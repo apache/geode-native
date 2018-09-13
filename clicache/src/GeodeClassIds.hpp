@@ -55,12 +55,6 @@ namespace Apache
           static_cast<System::UInt32>(apache::geode::client::internal::DSCode::BooleanArray) + 0x80000000;
 
         /// <summary>
-        /// ClassId of <c>RegionAttributes</c> class
-        /// </summary>
-        literal System::UInt32 RegionAttributes =
-          static_cast<System::UInt32>(apache::geode::client::internal::DSCode::RegionAttributes) + 0x80000000;
-
-        /// <summary>
         /// ClassId of <c>CacheableUndefined</c> class
         /// Implementation note: this has DSFID of FixedIDByte hence a
         /// different increment.

@@ -70,11 +70,15 @@ void stepOne() {
     auto serializationRegistry =
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
             ->getSerializationRegistry();
-    serializationRegistry->addType(Position::createDeserializable, 2);
-    serializationRegistry->addType(Portfolio::createDeserializable, 3);
+    serializationRegistry->addDataSerializableType(
+        Position::createDeserializable, 2);
+    serializationRegistry->addDataSerializableType(
+        Portfolio::createDeserializable, 3);
 
-    serializationRegistry->addPdxType(PositionPdx::createDeserializable);
-    serializationRegistry->addPdxType(PortfolioPdx::createDeserializable);
+    serializationRegistry->addPdxSerializableType(
+        PositionPdx::createDeserializable);
+    serializationRegistry->addPdxSerializableType(
+        PortfolioPdx::createDeserializable);
   } catch (const IllegalStateException&) {
     // ignore exception
   }

@@ -183,8 +183,6 @@ namespace apache
 
         void fromData(DataInput& input) override;
 
-        int8_t getInternalId() const override { return 0; }
-
         inline Apache::Geode::Client::IDataSerializableInternal^ ptr() const
         {
           return m_managedptr;

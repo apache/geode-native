@@ -42,12 +42,12 @@ namespace apache {
 					DataOutput& dataOutput, bool isDelta) const override
 				{
 					Managed::ISerializable^ data = Managed::SafeUMSerializableConvertGeneric(dataSerializable);
-					auto&& cache = CacheResolver::Lookup(dataOutput.getCache());
+					auto cache = CacheResolver::Lookup(dataOutput.getCache());
 
 					String^ typeName = gcnew String(data->GetType()->ToString());
 					int32_t objectID = cache->GetTypeRegistry()->GetIdForManagedType(typeName);
 					
-					auto&& dsCode = SerializationRegistry::getSerializableDataDsCode(objectID);
+					auto dsCode = SerializationRegistry::getSerializableDataDsCode(objectID);
 
 					dataOutput.write(static_cast<int8_t>(dsCode));
 					switch (dsCode) {

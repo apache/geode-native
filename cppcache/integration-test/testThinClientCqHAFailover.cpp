@@ -123,8 +123,10 @@ void initClientCq() {
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
             ->getSerializationRegistry();
 
-    serializationRegistry->addType(Position::createDeserializable, 2);
-    serializationRegistry->addType(Portfolio::createDeserializable, 3);
+    serializationRegistry->addDataSerializableType(
+        Position::createDeserializable, 2);
+    serializationRegistry->addDataSerializableType(
+        Portfolio::createDeserializable, 3);
   } catch (const IllegalStateException&) {
     // ignore exception
   }

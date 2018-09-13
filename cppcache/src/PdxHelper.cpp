@@ -155,7 +155,7 @@ std::shared_ptr<PdxSerializable> PdxHelper::deserializePdx(DataInput& dataInput,
     LOGDEBUG("deserializePdx ClassName = " + pdxClassname +
              ", isLocal = " + std::to_string(pType->isLocal()));
 
-    pdxObjectptr = serializationRegistry->getPdxType(pdxClassname);
+    pdxObjectptr = serializationRegistry->getPdxSerializableType(pdxClassname);
     if (pType->isLocal())  // local type no need to read Unread data
     {
       auto plr = PdxLocalReader(dataInput, pType, length, pdxTypeRegistry);
@@ -190,7 +190,8 @@ std::shared_ptr<PdxSerializable> PdxHelper::deserializePdx(DataInput& dataInput,
      * Fix : Commented the line
      */
     // pdxClassname = pType->getPdxClassName();
-    pdxObjectptr = serializationRegistry->getPdxType(pType->getPdxClassName());
+    pdxObjectptr =
+        serializationRegistry->getPdxSerializableType(pType->getPdxClassName());
     auto pdxRealObject = pdxObjectptr;
     if (pdxLocalType == nullptr)  // need to know local type
     {

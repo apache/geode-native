@@ -71,8 +71,6 @@ class FixedPartitionAttributesImpl : public internal::DataSerializableInternal {
             sizeof(decltype(m_partitionName)::value_type));
   }
 
-  int8_t getInternalId() const override { return 0; }
-
   FixedPartitionAttributesImpl& operator=(
       const FixedPartitionAttributesImpl& rhs) {
     if (this == &rhs) return *this;

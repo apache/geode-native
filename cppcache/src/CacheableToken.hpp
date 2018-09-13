@@ -72,8 +72,6 @@ class APACHE_GEODE_EXPORT CacheableToken
    */
   static std::shared_ptr<Serializable> createDeserializable();
 
-  virtual int8_t getInternalId() const override;
-
   ~CacheableToken() override = default;
 
   inline bool isInvalid() { return m_value == INVALID; }

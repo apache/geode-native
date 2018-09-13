@@ -88,8 +88,6 @@ class APACHE_GEODE_EXPORT ServerLocation
     return size;
   }
 
-  int8_t getInternalId() const override { return 0; }
-
   void printInfo() {
     LOGDEBUG(" Got Host %s, and port %d", getServerName().c_str(), m_port);
   }

@@ -273,7 +273,7 @@ void QueryHelper::populatePDXObject(std::shared_ptr<Region>& rptr) {
   // Register PdxType Object
 
   auto cacheImpl = CacheRegionHelper::getCacheImpl(&rptr->getCache());
-  cacheImpl->getSerializationRegistry()->addPdxType(
+  cacheImpl->getSerializationRegistry()->addPdxSerializableType(
       PdxTests::PdxType::createDeserializable);
   LOG("PdxObject Registered Successfully....");
 

@@ -27,11 +27,12 @@ TypeRegistry::TypeRegistry(CacheImpl* cache) : m_cache(cache) {}
 
 void TypeRegistry::registerType(TypeFactoryMethod creationFunction,
                                 int32_t id) {
-  m_cache->getSerializationRegistry()->addType(creationFunction, id);
+  m_cache->getSerializationRegistry()->addDataSerializableType(creationFunction,
+                                                               id);
 }
 
 void TypeRegistry::registerPdxType(TypeFactoryMethodPdx creationFunction) {
-  m_cache->getSerializationRegistry()->addPdxType(creationFunction);
+  m_cache->getSerializationRegistry()->addPdxSerializableType(creationFunction);
 }
 
 void TypeRegistry::registerPdxSerializer(

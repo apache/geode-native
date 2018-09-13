@@ -227,7 +227,7 @@ namespace Apache
           auto&& serializationRegistry = CacheRegionHelper::getCacheImpl(m_cache->GetNative().get())->getSerializationRegistry();
           auto nativeDelegateFunction = static_cast<std::shared_ptr<native::Serializable>(*)()>(
               System::Runtime::InteropServices::Marshal::GetFunctionPointerForDelegate(nativeDelegate).ToPointer());
-          serializationRegistry->addType(dsCode, nativeDelegateFunction);
+          serializationRegistry->setDataSerializablePrimitiveType(nativeDelegateFunction, static_cast<DSCode>(dsCode));
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
 
@@ -250,7 +250,7 @@ namespace Apache
           auto&& serializationRegistry = CacheRegionHelper::getCacheImpl(m_cache->GetNative().get())->getSerializationRegistry();
           auto nativeDelegateFunction = static_cast<std::shared_ptr<native::Serializable>(*)()>(
               System::Runtime::InteropServices::Marshal::GetFunctionPointerForDelegate(nativeDelegate).ToPointer());
-          serializationRegistry->addType2(fixedId, nativeDelegateFunction);
+          serializationRegistry->addDataSerializableFixedIdType(fixedId, nativeDelegateFunction);
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
 
@@ -259,7 +259,7 @@ namespace Apache
         DsCodeToDataSerializablePrimitiveNativeDelegate->Remove(typeId);
         _GF_MG_EXCEPTION_TRY2
 
-          CacheRegionHelper::getCacheImpl(m_cache->GetNative().get())->getSerializationRegistry()->removeType(typeId);
+          CacheRegionHelper::getCacheImpl(m_cache->GetNative().get())->getSerializationRegistry()->removeDataSerializableType(typeId);
 
         _GF_MG_EXCEPTION_CATCH_ALL2
       }

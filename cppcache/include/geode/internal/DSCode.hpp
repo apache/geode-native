@@ -31,12 +31,10 @@ enum class DSCode : int32_t {
   FixedIDShort = 2,
   CacheableLinkedList = 10,
   Properties = 11,
-  CacheableToken = 14,  // because there's no equivalence in java
   PdxType = 17,  // internal hack to read pdxtype in c# layer, look usuage in
-  // TcrMessage and  C# DistributedM.cpp
-      BooleanArray = 26,
+                 // TcrMessage and  C# DistributedM.cpp
+  BooleanArray = 26,
   CharArray = 27,
-  RegionAttributes = 30,  // because there's no equivalence in java
   NullObj = 41,
   CacheableString = 42,
   Class = 43,
@@ -89,4 +87,4 @@ enum class DSCode : int32_t {
 }  // namespace geode
 }  // namespace apache
 
-#endif //NATIVECLIENT_DSCODE_H
+#endif  // NATIVECLIENT_DSCODE_H

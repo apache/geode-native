@@ -136,7 +136,8 @@ std::shared_ptr<CacheListener> RegionAttributes::getCacheListener() const {
   return m_cacheListener;
 }
 
-std::shared_ptr<PartitionResolver> RegionAttributes::getPartitionResolver() const {
+std::shared_ptr<PartitionResolver> RegionAttributes::getPartitionResolver()
+    const {
   if (!m_partitionResolver && !m_partitionResolverLibrary.empty()) {
     if (CacheXmlParser::managedPartitionResolverFn &&
         m_partitionResolverFactory.find('.') != std::string::npos) {
@@ -155,7 +156,8 @@ std::shared_ptr<PartitionResolver> RegionAttributes::getPartitionResolver() cons
   return m_partitionResolver;
 }
 
-std::shared_ptr<PersistenceManager> RegionAttributes::getPersistenceManager() const {
+std::shared_ptr<PersistenceManager> RegionAttributes::getPersistenceManager()
+    const {
   if (!m_persistenceManager && !m_persistenceLibrary.empty()) {
     if (CacheXmlParser::managedPartitionResolverFn &&
         m_persistenceFactory.find('.') != std::string::npos) {
@@ -272,16 +274,10 @@ uint32_t RegionAttributes::getLruEntriesLimit() const {
   return m_lruEntriesLimit;
 }
 
-DiskPolicyType RegionAttributes::getDiskPolicy() const {
-  return m_diskPolicy;
-}
+DiskPolicyType RegionAttributes::getDiskPolicy() const { return m_diskPolicy; }
 
 std::shared_ptr<Serializable> RegionAttributes::createDeserializable() {
   return std::make_shared<RegionAttributes>();
-}
-
-int8_t RegionAttributes::getInternalId() const {
-  return static_cast<int8_t>(DSCode::RegionAttributes);
 }
 
 namespace impl {

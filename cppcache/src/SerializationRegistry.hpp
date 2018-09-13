@@ -61,6 +61,19 @@ class ACE_Export ACE_Hash<int64_t> {
 }  // namespace ACE_VERSIONED_NAMESPACE_NAME
 #endif
 
+ACE_BEGIN_VERSIONED_NAMESPACE_DECL
+
+using apache::geode::client::DSCode;
+template <>
+class ACE_Hash<DSCode> {
+ public:
+  inline u_long operator()(const DSCode key) {
+    return static_cast<u_long>(key);
+  }
+};
+
+ACE_END_VERSIONED_NAMESPACE_DECL
+
 namespace apache {
 namespace geode {
 namespace client {
@@ -75,12 +88,14 @@ typedef ACE_Hash_Map_Manager<std::string, TypeFactoryMethodPdx, ACE_Null_Mutex>
 
 class TheTypeMap : private NonCopyable {
  private:
-  IdToFactoryMap* m_DataSerializableMap;
-  IdToFactoryMap* m_DataSerializableFixedIdMap;
-  StrToPdxFactoryMap* m_pdxTypemap;
-  mutable util::concurrent::spinlock_mutex m_DataSerializableMapLock;
-  mutable util::concurrent::spinlock_mutex m_DataSerializableFixedIdMapLock;
-  mutable util::concurrent::spinlock_mutex m_pdxTypemapLock;
+  DSCodeToFactoryMap* m_dataSerializablePrimitiveMap;
+  IdToFactoryMap* m_dataSerializableMap;
+  IdToFactoryMap* m_dataSerializableFixedIdMap;
+  StrToPdxFactoryMap* m_pdxSerializableMap;
+  mutable util::concurrent::spinlock_mutex m_dataSerializablePrimitiveMapLock;
+  mutable util::concurrent::spinlock_mutex m_dataSerializableMapLock;
+  mutable util::concurrent::spinlock_mutex m_dataSerializableFixedIdMapLock;
+  mutable util::concurrent::spinlock_mutex m_pdxSerializableMapLock;
 
  public:
   std::unordered_map<std::type_index, int32_t> typeToClassId;
@@ -90,29 +105,32 @@ class TheTypeMap : private NonCopyable {
 
  public:
   TheTypeMap() {
+    // map to hold DataSerializablePrimitive
+    m_dataSerializablePrimitiveMap = new DSCodeToFactoryMap();
+
     // map to hold Data Serializable IDs
-    m_DataSerializableMap = new IdToFactoryMap();
+    m_dataSerializableMap = new IdToFactoryMap();
 
     // map to hold internal Data Serializable Fixed IDs
-    m_DataSerializableFixedIdMap = new IdToFactoryMap();
+    m_dataSerializableFixedIdMap = new IdToFactoryMap();
 
     // map to hold PDX types <string, funptr>.
-    m_pdxTypemap = new StrToPdxFactoryMap();
+    m_pdxSerializableMap = new StrToPdxFactoryMap();
 
     setup();
   }
 
   virtual ~TheTypeMap() {
-    if (m_DataSerializableMap != nullptr) {
-      delete m_DataSerializableMap;
+    if (m_dataSerializableMap != nullptr) {
+      delete m_dataSerializableMap;
     }
 
-    if (m_DataSerializableFixedIdMap != nullptr) {
-      delete m_DataSerializableFixedIdMap;
+    if (m_dataSerializableFixedIdMap != nullptr) {
+      delete m_dataSerializableFixedIdMap;
     }
 
-    if (m_pdxTypemap != nullptr) {
-      delete m_pdxTypemap;
+    if (m_pdxSerializableMap != nullptr) {
+      delete m_pdxSerializableMap;
     }
   }
 
@@ -124,32 +142,36 @@ class TheTypeMap : private NonCopyable {
 
   void bindDataSerializable(TypeFactoryMethod func, int32_t id);
 
-  inline void rebindDataSerializable(int32_t id, TypeFactoryMethod func);
+  void rebindDataSerializable(int32_t id, TypeFactoryMethod func);
 
-  inline void unbindDataSerializable(int32_t id);
+  void unbindDataSerializable(int32_t id);
 
   void findDataSerializableFixedId(int32_t id, TypeFactoryMethod& func) const;
 
-  inline void bindDataSerializableFixedId(TypeFactoryMethod func);
+  void bindDataSerializableFixedId(TypeFactoryMethod func);
 
-  inline void rebindDataSerializableFixedId(int32_t idd,
-                                            TypeFactoryMethod func);
+  void rebindDataSerializableFixedId(int32_t idd, TypeFactoryMethod func);
 
-  inline void unbindDataSerializableFixedId(int32_t id);
+  void unbindDataSerializableFixedId(int32_t id);
 
-  inline void bindPdxType(TypeFactoryMethodPdx func);
+  void bindPdxSerializable(TypeFactoryMethodPdx func);
 
-  inline void findPdxType(const std::string& objFullName,
-                          TypeFactoryMethodPdx& func) const;
+  void findPdxSerializable(const std::string& objFullName,
+                           TypeFactoryMethodPdx& func) const;
 
-  inline void unbindPdxType(const std::string& objFullName);
+  void unbindPdxSerializable(const std::string& objFullName);
 
-  void rebindPdxType(std::string objFullName, TypeFactoryMethodPdx func);
+  void rebindPdxSerializable(std::string objFullName,
+                             TypeFactoryMethodPdx func);
+
+  void findDataSerializablePrimitive(DSCode dsCode,
+                                     TypeFactoryMethod& func) const;
+
+  void bindDataSerializablePrimitive(TypeFactoryMethod func, DSCode id);
+
+  void rebindDataSerializablePrimitive(DSCode dsCode, TypeFactoryMethod func);
 
  private:
-  void bindDataSerializable(TypeFactoryMethod func, DSCode id) {
-    bindDataSerializable(func, static_cast<int32_t>(id));
-  }
 };
 
 class Pool;
@@ -250,26 +272,23 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
   std::shared_ptr<Serializable> deserialize(DataInput& input,
                                             int8_t typeId = -1) const;
 
-  void addType(TypeFactoryMethod func, int32_t id);
+  void addDataSerializableType(TypeFactoryMethod func, int32_t id);
 
-  void addType(int32_t idd, TypeFactoryMethod func);
-
-  void addPdxType(TypeFactoryMethodPdx func);
+  void addPdxSerializableType(TypeFactoryMethodPdx func);
 
   void setPdxSerializer(std::shared_ptr<PdxSerializer> pdxSerializer);
 
   std::shared_ptr<PdxSerializer> getPdxSerializer();
 
-  void removeType(int32_t id);
+  void removeDataSerializableType(int32_t id);
 
-  // following for internal types with Data Serializable Fixed IDs  - since GFE
-  // 5.7
+  void addDataSerializableFixedIdType(TypeFactoryMethod func);
 
-  void addType2(TypeFactoryMethod func);
+  void addDataSerializableFixedIdType(int32_t id, TypeFactoryMethod func);
 
-  void addType2(int32_t id, TypeFactoryMethod func);
+  void removeDataSerializableFixeIdType(int32_t id);
 
-  void removeType2(int32_t id);
+  void setDataSerializablePrimitiveType(TypeFactoryMethod func, DSCode dsCode);
 
   int32_t GetPDXIdForType(Pool* pool,
                           std::shared_ptr<Serializable> pdxType) const;
@@ -283,7 +302,7 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
   std::shared_ptr<Serializable> GetEnum(std::shared_ptr<Pool> pool,
                                         int32_t val) const;
 
-  std::shared_ptr<PdxSerializable> getPdxType(
+  std::shared_ptr<PdxSerializable> getPdxSerializableType(
       const std::string& className) const;
 
   void setPdxTypeHandler(PdxTypeHandler* handler) {
@@ -300,7 +319,7 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
     return createType;
   }
 
-  int32_t GetIdForDataSerializableType(std::type_index objectType) const {
+  int32_t getIdForDataSerializableType(std::type_index objectType) const {
     auto&& typeIterator = theTypeMap.typeToClassId.find(objectType);
     auto&& id = typeIterator->second;
     return id;
@@ -311,6 +330,9 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
   std::shared_ptr<PdxSerializer> pdxSerializer;
   std::unique_ptr<DataSerializableHandler> dataSerializeableHandler;
   TheTypeMap theTypeMap;
+
+  std::shared_ptr<Serializable> deserializeDataSerializableFixedId(
+      DataInput& input, DSCode dsCode) const;
 
   inline void serialize(const std::shared_ptr<DataSerializableFixedId>& obj,
                         DataOutput& output) const {

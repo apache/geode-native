@@ -199,7 +199,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1_PdxInit)
       auto serializationRegistry =
           CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
               ->getSerializationRegistry();
-      serializationRegistry->addPdxType(PdxDeltaEx::createDeserializable);
+      serializationRegistry->addPdxSerializableType(
+          PdxDeltaEx::createDeserializable);
     } catch (IllegalStateException&) {
       //  ignore type reregistration exception.
     }
@@ -212,7 +213,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, Client2_PdxInit)
       auto serializationRegistry =
           CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
               ->getSerializationRegistry();
-      serializationRegistry->addPdxType(PdxDeltaEx::createDeserializable);
+      serializationRegistry->addPdxSerializableType(
+          PdxDeltaEx::createDeserializable);
     } catch (IllegalStateException&) {
       //  ignore type reregistration exception.
     }
