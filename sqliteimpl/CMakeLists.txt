@@ -23,6 +23,10 @@ add_library(SqLiteImpl SHARED
   SqLiteImpl.hpp
 )
 
+set_target_properties(SqLiteImpl PROPERTIES
+	FOLDER cpp/test/integration
+)
+
 include(GenerateExportHeader)
 generate_export_header(SqLiteImpl)
 

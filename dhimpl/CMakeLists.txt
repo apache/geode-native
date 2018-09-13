@@ -20,6 +20,9 @@ file(GLOB_RECURSE SOURCES "*.cpp")
 
 add_library(DHImpl SHARED ${SOURCES})
 
+set_target_properties(DHImpl PROPERTIES
+  FOLDER cpp/test/integration)
+
 include(GenerateExportHeader)
 generate_export_header(DHImpl)
 

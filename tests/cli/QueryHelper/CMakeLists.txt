@@ -59,4 +59,4 @@ string(REPLACE "/RTC1" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
 set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${SHARED_LINKER_FLAGS_STRONG_KEY}")
 
 # For Visual Studio organization
-set_target_properties(QueryWrapper PROPERTIES FOLDER test/cliTests)
+set_target_properties(QueryWrapper PROPERTIES FOLDER cli/test/integration)

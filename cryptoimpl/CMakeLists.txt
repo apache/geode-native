@@ -33,7 +33,8 @@ target_include_directories(cryptoImpl
 
 set_target_properties(cryptoImpl PROPERTIES
   CXX_VISIBILITY_PRESET hidden
-  VISIBILITY_INLINES_HIDDEN ON)
+  VISIBILITY_INLINES_HIDDEN ON
+  FOLDER cpp/test/integration)
 
 target_link_libraries(cryptoImpl
   PRIVATE

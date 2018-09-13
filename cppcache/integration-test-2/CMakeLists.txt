@@ -75,6 +75,8 @@ if(WIN32)
   endforeach()
 endif()
 
+set_target_properties(integration-test-2 PROPERTIES
+	FOLDER cpp/test/integration)
 enable_testing()
 include(GoogleTest)
 gtest_discover_tests(integration-test-2)
