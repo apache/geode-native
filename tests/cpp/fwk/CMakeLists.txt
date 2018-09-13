@@ -35,4 +35,4 @@ target_link_libraries(${PROJECT_NAME}
 )
 
 # For Visual Studio organization
-set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER test)
+set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER test-common)

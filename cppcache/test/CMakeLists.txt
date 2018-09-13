@@ -70,6 +70,10 @@ target_include_directories(apache-geode_unittests
 
 add_dependencies(unit-tests apache-geode_unittests)
 
+set_target_properties(apache-geode_unittests PROPERTIES
+  FOLDER cpp/test/unit
+  )
+
 enable_testing()
 add_test(NAME ${PROJECT_NAME} COMMAND $<TARGET_FILE:${PROJECT_NAME}>)
 
@@ -80,6 +84,7 @@ add_custom_target(run-cppcache-unit-tests
   USES_TERMINAL
 )
 set_target_properties(run-cppcache-unit-tests PROPERTIES
+  FOLDER cpp/test/unit
   EXCLUDE_FROM_ALL TRUE
   EXCLUDE_FROM_DEFAULT_BUILD TRUE
 )

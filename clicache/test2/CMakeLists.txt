@@ -49,6 +49,7 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
   VS_DOTNET_REFERENCE_xunit.assert "${CMAKE_BINARY_DIR}/clicache/packages/xunit.assert.2.3.1/lib/netstandard1.1/xunit.assert.dll"
   VS_DOTNET_REFERENCE_xunit.abstractions "${CMAKE_BINARY_DIR}/clicache/packages/xunit.abstractions.2.0.1/lib/net35/xunit.abstractions.dll"
   VS_DOTNET_REFERENCE_xunit.execution.desktop "${CMAKE_BINARY_DIR}/clicache/packages/xunit.extensibility.execution.2.3.1/lib/net452/xunit.execution.desktop.dll"
+  FOLDER cli/test/integration
 )
 
 if(NOT "${STRONG_NAME_KEY}" STREQUAL "")

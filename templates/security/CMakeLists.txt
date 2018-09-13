@@ -24,6 +24,10 @@ add_library(securityImpl SHARED
   CMakeLists.txt.forInstall
 )
 
+set_target_properties(securityImpl PROPERTIES
+	FOLDER cpp/test/integration
+)
+
 include(GenerateExportHeader)
 generate_export_header(securityImpl)
 

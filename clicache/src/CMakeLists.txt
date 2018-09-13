@@ -310,6 +310,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
   VS_GLOBAL_ROOTNAMESPACE ${PROJECT_NAME}
   VS_DOTNET_TARGET_FRAMEWORK_VERSION "v4.5.2"
   VS_DOTNET_REFERENCES "System;System.Xml;System.Core"
+  FOLDER cli
 )
 
 target_compile_options(${PROJECT_NAME}

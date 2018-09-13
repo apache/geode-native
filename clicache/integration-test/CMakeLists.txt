@@ -43,7 +43,7 @@ foreach(FILE ${CSPROJECTS})
   include_external_msproject(
       ${PROJNAME}  ${CMAKE_CURRENT_BINARY_DIR}/${PROJNAME}.csproj
       TYPE FAE04EC0-301F-11D3-BF4B-00C04F79EFBC)
-  set_target_properties(${PROJNAME} PROPERTIES FOLDER test/cliTests)
+  set_target_properties(${PROJNAME} PROPERTIES FOLDER cli/test/integration)
 
 endforeach()
 
@@ -114,5 +114,8 @@ add_custom_target(run-stable-clicache-integration-tests
   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
   USES_TERMINAL)
 add_dependencies(run-integration-tests run-stable-clicache-integration-tests)
-set_target_properties(run-stable-clicache-integration-tests PROPERTIES EXCLUDE_FROM_ALL TRUE EXCLUDE_FROM_DEFAULT_BUILD TRUE)
+set_target_properties(run-stable-clicache-integration-tests PROPERTIES
+  EXCLUDE_FROM_ALL TRUE
+  EXCLUDE_FROM_DEFAULT_BUILD TRUE
+  FOLDER cli/test/integration)
 

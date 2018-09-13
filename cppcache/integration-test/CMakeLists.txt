@@ -30,6 +30,11 @@ target_link_libraries(${TEST_UTILS_LIB}
     apache-geode
     fwk
 )
+
+set_target_properties(${TEST_UTILS_LIB} PROPERTIES
+	FOLDER cpp/test/integration
+)
+
 target_compile_definitions(${TEST_UTILS_LIB}
   PRIVATE
     $<MAKE_C_IDENTIFIER:${TEST_UTILS_LIB}>_static=1
@@ -51,6 +56,9 @@ target_include_directories(unit_test_callbacks
   PRIVATE
     $<TARGET_PROPERTY:apache-geode,SOURCE_DIR>/../src
 )
+
+ set_target_properties(unit_test_callbacks PROPERTIES FOLDER cpp/test/integration)
+
 
 enable_testing()
 
@@ -79,7 +87,7 @@ foreach(FILE ${SOURCES})
   set(TESTS ${TESTS} ${TEST})
   add_dependencies(integration-tests ${TEST})
   add_executable(${TEST} ${FILE})
-  set_target_properties(${TEST} PROPERTIES FOLDER test/cppTests)
+  set_target_properties(${TEST} PROPERTIES FOLDER cpp/test/integration)
 
   target_link_libraries(${TEST}
     PRIVATE
@@ -226,6 +234,7 @@ add_dependencies(run-integration-tests run-stable-cppcache-integration-tests)
 set_target_properties(run-stable-cppcache-integration-tests PROPERTIES
     EXCLUDE_FROM_ALL TRUE
     EXCLUDE_FROM_DEFAULT_BUILD TRUE
+	FOLDER cpp/test/integration
 )
 
 add_custom_target(run-quick-cppcache-integration-tests
@@ -235,4 +244,5 @@ add_custom_target(run-quick-cppcache-integration-tests
 set_target_properties(run-quick-cppcache-integration-tests PROPERTIES
     EXCLUDE_FROM_ALL TRUE
     EXCLUDE_FROM_DEFAULT_BUILD TRUE
+	FOLDER cpp/test/integration
 )

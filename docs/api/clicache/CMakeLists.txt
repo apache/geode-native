@@ -22,7 +22,10 @@ if(DOXYGEN_FOUND)
       ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
       COMMENT "Generating .NET API documentation with Doxygen" VERBATIM)
-  set_target_properties(docs-clicache PROPERTIES EXCLUDE_FROM_ALL TRUE EXCLUDE_FROM_DEFAULT_BUILD TRUE)
+  set_target_properties(docs-clicache PROPERTIES
+    EXCLUDE_FROM_ALL TRUE
+	EXCLUDE_FROM_DEFAULT_BUILD TRUE
+	FOLDER cli/docs)
   add_dependencies(docs docs-clicache)
 
   install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html/ DESTINATION docs/DotNetDocs)
