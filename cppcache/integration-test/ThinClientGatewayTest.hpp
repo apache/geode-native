@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_INTEGRATION_TEST_THINCLIENTGATEWAYTEST_H_
-#define GEODE_INTEGRATION_TEST_THINCLIENTGATEWAYTEST_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,6 +15,11 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_INTEGRATION_TEST_THINCLIENTGATEWAYTEST_H_
+#define GEODE_INTEGRATION_TEST_THINCLIENTGATEWAYTEST_H_
+
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
 #include "TallyListener.hpp"
@@ -31,8 +31,14 @@
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
 
-
 #include <string>
+
+namespace {
+
+using apache::geode::client::EntryEvent;
+using apache::geode::client::RegionEvent;
+
+using apache::geode::client::testing::TallyListener;
 
 class MyListener : public CacheListener {
  private:
@@ -60,7 +66,8 @@ class MyListener : public CacheListener {
   int getNumEvents() { return m_events; }
 };
 
-void setCacheListener(const char* regName, std::shared_ptr<TallyListener> regListener) {
+void setCacheListener(const char* regName,
+                      std::shared_ptr<TallyListener> regListener) {
   auto reg = getHelper()->getRegion(regName);
   auto attrMutator = reg->getAttributesMutator();
   attrMutator->setCacheListener(regListener);
@@ -103,24 +110,23 @@ DUNIT_TASK_DEFINITION(SERVER2, SetupClient2)
   {
     // CacheHelper ch = getHelper();
     reg1Listener1 = std::make_shared<MyListener>();
-   auto regPtr = createPooledRegion("exampleRegion", false, locHostPort2,
-                                          "poolName", true, reg1Listener1);
-   regPtr->registerAllKeys();
+    auto regPtr = createPooledRegion("exampleRegion", false, locHostPort2,
+                                     "poolName", true, reg1Listener1);
+    regPtr->registerAllKeys();
   }
 END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(SERVER1, SetupClient)
   {
     initClientWithPool(true, "poolName", locHostPort1, nullptr);
-   auto regPtr =
-        createRegionAndAttachPool("exampleRegion", true, nullptr);
-   LOG(" region is created ");
-   for (int i = 0; i < 100; i++) {
-     LOG(" region is created put");
-     regPtr->put(i, i);
-   }
+    auto regPtr = createRegionAndAttachPool("exampleRegion", true, nullptr);
+    LOG(" region is created ");
+    for (int i = 0; i < 100; i++) {
+      LOG(" region is created put");
+      regPtr->put(i, i);
+    }
 
-   dunit::sleep(10000);
+    dunit::sleep(10000);
   }
 END_TASK_DEFINITION
 
@@ -184,5 +190,7 @@ void runListenerInit() {
   CALL_TASK(StopLocator1);
   CALL_TASK(StopLocator2);
 }
+
+}  // namespace
 
 #endif  // GEODE_INTEGRATION_TEST_THINCLIENTGATEWAYTEST_H_

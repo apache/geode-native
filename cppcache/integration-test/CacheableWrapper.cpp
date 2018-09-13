@@ -17,6 +17,10 @@
 
 #include "CacheableWrapper.hpp"
 
+namespace apache {
+namespace geode {
+namespace testing {
+
 void CacheableWrapper::initKey(int32_t, int32_t) {
   throw IllegalArgumentException("Cannot call initKey.");
 }
@@ -76,3 +80,7 @@ std::string CacheableWrapperFactory::getTypeForId(DSCode typeId) {
     return "";
   }
 }
+
+}  // namespace testing
+}  // namespace geode
+}  // namespace apache

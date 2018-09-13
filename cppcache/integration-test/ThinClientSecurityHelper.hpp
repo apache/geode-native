@@ -23,6 +23,8 @@
 #include "ThinClientHelper.hpp"
 #include "ace/Process.h"
 
+namespace {
+
 using apache::geode::client::CacheableBoolean;
 using apache::geode::client::Exception;
 using apache::geode::client::testframework::security::CredentialGenerator;
@@ -127,44 +129,44 @@ opCodeList::value_type tmpAArr[] = {OP_CREATE,       OP_UPDATE,
 #define TYPE_USER_CLIENT 'U'
 
 void initClientAuth(char UserType) {
- auto config = Properties::create();
- opCodeList wr(tmpWArr, tmpWArr + sizeof tmpWArr / sizeof *tmpWArr);
- opCodeList rt(tmpRArr, tmpRArr + sizeof tmpRArr / sizeof *tmpRArr);
- opCodeList ad(tmpAArr, tmpAArr + sizeof tmpAArr / sizeof *tmpAArr);
- credentialGeneratorHandler->getAuthInit(config);
- switch (UserType) {
-   case 'W':
-     credentialGeneratorHandler->getAllowedCredentialsForOps(wr, config,
-                                                             nullptr);
-     printf("User is %s Pass is %s ",
-            config->find("security-username")->value().c_str(),
-            (config->find("security-password") != nullptr
-                 ? config->find("security-password")->value().c_str()
-                 : " not set"));
-     break;
-   case 'R':
-     credentialGeneratorHandler->getAllowedCredentialsForOps(rt, config,
-                                                             nullptr);
-     printf("User is %s Pass is %s ",
-            config->find("security-username")->value().c_str(),
-            (config->find("security-password") != nullptr
-                 ? config->find("security-password")->value().c_str()
-                 : " not set"));
-     break;
-   case 'A':
-     credentialGeneratorHandler->getAllowedCredentialsForOps(ad, config,
-                                                             nullptr);
-     printf("User is %s Pass is %s ",
-            config->find("security-username")->value().c_str(),
-            (config->find("security-password") != nullptr
-                 ? config->find("security-password")->value().c_str()
-                 : " not set"));
-   default:
-     break;
- }
+  auto config = Properties::create();
+  opCodeList wr(tmpWArr, tmpWArr + sizeof tmpWArr / sizeof *tmpWArr);
+  opCodeList rt(tmpRArr, tmpRArr + sizeof tmpRArr / sizeof *tmpRArr);
+  opCodeList ad(tmpAArr, tmpAArr + sizeof tmpAArr / sizeof *tmpAArr);
+  credentialGeneratorHandler->getAuthInit(config);
+  switch (UserType) {
+    case 'W':
+      credentialGeneratorHandler->getAllowedCredentialsForOps(wr, config,
+                                                              nullptr);
+      printf("User is %s Pass is %s ",
+             config->find("security-username")->value().c_str(),
+             (config->find("security-password") != nullptr
+                  ? config->find("security-password")->value().c_str()
+                  : " not set"));
+      break;
+    case 'R':
+      credentialGeneratorHandler->getAllowedCredentialsForOps(rt, config,
+                                                              nullptr);
+      printf("User is %s Pass is %s ",
+             config->find("security-username")->value().c_str(),
+             (config->find("security-password") != nullptr
+                  ? config->find("security-password")->value().c_str()
+                  : " not set"));
+      break;
+    case 'A':
+      credentialGeneratorHandler->getAllowedCredentialsForOps(ad, config,
+                                                              nullptr);
+      printf("User is %s Pass is %s ",
+             config->find("security-username")->value().c_str(),
+             (config->find("security-password") != nullptr
+                  ? config->find("security-password")->value().c_str()
+                  : " not set"));
+    default:
+      break;
+  }
 
- try {
-   initClient(true, config);
+  try {
+    initClient(true, config);
   } catch (...) {
     throw;
   }
@@ -233,10 +235,10 @@ class putThread : public ACE_Task_Base {
       key = CacheableKey::create(buf);
       if (m_opcode == 0) {
         if (m_isCallBack) {
-         auto boolptr = CacheableBoolean::create("true");
-         sprintf(valbuf, "client1-value%d", ops);
-         value = CacheableString::create(valbuf);
-         m_reg->put(key, value, boolptr);
+          auto boolptr = CacheableBoolean::create("true");
+          sprintf(valbuf, "client1-value%d", ops);
+          value = CacheableString::create(valbuf);
+          m_reg->put(key, value, boolptr);
         } else {
           sprintf(valbuf, "client2-value%d", ops);
           value = CacheableString::create(valbuf);
@@ -254,8 +256,8 @@ class putThread : public ACE_Task_Base {
       } else {
         try {
           if (m_isCallBack) {
-           auto boolptr = CacheableBoolean::create("true");
-           m_reg->destroy(key, boolptr);
+            auto boolptr = CacheableBoolean::create("true");
+            m_reg->destroy(key, boolptr);
           } else {
             m_reg->destroy(key);
           }
@@ -278,5 +280,7 @@ class putThread : public ACE_Task_Base {
   bool m_regInt;
   int m_waitTime;
 };
+
+}  // namespace
 
 #endif  // GEODE_INTEGRATION_TEST_THINCLIENTSECURITYHELPER_H_

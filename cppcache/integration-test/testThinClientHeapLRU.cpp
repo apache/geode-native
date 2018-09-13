@@ -26,13 +26,17 @@
 #include <string>
 #include "ThinClientHelper.hpp"
 
-
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
 
 #include "locator_globals.hpp"
 #include "LocatorHelper.hpp"
+
+using apache::geode::client::internal::DSCode;
+
+using apache::geode::testing::CacheableWrapper;
+using apache::geode::testing::CacheableWrapperFactory;
 
 const char* _regionNames[] = {"DistRegionAck"};
 

@@ -35,6 +35,9 @@
 #include <geode/CacheableUndefined.hpp>
 #include <geode/CacheableObjectArray.hpp>
 
+namespace CacheableHelper {
+
+using apache::geode::client::Cacheable;
 using apache::geode::client::CacheableArrayList;
 using apache::geode::client::CacheableBoolean;
 using apache::geode::client::CacheableByte;
@@ -68,8 +71,10 @@ using apache::geode::client::CacheableVector;
 using apache::geode::client::CacheHelper;
 using apache::geode::client::Serializable;
 using apache::geode::client::internal::DataSerializablePrimitive;
+using apache::geode::client::internal::DSCode;
 
-namespace CacheableHelper {
+using apache::geode::testing::CacheableWrapper;
+using apache::geode::testing::CacheableWrapperFactory;
 
 const uint32_t m_crc32Table[] = {
     0x00000000, 0x77073096, 0xee0e612c, 0x990951ba, 0x076dc419, 0x706af48f,
@@ -220,7 +225,6 @@ inline bool isContainerTypeId(DSCode typeId) {
          (typeId == DSCode::CacheableLinkedHashSet) ||
          (typeId == DSCode::CacheableLinkedList);
 }
-}  // namespace CacheableHelper
 
 // Cacheable types that can be used as keys
 
@@ -1219,8 +1223,6 @@ class CacheableObjectArrayWrapper : public CacheableWrapper {
   }
 };
 
-namespace CacheableHelper {
-
 void registerBuiltins(bool isRegisterFileName = false) {
   // Initialize the random number generator.
   srand(getpid() + static_cast<int>(time(nullptr)));
@@ -1328,6 +1330,7 @@ void registerBuiltins(bool isRegisterFileName = false) {
                                         "CacheableStack",
                                         CacheableStackWrapper::create, false);
 }
+
 }  // namespace CacheableHelper
 
 #endif  // GEODE_INTEGRATION_TEST_BUILTINCACHEABLEWRAPPERS_H_

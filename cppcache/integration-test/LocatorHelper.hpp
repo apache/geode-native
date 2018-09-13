@@ -23,6 +23,8 @@
 #define SERVER2 s2p2
 #endif
 
+namespace {
+
 using apache::geode::client::CacheHelper;
 
 DUNIT_TASK_DEFINITION(SERVER1, CreateLocator1)
@@ -150,5 +152,7 @@ DUNIT_TASK_DEFINITION(SERVER1, CloseLocator1)
     }
   }
 END_TASK_DEFINITION
+
+}  // namespace
 
 #endif  // GEODE_INTEGRATION_TEST_LOCATORHELPER_H_

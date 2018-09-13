@@ -39,6 +39,8 @@
 #define CREATE_TWICE_KEY "__create_twice_key"
 #define CREATE_TWICE_VALUE "__create_twice_value"
 
+namespace {
+
 using apache::geode::client::CacheableInt32;
 using apache::geode::client::CacheableInt64;
 using apache::geode::client::CacheableKey;
@@ -598,11 +600,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, VerifyUpdateLocatorListThread)
       //    too strict.
       //    Assert(numLocatorListUpdates <= numExpectedLocatorListUpdates+2) is
       //    ideal.
-      ASSERT(numLocatorListUpdates >= numExpectedLocatorListUpdates -
-                                          1 /*&& numLocatorListUpdates <=
-                                               numExpectedLocatorListUpdates+2*/
-             ,
-             "Got unexpected number of LocatorList updates");
+      ASSERT(
+          numLocatorListUpdates >=
+              numExpectedLocatorListUpdates -
+                  1 /*&& numLocatorListUpdates <=
+                                                   numExpectedLocatorListUpdates+2*/
+          ,
+          "Got unexpected number of LocatorList updates");
     } else {
       ASSERT(
           numLocatorListUpdates == 0,
@@ -893,5 +897,7 @@ void runDistOpsDontUpdateLocatorList() {
   CALL_TASK(CloseServer1);
   CALL_TASK(CloseLocator1);
 }
+
+}  // namespace
 
 #endif  // GEODE_INTEGRATION_TEST_THINCLIENTDISTOPS_H_

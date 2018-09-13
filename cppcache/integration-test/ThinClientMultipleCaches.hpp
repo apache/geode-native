@@ -29,9 +29,10 @@
 #include "CacheHelper.hpp"
 #include "fw_dunit.hpp"
 
-
 #define CLIENT1 s1p1
 #define SERVER1 s2p1
+
+namespace {
 
 using apache::geode::client::Cache;
 using apache::geode::client::CacheFactory;
@@ -105,5 +106,7 @@ void run() {
   CALL_TASK(CloseServer);
   CALL_TASK(CloseLocator1);
 }
+
+}  // namespace
 
 #endif  // GEODE_INTEGRATION_TEST_THINCLIENTMULTIPLECACHES_H_

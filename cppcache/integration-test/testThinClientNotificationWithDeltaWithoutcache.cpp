@@ -44,11 +44,19 @@ CacheHelper* cacheHelper = nullptr;
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
 #include "LocatorHelper.hpp"
+
 int DeltaEx::toDeltaCount = 0;
 int DeltaEx::toDataCount = 0;
 int DeltaEx::fromDeltaCount = 0;
 int DeltaEx::fromDataCount = 0;
 int DeltaEx::cloneCount = 0;
+
+int PdxDeltaEx::m_toDeltaCount = 0;
+int PdxDeltaEx::m_toDataCount = 0;
+int PdxDeltaEx::m_fromDeltaCount = 0;
+int PdxDeltaEx::m_fromDataCount = 0;
+int PdxDeltaEx::m_cloneCount = 0;
+
 void initClient(const bool isthinClient) {
   if (cacheHelper == nullptr) {
     cacheHelper = new CacheHelper(isthinClient);

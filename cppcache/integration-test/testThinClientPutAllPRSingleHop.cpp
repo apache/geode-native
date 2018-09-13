@@ -43,6 +43,7 @@
 #define SERVER2 s1p2
 #define SERVER3 s2p2
 
+using apache::geode::client::Cacheable;
 using apache::geode::client::CacheServerException;
 using apache::geode::client::CacheWriterException;
 using apache::geode::client::Exception;

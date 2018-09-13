@@ -41,6 +41,7 @@ const char* locatorsG =
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
 #include "LocatorHelper.hpp"
+
 int DeltaEx::toDeltaCount = 0;
 int DeltaEx::toDataCount = 0;
 int DeltaEx::fromDeltaCount = 0;

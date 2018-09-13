@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_FWKLIB_QUERYHELPER_H_
-#define GEODE_FWKLIB_QUERYHELPER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_FWKLIB_QUERYHELPER_H_
+#define GEODE_FWKLIB_QUERYHELPER_H_
 
 #include <cstdlib>
 #include <geode/SystemProperties.hpp>
@@ -40,20 +40,6 @@
 #ifndef ROOT_SCOPE
 #define ROOT_SCOPE LOCAL
 #endif
-
-using apache::geode::client::Cacheable;
-using apache::geode::client::CacheableKey;
-using apache::geode::client::DataOutputInternal;
-using apache::geode::client::Exception;
-using apache::geode::client::Region;
-using apache::geode::client::ResultSet;
-using apache::geode::client::SelectResults;
-using apache::geode::client::Serializable;
-using apache::geode::client::Struct;
-using apache::geode::client::StructSet;
-
-using testobject::Portfolio;
-using testobject::Position;
 
 namespace testData {
 
@@ -655,6 +641,22 @@ const int cqResultsetRowCounts[CQRS_ARRAY_SIZE] = {20, 1,  19, 0, 0, 0,  0, 20,
 const int constantExpectedRowsCQRS[1] = {35};
 }  // namespace testData
 
+namespace {
+
+using apache::geode::client::Cacheable;
+using apache::geode::client::CacheableKey;
+using apache::geode::client::DataOutputInternal;
+using apache::geode::client::Exception;
+using apache::geode::client::Region;
+using apache::geode::client::ResultSet;
+using apache::geode::client::SelectResults;
+using apache::geode::client::Serializable;
+using apache::geode::client::Struct;
+using apache::geode::client::StructSet;
+
+using testobject::Portfolio;
+using testobject::Position;
+
 using testData::constantExpectedRowsCQRS;
 using testData::constantExpectedRowsPQRS;
 using testData::constantExpectedRowsRS;
@@ -719,15 +721,6 @@ class QueryHelper {
   virtual bool verifySS(std::shared_ptr<SelectResults>& structset,
                         size_t rowCount, int fieldCount);
 
-  void populateRangePositionData(std::shared_ptr<Region>& rptr, int start,
-                                 int end);
-  bool compareTwoPositionObjects(std::shared_ptr<Serializable> por1,
-                                 std::shared_ptr<Serializable> por2);
-  std::shared_ptr<Serializable> getExactPositionObject(int iForExactPosObject);
-  void putExactPositionObject(std::shared_ptr<Region>& rptr,
-                              int iForExactPosObject);
-  std::shared_ptr<Serializable> getCachedPositionObject(
-      std::shared_ptr<Region>& rptr, int iForExactPosObject);
 
   // utility methods
   virtual int getPortfolioSetSize() { return portfolioSetSize; };
@@ -735,68 +728,6 @@ class QueryHelper {
   virtual int getPositionSetSize() { return positionSetSize; };
   virtual int getPositionNumSets() { return positionNumSets; };
 
-  bool isExpectedRowsConstantRS(int queryindex) {
-    for (int i = (sizeof(constantExpectedRowsRS) / sizeof(int)) - 1; i > -1;
-         i--) {
-      if (constantExpectedRowsRS[i] == queryindex) {
-        FWKINFO("index " << constantExpectedRowsRS[i]
-                         << " is having constant rows ");
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  bool isExpectedRowsConstantSS(int queryindex) {
-    for (int i = (sizeof(constantExpectedRowsSS) / sizeof(int)) - 1; i > -1;
-         i--) {
-      if (constantExpectedRowsSS[i] == queryindex) {
-        FWKINFO("index " << constantExpectedRowsSS[i]
-                         << " is having constant rows ");
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  bool isExpectedRowsConstantCQRS(int queryindex) {
-    for (int i = (sizeof(constantExpectedRowsCQRS) / sizeof(int)) - 1; i > -1;
-         i--) {
-      if (constantExpectedRowsCQRS[i] == queryindex) {
-        FWKINFO("index " << constantExpectedRowsCQRS[i]
-                         << " is having constant rows ");
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  bool isExpectedRowsConstantPQRS(int queryindex) {
-    for (int i = (sizeof(constantExpectedRowsPQRS) / sizeof(int)) - 1; i > -1;
-         i--) {
-      if (constantExpectedRowsPQRS[i] == queryindex) {
-        printf("index %d is having constant rows \n",
-               constantExpectedRowsPQRS[i]);
-        return true;
-      }
-    }
-
-    return false;
-  }
-  bool isExpectedRowsConstantSSPQ(int queryindex) {
-    for (int i = (sizeof(constantExpectedRowsSSPQ) / sizeof(int)) - 1; i > -1;
-         i--) {
-      if (constantExpectedRowsSSPQ[i] == queryindex) {
-        printf("index %d is having constant rows \n",
-               constantExpectedRowsSSPQ[i]);
-        return true;
-      }
-    }
-    return false;
-  }
 
  private:
   int portfolioSetSize;
@@ -806,73 +737,6 @@ class QueryHelper {
 };
 
 QueryHelper* QueryHelper::singleton = nullptr;
-
-//===========================================================================================
-
-void QueryHelper::populateRangePositionData(std::shared_ptr<Region>& rptr,
-                                            int start, int end) {
-  for (int i = start; i <= end; i++) {
-    auto pos = std::make_shared<Position>(i);
-    char key[100];
-    ACE_OS::sprintf(key, "pos%d", i);
-    auto keyptr = CacheableKey::create(key);
-    rptr->put(keyptr, pos);
-  }
-}
-
-bool QueryHelper::compareTwoPositionObjects(
-    std::shared_ptr<Serializable> pos1, std::shared_ptr<Serializable> pos2) {
-  Position* p1 = dynamic_cast<Position*>(pos1.get());
-  Position* p2 = dynamic_cast<Position*>(pos2.get());
-
-  if (!p1 || !p2) {
-    printf("ERROR: The object(s) passed are not of Portflio type\n");
-    return false;
-  }
-
-  DataOutputInternal o1, o2;
-  p1->toData(o1);
-  p2->toData(o2);
-
-  auto len1 = o1.getBufferLength();
-  auto len2 = o2.getBufferLength();
-
-  if (len1 != len2) {
-    return false;
-  }
-
-  const uint8_t* ptr1 = o1.getBuffer();
-  const uint8_t* ptr2 = o2.getBuffer();
-
-  for (uint8_t i = 0; i < len1; i++) {
-    if (*ptr1++ != *ptr2++) {
-      return false;
-    }
-  }
-  return true;
-}
-std::shared_ptr<Serializable> QueryHelper::getExactPositionObject(
-    int iForExactPosObject) {
-  return std::make_shared<Position>(iForExactPosObject);
-}
-
-void QueryHelper::putExactPositionObject(std::shared_ptr<Region>& rptr,
-                                         int iForExactPosObject) {
-  char key[100];
-  ACE_OS::sprintf(key, "pos%d", iForExactPosObject);
-  auto keyptr = CacheableKey::create(key);
-  auto pos = std::make_shared<Position>(iForExactPosObject);
-  rptr->put(keyptr, pos);
-}
-std::shared_ptr<Serializable> QueryHelper::getCachedPositionObject(
-    std::shared_ptr<Region>& rptr, int iForExactPosObject) {
-  char key[100];
-  ACE_OS::sprintf(key, "pos%d", iForExactPosObject);
-  auto keyptr = CacheableKey::create(key);
-  return rptr->get(keyptr);
-}
-
-//===========================================================================================
 
 void QueryHelper::populatePortfolioData(std::shared_ptr<Region>& rptr,
                                         int setSize, int numSets,
@@ -1101,5 +965,7 @@ bool QueryHelper::verifySS(std::shared_ptr<SelectResults>& structSet,
   FWKSEVERE(buffer);
   return false;
 }
+
+}  // namespace
 
 #endif  // GEODE_FWKLIB_QUERYHELPER_H_

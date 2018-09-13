@@ -33,6 +33,8 @@
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
 
+namespace {
+
 using apache::geode::client::Cacheable;
 using apache::geode::client::CacheableInt32;
 using apache::geode::client::CacheableInt64;
@@ -384,5 +386,7 @@ DUNIT_TASK_DEFINITION(SERVER1, CloseServer1)
     }
   }
 END_TASK_DEFINITION
+
+}  // namespace
 
 #endif  // GEODE_INTEGRATION_TEST_THINCLIENTREGEX3_H_

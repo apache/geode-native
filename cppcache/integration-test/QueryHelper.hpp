@@ -51,6 +51,8 @@
 #define ROOT_SCOPE LOCAL
 #endif
 
+namespace {
+
 using apache::geode::client::CacheableKey;
 using apache::geode::client::CacheableStringArray;
 using apache::geode::client::CacheRegionHelper;
@@ -385,5 +387,7 @@ bool QueryHelper::verifySS(std::shared_ptr<SelectResults>& structSet,
   }
   return false;
 }
+
+}  // namespace
 
 #endif  // GEODE_INTEGRATION_TEST_QUERYHELPER_H_

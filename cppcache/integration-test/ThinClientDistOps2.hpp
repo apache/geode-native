@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_INTEGRATION_TEST_THINCLIENTDISTOPS2_H_
-#define GEODE_INTEGRATION_TEST_THINCLIENTDISTOPS2_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,6 +15,11 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_INTEGRATION_TEST_THINCLIENTDISTOPS2_H_
+#define GEODE_INTEGRATION_TEST_THINCLIENTDISTOPS2_H_
+
 #include "fw_dunit.hpp"
 #include <ace/OS.h>
 
@@ -31,11 +31,12 @@
 
 #include "ThinClientHelper.hpp"
 
-
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
 #define SERVER2 s2p2
+
+namespace {
 
 using apache::geode::client::CacheableInt32;
 using apache::geode::client::CacheableInt64;
@@ -344,5 +345,7 @@ DUNIT_TASK_DEFINITION(SERVER2, CloseServer2)
     }
   }
 END_TASK_DEFINITION
+
+}  // namespace
 
 #endif  // GEODE_INTEGRATION_TEST_THINCLIENTDISTOPS2_H_

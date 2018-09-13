@@ -24,6 +24,11 @@
 #include <string>
 #include <util/Log.hpp>
 
+namespace apache {
+namespace geode {
+namespace client {
+namespace testing {
+
 using apache::geode::client::Cacheable;
 using apache::geode::client::CacheableKey;
 using apache::geode::client::CacheableString;
@@ -220,5 +225,10 @@ void TallyListener::afterRegionClear(const EntryEvent& event) {
   LOGINFO("TallyListener::afterRegionClear m_clears = %d", m_clears);
   checkcallbackArg(event);
 }
+
+}  // namespace testing
+}  // namespace client
+}  // namespace geode
+}  // namespace apache
 
 #endif  // GEODE_INTEGRATION_TEST_TALLYLISTENER_H_

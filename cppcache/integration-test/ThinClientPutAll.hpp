@@ -33,6 +33,8 @@
 #define ROOT_SCOPE DISTRIBUTED_ACK
 #include "CacheHelper.hpp"
 
+namespace {
+
 using apache::geode::client::Cache;
 using apache::geode::client::CacheableInt32;
 using apache::geode::client::CacheableInt64;
@@ -389,11 +391,16 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
       auto serializationRegistry =
           CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
               ->getSerializationRegistry();
-      serializationRegistry->addPdxType(PdxTests::PdxType::createDeserializable);
-      serializationRegistry->addPdxType(PdxTests::PdxTypes1::createDeserializable);
-      serializationRegistry->addPdxType(PdxTests::PdxTypes2::createDeserializable);
-      serializationRegistry->addPdxType(PdxTests::Address::createDeserializable);
-      serializationRegistry->addPdxType(PdxTests::PdxTypes3::createDeserializable);
+      serializationRegistry->addPdxType(
+          PdxTests::PdxType::createDeserializable);
+      serializationRegistry->addPdxType(
+          PdxTests::PdxTypes1::createDeserializable);
+      serializationRegistry->addPdxType(
+          PdxTests::PdxTypes2::createDeserializable);
+      serializationRegistry->addPdxType(
+          PdxTests::Address::createDeserializable);
+      serializationRegistry->addPdxType(
+          PdxTests::PdxTypes3::createDeserializable);
     } catch (Exception e) {
       LOG("Got expected Exception for Serialization, already registered");
     }
@@ -429,11 +436,16 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepFour)
       auto serializationRegistry =
           CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
               ->getSerializationRegistry();
-      serializationRegistry->addPdxType(PdxTests::PdxType::createDeserializable);
-      serializationRegistry->addPdxType(PdxTests::PdxTypes1::createDeserializable);
-      serializationRegistry->addPdxType(PdxTests::PdxTypes2::createDeserializable);
-      serializationRegistry->addPdxType(PdxTests::Address::createDeserializable);
-      serializationRegistry->addPdxType(PdxTests::PdxTypes3::createDeserializable);
+      serializationRegistry->addPdxType(
+          PdxTests::PdxType::createDeserializable);
+      serializationRegistry->addPdxType(
+          PdxTests::PdxTypes1::createDeserializable);
+      serializationRegistry->addPdxType(
+          PdxTests::PdxTypes2::createDeserializable);
+      serializationRegistry->addPdxType(
+          PdxTests::Address::createDeserializable);
+      serializationRegistry->addPdxType(
+          PdxTests::PdxTypes3::createDeserializable);
     } catch (Exception e) {
       LOG("Got expected Exception for Serialization, already registered");
     }
@@ -818,5 +830,7 @@ void runPutAll1(bool concurrencyCheckEnabled = true) {
   CALL_TASK(CloseServer2);
   CALL_TASK(CloseLocator1);
 }
+
+}  // namespace
 
 #endif  // GEODE_INTEGRATION_TEST_THINCLIENTPUTALL_H_

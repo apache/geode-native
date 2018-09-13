@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_INTEGRATION_TEST_THINCLIENTCQ_H_
-#define GEODE_INTEGRATION_TEST_THINCLIENTCQ_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,12 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * ThinClientCQ.hpp
- *
- *  Created on: Nov 14, 2008
- *      Author: vrao
- */
+
+#pragma once
+
+#ifndef GEODE_INTEGRATION_TEST_THINCLIENTCQ_H_
+#define GEODE_INTEGRATION_TEST_THINCLIENTCQ_H_
 
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"

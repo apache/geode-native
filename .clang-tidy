@@ -1,6 +1,6 @@
 ---
 Checks:          '-*,clang-diagnostic-*,clang-analyzer-*,-clang-analyzer-alpha*,google-*,-google-readability-todo,-google-runtime-references'
-WarningsAsErrors: 'google-build-using-namespace,google-readability-redundant-smartptr-get,google-explicit-constructor'
+WarningsAsErrors: 'google-build-using-namespace,google-readability-redundant-smartptr-get,google-explicit-constructor,google-global-names-in-headers'
 HeaderFilterRegex: '.*'
 AnalyzeTemporaryDtors: false
 FormatStyle:     file

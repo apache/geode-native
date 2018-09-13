@@ -26,6 +26,8 @@ using apache::geode::client::CacheableKey;
 using apache::geode::client::CacheableString;
 using apache::geode::client::CacheListener;
 
+using apache::geode::client::testing::TallyListener;
+
 std::shared_ptr<CacheListener> nullListenerPtr;
 
 class RegionWrapper {

@@ -40,6 +40,8 @@
 #include <DistributedSystemImpl.hpp>
 #include <CacheImpl.hpp>
 
+namespace {
+
 using apache::geode::client::Cache;
 using apache::geode::client::CacheableKey;
 using apache::geode::client::CacheableString;
@@ -185,5 +187,7 @@ class TestUtils {
   }
 };
 }  // namespace unitTests
+
+}  // namespace
 
 #endif  // GEODE_INTEGRATION_TEST_TESTUTILS_H_

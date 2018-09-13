@@ -30,6 +30,8 @@
 
 #include "CacheHelper.hpp"
 
+namespace {
+
 using apache::geode::client::DataInput;
 using apache::geode::client::DataOutput;
 using apache::geode::client::DataSerializable;
@@ -164,5 +166,7 @@ class PdxDeltaEx : public PdxSerializable, public Delta {
     return idbuf;
   }
 };
+
+}  // namespace
 
 #endif  // GEODE_INTEGRATION_TEST_DELTAEX_H_

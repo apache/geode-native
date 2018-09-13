@@ -34,11 +34,12 @@
 #include "ThinClientPdxSerializers.hpp"
 #include "CacheRegionHelper.hpp"
 
-
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
 #define LOCATOR s2p2
 #define SERVER1 s2p1
+
+namespace {
 
 using apache::geode::client::CacheableBoolean;
 using apache::geode::client::UserObjectSizer;
@@ -391,5 +392,7 @@ DUNIT_TASK_DEFINITION(LOCATOR, CloseLocator)
     }
   }
 END_TASK_DEFINITION
+
+}  // namespace
 
 #endif  // GEODE_INTEGRATION_TEST_THINCLIENTPDXSERIALIZER_H_
