@@ -1,21 +1,20 @@
 # Continuous Query Example
-This is a simple example showing how to create and execute a continuous query.
+This is a simple example showing how to create a continuous query.
 
 ## Prerequisites
 * An installation of Apache Geode.
 * Apache Geode Native, built and installed.
-* Apache Geode Native examples, built and installed.
+* Apache Geode Native examples, built.
 * A `GEODE_HOME` environment variable set to the location of the Apache Geode installation.
-* `GEODE_HOME/bin` in the execution path.
 
 ## Running
-1. Set the current directory to the `continuousquery` directory in your example workspace.
+1. Set the current directory to the `continuousquery` directory in your installed example workspace.
 
   ```
   $ cd workspace/examples/cpp/continuousquery
   ```
 
-1. Run the `startserver.sh` script to start the Geode server, create a region, and populate the region with sample data.
+1. Run the `startserver.sh` script to start the Geode locator, server, and create a region.
 
   ```
   $ sh ./startserver.sh
@@ -36,13 +35,16 @@ This is a simple example showing how to create and execute a continuous query.
 
   ```
   $ build/continuousquery
+  Executing continuous query
   Create orders
-  Storing orders in the region
-  Getting the orders from the region
-  The following orders have a quantity greater than 30:
-  OrderID: 2 Product Name: product y Quantity: 37
-  OrderID: 4 Product Name: product z Quantity: 102
-  OrderID: 6 Product Name: product z Quantity: 42
+  Storing initial orders in the region
+  MyCqListener::OnEvent called with CREATE, key[Order2], value(2, product y, 37)
+  MyCqListener::OnEvent called with CREATE, key[Order4], value(4, product z, 102)
+  Making changes to existing order
+  MyCqListener::OnEvent called with CREATE, key[Order6], value(6, product z, 42)
+  MyCqListener::OnEvent called with UPDATE, key[Order2], value(2, product y, 45)
+  MyCqListener::OnEvent called with DESTROY, key[Order2], value(2, product y, 29)
+  MyCqListener::close called
   ```
 
 1. Stop the server

@@ -16,7 +16,6 @@
  */
 
 #include <iostream>
-#include <sstream>
 
 #include <geode/CacheFactory.hpp>
 #include <geode/CqAttributesFactory.hpp>
@@ -32,149 +31,94 @@
 using namespace apache::geode::client;
 using namespace continuousquery;
 
-//TODO: plug in real logging
-void log(const char* fmt, ...) {
-
-}
-
-#define LOGINFO log
-
 class MyCqListener : public CqListener {
  public:
-  void onEvent(const CqEvent& cqe)
-  {
+  void onEvent(const CqEvent& cqEvent) {
     auto opStr = "Default";
 
-    auto order = dynamic_cast<Order*>(cqe.getNewValue().get());
-    auto key( dynamic_cast<CacheableString*> (cqe.getKey().get() ));
+    auto order = dynamic_cast<Order*>(cqEvent.getNewValue().get());
+    auto key(dynamic_cast<CacheableString*>(cqEvent.getKey().get()));
 
-    switch (cqe.getQueryOperation())
-    {
+    switch (cqEvent.getQueryOperation()) {
       case CqOperation::OP_TYPE_CREATE:
-      {
         opStr = "CREATE";
         break;
-      }
       case CqOperation::OP_TYPE_UPDATE:
-      {
         opStr = "UPDATE";
         break;
-      }
       case CqOperation::OP_TYPE_DESTROY:
-      {
-        opStr = "UPDATE";
+        opStr = "DESTROY";
         break;
-      }
       default:
         break;
     }
-    std::cout << "MyCqListener::OnEvent called with " << opStr << ", key[" <<
-      key->value().c_str() << "], value(" << order->getOrderId() << ", " <<
-      order->getName().c_str() << ", " << order->getQuantity() << ")" << std::endl;
+    std::cout << "MyCqListener::OnEvent called with " << opStr << ", key["
+              << key->value().c_str() << "], value(" << order->getOrderId()
+              << ", " << order->getName().c_str() << ", "
+              << order->getQuantity() << ")" << std::endl;
   }
 
-  void onError(const CqEvent& cqe){
+  void onError(const CqEvent& cqEvent) {
     std::cout << "MyCqListener::OnError called" << std::endl;
   }
 
-  void close(){
-    std::cout << "MyCqListener::close called" << std::endl;
-  }
+  void close() { std::cout << "MyCqListener::close called" << std::endl; }
 };
 
-// The CqQuery QuickStart example.
-int main(int argc, char ** argv) {
-  try {
-    auto cacheFactory = CacheFactory();
-    cacheFactory.set("log-level", "none");
-    auto cache = cacheFactory.create();
-    auto poolFactory = cache.getPoolManager().createFactory();
-    auto pool = poolFactory.addLocator("localhost", 10334)
-        .setSubscriptionEnabled(true)
-        .create("pool");
+int main(int argc, char** argv) {
+  auto cacheFactory = CacheFactory();
+  cacheFactory.set("log-level", "none");
+  auto cache = cacheFactory.create();
+  auto poolFactory = cache.getPoolManager().createFactory();
+  auto pool = poolFactory.addLocator("localhost", 10334)
+      .setSubscriptionEnabled(true)
+      .create("pool");
 
-    LOGINFO("Created the GemFire Cache");
+  auto regionFactory = cache.createRegionFactory(RegionShortcut::PROXY);
 
-    auto regionFactory = cache.createRegionFactory(RegionShortcut::PROXY);
+  auto region = regionFactory.setPoolName("pool").create("custom_orders");
 
-    LOGINFO("Created the RegionFactory");
+  cache.getTypeRegistry().registerPdxType(Order::createDeserializable);
 
-    auto region = regionFactory.setPoolName("pool").create("custom_orders");
+  std::shared_ptr<QueryService> queryService = pool->getQueryService();
 
-    // Register our Serializable/Cacheable Query objects, viz. Portfolio and Position.
-    cache.getTypeRegistry().registerPdxType(Order::createDeserializable);
+  CqAttributesFactory cqFactory;
 
-    LOGINFO("Registered Serializable Query Objects");
+  std::shared_ptr<MyCqListener> cqListener = std::make_shared<MyCqListener>();
 
-    // Populate the Region with some Portfolio objects.
-    std::cout << "Create orders" << std::endl;
-    auto order1 = std::make_shared<Order>(1, "product x", 23);
-    auto order2 = std::make_shared<Order>(2, "product y", 37);
-    auto order3 = std::make_shared<Order>(3, "product z", 1);
-    auto order4 = std::make_shared<Order>(4, "product z", 102);
-    auto order5 = std::make_shared<Order>(5, "product x", 17);
-    auto order6 = std::make_shared<Order>(6, "product z", 42);
+  cqFactory.addCqListener(cqListener);
+  std::shared_ptr<CqAttributes> cqAttributes = cqFactory.create();
 
-    LOGINFO("Populated some Portfolio Objects");
+  auto query = queryService->newCq(
+      "MyCq", "SELECT * FROM /custom_orders c WHERE c.quantity > 30", cqAttributes);
 
-    // Get the QueryService from the Cache.
-    std::shared_ptr<QueryService> queryService = pool->getQueryService();
+  std::cout << "Executing continuous query" << std::endl;
+  query->execute();
 
-    std::cout << "Getting the orders from the region" << std::endl;
+  std::cout << "Create orders" << std::endl;
+  auto order1 = std::make_shared<Order>(1, "product x", 23);
+  auto order2 = std::make_shared<Order>(2, "product y", 37);
+  auto order3 = std::make_shared<Order>(3, "product z", 1);
+  auto order4 = std::make_shared<Order>(4, "product z", 102);
+  auto order5 = std::make_shared<Order>(5, "product x", 17);
+  auto order6 = std::make_shared<Order>(6, "product z", 42);
 
-    CqAttributesFactory cqFac;
+  std::cout << "Storing initial orders in the region" << std::endl;
+  region->put("Order1", order1);
+  region->put("Order2", order2);
+  region->put("Order3", order3);
+  region->put("Order4", order4);
+  region->put("Order5", order5);
+  region->put("Order6", order6);
 
-    //Create CqAttributes and Install Listener
-    std::shared_ptr<MyCqListener> cqLstner = std::make_shared<MyCqListener>();
+  // need to sleep main thread to ensure print order
+  std::cout << "Making changes to existing order" << std::endl;
 
-    cqFac.addCqListener(cqLstner);
-    std::shared_ptr<CqAttributes> cqAttr = cqFac.create();
+  region->put("Order2", std::make_shared<Order>(2, "product y", 45));
+  region->put("Order2", std::make_shared<Order>(2, "product y", 29));
 
-    //create a new Cq Query
-    auto qry = queryService->newCq("MyCq", "SELECT * FROM /custom_orders c WHERE c.quantity > 30", cqAttr);
+  query->stop();
+  query->close();
 
-    //execute Cq Query with initial Results
-    auto resultsPtr  = qry->executeWithInitialResults();
-
-    //make change to generate cq events
-    std::cout << "Storing orders in the region" << std::endl;
-    region->put("Order1", order1);
-    region->put("Order2", order2);
-    region->put("Order3", order3);
-    region->put("Order4", order4);
-    region->put("Order5", order5);
-    region->put("Order6", order6);
-
-    std::cout << "ResultSet Query returned " << resultsPtr->size() << " rows" << std::endl;
-
-    // Iterate through the rows of the query result.
-    for (auto&& item : *resultsPtr) {
-      std::cout << "query pulled object " << item->toString() << std::endl;
-
-      auto stPtr = dynamic_cast<Struct*>(item.get());
-      if (stPtr) {
-        LOGINFO(" got struct ptr ");
-        auto serKey = (*stPtr)["key"];
-        if (serKey) {
-          std::cout << "got struct key " << serKey->toString() << std::endl;
-        }
-
-        auto serVal = (*stPtr)["value"];
-
-        if (serVal) {
-          std::cout << "got struct value " << serVal->toString() << std::endl;
-        }
-      }
-    }
-
-    qry->stop();
-    qry->close();
-
-    cache.close();
-
-    std::cout << "Closed the GemFire Cache" << std::endl;
-  }
-  catch(const Exception & gemfireExcp) {
-    std::cout << "ERROR: CqQuery GemFire Exception: " << gemfireExcp.getMessage() << std::endl;
-  }
+  cache.close();
 }
