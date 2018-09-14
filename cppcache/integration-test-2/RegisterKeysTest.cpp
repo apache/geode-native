@@ -66,10 +66,10 @@ TEST(RegisterKeysTest, RegisterAllWithCachingRegion) {
 
   {
     auto cache = createTestCache();
-    auto pf =
+    auto poolFactory =
         cache.getPoolManager().createFactory().setSubscriptionEnabled(true);
-    cluster.applyLocators(pf);
-    pf.create("default");
+    cluster.applyLocators(poolFactory);
+    poolFactory.create("default");
     auto region = setupCachingProxyRegion(cache);
 
     region->put("one", std::make_shared<CacheableInt16>(1));
@@ -79,10 +79,10 @@ TEST(RegisterKeysTest, RegisterAllWithCachingRegion) {
 
   {
     auto cache2 = createTestCache();
-    auto pf =
+    auto poolFactory =
         cache2.getPoolManager().createFactory().setSubscriptionEnabled(true);
-    cluster.applyLocators(pf);
-    pf.create("default");
+    cluster.applyLocators(poolFactory);
+    poolFactory.create("default");
     auto region2 = setupCachingProxyRegion(cache2);
 
     auto&& entryBefore = region2->getEntry("one");
@@ -113,10 +113,10 @@ TEST(RegisterKeysTest, RegisterAnyWithCachingRegion) {
 
   {
     auto cache = createTestCache();
-    auto pf =
+    auto poolFactory =
         cache.getPoolManager().createFactory().setSubscriptionEnabled(true);
-    cluster.applyLocators(pf);
-    pf.create("default");
+    cluster.applyLocators(poolFactory);
+    poolFactory.create("default");
     auto region = setupCachingProxyRegion(cache);
 
     region->put("one", std::make_shared<CacheableInt16>(1));
@@ -128,10 +128,10 @@ TEST(RegisterKeysTest, RegisterAnyWithCachingRegion) {
 
   {
     auto cache2 = createTestCache();
-    auto pf =
+    auto poolFactory =
         cache2.getPoolManager().createFactory().setSubscriptionEnabled(true);
-    cluster.applyLocators(pf);
-    pf.create("default");
+    cluster.applyLocators(poolFactory);
+    poolFactory.create("default");
     auto region2 = setupCachingProxyRegion(cache2);
     std::vector<std::shared_ptr<CacheableKey> > keys;
     keys.push_back(std::make_shared<CacheableString>("one"));
@@ -157,10 +157,10 @@ TEST(RegisterKeysTest, RegisterAllWithProxyRegion) {
       .withType("PARTITION")
       .execute();
   auto cache = createTestCache();
-  auto pf =
+  auto poolFactory =
       cache.getPoolManager().createFactory().setSubscriptionEnabled(true);
-  cluster.applyLocators(pf);
-  pf.create("default");
+  cluster.applyLocators(poolFactory);
+  poolFactory.create("default");
   auto region = setupProxyRegion(cache);
 
   EXPECT_THROW(region->registerAllKeys(false, true), IllegalStateException);
@@ -176,10 +176,10 @@ TEST(RegisterKeysTest, RegisterAnyWithProxyRegion) {
       .withType("PARTITION")
       .execute();
   auto cache = createTestCache();
-  auto pf =
+  auto poolFactory =
       cache.getPoolManager().createFactory().setSubscriptionEnabled(true);
-  cluster.applyLocators(pf);
-  pf.create("default");
+  cluster.applyLocators(poolFactory);
+  poolFactory.create("default");
   auto region = setupProxyRegion(cache);
   std::vector<std::shared_ptr<CacheableKey> > keys;
   keys.push_back(std::make_shared<CacheableInt16>(2));
