@@ -80,7 +80,10 @@ namespace client {
 
 using internal::DataSerializableInternal;
 
-typedef ACE_Hash_Map_Manager<int64_t, TypeFactoryMethod, ACE_Null_Mutex>
+typedef ACE_Hash_Map_Manager<DSCode, TypeFactoryMethod, ACE_Null_Mutex>
+    DSCodeToFactoryMap;
+
+typedef ACE_Hash_Map_Manager<int32_t, TypeFactoryMethod, ACE_Null_Mutex>
     IdToFactoryMap;
 
 typedef ACE_Hash_Map_Manager<std::string, TypeFactoryMethodPdx, ACE_Null_Mutex>
@@ -99,9 +102,6 @@ class TheTypeMap : private NonCopyable {
 
  public:
   std::unordered_map<std::type_index, int32_t> typeToClassId;
-
- public:
-  std::unordered_map<std::string, int32_t> typeToClassId;
 
  public:
   TheTypeMap() {
