@@ -50,6 +50,9 @@ endfunction()
 add_example(NAME AuthInitialize
 	SOURCE ExampleAuthInitialize.cs Program.cs)
 
+add_example(NAME ContinuousQueryCs 
+	SOURCE Order.cs Program.cs)
+
 add_example(NAME DataSerializableCs
 	SOURCE Order.cs Program.cs)
 
