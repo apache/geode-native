@@ -34,7 +34,7 @@ using namespace continuousquery;
 
 class MyCqListener : public CqListener {
 public:
-  void onEvent(const CqEvent &cqEvent) override {
+  void onEvent(const CqEvent& cqEvent) override {
     auto opStr = "Default";
 
     auto order = dynamic_cast<Order *>(cqEvent.getNewValue().get());
@@ -68,14 +68,14 @@ public:
     }
   }
 
-  void onError(const CqEvent &cqEvent) override {
+  void onError(const CqEvent& cqEvent) override {
     std::cout << __FUNCTION__ << " called" << std::endl;
   }
 
   void close() override { std::cout << __FUNCTION__ << " called" << std::endl; }
 };
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
   auto cacheFactory = CacheFactory();
   cacheFactory.set("log-level", "none");
   auto cache = cacheFactory.create();
