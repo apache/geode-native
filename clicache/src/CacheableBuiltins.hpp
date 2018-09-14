@@ -570,49 +570,49 @@ namespace Apache
       /// An immutable wrapper for byte arrays that can serve
       /// as a distributable object for caching.
       /// </summary>
-      using CacheableBytes = CacheableArray<native::CacheableArray<int8_t, native::internal::DSCode::CacheableBytes>, Byte, static_cast<int8_t>(DSCode::CacheableBytes)>;
+      using CacheableBytes = CacheableArray<native::internal::CacheableArrayPrimitive<int8_t, native::internal::DSCode::CacheableBytes>, Byte, static_cast<int8_t>(DSCode::CacheableBytes)>;
 
       /// <summary>
       /// An immutable wrapper for array of doubles that can serve
       /// as a distributable object for caching.
       /// </summary>
-      using CacheableDoubleArray = CacheableArray<native::CacheableArray<double, native::internal::DSCode::CacheableDoubleArray>, Double, static_cast<int8_t>(DSCode::CacheableDoubleArray)>;
+      using CacheableDoubleArray = CacheableArray<native::internal::CacheableArrayPrimitive<double, native::internal::DSCode::CacheableDoubleArray>, Double, static_cast<int8_t>(DSCode::CacheableDoubleArray)>;
 
       /// <summary>
       /// An immutable wrapper for array of floats that can serve
       /// as a distributable object for caching.
       /// </summary>
-      using CacheableFloatArray = CacheableArray<native::CacheableArray<float, native::internal::DSCode::CacheableFloatArray>, Single, static_cast<int8_t>(DSCode::CacheableFloatArray)>;
+      using CacheableFloatArray = CacheableArray<native::internal::CacheableArrayPrimitive<float, native::internal::DSCode::CacheableFloatArray>, Single, static_cast<int8_t>(DSCode::CacheableFloatArray)>;
 
       /// <summary>
       /// An immutable wrapper for array of 16-bit integers that can serve
       /// as a distributable object for caching.
       /// </summary>
-      using CacheableInt16Array = CacheableArray<native::CacheableArray<int16_t, native::internal::DSCode::CacheableInt16Array>, System::Int16, static_cast<int8_t>(DSCode::CacheableInt16Array)>;
+      using CacheableInt16Array = CacheableArray<native::internal::CacheableArrayPrimitive<int16_t, native::internal::DSCode::CacheableInt16Array>, System::Int16, static_cast<int8_t>(DSCode::CacheableInt16Array)>;
 
       /// <summary>
       /// An immutable wrapper for array of 32-bit integers that can serve
       /// as a distributable object for caching.
       /// </summary>
-      using CacheableInt32Array = CacheableArray<native::CacheableArray<int32_t, native::internal::DSCode::CacheableInt32Array>, System::Int32, static_cast<int8_t>(DSCode::CacheableInt32Array)>;
+      using CacheableInt32Array = CacheableArray<native::internal::CacheableArrayPrimitive<int32_t, native::internal::DSCode::CacheableInt32Array>, System::Int32, static_cast<int8_t>(DSCode::CacheableInt32Array)>;
 
       /// <summary>
       /// An immutable wrapper for array of 64-bit integers that can serve
       /// as a distributable object for caching.
       /// </summary>
-      using CacheableInt64Array = CacheableArray<native::CacheableArray<int64_t, native::internal::DSCode::CacheableInt64Array>, System::Int64, static_cast<int8_t>(DSCode::CacheableInt64Array)>;
+      using CacheableInt64Array = CacheableArray<native::internal::CacheableArrayPrimitive<int64_t, native::internal::DSCode::CacheableInt64Array>, System::Int64, static_cast<int8_t>(DSCode::CacheableInt64Array)>;
 
       /// <summary>
       /// An immutable wrapper for array of booleans that can serve
       /// as a distributable object for caching.
       /// </summary>
-      using BooleanArray = CacheableArray<native::CacheableArray<bool, native::internal::DSCode::BooleanArray>, bool, static_cast<int8_t>(DSCode::BooleanArray)>;
+      using BooleanArray = CacheableArray<native::internal::CacheableArrayPrimitive<bool, native::internal::DSCode::BooleanArray>, bool, static_cast<int8_t>(DSCode::BooleanArray)>;
 
       /// <summary>
       /// An immutable wrapper for array of 16-bit characters that can serve
       /// as a distributable object for caching.
       /// </summary>
-      using CharArray = CacheableArray<native::CacheableArray<char16_t, native::internal::DSCode::CharArray>, Char, static_cast<int8_t>(DSCode::CharArray)>;
+      using CharArray = CacheableArray<native::internal::CacheableArrayPrimitive<char16_t, native::internal::DSCode::CharArray>, Char, static_cast<int8_t>(DSCode::CharArray)>;
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache

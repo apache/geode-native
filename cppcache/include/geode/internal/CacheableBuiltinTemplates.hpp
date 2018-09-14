@@ -171,7 +171,7 @@ class APACHE_GEODE_EXPORT CacheableArrayPrimitive
 };
 
 /** Template class for container Cacheable types. */
-template <typename TBase, DSCode TYPEID>
+template <typename TBase, DSCode TYPEID, class _Derived>
 class APACHE_GEODE_EXPORT CacheableContainerPrimitive
     : public DataSerializablePrimitive,
       public TBase {
@@ -191,21 +191,22 @@ class APACHE_GEODE_EXPORT CacheableContainerPrimitive
   DSCode getDsCode() const override { return TYPEID; }
 
   size_t objectSize() const override {
-    return sizeof(CacheableContainerPrimitive) + serializer::objectSize(*this);
+    return sizeof(_Derived) + serializer::objectSize(*this);
   }
 
   /** Factory function registered with serialization registry. */
-  static std::shared_ptr<Serializable> createDeserializable() {
-    return std::make_shared<CacheableContainerPrimitive>();
+  inline static std::shared_ptr<Serializable> createDeserializable() {
+    return std::make_shared<_Derived>();
   }
+
   /** Factory function to create a default instance. */
-  inline static std::shared_ptr<CacheableContainerPrimitive> create() {
-    return std::make_shared<CacheableContainerPrimitive>();
+  inline static std::shared_ptr<_Derived> create() {
+    return std::make_shared<_Derived>();
   }
+
   /** Factory function to create an instance with the given size. */
-  inline static std::shared_ptr<CacheableContainerPrimitive> create(
-      const int32_t n) {
-    return std::make_shared<CacheableContainerPrimitive>(n);
+  inline static std::shared_ptr<_Derived> create(const int32_t n) {
+    return std::make_shared<_Derived>(n);
   }
 };
 
