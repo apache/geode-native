@@ -257,7 +257,7 @@ class APACHE_GEODE_EXPORT CacheableVector
   using CacheableContainerPrimitive::CacheableContainerPrimitive;
 };
 
-template class CacheableContainerPrimitive<
+template class internal::CacheableContainerPrimitive<
     std::vector<std::shared_ptr<Cacheable>>, DSCode::CacheableVector,
     CacheableVector>;
 
@@ -272,7 +272,7 @@ class APACHE_GEODE_EXPORT CacheableHashMap
   using CacheableContainerPrimitive::CacheableContainerPrimitive;
 };
 
-template class CacheableContainerPrimitive<
+template class internal::CacheableContainerPrimitive<
     HashMapOfCacheable, DSCode::CacheableHashMap, CacheableHashMap>;
 
 /**
@@ -288,7 +288,7 @@ class APACHE_GEODE_EXPORT CacheableHashSet
   using CacheableContainerPrimitive::CacheableContainerPrimitive;
 };
 
-template class CacheableContainerPrimitive<
+template class internal::CacheableContainerPrimitive<
     HashSetOfCacheableKey, DSCode::CacheableHashSet, CacheableHashSet>;
 
 /**
@@ -303,7 +303,7 @@ class APACHE_GEODE_EXPORT CacheableArrayList
   using CacheableContainerPrimitive::CacheableContainerPrimitive;
 };
 
-template class CacheableContainerPrimitive<
+template class internal::CacheableContainerPrimitive<
     std::vector<std::shared_ptr<Cacheable>>, DSCode::CacheableArrayList,
     CacheableArrayList>;
 
@@ -319,7 +319,7 @@ class APACHE_GEODE_EXPORT CacheableLinkedList
   using CacheableContainerPrimitive::CacheableContainerPrimitive;
 };
 
-template class CacheableContainerPrimitive<
+template class internal::CacheableContainerPrimitive<
     std::vector<std::shared_ptr<Cacheable>>, DSCode::CacheableLinkedList,
     CacheableLinkedList>;
 
@@ -335,7 +335,7 @@ class APACHE_GEODE_EXPORT CacheableStack
   using CacheableContainerPrimitive::CacheableContainerPrimitive;
 };
 
-template class CacheableContainerPrimitive<
+template class internal::CacheableContainerPrimitive<
     HashMapOfCacheable, DSCode::CacheableStack, CacheableStack>;
 
 /**
@@ -349,7 +349,7 @@ class APACHE_GEODE_EXPORT CacheableHashTable
   using CacheableContainerPrimitive::CacheableContainerPrimitive;
 };
 
-template class CacheableContainerPrimitive<
+template class internal::CacheableContainerPrimitive<
     HashMapOfCacheable, DSCode::CacheableHashTable, CacheableHashTable>;
 
 /**
@@ -367,9 +367,9 @@ class APACHE_GEODE_EXPORT CacheableIdentityHashMap
   using CacheableContainerPrimitive::CacheableContainerPrimitive;
 };
 
-template class CacheableContainerPrimitive<HashMapOfCacheable,
-                                           DSCode::CacheableIdentityHashMap,
-                                           CacheableIdentityHashMap>;
+template class internal::CacheableContainerPrimitive<
+    HashMapOfCacheable, DSCode::CacheableIdentityHashMap,
+    CacheableIdentityHashMap>;
 
 /**
  * A mutable <code>CacheableKey</code> hash set wrapper that can serve as
@@ -386,9 +386,9 @@ class APACHE_GEODE_EXPORT CacheableLinkedHashSet
   using CacheableContainerPrimitive::CacheableContainerPrimitive;
 };
 
-template class CacheableContainerPrimitive<HashSetOfCacheableKey,
-                                           DSCode::CacheableLinkedHashSet,
-                                           CacheableLinkedHashSet>;
+template class internal::CacheableContainerPrimitive<
+    HashSetOfCacheableKey, DSCode::CacheableLinkedHashSet,
+    CacheableLinkedHashSet>;
 
 }  // namespace client
 }  // namespace geode
