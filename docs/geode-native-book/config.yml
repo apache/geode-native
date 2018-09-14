@@ -23,6 +23,10 @@ sections:
     name: geode-native-docs
   directory: docs/guide-native/18
   subnav_template: geode-nc-nav
+  dependent_sections:
+  - repository:
+      name: examples
+    no-docs: true
 
 template_variables:
   product_name_long: Apache Geode

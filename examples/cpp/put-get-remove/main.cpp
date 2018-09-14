@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+// code_snippet put-get-remove-snippetA start cpp
 #include <iostream>
 
 #include <geode/CacheFactory.hpp>
@@ -60,3 +61,4 @@ int main(int argc, char** argv) {
 
   cache.close();
 }
+// code_snippet put-get-remove-snippetA end
