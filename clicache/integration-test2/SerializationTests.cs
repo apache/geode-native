@@ -59,11 +59,6 @@ namespace Apache.Geode.Client.IntegrationTests
       Quantity = input.ReadInt16();
     }
 
-    //public Int32 ClassId
-    //{
-    //  get { return 0x42; }
-    //}
-
     public ulong ObjectSize
     {
       get { return 0; }
@@ -259,14 +254,6 @@ namespace Apache.Geode.Client.IntegrationTests
       get { return this.GetType().ToString(); }
     }
 
-    //public Int32 ClassId
-    //{
-    //  get
-    //  {
-    //    return 0x0;
-    //  }
-    //}
-
     #endregion
 
     public static ISerializable CreateDeserializable()
@@ -428,49 +415,44 @@ namespace Apache.Geode.Client.IntegrationTests
       }
       return false;
     }
-
   }
+
   [Trait("Category", "Integration")]
     public class SerializationTests : IDisposable
     {
-        private GeodeServer GeodeServer;
-        private CacheXml CacheXml;
-        private Cache Cache;
+      private GeodeServer GeodeServer;
+      private CacheXml CacheXml;
+      private Cache Cache;
 
-        public SerializationTests()
+      public SerializationTests()
+      {
+        GeodeServer = new GeodeServer();
+      }
+
+      public void Dispose()
+      {
+        try
         {
-            GeodeServer = new GeodeServer();
-            //CacheXml = new CacheXml(new FileInfo("cache.xml"), GeodeServer);
-
-            //var cacheFactory = new CacheFactory();
-            //Cache = cacheFactory.Create();
-            //Cache.InitializeDeclarativeCache(CacheXml.File.FullName);
+          if (null != Cache)
+          {
+            Cache.Close();
+          }
         }
-
-        public void Dispose()
+        finally
         {
-            try
+          try
+          {
+            if (null != CacheXml)
             {
-                if (null != Cache)
-                {
-                    Cache.Close();
-                }
+              CacheXml.Dispose();
             }
-            finally
-            {
-                try
-                {
-                    if (null != CacheXml)
-                    {
-                        CacheXml.Dispose();
-                    }
-                }
-                finally
-                {
-                    GeodeServer.Dispose();
-                }
-            }
+          }
+          finally
+          {
+            GeodeServer.Dispose();
+          }
         }
+      }
 
 
         private void putAndCheck(IRegion<object, object> region, object key, object value)
@@ -490,8 +472,18 @@ namespace Apache.Geode.Client.IntegrationTests
         [Fact]
         public void BuiltInSerializableTypes()
         {
-            var region = Cache.GetRegion<object, object>("testRegion");
-            Assert.NotNull(region);
+          var cacheFactory = new CacheFactory()
+              .Set("log-level", "none");
+          var cache = cacheFactory.Create();
+
+          var poolFactory = cache.GetPoolFactory()
+              .AddLocator("localhost", GeodeServer.LocatorPort);
+          poolFactory.Create("pool");
+
+          var regionFactory = cache.CreateRegionFactory(RegionShortcut.PROXY)
+              .SetPoolName("pool");
+          var region = regionFactory.Create<object, object>("testRegion");
+          Assert.NotNull(region);
 
           putAndCheck(region, "CacheableString", "foo");
           putAndCheck(region, "CacheableByte", (Byte)8);
@@ -523,21 +515,21 @@ namespace Apache.Geode.Client.IntegrationTests
           putAndCheck(region, "CacheableStack", new Stack<object>(new string[] { "one", "two" }));
 
           {
-              var cacheableHashSet = new CacheableHashSet();
-              cacheableHashSet.Add("one");
-              cacheableHashSet.Add("two");
-              putAndCheck(region, "CacheableHashSet", cacheableHashSet);
+            var cacheableHashSet = new CacheableHashSet();
+            cacheableHashSet.Add("one");
+            cacheableHashSet.Add("two");
+            putAndCheck(region, "CacheableHashSet", cacheableHashSet);
           }
 
           {
-              var cacheableLinkedHashSet = new CacheableLinkedHashSet();
-              cacheableLinkedHashSet.Add("one");
-              cacheableLinkedHashSet.Add("two");
-              putAndCheck(region, "CacheableLinkedHashSet", cacheableLinkedHashSet);
+            var cacheableLinkedHashSet = new CacheableLinkedHashSet();
+            cacheableLinkedHashSet.Add("one");
+            cacheableLinkedHashSet.Add("two");
+            putAndCheck(region, "CacheableLinkedHashSet", cacheableLinkedHashSet);
           }
 
-            Cache.TypeRegistry.RegisterPdxType(PdxType.CreateDeserializable);
-            putAndCheck(region, "PdxType", new PdxType());
+          cache.TypeRegistry.RegisterPdxType(PdxType.CreateDeserializable);
+          putAndCheck(region, "PdxType", new PdxType());
         }
 
       [Fact]
@@ -547,27 +539,27 @@ namespace Apache.Geode.Client.IntegrationTests
             .Set("log-level", "none");
         var cache = cacheFactory.Create();
 
-      Console.WriteLine("Registering for data serialization");
+        Console.WriteLine("Registering for data serialization");
 
-      cache.TypeRegistry.RegisterType(Order.CreateDeserializable, 0x42);
+        cache.TypeRegistry.RegisterType(Order.CreateDeserializable, 0x42);
 
-      var poolFactory = cache.GetPoolFactory()
-          .AddLocator("localhost", GeodeServer.LocatorPort);
-      poolFactory.Create("pool");
+        var poolFactory = cache.GetPoolFactory()
+            .AddLocator("localhost", GeodeServer.LocatorPort);
+        poolFactory.Create("pool");
 
-      var regionFactory = cache.CreateRegionFactory(RegionShortcut.PROXY)
+        var regionFactory = cache.CreateRegionFactory(RegionShortcut.PROXY)
           .SetPoolName("pool");
-      var orderRegion = regionFactory.Create<int, Order>("testRegion");
-      Assert.NotNull(orderRegion);
+        var orderRegion = regionFactory.Create<int, Order>("testRegion");
+        Assert.NotNull(orderRegion);
 
-      const int orderKey = 65;
-      var order = new Order(orderKey, "Donuts", 12);
+        const int orderKey = 65;
+        var order = new Order(orderKey, "Donuts", 12);
 
-      orderRegion.Put(orderKey, order, null);
-      var orderRetrieved = orderRegion.Get(orderKey, null);
-      Assert.Equal(order.ToString(), orderRetrieved.ToString());
+        orderRegion.Put(orderKey, order, null);
+        var orderRetrieved = orderRegion.Get(orderKey, null);
+        Assert.Equal(order.ToString(), orderRetrieved.ToString());
 
-      cache.Close();
+        cache.Close();
     }
   }
 
