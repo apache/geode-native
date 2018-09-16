@@ -52,12 +52,7 @@ namespace Apache.Geode.Examples.Serializer
             OrderId = input.ReadInt32();
             Name = input.ReadUTF();
             Quantity = input.ReadInt16();
-        }
-
-        public Int32 ClassId
-        {
-            get { return 0x42; }
-        }    
+        }   
 
         public ulong ObjectSize
         {
