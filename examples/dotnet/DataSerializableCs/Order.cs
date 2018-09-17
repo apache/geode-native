@@ -59,11 +59,6 @@ namespace Apache.Geode.Examples.Serializer
       get { return 0; }
     }
 
-    public String Type
-    {
-      get { return this.GetType().ToString(); }
-    }
-
     public static ISerializable CreateDeserializable()
     {
       return new Order();
