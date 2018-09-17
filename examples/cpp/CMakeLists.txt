@@ -47,17 +47,21 @@ function(add_example)
     DESTINATION examples/cpp/${ADD_EXAMPLE_NAME})
 endfunction()
 
+add_example(NAME continuousquery
+    SOURCE main.cpp Order.cpp Order.hpp)
+
 add_example(NAME dataserializable
-	SOURCE main.cpp Order.cpp Order.hpp)
+    SOURCE main.cpp Order.cpp Order.hpp)
 
 add_example(NAME pdxserializable
-	SOURCE main.cpp Order.cpp Order.hpp)
+    SOURCE main.cpp Order.cpp Order.hpp)
 
 add_example(NAME pdxserializer
-	SOURCE main.cpp Order.cpp Order.hpp OrderSerializer.cpp OrderSerializer.hpp)
+    SOURCE main.cpp Order.cpp Order.hpp OrderSerializer.cpp OrderSerializer.hpp)
 
 add_example(NAME put-get-remove
-	SOURCE main.cpp)
+    SOURCE main.cpp)
 
 add_example(NAME remotequery
-	SOURCE main.cpp Order.cpp Order.hpp)
+    SOURCE main.cpp Order.cpp Order.hpp)
+

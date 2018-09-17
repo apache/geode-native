@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <sstream>
 
 #include "Order.hpp"
 
@@ -24,27 +23,25 @@
 namespace customserializable {
 
 void Order::fromData(PdxReader& pdxReader) {
-  order_id_ = static_cast<uint32_t>(pdxReader.readLong(ORDER_ID_KEY_));
+  order_id_ = pdxReader.readInt(ORDER_ID_KEY_);
   name_ = pdxReader.readString(NAME_KEY_);
-  quantity_ = static_cast<uint16_t>(pdxReader.readInt(QUANTITY_KEY_));
+  quantity_ = pdxReader.readShort(QUANTITY_KEY_);
 }
 
 void Order::toData(PdxWriter& pdxWriter) const {
-  pdxWriter.writeLong(ORDER_ID_KEY_, order_id_);
+  pdxWriter.writeInt(ORDER_ID_KEY_, order_id_);
   pdxWriter.markIdentityField(ORDER_ID_KEY_);
 
   pdxWriter.writeString(NAME_KEY_, name_);
   pdxWriter.markIdentityField(NAME_KEY_);
 
-  pdxWriter.writeInt(QUANTITY_KEY_, quantity_);
+  pdxWriter.writeShort(QUANTITY_KEY_, quantity_);
   pdxWriter.markIdentityField(QUANTITY_KEY_);
 }
 
 std::string Order::toString() const {
-  std::stringstream strm;
-
-  strm << "OrderID: " << order_id_ << " Product Name: " << name_ << " Quantity: " << quantity_;
-  return strm.str();
+  return "OrderID: " + std::to_string(order_id_) + " Product Name: " + name_ +
+         " Quantity: " + std::to_string(quantity_);
 }
 
 const std::string& Order::getClassName() const {
@@ -52,7 +49,7 @@ const std::string& Order::getClassName() const {
   return CLASS_NAME;
 }
 
-std::shared_ptr<PdxSerializable> Order::create() {
+std::shared_ptr<PdxSerializable> Order::createDeserializable() {
   return std::make_shared<Order>();
 }
 

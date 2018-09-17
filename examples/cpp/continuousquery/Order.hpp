@@ -17,14 +17,14 @@
 
 #pragma once
 
-#ifndef CUSTOMSERIALIZABLE_ORDER_H
-#define CUSTOMSERIALIZABLE_ORDER_H
+#ifndef CONTINUOUSQUERY_ORDER_H
+#define CONTINUOUSQUERY_ORDER_H
 
 #include <string>
 
 #include <geode/PdxSerializable.hpp>
 
-namespace customserializable {
+namespace continuousquery {
 
 using namespace apache::geode::client;
 
@@ -67,6 +67,6 @@ class Order : public PdxSerializable {
   int16_t quantity_;
 };
 
-}  // namespace customserializable
+}  // namespace continuousquery
 
-#endif  // CUSTOMSERIALIZABLE_ORDER_H
+#endif  // CONTINUOUSQUERY_ORDER_H
