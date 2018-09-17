@@ -58,9 +58,9 @@ namespace Apache
         /// <returns>the deserialized object</returns>
         void FromData( DataInput^ input );
         
-        property System::String^ Type
+        property System::Type^ Type
         {
-            System::String^ get( );
+            System::Type^ get( );
         }
       };
 

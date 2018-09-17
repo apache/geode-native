@@ -69,9 +69,9 @@ namespace Apache.Geode.Client.IntegrationTests
       return new Order();
     }
 
-    public String Type
+    public System.Type Type
     {
-      get { return this.GetType().ToString(); }
+      get { return this.GetType(); }
     }
   }
 
@@ -249,9 +249,9 @@ namespace Apache.Geode.Client.IntegrationTests
       }
     }
 
-    public String Type
+    public System.Type Type
     {
-      get { return this.GetType().ToString(); }
+      get { return this.GetType(); }
     }
 
     #endregion
@@ -382,17 +382,9 @@ namespace Apache.Geode.Client.IntegrationTests
       }
     }
 
-    //public Int32 ClassId
-    //{
-    //  get
-    //  {
-    //    return 0x8C;
-    //  }
-    //}
-
-    public String Type
+    public System.Type Type
     {
-      get { return this.GetType().ToString(); }
+      get { return this.GetType(); }
     }
     #endregion
 
@@ -460,12 +452,6 @@ namespace Apache.Geode.Client.IntegrationTests
           region[key] = value;
           var retrievedValue = region[key];
           Assert.Equal(value, retrievedValue);
-        }
-
-        private void putAndCheck2(IRegion<String, OtherType> region, String key, OtherType value)
-        {
-          region[key] = value;
-          Assert.Equal(value, region[key]);
         }
 
 

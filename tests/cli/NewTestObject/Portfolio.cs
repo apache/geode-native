@@ -142,12 +142,9 @@ namespace Apache.Geode.Client.Tests
       }
     }
 
-    public string Type
+    public System.Type Type
     {
-      get
-      {
-        return this.GetType().ToString();
-      }
+      get { return this.GetType(); }
     }
 
     public static string[] SecIds

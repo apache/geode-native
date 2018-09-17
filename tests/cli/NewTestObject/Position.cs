@@ -225,14 +225,14 @@ namespace Apache.Geode.Client.Tests
       }
     }
 
-    public String Type
+    public System.Type Type
     {
-        get { return this.GetType().ToString(); }
+      get { return this.GetType(); }
     }
 
-        #endregion
+    #endregion
 
-        public static ISerializable CreateDeserializable()
+    public static ISerializable CreateDeserializable()
     {
       return new Position();
     }

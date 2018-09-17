@@ -132,9 +132,9 @@ namespace Apache.Geode.Client.UnitTests
 
     #region IDataSerializable Members
 
-    public String Type
+    public System.Type Type
     {
-        get { return this.GetType().ToString(); }
+      get { return this.GetType(); }
     }
         
     public void FromData(DataInput input)

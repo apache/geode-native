@@ -881,13 +881,13 @@ namespace PdxTests
       output.WriteInt32(m_i4); 
     }
 
-    public String Type
+    public System.Type Type
     {
-        get { return this.GetType().ToString(); }
+      get { return this.GetType(); }
     }
 
     #endregion
-    }
+  }
 
   #region Test class for all primitives types array
   public class AllPdxTypes : IPdxSerializable

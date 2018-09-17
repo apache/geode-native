@@ -46,7 +46,7 @@ namespace Apache.Geode.Client.Tests
       intVar = 1;
       str = "test";
       doubleVar = 1.1;
-      byte [] arr2 = new byte[1];
+      byte[] arr2 = new byte[1];
       byteArr = arr2;
       testobj = null;
       hasDelta = false;
@@ -59,7 +59,7 @@ namespace Apache.Geode.Client.Tests
     {
       this.intVar = rhs.intVar;
       this.str = rhs.str;
-      this.doubleVar=rhs.doubleVar;
+      this.doubleVar = rhs.doubleVar;
       this.byteArr = rhs.byteArr;
       this.testobj = rhs.testobj;
       this.toDeltaCounter = rhs.GetToDeltaCounter();
@@ -88,11 +88,11 @@ namespace Apache.Geode.Client.Tests
       }
     }
 
-    public String Type
+    public System.Type Type
     {
-        get { return this.GetType().ToString(); }
+      get { return this.GetType(); }
     }
-        
+
     public static ISerializable CreateDeserializable()
     {
       return new DeltaTestImpl();
@@ -195,7 +195,7 @@ namespace Apache.Geode.Client.Tests
       testobj = (TestObject1)input.ReadObject();
       lock (LOCK_THIS_CLASS)
       {
-      fromDataCount++;
+        fromDataCount++;
       }
     }
 
@@ -235,7 +235,7 @@ namespace Apache.Geode.Client.Tests
         if ((deltaBits & BYTE_ARR_MASK) == BYTE_ARR_MASK)
         {
           output.WriteObject(byteArr);
-         }
+        }
         if ((deltaBits & TEST_OBJ_MASK) == TEST_OBJ_MASK)
         {
           output.WriteObject(testobj);

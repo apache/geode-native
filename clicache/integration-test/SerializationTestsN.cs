@@ -491,12 +491,10 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public String Type
+    public System.Type Type
     {
-        get { return this.GetType().ToString(); }
+      get { return this.GetType(); }
     }
-
-
 
     #endregion
 
@@ -627,13 +625,13 @@ namespace Apache.Geode.Client.UnitTests
     }
 
 
-    public String Type
+    public System.Type Type
     {
-        get { return this.GetType().ToString(); }
+      get { return this.GetType(); }
     }
-        #endregion
+    #endregion
 
-        public static ISerializable CreateDeserializable()
+    public static ISerializable CreateDeserializable()
     {
       return new OtherType2();
     }
@@ -762,13 +760,13 @@ namespace Apache.Geode.Client.UnitTests
     }
 
 
-    public String Type
+    public System.Type Type
     {
-        get { return this.GetType().ToString(); }
+      get { return this.GetType(); }
     }
-        #endregion
+    #endregion
 
-        public static ISerializable CreateDeserializable()
+    public static ISerializable CreateDeserializable()
     {
       return new OtherType22();
     }
@@ -895,14 +893,14 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
- 
-    public String Type
-    {
-        get { return this.GetType().ToString(); }
-    }
-        #endregion
 
-        public static ISerializable CreateDeserializable()
+    public System.Type Type
+    {
+      get { return this.GetType(); }
+    }
+    #endregion
+
+    public static ISerializable CreateDeserializable()
     {
       return new OtherType4();
     }
@@ -1031,13 +1029,13 @@ namespace Apache.Geode.Client.UnitTests
     }
 
 
-    public String Type
+    public System.Type Type
     {
-        get { return this.GetType().ToString(); }
+      get { return this.GetType(); }
     }
-        #endregion
+    #endregion
 
-        public static ISerializable CreateDeserializable()
+    public static ISerializable CreateDeserializable()
     {
       return new OtherType42();
     }
@@ -1165,11 +1163,11 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public String Type
+    public System.Type Type
     {
-        get { return this.GetType().ToString(); }
+      get { return this.GetType(); }
     }
-        #endregion
+    #endregion
 
     public static ISerializable CreateDeserializable()
     {

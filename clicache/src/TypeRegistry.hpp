@@ -146,10 +146,10 @@ namespace Apache
           ObjectIDDelegatesMap->TryGetValue(typeId, ret);
           return ret;
         }
-        System::Int32  GetIdForManagedType(System::String^ s)
+        System::Int32  GetIdForManagedType(System::Type^ type)
         {
           System::Int32 ret;
-          ObjectTypeIDMap->TryGetValue(s, ret);
+          ObjectTypeIDMap->TryGetValue(type, ret);
           return ret;
         }
 
@@ -236,8 +236,8 @@ namespace Apache
         Dictionary<UInt32, TypeFactoryMethod^>^ DelegateMapGeneric =
           gcnew Dictionary<UInt32, TypeFactoryMethod^>();
 
-        Dictionary<System::String^, System::Int32>^ ObjectTypeIDMap =
-          gcnew Dictionary<System::String^, System::Int32>();
+        Dictionary<System::Type^, System::Int32>^ ObjectTypeIDMap =
+          gcnew Dictionary<System::Type^, System::Int32>();
 
         Dictionary<Byte, TypeFactoryMethod^>^ DsCodeToDataSerializablePrimitiveTypeFactoryMethod =
           gcnew Dictionary<Byte, TypeFactoryMethod^>();

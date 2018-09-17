@@ -46,12 +46,12 @@ namespace Apache.Geode.Client.Tests
       }
     }
 
-    public String Type
+    public System.Type Type
     {
-        get { return this.GetType().ToString(); }
+      get { return this.GetType(); }
     }
 
-        public void FromData(DataInput input)
+    public void FromData(DataInput input)
     {
       arr = input.ReadBytes();
       name = (string)input.ReadObject();

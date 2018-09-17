@@ -26,122 +26,121 @@
 #include "impl/SafeConvert.hpp"
 
 namespace apache {
-	namespace geode {
-		namespace client {
-			namespace Managed = Apache::Geode::Client;
+  namespace geode {
+    namespace client {
+      namespace Managed = Apache::Geode::Client;
 
-			/**
-			 * Intercept (de)serialization of DataSerializable types into the .NET managed layer.
-			 */
-			class ManagedDataSerializableHandler : public DataSerializableHandler
-			{
-			public:
-				~ManagedDataSerializableHandler() noexcept override = default;
+      /**
+       * Intercept (de)serialization of DataSerializable types into the .NET managed layer.
+       */
+      class ManagedDataSerializableHandler : public DataSerializableHandler
+      {
+      public:
+        ~ManagedDataSerializableHandler() noexcept override = default;
 
-				void serialize(const std::shared_ptr<DataSerializable>& dataSerializable,
-					DataOutput& dataOutput, bool isDelta) const override
-				{
-					Managed::ISerializable^ data = Managed::SafeUMSerializableConvertGeneric(dataSerializable);
-					auto cache = CacheResolver::Lookup(dataOutput.getCache());
+        void serialize(const std::shared_ptr<DataSerializable>& dataSerializable,
+          DataOutput& dataOutput, bool isDelta) const override
+        {
+          Managed::ISerializable^ data = Managed::SafeUMSerializableConvertGeneric(dataSerializable);
+          auto cache = CacheResolver::Lookup(dataOutput.getCache());
 
-					String^ typeName = gcnew String(data->GetType()->ToString());
-					int32_t objectID = cache->GetTypeRegistry()->GetIdForManagedType(typeName);
-					
-					auto dsCode = SerializationRegistry::getSerializableDataDsCode(objectID);
+          int32_t objectID = cache->GetTypeRegistry()->GetIdForManagedType(data->GetType());
+          
+          auto dsCode = SerializationRegistry::getSerializableDataDsCode(objectID);
 
-					dataOutput.write(static_cast<int8_t>(dsCode));
-					switch (dsCode) {
-					case DSCode::CacheableUserData:
-						dataOutput.write(static_cast<int8_t>(objectID));
-						break;
-					case DSCode::CacheableUserData2:
-						dataOutput.writeInt(static_cast<int16_t>(objectID));
-						break;
-					case DSCode::CacheableUserData4:
-						dataOutput.writeInt(static_cast<int32_t>(objectID));
-						break;
-					default:
-						IllegalStateException("Invalid DS Code.");
-					}
+          dataOutput.write(static_cast<int8_t>(dsCode));
+          switch (dsCode) {
+          case DSCode::CacheableUserData:
+            dataOutput.write(static_cast<int8_t>(objectID));
+            break;
+          case DSCode::CacheableUserData2:
+            dataOutput.writeInt(static_cast<int16_t>(objectID));
+            break;
+          case DSCode::CacheableUserData4:
+            dataOutput.writeInt(static_cast<int32_t>(objectID));
+            break;
+          default:
+            IllegalStateException("Invalid DS Code.");
+          }
 
-					if (isDelta) {
-						const Delta* ptr = dynamic_cast<const Delta*>(dataSerializable.get());
-						ptr->toDelta(dataOutput);
-					}
-					else {
-						dataSerializable->toData(dataOutput);
-					}
-				}
+          if (isDelta) {
+            const Delta* ptr = dynamic_cast<const Delta*>(dataSerializable.get());
+            ptr->toDelta(dataOutput);
+          }
+          else {
+            dataSerializable->toData(dataOutput);
+          }
+        }
 
-				std::shared_ptr<DataSerializable> deserialize(DataInput& dataInput,  DSCode typeId) const override
-				{
-					try
-					{
-						int32_t classId = -1;
+        std::shared_ptr<DataSerializable> deserialize(DataInput& dataInput,  DSCode typeId) const override
+        {
+          try
+          {
+            int32_t classId = -1;
 
-						switch (typeId) {
-							case DSCode::CacheableUserData: {
-								classId = dataInput.read();
-								break;
-							}
-							case DSCode::CacheableUserData2: {
-								classId = dataInput.readInt16();
-								break;
-							}
-							case DSCode::CacheableUserData4: {
-								classId = dataInput.readInt32();
-								break;
-							}
-							default:
-								break;
-						}
-											
-						auto cache = CacheResolver::Lookup(dataInput.getCache());
-						auto createType = cache->GetTypeRegistry()->GetManagedObjectFactory(classId);
+            switch (typeId) {
+              case DSCode::CacheableUserData: {
+                classId = dataInput.read();
+                break;
+              }
+              case DSCode::CacheableUserData2: {
+                classId = dataInput.readInt16();
+                break;
+              }
+              case DSCode::CacheableUserData4: {
+                classId = dataInput.readInt32();
+                break;
+              }
+              default:
+                break;
+            }
+                      
+            auto cache = CacheResolver::Lookup(dataInput.getCache());
+            auto createType = cache->GetTypeRegistry()->GetManagedObjectFactory(classId);
 
-						if (createType == nullptr) {
-							LOGERROR(
-									"Unregistered class ID %d during deserialization: Did the "
-									"application register serialization types?",
-									classId);
+            if (createType == nullptr) {
+              LOGERROR(
+                  "Unregistered class ID %d during deserialization: Did the "
+                  "application register serialization types?",
+                  classId);
 
-							// instead of a null key or null value... an Exception should be thrown..
-							throw IllegalStateException("Unregistered class ID in deserialization");
-						}
+              // instead of a null key or null value... an Exception should be thrown..
+              throw IllegalStateException("Unregistered class ID in deserialization");
+            }
 
-						auto managedDataSerializable = (Apache::Geode::Client::IDataSerializable^) createType();
-						auto nativeDataSerializable = std::shared_ptr<DataSerializable>(
-							dynamic_cast<DataSerializable*>(GetNativeWrapperForManagedIDataSerializable(managedDataSerializable)));
-						nativeDataSerializable->fromData(dataInput);
+            auto managedDataSerializable = (Apache::Geode::Client::IDataSerializable^) createType();
+            auto nativeDataSerializable = std::shared_ptr<DataSerializable>(
+              dynamic_cast<DataSerializable*>(GetNativeWrapperForManagedIDataSerializable(managedDataSerializable)));
+            nativeDataSerializable->fromData(dataInput);
 
-						return nativeDataSerializable;
-					}
-					catch (Apache::Geode::Client::GeodeException^ ex)
-					{
-						ex->ThrowNative();
-					}
-					catch (System::Exception^ ex)
-					{
-						Apache::Geode::Client::GeodeException::ThrowNative(ex);
-					}
+            return nativeDataSerializable;
+          }
+          catch (Apache::Geode::Client::GeodeException^ ex)
+          {
+            ex->ThrowNative();
+          }
+          catch (System::Exception^ ex)
+          {
+            Apache::Geode::Client::GeodeException::ThrowNative(ex);
+          }
 
-					return nullptr;
-				}
-				 inline DSCode getSerializableDataDsCode(int32_t classId) {
-					if (classId <= std::numeric_limits<int8_t>::max() &&
-						classId >= std::numeric_limits<int8_t>::min()) {
-					  return DSCode::CacheableUserData;
-					} else if (classId <= std::numeric_limits<int16_t>::max() &&
-							   classId >= std::numeric_limits<int16_t>::min()) {
-					  return DSCode::CacheableUserData2;
-					} else {
-					  return DSCode::CacheableUserData4;
-					}
-				  }
+          return nullptr;
+        }
+        inline DSCode getSerializableDataDsCode(int32_t classId) {
+          if (classId <= std::numeric_limits<int8_t>::max() &&
+            classId >= std::numeric_limits<int8_t>::min()) {
+            return DSCode::CacheableUserData;
+          } else if (classId <= std::numeric_limits<int16_t>::max() &&
+                classId >= std::numeric_limits<int16_t>::min()) {
+            return DSCode::CacheableUserData2;
+          } else {
+            return DSCode::CacheableUserData4;
+          }
+        }
   
-			};
+      };
 
-		} //  namespace client
-	} //  namespace geode
+    } //  namespace client
+  } //  namespace geode
 } //  namespace apache
 

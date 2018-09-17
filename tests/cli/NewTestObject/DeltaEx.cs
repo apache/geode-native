@@ -20,88 +20,88 @@ using System;
 using Apache.Geode.Client;
 namespace Apache.Geode.Client.Tests
 {
-    public class DeltaEx : IDelta, IDataSerializable, ICloneable
+  public class DeltaEx : IDelta, IDataSerializable, ICloneable
+  {
+    private int counter;
+    private bool IsDelta;
+    public static int ToDeltaCount = 0;
+    public static int FromDeltaCount = 0;
+    public static int ToDataCount = 0;
+    public static int FromDataCount = 0;
+    public static int CloneCount = 0;
+
+    public DeltaEx()
     {
-        private int counter;
-        private bool IsDelta;
-        public static int ToDeltaCount = 0;
-        public static int FromDeltaCount = 0;
-        public static int ToDataCount = 0;
-        public static int FromDataCount = 0;
-        public static int CloneCount = 0;
+      counter = 24;
+      IsDelta = false;
+    }
+    public DeltaEx(int count)
+    {
+      count = 0;
+      IsDelta = false;
+    }
+    public bool HasDelta()
+    {
+      return IsDelta;
+    }
+    public void ToDelta(Apache.Geode.Client.DataOutput DataOut)
+    {
+      DataOut.WriteInt32(counter);
+      ToDeltaCount++;
+    }
 
-        public DeltaEx()
-        {
-            counter = 24;
-            IsDelta = false;
-        }
-        public DeltaEx(int count)
-        {
-            count = 0;
-            IsDelta = false;
-        }
-        public bool HasDelta()
-        {
-            return IsDelta;
-        }
-        public void ToDelta(Apache.Geode.Client.DataOutput DataOut)
-        {
-            DataOut.WriteInt32(counter);
-            ToDeltaCount++;
-        }
-
-        public void FromDelta(Apache.Geode.Client.DataInput DataIn)
-        {
-            int val = DataIn.ReadInt32();
-            if( FromDeltaCount == 1 )
-            {
-                FromDeltaCount++;
-                throw new Apache.Geode.Client.InvalidDeltaException();
-            }
-            counter+=val;
-            FromDeltaCount++;
-        }
-
-        public void ToData(Apache.Geode.Client.DataOutput DataOut)
-        {
-            DataOut.WriteInt32( counter );
-            ToDataCount++;
-        }
-        public void FromData(Apache.Geode.Client.DataInput DataIn)
-        {
-            counter = DataIn.ReadInt32();
-            FromDataCount++;
-        }
-
-        public String Type
-        {
-            get { return this.GetType().ToString(); }
-        }
-
-        public UInt64 ObjectSize
-        {
-            get
-            {
-                return 0;
-            }
-        }
-        public void SetDelta(bool isDelta)
-        {
-            IsDelta = isDelta;
-        }
-
-        public static Apache.Geode.Client.ISerializable create()
-        {
-            return new DeltaEx();
-        }
-        public Object Clone()
-        {
-          CloneCount++;
-          return new DeltaEx();
-        }
-      public int getCounter()
+    public void FromDelta(Apache.Geode.Client.DataInput DataIn)
+    {
+      int val = DataIn.ReadInt32();
+      if (FromDeltaCount == 1)
       {
-        return counter;
+        FromDeltaCount++;
+        throw new Apache.Geode.Client.InvalidDeltaException();
+      }
+      counter += val;
+      FromDeltaCount++;
+    }
+
+    public void ToData(Apache.Geode.Client.DataOutput DataOut)
+    {
+      DataOut.WriteInt32(counter);
+      ToDataCount++;
+    }
+    public void FromData(Apache.Geode.Client.DataInput DataIn)
+    {
+      counter = DataIn.ReadInt32();
+      FromDataCount++;
+    }
+
+    public System.Type Type
+    {
+      get { return this.GetType(); }
+    }
+
+    public UInt64 ObjectSize
+    {
+      get
+      {
+        return 0;
       }
     }
+    public void SetDelta(bool isDelta)
+    {
+      IsDelta = isDelta;
+    }
+
+    public static Apache.Geode.Client.ISerializable create()
+    {
+      return new DeltaEx();
+    }
+    public Object Clone()
+    {
+      CloneCount++;
+      return new DeltaEx();
+    }
+    public int getCounter()
+    {
+      return counter;
+    }
+  }
 }
