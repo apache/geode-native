@@ -394,7 +394,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, doEventOperations)
         exmpRegPtr->size());
     ASSERT(exmpRegPtr->size() == 5,
            "Total number of entries in the region should be 5");
-    // SLEEP( 1000 ); // let the events reach at other end.
 
     LOGINFO(
         "CLIENT-1 localCaching Enabled After Put ....DistRegionAck.size() = %d",
