@@ -182,6 +182,7 @@ class Cluster {
         initialServers_(initialServers.get()) {
     jmxManagerPort_ = Framework::getAvailablePort();
 
+    removeServerDirectory();
     start();
   }
 
@@ -208,33 +209,38 @@ class Cluster {
 
   void stop();
 
+  void removeServerDirectory() {
+    boost::filesystem::path serverDir = boost::filesystem::relative(name_);
+    boost::filesystem::remove_all(serverDir);
+  }
+
+  apache::geode::client::Cache createCache() { return createCache({}); }
 
   apache::geode::client::Cache createCache(const std::unordered_map<std::string, std::string>& properties) {
     using apache::geode::client::CacheFactory;
 
     CacheFactory cacheFactory;
 
-    for (auto&& property : properties) {
+    for (auto &&property : properties) {
       cacheFactory.set(property.first, property.second);
     }
 
-    auto cache = cacheFactory
-            .set("log-level", "none")
-            .set("statistic-sampling-enabled", "false")
-            .create();
+    auto cache = cacheFactory.set("log-level", "none")
+                     .set("statistic-sampling-enabled", "false")
+                     .create();
 
     auto poolFactory = cache.getPoolManager().createFactory();
-    for (const auto &locator : locators_) {
-      poolFactory.addLocator(locator.getAdddress().address,
-                             locator.getAdddress().port);
-      poolFactory.create("default");
-    }
+    applyLocators(poolFactory);
+    poolFactory.create("default");
 
     return cache;
   }
 
-  apache::geode::client::Cache createCache() {
-    return createCache({});
+  void applyLocators(apache::geode::client::PoolFactory &poolFactory) {
+   for (const auto &locator : locators_) {
+     poolFactory.addLocator(locator.getAdddress().address,
+                            locator.getAdddress().port);
+   }
   }
 
   Gfsh &getGfsh() noexcept { return gfsh_; }

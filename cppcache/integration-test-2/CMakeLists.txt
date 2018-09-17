@@ -27,6 +27,7 @@ add_executable(integration-test-2
   framework/GfshExecute.h
   RegionPutGetAllTest.cpp
   PdxInstanceTest.cpp
+  RegisterKeysTest.cpp
   StructTest.cpp
   EnableChunkHandlerThreadTest.cpp
   )
