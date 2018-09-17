@@ -105,7 +105,7 @@ class Record {
   TimeStamp m_stopTime;
 
  public:
-  Record(std::string testName, const long ops, const TimeStamp& start,
+  Record(std::string testName, int64_t ops, const TimeStamp& start,
          const TimeStamp& stop);
 
   Record();
@@ -135,7 +135,7 @@ class PerfSuite {
  public:
   explicit PerfSuite(const char* suiteName);
 
-  void addRecord(std::string testName, const long ops, const TimeStamp& start,
+  void addRecord(std::string testName, int64_t ops, const TimeStamp& start,
                  const TimeStamp& stop);
 
   /** create a file in cwd, named "<suite>_results.<host>" */

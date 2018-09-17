@@ -69,7 +69,9 @@ TcrConnectionManager::TcrConnectionManager(CacheImpl *cache)
   m_redundancyManager = new ThinClientRedundancyManager(this);
 }
 
-long TcrConnectionManager::getPingTaskId() { return m_pingTaskId; }
+ExpiryTaskManager::id_type TcrConnectionManager::getPingTaskId() {
+  return m_pingTaskId;
+}
 void TcrConnectionManager::init(bool isPool) {
   if (!m_initGuard) {
     m_initGuard = true;

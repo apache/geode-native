@@ -51,25 +51,19 @@ namespace testframework {
 
 // ----------------------------------------------------------------------------
 
-static const short int wrd = 0x0001;
-static const char* byt = reinterpret_cast<const char*>(&wrd);
+#ifndef htonll
+#define htonll(x)  \
+  ((1 == htonl(1)) \
+       ? (x)       \
+       : ((uint64_t)htonl((x)&0xFFFFFFFF) << 32) | htonl((x) >> 32))
+#endif
 
-#define isNetworkOrder() (byt[1] == 1)
-
-#define NSWAP_8(x) ((x)&0xff)
-#define NSWAP_16(x) ((NSWAP_8(x) << 8) | NSWAP_8((x) >> 8))
-#define NSWAP_32(x) ((NSWAP_16(x) << 16) | NSWAP_16((x) >> 16))
-#define NSWAP_64(x) ((NSWAP_32(x) << 32) | NSWAP_32((x) >> 32))
-
-long long htonl64(long long value) {
-  if (isNetworkOrder()) return value;
-  return NSWAP_64(value);
-}
-
-long long ntohl64(long long value) {
-  if (isNetworkOrder()) return value;
-  return NSWAP_64(value);
-}
+#ifndef ntohll
+#define ntohll(x)  \
+  ((1 == ntohl(1)) \
+       ? (x)       \
+       : ((uint64_t)ntohl((x)&0xFFFFFFFF) << 32) | ntohl((x) >> 32))
+#endif
 
 // ----------------------------------------------------------------------------
 
@@ -120,7 +114,7 @@ void TimeSync::sendTimeSync() {
   int32_t tvLen = sizeof(int64_t);
   do {
     ACE_Time_Value tval = ACE_OS::gettimeofday();
-    int64_t now = htonl64(timevalMicros(tval));
+    int64_t now = htonll(timevalMicros(tval));
 #ifdef WIN32
     retVal = sendto(sock, (const char*)&now, tvLen, 0,
                     (const struct sockaddr*)&addr, addrLen);
@@ -227,7 +221,7 @@ void TimeSync::recvTimeSync() {
       {
         ACE_Time_Value now = ACE_OS::gettimeofday();
         int64_t curr = timevalMicros(now);
-        tval = ntohl64(tval);
+        tval = ntohll(tval);
         int64_t diff = (tval - curr);
         total += diff;
         cnt++;

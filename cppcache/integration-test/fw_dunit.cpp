@@ -953,7 +953,7 @@ int64_t TimeStamp::msec() const { return m_msec; }
 
 void TimeStamp::msec(int64_t t) { m_msec = t; }
 
-Record::Record(std::string testName, const long ops, const TimeStamp& start,
+Record::Record(std::string testName, int64_t ops, const TimeStamp& start,
                const TimeStamp& stop)
     : m_testName(testName),
       m_operations(ops),
@@ -1017,7 +1017,7 @@ std::string Record::asString() {
 
 PerfSuite::PerfSuite(const char* suiteName) : m_suiteName(suiteName) {}
 
-void PerfSuite::addRecord(std::string testName, const long ops,
+void PerfSuite::addRecord(std::string testName, int64_t ops,
                           const TimeStamp& start, const TimeStamp& stop) {
   Record tmp(testName, ops, start, stop);
   m_records[testName] = tmp;

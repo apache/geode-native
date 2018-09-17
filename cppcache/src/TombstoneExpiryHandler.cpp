@@ -43,10 +43,10 @@ int TombstoneExpiryHandler::handle_timeout(const ACE_Time_Value& current_time,
                                            const void*) {
   std::shared_ptr<CacheableKey> key;
   m_entryPtr->getEntry()->getKeyI(key);
-  int64_t creationTime = m_entryPtr->getTombstoneCreationTime();
-  int64_t curr_time = static_cast<int64_t>(current_time.get_msec());
-  int64_t expiryTaskId = m_entryPtr->getExpiryTaskId();
-  int64_t sec = curr_time - creationTime - m_duration.count();
+  auto creationTime = m_entryPtr->getTombstoneCreationTime();
+  auto curr_time = static_cast<int64_t>(current_time.get_msec());
+  auto expiryTaskId = m_entryPtr->getExpiryTaskId();
+  auto sec = curr_time - creationTime - m_duration.count();
   try {
     LOGDEBUG(
         "Entered entry expiry task handler for tombstone of key [%s]: "
@@ -63,8 +63,7 @@ int TombstoneExpiryHandler::handle_timeout(const ACE_Time_Value& current_time,
           "[%s]",
           -sec / 1000 + 1, Utils::nullSafeToString(key).c_str());
       m_cacheImpl->getExpiryTaskManager().resetTask(
-          static_cast<long>(m_entryPtr->getExpiryTaskId()),
-          uint32_t(-sec / 1000 + 1));
+          m_entryPtr->getExpiryTaskId(), uint32_t(-sec / 1000 + 1));
       return 0;
     }
   } catch (...) {
@@ -74,8 +73,7 @@ int TombstoneExpiryHandler::handle_timeout(const ACE_Time_Value& current_time,
            Utils::nullSafeToString(key).c_str());
   // we now delete the handler in GF_Timer_Heap_ImmediateReset_T
   // and always return success.
-  m_cacheImpl->getExpiryTaskManager().resetTask(static_cast<long>(expiryTaskId),
-                                                0);
+  m_cacheImpl->getExpiryTaskManager().resetTask(expiryTaskId, 0);
   return 0;
 }
 

@@ -68,7 +68,7 @@ class TombstoneList {
       : m_mapSegment(mapSegment), m_cacheImpl(cacheImpl) {}
   virtual ~TombstoneList() { cleanUp(); }
   void add(const std::shared_ptr<MapEntryImpl>& entry,
-           TombstoneExpiryHandler* handler, long taskID);
+           TombstoneExpiryHandler* handler, ExpiryTaskManager::id_type taskID);
 
   // Reaps the tombstones which have been gc'ed on server.
   // A map that has identifier for ClientProxyMembershipID as key
@@ -78,11 +78,11 @@ class TombstoneList {
   void reapTombstones(std::shared_ptr<CacheableHashSet> removedKeys);
   void eraseEntryFromTombstoneList(const std::shared_ptr<CacheableKey>& key,
                                    bool cancelTask = true);
-  long eraseEntryFromTombstoneListWithoutCancelTask(
+  ExpiryTaskManager::id_type eraseEntryFromTombstoneListWithoutCancelTask(
       const std::shared_ptr<CacheableKey>& key,
       TombstoneExpiryHandler*& handler);
   void cleanUp();
-  long getExpiryTask(TombstoneExpiryHandler** handler);
+  ExpiryTaskManager::id_type getExpiryTask(TombstoneExpiryHandler** handler);
   bool exists(const std::shared_ptr<CacheableKey>& key) const;
 
  private:

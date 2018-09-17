@@ -120,7 +120,7 @@ class ThinClientPoolHADM : public ThinClientPoolDM {
   /*
   void stopNotificationThreads();
   */
-  long m_servermonitorTaskId;
+  ExpiryTaskManager::id_type m_servermonitorTaskId;
   int checkRedundancy(const ACE_Time_Value&, const void*);
 
   virtual TcrEndpoint* createEP(const char* endpointName) {

@@ -47,21 +47,19 @@
 #include "MemberListForVersionStamp.hpp"
 #include "config.h"
 
-#if defined(_MACOSX)
 namespace ACE_VERSIONED_NAMESPACE_NAME {
+
+#if defined(_MACOSX)
 // TODO CMake check type int64_t
 template <>
 class ACE_Export ACE_Hash<int64_t> {
  public:
-  inline unsigned long operator()(int64_t t) const {
-    return static_cast<long>(t);
+  inline unsigned long operator()(int64_t t) const {  // NOLINT
+    return static_cast<unsigned long>(t);             // NOLINT
   }
 };
 
-}  // namespace ACE_VERSIONED_NAMESPACE_NAME
 #endif
-
-ACE_BEGIN_VERSIONED_NAMESPACE_DECL
 
 using apache::geode::client::DSCode;
 template <>
@@ -72,7 +70,7 @@ class ACE_Hash<DSCode> {
   }
 };
 
-ACE_END_VERSIONED_NAMESPACE_DECL
+}  // namespace ACE_VERSIONED_NAMESPACE_NAME
 
 namespace apache {
 namespace geode {

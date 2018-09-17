@@ -20,19 +20,23 @@
  * limitations under the License.
  */
 
-#include <geode/internal/geode_globals.hpp>
-#include "Task.hpp"
 #include <string>
-#include <ace/Recursive_Thread_Mutex.h>
+#include <vector>
+#include <list>
+#include <unordered_map>
+
 #include <ace/Map_Manager.h>
 #include <ace/Semaphore.h>
-#include <vector>
-#include <unordered_map>
-#include <list>
-#include "ace/config-lite.h"
-#include "ace/Versioned_Namespace.h"
+#include <ace/config-lite.h>
+#include <ace/Versioned_Namespace.h>
+#include <ace/Recursive_Thread_Mutex.h>
+
+#include <geode/internal/geode_globals.hpp>
+
+#include "Task.hpp"
 #include "Queue.hpp"
 #include "ThinClientRedundancyManager.hpp"
+#include "ExpiryTaskManager.hpp"
 
 namespace ACE_VERSIONED_NAMESPACE_NAME {
 class ACE_Task_Base;
@@ -65,7 +69,7 @@ class APACHE_GEODE_EXPORT TcrConnectionManager {
   int checkConnection(const ACE_Time_Value&, const void*);
   int checkRedundancy(const ACE_Time_Value&, const void*);
   int processEventIdMap(const ACE_Time_Value&, const void*);
-  long getPingTaskId();
+  ExpiryTaskManager::id_type getPingTaskId();
   void close();
 
   void readyForEvents();
@@ -164,8 +168,8 @@ class APACHE_GEODE_EXPORT TcrConnectionManager {
   ACE_Semaphore m_cleanupSema;
   Task<TcrConnectionManager>* m_cleanupTask;
 
-  long m_pingTaskId;
-  long m_servermonitorTaskId;
+  ExpiryTaskManager::id_type m_pingTaskId;
+  ExpiryTaskManager::id_type m_servermonitorTaskId;
   Queue<Task<TcrEndpoint> > m_receiverReleaseList;
   Queue<TcrConnection> m_connectionReleaseList;
   Queue<ACE_Semaphore> m_notifyCleanupSemaList;

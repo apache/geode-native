@@ -86,9 +86,13 @@ class APACHE_GEODE_EXPORT ExpEntryProperties {
     m_lastModifiedTime = currTime.time_since_epoch().count();
   }
 
-  inline void setExpiryTaskId(long id) { m_expiryTaskId = id; }
+  inline void setExpiryTaskId(ExpiryTaskManager::id_type id) {
+    m_expiryTaskId = id;
+  }
 
-  inline long getExpiryTaskId() const { return m_expiryTaskId; }
+  inline ExpiryTaskManager::id_type getExpiryTaskId() const {
+    return m_expiryTaskId;
+  }
 
   inline void cancelExpiryTaskId(
       const std::shared_ptr<CacheableKey>& key) const {
@@ -108,7 +112,7 @@ class APACHE_GEODE_EXPORT ExpEntryProperties {
   /** last modified time in secs, 32bit.. */
   std::atomic<time_point::duration::rep> m_lastModifiedTime;
   /** The expiry task id for this particular entry.. **/
-  long m_expiryTaskId;
+  ExpiryTaskManager::id_type m_expiryTaskId;
   ExpiryTaskManager* m_expiryTaskManager;
 };
 

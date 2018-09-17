@@ -20,8 +20,12 @@
  * limitations under the License.
  */
 
-#include <geode/PdxUnreadFields.hpp>
 #include <vector>
+
+#include <geode/Serializable.hpp>
+#include <geode/PdxUnreadFields.hpp>
+
+#include "ExpiryTaskManager.hpp"
 
 namespace apache {
 namespace geode {
@@ -35,7 +39,7 @@ class PdxRemotePreservedData : public PdxUnreadFields {
   int32_t m_mergedTypeId;
   int32_t m_currentIndex;
   std::shared_ptr<Serializable> /*Object^*/ m_owner;
-  long m_expiryTakId;
+  ExpiryTaskManager::id_type m_expiryTakId;
 
  public:
   PdxRemotePreservedData()
@@ -73,11 +77,13 @@ class PdxRemotePreservedData : public PdxUnreadFields {
 
   inline int32_t getMergedTypeId() { return m_mergedTypeId; }
 
-  inline void setPreservedDataExpiryTaskId(long expId) {
+  inline void setPreservedDataExpiryTaskId(ExpiryTaskManager::id_type expId) {
     m_expiryTakId = expId;
   }
 
-  inline long getPreservedDataExpiryTaskId() { return m_expiryTakId; }
+  inline ExpiryTaskManager::id_type getPreservedDataExpiryTaskId() {
+    return m_expiryTakId;
+  }
 
   std::shared_ptr<Serializable> getOwner() { return m_owner; }
 

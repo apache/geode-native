@@ -357,7 +357,7 @@ TransactionId& CacheTransactionManagerImpl::suspend() {
                                 .suspendedTxTimeout();
   auto handler =
       new SuspendedTxExpiryHandler(this, txState->getTransactionId());
-  long id = m_cache->getExpiryTaskManager().scheduleExpiryTask(
+  auto id = m_cache->getExpiryTaskManager().scheduleExpiryTask(
       handler, suspendedTxTimeout, std::chrono::seconds::zero(), false);
   txState->setSuspendedExpiryTaskId(id);
 

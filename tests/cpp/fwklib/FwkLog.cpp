@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+#include <cinttypes>
+
 #include "fwklib/FwkLog.hpp"
 #include "fwklib/PerfFwk.hpp"
 #include <geode/Exception.hpp>
@@ -62,8 +64,8 @@ void plog(const char* l, const char* s, const char* filename, int32_t lineno) {
   struct tm* tm_val = ACE_OS::localtime(&secs);
   char* pbuf = buf;
   pbuf += ACE_OS::strftime(pbuf, MINBUFSIZE, "%Y/%m/%d %H:%M:%S", tm_val);
-  pbuf +=
-      ACE_OS::snprintf(pbuf, 15, ".%06ld ", static_cast<long>(clock.usec()));
+  pbuf += ACE_OS::snprintf(pbuf, 15, ".%06" PRId64 " ",
+                           static_cast<int64_t>(clock.usec()));
   pbuf += ACE_OS::strftime(pbuf, MINBUFSIZE, "%Z ", tm_val);
   static bool needInit = true;
   if (needInit) {
@@ -73,9 +75,9 @@ void plog(const char* l, const char* s, const char* filename, int32_t lineno) {
 
   const char* fil = dirAndFile(filename);
 
-  fprintf(stdout, "[%s %s %s:P%d:T%lu]::%s::%d  %s  %s\n", buf, u.sysname,
-          u.nodename, ACE_OS::getpid(), (unsigned long)(ACE_Thread::self()),
-          fil, lineno, l, s);
+  fprintf(stdout, "[%s %s %s:P%d:T%" PRIXPTR "]::%s::%d  %s  %s\n", buf,
+          u.sysname, u.nodename, ACE_OS::getpid(),
+          (uintptr_t)(ACE_Thread::self()), fil, lineno, l, s);
   fflush(stdout);
 }
 

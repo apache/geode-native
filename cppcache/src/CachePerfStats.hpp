@@ -249,7 +249,7 @@ class APACHE_GEODE_EXPORT CachePerfStats {
     m_cachePerfStats->incInt(m_deltaFailedOnReceive, 1);
   }
 
-  inline void incTimeSpentOnDeltaApplication(long time) {
+  inline void incTimeSpentOnDeltaApplication(int32_t time) {
     m_cachePerfStats->incInt(m_processedDeltaMessagesTime, time);
   }
 

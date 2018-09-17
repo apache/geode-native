@@ -213,8 +213,8 @@ class putThread : public ACE_Task_Base {
 
   int svc(void) {
     int ops = 0;
-    int32_t pid = ACE_OS::getpid();
-    ACE_thread_t thr_id = ACE_OS::thr_self();
+    auto pid = ACE_OS::getpid();
+    auto thr_id = ACE_OS::thr_self();
     std::shared_ptr<CacheableKey> key;
     std::shared_ptr<CacheableString> value;
     std::vector<std::shared_ptr<CacheableKey>> keys0;
@@ -262,8 +262,8 @@ class putThread : public ACE_Task_Base {
             m_reg->destroy(key);
           }
         } catch (Exception& ex) {
-          printf("%d: %ld exception got and exception message = %s\n", pid,
-                 (long)thr_id, ex.what());
+          printf("%d: %" PRIuPTR " exception got and exception message = %s\n",
+                 pid, (uintptr_t)thr_id, ex.what());
         }
       }
     }

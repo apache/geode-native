@@ -1358,7 +1358,7 @@ GfErrType ThinClientPoolDM::sendSyncRequest(
   if (m_attrs->getRetryAttempts() == -1) {
     retryAllEPsOnce = true;
   }
-  long retry = m_attrs->getRetryAttempts() + 1;
+  auto retry = m_attrs->getRetryAttempts() + 1;
   TcrConnection* conn = nullptr;
   std::set<ServerLocation> excludeServers;
   type = request.getMessageType();
@@ -2331,7 +2331,7 @@ void ThinClientPoolDM::checkRegions() {
   m_destroyPending = true;
 }
 void ThinClientPoolDM::updateNotificationStats(bool isDeltaSuccess,
-                                               long timeInNanoSecond) {
+                                               int64_t timeInNanoSecond) {
   if (isDeltaSuccess) {
     getStats().incProcessedDeltaMessages();
     getStats().incProcessedDeltaMessagesTime(timeInNanoSecond);

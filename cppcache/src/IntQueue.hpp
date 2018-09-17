@@ -46,7 +46,7 @@ class APACHE_GEODE_EXPORT IntQueue {
   }
 
   /** wait usec time until notified */
-  T get(long usec) {
+  T get(int64_t usec) {
     ACE_Time_Value interval(usec / 1000000, usec % 1000000);
     return getUntil(interval);
   }
