@@ -73,8 +73,8 @@ using apache::geode::client::Serializable;
 using apache::geode::client::internal::DataSerializablePrimitive;
 using apache::geode::client::internal::DSCode;
 
-using apache::geode::testing::CacheableWrapper;
-using apache::geode::testing::CacheableWrapperFactory;
+using apache::geode::client::testing::CacheableWrapper;
+using apache::geode::client::testing::CacheableWrapperFactory;
 
 const uint32_t m_crc32Table[] = {
     0x00000000, 0x77073096, 0xee0e612c, 0x990951ba, 0x076dc419, 0x706af48f,

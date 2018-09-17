@@ -35,8 +35,8 @@
 
 using apache::geode::client::internal::DSCode;
 
-using apache::geode::testing::CacheableWrapper;
-using apache::geode::testing::CacheableWrapperFactory;
+using apache::geode::client::testing::CacheableWrapper;
+using apache::geode::client::testing::CacheableWrapperFactory;
 
 const char* _regionNames[] = {"DistRegionAck"};
 

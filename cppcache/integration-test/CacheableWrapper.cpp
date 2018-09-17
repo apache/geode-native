@@ -19,6 +19,7 @@
 
 namespace apache {
 namespace geode {
+namespace client {
 namespace testing {
 
 void CacheableWrapper::initKey(int32_t, int32_t) {
@@ -82,5 +83,6 @@ std::string CacheableWrapperFactory::getTypeForId(DSCode typeId) {
 }
 
 }  // namespace testing
+}  // namespace client
 }  // namespace geode
 }  // namespace apache

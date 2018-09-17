@@ -28,6 +28,7 @@
 
 namespace apache {
 namespace geode {
+namespace client {
 namespace testing {
 
 using apache::geode::client::Cacheable;
@@ -85,6 +86,7 @@ class CacheableWrapperFactory {
 };
 
 }  // namespace testing
+}  // namespace client
 }  // namespace geode
 }  // namespace apache
 
