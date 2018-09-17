@@ -18,7 +18,7 @@
 using System;
 using Apache.Geode.Client;
 
-namespace Apache.Geode.Examples.Serializer
+namespace Apache.Geode.Examples.ContinuousQuery
 {
     public class Program
     {
@@ -34,29 +34,58 @@ namespace Apache.Geode.Examples.Serializer
 
             var poolFactory = cache.GetPoolFactory()
                 .AddLocator("localhost", 10334);
-            poolFactory.Create("pool");
+            var pool = poolFactory
+              .SetSubscriptionEnabled(true)
+              .Create("pool");
 
             var regionFactory = cache.CreateRegionFactory(RegionShortcut.PROXY)
                 .SetPoolName("pool");
-            var orderRegion = regionFactory.Create<int, Order>("example_orderobject");
+            var orderRegion = regionFactory.Create<string, Order>("example_orderobject");
 
-            Console.WriteLine("Storing order object in the region");
+            var queryService = pool.GetQueryService();
 
-            const int orderKey = 65;
+            var cqAttributesFactory = new CqAttributesFactory<string, Order>();
 
-            var order = new Order(orderKey, "Donuts", 12);
+            var cqListener = new MyCqListener<string, Order>();
 
-            Console.WriteLine("order to put is " + order);
-            orderRegion.Put(orderKey, order, null);
+            cqAttributesFactory.AddCqListener(cqListener);
 
-            Console.WriteLine("Successfully put order, getting now...");
-            var orderRetrieved = orderRegion.Get(orderKey, null);
+            var cqAttributes = cqAttributesFactory.Create();
+            try {
+              var query = queryService.NewCq("MyCq", "SELECT * FROM /example_orderobject WHERE quantity > 30", cqAttributes, false);
 
-            Console.WriteLine("Order key: " + orderKey + " = " + orderRetrieved);
+              Console.WriteLine("Executing continuous query");
+              query.Execute();
+            
+              Console.WriteLine("Create orders");
+              var order1 = new Order(1, "product x", 23);
+              var order2 = new Order(2, "product y", 37);
+              var order3 = new Order(3, "product z", 1);
+              var order4 = new Order(4, "product z", 102);
+              var order5 = new Order(5, "product x", 17);
+              var order6 = new Order(6, "product z", 42);
+            
+              Console.WriteLine("Putting and changing Order objects in the region");
+              orderRegion.Put("Order1", order1);
+              orderRegion.Put("Order2", order2);
+              orderRegion.Put("Order3", order3);
+              orderRegion.Put("Order4", order4);
+              orderRegion.Put("Order5", order5);
+              orderRegion.Put("Order6", order6);
+            
+              orderRegion.Put("Order2", new Order(2, "product y", 45));
+              orderRegion.Put("Order2", new Order(2, "product y", 29));
+              orderRegion.Remove("Order6");
 
+              System.Threading.Thread.Sleep(2000);
+
+              query.Stop();
+              query.Close();
+            } catch (IllegalStateException ex) {
+              Console.WriteLine(ex.Message);
+            }
+         
             cache.Close();
         }
     }
 }
-
-

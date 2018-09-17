@@ -1,5 +1,5 @@
-﻿# PdxAutoSerializer Example
-This is a simple example showing how to register for auto-serialization of custom objects using the ReflectionBasedAutoSerializer class.
+﻿# PdxSerializable Example
+This is a simple example showing how to register for serialization of custom objects using the IPDXSerializable class.
 
 ## Prerequisites
 * Install [Apache Geode](https://geode.apache.org)
@@ -12,13 +12,13 @@ This is a simple example showing how to register for auto-serialization of custo
   gfsh>start server --name=server
   gfsh>create region --name=example_orderobject --type=PARTITION
   ```
-* Execute `PdxAutoSerializer.exe`.
+* Execute `PdxSerializableCs.exe`.
   
   output:
   ```
-  Registering for reflection-based auto serialization
+  Registering for data serialization
   Storing order object in the region
-  order to put is Order: [65, Vox AC30, 11]
+  order to put is Order: [65, Donuts, 12]
   Successfully put order, getting now...
-  Order key: 65 = Order: [65, Vox AC30, 11]
+  Order key: 65 = Order: [65, Donuts, 12]
   ```

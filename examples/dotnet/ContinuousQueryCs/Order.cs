@@ -17,7 +17,7 @@
 using Apache.Geode.Client;
 using System;
 
-namespace Apache.Geode.Examples.Serializer
+namespace Apache.Geode.Examples.ContinuousQuery
 {
     public class Order : IPdxSerializable
     {
@@ -69,5 +69,3 @@ namespace Apache.Geode.Examples.Serializer
         }
     }
 }
-
-
