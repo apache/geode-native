@@ -51,7 +51,7 @@ class APACHE_GEODE_EXPORT DataSerializable : public virtual Serializable {
   virtual void fromData(DataInput& dataInput) = 0;
 
   /**
-   * @brief Return the type name of the instance being serialized.
+   * @brief Return the std::type_info of the instance being serialized.
    * This is used by deserialization to determine what instance
    * type to create and deserialize into.
    *
