@@ -73,11 +73,6 @@ namespace Apache.Geode.Client.Tests
       FromDataCount++;
     }
 
-    public System.Type Type
-    {
-      get { return this.GetType(); }
-    }
-
     public UInt64 ObjectSize
     {
       get

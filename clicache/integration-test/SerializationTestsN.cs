@@ -491,11 +491,6 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public System.Type Type
-    {
-      get { return this.GetType(); }
-    }
-
     #endregion
 
     public static ISerializable CreateDeserializable()
@@ -624,11 +619,6 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-
-    public System.Type Type
-    {
-      get { return this.GetType(); }
-    }
     #endregion
 
     public static ISerializable CreateDeserializable()
@@ -759,11 +749,6 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-
-    public System.Type Type
-    {
-      get { return this.GetType(); }
-    }
     #endregion
 
     public static ISerializable CreateDeserializable()
@@ -893,11 +878,6 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-
-    public System.Type Type
-    {
-      get { return this.GetType(); }
-    }
     #endregion
 
     public static ISerializable CreateDeserializable()
@@ -1028,11 +1008,6 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-
-    public System.Type Type
-    {
-      get { return this.GetType(); }
-    }
     #endregion
 
     public static ISerializable CreateDeserializable()
@@ -1163,10 +1138,6 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public System.Type Type
-    {
-      get { return this.GetType(); }
-    }
     #endregion
 
     public static ISerializable CreateDeserializable()

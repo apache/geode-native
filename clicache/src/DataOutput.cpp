@@ -719,7 +719,7 @@ namespace Apache
         }
         else if (auto dataSerializable = dynamic_cast<IDataSerializable^>(obj))
         {
-          auto id = m_cache->TypeRegistry->GetIdForManagedType(dataSerializable->Type);
+          auto id = m_cache->TypeRegistry->GetIdForManagedType(dataSerializable->GetType());
 
           auto dsCode = getDataSerializableDsCode(id);
           WriteByte(static_cast<int8_t>(dsCode));

@@ -46,11 +46,6 @@ namespace Apache.Geode.Client.Tests
       }
     }
 
-    public System.Type Type
-    {
-      get { return this.GetType(); }
-    }
-
     public void FromData(DataInput input)
     {
       arr = input.ReadBytes();

@@ -57,11 +57,6 @@ namespace Apache
         /// </param>
         /// <returns>the deserialized object</returns>
         void FromData( DataInput^ input );
-        
-        property System::Type^ Type
-        {
-            System::Type^ get( );
-        }
       };
 
     }  // namespace Client

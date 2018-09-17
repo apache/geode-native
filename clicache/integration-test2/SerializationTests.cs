@@ -69,10 +69,6 @@ namespace Apache.Geode.Client.IntegrationTests
       return new Order();
     }
 
-    public System.Type Type
-    {
-      get { return this.GetType(); }
-    }
   }
 
   public struct CData
@@ -249,11 +245,6 @@ namespace Apache.Geode.Client.IntegrationTests
       }
     }
 
-    public System.Type Type
-    {
-      get { return this.GetType(); }
-    }
-
     #endregion
 
     public static ISerializable CreateDeserializable()
@@ -382,10 +373,6 @@ namespace Apache.Geode.Client.IntegrationTests
       }
     }
 
-    public System.Type Type
-    {
-      get { return this.GetType(); }
-    }
     #endregion
 
     public static ISerializable CreateDeserializable()

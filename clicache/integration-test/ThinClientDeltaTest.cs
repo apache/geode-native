@@ -120,12 +120,6 @@ namespace Apache.Geode.Client.UnitTests
 
     #region IDataSerializable Members
 
-
-    public System.Type Type
-    {
-      get { return this.GetType(); }
-    }
-
     public void FromData(DataInput input)
     {
       _deltaUpdate = input.ReadInt32();

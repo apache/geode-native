@@ -196,9 +196,9 @@ namespace Apache
 			throw gcnew IllegalArgumentException("A class with given ID is already registered");
 		}
         
-        if (!ObjectTypeIDMap->ContainsKey(dataSerializable->Type))
+        if (!ObjectTypeIDMap->ContainsKey(dataSerializable->GetType()))
         {
-          ObjectTypeIDMap->Add(dataSerializable->Type, id);
+          ObjectTypeIDMap->Add(dataSerializable->GetType(), id);
         }
         // register the type in the DelegateMap, this is pure c# for create domain object 
         Log::Fine("Registering serializable class ID " + id);

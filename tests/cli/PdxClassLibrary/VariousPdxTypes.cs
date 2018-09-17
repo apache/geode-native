@@ -881,11 +881,6 @@ namespace PdxTests
       output.WriteInt32(m_i4); 
     }
 
-    public System.Type Type
-    {
-      get { return this.GetType(); }
-    }
-
     #endregion
   }
 

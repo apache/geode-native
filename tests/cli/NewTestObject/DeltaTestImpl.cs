@@ -88,11 +88,6 @@ namespace Apache.Geode.Client.Tests
       }
     }
 
-    public System.Type Type
-    {
-      get { return this.GetType(); }
-    }
-
     public static ISerializable CreateDeserializable()
     {
       return new DeltaTestImpl();
