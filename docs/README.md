@@ -29,13 +29,13 @@ For ease of use, a Docker image is provided that contains a self-consistent Book
 
     ```bash
     $ cd geode-native/docs/docker
-    $ docker build -t geode-native-userman .
+    $ docker build -t geode-native .
     ```
     
 1. Run the Docker image in interactive mode with a command similar to the following:
 
     ```bash
-    $ docker run -it -p 9292:9292 -p 1234:1234 -v PATH-TO-GEODE-NATIVE/docs:/docs geode-native-userman
+    $ docker run -it -p 9292:9292 -p 1234:1234 -v PATH-TO-GEODE-NATIVE:/geode-native geode-native
     ```
 
     where `PATH-TO-GEODE-NATIVE` is the fully-qualified path to the geode-native repo. This brings up the interactive Docker container, with `/` as your current working directory.
@@ -43,7 +43,7 @@ For ease of use, a Docker image is provided that contains a self-consistent Book
 1. To build the documentation, `cd` to the book directory:
 
     ```bash
-    $ cd docs/geode-native-book
+    $ cd geode-native/geode-native-book
     ```
 
 1. Run `bundle install` to install the dependencies required to build the user guide.
