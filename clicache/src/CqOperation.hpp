@@ -31,7 +31,7 @@ namespace Apache
       public enum class CqOperation
       {
         OP_TYPE_INVALID = -1,
-        OP_TYPE_CREATE = 0,
+        OP_TYPE_CREATE = 1,
         OP_TYPE_UPDATE = 2,
         OP_TYPE_INVALIDATE = 4,
         OP_TYPE_REGION_CLEAR = 8,
