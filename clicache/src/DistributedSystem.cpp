@@ -165,7 +165,7 @@ namespace Apache
       {
         // Registers overrides in the C++ layer to incercept deserialization into managed layer.
 
-        auto&& typeRegistry = cache->TypeRegistry;
+        auto typeRegistry = cache->TypeRegistry;
 
         typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
             static_cast<int8_t>(native::internal::DSCode::CacheableBytes),
@@ -295,7 +295,7 @@ namespace Apache
 
       void DistributedSystem::RegisterDataSerializableFixedIdsOverrideNativeDeserialization(Cache^ cache)
       {
-        auto&& typeRegistry = cache->TypeRegistry;
+        auto typeRegistry = cache->TypeRegistry;
  
         typeRegistry->RegisterDataSerializableFixedIdTypeOverrideNativeDeserialization(
             static_cast<int8_t>(native::DSFid::EnumInfo),

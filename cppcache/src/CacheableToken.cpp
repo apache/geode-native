@@ -50,12 +50,6 @@ void CacheableToken::fromData(DataInput& input) {
   m_value = static_cast<TokenType>(input.readInt32());
 }
 
-int8_t CacheableToken::getInternalId() const {
-  return static_cast<int8_t>(DSCode::CacheableToken);
-}
-
-//------ ctor
-
 CacheableToken::CacheableToken() : m_value(CacheableToken::NOT_USED) {}
 
 CacheableToken::CacheableToken(TokenType value) : m_value(value) {}

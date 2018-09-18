@@ -89,10 +89,6 @@ class APACHE_GEODE_EXPORT PdxFieldType
 
   virtual void fromData(DataInput& input) override;
 
-  virtual int8_t getInternalId() const override {
-    return static_cast<int32_t>(m_typeId);
-  }
-
   virtual size_t objectSize() const override {
     auto size = sizeof(PdxFieldType);
     size += m_className.length();

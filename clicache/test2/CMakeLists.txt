@@ -23,6 +23,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/packages.config ${CMAKE_CURRENT_BINAR
 add_library( ${PROJECT_NAME} SHARED
     Tests2.cs
     xunit.runner.json
+    packages.config
 )
 
 set_source_files_properties(cache.xml xunit.runner.json geode.properties PROPERTIES

@@ -173,49 +173,36 @@ namespace Apache
         return retVal();
       }
 
-      void TypeRegistry::RegisterType(TypeFactoryMethod^ creationMethod)
+      void TypeRegistry::RegisterType(TypeFactoryMethod^ creationMethod, int32_t id)
       {
         if (creationMethod == nullptr) {
           throw gcnew IllegalArgumentException("Serializable.RegisterType(): "
             "null TypeFactoryMethod delegate passed");
         }
 
-        //--------------------------------------------------------------
-
-        int32_t classId;
-
         //adding user type as well in global builtin hashmap
         auto obj = creationMethod();
-        if (auto dataSerializable = dynamic_cast<IDataSerializable^>(obj))
-        {
-          classId = dataSerializable->ClassId;
-        } else
-        {
+        auto dataSerializable = dynamic_cast<IDataSerializable^>(obj);
+        if (nullptr == dataSerializable) {
           throw gcnew IllegalArgumentException("Unknown serialization type.");
         }
 
-        if (!ManagedDelegatesGeneric->ContainsKey(classId))
+        if (!ObjectIDDelegatesMap->ContainsKey(id))
         {
-          ManagedDelegatesGeneric->Add(classId, creationMethod);
+          ObjectIDDelegatesMap->Add(id, creationMethod);
         }
-
-        auto delegateObj = gcnew DelegateWrapperGeneric(creationMethod);
-        auto nativeDelegate = gcnew TypeFactoryNativeMethodGeneric(delegateObj,
-            &DelegateWrapperGeneric::NativeDelegateGeneric);
-
-        // this is avoid object being Gced
-        NativeDelegatesGeneric->Add(nativeDelegate);
-
+		else
+		{
+			throw gcnew IllegalArgumentException("A class with given ID is already registered");
+		}
+        
+        if (!ObjectTypeIDMap->ContainsKey(dataSerializable->GetType()))
+        {
+          ObjectTypeIDMap->Add(dataSerializable->GetType(), id);
+        }
         // register the type in the DelegateMap, this is pure c# for create domain object 
-        Log::Fine("Registering serializable class ID " + classId);
-        DelegateMapGeneric[classId] = creationMethod;
-
-        _GF_MG_EXCEPTION_TRY2
-          auto&& nativeTypeRegistry = CacheRegionHelper::getCacheImpl(m_cache->GetNative().get())->getSerializationRegistry();
-          auto nativeDelegateFunction = static_cast<std::shared_ptr<native::Serializable>(*)()>(
-              System::Runtime::InteropServices::Marshal::GetFunctionPointerForDelegate(nativeDelegate).ToPointer());
-          nativeTypeRegistry->addType(nativeDelegateFunction);
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        Log::Fine("Registering serializable class ID " + id);
+        DelegateMapGeneric[id] = creationMethod;
       }
 
       void TypeRegistry::RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
@@ -240,7 +227,7 @@ namespace Apache
           auto&& serializationRegistry = CacheRegionHelper::getCacheImpl(m_cache->GetNative().get())->getSerializationRegistry();
           auto nativeDelegateFunction = static_cast<std::shared_ptr<native::Serializable>(*)()>(
               System::Runtime::InteropServices::Marshal::GetFunctionPointerForDelegate(nativeDelegate).ToPointer());
-          serializationRegistry->addType(dsCode, nativeDelegateFunction);
+          serializationRegistry->setDataSerializablePrimitiveType(nativeDelegateFunction, static_cast<DSCode>(dsCode));
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
 
@@ -263,7 +250,7 @@ namespace Apache
           auto&& serializationRegistry = CacheRegionHelper::getCacheImpl(m_cache->GetNative().get())->getSerializationRegistry();
           auto nativeDelegateFunction = static_cast<std::shared_ptr<native::Serializable>(*)()>(
               System::Runtime::InteropServices::Marshal::GetFunctionPointerForDelegate(nativeDelegate).ToPointer());
-          serializationRegistry->addType2(fixedId, nativeDelegateFunction);
+          serializationRegistry->addDataSerializableFixedIdType(fixedId, nativeDelegateFunction);
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
 
@@ -272,7 +259,7 @@ namespace Apache
         DsCodeToDataSerializablePrimitiveNativeDelegate->Remove(typeId);
         _GF_MG_EXCEPTION_TRY2
 
-          CacheRegionHelper::getCacheImpl(m_cache->GetNative().get())->getSerializationRegistry()->removeType(typeId);
+          CacheRegionHelper::getCacheImpl(m_cache->GetNative().get())->getSerializationRegistry()->removeDataSerializableType(typeId);
 
         _GF_MG_EXCEPTION_CATCH_ALL2
       }

@@ -122,11 +122,6 @@ namespace Apache.Geode.Client.UnitTests
 
       #region IDataSerializable Members
 
-      public int ClassId
-      {
-        get { return 151; }
-      }
-
       public void FromData(DataInput input)
       {
         _deltaUpdate = input.ReadInt32();
@@ -217,7 +212,7 @@ namespace Apache.Geode.Client.UnitTests
       {
         try
         {
-          CacheHelper.DCache.TypeRegistry.RegisterType(DeltaEx.create);
+          CacheHelper.DCache.TypeRegistry.RegisterType(DeltaEx.create, 1);
         }
         catch (IllegalStateException)
         {
@@ -261,7 +256,7 @@ namespace Apache.Geode.Client.UnitTests
       {
         try
         {
-          CacheHelper.DCache.TypeRegistry.RegisterType(DeltaEx.create);
+          CacheHelper.DCache.TypeRegistry.RegisterType(DeltaEx.create, 1);
         }
         catch (IllegalStateException)
         {
@@ -294,7 +289,7 @@ namespace Apache.Geode.Client.UnitTests
       {
         try
         {
-          CacheHelper.DCache.TypeRegistry.RegisterType(DeltaEx.create);
+          CacheHelper.DCache.TypeRegistry.RegisterType(DeltaEx.create, 1);
         }
         catch (IllegalStateException)
         {
@@ -327,7 +322,7 @@ namespace Apache.Geode.Client.UnitTests
       {
         try
         {
-          CacheHelper.DCache.TypeRegistry.RegisterType(DeltaTestAD.Create);
+          CacheHelper.DCache.TypeRegistry.RegisterType(DeltaTestAD.Create, 151);
         }
         catch (IllegalStateException)
         {
@@ -417,7 +412,7 @@ namespace Apache.Geode.Client.UnitTests
       {
         try
         {
-          CacheHelper.DCache.TypeRegistry.RegisterType(DeltaEx.create);
+          CacheHelper.DCache.TypeRegistry.RegisterType(DeltaEx.create, 1);
         }
         catch (IllegalStateException)
         {
@@ -434,7 +429,7 @@ namespace Apache.Geode.Client.UnitTests
       {
         try
         {
-          CacheHelper.DCache.TypeRegistry.RegisterType(DeltaTestImpl.CreateDeserializable);
+          CacheHelper.DCache.TypeRegistry.RegisterType(DeltaTestImpl.CreateDeserializable, 0x1E);
         }
         catch (IllegalStateException)
         {

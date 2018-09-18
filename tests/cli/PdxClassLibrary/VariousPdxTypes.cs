@@ -852,11 +852,6 @@ namespace PdxTests
 
     #region IDataSerializable Members
 
-    public Int32 ClassId
-    {
-      get { return 5005; }
-    }
-
     public void FromData(DataInput input)
     {
       m_i1 = input.ReadInt32();

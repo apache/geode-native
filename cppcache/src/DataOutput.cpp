@@ -125,11 +125,8 @@ void DataOutput::checkinBuffer(uint8_t* buffer, size_t size) {
   TSSDataOutput::s_tssDataOutput->poolBuffer(buffer, size);
 }
 
-void DataOutput::writeObjectInternal(const Serializable* ptr, bool isDelta) {
-  getSerializationRegistry().serialize(ptr, *this, isDelta);
-}
-
-void DataOutput::writeObjectInternal(const std::shared_ptr<Serializable>& ptr, bool isDelta) {
+void DataOutput::writeObjectInternal(const std::shared_ptr<Serializable>& ptr,
+                                     bool isDelta) {
   getSerializationRegistry().serialize(ptr, *this, isDelta);
 }
 

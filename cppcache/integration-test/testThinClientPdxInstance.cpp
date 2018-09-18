@@ -261,7 +261,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, putPdxWithIdentityField)
       auto serializationRegistry =
           CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
               ->getSerializationRegistry();
-      serializationRegistry->addPdxType(SerializePdx::createDeserializable);
+      serializationRegistry->addPdxSerializableType(
+          SerializePdx::createDeserializable);
       LOG("SerializePdx Registered Successfully....");
     } catch (apache::geode::client::IllegalStateException& /* ex*/) {
       LOG("SerializePdx IllegalStateException");
@@ -287,7 +288,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, putCacheableObjectArrayWithPdxFields)
       auto serializationRegistry =
           CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
               ->getSerializationRegistry();
-      serializationRegistry->addPdxType(Address::createDeserializable);
+      serializationRegistry->addPdxSerializableType(
+          Address::createDeserializable);
       LOG("Address Registered Successfully....");
     } catch (apache::geode::client::IllegalStateException& /* ex*/) {
       LOG("Address IllegalStateException");
@@ -335,7 +337,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, verifyPdxIdentityField)
       auto serializationRegistry =
           CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
               ->getSerializationRegistry();
-      serializationRegistry->addPdxType(SerializePdx::createDeserializable);
+      serializationRegistry->addPdxSerializableType(
+          SerializePdx::createDeserializable);
       LOG("SerializePdx Registered Successfully....");
     } catch (apache::geode::client::IllegalStateException& /* ex*/) {
       LOG("SerializePdx IllegalStateException");
@@ -457,7 +460,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, verifyCacheableObjectArrayWithPdxField)
       auto serializationRegistry =
           CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
               ->getSerializationRegistry();
-      serializationRegistry->addPdxType(Address::createDeserializable);
+      serializationRegistry->addPdxSerializableType(
+          Address::createDeserializable);
       LOG("Address Registered Successfully....");
     } catch (apache::geode::client::IllegalStateException& /* ex*/) {
       LOG("Address IllegalStateException");
@@ -576,7 +580,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxPut)
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
             ->getSerializationRegistry();
     try {
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::PdxType::createDeserializable);
       LOG("PdxObject Registered Successfully....");
     } catch (apache::geode::client::IllegalStateException& /* ex*/) {
@@ -662,7 +666,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, getObject)
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
             ->getSerializationRegistry();
     try {
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::PdxType::createDeserializable);
       LOG("PdxObject Registered Successfully....");
     } catch (apache::geode::client::IllegalStateException& /* ex*/) {
@@ -670,14 +674,16 @@ DUNIT_TASK_DEFINITION(CLIENT2, getObject)
     }
 
     try {
-      serializationRegistry->addPdxType(ChildPdx::createDeserializable);
+      serializationRegistry->addPdxSerializableType(
+          ChildPdx::createDeserializable);
       LOG("ChildPdx Registered Successfully....");
     } catch (apache::geode::client::IllegalStateException& /* ex*/) {
       LOG("ChildPdx IllegalStateException");
     }
 
     try {
-      serializationRegistry->addPdxType(ParentPdx::createDeserializable);
+      serializationRegistry->addPdxSerializableType(
+          ParentPdx::createDeserializable);
       LOG("ParentPdx Registered Successfully....");
     } catch (apache::geode::client::IllegalStateException& /* ex*/) {
       LOG("ParentPdx IllegalStateException");
@@ -796,7 +802,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, verifyPdxInstanceEquals)
       auto serializationRegistry =
           CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
               ->getSerializationRegistry();
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::PdxType::createDeserializable);
       LOG("PdxObject Registered Successfully....");
     } catch (apache::geode::client::IllegalStateException& /* ex*/) {
@@ -863,7 +869,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
             ->getSerializationRegistry();
     try {
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::PdxType::createDeserializable);
       LOG("PdxObject Registered Successfully....");
     } catch (apache::geode::client::IllegalStateException& /* ex*/) {
@@ -871,7 +877,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
     }
 
     try {
-      serializationRegistry->addPdxType(Address::createDeserializable);
+      serializationRegistry->addPdxSerializableType(
+          Address::createDeserializable);
       LOG("Address Registered Successfully....");
     } catch (apache::geode::client::IllegalStateException& /* ex*/) {
       LOG("Address IllegalStateException");
@@ -2217,14 +2224,15 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxIFPutGetTest)
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
             ->getSerializationRegistry();
     try {
-      serializationRegistry->addPdxType(Address::createDeserializable);
+      serializationRegistry->addPdxSerializableType(
+          Address::createDeserializable);
       LOG("Address Registered Successfully....");
     } catch (apache::geode::client::IllegalStateException& /* ex*/) {
       LOG("Address IllegalStateException");
     }
 
     try {
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::PdxType::createDeserializable);
       LOG("PdxObject Registered Successfully....");
     } catch (apache::geode::client::IllegalStateException& /* ex*/) {
@@ -2232,14 +2240,16 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxIFPutGetTest)
     }
 
     try {
-      serializationRegistry->addPdxType(ChildPdx::createDeserializable);
+      serializationRegistry->addPdxSerializableType(
+          ChildPdx::createDeserializable);
       LOG("ChildPdx Registered Successfully....");
     } catch (apache::geode::client::IllegalStateException& /* ex*/) {
       LOG("ChildPdx IllegalStateException");
     }
 
     try {
-      serializationRegistry->addPdxType(ParentPdx::createDeserializable);
+      serializationRegistry->addPdxSerializableType(
+          ParentPdx::createDeserializable);
       LOG("ParentPdx Registered Successfully....");
     } catch (apache::geode::client::IllegalStateException& /* ex*/) {
       LOG("ParentPdx IllegalStateException");

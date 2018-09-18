@@ -30,7 +30,7 @@ namespace Apache.Geode.Examples.Serializer
 
             Console.WriteLine("Registering for data serialization");
 
-            cache.TypeRegistry.RegisterType(Order.CreateDeserializable);
+            cache.TypeRegistry.RegisterType(Order.CreateDeserializable, 7);
 
             var poolFactory = cache.GetPoolFactory()
                 .AddLocator("localhost", 10334);

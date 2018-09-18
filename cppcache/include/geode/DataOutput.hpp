@@ -357,14 +357,6 @@ class APACHE_GEODE_EXPORT DataOutput {
   }
 
   /**
-   * Write a <code>Serializable</code> object to the <code>DataOutput</code>.
-   *
-   * @param objptr pointer to the <code>Serializable</code> object
-   *   to be written
-   */
-  void writeObject(const Serializable* objptr) { writeObjectInternal(objptr); }
-
-  /**
    * Get an internal pointer to the current location in the
    * <code>DataOutput</code> byte array.
    */
@@ -516,8 +508,8 @@ class APACHE_GEODE_EXPORT DataOutput {
   virtual const SerializationRegistry& getSerializationRegistry() const;
 
  private:
-  void writeObjectInternal(const Serializable* ptr, bool isDelta = false);
-  void writeObjectInternal(const std::shared_ptr<Serializable>& ptr, bool isDelta = false);
+  void writeObjectInternal(const std::shared_ptr<Serializable>& ptr,
+                           bool isDelta = false);
 
   static void acquireLock();
   static void releaseLock();

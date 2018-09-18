@@ -142,14 +142,6 @@ namespace Apache.Geode.Client.Tests
       }
     }
 
-    public string Type
-    {
-      get
-      {
-        return m_type;
-      }
-    }
-
     public static string[] SecIds
     {
       get
@@ -289,13 +281,6 @@ namespace Apache.Geode.Client.Tests
       }
     }
 
-    public Int32 ClassId
-    {
-      get
-      {
-        return 0x08;
-      }
-    }
 
     #endregion
 

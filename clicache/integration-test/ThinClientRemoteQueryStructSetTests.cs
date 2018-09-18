@@ -80,8 +80,8 @@ namespace Apache.Geode.Client.UnitTests
     public void InitClient()
     {
       CacheHelper.Init();
-      CacheHelper.DCache.TypeRegistry.RegisterType(Portfolio.CreateDeserializable);
-      CacheHelper.DCache.TypeRegistry.RegisterType(Position.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterType(Portfolio.CreateDeserializable, 8);
+      CacheHelper.DCache.TypeRegistry.RegisterType(Position.CreateDeserializable, 7);
       CacheHelper.DCache.TypeRegistry.RegisterPdxType(Apache.Geode.Client.Tests.PortfolioPdx.CreateDeserializable);
       CacheHelper.DCache.TypeRegistry.RegisterPdxType(Apache.Geode.Client.Tests.PositionPdx.CreateDeserializable);
     }

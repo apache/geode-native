@@ -82,7 +82,7 @@ inline bool SerializableHelper<DataSerializablePrimitive>::metadataEqualTo(
 template <>
 inline bool SerializableHelper<DataSerializable>::metadataEqualTo(
     const DataSerializable& lhs, const DataSerializable& rhs) {
-  return lhs.getClassId() == rhs.getClassId();
+  return lhs.getType() == rhs.getType();
 }
 
 template <>
@@ -94,7 +94,7 @@ inline bool SerializableHelper<PdxSerializable>::equalTo(
 template <>
 inline bool SerializableHelper<DataSerializableInternal>::metadataEqualTo(
     const DataSerializableInternal& lhs, const DataSerializableInternal& rhs) {
-  return lhs.getInternalId() == rhs.getInternalId();
+  return true;
 }
 
 }  // namespace client

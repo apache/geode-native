@@ -30,7 +30,8 @@ add_executable(integration-test-2
   RegisterKeysTest.cpp
   StructTest.cpp
   EnableChunkHandlerThreadTest.cpp
-  )
+  DataSerializableTest.cpp
+)
 
 target_compile_definitions(integration-test-2
   PUBLIC
@@ -40,7 +41,7 @@ target_compile_definitions(integration-test-2
 
 target_include_directories(integration-test-2
   PUBLIC
-    ${CMAKE_CURRENT_BINARY_DIR}
+   ${CMAKE_CURRENT_BINARY_DIR}
 )
 
 target_link_libraries(integration-test-2
@@ -54,9 +55,9 @@ target_link_libraries(integration-test-2
     Boost::system
     Boost::log
     Boost::filesystem
-  PRIVATE
+ PRIVATE
     _WarningsAsError
-    internal
+ internal
 )
 
 if(WIN32)
@@ -68,7 +69,9 @@ if(WIN32)
 
   foreach (_target apache-geode testobject)
     add_custom_command(TARGET integration-test-2 POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "$<TARGET_FILE:${_target}>" "$<TARGET_FILE_DIR:integration-test-2>")
+        "$<TARGET_FILE:${_target}>"
+        "$<$<CONFIG:Debug>:$<TARGET_PDB_FILE:${_target}>>"
+        "$<TARGET_FILE_DIR:integration-test-2>")
   endforeach()
 endif()
 

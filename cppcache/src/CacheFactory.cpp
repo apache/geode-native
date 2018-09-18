@@ -100,23 +100,25 @@ Cache CacheFactory::create() const {
   const auto& memberListForVersionStamp =
       std::ref(*(cacheImpl->getMemberListForVersionStamp()));
 
-  serializationRegistry->addType2(
+  serializationRegistry->addDataSerializableFixedIdType(
       std::bind(TXCommitMessage::create, memberListForVersionStamp));
 
-  serializationRegistry->addType(
-      //TODO: This looks like the only thing to do here, but I'm not sure
-      static_cast<int64_t>(DSCode::PdxType),
-      std::bind(PdxType::CreateDeserializable, std::ref(*pdxTypeRegistry)));
+  serializationRegistry->setDataSerializablePrimitiveType(
+      // TODO: This looks like the only thing to do here, but I'm not sure
+      std::bind(PdxType::CreateDeserializable, std::ref(*pdxTypeRegistry)),
+      DSCode::PdxType);
 
-  serializationRegistry->addType2(
+  serializationRegistry->addDataSerializableFixedIdType(
       std::bind(VersionTag::createDeserializable, memberListForVersionStamp));
 
-  serializationRegistry->addType2(
+  serializationRegistry->addDataSerializableFixedIdType(
       static_cast<int64_t>(DSFid::DiskVersionTag),
       std::bind(DiskVersionTag::createDeserializable,
                 memberListForVersionStamp));
 
   serializationRegistry->setPdxTypeHandler(new PdxTypeHandler());
+  serializationRegistry->setDataSerializableHandler(
+      new DataSerializableHandler());
 
   pdxTypeRegistry->setPdxIgnoreUnreadFields(cache.getPdxIgnoreUnreadFields());
   pdxTypeRegistry->setPdxReadSerialized(cache.getPdxReadSerialized());
