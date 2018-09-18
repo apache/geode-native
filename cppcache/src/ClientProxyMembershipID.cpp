@@ -127,7 +127,7 @@ void ClientProxyMembershipID::initObjectVars(
   memcpy(&temp, hostAddr, 4);
   m_memID.writeInt(static_cast<int32_t>(temp));
   // m_memID.writeInt((int32_t)hostPort);
-  m_memID.writeInt((int32_t)synch_counter);
+  m_memID.writeInt(static_cast<int32_t>(synch_counter));
   m_memID.writeString(hostname);
   m_memID.write(splitBrainFlag);  // splitbrain flags
 

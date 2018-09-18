@@ -261,19 +261,19 @@ inline void readObject(apache::geode::client::DataInput& input, TObj*& array,
 template <typename TObj,
           typename std::enable_if<!std::is_base_of<Serializable, TObj>::value,
                                   Serializable>::type* = nullptr>
-inline uint32_t objectArraySize(const std::vector<TObj>& array) {
-  return (uint32_t)(sizeof(TObj) * array.size());
+inline size_t objectArraySize(const std::vector<TObj>& array) {
+  return sizeof(TObj) * array.size();
 }
 
 template <typename TObj,
           typename std::enable_if<std::is_base_of<Serializable, TObj>::value,
                                   Serializable>::type* = nullptr>
-inline uint32_t objectArraySize(const std::vector<TObj>& array) {
-  uint32_t size = 0;
+inline size_t objectArraySize(const std::vector<TObj>& array) {
+  size_t size = 0;
   for (auto obj : array) {
     size += obj.objectArraySize();
   }
-  size += (uint32_t)(sizeof(TObj) * array.size());
+  size += sizeof(TObj) * array.size();
   return size;
 }
 

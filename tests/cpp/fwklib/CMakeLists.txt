@@ -81,7 +81,8 @@ target_link_libraries(${PROJECT_NAME}
     xerces-c
   PRIVATE
     ACE
-	_WarningsAsError
+		internal
+	  _WarningsAsError
 )
 
 # For Visual Studio organization

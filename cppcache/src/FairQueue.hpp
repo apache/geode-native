@@ -58,7 +58,7 @@ class FairQueue {
     T* mp = getNoGetLock(isClosed);
 
     if (mp == nullptr && !isClosed) {
-      mp = getUntilWithToken(sec, isClosed, (void*)nullptr);
+      mp = getUntilWithToken(sec, isClosed, static_cast<void*>(nullptr));
     }
     return mp;
   }

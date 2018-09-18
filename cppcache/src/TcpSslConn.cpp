@@ -119,7 +119,7 @@ void TcpSslConn::close() {
     m_ssl->close();
     gf_destroy_SslImpl func = reinterpret_cast<gf_destroy_SslImpl>(
         m_dll.symbol("gf_destroy_SslImpl"));
-    func((void*)m_ssl);
+    func(m_ssl);
     m_ssl = nullptr;
   }
 }
@@ -202,7 +202,7 @@ uint16_t TcpSslConn::getPort() {
   GF_DEV_ASSERT(m_ssl != nullptr);
 
   ACE_INET_Addr localAddr;
-  m_ssl->getLocalAddr(*(ACE_Addr*)&localAddr);
+  m_ssl->getLocalAddr(localAddr);
   return localAddr.get_port_number();
 }
 

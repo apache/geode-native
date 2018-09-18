@@ -37,7 +37,7 @@ namespace testframework {
 
 void TcpIpc::clearNagle(ACE_HANDLE sock) {
   int32_t val = 1;
-  char *param = (char *)&val;
+  char *param = reinterpret_cast<char *>(&val);
   int32_t plen = sizeof(val);
 
   if (0 != ACE_OS::setsockopt(sock, IPPROTO_TCP, 1, param, plen)) {

@@ -79,7 +79,7 @@ int32_t TimeSync::svc() {
 // ----------------------------------------------------------------------------
 
 void TimeSync::sendTimeSync() {
-  int32_t sock = (int32_t)socket(AF_INET, SOCK_DGRAM, 0);
+  int32_t sock = static_cast<int32_t>(socket(AF_INET, SOCK_DGRAM, 0));
   if (sock < 0) {
     FWKSEVERE("Failed to create socket for sending TimeSync messages.  Errno: "
               << errno);
@@ -96,8 +96,8 @@ void TimeSync::sendTimeSync() {
   int32_t retVal = setsockopt(sock, IPPROTO_IP, IP_MULTICAST_TTL,
                               (const char*)&val, sizeof(val));
 #else
-  int32_t retVal = setsockopt(sock, IPPROTO_IP, IP_MULTICAST_TTL,
-                              (const void*)&val, sizeof(val));
+  auto retVal =
+      setsockopt(sock, IPPROTO_IP, IP_MULTICAST_TTL, &val, sizeof(val));
 #endif
   if (retVal != 0) {
     FWKSEVERE("Failed to set ttl on socket.  Errno: " << errno);
@@ -106,7 +106,7 @@ void TimeSync::sendTimeSync() {
 
   struct sockaddr_in addr;
   socklen_t addrLen = sizeof(struct sockaddr_in);
-  memset((void*)&addr, 0, addrLen);
+  memset(&addr, 0, addrLen);
   addr.sin_family = AF_INET;
   addr.sin_addr.s_addr = inet_addr(TIME_SYNC_ADDR);
   addr.sin_port = htons(m_port);
@@ -119,7 +119,7 @@ void TimeSync::sendTimeSync() {
     retVal = sendto(sock, (const char*)&now, tvLen, 0,
                     (const struct sockaddr*)&addr, addrLen);
 #else
-    retVal = sendto(sock, (const void*)&now, tvLen, 0,
+    retVal = sendto(sock, &now, tvLen, 0,
                     reinterpret_cast<const struct sockaddr*>(&addr), addrLen);
 #endif
     if (retVal == -1) {
@@ -139,7 +139,7 @@ void TimeSync::sendTimeSync() {
 // ----------------------------------------------------------------------------
 
 void TimeSync::recvTimeSync() {
-  int32_t sock = (int32_t)socket(AF_INET, SOCK_DGRAM, 0);
+  int32_t sock = static_cast<int32_t>(socket(AF_INET, SOCK_DGRAM, 0));
   if (sock < 0) {
     FWKSEVERE(
         "Failed to create socket for receiving TimeSync messages.  Errno: "
@@ -153,8 +153,8 @@ void TimeSync::recvTimeSync() {
   int32_t retVal = setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (const char*)&val,
                               sizeof(val));
 #else
-  int32_t retVal = setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (const void*)&val,
-                              sizeof(val));
+  int32_t retVal =
+      setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &val, sizeof(val));
 #endif
   if (retVal != 0) {
     FWKSEVERE("Failed to set socket option SO_REUSEADDR.  Errno: " << errno);
@@ -163,7 +163,7 @@ void TimeSync::recvTimeSync() {
 
   struct sockaddr_in addr;
   socklen_t addrLen = sizeof(struct sockaddr_in);
-  memset((void*)&addr, 0, addrLen);
+  memset(&addr, 0, addrLen);
   addr.sin_family = AF_INET;
   addr.sin_addr.s_addr = htonl(INADDR_ANY);
   addr.sin_port = htons(m_port);
@@ -184,8 +184,7 @@ void TimeSync::recvTimeSync() {
   retVal = setsockopt(sock, IPPROTO_IP, IP_ADD_MEMBERSHIP, (const char*)&mreq,
                       sizeof(mreq));
 #else
-  retVal = setsockopt(sock, IPPROTO_IP, IP_ADD_MEMBERSHIP, (const void*)&mreq,
-                      sizeof(mreq));
+  retVal = setsockopt(sock, IPPROTO_IP, IP_ADD_MEMBERSHIP, &mreq, sizeof(mreq));
 #endif
   if (retVal != 0) {
     FWKSEVERE("Failed to join multicast group.  Errno: " << errno);
@@ -196,7 +195,7 @@ void TimeSync::recvTimeSync() {
   int32_t tvLen = sizeof(int64_t);
   struct sockaddr_in sender;
   socklen_t senderLen = sizeof(struct sockaddr_in);
-  memset((void*)&sender, 0, senderLen);
+  memset(&sender, 0, senderLen);
 
   int32_t cnt = 0;
   int64_t total = 0;
@@ -206,7 +205,7 @@ void TimeSync::recvTimeSync() {
     retVal = recvfrom(sock, (char*)&tval, tvLen, 0, (struct sockaddr*)&sender,
                       &senderLen);
 #else
-    retVal = recvfrom(sock, (void*)&tval, tvLen, 0,
+    retVal = recvfrom(sock, &tval, tvLen, 0,
                       reinterpret_cast<struct sockaddr*>(&sender), &senderLen);
 #endif
     switch (retVal) {

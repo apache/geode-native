@@ -81,7 +81,7 @@ void TcrMessage::setKeepAlive(bool keepalive) {
 }
 
 void TcrMessage::writeInterestResultPolicyPart(InterestResultPolicy policy) {
-  m_request->writeInt((int32_t)3);           // size
+  m_request->writeInt(static_cast<int32_t>(3));  // size
   m_request->write(static_cast<int8_t>(1));  // isObject
   m_request->write(static_cast<int8_t>(DSCode::FixedIDByte));
   m_request->write(static_cast<int8_t>(DSCode::InterestResultPolicy));
@@ -89,20 +89,20 @@ void TcrMessage::writeInterestResultPolicyPart(InterestResultPolicy policy) {
 }
 
 void TcrMessage::writeIntPart(int32_t intValue) {
-  m_request->writeInt((int32_t)4);
+  m_request->writeInt(static_cast<int32_t>(4));
   m_request->write(static_cast<int8_t>(0));
   m_request->writeInt(intValue);
 }
 
 void TcrMessage::writeBytePart(uint8_t byteValue) {
-  m_request->writeInt((int32_t)1);
+  m_request->writeInt(static_cast<int32_t>(1));
   m_request->write(static_cast<int8_t>(0));
   m_request->write(byteValue);
 }
 
 void TcrMessage::writeByteAndTimeOutPart(uint8_t byteValue,
                                          std::chrono::milliseconds timeout) {
-  m_request->writeInt((int32_t)5);  // 1 (byte) + 4 (timeout)
+  m_request->writeInt(static_cast<int32_t>(5));  // 1 (byte) + 4 (timeout)
   m_request->write(static_cast<int8_t>(0));
   m_request->write(byteValue);
   m_request->writeInt(static_cast<int32_t>(timeout.count()));
@@ -589,9 +589,10 @@ void TcrMessage::writeHeader(uint32_t msgType, uint32_t numOfParts) {
   LOGDEBUG("TcrMessage::writeHeader earlyAck = %d", earlyAck);
 
   m_request->writeInt(static_cast<int32_t>(msgType));
-  m_request->writeInt((int32_t)0);  // write a dummy message len('0' here). At
-                                    // the end write the length at the (buffer +
-                                    // 4) offset.
+  m_request->writeInt(
+      static_cast<int32_t>(0));  // write a dummy message len('0' here). At
+                                 // the end write the length at the (buffer +
+                                 // 4) offset.
   m_request->writeInt(static_cast<int32_t>(numOfParts));
   TXState* txState = TSSTXStateWrapper::s_geodeTSSTXState->getTXState();
   if (txState == nullptr) {
@@ -1800,14 +1801,14 @@ TcrMessagePing::TcrMessagePing(DataOutput* dataOutput, bool decodeAll) {
   m_decodeAll = decodeAll;
   m_request.reset(dataOutput);
   m_request->writeInt(m_msgType);
-  m_request->writeInt(
-      (int32_t)0);  // 17 is fixed message len ...  PING only has a header.
-  m_request->writeInt((int32_t)0);  // Number of parts.
+  m_request->writeInt(static_cast<int32_t>(
+      0));  // 17 is fixed message len ...  PING only has a header.
+  m_request->writeInt(static_cast<int32_t>(0));  // Number of parts.
   // int32_t txId = TcrMessage::m_transactionId++;
   // Setting the txId to 0 for all ping message as it is not being used on the
   // SERVER side or the
   // client side.
-  m_request->writeInt((int32_t)0);
+  m_request->writeInt(static_cast<int32_t>(0));
   m_request->write(static_cast<int8_t>(0));  // Early ack is '0'.
   m_msgLength = g_headerLen;
   m_txId = 0;
@@ -1819,13 +1820,13 @@ TcrMessageCloseConnection::TcrMessageCloseConnection(DataOutput* dataOutput,
   m_decodeAll = decodeAll;
   m_request.reset(dataOutput);
   m_request->writeInt(m_msgType);
-  m_request->writeInt((int32_t)6);
-  m_request->writeInt((int32_t)1);  // Number of parts.
+  m_request->writeInt(static_cast<int32_t>(6));
+  m_request->writeInt(static_cast<int32_t>(1));  // Number of parts.
   // int32_t txId = TcrMessage::m_transactionId++;
-  m_request->writeInt((int32_t)0);
+  m_request->writeInt(static_cast<int32_t>(0));
   m_request->write(static_cast<int8_t>(0));  // Early ack is '0'.
   // last two parts are not used ... setting zero in both the parts.
-  m_request->writeInt((int32_t)1);           // len is 1
+  m_request->writeInt(static_cast<int32_t>(1));  // len is 1
   m_request->write(static_cast<int8_t>(0));  // is obj is '0'.
   // cast away constness here since we want to modify this
   TcrMessage::m_keepalive = const_cast<uint8_t*>(m_request->getCursor());
@@ -2884,7 +2885,7 @@ std::shared_ptr<DSMemberForVersionStamp> TcrMessage::readDSMember(
     auto memId =
         std::shared_ptr<ClientProxyMembershipID>(new ClientProxyMembershipID());
     memId->fromData(input);
-    return (std::shared_ptr<DSMemberForVersionStamp>)memId;
+    return std::shared_ptr<DSMemberForVersionStamp>(memId);
   } else if (typeidLen == 2) {
     auto typeidofMember = input.readInt16();
     if (typeidofMember != static_cast<int16_t>(DSFid::DiskStoreId)) {

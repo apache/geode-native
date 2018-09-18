@@ -108,7 +108,7 @@ GfErrType ThinClientLocatorHelper::getAllServers(
           std::make_shared<GetAllServersRequest>(serverGrp);
       auto data =
           m_poolDM->getConnectionManager().getCacheImpl()->createDataOutput();
-      data.writeInt((int32_t)1001);  // GOSSIPVERSION
+      data.writeInt(static_cast<int32_t>(1001));  // GOSSIPVERSION
       data.writeObject(request);
       auto sentLength = conn->send(
           reinterpret_cast<char*>(const_cast<uint8_t*>(data.getBuffer())), data.getBufferLength(),
@@ -195,7 +195,7 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewCallBackConn(
               memId, exclEndPts, redundancy, false, serverGrp);
       auto data =
           m_poolDM->getConnectionManager().getCacheImpl()->createDataOutput();
-      data.writeInt((int32_t)1001);  // GOSSIPVERSION
+      data.writeInt(static_cast<int32_t>(1001));  // GOSSIPVERSION
       data.writeObject(request);
       auto sentLength = conn->send(
           reinterpret_cast<char*>(const_cast<uint8_t*>(data.getBuffer())), data.getBufferLength(),
@@ -373,7 +373,7 @@ GfErrType ThinClientLocatorHelper::updateLocators(
           std::make_shared<LocatorListRequest>(serverGrp);
       auto data =
           m_poolDM->getConnectionManager().getCacheImpl()->createDataOutput();
-      data.writeInt((int32_t)1001);  // GOSSIPVERSION
+      data.writeInt(static_cast<int32_t>(1001));  // GOSSIPVERSION
       data.writeObject(request);
       auto sentLength = conn->send(
           reinterpret_cast<char*>(const_cast<uint8_t*>(data.getBuffer())), data.getBufferLength(),

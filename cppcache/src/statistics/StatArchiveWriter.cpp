@@ -105,7 +105,7 @@ void StatDataOutput::resetBuffer() {
 }
 
 void StatDataOutput::writeByte(int8_t v) {
-  dataBuffer->write((int8_t)v);
+  dataBuffer->write(v);
   bytesWritten += 1;
 }
 
@@ -227,7 +227,7 @@ void ResourceInst::writeSample() {
 }
 
 void ResourceInst::writeStatValue(StatisticDescriptor *sd, int64_t v) {
-  StatisticDescriptorImpl *sdImpl = (StatisticDescriptorImpl *)sd;
+  auto sdImpl = static_cast<StatisticDescriptorImpl *>(sd);
   if (sdImpl == nullptr) {
     throw NullPointerException("could not downcast to StatisticDescriptorImpl");
   }
@@ -581,7 +581,7 @@ const ResourceType *StatArchiveWriter::getResourceType(const Statistics *s) {
     for (int32_t i = 0; i < descCnt; i++) {
       std::string statsName = stats[i]->getName();
       this->dataBuffer->writeUTF(statsName);
-      StatisticDescriptorImpl *sdImpl = (StatisticDescriptorImpl *)stats[i];
+      auto sdImpl = static_cast<StatisticDescriptorImpl *>(stats[i]);
       if (sdImpl == nullptr) {
         throw NullPointerException(
             "could not down cast to StatisticDescriptorImpl");

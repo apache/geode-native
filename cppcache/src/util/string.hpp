@@ -35,7 +35,7 @@ namespace client {
  */
 constexpr std::codecvt_mode codecvt_mode_native_endian =
     endian::native == endian::little ? std::little_endian
-                                     : (std::codecvt_mode)0;
+                                     : static_cast<std::codecvt_mode>(0);
 
 inline std::u16string to_utf16(const std::string& utf8) {
 #if defined(_MSC_VER) && _MSC_VER >= 1900

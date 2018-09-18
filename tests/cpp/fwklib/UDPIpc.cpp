@@ -76,7 +76,7 @@ bool UDPMessage::receiveFrom(ACE_SOCK_Dgram& io,
     FWKEXCEPTION("UDPMessage::receiveFrom: Failed, header length: " << len);
   }
   clear();
-  memcpy((void*)&m_hdr, buffs.iov_base, UDP_HEADER_SIZE);
+  memcpy(&m_hdr, buffs.iov_base, UDP_HEADER_SIZE);
   if (m_hdr.tag != UDP_MSG_TAG) {
     FWKEXCEPTION("UDPMessage::receiveFrom: Failed, invalid tag: " << m_hdr.tag);
   }

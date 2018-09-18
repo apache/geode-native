@@ -102,8 +102,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, InitClientCreateRegionAndRunQueries)
     qh.populatePortfolioData(reg, qh.getPortfolioSetSize(),
                              qh.getPortfolioNumSets());
 
-    std::string qry1Str = (std::string) "select * from /" + qRegionNames[0];
-    std::string qry2Str = (std::string) "select * from /" + qRegionNames[1];
+    std::string qry1Str = std::string("select * from /") + qRegionNames[0];
+    std::string qry2Str = std::string("select * from /") + qRegionNames[1];
 
     std::shared_ptr<QueryService> qs = nullptr;
     qs = pool1->getQueryService();
@@ -164,8 +164,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateRegionAndRunQueries)
     qh.populatePositionData(reg, qh.getPositionSetSize(),
                             qh.getPositionNumSets());
 
-    std::string qry1Str = (std::string) "select * from /" + qRegionNames[0];
-    std::string qry2Str = (std::string) "select * from /" + qRegionNames[1];
+    std::string qry1Str = std::string("select * from /") + qRegionNames[0];
+    std::string qry2Str = std::string("select * from /") + qRegionNames[1];
 
     std::shared_ptr<QueryService> qs = nullptr;
     qs = pool2->getQueryService();
