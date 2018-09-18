@@ -80,7 +80,7 @@ class TSSDataOutput {
     } else {
       uint8_t* buf;
       *size = 8192;
-      buf = (uint8_t*)std::malloc(8192 * sizeof(uint8_t));
+      buf = static_cast<uint8_t*>(std::malloc(8192 * sizeof(uint8_t)));
       if (buf == nullptr) {
         throw OutOfMemoryException("Out of Memory while resizing buffer");
       }

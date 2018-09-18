@@ -139,7 +139,7 @@ bool TcrConnection::InitTcrConnection(
     // permissible value for bug #232 for now.
     //  minus 10 sec because the GFE 5.7 gridDev branch adds a
     // 5 sec buffer which was causing an int overflow.
-    handShakeMsg.writeInt((int32_t)0x7fffffff - 10000);
+    handShakeMsg.writeInt(static_cast<int32_t>(0x7fffffff) - 10000);
   }
 
   // Write header for byte FixedID since GFE 5.7
@@ -174,7 +174,7 @@ bool TcrConnection::InitTcrConnection(
     auto memIdBuffer = memId->getDSMemberId(memIdBufferLength);
     handShakeMsg.writeBytes(reinterpret_cast<int8_t*>(const_cast<char*>(memIdBuffer)), memIdBufferLength);
   }
-  handShakeMsg.writeInt((int32_t)1);
+  handShakeMsg.writeInt(static_cast<int32_t>(1));
 
   bool isDhOn = false;
   bool requireServerAuth = false;
@@ -475,17 +475,20 @@ bool TcrConnection::InitTcrConnection(
         if (isClientNotification) readHandshakeInstantiatorMsg(connectTimeout);
         break;
       case REPLY_AUTHENTICATION_FAILED: {
-        AuthenticationFailedException ex((char*)recvMessage.data());
+        AuthenticationFailedException ex(
+            reinterpret_cast<char*>(recvMessage.data()));
         GF_SAFE_DELETE_CON(m_conn);
         throwException(ex);
       }
       case REPLY_AUTHENTICATION_REQUIRED: {
-        AuthenticationRequiredException ex((char*)recvMessage.data());
+        AuthenticationRequiredException ex(
+            reinterpret_cast<char*>(recvMessage.data()));
         GF_SAFE_DELETE_CON(m_conn);
         throwException(ex);
       }
       case REPLY_DUPLICATE_DURABLE_CLIENT: {
-        DuplicateDurableClientException ex((char*)recvMessage.data());
+        DuplicateDurableClientException ex(
+            reinterpret_cast<char*>(recvMessage.data()));
         GF_SAFE_DELETE_CON(m_conn);
         throwException(ex);
       }
@@ -493,10 +496,11 @@ bool TcrConnection::InitTcrConnection(
       case REPLY_INVALID:
       case UNSUCCESSFUL_SERVER_TO_CLIENT: {
         LOGERROR("Handshake rejected by server[%s]: %s",
-                 m_endpointObj->name().c_str(), (char*)recvMessage.data());
-        auto message =
-            std::string("TcrConnection::TcrConnection: ") +
-            "Handshake rejected by server: " + (char*)recvMessage.data();
+                 m_endpointObj->name().c_str(),
+                 reinterpret_cast<char*>(recvMessage.data()));
+        auto message = std::string("TcrConnection::TcrConnection: ") +
+                       "Handshake rejected by server: " +
+                       reinterpret_cast<char*>(recvMessage.data());
         CacheServerException ex(message);
         GF_SAFE_DELETE_CON(m_conn);
         throw ex;
@@ -509,7 +513,8 @@ bool TcrConnection::InitTcrConnection(
             recvMessage.data());
         auto message =
             std::string("TcrConnection::TcrConnection: Unknown error") +
-            " received from server in handshake: " + (char*)recvMessage.data();
+            " received from server in handshake: " +
+            reinterpret_cast<char*>(recvMessage.data());
         MessageException ex(message);
         GF_SAFE_DELETE_CON(m_conn);
         throw ex;

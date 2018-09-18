@@ -15,27 +15,30 @@
  * limitations under the License.
  */
 
-#include <geode/PdxSerializable.hpp>
-#include <geode/CacheableString.hpp>
-#include <geode/internal/CacheableKeys.hpp>
+#pragma once
 
-#include "PdxHelper.hpp"
+#ifndef INTERNAL_HACKS_ACETHREADID_H_
+#define INTERNAL_HACKS_ACETHREADID_H_
 
-namespace apache {
-namespace geode {
-namespace client {
+#include <cstdint>
+#include <type_traits>
 
-std::string PdxSerializable::toString() const { return getClassName(); }
+namespace hacks {
 
-bool PdxSerializable::operator==(const CacheableKey& other) const {
-  return (this == &other);
+template <class _T>
+uint64_t aceThreadId(
+    _T&& thread,
+    typename std::enable_if<std::is_pointer<_T>::value>::type* = nullptr) {
+  return reinterpret_cast<uintptr_t>(thread);
 }
 
-int32_t PdxSerializable::hashcode() const {
-  return internal::hashcode(
-      static_cast<int64_t>(reinterpret_cast<uintptr_t>(this)));
+template <class _T>
+uint64_t aceThreadId(
+    _T&& thread,
+    typename std::enable_if<std::is_integral<_T>::value>::type* = nullptr) {
+  return thread;
 }
 
-}  // namespace client
-}  // namespace geode
-}  // namespace apache
+}  // namespace hacks
+
+#endif  // INTERNAL_HACKS_ACETHREADID_H_

@@ -101,7 +101,7 @@ class OtherType : public DataSerializable {
 
   static std::shared_ptr<Cacheable> uniqueCT(int32_t i) {
     auto ot = std::make_shared<OtherType>();
-    ot->m_struct.a = (int)i;
+    ot->m_struct.a = static_cast<int>(i);
     ot->m_struct.b = (i % 2 == 0) ? true : false;
     ot->m_struct.c = static_cast<char>(65) + i;
     ot->m_struct.d = ((2.0) * static_cast<double>(i));

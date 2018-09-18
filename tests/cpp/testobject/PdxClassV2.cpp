@@ -548,8 +548,8 @@ bool PdxTypesIgnoreUnreadFieldsV2::equals(
 }
 
 void PdxTypesIgnoreUnreadFieldsV2::updateMembers() {
-  m_i5 = (int32_t)m_diffInExtraFields;
-  m_i6 = (int32_t)m_diffInExtraFields;
+  m_i5 = static_cast<int32_t>(m_diffInExtraFields);
+  m_i6 = static_cast<int32_t>(m_diffInExtraFields);
 }
 
 void PdxTypesIgnoreUnreadFieldsV2::toData(PdxWriter& pw) const {
@@ -563,8 +563,8 @@ void PdxTypesIgnoreUnreadFieldsV2::toData(PdxWriter& pw) const {
   pw.writeInt("i5", m_diffInExtraFields);
   pw.writeInt("i6", m_diffInExtraFields);
 
-  m_i5 = (int32_t)m_diffInExtraFields;
-  m_i6 = (int32_t)m_diffInExtraFields;
+  m_i5 = static_cast<int32_t>(m_diffInExtraFields);
+  m_i6 = static_cast<int32_t>(m_diffInExtraFields);
 
   m_diffInSameFields++;
   m_diffInExtraFields++;

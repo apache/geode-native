@@ -173,7 +173,7 @@ std::string Utils::convertBytesToString(const uint8_t* bytes, size_t length,
     std::stringstream ss;
     ss << std::setfill('0') << std::hex;
     for (size_t i = 0; i < length; ++i) {
-      ss << std::setw(2) << (int)bytes[i];
+      ss << std::setw(2) << static_cast<int>(bytes[i]);
     }
     return ss.str();
   }

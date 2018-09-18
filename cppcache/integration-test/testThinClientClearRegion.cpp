@@ -91,7 +91,7 @@ DUNIT_TASK(CLIENT2, SetupClient2)
                                     "__TEST_POOL1__", true, true);
     auto regPtr = getHelper()->getRegion(regionNames[0]);
     regPtr->registerAllKeys();
-    auto keyPtr = CacheableKey::create((const char*)"key01");
+    auto keyPtr = CacheableKey::create("key01");
     auto valPtr =
       CacheableBytes::create(std::vector<int8_t>{'v','a','l','u','e','0','1'});
     regPtr->put(keyPtr, valPtr);

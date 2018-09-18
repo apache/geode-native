@@ -176,10 +176,7 @@ class NamingContextImpl : virtual public NamingContext {
    * otherwise returns 0.
    */
   virtual int rebind(const char* key, int value) {
-    char buf[VALUE_MAX] = {0};
-    ACE_OS::sprintf(buf, "%d", value);
-    int res = rebind(key, (const char*)buf);
-    return res;
+    return rebind(key, std::to_string(value).c_str());
   }
 
   /**

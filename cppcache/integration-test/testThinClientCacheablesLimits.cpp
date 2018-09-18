@@ -79,7 +79,7 @@ uint8_t* createRandByteArray(int size) {
 }
 char* createRandCharArray(int size) {
   char* ch;
-  ch = (char *) std::malloc((size + 1) * sizeof(char));
+  ch = static_cast<char*>(std::malloc((size + 1) * sizeof(char)));
   if (ch == nullptr) {
     throw OutOfMemoryException(
         "Out of Memory while resizing buffer");
