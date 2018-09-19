@@ -15,7 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
-book_repo: apache/geode-native/docs/geode-native-book
+book_repo: apache/geode-native/geode-native-book
 public_host: localhost
 
 sections:
