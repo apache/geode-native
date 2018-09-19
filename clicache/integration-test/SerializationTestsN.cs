@@ -90,33 +90,33 @@ namespace Apache.Geode.Client.UnitTests
 
     public void CreateRegionForOT(string locators)
     {
+      Util.LogFile = "mikesLog.log";
+      CacheHelper.SetLogging();
+
       CacheHelper.CreateTCRegion2<object, object>(RegionNames[0], true, false,
         null, locators, false);
-      CacheHelper.DCache.TypeRegistry.RegisterType(OtherType.CreateDeserializable);
-      CacheHelper.DCache.TypeRegistry.RegisterType(OtherType22.CreateDeserializable);
-      CacheHelper.DCache.TypeRegistry.RegisterType(OtherType4.CreateDeserializable);
-      CacheHelper.DCache.TypeRegistry.RegisterType(OtherType2.CreateDeserializable);
-      CacheHelper.DCache.TypeRegistry.RegisterType(OtherType42.CreateDeserializable);
-      CacheHelper.DCache.TypeRegistry.RegisterType(OtherType43.CreateDeserializable);
+      CacheHelper.DCache.TypeRegistry.RegisterType(OtherType.CreateDeserializable, 0);
+      CacheHelper.DCache.TypeRegistry.RegisterType(OtherType22.CreateDeserializable, 0x8C0);
+      CacheHelper.DCache.TypeRegistry.RegisterType(OtherType4.CreateDeserializable, 0x8FC0);
+      CacheHelper.DCache.TypeRegistry.RegisterType(OtherType2.CreateDeserializable, 0x8C);
+      CacheHelper.DCache.TypeRegistry.RegisterType(OtherType42.CreateDeserializable, 0x6F3F97);
+      CacheHelper.DCache.TypeRegistry.RegisterType(OtherType43.CreateDeserializable, 0x7FFFFFFF);
     }
 
     public void DoNPuts(int n)
     {
       try
       {
-        CacheHelper.DCache.TypeRegistry.RegisterType(OtherType.CreateDeserializable);
+        CacheHelper.DCache.TypeRegistry.RegisterType(OtherType.CreateDeserializable, 0);
         Assert.Fail("Expected exception in registering the type again.");
       }
-      catch (IllegalStateException ex)
+      catch (IllegalArgumentException ex)
       {
         Util.Log("Got expected exception in RegisterType: {0}", ex);
       }
       IRegion<object, object> region = CacheHelper.GetVerifyRegion<object, object>(RegionNames[0]);
       for (int i = 0; i < n; i++)
       {
-        //CacheableInt32 key = new CacheableInt32(i);
-        //region.Put(key, key);
-
         int key = i;
         region[key] = key;
       }
@@ -126,10 +126,10 @@ namespace Apache.Geode.Client.UnitTests
     {
       try
       {
-        CacheHelper.DCache.TypeRegistry.RegisterType(OtherType.CreateDeserializable);
+        CacheHelper.DCache.TypeRegistry.RegisterType(OtherType.CreateDeserializable, 0);
         Assert.Fail("Expected exception in registering the type again.");
       }
-      catch (IllegalStateException ex)
+      catch (IllegalArgumentException ex)
       {
         Util.Log("Got expected exception in RegisterType: {0}", ex);
       }
@@ -491,14 +491,6 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public Int32 ClassId
-    {
-      get
-      {
-        return 0x0;
-      }
-    }
-
     #endregion
 
     public static ISerializable CreateDeserializable()
@@ -624,14 +616,6 @@ namespace Apache.Geode.Client.UnitTests
       get
       {
         return (UInt32)(sizeof(Int32) + sizeof(Int64));
-      }
-    }
-
-    public Int32 ClassId
-    {
-      get
-      {
-        return 0x8C;
       }
     }
 
@@ -765,14 +749,6 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public Int32 ClassId
-    {
-      get
-      {
-        return 0x8C0;
-      }
-    }
-
     #endregion
 
     public static ISerializable CreateDeserializable()
@@ -899,14 +875,6 @@ namespace Apache.Geode.Client.UnitTests
       get
       {
         return (UInt32)(sizeof(Int32) + sizeof(Int64));
-      }
-    }
-
-    public Int32 ClassId
-    {
-      get
-      {
-        return 0x8FC0;
       }
     }
 
@@ -1040,14 +1008,6 @@ namespace Apache.Geode.Client.UnitTests
       }
     }
 
-    public Int32 ClassId
-    {
-      get
-      {
-        return 0x6F3F97;
-      }
-    }
-
     #endregion
 
     public static ISerializable CreateDeserializable()
@@ -1175,14 +1135,6 @@ namespace Apache.Geode.Client.UnitTests
       get
       {
         return (UInt32)(sizeof(Int32) + sizeof(Int64));
-      }
-    }
-
-    public Int32 ClassId
-    {
-      get
-      {
-        return 0x7FFFFFFF;
       }
     }
 

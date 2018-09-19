@@ -30,6 +30,7 @@
 #include "impl/CacheResolver.hpp"
 #include "impl/ManagedAuthInitialize.hpp"
 #include "ManagedPdxTypeHandler.hpp"
+#include "ManagedDataSerializableHandler.hpp"
 
 using namespace System;
 
@@ -76,6 +77,7 @@ namespace Apache
           DistributedSystem::registerCliCallback();
           auto&& cacheImpl = CacheRegionHelper::getCacheImpl(nativeCache.get());
           cacheImpl->getSerializationRegistry()->setPdxTypeHandler(new ManagedPdxTypeHandler());
+		  cacheImpl->getSerializationRegistry()->setDataSerializableHandler(new ManagedDataSerializableHandler());
 
           return cache;
         _GF_MG_EXCEPTION_CATCH_ALL2

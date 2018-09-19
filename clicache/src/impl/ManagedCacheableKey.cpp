@@ -97,11 +97,6 @@ namespace apache
         return 0;
       }
 
-      int32_t ManagedCacheableKeyGeneric::getClassId() const
-      {
-        return m_classId;
-      }
-
       std::string ManagedCacheableKeyGeneric::toString() const
       {
         try {

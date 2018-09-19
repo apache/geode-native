@@ -391,15 +391,15 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
       auto serializationRegistry =
           CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
               ->getSerializationRegistry();
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::PdxType::createDeserializable);
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::PdxTypes1::createDeserializable);
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::PdxTypes2::createDeserializable);
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::Address::createDeserializable);
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::PdxTypes3::createDeserializable);
     } catch (Exception e) {
       LOG("Got expected Exception for Serialization, already registered");
@@ -436,15 +436,15 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepFour)
       auto serializationRegistry =
           CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
               ->getSerializationRegistry();
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::PdxType::createDeserializable);
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::PdxTypes1::createDeserializable);
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::PdxTypes2::createDeserializable);
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::Address::createDeserializable);
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::PdxTypes3::createDeserializable);
     } catch (Exception e) {
       LOG("Got expected Exception for Serialization, already registered");

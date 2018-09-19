@@ -113,8 +113,6 @@ class PdxType : public internal::DataSerializableInternal,
 
   void fromData(DataInput& input) override;
 
-  int8_t getInternalId() const override { return static_cast<int8_t>(DSCode::PdxType); }
-
   static std::shared_ptr<Serializable> CreateDeserializable(
       PdxTypeRegistry& pdxTypeRegistry) {
     return std::make_shared<PdxType>(pdxTypeRegistry, "", false);

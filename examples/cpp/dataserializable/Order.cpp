@@ -52,9 +52,4 @@ std::shared_ptr<DataSerializable> Order::create() {
   return std::make_shared<Order>();
 }
 
-int32_t Order::getClassId() const {
-  // No longer used by the interface
-  return 7;
-}
-
 }  // namespace customserializable

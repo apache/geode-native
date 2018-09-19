@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+#pragma once
+
 //#include "../../../ICqListener.hpp"
 //#include "../../../CqListener.hpp"
 #include "../ICqListener.hpp"

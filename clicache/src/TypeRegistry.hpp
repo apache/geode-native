@@ -121,7 +121,7 @@ namespace Apache
         /// in registering the type; check <c>Utils::LastError</c> for more
         /// information in the latter case.
         /// </exception>
-        void RegisterType(TypeFactoryMethod^ creationMethod);
+        void RegisterType(TypeFactoryMethod^ creationMethod, int32_t id);
 
       internal:
         void RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
@@ -140,10 +140,16 @@ namespace Apache
         /// <summary>
         /// This is to get manged delegates.
         /// </summary>
-        TypeFactoryMethod^ GetManagedDelegateGeneric(System::Int64 typeId)
+        TypeFactoryMethod^ GetManagedObjectFactory(System::Int64 typeId)
         {
           TypeFactoryMethod^ ret = nullptr;
-          ManagedDelegatesGeneric->TryGetValue(typeId, ret);
+          ObjectIDDelegatesMap->TryGetValue(typeId, ret);
+          return ret;
+        }
+        System::Int32  GetIdForManagedType(System::Type^ type)
+        {
+          System::Int32 ret;
+          ObjectTypeIDMap->TryGetValue(type, ret);
           return ret;
         }
 
@@ -223,12 +229,15 @@ namespace Apache
         Dictionary<String^, PdxTypeFactoryMethod^>^ PdxDelegateMap =
           gcnew Dictionary<String^, PdxTypeFactoryMethod^>();
 
-        Dictionary<System::Int64, TypeFactoryMethod^>^ ManagedDelegatesGeneric =
+        Dictionary<System::Int64, TypeFactoryMethod^>^ ObjectIDDelegatesMap =
           gcnew Dictionary<System::Int64, TypeFactoryMethod^>();
         List<TypeFactoryNativeMethodGeneric^>^ NativeDelegatesGeneric =
           gcnew List<TypeFactoryNativeMethodGeneric^>();
         Dictionary<UInt32, TypeFactoryMethod^>^ DelegateMapGeneric =
           gcnew Dictionary<UInt32, TypeFactoryMethod^>();
+
+        Dictionary<System::Type^, System::Int32>^ ObjectTypeIDMap =
+          gcnew Dictionary<System::Type^, System::Int32>();
 
         Dictionary<Byte, TypeFactoryMethod^>^ DsCodeToDataSerializablePrimitiveTypeFactoryMethod =
           gcnew Dictionary<Byte, TypeFactoryMethod^>();

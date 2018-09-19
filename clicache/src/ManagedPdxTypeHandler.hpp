@@ -45,10 +45,10 @@ namespace apache {
           {
             try
             {
-              auto&& cache = CacheResolver::Lookup(dataOutput.getCache());
+              auto cache = CacheResolver::Lookup(dataOutput.getCache());
               Managed::DataOutput managedDataOutput(&dataOutput, true, cache);
               
-              auto&& managedPdx = wrappedPdxSerializable->ptr();
+              auto managedPdx = wrappedPdxSerializable->ptr();
               Managed::Internal::PdxHelper::SerializePdx(%managedDataOutput, managedPdx);
               
               managedDataOutput.WriteBytesToUMDataOutput();
@@ -72,11 +72,11 @@ namespace apache {
         {
           try
           {
-            auto&& cache = CacheResolver::Lookup(dataInput.getCache());
+            auto cache = CacheResolver::Lookup(dataInput.getCache());
 
             Managed::DataInput managedDataInput(&dataInput, true, cache);
 
-            auto&& serializationRegistry = CacheRegionHelper::getCacheImpl(dataInput.getCache())->getSerializationRegistry().get();
+            auto serializationRegistry = CacheRegionHelper::getCacheImpl(dataInput.getCache())->getSerializationRegistry().get();
             auto managedPdx = Apache::Geode::Client::Internal::PdxHelper::DeserializePdx(%managedDataInput, false, serializationRegistry);
             
             dataInput.advanceCursor(managedDataInput.BytesReadInternally);

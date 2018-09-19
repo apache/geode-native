@@ -124,8 +124,10 @@ void initClientCq(const bool isthinClient) {
     auto serializationRegistry =
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
             ->getSerializationRegistry();
-    serializationRegistry->addType(Position::createDeserializable);
-    serializationRegistry->addType(Portfolio::createDeserializable);
+    serializationRegistry->addDataSerializableType(
+        Position::createDeserializable, 2);
+    serializationRegistry->addDataSerializableType(
+        Portfolio::createDeserializable, 3);
   } catch (const IllegalStateException&) {
     // ignore exception
   }
@@ -160,7 +162,8 @@ void stepOne() {
   createRegionForCQ(regionNamesCq[0], USE_ACK, true);
 
   auto regptr = getHelper()->getRegion(regionNamesCq[0]);
-  auto subregPtr = regptr->createSubregion(regionNamesCq[1], regptr->getAttributes());
+  auto subregPtr =
+      regptr->createSubregion(regionNamesCq[1], regptr->getAttributes());
 
   QueryHelper* qh = &QueryHelper::getHelper();
 
@@ -178,7 +181,8 @@ void stepOne2() {
   initClientCq(true);
   createRegionForCQ(regionNamesCq[0], USE_ACK, true);
   auto regptr = getHelper()->getRegion(regionNamesCq[0]);
-  auto subregPtr = regptr->createSubregion(regionNamesCq[1], regptr->getAttributes());
+  auto subregPtr =
+      regptr->createSubregion(regionNamesCq[1], regptr->getAttributes());
 
   LOG("StepOne2 complete.");
 }
@@ -224,8 +228,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
       SLEEP(15000);
     } catch (IllegalStateException& ise) {
       char isemsg[500] = {0};
-      ACE_OS::snprintf(isemsg, 499, "IllegalStateException: %s",
-                       ise.what());
+      ACE_OS::snprintf(isemsg, 499, "IllegalStateException: %s", ise.what());
       LOG(isemsg);
       FAIL(isemsg);
     } catch (Exception& excp) {

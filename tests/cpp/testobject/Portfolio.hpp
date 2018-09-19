@@ -114,8 +114,6 @@ class TESTOBJECT_EXPORT Portfolio : public DataSerializable {
 
   int32_t getNewValSize() const { return newValSize; }
 
-  std::shared_ptr<CacheableString> getType() const { return this->type; }
-
   std::shared_ptr<CacheableDate> getCreationDate() const {
     return creationDate;
   }
@@ -130,7 +128,6 @@ class TESTOBJECT_EXPORT Portfolio : public DataSerializable {
 
   void toData(DataOutput& output) const override;
   void fromData(DataInput& input) override;
-  int32_t getClassId() const override { return 0x03; }
   std::string toString() const override;
 };
 

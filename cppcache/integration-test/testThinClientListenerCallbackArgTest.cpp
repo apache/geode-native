@@ -228,8 +228,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, SetupClient1_Pool_Locator)
     auto serializationRegistry =
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
             ->getSerializationRegistry();
-    serializationRegistry->addType(Portfolio::createDeserializable);
-    serializationRegistry->addType(Position::createDeserializable);
+    serializationRegistry->addDataSerializableType(
+        Portfolio::createDeserializable, 3);
+    serializationRegistry->addDataSerializableType(
+        Position::createDeserializable, 2);
     reg1Listener1 = std::make_shared<CallbackListener>();
     callBackPortFolioPtr = std::make_shared<Portfolio>(1, 0, nullptr);
 
@@ -245,6 +247,14 @@ DUNIT_TASK_DEFINITION(CLIENT2, SetupClient2_Pool_Locator)
     initClient(true);
 
     callBackStrPtr = CacheableString::create("Gemstone's Callback");
+
+    auto serializationRegistry =
+        CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
+            ->getSerializationRegistry();
+    serializationRegistry->addDataSerializableType(
+        Portfolio::createDeserializable, 3);
+    serializationRegistry->addDataSerializableType(
+        Position::createDeserializable, 2);
 
     createPooledRegion(regionNames[0], false /*ack mode*/, locatorsG,
                        "__TEST_POOL1__", true /*client notification*/);

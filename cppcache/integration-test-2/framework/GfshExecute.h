@@ -20,10 +20,12 @@
 #ifndef INTEGRATION_TEST_FRAMEWORK_GFSHEXECUTE_H
 #define INTEGRATION_TEST_FRAMEWORK_GFSHEXECUTE_H
 
-#include <string>
-#include <iostream>
 #include <algorithm>
+#include <iostream>
 #include <regex>
+#include <string>
+
+#include <geode/Exception.hpp>
 
 #pragma error_messages(off, oklambdaretmulti, wvarhidemem, \
                        w_constexprnonlitret, explctspectypename)
@@ -39,6 +41,23 @@ bool starts_with(const _T &input, const _T &match) {
   return input.size() >= match.size() &&
          std::equal(std::begin(match), std::end(match), std::begin(input));
 }
+
+
+ class GfshExecuteException : public apache::geode::client::Exception {
+public:
+  GfshExecuteException(std::string message, int returnCode) :
+      apache::geode::client::Exception(message),
+      returnCode_(returnCode) {}
+  ~GfshExecuteException() noexcept override {}
+  std::string getName() const override {
+    return "GfshExecuteException";
+  }
+  int getGfshReturnCode() {
+    return returnCode_;
+  }
+private:
+  int returnCode_;
+};
 
 class GfshExecute : public Gfsh {
  public:

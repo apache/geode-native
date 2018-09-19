@@ -298,7 +298,11 @@ namespace Apache
         {
           return m_pdxTypeRegistry;
         }
-
+		        
+		Apache::Geode::Client::TypeRegistry^ GetTypeRegistry()
+        {
+          return m_typeRegistry;
+        }
       private:
 
         /// <summary>

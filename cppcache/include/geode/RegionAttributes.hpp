@@ -206,8 +206,6 @@ class APACHE_GEODE_EXPORT RegionAttributes
 
   void fromData(DataInput& in) override;
 
-  int8_t getInternalId() const override;
-
   /**
    * This method returns the path of the library from which
    * the factory function will be invoked on a cache server.

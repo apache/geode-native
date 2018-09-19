@@ -417,9 +417,18 @@ void ThinClientRegion::registerKeys(
         "Durable flag only applicable for "
         "durable clients");
   }
+  if (getInitialValues && !m_regionAttributes.getCachingEnabled()) {
+    LOGERROR(
+          "Register keys getInitialValues flag is only applicable for caching"
+          "clients");
+    throw IllegalStateException(
+        "getInitialValues flag only applicable for caching clients");
+  }
 
   InterestResultPolicy interestPolicy = InterestResultPolicy::NONE;
-  if (getInitialValues) interestPolicy = InterestResultPolicy::KEYS_VALUES;
+  if (getInitialValues) {
+    interestPolicy = InterestResultPolicy::KEYS_VALUES;
+  }
 
   LOGDEBUG("ThinClientRegion::registerKeys : interestpolicy is %d",
            interestPolicy.ordinal);
@@ -487,6 +496,14 @@ void ThinClientRegion::registerAllKeys(bool isDurable, bool getInitialValues,
         "clients");
     throw IllegalStateException(
         "Durable flag only applicable for durable clients");
+  }
+
+  if (getInitialValues && !m_regionAttributes.getCachingEnabled()) {
+    LOGERROR(
+          "Register all keys getInitialValues flag is only applicable for caching"
+          "clients");
+    throw IllegalStateException(
+        "getInitialValues flag only applicable for caching clients");
   }
 
   InterestResultPolicy interestPolicy = InterestResultPolicy::NONE;

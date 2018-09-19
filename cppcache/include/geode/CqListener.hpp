@@ -40,7 +40,10 @@ class CacheListener;
 class APACHE_GEODE_EXPORT CqListener {
  public:
   virtual ~CqListener() noexcept = default;
+
+  CqListener();
   CqListener(const CacheListener& other) = delete;
+
   void operator=(const CqListener& other) = delete;
 
   /**
@@ -78,12 +81,6 @@ class APACHE_GEODE_EXPORT CqListener {
   * @see AttributesMutator
   */
   virtual void close();
-
- protected:
-  /**
-   * @brief constructors
-   */
-  CqListener();
 
 };
 }  // namespace client

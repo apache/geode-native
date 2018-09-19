@@ -146,6 +146,7 @@ add_library(${PROJECT_NAME} SHARED
   LocalRegion.hpp
   Log.cpp
   Log.hpp
+  ManagedDataSerializableHandler.hpp
   ManagedPdxTypeHandler.hpp
   native_conditional_shared_ptr.hpp
   native_conditional_unique_ptr.hpp
@@ -354,6 +355,7 @@ install(TARGETS ${PROJECT_NAME}
 add_dependencies(client-libraries ${PROJECT_NAME})
 
 add_subdirectory(templates)
+
 
 # For Visual Studio organization
 source_group("Configure In Files" FILES ${CONFIGURE_IN_FILES})
