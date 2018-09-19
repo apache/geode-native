@@ -30,6 +30,8 @@
 
 #include "CacheHelper.hpp"
 
+namespace {
+
 using apache::geode::client::CacheableKey;
 using apache::geode::client::CacheableString;
 using apache::geode::client::CacheHelper;
@@ -456,5 +458,7 @@ void runThinClientFailoverInterest2() {
 
   CALL_TASK(CloseLocator1);
 }
+
+}  // namespace
 
 #endif  // GEODE_INTEGRATION_TEST_THINCLIENTFAILOVERINTEREST2_H_

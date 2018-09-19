@@ -39,6 +39,9 @@ using apache::geode::client::testframework::security::OP_REGISTER_INTEREST;
 using apache::geode::client::testframework::security::OP_UNREGISTER_INTEREST;
 using apache::geode::client::testframework::security::opCodeList;
 
+using apache::geode::client::testing::TallyListener;
+using apache::geode::client::testing::TallyWriter;
+
 std::shared_ptr<TallyListener> regListener;
 std::shared_ptr<TallyWriter> regWriter;
 

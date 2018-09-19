@@ -44,6 +44,8 @@ recieved.
 #define SERVER1 s2p1
 #define FEEDER s2p2
 
+namespace {
+
 using apache::geode::client::EntryEvent;
 using apache::geode::client::HashMapOfCacheable;
 using apache::geode::client::RegionEvent;
@@ -368,5 +370,7 @@ DUNIT_TASK_DEFINITION(SERVER1, closeServer)
     LOG("SERVER closed");
   }
 END_TASK_DEFINITION
+
+}  // namespace
 
 #endif  // GEODE_INTEGRATION_TEST_THINCLIENTDURABLEINTEREST_H_

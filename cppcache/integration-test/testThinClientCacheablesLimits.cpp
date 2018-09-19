@@ -33,6 +33,7 @@
 #define CLIENT1 s1p1
 #define SERVER1 s2p1
 
+using apache::geode::client::CacheableBytes;
 using apache::geode::client::CacheHelper;
 using apache::geode::client::OutOfMemoryException;
 

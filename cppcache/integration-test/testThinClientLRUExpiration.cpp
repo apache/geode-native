@@ -35,12 +35,17 @@
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
 
+using apache::geode::client::CacheableKey;
+using apache::geode::client::CacheableString;
 using apache::geode::client::CacheHelper;
 using apache::geode::client::EntryNotFoundException;
 using apache::geode::client::Exception;
 using apache::geode::client::ExpirationAction;
 using apache::geode::client::RegionAttributes;
 using apache::geode::client::RegionDestroyedException;
+
+using apache::geode::client::testing::TallyListener;
+using apache::geode::client::testing::TallyWriter;
 
 CacheHelper* cacheHelper = nullptr;
 bool isLocalServer = false;

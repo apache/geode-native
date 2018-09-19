@@ -28,7 +28,12 @@
 #define CLIENT1 s1p1
 #define SERVER1 s2p1
 
+namespace {
+
+using apache::geode::client::Cacheable;
 using apache::geode::client::CacheFactory;
+
+using apache::geode::client::testing::TallyLoader;
 
 std::shared_ptr<TallyLoader> reg1Loader1;
 int numLoads = 0;
@@ -257,5 +262,7 @@ void runCacheLoaderTest() {
   CALL_TASK(CloseCache1);
   CALL_TASK(StopServer)
 }
+
+}  // namespace
 
 #endif  // GEODE_INTEGRATION_TEST_THINCLIENTLOCALCACHELOADER_H_

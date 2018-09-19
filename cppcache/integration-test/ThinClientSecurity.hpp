@@ -26,6 +26,8 @@
 #include "CacheImplHelper.hpp"
 #include "testUtils.hpp"
 
+namespace {
+
 using apache::geode::client::AuthenticatedView;
 
 static bool isLocalServer = false;
@@ -79,5 +81,7 @@ AuthenticatedView getVirtualCache(std::shared_ptr<Properties> creds,
   auto cachePtr = getHelper()->getCache();
   return cachePtr->createAuthenticatedView(creds, pool->getName());
 }
+
+}  // namespace
 
 #endif  // GEODE_INTEGRATION_TEST_THINCLIENTSECURITY_H_

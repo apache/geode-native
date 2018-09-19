@@ -46,6 +46,10 @@
 using apache::geode::client::CacheServerException;
 using apache::geode::client::CacheWriterException;
 using apache::geode::client::Exception;
+using apache::geode::client::internal::DSCode;
+
+using apache::geode::client::testing::CacheableWrapper;
+using apache::geode::client::testing::CacheableWrapperFactory;
 
 bool isLocalServer = false;
 const char* endPoints = CacheHelper::getTcrEndpoints(isLocalServer, 3);

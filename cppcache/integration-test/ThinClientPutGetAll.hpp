@@ -38,6 +38,8 @@
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
 
+namespace {
+
 using PdxTests::PdxTypes1;
 using PdxTests::PdxTypes10;
 using PdxTests::PdxTypes2;
@@ -647,5 +649,7 @@ void runPutGetAll() {
 
   CALL_TASK(CloseLocator1);
 }
+
+}  // namespace
 
 #endif  // GEODE_INTEGRATION_TEST_THINCLIENTPUTGETALL_H_

@@ -26,14 +26,16 @@
 #include "testUtils.hpp"
 
 #ifndef ROOT_NAME
-ROOT_NAME++ + DEFINE ROOT_NAME before including CacheHelper.hpp
+#define ROOT_NAME "DEFINE ROOT_NAME before including CacheHelper.hpp"
 #endif
 
 #ifndef ROOT_SCOPE
 #define ROOT_SCOPE LOCAL
 #endif
 
-              using apache::geode::client::Properties;
+namespace {
+
+using apache::geode::client::CacheHelper;
 using apache::geode::client::Properties;
 using apache::geode::client::RegionAttributesFactory;
 
@@ -67,5 +69,6 @@ class CacheImplHelper : public CacheHelper {
     ASSERT(regionPtr != nullptr, "failed to create region.");
   }
 };
+}  // namespace
 
 #endif  // GEODE_INTEGRATION_TEST_CACHEIMPLHELPER_H_

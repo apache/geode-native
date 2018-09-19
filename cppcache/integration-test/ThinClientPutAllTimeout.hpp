@@ -29,17 +29,24 @@
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
 
+namespace {
+
 using apache::geode::client::Exception;
 using apache::geode::client::HashMapOfCacheable;
 using apache::geode::client::TimeoutException;
+
+using apache::geode::client::testing::TallyListener;
+using apache::geode::client::testing::TallyWriter;
 
 bool isLocalServer = true;
 static bool isLocator = false;
 const char* locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 #include "LocatorHelper.hpp"
+
 std::shared_ptr<TallyListener> reg1Listener1;
 std::shared_ptr<TallyWriter> reg1Writer1;
+
 int numCreates = 0;
 int numUpdates = 0;
 int numInvalidates = 0;
@@ -253,5 +260,7 @@ DUNIT_TASK_DEFINITION(SERVER1, StopServer)
     LOG("SERVER stopped");
   }
 END_TASK_DEFINITION
+
+}  // namespace
 
 #endif  // GEODE_INTEGRATION_TEST_THINCLIENTPUTALLTIMEOUT_H_

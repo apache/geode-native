@@ -30,6 +30,8 @@
 
 #include "CacheHelper.hpp"
 
+namespace {
+
 using apache::geode::client::CacheableKey;
 using apache::geode::client::CacheableString;
 using apache::geode::client::CacheHelper;
@@ -506,5 +508,7 @@ void doThinClientSSL() {
 
   CALL_TASK(CloseLocator1_With_SSL);
 }
+
+}  // namespace
 
 #endif  // GEODE_INTEGRATION_TEST_THINCLIENTSSL_H_

@@ -42,6 +42,8 @@
 using apache::geode::client::Exception;
 using apache::geode::client::HashMapOfCacheable;
 
+using apache::geode::client::testing::TallyListener;
+
 std::shared_ptr<TallyListener> reg1Listener1;
 bool isLocalServer = false;
 static bool isLocator = false;

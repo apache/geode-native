@@ -20,6 +20,8 @@
 #ifndef GEODE_INTEGRATION_TEST_THINCLIENTPDXSERIALIZERS_H_
 #define GEODE_INTEGRATION_TEST_THINCLIENTPDXSERIALIZERS_H_
 
+namespace {
+
 using apache::geode::client::CacheableArrayList;
 using apache::geode::client::CacheableHashMap;
 using apache::geode::client::CacheableHashSet;
@@ -35,41 +37,41 @@ using PdxTests::TestPdxSerializerForV2;
 using PdxTests::V1CLASSNAME2;
 using PdxTests::V2CLASSNAME4;
 
-static const char *CLASSNAME1 = "PdxTests.PdxType";
-static const char *CLASSNAME2 = "PdxTests.Address";
+static const char* CLASSNAME1 = "PdxTests.PdxType";
+static const char* CLASSNAME2 = "PdxTests.Address";
 
 class TestPdxSerializer : public PdxSerializer {
  public:
-  static void deallocate(void *testObject, const std::string &className) {
+  static void deallocate(void* testObject, const std::string& className) {
     ASSERT(className == CLASSNAME1 || className == CLASSNAME2,
            "Unexpected classname in deallocate()");
     LOG("TestPdxSerializer::deallocate called");
     if (className == CLASSNAME1) {
-      PdxTests::NonPdxType *nonPdxType =
-          reinterpret_cast<PdxTests::NonPdxType *>(testObject);
+      PdxTests::NonPdxType* nonPdxType =
+          reinterpret_cast<PdxTests::NonPdxType*>(testObject);
       delete nonPdxType;
     } else {
-      PdxTests::NonPdxAddress *nonPdxAddress =
-          reinterpret_cast<PdxTests::NonPdxAddress *>(testObject);
+      PdxTests::NonPdxAddress* nonPdxAddress =
+          reinterpret_cast<PdxTests::NonPdxAddress*>(testObject);
       delete nonPdxAddress;
     }
   }
 
-  static size_t objectSize(const std::shared_ptr<const void> &,
-                           const std::string &className) {
+  static size_t objectSize(const std::shared_ptr<const void>&,
+                           const std::string& className) {
     ASSERT(className == CLASSNAME1 || className == CLASSNAME2,
            "Unexpected classname in objectSize()");
     LOG("TestPdxSerializer::objectSize called");
     return 12345;  // dummy value
   }
 
-  UserObjectSizer getObjectSizer(const std::string &className) override {
+  UserObjectSizer getObjectSizer(const std::string& className) override {
     ASSERT(className == CLASSNAME1 || className == CLASSNAME2,
            "Unexpected classname in getObjectSizer");
     return objectSize;
   }
 
-  std::shared_ptr<void> fromDataForAddress(PdxReader &pr) {
+  std::shared_ptr<void> fromDataForAddress(PdxReader& pr) {
     try {
       auto nonPdxAddress = std::make_shared<PdxTests::NonPdxAddress>();
       nonPdxAddress->_aptNumber = pr.readInt("_aptNumber");
@@ -81,8 +83,8 @@ class TestPdxSerializer : public PdxSerializer {
     }
   }
 
-  std::shared_ptr<void> fromData(const std::string &className,
-                                 PdxReader &pdxReader) override {
+  std::shared_ptr<void> fromData(const std::string& className,
+                                 PdxReader& pdxReader) override {
     ASSERT(className == CLASSNAME1 || className == CLASSNAME2,
            "Unexpected classname in fromData");
 
@@ -177,8 +179,8 @@ class TestPdxSerializer : public PdxSerializer {
     return nonPdxType;
   }
 
-  bool toDataForAddress(const std::shared_ptr<const void> &testObject,
-                        PdxWriter &pdxWriter) {
+  bool toDataForAddress(const std::shared_ptr<const void>& testObject,
+                        PdxWriter& pdxWriter) {
     try {
       auto nonPdxAddress =
           std::static_pointer_cast<const PdxTests::NonPdxAddress>(testObject);
@@ -191,8 +193,8 @@ class TestPdxSerializer : public PdxSerializer {
     }
   }
 
-  bool toData(const std::shared_ptr<const void> &testObject,
-              const std::string &className, PdxWriter &pdxWriter) override {
+  bool toData(const std::shared_ptr<const void>& testObject,
+              const std::string& className, PdxWriter& pdxWriter) override {
     ASSERT(className == CLASSNAME1 || className == CLASSNAME2,
            "Unexpected classname in toData");
 
@@ -204,7 +206,7 @@ class TestPdxSerializer : public PdxSerializer {
         std::static_pointer_cast<const PdxTests::NonPdxType>(testObject);
 
     try {
-      int *lengthArr = new int[2];
+      int* lengthArr = new int[2];
 
       lengthArr[0] = 1;
       lengthArr[1] = 2;
@@ -263,7 +265,7 @@ class TestPdxSerializer : public PdxSerializer {
       pdxWriter.writeByteArray("m_sbyteArray", nonPdxType->m_sbyteArray);
       pdxWriter.markIdentityField("m_sbyteArray");
 
-      int *strlengthArr = new int[2];
+      int* strlengthArr = new int[2];
 
       strlengthArr[0] = 5;
       strlengthArr[1] = 5;
@@ -304,5 +306,7 @@ class TestPdxSerializer : public PdxSerializer {
     return true;
   }
 };
+
+}  // namespace
 
 #endif  // GEODE_INTEGRATION_TEST_THINCLIENTPDXSERIALIZERS_H_

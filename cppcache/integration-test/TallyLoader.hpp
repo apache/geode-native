@@ -20,6 +20,11 @@
 #ifndef GEODE_INTEGRATION_TEST_TALLYLOADER_H_
 #define GEODE_INTEGRATION_TEST_TALLYLOADER_H_
 
+namespace apache {
+namespace geode {
+namespace client {
+namespace testing {
+
 using apache::geode::client::Cacheable;
 using apache::geode::client::CacheableInt32;
 using apache::geode::client::CacheableKey;
@@ -32,11 +37,7 @@ class TallyLoader : virtual public CacheLoader {
   int32_t m_loads;
 
  public:
-  TallyLoader()
-      : CacheLoader(),
-        m_loads(0)
-
-  {}
+  TallyLoader() : CacheLoader(), m_loads(0) {}
   virtual ~TallyLoader() = default;
 
   std::shared_ptr<Cacheable> load(Region&, const std::shared_ptr<CacheableKey>&,
@@ -69,5 +70,10 @@ class TallyLoader : virtual public CacheLoader {
     LOG(buf);
   }
 };
+
+}  // namespace testing
+}  // namespace client
+}  // namespace geode
+}  // namespace apache
 
 #endif  // GEODE_INTEGRATION_TEST_TALLYLOADER_H_

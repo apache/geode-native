@@ -46,6 +46,10 @@ void millisleep(uint32_t x) {
 
 extern "C" {
 
+using apache::geode::client::testing::TallyListener;
+using apache::geode::client::testing::TallyLoader;
+using apache::geode::client::testing::TallyWriter;
+
 _T_DLL_EXPORT apache::geode::client::CacheListener* createCacheListener() {
   TallyListener* tl = new TallyListener();
   tl->beQuiet(true);

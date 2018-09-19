@@ -39,6 +39,8 @@
 #define SERVER1 s2p1
 #define SERVER2 s2p2
 
+namespace {
+
 using apache::geode::client::CacheableInt32;
 using apache::geode::client::CacheableInt64;
 using apache::geode::client::CacheableKey;
@@ -814,5 +816,7 @@ DUNIT_TASK_DEFINITION(SERVER2, CloseServer2)
     }
   }
 END_TASK_DEFINITION
+
+}  // namespace
 
 #endif  // GEODE_INTEGRATION_TEST_THINCLIENTPUTALLWITHCALLBACK_H_

@@ -33,6 +33,18 @@
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
 
+using apache::geode::client::Cacheable;
+using apache::geode::client::CacheableInt32;
+using apache::geode::client::CacheableKey;
+using apache::geode::client::CacheHelper;
+using apache::geode::client::EntryNotFoundException;
+using apache::geode::client::Region;
+using apache::geode::client::Utils;
+using apache::geode::client::internal::DSCode;
+
+using apache::geode::client::testing::CacheableWrapper;
+using apache::geode::client::testing::CacheableWrapperFactory;
+
 CacheHelper* cacheHelper = nullptr;
 bool isLocalServer = false;
 
@@ -44,10 +56,6 @@ bool isLocalServer = false;
 #endif
 #define KEYSIZE 256
 #define VALUESIZE 1024
-
-using apache::geode::client::EntryNotFoundException;
-using apache::geode::client::Region;
-using apache::geode::client::Utils;
 
 void initClient(const bool isthinClient) {
   if (cacheHelper == nullptr) {

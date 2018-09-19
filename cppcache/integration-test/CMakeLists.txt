@@ -97,6 +97,16 @@ foreach(FILE ${SOURCES})
     $<TARGET_PROPERTY:apache-geode,SOURCE_DIR>/../src
   )
 
+  if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    target_compile_options(${TEST} PRIVATE
+        -Wno-unused-function
+    )
+  elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    target_compile_options(${TEST} PRIVATE
+        -Wno-unused-member-function
+    )
+  endif()
+
   # Some tests depend on these library
   add_dependencies(${TEST} securityImpl cryptoImpl DHImpl SqLiteImpl)
 

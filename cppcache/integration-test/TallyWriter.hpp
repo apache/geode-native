@@ -23,6 +23,11 @@
 #include <geode/CacheableKey.hpp>
 #include <geode/CacheWriter.hpp>
 
+namespace apache {
+namespace geode {
+namespace client {
+namespace testing {
+
 using apache::geode::client::Cacheable;
 using apache::geode::client::CacheableKey;
 using apache::geode::client::CacheWriter;
@@ -153,5 +158,10 @@ class TallyWriter : virtual public CacheWriter {
     }
   }
 };
+
+}  // namespace testing
+}  // namespace client
+}  // namespace geode
+}  // namespace apache
 
 #endif  // GEODE_INTEGRATION_TEST_TALLYWRITER_H_

@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_INTEGRATION_TEST_THINCLIENTHEAPLRU_H_
-#define GEODE_INTEGRATION_TEST_THINCLIENTHEAPLRU_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_INTEGRATION_TEST_THINCLIENTHEAPLRU_H_
+#define GEODE_INTEGRATION_TEST_THINCLIENTHEAPLRU_H_
 
 #include "fw_dunit.hpp"
 #include <ace/OS.h>

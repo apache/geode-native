@@ -34,7 +34,13 @@
 
 #include "testobject/Portfolio.hpp"
 
+using apache::geode::client::Cacheable;
 using apache::geode::client::ClassCastException;
+using apache::geode::client::EntryEvent;
+using apache::geode::client::RegionEvent;
+
+using apache::geode::client::testing::TallyListener;
+using apache::geode::client::testing::TallyWriter;
 
 bool isLocalServer = true;
 static bool isLocator = false;

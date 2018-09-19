@@ -34,6 +34,8 @@
 
 #include "CacheHelper.hpp"
 
+namespace {
+
 using apache::geode::client::CacheableKey;
 using apache::geode::client::CacheableString;
 using apache::geode::client::CacheHelper;
@@ -666,11 +668,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, SuspendResumeCommit)
     bool threwTransactionException = false;
     try {
       txManager->suspend();
-    }
-    catch (const TransactionException) {
+    } catch (const TransactionException) {
       threwTransactionException = true;
     }
-    ASSERT(threwTransactionException, "SuspendResumeCommit: Transaction shouldnt have been suspended");
+    ASSERT(threwTransactionException,
+           "SuspendResumeCommit: Transaction shouldnt have been suspended");
   }
 END_TASK_DEFINITION
 
@@ -1166,5 +1168,7 @@ void runTransactionOps(bool isSticky = false) {
   CALL_TASK(CloseServer1);
   CALL_TASK(CloseLocator1);
 }
+
+}  // namespace
 
 #endif  // GEODE_INTEGRATION_TEST_THINCLIENTTRANSACTIONSXA_H_

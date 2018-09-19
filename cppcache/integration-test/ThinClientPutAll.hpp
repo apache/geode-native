@@ -33,6 +33,8 @@
 #define ROOT_SCOPE DISTRIBUTED_ACK
 #include "CacheHelper.hpp"
 
+namespace {
+
 using apache::geode::client::Cache;
 using apache::geode::client::CacheableInt32;
 using apache::geode::client::CacheableInt64;
@@ -828,5 +830,7 @@ void runPutAll1(bool concurrencyCheckEnabled = true) {
   CALL_TASK(CloseServer2);
   CALL_TASK(CloseLocator1);
 }
+
+}  // namespace
 
 #endif  // GEODE_INTEGRATION_TEST_THINCLIENTPUTALL_H_

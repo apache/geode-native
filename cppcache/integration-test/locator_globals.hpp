@@ -20,6 +20,8 @@
 #ifndef GEODE_INTEGRATION_TEST_LOCATOR_GLOBALS_H_
 #define GEODE_INTEGRATION_TEST_LOCATOR_GLOBALS_H_
 
+namespace {
+
 using apache::geode::client::CacheHelper;
 
 static int numberOfLocators = 1;
@@ -27,5 +29,7 @@ bool isLocalServer = false;
 bool isLocator = false;
 const char* locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
+
+}  // namespace
 
 #endif  // GEODE_INTEGRATION_TEST_LOCATOR_GLOBALS_H_

@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_INTEGRATION_TEST_THINCLIENTSSLWITHPASSWORD_H_
-#define GEODE_INTEGRATION_TEST_THINCLIENTSSLWITHPASSWORD_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,6 +15,11 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_INTEGRATION_TEST_THINCLIENTSSLWITHPASSWORD_H_
+#define GEODE_INTEGRATION_TEST_THINCLIENTSSLWITHPASSWORD_H_
+
 #include "fw_dunit.hpp"
 #include <ace/OS.h>
 #include <ace/High_Res_Timer.h>
@@ -29,6 +29,8 @@
 #define ROOT_SCOPE DISTRIBUTED_ACK
 
 #include "CacheHelper.hpp"
+
+namespace {
 
 using apache::geode::client::CacheableKey;
 using apache::geode::client::CacheableString;
@@ -520,5 +522,7 @@ void doThinClientSSLWithPassword() {
 
   CALL_TASK(CloseLocator1_With_SSL);
 }
+
+}  // namespace
 
 #endif  // GEODE_INTEGRATION_TEST_THINCLIENTSSLWITHPASSWORD_H_

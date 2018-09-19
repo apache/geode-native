@@ -26,6 +26,11 @@
 
 #include <geode/CacheableBuiltins.hpp>
 
+namespace apache {
+namespace geode {
+namespace client {
+namespace testing {
+
 using apache::geode::client::Cacheable;
 using apache::geode::client::IllegalArgumentException;
 using apache::geode::client::internal::DSCode;
@@ -80,6 +85,9 @@ class CacheableWrapperFactory {
   static std::map<DSCode, std::string> m_typeIdNameMap;
 };
 
-
+}  // namespace testing
+}  // namespace client
+}  // namespace geode
+}  // namespace apache
 
 #endif  // GEODE_INTEGRATION_TEST_CACHEABLEWRAPPER_H_

@@ -42,6 +42,8 @@
 
 #include "CacheHelper.hpp"
 
+namespace {
+
 using apache::geode::client::CacheableInt32;
 using apache::geode::client::CacheHelper;
 using apache::geode::client::CacheListener;
@@ -724,5 +726,7 @@ class RegionOperations {
   }
   std::shared_ptr<Region> m_regionPtr;
 };
+
+}  // namespace
 
 #endif  // GEODE_INTEGRATION_TEST_THINCLIENTHELPER_H_

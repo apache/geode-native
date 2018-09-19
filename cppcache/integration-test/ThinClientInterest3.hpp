@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_INTEGRATION_TEST_THINCLIENTINTEREST3_H_
-#define GEODE_INTEGRATION_TEST_THINCLIENTINTEREST3_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,6 +15,11 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_INTEGRATION_TEST_THINCLIENTINTEREST3_H_
+#define GEODE_INTEGRATION_TEST_THINCLIENTINTEREST3_H_
+
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
 #include "TallyListener.hpp"
@@ -29,11 +29,15 @@
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
 
+namespace {
+
+using apache::geode::client::testing::TallyListener;
+using apache::geode::client::testing::TallyWriter;
 
 bool isLocalServer = true;
-const char *endPoint = CacheHelper::getTcrEndpoints(isLocalServer, 1);
+const char* endPoint = CacheHelper::getTcrEndpoints(isLocalServer, 1);
 static bool isLocator = false;
-const char *locatorsG =
+const char* locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 #include "LocatorHelper.hpp"
 std::shared_ptr<TallyListener> reg1Listener1;
@@ -43,14 +47,14 @@ int numUpdates = 0;
 int numInvalidates = 0;
 int numDestroys = 0;
 
-void setCacheListener(const char *regName,
+void setCacheListener(const char* regName,
                       std::shared_ptr<TallyListener> regListener) {
   auto reg = getHelper()->getRegion(regName);
   auto attrMutator = reg->getAttributesMutator();
   attrMutator->setCacheListener(regListener);
 }
 
-void setCacheWriter(const char *regName,
+void setCacheWriter(const char* regName,
                     std::shared_ptr<TallyWriter> regWriter) {
   auto reg = getHelper()->getRegion(regName);
   auto attrMutator = reg->getAttributesMutator();
@@ -176,5 +180,7 @@ DUNIT_TASK_DEFINITION(SERVER1, StopServer)
     LOG("SERVER stopped");
   }
 END_TASK_DEFINITION
+
+}  // namespace
 
 #endif  // GEODE_INTEGRATION_TEST_THINCLIENTINTEREST3_H_
