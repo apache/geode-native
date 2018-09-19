@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_TCRCHUNKEDCONTEXT_H_
-#define GEODE_TCRCHUNKEDCONTEXT_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,16 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/**
- * @file TcrChunkedContext.hpp
- *
- *
- */
+
+#pragma once
+
+#ifndef GEODE_TCRCHUNKEDCONTEXT_H_
+#define GEODE_TCRCHUNKEDCONTEXT_H_
 
 #include <memory>
+#include <string>
 
 #include <ace/Semaphore.h>
-#include <string>
+
 #include "Utils.hpp"
 #include "AppDomainContext.hpp"
 
