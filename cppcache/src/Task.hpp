@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_Task_H_
-#define GEODE_Task_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,14 +15,18 @@
  * limitations under the License.
  */
 
-/**
-*@file Task.hpp
-*@since   1.0
-*@version 1.0
-*/
+#pragma once
+
+#ifndef GEODE_Task_H_
+#define GEODE_Task_H_
+
+#include <memory>
+
+#include <ace/Task.h>
 
 #include "DistributedSystemImpl.hpp"
-#include <ace/Task.h>
+#include "AppDomainContext.hpp"
+
 namespace apache {
 namespace geode {
 namespace client {
@@ -44,12 +43,17 @@ class APACHE_GEODE_EXPORT Task : public ACE_Task_Base {
       : op_handler_(op_handler),
         m_op(op),
         m_run(false),
-        m_threadName(NC_thread) {}
+        m_threadName(NC_thread),
+        m_appDomainContext(createAppDomainContext()) {}
 
   // op_handler is the receiver of the timeout event. timeout is the method to
   // be executed by op_handler_
   Task(T* op_handler, OPERATION op, const char* tn)
-      : op_handler_(op_handler), m_op(op), m_run(false), m_threadName(tn) {}
+      : op_handler_(op_handler),
+        m_op(op),
+        m_run(false),
+        m_threadName(tn),
+        m_appDomainContext(createAppDomainContext()) {}
 
   ~Task() {}
 
@@ -69,7 +73,16 @@ class APACHE_GEODE_EXPORT Task : public ACE_Task_Base {
 
   int svc(void) {
     DistributedSystemImpl::setThreadName(m_threadName);
-    return ((this->op_handler_->*m_op)(m_run));
+
+    if (m_appDomainContext) {
+      int ret;
+      m_appDomainContext->run([this, &ret]() {
+        ret = (this->op_handler_->*this->m_op)(this->m_run);
+      });
+      return ret;
+    } else {
+      return (this->op_handler_->*m_op)(m_run);
+    }
   }
 
  private:
@@ -78,6 +91,7 @@ class APACHE_GEODE_EXPORT Task : public ACE_Task_Base {
   OPERATION m_op;
   volatile bool m_run;
   const char* m_threadName;
+  std::unique_ptr<AppDomainContext> m_appDomainContext;
 };
 }  // namespace client
 }  // namespace geode
