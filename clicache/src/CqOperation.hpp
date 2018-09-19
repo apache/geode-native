@@ -27,11 +27,14 @@ namespace Apache
     {
       /// <summary>
       /// Enumerated type for CqOperation
+      /// NOTE: These values *must* match those of 
+      /// apache::geode::client::CqOperation.  If you change one, make sure to
+      /// keep things in sync!
       /// </summary>
       public enum class CqOperation
       {
         OP_TYPE_INVALID = -1,
-        OP_TYPE_CREATE = 0,
+        OP_TYPE_CREATE = 1,
         OP_TYPE_UPDATE = 2,
         OP_TYPE_INVALIDATE = 4,
         OP_TYPE_REGION_CLEAR = 8,
