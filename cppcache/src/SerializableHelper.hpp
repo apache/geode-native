@@ -93,7 +93,7 @@ inline bool SerializableHelper<PdxSerializable>::equalTo(
 
 template <>
 inline bool SerializableHelper<DataSerializableInternal>::metadataEqualTo(
-    const DataSerializableInternal& lhs, const DataSerializableInternal& rhs) {
+    const DataSerializableInternal&, const DataSerializableInternal&) {
   return true;
 }
 
