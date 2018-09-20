@@ -25,12 +25,6 @@ namespace Apache
   {
     namespace Client
     {
-      /// <summary>
-      /// Enumerated type for CqOperation
-      /// NOTE: These values *must* match those of 
-      /// apache::geode::client::CqOperation.  If you change one, make sure to
-      /// keep things in sync!
-      /// </summary>
       public enum class CqOperation
       {
         OP_TYPE_INVALID = -1,
