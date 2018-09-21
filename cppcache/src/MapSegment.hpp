@@ -66,7 +66,7 @@ class ACE_Equal_To<std::shared_ptr<apache::geode::client::CacheableKey>> {
   }
 };
 
-}  // namespace ACE_VERSIONED_NAMESPACE_NAME
+}  // namespace ACE_VERSIONED_NAMESPACE_NAME NOLINT
 
 namespace apache {
 namespace geode {
