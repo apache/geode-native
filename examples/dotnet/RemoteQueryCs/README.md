@@ -1,5 +1,5 @@
-﻿# PdxAutoSerializer Example
-This is a simple example showing how to register for auto-serialization of custom objects using the ReflectionBasedAutoSerializer class.
+﻿# RemoteQuery Example
+This is a simple example showing how to execute a query on a remote region.
 
 ## Prerequisites
 * Install [Apache Geode](https://geode.apache.org)
@@ -10,15 +10,18 @@ This is a simple example showing how to register for auto-serialization of custo
   ```
   gfsh>start locator --name=locator
   gfsh>start server --name=server
-  gfsh>create region --name=example_orderobject --type=PARTITION
+  gfsh>create region --name=custom_orders --type=PARTITION
   ```
-* Execute `PdxAutoSerializer.exe`.
+* Execute `RemoteQueryCs.exe`.
   
   output:
   ```
-  Registering for reflection-based auto serialization
-  Storing order object in the region
-  order to put is Order: [65, Vox AC30, 11]
-  Successfully put order, getting now...
-  Order key: 65 = Order: [65, Vox AC30, 11]
+  Registering for data serialization
+  Create orders
+  Storing orders in the region
+  Getting the orders from the region
+  The following orders have a quantity greater than 30:
+  Order: [6, product z, 42]
+  Order: [4, product z, 102]
+  Order: [2, product y, 37]
   ```
