@@ -25,9 +25,9 @@
 #include <list>
 #include <unordered_map>
 
+#include <ace/config-lite.h>
 #include <ace/Map_Manager.h>
 #include <ace/Semaphore.h>
-#include <ace/config-lite.h>
 #include <ace/Versioned_Namespace.h>
 #include <ace/Recursive_Thread_Mutex.h>
 
@@ -38,13 +38,10 @@
 #include "ThinClientRedundancyManager.hpp"
 #include "ExpiryTaskManager.hpp"
 
-namespace ACE_VERSIONED_NAMESPACE_NAME {
-class ACE_Task_Base;
-}  // namespace ACE_VERSIONED_NAMESPACE_NAME
-
 namespace apache {
 namespace geode {
 namespace client {
+
 class TcrConnection;
 class TcrEndpoint;
 class TcrMessage;
