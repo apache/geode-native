@@ -72,8 +72,8 @@ class QueryStrings {
  public:
   QueryStrings(queryCategory pcategory, std::string pquery,
                bool pisLargeResultset = false)
-      : category(pcategory),
-        _query(std::move(pquery)),
+      : _query(std::move(pquery)),
+        category(pcategory),
         haveLargeResultset(pisLargeResultset) {}
 
   static int RSsize() { return RS_ARRAY_SIZE; };
@@ -85,8 +85,8 @@ class QueryStrings {
   const std::string& query() const { return _query; };
 
  public:
-  queryCategory category;
   std::string _query;
+  queryCategory category;
   bool haveLargeResultset;
 
  private:
@@ -721,13 +721,11 @@ class QueryHelper {
   virtual bool verifySS(std::shared_ptr<SelectResults>& structset,
                         size_t rowCount, int fieldCount);
 
-
   // utility methods
   virtual int getPortfolioSetSize() { return portfolioSetSize; };
   virtual int getPortfolioNumSets() { return portfolioNumSets; };
   virtual int getPositionSetSize() { return positionSetSize; };
   virtual int getPositionNumSets() { return positionNumSets; };
-
 
  private:
   int portfolioSetSize;
