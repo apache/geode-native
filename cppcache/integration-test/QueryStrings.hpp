@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_INTEGRATION_TEST_QUERYSTRINGS_H_
-#define GEODE_INTEGRATION_TEST_QUERYSTRINGS_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,7 +15,13 @@
  * limitations under the License.
  */
 
-#include <cstring>
+#pragma once
+
+#ifndef GEODE_INTEGRATION_TEST_QUERYSTRINGS_H_
+#define GEODE_INTEGRATION_TEST_QUERYSTRINGS_H_
+
+#include <utility>
+#include <string>
 
 namespace testData {
 
@@ -59,8 +60,9 @@ class QueryStrings {
  public:
   QueryStrings(queryCategory pcategory, std::string pquery,
                bool pisLargeResultset = false)
-      : category(pcategory),
-        _query(std::move(pquery)),
+      : _query(std::move(pquery)),
+        category(pcategory),
+
         haveLargeResultset(pisLargeResultset) {}
 
   static int RSsize() { return RS_ARRAY_SIZE; };
@@ -74,8 +76,8 @@ class QueryStrings {
   const std::string& query() const { return _query; };
 
  public:
-  queryCategory category;
   std::string _query;
+  queryCategory category;
   bool haveLargeResultset;
 
  private:
