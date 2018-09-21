@@ -1,6 +1,6 @@
 ---
 Checks:          '-*,clang-diagnostic-*,clang-analyzer-*,-clang-analyzer-alpha*,google-*,-google-readability-todo,-google-runtime-references,-google-default-arguments'
-WarningsAsErrors: 'google-build-using-namespace,google-readability-redundant-smartptr-get,google-explicit-constructor,google-global-names-in-headers,google-runtime-int,google-readability-casting,google-readability-namespace-comments'
+WarningsAsErrors: 'google-build-using-namespace,google-readability-redundant-smartptr-get,google-explicit-constructor,google-global-names-in-headers,google-runtime-int,google-readability-casting,google-readability-namespace-comments,clang-analyzer-optin.performance.Padding'
 HeaderFilterRegex: '.*'
 AnalyzeTemporaryDtors: false
 FormatStyle:     file
