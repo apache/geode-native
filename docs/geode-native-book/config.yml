@@ -21,7 +21,7 @@ public_host: localhost
 sections:
 - repository:
     name: geode-native-docs
-  directory: docs/guide-native/18
+  directory: docs/geode-native/18
   subnav_template: geode-nc-nav
 
 template_variables:
