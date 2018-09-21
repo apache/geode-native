@@ -16,12 +16,12 @@
  */
 
 /**
-* @file    UdpIpc.cpp
-* @since   1.0
-* @version 1.0
-* @see
-*
-*/
+ * @file    UdpIpc.cpp
+ * @since   1.0
+ * @version 1.0
+ * @see
+ *
+ */
 
 // ----------------------------------------------------------------------------
 
@@ -264,7 +264,8 @@ void UdpIpc::doClient() {
   FWKINFO("Stop");
   FWKINFO("Client sent " << msgCnt << " messages");
 }
-}
-}
-}
-}
+
+}  // namespace testframework
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

@@ -47,7 +47,7 @@
 #include "MemberListForVersionStamp.hpp"
 #include "config.h"
 
-namespace ACE_VERSIONED_NAMESPACE_NAME {
+namespace ACE_VERSIONED_NAMESPACE_NAME { // NOLINT
 
 #if defined(_MACOSX)
 // TODO CMake check type int64_t
@@ -70,7 +70,7 @@ class ACE_Hash<DSCode> {
   }
 };
 
-}  // namespace ACE_VERSIONED_NAMESPACE_NAME
+}  // namespace ACE_VERSIONED_NAMESPACE_NAME  NOLINT
 
 namespace apache {
 namespace geode {
