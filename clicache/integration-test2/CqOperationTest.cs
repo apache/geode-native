@@ -208,10 +208,13 @@ namespace Apache.Geode.Client.IntegrationTests
             region.Put("order3", order3);
             Assert.True(cqListener.CreatedEvent.WaitOne(_waitInterval), "Didn't receieve expected CREATE event");
 
-            //TODO: Add code to trigger an INVALIDATE event here
-
             region.Clear();
-            Assert.True(cqListener.RegionClearEvent.WaitOne(_waitInterval), "Didnt receive expected CLEAR event");
+            Assert.True(cqListener.RegionClearEvent.WaitOne(_waitInterval), "Didn't receive expected CLEAR event");
+
+            Assert.False(cqListener.ReceivedUnknownEventType, "An unknown event was received by CQ listener");
         }
     }
 }
+
+
+
