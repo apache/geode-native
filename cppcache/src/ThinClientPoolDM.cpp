@@ -1979,8 +1979,9 @@ GfErrType ThinClientPoolDM::sendRequestToEP(const TcrMessage& request,
         if (ua == nullptr) {
           LOGWARN("Attempted operation type %d without credentials",
                   request.getMessageType());
-          if (conn != nullptr)
+          if (conn) {
             putInQueue(conn, false, request.forTransaction());
+          }
           return GF_NOT_AUTHORIZED_EXCEPTION;
         } else {
           UserConnectionAttributes* uca =

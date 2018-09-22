@@ -33,7 +33,7 @@
 #define ROOT_SCOPE LOCAL
 #endif
 
-namespace {
+namespace { // NOLINT
 
 using apache::geode::client::CacheHelper;
 using apache::geode::client::Properties;

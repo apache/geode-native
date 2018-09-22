@@ -126,9 +126,10 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(SERVER1, CreateServer1_With_Locator_And_SSL_untrustedCert)
   {
     // starting servers
-    if (isLocalServer)
+    if (isLocalServer) {
       CacheHelper::initServer(1, nullptr, locatorsG, nullptr, true, true, false,
                               false, false);
+    }
   }
 END_TASK_DEFINITION
 

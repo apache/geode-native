@@ -396,8 +396,9 @@ class FunctionExecution : public PooledWork<GfErrType> {
     // TSSUserAttributesWrapper::s_geodeTSSUserAttributes->setUserAttributes(m_userAttr);
     GuardUserAttributes gua;
 
-    if (m_userAttr != nullptr)
+    if (m_userAttr) {
       gua.setAuthenticatedView(m_userAttr->getAuthenticatedView());
+    }
 
     std::string funcName(m_func);
     TcrMessageExecuteFunction request(
@@ -524,8 +525,9 @@ class OnRegionFunctionExecution : public PooledWork<GfErrType> {
   GfErrType execute(void) {
     GuardUserAttributes gua;
 
-    if (m_userAttr != nullptr)
+    if (m_userAttr) {
       gua.setAuthenticatedView(m_userAttr->getAuthenticatedView());
+    }
 
     return m_poolDM->sendSyncRequest(*m_request, *m_reply, !(m_getResult & 1),
                                      m_isBGThread, m_serverLocation);

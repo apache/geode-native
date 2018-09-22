@@ -82,7 +82,7 @@ void TcrMessage::setKeepAlive(bool keepalive) {
 
 void TcrMessage::writeInterestResultPolicyPart(InterestResultPolicy policy) {
   m_request->writeInt(static_cast<int32_t>(3));  // size
-  m_request->write(static_cast<int8_t>(1));  // isObject
+  m_request->write(static_cast<int8_t>(1));      // isObject
   m_request->write(static_cast<int8_t>(DSCode::FixedIDByte));
   m_request->write(static_cast<int8_t>(DSCode::InterestResultPolicy));
   m_request->write(static_cast<int8_t>(policy.getOrdinal()));
@@ -623,7 +623,8 @@ void TcrMessage::writeRegionPart(const std::string& regionName) {
   int32_t len = static_cast<int32_t>(regionName.length());
   m_request->writeInt(len);
   m_request->write(static_cast<int8_t>(0));  // isObject = 0
-  m_request->writeBytesOnly(reinterpret_cast<int8_t*>(const_cast<char*>(regionName.c_str())), len);
+  m_request->writeBytesOnly(
+      reinterpret_cast<int8_t*>(const_cast<char*>(regionName.c_str())), len);
 }
 
 void TcrMessage::writeStringPart(const std::string& str) {
@@ -1067,8 +1068,9 @@ void TcrMessage::handleByteArrayResponse(
         case TcrMessage::INVALIDATE: {
           uint32_t flags = 0;
           readIntPart(input, &flags);
-          if (flags & 0x01)
+          if (flags & 0x01) {
             readVersionTag(input, endpointMemId, memberListForVersionStamp);
+          }
           readPrMetaData(input);
 
           break;
@@ -1076,8 +1078,9 @@ void TcrMessage::handleByteArrayResponse(
         case TcrMessage::DESTROY: {
           uint32_t flags = 0;
           readIntPart(input, &flags);
-          if (flags & 0x01)
+          if (flags & 0x01) {
             readVersionTag(input, endpointMemId, memberListForVersionStamp);
+          }
           readPrMetaData(input);
           // skip the Destroy65.java response entryNotFound int part so
           // that the readSecureObjectPart() call below gets the security part
@@ -1383,8 +1386,9 @@ TcrMessageDestroyRegion::TcrMessageDestroyRegion(
 
   numOfParts++;
 
-  if (m_messageResponseTimeout >= std::chrono::milliseconds::zero())
+  if (m_messageResponseTimeout >= std::chrono::milliseconds::zero()) {
     numOfParts++;
+  }
   writeHeader(m_msgType, numOfParts);
   writeRegionPart(m_regionName);
   writeEventIdPart();
@@ -1422,8 +1426,9 @@ TcrMessageClearRegion::TcrMessageClearRegion(
 
   numOfParts++;
 
-  if (m_messageResponseTimeout >= std::chrono::milliseconds::zero())
+  if (m_messageResponseTimeout >= std::chrono::milliseconds::zero()) {
     numOfParts++;
+  }
   writeHeader(m_msgType, numOfParts);
   writeRegionPart(m_regionName);
   writeEventIdPart();
@@ -1452,8 +1457,9 @@ TcrMessageQuery::TcrMessageQuery(
 
   numOfParts++;
 
-  if (m_messageResponseTimeout >= std::chrono::milliseconds::zero())
+  if (m_messageResponseTimeout >= std::chrono::milliseconds::zero()) {
     numOfParts++;
+  }
   writeHeader(m_msgType, numOfParts);
   writeRegionPart(m_regionName);
   writeEventIdPart();
@@ -1827,7 +1833,7 @@ TcrMessageCloseConnection::TcrMessageCloseConnection(DataOutput* dataOutput,
   m_request->write(static_cast<int8_t>(0));  // Early ack is '0'.
   // last two parts are not used ... setting zero in both the parts.
   m_request->writeInt(static_cast<int32_t>(1));  // len is 1
-  m_request->write(static_cast<int8_t>(0));  // is obj is '0'.
+  m_request->write(static_cast<int8_t>(0));      // is obj is '0'.
   // cast away constness here since we want to modify this
   TcrMessage::m_keepalive = const_cast<uint8_t*>(m_request->getCursor());
   m_request->write(static_cast<int8_t>(0));  // keepalive is '0'.
@@ -2127,8 +2133,9 @@ TcrMessagePutAll::TcrMessagePutAll(
 
   // numOfParts++;
 
-  if (m_messageResponseTimeout >= std::chrono::milliseconds::zero())
+  if (m_messageResponseTimeout >= std::chrono::milliseconds::zero()) {
     numOfParts++;
+  }
 
   writeHeader(m_msgType, numOfParts);
   writeRegionPart(m_regionName);
@@ -2183,8 +2190,9 @@ TcrMessageRemoveAll::TcrMessageRemoveAll(
   // value can be nullptr also.
   uint32_t numOfParts = 5 + static_cast<uint32_t>(keys.size());
 
-  if (m_messageResponseTimeout >= std::chrono::milliseconds::zero())
+  if (m_messageResponseTimeout >= std::chrono::milliseconds::zero()) {
     numOfParts++;
+  }
   writeHeader(m_msgType, numOfParts);
   writeRegionPart(m_regionName);
   writeEventIdPart(static_cast<int>(keys.size() - 1));

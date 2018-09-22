@@ -33,7 +33,7 @@
 #define ROOT_SCOPE DISTRIBUTED_ACK
 #include "CacheHelper.hpp"
 
-namespace {
+namespace { // NOLINT
 
 using apache::geode::client::Cache;
 using apache::geode::client::CacheableInt32;

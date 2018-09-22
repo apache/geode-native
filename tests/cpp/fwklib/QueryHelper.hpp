@@ -41,6 +41,10 @@
 #define ROOT_SCOPE LOCAL
 #endif
 
+namespace apache {
+namespace geode {
+namespace client {
+namespace testframework {
 namespace testData {
 
 const int RS_ARRAY_SIZE = 41;
@@ -641,8 +645,6 @@ const int cqResultsetRowCounts[CQRS_ARRAY_SIZE] = {20, 1,  19, 0, 0, 0,  0, 20,
 const int constantExpectedRowsCQRS[1] = {35};
 }  // namespace testData
 
-namespace {
-
 using apache::geode::client::Cacheable;
 using apache::geode::client::CacheableKey;
 using apache::geode::client::DataOutputInternal;
@@ -964,6 +966,9 @@ bool QueryHelper::verifySS(std::shared_ptr<SelectResults>& structSet,
   return false;
 }
 
-}  // namespace
+}  // namespace testframework
+}  // namespace client
+}  // namespace geode
+}  // namespace apache
 
 #endif  // GEODE_FWKLIB_QUERYHELPER_H_
