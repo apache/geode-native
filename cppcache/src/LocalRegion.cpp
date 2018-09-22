@@ -275,8 +275,9 @@ std::shared_ptr<Region> LocalRegion::createSubregion(
 std::vector<std::shared_ptr<Region>> LocalRegion::subregions(
     const bool recursive) {
   CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::subregions);
-  if (m_subRegions.current_size() == 0)
+  if (m_subRegions.current_size() == 0) {
     return std::vector<std::shared_ptr<Region>>();
+  }
 
   return subregions_internal(recursive);
 }

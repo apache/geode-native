@@ -872,8 +872,9 @@ GfErrType ThinClientRedundancyManager::sendSyncRequestCq(
     if (err != GF_NOERR || m_redundantEndpoints.empty()) {
       auto userAttr = TSSUserAttributesWrapper::s_geodeTSSUserAttributes
                           ->getUserAttributes();
-      if (userAttr != nullptr)
+      if (userAttr) {
         authenticatedView = userAttr->getAuthenticatedView();
+      }
       err = maintainRedundancyLevel();
       // we continue on fatal error because MRL only tries a handshake without
       // sending a request (no params passed) so no need to check

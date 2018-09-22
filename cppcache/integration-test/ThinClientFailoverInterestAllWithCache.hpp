@@ -29,7 +29,7 @@
 
 #include "CacheHelper.hpp"
 
-namespace {
+namespace { // NOLINT
 
 using apache::geode::client::CacheableKey;
 using apache::geode::client::CacheableString;

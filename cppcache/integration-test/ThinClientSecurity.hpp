@@ -26,7 +26,7 @@
 #include "CacheImplHelper.hpp"
 #include "testUtils.hpp"
 
-namespace {
+namespace { // NOLINT
 
 using apache::geode::client::AuthenticatedView;
 

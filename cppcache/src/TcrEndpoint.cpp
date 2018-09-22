@@ -878,8 +878,9 @@ GfErrType TcrEndpoint::sendRequestConn(const TcrMessage& request,
     error = GF_NOTCON;
   }
   if (error == GF_NOERR) {
-    if (m_baseDM != nullptr)
+    if (m_baseDM) {
       m_baseDM->afterSendingRequest(request, reply, conn);
+    }
   }
 
   return error;

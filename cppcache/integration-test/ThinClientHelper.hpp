@@ -42,7 +42,7 @@
 
 #include "CacheHelper.hpp"
 
-namespace {
+namespace { // NOLINT
 
 using apache::geode::client::CacheableInt32;
 using apache::geode::client::CacheHelper;

@@ -39,7 +39,7 @@
 #define LOCATOR s2p2
 #define SERVER1 s2p1
 
-namespace {
+namespace { // NOLINT
 
 using apache::geode::client::CacheableBoolean;
 using apache::geode::client::UserObjectSizer;

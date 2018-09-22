@@ -1475,8 +1475,9 @@ bool TcrConnection::setAndGetBeingUsed(volatile bool isBeingUsed,
       if (m_isUsed == 2) {  // transaction thread has set, reused it
         return true;
       }
-      if (m_isUsed.compare_exchange_strong(currentValue, 2 /*for transaction*/))
+      if (m_isUsed.compare_exchange_strong(currentValue, 2 /*for transaction*/)) {
         return true;
+      }
       return false;
     } else {
       // m_isUsed = 0;//this will done by releasing the connection by

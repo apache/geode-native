@@ -51,7 +51,7 @@
 #define ROOT_SCOPE LOCAL
 #endif
 
-namespace {
+namespace { // NOLINT
 
 using apache::geode::client::CacheableKey;
 using apache::geode::client::CacheableStringArray;
