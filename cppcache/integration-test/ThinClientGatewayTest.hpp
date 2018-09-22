@@ -33,7 +33,7 @@
 
 #include <string>
 
-namespace {
+namespace { // NOLINT
 
 using apache::geode::client::EntryEvent;
 using apache::geode::client::RegionEvent;

@@ -28,7 +28,7 @@
 #define CLIENT1 s1p1
 #define SERVER1 s2p1
 
-namespace {
+namespace { // NOLINT
 
 using apache::geode::client::Cacheable;
 using apache::geode::client::CacheFactory;

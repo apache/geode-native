@@ -40,7 +40,7 @@
 #include <DistributedSystemImpl.hpp>
 #include <CacheImpl.hpp>
 
-namespace {
+namespace { // NOLINT
 
 using apache::geode::client::Cache;
 using apache::geode::client::CacheableKey;

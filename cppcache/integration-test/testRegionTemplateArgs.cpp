@@ -46,7 +46,7 @@ bool CheckBytesEqual(std::shared_ptr<CacheableBytes> result,
 // This test checks the template methods of Region API with all possible
 // combinations of key and value types.
 
-BEGIN_TEST(CheckTemplates)
+BEGIN_TEST(CheckTemplates)  // NOLINT
   {
     auto cacheFactory = CacheFactory();
     auto cache = std::make_shared<Cache>(cacheFactory.create());
