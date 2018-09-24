@@ -419,8 +419,8 @@ void ThinClientRegion::registerKeys(
   }
   if (getInitialValues && !m_regionAttributes.getCachingEnabled()) {
     LOGERROR(
-          "Register keys getInitialValues flag is only applicable for caching"
-          "clients");
+        "Register keys getInitialValues flag is only applicable for caching"
+        "clients");
     throw IllegalStateException(
         "getInitialValues flag only applicable for caching clients");
   }
@@ -500,8 +500,8 @@ void ThinClientRegion::registerAllKeys(bool isDurable, bool getInitialValues,
 
   if (getInitialValues && !m_regionAttributes.getCachingEnabled()) {
     LOGERROR(
-          "Register all keys getInitialValues flag is only applicable for caching"
-          "clients");
+        "Register all keys getInitialValues flag is only applicable for caching"
+        "clients");
     throw IllegalStateException(
         "getInitialValues flag only applicable for caching clients");
   }
@@ -2304,7 +2304,8 @@ GfErrType ThinClientRegion::registerKeysNoThrow(
       request, *reply, attemptFailover, this, endpoint);
 
   if (err == GF_NOERR /*|| err == GF_CACHE_REDUNDANCY_FAILURE*/) {
-    if (reply->getMessageType() == TcrMessage::RESPONSE_FROM_SECONDARY) {
+    if (reply->getMessageType() == TcrMessage::RESPONSE_FROM_SECONDARY &&
+        endpoint) {
       LOGFINER(
           "registerKeysNoThrow - got response from secondary for "
           "endpoint %s, ignoring.",
@@ -2492,7 +2493,8 @@ GfErrType ThinClientRegion::registerRegexNoThrow(
         request, *reply, attemptFailover, this, endpoint);
   }
   if (err == GF_NOERR /*|| err == GF_CACHE_REDUNDANCY_FAILURE*/) {
-    if (reply->getMessageType() == TcrMessage::RESPONSE_FROM_SECONDARY) {
+    if (reply->getMessageType() == TcrMessage::RESPONSE_FROM_SECONDARY &&
+        endpoint) {
       LOGFINER(
           "registerRegexNoThrow - got response from secondary for "
           "endpoint %s, ignoring.",

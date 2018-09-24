@@ -102,7 +102,7 @@ const FwkRegion* FrameworkTest::getSnippet(const std::string& name) const {
 
   if (mode == "poolwithendpoints" || mode == "poolwithlocator") {
     FWKINFO("Current Scheme::" << mode);
-    Attributes* atts = value->getAttributes();
+    auto atts = value->getAttributes();
     if (!tag.empty()) {
       poolName.append(tag);
       atts->setPoolName(poolName);

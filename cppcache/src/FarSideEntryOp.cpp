@@ -129,7 +129,7 @@ void FarSideEntryOp::skipFilterRoutingInfo(DataInput& input) {
       // memId.fromData(input);
       memId.readEssentialData(input);
 
-      int32_t len = input.readArrayLength();
+      auto len = input.readArrayLength();
 
       if (input.readBoolean()) {
         len = input.readArrayLength();

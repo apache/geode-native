@@ -1,6 +1,6 @@
 ---
-Checks:          '-*,clang-diagnostic-*,clang-analyzer-*,-clang-analyzer-alpha*,google-*,-google-readability-todo,-google-runtime-references,-google-default-arguments'
-WarningsAsErrors: 'clang-analyzer-optin.performance.Padding,google-*'
+Checks:          '-*,clang-diagnostic-*,clang-analyzer-*,-clang-analyzer-alpha*,google-*,-google-readability-todo,-google-runtime-references,-google-default-arguments,-clang-analyzer-core.uninitialized.UndefReturn'
+WarningsAsErrors: 'clang-analyzer-optin.performance.Padding,clang-analyzer-core.CallAndMessage,google-*'
 HeaderFilterRegex: '.*'
 AnalyzeTemporaryDtors: false
 FormatStyle:     file
@@ -52,4 +52,5 @@ CheckOptions:
 # google-readability-todo - Adds current user name when fix applied.
 
 # TODO - Fix these checks
-# google-default-arguments'
+# google-default-arguments
+# clang-analyzer-core.uninitialized.UndefReturn - Generates errors in ACE, how do we ignore?

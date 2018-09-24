@@ -19,6 +19,7 @@
 #include <vector>
 #include <chrono>
 #include <thread>
+#include <exception>
 
 #include <ace/ACE.h>
 #include <ace/Thread_Mutex.h>
@@ -264,10 +265,6 @@ HostStatSampler::~HostStatSampler() {
     delete m_samplerStats;
     m_samplerStats = nullptr;
   }
-  if (m_archiver != nullptr) {
-    delete m_archiver;
-    m_archiver = nullptr;
-  }
 }
 
 std::string HostStatSampler::createArchiveFileName() {
@@ -380,22 +377,11 @@ void HostStatSampler::changeArchive(std::string filename) {
   }
   // create new file only when tis file has some data; otherwise reuse it
   if (rollArchive(filename) != 0) {
-    delete m_archiver;
-    m_archiver = nullptr;
-    // throw exception
-    return;
-  } else {
-    /*
-    if (m_archiver != nullptr) {
-      m_archiver->openFile(filename);
-      m_archiver->close();
-    }
-    */
-    delete m_archiver;
-    m_archiver = nullptr;
+    m_archiver.reset();
+    throw std::runtime_error("Failed to roll archive.");
   }
 
-  m_archiver = new StatArchiveWriter(filename, this, m_cache);
+  m_archiver.reset(new StatArchiveWriter(filename, this, m_cache));
 }
 
 std::string HostStatSampler::chkForGFSExt(std::string filename) {
@@ -703,7 +689,7 @@ int32_t HostStatSampler::svc(void) {
     // createArchiveFileName instead of getArchiveFileName here because
     // for the first time the sampler needs to add the pid to the filename
     // passed to it.
-    std::string archivefilename = createArchiveFileName();
+    auto archivefilename = createArchiveFileName();
     if (!m_isStatDiskSpaceEnabled) {
       changeArchive(archivefilename);
     }

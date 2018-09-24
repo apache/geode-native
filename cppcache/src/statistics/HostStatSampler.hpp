@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_STATISTICS_HOSTSTATSAMPLER_H_
-#define GEODE_STATISTICS_HOSTSTATSAMPLER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,9 +15,16 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_STATISTICS_HOSTSTATSAMPLER_H_
+#define GEODE_STATISTICS_HOSTSTATSAMPLER_H_
+
+
 #include <string>
 #include <vector>
 #include <chrono>
+#include <memory>
 
 #include <ace/Task.h>
 #include <ace/Recursive_Thread_Mutex.h>
@@ -196,7 +198,7 @@ class APACHE_GEODE_EXPORT HostStatSampler : public ACE_Task_Base,
   bool m_running;
   bool m_stopRequested;
   volatile bool m_isStatDiskSpaceEnabled;
-  StatArchiveWriter* m_archiver;
+  std::unique_ptr<StatArchiveWriter> m_archiver;
   StatSamplerStats* m_samplerStats;
   const char* m_durableClientId;
   std::chrono::seconds m_durableTimeout;
