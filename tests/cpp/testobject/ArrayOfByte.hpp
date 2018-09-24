@@ -22,7 +22,6 @@
 
 #include <string>
 #include "fwklib/FwkLog.hpp"
-#include "fwklib/FrameworkTest.hpp"
 #include <ace/Time_Value.h>
 
 #include "SerializationRegistry.hpp"

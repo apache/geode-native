@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+#include <geode/CacheableBuiltins.hpp>
+
 #include "BatchObject.hpp"
 
 namespace testobject {

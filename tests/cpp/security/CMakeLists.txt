@@ -27,8 +27,6 @@ add_library(security STATIC
   PkcsAuthInit.cpp
   PkcsAuthInit.hpp
   PkcsCredentialGenerator.hpp
-  Security.cpp
-  Security.hpp
   typedefs.hpp
   XmlAuthzCredentialGenerator.hpp
 )
@@ -45,7 +43,6 @@ target_include_directories(security
 
 target_link_libraries(security
   PUBLIC
-    fwk
     testobject
     crypto
     ssl

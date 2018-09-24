@@ -29,7 +29,6 @@
 
 #include <geode/Delta.hpp>
 
-#include "fwklib/FrameworkTest.hpp"
 #include "FastAsset.hpp"
 #include "testobject_export.h"
 

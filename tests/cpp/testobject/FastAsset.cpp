@@ -15,6 +15,9 @@
  * limitations under the License.
  */
 
+#include <geode/DataInput.hpp>
+#include <geode/DataOutput.hpp>
+
 #include "FastAsset.hpp"
 #include "fwklib/GsRandom.hpp"
 
