@@ -30,9 +30,6 @@ namespace apache {
 namespace geode {
 namespace client {
 
-/**
- * Enumerated type for Operation actions.
- */
 enum class CqOperation {
   OP_TYPE_INVALID = -1,
   OP_TYPE_CREATE = 1,

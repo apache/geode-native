@@ -33,6 +33,7 @@ add_library( ${PROJECT_NAME} SHARED
     GeodeServerTests.cs
     CacheXml.cs
     CacheXmlTests.cs
+    CqOperationTest.cs
     RegionTest.cs
     RegionSSLTest.cs
     cache.xml
