@@ -71,8 +71,8 @@ public class GeodeServer : IDisposable
                       Environment.CurrentDirectory +
                       "/ServerSslKeys/server_truststore.jks --J=-Dgemfire.ssl-truststore-password=gemstone\"" +
                       " -e \"create region --name=" + regionName + " --type=PARTITION\"" +
-		      " -e \"create region --name=testRegion1 --type=PARTITION\"" +
-		      " -e \"create region --name=cqTestRegion --type=REPLICATE\"",
+                      " -e \"create region --name=testRegion1 --type=PARTITION\"" +
+                      " -e \"create region --name=cqTestRegion --type=REPLICATE\"",
           WindowStyle = ProcessWindowStyle.Hidden,
           UseShellExecute = false,
           RedirectStandardOutput = true,
@@ -93,7 +93,7 @@ public class GeodeServer : IDisposable
                       " -e \"start server --bind-address=localhost --server-port=0\"" +
                       " -e \"create region --name=" + regionName + " --type=PARTITION\"" +
                       " -e \"create region --name=testRegion1 --type=PARTITION\"" +
-	              " -e \"create region --name=cqTestRegion --type=REPLICATE\"",
+                      " -e \"create region --name=cqTestRegion --type=REPLICATE\"",
           WindowStyle = ProcessWindowStyle.Hidden,
           UseShellExecute = false,
           RedirectStandardOutput = true,
