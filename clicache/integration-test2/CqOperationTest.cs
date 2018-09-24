@@ -135,7 +135,7 @@ namespace Apache.Geode.Client.IntegrationTests
     [Trait("Category", "Integration")]
     public class CqOperationTest : IDisposable
     {
-        private readonly Cache _cacheOne;
+        private readonly Cache _cache;
         private readonly GeodeServer _geodeServer;
         private static int _waitInterval = 1000;
 
@@ -144,29 +144,29 @@ namespace Apache.Geode.Client.IntegrationTests
             var cacheFactory = new CacheFactory()
                 .Set("log-level", "error");
 
-            _cacheOne = cacheFactory.Create();
+            _cache = cacheFactory.Create();
             _geodeServer = new GeodeServer();
 
         }
 
         public void Dispose()
         {
-            _cacheOne.Close();
+            _cache.Close();
             _geodeServer.Dispose();
         }
 
         [Fact]
         public void NotificationsHaveCorrectValues()
         {
-            _cacheOne.TypeRegistry.RegisterPdxType(MyOrder.CreateDeserializable);
+            _cache.TypeRegistry.RegisterPdxType(MyOrder.CreateDeserializable);
 
-            var poolFactory = _cacheOne.GetPoolFactory()
+            var poolFactory = _cache.GetPoolFactory()
                 .AddLocator("localhost", _geodeServer.LocatorPort);
             var pool = poolFactory
               .SetSubscriptionEnabled(true)
               .Create("pool");
 
-            var regionFactory = _cacheOne.CreateRegionFactory(RegionShortcut.PROXY)
+            var regionFactory = _cache.CreateRegionFactory(RegionShortcut.PROXY)
                 .SetPoolName("pool");
 
             var region = regionFactory.Create<string, MyOrder>("cqTestRegion");
