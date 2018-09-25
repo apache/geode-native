@@ -3,6 +3,7 @@ Checks:          '-*,clang-diagnostic-*,clang-analyzer-*,-clang-analyzer-alpha*,
 WarningsAsErrors: 'clang-analyzer-optin.performance.Padding,clang-analyzer-core.CallAndMessage,google-*'
 HeaderFilterRegex: '.*'
 AnalyzeTemporaryDtors: false
+SystemHeaders: false
 FormatStyle:     file
 CheckOptions:
   - key:             google-build-namespaces.HeaderFileExtensions

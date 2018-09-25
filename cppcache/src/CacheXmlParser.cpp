@@ -78,6 +78,7 @@ extern "C" void startElementSAX2Function(void* ctx, const xmlChar* name,
   CacheXmlParser* parser = (CacheXmlParser*)ctx;
   if (!parser) {
     Log::error("CacheXmlParser::startElementSAX2Function:Parser is nullptr");
+    return;
   }
 
   if ((!parser->isCacheXmlException()) &&
