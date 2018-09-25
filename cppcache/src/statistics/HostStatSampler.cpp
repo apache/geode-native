@@ -376,10 +376,7 @@ void HostStatSampler::changeArchive(std::string filename) {
     m_archiver->closeFile();
   }
   // create new file only when tis file has some data; otherwise reuse it
-  if (rollArchive(filename) != 0) {
-    m_archiver.reset();
-    throw std::runtime_error("Failed to roll archive.");
-  }
+  rollArchive(filename);
 
   m_archiver.reset(new StatArchiveWriter(filename, this, m_cache));
 }

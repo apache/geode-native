@@ -545,8 +545,7 @@ EVP_PKEY *DH_PUBKEY_get(DH_PUBKEY *key) {
   ASN1_INTEGER *asn1int = nullptr;
 
   if (key == nullptr) {
-    EVP_PKEY_up_ref(key->pkey);
-    return (key->pkey);
+   return(nullptr);
   }
 
   if (key->pkey != nullptr) {
