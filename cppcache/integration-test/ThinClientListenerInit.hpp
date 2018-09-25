@@ -74,7 +74,7 @@ class ThinClientTallyLoader : public TallyLoader {
                lstrvalue);
       rp.put(key, lreturnValue);
     }
-    return lreturnValue;
+    return std::move(lreturnValue);
   }
 };
 

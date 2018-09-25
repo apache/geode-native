@@ -110,7 +110,9 @@ class APACHE_GEODE_EXPORT ProxyRegion final : public Region {
     auto rPtr = std::static_pointer_cast<RegionInternal>(
         m_realRegion->getSubregion(path));
 
-    if (rPtr == nullptr) return rPtr;
+    if (rPtr == nullptr) {
+      return std::move(rPtr);
+    }
 
     return std::make_shared<ProxyRegion>(*m_authenticatedView, rPtr);
   }
