@@ -20,7 +20,7 @@
 #ifndef GEODE_INTEGRATION_TEST_THINCLIENTPDXSERIALIZERS_H_
 #define GEODE_INTEGRATION_TEST_THINCLIENTPDXSERIALIZERS_H_
 
-namespace { // NOLINT
+namespace { // NOLINT(google-build-namespaces)
 
 using apache::geode::client::CacheableArrayList;
 using apache::geode::client::CacheableHashMap;

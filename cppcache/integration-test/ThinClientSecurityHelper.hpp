@@ -26,7 +26,7 @@
 #include "ThinClientHelper.hpp"
 #include "hacks/AceThreadId.h"
 
-namespace { // NOLINT
+namespace { // NOLINT(google-build-namespaces)
 
 using apache::geode::client::CacheableBoolean;
 using apache::geode::client::Exception;

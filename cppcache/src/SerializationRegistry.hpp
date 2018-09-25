@@ -47,15 +47,17 @@
 #include "MemberListForVersionStamp.hpp"
 #include "config.h"
 
-namespace ACE_VERSIONED_NAMESPACE_NAME { // NOLINT
+namespace ACE_VERSIONED_NAMESPACE_NAME {
 
 #if defined(_MACOSX)
 // TODO CMake check type int64_t
 template <>
 class ACE_Export ACE_Hash<int64_t> {
  public:
-  inline unsigned long operator()(int64_t t) const {  // NOLINT
-    return static_cast<unsigned long>(t);             // NOLINT
+  // NOLINTNEXTLINE(google-runtime-int)
+  inline unsigned long operator()(int64_t t) const {
+    // NOLINTNEXTLINE(google-runtime-int)
+    return static_cast<unsigned long>(t);
   }
 };
 
@@ -70,7 +72,8 @@ class ACE_Hash<DSCode> {
   }
 };
 
-}  // namespace ACE_VERSIONED_NAMESPACE_NAME  NOLINT
+// NOLINTNEXTLINE(google-readability-namespace-comments)
+}  // namespace ACE_VERSIONED_NAMESPACE_NAME
 
 namespace apache {
 namespace geode {

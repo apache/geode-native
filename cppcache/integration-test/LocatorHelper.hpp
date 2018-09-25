@@ -24,7 +24,7 @@
 #define SERVER2 s2p2
 #endif
 
-namespace { // NOLINT
+namespace { // NOLINT(google-build-namespaces)
 
 using apache::geode::client::CacheHelper;
 

@@ -46,7 +46,7 @@ Client 1 is with R =0 and Client 2 with R = 1
 #define SERVER1 s2p1
 #define FEEDER s2p2
 
-namespace { // NOLINT
+namespace { // NOLINT(google-build-namespaces)
 
 using apache::geode::client::EntryEvent;
 using apache::geode::client::Exception;

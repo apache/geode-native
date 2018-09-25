@@ -41,7 +41,7 @@
 #define SERVER1 s2p1
 #define SERVER2 s2p2
 
-namespace { // NOLINT
+namespace { // NOLINT(google-build-namespaces)
 
 using apache::geode::client::CacheableInt32;
 using apache::geode::client::CacheableKey;
