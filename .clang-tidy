@@ -1,5 +1,5 @@
 ---
-Checks:          '-*,clang-diagnostic-*,clang-analyzer-*,-clang-analyzer-alpha*,google-*,-google-readability-todo,-google-runtime-references,-google-default-arguments,-clang-analyzer-core.uninitialized.UndefReturn'
+Checks:          '-*,clang-diagnostic-*,clang-analyzer-*,-clang-analyzer-alpha*,google-*,-google-readability-todo,-google-runtime-references,-google-default-arguments,-clang-analyzer-core.uninitialized.UndefReturn,-clang-analyzer-core.UndefinedBinaryOperatorResult'
 WarningsAsErrors: 'clang-analyzer-optin.performance.*,clang-analyzer-core.*,clang-diagnostic-return-std-move-in-c++11,google-*'
 HeaderFilterRegex: '.*'
 AnalyzeTemporaryDtors: false
@@ -54,3 +54,4 @@ CheckOptions:
 # TODO - Fix these checks
 # google-default-arguments
 # clang-analyzer-core.uninitialized.UndefReturn - Generates errors in ACE, how do we ignore?
+# clang-analyzer-core.UndefinedBinaryOperatorResult - Generates errors in ACE, how do we ignore?

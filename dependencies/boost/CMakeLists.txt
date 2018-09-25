@@ -15,8 +15,8 @@
 
 project( boost LANGUAGES NONE )
 
-set( ${PROJECT_NAME}_VERSION 1.66.0 )
-set( ${PROJECT_NAME}_SHA265 bd0df411efd9a585e5a2212275f8762079fed8842264954675a4fddc46cfcf60 )
+set( ${PROJECT_NAME}_VERSION 1.68.0 )
+set( ${PROJECT_NAME}_SHA265 da3411ea45622579d419bfda66f45cd0f8c32a181d84adfa936f5688388995cf )
 string(REPLACE "." "_" _VERSION_UNDERSCORE ${${PROJECT_NAME}_VERSION})
 set( ${PROJECT_NAME}_URL "https://dl.bintray.com/boostorg/release/${${PROJECT_NAME}_VERSION}/source/boost_${_VERSION_UNDERSCORE}.tar.gz" )
 set( ${PROJECT_NAME}_EXTERN ${PROJECT_NAME}-extern )
@@ -79,25 +79,6 @@ ExternalProject_Get_Property( ${${PROJECT_NAME}_EXTERN} SOURCE_DIR )
 set( ${PROJECT_NAME}_SOURCE_DIR ${SOURCE_DIR} )
 ExternalProject_Get_Property( ${${PROJECT_NAME}_EXTERN} INSTALL_DIR )
 set( ${PROJECT_NAME}_INSTALL_DIR ${INSTALL_DIR} )
-
-if ("SunOS" STREQUAL ${CMAKE_SYSTEM_NAME})
-  #
-  # Solaris patch is to workaround issue of dladdr function signature
-  # mismatching the signature boost stacktrace expects. Following boost ticket
-  # tracks this issue:
-  #
-  #     https://svn.boost.org/trac10/ticket/13300#ticket
-  #
-  set( PATCH_FILE ${CMAKE_CURRENT_SOURCE_DIR}/solaris.patch )
-  ExternalProject_Add_Step( ${${PROJECT_NAME}_EXTERN} patches
-      ALWAYS 0
-      DEPENDEES download
-      DEPENDERS patch
-      DEPENDS ${PATCH_FILE}
-      WORKING_DIRECTORY ${${PROJECT_NAME}_SOURCE_DIR}
-      COMMAND ${PATCH} -u -N -p1 < ${PATCH_FILE}
-  )
-endif()
 
 
 function(ADD_BOOST_LIBRARY)

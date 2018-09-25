@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+#include <sstream>
+
 #include <geode/CacheableBuiltins.hpp>
 #include <geode/SystemProperties.hpp>
 #include <geode/CacheableObjectArray.hpp>

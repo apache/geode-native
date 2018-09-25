@@ -17,6 +17,8 @@
 
 #include "StackTrace.hpp"
 
+#include <sstream>
+
 namespace apache {
 namespace geode {
 namespace client {
