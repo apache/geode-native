@@ -115,6 +115,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutsTask)
       auto bytePtrSent = CacheableBytes::create(std::vector<int8_t>(ptr, ptr + keyArr[count]));
       auto stringPtrSent =
           CacheableString::create(std::string(ptrChar, keyArr[count]));
+      std::free(ptrChar);
 
       verifyReg->put(KEY_BYTE, bytePtrSent);
       verifyReg->put(KEY_STRING, stringPtrSent);
