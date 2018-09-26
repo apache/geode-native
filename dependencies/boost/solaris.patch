@@ -1,0 +1,12 @@
+--- a/src/boost/process/detail/posix/is_running.hpp	Wed Aug  1 20:50:52 2018
++++ b/src/boost/process/detail/posix/is_running.hpp	Wed Sep 26 01:43:58 2018
+@@ -17,7 +17,9 @@
+ // This bit arrangement of status codes is not guaranteed by POSIX, but (according to comments in
+ // the glibc <bits/waitstatus.h> header) is the same across systems in practice.
+ constexpr int still_active = 0x7F;
++#ifndef __SUNPRO_CC
+ static_assert(!WIFEXITED(still_active) && !WIFSIGNALED(still_active), "Internal Error");
++#endif
+ 
+ inline bool is_running(int code)
+ {
