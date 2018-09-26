@@ -31,6 +31,9 @@ add_library( ${PROJECT_NAME} SHARED
     ${CMAKE_CURRENT_BINARY_DIR}/Config.cs
     GeodeServer.cs
     GeodeServerTests.cs
+    GfshTest.cs
+    Gfsh.cs
+    GfshExecute.cs
     CacheXml.cs
     CacheXmlTests.cs
     CqOperationTest.cs
