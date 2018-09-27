@@ -75,7 +75,7 @@ ExternalProject_Add( ${${PROJECT_NAME}_EXTERN}
    STAMP_DIR ./stamp
 )
 
-if (NOT ${WIN32})
+if (NOT WIN32)
 # https://github.com/boostorg/process/issues/51
   set( PATCH_FILE ${CMAKE_CURRENT_SOURCE_DIR}/patches)
   ExternalProject_Add_Step( ${${PROJECT_NAME}_EXTERN} patches
