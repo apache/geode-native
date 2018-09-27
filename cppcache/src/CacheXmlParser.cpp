@@ -1107,7 +1107,7 @@ void CacheXmlParser::startPersistenceProperties(const xmlChar** atts) {
   }
   std::string propName;
   std::string propValue;
-  for (size_t i = 0; atts[i] && atts[i + 1]; i += 1) {
+  for (size_t i = 0; atts[i] && atts[i + 1]; i += 2) {
     auto name = std::string(reinterpret_cast<const char*>(atts[i]));
     auto value = std::string(reinterpret_cast<const char*>(atts[i + 1]));
 
