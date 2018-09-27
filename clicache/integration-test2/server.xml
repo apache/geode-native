@@ -19,8 +19,8 @@
 	xmlns="http://geode.apache.org/schema/cache" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://geode.apache.org/schema/cache http://geode.apache.org/schema/cache/cache-1.0.xsd" version="1.0">
 	<serialization-registration>
-		<instantiator id="2">
-			<class-name>javaobject.Position</class-name>
+		<instantiator id="22">
+			<class-name>javaobject.cli.Position</class-name>
 		</instantiator>
 	</serialization-registration>
 </cache>

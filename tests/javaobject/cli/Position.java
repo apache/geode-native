@@ -14,8 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-//package org.apache.geode.cache.query.data;
-package javaobject;
+package javaobject.cli;
 
 import java.util.*;
 import java.io.*;
@@ -43,7 +42,7 @@ public class Position implements Declarable, Serializable, DataSerializable {
   public static int cnt = 0;
 
   static {
-     Instantiator.register(new Instantiator(Position.class, (byte) 2) {
+     Instantiator.register(new Instantiator(javaobject.cli.Position.class, (byte) 22) {
      public DataSerializable newInstance() {
         return new Position();
      }
@@ -113,38 +112,38 @@ public class Position implements Declarable, Serializable, DataSerializable {
   
   public void fromData(DataInput in) throws IOException, ClassNotFoundException {
     this.avg20DaysVol = in.readLong();
-    this.bondRating = (String)DataSerializer.readObject(in);
+    this.bondRating = in.readUTF();
     this.convRatio = in.readDouble();
-    this.country = (String)DataSerializer.readObject(in);
+    this.country = in.readUTF();
     this.delta = in.readDouble();
     this.industry = in.readLong();
     this.issuer = in.readLong();
     this.mktValue = in.readDouble();
     this.qty = in.readDouble();
-    this.secId = (String)DataSerializer.readObject(in);
-    this.secLinks = (String)DataSerializer.readObject(in);
+    this.secId = in.readUTF();
+    this.secLinks = in.readUTF();
     this.secType = in.readUTF();
     this.sharesOutstanding = in.readInt();
-    this.underlyer = (String)DataSerializer.readObject(in);
+    this.underlyer = in.readUTF();
     this.volatility = in.readLong();
     this.pid = in.readInt();
   }
   
   public void toData(DataOutput out) throws IOException {
     out.writeLong(this.avg20DaysVol);
-    DataSerializer.writeObject(this.bondRating, out);
+    out.writeUTF(this.bondRating);
     out.writeDouble(this.convRatio);
-    DataSerializer.writeObject(this.country, out);
+    out.writeUTF(this.country);
     out.writeDouble(this.delta);
     out.writeLong(this.industry);
     out.writeLong(this.issuer);
     out.writeDouble(this.mktValue);
     out.writeDouble(this.qty);
-    DataSerializer.writeObject(this.secId, out);
-    DataSerializer.writeObject(this.secLinks, out);
+    out.writeUTF(this.secId);
+    out.writeUTF(this.secLinks);
     out.writeUTF(this.secType);
     out.writeInt(this.sharesOutstanding);
-    DataSerializer.writeObject(this.underlyer, out);
+    out.writeUTF(this.underlyer);
     out.writeLong(this.volatility);
     out.writeInt(this.pid);
   } 

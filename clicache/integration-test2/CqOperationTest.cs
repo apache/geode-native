@@ -264,7 +264,7 @@ namespace Apache.Geode.Client.IntegrationTests
         [Fact]
         public void NotificationsHaveCorrectValuesDataSerializable()
         {
-            _cache.TypeRegistry.RegisterType(Position.CreateDeserializable, 2);
+            _cache.TypeRegistry.RegisterType(Position.CreateDeserializable, 22);
   
             var poolFactory = _cache.GetPoolFactory()
             .AddLocator("localhost", _geodeServer.LocatorPort);
