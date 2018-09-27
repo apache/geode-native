@@ -75,18 +75,15 @@ ExternalProject_Add( ${${PROJECT_NAME}_EXTERN}
    STAMP_DIR ./stamp
 )
 
-if ("SunOS" STREQUAL ${CMAKE_SYSTEM_NAME})
-  set( PATCH_FILE ${CMAKE_CURRENT_SOURCE_DIR}/solaris.patch )
-  ExternalProject_Add_Step( ${${PROJECT_NAME}_EXTERN} patches
-      ALWAYS 0
-      DEPENDEES download
-      DEPENDERS patch
-      DEPENDS ${PATCH_FILE}
-      WORKING_DIRECTORY ${${PROJECT_NAME}_INSTALL_DIR}
-      COMMAND ${PATCH} -u -N -p1 < ${PATCH_FILE}
-  )
-endif()
-
+set( PATCH_FILE ${CMAKE_CURRENT_SOURCE_DIR}/patches)
+ExternalProject_Add_Step( ${${PROJECT_NAME}_EXTERN} patches
+    ALWAYS 0
+    DEPENDEES download
+    DEPENDERS patch
+    DEPENDS ${PATCH_FILE}
+    WORKING_DIRECTORY ${${PROJECT_NAME}_INSTALL_DIR}
+    COMMAND ${PATCH} -u -N -p1 < ${PATCH_FILE}
+)
 
 
 ExternalProject_Get_Property( ${${PROJECT_NAME}_EXTERN} SOURCE_DIR )
