@@ -4,9 +4,9 @@
 # The ASF licenses this file to You under the Apache License, Version 2.0
 # (the "License"); you may not use this file except in compliance with
 # the License.  You may obtain a copy of the License at
-# 
+#
 #      http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -75,16 +75,18 @@ ExternalProject_Add( ${${PROJECT_NAME}_EXTERN}
    STAMP_DIR ./stamp
 )
 
+if (NOT ${WIN32})
 # https://github.com/boostorg/process/issues/51
-set( PATCH_FILE ${CMAKE_CURRENT_SOURCE_DIR}/patches)
-ExternalProject_Add_Step( ${${PROJECT_NAME}_EXTERN} patches
-    ALWAYS 0
-    DEPENDEES download
-    DEPENDERS patch
-    DEPENDS ${PATCH_FILE}
-    WORKING_DIRECTORY ${${PROJECT_NAME}_INSTALL_DIR}
-    COMMAND ${PATCH} -u -N -p1 < ${PATCH_FILE}
-)
+  set( PATCH_FILE ${CMAKE_CURRENT_SOURCE_DIR}/patches)
+  ExternalProject_Add_Step( ${${PROJECT_NAME}_EXTERN} patches
+      ALWAYS 0
+      DEPENDEES download
+      DEPENDERS patch
+      DEPENDS ${PATCH_FILE}
+      WORKING_DIRECTORY ${${PROJECT_NAME}_INSTALL_DIR}
+      COMMAND ${PATCH} -u -N -p1 < ${PATCH_FILE}
+  )
+endif()
 
 
 ExternalProject_Get_Property( ${${PROJECT_NAME}_EXTERN} SOURCE_DIR )
