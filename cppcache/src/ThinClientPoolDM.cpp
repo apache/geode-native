@@ -275,16 +275,14 @@ void ThinClientPoolDM::startBackgroundThreads() {
     m_cliCallbackTask->start();
   }
 
-  LOGDEBUG("ThinClientPoolDM::startBackgroundThreads: Creating ping task");
-  ACE_Event_Handler* pingHandler =
-      new ExpiryHandler_T<ThinClientPoolDM>(this, &ThinClientPoolDM::doPing);
-
   auto pingInterval =
       static_cast<int32_t>(getPingInterval().count() / (1000 * 2));
   if (pingInterval > 0) {
     LOGDEBUG(
         "ThinClientPoolDM::startBackgroundThreads: Scheduling ping task at %ld",
         pingInterval);
+    auto pingHandler =
+        new ExpiryHandler_T<ThinClientPoolDM>(this, &ThinClientPoolDM::doPing);
     m_pingTaskId =
         m_connManager.getCacheImpl()->getExpiryTaskManager().scheduleExpiryTask(
             pingHandler, 1, pingInterval, false);
@@ -307,9 +305,8 @@ void ThinClientPoolDM::startBackgroundThreads() {
     LOGDEBUG(
         "ThinClientPoolDM::startBackgroundThreads: Creating updateLocatorList "
         "task");
-    ACE_Event_Handler* updateLocatorListHandler =
-        new ExpiryHandler_T<ThinClientPoolDM>(
-            this, &ThinClientPoolDM::doUpdateLocatorList);
+    auto updateLocatorListHandler = new ExpiryHandler_T<ThinClientPoolDM>(
+        this, &ThinClientPoolDM::doUpdateLocatorList);
 
     LOGDEBUG(
         "ThinClientPoolDM::startBackgroundThreads: Scheduling updater Locator "
