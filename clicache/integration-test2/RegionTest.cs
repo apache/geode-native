@@ -28,42 +28,63 @@ namespace Apache.Geode.Client.IntegrationTests
     [Fact]
     public void PutOnOneCacheGetOnAnotherCache()
     {
-      using (var geodeServer = new GeodeServer())
+      using (var geodeServer = new GfshExecute())
       {
-        using (var cacheXml = new CacheXml(new FileInfo("cache.xml"), geodeServer))
+        try
         {
-          var cacheFactory = new CacheFactory();
+            Assert.Equal(geodeServer.start()
+                       .locator()
+                       .execute(), 0);
+            Assert.Equal(geodeServer.start()
+                       .server()
+                       .execute(), 0);
+            Assert.Equal(geodeServer.create()
+                       .region()
+                       .withName("testRegion1")
+                       .withType("PARTITION")
+                       .execute(), 0);
 
-          var cacheOne = cacheFactory.Create();
-          try
-          {
-            cacheOne.InitializeDeclarativeCache(cacheXml.File.FullName);
-
-            var cacheTwo = cacheFactory.Create();
-            try
+            using (var cacheXml = new CacheXml(new FileInfo("cache.xml"), geodeServer.LocatorPort))
             {
-              cacheTwo.InitializeDeclarativeCache(cacheXml.File.FullName);
+              var cacheFactory = new CacheFactory();
 
-              var regionForCache1 = cacheOne.GetRegion<string, string>("testRegion1");
-              var regionForCache2 = cacheTwo.GetRegion<string, string>("testRegion1");
+              var cacheOne = cacheFactory.Create();
+              try
+              {
+                cacheOne.InitializeDeclarativeCache(cacheXml.File.FullName);
 
-              const string key = "hello";
-              const string expectedResult = "dave";
+                var cacheTwo = cacheFactory.Create();
+                try
+                {
+                  cacheTwo.InitializeDeclarativeCache(cacheXml.File.FullName);
 
-              regionForCache1.Put(key, expectedResult);
-              var actualResult = regionForCache2.Get(key);
+                  var regionForCache1 = cacheOne.GetRegion<string, string>("testRegion1");
+                  var regionForCache2 = cacheTwo.GetRegion<string, string>("testRegion1");
 
-              Assert.Equal(expectedResult, actualResult);
+                  const string key = "hello";
+                  const string expectedResult = "dave";
+
+                  regionForCache1.Put(key, expectedResult);
+                  var actualResult = regionForCache2.Get(key);
+
+                  Assert.Equal(expectedResult, actualResult);
+                }
+                finally
+                {
+                  cacheTwo.Close();
+                }
+              }
+              finally
+              {
+                cacheOne.Close();
+              }
             }
-            finally
-            {
-              cacheTwo.Close();
-            }
-          }
-          finally
-          {
-            cacheOne.Close();
-          }
+        }
+        finally
+        {
+            Assert.Equal(geodeServer.shutdown()
+                    .withIncludeLocators(true)
+                    .execute(), 0);
         }
       }
     }

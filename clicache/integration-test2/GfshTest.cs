@@ -48,9 +48,8 @@ namespace Apache.Geode.Client.IntegrationTests
                 .withMaxHeap("someHugeAmount");
             s = locator.ToString();
             Assert.True(s.Equals("Command: start locator --name=name --dir=dir " +
-                    "--bind-address=address --port=420 " +
-                    "--J=-Dgemfire.jmx-manager-port=1111 --http-service-port=" +
-                    "2222 --log-level=fine --max-heap=someHugeAmount"));
+                    "--http-service-port=2222 --log-level=fine " +
+                    "--max-heap=someHugeAmount"));
         }
 
         [Fact]
@@ -74,8 +73,7 @@ namespace Apache.Geode.Client.IntegrationTests
                 .withMaxHeap("1.21gigabytes");
             s = server.ToString();
             Assert.True(s.Equals("Command: start server --name=server " +
-                "--dir=someDir --bind-address=someAddress --port=1234 " +
-                "--locators=someLocator --log-level=debug " +
+                "--dir=someDir --locators=someLocator --log-level=debug " +
                 "--max-heap=1.21gigabytes"));
         }
 
