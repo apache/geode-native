@@ -70,7 +70,7 @@ namespace Apache.Geode.Client.IntegrationTests
     [Fact]
     public void PutGet_Works()
     {
-      using (var cacheXml = new CacheXml(new FileInfo("cache.xml"), _geodeServer))
+      using (var cacheXml = new CacheXml(new FileInfo("cache.xml"), _geodeServer.LocatorPort))
       {
         _cacheOne.InitializeDeclarativeCache(cacheXml.File.FullName);
 

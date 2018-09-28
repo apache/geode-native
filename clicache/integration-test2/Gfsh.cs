@@ -7,15 +7,16 @@ using Xunit;
 
 namespace Apache.Geode.Client.IntegrationTests
 {
-    public abstract class Gfsh
+    public abstract class Gfsh : IDisposable
     {
         public string LocatorBindAddress { get; set; }
         public int LocatorPort { get; private set; }
         public int JmxManagerPort { get; private set; }
         public int HttpServicePort { get; private set; }
-        public int ServerPort { get; private set; }
         public string ServerBindAddress { get; private set; }
         public string Connection { get; private set; }
+
+        public abstract void Dispose();
 
         //TODO: Understand what C++ Command class is doing.  Why is it a template,
         //when the only <T> class we're passing is void?  How can you call a ctor
@@ -75,7 +76,7 @@ namespace Apache.Geode.Client.IntegrationTests
 
                 public Server withPort(int port)
                 {
-                    gfsh_.ServerPort = port;
+                    command_ += " --server-port=" + port.ToString();
                     return this;
                 }
 
@@ -295,7 +296,6 @@ namespace Apache.Geode.Client.IntegrationTests
             //TODO: May need a map or something to prevent port collisions
             LocatorPort = FreeTcpPort();
             JmxManagerPort = FreeTcpPort();
-            ServerPort = FreeTcpPort();
         }
 
         private static int FreeTcpPort()

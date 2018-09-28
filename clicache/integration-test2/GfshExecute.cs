@@ -12,6 +12,9 @@ namespace Apache.Geode.Client.IntegrationTests
         public GfshExecute()
         {
         }
+        public override void Dispose()
+        {
+        }
 
         private static string startLocator = "start locator";
         private static string startServer = "start server";
@@ -22,16 +25,17 @@ namespace Apache.Geode.Client.IntegrationTests
             locatorCmd += " --port=" + LocatorPort;
             locatorCmd += " --bind-address=" + LocatorBindAddress;
             locatorCmd += " --J=-Dgemfire.jmx-manager-port=" + JmxManagerPort + " ";
+            locatorCmd += " --J=-Dgemfire.jmx-manager-start=true";
             locatorCmd += options;
             return locatorCmd;
         }
 
         private string buildStartServerCommand(string options)
         {
-            string serverCmd = startServer;
+            string serverCmd = "-e \"connect --jmx-manager=" + LocatorBindAddress
+                + "[" + JmxManagerPort + "]\" -e \"" + startServer;
             serverCmd += " --bind-address=" + ServerBindAddress;
-            serverCmd += " --server-port=" + ServerPort;
-            serverCmd += options;
+            serverCmd += options + "\"";
             return serverCmd;
         }
 

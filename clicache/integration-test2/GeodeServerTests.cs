@@ -17,33 +17,97 @@
 
 using Xunit;
 
-[Trait("Category", "Integration")]
-public class GemFireServerTest
+namespace Apache.Geode.Client.IntegrationTests
 {
-    [Fact]
-    public void Start()
+    [Trait("Category", "Integration")]
+    public class GemFireServerTest
     {
-        using (var geodeServer = new GeodeServer())
+        [Fact]
+        public void Start()
         {
-            Assert.NotNull(geodeServer);
-            Assert.NotEqual(0, geodeServer.LocatorPort);
-        }
-    }
-
-    [Fact]
-    public void StartTwo()
-    {
-        using (var geodeServer1 = new GeodeServer())
-        {
-            Assert.NotNull(geodeServer1);
-            Assert.NotEqual(0, geodeServer1.LocatorPort);
-
-            using (var geodeServer2 = new GeodeServer())
+            using (var gfsh = new GfshExecute())
             {
-                Assert.NotNull(geodeServer2);
-                Assert.NotEqual(0, geodeServer2.LocatorPort);
-                Assert.NotEqual(geodeServer1.LocatorPort, geodeServer2.LocatorPort);
+                Assert.Equal(gfsh.start()
+                    .locator()
+                    .withHttpServicePort(0)
+                    .execute(), 0);
+
+                Assert.NotEqual(0, gfsh.LocatorPort);
+
+                Assert.Equal(gfsh.shutdown()
+                    .withIncludeLocators(true)
+                    .execute(), 0);
+            }
+        }
+
+        [Fact]
+        public void StartTwoLocators()
+        {
+            using (var gfsh1 = new GfshExecute())
+            {
+                try
+                {
+                    Assert.Equal(gfsh1.start()
+                        .locator()
+                        .withHttpServicePort(0)
+                        .execute(), 0);
+
+                    using (var gfsh2 = new GfshExecute())
+                    {
+                        try
+                        {
+                            Assert.Equal(gfsh2.start()
+                                .locator()
+                                .withHttpServicePort(0)
+                                .execute(), 0);
+                        }
+                        finally
+                        {
+                            Assert.Equal(gfsh2.shutdown()
+                                .withIncludeLocators(true)
+                                .execute(), 0);
+                        }
+                    }
+                }
+                finally
+                {
+                    Assert.Equal(gfsh1.shutdown()
+                        .withIncludeLocators(true)
+                        .execute(), 0);
+                }
+            }
+        }
+
+        [Fact]
+        public void StartTwoServers()
+        {
+            using (var gfsh1 = new GfshExecute())
+            {
+                try
+                {
+                    Assert.Equal(gfsh1.start()
+                        .locator()
+                        .withHttpServicePort(0)
+                        .execute(), 0);
+
+                    Assert.Equal(gfsh1.start()
+                        .server()
+                        .withPort(0)
+                        .execute(), 0);
+
+                    Assert.Equal(gfsh1.start()
+                        .server()
+                        .withPort(0)
+                        .execute(), 0);
+                }
+                finally
+                {
+                    Assert.Equal(gfsh1.shutdown()
+                        .withIncludeLocators(true)
+                        .execute(), 0);
+                }
             }
         }
     }
 }
+

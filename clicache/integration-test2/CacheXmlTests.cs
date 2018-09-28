@@ -28,7 +28,7 @@ public class CacheXmlTests
         using (var gfs = new GeodeServer())
         {
             var template = new FileInfo("cache.xml");
-            var cacheXml = new CacheXml(template, gfs);
+            var cacheXml = new CacheXml(template, gfs.LocatorPort);
             Assert.NotNull(cacheXml.File);
             Assert.True(cacheXml.File.Exists);
 
@@ -48,7 +48,7 @@ public class CacheXmlTests
             FileInfo file;
 
             var template = new FileInfo("cache.xml");
-            using (var cacheXml = new CacheXml(template, gfs))
+            using (var cacheXml = new CacheXml(template, gfs.LocatorPort))
             {
                 Assert.NotNull(cacheXml.File);
                 file = cacheXml.File;

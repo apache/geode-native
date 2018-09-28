@@ -14,23 +14,49 @@ namespace Apache.Geode.Client.IntegrationTests
         [Fact]
         public void GfshExecuteStartLocatorTest()
         {
-            GfshExecute gfsh = new GfshExecute();
-            var exitCode = gfsh.start().locator().withPort(gfsh.LocatorPort).execute();
-
-            Assert.Equal(exitCode, 0);
+            using (GfshExecute gfsh = new GfshExecute())
+            {
+                try
+                {
+                    Assert.Equal(gfsh.start()
+                        .locator()
+                        .withHttpServicePort(0)
+                        .withPort(gfsh.LocatorPort)
+                        .execute(), 0);
+                }
+                finally
+                {
+                    Assert.Equal(gfsh.shutdown()
+                        .withIncludeLocators(true)
+                        .execute(), 0);
+                }
+            }
         }
 
         [Fact]
         public void GfshExecuteStartServerTest()
         {
-            GfshExecute gfsh = new GfshExecute();
-            var locatorExitCode = gfsh.start().locator().withPort(gfsh.LocatorPort).execute();
-            var serverExitCode = gfsh.start().server().withLocators("localhost[" + gfsh.LocatorPort + "]").execute();
-            var shutdownExitCode = gfsh.shutdown().withIncludeLocators(true).execute();
-
-            Assert.Equal(locatorExitCode, 0);
-            Assert.Equal(serverExitCode, 0);
-            Assert.Equal(shutdownExitCode, 0);
+            using (GfshExecute gfsh = new GfshExecute())
+            {
+                try
+                {
+                    Assert.Equal(gfsh.start()
+                        .locator()
+                        .withHttpServicePort(0)
+                        .withPort(gfsh.LocatorPort)
+                        .execute(), 0);
+                    Assert.Equal(gfsh.start()
+                        .server()
+                        .withLocators("localhost[" + gfsh.LocatorPort + "]")
+                        .execute(), 0);
+                }
+                finally
+                {
+                    Assert.Equal(gfsh.shutdown()
+                        .withIncludeLocators(true)
+                        .execute(), 0);
+                }
+            }
         }
     }
 }
