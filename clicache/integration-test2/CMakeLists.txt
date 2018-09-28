@@ -32,6 +32,7 @@ add_library( ${PROJECT_NAME} SHARED
     GeodeServer.cs
     GeodeServerTests.cs
     GfshTest.cs
+    GfshExecuteTest.cs
     Gfsh.cs
     GfshExecute.cs
     CacheXml.cs

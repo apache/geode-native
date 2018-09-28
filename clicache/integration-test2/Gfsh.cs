@@ -9,6 +9,14 @@ namespace Apache.Geode.Client.IntegrationTests
 {
     public abstract class Gfsh
     {
+        public string LocatorBindAddress { get; set; }
+        public int LocatorPort { get; private set; }
+        public int JmxManagerPort { get; private set; }
+        public int HttpServicePort { get; private set; }
+        public int ServerPort { get; private set; }
+        public string ServerBindAddress { get; private set; }
+        public string Connection { get; private set; }
+
         //TODO: Understand what C++ Command class is doing.  Why is it a template,
         //when the only <T> class we're passing is void?  How can you call a ctor
         //or a (non-existent?) 'parse' function on void?  So many questions...
@@ -19,10 +27,10 @@ namespace Apache.Geode.Client.IntegrationTests
                 gfsh_ = gfsh;
                 command_ = command;
             }
-            public void execute()
+            public int execute()
             {
                 //return (T)new T().SetGfsh(gfsh_); // .parse(gfsh_.execute(command_));
-                gfsh_.execute(command_);
+                return gfsh_.execute(command_);
             }
 
             public override string ToString()
@@ -61,13 +69,13 @@ namespace Apache.Geode.Client.IntegrationTests
 
                 public Server withBindAddress(string bindAddress)
                 {
-                    command_ += " --bind-address=" + bindAddress;
+                    gfsh_.ServerBindAddress = bindAddress;
                     return this;
                 }
 
-                public Server withPort(short port)
+                public Server withPort(int port)
                 {
-                    command_ += " --port=" + Convert.ToString(port);
+                    gfsh_.ServerPort = port;
                     return this;
                 }
 
@@ -115,19 +123,18 @@ namespace Apache.Geode.Client.IntegrationTests
 
                 public Locator withBindAddress(string bindAddress)
                 {
-                    command_ += " --bind-address=" + bindAddress;
+                    gfsh_.LocatorBindAddress = bindAddress;
                     return this;
                 }
 
-                public Locator withPort(short port)
+                public Locator withPort(int port)
                 {
-                    command_ += " --port=" + Convert.ToString(port);
+                    gfsh_.LocatorPort = port;
                     return this;
                 }
                 public Locator withJmxManagerPort(short jmxManagerPort)
                 {
-                    command_ +=
-                        " --J=-Dgemfire.jmx-manager-port=" + Convert.ToString(jmxManagerPort);
+                    gfsh_.JmxManagerPort = jmxManagerPort;
                     return this;
                 }
 
@@ -259,22 +266,6 @@ namespace Apache.Geode.Client.IntegrationTests
             return new Create(this);
         }
 
-        public class Connect : Command
-        {
-            public Connect(Gfsh gfsh) : base(gfsh, "connect") {}
-
-            public Connect withJmxManager(string jmxManager)
-            {
-                command_ += " --jmx-manager=" + jmxManager;
-                return this;
-            }
-        }
-
-        public Connect connect()
-        {
-            return new Connect(this);
-        }
-
         public class Shutdown : Command
         {
             public Shutdown(Gfsh gfsh) : base(gfsh, "shutdown") {}
@@ -292,11 +283,30 @@ namespace Apache.Geode.Client.IntegrationTests
             return new Shutdown(this);
         }
 
+        private static string defaultBindAddress = "localhost";
+        private static int defaultHttpServicePort = 0;
         public Gfsh()
         {
+            LocatorBindAddress = defaultBindAddress;
+            HttpServicePort = defaultHttpServicePort;
+            ServerBindAddress = defaultBindAddress;
+            Connection = String.Empty; 
 
+            //TODO: May need a map or something to prevent port collisions
+            LocatorPort = FreeTcpPort();
+            JmxManagerPort = FreeTcpPort();
+            ServerPort = FreeTcpPort();
         }
 
-        public abstract void execute(string cmd);
+        private static int FreeTcpPort()
+        {
+            var tcpListner = new TcpListener(IPAddress.Loopback, 0);
+            tcpListner.Start();
+            var port = ((IPEndPoint) tcpListner.LocalEndpoint).Port;
+            tcpListner.Stop();
+            return port;
+        }
+
+        public abstract int execute(string cmd);
     }
 }
