@@ -1776,9 +1776,7 @@ int CacheHelper::hashcode(char* str) {
 }
 
 int CacheHelper::getRandomNumber() {
-  // char * testName = ACE_OS::getenv( "TESTNAME" );
-
-  // int seed = hashcode(testName);
+  // NOLINTNEXTLINE(clang-analyzer-security.insecureAPI.rand)
   return (ACE_OS::rand() % RANDOM_NUMBER_DIVIDER) + RANDOM_NUMBER_OFFSET;
 }
 

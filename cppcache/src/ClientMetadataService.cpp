@@ -29,7 +29,9 @@
 namespace apache {
 namespace geode {
 namespace client {
+
 const char* ClientMetadataService::NC_CMDSvcThread = "NC CMDSvcThread";
+
 ClientMetadataService::~ClientMetadataService() {
   if (m_bucketWaitTimeout > std::chrono::milliseconds::zero()) {
     try {
@@ -657,7 +659,7 @@ ClientMetadataService::pruneNodes(
         "ClientMetadataService::pruneNodes Total size of serverToBucketsMap = "
         "%d ",
         size);
-    for (size_t idx = 0; idx < (rand() % size); idx++) {
+    for (size_t idx = 0; idx < RandGen{}(size); idx++) {
       itrRes++;
     }
     randomFirstServer = itrRes->first;

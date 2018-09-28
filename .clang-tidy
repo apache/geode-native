@@ -1,6 +1,6 @@
 ---
 Checks:          '-*,clang-diagnostic-*,clang-analyzer-*,-clang-analyzer-alpha*,google-*,-google-readability-todo,-google-runtime-references,-google-default-arguments,-clang-analyzer-core.uninitialized.UndefReturn,-clang-analyzer-core.UndefinedBinaryOperatorResult'
-WarningsAsErrors: 'clang-analyzer-optin.performance.*,clang-analyzer-core.*,clang-analyzer-unix.*,clang-diagnostic-return-std-move-in-c++11,google-*,clang-analyzer-cplusplus.NewDeleteLeaks'
+WarningsAsErrors: 'clang-analyzer-optin.performance.*,clang-analyzer-core.*,clang-analyzer-unix.*,clang-diagnostic-return-std-move-in-c++11,google-*,clang-analyzer-cplusplus.NewDeleteLeaks,clang-analyzer-security.insecureAPI.rand'
 HeaderFilterRegex: '.*'
 AnalyzeTemporaryDtors: false
 FormatStyle:     file

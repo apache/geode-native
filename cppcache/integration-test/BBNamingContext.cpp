@@ -58,6 +58,7 @@ static int getRandomNum() {
   // Whilst this approach is pessimal, it can not be
   // remedied as the test depend upon it.
   ACE_OS::srand(seed);
+  // NOLINTNEXTLINE(clang-analyzer-security.insecureAPI.rand)
   return (ACE_OS::rand() % 49999) + 14000;
 }
 
