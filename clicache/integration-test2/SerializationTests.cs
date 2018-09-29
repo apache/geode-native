@@ -399,13 +399,26 @@ namespace Apache.Geode.Client.IntegrationTests
   [Trait("Category", "Integration")]
     public class SerializationTests : IDisposable
     {
-      private GeodeServer GeodeServer;
+      private GfshExecute gfsh_;
       private CacheXml CacheXml;
       private Cache Cache;
 
       public SerializationTests()
       {
-        GeodeServer = new GeodeServer();
+        gfsh_ = new GfshExecute();
+        Assert.Equal(gfsh_.start()
+            .locator()
+            .withHttpServicePort(0)
+            .execute(), 0);
+        Assert.Equal(gfsh_.start()
+            .server()
+            .withPort(0)
+            .execute(), 0);
+        Assert.Equal(gfsh_.create()
+            .region()
+            .withName("testRegion")
+            .withType("PARTITION")
+            .execute(), 0);
       }
 
       public void Dispose()
@@ -428,7 +441,9 @@ namespace Apache.Geode.Client.IntegrationTests
           }
           finally
           {
-            GeodeServer.Dispose();
+            Assert.Equal(gfsh_.shutdown()
+                .withIncludeLocators(true)
+                .execute(), 0);
           }
         }
       }
@@ -450,7 +465,7 @@ namespace Apache.Geode.Client.IntegrationTests
           var cache = cacheFactory.Create();
 
           var poolFactory = cache.GetPoolFactory()
-              .AddLocator("localhost", GeodeServer.LocatorPort);
+              .AddLocator("localhost", gfsh_.LocatorPort);
           poolFactory.Create("pool");
 
           var regionFactory = cache.CreateRegionFactory(RegionShortcut.PROXY)
@@ -517,7 +532,7 @@ namespace Apache.Geode.Client.IntegrationTests
         cache.TypeRegistry.RegisterType(Order.CreateDeserializable, 0x42);
 
         var poolFactory = cache.GetPoolFactory()
-            .AddLocator("localhost", GeodeServer.LocatorPort);
+            .AddLocator("localhost", gfsh_.LocatorPort);
         poolFactory.Create("pool");
 
         var regionFactory = cache.CreateRegionFactory(RegionShortcut.PROXY)
@@ -535,5 +550,4 @@ namespace Apache.Geode.Client.IntegrationTests
         cache.Close();
     }
   }
-
 }

@@ -73,7 +73,7 @@ namespace Apache.Geode.Client.IntegrationTests
                 .withMaxHeap("1.21gigabytes");
             s = server.ToString();
             Assert.True(s.Equals("Command: start server --name=server " +
-                "--dir=someDir --locators=someLocator --log-level=debug " +
+                "--dir=someDir --server-port=1234 --locators=someLocator --log-level=debug " +
                 "--max-heap=1.21gigabytes"));
         }
 
