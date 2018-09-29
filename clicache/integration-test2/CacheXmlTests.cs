@@ -19,48 +19,79 @@ using System.IO;
 using System.Threading;
 using Xunit;
 
-[Trait("Category", "Integration")]
-public class CacheXmlTests
+namespace Apache.Geode.Client.IntegrationTests
 {
-    [Fact]
-    public void ConstructAndGenerate()
-    {
-        using (var gfs = new GeodeServer())
-        {
-            var template = new FileInfo("cache.xml");
-            var cacheXml = new CacheXml(template, gfs.LocatorPort);
-            Assert.NotNull(cacheXml.File);
-            Assert.True(cacheXml.File.Exists);
 
-            using (var input = cacheXml.File.OpenText())
+    [Trait("Category", "Integration")]
+    public class CacheXmlTests
+    {
+        [Fact]
+        public void ConstructAndGenerate()
+        {
+            using (var gfsh = new GfshExecute())
             {
-                var content = input.ReadToEnd();
-                Assert.True(content.Contains(gfs.LocatorPort.ToString()));
+                try
+                {
+                    Assert.Equal(gfsh.start()
+                        .locator()
+                        .withHttpServicePort(0)
+                        .execute(), 0);
+                    var template = new FileInfo("cache.xml");
+                    var cacheXml = new CacheXml(template, gfsh.LocatorPort);
+                    Assert.NotNull(cacheXml.File);
+                    Assert.True(cacheXml.File.Exists);
+
+                    using (var input = cacheXml.File.OpenText())
+                    {
+                        var content = input.ReadToEnd();
+                        Assert.True(content.Contains(gfsh.LocatorPort.ToString()));
+                    }
+                }
+                finally
+                {
+                    Assert.Equal(gfsh.shutdown()
+                        .withIncludeLocators(true)
+                        .execute(), 0);
+                }
             }
         }
-    }
 
-    [Fact]
-    public void DisposeAndCleanup()
-    {
-        using (var gfs = new GeodeServer())
+        [Fact]
+        public void DisposeAndCleanup()
         {
-            FileInfo file;
-
-            var template = new FileInfo("cache.xml");
-            using (var cacheXml = new CacheXml(template, gfs.LocatorPort))
+            using (var gfsh = new GfshExecute())
             {
-                Assert.NotNull(cacheXml.File);
-                file = cacheXml.File;
-                Assert.True(file.Exists);
+                try
+                {
+                    Assert.Equal(gfsh.start()
+                        .locator()
+                        .withHttpServicePort(0)
+                        .execute(), 0);
+                    FileInfo file;
+
+                    var template = new FileInfo("cache.xml");
+                    using (var cacheXml = new CacheXml(template, gfsh.LocatorPort))
+                    {
+                        Assert.NotNull(cacheXml.File);
+                        file = cacheXml.File;
+                        Assert.True(file.Exists);
+                    }
+
+                    file.Refresh();
+
+                    // File deletion via File.Delete (inside the file.Refresh() call)
+                    // is not synchronous so we need to potentially wait until the file 
+                    // has been deleted here
+                    Assert.True(SpinWait.SpinUntil(() => !file.Exists, 10000));
+                }
+                finally
+                {
+                    Assert.Equal(gfsh.shutdown()
+                        .withIncludeLocators(true)
+                        .execute(), 0);
+                }
             }
-
-            file.Refresh();
-
-            // File deletion via File.Delete (inside the file.Refresh() call)
-            // is not synchronous so we need to potentially wait until the file 
-            // has been deleted here
-            Assert.True(SpinWait.SpinUntil(() => !file.Exists, 10000));
         }
     }
 }
+

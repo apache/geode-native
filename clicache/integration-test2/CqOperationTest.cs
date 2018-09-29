@@ -136,7 +136,7 @@ namespace Apache.Geode.Client.IntegrationTests
     public class CqOperationTest : IDisposable
     {
         private readonly Cache _cache;
-        private readonly GeodeServer _geodeServer;
+        private readonly GfshExecute gfsh_;
         private static int _waitInterval = 1000;
 
         public CqOperationTest()
@@ -145,14 +145,29 @@ namespace Apache.Geode.Client.IntegrationTests
                 .Set("log-level", "error");
 
             _cache = cacheFactory.Create();
-            _geodeServer = new GeodeServer();
+            gfsh_ = new GfshExecute();
+            Assert.Equal(gfsh_.start()
+                .locator()
+                .withHttpServicePort(0)
+                .execute(), 0);
+            Assert.Equal(gfsh_.start()
+                .server()
+                .withPort(0)
+                .execute(), 0);
+            Assert.Equal(gfsh_.create()
+                .region()
+                .withName("cqTestRegion")
+                .withType("REPLICATE")
+                .execute(), 0);
 
         }
 
         public void Dispose()
         {
             _cache.Close();
-            _geodeServer.Dispose();
+            Assert.Equal(gfsh_.shutdown()
+                .withIncludeLocators(true)
+                .execute(), 0);
         }
 
         [Fact]
@@ -161,7 +176,7 @@ namespace Apache.Geode.Client.IntegrationTests
             _cache.TypeRegistry.RegisterPdxType(MyOrder.CreateDeserializable);
 
             var poolFactory = _cache.GetPoolFactory()
-                .AddLocator("localhost", _geodeServer.LocatorPort);
+                .AddLocator("localhost", gfsh_.LocatorPort);
             var pool = poolFactory
               .SetSubscriptionEnabled(true)
               .Create("pool");

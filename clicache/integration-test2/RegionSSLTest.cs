@@ -67,23 +67,23 @@ namespace Apache.Geode.Client.IntegrationTests
       _geodeServer.Dispose();
     }
 
-    [Fact]
-    public void PutGet_Works()
-    {
-      using (var cacheXml = new CacheXml(new FileInfo("cache.xml"), _geodeServer.LocatorPort))
-      {
-        _cacheOne.InitializeDeclarativeCache(cacheXml.File.FullName);
+    //[Fact]
+    //public void PutGet_Works()
+    //{
+    //  using (var cacheXml = new CacheXml(new FileInfo("cache.xml"), _geodeServer.LocatorPort))
+    //  {
+    //    _cacheOne.InitializeDeclarativeCache(cacheXml.File.FullName);
 
-        var regionForCache1 = _cacheOne.GetRegion<string, string>("testRegion1");
+    //    var regionForCache1 = _cacheOne.GetRegion<string, string>("testRegion1");
 
-        const string key = "hello";
-        const string expectedResult = "dave";
+    //    const string key = "hello";
+    //    const string expectedResult = "dave";
 
-        regionForCache1.Put(key, expectedResult);
-        var actualResult = regionForCache1.Get(key);
+    //    regionForCache1.Put(key, expectedResult);
+    //    var actualResult = regionForCache1.Get(key);
 
-        Assert.Equal(expectedResult, actualResult);
-      }
-    }
+    //    Assert.Equal(expectedResult, actualResult);
+    //  }
+    //}
   }
 }

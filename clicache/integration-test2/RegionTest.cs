@@ -34,6 +34,7 @@ namespace Apache.Geode.Client.IntegrationTests
         {
             Assert.Equal(geodeServer.start()
                        .locator()
+                       .withHttpServicePort(0)
                        .execute(), 0);
             Assert.Equal(geodeServer.start()
                        .server()

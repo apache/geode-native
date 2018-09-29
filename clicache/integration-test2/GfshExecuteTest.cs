@@ -47,7 +47,7 @@ namespace Apache.Geode.Client.IntegrationTests
                         .execute(), 0);
                     Assert.Equal(gfsh.start()
                         .server()
-                        .withLocators("localhost[" + gfsh.LocatorPort + "]")
+                        .withPort(0)
                         .execute(), 0);
                 }
                 finally
