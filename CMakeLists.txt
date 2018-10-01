@@ -349,7 +349,6 @@ add_subdirectory(examples)
 add_subdirectory(tests/javaobject)
 if (${BUILD_CLI})
   add_subdirectory(clicache)
-  add_subdirectory(plugins/SQLiteCLI)
 endif()
 add_subdirectory(tests)
 

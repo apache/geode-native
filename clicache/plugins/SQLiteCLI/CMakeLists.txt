@@ -14,16 +14,38 @@
 # limitations under the License.
 
 cmake_minimum_required(VERSION 3.10)
-project(nativeclient.plugins.SQLiteCLI)
+project(Apache.Geode.Plugins.SQLite CSharp)
 
 # Set the .NET Target Framework (Note: This should match the build for Apache.Geode.)
 set (DOTNET_TARGET_FRAMEWORK_VERSION "v4.5.2")
 
-foreach(var CMAKE_CURRENT_SOURCE_DIR CMAKE_SOURCE_DIR CMAKE_BINARY_DIR CMAKE_CURRENT_BINARY_DIR)
-  file(TO_NATIVE_PATH ${${var}} ${var}_NATIVE)
-endforeach()
+#foreach(var CMAKE_CURRENT_SOURCE_DIR CMAKE_SOURCE_DIR CMAKE_BINARY_DIR CMAKE_CURRENT_BINARY_DIR)
+#  file(TO_NATIVE_PATH ${${var}} ${var}_NATIVE)
+#endforeach()
+#
+#configure_file(${CMAKE_CURRENT_SOURCE_DIR}/SQLiteCLI.csproj.in ${CMAKE_CURRENT_BINARY_DIR}/SQLiteCLI.csproj)  
+#include_external_msproject(
+#      SQLiteCLI  ${CMAKE_CURRENT_BINARY_DIR}/SQLiteCLI.csproj
+#      TYPE FAE04EC0-301F-11D3-BF4B-00C04F79EFBC)
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/SQLiteCLI.csproj.in ${CMAKE_CURRENT_BINARY_DIR}/SQLiteCLI.csproj)  
-include_external_msproject(
-      SQLiteCLI  ${CMAKE_CURRENT_BINARY_DIR}/SQLiteCLI.csproj
-      TYPE FAE04EC0-301F-11D3-BF4B-00C04F79EFBC)
+add_library( ${PROJECT_NAME} SHARED
+    AssemblyInfo.cs
+    SqLiteImpl.cs
+)
+
+target_link_libraries(${PROJECT_NAME}
+  PUBLIC
+    Apache.Geode
+    PdxClassLibrary
+)
+
+set_target_properties( ${PROJECT_NAME} PROPERTIES
+  COMMON_LANGUAGE_RUNTIME ""
+  VS_GLOBAL_ROOTNAMESPACE ${PROJECT_NAME}
+  VS_GLOBAL_TreatWarningsAsErrors True
+  VS_GLOBAL_PROJECT_TYPES "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+  VS_DOTNET_TARGET_FRAMEWORK_VERSION "v4.5.2"
+  VS_DOTNET_REFERENCE_System.Data.SQLite "${sqlite-netFx_SHARED_LIB}"
+  VS_DOTNET_REFERENCES "System;System.Data;System.Xml"
+  FOLDER cli/plugins
+)
