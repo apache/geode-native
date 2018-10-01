@@ -241,7 +241,7 @@ std::shared_ptr<EnumInfo> PdxTypeRegistry::getEnum(int32_t enumVal) {
     if (entry != tmp->end()) {
       auto&& ret = std::dynamic_pointer_cast<EnumInfo>(entry->second);
       if (ret) {
-        return ret;
+        return std::move(ret);
       }
     }
   }
@@ -253,7 +253,7 @@ std::shared_ptr<EnumInfo> PdxTypeRegistry::getEnum(int32_t enumVal) {
     if (entry != tmp->end()) {
       auto&& ret = std::dynamic_pointer_cast<EnumInfo>(entry->second);
       if (ret) {
-        return ret;
+        return std::move(ret);
       }
     }
   }
@@ -265,7 +265,7 @@ std::shared_ptr<EnumInfo> PdxTypeRegistry::getEnum(int32_t enumVal) {
   tmp = intToEnum;
   (*tmp)[enumValPtr] = ret;
   intToEnum = tmp;
-  return ret;
+  return std::move(ret);
 }
 }  // namespace client
 }  // namespace geode
