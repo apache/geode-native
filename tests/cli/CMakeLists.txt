@@ -51,6 +51,6 @@ foreach(FILE ${CSPROJECTS})
       ${PROJNAME}  ${CMAKE_CURRENT_BINARY_DIR}/${PROJNAME}/${PROJNAME}.csproj
       TYPE FAE04EC0-301F-11D3-BF4B-00C04F79EFBC
 	  PLATFORM ${PLATFORM})
-  set_target_properties(${PROJNAME} PROPERTIES FOLDER test/cliTests)
+  set_target_properties(${PROJNAME} PROPERTIES FOLDER cli/test/integration)
 
 endforeach()

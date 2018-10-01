@@ -98,4 +98,4 @@ target_link_libraries(testobject
 )
 
 # For Visual Studio organization
-set_target_properties(testobject PROPERTIES FOLDER test)
+set_target_properties(testobject PROPERTIES FOLDER test-common)

@@ -37,6 +37,9 @@ list(APPEND CONFIGURE_OUT_FILES ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 
 # adds named target for version.h to avoid parallel generation under windows
 add_custom_target(version-header DEPENDS version.h)
+set_target_properties(version-header PROPERTIES
+	FOLDER cpp
+)
 
 if ("SunOS" STREQUAL ${CMAKE_SYSTEM_NAME})
   set( _SOLARIS 1 )

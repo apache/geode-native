@@ -310,21 +310,32 @@ endif()
 find_package(Geode 1.0 REQUIRED)
 
 add_custom_target(client-libraries)
+set_target_properties(client-libraries PROPERTIES
+	FOLDER test-common
+)
 
 add_custom_target(unit-tests)
+set_target_properties(unit-tests PROPERTIES
+	FOLDER cpp/test/unit
+)
+
 add_custom_target(run-unit-tests)
 add_dependencies(run-unit-tests unit-tests)
 set_target_properties(run-unit-tests PROPERTIES
     EXCLUDE_FROM_ALL TRUE
     EXCLUDE_FROM_DEFAULT_BUILD TRUE
+	FOLDER cpp/test/unit
 )
 
 add_custom_target(integration-tests)
+set_target_properties(integration-tests PROPERTIES FOLDER cpp/test/integration)
+
 add_custom_target(run-integration-tests)
 add_dependencies(run-integration-tests integration-tests)
 set_target_properties(run-integration-tests PROPERTIES
     EXCLUDE_FROM_ALL TRUE
     EXCLUDE_FROM_DEFAULT_BUILD TRUE
+	FOLDER test-common
 )
 
 add_subdirectory(dependencies)

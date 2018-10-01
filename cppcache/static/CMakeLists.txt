@@ -50,6 +50,7 @@ if (USE_PCH)
   endif()
 
   set_target_properties(apache-geode-static PROPERTIES
+    FOLDER cpp
     COTIRE_ENABLE_PRECOMPILED_HEADER TRUE
     COTIRE_ADD_UNITY_BUILD TRUE
     COTIRE_PREFIX_HEADER_IGNORE_PATH "${_COTIRE_PREFIX_HEADER_IGNORE_PATH}"
@@ -58,4 +59,7 @@ if (USE_PCH)
   set_source_files_properties(cppcache/version.h PROPERTIES GENERATED TRUE)
 
   cotire(apache-geode-static)
+else()
+  set_target_properties(apache-geode-static PROPERTIES
+    FOLDER cpp)
 endif()
