@@ -47,38 +47,41 @@ namespace Apache.Geode.Client.IntegrationTests
 
             using (var cacheXml = new CacheXml(new FileInfo("cache.xml"), geodeServer.LocatorPort))
             {
-              var cacheFactory = new CacheFactory();
-
-              var cacheOne = cacheFactory.Create();
-              try
-              {
-                cacheOne.InitializeDeclarativeCache(cacheXml.File.FullName);
-
-                var cacheTwo = cacheFactory.Create();
-                try
+                using (var cacheXml2 = new CacheXml(new FileInfo("cache.xml"), geodeServer.LocatorPort))
                 {
-                  cacheTwo.InitializeDeclarativeCache(cacheXml.File.FullName);
+                    var cacheFactory = new CacheFactory();
 
-                  var regionForCache1 = cacheOne.GetRegion<string, string>("testRegion1");
-                  var regionForCache2 = cacheTwo.GetRegion<string, string>("testRegion1");
+                    var cacheOne = cacheFactory.Create();
+                    try
+                    {
+                        cacheOne.InitializeDeclarativeCache(cacheXml.File.FullName);
 
-                  const string key = "hello";
-                  const string expectedResult = "dave";
+                        var cacheTwo = cacheFactory.Create();
+                        try
+                        {
+                            cacheTwo.InitializeDeclarativeCache(cacheXml2.File.FullName);
 
-                  regionForCache1.Put(key, expectedResult);
-                  var actualResult = regionForCache2.Get(key);
+                            var regionForCache1 = cacheOne.GetRegion<string, string>("testRegion1");
+                            var regionForCache2 = cacheTwo.GetRegion<string, string>("testRegion1");
 
-                  Assert.Equal(expectedResult, actualResult);
+                            const string key = "hello";
+                            const string expectedResult = "dave";
+
+                            regionForCache1.Put(key, expectedResult);
+                            var actualResult = regionForCache2.Get(key);
+
+                            Assert.Equal(expectedResult, actualResult);
+                        }
+                        finally
+                        {
+                            cacheTwo.Close();
+                        }
+                    }
+                    finally
+                    {
+                        cacheOne.Close();
+                    }
                 }
-                finally
-                {
-                  cacheTwo.Close();
-                }
-              }
-              finally
-              {
-                cacheOne.Close();
-              }
             }
         }
         finally
