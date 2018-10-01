@@ -68,7 +68,7 @@ void plog(const char* l, const char* s, const char* filename, int32_t lineno) {
   pbuf += ACE_OS::strftime(pbuf, MINBUFSIZE, "%Y/%m/%d %H:%M:%S", tm_val);
   pbuf += ACE_OS::snprintf(pbuf, 15, ".%06" PRId64 " ",
                            static_cast<int64_t>(clock.usec()));
-  pbuf += ACE_OS::strftime(pbuf, MINBUFSIZE, "%Z ", tm_val);
+  ACE_OS::strftime(pbuf, MINBUFSIZE, "%Z ", tm_val);
   static bool needInit = true;
   if (needInit) {
     ACE_OS::uname(&u);

@@ -79,7 +79,6 @@ std::string convertHostToCanonicalForm(const char* endpoints) {
     endpointsStr = endpointsStr.substr(pos, length);
   } else {
     hostString = "";
-    port = 0;
     return "";
   }
   hostString = endpoint;
@@ -1170,8 +1169,6 @@ DUNIT_MAIN
       CALL_TASK(CheckPrSingleHopForIntKeysTask);
       size_t totKeyTypes =
           CacheableWrapperFactory::getRegisteredKeyTypes().size();
-      size_t totValTypes =
-          CacheableWrapperFactory::getRegisteredValueTypes().size();
 
       CALL_TASK(CheckPrSingleHopForIntKeysTask);
       for (size_t i = 0; i < totKeyTypes; i++) {

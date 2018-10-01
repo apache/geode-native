@@ -98,7 +98,6 @@ std::string Utils::convertHostToCanonicalForm(const char* endpoints) {
     endpointsStr = endpointsStr.substr(pos, length);
   } else {
     hostString = "";
-    port = 0;
     return "";
   }
   hostString = endpoint;

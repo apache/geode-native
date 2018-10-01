@@ -967,8 +967,6 @@ GfErrType LocalRegion::getNoThrow(
         value = oldValue;
       }
     }
-    // signal no explicit removal of tracking to the RemoveTracking object
-    updateCount = -1;
   }
 
   if (CacheableToken::isInvalid(value) || CacheableToken::isTombstone(value)) {

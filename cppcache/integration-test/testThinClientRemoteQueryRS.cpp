@@ -204,7 +204,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
       if (!qh->verifyRS(results, resultsetRowCountsOPL[i])) {
         char failmsg[100] = {0};
         ACE_OS::sprintf(failmsg, "Query verify failed for query index %d", i);
-        doAnyErrorOccured = true;
         ASSERT(false, failmsg);
       }
 
@@ -306,7 +305,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
                                               qh->getPortfolioNumSets()))) {
           char failmsg[100] = {0};
           ACE_OS::sprintf(failmsg, "Query verify failed for query index %d", i);
-          doAnyErrorOccured = true;
           ASSERT(false, failmsg);
         }
 
@@ -418,7 +416,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
                                               qh->getPortfolioNumSets()))) {
           char failmsg[100] = {0};
           ACE_OS::sprintf(failmsg, "Query verify failed for query index %d", i);
-          doAnyErrorOccured = true;
           ASSERT(false, failmsg);
         }
 

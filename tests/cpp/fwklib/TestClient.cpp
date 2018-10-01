@@ -78,12 +78,12 @@ int32_t TestClient::runTask(ClientTask* task, ACE_thread_t id) {
       return FWK_SEVERE;
     }
     m_Ready.release();
-    state = READY;
+    state = READY;  // NOLINT(clang-analyzer-deadcode.DeadStores)
     m_Run.acquire();
     int32_t iters = task->doTask(id);
     task->addIters(iters);
     m_Done.release();
-    state = DONE;
+    state = DONE;  // NOLINT(clang-analyzer-deadcode.DeadStores)
     task->doCleanup(id);
     m_Clean.release();
     state = CLEAN;

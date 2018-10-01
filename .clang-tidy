@@ -1,6 +1,6 @@
 ---
-Checks:          '-*,clang-diagnostic-*,clang-analyzer-*,-clang-analyzer-alpha*,google-*,-google-readability-todo,-google-runtime-references,-google-default-arguments,-clang-analyzer-core.uninitialized.UndefReturn,-clang-analyzer-core.UndefinedBinaryOperatorResult'
-WarningsAsErrors: 'clang-analyzer-optin.performance.*,clang-analyzer-core.*,clang-analyzer-unix.*,clang-diagnostic-*,google-*,clang-analyzer-cplusplus.NewDeleteLeaks,clang-analyzer-security.insecureAPI.rand'
+Checks:          '-*,clang-diagnostic-*,clang-analyzer-*,-clang-analyzer-alpha*,google-*,-google-readability-todo,-google-runtime-references,-google-default-arguments,-clang-analyzer-core.uninitialized.UndefReturn,-clang-analyzer-core.UndefinedBinaryOperatorResult,-clang-analyzer-optin.cplusplus.VirtualCall'
+WarningsAsErrors: 'clang-analyzer-optin.performance.*,clang-analyzer-core.*,clang-analyzer-unix.*,clang-diagnostic-*,google-*,clang-analyzer-cplusplus.NewDeleteLeaks,clang-analyzer-security.insecureAPI.rand,clang-analyzer-deadcode.DeadStores'
 HeaderFilterRegex: '.*'
 AnalyzeTemporaryDtors: false
 FormatStyle:     file
@@ -55,3 +55,6 @@ CheckOptions:
 # google-default-arguments
 # clang-analyzer-core.uninitialized.UndefReturn - Generates errors in ACE, how do we ignore?
 # clang-analyzer-core.UndefinedBinaryOperatorResult - Generates errors in ACE, how do we ignore?
+
+# TEMP
+# clang-analyzer-optin.cplusplus.VirtualCall

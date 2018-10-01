@@ -31,14 +31,14 @@ void RegionCommit::fromData(DataInput& input) {
   m_regionPath = std::dynamic_pointer_cast<CacheableString>(input.readObject());
   m_parentRegionPath =
       std::dynamic_pointer_cast<CacheableString>(input.readObject());
-  int32_t size = input.readInt32();
+  auto size = input.readInt32();
   if (size > 0) {
     const auto largeModCount = input.readBoolean();
     auto dsMember =
         std::dynamic_pointer_cast<DSMemberForVersionStamp>(input.readObject());
 
     auto memId = m_memberListForVersionStamp.add(dsMember);
-    for (int i = 0; i < size; i++) {
+    for (int32_t i = 0; i < size; i++) {
       auto entryOp =
           std::make_shared<FarSideEntryOp>(m_memberListForVersionStamp);
       entryOp->fromData(input, largeModCount, memId);

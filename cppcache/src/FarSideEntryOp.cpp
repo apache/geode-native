@@ -55,12 +55,10 @@ void FarSideEntryOp::fromData(DataInput& input, bool largeModCount,
     m_modSerialNum = input.read();
   }
 
-  if (input.read() != static_cast<int8_t>(DSCode::NullObj)) {
-    input.rewindCursor(1);
-    input.readObject(m_callbackArg);
-  }
+  m_callbackArg = input.readObject();
 
   skipFilterRoutingInfo(input);
+
   m_versionTag =
       TcrMessage::readVersionTagPart(input, memId, m_memberListForVersionStamp);
   // std::shared_ptr<Serializable> sPtr;
@@ -122,47 +120,34 @@ void FarSideEntryOp::skipFilterRoutingInfo(DataInput& input) {
     return;
   } else if (structType == DSCode::DataSerializable) {
     input.read();  // ignore classbyte
-    input.readObject(tmp);
+    input.readObject(); // ignore object
     int32_t size = input.readInt32();
     for (int i = 0; i < size; i++) {
+      // ignore ClientProxyMembershipID
       ClientProxyMembershipID memId;
-      // memId.fromData(input);
       memId.readEssentialData(input);
 
-      auto len = input.readArrayLength();
-
+      // Ignore filter info
       if (input.readBoolean()) {
-        len = input.readArrayLength();
+        auto len = input.readArrayLength();
         for (int j = 0; j < len; j++) {
           input.readUnsignedVL();
           input.readUnsignedVL();
         }
       }
 
-      len = input.readInt32();
+      // ignore interestedClients
+      auto len = input.readInt32();
       if (len != -1) {
         const auto isLong = input.readBoolean();
-
-        for (int j = 0; j < len; j++) {
-          if (isLong) {
-            input.readInt64();
-          } else {
-            input.readInt32();
-          }
-        }
+        input.advanceCursor(len * (isLong ? sizeof(int64_t) : sizeof(int32_t)));
       }
 
+      // ignore interestedClientsInv
       len = input.readInt32();
       if (len != -1) {
         const auto isLong = input.readBoolean();
-
-        for (int j = 0; j < len; j++) {
-          if (isLong) {
-            input.readInt64();
-          } else {
-            input.readInt32();
-          }
-        }
+        input.advanceCursor(len * (isLong ? sizeof(int64_t) : sizeof(int32_t)));
       }
     }
   } else {

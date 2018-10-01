@@ -1220,18 +1220,18 @@ void TcrMessage::handleByteArrayResponse(
       m_metadata =
           new std::vector<std::vector<std::shared_ptr<BucketServerLocation>>>();
       for (int32_t i = 0; i < numparts; i++) {
-        int32_t bits32 = input.readInt32();  // partlen;
-        input.read();                        // isObj;
-        auto bits8 = input.read();           // cacheable vector typeid
+        input.readInt32();          // ignore partlen
+        input.read();               // ignore  isObj;
+        auto bits8 = input.read();  // cacheable vector typeid
         LOGDEBUG("Expected typeID %d, got %d", DSCode::CacheableArrayList,
                  bits8);
 
-        bits32 = input.readArrayLength();  // array length
-        LOGDEBUG("Array length = %d ", bits32);
-        if (bits32 > 0) {
+        auto arrayLength = input.readArrayLength();  // array length
+        LOGDEBUG("Array length = %d ", arrayLength);
+        if (arrayLength > 0) {
           std::vector<std::shared_ptr<BucketServerLocation>>
               bucketServerLocations;
-          for (int32_t index = 0; index < bits32; index++) {
+          for (int32_t index = 0; index < arrayLength; index++) {
             // ignore DS typeid, CLASS typeid, and string typeid
             input.advanceCursor(3);
             uint16_t classLen = input.readInt16();  // Read classLen
@@ -1257,39 +1257,39 @@ void TcrMessage::handleByteArrayResponse(
     }
 
     case TcrMessage::RESPONSE_CLIENT_PARTITION_ATTRIBUTES: {
-      int32_t bits32 = input.readInt32();  // partlen;
-      input.read();                        // ignore isObj;
+      input.readInt32();  // ignore partlen;
+      input.read();       // ignore isObj;
 
       // PART1 = bucketCount
       m_bucketCount = input.readNativeInt32();
 
-      bits32 = input.readInt32();  // partlen;
-      input.read();                // ignore isObj;
-      if (bits32 > 0) {
+      auto partLength = input.readInt32();  // partlen;
+      input.read();                         // ignore isObj;
+      if (partLength > 0) {
         // PART2 = colocatedwith
         m_colocatedWith = input.readString();
       }
 
       if (numparts == 4) {
-        bits32 = input.readInt32();  // partlen;
-        input.read();                // ignore isObj;
-        if (bits32 > 0) {
+        partLength = input.readInt32();  // partlen;
+        input.read();                    // ignore isObj;
+        if (partLength > 0) {
           // PART3 = partitionresolvername
           m_partitionResolverName = input.readString();
         }
 
-        bits32 = input.readInt32();  // partlen;
-        input.read();                // ignore isObj;
-        input.read();                // ignore cacheable CacheableHashSet typeid
+        input.readInt32();  // ignore partlen;
+        input.read();       // ignore isObj;
+        input.read();       // ignore cacheable CacheableHashSet typeid
 
-        bits32 = input.readArrayLength();  // array length
-        if (bits32 > 0) {
+        auto arrayLength = input.readArrayLength();  // array length
+        if (arrayLength > 0) {
           m_fpaSet =
               new std::vector<std::shared_ptr<FixedPartitionAttributesImpl>>();
-          for (int32_t index = 0; index < bits32; index++) {
+          for (int32_t index = 0; index < arrayLength; index++) {
             input.advanceCursor(
                 3);  // ignore DS typeid, CLASS typeid, string typeid
-            uint16_t classLen = input.readInt16();  // Read classLen
+            auto classLen = input.readInt16();  // Read classLen
             input.advanceCursor(classLen);
             auto fpa = std::make_shared<FixedPartitionAttributesImpl>();
             fpa->fromData(input);  // PART4 = set of FixedAttributes.

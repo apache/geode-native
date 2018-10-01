@@ -132,12 +132,16 @@ class XmlAuthzCredentialGenerator {
       switch (role) {
         case READER_ROLE:
           role = WRITER_ROLE;
+          break;
         case WRITER_ROLE:
           role = READER_ROLE;
+          break;
         case QUERY_ROLE:
           role = WRITER_ROLE;
+          break;
         case ADMIN_ROLE:
           role = QUERY_ROLE;
+          break;
         default:
           /* UNNECESSARY role = role*/ break;
       };
