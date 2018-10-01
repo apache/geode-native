@@ -328,6 +328,8 @@ set_target_properties(run-unit-tests PROPERTIES
 )
 
 add_custom_target(integration-tests)
+set_target_properties(integration-tests PROPERTIES FOLDER cpp/test/integration)
+
 add_custom_target(run-integration-tests)
 add_dependencies(run-integration-tests integration-tests)
 set_target_properties(run-integration-tests PROPERTIES
