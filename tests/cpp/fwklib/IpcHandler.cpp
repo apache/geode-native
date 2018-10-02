@@ -244,7 +244,7 @@ bool IpcHandler::sendBuffer(IpcMsg msg, const char *str) {
   char *buffer = checkBuffer(length);
   *reinterpret_cast<IpcMsg *>(buffer) = static_cast<IpcMsg>(htonl(msg));
   *reinterpret_cast<int32_t *>(buffer + 4) = htonl(length);
-  strcpy((buffer + 8), str);
+  strncpy((buffer + 8), str, length - 8);
 
   //  FWKDEBUG( "Sending " << ( int32_t )msg << "  and string: " << str );
   length += 8;
