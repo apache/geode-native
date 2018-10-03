@@ -31,7 +31,7 @@ else()
 endif()
 
 # Set the .NET Target Framework (Note: This should match the build for Apache.Geode.)
-set (DOTNET_TARGET_FRAMEWORK_VERSION "v4.5.2")
+set (DOTNET_TARGET_FRAMEWORK_VERSION ${DOTNET_TARGET_FRAMEWORK_VERSION})
 
 foreach(var CMAKE_CURRENT_SOURCE_DIR CMAKE_SOURCE_DIR CMAKE_BINARY_DIR CMAKE_CURRENT_BINARY_DIR)
   file(TO_NATIVE_PATH ${${var}} ${var}_NATIVE)
