@@ -70,8 +70,8 @@ void Server::start() {
       .withBindAddress(serverAddress_.address)
       .withPort(serverAddress_.port)
       .withMaxHeap("1g")
-      .withLocators(locators_.front().getAdddress().address + "[" +
-                    std::to_string(locators_.front().getAdddress().port) + "]")
+      .withLocators(locators_.front().getAddress().address + "[" +
+                    std::to_string(locators_.front().getAddress().port) + "]")
       .execute();
 
   //    std::cout << "server: " << serverAddress_.port << ": started" <<

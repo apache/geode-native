@@ -135,53 +135,43 @@ namespace Apache.Geode.Client.IntegrationTests
     [Trait("Category", "Integration")]
     public class CqOperationTest : IDisposable
     {
-        private readonly Cache _cache;
-        private readonly GfshExecute gfsh_;
-        private static int _waitInterval = 1000;
+        private readonly Cache cache_;
+        private static int waitInterval_ = 1000;
+        private Cluster cluster_;
 
         public CqOperationTest()
         {
             var cacheFactory = new CacheFactory()
                 .Set("log-level", "error");
 
-            _cache = cacheFactory.Create();
-            gfsh_ = new GfshExecute();
-            Assert.Equal(gfsh_.start()
-                .locator()
-                .withHttpServicePort(0)
-                .execute(), 0);
-            Assert.Equal(gfsh_.start()
-                .server()
-                .withPort(0)
-                .execute(), 0);
-            Assert.Equal(gfsh_.create()
+            cache_ = cacheFactory.Create();
+            cluster_ = new Cluster("CqOperationTest", 1, 1);
+            Assert.Equal(cluster_.Start(), true);
+            Assert.Equal(cluster_.Gfsh.create()
                 .region()
                 .withName("cqTestRegion")
                 .withType("REPLICATE")
                 .execute(), 0);
-
         }
 
         public void Dispose()
         {
-            _cache.Close();
-            Assert.Equal(gfsh_.shutdown()
-                .withIncludeLocators(true)
-                .execute(), 0);
+            cache_.Close();
+            cluster_.Dispose();
         }
 
         [Fact]
         public void NotificationsHaveCorrectValues()
         {
-            _cache.TypeRegistry.RegisterPdxType(MyOrder.CreateDeserializable);
+            cache_.TypeRegistry.RegisterPdxType(MyOrder.CreateDeserializable);
 
-            var poolFactory = _cache.GetPoolFactory()
-                .AddLocator("localhost", gfsh_.LocatorPort);
+            var poolFactory = cache_.GetPoolFactory()
+                .AddLocator("localhost", cluster_.Gfsh.LocatorPort);
             var pool = poolFactory
               .SetSubscriptionEnabled(true)
               .Create("pool");
 
-            var regionFactory = _cache.CreateRegionFactory(RegionShortcut.PROXY)
+            var regionFactory = cache_.CreateRegionFactory(RegionShortcut.PROXY)
                 .SetPoolName("pool");
 
             var region = regionFactory.Create<string, MyOrder>("cqTestRegion");
@@ -203,28 +193,28 @@ namespace Apache.Geode.Client.IntegrationTests
             
             region.Put("order1", order1);
             region.Put("order2", order2);
-            Assert.True(cqListener.CreatedEvent.WaitOne(_waitInterval), "Didn't receieve expected CREATE event");
+            Assert.True(cqListener.CreatedEvent.WaitOne(waitInterval_), "Didn't receieve expected CREATE event");
 
             order1.Quantity = 60;
             region.Put("order1", order1);
-            Assert.True(cqListener.CreatedEvent.WaitOne(_waitInterval), "Didn't receieve expected CREATE event");
+            Assert.True(cqListener.CreatedEvent.WaitOne(waitInterval_), "Didn't receieve expected CREATE event");
 
             order2.Quantity = 45;
             region.Put("order2", order2);
-            Assert.True(cqListener.UpdatedEvent.WaitOne(_waitInterval), "Didn't receieve expected UPDATE event");
+            Assert.True(cqListener.UpdatedEvent.WaitOne(waitInterval_), "Didn't receieve expected UPDATE event");
 
             order2.Quantity = 11;
             region.Put("order2", order2);
-            Assert.True(cqListener.DestroyedNonNullEvent.WaitOne(_waitInterval), "Didn't receieve expected DESTROY event");
+            Assert.True(cqListener.DestroyedNonNullEvent.WaitOne(waitInterval_), "Didn't receieve expected DESTROY event");
 
             region.Remove("order1");
-            Assert.True(cqListener.DestroyedNullEvent.WaitOne(_waitInterval), "Didn't receieve expected DESTROY event");
+            Assert.True(cqListener.DestroyedNullEvent.WaitOne(waitInterval_), "Didn't receieve expected DESTROY event");
 
             region.Put("order3", order3);
-            Assert.True(cqListener.CreatedEvent.WaitOne(_waitInterval), "Didn't receieve expected CREATE event");
+            Assert.True(cqListener.CreatedEvent.WaitOne(waitInterval_), "Didn't receieve expected CREATE event");
 
             region.Clear();
-            Assert.True(cqListener.RegionClearEvent.WaitOne(_waitInterval), "Didn't receive expected CLEAR event");
+            Assert.True(cqListener.RegionClearEvent.WaitOne(waitInterval_), "Didn't receive expected CLEAR event");
 
             Assert.False(cqListener.ReceivedUnknownEventType, "An unknown event was received by CQ listener");
         }

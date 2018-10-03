@@ -133,7 +133,7 @@ namespace Apache.Geode.Client.IntegrationTests
                     gfsh_.LocatorPort = port;
                     return this;
                 }
-                public Locator withJmxManagerPort(short jmxManagerPort)
+                public Locator withJmxManagerPort(int jmxManagerPort)
                 {
                     gfsh_.JmxManagerPort = jmxManagerPort;
                     return this;
