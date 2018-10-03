@@ -27,3 +27,5 @@ add_subdirectory(test)
 add_subdirectory(test2)
 add_subdirectory(integration-test)
 add_subdirectory(integration-test2)
+add_subdirectory(plugins/SQLiteCLI)
+

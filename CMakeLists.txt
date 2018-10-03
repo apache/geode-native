@@ -35,6 +35,8 @@ if(CMAKE_GENERATOR MATCHES Win64*)
   endif()
 endif()
 
+set(DOTNET_TARGET_FRAMEWORK_VERSION "4.5.2")
+
 set(BUILD_BITS 64 CACHE STRING "Build for 64 (Geode default) or 32 bit.")
 
 set(PRODUCT_VENDOR "Apache" CACHE STRING "Product vendor")
@@ -349,7 +351,6 @@ add_subdirectory(examples)
 add_subdirectory(tests/javaobject)
 if (${BUILD_CLI})
   add_subdirectory(clicache)
-  add_subdirectory(plugins/SQLiteCLI)
 endif()
 add_subdirectory(tests)
 
