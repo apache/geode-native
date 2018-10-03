@@ -179,26 +179,19 @@ namespace Apache.Geode.Client.IntegrationTests
     [Trait("Category", "Integration")]
     public class CqOperationTest : IDisposable
     {
-        private readonly Cache _cache;
-        private readonly GfshExecute gfsh_;
-        private static int _waitInterval = 1000;
-  
+        private readonly Cache cache_;
+        private static int waitInterval_ = 1000;
+        private Cluster cluster_;
+
         public CqOperationTest()
         {
             var cacheFactory = new CacheFactory()
                 .Set("log-level", "error");
-  
-            _cache = cacheFactory.Create();
-            gfsh_ = new GfshExecute();
-            Assert.Equal(gfsh_.start()
-                .locator()
-                .withHttpServicePort(0)
-                .execute(), 0);
-            Assert.Equal(gfsh_.start()
-                .server()
-                .withPort(0)
-                .execute(), 0);
-            Assert.Equal(gfsh_.create()
+
+            cache_ = cacheFactory.Create();
+            cluster_ = new Cluster("CqOperationTest", 1, 1);
+            Assert.Equal(cluster_.Start(), true);
+            Assert.Equal(cluster_.Gfsh.create()
                 .region()
                 .withName("cqTestRegion")
                 .withType("REPLICATE")
@@ -207,24 +200,22 @@ namespace Apache.Geode.Client.IntegrationTests
   
         public void Dispose()
         {
-            _cache.Close();
-            Assert.Equal(gfsh_.shutdown()
-                .withIncludeLocators(true)
-                .execute(), 0);
+            cache_.Close();
+            cluster_.Dispose();
         }
   
         [Fact]
         public void NotificationsHaveCorrectValuesPdxSerializable()
         {
-            _cache.TypeRegistry.RegisterPdxType(MyOrder.CreateDeserializable);
-  
-            var poolFactory = _cache.GetPoolFactory()
-                .AddLocator("localhost", gfsh_.LocatorPort);
+            cache_.TypeRegistry.RegisterPdxType(MyOrder.CreateDeserializable);
+
+            var poolFactory = cache_.GetPoolFactory()
+                .AddLocator("localhost", cluster_.Gfsh.LocatorPort);
             var pool = poolFactory
               .SetSubscriptionEnabled(true)
               .Create("pool");
-  
-            var regionFactory = _cache.CreateRegionFactory(RegionShortcut.PROXY)
+
+            var regionFactory = cache_.CreateRegionFactory(RegionShortcut.PROXY)
                 .SetPoolName("pool");
   
             var region = regionFactory.Create<string, MyOrder>("cqTestRegion");
