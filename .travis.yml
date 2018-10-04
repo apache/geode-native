@@ -33,14 +33,17 @@ addons:
     - make
     - graphviz
     - zlib1g-dev
+    - wget
 
 before_install:
   - CC=clang-6.0
   - CXX=clang-6.0
+  - wget https://cmake.org/files/v3.12/cmake-3.12.2-Linux-x86_64.sh
+  - sh ./cmake-3.7.2-Linux-x86_64.sh --prefix=/usr --skip-license
 
 script:
   - cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS=-stdlib=libc++ -DCMAKE_CXX_CLANG_TIDY=clang-tidy-6.0 -DUSE_PCH=ON .
-  - cmake --build . -- -j`nprocs` VERBOSE=1
+  - cmake --build . -- -j2 VERBOSE=1
 
 notifications:
   email:
