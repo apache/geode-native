@@ -112,16 +112,13 @@ class ClientTask {
 class ExitTask : public ClientTask {
  public:
   ExitTask() { m_Exit = true; }
-  bool doSetup(ACE_thread_t id) {
-    id = ACE_Thread_NULL;
+  bool doSetup(ACE_thread_t) {
     return true;
   }
-  uint32_t doTask(ACE_thread_t id) {
-    id = ACE_Thread_NULL;
+  uint32_t doTask(ACE_thread_t) {
     return 0;
   }
-  void doCleanup(ACE_thread_t id) {
-    id = ACE_Thread_NULL;
+  void doCleanup(ACE_thread_t) {
   }
 };
 
@@ -132,8 +129,7 @@ class ThreadedTask : public ClientTask {
  public:
   ThreadedTask(FwkAction func, std::string args) : m_func(func), m_args(args) {}
 
-  uint32_t doTask(ACE_thread_t id) {
-    id = ACE_Thread_NULL;
+  uint32_t doTask(ACE_thread_t) {
     int32_t result = m_func(m_args.c_str());
     if (result != FWK_SUCCESS) {
       failed();
@@ -143,12 +139,10 @@ class ThreadedTask : public ClientTask {
     return 0;
   }
 
-  bool doSetup(ACE_thread_t id) {
-    id = ACE_Thread_NULL;
+  bool doSetup(ACE_thread_t) {
     return true;
   }
-  void doCleanup(ACE_thread_t id) {
-    id = ACE_Thread_NULL;
+  void doCleanup(ACE_thread_t) {
   }
 };
 

@@ -49,7 +49,7 @@ if (${WIN32})
 else()
   set ( _BOOTSTRAP_COMMAND ./bootstrap.sh )
   set ( _B2_COMMAND ./b2 )
-  set ( _B2_FLAGS ${_B2_FLAGS} cxxflags=-std=c++11 )
+  set ( _B2_FLAGS ${_B2_FLAGS} "cxxflags=${CMAKE_CXX_FLAGS} ${CMAKE_CXX11_STANDARD_COMPILE_OPTION}" )
 endif()
 
 if ("SunOS" STREQUAL ${CMAKE_SYSTEM_NAME})

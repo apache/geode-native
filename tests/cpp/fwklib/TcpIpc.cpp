@@ -181,11 +181,7 @@ int32_t TcpIpc::sendBuffers(int32_t cnt, char *buffers[], int32_t lengths[],
   }
   iovec buffs[2];
   for (int32_t idx = 0; idx < cnt; idx++) {
-#ifdef _LINUX
-    buffs[idx].iov_base = (void *)buffers[idx];
-#else
     buffs[idx].iov_base = buffers[idx];
-#endif
     buffs[idx].iov_len = lengths[idx];
     tot += lengths[idx];
   }
