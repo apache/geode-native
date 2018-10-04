@@ -75,6 +75,11 @@ ExternalProject_Add( ${${PROJECT_NAME}_EXTERN}
    STAMP_DIR ./stamp
 )
 
+ExternalProject_Get_Property( ${${PROJECT_NAME}_EXTERN} SOURCE_DIR )
+set( ${PROJECT_NAME}_SOURCE_DIR ${SOURCE_DIR} )
+ExternalProject_Get_Property( ${${PROJECT_NAME}_EXTERN} INSTALL_DIR )
+set( ${PROJECT_NAME}_INSTALL_DIR ${INSTALL_DIR} )
+
 if (NOT WIN32)
 # https://github.com/boostorg/process/issues/51
   set( PATCH_FILE ${CMAKE_CURRENT_SOURCE_DIR}/patches)
@@ -83,17 +88,11 @@ if (NOT WIN32)
       DEPENDEES download
       DEPENDERS patch
       DEPENDS ${PATCH_FILE}
+      BYPRODUCTS ${${PROJECT_NAME}_SOURCE_DIR}/boost/process/detail/posix/is_running.hpp
       WORKING_DIRECTORY ${${PROJECT_NAME}_INSTALL_DIR}
       COMMAND ${PATCH} -u -N -p1 < ${PATCH_FILE}
   )
 endif()
-
-
-ExternalProject_Get_Property( ${${PROJECT_NAME}_EXTERN} SOURCE_DIR )
-set( ${PROJECT_NAME}_SOURCE_DIR ${SOURCE_DIR} )
-ExternalProject_Get_Property( ${${PROJECT_NAME}_EXTERN} INSTALL_DIR )
-set( ${PROJECT_NAME}_INSTALL_DIR ${INSTALL_DIR} )
-
 
 function(ADD_BOOST_LIBRARY)
   set(options)
