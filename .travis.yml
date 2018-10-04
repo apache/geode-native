@@ -16,6 +16,12 @@
 language: cpp
 os: linux
 
+env:
+  global:
+    - GEODE_VERSION=1.6.0
+    - CMAKE_VERSION=3.12.2
+    - CMAKE_VERSION=3.12.2
+
 addons:
   apt:
     sources:
@@ -34,12 +40,17 @@ addons:
     - graphviz
     - zlib1g-dev
     - wget
+    - openjdk-8-jdk-headless
 
 before_install:
-  - CC=clang-6.0
-  - CXX=clang-6.0
-  - wget https://cmake.org/files/v3.12/cmake-3.12.2-Linux-x86_64.sh
-  - sh ./cmake-3.7.2-Linux-x86_64.sh --prefix=/usr --skip-license
+  - export CC=clang-6.0
+  - export CXX=clang-6.0
+  - mkdir $HOME/usr
+  - export PATH="$HOME/usr/bin:$PATH"
+  - wget "https://cmake.org/files/v${CMAKE_VERSION%.*}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh"
+  - sh cmake-${CMAKE_VERSION}-Linux-x86_64.sh --prefix=$HOME/usr --exclude-subdir --skip-license
+  - wget "https://www.apache.org/dyn/closer.cgi?action=download&filename=geode/${GEODE_VERSION}/apache-geode-${GEODE_VERSION}.tgz" --quiet -O - | tar xzf - -C $HOME
+  - export GEODE_HOME=$HOME/apache-geode-${GEODE_VERSION}
 
 script:
   - cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS=-stdlib=libc++ -DCMAKE_CXX_CLANG_TIDY=clang-tidy-6.0 -DUSE_PCH=ON .
