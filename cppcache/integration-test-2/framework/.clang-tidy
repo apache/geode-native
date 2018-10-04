@@ -2,52 +2,10 @@
 Checks:          '-*,clang-diagnostic-*,clang-analyzer-*,-clang-analyzer-alpha*,google-*,-google-readability-todo,-google-runtime-references,-clang-analyzer-unix.cstring.NullArg'
 WarningsAsErrors: '*,-google-default-arguments'
 HeaderFilterRegex: '.*'
-AnalyzeTemporaryDtors: false
 FormatStyle:     file
-CheckOptions:
-  - key:             google-build-namespaces.HeaderFileExtensions
-    value:           h,hh,hpp,hxx
-  - key:             google-global-names-in-headers.HeaderFileExtensions
-    value:           h
-  - key:             google-readability-braces-around-statements.ShortStatementLines
-    value:           '1'
-  - key:             google-readability-function-size.BranchThreshold
-    value:           '4294967295'
-  - key:             google-readability-function-size.LineThreshold
-    value:           '4294967295'
-  - key:             google-readability-function-size.NestingThreshold
-    value:           '4294967295'
-  - key:             google-readability-function-size.ParameterThreshold
-    value:           '4294967295'
-  - key:             google-readability-function-size.StatementThreshold
-    value:           '800'
-  - key:             google-readability-namespace-comments.ShortNamespaceLines
-    value:           '0'
-  - key:             google-readability-namespace-comments.SpacesBeforeComments
-    value:           '2'
-  - key:             google-runtime-int.SignedTypePrefix
-    value:           int
-  - key:             google-runtime-int.TypeSuffix
-    value:           ''
-  - key:             google-runtime-int.UnsignedTypePrefix
-    value:           uint
-  - key:             google-runtime-references.WhiteListTypes
-    value:           ''
-  - key:             modernize-loop-convert.MaxCopySize
-    value:           '16'
-  - key:             modernize-loop-convert.MinConfidence
-    value:           reasonable
-  - key:             modernize-loop-convert.NamingStyle
-    value:           CamelCase
-  - key:             modernize-pass-by-value.IncludeStyle
-    value:           llvm
-  - key:             modernize-replace-auto-ptr.IncludeStyle
-    value:           llvm
-  - key:             modernize-use-nullptr.NullMacros
-    value:           'NULL'
-...
 
 # Disable Checks
+# google-runtime-references - We have diverged from this rule due to both legacy and disagreement with the rule.
 # google-readability-todo - Adds current user name when fix applied.
 
 # TODO - Fix these checks
