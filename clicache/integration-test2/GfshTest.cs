@@ -16,6 +16,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using Xunit;
 
 namespace Apache.Geode.Client.IntegrationTests
@@ -62,11 +63,19 @@ namespace Apache.Geode.Client.IntegrationTests
                 .withJmxManagerPort(1111)
                 .withHttpServicePort(2222)
                 .withLogLevel("fine")
-                .withMaxHeap("someHugeAmount");
+                .withMaxHeap("someHugeAmount")
+                .withNoConnect()
+                .withSslEnabledComponents(new List<string> { "locator", "jmx" })
+                .withSslKeystore("some/path/keystore.jks")
+                .withSslKeystorePassword("password")
+                .withSslTruststore("some/path/truststore.jks")
+                .withSslTruststorePassword("password");
             s = locator.ToString();
-            Assert.True(s.Equals("Command: start locator --name=name --dir=dir " +
-                    "--http-service-port=2222 --log-level=fine " +
-                    "--max-heap=someHugeAmount"));
+            Assert.Equal(s, "Command: start locator --name=name --dir=dir " +
+                    "--http-service-port=2222 --log-level=fine --max-heap=someHugeAmount " +
+                    "--connect=false --J=-Dgemfire.ssl-enabled-components=locator,jmx " +
+                    "--J=-Dgemfire.ssl-keystore=some/path/keystore.jks --J=-Dgemfire.ssl-keystore-password=password " +
+                    "--J=-Dgemfire.ssl-truststore=some/path/truststore.jks --J=-Dgemfire.ssl-truststore-password=password");
         }
 
         [Fact]
@@ -89,9 +98,9 @@ namespace Apache.Geode.Client.IntegrationTests
                 .withLogLevel("debug")
                 .withMaxHeap("1.21gigabytes");
             s = server.ToString();
-            Assert.True(s.Equals("Command: start server --name=server " +
+            Assert.Equal(s, "Command: start server --name=server " +
                 "--dir=someDir --server-port=1234 --locators=someLocator --log-level=debug " +
-                "--max-heap=1.21gigabytes"));
+                "--max-heap=1.21gigabytes");
         }
 
         [Fact]

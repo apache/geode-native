@@ -21,6 +21,7 @@ using System.Net;
 using System.IO;
 using System.Net.Sockets;
 using Xunit;
+using System.Collections.Generic;
 
 namespace Apache.Geode.Client.IntegrationTests
 {
@@ -162,15 +163,51 @@ namespace Apache.Geode.Client.IntegrationTests
                     return this;
                 }
 
-                public Locator withLogLevel(string logLevel) 
+                public Locator withLogLevel(string logLevel)
                 {
                     command_ += " --log-level=" + logLevel;
                     return this;
                 }
 
-                public Locator withMaxHeap(string maxHeap) 
+                public Locator withMaxHeap(string maxHeap)
                 {
                     command_ += " --max-heap=" + maxHeap;
+                    return this;
+                }
+
+                public Locator withNoConnect()
+                {
+                    command_ += " --connect=false";
+                    return this;
+                }
+
+                public Locator withSslEnabledComponents(List<string> components)
+                {
+                    command_ += " --J=-Dgemfire.ssl-enabled-components=" + String.Join(",", components);
+                    return this;
+                }
+
+                public Locator withSslKeystore(string sslKeystorePath)
+                {
+                    command_ += " --J=-Dgemfire.ssl-keystore=" + sslKeystorePath;
+                    return this;
+                }
+
+                public Locator withSslKeystorePassword(string sslKeystorePassword)
+                {
+                    command_ += " --J=-Dgemfire.ssl-keystore-password=" + sslKeystorePassword;
+                    return this;
+                }
+
+                public Locator withSslTruststore(string sslTruststorePath)
+                {
+                    command_ += " --J=-Dgemfire.ssl-truststore=" + sslTruststorePath;
+                    return this;
+                }
+
+                public Locator withSslTruststorePassword(string sslTruststorePassword)
+                {
+                    command_ += " --J=-Dgemfire.ssl-truststore-password=" + sslTruststorePassword;
                     return this;
                 }
             }
