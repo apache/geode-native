@@ -28,7 +28,7 @@ see [How Continuous Querying Works](/serverman/developing/continuous_querying/ho
 
 Continuous querying in the native client has the following features:
 
--   **Standard <%=vars.product_name%> native client query syntax and semantics**. CQ queries are expressed in the same language used for other native client queries. See [Remote Querying](../remote-querying/remote-queries.html).
+-   **Standard <%=vars.product_name%> native client query syntax and semantics**. CQ queries are expressed in the same language used for other native client queries. See [Remote Queries](../remote-querying/remote-queries.html).
 
 - **Standard <%=vars.product_name%> events-based management of CQ events**. The event handling used
 to process CQ events is based on the standard <%=vars.product_name%> event handling framework. 
@@ -43,7 +43,7 @@ If your clients are durable, you can also define any of your CQs as durable (see
 - **Interest criteria based on data values**. CQ queries are run against the region's entry values. 
 Compare this to register interest by reviewing [Registering Interest for Entries](../client-cache/registering-interest-for-entries.html).
 
--   **Active query execution**. Once initialized, the queries only operate on new events instead of on the entire region data set. 
+-   **Active query execution**. Once initialized, the queries operate only on new events, rather than on the entire region data set. 
 Events that change the query result are sent to the client immediately.
 
 ## <a id="typical_cq_lifecycle"></a>Typical CQ Lifecycle
@@ -51,4 +51,67 @@ Events that change the query result are sent to the client immediately.
 1.  The client creates the CQ. This sets up everything for running the query and provides the client with a `CqQuery` object, but does not execute the CQ. At this point, the query is in a `STOPPED `state, ready to be closed or run.
 2.  The client runs the CQ with an API call to one of the `CqQuery execute*` methods. This puts the query into a `RUNNING` state on the client and on the server.
 3.  The CQ is closed by a client call to `CqQuery.close`. This de-allocates all resources in use for the CQ on the client and server. At this point, the cycle could begin again with the creation of a new `CqQuery` instance.
+
+## CQ steps
+
+1. Create a query service:
+
+```
+ auto queryService = pool->getQueryService();
+```
+
+1. Create a CQ Listener:
+
+```
+class MyCqListener : public CqListener {
+  /* the CqListener fields events and takes action accordingly */
+  /* Note that events are not result sets. If the action requires
+     doing something with the data, it must first be retrieved */
+}
+```
+
+1. Insert the CQ Listener in a CQ attributes object:
+
+```
+  CqAttributesFactory cqFactory;
+
+  auto cqListener = std::make_shared<MyCqListener>();
+
+  cqFactory.addCqListener(cqListener);
+  auto cqAttributes = cqFactory.create();
+```
+
+1. Create a Continuous Query using the query service and the CQ attributes:
+
+```
+  auto query = queryService->newCq(
+      "MyCq", "SELECT * FROM /custom_orders c WHERE c.quantity > 30",
+      cqAttributes);
+```
+
+1. Wait for events and do something with them.
+
+```
+    /* Excerpt from the CqListener */
+
+    /* Determine OP Type */
+    switch (cqEvent.getQueryOperation()) {
+    case CqOperation::OP_TYPE_CREATE:
+      opStr = "CREATE";
+      break;
+    case CqOperation::OP_TYPE_UPDATE:
+      opStr = "UPDATE";
+      break;
+    case CqOperation::OP_TYPE_DESTROY:
+      opStr = "DESTROY";
+      break;
+    default:
+      break;
+    }
+
+    ...
+
+    /* Take action based on OP Type */
+
+```
 
