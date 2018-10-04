@@ -37,14 +37,14 @@ This is a simple example showing how to create a continuous query.
   $ build/continuousquery
   Executing continuous query
   Create orders
-  Storing initial orders in the region
+  Putting and changing Order objects in the region
   MyCqListener::OnEvent called with CREATE, key[Order2], value(2, product y, 37)
   MyCqListener::OnEvent called with CREATE, key[Order4], value(4, product z, 102)
-  Making changes to existing order
   MyCqListener::OnEvent called with CREATE, key[Order6], value(6, product z, 42)
   MyCqListener::OnEvent called with UPDATE, key[Order2], value(2, product y, 45)
   MyCqListener::OnEvent called with DESTROY, key[Order2], value(2, product y, 29)
-  MyCqListener::close called
+  MyCqListener::OnEvent called with DESTROY, key[Order6], value is nullptr
+  close called
   ```
 
 1. Stop the server
