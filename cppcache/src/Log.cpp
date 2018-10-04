@@ -21,6 +21,7 @@
 #include <vector>
 #include <thread>
 #include <chrono>
+#include <cinttypes>
 
 #include <ace/ACE.h>
 #include <ace/Guard_T.h>
