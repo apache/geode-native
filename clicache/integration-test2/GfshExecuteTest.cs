@@ -31,7 +31,7 @@ namespace Apache.Geode.Client.IntegrationTests
         [Fact]
         public void GfshExecuteStartLocatorTest()
         {
-            using (GfshExecute gfsh = new GfshExecute())
+            using (var gfsh = new GfshExecute())
             {
                 try
                 {
@@ -53,7 +53,7 @@ namespace Apache.Geode.Client.IntegrationTests
         [Fact]
         public void GfshExecuteStartServerTest()
         {
-            using (GfshExecute gfsh = new GfshExecute())
+            using (var gfsh = new GfshExecute())
             {
                 try
                 {

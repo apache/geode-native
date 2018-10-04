@@ -30,29 +30,32 @@ namespace Apache.Geode.Client.IntegrationTests
         }
 
         [Fact]
-        public void InstantiateGfshClasses()
+        public void InstantiateGfshClassesTest()
         {
-            Gfsh gfsh = new GfshExecute();
-            Gfsh.Start start = gfsh.start();
+            var gfsh = new GfshExecute();
+            var start = gfsh.start();
             Assert.NotNull(start);
 
-            Gfsh.Stop stop = gfsh.stop();
+            var stop = gfsh.stop();
             Assert.NotNull(stop);
 
-            Gfsh.Create create = gfsh.create();
+            var create = gfsh.create();
             Assert.NotNull(create);
 
-            Gfsh.Shutdown shutdown = gfsh.shutdown();
+            var shutdown = gfsh.shutdown();
             Assert.NotNull(shutdown);
+
+            var configurePdx = gfsh.configurePdx();
+            Assert.NotNull(configurePdx);
         }
 
         [Fact]
-        public void StartLocatorStrings()
+        public void StartLocatorStringsTest()
         {
-            Gfsh.Start.Locator locator = new GfshExecute()
+            var locator = new GfshExecute()
                 .start()
                 .locator();
-            string s = locator.ToString();
+            var s = locator.ToString();
             Assert.True(s.Equals("Command: start locator"));
 
             locator = new GfshExecute().start().locator()
@@ -64,27 +67,27 @@ namespace Apache.Geode.Client.IntegrationTests
                 .withHttpServicePort(2222)
                 .withLogLevel("fine")
                 .withMaxHeap("someHugeAmount")
-                .withNoConnect()
+                .withConnect(false)
                 .withSslEnabledComponents(new List<string> { "locator", "jmx" })
                 .withSslKeystore("some/path/keystore.jks")
                 .withSslKeystorePassword("password")
                 .withSslTruststore("some/path/truststore.jks")
                 .withSslTruststorePassword("password");
             s = locator.ToString();
-            Assert.Equal(s, "Command: start locator --name=name --dir=dir " +
-                    "--http-service-port=2222 --log-level=fine --max-heap=someHugeAmount " +
-                    "--connect=false --J=-Dgemfire.ssl-enabled-components=locator,jmx " +
-                    "--J=-Dgemfire.ssl-keystore=some/path/keystore.jks --J=-Dgemfire.ssl-keystore-password=password " +
-                    "--J=-Dgemfire.ssl-truststore=some/path/truststore.jks --J=-Dgemfire.ssl-truststore-password=password");
+            Assert.Equal(s, "Command: start locator --name=name --dir=dir " + 
+                "--http-service-port=2222 --log-level=fine --max-heap=someHugeAmount " +
+                "--connect=false --J=-Dgemfire.ssl-enabled-components=locator,jmx " +
+                "--J=-Dgemfire.ssl-keystore=some/path/keystore.jks --J=-Dgemfire.ssl-keystore-password=password " +
+                "--J=-Dgemfire.ssl-truststore=some/path/truststore.jks --J=-Dgemfire.ssl-truststore-password=password");
         }
 
         [Fact]
-        public void StartServerStrings()
+        public void StartServerStringsTest()
         {
-            Gfsh.Start.Server server = new GfshExecute()
+            var server = new GfshExecute()
                 .start()
                 .server();
-            string s = server.ToString();
+            var s = server.ToString();
             Assert.True(s.Equals("Command: start server"));
 
             server = new GfshExecute()
@@ -96,20 +99,27 @@ namespace Apache.Geode.Client.IntegrationTests
                 .withPort(1234)
                 .withLocators("someLocator")
                 .withLogLevel("debug")
-                .withMaxHeap("1.21gigabytes");
+                .withMaxHeap("1.21gigabytes")
+                .withSslEnabledComponents(new List<string> { "server", "locator", "jmx" })
+                .withSslKeystore("some/path/keystore.jks")
+                .withSslKeystorePassword("password")
+                .withSslTruststore("some/path/truststore.jks")
+                .withSslTruststorePassword("password");
             s = server.ToString();
             Assert.Equal(s, "Command: start server --name=server " +
                 "--dir=someDir --server-port=1234 --locators=someLocator --log-level=debug " +
-                "--max-heap=1.21gigabytes");
+                "--max-heap=1.21gigabytes --J=-Dgemfire.ssl-enabled-components=server,locator,jmx " +
+                "--J=-Dgemfire.ssl-keystore=some/path/keystore.jks --J=-Dgemfire.ssl-keystore-password=password " +
+                "--J=-Dgemfire.ssl-truststore=some/path/truststore.jks --J=-Dgemfire.ssl-truststore-password=password");
         }
 
         [Fact]
-        public void StopLocatorStrings()
+        public void StopLocatorStringsTest()
         {
-            Gfsh.Stop.Locator locator = new GfshExecute()
+            var locator = new GfshExecute()
                 .stop()
                 .locator();
-            string s = locator.ToString();
+            var s = locator.ToString();
             Assert.True(s.Equals("Command: stop locator"));
 
             locator = new GfshExecute().stop().locator()
@@ -120,12 +130,12 @@ namespace Apache.Geode.Client.IntegrationTests
         }
 
         [Fact]
-        public void StopServerStrings()
+        public void StopServerStringsTest()
         {
-            Gfsh.Stop.Server server = new GfshExecute()
+            var server = new GfshExecute()
                 .stop()
                 .server();
-            string s = server.ToString();
+            var s = server.ToString();
             Assert.True(s.Equals("Command: stop server"));
 
             server = new GfshExecute()
@@ -138,12 +148,12 @@ namespace Apache.Geode.Client.IntegrationTests
         }
 
         [Fact]
-        public void CreateRegionStrings()
+        public void CreateRegionStringsTest()
         {
-            Gfsh.Create.Region region = new GfshExecute()
+            var region = new GfshExecute()
                 .create()
                 .region();
-            string s = region.ToString();
+            var s = region.ToString();
             Assert.True(s.Equals("Command: create region"));
 
             region = new GfshExecute()
@@ -156,11 +166,11 @@ namespace Apache.Geode.Client.IntegrationTests
         }
 
         [Fact]
-        public void ShutdownStrings()
+        public void ShutdownStringsTest()
         {
-            Gfsh.Shutdown shutdown = new GfshExecute()
+            var shutdown = new GfshExecute()
                 .shutdown();
-            string s = shutdown.ToString();
+            var s = shutdown.ToString();
             Assert.True(s.Equals("Command: shutdown"));
 
             shutdown = new GfshExecute()
@@ -174,6 +184,27 @@ namespace Apache.Geode.Client.IntegrationTests
                 .withIncludeLocators(false);
             s = shutdown.ToString();
             Assert.True(s.Equals("Command: shutdown --include-locators=false"));
+        }
+
+        [Fact]
+        public void ConfigurePdxStringsTest()
+        {
+            var configurePdx = new GfshExecute()
+                .configurePdx();
+            var s = configurePdx.ToString();
+            Assert.Equal(s, "Command: configure pdx");
+
+            configurePdx = new GfshExecute()
+                .configurePdx()
+                .withReadSerialized(true);
+            s = configurePdx.ToString();
+            Assert.Equal(s, "Command: configure pdx --read-serialized=true");
+
+            configurePdx = new GfshExecute()
+                .configurePdx()
+                .withReadSerialized(false);
+            s = configurePdx.ToString();
+            Assert.Equal(s, "Command: configure pdx --read-serialized=false");
         }
     }
 }

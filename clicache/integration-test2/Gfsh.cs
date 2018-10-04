@@ -115,6 +115,37 @@ namespace Apache.Geode.Client.IntegrationTests
                     command_ += " --max-heap=" + maxHeap;
                     return this;
                 }
+
+                public Server withSslEnabledComponents(List<string> components)
+                {
+                    command_ += " --J=-Dgemfire.ssl-enabled-components=";
+                    command_ += String.Join(",", components);
+                    return this;
+                }
+
+                public Server withSslKeystore(string sslKeystorePath)
+                {
+                    command_ += " --J=-Dgemfire.ssl-keystore=" + sslKeystorePath;
+                    return this;
+                }
+
+                public Server withSslKeystorePassword(string sslKeystorePassword)
+                {
+                    command_ += " --J=-Dgemfire.ssl-keystore-password=" + sslKeystorePassword;
+                    return this;
+                }
+
+                public Server withSslTruststore(string sslTruststorePath)
+                {
+                    command_ += " --J=-Dgemfire.ssl-truststore=" + sslTruststorePath;
+                    return this;
+                }
+
+                public Server withSslTruststorePassword(string sslTruststorePassword)
+                {
+                    command_ += " --J=-Dgemfire.ssl-truststore-password=" + sslTruststorePassword;
+                    return this;
+                }
             }
 
             public Server server()
@@ -175,15 +206,17 @@ namespace Apache.Geode.Client.IntegrationTests
                     return this;
                 }
 
-                public Locator withNoConnect()
+                public Locator withConnect(bool connect)
                 {
-                    command_ += " --connect=false";
+                    command_ += " --connect=";
+                    command_ += connect ? "true" : "false";
                     return this;
                 }
 
                 public Locator withSslEnabledComponents(List<string> components)
                 {
-                    command_ += " --J=-Dgemfire.ssl-enabled-components=" + String.Join(",", components);
+                    command_ += " --J=-Dgemfire.ssl-enabled-components=";
+                    command_ += String.Join(",", components);
                     return this;
                 }
 
@@ -336,6 +369,23 @@ namespace Apache.Geode.Client.IntegrationTests
         public Shutdown shutdown()
         {
             return new Shutdown(this);
+        }
+
+        public class ConfigurePdx : Command
+        {
+            public ConfigurePdx(Gfsh gfsh) : base(gfsh, "configure pdx") {}
+
+            public ConfigurePdx withReadSerialized(bool readSerialized)
+            {
+                command_ += " --read-serialized=";
+                command_ += readSerialized ? "true" : "false";
+                return this;
+            }
+        }
+
+        public ConfigurePdx configurePdx()
+        {
+            return new ConfigurePdx(this);
         }
 
         private static string defaultBindAddress = "localhost";
