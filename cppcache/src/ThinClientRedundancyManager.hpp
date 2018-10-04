@@ -28,6 +28,7 @@
 #include "TcrEndpoint.hpp"
 #include "ServerLocation.hpp"
 #include "EventIdMap.hpp"
+#include "ExpiryTaskManager.hpp"
 
 namespace apache {
 namespace geode {
@@ -123,8 +124,9 @@ class ThinClientRedundancyManager {
   int processEventIdMap(const ACE_Time_Value&, const void*);
   Task<ThinClientRedundancyManager>* m_periodicAckTask;
   ACE_Semaphore m_periodicAckSema;
-  long m_processEventIdMapTaskId;  // periodic check eventid map for notify ack
-                                   // and/or expiry
+  ExpiryTaskManager::id_type
+      m_processEventIdMapTaskId;  // periodic check eventid map for notify ack
+                                  // and/or expiry
   int periodicAck(volatile bool& isRunning);
   void doPeriodicAck();
   ACE_Time_Value m_nextAck;     // next ack time

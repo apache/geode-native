@@ -30,7 +30,12 @@
 
 namespace {
 
-using namespace apache::geode::client;
+using apache::geode::client::CacheableString;
+using apache::geode::client::CacheableStringArray;
+using apache::geode::client::DataInput;
+using apache::geode::client::DataOutput;
+using apache::geode::client::DataSerializable;
+using apache::geode::client::RegionShortcut;
 
 class Simple : public DataSerializable {
  public:
@@ -143,14 +148,15 @@ TEST(DataSerializableTest, isSerializableAndDeserializable) {
 
   ASSERT_NE(nullptr, returnedObject);
   EXPECT_EQ(dsObject->getName(), returnedObject->getName());
-  EXPECT_EQ(dsObject->getSimple()->getName(), returnedObject->getSimple()->getName());
-  EXPECT_EQ(dsObject->getSimple()->getAge(), returnedObject->getSimple()->getAge());
+  EXPECT_EQ(dsObject->getSimple()->getName(),
+            returnedObject->getSimple()->getName());
+  EXPECT_EQ(dsObject->getSimple()->getAge(),
+            returnedObject->getSimple()->getAge());
   auto originalArray = dsObject->getCSArray();
   auto returnedArray = returnedObject->getCSArray();
-  for(uint32_t index = 0; index < 4; ++index)
-  {
-      EXPECT_EQ(originalArray->operator[](index)->toString(), returnedArray->operator[](index)->toString());
+  for (uint32_t index = 0; index < 4; ++index) {
+    EXPECT_EQ(originalArray->operator[](index)->toString(),
+              returnedArray->operator[](index)->toString());
   }
-   
 }
 }  // namespace

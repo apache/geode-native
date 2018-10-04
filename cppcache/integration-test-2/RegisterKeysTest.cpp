@@ -30,9 +30,16 @@
 
 namespace {
 
-using namespace apache::geode::client;
+using apache::geode::client::Cache;
+using apache::geode::client::CacheableInt16;
+using apache::geode::client::CacheableKey;
+using apache::geode::client::CacheableString;
+using apache::geode::client::CacheFactory;
+using apache::geode::client::IllegalStateException;
+using apache::geode::client::Region;
+using apache::geode::client::RegionShortcut;
 
-apache::geode::client::Cache createTestCache() {
+Cache createTestCache() {
   CacheFactory cacheFactory;
   return cacheFactory.set("log-level", "none")
       .set("statistic-sampling-enabled", "false")

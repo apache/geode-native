@@ -158,7 +158,7 @@ class ThinClientPoolDM
 
   virtual bool canItBeDeletedNoImpl(TcrConnection* conn);
 
-  void updateNotificationStats(bool isDeltaSuccess, long timeInNanoSecond);
+  void updateNotificationStats(bool isDeltaSuccess, int64_t timeInNanoSecond);
 
   virtual bool isSecurityOn() { return m_isSecurityOn || m_isMultiUserMode; }
 
@@ -319,9 +319,9 @@ class ThinClientPoolDM
   Task<ThinClientPoolDM>* m_pingTask;
   Task<ThinClientPoolDM>* m_updateLocatorListTask;
   Task<ThinClientPoolDM>* m_cliCallbackTask;
-  long m_pingTaskId;
+  ExpiryTaskManager::id_type m_pingTaskId;
   ExpiryTaskManager::id_type m_updateLocatorListTaskId;
-  long m_connManageTaskId;
+  ExpiryTaskManager::id_type m_connManageTaskId;
   int manageConnections(volatile bool& isRunning);
   int doPing(const ACE_Time_Value&, const void*);
   int doUpdateLocatorList(const ACE_Time_Value&, const void*);

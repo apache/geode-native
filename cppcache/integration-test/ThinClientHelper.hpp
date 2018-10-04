@@ -403,8 +403,7 @@ std::shared_ptr<Region> createOverflowRegion(const char* name, bool,
   sqLiteProps->insert("PageSize", "65536");
   sqLiteProps->insert("MaxPageCount", "1073741823");
   std::string sqlite_dir =
-      "SqLiteRegionData" +
-      std::to_string(static_cast<long long int>(ACE_OS::getpid()));
+      "SqLiteRegionData" + std::to_string(ACE_OS::getpid());
   sqLiteProps->insert("PersistenceDirectory", sqlite_dir.c_str());
   regionAttributesFactory.setPersistenceManager(
       "SqLiteImpl", "createSqLiteInstance", sqLiteProps);

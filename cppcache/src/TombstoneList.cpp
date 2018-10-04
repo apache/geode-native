@@ -37,7 +37,8 @@ namespace client {
 #define SIZEOF_TOMBSTONEOVERHEAD \
   (SIZEOF_EXPIRYHANDLER + SIZEOF_TOMBSTONELISTENTRY)
 
-long TombstoneList::getExpiryTask(TombstoneExpiryHandler** handler) {
+ExpiryTaskManager::id_type TombstoneList::getExpiryTask(
+    TombstoneExpiryHandler** handler) {
   // This function is not guarded as all functions of this class are called from
   // MapSegment
   auto duration = m_cacheImpl->getDistributedSystem()
@@ -49,7 +50,7 @@ long TombstoneList::getExpiryTask(TombstoneExpiryHandler** handler) {
   *handler = new TombstoneExpiryHandler(tombstoneEntryPtr, this, duration,
                                         m_cacheImpl);
   tombstoneEntryPtr->setHandler(*handler);
-  long id = m_cacheImpl->getExpiryTaskManager().scheduleExpiryTask(
+  auto id = m_cacheImpl->getExpiryTaskManager().scheduleExpiryTask(
       *handler, duration, std::chrono::seconds::zero());
   return id;
 }
@@ -141,7 +142,7 @@ void TombstoneList::eraseEntryFromTombstoneList(
   if (exists(key)) {
     if (cancelTask) {
       m_cacheImpl->getExpiryTaskManager().cancelTask(
-          static_cast<long>(m_tombstoneMap[key]->getExpiryTaskId()));
+          m_tombstoneMap[key]->getExpiryTaskId());
       delete m_tombstoneMap[key]->getHandler();
     }
 
@@ -152,14 +153,15 @@ void TombstoneList::eraseEntryFromTombstoneList(
   }
 }
 
-long TombstoneList::eraseEntryFromTombstoneListWithoutCancelTask(
+ExpiryTaskManager::id_type
+TombstoneList::eraseEntryFromTombstoneListWithoutCancelTask(
     const std::shared_ptr<CacheableKey>& key,
     TombstoneExpiryHandler*& handler) {
   // This function is not guarded as all functions of this class are called from
   // MapSegment
-  long taskid = -1;
+  ExpiryTaskManager::id_type taskid = -1;
   if (exists(key)) {
-    taskid = static_cast<long>(m_tombstoneMap[key]->getExpiryTaskId());
+    taskid = m_tombstoneMap[key]->getExpiryTaskId();
     handler = m_tombstoneMap[key]->getHandler();
     m_cacheImpl->getCachePerfStats().decTombstoneCount();
     auto tombstonesize = key->objectSize() + SIZEOF_TOMBSTONEOVERHEAD;

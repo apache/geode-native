@@ -688,8 +688,7 @@ std::shared_ptr<Region> CacheHelper::createRegionDiscOverFlow(
     sqLiteProps->insert("PageSize", "65536");
     sqLiteProps->insert("MaxPageCount", "1073741823");
     std::string sqlite_dir =
-        "SqLiteRegionData" +
-        std::to_string(static_cast<long long int>(ACE_OS::getpid()));
+        "SqLiteRegionData" + std::to_string(ACE_OS::getpid());
     sqLiteProps->insert("PersistenceDirectory", sqlite_dir.c_str());
     regionAttributeFactory.setPersistenceManager(
         "SqLiteImpl", "createSqLiteInstance", sqLiteProps);
@@ -746,8 +745,7 @@ std::shared_ptr<Region> CacheHelper::createPooledRegionDiscOverFlow(
     sqLiteProps->insert("PageSize", "65536");
     sqLiteProps->insert("MaxPageCount", "1073741823");
     std::string sqlite_dir =
-        "SqLiteRegionData" +
-        std::to_string(static_cast<long long int>(ACE_OS::getpid()));
+        "SqLiteRegionData" + std::to_string(ACE_OS::getpid());
     sqLiteProps->insert("PersistenceDirectory", sqlite_dir.c_str());
     regionFactory.setPersistenceManager("SqLiteImpl", "createSqLiteInstance",
                                         sqLiteProps);
@@ -1286,10 +1284,10 @@ void CacheHelper::initServer(int instance, const char* xml,
   if (!enableDelta) {
     deltaProperty = "delta-propagation=false";
   }
-  long defaultTombstone_timeout = 600000;
-  long defaultTombstone_gc_threshold = 100000;
-  long userTombstone_timeout = 1000;
-  long userTombstone_gc_threshold = 10;
+  int64_t defaultTombstone_timeout = 600000;
+  int64_t defaultTombstone_gc_threshold = 100000;
+  int64_t userTombstone_timeout = 1000;
+  int64_t userTombstone_gc_threshold = 10;
   if (testServerGC) {
     ACE_OS::mkdir("backupDirectory1");
     ACE_OS::mkdir("backupDirectory2");
@@ -1306,8 +1304,10 @@ void CacheHelper::initServer(int instance, const char* xml,
         "%s/bin/%s start server --classpath=%s --name=%s "
         "--cache-xml-file=%s %s --dir=%s --server-port=%d --log-level=%s "
         "--properties-file=%s %s %s "
-        "--J=-Dgemfire.tombstone-timeout=%ld "
-        "--J=-Dgemfire.tombstone-gc-hreshold=%ld "
+        "--J=-Dgemfire.tombstone-timeout=%" PRId64
+        " "
+        "--J=-Dgemfire.tombstone-gc-hreshold=%" PRId64
+        " "
         "--J=-Dgemfire.security-log-level=%s --J=-Xmx1024m --J=-Xms128m 2>&1",
         gfjavaenv, GFSH, classpath, sname.c_str(), xmlFile.c_str(),
         useSecurityManager ? "--user=root --password=root-password" : "",
@@ -1322,8 +1322,10 @@ void CacheHelper::initServer(int instance, const char* xml,
         cmd,
         "%s/bin/%s start server --classpath=%s --name=%s "
         "--cache-xml-file=%s %s --dir=%s --server-port=%d --log-level=%s %s %s "
-        "--J=-Dgemfire.tombstone-timeout=%ld "
-        "--J=-Dgemfire.tombstone-gc-hreshold=%ld "
+        "--J=-Dgemfire.tombstone-timeout=%" PRId64
+        " "
+        "--J=-Dgemfire.tombstone-gc-hreshold=%" PRId64
+        " "
         "--J=-Dgemfire.security-log-level=%s --J=-Xmx1024m --J=-Xms128m 2>&1",
         gfjavaenv, GFSH, classpath, sname.c_str(), xmlFile.c_str(),
         useSecurityManager ? "--user=root --password=root-password" : "",
@@ -1736,7 +1738,7 @@ void CacheHelper::clearSecProp() {
   tmpSecProp->remove("security-password");
 }
 
-void CacheHelper::setJavaConnectionPoolSize(long size) {
+void CacheHelper::setJavaConnectionPoolSize(uint32_t size) {
   CacheHelper::getHelper()
       .getCache()
       ->getSystemProperties()

@@ -195,28 +195,14 @@ class APACHE_GEODE_EXPORT DataInput {
   inline int64_t readInt64() {
     _GEODE_CHECK_BUFFER_SIZE(8);
     int64_t tmp;
-    if (sizeof(long) == 8) {
-      tmp = *(m_buf++);
-      tmp = (tmp << 8) | *(m_buf++);
-      tmp = (tmp << 8) | *(m_buf++);
-      tmp = (tmp << 8) | *(m_buf++);
-      tmp = (tmp << 8) | *(m_buf++);
-      tmp = (tmp << 8) | *(m_buf++);
-      tmp = (tmp << 8) | *(m_buf++);
-      tmp = (tmp << 8) | *(m_buf++);
-    } else {
-      uint32_t hword = *(m_buf++);
-      hword = (hword << 8) | *(m_buf++);
-      hword = (hword << 8) | *(m_buf++);
-      hword = (hword << 8) | *(m_buf++);
-
-      tmp = hword;
-      hword = *(m_buf++);
-      hword = (hword << 8) | *(m_buf++);
-      hword = (hword << 8) | *(m_buf++);
-      hword = (hword << 8) | *(m_buf++);
-      tmp = (tmp << 32) | hword;
-    }
+    tmp = *(m_buf++);
+    tmp = (tmp << 8) | *(m_buf++);
+    tmp = (tmp << 8) | *(m_buf++);
+    tmp = (tmp << 8) | *(m_buf++);
+    tmp = (tmp << 8) | *(m_buf++);
+    tmp = (tmp << 8) | *(m_buf++);
+    tmp = (tmp << 8) | *(m_buf++);
+    tmp = (tmp << 8) | *(m_buf++);
     return tmp;
   }
 

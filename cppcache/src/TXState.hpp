@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_TXSTATE_H_
-#define GEODE_TXSTATE_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,21 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * TXState.hpp
- *
- *  Created on: 09-Feb-2011
- *      Author: ankurs
- */
+
+#pragma once
+
+#ifndef GEODE_TXSTATE_H_
+#define GEODE_TXSTATE_H_
+
+#include <string>
+#include <vector>
 
 #include "TXId.hpp"
 #include "TransactionalOperation.hpp"
-#include <string>
-#include <vector>
+#include "ExpiryTaskManager.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
+
 class ThinClientPoolDM;
 class TXState {
  public:
@@ -56,10 +53,13 @@ class TXState {
 
   ThinClientPoolDM* getPoolDM() { return m_pooldm; }
   void setPoolDM(ThinClientPoolDM* dm) { m_pooldm = dm; }
-  void setSuspendedExpiryTaskId(long suspendedExpiryTaskId) {
+  void setSuspendedExpiryTaskId(
+      ExpiryTaskManager::id_type suspendedExpiryTaskId) {
     m_suspendedExpiryTaskId = suspendedExpiryTaskId;
   }
-  long getSuspendedExpiryTaskId() { return m_suspendedExpiryTaskId; }
+  ExpiryTaskManager::id_type getSuspendedExpiryTaskId() {
+    return m_suspendedExpiryTaskId;
+  }
 
  private:
   void startReplay() { m_replay = true; };
@@ -84,7 +84,7 @@ class TXState {
   std::vector<std::shared_ptr<TransactionalOperation>> m_operations;
   CacheImpl* m_cache;
   ThinClientPoolDM* m_pooldm;
-  long m_suspendedExpiryTaskId;
+  ExpiryTaskManager::id_type m_suspendedExpiryTaskId;
   class ReplayControl {
    public:
     explicit ReplayControl(TXState* txState) : m_txState(txState) {

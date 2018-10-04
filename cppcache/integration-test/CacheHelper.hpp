@@ -353,7 +353,7 @@ class CacheHelper {
 
   static void clearSecProp();
 
-  static void setJavaConnectionPoolSize(long size);
+  static void setJavaConnectionPoolSize(uint32_t size);
 
   static bool isSeedSet;
   static bool setSeed();

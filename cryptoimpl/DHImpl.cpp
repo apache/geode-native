@@ -637,7 +637,7 @@ err:
 
 EVP_PKEY *DH_PUBKEY_get(DH_PUBKEY *key) {
   EVP_PKEY *ret = nullptr;
-  long j;
+  decltype(asn1_string_st::length) j;
   const unsigned char *p;
   const unsigned char *cp;
   X509_ALGOR *a;

@@ -174,32 +174,14 @@ class APACHE_GEODE_EXPORT DataOutput {
    */
   inline void writeInt(uint64_t value) {
     ensureCapacity(8);
-    // the defines are not reliable and can be changed by compiler options.
-    // Hence using sizeof() test instead.
-    //#if defined(_LP64) || ( defined(__WORDSIZE) && __WORDSIZE == 64 ) ||
-    //( defined(_INTEGRAL_MAX_BITS) && _INTEGRAL_MAX_BITS >= 64 )
-    if (sizeof(long) == 8) {
-      *(m_buf++) = static_cast<uint8_t>(value >> 56);
-      *(m_buf++) = static_cast<uint8_t>(value >> 48);
-      *(m_buf++) = static_cast<uint8_t>(value >> 40);
-      *(m_buf++) = static_cast<uint8_t>(value >> 32);
-      *(m_buf++) = static_cast<uint8_t>(value >> 24);
-      *(m_buf++) = static_cast<uint8_t>(value >> 16);
-      *(m_buf++) = static_cast<uint8_t>(value >> 8);
-      *(m_buf++) = static_cast<uint8_t>(value);
-    } else {
-      uint32_t hword = static_cast<uint32_t>(value >> 32);
-      *(m_buf++) = static_cast<uint8_t>(hword >> 24);
-      *(m_buf++) = static_cast<uint8_t>(hword >> 16);
-      *(m_buf++) = static_cast<uint8_t>(hword >> 8);
-      *(m_buf++) = static_cast<uint8_t>(hword);
-
-      hword = static_cast<uint32_t>(value);
-      *(m_buf++) = static_cast<uint8_t>(hword >> 24);
-      *(m_buf++) = static_cast<uint8_t>(hword >> 16);
-      *(m_buf++) = static_cast<uint8_t>(hword >> 8);
-      *(m_buf++) = static_cast<uint8_t>(hword);
-    }
+    *(m_buf++) = static_cast<uint8_t>(value >> 56);
+    *(m_buf++) = static_cast<uint8_t>(value >> 48);
+    *(m_buf++) = static_cast<uint8_t>(value >> 40);
+    *(m_buf++) = static_cast<uint8_t>(value >> 32);
+    *(m_buf++) = static_cast<uint8_t>(value >> 24);
+    *(m_buf++) = static_cast<uint8_t>(value >> 16);
+    *(m_buf++) = static_cast<uint8_t>(value >> 8);
+    *(m_buf++) = static_cast<uint8_t>(value);
   }
 
   /**
@@ -415,8 +397,7 @@ class APACHE_GEODE_EXPORT DataOutput {
 
   inline uint8_t* getBufferCopy() {
     size_t size = m_buf - m_bytes.get();
-    uint8_t* result;
-    result = (uint8_t*)std::malloc(size * sizeof(uint8_t));
+    auto result = static_cast<uint8_t*>(std::malloc(size * sizeof(uint8_t)));
     if (result == nullptr) {
       throw OutOfMemoryException("Out of Memory while resizing buffer");
     }

@@ -45,8 +45,7 @@ static class RandomInitializer {
   RandomInitializer() {
     // using current time and
     // processor time would be good enough for our purpose
-    unsigned long seed =
-        ACE_OS::getpid() + ACE_OS::gettimeofday().msec() + clock();
+    auto seed = ACE_OS::getpid() + ACE_OS::gettimeofday().msec() + clock();
     seed += ACE_OS::gettimeofday().usec();
     // LOGINFO("PID %ld seed %ld ACE_OS::gettimeofday().usec() = %ld clock =
     // %ld ACE_OS::gettimeofday().msec() = %ld", pid, seed ,

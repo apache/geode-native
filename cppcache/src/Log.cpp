@@ -560,12 +560,12 @@ char* Log::formatLogLine(char* buf, LogLevel level) {
   char* pbuf = buf;
   pbuf += ACE_OS::snprintf(pbuf, 15, "[%s ", Log::levelToChars(level));
   pbuf += ACE_OS::strftime(pbuf, MINBUFSIZE, "%Y/%m/%d %H:%M:%S", tm_val);
-  pbuf +=
-      ACE_OS::snprintf(pbuf, 15, ".%06ld ", static_cast<long>(clock.usec()));
+  pbuf += ACE_OS::snprintf(pbuf, 15, ".%06" PRIu64 " ",
+                           static_cast<int64_t>(clock.usec()));
   pbuf += ACE_OS::strftime(pbuf, MINBUFSIZE, "%Z ", tm_val);
 
-  ACE_OS::snprintf(pbuf, 300, "%s:%d %lu] ", g_uname.nodename, g_pid,
-                   (unsigned long)ACE_OS::thr_self());
+  ACE_OS::snprintf(pbuf, 300, "%s:%d %" PRIu64 "] ", g_uname.nodename, g_pid,
+                   (uint64_t)ACE_OS::thr_self());
 
   return buf;
 }

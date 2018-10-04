@@ -102,7 +102,7 @@ else()
 endif()
 
 add_library(ssl INTERFACE)
-target_include_directories(ssl INTERFACE
+target_include_directories(ssl SYSTEM INTERFACE
   $<BUILD_INTERFACE:${${PROJECT_NAME}_INSTALL_DIR}/include>
 )
 target_link_libraries(ssl INTERFACE
@@ -111,7 +111,7 @@ target_link_libraries(ssl INTERFACE
 add_dependencies(ssl ${${PROJECT_NAME}_EXTERN})
 
 add_library(crypto INTERFACE)
-target_include_directories(crypto INTERFACE
+target_include_directories(crypto SYSTEM INTERFACE
   $<BUILD_INTERFACE:${${PROJECT_NAME}_INSTALL_DIR}/include>
 )
 target_link_libraries(crypto INTERFACE

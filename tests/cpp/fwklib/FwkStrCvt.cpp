@@ -23,45 +23,7 @@ namespace geode {
 namespace client {
 namespace testframework {
 
-static const short int wrd = 0x0001;
-static const char* byt = reinterpret_cast<const char*>(&wrd);
 
-#define isNetworkOrder() (byt[1] == 1)
-
-#define NSWAP_8(x) ((x)&0xff)
-#define NSWAP_16(x) ((NSWAP_8(x) << 8) | NSWAP_8((x) >> 8))
-#define NSWAP_32(x) ((NSWAP_16(x) << 16) | NSWAP_16((x) >> 16))
-#define NSWAP_64(x) ((NSWAP_32(x) << 32) | NSWAP_32((x) >> 32))
-
-int64_t FwkStrCvt::hton64(int64_t value) {
-  if (isNetworkOrder()) return value;
-  return NSWAP_64(value);
-}
-
-int64_t FwkStrCvt::ntoh64(int64_t value) {
-  if (isNetworkOrder()) return value;
-  return NSWAP_64(value);
-}
-
-int32_t FwkStrCvt::hton32(int32_t value) {
-  if (isNetworkOrder()) return value;
-  return NSWAP_32(value);
-}
-
-int32_t FwkStrCvt::ntoh32(int32_t value) {
-  if (isNetworkOrder()) return value;
-  return NSWAP_32(value);
-}
-
-int16_t FwkStrCvt::hton16(int16_t value) {
-  if (isNetworkOrder()) return value;
-  return NSWAP_16(value);
-}
-
-int16_t FwkStrCvt::ntoh16(int16_t value) {
-  if (isNetworkOrder()) return value;
-  return NSWAP_16(value);
-}
 
 // ----------------------------------------------------------------------------
 
