@@ -137,7 +137,7 @@ inline std::shared_ptr<Cacheable> Serializable::create(int16_t value) {
 }
 
 /**
- * An immutable wrapper for 132-bit integers that can serve as
+ * An immutable wrapper for 32-bit integers that can serve as
  * a distributable key object for caching.
  */
 using CacheableInt32 =
@@ -167,7 +167,7 @@ inline std::shared_ptr<Cacheable> Serializable::create(int64_t value) {
 }
 
 /**
- * An immutable wrapper for 64-bit integers that can serve as
+ * An immutable wrapper for 16-bit characters that can serve as
  * a distributable key object for caching.
  */
 using CacheableCharacter =
