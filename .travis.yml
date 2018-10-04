@@ -13,29 +13,34 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# cpp tools are outdated, so use docker
-language: generic
+language: cpp
+os: linux
 
-# required for docker
-sudo: required
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    - llvm-toolchain-trusty-6.0
+    - sourceline: 'deb http://apt.llvm.org/trusty/ llvm-toolchain-trusty-6.0 main'
+      key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
+    packages:
+    - clang-6.0
+    - clang-tidy-6.0
+    - clang-format-6.0
+    - libc++-dev
+    - libc++abi-dev
+    - doxygen
+    - make
+    - graphviz
+    - zlib1g-dev
 
-services:
-  - docker
-
-env:
-  global:
-    - DOCKER_ARGS="--rm --volume=${TRAVIS_BUILD_DIR}:/geode-native"
-    - DOCKER_IMAGE="apachegeode/geode-native-build:clang"
-
-  matrix:
-    - DOCKER_COMMAND='java -jar /apache-rat-0.12/apache-rat-0.12.jar -E .ratignore -d /geode-native'
-    - DOCKER_COMMAND='mkdir build && cd build && cmake /geode-native -DCMAKE_CXX_FLAGS=-stdlib=libc++ -DCMAKE_CXX_CLANG_TIDY=/usr/bin/clang-tidy -DUSE_PCH=ON && cmake --build . -- -j $((`nproc`+1)) && ./cppcache/test/apache-geode_unittests'
-
-install:
-  - docker pull apachegeode/geode-native-build:clang
+before_install:
+  - CC=clang-6.0
+  - CXX=clang-6.0
 
 script:
-  - docker run ${DOCKER_ARGS} "${DOCKER_IMAGE}" bash -c "${DOCKER_COMMAND}"
+  - cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS=-stdlib=libc++ -DCMAKE_CXX_CLANG_TIDY=clang-tidy-6.0 -DUSE_PCH=ON .
+  - cmake --build . -- -j`nprocs` VERBOSE=1
 
 notifications:
   email:
