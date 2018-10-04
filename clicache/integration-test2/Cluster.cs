@@ -49,14 +49,14 @@ namespace Apache.Geode.Client.IntegrationTests
 
         private bool StartLocators()
         {
-            bool success = true;
+            var success = true;
 
-            for (int i = 0; i < locatorCount_; i++)
+            for (var i = 0; i < locatorCount_; i++)
             {
-                Locator locator = new Locator(this, new List<Locator>(), 
+                var locator = new Locator(this, new List<Locator>(), 
                     name_ + "/locator/" + i.ToString());
                 locators_.Add(locator);
-                int localResult = locator.Start();
+                var localResult = locator.Start();
                 if (localResult != 0)
                 {
                     success = false;
@@ -67,14 +67,14 @@ namespace Apache.Geode.Client.IntegrationTests
 
         private bool StartServers()
         {
-            bool success = true;
+            var success = true;
 
-            for (int i = 0; i < serverCount_; i++)
+            for (var i = 0; i < serverCount_; i++)
             {
-                Server server = new Server(this, locators_, 
+                var server = new Server(this, locators_, 
                     name_ + "/server/" + i.ToString());
                 servers_.Add(server);
-                int localResult = server.Start();
+                var localResult = server.Start();
                 if (localResult != 0)
                 {
                     success = false;
@@ -93,7 +93,7 @@ namespace Apache.Geode.Client.IntegrationTests
 
         public bool Start()
         {
-            bool success = false;
+            var success = false;
             if (!started_)
             {
                 RemoveClusterDirectory();
@@ -137,7 +137,7 @@ namespace Apache.Geode.Client.IntegrationTests
             cluster_ = cluster;
             locators_ = locators;
             name_ = name;
-            Address address = new Address();
+            var address = new Address();
             address.address = "localhost";
             address.port = cluster.Gfsh.LocatorPort;
             Address = address;
@@ -147,7 +147,7 @@ namespace Apache.Geode.Client.IntegrationTests
         
         public int Start()
         {
-            int result = -1;
+            var result = -1;
             if (!started_)
             {
                 result = cluster_.Gfsh
@@ -168,7 +168,7 @@ namespace Apache.Geode.Client.IntegrationTests
 
         public int Stop()
         {
-            int result = cluster_.Gfsh
+            var result = cluster_.Gfsh
                 .stop()
                 .locator()
                 .withDir(name_)
@@ -190,7 +190,7 @@ namespace Apache.Geode.Client.IntegrationTests
             cluster_ = cluster;
             locators_ = locators;
             name_ = name;
-            Address address = new Address();
+            var address = new Address();
             address.address = "localhost";
             address.port = 0;
             Address = address;
@@ -200,7 +200,7 @@ namespace Apache.Geode.Client.IntegrationTests
 
         public int Start()
         {
-            int result = -1;
+            var result = -1;
             if (!started_)
             {
                 result = cluster_.Gfsh
@@ -219,7 +219,7 @@ namespace Apache.Geode.Client.IntegrationTests
 
         public int Stop()
         {
-            int result = cluster_.Gfsh
+            var result = cluster_.Gfsh
                 .stop()
                 .server()
                 .withDir(name_)

@@ -38,7 +38,7 @@ namespace Apache.Geode.Client.IntegrationTests
 
         private string buildStartLocatorCommand(string options)
         {
-            string locatorCmd = startLocator;
+            var locatorCmd = startLocator;
             locatorCmd += " --port=" + LocatorPort;
             locatorCmd += " --bind-address=" + LocatorBindAddress;
             locatorCmd += " --J=-Dgemfire.jmx-manager-port=" + JmxManagerPort + " ";
@@ -49,7 +49,7 @@ namespace Apache.Geode.Client.IntegrationTests
 
         private string buildStartServerCommand(string options)
         {
-            string serverCmd = "-e \"connect --jmx-manager=" + LocatorBindAddress
+            var serverCmd = "-e \"connect --jmx-manager=" + LocatorBindAddress
                 + "[" + JmxManagerPort + "]\" -e \"" + startServer;
             serverCmd += " --bind-address=" + ServerBindAddress;
             serverCmd += options + "\"";
@@ -84,9 +84,9 @@ namespace Apache.Geode.Client.IntegrationTests
 
         public override int execute(string cmd)
         {
-            string fullCmd = BuildFullCommandString(cmd);
+            var fullCmd = BuildFullCommandString(cmd);
 
-            Process gfsh = new Process
+            var gfsh = new Process
             {
                 StartInfo =
                 {
