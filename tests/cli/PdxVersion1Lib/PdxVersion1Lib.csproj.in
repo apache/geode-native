@@ -106,10 +106,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(CMAKE_BINARY_DIR)\clicache\src\Apache.Geode.vcxproj">
+    <!--<ProjectReference Include="$(CMAKE_BINARY_DIR)\clicache\src\Apache.Geode.vcxproj">
       <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
       <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-    </ProjectReference>
+    </ProjectReference>-->
+    <ProjectReference Include="C:\geode-native\build\clicache\src\Apache.Geode.vcxproj">
+      <Project>{03A77323-4CE8-3C6C-87CE-530E8B5559DA}</Project>
+      <Name>Apache.Geode</Name>
+    </ProjectReference>    
   </ItemGroup>
   <ItemGroup>
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\PdxVersion1Lib\Version1.cs">
