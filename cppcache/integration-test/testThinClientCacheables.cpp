@@ -261,7 +261,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, GetsTask)
     // have deserialized on server so checks serialization/deserialization
     // compatibility with java server.
     std::string queryStr = "SELECT DISTINCT iter.key, iter.value FROM /";
-    queryStr += ((std::string)regionNames[0] + ".entrySet AS iter");
+    queryStr += (std::string(regionNames[0]) + ".entrySet AS iter");
     dataReg->query(queryStr.c_str());
     dataReg->localInvalidateRegion();
     verifyReg->localInvalidateRegion();

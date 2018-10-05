@@ -38,7 +38,7 @@
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
 
-namespace {
+namespace { // NOLINT(google-build-namespaces)
 
 using PdxTests::PdxTypes1;
 using PdxTests::PdxTypes10;

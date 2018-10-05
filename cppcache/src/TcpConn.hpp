@@ -129,11 +129,11 @@ class APACHE_GEODE_EXPORT TcpConn : public Connector {
   }
 
   void setIntOption(int32_t level, int32_t option, int32_t val) {
-    setOption(level, option, (void*)&val, sizeof(int32_t));
+    setOption(level, option, &val, sizeof(int32_t));
   }
 
   void setBoolOption(int32_t level, int32_t option, bool val) {
-    setOption(level, option, (void*)&val, sizeof(bool));
+    setOption(level, option, &val, sizeof(bool));
   }
 
   virtual uint16_t getPort() override;

@@ -55,8 +55,10 @@ namespace ACE_VERSIONED_NAMESPACE_NAME {
 template <>
 class ACE_Export ACE_Hash<int64_t> {
  public:
-  inline unsigned long operator()(int64_t t) const {  // NOLINT
-    return static_cast<unsigned long>(t);             // NOLINT
+  // NOLINTNEXTLINE(google-runtime-int)
+  inline unsigned long operator()(int64_t t) const {
+    // NOLINTNEXTLINE(google-runtime-int)
+    return static_cast<unsigned long>(t);
   }
 };
 
@@ -71,6 +73,7 @@ class ACE_Hash<DSCode> {
   }
 };
 
+// NOLINTNEXTLINE(google-readability-namespace-comments)
 }  // namespace ACE_VERSIONED_NAMESPACE_NAME
 
 namespace apache {

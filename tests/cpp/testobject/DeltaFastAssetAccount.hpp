@@ -29,7 +29,6 @@
 
 #include <geode/Delta.hpp>
 
-#include "fwklib/FrameworkTest.hpp"
 #include "FastAsset.hpp"
 #include "testobject_export.h"
 
@@ -136,7 +135,7 @@ class TESTOBJECT_EXPORT DeltaFastAssetAccount : public DataSerializable,
       auto asset = std::dynamic_pointer_cast<FastAsset>(item.second);
       clonePtr->assets->emplace(key, asset->copy());
     }
-    return clonePtr;
+    return std::move(clonePtr);
   }
 
   static apache::geode::client::Serializable* createDeserializable() {

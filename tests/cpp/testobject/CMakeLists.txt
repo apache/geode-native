@@ -91,7 +91,7 @@ target_include_directories(testobject
 target_link_libraries(testobject
   PUBLIC 
     apache-geode
-    fwk
+		framework
   PRIVATE
     ACE
 	  _WarningsAsError

@@ -463,7 +463,7 @@ class TestPdxSerializerForV2 : public PdxSerializer {
     try {
       auto tkv1 = std::shared_ptr<PdxTests::TestKeyV2>();
       tkv1->_id = pr.readString("_id");
-      return tkv1;
+      return std::move(tkv1);
     } catch (...) {
       return nullptr;
     }
@@ -488,7 +488,7 @@ class TestPdxSerializerForV2 : public PdxSerializer {
       dtpv1->_id = pr.readString("_id");
       dtpv1->_name = pr.readString("_name");
       dtpv1->_count = pr.readInt("_count");
-      return dtpv1;
+      return std::move(dtpv1);
     } catch (...) {
       return nullptr;
     }

@@ -29,9 +29,10 @@
 namespace apache {
 namespace geode {
 namespace client {
+
 const char* ClientMetadataService::NC_CMDSvcThread = "NC CMDSvcThread";
+
 ClientMetadataService::~ClientMetadataService() {
-  delete m_regionQueue;
   if (m_bucketWaitTimeout > std::chrono::milliseconds::zero()) {
     try {
       std::map<std::string, PRbuckets*>::iterator bi;
@@ -46,14 +47,13 @@ ClientMetadataService::~ClientMetadataService() {
 }
 
 ClientMetadataService::ClientMetadataService(Pool* pool)
-    : m_run(false)
+    : m_run(false),
+      m_pool(pool),
+      m_regionQueue(false)
 
 {
-  m_regionQueue = new Queue<std::string>(false);
-  m_pool = pool;
-
-  ThinClientPoolDM* tcrdm = dynamic_cast<ThinClientPoolDM*>(m_pool);
-  CacheImpl* cacheImpl = tcrdm->getConnectionManager().getCacheImpl();
+  auto tcrdm = dynamic_cast<ThinClientPoolDM*>(m_pool);
+  auto cacheImpl = tcrdm->getConnectionManager().getCacheImpl();
   m_bucketWaitTimeout = cacheImpl->getDistributedSystem()
                             .getSystemProperties()
                             .bucketWaitTimeout();
@@ -64,22 +64,21 @@ int ClientMetadataService::svc() {
   LOGINFO("ClientMetadataService started for pool " + m_pool->getName());
   while (m_run) {
     m_regionQueueSema.acquire();
-    ThinClientPoolDM* tcrdm = dynamic_cast<ThinClientPoolDM*>(m_pool);
-    CacheImpl* cache = tcrdm->getConnectionManager().getCacheImpl();
+    auto tcrdm = dynamic_cast<ThinClientPoolDM*>(m_pool);
+    auto&& cache = tcrdm->getConnectionManager().getCacheImpl();
     while (true) {
-      std::string* regionFullPath = m_regionQueue->get();
+      auto&& regionFullPath = m_regionQueue.get();
 
-      if (regionFullPath != nullptr && regionFullPath->c_str() != nullptr) {
+      if (regionFullPath) {
         while (true) {
-          if (m_regionQueue->size() > 0) {
-            std::string* nextRegionFullPath = m_regionQueue->get();
+          if (m_regionQueue.size() > 0) {
+            auto&& nextRegionFullPath = m_regionQueue.get();
             if (nextRegionFullPath != nullptr &&
                 nextRegionFullPath->c_str() != nullptr &&
                 regionFullPath->compare(nextRegionFullPath->c_str()) == 0) {
-              delete nextRegionFullPath;  // we are going for same
             } else {
               // different region; put it back
-              m_regionQueue->put(nextRegionFullPath);
+              m_regionQueue.put(nextRegionFullPath);
               break;
             }
           } else {
@@ -88,14 +87,9 @@ int ClientMetadataService::svc() {
         }
       }
 
-      if (!cache->isCacheDestroyPending() && regionFullPath != nullptr &&
-          regionFullPath->c_str() != nullptr) {
+      if (!cache->isCacheDestroyPending() && regionFullPath) {
         getClientPRMetadata(regionFullPath->c_str());
-        delete regionFullPath;
-        regionFullPath = nullptr;
       } else {
-        delete regionFullPath;
-        regionFullPath = nullptr;
         break;
       }
     }
@@ -329,8 +323,8 @@ void ClientMetadataService::enqueueForMetadataRefresh(
       LOGFINE("Network hop so fetching single hop metadata from the server");
       cache->setNetworkHopFlag(true);
       tcrRegion->setMetaDataRefreshed(true);
-      std::string* tempRegionPath = new std::string(regionFullPath);
-      m_regionQueue->put(tempRegionPath);
+      auto tempRegionPath = std::make_shared<std::string>(regionFullPath);
+      m_regionQueue.put(tempRegionPath);
       m_regionQueueSema.release();
     }
   }
@@ -665,7 +659,7 @@ ClientMetadataService::pruneNodes(
         "ClientMetadataService::pruneNodes Total size of serverToBucketsMap = "
         "%d ",
         size);
-    for (size_t idx = 0; idx < (rand() % size); idx++) {
+    for (size_t idx = 0; idx < RandGen{}(size); idx++) {
       itrRes++;
     }
     randomFirstServer = itrRes->first;

@@ -47,25 +47,13 @@ class APACHE_GEODE_EXPORT PoolXmlCreation {
   /** The name of this pool */
   std::string poolName;
 
-  /*
-  std::vector<std::string> locatorhosts;
-  std::vector<std::string> locatorports;
-  std::vector<std::string> serverhosts;
-  std::vector<std::string> serverports;
-  */
 
  public:
   ~PoolXmlCreation();
   /**
    * Creates a new <code>PoolXmlCreation</code> with the given pool name.
    */
-  PoolXmlCreation(const char* name, std::shared_ptr<PoolFactory> factory);
-
-  /** Add a locator */
-  // void addLocator(const char * host, const char * port);
-
-  /** Add a server */
-  // void addServer(const char * host, const char * port);
+  PoolXmlCreation(std::string name, std::shared_ptr<PoolFactory> factory);
 
   /**
    * Creates a {@link Pool} using the

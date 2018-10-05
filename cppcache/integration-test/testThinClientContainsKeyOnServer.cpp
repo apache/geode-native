@@ -44,7 +44,7 @@ DUNIT_TASK(CLIENT1, SetupClient1)
     getHelper()->createPooledRegion(regionNames[0], false, locatorsG,
                                     "__TEST_POOL1__", true, true);
     auto regPtr = getHelper()->getRegion(regionNames[0]);
-    auto key = CacheableKey::create((const char*)"key01");
+    auto key = CacheableKey::create("key01");
     ASSERT(!regPtr->containsKeyOnServer(key), "key should not be there");
   }
 END_TASK(SetupClient1)

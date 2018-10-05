@@ -211,7 +211,8 @@ class ClientMetadataService : public ACE_Task_Base,
   std::shared_ptr<ClientMetadata> SendClientPRMetadata(
       const char* regionPath, std::shared_ptr<ClientMetadata> cptr);
 
-  std::shared_ptr<ClientMetadata> getClientMetadata(const std::shared_ptr<Region>& region);
+  std::shared_ptr<ClientMetadata> getClientMetadata(
+      const std::shared_ptr<Region>& region);
 
  private:
   // ACE_Recursive_Thread_Mutex m_regionMetadataLock;
@@ -221,7 +222,7 @@ class ClientMetadataService : public ACE_Task_Base,
   RegionMetadataMapType m_regionMetaDataMap;
   volatile bool m_run;
   Pool* m_pool;
-  Queue<std::string>* m_regionQueue;
+  Queue<std::shared_ptr<std::string>> m_regionQueue;
 
   ACE_RW_Thread_Mutex m_PRbucketStatusLock;
   std::map<std::string, PRbuckets*> m_bucketStatus;

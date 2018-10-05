@@ -34,7 +34,7 @@
 
 #include "CacheHelper.hpp"
 
-namespace {
+namespace { // NOLINT(google-build-namespaces)
 
 using apache::geode::client::CacheableKey;
 using apache::geode::client::CacheableString;

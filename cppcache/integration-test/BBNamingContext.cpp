@@ -58,6 +58,7 @@ static int getRandomNum() {
   // Whilst this approach is pessimal, it can not be
   // remedied as the test depend upon it.
   ACE_OS::srand(seed);
+  // NOLINTNEXTLINE(clang-analyzer-security.insecureAPI.rand)
   return (ACE_OS::rand() % 49999) + 14000;
 }
 
@@ -191,7 +192,7 @@ int BBNamingContextClientImpl::resolve(const char* key, char* value, char*) {
     std::string v = m_bbc->getString(k, k1);
     // fprintf(stdout, "resolve: got value %s for key=%s\n", v.c_str(),
     // key);fflush(stdout);
-    ACE_OS::strcpy(value, v.c_str());
+    ACE_OS::strncpy(value, v.c_str(), sizeof(value));
     if (m_errCount > 0) {
       m_errCount = 0;
     }

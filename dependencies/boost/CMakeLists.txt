@@ -4,9 +4,9 @@
 # The ASF licenses this file to You under the Apache License, Version 2.0
 # (the "License"); you may not use this file except in compliance with
 # the License.  You may obtain a copy of the License at
-# 
+#
 #      http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,8 +15,8 @@
 
 project( boost LANGUAGES NONE )
 
-set( ${PROJECT_NAME}_VERSION 1.66.0 )
-set( ${PROJECT_NAME}_SHA265 bd0df411efd9a585e5a2212275f8762079fed8842264954675a4fddc46cfcf60 )
+set( ${PROJECT_NAME}_VERSION 1.68.0 )
+set( ${PROJECT_NAME}_SHA265 da3411ea45622579d419bfda66f45cd0f8c32a181d84adfa936f5688388995cf )
 string(REPLACE "." "_" _VERSION_UNDERSCORE ${${PROJECT_NAME}_VERSION})
 set( ${PROJECT_NAME}_URL "https://dl.bintray.com/boostorg/release/${${PROJECT_NAME}_VERSION}/source/boost_${_VERSION_UNDERSCORE}.tar.gz" )
 set( ${PROJECT_NAME}_EXTERN ${PROJECT_NAME}-extern )
@@ -49,7 +49,7 @@ if (${WIN32})
 else()
   set ( _BOOTSTRAP_COMMAND ./bootstrap.sh )
   set ( _B2_COMMAND ./b2 )
-  set ( _B2_FLAGS ${_B2_FLAGS} cxxflags=-std=c++11 )
+  set ( _B2_FLAGS ${_B2_FLAGS} "cxxflags=${CMAKE_CXX_FLAGS} ${CMAKE_CXX11_STANDARD_COMPILE_OPTION}" )
 endif()
 
 if ("SunOS" STREQUAL ${CMAKE_SYSTEM_NAME})
@@ -80,25 +80,19 @@ set( ${PROJECT_NAME}_SOURCE_DIR ${SOURCE_DIR} )
 ExternalProject_Get_Property( ${${PROJECT_NAME}_EXTERN} INSTALL_DIR )
 set( ${PROJECT_NAME}_INSTALL_DIR ${INSTALL_DIR} )
 
-if ("SunOS" STREQUAL ${CMAKE_SYSTEM_NAME})
-  #
-  # Solaris patch is to workaround issue of dladdr function signature
-  # mismatching the signature boost stacktrace expects. Following boost ticket
-  # tracks this issue:
-  #
-  #     https://svn.boost.org/trac10/ticket/13300#ticket
-  #
-  set( PATCH_FILE ${CMAKE_CURRENT_SOURCE_DIR}/solaris.patch )
+if (NOT WIN32)
+# https://github.com/boostorg/process/issues/51
+  set( PATCH_FILE ${CMAKE_CURRENT_SOURCE_DIR}/patches)
   ExternalProject_Add_Step( ${${PROJECT_NAME}_EXTERN} patches
       ALWAYS 0
       DEPENDEES download
       DEPENDERS patch
       DEPENDS ${PATCH_FILE}
-      WORKING_DIRECTORY ${${PROJECT_NAME}_SOURCE_DIR}
+      BYPRODUCTS ${${PROJECT_NAME}_SOURCE_DIR}/boost/process/detail/posix/is_running.hpp
+      WORKING_DIRECTORY ${${PROJECT_NAME}_INSTALL_DIR}
       COMMAND ${PATCH} -u -N -p1 < ${PATCH_FILE}
   )
 endif()
-
 
 function(ADD_BOOST_LIBRARY)
   set(options)

@@ -103,7 +103,7 @@ BEGIN_TEST(int_t)
   {
     DataOutputInternal dataOutput;
 
-    dataOutput.writeInt((int32_t)0x11223344);
+    dataOutput.writeInt(static_cast<int32_t>(0x11223344));
     const uint8_t* buffer = dataOutput.getBuffer();
     dumpnbytes(buffer, 4);
     ASSERT(buffer[0] == (uint8_t)0x11, "expected 0x11.");

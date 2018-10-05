@@ -4,9 +4,9 @@
 # The ASF licenses this file to You under the Apache License, Version 2.0
 # (the "License"); you may not use this file except in compliance with
 # the License.  You may obtain a copy of the License at
-# 
+#
 #      http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,11 +16,9 @@
 cmake_minimum_required(VERSION 3.10)
 project(framework LANGUAGES CXX)
 
-add_library(${PROJECT_NAME} STATIC 
+add_library(framework STATIC
   ClientTask.hpp
-  FrameworkTest.cpp
-  FrameworkTest.hpp
-  FwkBB.hpp
+	FwkBB.hpp
   FwkBBClient.cpp
   FwkBBClient.hpp
   FwkBBServer.cpp
@@ -61,13 +59,13 @@ add_library(${PROJECT_NAME} STATIC
   UDPIpc.hpp
 )
 
-target_compile_options(${PROJECT_NAME}
+target_compile_options(framework
   PRIVATE
     # Add PIC flags to link later with shared library
     ${CMAKE_CXX_COMPILE_OPTIONS_PIC}
 )
 
-target_include_directories(${PROJECT_NAME}
+target_include_directories(framework
   PUBLIC
     # headers for this library are referenced relative to the parent
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>
@@ -75,14 +73,15 @@ target_include_directories(${PROJECT_NAME}
   	$<TARGET_PROPERTY:apache-geode,SOURCE_DIR>/../src
 )
 
-target_link_libraries(${PROJECT_NAME}
-  PUBLIC 
+target_link_libraries(framework
+  PUBLIC
     apache-geode
     xerces-c
   PRIVATE
     ACE
-	_WarningsAsError
+		internal
+	  _WarningsAsError
 )
 
 # For Visual Studio organization
-set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER cpp/test/integration)
+set_target_properties(framework PROPERTIES FOLDER cpp/test/integration)

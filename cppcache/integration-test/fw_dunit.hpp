@@ -220,7 +220,8 @@ END_TASK(validate)
   }                                               \
   }                                               \
   ;
-#define CALL_TASK(y) DCLASSDEF(y) * DVARNAME(y) = new DCLASSDEF(y)();
+#define CALL_TASK(y) \
+  auto DVARNAME(y) = std::unique_ptr<DCLASSDEF(y)>(new DCLASSDEF(y)());
 
 #define DUNIT_MAIN         \
   class DCLASSNAME(Main) { \
@@ -308,7 +309,7 @@ class NamingContext {
    * is not found, the buf will contain the empty string "". Make sure the
    * buffer is big enough to hold whatever has have bound.
    */
-  virtual void getValue(const char* key, char* buf) = 0;
+  virtual void getValue(const char* key, char* buf, size_t sizeOfBuf) = 0;
 
   /**
    * return the value by key, as an int using the string to int conversion
@@ -318,6 +319,8 @@ class NamingContext {
 
   /** dump the entire context in LOG messages. */
   virtual void dump() = 0;
+
+  virtual ~NamingContext() noexcept = default;
 };
 
 extern "C" {

@@ -28,7 +28,6 @@ target_link_libraries(${TEST_UTILS_LIB}
     _WarningsAsError
   PUBLIC
     apache-geode
-    fwk
 )
 
 set_target_properties(${TEST_UTILS_LIB} PROPERTIES
@@ -99,7 +98,7 @@ foreach(FILE ${SOURCES})
     PUBLIC
       apache-geode
       testobject
-      fwk
+      framework
   )
   target_include_directories(${TEST} PRIVATE
     $<TARGET_PROPERTY:apache-geode,SOURCE_DIR>/../src

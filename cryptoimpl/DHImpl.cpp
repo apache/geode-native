@@ -17,6 +17,10 @@
 
 #include "DHImpl.hpp"
 
+#include <cstring>
+#include <cctype>
+#include <memory>
+
 #include <openssl/objects.h>
 #include <openssl/stack.h>
 #include <openssl/aes.h>
@@ -27,8 +31,6 @@
 #include <openssl/pem.h>
 #include <openssl/pkcs12.h>
 #include <openssl/rsa.h>
-#include <cstring>
-#include <cctype>
 
 #include <geode/internal/geode_globals.hpp>
 
@@ -76,8 +78,8 @@ ASN1_SEQUENCE(
     int gf_initDhKeys(void **dhCtx, const char *dhAlgo, const char *ksPath) {
   int errorCode = DH_ERR_NO_ERROR;  // No error;
 
-  DHImpl *dhimpl = new DHImpl();
-  *dhCtx = (void *)dhimpl;
+  auto dhimpl = new DHImpl();
+  *dhCtx = dhimpl;
 
   // ksPath can be null
   if (dhimpl->m_dh || !dhAlgo || strlen(dhAlgo) == 0) {
@@ -99,9 +101,10 @@ ASN1_SEQUENCE(
 
   dhimpl->m_dh = DH_new();
 
-  BIGNUM* pbn = nullptr;
-  BIGNUM* gbn = nullptr;
-  DH_get0_pqg(dhimpl->m_dh, const_cast<const BIGNUM**>(&pbn), nullptr, const_cast<const BIGNUM**>(&gbn));
+  BIGNUM *pbn = nullptr;
+  BIGNUM *gbn = nullptr;
+  DH_get0_pqg(dhimpl->m_dh, const_cast<const BIGNUM **>(&pbn), nullptr,
+              const_cast<const BIGNUM **>(&gbn));
   BN_dec2bn(&pbn, dhP);
 
   LOGDH(" DHInit: P ptr is %p", pbn);
@@ -350,8 +353,8 @@ unsigned char *gf_encryptDH(void *dhCtx, const unsigned char *cleartext,
   LOGDH(" DH: gf_encryptDH using sk algo: %s, Keysize: %d",
         dhimpl->m_skAlgo.c_str(), dhimpl->m_keySize);
 
-  unsigned char *ciphertext =
-      new unsigned char[len + 50];  // give enough room for padding
+  auto ciphertext = std::unique_ptr<unsigned char[]>(
+      new unsigned char[len + 50]);  // give enough room for padding
   int outlen, tmplen;
   EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
 
@@ -360,21 +363,21 @@ unsigned char *gf_encryptDH(void *dhCtx, const unsigned char *cleartext,
   // init openssl cipher context
   if (dhimpl->m_skAlgo == "AES") {
     int keySize = dhimpl->m_keySize > 128 ? dhimpl->m_keySize / 8 : 16;
-    EVP_EncryptInit_ex(ctx, cipherFunc, nullptr, (unsigned char *)dhimpl->m_key,
-                       (unsigned char *)dhimpl->m_key + keySize);
+    EVP_EncryptInit_ex(ctx, cipherFunc, nullptr, dhimpl->m_key,
+                       dhimpl->m_key + keySize);
   } else if (dhimpl->m_skAlgo == "Blowfish") {
     int keySize = dhimpl->m_keySize > 128 ? dhimpl->m_keySize / 8 : 16;
     EVP_EncryptInit_ex(ctx, cipherFunc, nullptr, nullptr,
-                       (unsigned char *)dhimpl->m_key + keySize);
+                       dhimpl->m_key + keySize);
     EVP_CIPHER_CTX_set_key_length(ctx, keySize);
     LOGDH("DHencrypt: BF keysize is %d", keySize);
-    EVP_EncryptInit_ex(ctx, nullptr, nullptr, (unsigned char *)dhimpl->m_key, nullptr);
+    EVP_EncryptInit_ex(ctx, nullptr, nullptr, dhimpl->m_key, nullptr);
   } else if (dhimpl->m_skAlgo == "DESede") {
-    EVP_EncryptInit_ex(ctx, cipherFunc, nullptr, (unsigned char *)dhimpl->m_key,
-                       (unsigned char *)dhimpl->m_key + 24);
+    EVP_EncryptInit_ex(ctx, cipherFunc, nullptr, dhimpl->m_key,
+                       dhimpl->m_key + 24);
   }
 
-  if (!EVP_EncryptUpdate(ctx, ciphertext, &outlen, cleartext, len)) {
+  if (!EVP_EncryptUpdate(ctx, ciphertext.get(), &outlen, cleartext, len)) {
     LOGDH(" DHencrypt: enc update ret nullptr");
     return nullptr;
   }
@@ -383,7 +386,7 @@ unsigned char *gf_encryptDH(void *dhCtx, const unsigned char *cleartext,
    */
   tmplen = 0;
 
-  if (!EVP_EncryptFinal_ex(ctx, ciphertext + outlen, &tmplen)) {
+  if (!EVP_EncryptFinal_ex(ctx, ciphertext.get() + outlen, &tmplen)) {
     LOGDH("DHencrypt: enc final ret nullptr");
     return nullptr;
   }
@@ -395,7 +398,7 @@ unsigned char *gf_encryptDH(void *dhCtx, const unsigned char *cleartext,
   LOGDH("DHencrypt: in len is %d, out len is %d", len, outlen);
 
   *retLen = outlen;
-  return ciphertext;
+  return ciphertext.release();
 }
 
 unsigned char *gf_decryptDH(void *dhCtx, const unsigned char *cleartext,
@@ -410,31 +413,31 @@ unsigned char *gf_decryptDH(void *dhCtx, const unsigned char *cleartext,
   LOGDH(" DH: gf_encryptDH using sk algo: %s, Keysize: %d",
         dhimpl->m_skAlgo.c_str(), dhimpl->m_keySize);
 
-  unsigned char *ciphertext =
-      new unsigned char[len + 50];  // give enough room for padding
+  auto ciphertext = std::unique_ptr<unsigned char[]>(
+      new unsigned char[len + 50]);  // give enough room for padding
   int outlen, tmplen;
   EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
 
-  const EVP_CIPHER *cipherFunc = dhimpl->getCipherFunc();
+  auto cipherFunc = dhimpl->getCipherFunc();
 
   // init openssl cipher context
   if (dhimpl->m_skAlgo == "AES") {
     int keySize = dhimpl->m_keySize > 128 ? dhimpl->m_keySize / 8 : 16;
-    EVP_DecryptInit_ex(ctx, cipherFunc, nullptr, (unsigned char *)dhimpl->m_key,
-                       (unsigned char *)dhimpl->m_key + keySize);
+    EVP_DecryptInit_ex(ctx, cipherFunc, nullptr, dhimpl->m_key,
+                       dhimpl->m_key + keySize);
   } else if (dhimpl->m_skAlgo == "Blowfish") {
     int keySize = dhimpl->m_keySize > 128 ? dhimpl->m_keySize / 8 : 16;
     EVP_DecryptInit_ex(ctx, cipherFunc, nullptr, nullptr,
-                       (unsigned char *)dhimpl->m_key + keySize);
+                       dhimpl->m_key + keySize);
     EVP_CIPHER_CTX_set_key_length(ctx, keySize);
     LOGDH("DHencrypt: BF keysize is %d", keySize);
-    EVP_DecryptInit_ex(ctx, nullptr, nullptr, (unsigned char *)dhimpl->m_key, nullptr);
+    EVP_DecryptInit_ex(ctx, nullptr, nullptr, dhimpl->m_key, nullptr);
   } else if (dhimpl->m_skAlgo == "DESede") {
-    EVP_DecryptInit_ex(ctx, cipherFunc, nullptr, (unsigned char *)dhimpl->m_key,
-                       (unsigned char *)dhimpl->m_key + 24);
+    EVP_DecryptInit_ex(ctx, cipherFunc, nullptr, dhimpl->m_key,
+                       dhimpl->m_key + 24);
   }
 
-  if (!EVP_DecryptUpdate(ctx, ciphertext, &outlen, cleartext, len)) {
+  if (!EVP_DecryptUpdate(ctx, ciphertext.get(), &outlen, cleartext, len)) {
     LOGDH(" DHencrypt: enc update ret nullptr");
     return nullptr;
   }
@@ -443,7 +446,7 @@ unsigned char *gf_decryptDH(void *dhCtx, const unsigned char *cleartext,
    */
   tmplen = 0;
 
-  if (!EVP_DecryptFinal_ex(ctx, ciphertext + outlen, &tmplen)) {
+  if (!EVP_DecryptFinal_ex(ctx, ciphertext.get() + outlen, &tmplen)) {
     LOGDH("DHencrypt: enc final ret nullptr");
     return nullptr;
   }
@@ -455,7 +458,7 @@ unsigned char *gf_decryptDH(void *dhCtx, const unsigned char *cleartext,
   LOGDH("DHencrypt: in len is %d, out len is %d", len, outlen);
 
   *retLen = outlen;
-  return ciphertext;
+  return ciphertext.release();
 }
 
 // std::shared_ptr<CacheableBytes> decrypt(const uint8_t * ciphertext, int len)
@@ -488,7 +491,7 @@ bool gf_verifyDH(void *dhCtx, const char *subject,
 
     // Ignore first letter for comparision, openssl adds / before subject name
     // e.g. /CN=geode1
-    if (strcmp((const char *)certsubject + 1, subject) == 0) {
+    if (strcmp(certsubject + 1, subject) == 0) {
       evpkey = X509_get_pubkey(dhimpl->m_serverCerts[item]);
       cert = dhimpl->m_serverCerts[item];
       LOGDH("Found subject [%s] in stored certificates", certsubject);
@@ -608,13 +611,14 @@ int DH_PUBKEY_set(DH_PUBKEY **x, EVP_PKEY *pkey) {
 
   asn1int = BN_to_ASN1_INTEGER(pub_key, nullptr);
   if ((i = i2d_ASN1_INTEGER(asn1int, nullptr)) <= 0) goto err;
-  if ((s = reinterpret_cast<unsigned char *>(OPENSSL_malloc(i + 1))) == nullptr) {
+  if ((s = reinterpret_cast<unsigned char *>(OPENSSL_malloc(i + 1))) ==
+      nullptr) {
     X509err(X509_F_X509_PUBKEY_SET, ERR_R_MALLOC_FAILURE);
     goto err;
   }
   p = s;
   i2d_ASN1_INTEGER(asn1int, &p);
-  if (!ASN1_BIT_STRING_set((ASN1_STRING *)pk->public_key, s, i)) {
+  if (!ASN1_BIT_STRING_set(static_cast<ASN1_STRING *>(pk->public_key), s, i)) {
     X509err(X509_F_X509_PUBKEY_SET, ERR_R_MALLOC_FAILURE);
     goto err;
   }

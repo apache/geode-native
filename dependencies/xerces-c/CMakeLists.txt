@@ -20,8 +20,8 @@ set( ${PROJECT_NAME}_SHA265 c98eedac4cf8a73b09366ad349cb3ef30640e7a3089d360d40a3
 set( ${PROJECT_NAME}_URL "http://archive.apache.org/dist/xerces/c/3/sources/xerces-c-${${PROJECT_NAME}_VERSION}.tar.gz" )
 set( ${PROJECT_NAME}_EXTERN ${PROJECT_NAME}-extern )
 
-set ( ${PROJECT_NAME}_CFLAGS "${${PROJECT_NAME}_CFLAGS} ${CFLAGS_ARCH}" )
-set ( ${PROJECT_NAME}_CXXFLAGS "${${PROJECT_NAME}_CXXFLAGS} ${CXXFLAGS_ARCH} ${CXXFLAGS_C++}" )
+set ( CMAK_C_FLAGS "${CMAK_C_FLAGS} ${CFLAGS_ARCH}" )
+set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXXFLAGS_ARCH} ${CXXFLAGS_C++}" )
 
 
   if (MSVC_VERSION GREATER 14)
@@ -45,7 +45,7 @@ if (WIN32)
                  #TODO cleanup includes?
                  COMMAND ${CMAKE_COMMAND} -E copy_directory src <INSTALL_DIR>/include )
 else()
-  set ( _CONFIGURE_COMMAND ${CONFIGURE} $<$<CONFIG:Debug>:--with-debug> --libdir=<INSTALL_DIR>/lib --without-curl --with-pic "CFLAGS=${${PROJECT_NAME}_CFLAGS}" "CXXFLAGS=${${PROJECT_NAME}_CXXFLAGS}" "MAKE=$(MAKE)" )
+  set ( _CONFIGURE_COMMAND ${CONFIGURE} $<$<CONFIG:Debug>:--with-debug> --libdir=<INSTALL_DIR>/lib --without-curl --with-pic "CFLAGS=${CMAKE_C_FLAGS}" "CXXFLAGS=${CMAKE_CXX_FLAGS}" "MAKE=$(MAKE)" )
   set ( _BUILD_COMMAND $(MAKE) all )
   set ( _INSTALL_COMMAND $(MAKE) install )
 endif()

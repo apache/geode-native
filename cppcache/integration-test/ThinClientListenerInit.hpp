@@ -30,7 +30,7 @@
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
 
-namespace {
+namespace { // NOLINT(google-build-namespaces)
 
 using apache::geode::client::Cacheable;
 
@@ -74,7 +74,7 @@ class ThinClientTallyLoader : public TallyLoader {
                lstrvalue);
       rp.put(key, lreturnValue);
     }
-    return lreturnValue;
+    return std::move(lreturnValue);
   }
 };
 

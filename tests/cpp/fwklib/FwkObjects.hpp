@@ -239,7 +239,7 @@ class TFwkSet {
       int32_t pos = 0;
       int32_t max = static_cast<int32_t>(m_vec.size());
       while (pos < max) {
-        const FWK_OBJECT* curr = (const FWK_OBJECT*)m_vec.at(pos);
+        auto&& curr = m_vec.at(pos);
         if (curr->getKey() == key) {
           idx = pos;
           max = -1;
@@ -949,11 +949,11 @@ class FwkClient : public FwkObject {
 
   ~FwkClient() {
     if (m_program != nullptr) {
-      free((void*)m_program);
+      free(m_program);
       m_program = nullptr;
     }
     if (m_arguments != nullptr) {
-      free((void*)m_arguments);
+      free(m_arguments);
       m_arguments = nullptr;
     }
   }
@@ -984,8 +984,8 @@ class FwkClient : public FwkObject {
   virtual const std::string& getKey() const { return getName(); }
 
  private:
-  const char* m_program;
-  const char* m_arguments;
+  char* m_program;
+  char* m_arguments;
   std::string m_hostGroup;
   bool m_remaining;
   std::string m_host;

@@ -28,7 +28,7 @@
 #define CLIENT1 s1p1
 #define SERVER1 s2p1
 
-namespace {
+namespace { // NOLINT(google-build-namespaces)
 
 using apache::geode::client::Cacheable;
 using apache::geode::client::CacheFactory;
@@ -61,7 +61,7 @@ class ThinClientTallyLoader : public TallyLoader {
                lstrvalue);
       rp.put(key, lreturnValue);
     }
-    return lreturnValue;
+    return std::move(lreturnValue);
   }
 
   void close(Region& region) {

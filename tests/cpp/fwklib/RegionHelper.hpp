@@ -28,7 +28,6 @@
 #include <geode/RegionFactory.hpp>
 #include <geode/RegionShortcut.hpp>
 
-#include "fwklib/FrameworkTest.hpp"
 #include "fwklib/FwkObjects.hpp"
 #include "fwklib/FwkStrCvt.hpp"
 #include "fwklib/FwkLog.hpp"

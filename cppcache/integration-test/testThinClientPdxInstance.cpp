@@ -828,7 +828,6 @@ DUNIT_TASK_DEFINITION(CLIENT2, verifyPdxInstanceEquals)
     pIPtr2 = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport1));
     LOG("parentPdx get2 Successfully....");
 
-    ret = false;
     ret = (*pIPtr1 == *pIPtr2);
     LOGINFO("parentPdx ret = %d ", ret);
     ASSERT(ret == true, "Both PdxInstances should be equal.");
@@ -1673,7 +1672,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     auto setVec = CacheableVector::create();
     setVec->push_back(CacheableInt32::create(3));
     setVec->push_back(CacheableInt32::create(4));
-    wpiPtr->setField("m_vector", (std::shared_ptr<Cacheable>)setVec);
+    wpiPtr->setField("m_vector", setVec);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
     ASSERT(newPiPtr->hasField("m_vector") == true, "m_vector = true expected");
@@ -1702,7 +1701,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     setarr->push_back(CacheableInt32::create(3));
     setarr->push_back(CacheableInt32::create(4));
     setarr->push_back(CacheableInt32::create(5));
-    wpiPtr->setField("m_arraylist", (std::shared_ptr<Cacheable>)setarr);
+    wpiPtr->setField("m_arraylist", setarr);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
     ASSERT(newPiPtr->hasField("m_arraylist") == true,
@@ -1733,7 +1732,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     hashset->insert(CacheableInt32::create(3));
     hashset->insert(CacheableInt32::create(4));
     hashset->insert(CacheableInt32::create(5));
-    wpiPtr->setField("m_chs", (std::shared_ptr<Cacheable>)hashset);
+    wpiPtr->setField("m_chs", hashset);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
     ASSERT(newPiPtr->hasField("m_chs") == true, "m_chs = true expected");
@@ -1759,7 +1758,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     hashmap->emplace(CacheableInt32::create(3), CacheableInt32::create(3));
     hashmap->emplace(CacheableInt32::create(4), CacheableInt32::create(4));
     hashmap->emplace(CacheableInt32::create(5), CacheableInt32::create(5));
-    wpiPtr->setField("m_map", (std::shared_ptr<Cacheable>)hashmap);
+    wpiPtr->setField("m_map", hashmap);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
     ASSERT(newPiPtr->hasField("m_map") == true, "m_map = true expected");
@@ -1785,7 +1784,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     linkedhashset->insert(CacheableInt32::create(3));
     linkedhashset->insert(CacheableInt32::create(4));
     linkedhashset->insert(CacheableInt32::create(5));
-    wpiPtr->setField("m_clhs", (std::shared_ptr<Cacheable>)linkedhashset);
+    wpiPtr->setField("m_clhs", linkedhashset);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
     ASSERT(newPiPtr->hasField("m_clhs") == true, "m_clhs = true expected");
@@ -1851,8 +1850,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
 
     wpiPtr = pIPtr->createWriter();
     try {
-      wpiPtr->setField("m_byteByteArray",
-                       (std::shared_ptr<Cacheable>)linkedhashset);
+      wpiPtr->setField("m_byteByteArray", linkedhashset);
       FAIL(
           "setField on m_byteByteArray with linkedhashset value should throw "
           "expected IllegalStateException");
@@ -1888,7 +1886,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     wpiPtr = pIPtr->createWriter();
     auto childpdxobjPtr = std::make_shared<ChildPdx>(2);
     LOGINFO("created new childPdx");
-    wpiPtr->setField("m_childPdx", (std::shared_ptr<Cacheable>)childpdxobjPtr);
+    wpiPtr->setField("m_childPdx", childpdxobjPtr);
     LOGINFO("childPdx seField done");
     rptr->put(keyport1, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport1));
@@ -1992,14 +1990,13 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstanceAndCheckLocally)
 
     std::vector<bool> setBoolArray{true, false, true,  false,
                                    true, true,  false, true};
-    auto arrayLen = setBoolArray.size();
     wpiPtr->setField("m_boolArray", setBoolArray);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
     ASSERT(pIPtr->hasField("m_boolArray") == true,
            "m_boolArray = true expected");
     auto getBoolArray = newPiPtr->getBooleanArrayField("m_boolArray");
-    arrayLen = getBoolArray.size();
+    auto arrayLen = getBoolArray.size();
     ASSERT(arrayLen == 8, "Arraylength == 8 expected");
     ASSERT(genericCompare(setBoolArray, getBoolArray, arrayLen) == true,
            "boolArray should be equal");

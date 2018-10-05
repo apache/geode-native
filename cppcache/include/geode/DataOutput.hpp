@@ -417,7 +417,8 @@ class APACHE_GEODE_EXPORT DataOutput {
   inline void reset() {
     if (m_haveBigBuffer) {
       // create smaller buffer
-      m_bytes.reset((uint8_t*)std::malloc(m_lowWaterMark * sizeof(uint8_t)));
+      m_bytes.reset(
+          static_cast<uint8_t*>(std::malloc(m_lowWaterMark * sizeof(uint8_t))));
       if (m_bytes == nullptr) {
         throw OutOfMemoryException("Out of Memory while resizing buffer");
       }
@@ -444,7 +445,8 @@ class APACHE_GEODE_EXPORT DataOutput {
       m_size = newSize;
 
       auto bytes = m_bytes.release();
-      auto tmp = (uint8_t*)std::realloc(bytes, m_size * sizeof(uint8_t));
+      auto tmp =
+          static_cast<uint8_t*>(std::realloc(bytes, m_size * sizeof(uint8_t)));
       if (tmp == nullptr) {
         throw OutOfMemoryException("Out of Memory while resizing buffer");
       }
@@ -496,7 +498,7 @@ class APACHE_GEODE_EXPORT DataOutput {
   static void releaseLock();
 
   // memory m_buffer to encode to.
-  std::unique_ptr<uint8_t> m_bytes;
+  std::unique_ptr<uint8_t[]> m_bytes;
   // cursor.
   uint8_t* m_buf;
   // size of m_bytes.

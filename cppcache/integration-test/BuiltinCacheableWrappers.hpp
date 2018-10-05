@@ -23,6 +23,7 @@
 #include <limits.h>
 #include <cstdlib>
 #include <wchar.h>
+#include <random>
 
 #include <ace/Date_Time.h>
 
@@ -122,14 +123,14 @@ const uint32_t m_crc32Table[] = {
     0xb40bbe37, 0xc30c8ea1, 0x5a05df1b, 0x2d02ef8d};
 
 inline double random(double maxValue) {
-  // Random number generator is initialized in registerBuiltins()
-  return (maxValue * static_cast<double>(rand())) /
-         (static_cast<double>(RAND_MAX) + 1.0);
+  static thread_local std::default_random_engine generator(
+      std::random_device{}());
+  return std::uniform_real_distribution<double>{0.0, maxValue}(generator);
 }
 
 template <typename TPRIM>
 inline TPRIM random(TPRIM maxValue) {
-  return (TPRIM)random((double)maxValue);
+  return static_cast<TPRIM>(random(static_cast<double>(maxValue)));
 }
 
 // This returns an array allocated on heap
@@ -338,7 +339,8 @@ class CacheableDateWrapper : public CacheableWrapper {
 
     const ACE_Time_Value currentTime = ACE_OS::gettimeofday();
     timeofday = currentTime.sec();
-    time_t epoctime = (time_t)(timeofday + (rnd * (rnd % 2 == 0 ? 1 : -1)));
+    time_t epoctime =
+        static_cast<time_t>(timeofday + (rnd * (rnd % 2 == 0 ? 1 : -1)));
 
     m_cacheableObject = CacheableDate::create(epoctime);
   }
@@ -1035,7 +1037,7 @@ class CacheableNullStringWrapper : public CacheableWrapper {
   // CacheableWrapper members
 
   void initRandomValue(int32_t) override {
-    m_cacheableObject = CacheableString::create((char*)nullptr);
+    m_cacheableObject = CacheableString::create(static_cast<char*>(nullptr));
   }
 
   uint32_t getCheckSum(const std::shared_ptr<Cacheable> object) const override {

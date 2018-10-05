@@ -86,7 +86,7 @@ int32_t TcpConn::maxSize(ACE_HANDLE sock, int32_t flag, int32_t size) {
 
 void TcpConn::createSocket(ACE_HANDLE sock) {
   LOGDEBUG("Creating plain socket stream");
-  m_io = new ACE_SOCK_Stream((ACE_HANDLE)sock);
+  m_io = new ACE_SOCK_Stream(sock);
   // m_io->enable(ACE_NONBLOCK);
 }
 
@@ -356,7 +356,7 @@ uint16_t TcpConn::getPort() {
   GF_DEV_ASSERT(m_io != nullptr);
 
   ACE_INET_Addr localAddr;
-  m_io->get_local_addr(*(ACE_Addr *)&localAddr);
+  m_io->get_local_addr(localAddr);
   return localAddr.get_port_number();
 }
 

@@ -115,7 +115,7 @@ RegionAttributesFactory& RegionAttributesFactory::setRegionTimeToLive(
 }
 
 RegionAttributesFactory& RegionAttributesFactory::setInitialCapacity(
-    int initialCapacity) {
+    int32_t initialCapacity) {
   m_regionAttributes.m_initialCapacity = initialCapacity;
   return *this;
 }

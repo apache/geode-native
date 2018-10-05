@@ -26,7 +26,6 @@
 
 #include <string>
 #include "fwklib/Timer.hpp"
-#include "fwklib/FrameworkTest.hpp"
 #include "TimestampedObject.hpp"
 #include <ace/ACE.h>
 #include <ace/OS.h>

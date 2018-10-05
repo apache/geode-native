@@ -66,6 +66,7 @@ class ACE_Equal_To<std::shared_ptr<apache::geode::client::CacheableKey>> {
   }
 };
 
+// NOLINTNEXTLINE(google-readability-namespace-comments)
 }  // namespace ACE_VERSIONED_NAMESPACE_NAME
 
 namespace apache {

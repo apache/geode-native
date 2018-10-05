@@ -75,7 +75,7 @@ int32_t traverseChildElements(const DOMNode* node) {
         DOMNamedNodeMap* attributes = node->getAttributes();
         int32_t size = static_cast<int32_t>(attributes->getLength());
         for (int32_t i = 0; i < size; ++i) {
-          DOMAttr* attributeNode = (DOMAttr*)attributes->item(i);
+          auto attributeNode = static_cast<DOMAttr*>(attributes->item(i));
           std::string attName = XMLChToStr(attributeNode->getName());
           std::string attValue = XMLChToStr(attributeNode->getValue());
           FWKINFO("------ " << name << " Attribute: " << attName
@@ -83,7 +83,7 @@ int32_t traverseChildElements(const DOMNode* node) {
         }
       }
       FWKINFO("------ Children of " << name);
-      for (child = node->getFirstChild(); child!= nullptr;
+      for (child = node->getFirstChild(); child != nullptr;
            child = child->getNextSibling()) {
         count += traverseChildElements(child);
       }
@@ -365,12 +365,12 @@ LocalFile::LocalFile(const DOMNode* node) : m_append(false) {
   }
 
   bool done = false;
-  DOMNode* child = node->getFirstChild();
+  auto child = node->getFirstChild();
   while ((child != nullptr) && !done) {
     if (child->getNodeType() == DOMNode::TEXT_NODE) {
       //      DOMText * tnode = dynamic_cast< DOMText * >( child );
-      DOMText* tnode = (DOMText*)child;
-      std::string text = XMLChToStr(tnode->getNodeValue());
+      auto tnode = static_cast<DOMText*>(child);
+      auto text = XMLChToStr(tnode->getNodeValue());
       if (!tnode->isIgnorableWhitespace() && !allSpace(text)) {
         setContent(text);
         done = true;
@@ -801,8 +801,8 @@ FwkData::FwkData(const DOMNode* node)
       }
     } else if (child->getNodeType() == DOMNode::TEXT_NODE) {
       //      DOMText * tnode = dynamic_cast< DOMText * >( child );
-      DOMText* tnode = (DOMText*)child;
-      std::string text = XMLChToStr(tnode->getNodeValue());
+      auto tnode = static_cast<DOMText*>(child);
+      auto text = XMLChToStr(tnode->getNodeValue());
       if (!tnode->isIgnorableWhitespace() && !allSpace(text)) {
         setContent(text);
       }
@@ -827,7 +827,8 @@ DataRange::DataRange(const DOMNode* node) {
   }
 }
 
-DataSnippet::DataSnippet(const DOMNode* node) : m_region(nullptr), m_pool(nullptr) {
+DataSnippet::DataSnippet(const DOMNode* node)
+    : m_region(nullptr), m_pool(nullptr) {
   DOMNode* child = node->getFirstChild();
   while (child != nullptr) {
     if (child->getNodeType() == DOMNode::ELEMENT_NODE) {
@@ -846,17 +847,17 @@ DataList::DataList(const DOMNode* node) {
   //  FWKINFO( "Instantiate DataList" );
   //  traverseChildElements( node );
   // for all children, process ITEM_TAG elements
-  DOMNode* child = node->getFirstChild();
+  auto child = node->getFirstChild();
   while (child != nullptr) {
     if (child->getNodeType() == DOMNode::ELEMENT_NODE) {
-      std::string tag = XMLChToStr(child->getNodeName());
+      auto tag = XMLChToStr(child->getNodeName());
       if (tag == ITEM_TAG) {  // now find all TEXT_NODE children of item
-        DOMNode* tchild = child->getFirstChild();
+        auto tchild = child->getFirstChild();
         while (tchild != nullptr) {
           if (tchild->getNodeType() == DOMNode::TEXT_NODE) {
             //            DOMText * tnode = dynamic_cast< DOMText * >( tchild );
-            DOMText* tnode = (DOMText*)tchild;
-            std::string text = XMLChToStr(tnode->getNodeValue());
+            auto tnode = static_cast<DOMText*>(tchild);
+            auto text = XMLChToStr(tnode->getNodeValue());
             if (!tnode->isIgnorableWhitespace() && !allSpace(text)) {
               addValue(text);
             }
@@ -873,17 +874,17 @@ DataOneof::DataOneof(const DOMNode* node) {
   //  FWKINFO( "Instantiate DataOneof" );
   //  traverseChildElements( node );
   // for all children, process ITEM_TAG elements
-  DOMNode* child = node->getFirstChild();
+  auto child = node->getFirstChild();
   while (child != nullptr) {
     if (child->getNodeType() == DOMNode::ELEMENT_NODE) {
-      std::string tag = XMLChToStr(child->getNodeName());
+      auto tag = XMLChToStr(child->getNodeName());
       if (tag == ITEM_TAG) {  // now find all TEXT_NODE children of item
-        DOMNode* tchild = child->getFirstChild();
+        auto tchild = child->getFirstChild();
         while (tchild != nullptr) {
           if (tchild->getNodeType() == DOMNode::TEXT_NODE) {
             //            DOMText * tnode = dynamic_cast< DOMText * >( tchild );
-            DOMText* tnode = (DOMText*)tchild;
-            std::string text = XMLChToStr(tnode->getNodeValue());
+            auto tnode = static_cast<DOMText*>(tchild);
+            auto text = XMLChToStr(tnode->getNodeValue());
             if (!tnode->isIgnorableWhitespace() && !allSpace(text)) {
               addValue(text);
             }
@@ -933,8 +934,8 @@ TestDriver::TestDriver(const char* xmlfile) {
     FWKEXCEPTION("TestDriver::fromXmlFile() Failed to instantiate domImpl.");
   }
 
-  DOMLSParser* builder =
-      ((DOMImplementationLS*)domImpl)
+  auto builder =
+      (static_cast<DOMImplementationLS*>(domImpl))
           ->createLSParser(DOMImplementationLS::MODE_SYNCHRONOUS, nullptr);
 
   if (builder == nullptr) {
@@ -985,7 +986,7 @@ TestDriver::TestDriver(const char* xmlfile) {
                  << xmlfile << " Caught unknown exception.");
   }
 
-  DOMNode* node = (DOMNode*)doc->getDocumentElement();
+  auto node = static_cast<DOMNode*>(doc->getDocumentElement());
   if (node != nullptr) {
     fromXmlNode(node);
   }

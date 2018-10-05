@@ -20,7 +20,6 @@
  * limitations under the License.
  */
 
-#include "fwklib/FrameworkTest.hpp"
 #include "fwklib/FwkObjects.hpp"
 #include "fwklib/FwkStrCvt.hpp"
 #include "fwklib/FwkLog.hpp"

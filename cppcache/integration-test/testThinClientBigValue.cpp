@@ -152,7 +152,7 @@ DUNIT_TASK(CLIENT2, VerifyPuts)
   {
     auto regPtr = getHelper()->getRegion(regionNames[0]);
     // region should already have n entries...
-    int entriesExpected = dunit::globals()->getIntValue("entriesToExpect");
+    dunit::globals()->getIntValue("entriesToExpect");
 
     for (int i = 0; i <= MAX_PAYLOAD; grow(&i)) {
       char keybuf[100];

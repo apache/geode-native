@@ -15,39 +15,30 @@
  * limitations under the License.
  */
 
-#include <geode/Cache.hpp>
-#include <geode/PoolManager.hpp>
+#pragma once
 
-#include "PoolXmlCreation.hpp"
+#ifndef INTERNAL_HACKS_ACETHREADID_H_
+#define INTERNAL_HACKS_ACETHREADID_H_
 
-namespace apache {
-namespace geode {
-namespace client {
+#include <cstdint>
+#include <type_traits>
 
-/*
-void PoolXmlCreation::addLocator(const char * host, const char * port)
-{
-  locatorhosts.push_back(host);
-  locatorports.push_back(port);
+namespace hacks {
+
+template <class _T>
+uint64_t aceThreadId(
+    _T&& thread,
+    typename std::enable_if<std::is_pointer<_T>::value>::type* = nullptr) {
+  return reinterpret_cast<uintptr_t>(thread);
 }
 
-void PoolXmlCreation::addServer(const char * host, const char * port)
-{
-  serverhosts.push_back(host);
-  serverports.push_back(port);
-}
-*/
-std::shared_ptr<Pool> PoolXmlCreation::create() {
-  return poolFactory->create(poolName);
+template <class _T>
+uint64_t aceThreadId(
+    _T&& thread,
+    typename std::enable_if<std::is_integral<_T>::value>::type* = nullptr) {
+  return thread;
 }
 
-PoolXmlCreation::PoolXmlCreation(std::string name, std::shared_ptr<PoolFactory> factory) {
-  poolName = std::move(name);
-  poolFactory = factory;
-}
+}  // namespace hacks
 
-PoolXmlCreation::~PoolXmlCreation() {}
-
-}  // namespace client
-}  // namespace geode
-}  // namespace apache
+#endif  // INTERNAL_HACKS_ACETHREADID_H_

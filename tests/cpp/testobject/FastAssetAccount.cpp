@@ -17,6 +17,8 @@
 
 #include <inttypes.h>
 
+#include <geode/CacheableBuiltins.hpp>
+
 #include "FastAssetAccount.hpp"
 #include "FastAsset.hpp"
 

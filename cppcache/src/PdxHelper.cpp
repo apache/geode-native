@@ -272,7 +272,7 @@ std::shared_ptr<PdxSerializable> PdxHelper::deserializePdx(
 
     cachePerfStats.incPdxDeSerialization(len + 9);  // pdxLen + 1 + 2*4
 
-    return PdxHelper::deserializePdx(dataInput, (int32_t)typeId, (int32_t)len);
+    return PdxHelper::deserializePdx(dataInput, typeId, len);
 
   } else {
     // Read Length
@@ -303,7 +303,7 @@ std::shared_ptr<PdxSerializable> PdxHelper::deserializePdx(
 
     dataInput.advanceCursor(len);
 
-    return pdxObject;
+    return std::move(pdxObject);
   }
 }
 

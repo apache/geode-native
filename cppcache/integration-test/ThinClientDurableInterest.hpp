@@ -44,7 +44,7 @@ recieved.
 #define SERVER1 s2p1
 #define FEEDER s2p2
 
-namespace {
+namespace { // NOLINT(google-build-namespaces)
 
 using apache::geode::client::EntryEvent;
 using apache::geode::client::HashMapOfCacheable;

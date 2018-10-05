@@ -81,7 +81,7 @@ void VersionTag::readMembers(uint16_t flags, DataInput& input) {
     auto internalMemId = std::make_shared<ClientProxyMembershipID>();
     internalMemId->readEssentialData(input);
     m_internalMemId = m_memberListForVersionStamp.add(
-        (std::shared_ptr<DSMemberForVersionStamp>)internalMemId);
+        std::dynamic_pointer_cast<DSMemberForVersionStamp>(internalMemId));
   }
   if ((flags & HAS_PREVIOUS_MEMBER_ID) != 0) {
     if ((flags & DUPLICATE_MEMBER_IDS) != 0) {

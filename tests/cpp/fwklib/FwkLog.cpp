@@ -17,9 +17,11 @@
 
 #include <cinttypes>
 
+#include <geode/Exception.hpp>
+
 #include "fwklib/FwkLog.hpp"
 #include "fwklib/PerfFwk.hpp"
-#include <geode/Exception.hpp>
+#include "hacks/AceThreadId.h"
 
 namespace apache {
 namespace geode {
@@ -66,7 +68,7 @@ void plog(const char* l, const char* s, const char* filename, int32_t lineno) {
   pbuf += ACE_OS::strftime(pbuf, MINBUFSIZE, "%Y/%m/%d %H:%M:%S", tm_val);
   pbuf += ACE_OS::snprintf(pbuf, 15, ".%06" PRId64 " ",
                            static_cast<int64_t>(clock.usec()));
-  pbuf += ACE_OS::strftime(pbuf, MINBUFSIZE, "%Z ", tm_val);
+  ACE_OS::strftime(pbuf, MINBUFSIZE, "%Z ", tm_val);
   static bool needInit = true;
   if (needInit) {
     ACE_OS::uname(&u);
@@ -75,9 +77,9 @@ void plog(const char* l, const char* s, const char* filename, int32_t lineno) {
 
   const char* fil = dirAndFile(filename);
 
-  fprintf(stdout, "[%s %s %s:P%d:T%" PRIXPTR "]::%s::%d  %s  %s\n", buf,
+  fprintf(stdout, "[%s %s %s:P%d:T%" PRIu64 "]::%s::%d  %s  %s\n", buf,
           u.sysname, u.nodename, ACE_OS::getpid(),
-          (uintptr_t)(ACE_Thread::self()), fil, lineno, l, s);
+          hacks::aceThreadId(ACE_OS::thr_self()), fil, lineno, l, s);
   fflush(stdout);
 }
 

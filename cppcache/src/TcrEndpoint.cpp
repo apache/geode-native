@@ -42,39 +42,39 @@ TcrEndpoint::TcrEndpoint(const std::string& name, CacheImpl* cacheImpl,
                          ACE_Semaphore& cleanupSema,
                          ACE_Semaphore& redundancySema, ThinClientBaseDM* DM,
                          bool isMultiUserMode)
-    : m_needToConnectInLock(false),
+    : m_notifyConnection(nullptr),
+      m_notifyReceiver(nullptr),
+      m_cacheImpl(cacheImpl),
       m_connectLockCond(m_connectLock),
       m_maxConnections(cacheImpl->getDistributedSystem()
                            .getSystemProperties()
                            .connectionPoolSize()),
-      m_notifyConnection(nullptr),
-      m_notifyReceiver(nullptr),
       m_numRegionListener(0),
+      m_needToConnectInLock(false),
       m_isQueueHosted(false),
-      m_cacheImpl(cacheImpl),
       m_uniqueId(0),
-      m_isAuthenticated(false),
-      m_msgSent(false),
-      m_pingSent(false),
-      m_numberOfTimesFailed(0),
-      m_isMultiUserMode(isMultiUserMode),
+      m_failoverSema(failoverSema),
+      m_cleanupSema(cleanupSema),
+      m_redundancySema(redundancySema),
+      m_baseDM(DM),
       m_name(name),
-      m_connected(false),
-      m_isActiveEndpoint(false),
+      m_notificationCleanupSema(0),
+      m_numberOfTimesFailed(0),
       m_numRegions(0),
       m_pingTimeouts(0),
       m_notifyCount(0),
-      m_failoverSema(failoverSema),
-      m_cleanupSema(cleanupSema),
-      m_notificationCleanupSema(0),
-      m_redundancySema(redundancySema),
       m_dupCount(0),
+      m_isAuthenticated(false),
+      m_msgSent(false),
+      m_pingSent(false),
+      m_isMultiUserMode(isMultiUserMode),
+      m_connected(false),
+      m_isActiveEndpoint(false),
       m_serverQueueStatus(NON_REDUNDANT_SERVER),
-      m_isServerQueueStatusSet(false),
       m_queueSize(0),
-      m_baseDM(DM),
       m_noOfConnRefs(0),
-      m_distributedMemId(0) {
+      m_distributedMemId(0),
+      m_isServerQueueStatusSet(false) {
   /*
   m_name = Utils::convertHostToCanonicalForm(m_name.c_str() );
   */
@@ -878,8 +878,9 @@ GfErrType TcrEndpoint::sendRequestConn(const TcrMessage& request,
     error = GF_NOTCON;
   }
   if (error == GF_NOERR) {
-    if (m_baseDM != nullptr)
+    if (m_baseDM) {
       m_baseDM->afterSendingRequest(request, reply, conn);
+    }
   }
 
   return error;

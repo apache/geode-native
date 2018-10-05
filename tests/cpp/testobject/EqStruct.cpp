@@ -15,6 +15,9 @@
  * limitations under the License.
  */
 
+#include <geode/DataOutput.hpp>
+#include <geode/DataInput.hpp>
+
 #include "EqStruct.hpp"
 
 namespace testobject {

@@ -872,8 +872,9 @@ GfErrType ThinClientRedundancyManager::sendSyncRequestCq(
     if (err != GF_NOERR || m_redundantEndpoints.empty()) {
       auto userAttr = TSSUserAttributesWrapper::s_geodeTSSUserAttributes
                           ->getUserAttributes();
-      if (userAttr != nullptr)
+      if (userAttr) {
         authenticatedView = userAttr->getAuthenticatedView();
+      }
       err = maintainRedundancyLevel();
       // we continue on fatal error because MRL only tries a handshake without
       // sending a request (no params passed) so no need to check
@@ -914,19 +915,18 @@ GfErrType ThinClientRedundancyManager::sendSyncRequestRegisterInterest(
     TcrMessage& request, TcrMessageReply& reply, bool, TcrEndpoint* endpoint,
     ThinClientBaseDM* theHADM, ThinClientRegion* region) {
   LOGDEBUG("ThinClientRedundancyManager::sendSyncRequestRegisterInterest ");
-  if (endpoint == nullptr) {
+  if (!endpoint) {
     ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_redundantEndpointsLock);
 
-    GfErrType err = GF_NOERR;
-    GfErrType opErr = GF_NOERR;
+    auto err = GF_NOERR;
+    auto opErr = GF_NOERR;
     TcrEndpoint* primaryEndpoint = nullptr;
 
-    if (m_redundantEndpoints.size() >= 1) {
-      std::vector<TcrEndpoint*>::iterator iter = m_redundantEndpoints.begin();
-      for (++iter; iter != m_redundantEndpoints.end(); ++iter) {
-        (*iter)->setDM(request.getDM());
-        opErr = theHADM->sendSyncRequestRegisterInterestEP(request, reply,
-                                                           false, *iter);
+    if (!m_redundantEndpoints.empty()) {
+      for (auto&& redundantEndpoint : m_redundantEndpoints) {
+        redundantEndpoint->setDM(request.getDM());
+        opErr = theHADM->sendSyncRequestRegisterInterestEP(
+            request, reply, false, redundantEndpoint);
         if (err == GF_NOERR) {
           err = opErr;
         }
@@ -953,7 +953,7 @@ GfErrType ThinClientRedundancyManager::sendSyncRequestRegisterInterest(
 
     if (m_redundantEndpoints.empty()) {
       err = GF_NOTCON;
-    } else if (primaryEndpoint == m_redundantEndpoints[0]) {
+    } else if (primaryEndpoint && primaryEndpoint == m_redundantEndpoints[0]) {
       for (size_t count = 0;
            count < m_redundantEndpoints.size() + m_nonredundantEndpoints.size();
            count++) {
@@ -1192,8 +1192,8 @@ void ThinClientRedundancyManager::doPeriodicAck() {
 
       if (endpoint != m_redundantEndpoints.end()) {
         TcrMessagePeriodicAck request(
-            new DataOutput(m_theTcrConnManager->getCacheImpl()
-                               ->createDataOutput()),
+            new DataOutput(
+                m_theTcrConnManager->getCacheImpl()->createDataOutput()),
             entries);
         TcrMessageReply reply(true, nullptr);
 
@@ -1258,9 +1258,11 @@ void ThinClientRedundancyManager::startPeriodicAck() {
       "notify-dupcheck-life = %ld, periodic ack is %sabled",
       m_processEventIdMapTaskId,
       (m_poolHADM ? m_poolHADM->getSubscriptionAckInterval()
-                  : props.notifyAckInterval()).count(),
+                  : props.notifyAckInterval())
+          .count(),
       (m_poolHADM ? m_poolHADM->getSubscriptionMessageTrackingTimeout()
-                  : props.notifyDupCheckLife()).count(),
+                  : props.notifyDupCheckLife())
+          .count(),
       m_HAenabled ? "en" : "dis");
 }
 

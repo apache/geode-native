@@ -26,7 +26,7 @@
 #include <ace/Time_Value.h>
 #include <ace/Guard_T.h>
 
-namespace {
+namespace { // NOLINT(google-build-namespaces)
 
 using apache::geode::util::concurrent::spinlock_mutex;
 
