@@ -197,8 +197,7 @@ PdxInstanceFactory& PdxInstanceFactory::writeByteArray(
   isFieldAdded(fieldName);
   m_pdxType->addVariableLengthTypeField(fieldName, "byte[]",
                                         PdxFieldTypes::BYTE_ARRAY);
-  auto cacheableObject =
-      CacheableArray<int8_t, DSCode::CacheableBytes>::create(value);
+  auto cacheableObject = CacheableBytes::create(value);
   m_FieldVsValues.emplace(fieldName, cacheableObject);
   return *this;
 }

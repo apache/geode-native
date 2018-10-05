@@ -261,11 +261,10 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 
   target_compile_options(_WarningsAsError INTERFACE
     /WX
+	/wd4996
 	/wd4068 # TODO fix
 	)
 
-  # TODO error on warnings
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4996")
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /ignore:4099")
   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /ignore:4099")
 

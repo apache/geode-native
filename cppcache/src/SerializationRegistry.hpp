@@ -34,6 +34,7 @@
 
 #include <geode/internal/geode_globals.hpp>
 #include <geode/internal/DataSerializableInternal.hpp>
+#include <geode/internal/DataSerializablePrimitive.hpp>
 #include <geode/Serializable.hpp>
 #include <geode/PdxSerializer.hpp>
 #include <geode/DataOutput.hpp>
@@ -77,6 +78,7 @@ namespace geode {
 namespace client {
 
 using internal::DataSerializableInternal;
+using internal::DataSerializablePrimitive;
 
 typedef ACE_Hash_Map_Manager<DSCode, TypeFactoryMethod, ACE_Null_Mutex>
     DSCodeToFactoryMap;
