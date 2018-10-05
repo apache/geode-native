@@ -19,16 +19,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-The C++ and .NET clients can run queries that continuously monitor events in the <%=vars.product_name%> cache server and notify
-the client when the query results have changed.
-For details on the server-side setup for continuous queries, 
-see [How Continuous Querying Works](/serverman/developing/continuous_querying/how_continuous_querying_works.html) in the *<%=vars.product_name%> User Guide*.
+The C++ and .NET clients can initiate queries that run on the <%=vars.product_name%> cache server
+and notify the client when the query results have changed.  For details on the server-side setup for
+continuous queries, see [How Continuous Querying Works](/serverman/developing/continuous_querying/how_continuous_querying_works.html) 
+in the *<%=vars.product_name%> User Guide*.
 
 ## <a id="cq_main_features" ></a>Continuous Query Basics
 
 Continuous querying provides the following features:
 
--   **Standard <%=vars.product_name%> native client query syntax and semantics**. CQ queries are expressed in the same language used for other native client queries. See [Remote Queries](../remote-querying/remote-queries.html).
+-   **Standard <%=vars.product_name%> native client query syntax and semantics**. Continuous queries are expressed in the same language used for other native client queries. See [Remote Queries](../remote-querying/remote-queries.html).
 
 - **Standard <%=vars.product_name%> events-based management of CQ events**. The event handling used
 to process CQ events is based on the standard <%=vars.product_name%> event handling framework. 
@@ -40,7 +40,7 @@ availability then your CQs are highly available, with seamless failover provided
 server failure (see [High Availability for Client-to-Server Communication](../preserving-data/high-availability-client-server.html)). 
 If your clients are durable, you can also define any of your CQs as durable (see [Durable Client Messaging](../preserving-data/durable-client-messaging.html)).
 
-- **Interest criteria based on data values**. CQ queries are run against the region's entry values. 
+- **Interest criteria based on data values**. Continuous queries are run against the region's entry values. 
 Compare this to register interest by reviewing [Registering Interest for Entries](../client-cache/registering-interest-for-entries.html).
 
 -   **Active query execution**. Once initialized, the queries operate only on new events, rather than on the entire region data set. 
@@ -49,8 +49,8 @@ Events that change the query result are sent to the client immediately.
 ## <a id="cq_api"></a>Typical Continuous Query Lifecycle
 
 1.  The client creates the CQ. This sets up everything for running the query and provides the client with a `CqQuery` object, but does not execute the CQ. At this point, the query is in a `STOPPED `state, ready to be closed or run.
-2.  The client runs the CQ with an API call to one of the `CqQuery execute*` methods. This puts the query into a `RUNNING` state on the client and on the server.
-1.  The CqListener fields events and takes action accordingly. Events are not result sets. If the action requires doing something with the data, the data must first be retrieved.
+2.  The client initiates the CQ with an API call to one of the `CqQuery execute*` methods. This puts the query into a `RUNNING` state on the client and on the server.  The server remotely evaluates the query string, and optionally returns the results to the client.
+1.  The CqListener waits for events. When it receives events, it takes action accordingly. Events are not result sets. If the action requires doing something with the data, the data must first be retrieved.
 3.  The CQ is closed by a client call to `CqQuery.close`. This de-allocates all resources in use for the CQ on the client and server. At this point, the cycle could begin again with the creation of a new `CqQuery` instance.
 
 ## <a id="ExecutingACQ"></a>Executing a Continuous Query from the Client
@@ -74,7 +74,7 @@ Following the steps listed above,
 1. Create a query service:
 
     ```
-    var cqAttributesFactory = new CqAttributesFactory<string, Order>();
+    var queryService = pool.GetQueryService();
     ```
 
 1. Create a CQ Listener:
@@ -86,8 +86,8 @@ Following the steps listed above,
 1. Insert the CQ Listener into a CQ attributes object:
 
     ```
+    var cqAttributesFactory = new CqAttributesFactory<string, Order>();
     cqAttributesFactory.AddCqListener(cqListener);
-
     var cqAttributes = cqAttributesFactory.Create();
     ```
 
