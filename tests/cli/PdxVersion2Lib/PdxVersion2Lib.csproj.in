@@ -106,7 +106,7 @@
     <ProjectReference Include="$(CMAKE_BINARY_DIR)\clicache\src\Apache.Geode.vcxproj">
       <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
       <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-    </ProjectReference>    
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\PdxVersion2Lib\Version2.cs">
