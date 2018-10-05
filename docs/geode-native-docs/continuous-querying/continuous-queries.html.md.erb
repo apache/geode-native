@@ -19,14 +19,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-The C++ and .NET clients can run queries that continuously monitor events in the <%=vars.product_name%> cache server and return results
-when triggered.
+The C++ and .NET clients can run queries that continuously monitor events in the <%=vars.product_name%> cache server and notify
+the client when the query results have changed.
 For details on the server-side setup for continuous queries, 
 see [How Continuous Querying Works](/serverman/developing/continuous_querying/how_continuous_querying_works.html) in the *<%=vars.product_name%> User Guide*.
 
-## <a id="cq_main_features" ></a>Main Features of Continuous Querying
+## <a id="cq_main_features" ></a>Continuous Query Basics
 
-Continuous querying in the native client has the following features:
+Continuous querying provides the following features:
 
 -   **Standard <%=vars.product_name%> native client query syntax and semantics**. CQ queries are expressed in the same language used for other native client queries. See [Remote Queries](../remote-querying/remote-queries.html).
 
@@ -46,14 +46,14 @@ Compare this to register interest by reviewing [Registering Interest for Entries
 -   **Active query execution**. Once initialized, the queries operate only on new events, rather than on the entire region data set. 
 Events that change the query result are sent to the client immediately.
 
-## <a id="typical_cq_lifecycle"></a>Typical CQ Lifecycle
+## <a id="cq_api"></a>Typical Continuous Query Lifecycle
 
 1.  The client creates the CQ. This sets up everything for running the query and provides the client with a `CqQuery` object, but does not execute the CQ. At this point, the query is in a `STOPPED `state, ready to be closed or run.
 2.  The client runs the CQ with an API call to one of the `CqQuery execute*` methods. This puts the query into a `RUNNING` state on the client and on the server.
 1.  The CqListener fields events and takes action accordingly. Events are not result sets. If the action requires doing something with the data, the data must first be retrieved.
 3.  The CQ is closed by a client call to `CqQuery.close`. This de-allocates all resources in use for the CQ on the client and server. At this point, the cycle could begin again with the creation of a new `CqQuery` instance.
 
-### <a id="ExecutingACQ"></a>Executing a Continuous Query from the Client
+## <a id="ExecutingACQ"></a>Executing a Continuous Query from the Client
 
 The essential steps to create and execute a continuous query are:
 
@@ -115,18 +115,9 @@ Following the steps listed above,
                     operationType = "DESTROY";
                     break;
                 default:
-                    Console.WriteLine("Unexpected operation encountered {0}", ev.getQueryOperation());
                     break;
             }
 
-            if (val != null)
-            {
-                Console.WriteLine("MyCqListener::OnEvent({0}) called with key {1}, value {2}", operationType, key, val.ToString());
-            }
-            else
-            {
-                Console.WriteLine("MyCqListener::OnEvent({0}) called with key {1}, value null", operationType, key);
-            }
 	...
 
 	/* Take action based on OP Type */
@@ -136,9 +127,12 @@ Following the steps listed above,
 1. When finished, close up shop.
 
     ```
+    query.Execute();
+    ... (respond to events as they arrive)
+
     query.Stop();
     query.Close();
-    ...
+
     cache.Close();
     ```
 
@@ -211,7 +205,7 @@ Following the steps listed above,
     ```
     query->execute();
 
-    ... (field events as they arrive)
+    ... (respond to events as they arrive)
 
     query->stop();
     query->close();
