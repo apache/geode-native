@@ -13,47 +13,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-language: cpp
-os: linux
+# cpp tools are outdated, so use docker
+language: generic
+
+# required for docker
+sudo: required
+
+services:
+  - docker
 
 env:
   global:
-    - GEODE_VERSION=1.6.0
-    - CMAKE_VERSION=3.12.2
+    - DOCKER_ARGS="--rm --volume=${TRAVIS_BUILD_DIR}:/geode-native"
+    - DOCKER_IMAGE="apachegeode/geode-native-build:clang"
+    - SOURCE_DIR="/geode-native"
 
-addons:
-  apt:
-    sources:
-    - ubuntu-toolchain-r-test
-    - llvm-toolchain-trusty-6.0
-    - sourceline: 'deb http://apt.llvm.org/trusty/ llvm-toolchain-trusty-6.0 main'
-      key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
-    packages:
-    - clang-6.0
-    - clang-tidy-6.0
-    - clang-format-6.0
-    - libc++-dev
-    - libc++abi-dev
-    - doxygen
-#    - make
-    - graphviz
-    - zlib1g-dev
-    - wget
-#    - openjdk-8-jdk-headless
+  matrix:
+    - DOCKER_COMMAND="java -jar /apache-rat-0.12/apache-rat-0.12.jar -E ${SOURCE_DIR}/.ratignore -d ${SOURCE_DIR}"
+    - DOCKER_COMMAND="mkdir build && cd build && cmake ${SOURCE_DIR} -DCMAKE_CXX_FLAGS=-stdlib=libc++ -DCMAKE_CXX_CLANG_TIDY=clang-tidy && cmake --build . -- -j2 && ./cppcache/test/apache-geode_unittests"
 
-before_install:
-  - export CC=clang-6.0
-  - export CXX=clang-6.0
-  - mkdir $HOME/usr
-  - export PATH="$HOME/usr/bin:$PATH"
-  - wget "https://cmake.org/files/v${CMAKE_VERSION%.*}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh"
-  - sh cmake-${CMAKE_VERSION}-Linux-x86_64.sh --prefix=$HOME/usr --exclude-subdir --skip-license
-  - wget "https://www.apache.org/dyn/closer.cgi?action=download&filename=geode/${GEODE_VERSION}/apache-geode-${GEODE_VERSION}.tgz" --quiet -O - | tar xzf - -C $HOME
-  - export GEODE_HOME=$HOME/apache-geode-${GEODE_VERSION}
+install:
+  - docker pull "${DOCKER_IMAGE}"
 
 script:
-  - cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS=-stdlib=libc++ -DCMAKE_CXX_CLANG_TIDY=clang-tidy-6.0 .
-  - cmake --build . -- -j2 VERBOSE=1
+  - docker run ${DOCKER_ARGS} "${DOCKER_IMAGE}" bash -c "${DOCKER_COMMAND}"
 
 notifications:
   email:
