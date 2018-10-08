@@ -20,6 +20,7 @@ using System.Diagnostics;
 using System.Net;
 using System.IO;
 using System.Net.Sockets;
+using System.Reflection;
 using Xunit;
 using System.Collections.Generic;
 
@@ -27,12 +28,18 @@ namespace Apache.Geode.Client.IntegrationTests
 {
     public abstract class Gfsh : IDisposable
     {
+        public string Name { get; private set; }
         public string LocatorBindAddress { get; set; }
         public int LocatorPort { get; private set; }
         public int JmxManagerPort { get; private set; }
         public int HttpServicePort { get; private set; }
         public string ServerBindAddress { get; private set; }
         public string Connection { get; private set; }
+        public bool UseSSL { get; set; }
+        public string Keystore { get; set; }
+        public string KeystorePassword { get; set; }
+        public string Truststore { get; set; }
+        public string TruststorePassword { get; set; }
 
         public abstract void Dispose();
 
@@ -48,13 +55,12 @@ namespace Apache.Geode.Client.IntegrationTests
             }
             public int execute()
             {
-                //return (T)new T().SetGfsh(gfsh_); // .parse(gfsh_.execute(command_));
                 return gfsh_.execute(command_);
             }
 
             public override string ToString()
             {
-                return "Command: " + command_;
+                return command_;
             }
 
             protected Gfsh gfsh_;
@@ -116,34 +122,13 @@ namespace Apache.Geode.Client.IntegrationTests
                     return this;
                 }
 
-                public Server withSslEnabledComponents(List<string> components)
+                public Server withUseSsl()
                 {
-                    command_ += " --J=-Dgemfire.ssl-enabled-components=";
-                    command_ += String.Join(",", components);
-                    return this;
-                }
-
-                public Server withSslKeystore(string sslKeystorePath)
-                {
-                    command_ += " --J=-Dgemfire.ssl-keystore=" + sslKeystorePath;
-                    return this;
-                }
-
-                public Server withSslKeystorePassword(string sslKeystorePassword)
-                {
-                    command_ += " --J=-Dgemfire.ssl-keystore-password=" + sslKeystorePassword;
-                    return this;
-                }
-
-                public Server withSslTruststore(string sslTruststorePath)
-                {
-                    command_ += " --J=-Dgemfire.ssl-truststore=" + sslTruststorePath;
-                    return this;
-                }
-
-                public Server withSslTruststorePassword(string sslTruststorePassword)
-                {
-                    command_ += " --J=-Dgemfire.ssl-truststore-password=" + sslTruststorePassword;
+                    command_ += " --J=-Dgemfire.ssl-enabled-components=server,locator,jmx" +
+                        " --J=-Dgemfire.ssl-keystore=" + gfsh_.Keystore +
+                        " --J=-Dgemfire.ssl-keystore-password=" + gfsh_.KeystorePassword +
+                        " --J=-Dgemfire.ssl-truststore=" + gfsh_.Truststore +
+                        " --J=-Dgemfire.ssl-truststore-password=" + gfsh_.TruststorePassword;
                     return this;
                 }
             }
@@ -213,34 +198,13 @@ namespace Apache.Geode.Client.IntegrationTests
                     return this;
                 }
 
-                public Locator withSslEnabledComponents(List<string> components)
+                public Locator withUseSsl()
                 {
-                    command_ += " --J=-Dgemfire.ssl-enabled-components=";
-                    command_ += String.Join(",", components);
-                    return this;
-                }
-
-                public Locator withSslKeystore(string sslKeystorePath)
-                {
-                    command_ += " --J=-Dgemfire.ssl-keystore=" + sslKeystorePath;
-                    return this;
-                }
-
-                public Locator withSslKeystorePassword(string sslKeystorePassword)
-                {
-                    command_ += " --J=-Dgemfire.ssl-keystore-password=" + sslKeystorePassword;
-                    return this;
-                }
-
-                public Locator withSslTruststore(string sslTruststorePath)
-                {
-                    command_ += " --J=-Dgemfire.ssl-truststore=" + sslTruststorePath;
-                    return this;
-                }
-
-                public Locator withSslTruststorePassword(string sslTruststorePassword)
-                {
-                    command_ += " --J=-Dgemfire.ssl-truststore-password=" + sslTruststorePassword;
+                    command_ += " --J=-Dgemfire.ssl-enabled-components=locator,jmx" +
+                        " --J=-Dgemfire.ssl-keystore=" + gfsh_.Keystore +
+                        " --J=-Dgemfire.ssl-keystore-password=" + gfsh_.KeystorePassword +
+                        " --J=-Dgemfire.ssl-truststore=" + gfsh_.Truststore +
+                        " --J=-Dgemfire.ssl-truststore-password=" + gfsh_.TruststorePassword;
                     return this;
                 }
             }
@@ -371,6 +335,31 @@ namespace Apache.Geode.Client.IntegrationTests
             return new Shutdown(this);
         }
 
+        public class Connect : Command
+        {
+            public Connect(Gfsh gfsh) : base(gfsh, "connect") {}
+
+            public Connect withJmxManager(string jmxManagerAddress, int jmxManagerPort)
+            {
+                command_ += " --jmx-manager=" + jmxManagerAddress + "[" + jmxManagerPort.ToString() + "]";
+                return this;
+            }
+
+            public Connect withUseSsl()
+            {
+                command_ += " --use-ssl --key-store=" + gfsh_.Keystore +
+                    " --key-store-password=" + gfsh_.KeystorePassword +
+                    " --trust-store=" + gfsh_.Truststore +
+                    " --trust-store-password=" + gfsh_.TruststorePassword;
+                return this;
+            }
+        }
+        
+        public Connect connect()
+        {
+            return new Connect(this);
+        }
+
         public class ConfigurePdx : Command
         {
             public ConfigurePdx(Gfsh gfsh) : base(gfsh, "configure pdx") {}
@@ -397,7 +386,6 @@ namespace Apache.Geode.Client.IntegrationTests
             ServerBindAddress = defaultBindAddress;
             Connection = String.Empty; 
 
-            //TODO: May need a map or something to prevent port collisions
             LocatorPort = FreeTcpPort();
             JmxManagerPort = FreeTcpPort();
         }

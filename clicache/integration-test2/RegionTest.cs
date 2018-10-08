@@ -22,7 +22,7 @@ using Xunit;
 namespace Apache.Geode.Client.IntegrationTests
 {
   [Trait("Category", "Integration")]
-  public class RegionTest
+  public class RegionTest : TestBase
   {
 
     [Fact]
@@ -30,14 +30,19 @@ namespace Apache.Geode.Client.IntegrationTests
     {
       using (var geodeServer = new GfshExecute())
       {
+        string testDir = CreateTestCaseDirectoryName();
+        CleanTestCaseDirectory(testDir);
+
         try
         {
             Assert.Equal(geodeServer.start()
                        .locator()
+                       .withDir(testDir + "/locator/0")
                        .withHttpServicePort(0)
                        .execute(), 0);
             Assert.Equal(geodeServer.start()
                        .server()
+                       .withDir(testDir + "/server/0")
                        .execute(), 0);
             Assert.Equal(geodeServer.create()
                        .region()

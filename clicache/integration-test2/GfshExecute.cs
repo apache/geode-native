@@ -49,8 +49,14 @@ namespace Apache.Geode.Client.IntegrationTests
 
         private string buildStartServerCommand(string options)
         {
-            var serverCmd = "-e \"connect --jmx-manager=" + LocatorBindAddress
-                + "[" + JmxManagerPort + "]\" -e \"" + startServer;
+            var connectObject = connect()
+                .withJmxManager(LocatorBindAddress, JmxManagerPort);
+            if (UseSSL)
+            {
+                connectObject
+                    .withUseSsl();
+            }
+            var serverCmd = "-e \"" + connectObject.ToString() + "\" -e \"" + startServer;
             serverCmd += " --bind-address=" + ServerBindAddress;
             serverCmd += options + "\"";
             return serverCmd;
@@ -58,8 +64,14 @@ namespace Apache.Geode.Client.IntegrationTests
 
         private string buildConnectAndExecuteString(string options)
         {
-            return "-e \"connect --jmx-manager=" + LocatorBindAddress
-                + "[" + JmxManagerPort + "]\" -e \"" + options + "\"";
+            var connectObject = connect()
+                .withJmxManager(LocatorBindAddress, JmxManagerPort);
+            if (UseSSL)
+            {
+                connectObject
+                    .withUseSsl();
+            }
+            return "-e \"" + connectObject.ToString() + "\" -e \"" + options + "\"";
         }
 
         private string BuildFullCommandString(string baseCmd)

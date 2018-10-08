@@ -33,13 +33,38 @@ namespace Apache.Geode.Client.IntegrationTests
         private List<Locator> locators_;
         private List<Server> servers_;
         private string name_;
+        private bool usessl_;
 
         public Gfsh Gfsh { get; private set; }
+
+        private const string sslPassword_ = "gemstone";
+
+        public bool UseSSL
+        {
+            get
+            {
+                return usessl_;
+            }
+            set
+            {
+                usessl_ = value;
+                Gfsh.UseSSL = value;
+                if (value)
+                {
+                    var currentDir = Environment.CurrentDirectory;
+                    Gfsh.Keystore = currentDir + "/ServerSslKeys/server_keystore.jks";
+                    Gfsh.KeystorePassword = sslPassword_;
+                    Gfsh.Truststore = currentDir + "/ServerSslKeys/server_truststore.jks";
+                    Gfsh.TruststorePassword = sslPassword_;
+                }
+            }
+        }
 
         public Cluster(string name, int locatorCount, int serverCount)
         {
             started_ = false;
-            this.Gfsh = new GfshExecute();
+            Gfsh = new GfshExecute();
+            UseSSL = false;
             name_ = name;
             locatorCount_ = locatorCount;
             serverCount_ = serverCount;
@@ -56,11 +81,7 @@ namespace Apache.Geode.Client.IntegrationTests
                 var locator = new Locator(this, new List<Locator>(), 
                     name_ + "/locator/" + i.ToString());
                 locators_.Add(locator);
-                var localResult = locator.Start();
-                if (localResult != 0)
-                {
-                    success = false;
-                }
+                success = (locator.Start() == 0);
             }
             return success;
         }
@@ -93,18 +114,14 @@ namespace Apache.Geode.Client.IntegrationTests
 
         public bool Start()
         {
-            var success = false;
             if (!started_)
             {
                 RemoveClusterDirectory();
-                success = StartLocators();
-                if (!StartServers())
-                {
-                    success = false;
-                }
-                started_ = true;
+                var locatorSuccess = StartLocators();
+                var serverSuccess = StartServers();
+                started_ = (locatorSuccess && serverSuccess);
             }
-            return success;
+            return (started_);
         }
 
         public void Dispose()
@@ -150,7 +167,7 @@ namespace Apache.Geode.Client.IntegrationTests
             var result = -1;
             if (!started_)
             {
-                result = cluster_.Gfsh
+                var locator = cluster_.Gfsh
                     .start()
                     .locator()
                     .withDir(name_)
@@ -159,8 +176,13 @@ namespace Apache.Geode.Client.IntegrationTests
                     .withPort(Address.port)
                     .withMaxHeap("256m")
                     .withJmxManagerPort(cluster_.Gfsh.JmxManagerPort)
-                    .withHttpServicePort(0)
-                    .execute();
+                    .withHttpServicePort(0);
+                if (cluster_.UseSSL)
+                {
+                    locator.withUseSsl()
+                        .withConnect(false);
+                }
+                result = locator.execute();
                 started_ = true;
             }
             return result;
@@ -203,15 +225,19 @@ namespace Apache.Geode.Client.IntegrationTests
             var result = -1;
             if (!started_)
             {
-                result = cluster_.Gfsh
+                var server = cluster_.Gfsh
                     .start()
                     .server()
                     .withDir(name_)
                     .withName(name_.Replace('/', '_'))
                     .withBindAddress(Address.address)
                     .withPort(Address.port)
-                    .withMaxHeap("1g")
-                    .execute();
+                    .withMaxHeap("1g");
+                if (cluster_.UseSSL)
+                {
+                    server.withUseSsl();
+                }
+                result = server.execute();
                 started_ = true;
             }
             return result;
