@@ -20,7 +20,6 @@
 #include <geode/Exception.hpp>
 
 #include "fwklib/FwkLog.hpp"
-#include "fwklib/PerfFwk.hpp"
 #include "hacks/AceThreadId.h"
 
 namespace apache {
