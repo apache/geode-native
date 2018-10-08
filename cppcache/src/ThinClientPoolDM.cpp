@@ -559,15 +559,14 @@ std::string ThinClientPoolDM::selectEndpoint(
     // Update Locator Request Stats
     getStats().incLoctorRequests();
 
-    if (GF_NOERR != ((ThinClientLocatorHelper*)m_locHelper)
+    if (GF_NOERR != (m_locHelper)
                         ->getEndpointForNewFwdConn(
                             outEndpoint, additionalLoc, excludeServers,
                             m_attrs->m_serverGrp, currentServer)) {
       throw IllegalStateException("Locator query failed");
     }
     // Update Locator stats
-    getStats().setLocators(
-        ((ThinClientLocatorHelper*)m_locHelper)->getCurLocatorsNum());
+    getStats().setLocators((m_locHelper)->getCurLocatorsNum());
     getStats().incLoctorResposes();
 
     char epNameStr[128] = {0};
@@ -2110,8 +2109,7 @@ int ThinClientPoolDM::updateLocatorList(volatile bool& isRunning) {
   while (isRunning) {
     m_updateLocatorListSema.acquire();
     if (isRunning && !m_connManager.isNetDown()) {
-      ((ThinClientLocatorHelper*)m_locHelper)
-          ->updateLocators(this->getServerGroup());
+      (m_locHelper)->updateLocators(this->getServerGroup());
     }
   }
   LOGFINE("Ending updateLocatorList thread for pool %s", m_poolName.c_str());

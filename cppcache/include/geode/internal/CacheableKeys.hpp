@@ -48,9 +48,7 @@ inline int32_t hashcode(const int16_t value) {
   return static_cast<int32_t>(value);
 }
 
-inline int32_t hashcode(const int32_t value) {
-  return static_cast<int32_t>(value);
-}
+inline int32_t hashcode(const int32_t value) { return value; }
 
 inline int32_t hashcode(const int64_t value) {
   int32_t hash = static_cast<int32_t>(value);

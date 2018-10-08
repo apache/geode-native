@@ -37,7 +37,7 @@ using apache::geode::client::Exception;
 static bool isLocalServer = false;
 static bool isLocator = false;
 static int numberOfLocators = 1;
-const char* endPoints = (const char*)nullptr;
+const char* endPoints = nullptr;
 const char* locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 

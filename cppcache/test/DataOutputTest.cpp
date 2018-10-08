@@ -114,9 +114,9 @@ TEST_F(DataOutputTest, TestWriteInt8) {
 
 TEST_F(DataOutputTest, TestWriteSequenceNumber) {
   TestDataOutput dataOutput(nullptr);
-  dataOutput.writeInt((int32_t)55);
-  dataOutput.writeInt((int32_t)17);
-  dataOutput.writeInt((int32_t)0);
+  dataOutput.writeInt(static_cast<int32_t>(55));
+  dataOutput.writeInt(static_cast<int32_t>(17));
+  dataOutput.writeInt(static_cast<int32_t>(0));
   dataOutput.writeInt(getRandomSequenceNumber());
   dataOutput.write(static_cast<uint8_t>(0U));
   EXPECT_BYTEARRAY_EQ("000000370000001100000000\\h{8}00",

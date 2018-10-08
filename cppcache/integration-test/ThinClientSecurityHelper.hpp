@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_INTEGRATION_TEST_THINCLIENTSECURITYHELPER_H_
-#define GEODE_INTEGRATION_TEST_THINCLIENTSECURITYHELPER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,9 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_INTEGRATION_TEST_THINCLIENTSECURITYHELPER_H_
+#define GEODE_INTEGRATION_TEST_THINCLIENTSECURITYHELPER_H_
+
+#include <ace/Process.h>
+
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
-#include "ace/Process.h"
+#include "hacks/AceThreadId.h"
 
 namespace {
 
@@ -214,7 +217,6 @@ class putThread : public ACE_Task_Base {
   int svc(void) {
     int ops = 0;
     auto pid = ACE_OS::getpid();
-    auto thr_id = ACE_OS::thr_self();
     std::shared_ptr<CacheableKey> key;
     std::shared_ptr<CacheableString> value;
     std::vector<std::shared_ptr<CacheableKey>> keys0;
@@ -262,8 +264,8 @@ class putThread : public ACE_Task_Base {
             m_reg->destroy(key);
           }
         } catch (Exception& ex) {
-          printf("%d: %" PRIuPTR " exception got and exception message = %s\n",
-                 pid, (uintptr_t)thr_id, ex.what());
+          printf("%d: %" PRIu64 " exception got and exception message = %s\n",
+                 pid, hacks::aceThreadId(ACE_OS::thr_self()), ex.what());
         }
       }
     }

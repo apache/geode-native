@@ -79,7 +79,7 @@ inline std::string to_hex(const uint8_t* bytes, size_t len) {
   std::stringstream ss;
   ss << std::setfill('0') << std::hex;
   for (size_t i(0); i < len; ++i) {
-    ss << std::setw(2) << (int)bytes[i];
+    ss << std::setw(2) << static_cast<int>(bytes[i]);
   }
   return ss.str();
 }

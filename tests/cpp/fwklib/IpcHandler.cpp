@@ -93,16 +93,15 @@ int32_t IpcHandler::readInt(int32_t waitSeconds) {
     FWKEXCEPTION("Connection failure, error: " << errno);
   }
 
-  ACE_Time_Value *wtime = new ACE_Time_Value(waitSeconds, 1000);
+  auto wtime = new ACE_Time_Value(waitSeconds, 1000);
   int32_t redInt = -1;
-  int32_t red =
-      static_cast<int32_t>(m_io->recv_n((void *)&redInt, 4, 0, wtime));
+  auto length = m_io->recv_n(&redInt, 4, 0, wtime);
   delete wtime;
-  if (red == 4) {
+  if (length == 4) {
     result = ntohl(redInt);
     //    FWKDEBUG( "Received " << result );
   } else {
-    if (red == -1) {
+    if (length == -1) {
 #ifdef WIN32
       errno = WSAGetLastError();
 #endif
@@ -151,11 +150,10 @@ std::string IpcHandler::readString(int32_t waitSeconds) {
 
   ACE_Time_Value *wtime = new ACE_Time_Value(waitSeconds, 1000);
 
-  int32_t red =
-      static_cast<int32_t>(m_io->recv((void *)buffer, length, 0, wtime));
+  auto readLength = m_io->recv(buffer, length, 0, wtime);
   delete wtime;
-  if (red <= 0) {
-    if (red < 0) {
+  if (readLength <= 0) {
+    if (readLength < 0) {
 #ifdef WIN32
       errno = WSAGetLastError();
 #endif
@@ -214,8 +212,7 @@ bool IpcHandler::sendIpcMsg(IpcMsg msg, int32_t waitSeconds) {
   int32_t writeInt = htonl(msg);
   //  FWKDEBUG( "Sending " << ( int32_t )msg );
   ACE_Time_Value tv(waitSeconds, 1000);
-  int32_t wrote =
-      static_cast<int32_t>(m_io->send((const void *)&writeInt, 4, &tv));
+  auto wrote = m_io->send(&writeInt, 4, &tv);
   if (wrote == -1) {
 #ifdef WIN32
     errno = WSAGetLastError();
@@ -242,7 +239,7 @@ bool IpcHandler::sendIpcMsg(IpcMsg msg, int32_t waitSeconds) {
 }
 
 bool IpcHandler::sendBuffer(IpcMsg msg, const char *str) {
-  int32_t length = static_cast<int32_t>(strlen(str));
+  auto length = static_cast<int32_t>(strlen(str));
   char *buffer = checkBuffer(length);
   *reinterpret_cast<IpcMsg *>(buffer) = static_cast<IpcMsg>(htonl(msg));
   *reinterpret_cast<int32_t *>(buffer + 4) = htonl(length);
@@ -250,8 +247,7 @@ bool IpcHandler::sendBuffer(IpcMsg msg, const char *str) {
 
   //  FWKDEBUG( "Sending " << ( int32_t )msg << "  and string: " << str );
   length += 8;
-  int32_t wrote =
-      static_cast<int32_t>(m_io->send((const void *)buffer, length));
+  auto wrote = m_io->send(buffer, length);
   if (wrote == -1) {
 #ifdef WIN32
     errno = WSAGetLastError();
