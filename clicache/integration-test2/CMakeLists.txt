@@ -42,6 +42,7 @@ add_library( ${PROJECT_NAME} SHARED
     CqOperationTest.cs
     RegionTest.cs
     RegionSSLTest.cs
+    TestBase.cs
     cache.xml
     geode.properties
     xunit.runner.json

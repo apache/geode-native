@@ -23,7 +23,7 @@ namespace Apache.Geode.Client.IntegrationTests
 {
 
     [Trait("Category", "Integration")]
-    public class CacheXmlTests
+    public class CacheXmlTests : TestBase
     {
         [Fact]
         public void ConstructAndGenerate()
@@ -32,8 +32,12 @@ namespace Apache.Geode.Client.IntegrationTests
             {
                 try
                 {
+                    string testDir = CreateTestCaseDirectoryName();
+                    CleanTestCaseDirectory(testDir);
+
                     Assert.Equal(gfsh.start()
                         .locator()
+                        .withDir(testDir)
                         .withHttpServicePort(0)
                         .execute(), 0);
                     var template = new FileInfo("cache.xml");
@@ -63,8 +67,12 @@ namespace Apache.Geode.Client.IntegrationTests
             {
                 try
                 {
+                    string testDir = CreateTestCaseDirectoryName();
+                    CleanTestCaseDirectory(testDir);
+
                     Assert.Equal(gfsh.start()
                         .locator()
+                        .withDir(testDir)
                         .withHttpServicePort(0)
                         .execute(), 0);
                     FileInfo file;

@@ -22,10 +22,9 @@ using Xunit;
 namespace Apache.Geode.Client.IntegrationTests
 {
   [Trait("Category", "Integration")]
-  public class RegionSSLTest : IDisposable
+  public class RegionSSLTest : TestBase, IDisposable
   {
-    private readonly Cache _cacheOne;
-    private readonly GeodeServer _geodeServer;
+    private readonly Cache cacheOne_;
 
     public RegionSSLTest()
     {
@@ -57,33 +56,41 @@ namespace Apache.Geode.Client.IntegrationTests
       cacheFactory.Set("ssl-keystore-password", "gemstone" );
       cacheFactory.Set("ssl-truststore", Environment.CurrentDirectory + "\\ClientSslKeys\\client_truststore.pem");
 
-      _cacheOne = cacheFactory.Create();
-      _geodeServer = new GeodeServer(useSsl: true);
+      cacheOne_ = cacheFactory.Create();
     }
 
     public void Dispose()
     {
-      _cacheOne.Close();
-      _geodeServer.Dispose();
+      cacheOne_.Close();
     }
 
-    //[Fact]
-    //public void PutGet_Works()
-    //{
-    //  using (var cacheXml = new CacheXml(new FileInfo("cache.xml"), _geodeServer.LocatorPort))
-    //  {
-    //    _cacheOne.InitializeDeclarativeCache(cacheXml.File.FullName);
+    [Fact]
+    public void PutGet_Works()
+    {
+        using (Cluster cluster = new Cluster(CreateTestCaseDirectoryName(), 1, 1))
+        {
+            cluster.UseSSL = true;
+            Assert.True(cluster.Start());
+            Assert.Equal(cluster.Gfsh.create()
+                .region()
+                .withName("testRegion1")
+                .withType("PARTITION")
+                .execute(), 0);
+            using (var cacheXml = new CacheXml(new FileInfo("cache.xml"), cluster.Gfsh.LocatorPort))
+            {
+                cacheOne_.InitializeDeclarativeCache(cacheXml.File.FullName);
 
-    //    var regionForCache1 = _cacheOne.GetRegion<string, string>("testRegion1");
+                var regionForCache1 = cacheOne_.GetRegion<string, string>("testRegion1");
 
-    //    const string key = "hello";
-    //    const string expectedResult = "dave";
+                const string key = "hello";
+                const string expectedResult = "dave";
 
-    //    regionForCache1.Put(key, expectedResult);
-    //    var actualResult = regionForCache1.Get(key);
+                regionForCache1.Put(key, expectedResult);
+                var actualResult = regionForCache1.Get(key);
 
-    //    Assert.Equal(expectedResult, actualResult);
-    //  }
-    //}
-  }
+                Assert.Equal(expectedResult, actualResult);
+            }
+        }
+    }
+    }
 }

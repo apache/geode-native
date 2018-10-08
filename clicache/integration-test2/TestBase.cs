@@ -17,46 +17,37 @@
 
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 using Xunit;
 
 namespace Apache.Geode.Client.IntegrationTests
 {
     [Trait("Category", "Integration")]
-    public class ClusterTest : TestBase, IDisposable
+    public class TestBase
     {
-        public void Dispose()
-        {
+        private const int MaxAllowedDirectoryCharacters = 30;
 
-        }
-
-        [Fact]
-        public void ClusterStartTest()
+        public void CleanTestCaseDirectory(string directory)
         {
-            using (var cluster = new Cluster(CreateTestCaseDirectoryName(), 1, 1))
+            if (Directory.Exists(directory))
             {
-                Assert.True(cluster.Start());
+                Directory.Delete(directory, true);
             }
         }
 
-        [Fact]
-        public void ClusterStartWithTwoServersTest()
+        public string CreateTestCaseDirectoryName()
         {
-            using (var cluster = new Cluster(CreateTestCaseDirectoryName(), 1, 2))
-            {
-                Assert.True(cluster.Start());
-            }
-        }
+            StackTrace st = new StackTrace();
+            StackFrame sf = st.GetFrame(1);
+            MethodBase currentMethod = sf.GetMethod();
+            string dirName = currentMethod.Name;
 
-        [Fact]
-        public void ClusterStartWithSslTest()
-        {
-            using (var cluster = new Cluster(CreateTestCaseDirectoryName(), 1, 1))
+            if (dirName.Length > MaxAllowedDirectoryCharacters)
             {
-                cluster.UseSSL = true;
-
-                Assert.True(cluster.Start());
+                dirName = dirName.Substring(0, MaxAllowedDirectoryCharacters);
             }
+            return dirName;
         }
     }
 }

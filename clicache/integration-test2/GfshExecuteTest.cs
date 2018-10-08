@@ -43,7 +43,8 @@ namespace Apache.Geode.Client.IntegrationTests
                 }
                 finally
                 {
-                    Assert.Equal(gfsh.shutdown()
+                    Assert.Equal(gfsh
+                        .shutdown()
                         .withIncludeLocators(true)
                         .execute(), 0);
                 }
@@ -69,7 +70,82 @@ namespace Apache.Geode.Client.IntegrationTests
                 }
                 finally
                 {
-                    Assert.Equal(gfsh.shutdown()
+                    Assert.Equal(gfsh
+                        .shutdown()
+                        .withIncludeLocators(true)
+                        .execute(), 0);
+                }
+            }
+        }
+
+        [Fact]
+        public void GfshExecuteStartLocatorWithUseSsl()
+        {
+            using (var gfsh = new GfshExecute())
+            {
+                var sslPassword = "gemstone";
+                var currentDir = Environment.CurrentDirectory;
+                gfsh.Keystore = currentDir + "/ServerSslKeys/server_keystore.jks";
+                gfsh.KeystorePassword = sslPassword;
+                gfsh.Truststore = currentDir + "/ServerSslKeys/server_truststore.jks";
+                gfsh.TruststorePassword = sslPassword;
+                gfsh.UseSSL = true;
+
+                try
+                {
+                    var locator = gfsh
+                        .start()
+                        .locator()
+                        .withHttpServicePort(0)
+                        .withUseSsl()
+                        .withConnect(false);
+
+                    Assert.Equal(locator.execute(), 0);
+                }
+                finally
+                {
+                    Assert.Equal(gfsh
+                        .shutdown()
+                        .withIncludeLocators(true)
+                        .execute(), 0);
+                }
+            }
+        }
+
+        [Fact]
+        public void GfshExecuteStartLocatorAndServerWithUseSsl()
+        {
+            using (var gfsh = new GfshExecute())
+            {
+                var sslPassword = "gemstone";
+                var currentDir = Environment.CurrentDirectory;
+                gfsh.Keystore = currentDir + "/ServerSslKeys/server_keystore.jks";
+                gfsh.KeystorePassword = sslPassword;
+                gfsh.Truststore = currentDir + "/ServerSslKeys/server_truststore.jks";
+                gfsh.TruststorePassword = sslPassword;
+                gfsh.UseSSL = true;
+
+                try
+                {
+                    Assert.Equal(gfsh
+                        .start()
+                        .locator()
+                        .withHttpServicePort(0)
+                        .withUseSsl()
+                        .withConnect(false)
+                        .execute(), 0);
+
+                    Assert.Equal(gfsh
+                        .start()
+                        .server()
+                        .withPort(0)
+                        .withUseSsl()
+                        .execute(), 0);
+                }
+                finally
+                {
+                    Assert.Equal(gfsh
+                        .shutdown()
                         .withIncludeLocators(true)
                         .execute(), 0);
                 }

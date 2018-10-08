@@ -20,15 +20,19 @@ using Xunit;
 namespace Apache.Geode.Client.IntegrationTests
 {
     [Trait("Category", "Integration")]
-    public class GemFireServerTest
+    public class GemFireServerTest : TestBase
     {
         [Fact]
         public void Start()
         {
             using (var gfsh = new GfshExecute())
             {
+                string testDir = CreateTestCaseDirectoryName();
+                CleanTestCaseDirectory(testDir);
+
                 Assert.Equal(gfsh.start()
                     .locator()
+                    .withDir(testDir)
                     .withHttpServicePort(0)
                     .execute(), 0);
 
@@ -45,10 +49,14 @@ namespace Apache.Geode.Client.IntegrationTests
         {
             using (var gfsh1 = new GfshExecute())
             {
+                string testDir = CreateTestCaseDirectoryName();
+                CleanTestCaseDirectory(testDir);
+
                 try
                 {
                     Assert.Equal(gfsh1.start()
                         .locator()
+                        .withDir(testDir + "/locator/0")
                         .withHttpServicePort(0)
                         .execute(), 0);
 
@@ -58,6 +66,7 @@ namespace Apache.Geode.Client.IntegrationTests
                         {
                             Assert.Equal(gfsh2.start()
                                 .locator()
+                                .withDir(testDir + "/locator/1")
                                 .withHttpServicePort(0)
                                 .execute(), 0);
                         }
@@ -83,20 +92,26 @@ namespace Apache.Geode.Client.IntegrationTests
         {
             using (var gfsh1 = new GfshExecute())
             {
+                string testDir = CreateTestCaseDirectoryName();
+                CleanTestCaseDirectory(testDir);
+
                 try
                 {
                     Assert.Equal(gfsh1.start()
                         .locator()
+                        .withDir(testDir)
                         .withHttpServicePort(0)
                         .execute(), 0);
 
                     Assert.Equal(gfsh1.start()
                         .server()
+                        .withDir(testDir + "/server/0")
                         .withPort(0)
                         .execute(), 0);
 
                     Assert.Equal(gfsh1.start()
                         .server()
+                        .withDir(testDir + "/server/1")
                         .withPort(0)
                         .execute(), 0);
                 }
