@@ -28,7 +28,7 @@ target_link_libraries(${TEST_UTILS_LIB}
     _WarningsAsError
   PUBLIC
     apache-geode
-    fwk
+    framework
 )
 
 set_target_properties(${TEST_UTILS_LIB} PROPERTIES
@@ -72,7 +72,7 @@ macro(generate_config INPUT TEMP OUTPUT)
 endmacro()
 
 # Add lazy loaded shared library paths to test environment
-foreach( lib ssl xerces-c sqlite )
+foreach( lib ssl sqlite )
   get_target_property(library_path ${lib} INTERFACE_LIBRARY_DIR)
   set(LD_LIBRARY_PATH ${LD_LIBRARY_PATH} ${library_path})
   get_target_property(runtime_path ${lib} INTERFACE_RUNTIME_DIR)
@@ -99,7 +99,7 @@ foreach(FILE ${SOURCES})
     PUBLIC
       apache-geode
       testobject
-      fwk
+      framework
   )
   target_include_directories(${TEST} PRIVATE
     $<TARGET_PROPERTY:apache-geode,SOURCE_DIR>/../src

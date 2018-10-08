@@ -15,12 +15,15 @@
  * limitations under the License.
  */
 
+#include "TcrMessage.hpp"
+
+#include <sstream>
+
 #include <geode/CacheableBuiltins.hpp>
 #include <geode/SystemProperties.hpp>
 #include <geode/CacheableObjectArray.hpp>
 
 #include "DistributedSystem.hpp"
-#include "TcrMessage.hpp"
 #include "Assert.hpp"
 #include "TcrConnection.hpp"
 #include "AutoDelete.hpp"

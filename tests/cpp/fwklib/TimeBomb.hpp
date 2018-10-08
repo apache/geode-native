@@ -20,7 +20,6 @@
  * limitations under the License.
  */
 
-#include "fwklib/PerfFwk.hpp"
 #include "fwklib/FwkLog.hpp"
 
 #include <ace/Time_Value.h>

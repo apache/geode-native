@@ -28,8 +28,8 @@
 #include <ace/Time_Value.h>
 
 #include <geode/Delta.hpp>
+#include <geode/CacheableBuiltins.hpp>
 
-#include "fwklib/FrameworkTest.hpp"
 #include "FastAsset.hpp"
 #include "testobject_export.h"
 

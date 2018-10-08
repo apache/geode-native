@@ -18,7 +18,6 @@
 #include <cinttypes>
 
 #include "fwklib/FwkLog.hpp"
-#include "fwklib/PerfFwk.hpp"
 #include <geode/Exception.hpp>
 
 namespace apache {

@@ -16,7 +16,6 @@
  */
 
 #include "IpcHandler.hpp"
-#include "fwklib/PerfFwk.hpp"
 #include "fwklib/FwkLog.hpp"
 
 #include <memory.h>

@@ -16,11 +16,8 @@
 cmake_minimum_required(VERSION 3.10)
 project(framework LANGUAGES CXX)
 
-add_library(${PROJECT_NAME} STATIC 
-  ClientTask.hpp
-  FrameworkTest.cpp
-  FrameworkTest.hpp
-  FwkBB.hpp
+add_library(framework STATIC
+	FwkBB.hpp
   FwkBBClient.cpp
   FwkBBClient.hpp
   FwkBBServer.cpp
@@ -29,45 +26,29 @@ add_library(${PROJECT_NAME} STATIC
   FwkExport.hpp
   FwkLog.cpp
   FwkLog.hpp
-  FwkObjects.cpp
-  FwkObjects.hpp
-  FwkStrCvt.cpp
+	FwkStrCvt.cpp
   FwkStrCvt.hpp
   GsRandom.cpp
   GsRandom.hpp
   IpcHandler.cpp
   IpcHandler.hpp
-  PaceMeter.hpp
-  PerfFwk.cpp
-  PerfFwk.hpp
-  PoolHelper.hpp
-  QueryHelper.hpp
-  RegionHelper.hpp
-  Service.cpp
+	Service.cpp
   Service.hpp
-  TaskClient.cpp
-  TaskClient.hpp
-  TcpIpc.cpp
+	TcpIpc.cpp
   TcpIpc.hpp
-  TestClient.cpp
-  TestClient.hpp
-  TimeBomb.cpp
+	TimeBomb.cpp
   TimeBomb.hpp
-  TimeLimit.hpp
-  Timer.hpp
-  TimeSync.cpp
-  TimeSync.hpp
-  UDPIpc.cpp
+	UDPIpc.cpp
   UDPIpc.hpp
 )
 
-target_compile_options(${PROJECT_NAME}
+target_compile_options(framework
   PRIVATE
     # Add PIC flags to link later with shared library
     ${CMAKE_CXX_COMPILE_OPTIONS_PIC}
 )
 
-target_include_directories(${PROJECT_NAME}
+target_include_directories(framework
   PUBLIC
     # headers for this library are referenced relative to the parent
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>
@@ -75,14 +56,13 @@ target_include_directories(${PROJECT_NAME}
   	$<TARGET_PROPERTY:apache-geode,SOURCE_DIR>/../src
 )
 
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(framework
   PUBLIC 
     apache-geode
-    xerces-c
   PRIVATE
     ACE
-	_WarningsAsError
+	  _WarningsAsError
 )
 
 # For Visual Studio organization
-set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER cpp/test/integration)
+set_target_properties(framework PROPERTIES FOLDER cpp/test/integration)

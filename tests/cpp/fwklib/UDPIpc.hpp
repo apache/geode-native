@@ -21,7 +21,6 @@
  */
 
 #include "Service.hpp"
-#include "PerfFwk.hpp"
 #include "FwkLog.hpp"
 #include "GsRandom.hpp"
 #include "config.h"
