@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_FWKLIB_FWKLOG_H_
-#define GEODE_FWKLIB_FWKLOG_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,13 +15,10 @@
  * limitations under the License.
  */
 
-/**
- * @file    FwkLog.hpp
- * @since   1.0
- * @version 1.0
- * @see
- *
- */
+#pragma once
+
+#ifndef GEODE_FWKLIB_FWKLOG_H_
+#define GEODE_FWKLIB_FWKLOG_H_
 
 // ----------------------------------------------------------------------------
 

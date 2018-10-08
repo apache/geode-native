@@ -16,9 +16,9 @@
  */
 
 #include "TcpIpc.hpp"
-#include "fwklib/PerfFwk.hpp"
-#include "fwklib/FwkLog.hpp"
 
+#include <thread>
+#include <chrono>
 #include <memory.h>
 #include <errno.h>
 
@@ -27,6 +27,8 @@
 #include <ace/SOCK_Connector.h>
 #include <ace/SOCK_Acceptor.h>
 #include <ace/OS.h>
+
+#include "fwklib/FwkLog.hpp"
 
 #include "config.h"
 
@@ -136,7 +138,7 @@ bool TcpIpc::connect(int32_t waitSecs) {
   ACE_SOCK_Connector conn;
   int32_t retVal = -1;
   while ((retVal == -1) && (waitSecs-- > 0)) {
-    perf::sleepSeconds(1);
+    std::this_thread::sleep_for(std::chrono::seconds(1));
     errno = 0;
     retVal = conn.connect(*m_io, driver);
   }

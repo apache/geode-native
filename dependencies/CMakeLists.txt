@@ -20,7 +20,6 @@ set( USE_C++ 11 CACHE STRING "Use C++ standard X (11).")
 
 set ( DEPENDENCIES
 	libxml2
-	xerces-c
 	openssl
 	ACE
 	boost

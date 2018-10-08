@@ -15,18 +15,19 @@
  * limitations under the License.
  */
 
+#include <thread>
+#include <chrono>
+
 #include <geode/internal/geode_globals.hpp>
+
 #include "fwklib/TimeBomb.hpp"
 #include "fwklib/FwkLog.hpp"
-#include "fwklib/PerfFwk.hpp"
 #include "config.h"
 
 namespace apache {
 namespace geode {
 namespace client {
 namespace testframework {
-
-using apache::geode::client::testframework::perf::sleepSeconds;
 
 int32_t TimeBomb::svc() {
   while (!m_stop) {
@@ -49,7 +50,7 @@ int32_t TimeBomb::svc() {
         if (!pip) {
           FWKSEVERE("TimeBomb: Unable to dump threads.");
         } else {
-          perf::sleepSeconds(10);
+          std::this_thread::sleep_for(std::chrono::seconds(10));
 
           std::string dump;
           buf[0] = 0;
@@ -79,7 +80,7 @@ int32_t TimeBomb::svc() {
         if (!pip) {
           FWKSEVERE("TimeBomb: Unable to dump threads.");
         } else {
-          perf::sleepSeconds(10);
+          std::this_thread::sleep_for(std::chrono::seconds(10));
 
           std::string dump;
           buf[0] = 0;
@@ -107,7 +108,7 @@ int32_t TimeBomb::svc() {
         if (!pip) {
           FWKSEVERE("TimeBomb: Unable to dump threads.");
         } else {
-          perf::sleepSeconds(20);
+          std::this_thread::sleep_for(std::chrono::seconds(20));
 
           std::string dump;
           buf[0] = 0;
@@ -128,7 +129,7 @@ int32_t TimeBomb::svc() {
         exit(m_exitCode);
       }
     }
-    sleepSeconds(1);
+    std::this_thread::sleep_for(std::chrono::seconds(1));
   }
   return 0;
 }

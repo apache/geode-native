@@ -27,8 +27,8 @@
 #include <ace/OS.h>
 #include <ace/Time_Value.h>
 
-#include "fwklib/Timer.hpp"
-#include "fwklib/FrameworkTest.hpp"
+#include <fwklib/FwkException.hpp>
+
 #include "testobject_export.h"
 #include "TimestampedObject.hpp"
 
