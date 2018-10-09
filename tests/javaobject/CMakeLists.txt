@@ -22,6 +22,7 @@ include(UseJava)
 
 file(GLOB_RECURSE SOURCES "*.java")
 
+
 add_jar(javaobject ${SOURCES}
   INCLUDE_JARS ${Geode_CLASSPATH}
 )
