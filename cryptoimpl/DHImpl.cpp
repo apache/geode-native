@@ -17,6 +17,10 @@
 
 #include "DHImpl.hpp"
 
+#include <cstring>
+#include <cctype>
+#include <memory>
+
 #include <openssl/objects.h>
 #include <openssl/stack.h>
 #include <openssl/aes.h>
@@ -27,8 +31,6 @@
 #include <openssl/pem.h>
 #include <openssl/pkcs12.h>
 #include <openssl/rsa.h>
-#include <cstring>
-#include <cctype>
 
 #include <geode/internal/geode_globals.hpp>
 
@@ -351,8 +353,8 @@ unsigned char *gf_encryptDH(void *dhCtx, const unsigned char *cleartext,
   LOGDH(" DH: gf_encryptDH using sk algo: %s, Keysize: %d",
         dhimpl->m_skAlgo.c_str(), dhimpl->m_keySize);
 
-  unsigned char *ciphertext =
-      new unsigned char[len + 50];  // give enough room for padding
+  auto ciphertext = std::unique_ptr<unsigned char[]>(
+      new unsigned char[len + 50]);  // give enough room for padding
   int outlen, tmplen;
   EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
 
@@ -375,7 +377,7 @@ unsigned char *gf_encryptDH(void *dhCtx, const unsigned char *cleartext,
                        dhimpl->m_key + 24);
   }
 
-  if (!EVP_EncryptUpdate(ctx, ciphertext, &outlen, cleartext, len)) {
+  if (!EVP_EncryptUpdate(ctx, ciphertext.get(), &outlen, cleartext, len)) {
     LOGDH(" DHencrypt: enc update ret nullptr");
     return nullptr;
   }
@@ -384,7 +386,7 @@ unsigned char *gf_encryptDH(void *dhCtx, const unsigned char *cleartext,
    */
   tmplen = 0;
 
-  if (!EVP_EncryptFinal_ex(ctx, ciphertext + outlen, &tmplen)) {
+  if (!EVP_EncryptFinal_ex(ctx, ciphertext.get() + outlen, &tmplen)) {
     LOGDH("DHencrypt: enc final ret nullptr");
     return nullptr;
   }
@@ -396,7 +398,7 @@ unsigned char *gf_encryptDH(void *dhCtx, const unsigned char *cleartext,
   LOGDH("DHencrypt: in len is %d, out len is %d", len, outlen);
 
   *retLen = outlen;
-  return ciphertext;
+  return ciphertext.release();
 }
 
 unsigned char *gf_decryptDH(void *dhCtx, const unsigned char *cleartext,
@@ -411,8 +413,8 @@ unsigned char *gf_decryptDH(void *dhCtx, const unsigned char *cleartext,
   LOGDH(" DH: gf_encryptDH using sk algo: %s, Keysize: %d",
         dhimpl->m_skAlgo.c_str(), dhimpl->m_keySize);
 
-  auto ciphertext =
-      new unsigned char[len + 50];  // give enough room for padding
+  auto ciphertext = std::unique_ptr<unsigned char[]>(
+      new unsigned char[len + 50]);  // give enough room for padding
   int outlen, tmplen;
   EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
 
@@ -435,7 +437,7 @@ unsigned char *gf_decryptDH(void *dhCtx, const unsigned char *cleartext,
                        dhimpl->m_key + 24);
   }
 
-  if (!EVP_DecryptUpdate(ctx, ciphertext, &outlen, cleartext, len)) {
+  if (!EVP_DecryptUpdate(ctx, ciphertext.get(), &outlen, cleartext, len)) {
     LOGDH(" DHencrypt: enc update ret nullptr");
     return nullptr;
   }
@@ -444,7 +446,7 @@ unsigned char *gf_decryptDH(void *dhCtx, const unsigned char *cleartext,
    */
   tmplen = 0;
 
-  if (!EVP_DecryptFinal_ex(ctx, ciphertext + outlen, &tmplen)) {
+  if (!EVP_DecryptFinal_ex(ctx, ciphertext.get() + outlen, &tmplen)) {
     LOGDH("DHencrypt: enc final ret nullptr");
     return nullptr;
   }
@@ -456,7 +458,7 @@ unsigned char *gf_decryptDH(void *dhCtx, const unsigned char *cleartext,
   LOGDH("DHencrypt: in len is %d, out len is %d", len, outlen);
 
   *retLen = outlen;
-  return ciphertext;
+  return ciphertext.release();
 }
 
 // std::shared_ptr<CacheableBytes> decrypt(const uint8_t * ciphertext, int len)

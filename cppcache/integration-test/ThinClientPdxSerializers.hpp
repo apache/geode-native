@@ -20,7 +20,7 @@
 #ifndef GEODE_INTEGRATION_TEST_THINCLIENTPDXSERIALIZERS_H_
 #define GEODE_INTEGRATION_TEST_THINCLIENTPDXSERIALIZERS_H_
 
-namespace { // NOLINT
+namespace { // NOLINT(google-build-namespaces)
 
 using apache::geode::client::CacheableArrayList;
 using apache::geode::client::CacheableHashMap;
@@ -77,7 +77,7 @@ class TestPdxSerializer : public PdxSerializer {
       nonPdxAddress->_aptNumber = pr.readInt("_aptNumber");
       nonPdxAddress->_street = pr.readString("_street");
       nonPdxAddress->_city = pr.readString("_city");
-      return nonPdxAddress;
+      return std::move(nonPdxAddress);
     } catch (...) {
       return nullptr;
     }
@@ -176,7 +176,7 @@ class TestPdxSerializer : public PdxSerializer {
     } catch (...) {
       return nullptr;
     }
-    return nonPdxType;
+    return std::move(nonPdxType);
   }
 
   bool toDataForAddress(const std::shared_ptr<const void>& testObject,

@@ -136,7 +136,7 @@ std::shared_ptr<CqQuery> CqService::newCq(
       shared_from_this(), cqName, queryString, cqAttributes,
       m_statisticsFactory, isDurable, ua);
   cQuery->initCq();
-  return cQuery;
+  return std::move(cQuery);
 }
 
 /**

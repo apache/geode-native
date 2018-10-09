@@ -30,7 +30,7 @@
 
 #include "CacheHelper.hpp"
 
-namespace { // NOLINT
+namespace { // NOLINT(google-build-namespaces)
 
 using apache::geode::client::DataInput;
 using apache::geode::client::DataOutput;

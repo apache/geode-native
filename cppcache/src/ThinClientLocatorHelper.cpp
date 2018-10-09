@@ -52,12 +52,11 @@ class ConnectionWrapper {
 };
 
 ThinClientLocatorHelper::ThinClientLocatorHelper(
-    std::vector<std::string> locHostPort, const ThinClientPoolDM* poolDM)
+    const std::vector<std::string>& locatorAddresses,
+    const ThinClientPoolDM* poolDM)
     : m_poolDM(poolDM) {
-  for (std::vector<std::string>::iterator it = locHostPort.begin();
-       it != locHostPort.end(); it++) {
-    ServerLocation sl(*it);
-    m_locHostPort.push_back(sl);
+  for (auto&& locatorAddress : locatorAddresses) {
+    m_locHostPort.emplace_back(locatorAddress);
   }
 }
 
@@ -69,7 +68,7 @@ Connector* ThinClientLocatorHelper::createConnection(
                                .getCacheImpl()
                                ->getDistributedSystem()
                                .getSystemProperties();
-  if (m_poolDM && systemProperties.sslEnabled()) {
+  if (systemProperties.sslEnabled()) {
     socket = new TcpSslConn(hostname, port, waitSeconds, maxBuffSizePool,
                             systemProperties.sslTrustStore().c_str(),
                             systemProperties.sslKeyStore().c_str(),
@@ -91,35 +90,30 @@ GfErrType ThinClientLocatorHelper::getAllServers(
                        .getCacheImpl()
                        ->getDistributedSystem()
                        .getSystemProperties();
-  for (unsigned i = 0; i < m_locHostPort.size(); i++) {
-    ServerLocation loc = m_locHostPort[i];
+  for (size_t i = 0; i < m_locHostPort.size(); i++) {
+    auto& loc = m_locHostPort[i];
     try {
       LOGDEBUG("getAllServers getting servers from server = %s ",
                loc.getServerName().c_str());
-      int32_t buffSize = 0;
-      if (m_poolDM) {
-        buffSize = static_cast<int32_t>(m_poolDM->getSocketBufferSize());
-      }
+      auto buffSize = m_poolDM->getSocketBufferSize();
       Connector* conn = nullptr;
       ConnectionWrapper cw(conn);
       createConnection(conn, loc.getServerName().c_str(), loc.getPort(),
                        sysProps.connectTimeout(), buffSize);
-      std::shared_ptr<GetAllServersRequest> request =
-          std::make_shared<GetAllServersRequest>(serverGrp);
+      auto request = std::make_shared<GetAllServersRequest>(serverGrp);
       auto data =
           m_poolDM->getConnectionManager().getCacheImpl()->createDataOutput();
       data.writeInt(static_cast<int32_t>(1001));  // GOSSIPVERSION
       data.writeObject(request);
       auto sentLength = conn->send(
-          reinterpret_cast<char*>(const_cast<uint8_t*>(data.getBuffer())), data.getBufferLength(),
-          m_poolDM ? m_poolDM->getReadTimeout() : std::chrono::seconds(10));
+          reinterpret_cast<char*>(const_cast<uint8_t*>(data.getBuffer())),
+          data.getBufferLength(), m_poolDM->getReadTimeout());
       if (sentLength <= 0) {
         continue;
       }
       char buff[BUFF_SIZE];
-      auto receivedLength = conn->receive(
-          buff, BUFF_SIZE,
-          m_poolDM ? m_poolDM->getReadTimeout() : std::chrono::seconds(10));
+      auto receivedLength =
+          conn->receive(buff, BUFF_SIZE, m_poolDM->getReadTimeout());
       if (receivedLength <= 0) {
         continue;
       }
@@ -182,31 +176,26 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewCallBackConn(
     try {
       LOGFINER("Querying locator at [%s:%d] for queue server from group [%s]",
                loc.getServerName().c_str(), loc.getPort(), serverGrp.c_str());
-      int32_t buffSize = 0;
-      if (m_poolDM) {
-        buffSize = static_cast<int32_t>(m_poolDM->getSocketBufferSize());
-      }
+      auto buffSize = m_poolDM->getSocketBufferSize();
       Connector* conn = nullptr;
       ConnectionWrapper cw(conn);
       createConnection(conn, loc.getServerName().c_str(), loc.getPort(),
                        sysProps.connectTimeout(), buffSize);
-      std::shared_ptr<QueueConnectionRequest> request =
-          std::make_shared<QueueConnectionRequest>(
-              memId, exclEndPts, redundancy, false, serverGrp);
+      auto request = std::make_shared<QueueConnectionRequest>(
+          memId, exclEndPts, redundancy, false, serverGrp);
       auto data =
           m_poolDM->getConnectionManager().getCacheImpl()->createDataOutput();
       data.writeInt(static_cast<int32_t>(1001));  // GOSSIPVERSION
       data.writeObject(request);
       auto sentLength = conn->send(
-          reinterpret_cast<char*>(const_cast<uint8_t*>(data.getBuffer())), data.getBufferLength(),
-          m_poolDM ? m_poolDM->getReadTimeout() : sysProps.connectTimeout());
+          reinterpret_cast<char*>(const_cast<uint8_t*>(data.getBuffer())),
+          data.getBufferLength(), m_poolDM->getReadTimeout());
       if (sentLength <= 0) {
         continue;
       }
       char buff[BUFF_SIZE];
-      auto receivedLength = conn->receive(
-          buff, BUFF_SIZE,
-          m_poolDM ? m_poolDM->getReadTimeout() : sysProps.connectTimeout());
+      auto receivedLength =
+          conn->receive(buff, BUFF_SIZE, m_poolDM->getReadTimeout());
       if (receivedLength <= 0) {
         continue;
       }
@@ -241,17 +230,14 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewFwdConn(
     const std::set<ServerLocation>& exclEndPts, const std::string& serverGrp,
     const TcrConnection* currentServer) {
   bool locatorFound = false;
-  int locatorsRetry = 3;
   ACE_Guard<ACE_Thread_Mutex> guard(m_locatorLock);
   auto& sysProps = m_poolDM->getConnectionManager()
                        .getCacheImpl()
                        ->getDistributedSystem()
                        .getSystemProperties();
 
-  if (m_poolDM) {
-    int poolRetry = m_poolDM->getRetryAttempts();
-    locatorsRetry = poolRetry <= 0 ? locatorsRetry : poolRetry;
-  }
+  auto poolRetry = m_poolDM->getRetryAttempts();
+  auto locatorsRetry = poolRetry <= 0 ? 3 : poolRetry;
   LOGFINER(
       "ThinClientLocatorHelper::getEndpointForNewFwdConn locatorsRetry = %d ",
       locatorsRetry);
@@ -269,10 +255,7 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewFwdConn(
       LOGFINE("Querying locator at [%s:%d] for server from group [%s]",
               serLoc.getServerName().c_str(), serLoc.getPort(),
               serverGrp.c_str());
-      int32_t buffSize = 0;
-      if (m_poolDM) {
-        buffSize = static_cast<int32_t>(m_poolDM->getSocketBufferSize());
-      }
+      auto buffSize = m_poolDM->getSocketBufferSize();
       Connector* conn = nullptr;
       ConnectionWrapper cw(conn);
       createConnection(conn, serLoc.getServerName().c_str(), serLoc.getPort(),
@@ -295,15 +278,14 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewFwdConn(
         data.writeObject(request);
       }
       auto sentLength = conn->send(
-          reinterpret_cast<char*>(const_cast<uint8_t*>(data.getBuffer())), data.getBufferLength(),
-          m_poolDM ? m_poolDM->getReadTimeout() : sysProps.connectTimeout());
+          reinterpret_cast<char*>(const_cast<uint8_t*>(data.getBuffer())),
+          data.getBufferLength(), m_poolDM->getReadTimeout());
       if (sentLength <= 0) {
         continue;
       }
       char buff[BUFF_SIZE];
-      auto receivedLength = conn->receive(
-          buff, BUFF_SIZE,
-          m_poolDM ? m_poolDM->getReadTimeout() : sysProps.connectTimeout());
+      auto receivedLength =
+          conn->receive(buff, BUFF_SIZE, m_poolDM->getReadTimeout());
       if (receivedLength <= 0) {
         continue;  // return GF_EUNDEF;
       }
@@ -355,37 +337,32 @@ GfErrType ThinClientLocatorHelper::updateLocators(
                        ->getDistributedSystem()
                        .getSystemProperties();
 
-  for (unsigned attempts = 0; attempts < m_locHostPort.size(); attempts++) {
-    ServerLocation serLoc = m_locHostPort[attempts];
+  for (size_t attempts = 0; attempts < m_locHostPort.size(); attempts++) {
+    auto&& serLoc = m_locHostPort[attempts];
     Connector* conn = nullptr;
     try {
-      int32_t buffSize = 0;
-      if (m_poolDM) {
-        buffSize = static_cast<int32_t>(m_poolDM->getSocketBufferSize());
-      }
+      auto buffSize = m_poolDM->getSocketBufferSize();
       LOGFINER("Querying locator list at: [%s:%d] for update from group [%s]",
                serLoc.getServerName().c_str(), serLoc.getPort(),
                serverGrp.c_str());
       ConnectionWrapper cw(conn);
       createConnection(conn, serLoc.getServerName().c_str(), serLoc.getPort(),
                        sysProps.connectTimeout(), buffSize);
-      std::shared_ptr<LocatorListRequest> request =
-          std::make_shared<LocatorListRequest>(serverGrp);
+      auto request = std::make_shared<LocatorListRequest>(serverGrp);
       auto data =
           m_poolDM->getConnectionManager().getCacheImpl()->createDataOutput();
       data.writeInt(static_cast<int32_t>(1001));  // GOSSIPVERSION
       data.writeObject(request);
       auto sentLength = conn->send(
-          reinterpret_cast<char*>(const_cast<uint8_t*>(data.getBuffer())), data.getBufferLength(),
-          m_poolDM ? m_poolDM->getReadTimeout() : sysProps.connectTimeout());
+          reinterpret_cast<char*>(const_cast<uint8_t*>(data.getBuffer())),
+          data.getBufferLength(), m_poolDM->getReadTimeout());
       if (sentLength <= 0) {
         conn = nullptr;
         continue;
       }
       char buff[BUFF_SIZE];
-      auto receivedLength = conn->receive(
-          buff, BUFF_SIZE,
-          m_poolDM ? m_poolDM->getReadTimeout() : sysProps.connectTimeout());
+      auto receivedLength =
+          conn->receive(buff, BUFF_SIZE, m_poolDM->getReadTimeout());
       if (receivedLength <= 0) {
         continue;
       }

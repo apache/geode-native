@@ -20,10 +20,6 @@
 #ifndef GEODE_INTERNAL_UTILS_H_
 #define GEODE_INTERNAL_UTILS_H_
 
-/**
- * @file
- */
-
 #include <typeinfo>
 #include <string>
 #include <unordered_set>
@@ -33,6 +29,7 @@
 #include <unordered_set>
 #include <memory>
 #include <chrono>
+#include <random>
 
 #include <geode/internal/geode_globals.hpp>
 #include <geode/internal/geode_base.hpp>
@@ -189,8 +186,19 @@ class APACHE_GEODE_EXPORT Utils {
 // Generate random numbers 0 to max-1
 class RandGen {
  public:
-  int operator()(size_t max);
+  template <typename T, class G = std::default_random_engine>
+  inline T operator()(T max) {
+    return std::uniform_int_distribution<T>{0, max - 1}(generator<G>());
+  }
+
+ private:
+  template <class G>
+  inline G& generator() {
+    static thread_local G generator(std::random_device{}());
+    return generator;
+  }
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

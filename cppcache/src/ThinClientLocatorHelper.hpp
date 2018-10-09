@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_THINCLIENTLOCATORHELPER_H_
-#define GEODE_THINCLIENTLOCATORHELPER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_THINCLIENTLOCATORHELPER_H_
+#define GEODE_THINCLIENTLOCATORHELPER_H_
 
 #include <string>
 #include <geode/internal/geode_globals.hpp>
@@ -37,7 +37,7 @@ class TcrEndpoint;
 class ThinClientPoolDM;
 class ThinClientLocatorHelper {
  public:
-  ThinClientLocatorHelper(std::vector<std::string> locHostPort,
+  ThinClientLocatorHelper(const std::vector<std::string>& locatorAddresses,
                           const ThinClientPoolDM* poolDM);
   GfErrType getEndpointForNewFwdConn(
       ServerLocation& outEndpoint, std::string& additionalLoc,

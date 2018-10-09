@@ -435,7 +435,7 @@ class TestPdxSerializerForV1 : public PdxSerializer {
     try {
       auto tkv1 = std::make_shared<PdxTests::TestKeyV1>();
       tkv1->_id = pr.readString("_id");
-      return tkv1;
+      return std::move(tkv1);
     } catch (...) {
       return nullptr;
     }
@@ -459,7 +459,7 @@ class TestPdxSerializerForV1 : public PdxSerializer {
       auto dtpv1 = std::make_shared<PdxTests::TestDiffTypePdxSV1>();
       dtpv1->_id = pr.readString("_id");
       dtpv1->_name = pr.readString("_name");
-      return dtpv1;
+      return std::move(dtpv1);
     } catch (...) {
       return nullptr;
     }

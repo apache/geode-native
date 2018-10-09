@@ -338,7 +338,7 @@ class APACHE_GEODE_EXPORT RegionAttributesFactory {
    * @return a reference to <code>this</code>
    * @throws IllegalArgumentException if initialCapacity is negative.
    */
-  RegionAttributesFactory& setInitialCapacity(int initialCapacity);
+  RegionAttributesFactory& setInitialCapacity(int32_t initialCapacity);
 
   /**
    * Sets the entry load factor for the next <code>RegionAttributes</code>

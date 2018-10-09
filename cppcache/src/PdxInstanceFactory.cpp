@@ -52,7 +52,7 @@ std::shared_ptr<PdxInstance> PdxInstanceFactory::create() {
   auto dataOutput = m_cacheImpl.createDataOutput();
   PdxHelper::serializePdx(dataOutput, pi);
 
-  return pi;
+  return std::move(pi);
 }
 PdxInstanceFactory& PdxInstanceFactory::writeChar(const std::string& fieldName,
                                                   char16_t value) {

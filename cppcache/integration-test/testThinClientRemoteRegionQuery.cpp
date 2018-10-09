@@ -251,8 +251,6 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
   {
-    bool doAnyErrorOccured = false;
-
     auto region = getHelper()->getRegion(qRegionNames[0]);
 
     for (int i = 0; i < QueryStrings::RQsize(); i++) {
@@ -270,7 +268,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
             failmsg,
             "FAIL: Query # %d existsValue expected is %s, actual is %s", i,
             expectedResult ? "true" : "false", existsValue ? "true" : "false");
-        doAnyErrorOccured = true;
         ASSERT(false, failmsg);
       }
     }
@@ -308,13 +305,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
     } catch (QueryException ex) {
       LOG("got expected QueryException exception for wrong predicate:");
       LOG(ex.what());
-    }
-
-    if (!doAnyErrorOccured) {
-      LOG("ALL QUERIES PASSED");
-    } else {
-      LOG("QUERY ERROR(S) OCCURED");
-      FAIL("QUERY ERROR(S) OCCURED");
     }
 
     LOG("StepFour complete.");

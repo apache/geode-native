@@ -43,25 +43,21 @@ void TXCommitMessage::fromData(DataInput& input) {
 
   // read and ignore txIdent
   input.readInt32();
-
   ClientProxyMembershipID memId;
   memId.fromData(input);
 
   if (input.readBoolean()) {
-    memId.fromData(input);
     // read and ignore lockId
+    memId.fromData(input);
     input.readInt32();
   }
   // read and ignore totalMaxSize
   input.readInt32();
 
-  int8_t* m_farsideBaseMembershipId;
-  int32_t m_farsideBaseMembershipIdLen;
-  input.readBytes(&m_farsideBaseMembershipId, &m_farsideBaseMembershipIdLen);
-
-  if (m_farsideBaseMembershipId != nullptr) {
-    _GEODE_SAFE_DELETE_ARRAY(m_farsideBaseMembershipId);
-    m_farsideBaseMembershipId = nullptr;
+  // ignore farsideBaseMembershipId
+  auto ignoreLength = input.readArrayLength();
+  if (ignoreLength > 0) {
+    input.advanceCursor(ignoreLength);
   }
 
   input.readInt64();  // ignore tid
@@ -69,7 +65,7 @@ void TXCommitMessage::fromData(DataInput& input) {
 
   input.readBoolean();  // ignore needsLargeModCount
 
-  int32_t regionSize = input.readInt32();
+  auto regionSize = input.readInt32();
   for (int32_t i = 0; i < regionSize; i++) {
     auto rc = std::make_shared<RegionCommit>(m_memberListForVersionStamp);
     rc->fromData(input);

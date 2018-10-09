@@ -301,7 +301,7 @@ std::shared_ptr<Pool> PoolFactory::create(std::string name) {
     poolDM->init();
   }
 
-  return poolDM;
+  return std::move(poolDM);
 }
 
 PoolFactory& PoolFactory::addCheck(const std::string& host, int port) {

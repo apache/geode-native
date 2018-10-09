@@ -45,14 +45,14 @@ class APACHE_GEODE_EXPORT Queue {
 
   ~Queue() { close(); }
 
-  T* get() {
+  T get() {
     ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_mutex);
     return getNoLock();
   }
 
   /** wait "sec" secs, "usec" micros time until notified */
-  T* getUntil(uint32_t sec, uint32_t usec = 0) {
-    T* mp = get();
+  T getUntil(uint32_t sec, uint32_t usec = 0) {
+    auto&& mp = get();
 
     if (mp == nullptr) {
       ACE_Time_Value interval(sec + usec / 1000000, usec % 1000000);
@@ -67,7 +67,7 @@ class APACHE_GEODE_EXPORT Queue {
     return mp;
   }
 
-  bool put(T* mp) {
+  bool put(T mp) {
     ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_mutex);
     if (m_maxSize > 0 && m_queue.size() >= m_maxSize) {
       return false;
@@ -75,7 +75,7 @@ class APACHE_GEODE_EXPORT Queue {
     return putNoLock(mp);
   }
 
-  bool putUntil(T* mp, uint32_t sec, uint32_t usec = 0) {
+  bool putUntil(T mp, uint32_t sec, uint32_t usec = 0) {
     if (m_maxSize > 0) {
       {
         ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_mutex);
@@ -111,9 +111,8 @@ class APACHE_GEODE_EXPORT Queue {
 
     if (m_deleteObjs) {
       while (m_queue.size() > 0) {
-        T* mp = m_queue.back();
+        auto&& mp = m_queue.back();
         m_queue.pop_back();
-        delete mp;
       }
     } else {
       m_queue.clear();
@@ -130,8 +129,8 @@ class APACHE_GEODE_EXPORT Queue {
   bool empty() { return (size() == 0); }
 
  private:
-  inline T* getNoLock() {
-    T* mp = nullptr;
+  inline T getNoLock() {
+    T mp = nullptr;
 
     uint32_t queueSize = static_cast<uint32_t>(m_queue.size());
     if (queueSize > 0) {
@@ -145,7 +144,7 @@ class APACHE_GEODE_EXPORT Queue {
     return mp;
   }
 
-  inline bool putNoLock(T* mp) {
+  inline bool putNoLock(T mp) {
     if (!m_closed) {
       m_queue.push_front(mp);
       // signal the waiting getter threads, if any
@@ -157,7 +156,7 @@ class APACHE_GEODE_EXPORT Queue {
     return false;
   }
 
-  std::deque<T*> m_queue;
+  std::deque<T> m_queue;
   ACE_Recursive_Thread_Mutex m_mutex;
   ACE_Condition<ACE_Recursive_Thread_Mutex> m_cond;
   bool m_deleteObjs;

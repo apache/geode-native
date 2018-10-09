@@ -71,7 +71,6 @@ using apache::geode::client::testframework::BBNamingContextServer;
 #define __DUNIT_NO_MAIN__
 #include "fw_dunit.hpp"
 
-
 ACE_TCHAR* g_programName = nullptr;
 uint32_t g_masterPid = 0;
 
@@ -102,12 +101,12 @@ void setupCRTOutput() {
 #endif
 }
 
-void getTimeStr(char* bufPtr) {
+void getTimeStr(char* bufPtr, size_t sizeOfBuf) {
   ACE_TCHAR timestamp[64] = {0};  // only 35 needed here
   ACE::timestamp(timestamp, sizeof timestamp);
   // timestamp is like "Tue May 17 2005 12:54:22.546780"
   // for our purpose we just want "12:54:22.546780"
-  strcpy(bufPtr, &timestamp[16]);
+  strncpy(bufPtr, &timestamp[16], sizeOfBuf);
 }
 
 // some common values..
@@ -152,7 +151,7 @@ class NamingContextImpl : virtual public NamingContext {
     LOGMASTER("Naming context ready.");
   }
 
-  virtual ~NamingContextImpl() {
+  ~NamingContextImpl() noexcept override {
     m_context.close();
     ACE_OS::unlink(ACE_OS::getenv("TESTNAME"));
   }
@@ -161,7 +160,7 @@ class NamingContextImpl : virtual public NamingContext {
    * Share a string value, return -1 if there is a failure to store value,
    * otherwise returns 0.
    */
-  virtual int rebind(const char* key, const char* value) {
+  int rebind(const char* key, const char* value) override {
     int res = -1;
     int attempts = 10;
     while ((res = m_context.rebind(key, value, const_cast<char*>(""))) == -1 &&
@@ -175,7 +174,7 @@ class NamingContextImpl : virtual public NamingContext {
    * Share an int value, return -1 if there is a failure to store value,
    * otherwise returns 0.
    */
-  virtual int rebind(const char* key, int value) {
+  int rebind(const char* key, int value) override {
     return rebind(key, std::to_string(value).c_str());
   }
 
@@ -183,7 +182,7 @@ class NamingContextImpl : virtual public NamingContext {
    * retreive a value by key, storing the result in the users buf. If the key
    * is not found, the buf will contain the empty string "".
    */
-  virtual void getValue(const char* key, char* buf) {
+  void getValue(const char* key, char* buf, size_t sizeOfBuf) override {
 #ifdef SOLARIS_USE_BB
     char value[VALUE_MAX] = {0};
     char type[VALUE_MAX] = {0};
@@ -201,19 +200,19 @@ class NamingContextImpl : virtual public NamingContext {
     }
 
     if (res != 0) {
-      strcpy(buf, "");
+      strncpy(buf, "", sizeOfBuf);
       return;
     }
-    ACE_OS::strcpy(buf, value);
+    ACE_OS::strncpy(buf, value, sizeOfBuf);
   }
 
   /**
    * return the value by key, as an int using the string to int conversion
    * rules of atoi.
    */
-  virtual int getIntValue(const char* key) {
+  int getIntValue(const char* key) override {
     char value[VALUE_MAX] = {0};
-    getValue(key, value);
+    getValue(key, value, sizeof(value));
     if (ACE_OS::strcmp(value, "") == 0) return 0;
     return ACE_OS::atoi(value);
   }
@@ -249,7 +248,7 @@ class NamingContextImpl : virtual public NamingContext {
   }
 
   /** print out all the entries' keys and values in the naming context. */
-  virtual void dump() {
+  void dump() override {
 #ifdef SOLARIS_USE_BB
     m_context.dump();
 #else
@@ -794,7 +793,7 @@ void sleep(int millis) {
 
 void logMaster(std::string s, int lineno, const char* /*filename*/) {
   char buf[128] = {0};
-  dunit::getTimeStr(buf);
+  dunit::getTimeStr(buf, sizeof(buf));
 
   fprintf(stdout, "[TEST master:pid(%d)] %s at line: %d\n", ACE_OS::getpid(),
           s.c_str(), lineno);
@@ -805,7 +804,7 @@ void logMaster(std::string s, int lineno, const char* /*filename*/) {
 // slave id.
 void log(std::string s, int lineno, const char* /*filename*/, int /*id*/) {
   char buf[128] = {0};
-  dunit::getTimeStr(buf);
+  dunit::getTimeStr(buf, sizeof(buf));
 
   fprintf(stdout, "[TEST 0:pid(%d)] %s at line: %d\n", ACE_OS::getpid(),
           s.c_str(), lineno);
@@ -815,7 +814,7 @@ void log(std::string s, int lineno, const char* /*filename*/, int /*id*/) {
 // log a message and print the slave id as well..
 void log(std::string s, int lineno, const char* /*filename*/) {
   char buf[128] = {0};
-  dunit::getTimeStr(buf);
+  dunit::getTimeStr(buf, sizeof(buf));
 
   fprintf(stdout, "[TEST %s %s:pid(%d)] %s at line: %d\n", buf,
           (dunit::TestSlave::procSlaveId
@@ -836,7 +835,7 @@ int dmain(int argc, ACE_TCHAR* argv[]) {
   // tb->arm(); // leak this on purpose.
   try {
     g_programName = new ACE_TCHAR[2048];
-    ACE_OS::strcpy(g_programName, argv[0]);
+    ACE_OS::strncpy(g_programName, argv[0], 2048);
 
     const ACE_TCHAR options[] = ACE_TEXT("s:m:");
     ACE_Get_Opt cmd_opts(argc, argv, options);
@@ -1171,4 +1170,3 @@ void Semaphore::release(int t) {
 }
 
 }  // namespace perf
-

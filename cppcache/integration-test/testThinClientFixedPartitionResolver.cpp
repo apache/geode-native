@@ -195,6 +195,7 @@ std::vector<char*> storeEndPoints(const char* points) {
       endpointNames.push_back(token);
       token = strtok(nullptr, ",");
     }
+    free(ep);
   }
   ASSERT(endpointNames.size() == 3, "There should be 3 end points");
   return endpointNames;

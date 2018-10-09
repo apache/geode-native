@@ -167,9 +167,9 @@ class APACHE_GEODE_EXPORT TcrConnectionManager {
 
   ExpiryTaskManager::id_type m_pingTaskId;
   ExpiryTaskManager::id_type m_servermonitorTaskId;
-  Queue<Task<TcrEndpoint> > m_receiverReleaseList;
-  Queue<TcrConnection> m_connectionReleaseList;
-  Queue<ACE_Semaphore> m_notifyCleanupSemaList;
+  Queue<Task<TcrEndpoint>*> m_receiverReleaseList;
+  Queue<TcrConnection*> m_connectionReleaseList;
+  Queue<ACE_Semaphore*> m_notifyCleanupSemaList;
 
   ACE_Semaphore m_redundancySema;
   Task<TcrConnectionManager>* m_redundancyTask;

@@ -19,6 +19,8 @@
 #define ROOT_SCOPE DISTRIBUTED_ACK
 
 #include <string>
+#include <random>
+#include <limits>
 
 #include <ace/OS.h>
 #include <ace/High_Res_Timer.h>
@@ -77,7 +79,6 @@ std::string convertHostToCanonicalForm(const char* endpoints) {
     endpointsStr = endpointsStr.substr(pos, length);
   } else {
     hostString = "";
-    port = 0;
     return "";
   }
   hostString = endpoint;
@@ -97,6 +98,13 @@ std::string convertHostToCanonicalForm(const char* endpoints) {
     return fullName;
   }
   return endpoints;
+}
+
+template <typename T>
+T randomValue(T maxValue) {
+  static thread_local std::default_random_engine generator(
+      std::random_device{}());
+  return std::uniform_int_distribution<T>{0, maxValue}(generator);
 }
 
 class putThread : public ACE_Task_Base {
@@ -119,11 +127,9 @@ class putThread : public ACE_Task_Base {
 
   int svc(void) {
     std::shared_ptr<CacheableKey> keyPtr;
-    int rand;
     for (int i = m_min; i < m_max; i++) {
       if (!m_isWarmUpTask) {
-        unsigned int seed = i;
-        rand = ACE_OS::rand_r(&seed);
+        auto rand = randomValue(std::numeric_limits<int32_t>::max());
         keyPtr = std::dynamic_pointer_cast<CacheableKey>(
             CacheableInt32::create(rand));
         LOGDEBUG("svc: putting key %d  ", rand);
@@ -204,6 +210,7 @@ std::vector<char*> storeEndPoints(const char* points) {
       endpointNames.push_back(token);
       token = strtok(nullptr, ",");
     }
+    free(ep);
   }
   ASSERT(endpointNames.size() == 3, "There should be 3 end points");
   return endpointNames;
@@ -1162,8 +1169,6 @@ DUNIT_MAIN
       CALL_TASK(CheckPrSingleHopForIntKeysTask);
       size_t totKeyTypes =
           CacheableWrapperFactory::getRegisteredKeyTypes().size();
-      size_t totValTypes =
-          CacheableWrapperFactory::getRegisteredValueTypes().size();
 
       CALL_TASK(CheckPrSingleHopForIntKeysTask);
       for (size_t i = 0; i < totKeyTypes; i++) {

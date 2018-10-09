@@ -303,7 +303,7 @@ std::shared_ptr<PdxSerializable> PdxHelper::deserializePdx(
 
     dataInput.advanceCursor(len);
 
-    return pdxObject;
+    return std::move(pdxObject);
   }
 }
 
