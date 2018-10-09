@@ -419,8 +419,8 @@ void ThinClientRegion::registerKeys(
   }
   if (getInitialValues && !m_regionAttributes.getCachingEnabled()) {
     LOGERROR(
-          "Register keys getInitialValues flag is only applicable for caching"
-          "clients");
+        "Register keys getInitialValues flag is only applicable for caching"
+        "clients");
     throw IllegalStateException(
         "getInitialValues flag only applicable for caching clients");
   }
@@ -500,8 +500,8 @@ void ThinClientRegion::registerAllKeys(bool isDurable, bool getInitialValues,
 
   if (getInitialValues && !m_regionAttributes.getCachingEnabled()) {
     LOGERROR(
-          "Register all keys getInitialValues flag is only applicable for caching"
-          "clients");
+        "Register all keys getInitialValues flag is only applicable for caching"
+        "clients");
     throw IllegalStateException(
         "getInitialValues flag only applicable for caching clients");
   }
@@ -2304,7 +2304,8 @@ GfErrType ThinClientRegion::registerKeysNoThrow(
       request, *reply, attemptFailover, this, endpoint);
 
   if (err == GF_NOERR /*|| err == GF_CACHE_REDUNDANCY_FAILURE*/) {
-    if (reply->getMessageType() == TcrMessage::RESPONSE_FROM_SECONDARY) {
+    if (reply->getMessageType() == TcrMessage::RESPONSE_FROM_SECONDARY &&
+        endpoint) {
       LOGFINER(
           "registerKeysNoThrow - got response from secondary for "
           "endpoint %s, ignoring.",
@@ -2492,7 +2493,8 @@ GfErrType ThinClientRegion::registerRegexNoThrow(
         request, *reply, attemptFailover, this, endpoint);
   }
   if (err == GF_NOERR /*|| err == GF_CACHE_REDUNDANCY_FAILURE*/) {
-    if (reply->getMessageType() == TcrMessage::RESPONSE_FROM_SECONDARY) {
+    if (reply->getMessageType() == TcrMessage::RESPONSE_FROM_SECONDARY &&
+        endpoint) {
       LOGFINER(
           "registerRegexNoThrow - got response from secondary for "
           "endpoint %s, ignoring.",
@@ -3462,25 +3464,21 @@ void ChunkedQueryResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
   auto input = cacheImpl->createDataInput(chunk, chunkLen, m_msg.getPool());
 
   uint32_t partLen;
-  TcrMessageHelper::ChunkObjectType objType =
-      TcrMessageHelper::readChunkPartHeader(
-          m_msg, input, DSCode::FixedIDByte,
-          static_cast<int32_t>(DSFid::CollectionTypeImpl),
-          "ChunkedQueryResponse", partLen, isLastChunkWithSecurity);
+  auto objType = TcrMessageHelper::readChunkPartHeader(
+      m_msg, input, DSCode::FixedIDByte,
+      static_cast<int32_t>(DSFid::CollectionTypeImpl), "ChunkedQueryResponse",
+      partLen, isLastChunkWithSecurity);
   if (objType == TcrMessageHelper::ChunkObjectType::EXCEPTION) {
     // encountered an exception part, so return without reading more
     m_msg.readSecureObjectPart(input, false, true, isLastChunkWithSecurity);
     return;
   } else if (objType == TcrMessageHelper::ChunkObjectType::NULL_OBJECT) {
     // special case for scalar result
-    partLen = input.readInt32();
-    input.read();
+    input.readInt32(); // ignored part length
+    input.read();  // ignored is object
     auto intVal = std::dynamic_pointer_cast<CacheableInt32>(input.readObject());
     m_queryResults->push_back(intVal);
-
-    // TODO:
     m_msg.readSecureObjectPart(input, false, true, isLastChunkWithSecurity);
-
     return;
   }
 
@@ -3520,7 +3518,7 @@ void ChunkedQueryResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
   // skip the whole part including partLen and isObj (4+1)
   input.advanceCursor(partLen + 5);
 
-  partLen = input.readInt32();
+  input.readInt32(); // skip part length
 
   if (!input.read()) {
     LOGERROR(
@@ -3674,7 +3672,7 @@ void ChunkedFunctionExecutionResponse::handleChunk(
 
       // Since it is contained as a part of other results, read arrayType which
       // is arrayList = 65.
-      int8_t ignored = input.read();
+      input.read();
 
       // read and ignore its len which is 2
       input.readArrayLength();

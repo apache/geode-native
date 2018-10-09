@@ -828,7 +828,6 @@ DUNIT_TASK_DEFINITION(CLIENT2, verifyPdxInstanceEquals)
     pIPtr2 = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport1));
     LOG("parentPdx get2 Successfully....");
 
-    ret = false;
     ret = (*pIPtr1 == *pIPtr2);
     LOGINFO("parentPdx ret = %d ", ret);
     ASSERT(ret == true, "Both PdxInstances should be equal.");
@@ -1991,14 +1990,13 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstanceAndCheckLocally)
 
     std::vector<bool> setBoolArray{true, false, true,  false,
                                    true, true,  false, true};
-    auto arrayLen = setBoolArray.size();
     wpiPtr->setField("m_boolArray", setBoolArray);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
     ASSERT(pIPtr->hasField("m_boolArray") == true,
            "m_boolArray = true expected");
     auto getBoolArray = newPiPtr->getBooleanArrayField("m_boolArray");
-    arrayLen = getBoolArray.size();
+    auto arrayLen = getBoolArray.size();
     ASSERT(arrayLen == 8, "Arraylength == 8 expected");
     ASSERT(genericCompare(setBoolArray, getBoolArray, arrayLen) == true,
            "boolArray should be equal");

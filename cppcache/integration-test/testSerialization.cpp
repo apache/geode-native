@@ -111,7 +111,7 @@ class OtherType : public DataSerializable {
 
     printf("double hex 0x%016" PRIX64 "\n", ot->m_struct.e);
 
-    return ot;
+    return std::move(ot);
   }
 
   static void validateCT(int32_t i, const std::shared_ptr<Cacheable> otPtr) {

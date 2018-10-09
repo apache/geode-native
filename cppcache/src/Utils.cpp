@@ -30,12 +30,6 @@ namespace apache {
 namespace geode {
 namespace client {
 
-int RandGen::operator()(size_t max) {
-  unsigned int seed = static_cast<unsigned int>(
-      std::chrono::system_clock::now().time_since_epoch().count());
-  return ACE_OS::rand_r(&seed) % max;
-}
-
 int32_t Utils::getLastError() { return ACE_OS::last_error(); }
 std::string Utils::getEnv(const char* varName) {
 #ifdef _WIN32
@@ -104,7 +98,6 @@ std::string Utils::convertHostToCanonicalForm(const char* endpoints) {
     endpointsStr = endpointsStr.substr(pos, length);
   } else {
     hostString = "";
-    port = 0;
     return "";
   }
   hostString = endpoint;

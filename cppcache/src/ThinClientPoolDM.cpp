@@ -275,16 +275,14 @@ void ThinClientPoolDM::startBackgroundThreads() {
     m_cliCallbackTask->start();
   }
 
-  LOGDEBUG("ThinClientPoolDM::startBackgroundThreads: Creating ping task");
-  ACE_Event_Handler* pingHandler =
-      new ExpiryHandler_T<ThinClientPoolDM>(this, &ThinClientPoolDM::doPing);
-
   auto pingInterval =
       static_cast<int32_t>(getPingInterval().count() / (1000 * 2));
   if (pingInterval > 0) {
     LOGDEBUG(
         "ThinClientPoolDM::startBackgroundThreads: Scheduling ping task at %ld",
         pingInterval);
+    auto pingHandler =
+        new ExpiryHandler_T<ThinClientPoolDM>(this, &ThinClientPoolDM::doPing);
     m_pingTaskId =
         m_connManager.getCacheImpl()->getExpiryTaskManager().scheduleExpiryTask(
             pingHandler, 1, pingInterval, false);
@@ -307,9 +305,8 @@ void ThinClientPoolDM::startBackgroundThreads() {
     LOGDEBUG(
         "ThinClientPoolDM::startBackgroundThreads: Creating updateLocatorList "
         "task");
-    ACE_Event_Handler* updateLocatorListHandler =
-        new ExpiryHandler_T<ThinClientPoolDM>(
-            this, &ThinClientPoolDM::doUpdateLocatorList);
+    auto updateLocatorListHandler = new ExpiryHandler_T<ThinClientPoolDM>(
+        this, &ThinClientPoolDM::doUpdateLocatorList);
 
     LOGDEBUG(
         "ThinClientPoolDM::startBackgroundThreads: Scheduling updater Locator "
@@ -718,10 +715,7 @@ const std::shared_ptr<CacheableStringArray> ThinClientPoolDM::getServers() {
         std::vector<std::shared_ptr<CacheableString>>(ptrArr, ptrArr + i));
   } else if (!m_attrs->m_initLocList.empty()) {
     std::vector<std::shared_ptr<ServerLocation>> vec;
-    // TODO thread - why is this member volatile?
-    const_cast<ThinClientLocatorHelper*>(
-        reinterpret_cast<volatile ThinClientLocatorHelper*>(m_locHelper))
-        ->getAllServers(vec, m_attrs->m_serverGrp);
+    m_locHelper->getAllServers(vec, m_attrs->m_serverGrp);
 
     auto ptrArr = new std::shared_ptr<CacheableString>[vec.size()];
     int32_t i = 0;
@@ -1105,7 +1099,7 @@ GfErrType ThinClientPoolDM::sendUserCredentials(
     bool isBGThread, bool& isServerException) {
   LOGDEBUG("ThinClientPoolDM::sendUserCredentials:");
 
-  GfErrType err = GF_NOERR;
+  auto err = GF_NOERR;
 
   TcrMessageUserCredential request(
       new DataOutput(m_connManager.getCacheImpl()->createDataOutput()),
@@ -1116,7 +1110,9 @@ GfErrType ThinClientPoolDM::sendUserCredentials(
   err =
       conn->getEndpointObject()->sendRequestConnWithRetry(request, reply, conn);
 
-  if (conn) err = handleEPError(conn->getEndpointObject(), reply, err);
+  if (conn) {
+    err = handleEPError(conn->getEndpointObject(), reply, err);
+  }
 
   LOGDEBUG(
       "ThinClientPoolDM::sendUserCredentials: Error after sending cred request "
@@ -1130,7 +1126,7 @@ GfErrType ThinClientPoolDM::sendUserCredentials(
         break;
       }
       case TcrMessage::EXCEPTION: {
-        if (err == GF_NOERR) {
+        if (err == GF_NOERR && conn) {
           putInQueue(
               conn, isBGThread);  // connFound is only relevant for Sticky conn.
         }
@@ -1142,7 +1138,7 @@ GfErrType ThinClientPoolDM::sendUserCredentials(
         break;
       }
       default: {
-        if (err == GF_NOERR) {
+        if (err == GF_NOERR && conn) {
           putInQueue(
               conn, isBGThread);  // connFound is only relevant for Sticky conn.
         }
@@ -1639,13 +1635,13 @@ GfErrType ThinClientPoolDM::getConnectionToAnEndPoint(std::string epNameStr,
   conn = nullptr;
 
   GfErrType error = GF_NOERR;
-  TcrEndpoint* theEP = getEndPoint(epNameStr);
+  auto theEP = getEndPoint(epNameStr);
 
   LOGFINE(
       "ThinClientPoolDM::getConnectionToAnEndPoint( ): Getting endpoint object "
       "for %s",
       epNameStr.c_str());
-  if (theEP != nullptr && theEP->connected()) {
+  if (theEP && theEP->connected()) {
     LOGFINE(
         "ThinClientPoolDM::getConnectionToAnEndPoint( ): Getting connection "
         "for endpoint %s",
@@ -1666,7 +1662,7 @@ GfErrType ThinClientPoolDM::getConnectionToAnEndPoint(std::string epNameStr,
   // if connection is null, it has failed to get a connection to the specified
   // endpoint. Get a connection to any other server and failover the transaction
   // to that server.
-  if (conn == nullptr) {
+  if (!conn) {
     std::set<ServerLocation> excludeServers;
     bool maxConnLimit = false;
     LOGFINE(
@@ -1674,14 +1670,14 @@ GfErrType ThinClientPoolDM::getConnectionToAnEndPoint(std::string epNameStr,
         "available for endpoint %s. Create connection to any endpoint.",
         epNameStr.c_str());
     conn = getConnectionFromQueue(true, &error, excludeServers, maxConnLimit);
-    if (conn != nullptr && error == GF_NOERR) {
+    if (conn && error == GF_NOERR) {
       if (conn->getEndpointObject()->name() != epNameStr) {
         LOGFINE(
             "ThinClientPoolDM::getConnectionToAnEndPoint( ): Endpoint %s "
             "different than the endpoint %s. New connection created and "
             "failing over.",
             epNameStr.c_str(), conn->getEndpointObject()->name().c_str());
-        GfErrType failoverErr = doFailover(conn);
+        auto failoverErr = doFailover(conn);
         if (failoverErr != GF_NOERR) {
           LOGFINE(
               "ThinClientPoolDM::getConnectionToAnEndPoint( ):Failed to "
@@ -1694,11 +1690,13 @@ GfErrType ThinClientPoolDM::getConnectionToAnEndPoint(std::string epNameStr,
     }
   }
 
-  if (conn == nullptr || error != GF_NOERR) {
+  if (!(conn && error == GF_NOERR)) {
     LOGFINE(
         "ThinClientPoolDM::getConnectionToAEndPoint( ):Failed to connect to %s",
-        theEP->name().c_str());
-    if (conn != nullptr) _GEODE_SAFE_DELETE(conn);
+        epNameStr.c_str());
+    if (conn) {
+      _GEODE_SAFE_DELETE(conn);
+    }
   }
 
   return error;

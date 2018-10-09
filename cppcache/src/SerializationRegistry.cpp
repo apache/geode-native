@@ -173,7 +173,7 @@ std::shared_ptr<Serializable> SerializationRegistry::deserialize(
     case DSCode::CacheableEnum: {
       auto enumObject = CacheableEnum::create(" ", " ", 0);
       enumObject->fromData(input);
-      return enumObject;
+      return std::move(enumObject);
     }
     case DSCode::CacheableUserData:
     case DSCode::CacheableUserData2:

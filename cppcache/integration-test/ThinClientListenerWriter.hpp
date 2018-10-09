@@ -30,7 +30,7 @@
 #define SERVER1 s2p1
 #define CLIENT3 s2p2
 
-namespace { // NOLINT
+namespace { // NOLINT(google-build-namespaces)
 using apache::geode::client::EntryEvent;
 using apache::geode::client::RegionEvent;
 

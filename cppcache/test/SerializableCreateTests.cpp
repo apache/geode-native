@@ -44,9 +44,9 @@ TEST(SerializableCreateTests, forArrayOf_constchar) {
   ASSERT_TRUE(nullptr != cacheableString);
   ASSERT_EQ(cacheableString->value(), "test");
 }
+
 TEST(SerializableCreateTests, forArrayOf_char) {
-  char* test = new char[10];
-  strcpy(test, "test");
+  char* test = new char[5]{'t', 'e', 's', 't', '\0'};
   const auto serializable = Serializable::create(test);
   ASSERT_TRUE(nullptr != serializable);
   auto&& cacheableString =

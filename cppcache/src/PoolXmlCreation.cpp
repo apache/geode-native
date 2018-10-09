@@ -38,11 +38,11 @@ void PoolXmlCreation::addServer(const char * host, const char * port)
 }
 */
 std::shared_ptr<Pool> PoolXmlCreation::create() {
-  return poolFactory->create(poolName.c_str());
+  return poolFactory->create(poolName);
 }
 
-PoolXmlCreation::PoolXmlCreation(const char* name, std::shared_ptr<PoolFactory> factory) {
-  poolName = name;
+PoolXmlCreation::PoolXmlCreation(std::string name, std::shared_ptr<PoolFactory> factory) {
+  poolName = std::move(name);
   poolFactory = factory;
 }
 

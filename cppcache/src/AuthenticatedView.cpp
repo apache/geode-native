@@ -127,7 +127,7 @@ std::shared_ptr<QueryService> AuthenticatedView::getQueryService() {
     if (m_remoteQueryService != nullptr) return m_remoteQueryService;
     auto prqsPtr = std::make_shared<ProxyRemoteQueryService>(this);
     m_remoteQueryService = prqsPtr;
-    return prqsPtr;
+    return std::move(prqsPtr);
   }
   throw IllegalStateException("User cache has been closed.");
 }

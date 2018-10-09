@@ -17,6 +17,11 @@
 
 #include "DHImpl.hpp"
 
+#include <cstring>
+#include <cctype>
+#include <cstdint>
+#include <memory>
+
 #include <openssl/objects.h>
 #include <openssl/stack.h>
 #include <openssl/aes.h>
@@ -27,9 +32,6 @@
 #include <openssl/pem.h>
 #include <openssl/pkcs12.h>
 #include <openssl/rsa.h>
-#include <cstring>
-#include <cctype>
-#include <cstdint>
 
 static DH *m_dh = nullptr;
 static std::string m_skAlgo;
@@ -322,8 +324,8 @@ unsigned char *gf_encryptDH(const unsigned char *cleartext, int len,
   LOGDH(" DH: gf_encryptDH using sk algo: %s, Keysize: %d", m_skAlgo.c_str(),
         m_keySize);
 
-  unsigned char *ciphertext =
-      new unsigned char[len + 50];  // give enough room for padding
+  auto ciphertext = std::unique_ptr<unsigned char[]>(
+      new unsigned char[len + 50]);  // give enough room for padding
   int outlen, tmplen;
   auto ctx = EVP_CIPHER_CTX_new();
 
@@ -343,7 +345,7 @@ unsigned char *gf_encryptDH(const unsigned char *cleartext, int len,
     EVP_EncryptInit_ex(ctx, cipherFunc, nullptr, m_key, m_key + 24);
   }
 
-  if (!EVP_EncryptUpdate(ctx, ciphertext, &outlen, cleartext, len)) {
+  if (!EVP_EncryptUpdate(ctx, ciphertext.get(), &outlen, cleartext, len)) {
     LOGDH(" DHencrypt: enc update ret nullptr");
     return nullptr;
   }
@@ -352,7 +354,7 @@ unsigned char *gf_encryptDH(const unsigned char *cleartext, int len,
    */
   tmplen = 0;
 
-  if (!EVP_EncryptFinal_ex(ctx, ciphertext + outlen, &tmplen)) {
+  if (!EVP_EncryptFinal_ex(ctx, ciphertext.get() + outlen, &tmplen)) {
     LOGDH("DHencrypt: enc final ret nullptr");
     return nullptr;
   }
@@ -364,7 +366,7 @@ unsigned char *gf_encryptDH(const unsigned char *cleartext, int len,
   LOGDH("DHencrypt: in len is %d, out len is %d", len, outlen);
 
   *retLen = outlen;
-  return ciphertext;
+  return ciphertext.release();
 }
 
 // std::shared_ptr<CacheableBytes> decrypt(const uint8_t * ciphertext, int
@@ -545,8 +547,7 @@ EVP_PKEY *DH_PUBKEY_get(DH_PUBKEY *key) {
   ASN1_INTEGER *asn1int = nullptr;
 
   if (key == nullptr) {
-    EVP_PKEY_up_ref(key->pkey);
-    return (key->pkey);
+    return (nullptr);
   }
 
   if (key->pkey != nullptr) {

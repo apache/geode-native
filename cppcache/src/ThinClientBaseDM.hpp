@@ -192,7 +192,7 @@ class ThinClientBaseDM {
   bool m_initDone;
   bool m_clientNotification;
 
-  Queue<TcrChunkedContext> m_chunks;
+  Queue<TcrChunkedContext*> m_chunks;
   Task<ThinClientBaseDM>* m_chunkProcessor;
 
  private:

@@ -45,7 +45,7 @@
   class Manager : virtual public ACE_Process {
    public:
     explicit Manager(const ACE_TCHAR *program_name) : ACE_Process() {
-      ACE_OS::strcpy(programName_, program_name);
+      ACE_OS::strncpy(programName_, program_name, sizeof(programName_));
     }
 
     virtual int doWork(void) {

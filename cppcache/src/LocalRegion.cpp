@@ -967,8 +967,6 @@ GfErrType LocalRegion::getNoThrow(
         value = oldValue;
       }
     }
-    // signal no explicit removal of tracking to the RemoveTracking object
-    updateCount = -1;
   }
 
   if (CacheableToken::isInvalid(value) || CacheableToken::isTombstone(value)) {
@@ -3127,10 +3125,11 @@ std::shared_ptr<Cacheable> LocalRegion::handleReplay(
   if (err == GF_TRANSACTION_DATA_REBALANCED_EXCEPTION ||
       err == GF_TRANSACTION_DATA_NODE_HAS_DEPARTED_EXCEPTION) {
     bool isRollBack = (err == GF_TRANSACTION_DATA_REBALANCED_EXCEPTION);
-    TXState* txState = getTXState();
-    if (txState == nullptr) {
+    auto txState = getTXState();
+    if (!txState) {
       GfErrTypeThrowException("TXState is nullptr",
                               GF_CACHE_ILLEGAL_STATE_EXCEPTION);
+      throw ""; // never reached
     }
 
     auto ret = txState->replay(isRollBack);

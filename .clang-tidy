@@ -1,50 +1,8 @@
 ---
-Checks:          '-*,clang-diagnostic-*,clang-analyzer-*,-clang-analyzer-alpha*,google-*,-google-readability-todo,-google-runtime-references,-google-default-arguments'
-WarningsAsErrors: 'clang-analyzer-optin.performance.Padding,google-*'
+Checks:          '-*,clang-diagnostic-*,clang-analyzer-*,-clang-analyzer-alpha*,google-*,-google-readability-todo,-google-runtime-references,-google-default-arguments,-clang-analyzer-core.uninitialized.UndefReturn,-clang-analyzer-core.UndefinedBinaryOperatorResult,-clang-analyzer-optin.cplusplus.VirtualCall'
+WarningsAsErrors: 'clang-analyzer-optin.performance.*,clang-analyzer-core.*,clang-analyzer-unix.*,clang-diagnostic-*,google-*,clang-analyzer-cplusplus.*,clang-analyzer-security.insecureAPI.*,clang-analyzer-deadcode.*'
 HeaderFilterRegex: '.*'
-AnalyzeTemporaryDtors: false
 FormatStyle:     file
-CheckOptions:
-  - key:             google-build-namespaces.HeaderFileExtensions
-    value:           h,hh,hpp,hxx
-  - key:             google-global-names-in-headers.HeaderFileExtensions
-    value:           h
-  - key:             google-readability-braces-around-statements.ShortStatementLines
-    value:           '1'
-  - key:             google-readability-function-size.BranchThreshold
-    value:           '4294967295'
-  - key:             google-readability-function-size.LineThreshold
-    value:           '4294967295'
-  - key:             google-readability-function-size.NestingThreshold
-    value:           '4294967295'
-  - key:             google-readability-function-size.ParameterThreshold
-    value:           '4294967295'
-  - key:             google-readability-function-size.StatementThreshold
-    value:           '800'
-  - key:             google-readability-namespace-comments.ShortNamespaceLines
-    value:           '0'
-  - key:             google-readability-namespace-comments.SpacesBeforeComments
-    value:           '2'
-  - key:             google-runtime-int.SignedTypePrefix
-    value:           int
-  - key:             google-runtime-int.TypeSuffix
-    value:           ''
-  - key:             google-runtime-int.UnsignedTypePrefix
-    value:           uint
-  - key:             google-runtime-references.WhiteListTypes
-    value:           ''
-  - key:             modernize-loop-convert.MaxCopySize
-    value:           '16'
-  - key:             modernize-loop-convert.MinConfidence
-    value:           reasonable
-  - key:             modernize-loop-convert.NamingStyle
-    value:           CamelCase
-  - key:             modernize-pass-by-value.IncludeStyle
-    value:           llvm
-  - key:             modernize-replace-auto-ptr.IncludeStyle
-    value:           llvm
-  - key:             modernize-use-nullptr.NullMacros
-    value:           'NULL'
 ...
 
 # Disable Checks
@@ -52,4 +10,9 @@ CheckOptions:
 # google-readability-todo - Adds current user name when fix applied.
 
 # TODO - Fix these checks
-# google-default-arguments'
+# google-default-arguments
+# clang-analyzer-core.uninitialized.UndefReturn - Generates errors in ACE, how do we ignore?
+# clang-analyzer-core.UndefinedBinaryOperatorResult - Generates errors in ACE, how do we ignore?
+
+# TEMP
+# clang-analyzer-optin.cplusplus.VirtualCall

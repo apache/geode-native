@@ -46,8 +46,7 @@ TEST(CacheableKeyCreateTests, forArrayOf_constchar) {
 }
 
 TEST(CacheableKeyCreateTests, forArrayOf_char) {
-  char* test = new char[10];
-  strcpy(test, "test");
+  char* test = new char[5]{'t', 'e', 's', 't', '\0'};
   const auto cacheableKey = CacheableKey::create(test);
   ASSERT_TRUE(nullptr != cacheableKey);
   auto&& cacheableString =
