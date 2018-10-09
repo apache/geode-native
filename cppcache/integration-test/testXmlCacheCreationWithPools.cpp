@@ -121,7 +121,8 @@ bool checkPoolAttribs(std::shared_ptr<Pool> pool, SLIST& locators,
     sprintf(logmsg,
             "checkPoolAttribs: Pool freeConnectionTimeout expected [%d], "
             "actual [%" PRId64 "]",
-            freeConnectionTimeout, pool->getFreeConnectionTimeout().count());
+            freeConnectionTimeout,
+            static_cast<int64_t>(pool->getFreeConnectionTimeout().count()));
     LOG(logmsg);
     return false;
   }
@@ -131,7 +132,7 @@ bool checkPoolAttribs(std::shared_ptr<Pool> pool, SLIST& locators,
             "checkPoolAttribs: Pool loadConditioningInterval expected [%d], "
             "actual [%" PRId64 "]",
             loadConditioningInterval,
-            pool->getLoadConditioningInterval().count());
+            static_cast<int64_t>(pool->getLoadConditioningInterval().count()));
     LOG(logmsg);
     return false;
   }
@@ -169,7 +170,7 @@ bool checkPoolAttribs(std::shared_ptr<Pool> pool, SLIST& locators,
         logmsg,
         "checkPoolAttribs: Pool pingInterval expected [%d], actual [%" PRId64
         "]",
-        pingInterval, pool->getPingInterval().count());
+        pingInterval, static_cast<int64_t>(pool->getPingInterval().count()));
     LOG(logmsg);
     return false;
   }
@@ -177,7 +178,7 @@ bool checkPoolAttribs(std::shared_ptr<Pool> pool, SLIST& locators,
     sprintf(logmsg,
             "checkPoolAttribs: Pool readTimeout expected [%d], actual [%" PRId64
             "]",
-            readTimeout, pool->getReadTimeout().count());
+            readTimeout, static_cast<int64_t>(pool->getReadTimeout().count()));
     LOG(logmsg);
     return false;
   }
@@ -211,7 +212,8 @@ bool checkPoolAttribs(std::shared_ptr<Pool> pool, SLIST& locators,
             "checkPoolAttribs: Pool subscriptionMessageTrackingTimeout "
             "expected [%d], actual [%" PRId64 "]",
             subscriptionMessageTrackingTimeout,
-            pool->getSubscriptionMessageTrackingTimeout().count());
+            static_cast<int64_t>(
+                pool->getSubscriptionMessageTrackingTimeout().count()));
     LOG(logmsg);
     return false;
   }
@@ -221,7 +223,7 @@ bool checkPoolAttribs(std::shared_ptr<Pool> pool, SLIST& locators,
             "checkPoolAttribs: Pool subscriptionAckInterval expected [%d], "
             "actual [%" PRId64 "]",
             subscriptionAckInterval,
-            pool->getSubscriptionAckInterval().count());
+            static_cast<int64_t>(pool->getSubscriptionAckInterval().count()));
     LOG(logmsg);
     return false;
   }
@@ -238,7 +240,8 @@ bool checkPoolAttribs(std::shared_ptr<Pool> pool, SLIST& locators,
     sprintf(logmsg,
             "checkPoolAttribs: Pool statisticInterval expected [%d], actual "
             "[%" PRId64 "]",
-            statisticInterval, pool->getStatisticInterval().count());
+            statisticInterval,
+            static_cast<int64_t>(pool->getStatisticInterval().count()));
     LOG(logmsg);
     return false;
   }
@@ -256,7 +259,7 @@ bool checkPoolAttribs(std::shared_ptr<Pool> pool, SLIST& locators,
             "checkPoolAttribs: Pool updateLocatorListInterval expected [%d], "
             "actual [%" PRId64 "]",
             updateLocatorListInterval,
-            pool->getUpdateLocatorListInterval().count());
+            static_cast<int64_t>(pool->getUpdateLocatorListInterval().count()));
     LOG(logmsg);
     return false;
   }
@@ -267,7 +270,8 @@ int testXmlCacheCreationWithPools() {
   auto cacheFactory = CacheFactory();
   std::shared_ptr<Cache> cptr;
 
-  std::cout << "create DistributedSytem with name=XML_CACHE_CREATION_TEST" << std::endl;
+  std::cout << "create DistributedSytem with name=XML_CACHE_CREATION_TEST"
+            << std::endl;
   std::cout
       << "Create cache with the configurations provided in valid_cache_pool.xml"
       << std::endl;

@@ -484,28 +484,21 @@ void MapSegment::getEntries(std::vector<std::shared_ptr<RegionEntry>>& result) {
  */
 void MapSegment::getValues(std::vector<std::shared_ptr<Cacheable>>& result) {
   std::lock_guard<spinlock_mutex> lk(m_spinlock);
-  for (CacheableKeyHashMap::iterator iter = m_map->begin();
-       iter != m_map->end(); iter++) {
-    std::shared_ptr<Cacheable> valuePtr;
-    std::shared_ptr<CacheableKey> keyPtr;
-    std::shared_ptr<MapEntry> entry;
-    int status;
+  for (auto&& it : *m_map) {
+    auto&& entry = it.int_id_;
+    std::shared_ptr<Cacheable> value;
+    entry->getValue(value);
+    auto&& entryImpl = entry->getImplPtr();
 
-    keyPtr = (*iter).ext_id_;
-    (*iter).int_id_->getValue(valuePtr);
-    status = m_map->find(keyPtr, entry);
-
-    if (status != -1) {
-      auto entryImpl = entry->getImplPtr();
-      if (valuePtr != nullptr && !CacheableToken::isInvalid(valuePtr) &&
-          !CacheableToken::isDestroyed(valuePtr) &&
-          !CacheableToken::isTombstone(valuePtr)) {
-        if (CacheableToken::isOverflowed(valuePtr)) {  // get Value from disc.
-          valuePtr = getFromDisc(keyPtr, entryImpl);
-          entryImpl->setValueI(valuePtr);
-        }
-        result.push_back(valuePtr);
+    if (value && !CacheableToken::isInvalid(value) &&
+        !CacheableToken::isDestroyed(value) &&
+        !CacheableToken::isTombstone(value)) {
+      if (CacheableToken::isOverflowed(value)) {  // get Value from disc.
+        auto&& key = it.ext_id_;
+        value = getFromDisc(key, entryImpl);
+        entryImpl->setValueI(value);
       }
+      result.push_back(value);
     }
   }
 }
