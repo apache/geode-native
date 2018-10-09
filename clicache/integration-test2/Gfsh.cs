@@ -34,7 +34,6 @@ namespace Apache.Geode.Client.IntegrationTests
         public int JmxManagerPort { get; private set; }
         public int HttpServicePort { get; private set; }
         public string ServerBindAddress { get; private set; }
-        public string Connection { get; private set; }
         public bool UseSSL { get; set; }
         public string Keystore { get; set; }
         public string KeystorePassword { get; set; }
@@ -104,19 +103,19 @@ namespace Apache.Geode.Client.IntegrationTests
                     return this;
                 }
 
-                public Server withLocators(string locators) 
+                public Server withLocators(string locators)
                 {
                     command_ += " --locators=" + locators;
                     return this;
                 }
 
-                public Server withLogLevel(string logLevel) 
+                public Server withLogLevel(string logLevel)
                 {
                     command_ += " --log-level=" + logLevel;
                     return this;
                 }
 
-                public Server withMaxHeap(string maxHeap) 
+                public Server withMaxHeap(string maxHeap)
                 {
                     command_ += " --max-heap=" + maxHeap;
                     return this;
@@ -320,7 +319,7 @@ namespace Apache.Geode.Client.IntegrationTests
 
         public class Shutdown : Command
         {
-            public Shutdown(Gfsh gfsh) : base(gfsh, "shutdown") {}
+            public Shutdown(Gfsh gfsh) : base(gfsh, "shutdown") { }
 
             public Shutdown withIncludeLocators(bool includeLocators)
             {
@@ -337,7 +336,7 @@ namespace Apache.Geode.Client.IntegrationTests
 
         public class Connect : Command
         {
-            public Connect(Gfsh gfsh) : base(gfsh, "connect") {}
+            public Connect(Gfsh gfsh) : base(gfsh, "connect") { }
 
             public Connect withJmxManager(string jmxManagerAddress, int jmxManagerPort)
             {
@@ -354,7 +353,7 @@ namespace Apache.Geode.Client.IntegrationTests
                 return this;
             }
         }
-        
+
         public Connect connect()
         {
             return new Connect(this);
@@ -362,7 +361,7 @@ namespace Apache.Geode.Client.IntegrationTests
 
         public class ConfigurePdx : Command
         {
-            public ConfigurePdx(Gfsh gfsh) : base(gfsh, "configure pdx") {}
+            public ConfigurePdx(Gfsh gfsh) : base(gfsh, "configure pdx") { }
 
             public ConfigurePdx withReadSerialized(bool readSerialized)
             {
@@ -384,8 +383,6 @@ namespace Apache.Geode.Client.IntegrationTests
             LocatorBindAddress = defaultBindAddress;
             HttpServicePort = defaultHttpServicePort;
             ServerBindAddress = defaultBindAddress;
-            Connection = String.Empty; 
-
             LocatorPort = FreeTcpPort();
             JmxManagerPort = FreeTcpPort();
         }
@@ -394,7 +391,7 @@ namespace Apache.Geode.Client.IntegrationTests
         {
             var tcpListner = new TcpListener(IPAddress.Loopback, 0);
             tcpListner.Start();
-            var port = ((IPEndPoint) tcpListner.LocalEndpoint).Port;
+            var port = ((IPEndPoint)tcpListner.LocalEndpoint).Port;
             tcpListner.Stop();
             return port;
         }

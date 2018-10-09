@@ -412,10 +412,10 @@ namespace Apache.Geode.Client.IntegrationTests
         {
             using (var cluster = new Cluster(CreateTestCaseDirectoryName(), 1, 1))
             {
-                Assert.Equal(cluster.Start(), true);
+                Assert.True(cluster.Start());
                 Assert.Equal(cluster.Gfsh.create()
                     .region()
-                    .withName("cqTestRegion")
+                    .withName("testRegion")
                     .withType("REPLICATE")
                     .execute(), 0);
                 var cacheFactory = new CacheFactory()
@@ -484,17 +484,15 @@ namespace Apache.Geode.Client.IntegrationTests
         {
             using (var cluster = new Cluster(CreateTestCaseDirectoryName(), 1, 1))
             {
-                Assert.Equal(cluster.Start(), true);
+                Assert.True(cluster.Start());
                 Assert.Equal(cluster.Gfsh.create()
                     .region()
-                    .withName("cqTestRegion")
+                    .withName("testRegion")
                     .withType("REPLICATE")
                     .execute(), 0);
                 var cacheFactory = new CacheFactory()
                     .Set("log-level", "none");
                 var cache = cacheFactory.Create();
-
-                Console.WriteLine("Registering for data serialization");
 
                 cache.TypeRegistry.RegisterType(Order.CreateDeserializable, 0x42);
 
@@ -504,7 +502,7 @@ namespace Apache.Geode.Client.IntegrationTests
 
                 var regionFactory = cache.CreateRegionFactory(RegionShortcut.PROXY)
                   .SetPoolName("pool");
-                var orderRegion = regionFactory.Create<int, Order>("cqTestRegion");
+                var orderRegion = regionFactory.Create<int, Order>("testRegion");
                 Assert.NotNull(orderRegion);
 
                 const int orderKey = 65;
@@ -519,4 +517,3 @@ namespace Apache.Geode.Client.IntegrationTests
         }
     }
 }
-

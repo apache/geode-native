@@ -31,7 +31,7 @@ namespace Apache.Geode.Client.IntegrationTests
         public long OrderId { get; set; }
         public string Name { get; set; }
         public short Quantity { get; set; }
-         // A default constructor is required for deserialization
+        // A default constructor is required for deserialization
         public MyOrder() { }
         public MyOrder(int orderId, string name, short quantity)
         {
@@ -86,21 +86,6 @@ namespace Apache.Geode.Client.IntegrationTests
         }
 
         public virtual void OnEvent(CqEvent<TKey, TResult> ev)
-        {
-        }
-
-        public virtual void OnError(CqEvent<TKey, TResult> ev)
-        {
-        }
-
-        public virtual void Close()
-        {
-        }
-    }
-
-    public class PdxCqListener<TKey, TResult> : CqListener<TKey, TResult>
-    {
-        public override void OnEvent(CqEvent<TKey, TResult> ev)
         {
             Debug.WriteLine("CqListener::OnEvent called");
             var val = ev.getNewValue() as MyOrder;
@@ -206,7 +191,6 @@ namespace Apache.Geode.Client.IntegrationTests
                     .withType("REPLICATE")
                     .execute(), 0);
 		    cache_.TypeRegistry.RegisterPdxType(MyOrder.CreateDeserializable);
-
 		    var poolFactory = cache_.GetPoolFactory()
 			.AddLocator("localhost", cluster_.Gfsh.LocatorPort);
 		    var pool = poolFactory
@@ -334,6 +318,3 @@ namespace Apache.Geode.Client.IntegrationTests
         }
     }
 }
-
-
-

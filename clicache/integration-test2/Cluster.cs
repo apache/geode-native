@@ -78,7 +78,7 @@ namespace Apache.Geode.Client.IntegrationTests
 
             for (var i = 0; i < locatorCount_; i++)
             {
-                var locator = new Locator(this, new List<Locator>(), 
+                var locator = new Locator(this, new List<Locator>(),
                     name_ + "/locator/" + i.ToString());
                 locators_.Add(locator);
                 success = (locator.Start() == 0);
@@ -92,7 +92,7 @@ namespace Apache.Geode.Client.IntegrationTests
 
             for (var i = 0; i < serverCount_; i++)
             {
-                var server = new Server(this, locators_, 
+                var server = new Server(this, locators_,
                     name_ + "/server/" + i.ToString());
                 servers_.Add(server);
                 var localResult = server.Start();
@@ -142,7 +142,7 @@ namespace Apache.Geode.Client.IntegrationTests
         public int port;
     }
 
-    public class Locator 
+    public class Locator
     {
         private Cluster cluster_;
         private string name_;
@@ -161,7 +161,7 @@ namespace Apache.Geode.Client.IntegrationTests
         }
 
         public Address Address { get; private set; }
-        
+
         public int Start()
         {
             var result = -1;
@@ -199,8 +199,8 @@ namespace Apache.Geode.Client.IntegrationTests
             return result;
         }
     }
-    
-    public class Server 
+
+    public class Server
     {
         private Cluster cluster_;
         private string name_;

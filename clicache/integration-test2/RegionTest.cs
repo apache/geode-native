@@ -21,82 +21,63 @@ using Xunit;
 
 namespace Apache.Geode.Client.IntegrationTests
 {
-  [Trait("Category", "Integration")]
-  public class RegionTest : TestBase
-  {
-
-    [Fact]
-    public void PutOnOneCacheGetOnAnotherCache()
+    [Trait("Category", "Integration")]
+    public class RegionTest : TestBase
     {
-      using (var geodeServer = new GfshExecute())
-      {
-        string testDir = CreateTestCaseDirectoryName();
-        CleanTestCaseDirectory(testDir);
-
-        try
+        [Fact]
+        public void PutOnOneCacheGetOnAnotherCache()
         {
-            Assert.Equal(geodeServer.start()
-                       .locator()
-                       .withDir(testDir + "/locator/0")
-                       .withHttpServicePort(0)
-                       .execute(), 0);
-            Assert.Equal(geodeServer.start()
-                       .server()
-                       .withDir(testDir + "/server/0")
-                       .execute(), 0);
-            Assert.Equal(geodeServer.create()
-                       .region()
-                       .withName("testRegion1")
-                       .withType("PARTITION")
-                       .execute(), 0);
-
-            using (var cacheXml = new CacheXml(new FileInfo("cache.xml"), geodeServer.LocatorPort))
+            using (var cluster = new Cluster(CreateTestCaseDirectoryName(), 1, 1))
             {
-                using (var cacheXml2 = new CacheXml(new FileInfo("cache.xml"), geodeServer.LocatorPort))
-                {
-                    var cacheFactory = new CacheFactory();
+                Assert.True(cluster.Start());
+                Assert.Equal(cluster.Gfsh
+                    .create()
+                    .region()
+                    .withName("testRegion1")
+                    .withType("PARTITION")
+                    .execute(), 0);
 
-                    var cacheOne = cacheFactory.Create();
+                var cacheFactory = new CacheFactory();
+                var cacheOne = cacheFactory.Create();
+                cacheOne.GetPoolFactory()
+                    .AddLocator(cluster.Gfsh.LocatorBindAddress, cluster.Gfsh.LocatorPort)
+                    .Create("default");
+
+                try
+                {
+                    var cacheTwo = cacheFactory.Create();
                     try
                     {
-                        cacheOne.InitializeDeclarativeCache(cacheXml.File.FullName);
+                        cacheTwo.GetPoolFactory()
+                            .AddLocator(cluster.Gfsh.LocatorBindAddress, cluster.Gfsh.LocatorPort)
+                            .Create("default");
 
-                        var cacheTwo = cacheFactory.Create();
-                        try
-                        {
-                            cacheTwo.InitializeDeclarativeCache(cacheXml2.File.FullName);
+                        var regionFactory1 = cacheOne.CreateRegionFactory(RegionShortcut.PROXY)
+                            .SetPoolName("default");
+                        var regionFactory2 = cacheTwo.CreateRegionFactory(RegionShortcut.PROXY)
+                            .SetPoolName("default");
 
-                            var regionForCache1 = cacheOne.GetRegion<string, string>("testRegion1");
-                            var regionForCache2 = cacheTwo.GetRegion<string, string>("testRegion1");
+                        var regionForCache1 = regionFactory1.Create<string, string>("testRegion1");
+                        var regionForCache2 = regionFactory2.Create<string, string>("testRegion1");
 
-                            const string key = "hello";
-                            const string expectedResult = "dave";
+                        const string key = "hello";
+                        const string expectedResult = "dave";
 
-                            regionForCache1.Put(key, expectedResult);
-                            var actualResult = regionForCache2.Get(key);
+                        regionForCache1.Put(key, expectedResult);
+                        var actualResult = regionForCache2.Get(key);
 
-                            Assert.Equal(expectedResult, actualResult);
-                        }
-                        finally
-                        {
-                            cacheTwo.Close();
-                        }
+                        Assert.Equal(expectedResult, actualResult);
                     }
                     finally
                     {
-                        cacheOne.Close();
+                        cacheTwo.Close();
                     }
+                }
+                finally
+                {
+                    cacheOne.Close();
                 }
             }
         }
-        finally
-        {
-            Assert.Equal(geodeServer.shutdown()
-                    .withIncludeLocators(true)
-                    .execute(), 0);
-        }
-      }
     }
-  }
-
 }

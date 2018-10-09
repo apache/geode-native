@@ -27,7 +27,7 @@ namespace Apache.Geode.Client.IntegrationTests
     {
         public void Dispose()
         {
-        
+
         }
 
         [Fact]
@@ -81,7 +81,7 @@ namespace Apache.Geode.Client.IntegrationTests
                 .withConnect(false)
                 .withUseSsl();
             s = locator.ToString();
-            Assert.Equal(s, "start locator --name=name --dir=dir " + 
+            Assert.Equal(s, "start locator --name=name --dir=dir " +
                 "--http-service-port=2222 --log-level=fine --max-heap=someHugeAmount " +
                 "--connect=false --J=-Dgemfire.ssl-enabled-components=locator,jmx " +
                 "--J=-Dgemfire.ssl-keystore=some/path/keystore.jks --J=-Dgemfire.ssl-keystore-password=password " +

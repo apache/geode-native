@@ -134,7 +134,8 @@ namespace Apache.Geode.Client.IntegrationTests
             if (gfsh.WaitForExit(60000))
             {
                 Debug.WriteLine("GeodeServer Start: gfsh.HasExited = {0}, gfsh.ExitCode = {1}",
-                  gfsh.HasExited, gfsh.ExitCode);
+                    gfsh.HasExited,
+                    gfsh.ExitCode);
             }
             else
             {
