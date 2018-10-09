@@ -38,10 +38,10 @@ namespace Apache.Geode.Client.IntegrationTests
 
         public string CreateTestCaseDirectoryName()
         {
-            StackTrace st = new StackTrace();
-            StackFrame sf = st.GetFrame(1);
-            MethodBase currentMethod = sf.GetMethod();
-            string dirName = currentMethod.Name;
+            var st = new StackTrace();
+            var sf = st.GetFrame(1);
+            var currentMethod = sf.GetMethod();
+            var dirName = currentMethod.Name;
 
             if (dirName.Length > MaxAllowedDirectoryCharacters)
             {

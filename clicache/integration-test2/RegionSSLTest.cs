@@ -21,76 +21,80 @@ using Xunit;
 
 namespace Apache.Geode.Client.IntegrationTests
 {
-  [Trait("Category", "Integration")]
-  public class RegionSSLTest : TestBase, IDisposable
-  {
-    private readonly Cache cacheOne_;
-
-    public RegionSSLTest()
+    [Trait("Category", "Integration")]
+    public class RegionSSLTest : TestBase, IDisposable
     {
-      var pathvar = Environment.GetEnvironmentVariable("PATH");
+        private readonly Cache cacheOne_;
 
-      var openSslPath = Environment.CurrentDirectory + Config.OpenSSLPath;
-
-      if (!Directory.Exists(openSslPath))
-      {
-        throw new DirectoryNotFoundException("OpenSSL is a prerequisite for integration tests and the directory was not found.");
-      }
-
-      pathvar += ";" + openSslPath;
-
-      var cryptoImplPath = Environment.CurrentDirectory + Config.CryptoImplPath;
-
-      if (!File.Exists(cryptoImplPath + "\\cryptoImpl.dll"))
-      {
-        throw new System.IO.FileNotFoundException("cryptoImpl.dll was not found at " + cryptoImplPath);
-      }
-
-      pathvar += ";" + cryptoImplPath;
-
-      Environment.SetEnvironmentVariable("PATH", pathvar);
-
-      var cacheFactory = new CacheFactory();
-      cacheFactory.Set("ssl-enabled", "true");
-      cacheFactory.Set("ssl-keystore", Environment.CurrentDirectory + "\\ClientSslKeys\\client_keystore.password.pem");
-      cacheFactory.Set("ssl-keystore-password", "gemstone" );
-      cacheFactory.Set("ssl-truststore", Environment.CurrentDirectory + "\\ClientSslKeys\\client_truststore.pem");
-
-      cacheOne_ = cacheFactory.Create();
-    }
-
-    public void Dispose()
-    {
-      cacheOne_.Close();
-    }
-
-    [Fact]
-    public void PutGet_Works()
-    {
-        using (Cluster cluster = new Cluster(CreateTestCaseDirectoryName(), 1, 1))
+        public RegionSSLTest()
         {
-            cluster.UseSSL = true;
-            Assert.True(cluster.Start());
-            Assert.Equal(cluster.Gfsh.create()
-                .region()
-                .withName("testRegion1")
-                .withType("PARTITION")
-                .execute(), 0);
-            using (var cacheXml = new CacheXml(new FileInfo("cache.xml"), cluster.Gfsh.LocatorPort))
-            {
-                cacheOne_.InitializeDeclarativeCache(cacheXml.File.FullName);
+            var pathvar = Environment.GetEnvironmentVariable("PATH");
 
-                var regionForCache1 = cacheOne_.GetRegion<string, string>("testRegion1");
+            var openSslPath = Environment.CurrentDirectory + Config.OpenSSLPath;
+
+            if (!Directory.Exists(openSslPath))
+            {
+                throw new DirectoryNotFoundException("OpenSSL is a prerequisite for integration tests and the directory was not found.");
+            }
+
+            pathvar += ";" + openSslPath;
+
+            var cryptoImplPath = Environment.CurrentDirectory + Config.CryptoImplPath;
+
+            if (!File.Exists(cryptoImplPath + "\\cryptoImpl.dll"))
+            {
+                throw new System.IO.FileNotFoundException("cryptoImpl.dll was not found at " + cryptoImplPath);
+            }
+
+            pathvar += ";" + cryptoImplPath;
+
+            Environment.SetEnvironmentVariable("PATH", pathvar);
+
+            var cacheFactory = new CacheFactory();
+            cacheFactory.Set("ssl-enabled", "true");
+            cacheFactory.Set("ssl-keystore", Environment.CurrentDirectory + "\\ClientSslKeys\\client_keystore.password.pem");
+            cacheFactory.Set("ssl-keystore-password", "gemstone");
+            cacheFactory.Set("ssl-truststore", Environment.CurrentDirectory + "\\ClientSslKeys\\client_truststore.pem");
+
+            cacheOne_ = cacheFactory.Create();
+        }
+
+        public void Dispose()
+        {
+            cacheOne_.Close();
+        }
+
+        [Fact]
+        public void SslPutGetTest()
+        {
+            using (var cluster = new Cluster(CreateTestCaseDirectoryName(), 1, 1))
+            {
+                cluster.UseSSL = true;
+                Assert.True(cluster.Start());
+                Assert.Equal(cluster.Gfsh
+                    .create()
+                    .region()
+                    .withName("testRegion1")
+                    .withType("PARTITION")
+                    .execute(), 0);
+
+                cacheOne_.GetPoolFactory()
+                    .AddLocator(cluster.Gfsh.LocatorBindAddress, cluster.Gfsh.LocatorPort)
+                    .Create("default");
+
+                var regionFactory = cacheOne_.CreateRegionFactory(RegionShortcut.PROXY)
+                            .SetPoolName("default");
+
+                var region = regionFactory.Create<string, string>("testRegion1");
 
                 const string key = "hello";
                 const string expectedResult = "dave";
 
-                regionForCache1.Put(key, expectedResult);
-                var actualResult = regionForCache1.Get(key);
+                region.Put(key, expectedResult);
+                var actualResult = region.Get(key);
 
                 Assert.Equal(expectedResult, actualResult);
             }
         }
-    }
     }
 }

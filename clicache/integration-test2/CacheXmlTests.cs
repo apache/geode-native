@@ -67,7 +67,7 @@ namespace Apache.Geode.Client.IntegrationTests
             {
                 try
                 {
-                    string testDir = CreateTestCaseDirectoryName();
+                    var testDir = CreateTestCaseDirectoryName();
                     CleanTestCaseDirectory(testDir);
 
                     Assert.Equal(gfsh.start()
@@ -102,4 +102,3 @@ namespace Apache.Geode.Client.IntegrationTests
         }
     }
 }
-

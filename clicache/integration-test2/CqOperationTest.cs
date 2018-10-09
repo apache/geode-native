@@ -31,7 +31,7 @@ namespace Apache.Geode.Client.IntegrationTests
         public long OrderId { get; set; }
         public string Name { get; set; }
         public short Quantity { get; set; }
-         // A default constructor is required for deserialization
+        // A default constructor is required for deserialization
         public MyOrder() { }
         public MyOrder(int orderId, string name, short quantity)
         {
@@ -88,7 +88,7 @@ namespace Apache.Geode.Client.IntegrationTests
         public virtual void OnEvent(CqEvent<TKey, TResult> ev)
         {
             Debug.WriteLine("MyCqListener::OnEvent called");
-            MyOrder val = ev.getNewValue() as MyOrder;
+            var val = ev.getNewValue() as MyOrder;
             TKey key = ev.getKey();
 
             switch (ev.getQueryOperation())
@@ -180,16 +180,16 @@ namespace Apache.Geode.Client.IntegrationTests
                 var cqListener = new MyCqListener<string, MyOrder>();
                 cqAttributesFactory.AddCqListener(cqListener);
                 var cqAttributes = cqAttributesFactory.Create();
-                
+
                 var query = queryService.NewCq("MyCq", "SELECT * FROM /cqTestRegion WHERE quantity > 30", cqAttributes, false);
                 Debug.WriteLine("Executing continuous query");
                 query.Execute();
-                      
+
                 Debug.WriteLine("Putting and changing Order objects in the region");
                 var order1 = new MyOrder(1, "product x", 23);
                 var order2 = new MyOrder(2, "product y", 37);
                 var order3 = new MyOrder(3, "product z", 101);
-                
+
                 region.Put("order1", order1);
                 region.Put("order2", order2);
                 Assert.True(cqListener.CreatedEvent.WaitOne(waitInterval_), "Didn't receieve expected CREATE event");
@@ -220,6 +220,3 @@ namespace Apache.Geode.Client.IntegrationTests
         }
     }
 }
-
-
-
