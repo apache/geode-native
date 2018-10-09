@@ -120,7 +120,7 @@ class APACHE_GEODE_EXPORT CacheableArrayPrimitive
   inline CacheableArrayPrimitive() = default;
 
   template <typename TT>
-  CacheableArrayPrimitive(TT&& value) : m_value(std::forward<TT>(value)) {}
+  explicit CacheableArrayPrimitive(TT&& value) : m_value(std::forward<TT>(value)) {}
 
   ~CacheableArrayPrimitive() noexcept override = default;
 

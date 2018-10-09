@@ -1,12 +1,14 @@
 ---
-Checks:          '-*,clang-diagnostic-*,clang-analyzer-*,-clang-analyzer-alpha*,google-*,-google-readability-todo,-google-runtime-references,-clang-analyzer-unix.cstring.NullArg'
-WarningsAsErrors: '*,-google-default-arguments'
+Checks:          '-*,clang-diagnostic-*,clang-analyzer-*,-clang-analyzer-alpha*,google-*,-google-readability-todo,-google-runtime-references,-google-default-arguments,-clang-analyzer-unix.cstring.NullArg'
+WarningsAsErrors: '*'
 HeaderFilterRegex: '.*'
 FormatStyle:     file
+...
 
 # Disable Checks
 # google-runtime-references - We have diverged from this rule due to both legacy and disagreement with the rule.
 # google-readability-todo - Adds current user name when fix applied.
 
 # TODO - Fix these checks
+# google-default-arguments
 # clang-analyzer-unix.cstring.NullArg - Generates errors in Boost, how do we ignore?
