@@ -100,7 +100,6 @@ class PdxReaderWithTypeCollector : public PdxLocalReader {
 
   virtual std::shared_ptr<CacheableDate> readDate(
       const std::string& fieldName) override;
-
 };
 
 }  // namespace client

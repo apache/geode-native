@@ -31,7 +31,10 @@ std::atomic<int32_t> TXId::m_transactionId(1);
 
 TXId::TXId() : m_TXId(m_transactionId++) {}
 
-TXId& TXId::operator=(const TXId& other) { m_TXId = other.m_TXId; return *this; }
+TXId& TXId::operator=(const TXId& other) {
+  m_TXId = other.m_TXId;
+  return *this;
+}
 
 TXId::~TXId() {}
 

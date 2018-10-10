@@ -49,7 +49,9 @@ int testXmlDeclarativeCacheCreation() {
 
   std::string directory(ACE_OS::getenv("TESTSRC"));
 
-  std::cout << "create DistributedSytem with name=XML_DECLARATIVE_CACHE_CREATION_TEST" << std::endl;
+  std::cout
+      << "create DistributedSytem with name=XML_DECLARATIVE_CACHE_CREATION_TEST"
+      << std::endl;
 
   try {
     const auto filePath =

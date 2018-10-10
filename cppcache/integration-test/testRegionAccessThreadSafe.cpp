@@ -121,7 +121,7 @@ DUNIT_TASK(s2p2, CreateNormalRegion)
     RegionAttributesFactory regionAttributesFactory;
     auto regionAttributes = regionAttributesFactory.create();
     getThread->setSubRegionFlag();
-   LOG("create normal region successful");
+    LOG("create normal region successful");
   }
 END_TASK(CreateNormalRegion)
 

@@ -27,23 +27,23 @@ namespace geode {
 namespace client {
 
 /**
-* Extension of CqListener. Adds two new methods to CqListener, one that
-* is called when the cq is connected and one that is called when
-* the cq is disconnected
-*
-* @since 7.0
-*/
+ * Extension of CqListener. Adds two new methods to CqListener, one that
+ * is called when the cq is connected and one that is called when
+ * the cq is disconnected
+ *
+ * @since 7.0
+ */
 
 class APACHE_GEODE_EXPORT CqStatusListener : public CqListener {
  public:
   /**
-  * Called when the cq loses connection with all servers
-  */
+   * Called when the cq loses connection with all servers
+   */
   virtual void onCqDisconnected();
 
   /**
-  * Called when the cq establishes a connection with a server
-  */
+   * Called when the cq establishes a connection with a server
+   */
   virtual void onCqConnected();
 };
 }  // namespace client

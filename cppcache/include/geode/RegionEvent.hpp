@@ -25,7 +25,7 @@
 #include "CacheableKey.hpp"
 
 /** @file
-*/
+ */
 
 namespace apache {
 namespace geode {

@@ -30,14 +30,11 @@ void RegionXmlCreation::addSubregion(
   subRegions.push_back(regionPtr);
 }
 
-void RegionXmlCreation::setAttributes(
-    const RegionAttributes attributes) {
+void RegionXmlCreation::setAttributes(const RegionAttributes attributes) {
   regionAttributes = attributes;
 }
 
-RegionAttributes RegionXmlCreation::getAttributes() {
-  return regionAttributes;
-}
+RegionAttributes RegionXmlCreation::getAttributes() { return regionAttributes; }
 
 void RegionXmlCreation::fillIn(std::shared_ptr<Region> regionPtr) {
   for (const auto& regXmlCreation : subRegions) {

@@ -103,7 +103,7 @@ void initClientAuth(char credentialsType, const char* dhAlgo) {
   printf("Initializing Client with %s credential and %s DH Algo\n",
          credentialsType == CORRECT_CREDENTIALS ? "Valid" : "Invalid", dhAlgo);
 
- auto config = Properties::create();
+  auto config = Properties::create();
 
   config->insert("security-client-dhalgo", dhAlgo);
   std::string testsrc = ACE_OS::getenv("TESTSRC");
@@ -189,18 +189,18 @@ void InitCorrectClients(const char* dhAlgo) {
 void DoNetSearch() {
   try {
     createRegionForSecurity(regionNamesAuth[1], USE_ACK, true);
-   auto regPtr0 = getHelper()->getRegion(regionNamesAuth[0]);
-   auto keyPtr = CacheableKey::create(keys[0]);
-   auto checkPtr =
-       std::dynamic_pointer_cast<CacheableString>(regPtr0->get(keyPtr));
-   if (checkPtr != nullptr && !strcmp(nvals[0], checkPtr->value().c_str())) {
-     LOG("checkPtr is not null");
-     char buf[1024];
-     sprintf(buf, "In net search, get returned %s for key %s",
-             checkPtr->value().c_str(), keys[0]);
-     LOG(buf);
-   } else {
-     LOG("checkPtr is nullptr");
+    auto regPtr0 = getHelper()->getRegion(regionNamesAuth[0]);
+    auto keyPtr = CacheableKey::create(keys[0]);
+    auto checkPtr =
+        std::dynamic_pointer_cast<CacheableString>(regPtr0->get(keyPtr));
+    if (checkPtr != nullptr && !strcmp(nvals[0], checkPtr->value().c_str())) {
+      LOG("checkPtr is not null");
+      char buf[1024];
+      sprintf(buf, "In net search, get returned %s for key %s",
+              checkPtr->value().c_str(), keys[0]);
+      LOG(buf);
+    } else {
+      LOG("checkPtr is nullptr");
     }
   } catch (const apache::geode::client::Exception& other) {
     LOG(other.getStackTrace());

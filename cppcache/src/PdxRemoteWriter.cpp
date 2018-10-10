@@ -127,8 +127,8 @@ PdxWriter& PdxRemoteWriter::writeUnreadFields(
   return *this;
 }
 
-PdxWriter& PdxRemoteWriter::writeChar(
-    const std::string& fieldName, char16_t value) {
+PdxWriter& PdxRemoteWriter::writeChar(const std::string& fieldName,
+                                      char16_t value) {
   writePreserveData();
   PdxLocalWriter::writeChar(fieldName, value);
   return *this;
@@ -182,8 +182,8 @@ PdxWriter& PdxRemoteWriter::writeDate(const std::string& fieldName,
   return *this;
 }
 
-PdxWriter& PdxRemoteWriter::writeString(
-    const std::string& fieldName, const std::string& value) {
+PdxWriter& PdxRemoteWriter::writeString(const std::string& fieldName,
+                                        const std::string& value) {
   writePreserveData();
   PdxLocalWriter::writeString(fieldName, value);
   return *this;
@@ -196,8 +196,8 @@ PdxWriter& PdxRemoteWriter::writeStringArray(
   return *this;
 }
 
-PdxWriter& PdxRemoteWriter::writeObject(
-    const std::string& fieldName, std::shared_ptr<Serializable> value) {
+PdxWriter& PdxRemoteWriter::writeObject(const std::string& fieldName,
+                                        std::shared_ptr<Serializable> value) {
   writePreserveData();
   PdxLocalWriter::writeObject(fieldName, value);
   return *this;
@@ -209,15 +209,15 @@ PdxWriter& PdxRemoteWriter::writeBooleanArray(const std::string& fieldName,
   return *this;
 }
 
-PdxWriter& PdxRemoteWriter::writeCharArray(
-    const std::string& fieldName, const std::vector<char16_t>& array) {
+PdxWriter& PdxRemoteWriter::writeCharArray(const std::string& fieldName,
+                                           const std::vector<char16_t>& array) {
   writePreserveData();
   PdxLocalWriter::writeCharArray(fieldName, array);
   return *this;
 }
 
-PdxWriter& PdxRemoteWriter::writeByteArray(
-    const std::string& fieldName, const std::vector<int8_t>& array) {
+PdxWriter& PdxRemoteWriter::writeByteArray(const std::string& fieldName,
+                                           const std::vector<int8_t>& array) {
   writePreserveData();
   PdxLocalWriter::writeByteArray(fieldName, array);
   return *this;

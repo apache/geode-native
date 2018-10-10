@@ -3474,8 +3474,8 @@ void ChunkedQueryResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
     return;
   } else if (objType == TcrMessageHelper::ChunkObjectType::NULL_OBJECT) {
     // special case for scalar result
-    input.readInt32(); // ignored part length
-    input.read();  // ignored is object
+    input.readInt32();  // ignored part length
+    input.read();       // ignored is object
     auto intVal = std::dynamic_pointer_cast<CacheableInt32>(input.readObject());
     m_queryResults->push_back(intVal);
     m_msg.readSecureObjectPart(input, false, true, isLastChunkWithSecurity);
@@ -3518,7 +3518,7 @@ void ChunkedQueryResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
   // skip the whole part including partLen and isObj (4+1)
   input.advanceCursor(partLen + 5);
 
-  input.readInt32(); // skip part length
+  input.readInt32();  // skip part length
 
   if (!input.read()) {
     LOGERROR(

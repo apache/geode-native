@@ -28,7 +28,9 @@ void QueueConnectionRequest::toData(DataOutput& output) const {
   output.write(static_cast<int8_t>(DSCode::FixedIDByte));
   output.write(static_cast<int8_t>(DSCode::ClientProxyMembershipId));
   uint32_t buffLen = 0;
-  output.writeBytes(reinterpret_cast<uint8_t*>(const_cast<char*>(m_membershipID.getDSMemberId(buffLen))), buffLen);
+  output.writeBytes(reinterpret_cast<uint8_t*>(const_cast<char*>(
+                        m_membershipID.getDSMemberId(buffLen))),
+                    buffLen);
   output.writeInt(static_cast<int32_t>(1));
   output.writeInt(static_cast<int32_t>(m_redundantCopies));
   writeSetOfServerLocation(output);

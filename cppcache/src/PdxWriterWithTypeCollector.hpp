@@ -49,71 +49,62 @@ class PdxWriterWithTypeCollector : public PdxLocalWriter {
   virtual void writeOffsets(int32_t len) override;
 
   virtual PdxWriter& writeChar(const std::string& fieldName,
-                                               char16_t value) override;
+                               char16_t value) override;
 
   virtual PdxWriter& writeBoolean(const std::string& fieldName,
-                                                  bool value) override;
+                                  bool value) override;
 
   virtual PdxWriter& writeByte(const std::string& fieldName,
-                                               int8_t value) override;
+                               int8_t value) override;
 
   virtual PdxWriter& writeShort(const std::string& fieldName,
-                                                int16_t value) override;
+                                int16_t value) override;
 
   virtual PdxWriter& writeInt(const std::string& fieldName,
-                                              int32_t value) override;
+                              int32_t value) override;
 
   virtual PdxWriter& writeLong(const std::string& fieldName,
-                                               int64_t value) override;
+                               int64_t value) override;
 
   virtual PdxWriter& writeFloat(const std::string& fieldName,
-                                                float value) override;
+                                float value) override;
 
   virtual PdxWriter& writeDouble(const std::string& fieldName,
-                                                 double value) override;
+                                 double value) override;
 
-  virtual PdxWriter& writeDate(
-      const std::string& fieldName,
-      std::shared_ptr<CacheableDate> date) override;
+  virtual PdxWriter& writeDate(const std::string& fieldName,
+                               std::shared_ptr<CacheableDate> date) override;
 
-  virtual PdxWriter& writeString(
-      const std::string& fieldName, const std::string& value) override;
+  virtual PdxWriter& writeString(const std::string& fieldName,
+                                 const std::string& value) override;
 
-  virtual PdxWriter& writeObject(
-      const std::string& fieldName,
-      std::shared_ptr<Serializable> value) override;
+  virtual PdxWriter& writeObject(const std::string& fieldName,
+                                 std::shared_ptr<Serializable> value) override;
 
-  virtual PdxWriter& writeBooleanArray(
-      const std::string& fieldName,
-      const std::vector<bool>& array) override;
+  virtual PdxWriter& writeBooleanArray(const std::string& fieldName,
+                                       const std::vector<bool>& array) override;
 
   virtual PdxWriter& writeCharArray(
       const std::string& fieldName,
       const std::vector<char16_t>& array) override;
 
-  virtual PdxWriter& writeByteArray(
-      const std::string& fieldName,
-      const std::vector<int8_t>& array) override;
+  virtual PdxWriter& writeByteArray(const std::string& fieldName,
+                                    const std::vector<int8_t>& array) override;
 
   virtual PdxWriter& writeShortArray(
-      const std::string& fieldName,
-      const std::vector<int16_t>& array) override;
+      const std::string& fieldName, const std::vector<int16_t>& array) override;
 
-  virtual PdxWriter& writeIntArray(
-      const std::string& fieldName,
-      const std::vector<int32_t>& array) override;
+  virtual PdxWriter& writeIntArray(const std::string& fieldName,
+                                   const std::vector<int32_t>& array) override;
 
-  virtual PdxWriter& writeLongArray(
-      const std::string& fieldName,
-      const std::vector<int64_t>& array) override;
+  virtual PdxWriter& writeLongArray(const std::string& fieldName,
+                                    const std::vector<int64_t>& array) override;
 
-  virtual PdxWriter& writeFloatArray(
-      const std::string& fieldName,
-      const std::vector<float>& array) override;
+  virtual PdxWriter& writeFloatArray(const std::string& fieldName,
+                                     const std::vector<float>& array) override;
 
   virtual PdxWriter& writeDoubleArray(
-      const std::string& fieldName,
-      const std::vector<double>& array) override;
+      const std::string& fieldName, const std::vector<double>& array) override;
 
   virtual PdxWriter& writeStringArray(
       const std::string& fieldName,
@@ -123,9 +114,10 @@ class PdxWriterWithTypeCollector : public PdxLocalWriter {
       const std::string& fieldName,
       std::shared_ptr<CacheableObjectArray> array) override;
 
-  virtual PdxWriter& writeArrayOfByteArrays(
-      const std::string& fieldName, int8_t* const* const byteArrays,
-      int arrayLength, const int* elementLength) override;
+  virtual PdxWriter& writeArrayOfByteArrays(const std::string& fieldName,
+                                            int8_t* const* const byteArrays,
+                                            int arrayLength,
+                                            const int* elementLength) override;
 
   virtual PdxWriter& markIdentityField(const std::string& fieldName) override;
 

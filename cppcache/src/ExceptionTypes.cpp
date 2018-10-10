@@ -52,15 +52,17 @@ const char* getTSSExceptionMessage();
       throw ex;
     }
     case GF_MSG: {
-      message.append(exMsg != nullptr ? exMsg
-                    : ": message from server could not be handled");
+      message.append(exMsg != nullptr
+                         ? exMsg
+                         : ": message from server could not be handled");
 
       MessageException ex(message);
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
     case GF_CACHESERVER_EXCEPTION: {
-      message.append(exMsg != nullptr ? exMsg : ": exception happened at cache server");
+      message.append(exMsg != nullptr ? exMsg
+                                      : ": exception happened at cache server");
       CacheServerException ex(message);
       setTSSExceptionMessage(nullptr);
       throw ex;
@@ -96,7 +98,8 @@ const char* getTSSExceptionMessage();
       throw ex;
     }
     case GF_CACHE_WRITER_EXCEPTION: {
-      message.append(exMsg != nullptr ? exMsg : ": exception on server during write");
+      message.append(exMsg != nullptr ? exMsg
+                                      : ": exception on server during write");
       CacheWriterException ex(message);
       setTSSExceptionMessage(nullptr);
       throw ex;
@@ -126,13 +129,14 @@ const char* getTSSExceptionMessage();
       throw ex;
     }
     case GF_CACHE_PROXY: {
-      message.append (exMsg != nullptr ? exMsg : ": error in Cache proxy");
+      message.append(exMsg != nullptr ? exMsg : ": error in Cache proxy");
       CacheProxyException ex(message);
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
     case GF_IOERR: {
-      message.append(exMsg != nullptr ? exMsg : ": Input/Output error in operation");
+      message.append(exMsg != nullptr ? exMsg
+                                      : ": Input/Output error in operation");
       GeodeIOException ex(message);
       setTSSExceptionMessage(nullptr);
       throw ex;
@@ -144,16 +148,17 @@ const char* getTSSExceptionMessage();
       throw ex;
     }
     case GF_CACHE_REGION_KEYS_NOT_STRINGS: {
-      message.append(exMsg != nullptr ? exMsg
-                    : ": region entries do not support C access");
+      message.append(exMsg != nullptr
+                         ? exMsg
+                         : ": region entries do not support C access");
       IllegalArgumentException ex(message);
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
     case GF_CACHE_REGION_ENTRY_NOT_BYTES: {
       message.append(exMsg != nullptr
-                    ? exMsg
-                    : ": existing non-null values was not a byte array");
+                         ? exMsg
+                         : ": existing non-null values was not a byte array");
       IllegalArgumentException ex(message);
       setTSSExceptionMessage(nullptr);
       throw ex;
@@ -172,8 +177,8 @@ const char* getTSSExceptionMessage();
     }
     case GF_CLIENT_WAIT_TIMEOUT: {
       message.append(exMsg != nullptr
-                    ? exMsg
-                    : ": timed out, possibly bucket is not available.");
+                         ? exMsg
+                         : ": timed out, possibly bucket is not available.");
       TimeoutException ex(message);
       setTSSExceptionMessage(nullptr);
       throw ex;
@@ -209,7 +214,8 @@ const char* getTSSExceptionMessage();
       throw ex;
     }
     case GF_CACHE_ENTRY_EXISTS: {
-      message.append(exMsg != nullptr ? exMsg : ": Entry already exists in the region");
+      message.append(exMsg != nullptr ? exMsg
+                                      : ": Entry already exists in the region");
       EntryExistsException ex(message);
       setTSSExceptionMessage(nullptr);
       throw ex;
@@ -234,15 +240,15 @@ const char* getTSSExceptionMessage();
     }
     case GF_CACHE_STATISTICS_DISABLED_EXCEPTION: {
       message.append(exMsg != nullptr
-                    ? exMsg
-                    : ": Statistics have been disabled for the region");
+                         ? exMsg
+                         : ": Statistics have been disabled for the region");
       StatisticsDisabledException ex(message);
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
     case GF_CACHE_CONCURRENT_MODIFICATION_EXCEPTION: {
-      message.append(exMsg != nullptr ? exMsg
-                    : ": Concurrent modification in the cache");
+      message.append(
+          exMsg != nullptr ? exMsg : ": Concurrent modification in the cache");
       ConcurrentModificationException ex(message);
       setTSSExceptionMessage(nullptr);
       throw ex;
@@ -260,13 +266,14 @@ const char* getTSSExceptionMessage();
       throw ex;
     }
     case GF_AUTHENTICATION_REQUIRED_EXCEPTION: {
-      message.append (exMsg != nullptr ? exMsg : ": no authentication provided");
+      message.append(exMsg != nullptr ? exMsg : ": no authentication provided");
       AuthenticationRequiredException ex(message);
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
     case GF_DUPLICATE_DURABLE_CLIENT: {
-      message.append(exMsg != nullptr ? exMsg : ": Duplicate Durable Client Id");
+      message.append(exMsg != nullptr ? exMsg
+                                      : ": Duplicate Durable Client Id");
       DuplicateDurableClientException ex(message);
       setTSSExceptionMessage(nullptr);
       throw ex;
@@ -278,14 +285,15 @@ const char* getTSSExceptionMessage();
       throw ex;
     }
     case GF_CACHE_LOCATOR_EXCEPTION: {
-      NoAvailableLocatorsException cause(std::string(str) +
-        (exMsg != nullptr ? exMsg : ": No locators available"));
+      NoAvailableLocatorsException cause(
+          std::string(str) +
+          (exMsg != nullptr ? exMsg : ": No locators available"));
       setTSSExceptionMessage(nullptr);
-      try
-      {
+      try {
         throw cause;
       } catch (...) {
-        NotConnectedException ex(std::string(str) +
+        NotConnectedException ex(
+            std::string(str) +
             (exMsg != nullptr ? exMsg : ": No locators available"));
         std::throw_with_nested(ex);
       }
@@ -321,16 +329,16 @@ const char* getTSSExceptionMessage();
       throw ex;
     }
     case GF_TRANSACTION_DATA_REBALANCED_EXCEPTION: {
-      message.append(exMsg != nullptr ? exMsg
-                    : ": Transaction data rebalanced exception");
+      message.append(
+          exMsg != nullptr ? exMsg : ": Transaction data rebalanced exception");
       TransactionDataRebalancedException ex(message);
       setTSSExceptionMessage(nullptr);
       throw ex;
     }
     case GF_TRANSACTION_DATA_NODE_HAS_DEPARTED_EXCEPTION: {
       message.append(exMsg != nullptr
-                    ? exMsg
-                    : ": Transaction data node has departed exception");
+                         ? exMsg
+                         : ": Transaction data node has departed exception");
       TransactionDataNodeHasDepartedException ex(message);
       setTSSExceptionMessage(nullptr);
       throw ex;

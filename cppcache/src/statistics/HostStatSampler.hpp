@@ -20,7 +20,6 @@
 #ifndef GEODE_STATISTICS_HOSTSTATSAMPLER_H_
 #define GEODE_STATISTICS_HOSTSTATSAMPLER_H_
 
-
 #include <string>
 #include <vector>
 #include <chrono>

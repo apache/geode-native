@@ -25,7 +25,6 @@
 
 #include "ThinClientHelper.hpp"
 
-
 #define CLIENT1 s1p1
 #define SERVER1 s2p1
 #define SERVER2 s2p2

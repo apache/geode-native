@@ -56,7 +56,8 @@ class APACHE_GEODE_EXPORT PutAllPartialResultServerException
   /**
    * Returns the key set in exception
    */
-  std::shared_ptr<VersionedCacheableObjectPartList> getSucceededKeysAndVersions();
+  std::shared_ptr<VersionedCacheableObjectPartList>
+  getSucceededKeysAndVersions();
 
   std::shared_ptr<Exception> getFailure();
 

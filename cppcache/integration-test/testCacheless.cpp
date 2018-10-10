@@ -42,8 +42,8 @@ class RegionWrapper {
     char valbuf[100];
     sprintf(keybuf, "key%d", key);
     sprintf(valbuf, "%d", value);
-   auto valPtr = CacheableString::create(valbuf);
-   m_regionPtr->put(keybuf, valPtr);
+    auto valPtr = CacheableString::create(valbuf);
+    m_regionPtr->put(keybuf, valPtr);
   }
 
   void waitForKey(std::shared_ptr<CacheableKey>& keyPtr) {

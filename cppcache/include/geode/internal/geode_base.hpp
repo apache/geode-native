@@ -67,7 +67,6 @@
     x = nullptr;                    \
   }
 
-
 #include <chrono>
 #include <string>
 

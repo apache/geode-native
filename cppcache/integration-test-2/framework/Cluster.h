@@ -216,7 +216,8 @@ class Cluster {
 
   apache::geode::client::Cache createCache() { return createCache({}); }
 
-  apache::geode::client::Cache createCache(const std::unordered_map<std::string, std::string>& properties) {
+  apache::geode::client::Cache createCache(
+      const std::unordered_map<std::string, std::string> &properties) {
     using apache::geode::client::CacheFactory;
 
     CacheFactory cacheFactory;
@@ -237,10 +238,10 @@ class Cluster {
   }
 
   void applyLocators(apache::geode::client::PoolFactory &poolFactory) {
-   for (const auto &locator : locators_) {
-     poolFactory.addLocator(locator.getAdddress().address,
-                            locator.getAdddress().port);
-   }
+    for (const auto &locator : locators_) {
+      poolFactory.addLocator(locator.getAdddress().address,
+                             locator.getAdddress().port);
+    }
   }
 
   Gfsh &getGfsh() noexcept { return gfsh_; }

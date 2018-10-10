@@ -114,13 +114,14 @@ void FarSideEntryOp::apply(std::shared_ptr<Region>& region) {
 
 void FarSideEntryOp::skipFilterRoutingInfo(DataInput& input) {
   std::shared_ptr<Cacheable> tmp;
-  auto structType = static_cast<DSCode>(input.read());  // this is DataSerializable (45)
+  auto structType =
+      static_cast<DSCode>(input.read());  // this is DataSerializable (45)
 
   if (structType == DSCode::NullObj) {
     return;
   } else if (structType == DSCode::DataSerializable) {
-    input.read();  // ignore classbyte
-    input.readObject(); // ignore object
+    input.read();        // ignore classbyte
+    input.readObject();  // ignore object
     int32_t size = input.readInt32();
     for (int i = 0; i < size; i++) {
       // ignore ClientProxyMembershipID

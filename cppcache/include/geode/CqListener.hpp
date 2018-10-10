@@ -63,25 +63,24 @@ class APACHE_GEODE_EXPORT CqListener {
   virtual void onError(const CqEvent& aCqEvent);
 
   /** Called when the region containing this callback is closed or destroyed,
-  * when
-  * the cache is closed, or when a callback is removed from a region
-  * using an <code>AttributesMutator</code>.
-  *
-  * <p>Implementations should cleanup any external
-  * resources such as database connections. Any runtime exceptions this method
-  * throws will be logged.
-  *
-  * <p>It is possible for this method to be called multiple times on a single
-  * callback instance, so implementations must be tolerant of this.
-  *
-  * @see Cache#close()
-  * @see Region#close
-  * @see Region#localDestroyRegion()
-  * @see Region#destroyRegion()
-  * @see AttributesMutator
-  */
+   * when
+   * the cache is closed, or when a callback is removed from a region
+   * using an <code>AttributesMutator</code>.
+   *
+   * <p>Implementations should cleanup any external
+   * resources such as database connections. Any runtime exceptions this method
+   * throws will be logged.
+   *
+   * <p>It is possible for this method to be called multiple times on a single
+   * callback instance, so implementations must be tolerant of this.
+   *
+   * @see Cache#close()
+   * @see Region#close
+   * @see Region#localDestroyRegion()
+   * @see Region#destroyRegion()
+   * @see AttributesMutator
+   */
   virtual void close();
-
 };
 }  // namespace client
 }  // namespace geode

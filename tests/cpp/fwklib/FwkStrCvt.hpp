@@ -60,9 +60,9 @@ namespace testframework {
 // ----------------------------------------------------------------------------
 
 /**
-  * @class FwkStrCvt
-  * @brief basic string converting class
-  */
+ * @class FwkStrCvt
+ * @brief basic string converting class
+ */
 class FwkStrCvt {
  public:
   static int64_t hton64(int64_t value);

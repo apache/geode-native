@@ -57,7 +57,6 @@ ByteArray ByteArray::fromString(const std::string& str) {
   return ba;
 }
 
-
 std::string ByteArray::toString(const ByteArray& ba) {
   std::string str;
   const uint8_t* bytes = ba.m_bytes.get();

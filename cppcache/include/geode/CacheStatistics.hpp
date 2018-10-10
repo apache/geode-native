@@ -49,8 +49,7 @@ class APACHE_GEODE_EXPORT CacheStatistics {
  public:
   typedef std::chrono::system_clock::time_point time_point;
 
-  CacheStatistics() 
-      : m_lastAccessTime(0), m_lastModifiedTime(0) {};
+  CacheStatistics() : m_lastAccessTime(0), m_lastModifiedTime(0){};
   CacheStatistics(const CacheStatistics&) = delete;
   virtual ~CacheStatistics() = default;
 

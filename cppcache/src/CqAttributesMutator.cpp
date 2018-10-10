@@ -21,7 +21,8 @@
 namespace apache {
 namespace geode {
 namespace client {
-CqAttributesMutator::CqAttributesMutator(const std::shared_ptr<CqAttributes>& impl)
+CqAttributesMutator::CqAttributesMutator(
+    const std::shared_ptr<CqAttributes>& impl)
     : m_cqAttributes(impl) {}
 
 void CqAttributesMutator::addCqListener(

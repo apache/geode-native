@@ -34,8 +34,8 @@ namespace geode {
 namespace client {
 
 using statistics::StatisticDescriptor;
-using statistics::StatisticsType;
 using statistics::Statistics;
+using statistics::StatisticsType;
 using util::concurrent::spinlock_mutex;
 
 class APACHE_GEODE_EXPORT CqServiceVsdStats : public CqServiceStatistics {

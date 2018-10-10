@@ -30,11 +30,11 @@ GsRandom &GsRandom::getInstance() {
 }
 
 /**
-* @param max the maximum length of the random string to generate.
-* @param min the minimum length of the random string to generate, default is 0.
-* @return a bounded random string with a length between min and
-* max length inclusive.
-*/
+ * @param max the maximum length of the random string to generate.
+ * @param min the minimum length of the random string to generate, default is 0.
+ * @return a bounded random string with a length between min and
+ * max length inclusive.
+ */
 char *GsRandom::randomString(int32_t max, int32_t min) {
   int32_t len = (max == min) ? max : nextInt(min, max);
   char *buf = reinterpret_cast<char *>(malloc(len + 1));
@@ -44,13 +44,13 @@ char *GsRandom::randomString(int32_t max, int32_t min) {
 }
 
 /**
-* Like randomString(), but returns only readable characters.
-*
-* @param max the maximum length of the random string to generate.
-* @param min the minimum length of the random string to generate, default is 0.
-* @return a bounded random string with a length between min and
-* max length inclusive.
-*/
+ * Like randomString(), but returns only readable characters.
+ *
+ * @param max the maximum length of the random string to generate.
+ * @param min the minimum length of the random string to generate, default is 0.
+ * @return a bounded random string with a length between min and
+ * max length inclusive.
+ */
 char *GsRandom::randomReadableString(int32_t max, int32_t min) {
   int32_t len = (max == min) ? max : nextInt(min, max);
   char *buf = reinterpret_cast<char *>(malloc(len + 1));
@@ -64,14 +64,14 @@ const char choseFrom[] =
 const int32_t choseSize = static_cast<int32_t>(strlen(choseFrom)) - 1;
 
 /**
-* Like randomString(), but returns only only alphanumeric, underscore, or space
-* characters.
-*
-* @param max the maximum length of the random string to generate.
-* @param min the minimum length of the random string to generate, default is 0.
-* @return a bounded random string with a length between min and
-* max length inclusive.
-*/
+ * Like randomString(), but returns only only alphanumeric, underscore, or space
+ * characters.
+ *
+ * @param max the maximum length of the random string to generate.
+ * @param min the minimum length of the random string to generate, default is 0.
+ * @return a bounded random string with a length between min and
+ * max length inclusive.
+ */
 char *GsRandom::randomAlphanumericString(int32_t max, int32_t min) {
   int32_t len = (max == min) ? max : nextInt(min, max);
   char *buf = reinterpret_cast<char *>(malloc(len + 1));

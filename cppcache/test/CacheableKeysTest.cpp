@@ -41,7 +41,6 @@ TEST(CacheableKeysTest, int32_tDifferentHashCodes) {
       << "Two different int32_t values have different hashcodes";
 }
 
-
 TEST(CacheableKeysTest, int64_tDifferentHashCodes) {
   EXPECT_NE(hashcode((int64_t)37), hashcode((int64_t)42))
       << "Two different int64_t values have different hashcodes";

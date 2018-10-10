@@ -40,8 +40,8 @@ namespace client {
 class APACHE_GEODE_EXPORT Assert {
  public:
   /** If the given expression is true, does nothing, otherwise calls
-  * @ref throwAssertion .
-  */
+   * @ref throwAssertion .
+   */
   inline static void assertTrue(bool expression, const char* expressionText,
                                 const char* file, int line) {
     if (!expression) {
@@ -50,7 +50,7 @@ class APACHE_GEODE_EXPORT Assert {
   }
 
   /** Throws the given assertion.
-  */
+   */
   [[noreturn]] static void throwAssertion(const char* expressionText,
                                           const char* file, int line);
 };

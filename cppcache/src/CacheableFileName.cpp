@@ -26,7 +26,7 @@ namespace geode {
 namespace client {
 
 void CacheableFileName::toData(DataOutput& output) const {
-  output.write(static_cast<int8_t >(m_type));
+  output.write(static_cast<int8_t>(m_type));
   CacheableString::toData(output);
 }
 

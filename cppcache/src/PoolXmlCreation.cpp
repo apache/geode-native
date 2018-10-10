@@ -41,7 +41,8 @@ std::shared_ptr<Pool> PoolXmlCreation::create() {
   return poolFactory->create(poolName);
 }
 
-PoolXmlCreation::PoolXmlCreation(std::string name, std::shared_ptr<PoolFactory> factory) {
+PoolXmlCreation::PoolXmlCreation(std::string name,
+                                 std::shared_ptr<PoolFactory> factory) {
   poolName = std::move(name);
   poolFactory = factory;
 }

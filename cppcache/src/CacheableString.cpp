@@ -66,8 +66,7 @@ std::shared_ptr<Serializable> CacheableString::createDeserializable() {
 }
 
 std::shared_ptr<Serializable> CacheableString::createDeserializableHuge() {
-  return std::make_shared<CacheableString>(
-      DSCode::CacheableASCIIStringHuge);
+  return std::make_shared<CacheableString>(DSCode::CacheableASCIIStringHuge);
 }
 
 std::shared_ptr<Serializable> CacheableString::createUTFDeserializable() {

@@ -29,10 +29,10 @@ namespace geode {
 namespace client {
 
 /** The TransactionId interface is a "marker" interface that
-* represents a unique Geode transaction.
-* @see Cache#getCacheTransactionManager
-* @see CacheTransactionManager#getTransactionId
-*/
+ * represents a unique Geode transaction.
+ * @see Cache#getCacheTransactionManager
+ * @see CacheTransactionManager#getTransactionId
+ */
 class APACHE_GEODE_EXPORT TransactionId {
  public:
   TransactionId();

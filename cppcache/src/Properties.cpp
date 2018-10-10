@@ -88,9 +88,7 @@ void Properties::remove(const std::shared_ptr<CacheableKey>& key) {
   m_map.erase(key);
 }
 
-size_t Properties::getSize() const {
-  return m_map.size();
-}
+size_t Properties::getSize() const { return m_map.size(); }
 
 void Properties::foreach (Visitor& visitor) const {
   for (auto& entry : m_map) {

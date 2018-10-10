@@ -85,7 +85,8 @@ class CredentialGenerator;
  */
 class CredentialGenerator {
  public:
-  typedef std::map<std::string, std::shared_ptr<CredentialGenerator>> registeredClassMap;
+  typedef std::map<std::string, std::shared_ptr<CredentialGenerator>>
+      registeredClassMap;
 
  private:
   ID m_id;
@@ -235,9 +236,9 @@ class CredentialGenerator {
                                            std::shared_ptr<Properties>& p,
                                            stringList* regionNames = nullptr);
 
-  virtual void getDisallowedCredentialsForOps(opCodeList& opCodes,
-                                              std::shared_ptr<Properties>& p,
-                                              stringList* regionNames = nullptr);
+  virtual void getDisallowedCredentialsForOps(
+      opCodeList& opCodes, std::shared_ptr<Properties>& p,
+      stringList* regionNames = nullptr);
 
   static registeredClassMap& getRegisterdSchemes() {
     if (generators().size() == 0) {

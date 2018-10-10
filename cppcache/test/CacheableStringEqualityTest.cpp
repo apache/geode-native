@@ -66,7 +66,9 @@ TEST(CacheableStringEqualityTest, CacheableHashSet) {
   EXPECT_EQ(3556498, s1->hashcode());
   EXPECT_EQ(s1->hashcode(), s2->hashcode());
 
-  std::unordered_set<key_type, dereference_hash<key_type>, dereference_equal_to<key_type>> set = {s1};
+  std::unordered_set<key_type, dereference_hash<key_type>,
+                     dereference_equal_to<key_type>>
+      set = {s1};
 
   {
     const auto& f = set.find(s2);
@@ -91,7 +93,8 @@ TEST(CacheableStringEqualityTest, CacheableHashSetExplicitHash) {
   EXPECT_EQ(*s1, *s2);
   EXPECT_EQ(s1->hashcode(), s2->hashcode());
 
-  std::unordered_set<key_type, CacheableKey::hash, CacheableKey::equal_to> set = {s1};
+  std::unordered_set<key_type, CacheableKey::hash, CacheableKey::equal_to> set =
+      {s1};
 
   {
     const auto& f = set.find(s2);
@@ -116,8 +119,9 @@ TEST(CacheableStringEqualityTest, CacheableHashMapViaSharedPtr) {
   EXPECT_EQ(*s1, *s2);
   EXPECT_EQ(s1->hashcode(), s2->hashcode());
 
-  std::unordered_map<key_type, int, dereference_hash<key_type>, dereference_equal_to<key_type>>
-    map = {{s1, 1}};
+  std::unordered_map<key_type, int, dereference_hash<key_type>,
+                     dereference_equal_to<key_type>>
+      map = {{s1, 1}};
 
   {
     const auto& f = map.find(s2);
@@ -142,8 +146,9 @@ TEST(CacheableStringEqualityTest, CacheableHashMapViaPtr) {
   EXPECT_EQ(*s1, *s2);
   EXPECT_EQ(s1->hashcode(), s2->hashcode());
 
-  std::unordered_map<key_type, int, dereference_hash<key_type>, dereference_equal_to<key_type>>
-    map = {{s1.get(), 1}};
+  std::unordered_map<key_type, int, dereference_hash<key_type>,
+                     dereference_equal_to<key_type>>
+      map = {{s1.get(), 1}};
 
   {
     const auto& f = map.find(s2.get());
@@ -169,7 +174,7 @@ TEST(CacheableStringEqualityTest, CacheableHashMapExplicitHash) {
   EXPECT_EQ(s1->hashcode(), s2->hashcode());
 
   std::unordered_map<key_type, int, CacheableKey::hash, CacheableKey::equal_to>
-    map = {{s1, 1}};
+      map = {{s1, 1}};
 
   {
     const auto& f = map.find(s2);

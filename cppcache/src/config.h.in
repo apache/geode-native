@@ -28,7 +28,7 @@
 // TODO replace with better CMake checks
 #cmakedefine _LINUX
 #cmakedefine _MACOSX
-//TODO already defined #cmakedefine _WIN32
+// TODO already defined #cmakedefine _WIN32
 #cmakedefine _SOLARIS
 
 #define PRODUCT_VENDOR "@PRODUCT_VENDOR@"

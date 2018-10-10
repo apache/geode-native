@@ -58,7 +58,6 @@ class PoolStatsSampler;
 
 namespace client {
 
-
 class CacheImpl;
 class FunctionExecution;
 
@@ -143,9 +142,7 @@ class ThinClientPoolDM
                                  std::set<ServerLocation>& excludeServers,
                                  bool& maxConnLimit,
                                  const TcrConnection* currentServer = nullptr);
-  ThinClientLocatorHelper* getLocatorHelper() {
-    return m_locHelper;
-  }
+  ThinClientLocatorHelper* getLocatorHelper() { return m_locHelper; }
   virtual void releaseThreadLocalConnection();
   virtual void setThreadLocalConnection(TcrConnection* conn);
   bool excludeConnection(TcrConnection*, std::set<ServerLocation>&);

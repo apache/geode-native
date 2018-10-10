@@ -56,7 +56,7 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
   std::vector<std::shared_ptr<VersionTag>> m_versionTags;
   std::vector<uint8_t> m_byteArray;
   uint16_t m_endpointMemId;
-  std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>> > m_tempKeys;
+  std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>> m_tempKeys;
   ACE_Recursive_Thread_Mutex& m_responseLock;
 
   static const uint8_t FLAG_NULL_TAG;
@@ -64,7 +64,8 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
   static const uint8_t FLAG_TAG_WITH_NEW_ID;
   static const uint8_t FLAG_TAG_WITH_NUMBER_ID;
 
-  void readObjectPart(int32_t index, DataInput& input, std::shared_ptr<CacheableKey> keyPtr);
+  void readObjectPart(int32_t index, DataInput& input,
+                      std::shared_ptr<CacheableKey> keyPtr);
   // never implemented.
   VersionedCacheableObjectPartList& operator=(
       const VersionedCacheableObjectPartList& other);
@@ -101,9 +102,9 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
     m_hasKeys = false;
   }
 
-  VersionedCacheableObjectPartList(std::vector<std::shared_ptr<CacheableKey>> * keys,
-                                   int32_t totalMapSize,
-                                   ACE_Recursive_Thread_Mutex& responseLock)
+  VersionedCacheableObjectPartList(
+      std::vector<std::shared_ptr<CacheableKey>>* keys, int32_t totalMapSize,
+      ACE_Recursive_Thread_Mutex& responseLock)
       : m_tempKeys(keys), m_responseLock(responseLock) {
     m_regionIsVersioned = false;
     m_serializeValues = false;
@@ -126,8 +127,9 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
     ;
   }
 
-  VersionedCacheableObjectPartList(std::vector<std::shared_ptr<CacheableKey>> * keys,
-                                   ACE_Recursive_Thread_Mutex& responseLock)
+  VersionedCacheableObjectPartList(
+      std::vector<std::shared_ptr<CacheableKey>>* keys,
+      ACE_Recursive_Thread_Mutex& responseLock)
       : m_tempKeys(keys), m_responseLock(responseLock) {
     m_regionIsVersioned = false;
     m_serializeValues = false;
@@ -136,9 +138,10 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
     this->m_hasKeys = false;
   }
 
-  VersionedCacheableObjectPartList(ThinClientRegion* region,
-                                   std::vector<std::shared_ptr<CacheableKey>> * keys,
-                                   ACE_Recursive_Thread_Mutex& responseLock)
+  VersionedCacheableObjectPartList(
+      ThinClientRegion* region,
+      std::vector<std::shared_ptr<CacheableKey>>* keys,
+      ACE_Recursive_Thread_Mutex& responseLock)
       : CacheableObjectPartList(region),
         m_tempKeys(keys),
         m_responseLock(responseLock) {
@@ -161,9 +164,12 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
 
   inline uint16_t getEndpointMemId() { return m_endpointMemId; }
 
-  std::vector<std::shared_ptr<VersionTag>>& getVersionedTagptr() { return m_versionTags; }
+  std::vector<std::shared_ptr<VersionTag>>& getVersionedTagptr() {
+    return m_versionTags;
+  }
 
-  void setVersionedTagptr(std::vector<std::shared_ptr<VersionTag>>& versionTags) {
+  void setVersionedTagptr(
+      std::vector<std::shared_ptr<VersionTag>>& versionTags) {
     m_versionTags = versionTags;
     m_hasTags = (m_versionTags.size() > 0);
   }
@@ -172,7 +178,10 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
     return static_cast<int>(m_versionTags.size());
   }
 
-  std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>> > getSucceededKeys() { return m_tempKeys; }
+  std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>>
+  getSucceededKeys() {
+    return m_tempKeys;
+  }
 
   inline VersionedCacheableObjectPartList(
       uint16_t endpointMemId, ACE_Recursive_Thread_Mutex& responseLock)
@@ -252,9 +261,7 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
 
   void fromData(DataInput& input) override;
 
-  DSFid getDSFID() const override {
-    return DSFid::VersionedObjectPartList;
-  }
+  DSFid getDSFID() const override { return DSFid::VersionedObjectPartList; }
 };
 
 }  // namespace client

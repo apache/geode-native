@@ -32,9 +32,7 @@ void LocatorListRequest::toData(DataOutput& output) const {
   output.writeString(m_servergroup);
 }
 
-DSFid LocatorListRequest::getDSFID() const {
-  return DSFid::LocatorListRequest;
-}
+DSFid LocatorListRequest::getDSFID() const { return DSFid::LocatorListRequest; }
 
 }  // namespace client
 }  // namespace geode

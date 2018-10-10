@@ -69,9 +69,7 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
   // Serializable interface:
   void toData(DataOutput& output) const override;
   void fromData(DataInput& input) override;
-  DSFid getDSFID() const override {
-    return DSFid::InternalDistributedMember;
-  }
+  DSFid getDSFID() const override { return DSFid::InternalDistributedMember; }
   size_t objectSize() const override { return 0; }
 
   void initObjectVars(const char* hostname, uint8_t* hostAddr,

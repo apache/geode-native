@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-
 #include <atomic>
 
 #include <ace/OS_NS_stdio.h>

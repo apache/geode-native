@@ -37,7 +37,6 @@
 #include "CacheRegionHelper.hpp"
 #include "CacheImpl.hpp"
 
-
 #define CLIENT1 s1p1
 #define SERVER s2p1
 #define LOCATOR s2p2

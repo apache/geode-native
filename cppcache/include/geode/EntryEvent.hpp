@@ -28,7 +28,7 @@
 #include "internal/geode_globals.hpp"
 
 /** @file
-*/
+ */
 
 namespace apache {
 namespace geode {

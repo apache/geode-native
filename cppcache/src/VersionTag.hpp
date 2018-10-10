@@ -63,9 +63,7 @@ class VersionTag : public DataSerializableFixedId {
 
   void fromData(DataInput& input) override;
 
-  DSFid getDSFID() const override {
-    return DSFid::VersionTag;
-  }
+  DSFid getDSFID() const override { return DSFid::VersionTag; }
 
   static std::shared_ptr<Serializable> createDeserializable(
       MemberListForVersionStamp& memberListForVersionStamp);

@@ -32,13 +32,14 @@ namespace geode {
 namespace client {
 
 using statistics::StatisticDescriptor;
-using statistics::StatisticsType;
 using statistics::Statistics;
+using statistics::StatisticsType;
 
 class APACHE_GEODE_EXPORT RegionStats {
  public:
   /** hold statistics for a region.. */
-  RegionStats(statistics::StatisticsFactory* factory, const std::string& regionName);
+  RegionStats(statistics::StatisticsFactory* factory,
+              const std::string& regionName);
 
   /** disable stat collection for this item. */
   virtual ~RegionStats();

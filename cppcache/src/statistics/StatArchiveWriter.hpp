@@ -85,7 +85,7 @@ using std::chrono::system_clock;
 class APACHE_GEODE_EXPORT StatDataOutput {
  public:
   explicit StatDataOutput(CacheImpl *cache);
-  StatDataOutput(std::string, CacheImpl* cache);
+  StatDataOutput(std::string, CacheImpl *cache);
   ~StatDataOutput();
   /**
    * Returns the number of bytes written into the buffer so far.
@@ -205,7 +205,7 @@ class APACHE_GEODE_EXPORT StatArchiveWriter {
  private:
   HostStatSampler *sampler;
   StatDataOutput *dataBuffer;
-  CacheImpl* cache;
+  CacheImpl *cache;
   steady_clock::time_point previousTimeStamp;
   int32_t resourceTypeId;
   int32_t resourceInstId;
@@ -228,7 +228,7 @@ class APACHE_GEODE_EXPORT StatArchiveWriter {
 
  public:
   StatArchiveWriter(std::string archiveName, HostStatSampler *sampler,
-                    CacheImpl* cache);
+                    CacheImpl *cache);
   ~StatArchiveWriter();
   /**
    * Returns the number of bytes written so far to this archive.

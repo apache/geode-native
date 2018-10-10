@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-
 #include <mutex>
 
 #include "util/concurrent/spinlock_mutex.hpp"
@@ -34,8 +33,8 @@ namespace geode {
 namespace client {
 
 using statistics::StatisticsFactory;
-using util::concurrent::spinlock_mutex;
 using std::lock_guard;
+using util::concurrent::spinlock_mutex;
 
 constexpr const char* CqQueryVsdStats::STATS_NAME;
 constexpr const char* CqQueryVsdStats::STATS_DESC;

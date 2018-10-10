@@ -45,7 +45,7 @@ StatisticsManager::StatisticsManager(
     : m_sampleIntervalMs(sampleInterval),
       m_sampler(nullptr),
       m_adminRegion(nullptr) {
-  m_newlyAddedStatsList.reserve(16);               // Allocate initial sizes
+  m_newlyAddedStatsList.reserve(16);  // Allocate initial sizes
   m_statisticsFactory =
       std::unique_ptr<GeodeStatisticsFactory>(new GeodeStatisticsFactory(this));
 

@@ -33,8 +33,7 @@ class APACHE_GEODE_EXPORT EntriesMapFactory {
   /** @brief used internally by Region implementation to create the appropriate
    * type of entries map.
    */
-  static EntriesMap* createMap(RegionInternal* region,
-                               RegionAttributes attrs);
+  static EntriesMap* createMap(RegionInternal* region, RegionAttributes attrs);
 
  private:
   /** @brief not to be instantiated. */

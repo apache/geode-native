@@ -47,7 +47,6 @@ class APACHE_GEODE_EXPORT PoolXmlCreation {
   /** The name of this pool */
   std::string poolName;
 
-
  public:
   ~PoolXmlCreation();
   /**

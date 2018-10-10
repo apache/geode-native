@@ -146,14 +146,15 @@ bool TcrConnection::InitTcrConnection(
   handShakeMsg.write(static_cast<int8_t>(DSCode::FixedIDByte));
   // Writing byte for ClientProxyMembershipID class id=38 as registered on the
   // java server.
-  handShakeMsg.write(
-      static_cast<int8_t>(DSCode::ClientProxyMembershipId));
+  handShakeMsg.write(static_cast<int8_t>(DSCode::ClientProxyMembershipId));
   if (endpointObj->getPoolHADM()) {
     ClientProxyMembershipID* memId =
         endpointObj->getPoolHADM()->getMembershipId();
     uint32_t memIdBufferLength;
     auto memIdBuffer = memId->getDSMemberId(memIdBufferLength);
-    handShakeMsg.writeBytes(reinterpret_cast<int8_t*>(const_cast<char*>(memIdBuffer)), memIdBufferLength);
+    handShakeMsg.writeBytes(
+        reinterpret_cast<int8_t*>(const_cast<char*>(memIdBuffer)),
+        memIdBufferLength);
   } else {
     ACE_TCHAR hostName[256];
     ACE_OS::hostname(hostName, sizeof(hostName) - 1);
@@ -172,7 +173,9 @@ bool TcrConnection::InitTcrConnection(
     auto memId = cacheImpl->getClientProxyMembershipIDFactory().create(
         hostName, hostAddr, hostPort, durableId.c_str(), durableTimeOut);
     auto memIdBuffer = memId->getDSMemberId(memIdBufferLength);
-    handShakeMsg.writeBytes(reinterpret_cast<int8_t*>(const_cast<char*>(memIdBuffer)), memIdBufferLength);
+    handShakeMsg.writeBytes(
+        reinterpret_cast<int8_t*>(const_cast<char*>(memIdBuffer)),
+        memIdBufferLength);
   }
   handShakeMsg.writeInt(static_cast<int32_t>(1));
 
@@ -294,7 +297,8 @@ bool TcrConnection::InitTcrConnection(
   }
 
   size_t msgLength;
-  auto data = reinterpret_cast<char*>(const_cast<uint8_t*>(handShakeMsg.getBuffer(&msgLength)));
+  auto data = reinterpret_cast<char*>(
+      const_cast<uint8_t*>(handShakeMsg.getBuffer(&msgLength)));
   LOGFINE("Attempting handshake with endpoint %s for %s%s connection", endpoint,
           isClientNotification ? (isSecondary ? "secondary " : "primary ") : "",
           isClientNotification ? "subscription" : "client");
@@ -359,7 +363,8 @@ bool TcrConnection::InitTcrConnection(
       auto sendCreds = cacheImpl->createDataOutput();
       ciphertext->toData(sendCreds);
       size_t credLength;
-      auto credData = reinterpret_cast<char*>(const_cast<uint8_t*>(sendCreds.getBuffer(&credLength)));
+      auto credData = reinterpret_cast<char*>(
+          const_cast<uint8_t*>(sendCreds.getBuffer(&credLength)));
       // send the encrypted bytes and check the response
       error = sendData(credData, credLength, connectTimeout, false);
 
@@ -1475,7 +1480,8 @@ bool TcrConnection::setAndGetBeingUsed(volatile bool isBeingUsed,
       if (m_isUsed == 2) {  // transaction thread has set, reused it
         return true;
       }
-      if (m_isUsed.compare_exchange_strong(currentValue, 2 /*for transaction*/)) {
+      if (m_isUsed.compare_exchange_strong(currentValue,
+                                           2 /*for transaction*/)) {
         return true;
       }
       return false;

@@ -208,16 +208,16 @@ class APACHE_GEODE_EXPORT SystemProperties {
   }
 
   /**
-   * Returns the connect wait timeout(in milliseconds) used for to connect to server
-   * This is only applicable for linux
+   * Returns the connect wait timeout(in milliseconds) used for to connect to
+   * server This is only applicable for linux
    */
   const std::chrono::milliseconds& connectWaitTimeout() const {
     return m_connectWaitTimeout;
   }
 
   /**
-   * Returns the connect wait timeout(in milliseconds) used for to connect to server
-   * This is only applicable for linux
+   * Returns the connect wait timeout(in milliseconds) used for to connect to
+   * server This is only applicable for linux
    */
   const std::chrono::milliseconds& bucketWaitTimeout() const {
     return m_bucketWaitTimeout;
@@ -253,9 +253,7 @@ class APACHE_GEODE_EXPORT SystemProperties {
   uint32_t statsDiskSpaceLimit() const { return m_statsDiskSpaceLimit; }
 
   uint32_t connectionPoolSize() const { return m_connectionPoolSize; }
-  void setjavaConnectionPoolSize(uint32_t size) {
-    m_connectionPoolSize = size;
-  }
+  void setjavaConnectionPoolSize(uint32_t size) { m_connectionPoolSize = size; }
 
   /**
    * Returns true if chunk handler thread is enabled, false if not

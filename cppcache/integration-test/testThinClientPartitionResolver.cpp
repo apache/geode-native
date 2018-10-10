@@ -123,7 +123,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutThroughPartitionResolver)
     LOG("PutThroughPartitionResolver started.");
 
     for (int i = 0; i < 100; i++) {
-      //auto dataReg = getHelper()->getRegion("LocalRegion");
+      // auto dataReg = getHelper()->getRegion("LocalRegion");
       auto dataReg = getHelper()->getRegion(regionNames[0]);
       auto keyPtr =
           std::dynamic_pointer_cast<CacheableKey>(CacheableInt32::create(i));

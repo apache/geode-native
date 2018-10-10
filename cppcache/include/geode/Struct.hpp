@@ -122,7 +122,6 @@ class APACHE_GEODE_EXPORT Struct
   }
 
  private:
-
   void skipClassName(DataInput& input);
 
   typedef std::unordered_map<std::string, int32_t> FieldNameToIndexMap;
