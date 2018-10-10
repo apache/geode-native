@@ -87,18 +87,21 @@ public class GeodeServer : IDisposable
       {
         StartInfo =
         {
-          FileName = Config.GeodeGfsh,
-          Arguments = " -e \"start locator --bind-address=localhost --port=" + LocatorPort +
-                      " --J=-Dgemfire.jmx-manager-port=" + LocatorJmxPort + " --http-service-port=0" + "\"" +
-                      " -e \"start server --bind-address=localhost --server-port=0\"" +
-                      " -e \"create region --name=" + regionName + " --type=PARTITION\"" +
-                      " -e \"create region --name=testRegion1 --type=PARTITION\"" +
-                      " -e \"create region --name=cqTestRegion --type=REPLICATE\"",
-          WindowStyle = ProcessWindowStyle.Hidden,
-          UseShellExecute = false,
-          RedirectStandardOutput = true,
-          RedirectStandardError = true,
-          CreateNoWindow = true
+
+            FileName = Config.GeodeGfsh,
+            Arguments = " -e \"start locator --name=locator1 --bind-address=localhost --port=" + LocatorPort +
+                        " --J=-Dgemfire.jmx-manager-port=" + LocatorJmxPort + " --http-service-port=0" + "\"" +
+                        " -e \"deploy --jar=..\\..\\..\\tests\\javaobject\\javaobject.jar\"" +
+                        " -e \"start server --name=server1 --bind-address=localhost --cache-xml-file=server.xml --server-port=0\"" +
+                        " -e \"start server --name=server1 --bind-address=localhost --server-port=0\"" +
+                        " -e \"create region --name=" + regionName + " --type=PARTITION\"" +
+                        " -e \"create region --name=testRegion1 --type=PARTITION\"" +
+                        " -e \"create region --name=cqTestRegion --type=REPLICATE\"",
+            WindowStyle = ProcessWindowStyle.Hidden,
+            UseShellExecute = false,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            CreateNoWindow = true
         }
       };
     }

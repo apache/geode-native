@@ -36,7 +36,9 @@ add_library( ${PROJECT_NAME} SHARED
     CqOperationTest.cs
     RegionTest.cs
     RegionSSLTest.cs
+    Position.cs
     cache.xml
+    server.xml
     geode.properties
     xunit.runner.json
     packages.config
@@ -47,7 +49,7 @@ add_library( ${PROJECT_NAME} SHARED
     ServerSslKeys/server_truststore.jks
 )
 
-set_source_files_properties(cache.xml xunit.runner.json geode.properties ClientSslKeys/client_keystore.password.pem ClientSslKeys/client_truststore.pem ServerSslKeys/server_keystore.jks ServerSslKeys/server_truststore.jks PROPERTIES
+set_source_files_properties(cache.xml server.xml xunit.runner.json geode.properties ClientSslKeys/client_keystore.password.pem ClientSslKeys/client_truststore.pem ServerSslKeys/server_keystore.jks ServerSslKeys/server_truststore.jks PROPERTIES
   VS_COPY_TO_OUT_DIR Always
   VS_TOOL_OVERRIDE "None"
 )

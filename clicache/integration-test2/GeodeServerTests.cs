@@ -18,7 +18,7 @@
 using Xunit;
 
 [Trait("Category", "Integration")]
-public class GemFireServerTest
+public class GeodeServerTest
 {
     [Fact]
     public void Start()
