@@ -91,12 +91,10 @@ namespace Apache.Geode.Client.IntegrationTests
 
         public virtual void OnError(CqEvent<TKey, TResult> ev)
         {
-            Debug.WriteLine("CqListener::OnError called");
         }
 
         public virtual void Close()
         {
-            Debug.WriteLine("CqListener::close called");
         }
     }
 
