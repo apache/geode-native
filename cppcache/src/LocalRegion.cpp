@@ -3129,7 +3129,7 @@ std::shared_ptr<Cacheable> LocalRegion::handleReplay(
     if (!txState) {
       GfErrTypeThrowException("TXState is nullptr",
                               GF_CACHE_ILLEGAL_STATE_EXCEPTION);
-      throw ""; // never reached
+      throw "";  // never reached
     }
 
     auto ret = txState->replay(isRollBack);

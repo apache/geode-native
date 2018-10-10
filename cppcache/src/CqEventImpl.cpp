@@ -54,9 +54,7 @@ CqOperation CqEventImpl::getQueryOperation() const { return m_queryOp; }
  * Get the key relating to the event.
  * @return Object key.
  */
-std::shared_ptr<CacheableKey> CqEventImpl::getKey() const {
-  return m_key;
-}
+std::shared_ptr<CacheableKey> CqEventImpl::getKey() const { return m_key; }
 /**
  * Get the new value of the modification.
  *  If there is no new value because this is a delete, then
@@ -68,9 +66,8 @@ std::shared_ptr<Cacheable> CqEventImpl::getNewValue() const {
   } else {
     // Get full object for delta
     TcrMessageRequestEventValue fullObjectMsg(
-        new DataOutput(m_tcrdm->getConnectionManager()
-                           .getCacheImpl()
-                           ->createDataOutput()),
+        new DataOutput(
+            m_tcrdm->getConnectionManager().getCacheImpl()->createDataOutput()),
         m_eventId);
     TcrMessageReply reply(true, nullptr);
     ThinClientPoolHADM* poolHADM = dynamic_cast<ThinClientPoolHADM*>(m_tcrdm);

@@ -32,14 +32,15 @@ namespace geode {
 namespace client {
 
 using statistics::StatisticDescriptor;
-using statistics::StatisticsType;
 using statistics::Statistics;
+using statistics::StatisticsType;
 using util::concurrent::spinlock_mutex;
 
 class PoolStats {
  public:
   /** hold statistics for a pool.. */
-  PoolStats(statistics::StatisticsFactory* factory, const std::string& poolName);
+  PoolStats(statistics::StatisticsFactory* factory,
+            const std::string& poolName);
 
   /** disable stat collection for this item. */
   virtual ~PoolStats();

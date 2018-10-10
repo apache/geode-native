@@ -165,7 +165,7 @@ class TestDataInput {
 
 class DataInputTest : public ::testing::Test, protected ByteArrayFixture {
  public:
-  ~DataInputTest() noexcept override {} 
+  ~DataInputTest() noexcept override {}
 };
 
 TEST_F(DataInputTest, ThrowsWhenReadingInputWithSizeZero) {

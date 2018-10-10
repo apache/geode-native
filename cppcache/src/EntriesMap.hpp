@@ -191,7 +191,9 @@ class APACHE_GEODE_EXPORT EntriesMap {
   const std::unique_ptr<EntryFactory> m_entryFactory;
 
   /** @brief return the instance of EntryFactory for the segments to use. */
-  inline const EntryFactory* getEntryFactory() const { return m_entryFactory.get(); }
+  inline const EntryFactory* getEntryFactory() const {
+    return m_entryFactory.get();
+  }
 
 };  // class EntriesMap
 

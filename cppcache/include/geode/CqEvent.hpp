@@ -92,11 +92,11 @@ class APACHE_GEODE_EXPORT CqEvent {
   virtual std::shared_ptr<Cacheable> getNewValue() const = 0;
 
   /**
-  * Get the delta modification.
-  * If there is no delta, returns null. New value may still be available.
-  *
-  * @return CacheableBytes delta value.
-  */
+   * Get the delta modification.
+   * If there is no delta, returns null. New value may still be available.
+   *
+   * @return CacheableBytes delta value.
+   */
   virtual std::shared_ptr<CacheableBytes> getDeltaValue() const = 0;
 
  private:

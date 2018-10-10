@@ -21,12 +21,12 @@
  */
 
 /**
-  * @file    FwkException.hpp
-  * @since   1.0
-  * @version 1.0
-  * @see
-  *
-  */
+ * @file    FwkException.hpp
+ * @since   1.0
+ * @version 1.0
+ * @see
+ *
+ */
 
 // ----------------------------------------------------------------------------
 
@@ -41,8 +41,8 @@ namespace testframework {
 // ----------------------------------------------------------------------------
 
 /** @class FwkException
-  * @brief Framework exception handler
-  */
+ * @brief Framework exception handler
+ */
 class FwkException {
  public:
   /** @brief exception message to handle */

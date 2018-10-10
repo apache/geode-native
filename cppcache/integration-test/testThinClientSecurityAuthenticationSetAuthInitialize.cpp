@@ -70,11 +70,11 @@ class UserPasswordAuthInit : public AuthInitialize {
     // If password is not provided then use empty string as the password.
     if (passwd == nullptr) {
       passwd = CacheableString::create("");
-   }
-   credentials->insert(SECURITY_PASSWORD, passwd->value().c_str());
-   // LOGDEBUG("UserPasswordAuthInit: inserted username:password - %s:%s",
-   //    userName->toString().c_str(), passwd->toString().c_str());
-   return credentials;
+    }
+    credentials->insert(SECURITY_PASSWORD, passwd->value().c_str());
+    // LOGDEBUG("UserPasswordAuthInit: inserted username:password - %s:%s",
+    //    userName->toString().c_str(), passwd->toString().c_str());
+    return credentials;
   }
 
   void close() override { return; }
@@ -137,9 +137,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, TestAuthentication)
       createRegionForSecurity(regionNamesAuth[0], USE_ACK, true);
       createEntry(regionNamesAuth[0], keys[0], vals[0]);
       updateEntry(regionNamesAuth[0], keys[0], nvals[0]);
-     auto regPtr0 = getHelper()->getRegion(regionNamesAuth[0]);
-     regPtr0->containsKeyOnServer(
-         apache::geode::client::CacheableKey::create(keys[0]));
+      auto regPtr0 = getHelper()->getRegion(regionNamesAuth[0]);
+      regPtr0->containsKeyOnServer(
+          apache::geode::client::CacheableKey::create(keys[0]));
     } catch (const apache::geode::client::Exception& other) {
       LOG(other.getStackTrace());
       FAIL(other.what());

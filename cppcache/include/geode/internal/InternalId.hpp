@@ -27,7 +27,7 @@ enum class InternalId : int8_t {
   // Do not use IDs 7 and 8 which are used by .NET
   // ManagedObject and ManagedObjectXml. If those are
   // required then change those in GeodeTypeIdsM.hpp
-      CacheableManagedObject = 7,
+  CacheableManagedObject = 7,
   CacheableManagedObjectXml = 8,
 
 };
@@ -37,4 +37,4 @@ enum class InternalId : int8_t {
 }  // namespace geode
 }  // namespace apache
 
-#endif //NATIVECLIENT_INTERNALID_HPP
+#endif  // NATIVECLIENT_INTERNALID_HPP

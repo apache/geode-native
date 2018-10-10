@@ -20,8 +20,6 @@
 #ifndef GEODE_CACHEABLEFILENAME_H_
 #define GEODE_CACHEABLEFILENAME_H_
 
-
-
 #include <memory>
 
 #include "CacheableKey.hpp"

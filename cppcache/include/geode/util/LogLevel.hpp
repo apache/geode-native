@@ -42,5 +42,4 @@ enum class LogLevel {
 }  // namespace geode
 }  // namespace apache
 
-#endif //GEODE_UTIL_LOGLEVEL_HPP
-
+#endif  // GEODE_UTIL_LOGLEVEL_HPP

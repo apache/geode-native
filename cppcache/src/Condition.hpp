@@ -52,7 +52,7 @@ class APACHE_GEODE_EXPORT Condition {
    */
   bool waitUntil(ACE_Time_Value* absoluteStopTime);
   /** Convenience to derive absolute time.
-  */
+   */
   inline bool waitFor(uint32_t seconds) {
     ACE_Time_Value stopAt = ACE_OS::gettimeofday();
     stopAt += seconds;

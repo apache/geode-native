@@ -49,8 +49,8 @@ namespace client {
  */
 class APACHE_GEODE_EXPORT ExpirationAttributes {
   /**
-    * @brief public methods
-    */
+   * @brief public methods
+   */
  public:
   /**
    *@brief  constructors

@@ -47,7 +47,8 @@ class APACHE_GEODE_EXPORT DefaultResultCollector : public ResultCollector {
       std::chrono::milliseconds timeout =
           DEFAULT_QUERY_RESPONSE_TIMEOUT) override;
 
-  void addResult(const std::shared_ptr<Cacheable>& resultOfSingleExecution) override;
+  void addResult(
+      const std::shared_ptr<Cacheable>& resultOfSingleExecution) override;
 
   void endResults() override;
 

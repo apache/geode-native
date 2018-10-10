@@ -46,7 +46,6 @@ class ThinClientBaseDM;
 class TcrConnectionManager;
 class CacheableKey;
 
-
 class AdminRegion : private NonCopyable,
                     private NonAssignable,
                     public std::enable_shared_from_this<AdminRegion> {
@@ -75,7 +74,8 @@ class AdminRegion : private NonCopyable,
   const bool& isDestroyed();
   void close();
   void init();
-  void put(const std::shared_ptr<CacheableKey>& keyPtr, const std::shared_ptr<Cacheable>& valuePtr);
+  void put(const std::shared_ptr<CacheableKey>& keyPtr,
+           const std::shared_ptr<Cacheable>& valuePtr);
   friend class apache::geode::statistics::HostStatSampler;
 };
 

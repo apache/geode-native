@@ -86,7 +86,8 @@ class APACHE_GEODE_EXPORT EventIdMap {
   /** Find out if entry is duplicate
    * @return true if the entry exists else false
    */
-  bool isDuplicate(std::shared_ptr<EventSource> key, std::shared_ptr<EventSequence> value);
+  bool isDuplicate(std::shared_ptr<EventSource> key,
+                   std::shared_ptr<EventSequence> value);
 
   /** Construct an EventIdMapEntry from an std::shared_ptr<EventId> */
   static EventIdMapEntry make(std::shared_ptr<EventId> eventid);
@@ -96,7 +97,8 @@ class APACHE_GEODE_EXPORT EventIdMap {
    * @param onlynew Only put if the sequence id does not exist or is higher
    * @return true if the entry was updated or inserted otherwise false
    */
-  bool put(std::shared_ptr<EventSource> key, std::shared_ptr<EventSequence> value, bool onlynew = false);
+  bool put(std::shared_ptr<EventSource> key,
+           std::shared_ptr<EventSequence> value, bool onlynew = false);
 
   /** Update the deadline for the entry
    * @return true if the entry exists else false

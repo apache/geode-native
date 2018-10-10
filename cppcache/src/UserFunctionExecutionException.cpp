@@ -20,8 +20,6 @@
 
 namespace apache {
 namespace geode {
-namespace client {
-
-}  // namespace client
+namespace client {}  // namespace client
 }  // namespace geode
 }  // namespace apache

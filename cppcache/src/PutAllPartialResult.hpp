@@ -110,7 +110,6 @@ class PutAllPartialResult final : public Serializable {
                      msgStr2);
     return std::string(stringBuf);
   }
-
 };
 
 }  // namespace client

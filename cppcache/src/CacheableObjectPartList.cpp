@@ -113,7 +113,6 @@ void CacheableObjectPartList::fromData(DataInput& input) {
   }
 }
 
-
 size_t CacheableObjectPartList::objectSize() const { return 0; }
 }  // namespace client
 }  // namespace geode

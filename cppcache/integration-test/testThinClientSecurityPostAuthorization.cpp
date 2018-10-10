@@ -164,8 +164,7 @@ void checkExceptionsMap(HashMapOfException& exceptions, int clientNum,
       ASSERT(std::dynamic_pointer_cast<std::shared_ptr<NotAuthorizedException>>(
                  iter->second),
              "unexpected exception type in exception map");
-      printf("Got expected NotAuthorizedException: %s",
-             iter->second->what());
+      printf("Got expected NotAuthorizedException: %s", iter->second->what());
     }
   }
   printf("Expected number of exceptions: %zd; got exceptions: %zd", expectedNum,

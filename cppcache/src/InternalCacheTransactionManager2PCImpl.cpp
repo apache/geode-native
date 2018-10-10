@@ -47,7 +47,7 @@ void InternalCacheTransactionManager2PCImpl::prepare() {
       GfErrTypeThrowException(
           "Transaction is null, cannot prepare of a null transaction",
           GF_CACHE_ILLEGAL_STATE_EXCEPTION);
-      return; // never called
+      return;  // never called
     }
 
     auto tcr_dm = getDM();
@@ -123,7 +123,7 @@ void InternalCacheTransactionManager2PCImpl::afterCompletion(int32_t status) {
       GfErrTypeThrowException(
           "Transaction is null, cannot commit a null transaction",
           GF_CACHE_ILLEGAL_STATE_EXCEPTION);
-      return; // never called
+      return;  // never called
     }
 
     auto tcr_dm = getDM();

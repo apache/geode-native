@@ -25,7 +25,6 @@
 #pragma warning(disable : 4302)
 #pragma pack(push)
 
-
 #pragma error_messages(off, macroredef)
 
 #include <ace/OS.h>

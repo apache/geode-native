@@ -25,7 +25,6 @@
 
 #include <geode/EntryEvent.hpp>
 
-
 #define ROOT_NAME "testThinClientHAPeriodicAck"
 #define ROOT_SCOPE DISTRIBUTED_ACK
 

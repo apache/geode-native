@@ -296,7 +296,7 @@ class APACHE_GEODE_EXPORT DataInput {
   template <class CharT = char, class... Tail>
   inline std::basic_string<CharT, Tail...> readString() {
     std::basic_string<CharT, Tail...> value;
-    auto type = static_cast<internal::DSCode >(read());
+    auto type = static_cast<internal::DSCode>(read());
     switch (type) {
       case internal::DSCode::CacheableString:
         readJavaModifiedUtf8(value);

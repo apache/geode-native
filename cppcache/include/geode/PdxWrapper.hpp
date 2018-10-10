@@ -82,7 +82,6 @@ class APACHE_GEODE_EXPORT PdxWrapper : public PdxSerializable {
  private:
   PdxWrapper() = delete;
 
-
   std::shared_ptr<void> m_userObject;
   std::string m_className;
 };

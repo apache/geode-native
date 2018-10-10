@@ -98,7 +98,9 @@ class LRUList {
 
     inline ~LRUListNode() {}
 
-    inline void getEntry(std::shared_ptr<TEntry>& result) const { result = m_entry; }
+    inline void getEntry(std::shared_ptr<TEntry>& result) const {
+      result = m_entry;
+    }
 
     inline LRUListNode* getNextLRUListNode() const { return m_nextLRUListNode; }
 

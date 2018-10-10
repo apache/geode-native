@@ -69,7 +69,6 @@ TEST(StructTest, queryResultForRange) {
   std::unordered_map<int, std::string> values = {
       {1, "one"}, {2, "two"}, {3, "three"}};
 
-
   for (auto&& value : values) {
     region->put(value.first, value.second);
   }

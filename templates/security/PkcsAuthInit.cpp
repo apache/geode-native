@@ -68,8 +68,7 @@ bool readPKCSPublicPrivateKey(FILE* keyStoreFP, const char* keyStorePassword,
                               EVP_PKEY** outPrivateKey, X509** outCertificate) {
   PKCS12* p12;
 
-  if (!keyStoreFP || !keyStorePassword ||
-      (keyStorePassword[0] == '\0')) {
+  if (!keyStoreFP || !keyStorePassword || (keyStorePassword[0] == '\0')) {
     return (false);
   }
 

@@ -30,7 +30,7 @@ TEST(StructSetTest, Basic) {
   std::vector<std::string> fieldNames;
 
   size_t numOfFields = 10;
-  
+
   for (size_t i = 0; i < numOfFields; i++) {
     std::string value = "value";
     value += std::to_string(i);
@@ -50,7 +50,7 @@ TEST(StructSetTest, MissingFieldIndex) {
   std::vector<std::string> fieldNames;
 
   size_t numOfFields = 10;
-  
+
   for (size_t i = 0; i < numOfFields; i++) {
     std::string value = "value";
     value += std::to_string(i);
@@ -70,7 +70,7 @@ TEST(StructSetTest, MissingFieldName) {
   std::vector<std::string> fieldNames;
 
   size_t numOfFields = 10;
-  
+
   for (size_t i = 0; i < numOfFields; i++) {
     std::string value = "value";
     value += std::to_string(i);
@@ -102,7 +102,7 @@ TEST(StructSetTest, ForRange) {
 
   auto ss = StructSetImpl(values, fieldNames);
 
-  for(auto&& row : ss) {
+  for (auto&& row : ss) {
     auto rowStruct = std::dynamic_pointer_cast<Struct>(row);
     ASSERT_NE(nullptr, rowStruct);
 

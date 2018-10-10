@@ -42,7 +42,6 @@ class APACHE_GEODE_EXPORT CacheableKey : public virtual Cacheable {
   CacheableKey() = default;
   ~CacheableKey() override = default;
 
-
  public:
   /** return true if this key matches other. */
   virtual bool operator==(const CacheableKey& other) const = 0;

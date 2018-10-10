@@ -33,8 +33,7 @@ namespace client {
 
 ThinClientPoolRegion::ThinClientPoolRegion(
     const std::string& name, CacheImpl* cache,
-    const std::shared_ptr<RegionInternal>& rPtr,
-    RegionAttributes attributes,
+    const std::shared_ptr<RegionInternal>& rPtr, RegionAttributes attributes,
     const std::shared_ptr<CacheStatistics>& stats, bool shared)
     : ThinClientRegion(name, cache, rPtr, attributes, stats, shared) {}
 

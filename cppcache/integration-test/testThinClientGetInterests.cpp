@@ -23,7 +23,6 @@
 
 #include "locator_globals.hpp"
 
-
 const char* durableIds[] = {"DurableId1", "DurableId2"};
 
 DUNIT_TASK(SERVER1, StartServer)

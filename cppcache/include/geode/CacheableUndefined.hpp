@@ -39,7 +39,8 @@ class DataOutput;
 class Serializable;
 
 class APACHE_GEODE_EXPORT CacheableUndefined
-   : public internal::DataSerializableFixedId_t<internal::DSFid::CacheableUndefined> {
+    : public internal::DataSerializableFixedId_t<
+          internal::DSFid::CacheableUndefined> {
  public:
   inline CacheableUndefined() = default;
   virtual ~CacheableUndefined() noexcept override = default;

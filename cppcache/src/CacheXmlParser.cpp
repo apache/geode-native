@@ -781,7 +781,8 @@ void CacheXmlParser::startRegionAttributes(const xmlChar** atts) {
     while (atts[attrsCount]) ++attrsCount;
     if (attrsCount > 24)  // Remember to change this when the number changes
     {
-      throw CacheXmlException("XML:Number of attributes provided for <region-attributes> are more");
+      throw CacheXmlException(
+          "XML:Number of attributes provided for <region-attributes> are more");
     }
 
     std::string refid;

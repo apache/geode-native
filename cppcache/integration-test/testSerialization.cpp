@@ -33,7 +33,6 @@
 
 #include "CacheHelper.hpp"
 
-
 #include "locator_globals.hpp"
 
 using apache::geode::client::Cacheable;
@@ -81,7 +80,8 @@ class OtherType : public DataSerializable {
 
   void toData(DataOutput& output) const override {
     // TODO: refactor - this insane
-    output.writeBytes(reinterpret_cast<const uint8_t*>(&m_struct), sizeof(CData));
+    output.writeBytes(reinterpret_cast<const uint8_t*>(&m_struct),
+                      sizeof(CData));
     output.writeInt(m_classIdToReturn);
   }
 

@@ -127,7 +127,8 @@ class EventListener : public CacheListener {
   }
 };
 
-void setCacheListener(const char* regName, std::shared_ptr<EventListener> monitor) {
+void setCacheListener(const char* regName,
+                      std::shared_ptr<EventListener> monitor) {
   auto reg = getHelper()->getRegion(regName);
   auto attrMutator = reg->getAttributesMutator();
   attrMutator->setCacheListener(monitor);
@@ -217,9 +218,9 @@ void feederDestroys() {
 }
 
 void registerInterests(const char* region, bool durable, bool receiveValues) {
- auto regionPtr = getHelper()->getRegion(region);
+  auto regionPtr = getHelper()->getRegion(region);
 
-  std::vector<std::shared_ptr<CacheableKey>>  keysVector;
+  std::vector<std::shared_ptr<CacheableKey>> keysVector;
 
   keysVector.push_back(CacheableKey::create(keys[0]));
   keysVector.push_back(CacheableKey::create(keys[1]));
@@ -233,7 +234,7 @@ void registerInterests(const char* region, bool durable, bool receiveValues) {
 void unregisterInterests(const char* region) {
   auto regionPtr = getHelper()->getRegion(region);
 
-  std::vector<std::shared_ptr<CacheableKey>>  keysVector;
+  std::vector<std::shared_ptr<CacheableKey>> keysVector;
 
   keysVector.push_back(CacheableKey::create(keys[0]));
   keysVector.push_back(CacheableKey::create(keys[1]));

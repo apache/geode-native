@@ -21,7 +21,6 @@ perf::PerfSuite perfSuite("FwPerf");
 
 class LocalPutTask : public perf::Thread {
  private:
-
  public:
   LocalPutTask() : Thread() {}
 

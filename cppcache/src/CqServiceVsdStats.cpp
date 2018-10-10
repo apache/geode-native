@@ -28,8 +28,8 @@ namespace geode {
 namespace client {
 
 using statistics::StatisticsFactory;
-using util::concurrent::spinlock_mutex;
 using std::lock_guard;
+using util::concurrent::spinlock_mutex;
 
 constexpr const char* CqServiceVsdStats::STATS_NAME;
 constexpr const char* CqServiceVsdStats::STATS_DESC;

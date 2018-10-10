@@ -69,10 +69,12 @@ uint8_t* createSignature(EVP_PKEY* key, X509* cert,
   X509_ALGOR_get0(&macobj, nullptr, nullptr, algorithm);
   const EVP_MD* signatureDigest = EVP_get_digestbyobj(macobj);
   EVP_MD_CTX* signatureCtx = EVP_MD_CTX_new();
-  auto signatureData = std::unique_ptr<uint8_t[]>(new uint8_t[EVP_PKEY_size(key)]);
-  bool result = (EVP_SignInit_ex(signatureCtx, signatureDigest, nullptr) &&
-                 EVP_SignUpdate(signatureCtx, inputBuffer, inputBufferLen) &&
-                 EVP_SignFinal(signatureCtx, signatureData.get(), signatureLen, key));
+  auto signatureData =
+      std::unique_ptr<uint8_t[]>(new uint8_t[EVP_PKEY_size(key)]);
+  bool result =
+      (EVP_SignInit_ex(signatureCtx, signatureDigest, nullptr) &&
+       EVP_SignUpdate(signatureCtx, inputBuffer, inputBufferLen) &&
+       EVP_SignFinal(signatureCtx, signatureData.get(), signatureLen, key));
   EVP_MD_CTX_free(signatureCtx);
   if (result) {
     return signatureData.release();
@@ -84,8 +86,7 @@ bool readPKCSPublicPrivateKey(FILE* keyStoreFP, const char* keyStorePassword,
                               EVP_PKEY** outPrivateKey, X509** outCertificate) {
   PKCS12* p12;
 
-  if (!keyStoreFP || !keyStorePassword ||
-      (keyStorePassword[0] == '\0')) {
+  if (!keyStoreFP || !keyStorePassword || (keyStorePassword[0] == '\0')) {
     return (false);
   }
 

@@ -28,7 +28,6 @@
 #include <geode/DataOutput.hpp>
 #include <geode/CacheableString.hpp>
 
-
 namespace apache {
 namespace geode {
 namespace client {

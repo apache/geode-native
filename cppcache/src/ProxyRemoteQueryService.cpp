@@ -31,8 +31,9 @@ std::shared_ptr<Query> ProxyRemoteQueryService::newQuery(
     std::string querystring) {
   if (!m_authenticatedView->isClosed()) {
     auto userAttachedPool = m_authenticatedView->m_userAttributes->getPool();
-    auto pool = m_authenticatedView->m_cacheImpl->getCache()->getPoolManager().find(
-        userAttachedPool->getName());
+    auto pool =
+        m_authenticatedView->m_cacheImpl->getCache()->getPoolManager().find(
+            userAttachedPool->getName());
     if (pool != nullptr && pool.get() == userAttachedPool.get() &&
         !pool->isDestroyed()) {
       GuardUserAttributes gua(m_authenticatedView);
@@ -58,8 +59,9 @@ std::shared_ptr<CqQuery> ProxyRemoteQueryService::newCq(
     bool isDurable) {
   if (!m_authenticatedView->isClosed()) {
     auto userAttachedPool = m_authenticatedView->m_userAttributes->getPool();
-    auto pool = m_authenticatedView->m_cacheImpl->getCache()->getPoolManager().find(
-        userAttachedPool->getName());
+    auto pool =
+        m_authenticatedView->m_cacheImpl->getCache()->getPoolManager().find(
+            userAttachedPool->getName());
     if (pool != nullptr && pool.get() == userAttachedPool.get() &&
         !pool->isDestroyed()) {
       GuardUserAttributes gua(m_authenticatedView);
@@ -87,8 +89,9 @@ std::shared_ptr<CqQuery> ProxyRemoteQueryService::newCq(
     const std::shared_ptr<CqAttributes>& cqAttr, bool isDurable) {
   if (!m_authenticatedView->isClosed()) {
     auto userAttachedPool = m_authenticatedView->m_userAttributes->getPool();
-    auto pool = m_authenticatedView->m_cacheImpl->getCache()->getPoolManager().find(
-        userAttachedPool->getName());
+    auto pool =
+        m_authenticatedView->m_cacheImpl->getCache()->getPoolManager().find(
+            userAttachedPool->getName());
     if (pool != nullptr && pool.get() == userAttachedPool.get() &&
         !pool->isDestroyed()) {
       GuardUserAttributes gua(m_authenticatedView);
@@ -138,8 +141,9 @@ std::shared_ptr<CqQuery> ProxyRemoteQueryService::getCq(
     const std::string& name) const {
   if (!m_authenticatedView->isClosed()) {
     auto userAttachedPool = m_authenticatedView->m_userAttributes->getPool();
-    auto pool = m_authenticatedView->m_cacheImpl->getCache()->getPoolManager().find(
-        userAttachedPool->getName());
+    auto pool =
+        m_authenticatedView->m_cacheImpl->getCache()->getPoolManager().find(
+            userAttachedPool->getName());
     if (pool != nullptr && pool.get() == userAttachedPool.get() &&
         !pool->isDestroyed()) {
       GuardUserAttributes gua(m_authenticatedView);

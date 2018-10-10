@@ -50,8 +50,9 @@ class APACHE_GEODE_EXPORT ExpiryHandler_T : public ACE_Event_Handler {
   ~ExpiryHandler_T() override = default;
 
   int handle_timeout(const ACE_Time_Value &tv, const void *arg) override {
-    return (this->to_handler_ == nullptr ? 0 : (this->op_handler_->*to_handler_)(
-                                             tv, arg));
+    return (this->to_handler_ == nullptr
+                ? 0
+                : (this->op_handler_->*to_handler_)(tv, arg));
   }
 
   int handle_close(ACE_HANDLE, ACE_Reactor_Mask) override {

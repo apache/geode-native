@@ -24,7 +24,6 @@
 
 #include "CacheHelper.hpp"
 
-
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
@@ -60,7 +59,7 @@ CacheHelper *getHelper() {
 void _verifyEntry(const char *name, const char *key, const char *val,
                   bool noKey, bool isCreated = false) {
   // Verify key and value exist in this region, in this process.
-  const char* value = val ? val : "";
+  const char *value = val ? val : "";
   char *buf =
       reinterpret_cast<char *>(malloc(1024 + strlen(key) + strlen(value)));
   ASSERT(buf, "Unable to malloc buffer for logging.");

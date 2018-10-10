@@ -82,19 +82,19 @@ void TXCommitMessage::fromData(DataInput& input) {
 
       input.readInt32();
     } else {
-      LOGERROR(
-          "TXCommitMessage::fromData Unexpected type id: %" PRId8 "while "
-          "desirializing commit response",
-          dscode);
+      LOGERROR("TXCommitMessage::fromData Unexpected type id: %" PRId8
+               "while "
+               "desirializing commit response",
+               dscode);
       GfErrTypeThrowException(
           "TXCommitMessage::fromData Unable to handle commit response",
           GF_CACHE_ILLEGAL_STATE_EXCEPTION);
     }
   } else if (fixedId != DSCode::NullObj) {
-    LOGERROR(
-        "TXCommitMessage::fromData Unexpected type id: %" PRId8 "while desirializing "
-        "commit response",
-        fixedId);
+    LOGERROR("TXCommitMessage::fromData Unexpected type id: %" PRId8
+             "while desirializing "
+             "commit response",
+             fixedId);
     GfErrTypeThrowException(
         "TXCommitMessage::fromData Unable to handle commit response",
         GF_CACHE_ILLEGAL_STATE_EXCEPTION);

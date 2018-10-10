@@ -41,7 +41,6 @@
 #include "CacheRegionHelper.hpp"
 #include "CacheImpl.hpp"
 
-
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
@@ -222,7 +221,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
       cqFac.addCqListener(cqLstner);
       auto cqAttr = cqFac.create();
 
-      auto qry = qs->newCq(cqName, "select * from /Portfolios p where p.ID != 2", cqAttr);
+      auto qry = qs->newCq(
+          cqName, "select * from /Portfolios p where p.ID != 2", cqAttr);
       qry->execute();
 
       SLEEP(15000);

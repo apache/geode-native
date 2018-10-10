@@ -27,12 +27,14 @@ CacheImpl* CacheRegionHelper::getCacheImpl(const Cache* cache) {
   return cache->m_cacheImpl.get();
 }
 
-CacheImpl* CacheRegionHelper::getCacheImpl(const AuthenticatedView* authenticatedView) {
+CacheImpl* CacheRegionHelper::getCacheImpl(
+    const AuthenticatedView* authenticatedView) {
   return authenticatedView->m_cacheImpl;
 }
 
 CacheImpl* CacheRegionHelper::getCacheImpl(const RegionService* regionService) {
-  if (const auto authenticatedView = dynamic_cast<const AuthenticatedView*>(regionService)) {
+  if (const auto authenticatedView =
+          dynamic_cast<const AuthenticatedView*>(regionService)) {
     return getCacheImpl(authenticatedView);
   }
 

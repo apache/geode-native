@@ -21,7 +21,6 @@
 #define CLIENT1 s1p1
 #define SERVER1 s2p1
 
-
 #include "locator_globals.hpp"
 #include "LocatorHelper.hpp"
 
@@ -83,33 +82,33 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, doRemoteGet)
   {
-   auto regionPtr = getHelper()->getRegion(regionNames[0]);
+    auto regionPtr = getHelper()->getRegion(regionNames[0]);
 
-   auto attrMutatorPtr = regionPtr->getAttributesMutator();
-   auto regListener1 = std::make_shared<SimpleCacheListener>();
-   attrMutatorPtr->setCacheListener(regListener1);
+    auto attrMutatorPtr = regionPtr->getAttributesMutator();
+    auto regListener1 = std::make_shared<SimpleCacheListener>();
+    attrMutatorPtr->setCacheListener(regListener1);
 
-   // Put 3 Entries into the Region.
-   regionPtr->put("Key1", "Value1");
-   regionPtr->put("Key2", "Value2");
-   regionPtr->put("Key3", "Value3");
+    // Put 3 Entries into the Region.
+    regionPtr->put("Key1", "Value1");
+    regionPtr->put("Key2", "Value2");
+    regionPtr->put("Key3", "Value3");
 
-   // Update Key3.
-   regionPtr->put("Key3", "Value3-updated");
+    // Update Key3.
+    regionPtr->put("Key3", "Value3-updated");
 
-   // Destroy Key3.
-   regionPtr->localDestroy("Key3");
+    // Destroy Key3.
+    regionPtr->localDestroy("Key3");
 
-   // Perform remote get (Locally destroyed).
-   regionPtr->get("Key3");
-   int toalFunCall = regListener1->getCount();
-   ASSERT(4 == toalFunCall,
-          "afterCreate() did not call expected number of times");
-   // printf("[NIL_DEBUG_DUnitTest:149] Total Function Call =
-   // %d.............\n",
-   // toalFunCall);
-   // printf("\n[NIL_DEBUG_DUnitTest:150:Remote get ended.
-   // ..................\n");
+    // Perform remote get (Locally destroyed).
+    regionPtr->get("Key3");
+    int toalFunCall = regListener1->getCount();
+    ASSERT(4 == toalFunCall,
+           "afterCreate() did not call expected number of times");
+    // printf("[NIL_DEBUG_DUnitTest:149] Total Function Call =
+    // %d.............\n",
+    // toalFunCall);
+    // printf("\n[NIL_DEBUG_DUnitTest:150:Remote get ended.
+    // ..................\n");
   }
 END_TASK_DEFINITION
 

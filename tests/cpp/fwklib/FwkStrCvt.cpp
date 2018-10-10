@@ -23,8 +23,6 @@ namespace geode {
 namespace client {
 namespace testframework {
 
-
-
 // ----------------------------------------------------------------------------
 
 char* FwkStrCvt::hexify(uint8_t* buff, int32_t len) {

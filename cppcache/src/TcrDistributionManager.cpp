@@ -28,8 +28,7 @@ TcrDistributionManager::TcrDistributionManager(
     ThinClientRegion* region, TcrConnectionManager& connManager)
     : ThinClientDistributionManager(connManager, region) {
   GF_R_ASSERT(region != nullptr);
-  m_clientNotification =
-      region->getAttributes().getClientNotificationEnabled();
+  m_clientNotification = region->getAttributes().getClientNotificationEnabled();
 }
 
 void TcrDistributionManager::getEndpointNames(

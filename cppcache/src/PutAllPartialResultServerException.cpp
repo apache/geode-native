@@ -66,8 +66,7 @@ PutAllPartialResultServerException::getFirstFailedKey() {
   return m_result->getFirstFailedKey();
 }
 
-std::shared_ptr<CacheableString>
-PutAllPartialResultServerException::what() {
+std::shared_ptr<CacheableString> PutAllPartialResultServerException::what() {
   return CacheableString::create(m_result->toString().c_str());
 }
 
