@@ -52,5 +52,7 @@ target_link_libraries(security
 	_WarningsAsError
 )
 
+add_clangformat(security)
+
 # For Visual Studio organization
 set_target_properties(security PROPERTIES FOLDER cli/test/integration)

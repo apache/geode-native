@@ -74,6 +74,8 @@ set_target_properties(apache-geode_unittests PROPERTIES
   FOLDER cpp/test/unit
   )
 
+add_clangformat(apache-geode_unittests)
+
 enable_testing()
 add_test(NAME ${PROJECT_NAME} COMMAND $<TARGET_FILE:${PROJECT_NAME}>)
 
