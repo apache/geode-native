@@ -4,39 +4,25 @@
 # The ASF licenses this file to You under the Apache License, Version 2.0
 # (the "License"); you may not use this file except in compliance with
 # the License.  You may obtain a copy of the License at
-# 
+#
 #      http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cmake_minimum_required(VERSION 3.10)
-project(DHImpl LANGUAGES CXX)
+include(FindPackageHandleStandardArgs)
 
-file(GLOB_RECURSE SOURCES "*.cpp")
+set(ClangFormat_EXECUTABLE "" CACHE FILEPATH "Path to clang-format executable.")
 
-add_library(DHImpl SHARED ${SOURCES})
-
-set_target_properties(DHImpl PROPERTIES
-  FOLDER cpp/test/integration)
-
-include(GenerateExportHeader)
-generate_export_header(DHImpl)
-
-target_include_directories(DHImpl
-  PUBLIC
-	$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
-
-target_link_libraries(DHImpl
-  PUBLIC 
-    apache-geode
-    crypto
-    c++11
-  PRIVATE
-    _WarningsAsError
+find_program(ClangFormat_EXECUTABLE
+  NAMES clang-format
+  DOC "clang-format executable"
 )
+mark_as_advanced(ClangFormat_EXECUTABLE)
 
-add_clangformat(DHImpl)
+find_package_handle_standard_args(ClangFormat
+  REQUIRED_VARS ClangFormat_EXECUTABLE
+)

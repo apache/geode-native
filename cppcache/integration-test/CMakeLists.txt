@@ -16,13 +16,14 @@
 cmake_minimum_required(VERSION 3.10)
 project(nativeclient.tests.cppcache LANGUAGES CXX)
 
-set(TEST_UTILS_LIB test-cppcache-utils)
-add_library(${TEST_UTILS_LIB} STATIC
+add_library(test-cppcache-utils STATIC
   fw_dunit.cpp
   BBNamingContext.cpp
   CacheHelper.cpp
-  CacheableWrapper.cpp)
-target_link_libraries(${TEST_UTILS_LIB}
+  CacheableWrapper.cpp
+)
+
+target_link_libraries(test-cppcache-utils
   PRIVATE
     ACE
     _WarningsAsError
@@ -31,18 +32,20 @@ target_link_libraries(${TEST_UTILS_LIB}
     framework
 )
 
-set_target_properties(${TEST_UTILS_LIB} PROPERTIES
+set_target_properties(test-cppcache-utils PROPERTIES
 	FOLDER cpp/test/integration
 )
 
-target_compile_definitions(${TEST_UTILS_LIB}
+target_compile_definitions(test-cppcache-utils
   PRIVATE
-    $<MAKE_C_IDENTIFIER:${TEST_UTILS_LIB}>_static=1
+    $<MAKE_C_IDENTIFIER:test-cppcache-utils>_static=1
 )
-target_include_directories(${TEST_UTILS_LIB}
+target_include_directories(test-cppcache-utils
   PRIVATE
     $<TARGET_PROPERTY:apache-geode,SOURCE_DIR>/../src
 )
+add_clangformat(test-cppcache-utils)
+
 
 add_library(unit_test_callbacks SHARED LibraryCallbacks.cpp)
 target_link_libraries(unit_test_callbacks
@@ -57,7 +60,9 @@ target_include_directories(unit_test_callbacks
     $<TARGET_PROPERTY:apache-geode,SOURCE_DIR>/../src
 )
 
- set_target_properties(unit_test_callbacks PROPERTIES FOLDER cpp/test/integration)
+set_target_properties(unit_test_callbacks PROPERTIES FOLDER cpp/test/integration)
+
+add_clangformat(unit_test_callbacks)
 
 
 enable_testing()
@@ -92,7 +97,7 @@ foreach(FILE ${SOURCES})
   target_link_libraries(${TEST}
     PRIVATE
       ACE
-      ${TEST_UTILS_LIB}
+      test-cppcache-utils
       _WarningsAsError
       _CppCodeCoverage
       internal
@@ -117,6 +122,8 @@ foreach(FILE ${SOURCES})
 
   # Some tests depend on these library
   add_dependencies(${TEST} securityImpl cryptoImpl DHImpl SqLiteImpl)
+
+  add_clangformat(${TEST})
 
   set(TEST_DIR ${CMAKE_CURRENT_BINARY_DIR}/.tests/${TEST})
 

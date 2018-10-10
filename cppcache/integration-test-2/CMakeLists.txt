@@ -77,6 +77,9 @@ endif()
 
 set_target_properties(integration-test-2 PROPERTIES
 	FOLDER cpp/test/integration)
+
+add_clangformat(integration-test-2)
+
 enable_testing()
 include(GoogleTest)
 gtest_discover_tests(integration-test-2)

@@ -47,6 +47,8 @@ target_link_libraries(cryptoImpl
    c++11
 )
 
+add_clangformat(cryptoImpl)
+
 if ("Windows" STREQUAL ${CMAKE_SYSTEM_NAME} )
   install(TARGETS cryptoImpl
     RUNTIME DESTINATION bin

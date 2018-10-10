@@ -65,5 +65,7 @@ target_link_libraries(framework
 	  _WarningsAsError
 )
 
+add_clangformat(framework)
+
 # For Visual Studio organization
 set_target_properties(framework PROPERTIES FOLDER cpp/test/integration)

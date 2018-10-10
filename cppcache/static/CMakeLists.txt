@@ -63,3 +63,5 @@ else()
   set_target_properties(apache-geode-static PROPERTIES
     FOLDER cpp)
 endif()
+
+add_clangformat(apache-geode-static)

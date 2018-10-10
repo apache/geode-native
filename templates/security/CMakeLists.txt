@@ -42,3 +42,5 @@ target_link_libraries(securityImpl
   PRIVATE
     _WarningsAsError
 )
+
+add_clangformat(securityImpl)

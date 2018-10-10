@@ -97,5 +97,7 @@ target_link_libraries(testobject
 	  _WarningsAsError
 )
 
+add_clangformat(testobject)
+
 # For Visual Studio organization
 set_target_properties(testobject PROPERTIES FOLDER test-common)

@@ -25,6 +25,8 @@ if (USE_PCH)
   include(cotire)
 endif()
 
+include(ClangFormat)
+
 if(CMAKE_GENERATOR MATCHES Win64*)
 
   if ((CMAKE_GENERATOR MATCHES "Visual Studio") AND (CMAKE_GENERATOR_TOOLSET STREQUAL ""))
