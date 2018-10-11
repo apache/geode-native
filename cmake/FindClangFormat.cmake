@@ -15,8 +15,6 @@
 
 include(FindPackageHandleStandardArgs)
 
-set(ClangFormat_EXECUTABLE "" CACHE FILEPATH "Path to clang-format executable.")
-
 find_program(ClangFormat_EXECUTABLE
   NAMES clang-format
   DOC "clang-format executable"
