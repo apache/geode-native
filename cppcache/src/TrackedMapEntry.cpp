@@ -16,6 +16,7 @@
  */
 
 #include "TrackedMapEntry.hpp"
+
 #include "MapEntry.hpp"
 
 namespace apache {

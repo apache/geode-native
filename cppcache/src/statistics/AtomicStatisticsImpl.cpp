@@ -15,16 +15,17 @@
  * limitations under the License.
  */
 
+#include "AtomicStatisticsImpl.hpp"
+
 #include <atomic>
 
 #include <ace/OS_NS_stdio.h>
 
 #include <geode/internal/geode_globals.hpp>
 
-#include "AtomicStatisticsImpl.hpp"
-#include "StatisticsTypeImpl.hpp"
-#include "StatisticDescriptorImpl.hpp"
 #include "../Assert.hpp"
+#include "StatisticDescriptorImpl.hpp"
+#include "StatisticsTypeImpl.hpp"
 
 namespace apache {
 namespace geode {

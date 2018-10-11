@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 #include "PoolAttributes.hpp"
+
 #include <geode/ExceptionTypes.hpp>
 #include <geode/PoolFactory.hpp>
 

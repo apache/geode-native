@@ -22,13 +22,13 @@
 
 #include <string>
 
-#include <geode/internal/geode_globals.hpp>
+#include <geode/CacheableKey.hpp>
 #include <geode/CqEvent.hpp>
 #include <geode/CqOperation.hpp>
 #include <geode/CqQuery.hpp>
-#include <geode/CacheableKey.hpp>
-#include <geode/Serializable.hpp>
 #include <geode/Exception.hpp>
+#include <geode/Serializable.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 namespace apache {
 namespace geode {

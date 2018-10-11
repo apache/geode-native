@@ -15,14 +15,15 @@
  * limitations under the License.
  */
 
+#include "EvictionController.hpp"
+
 #include <string>
 
-#include "EvictionController.hpp"
 #include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
-#include "RegionInternal.hpp"
 #include "DistributedSystem.hpp"
 #include "ReadWriteLock.hpp"
+#include "RegionInternal.hpp"
 
 namespace apache {
 namespace geode {

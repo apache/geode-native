@@ -20,10 +20,10 @@
 #ifndef GEODE_FARSIDEENTRYOP_H_
 #define GEODE_FARSIDEENTRYOP_H_
 
-#include <geode/internal/geode_globals.hpp>
-#include <geode/Serializable.hpp>
-#include <geode/DataOutput.hpp>
 #include <geode/DataInput.hpp>
+#include <geode/DataOutput.hpp>
+#include <geode/Serializable.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 #include "LocalRegion.hpp"
 

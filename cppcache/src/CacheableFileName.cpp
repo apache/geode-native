@@ -14,12 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <geode/CacheableFileName.hpp>
-#include <geode/DataOutput.hpp>
-#include <geode/DataInput.hpp>
-
 #include <ace/ACE.h>
 #include <ace/OS.h>
+
+#include <geode/CacheableFileName.hpp>
+#include <geode/DataInput.hpp>
+#include <geode/DataOutput.hpp>
 
 namespace apache {
 namespace geode {

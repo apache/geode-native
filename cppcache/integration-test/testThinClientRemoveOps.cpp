@@ -46,12 +46,12 @@ using apache::geode::client::IllegalArgumentException;
 using apache::geode::client::Properties;
 using apache::geode::client::RegionDestroyedException;
 
-CacheHelper* cacheHelper = nullptr;
+CacheHelper *cacheHelper = nullptr;
 static bool isLocalServer = false;
 static bool isLocator = false;
 static int numberOfLocators = 0;
 
-const char* locatorsG =
+const char *locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 
 bool g_isGridClient = false;
@@ -82,17 +82,17 @@ void cleanProc() {
   }
 }
 
-CacheHelper* getHelper() {
+CacheHelper *getHelper() {
   ASSERT(cacheHelper != nullptr, "No cacheHelper initialized.");
   return cacheHelper;
 }
 
-void _verifyEntry(const char* name, const char* key, const char* val,
+void _verifyEntry(const char *name, const char *key, const char *val,
                   bool noKey) {
   // Verify key and value exist in this region, in this process.
-  const char* value = val ? val : "";
-  char* buf =
-      reinterpret_cast<char*>(malloc(1024 + strlen(key) + strlen(value)));
+  const char *value = val ? val : "";
+  char *buf =
+      reinterpret_cast<char *>(malloc(1024 + strlen(key) + strlen(value)));
   ASSERT(buf, "Unable to malloc buffer for logging.");
   if (noKey) {
     sprintf(buf, "Verify key %s does not exist in region %s", key, name);
@@ -164,7 +164,7 @@ void _verifyEntry(const char* name, const char* key, const char* val,
   }
 }
 
-void _verifyInvalid(const char* name, const char* key, int line) {
+void _verifyInvalid(const char *name, const char *key, int line) {
   char logmsg[1024];
   sprintf(logmsg, "verifyInvalid() called from %d.\n", line);
   LOG(logmsg);
@@ -172,7 +172,7 @@ void _verifyInvalid(const char* name, const char* key, int line) {
   LOG("Entry invalidated.");
 }
 
-void _verifyDestroyed(const char* name, const char* key, int line) {
+void _verifyDestroyed(const char *name, const char *key, int line) {
   char logmsg[1024];
   sprintf(logmsg, "verifyDestroyed() called from %d.\n", line);
   LOG(logmsg);
@@ -182,7 +182,7 @@ void _verifyDestroyed(const char* name, const char* key, int line) {
 
 #define verifyEntry(x, y, z) _verifyEntry(x, y, z, __LINE__)
 
-void _verifyEntry(const char* name, const char* key, const char* val,
+void _verifyEntry(const char *name, const char *key, const char *val,
                   int line) {
   char logmsg[1024];
   sprintf(logmsg, "verifyEntry() called from %d.\n", line);
@@ -191,7 +191,7 @@ void _verifyEntry(const char* name, const char* key, const char* val,
   LOG("Entry verified.");
 }
 
-void createRegion(const char* name, bool ackMode,
+void createRegion(const char *name, bool ackMode,
                   bool clientNotificationEnabled = false,
                   bool cachingEnable = true) {
   LOG("createRegion() entered.");
@@ -203,8 +203,8 @@ void createRegion(const char* name, bool ackMode,
   LOG("Region created.");
 }
 
-void createPooledRegion(const char* name, bool ackMode, const char* locators,
-                        const char* poolname,
+void createPooledRegion(const char *name, bool ackMode, const char *locators,
+                        const char *poolname,
                         bool clientNotificationEnabled = false,
                         bool cachingEnable = true) {
   LOG("createRegion_Pool() entered.");
@@ -217,7 +217,7 @@ void createPooledRegion(const char* name, bool ackMode, const char* locators,
   LOG("Pooled Region created.");
 }
 
-void putEntry(const char* name, const char* key, const char* value) {
+void putEntry(const char *name, const char *key, const char *value) {
   LOG("putEntry() entered.");
   fprintf(stdout, "Creating entry -- key: %s  value: %s in region %s\n", key,
           value, name);
@@ -241,7 +241,7 @@ void putEntry(const char* name, const char* key, const char* value) {
   LOG("Entry created.");
 }
 
-void localPutEntry(const char* name, const char* key, const char* value) {
+void localPutEntry(const char *name, const char *key, const char *value) {
   LOG("putEntry() entered.");
   fprintf(stdout, "Creating entry -- key: %s  value: %s in region %s\n", key,
           value, name);
@@ -260,7 +260,7 @@ void localPutEntry(const char* name, const char* key, const char* value) {
   LOG("Local Entry created.");
 }
 
-void createEntryTwice(const char* name, const char* key, const char* value) {
+void createEntryTwice(const char *name, const char *key, const char *value) {
   LOG("createEntryTwice() entered.");
   char message[500];
   sprintf(message, "Creating entry -- key: %s  value: %s in region %s\n", key,
@@ -272,7 +272,7 @@ void createEntryTwice(const char* name, const char* key, const char* value) {
   regPtr->create(keyPtr, valPtr);
   try {
     regPtr->create(keyPtr, valPtr);
-  } catch (const EntryExistsException& geodeExcp) {
+  } catch (const EntryExistsException &geodeExcp) {
     LOG(geodeExcp.what());
     LOG("createEntryTwice() Clean Exit.");
     return;
@@ -282,7 +282,7 @@ void createEntryTwice(const char* name, const char* key, const char* value) {
          "not thrown");
 }
 
-void updateEntry(const char* name, const char* key, const char* value) {
+void updateEntry(const char *name, const char *key, const char *value) {
   LOG("updateEntry() entered.");
   fprintf(stdout, "Updating entry -- key: %s  value: %s in region %s\n", key,
           value, name);
@@ -305,7 +305,7 @@ void updateEntry(const char* name, const char* key, const char* value) {
   LOG("Entry updated.");
 }
 
-void doGetAgain(const char* name, const char* key, const char* value) {
+void doGetAgain(const char *name, const char *key, const char *value) {
   LOG("doGetAgain() entered.");
   fprintf(stdout,
           "get for entry -- key: %s  expecting value: %s in region %s\n", key,
@@ -335,7 +335,7 @@ void doGetAgain(const char* name, const char* key, const char* value) {
   LOG("GetAgain complete.");
 }
 
-void doNetsearch(const char* name, const char* key, const char* value) {
+void doNetsearch(const char *name, const char *key, const char *value) {
   LOG("doNetsearch() entered.");
   fprintf(
       stdout,
@@ -374,13 +374,13 @@ void doNetsearch(const char* name, const char* key, const char* value) {
   LOG("Netsearch complete.");
 }
 
-const char* keys[] = {"Key-1", "Key-2", "Key-3", "Key-4", "Non-Existent-Key"};
-const char* vals[] = {"Value-1", "Value-2", "Value-3", "Value-4",
+const char *keys[] = {"Key-1", "Key-2", "Key-3", "Key-4", "Non-Existent-Key"};
+const char *vals[] = {"Value-1", "Value-2", "Value-3", "Value-4",
                       "Non-Existent-Value"};
-const char* nvals[] = {"New Value-1", "New Value-2", "New Value-3",
+const char *nvals[] = {"New Value-1", "New Value-2", "New Value-3",
                        "New Value-4"};
 
-const char* regionNames[] = {"DistRegionAck", "DistRegionNoAck",
+const char *regionNames[] = {"DistRegionAck", "DistRegionNoAck",
                              "exampleRegion"};
 
 const bool USE_ACK = true;
@@ -1081,7 +1081,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight)
       FAIL(
           "destroy on non=existent key should have thrown "
           "EntryNotFoundException");
-    } catch (EntryNotFoundException& /*ex*/) {
+    } catch (EntryNotFoundException & /*ex*/) {
       LOG("Got expected EntryNotFoundException for key300");
     }
 
@@ -1196,7 +1196,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepTwelve)
     ASSERT(vInt == nullptr, "valueshould not be found from sever");
 
     intKey = 2;
-    const char* strVal = "IntKeyStringValue";
+    const char *strVal = "IntKeyStringValue";
     regPtr0->localCreate(intKey, strVal);
     auto vString =
         std::dynamic_pointer_cast<CacheableString>(regPtr0->get(intKey));
@@ -1222,7 +1222,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepTwelve)
         regPtr0->get(CacheableInt64::create(longKey)));
     ASSERT(vLong->value() == 200, "Long Key Long Val Mismatch.");
 
-    const char* strKey = "StrKeyIntValueKey";
+    const char *strKey = "StrKeyIntValueKey";
     intVal = 1234;
     regPtr0->localCreate(strKey, CacheableInt32::create(intVal));
     auto vIntPtr =

@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 #include "VersionTag.hpp"
+
 #include "CacheImpl.hpp"
-#include "RegionInternal.hpp"
-#include "MemberListForVersionStamp.hpp"
 #include "ClientProxyMembershipID.hpp"
+#include "MemberListForVersionStamp.hpp"
+#include "RegionInternal.hpp"
 
 namespace apache {
 namespace geode {

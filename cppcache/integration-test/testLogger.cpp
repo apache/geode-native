@@ -29,11 +29,11 @@ using apache::geode::client::Log;
 using apache::geode::client::LogFn;
 using apache::geode::client::LogLevel;
 
-int numOfLinesInFile(const char* fname) {
+int numOfLinesInFile(const char *fname) {
   char line[2048];
-  char* read;
+  char *read;
   int ln_cnt = 0;
-  FILE* fp = fopen(fname, "r");
+  FILE *fp = fopen(fname, "r");
   if (fp == nullptr) {
     return -1;
   }
@@ -107,7 +107,7 @@ BEGIN_TEST(REINIT)
     Log::init(LogLevel::Debug, "logfile");
     try {
       Log::init(LogLevel::Debug, "logfile1");
-    } catch (IllegalStateException& ex) {
+    } catch (IllegalStateException &ex) {
       printf("Got Illegal state exception while calling init again\n");
       printf("Exception mesage = %s\n", ex.what());
       exceptiongot = 1;

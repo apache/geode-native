@@ -15,10 +15,13 @@
  * limitations under the License.
  */
 #include "Position.hpp"
-#include <cwchar>
+
 #include <wchar.h>
-#include <geode/DataOutput.hpp>
+
+#include <cwchar>
+
 #include <geode/DataInput.hpp>
+#include <geode/DataOutput.hpp>
 
 namespace testobject {
 

@@ -75,10 +75,10 @@ class KillServerThread : public ACE_Task_Base {
 bool isLocator = false;
 bool isLocalServer = false;
 
-const char* qRegionNames[] = {"Portfolios", "Positions"};
-KillServerThread* kst = nullptr;
-const char* poolNames[] = {"Pool1", "Pool2", "Pool3"};
-const char* locHostPort =
+const char *qRegionNames[] = {"Portfolios", "Positions"};
+KillServerThread *kst = nullptr;
+const char *poolNames[] = {"Pool1", "Pool2", "Pool3"};
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 bool isPoolConfig = false;  // To track if pool case is running
 
@@ -130,7 +130,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, RegisterTypesAndCreatePoolAndRegion)
           PositionPdx::createDeserializable);
       serializationRegistry->addPdxSerializableType(
           PortfolioPdx::createDeserializable);
-    } catch (const IllegalStateException&) {
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
@@ -192,12 +192,12 @@ DUNIT_TASK_DEFINITION(CLIENT1, ValidateQueryExecutionAcrossServerFailure)
       }
 
       kst->stop();
-    } catch (IllegalStateException& ise) {
+    } catch (IllegalStateException &ise) {
       char isemsg[500] = {0};
       ACE_OS::snprintf(isemsg, 499, "IllegalStateException: %s", ise.what());
       LOG(isemsg);
       FAIL(isemsg);
-    } catch (Exception& excp) {
+    } catch (Exception &excp) {
       char excpmsg[500] = {0};
       ACE_OS::snprintf(excpmsg, 499, "Exception: %s", excp.what());
       LOG(excpmsg);

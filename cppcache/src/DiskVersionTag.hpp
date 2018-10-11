@@ -20,8 +20,8 @@
 #ifndef GEODE_DISKVERSIONTAG_H_
 #define GEODE_DISKVERSIONTAG_H_
 
-#include "VersionTag.hpp"
 #include "DiskStoreId.hpp"
+#include "VersionTag.hpp"
 
 namespace apache {
 namespace geode {

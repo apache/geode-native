@@ -20,8 +20,8 @@
 #ifndef GEODE_TCRPOOLENDPOINT_H_
 #define GEODE_TCRPOOLENDPOINT_H_
 
-#include "TcrEndpoint.hpp"
 #include "PoolStatistics.hpp"
+#include "TcrEndpoint.hpp"
 
 namespace apache {
 namespace geode {

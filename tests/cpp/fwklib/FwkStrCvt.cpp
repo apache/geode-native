@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-#include "fwklib/FwkStrCvt.hpp"
-#include "fwklib/FwkLog.hpp"
+#include <fwklib/FwkLog.hpp>
+#include <fwklib/FwkStrCvt.hpp>
 
 namespace apache {
 namespace geode {

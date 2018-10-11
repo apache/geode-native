@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
+#include "EnumInfo.hpp"
+
 #include <geode/DataInput.hpp>
 
-#include "EnumInfo.hpp"
 #include "Utils.hpp"
 
 namespace apache {

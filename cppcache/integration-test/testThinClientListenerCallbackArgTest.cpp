@@ -44,7 +44,7 @@ using apache::geode::client::testing::TallyWriter;
 
 bool isLocalServer = true;
 static bool isLocator = false;
-const char* locatorsG =
+const char *locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 #include "LocatorHelper.hpp"
 
@@ -87,11 +87,11 @@ class CallbackListener : public CacheListener {
   int getRegionInvalidates() { return m_regionInvalidate; }
   int getRegionDestroys() { return m_regionDestroy; }
   int getRegionClear() { return m_regionClear; }
-  void setCallBackArg(const std::shared_ptr<Cacheable>& callbackArg) {
+  void setCallBackArg(const std::shared_ptr<Cacheable> &callbackArg) {
     m_callbackArg = callbackArg;
   }
 
-  void check(std::shared_ptr<Cacheable> eventCallback, int& updateEvent) {
+  void check(std::shared_ptr<Cacheable> eventCallback, int &updateEvent) {
     if (m_callbackArg != nullptr) {
       try {
         auto mCallbkArg = std::dynamic_pointer_cast<Portfolio>(m_callbackArg);
@@ -110,7 +110,7 @@ class CallbackListener : public CacheListener {
         } else {
           LOGFINE("values are NOT same");
         }
-      } catch (const ClassCastException& ex) {
+      } catch (const ClassCastException &ex) {
         LOGFINE(" in class cast exception %s ", ex.what());
         try {
           auto fromCallback =
@@ -127,45 +127,45 @@ class CallbackListener : public CacheListener {
           } else {
             LOGFINE("values are NOT same");
           }
-        } catch (const ClassCastException& ex2) {
+        } catch (const ClassCastException &ex2) {
           LOGFINE(" in class cast second exception %s ", ex2.what());
         }
       }
     }
   }
 
-  void checkcallbackArg(const EntryEvent& event, int& updateEvent) {
+  void checkcallbackArg(const EntryEvent &event, int &updateEvent) {
     check(event.getCallbackArgument(), updateEvent);
   }
 
-  void checkcallbackArg(const RegionEvent& event, int& updateEvent) {
+  void checkcallbackArg(const RegionEvent &event, int &updateEvent) {
     check(event.getCallbackArgument(), updateEvent);
   }
 
-  virtual void afterCreate(const EntryEvent& event) {
+  virtual void afterCreate(const EntryEvent &event) {
     checkcallbackArg(event, m_creates);
   }
 
-  virtual void afterUpdate(const EntryEvent& event) {
+  virtual void afterUpdate(const EntryEvent &event) {
     checkcallbackArg(event, m_updates);
   }
 
-  virtual void afterInvalidate(const EntryEvent& event) {
+  virtual void afterInvalidate(const EntryEvent &event) {
     checkcallbackArg(event, m_invalidates);
   }
 
-  virtual void afterDestroy(const EntryEvent& event) {
+  virtual void afterDestroy(const EntryEvent &event) {
     checkcallbackArg(event, m_destroys);
   }
 
-  virtual void afterRegionInvalidate(const RegionEvent& event) {
+  virtual void afterRegionInvalidate(const RegionEvent &event) {
     checkcallbackArg(event, m_regionInvalidate);
   }
 
-  virtual void afterRegionDestroy(const RegionEvent& event) {
+  virtual void afterRegionDestroy(const RegionEvent &event) {
     checkcallbackArg(event, m_regionDestroy);
   }
-  virtual void afterRegionClear(const RegionEvent& event) {
+  virtual void afterRegionClear(const RegionEvent &event) {
     checkcallbackArg(event, m_regionClear);
   }
 };
@@ -174,7 +174,7 @@ std::shared_ptr<CallbackListener> reg1Listener1 = nullptr;
 std::shared_ptr<CacheableString> callBackStrPtr;
 std::shared_ptr<Cacheable> callBackPortFolioPtr;
 
-void setCacheListener(const char* regName,
+void setCacheListener(const char *regName,
                       std::shared_ptr<CallbackListener> regListener) {
   auto reg = getHelper()->getRegion(regName);
   auto attrMutator = reg->getAttributesMutator();

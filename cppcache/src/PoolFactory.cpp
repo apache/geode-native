@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-#include <ace/Recursive_Thread_Mutex.h>
 #include <ace/INET_Addr.h>
+#include <ace/Recursive_Thread_Mutex.h>
 
-#include <geode/PoolFactory.hpp>
 #include <geode/Pool.hpp>
-#include <geode/SystemProperties.hpp>
+#include <geode/PoolFactory.hpp>
 #include <geode/PoolManager.hpp>
+#include <geode/SystemProperties.hpp>
 
 #include "CacheImpl.hpp"
+#include "CacheRegionHelper.hpp"
 #include "PoolAttributes.hpp"
 #include "ThinClientPoolDM.hpp"
 #include "ThinClientPoolHADM.hpp"
 #include "ThinClientPoolStickyDM.hpp"
 #include "ThinClientPoolStickyHADM.hpp"
-#include "CacheRegionHelper.hpp"
 
 namespace apache {
 namespace geode {

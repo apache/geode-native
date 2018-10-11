@@ -24,8 +24,9 @@
 
 #include <chrono>
 #include <memory>
-#include "internal/geode_globals.hpp"
+
 #include "TransactionId.hpp"
+#include "internal/geode_globals.hpp"
 
 namespace apache {
 namespace geode {

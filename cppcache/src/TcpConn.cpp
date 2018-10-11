@@ -15,22 +15,23 @@
  * limitations under the License.
  */
 
+#include "TcpConn.hpp"
+
 #include <memory.h>
 
 #include <ace/INET_Addr.h>
-#include <ace/SOCK_IO.h>
-#include <ace/SOCK_Connector.h>
-#include <ace/SOCK_Acceptor.h>
 #include <ace/OS.h>
+#include <ace/SOCK_Acceptor.h>
+#include <ace/SOCK_Connector.h>
+#include <ace/SOCK_IO.h>
 
 #include <geode/SystemProperties.hpp>
 #include <geode/internal/chrono/duration.hpp>
 
-#include "DistributedSystem.hpp"
-#include "TcpConn.hpp"
 #include "CacheImpl.hpp"
-#include "util/Log.hpp"
+#include "DistributedSystem.hpp"
 #include "config.h"
+#include "util/Log.hpp"
 
 namespace apache {
 namespace geode {

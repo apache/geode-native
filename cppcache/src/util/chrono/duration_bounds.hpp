@@ -20,8 +20,8 @@
 #ifndef GEODE_UTIL_CHRONO_DURATION_BOUNDS_H_
 #define GEODE_UTIL_CHRONO_DURATION_BOUNDS_H_
 
-#include <chrono>
 #include <algorithm>
+#include <chrono>
 
 #include <geode/ExceptionTypes.hpp>
 

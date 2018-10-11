@@ -29,14 +29,14 @@ using apache::geode::client::AuthInitialize;
 using apache::geode::client::Cacheable;
 using apache::geode::client::testframework::security::CredentialGenerator;
 
-const char* locHostPort =
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
-const char* regionNamesAuth[] = {"DistRegionAck", "DistRegionNoAck"};
+const char *regionNamesAuth[] = {"DistRegionAck", "DistRegionNoAck"};
 std::shared_ptr<CredentialGenerator> credentialGeneratorHandler;
 
 std::string getXmlPath() {
   char xmlPath[1000] = {'\0'};
-  const char* path = ACE_OS::getenv("TESTSRC");
+  const char *path = ACE_OS::getenv("TESTSRC");
   ASSERT(path != NULL,
          "Environment variable TESTSRC for test source directory is not set.");
   strncpy(xmlPath, path, strlen(path) - strlen("cppcache"));
@@ -53,8 +53,8 @@ class UserPasswordAuthInit : public AuthInitialize {
   ~UserPasswordAuthInit() noexcept override = default;
 
   std::shared_ptr<Properties> getCredentials(
-      const std::shared_ptr<Properties>& securityprops,
-      const std::string&) override {
+      const std::shared_ptr<Properties> &securityprops,
+      const std::string &) override {
     // LOGDEBUG("UserPasswordAuthInit: inside userPassword::getCredentials");
     std::shared_ptr<Cacheable> userName;
     if (securityprops == nullptr ||
@@ -121,7 +121,7 @@ DUNIT_TASK_DEFINITION(LOCATORSERVER, CreateServer1)
                cmdServerAuthenticator.c_str());
         CacheHelper::initServer(
             1, nullptr, locHostPort,
-            const_cast<char*>(cmdServerAuthenticator.c_str()));
+            const_cast<char *>(cmdServerAuthenticator.c_str()));
         LOG("Server1 started");
       }
     } catch (...) {
@@ -140,7 +140,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, TestAuthentication)
       auto regPtr0 = getHelper()->getRegion(regionNamesAuth[0]);
       regPtr0->containsKeyOnServer(
           apache::geode::client::CacheableKey::create(keys[0]));
-    } catch (const apache::geode::client::Exception& other) {
+    } catch (const apache::geode::client::Exception &other) {
       LOG(other.getStackTrace());
       FAIL(other.what());
     }

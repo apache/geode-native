@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-#include <gtest/gtest.h>
-
 #include <CacheXmlParser.hpp>
+
+#include <gtest/gtest.h>
 
 using apache::geode::client::CacheXmlParser;
 

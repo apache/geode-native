@@ -14,18 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "ace/Timer_Queue.h"
-#include "ace/Timer_Heap.h"
-#include "ace/Reactor.h"
-#include "ace/svc_export.h"
-#include "ace/Timer_Heap_T.h"
-#include "ace/Timer_Queue_Adapters.h"
+#include "TombstoneExpiryHandler.hpp"
 
 #include "CacheImpl.hpp"
 #include "ExpiryTaskManager.hpp"
-#include "TombstoneExpiryHandler.hpp"
 #include "MapEntry.hpp"
 #include "RegionInternal.hpp"
+#include "ace/Reactor.h"
+#include "ace/Timer_Heap.h"
+#include "ace/Timer_Heap_T.h"
+#include "ace/Timer_Queue.h"
+#include "ace/Timer_Queue_Adapters.h"
+#include "ace/svc_export.h"
 
 namespace apache {
 namespace geode {

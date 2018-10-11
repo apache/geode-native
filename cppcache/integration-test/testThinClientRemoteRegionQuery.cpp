@@ -48,11 +48,11 @@ using apache::geode::client::QueryException;
 bool isLocalServer = false;
 bool isLocator = false;
 
-const char* poolNames[] = {"Pool1", "Pool2", "Pool3"};
-const char* locHostPort =
+const char *poolNames[] = {"Pool1", "Pool2", "Pool3"};
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 static bool m_isPdx = false;
-const char* qRegionNames[] = {"Portfolios", "Positions", "Portfolios2",
+const char *qRegionNames[] = {"Portfolios", "Positions", "Portfolios2",
                               "Portfolios3"};
 
 DUNIT_TASK_DEFINITION(LOCATOR, StartLocator)
@@ -103,7 +103,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOnePoolLocator)
           PositionPdx::createDeserializable);
       serializationRegistry->addPdxSerializableType(
           PortfolioPdx::createDeserializable);
-    } catch (const IllegalStateException&) {
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
     createPool(poolNames[0], locHostPort, nullptr, 0, true);
@@ -132,7 +132,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepTwo)
     auto regPtr2 = getHelper()->getRegion(qRegionNames[2]);
     auto regPtr3 = getHelper()->getRegion(qRegionNames[3]);
 
-    QueryHelper* qh = &QueryHelper::getHelper();
+    QueryHelper *qh = &QueryHelper::getHelper();
 
     char buf[100];
     sprintf(buf, "SetSize %zd, NumSets %zd", qh->getPortfolioSetSize(),
@@ -350,7 +350,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
           LOG(logmsg);
           doAnyErrorOccured = true;
         }
-      } catch (const QueryException&) {
+      } catch (const QueryException &) {
         if (regionQueryRowCounts[i] == 0 || regionQueryRowCounts[i] == 1) {
           char logmsg[100] = {0};
           ACE_OS::sprintf(

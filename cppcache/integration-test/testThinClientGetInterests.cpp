@@ -23,7 +23,7 @@
 
 #include "locator_globals.hpp"
 
-const char* durableIds[] = {"DurableId1", "DurableId2"};
+const char *durableIds[] = {"DurableId1", "DurableId2"};
 
 DUNIT_TASK(SERVER1, StartServer)
   {
@@ -70,12 +70,12 @@ DUNIT_TASK(CLIENT1, SetupClient1)
     auto vreg = regPtr0->getInterestListRegex();
     for (size_t i = 0; i < vkey.size(); i++) {
       char buf[1024];
-      const char* key =
+      const char *key =
           std::dynamic_pointer_cast<CacheableString>(vkey[i])->value().c_str();
       sprintf(buf, "key[%zd]=%s", i, key);
       LOG(buf);
       bool found = false;
-      for (const auto& k : vkey) {
+      for (const auto &k : vkey) {
         if (!strcmp(key, k->toString().c_str())) {
           found = true;
           break;
@@ -87,7 +87,7 @@ DUNIT_TASK(CLIENT1, SetupClient1)
     for (size_t i = 0; i < vreg.size(); i++) {
       char buf[1024];
       auto ptr = vreg[i];
-      const char* reg = ptr->value().c_str();
+      const char *reg = ptr->value().c_str();
       sprintf(buf, "regex[%zd]=%s", i, reg);
       LOG(buf);
       bool found = false;

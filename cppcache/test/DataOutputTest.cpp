@@ -16,15 +16,16 @@
  */
 
 #include <stdint.h>
+
 #include <limits>
 #include <random>
 
-#include <gtest/gtest.h>
-
 #include <boost/endian/conversion.hpp>
 
-#include <geode/DataOutput.hpp>
+#include <gtest/gtest.h>
+
 #include <geode/CacheFactory.hpp>
+#include <geode/DataOutput.hpp>
 
 #include "ByteArrayFixture.hpp"
 #include "DataOutputInternal.hpp"

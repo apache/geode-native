@@ -22,12 +22,13 @@
  */
 
 #include "PdxType.hpp"
-#include "PdxHelper.hpp"
-#include "PdxFieldType.hpp"
-#include "Utils.hpp"
-#include "PdxTypeRegistry.hpp"
-#include "PdxHelper.hpp"
+
 #include <ace/OS.h>
+
+#include "PdxFieldType.hpp"
+#include "PdxHelper.hpp"
+#include "PdxTypeRegistry.hpp"
+#include "Utils.hpp"
 
 namespace apache {
 namespace geode {

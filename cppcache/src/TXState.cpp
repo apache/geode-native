@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 
+#include "TXState.hpp"
+
 #include <geode/Cache.hpp>
 #include <geode/CacheTransactionManager.hpp>
 
-#include "TXState.hpp"
+#include "ThinClientPoolDM.hpp"
 #include "TransactionalOperation.hpp"
 #include "TssConnectionWrapper.hpp"
-#include "ThinClientPoolDM.hpp"
 #include "util/exception.hpp"
 
 namespace apache {

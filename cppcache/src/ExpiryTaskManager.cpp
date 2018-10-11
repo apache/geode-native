@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-#include "config.h"
 #include "ExpiryTaskManager.hpp"
-#include "util/Log.hpp"
-#include "DistributedSystem.hpp"
+
 #include "Assert.hpp"
+#include "DistributedSystem.hpp"
 #include "DistributedSystemImpl.hpp"
+#include "config.h"
+#include "util/Log.hpp"
 
 #if defined(_WIN32)
 #include <ace/WFMO_Reactor.h>

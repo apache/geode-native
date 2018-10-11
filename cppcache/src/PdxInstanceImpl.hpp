@@ -20,16 +20,16 @@
 #ifndef GEODE_PDXINSTANCEIMPL_H_
 #define GEODE_PDXINSTANCEIMPL_H_
 
-#include <vector>
 #include <map>
+#include <vector>
 
-#include <geode/PdxInstance.hpp>
-#include <geode/WritablePdxInstance.hpp>
-#include <geode/PdxSerializable.hpp>
 #include <geode/PdxFieldTypes.hpp>
+#include <geode/PdxInstance.hpp>
+#include <geode/PdxSerializable.hpp>
+#include <geode/WritablePdxInstance.hpp>
 
-#include "PdxType.hpp"
 #include "PdxLocalWriter.hpp"
+#include "PdxType.hpp"
 #include "PdxTypeRegistry.hpp"
 
 namespace apache {

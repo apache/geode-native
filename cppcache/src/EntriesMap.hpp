@@ -24,9 +24,9 @@
 
 #include <memory>
 
-#include <geode/internal/geode_globals.hpp>
-#include <geode/RegionEntry.hpp>
 #include <geode/CacheableKey.hpp>
+#include <geode/RegionEntry.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 #include "MapEntry.hpp"
 #include "MapSegment.hpp"

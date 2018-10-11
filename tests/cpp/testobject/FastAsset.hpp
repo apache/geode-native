@@ -25,11 +25,12 @@
  */
 
 #include <string>
-#include "TimestampedObject.hpp"
+
 #include <ace/ACE.h>
 #include <ace/OS.h>
 #include <ace/Time_Value.h>
 
+#include "TimestampedObject.hpp"
 #include "testobject_export.h"
 
 namespace testobject {

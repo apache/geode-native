@@ -14,18 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <geode/internal/geode_globals.hpp>
-#include "ThinClientBaseDM.hpp"
 #include "ThinClientCacheDistributionManager.hpp"
-#include "TcrMessage.hpp"
-#include "TcrEndpoint.hpp"
-#include <geode/ExceptionTypes.hpp>
-#include "ReadWriteLock.hpp"
-#include "ThinClientRegion.hpp"
-#include "RemoteQueryService.hpp"
-#include "CacheImpl.hpp"
-#include <geode/CacheAttributes.hpp>
+
 #include <algorithm>
+
+#include <geode/CacheAttributes.hpp>
+#include <geode/ExceptionTypes.hpp>
+#include <geode/internal/geode_globals.hpp>
+
+#include "CacheImpl.hpp"
+#include "ReadWriteLock.hpp"
+#include "RemoteQueryService.hpp"
+#include "TcrEndpoint.hpp"
+#include "TcrMessage.hpp"
+#include "ThinClientBaseDM.hpp"
+#include "ThinClientRegion.hpp"
 
 namespace apache {
 namespace geode {

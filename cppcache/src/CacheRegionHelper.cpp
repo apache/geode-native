@@ -16,8 +16,10 @@
  */
 
 #include "CacheRegionHelper.hpp"
-#include "CacheImpl.hpp"
+
 #include <geode/AuthenticatedView.hpp>
+
+#include "CacheImpl.hpp"
 
 namespace apache {
 namespace geode {

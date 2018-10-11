@@ -15,9 +15,11 @@
  * limitations under the License.
  */
 
-#include "fwklib/GsRandom.hpp"
-#include "ArrayOfByte.hpp"
 #include "DeltaPSTObject.hpp"
+
+#include <fwklib/GsRandom.hpp>
+
+#include "ArrayOfByte.hpp"
 
 namespace testobject {
 

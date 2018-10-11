@@ -20,15 +20,15 @@
 #ifndef GEODE_DATAOUTPUT_H_
 #define GEODE_DATAOUTPUT_H_
 
+#include <algorithm>
+#include <cstdlib>
 #include <cstring>
 #include <string>
-#include <cstdlib>
-#include <algorithm>
 
-#include "internal/geode_globals.hpp"
+#include "CacheableString.hpp"
 #include "ExceptionTypes.hpp"
 #include "Serializable.hpp"
-#include "CacheableString.hpp"
+#include "internal/geode_globals.hpp"
 
 namespace apache {
 namespace geode {

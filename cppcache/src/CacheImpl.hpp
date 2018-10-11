@@ -24,28 +24,28 @@
 #include <memory>
 
 #include <ace/ACE.h>
-#include <ace/Time_Value.h>
 #include <ace/Guard_T.h>
 #include <ace/Recursive_Thread_Mutex.h>
+#include <ace/Time_Value.h>
 
-#include <geode/internal/geode_globals.hpp>
 #include <geode/Cache.hpp>
 #include <geode/CacheAttributes.hpp>
-#include <geode/TypeRegistry.hpp>
 #include <geode/PoolManager.hpp>
+#include <geode/TypeRegistry.hpp>
+#include <geode/internal/geode_globals.hpp>
 
-#include "DistributedSystem.hpp"
-#include "MapWithLock.hpp"
-#include "Condition.hpp"
-#include "TcrConnectionManager.hpp"
-#include "EvictionController.hpp"
-#include "RemoteQueryService.hpp"
 #include "AdminRegion.hpp"
 #include "CachePerfStats.hpp"
-#include "PdxTypeRegistry.hpp"
-#include "MemberListForVersionStamp.hpp"
 #include "ClientProxyMembershipIDFactory.hpp"
+#include "Condition.hpp"
+#include "DistributedSystem.hpp"
+#include "EvictionController.hpp"
+#include "MapWithLock.hpp"
+#include "MemberListForVersionStamp.hpp"
 #include "NonCopyable.hpp"
+#include "PdxTypeRegistry.hpp"
+#include "RemoteQueryService.hpp"
+#include "TcrConnectionManager.hpp"
 
 #define DEFAULT_LRU_MAXIMUM_ENTRIES 100000
 /** @todo period '.' consistency */

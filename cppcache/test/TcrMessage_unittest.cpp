@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
+#include <TcrMessage.hpp>
 #include <iostream>
 
-#include "gtest/gtest.h"
-
-#include <geode/CqState.hpp>
 #include <geode/CacheFactory.hpp>
-#include <TcrMessage.hpp>
+#include <geode/CqState.hpp>
+
 #include "ByteArrayFixture.hpp"
+#include "gtest/gtest.h"
 
 namespace {
 

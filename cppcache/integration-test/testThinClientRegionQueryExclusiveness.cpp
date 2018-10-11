@@ -49,11 +49,11 @@ using testobject::Position;
 
 bool isLocator = false;
 bool isLocalServer = false;
-const char* poolNames[] = {"Pool1", "Pool2", "Pool3"};
-const char* locHostPort =
+const char *poolNames[] = {"Pool1", "Pool2", "Pool3"};
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
-const char* qRegionNames[] = {"Portfolios", "Positions"};
+const char *qRegionNames[] = {"Portfolios", "Positions"};
 
 void clientOperations() {
   initClient(true);
@@ -66,7 +66,7 @@ void clientOperations() {
         Position::createDeserializable, 2);
     serializationRegistry->addDataSerializableType(
         Portfolio::createDeserializable, 3);
-  } catch (const IllegalStateException&) {
+  } catch (const IllegalStateException &) {
     // ignore exception
   }
 

@@ -20,22 +20,22 @@
 #ifndef GEODE_PDXTYPEREGISTRY_H_
 #define GEODE_PDXTYPEREGISTRY_H_
 
-#include <unordered_map>
 #include <map>
+#include <unordered_map>
 
 #include <ace/ACE.h>
 #include <ace/Recursive_Thread_Mutex.h>
 
-#include <geode/PdxSerializable.hpp>
 #include <geode/Cache.hpp>
+#include <geode/PdxSerializable.hpp>
 #include <geode/internal/functional.hpp>
 
-#include "PdxRemotePreservedData.hpp"
-#include "ReadWriteLock.hpp"
-#include "PdxType.hpp"
 #include "EnumInfo.hpp"
-#include "PreservedDataExpiryHandler.hpp"
 #include "ExpiryTaskManager.hpp"
+#include "PdxRemotePreservedData.hpp"
+#include "PdxType.hpp"
+#include "PreservedDataExpiryHandler.hpp"
+#include "ReadWriteLock.hpp"
 
 namespace apache {
 namespace geode {

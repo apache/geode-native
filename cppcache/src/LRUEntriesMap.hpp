@@ -21,17 +21,17 @@
 #define GEODE_LRUENTRIESMAP_H_
 
 #include <atomic>
-#include <geode/internal/geode_globals.hpp>
+
 #include <geode/Cache.hpp>
+#include <geode/internal/geode_globals.hpp>
+
 #include "ConcurrentEntriesMap.hpp"
 #include "LRUAction.hpp"
 #include "LRUList.hpp"
 #include "LRUMapEntry.hpp"
 #include "MapEntryT.hpp"
-
-#include "util/concurrent/spinlock_mutex.hpp"
-
 #include "NonCopyable.hpp"
+#include "util/concurrent/spinlock_mutex.hpp"
 
 namespace apache {
 namespace geode {

@@ -20,15 +20,17 @@
 #ifndef GEODE_THINCLIENTLOCATORHELPER_H_
 #define GEODE_THINCLIENTLOCATORHELPER_H_
 
-#include <string>
-#include <geode/internal/geode_globals.hpp>
-#include "TcrEndpoint.hpp"
-#include "ServerLocation.hpp"
-#include <set>
 #include <list>
+#include <set>
+#include <string>
+
+#include <geode/internal/geode_globals.hpp>
+
 #include "ClientProxyMembershipID.hpp"
 #include "GetAllServersRequest.hpp"
 #include "GetAllServersResponse.hpp"
+#include "ServerLocation.hpp"
+#include "TcrEndpoint.hpp"
 
 namespace apache {
 namespace geode {

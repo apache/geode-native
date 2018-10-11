@@ -24,14 +24,14 @@
 #pragma warning(disable : 4786)
 #endif  // _MSC_VER > 1000
 
-#include <string>
 #include <map>
+#include <string>
 
-#include <geode/internal/geode_globals.hpp>
 #include <geode/ExceptionTypes.hpp>
+#include <geode/internal/geode_globals.hpp>
 
-#include "RegionConfig.hpp"
 #include "DistributedSystem.hpp"
+#include "RegionConfig.hpp"
 
 //
 // Sneaky structure forward decl;

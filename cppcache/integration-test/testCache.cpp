@@ -35,10 +35,10 @@ using apache::geode::client::RegionAttributesFactory;
 
 BEGIN_TEST(CacheFunction)
   const uint32_t totalSubRegions = 3;
-  const char* regionName = "TESTCACHE_ROOT_REGION";
-  const char* subRegionName1 = "TESTCACHE_SUB_REGION1";
-  const char* subRegionName2 = "TESTCACHE_SUB_REGION2";
-  const char* subRegionName21 = "TESTCACHE_SUB_REGION21";
+  const char *regionName = "TESTCACHE_ROOT_REGION";
+  const char *subRegionName1 = "TESTCACHE_SUB_REGION1";
+  const char *subRegionName2 = "TESTCACHE_SUB_REGION2";
+  const char *subRegionName21 = "TESTCACHE_SUB_REGION21";
   std::shared_ptr<Cache> cptr;
   if (cptr != nullptr) {
     std::cout << "cptr is not null" << std::endl;
@@ -60,7 +60,7 @@ BEGIN_TEST(CacheFunction)
   try {
     auto cacheImpl = CacheRegionHelper::getCacheImpl(cptr.get());
     cacheImpl->createRegion(regionName, regionAttributes, rptr);
-  } catch (Exception& ex) {
+  } catch (Exception &ex) {
     std::cout << ex.what() << std::endl;
     ASSERT(false, "attribute create failed");
   }
@@ -68,7 +68,7 @@ BEGIN_TEST(CacheFunction)
   std::shared_ptr<Region> subRptr1;
   try {
     subRptr1 = rptr->createSubregion(subRegionName1, regionAttributes);
-  } catch (Exception& ex) {
+  } catch (Exception &ex) {
     std::cout << ex.what() << std::endl;
     ASSERT(false, "subregion create failed");
   }
@@ -76,7 +76,7 @@ BEGIN_TEST(CacheFunction)
   std::shared_ptr<Region> subRptr2;
   try {
     subRptr2 = rptr->createSubregion(subRegionName2, regionAttributes);
-  } catch (Exception& ex) {
+  } catch (Exception &ex) {
     std::cout << ex.what() << std::endl;
     ASSERT(false, "subregion create failed");
   }
@@ -85,7 +85,7 @@ BEGIN_TEST(CacheFunction)
   std::shared_ptr<Region> subRptr21;
   try {
     subRptr21 = subRptr2->createSubregion(subRegionName21, regionAttributes);
-  } catch (Exception& ex) {
+  } catch (Exception &ex) {
     std::cout << ex.what() << std::endl;
     ASSERT(false, "subregion create failed");
   }
@@ -121,7 +121,7 @@ BEGIN_TEST(CacheFunction)
   std::cout << "find region:" << regionName << std::endl;
   try {
     region = cptr->getRegion(root.c_str());
-  } catch (Exception& ex) {
+  } catch (Exception &ex) {
     std::cout << ex.what() << std::endl;
     ASSERT(false, "getRegion");
   }
@@ -133,7 +133,7 @@ BEGIN_TEST(CacheFunction)
   std::cout << "find region:" << subRegionName1 << std::endl;
   try {
     region = cptr->getRegion(subRegion1.c_str());
-  } catch (Exception& ex) {
+  } catch (Exception &ex) {
     std::cout << ex.what() << std::endl;
     ASSERT(false, "getRegion");
   }
@@ -145,7 +145,7 @@ BEGIN_TEST(CacheFunction)
   std::cout << "find region:" << subRegionName21 << std::endl;
   try {
     region = cptr->getRegion(subRegion21.c_str());
-  } catch (Exception& ex) {
+  } catch (Exception &ex) {
     std::cout << ex.what() << std::endl;
     ASSERT(false, "getRegion");
   }
@@ -158,7 +158,7 @@ BEGIN_TEST(CacheFunction)
   std::cout << "find region:" << subRegionName21 << std::endl;
   try {
     region = cptr->getRegion(subRegion21.c_str());
-  } catch (Exception& ex) {
+  } catch (Exception &ex) {
     std::cout << ex.what() << std::endl;
     ASSERT(false, "getRegion");
   }
@@ -171,7 +171,7 @@ BEGIN_TEST(CacheFunction)
   std::cout << "find region:" << notExist << std::endl;
   try {
     region = cptr->getRegion(notExist);
-  } catch (Exception& ex) {
+  } catch (Exception &ex) {
     std::cout << ex.what() << std::endl;
     ASSERT(false, "getRegion");
   }

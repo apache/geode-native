@@ -25,8 +25,8 @@
 
 #include <ace/Semaphore.h>
 
-#include "Utils.hpp"
 #include "AppDomainContext.hpp"
+#include "Utils.hpp"
 
 namespace apache {
 namespace geode {

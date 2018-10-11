@@ -20,9 +20,9 @@
 #ifndef INTEGRATION_TEST_FRAMEWORK_FRAMEWORK_H
 #define INTEGRATION_TEST_FRAMEWORK_FRAMEWORK_H
 
+#include <chrono>
 #include <cstdint>
 #include <random>
-#include <chrono>
 
 class Framework {
  public:

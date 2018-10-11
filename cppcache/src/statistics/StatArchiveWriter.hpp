@@ -20,24 +20,24 @@
  * limitations under the License.
  */
 
-#include <map>
-#include <list>
 #include <chrono>
+#include <list>
+#include <map>
 
-#include <geode/internal/geode_globals.hpp>
-#include <geode/ExceptionTypes.hpp>
 #include <geode/Cache.hpp>
 #include <geode/DataOutput.hpp>
+#include <geode/ExceptionTypes.hpp>
+#include <geode/internal/geode_globals.hpp>
 
-#include "StatsDef.hpp"
-#include "Statistics.hpp"
-#include "StatisticDescriptor.hpp"
-#include "StatisticDescriptorImpl.hpp"
-#include "StatisticsType.hpp"
-#include "HostStatSampler.hpp"
-#include "../util/Log.hpp"
 #include "../NonCopyable.hpp"
 #include "../SerializationRegistry.hpp"
+#include "../util/Log.hpp"
+#include "HostStatSampler.hpp"
+#include "StatisticDescriptor.hpp"
+#include "StatisticDescriptorImpl.hpp"
+#include "Statistics.hpp"
+#include "StatisticsType.hpp"
+#include "StatsDef.hpp"
 
 /**
  * some constants to be used while archiving

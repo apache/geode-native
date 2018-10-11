@@ -20,8 +20,8 @@
 #ifndef GEODE_EXCEPTIONTYPES_H_
 #define GEODE_EXCEPTIONTYPES_H_
 
-#include "internal/geode_globals.hpp"
 #include "geode/Exception.hpp"
+#include "internal/geode_globals.hpp"
 
 namespace apache {
 namespace geode {

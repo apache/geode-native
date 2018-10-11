@@ -16,15 +16,15 @@
  */
 
 #include <cstdio>
-#include <string>
 #include <sstream>
+#include <string>
 
 #include <geode/ExceptionTypes.hpp>
 
-#include "TXState.hpp"
-#include "TSSTXStateWrapper.hpp"
-#include "util/Log.hpp"
 #include "ErrType.hpp"
+#include "TSSTXStateWrapper.hpp"
+#include "TXState.hpp"
+#include "util/Log.hpp"
 
 namespace apache {
 namespace geode {

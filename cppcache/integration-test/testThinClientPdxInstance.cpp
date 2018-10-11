@@ -68,7 +68,7 @@ using apache::geode::client::WritablePdxInstance;
 
 bool isLocalServer = false;
 
-CacheHelper* cacheHelper = nullptr;
+CacheHelper *cacheHelper = nullptr;
 
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
@@ -77,10 +77,10 @@ static bool isLocator = false;
 const bool USE_ACK = true;
 const bool NO_ACK = false;
 
-const char* locatorsG =
+const char *locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
-const char* regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
+const char *regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
 
 template <typename T1, typename T2>
 bool genericValCompare(T1 value1, T2 value2) /*const*/
@@ -105,8 +105,8 @@ bool genericCompare(std::vector<T1> value1, std::vector<T2> value2,
 }
 
 template <typename T1, typename T2>
-bool generic2DCompare(T1** value1, T2** value2, int length,
-                      int* arrLengths) /*const*/
+bool generic2DCompare(T1 **value1, T2 **value2, int length,
+                      int *arrLengths) /*const*/
 {
   for (int j = 0; j < length; j++) {
     for (int k = 0; k < arrLengths[j]; k++) {
@@ -131,7 +131,7 @@ void initClient(const bool isthinClient, bool isPdxReadSerailized) {
   ASSERT(cacheHelper, "Failed to create a CacheHelper client instance.");
 }
 static int clientWithXml = 0;
-void initClient(const char* clientXmlFile) {
+void initClient(const char *clientXmlFile) {
   if (cacheHelper == nullptr) {
     auto config = Properties::create();
     if (clientWithXml > 2) config->insert("grid-client", "true");
@@ -147,12 +147,12 @@ void cleanProc() {
     cacheHelper = nullptr;
   }
 }
-CacheHelper* getHelper() {
+CacheHelper *getHelper() {
   ASSERT(cacheHelper != nullptr, "No cacheHelper initialized.");
   return cacheHelper;
 }
-void createPooledRegion(const char* name, bool ackMode, const char* locators,
-                        const char* poolname,
+void createPooledRegion(const char *name, bool ackMode, const char *locators,
+                        const char *poolname,
                         bool clientNotificationEnabled = false,
                         bool cachingEnable = true) {
   LOG("createRegion_Pool() entered.");
@@ -264,7 +264,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, putPdxWithIdentityField)
       serializationRegistry->addPdxSerializableType(
           SerializePdx::createDeserializable);
       LOG("SerializePdx Registered Successfully....");
-    } catch (apache::geode::client::IllegalStateException& /* ex*/) {
+    } catch (apache::geode::client::IllegalStateException & /* ex*/) {
       LOG("SerializePdx IllegalStateException");
     }
 
@@ -291,7 +291,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, putCacheableObjectArrayWithPdxFields)
       serializationRegistry->addPdxSerializableType(
           Address::createDeserializable);
       LOG("Address Registered Successfully....");
-    } catch (apache::geode::client::IllegalStateException& /* ex*/) {
+    } catch (apache::geode::client::IllegalStateException & /* ex*/) {
       LOG("Address IllegalStateException");
     }
 
@@ -340,7 +340,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, verifyPdxIdentityField)
       serializationRegistry->addPdxSerializableType(
           SerializePdx::createDeserializable);
       LOG("SerializePdx Registered Successfully....");
-    } catch (apache::geode::client::IllegalStateException& /* ex*/) {
+    } catch (apache::geode::client::IllegalStateException & /* ex*/) {
       LOG("SerializePdx IllegalStateException");
     }
 
@@ -351,7 +351,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, verifyPdxIdentityField)
     LOG("PdxInstancePtr get complete");
 
     LOG("Statistics for for (PdxTests.PdxType) PdxInstance");
-    LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(rptr.get()));
+    LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(rptr.get()));
 
     LOGINFO(
         "pdxInstanceDeserializations for (PdxTests.PdxType) PdxInstance  = %d ",
@@ -400,7 +400,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, verifyPdxIdentityField)
         CacheableKey::create("javaPdxHC");
     auto pIPtr2 = std::dynamic_pointer_cast<Cacheable>(rptr->get(javaPdxHCKey));
     LOG("javaPdxHCKey get done");
-    CacheableInt32* val = dynamic_cast<CacheableInt32*>(pIPtr2.get());
+    CacheableInt32 *val = dynamic_cast<CacheableInt32 *>(pIPtr2.get());
     LOG("javaPdxHCKey cast done");
     int javaPdxHC = val->value();
     LOGINFO("javaPdxHC hash code = %d ", javaPdxHC);
@@ -463,7 +463,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, verifyCacheableObjectArrayWithPdxField)
       serializationRegistry->addPdxSerializableType(
           Address::createDeserializable);
       LOG("Address Registered Successfully....");
-    } catch (apache::geode::client::IllegalStateException& /* ex*/) {
+    } catch (apache::geode::client::IllegalStateException & /* ex*/) {
       LOG("Address IllegalStateException");
     }
 
@@ -540,7 +540,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, verifyPdxNullIdentityFieldHC)
         CacheableKey::create("javaPdxHC");
     auto pIPtr2 = std::dynamic_pointer_cast<Cacheable>(rptr->get(javaPdxHCKey));
     LOG("javaPdxHCKey get done");
-    CacheableInt32* val = dynamic_cast<CacheableInt32*>(pIPtr2.get());
+    CacheableInt32 *val = dynamic_cast<CacheableInt32 *>(pIPtr2.get());
     LOG("javaPdxHCKey cast done");
     int javaPdxHC = val->value();
     LOGINFO("javaPdxHC hash code = %d ", javaPdxHC);
@@ -583,7 +583,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxPut)
       serializationRegistry->addPdxSerializableType(
           PdxTests::PdxType::createDeserializable);
       LOG("PdxObject Registered Successfully....");
-    } catch (apache::geode::client::IllegalStateException& /* ex*/) {
+    } catch (apache::geode::client::IllegalStateException & /* ex*/) {
       LOG("PdxObject IllegalStateException");
     }
 
@@ -601,7 +601,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxPut)
     auto pIPtr1 = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
 
     LOG("Statistics for for (PdxTests.PdxType) PdxInstance");
-    LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(rptr.get()));
+    LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(rptr.get()));
 
     LOGINFO(
         "pdxInstanceDeserializations for (PdxTests.PdxType) PdxInstance = %d ",
@@ -639,7 +639,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxPut)
     auto javaPdxHCKey = CacheableKey::create("javaPdxHC");
     auto pIPtr2 = std::dynamic_pointer_cast<Cacheable>(rptr->get(javaPdxHCKey));
     LOG("In verifyPdxInstanceHashcode get done");
-    CacheableInt32* val = dynamic_cast<CacheableInt32*>(pIPtr2.get());
+    CacheableInt32 *val = dynamic_cast<CacheableInt32 *>(pIPtr2.get());
     LOG("In verifyPdxInstanceHashcode cast done");
     int javaPdxHC = val->value();
     LOGINFO("javaPdxHC hash code = %d ", javaPdxHC);
@@ -669,7 +669,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, getObject)
       serializationRegistry->addPdxSerializableType(
           PdxTests::PdxType::createDeserializable);
       LOG("PdxObject Registered Successfully....");
-    } catch (apache::geode::client::IllegalStateException& /* ex*/) {
+    } catch (apache::geode::client::IllegalStateException & /* ex*/) {
       LOG("PdxObject IllegalStateException");
     }
 
@@ -677,7 +677,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, getObject)
       serializationRegistry->addPdxSerializableType(
           ChildPdx::createDeserializable);
       LOG("ChildPdx Registered Successfully....");
-    } catch (apache::geode::client::IllegalStateException& /* ex*/) {
+    } catch (apache::geode::client::IllegalStateException & /* ex*/) {
       LOG("ChildPdx IllegalStateException");
     }
 
@@ -685,7 +685,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, getObject)
       serializationRegistry->addPdxSerializableType(
           ParentPdx::createDeserializable);
       LOG("ParentPdx Registered Successfully....");
-    } catch (apache::geode::client::IllegalStateException& /* ex*/) {
+    } catch (apache::geode::client::IllegalStateException & /* ex*/) {
       LOG("ParentPdx IllegalStateException");
     }
 
@@ -705,7 +705,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, getObject)
     LOG("PdxObject getObject Successful....");
 
     LOG("Statistics for for (PdxTests.PdxType) PdxInstance ");
-    auto&& lregPtr = std::dynamic_pointer_cast<LocalRegion>(rptr);
+    auto &&lregPtr = std::dynamic_pointer_cast<LocalRegion>(rptr);
 
     LOGINFO(
         "pdxInstanceDeserializations for (PdxTests.PdxType) PdxInstance  = %d ",
@@ -737,9 +737,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, getObject)
 
     auto ptorig = std::make_shared<PdxTests::PdxType>();
     LOG("PdxObject ptorig Successful....");
-    PdxTests::PdxType* obj1 = ptorig.get();
+    PdxTests::PdxType *obj1 = ptorig.get();
     LOG("obj1 Successful....");
-    PdxTests::PdxType* obj2 = dynamic_cast<PdxTests::PdxType*>(pt.get());
+    PdxTests::PdxType *obj2 = dynamic_cast<PdxTests::PdxType *>(pt.get());
     LOG("obj2 Successful....");
 
     ASSERT(obj1->equals(*obj2, true) == true,
@@ -782,9 +782,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, getObject)
 
     auto parentPdxObj = std::make_shared<ParentPdx>(1);
     LOG("ParentPdxObject parentPdxObj Successful....");
-    ParentPdx* parentObj1 = parentPdxObj.get();
+    ParentPdx *parentObj1 = parentPdxObj.get();
     LOG("parentObj1 Successful....");
-    ParentPdx* parentObj2 = dynamic_cast<ParentPdx*>(pt1.get());
+    ParentPdx *parentObj2 = dynamic_cast<ParentPdx *>(pt1.get());
     LOG("parentObj2 Successful....");
 
     ASSERT(parentObj1->equals(*parentObj2, true) == true,
@@ -805,7 +805,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, verifyPdxInstanceEquals)
       serializationRegistry->addPdxSerializableType(
           PdxTests::PdxType::createDeserializable);
       LOG("PdxObject Registered Successfully....");
-    } catch (apache::geode::client::IllegalStateException& /* ex*/) {
+    } catch (apache::geode::client::IllegalStateException & /* ex*/) {
       LOG("PdxObject IllegalStateException");
     }
 
@@ -849,7 +849,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, verifyPdxInstanceHashcode)
 
     auto pIPtr2 = std::dynamic_pointer_cast<Cacheable>(rptr->get(keyport1));
     LOG("In verifyPdxInstanceHashcode get done");
-    CacheableInt32* val1 = dynamic_cast<CacheableInt32*>(pIPtr2.get());
+    CacheableInt32 *val1 = dynamic_cast<CacheableInt32 *>(pIPtr2.get());
     LOG("In verifyPdxInstanceHashcode cast done");
     int javaPdxHC = val1->value();
     LOGINFO("javaPdxHC hash code again = %d ", javaPdxHC);
@@ -871,7 +871,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
       serializationRegistry->addPdxSerializableType(
           PdxTests::PdxType::createDeserializable);
       LOG("PdxObject Registered Successfully....");
-    } catch (apache::geode::client::IllegalStateException& /* ex*/) {
+    } catch (apache::geode::client::IllegalStateException & /* ex*/) {
       LOG("PdxObject IllegalStateException");
     }
 
@@ -879,7 +879,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
       serializationRegistry->addPdxSerializableType(
           Address::createDeserializable);
       LOG("Address Registered Successfully....");
-    } catch (apache::geode::client::IllegalStateException& /* ex*/) {
+    } catch (apache::geode::client::IllegalStateException & /* ex*/) {
       LOG("Address IllegalStateException");
     }
 
@@ -1159,15 +1159,15 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
     ASSERT(pIPtr->getFieldType("m_clhs") == PdxFieldTypes::OBJECT,
            "Type Value OBJECT Mismatch");
 
-    int8_t** byteByteArrayVal = nullptr;
+    int8_t **byteByteArrayVal = nullptr;
     int32_t byteArrayLen = 0;
-    int32_t* elementLength = nullptr;
+    int32_t *elementLength = nullptr;
     pIPtr->getField("m_byteByteArray", &byteByteArrayVal, byteArrayLen,
                     elementLength);
     ASSERT(genericValCompare(pdxobjPtr->getbyteByteArrayLength(),
                              byteArrayLen) == true,
            "byteByteArrayLength should be equal");
-    int8_t** bytArray = pdxobjPtr->getArrayOfByteArrays();
+    int8_t **bytArray = pdxobjPtr->getArrayOfByteArrays();
     ASSERT(generic2DCompare(byteByteArrayVal, bytArray, byteArrayLen,
                             elementLength) == true,
            "byteByteArray should be equal");
@@ -1273,7 +1273,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
       FAIL(
           "setField on m_int32 with bool value should throw expected "
           "IllegalStateException");
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       LOG("setField on m_int32 with bool value caught expected "
           "IllegalStateException");
     }
@@ -1294,7 +1294,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
       FAIL(
           "setField on m_bool with int value should throw expected "
           "IllegalStateException");
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       LOG("setField on m_bool with int value caught expected "
           "IllegalStateException");
     }
@@ -1305,7 +1305,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
       FAIL(
           "setField on m_char with float value should throw expected "
           "IllegalStateException");
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       LOG("setField on m_char with float value caught expected "
           "IllegalStateException");
     }
@@ -1337,7 +1337,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
       FAIL(
           "setField on m_byte with int64_t value should throw expected "
           "IllegalStateException");
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       LOG("setField on m_byte with int64_t value caught expected "
           "IllegalStateException");
     }
@@ -1358,7 +1358,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
       FAIL(
           "setField on m_int16 with int64_t value should throw expected "
           "IllegalStateException");
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       LOG("setField on m_int16 with int64_t value caught expected "
           "IllegalStateException");
     }
@@ -1379,7 +1379,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
       FAIL(
           "setField on m_long with float value should throw expected "
           "IllegalStateException");
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       LOG("setField on m_long with float value caught expected "
           "IllegalStateException");
     }
@@ -1400,7 +1400,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
       FAIL(
           "setField on m_float with char value should throw expected "
           "IllegalStateException");
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       LOG("setField on m_float with char value caught expected "
           "IllegalStateException");
     }
@@ -1421,7 +1421,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
       FAIL(
           "setField on m_double with char value should throw expected "
           "IllegalStateException");
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       LOG("setField on m_double with char value caught expected "
           "IllegalStateException");
     }
@@ -1446,7 +1446,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
       FAIL(
           "setField on m_boolArray with char value should throw expected "
           "IllegalStateException");
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       LOG("setField on m_boolArray with char value caught expected "
           "IllegalStateException");
     }
@@ -1470,7 +1470,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
       FAIL(
           "setField on m_byteArray with string value should throw expected "
           "IllegalStateException");
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       LOG("setField on m_byteArray with string value caught expected "
           "IllegalStateException");
     }
@@ -1494,7 +1494,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
       FAIL(
           "setField on m_charArray with string value should throw expected "
           "IllegalStateException");
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       LOG("setField on m_charArray with string value caught expected "
           "IllegalStateException");
     }
@@ -1518,7 +1518,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
       FAIL(
           "setField on m_int16Array with setCharArray value should throw "
           "expected IllegalStateException");
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       LOG("setField on m_int16Array with setCharArray value caught expected "
           "IllegalStateException");
     }
@@ -1541,7 +1541,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
       FAIL(
           "setField on m_int32Array with setShortArray value should throw "
           "expected IllegalStateException");
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       LOG("setField on m_int32Array with setShortArray value caught expected "
           "IllegalStateException");
     }
@@ -1566,7 +1566,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
           "setField on m_longArray with setIntArray value should throw "
           "expected "
           "IllegalStateException");
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       LOG("setField on m_longArray with setIntArray value caught expected "
           "IllegalStateException");
     }
@@ -1590,7 +1590,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
       FAIL(
           "setField on m_floatArray with setLongArray value should throw "
           "expected IllegalStateException");
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       LOG("setField on m_floatArray with setLongArray value caught expected "
           "IllegalStateException");
     }
@@ -1614,7 +1614,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
       FAIL(
           "setField on m_doubleArray with setFloatArray value should throw "
           "expected IllegalStateException");
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       LOG("setField on m_doubleArray with setFloatArray value caught expected "
           "IllegalStateException");
     }
@@ -1625,7 +1625,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
       FAIL(
           "setField on m_string with setFloatArray value should throw expected "
           "IllegalStateException");
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       LOG("setField on m_string with setFloatArray value caught expected "
           "IllegalStateException");
     }
@@ -1662,7 +1662,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
       FAIL(
           "setField on m_dateTime with setString value should throw expected "
           "IllegalStateException");
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       LOG("setField on m_dateTime with setString value caught expected "
           "IllegalStateException");
     }
@@ -1691,7 +1691,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
       FAIL(
           "setField on m_vector with setString value should throw expected "
           "IllegalStateException");
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       LOG("setField on m_vector with setString value caught expected "
           "IllegalStateException");
     }
@@ -1722,7 +1722,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
       FAIL(
           "setField on m_arraylist with setFloatArray value should throw "
           "expected IllegalStateException");
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       LOG("setField on m_arraylist with setFloatArray value caught expected "
           "IllegalStateException");
     }
@@ -1748,7 +1748,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
       FAIL(
           "setField on m_chs with int value should throw expected "
           "IllegalStateException");
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       LOG("setField on m_chs with int value caught expected "
           "IllegalStateException");
     }
@@ -1774,7 +1774,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
       FAIL(
           "setField on m_map with float value should throw expected "
           "IllegalStateException");
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       LOG("setField on m_map with float value caught expected "
           "IllegalStateException");
     }
@@ -1802,16 +1802,16 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
       FAIL(
           "setField on m_clhs with char value should throw expected "
           "IllegalStateException");
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       LOG("setField on m_clhs with char value caught expected "
           "IllegalStateException");
     }
 
     LOGINFO("Testing byteByteArray");
-    int8_t** getbyteByteArray = nullptr;
+    int8_t **getbyteByteArray = nullptr;
     int byteByteArrayLength = 0;
-    int32_t* elementLength = nullptr;
-    int8_t** setbyteByteArray = new int8_t*[4];
+    int32_t *elementLength = nullptr;
+    int8_t **setbyteByteArray = new int8_t *[4];
     setbyteByteArray[0] = new int8_t[1];
     setbyteByteArray[1] = new int8_t[2];
     setbyteByteArray[2] = new int8_t[1];
@@ -1823,7 +1823,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     setbyteByteArray[3][0] = 0x34;
     setbyteByteArray[3][1] = 0x55;
     wpiPtr = pIPtr->createWriter();
-    int* lengthArr = new int[4];
+    int *lengthArr = new int[4];
     lengthArr[0] = 1;
     lengthArr[1] = 2;
     lengthArr[2] = 1;
@@ -1854,7 +1854,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
       FAIL(
           "setField on m_byteByteArray with linkedhashset value should throw "
           "expected IllegalStateException");
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       LOG("setField on m_byteByteArray with linkedhashset value caught "
           "expected "
           "IllegalStateException");
@@ -1937,7 +1937,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstanceAndCheckLocally)
     LOG("modifyPdxInstanceAndCheckLocally get complete.");
 
     LOG("Statistics for for (PdxTests.PdxType) PdxInstance ");
-    LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(rptr.get()));
+    LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(rptr.get()));
 
     LOGINFO(
         "pdxInstanceDeserializations for (PdxTests.PdxType) PdxInstance  = %d ",
@@ -2224,7 +2224,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxIFPutGetTest)
       serializationRegistry->addPdxSerializableType(
           Address::createDeserializable);
       LOG("Address Registered Successfully....");
-    } catch (apache::geode::client::IllegalStateException& /* ex*/) {
+    } catch (apache::geode::client::IllegalStateException & /* ex*/) {
       LOG("Address IllegalStateException");
     }
 
@@ -2232,7 +2232,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxIFPutGetTest)
       serializationRegistry->addPdxSerializableType(
           PdxTests::PdxType::createDeserializable);
       LOG("PdxObject Registered Successfully....");
-    } catch (apache::geode::client::IllegalStateException& /* ex*/) {
+    } catch (apache::geode::client::IllegalStateException & /* ex*/) {
       LOG("PdxObject IllegalStateException");
     }
 
@@ -2240,7 +2240,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxIFPutGetTest)
       serializationRegistry->addPdxSerializableType(
           ChildPdx::createDeserializable);
       LOG("ChildPdx Registered Successfully....");
-    } catch (apache::geode::client::IllegalStateException& /* ex*/) {
+    } catch (apache::geode::client::IllegalStateException & /* ex*/) {
       LOG("ChildPdx IllegalStateException");
     }
 
@@ -2248,7 +2248,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxIFPutGetTest)
       serializationRegistry->addPdxSerializableType(
           ParentPdx::createDeserializable);
       LOG("ParentPdx Registered Successfully....");
-    } catch (apache::geode::client::IllegalStateException& /* ex*/) {
+    } catch (apache::geode::client::IllegalStateException & /* ex*/) {
       LOG("ParentPdx IllegalStateException");
     }
 
@@ -2260,7 +2260,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxIFPutGetTest)
         cacheHelper->getCache()->createPdxInstanceFactory("PdxTests.PdxType");
     LOG("PdxInstanceFactoryPtr created....");
 
-    int* lengthArr = new int[2];
+    int *lengthArr = new int[2];
 
     lengthArr[0] = 1;
     lengthArr[1] = 2;
@@ -2271,7 +2271,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxIFPutGetTest)
       FAIL(
           "calling writeBoolean on same fieldname should have thrown "
           "IllegalStateException");
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       LOG("Got expected IllegalStateException for m_bool");
     }
     pdxFactory.markIdentityField("m_bool");
@@ -2372,7 +2372,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxIFPutGetTest)
     LOG("getObject created....");
 
     LOG("Statistics for for (PdxTests.PdxType) PdxInstance ");
-    auto&& lregPtr = std::dynamic_pointer_cast<LocalRegion>(rptr);
+    auto &&lregPtr = std::dynamic_pointer_cast<LocalRegion>(rptr);
 
     LOGINFO(
         "pdxInstanceDeserializations for (PdxTests.PdxType) PdxInstance  = %d ",
@@ -2402,8 +2402,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxIFPutGetTest)
                    .getPdxInstanceDeserializationTime() == 0,
            "pdxInstanceDeserializationTime should be equal to 0.");
 
-    PdxTests::PdxType* obj2 = pdxobj.get();
-    PdxTests::PdxType* obj1 = dynamic_cast<PdxTests::PdxType*>(psPtr.get());
+    PdxTests::PdxType *obj2 = pdxobj.get();
+    PdxTests::PdxType *obj1 = dynamic_cast<PdxTests::PdxType *>(psPtr.get());
 
     LOGINFO("Avinash Equal Starts");
     ASSERT(obj1->equals(*obj2, false) == true, "PdxObjects should be equal.");
@@ -2444,7 +2444,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxIFPutGetTest)
                    .getPdxInstanceDeserializationTime() > 0,
            "pdxInstanceDeserializationTime should be greater than 0.");
 
-    PdxTests::PdxType* obj3 = dynamic_cast<PdxTests::PdxType*>(newPiPtr.get());
+    PdxTests::PdxType *obj3 = dynamic_cast<PdxTests::PdxType *>(newPiPtr.get());
 
     ASSERT(obj2->equals(*obj3, false) == true, "PdxObjects should be equal.");
 
@@ -2454,7 +2454,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxIFPutGetTest)
     auto javaPdxHCKey = CacheableKey::create("javaPdxHC");
     auto pIPtr2 = std::dynamic_pointer_cast<Cacheable>(rptr->get(javaPdxHCKey));
     LOG("In pdxIFPutGetTest get done");
-    CacheableInt32* val = dynamic_cast<CacheableInt32*>(pIPtr2.get());
+    CacheableInt32 *val = dynamic_cast<CacheableInt32 *>(pIPtr2.get());
     LOG("In pdxIFPutGetTest cast done");
     int javaPdxHC = val->value();
     LOGINFO("javaPdxHC hash code = %d ", javaPdxHC);
@@ -2520,10 +2520,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxIFPutGetTest)
     auto pp1 = std::dynamic_pointer_cast<ParentPdx>(newPiPtr);
     LOG("got std::shared_ptr<ParentPdx>....");
 
-    ParentPdx* rawPP1 = dynamic_cast<ParentPdx*>(pp1.get());
+    ParentPdx *rawPP1 = dynamic_cast<ParentPdx *>(pp1.get());
     LOG("got rawPP1....");
 
-    ParentPdx* rawPP2 = dynamic_cast<ParentPdx*>(pp.get());
+    ParentPdx *rawPP2 = dynamic_cast<ParentPdx *>(pp.get());
     LOG("got rawpp2....");
 
     ASSERT(rawPP1->equals(*rawPP2, false) == true,

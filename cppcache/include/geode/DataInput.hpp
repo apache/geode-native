@@ -26,10 +26,9 @@
 #include <string>
 #include <vector>
 
-#include "internal/geode_globals.hpp"
 #include "ExceptionTypes.hpp"
 #include "internal/DSCode.hpp"
-#include "ExceptionTypes.hpp"
+#include "internal/geode_globals.hpp"
 
 /**
  * @file

@@ -22,6 +22,7 @@
  */
 
 #include "PdxVersioned2.hpp"
+
 #include <util/Log.hpp>
 
 namespace PdxTests {

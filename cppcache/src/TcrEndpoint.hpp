@@ -20,21 +20,21 @@
 #ifndef GEODE_TCRENDPOINT_H_
 #define GEODE_TCRENDPOINT_H_
 
-#include <string>
-#include <list>
 #include <atomic>
+#include <list>
+#include <string>
 
 #include <ace/Recursive_Thread_Mutex.h>
 #include <ace/Semaphore.h>
 
-#include <geode/internal/geode_globals.hpp>
 #include <geode/internal/geode_base.hpp>
+#include <geode/internal/geode_globals.hpp>
 
+#include "ErrType.hpp"
 #include "FairQueue.hpp"
 #include "Set.hpp"
-#include "TcrConnection.hpp"
 #include "Task.hpp"
-#include "ErrType.hpp"
+#include "TcrConnection.hpp"
 
 namespace apache {
 namespace geode {

@@ -19,12 +19,11 @@
  * @file
  */
 
-#include <string.h>
+#include "CacheConfig.hpp"
 
 #include <libxml/parser.h>
 #include <libxml/tree.h>
-
-#include "CacheConfig.hpp"
+#include <string.h>
 
 namespace apache {
 namespace geode {

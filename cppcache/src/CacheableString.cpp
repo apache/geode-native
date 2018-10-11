@@ -16,16 +16,16 @@
  */
 
 #include <codecvt>
-#include <locale>
-#include <cwchar>
 #include <cstdlib>
+#include <cwchar>
+#include <locale>
 
 #include <ace/ACE.h>
 #include <ace/OS.h>
 
 #include <geode/CacheableString.hpp>
-#include <geode/DataOutput.hpp>
 #include <geode/DataInput.hpp>
+#include <geode/DataOutput.hpp>
 #include <geode/ExceptionTypes.hpp>
 
 #include "DataOutputInternal.hpp"

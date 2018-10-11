@@ -20,10 +20,11 @@
  * limitations under the License.
  */
 
-#include <geode/internal/geode_globals.hpp>
 #include <geode/Cache.hpp>
-#include <geode/Region.hpp>
 #include <geode/ExpirationAction.hpp>
+#include <geode/Region.hpp>
+#include <geode/internal/geode_globals.hpp>
+
 #include "ExpMapEntry.hpp"
 #include "RegionInternal.hpp"
 

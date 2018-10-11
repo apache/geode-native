@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
+#include "FastAssetAccount.hpp"
+
 #include <inttypes.h>
 
-#include "FastAssetAccount.hpp"
 #include "FastAsset.hpp"
 
 namespace testobject {

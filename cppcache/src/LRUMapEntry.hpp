@@ -20,10 +20,11 @@
  * limitations under the License.
  */
 
-#include <geode/internal/geode_globals.hpp>
 #include <geode/CacheableKey.hpp>
-#include "MapEntry.hpp"
+#include <geode/internal/geode_globals.hpp>
+
 #include "LRUList.hpp"
+#include "MapEntry.hpp"
 #include "VersionStamp.hpp"
 
 namespace apache {

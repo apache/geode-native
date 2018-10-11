@@ -20,12 +20,15 @@
 #ifndef GEODE_USERATTRIBUTES_H_
 #define GEODE_USERATTRIBUTES_H_
 
-#include <geode/internal/geode_globals.hpp>
-#include <geode/Properties.hpp>
-#include "TcrEndpoint.hpp"
-#include <ace/TSS_T.h>
-#include <string>
 #include <map>
+#include <string>
+
+#include <ace/TSS_T.h>
+
+#include <geode/Properties.hpp>
+#include <geode/internal/geode_globals.hpp>
+
+#include "TcrEndpoint.hpp"
 
 namespace apache {
 namespace geode {

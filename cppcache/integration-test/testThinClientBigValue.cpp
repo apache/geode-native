@@ -36,14 +36,14 @@ using apache::geode::client::CacheableBytes;
 using apache::geode::client::CacheableInt32;
 using apache::geode::client::CacheableInt64;
 
-void grow(int* iptr) { *iptr = *iptr + GROWTH; }
+void grow(int *iptr) { *iptr = *iptr + GROWTH; }
 
-void putSize(std::shared_ptr<Region>& rptr, const char* buf, int size) {
+void putSize(std::shared_ptr<Region> &rptr, const char *buf, int size) {
   char msg[1024];
   auto keyPtr = CacheableKey::create(buf);
   uint8_t base = 0;
 
-  uint8_t* valbuf = new uint8_t[size + 1];
+  uint8_t *valbuf = new uint8_t[size + 1];
   for (int i = 0; i <= size; i++) {
     valbuf[i] = base;
     if (base == 255) {
@@ -63,7 +63,7 @@ void putSize(std::shared_ptr<Region>& rptr, const char* buf, int size) {
   LOG(msg);
 }
 
-void verify(std::shared_ptr<CacheableBytes>& valuePtr, int size) {
+void verify(std::shared_ptr<CacheableBytes> &valuePtr, int size) {
   char msg[200];
   sprintf(msg, "verifying value of size %d", size);
   ASSERT(size == 0 || valuePtr != nullptr, msg);
@@ -78,7 +78,7 @@ void verify(std::shared_ptr<CacheableBytes>& valuePtr, int size) {
 
   ASSERT(valSize == size, msg);
 
-  auto&& bytes = reinterpret_cast<const uint8_t*>(valuePtr->value().data());
+  auto &&bytes = reinterpret_cast<const uint8_t *>(valuePtr->value().data());
   uint8_t base = 0;
   for (int i = 0; i < size; i++) {
     if (bytes[i] != base) {
@@ -97,7 +97,7 @@ void verify(std::shared_ptr<CacheableBytes>& valuePtr, int size) {
 static int numberOfLocators = 1;
 bool isLocalServer = true;
 bool isLocator = true;
-const char* locHostPort =
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 
 DUNIT_TASK(SERVER1, StartServer)
@@ -369,7 +369,7 @@ DUNIT_TASK(CLIENT2, VerifyUpdatedManyPutsInt64GetAll)
       // std::dynamic_pointer_cast<CacheableString>(entry->getValue());
       ASSERT(valPtr != nullptr, "expected non-null value");
       // ASSERT(valPtr->length() == 207, "unexpected size of value in verify");
-      const auto& iter = valuesMap.find(key);
+      const auto &iter = valuesMap.find(key);
       ASSERT(iter != valuesMap.end(), "expected to find key in map");
       valPtr = std::dynamic_pointer_cast<CacheableString>(iter->second);
       ASSERT(valPtr != nullptr, "expected non-null value");

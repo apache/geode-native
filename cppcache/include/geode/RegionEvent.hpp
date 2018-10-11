@@ -20,9 +20,9 @@
 #ifndef GEODE_REGIONEVENT_H_
 #define GEODE_REGIONEVENT_H_
 
-#include "internal/geode_globals.hpp"
-#include "Region.hpp"
 #include "CacheableKey.hpp"
+#include "Region.hpp"
+#include "internal/geode_globals.hpp"
 
 /** @file
  */

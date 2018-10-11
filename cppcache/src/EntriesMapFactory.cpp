@@ -15,12 +15,14 @@
  * limitations under the License.
  */
 
-#include <geode/Cache.hpp>
 #include "EntriesMapFactory.hpp"
-#include "LRUEntriesMap.hpp"
-#include "ExpMapEntry.hpp"
-#include "LRUExpMapEntry.hpp"
+
+#include <geode/Cache.hpp>
 #include <geode/DiskPolicyType.hpp>
+
+#include "ExpMapEntry.hpp"
+#include "LRUEntriesMap.hpp"
+#include "LRUExpMapEntry.hpp"
 //#include <geode/ExpirationAction.hpp>
 #include <geode/SystemProperties.hpp>
 

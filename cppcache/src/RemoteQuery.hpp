@@ -20,16 +20,16 @@
 #ifndef GEODE_REMOTEQUERY_H_
 #define GEODE_REMOTEQUERY_H_
 
-#include <string>
 #include <memory>
+#include <string>
 
-#include <geode/internal/geode_globals.hpp>
 #include <geode/AuthenticatedView.hpp>
 #include <geode/ExceptionTypes.hpp>
 #include <geode/Query.hpp>
-#include <geode/SelectResults.hpp>
 #include <geode/ResultSet.hpp>
+#include <geode/SelectResults.hpp>
 #include <geode/StructSet.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 #include "CacheImpl.hpp"
 #include "ThinClientBaseDM.hpp"

@@ -63,27 +63,27 @@ using testData::unsupported;
 bool isLocator = false;
 bool isLocalServer = false;
 
-const char* poolNames[] = {"Pool1", "Pool2", "Pool3"};
-const char* locHostPort =
+const char *poolNames[] = {"Pool1", "Pool2", "Pool3"};
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 bool isPoolConfig = false;  // To track if pool case is running
-const char* qRegionNames[] = {"Portfolios", "Positions", "Portfolios2",
+const char *qRegionNames[] = {"Portfolios", "Positions", "Portfolios2",
                               "Portfolios3"};
 
-const char* checkNullString(const char* str) {
+const char *checkNullString(const char *str) {
   return ((str == nullptr) ? "(null)" : str);
 }
 
-const wchar_t* checkNullString(const wchar_t* str) {
+const wchar_t *checkNullString(const wchar_t *str) {
   return ((str == nullptr) ? L"(null)" : str);
 }
 
-std::string checkNullString(const std::string* str) {
+std::string checkNullString(const std::string *str) {
   return ((str == nullptr) ? "(null)" : *str);
 }
 
-void _printFields(std::shared_ptr<Cacheable> field, Struct* ssptr,
-                  int32_t& fields) {
+void _printFields(std::shared_ptr<Cacheable> field, Struct *ssptr,
+                  int32_t &fields) {
   try {
     if (auto portfolio = std::dynamic_pointer_cast<Portfolio>(field)) {
       printf("   pulled %s :- ID %d, pkid %s\n",
@@ -131,7 +131,7 @@ void _printFields(std::shared_ptr<Cacheable> field, Struct* ssptr,
         } else if (auto map =
                        std::dynamic_pointer_cast<CacheableHashMap>(field)) {
           int index = 0;
-          for (const auto& iter : *map) {
+          for (const auto &iter : *map) {
             printf("   hashMap %d of %zd ... \n", ++index, map->size());
             _printFields(iter.first, ssptr, fields);
             _printFields(iter.second, ssptr, fields);
@@ -160,19 +160,19 @@ void _printFields(std::shared_ptr<Cacheable> field, Struct* ssptr,
       }
 
     }  // end of else
-  } catch (const std::out_of_range& e) {
+  } catch (const std::out_of_range &e) {
     printf("Caught a non-fatal out_of_range exception: %s", e.what());
   }
 }
 
-void _verifyStructSet(std::shared_ptr<StructSet>& ssptr, int i) {
+void _verifyStructSet(std::shared_ptr<StructSet> &ssptr, int i) {
   printf("query idx %d \n", i);
   for (size_t rows = 0; rows < ssptr->size(); rows++) {
     if (rows > QueryHelper::getHelper().getPortfolioSetSize()) {
       continue;
     }
 
-    Struct* siptr = dynamic_cast<Struct*>(((*ssptr)[rows]).get());
+    Struct *siptr = dynamic_cast<Struct *>(((*ssptr)[rows]).get());
     if (siptr == nullptr) {
       printf("siptr is nullptr \n\n");
       continue;
@@ -192,18 +192,18 @@ void _verifyStructSet(std::shared_ptr<StructSet>& ssptr, int i) {
   }    // end of row iterations
 }
 
-void compareMaps(HashMapOfCacheable& map, HashMapOfCacheable& expectedMap) {
+void compareMaps(HashMapOfCacheable &map, HashMapOfCacheable &expectedMap) {
   ASSERT(expectedMap.size() == map.size(),
          "Unexpected number of entries in map");
   LOGINFO("Got expected number of %d entries in map", map.size());
-  for (const auto& iter : map) {
-    const auto& key = iter.first;
-    const auto& val = iter.second;
-    const auto& expectedIter = expectedMap.find(key);
+  for (const auto &iter : map) {
+    const auto &key = iter.first;
+    const auto &val = iter.second;
+    const auto &expectedIter = expectedMap.find(key);
     if (expectedIter == expectedMap.end()) {
       FAIL("Could not find expected key in map");
     }
-    const auto& expectedVal = expectedIter->second;
+    const auto &expectedVal = expectedIter->second;
 
     if (std::dynamic_pointer_cast<PositionPdx>(expectedVal)) {
       auto posVal = std::dynamic_pointer_cast<PositionPdx>(val);
@@ -241,7 +241,7 @@ void stepOne() {
         PositionPdx::createDeserializable);
     serializationRegistry->addPdxSerializableType(
         PortfolioPdx::createDeserializable);
-  } catch (const IllegalStateException&) {
+  } catch (const IllegalStateException &) {
     // ignore exception
   }
 
@@ -305,7 +305,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
     auto regPtr3 = getHelper()->getRegion(qRegionNames[2]);
     auto regPtr4 = getHelper()->getRegion(qRegionNames[3]);
 
-    auto* qh = &QueryHelper::getHelper();
+    auto *qh = &QueryHelper::getHelper();
 
     qh->populatePortfolioPdxData(regPtr0, qh->getPortfolioSetSize(),
                                  qh->getPortfolioNumSets());
@@ -332,7 +332,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
   {
     SLEEP(100);
     bool doAnyErrorOccured = false;
-    auto* qh = &QueryHelper::getHelper();
+    auto *qh = &QueryHelper::getHelper();
 
     std::shared_ptr<QueryService> qs = nullptr;
     if (isPoolConfig) {
@@ -421,7 +421,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
   {
     SLEEP(100);
     bool doAnyErrorOccured = false;
-    auto* qh = &QueryHelper::getHelper();
+    auto *qh = &QueryHelper::getHelper();
 
     std::shared_ptr<QueryService> qs = nullptr;
     if (isPoolConfig) {
@@ -490,14 +490,14 @@ DUNIT_TASK_DEFINITION(CLIENT1, GetAll)
     // reset the counter for uniform population of position objects
     PositionPdx::resetCounter();
 
-    int numSecIds = sizeof(secIds) / sizeof(char*);
+    int numSecIds = sizeof(secIds) / sizeof(char *);
 
     std::vector<std::shared_ptr<CacheableKey>> posKeys;
     std::vector<std::shared_ptr<CacheableKey>> portKeys;
     HashMapOfCacheable expectedPosMap;
     HashMapOfCacheable expectedPortMap;
 
-    auto& qh = QueryHelper::getHelper();
+    auto &qh = QueryHelper::getHelper();
     auto setSize = qh.getPositionSetSize();
     auto numSets = qh.getPositionNumSets();
 
@@ -586,7 +586,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, DoQuerySSError)
                           i);
           LOG(failmsg);
           FAIL(failmsg);
-        } catch (apache::geode::client::QueryException& ex) {
+        } catch (apache::geode::client::QueryException &ex) {
           // ok, expecting an exception, do nothing
           fprintf(stdout, "Got expected exception: %s", ex.what());
         } catch (...) {

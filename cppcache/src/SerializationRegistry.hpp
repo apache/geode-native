@@ -20,33 +20,33 @@
 #ifndef GEODE_SERIALIZATIONREGISTRY_H_
 #define GEODE_SERIALIZATIONREGISTRY_H_
 
-#include <string>
 #include <functional>
-#include <typeinfo>
 #include <iostream>
 #include <memory>
+#include <string>
 #include <typeindex>
+#include <typeinfo>
 #include <unordered_map>
 
 #include <ace/Hash_Map_Manager.h>
-#include <ace/Thread_Mutex.h>
 #include <ace/Null_Mutex.h>
+#include <ace/Thread_Mutex.h>
 
-#include <geode/internal/geode_globals.hpp>
+#include <geode/DataOutput.hpp>
+#include <geode/DataSerializable.hpp>
+#include <geode/Delta.hpp>
+#include <geode/ExceptionTypes.hpp>
+#include <geode/PdxSerializable.hpp>
+#include <geode/PdxSerializer.hpp>
+#include <geode/Serializable.hpp>
 #include <geode/internal/DataSerializableInternal.hpp>
 #include <geode/internal/DataSerializablePrimitive.hpp>
-#include <geode/Serializable.hpp>
-#include <geode/PdxSerializer.hpp>
-#include <geode/DataOutput.hpp>
-#include <geode/ExceptionTypes.hpp>
-#include <geode/Delta.hpp>
-#include <geode/PdxSerializable.hpp>
-#include <geode/DataSerializable.hpp>
+#include <geode/internal/geode_globals.hpp>
 
-#include "util/concurrent/spinlock_mutex.hpp"
-#include "NonCopyable.hpp"
 #include "MemberListForVersionStamp.hpp"
+#include "NonCopyable.hpp"
 #include "config.h"
+#include "util/concurrent/spinlock_mutex.hpp"
 
 namespace ACE_VERSIONED_NAMESPACE_NAME {
 

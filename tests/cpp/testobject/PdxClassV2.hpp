@@ -20,12 +20,12 @@
 #ifndef GEODE_TESTOBJECT_PDXCLASSV2_H_
 #define GEODE_TESTOBJECT_PDXCLASSV2_H_
 
+#include <util/Log.hpp>
+
+#include <geode/PdxReader.hpp>
 #include <geode/PdxSerializable.hpp>
 #include <geode/PdxSerializer.hpp>
 #include <geode/PdxWriter.hpp>
-#include <geode/PdxReader.hpp>
-#include <util/Log.hpp>
-#include <util/Log.hpp>
 
 #include "testobject_export.h"
 

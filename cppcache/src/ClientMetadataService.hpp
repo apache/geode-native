@@ -20,23 +20,24 @@
 #ifndef GEODE_CLIENTMETADATASERVICE_H_
 #define GEODE_CLIENTMETADATASERVICE_H_
 
-#include <unordered_map>
 #include <memory>
 #include <string>
+#include <unordered_map>
 
+#include <ace/Semaphore.h>
 #include <ace/Task.h>
 
 #include <geode/CacheableKey.hpp>
-#include <geode/Serializable.hpp>
 #include <geode/Region.hpp>
+#include <geode/Serializable.hpp>
 #include <geode/internal/functional.hpp>
 
-#include "ClientMetadata.hpp"
-#include "ServerLocation.hpp"
 #include "BucketServerLocation.hpp"
-#include "Queue.hpp"
+#include "ClientMetadata.hpp"
 #include "DistributedSystemImpl.hpp"
 #include "NonCopyable.hpp"
+#include "Queue.hpp"
+#include "ServerLocation.hpp"
 
 namespace apache {
 namespace geode {

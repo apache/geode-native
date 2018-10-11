@@ -15,18 +15,19 @@
  * limitations under the License.
  */
 
+#include "CqService.hpp"
+
 #include <sstream>
 
-#include <geode/CqStatusListener.hpp>
 #include <geode/CqServiceStatistics.hpp>
-#include <geode/SystemProperties.hpp>
+#include <geode/CqStatusListener.hpp>
 #include <geode/ExceptionTypes.hpp>
+#include <geode/SystemProperties.hpp>
 
-#include "DistributedSystem.hpp"
-#include "CqService.hpp"
-#include "ReadWriteLock.hpp"
-#include "CqQueryImpl.hpp"
 #include "CqEventImpl.hpp"
+#include "CqQueryImpl.hpp"
+#include "DistributedSystem.hpp"
+#include "ReadWriteLock.hpp"
 #include "ThinClientPoolDM.hpp"
 #include "util/exception.hpp"
 

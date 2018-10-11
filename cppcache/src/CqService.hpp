@@ -25,25 +25,24 @@
 
 #include <ace/ACE.h>
 #include <ace/Condition_Recursive_Thread_Mutex.h>
-#include <ace/Time_Value.h>
 #include <ace/Guard_T.h>
 #include <ace/Recursive_Thread_Mutex.h>
 #include <ace/Semaphore.h>
 #include <ace/Task.h>
+#include <ace/Time_Value.h>
 
 #include <geode/CacheableKey.hpp>
 #include <geode/CqOperation.hpp>
 #include <geode/CqQuery.hpp>
 #include <geode/internal/geode_globals.hpp>
 
-#include "TcrMessage.hpp"
-#include "Queue.hpp"
-#include "MapWithLock.hpp"
-#include "DistributedSystem.hpp"
-#include "Queue.hpp"
-#include "ThinClientBaseDM.hpp"
 #include "CqServiceVsdStats.hpp"
+#include "DistributedSystem.hpp"
+#include "MapWithLock.hpp"
 #include "NonCopyable.hpp"
+#include "Queue.hpp"
+#include "TcrMessage.hpp"
+#include "ThinClientBaseDM.hpp"
 
 /**
  * @file

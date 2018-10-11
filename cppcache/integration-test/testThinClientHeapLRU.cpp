@@ -38,15 +38,15 @@ using apache::geode::client::internal::DSCode;
 using apache::geode::client::testing::CacheableWrapper;
 using apache::geode::client::testing::CacheableWrapperFactory;
 
-const char* _regionNames[] = {"DistRegionAck"};
+const char *_regionNames[] = {"DistRegionAck"};
 
 void createOnekEntries() {
   CacheableHelper::registerBuiltins();
   auto dataReg = getHelper()->getRegion(_regionNames[0]);
   for (int i = 0; i < 2048; i++) {
-    CacheableWrapper* tmpkey =
+    CacheableWrapper *tmpkey =
         CacheableWrapperFactory::createInstance(DSCode::CacheableInt32);
-    CacheableWrapper* tmpval =
+    CacheableWrapper *tmpval =
         CacheableWrapperFactory::createInstance(DSCode::CacheableBytes);
     tmpkey->initKey(i, 32);
     tmpval->initRandomValue(1024);

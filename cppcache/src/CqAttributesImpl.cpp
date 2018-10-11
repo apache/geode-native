@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
+#include "CqAttributesImpl.hpp"
+
 #include <geode/ExceptionTypes.hpp>
 
-#include "CqAttributesImpl.hpp"
 #include "util/Log.hpp"
 
 namespace apache {

@@ -15,50 +15,50 @@
  * limitations under the License.
  */
 
-#include <mutex>
+#include "SerializationRegistry.hpp"
+
 #include <functional>
+#include <mutex>
 
 #include <ace/Singleton.h>
 #include <ace/Thread_Mutex.h>
 
-#include <geode/internal/geode_globals.hpp>
 #include <geode/CacheableBuiltins.hpp>
-#include <geode/CacheableObjectArray.hpp>
 #include <geode/CacheableDate.hpp>
+#include <geode/CacheableEnum.hpp>
 #include <geode/CacheableFileName.hpp>
+#include <geode/CacheableObjectArray.hpp>
 #include <geode/CacheableString.hpp>
 #include <geode/CacheableUndefined.hpp>
-#include <geode/CacheableEnum.hpp>
-#include <geode/Struct.hpp>
 #include <geode/DataInput.hpp>
 #include <geode/DataOutput.hpp>
-#include <geode/Region.hpp>
-#include <geode/Properties.hpp>
 #include <geode/ExceptionTypes.hpp>
-#include <geode/RegionAttributes.hpp>
-#include <geode/PoolManager.hpp>
 #include <geode/PdxWrapper.hpp>
+#include <geode/PoolManager.hpp>
+#include <geode/Properties.hpp>
+#include <geode/Region.hpp>
+#include <geode/RegionAttributes.hpp>
+#include <geode/Struct.hpp>
+#include <geode/internal/geode_globals.hpp>
 
-#include "config.h"
-
-#include "SerializationRegistry.hpp"
-#include "CacheableToken.hpp"
-#include "EventId.hpp"
+#include "CacheRegionHelper.hpp"
 #include "CacheableObjectPartList.hpp"
+#include "CacheableToken.hpp"
 #include "ClientConnectionResponse.hpp"
-#include "QueueConnectionResponse.hpp"
-#include "LocatorListResponse.hpp"
 #include "ClientProxyMembershipID.hpp"
-#include "GetAllServersResponse.hpp"
-#include "TXCommitMessage.hpp"
-#include "ThinClientPoolDM.hpp"
-#include "PdxType.hpp"
-#include "EnumInfo.hpp"
-#include "VersionTag.hpp"
 #include "DiskStoreId.hpp"
 #include "DiskVersionTag.hpp"
+#include "EnumInfo.hpp"
+#include "EventId.hpp"
+#include "GetAllServersResponse.hpp"
+#include "LocatorListResponse.hpp"
 #include "PdxHelper.hpp"
-#include "CacheRegionHelper.hpp"
+#include "PdxType.hpp"
+#include "QueueConnectionResponse.hpp"
+#include "TXCommitMessage.hpp"
+#include "ThinClientPoolDM.hpp"
+#include "VersionTag.hpp"
+#include "config.h"
 
 namespace apache {
 namespace geode {

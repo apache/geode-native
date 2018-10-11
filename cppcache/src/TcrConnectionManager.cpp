@@ -15,30 +15,31 @@
  * limitations under the License.
  */
 
+#include "TcrConnectionManager.hpp"
+
+#include <chrono>
 #include <set>
 #include <thread>
-#include <chrono>
 
 #include <ace/INET_Addr.h>
 
 #include <geode/SystemProperties.hpp>
 
-#include "TcrConnectionManager.hpp"
-#include "TcrEndpoint.hpp"
-#include "ExpiryHandler_T.hpp"
 #include "CacheImpl.hpp"
+#include "ExpiryHandler_T.hpp"
 #include "ExpiryTaskManager.hpp"
+#include "RemoteQueryService.hpp"
+#include "ServerLocation.hpp"
+#include "TcrConnection.hpp"
+#include "TcrEndpoint.hpp"
+#include "TcrHADistributionManager.hpp"
 #include "ThinClientBaseDM.hpp"
 #include "ThinClientCacheDistributionManager.hpp"
-#include "ThinClientRedundancyManager.hpp"
-#include "TcrHADistributionManager.hpp"
-#include "Utils.hpp"
-#include "ThinClientRegion.hpp"
 #include "ThinClientHARegion.hpp"
-#include "TcrConnection.hpp"
-#include "RemoteQueryService.hpp"
 #include "ThinClientLocatorHelper.hpp"
-#include "ServerLocation.hpp"
+#include "ThinClientRedundancyManager.hpp"
+#include "ThinClientRegion.hpp"
+#include "Utils.hpp"
 #include "util/exception.hpp"
 
 namespace apache {

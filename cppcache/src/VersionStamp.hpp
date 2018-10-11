@@ -25,8 +25,8 @@
 #include <geode/internal/geode_globals.hpp>
 
 #include "ClientProxyMembershipID.hpp"
-#include "VersionTag.hpp"
 #include "ErrType.hpp"
+#include "VersionTag.hpp"
 
 namespace apache {
 namespace geode {

@@ -20,8 +20,8 @@
 #ifndef GEODE_LOG_H_
 #define GEODE_LOG_H_
 
-#include <cstdio>
 #include <cstdarg>
+#include <cstdio>
 #include <string>
 
 #include <geode/internal/geode_globals.hpp>

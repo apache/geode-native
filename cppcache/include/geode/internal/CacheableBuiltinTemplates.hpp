@@ -22,11 +22,11 @@
 
 #include <cstring>
 
-#include "../Serializable.hpp"
 #include "../CacheableKey.hpp"
+#include "../CacheableString.hpp"
+#include "../Serializable.hpp"
 #include "../Serializer.hpp"
 #include "CacheableKeys.hpp"
-#include "../CacheableString.hpp"
 
 namespace apache {
 namespace geode {

@@ -20,11 +20,11 @@
 #ifndef GEODE_FIXEDPARTITIONATTRIBUTESIMPL_H_
 #define GEODE_FIXEDPARTITIONATTRIBUTESIMPL_H_
 
-#include <geode/Serializable.hpp>
+#include <geode/CacheableBuiltins.hpp>
+#include <geode/CacheableString.hpp>
 #include <geode/DataInput.hpp>
 #include <geode/DataOutput.hpp>
-#include <geode/CacheableString.hpp>
-#include <geode/CacheableBuiltins.hpp>
+#include <geode/Serializable.hpp>
 
 namespace apache {
 namespace geode {

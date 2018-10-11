@@ -25,8 +25,8 @@
 #include <memory>
 #include <string>
 
-#include "internal/geode_globals.hpp"
 #include "ExpirationAction.hpp"
+#include "internal/geode_globals.hpp"
 
 /**
  * @file

@@ -23,14 +23,14 @@
 #include <deque>
 
 #include <ace/ACE.h>
-#include <ace/Thread_Mutex.h>
-#include <ace/Token.h>
 #include <ace/Condition_T.h>
-#include <ace/Time_Value.h>
 #include <ace/Guard_T.h>
+#include <ace/Thread_Mutex.h>
+#include <ace/Time_Value.h>
+#include <ace/Token.h>
 
-#include "util/Log.hpp"
 #include "Assert.hpp"
+#include "util/Log.hpp"
 
 namespace apache {
 namespace geode {

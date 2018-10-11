@@ -24,10 +24,12 @@
  * @brief User class for testing the put functionality for object.
  */
 
+#include <util/Log.hpp>
+
 #include <geode/CacheableBuiltins.hpp>
 #include <geode/CacheableDate.hpp>
+
 #include "Position.hpp"
-#include <util/Log.hpp>
 
 namespace testobject {
 

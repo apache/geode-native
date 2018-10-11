@@ -15,11 +15,14 @@
  * limitations under the License.
  */
 
+#include "Assert.hpp"
+
 #include <sstream>
 
 #include <boost/stacktrace.hpp>
+
 #include <geode/ExceptionTypes.hpp>
-#include "Assert.hpp"
+
 #include "util/Log.hpp"
 
 namespace apache {

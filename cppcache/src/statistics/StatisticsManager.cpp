@@ -15,20 +15,21 @@
  * limitations under the License.
  */
 
+#include "StatisticsManager.hpp"
+
 #include <string>
 
+#include <ace/Guard_T.h>
 #include <ace/OS.h>
 #include <ace/Thread_Mutex.h>
 #include <ace/Time_Value.h>
-#include <ace/Guard_T.h>
 
-#include <geode/internal/geode_globals.hpp>
 #include <geode/Exception.hpp>
+#include <geode/internal/geode_globals.hpp>
 
-#include "StatisticsManager.hpp"
 #include "../util/Log.hpp"
-#include "GeodeStatisticsFactory.hpp"
 #include "AtomicStatisticsImpl.hpp"
+#include "GeodeStatisticsFactory.hpp"
 #include "OsStatisticsImpl.hpp"
 
 namespace apache {

@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-#include <vector>
+#include "TXCommitMessage.hpp"
+
 #include <algorithm>
+#include <vector>
 
 #include <geode/DataOutput.hpp>
 
-#include "TXCommitMessage.hpp"
 #include "ClientProxyMembershipID.hpp"
 #include "FarSideEntryOp.hpp"
 #include "util/exception.hpp"

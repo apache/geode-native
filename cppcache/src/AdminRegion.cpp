@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
+#include "AdminRegion.hpp"
+
 #include <geode/SystemProperties.hpp>
 
-#include "AdminRegion.hpp"
 #include "CacheImpl.hpp"
-#include "ThinClientRegion.hpp"
 #include "ThinClientPoolDM.hpp"
+#include "ThinClientRegion.hpp"
 #include "statistics/StatisticsManager.hpp"
 #include "util/exception.hpp"
 

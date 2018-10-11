@@ -15,16 +15,17 @@
  * limitations under the License.
  */
 
-#include <string>
+#include "PoolStatsSampler.hpp"
+
 #include <chrono>
+#include <string>
 #include <thread>
 
-#include "PoolStatsSampler.hpp"
-#include "GeodeStatisticsFactory.hpp"
-#include "../ReadWriteLock.hpp"
 #include "../CacheImpl.hpp"
-#include "../ThinClientPoolDM.hpp"
 #include "../ClientHealthStats.hpp"
+#include "../ReadWriteLock.hpp"
+#include "../ThinClientPoolDM.hpp"
+#include "GeodeStatisticsFactory.hpp"
 
 namespace apache {
 namespace geode {

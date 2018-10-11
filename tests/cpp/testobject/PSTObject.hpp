@@ -21,6 +21,7 @@
 #define GEODE_TESTOBJECT_PSTOBJECT_H_
 
 #include <inttypes.h>
+
 #include <string>
 
 #include <ace/ACE.h>
@@ -29,8 +30,8 @@
 
 #include <geode/CacheableBuiltins.hpp>
 
-#include "testobject_export.h"
 #include "TimestampedObject.hpp"
+#include "testobject_export.h"
 
 namespace testobject {
 

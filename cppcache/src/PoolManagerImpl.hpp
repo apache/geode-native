@@ -23,6 +23,11 @@
 #include <memory>
 #include <mutex>
 #include <string>
+#include <unordered_map>
+
+#include <geode/Region.hpp>
+
+#include "CacheImpl.hpp"
 
 namespace apache {
 namespace geode {

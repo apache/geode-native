@@ -20,11 +20,13 @@
  * limitations under the License.
  */
 
-#include <geode/internal/geode_globals.hpp>
-#include <geode/ExceptionTypes.hpp>
-#include "RegionXmlCreation.hpp"
-#include "PoolXmlCreation.hpp"
 #include <vector>
+
+#include <geode/ExceptionTypes.hpp>
+#include <geode/internal/geode_globals.hpp>
+
+#include "PoolXmlCreation.hpp"
+#include "RegionXmlCreation.hpp"
 
 namespace apache {
 namespace geode {

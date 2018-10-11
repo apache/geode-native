@@ -22,10 +22,10 @@
 
 #include <memory>
 
-#include "internal/DataSerializableFixedId.hpp"
-#include "internal/geode_globals.hpp"
 #include "Serializable.hpp"
 #include "internal/DSFixedId.hpp"
+#include "internal/DataSerializableFixedId.hpp"
+#include "internal/geode_globals.hpp"
 
 /** @file
  */

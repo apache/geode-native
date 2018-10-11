@@ -16,7 +16,9 @@
  */
 
 #include "PSTObject.hpp"
-#include "fwklib/GsRandom.hpp"
+
+#include <fwklib/GsRandom.hpp>
+
 #include "ArrayOfByte.hpp"
 
 namespace testobject {

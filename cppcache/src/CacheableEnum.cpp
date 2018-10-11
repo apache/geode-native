@@ -18,10 +18,10 @@
 #include <geode/CacheableEnum.hpp>
 #include <geode/internal/functional.hpp>
 
-#include "Utils.hpp"
-#include "PdxHelper.hpp"
-#include "EnumInfo.hpp"
 #include "CacheRegionHelper.hpp"
+#include "EnumInfo.hpp"
+#include "PdxHelper.hpp"
+#include "Utils.hpp"
 
 namespace apache {
 namespace geode {

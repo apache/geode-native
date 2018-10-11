@@ -27,8 +27,8 @@
 #include <ace/Task.h>
 #include <ace/Timer_Heap.h>
 
-#include <geode/internal/geode_globals.hpp>
 #include <geode/internal/chrono/duration.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 #include "ReadWriteLock.hpp"
 #include "util/Log.hpp"

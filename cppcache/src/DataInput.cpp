@@ -16,13 +16,13 @@
  */
 
 #include <geode/DataInput.hpp>
+#include <geode/PoolManager.hpp>
 
+#include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
 #include "SerializationRegistry.hpp"
-#include "CacheImpl.hpp"
-#include "util/string.hpp"
 #include "util/JavaModifiedUtf8.hpp"
-#include <geode/PoolManager.hpp>
+#include "util/string.hpp"
 
 namespace apache {
 namespace geode {

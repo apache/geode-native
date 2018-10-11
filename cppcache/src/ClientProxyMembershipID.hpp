@@ -24,9 +24,9 @@
 
 #include <ace/OS.h>
 
-#include <geode/internal/geode_globals.hpp>
 #include <geode/DataOutput.hpp>
 #include <geode/internal/functional.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 #include "DSMemberForVersionStamp.hpp"
 

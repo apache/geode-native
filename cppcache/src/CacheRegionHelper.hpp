@@ -20,8 +20,8 @@
 #ifndef GEODE_CACHEREGIONHELPER_H_
 #define GEODE_CACHEREGIONHELPER_H_
 
-#include <geode/internal/geode_globals.hpp>
 #include <geode/Cache.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 namespace apache {
 namespace geode {

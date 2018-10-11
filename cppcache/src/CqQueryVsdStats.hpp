@@ -22,8 +22,8 @@
 
 #include <string>
 
-#include <geode/internal/geode_globals.hpp>
 #include <geode/CqStatistics.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 #include "statistics/Statistics.hpp"
 #include "statistics/StatisticsFactory.hpp"

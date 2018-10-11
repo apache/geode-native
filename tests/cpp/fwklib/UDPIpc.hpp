@@ -20,21 +20,20 @@
  * limitations under the License.
  */
 
-#include "Service.hpp"
-#include "FwkLog.hpp"
-#include "GsRandom.hpp"
-#include "config.h"
+#include <atomic>
+#include <list>
+#include <string>
 
-#include <ace/Task.h>
-#include <ace/Thread_Mutex.h>
 #include <ace/INET_Addr.h>
-
 #include <ace/SOCK_Dgram.h>
 #include <ace/TSS_T.h>
+#include <ace/Task.h>
+#include <ace/Thread_Mutex.h>
 
-#include <atomic>
-#include <string>
-#include <list>
+#include "FwkLog.hpp"
+#include "GsRandom.hpp"
+#include "Service.hpp"
+#include "config.h"
 
 #ifdef _WIN32
 

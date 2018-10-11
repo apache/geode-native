@@ -16,8 +16,9 @@
  */
 
 #include "LRULocalDestroyAction.hpp"
-#include "LRUEntriesMap.hpp"
+
 #include "CacheImpl.hpp"
+#include "LRUEntriesMap.hpp"
 
 namespace apache {
 namespace geode {

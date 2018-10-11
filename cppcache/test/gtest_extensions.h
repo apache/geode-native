@@ -20,9 +20,9 @@
 #ifndef GEODE_GTEST_EXTENSIONS_H_
 #define GEODE_GTEST_EXTENSIONS_H_
 
-#include <string>
 #include <limits>
 #include <regex>
+#include <string>
 
 #include <gtest/gtest.h>
 

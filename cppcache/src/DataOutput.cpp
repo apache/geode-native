@@ -17,18 +17,18 @@
 
 #include <vector>
 
-#include <ace/TSS_T.h>
 #include <ace/Recursive_Thread_Mutex.h>
+#include <ace/TSS_T.h>
 
 #include <geode/DataOutput.hpp>
 #include <geode/SystemProperties.hpp>
 
-#include "SerializationRegistry.hpp"
 #include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
+#include "SerializationRegistry.hpp"
+#include "util/JavaModifiedUtf8.hpp"
 #include "util/Log.hpp"
 #include "util/string.hpp"
-#include "util/JavaModifiedUtf8.hpp"
 
 namespace apache {
 namespace geode {

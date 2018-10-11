@@ -27,11 +27,11 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include <memory>
-
-#include <string>
-#include <geode/Properties.hpp>
 #include <cstdlib>
+#include <memory>
+#include <string>
+
+#include <geode/Properties.hpp>
 
 namespace apache {
 namespace geode {

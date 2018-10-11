@@ -20,9 +20,10 @@
  * limitations under the License.
  */
 
-#include <geode/internal/geode_globals.hpp>
-#include "EntriesMap.hpp"
 #include <geode/RegionAttributes.hpp>
+#include <geode/internal/geode_globals.hpp>
+
+#include "EntriesMap.hpp"
 
 namespace apache {
 namespace geode {

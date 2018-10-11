@@ -91,7 +91,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, verifyKeyDestroyedfromClient1)
     try {
       auto regPtr = getHelper()->getRegion(regionNames[0]);
       regPtr->get(keys[0]);
-    } catch (const EntryNotFoundException&) {
+    } catch (const EntryNotFoundException &) {
       // expected
     }
     LOG("verifyKeyDestroyedOnServer from client 1 completed");

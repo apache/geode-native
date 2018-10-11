@@ -20,18 +20,21 @@
  * limitations under the License.
  */
 
+#include <memory>
+#include <string>
+#include <vector>
+
 #include <ace/ACE.h>
 #include <ace/OS.h>
 #include <ace/Singleton.h>
-#include <ace/Thread_Mutex.h>
 #include <ace/Task.h>
+#include <ace/Thread_Mutex.h>
+
 #include <geode/DataOutput.hpp>
-#include "util/Log.hpp"
-#include <memory>
-#include "IntQueue.hpp"
+
 #include "EvictionThread.hpp"
-#include <string>
-#include <vector>
+#include "IntQueue.hpp"
+#include "util/Log.hpp"
 
 /**
  * This class ensures that the cache consumes only as much memory as

@@ -22,6 +22,7 @@
  */
 
 #include "PdxRemoteReader.hpp"
+
 #include "PdxTypes.hpp"
 
 namespace apache {

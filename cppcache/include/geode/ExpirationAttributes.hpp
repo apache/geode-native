@@ -22,8 +22,8 @@
 
 #include <chrono>
 
-#include "internal/geode_globals.hpp"
 #include "ExpirationAction.hpp"
+#include "internal/geode_globals.hpp"
 
 /**
  * @file

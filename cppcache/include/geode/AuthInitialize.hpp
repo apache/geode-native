@@ -24,10 +24,10 @@
  * @file
  */
 
+#include <memory>
 #include <string>
 
 #include "internal/geode_globals.hpp"
-#include <memory>
 
 namespace apache {
 namespace geode {

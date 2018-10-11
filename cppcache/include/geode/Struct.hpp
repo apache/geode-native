@@ -23,12 +23,12 @@
 #include <unordered_map>
 #include <vector>
 
-#include "internal/geode_globals.hpp"
-#include "internal/DataSerializableFixedId.hpp"
 #include "CacheableBuiltins.hpp"
-#include "StructSet.hpp"
 #include "SelectResults.hpp"
 #include "Serializable.hpp"
+#include "StructSet.hpp"
+#include "internal/DataSerializableFixedId.hpp"
+#include "internal/geode_globals.hpp"
 
 /**
  * @file

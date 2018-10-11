@@ -36,7 +36,7 @@ using apache::geode::client::CacheHelper;
 using apache::geode::client::CacheRegionHelper;
 using apache::geode::client::IllegalStateException;
 
-CacheHelper* cacheHelper = nullptr;
+CacheHelper *cacheHelper = nullptr;
 
 #include "locator_globals.hpp"
 
@@ -76,13 +76,13 @@ void cleanProc() {
   }
 }
 
-CacheHelper* getHelper() {
+CacheHelper *getHelper() {
   ASSERT(cacheHelper != nullptr, "No cacheHelper initialized.");
   return cacheHelper;
 }
 
-void createPooledRegion(const char* name, bool ackMode, const char* locators,
-                        const char* poolname,
+void createPooledRegion(const char *name, bool ackMode, const char *locators,
+                        const char *poolname,
                         bool clientNotificationEnabled = false,
                         bool cachingEnable = true) {
   LOG("createRegion_Pool() entered.");
@@ -95,7 +95,7 @@ void createPooledRegion(const char* name, bool ackMode, const char* locators,
   LOG("Pooled Region created.");
 }
 
-void createRegionCachingDisabled(const char* name, bool ackMode,
+void createRegionCachingDisabled(const char *name, bool ackMode,
                                  bool clientNotificationEnabled = false) {
   LOG("createRegion() entered.");
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
@@ -107,9 +107,9 @@ void createRegionCachingDisabled(const char* name, bool ackMode,
   LOG("Region created.");
 }
 
-const char* keys[] = {"Key-1", "Key-2", "Key-3", "Key-4"};
+const char *keys[] = {"Key-1", "Key-2", "Key-3", "Key-4"};
 
-const char* regionNames[] = {"DistRegionAck", "DistRegionAck1"};
+const char *regionNames[] = {"DistRegionAck", "DistRegionAck1"};
 
 const bool USE_ACK = true;
 const bool NO_ACK = false;
@@ -124,7 +124,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateClient1)
           CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
               ->getSerializationRegistry();
       serializationRegistry->addDataSerializableType(DeltaEx::create, 1);
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       //  ignore exception caused by type reregistration.
     }
   }
@@ -139,7 +139,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateClient1_NoPools)
           CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
               ->getSerializationRegistry();
       serializationRegistry->addDataSerializableType(DeltaEx::create, 1);
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       //  ignore exception caused by type reregistration.
     }
   }
@@ -155,7 +155,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, CreateClient2)
           CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
               ->getSerializationRegistry();
       serializationRegistry->addDataSerializableType(DeltaEx::create, 1);
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       //  ignore exception caused by type reregistration.
     }
     DeltaEx::fromDataCount = 0;
@@ -172,7 +172,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, CreateClient2_NoPools)
           CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
               ->getSerializationRegistry();
       serializationRegistry->addDataSerializableType(DeltaEx::create, 1);
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       //  ignore exception caused by type reregistration.
     }
     DeltaEx::fromDataCount = 0;
@@ -193,7 +193,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, Client1_Put)
   {
     auto keyPtr = CacheableKey::create(keys[0]);
-    DeltaEx* ptr = new DeltaEx();
+    DeltaEx *ptr = new DeltaEx();
     std::shared_ptr<Cacheable> valPtr(ptr);
 
     auto regPtr = getHelper()->getRegion(regionNames[0]);

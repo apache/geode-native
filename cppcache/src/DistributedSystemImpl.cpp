@@ -15,19 +15,20 @@
  * limitations under the License.
  */
 
+#include "DistributedSystemImpl.hpp"
+
 #include <geode/SystemProperties.hpp>
 
-#include "DistributedSystemImpl.hpp"
-#include "config.h"
-#include "version.h"
-#include "util/Log.hpp"
-#include "statistics/StatisticsManager.hpp"
-#include "CppCacheLibrary.hpp"
-#include "RegionStats.hpp"
-#include "PoolStatistics.hpp"
-#include "CacheRegionHelper.hpp"
-#include "DiffieHellman.hpp"
 #include "CacheImpl.hpp"
+#include "CacheRegionHelper.hpp"
+#include "CppCacheLibrary.hpp"
+#include "DiffieHellman.hpp"
+#include "PoolStatistics.hpp"
+#include "RegionStats.hpp"
+#include "config.h"
+#include "statistics/StatisticsManager.hpp"
+#include "util/Log.hpp"
+#include "version.h"
 
 namespace apache {
 namespace geode {

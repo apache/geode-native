@@ -15,26 +15,27 @@
  * limitations under the License.
  */
 
+#include "ThinClientPoolDM.hpp"
+
 #include <algorithm>
 
 #include <ace/INET_Addr.h>
 
+#include <geode/AuthInitialize.hpp>
+#include <geode/PoolManager.hpp>
 #include <geode/ResultCollector.hpp>
 #include <geode/SystemProperties.hpp>
-#include <geode/PoolManager.hpp>
-#include <geode/AuthInitialize.hpp>
 
-#include "statistics/PoolStatsSampler.hpp"
-#include "ThinClientPoolDM.hpp"
-#include "TcrEndpoint.hpp"
-#include "ThinClientRegion.hpp"
+#include "DistributedSystemImpl.hpp"
 #include "ExecutionImpl.hpp"
 #include "ExpiryHandler_T.hpp"
 #include "ExpiryTaskManager.hpp"
-#include "DistributedSystemImpl.hpp"
-#include "UserAttributes.hpp"
-#include "ThinClientStickyManager.hpp"
 #include "NonCopyable.hpp"
+#include "TcrEndpoint.hpp"
+#include "ThinClientRegion.hpp"
+#include "ThinClientStickyManager.hpp"
+#include "UserAttributes.hpp"
+#include "statistics/PoolStatsSampler.hpp"
 #include "util/exception.hpp"
 
 namespace apache {

@@ -16,9 +16,10 @@
  */
 
 #include "FarSideEntryOp.hpp"
-#include "RegionCommit.hpp"
+
 #include "ClientProxyMembershipID.hpp"
 #include "DiskVersionTag.hpp"
+#include "RegionCommit.hpp"
 #include "util/exception.hpp"
 
 namespace apache {

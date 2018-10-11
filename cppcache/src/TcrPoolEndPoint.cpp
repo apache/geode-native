@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
+#include "TcrPoolEndPoint.hpp"
+
 #include <geode/SystemProperties.hpp>
 
-#include "TcrPoolEndPoint.hpp"
 #include "ThinClientPoolDM.hpp"
 
 namespace apache {

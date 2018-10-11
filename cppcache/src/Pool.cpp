@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-#include <geode/Pool.hpp>
+#include <geode/AuthenticatedView.hpp>
 #include <geode/Cache.hpp>
 #include <geode/CacheFactory.hpp>
+#include <geode/Pool.hpp>
 
 #include "PoolAttributes.hpp"
-#include <geode/AuthenticatedView.hpp>
 #include "ThinClientPoolHADM.hpp"
 
 /**

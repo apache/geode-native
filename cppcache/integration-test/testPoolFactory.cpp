@@ -31,7 +31,7 @@ BEGIN_TEST(POOLFACTORY)
     auto cacheFactory = CacheFactory();
     auto cache = cacheFactory.create();
     auto poolFactory = cache.getPoolManager().createFactory();
-    auto& testPoolFactory = poolFactory.setSubscriptionEnabled(true);
+    auto &testPoolFactory = poolFactory.setSubscriptionEnabled(true);
     bool test = &poolFactory == std::addressof<PoolFactory>(testPoolFactory);
     ASSERT(test, "testPoolFactory and poolFactory not equal");
   }

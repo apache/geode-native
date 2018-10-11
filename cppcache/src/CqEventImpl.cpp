@@ -15,10 +15,12 @@
  * limitations under the License.
  */
 #include "CqEventImpl.hpp"
+
 #include <geode/CacheableString.hpp>
-#include "ThinClientPoolHADM.hpp"
-#include "ThinClientCacheDistributionManager.hpp"
+
 #include "TcrMessage.hpp"
+#include "ThinClientCacheDistributionManager.hpp"
+#include "ThinClientPoolHADM.hpp"
 
 namespace apache {
 namespace geode {

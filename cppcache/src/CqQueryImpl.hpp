@@ -20,24 +20,26 @@
 #ifndef GEODE_CQQUERYIMPL_H_
 #define GEODE_CQQUERYIMPL_H_
 
-#include <geode/internal/geode_globals.hpp>
-
-#include <geode/CqResults.hpp>
-#include <geode/CqQuery.hpp>
-#include <geode/CqState.hpp>
-#include "CqQueryVsdStats.hpp"
-#include "CqService.hpp"
-#include <geode/CqOperation.hpp>
-#include <geode/CqAttributes.hpp>
-#include <geode/Region.hpp>
-#include "MapWithLock.hpp"
 #include <string>
+
 #include <ace/ACE.h>
 #include <ace/Condition_Recursive_Thread_Mutex.h>
-#include <ace/Time_Value.h>
 #include <ace/Guard_T.h>
 #include <ace/Recursive_Thread_Mutex.h>
+#include <ace/Time_Value.h>
+
 #include <geode/AuthenticatedView.hpp>
+#include <geode/CqAttributes.hpp>
+#include <geode/CqOperation.hpp>
+#include <geode/CqQuery.hpp>
+#include <geode/CqResults.hpp>
+#include <geode/CqState.hpp>
+#include <geode/Region.hpp>
+#include <geode/internal/geode_globals.hpp>
+
+#include "CqQueryVsdStats.hpp"
+#include "CqService.hpp"
+#include "MapWithLock.hpp"
 
 /**
  * @file

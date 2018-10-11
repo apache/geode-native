@@ -21,12 +21,12 @@
 #define GEODE_SECURITY_XMLAUTHZCREDENTIALGENERATOR_H_
 
 #include <algorithm>
-#include <ctime>
 #include <cstdlib>
+#include <ctime>
 #include <random>
 
-#include <geode/Properties.hpp>
 #include <geode/CacheableString.hpp>
+#include <geode/Properties.hpp>
 
 #include "typedefs.hpp"
 

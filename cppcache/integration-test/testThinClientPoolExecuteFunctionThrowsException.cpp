@@ -47,22 +47,22 @@ bool isLocalServer = false;
 bool isLocator = false;
 bool isPoolWithEndpoint = false;
 
-const char* locHostPort =
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
-const char* poolRegNames[] = {"partition_region", "PoolRegion2"};
+const char *poolRegNames[] = {"partition_region", "PoolRegion2"};
 
-const char* serverGroup = "ServerGroup1";
+const char *serverGroup = "ServerGroup1";
 
-const char* getFuncIName = "MultiGetFunctionI";
-const char* putFuncIName = "MultiPutFunctionI";
-const char* getFuncName = "MultiGetFunction";
-const char* putFuncName = "MultiPutFunction";
-const char* rjFuncName = "RegionOperationsFunction";
-const char* exFuncName = "ExceptionHandlingFunction";
-const char* exFuncNameSendException = "executeFunction_SendException";
-const char* exFuncNamePdxType = "PdxFunctionTest";
-const char* FEOnRegionPrSHOP = "FEOnRegionPrSHOP";
-const char* FEOnRegionPrSHOP_OptimizeForWrite =
+const char *getFuncIName = "MultiGetFunctionI";
+const char *putFuncIName = "MultiPutFunctionI";
+const char *getFuncName = "MultiGetFunction";
+const char *putFuncName = "MultiPutFunction";
+const char *rjFuncName = "RegionOperationsFunction";
+const char *exFuncName = "ExceptionHandlingFunction";
+const char *exFuncNameSendException = "executeFunction_SendException";
+const char *exFuncNamePdxType = "PdxFunctionTest";
+const char *FEOnRegionPrSHOP = "FEOnRegionPrSHOP";
+const char *FEOnRegionPrSHOP_OptimizeForWrite =
     "FEOnRegionPrSHOP_OptimizeForWrite";
 
 class MyResultCollector : public DefaultResultCollector {
@@ -77,14 +77,14 @@ class MyResultCollector : public DefaultResultCollector {
     return DefaultResultCollector::getResult(timeout);
   }
 
-  void addResult(const std::shared_ptr<Cacheable>& resultItem) override {
+  void addResult(const std::shared_ptr<Cacheable> &resultItem) override {
     m_addResultCount++;
     if (resultItem == nullptr) {
       return;
     }
     if (auto results =
             std::dynamic_pointer_cast<CacheableArrayList>(resultItem)) {
-      for (auto& result : *results) {
+      for (auto &result : *results) {
         DefaultResultCollector::addResult(result);
       }
     } else {
@@ -119,7 +119,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(SERVER, StartS12)
   {
-    const char* lhp = nullptr;
+    const char *lhp = nullptr;
     if (!isPoolWithEndpoint) lhp = locHostPort;
     if (isLocalServer) {
       CacheHelper::initServer(1, "func_cacheserver1_pool.xml", lhp);

@@ -20,8 +20,8 @@
  * limitations under the License.
  */
 
-#include "internal/geode_globals.hpp"
 #include "RegionService.hpp"
+#include "internal/geode_globals.hpp"
 
 /**
  * @file

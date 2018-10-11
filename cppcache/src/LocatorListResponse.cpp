@@ -16,8 +16,10 @@
  */
 
 #include "LocatorListResponse.hpp"
-#include <geode/DataInput.hpp>
+
 #include <vector>
+
+#include <geode/DataInput.hpp>
 
 namespace apache {
 namespace geode {

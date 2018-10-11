@@ -20,15 +20,15 @@
 #ifndef GEODE_THINCLIENTREDUNDANCYMANAGER_H_
 #define GEODE_THINCLIENTREDUNDANCYMANAGER_H_
 
-#include <set>
 #include <list>
+#include <set>
 #include <string>
 
-#include "TcrMessage.hpp"
-#include "TcrEndpoint.hpp"
-#include "ServerLocation.hpp"
 #include "EventIdMap.hpp"
 #include "ExpiryTaskManager.hpp"
+#include "ServerLocation.hpp"
+#include "TcrEndpoint.hpp"
+#include "TcrMessage.hpp"
 
 namespace apache {
 namespace geode {

@@ -23,17 +23,17 @@
 #include <chrono>
 #include <string>
 
-#include "internal/geode_globals.hpp"
-#include "ExceptionTypes.hpp"
-#include "ExpirationAction.hpp"
+#include "CacheListener.hpp"
 #include "CacheLoader.hpp"
 #include "CacheWriter.hpp"
-#include "CacheListener.hpp"
-#include "PartitionResolver.hpp"
-#include "RegionAttributes.hpp"
 #include "DiskPolicyType.hpp"
+#include "ExceptionTypes.hpp"
+#include "ExpirationAction.hpp"
+#include "PartitionResolver.hpp"
 #include "Pool.hpp"
+#include "RegionAttributes.hpp"
 #include "internal/chrono/duration.hpp"
+#include "internal/geode_globals.hpp"
 
 /**
  * @file

@@ -19,15 +19,15 @@
 
 #include <ctime>
 #include <iostream>
-#include <string>
 #include <memory>
+#include <string>
 
 #include <ace/OS.h>
 
 #include <geode/CacheableBuiltins.hpp>
 
-#include "DistributedSystem.hpp"
 #include "DataOutputInternal.hpp"
+#include "DistributedSystem.hpp"
 #include "Version.hpp"
 
 #define ADDRSIZE 4

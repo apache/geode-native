@@ -52,7 +52,7 @@ DUNIT_TASK(A, Init)
         ExpirationAction::LOCAL_INVALIDATE, std::chrono::seconds(5));
     auto regionAttributes = regionAttributesFactory.create();
 
-    auto&& cacheImpl = CacheRegionHelper::getCacheImpl(Test.m_cache.get());
+    auto &&cacheImpl = CacheRegionHelper::getCacheImpl(Test.m_cache.get());
     cacheImpl->createRegion("Local_ETTL_LI", regionAttributes, Test.m_region);
   }
 ENDTASK

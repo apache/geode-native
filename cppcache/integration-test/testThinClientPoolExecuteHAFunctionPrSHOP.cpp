@@ -34,18 +34,18 @@ using apache::geode::client::FunctionService;
 bool isLocalServer = false;
 bool isLocator = false;
 
-const char* locHostPort =
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
-const char* poolRegNames[] = {"partition_region", "PoolRegion2"};
-const char* poolName = "__TEST_POOL1__";
+const char *poolRegNames[] = {"partition_region", "PoolRegion2"};
+const char *poolName = "__TEST_POOL1__";
 
-const char* serverGroup = "ServerGroup1";
+const char *serverGroup = "ServerGroup1";
 
-const char* OnServerHAExceptionFunction = "OnServerHAExceptionFunction";
-const char* OnServerHAShutdownFunction = "OnServerHAShutdownFunction";
+const char *OnServerHAExceptionFunction = "OnServerHAExceptionFunction";
+const char *OnServerHAShutdownFunction = "OnServerHAShutdownFunction";
 
-const char* RegionOperationsHAFunction = "RegionOperationsHAFunction";
-const char* RegionOperationsHAFunctionPrSHOP =
+const char *RegionOperationsHAFunction = "RegionOperationsHAFunction";
+const char *RegionOperationsHAFunctionPrSHOP =
     "RegionOperationsHAFunctionPrSHOP";
 #define verifyGetResults()                                      \
   bool found = false;                                           \
@@ -74,14 +74,14 @@ class MyResultCollector : public DefaultResultCollector {
     return DefaultResultCollector::getResult(timeout);
   }
 
-  void addResult(const std::shared_ptr<Cacheable>& resultItem) override {
+  void addResult(const std::shared_ptr<Cacheable> &resultItem) override {
     m_addResultCount++;
     if (resultItem == nullptr) {
       return;
     }
     if (auto results =
             std::dynamic_pointer_cast<CacheableArrayList>(resultItem)) {
-      for (auto& result : *results) {
+      for (auto &result : *results) {
         DefaultResultCollector::addResult(result);
       }
     } else {
@@ -235,7 +235,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
           verifyGetResults()
         }
       }
-    } catch (const Exception& excp) {
+    } catch (const Exception &excp) {
       std::string logmsg = "";
       logmsg += excp.getName();
       logmsg += ": ";
@@ -356,7 +356,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OnServerHATest)
           verifyGetResults()
         }
       }
-    } catch (const Exception& excp) {
+    } catch (const Exception &excp) {
       std::string logmsg = "";
       logmsg += excp.getName();
       logmsg += ": ";

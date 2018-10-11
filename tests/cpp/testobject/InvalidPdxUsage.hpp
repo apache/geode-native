@@ -26,12 +26,13 @@
  *      Author: npatel
  */
 
-#include <geode/PdxSerializable.hpp>
+#include <util/Log.hpp>
+
 #include <geode/CacheableEnum.hpp>
 #include <geode/CacheableObjectArray.hpp>
-#include <geode/PdxWriter.hpp>
 #include <geode/PdxReader.hpp>
-#include <util/Log.hpp>
+#include <geode/PdxSerializable.hpp>
+#include <geode/PdxWriter.hpp>
 
 #include "testobject_export.h"
 

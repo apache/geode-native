@@ -56,15 +56,15 @@ using apache::geode::client::IllegalStateException;
 using apache::geode::client::QueryService;
 using apache::geode::client::RegionShortcut;
 
-const char* durableIds[] = {"DurableId1", "DurableId2"};
+const char *durableIds[] = {"DurableId1", "DurableId2"};
 
-const char* cqName = "MyCq";
-const char* durableCQNamesClient1[] = {
+const char *cqName = "MyCq";
+const char *durableCQNamesClient1[] = {
     "durableCQ1Client1", "durableCQ2Client1", "durableCQ3Client1",
     "durableCQ4Client1", "durableCQ5Client1", "durableCQ6Client1",
     "durableCQ7Client1", "durableCQ8Client1"};
 
-const char* durableCQNamesClient2[] = {
+const char *durableCQNamesClient2[] = {
     "durableCQ1Client2", "durableCQ2Client2", "durableCQ3Client2",
     "durableCQ4Client2", "durableCQ5Client2", "durableCQ6Client2",
     "durableCQ7Client2", "durableCQ8Client2"};
@@ -93,7 +93,7 @@ void initClientWithId(int ClientIdx, bool typeRegistered = false) {
           PositionPdx::createDeserializable);
       serializationRegistry->addPdxSerializableType(
           PortfolioPdx::createDeserializable);
-    } catch (const IllegalStateException&) {
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
   }
@@ -102,9 +102,9 @@ void initClientWithId(int ClientIdx, bool typeRegistered = false) {
 class MyCqListener1 : public CqListener {
  public:
   static int m_cntEvents;
-  void onEvent(const CqEvent& cqe) override {
+  void onEvent(const CqEvent &cqe) override {
     m_cntEvents++;
-    const char* opStr = "Default";
+    const char *opStr = "Default";
     std::shared_ptr<CacheableInt32> value(
         std::dynamic_pointer_cast<CacheableInt32>(cqe.getNewValue()));
     std::shared_ptr<CacheableInt32> key(
@@ -129,7 +129,7 @@ class MyCqListener1 : public CqListener {
             key->toString().c_str(), value->toString().c_str());
   }
 
-  void onError(const CqEvent&) override {
+  void onError(const CqEvent &) override {
     LOGINFO("MyCqListener1::OnError called");
   }
 
@@ -137,19 +137,19 @@ class MyCqListener1 : public CqListener {
 };
 int MyCqListener1::m_cntEvents = 0;
 
-const char* regionNamesCq[] = {"Portfolios", "Positions", "Portfolios2",
+const char *regionNamesCq[] = {"Portfolios", "Positions", "Portfolios2",
                                "Portfolios3"};
 
 int onEventCount = 0;
 int onErrorCount = 0;
 int onEventCountBefore = 0;
 class MyCqListener : public CqListener {
-  void onEvent(const CqEvent&) override {
+  void onEvent(const CqEvent &) override {
     //    LOG("MyCqListener::OnEvent called");
     onEventCount++;
   }
 
-  void onError(const CqEvent&) override {
+  void onError(const CqEvent &) override {
     //   LOG("MyCqListener::OnError called");
     onErrorCount++;
   }
@@ -240,7 +240,7 @@ void RunDurableCqClient() {
   LOGINFO("Attached CqListener");
 
   // create a new Cq Query
-  const char* qryStr = "select * from /DistRegionAck ";
+  const char *qryStr = "select * from /DistRegionAck ";
   auto qry = qrySvcPtr->newCq("MyCq", qryStr, cqAttr, true);
 
   LOGINFO("Created new CqQuery");
@@ -376,7 +376,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepTwo)
     auto regPtr0 = getHelper()->getRegion(regionNamesCq[0]);
     auto subregPtr0 = regPtr0->getSubregion(regionNamesCq[1]);
 
-    QueryHelper* qh = &QueryHelper::getHelper();
+    QueryHelper *qh = &QueryHelper::getHelper();
     if (!m_isPdx) {
       qh->populatePortfolioData(regPtr0, 130, 20, 20);
       qh->populatePositionData(subregPtr0, 130, 20);
@@ -407,19 +407,19 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
     auto cqAttr = cqFac.create();
 
     auto qryStr = "select * from /Portfolios p where p.ID < 3";
-    auto&& qry = qs->newCq(cqName, qryStr, cqAttr);
+    auto &&qry = qs->newCq(cqName, qryStr, cqAttr);
 
     try {
       LOG("EXECUTE 1 START");
 
-      auto&& results = qry->executeWithInitialResults();
+      auto &&results = qry->executeWithInitialResults();
 
       LOG("EXECUTE 1 STOP");
       auto count = results->size();
       char buf[100];
       sprintf(buf, "results size=%zd", count);
       LOG(buf);
-    } catch (const Exception& excp) {
+    } catch (const Exception &excp) {
       std::string logmsg = "";
       logmsg += excp.getName();
       logmsg += ": ";
@@ -437,7 +437,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepTwo2)
     auto regPtr0 = getHelper()->getRegion(regionNamesCq[0]);
     auto subregPtr0 = regPtr0->getSubregion(regionNamesCq[1]);
 
-    QueryHelper* qh = &QueryHelper::getHelper();
+    QueryHelper *qh = &QueryHelper::getHelper();
 
     qh->populatePortfolioData(regPtr0, 140, 30, 20);
     qh->populatePositionData(subregPtr0, 140, 30);
@@ -491,7 +491,7 @@ void client1Up() {
   cqFac.addCqListener(cqLstner);
   auto cqAttr = cqFac.create();
 
-  const char* qryStr = "select * from /Portfolios p where p.ID < 3";
+  const char *qryStr = "select * from /Portfolios p where p.ID < 3";
   auto qry = qs->newCq(cqName, qryStr, cqAttr);
 
   try {
@@ -500,7 +500,7 @@ void client1Up() {
     qry->execute();
 
     LOG("EXECUTE 1 STOP");
-  } catch (const Exception& excp) {
+  } catch (const Exception &excp) {
     std::string logmsg = "";
     logmsg += excp.getName();
     logmsg += ": ";
@@ -586,7 +586,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
       LOG(buf);
       ASSERT(cqStats->numEvents() > 0, "stats incorrect!");
       cqy->close();
-    } catch (Exception& excp) {
+    } catch (Exception &excp) {
       std::string failmsg = "";
       failmsg += excp.getName();
       failmsg += ": ";
@@ -641,7 +641,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, UnsetPortfolioTypeToPdx)
   { m_isPdx = false; }
 END_TASK_DEFINITION
 
-bool isDurableCQName(const char* cqName, int clientID, bool isRecycled) {
+bool isDurableCQName(const char *cqName, int clientID, bool isRecycled) {
   bool bRetVal = false;
   int i = 0;
   if (clientID == 1) {

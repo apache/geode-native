@@ -16,11 +16,12 @@
  */
 
 #include "FwkBBServer.hpp"
-#include "FwkStrCvt.hpp"
-#include "FwkLog.hpp"
-#include "UDPIpc.hpp"
 
 #include <set>
+
+#include "FwkLog.hpp"
+#include "FwkStrCvt.hpp"
+#include "UDPIpc.hpp"
 
 namespace apache {
 namespace geode {

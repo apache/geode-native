@@ -25,8 +25,8 @@
 
 #include <geode/ExceptionTypes.hpp>
 
-#include "StatisticsType.hpp"
 #include "StatisticsFactory.hpp"
+#include "StatisticsType.hpp"
 #include "StatsDef.hpp"
 
 /** @file

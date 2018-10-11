@@ -21,6 +21,7 @@
  */
 
 #include "PdxLocalReader.hpp"
+
 #include "PdxTypeRegistry.hpp"
 
 namespace apache {

@@ -22,11 +22,11 @@
 
 #include <string>
 
-#include <geode/internal/DataSerializableFixedId.hpp>
-#include <geode/Serializable.hpp>
+#include <geode/CacheableString.hpp>
 #include <geode/DataInput.hpp>
 #include <geode/DataOutput.hpp>
-#include <geode/CacheableString.hpp>
+#include <geode/Serializable.hpp>
+#include <geode/internal/DataSerializableFixedId.hpp>
 
 namespace apache {
 namespace geode {

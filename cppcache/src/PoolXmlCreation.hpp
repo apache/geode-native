@@ -22,11 +22,13 @@
 
 #include <string>
 #include <vector>
-#include <geode/internal/geode_globals.hpp>
+
 #include <geode/ExceptionTypes.hpp>
 #include <geode/Pool.hpp>
-#include "PoolXmlCreation.hpp"
 #include <geode/PoolFactory.hpp>
+#include <geode/internal/geode_globals.hpp>
+
+#include "PoolXmlCreation.hpp"
 
 namespace apache {
 namespace geode {

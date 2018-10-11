@@ -22,9 +22,11 @@
  */
 
 #include "PdxLocalWriter.hpp"
+
+#include <geode/CacheableEnum.hpp>
+
 #include "PdxHelper.hpp"
 #include "PdxTypeRegistry.hpp"
-#include <geode/CacheableEnum.hpp>
 
 namespace apache {
 namespace geode {

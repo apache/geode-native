@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
+#include "PdxTypeRegistry.hpp"
+
 #include <geode/PoolManager.hpp>
 
-#include "PdxTypeRegistry.hpp"
+#include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
 #include "ThinClientPoolDM.hpp"
-#include "CacheImpl.hpp"
 
 namespace apache {
 namespace geode {

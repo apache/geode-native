@@ -27,22 +27,20 @@
 
 #pragma error_messages(off, macroredef)
 
-#include <ace/OS.h>
 #include <ace/INET_Addr.h>
-#include <ace/SOCK_IO.h>
-#include <ace/SSL/SSL_SOCK_Connector.h>
-#include <ace/SSL/SSL_SOCK_Acceptor.h>
 #include <ace/OS.h>
 #include <ace/Recursive_Thread_Mutex.h>
+#include <ace/SOCK_IO.h>
+#include <ace/SSL/SSL_SOCK_Acceptor.h>
+#include <ace/SSL/SSL_SOCK_Connector.h>
 #include <ace/Time_Value.h>
 
 #pragma error_messages(on, macroredef)
 
 #pragma pack(pop)
 
-#include "cryptoimpl_export.h"
-
 #include "Ssl.hpp"
+#include "cryptoimpl_export.h"
 
 namespace apache {
 namespace geode {

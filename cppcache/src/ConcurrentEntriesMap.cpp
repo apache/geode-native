@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 #include "ConcurrentEntriesMap.hpp"
-#include "RegionInternal.hpp"
-#include "TableOfPrimes.hpp"
 
 #include <algorithm>
+
+#include "RegionInternal.hpp"
+#include "TableOfPrimes.hpp"
 
 namespace apache {
 namespace geode {

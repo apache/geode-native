@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
+#include "DiskStoreId.hpp"
+
 #include <inttypes.h>
 
 #include <ace/OS.h>
-
-#include "DiskStoreId.hpp"
 
 namespace apache {
 namespace geode {

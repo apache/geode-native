@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-#include <string>
 #include <codecvt>
 #include <locale>
+#include <string>
 
 #include <geode/internal/functional.hpp>
 

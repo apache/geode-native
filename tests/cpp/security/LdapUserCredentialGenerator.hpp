@@ -20,11 +20,11 @@
  * limitations under the License.
  */
 
-#include "CredentialGenerator.hpp"
-#include "XmlAuthzCredentialGenerator.hpp"
-
 #include <ace/ACE.h>
 #include <ace/OS.h>
+
+#include "CredentialGenerator.hpp"
+#include "XmlAuthzCredentialGenerator.hpp"
 
 namespace apache {
 namespace geode {

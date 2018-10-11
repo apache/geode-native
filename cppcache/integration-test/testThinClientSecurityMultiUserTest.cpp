@@ -76,7 +76,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, PerformSecureOperationsWithUserCredentials)
           .getRegion("DistRegionAck")
           ->put("akey", "avalue");
       FAIL("Didn't throw expected AuthenticationFailedException.");
-    } catch (const apache::geode::client::NotAuthorizedException&) {
+    } catch (const apache::geode::client::NotAuthorizedException &) {
       LOG("Caught expected AuthenticationFailedException.");
     }
   }

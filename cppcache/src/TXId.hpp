@@ -26,9 +26,10 @@
  *      Author: ankurs
  */
 
-#include <geode/TransactionId.hpp>
-#include <geode/DataOutput.hpp>
 #include <atomic>
+
+#include <geode/DataOutput.hpp>
+#include <geode/TransactionId.hpp>
 
 namespace apache {
 namespace geode {

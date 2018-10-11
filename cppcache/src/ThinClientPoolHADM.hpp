@@ -19,10 +19,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "ThinClientPoolDM.hpp"
 #include "PoolAttributes.hpp"
 #include "TcrConnectionManager.hpp"
 #include "ThinClientHARegion.hpp"
+#include "ThinClientPoolDM.hpp"
 //#include "TcrPoolEndPoint.hpp"
 namespace apache {
 namespace geode {

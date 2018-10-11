@@ -15,20 +15,22 @@
  * limitations under the License.
  */
 
-#include <thread>
+#include "TcrEndpoint.hpp"
+
 #include <chrono>
+#include <thread>
+
 #include <ace/OS.h>
 
-#include <geode/SystemProperties.hpp>
 #include <geode/AuthInitialize.hpp>
+#include <geode/SystemProperties.hpp>
 
-#include "TcrEndpoint.hpp"
-#include "ThinClientRegion.hpp"
-#include "ThinClientPoolHADM.hpp"
-#include "StackTrace.hpp"
 #include "CacheImpl.hpp"
-#include "Utils.hpp"
 #include "DistributedSystemImpl.hpp"
+#include "StackTrace.hpp"
+#include "ThinClientPoolHADM.hpp"
+#include "ThinClientRegion.hpp"
+#include "Utils.hpp"
 #include "util/exception.hpp"
 
 namespace apache {

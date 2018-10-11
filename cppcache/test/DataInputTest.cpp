@@ -15,20 +15,21 @@
  * limitations under the License.
  */
 
-#include <string>  // for ::memset()
-
 #include <stdint.h>
+
+#include <string>  // for ::memset()
 #define NOMINMAX
 #if defined(NOMINMAX)
 // ifnore unused macro warning
 #endif
 #include <cstdint>
+#include <memory>
 
 #include <gtest/gtest.h>
 
 #include <geode/CacheFactory.hpp>
 #include <geode/DataInput.hpp>
-#include <memory>
+
 #include "ByteArrayFixture.hpp"
 #include "DataInputInternal.hpp"
 #include "DataOutputInternal.hpp"

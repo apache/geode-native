@@ -40,7 +40,7 @@ using apache::geode::client::CqListener;
 using apache::geode::client::IllegalStateException;
 using apache::geode::client::QueryService;
 
-CacheHelper* cacheHelper = nullptr;
+CacheHelper *cacheHelper = nullptr;
 
 #include "locator_globals.hpp"
 
@@ -51,7 +51,7 @@ CacheHelper* cacheHelper = nullptr;
 
 using testobject::DeltaTestImpl;
 
-CacheHelper* getHelper() {
+CacheHelper *getHelper() {
   ASSERT(cacheHelper != nullptr, "No cacheHelper initialized.");
   return cacheHelper;
 }
@@ -60,11 +60,11 @@ class CqDeltaListener : public CqListener {
  public:
   CqDeltaListener() : m_deltaCount(0), m_valueCount(0) {}
 
-  virtual void onEvent(const CqEvent& aCqEvent) {
+  virtual void onEvent(const CqEvent &aCqEvent) {
     auto deltaValue = aCqEvent.getDeltaValue();
     DeltaTestImpl newValue;
     auto input = getHelper()->getCache()->createDataInput(
-        reinterpret_cast<const uint8_t*>(deltaValue->value().data()),
+        reinterpret_cast<const uint8_t *>(deltaValue->value().data()),
         deltaValue->length());
     newValue.fromDelta(input);
     if (newValue.getIntVar() == 5) {
@@ -106,8 +106,8 @@ void cleanProc() {
   }
 }
 
-void createPooledRegion(const char* name, bool ackMode, const char* locators,
-                        const char* poolname,
+void createPooledRegion(const char *name, bool ackMode, const char *locators,
+                        const char *poolname,
                         bool clientNotificationEnabled = false,
                         bool cachingEnable = true) {
   LOG("createRegion_Pool() entered.");
@@ -120,8 +120,8 @@ void createPooledRegion(const char* name, bool ackMode, const char* locators,
   LOG("Pooled Region created.");
 }
 
-void createPooledLRURegion(const char* name, bool ackMode, const char* locators,
-                           const char* poolname,
+void createPooledLRURegion(const char *name, bool ackMode, const char *locators,
+                           const char *poolname,
                            bool clientNotificationEnabled = false,
                            bool cachingEnable = true) {
   LOG(" createPooledLRURegion entered");
@@ -133,7 +133,7 @@ void createPooledLRURegion(const char* name, bool ackMode, const char* locators,
   LOG(" createPooledLRURegion exited");
 }
 
-void createRegion(const char* name, bool ackMode,
+void createRegion(const char *name, bool ackMode,
                   bool clientNotificationEnabled = false) {
   LOG("createRegion() entered.");
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
@@ -144,9 +144,9 @@ void createRegion(const char* name, bool ackMode,
   ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
-const char* keys[] = {"Key-1", "Key-2", "Key-3", "Key-4"};
+const char *keys[] = {"Key-1", "Key-2", "Key-3", "Key-4"};
 
-const char* regionNames[] = {"DistRegionAck", "DistRegionAck1"};
+const char *regionNames[] = {"DistRegionAck", "DistRegionAck1"};
 
 const bool USE_ACK = true;
 const bool NO_ACK = false;
@@ -162,7 +162,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateClient1)
               ->getSerializationRegistry();
 
       serializationRegistry->addDataSerializableType(DeltaTestImpl::create, 30);
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       //  ignore exception caused by type reregistration.
     }
   }
@@ -179,7 +179,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, CreateClient2)
               ->getSerializationRegistry();
 
       serializationRegistry->addDataSerializableType(DeltaTestImpl::create, 30);
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       //  ignore exception caused by type reregistration.
     }
     auto regPtr = getHelper()->getRegion(regionNames[0]);
@@ -209,7 +209,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateClient1_NoPools)
               ->getSerializationRegistry();
 
       serializationRegistry->addDataSerializableType(DeltaTestImpl::create, 30);
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       //  ignore exception caused by type reregistration.
     }
   }
@@ -225,7 +225,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, CreateClient2_NoPools)
               ->getSerializationRegistry();
 
       serializationRegistry->addDataSerializableType(DeltaTestImpl::create, 30);
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       //  ignore exception caused by type reregistration.
     }
     auto regPtr = getHelper()->getRegion(regionNames[0]);

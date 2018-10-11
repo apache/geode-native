@@ -15,28 +15,29 @@
  * limitations under the License.
  */
 
+#include "LocalRegion.hpp"
+
 #include <sstream>
 #include <vector>
 
-#include <geode/SystemProperties.hpp>
 #include <geode/PoolManager.hpp>
+#include <geode/SystemProperties.hpp>
 
-#include "LocalRegion.hpp"
 #include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
 #include "CacheableToken.hpp"
-#include "Utils.hpp"
 #include "EntryExpiryHandler.hpp"
-#include "RegionExpiryHandler.hpp"
 #include "ExpiryTaskManager.hpp"
 #include "LRUEntriesMap.hpp"
+#include "RegionExpiryHandler.hpp"
 #include "RegionGlobalLocks.hpp"
-#include "TXState.hpp"
-#include "VersionTag.hpp"
-#include "util/bounds.hpp"
-#include "util/Log.hpp"
-#include "util/exception.hpp"
 #include "SerializableHelper.hpp"
+#include "TXState.hpp"
+#include "Utils.hpp"
+#include "VersionTag.hpp"
+#include "util/Log.hpp"
+#include "util/bounds.hpp"
+#include "util/exception.hpp"
 
 namespace apache {
 namespace geode {

@@ -20,9 +20,9 @@
  * limitations under the License.
  */
 
-#include <geode/internal/geode_globals.hpp>
 #include <geode/AuthenticatedView.hpp>
 #include <geode/FunctionService.hpp>
+#include <geode/internal/geode_globals.hpp>
 /**
  * @file
  */

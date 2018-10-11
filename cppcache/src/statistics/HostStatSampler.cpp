@@ -15,32 +15,33 @@
  * limitations under the License.
  */
 
+#include "HostStatSampler.hpp"
+
+#include <chrono>
+#include <exception>
+#include <thread>
 #include <utility>
 #include <vector>
-#include <chrono>
-#include <thread>
-#include <exception>
 
 #include <ace/ACE.h>
-#include <ace/Thread_Mutex.h>
-#include <ace/Task.h>
-#include <ace/OS_NS_sys_utsname.h>
-#include <ace/INET_Addr.h>
 #include <ace/Dirent.h>
 #include <ace/Dirent_Selector.h>
+#include <ace/INET_Addr.h>
 #include <ace/OS_NS_sys_stat.h>
+#include <ace/OS_NS_sys_utsname.h>
+#include <ace/Task.h>
+#include <ace/Thread_Mutex.h>
 
-#include <geode/internal/geode_globals.hpp>
 #include <geode/SystemProperties.hpp>
+#include <geode/internal/geode_globals.hpp>
 
-#include "HostStatSampler.hpp"
-#include "StatArchiveWriter.hpp"
-#include "GeodeStatisticsFactory.hpp"
-#include "../DistributedSystem.hpp"
-#include "../util/Log.hpp"
+#include "../CacheImpl.hpp"
 #include "../ClientHealthStats.hpp"
 #include "../ClientProxyMembershipID.hpp"
-#include "../CacheImpl.hpp"
+#include "../DistributedSystem.hpp"
+#include "../util/Log.hpp"
+#include "GeodeStatisticsFactory.hpp"
+#include "StatArchiveWriter.hpp"
 
 namespace apache {
 namespace geode {

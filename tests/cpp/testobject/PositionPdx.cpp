@@ -15,8 +15,10 @@
  * limitations under the License.
  */
 #include "PositionPdx.hpp"
-#include <cwchar>
+
 #include <wchar.h>
+
+#include <cwchar>
 
 namespace testobject {
 

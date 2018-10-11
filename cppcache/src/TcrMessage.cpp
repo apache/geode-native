@@ -20,26 +20,25 @@
 #include <sstream>
 
 #include <geode/CacheableBuiltins.hpp>
-#include <geode/SystemProperties.hpp>
 #include <geode/CacheableObjectArray.hpp>
+#include <geode/SystemProperties.hpp>
 
-#include "DistributedSystem.hpp"
 #include "Assert.hpp"
-#include "TcrConnection.hpp"
 #include "AutoDelete.hpp"
-#include "TcrChunkedContext.hpp"
-#include "ThinClientRegion.hpp"
-#include "ThinClientBaseDM.hpp"
-#include "StackTrace.hpp"
-#include "TcrConnection.hpp"
-#include "ThinClientPoolDM.hpp"
-#include "TSSTXStateWrapper.hpp"
-#include "TXState.hpp"
-#include "DiskStoreId.hpp"
-#include "DiskVersionTag.hpp"
 #include "CacheRegionHelper.hpp"
 #include "DataInputInternal.hpp"
 #include "DataOutputInternal.hpp"
+#include "DiskStoreId.hpp"
+#include "DiskVersionTag.hpp"
+#include "DistributedSystem.hpp"
+#include "StackTrace.hpp"
+#include "TSSTXStateWrapper.hpp"
+#include "TXState.hpp"
+#include "TcrChunkedContext.hpp"
+#include "TcrConnection.hpp"
+#include "ThinClientBaseDM.hpp"
+#include "ThinClientPoolDM.hpp"
+#include "ThinClientRegion.hpp"
 #include "util/JavaModifiedUtf8.hpp"
 
 #pragma error_messages(off, SEC_UNINITIALIZED_MEM_READ)

@@ -21,6 +21,7 @@
  */
 
 #include <ace/RW_Thread_Mutex.h>
+
 #include "Condition.hpp"
 
 namespace apache {

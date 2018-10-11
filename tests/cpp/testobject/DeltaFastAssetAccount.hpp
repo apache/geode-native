@@ -21,14 +21,15 @@
 #define GEODE_TESTOBJECT_DELTAFASTASSETACCOUNT_H_
 
 #include <inttypes.h>
+
 #include <string>
 
 #include <ace/ACE.h>
 #include <ace/OS.h>
 #include <ace/Time_Value.h>
 
-#include <geode/Delta.hpp>
 #include <geode/CacheableBuiltins.hpp>
+#include <geode/Delta.hpp>
 
 #include "FastAsset.hpp"
 #include "testobject_export.h"

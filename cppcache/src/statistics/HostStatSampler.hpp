@@ -20,25 +20,24 @@
 #ifndef GEODE_STATISTICS_HOSTSTATSAMPLER_H_
 #define GEODE_STATISTICS_HOSTSTATSAMPLER_H_
 
-#include <string>
-#include <vector>
 #include <chrono>
 #include <memory>
+#include <string>
+#include <vector>
 
-#include <ace/Task.h>
 #include <ace/Recursive_Thread_Mutex.h>
+#include <ace/Task.h>
 
+#include <geode/ExceptionTypes.hpp>
 #include <geode/internal/geode_globals.hpp>
 
-#include "Statistics.hpp"
+#include "../NonCopyable.hpp"
+#include "StatArchiveWriter.hpp"
+#include "StatSamplerStats.hpp"
 #include "StatisticDescriptor.hpp"
+#include "Statistics.hpp"
 #include "StatisticsManager.hpp"
 #include "StatisticsType.hpp"
-#include "StatSamplerStats.hpp"
-#include "StatArchiveWriter.hpp"
-#include <geode/ExceptionTypes.hpp>
-
-#include "../NonCopyable.hpp"
 
 /** @file
  */

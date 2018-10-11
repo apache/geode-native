@@ -45,15 +45,15 @@ using apache::geode::client::testing::TallyWriter;
 std::shared_ptr<TallyListener> regListener;
 std::shared_ptr<TallyWriter> regWriter;
 
-const char* locHostPort =
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
-const char* regionNamesAuth[] = {"DistRegionAck"};
+const char *regionNamesAuth[] = {"DistRegionAck"};
 std::shared_ptr<CredentialGenerator> credentialGeneratorHandler;
 
 std::string getXmlPath() {
   char xmlPath[1000] = {'\0'};
-  const char* path = ACE_OS::getenv("TESTSRC");
+  const char *path = ACE_OS::getenv("TESTSRC");
   ASSERT(path != nullptr,
          "Environment variable TESTSRC for test source directory is not set.");
   strncpy(xmlPath, path, strlen(path) - strlen("cppcache"));
@@ -92,20 +92,20 @@ opCodeList::value_type tmpRArr[] = {OP_GET, OP_REGISTER_INTEREST,
                                     OP_UNREGISTER_INTEREST, OP_KEY_SET,
                                     OP_CONTAINS_KEY};
 
-#define HANDLE_NOT_AUTHORIZED_EXCEPTION                          \
-  catch (const apache::geode::client::NotAuthorizedException&) { \
-    LOG("NotAuthorizedException Caught");                        \
-    LOG("Success");                                              \
-  }                                                              \
-  catch (const apache::geode::client::Exception& other) {        \
-    LOG(other.getStackTrace());                                  \
-    FAIL(other.what());                                          \
+#define HANDLE_NOT_AUTHORIZED_EXCEPTION                           \
+  catch (const apache::geode::client::NotAuthorizedException &) { \
+    LOG("NotAuthorizedException Caught");                         \
+    LOG("Success");                                               \
+  }                                                               \
+  catch (const apache::geode::client::Exception &other) {         \
+    LOG(other.getStackTrace());                                   \
+    FAIL(other.what());                                           \
   }
 
-#define HANDLE_CACHEWRITER_EXCEPTION                           \
-  catch (const apache::geode::client::CacheWriterException&) { \
-    LOG("CacheWriterException  Caught");                       \
-    LOG("Success");                                            \
+#define HANDLE_CACHEWRITER_EXCEPTION                            \
+  catch (const apache::geode::client::CacheWriterException &) { \
+    LOG("CacheWriterException  Caught");                        \
+    LOG("Success");                                             \
   }
 
 #define ADMIN_CLIENT s1p1
@@ -128,7 +128,7 @@ void initClientAuth() {
   }
 }
 
-void setCacheWriter(const char* regName,
+void setCacheWriter(const char *regName,
                     std::shared_ptr<TallyWriter> regWriter) {
   auto reg = getHelper()->getRegion(regName);
   auto attrMutator = reg->getAttributesMutator();
@@ -146,7 +146,7 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StartServer1)
       printf("string %s", cmdServerAuthenticator.c_str());
       CacheHelper::initServer(
           1, "cacheserver_notify_subscription.xml", locHostPort,
-          const_cast<char*>(cmdServerAuthenticator.c_str()));
+          const_cast<char *>(cmdServerAuthenticator.c_str()));
       LOG("Server1 started");
     }
   }

@@ -20,9 +20,9 @@
 #ifndef GEODE_PRESERVEDDATAEXPIRYHANDLER_H_
 #define GEODE_PRESERVEDDATAEXPIRYHANDLER_H_
 
-#include <geode/internal/geode_globals.hpp>
 #include <geode/Cache.hpp>
 #include <geode/PdxSerializable.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 #include "CacheImpl.hpp"
 #include "ExpiryTaskManager.hpp"

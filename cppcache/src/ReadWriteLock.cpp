@@ -16,6 +16,7 @@
  */
 
 #include "ReadWriteLock.hpp"
+
 #include <ace/Guard_T.h>
 
 namespace apache {

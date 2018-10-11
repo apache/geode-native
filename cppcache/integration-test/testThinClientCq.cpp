@@ -59,19 +59,19 @@ using apache::geode::client::QueryService;
 
 static bool m_isPdx = false;
 
-const char* locHostPort =
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
-const char* cqNames[MAX_LISTNER] = {"MyCq_0", "MyCq_1", "MyCq_2", "MyCq_3",
+const char *cqNames[MAX_LISTNER] = {"MyCq_0", "MyCq_1", "MyCq_2", "MyCq_3",
                                     "MyCq_4", "MyCq_5", "MyCq_6", "MyCq_7"};
 
-const char* regionName = "DistRegionAck";
-const char* regionName1 = "DistRegionAck1";
-const char* cqName = "testCQAllServersLeave";
-const char* cqName1 = "testCQAllServersLeave1";
-const char* cqQueryStatusString = "select * from /DistRegionAck";
-const char* cqQueryStatusString1 = "select * from /DistRegionAck1";
+const char *regionName = "DistRegionAck";
+const char *regionName1 = "DistRegionAck1";
+const char *cqName = "testCQAllServersLeave";
+const char *cqName1 = "testCQAllServersLeave1";
+const char *cqQueryStatusString = "select * from /DistRegionAck";
+const char *cqQueryStatusString1 = "select * from /DistRegionAck1";
 
-const char* queryStrings[MAX_LISTNER] = {
+const char *queryStrings[MAX_LISTNER] = {
     "select * from /Portfolios p where p.ID < 4",
     "select * from /Portfolios p where p.ID < 2",
     "select * from /Portfolios p where p.ID != 2",
@@ -101,23 +101,23 @@ void initClientCq(const bool isthinClient) {
     serializationRegistry->addPdxSerializableType(
         PortfolioPdx::createDeserializable);
 
-  } catch (const IllegalStateException&) {
+  } catch (const IllegalStateException &) {
     // ignore exception
   }
 }
 
-const char* regionNamesCq[] = {"Portfolios", "Positions", "Portfolios2",
+const char *regionNamesCq[] = {"Portfolios", "Positions", "Portfolios2",
                                "Portfolios3"};
 
 class MyCqListener1026 : public CqListener {
  public:
   void close() override { LOGINFO("MyCqListener::close called"); }
 
-  void onError(const CqEvent&) override {
+  void onError(const CqEvent &) override {
     LOGINFO("MyCqListener::OnError called");
   }
 
-  void onEvent(const CqEvent&) override {
+  void onEvent(const CqEvent &) override {
     LOGINFO("MyCqListener::onEvent called");
   }
 };
@@ -141,7 +141,7 @@ class MyCqListener : public CqListener {
         m_numUpdates(0),
         m_numDeletes(0),
         m_numEvents(0) {}
-  inline void updateCount(const CqEvent& cqEvent) {
+  inline void updateCount(const CqEvent &cqEvent) {
     m_numEvents++;
     switch (cqEvent.getQueryOperation()) {
       case CqOperation::OP_TYPE_CREATE:
@@ -158,11 +158,11 @@ class MyCqListener : public CqListener {
     }
   }
 
-  void onEvent(const CqEvent& cqe) {
+  void onEvent(const CqEvent &cqe) {
     //  LOG("MyCqListener::OnEvent called");
     updateCount(cqe);
   }
-  void onError(const CqEvent& cqe) {
+  void onError(const CqEvent &cqe) {
     updateCount(cqe);
     //   LOG("MyCqListener::OnError called");
   }
@@ -196,7 +196,7 @@ class MyCqStatusListener : public CqStatusListener {
         m_numEvents(0),
         m_cqsConnectedCount(0),
         m_cqsDisconnectedCount(0) {}
-  inline void updateCount(const CqEvent& cqEvent) {
+  inline void updateCount(const CqEvent &cqEvent) {
     m_numEvents++;
     switch (cqEvent.getQueryOperation()) {
       case CqOperation::OP_TYPE_CREATE: {
@@ -219,11 +219,11 @@ class MyCqStatusListener : public CqStatusListener {
     }
   }
 
-  void onEvent(const CqEvent& cqe) {
+  void onEvent(const CqEvent &cqe) {
     LOGINFO("MyCqStatusListener::OnEvent %d called", m_id);
     updateCount(cqe);
   }
-  void onError(const CqEvent& cqe) {
+  void onError(const CqEvent &cqe) {
     updateCount(cqe);
     LOGINFO("MyCqStatusListener::OnError %d called", m_id);
   }
@@ -287,7 +287,7 @@ DUNIT_TASK_DEFINITION(SERVER1, CreateServer1_Locator)
   { createServer(true); }
 END_TASK_DEFINITION
 
-void createServer_group(bool locator, const char* XML) {
+void createServer_group(bool locator, const char *XML) {
   LOG("Starting SERVER1...");
   if (isLocalServer) {
     CacheHelper::initServer(1, XML, locator ? locHostPort : nullptr);
@@ -295,7 +295,7 @@ void createServer_group(bool locator, const char* XML) {
   LOG("SERVER1 started");
 }
 
-void createServer_group2(bool locator, const char* XML) {
+void createServer_group2(bool locator, const char *XML) {
   LOG("Starting SERVER2...");
   if (isLocalServer) {
     CacheHelper::initServer(2, XML, locator ? locHostPort : nullptr);
@@ -379,7 +379,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepTwo)
     auto regPtr0 = getHelper()->getRegion(regionNamesCq[0]);
     auto subregPtr0 = regPtr0->getSubregion(regionNamesCq[1]);
 
-    QueryHelper* qh = &QueryHelper::getHelper();
+    QueryHelper *qh = &QueryHelper::getHelper();
 
     if (!m_isPdx) {
       qh->populatePortfolioData(regPtr0, 2, 1, 1);
@@ -421,7 +421,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
       qs->executeCqs();
 
       LOG("EXECUTE 1 STOP");
-    } catch (const Exception& excp) {
+    } catch (const Exception &excp) {
       std::string logmsg = "";
       logmsg += excp.getName();
       logmsg += ": ";
@@ -442,7 +442,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
         regionPtr->put("1026_Key4",
                        "Königin");  // string with extended charater set
 
-        const char* qryStr = "select * from /Portfolios p where p='Schüler'";
+        const char *qryStr = "select * from /Portfolios p where p='Schüler'";
 
         std::shared_ptr<CqListener> cqLstner(new MyCqListener1026);
         cqFac.addCqListener(cqLstner);
@@ -455,7 +455,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
         LOGINFO("ResultSet Query returned %d rows", resultsPtr->size());
         LOG("Testing bug #1026 Complete");
         // Iterate through the rows of the query result.
-      } catch (const Exception& geodeExcp) {
+      } catch (const Exception &geodeExcp) {
         LOGERROR("CqQuery Geode Exception: %s", geodeExcp.what());
         FAIL(geodeExcp.what());
       }
@@ -469,7 +469,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepTwo2)
     auto regPtr0 = getHelper()->getRegion(regionNamesCq[0]);
     auto subregPtr0 = regPtr0->getSubregion(regionNamesCq[1]);
 
-    QueryHelper* qh = &QueryHelper::getHelper();
+    QueryHelper *qh = &QueryHelper::getHelper();
 
     if (!m_isPdx) {
       qh->populatePortfolioData(regPtr0, 3, 2, 1);
@@ -552,13 +552,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
       ASSERT(vl.size() == static_cast<size_t>(i + 1),
              "incorrect number of listeners");
       if (i == (MAX_LISTNER - 1)) {
-        MyCqListener* myLl[MAX_LISTNER];
+        MyCqListener *myLl[MAX_LISTNER];
         for (int k = 0; k < MAX_LISTNER; k++) {
-          MyCqListener* ml = dynamic_cast<MyCqListener*>(vl[k].get());
+          MyCqListener *ml = dynamic_cast<MyCqListener *>(vl[k].get());
           myLl[ml->getId()] = ml;
         }
         for (j = 0; j < MAX_LISTNER; j++) {
-          MyCqListener* ml = myLl[j];
+          MyCqListener *ml = myLl[j];
           sprintf(buf,
                   "MyCount for Listener[%d]: numInserts[%d], numDeletes[%d], "
                   "numUpdates[%d], numEvents[%d]",
@@ -601,7 +601,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
       bool got_exception = false;
       try {
         cqy->execute();
-      } catch (IllegalStateException& excp) {
+      } catch (IllegalStateException &excp) {
         std::string failmsg = "";
         failmsg += excp.getName();
         failmsg += ": ";
@@ -626,7 +626,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
       cqy = qs->getCq(cqNames[2]);
       sprintf(buf, "cq[%s] should have been removed after close!", cqNames[2]);
       ASSERT(cqy == nullptr, buf);
-    } catch (Exception& excp) {
+    } catch (Exception &excp) {
       std::string failmsg = "";
       failmsg += excp.getName();
       failmsg += ": ";
@@ -664,7 +664,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
 
     try {
       qs->stopCqs();
-    } catch (Exception& excp) {
+    } catch (Exception &excp) {
       std::string failmsg = "";
       failmsg += excp.getName();
       failmsg += ": ";
@@ -687,7 +687,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
     ASSERT(serviceStats->numCqsOnClient() == 8, "cq count incorrect!");
     try {
       qs->closeCqs();
-    } catch (Exception& excp) {
+    } catch (Exception &excp) {
       std::string failmsg = "";
       failmsg += excp.getName();
       failmsg += ": ";
@@ -718,7 +718,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
       qry->execute();
       qry->stop();
       qry->close();
-    } catch (Exception& excp) {
+    } catch (Exception &excp) {
       std::string failmsg = "";
       failmsg += excp.getName();
       failmsg += ": ";
@@ -817,15 +817,16 @@ DUNIT_TASK_DEFINITION(CLIENT1, createCQ)
     auto cqLstner = std::make_shared<MyCqStatusListener>(100);
     cqFac.addCqListener(cqLstner);
     auto cqAttr = cqFac.create();
-    auto cq = qs->newCq(const_cast<char*>(cqName), cqQueryStatusString, cqAttr);
+    auto cq =
+        qs->newCq(const_cast<char *>(cqName), cqQueryStatusString, cqAttr);
 
     cq->execute();
     SLEEP(20000);
 
     cqAttr = cq->getCqAttributes();
     auto vl = cqAttr->getCqListeners();
-    MyCqStatusListener* myStatusCq =
-        dynamic_cast<MyCqStatusListener*>(vl[0].get());
+    MyCqStatusListener *myStatusCq =
+        dynamic_cast<MyCqStatusListener *>(vl[0].get());
     LOGINFO("checkCQStatusOnConnect = %d ", myStatusCq->getCqsConnectedCount());
     ASSERT(myStatusCq->getCqsConnectedCount() == 1,
            "incorrect number of CqStatus Connected count.");
@@ -843,14 +844,15 @@ DUNIT_TASK_DEFINITION(CLIENT1, createCQ_Pool)
     cqFac.addCqListener(cqLstner);
     auto cqAttr = cqFac.create();
 
-    auto cq = qs->newCq(const_cast<char*>(cqName), cqQueryStatusString, cqAttr);
+    auto cq =
+        qs->newCq(const_cast<char *>(cqName), cqQueryStatusString, cqAttr);
     cq->execute();
     SLEEP(20000);
 
     cqAttr = cq->getCqAttributes();
     auto vl = cqAttr->getCqListeners();
-    MyCqStatusListener* myStatusCq =
-        dynamic_cast<MyCqStatusListener*>(vl[0].get());
+    MyCqStatusListener *myStatusCq =
+        dynamic_cast<MyCqStatusListener *>(vl[0].get());
     LOGINFO("checkCQStatusOnConnect = %d ", myStatusCq->getCqsConnectedCount());
     ASSERT(myStatusCq->getCqsConnectedCount() == 1,
            "incorrect number of CqStatus Connected count.");
@@ -863,14 +865,14 @@ DUNIT_TASK_DEFINITION(CLIENT1, createCQ_Pool)
     cqFac1.addCqListener(cqLstner1);
     auto cqAttr1 = cqFac1.create();
     auto cq2 =
-        qs2->newCq(const_cast<char*>(cqName1), cqQueryStatusString1, cqAttr1);
+        qs2->newCq(const_cast<char *>(cqName1), cqQueryStatusString1, cqAttr1);
     cq2->execute();
     SLEEP(20000);
 
     cqAttr1 = cq2->getCqAttributes();
     auto vl2 = cqAttr1->getCqListeners();
-    MyCqStatusListener* myStatusCq2 =
-        dynamic_cast<MyCqStatusListener*>(vl2[0].get());
+    MyCqStatusListener *myStatusCq2 =
+        dynamic_cast<MyCqStatusListener *>(vl2[0].get());
     LOGINFO("checkCQStatusOnConnect = %d ",
             myStatusCq2->getCqsConnectedCount());
     ASSERT(myStatusCq2->getCqsConnectedCount() == 1,
@@ -904,13 +906,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, createCQ_Pool)
   }
 END_TASK_DEFINITION
 
-void executeCq(const char* poolName, const char* name) {
+void executeCq(const char *poolName, const char *name) {
   auto pool = getHelper()->getCache()->getPoolManager().find(poolName);
   std::shared_ptr<QueryService> qs;
   if (pool != nullptr) {
     qs = pool->getQueryService();
   }
-  auto cq = qs->getCq(const_cast<char*>(name));
+  auto cq = qs->getCq(const_cast<char *>(name));
   cq->execute();
   SLEEP(20000);
   LOG("executeCq complete");
@@ -923,18 +925,18 @@ DUNIT_TASK_DEFINITION(CLIENT1, executeCQ)
   }
 END_TASK_DEFINITION
 
-void checkCQStatusOnConnect(const char* poolName, const char* name,
+void checkCQStatusOnConnect(const char *poolName, const char *name,
                             uint32_t connect) {
   auto pool = getHelper()->getCache()->getPoolManager().find(poolName);
   std::shared_ptr<QueryService> qs;
   if (pool != nullptr) {
     qs = pool->getQueryService();
   }
-  auto cq = qs->getCq(const_cast<char*>(name));
+  auto cq = qs->getCq(const_cast<char *>(name));
   auto cqAttr = cq->getCqAttributes();
   auto vl = cqAttr->getCqListeners();
-  MyCqStatusListener* myStatusCq =
-      dynamic_cast<MyCqStatusListener*>(vl[0].get());
+  MyCqStatusListener *myStatusCq =
+      dynamic_cast<MyCqStatusListener *>(vl[0].get());
   LOGINFO("checkCQStatusOnConnect = %d ", myStatusCq->getCqsConnectedCount());
   ASSERT(myStatusCq->getCqsConnectedCount() == connect,
          "incorrect number of CqStatus Connected count.");
@@ -943,7 +945,7 @@ void checkCQStatusOnConnect(const char* poolName, const char* name,
 DUNIT_TASK_DEFINITION(CLIENT1, checkCQStatusOnConnect)
   {
     SLEEP(20000);
-    checkCQStatusOnConnect(regionName, const_cast<char*>(cqName), 1);
+    checkCQStatusOnConnect(regionName, const_cast<char *>(cqName), 1);
     LOG("checkCQStatusOnConnect complete.");
   }
 END_TASK_DEFINITION
@@ -951,7 +953,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, checkCQStatusOnConnect2)
   {
     SLEEP(20000);
-    checkCQStatusOnConnect(regionName, const_cast<char*>(cqName), 2);
+    checkCQStatusOnConnect(regionName, const_cast<char *>(cqName), 2);
     LOG("checkCQStatusOnConnect2 complete.");
   }
 END_TASK_DEFINITION
@@ -959,21 +961,21 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, checkCQStatusOnConnect_Pool)
   {
     SLEEP(20000);
-    checkCQStatusOnConnect("__TEST_POOL1__", const_cast<char*>(cqName), 1);
-    checkCQStatusOnConnect("__TEST_POOL2__", const_cast<char*>(cqName1), 1);
+    checkCQStatusOnConnect("__TEST_POOL1__", const_cast<char *>(cqName), 1);
+    checkCQStatusOnConnect("__TEST_POOL2__", const_cast<char *>(cqName1), 1);
 
     LOG("checkCQStatusOnConnect_Pool complete.");
   }
 END_TASK_DEFINITION
 
-void checkCQStatusOnDisConnect(const char* poolName, const char* cqName,
+void checkCQStatusOnDisConnect(const char *poolName, const char *cqName,
                                uint32_t disconnect) {
   auto pool = getHelper()->getCache()->getPoolManager().find(poolName);
   std::shared_ptr<QueryService> qs;
   if (pool != nullptr) {
     qs = pool->getQueryService();
   }
-  auto cq = qs->getCq(const_cast<char*>(cqName));
+  auto cq = qs->getCq(const_cast<char *>(cqName));
   auto cqAttr = cq->getCqAttributes();
   auto vl = cqAttr->getCqListeners();
   auto myStatusCq = std::dynamic_pointer_cast<MyCqStatusListener>(vl[0]);
@@ -986,7 +988,7 @@ void checkCQStatusOnDisConnect(const char* poolName, const char* cqName,
 DUNIT_TASK_DEFINITION(CLIENT1, checkCQStatusOnDisConnect0)
   {
     SLEEP(20000);
-    checkCQStatusOnDisConnect(regionName, const_cast<char*>(cqName), 0);
+    checkCQStatusOnDisConnect(regionName, const_cast<char *>(cqName), 0);
     LOG("checkCQStatusOnDisConnect0 complete.");
   }
 END_TASK_DEFINITION
@@ -994,8 +996,8 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, checkCQStatusOnDisConnect_Pool)
   {
     SLEEP(20000);
-    checkCQStatusOnDisConnect("__TEST_POOL1__", const_cast<char*>(cqName), 1);
-    checkCQStatusOnDisConnect("__TEST_POOL2__", const_cast<char*>(cqName1), 1);
+    checkCQStatusOnDisConnect("__TEST_POOL1__", const_cast<char *>(cqName), 1);
+    checkCQStatusOnDisConnect("__TEST_POOL2__", const_cast<char *>(cqName1), 1);
     LOG("checkCQStatusOnDisConnect_Pool complete.");
   }
 END_TASK_DEFINITION
@@ -1003,7 +1005,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, checkCQStatusOnDisConnect1)
   {
     SLEEP(20000);
-    checkCQStatusOnDisConnect(regionName, const_cast<char*>(cqName), 1);
+    checkCQStatusOnDisConnect(regionName, const_cast<char *>(cqName), 1);
     LOG("checkCQStatusOnDisConnect1 complete.");
   }
 END_TASK_DEFINITION
@@ -1011,7 +1013,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, checkCQStatusOnDisConnect2)
   {
     SLEEP(20000);
-    checkCQStatusOnDisConnect(regionName, const_cast<char*>(cqName), 2);
+    checkCQStatusOnDisConnect(regionName, const_cast<char *>(cqName), 2);
     LOG("checkCQStatusOnDisConnect2 complete.");
   }
 END_TASK_DEFINITION
@@ -1036,18 +1038,18 @@ DUNIT_TASK_DEFINITION(CLIENT1, putEntries)
   }
 END_TASK_DEFINITION
 
-void checkCQStatusOnPutEvent(const char* poolName, const char* cqName,
+void checkCQStatusOnPutEvent(const char *poolName, const char *cqName,
                              uint32_t count) {
   auto pool = getHelper()->getCache()->getPoolManager().find(poolName);
   std::shared_ptr<QueryService> qs;
   if (pool != nullptr) {
     qs = pool->getQueryService();
   }
-  auto cq = qs->getCq(const_cast<char*>(cqName));
+  auto cq = qs->getCq(const_cast<char *>(cqName));
   auto cqAttr = cq->getCqAttributes();
   auto vl = cqAttr->getCqListeners();
-  MyCqStatusListener* myStatusCq =
-      dynamic_cast<MyCqStatusListener*>(vl[0].get());
+  MyCqStatusListener *myStatusCq =
+      dynamic_cast<MyCqStatusListener *>(vl[0].get());
   LOGINFO("checkCQStatusOnPutEvent = %d ", myStatusCq->getNumInserts());
   ASSERT(myStatusCq->getNumInserts() == count,
          "incorrect number of CqStatus Updates count.");
@@ -1081,7 +1083,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, ProcessCQ)
     cqFac.addCqListener(cqStatusLstner);
     auto cqAttr = cqFac.create();
 
-    auto cq = qs->newCq(const_cast<char*>(cqName), cqQueryStatusString, cqAttr);
+    auto cq =
+        qs->newCq(const_cast<char *>(cqName), cqQueryStatusString, cqAttr);
     cq->execute();
     SLEEP(20000);
     LOG("ProcessCQ Query executed.");
@@ -1103,8 +1106,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, ProcessCQ)
     cqAttr = cq->getCqAttributes();
     auto vl = cqAttr->getCqListeners();
     ASSERT(vl.size() == 2, "incorrect number of CqListeners count.");
-    MyCqStatusListener* myStatusCq =
-        dynamic_cast<MyCqStatusListener*>(vl[1].get());
+    MyCqStatusListener *myStatusCq =
+        dynamic_cast<MyCqStatusListener *>(vl[1].get());
     LOGINFO("No of insert events = %d ", myStatusCq->getNumInserts());
     LOGINFO("No of OnCqConnected events = %d ",
             myStatusCq->getCqsConnectedCount());
@@ -1113,7 +1116,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, ProcessCQ)
     ASSERT(myStatusCq->getCqsConnectedCount() == 1,
            "incorrect number of CqStatus Connected count.");
 
-    MyCqListener* myCq = dynamic_cast<MyCqListener*>(vl[0].get());
+    MyCqListener *myCq = dynamic_cast<MyCqListener *>(vl[0].get());
     LOGINFO("No of insert events = %d ", myCq->getNumInserts());
     ASSERT(myCq->getNumInserts() == 5,
            "incorrect number of CqStatus Updates count.");

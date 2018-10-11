@@ -20,8 +20,10 @@
 #ifndef GEODE_SUSPENDEDTXEXPIRYHANDLER_H_
 #define GEODE_SUSPENDEDTXEXPIRYHANDLER_H_
 
-#include <geode/internal/geode_globals.hpp>
+#include <ace/Event_Handler.h>
+
 #include <geode/Cache.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 #include "CacheTransactionManagerImpl.hpp"
 

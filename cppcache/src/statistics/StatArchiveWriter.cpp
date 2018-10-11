@@ -15,18 +15,19 @@
  * limitations under the License.
  */
 
-#include <geode/internal/geode_globals.hpp>
+#include "StatArchiveWriter.hpp"
 
 #include <ace/ACE.h>
-#include <ace/Thread_Mutex.h>
-#include <ace/Task.h>
+#include <ace/OS_NS_sys_time.h>
 #include <ace/OS_NS_sys_utsname.h>
 #include <ace/OS_NS_time.h>
-#include <ace/OS_NS_sys_time.h>
+#include <ace/Task.h>
+#include <ace/Thread_Mutex.h>
 
-#include "StatArchiveWriter.hpp"
-#include "GeodeStatisticsFactory.hpp"
+#include <geode/internal/geode_globals.hpp>
+
 #include "../CacheImpl.hpp"
+#include "GeodeStatisticsFactory.hpp"
 
 namespace apache {
 namespace geode {

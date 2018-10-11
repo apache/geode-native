@@ -22,8 +22,8 @@
 
 #include <vector>
 
-#include "internal/geode_globals.hpp"
 #include "CqListener.hpp"
+#include "internal/geode_globals.hpp"
 
 namespace apache {
 namespace geode {

@@ -21,9 +21,9 @@
 #define GEODE_DATAOUTPUTINTERNAL_H_
 
 #include <geode/DataOutput.hpp>
-
-#include "CacheImpl.hpp"          // TODO remove
 #include <geode/PoolManager.hpp>  // TODO remove
+
+#include "CacheImpl.hpp"  // TODO remove
 
 namespace apache {
 namespace geode {

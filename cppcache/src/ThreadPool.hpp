@@ -26,15 +26,16 @@
  *      Author: ankurs
  */
 
-#include <ace/Task.h>
 #include <ace/Method_Request.h>
+#include <ace/Task.h>
 //#include <ace/Future.h>
+#include <condition_variable>
+#include <mutex>
+
 #include <ace/Activation_Queue.h>
 #include <ace/Condition_T.h>
-#include <ace/Singleton.h>
 #include <ace/Guard_T.h>
-#include <mutex>
-#include <condition_variable>
+#include <ace/Singleton.h>
 namespace apache {
 namespace geode {
 namespace client {

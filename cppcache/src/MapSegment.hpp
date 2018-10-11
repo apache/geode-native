@@ -20,29 +20,27 @@
 #ifndef GEODE_MAPSEGMENT_H_
 #define GEODE_MAPSEGMENT_H_
 
-#include <vector>
 #include <memory>
+#include <unordered_map>
+#include <vector>
 
-#include <geode/internal/geode_globals.hpp>
+#include <ace/Functor_T.h>
+#include <ace/Hash_Map_Manager.h>
+#include <ace/Null_Mutex.h>
+#include <ace/Recursive_Thread_Mutex.h>
+#include <ace/Thread_Mutex.h>
+#include <ace/Versioned_Namespace.h>
+#include <ace/config-lite.h>
 
 #include <geode/CacheableKey.hpp>
-#include "MapEntry.hpp"
-#include <geode/RegionEntry.hpp>
-#include "MapWithLock.hpp"
-#include "CacheableToken.hpp"
 #include <geode/Delta.hpp>
+#include <geode/RegionEntry.hpp>
+#include <geode/internal/geode_globals.hpp>
 
-#include <ace/Hash_Map_Manager.h>
-#include <ace/Functor_T.h>
-#include <ace/Null_Mutex.h>
-#include <ace/Thread_Mutex.h>
-#include <ace/Recursive_Thread_Mutex.h>
-#include <vector>
-#include <ace/config-lite.h>
-#include <ace/Versioned_Namespace.h>
+#include "CacheableToken.hpp"
+#include "MapEntry.hpp"
+#include "MapWithLock.hpp"
 #include "TombstoneList.hpp"
-#include <unordered_map>
-
 #include "util/concurrent/spinlock_mutex.hpp"
 
 namespace ACE_VERSIONED_NAMESPACE_NAME {

@@ -22,9 +22,9 @@
 
 #include <string>
 
-#include <geode/internal/geode_globals.hpp>
-#include <geode/internal/DataSerializableFixedId.hpp>
 #include <geode/DataOutput.hpp>
+#include <geode/internal/DataSerializableFixedId.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 /** @file
  */

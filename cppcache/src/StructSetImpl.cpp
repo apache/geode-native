@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-#include <vector>
-#include <stdexcept>
-
 #include "StructSetImpl.hpp"
+
+#include <stdexcept>
+#include <vector>
+
 #include "util/Log.hpp"
 
 namespace apache {

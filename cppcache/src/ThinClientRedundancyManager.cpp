@@ -22,21 +22,23 @@
  */
 
 #include "ThinClientRedundancyManager.hpp"
-#include "TcrHADistributionManager.hpp"
-#include "RemoteQueryService.hpp"
-#include "CacheImpl.hpp"
-#include "ThinClientRegion.hpp"
+
+#include <algorithm>
+#include <set>
+
+#include <geode/AuthenticatedView.hpp>
 #include <geode/SystemProperties.hpp>
+
+#include "CacheImpl.hpp"
 #include "ClientProxyMembershipID.hpp"
 #include "ExpiryHandler_T.hpp"
-
-#include "ThinClientPoolHADM.hpp"
+#include "RemoteQueryService.hpp"
 #include "ServerLocation.hpp"
+#include "TcrHADistributionManager.hpp"
 #include "ThinClientLocatorHelper.hpp"
+#include "ThinClientPoolHADM.hpp"
+#include "ThinClientRegion.hpp"
 #include "UserAttributes.hpp"
-#include <geode/AuthenticatedView.hpp>
-#include <set>
-#include <algorithm>
 
 namespace apache {
 namespace geode {

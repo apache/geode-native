@@ -22,8 +22,10 @@
  */
 
 #include "PdxFieldType.hpp"
-#include "PdxTypes.hpp"
+
 #include <geode/PdxFieldTypes.hpp>
+
+#include "PdxTypes.hpp"
 //#include <malloc.h>
 
 #include "ace/OS.h"

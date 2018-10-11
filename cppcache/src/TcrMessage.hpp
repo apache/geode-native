@@ -21,32 +21,32 @@
 #define GEODE_TCRMESSAGE_H_
 
 #include <atomic>
-#include <string>
-#include <map>
-#include <vector>
 #include <cinttypes>
+#include <map>
+#include <string>
+#include <vector>
 
 #include <ace/OS.h>
 
-#include <geode/internal/geode_globals.hpp>
-#include <geode/Serializable.hpp>
+#include <geode/CacheableBuiltins.hpp>
 #include <geode/CacheableKey.hpp>
 #include <geode/CacheableString.hpp>
-#include <geode/DataOutput.hpp>
-#include <geode/DataInput.hpp>
-#include <geode/ExceptionTypes.hpp>
-#include <geode/CacheableBuiltins.hpp>
 #include <geode/CqState.hpp>
+#include <geode/DataInput.hpp>
+#include <geode/DataOutput.hpp>
+#include <geode/ExceptionTypes.hpp>
+#include <geode/Serializable.hpp>
+#include <geode/internal/geode_globals.hpp>
 
-#include "InterestResultPolicy.hpp"
+#include "BucketServerLocation.hpp"
 #include "EventId.hpp"
 #include "EventIdMap.hpp"
-#include "TcrChunkedContext.hpp"
-#include "BucketServerLocation.hpp"
 #include "FixedPartitionAttributesImpl.hpp"
+#include "InterestResultPolicy.hpp"
+#include "SerializationRegistry.hpp"
+#include "TcrChunkedContext.hpp"
 #include "VersionTag.hpp"
 #include "VersionedCacheableObjectPartList.hpp"
-#include "SerializationRegistry.hpp"
 
 namespace apache {
 namespace geode {

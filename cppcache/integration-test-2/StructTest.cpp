@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+#include <hacks/range.h>
+
 #include <iostream>
 #include <unordered_map>
 
@@ -22,16 +24,14 @@
 
 #include <geode/Cache.hpp>
 #include <geode/PoolManager.hpp>
+#include <geode/QueryService.hpp>
 #include <geode/RegionFactory.hpp>
 #include <geode/RegionShortcut.hpp>
 #include <geode/Struct.hpp>
-#include <geode/QueryService.hpp>
 
-#include <hacks/range.h>
-
+#include "framework/Cluster.h"
 #include "framework/Framework.h"
 #include "framework/Gfsh.h"
-#include "framework/Cluster.h"
 
 namespace {
 

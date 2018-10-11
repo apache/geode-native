@@ -22,8 +22,10 @@
  */
 
 #include "VariousPdxTypes.hpp"
-#include <geode/CacheableEnum.hpp>
+
 #include <util/Log.hpp>
+
+#include <geode/CacheableEnum.hpp>
 
 namespace PdxTests {
 

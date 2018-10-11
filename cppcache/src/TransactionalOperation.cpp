@@ -15,14 +15,15 @@
  * limitations under the License.
  */
 
-#include <geode/CacheableString.hpp>
+#include "TransactionalOperation.hpp"
+
 #include <geode/Cache.hpp>
+#include <geode/CacheableString.hpp>
 #include <geode/FunctionService.hpp>
 
-#include "TransactionalOperation.hpp"
+#include "CacheImpl.hpp"
 #include "RegionInternal.hpp"
 #include "util/exception.hpp"
-#include "CacheImpl.hpp"
 
 namespace apache {
 namespace geode {

@@ -21,9 +21,11 @@
 #define GEODE_QUEUECONNECTIONRESPONSE_H_
 
 #include <list>
-#include "ServerLocationResponse.hpp"
+
 #include <geode/DataInput.hpp>
+
 #include "ServerLocation.hpp"
+#include "ServerLocationResponse.hpp"
 
 namespace apache {
 namespace geode {

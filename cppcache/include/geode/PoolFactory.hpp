@@ -22,9 +22,9 @@
 
 #include <chrono>
 
-#include "internal/geode_globals.hpp"
-#include "internal/chrono/duration.hpp"
 #include "Pool.hpp"
+#include "internal/chrono/duration.hpp"
+#include "internal/geode_globals.hpp"
 
 /**
  * @file

@@ -16,7 +16,9 @@
  */
 
 #include "RegionInternal.hpp"
+
 #include <geode/RegionEntry.hpp>
+
 #include "TombstoneList.hpp"
 
 namespace apache {

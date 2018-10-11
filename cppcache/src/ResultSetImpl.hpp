@@ -22,9 +22,9 @@
 
 #include <memory>
 
-#include <geode/internal/geode_globals.hpp>
-#include <geode/ResultSet.hpp>
 #include <geode/CacheableBuiltins.hpp>
+#include <geode/ResultSet.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 namespace apache {
 namespace geode {

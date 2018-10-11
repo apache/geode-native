@@ -20,9 +20,9 @@
 #ifndef GEODE_PDXWRITER_H_
 #define GEODE_PDXWRITER_H_
 
-#include "internal/geode_globals.hpp"
 #include "CacheableBuiltins.hpp"
 #include "CacheableDate.hpp"
+#include "internal/geode_globals.hpp"
 
 namespace apache {
 namespace geode {

@@ -16,18 +16,19 @@
  */
 
 #include "CacheTransactionManagerImpl.hpp"
-#include <geode/TransactionId.hpp>
+
 #include <geode/ExceptionTypes.hpp>
 #include <geode/PoolManager.hpp>
+#include <geode/TransactionId.hpp>
 
+#include "CacheImpl.hpp"
+#include "CacheRegionHelper.hpp"
 #include "TSSTXStateWrapper.hpp"
+#include "TXCleaner.hpp"
 #include "TcrMessage.hpp"
 #include "ThinClientBaseDM.hpp"
 #include "ThinClientPoolDM.hpp"
-#include "CacheRegionHelper.hpp"
-#include "CacheImpl.hpp"
 #include "TssConnectionWrapper.hpp"
-#include "TXCleaner.hpp"
 #include "util/exception.hpp"
 
 namespace apache {

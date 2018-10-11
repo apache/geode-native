@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-#include <gtest/gtest.h>
-
 #include <functional>
-#include <unordered_set>
 #include <unordered_map>
+#include <unordered_set>
+
+#include <gtest/gtest.h>
 
 #include <geode/CacheableString.hpp>
 #include <geode/internal/functional.hpp>

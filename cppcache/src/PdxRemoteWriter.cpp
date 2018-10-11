@@ -22,6 +22,7 @@
  */
 
 #include "PdxRemoteWriter.hpp"
+
 #include "PdxTypeRegistry.hpp"
 
 namespace apache {

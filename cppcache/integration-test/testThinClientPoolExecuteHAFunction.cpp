@@ -36,18 +36,18 @@ bool isLocalServer = false;
 bool isLocator = false;
 bool isPoolWithEndpoint = false;
 
-const char* endPoints1 = CacheHelper::getTcrEndpoints(isLocalServer, 3);
-const char* locHostPort =
+const char *endPoints1 = CacheHelper::getTcrEndpoints(isLocalServer, 3);
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
-const char* poolRegNames[] = {"partition_region", "PoolRegion2"};
-const char* poolName = "__TEST_POOL1__";
+const char *poolRegNames[] = {"partition_region", "PoolRegion2"};
+const char *poolName = "__TEST_POOL1__";
 
-const char* serverGroup = "ServerGroup1";
+const char *serverGroup = "ServerGroup1";
 
-const char* OnServerHAExceptionFunction = "OnServerHAExceptionFunction";
-const char* OnServerHAShutdownFunction = "OnServerHAShutdownFunction";
+const char *OnServerHAExceptionFunction = "OnServerHAExceptionFunction";
+const char *OnServerHAShutdownFunction = "OnServerHAShutdownFunction";
 
-const char* RegionOperationsHAFunction = "RegionOperationsHAFunction";
+const char *RegionOperationsHAFunction = "RegionOperationsHAFunction";
 #define verifyGetResults()                                      \
   bool found = false;                                           \
   for (int j = 0; j < 34; j++) {                                \
@@ -75,14 +75,14 @@ class MyResultCollector : public DefaultResultCollector {
     return DefaultResultCollector::getResult(timeout);
   }
 
-  void addResult(const std::shared_ptr<Cacheable>& resultItem) override {
+  void addResult(const std::shared_ptr<Cacheable> &resultItem) override {
     m_addResultCount++;
     if (resultItem == nullptr) {
       return;
     }
     if (auto results =
             std::dynamic_pointer_cast<CacheableArrayList>(resultItem)) {
-      for (auto& result : *results) {
+      for (auto &result : *results) {
         DefaultResultCollector::addResult(result);
       }
     } else {
@@ -117,7 +117,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(SERVER, StartS12)
   {
-    const char* lhp = nullptr;
+    const char *lhp = nullptr;
     if (!isPoolWithEndpoint) lhp = locHostPort;
     if (isLocalServer) {
       CacheHelper::initServer(1, "func_cacheserver1_pool.xml", lhp);
@@ -130,7 +130,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(SERVER, StartS13)
   {
-    const char* lhp = nullptr;
+    const char *lhp = nullptr;
     if (!isPoolWithEndpoint) lhp = locHostPort;
     if (isLocalServer) {
       CacheHelper::initServer(1, "func_cacheserver1_pool.xml", lhp);
@@ -241,7 +241,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       /*-------------------------------onRegion with single filter
        * key---------------------------------------*/
       auto filter = CacheableVector::create();
-      const char* key = "KEY--10";
+      const char *key = "KEY--10";
       filter->push_back(CacheableString::create(key));
       executeFunctionResult =
           exc.withArgs(routingObj)
@@ -285,7 +285,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       }
       /*-------------------------------onRegion with single filter key
        * done---------------------------------------*/
-    } catch (const Exception& excp) {
+    } catch (const Exception &excp) {
       std::string logmsg = "";
       logmsg += excp.getName();
       logmsg += ": ";
@@ -407,7 +407,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OnServerHATest)
           verifyGetResults()
         }
       }
-    } catch (const Exception& excp) {
+    } catch (const Exception &excp) {
       std::string logmsg = "";
       logmsg += excp.getName();
       logmsg += ": ";

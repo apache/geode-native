@@ -20,28 +20,24 @@
 #ifndef GEODE_INTERNAL_UTILS_H_
 #define GEODE_INTERNAL_UTILS_H_
 
-#include <typeinfo>
-#include <string>
-#include <unordered_set>
-#include <memory>
-#include <typeinfo>
-#include <string>
-#include <unordered_set>
-#include <memory>
 #include <chrono>
+#include <memory>
 #include <random>
+#include <string>
+#include <typeinfo>
+#include <unordered_set>
 
-#include <geode/internal/geode_globals.hpp>
-#include <geode/internal/geode_base.hpp>
-#include <geode/ExceptionTypes.hpp>
 #include <geode/CacheableString.hpp>
 #include <geode/DataOutput.hpp>
+#include <geode/ExceptionTypes.hpp>
 #include <geode/SystemProperties.hpp>
+#include <geode/internal/geode_base.hpp>
+#include <geode/internal/geode_globals.hpp>
 
+#include "Assert.hpp"
 #include "DistributedSystem.hpp"
 #include "statistics/Statistics.hpp"
 #include "util/Log.hpp"
-#include "Assert.hpp"
 
 #ifdef __GNUC__
 extern "C" {

@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
+#include "ThreadPool.hpp"
+
 #include <geode/SystemProperties.hpp>
 
-#include "ThreadPool.hpp"
+#include "CacheImpl.hpp"
 #include "DistributedSystem.hpp"
 #include "DistributedSystemImpl.hpp"
-#include "CacheImpl.hpp"
 
 namespace apache {
 namespace geode {

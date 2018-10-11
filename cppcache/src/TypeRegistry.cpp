@@ -16,8 +16,9 @@
  */
 
 #include "geode/TypeRegistry.hpp"
-#include "CacheRegionHelper.hpp"
+
 #include "CacheImpl.hpp"
+#include "CacheRegionHelper.hpp"
 
 namespace apache {
 namespace geode {

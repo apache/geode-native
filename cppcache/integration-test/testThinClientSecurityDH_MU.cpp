@@ -57,14 +57,14 @@ portion in this test.
 
 using apache::geode::client::testframework::security::CredentialGenerator;
 
-const char* locHostPort =
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
-const char* regionNamesAuth[] = {"DistRegionAck", "DistRegionNoAck"};
+const char *regionNamesAuth[] = {"DistRegionAck", "DistRegionNoAck"};
 std::shared_ptr<CredentialGenerator> credentialGeneratorHandler;
 
 std::string getXmlPath() {
   char xmlPath[1000] = {'\0'};
-  const char* path = ACE_OS::getenv("TESTSRC");
+  const char *path = ACE_OS::getenv("TESTSRC");
   ASSERT(path != nullptr,
          "Environment variable TESTSRC for test source directory is not set.");
   strncpy(xmlPath, path, strlen(path) - strlen("cppcache"));
@@ -104,7 +104,7 @@ void initCredentialGenerator() {
 
 static std::shared_ptr<Properties> userCreds;
 
-void initClientAuth(char credentialsType, const char* dhAlgo) {
+void initClientAuth(char credentialsType, const char *dhAlgo) {
   printf("Initializing Client with %s credential and %s DH Algo\n",
          credentialsType == CORRECT_CREDENTIALS ? "Valid" : "Invalid", dhAlgo);
 
@@ -152,10 +152,10 @@ void initClientAuth(char credentialsType, const char* dhAlgo) {
   }
 }
 
-void InitIncorrectClients(const char* dhAlgo) {
+void InitIncorrectClients(const char *dhAlgo) {
   try {
     initClientAuth(INCORRECT_CREDENTIALS, dhAlgo);
-  } catch (const apache::geode::client::Exception& other) {
+  } catch (const apache::geode::client::Exception &other) {
     LOG(other.getStackTrace());
     LOG(other.what());
   }
@@ -173,10 +173,10 @@ void InitIncorrectClients(const char* dhAlgo) {
       LOG("Operation allowed, something is wrong.");
     }
     FAIL("Should have thrown AuthenticationFailedException.");
-  } catch (const apache::geode::client::AuthenticationFailedException& other) {
+  } catch (const apache::geode::client::AuthenticationFailedException &other) {
     LOG(other.getStackTrace());
     LOG(other.what());
-  } catch (const apache::geode::client::Exception& other) {
+  } catch (const apache::geode::client::Exception &other) {
     LOG(other.getStackTrace());
     LOG(other.what());
     FAIL("Only AuthenticationFailedException is expected");
@@ -184,10 +184,10 @@ void InitIncorrectClients(const char* dhAlgo) {
   LOG("InitIncorrectClients Completed");
 }
 
-void InitCorrectClients(const char* dhAlgo) {
+void InitCorrectClients(const char *dhAlgo) {
   try {
     initClientAuth(CORRECT_CREDENTIALS, dhAlgo);
-  } catch (const apache::geode::client::Exception& other) {
+  } catch (const apache::geode::client::Exception &other) {
     LOG(other.getStackTrace());
     LOG(other.what());
   }
@@ -203,7 +203,7 @@ void InitCorrectClients(const char* dhAlgo) {
     auto regionPtr = virtualCache.getRegion(regionNamesAuth[0]);
 
     for (int i = 0; i < 100; i++) regionPtr->put(keys[0], vals[0]);
-  } catch (const apache::geode::client::Exception& other) {
+  } catch (const apache::geode::client::Exception &other) {
     LOG(other.getStackTrace());
     FAIL(other.what());
   }
@@ -234,7 +234,7 @@ void DoNetSearch() {
     } else {
       LOG("checkPtr is nullptr");
     }
-  } catch (const apache::geode::client::Exception& other) {
+  } catch (const apache::geode::client::Exception &other) {
     LOG(other.getStackTrace());
     FAIL(other.what());
   }
@@ -273,7 +273,7 @@ void initSecurityServer(int instance) {
              cmdServerAuthenticator.c_str());
       CacheHelper::initServer(
           instance, nullptr, locHostPort,
-          const_cast<char*>(cmdServerAuthenticator.c_str()));
+          const_cast<char *>(cmdServerAuthenticator.c_str()));
     }
   } catch (...) {
     printf("this is some exception");

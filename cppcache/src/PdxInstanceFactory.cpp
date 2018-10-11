@@ -17,10 +17,10 @@
 
 #include <geode/PdxInstanceFactory.hpp>
 
+#include "PdxHelper.hpp"
+#include "PdxInstanceImpl.hpp"
 #include "PdxType.hpp"
 #include "PdxTypes.hpp"
-#include "PdxInstanceImpl.hpp"
-#include "PdxHelper.hpp"
 
 namespace apache {
 namespace geode {

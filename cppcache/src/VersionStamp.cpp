@@ -15,14 +15,15 @@
  * limitations under the License.
  */
 
+#include "VersionStamp.hpp"
+
 #include <string>
 
-#include "VersionStamp.hpp"
-#include "MemberListForVersionStamp.hpp"
 #include "CacheImpl.hpp"
+#include "MemberListForVersionStamp.hpp"
 #include "RegionInternal.hpp"
-#include "ThinClientRegion.hpp"
 #include "ThinClientPoolDM.hpp"
+#include "ThinClientRegion.hpp"
 
 namespace apache {
 namespace geode {

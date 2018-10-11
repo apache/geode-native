@@ -24,24 +24,22 @@
 #include <iosfwd>
 #include <memory>
 
-#include "internal/geode_globals.hpp"
-#include "CacheStatistics.hpp"
-#include "CacheableBuiltins.hpp"
-#include "CacheableKey.hpp"
-#include "CacheableString.hpp"
-#include "CacheableString.hpp"
-#include "ExceptionTypes.hpp"
-#include "Serializable.hpp"
-#include "RegionAttributesFactory.hpp"
 #include "AttributesMutator.hpp"
 #include "CacheListener.hpp"
 #include "CacheLoader.hpp"
+#include "CacheStatistics.hpp"
 #include "CacheWriter.hpp"
+#include "CacheableBuiltins.hpp"
 #include "CacheableKey.hpp"
+#include "CacheableString.hpp"
+#include "ExceptionTypes.hpp"
 #include "PartitionResolver.hpp"
 #include "Query.hpp"
 #include "RegionAttributes.hpp"
+#include "RegionAttributesFactory.hpp"
 #include "RegionEntry.hpp"
+#include "Serializable.hpp"
+#include "internal/geode_globals.hpp"
 
 namespace apache {
 namespace geode {

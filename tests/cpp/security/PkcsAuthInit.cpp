@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
+#include "PkcsAuthInit.hpp"
+
 #include <cstdio>
 #include <string>
-
-#include <geode/Properties.hpp>
-#include <geode/CacheableBuiltins.hpp>
-#include <geode/ExceptionTypes.hpp>
-
 #include <util/Log.hpp>
 
+#include <geode/CacheableBuiltins.hpp>
+#include <geode/ExceptionTypes.hpp>
+#include <geode/Properties.hpp>
+
 #include "SerializationRegistry.hpp"
-#include "PkcsAuthInit.hpp"
 #include "security_export.h"
 
 namespace apache {

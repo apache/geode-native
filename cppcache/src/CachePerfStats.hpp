@@ -22,10 +22,10 @@
 
 #include <geode/internal/geode_globals.hpp>
 
+#include "Assert.hpp"
 #include "statistics/Statistics.hpp"
 #include "statistics/StatisticsFactory.hpp"
 #include "statistics/StatisticsManager.hpp"
-#include "Assert.hpp"
 
 namespace apache {
 namespace geode {

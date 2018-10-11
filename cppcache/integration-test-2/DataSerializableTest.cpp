@@ -19,11 +19,11 @@
 
 #include <gtest/gtest.h>
 
-#include <geode/DataSerializable.hpp>
-#include <geode/RegionShortcut.hpp>
 #include <geode/DataInput.hpp>
 #include <geode/DataOutput.hpp>
+#include <geode/DataSerializable.hpp>
 #include <geode/RegionFactory.hpp>
+#include <geode/RegionShortcut.hpp>
 #include <geode/TypeRegistry.hpp>
 
 #include "framework/Cluster.h"

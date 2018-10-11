@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
+#include "TXEntryState.hpp"
+
 #include <geode/ExceptionTypes.hpp>
 
-#include "TXEntryState.hpp"
 #include "util/exception.hpp"
 
 namespace apache {

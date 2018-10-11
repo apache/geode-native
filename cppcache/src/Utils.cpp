@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-#include <cstdio>
-#include <chrono>
-#include <sstream>
-#include <iomanip>
+#include "Utils.hpp"
 
+#include <chrono>
+#include <cstdio>
+#include <iomanip>
+#include <sstream>
+
+#include <ace/INET_Addr.h>
 #include <ace/OS.h>
 #include <ace/Recursive_Thread_Mutex.h>
-#include <ace/INET_Addr.h>
-
-#include "Utils.hpp"
 
 namespace apache {
 namespace geode {

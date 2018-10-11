@@ -57,16 +57,16 @@ using apache::geode::client::testframework::security::OP_UNREGISTER_INTEREST;
 using apache::geode::client::testframework::security::OP_UPDATE;
 using apache::geode::client::testframework::security::opCodeList;
 
-const char* locHostPort =
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
 std::shared_ptr<CredentialGenerator> credentialGeneratorHandler;
 
-const char* exFuncNameSendException = "executeFunction_SendException";
+const char *exFuncNameSendException = "executeFunction_SendException";
 
 std::string getXmlPath() {
   char xmlPath[1000] = {'\0'};
-  const char* path = ACE_OS::getenv("TESTSRC");
+  const char *path = ACE_OS::getenv("TESTSRC");
   ASSERT(path != nullptr,
          "Environment variable TESTSRC for test source directory is not set.");
   strncpy(xmlPath, path, strlen(path) - strlen("cppcache"));
@@ -114,25 +114,25 @@ opCodeList::value_type tmpAArr[] = {OP_CREATE,       OP_UPDATE,
                                     OP_GET,          OP_QUERY,
                                     OP_REGISTER_CQ,  OP_EXECUTE_FUNCTION};
 
-#define HANDLE_NO_NOT_AUTHORIZED_EXCEPTION                       \
-  catch (const apache::geode::client::NotAuthorizedException&) { \
-    LOG("NotAuthorizedException Caught");                        \
-    FAIL("should not have caught NotAuthorizedException");       \
-  }                                                              \
-  catch (const apache::geode::client::Exception& other) {        \
-    LOG("Got apache::geode::client::Exception& other ");         \
-    LOG(other.getStackTrace().c_str());                          \
-    FAIL(other.what());                                          \
+#define HANDLE_NO_NOT_AUTHORIZED_EXCEPTION                        \
+  catch (const apache::geode::client::NotAuthorizedException &) { \
+    LOG("NotAuthorizedException Caught");                         \
+    FAIL("should not have caught NotAuthorizedException");        \
+  }                                                               \
+  catch (const apache::geode::client::Exception &other) {         \
+    LOG("Got apache::geode::client::Exception& other ");          \
+    LOG(other.getStackTrace().c_str());                           \
+    FAIL(other.what());                                           \
   }
 
-#define HANDLE_NOT_AUTHORIZED_EXCEPTION                          \
-  catch (const apache::geode::client::NotAuthorizedException&) { \
-    LOG("NotAuthorizedException Caught");                        \
-    LOG("Success");                                              \
-  }                                                              \
-  catch (const apache::geode::client::Exception& other) {        \
-    LOG(other.getStackTrace().c_str());                          \
-    FAIL(other.what());                                          \
+#define HANDLE_NOT_AUTHORIZED_EXCEPTION                           \
+  catch (const apache::geode::client::NotAuthorizedException &) { \
+    LOG("NotAuthorizedException Caught");                         \
+    LOG("Success");                                               \
+  }                                                               \
+  catch (const apache::geode::client::Exception &other) {         \
+    LOG(other.getStackTrace().c_str());                           \
+    FAIL(other.what());                                           \
   }
 
 #define ADMIN_CLIENT s1p1
@@ -201,7 +201,7 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StartServer1)
       printf("string %s", cmdServerAuthenticator.c_str());
       CacheHelper::initServer(
           1, "cacheserver_notify_subscription.xml", locHostPort,
-          const_cast<char*>(cmdServerAuthenticator.c_str()));
+          const_cast<char *>(cmdServerAuthenticator.c_str()));
       LOG("Server1 started");
     }
   }
@@ -217,7 +217,7 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StartServer2)
       printf("string %s", cmdServerAuthenticator.c_str());
       CacheHelper::initServer(
           2, "cacheserver_notify_subscription2.xml", locHostPort,
-          const_cast<char*>(cmdServerAuthenticator.c_str()));
+          const_cast<char *>(cmdServerAuthenticator.c_str()));
       LOG("Server2 started");
     }
   }
@@ -303,11 +303,11 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
       try {
         qs = pool->getQueryService();
         FAIL("Pool should not return queryservice in multiusermode");
-      } catch (const apache::geode::client::UnsupportedOperationException&) {
+      } catch (const apache::geode::client::UnsupportedOperationException &) {
         LOG("UnsupportedOperationException Caught for pool.getQuerySerice in "
             "multiusermode");
         LOG("Success");
-      } catch (const apache::geode::client::Exception& other) {
+      } catch (const apache::geode::client::Exception &other) {
         LOG(other.getStackTrace().c_str());
         FAIL(other.what());
       }
@@ -316,13 +316,13 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
 
       auto queryString = "select * from /" + regionNamesAuth[0];
 
-      auto&& qry = qs->newQuery(queryString);
+      auto &&qry = qs->newQuery(queryString);
       printf(" before query executing\n");
-      auto&& results = qry->execute(std::chrono::seconds(850));
+      auto &&results = qry->execute(std::chrono::seconds(850));
       LOG("Query completed successfully");
 
-      auto&& cqAttrs = CqAttributesFactory{}.create();
-      auto&& cqQry = qs->newCq("cq_security", queryString, cqAttrs);
+      auto &&cqAttrs = CqAttributesFactory{}.create();
+      auto &&cqQry = qs->newCq("cq_security", queryString, cqAttrs);
       cqQry->execute();
       cqQry->close();
       LOG("CQ completed successfully");
@@ -394,7 +394,7 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
               LOGINFO("Read expected uFEPtr exception %s ",
                       uFEPtr->getMessage().c_str());
             }
-          } catch (ClassCastException& ex) {
+          } catch (ClassCastException &ex) {
             std::string logmsg = "";
             logmsg += ex.getName();
             logmsg += ": ";
@@ -427,7 +427,7 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
                 result->operator[](i));
             ASSERT(intValue != nullptr, "int value is nullptr");
             LOGINFO("intValue is %d ", intValue->value());
-          } catch (ClassCastException& ex) {
+          } catch (ClassCastException &ex) {
             LOG("exFuncNameSendException casting to int for arrayList "
                 "arguement "
                 "exception.");

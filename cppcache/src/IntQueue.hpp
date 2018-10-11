@@ -21,11 +21,12 @@
  */
 
 #include <deque>
+
 #include <ace/ACE.h>
 #include <ace/Condition_Recursive_Thread_Mutex.h>
-#include <ace/Time_Value.h>
 #include <ace/Guard_T.h>
 #include <ace/Recursive_Thread_Mutex.h>
+#include <ace/Time_Value.h>
 
 namespace apache {
 namespace geode {

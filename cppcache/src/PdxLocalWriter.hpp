@@ -22,12 +22,12 @@
 
 #include <vector>
 
-#include <geode/PdxWriter.hpp>
-#include <geode/DataOutput.hpp>
 #include <geode/CacheableObjectArray.hpp>
+#include <geode/DataOutput.hpp>
+#include <geode/PdxWriter.hpp>
 
-#include "PdxType.hpp"
 #include "PdxRemotePreservedData.hpp"
+#include "PdxType.hpp"
 #include "PdxTypeRegistry.hpp"
 
 namespace apache {

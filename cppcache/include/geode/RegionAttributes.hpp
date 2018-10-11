@@ -26,18 +26,18 @@
 
 #include <chrono>
 
-#include "internal/geode_globals.hpp"
-#include "internal/DataSerializableInternal.hpp"
-#include "CacheLoader.hpp"
-#include "ExpirationAttributes.hpp"
-#include "CacheWriter.hpp"
 #include "CacheListener.hpp"
+#include "CacheLoader.hpp"
+#include "CacheWriter.hpp"
+#include "DiskPolicyType.hpp"
+#include "ExpirationAttributes.hpp"
 #include "PartitionResolver.hpp"
+#include "PersistenceManager.hpp"
 #include "Properties.hpp"
 #include "Serializable.hpp"
-#include "DiskPolicyType.hpp"
-#include "PersistenceManager.hpp"
+#include "internal/DataSerializableInternal.hpp"
 #include "internal/chrono/duration.hpp"
+#include "internal/geode_globals.hpp"
 
 namespace apache {
 namespace geode {

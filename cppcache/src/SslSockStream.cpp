@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
+#include "SslSockStream.hpp"
+
 #include <ace/OS_NS_stdio.h>
 
 #include <geode/ExceptionTypes.hpp>
 
-#include "SslSockStream.hpp"
 #include "util/Log.hpp"
 
 namespace apache {

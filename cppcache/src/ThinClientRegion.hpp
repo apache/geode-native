@@ -25,16 +25,16 @@
 #include <ace/Task.h>
 
 #include <geode/ResultCollector.hpp>
+#include <geode/internal/functional.hpp>
 
-#include "LocalRegion.hpp"
-#include "TcrMessage.hpp"
-#include "TcrEndpoint.hpp"
-#include "RegionGlobalLocks.hpp"
-#include "Queue.hpp"
-#include "TcrChunkedContext.hpp"
 #include "CacheableObjectPartList.hpp"
 #include "ClientMetadataService.hpp"
-#include <geode/internal/functional.hpp>
+#include "LocalRegion.hpp"
+#include "Queue.hpp"
+#include "RegionGlobalLocks.hpp"
+#include "TcrChunkedContext.hpp"
+#include "TcrEndpoint.hpp"
+#include "TcrMessage.hpp"
 /**
  * @file
  */

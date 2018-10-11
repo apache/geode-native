@@ -20,8 +20,9 @@
 #ifndef GEODE_DISKSTOREID_H_
 #define GEODE_DISKSTOREID_H_
 
-#include <geode/internal/geode_globals.hpp>
 #include <geode/DataInput.hpp>
+#include <geode/internal/geode_globals.hpp>
+
 #include "DSMemberForVersionStamp.hpp"
 
 namespace apache {

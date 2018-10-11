@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 #include "Version.hpp"
+
 #include "CacheImpl.hpp"
 
 namespace apache {

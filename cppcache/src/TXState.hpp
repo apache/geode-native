@@ -23,9 +23,9 @@
 #include <string>
 #include <vector>
 
+#include "ExpiryTaskManager.hpp"
 #include "TXId.hpp"
 #include "TransactionalOperation.hpp"
-#include "ExpiryTaskManager.hpp"
 
 namespace apache {
 namespace geode {

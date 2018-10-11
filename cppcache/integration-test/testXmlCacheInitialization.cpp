@@ -37,8 +37,8 @@ using apache::geode::client::Exception;
 static bool isLocalServer = false;
 static bool isLocator = false;
 static int numberOfLocators = 1;
-const char* endPoints = nullptr;
-const char* locatorsG =
+const char *endPoints = nullptr;
+const char *locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 
 #include "LocatorHelper.hpp"
@@ -59,7 +59,7 @@ int testXmlDeclarativeCacheCreation() {
     cptr = std::make_shared<Cache>(
         cacheFactory.set("cache-xml-file", filePath).create());
 
-  } catch (Exception& ex) {
+  } catch (Exception &ex) {
     std::cout << "Exception: msg = " << ex.what() << std::endl;
     LOG(ex.getStackTrace());
     return -1;
@@ -132,7 +132,7 @@ int testSetCacheXmlThenGetRegion() {
             .set("cache-xml-file", duplicateFile)
             .create());
 
-  } catch (Exception& ex) {
+  } catch (Exception &ex) {
     std::cout << "Exception: msg = " << ex.what() << std::endl;
     LOG(ex.getStackTrace());
     return -1;

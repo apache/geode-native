@@ -24,10 +24,11 @@
  * @brief User class for testing the put functionality for object.
  */
 
+#include <string>
+
+#include <geode/PdxReader.hpp>
 #include <geode/PdxSerializable.hpp>
 #include <geode/PdxWriter.hpp>
-#include <geode/PdxReader.hpp>
-#include <string>
 
 #include "testobject_export.h"
 

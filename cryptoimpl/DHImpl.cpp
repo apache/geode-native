@@ -17,20 +17,20 @@
 
 #include "DHImpl.hpp"
 
-#include <cstring>
-#include <cctype>
-#include <memory>
-
-#include <openssl/objects.h>
-#include <openssl/stack.h>
 #include <openssl/aes.h>
-#include <openssl/evp.h>
 #include <openssl/asn1.h>
-#include <openssl/x509.h>
 #include <openssl/err.h>
+#include <openssl/evp.h>
+#include <openssl/objects.h>
 #include <openssl/pem.h>
 #include <openssl/pkcs12.h>
 #include <openssl/rsa.h>
+#include <openssl/stack.h>
+#include <openssl/x509.h>
+
+#include <cctype>
+#include <cstring>
+#include <memory>
 
 #include <geode/internal/geode_globals.hpp>
 
