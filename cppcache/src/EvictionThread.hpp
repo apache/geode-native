@@ -23,11 +23,13 @@
 #include <ace/ACE.h>
 #include <ace/OS.h>
 #include <ace/Singleton.h>
-#include <ace/Thread_Mutex.h>
 #include <ace/Task.h>
+#include <ace/Thread_Mutex.h>
+
 #include <geode/DataOutput.hpp>
-#include "util/Log.hpp"
+
 #include "IntQueue.hpp"
+#include "util/Log.hpp"
 /**
  * This class does the actual evictions
  */

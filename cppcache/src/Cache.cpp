@@ -17,17 +17,17 @@
 
 #include <memory>
 
-#include <geode/internal/geode_globals.hpp>
+#include <geode/Cache.hpp>
 #include <geode/FunctionService.hpp>
 #include <geode/PoolManager.hpp>
-#include <geode/Cache.hpp>
 #include <geode/RegionFactory.hpp>
+#include <geode/internal/geode_globals.hpp>
 
-#include "DistributedSystemImpl.hpp"
-#include "CacheRegionHelper.hpp"
 #include "CacheImpl.hpp"
-#include "UserAttributes.hpp"
+#include "CacheRegionHelper.hpp"
+#include "DistributedSystemImpl.hpp"
 #include "ProxyRegion.hpp"
+#include "UserAttributes.hpp"
 
 namespace apache {
 namespace geode {

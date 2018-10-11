@@ -20,8 +20,8 @@
 #ifndef INTEGRATION_TEST_FRAMEWORK_GFSH_H
 #define INTEGRATION_TEST_FRAMEWORK_GFSH_H
 
-#include <string>
 #include <iostream>
+#include <string>
 
 #include <boost/log/trivial.hpp>
 

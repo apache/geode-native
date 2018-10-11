@@ -14,13 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <geode/internal/geode_globals.hpp>
-
 #include "CacheableToken.hpp"
 
+#include <geode/CacheableString.hpp>
 #include <geode/DataInput.hpp>
 #include <geode/DataOutput.hpp>
-#include <geode/CacheableString.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 namespace apache {
 namespace geode {

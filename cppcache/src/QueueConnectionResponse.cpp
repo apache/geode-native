@@ -16,7 +16,9 @@
  */
 
 #include "QueueConnectionResponse.hpp"
+
 #include <geode/DataInput.hpp>
+
 #include "ServerLocation.hpp"
 
 namespace apache {

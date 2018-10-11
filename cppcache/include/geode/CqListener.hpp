@@ -20,8 +20,8 @@
 #ifndef GEODE_CQLISTENER_H_
 #define GEODE_CQLISTENER_H_
 
-#include "internal/geode_globals.hpp"
 #include "CqEvent.hpp"
+#include "internal/geode_globals.hpp"
 
 namespace apache {
 namespace geode {

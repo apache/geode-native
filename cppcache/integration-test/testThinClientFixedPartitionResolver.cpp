@@ -37,28 +37,28 @@ using apache::geode::client::EntryEvent;
 using apache::geode::client::Exception;
 using apache::geode::client::FixedPartitionResolver;
 
-const char* partitionRegionNames[] = {"R1", "R2", "R3"};
-const char* partitionRegionName;
+const char *partitionRegionNames[] = {"R1", "R2", "R3"};
+const char *partitionRegionName;
 
 class CustomFixedPartitionResolver1 : public FixedPartitionResolver {
  public:
   CustomFixedPartitionResolver1() {}
   ~CustomFixedPartitionResolver1() override {}
-  const std::string& getName() override {
+  const std::string &getName() override {
     static std::string name = "CustomFixedPartitionResolver1";
     LOG("CustomFixedPartitionResolver1::getName()");
     return name;
   }
 
   std::shared_ptr<CacheableKey> getRoutingObject(
-      const EntryEvent& opDetails) override {
+      const EntryEvent &opDetails) override {
     LOG("CustomFixedPartitionResolver1::getRoutingObject()");
     int32_t key = atoi(opDetails.getKey()->toString().c_str());
     int32_t newKey = key + 5;
     return CacheableKey::create(newKey);
   }
 
-  const std::string& getPartitionName(const EntryEvent& opDetails) override {
+  const std::string &getPartitionName(const EntryEvent &opDetails) override {
     LOG("CustomFixedPartitionResolver1::getPartitionName()");
     int32_t key = atoi(opDetails.getKey()->toString().c_str());
     int32_t newkey = key % 6;
@@ -92,21 +92,21 @@ class CustomFixedPartitionResolver2 : public FixedPartitionResolver {
  public:
   CustomFixedPartitionResolver2() {}
   ~CustomFixedPartitionResolver2() override {}
-  const std::string& getName() override {
+  const std::string &getName() override {
     static std::string name = "CustomFixedPartitionResolver2";
     LOG("CustomFixedPartitionResolver2::getName()");
     return name;
   }
 
   std::shared_ptr<CacheableKey> getRoutingObject(
-      const EntryEvent& opDetails) override {
+      const EntryEvent &opDetails) override {
     LOG("CustomFixedPartitionResolver2::getRoutingObject()");
     int32_t key = atoi(opDetails.getKey()->toString().c_str());
     int32_t newKey = key + 4;
     return CacheableKey::create(newKey /*key*/);
   }
 
-  const std::string& getPartitionName(const EntryEvent& opDetails) override {
+  const std::string &getPartitionName(const EntryEvent &opDetails) override {
     LOG("CustomFixedPartitionResolver2::getPartitionName()");
     int32_t key = atoi(opDetails.getKey()->toString().c_str());
     int32_t newkey = key % 6;
@@ -140,21 +140,21 @@ class CustomFixedPartitionResolver3 : public FixedPartitionResolver {
  public:
   CustomFixedPartitionResolver3() {}
   ~CustomFixedPartitionResolver3() override {}
-  const std::string& getName() override {
+  const std::string &getName() override {
     static std::string name = "CustomFixedPartitionResolver3";
     LOG("CustomFixedPartitionResolver3::getName()");
     return name;
   }
 
   std::shared_ptr<CacheableKey> getRoutingObject(
-      const EntryEvent& opDetails) override {
+      const EntryEvent &opDetails) override {
     LOG("CustomFixedPartitionResolver3::getRoutingObject()");
     int32_t key = atoi(opDetails.getKey()->toString().c_str());
     int32_t newKey = key % 5;
     return CacheableKey::create(newKey /*key*/);
   }
 
-  const std::string& getPartitionName(const EntryEvent& opDetails) override {
+  const std::string &getPartitionName(const EntryEvent &opDetails) override {
     LOG("CustomFixedPartitionResolver3::getPartitionName()");
     int32_t key = atoi(opDetails.getKey()->toString().c_str());
     int32_t newkey = key % 3;
@@ -183,14 +183,14 @@ auto cptr3 = std::make_shared<CustomFixedPartitionResolver3>();
 bool isLocalServer = false;
 
 static bool isLocator = false;
-const char* locatorsG =
+const char *locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
-std::vector<char*> storeEndPoints(const char* points) {
-  std::vector<char*> endpointNames;
+std::vector<char *> storeEndPoints(const char *points) {
+  std::vector<char *> endpointNames;
   if (points != nullptr) {
-    char* ep = strdup(points);
-    char* token = strtok(ep, ",");
+    char *ep = strdup(points);
+    char *token = strtok(ep, ",");
     while (token) {
       endpointNames.push_back(token);
       token = strtok(nullptr, ",");
@@ -282,13 +282,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_REGION)
             serverGroupFlag, failureCount);
         ASSERT(serverGroupFlag != 2,
                "serverGroupFlag should not be equal to 2");
-      } catch (CacheServerException&) {
+      } catch (CacheServerException &) {
         LOGERROR("CPPTEST: Put caused extra hop.");
         FAIL("Put caused extra hop.");
-      } catch (CacheWriterException&) {
+      } catch (CacheWriterException &) {
         LOGERROR("CPPTEST: Put caused extra hop.");
         FAIL("Put caused extra hop.");
-      } catch (Exception& ex) {
+      } catch (Exception &ex) {
         LOGERROR("CPPTEST: Put caused unexpected %s: %s", ex.getName().c_str(),
                  ex.what());
         cleanProc();
@@ -322,13 +322,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_REGION)
             serverGroupFlag);
         ASSERT(serverGroupFlag != 2,
                "serverGroupFlag should not be equal to 2");
-      } catch (CacheServerException&) {
+      } catch (CacheServerException &) {
         LOGERROR("CPPTEST: get caused extra hop.");
         FAIL("get caused extra hop.");
-      } catch (CacheWriterException&) {
+      } catch (CacheWriterException &) {
         LOGERROR("CPPTEST: get caused extra hop.");
         FAIL("get caused extra hop.");
-      } catch (Exception& ex) {
+      } catch (Exception &ex) {
         LOGERROR("CPPTEST: get caused unexpected %s: %s", ex.getName().c_str(),
                  ex.what());
         cleanProc();
@@ -362,13 +362,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_REGION)
             serverGroupFlag);
         ASSERT(serverGroupFlag != 2,
                "serverGroupFlag should not be equal to 2");
-      } catch (CacheServerException&) {
+      } catch (CacheServerException &) {
         LOGERROR("CPPTEST: getAll caused extra hop.");
         FAIL("getAll caused extra hop.");
-      } catch (CacheWriterException&) {
+      } catch (CacheWriterException &) {
         LOGERROR("CPPTEST: getAll caused extra hop.");
         FAIL("getAll caused extra hop.");
-      } catch (Exception& ex) {
+      } catch (Exception &ex) {
         LOGERROR("CPPTEST: getALL caused unexpected %s: %s",
                  ex.getName().c_str(), ex.what());
         cleanProc();
@@ -394,13 +394,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_REGION)
             serverGroupFlag);
         ASSERT(serverGroupFlag != 2,
                "serverGroupFlag should not be equal to 2");
-      } catch (CacheServerException&) {
+      } catch (CacheServerException &) {
         LOGERROR("CPPTEST: getAllwithCallBackArg caused extra hop.");
         FAIL("getAll caused extra hop.");
-      } catch (CacheWriterException&) {
+      } catch (CacheWriterException &) {
         LOGERROR("CPPTEST: getAll caused extra hop.");
         FAIL("getAll caused extra hop.");
-      } catch (Exception& ex) {
+      } catch (Exception &ex) {
         LOGERROR("CPPTEST: getALL caused unexpected %s: %s",
                  ex.getName().c_str(), ex.what());
         cleanProc();
@@ -433,13 +433,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_REGION)
             serverGroupFlag);
         ASSERT(serverGroupFlag != 2,
                "serverGroupFlag should not be equal to 2");
-      } catch (CacheServerException&) {
+      } catch (CacheServerException &) {
         LOGERROR("CPPTEST: destroy caused extra hop.");
         FAIL("destroy caused extra hop.");
-      } catch (CacheWriterException&) {
+      } catch (CacheWriterException &) {
         LOGERROR("CPPTEST: destroy caused extra hop.");
         FAIL("destroy caused extra hop.");
-      } catch (Exception& ex) {
+      } catch (Exception &ex) {
         LOGERROR("CPPTEST: destroy caused unexpected %s: %s",
                  ex.getName().c_str(), ex.what());
         cleanProc();

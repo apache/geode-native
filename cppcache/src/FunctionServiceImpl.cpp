@@ -16,8 +16,10 @@
  */
 
 #include "FunctionServiceImpl.hpp"
-#include "ExecutionImpl.hpp"
+
 #include <geode/PoolManager.hpp>
+
+#include "ExecutionImpl.hpp"
 
 namespace apache {
 namespace geode {

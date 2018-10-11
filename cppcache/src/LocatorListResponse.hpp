@@ -21,8 +21,9 @@
 #define GEODE_LOCATORLISTRESPONSE_H_
 
 #include <vector>
-#include "ServerLocationResponse.hpp"
+
 #include "ServerLocation.hpp"
+#include "ServerLocationResponse.hpp"
 
 namespace apache {
 namespace geode {

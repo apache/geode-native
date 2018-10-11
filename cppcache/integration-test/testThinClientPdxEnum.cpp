@@ -32,7 +32,7 @@ bool isLocalServer = false;
 #define SERVER1 s2p1
 static bool isLocator = false;
 
-const char* locatorsG =
+const char *locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
 DUNIT_TASK_DEFINITION(CLIENT1, SetupClientPoolLoc)
@@ -109,28 +109,28 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxEnumQuery)
       serializationRegistry->addPdxSerializableType(
           PdxEnumTestClass::createDeserializable);
       LOG("PdxEnumTestClass Registered Successfully....");
-    } catch (apache::geode::client::IllegalStateException& /* ex*/) {
+    } catch (apache::geode::client::IllegalStateException & /* ex*/) {
       LOG("PdxEnumTestClass IllegalStateException");
     }
 
-    auto&& rptr = getHelper()->getRegion("DistRegionAck");
-    auto&& results = rptr->query("m_enumid.name = 'id2'");
+    auto &&rptr = getHelper()->getRegion("DistRegionAck");
+    auto &&results = rptr->query("m_enumid.name = 'id2'");
     ASSERT(results->size() == 1, "query result should have one item");
     auto rsptr = std::dynamic_pointer_cast<ResultSet>(results);
-    for (auto&& row : hacks::range(*rsptr)) {
+    for (auto &&row : hacks::range(*rsptr)) {
       auto re = std::dynamic_pointer_cast<PdxEnumTestClass>(row);
       ASSERT(re->getID() == 1, "query should have return id 1");
     }
 
     QueryHelper::getHelper();
-    auto&& pool1 = findPool("__TEST_POOL1__");
-    auto&& qs = pool1->getQueryService();
-    auto&& qry = qs->newQuery(
+    auto &&pool1 = findPool("__TEST_POOL1__");
+    auto &&qs = pool1->getQueryService();
+    auto &&qry = qs->newQuery(
         "select distinct * from /DistRegionAck this where m_enumid.name = "
         "'id3'");
     results = qry->execute();
     rsptr = std::dynamic_pointer_cast<ResultSet>(results);
-    for (auto&& row : hacks::range(*rsptr)) {
+    for (auto &&row : hacks::range(*rsptr)) {
       auto re = std::dynamic_pointer_cast<PdxEnumTestClass>(row);
       ASSERT(re->getID() == 2, "query should have return id 0");
     }

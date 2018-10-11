@@ -15,10 +15,12 @@
  * limitations under the License.
  */
 #include "CacheableObjectPartList.hpp"
-#include <geode/ExceptionTypes.hpp>
+
 #include <geode/CacheableString.hpp>
-#include "ThinClientRegion.hpp"
+#include <geode/ExceptionTypes.hpp>
+
 #include "CacheableToken.hpp"
+#include "ThinClientRegion.hpp"
 
 namespace apache {
 namespace geode {

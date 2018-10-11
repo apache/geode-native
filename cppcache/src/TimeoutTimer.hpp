@@ -20,13 +20,13 @@
  * limitations under the License.
  */
 
-#include <geode/internal/geode_globals.hpp>
-
 #include <ace/Condition_Recursive_Thread_Mutex.h>
 #include <ace/Condition_T.h>
 #include <ace/Guard_T.h>
-#include <ace/Time_Value.h>
 #include <ace/OS_NS_sys_time.h>
+#include <ace/Time_Value.h>
+
+#include <geode/internal/geode_globals.hpp>
 
 namespace apache {
 namespace geode {

@@ -24,11 +24,12 @@
  *
  */
 
-#include <geode/PdxSerializable.hpp>
-#include <geode/CacheableEnum.hpp>
-#include <geode/PdxWriter.hpp>
-#include <geode/PdxReader.hpp>
 #include <util/Log.hpp>
+
+#include <geode/CacheableEnum.hpp>
+#include <geode/PdxReader.hpp>
+#include <geode/PdxSerializable.hpp>
+#include <geode/PdxWriter.hpp>
 
 #include "testobject_export.h"
 

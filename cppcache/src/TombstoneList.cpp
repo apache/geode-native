@@ -15,9 +15,11 @@
  * limitations under the License.
  */
 #include "TombstoneList.hpp"
-#include "TombstoneExpiryHandler.hpp"
-#include "MapSegment.hpp"
+
 #include <unordered_map>
+
+#include "MapSegment.hpp"
+#include "TombstoneExpiryHandler.hpp"
 
 namespace apache {
 namespace geode {

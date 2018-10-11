@@ -15,34 +15,35 @@
  * limitations under the License.
  */
 
+#include "util/Log.hpp"
+
 #include <cctype>
-#include <string>
-#include <utility>
-#include <vector>
-#include <thread>
 #include <chrono>
 #include <cinttypes>
+#include <string>
+#include <thread>
+#include <utility>
+#include <vector>
 
 #include <ace/ACE.h>
-#include <ace/Guard_T.h>
-#include <ace/Thread_Mutex.h>
-#include <ace/OS.h>
-#include <ace/OS_NS_time.h>
-#include <ace/OS_NS_sys_time.h>
-#include <ace/OS_NS_unistd.h>
-#include <ace/OS_NS_Thread.h>
 #include <ace/Dirent.h>
 #include <ace/Dirent_Selector.h>
+#include <ace/Guard_T.h>
+#include <ace/OS.h>
+#include <ace/OS_NS_Thread.h>
 #include <ace/OS_NS_sys_stat.h>
+#include <ace/OS_NS_sys_time.h>
+#include <ace/OS_NS_time.h>
+#include <ace/OS_NS_unistd.h>
+#include <ace/Thread_Mutex.h>
 
-#include <geode/internal/geode_globals.hpp>
 #include <geode/ExceptionTypes.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <geode/util/LogLevel.hpp>
 
-#include "util/Log.hpp"
-#include "geodeBanner.hpp"
-#include "Assert.hpp"
 #include "../internal/hacks/AceThreadId.h"
+#include "Assert.hpp"
+#include "geodeBanner.hpp"
 
 #if defined(_WIN32)
 #include <io.h>

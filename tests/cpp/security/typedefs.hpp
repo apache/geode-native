@@ -26,9 +26,9 @@
 _Pragma("GCC system_header")
 #endif
 
-#include <vector>
-#include <string>
 #include <algorithm>
+#include <string>
+#include <vector>
 
     namespace apache {
   namespace geode {

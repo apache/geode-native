@@ -28,11 +28,11 @@ static bool isLocator = false;
 static bool isLocalServer = true;
 static int numberOfLocators = 1;
 static int isDisconnected = false;
-const char* locatorsG =
+const char *locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 
 class DisconnectCacheListioner : public CacheListener {
-  void afterRegionDisconnected(Region&) override {
+  void afterRegionDisconnected(Region &) override {
     LOG("After Region Disconnected event received");
     isDisconnected = true;
   }

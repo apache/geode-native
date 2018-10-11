@@ -21,6 +21,7 @@
 #define GEODE_LOCATORLISTREQUEST_H_
 
 #include <string>
+
 #include "ServerLocationRequest.hpp"
 
 namespace apache {

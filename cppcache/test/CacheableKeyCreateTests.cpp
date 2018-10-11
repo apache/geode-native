@@ -19,10 +19,10 @@
 
 #include <gtest/gtest.h>
 
-#include <geode/CacheableKey.hpp>
-#include <geode/CacheableString.hpp>
 #include <geode/CacheableBuiltins.hpp>
 #include <geode/CacheableDate.hpp>
+#include <geode/CacheableKey.hpp>
+#include <geode/CacheableString.hpp>
 
 using apache::geode::client::CacheableBoolean;
 using apache::geode::client::CacheableByte;

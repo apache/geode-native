@@ -20,8 +20,8 @@
  * limitations under the License.
  */
 
-#include "PartitionResolver.hpp"
 #include "CacheableBuiltins.hpp"
+#include "PartitionResolver.hpp"
 
 namespace apache {
 namespace geode {

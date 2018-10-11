@@ -14,8 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <geode/PartitionResolver.hpp>
 #include <geode/EntryEvent.hpp>
+#include <geode/PartitionResolver.hpp>
 
 namespace apache {
 namespace geode {

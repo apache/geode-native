@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 
-#include <vector>
-#include <string>
-#include <sstream>
-
 #include "UDPIpc.hpp"
-#include "GsRandom.hpp"
+
+#include <sstream>
+#include <string>
+#include <vector>
+
 #include "FwkStrCvt.hpp"
+#include "GsRandom.hpp"
 #include "config.h"
 
 namespace apache {

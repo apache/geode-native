@@ -15,15 +15,16 @@
  * limitations under the License.
  */
 
-#include <unordered_set>
-#include <iterator>
-#include <cstdlib>
+#include "ClientMetadataService.hpp"
+
 #include <climits>
+#include <cstdlib>
+#include <iterator>
+#include <unordered_set>
 
 #include <geode/FixedPartitionResolver.hpp>
 
 #include "TcrMessage.hpp"
-#include "ClientMetadataService.hpp"
 #include "ThinClientPoolDM.hpp"
 
 namespace apache {

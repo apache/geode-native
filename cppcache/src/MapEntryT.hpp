@@ -21,6 +21,7 @@
 #define GEODE_MAPENTRYT_H_
 
 #include <geode/internal/geode_globals.hpp>
+
 #include "MapEntry.hpp"
 #include "TrackedMapEntry.hpp"
 

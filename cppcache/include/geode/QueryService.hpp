@@ -20,16 +20,15 @@
 #ifndef GEODE_QUERYSERVICE_H_
 #define GEODE_QUERYSERVICE_H_
 
-#include <string>
 #include <memory>
+#include <string>
 
-#include "internal/geode_globals.hpp"
-#include "ExceptionTypes.hpp"
-#include "CqQuery.hpp"
 #include "CqAttributes.hpp"
+#include "CqQuery.hpp"
 #include "CqServiceStatistics.hpp"
-
+#include "ExceptionTypes.hpp"
 #include "Query.hpp"
+#include "internal/geode_globals.hpp"
 
 /**
  * @file

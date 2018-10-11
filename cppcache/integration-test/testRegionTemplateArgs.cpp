@@ -54,7 +54,7 @@ BEGIN_TEST(CheckTemplates)
     RegionAttributesFactory regionAttributesFactory;
     auto regionAttributes = regionAttributesFactory.create();
     std::shared_ptr<Region> regPtr;
-    auto&& cacheImpl = CacheRegionHelper::getCacheImpl(cache.get());
+    auto &&cacheImpl = CacheRegionHelper::getCacheImpl(cache.get());
     cacheImpl->createRegion("TestRegion", regionAttributes, regPtr);
 
     const char charKey[] = "test key";

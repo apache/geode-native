@@ -21,16 +21,16 @@
 #define GEODE_TOMBSTONELIST_H_
 
 #include <list>
+#include <memory>
 #include <unordered_map>
 
-#include <ace/Recursive_Thread_Mutex.h>
 #include <ace/Guard_T.h>
+#include <ace/Recursive_Thread_Mutex.h>
 
-#include <memory>
 #include <geode/CacheableBuiltins.hpp>
+#include <geode/internal/functional.hpp>
 
 #include "MapEntry.hpp"
-#include <geode/internal/functional.hpp>
 
 namespace apache {
 namespace geode {

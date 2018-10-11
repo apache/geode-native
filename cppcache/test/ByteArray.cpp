@@ -17,10 +17,10 @@
 
 #include "ByteArray.hpp"
 
-#include "config.h"
-
 #include <cstdlib>  // For wcstombs()
 #include <cstring>
+
+#include "config.h"
 
 namespace apache {
 namespace geode {

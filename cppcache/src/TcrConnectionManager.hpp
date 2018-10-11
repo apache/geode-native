@@ -20,23 +20,23 @@
  * limitations under the License.
  */
 
-#include <string>
-#include <vector>
 #include <list>
+#include <string>
 #include <unordered_map>
+#include <vector>
 
-#include <ace/config-lite.h>
 #include <ace/Map_Manager.h>
+#include <ace/Recursive_Thread_Mutex.h>
 #include <ace/Semaphore.h>
 #include <ace/Versioned_Namespace.h>
-#include <ace/Recursive_Thread_Mutex.h>
+#include <ace/config-lite.h>
 
 #include <geode/internal/geode_globals.hpp>
 
-#include "Task.hpp"
-#include "Queue.hpp"
-#include "ThinClientRedundancyManager.hpp"
 #include "ExpiryTaskManager.hpp"
+#include "Queue.hpp"
+#include "Task.hpp"
+#include "ThinClientRedundancyManager.hpp"
 
 namespace apache {
 namespace geode {

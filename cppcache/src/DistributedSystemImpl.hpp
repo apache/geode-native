@@ -24,18 +24,18 @@
  * @file
  */
 
+#include <map>
 #include <memory>
 #include <string>
-#include <map>
 
-#include <ace/Recursive_Thread_Mutex.h>
 #include <ace/Guard_T.h>
 #include <ace/OS.h>
+#include <ace/Recursive_Thread_Mutex.h>
 
 #include <geode/internal/geode_globals.hpp>
 
-#include "DistributedSystem.hpp"
 #include "DiffieHellman.hpp"
+#include "DistributedSystem.hpp"
 #include "statistics/StatisticsManager.hpp"
 
 #ifdef __linux

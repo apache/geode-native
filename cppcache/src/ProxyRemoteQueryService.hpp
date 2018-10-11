@@ -19,15 +19,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <geode/internal/geode_globals.hpp>
 #include <memory>
-#include "CqService.hpp"
-#include "UserAttributes.hpp"
-#include <geode/QueryService.hpp>
-#include <geode/AuthenticatedView.hpp>
-#include "ThinClientCacheDistributionManager.hpp"
 
 #include <ace/Recursive_Thread_Mutex.h>
+
+#include <geode/AuthenticatedView.hpp>
+#include <geode/QueryService.hpp>
+#include <geode/internal/geode_globals.hpp>
+
+#include "CqService.hpp"
+#include "ThinClientCacheDistributionManager.hpp"
+#include "UserAttributes.hpp"
 
 namespace apache {
 namespace geode {

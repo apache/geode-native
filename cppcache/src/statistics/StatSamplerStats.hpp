@@ -23,9 +23,9 @@
 #include <geode/internal/geode_globals.hpp>
 
 #include "StatisticDescriptor.hpp"
-#include "StatisticsType.hpp"
 #include "Statistics.hpp"
 #include "StatisticsFactory.hpp"
+#include "StatisticsType.hpp"
 
 namespace apache {
 namespace geode {

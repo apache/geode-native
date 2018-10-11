@@ -19,28 +19,27 @@
 #include <map>
 #include <string>
 
-#include <ace/Recursive_Thread_Mutex.h>
 #include <ace/Guard_T.h>
+#include <ace/Recursive_Thread_Mutex.h>
 
-#include <geode/CacheFactory.hpp>
 #include <geode/Cache.hpp>
-#include <geode/SystemProperties.hpp>
+#include <geode/CacheFactory.hpp>
 #include <geode/PoolManager.hpp>
+#include <geode/SystemProperties.hpp>
 
-#include "config.h"
-#include "version.h"
-
+#include "CacheConfig.hpp"
 #include "CacheImpl.hpp"
 #include "CppCacheLibrary.hpp"
-#include "PoolAttributes.hpp"
-#include "CacheConfig.hpp"
+#include "DiskVersionTag.hpp"
 #include "DistributedSystemImpl.hpp"
-#include "SerializationRegistry.hpp"
+#include "PdxHelper.hpp"
 #include "PdxType.hpp"
 #include "PdxTypeRegistry.hpp"
-#include "DiskVersionTag.hpp"
+#include "PoolAttributes.hpp"
+#include "SerializationRegistry.hpp"
 #include "TXCommitMessage.hpp"
-#include "PdxHelper.hpp"
+#include "config.h"
+#include "version.h"
 
 namespace apache {
 namespace geode {

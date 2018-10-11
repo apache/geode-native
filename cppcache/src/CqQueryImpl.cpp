@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-#include <geode/CqAttributesFactory.hpp>
-#include <geode/ExceptionTypes.hpp>
-#include <geode/CqAttributesMutator.hpp>
-
 #include "CqQueryImpl.hpp"
+
+#include <geode/CqAttributesFactory.hpp>
+#include <geode/CqAttributesMutator.hpp>
+#include <geode/ExceptionTypes.hpp>
+
+#include "ReadWriteLock.hpp"
 #include "ResultSetImpl.hpp"
 #include "StructSetImpl.hpp"
 #include "ThinClientRegion.hpp"
-#include "ReadWriteLock.hpp"
-#include "ThinClientRegion.hpp"
 #include "UserAttributes.hpp"
-#include "util/bounds.hpp"
 #include "util/Log.hpp"
+#include "util/bounds.hpp"
 #include "util/exception.hpp"
 
 namespace apache {

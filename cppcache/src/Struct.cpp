@@ -17,8 +17,8 @@
 
 #include <string>
 
-#include <geode/Struct.hpp>
 #include <geode/DataInput.hpp>
+#include <geode/Struct.hpp>
 
 namespace apache {
 namespace geode {

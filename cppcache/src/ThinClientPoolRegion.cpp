@@ -22,10 +22,12 @@
  */
 
 #include "ThinClientPoolRegion.hpp"
-#include "CacheImpl.hpp"
-#include <geode/SystemProperties.hpp>
-#include "ThinClientPoolDM.hpp"
+
 #include <geode/PoolManager.hpp>
+#include <geode/SystemProperties.hpp>
+
+#include "CacheImpl.hpp"
+#include "ThinClientPoolDM.hpp"
 
 namespace apache {
 namespace geode {

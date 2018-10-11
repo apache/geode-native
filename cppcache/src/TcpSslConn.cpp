@@ -19,8 +19,8 @@
 
 #include <geode/SystemProperties.hpp>
 
-#include "DistributedSystem.hpp"
 #include "CacheImpl.hpp"
+#include "DistributedSystem.hpp"
 
 namespace apache {
 namespace geode {

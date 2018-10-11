@@ -15,8 +15,10 @@
  * limitations under the License.
  */
 #include "ThinClientPoolStickyDM.hpp"
-#include "TssConnectionWrapper.hpp"
+
 #include <algorithm>
+
+#include "TssConnectionWrapper.hpp"
 namespace apache {
 namespace geode {
 namespace client {

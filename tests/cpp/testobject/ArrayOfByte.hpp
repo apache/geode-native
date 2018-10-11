@@ -20,14 +20,14 @@
  * limitations under the License.
  */
 
+#include <fwklib/FwkLog.hpp>
 #include <string>
-#include "fwklib/FwkLog.hpp"
+
 #include <ace/Time_Value.h>
 
-#include "SerializationRegistry.hpp"
 #include "DataInputInternal.hpp"
 #include "DataOutputInternal.hpp"
-
+#include "SerializationRegistry.hpp"
 #include "testobject_export.h"
 
 namespace testobject {

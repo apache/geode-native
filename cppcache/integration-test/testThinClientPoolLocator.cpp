@@ -24,9 +24,9 @@ using apache::geode::client::NotConnectedException;
 bool isLocalServer = false;
 bool isLocator = false;
 
-const char* locHostPort1 =
+const char *locHostPort1 =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
-const char* locHostPort2 =
+const char *locHostPort2 =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 2);
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
@@ -40,7 +40,7 @@ DUNIT_TASK(CLIENT1, SetupClient1_NoLocators_At_Init)
 
     try {
       createEntry(regionNames[0], keys[0], vals[0]);
-    } catch (NoAvailableLocatorsException&) {
+    } catch (NoAvailableLocatorsException &) {
       LOG("Caught expected exception.");
     } catch (...) {
       FAIL("NoAvailableLocatorsException was not thrown.");
@@ -160,10 +160,10 @@ DUNIT_TASK(CLIENT1, AgainFailoverC1)
       doNetsearch(regionNames[0], keys[1], nvals[1], false);
       updateEntry(regionNames[0], keys[0], vals[0]);
       FAIL("Client Failover Should Fail");
-    } catch (const NotConnectedException&) {
+    } catch (const NotConnectedException &) {
       LOG("Expected exception NotConnectedException "
           "got");
-    } catch (const Exception& excp) {
+    } catch (const Exception &excp) {
       LOG(excp.getName());
       LOG(excp.what());
       FAIL(
@@ -195,14 +195,14 @@ DUNIT_TASK(CLIENT2, AgainFailoverC2)
       doNetsearch(regionNames[0], keys[0], vals[0], false);
       updateEntry(regionNames[0], keys[1], vals[1]);
       FAIL("Client Failover Should Fail");
-    } catch (const NotConnectedException& ex) {
+    } catch (const NotConnectedException &ex) {
       LOG(ex.getName());
       LOG(ex.what());
       FAIL(
           "Unexpected expection - only "
           "NoAvailableLocatorsException "
           "expected");
-    } catch (const Exception& excp) {
+    } catch (const Exception &excp) {
       LOG(excp.getName());
       LOG(excp.what());
       FAIL(

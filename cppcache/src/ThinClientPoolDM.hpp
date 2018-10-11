@@ -20,9 +20,9 @@
 #ifndef GEODE_THINCLIENTPOOLDM_H_
 #define GEODE_THINCLIENTPOOLDM_H_
 
-#include <string>
 #include <memory>
 #include <set>
+#include <string>
 #include <vector>
 
 #include <ace/Semaphore.h>
@@ -30,22 +30,22 @@
 #include <geode/Pool.hpp>
 #include <geode/ResultCollector.hpp>
 
-#include "ThinClientBaseDM.hpp"
-#include "PoolAttributes.hpp"
-#include "ThinClientLocatorHelper.hpp"
-#include "RemoteQueryService.hpp"
-#include "Task.hpp"
-#include "PoolStatistics.hpp"
-#include "FairQueue.hpp"
-#include "TcrPoolEndPoint.hpp"
-#include "ThinClientRegion.hpp"
-#include "ExecutionImpl.hpp"
 #include "ClientMetadataService.hpp"
-#include "ThreadPool.hpp"
-#include "ThinClientStickyManager.hpp"
-#include "TXState.hpp"
-#include "UserAttributes.hpp"
+#include "ExecutionImpl.hpp"
+#include "FairQueue.hpp"
 #include "NonCopyable.hpp"
+#include "PoolAttributes.hpp"
+#include "PoolStatistics.hpp"
+#include "RemoteQueryService.hpp"
+#include "TXState.hpp"
+#include "Task.hpp"
+#include "TcrPoolEndPoint.hpp"
+#include "ThinClientBaseDM.hpp"
+#include "ThinClientLocatorHelper.hpp"
+#include "ThinClientRegion.hpp"
+#include "ThinClientStickyManager.hpp"
+#include "ThreadPool.hpp"
+#include "UserAttributes.hpp"
 
 namespace apache {
 namespace geode {

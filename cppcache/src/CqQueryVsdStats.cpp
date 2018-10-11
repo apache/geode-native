@@ -21,8 +21,8 @@
 
 const char* cqStatsName = "CqQueryStatistics";
 const char* cqStatsDesc = "Statistics for this cq query";
-#include <ace/Thread_Mutex.h>
 #include <ace/Singleton.h>
+#include <ace/Thread_Mutex.h>
 
 #include <geode/internal/geode_globals.hpp>
 

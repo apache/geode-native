@@ -43,7 +43,7 @@ BEGIN_TEST(REGION_FACTORY)
     try {
       rf.setInitialCapacity(-1);
       FAIL("Should have got expected IllegalArgumentException");
-    } catch (IllegalArgumentException&) {
+    } catch (IllegalArgumentException &) {
       LOG("Got expected IllegalArgumentException");
     }
 
@@ -70,7 +70,7 @@ BEGIN_TEST(REGION_FACTORY)
     try {
       rf1.setInitialCapacity(2147483648U);
       FAIL("Should have got expected IllegalArgumentException");
-    } catch (IllegalArgumentException&) {
+    } catch (IllegalArgumentException &) {
       LOG("Got expected IllegalArgumentException");
     }
     auto region1 = rf1.create("Local_ETTL_LI");

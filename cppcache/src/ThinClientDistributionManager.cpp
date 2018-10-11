@@ -15,14 +15,15 @@
  * limitations under the License.
  */
 
+#include "ThinClientDistributionManager.hpp"
+
 #include <algorithm>
 
-#include <geode/SystemProperties.hpp>
 #include <geode/AuthInitialize.hpp>
+#include <geode/SystemProperties.hpp>
 
-#include "ThinClientDistributionManager.hpp"
-#include "ThinClientRegion.hpp"
 #include "DistributedSystemImpl.hpp"
+#include "ThinClientRegion.hpp"
 #include "util/exception.hpp"
 
 namespace apache {

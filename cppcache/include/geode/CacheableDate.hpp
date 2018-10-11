@@ -20,14 +20,14 @@
 #ifndef GEODE_CACHEABLEDATE_H_
 #define GEODE_CACHEABLEDATE_H_
 
-#include "internal/geode_globals.hpp"
+#include <chrono>
+#include <ctime>
+#include <string>
+
 #include "CacheableKey.hpp"
 #include "CacheableString.hpp"
 #include "ExceptionTypes.hpp"
-
-#include <string>
-#include <chrono>
-#include <ctime>
+#include "internal/geode_globals.hpp"
 
 /** @file
  */

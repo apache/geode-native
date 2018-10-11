@@ -20,13 +20,13 @@
 #ifndef GEODE_CACHEABLEOBJECTARRAY_H_
 #define GEODE_CACHEABLEOBJECTARRAY_H_
 
-#include <vector>
 #include <memory>
+#include <vector>
 
-#include "internal/geode_globals.hpp"
-#include "internal/DataSerializablePrimitive.hpp"
 #include "Serializable.hpp"
 #include "internal/DSCode.hpp"
+#include "internal/DataSerializablePrimitive.hpp"
+#include "internal/geode_globals.hpp"
 
 /** @file
  */

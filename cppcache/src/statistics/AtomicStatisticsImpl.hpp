@@ -25,11 +25,10 @@
 
 #include <geode/internal/geode_globals.hpp>
 
-#include "Statistics.hpp"
-#include "StatisticsTypeImpl.hpp"
-#include "StatisticsFactory.hpp"
-
 #include "../NonCopyable.hpp"
+#include "Statistics.hpp"
+#include "StatisticsFactory.hpp"
+#include "StatisticsTypeImpl.hpp"
 
 /** @file
  */

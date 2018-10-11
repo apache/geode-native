@@ -23,11 +23,11 @@
  */
 
 #include "FwkBBClient.hpp"
+
 #include "FwkLog.hpp"
 #include "FwkStrCvt.hpp"
-
-#include "ace/Synch.h"
 #include "ace/OS.h"
+#include "ace/Synch.h"
 
 namespace apache {
 namespace geode {

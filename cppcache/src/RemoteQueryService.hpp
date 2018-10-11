@@ -20,13 +20,13 @@
 #ifndef GEODE_REMOTEQUERYSERVICE_H_
 #define GEODE_REMOTEQUERYSERVICE_H_
 
-#include <string>
 #include <memory>
+#include <string>
 
 #include <ace/Recursive_Thread_Mutex.h>
 
-#include <geode/internal/geode_globals.hpp>
 #include <geode/QueryService.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 #include "CqService.hpp"
 #include "ThinClientCacheDistributionManager.hpp"

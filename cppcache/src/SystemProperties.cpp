@@ -15,18 +15,17 @@
  * limitations under the License.
  */
 
-#include <string>
 #include <cstdlib>
 #include <string>
 
-#include <ace/OS.h>
 #include <ace/DLL.h>
+#include <ace/OS.h>
 
-#include <geode/internal/geode_globals.hpp>
-#include <geode/internal/chrono/duration.hpp>
-#include <geode/SystemProperties.hpp>
-#include <geode/ExceptionTypes.hpp>
 #include <geode/CacheableKey.hpp>
+#include <geode/ExceptionTypes.hpp>
+#include <geode/SystemProperties.hpp>
+#include <geode/internal/chrono/duration.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 #include "CppCacheLibrary.hpp"
 #include "util/Log.hpp"

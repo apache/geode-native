@@ -20,12 +20,13 @@
 #ifndef GEODE_TESTOBJECT_PDXTYPE_H_
 #define GEODE_TESTOBJECT_PDXTYPE_H_
 
-#include <geode/PdxSerializable.hpp>
-#include <geode/CacheableEnum.hpp>
-#include <geode/PdxWriter.hpp>
-#include <geode/PdxReader.hpp>
-#include <geode/CacheableObjectArray.hpp>
 #include <util/Log.hpp>
+
+#include <geode/CacheableEnum.hpp>
+#include <geode/CacheableObjectArray.hpp>
+#include <geode/PdxReader.hpp>
+#include <geode/PdxSerializable.hpp>
+#include <geode/PdxWriter.hpp>
 
 #include "testobject_export.h"
 

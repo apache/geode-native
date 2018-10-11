@@ -55,11 +55,11 @@ using apache::geode::client::TimeoutException;
 
 bool isLocalServer = false;
 bool isLocator = false;
-const char* poolNames[] = {"Pool1", "Pool2", "Pool3"};
-const char* locHostPort =
+const char *poolNames[] = {"Pool1", "Pool2", "Pool3"};
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
-const char* qRegionNames[] = {"Portfolios", "Positions", "Portfolios2",
+const char *qRegionNames[] = {"Portfolios", "Positions", "Portfolios2",
                               "Portfolios3"};
 
 bool isPoolConfig = false;  // To track if pool case is running
@@ -79,7 +79,7 @@ void stepOne() {
         PositionPdx::createDeserializable);
     serializationRegistry->addPdxSerializableType(
         PortfolioPdx::createDeserializable);
-  } catch (const IllegalStateException&) {
+  } catch (const IllegalStateException &) {
     // ignore exception
   }
   isPoolConfig = true;
@@ -137,7 +137,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepTwo)
     auto regPtr0 = getHelper()->getRegion(qRegionNames[0]);
     auto subregPtr0 = regPtr0->getSubregion(qRegionNames[1]);
 
-    QueryHelper* qh = &QueryHelper::getHelper();
+    QueryHelper *qh = &QueryHelper::getHelper();
 
     if (!m_isPdx) {
       qh->populatePortfolioData(regPtr0, 100, 20, 100);
@@ -179,7 +179,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
 
       LOG("Didnt get expected timeout exception for first execute");
       FAIL("Didnt get expected timeout exception for first execute");
-    } catch (const TimeoutException& excp) {
+    } catch (const TimeoutException &excp) {
       std::string logmsg = "";
       logmsg += "First execute expected exception ";
       logmsg += excp.getName();
@@ -261,7 +261,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
 
       LOG("Didnt get expected timeout exception for third execute");
       FAIL("Didnt get expected timeout exception for third execute");
-    } catch (const TimeoutException& excp) {
+    } catch (const TimeoutException &excp) {
       std::string logmsg = "";
       logmsg += "Third execute expected exception ";
       logmsg += excp.getName();
@@ -352,7 +352,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSeven)
 
       LOG("Didnt get expected timeout exception for fifth execute");
       FAIL("Didnt get expected timeout exception for fifth execute");
-    } catch (const TimeoutException& excp) {
+    } catch (const TimeoutException &excp) {
       std::string logmsg = "";
       logmsg += "Fifth execute expected exception ";
       logmsg += excp.getName();
@@ -446,7 +446,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, verifyNegativeValueTimeout)
       FAIL("Didnt get expected timeout exception for first execute");
     }
 
-    catch (const IllegalArgumentException& excp) {
+    catch (const IllegalArgumentException &excp) {
       std::string logmsg = "";
       logmsg += "execute expected exception ";
       logmsg += excp.getName();
@@ -491,7 +491,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, verifyLargeValueTimeout)
       FAIL("Didnt get expected timeout exception for first execute");
     }
 
-    catch (const IllegalArgumentException& excp) {
+    catch (const IllegalArgumentException &excp) {
       std::string logmsg = "";
       logmsg += "execute expected exception ";
       logmsg += excp.getName();

@@ -20,12 +20,12 @@
 #ifndef GEODE_UTIL_FUNCTIONAL_H_
 #define GEODE_UTIL_FUNCTIONAL_H_
 
-#include <functional>
-#include <memory>
-#include <type_traits>
-#include <string>
 #include <codecvt>
+#include <functional>
 #include <locale>
+#include <memory>
+#include <string>
+#include <type_traits>
 
 namespace apache {
 namespace geode {

@@ -24,8 +24,8 @@
 
 #include <ace/Task.h>
 
-#include "DistributedSystemImpl.hpp"
 #include "AppDomainContext.hpp"
+#include "DistributedSystemImpl.hpp"
 
 namespace apache {
 namespace geode {

@@ -15,15 +15,16 @@
  * limitations under the License.
  */
 
+#include "PdxInstanceImpl.hpp"
+
 #include <algorithm>
 
+#include <geode/Cache.hpp>
 #include <geode/PdxFieldTypes.hpp>
 #include <geode/PdxReader.hpp>
-#include <geode/Cache.hpp>
 
-#include "PdxInstanceImpl.hpp"
-#include "PdxHelper.hpp"
 #include "CacheRegionHelper.hpp"
+#include "PdxHelper.hpp"
 #include "util/string.hpp"
 
 namespace apache {

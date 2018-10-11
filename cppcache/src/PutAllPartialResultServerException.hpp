@@ -20,10 +20,11 @@
 #ifndef GEODE_PUTALLPARTIALRESULTSERVEREXCEPTION_H_
 #define GEODE_PUTALLPARTIALRESULTSERVEREXCEPTION_H_
 
-#include <geode/Serializable.hpp>
 #include <geode/CacheableString.hpp>
-#include "VersionedCacheableObjectPartList.hpp"
+#include <geode/Serializable.hpp>
+
 #include "PutAllPartialResult.hpp"
+#include "VersionedCacheableObjectPartList.hpp"
 
 namespace apache {
 namespace geode {

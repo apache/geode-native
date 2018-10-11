@@ -19,10 +19,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <ace/TSS_T.h>
-#include <geode/Pool.hpp>
 #include <map>
 #include <string>
+
+#include <ace/TSS_T.h>
+
+#include <geode/Pool.hpp>
+
 #include "TcrEndpoint.hpp"
 
 namespace apache {

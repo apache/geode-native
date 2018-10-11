@@ -24,9 +24,9 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include "internal/geode_globals.hpp"
 #include "Serializable.hpp"
 #include "internal/functional.hpp"
+#include "internal/geode_globals.hpp"
 
 /**
  * @file

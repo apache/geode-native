@@ -20,11 +20,12 @@
 #ifndef GEODE_CLIENTCONNECTIONREQUEST_H_
 #define GEODE_CLIENTCONNECTIONREQUEST_H_
 
+#include <set>
+#include <string>
+
+#include "ServerLocation.hpp"
 #include "ServerLocationRequest.hpp"
 #include "TcrEndpoint.hpp"
-#include <string>
-#include <set>
-#include "ServerLocation.hpp"
 
 namespace apache {
 namespace geode {

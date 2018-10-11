@@ -16,6 +16,7 @@
  */
 
 #include "StatSamplerStats.hpp"
+
 #include "StatisticsManager.hpp"
 
 namespace apache {

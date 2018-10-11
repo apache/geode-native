@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-#include <geode/DataOutput.hpp>
-#include <geode/DataInput.hpp>
-
 #include "FastAsset.hpp"
-#include "fwklib/GsRandom.hpp"
+
+#include <fwklib/GsRandom.hpp>
+
+#include <geode/DataInput.hpp>
+#include <geode/DataOutput.hpp>
 
 namespace testobject {
 

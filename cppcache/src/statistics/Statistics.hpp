@@ -24,8 +24,8 @@
 
 #include <geode/internal/geode_globals.hpp>
 
-#include "StatisticsType.hpp"
 #include "StatisticDescriptor.hpp"
+#include "StatisticsType.hpp"
 
 /** @file
  */

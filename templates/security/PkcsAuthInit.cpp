@@ -20,15 +20,14 @@
 #include <cstdio>
 #include <string>
 
-#include "geode/Properties.hpp"
-#include "geode/CacheableBuiltins.hpp"
-#include "geode/ExceptionTypes.hpp"
-
-#include "securityimpl_export.h"
-
-#include <geode/Properties.hpp>
 #include <geode/CacheableBuiltins.hpp>
 #include <geode/ExceptionTypes.hpp>
+#include <geode/Properties.hpp>
+
+#include "geode/CacheableBuiltins.hpp"
+#include "geode/ExceptionTypes.hpp"
+#include "geode/Properties.hpp"
+#include "securityimpl_export.h"
 
 namespace apache {
 namespace geode {

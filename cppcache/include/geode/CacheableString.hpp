@@ -20,10 +20,10 @@
 #ifndef GEODE_CACHEABLESTRING_H_
 #define GEODE_CACHEABLESTRING_H_
 
-#include "internal/geode_globals.hpp"
-#include "internal/DataSerializablePrimitive.hpp"
 #include "CacheableKey.hpp"
 #include "internal/DSCode.hpp"
+#include "internal/DataSerializablePrimitive.hpp"
+#include "internal/geode_globals.hpp"
 
 /** @file
  */

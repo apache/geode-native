@@ -14,15 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <geode/internal/geode_globals.hpp>
 #include "TcrHADistributionManager.hpp"
+
 #include <geode/ExceptionTypes.hpp>
-#include "TcrMessage.hpp"
-#include "Utils.hpp"
-#include "ThinClientRegion.hpp"
-#include "ThinClientHARegion.hpp"
+#include <geode/internal/geode_globals.hpp>
+
 #include "CacheImpl.hpp"
 #include "RemoteQueryService.hpp"
+#include "TcrMessage.hpp"
+#include "ThinClientHARegion.hpp"
+#include "ThinClientRegion.hpp"
+#include "Utils.hpp"
 
 namespace apache {
 namespace geode {

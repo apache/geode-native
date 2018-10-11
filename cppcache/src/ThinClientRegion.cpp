@@ -15,32 +15,33 @@
  * limitations under the License.
  */
 
+#include "ThinClientRegion.hpp"
+
 #include <algorithm>
 #include <limits>
 #include <regex>
 
-#include <geode/SystemProperties.hpp>
 #include <geode/PoolManager.hpp>
-#include <geode/UserFunctionExecutionException.hpp>
 #include <geode/Struct.hpp>
+#include <geode/SystemProperties.hpp>
+#include <geode/UserFunctionExecutionException.hpp>
 
-#include "Utils.hpp"
-#include "CacheRegionHelper.hpp"
-#include "ThinClientRegion.hpp"
-#include "TcrDistributionManager.hpp"
-#include "ThinClientPoolDM.hpp"
-#include "ThinClientBaseDM.hpp"
-#include "TcrEndpoint.hpp"
-#include "CacheImpl.hpp"
-#include "RegionGlobalLocks.hpp"
-#include "ReadWriteLock.hpp"
-#include "RemoteQuery.hpp"
 #include "AutoDelete.hpp"
-#include "UserAttributes.hpp"
+#include "CacheImpl.hpp"
+#include "CacheRegionHelper.hpp"
+#include "DataInputInternal.hpp"
 #include "PutAllPartialResultServerException.hpp"
+#include "ReadWriteLock.hpp"
+#include "RegionGlobalLocks.hpp"
+#include "RemoteQuery.hpp"
+#include "TcrDistributionManager.hpp"
+#include "TcrEndpoint.hpp"
+#include "ThinClientBaseDM.hpp"
+#include "ThinClientPoolDM.hpp"
+#include "UserAttributes.hpp"
+#include "Utils.hpp"
 #include "VersionedCacheableObjectPartList.hpp"
 #include "util/bounds.hpp"
-#include "DataInputInternal.hpp"
 #include "util/exception.hpp"
 
 namespace apache {

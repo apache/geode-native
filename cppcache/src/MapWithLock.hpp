@@ -20,16 +20,16 @@
  * limitations under the License.
  */
 
-#include <geode/internal/geode_globals.hpp>
-#include <geode/CacheableKey.hpp>
+#include <string>
+#include <unordered_map>
 
 #include <ace/Hash_Map_Manager.h>
 #include <ace/Recursive_Thread_Mutex.h>
-#include <ace/config-lite.h>
 #include <ace/Versioned_Namespace.h>
+#include <ace/config-lite.h>
 
-#include <unordered_map>
-#include <string>
+#include <geode/CacheableKey.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 namespace apache {
 namespace geode {

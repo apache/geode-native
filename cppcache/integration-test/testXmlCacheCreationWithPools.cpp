@@ -41,8 +41,8 @@ using apache::geode::client::Pool;
 static bool isLocalServer = false;
 static bool isLocator = false;
 static int numberOfLocators = 1;
-const char* endPoints = nullptr;
-const char* locatorsG =
+const char *endPoints = nullptr;
+const char *locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 
 #include "LocatorHelper.hpp"
@@ -52,7 +52,7 @@ using std::vector;
 
 using SLIST = vector<string>;
 
-bool findString(string& item, std::shared_ptr<CacheableStringArray> array) {
+bool findString(string &item, std::shared_ptr<CacheableStringArray> array) {
   for (int size = 0; size < array->length(); size++) {
     if (strcmp(item.c_str(), array->operator[](size)->value().c_str()) == 0) {
       return true;
@@ -62,7 +62,7 @@ bool findString(string& item, std::shared_ptr<CacheableStringArray> array) {
   return false;
 }
 
-bool checkStringArray(SLIST& first,
+bool checkStringArray(SLIST &first,
                       std::shared_ptr<CacheableStringArray> second) {
   if (second == nullptr && first.size() > 0) return false;
 
@@ -79,13 +79,13 @@ bool checkStringArray(SLIST& first,
   return true;
 }
 
-bool checkPoolAttribs(std::shared_ptr<Pool> pool, SLIST& locators,
-                      SLIST& servers, int freeConnectionTimeout,
+bool checkPoolAttribs(std::shared_ptr<Pool> pool, SLIST &locators,
+                      SLIST &servers, int freeConnectionTimeout,
                       int loadConditioningInterval, int minConnections,
                       int maxConnections, int retryAttempts,
                       std::chrono::milliseconds idleTimeout, int pingInterval,
-                      const std::string& name, int readTimeout,
-                      const std::string& serverGroup, int socketBufferSize,
+                      const std::string &name, int readTimeout,
+                      const std::string &serverGroup, int socketBufferSize,
                       bool subscriptionEnabled,
                       int subscriptionMessageTrackingTimeout,
                       int subscriptionAckInterval, int subscriptionRedundancy,
@@ -288,7 +288,7 @@ int testXmlCacheCreationWithPools() {
     } else {
       std::cout << "getPdxIgnoreUnreadFields returned true." << std::endl;
     }
-  } catch (Exception& ex) {
+  } catch (Exception &ex) {
     std::cout << "Exception: msg = " << ex.what() << std::endl;
     LOG(ex.getStackTrace());
     return -1;
@@ -313,7 +313,7 @@ int testXmlCacheCreationWithPools() {
   }
   auto regPtr1 = vrp.at(0);
 
-  auto&& vr = regPtr1->subregions(true);
+  auto &&vr = regPtr1->subregions(true);
   std::cout << "Test if the number of sub regions with the root region Root1 "
                "are correct"
             << std::endl;
@@ -352,9 +352,9 @@ int testXmlCacheCreationWithPools() {
 
   std::cout << "Test the attributes of region" << std::endl;
 
-  const auto& poolNameReg1 = regPtr1->getAttributes().getPoolName();
-  const auto& poolNameSubReg = subRegPtr->getAttributes().getPoolName();
-  const auto& poolNameReg2 = regPtr2->getAttributes().getPoolName();
+  const auto &poolNameReg1 = regPtr1->getAttributes().getPoolName();
+  const auto &poolNameSubReg = subRegPtr->getAttributes().getPoolName();
+  const auto &poolNameReg2 = regPtr2->getAttributes().getPoolName();
 
   if (poolNameReg1 != "test_pool_1") {
     std::cout << "Wrong pool name for region 1" << std::endl;
@@ -423,7 +423,7 @@ int testXmlCacheCreationWithPools() {
     cptr = std::make_shared<Cache>(
         cacheFactory.set("cache-xml-file", duplicateFile).create());
     return -1;
-  } catch (Exception& ex) {
+  } catch (Exception &ex) {
     std::cout << "EXPECTED EXCEPTION" << std::endl;
     std::cout << "Exception: msg = " << ex.what() << std::endl;
     LOG(ex.getStackTrace());
@@ -437,7 +437,7 @@ int testXmlCacheCreationWithPools() {
     cptr = std::make_shared<Cache>(
         cacheFactory.set("cache-xml-file", duplicateFile).create());
     return -1;
-  } catch (Exception& ex) {
+  } catch (Exception &ex) {
     std::cout << "EXPECTED EXCEPTION" << std::endl;
     std::cout << "Exception: msg = " << ex.what() << std::endl;
     LOG(ex.getStackTrace());
@@ -451,7 +451,7 @@ int testXmlCacheCreationWithPools() {
     cptr = std::make_shared<Cache>(
         cacheFactory.set("cache-xml-file", duplicateFile).create());
     return -1;
-  } catch (Exception& ex) {
+  } catch (Exception &ex) {
     std::cout << "EXPECTED EXCEPTION" << std::endl;
     std::cout << "Exception: msg = " << ex.what() << std::endl;
     LOG(ex.getStackTrace());
@@ -465,7 +465,7 @@ int testXmlCacheCreationWithPools() {
     cptr = std::make_shared<Cache>(
         cacheFactory.set("cache-xml-file", duplicateFile).create());
     return -1;
-  } catch (Exception& ex) {
+  } catch (Exception &ex) {
     std::cout << "EXPECTED EXCEPTION" << std::endl;
     std::cout << "Exception: msg = " << ex.what() << std::endl;
     LOG(ex.getStackTrace());
@@ -475,7 +475,7 @@ int testXmlCacheCreationWithPools() {
   try {
     std::cout << "just before disconnecting..." << std::endl;
     if (cptr != nullptr) cptr->close();
-  } catch (Exception& ex) {
+  } catch (Exception &ex) {
     std::cout << "Exception: msg = " << ex.what() << std::endl;
     LOG(ex.getStackTrace());
     return -1;

@@ -20,11 +20,13 @@
  * limitations under the License.
  */
 
-#include <geode/internal/geode_base.hpp>
-#include <ace/SOCK_Stream.h>
-#include <ace/SOCK_Acceptor.h>
 #include <cstdint>
 #include <string>
+
+#include <ace/SOCK_Acceptor.h>
+#include <ace/SOCK_Stream.h>
+
+#include <geode/internal/geode_base.hpp>
 
 namespace apache {
 namespace geode {

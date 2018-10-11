@@ -25,14 +25,14 @@
 
 #include <ace/Semaphore.h>
 
-#include <geode/internal/geode_globals.hpp>
-#include <geode/ExceptionTypes.hpp>
 #include <geode/CacheableBuiltins.hpp>
+#include <geode/ExceptionTypes.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 #include "Connector.hpp"
+#include "DiffieHellman.hpp"
 #include "Set.hpp"
 #include "TcrMessage.hpp"
-#include "DiffieHellman.hpp"
 
 #define DEFAULT_TIMEOUT_RETRIES 12
 #define PRIMARY_SERVER_TO_CLIENT 101

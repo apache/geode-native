@@ -37,12 +37,12 @@ DUNIT_TASK(s1p1, Basic)
   }
 END_TASK(Basic)
 
-perf::Semaphore* triggerA;
-perf::Semaphore* triggerB;
-perf::Semaphore* triggerM;
+perf::Semaphore *triggerA;
+perf::Semaphore *triggerB;
+perf::Semaphore *triggerM;
 
 spinlock_mutex lock;
-ACE_Time_Value* btime;
+ACE_Time_Value *btime;
 
 class ThreadA : public ACE_Task_Base {
  public:
@@ -82,8 +82,8 @@ DUNIT_TASK(s1p1, TwoThreads)
     triggerB = new perf::Semaphore(0);
     triggerM = new perf::Semaphore(0);
 
-    ThreadA* threadA = new ThreadA();
-    ThreadB* threadB = new ThreadB();
+    ThreadA *threadA = new ThreadA();
+    ThreadB *threadB = new ThreadB();
 
     threadA->activate();
     threadB->activate();

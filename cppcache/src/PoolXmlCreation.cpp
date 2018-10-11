@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
+#include "PoolXmlCreation.hpp"
+
 #include <geode/Cache.hpp>
 #include <geode/PoolManager.hpp>
-
-#include "PoolXmlCreation.hpp"
 
 namespace apache {
 namespace geode {

@@ -71,7 +71,7 @@ using apache::geode::client::testframework::BBNamingContextServer;
 #define __DUNIT_NO_MAIN__
 #include "fw_dunit.hpp"
 
-ACE_TCHAR* g_programName = nullptr;
+ACE_TCHAR *g_programName = nullptr;
 uint32_t g_masterPid = 0;
 
 ClientCleanup gClientCleanup;
@@ -101,7 +101,7 @@ void setupCRTOutput() {
 #endif
 }
 
-void getTimeStr(char* bufPtr, size_t sizeOfBuf) {
+void getTimeStr(char *bufPtr, size_t sizeOfBuf) {
   ACE_TCHAR timestamp[64] = {0};  // only 35 needed here
   ACE::timestamp(timestamp, sizeof timestamp);
   // timestamp is like "Tue May 17 2005 12:54:22.546780"
@@ -116,7 +116,7 @@ void getTimeStr(char* bufPtr, size_t sizeOfBuf) {
 #define SLAVE_STATE_TASK_COMPLETE 4
 #define SLAVE_STATE_SCHEDULED 5
 
-void log(std::string s, int lineno, const char* filename);
+void log(std::string s, int lineno, const char *filename);
 
 /** Naming service for sharing data between processes. */
 class NamingContextImpl : virtual public NamingContext {
@@ -134,7 +134,7 @@ class NamingContextImpl : virtual public NamingContext {
     ACE_OS::sleep(sleepTime);
   }
 
-  int checkResult(int result, const char* func) {
+  int checkResult(int result, const char *func) {
     if (result == -1) {
       LOGMASTER("NamingCtx operation failed for:");
       LOGMASTER(func);
@@ -160,10 +160,10 @@ class NamingContextImpl : virtual public NamingContext {
    * Share a string value, return -1 if there is a failure to store value,
    * otherwise returns 0.
    */
-  int rebind(const char* key, const char* value) override {
+  int rebind(const char *key, const char *value) override {
     int res = -1;
     int attempts = 10;
-    while ((res = m_context.rebind(key, value, const_cast<char*>(""))) == -1 &&
+    while ((res = m_context.rebind(key, value, const_cast<char *>(""))) == -1 &&
            attempts--) {
       millisleep(10);
     }
@@ -174,7 +174,7 @@ class NamingContextImpl : virtual public NamingContext {
    * Share an int value, return -1 if there is a failure to store value,
    * otherwise returns 0.
    */
-  int rebind(const char* key, int value) override {
+  int rebind(const char *key, int value) override {
     return rebind(key, std::to_string(value).c_str());
   }
 
@@ -182,13 +182,13 @@ class NamingContextImpl : virtual public NamingContext {
    * retreive a value by key, storing the result in the users buf. If the key
    * is not found, the buf will contain the empty string "".
    */
-  void getValue(const char* key, char* buf, size_t sizeOfBuf) override {
+  void getValue(const char *key, char *buf, size_t sizeOfBuf) override {
 #ifdef SOLARIS_USE_BB
     char value[VALUE_MAX] = {0};
     char type[VALUE_MAX] = {0};
 #else
-    char* value = nullptr;
-    char* type = nullptr;
+    char *value = nullptr;
+    char *type = nullptr;
 #endif
 
     int res = -1;
@@ -210,7 +210,7 @@ class NamingContextImpl : virtual public NamingContext {
    * return the value by key, as an int using the string to int conversion
    * rules of atoi.
    */
-  int getIntValue(const char* key) override {
+  int getIntValue(const char *key) override {
     char value[VALUE_MAX] = {0};
     getValue(key, value, sizeof(value));
     if (ACE_OS::strcmp(value, "") == 0) return 0;
@@ -221,7 +221,7 @@ class NamingContextImpl : virtual public NamingContext {
 #ifdef SOLARIS_USE_BB
     m_context.open();
 #else
-    ACE_Name_Options* name_options = m_context.name_options();
+    ACE_Name_Options *name_options = m_context.name_options();
     name_options->process_name(getContextName().c_str());
     name_options->namespace_dir(".");
     name_options->context(ACE_Naming_Context::PROC_LOCAL);
@@ -259,7 +259,7 @@ class NamingContextImpl : virtual public NamingContext {
       LOGMASTER(buf);
     } else {
       ACE_BINDING_ITERATOR set_iterator(set);
-      for (ACE_Name_Binding* entry = 0; set_iterator.next(entry) != 0;
+      for (ACE_Name_Binding *entry = 0; set_iterator.next(entry) != 0;
            set_iterator.advance()) {
         ACE_Name_Binding binding(*entry);
         char buf[1000] = {0};
@@ -297,14 +297,14 @@ class NamingContextImpl : virtual public NamingContext {
 class SlaveId {
  private:
   uint32_t m_id;
-  static const char* m_idNames[];
+  static const char *m_idNames[];
 
  public:
   explicit SlaveId(uint32_t id) { m_id = id; }
 
   int getId() { return m_id; }
 
-  const char* getIdName() { return m_idNames[m_id]; }
+  const char *getIdName() { return m_idNames[m_id]; }
 
   /** return the system id for this process */
   int getSystem() { return 1; }
@@ -312,12 +312,12 @@ class SlaveId {
   int getProcOnSys() { return ((m_id % 2) == 0) ? 2 : 1; }
 };
 
-const char* SlaveId::m_idNames[] = {"none", "s1p1", "s1p2", "s2p1", "s2p2"};
+const char *SlaveId::m_idNames[] = {"none", "s1p1", "s1p2", "s2p1", "s2p2"};
 
 /** method for letting Task discover its name through RTTI. */
 std::string Task::typeName() { return std::string(typeid(*this).name()); }
 
-typedef std::list<Task*> TaskList;
+typedef std::list<Task *> TaskList;
 
 /** contains a queue of Task* for each SlaveId. */
 class TaskQueues {
@@ -327,17 +327,17 @@ class TaskQueues {
 
   TaskQueues() : m_qmap(), m_schedule() {}
 
-  void registerTask(SlaveId sId, Task* task) {
+  void registerTask(SlaveId sId, Task *task) {
     m_qmap[sId.getId()].push_back(task);
     m_schedule.push_back(sId.getId());
   }
 
-  Task* nextTask(SlaveId& sId) {
-    TaskList* tasks = &(m_qmap[sId.getId()]);
+  Task *nextTask(SlaveId &sId) {
+    TaskList *tasks = &(m_qmap[sId.getId()]);
     if (tasks->empty()) {
       return nullptr;
     }
-    Task* task = tasks->front();
+    Task *task = tasks->front();
     if (task != nullptr) {
       char logmsg[1024] = {0};
       sprintf(logmsg, "received task: %s ", task->m_taskName.c_str());
@@ -359,10 +359,10 @@ class TaskQueues {
     return sId;
   }
 
-  static TaskQueues* taskQueues;
+  static TaskQueues *taskQueues;
 
  public:
-  static void addTask(SlaveId sId, Task* task) {
+  static void addTask(SlaveId sId, Task *task) {
     if (taskQueues == nullptr) {
       taskQueues = new TaskQueues();
     }
@@ -374,13 +374,13 @@ class TaskQueues {
     return taskQueues->nextSlaveId();
   }
 
-  static Task* getTask(SlaveId sId) {
+  static Task *getTask(SlaveId sId) {
     ASSERT(taskQueues != nullptr, "failure to initialize fw_dunit module.");
     return taskQueues->nextTask(sId);
   }
 };
 
-TaskQueues* TaskQueues::taskQueues = nullptr;
+TaskQueues *TaskQueues::taskQueues = nullptr;
 
 /** register task with slave. */
 void Task::init(int sId) {
@@ -393,7 +393,7 @@ void Task::init(int sId) {
 class Dunit {
  private:
   NamingContextImpl m_globals;
-  static Dunit* singleton;
+  static Dunit *singleton;
   bool m_close_down;
 
   Dunit() : m_globals(), m_close_down(false) {}
@@ -418,20 +418,20 @@ class Dunit {
   }
 
   /** return the already initialized singleton Dunit instance. */
-  static Dunit* getSingleton() {
+  static Dunit *getSingleton() {
     ASSERT(singleton != nullptr, "singleton not created yet.");
     return singleton;
   }
 
   /** delete the existing singleton */
   static void close() {
-    Dunit* tmp = singleton;
+    Dunit *tmp = singleton;
     singleton = nullptr;
     delete tmp;
   }
 
   /** set the next slave id */
-  void setNextSlave(SlaveId& sId) { m_globals.rebind("SlaveId", sId.getId()); }
+  void setNextSlave(SlaveId &sId) { m_globals.rebind("SlaveId", sId.getId()); }
 
   /** get the next slave id */
   int getNextSlave() { return m_globals.getIntValue("SlaveId"); }
@@ -474,14 +474,14 @@ class Dunit {
   }
 
   /** return the NamingContext for global (amongst all processes) values. */
-  NamingContext* globals() { return &m_globals; }
+  NamingContext *globals() { return &m_globals; }
 
   ~Dunit() {}
 };
 
 #define DUNIT dunit::Dunit::getSingleton()
 
-Dunit* Dunit::singleton = nullptr;
+Dunit *Dunit::singleton = nullptr;
 
 void Task::setTimeout(int seconds) {
   if (seconds > 0) {
@@ -496,10 +496,10 @@ class TestProcess : virtual public dunit::Manager {
   SlaveId m_sId;
 
  public:
-  TestProcess(const ACE_TCHAR* cmdline, uint32_t id)
+  TestProcess(const ACE_TCHAR *cmdline, uint32_t id)
       : Manager(cmdline), m_sId(id) {}
 
-  SlaveId& getSlaveId() { return m_sId; }
+  SlaveId &getSlaveId() { return m_sId; }
 
  protected:
  public:
@@ -512,9 +512,9 @@ class TestProcess : virtual public dunit::Manager {
  */
 class TestDriver {
  private:
-  TestProcess* m_slaves[4];
+  TestProcess *m_slaves[4];
 #ifdef SOLARIS_USE_BB
-  BBNamingContextServer* m_bbNamingContextServer;
+  BBNamingContextServer *m_bbNamingContextServer;
 #endif
 
  public:
@@ -530,7 +530,7 @@ class TestDriver {
     fprintf(stdout, "Master starting slaves.\n");
     for (uint32_t i = 1; i < 5; i++) {
       ACE_TCHAR cmdline[2048] = {0};
-      char* profilerCmd = ACE_OS::getenv("PROFILERCMD");
+      char *profilerCmd = ACE_OS::getenv("PROFILERCMD");
       if (profilerCmd != nullptr && profilerCmd[0] != '$' &&
           profilerCmd[0] != '\0') {
         // replace %d's in profilerCmd with PID and slave ID
@@ -597,7 +597,7 @@ class TestDriver {
   }
 
   /** wait for an individual slave to finish a task. */
-  void waitForCompletion(SlaveId& sId) {
+  void waitForCompletion(SlaveId &sId) {
     int secs = DUNIT->getSlaveTimeout(sId);
     DUNIT->setSlaveTimeout(sId, TASK_TIMEOUT);
     if (secs <= 0) secs = TASK_TIMEOUT;
@@ -629,7 +629,7 @@ class TestDriver {
     DUNIT->setFailed();
   }
 
-  void handleTimeout(SlaveId& sId) {
+  void handleTimeout(SlaveId &sId) {
     fprintf(stdout, "Error: Timed out waiting for %s to finish task.\n",
             sId.getIdName());
     fflush(stdout);
@@ -722,7 +722,7 @@ class TestSlave {
   SlaveId m_sId;
 
  public:
-  static SlaveId* procSlaveId;
+  static SlaveId *procSlaveId;
 
   explicit TestSlave(int id) : m_sId(id) {
     procSlaveId = new SlaveId(id);
@@ -747,7 +747,7 @@ class TestSlave {
         // set next slave to zero so I don't accidently run twice.
         DUNIT->setNextSlave(slaveZero);
         // do next task...
-        Task* task = TaskQueues::getTask(m_sId);
+        Task *task = TaskQueues::getTask(m_sId);
         // perform task.
         if (task != nullptr) {
           DUNIT->setSlaveState(m_sId, SLAVE_STATE_TASK_ACTIVE);
@@ -779,7 +779,7 @@ class TestSlave {
   }
 };
 
-SlaveId* TestSlave::procSlaveId = nullptr;
+SlaveId *TestSlave::procSlaveId = nullptr;
 
 void sleep(int millis) {
   if (millis == 0) {
@@ -791,7 +791,7 @@ void sleep(int millis) {
   }
 }
 
-void logMaster(std::string s, int lineno, const char* /*filename*/) {
+void logMaster(std::string s, int lineno, const char * /*filename*/) {
   char buf[128] = {0};
   dunit::getTimeStr(buf, sizeof(buf));
 
@@ -802,7 +802,7 @@ void logMaster(std::string s, int lineno, const char* /*filename*/) {
 
 // log a message and print the slave id as well.. used by fw_helper with no
 // slave id.
-void log(std::string s, int lineno, const char* /*filename*/, int /*id*/) {
+void log(std::string s, int lineno, const char * /*filename*/, int /*id*/) {
   char buf[128] = {0};
   dunit::getTimeStr(buf, sizeof(buf));
 
@@ -812,7 +812,7 @@ void log(std::string s, int lineno, const char* /*filename*/, int /*id*/) {
 }
 
 // log a message and print the slave id as well..
-void log(std::string s, int lineno, const char* /*filename*/) {
+void log(std::string s, int lineno, const char * /*filename*/) {
   char buf[128] = {0};
   dunit::getTimeStr(buf, sizeof(buf));
 
@@ -826,7 +826,7 @@ void log(std::string s, int lineno, const char* /*filename*/) {
 
 void cleanup() { gClientCleanup.callClientCleanup(); }
 
-int dmain(int argc, ACE_TCHAR* argv[]) {
+int dmain(int argc, ACE_TCHAR *argv[]) {
 #ifdef USE_SMARTHEAP
   MemRegisterTask();
 #endif
@@ -908,9 +908,9 @@ int dmain(int argc, ACE_TCHAR* argv[]) {
     printf("after calling cleanup\n");
     return result;
 
-  } catch (dunit::TestException& te) {
+  } catch (dunit::TestException &te) {
     te.print();
-  } catch (apache::geode::client::testframework::FwkException& fe) {
+  } catch (apache::geode::client::testframework::FwkException &fe) {
     printf("Exception: %s\n", fe.what());
     fflush(stdout);
   } catch (...) {
@@ -923,7 +923,7 @@ int dmain(int argc, ACE_TCHAR* argv[]) {
 }
 
 /** entry point for test code modules to access the naming service. */
-NamingContext* globals() { return DUNIT->globals(); }
+NamingContext *globals() { return DUNIT->globals(); }
 
 }  // namespace dunit
 
@@ -936,9 +936,9 @@ TimeStamp::TimeStamp() {
   m_msec = tmp.msec();
 }
 
-TimeStamp::TimeStamp(const TimeStamp& other) : m_msec(other.m_msec) {}
+TimeStamp::TimeStamp(const TimeStamp &other) : m_msec(other.m_msec) {}
 
-TimeStamp& TimeStamp::operator=(const TimeStamp& other) {
+TimeStamp &TimeStamp::operator=(const TimeStamp &other) {
   m_msec = other.m_msec;
   return *this;
 }
@@ -949,8 +949,8 @@ int64_t TimeStamp::msec() const { return m_msec; }
 
 void TimeStamp::msec(int64_t t) { m_msec = t; }
 
-Record::Record(std::string testName, int64_t ops, const TimeStamp& start,
-               const TimeStamp& stop)
+Record::Record(std::string testName, int64_t ops, const TimeStamp &start,
+               const TimeStamp &stop)
     : m_testName(testName),
       m_operations(ops),
       m_startTime(start),
@@ -959,13 +959,13 @@ Record::Record(std::string testName, int64_t ops, const TimeStamp& start,
 Record::Record()
     : m_testName(""), m_operations(0), m_startTime(0), m_stopTime(0) {}
 
-Record::Record(const Record& other)
+Record::Record(const Record &other)
     : m_testName(other.m_testName),
       m_operations(other.m_operations),
       m_startTime(other.m_startTime),
       m_stopTime(other.m_stopTime) {}
 
-Record& Record::operator=(const Record& other) {
+Record &Record::operator=(const Record &other) {
   m_testName = other.m_testName;
   m_operations = other.m_operations;
   m_startTime = other.m_startTime;
@@ -973,14 +973,14 @@ Record& Record::operator=(const Record& other) {
   return *this;
 }
 
-void Record::write(apache::geode::client::DataOutput& output) {
+void Record::write(apache::geode::client::DataOutput &output) {
   output.writeString(m_testName);
   output.writeInt(m_operations);
   output.writeInt(m_startTime.msec());
   output.writeInt(m_stopTime.msec());
 }
 
-void Record::read(apache::geode::client::DataInput& input) {
+void Record::read(apache::geode::client::DataInput &input) {
   m_testName = input.readString();
   m_operations = input.readInt64();
   m_startTime.msec(input.readInt64());
@@ -1001,7 +1001,7 @@ int Record::perSec() {
 
 std::string Record::asString() {
   std::string tmp = m_testName;
-  char* buf = new char[1000];
+  char *buf = new char[1000];
   sprintf(buf, " -- %d ops/sec, ", perSec());
   tmp += buf;
   sprintf(buf, "%d ops, ", static_cast<int>(m_operations));
@@ -1011,10 +1011,10 @@ std::string Record::asString() {
   return tmp;
 }
 
-PerfSuite::PerfSuite(const char* suiteName) : m_suiteName(suiteName) {}
+PerfSuite::PerfSuite(const char *suiteName) : m_suiteName(suiteName) {}
 
 void PerfSuite::addRecord(std::string testName, int64_t ops,
-                          const TimeStamp& start, const TimeStamp& stop) {
+                          const TimeStamp &start, const TimeStamp &stop) {
   Record tmp(testName, ops, start, stop);
   m_records[testName] = tmp;
   fprintf(stdout, "[PerfSuite] %s\n", tmp.asString().c_str());
@@ -1071,7 +1071,7 @@ void PerfSuite::compare() {
   std::string fname = m_suiteName + "_baseline." + hname;
 }
 
-ThreadLauncher::ThreadLauncher(int thrCount, Thread& thr)
+ThreadLauncher::ThreadLauncher(int thrCount, Thread &thr)
     : m_thrCount(thrCount),
       m_initSemaphore((-1 * thrCount) + 1),
       m_startSemaphore(0),

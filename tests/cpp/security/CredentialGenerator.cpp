@@ -16,12 +16,13 @@
  */
 
 #include "CredentialGenerator.hpp"
+
 #include "DummyCredentialGenerator.hpp"
 #include "DummyCredentialGenerator2.hpp"
 #include "DummyCredentialGenerator3.hpp"
 #include "LdapUserCredentialGenerator.hpp"
-#include "PkcsCredentialGenerator.hpp"
 #include "NoopCredentialGenerator.hpp"
+#include "PkcsCredentialGenerator.hpp"
 
 namespace apache {
 namespace geode {

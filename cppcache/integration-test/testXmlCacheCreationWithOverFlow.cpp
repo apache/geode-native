@@ -36,7 +36,7 @@ int testXmlCacheCreationWithOverflow() {
   const uint32_t totalSubRegionsRoot1 = 2;
   const uint32_t totalRootRegions = 2;
 
-  char* path = ACE_OS::getenv("TESTSRC");
+  char *path = ACE_OS::getenv("TESTSRC");
   std::string directory(path);
 
   std::cout << "create DistributedSytem with name=XML_CACHE_CREATION_TEST"
@@ -50,7 +50,7 @@ int testXmlCacheCreationWithOverflow() {
     cptr = std::make_shared<Cache>(
         cacheFactory.set("cache-xml-file", filePath.c_str()).create());
     return -1;
-  } catch (CacheXmlException& ex) {
+  } catch (CacheXmlException &ex) {
     std::cout << "CacheXmlException: msg = " << ex.what() << std::endl;
     LOG(ex.getStackTrace());
   } catch (...) {
@@ -71,7 +71,7 @@ int testXmlCacheCreationWithOverflow() {
       std::cout << "getPdxIgnoreUnreadFields returned true." << std::endl;
     }
     // return 0;
-  } catch (Exception& ex) {
+  } catch (Exception &ex) {
     std::cout << "getPdxIgnoreUnreadFields should return true2." << std::endl;
     std::cout << "Exception: msg = " << ex.what() << std::endl;
     LOG(ex.getStackTrace());
@@ -117,10 +117,10 @@ int testXmlCacheCreationWithOverflow() {
 
   std::cout << "Test if the nesting of regions is correct" << std::endl;
   auto regPtr2 = vrp.at(1);
-  auto&& vsr = regPtr2->subregions(true);
-  for (auto&& regPtr : vsr) {
-    auto&& childName = regPtr->getName();
-    auto&& parentName = regPtr->getParentRegion()->getName();
+  auto &&vsr = regPtr2->subregions(true);
+  for (auto &&regPtr : vsr) {
+    auto &&childName = regPtr->getName();
+    auto &&parentName = regPtr->getParentRegion()->getName();
     if (childName == "SubSubRegion221") {
       if (parentName != "SubRegion22") {
         std::cout << "Incorrect parent: tree structure not formed correctly"
@@ -216,7 +216,7 @@ int testXmlCacheCreationWithOverflow() {
   try {
     regPtr1->localDestroyRegion();
     regPtr2->localDestroyRegion();
-  } catch (Exception& ex) {
+  } catch (Exception &ex) {
     std::cout << "Exception: msg = " << ex.what() << std::endl;
     LOG(ex.getStackTrace());
     return -1;
@@ -243,7 +243,7 @@ int testXmlCacheCreationWithOverflow() {
     cptr = std::make_shared<Cache>(
         cacheFactory.set("cache-xml-file", filePath).create());
     return -1;
-  } catch (Exception& ex) {
+  } catch (Exception &ex) {
     std::cout << std::endl;
     std::cout << "Exception: msg = " << ex.what() << std::endl;
     LOG(ex.getStackTrace());
@@ -264,7 +264,7 @@ int testXmlCacheCreationWithOverflow() {
     cptr = std::make_shared<Cache>(
         cacheFactory.set("cache-xml-file", filePath).create());
     return -1;
-  } catch (CacheXmlException& ex) {
+  } catch (CacheXmlException &ex) {
     std::cout << std::endl;
     std::cout << "CacheXmlException: msg = " << ex.what() << std::endl;
     LOG(ex.getStackTrace());
@@ -286,7 +286,7 @@ int testXmlCacheCreationWithOverflow() {
     cptr = std::make_shared<Cache>(
         cacheFactory.set("cache-xml-file", filePath).create());
     return -1;
-  } catch (Exception& ex) {
+  } catch (Exception &ex) {
     std::cout << std::endl;
     std::cout << "Exception: msg = " << ex.what() << std::endl;
     LOG(ex.getStackTrace());
@@ -300,7 +300,7 @@ int testXmlCacheCreationWithOverflow() {
       cptr->close();
       cptr = nullptr;
     }
-  } catch (Exception& ex) {
+  } catch (Exception &ex) {
     std::cout << "Exception: msg = " << ex.what() << std::endl;
     LOG(ex.getStackTrace());
     return -1;

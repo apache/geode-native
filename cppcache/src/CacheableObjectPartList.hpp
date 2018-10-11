@@ -22,14 +22,14 @@
 
 #include <vector>
 
-#include <geode/internal/geode_globals.hpp>
-#include <geode/DataOutput.hpp>
 #include <geode/DataInput.hpp>
+#include <geode/DataOutput.hpp>
 #include <geode/Serializable.hpp>
+#include <geode/internal/geode_globals.hpp>
 
-#include "geode/internal/DataSerializableFixedId.hpp"
-#include "MapWithLock.hpp"
 #include "HashMapOfException.hpp"
+#include "MapWithLock.hpp"
+#include "geode/internal/DataSerializableFixedId.hpp"
 
 /** @file
  */

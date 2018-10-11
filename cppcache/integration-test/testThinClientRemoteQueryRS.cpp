@@ -57,11 +57,11 @@ using apache::geode::client::QueryService;
 bool isLocator = false;
 bool isLocalServer = false;
 
-const char* poolNames[] = {"Pool1", "Pool2", "Pool3"};
-const char* locHostPort =
+const char *poolNames[] = {"Pool1", "Pool2", "Pool3"};
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 bool isPoolConfig = false;  // To track if pool case is running
-const char* qRegionNames[] = {"Portfolios", "Positions", "Portfolios2",
+const char *qRegionNames[] = {"Portfolios", "Positions", "Portfolios2",
                               "Portfolios3"};
 static bool m_isPdx = false;
 void stepOne() {
@@ -79,7 +79,7 @@ void stepOne() {
         PositionPdx::createDeserializable);
     serializationRegistry->addPdxSerializableType(
         PortfolioPdx::createDeserializable);
-  } catch (const IllegalStateException&) {
+  } catch (const IllegalStateException &) {
     // ignore exception
   }
   isPoolConfig = true;
@@ -148,7 +148,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
     auto regPtr2 = getHelper()->getRegion(qRegionNames[2]);
     auto regPtr3 = getHelper()->getRegion(qRegionNames[3]);
 
-    QueryHelper* qh = &QueryHelper::getHelper();
+    QueryHelper *qh = &QueryHelper::getHelper();
 
     char buf[100];
     sprintf(buf, "SetSize %zd, NumSets %zd", qh->getPortfolioSetSize(),
@@ -189,7 +189,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
   {
     SLEEP(500);
     bool doAnyErrorOccured = false;
-    QueryHelper* qh = &QueryHelper::getHelper();
+    QueryHelper *qh = &QueryHelper::getHelper();
 
     std::shared_ptr<QueryService> qs = nullptr;
     if (isPoolConfig) {
@@ -277,7 +277,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
   {
     SLEEP(500);
     bool doAnyErrorOccured = false;
-    QueryHelper* qh = &QueryHelper::getHelper();
+    QueryHelper *qh = &QueryHelper::getHelper();
 
     std::shared_ptr<QueryService> qs = nullptr;
     if (isPoolConfig) {
@@ -382,7 +382,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
   {
     SLEEP(500);
     bool doAnyErrorOccured = false;
-    QueryHelper* qh = &QueryHelper::getHelper();
+    QueryHelper *qh = &QueryHelper::getHelper();
 
     std::shared_ptr<QueryService> qs = nullptr;
     if (isPoolConfig) {
@@ -511,7 +511,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, DoQueryRSError)
                           i);
           LOG(failmsg);
           FAIL(failmsg);
-        } catch (apache::geode::client::QueryException&) {
+        } catch (apache::geode::client::QueryException &) {
           // ok, expecting an exception, do nothing
         } catch (...) {
           ASSERT(false, "Got unexpected exception");

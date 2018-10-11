@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 #include <geode/CacheableObjectArray.hpp>
-#include <geode/DataOutput.hpp>
 #include <geode/DataInput.hpp>
+#include <geode/DataOutput.hpp>
 #include <geode/ExceptionTypes.hpp>
 
 namespace apache {

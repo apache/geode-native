@@ -14,11 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <geode/Cache.hpp>
 #include "LRUAction.hpp"
-#include "LRULocalDestroyAction.hpp"
-#include "LRUEntriesMap.hpp"
+
+#include <geode/Cache.hpp>
+
 #include "CacheImpl.hpp"
+#include "LRUEntriesMap.hpp"
+#include "LRULocalDestroyAction.hpp"
 
 namespace apache {
 namespace geode {

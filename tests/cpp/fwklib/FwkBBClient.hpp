@@ -27,10 +27,10 @@
  * @see
  */
 
+#include <ace/OS.h>
+
 #include "FwkBB.hpp"
 #include "UDPIpc.hpp"
-
-#include <ace/OS.h>
 
 // ----------------------------------------------------------------------------
 //  Some widely used BBs and counters

@@ -16,7 +16,8 @@
  */
 
 #include "Service.hpp"
-#include "fwklib/FwkLog.hpp"
+
+#include <fwklib/FwkLog.hpp>
 
 namespace apache {
 namespace geode {

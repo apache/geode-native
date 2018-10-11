@@ -47,14 +47,14 @@ using apache::geode::client::RegionDestroyedException;
 using apache::geode::client::testing::TallyListener;
 using apache::geode::client::testing::TallyWriter;
 
-CacheHelper* cacheHelper = nullptr;
+CacheHelper *cacheHelper = nullptr;
 bool isLocalServer = false;
 
 static bool isLocator = false;
-const char* locatorsG =
+const char *locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
-const char* regionNames[] = {"DistRegionAck1", "DistRegionAck2",
+const char *regionNames[] = {"DistRegionAck1", "DistRegionAck2",
                              "DistRegionAck3", "DistRegionAck4",
                              "DistRegionAck5", "DistRegionAck"};
 const bool USE_ACK = true;
@@ -75,7 +75,7 @@ void cleanProc() {
   }
 }
 
-CacheHelper* getHelper() {
+CacheHelper *getHelper() {
   ASSERT(cacheHelper != nullptr, "No cacheHelper initialized.");
   return cacheHelper;
 }
@@ -110,27 +110,27 @@ void printAttribute(RegionAttributes attr) {
   // printf("getEndPoint: %s\n",attr.getEndpoints());
 }
 
-void setCacheListener(const char* regName,
+void setCacheListener(const char *regName,
                       std::shared_ptr<TallyListener> regListener) {
   auto reg = getHelper()->getRegion(regName);
   auto attrMutator = reg->getAttributesMutator();
   attrMutator->setCacheListener(regListener);
 }
 
-void setCacheWriter(const char* regName,
+void setCacheWriter(const char *regName,
                     std::shared_ptr<TallyWriter> regWriter) {
   auto reg = getHelper()->getRegion(regName);
   auto attrMutator = reg->getAttributesMutator();
   attrMutator->setCacheWriter(regWriter);
 }
 
-void getRegionAttr(const char* name) {
+void getRegionAttr(const char *name) {
   auto rptr = getHelper()->getRegion(name);
   auto m_currRegionAttributesPtr = rptr->getAttributes();
   printAttribute(m_currRegionAttributesPtr);
 }
 
-void ValidateDestroyRegion(const char* name) {
+void ValidateDestroyRegion(const char *name) {
   auto rptr = getHelper()->getRegion(name);
   if (rptr == nullptr) {
     return;
@@ -138,12 +138,12 @@ void ValidateDestroyRegion(const char* name) {
   try {
     rptr->put(1, 2);
     FAIL("Put should not be happened");
-  } catch (RegionDestroyedException& ex) {
+  } catch (RegionDestroyedException &ex) {
     char buffer[1024];
     sprintf(buffer, "Got expected exception %s: msg = %s", ex.getName().c_str(),
             ex.what());
     LOG(buffer);
-  } catch (Exception& ex) {
+  } catch (Exception &ex) {
     char buffer[1024];
     sprintf(buffer, "Got unexpected exception %s: msg = %s",
             ex.getName().c_str(), ex.what());
@@ -151,11 +151,11 @@ void ValidateDestroyRegion(const char* name) {
   }
 }
 
-void createRegion(const char* name, bool ackMode,
-                  const std::chrono::seconds& ettl,
-                  const std::chrono::seconds& eit,
-                  const std::chrono::seconds& rttl,
-                  const std::chrono::seconds& rit, int lel,
+void createRegion(const char *name, bool ackMode,
+                  const std::chrono::seconds &ettl,
+                  const std::chrono::seconds &eit,
+                  const std::chrono::seconds &rttl,
+                  const std::chrono::seconds &rit, int lel,
                   ExpirationAction action = ExpirationAction::DESTROY) {
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
@@ -170,7 +170,7 @@ void createRegion(const char* name, bool ackMode,
   LOG("Region created.");
 }
 
-void doRgnOperations(const char* name, int n, int rgnOpt = 0) {
+void doRgnOperations(const char *name, int n, int rgnOpt = 0) {
   std::shared_ptr<CacheableString> value;
   char buf[16];
   if (rgnOpt == 0) {
@@ -208,7 +208,7 @@ void doRgnOperations(const char* name, int n, int rgnOpt = 0) {
   }
 }
 
-void dumpCounters(const char* regName) {
+void dumpCounters(const char *regName) {
   auto rptr = getHelper()->getRegion(regName);
   printf("Region size: %d\n", rptr->size());
   if (regListener != nullptr) {
@@ -218,7 +218,7 @@ void dumpCounters(const char* regName) {
   }
 }
 
-size_t getNumOfEntries(const char* regName, bool isValue = false) {
+size_t getNumOfEntries(const char *regName, bool isValue = false) {
   static bool useRegionSize = false;
 
   useRegionSize = !useRegionSize;
@@ -237,7 +237,7 @@ size_t getNumOfEntries(const char* regName, bool isValue = false) {
   }
 }
 
-void localDestroyRegion(const char* name) {
+void localDestroyRegion(const char *name) {
   LOG("localDestroyRegion() entered.");
   auto regPtr = getHelper()->getRegion(name);
   regPtr->localDestroyRegion();
@@ -246,15 +246,15 @@ void localDestroyRegion(const char* name) {
 }
 
 void createThinClientRegion(
-    const char* regionName, const std::chrono::seconds& ettl,
-    const std::chrono::seconds& eit, const std::chrono::seconds& rttl,
-    const std::chrono::seconds& rit, int lel, int noOfEntry = 0, int rgnOpt = 0,
+    const char *regionName, const std::chrono::seconds &ettl,
+    const std::chrono::seconds &eit, const std::chrono::seconds &rttl,
+    const std::chrono::seconds &rit, int lel, int noOfEntry = 0, int rgnOpt = 0,
     bool destroyRgn = true,
     ExpirationAction action = ExpirationAction::DESTROY) {
   if (destroyRgn) {
     try {
       doRgnOperations(regionName, noOfEntry, rgnOpt);
-    } catch (EntryNotFoundException& ex) {
+    } catch (EntryNotFoundException &ex) {
       char buffer[1024];
       sprintf(buffer, "Got expected exception %s: msg = %s",
               ex.getName().c_str(), ex.what());

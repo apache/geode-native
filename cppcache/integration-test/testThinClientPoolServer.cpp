@@ -33,12 +33,12 @@ server-group having the region.
 bool isLocalServer = false;
 bool isLocator = false;
 
-const char* locHostPort =
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
-const char* poolRegNames[] = {"PoolRegion1", "PoolRegion2", "PoolRegion3"};
-const char* poolName = "__TEST_POOL1__";
+const char *poolRegNames[] = {"PoolRegion1", "PoolRegion2", "PoolRegion3"};
+const char *poolName = "__TEST_POOL1__";
 
-const char* serverGroup = "ServerGroup1";
+const char *serverGroup = "ServerGroup1";
 
 DUNIT_TASK_DEFINITION(LOCATOR1, StartLocator1)
   {
@@ -108,7 +108,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateClient1Entries)
     try {
       createEntry(poolRegNames[1], keys[0], vals[0]);
       FAIL("Operations on R2 should throw RegionNotFoundException");
-    } catch (const apache::geode::client::CacheServerException&) {
+    } catch (const apache::geode::client::CacheServerException &) {
       LOG("Expected exception.");
     } catch (...) {
       LOG("Operation on Region 2 got unexpected exception.");
@@ -131,7 +131,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, CreateClient2Entries)
     try {
       createEntry(poolRegNames[2], keys[0], vals[0]);
       FAIL("Operations on R3 should throw RegionNotFoundException");
-    } catch (const apache::geode::client::CacheServerException&) {
+    } catch (const apache::geode::client::CacheServerException &) {
       LOG("Expected exception.");
     } catch (...) {
       LOG("Operation on Region 2 got unexpected exception.");

@@ -19,12 +19,12 @@
 
 #include <gtest/gtest.h>
 
-#include <geode/PdxSerializable.hpp>
-#include <geode/RegionShortcut.hpp>
 #include <geode/PdxReader.hpp>
+#include <geode/PdxSerializable.hpp>
 #include <geode/PdxWriter.hpp>
 #include <geode/QueryService.hpp>
 #include <geode/RegionFactory.hpp>
+#include <geode/RegionShortcut.hpp>
 #include <geode/TypeRegistry.hpp>
 
 #include "framework/Cluster.h"

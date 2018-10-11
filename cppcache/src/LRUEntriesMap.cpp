@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 #include "LRUEntriesMap.hpp"
-#include "LRUList.cpp"
-#include "ExpiryTaskManager.hpp"
-#include "MapSegment.hpp"
-#include "CacheImpl.hpp"
 
 #include <mutex>
+
+#include "CacheImpl.hpp"
+#include "ExpiryTaskManager.hpp"
+#include "LRUList.cpp"
+#include "MapSegment.hpp"
 #include "util/concurrent/spinlock_mutex.hpp"
 
 namespace apache {

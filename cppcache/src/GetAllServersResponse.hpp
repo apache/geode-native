@@ -20,11 +20,12 @@
 #ifndef GEODE_GETALLSERVERSRESPONSE_H_
 #define GEODE_GETALLSERVERSRESPONSE_H_
 
-#include <geode/internal/DataSerializableFixedId.hpp>
-#include <geode/Serializable.hpp>
+#include <vector>
+
 #include <geode/DataInput.hpp>
 #include <geode/DataOutput.hpp>
-#include <vector>
+#include <geode/Serializable.hpp>
+#include <geode/internal/DataSerializableFixedId.hpp>
 
 #include "ServerLocation.hpp"
 

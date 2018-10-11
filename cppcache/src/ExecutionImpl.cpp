@@ -15,16 +15,17 @@
  * limitations under the License.
  */
 
+#include "ExecutionImpl.hpp"
+
 #include <sstream>
 
-#include <geode/internal/geode_globals.hpp>
-#include <geode/ExceptionTypes.hpp>
 #include <geode/DefaultResultCollector.hpp>
+#include <geode/ExceptionTypes.hpp>
+#include <geode/internal/geode_globals.hpp>
 
-#include "ExecutionImpl.hpp"
-#include "ThinClientRegion.hpp"
-#include "ThinClientPoolDM.hpp"
 #include "NoResult.hpp"
+#include "ThinClientPoolDM.hpp"
+#include "ThinClientRegion.hpp"
 #include "UserAttributes.hpp"
 #include "util/exception.hpp"
 

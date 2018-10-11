@@ -20,13 +20,13 @@
 #ifndef GEODE_EXECUTION_H_
 #define GEODE_EXECUTION_H_
 
-#include <memory>
 #include <chrono>
+#include <memory>
 #include <string>
 
-#include "internal/geode_globals.hpp"
 #include "CacheableBuiltins.hpp"
 #include "ResultCollector.hpp"
+#include "internal/geode_globals.hpp"
 
 /**
  * @file

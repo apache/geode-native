@@ -21,6 +21,7 @@
 #define GEODE_TESTOBJECT_BATCHOBJECT_H_
 
 #include <inttypes.h>
+
 #include <string>
 
 #include <ace/ACE.h>

@@ -20,8 +20,8 @@
 #ifndef GEODE_SERIALIZABLEHELPER_H_
 #define GEODE_SERIALIZABLEHELPER_H_
 
-#include <geode/DataOutput.hpp>
 #include <geode/DataInput.hpp>
+#include <geode/DataOutput.hpp>
 
 namespace apache {
 namespace geode {

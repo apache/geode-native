@@ -22,10 +22,13 @@
  */
 
 #include "PdxReaderWithTypeCollector.hpp"
-#include "PdxTypes.hpp"
+
 #include <ace/OS_NS_stdio.h>
+
 #include <geode/PdxFieldTypes.hpp>
+
 #include "CacheImpl.hpp"
+#include "PdxTypes.hpp"
 
 namespace apache {
 namespace geode {

@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 #include "PortfolioPdx.hpp"
+
 #include <util/Log.hpp>
 
 namespace testobject {

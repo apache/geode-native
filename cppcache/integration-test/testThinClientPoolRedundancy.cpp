@@ -30,14 +30,14 @@
 
 bool isLocalServer = false;
 bool isLocator = false;
-const char* endPoints1 = CacheHelper::getTcrEndpoints(isLocalServer, 1);
-const char* endPoints2 = CacheHelper::getTcrEndpoints(isLocalServer, 2);
-const char* endPoints3 = CacheHelper::getTcrEndpoints(isLocalServer, 3);
-const char* locHostPort =
+const char *endPoints1 = CacheHelper::getTcrEndpoints(isLocalServer, 1);
+const char *endPoints2 = CacheHelper::getTcrEndpoints(isLocalServer, 2);
+const char *endPoints3 = CacheHelper::getTcrEndpoints(isLocalServer, 3);
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
-const char* poolRegNames[] = {"PoolRegion1", "PoolRegion2", "PoolRegion3"};
-const char* poolNames[] = {"Pool1", "Pool2", "Pool3"};
-const char* sGNames[] = {"ServerGroup1", "ServerGroup2", "ServerGroup3"};
+const char *poolRegNames[] = {"PoolRegion1", "PoolRegion2", "PoolRegion3"};
+const char *poolNames[] = {"Pool1", "Pool2", "Pool3"};
+const char *sGNames[] = {"ServerGroup1", "ServerGroup2", "ServerGroup3"};
 
 void feedEntries(int keyIndex, bool newValue = false, bool update = false) {
   if (!update) {

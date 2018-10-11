@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 #include "UserAttributes.hpp"
+
 #include <geode/AuthenticatedView.hpp>
 
 namespace apache {

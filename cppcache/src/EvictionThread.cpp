@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 #include "EvictionThread.hpp"
-#include "EvictionController.hpp"
+
 #include "DistributedSystemImpl.hpp"
+#include "EvictionController.hpp"
 
 namespace apache {
 namespace geode {

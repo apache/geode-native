@@ -68,15 +68,15 @@ using PdxTests::PdxTypes9;
 bool isLocator = false;
 bool isLocalServer = false;
 
-const char* poolNames[] = {"Pool1", "Pool2", "Pool3"};
-const char* locHostPort =
+const char *poolNames[] = {"Pool1", "Pool2", "Pool3"};
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 bool isPoolConfig = false;  // To track if pool case is running
 // const char * qRegionNames[] = { "Portfolios", "Positions", "Portfolios2",
 // "Portfolios3" };
 
 void initClient(const bool isthinClient, bool isPdxIgnoreUnreadFields,
-                const std::shared_ptr<Properties>& configPtr = nullptr) {
+                const std::shared_ptr<Properties> &configPtr = nullptr) {
   LOGINFO("isPdxIgnoreUnreadFields = %d ", isPdxIgnoreUnreadFields);
   if (cacheHelper == nullptr) {
     cacheHelper = new CacheHelper(isthinClient, isPdxIgnoreUnreadFields, false,
@@ -171,7 +171,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, generateJavaPdxType)
           ASSERT(resultVal == true,
                  "Function should return true NIL LINE_1508");
           gotResult = true;
-        } catch (ClassCastException& ex) {
+        } catch (ClassCastException &ex) {
           LOG("exFuncNameSendException casting to int for arrayList arguement "
               "exception.");
           std::string logmsg = "";
@@ -211,61 +211,61 @@ DUNIT_TASK_DEFINITION(CLIENT1, putAllPdxTypes)
     try {
       serializationRegistry->addPdxSerializableType(
           PdxTypes1::createDeserializable);
-    } catch (const IllegalStateException&) {
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
     try {
       serializationRegistry->addPdxSerializableType(
           PdxTypes2::createDeserializable);
-    } catch (const IllegalStateException&) {
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
     try {
       serializationRegistry->addPdxSerializableType(
           PdxTypes3::createDeserializable);
-    } catch (const IllegalStateException&) {
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
     try {
       serializationRegistry->addPdxSerializableType(
           PdxTypes4::createDeserializable);
-    } catch (const IllegalStateException&) {
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
     try {
       serializationRegistry->addPdxSerializableType(
           PdxTypes5::createDeserializable);
-    } catch (const IllegalStateException&) {
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
     try {
       serializationRegistry->addPdxSerializableType(
           PdxTypes6::createDeserializable);
-    } catch (const IllegalStateException&) {
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
     try {
       serializationRegistry->addPdxSerializableType(
           PdxTypes7::createDeserializable);
-    } catch (const IllegalStateException&) {
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
     try {
       serializationRegistry->addPdxSerializableType(
           PdxTypes8::createDeserializable);
-    } catch (const IllegalStateException&) {
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
     try {
       serializationRegistry->addPdxSerializableType(
           PdxTypes9::createDeserializable);
-    } catch (const IllegalStateException&) {
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
     try {
       serializationRegistry->addPdxSerializableType(
           PdxTypes10::createDeserializable);
-    } catch (const IllegalStateException&) {
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
     // TODO::Uncomment it once PortfolioPdx/PositionPdx Classes are ready
@@ -350,7 +350,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, verifyDotNetPdxTypes)
           ASSERT(resultVal == true,
                  "Function should return true NIL LINE_1508");
           gotResult = true;
-        } catch (ClassCastException& ex) {
+        } catch (ClassCastException &ex) {
           LOG("exFuncNameSendException casting to int for arrayList arguement "
               "exception.");
           std::string logmsg = "";

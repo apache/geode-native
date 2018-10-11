@@ -21,11 +21,14 @@
 #define GEODE_TESTOBJECT_DELTAPSTOBJECT_H_
 
 #include <inttypes.h>
+
 #include <string>
 
 #include <ace/ACE.h>
 #include <ace/OS.h>
 #include <ace/Time_Value.h>
+
+#include <geode/Delta.hpp>
 
 #include "TimestampedObject.hpp"
 #include "testobject/PSTObject.hpp"

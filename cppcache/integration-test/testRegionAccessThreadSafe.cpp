@@ -29,7 +29,7 @@ class GetRegionThread : public ACE_Task_Base {
   bool m_regionCreateDone;
   bool m_subRegionCreateDone;
   ACE_Recursive_Thread_Mutex m_mutex;
-  GetRegionThread(const char* path, const char* subPath)
+  GetRegionThread(const char *path, const char *subPath)
       : m_running(false),
         m_path(path),
         m_subPath(subPath),
@@ -45,10 +45,10 @@ class GetRegionThread : public ACE_Task_Base {
           ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_mutex);
           ASSERT(m_regionCreateDone == true, "regionCreate Not Done");
         }
-      } catch (Exception& ex) {
+      } catch (Exception &ex) {
         LOG(ex.what());
         continue;
-      } catch (std::exception& ex) {
+      } catch (std::exception &ex) {
         LOG(ex.what());
         continue;
       } catch (...) {
@@ -62,9 +62,9 @@ class GetRegionThread : public ACE_Task_Base {
           ASSERT(m_subRegionCreateDone == true, "subRegionCreate Not Done");
           return 0;
         }
-      } catch (Exception& ex) {
+      } catch (Exception &ex) {
         LOG(ex.what());
-      } catch (std::exception& ex) {
+      } catch (std::exception &ex) {
         LOG(ex.what());
       } catch (...) {
         LOG("getRegion: unknown exception");
@@ -93,9 +93,9 @@ class GetRegionThread : public ACE_Task_Base {
 static int numberOfLocators = 1;
 bool isLocalServer = true;
 bool isLocator = true;
-const char* locHostPort =
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
-GetRegionThread* getThread = nullptr;
+GetRegionThread *getThread = nullptr;
 std::shared_ptr<Region> regionPtr;
 DUNIT_TASK(s1p1, Setup)
   {

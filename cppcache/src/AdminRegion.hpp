@@ -24,11 +24,10 @@
 #include <string>
 
 #include <geode/Serializable.hpp>
-#include <geode/Serializable.hpp>
 
-#include "ReadWriteLock.hpp"
-#include "NonCopyable.hpp"
 #include "ErrType.hpp"
+#include "NonCopyable.hpp"
+#include "ReadWriteLock.hpp"
 
 namespace apache {
 namespace geode {

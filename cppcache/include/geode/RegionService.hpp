@@ -20,11 +20,11 @@
 #ifndef GEODE_REGIONSERVICE_H_
 #define GEODE_REGIONSERVICE_H_
 
-#include <vector>
 #include <memory>
+#include <vector>
 
-#include "internal/geode_globals.hpp"
 #include "PdxInstanceFactory.hpp"
+#include "internal/geode_globals.hpp"
 
 /**
  * @file

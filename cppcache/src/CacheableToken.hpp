@@ -20,9 +20,9 @@
 #ifndef GEODE_CACHEABLETOKEN_H_
 #define GEODE_CACHEABLETOKEN_H_
 
-#include <geode/internal/geode_globals.hpp>
-#include <geode/internal/DataSerializableInternal.hpp>
 #include <geode/Serializable.hpp>
+#include <geode/internal/DataSerializableInternal.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 namespace apache {
 namespace geode {

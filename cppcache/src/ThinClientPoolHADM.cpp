@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
+#include "ThinClientPoolHADM.hpp"
+
 #include <geode/SystemProperties.hpp>
 
-#include "ThinClientPoolHADM.hpp"
 #include "ExpiryHandler_T.hpp"
 #include "util/exception.hpp"
 

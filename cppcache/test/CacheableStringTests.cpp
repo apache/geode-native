@@ -16,20 +16,20 @@
  */
 
 #include <stdint.h>
+
 #include <limits>
 #include <regex>
 
 #include <gtest/gtest.h>
 
-#include <geode/DataOutput.hpp>
 #include <geode/CacheFactory.hpp>
+#include <geode/DataOutput.hpp>
 
-#include "gtest_extensions.h"
 #include "ByteArrayFixture.hpp"
-#include "DataOutputInternal.hpp"
-#include "SerializationRegistry.hpp"
 #include "DataInputInternal.hpp"
 #include "DataOutputInternal.hpp"
+#include "SerializationRegistry.hpp"
+#include "gtest_extensions.h"
 
 namespace {
 

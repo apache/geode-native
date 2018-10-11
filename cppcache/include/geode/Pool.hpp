@@ -27,9 +27,9 @@
 #include "Cache.hpp"
 #include "CacheFactory.hpp"
 #include "CacheableBuiltins.hpp"
+#include "internal/chrono/duration.hpp"
 #include "internal/geode_base.hpp"
 #include "internal/geode_globals.hpp"
-#include "internal/chrono/duration.hpp"
 
 /**
  * @file

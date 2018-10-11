@@ -16,15 +16,16 @@
  */
 
 #include "IpcHandler.hpp"
-#include "fwklib/FwkLog.hpp"
 
-#include <memory.h>
 #include <errno.h>
+#include <memory.h>
+
+#include <fwklib/FwkLog.hpp>
 
 #include <ace/INET_Addr.h>
-#include <ace/SOCK_IO.h>
-#include <ace/SOCK_Connector.h>
 #include <ace/OS.h>
+#include <ace/SOCK_Connector.h>
+#include <ace/SOCK_IO.h>
 
 namespace apache {
 namespace geode {

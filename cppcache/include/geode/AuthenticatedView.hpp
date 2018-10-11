@@ -20,11 +20,11 @@
 #ifndef GEODE_AUTHENTICATEDVIEW_H_
 #define GEODE_AUTHENTICATEDVIEW_H_
 
-#include <geode/internal/geode_globals.hpp>
-#include <geode/Region.hpp>
-#include <geode/QueryService.hpp>
 #include <geode/PoolFactory.hpp>
+#include <geode/QueryService.hpp>
+#include <geode/Region.hpp>
 #include <geode/RegionService.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 /**
  * @file

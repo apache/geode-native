@@ -26,12 +26,13 @@
  *      Author: vrao
  */
 
-#include "SerializationRegistry.hpp"
+#include <util/Log.hpp>
+
 #include <geode/CacheableEnum.hpp>
 #include <geode/CacheableObjectArray.hpp>
 #include <geode/PdxWrapper.hpp>
-#include <util/Log.hpp>
 
+#include "SerializationRegistry.hpp"
 #include "testobject_export.h"
 
 namespace PdxTests {

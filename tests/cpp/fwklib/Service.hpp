@@ -20,14 +20,15 @@
  * limitations under the License.
  */
 
-#include <geode/internal/geode_base.hpp>
 #include <atomic>
-#include "fwklib/FwkLog.hpp"
+#include <fwklib/FwkLog.hpp>
+#include <string>
 
-#include "ace/Task.h"
 #include <ace/Condition_T.h>
 
-#include <string>
+#include <geode/internal/geode_base.hpp>
+
+#include "ace/Task.h"
 
 namespace apache {
 namespace geode {

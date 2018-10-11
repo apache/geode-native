@@ -47,10 +47,10 @@ using apache::geode::client::testing::TallyListener;
 std::shared_ptr<TallyListener> reg1Listener1;
 bool isLocalServer = false;
 static bool isLocator = false;
-const char* locatorsG =
+const char *locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
-void setCacheListener(const char* regName,
+void setCacheListener(const char *regName,
                       std::shared_ptr<TallyListener> regListener) {
   auto reg = getHelper()->getRegion(regName);
   auto attrMutator = reg->getAttributesMutator();
@@ -138,7 +138,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAllOneTask)
     }
     try {
       dataReg->putAll(entryMap);
-    } catch (Exception& ex) {
+    } catch (Exception &ex) {
       LOGERROR("CPPTEST: Unexpected %s: %s", ex.getName().c_str(), ex.what());
       FAIL(ex.what());
     } catch (...) {
@@ -171,7 +171,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAllTwoTask)
     }
     try {
       dataReg->putAll(entryMap);
-    } catch (Exception& ex) {
+    } catch (Exception &ex) {
       LOGERROR("CPPTEST: Unexpected %s: %s", ex.getName().c_str(), ex.what());
       FAIL(ex.what());
     } catch (...) {
@@ -204,7 +204,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAllThreeTask)
     }
     try {
       dataReg->putAll(entryMap);
-    } catch (Exception& ex) {
+    } catch (Exception &ex) {
       LOGERROR("CPPTEST: Unexpected %s: %s", ex.getName().c_str(), ex.what());
       FAIL(ex.what());
     } catch (...) {
@@ -237,7 +237,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAllFourTask)
     }
     try {
       dataReg->putAll(entryMap);
-    } catch (Exception& ex) {
+    } catch (Exception &ex) {
       LOGERROR("CPPTEST: Unexpected %s: %s", ex.getName().c_str(), ex.what());
       FAIL(ex.what());
     } catch (...) {
@@ -302,7 +302,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, RemoveAllOneTask)
     try {
       dataReg->putAll(entryMap);
       dataReg->removeAll(keys);
-    } catch (Exception& ex) {
+    } catch (Exception &ex) {
       LOGERROR("CPPTEST: Unexpected %s: %s", ex.getName().c_str(), ex.what());
       FAIL(ex.what());
     } catch (...) {
@@ -337,7 +337,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, RemoveAllTwoTask)
     try {
       dataReg->putAll(entryMap);
       dataReg->removeAll(keys);
-    } catch (Exception& ex) {
+    } catch (Exception &ex) {
       LOGERROR("CPPTEST: Unexpected %s: %s", ex.getName().c_str(), ex.what());
       FAIL(ex.what());
     } catch (...) {
@@ -373,7 +373,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, RemoveAllThreeTask)
     try {
       dataReg->putAll(entryMap);
       dataReg->removeAll(keys);
-    } catch (Exception& ex) {
+    } catch (Exception &ex) {
       LOGERROR("CPPTEST: Unexpected %s: %s", ex.getName().c_str(), ex.what());
       FAIL(ex.what());
     } catch (...) {
@@ -409,7 +409,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, RemoveAllFourTask)
     try {
       dataReg->putAll(entryMap);
       dataReg->removeAll(keys);
-    } catch (Exception& ex) {
+    } catch (Exception &ex) {
       LOGERROR("CPPTEST: Unexpected %s: %s", ex.getName().c_str(), ex.what());
       FAIL(ex.what());
     } catch (...) {

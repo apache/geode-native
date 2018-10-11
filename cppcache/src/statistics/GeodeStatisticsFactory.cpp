@@ -16,17 +16,18 @@
  * limitations under the License.
  */
 
+#include "GeodeStatisticsFactory.hpp"
+
 #include <string>
 
-#include <ace/Recursive_Thread_Mutex.h>
-#include <ace/OS.h>
-#include <ace/Thread_Mutex.h>
 #include <ace/Guard_T.h>
+#include <ace/OS.h>
+#include <ace/Recursive_Thread_Mutex.h>
+#include <ace/Thread_Mutex.h>
 
-#include <geode/internal/geode_globals.hpp>
 #include <geode/Exception.hpp>
+#include <geode/internal/geode_globals.hpp>
 
-#include "GeodeStatisticsFactory.hpp"
 #include "../util/Log.hpp"
 #include "AtomicStatisticsImpl.hpp"
 #include "OsStatisticsImpl.hpp"

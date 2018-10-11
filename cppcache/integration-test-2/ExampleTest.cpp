@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
+#include <future>
 #include <iostream>
 #include <random>
 #include <thread>
-#include <future>
 
 #include <gtest/gtest.h>
 
@@ -27,9 +27,9 @@
 #include <geode/RegionFactory.hpp>
 #include <geode/RegionShortcut.hpp>
 
+#include "framework/Cluster.h"
 #include "framework/Framework.h"
 #include "framework/Gfsh.h"
-#include "framework/Cluster.h"
 
 namespace {
 

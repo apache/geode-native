@@ -24,39 +24,39 @@
  * @file
  */
 
-#include <geode/internal/geode_globals.hpp>
-#include <geode/CacheStatistics.hpp>
-#include <geode/ExceptionTypes.hpp>
-#include <geode/CacheableKey.hpp>
-#include <geode/Serializable.hpp>
-#include <geode/Cache.hpp>
-#include <geode/EntryEvent.hpp>
-#include <geode/RegionEvent.hpp>
-#include "EventType.hpp"
-#include <geode/PersistenceManager.hpp>
-#include <geode/RegionEntry.hpp>
-#include <geode/CacheListener.hpp>
-#include <geode/CacheWriter.hpp>
-#include <geode/CacheLoader.hpp>
-#include <geode/AttributesMutator.hpp>
-#include <geode/RegionAttributesFactory.hpp>
-
-#include "RegionInternal.hpp"
-#include "RegionStats.hpp"
-#include "EntriesMapFactory.hpp"
-#include "SerializationRegistry.hpp"
-#include "MapWithLock.hpp"
-#include "CacheableToken.hpp"
-#include "ExpMapEntry.hpp"
-#include "TombstoneList.hpp"
+#include <string>
+#include <unordered_map>
 
 #include <ace/ACE.h>
 #include <ace/Hash_Map_Manager_T.h>
 #include <ace/Recursive_Thread_Mutex.h>
 
-#include <string>
-#include <unordered_map>
+#include <geode/AttributesMutator.hpp>
+#include <geode/Cache.hpp>
+#include <geode/CacheListener.hpp>
+#include <geode/CacheLoader.hpp>
+#include <geode/CacheStatistics.hpp>
+#include <geode/CacheWriter.hpp>
+#include <geode/CacheableKey.hpp>
+#include <geode/EntryEvent.hpp>
+#include <geode/ExceptionTypes.hpp>
+#include <geode/PersistenceManager.hpp>
+#include <geode/RegionAttributesFactory.hpp>
+#include <geode/RegionEntry.hpp>
+#include <geode/RegionEvent.hpp>
+#include <geode/Serializable.hpp>
+#include <geode/internal/geode_globals.hpp>
+
+#include "CacheableToken.hpp"
+#include "EntriesMapFactory.hpp"
+#include "EventType.hpp"
+#include "ExpMapEntry.hpp"
+#include "MapWithLock.hpp"
+#include "RegionInternal.hpp"
+#include "RegionStats.hpp"
+#include "SerializationRegistry.hpp"
 #include "TSSTXStateWrapper.hpp"
+#include "TombstoneList.hpp"
 
 namespace apache {
 namespace geode {

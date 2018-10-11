@@ -14,12 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <geode/DataInput.hpp>
 #include "EventId.hpp"
-#include "ClientProxyMembershipID.hpp"
 
-#include <cstring>
 #include <atomic>
+#include <cstring>
+
+#include <geode/DataInput.hpp>
+
+#include "ClientProxyMembershipID.hpp"
 
 namespace apache {
 namespace geode {

@@ -20,15 +20,15 @@
 #ifndef GEODE_SERIALIZER_H_
 #define GEODE_SERIALIZER_H_
 
-#include <vector>
-#include <unordered_map>
-#include <unordered_set>
 #include <memory>
 #include <type_traits>
+#include <unordered_map>
+#include <unordered_set>
+#include <vector>
 
-#include "internal/geode_globals.hpp"
-#include "DataOutput.hpp"
 #include "DataInput.hpp"
+#include "DataOutput.hpp"
+#include "internal/geode_globals.hpp"
 
 namespace apache {
 namespace geode {

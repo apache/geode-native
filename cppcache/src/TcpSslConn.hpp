@@ -22,8 +22,8 @@
 
 #include <ace/DLL.h>
 
-#include "TcpConn.hpp"
 #include "../../cryptoimpl/Ssl.hpp"
+#include "TcpConn.hpp"
 
 namespace apache {
 namespace geode {

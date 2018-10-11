@@ -20,10 +20,11 @@
  * limitations under the License.
  */
 
-#include <geode/internal/geode_base.hpp>
-#include "ThinClientDistributionManager.hpp"
 #include <geode/CacheAttributes.hpp>
+#include <geode/internal/geode_base.hpp>
+
 #include "TcrEndpoint.hpp"
+#include "ThinClientDistributionManager.hpp"
 
 namespace apache {
 namespace geode {

@@ -18,15 +18,15 @@
 
 #include <gtest/gtest.h>
 
-#include <geode/CacheFactory.hpp>
 #include <geode/Cache.hpp>
+#include <geode/CacheFactory.hpp>
 #include <geode/PoolManager.hpp>
 #include <geode/RegionFactory.hpp>
 #include <geode/RegionShortcut.hpp>
 
+#include "framework/Cluster.h"
 #include "framework/Framework.h"
 #include "framework/Gfsh.h"
-#include "framework/Cluster.h"
 
 namespace {
 

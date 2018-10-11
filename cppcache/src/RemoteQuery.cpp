@@ -16,11 +16,12 @@
  */
 
 #include "RemoteQuery.hpp"
+
 #include "ResultSetImpl.hpp"
 #include "StructSetImpl.hpp"
+#include "ThinClientPoolDM.hpp"
 #include "ThinClientRegion.hpp"
 #include "UserAttributes.hpp"
-#include "ThinClientPoolDM.hpp"
 #include "util/bounds.hpp"
 #include "util/exception.hpp"
 

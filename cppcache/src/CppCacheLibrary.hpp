@@ -20,8 +20,9 @@
  * limitations under the License.
  */
 
-#include <geode/internal/geode_globals.hpp>
 #include <string>
+
+#include <geode/internal/geode_globals.hpp>
 
 namespace apache {
 namespace geode {

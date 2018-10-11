@@ -20,8 +20,8 @@
 #ifndef GEODE_HASHMAPOFEXCEPTION_H_
 #define GEODE_HASHMAPOFEXCEPTION_H_
 
-#include <unordered_map>
 #include <memory>
+#include <unordered_map>
 
 #include <geode/internal/functional.hpp>
 

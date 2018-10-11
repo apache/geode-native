@@ -20,8 +20,8 @@
 #ifndef GEODE_RESULTSET_H_
 #define GEODE_RESULTSET_H_
 
-#include "internal/geode_globals.hpp"
 #include "SelectResults.hpp"
+#include "internal/geode_globals.hpp"
 
 namespace apache {
 namespace geode {

@@ -45,13 +45,13 @@ int32_t g_classIdToReturn2 = 0x1234;
 int32_t g_classIdToReturn4 = 0x123456;
 
 template <class T>
-std::shared_ptr<T> duplicate(const std::shared_ptr<T>& orig) {
+std::shared_ptr<T> duplicate(const std::shared_ptr<T> &orig) {
   std::shared_ptr<T> result;
   auto dout = getHelper()->getCache()->createDataOutput();
   dout.writeObject(orig);
 
   size_t length = 0;
-  auto&& buffer = dout.getBuffer(&length);
+  auto &&buffer = dout.getBuffer(&length);
   auto din = getHelper()->getCache()->createDataInput(buffer, length);
   din.readObject(result);
 
@@ -78,18 +78,18 @@ class OtherType : public DataSerializable {
     m_struct.d = 0;
   }
 
-  void toData(DataOutput& output) const override {
+  void toData(DataOutput &output) const override {
     // TODO: refactor - this insane
-    output.writeBytes(reinterpret_cast<const uint8_t*>(&m_struct),
+    output.writeBytes(reinterpret_cast<const uint8_t *>(&m_struct),
                       sizeof(CData));
     output.writeInt(m_classIdToReturn);
   }
 
   size_t objectSize() const override { return sizeof(CData); }
 
-  void fromData(DataInput& input) override {
+  void fromData(DataInput &input) override {
     int32_t size = input.readArrayLength();
-    input.readBytesOnly(reinterpret_cast<uint8_t*>(&m_struct), size);
+    input.readBytesOnly(reinterpret_cast<uint8_t *>(&m_struct), size);
     m_classIdToReturn = input.readInt32();
   }
 
@@ -173,7 +173,7 @@ DUNIT_TASK(Sender, SendCT)
     for (int32_t i = 0; i < 30; i += 3) {
       try {
         regionPtr->put(i, OtherType::uniqueCT(i));
-      } catch (const apache::geode::client::TimeoutException&) {
+      } catch (const apache::geode::client::TimeoutException &) {
       }
     }
   }

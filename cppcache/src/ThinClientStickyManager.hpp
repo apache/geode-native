@@ -20,11 +20,13 @@
  * limitations under the License.
  */
 
-#include "TssConnectionWrapper.hpp"
 #include <algorithm>
-#include <vector>
 #include <set>
+#include <vector>
+
 #include <ace/Recursive_Thread_Mutex.h>
+
+#include "TssConnectionWrapper.hpp"
 namespace apache {
 namespace geode {
 namespace client {

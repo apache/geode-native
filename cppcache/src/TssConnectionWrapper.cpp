@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 #include "TssConnectionWrapper.hpp"
+
 #include "TcrConnection.hpp"
 #include "ThinClientPoolDM.hpp"
 namespace apache {

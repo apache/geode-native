@@ -16,10 +16,11 @@
  */
 
 #include "RemoteQueryService.hpp"
+
 #include "CacheImpl.hpp"
-#include "RemoteQuery.hpp"
-#include "ReadWriteLock.hpp"
 #include "CqServiceVsdStats.hpp"
+#include "ReadWriteLock.hpp"
+#include "RemoteQuery.hpp"
 #include "ThinClientPoolDM.hpp"
 #include "UserAttributes.hpp"
 #include "statistics/StatisticsManager.hpp"

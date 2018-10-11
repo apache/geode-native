@@ -14,16 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <geode/FunctionService.hpp>
+#include <geode/AuthenticatedView.hpp>
 #include <geode/ExceptionTypes.hpp>
+#include <geode/FunctionService.hpp>
 #include <geode/PoolManager.hpp>
 
+#include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
+#include "ExecutionImpl.hpp"
 #include "ProxyRegion.hpp"
 #include "UserAttributes.hpp"
-#include <geode/AuthenticatedView.hpp>
-#include "ExecutionImpl.hpp"
-#include "CacheImpl.hpp"
 
 namespace apache {
 namespace geode {

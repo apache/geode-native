@@ -20,12 +20,12 @@
  * limitations under the License.
  */
 
-#include "internal/geode_globals.hpp"
-#include "Exception.hpp"
-#include "CqOperation.hpp"
-#include "Serializable.hpp"
-#include "CacheableKey.hpp"
 #include "CacheableBuiltins.hpp"
+#include "CacheableKey.hpp"
+#include "CqOperation.hpp"
+#include "Exception.hpp"
+#include "Serializable.hpp"
+#include "internal/geode_globals.hpp"
 
 /**
  * @file

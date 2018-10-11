@@ -35,7 +35,7 @@
 #include <geode/Properties.hpp>
 
 #ifndef __COMPILE_DUNIT_
-#include "fwklib/FwkLog.hpp"
+#include <fwklib/FwkLog.hpp>
 #else
 #ifndef FWKINFO
 #define FWKINFO(x)
@@ -45,11 +45,11 @@
 #endif
 #endif
 
-#include "typedefs.hpp"
+#include <map>
 
 #include <ace/OS.h>
 
-#include <map>
+#include "typedefs.hpp"
 
 namespace apache {
 namespace geode {

@@ -21,6 +21,7 @@
 #define GEODE_VERSIONTAG_H_
 
 #include <geode/Serializable.hpp>
+
 #include "MemberListForVersionStamp.hpp"
 
 namespace apache {

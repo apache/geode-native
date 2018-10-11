@@ -16,18 +16,20 @@
  */
 
 #include "MapSegment.hpp"
+
+#include <mutex>
+
+#include <ace/OS.h>
+
 #include "MapEntry.hpp"
-#include "TrackedMapEntry.hpp"
 #include "RegionInternal.hpp"
 #include "TableOfPrimes.hpp"
-#include "Utils.hpp"
 #include "ThinClientPoolDM.hpp"
 #include "ThinClientRegion.hpp"
 #include "TombstoneExpiryHandler.hpp"
-#include <ace/OS.h>
+#include "TrackedMapEntry.hpp"
+#include "Utils.hpp"
 #include "ace/Time_Value.h"
-
-#include <mutex>
 #include "util/concurrent/spinlock_mutex.hpp"
 
 namespace apache {

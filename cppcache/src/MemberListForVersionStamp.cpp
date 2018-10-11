@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 #include "MemberListForVersionStamp.hpp"
+
 #include "util/Log.hpp"
 
 namespace apache {

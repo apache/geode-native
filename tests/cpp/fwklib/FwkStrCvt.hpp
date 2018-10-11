@@ -28,9 +28,9 @@
 
 #include <string>
 
-#include "ace/OS.h"
-
 #include <geode/internal/geode_globals.hpp>
+
+#include "ace/OS.h"
 
 // ----------------------------------------------------------------------------
 

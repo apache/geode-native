@@ -20,20 +20,20 @@
 #ifndef GEODE_CLIENTMETADATA_H_
 #define GEODE_CLIENTMETADATA_H_
 
-#include <vector>
 #include <map>
+#include <vector>
 
 #include <ace/ACE.h>
 #include <ace/Recursive_Thread_Mutex.h>
 
 #include <geode/PartitionResolver.hpp>
 
-#include "util/Log.hpp"
-#include "ServerLocation.hpp"
 #include "BucketServerLocation.hpp"
-#include "ReadWriteLock.hpp"
 #include "FixedPartitionAttributesImpl.hpp"
 #include "NonCopyable.hpp"
+#include "ReadWriteLock.hpp"
+#include "ServerLocation.hpp"
+#include "util/Log.hpp"
 
 /*Stores the information such as partition attributes and meta data details*/
 

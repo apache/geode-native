@@ -20,12 +20,12 @@
 #ifndef GEODE_EXCEPTION_H_
 #define GEODE_EXCEPTION_H_
 
-#include <string>
 #include <stdexcept>
+#include <string>
 #include <unordered_map>
 
-#include "internal/geode_globals.hpp"
 #include "internal/functional.hpp"
+#include "internal/geode_globals.hpp"
 
 namespace apache {
 namespace geode {

@@ -24,16 +24,15 @@
 #include <gtest/gtest.h>
 
 #include <geode/Cache.hpp>
+#include <geode/PdxInstanceFactory.hpp>
 #include <geode/PoolManager.hpp>
 #include <geode/RegionFactory.hpp>
 #include <geode/RegionShortcut.hpp>
 #include <geode/TypeRegistry.hpp>
-#include <geode/PdxInstanceFactory.hpp>
 
-#include <PdxType.hpp>
-#include <NestedPdxObject.hpp>
-#include <LocalRegion.hpp>
-
+#include "LocalRegion.hpp"
+#include "NestedPdxObject.hpp"
+#include "PdxType.hpp"
 #include "framework/Cluster.h"
 #include "framework/Gfsh.h"
 

@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-#include <gtest/gtest.h>
-
 #include <ClientConnectionResponse.hpp>
 #include <DataInputInternal.hpp>
 #include <DataOutputInternal.hpp>
+
+#include <gtest/gtest.h>
 
 using apache::geode::client::ClientConnectionResponse;
 using apache::geode::client::DataInputInternal;

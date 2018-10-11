@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 #include "ThinClientStickyManager.hpp"
+
 #include "ThinClientPoolDM.hpp"
 namespace apache {
 namespace geode {

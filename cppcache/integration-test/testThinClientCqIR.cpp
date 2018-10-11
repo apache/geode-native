@@ -48,7 +48,7 @@ using apache::geode::client::Exception;
 using apache::geode::client::IllegalStateException;
 using apache::geode::client::QueryService;
 
-const char* cqName = "MyCq";
+const char *cqName = "MyCq";
 
 void initClientCq(const bool isthinClient) {
   if (cacheHelper == nullptr) {
@@ -69,11 +69,11 @@ void initClientCq(const bool isthinClient) {
         PositionPdx::createDeserializable);
     serializationRegistry->addPdxSerializableType(
         PortfolioPdx::createDeserializable);
-  } catch (const IllegalStateException&) {
+  } catch (const IllegalStateException &) {
     // ignore exception
   }
 }
-const char* regionNamesCq[] = {"Portfolios", "Positions", "Portfolios2",
+const char *regionNamesCq[] = {"Portfolios", "Positions", "Portfolios2",
                                "Portfolios3"};
 
 DUNIT_TASK_DEFINITION(SERVER1, CreateLocator)
@@ -129,7 +129,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, PopulateData)
     auto subregPtr0 = regPtr0->getSubregion(regionNamesCq[1]);
     auto regPtr1 = getHelper()->getRegion(regionNamesCq[2]);
 
-    QueryHelper* qh = &QueryHelper::getHelper();
+    QueryHelper *qh = &QueryHelper::getHelper();
 
     qh->populatePortfolioPdxData(regPtr0, 30, 20, 20);
     qh->populatePortfolioPdxData(regPtr1, 30, 20, 20);
@@ -143,7 +143,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, PutData)
     auto regPtr0 = getHelper()->getRegion(regionNamesCq[0]);
     auto subregPtr0 = regPtr0->getSubregion(regionNamesCq[1]);
 
-    QueryHelper* qh = &QueryHelper::getHelper();
+    QueryHelper *qh = &QueryHelper::getHelper();
     qh->populatePortfolioPdxData(regPtr0, 150, 40, 150);
     qh->populatePositionPdxData(subregPtr0, 150, 40);
 
@@ -190,7 +190,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, QueryData)
       sprintf(buf, "results size=%zd", count);
       LOG(buf);
       ASSERT(count > 0, "count should be > 0");
-      for (auto&& ser : hacks::range(*results)) {
+      for (auto &&ser : hacks::range(*results)) {
         count--;
 
         if (ser) {
@@ -231,7 +231,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, QueryData)
       sprintf(buf, "results2 size=%zd", count);
       LOG(buf);
       ASSERT(count > 0, "count should be > 0");
-      for (auto&& ser : hacks::range(*results)) {
+      for (auto &&ser : hacks::range(*results)) {
         count--;
 
         if (ser) {
@@ -270,7 +270,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, QueryData)
       qry = qs->getCq(cqName);
       sprintf(buf, "cq[%s] should have been removed after close!", cqName);
       ASSERT(qry == nullptr, buf);
-    } catch (const Exception& excp) {
+    } catch (const Exception &excp) {
       std::string logmsg = "";
       logmsg += excp.getName();
       logmsg += ": ";

@@ -31,7 +31,7 @@ using apache::geode::client::Properties;
 using apache::geode::client::SystemProperties;
 
 bool checkSecurityProperties(std::shared_ptr<Properties> securityProperties,
-                             const char* key, const char* value) {
+                             const char *key, const char *value) {
   bool flag;
   if (key == nullptr || value == nullptr) {
     return false;
@@ -46,18 +46,18 @@ bool checkSecurityProperties(std::shared_ptr<Properties> securityProperties,
 
 BEGIN_TEST(DEFAULT)
   {
-    SystemProperties* systemProperties =
+    SystemProperties *systemProperties =
         new SystemProperties(nullptr, "./non-existent");
     ASSERT(
         systemProperties->statisticsSampleInterval() == std::chrono::seconds(1),
         "expected 1");
     ASSERT(systemProperties->statisticsEnabled() == true, "expected true");
     LOG(systemProperties->statisticsArchiveFile());
-    auto&& statisticsArchiveFileName =
+    auto &&statisticsArchiveFileName =
         systemProperties->statisticsArchiveFile();
     ASSERT(statisticsArchiveFileName == "statArchive.gfs",
            "Expected statisticsArchiveFileName == \"statArchive.gfs\"");
-    auto&& logLevel = Log::levelToChars(systemProperties->logLevel());
+    auto &&logLevel = Log::levelToChars(systemProperties->logLevel());
     ASSERT_STREQ("config", logLevel);
     delete systemProperties;
   }
@@ -73,7 +73,7 @@ BEGIN_TEST(NEW_CONFIG)
     // Make sure product can at least log to stdout.
     Log::init(LogLevel::Config, nullptr, 0);
 
-    SystemProperties* systemProperties =
+    SystemProperties *systemProperties =
         new SystemProperties(nullptr, filePath);
 
     ASSERT(systemProperties->statisticsSampleInterval() ==
@@ -85,17 +85,17 @@ BEGIN_TEST(NEW_CONFIG)
     ASSERT(systemProperties->threadPoolSize() == 96,
            "max-fe-thread should be 96");
 
-    auto&& statisticsArchiveFileName =
+    auto &&statisticsArchiveFileName =
         systemProperties->statisticsArchiveFile();
     ASSERT1(statisticsArchiveFileName == "stats.gfs");
 
-    auto&& logFilename = systemProperties->logFilename();
+    auto &&logFilename = systemProperties->logFilename();
     ASSERT1(logFilename == "geode-native.log");
 
-    auto&& name = systemProperties->name();
+    auto &&name = systemProperties->name();
     ASSERT1(name == "system");
 
-    auto&& cacheXMLFileName = systemProperties->cacheXMLFile();
+    auto &&cacheXMLFileName = systemProperties->cacheXMLFile();
     ASSERT1(cacheXMLFileName == "cache.xml");
 
     ASSERT(systemProperties->pingInterval() == std::chrono::seconds(123),
@@ -120,7 +120,7 @@ BEGIN_TEST(NEW_CONFIG)
     ASSERT(systemProperties->statsFileSizeLimit() == 1024000000,
            "expected 1024000000");
 
-    auto&& durableId = systemProperties->durableClientId();
+    auto &&durableId = systemProperties->durableClientId();
     ASSERT1(durableId == "testDurableId");
 
     ASSERT(systemProperties->durableTimeout() == std::chrono::seconds(123),

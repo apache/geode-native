@@ -19,12 +19,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include <string>
+
 #include <ace/DLL.h>
 #include <ace/OS.h>
-#include <string>
+#include <ace/Recursive_Thread_Mutex.h>
+
 #include <geode/CacheableBuiltins.hpp>
 #include <geode/Properties.hpp>
-#include <ace/Recursive_Thread_Mutex.h>
 
 #define DH_ERR_NO_ERROR 0
 #define DH_ERR_UNSUPPORTED_ALGO 1

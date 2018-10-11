@@ -20,7 +20,7 @@
 
 class ThreadAcquire : public ACE_Task_Base {
  public:
-  ThreadAcquire(ACE_Thread_Semaphore& sema, int acquireSecs)
+  ThreadAcquire(ACE_Thread_Semaphore &sema, int acquireSecs)
       : ACE_Task_Base(),
         m_sema(sema),
         m_acquireSecs(acquireSecs),
@@ -48,7 +48,7 @@ class ThreadAcquire : public ACE_Task_Base {
   int getStatus() { return m_status; }
 
  private:
-  ACE_Thread_Semaphore& m_sema;
+  ACE_Thread_Semaphore &m_sema;
   int m_acquireSecs;
   int m_status;
 };
@@ -56,7 +56,7 @@ class ThreadAcquire : public ACE_Task_Base {
 BEGIN_TEST(CheckTimedAcquire)
   {
     ACE_Thread_Semaphore sema(1);
-    ThreadAcquire* thread = new ThreadAcquire(sema, 10);
+    ThreadAcquire *thread = new ThreadAcquire(sema, 10);
 
     sema.acquire();
     thread->activate();
@@ -77,7 +77,7 @@ END_TEST(CheckTimedAcquire)
 BEGIN_TEST(CheckTimedAcquireFail)
   {
     ACE_Thread_Semaphore sema(0);
-    ThreadAcquire* thread = new ThreadAcquire(sema, 10);
+    ThreadAcquire *thread = new ThreadAcquire(sema, 10);
 
     thread->activate();
 
@@ -97,7 +97,7 @@ END_TEST(CheckTimedAcquireFail)
 BEGIN_TEST(CheckNoWait)
   {
     ACE_Thread_Semaphore sema(0);
-    ThreadAcquire* thread = new ThreadAcquire(sema, 10);
+    ThreadAcquire *thread = new ThreadAcquire(sema, 10);
 
     sema.release();
     thread->activate();
@@ -114,7 +114,7 @@ END_TEST(CheckNoWait)
 BEGIN_TEST(CheckResetAndTimedAcquire)
   {
     ACE_Thread_Semaphore sema(1);
-    ThreadAcquire* thread = new ThreadAcquire(sema, 10);
+    ThreadAcquire *thread = new ThreadAcquire(sema, 10);
 
     sema.acquire();
     ACE_OS::sleep(1);

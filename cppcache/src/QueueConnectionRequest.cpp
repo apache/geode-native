@@ -16,6 +16,7 @@
  */
 
 #include "QueueConnectionRequest.hpp"
+
 #include <geode/DataInput.hpp>
 #include <geode/DataOutput.hpp>
 

@@ -16,20 +16,23 @@
  */
 
 #include "ThinClientLocatorHelper.hpp"
-#include "TcpSslConn.hpp"
-#include <geode/SystemProperties.hpp>
-#include "ClientConnectionRequest.hpp"
-#include "ClientReplacementRequest.hpp"
-#include "ClientConnectionResponse.hpp"
-#include <geode/DataOutput.hpp>
+
+#include <algorithm>
+#include <set>
+
 #include <geode/DataInput.hpp>
+#include <geode/DataOutput.hpp>
+#include <geode/SystemProperties.hpp>
+
+#include "ClientConnectionRequest.hpp"
+#include "ClientConnectionResponse.hpp"
+#include "ClientReplacementRequest.hpp"
+#include "LocatorListRequest.hpp"
+#include "LocatorListResponse.hpp"
 #include "QueueConnectionRequest.hpp"
 #include "QueueConnectionResponse.hpp"
+#include "TcpSslConn.hpp"
 #include "ThinClientPoolDM.hpp"
-#include "LocatorListResponse.hpp"
-#include "LocatorListRequest.hpp"
-#include <set>
-#include <algorithm>
 namespace apache {
 namespace geode {
 namespace client {

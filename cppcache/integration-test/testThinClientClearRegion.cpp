@@ -31,7 +31,7 @@ class MyCacheWriter : public CacheWriter {
 
  public:
   MyCacheWriter() : m_clear(0) {}
-  bool beforeRegionClear(const RegionEvent&) override {
+  bool beforeRegionClear(const RegionEvent &) override {
     LOG("beforeRegionClear called");
     m_clear++;
     return true;
@@ -43,7 +43,7 @@ class MyCacheListener : public CacheListener {
 
  public:
   MyCacheListener() : m_clear(0) {}
-  void afterRegionClear(const RegionEvent&) override {
+  void afterRegionClear(const RegionEvent &) override {
     LOG("afterRegionClear called");
     m_clear++;
   }
@@ -53,7 +53,7 @@ class MyCacheListener : public CacheListener {
 static int numberOfLocators = 1;
 bool isLocalServer = true;
 bool isLocator = true;
-const char* locHostPort =
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 
 DUNIT_TASK(SERVER1, StartServer)

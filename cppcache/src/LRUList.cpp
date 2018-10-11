@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
+#include "LRUList.hpp"
+
 #include <mutex>
 
-#include "LRUList.hpp"
-#include "util/concurrent/spinlock_mutex.hpp"
 #include "Assert.hpp"
+#include "util/concurrent/spinlock_mutex.hpp"
 
 namespace apache {
 namespace geode {

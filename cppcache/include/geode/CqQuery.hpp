@@ -22,13 +22,12 @@
 
 #include <chrono>
 
-#include "internal/geode_globals.hpp"
-
-#include "CqResults.hpp"
-#include "CqStatistics.hpp"
 #include "CqAttributes.hpp"
 #include "CqAttributesMutator.hpp"
+#include "CqResults.hpp"
 #include "CqState.hpp"
+#include "CqStatistics.hpp"
+#include "internal/geode_globals.hpp"
 
 /**
  * @file

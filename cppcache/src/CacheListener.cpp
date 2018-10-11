@@ -16,8 +16,8 @@
  */
 
 #include <geode/CacheListener.hpp>
-#include <geode/Region.hpp>
 #include <geode/EntryEvent.hpp>
+#include <geode/Region.hpp>
 #include <geode/RegionEvent.hpp>
 
 namespace apache {

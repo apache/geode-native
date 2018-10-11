@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-#include <geode/internal/geode_globals.hpp>
-
 #include "PoolStatistics.hpp"
+
+#include <geode/internal/geode_globals.hpp>
 //#include "StatisticsFactory.hpp"
 
-#include <ace/Singleton.h>
-
 #include <mutex>
+
+#include <ace/Singleton.h>
 
 #include "util/concurrent/spinlock_mutex.hpp"
 

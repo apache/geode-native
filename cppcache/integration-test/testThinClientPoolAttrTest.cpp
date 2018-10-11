@@ -35,13 +35,13 @@ using apache::geode::client::IllegalStateException;
 bool isLocalServer = false;
 bool isLocator = false;
 
-const char* locHostPort =
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
-const char* poolRegNames[] = {"PoolRegion1"};
-const char* poolName = "__TEST_POOL1__";
-const char* poolName1 = "clientPool";
+const char *poolRegNames[] = {"PoolRegion1"};
+const char *poolName = "__TEST_POOL1__";
+const char *poolName1 = "clientPool";
 
-const char* serverGroup = "ServerGroup1";
+const char *serverGroup = "ServerGroup1";
 std::shared_ptr<Cache> cachePtr;
 
 class putThread : public ACE_Task_Base {
@@ -49,7 +49,7 @@ class putThread : public ACE_Task_Base {
   std::shared_ptr<Region> regPtr;
 
  public:
-  explicit putThread(const char* name) : regPtr(getHelper()->getRegion(name)) {}
+  explicit putThread(const char *name) : regPtr(getHelper()->getRegion(name)) {}
 
   int svc(void) {
     // TODO: No. of connection should be = minConnection
@@ -57,7 +57,7 @@ class putThread : public ACE_Task_Base {
     for (int i = 0; i < 10000; i++) {
       try {
         regPtr->put(keys[i % 5], vals[i % 6]);
-      } catch (const Exception&) {
+      } catch (const Exception &) {
         // ignore
       } catch (...) {
         // ignore
@@ -71,7 +71,7 @@ class putThread : public ACE_Task_Base {
   void stop() { wait(); }
 };
 
-void doAttrTestingAndCreatePool(const char* poolName) {
+void doAttrTestingAndCreatePool(const char *poolName) {
   auto poolFac = getHelper()->getCache()->getPoolManager().createFactory();
   poolFac.setFreeConnectionTimeout(std::chrono::milliseconds(10000));
   poolFac.setLoadConditioningInterval(std::chrono::milliseconds(60000));
@@ -136,7 +136,7 @@ void doAttrTestingAndCreatePool(const char* poolName) {
          "PRSingleHopEnabled should have been false");
 }
 
-void doAttrTesting(const char* poolName1) {
+void doAttrTesting(const char *poolName1) {
   // auto poolFacPtr = cachePtr->getPoolFactory();
   auto pptr = getHelper()->getCache()->getPoolManager().find(poolName1);
   // auto pptr = poolFacPtr->find(poolName1);
@@ -213,7 +213,7 @@ DUNIT_TASK(CLIENT1, StartC1)
     try {
       auto pptr = poolFac.create(poolName);
       FAIL("Pool creation with same name should fail");
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       LOG("OK:Pool creation with same name should fail");
     } catch (...) {
       FAIL("Pool creation with same name should fail");
@@ -243,7 +243,7 @@ DUNIT_TASK(CLIENT2, StartC2)
                      .find("clientPoolMultiUser")
                      ->getMultiuserAuthentication() == true,
              "MultiUser secure mode should be true for Pool");
-    } catch (const Exception& excp) {
+    } catch (const Exception &excp) {
       LOG("Exception during client 2 XML creation");
       LOG(excp.what());
     }
@@ -272,7 +272,7 @@ DUNIT_TASK(CLIENT1, ClientOp)
             min, level);
     ASSERT(level == min, logmsg);
 
-    putThread* threads[25];
+    putThread *threads[25];
     for (int thdIdx = 0; thdIdx < 10; thdIdx++) {
       threads[thdIdx] = new putThread(poolRegNames[0]);
       threads[thdIdx]->start();

@@ -21,7 +21,6 @@
  */
 
 #include "DeltaTestImpl.hpp"
-
 #include "testobject_export.h"
 
 using namespace apache::geode::client;

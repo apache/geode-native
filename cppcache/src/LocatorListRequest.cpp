@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 #include "LocatorListRequest.hpp"
+
+#include <geode/CacheableString.hpp>
 #include <geode/DataInput.hpp>
 #include <geode/DataOutput.hpp>
-#include <geode/CacheableString.hpp>
 
 namespace apache {
 namespace geode {

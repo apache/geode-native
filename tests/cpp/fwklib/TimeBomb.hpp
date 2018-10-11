@@ -20,11 +20,12 @@
  * limitations under the License.
  */
 
-#include "fwklib/FwkLog.hpp"
+#include <fwklib/FwkLog.hpp>
 
-#include <ace/Time_Value.h>
-#include "ace/Task.h"
 #include <ace/OS.h>
+#include <ace/Time_Value.h>
+
+#include "ace/Task.h"
 
 namespace apache {
 namespace geode {

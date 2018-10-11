@@ -15,11 +15,14 @@
  * limitations under the License.
  */
 #include "ClientMetadata.hpp"
-#include "Utils.hpp"
-#include "ThinClientPoolDM.hpp"
-#include <cstdlib>
+
 #include <climits>
+#include <cstdlib>
+
 #include <ace/OS.h>
+
+#include "ThinClientPoolDM.hpp"
+#include "Utils.hpp"
 
 namespace apache {
 namespace geode {

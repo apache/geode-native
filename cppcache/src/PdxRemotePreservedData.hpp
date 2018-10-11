@@ -22,8 +22,8 @@
 
 #include <vector>
 
-#include <geode/Serializable.hpp>
 #include <geode/PdxUnreadFields.hpp>
+#include <geode/Serializable.hpp>
 
 #include "ExpiryTaskManager.hpp"
 

@@ -21,16 +21,16 @@
 #define GEODE_TESTOBJECT_EQSTRUCT_H_
 
 #include <inttypes.h>
+
+#include <fwklib/FwkException.hpp>
 #include <string>
 
 #include <ace/ACE.h>
 #include <ace/OS.h>
 #include <ace/Time_Value.h>
 
-#include <fwklib/FwkException.hpp>
-
-#include "testobject_export.h"
 #include "TimestampedObject.hpp"
+#include "testobject_export.h"
 
 namespace testobject {
 

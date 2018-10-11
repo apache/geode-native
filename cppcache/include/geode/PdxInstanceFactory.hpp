@@ -22,11 +22,11 @@
 
 #include <map>
 
-#include "PdxInstance.hpp"
-#include "internal/geode_globals.hpp"
 #include "CacheableBuiltins.hpp"
 #include "CacheableDate.hpp"
 #include "CacheableObjectArray.hpp"
+#include "PdxInstance.hpp"
+#include "internal/geode_globals.hpp"
 
 namespace apache {
 namespace geode {

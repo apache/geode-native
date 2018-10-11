@@ -20,9 +20,9 @@
 #ifndef GEODE_PDXSERIALIZER_H_
 #define GEODE_PDXSERIALIZER_H_
 
-#include "Serializable.hpp"
 #include "PdxReader.hpp"
 #include "PdxWriter.hpp"
+#include "Serializable.hpp"
 
 namespace apache {
 namespace geode {

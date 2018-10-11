@@ -20,8 +20,8 @@
 #ifndef GEODE_INTERNALCACHETRANSACTIONMANAGER2PCIMPL_H_
 #define GEODE_INTERNALCACHETRANSACTIONMANAGER2PCIMPL_H_
 
-#include "InternalCacheTransactionManager2PC.hpp"
 #include "CacheTransactionManagerImpl.hpp"
+#include "InternalCacheTransactionManager2PC.hpp"
 
 namespace apache {
 namespace geode {

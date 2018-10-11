@@ -17,14 +17,14 @@
 
 #pragma once
 
-#include <typeinfo>
-#include <typeindex>
-
 #ifndef GEODE_DATASERIALIZABLE_H_
 #define GEODE_DATASERIALIZABLE_H_
 
-#include "internal/geode_globals.hpp"
+#include <typeindex>
+#include <typeinfo>
+
 #include "Serializable.hpp"
+#include "internal/geode_globals.hpp"
 
 namespace apache {
 namespace geode {

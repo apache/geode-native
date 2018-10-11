@@ -20,8 +20,10 @@
  * limitations under the License.
  */
 
-#include <geode/internal/geode_globals.hpp>
 #include <memory>
+
+#include <geode/internal/geode_globals.hpp>
+
 #include "ThinClientDistributionManager.hpp"
 
 namespace apache {

@@ -236,22 +236,22 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, CheckUpdateBug1001)
   {
     try {
-      const wchar_t* str = L"Pivotal";
+      const wchar_t *str = L"Pivotal";
       auto lCStringP = CacheableString::create(str);
       lCStringP->value();
-    } catch (const Exception& geodeExcp) {
+    } catch (const Exception &geodeExcp) {
       printf("%s: %s", geodeExcp.getName().c_str(), geodeExcp.what());
       FAIL("Should not have got exception.");
     }
 
     try {
-      const wchar_t* str =
+      const wchar_t *str =
           L"Pivotal\\u7b2c"
           "17"
           "\\u53f7";
       auto lCStringP = CacheableString::create(str);
       lCStringP->value();
-    } catch (const Exception& geodeExcp) {
+    } catch (const Exception &geodeExcp) {
       printf("%s: %s", geodeExcp.getName().c_str(), geodeExcp.what());
       FAIL("Should not have got exception.");
     }

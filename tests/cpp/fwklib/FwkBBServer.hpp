@@ -27,13 +27,13 @@
  * @see
  */
 
-#include "FwkBB.hpp"
-#include "UDPIpc.hpp"
-
-#include <string>
 #include <map>
+#include <string>
 
 #include <ace/OS.h>
+
+#include "FwkBB.hpp"
+#include "UDPIpc.hpp"
 
 // ----------------------------------------------------------------------------
 

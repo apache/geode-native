@@ -24,14 +24,14 @@
  * @file
  */
 
-#include <string>
 #include <memory>
+#include <string>
 #include <unordered_map>
 
-#include "internal/geode_globals.hpp"
+#include "CacheableKey.hpp"
 #include "internal/DataSerializablePrimitive.hpp"
 #include "internal/chrono/duration.hpp"
-#include "CacheableKey.hpp"
+#include "internal/geode_globals.hpp"
 
 namespace apache {
 namespace geode {

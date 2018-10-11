@@ -15,16 +15,17 @@
  * limitations under the License.
  */
 
+#include "CacheXmlParser.hpp"
+
 #include <chrono>
 
-#include <geode/internal/chrono/duration.hpp>
-#include <geode/PoolManager.hpp>
 #include <geode/PoolFactory.hpp>
+#include <geode/PoolManager.hpp>
+#include <geode/internal/chrono/duration.hpp>
 
-#include "CacheXmlParser.hpp"
-#include "CacheRegionHelper.hpp"
 #include "AutoDelete.hpp"
 #include "CacheImpl.hpp"
+#include "CacheRegionHelper.hpp"
 
 #if defined(_WIN32)
 #include <windows.h>

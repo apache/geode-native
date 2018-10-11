@@ -15,26 +15,27 @@
  * limitations under the License.
  */
 
+#include "TcrConnection.hpp"
+
 #include <memory.h>
 
 #include <ace/INET_Addr.h>
 #include <ace/OS.h>
 
-#include <geode/SystemProperties.hpp>
 #include <geode/AuthInitialize.hpp>
+#include <geode/SystemProperties.hpp>
 
-#include "TcrConnection.hpp"
-#include "Connector.hpp"
-#include "TcpSslConn.hpp"
 #include "ClientProxyMembershipID.hpp"
-#include "ThinClientPoolHADM.hpp"
-#include "TcrEndpoint.hpp"
-#include "TcrConnectionManager.hpp"
-#include "DistributedSystemImpl.hpp"
-#include "Version.hpp"
+#include "Connector.hpp"
 #include "DiffieHellman.hpp"
-#include "Utils.hpp"
+#include "DistributedSystemImpl.hpp"
+#include "TcpSslConn.hpp"
+#include "TcrConnectionManager.hpp"
+#include "TcrEndpoint.hpp"
+#include "ThinClientPoolHADM.hpp"
 #include "ThinClientRegion.hpp"
+#include "Utils.hpp"
+#include "Version.hpp"
 
 namespace apache {
 namespace geode {

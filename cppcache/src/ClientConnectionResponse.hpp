@@ -20,9 +20,10 @@
 #ifndef GEODE_CLIENTCONNECTIONRESPONSE_H_
 #define GEODE_CLIENTCONNECTIONRESPONSE_H_
 
-#include "ServerLocationResponse.hpp"
-#include "ServerLocation.hpp"
 #include <memory>
+
+#include "ServerLocation.hpp"
+#include "ServerLocationResponse.hpp"
 
 namespace apache {
 namespace geode {

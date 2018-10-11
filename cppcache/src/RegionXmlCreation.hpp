@@ -22,11 +22,13 @@
 
 #include <string>
 #include <vector>
-#include <geode/internal/geode_globals.hpp>
+
 #include <geode/ExceptionTypes.hpp>
 #include <geode/Region.hpp>
-#include "RegionXmlCreation.hpp"
 #include <geode/RegionAttributes.hpp>
+#include <geode/internal/geode_globals.hpp>
+
+#include "RegionXmlCreation.hpp"
 
 namespace apache {
 namespace geode {

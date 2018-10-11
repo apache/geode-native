@@ -20,11 +20,12 @@
  * limitations under the License.
  */
 
-#include <geode/internal/geode_globals.hpp>
 #include <geode/Cache.hpp>
 #include <geode/PersistenceManager.hpp>
-#include "MapEntry.hpp"
+#include <geode/internal/geode_globals.hpp>
+
 #include "CacheableToken.hpp"
+#include "MapEntry.hpp"
 #include "RegionInternal.hpp"
 #include "Utils.hpp"
 

@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-#include <gtest/gtest.h>
-
 #include <AutoDelete.hpp>
+
+#include <gtest/gtest.h>
 
 namespace {
 class TestSharedBase {

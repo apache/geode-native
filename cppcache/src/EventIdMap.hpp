@@ -23,13 +23,13 @@
 #include <functional>
 #include <memory>
 #include <unordered_map>
-#include <vector>
 #include <utility>
+#include <vector>
 
 #include <ace/ACE.h>
-#include <ace/Time_Value.h>
-#include <ace/Recursive_Thread_Mutex.h>
 #include <ace/Guard_T.h>
+#include <ace/Recursive_Thread_Mutex.h>
+#include <ace/Time_Value.h>
 
 #include <geode/internal/functional.hpp>
 

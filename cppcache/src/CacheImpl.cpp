@@ -14,36 +14,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include "CacheImpl.hpp"
+
 #include <string>
 
 #include <ace/OS.h>
+
 #include <geode/CacheStatistics.hpp>
-#include <geode/PoolManager.hpp>
-#include <geode/SystemProperties.hpp>
+#include <geode/PersistenceManager.hpp>
 #include <geode/PoolManager.hpp>
 #include <geode/RegionAttributes.hpp>
-#include <geode/PersistenceManager.hpp>
 #include <geode/RegionFactory.hpp>
+#include <geode/SystemProperties.hpp>
 
-#include "CacheImpl.hpp"
-#include "Utils.hpp"
-#include "LocalRegion.hpp"
-#include "ExpiryTaskManager.hpp"
-#include "RegionExpiryHandler.hpp"
-#include "TcrMessage.hpp"
-#include "ThinClientRegion.hpp"
-#include "ThinClientHARegion.hpp"
-#include "ThinClientPoolRegion.hpp"
-#include "ThinClientPoolDM.hpp"
-#include "Version.hpp"
-#include "ClientProxyMembershipID.hpp"
 #include "AutoDelete.hpp"
-#include "ThinClientPoolHADM.hpp"
-#include "InternalCacheTransactionManager2PCImpl.hpp"
-#include "PdxTypeRegistry.hpp"
-#include "SerializationRegistry.hpp"
-#include "ThreadPool.hpp"
 #include "CacheXmlParser.hpp"
+#include "ClientProxyMembershipID.hpp"
+#include "ExpiryTaskManager.hpp"
+#include "InternalCacheTransactionManager2PCImpl.hpp"
+#include "LocalRegion.hpp"
+#include "PdxTypeRegistry.hpp"
+#include "RegionExpiryHandler.hpp"
+#include "SerializationRegistry.hpp"
+#include "TcrMessage.hpp"
+#include "ThinClientHARegion.hpp"
+#include "ThinClientPoolDM.hpp"
+#include "ThinClientPoolHADM.hpp"
+#include "ThinClientPoolRegion.hpp"
+#include "ThinClientRegion.hpp"
+#include "ThreadPool.hpp"
+#include "Utils.hpp"
+#include "Version.hpp"
 
 #define DEFAULT_DS_NAME "default_GeodeDS"
 

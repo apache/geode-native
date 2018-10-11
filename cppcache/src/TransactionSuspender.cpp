@@ -22,6 +22,7 @@
  */
 
 #include "TransactionSuspender.hpp"
+
 #include "TSSTXStateWrapper.hpp"
 
 namespace apache {

@@ -22,10 +22,12 @@
  */
 
 #include "PdxWriterWithTypeCollector.hpp"
-#include "PdxType.hpp"
-#include "PdxHelper.hpp"
-#include "PdxTypes.hpp"
+
 #include <geode/PdxFieldTypes.hpp>
+
+#include "PdxHelper.hpp"
+#include "PdxType.hpp"
+#include "PdxTypes.hpp"
 
 namespace apache {
 namespace geode {

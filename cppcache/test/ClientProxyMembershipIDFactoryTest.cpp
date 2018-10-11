@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
+#include <ClientProxyMembershipIDFactory.hpp>
 #include <regex>
 
 #include <gtest/gtest.h>
-
-#include <ClientProxyMembershipIDFactory.hpp>
 
 using apache::geode::client::ClientProxyMembershipIDFactory;
 

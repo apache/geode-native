@@ -24,10 +24,10 @@
  * @file
  */
 
-#include "internal/geode_globals.hpp"
+#include "CacheableBuiltins.hpp"
 #include "ExceptionTypes.hpp"
 #include "Serializable.hpp"
-#include "CacheableBuiltins.hpp"
+#include "internal/geode_globals.hpp"
 
 namespace apache {
 namespace geode {

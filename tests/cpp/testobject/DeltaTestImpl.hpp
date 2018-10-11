@@ -21,14 +21,14 @@
 #define GEODE_TESTOBJECT_DELTATESTIMPL_H_
 
 #include <ace/ACE.h>
-#include <ace/OS.h>
-#include <ace/Task.h>
 #include <ace/Condition_T.h>
+#include <ace/OS.h>
 #include <ace/Recursive_Thread_Mutex.h>
+#include <ace/Task.h>
 #include <ace/Time_Value.h>
 
-#include <geode/Delta.hpp>
 #include <geode/DataSerializable.hpp>
+#include <geode/Delta.hpp>
 
 #include "TestObject1.hpp"
 #include "testobject_export.h"

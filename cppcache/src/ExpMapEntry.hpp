@@ -21,6 +21,7 @@
 #define GEODE_EXPMAPENTRY_H_
 
 #include <geode/internal/geode_globals.hpp>
+
 #include "MapEntry.hpp"
 #include "VersionStamp.hpp"
 

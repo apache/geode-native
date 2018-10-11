@@ -15,24 +15,24 @@
  * limitations under the License.
  */
 
-#include <string>
 #include <memory>
+#include <string>
 
-#include <geode/internal/geode_globals.hpp>
+#include <geode/AuthenticatedView.hpp>
 #include <geode/Cache.hpp>
 #include <geode/FunctionService.hpp>
-#include <geode/AuthenticatedView.hpp>
 #include <geode/PoolManager.hpp>
+#include <geode/internal/geode_globals.hpp>
 
-#include "DistributedSystemImpl.hpp"
-#include "CacheXmlParser.hpp"
-#include "CacheRegionHelper.hpp"
 #include "CacheImpl.hpp"
-#include "UserAttributes.hpp"
+#include "CacheRegionHelper.hpp"
+#include "CacheXmlParser.hpp"
+#include "DistributedSystemImpl.hpp"
+#include "FunctionServiceImpl.hpp"
 #include "ProxyRegion.hpp"
 #include "ProxyRemoteQueryService.hpp"
-#include "FunctionServiceImpl.hpp"
 #include "ThinClientPoolDM.hpp"
+#include "UserAttributes.hpp"
 
 namespace apache {
 namespace geode {

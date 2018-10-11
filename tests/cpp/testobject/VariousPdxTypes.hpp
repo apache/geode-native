@@ -21,9 +21,9 @@
 #define GEODE_TESTOBJECT_VARIOUSPDXTYPES_H_
 
 #include <geode/DataSerializable.hpp>
+#include <geode/PdxReader.hpp>
 #include <geode/PdxSerializable.hpp>
 #include <geode/PdxWriter.hpp>
-#include <geode/PdxReader.hpp>
 
 #include "testobject_export.h"
 

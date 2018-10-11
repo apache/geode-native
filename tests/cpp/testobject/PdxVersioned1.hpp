@@ -20,11 +20,12 @@
 #ifndef GEODE_TESTOBJECT_PDXVERSIONED1_H_
 #define GEODE_TESTOBJECT_PDXVERSIONED1_H_
 
-#include <geode/PdxSerializable.hpp>
+#include <fwklib/FwkExport.hpp>
+
 #include <geode/CacheableEnum.hpp>
-#include <geode/PdxWriter.hpp>
 #include <geode/PdxReader.hpp>
-#include "fwklib/FwkExport.hpp"
+#include <geode/PdxSerializable.hpp>
+#include <geode/PdxWriter.hpp>
 
 #include "testobject_export.h"
 

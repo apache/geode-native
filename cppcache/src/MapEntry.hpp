@@ -24,15 +24,15 @@
 #include <memory>
 #include <utility>
 
-#include <geode/internal/geode_globals.hpp>
-#include <geode/Serializable.hpp>
 #include <geode/CacheableKey.hpp>
 #include <geode/ExceptionTypes.hpp>
+#include <geode/Serializable.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 #include "CacheImpl.hpp"
+#include "CacheableToken.hpp"
 #include "ExpiryTaskManager.hpp"
 #include "RegionInternal.hpp"
-#include "CacheableToken.hpp"
 #include "VersionStamp.hpp"
 
 namespace apache {

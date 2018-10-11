@@ -20,21 +20,21 @@
 #ifndef GEODE_PDXTYPE_H_
 #define GEODE_PDXTYPE_H_
 
-#include <map>
-#include <vector>
 #include <list>
+#include <map>
 #include <string>
+#include <vector>
 
 #include <ace/ACE.h>
 #include <ace/Recursive_Thread_Mutex.h>
 
-#include <geode/Serializable.hpp>
 #include <geode/CacheableBuiltins.hpp>
 #include <geode/PdxFieldTypes.hpp>
+#include <geode/Serializable.hpp>
 
+#include "NonCopyable.hpp"
 #include "PdxFieldType.hpp"
 #include "ReadWriteLock.hpp"
-#include "NonCopyable.hpp"
 
 namespace apache {
 namespace geode {

@@ -27,12 +27,12 @@
  * @see
  */
 
-#include <geode/internal/geode_base.hpp>
-#include "fwklib/FwkLog.hpp"
-
-#include <vector>
-#include <string>
+#include <fwklib/FwkLog.hpp>
 #include <sstream>
+#include <string>
+#include <vector>
+
+#include <geode/internal/geode_base.hpp>
 
 // ----------------------------------------------------------------------------
 

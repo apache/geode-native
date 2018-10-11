@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-#include <gtest/gtest.h>
+#include <StructSetImpl.hpp>
 #include <stdexcept>
 
-#include <StructSetImpl.hpp>
+#include <gtest/gtest.h>
 
 using apache::geode::client::CacheableString;
 using apache::geode::client::CacheableVector;

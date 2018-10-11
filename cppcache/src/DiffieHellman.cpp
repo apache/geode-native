@@ -16,10 +16,13 @@
  */
 
 #include "DiffieHellman.hpp"
-#include "util/Log.hpp"
+
+#include <ace/Guard_T.h>
+
 #include <geode/ExceptionTypes.hpp>
 #include <geode/SystemProperties.hpp>
-#include <ace/Guard_T.h>
+
+#include "util/Log.hpp"
 namespace apache {
 namespace geode {
 namespace client {

@@ -22,13 +22,13 @@
 
 #include <string>
 
-#include <geode/internal/geode_globals.hpp>
-#include <geode/internal/DataSerializableInternal.hpp>
-#include <geode/Serializable.hpp>
 #include <geode/CacheableString.hpp>
 #include <geode/DataInput.hpp>
 #include <geode/DataOutput.hpp>
 #include <geode/PdxFieldTypes.hpp>
+#include <geode/Serializable.hpp>
+#include <geode/internal/DataSerializableInternal.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 namespace apache {
 namespace geode {

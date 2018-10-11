@@ -16,9 +16,11 @@
  */
 
 #include "ProxyRemoteQueryService.hpp"
-#include "ThinClientPoolDM.hpp"
+
 #include <geode/PoolManager.hpp>
+
 #include "CqQueryImpl.hpp"
+#include "ThinClientPoolDM.hpp"
 
 namespace apache {
 namespace geode {

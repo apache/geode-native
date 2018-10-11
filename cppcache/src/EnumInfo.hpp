@@ -20,8 +20,8 @@
 #ifndef GEODE_ENUMINFO_H_
 #define GEODE_ENUMINFO_H_
 
-#include <geode/CacheableString.hpp>
 #include <geode/CacheableKey.hpp>
+#include <geode/CacheableString.hpp>
 
 #include "geode/internal/DataSerializableFixedId.hpp"
 

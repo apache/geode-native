@@ -22,9 +22,9 @@
 
 #include <chrono>
 
-#include "internal/geode_globals.hpp"
 #include "RegionAttributesFactory.hpp"
 #include "internal/chrono/duration.hpp"
+#include "internal/geode_globals.hpp"
 
 /**
  * @file

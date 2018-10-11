@@ -32,7 +32,7 @@ std::shared_ptr<CacheListener> nullListenerPtr;
 
 class RegionWrapper {
  public:
-  explicit RegionWrapper(const char* name)
+  explicit RegionWrapper(const char *name)
       : m_regionPtr(cacheHelper->getRegion(name)) {
     m_noack = true;
   }
@@ -46,7 +46,7 @@ class RegionWrapper {
     m_regionPtr->put(keybuf, valPtr);
   }
 
-  void waitForKey(std::shared_ptr<CacheableKey>& keyPtr) {
+  void waitForKey(std::shared_ptr<CacheableKey> &keyPtr) {
     if (m_noack) {
       // might have to wait for a moment.
       int tries = 0;
@@ -57,8 +57,8 @@ class RegionWrapper {
     }
   }
 
-  int waitForValue(std::shared_ptr<CacheableKey>& keyPtr, int expected,
-                   std::shared_ptr<CacheableString>& valPtr) {
+  int waitForValue(std::shared_ptr<CacheableKey> &keyPtr, int expected,
+                   std::shared_ptr<CacheableString> &valPtr) {
     int tries = 0;
     int val = 0;
     do {
@@ -107,7 +107,7 @@ class RegionWrapper {
 static int numberOfLocators = 1;
 bool isLocalServer = true;
 bool isLocator = true;
-const char* locHostPort =
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 std::shared_ptr<TallyListener> listener;
 

@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
+#include "RegionXmlCreation.hpp"
+
 #include <geode/Cache.hpp>
 
-#include "CacheRegionHelper.hpp"
-#include "RegionXmlCreation.hpp"
 #include "CacheImpl.hpp"
+#include "CacheRegionHelper.hpp"
 
 namespace apache {
 namespace geode {
