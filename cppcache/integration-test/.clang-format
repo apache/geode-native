@@ -20,7 +20,7 @@ AlwaysBreakBeforeMultilineStrings: true
 AlwaysBreakTemplateDeclarations: true
 BinPackArguments: true
 BinPackParameters: true
-BraceWrapping:   
+BraceWrapping:
   AfterClass:      false
   AfterControlStatement: false
   AfterEnum:       false
@@ -55,24 +55,24 @@ DerivePointerAlignment: true
 DisableFormat:   false
 ExperimentalAutoDetectBinPacking: false
 FixNamespaceComments: true
-ForEachMacros:   
-  - foreach
-  - Q_FOREACH
-  - BOOST_FOREACH
+ForEachMacros:
+- foreach
+- Q_FOREACH
+- BOOST_FOREACH
 IncludeBlocks:   Regroup
 IncludeCategories:
-  - Regex:           '^<(ace|boost)/'
-    Priority:        3
-  - Regex:           '^<(gtest)/'
-    Priority:        4
-  - Regex:           '^<geode/'
-    Priority:        5
-  - Regex:           '^<.*\.h>'
-    Priority:        1
-  - Regex:           '^<.*'
-    Priority:        2
-  - Regex:           '.*'
-    Priority:        6
+- Regex:           '^<(ace|boost)/'
+  Priority:        3
+- Regex:           '^<(gtest)/'
+  Priority:        4
+- Regex:           '^<geode/'
+  Priority:        5
+- Regex:           '^<.*\.h>'
+  Priority:        1
+- Regex:           '^<.*'
+  Priority:        2
+- Regex:           '.*'
+  Priority:        6
 IncludeIsMainRegex: '([-_](test|unittest))?$'
 IndentCaseLabels: true
 IndentPPDirectives: None
@@ -97,7 +97,7 @@ PenaltyExcessCharacter: 1000000
 PenaltyReturnTypeOnItsOwnLine: 200
 PointerAlignment: Left
 ReflowComments:  true
-SortIncludes:    true
+SortIncludes:    false
 SortUsingDeclarations: true
 SpaceAfterCStyleCast: false
 SpaceAfterTemplateKeyword: true
