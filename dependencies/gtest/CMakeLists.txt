@@ -23,7 +23,7 @@ set( ${PROJECT_NAME}_EXTERN ${PROJECT_NAME}-extern )
 include(ExternalProject)
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "SunPro")
-  set(SUN_COMPILER_FLAGS "-DCMAKE_CXX_FLAGS=-std=c++11 -m64")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m64")
 endif()
 
 ExternalProject_Add( ${${PROJECT_NAME}_EXTERN}
@@ -31,7 +31,7 @@ ExternalProject_Add( ${${PROJECT_NAME}_EXTERN}
    URL_HASH SHA256=${${PROJECT_NAME}_SHA265}
    UPDATE_COMMAND ""
    INSTALL_COMMAND ""
-   CMAKE_ARGS "${SUN_COMPILER_FLAGS}" -Dgtest_force_shared_crt:BOOL=ON
+   CMAKE_ARGS -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS} -DCMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD} -Dgtest_force_shared_crt:BOOL=ON
 )
 
 ExternalProject_Get_Property( ${${PROJECT_NAME}_EXTERN} SOURCE_DIR )

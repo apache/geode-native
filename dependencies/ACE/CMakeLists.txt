@@ -22,14 +22,9 @@ set( ${PROJECT_NAME}_URL "https://github.com/DOCGroup/ACE_TAO/releases/download/
 set( ${PROJECT_NAME}_EXTERN ${PROJECT_NAME}-extern )
 set( ${PROJECT_NAME}_DEPENDS openssl-extern )
 
-
 if ("SunOS" STREQUAL ${CMAKE_SYSTEM_NAME})
   set( ACE_PLATFORM sunos5_sunc++ )
   set( ACE_CONFIG sunos${CMAKE_SYSTEM_VERSION} )
-  set( ACE_CPPFLAGS ${ACE_CPPFLAGS} -KPIC )
-  if ( 5.10 VERSION_EQUAL ${CMAKE_C_COMPILER_VERSION} )
-    set( ACE_CPPFLAGS ${ACE_CPPFLAGS} -features=zla )
-  endif()
 elseif ("Linux" STREQUAL ${CMAKE_SYSTEM_NAME} )
   if ("Clang" STREQUAL ${CMAKE_CXX_COMPILER_ID})
     set( ACE_PLATFORM linux_clang )
@@ -37,13 +32,11 @@ elseif ("Linux" STREQUAL ${CMAKE_SYSTEM_NAME} )
     set( ACE_PLATFORM linux )
   endif()
   set( ACE_CONFIG linux )
-  set( ACE_CPPFLAGS ${ACE_CPPFLAGS} -fPIC )
   ## TODO fix visibility problem with g++
   set( _MAKE_ARGS ${_MAKE_ARGS} no_hidden_visibility=1 )
 elseif ("Darwin" STREQUAL ${CMAKE_SYSTEM_NAME} )
   set( ACE_PLATFORM macosx_sierra )
   set( ACE_CONFIG macosx-sierra )
-  set( ACE_CPPFLAGS ${ACE_CPPFLAGS} -fPIC )
 elseif ("Windows" STREQUAL ${CMAKE_SYSTEM_NAME} )
   set( ACE_PLATFORM win32-msvc )
   set( ACE_CONFIG win32 )
@@ -51,23 +44,6 @@ endif()
 
 if (NOT DEFINED ACE_PLATFORM)
   message( FATAL_ERROR "ACE_PLATFORM unset for ${CMAKE_SYSTEM_NAME}" )
-endif()
-
-set( _MAKE_ARGS ${_MAKE_ARGS} buildbits=${BUILD_BITS} )
-
-if ( 11 EQUAL USE_C++ )
-  if ("${CMAKE_CXX11_STANDARD_COMPILE_OPTION}" STREQUAL "-std=c++0x")
-    set( _MAKE_ARGS ${_MAKE_ARGS} c++0x=1 )
-  else()
-    set( _MAKE_ARGS ${_MAKE_ARGS} c++11=1 )
-  endif()
-elseif ( "" STREQUAL "${USE_C++}" )
-  
-  # TODO config.h
-         #define ACE_LACKS_IOSTREAM_TOTALLY true
-         #define ACE_HAS_VERSIONED_NAMESPACE 1
-         #define ACE_HAS_POLL
-
 endif()
 
 include(ExternalProject)
@@ -84,7 +60,7 @@ if (${WIN32})
 
   set ( _COMMAND_PREFIX ${CMAKE_COMMAND} -E chdir ace )
 
-  set ( _MSBUILD_FLAGS /m /p:Platform=${_PLATFORM} /p:Configuration=$<$<CONFIG:Debug>:Debug>$<$<NOT:$<CONFIG:Debug>>:Release>) 
+  set ( _MSBUILD_FLAGS /m /p:Platform=${_PLATFORM} /p:Configuration=$<$<CONFIG:Debug>:Debug>$<$<NOT:$<CONFIG:Debug>>:Release>)
   set ( _MSBUILD_FLAGS_STATIC ${_MSBUILD_FLAGS} /t:ace_vc${MSVC_VERSION}_static /t:SSL_vc${MSVC_VERSION}_static ) 
 
   include(ProcessorCount)
@@ -108,13 +84,14 @@ if (${WIN32})
                  COMMAND ${CMAKE_COMMAND} -E copy_directory ace <INSTALL_DIR>/include/ace
   )
 
+  set(CMAKE_STATIC_LIBRARY_SUFFIX s$<${MSVC}:$<$<CONFIG:Debug>:d>>.lib)
+
 else()
   # TODO Configure trips up without MAKE
-  # TODO should we do something with STLport includes
   # TODO look into using cmake -E chdir
   # TODO use cmake -E env
 
-  set( _MAKE cd ace && ACE_ROOT=<SOURCE_DIR> SSL_ROOT=${OPENSSL_ROOT} $(MAKE) SHELL=/bin/bash debug=$<CONFIG:Debug> optimize=$<NOT:$<CONFIG:Debug>> static_libs_only=1 ssl=1 ${_MAKE_ARGS})
+  set( _MAKE cd ace && ACE_ROOT=<SOURCE_DIR> SSL_ROOT=${OPENSSL_ROOT} $(MAKE) SHELL=/bin/bash debug=$<CONFIG:Debug> optimize=$<NOT:$<CONFIG:Debug>> buildbits=${BUILD_BITS} c++11=1 static_libs_only=1 ssl=1 ${_MAKE_ARGS})
   set ( _CONFIGURE_COMMAND "" )
   set ( _BUILD_COMMAND ${_MAKE} all )
   set ( _INSTALL_COMMAND ${_MAKE} install )
@@ -136,10 +113,6 @@ set( ${PROJECT_NAME}_SOURCE_DIR ${SOURCE_DIR} )
 ExternalProject_Get_Property( ${${PROJECT_NAME}_EXTERN} INSTALL_DIR )
 set( ${PROJECT_NAME}_INSTALL_DIR ${INSTALL_DIR} )
 set( DEPENDENCIES_${PROJECT_NAME}_DIR ${${PROJECT_NAME}_INSTALL_DIR} PARENT_SCOPE)
-
-if (${WIN32})
-  set(CMAKE_STATIC_LIBRARY_SUFFIX s$<${MSVC}:$<$<CONFIG:Debug>:d>>.lib)
-endif()
 
 if ("SunOS" STREQUAL ${CMAKE_SYSTEM_NAME})
 set( PATCH_FILE ${CMAKE_CURRENT_SOURCE_DIR}/patches )
@@ -169,7 +142,7 @@ ExternalProject_Add_Step( ${${PROJECT_NAME}_EXTERN} platform
     DEPENDERS configure
     BYPRODUCTS ${${PROJECT_NAME}_SOURCE_DIR}/include/makeinclude/platform_macros.GNU
     COMMAND echo "INSTALL_PREFIX = ${${PROJECT_NAME}_INSTALL_DIR}" > ${${PROJECT_NAME}_SOURCE_DIR}/include/makeinclude/platform_macros.GNU
-    COMMAND echo "CCFLAGS += ${ACE_CPPFLAGS}" >> ${${PROJECT_NAME}_SOURCE_DIR}/include/makeinclude/platform_macros.GNU
+    COMMAND echo "CCFLAGS += ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_COMPILE_OPTIONS_PIC}" >> ${${PROJECT_NAME}_SOURCE_DIR}/include/makeinclude/platform_macros.GNU
     COMMAND echo "include ${${PROJECT_NAME}_SOURCE_DIR}/include/makeinclude/platform_${ACE_PLATFORM}.GNU" >> ${${PROJECT_NAME}_SOURCE_DIR}/include/makeinclude/platform_macros.GNU
 )
 endif()
@@ -215,4 +188,3 @@ target_link_libraries(ACE_SSL INTERFACE
     ${PROJECT_NAME}
     ${${PROJECT_NAME}_INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}ACE_SSL${CMAKE_STATIC_LIBRARY_SUFFIX}
 )
-
