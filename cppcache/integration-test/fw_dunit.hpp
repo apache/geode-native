@@ -220,8 +220,7 @@ END_TASK(validate)
   }                                               \
   }                                               \
   ;
-#define CALL_TASK(y) \
-  auto DVARNAME(y) = std::unique_ptr<DCLASSDEF(y)>(new DCLASSDEF(y)());
+#define CALL_TASK(y) DCLASSDEF(y) * DVARNAME(y) = new DCLASSDEF(y)();
 
 #define DUNIT_MAIN         \
   class DCLASSNAME(Main) { \
