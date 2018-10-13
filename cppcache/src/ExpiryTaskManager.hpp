@@ -21,6 +21,8 @@
 #define GEODE_EXPIRYTASKMANAGER_H_
 
 #include <chrono>
+#include <condition_variable>
+#include <mutex>
 #include <type_traits>
 
 #include <ace/Reactor.h>
@@ -308,6 +310,9 @@ class APACHE_GEODE_EXPORT ExpiryTaskManager : public ACE_Task_Base {
   ACE_Recursive_Thread_Mutex m_taskLock;  // to synchronize scheduling
                                           // of expiry tasks.
   static const char* NC_ETM_Thread;
+
+  std::mutex m_mutex;
+  std::condition_variable m_condition;
 };
 }  // namespace client
 }  // namespace geode
