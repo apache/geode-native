@@ -512,9 +512,6 @@ void HostStatSampler::start() {
 void HostStatSampler::stop() {
   m_stopRequested = true;
   this->wait();
-  // while (m_running) {
-  //  ACE_OS::sleep(100);
-  //}
 }
 
 bool HostStatSampler::isRunning() { return m_running; }
@@ -697,7 +694,7 @@ int32_t HostStatSampler::svc(void) {
     while (!m_stopRequested) {
       try {
         if (gotexception) {
-          ACE_OS::sleep(1);
+          std::this_thread::sleep_for(std::chrono::seconds(1));
 
           waitTime++;
           if (waitTime < 60) {  // sleep for minute and then try to recreate

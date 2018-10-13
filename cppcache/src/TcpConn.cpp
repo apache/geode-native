@@ -17,7 +17,9 @@
 
 #include "TcpConn.hpp"
 
-#include <memory.h>
+#include <chrono>
+#include <memory>
+#include <thread>
 
 #include <ace/INET_Addr.h>
 #include <ace/OS.h>
@@ -297,7 +299,6 @@ size_t TcpConn::socketOp(TcpConn::SockOp op, char *buff, size_t len,
     ACE_Time_Value waitTime(waitSeconds);
     ACE_Time_Value endTime(ACE_OS::gettimeofday());
     endTime += waitTime;
-    ACE_Time_Value sleepTime(0, 100);
     size_t readLen = 0;
     ssize_t retVal;
     bool errnoSet = false;
@@ -324,7 +325,7 @@ size_t TcpConn::socketOp(TcpConn::SockOp op, char *buff, size_t len,
         if (retVal < 0) {
           int32_t lastError = ACE_OS::last_error();
           if (lastError == EAGAIN) {
-            ACE_OS::sleep(sleepTime);
+            std::this_thread::sleep_for(std::chrono::microseconds(100));
           } else {
             errnoSet = true;
             break;
