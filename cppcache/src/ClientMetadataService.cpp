@@ -31,6 +31,8 @@ namespace apache {
 namespace geode {
 namespace client {
 
+const BucketStatus::clock::time_point BucketStatus::m_noTimeout{};
+
 const char* ClientMetadataService::NC_CMDSvcThread = "NC CMDSvcThread";
 
 ClientMetadataService::~ClientMetadataService() {
