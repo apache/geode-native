@@ -267,22 +267,8 @@ size_t TcpConn::send(const char *buff, size_t len,
 }
 
 size_t TcpConn::socketOp(TcpConn::SockOp op, char *buff, size_t len,
-                         std::chrono::microseconds waitSeconds) {
+                         std::chrono::microseconds waitDuration) {
   {
-    /*{
-      ACE_HANDLE handle = m_io->get_handle();
-       int val = ACE::get_flags (handle);
-
-      if (ACE_BIT_DISABLED (val, ACE_NONBLOCK))
-      {
-        //ACE::set_flags (handle, ACE_NONBLOCK);
-        LOGINFO("Flag is not set");
-      }else
-      {
-          LOGINFO("Flag is set");
-      }
-    }*/
-
     GF_DEV_ASSERT(m_io != nullptr);
     GF_DEV_ASSERT(buff != nullptr);
 
@@ -296,9 +282,8 @@ size_t TcpConn::socketOp(TcpConn::SockOp op, char *buff, size_t len,
     }
 #endif
 
-    ACE_Time_Value waitTime(waitSeconds);
-    ACE_Time_Value endTime(ACE_OS::gettimeofday());
-    endTime += waitTime;
+    ACE_Time_Value waitTime(waitDuration);
+    auto endTime = std::chrono::steady_clock::now() + waitDuration;
     size_t readLen = 0;
     ssize_t retVal;
     bool errnoSet = false;
@@ -338,7 +323,7 @@ size_t TcpConn::socketOp(TcpConn::SockOp op, char *buff, size_t len,
 
         buff += readLen;
         if (sendlen == 0) break;
-        waitTime = endTime - ACE_OS::gettimeofday();
+        waitTime = endTime - std::chrono::steady_clock::now();
         if (waitTime <= ACE_Time_Value::zero) break;
       } while (sendlen > 0);
       if (errnoSet) break;

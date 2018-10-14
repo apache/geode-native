@@ -62,7 +62,7 @@ class APACHE_GEODE_EXPORT TcpConn : public Connector {
   int32_t maxSize(ACE_HANDLE sock, int32_t flag, int32_t size);
 
   virtual size_t socketOp(SockOp op, char* buff, size_t len,
-                          std::chrono::microseconds waitSeconds);
+                          std::chrono::microseconds waitDuration);
 
   virtual void createSocket(ACE_HANDLE sock);
 

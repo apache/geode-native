@@ -128,7 +128,7 @@ void TcpSslConn::close() {
 }
 
 size_t TcpSslConn::socketOp(TcpConn::SockOp op, char* buff, size_t len,
-                            std::chrono::microseconds waitSeconds) {
+                            std::chrono::microseconds waitDuration) {
   {
     GF_DEV_ASSERT(m_ssl != nullptr);
     GF_DEV_ASSERT(buff != nullptr);
@@ -143,9 +143,8 @@ size_t TcpSslConn::socketOp(TcpConn::SockOp op, char* buff, size_t len,
     }
 #endif
     // passing wait time as micro seconds
-    ACE_Time_Value waitTime(waitSeconds);
-    ACE_Time_Value endTime(ACE_OS::gettimeofday());
-    endTime += waitTime;
+    ACE_Time_Value waitTime(waitDuration);
+    auto endTime = std::chrono::steady_clock::now() + waitDuration;
     size_t readLen = 0;
     bool errnoSet = false;
 
@@ -185,7 +184,7 @@ size_t TcpSslConn::socketOp(TcpConn::SockOp op, char* buff, size_t len,
 
         buff += readLen;
 
-        waitTime = endTime - ACE_OS::gettimeofday();
+        waitTime = endTime - std::chrono::steady_clock::now();
         if (waitTime <= ACE_Time_Value::zero) break;
       } while (sendlen > 0);
       if (errnoSet) break;
