@@ -38,10 +38,10 @@
 namespace apache {
 namespace geode {
 namespace client {
-class APACHE_GEODE_EXPORT MapEntry;
-class APACHE_GEODE_EXPORT MapEntryImpl;
 
-class APACHE_GEODE_EXPORT LRUEntryProperties;
+class MapEntry;
+class MapEntryImpl;
+class LRUEntryProperties;
 class CacheImpl;
 
 /**
