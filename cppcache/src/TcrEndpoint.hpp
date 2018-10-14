@@ -22,6 +22,7 @@
 
 #include <atomic>
 #include <list>
+#include <mutex>
 #include <string>
 
 #include <ace/Condition_Recursive_Thread_Mutex.h>
@@ -195,8 +196,7 @@ class APACHE_GEODE_EXPORT TcrEndpoint {
   CacheImpl* m_cacheImpl;
   std::list<Task<TcrEndpoint>*> m_notifyReceiverList;
   std::list<TcrConnection*> m_notifyConnectionList;
-  ACE_Condition<ACE_Recursive_Thread_Mutex> m_connectLockCond;
-  ACE_Recursive_Thread_Mutex m_connectLock;
+  std::timed_mutex m_connectLock;
   ACE_Recursive_Thread_Mutex m_notifyReceiverLock;
   FairQueue<TcrConnection> m_opConnections;
   volatile int m_maxConnections;

@@ -18,6 +18,7 @@
 #include "TcrEndpoint.hpp"
 
 #include <chrono>
+#include <mutex>
 #include <thread>
 
 #include <ace/OS.h>
@@ -47,7 +48,6 @@ TcrEndpoint::TcrEndpoint(const std::string& name, CacheImpl* cacheImpl,
     : m_notifyConnection(nullptr),
       m_notifyReceiver(nullptr),
       m_cacheImpl(cacheImpl),
-      m_connectLockCond(m_connectLock),
       m_maxConnections(cacheImpl->getDistributedSystem()
                            .getSystemProperties()
                            .connectionPoolSize()),
@@ -127,23 +127,25 @@ inline bool TcrEndpoint::needtoTakeConnectLock() {
 GfErrType TcrEndpoint::createNewConnectionWL(
     TcrConnection*& newConn, bool isClientNotification, bool isSecondary,
     std::chrono::microseconds connectTimeout) {
+  using clock = std::chrono::steady_clock;
+
   LOGFINE("TcrEndpoint::createNewConnectionWL");
   auto connectWaitTimeout = m_cacheImpl->getDistributedSystem()
                                 .getSystemProperties()
                                 .connectWaitTimeout();
-  ACE_Time_Value interval(connectWaitTimeout);
-  ACE_Time_Value stopAt(ACE_OS::gettimeofday());
-  stopAt += interval;
-  bool connCreated = false;
 
-  while (ACE_OS::gettimeofday() < stopAt) {
-    int32_t ret = m_connectLock.acquire(&stopAt);
+  auto stopAt = clock::now() + connectWaitTimeout;
+  auto connCreated = false;
+  std::unique_lock<decltype(m_connectLock)> lock(m_connectLock,
+                                                 std::defer_lock);
 
-    LOGFINE(
-        "TcrEndpoint::createNewConnectionWL ret = %d interval = %ld error =%s",
-        ret, interval.get_msec(), ACE_OS::strerror(ACE_OS::last_error()));
+  while (clock::now() < stopAt) {
+    auto locked = lock.try_lock_until(stopAt);
 
-    if (ret != -1) {  // got lock
+    LOGFINE("TcrEndpoint::createNewConnectionWL ret = %d interval = %ld",
+            locked, connectWaitTimeout.count());
+
+    if (locked) {
       try {
         LOGFINE("TcrEndpoint::createNewConnectionWL got lock");
         newConn =
@@ -152,29 +154,20 @@ GfErrType TcrEndpoint::createNewConnectionWL(
                                    isClientNotification, isSecondary,
                                    connectTimeout);
 
-        connCreated = true;  // to break while loop
-
+        connCreated = true;             // to break while loop
         m_needToConnectInLock = false;  // no need to take lock
-
-        m_connectLock.release();
         LOGFINE("New Connection Created");
         break;
       } catch (const TimeoutException&) {
         LOGINFO("Timeout1 in handshake with endpoint[%s]", m_name.c_str());
-        m_connectLock.release();
-        // throw te;
         return GF_CLIENT_WAIT_TIMEOUT_REFRESH_PRMETADATA;
       } catch (std::exception& ex) {
-        m_connectLock.release();
         LOGWARN("Failed1 in handshake with endpoint[%s]: %s", m_name.c_str(),
                 ex.what());
-        // throw ex;
         return GF_CLIENT_WAIT_TIMEOUT_REFRESH_PRMETADATA;
       } catch (...) {
         LOGWARN("Unknown1 failure in handshake with endpoint[%s]",
                 m_name.c_str());
-        m_connectLock.release();
-        // throw;
         return GF_CLIENT_WAIT_TIMEOUT_REFRESH_PRMETADATA;
       }
     }
@@ -247,8 +240,8 @@ GfErrType TcrEndpoint::createNewConnection(
       m_needToConnectInLock = true;  // while creating the connection
       std::this_thread::sleep_for(std::chrono::milliseconds(50));
     } catch (const GeodeIOException& ex) {
-      LOGINFO("IO error[%d] in handshake with endpoint[%s]: %s",
-              ACE_OS::last_error(), m_name.c_str(), ex.what());
+      LOGINFO("IO error in handshake with endpoint[%s]: %s", m_name.c_str(),
+              ex.what());
       err = GF_IOERR;
       m_needToConnectInLock = true;  // while creating the connection
       break;
