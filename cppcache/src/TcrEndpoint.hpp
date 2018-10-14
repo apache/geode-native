@@ -24,6 +24,7 @@
 #include <list>
 #include <string>
 
+#include <ace/Condition_Recursive_Thread_Mutex.h>
 #include <ace/Recursive_Thread_Mutex.h>
 #include <ace/Semaphore.h>
 

@@ -37,7 +37,6 @@
 #include "AdminRegion.hpp"
 #include "CachePerfStats.hpp"
 #include "ClientProxyMembershipIDFactory.hpp"
-#include "Condition.hpp"
 #include "DistributedSystem.hpp"
 #include "EvictionController.hpp"
 #include "MapWithLock.hpp"
@@ -384,8 +383,6 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
   ClientProxyMembershipIDFactory m_clientProxyMembershipIDFactory;
   MapOfRegionWithLock* m_regions;
   Cache* m_cache;
-  ACE_Recursive_Thread_Mutex m_mutex;
-  Condition m_cond;
   std::shared_ptr<CacheAttributes> m_attributes;
   EvictionController* m_evictionControllerPtr;
   TcrConnectionManager* m_tcrConnectionManager;
