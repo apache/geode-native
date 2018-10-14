@@ -34,38 +34,19 @@
 #define DCPORT 12334
 #define VMKIND 13
 #define ROLEARRLENGTH 0
-static int synch_counter = 2;
+
 namespace apache {
 namespace geode {
 namespace client {
 
-namespace {
-static class RandomInitializer {
- public:
-  RandomInitializer() {
-    // using current time and
-    // processor time would be good enough for our purpose
-    auto seed = ACE_OS::getpid() + ACE_OS::gettimeofday().msec() + clock();
-    seed += ACE_OS::gettimeofday().usec();
-    // LOGINFO("PID %ld seed %ld ACE_OS::gettimeofday().usec() = %ld clock =
-    // %ld ACE_OS::gettimeofday().msec() = %ld", pid, seed ,
-    // ACE_OS::gettimeofday().usec() , clock(),
-    // ACE_OS::gettimeofday().msec());
-    ACE_OS::srand(seed);
-  }
-} oneTimeRandomInitializer;
-}  // namespace
+static int synch_counter = 2;
 
 const int ClientProxyMembershipID::VERSION_MASK = 0x8;
 const int8_t ClientProxyMembershipID::TOKEN_ORDINAL = -1;
 
 ClientProxyMembershipID::ClientProxyMembershipID()
     : m_hostPort(0),
-      m_hostAddr(nullptr)
-      /* adongre  - Coverity II
-       * CID 29278: Uninitialized scalar field (UNINIT_CTOR)
-       */
-      ,
+      m_hostAddr(nullptr),
       m_hostAddrLen(0),
       m_hostAddrLocalMem(false),
       m_vmViewId(0) {}
