@@ -63,9 +63,9 @@ bool TcrConnection::InitTcrConnection(
   m_queueSize = 0;
   m_dh = nullptr;
   // m_chunksProcessSema = 0;
-  m_creationTime = ACE_OS::gettimeofday();
+  m_creationTime = clock::now();
   connectionId = INITIAL_CONNECTION_ID;
-  m_lastAccessed = ACE_OS::gettimeofday();
+  m_lastAccessed = clock::now();
   auto cacheImpl = m_poolDM->getConnectionManager().getCacheImpl();
   const auto& distributedSystem = cacheImpl->getDistributedSystem();
   const auto& sysProp = distributedSystem.getSystemProperties();
@@ -1399,13 +1399,7 @@ bool TcrConnection::hasExpired(const std::chrono::milliseconds& expiryTime) {
     return false;
   }
 
-  ACE_Time_Value _expiryTime(expiryTime);
-
-  if (ACE_OS::gettimeofday() - m_creationTime > _expiryTime) {
-    return true;
-  } else {
-    return false;
-  }
+  return (clock::now() - m_creationTime) > expiryTime;
 }
 
 bool TcrConnection::isIdle(const std::chrono::milliseconds& idleTime) {
@@ -1413,18 +1407,14 @@ bool TcrConnection::isIdle(const std::chrono::milliseconds& idleTime) {
     return false;
   }
 
-  ACE_Time_Value _idleTime(idleTime);
-
-  if (ACE_OS::gettimeofday() - m_lastAccessed > _idleTime) {
-    return true;
-  } else {
-    return false;
-  }
+  return (clock::now() - m_lastAccessed) > idleTime;
 }
 
-void TcrConnection::touch() { m_lastAccessed = ACE_OS::gettimeofday(); }
+void TcrConnection::touch() { m_lastAccessed = clock::now(); }
 
-ACE_Time_Value TcrConnection::getLastAccessed() { return m_lastAccessed; }
+TcrConnection::time_point TcrConnection::getLastAccessed() {
+  return m_lastAccessed;
+}
 
 uint8_t TcrConnection::getOverrides(const SystemProperties* props) {
   uint8_t conflateByte = 0;
@@ -1440,7 +1430,7 @@ uint8_t TcrConnection::getOverrides(const SystemProperties* props) {
 }
 
 void TcrConnection::updateCreationTime() {
-  m_creationTime = ACE_OS::gettimeofday();
+  m_creationTime = clock::now();
   touch();
 }
 

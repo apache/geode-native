@@ -398,8 +398,8 @@ void ThinClientPoolDM::cleanStaleConnections(volatile bool& isRunning) {
 
   LOGDEBUG("Cleaning stale connections");
 
-  ACE_Time_Value _idle(getIdleTimeout());
-  ACE_Time_Value _nextIdle = _idle;
+  auto _idle = getIdleTimeout();
+  auto _nextIdle = _idle;
   {
     TcrConnection* conn = nullptr;
 
@@ -411,9 +411,10 @@ void ThinClientPoolDM::cleanStaleConnections(volatile bool& isRunning) {
       if (canItBeDeleted(conn)) {
         replacelist.push_back(conn);
       } else if (conn) {
-        ACE_Time_Value nextIdle =
-            _idle - (ACE_OS::gettimeofday() - conn->getLastAccessed());
-        if ((ACE_Time_Value(0, 0) < nextIdle) && (nextIdle < _nextIdle)) {
+        auto nextIdle =
+            _idle - std::chrono::duration_cast<std::chrono::milliseconds>(
+                        TcrConnection::clock::now() - conn->getLastAccessed());
+        if (nextIdle > std::chrono::seconds::zero() && nextIdle < _nextIdle) {
           _nextIdle = nextIdle;
         }
         savelist.push_back(conn);
@@ -437,9 +438,11 @@ void ThinClientPoolDM::cleanStaleConnections(volatile bool& isRunning) {
         createPoolConnection(newConn, excludeServers, maxConnLimit,
                              /*hasExpired(conn) ? nullptr :*/ conn);
         if (newConn) {
-          ACE_Time_Value nextIdle =
-              _idle - (ACE_OS::gettimeofday() - newConn->getLastAccessed());
-          if ((ACE_Time_Value(0, 0) < nextIdle) && (nextIdle < _nextIdle)) {
+          auto nextIdle =
+              _idle -
+              std::chrono::duration_cast<std::chrono::milliseconds>(
+                  TcrConnection::clock::now() - conn->getLastAccessed());
+          if (nextIdle > std::chrono::seconds::zero() && nextIdle < _nextIdle) {
             _nextIdle = nextIdle;
           }
           savelist.push_back(newConn);
@@ -457,9 +460,12 @@ void ThinClientPoolDM::cleanStaleConnections(volatile bool& isRunning) {
             LOGDEBUG("Removed a connection");
           } else {
             conn->updateCreationTime();
-            ACE_Time_Value nextIdle =
-                _idle - (ACE_OS::gettimeofday() - conn->getLastAccessed());
-            if ((ACE_Time_Value(0, 0) < nextIdle) && (nextIdle < _nextIdle)) {
+            auto nextIdle =
+                _idle -
+                std::chrono::duration_cast<std::chrono::milliseconds>(
+                    TcrConnection::clock::now() - conn->getLastAccessed());
+            if (nextIdle > std::chrono::seconds::zero() &&
+                nextIdle < _nextIdle) {
               _nextIdle = nextIdle;
             }
             savelist.push_back(conn);
@@ -478,11 +484,12 @@ void ThinClientPoolDM::cleanStaleConnections(volatile bool& isRunning) {
   }
   if (m_connManageTaskId >= 0 && isRunning &&
       m_connManager.getCacheImpl()->getExpiryTaskManager().resetTask(
-          m_connManageTaskId, static_cast<uint32_t>(_nextIdle.sec() + 1))) {
+          m_connManageTaskId, _nextIdle)) {
     LOGERROR("Failed to reschedule connection manager");
   } else {
-    LOGFINEST("Rescheduled next connection manager run after %d seconds",
-              _nextIdle.sec() + 1);
+    LOGFINEST(
+        "Rescheduled next connection manager run after %d seconds",
+        std::chrono::duration_cast<std::chrono::seconds>(_nextIdle).count());
   }
 
   LOGDEBUG("Pool size is %d, pool counter is %d", size(), m_poolSize.load());
