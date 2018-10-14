@@ -2328,11 +2328,11 @@ void ThinClientPoolDM::checkRegions() {
 
   m_destroyPending = true;
 }
-void ThinClientPoolDM::updateNotificationStats(bool isDeltaSuccess,
-                                               int64_t timeInNanoSecond) {
+void ThinClientPoolDM::updateNotificationStats(
+    bool isDeltaSuccess, std::chrono::nanoseconds timeInNanoSecond) {
   if (isDeltaSuccess) {
     getStats().incProcessedDeltaMessages();
-    getStats().incProcessedDeltaMessagesTime(timeInNanoSecond);
+    getStats().incProcessedDeltaMessagesTime(timeInNanoSecond.count());
   } else {
     getStats().incDeltaMessageFailures();
   }

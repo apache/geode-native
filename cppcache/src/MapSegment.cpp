@@ -17,6 +17,7 @@
 
 #include "MapSegment.hpp"
 
+#include <chrono>
 #include <mutex>
 
 #include <ace/OS.h>
@@ -652,41 +653,44 @@ GfErrType MapSegment::putForTrackedEntry(
       if (oldValue == nullptr || CacheableToken::isDestroyed(oldValue) ||
           CacheableToken::isInvalid(oldValue) ||
           CacheableToken::isTombstone(oldValue)) {
-        if (m_poolDM) m_poolDM->updateNotificationStats(false, 0);
+        if (m_poolDM)
+          m_poolDM->updateNotificationStats(false, std::chrono::nanoseconds(0));
         return GF_INVALID_DELTA;
       } else if (CacheableToken::isOverflowed(
                      oldValue)) {  // get Value from disc.
         oldValue = getFromDisc(key, entryImpl);
         if (oldValue == nullptr) {
-          if (m_poolDM) m_poolDM->updateNotificationStats(false, 0);
+          if (m_poolDM)
+            m_poolDM->updateNotificationStats(false,
+                                              std::chrono::nanoseconds(0));
           return GF_INVALID_DELTA;
         }
       }
+
+      using clock = std::chrono::steady_clock;
 
       auto valueWithDelta = std::dynamic_pointer_cast<Delta>(oldValue);
       auto& newValue1 = const_cast<std::shared_ptr<Cacheable>&>(newValue);
       try {
         if (m_region->getAttributes().getCloningEnabled()) {
           auto tempVal = valueWithDelta->clone();
-          ACE_Time_Value currTimeBefore = ACE_OS::gettimeofday();
+          auto currTimeBefore = clock::now();
           tempVal->fromDelta(*delta);
 
           if (m_poolDM) {
-            m_poolDM->updateNotificationStats(
-                true,
-                ((ACE_OS::gettimeofday() - currTimeBefore).msec()) * 1000000);
+            m_poolDM->updateNotificationStats(true,
+                                              clock::now() - currTimeBefore);
           }
           newValue1 = std::dynamic_pointer_cast<Serializable>(tempVal);
           entryImpl->setValueI(newValue1);
         } else {
-          ACE_Time_Value currTimeBefore = ACE_OS::gettimeofday();
+          auto currTimeBefore = clock::now();
           valueWithDelta->fromDelta(*delta);
           newValue1 = std::dynamic_pointer_cast<Serializable>(valueWithDelta);
 
           if (m_poolDM) {
-            m_poolDM->updateNotificationStats(
-                true,
-                ((ACE_OS::gettimeofday() - currTimeBefore).msec()) * 1000000);
+            m_poolDM->updateNotificationStats(true,
+                                              clock::now() - currTimeBefore);
           }
           entryImpl->setValueI(
               std::dynamic_pointer_cast<Serializable>(valueWithDelta));

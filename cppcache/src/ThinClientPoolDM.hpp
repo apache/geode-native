@@ -20,6 +20,7 @@
 #ifndef GEODE_THINCLIENTPOOLDM_H_
 #define GEODE_THINCLIENTPOOLDM_H_
 
+#include <chrono>
 #include <memory>
 #include <set>
 #include <string>
@@ -155,7 +156,8 @@ class ThinClientPoolDM
 
   virtual bool canItBeDeletedNoImpl(TcrConnection* conn);
 
-  void updateNotificationStats(bool isDeltaSuccess, int64_t timeInNanoSecond);
+  void updateNotificationStats(bool isDeltaSuccess,
+                               std::chrono::nanoseconds timeInNanoSecond);
 
   virtual bool isSecurityOn() { return m_isSecurityOn || m_isMultiUserMode; }
 
