@@ -20,6 +20,7 @@
 #ifndef GEODE_EVENTIDMAP_H_
 #define GEODE_EVENTIDMAP_H_
 
+#include <chrono>
 #include <functional>
 #include <memory>
 #include <unordered_map>
@@ -135,9 +136,14 @@ class APACHE_GEODE_EXPORT EventIdMap {
  * a flag indicating whether or not it is ACKed
  */
 class APACHE_GEODE_EXPORT EventSequence {
+ public:
+  using clock = std::chrono::steady_clock;
+  using time_point = clock::time_point;
+
+ private:
   int64_t m_seqNum;
   bool m_acked;
-  ACE_Time_Value m_deadline;  // current time plus the expiration delay (age)
+  time_point m_deadline;  // current time plus the expiration delay (age)
 
   void init();
 
@@ -161,8 +167,8 @@ class APACHE_GEODE_EXPORT EventSequence {
   bool getAcked();
   void setAcked(bool acked);
 
-  ACE_Time_Value getDeadline();
-  void setDeadline(ACE_Time_Value deadline);
+  time_point getDeadline();
+  void setDeadline(time_point deadline);
 
   bool operator<=(const EventSequence &rhs) const;
 };

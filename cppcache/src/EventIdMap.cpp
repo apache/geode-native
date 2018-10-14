@@ -138,21 +138,18 @@ uint32_t EventIdMap::expire(bool onlyacked) {
 
   EventIdMapEntryList entries;
 
-  ACE_Time_Value current = ACE_OS::gettimeofday();
-
   for (const auto& entry : m_map) {
     if (onlyacked && !entry.second->getAcked()) {
       continue;
     }
 
-    if (entry.second->getDeadline() < current) {
+    if (entry.second->getDeadline() < EventSequence::clock::now()) {
       entries.push_back(std::make_pair(entry.first, entry.second));
     }
   }
 
-  for (EventIdMapEntryList::iterator expiry = entries.begin();
-       expiry != entries.end(); expiry++) {
-    m_map.erase((*expiry).first);
+  for (auto&& expiry : entries) {
+    m_map.erase(expiry.first);
     expired++;
   }
 
@@ -162,7 +159,7 @@ uint32_t EventIdMap::expire(bool onlyacked) {
 void EventSequence::init() {
   m_seqNum = -1;
   m_acked = false;
-  m_deadline = ACE_OS::gettimeofday();
+  m_deadline = clock::now();
 }
 
 void EventSequence::clear() { init(); }
@@ -177,8 +174,7 @@ EventSequence::EventSequence(int64_t seqNum) {
 EventSequence::~EventSequence() { clear(); }
 
 void EventSequence::touch(std::chrono::milliseconds ageSecs) {
-  m_deadline = ACE_OS::gettimeofday();
-  m_deadline += ageSecs;
+  m_deadline = clock::now() + ageSecs;
 }
 
 void EventSequence::touch(int64_t seqNum, std::chrono::milliseconds ageSecs) {
@@ -195,11 +191,9 @@ bool EventSequence::getAcked() { return m_acked; }
 
 void EventSequence::setAcked(bool acked) { m_acked = acked; }
 
-ACE_Time_Value EventSequence::getDeadline() { return m_deadline; }
+EventSequence::time_point EventSequence::getDeadline() { return m_deadline; }
 
-void EventSequence::setDeadline(ACE_Time_Value deadline) {
-  m_deadline = deadline;
-}
+void EventSequence::setDeadline(time_point deadline) { m_deadline = deadline; }
 
 bool EventSequence::operator<=(const EventSequence& rhs) const {
   return this->m_seqNum <= (&rhs)->m_seqNum;
