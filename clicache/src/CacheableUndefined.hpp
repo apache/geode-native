@@ -23,6 +23,10 @@
 #include "ISerializable.hpp"
 #include "Log.hpp"
 
+#include "begin_native.hpp"
+#include <geode/internal/DSFixedId.hpp>
+#include "end_native.hpp"
+
 using namespace System;
 
 namespace Apache
@@ -92,7 +96,7 @@ namespace Apache
         {
           virtual Int32 get()
           {
-            return static_cast<Int32>(native::DSFid::CacheableUndefined);
+            return static_cast<Int32>(native::internal::DSFid::CacheableUndefined);
           }
         }
 

@@ -21,6 +21,7 @@
 #include "PdxFieldType.hpp"
 #include "../begin_native.hpp"
 #include <PdxTypes.hpp>
+#include <PdxFieldType.hpp>
 #include "../end_native.hpp"
 
 

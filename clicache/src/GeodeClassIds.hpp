@@ -19,6 +19,7 @@
 
 #include "geode_defs.hpp"
 #include "begin_native.hpp"
+#include <geode/internal/InternalId.hpp>
 #include "end_native.hpp"
 
 namespace Apache
