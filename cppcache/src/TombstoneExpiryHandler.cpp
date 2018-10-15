@@ -41,31 +41,33 @@ TombstoneExpiryHandler::TombstoneExpiryHandler(
       m_cacheImpl(cacheImpl),
       m_tombstoneList(tombstoneList) {}
 
-int TombstoneExpiryHandler::handle_timeout(const ACE_Time_Value& current_time,
-                                           const void*) {
+int TombstoneExpiryHandler::handle_timeout(const ACE_Time_Value&, const void*) {
   std::shared_ptr<CacheableKey> key;
   m_entryPtr->getEntry()->getKeyI(key);
   auto creationTime = m_entryPtr->getTombstoneCreationTime();
-  auto curr_time = static_cast<int64_t>(current_time.get_msec());
+  auto curr_time = TombstoneEntry::clock::now();
   auto expiryTaskId = m_entryPtr->getExpiryTaskId();
-  auto sec = curr_time - creationTime - m_duration.count();
+  auto sec = curr_time - creationTime - m_duration;
   try {
+    using apache::geode::internal::chrono::duration::to_string;
     LOGDEBUG(
         "Entered entry expiry task handler for tombstone of key [%s]: "
-        "%lld,%lld,%d,%lld",
-        Utils::nullSafeToString(key).c_str(), curr_time, creationTime,
-        m_duration.count(), sec);
-    if (sec >= 0) {
+        "%s,%s,%s,%s",
+        Utils::nullSafeToString(key).c_str(),
+        to_string(curr_time.time_since_epoch()).c_str(),
+        to_string(creationTime.time_since_epoch()).c_str(),
+        to_string(m_duration).c_str(), to_string(sec).c_str());
+    if (sec >= std::chrono::seconds::zero()) {
       DoTheExpirationAction(key);
     } else {
       // reset the task after
       // (lastAccessTime + entryExpiryDuration - curr_time) in seconds
       LOGDEBUG(
-          "Resetting expiry task %d secs later for key "
+          "Resetting expiry task %s later for key "
           "[%s]",
-          -sec / 1000 + 1, Utils::nullSafeToString(key).c_str());
+          to_string(-sec).c_str(), Utils::nullSafeToString(key).c_str());
       m_cacheImpl->getExpiryTaskManager().resetTask(
-          m_entryPtr->getExpiryTaskId(), uint32_t(-sec / 1000 + 1));
+          m_entryPtr->getExpiryTaskId(), -sec);
       return 0;
     }
   } catch (...) {

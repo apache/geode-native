@@ -46,9 +46,8 @@ ExpiryTaskManager::id_type TombstoneList::getExpiryTask(
   auto duration = m_cacheImpl->getDistributedSystem()
                       .getSystemProperties()
                       .tombstoneTimeout();
-  ACE_Time_Value currTime(ACE_OS::gettimeofday());
-  auto tombstoneEntryPtr = std::make_shared<TombstoneEntry>(
-      nullptr, static_cast<int64_t>(currTime.get_msec()));
+
+  auto tombstoneEntryPtr = std::make_shared<TombstoneEntry>(nullptr);
   *handler = new TombstoneExpiryHandler(tombstoneEntryPtr, this, duration,
                                         m_cacheImpl);
   tombstoneEntryPtr->setHandler(*handler);
@@ -61,11 +60,8 @@ void TombstoneList::add(const std::shared_ptr<MapEntryImpl>& entry,
                         TombstoneExpiryHandler* handler,
                         ExpiryTaskManager::id_type taskid) {
   // This function is not guarded as all functions of this class are called from
-  // MapSegment
-  // read TombstoneTImeout from systemProperties.
-  ACE_Time_Value currTime(ACE_OS::gettimeofday());
-  auto tombstoneEntryPtr = std::make_shared<TombstoneEntry>(
-      entry, static_cast<int64_t>(currTime.get_msec()));
+  // MapSegment read TombstoneTImeout from systemProperties.
+  auto tombstoneEntryPtr = std::make_shared<TombstoneEntry>(entry);
   handler->setTombstoneEntry(tombstoneEntryPtr);
   tombstoneEntryPtr->setHandler(handler);
   std::shared_ptr<CacheableKey> key;

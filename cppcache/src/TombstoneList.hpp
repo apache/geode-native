@@ -20,6 +20,7 @@
 #ifndef GEODE_TOMBSTONELIST_H_
 #define GEODE_TOMBSTONELIST_H_
 
+#include <chrono>
 #include <list>
 #include <memory>
 #include <unordered_map>
@@ -39,15 +40,17 @@ class MapSegment;
 class TombstoneExpiryHandler;
 class TombstoneEntry {
  public:
-  TombstoneEntry(const std::shared_ptr<MapEntryImpl>& entry,
-                 int64_t tombstoneCreationTime)
+  using clock = std::chrono::steady_clock;
+  using time_point = clock::time_point;
+
+  TombstoneEntry(const std::shared_ptr<MapEntryImpl>& entry)
       : m_entry(entry),
-        m_tombstoneCreationTime(tombstoneCreationTime),
+        m_tombstoneCreationTime(TombstoneEntry::clock::now()),
         m_expiryTaskId(0),
         m_handler(nullptr) {}
   virtual ~TombstoneEntry() {}
   std::shared_ptr<MapEntryImpl> getEntry() { return m_entry; }
-  int64_t getTombstoneCreationTime() { return m_tombstoneCreationTime; }
+  time_point getTombstoneCreationTime() { return m_tombstoneCreationTime; }
   ExpiryTaskManager::id_type getExpiryTaskId() { return m_expiryTaskId; }
   void setExpiryTaskId(ExpiryTaskManager::id_type expiryTaskId) {
     m_expiryTaskId = expiryTaskId;
@@ -57,7 +60,7 @@ class TombstoneEntry {
 
  private:
   std::shared_ptr<MapEntryImpl> m_entry;
-  int64_t m_tombstoneCreationTime;
+  time_point m_tombstoneCreationTime;
   ExpiryTaskManager::id_type m_expiryTaskId;
   TombstoneExpiryHandler* m_handler;
 };
