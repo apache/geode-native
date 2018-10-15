@@ -23,9 +23,8 @@
 #include <fwklib/FwkLog.hpp>
 
 #include <ace/OS.h>
+#include <ace/Task.h>
 #include <ace/Time_Value.h>
-
-#include "ace/Task.h"
 
 namespace apache {
 namespace geode {

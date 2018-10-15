@@ -17,10 +17,11 @@
 
 #include "OsStatisticsImpl.hpp"
 
+#include <ace/OS.h>
+
 #include "../util/Log.hpp"
 #include "StatisticDescriptorImpl.hpp"
 #include "StatisticsTypeImpl.hpp"
-#include "ace/OS.h"
 
 namespace apache {
 namespace geode {

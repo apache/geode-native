@@ -40,7 +40,7 @@
 
 #include "CacheHelper.hpp"
 #include "ThinClientHelper.hpp"
-#include "ace/Process.h"
+#include <ace/Process.h>
 
 using apache::geode::client::AuthenticatedView;
 using apache::geode::client::CqAttributesFactory;
