@@ -120,6 +120,13 @@ namespace Apache.Geode.Client.IntegrationTests
                     break;
             }
         }
+        public virtual void OnError(CqEvent<TKey, TResult> ev)
+        {
+        }
+        public virtual void Close()
+        {
+
+        }
     }
 
     public class DataCqListener<TKey, TResult> : CqListener<TKey, TResult>
@@ -204,7 +211,7 @@ namespace Apache.Geode.Client.IntegrationTests
 	  
 		    var queryService = pool.GetQueryService();
 		    var cqAttributesFactory = new CqAttributesFactory<string, MyOrder>();
-		    var cqListener = new PdxCqListener<string, MyOrder>();
+		    var cqListener = new CqListener<string, MyOrder>();
 		    cqAttributesFactory.AddCqListener(cqListener);
 		    var cqAttributes = cqAttributesFactory.Create();
 		    
@@ -220,28 +227,28 @@ namespace Apache.Geode.Client.IntegrationTests
 		    region.Put("order1", order1);
 	  
 		    region.Put("order2", order2);
-		    Assert.True(cqListener.CreatedEvent.WaitOne(_waitInterval), "Didn't receive expected CREATE event");
+		    Assert.True(cqListener.CreatedEvent.WaitOne(waitInterval_), "Didn't receive expected CREATE event");
 	  
 		    order1.Quantity = 60;
 		    region.Put("order1", order1);
-		    Assert.True(cqListener.CreatedEvent.WaitOne(_waitInterval), "Didn't receive expected CREATE event");
+		    Assert.True(cqListener.CreatedEvent.WaitOne(waitInterval_), "Didn't receive expected CREATE event");
 	  
 		    order2.Quantity = 45;
 		    region.Put("order2", order2);
-		    Assert.True(cqListener.UpdatedEvent.WaitOne(_waitInterval), "Didn't receive expected UPDATE event");
+		    Assert.True(cqListener.UpdatedEvent.WaitOne(waitInterval_), "Didn't receive expected UPDATE event");
 	  
 		    order2.Quantity = 11;
 		    region.Put("order2", order2);
-		    Assert.True(cqListener.DestroyedNonNullEvent.WaitOne(_waitInterval), "Didn't receive expected DESTROY event");
+		    Assert.True(cqListener.DestroyedNonNullEvent.WaitOne(waitInterval_), "Didn't receive expected DESTROY event");
 	  
 		    region.Remove("order1");
-		    Assert.True(cqListener.DestroyedNullEvent.WaitOne(_waitInterval), "Didn't receive expected DESTROY event");
+		    Assert.True(cqListener.DestroyedNullEvent.WaitOne(waitInterval_), "Didn't receive expected DESTROY event");
 	  
 		    region.Put("order3", order3);
-		    Assert.True(cqListener.CreatedEvent.WaitOne(_waitInterval), "Didn't receive expected CREATE event");
+		    Assert.True(cqListener.CreatedEvent.WaitOne(waitInterval_), "Didn't receive expected CREATE event");
 	  
 		    region.Clear();
-		    Assert.True(cqListener.RegionClearEvent.WaitOne(_waitInterval), "Didn't receive expected CLEAR event");
+		    Assert.True(cqListener.RegionClearEvent.WaitOne(waitInterval_), "Didn't receive expected CLEAR event");
 	  
 		    Assert.False(cqListener.ReceivedUnknownEventType, "An unknown event was received by CQ listener");
 	    }
@@ -258,15 +265,15 @@ namespace Apache.Geode.Client.IntegrationTests
                     .withName("cqTestRegion")
                     .withType("REPLICATE")
                     .execute(), 0);
-		    _cache.TypeRegistry.RegisterType(Position.CreateDeserializable, 22);
+		    cache_.TypeRegistry.RegisterType(Position.CreateDeserializable, 22);
 	  
-		    var poolFactory = _cache.GetPoolFactory()
-		    .AddLocator("localhost", _geodeServer.LocatorPort);
+		    var poolFactory = cache_.GetPoolFactory()
+		    .AddLocator("localhost", cluster_.Gfsh.LocatorPort);
 		    var pool = poolFactory
 		    .SetSubscriptionEnabled(true)
 		    .Create("pool");
 	  
-		    var regionFactory = _cache.CreateRegionFactory(RegionShortcut.PROXY)
+		    var regionFactory = cache_.CreateRegionFactory(RegionShortcut.PROXY)
 		    .SetPoolName("pool");
 	  
 		    var region = regionFactory.Create<string, Position>("cqTestRegion");
@@ -290,28 +297,28 @@ namespace Apache.Geode.Client.IntegrationTests
 		    var Value = region["order1"];
 	  
 		    region.Put("order2", order2);
-		    Assert.True(cqListener.CreatedEvent.WaitOne(_waitInterval), "Didn't receive expected CREATE event");
+		    Assert.True(cqListener.CreatedEvent.WaitOne(waitInterval_), "Didn't receive expected CREATE event");
 	  
 		    order1.SharesOutstanding = 55;
 		    region.Put("order1", order1);
-		    Assert.True(cqListener.CreatedEvent.WaitOne(_waitInterval), "Didn't receive expected CREATE event");
+		    Assert.True(cqListener.CreatedEvent.WaitOne(waitInterval_), "Didn't receive expected CREATE event");
 	  
 		    order2.SharesOutstanding = 77;
 		    region.Put("order2", order2);
-		    Assert.True(cqListener.UpdatedEvent.WaitOne(_waitInterval), "Didn't receive expected UPDATE event");
+		    Assert.True(cqListener.UpdatedEvent.WaitOne(waitInterval_), "Didn't receive expected UPDATE event");
 	  
 		    order2.SharesOutstanding = 11;
 		    region.Put("order2", order2);
-		    Assert.True(cqListener.DestroyedNonNullEvent.WaitOne(_waitInterval), "Didn't receive expected DESTROY event");
+		    Assert.True(cqListener.DestroyedNonNullEvent.WaitOne(waitInterval_), "Didn't receive expected DESTROY event");
 	  
 		    region.Remove("order1");
-		    Assert.True(cqListener.DestroyedNullEvent.WaitOne(_waitInterval), "Didn't receive expected DESTROY event");
+		    Assert.True(cqListener.DestroyedNullEvent.WaitOne(waitInterval_), "Didn't receive expected DESTROY event");
 	  
 		    region.Put("order3", order3);
-		    Assert.True(cqListener.CreatedEvent.WaitOne(_waitInterval), "Didn't receive expected CREATE event");
+		    Assert.True(cqListener.CreatedEvent.WaitOne(waitInterval_), "Didn't receive expected CREATE event");
 	  
 		    region.Clear();
-		    Assert.True(cqListener.RegionClearEvent.WaitOne(_waitInterval), "Didn't receive expected CLEAR event");
+		    Assert.True(cqListener.RegionClearEvent.WaitOne(waitInterval_), "Didn't receive expected CLEAR event");
 	  
 		    Assert.False(cqListener.ReceivedUnknownEventType, "An unknown event was received by CQ listener");
 	    }
