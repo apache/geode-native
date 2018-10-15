@@ -20,6 +20,7 @@
 #ifndef GEODE_THINCLIENTREDUNDANCYMANAGER_H_
 #define GEODE_THINCLIENTREDUNDANCYMANAGER_H_
 
+#include <chrono>
 #include <list>
 #include <set>
 #include <string>
@@ -82,6 +83,9 @@ class ThinClientRedundancyManager {
   bool isSentReadyForEvents() const { return m_sentReadyForEvents; }
 
  private:
+  using clock = std::chrono::steady_clock;
+  using time_point = clock::time_point;
+
   // for selectServers
   volatile bool m_IsAllEpDisCon;
   int m_server;
@@ -129,8 +133,8 @@ class ThinClientRedundancyManager {
                                   // and/or expiry
   int periodicAck(volatile bool& isRunning);
   void doPeriodicAck();
-  ACE_Time_Value m_nextAck;     // next ack time
-  ACE_Time_Value m_nextAckInc;  // next ack time increment
+  time_point m_nextAck;                    // next ack time
+  std::chrono::milliseconds m_nextAckInc;  // next ack time increment
   volatile bool m_HAenabled;
   EventIdMap m_eventidmap;
 

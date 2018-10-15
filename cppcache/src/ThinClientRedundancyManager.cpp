@@ -667,9 +667,8 @@ void ThinClientRedundancyManager::initialize(int redundancyLevel) {
     if (interval < std::chrono::milliseconds(100)) {
       interval = std::chrono::milliseconds(100);
     }
-    m_nextAckInc = ACE_Time_Value(interval);
-    m_nextAck = ACE_OS::gettimeofday();
-    m_nextAck += m_nextAckInc;
+    m_nextAckInc = interval;
+    m_nextAck = clock::now() + interval;
   }
 
   if (m_poolHADM) {
@@ -1177,21 +1176,18 @@ void ThinClientRedundancyManager::doPeriodicAck() {
       "ThinClientRedundancyManager::processEventIdMap( ): Examining eventid "
       "map.");
   // do periodic ack if HA is enabled and the time has come
-  if (m_HAenabled && (m_nextAck < ACE_OS::gettimeofday())) {
+  if (m_HAenabled && (m_nextAck < clock::now())) {
     LOGFINER("Doing periodic ack");
     m_nextAck += m_nextAckInc;
 
-    EventIdMapEntryList entries = m_eventidmap.getUnAcked();
-    uint32_t count = static_cast<uint32_t>(entries.size());
-
+    auto entries = m_eventidmap.getUnAcked();
+    auto count = entries.size();
     if (count > 0) {
       bool acked = false;
 
       ACE_Guard<ACE_Recursive_Thread_Mutex> guardEPs(m_redundantEndpointsLock);
 
-      std::vector<TcrEndpoint*>::iterator endpoint =
-          m_redundantEndpoints.begin();
-
+      auto endpoint = m_redundantEndpoints.begin();
       if (endpoint != m_redundantEndpoints.end()) {
         TcrMessagePeriodicAck request(
             new DataOutput(
