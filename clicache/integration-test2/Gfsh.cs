@@ -376,6 +376,34 @@ namespace Apache.Geode.Client.IntegrationTests
             return new ConfigurePdx(this);
         }
 
+        public class Deploy : Command
+        {
+            public Deploy(Gfsh gfsh) : base(gfsh, "deploy") { }
+
+            public Deploy withJar(string fullPathToJar)
+            {
+                command_ += " --jar=" + fullPathToJar;
+                return this;
+            }
+
+            public Deploy withDir(string fullPathToDir)
+            {
+                command_ += " --dir=" + fullPathToDir;
+                return this;
+            }
+
+            public Deploy withGroup(string groupName)
+            {
+                command_ += " --group=" + groupName;
+                return this;
+            }
+        }
+
+        public Deploy deploy()
+        {
+            return new Deploy(this);
+        }
+
         private static string defaultBindAddress = "localhost";
         private static int defaultHttpServicePort = 0;
         public Gfsh()
