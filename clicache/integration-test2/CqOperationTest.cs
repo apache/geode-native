@@ -254,7 +254,7 @@ namespace Apache.Geode.Client.IntegrationTests
             }
         }
   
-        [Fact]
+        //[Fact]
         public void NotificationsHaveCorrectValuesDataSerializable()
         {
             using (var cluster_ = new Cluster(CreateTestCaseDirectoryName(), 1, 1))
