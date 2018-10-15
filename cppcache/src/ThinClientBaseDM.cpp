@@ -17,6 +17,8 @@
 
 #include "ThinClientBaseDM.hpp"
 
+#include <chrono>
+
 #include <geode/AuthenticatedView.hpp>
 
 #include "ThinClientRegion.hpp"
@@ -194,19 +196,17 @@ void ThinClientBaseDM::failover() {}
 
 void ThinClientBaseDM::queueChunk(TcrChunkedContext* chunk) {
   LOGDEBUG("ThinClientBaseDM::queueChunk");
-  const uint32_t timeout = 1;
   if (m_chunkProcessor == nullptr) {
     LOGDEBUG("ThinClientBaseDM::queueChunk2");
     // process in same thread if no chunk processor thread
     chunk->handleChunk(true);
     _GEODE_SAFE_DELETE(chunk);
-  } else if (!m_chunks.putUntil(chunk, timeout, 0)) {
+  } else if (!m_chunks.putFor(chunk, std::chrono::seconds(1))) {
     LOGDEBUG("ThinClientBaseDM::queueChunk3");
     // if put in queue fails due to whatever reason then process in same thread
     LOGFINE(
         "addChunkToQueue: timed out while adding to queue of "
-        "unbounded size after waiting for %d secs",
-        timeout);
+        "unbounded size after waiting for 1 secs");
     chunk->handleChunk(true);
     _GEODE_SAFE_DELETE(chunk);
   } else {
@@ -220,7 +220,7 @@ int ThinClientBaseDM::processChunks(volatile bool& isRunning) {
   LOGFINE("Starting chunk process thread for region %s",
           (m_region != nullptr ? m_region->getFullPath().c_str() : "(null)"));
   while (isRunning) {
-    chunk = m_chunks.getUntil(0, 100000);
+    chunk = m_chunks.getFor(std::chrono::microseconds(100000));
     if (chunk) {
       chunk->handleChunk(false);
       _GEODE_SAFE_DELETE(chunk);
