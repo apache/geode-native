@@ -26,7 +26,7 @@ namespace Apache.Geode.Client.IntegrationTests
     [Trait("Category", "Integration")]
     public class TestBase
     {
-        private const int MaxAllowedDirectoryCharacters = 30;
+        private const int MaxAllowedDirectoryCharacters = 15;
 
         public void CleanTestCaseDirectory(string directory)
         {
