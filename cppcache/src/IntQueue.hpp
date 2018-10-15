@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_INTQUEUE_H_
-#define GEODE_INTQUEUE_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,102 +15,84 @@
  * limitations under the License.
  */
 
-#include <deque>
+#pragma once
 
-#include <ace/ACE.h>
-#include <ace/Condition_Recursive_Thread_Mutex.h>
-#include <ace/Guard_T.h>
-#include <ace/Recursive_Thread_Mutex.h>
-#include <ace/Time_Value.h>
+#ifndef GEODE_INTQUEUE_H_
+#define GEODE_INTQUEUE_H_
+
+#include <chrono>
+#include <condition_variable>
+#include <deque>
+#include <mutex>
 
 namespace apache {
 namespace geode {
 namespace client {
 
 template <class T>
-
 class APACHE_GEODE_EXPORT IntQueue {
  public:
-  IntQueue() : m_cond(m_mutex) {}
+  inline IntQueue() = default;
 
-  ~IntQueue() {
-    ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_mutex);
-
-    while (m_queue.size() > 0) {
-      m_queue.pop_back();
-    }
-  }
-
-  /** wait usec time until notified */
-  T get(int64_t usec) {
-    ACE_Time_Value interval(usec / 1000000, usec % 1000000);
-    return getUntil(interval);
-  }
+  inline ~IntQueue() noexcept = default;
 
   T get() {
+    std::unique_lock<decltype(m_mutex)> _guard(m_mutex);
     T mp = 0;
-
     getInternal(mp);
     return mp;
   }
 
-  void put(T mp) {
-    ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_mutex);
-    m_queue.push_front(mp);
-    m_cond.signal();
-  }
-
-  uint32_t size() {
-    ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_mutex);
-    return static_cast<uint32_t>(m_queue.size());
-  }
-
-  void clear() {
-    ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_mutex);
-    m_queue.clear();
-    m_cond.signal();
-  }
-
-  bool empty() { return size() == 0; }
-
- private:
-  inline bool getInternal(T& val) {
-    ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_mutex);
-
-    if (m_queue.size() > 0) {
-      val = m_queue.back();
-      m_queue.pop_back();
-      return true;
-    }
-
-    return false;
-  }
-
-  T getUntil(const ACE_Time_Value& interval) {
+  template <class _Rep, class _Period>
+  T getFor(const std::chrono::duration<_Rep, _Period>& duration) {
+    std::unique_lock<decltype(m_mutex)> _guard(m_mutex);
     T mp = 0;
-    bool found = getInternal(mp);
-
-    if (!found) {
-      ACE_Time_Value stopAt(ACE_OS::gettimeofday());
-      stopAt += interval;
-
-      while (!found && ACE_OS::gettimeofday() < stopAt) {
-        ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_mutex);
-        m_cond.wait(&stopAt);
-        if (m_queue.size() > 0) {
-          mp = m_queue.back();
-          m_queue.pop_back();
-          found = true;
-        }
+    if (!getInternal(mp)) {
+      if (m_cond.wait_for(_guard, duration,
+                          [this] { return !m_queue.empty(); })) {
+        mp = m_queue.back();
+        m_queue.pop_back();
       }
     }
     return mp;
   }
 
-  typedef std::deque<T> LocalQueue;
-  LocalQueue m_queue;
-  ACE_Recursive_Thread_Mutex m_mutex;
-  ACE_Condition<ACE_Recursive_Thread_Mutex> m_cond;
+  void put(T mp) {
+    std::unique_lock<decltype(m_mutex)> _guard(m_mutex);
+    m_queue.push_front(mp);
+    if (m_queue.size() == 1) {
+      m_cond.notify_one();
+    }
+  }
+
+  size_t size() {
+    std::unique_lock<decltype(m_mutex)> _guard(m_mutex);
+    return m_queue.size();
+  }
+
+  void clear() {
+    std::unique_lock<decltype(m_mutex)> _guard(m_mutex);
+    m_queue.clear();
+  }
+
+  bool empty() {
+    std::unique_lock<decltype(m_mutex)> _guard(m_mutex);
+    return m_queue.empty();
+  }
+
+ private:
+  inline bool getInternal(T& val) {
+    if (m_queue.size() > 0) {
+      val = m_queue.back();
+      m_queue.pop_back();
+      return true;
+    }
+    return false;
+  }
+
+  std::deque<T> m_queue;
+  std::mutex m_mutex;
+  std::condition_variable m_cond;
 };
 }  // namespace client
 }  // namespace geode

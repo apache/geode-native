@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_EVICTIONTHREAD_H_
-#define GEODE_EVICTIONTHREAD_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,6 +15,11 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_EVICTIONTHREAD_H_
+#define GEODE_EVICTIONTHREAD_H_
+
 #include <ace/ACE.h>
 #include <ace/OS.h>
 #include <ace/Singleton.h>
@@ -30,15 +30,16 @@
 
 #include "IntQueue.hpp"
 #include "util/Log.hpp"
-/**
- * This class does the actual evictions
- */
+
 namespace apache {
 namespace geode {
 namespace client {
-class EvictionController;
-typedef IntQueue<int64_t> HeapSizeInfoQueue;
 
+class EvictionController;
+
+/**
+ * This class does the actual evictions
+ */
 class APACHE_GEODE_EXPORT EvictionThread : public ACE_Task_Base {
  public:
   explicit EvictionThread(EvictionController* parent);
@@ -62,11 +63,12 @@ class APACHE_GEODE_EXPORT EvictionThread : public ACE_Task_Base {
 
  private:
   EvictionController* m_pParent;
-  HeapSizeInfoQueue m_queue;
+  IntQueue<int32_t> m_queue;
   bool m_run;
 
   static const char* NC_Evic_Thread;
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

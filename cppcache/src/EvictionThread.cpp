@@ -14,7 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "EvictionThread.hpp"
+
+#include <chrono>
 
 #include "DistributedSystemImpl.hpp"
 #include "EvictionController.hpp"
@@ -25,27 +28,22 @@ namespace client {
 
 const char* EvictionThread::NC_Evic_Thread = "NC Evic Thread";
 EvictionThread::EvictionThread(EvictionController* parent)
-    : m_pParent(parent),
-      /* adongre
-       * CID 28936: Uninitialized scalar field (UNINIT_CTOR)
-       */
-      m_run(false) {}
+    : m_pParent(parent), m_run(false) {}
 
 int EvictionThread::svc(void) {
   DistributedSystemImpl::setThreadName(NC_Evic_Thread);
   while (m_run) {
     processEvictions();
   }
-  int32_t size = m_queue.size();
-  for (int i = 0; i < size; i++) {
+  auto size = m_queue.size();
+  for (decltype(size) i = 0; i < size; i++) {
     processEvictions();
   }
   return 1;
 }
 
 void EvictionThread::processEvictions() {
-  int32_t percentageToEvict = 0;
-  percentageToEvict = static_cast<int32_t>(m_queue.get(1500));
+  auto percentageToEvict = m_queue.getFor(std::chrono::microseconds(1500));
   if (percentageToEvict != 0) {
     m_pParent->evict(percentageToEvict);
   }
