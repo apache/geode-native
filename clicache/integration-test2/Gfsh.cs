@@ -404,6 +404,28 @@ namespace Apache.Geode.Client.IntegrationTests
             return new Deploy(this);
         }
 
+        public class ExecuteFunction : Command
+        {
+            public ExecuteFunction(Gfsh gfsh) : base(gfsh, "execute function") { }
+
+            public ExecuteFunction withId(string functionId)
+            {
+                command_ += " --id=" + functionId;
+                return this;
+            }
+
+            public ExecuteFunction withMember(string memberName)
+            {
+                command_ += " --member=" + memberName;
+                return this;
+            }
+        }
+
+        public ExecuteFunction executeFunction()
+        {
+            return new ExecuteFunction(this);
+        }
+
         private static string defaultBindAddress = "localhost";
         private static int defaultHttpServicePort = 0;
         public Gfsh()
