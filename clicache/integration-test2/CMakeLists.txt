@@ -43,7 +43,6 @@ add_library( ${PROJECT_NAME} SHARED
     Position.cs
     TestBase.cs
     cache.xml
-    server.xml
     geode.properties
     xunit.runner.json
     packages.config
