@@ -92,7 +92,7 @@ foreach(FILE ${SOURCES})
   set(TESTS ${TESTS} ${TEST})
   add_dependencies(integration-tests ${TEST})
   add_executable(${TEST} ${FILE})
-  set_target_properties(${TEST} PROPERTIES FOLDER cpp/test/integration)
+  set_target_properties(${TEST} PROPERTIES FOLDER cpp/test/integration/legacy)
 
   target_link_libraries(${TEST}
     PRIVATE
