@@ -238,10 +238,10 @@ class Cluster {
   }
 
   void applyLocators(apache::geode::client::PoolFactory &poolFactory) {
-   for (const auto &locator : locators_) {
-     poolFactory.addLocator(locator.getAddress().address,
-                            locator.getAddress().port);
-   }
+    for (const auto &locator : locators_) {
+      poolFactory.addLocator(locator.getAddress().address,
+                             locator.getAddress().port);
+    }
   }
 
   Gfsh &getGfsh() noexcept { return gfsh_; }
