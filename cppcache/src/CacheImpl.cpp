@@ -241,6 +241,8 @@ CacheImpl::~CacheImpl() {
 }
 
 const std::string& CacheImpl::getName() const {
+  this->throwIfClosed();
+
   return m_distributedSystem.getName();
 }
 
@@ -257,7 +259,10 @@ DistributedSystem& CacheImpl::getDistributedSystem() {
   return m_distributedSystem;
 }
 
-TypeRegistry& CacheImpl::getTypeRegistry() { return *m_typeRegistry; }
+TypeRegistry& CacheImpl::getTypeRegistry() {
+  this->throwIfClosed();
+  return *m_typeRegistry;
+}
 
 void CacheImpl::sendNotificationCloseMsgs() {
   for (const auto& iter : getPoolManager().getAll()) {
@@ -269,6 +274,8 @@ void CacheImpl::sendNotificationCloseMsgs() {
 }
 
 void CacheImpl::close(bool keepalive) {
+  this->throwIfClosed();
+
   TcrMessage::setKeepAlive(keepalive);
   // bug #247 fix for durable clients missing events when recycled
   sendNotificationCloseMsgs();
@@ -391,9 +398,7 @@ void CacheImpl::createRegion(std::string name,
     }
   }
 
-  if (m_closed || m_destroyPending) {
-    throw CacheClosedException("Cache::createRegion: cache closed");
-  }
+  this->throwIfClosed();
 
   if (name.find('/') != std::string::npos) {
     throw IllegalArgumentException(
@@ -483,20 +488,10 @@ void CacheImpl::createRegion(std::string name,
   rpImpl->releaseReadLock();
 }
 
-/**
- * Return the existing region (or subregion) with the specified
- * path that already exists or is already mapped into the cache.
- * Whether or not the path starts with a forward slash it is interpreted as a
- * full path starting at a root.
- *
- * @param path the path to the region
- * @param[out] rptr the region pointer that is returned
- * @return the Region or null if not found
- * @throws IllegalArgumentException if path is null, the empty string, or "/"
- */
-
 std::shared_ptr<Region> CacheImpl::getRegion(const std::string& path) {
   LOGDEBUG("Cache::getRegion " + path);
+
+  this->throwIfClosed();
 
   TryReadGuard guardCacheDestroy(m_destroyCacheMutex, m_destroyPending);
 
@@ -608,6 +603,8 @@ std::shared_ptr<RegionInternal> CacheImpl::createRegion_internal(
 }
 
 std::vector<std::shared_ptr<Region>> CacheImpl::rootRegions() {
+  this->throwIfClosed();
+
   std::vector<std::shared_ptr<Region>> regions;
 
   MapOfRegionGuard guard(m_regions->mutex());
@@ -627,12 +624,13 @@ std::vector<std::shared_ptr<Region>> CacheImpl::rootRegions() {
 }
 
 void CacheImpl::initializeDeclarativeCache(const std::string& cacheXml) {
-  CacheXmlParser* xmlParser = CacheXmlParser::parse(cacheXml.c_str(), m_cache);
+  this->throwIfClosed();
+
+  auto xmlParser = std::unique_ptr<CacheXmlParser>(
+      CacheXmlParser::parse(cacheXml.c_str(), m_cache));
   xmlParser->setAttributes(m_cache);
   initServices();
   xmlParser->create(m_cache);
-  delete xmlParser;
-  xmlParser = nullptr;
 }
 
 EvictionController* CacheImpl::getEvictionController() {
@@ -640,6 +638,8 @@ EvictionController* CacheImpl::getEvictionController() {
 }
 
 void CacheImpl::readyForEvents() {
+  this->throwIfClosed();
+
   bool autoReadyForEvents =
       m_distributedSystem.getSystemProperties().autoReadyForEvents();
   bool isDurable = m_tcrConnectionManager->isDurable();
@@ -756,6 +756,8 @@ int CacheImpl::getPoolSize(const char* poolName) {
 }
 
 RegionFactory CacheImpl::createRegionFactory(RegionShortcut preDefinedRegion) {
+  this->throwIfClosed();
+
   return RegionFactory(preDefinedRegion, this);
 }
 
@@ -802,6 +804,8 @@ std::shared_ptr<SerializationRegistry> CacheImpl::getSerializationRegistry()
 ThreadPool* CacheImpl::getThreadPool() { return m_threadPool; }
 std::shared_ptr<CacheTransactionManager>
 CacheImpl::getCacheTransactionManager() {
+  this->throwIfClosed();
+
   return m_cacheTXManager;
 }
 
@@ -814,10 +818,14 @@ CacheImpl::getMemberListForVersionStamp() {
 }
 
 DataOutput CacheImpl::createDataOutput() const {
+  this->throwIfClosed();
+
   return CacheImpl::createDataOutput(nullptr);
 }
 
 DataOutput CacheImpl::createDataOutput(Pool* pool) const {
+  this->throwIfClosed();
+
   if (!pool) {
     pool = this->getPoolManager().getDefaultPool().get();
   }
@@ -826,6 +834,8 @@ DataOutput CacheImpl::createDataOutput(Pool* pool) const {
 }
 
 DataInput CacheImpl::createDataInput(const uint8_t* buffer, size_t len) const {
+  this->throwIfClosed();
+
   return CacheImpl::createDataInput(buffer, len, nullptr);
 }
 
@@ -839,6 +849,8 @@ DataInput CacheImpl::createDataInput(const uint8_t* buffer, size_t len,
 
 PdxInstanceFactory CacheImpl::createPdxInstanceFactory(
     const std::string& className) const {
+  this->throwIfClosed();
+
   return PdxInstanceFactory(
       className, *m_cacheStats, *m_pdxTypeRegistry, *this,
       m_distributedSystem.getSystemProperties().getEnableTimeStatistics());
@@ -847,6 +859,8 @@ PdxInstanceFactory CacheImpl::createPdxInstanceFactory(
 AuthenticatedView CacheImpl::createAuthenticatedView(
     std::shared_ptr<Properties> userSecurityProperties,
     const std::string& poolName) {
+  this->throwIfClosed();
+
   if (poolName.empty()) {
     auto pool = m_poolManager->getDefaultPool();
     if (!this->isClosed() && pool != nullptr) {

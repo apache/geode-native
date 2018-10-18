@@ -25,6 +25,7 @@ add_executable(apache-geode_unittests
   ByteArrayFixture.cpp
   ByteArrayFixture.hpp
   ByteArrayTest.cpp
+  CacheTest.cpp
   CacheableKeyCreateTests.cpp
   CacheableKeysTest.cpp
   CacheableStringEqualityTest.cpp
