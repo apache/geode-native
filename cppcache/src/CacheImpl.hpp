@@ -183,6 +183,17 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
   void createRegion(std::string name, RegionAttributes aRegionAttributes,
                     std::shared_ptr<Region>& regionPtr);
 
+  /**
+   * Return the existing region (or subregion) with the specified
+   * path that already exists or is already mapped into the cache.
+   * Whether or not the path starts with a forward slash it is interpreted as a
+   * full path starting at a root.
+   *
+   * @param path the path to the region
+   * @param[out] rptr the region pointer that is returned
+   * @return the Region or null if not found
+   * @throws IllegalArgumentException if path is null, the empty string, or "/"
+   */
   std::shared_ptr<Region> getRegion(const std::string& path);
 
   /**
@@ -259,7 +270,11 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
     return m_attributes == nullptr ? false : m_attributes->m_cacheMode;
   }
 
-  bool getPdxIgnoreUnreadFields() { return m_ignorePdxUnreadFields; }
+  bool getPdxIgnoreUnreadFields() {
+    this->throwIfClosed();
+
+    return m_ignorePdxUnreadFields;
+  }
 
   void setPdxIgnoreUnreadFields(bool ignore) {
     m_ignorePdxUnreadFields = ignore;
@@ -267,7 +282,10 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
 
   void setPdxReadSerialized(bool val) { m_readPdxSerialized = val; }
 
-  bool getPdxReadSerialized() { return m_readPdxSerialized; }
+  bool getPdxReadSerialized() {
+    this->throwIfClosed();
+    return m_readPdxSerialized;
+  }
 
   bool isCacheDestroyPending() const;
 
@@ -278,13 +296,18 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
   std::shared_ptr<SerializationRegistry> getSerializationRegistry() const;
   inline CachePerfStats& getCachePerfStats() { return *m_cacheStats; }
 
-  PoolManager& getPoolManager() const { return *m_poolManager; }
+  PoolManager& getPoolManager() const {
+    this->throwIfClosed();
+    return *m_poolManager;
+  }
 
   const std::shared_ptr<Pool>& getDefaultPool() {
     return m_poolManager->getDefaultPool();
   }
 
   SystemProperties& getSystemProperties() const {
+    this->throwIfClosed();
+
     return m_distributedSystem.getSystemProperties();
   }
 
@@ -380,6 +403,12 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
   ThreadPool* m_threadPool;
   const std::shared_ptr<AuthInitialize> m_authInitialize;
   std::unique_ptr<TypeRegistry> m_typeRegistry;
+
+  inline void throwIfClosed() const {
+    if (m_closed) {
+      throw CacheClosedException("Cache is closed.");
+    }
+  }
 
   friend class CacheFactory;
   friend class Cache;
