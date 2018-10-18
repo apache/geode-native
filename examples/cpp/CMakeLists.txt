@@ -62,6 +62,9 @@ add_example(NAME pdxserializer
 add_example(NAME put-get-remove
     SOURCE main.cpp)
 
+add_example(NAME remote-function
+    SOURCE main.cpp)
+
 add_example(NAME remotequery
     SOURCE main.cpp Order.cpp Order.hpp)
 
