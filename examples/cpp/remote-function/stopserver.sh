@@ -29,4 +29,5 @@ else
     fi
 fi
 
-$GFSH_PATH -e "connect" -e "stop server --name=server" -e "stop locator --name=locator"
+$GFSH_PATH -e "connect" -e "shutdown --include-locators=true"
+
