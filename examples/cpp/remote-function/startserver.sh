@@ -29,4 +29,6 @@ else
     fi
 fi
 
-$GFSH_PATH  -e "start locator --name=locator" -e "deploy --jar=javaobject.jar" -e "start server --name=the-server --cache-xml-file=serverExecuteFunctions.xml"  -e "create region --name=partition_region --type=PARTITION" -e "start server --name=the-second-server --cache-xml-file=serverExecuteFunctions2.xml"
+$GFSH_PATH  -e "start locator --name=locator" -e "deploy --jar=javaobject.jar" -e "start server --name=the-server --server-port=40404"  -e "create region --name=partition_region --type=PARTITION" -e "start server --name=the-second-server --server-port=50505"
+
+
