@@ -86,8 +86,7 @@ int main(int argc, char** argv) {
     }
 
     auto routingObj = CacheableVector::create();
-    for (int i = 0; i < 34; i++) {
-      if (i % 2 == 0) continue;
+    for (int i = 1; i < 34; i+=2) {
       sprintf(buf, "KEY--%d", i);
       auto key = CacheableKey::create(buf);
       routingObj->push_back(key);
@@ -108,10 +107,10 @@ int main(int argc, char** argv) {
       }
       sprintf(buf, "get: result count = %lu\n", resultList->size());
       std::cout << buf;
-      for (int32_t i = 0; i < executeFunctionResult->size(); i++) {
+      for (int32_t i = 0; i < resultList->size(); i++) {
         sprintf(
             buf, "get result[%d]=%s\n", i,
-            std::dynamic_pointer_cast<CacheableString>(resultList->operator[](i))->toString().c_str());
+            std::dynamic_pointer_cast<CacheableString>(resultList->operator[](i))->value().c_str());
         std::cout << buf;
       }
     }
@@ -137,10 +136,10 @@ int main(int argc, char** argv) {
       }
       sprintf(buf, "get: result count = %lu\n", resultList->size());
       std::cout << buf;
-      for (int32_t i = 0; i < executeFunctionResult->size(); i++) {
+      for (int32_t i = 0; i < resultList->size(); i++) {
         sprintf(
             buf, "get result[%d]=%s\n", i,
-            std::dynamic_pointer_cast<CacheableString>(resultList->operator[](i))->toString().c_str());
+            std::dynamic_pointer_cast<CacheableString>(resultList->operator[](i))->value().c_str());
         std::cout << buf;
       }
     }
@@ -173,7 +172,7 @@ int main(int argc, char** argv) {
       for (int32_t i = 0; i < resultList->size(); i++) {
         sprintf(
             buf, "Execute on Region: result[%d]=%s\n", i,
-            std::dynamic_pointer_cast<CacheableString>(resultList->operator[](i))->toString().c_str());
+            std::dynamic_pointer_cast<CacheableString>(resultList->operator[](i))->value().c_str());
         std::cout << buf;
       }
     }
