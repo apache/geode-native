@@ -27,18 +27,22 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/packages.config ${CMAKE_CURRENT_BINAR
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Config.cs.in ${CMAKE_CURRENT_BINARY_DIR}/Config.cs)
 
 add_library( ${PROJECT_NAME} SHARED
+    Cluster.cs
+    ClusterTest.cs
     Config.cs.in
     ${CMAKE_CURRENT_BINARY_DIR}/Config.cs
-    GeodeServer.cs
-    GeodeServerTests.cs
+    GfshTest.cs
+    GfshExecuteTest.cs
+    Gfsh.cs
+    GfshExecute.cs
     CacheXml.cs
     CacheXmlTests.cs
     CqOperationTest.cs
     RegionTest.cs
     RegionSSLTest.cs
     Position.cs
+    TestBase.cs
     cache.xml
-    server.xml
     geode.properties
     xunit.runner.json
     packages.config

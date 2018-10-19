@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 using System;
 using System.IO;
 using System.Diagnostics;
@@ -27,7 +27,7 @@ public class CacheXml : IDisposable
         private set;
     }
 
-    public CacheXml(FileInfo template, GeodeServer gfs, string regionName = "testRegion")
+    public CacheXml(FileInfo template, int locatorPort, string regionName = "testRegion")
     {
         string content;
 
@@ -36,7 +36,7 @@ public class CacheXml : IDisposable
             content = input.ReadToEnd();
         }
 
-        content = content.Replace("LOCATOR_PORT", gfs.LocatorPort.ToString());
+        content = content.Replace("LOCATOR_PORT", locatorPort.ToString());
         content = content.Replace("REGION_NAME", regionName);
 
         Debug.WriteLine(content);

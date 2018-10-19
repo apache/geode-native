@@ -88,7 +88,7 @@ class Locator {
   };
   //  Locator &operator=(Locator &&move) = default;
 
-  const LocatorAddress &getAdddress() const { return locatorAddress_; }
+  const LocatorAddress &getAddress() const { return locatorAddress_; }
 
   void start();
 
@@ -201,7 +201,7 @@ class Cluster {
   Cluster &operator=(Cluster &&other) = default;
 
   std::string getJmxManager() {
-    return locators_.begin()->getAdddress().address + "[" +
+    return locators_.begin()->getAddress().address + "[" +
            std::to_string(jmxManagerPort_) + "]";
   }
 
@@ -239,8 +239,8 @@ class Cluster {
 
   void applyLocators(apache::geode::client::PoolFactory &poolFactory) {
     for (const auto &locator : locators_) {
-      poolFactory.addLocator(locator.getAdddress().address,
-                             locator.getAdddress().port);
+      poolFactory.addLocator(locator.getAddress().address,
+                             locator.getAddress().port);
     }
   }
 

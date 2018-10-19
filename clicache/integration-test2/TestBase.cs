@@ -15,35 +15,39 @@
  * limitations under the License.
  */
 
+using System;
+using System.Diagnostics;
+using System.IO;
+using System.Reflection;
 using Xunit;
 
-[Trait("Category", "Integration")]
-public class GeodeServerTest
+namespace Apache.Geode.Client.IntegrationTests
 {
-    [Fact]
-    public void Start()
+    [Trait("Category", "Integration")]
+    public class TestBase
     {
-        using (var geodeServer = new GeodeServer())
-        {
-            Assert.NotNull(geodeServer);
-            Assert.NotEqual(0, geodeServer.LocatorPort);
-        }
-    }
+        private const int MaxAllowedDirectoryCharacters = 30;
 
-    [Fact]
-    public void StartTwo()
-    {
-        using (var geodeServer1 = new GeodeServer())
+        public void CleanTestCaseDirectory(string directory)
         {
-            Assert.NotNull(geodeServer1);
-            Assert.NotEqual(0, geodeServer1.LocatorPort);
-
-            using (var geodeServer2 = new GeodeServer())
+            if (Directory.Exists(directory))
             {
-                Assert.NotNull(geodeServer2);
-                Assert.NotEqual(0, geodeServer2.LocatorPort);
-                Assert.NotEqual(geodeServer1.LocatorPort, geodeServer2.LocatorPort);
+                Directory.Delete(directory, true);
             }
+        }
+
+        public string CreateTestCaseDirectoryName()
+        {
+            var st = new StackTrace();
+            var sf = st.GetFrame(1);
+            var currentMethod = sf.GetMethod();
+            var dirName = currentMethod.Name;
+
+            if (dirName.Length > MaxAllowedDirectoryCharacters)
+            {
+                dirName = dirName.Substring(0, MaxAllowedDirectoryCharacters);
+            }
+            return dirName;
         }
     }
 }
