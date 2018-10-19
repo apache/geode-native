@@ -41,6 +41,8 @@ static bool initgflibDone = initgflib();
 #ifdef _WIN32
 #include <windows.h>
 
+EXTERN_C IMAGE_DOS_HEADER __ImageBase;
+
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call,
                       LPVOID lpReserved) {
   switch (ul_reason_for_call) {
@@ -73,6 +75,9 @@ APACHE_GEODE_EXPORT void DllMainGetPath(char *result, int maxLen) {
   HMODULE module = GetModuleHandle(cppLibName.c_str());
   if (module == 0) {
     module = GetModuleHandle(dotNetLibName.c_str());
+  }
+  if (module == 0) {
+    module = (HMODULE)&__ImageBase;
   }
   if (module != 0) {
     GetModuleFileName(module, result, maxLen);
