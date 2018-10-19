@@ -61,8 +61,8 @@ int main(int argc, char** argv) {
 
     auto poolFactory = cache.getPoolManager().createFactory();
     poolFactory.setSubscriptionEnabled(true)
-      .addServer("localhost", 50505)
-      .addServer("localhost", 40404);
+        .addServer("localhost", 50505)
+        .addServer("localhost", 40404);
     auto pool = poolFactory.create("pool");
 
 
@@ -93,93 +93,88 @@ int main(int argc, char** argv) {
     }
 
     std::cout << "test data independent function with result on one server\n";
-    auto args = routingObj;
     auto exc = FunctionService::onServer(regPtr0->getRegionService());
-    auto executeFunctionResult = exc.withArgs(args).execute(getFuncIName)->getResult();
-    if (!executeFunctionResult) {
-      std::cout << "get executeFunctionResult is NULL\n";
-    } else {
-      for (int32_t item = 0; item < executeFunctionResult->size(); item++) {
-        auto arrayList = std::dynamic_pointer_cast<CacheableArrayList>(executeFunctionResult->operator[](item));
-        for (int32_t pos = 0; pos < arrayList->size(); pos++) {
-          resultList->push_back(arrayList->operator[](pos));
+    if(auto executeFunctionResult = exc.withArgs(routingObj).execute(getFuncIName)->getResult()) {
+      for (auto &arrayList: *executeFunctionResult) {
+        for (auto &cachedString: *std::dynamic_pointer_cast<CacheableArrayList>(arrayList)) {
+          resultList->push_back(cachedString);
         }
       }
       sprintf(buf, "get: result count = %lu\n", resultList->size());
       std::cout << buf;
-      for (int32_t i = 0; i < resultList->size(); i++) {
+      int i = 0;
+      for (auto &cachedString: *resultList) {
         sprintf(
             buf, "get result[%d]=%s\n", i,
-            std::dynamic_pointer_cast<CacheableString>(resultList->operator[](i))->value().c_str());
+            std::dynamic_pointer_cast<CacheableString>(cachedString)->value().c_str());
         std::cout << buf;
+        ++i;
       }
+    } else {
+      std::cout << "get executeFunctionResult is NULL\n";
     }
 
     std::cout << "test data independent function without result on one server\n";
 
-    exc.withArgs(args).execute(putFuncIName, std::chrono::milliseconds(15));
+    exc.withArgs(routingObj).execute(putFuncIName, std::chrono::milliseconds(15));
 
     std::cout << "test data independent function with result on all servers\n";
 
     exc = FunctionService::onServers(regPtr0->getRegionService());
-    executeFunctionResult =
-        exc.withArgs(args).execute(getFuncIName)->getResult();
-    if (!executeFunctionResult) {
-      std::cout << "get executeFunctionResult is NULL\n";
-    } else {
+    if(auto executeFunctionResult = exc.withArgs(routingObj).execute(getFuncIName)->getResult()) {
       resultList->clear();
-      for (int32_t item = 0; item < executeFunctionResult->size(); item++) {
-        auto arrayList = std::dynamic_pointer_cast<CacheableArrayList>(executeFunctionResult->operator[](item));
-        for (int32_t pos = 0; pos < arrayList->size(); pos++) {
-          resultList->push_back(arrayList->operator[](pos));
+      for (auto &arrayList: *executeFunctionResult) {
+        for (auto &cachedString: *std::dynamic_pointer_cast<CacheableArrayList>(arrayList)) {
+          resultList->push_back(cachedString);
         }
       }
       sprintf(buf, "get: result count = %lu\n", resultList->size());
       std::cout << buf;
-      for (int32_t i = 0; i < resultList->size(); i++) {
+      int i = 0;
+      for (auto &cachedString: *resultList) {
         sprintf(
             buf, "get result[%d]=%s\n", i,
-            std::dynamic_pointer_cast<CacheableString>(resultList->operator[](i))->value().c_str());
+            std::dynamic_pointer_cast<CacheableString>(cachedString)->value().c_str());
         std::cout << buf;
+        ++i;
       }
+    } else {
+      std::cout << "get executeFunctionResult is NULL\n";
     }
 
 
     std::cout << "test data independent function without result on all servers\n";
-    exc.withArgs(args).execute(putFuncIName, std::chrono::milliseconds(15));
+    exc.withArgs(routingObj).execute(putFuncIName, std::chrono::milliseconds(15));
     std::cout << "test data dependent function with result\n";
 
-    auto args2 = CacheableBoolean::create(1);
+    auto args = CacheableBoolean::create(1);
     exc = FunctionService::onRegion(regPtr0);
-    executeFunctionResult = exc.withFilter(routingObj)
-                                .withArgs(args)
-                                .execute(getFuncName)
-                                ->getResult();
-    if (!executeFunctionResult) {
-      std::cout << "execute on region: executeFunctionResult is NULL\n";
-    } else {
+    if(auto executeFunctionResult = exc.withFilter(routingObj)
+        .withArgs(args)
+        .execute(getFuncName)
+        ->getResult()) {
       resultList->clear();
       std::cout << "Execute on Region: result count = " << executeFunctionResult->size() << '\n';
-      for (int32_t i = 0; i < executeFunctionResult->size(); i++) {
-        auto arrayList = std::dynamic_pointer_cast<CacheableArrayList>(executeFunctionResult->operator[](i));
-        for (int32_t pos = 0; pos < arrayList->size(); pos++) {
-          resultList->push_back(arrayList->operator[](pos));
+      for (auto &arrayList: *executeFunctionResult) {
+        for (auto &cachedString: *std::dynamic_pointer_cast<CacheableArrayList>(arrayList)) {
+          resultList->push_back(cachedString);
         }
       }
       sprintf(buf, "Execute on Region: result count = %lu\n", resultList->size());
       std::cout << buf;
-
-      for (int32_t i = 0; i < resultList->size(); i++) {
+      int i = 0;
+      for (auto &cachedString: *resultList) {
         sprintf(
             buf, "Execute on Region: result[%d]=%s\n", i,
-            std::dynamic_pointer_cast<CacheableString>(resultList->operator[](i))->value().c_str());
+            std::dynamic_pointer_cast<CacheableString>(cachedString)->value().c_str());
         std::cout << buf;
+        ++i;
       }
+    } else {
+      std::cout << "execute on region: executeFunctionResult is NULL\n";
     }
 
     std::cout << "test data dependent function without result\n";
-
-    exc.withFilter(routingObj).withArgs(args).execute(putFuncName, std::chrono::milliseconds(15));
 
     // Close the Geode Cache.
     cache.close();
@@ -187,7 +182,7 @@ int main(int argc, char** argv) {
 
     return 0;
   }
-  // An exception should not occur
+    // An exception should not occur
   catch (const Exception& geodeExcp) {
     std::cerr << "Function Execution Geode Exception: " << geodeExcp.getMessage() << '\n';
 
