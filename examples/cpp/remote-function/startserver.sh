@@ -29,4 +29,4 @@ else
     fi
 fi
 
-$GFSH_PATH  -e "start locator --name=locator" -e "start server --name=server"  -e "create region --name=example_userinfo --type=PARTITION"
+$GFSH_PATH  -e "start locator --name=locator" -e "start server --name=the-server --cache-xml-file=serverExecuteFunctions.xml"  -e "create region --name=partition_region --type=PARTITION" -e "start server --name=the-second-server --cache-xml-file=serverExecuteFunctions2.xml"
