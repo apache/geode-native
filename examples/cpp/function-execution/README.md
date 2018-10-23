@@ -1,7 +1,9 @@
-# Put-get-remove example
-This is a very simple example showing how to create a `Cache` using the `CacheFactory`,
-configure a `Pool` with a `PoolFactory`, and configure a `Region` with a `RegionFactory`.
-We then put, get, and remove some primitive data in the region.
+# Function-execution example
+This is a very simple example showing how to execute a function on the server.  
+It creates a `Cache` using the `CacheFactory`, configures a `Pool` with a 
+`PoolFactory`, and configures a `Region` with a `RegionFactory`.  The 
+startserver script deploys a jar file with several custom functions in it, and 
+the example app executes those functions and prints out the result set(s).
 
 ## Prerequisites
 * An installation of Apache Geode.
@@ -11,10 +13,10 @@ We then put, get, and remove some primitive data in the region.
 * `GEODE_HOME/bin` in the execution path.
 
 ## Running
-1. Set the current directory to the `put-get-remove` directory in your example workspace.
+1. Set the current directory to the `function-execution` directory in your example workspace.
 
   ```
-  $ cd workspace/examples/cpp/put-get-remove
+  $ cd workspace/examples/cpp/function-execution
   ```
 
 1. Run the `startserver.sh` script to start the Geode server, create a region, and populate the region with sample data.
@@ -31,19 +33,12 @@ We then put, get, and remove some primitive data in the region.
 
   Member | Status
   ------ | ----------------------------------------------
-  server | Region "/example_userinfo" created on "server"
+  server | Region "/partition_region" created on "server"
   ```
 
-1. Execute `put-get-remove`:
+1. Execute `function-execution`:
 
   ```
-  $ build/put-get-remove
-  Storing id and username in the region
-  Getting the user info from the region
-    rtimmons = Robert Timmons
-    scharles = Sylvia Charles
-  Removing rtimmons info from the region
-  rtimmons's info successfully deleted
   ```
 
 1. Stop the server
