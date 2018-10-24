@@ -28,8 +28,6 @@
  * 6. Close the Cache.
  *
  */
-
-// Include the Geode library.
 #include <iostream>
 #include <memory>
 
@@ -46,25 +44,26 @@ using namespace apache::geode::client;
 const auto getFuncIName = std::string("MultiGetFunctionI");
 const auto putFuncIName = std::string("MultiPutFunctionI");
 const auto getFuncName = std::string("MultiGetFunction");
-const auto putFuncName = std::string("MultiPutFunction");
+
+const int EXAMPLE_ITEM_COUNT = 34;
 
 // The Execute Function QuickStart example.
 int main(int argc, char** argv) {
   try {
     // Create CacheFactory using the settings from the geode.properties file by
     // default.
-    auto cacheFactory = CacheFactory();
-    cacheFactory.set("log-level", "none");
-    auto cache = cacheFactory.create();
+    auto cache = CacheFactory()
+        .set("log-level", "none")
+        .create();
 
     std::cout << "Created CacheFactory\n";
 
-    auto poolFactory = cache.getPoolManager().createFactory();
-    poolFactory.setSubscriptionEnabled(true)
+    auto pool = cache.getPoolManager()
+        .createFactory()
+        .setSubscriptionEnabled(true)
         .addServer("localhost", 50505)
         .addServer("localhost", 40404);
-    auto pool = poolFactory.create("pool");
-
+        .create("pool");
 
     // Create the example Region Programmatically
     auto regionFactory = cache.createRegionFactory(RegionShortcut::PROXY);
@@ -76,7 +75,7 @@ int main(int argc, char** argv) {
     char buf[128];
 
     auto resultList = CacheableVector::create();
-    for (int i = 0; i < 34; i++) {
+    for (int i = 0; i < EXAMPLE_ITEM_COUNT; i++) {
       sprintf(buf, "VALUE--%d", i);
       auto value(CacheableString::create(buf));
 
@@ -86,7 +85,7 @@ int main(int argc, char** argv) {
     }
 
     auto routingObj = CacheableVector::create();
-    for (int i = 1; i < 34; i+=2) {
+    for (int i = 1; i < EXAMPLE_ITEM_COUNT; i+=2) {
       sprintf(buf, "KEY--%d", i);
       auto key = CacheableKey::create(buf);
       routingObj->push_back(key);
@@ -173,12 +172,6 @@ int main(int argc, char** argv) {
     } else {
       std::cout << "execute on region: executeFunctionResult is NULL\n";
     }
-
-    std::cout << "test data dependent function without result\n";
-
-    // Close the Geode Cache.
-    cache.close();
-    std::cout << "Closed the Geode Cache\n";
 
     return 0;
   }
