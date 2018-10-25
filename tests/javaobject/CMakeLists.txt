@@ -22,7 +22,15 @@ include(UseJava)
 
 file(GLOB_RECURSE SOURCES "*.java")
 
-
 add_jar(javaobject ${SOURCES}
   INCLUDE_JARS ${Geode_CLASSPATH}
 )
+
+set(EXPORT_FILE_NAME ${CMAKE_CURRENT_BINARY_DIR}/javaobject.jar)
+
+install(DIRECTORY ${COMMON_INCLUDE_DIR} DESTINATION .)
+install(FILES
+        ${EXPORT_FILE_NAME}
+        DESTINATION examples/
+        )
+
