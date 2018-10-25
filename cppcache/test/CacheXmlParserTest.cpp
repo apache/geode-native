@@ -24,8 +24,8 @@ using apache::geode::client::CacheXmlParser;
 std::string xsd_prefix = R"(<?xml version='1.0' encoding='UTF-8'?>
 <client-cache
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns="http://schema.pivotal.io/gemfire/gfcpp-cache"
-  xsi:schemaLocation="http://schema.pivotal.io/gemfire/gfcpp-cache-10.0.xsd"
+  xmlns="http://geode.apache.org/schema/cache"
+  xsi:schemaLocation="http://geode.apache.org/schema/cpp-cache-1.0.xsd"
   version='10.0'
 >)";
 
