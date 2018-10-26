@@ -51,9 +51,9 @@ typedef std::shared_ptr<PersistenceManager> (*getPersistenceManagerInstance)(
  */
 class APACHE_GEODE_EXPORT PersistenceManager {
  public:
-  static constexpr char const* MAX_PAGE_COUNT = "MaxPageCount";
-  static constexpr char const* PAGE_SIZE = "PageSize";
-  static constexpr char const* PERSISTENCE_DIR = "PersistenceDirectory";
+  static constexpr char const* PM_MAX_PAGE_COUNT = "MaxPageCount";
+  static constexpr char const* PM_PAGE_SIZE = "PageSize";
+  static constexpr char const* PM_PERSISTENCE_DIR = "PersistenceDirectory";
 
   /**
    * Returns the current persistence manager.

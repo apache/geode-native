@@ -21,9 +21,9 @@ namespace apache {
 namespace geode {
 namespace client {
 
-constexpr char const* PersistenceManager::MAX_PAGE_COUNT;
-constexpr char const* PersistenceManager::PAGE_SIZE;
-constexpr char const* PersistenceManager::PERSISTENCE_DIR;
+constexpr char const* PersistenceManager::PM_MAX_PAGE_COUNT;
+constexpr char const* PersistenceManager::PM_PAGE_SIZE;
+constexpr char const* PersistenceManager::PM_PERSISTENCE_DIR;
 
 }  // namespace client
 }  // namespace geode

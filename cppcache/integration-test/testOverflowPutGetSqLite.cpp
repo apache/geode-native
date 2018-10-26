@@ -337,9 +337,9 @@ void setSqLiteProperties(std::shared_ptr<Properties> &sqliteProperties,
                          int maxPageCount = 1073741823, int pageSize = 65536,
                          std::string pDir = sqlite_dir) {
   sqliteProperties = Properties::create();
-  sqliteProperties->insert(PersistenceManager::MAX_PAGE_COUNT, maxPageCount);
-  sqliteProperties->insert(PersistenceManager::PAGE_SIZE, pageSize);
-  sqliteProperties->insert(PersistenceManager::PERSISTENCE_DIR, pDir.c_str());
+  sqliteProperties->insert(PersistenceManager::PM_MAX_PAGE_COUNT, maxPageCount);
+  sqliteProperties->insert(PersistenceManager::PM_PAGE_SIZE, pageSize);
+  sqliteProperties->insert(PersistenceManager::PM_PERSISTENCE_DIR, pDir.c_str());
   ASSERT(sqliteProperties != nullptr,
          "Expected sqlite properties to be NON-nullptr");
 }

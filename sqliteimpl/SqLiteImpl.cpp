@@ -43,9 +43,9 @@ void SqLiteImpl::init(const std::shared_ptr<Region> &region,
   m_persistanceDir = g_default_persistence_directory;
   std::string regionName = region->getName();
   if (diskProperties != nullptr) {
-    auto maxPageCountPtr = diskProperties->find(MAX_PAGE_COUNT);
-    auto pageSizePtr = diskProperties->find(PAGE_SIZE);
-    auto persDir = diskProperties->find(PERSISTENCE_DIR);
+    auto maxPageCountPtr = diskProperties->find(PM_MAX_PAGE_COUNT);
+    auto pageSizePtr = diskProperties->find(PM_PAGE_SIZE);
+    auto persDir = diskProperties->find(PM_PERSISTENCE_DIR);
 
     if (maxPageCountPtr != nullptr) {
       maxPageCount = atoi(maxPageCountPtr->value().c_str());
