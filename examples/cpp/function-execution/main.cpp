@@ -62,7 +62,7 @@ int main(int argc, char** argv) {
         .createFactory()
         .setSubscriptionEnabled(true)
         .addServer("localhost", 50505)
-        .addServer("localhost", 40404);
+        .addServer("localhost", 40404)
         .create("pool");
 
     // Create the example Region Programmatically
