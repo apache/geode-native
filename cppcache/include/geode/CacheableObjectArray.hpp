@@ -35,13 +35,14 @@ namespace apache {
 namespace geode {
 namespace client {
 
-/**
- * Implement an immutable Vector of <code>Cacheable</code> objects
- * that can serve as a distributable object for caching.
- */
 class DataInput;
 class DataOutput;
 class Serializable;
+
+/**
+ * Implements an immutable Vector of <code>Cacheable</code> objects
+ * that can serve as a distributable object for caching.
+ */
 
 class APACHE_GEODE_EXPORT CacheableObjectArray
     : public internal::DataSerializablePrimitive,

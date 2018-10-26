@@ -38,6 +38,10 @@ class DataInput;
 class DataOutput;
 class Serializable;
 
+/**
+ * Implements a DataSerializable object for undefined query results.
+ */
+
 class APACHE_GEODE_EXPORT CacheableUndefined
     : public internal::DataSerializableFixedId_t<
           internal::DSFid::CacheableUndefined> {

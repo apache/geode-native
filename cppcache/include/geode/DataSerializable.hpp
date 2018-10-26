@@ -34,7 +34,7 @@ class DataOutput;
 class DataInput;
 
 /**
- * An interface for objects whose state can be written/read as primitive types.
+ * An interface for objects whose contents can be serialized as primitive types.
  */
 class APACHE_GEODE_EXPORT DataSerializable : public virtual Serializable {
  public:

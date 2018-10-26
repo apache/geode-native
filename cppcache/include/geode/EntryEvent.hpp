@@ -34,11 +34,12 @@ namespace apache {
 namespace geode {
 namespace client {
 
-/** Represents an entry event affecting an entry, including its identity and the
- * the circumstances of the event. */
 class CacheableKey;
 class Region;
 class Serializable;
+
+/** Represents an entry event affecting an entry, including its identity and the
+ * the circumstances of the event. */
 
 class APACHE_GEODE_EXPORT EntryEvent {
  protected:

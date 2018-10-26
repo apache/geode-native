@@ -36,7 +36,9 @@ namespace Apache
       namespace native = apache::geode::client;
       
       ref class Cache;
-
+      /// <summary>
+      /// Registry for custom serializable types, both PDXSerializable and DataSerializable.
+      /// </summary>
       public ref class TypeRegistry
       {
       public:

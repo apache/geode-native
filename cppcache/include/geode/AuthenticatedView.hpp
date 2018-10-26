@@ -39,19 +39,10 @@ class UserAttributes;
 class FunctionServiceImpl;
 
 /**
- * @class Cache Cache.hpp
- *
- * Caches are obtained from static methods on the {@link CacheFactory} class
- * <p>
- * When a cache is created a {@link DistributedSystem} must be specified.
- * <p>
- * When a cache will no longer be used, it should be {@link #close closed}.
- * Once it {@link Cache::isClosed is closed} any attempt to use it
- * will cause a <code>CacheClosedException</code> to be thrown.
- *
- * <p>A cache can have multiple root regions, each with a different name.
- *
+ * Creates an authenticated cache view to allow credential based access to
+ * region services.
  */
+
 class APACHE_GEODE_EXPORT AuthenticatedView : public RegionService {
   /**
    * @brief public methods

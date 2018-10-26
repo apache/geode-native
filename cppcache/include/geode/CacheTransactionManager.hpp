@@ -32,6 +32,11 @@ namespace apache {
 namespace geode {
 namespace client {
 
+/**
+ * An interface for objects who perform transaction management
+ *
+ */
+
 class APACHE_GEODE_EXPORT CacheTransactionManager {
  public:
   /** Creates a new transaction and associates it with the current thread.
