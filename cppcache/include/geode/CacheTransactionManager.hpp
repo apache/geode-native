@@ -34,7 +34,6 @@ namespace client {
 
 /**
  * An interface for objects who perform transaction management
- *
  */
 
 class APACHE_GEODE_EXPORT CacheTransactionManager {

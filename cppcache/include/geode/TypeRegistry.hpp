@@ -35,7 +35,6 @@ class PdxSerializer;
 /**
  * Registry for custom serializable types, both PDXSerializable and
  * DataSerializable.
- *
  */
 class APACHE_GEODE_EXPORT TypeRegistry {
  public:
