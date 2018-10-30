@@ -45,7 +45,7 @@ using apache::geode::client::FunctionService;
 using apache::geode::client::Region;
 using apache::geode::client::RegionShortcut;
 
-const auto getFuncIName = std::string("MultiGetFunctionI");
+const auto getFuncIName = std::string("ExampleMultiGetFunction");
 
 const int EXAMPLE_ITEM_COUNT  = 6;
 const int EXAMPLE_SERVER_PORT = 50505;

@@ -31,8 +31,16 @@ install(FILES
 install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/cmake/Find${PRODUCT_NAME_NOSPACE}.cmake
   DESTINATION examples/cmake)
+install(FILES
+  ${CMAKE_CURRENT_SOURCE_DIR}/utilities/ExampleMultiGetFunction.java
+  DESTINATION examples/utilities)
+install(FILES
+  ${CMAKE_CURRENT_SOURCE_DIR}/utilities/CMakeLists.txt
+  DESTINATION examples/utilities)
 
 add_subdirectory(cpp)
 if (BUILD_CLI)
   add_subdirectory(dotnet)
 endif()
+add_subdirectory(utilities)
+
