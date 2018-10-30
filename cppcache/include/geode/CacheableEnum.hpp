@@ -32,10 +32,14 @@ namespace apache {
 namespace geode {
 namespace client {
 
+class DataInput;
+class DataOutput;
+class Serializable;
+
 /**
  * Since C++ enums cannot be directly passed as a parameter to PdxWriter's
- * writeObject and PdxReader's readObject api
- * wrap C++ enum in to a immutable wrapper CacheableEnum class type by
+ * writeObject and PdxReader's readObject api,
+ * wrap C++ enums with an immutable wrapper CacheableEnum class type by
  * specifying enum class name, enum value name and its ordinal. C++ enum allows
  * explicit setting of ordinal number, but it is up to the user to map java
  * enumName with that of C++ enumName. Currently this wrapper only works as part
@@ -45,10 +49,6 @@ namespace client {
  * @see PdxWriter#writeObject
  * @see PdxReader#readObject
  */
-
-class DataInput;
-class DataOutput;
-class Serializable;
 
 class APACHE_GEODE_EXPORT CacheableEnum
     : public internal::DataSerializablePrimitive,

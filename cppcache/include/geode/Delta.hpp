@@ -32,6 +32,9 @@ namespace apache {
 namespace geode {
 namespace client {
 
+class DataInput;
+class DataOutput;
+
 /**
  * This interface is used for delta propagation.
  * To use delta propagation, an application class must derive from <code>class
@@ -43,9 +46,6 @@ namespace client {
  * apply a serialized delta to an existing object
  * of the class.
  */
-
-class DataInput;
-class DataOutput;
 
 class APACHE_GEODE_EXPORT Delta {
  public:

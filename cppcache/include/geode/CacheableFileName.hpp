@@ -33,13 +33,14 @@ namespace apache {
 namespace geode {
 namespace client {
 
-/**
- * Implement an immutable wrapper for filenames that can serve as a
- * distributable filename object for caching as both key and value.
- */
 class DataInput;
 class DataOutput;
 class Serializable;
+
+/**
+ * Implements an immutable wrapper for filenames that can serve as a
+ * distributable filename object for caching as both key and value.
+ */
 
 class APACHE_GEODE_EXPORT CacheableFileName : public CacheableString {
  public:

@@ -37,6 +37,9 @@ namespace Apache
       ref class DataOutput;
       ref class DataInput;
 
+      /// <summary>
+      /// An interface for objects whose contents can be serialized as primitive types.
+      /// </summary>
       public interface class IDataSerializable : public ISerializable
       {
       public:
