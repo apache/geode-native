@@ -22,25 +22,41 @@ namespace geode {
 namespace client {
 namespace internal {
 
-template class CacheableKeyPrimitive<bool, DSCode::CacheableBoolean>;
-template class CacheableKeyPrimitive<int8_t, DSCode::CacheableByte>;
-template class CacheableKeyPrimitive<double, DSCode::CacheableDouble>;
-template class CacheableKeyPrimitive<float, DSCode::CacheableFloat>;
-template class CacheableKeyPrimitive<int16_t, DSCode::CacheableInt16>;
-template class CacheableKeyPrimitive<int32_t, DSCode::CacheableInt32>;
-template class CacheableKeyPrimitive<int64_t, DSCode::CacheableInt64>;
-template class CacheableKeyPrimitive<char16_t, DSCode::CacheableCharacter>;
+template class APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT
+    CacheableKeyPrimitive<bool, DSCode::CacheableBoolean>;
+template class APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT
+    CacheableKeyPrimitive<int8_t, DSCode::CacheableByte>;
+template class APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT
+    CacheableKeyPrimitive<double, DSCode::CacheableDouble>;
+template class APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT
+    CacheableKeyPrimitive<float, DSCode::CacheableFloat>;
+template class APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT
+    CacheableKeyPrimitive<int16_t, DSCode::CacheableInt16>;
+template class APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT
+    CacheableKeyPrimitive<int32_t, DSCode::CacheableInt32>;
+template class APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT
+    CacheableKeyPrimitive<int64_t, DSCode::CacheableInt64>;
+template class APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT
+    CacheableKeyPrimitive<char16_t, DSCode::CacheableCharacter>;
 
-template class CacheableArrayPrimitive<int8_t, DSCode::CacheableBytes>;
-template class CacheableArrayPrimitive<bool, DSCode::BooleanArray>;
-template class CacheableArrayPrimitive<char16_t, DSCode::CharArray>;
-template class CacheableArrayPrimitive<double, DSCode::CacheableDoubleArray>;
-template class CacheableArrayPrimitive<float, DSCode::CacheableFloatArray>;
-template class CacheableArrayPrimitive<int16_t, DSCode::CacheableInt16Array>;
-template class CacheableArrayPrimitive<int32_t, DSCode::CacheableInt32Array>;
-template class CacheableArrayPrimitive<int64_t, DSCode::CacheableInt64Array>;
-template class CacheableArrayPrimitive<std::shared_ptr<CacheableString>,
-                                       DSCode::CacheableStringArray>;
+template class APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT
+    CacheableArrayPrimitive<int8_t, DSCode::CacheableBytes>;
+template class APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT
+    CacheableArrayPrimitive<bool, DSCode::BooleanArray>;
+template class APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT
+    CacheableArrayPrimitive<char16_t, DSCode::CharArray>;
+template class APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT
+    CacheableArrayPrimitive<double, DSCode::CacheableDoubleArray>;
+template class APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT
+    CacheableArrayPrimitive<float, DSCode::CacheableFloatArray>;
+template class APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT
+    CacheableArrayPrimitive<int16_t, DSCode::CacheableInt16Array>;
+template class APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT
+    CacheableArrayPrimitive<int32_t, DSCode::CacheableInt32Array>;
+template class APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT
+    CacheableArrayPrimitive<int64_t, DSCode::CacheableInt64Array>;
+template class APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT CacheableArrayPrimitive<
+    std::shared_ptr<CacheableString>, DSCode::CacheableStringArray>;
 }  // namespace internal
 }  // namespace client
 }  // namespace geode
