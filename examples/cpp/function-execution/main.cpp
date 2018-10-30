@@ -16,20 +16,16 @@
  */
 
 /*
- * The Execute Function QuickStart Example.
- *
  * This example takes the following steps:
  *
- * 1. Create a Geode Cache.
- * 2. Create the example Region Programmatically.
+ * 1. Create a Geode Cache, Pool, and example Region Programmatically.
  * 3. Populate some objects on the Region.
- * 4. Create Execute Objects
- * 5. Execute Functions
- * 6. Close the Cache.
- *
+ * 4. Create Execute Object
+ * 5. Execute Function
  */
 #include <iostream>
 #include <memory>
+#include <sstream>
 
 #include <geode/CacheFactory.hpp>
 #include <geode/PoolManager.hpp>
@@ -38,147 +34,117 @@
 #include <geode/FunctionService.hpp>
 #include <geode/CacheableString.hpp>
 
-// Use the "geode" namespace.
-using namespace apache::geode::client;
+using apache::geode::client::Cache;
+using apache::geode::client::CacheableArrayList;
+using apache::geode::client::CacheableKey;
+using apache::geode::client::CacheableString;
+using apache::geode::client::CacheableVector;
+using apache::geode::client::CacheFactory;
+using apache::geode::client::Exception;
+using apache::geode::client::FunctionService;
+using apache::geode::client::Region;
+using apache::geode::client::RegionShortcut;
 
 const auto getFuncIName = std::string("MultiGetFunctionI");
-const auto putFuncIName = std::string("MultiPutFunctionI");
-const auto getFuncName = std::string("MultiGetFunction");
 
-const int EXAMPLE_ITEM_COUNT = 34;
+const int EXAMPLE_ITEM_COUNT  = 6;
+const int EXAMPLE_SERVER_PORT = 50505;
 
-// The Execute Function QuickStart example.
+Cache setupCache() {
+  return CacheFactory()
+      .set("log-level", "none")
+      .create();
+}
+
+void createPool(const Cache& cache) {
+  auto pool = cache.getPoolManager()
+      .createFactory()
+      .setSubscriptionEnabled(true)
+      .addServer("localhost", EXAMPLE_SERVER_PORT)
+      .create("pool");
+}
+
+std::shared_ptr<Region> createRegion(Cache& cache) {
+  auto regionFactory = cache.createRegionFactory(RegionShortcut::PROXY);
+  auto regPtr0 = regionFactory.setPoolName("pool").create("partition_region");
+
+  return regPtr0;
+}
+
+void populateRegion(const std::shared_ptr<Region>& regionPtr) {
+  for (int i = 0; i < EXAMPLE_ITEM_COUNT; i++) {
+    std::stringstream keyStream;
+    std::stringstream valueStream;
+    keyStream << "KEY--" << i;
+    valueStream << "VALUE--" << i;
+    auto value(CacheableString::create(valueStream.str().c_str()));
+
+    auto key = CacheableKey::create(keyStream.str().c_str());
+    regionPtr->put(key, value);
+  }
+}
+
+std::shared_ptr<CacheableVector> populateQueryObject() {
+  auto routingObj = CacheableVector::create();
+  for (int i = 1; i < EXAMPLE_ITEM_COUNT; i+=2) {
+    std::stringstream keyStream;
+    keyStream << "KEY--" << i;
+    auto key = CacheableKey::create(keyStream.str().c_str());
+    routingObj->push_back(key);
+  }
+  return routingObj;
+}
+
+std::vector<std::string> executeFunctionOnServer(const std::shared_ptr<Region> regionPtr,
+    const std::shared_ptr<CacheableVector> queryObject) {
+  std::vector<std::string> resultList;
+
+  auto functionService = FunctionService::onServer(regionPtr->getRegionService());
+  if(auto executeFunctionResult = functionService.withArgs(queryObject).execute(getFuncIName)->getResult()) {
+    for (auto &arrayList: *executeFunctionResult) {
+//        auto newList = std::dynamic_pointer_cast<CacheableArrayList>(arrayList);
+//        std::for_each(newList->begin(), newList->end(), [&resultList](std::shared_ptr<Cacheable> val) {
+//          resultList.push_back(std::dynamic_pointer_cast<CacheableString>(val)->value());
+//        });
+      for (auto &cachedString: *std::dynamic_pointer_cast<CacheableArrayList>(arrayList)) {
+        resultList.push_back(std::dynamic_pointer_cast<CacheableString>(cachedString)->value());
+      }
+    }
+  } else {
+    std::cout << "get executeFunctionResult is NULL\n";
+  }
+
+  return resultList;
+}
+
+void printResults(const std::vector<std::string>& resultList) {
+  std::cout << "Result count = " << resultList.size() << std::endl << std::endl;
+  int i = 0;
+  for (auto &cachedString: resultList) {
+    std::cout << "\tResult[" << i << "]=" << cachedString << std::endl;
+    ++i;
+  }
+}
+
 int main(int argc, char** argv) {
   try {
-    // Create CacheFactory using the settings from the geode.properties file by
-    // default.
-    auto cache = CacheFactory()
-        .set("log-level", "none")
-        .create();
+    auto cache = setupCache();
 
-    std::cout << "Created CacheFactory\n";
+    createPool(cache);
 
-    auto pool = cache.getPoolManager()
-        .createFactory()
-        .setSubscriptionEnabled(true)
-        .addServer("localhost", 50505)
-        .addServer("localhost", 40404);
-        .create("pool");
+    auto regionPtr = createRegion(cache);
 
-    // Create the example Region Programmatically
-    auto regionFactory = cache.createRegionFactory(RegionShortcut::PROXY);
-    auto regPtr0 = regionFactory.setPoolName("pool").create("partition_region");
+    populateRegion(regionPtr);
 
-    std::cout << "Created the Region\n";
+    auto queryObject = populateQueryObject();
 
-    regPtr0->registerAllKeys();
-    char buf[128];
+    auto resultList = executeFunctionOnServer(regionPtr, queryObject);
 
-    auto resultList = CacheableVector::create();
-    for (int i = 0; i < EXAMPLE_ITEM_COUNT; i++) {
-      sprintf(buf, "VALUE--%d", i);
-      auto value(CacheableString::create(buf));
-
-      sprintf(buf, "KEY--%d", i);
-      auto key = CacheableKey::create(buf);
-      regPtr0->put(key, value);
-    }
-
-    auto routingObj = CacheableVector::create();
-    for (int i = 1; i < EXAMPLE_ITEM_COUNT; i+=2) {
-      sprintf(buf, "KEY--%d", i);
-      auto key = CacheableKey::create(buf);
-      routingObj->push_back(key);
-    }
-
-    std::cout << "test data independent function with result on one server\n";
-    auto exc = FunctionService::onServer(regPtr0->getRegionService());
-    if(auto executeFunctionResult = exc.withArgs(routingObj).execute(getFuncIName)->getResult()) {
-      for (auto &arrayList: *executeFunctionResult) {
-        for (auto &cachedString: *std::dynamic_pointer_cast<CacheableArrayList>(arrayList)) {
-          resultList->push_back(cachedString);
-        }
-      }
-      sprintf(buf, "get: result count = %lu\n", resultList->size());
-      std::cout << buf;
-      int i = 0;
-      for (auto &cachedString: *resultList) {
-        sprintf(
-            buf, "get result[%d]=%s\n", i,
-            std::dynamic_pointer_cast<CacheableString>(cachedString)->value().c_str());
-        std::cout << buf;
-        ++i;
-      }
-    } else {
-      std::cout << "get executeFunctionResult is NULL\n";
-    }
-
-    std::cout << "test data independent function without result on one server\n";
-
-    exc.withArgs(routingObj).execute(putFuncIName, std::chrono::milliseconds(15));
-
-    std::cout << "test data independent function with result on all servers\n";
-
-    exc = FunctionService::onServers(regPtr0->getRegionService());
-    if(auto executeFunctionResult = exc.withArgs(routingObj).execute(getFuncIName)->getResult()) {
-      resultList->clear();
-      for (auto &arrayList: *executeFunctionResult) {
-        for (auto &cachedString: *std::dynamic_pointer_cast<CacheableArrayList>(arrayList)) {
-          resultList->push_back(cachedString);
-        }
-      }
-      sprintf(buf, "get: result count = %lu\n", resultList->size());
-      std::cout << buf;
-      int i = 0;
-      for (auto &cachedString: *resultList) {
-        sprintf(
-            buf, "get result[%d]=%s\n", i,
-            std::dynamic_pointer_cast<CacheableString>(cachedString)->value().c_str());
-        std::cout << buf;
-        ++i;
-      }
-    } else {
-      std::cout << "get executeFunctionResult is NULL\n";
-    }
-
-
-    std::cout << "test data independent function without result on all servers\n";
-    exc.withArgs(routingObj).execute(putFuncIName, std::chrono::milliseconds(15));
-    std::cout << "test data dependent function with result\n";
-
-    auto args = CacheableBoolean::create(1);
-    exc = FunctionService::onRegion(regPtr0);
-    if(auto executeFunctionResult = exc.withFilter(routingObj)
-        .withArgs(args)
-        .execute(getFuncName)
-        ->getResult()) {
-      resultList->clear();
-      std::cout << "Execute on Region: result count = " << executeFunctionResult->size() << '\n';
-      for (auto &arrayList: *executeFunctionResult) {
-        for (auto &cachedString: *std::dynamic_pointer_cast<CacheableArrayList>(arrayList)) {
-          resultList->push_back(cachedString);
-        }
-      }
-      sprintf(buf, "Execute on Region: result count = %lu\n", resultList->size());
-      std::cout << buf;
-      int i = 0;
-      for (auto &cachedString: *resultList) {
-        sprintf(
-            buf, "Execute on Region: result[%d]=%s\n", i,
-            std::dynamic_pointer_cast<CacheableString>(cachedString)->value().c_str());
-        std::cout << buf;
-        ++i;
-      }
-    } else {
-      std::cout << "execute on region: executeFunctionResult is NULL\n";
-    }
-
-    return 0;
+    printResults(resultList);
   }
-    // An exception should not occur
   catch (const Exception& geodeExcp) {
     std::cerr << "Function Execution Geode Exception: " << geodeExcp.getMessage() << '\n';
-
     return 1;
   }
 }
+
