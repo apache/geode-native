@@ -42,30 +42,14 @@ using internal::CacheableArrayPrimitive;
 using internal::CacheableContainerPrimitive;
 using internal::CacheableKeyPrimitive;
 
-/** Function to copy an array from source to destination. */
-template <typename TObj>
-inline void copyArray(TObj* dest, const TObj* src, size_t length) {
-  std::memcpy(dest, src, length * sizeof(TObj));
-}
-
-/**
- * Function to copy an array of <code>std::shared_ptr</code>s from
- * source to destination.
- */
-template <typename TObj>
-inline void copyArray(std::shared_ptr<TObj>* dest,
-                      const std::shared_ptr<TObj>* src, size_t length) {
-  for (size_t index = 0; index < length; index++) {
-    dest[index] = src[index];
-  }
-}
-
 /**
  * An immutable wrapper for bool that can serve as
  * a distributable key object for caching.
  */
 using CacheableBoolean =
     CacheableKeyPrimitive<bool, internal::DSCode::CacheableBoolean>;
+extern template class internal::CacheableKeyPrimitive<
+    bool, internal::DSCode::CacheableBoolean>;
 template <>
 inline std::shared_ptr<CacheableKey> CacheableKey::create(bool value) {
   return CacheableBoolean::create(value);
@@ -81,6 +65,8 @@ inline std::shared_ptr<Cacheable> Serializable::create(bool value) {
  */
 using CacheableByte =
     CacheableKeyPrimitive<int8_t, internal::DSCode::CacheableByte>;
+extern template class internal::CacheableKeyPrimitive<
+    int8_t, internal::DSCode::CacheableByte>;
 template <>
 inline std::shared_ptr<CacheableKey> CacheableKey::create(int8_t value) {
   return CacheableByte::create(value);
@@ -95,7 +81,9 @@ inline std::shared_ptr<Cacheable> Serializable::create(int8_t value) {
  * a distributable key object for caching.
  */
 using CacheableDouble =
-    CacheableKeyPrimitive<double, internal::DSCode::CacheableDouble>;
+    internal::CacheableKeyPrimitive<double, internal::DSCode::CacheableDouble>;
+extern template class internal::CacheableKeyPrimitive<
+    double, internal::DSCode::CacheableDouble>;
 template <>
 inline std::shared_ptr<CacheableKey> CacheableKey::create(double value) {
   return CacheableDouble::create(value);
@@ -112,6 +100,8 @@ inline std::shared_ptr<Cacheable> Serializable::create(double value) {
  */
 using CacheableFloat =
     CacheableKeyPrimitive<float, internal::DSCode::CacheableFloat>;
+extern template class internal::CacheableKeyPrimitive<
+    float, internal::DSCode::CacheableFloat>;
 template <>
 inline std::shared_ptr<CacheableKey> CacheableKey::create(float value) {
   return CacheableFloat::create(value);
@@ -127,6 +117,8 @@ inline std::shared_ptr<Cacheable> Serializable::create(float value) {
  */
 using CacheableInt16 =
     CacheableKeyPrimitive<int16_t, internal::DSCode::CacheableInt16>;
+extern template class internal::CacheableKeyPrimitive<
+    int16_t, internal::DSCode::CacheableInt16>;
 template <>
 inline std::shared_ptr<CacheableKey> CacheableKey::create(int16_t value) {
   return CacheableInt16::create(value);
@@ -142,6 +134,8 @@ inline std::shared_ptr<Cacheable> Serializable::create(int16_t value) {
  */
 using CacheableInt32 =
     CacheableKeyPrimitive<int32_t, internal::DSCode::CacheableInt32>;
+extern template class internal::CacheableKeyPrimitive<
+    int32_t, internal::DSCode::CacheableInt32>;
 template <>
 inline std::shared_ptr<CacheableKey> CacheableKey::create(int32_t value) {
   return CacheableInt32::create(value);
@@ -157,6 +151,8 @@ inline std::shared_ptr<Cacheable> Serializable::create(int32_t value) {
  */
 using CacheableInt64 =
     CacheableKeyPrimitive<int64_t, internal::DSCode::CacheableInt64>;
+extern template class internal::CacheableKeyPrimitive<
+    int64_t, internal::DSCode::CacheableInt64>;
 template <>
 inline std::shared_ptr<CacheableKey> CacheableKey::create(int64_t value) {
   return CacheableInt64::create(value);
@@ -172,6 +168,8 @@ inline std::shared_ptr<Cacheable> Serializable::create(int64_t value) {
  */
 using CacheableCharacter =
     CacheableKeyPrimitive<char16_t, internal::DSCode::CacheableCharacter>;
+extern template class internal::CacheableKeyPrimitive<
+    char16_t, internal::DSCode::CacheableCharacter>;
 template <>
 inline std::shared_ptr<CacheableKey> CacheableKey::create(char16_t value) {
   return CacheableCharacter::create(value);
@@ -186,18 +184,24 @@ inline std::shared_ptr<Cacheable> Serializable::create(char16_t value) {
  * a distributable object for caching.
  */
 using CacheableBytes = CacheableArrayPrimitive<int8_t, DSCode::CacheableBytes>;
+extern template class internal::CacheableArrayPrimitive<
+    int8_t, internal::DSCode::CacheableBytes>;
 
 /**
  * An immutable wrapper for array of booleans that can serve as
  * a distributable object for caching.
  */
 using BooleanArray = CacheableArrayPrimitive<bool, DSCode::BooleanArray>;
+extern template class internal::CacheableArrayPrimitive<
+    bool, internal::DSCode::BooleanArray>;
 
 /**
  * An immutable wrapper for array of wide-characters that can serve as
  * a distributable object for caching.
  */
 using CharArray = CacheableArrayPrimitive<char16_t, DSCode::CharArray>;
+extern template class internal::CacheableArrayPrimitive<
+    char16_t, internal::DSCode::CharArray>;
 
 /**
  * An immutable wrapper for array of doubles that can serve as
@@ -205,6 +209,8 @@ using CharArray = CacheableArrayPrimitive<char16_t, DSCode::CharArray>;
  */
 using CacheableDoubleArray =
     CacheableArrayPrimitive<double, DSCode::CacheableDoubleArray>;
+extern template class internal::CacheableArrayPrimitive<
+    double, internal::DSCode::CacheableDoubleArray>;
 
 /**
  * An immutable wrapper for array of floats that can serve as
@@ -212,6 +218,8 @@ using CacheableDoubleArray =
  */
 using CacheableFloatArray =
     CacheableArrayPrimitive<float, DSCode::CacheableFloatArray>;
+extern template class internal::CacheableArrayPrimitive<
+    float, internal::DSCode::CacheableFloatArray>;
 
 /**
  * An immutable wrapper for array of 16-bit integers that can serve as
@@ -219,6 +227,8 @@ using CacheableFloatArray =
  */
 using CacheableInt16Array =
     CacheableArrayPrimitive<int16_t, DSCode::CacheableInt16Array>;
+extern template class internal::CacheableArrayPrimitive<
+    int16_t, internal::DSCode::CacheableInt16Array>;
 
 /**
  * An immutable wrapper for array of 32-bit integers that can serve as
@@ -226,6 +236,8 @@ using CacheableInt16Array =
  */
 using CacheableInt32Array =
     CacheableArrayPrimitive<int32_t, DSCode::CacheableInt32Array>;
+extern template class internal::CacheableArrayPrimitive<
+    int32_t, internal::DSCode::CacheableInt32Array>;
 
 /**
  * An immutable wrapper for array of 64-bit integers that can serve as
@@ -233,6 +245,8 @@ using CacheableInt32Array =
  */
 using CacheableInt64Array =
     CacheableArrayPrimitive<int64_t, DSCode::CacheableInt64Array>;
+extern template class internal::CacheableArrayPrimitive<
+    int64_t, internal::DSCode::CacheableInt64Array>;
 
 /**
  * An immutable wrapper for array of strings that can serve as
@@ -241,6 +255,8 @@ using CacheableInt64Array =
 using CacheableStringArray =
     CacheableArrayPrimitive<std::shared_ptr<CacheableString>,
                             DSCode::CacheableStringArray>;
+extern template class internal::CacheableArrayPrimitive<
+    std::shared_ptr<CacheableString>, internal::DSCode::CacheableStringArray>;
 
 // The following are defined as classes to avoid the issues with MSVC++
 // warning/erroring on C4503

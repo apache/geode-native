@@ -2450,7 +2450,7 @@ TcrMessageExecuteRegionFunctionSingleHop::
       LOGDEBUG("All Buckets so putting IntPart for buckets = %d ",
                routingObj->size());
       for (const auto& itr : *routingObj) {
-        writeIntPart(std::static_pointer_cast<CacheableInt32>(itr)->value());
+        writeIntPart(std::dynamic_pointer_cast<CacheableInt32>(itr)->value());
       }
     } else {
       LOGDEBUG("putting keys as withFilter called, routing Keys size = %d ",

@@ -38,8 +38,8 @@ namespace internal {
  */
 template <typename TObj, DSCode TYPEID>
 class APACHE_GEODE_EXPORT CacheableKeyPrimitive
-    : public DataSerializablePrimitive,
-      public CacheableKey {
+    : public virtual DataSerializablePrimitive,
+      public virtual CacheableKey {
  private:
   TObj value_;
 
@@ -86,19 +86,19 @@ class APACHE_GEODE_EXPORT CacheableKeyPrimitive
   }
 
   /** Factory function registered with serialization registry. */
-  static std::shared_ptr<Serializable> createDeserializable() {
-    return std::make_shared<CacheableKeyPrimitive>();
+  inline static std::shared_ptr<Serializable> createDeserializable() {
+    return std::make_shared<CacheableKeyPrimitive<TObj, TYPEID>>();
   }
 
   /** Factory function to create a new default instance. */
-  inline static std::shared_ptr<CacheableKeyPrimitive> create() {
-    return std::make_shared<CacheableKeyPrimitive>();
+  inline static std::shared_ptr<CacheableKeyPrimitive<TObj, TYPEID>> create() {
+    return std::make_shared<CacheableKeyPrimitive<TObj, TYPEID>>();
   }
 
   /** Factory function to create an instance with the given value. */
-  inline static std::shared_ptr<CacheableKeyPrimitive> create(
+  inline static std::shared_ptr<CacheableKeyPrimitive<TObj, TYPEID>> create(
       const TObj value) {
-    return std::make_shared<CacheableKeyPrimitive>(value);
+    return std::make_shared<CacheableKeyPrimitive<TObj, TYPEID>>(value);
   }
 };
 

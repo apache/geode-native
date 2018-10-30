@@ -20,17 +20,28 @@
 namespace apache {
 namespace geode {
 namespace client {
+namespace internal {
 
-#define _GF_CACHEABLE_KEY_DEF_(k) const char tName_##k[] = #k;
+template class CacheableKeyPrimitive<bool, DSCode::CacheableBoolean>;
+template class CacheableKeyPrimitive<int8_t, DSCode::CacheableByte>;
+template class CacheableKeyPrimitive<double, DSCode::CacheableDouble>;
+template class CacheableKeyPrimitive<float, DSCode::CacheableFloat>;
+template class CacheableKeyPrimitive<int16_t, DSCode::CacheableInt16>;
+template class CacheableKeyPrimitive<int32_t, DSCode::CacheableInt32>;
+template class CacheableKeyPrimitive<int64_t, DSCode::CacheableInt64>;
+template class CacheableKeyPrimitive<char16_t, DSCode::CacheableCharacter>;
 
-_GF_CACHEABLE_KEY_DEF_(CacheableBoolean)
-_GF_CACHEABLE_KEY_DEF_(CacheableByte)
-_GF_CACHEABLE_KEY_DEF_(CacheableDouble)
-_GF_CACHEABLE_KEY_DEF_(CacheableFloat)
-_GF_CACHEABLE_KEY_DEF_(CacheableInt16)
-_GF_CACHEABLE_KEY_DEF_(CacheableInt32)
-_GF_CACHEABLE_KEY_DEF_(CacheableInt64)
-_GF_CACHEABLE_KEY_DEF_(CacheableCharacter)
+template class CacheableArrayPrimitive<int8_t, DSCode::CacheableBytes>;
+template class CacheableArrayPrimitive<bool, DSCode::BooleanArray>;
+template class CacheableArrayPrimitive<char16_t, DSCode::CharArray>;
+template class CacheableArrayPrimitive<double, DSCode::CacheableDoubleArray>;
+template class CacheableArrayPrimitive<float, DSCode::CacheableFloatArray>;
+template class CacheableArrayPrimitive<int16_t, DSCode::CacheableInt16Array>;
+template class CacheableArrayPrimitive<int32_t, DSCode::CacheableInt32Array>;
+template class CacheableArrayPrimitive<int64_t, DSCode::CacheableInt64Array>;
+template class CacheableArrayPrimitive<std::shared_ptr<CacheableString>,
+                                       DSCode::CacheableStringArray>;
+}  // namespace internal
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
