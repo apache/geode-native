@@ -32,7 +32,6 @@
 #include "DiskPolicyType.hpp"
 #include "ExpirationAttributes.hpp"
 #include "PartitionResolver.hpp"
-#include "PersistenceManager.hpp"
 #include "Properties.hpp"
 #include "Serializable.hpp"
 #include "internal/DataSerializableInternal.hpp"
@@ -44,6 +43,11 @@ namespace geode {
 namespace client {
 
 class CacheImpl;
+class RegionAttributesFactory;
+class AttributesMutator;
+class Cache;
+class Region;
+class PersistenceManager;
 
 /**
  * @class RegionAttributes RegionAttributes.hpp
@@ -69,11 +73,6 @@ class CacheImpl;
  * @see AttributesMutator
  * @see Region::getAttributes
  */
-class RegionAttributesFactory;
-class AttributesMutator;
-class Cache;
-class Region;
-
 class APACHE_GEODE_EXPORT RegionAttributes
     : public internal::DataSerializableInternal {
   /**
