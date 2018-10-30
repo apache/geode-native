@@ -37,7 +37,7 @@ namespace internal {
  * Template class for primitive key types.
  */
 template <typename TObj, DSCode TYPEID>
-class APACHE_GEODE_EXPORT CacheableKeyPrimitive
+class CacheableKeyPrimitive
     : public virtual DataSerializablePrimitive,
       public virtual CacheableKey {
  private:
@@ -103,7 +103,7 @@ class APACHE_GEODE_EXPORT CacheableKeyPrimitive
 };
 
 template <typename T, DSCode GeodeTypeId>
-class APACHE_GEODE_EXPORT CacheableArrayPrimitive
+class CacheableArrayPrimitive
     : public DataSerializablePrimitive {
  protected:
   DSCode getDsCode() const override { return GeodeTypeId; }
