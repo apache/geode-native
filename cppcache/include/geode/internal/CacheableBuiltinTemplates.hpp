@@ -37,9 +37,8 @@ namespace internal {
  * Template class for primitive key types.
  */
 template <typename TObj, DSCode TYPEID>
-class CacheableKeyPrimitive
-    : public virtual DataSerializablePrimitive,
-      public virtual CacheableKey {
+class CacheableKeyPrimitive : public virtual DataSerializablePrimitive,
+                              public virtual CacheableKey {
  private:
   TObj value_;
 
@@ -103,8 +102,7 @@ class CacheableKeyPrimitive
 };
 
 template <typename T, DSCode GeodeTypeId>
-class CacheableArrayPrimitive
-    : public DataSerializablePrimitive {
+class CacheableArrayPrimitive : public DataSerializablePrimitive {
  protected:
   DSCode getDsCode() const override { return GeodeTypeId; }
 
