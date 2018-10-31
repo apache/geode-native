@@ -157,8 +157,7 @@ void PdxInstanceImpl::writeField(PdxWriter& writer,
       break;
     }
     case PdxFieldTypes::BYTE_ARRAY: {
-      if (auto&& val = std::dynamic_pointer_cast<
-              CacheableArrayPrimitive<int8_t, DSCode::CacheableBytes>>(value)) {
+      if (auto&& val = std::dynamic_pointer_cast<CacheableBytes>(value)) {
         writer.writeByteArray(fieldName, val->value());
       }
       break;
