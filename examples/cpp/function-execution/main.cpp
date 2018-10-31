@@ -102,10 +102,6 @@ std::vector<std::string> executeFunctionOnServer(const std::shared_ptr<Region> r
   auto functionService = FunctionService::onServer(regionPtr->getRegionService());
   if(auto executeFunctionResult = functionService.withArgs(queryObject).execute(getFuncIName)->getResult()) {
     for (auto &arrayList: *executeFunctionResult) {
-//        auto newList = std::dynamic_pointer_cast<CacheableArrayList>(arrayList);
-//        std::for_each(newList->begin(), newList->end(), [&resultList](std::shared_ptr<Cacheable> val) {
-//          resultList.push_back(std::dynamic_pointer_cast<CacheableString>(val)->value());
-//        });
       for (auto &cachedString: *std::dynamic_pointer_cast<CacheableArrayList>(arrayList)) {
         resultList.push_back(std::dynamic_pointer_cast<CacheableString>(cachedString)->value());
       }
