@@ -23,7 +23,6 @@ if (BUILD_CLI)
 endif()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt.in ${CMAKE_CURRENT_BINARY_DIR}/CMakeLists.txt @ONLY)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/utilities/CMakeLists.txt.in ${CMAKE_CURRENT_BINARY_DIR}/utilities/CMakeLists.txt @ONLY)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindGeodeNative.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/cmake/Find${PRODUCT_NAME_NOSPACE}.cmake @ONLY)
 
 install(FILES
@@ -35,12 +34,6 @@ install(FILES
 install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/cmake/Find${PRODUCT_NAME_NOSPACE}.cmake
   DESTINATION examples/cmake)
-install(FILES
-  ${CMAKE_CURRENT_SOURCE_DIR}/utilities/ExampleMultiGetFunction.java
-  DESTINATION examples/utilities)
-install(FILES
-  ${CMAKE_CURRENT_SOURCE_DIR}/utilities/CMakeLists.txt
-  DESTINATION examples/utilities)
 
 add_subdirectory(cpp)
 if (BUILD_CLI)
