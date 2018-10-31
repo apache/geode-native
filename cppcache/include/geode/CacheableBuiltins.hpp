@@ -182,7 +182,7 @@ inline std::shared_ptr<Cacheable> Serializable::create(char16_t value) {
  * a distributable object for caching.
  */
 using CacheableBytes =
-    internal::CacheableArrayPrimitive<int8_t, DSCode::CacheableBytes>;
+    internal::CacheableArrayPrimitive<int8_t, internal::DSCode::CacheableBytes>;
 extern template class APACHE_GEODE_EXTERN_TEMPLATE_EXPORT
     internal::CacheableArrayPrimitive<int8_t, internal::DSCode::CacheableBytes>;
 
@@ -191,7 +191,7 @@ extern template class APACHE_GEODE_EXTERN_TEMPLATE_EXPORT
  * a distributable object for caching.
  */
 using BooleanArray =
-    internal::CacheableArrayPrimitive<bool, DSCode::BooleanArray>;
+    internal::CacheableArrayPrimitive<bool, internal::DSCode::BooleanArray>;
 extern template class APACHE_GEODE_EXTERN_TEMPLATE_EXPORT
     internal::CacheableArrayPrimitive<bool, internal::DSCode::BooleanArray>;
 
@@ -200,7 +200,7 @@ extern template class APACHE_GEODE_EXTERN_TEMPLATE_EXPORT
  * a distributable object for caching.
  */
 using CharArray =
-    internal::CacheableArrayPrimitive<char16_t, DSCode::CharArray>;
+    internal::CacheableArrayPrimitive<char16_t, internal::DSCode::CharArray>;
 extern template class APACHE_GEODE_EXTERN_TEMPLATE_EXPORT
     internal::CacheableArrayPrimitive<char16_t, internal::DSCode::CharArray>;
 
@@ -209,7 +209,8 @@ extern template class APACHE_GEODE_EXTERN_TEMPLATE_EXPORT
  * a distributable object for caching.
  */
 using CacheableDoubleArray =
-    internal::CacheableArrayPrimitive<double, DSCode::CacheableDoubleArray>;
+    internal::CacheableArrayPrimitive<double,
+                                      internal::DSCode::CacheableDoubleArray>;
 extern template class APACHE_GEODE_EXTERN_TEMPLATE_EXPORT
     internal::CacheableArrayPrimitive<double,
                                       internal::DSCode::CacheableDoubleArray>;
@@ -219,7 +220,8 @@ extern template class APACHE_GEODE_EXTERN_TEMPLATE_EXPORT
  * a distributable object for caching.
  */
 using CacheableFloatArray =
-    internal::CacheableArrayPrimitive<float, DSCode::CacheableFloatArray>;
+    internal::CacheableArrayPrimitive<float,
+                                      internal::DSCode::CacheableFloatArray>;
 extern template class APACHE_GEODE_EXTERN_TEMPLATE_EXPORT
     internal::CacheableArrayPrimitive<float,
                                       internal::DSCode::CacheableFloatArray>;
@@ -229,7 +231,8 @@ extern template class APACHE_GEODE_EXTERN_TEMPLATE_EXPORT
  * a distributable object for caching.
  */
 using CacheableInt16Array =
-    internal::CacheableArrayPrimitive<int16_t, DSCode::CacheableInt16Array>;
+    internal::CacheableArrayPrimitive<int16_t,
+                                      internal::DSCode::CacheableInt16Array>;
 extern template class APACHE_GEODE_EXTERN_TEMPLATE_EXPORT
     internal::CacheableArrayPrimitive<int16_t,
                                       internal::DSCode::CacheableInt16Array>;
@@ -239,7 +242,8 @@ extern template class APACHE_GEODE_EXTERN_TEMPLATE_EXPORT
  * a distributable object for caching.
  */
 using CacheableInt32Array =
-    internal::CacheableArrayPrimitive<int32_t, DSCode::CacheableInt32Array>;
+    internal::CacheableArrayPrimitive<int32_t,
+                                      internal::DSCode::CacheableInt32Array>;
 extern template class APACHE_GEODE_EXTERN_TEMPLATE_EXPORT
     internal::CacheableArrayPrimitive<int32_t,
                                       internal::DSCode::CacheableInt32Array>;
@@ -249,7 +253,8 @@ extern template class APACHE_GEODE_EXTERN_TEMPLATE_EXPORT
  * a distributable object for caching.
  */
 using CacheableInt64Array =
-    internal::CacheableArrayPrimitive<int64_t, DSCode::CacheableInt64Array>;
+    internal::CacheableArrayPrimitive<int64_t,
+                                      internal::DSCode::CacheableInt64Array>;
 extern template class APACHE_GEODE_EXTERN_TEMPLATE_EXPORT
     internal::CacheableArrayPrimitive<int64_t,
                                       internal::DSCode::CacheableInt64Array>;
@@ -260,7 +265,7 @@ extern template class APACHE_GEODE_EXTERN_TEMPLATE_EXPORT
  */
 using CacheableStringArray =
     internal::CacheableArrayPrimitive<std::shared_ptr<CacheableString>,
-                                      DSCode::CacheableStringArray>;
+                                      internal::DSCode::CacheableStringArray>;
 extern template class APACHE_GEODE_EXTERN_TEMPLATE_EXPORT
     internal::CacheableArrayPrimitive<std::shared_ptr<CacheableString>,
                                       internal::DSCode::CacheableStringArray>;
@@ -274,15 +279,16 @@ extern template class APACHE_GEODE_EXTERN_TEMPLATE_EXPORT
  */
 class APACHE_GEODE_EXPORT CacheableVector
     : public internal::CacheableContainerPrimitive<
-          std::vector<std::shared_ptr<Cacheable>>, DSCode::CacheableVector,
-          CacheableVector> {
+          std::vector<std::shared_ptr<Cacheable>>,
+          internal::DSCode::CacheableVector, CacheableVector> {
  public:
   using CacheableContainerPrimitive::CacheableContainerPrimitive;
 };
 
-template class internal::CacheableContainerPrimitive<
-    std::vector<std::shared_ptr<Cacheable>>, DSCode::CacheableVector,
-    CacheableVector>;
+extern template class APACHE_GEODE_EXTERN_TEMPLATE_EXPORT
+    internal::CacheableContainerPrimitive<
+        std::vector<std::shared_ptr<Cacheable>>,
+        internal::DSCode::CacheableVector, CacheableVector>;
 
 /**
  * A mutable <code>CacheableKey</code> to <code>Serializable</code>
@@ -290,30 +296,33 @@ template class internal::CacheableContainerPrimitive<
  */
 class APACHE_GEODE_EXPORT CacheableHashMap
     : public internal::CacheableContainerPrimitive<
-          HashMapOfCacheable, DSCode::CacheableHashMap, CacheableHashMap> {
+          HashMapOfCacheable, internal::DSCode::CacheableHashMap,
+          CacheableHashMap> {
  public:
   using CacheableContainerPrimitive::CacheableContainerPrimitive;
 };
 
-template class internal::CacheableContainerPrimitive<
-    HashMapOfCacheable, DSCode::CacheableHashMap, CacheableHashMap>;
+extern template class APACHE_GEODE_EXTERN_TEMPLATE_EXPORT
+    internal::CacheableContainerPrimitive<HashMapOfCacheable,
+                                          internal::DSCode::CacheableHashMap,
+                                          CacheableHashMap>;
 
 /**
  * A mutable <code>CacheableKey</code> hash set wrapper that can serve as
  * a distributable object for caching.
  */
-// using CacheableHashSet
-// =internal::CacheableContainerPrimitive<HashSetOfCacheableKey,
-//                                                     DSCode::CacheableHashSet>;
 class APACHE_GEODE_EXPORT CacheableHashSet
     : public internal::CacheableContainerPrimitive<
-          HashSetOfCacheableKey, DSCode::CacheableHashSet, CacheableHashSet> {
+          HashSetOfCacheableKey, internal::DSCode::CacheableHashSet,
+          CacheableHashSet> {
  public:
   using CacheableContainerPrimitive::CacheableContainerPrimitive;
 };
 
-template class internal::CacheableContainerPrimitive<
-    HashSetOfCacheableKey, DSCode::CacheableHashSet, CacheableHashSet>;
+extern template class APACHE_GEODE_EXTERN_TEMPLATE_EXPORT
+    internal::CacheableContainerPrimitive<HashSetOfCacheableKey,
+                                          internal::DSCode::CacheableHashSet,
+                                          CacheableHashSet>;
 
 /**
  * A mutable <code>Cacheable</code> array list wrapper that can serve as
@@ -321,15 +330,16 @@ template class internal::CacheableContainerPrimitive<
  */
 class APACHE_GEODE_EXPORT CacheableArrayList
     : public internal::CacheableContainerPrimitive<
-          std::vector<std::shared_ptr<Cacheable>>, DSCode::CacheableArrayList,
-          CacheableArrayList> {
+          std::vector<std::shared_ptr<Cacheable>>,
+          internal::DSCode::CacheableArrayList, CacheableArrayList> {
  public:
   using CacheableContainerPrimitive::CacheableContainerPrimitive;
 };
 
-template class internal::CacheableContainerPrimitive<
-    std::vector<std::shared_ptr<Cacheable>>, DSCode::CacheableArrayList,
-    CacheableArrayList>;
+extern template class APACHE_GEODE_EXTERN_TEMPLATE_EXPORT
+    internal::CacheableContainerPrimitive<
+        std::vector<std::shared_ptr<Cacheable>>,
+        internal::DSCode::CacheableArrayList, CacheableArrayList>;
 
 /**
  * A mutable <code>Cacheable</code> array list wrapper that can serve as
@@ -337,15 +347,16 @@ template class internal::CacheableContainerPrimitive<
  */
 class APACHE_GEODE_EXPORT CacheableLinkedList
     : public internal::CacheableContainerPrimitive<
-          std::vector<std::shared_ptr<Cacheable>>, DSCode::CacheableLinkedList,
-          CacheableLinkedList> {
+          std::vector<std::shared_ptr<Cacheable>>,
+          internal::DSCode::CacheableLinkedList, CacheableLinkedList> {
  public:
   using CacheableContainerPrimitive::CacheableContainerPrimitive;
 };
 
-template class internal::CacheableContainerPrimitive<
-    std::vector<std::shared_ptr<Cacheable>>, DSCode::CacheableLinkedList,
-    CacheableLinkedList>;
+extern template class APACHE_GEODE_EXTERN_TEMPLATE_EXPORT
+    internal::CacheableContainerPrimitive<
+        std::vector<std::shared_ptr<Cacheable>>,
+        internal::DSCode::CacheableLinkedList, CacheableLinkedList>;
 
 /**
  * A mutable <code>Cacheable</code> stack wrapper that can serve as
@@ -353,14 +364,15 @@ template class internal::CacheableContainerPrimitive<
  */
 class APACHE_GEODE_EXPORT CacheableStack
     : public internal::CacheableContainerPrimitive<
-          std::vector<std::shared_ptr<Cacheable>>, DSCode::CacheableStack,
-          CacheableStack> {
+          std::vector<std::shared_ptr<Cacheable>>,
+          internal::DSCode::CacheableStack, CacheableStack> {
  public:
   using CacheableContainerPrimitive::CacheableContainerPrimitive;
 };
 
-template class internal::CacheableContainerPrimitive<
-    HashMapOfCacheable, DSCode::CacheableStack, CacheableStack>;
+extern template class APACHE_GEODE_EXTERN_TEMPLATE_EXPORT
+    internal::CacheableContainerPrimitive<
+        HashMapOfCacheable, internal::DSCode::CacheableStack, CacheableStack>;
 
 /**
  * A mutable <code>CacheableKey</code> to <code>Serializable</code>
@@ -368,13 +380,16 @@ template class internal::CacheableContainerPrimitive<
  */
 class APACHE_GEODE_EXPORT CacheableHashTable
     : public internal::CacheableContainerPrimitive<
-          HashMapOfCacheable, DSCode::CacheableHashTable, CacheableHashTable> {
+          HashMapOfCacheable, internal::DSCode::CacheableHashTable,
+          CacheableHashTable> {
  public:
   using CacheableContainerPrimitive::CacheableContainerPrimitive;
 };
 
-template class internal::CacheableContainerPrimitive<
-    HashMapOfCacheable, DSCode::CacheableHashTable, CacheableHashTable>;
+extern template class APACHE_GEODE_EXTERN_TEMPLATE_EXPORT
+    internal::CacheableContainerPrimitive<HashMapOfCacheable,
+                                          internal::DSCode::CacheableHashTable,
+                                          CacheableHashTable>;
 
 /**
  * A mutable <code>CacheableKey</code> to <code>Serializable</code>
@@ -385,15 +400,16 @@ template class internal::CacheableContainerPrimitive<
  */
 class APACHE_GEODE_EXPORT CacheableIdentityHashMap
     : public internal::CacheableContainerPrimitive<
-          HashMapOfCacheable, DSCode::CacheableIdentityHashMap,
+          HashMapOfCacheable, internal::DSCode::CacheableIdentityHashMap,
           CacheableIdentityHashMap> {
  public:
   using CacheableContainerPrimitive::CacheableContainerPrimitive;
 };
 
-template class internal::CacheableContainerPrimitive<
-    HashMapOfCacheable, DSCode::CacheableIdentityHashMap,
-    CacheableIdentityHashMap>;
+extern template class APACHE_GEODE_EXTERN_TEMPLATE_EXPORT
+    internal::CacheableContainerPrimitive<
+        HashMapOfCacheable, internal::DSCode::CacheableIdentityHashMap,
+        CacheableIdentityHashMap>;
 
 /**
  * A mutable <code>CacheableKey</code> hash set wrapper that can serve as
@@ -404,15 +420,16 @@ template class internal::CacheableContainerPrimitive<
  */
 class APACHE_GEODE_EXPORT CacheableLinkedHashSet
     : public internal::CacheableContainerPrimitive<
-          HashSetOfCacheableKey, DSCode::CacheableLinkedHashSet,
+          HashSetOfCacheableKey, internal::DSCode::CacheableLinkedHashSet,
           CacheableLinkedHashSet> {
  public:
   using CacheableContainerPrimitive::CacheableContainerPrimitive;
 };
 
-template class internal::CacheableContainerPrimitive<
-    HashSetOfCacheableKey, DSCode::CacheableLinkedHashSet,
-    CacheableLinkedHashSet>;
+extern template class APACHE_GEODE_EXTERN_TEMPLATE_EXPORT
+    internal::CacheableContainerPrimitive<
+        HashSetOfCacheableKey, internal::DSCode::CacheableLinkedHashSet,
+        CacheableLinkedHashSet>;
 
 }  // namespace client
 }  // namespace geode

@@ -57,6 +57,38 @@ template class APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT
     CacheableArrayPrimitive<int64_t, DSCode::CacheableInt64Array>;
 template class APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT CacheableArrayPrimitive<
     std::shared_ptr<CacheableString>, DSCode::CacheableStringArray>;
+
+template class APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT
+    CacheableContainerPrimitive<std::vector<std::shared_ptr<Cacheable>>,
+                                DSCode::CacheableVector, CacheableVector>;
+template class APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT
+    CacheableContainerPrimitive<HashMapOfCacheable, DSCode::CacheableHashMap,
+                                CacheableHashMap>;
+template class APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT
+    CacheableContainerPrimitive<HashSetOfCacheableKey, DSCode::CacheableHashSet,
+                                CacheableHashSet>;
+template class APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT
+    CacheableContainerPrimitive<std::vector<std::shared_ptr<Cacheable>>,
+                                DSCode::CacheableArrayList, CacheableArrayList>;
+template class APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT
+    CacheableContainerPrimitive<std::vector<std::shared_ptr<Cacheable>>,
+                                DSCode::CacheableLinkedList,
+                                CacheableLinkedList>;
+template class APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT
+    CacheableContainerPrimitive<HashMapOfCacheable, DSCode::CacheableStack,
+                                CacheableStack>;
+template class APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT
+    CacheableContainerPrimitive<HashMapOfCacheable, DSCode::CacheableHashTable,
+                                CacheableHashTable>;
+template class APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT
+    CacheableContainerPrimitive<HashMapOfCacheable,
+                                DSCode::CacheableIdentityHashMap,
+                                CacheableIdentityHashMap>;
+template class APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT
+    CacheableContainerPrimitive<HashSetOfCacheableKey,
+                                DSCode::CacheableLinkedHashSet,
+                                CacheableLinkedHashSet>;
+
 }  // namespace internal
 }  // namespace client
 }  // namespace geode
