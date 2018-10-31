@@ -19,29 +19,25 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-In the .NET api docs, see [Apache::Geode::Client::SystemProperties](https://gemfire-nc-100-dotnetdocs.cfapps.io/a01085.html#ad1385fe85b1551993560d9029c8a35b3).
-
-In the C++ api docs, see [apache::geode::client::SystemProperties](https://gemfire-nc-100-cppdocs.cfapps.io/a00923.html).
-
 A variety of system properties can be specified when a client connects to a distributed system, either programmatically or in a `geode.properties` file.
+
+- In the [.NET API docs](https://gemfire-nc-100-dotnetdocs.cfapps.io), see `Apache::Geode::Client::SystemProperties`.
+- In the [C++ API docs](https://gemfire-nc-100-cppdocs.cfapps.io), see `apache::geode::client::SystemProperties`.
 
 The following settings can be configured:
 
--   **[General Properties](#general_props)** Basic information for the process, such as cache creation parameters.
--   **[Logging Properties](#attributes-gfcpp__table_logging_props)** How and where to log system messages.
--   **[Statistics Archiving Properties](#attributes-gfcpp__table_statistic_props)** How to collect and archive statistics information.
--   **[Durable Client Properties](#attributes-gfcpp__table_durable_client_props)** Information about the durable clients connected to the system.
--   **[System Properties for Client Authentication and Authorization](#attributes-gfcpp__table_security_props)** Information about various security parameters.
--   **[System Properties for High Availability](#attributes-gfcpp__table_high_availability_props)** High Availability Properties
-
-## <a id="attributes-gfcpp__section_655789BCC46642789F91CDA8AE03CD9B" class="no-quick-link"></a>Attribute Definitions
+-   **[General Properties](#general_props)**<br />Basic information for the process, such as cache creation parameters.
+-   **[Logging Properties](#attributes-gfcpp__table_logging_props)**<br />How and where to log system messages.
+-   **[Statistics Archiving Properties](#attributes-gfcpp__table_statistic_props)**<br />How to collect and archive statistics information.
+-   **[Durable Client Properties](#attributes-gfcpp__table_durable_client_props)**<br />Information about the durable clients connected to the system.
+-   **[System Properties for Client Authentication and Authorization](#attributes-gfcpp__table_security_props)**<br /> Information about various security parameters.
+-   **[System Properties for High Availability](#attributes-gfcpp__table_high_availability_props)**<br />System properties to configure periodic acknowledgment (ack).
 
 The following tables list attributes that can be specified programmatically or stored in the `geode.properties` file to be read by a client.
 
-<a id="general_props" class="no-quick-link"></a>
+### <a id="general_props" class="no-quick-link"></a>General Properties
 
 <table>
-<caption><span class="tablecap">General Properties</span></caption>
 <thead>
 <tr class="header">
 <th>Attribute</th>
@@ -140,10 +136,9 @@ When the chunk handler is not operative (enable-chunk-handler=false), each appli
 </table>
 
 
-<a id="attributes-gfcpp__table_logging_props" class="no-quick-link"></a>
+### <a id="attributes-gfcpp__table_logging_props" class="no-quick-link"></a>Logging Properties
 
 <table>
-<caption><span class="tablecap">Logging Properties</span></caption>
 <thead>
 <tr class="header">
 <th>Attribute</th>
@@ -184,10 +179,9 @@ When the chunk handler is not operative (enable-chunk-handler=false), each appli
 </table>
 
 
-<a id="attributes-gfcpp__table_statistic_props" class="no-quick-link"></a>
+### <a id="attributes-gfcpp__table_statistic_props" class="no-quick-link"></a>Statistics Archiving Properties
 
 <table>
-<caption><span class="tablecap">Statistics Archiving Properties</span></caption>
 <thead>
 <tr class="header">
 <th>Attribute</th>
@@ -316,8 +310,6 @@ See [SSL Client/Server Communication](../security/sslclientserver.html).
 </table>
 
 ## <a id="attributes-gfcpp__table_high_availability_props" class="no-quick-link"></a>High Availability Properties
-
-Use the following system properties to configure periodic ack.
 
 <table>
 <thead>
