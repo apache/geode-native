@@ -1,7 +1,9 @@
 # text files
 .*\.clang-format$
 .*\.clang-tidy$
+.*\.cpackignore$
 .*\.gitignore$
+.*\.lcovrc$
 .*\.ratignore$
 .*md$
 .*json$
