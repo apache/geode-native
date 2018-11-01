@@ -50,6 +50,18 @@ const auto getFuncIName = std::string("ExampleMultiGetFunction");
 const int EXAMPLE_ITEM_COUNT  = 6;
 const int EXAMPLE_SERVER_PORT = 50505;
 
+std::vector<std::string> keys = {
+    "KEY--1",
+    "KEY--2",
+    "KEY--3",
+};
+
+std::vector<std::string> values = {
+    "VALUE--1",
+    "VALUE--3",
+    "VALUE--5"
+};
+
 Cache setupCache() {
   return CacheFactory()
       .set("log-level", "none")
@@ -59,48 +71,37 @@ Cache setupCache() {
 void createPool(const Cache& cache) {
   auto pool = cache.getPoolManager()
       .createFactory()
-      .setSubscriptionEnabled(true)
       .addServer("localhost", EXAMPLE_SERVER_PORT)
       .create("pool");
 }
 
 std::shared_ptr<Region> createRegion(Cache& cache) {
   auto regionFactory = cache.createRegionFactory(RegionShortcut::PROXY);
-  auto regPtr0 = regionFactory.setPoolName("pool").create("partition_region");
+  auto region = regionFactory.setPoolName("pool").create("partition_region");
 
-  return regPtr0;
+  return region;
 }
 
-void populateRegion(const std::shared_ptr<Region>& regionPtr) {
-  for (int i = 0; i < EXAMPLE_ITEM_COUNT; i++) {
-    std::stringstream keyStream;
-    std::stringstream valueStream;
-    keyStream << "KEY--" << i;
-    valueStream << "VALUE--" << i;
-    auto value(CacheableString::create(valueStream.str().c_str()));
-
-    auto key = CacheableKey::create(keyStream.str().c_str());
-    regionPtr->put(key, value);
+void populateRegion(const std::shared_ptr<Region>& region) {
+  for (int i = 0; i < keys.size(); i++) {
+    region->put(keys[i], values[i]);
   }
 }
 
-std::shared_ptr<CacheableVector> populateQueryObject() {
-  auto routingObj = CacheableVector::create();
-  for (int i = 1; i < EXAMPLE_ITEM_COUNT; i+=2) {
-    std::stringstream keyStream;
-    keyStream << "KEY--" << i;
-    auto key = CacheableKey::create(keyStream.str().c_str());
-    routingObj->push_back(key);
+std::shared_ptr<CacheableVector> populateArguments() {
+  auto arguments = CacheableVector::create();
+  for (int i = 0; i < keys.size(); i++) {
+    arguments->push_back(CacheableKey::create(keys[i]));
   }
-  return routingObj;
+  return arguments;
 }
 
 std::vector<std::string> executeFunctionOnServer(const std::shared_ptr<Region> regionPtr,
-    const std::shared_ptr<CacheableVector> queryObject) {
+    const std::shared_ptr<CacheableVector> arguments) {
   std::vector<std::string> resultList;
 
   auto functionService = FunctionService::onServer(regionPtr->getRegionService());
-  if(auto executeFunctionResult = functionService.withArgs(queryObject).execute(getFuncIName)->getResult()) {
+  if(auto executeFunctionResult = functionService.withArgs(arguments).execute(getFuncIName)->getResult()) {
     for (auto &arrayList: *executeFunctionResult) {
       for (auto &cachedString: *std::dynamic_pointer_cast<CacheableArrayList>(arrayList)) {
         resultList.push_back(std::dynamic_pointer_cast<CacheableString>(cachedString)->value());
@@ -132,9 +133,9 @@ int main(int argc, char** argv) {
 
     populateRegion(regionPtr);
 
-    auto queryObject = populateQueryObject();
+    auto arguments = populateArguments();
 
-    auto resultList = executeFunctionOnServer(regionPtr, queryObject);
+    auto resultList = executeFunctionOnServer(regionPtr, arguments);
 
     printResults(resultList);
   }

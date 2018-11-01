@@ -14,39 +14,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package javaobject;
+package example;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Properties;
+import java.util.Vector;
 
-import java.util.*;
-import java.io.*;
-import org.apache.geode.*; // for DataSerializable
+import org.apache.geode.cache.Cache;
+import org.apache.geode.cache.CacheClosedException;
+import org.apache.geode.cache.CacheFactory;
 import org.apache.geode.cache.Declarable;
-
-import org.apache.geode.cache.*;
-import org.apache.geode.cache.Region;
 import org.apache.geode.cache.execute.FunctionAdapter;
 import org.apache.geode.cache.execute.FunctionContext;
+import org.apache.geode.cache.Region;
 import org.apache.geode.cache.execute.ResultSender;
 
 public class ExampleMultiGetFunction extends FunctionAdapter implements Declarable{
 
   public void execute(FunctionContext context) {
     ArrayList vals = new ArrayList();
-    if (context.getArguments() instanceof Boolean) {
-	context.getResultSender().lastResult((Boolean)context.getArguments());
-    }
-    else if (context.getArguments() instanceof String) {
-        String key = (String)context.getArguments();
-	context.getResultSender().lastResult(key);
-    }
-    else if(context.getArguments() instanceof Vector ) {
+    if(context.getArguments() instanceof Vector ) {
        Cache c = null;
        try {
-           c = CacheFactory.getAnyInstance();
-       } catch (CacheClosedException ex)
-       {
-           vals.add("NoCacheResult");
-	   context.getResultSender().lastResult(vals);
+         c = CacheFactory.getAnyInstance();
+       }
+       catch (CacheClosedException ex) {
+         vals.add("NoCacheResult");
+         context.getResultSender().lastResult(vals);
        }
 
        Region region = c.getRegion("partition_region");
@@ -67,7 +62,6 @@ public class ExampleMultiGetFunction extends FunctionAdapter implements Declarab
   }
 
   public void init(Properties arg0) {
-
   }
 
 }
