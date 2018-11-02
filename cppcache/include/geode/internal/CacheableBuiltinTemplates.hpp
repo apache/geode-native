@@ -171,9 +171,8 @@ class CacheableArrayPrimitive : public DataSerializablePrimitive {
 
 /** Template class for container Cacheable types. */
 template <typename TBase, DSCode TYPEID, class _Derived>
-class APACHE_GEODE_EXPORT CacheableContainerPrimitive
-    : public DataSerializablePrimitive,
-      public TBase {
+class CacheableContainerPrimitive : public DataSerializablePrimitive,
+                                    public TBase {
  public:
   inline CacheableContainerPrimitive() : TBase() {}
 
