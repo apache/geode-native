@@ -40,7 +40,7 @@ namespace client {
 class APACHE_GEODE_EXPORT CacheableKey : public virtual Cacheable {
  protected:
   CacheableKey() = default;
-  ~CacheableKey() override = default;
+  ~CacheableKey() noexcept override = default;
 
  public:
   /** return true if this key matches other. */

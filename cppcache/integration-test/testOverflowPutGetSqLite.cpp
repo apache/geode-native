@@ -22,6 +22,7 @@
 
 #include <geode/RegionShortcut.hpp>
 #include <geode/RegionFactory.hpp>
+#include <geode/PersistenceManager.hpp>
 
 #include <CacheableToken.hpp>
 #include <CacheRegionHelper.hpp>

@@ -76,7 +76,10 @@ if(WIN32)
 endif()
 
 set_target_properties(integration-test-2 PROPERTIES
-	FOLDER cpp/test/integration)
+  CXX_VISIBILITY_PRESET hidden
+  VISIBILITY_INLINES_HIDDEN ON
+  FOLDER cpp/test/integration
+)
 
 add_clangformat(integration-test-2)
 

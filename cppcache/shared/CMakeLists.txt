@@ -18,11 +18,20 @@ project(apache-geode LANGUAGES CXX)
 
 add_library(apache-geode SHARED ${SOURCES_ALL} ${RESOURCES})
 
-if (WIN32)
-  set(EXPORT_HEADER_CUSTOM_CONTENT "#define APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT APACHE_GEODE_EXPORT")
+if (MSVC)
+  set(EXPORT_HEADER_CUSTOM_CONTENT "
+#define APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT APACHE_GEODE_EXPORT
+
+#define APACHE_GEODE_EXTERN_TEMPLATE_EXPORT
+")
 else()
-  set(EXPORT_HEADER_CUSTOM_CONTENT "#define APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT")
+  set(EXPORT_HEADER_CUSTOM_CONTENT "
+#define APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT
+
+#define APACHE_GEODE_EXTERN_TEMPLATE_EXPORT APACHE_GEODE_EXPORT
+")
 endif()
+
 include(GenerateExportHeader)
 generate_export_header(apache-geode
   EXPORT_FILE_NAME ${EXPORT_FILE_NAME}
@@ -49,11 +58,6 @@ set_target_properties(apache-geode PROPERTIES
   VISIBILITY_INLINES_HIDDEN ON
   FOLDER cpp
   )
-
-if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  set_target_properties(apache-geode PROPERTIES
-    CXX_VISIBILITY_PRESET default)
-endif()
 
 add_dependencies(client-libraries apache-geode)
 
