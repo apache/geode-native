@@ -24,6 +24,7 @@
 #include <geode/Cache.hpp>
 #include <geode/DataInput.hpp>
 #include <geode/DataOutput.hpp>
+#include <geode/PersistenceManager.hpp>
 #include <geode/Properties.hpp>
 
 #include "CacheXmlParser.hpp"

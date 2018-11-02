@@ -37,9 +37,8 @@ namespace internal {
  * Template class for primitive key types.
  */
 template <typename TObj, DSCode TYPEID>
-class APACHE_GEODE_EXPORT CacheableKeyPrimitive
-    : public DataSerializablePrimitive,
-      public CacheableKey {
+class CacheableKeyPrimitive : public virtual DataSerializablePrimitive,
+                              public virtual CacheableKey {
  private:
   TObj value_;
 
@@ -86,25 +85,24 @@ class APACHE_GEODE_EXPORT CacheableKeyPrimitive
   }
 
   /** Factory function registered with serialization registry. */
-  static std::shared_ptr<Serializable> createDeserializable() {
-    return std::make_shared<CacheableKeyPrimitive>();
+  inline static std::shared_ptr<Serializable> createDeserializable() {
+    return std::make_shared<CacheableKeyPrimitive<TObj, TYPEID>>();
   }
 
   /** Factory function to create a new default instance. */
-  inline static std::shared_ptr<CacheableKeyPrimitive> create() {
-    return std::make_shared<CacheableKeyPrimitive>();
+  inline static std::shared_ptr<CacheableKeyPrimitive<TObj, TYPEID>> create() {
+    return std::make_shared<CacheableKeyPrimitive<TObj, TYPEID>>();
   }
 
   /** Factory function to create an instance with the given value. */
-  inline static std::shared_ptr<CacheableKeyPrimitive> create(
+  inline static std::shared_ptr<CacheableKeyPrimitive<TObj, TYPEID>> create(
       const TObj value) {
-    return std::make_shared<CacheableKeyPrimitive>(value);
+    return std::make_shared<CacheableKeyPrimitive<TObj, TYPEID>>(value);
   }
 };
 
 template <typename T, DSCode GeodeTypeId>
-class APACHE_GEODE_EXPORT CacheableArrayPrimitive
-    : public DataSerializablePrimitive {
+class CacheableArrayPrimitive : public DataSerializablePrimitive {
  protected:
   DSCode getDsCode() const override { return GeodeTypeId; }
 
@@ -173,9 +171,8 @@ class APACHE_GEODE_EXPORT CacheableArrayPrimitive
 
 /** Template class for container Cacheable types. */
 template <typename TBase, DSCode TYPEID, class _Derived>
-class APACHE_GEODE_EXPORT CacheableContainerPrimitive
-    : public DataSerializablePrimitive,
-      public TBase {
+class CacheableContainerPrimitive : public DataSerializablePrimitive,
+                                    public TBase {
  public:
   inline CacheableContainerPrimitive() : TBase() {}
 
