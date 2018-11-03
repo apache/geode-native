@@ -1,4 +1,4 @@
-﻿# PutGetRemove Example
+# PutGetRemove Example
 This is a very simple example showing how to create a `Cache` using the `CacheFactory`,
 configure a `Pool` with a `PoolFactory`, and configure a `Region` with a `RegionFactory`.
 We then put, get, and remove some primitive data in the region.

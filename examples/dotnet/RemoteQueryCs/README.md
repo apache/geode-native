@@ -1,4 +1,4 @@
-﻿# RemoteQuery Example
+# RemoteQuery Example
 This is a simple example showing how to execute a query on a remote region.
 
 ## Prerequisites
