@@ -165,32 +165,6 @@ std::string Utils::convertBytesToString(const uint8_t* bytes, size_t length,
   return "";
 }
 
-int32_t Utils::logWideString(char* buf, size_t maxLen, const wchar_t* wStr) {
-  if (wStr != nullptr) {
-    mbstate_t state;
-    ACE_OS::memset(&state, 0, sizeof(mbstate_t));
-    const char* bufStart = buf;
-    do {
-      if (maxLen < static_cast<size_t>(MB_CUR_MAX)) {
-        break;
-      }
-      size_t numChars = wcrtomb(buf, *wStr, &state);
-      if (numChars == static_cast<size_t>(-1)) {
-        // write short when conversion cannot be done
-        numChars = std::snprintf(buf, maxLen, "<%u>", *wStr);
-      }
-      buf += numChars;
-      if (numChars >= maxLen) {
-        break;
-      }
-      maxLen -= numChars;
-    } while (*wStr++ != L'\0');
-    return static_cast<int32_t>(buf - bufStart);
-  } else {
-    return std::snprintf(buf, maxLen, "null");
-  }
-}
-
 int64_t Utils::startStatOpTime() {
   return std::chrono::duration_cast<std::chrono::nanoseconds>(
              std::chrono::steady_clock::now().time_since_epoch())
