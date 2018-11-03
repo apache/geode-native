@@ -210,7 +210,7 @@ HostStatSampler::HostStatSampler(const char* filePath,
           if (fileHyphenPos != std::string::npos) {
             std::string buff =
                 tempname.substr(fileHyphenPos + 1, tempname.length());
-            rollIndex = ACE_OS::atoi(buff.c_str()) + 1;
+            rollIndex = std::stoi(buff) + 1;
           }
         }
       }

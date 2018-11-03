@@ -266,7 +266,7 @@ void Log::init(LogLevel level, const char* logFileName, int32_t logFileLimit,
           if (fileHyphenPos != std::string::npos) {
             std::string buff =
                 tempname.substr(fileHyphenPos + 1, tempname.length());
-            g_rollIndex = ACE_OS::atoi(buff.c_str()) + 1;
+            g_rollIndex = std::stoi(buff) + 1;
           }
         }  // if loop
       }    // for loop
