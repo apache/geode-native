@@ -571,7 +571,7 @@ void Log::put(LogLevel level, const char* msg) {
 
     formatLogLine(buf, level);
     size_t numChars =
-        static_cast<int>(ACE_OS::strlen(buf) + ACE_OS::strlen(msg));
+        static_cast<int>(std::strlen(buf) + std::strlen(msg));
     g_bytesWritten +=
         numChars + 2;  // bcoz we have to count trailing new line (\n)
 
