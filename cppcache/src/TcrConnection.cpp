@@ -709,29 +709,7 @@ void TcrConnection::sendRequestForChunkedResponse(
     const TcrMessage& request, size_t len, TcrMessageReply& reply,
     std::chrono::microseconds sendTimeoutSec,
     std::chrono::microseconds receiveTimeoutSec) {
-  int32_t msgType = request.getMessageType();
-  // ACE_OS::memcpy(&msgType, buffer, 4);
-  // msgType = ntohl(msgType);
-
-  /*receiveTimeoutSec = (msgType == TcrMessage::QUERY ||
-    msgType == TcrMessage::QUERY_WITH_PARAMETERS ||
-    msgType == TcrMessage::EXECUTECQ_WITH_IR_MSG_TYPE ||
-    msgType == TcrMessage::GETDURABLECQS_MSG_TYPE ||
-    msgType == TcrMessage::EXECUTE_FUNCTION ||
-    msgType == TcrMessage::EXECUTE_REGION_FUNCTION ||
-    msgType == TcrMessage::EXECUTE_REGION_FUNCTION_SINGLE_HOP)
-    ? reply.getTimeout() : receiveTimeoutSec;
-
-  //send + recieve should be part of API timeout
-  sendTimeoutSec = (msgType == TcrMessage::QUERY ||
-    msgType == TcrMessage::QUERY_WITH_PARAMETERS ||
-    msgType == TcrMessage::EXECUTECQ_WITH_IR_MSG_TYPE ||
-    msgType == TcrMessage::GETDURABLECQS_MSG_TYPE ||
-    msgType == TcrMessage::EXECUTE_FUNCTION ||
-    msgType == TcrMessage::EXECUTE_REGION_FUNCTION ||
-    msgType == TcrMessage::EXECUTE_REGION_FUNCTION_SINGLE_HOP)
-    ? reply.getTimeout() : sendTimeoutSec;
-    */
+  auto msgType = request.getMessageType();
   switch (msgType) {
     case TcrMessage::QUERY:
     case TcrMessage::QUERY_WITH_PARAMETERS:
@@ -747,18 +725,7 @@ void TcrConnection::sendRequestForChunkedResponse(
     default:
       break;
   }
-  /*if((msgType == TcrMessage::QUERY ||
-    msgType == TcrMessage::QUERY_WITH_PARAMETERS ||
-    msgType == TcrMessage::EXECUTECQ_WITH_IR_MSG_TYPE ||
-    msgType == TcrMessage::GETDURABLECQS_MSG_TYPE ||
-    msgType == TcrMessage::EXECUTE_FUNCTION ||
-    msgType == TcrMessage::EXECUTE_REGION_FUNCTION))
-  {
-    receiveTimeoutSec = reply.getTimeout();
-    sendTimeoutSec = reply.getTimeout();
-  }*/
 
-  // send(buffer, len, sendTimeoutSec);
   std::chrono::microseconds timeSpent{0};
   send(timeSpent, request.getMsgData(), len, sendTimeoutSec, true);
 
@@ -893,7 +860,7 @@ char* TcrConnection::readMessage(size_t* recvLen,
     char* fullMessage;
     *recvLen = HEADER_LENGTH + msgLen;
     _GEODE_NEW(fullMessage, char[HEADER_LENGTH + msgLen]);
-    ACE_OS::memcpy(fullMessage, msg_header, HEADER_LENGTH);
+    std::memcpy(fullMessage, msg_header, HEADER_LENGTH);
     return fullMessage;
     // exit(0);
   }
@@ -903,7 +870,7 @@ char* TcrConnection::readMessage(size_t* recvLen,
   char* fullMessage;
   *recvLen = HEADER_LENGTH + msgLen;
   _GEODE_NEW(fullMessage, char[HEADER_LENGTH + msgLen]);
-  ACE_OS::memcpy(fullMessage, msg_header, HEADER_LENGTH);
+  std::memcpy(fullMessage, msg_header, HEADER_LENGTH);
 
   std::chrono::microseconds mesgBodyTimeout = receiveTimeoutSec;
   if (isNotificationMessage) {
@@ -937,20 +904,7 @@ char* TcrConnection::readMessage(size_t* recvLen,
       "TcrConnection::readMessage: received message body from "
       "endpoint %s; bytes: %s",
       m_endpoint,
-      Utils::convertBytesToString(fullMessage + HEADER_LENGTH, msgLen)
-
-          .c_str());
-
-  // This is the test case when msg type is GET_CLIENT_PR_METADATA and msgLen is
-  // 0.
-  /*if (request == TcrMessage::GET_CLIENT_PR_METADATA) {
-  LOGCONFIG("Amey request == TcrMessage::GET_CLIENT_PR_METADATA");
-  char* fullMessage2;
-  *recvLen = HEADER_LENGTH;
-  _GEODE_NEW( fullMessage2, char[HEADER_LENGTH ] );
-  ACE_OS::memcpy(fullMessage2, msg_header, HEADER_LENGTH);
-  return fullMessage2;
-  }*/
+      Utils::convertBytesToString(fullMessage + HEADER_LENGTH, msgLen).c_str());
 
   return fullMessage;
 }
