@@ -17,6 +17,8 @@
 
 #include "DistributedSystemImpl.hpp"
 
+#include <boost/filesystem.hpp>
+
 #include <geode/SystemProperties.hpp>
 
 #include "CacheImpl.hpp"
@@ -81,15 +83,8 @@ void DistributedSystemImpl::logSystemInformation() const {
   LOGCONFIG(
       "Running on: SystemName=%s Machine=%s Host=%s Release=%s Version=%s",
       u.sysname, u.machine, u.nodename, u.release, u.version);
-
-#ifdef _WIN32
-  const uint32_t pathMax = _MAX_PATH;
-#else
-  const uint32_t pathMax = PATH_MAX;
-#endif
-  ACE_TCHAR cwd[pathMax + 1];
-  (void)ACE_OS::getcwd(cwd, pathMax);
-  LOGCONFIG("Current directory: %s", cwd);
+  LOGCONFIG("Current directory: %s",
+            boost::filesystem::current_path().string().c_str());
   LOGCONFIG("Current value of PATH: %s", ACE_OS::getenv("PATH"));
 #ifndef _WIN32
   const char* ld_libpath = ACE_OS::getenv("LD_LIBRARY_PATH");

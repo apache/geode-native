@@ -87,7 +87,8 @@ endif()
 
 target_link_libraries(_apache-geode INTERFACE
   ACE
-  boost
+  Boost::boost
+  Boost::filesystem
   libxml2
 )
 
