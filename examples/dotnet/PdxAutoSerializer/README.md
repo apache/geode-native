@@ -1,4 +1,4 @@
-﻿# PdxAutoSerializer Example
+# PdxAutoSerializer Example
 This is a simple example showing how to register for auto-serialization of custom objects using the ReflectionBasedAutoSerializer class.
 
 ## Prerequisites

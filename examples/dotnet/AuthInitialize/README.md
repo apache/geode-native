@@ -1,4 +1,4 @@
-﻿# AuthInitialize Example
+# AuthInitialize Example
 This example shows how to create and register a custom `IAuthIntialize` authentication
 handler. 
 

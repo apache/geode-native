@@ -1,4 +1,4 @@
-﻿# ContinuousQuery Example
+# ContinuousQuery Example
 This is a simple example showing how to execute a continuous query on a Goede region.
 
 ## Prerequisites
