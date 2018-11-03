@@ -20,6 +20,7 @@
 #include <cctype>
 #include <chrono>
 #include <cinttypes>
+#include <ctime>
 #include <string>
 #include <thread>
 #include <utility>
@@ -44,6 +45,7 @@
 #include "../internal/hacks/AceThreadId.h"
 #include "Assert.hpp"
 #include "geodeBanner.hpp"
+#include "util/chrono/time_point.hpp"
 
 #if defined(_WIN32)
 #include <io.h>
@@ -557,18 +559,20 @@ char* Log::formatLogLine(char* buf, LogLevel level) {
     ACE_OS::uname(&g_uname);
   }
   const size_t MINBUFSIZE = 128;
-  ACE_Time_Value clock = ACE_OS::gettimeofday();
-  time_t secs = clock.sec();
-  struct tm* tm_val = ACE_OS::localtime(&secs);
-  char* pbuf = buf;
-  pbuf += ACE_OS::snprintf(pbuf, 15, "[%s ", Log::levelToChars(level));
-  pbuf += ACE_OS::strftime(pbuf, MINBUFSIZE, "%Y/%m/%d %H:%M:%S", tm_val);
-  pbuf += ACE_OS::snprintf(pbuf, 15, ".%06" PRId64 " ",
-                           static_cast<int64_t>(clock.usec()));
-  pbuf += ACE_OS::strftime(pbuf, MINBUFSIZE, "%Z ", tm_val);
+  auto now = std::chrono::system_clock::now();
+  auto secs = std::chrono::system_clock::to_time_t(now);
+  auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(
+      now - std::chrono::system_clock::from_time_t(secs));
+  auto tm_val = apache::geode::util::chrono::localtime(secs);
+  auto pbuf = buf;
+  pbuf += std::snprintf(pbuf, 15, "[%s ", Log::levelToChars(level));
+  pbuf += std::strftime(pbuf, MINBUFSIZE, "%Y/%m/%d %H:%M:%S", &tm_val);
+  pbuf += std::snprintf(pbuf, 15, ".%06" PRId64 " ",
+                        static_cast<int64_t>(microseconds.count()));
+  pbuf += std::strftime(pbuf, MINBUFSIZE, "%Z ", &tm_val);
 
-  ACE_OS::snprintf(pbuf, 300, "%s:%d %" PRIu64 "] ", g_uname.nodename, g_pid,
-                   hacks::aceThreadId(ACE_OS::thr_self()));
+  std::snprintf(pbuf, 300, "%s:%d %" PRIu64 "] ", g_uname.nodename, g_pid,
+                hacks::aceThreadId(ACE_OS::thr_self()));
 
   return buf;
 }

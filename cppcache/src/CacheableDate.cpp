@@ -28,6 +28,7 @@
 #include <geode/internal/CacheableKeys.hpp>
 
 #include "config.h"
+#include "util/chrono/time_point.hpp"
 
 namespace apache {
 namespace geode {
@@ -81,14 +82,7 @@ CacheableDate::CacheableDate(const CacheableDate::duration& value) {
 }
 
 std::string CacheableDate::toString() const {
-  char buffer[25];
-  struct tm date = {};
-  time_t sec = m_timevalue / 1000;
-  ACE_OS::localtime_r(&sec, &date);
-  ACE_OS::snprintf(buffer, 24, "%d/%d/%d %d:%d:%d", date.tm_mon + 1,
-                   date.tm_mday, date.tm_year + 1900, date.tm_hour, date.tm_min,
-                   date.tm_sec);
-  return std::string(buffer);
+  return apache::geode::util::chrono::to_string(static_cast<time_t>(*this));
 }
 
 }  // namespace client

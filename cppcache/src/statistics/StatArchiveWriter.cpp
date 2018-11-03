@@ -17,6 +17,9 @@
 
 #include "StatArchiveWriter.hpp"
 
+#include <chrono>
+#include <ctime>
+
 #include <ace/ACE.h>
 #include <ace/OS_NS_sys_time.h>
 #include <ace/OS_NS_sys_utsname.h>
@@ -28,6 +31,7 @@
 
 #include "../CacheImpl.hpp"
 #include "GeodeStatisticsFactory.hpp"
+#include "../util/chrono/time_point.hpp"
 
 namespace apache {
 namespace geode {
@@ -347,11 +351,10 @@ StatArchiveWriter::StatArchiveWriter(std::string outfile,
   tzOffset = tzOffset * -1 * 1000;
   this->dataBuffer->writeInt(tzOffset);
 
-  struct tm *tm_val;
-  time_t clock = ACE_OS::time();
-  tm_val = ACE_OS::localtime(&clock);
+  auto now = std::chrono::system_clock::now();
+  auto tm_val = apache::geode::util::chrono::localtime(now);
   char buf[512] = {0};
-  ACE_OS::strftime(buf, sizeof(buf), "%Z", tm_val);
+  std::strftime(buf, sizeof(buf), "%Z", &tm_val);
   std::string tzId(buf);
   this->dataBuffer->writeUTF(tzId);
 
