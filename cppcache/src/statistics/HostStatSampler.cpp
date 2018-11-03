@@ -544,7 +544,7 @@ void HostStatSampler::putStatsInAdminRegion() {
             }
           }
         }
-        static int numCPU = ACE_OS::num_processors();
+        static auto numCPU = std::thread::hardware_concurrency();
         auto obj = client::ClientHealthStats::create(
             gets, puts, misses, numListeners, numThreads, cpuTime, numCPU);
         if (clientId.empty()) {
