@@ -26,6 +26,7 @@
 #include "AutoDelete.hpp"
 #include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
+#include "util/string.hpp"
 
 #if defined(_WIN32)
 #include <windows.h>
@@ -630,12 +631,13 @@ void CacheXmlParser::endPool() {
 void CacheXmlParser::setPoolInfo(PoolFactory* factory, const char* name,
                                  const char* value) {
   using apache::geode::internal::chrono::duration::from_string;
+  using apache::geode::client::equal_ignore_case;
 
   if (strcmp(name, FREE_CONNECTION_TIMEOUT) == 0) {
     factory->setFreeConnectionTimeout(
         from_string<std::chrono::milliseconds>(std::string(value)));
   } else if (strcmp(name, MULTIUSER_SECURE_MODE) == 0) {
-    if (ACE_OS::strcasecmp(value, "true") == 0) {
+    if (equal_ignore_case(value, "true")) {
       factory->setMultiuserAuthentication(true);
     } else {
       factory->setMultiuserAuthentication(false);
@@ -672,7 +674,7 @@ void CacheXmlParser::setPoolInfo(PoolFactory* factory, const char* name,
     factory->setSubscriptionAckInterval(
         from_string<std::chrono::milliseconds>(std::string(value)));
   } else if (strcmp(name, SUBSCRIPTION_ENABLED) == 0) {
-    if (ACE_OS::strcasecmp(value, "true") == 0) {
+    if (equal_ignore_case(value, "true")) {
       factory->setSubscriptionEnabled(true);
     } else {
       factory->setSubscriptionEnabled(false);
@@ -683,13 +685,13 @@ void CacheXmlParser::setPoolInfo(PoolFactory* factory, const char* name,
   } else if (strcmp(name, SUBSCRIPTION_REDUNDANCY) == 0) {
     factory->setSubscriptionRedundancy(atoi(value));
   } else if (strcmp(name, THREAD_LOCAL_CONNECTIONS) == 0) {
-    if (ACE_OS::strcasecmp(value, "true") == 0) {
+    if (equal_ignore_case(value, "true")) {
       factory->setThreadLocalConnections(true);
     } else {
       factory->setThreadLocalConnections(false);
     }
   } else if (strcmp(name, PR_SINGLE_HOP_ENABLED) == 0) {
-    if (ACE_OS::strcasecmp(value, "true") == 0) {
+    if (equal_ignore_case(value, "true")) {
       factory->setPRSingleHopEnabled(true);
     } else {
       factory->setPRSingleHopEnabled(false);
