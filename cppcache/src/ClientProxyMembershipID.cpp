@@ -133,15 +133,11 @@ void ClientProxyMembershipID::initObjectVars(
       reinterpret_cast<char*>(const_cast<uint8_t*>(m_memID.getBuffer(&len)));
   m_memIDStr.append(buf, len);
 
-  char PID[15] = {0};
-  char Synch_Counter[15] = {0};
-  ACE_OS::itoa(vPID, PID, 10);
-  ACE_OS::itoa(synch_counter, Synch_Counter, 10);
   clientID.append(hostname);
   clientID.append("(");
-  clientID.append(PID);
+  clientID.append(std::to_string(vPID));
   clientID.append(":loner):");
-  clientID.append(Synch_Counter);
+  clientID.append(std::to_string(synch_counter));
   clientID.append(":");
   clientID.append(getUniqueTag());
   clientID.append(":");
@@ -150,15 +146,11 @@ void ClientProxyMembershipID::initObjectVars(
 
   // int offset = 0;
   for (uint32_t i = 0; i < getHostAddrLen(); i++) {
-    char hostInfo[16] = {0};
-    ACE_OS::itoa(m_hostAddr[i], hostInfo, 16);
     m_hashKey.append(":");
-    m_hashKey.append(hostInfo);
+    m_hashKey.append(std::to_string(m_hostAddr[i]));
   }
   m_hashKey.append(":");
-  char hostInfoPort[16] = {0};
-  ACE_OS::itoa(getHostPort(), hostInfoPort, 10);
-  m_hashKey.append(hostInfoPort);
+  m_hashKey.append(std::to_string(getHostPort()));
   m_hashKey.append(":");
   m_hashKey.append(getDSName());
   m_hashKey.append(":");
@@ -166,9 +158,7 @@ void ClientProxyMembershipID::initObjectVars(
     m_hashKey.append(getUniqueTag());
   } else {
     m_hashKey.append(":");
-    char viewid[16] = {0};
-    ACE_OS::itoa(m_vmViewId, viewid, 10);
-    m_hashKey.append(viewid);
+    m_hashKey.append(std::to_string(m_vmViewId));
   }
   LOGDEBUG("GethashKey %s client id: %s ", m_hashKey.c_str(), clientID.c_str());
 }
