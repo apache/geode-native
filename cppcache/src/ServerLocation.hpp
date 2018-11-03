@@ -108,10 +108,7 @@ class APACHE_GEODE_EXPORT ServerLocation
 
   inline bool isValid() const { return !m_serverName.empty() && m_port >= 0; }
 
-  inline std::string& getEpString() {
-    /*if (m_epString.empty() == false) {
-      return m_epString;
-    }*/
+  inline const std::string& getEpString() {
     return m_epString;
   }
 

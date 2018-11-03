@@ -51,7 +51,8 @@ std::shared_ptr<PdxFieldType> PdxInstanceImpl::m_DefaultPdxFieldType(
 
 bool sortFunc(std::shared_ptr<PdxFieldType> field1,
               std::shared_ptr<PdxFieldType> field2) {
-  int diff = ACE_OS::strcmp(field1->getFieldName(), field2->getFieldName());
+
+  const auto diff = field1->getFieldName().compare(field2->getFieldName());
   if (diff < 0) {
     return true;
   } else {
@@ -653,7 +654,7 @@ int32_t PdxInstanceImpl::hashcode() const {
     auto pField = pdxIdentityFieldList.at(i);
 
     LOGDEBUG("hashcode for pdxfield %s  hashcode is %d ",
-             pField->getFieldName(), hashCode);
+             pField->getFieldName().c_str(), hashCode);
     switch (pField->getTypeId()) {
       case PdxFieldTypes::CHAR:
       case PdxFieldTypes::BOOLEAN:
@@ -1144,7 +1145,7 @@ bool PdxInstanceImpl::operator==(const CacheableKey& other) const {
 
     LOGDEBUG("pdxfield %s ",
              ((myPFT != m_DefaultPdxFieldType) ? myPFT->getFieldName()
-                                               : otherPFT->getFieldName()));
+                                               : otherPFT->getFieldName()).c_str());
     if (myPFT->equals(m_DefaultPdxFieldType)) {
       fieldTypeId = otherPFT->getTypeId();
     } else if (otherPFT->equals(m_DefaultPdxFieldType)) {
@@ -1340,7 +1341,7 @@ void PdxInstanceImpl::toDataMutable(PdxWriter& writer) {
     for (size_t i = 0; i < pdxFieldList->size(); i++) {
       auto currPf = pdxFieldList->at(i);
       LOGDEBUG("toData filedname = %s , isVarLengthType = %d ",
-               currPf->getFieldName(), currPf->IsVariableLengthType());
+               currPf->getFieldName().c_str(), currPf->IsVariableLengthType());
       std::shared_ptr<Cacheable> value = nullptr;
 
       auto&& iter = m_updatedFields.find(currPf->getFieldName());
@@ -1370,7 +1371,7 @@ void PdxInstanceImpl::toDataMutable(PdxWriter& writer) {
     for (size_t i = 0; i < pdxFieldList->size(); i++) {
       auto currPf = pdxFieldList->at(i);
       LOGDEBUG("toData1 filedname = %s , isVarLengthType = %d ",
-               currPf->getFieldName(), currPf->IsVariableLengthType());
+               currPf->getFieldName().c_str(), currPf->IsVariableLengthType());
       auto value = m_updatedFields[currPf->getFieldName()];
       writeField(writer, currPf->getFieldName(), currPf->getTypeId(), value);
     }

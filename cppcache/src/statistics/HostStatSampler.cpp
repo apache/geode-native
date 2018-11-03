@@ -108,7 +108,7 @@ int comparator(const dirent** d1, const dirent** d2) {
   } else if (strlen((*d1)->d_name) > strlen((*d2)->d_name)) {
     return 1;
   }
-  int diff = ACE_OS::strcmp((*d1)->d_name, (*d2)->d_name);
+  int diff = std::strcmp((*d1)->d_name, (*d2)->d_name);
   if (diff < 0) {
     return -1;
   } else if (diff > 0) {

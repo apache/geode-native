@@ -575,9 +575,8 @@ std::string ThinClientPoolDM::selectEndpoint(
     getStats().incLoctorResposes();
 
     char epNameStr[128] = {0};
-    std::snprintf(epNameStr, 128, "%s:%d",
-                     outEndpoint.getServerName().c_str(),
-                     outEndpoint.getPort());
+    std::snprintf(epNameStr, 128, "%s:%d", outEndpoint.getServerName().c_str(),
+                  outEndpoint.getPort());
     LOGFINE("ThinClientPoolDM: Locator returned endpoint [%s]", epNameStr);
     return epNameStr;
   } else if (m_attrs->m_initServList
@@ -1208,12 +1207,9 @@ TcrEndpoint* ThinClientPoolDM::getEndPoint(
 
     // do for pool with endpoints. Add endpoint into m_endpoints only when we
     // did not find it above and it is in the pool's m_initServList.
-    for (std::vector<std::string>::iterator itr =
-             m_attrs->m_initServList.begin();
-         itr != m_attrs->m_initServList.end(); ++itr) {
-      if ((ACE_OS::strcmp(serverLocation->getEpString().c_str(),
-                          (*itr).c_str()) == 0)) {
-        ep = addEP(*(serverLocation.get()));  // see if this is new endpoint
+    for (const auto& itr : m_attrs->m_initServList) {
+      if (serverLocation->getEpString() == itr) {
+        ep = addEP(*serverLocation);  // see if this is new endpoint
         break;
       }
     }

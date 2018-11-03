@@ -143,7 +143,7 @@ static int comparator(const dirent** d1, const dirent** d2) {
     return 1;
   }
 
-  int diff = ACE_OS::strcmp((*d1)->d_name, (*d2)->d_name);
+  int diff = std::strcmp((*d1)->d_name, (*d2)->d_name);
   if (diff < 0) {
     return -1;
   } else if (diff > 0) {
