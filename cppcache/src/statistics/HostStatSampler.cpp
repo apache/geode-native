@@ -194,9 +194,6 @@ HostStatSampler::HostStatSampler(const char* filePath,
 #endif
 
     std::string dirname = ACE::dirname(globals::g_statFile.c_str());
-    // struct dirent **resultArray;
-    // int entries_count = ACE_OS::scandir(dirname.c_str(), &resultArray,
-    // selector, comparator);
     ACE_Dirent_Selector sds;
     int status = sds.open(dirname.c_str(), selector, comparator);
     if (status != -1) {
@@ -216,28 +213,15 @@ HostStatSampler::HostStatSampler(const char* filePath,
       }
       sds.close();
     }
-    /*for(int i = 0; i < entries_count; i++) {
-      ACE_OS::free ( resultArray[i] );
-    }
-    if (entries_count >= 0) {
-      ACE_OS::free( resultArray );
-      resultArray = nullptr;
-    }*/
 
     FILE* existingFile = fopen(globals::g_statFileWithExt.c_str(), "r");
     if (existingFile != nullptr && statFileLimit > 0) {
       fclose(existingFile);
-      /* adongre
-       * CID 28820: Resource leak (RESOURCE_LEAK)
-       */
       existingFile = nullptr;
       changeArchive(globals::g_statFileWithExt);
     } else {
       writeGfs();
     }
-    /* adongre
-     * CID 28820: Resource leak (RESOURCE_LEAK)
-     */
     if (existingFile != nullptr) {
       fclose(existingFile);
       existingFile = nullptr;
@@ -628,9 +612,6 @@ void HostStatSampler::checkDiskLimit() {
   globals::g_spaceUsed = 0;
   char fullpath[512] = {0};
   std::string dirname = ACE::dirname(globals::g_statFile.c_str());
-  // struct dirent **resultArray;
-  // int entries_count = ACE_OS::scandir(dirname.c_str(), &resultArray,
-  // selector, comparator);
   ACE_stat statBuf = {};
   ACE_Dirent_Selector sds;
   int status = sds.open(dirname.c_str(), selector, comparator);
@@ -644,13 +625,6 @@ void HostStatSampler::checkDiskLimit() {
       globals::g_spaceUsed += fileInfo[i - 1].second;
     }
     globals::g_spaceUsed += m_archiver->bytesWritten();
-    /*for(int i = 0; i < entries_count; i++) {
-    ACE_OS::free ( resultArray[i] );
-    }
-    if (entries_count >= 0) {
-    ACE_OS::free( resultArray );
-    resultArray = nullptr;
-    }*/
     sds.close();
   }
   int fileIndex = 0;

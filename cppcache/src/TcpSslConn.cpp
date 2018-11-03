@@ -74,8 +74,6 @@ void TcpSslConn::listen(ACE_INET_Addr addr,
           "TcpSslConn::listen Attempt to listen timed out after" +
           to_string(waitSeconds) + ".");
     }
-    // sprintf( msg, "TcpSslConn::listen failed with errno: %d: %s", lastError,
-    // ACE_OS::strerror(lastError) );
     std::snprintf(msg, 255, "TcpSslConn::listen failed with errno: %d: %s",
                      lastError, ACE_OS::strerror(lastError));
     throw GeodeIOException(msg);
