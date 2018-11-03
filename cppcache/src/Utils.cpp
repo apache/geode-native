@@ -19,6 +19,7 @@
 
 #include <chrono>
 #include <cstdio>
+#include <cstdlib>
 #include <iomanip>
 #include <sstream>
 
@@ -31,22 +32,13 @@ namespace geode {
 namespace client {
 
 int32_t Utils::getLastError() { return ACE_OS::last_error(); }
+
 std::string Utils::getEnv(const char* varName) {
-#ifdef _WIN32
-  DWORD dwRet;
-  char varValue[8192];
-  dwRet = ::GetEnvironmentVariable(varName, varValue, 8192);
-  if (dwRet == 0 && (::GetLastError() == ERROR_ENVVAR_NOT_FOUND)) {
-    return "";
+  std::string env;
+  if (const auto varValue = std::getenv(varName)) {
+    env = varValue;
   }
-  return varValue;
-#else
-  char* varValue = ACE_OS::getenv(varName);
-  if (varValue == nullptr) {
-    return "";
-  }
-  return varValue;
-#endif
+  return env;
 }
 
 void Utils::parseEndpointString(const char* endpoints, std::string& host,
