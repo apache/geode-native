@@ -353,7 +353,7 @@ const char* getTSSExceptionMessage();
       char buf[64];
       LOGINFO("error code: %d", err);
       if (exMsg == nullptr) {
-        ACE_OS::snprintf(buf, 64, "Unknown error code[0x%X]", err);
+        std::snprintf(buf, 64, "Unknown error code[0x%X]", err);
         exMsg = buf;
       }
       std::string message = std::string(str) + exMsg;

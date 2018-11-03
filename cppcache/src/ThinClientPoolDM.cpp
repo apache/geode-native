@@ -575,7 +575,7 @@ std::string ThinClientPoolDM::selectEndpoint(
     getStats().incLoctorResposes();
 
     char epNameStr[128] = {0};
-    ACE_OS::snprintf(epNameStr, 128, "%s:%d",
+    std::snprintf(epNameStr, 128, "%s:%d",
                      outEndpoint.getServerName().c_str(),
                      outEndpoint.getPort());
     LOGFINE("ThinClientPoolDM: Locator returned endpoint [%s]", epNameStr);
@@ -2062,7 +2062,7 @@ TcrEndpoint* ThinClientPoolDM::addEP(ServerLocation& serverLoc) {
   std::string serverName = serverLoc.getServerName();
   int port = serverLoc.getPort();
   char endpointName[100];
-  ACE_OS::snprintf(endpointName, 100, "%s:%d", serverName.c_str(), port);
+  std::snprintf(endpointName, 100, "%s:%d", serverName.c_str(), port);
 
   return addEP(endpointName);
 }

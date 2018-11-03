@@ -45,11 +45,11 @@ StatisticsTypeImpl::StatisticsTypeImpl(std::string nameArg,
   }
   if (statsLengthArg > MAX_DESCRIPTORS_PER_TYPE) {
     char buffer[100];
-    ACE_OS::snprintf(buffer, 100, "%d", statsLengthArg);
+    std::snprintf(buffer, 100, "%d", statsLengthArg);
     std::string temp(buffer);
     std::string s = "The requested descriptor count " + temp +
                     " exceeds the maximum which is ";
-    ACE_OS::snprintf(buffer, 100, "%d", MAX_DESCRIPTORS_PER_TYPE);
+    std::snprintf(buffer, 100, "%d", MAX_DESCRIPTORS_PER_TYPE);
     std::string buf(buffer);
     s += buf + ".";
     throw IllegalArgumentException(s.c_str());

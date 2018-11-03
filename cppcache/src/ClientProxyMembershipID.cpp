@@ -151,8 +151,6 @@ void ClientProxyMembershipID::initObjectVars(
   // int offset = 0;
   for (uint32_t i = 0; i < getHostAddrLen(); i++) {
     char hostInfo[16] = {0};
-    // offset += ACE_OS::snprintf(hostInfo + offset , 255 - offset, ":%x",
-    // m_hostAddr[i]);
     ACE_OS::itoa(m_hostAddr[i], hostInfo, 16);
     m_hashKey.append(":");
     m_hashKey.append(hostInfo);
@@ -160,8 +158,6 @@ void ClientProxyMembershipID::initObjectVars(
   m_hashKey.append(":");
   char hostInfoPort[16] = {0};
   ACE_OS::itoa(getHostPort(), hostInfoPort, 10);
-  //  offset += ACE_OS::snprintf(hostInfo + offset, 255 - offset , ":%d",
-  //  getHostPort());
   m_hashKey.append(hostInfoPort);
   m_hashKey.append(":");
   m_hashKey.append(getDSName());
@@ -172,8 +168,6 @@ void ClientProxyMembershipID::initObjectVars(
     m_hashKey.append(":");
     char viewid[16] = {0};
     ACE_OS::itoa(m_vmViewId, viewid, 10);
-    // offset += ACE_OS::snprintf(hostInfo + offset , 255 - offset , ":%d",
-    // m_vmViewId);
     m_hashKey.append(viewid);
   }
   LOGDEBUG("GethashKey %s client id: %s ", m_hashKey.c_str(), clientID.c_str());

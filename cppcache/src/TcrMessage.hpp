@@ -1263,7 +1263,7 @@ class TcrMessageHelper {
     } else if (!isObj) {
       // otherwise we're currently always expecting an object
       char exMsg[256];
-      ACE_OS::snprintf(exMsg, 255,
+      std::snprintf(exMsg, 255,
                        "TcrMessageHelper::readChunkPartHeader: "
                        "%s: part is not object",
                        methodName);
@@ -1284,7 +1284,7 @@ class TcrMessageHelper {
         return ChunkObjectType::EXCEPTION;
       } else {
         char exMsg[256];
-        ACE_OS::snprintf(
+        std::snprintf(
             exMsg, 255,
             "TcrMessageHelper::readChunkPartHeader: %s: cannot handle "
             "java serializable object from server",
@@ -1300,7 +1300,7 @@ class TcrMessageHelper {
     if (expectedFirstType > DSCode::FixedIDDefault) {
       if (partType != expectedFirstType) {
         char exMsg[256];
-        ACE_OS::snprintf(exMsg, 255,
+        std::snprintf(exMsg, 255,
                          "TcrMessageHelper::readChunkPartHeader: "
                          "%s: got unhandled object class = %" PRId8,
                          methodName, static_cast<int8_t>(partType));
@@ -1316,7 +1316,7 @@ class TcrMessageHelper {
     }
     if (compId != expectedPartType) {
       char exMsg[256];
-      ACE_OS::snprintf(
+      std::snprintf(
           exMsg, 255,
           "TcrMessageHelper::readChunkPartHeader: "
           "%s: got unhandled object type = %d, expected = %d, raw = %d",
@@ -1340,7 +1340,7 @@ class TcrMessageHelper {
     } else if (!isObj) {
       // otherwise we're currently always expecting an object
       char exMsg[256];
-      ACE_OS::snprintf(exMsg, 255,
+      std::snprintf(exMsg, 255,
                        "TcrMessageHelper::readChunkPartHeader: "
                        "%s: part is not object",
                        methodName);
@@ -1356,7 +1356,7 @@ class TcrMessageHelper {
         return ChunkObjectType::EXCEPTION;
       } else {
         char exMsg[256];
-        ACE_OS::snprintf(
+        std::snprintf(
             exMsg, 255,
             "TcrMessageHelper::readChunkPartHeader: %s: cannot handle "
             "java serializable object from server",

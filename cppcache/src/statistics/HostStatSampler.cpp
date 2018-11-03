@@ -275,11 +275,11 @@ std::string HostStatSampler::createArchiveFileName() {
     int32_t len = static_cast<int32_t>(m_archiveFileName.length());
     size_t fileExtPos = m_archiveFileName.find_last_of('.', len);
     if (fileExtPos == std::string::npos) {
-      ACE_OS::snprintf(buff, 1024, "%s-%d.gfs", m_archiveFileName.c_str(), pid);
+      std::snprintf(buff, 1024, "%s-%d.gfs", m_archiveFileName.c_str(), pid);
     } else {
       std::string tmp;
       tmp = m_archiveFileName.substr(0, fileExtPos);
-      ACE_OS::snprintf(buff, 1024, "%s-%d.gfs", tmp.c_str(), pid);
+      std::snprintf(buff, 1024, "%s-%d.gfs", tmp.c_str(), pid);
     }
     m_archiveFileName = buff;
     return m_archiveFileName;
@@ -461,11 +461,11 @@ int32_t HostStatSampler::rollArchive(std::string filename) {
   while (!gotNewFileName) {
     char newfilename[1000] = {0};
     if (i < 10) {
-      ACE_OS::snprintf(newfilename, 1000, "%s%c%s-%d.%s", statsdirname.c_str(),
+      std::snprintf(newfilename, 1000, "%s%c%s-%d.%s", statsdirname.c_str(),
                        ACE_DIRECTORY_SEPARATOR_CHAR, fnameBeforeExt.c_str(), i,
                        extName.c_str());
     } else {
-      ACE_OS::snprintf(newfilename, 1000, "%s%c%s-%d.%s", statsdirname.c_str(),
+      std::snprintf(newfilename, 1000, "%s%c%s-%d.%s", statsdirname.c_str(),
                        ACE_DIRECTORY_SEPARATOR_CHAR, fnameBeforeExt.c_str(), i,
                        extName.c_str());
     }
@@ -646,7 +646,7 @@ void HostStatSampler::checkDiskLimit() {
   int status = sds.open(dirname.c_str(), selector, comparator);
   if (status != -1) {
     for (int i = 1; i < sds.length(); i++) {
-      ACE_OS::snprintf(fullpath, 512, "%s%c%s", dirname.c_str(),
+      std::snprintf(fullpath, 512, "%s%c%s", dirname.c_str(),
                        ACE_DIRECTORY_SEPARATOR_CHAR, sds[i]->d_name);
       ACE_OS::stat(fullpath, &statBuf);
       globals::g_fileInfoPair = std::make_pair(fullpath, statBuf.st_size);

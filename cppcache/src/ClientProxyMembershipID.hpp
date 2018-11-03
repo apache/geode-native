@@ -92,7 +92,7 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
     char hostInfo[255] = {0};
     uint32_t offset = 0;
     for (uint32_t i = 0; i < getHostAddrLen(); i++) {
-      offset += ACE_OS::snprintf(hostInfo + offset, 255 - offset, ":%x",
+      offset += std::snprintf(hostInfo + offset, 255 - offset, ":%x",
                                  m_hostAddr[i]);
     }
     result +=

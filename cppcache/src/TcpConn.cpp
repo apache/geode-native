@@ -100,7 +100,7 @@ void TcpConn::init() {
     LOGERROR("Failed to create socket. Errno: %d: %s", lastError,
              ACE_OS::strerror(lastError));
     char msg[256];
-    ACE_OS::snprintf(msg, 256, "TcpConn::connect failed with errno: %d: %s",
+    std::snprintf(msg, 256, "TcpConn::connect failed with errno: %d: %s",
                      lastError, ACE_OS::strerror(lastError));
     throw GeodeIOException(msg);
   }
@@ -177,7 +177,7 @@ void TcpConn::listen(ACE_INET_Addr addr,
           "TcpConn::listen Attempt to listen timed out after " +
           to_string(waitSeconds) + ".");
     }
-    ACE_OS::snprintf(msg, 256, "TcpConn::listen failed with errno: %d: %s",
+    std::snprintf(msg, 256, "TcpConn::listen failed with errno: %d: %s",
                      lastError, ACE_OS::strerror(lastError));
     throw GeodeIOException(msg);
   }
@@ -232,7 +232,7 @@ void TcpConn::connect() {
           "TcpConn::connect Attempt to connect timed out after" +
           to_string(waitMicroSeconds) + ".");
     }
-    ACE_OS::snprintf(msg, 256, "TcpConn::connect failed with errno: %d: %s",
+    std::snprintf(msg, 256, "TcpConn::connect failed with errno: %d: %s",
                      lastError, ACE_OS::strerror(lastError));
     //  this is only called by constructor, so we must delete m_io
     close();
@@ -242,7 +242,7 @@ void TcpConn::connect() {
   if (-1 == rc) {
     char msg[250];
     int32_t lastError = ACE_OS::last_error();
-    ACE_OS::snprintf(msg, 256, "TcpConn::NONBLOCK: %d: %s", lastError,
+    std::snprintf(msg, 256, "TcpConn::NONBLOCK: %d: %s", lastError,
                      ACE_OS::strerror(lastError));
 
     LOGINFO(msg);

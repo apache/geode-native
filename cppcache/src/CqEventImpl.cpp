@@ -92,7 +92,7 @@ bool CqEventImpl::getError() { return m_error; }
 
 std::string CqEventImpl::toString() {
   char buffer[1024];
-  ACE_OS::snprintf(
+  std::snprintf(
       buffer, 1024,
       "CqEvent CqName=%s; base operation=%d; cq operation= %d;key=%s;value=%s",
       m_cQuery->getName().c_str(), static_cast<int>(m_baseOp),

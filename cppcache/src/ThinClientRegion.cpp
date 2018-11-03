@@ -3912,7 +3912,7 @@ void ChunkedDurableCQListResponse::handleChunk(const uint8_t* chunk,
   if (!input.readBoolean()) {
     // we're currently always expecting an object
     char exMsg[256];
-    ACE_OS::snprintf(
+    std::snprintf(
         exMsg, 255,
         "ChunkedDurableCQListResponse::handleChunk: part is not object");
     throw MessageException(exMsg);

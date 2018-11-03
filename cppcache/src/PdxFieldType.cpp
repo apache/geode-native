@@ -135,7 +135,7 @@ int32_t PdxFieldType::getFixedTypeSize() const {
 
 std::string PdxFieldType::toString() const {
   char stringBuf[1024];
-  ACE_OS::snprintf(
+  std::snprintf(
       stringBuf, 1024,
       " PdxFieldName=%s TypeId=%d VarLenFieldIdx=%d sequenceid=%d\n",
       this->m_fieldName.c_str(), static_cast<int>(this->m_typeId),

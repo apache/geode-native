@@ -347,11 +347,7 @@ void CacheXmlParser::parseMemory(const char* buffer, int size) {
 void CacheXmlParser::handleParserErrors(int res) {
   if (res != 0)  // xml file is not well-formed
   {
-    char buf[256];
-    ACE_OS::snprintf(buf, 256, "Error code returned by xml parser is : %d ",
-                     res);
-    Log::error(buf);
-
+    Log::error("Error code returned by xml parser is : " + std::to_string(res));
     throw CacheXmlException("Xml file is not well formed. Error _stack: \n" +
                             std::string(this->m_parserMessage));
   }

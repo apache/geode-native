@@ -699,17 +699,7 @@ int32_t PdxInstanceImpl::hashcode() const {
       }
       default: {
         char excpStr[256] = {0};
-        /* adongre  - Coverity II
-         * CID 29264: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-         * "sprintf" can cause a
-         * buffer overflow when done incorrectly. Because sprintf() assumes an
-         * arbitrarily long string,
-         * callers must be careful not to overflow the actual space of the
-         * destination.
-         * Use snprintf() instead, or correct precision specifiers.
-         * Fix : using ACE_OS::snprintf
-         */
-        ACE_OS::snprintf(excpStr, 256, "PdxInstance not found typeid %d ",
+        std::snprintf(excpStr, 256, "PdxInstance not found typeid %d ",
                          static_cast<int>(pField->getTypeId()));
         throw IllegalStateException(excpStr);
       }
@@ -880,15 +870,6 @@ void PdxInstanceImpl::getField(const std::string& fieldname, int8_t*** value,
 }
 
 std::string PdxInstanceImpl::toString() const {
-  /* adongre - Coverity II
-   * CID 29265: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-   * "sprintf" can cause a
-   * buffer overflow when done incorrectly. Because sprintf() assumes an
-   * arbitrarily long string,
-   * callers must be careful not to overflow the actual space of the
-   * destination. Use snprintf() instead, or correct precision specifiers. Fix
-   * : using ACE_OS::snprintf
-   */
   auto pt = getPdxType();
   std::string toString = "PDX[" + std::to_string(pt->getTypeId()) + "," +
                          pt->getPdxClassName() + "]{";
@@ -1243,17 +1224,7 @@ bool PdxInstanceImpl::operator==(const CacheableKey& other) const {
       }
       default: {
         char excpStr[256] = {0};
-        /* adongre - Coverity II
-         * CID 29267: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-         * "sprintf" can cause a
-         * buffer overflow when done incorrectly. Because sprintf() assumes an
-         * arbitrarily long string,
-         * callers must be careful not to overflow the actual space of the
-         * destination.
-         * Use snprintf() instead, or correct precision specifiers.
-         * Fix : using ACE_OS::snprintf
-         */
-        ACE_OS::snprintf(excpStr, 256, "PdxInstance not found typeid  %d ",
+        std::snprintf(excpStr, 256, "PdxInstance not found typeid  %d ",
                          static_cast<int>(myPFT->getTypeId()));
         throw IllegalStateException(excpStr);
       }

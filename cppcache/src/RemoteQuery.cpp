@@ -96,7 +96,7 @@ std::shared_ptr<SelectResults> RemoteQuery::execute(
   } else {
     if (values->size() % fieldNameVec.size() != 0) {
       char exMsg[1024];
-      ACE_OS::snprintf(exMsg, 1023,
+      std::snprintf(exMsg, 1023,
                        "%s: Number of values coming from "
                        "server has to be exactly divisible by field count",
                        func);

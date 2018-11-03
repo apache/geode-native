@@ -260,6 +260,10 @@ class APACHE_GEODE_EXPORT Log {
     if (errorEnabled()) put(LogLevel::Error, msg);
   }
 
+  static void error(const std::string& msg) {
+    if (errorEnabled()) put(LogLevel::Error, msg.c_str());
+  }
+
   /**
    * Logs both a message and thrown exception.
    * The message level is "error".

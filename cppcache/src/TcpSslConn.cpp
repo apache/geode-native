@@ -34,7 +34,7 @@ Ssl* TcpSslConn::getSSLImpl(ACE_HANDLE sock, const char* pubkeyfile,
   const char* libName = "cryptoImpl";
   if (m_dll.open(libName, RTLD_NOW | RTLD_GLOBAL, 0) == -1) {
     char msg[1000] = {0};
-    ACE_OS::snprintf(msg, 1000, "cannot open library: %s", libName);
+    std::snprintf(msg, 1000, "cannot open library: %s", libName);
     LOGERROR(msg);
     throw FileNotFoundException(msg);
   }
@@ -43,7 +43,7 @@ Ssl* TcpSslConn::getSSLImpl(ACE_HANDLE sock, const char* pubkeyfile,
       reinterpret_cast<gf_create_SslImpl>(m_dll.symbol("gf_create_SslImpl"));
   if (func == nullptr) {
     char msg[1000];
-    ACE_OS::snprintf(msg, 1000,
+    std::snprintf(msg, 1000,
                      "cannot find function %s in library gf_create_SslImpl",
                      "cryptoImpl");
     LOGERROR(msg);
@@ -76,7 +76,7 @@ void TcpSslConn::listen(ACE_INET_Addr addr,
     }
     // sprintf( msg, "TcpSslConn::listen failed with errno: %d: %s", lastError,
     // ACE_OS::strerror(lastError) );
-    ACE_OS::snprintf(msg, 255, "TcpSslConn::listen failed with errno: %d: %s",
+    std::snprintf(msg, 255, "TcpSslConn::listen failed with errno: %d: %s",
                      lastError, ACE_OS::strerror(lastError));
     throw GeodeIOException(msg);
   }
@@ -109,7 +109,7 @@ void TcpSslConn::connect() {
           "TcpSslConn::connect Attempt to connect timed out after " +
           to_string(waitMicroSeconds) + ".");
     }
-    ACE_OS::snprintf(msg, 256, "TcpSslConn::connect failed with errno: %d: %s",
+    std::snprintf(msg, 256, "TcpSslConn::connect failed with errno: %d: %s",
                      lastError, ACE_OS::strerror(lastError));
     // this is only called by constructor, so we must delete m_ssl
     _GEODE_SAFE_DELETE(m_ssl);
