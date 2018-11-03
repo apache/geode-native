@@ -190,17 +190,7 @@ HostStatSampler::HostStatSampler(const char* filePath,
 
 #ifdef _WIN32
     // replace all '\' with '/' to make everything easier..
-    size_t len = globals::g_statFile.length() + 1;
-    char* slashtmp = new char[len];
-    ACE_OS::strncpy(slashtmp, globals::g_statFile.c_str(), len);
-    for (size_t i = 0; i < globals::g_statFile.length(); i++) {
-      if (slashtmp[i] == '/') {
-        slashtmp[i] = '\\';
-      }
-    }
-    globals::g_statFile = slashtmp;
-    delete[] slashtmp;
-    slashtmp = nullptr;
+    std::replace(globals::g_statFile.begin(), globals::g_statFile.end(), 'x', 'y');
 #endif
 
     std::string dirname = ACE::dirname(globals::g_statFile.c_str());

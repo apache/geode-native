@@ -18,9 +18,9 @@
 
 
 #include "Log.hpp"
+#include "ExceptionTypes.hpp"
 #include "impl/ManagedString.hpp"
 #include "impl/SafeConvert.hpp"
-#include "ExceptionTypes.hpp"
 
 
 using namespace System;
@@ -68,15 +68,6 @@ namespace Apache
       {
         apache::geode::client::Log::setLogLevel(
           static_cast<apache::geode::client::LogLevel>(level));
-      }
-
-      String^ Log::LogFileName()
-      {
-        _GF_MG_EXCEPTION_TRY2
-
-          return ManagedString::Get(apache::geode::client::Log::logFileName());
-
-        _GF_MG_EXCEPTION_CATCH_ALL2
       }
 
       bool Log::Enabled(LogLevel level)

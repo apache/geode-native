@@ -17,6 +17,7 @@
 
 #include "util/Log.hpp"
 
+#include <algorithm>
 #include <cctype>
 #include <chrono>
 #include <cinttypes>
@@ -168,7 +169,6 @@ using apache::geode::log::globals::g_fileSizeLimit;
 using apache::geode::log::globals::g_isLogFileOpened;
 using apache::geode::log::globals::g_log;
 using apache::geode::log::globals::g_logFile;
-using apache::geode::log::globals::g_logFileNameBuffer;
 using apache::geode::log::globals::g_logFileWithExt;
 using apache::geode::log::globals::g_logMutex;
 using apache::geode::log::globals::g_pid;
@@ -177,23 +177,6 @@ using apache::geode::log::globals::g_spaceUsed;
 using apache::geode::log::globals::g_uname;
 
 /*****************************************************************************/
-
-const char* Log::logFileName() {
-  ACE_Guard<ACE_Thread_Mutex> guard(*g_logMutex);
-
-  if (!g_logFile) {
-    g_logFileNameBuffer[0] = '\0';
-  } else {
-    if (g_logFile->size() >= sizeof g_logFileNameBuffer) {
-      throw IllegalStateException(
-          ("Log file name is too long: " + *g_logFile).c_str());
-    }
-    ACE_OS::strncpy(g_logFileNameBuffer, g_logFile->c_str(),
-                    sizeof(g_logFileNameBuffer));
-  }
-
-  return g_logFileNameBuffer;
-}
 
 void Log::init(LogLevel level, const char* logFileName, int32_t logFileLimit,
                int64_t logDiskSpaceLimit) {
@@ -218,10 +201,6 @@ void Log::init(LogLevel level, const char* logFileName, int32_t logFileLimit,
 
   if (logFileName && logFileName[0]) {
     std::string filename = logFileName;
-    if (filename.size() >= sizeof g_logFileNameBuffer) {
-      throw IllegalStateException(
-          ("Log file name is too long: " + filename).c_str());
-    }
     if (g_logFile) {
       *g_logFile = filename;
     } else {
@@ -230,17 +209,7 @@ void Log::init(LogLevel level, const char* logFileName, int32_t logFileLimit,
 
 #ifdef _WIN32
     // replace all '\' with '/' to make everything easier..
-    size_t length = g_logFile->length() + 1;
-    char* slashtmp = new char[length];
-    ACE_OS::strncpy(slashtmp, g_logFile->c_str(), length);
-    for (size_t i = 0; i < g_logFile->length(); i++) {
-      if (slashtmp[i] == '/') {
-        slashtmp[i] = '\\';
-      }
-    }
-    *g_logFile = slashtmp;
-    delete[] slashtmp;
-    slashtmp = nullptr;
+    std::replace(g_logFile->begin(), g_logFile->end(), 'x', 'y');
 #endif
 
     // Appending a ".log" at the end if it does not exist or file has some other
@@ -333,8 +302,8 @@ void Log::init(LogLevel level, const char* logFileName, int32_t logFileLimit,
         extName = logsbasename.substr(posOfExt + 1, baselen);
       }
       std::snprintf(rollFile, 1024, "%s%c%s-%d.%s", logsdirname.c_str(),
-                       ACE_DIRECTORY_SEPARATOR_CHAR, fnameBeforeExt.c_str(),
-                       g_rollIndex++, extName.c_str());
+                    ACE_DIRECTORY_SEPARATOR_CHAR, fnameBeforeExt.c_str(),
+                    g_rollIndex++, extName.c_str());
       bool rollFileNameGot = false;
       while (!rollFileNameGot) {
         FILE* checkFile = fopen(rollFile, "r");
@@ -342,8 +311,8 @@ void Log::init(LogLevel level, const char* logFileName, int32_t logFileLimit,
           fclose(checkFile);
           checkFile = nullptr;
           std::snprintf(rollFile, 1024, "%s%c%s-%d.%s", logsdirname.c_str(),
-                           ACE_DIRECTORY_SEPARATOR_CHAR, fnameBeforeExt.c_str(),
-                           g_rollIndex++, extName.c_str());
+                        ACE_DIRECTORY_SEPARATOR_CHAR, fnameBeforeExt.c_str(),
+                        g_rollIndex++, extName.c_str());
         } else {
           rollFileNameGot = true;
         }
@@ -502,7 +471,7 @@ const char* Log::levelToChars(LogLevel level) {
     default: {
       char buf[64] = {0};
       std::snprintf(buf, 64, "Unexpected log level: %d",
-                       static_cast<int>(level));
+                    static_cast<int>(level));
       throw IllegalArgumentException(buf);
     }
   }
@@ -634,16 +603,16 @@ void Log::put(LogLevel level, const char* msg) {
         extName = logsbasename.substr(posOfExt + 1, baselen);
       }
       std::snprintf(rollFile, 1024, "%s%c%s-%d.%s", logsdirname.c_str(),
-                       ACE_DIRECTORY_SEPARATOR_CHAR, fnameBeforeExt.c_str(),
-                       g_rollIndex++, extName.c_str());
+                    ACE_DIRECTORY_SEPARATOR_CHAR, fnameBeforeExt.c_str(),
+                    g_rollIndex++, extName.c_str());
       bool rollFileNameGot = false;
       while (!rollFileNameGot) {
         FILE* fp1 = fopen(rollFile, "r");
         if (fp1 != nullptr) {
           fclose(fp1);
           std::snprintf(rollFile, 1024, "%s%c%s-%d.%s", logsdirname.c_str(),
-                           ACE_DIRECTORY_SEPARATOR_CHAR, fnameBeforeExt.c_str(),
-                           g_rollIndex++, extName.c_str());
+                        ACE_DIRECTORY_SEPARATOR_CHAR, fnameBeforeExt.c_str(),
+                        g_rollIndex++, extName.c_str());
         } else {
           rollFileNameGot = true;
         }
@@ -673,7 +642,7 @@ void Log::put(LogLevel level, const char* msg) {
       if (status != -1) {
         for (int index = 1; index < sds.length(); ++index) {
           std::snprintf(fullpath, 512, "%s%c%s", dirname.c_str(),
-                           ACE_DIRECTORY_SEPARATOR_CHAR, sds[index]->d_name);
+                        ACE_DIRECTORY_SEPARATOR_CHAR, sds[index]->d_name);
           ACE_OS::stat(fullpath, &statBuf);
           g_fileInfoPair = std::make_pair(fullpath, statBuf.st_size);
           fileInfo.push_back(g_fileInfoPair);
@@ -691,7 +660,7 @@ void Log::put(LogLevel level, const char* msg) {
         } else {
           char printmsg[256];
           std::snprintf(printmsg, 256, "%s\t%s\n", "Could not delete",
-                           fileInfo[fileIndex].first.c_str());
+                        fileInfo[fileIndex].first.c_str());
           int numChars =
               fprintf(g_log, "%s%s\n", formatLogLine(buf, level), printmsg);
           g_bytesWritten +=
