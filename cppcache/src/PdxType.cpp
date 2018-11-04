@@ -23,8 +23,6 @@
 
 #include "PdxType.hpp"
 
-#include <ace/OS.h>
-
 #include "PdxFieldType.hpp"
 #include "PdxHelper.hpp"
 #include "PdxTypeRegistry.hpp"

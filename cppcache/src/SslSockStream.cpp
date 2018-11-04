@@ -17,7 +17,7 @@
 
 #include "SslSockStream.hpp"
 
-#include <ace/OS_NS_stdio.h>
+#include <ace/OS.h>
 
 #include <geode/ExceptionTypes.hpp>
 

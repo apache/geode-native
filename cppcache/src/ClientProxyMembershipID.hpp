@@ -22,8 +22,6 @@
 
 #include <string>
 
-#include <ace/OS.h>
-
 #include <geode/DataOutput.hpp>
 #include <geode/internal/functional.hpp>
 #include <geode/internal/geode_globals.hpp>

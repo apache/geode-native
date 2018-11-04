@@ -19,9 +19,6 @@
 #include <string>
 #include <thread>
 
-#include <ace/DLL.h>
-#include <ace/OS.h>
-
 #include <geode/CacheableKey.hpp>
 #include <geode/ExceptionTypes.hpp>
 #include <geode/SystemProperties.hpp>

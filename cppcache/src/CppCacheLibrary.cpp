@@ -22,7 +22,6 @@
 #include <ace/ACE.h>
 #include <ace/Init_ACE.h>
 #include <ace/Log_Msg.h>
-#include <ace/OS.h>
 #include <ace/Singleton.h>
 
 #include <geode/CacheFactory.hpp>

@@ -17,7 +17,6 @@
 
 #include <cstdlib>
 
-#include <ace/OS.h>
 #include <ace/TSS_T.h>
 #include <boost/core/demangle.hpp>
 

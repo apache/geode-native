@@ -19,8 +19,6 @@
 
 #include <inttypes.h>
 
-#include <ace/OS.h>
-
 namespace apache {
 namespace geode {
 namespace client {

@@ -18,8 +18,6 @@
 
 #include <string>
 
-#include <ace/OS.h>
-
 #include <geode/CacheStatistics.hpp>
 #include <geode/PersistenceManager.hpp>
 #include <geode/PoolManager.hpp>

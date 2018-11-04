@@ -19,8 +19,6 @@
 
 #include <atomic>
 
-#include <ace/OS_NS_stdio.h>
-
 #include <geode/internal/geode_globals.hpp>
 
 #include "../Assert.hpp"

@@ -20,11 +20,7 @@
 #ifndef GEODE_EVICTIONTHREAD_H_
 #define GEODE_EVICTIONTHREAD_H_
 
-#include <ace/ACE.h>
-#include <ace/OS.h>
-#include <ace/Singleton.h>
 #include <ace/Task.h>
-#include <ace/Thread_Mutex.h>
 
 #include <geode/DataOutput.hpp>
 

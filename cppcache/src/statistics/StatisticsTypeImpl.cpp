@@ -19,8 +19,6 @@
 
 #include <string>
 
-#include <ace/OS.h>
-
 #include "../util/Log.hpp"
 #include "StatisticDescriptorImpl.hpp"
 

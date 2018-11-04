@@ -20,9 +20,6 @@
 #include <chrono>
 #include <mutex>
 
-#include <ace/OS.h>
-#include <ace/Time_Value.h>
-
 #include "MapEntry.hpp"
 #include "RegionInternal.hpp"
 #include "TableOfPrimes.hpp"

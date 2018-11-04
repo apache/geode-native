@@ -28,8 +28,6 @@
 #include <memory>
 #include <string>
 
-#include <ace/Guard_T.h>
-#include <ace/OS.h>
 #include <ace/Recursive_Thread_Mutex.h>
 
 #include <geode/internal/geode_globals.hpp>

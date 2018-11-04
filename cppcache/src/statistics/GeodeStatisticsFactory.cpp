@@ -21,7 +21,6 @@
 #include <string>
 
 #include <ace/Guard_T.h>
-#include <ace/OS.h>
 #include <ace/Recursive_Thread_Mutex.h>
 #include <ace/Thread_Mutex.h>
 #include <boost/process/environment.hpp>

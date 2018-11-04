@@ -19,8 +19,6 @@
 #include <ctime>
 #include <cwchar>
 
-#include <ace/OS.h>
-
 #include <geode/CacheableDate.hpp>
 #include <geode/DataInput.hpp>
 #include <geode/DataOutput.hpp>

@@ -25,7 +25,6 @@
 
 #include <ace/INET_Addr.h>
 #include <ace/OS.h>
-#include <ace/Recursive_Thread_Mutex.h>
 
 namespace apache {
 namespace geode {
