@@ -34,10 +34,9 @@ namespace geode {
 namespace client {
 
 FunctionToFunctionAttributes ExecutionImpl::m_func_attrs;
-ACE_Recursive_Thread_Mutex ExecutionImpl::m_func_attrs_lock;
+std::recursive_mutex ExecutionImpl::m_func_attrs_lock;
 Execution ExecutionImpl::withFilter(
     std::shared_ptr<CacheableVector> routingObj) {
-  // ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_lock);
   if (routingObj == nullptr) {
     throw IllegalArgumentException("Execution::withFilter: filter is null");
   }
@@ -53,7 +52,6 @@ Execution ExecutionImpl::withFilter(
 }
 
 Execution ExecutionImpl::withArgs(std::shared_ptr<Cacheable> args) {
-  // ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_lock);
   if (args == nullptr) {
     throw IllegalArgumentException("Execution::withArgs: args is null");
   }
@@ -64,7 +62,6 @@ Execution ExecutionImpl::withArgs(std::shared_ptr<Cacheable> args) {
 }
 
 Execution ExecutionImpl::withCollector(std::shared_ptr<ResultCollector> rs) {
-  // ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_lock);
   if (rs == nullptr) {
     throw IllegalArgumentException(
         "Execution::withCollector: collector is null");
@@ -110,7 +107,7 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
   auto&& attr = getFunctionAttributes(func);
   {
     if (attr == nullptr) {
-      ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_func_attrs_lock);
+      std::lock_guard<decltype(m_func_attrs_lock)> _guard(m_func_attrs_lock);
       GfErrType err = GF_NOERR;
       attr = getFunctionAttributes(func);
       if (attr == nullptr) {
