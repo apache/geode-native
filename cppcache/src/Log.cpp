@@ -38,6 +38,7 @@
 #include <ace/OS_NS_time.h>
 #include <ace/OS_NS_unistd.h>
 #include <ace/Thread_Mutex.h>
+#include <boost/process/environment.hpp>
 
 #include <geode/ExceptionTypes.hpp>
 #include <geode/internal/geode_globals.hpp>
@@ -513,7 +514,7 @@ LogLevel Log::charsToLevel(const std::string& chars) {
 
 char* Log::formatLogLine(char* buf, LogLevel level) {
   if (g_pid == 0) {
-    g_pid = ACE_OS::getpid();
+    g_pid = boost::this_process::get_id();
     ACE_OS::uname(&g_uname);
   }
   const size_t MINBUFSIZE = 128;
@@ -570,8 +571,7 @@ void Log::put(LogLevel level, const char* msg) {
     }
 
     formatLogLine(buf, level);
-    size_t numChars =
-        static_cast<int>(std::strlen(buf) + std::strlen(msg));
+    size_t numChars = static_cast<int>(std::strlen(buf) + std::strlen(msg));
     g_bytesWritten +=
         numChars + 2;  // bcoz we have to count trailing new line (\n)
 

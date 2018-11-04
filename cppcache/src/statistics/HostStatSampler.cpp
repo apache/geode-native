@@ -31,6 +31,7 @@
 #include <ace/OS_NS_sys_utsname.h>
 #include <ace/Task.h>
 #include <ace/Thread_Mutex.h>
+#include <boost/process/environment.hpp>
 
 #include <geode/SystemProperties.hpp>
 #include <geode/internal/geode_globals.hpp>
@@ -146,7 +147,7 @@ HostStatSampler::HostStatSampler(const char* filePath,
   m_archiver = nullptr;
   m_samplerStats = new StatSamplerStats(statMngr->getStatisticsFactory());
   m_startTime = system_clock::now();
-  m_pid = ACE_OS::getpid();
+  m_pid = boost::this_process::get_id();
   m_statMngr = statMngr;
   m_archiveFileName = filePath;
   globals::g_statFile = filePath;
@@ -190,7 +191,8 @@ HostStatSampler::HostStatSampler(const char* filePath,
 
 #ifdef _WIN32
     // replace all '\' with '/' to make everything easier..
-    std::replace(globals::g_statFile.begin(), globals::g_statFile.end(), 'x', 'y');
+    std::replace(globals::g_statFile.begin(), globals::g_statFile.end(), 'x',
+                 'y');
 #endif
 
     std::string dirname = ACE::dirname(globals::g_statFile.c_str());
@@ -245,9 +247,9 @@ HostStatSampler::~HostStatSampler() {
 std::string HostStatSampler::createArchiveFileName() {
   if (!m_isStatDiskSpaceEnabled) {
     char buff[1024] = {0};
-    int32_t pid = ACE_OS::getpid();
-    int32_t len = static_cast<int32_t>(m_archiveFileName.length());
-    size_t fileExtPos = m_archiveFileName.find_last_of('.', len);
+    auto pid =  boost::this_process::get_id();
+    auto len = m_archiveFileName.length();
+    auto fileExtPos = m_archiveFileName.find_last_of('.', len);
     if (fileExtPos == std::string::npos) {
       std::snprintf(buff, 1024, "%s-%d.gfs", m_archiveFileName.c_str(), pid);
     } else {
@@ -436,12 +438,12 @@ int32_t HostStatSampler::rollArchive(std::string filename) {
     char newfilename[1000] = {0};
     if (i < 10) {
       std::snprintf(newfilename, 1000, "%s%c%s-%d.%s", statsdirname.c_str(),
-                       ACE_DIRECTORY_SEPARATOR_CHAR, fnameBeforeExt.c_str(), i,
-                       extName.c_str());
+                    ACE_DIRECTORY_SEPARATOR_CHAR, fnameBeforeExt.c_str(), i,
+                    extName.c_str());
     } else {
       std::snprintf(newfilename, 1000, "%s%c%s-%d.%s", statsdirname.c_str(),
-                       ACE_DIRECTORY_SEPARATOR_CHAR, fnameBeforeExt.c_str(), i,
-                       extName.c_str());
+                    ACE_DIRECTORY_SEPARATOR_CHAR, fnameBeforeExt.c_str(), i,
+                    extName.c_str());
     }
     FILE* fp = fopen(newfilename, "r");
 
@@ -618,7 +620,7 @@ void HostStatSampler::checkDiskLimit() {
   if (status != -1) {
     for (int i = 1; i < sds.length(); i++) {
       std::snprintf(fullpath, 512, "%s%c%s", dirname.c_str(),
-                       ACE_DIRECTORY_SEPARATOR_CHAR, sds[i]->d_name);
+                    ACE_DIRECTORY_SEPARATOR_CHAR, sds[i]->d_name);
       ACE_OS::stat(fullpath, &statBuf);
       globals::g_fileInfoPair = std::make_pair(fullpath, statBuf.st_size);
       fileInfo.push_back(globals::g_fileInfoPair);

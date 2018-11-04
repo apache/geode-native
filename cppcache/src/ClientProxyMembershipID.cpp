@@ -22,7 +22,7 @@
 #include <memory>
 #include <string>
 
-#include <ace/OS.h>
+#include <boost/process/environment.hpp>
 
 #include <geode/CacheableBuiltins.hpp>
 
@@ -60,7 +60,7 @@ ClientProxyMembershipID::ClientProxyMembershipID(
     uint32_t hostAddr, uint32_t hostPort, const char* durableClientId,
     const std::chrono::seconds durableClntTimeOut)
     : m_hostAddrAsUInt32(hostAddr) {
-  int32_t vmPID = ACE_OS::getpid();
+  auto vmPID = boost::this_process::get_id();
   initObjectVars(hostname, reinterpret_cast<uint8_t*>(&m_hostAddrAsUInt32), 4,
                  false, hostPort, durableClientId, durableClntTimeOut, DCPORT,
                  vmPID, VMKIND, 0, dsName.c_str(), randString.c_str(), 0);
@@ -71,7 +71,7 @@ ClientProxyMembershipID::ClientProxyMembershipID(
 ClientProxyMembershipID::ClientProxyMembershipID(
     uint8_t* hostAddr, uint32_t hostAddrLen, uint32_t hostPort,
     const char* dsname, const char* uniqueTag, uint32_t vmViewId) {
-  int32_t vmPID = ACE_OS::getpid();
+  auto vmPID = boost::this_process::get_id();
   initObjectVars("localhost", hostAddr, hostAddrLen, false, hostPort, "",
                  std::chrono::seconds::zero(), DCPORT, vmPID, VMKIND, 0, dsname,
                  uniqueTag, vmViewId);

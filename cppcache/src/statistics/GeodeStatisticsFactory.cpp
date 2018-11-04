@@ -24,6 +24,7 @@
 #include <ace/OS.h>
 #include <ace/Recursive_Thread_Mutex.h>
 #include <ace/Thread_Mutex.h>
+#include <boost/process/environment.hpp>
 
 #include <geode/Exception.hpp>
 #include <geode/internal/geode_globals.hpp>
@@ -43,7 +44,7 @@ using client::OutOfMemoryException;
 
 GeodeStatisticsFactory::GeodeStatisticsFactory(StatisticsManager* statMngr) {
   m_name = "GeodeStatisticsFactory";
-  m_id = ACE_OS::getpid();
+  m_id = boost::this_process::get_id();
   m_statsListUniqueId = 1;
 
   m_statMngr = statMngr;
