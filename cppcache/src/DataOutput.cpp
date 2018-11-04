@@ -34,7 +34,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-ACE_Recursive_Thread_Mutex g_bigBufferLock;
+std::recursive_mutex g_bigBufferLock;
 size_t DataOutput::m_highWaterMark = 50 * 1024 * 1024;
 size_t DataOutput::m_lowWaterMark = 8192;
 
@@ -130,9 +130,9 @@ void DataOutput::writeObjectInternal(const std::shared_ptr<Serializable>& ptr,
   getSerializationRegistry().serialize(ptr, *this, isDelta);
 }
 
-void DataOutput::acquireLock() { g_bigBufferLock.acquire(); }
+void DataOutput::acquireLock() { g_bigBufferLock.lock(); }
 
-void DataOutput::releaseLock() { g_bigBufferLock.release(); }
+void DataOutput::releaseLock() { g_bigBufferLock.unlock(); }
 
 const SerializationRegistry& DataOutput::getSerializationRegistry() const {
   return *m_cache->getSerializationRegistry();
