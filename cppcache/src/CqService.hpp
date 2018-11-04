@@ -21,15 +21,10 @@
 #define GEODE_CQSERVICE_H_
 
 #include <map>
+#include <mutex>
 #include <string>
 
-#include <ace/ACE.h>
-#include <ace/Condition_Recursive_Thread_Mutex.h>
-#include <ace/Guard_T.h>
-#include <ace/Recursive_Thread_Mutex.h>
 #include <ace/Semaphore.h>
-#include <ace/Task.h>
-#include <ace/Time_Value.h>
 
 #include <geode/CacheableKey.hpp>
 #include <geode/CqOperation.hpp>
@@ -66,8 +61,6 @@ class APACHE_GEODE_EXPORT CqService
  private:
   ThinClientBaseDM* m_tccdm;
   statistics::StatisticsFactory* m_statisticsFactory;
-  ACE_Recursive_Thread_Mutex m_mutex;
-  std::string m_queryString;
   ACE_Semaphore m_notificationSema;
 
   bool m_running;
