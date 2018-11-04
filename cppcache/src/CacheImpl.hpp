@@ -22,11 +22,9 @@
 
 #include <atomic>
 #include <memory>
+#include <mutex>
 
-#include <ace/ACE.h>
-#include <ace/Guard_T.h>
-#include <ace/Recursive_Thread_Mutex.h>
-#include <ace/Time_Value.h>
+#include <ace/RW_Thread_Mutex.h>
 
 #include <geode/Cache.hpp>
 #include <geode/CacheAttributes.hpp>
@@ -390,7 +388,7 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
   ACE_RW_Thread_Mutex m_destroyCacheMutex;
   volatile bool m_destroyPending;
   volatile bool m_initDone;
-  ACE_Thread_Mutex m_initDoneLock;
+  std::mutex m_initDoneLock;
   std::shared_ptr<AdminRegion> m_adminRegion;
   std::shared_ptr<CacheTransactionManager> m_cacheTXManager;
 

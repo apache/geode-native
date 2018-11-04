@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "CacheImpl.hpp"
 
 #include <string>
@@ -381,7 +382,7 @@ void CacheImpl::createRegion(std::string name,
                              RegionAttributes regionAttributes,
                              std::shared_ptr<Region>& regionPtr) {
   {
-    ACE_Guard<ACE_Thread_Mutex> _guard(m_initDoneLock);
+    std::lock_guard<decltype(m_initDoneLock)> _guard(m_initDoneLock);
     if (!m_initDone) {
       if (regionAttributes.getPoolName().empty()) {
         m_tcrConnectionManager->init();
