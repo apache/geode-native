@@ -23,12 +23,11 @@
 #include <memory>
 #include <unordered_map>
 #include <vector>
+#include <mutex>
 
 #include <ace/Functor_T.h>
 #include <ace/Hash_Map_Manager.h>
 #include <ace/Null_Mutex.h>
-#include <ace/Recursive_Thread_Mutex.h>
-#include <ace/Thread_Mutex.h>
 #include <ace/Versioned_Namespace.h>
 #include <ace/config-lite.h>
 
@@ -92,7 +91,7 @@ class APACHE_GEODE_EXPORT MapSegment {
   // index of the current prime in the primes table
   uint32_t m_primeIndex;
   spinlock_mutex m_spinlock;
-  ACE_Recursive_Thread_Mutex m_segmentMutex;
+  std::recursive_mutex m_segmentMutex;
 
   bool m_concurrencyChecksEnabled;
   // number of operations that are tracking destroys
@@ -217,10 +216,9 @@ class APACHE_GEODE_EXPORT MapSegment {
 
   ~MapSegment();
 
-  // methods to acquire/release MapSegment mutex (not SpinLock)
-  // that allow using MapSegment with ACE_Guard
-  int acquire();
-  int release();
+  // methods for BasicLockable
+  void lock();
+  void unlock();
 
   /**
    * @brief initialize underlying map structures. Not called by constructor.

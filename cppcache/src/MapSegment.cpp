@@ -18,7 +18,6 @@
 #include "MapSegment.hpp"
 
 #include <chrono>
-#include <mutex>
 
 #include "MapEntry.hpp"
 #include "RegionInternal.hpp"
@@ -65,9 +64,9 @@ void MapSegment::clear() {
   m_map->unbind_all();
 }
 
-int MapSegment::acquire() { return m_segmentMutex.acquire(); }
+void MapSegment::lock() {  m_segmentMutex.lock(); }
 
-int MapSegment::release() { return m_segmentMutex.release(); }
+void MapSegment::unlock() {  m_segmentMutex.unlock(); }
 
 GfErrType MapSegment::create(const std::shared_ptr<CacheableKey>& key,
                              const std::shared_ptr<Cacheable>& newValue,
