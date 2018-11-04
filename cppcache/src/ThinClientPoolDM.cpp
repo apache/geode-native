@@ -582,7 +582,7 @@ std::string ThinClientPoolDM::selectEndpoint(
   } else if (m_attrs->m_initServList
                  .size()) {  // use specified server endpoints
     // highly complex round-robin algorithm
-    ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_endpointSelectionLock);
+    std::lock_guard<decltype(m_endpointSelectionLock)> _guard(m_endpointSelectionLock);
     if (m_server >= m_attrs->m_initServList.size()) {
       m_server = 0;
     }
@@ -621,7 +621,7 @@ GfErrType ThinClientPoolDM::sendRequestToAllServers(
 
   getStats().setCurClientOps(++m_clientOps);
 
-  auto resultCollectorLock = std::make_shared<ACE_Recursive_Thread_Mutex>();
+  auto resultCollectorLock = std::make_shared<std::recursive_mutex>();
 
   auto csArray = getServers();
 

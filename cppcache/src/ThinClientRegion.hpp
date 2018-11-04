@@ -20,6 +20,7 @@
 #ifndef GEODE_THINCLIENTREGION_H_
 #define GEODE_THINCLIENTREGION_H_
 
+#include <mutex>
 #include <unordered_map>
 
 #include <ace/Task.h>
@@ -35,9 +36,6 @@
 #include "TcrChunkedContext.hpp"
 #include "TcrEndpoint.hpp"
 #include "TcrMessage.hpp"
-/**
- * @file
- */
 
 namespace apache {
 namespace geode {
@@ -52,7 +50,6 @@ class ThinClientBaseDM;
  * region. It will inherit from DistributedRegion and overload some methods
  *
  */
-
 class APACHE_GEODE_EXPORT ThinClientRegion : public LocalRegion {
  public:
   /**
@@ -470,7 +467,7 @@ class ChunkedFunctionExecutionResponse : public TcrChunkedResult {
   // std::shared_ptr<CacheableVector>  m_functionExecutionResults;
   bool m_getResult;
   std::shared_ptr<ResultCollector> m_rc;
-  std::shared_ptr<ACE_Recursive_Thread_Mutex> m_resultCollectorLock;
+  std::shared_ptr<std::recursive_mutex> m_resultCollectorLock;
 
   // disabled
   ChunkedFunctionExecutionResponse(const ChunkedFunctionExecutionResponse&);
@@ -484,7 +481,7 @@ class ChunkedFunctionExecutionResponse : public TcrChunkedResult {
 
   inline ChunkedFunctionExecutionResponse(
       TcrMessage& msg, bool getResult, std::shared_ptr<ResultCollector> rc,
-      const std::shared_ptr<ACE_Recursive_Thread_Mutex>& resultCollectorLock)
+      const std::shared_ptr<std::recursive_mutex>& resultCollectorLock)
       : TcrChunkedResult(),
         m_msg(msg),
         m_getResult(getResult),

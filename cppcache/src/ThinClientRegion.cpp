@@ -3165,7 +3165,7 @@ bool ThinClientRegion::executeFunctionSH(
     std::shared_ptr<CacheableHashSet>& failedNodes,
     std::chrono::milliseconds timeout, bool allBuckets) {
   bool reExecute = false;
-  auto resultCollectorLock = std::make_shared<ACE_Recursive_Thread_Mutex>();
+  auto resultCollectorLock = std::make_shared<std::recursive_mutex>();
   const auto& userAttr =
       TSSUserAttributesWrapper::s_geodeTSSUserAttributes->getUserAttributes();
   std::vector<std::shared_ptr<OnRegionFunctionExecution>> feWorkers;
@@ -3209,7 +3209,7 @@ bool ThinClientRegion::executeFunctionSH(
         }
         worker->getResultCollector()->reset();
         {
-          ACE_Guard<ACE_Recursive_Thread_Mutex> guard(*resultCollectorLock);
+          std::lock_guard<decltype(*resultCollectorLock)> guard(*resultCollectorLock);
           rc->clearResults();
         }
         std::shared_ptr<CacheableHashSet> failedNodeIds(
@@ -3235,7 +3235,7 @@ bool ThinClientRegion::executeFunctionSH(
         }
         worker->getResultCollector()->reset();
         {
-          ACE_Guard<ACE_Recursive_Thread_Mutex> guard(*resultCollectorLock);
+          std::lock_guard<decltype(*resultCollectorLock)> guard(*resultCollectorLock);
           rc->clearResults();
         }
       } else {
@@ -3712,7 +3712,7 @@ void ChunkedFunctionExecutionResponse::handleChunk(
       result = value;
     }
     if (m_resultCollectorLock) {
-      ACE_Guard<ACE_Recursive_Thread_Mutex> guard(*m_resultCollectorLock);
+      std::lock_guard<decltype(*m_resultCollectorLock)> guard(*m_resultCollectorLock);
       m_rc->addResult(result);
     } else {
       m_rc->addResult(result);
