@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "EventIdMap.hpp"
 
 namespace apache {
@@ -27,7 +28,8 @@ void EventIdMap::init(std::chrono::milliseconds expirySecs) {
 }
 
 void EventIdMap::clear() {
-  GUARD_MAP;
+  std::lock_guard<decltype(m_lock)> guard(m_lock);
+
   m_map.clear();
 }
 
@@ -40,9 +42,9 @@ EventIdMapEntry EventIdMap::make(std::shared_ptr<EventId> eventid) {
 
 bool EventIdMap::isDuplicate(std::shared_ptr<EventSource> key,
                              std::shared_ptr<EventSequence> value) {
-  GUARD_MAP;
-  const auto& entry = m_map.find(key);
+  std::lock_guard<decltype(m_lock)> guard(m_lock);
 
+  const auto& entry = m_map.find(key);
   if (entry != m_map.end() && ((*value) <= (*(entry->second)))) {
     return true;
   }
@@ -51,12 +53,11 @@ bool EventIdMap::isDuplicate(std::shared_ptr<EventSource> key,
 
 bool EventIdMap::put(std::shared_ptr<EventSource> key,
                      std::shared_ptr<EventSequence> value, bool onlynew) {
-  GUARD_MAP;
+  std::lock_guard<decltype(m_lock)> guard(m_lock);
 
   value->touch(m_expiry);
 
   const auto& entry = m_map.find(key);
-
   if (entry != m_map.end()) {
     if (onlynew && ((*value) <= (*(entry->second)))) {
       return false;
@@ -71,10 +72,9 @@ bool EventIdMap::put(std::shared_ptr<EventSource> key,
 }
 
 bool EventIdMap::touch(std::shared_ptr<EventSource> key) {
-  GUARD_MAP;
+  std::lock_guard<decltype(m_lock)> guard(m_lock);
 
   const auto& entry = m_map.find(key);
-
   if (entry != m_map.end()) {
     entry->second->touch(m_expiry);
     return true;
@@ -84,7 +84,7 @@ bool EventIdMap::touch(std::shared_ptr<EventSource> key) {
 }
 
 bool EventIdMap::remove(std::shared_ptr<EventSource> key) {
-  GUARD_MAP;
+  std::lock_guard<decltype(m_lock)> guard(m_lock);
 
   const auto& entry = m_map.find(key);
 
@@ -98,7 +98,7 @@ bool EventIdMap::remove(std::shared_ptr<EventSource> key) {
 
 // side-effect: sets acked flags to true
 EventIdMapEntryList EventIdMap::getUnAcked() {
-  GUARD_MAP;
+  std::lock_guard<decltype(m_lock)> guard(m_lock);
 
   EventIdMapEntryList entries;
 
@@ -115,7 +115,7 @@ EventIdMapEntryList EventIdMap::getUnAcked() {
 }
 
 uint32_t EventIdMap::clearAckedFlags(EventIdMapEntryList& entries) {
-  GUARD_MAP;
+  std::lock_guard<decltype(m_lock)> guard(m_lock);
 
   uint32_t cleared = 0;
 
@@ -132,7 +132,7 @@ uint32_t EventIdMap::clearAckedFlags(EventIdMapEntryList& entries) {
 }
 
 uint32_t EventIdMap::expire(bool onlyacked) {
-  GUARD_MAP;
+  std::lock_guard<decltype(m_lock)> guard(m_lock);
 
   uint32_t expired = 0;
 

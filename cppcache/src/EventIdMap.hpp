@@ -23,14 +23,10 @@
 #include <chrono>
 #include <functional>
 #include <memory>
+#include <mutex>
 #include <unordered_map>
 #include <utility>
 #include <vector>
-
-#include <ace/ACE.h>
-#include <ace/Guard_T.h>
-#include <ace/Recursive_Thread_Mutex.h>
-#include <ace/Time_Value.h>
 
 #include <geode/internal/functional.hpp>
 
@@ -48,10 +44,6 @@ typedef std::pair<std::shared_ptr<EventSource>, std::shared_ptr<EventSequence>>
     EventIdMapEntry;
 typedef std::vector<EventIdMapEntry> EventIdMapEntryList;
 
-typedef ACE_Guard<ACE_Recursive_Thread_Mutex> MapGuard;
-
-#define GUARD_MAP MapGuard mapguard(m_lock)
-
 /** @class EventIdMap EventIdMap.hpp
  *
  * This is the class that encapsulates a HashMap and
@@ -68,7 +60,7 @@ class APACHE_GEODE_EXPORT EventIdMap {
 
   std::chrono::milliseconds m_expiry;
   map_type m_map;
-  ACE_Recursive_Thread_Mutex m_lock;
+  std::recursive_mutex m_lock;
 
   // hidden
   EventIdMap(const EventIdMap &);
