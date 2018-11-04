@@ -141,7 +141,7 @@ void TcrConnectionManager::init(bool isPool) {
 
 void TcrConnectionManager::startFailoverAndCleanupThreads(bool isPool) {
   if (m_failoverTask == nullptr || m_cleanupTask == nullptr) {
-    ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_distMngrsLock);
+    std::lock_guard<decltype(m_distMngrsLock)> _guard(m_distMngrsLock);
     if (m_failoverTask == nullptr && !isPool) {
       m_failoverTask = new Task<TcrConnectionManager>(
           this, &TcrConnectionManager::failover, NC_Failover);
@@ -234,7 +234,7 @@ TcrConnectionManager::~TcrConnectionManager() {
 void TcrConnectionManager::connect(
     ThinClientBaseDM *distMng, std::vector<TcrEndpoint *> &endpoints,
     const std::unordered_set<std::string> &endpointStrs) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guardDistMngrs(m_distMngrsLock);
+  std::lock_guard<decltype(m_distMngrsLock)> guardDistMngrs(m_distMngrsLock);
   {
     ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_endpoints.mutex());
     int32_t numEndPoints = static_cast<int32_t>(endpointStrs.size());
@@ -305,7 +305,7 @@ TcrEndpoint *TcrConnectionManager::addRefToTcrEndpoint(std::string endpointName,
 void TcrConnectionManager::disconnect(ThinClientBaseDM *distMng,
                                       std::vector<TcrEndpoint *> &endpoints,
                                       bool keepEndpoints) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guardDistMngrs(m_distMngrsLock);
+  std::lock_guard<decltype(m_distMngrsLock)> guardDistMngrs(m_distMngrsLock);
   {
     ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_endpoints.mutex());
 
@@ -373,7 +373,7 @@ int TcrConnectionManager::failover(volatile bool &isRunning) {
     m_failoverSema.acquire();
     if (isRunning && !m_isNetDown) {
       try {
-        ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_distMngrsLock);
+        std::lock_guard<decltype(m_distMngrsLock)> guard(m_distMngrsLock);
         for (std::list<ThinClientBaseDM *>::iterator it = m_distMngrs.begin();
              it != m_distMngrs.end(); ++it) {
           (*it)->failover();
@@ -421,7 +421,7 @@ GfErrType TcrConnectionManager::registerInterestAllRegions(
 
   GfErrType err = GF_NOERR;
   GfErrType opErr = GF_NOERR;
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_distMngrsLock);
+  std::lock_guard<decltype(m_distMngrsLock)> guard(m_distMngrsLock);
   std::list<ThinClientBaseDM *>::iterator begin = m_distMngrs.begin();
   std::list<ThinClientBaseDM *>::iterator end = m_distMngrs.end();
   for (std::list<ThinClientBaseDM *>::iterator it = begin; it != end; ++it) {
@@ -446,7 +446,7 @@ GfErrType TcrConnectionManager::sendSyncRequestCq(TcrMessage &request,
   // 1. m_distMngrs.size() > 1 (query distribution manager + 1 or more
   // TcrHADistributionManagers).
 
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_distMngrsLock);
+  std::lock_guard<decltype(m_distMngrsLock)> guard(m_distMngrsLock);
   std::list<ThinClientBaseDM *>::iterator begin = m_distMngrs.begin();
   std::list<ThinClientBaseDM *>::iterator end = m_distMngrs.end();
   for (std::list<ThinClientBaseDM *>::iterator it = begin; it != end; ++it) {
@@ -494,11 +494,8 @@ void TcrConnectionManager::netDown() {
   {
     ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_endpoints.mutex());
 
-    for (ACE_Map_Manager<std::string, TcrEndpoint *,
-                         ACE_Recursive_Thread_Mutex>::iterator currItr =
-             m_endpoints.begin();
-         currItr != m_endpoints.end(); currItr++) {
-      (*currItr).int_id_->setConnectionStatus(false);
+    for (auto &currItr : m_endpoints) {
+      currItr.int_id_->setConnectionStatus(false);
     }
   }
 
@@ -533,7 +530,7 @@ int TcrConnectionManager::redundancy(volatile bool &isRunning) {
 void TcrConnectionManager::addNotificationForDeletion(
     Task<TcrEndpoint> *notifyReceiver, TcrConnection *notifyConnection,
     ACE_Semaphore &notifyCleanupSema) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_notificationLock);
+  std::lock_guard<decltype(m_notificationLock)> guard(m_notificationLock);
   m_connectionReleaseList.put(notifyConnection);
   m_receiverReleaseList.put(notifyReceiver);
   m_notifyCleanupSemaList.put(&notifyCleanupSema);
@@ -571,7 +568,7 @@ void TcrConnectionManager::cleanNotificationLists() {
 
   while (true) {
     {
-      ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_notificationLock);
+      std::lock_guard<decltype(m_notificationLock)> guard(m_notificationLock);
       notifyReceiver = m_receiverReleaseList.get();
       if (!notifyReceiver) break;
       notifyConnection = m_connectionReleaseList.get();
@@ -591,11 +588,8 @@ void TcrConnectionManager::processMarker() {
 
 //  TESTING: Durable clients - return queue status of endpoing. Not thread safe.
 bool TcrConnectionManager::getEndpointStatus(const std::string &endpoint) {
-  for (ACE_Map_Manager<std::string, TcrEndpoint *,
-                       ACE_Recursive_Thread_Mutex>::iterator currItr =
-           m_endpoints.begin();
-       currItr != m_endpoints.end(); currItr++) {
-    TcrEndpoint *ep = (*currItr).int_id_;
+  for (auto &currItr : m_endpoints) {
+    auto ep = currItr.int_id_;
     const std::string epName = ep->name();
     if (epName == endpoint) return ep->getServerQueueStatusTEST();
   }
