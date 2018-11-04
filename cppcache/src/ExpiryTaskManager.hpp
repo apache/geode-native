@@ -307,8 +307,6 @@ class APACHE_GEODE_EXPORT ExpiryTaskManager : public ACE_Task_Base {
 
   bool m_reactorEventLoopRunning;  // flag to indicate if the reactor event
                                    // loop is running or not.
-  ACE_Recursive_Thread_Mutex m_taskLock;  // to synchronize scheduling
-                                          // of expiry tasks.
   static const char* NC_ETM_Thread;
 
   std::mutex m_mutex;
