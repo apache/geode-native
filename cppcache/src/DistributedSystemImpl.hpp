@@ -26,9 +26,8 @@
 
 #include <map>
 #include <memory>
+#include <mutex>
 #include <string>
-
-#include <ace/Recursive_Thread_Mutex.h>
 
 #include <geode/internal/geode_globals.hpp>
 
@@ -105,7 +104,7 @@ class APACHE_GEODE_EXPORT DistributedSystemImpl {
   static void CallCliCallBack(Cache& cache);
 
  private:
-  static ACE_Recursive_Thread_Mutex m_cliCallbackLock;
+  static std::recursive_mutex m_cliCallbackLock;
   static volatile bool m_isCliCallbackSet;
   static std::map<int, CliCallbackMethod> m_cliCallbackMap;
   std::unique_ptr<SystemProperties> m_sysProps;

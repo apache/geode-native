@@ -24,11 +24,9 @@
 #include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
 #include "CppCacheLibrary.hpp"
-#include "DiffieHellman.hpp"
 #include "PoolStatistics.hpp"
 #include "RegionStats.hpp"
 #include "config.h"
-#include "statistics/StatisticsManager.hpp"
 #include "util/Log.hpp"
 #include "version.h"
 
@@ -38,7 +36,7 @@ namespace client {
 
 volatile bool DistributedSystemImpl::m_isCliCallbackSet = false;
 std::map<int, CliCallbackMethod> DistributedSystemImpl::m_cliCallbackMap;
-ACE_Recursive_Thread_Mutex DistributedSystemImpl::m_cliCallbackLock;
+std::recursive_mutex DistributedSystemImpl::m_cliCallbackLock;
 
 DistributedSystemImpl::DistributedSystemImpl(
     std::string name, DistributedSystem* implementee,
@@ -116,7 +114,8 @@ SystemProperties& DistributedSystemImpl::getSystemProperties() const {
 const std::string& DistributedSystemImpl::getName() const { return m_name; }
 
 void DistributedSystemImpl::CallCliCallBack(Cache& cache) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> disconnectGuard(m_cliCallbackLock);
+  std::lock_guard<decltype(m_cliCallbackLock)> disconnectGuard(
+      m_cliCallbackLock);
   if (m_isCliCallbackSet == true) {
     for (const auto& iter : m_cliCallbackMap) {
       iter.second(cache);
@@ -126,13 +125,15 @@ void DistributedSystemImpl::CallCliCallBack(Cache& cache) {
 
 void DistributedSystemImpl::registerCliCallback(int appdomainId,
                                                 CliCallbackMethod clicallback) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> disconnectGuard(m_cliCallbackLock);
+  std::lock_guard<decltype(m_cliCallbackLock)> disconnectGuard(
+      m_cliCallbackLock);
   m_cliCallbackMap[appdomainId] = clicallback;
   m_isCliCallbackSet = true;
 }
 
 void DistributedSystemImpl::unregisterCliCallback(int appdomainId) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> disconnectGuard(m_cliCallbackLock);
+  std::lock_guard<decltype(m_cliCallbackLock)> disconnectGuard(
+      m_cliCallbackLock);
   auto iter = m_cliCallbackMap.find(appdomainId);
   if (iter != m_cliCallbackMap.end()) {
     m_cliCallbackMap.erase(iter);
