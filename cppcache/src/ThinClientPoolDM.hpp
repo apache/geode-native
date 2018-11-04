@@ -25,7 +25,10 @@
 #include <set>
 #include <string>
 #include <vector>
+#include <mutex>
 
+#include <ace/Recursive_Thread_Mutex.h>
+#include <ace/Map_Manager.h>
 #include <ace/Semaphore.h>
 
 #include <geode/Pool.hpp>
@@ -205,7 +208,7 @@ class ThinClientPoolDM
   std::vector<std::string> m_canonicalHosts;
   ACE_Map_Manager<std::string, TcrEndpoint*, ACE_Recursive_Thread_Mutex>
       m_endpoints;
-  ACE_Recursive_Thread_Mutex m_endpointsLock;
+  std::recursive_mutex m_endpointsLock;
   ACE_Recursive_Thread_Mutex m_endpointSelectionLock;
   std::string m_poolName;
   PoolStats* m_stats;

@@ -261,7 +261,7 @@ void ThinClientPoolHADM::netDown() {
   ThinClientPoolDM::netDown();
 
   {
-    ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_endpointsLock);
+    std::lock_guard<decltype(m_endpointsLock)> guard(m_endpointsLock);
     for (auto&& currItr : m_endpoints) {
       currItr.int_id_->setConnectionStatus(false);
     }

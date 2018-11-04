@@ -704,7 +704,8 @@ bool CacheImpl::getEndpointStatus(const std::string& endpoint) {
   const auto firstPool =
       std::static_pointer_cast<ThinClientPoolDM>(pools.begin()->second);
 
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(firstPool->m_endpointsLock);
+  auto& mutex = firstPool->m_endpointsLock;
+  std::lock_guard<decltype(mutex)> guard(mutex);
   for (const auto& itr : firstPool->m_endpoints) {
     const auto& ep = itr.int_id_;
     if (ep->name().find(fullName) != std::string::npos) {

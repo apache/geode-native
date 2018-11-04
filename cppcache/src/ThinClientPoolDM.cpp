@@ -2064,7 +2064,7 @@ TcrEndpoint* ThinClientPoolDM::addEP(ServerLocation& serverLoc) {
 }
 
 TcrEndpoint* ThinClientPoolDM::addEP(const char* endpointName) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_endpointsLock);
+  std::lock_guard<decltype(m_endpointsLock)> guard(m_endpointsLock);
   TcrEndpoint* ep = nullptr;
 
   std::string fullName = endpointName;
@@ -2092,7 +2092,7 @@ void ThinClientPoolDM::netDown() {
 
 void ThinClientPoolDM::pingServerLocal() {
   ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(getPoolLock());
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_endpointsLock);
+  std::lock_guard<decltype(m_endpointsLock)> guard(m_endpointsLock);
   for (ACE_Map_Manager<std::string, TcrEndpoint*,
                        ACE_Recursive_Thread_Mutex>::iterator it =
            m_endpoints.begin();
