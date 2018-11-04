@@ -300,8 +300,8 @@ void CqQueryImpl::execute() {
     gua.setAuthenticatedView(m_authenticatedView);
   }
 
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guardRedundancy(
-      *(m_tccdm->getRedundancyLock()));
+  auto& redundancyMutex = m_tccdm->getRedundancyLock();
+  std::lock_guard<decltype(redundancyMutex)> guardRedundancy(redundancyMutex);
 
   std::lock_guard<decltype(m_mutex)> _guard(m_mutex);
   if (m_cqState == CqState::RUNNING) {
@@ -360,8 +360,8 @@ std::shared_ptr<CqResults> CqQueryImpl::executeWithInitialResults(
     gua.setAuthenticatedView(m_authenticatedView);
   }
 
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guardRedundancy(
-      *(m_tccdm->getRedundancyLock()));
+  std::lock_guard<decltype(m_tccdm->getRedundancyLock())> guardRedundancy(
+      m_tccdm->getRedundancyLock());
 
   std::lock_guard<decltype(m_mutex)> _guard(m_mutex);
   if (m_cqState == CqState::RUNNING) {

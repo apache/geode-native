@@ -131,8 +131,8 @@ class APACHE_GEODE_EXPORT TcrConnectionManager {
     return m_redundancyManager->checkDupAndAdd(eventid);
   }
 
-  ACE_Recursive_Thread_Mutex* getRedundancyLock() {
-    return &m_redundancyManager->getRedundancyLock();
+  std::recursive_mutex& getRedundancyLock() {
+    return m_redundancyManager->getRedundancyLock();
   }
 
   GfErrType sendRequestToPrimary(TcrMessage& request, TcrMessageReply& reply) {

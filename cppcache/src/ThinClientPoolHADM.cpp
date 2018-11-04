@@ -271,8 +271,8 @@ void ThinClientPoolHADM::netDown() {
 }
 
 void ThinClientPoolHADM::pingServerLocal() {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(
-      m_redundancyManager->getRedundancyLock());
+  auto& mutex = m_redundancyManager->getRedundancyLock();
+  std::lock_guard<decltype(mutex)> guard(mutex);
   ThinClientPoolDM::pingServerLocal();
 }
 

@@ -112,7 +112,7 @@ class ThinClientBaseDM {
     return m_connManager.checkDupAndAdd(eventid);
   }
 
-  virtual ACE_Recursive_Thread_Mutex* getRedundancyLock() {
+  virtual std::recursive_mutex& getRedundancyLock() {
     return m_connManager.getRedundancyLock();
   }
 

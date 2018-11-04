@@ -22,6 +22,7 @@
 
 #include <chrono>
 #include <list>
+#include <mutex>
 #include <set>
 #include <string>
 
@@ -70,12 +71,12 @@ class ThinClientRedundancyManager {
   void startPeriodicAck();
   bool checkDupAndAdd(std::shared_ptr<EventId> eventid);
   void netDown();
-  void acquireRedundancyLock() { m_redundantEndpointsLock.acquire_read(); }
-  void releaseRedundancyLock() { m_redundantEndpointsLock.release(); }
+  void acquireRedundancyLock() { m_redundantEndpointsLock.lock(); }
+  void releaseRedundancyLock() { m_redundantEndpointsLock.unlock(); }
   bool allEndPointDiscon() { return m_IsAllEpDisCon; }
   void removeCallbackConnection(TcrEndpoint*);
 
-  ACE_Recursive_Thread_Mutex& getRedundancyLock() {
+  std::recursive_mutex& getRedundancyLock() {
     return m_redundantEndpointsLock;
   }
 
@@ -95,7 +96,7 @@ class ThinClientRedundancyManager {
   ThinClientPoolHADM* m_poolHADM;
   std::vector<TcrEndpoint*> m_redundantEndpoints;
   std::vector<TcrEndpoint*> m_nonredundantEndpoints;
-  ACE_Recursive_Thread_Mutex m_redundantEndpointsLock;
+  std::recursive_mutex m_redundantEndpointsLock;
   TcrConnectionManager* m_theTcrConnManager;
   std::shared_ptr<CacheableStringArray> m_locators;
   std::shared_ptr<CacheableStringArray> m_servers;

@@ -78,8 +78,8 @@ class ThinClientPoolHADM : public ThinClientPoolDM {
   virtual void releaseRedundancyLock() {
     m_redundancyManager->releaseRedundancyLock();
   };
-  virtual ACE_Recursive_Thread_Mutex* getRedundancyLock() {
-    return &m_redundancyManager->getRedundancyLock();
+  virtual std::recursive_mutex& getRedundancyLock() {
+    return m_redundancyManager->getRedundancyLock();
   }
 
   GfErrType sendRequestToPrimary(TcrMessage& request, TcrMessageReply& reply) {
