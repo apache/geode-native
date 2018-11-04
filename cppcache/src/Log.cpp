@@ -22,6 +22,7 @@
 #include <chrono>
 #include <cinttypes>
 #include <ctime>
+#include <mutex>
 #include <string>
 #include <thread>
 #include <utility>
@@ -30,14 +31,12 @@
 #include <ace/ACE.h>
 #include <ace/Dirent.h>
 #include <ace/Dirent_Selector.h>
-#include <ace/Guard_T.h>
 #include <ace/OS.h>
 #include <ace/OS_NS_Thread.h>
 #include <ace/OS_NS_sys_stat.h>
 #include <ace/OS_NS_sys_time.h>
 #include <ace/OS_NS_time.h>
 #include <ace/OS_NS_unistd.h>
-#include <ace/Thread_Mutex.h>
 #include <boost/process/environment.hpp>
 
 #include <geode/ExceptionTypes.hpp>
@@ -83,7 +82,7 @@ size_t g_diskSpaceLimit = GEODE_MAX_LOG_DISK_LIMIT;
 
 char g_logFileNameBuffer[2048] = {0};
 
-ACE_Thread_Mutex* g_logMutex = new ACE_Thread_Mutex("Log::logMutex");
+std::mutex g_logMutex;
 
 int g_rollIndex = 0;
 size_t g_spaceUsed = 0;
@@ -187,7 +186,6 @@ void Log::init(LogLevel level, const char* logFileName, int32_t logFileLimit,
         "Call Log::close() before calling Log::init again.");
   }
   s_logLevel = level;
-  if (g_logMutex == nullptr) g_logMutex = new ACE_Thread_Mutex("Log::logMutex");
 
   if (logDiskSpaceLimit <
       0 /*|| logDiskSpaceLimit > GEODE_MAX_LOG_DISK_LIMIT*/) {
@@ -198,7 +196,7 @@ void Log::init(LogLevel level, const char* logFileName, int32_t logFileLimit,
     logFileLimit = GEODE_MAX_LOG_FILE_LIMIT;
   }
 
-  ACE_Guard<ACE_Thread_Mutex> guard(*g_logMutex);
+  std::lock_guard<decltype(g_logMutex)> guard(g_logMutex);
 
   if (logFileName && logFileName[0]) {
     std::string filename = logFileName;
@@ -354,7 +352,7 @@ void Log::init(LogLevel level, const char* logFileName, int32_t logFileLimit,
 }
 
 void Log::close() {
-  ACE_Guard<ACE_Thread_Mutex> guard(*g_logMutex);
+  std::lock_guard<decltype(g_logMutex)> guard(g_logMutex);
 
   std::string oldfile;
 
@@ -542,7 +540,7 @@ void Log::put(LogLevel level, const std::string& msg) {
 
 // int g_count = 0;
 void Log::put(LogLevel level, const char* msg) {
-  ACE_Guard<ACE_Thread_Mutex> guard(*g_logMutex);
+  std::lock_guard<decltype(g_logMutex)> guard(g_logMutex);
 
   g_fileInfo fileInfo;
 
