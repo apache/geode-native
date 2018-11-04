@@ -200,7 +200,6 @@ HostStatSampler::HostStatSampler(const char* filePath,
     int status = sds.open(dirname.c_str(), selector, comparator);
     if (status != -1) {
       for (int i = 0; i < sds.length(); i++) {
-        // std::string strname = ACE::basename(resultArray[i]->d_name);
         std::string strname = ACE::basename(sds[i]->d_name);
         size_t fileExtPos = strname.find_last_of('.', strname.length());
         if (fileExtPos != std::string::npos) {
