@@ -1262,9 +1262,9 @@ class TcrMessageHelper {
       // otherwise we're currently always expecting an object
       char exMsg[256];
       std::snprintf(exMsg, 255,
-                       "TcrMessageHelper::readChunkPartHeader: "
-                       "%s: part is not object",
-                       methodName);
+                    "TcrMessageHelper::readChunkPartHeader: "
+                    "%s: part is not object",
+                    methodName);
       LOGDEBUG("%s ", exMsg);
       // throw MessageException(exMsg);
       return ChunkObjectType::EXCEPTION;
@@ -1299,9 +1299,9 @@ class TcrMessageHelper {
       if (partType != expectedFirstType) {
         char exMsg[256];
         std::snprintf(exMsg, 255,
-                         "TcrMessageHelper::readChunkPartHeader: "
-                         "%s: got unhandled object class = %" PRId8,
-                         methodName, static_cast<int8_t>(partType));
+                      "TcrMessageHelper::readChunkPartHeader: "
+                      "%s: got unhandled object class = %" PRId8,
+                      methodName, static_cast<int8_t>(partType));
         throw MessageException(exMsg);
       }
       // This is for GETALL
@@ -1339,9 +1339,9 @@ class TcrMessageHelper {
       // otherwise we're currently always expecting an object
       char exMsg[256];
       std::snprintf(exMsg, 255,
-                       "TcrMessageHelper::readChunkPartHeader: "
-                       "%s: part is not object",
-                       methodName);
+                    "TcrMessageHelper::readChunkPartHeader: "
+                    "%s: part is not object",
+                    methodName);
       throw MessageException(exMsg);
     }
 

@@ -3209,7 +3209,8 @@ bool ThinClientRegion::executeFunctionSH(
         }
         worker->getResultCollector()->reset();
         {
-          std::lock_guard<decltype(*resultCollectorLock)> guard(*resultCollectorLock);
+          std::lock_guard<decltype(*resultCollectorLock)> guard(
+              *resultCollectorLock);
           rc->clearResults();
         }
         std::shared_ptr<CacheableHashSet> failedNodeIds(
@@ -3235,7 +3236,8 @@ bool ThinClientRegion::executeFunctionSH(
         }
         worker->getResultCollector()->reset();
         {
-          std::lock_guard<decltype(*resultCollectorLock)> guard(*resultCollectorLock);
+          std::lock_guard<decltype(*resultCollectorLock)> guard(
+              *resultCollectorLock);
           rc->clearResults();
         }
       } else {
@@ -3712,7 +3714,8 @@ void ChunkedFunctionExecutionResponse::handleChunk(
       result = value;
     }
     if (m_resultCollectorLock) {
-      std::lock_guard<decltype(*m_resultCollectorLock)> guard(*m_resultCollectorLock);
+      std::lock_guard<decltype(*m_resultCollectorLock)> guard(
+          *m_resultCollectorLock);
       m_rc->addResult(result);
     } else {
       m_rc->addResult(result);

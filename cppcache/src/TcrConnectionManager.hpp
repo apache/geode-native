@@ -21,10 +21,10 @@
 #define GEODE_TCRCONNECTIONMANAGER_H_
 
 #include <list>
+#include <mutex>
 #include <string>
 #include <unordered_map>
 #include <vector>
-#include <mutex>
 
 #include <ace/Map_Manager.h>
 #include <ace/Recursive_Thread_Mutex.h>

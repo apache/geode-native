@@ -51,7 +51,6 @@ std::shared_ptr<PdxFieldType> PdxInstanceImpl::m_DefaultPdxFieldType(
 
 bool sortFunc(std::shared_ptr<PdxFieldType> field1,
               std::shared_ptr<PdxFieldType> field2) {
-
   const auto diff = field1->getFieldName().compare(field2->getFieldName());
   if (diff < 0) {
     return true;
@@ -701,7 +700,7 @@ int32_t PdxInstanceImpl::hashcode() const {
       default: {
         char excpStr[256] = {0};
         std::snprintf(excpStr, 256, "PdxInstance not found typeid %d ",
-                         static_cast<int>(pField->getTypeId()));
+                      static_cast<int>(pField->getTypeId()));
         throw IllegalStateException(excpStr);
       }
     }
@@ -1145,7 +1144,8 @@ bool PdxInstanceImpl::operator==(const CacheableKey& other) const {
 
     LOGDEBUG("pdxfield %s ",
              ((myPFT != m_DefaultPdxFieldType) ? myPFT->getFieldName()
-                                               : otherPFT->getFieldName()).c_str());
+                                               : otherPFT->getFieldName())
+                 .c_str());
     if (myPFT->equals(m_DefaultPdxFieldType)) {
       fieldTypeId = otherPFT->getTypeId();
     } else if (otherPFT->equals(m_DefaultPdxFieldType)) {
@@ -1226,7 +1226,7 @@ bool PdxInstanceImpl::operator==(const CacheableKey& other) const {
       default: {
         char excpStr[256] = {0};
         std::snprintf(excpStr, 256, "PdxInstance not found typeid  %d ",
-                         static_cast<int>(myPFT->getTypeId()));
+                      static_cast<int>(myPFT->getTypeId()));
         throw IllegalStateException(excpStr);
       }
     }

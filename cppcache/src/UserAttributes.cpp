@@ -34,7 +34,6 @@ UserAttributes::UserAttributes(std::shared_ptr<Properties> credentials,
 bool UserAttributes::isCacheClosed() { return m_authenticatedView->isClosed(); }
 
 UserAttributes::~UserAttributes() {
-
   std::lock_guard<decltype(m_listLock)> guard(m_listLock);
   for (auto& it : m_connectionAttr) {
     auto uca = it.second;

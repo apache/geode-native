@@ -64,9 +64,9 @@ void MapSegment::clear() {
   m_map->unbind_all();
 }
 
-void MapSegment::lock() {  m_segmentMutex.lock(); }
+void MapSegment::lock() { m_segmentMutex.lock(); }
 
-void MapSegment::unlock() {  m_segmentMutex.unlock(); }
+void MapSegment::unlock() { m_segmentMutex.unlock(); }
 
 GfErrType MapSegment::create(const std::shared_ptr<CacheableKey>& key,
                              const std::shared_ptr<Cacheable>& newValue,

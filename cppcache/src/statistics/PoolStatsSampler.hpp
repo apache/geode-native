@@ -20,6 +20,10 @@
 #ifndef GEODE_STATISTICS_POOLSTATSSAMPLER_H_
 #define GEODE_STATISTICS_POOLSTATSSAMPLER_H_
 
+#include <chrono>
+#include <memory>
+#include <mutex>
+
 #include <ace/Task.h>
 
 #include <geode/internal/geode_globals.hpp>
@@ -67,7 +71,7 @@ class APACHE_GEODE_EXPORT PoolStatsSampler : public ACE_Task_Base {
   std::chrono::milliseconds m_sampleRate;
   std::shared_ptr<AdminRegion> m_adminRegion;
   ThinClientPoolDM* m_distMan;
-  ACE_Recursive_Thread_Mutex m_lock;
+  std::recursive_mutex m_lock;
   static const char* NC_PSS_Thread;
   GeodeStatisticsFactory* m_statisticsFactory;
 };

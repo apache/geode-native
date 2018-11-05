@@ -630,8 +630,8 @@ void CacheXmlParser::endPool() {
 
 void CacheXmlParser::setPoolInfo(PoolFactory* factory, const char* name,
                                  const char* value) {
-  using apache::geode::internal::chrono::duration::from_string;
   using apache::geode::client::equal_ignore_case;
+  using apache::geode::internal::chrono::duration::from_string;
 
   if (strcmp(name, FREE_CONNECTION_TIMEOUT) == 0) {
     factory->setFreeConnectionTimeout(

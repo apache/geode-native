@@ -101,7 +101,7 @@ void TcpConn::init() {
              ACE_OS::strerror(lastError));
     char msg[256];
     std::snprintf(msg, 256, "TcpConn::connect failed with errno: %d: %s",
-                     lastError, ACE_OS::strerror(lastError));
+                  lastError, ACE_OS::strerror(lastError));
     throw GeodeIOException(msg);
   }
 
@@ -178,7 +178,7 @@ void TcpConn::listen(ACE_INET_Addr addr,
           to_string(waitSeconds) + ".");
     }
     std::snprintf(msg, 256, "TcpConn::listen failed with errno: %d: %s",
-                     lastError, ACE_OS::strerror(lastError));
+                  lastError, ACE_OS::strerror(lastError));
     throw GeodeIOException(msg);
   }
 }
@@ -233,7 +233,7 @@ void TcpConn::connect() {
           to_string(waitMicroSeconds) + ".");
     }
     std::snprintf(msg, 256, "TcpConn::connect failed with errno: %d: %s",
-                     lastError, ACE_OS::strerror(lastError));
+                  lastError, ACE_OS::strerror(lastError));
     //  this is only called by constructor, so we must delete m_io
     close();
     throw GeodeIOException(msg);
@@ -243,7 +243,7 @@ void TcpConn::connect() {
     char msg[250];
     int32_t lastError = ACE_OS::last_error();
     std::snprintf(msg, 256, "TcpConn::NONBLOCK: %d: %s", lastError,
-                     ACE_OS::strerror(lastError));
+                  ACE_OS::strerror(lastError));
 
     LOGINFO(msg);
   }

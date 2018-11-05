@@ -46,7 +46,7 @@ void* DiffieHellman::getOpenSSLFuncPtr(const char* function_name) {
   if (func == nullptr) {
     char msg[1000];
     std::snprintf(msg, 1000, "cannot find function %s in library %s",
-                     function_name, "cryptoImpl");
+                  function_name, "cryptoImpl");
     LOGERROR(msg);
     throw IllegalStateException(msg);
   }
@@ -103,12 +103,12 @@ void DiffieHellman::initDhKeys(const std::shared_ptr<Properties>& props) {
   if (error == DH_ERR_UNSUPPORTED_ALGO) {  // Unsupported Algorithm
     char msg[64] = {'\0'};
     std::snprintf(msg, 64, "Algorithm %s is not supported.",
-                     dhAlgo->value().c_str());
+                  dhAlgo->value().c_str());
     throw IllegalArgumentException(msg);
   } else if (error == DH_ERR_ILLEGAL_KEYSIZE) {  // Illegal Key size
     char msg[64] = {'\0'};
     std::snprintf(msg, 64, "Illegal key size for algorithm %s.",
-                     dhAlgo->value().c_str());
+                  dhAlgo->value().c_str());
     throw IllegalArgumentException(msg);
   } else if (m_dhCtx == nullptr) {
     throw IllegalStateException(

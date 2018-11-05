@@ -32,7 +32,7 @@ void *SslSockStream::getACESSLFuncPtr(const char *function_name) {
   if (func == nullptr) {
     char msg[1000];
     std::snprintf(msg, 1000, "cannot find function %s in library %s",
-                     function_name, "cryptoImpl");
+                  function_name, "cryptoImpl");
     LOGERROR(msg);
     throw IllegalStateException(msg);
   }

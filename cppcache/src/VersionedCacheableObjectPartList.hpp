@@ -20,6 +20,7 @@
 #ifndef GEODE_VERSIONEDCACHEABLEOBJECTPARTLIST_H_
 #define GEODE_VERSIONEDCACHEABLEOBJECTPARTLIST_H_
 
+#include <mutex>
 #include <vector>
 
 #include <ace/Task.h>
@@ -27,9 +28,6 @@
 #include "CacheableObjectPartList.hpp"
 #include "VersionTag.hpp"
 #include "util/Log.hpp"
-
-/** @file
- */
 
 namespace apache {
 namespace geode {
@@ -176,8 +174,8 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
     return m_tempKeys;
   }
 
-  inline VersionedCacheableObjectPartList(
-      uint16_t endpointMemId, std::recursive_mutex& responseLock)
+  inline VersionedCacheableObjectPartList(uint16_t endpointMemId,
+                                          std::recursive_mutex& responseLock)
       : m_tempKeys(
             std::make_shared<std::vector<std::shared_ptr<CacheableKey>>>()),
         m_responseLock(responseLock) {

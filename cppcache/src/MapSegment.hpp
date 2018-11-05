@@ -21,9 +21,9 @@
 #define GEODE_MAPSEGMENT_H_
 
 #include <memory>
+#include <mutex>
 #include <unordered_map>
 #include <vector>
-#include <mutex>
 
 #include <ace/Functor_T.h>
 #include <ace/Hash_Map_Manager.h>

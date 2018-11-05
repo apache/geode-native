@@ -167,9 +167,7 @@ class APACHE_GEODE_EXPORT TcrEndpoint {
   void setConnected(volatile bool connected = true) { m_connected = connected; }
   virtual ThinClientPoolDM* getPoolHADM() { return nullptr; }
   bool isQueueHosted();
-  std::recursive_mutex& getQueueHostedMutex() {
-    return m_notifyReceiverLock;
-  }
+  std::recursive_mutex& getQueueHostedMutex() { return m_notifyReceiverLock; }
   /*
   void sendNotificationCloseMsg();
   */

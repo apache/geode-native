@@ -1,4 +1,3 @@
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,9 +19,6 @@
 
 #include <string>
 
-#include <ace/Guard_T.h>
-#include <ace/Recursive_Thread_Mutex.h>
-#include <ace/Thread_Mutex.h>
 #include <boost/process/environment.hpp>
 
 #include <geode/Exception.hpp>
@@ -56,9 +52,7 @@ GeodeStatisticsFactory::~GeodeStatisticsFactory() {
     // Clean Map : Delete all the pointers of StatisticsType from the map.
     if (statsTypeMap.total_size() == 0) return;
 
-    ACE_Map_Manager<std::string, StatisticsTypeImpl*,
-                    ACE_Recursive_Thread_Mutex>::iterator iterFind =
-        statsTypeMap.begin();
+    auto iterFind = statsTypeMap.begin();
     while (iterFind != statsTypeMap.end()) {
       delete (*iterFind).int_id_;
       (*iterFind).int_id_ = nullptr;
@@ -107,7 +101,8 @@ Statistics* GeodeStatisticsFactory::createOsStatistics(
 
   int64_t myUniqueId;
   {
-    ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_statsListUniqueIdLock);
+    std::lock_guard<decltype(m_statsListUniqueIdLock)> guard(
+        m_statsListUniqueIdLock);
     myUniqueId = m_statsListUniqueId++;
   }
 
@@ -137,7 +132,8 @@ Statistics* GeodeStatisticsFactory::createAtomicStatistics(
   int64_t myUniqueId;
 
   {
-    ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_statsListUniqueIdLock);
+    std::lock_guard<decltype(m_statsListUniqueIdLock)> guard(
+        m_statsListUniqueIdLock);
     myUniqueId = m_statsListUniqueId++;
   }
 

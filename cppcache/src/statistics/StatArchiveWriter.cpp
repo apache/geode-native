@@ -30,8 +30,8 @@
 #include <geode/internal/geode_globals.hpp>
 
 #include "../CacheImpl.hpp"
-#include "GeodeStatisticsFactory.hpp"
 #include "../util/chrono/time_point.hpp"
+#include "GeodeStatisticsFactory.hpp"
 
 namespace apache {
 namespace geode {
@@ -399,7 +399,8 @@ int64_t StatArchiveWriter::bytesWritten() { return bytesWrittenToFile; }
 int64_t StatArchiveWriter::getSampleSize() { return m_samplesize; }
 
 void StatArchiveWriter::sample(const steady_clock::time_point &timeStamp) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(sampler->getStatListMutex());
+  std::lock_guard<decltype(sampler->getStatListMutex())> guard(
+      sampler->getStatListMutex());
   m_samplesize = dataBuffer->getBytesWritten();
 
   sampleResources();
@@ -505,7 +506,8 @@ void StatArchiveWriter::sampleResources() {
 }
 
 void StatArchiveWriter::resampleResources() {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(sampler->getStatListMutex());
+  std::lock_guard<decltype(sampler->getStatListMutex())> guard(
+      sampler->getStatListMutex());
   std::vector<Statistics *> &statsList = sampler->getStatistics();
   std::vector<Statistics *>::iterator statlistIter = statsList.begin();
   while (statlistIter != statsList.end()) {

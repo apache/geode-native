@@ -246,7 +246,7 @@ HostStatSampler::~HostStatSampler() {
 std::string HostStatSampler::createArchiveFileName() {
   if (!m_isStatDiskSpaceEnabled) {
     char buff[1024] = {0};
-    auto pid =  boost::this_process::get_id();
+    auto pid = boost::this_process::get_id();
     auto len = m_archiveFileName.length();
     auto fileExtPos = m_archiveFileName.find_last_of('.', len);
     if (fileExtPos == std::string::npos) {
@@ -284,7 +284,8 @@ void HostStatSampler::accountForTimeSpentWorking(int64_t nanosSpentWorking) {
 }
 
 bool HostStatSampler::statisticsExists(const int64_t id) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_statMngr->getListMutex());
+  std::lock_guard<decltype(m_statMngr->getListMutex())> guard(
+      m_statMngr->getListMutex());
   std::vector<Statistics*>& statsList = m_statMngr->getStatsList();
   std::vector<Statistics*>::iterator i;
   for (i = statsList.begin(); i != statsList.end(); ++i) {
@@ -296,7 +297,8 @@ bool HostStatSampler::statisticsExists(const int64_t id) {
 }
 
 Statistics* HostStatSampler::findStatistics(const int64_t id) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_statMngr->getListMutex());
+  std::lock_guard<decltype(m_statMngr->getListMutex())> guard(
+      m_statMngr->getListMutex());
   std::vector<Statistics*>& statsList = m_statMngr->getStatsList();
   std::vector<Statistics*>::iterator i;
   for (i = statsList.begin(); i != statsList.end(); ++i) {
@@ -307,7 +309,7 @@ Statistics* HostStatSampler::findStatistics(const int64_t id) {
   return nullptr;
 }
 
-ACE_Recursive_Thread_Mutex& HostStatSampler::getStatListMutex() {
+std::recursive_mutex& HostStatSampler::getStatListMutex() {
   return m_statMngr->getListMutex();
 }
 
@@ -561,7 +563,7 @@ void HostStatSampler::writeGfs() {
 }
 
 void HostStatSampler::forceSample() {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> samplingGuard(m_samplingLock);
+  std::lock_guard<decltype(m_samplingLock)> guard(m_samplingLock);
 
   if (m_archiver) {
     sampleSpecialStats();
@@ -571,7 +573,7 @@ void HostStatSampler::forceSample() {
 }
 
 void HostStatSampler::doSample(std::string& archivefilename) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> samplingGuard(m_samplingLock);
+  std::lock_guard<decltype(m_samplingLock)> guard(m_samplingLock);
 
   sampleSpecialStats();
   checkListeners();

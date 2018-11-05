@@ -44,8 +44,8 @@ Ssl* TcpSslConn::getSSLImpl(ACE_HANDLE sock, const char* pubkeyfile,
   if (func == nullptr) {
     char msg[1000];
     std::snprintf(msg, 1000,
-                     "cannot find function %s in library gf_create_SslImpl",
-                     "cryptoImpl");
+                  "cannot find function %s in library gf_create_SslImpl",
+                  "cryptoImpl");
     LOGERROR(msg);
     throw IllegalStateException(msg);
   }
@@ -75,7 +75,7 @@ void TcpSslConn::listen(ACE_INET_Addr addr,
           to_string(waitSeconds) + ".");
     }
     std::snprintf(msg, 255, "TcpSslConn::listen failed with errno: %d: %s",
-                     lastError, ACE_OS::strerror(lastError));
+                  lastError, ACE_OS::strerror(lastError));
     throw GeodeIOException(msg);
   }
 }
@@ -108,7 +108,7 @@ void TcpSslConn::connect() {
           to_string(waitMicroSeconds) + ".");
     }
     std::snprintf(msg, 256, "TcpSslConn::connect failed with errno: %d: %s",
-                     lastError, ACE_OS::strerror(lastError));
+                  lastError, ACE_OS::strerror(lastError));
     // this is only called by constructor, so we must delete m_ssl
     _GEODE_SAFE_DELETE(m_ssl);
     throw GeodeIOException(msg);

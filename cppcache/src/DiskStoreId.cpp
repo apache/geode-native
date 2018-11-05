@@ -25,8 +25,7 @@ namespace client {
 std::string DiskStoreId::getHashKey() {
   if (m_hashCode.size() == 0) {
     char hashCode[128] = {0};
-    std::snprintf(hashCode, 128, "%" PRIx64 "_%" PRIx64, m_mostSig,
-                     m_leastSig);
+    std::snprintf(hashCode, 128, "%" PRIx64 "_%" PRIx64, m_mostSig, m_leastSig);
     m_hashCode.append(hashCode);
   }
   return m_hashCode;

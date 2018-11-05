@@ -76,9 +76,7 @@ class ThinClientRedundancyManager {
   bool allEndPointDiscon() { return m_IsAllEpDisCon; }
   void removeCallbackConnection(TcrEndpoint*);
 
-  std::recursive_mutex& getRedundancyLock() {
-    return m_redundantEndpointsLock;
-  }
+  std::recursive_mutex& getRedundancyLock() { return m_redundantEndpointsLock; }
 
   GfErrType sendRequestToPrimary(TcrMessage& request, TcrMessageReply& reply);
   bool isSentReadyForEvents() const { return m_sentReadyForEvents; }

@@ -22,13 +22,13 @@
 
 #include <chrono>
 #include <memory>
+#include <mutex>
 #include <set>
 #include <string>
 #include <vector>
-#include <mutex>
 
-#include <ace/Recursive_Thread_Mutex.h>
 #include <ace/Map_Manager.h>
+#include <ace/Recursive_Thread_Mutex.h>
 #include <ace/Semaphore.h>
 
 #include <geode/Pool.hpp>

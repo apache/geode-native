@@ -21,8 +21,8 @@
 #define GEODE_USERATTRIBUTES_H_
 
 #include <map>
-#include <string>
 #include <mutex>
+#include <string>
 
 #include <ace/TSS_T.h>
 

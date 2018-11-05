@@ -24,8 +24,8 @@
 #include <string>
 #include <vector>
 
-#include <ace/Task.h>
 #include <ace/RW_Thread_Mutex.h>
+#include <ace/Task.h>
 
 #include <geode/DataOutput.hpp>
 

@@ -24,7 +24,6 @@
 #include <string>
 #include <vector>
 
-
 #include <geode/ExceptionTypes.hpp>
 #include <geode/internal/geode_globals.hpp>
 

@@ -22,10 +22,10 @@
 
 #include <chrono>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <vector>
 
-#include <ace/Recursive_Thread_Mutex.h>
 #include <ace/Task.h>
 
 #include <geode/ExceptionTypes.hpp>
@@ -39,8 +39,6 @@
 #include "StatisticsManager.hpp"
 #include "StatisticsType.hpp"
 
-/** @file
- */
 #ifndef GEMFIRE_MAX_STATS_FILE_LIMIT
 #define GEMFIRE_MAX_STATS_FILE_LIMIT (1024 * 1024 * 1024)
 #endif
@@ -48,6 +46,7 @@
 #ifndef GEMFIRE_MAX_STAT_DISK_LIMIT
 #define GEMFIRE_MAX_STAT_DISK_LIMIT (1024LL * 1024LL * 1024LL * 1024LL)
 #endif
+
 namespace apache {
 namespace geode {
 namespace statistics {
@@ -122,7 +121,7 @@ class APACHE_GEODE_EXPORT HostStatSampler : public ACE_Task_Base,
   /**
    * Gets list mutex for synchronization
    */
-  ACE_Recursive_Thread_Mutex& getStatListMutex();
+  std::recursive_mutex& getStatListMutex();
   /**
    * Returns a vector of ptrs to all the current statistic resource instances.
    */
@@ -190,7 +189,7 @@ class APACHE_GEODE_EXPORT HostStatSampler : public ACE_Task_Base,
   ~HostStatSampler();
 
  private:
-  ACE_Recursive_Thread_Mutex m_samplingLock;
+  std::recursive_mutex m_samplingLock;
   bool m_adminError;
   // Related to ACE Thread.
   bool m_running;
@@ -247,6 +246,7 @@ class APACHE_GEODE_EXPORT HostStatSampler : public ACE_Task_Base,
 
   static const char* NC_HSS_Thread;
 };
+
 }  // namespace statistics
 }  // namespace geode
 }  // namespace apache

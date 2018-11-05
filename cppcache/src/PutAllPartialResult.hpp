@@ -43,8 +43,7 @@ class PutAllPartialResult final : public Serializable {
   ACE_RW_Thread_Mutex g_readerWriterLock;
 
  public:
-  PutAllPartialResult(int totalMapSize,
-                      std::recursive_mutex& responseLock);
+  PutAllPartialResult(int totalMapSize, std::recursive_mutex& responseLock);
   ~PutAllPartialResult() noexcept final {}
 
   void setTotalMapSize(int totalMapSize) { m_totalMapSize = totalMapSize; }
