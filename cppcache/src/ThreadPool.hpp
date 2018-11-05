@@ -21,12 +21,12 @@
 #define GEODE_THREADPOOL_H_
 
 #include <condition_variable>
+#include <deque>
 #include <mutex>
 
 #include <ace/Activation_Queue.h>
-#include <ace/Condition_T.h>
-#include <ace/Guard_T.h>
 #include <ace/Method_Request.h>
+#include <ace/Recursive_Thread_Mutex.h>
 #include <ace/Singleton.h>
 #include <ace/Task.h>
 
@@ -119,7 +119,7 @@ class ThreadPool : public ACE_Task_Base, IThreadPool {
   int shutdown_;
   std::mutex workersLock_;
   std::condition_variable workersCond_;
-  ACE_Unbounded_Queue<ThreadPoolWorker*> workers_;
+  std::deque<ThreadPoolWorker*> workers_;
   ACE_Activation_Queue queue_;
   static const char* NC_Pool_Thread;
 };

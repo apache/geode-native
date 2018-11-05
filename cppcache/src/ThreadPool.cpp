@@ -40,13 +40,13 @@ ThreadPoolWorker::~ThreadPoolWorker() { shutDown(); }
 
 int ThreadPoolWorker::perform(ACE_Method_Request* req) {
   ACE_TRACE(ACE_TEXT("Worker::perform"));
-  return this->queue_.enqueue(req);
+  return queue_.enqueue(req);
 }
 
 int ThreadPoolWorker::svc(void) {
   threadId_ = ACE_Thread::self();
   while (1) {
-    ACE_Method_Request* request = this->queue_.dequeue();
+    ACE_Method_Request* request = queue_.dequeue();
     if (request == nullptr) {
       shutDown();
       break;
@@ -56,7 +56,7 @@ int ThreadPoolWorker::svc(void) {
     request->call();
 
     // Return to work.
-    this->manager_->returnToWork(this);
+    manager_->returnToWork(this);
   }
   return 0;
 }
@@ -80,9 +80,7 @@ ThreadPool::ThreadPool(uint32_t threadPoolSize)
 
 ThreadPool::~ThreadPool() { shutDown(); }
 
-int ThreadPool::perform(ACE_Method_Request* req) {
-  return this->queue_.enqueue(req);
-}
+int ThreadPool::perform(ACE_Method_Request* req) { return queue_.enqueue(req); }
 
 const char* ThreadPool::NC_Pool_Thread = "NC Pool Thread";
 int ThreadPool::svc(void) {
@@ -91,13 +89,13 @@ int ThreadPool::svc(void) {
   createWorkerPool();
   while (!done()) {
     // Get the next message
-    ACE_Method_Request* request = this->queue_.dequeue();
+    ACE_Method_Request* request = queue_.dequeue();
     if (request == nullptr) {
       shutDown();
       break;
     }
     // Choose a worker.
-    ThreadPoolWorker* worker = chooseWorker();
+    auto worker = chooseWorker();
     // Ask the worker to do the job.
     worker->perform(request);
   }
@@ -116,18 +114,18 @@ int ThreadPool::shutDown(void) {
 
 int ThreadPool::returnToWork(ThreadPoolWorker* worker) {
   std::unique_lock<decltype(workersLock_)> lock(workersLock_);
-  workers_.enqueue_tail(worker);
+  workers_.push_back(worker);
   workersCond_.notify_one();
   return 0;
 }
 
 ThreadPoolWorker* ThreadPool::chooseWorker(void) {
   std::unique_lock<decltype(workersLock_)> lock(workersLock_);
-  if (workers_.is_empty()) {
-    workersCond_.wait(lock, [this] { return !workers_.is_empty(); });
+  if (workers_.empty()) {
+    workersCond_.wait(lock, [this] { return !workers_.empty(); });
   }
-  ThreadPoolWorker* worker;
-  this->workers_.dequeue_head(worker);
+  auto worker = workers_.front();
+  workers_.pop_front();
   return worker;
 }
 
@@ -136,7 +134,7 @@ int ThreadPool::createWorkerPool(void) {
   for (int i = 0; i < poolSize_; i++) {
     ThreadPoolWorker* worker;
     ACE_NEW_RETURN(worker, ThreadPoolWorker(this), -1);
-    this->workers_.enqueue_tail(worker);
+    workers_.push_back(worker);
     worker->activate();
   }
   return 0;
