@@ -92,7 +92,7 @@ class TSSDataOutput {
     m_buffers.push_back(desc);
   }
 
-  static ACE_TSS<TSSDataOutput> s_tssDataOutput;
+  static thread_local TSSDataOutput s_tssDataOutput;
 };
 
 TSSDataOutput::TSSDataOutput() : m_buffers() {
@@ -108,7 +108,7 @@ TSSDataOutput::~TSSDataOutput() {
   }
 }
 
-ACE_TSS<TSSDataOutput> TSSDataOutput::s_tssDataOutput;
+thread_local TSSDataOutput TSSDataOutput::s_tssDataOutput;
 
 DataOutput::DataOutput(const CacheImpl* cache, Pool* pool)
     : m_size(0), m_haveBigBuffer(false), m_cache(cache), m_pool(pool) {
@@ -117,11 +117,11 @@ DataOutput::DataOutput(const CacheImpl* cache, Pool* pool)
 }
 
 uint8_t* DataOutput::checkoutBuffer(size_t* size) {
-  return TSSDataOutput::s_tssDataOutput->getBuffer(size);
+  return TSSDataOutput::s_tssDataOutput.getBuffer(size);
 }
 
 void DataOutput::checkinBuffer(uint8_t* buffer, size_t size) {
-  TSSDataOutput::s_tssDataOutput->poolBuffer(buffer, size);
+  TSSDataOutput::s_tssDataOutput.poolBuffer(buffer, size);
 }
 
 void DataOutput::writeObjectInternal(const std::shared_ptr<Serializable>& ptr,
