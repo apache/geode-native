@@ -17,7 +17,6 @@
 
 #include <vector>
 
-#include <ace/Recursive_Thread_Mutex.h>
 #include <ace/TSS_T.h>
 
 #include <geode/DataOutput.hpp>

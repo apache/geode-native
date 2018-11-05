@@ -19,9 +19,6 @@
 
 #include <string>
 
-#include <ace/Guard_T.h>
-#include <ace/Recursive_Thread_Mutex.h>
-
 #include <geode/Exception.hpp>
 #include <geode/internal/geode_globals.hpp>
 

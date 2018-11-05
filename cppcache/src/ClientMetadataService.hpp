@@ -218,7 +218,6 @@ class ClientMetadataService : public ACE_Task_Base,
       const std::shared_ptr<Region>& region);
 
  private:
-  // ACE_Recursive_Thread_Mutex m_regionMetadataLock;
   ACE_RW_Thread_Mutex m_regionMetadataLock;
   ClientMetadataService();
   ACE_Semaphore m_regionQueueSema;

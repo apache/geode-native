@@ -25,7 +25,6 @@ bool ThinClientStickyManager::getStickyConnection(
     std::set<ServerLocation>& excludeServers, bool forTransaction) {
   bool maxConnLimit = false;
   bool connFound = false;
-  // ACE_Guard<ACE_Recursive_Thread_Mutex> guard( m_stickyLock );
   conn = (*TssConnectionWrapper::s_geodeTSSConn)->getConnection();
 
   if (!conn) {
@@ -86,7 +85,6 @@ void ThinClientStickyManager::addStickyConnection(TcrConnection* conn) {
 
 void ThinClientStickyManager::setStickyConnection(TcrConnection* conn,
                                                   bool forTransaction) {
-  // ACE_Guard<ACE_Recursive_Thread_Mutex> guard( m_stickyLock );
   if (!conn) {
     std::lock_guard<decltype(m_stickyLock)> keysGuard(m_stickyLock);
     (*TssConnectionWrapper::s_geodeTSSConn)

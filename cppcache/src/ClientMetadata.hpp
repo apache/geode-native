@@ -23,9 +23,6 @@
 #include <map>
 #include <vector>
 
-#include <ace/ACE.h>
-#include <ace/Recursive_Thread_Mutex.h>
-
 #include <geode/PartitionResolver.hpp>
 
 #include "BucketServerLocation.hpp"
@@ -61,7 +58,6 @@ class APACHE_GEODE_EXPORT ClientMetadata : public NonAssignable {
   int m_totalNumBuckets;
   // std::shared_ptr<PartitionResolver> m_partitionResolver;
   std::string m_colocatedWith;
-  // ACE_RW_Thread_Mutex m_readWriteLock;
   ThinClientPoolDM* m_tcrdm;
   FixedMapType m_fpaMap;
   inline void checkBucketId(size_t bucketId) {

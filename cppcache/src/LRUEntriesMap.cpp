@@ -166,7 +166,6 @@ GfErrType LRUEntriesMap::processLRU() {
 
 GfErrType LRUEntriesMap::evictionHelper() {
   GfErrType err = GF_NOERR;
-  //  ACE_Guard< ACE_Recursive_Thread_Mutex > guard( m_mutex );
   std::shared_ptr<MapEntryImpl> lruEntryPtr;
   m_lruList.getLRUEntry(lruEntryPtr);
   if (lruEntryPtr == nullptr) {

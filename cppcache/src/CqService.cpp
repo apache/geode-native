@@ -214,9 +214,7 @@ CqService::query_container_type CqService::getAllCqs() {
  * Executes all the cqs on this client.
  */
 void CqService::executeAllClientCqs(bool afterFailover) {
-  // ACE_Guard< ACE_Recursive_Thread_Mutex > _guard( m_mutex );
   query_container_type cqVec = getAllCqs();
-  // MapOfRegionGuard guard( m_cqQueryMap->mutex() );
   executeCqs(cqVec, afterFailover);
 }
 

@@ -23,8 +23,6 @@
 #include <mutex>
 #include <vector>
 
-#include <ace/Task.h>
-
 #include "CacheableObjectPartList.hpp"
 #include "VersionTag.hpp"
 #include "util/Log.hpp"
@@ -187,8 +185,6 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
   }
 
   void addAll(std::shared_ptr<VersionedCacheableObjectPartList> other) {
-    // LOGDEBUG("DEBUG:: COPL.addAll called");
-    // ACE_Guard< ACE_Recursive_Thread_Mutex > guard( this->m_responseLock );
     if (other->m_tempKeys != nullptr) {
       if (this->m_tempKeys == nullptr) {
         this->m_tempKeys =

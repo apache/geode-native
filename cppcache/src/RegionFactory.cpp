@@ -18,9 +18,6 @@
 #include <map>
 #include <string>
 
-#include <ace/Guard_T.h>
-#include <ace/Recursive_Thread_Mutex.h>
-
 #include <geode/Cache.hpp>
 #include <geode/CacheFactory.hpp>
 #include <geode/PoolManager.hpp>
