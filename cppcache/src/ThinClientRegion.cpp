@@ -102,7 +102,7 @@ class PutAllWork : public PooledWork<GfErrType>,
     m_reply = new TcrMessageReply(true, m_poolDM);
 
     // create new instanceof VCOPL
-    ACE_Recursive_Thread_Mutex responseLock;
+    std::recursive_mutex responseLock;
     m_verObjPartListPtr = std::make_shared<VersionedCacheableObjectPartList>(
         keys.get(), responseLock);
 
@@ -245,7 +245,7 @@ class RemoveAllWork : public PooledWork<GfErrType>,
         *keys, m_aCallbackArgument, m_poolDM);
     m_reply = new TcrMessageReply(true, m_poolDM);
     // create new instanceof VCOPL
-    ACE_Recursive_Thread_Mutex responseLock;
+    std::recursive_mutex responseLock;
     m_verObjPartListPtr = std::make_shared<VersionedCacheableObjectPartList>(
         keys.get(), responseLock);
 
@@ -1234,7 +1234,7 @@ GfErrType ThinClientRegion::getAllNoThrow_remote(
       aCallbackArgument);  // now we need to initialize later
 
   TcrMessageReply reply(true, m_tcrdm);
-  ACE_Recursive_Thread_Mutex responseLock;
+  std::recursive_mutex responseLock;
   // need to check
   TcrChunkedResult* resultCollector(new ChunkedGetAllResponse(
       reply, this, keys, values, exceptions, resultKeys, updateCountMap,
@@ -1439,7 +1439,7 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
    * versions. C. ToDO:: what if the value in the resultMap is of type
    * PutAllPartialResultServerException
    */
-  ACE_Recursive_Thread_Mutex responseLock;
+  std::recursive_mutex responseLock;
   auto result = std::make_shared<PutAllPartialResult>(
       static_cast<int>(map.size()), responseLock);
   LOGDEBUG(
@@ -1608,7 +1608,7 @@ GfErrType ThinClientRegion::multiHopPutAllNoThrow_remote(
   request.setTimeout(timeout);
   reply.setTimeout(timeout);
 
-  ACE_Recursive_Thread_Mutex responseLock;
+  std::recursive_mutex responseLock;
   versionedObjPartList =
       std::make_shared<VersionedCacheableObjectPartList>(this, responseLock);
   // need to check
@@ -1794,7 +1794,7 @@ GfErrType ThinClientRegion::singleHopRemoveAllNoThrow_remote(
    * versions. C. ToDO:: what if the value in the resultMap is of type
    * PutAllPartialResultServerException
    */
-  ACE_Recursive_Thread_Mutex responseLock;
+  std::recursive_mutex responseLock;
   auto result = std::make_shared<PutAllPartialResult>(
       static_cast<int>(keys.size()), responseLock);
   LOGDEBUG(
@@ -1943,7 +1943,7 @@ GfErrType ThinClientRegion::multiHopRemoveAllNoThrow_remote(
                               this, keys, aCallbackArgument, m_tcrdm);
   TcrMessageReply reply(true, m_tcrdm);
 
-  ACE_Recursive_Thread_Mutex responseLock;
+  std::recursive_mutex responseLock;
   versionedObjPartList =
       std::make_shared<VersionedCacheableObjectPartList>(this, responseLock);
   // need to check
@@ -2281,7 +2281,7 @@ GfErrType ThinClientRegion::registerKeysNoThrow(
       new DataOutput(m_cacheImpl->createDataOutput()), this, keys, isDurable,
       getAttributes().getCachingEnabled(), receiveValues, interestPolicy,
       m_tcrdm);
-  ACE_Recursive_Thread_Mutex responseLock;
+  std::recursive_mutex responseLock;
   TcrChunkedResult* resultCollector = nullptr;
   if (interestPolicy.ordinal == InterestResultPolicy::KEYS_VALUES.ordinal) {
     auto values = std::make_shared<HashMapOfCacheable>();
@@ -2459,7 +2459,7 @@ GfErrType ThinClientRegion::registerRegexNoThrow(
       new DataOutput(m_cacheImpl->createDataOutput()), m_fullPath,
       regex.c_str(), interestPolicy, isDurable,
       getAttributes().getCachingEnabled(), receiveValues, m_tcrdm);
-  ACE_Recursive_Thread_Mutex responseLock;
+  std::recursive_mutex responseLock;
   if (reply == nullptr) {
     TcrMessageReply replyLocal(true, m_tcrdm);
     auto values = std::make_shared<HashMapOfCacheable>();
@@ -3806,7 +3806,7 @@ void ChunkedPutAllResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
 
   if (chunkType == TcrMessageHelper::ChunkObjectType::OBJECT) {
     LOGDEBUG("ChunkedPutAllResponse::handleChunk object");
-    ACE_Recursive_Thread_Mutex responseLock;
+    std::recursive_mutex responseLock;
     auto vcObjPart = std::make_shared<VersionedCacheableObjectPartList>(
         dynamic_cast<ThinClientRegion*>(m_region.get()),
         m_msg.getChunkedResultHandler()->getEndpointMemId(), responseLock);
@@ -3864,7 +3864,7 @@ void ChunkedRemoveAllResponse::handleChunk(const uint8_t* chunk,
 
   if (chunkType == TcrMessageHelper::ChunkObjectType::OBJECT) {
     LOGDEBUG("ChunkedRemoveAllResponse::handleChunk object");
-    ACE_Recursive_Thread_Mutex responseLock;
+    std::recursive_mutex responseLock;
     auto vcObjPart = std::make_shared<VersionedCacheableObjectPartList>(
         dynamic_cast<ThinClientRegion*>(m_region.get()),
         m_msg.getChunkedResultHandler()->getEndpointMemId(), responseLock);

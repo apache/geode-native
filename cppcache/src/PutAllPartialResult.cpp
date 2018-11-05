@@ -21,7 +21,7 @@ namespace geode {
 namespace client {
 
 PutAllPartialResult::PutAllPartialResult(
-    int totalMapSize, ACE_Recursive_Thread_Mutex& responseLock) {
+    int totalMapSize, std::recursive_mutex& responseLock) {
   m_succeededKeys = std::make_shared<VersionedCacheableObjectPartList>(
       new std::vector<std::shared_ptr<CacheableKey>>(), responseLock);
   m_totalMapSize = totalMapSize;

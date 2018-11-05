@@ -20,6 +20,9 @@
 #ifndef GEODE_PUTALLPARTIALRESULT_H_
 #define GEODE_PUTALLPARTIALRESULT_H_
 
+#include <mutex>
+
+#include <ace/RW_Thread_Mutex.h>
 #include <ace/Task.h>
 
 #include <geode/CacheableString.hpp>
@@ -41,7 +44,7 @@ class PutAllPartialResult final : public Serializable {
 
  public:
   PutAllPartialResult(int totalMapSize,
-                      ACE_Recursive_Thread_Mutex& responseLock);
+                      std::recursive_mutex& responseLock);
   ~PutAllPartialResult() noexcept final {}
 
   void setTotalMapSize(int totalMapSize) { m_totalMapSize = totalMapSize; }
@@ -87,7 +90,7 @@ class PutAllPartialResult final : public Serializable {
     char msgStr1[1024];
     if (m_firstFailedKey != nullptr) {
       std::snprintf(msgStr1, 1024, "[ Key =%s ]",
-                       m_firstFailedKey->toString().c_str());
+                    m_firstFailedKey->toString().c_str());
     }
 
     char msgStr2[1024];
@@ -109,7 +112,7 @@ class PutAllPartialResult final : public Serializable {
 
     char stringBuf[7000];
     std::snprintf(stringBuf, 7000, "PutAllPartialResult: %s%s", msgStr1,
-                     msgStr2);
+                  msgStr2);
     return std::string(stringBuf);
   }
 };
