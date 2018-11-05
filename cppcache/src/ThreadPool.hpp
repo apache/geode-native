@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_THREADPOOL_H_
-#define GEODE_THREADPOOL_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,23 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * ThreadPool.hpp
- *
- *  Created on: 16-Mar-2010
- *      Author: ankurs
- */
 
-#include <ace/Method_Request.h>
-#include <ace/Task.h>
-//#include <ace/Future.h>
+#pragma once
+
+#ifndef GEODE_THREADPOOL_H_
+#define GEODE_THREADPOOL_H_
+
 #include <condition_variable>
 #include <mutex>
 
 #include <ace/Activation_Queue.h>
 #include <ace/Condition_T.h>
 #include <ace/Guard_T.h>
+#include <ace/Method_Request.h>
 #include <ace/Singleton.h>
+#include <ace/Task.h>
+
 namespace apache {
 namespace geode {
 namespace client {
@@ -79,22 +73,6 @@ class PooledWork : public ACE_Method_Request {
   virtual T execute(void) = 0;
 };
 
-template <typename S, typename R = int>
-class PooledWorkFP : public PooledWork<R> {
- public:
-  typedef R (S::*OPERATION)(void);
-  PooledWorkFP(S* op_handler, OPERATION op)
-      : op_handler_(op_handler), m_op(op) {}
-  virtual ~PooledWorkFP() {}
-
- protected:
-  virtual R execute(void) { return (this->op_handler_->*m_op)(); }
-
- private:
-  S* op_handler_;
-  OPERATION m_op;
-};
-
 class ThreadPoolWorker;
 
 class IThreadPool {
@@ -135,17 +113,17 @@ class ThreadPool : public ACE_Task_Base, IThreadPool {
   ThreadPoolWorker* chooseWorker(void);
   int createWorkerPool(void);
   int done(void);
-  ACE_thread_t threadId(ThreadPoolWorker* worker);
 
  private:
   int poolSize_;
   int shutdown_;
-  ACE_Thread_Mutex workersLock_;
-  ACE_Condition<ACE_Thread_Mutex> workersCond_;
+  std::mutex workersLock_;
+  std::condition_variable workersCond_;
   ACE_Unbounded_Queue<ThreadPoolWorker*> workers_;
   ACE_Activation_Queue queue_;
   static const char* NC_Pool_Thread;
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

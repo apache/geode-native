@@ -74,10 +74,7 @@ int ThreadPoolWorker::shutDown(void) {
 ACE_thread_t ThreadPoolWorker::threadId(void) { return threadId_; }
 
 ThreadPool::ThreadPool(uint32_t threadPoolSize)
-    : poolSize_(threadPoolSize),
-      shutdown_(0),
-      workersLock_(),
-      workersCond_(workersLock_) {
+    : poolSize_(threadPoolSize), shutdown_(0) {
   activate();
 }
 
@@ -118,22 +115,24 @@ int ThreadPool::shutDown(void) {
 }
 
 int ThreadPool::returnToWork(ThreadPoolWorker* worker) {
-  ACE_GUARD_RETURN(ACE_Thread_Mutex, workerMon, this->workersLock_, -1);
-  this->workers_.enqueue_tail(worker);
-  this->workersCond_.signal();
+  std::unique_lock<decltype(workersLock_)> lock(workersLock_);
+  workers_.enqueue_tail(worker);
+  workersCond_.notify_one();
   return 0;
 }
 
 ThreadPoolWorker* ThreadPool::chooseWorker(void) {
-  ACE_GUARD_RETURN(ACE_Thread_Mutex, workerMon, this->workersLock_, nullptr);
-  while (this->workers_.is_empty()) workersCond_.wait();
+  std::unique_lock<decltype(workersLock_)> lock(workersLock_);
+  if (workers_.is_empty()) {
+    workersCond_.wait(lock, [this] { return !workers_.is_empty(); });
+  }
   ThreadPoolWorker* worker;
   this->workers_.dequeue_head(worker);
   return worker;
 }
 
 int ThreadPool::createWorkerPool(void) {
-  ACE_GUARD_RETURN(ACE_Thread_Mutex, worker_mon, this->workersLock_, -1);
+  std::unique_lock<decltype(workersLock_)> lock(workersLock_);
   for (int i = 0; i < poolSize_; i++) {
     ThreadPoolWorker* worker;
     ACE_NEW_RETURN(worker, ThreadPoolWorker(this), -1);
@@ -144,10 +143,6 @@ int ThreadPool::createWorkerPool(void) {
 }
 
 int ThreadPool::done(void) { return (shutdown_ == 1); }
-
-ACE_thread_t ThreadPool::threadId(ThreadPoolWorker* worker) {
-  return worker->threadId();
-}
 
 }  // namespace client
 }  // namespace geode
