@@ -91,8 +91,7 @@ class GetAllWork : public PooledWork<GfErrType>,
         m_keys.get(), m_poolDM, m_aCallbackArgument);
     m_reply = new TcrMessageReply(true, m_poolDM);
     if (m_poolDM->isMultiUserMode()) {
-      m_userAttribute = TSSUserAttributesWrapper::s_geodeTSSUserAttributes
-                            ->getUserAttributes();
+      m_userAttribute = UserAttributes::s_geodeTSSUserAttributes;
     }
 
     m_resultCollector = (new ChunkedGetAllResponse(
@@ -633,9 +632,8 @@ GfErrType ThinClientPoolDM::sendRequestToAllServers(
 
   int feIndex = 0;
   FunctionExecution* fePtrList = new FunctionExecution[csArray->length()];
-  auto* threadPool = m_connManager.getCacheImpl()->getThreadPool();
-  auto userAttr =
-      TSSUserAttributesWrapper::s_geodeTSSUserAttributes->getUserAttributes();
+  auto threadPool = m_connManager.getCacheImpl()->getThreadPool();
+  auto userAttr = UserAttributes::s_geodeTSSUserAttributes;
   for (int i = 0; i < csArray->length(); i++) {
     auto cs = (*csArray)[i];
     std::string endpointStr(cs->value().c_str());
@@ -887,16 +885,12 @@ std::shared_ptr<QueryService> ThinClientPoolDM::getQueryServiceWithoutCheck() {
 }
 void ThinClientPoolDM::sendUserCacheCloseMessage(bool keepAlive) {
   LOGDEBUG("ThinClientPoolDM::sendUserCacheCloseMessage");
-  auto userAttribute =
-      TSSUserAttributesWrapper::s_geodeTSSUserAttributes->getUserAttributes();
+  auto userAttribute = UserAttributes::s_geodeTSSUserAttributes;
 
-  std::map<std::string, UserConnectionAttributes*>& uca =
-      userAttribute->getUserConnectionServers();
+  auto& ucs = userAttribute->getUserConnectionServers();
 
-  std::map<std::string, UserConnectionAttributes*>::iterator it;
-
-  for (it = uca.begin(); it != uca.end(); it++) {
-    UserConnectionAttributes* uca = (*it).second;
+  for (const auto& it : ucs) {
+    auto uca = it.second;
     if (uca->isAuthenticated() && uca->getEndpoint()->connected()) {
       TcrMessageRemoveUserAuth request(
           new DataOutput(m_connManager.getCacheImpl()->createDataOutput()),
@@ -1394,8 +1388,7 @@ GfErrType ThinClientPoolDM::sendSyncRequest(
                                      request, version, singleHopConnFound,
                                      connFound, serverLocation);
     } else {
-      userAttr = TSSUserAttributesWrapper::s_geodeTSSUserAttributes
-                     ->getUserAttributes();
+      userAttr = UserAttributes::s_geodeTSSUserAttributes;
       if (userAttr == nullptr) {
         LOGWARN("Attempted operation type %d without credentials",
                 request.getMessageType());
@@ -1974,16 +1967,8 @@ GfErrType ThinClientPoolDM::sendRequestToEP(const TcrMessage& request,
         error = this->sendUserCredentials(this->getCredentials(currentEndpoint),
                                           conn, false, isServerException);
       } else if (this->m_isMultiUserMode) {
-        ua = TSSUserAttributesWrapper::s_geodeTSSUserAttributes
-                 ->getUserAttributes();
-        if (ua == nullptr) {
-          LOGWARN("Attempted operation type %d without credentials",
-                  request.getMessageType());
-          if (conn) {
-            putInQueue(conn, false, request.forTransaction());
-          }
-          return GF_NOT_AUTHORIZED_EXCEPTION;
-        } else {
+        ua = UserAttributes::s_geodeTSSUserAttributes;
+        if (ua) {
           UserConnectionAttributes* uca =
               ua->getConnectionAttribute(currentEndpoint);
 
@@ -1991,6 +1976,13 @@ GfErrType ThinClientPoolDM::sendRequestToEP(const TcrMessage& request,
             error = this->sendUserCredentials(ua->getCredentials(), conn, false,
                                               isServerException);
           }
+        } else {
+          LOGWARN("Attempted operation type %d without credentials",
+                  request.getMessageType());
+          if (conn) {
+            putInQueue(conn, false, request.forTransaction());
+          }
+          return GF_NOT_AUTHORIZED_EXCEPTION;
         }
       }
     }

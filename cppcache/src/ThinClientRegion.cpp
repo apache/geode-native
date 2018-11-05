@@ -107,8 +107,7 @@ class PutAllWork : public PooledWork<GfErrType>,
         keys.get(), responseLock);
 
     if (m_poolDM->isMultiUserMode()) {
-      m_userAttribute = TSSUserAttributesWrapper::s_geodeTSSUserAttributes
-                            ->getUserAttributes();
+      m_userAttribute = UserAttributes::s_geodeTSSUserAttributes;
     }
 
     m_request->setTimeout(m_timeout);
@@ -250,8 +249,7 @@ class RemoveAllWork : public PooledWork<GfErrType>,
         keys.get(), responseLock);
 
     if (m_poolDM->isMultiUserMode()) {
-      m_userAttribute = TSSUserAttributesWrapper::s_geodeTSSUserAttributes
-                            ->getUserAttributes();
+      m_userAttribute = UserAttributes::s_geodeTSSUserAttributes;
     }
 
     m_resultCollector = new ChunkedRemoveAllResponse(
@@ -3166,8 +3164,7 @@ bool ThinClientRegion::executeFunctionSH(
     std::chrono::milliseconds timeout, bool allBuckets) {
   bool reExecute = false;
   auto resultCollectorLock = std::make_shared<std::recursive_mutex>();
-  const auto& userAttr =
-      TSSUserAttributesWrapper::s_geodeTSSUserAttributes->getUserAttributes();
+  const auto& userAttr = UserAttributes::s_geodeTSSUserAttributes;
   std::vector<std::shared_ptr<OnRegionFunctionExecution>> feWorkers;
   auto* threadPool =
       CacheRegionHelper::getCacheImpl(&getCache())->getThreadPool();

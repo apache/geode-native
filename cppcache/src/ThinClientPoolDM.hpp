@@ -395,7 +395,6 @@ class FunctionExecution : public PooledWork<GfErrType> {
   }
 
   GfErrType execute(void) {
-    // TSSUserAttributesWrapper::s_geodeTSSUserAttributes->setUserAttributes(m_userAttr);
     GuardUserAttributes gua;
 
     if (m_userAttr) {

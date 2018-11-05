@@ -74,7 +74,7 @@ class UserConnectionAttributes {
   // UserConnectionAttributes & operator =(const UserConnectionAttributes &);
 };
 
-class APACHE_GEODE_EXPORT UserAttributes {
+class UserAttributes {
   // TODO: need to add lock here so that user should not be authenticated at two
   // servers
  public:
@@ -110,6 +110,8 @@ class APACHE_GEODE_EXPORT UserAttributes {
 
   bool isEndpointAuthenticated(TcrEndpoint* ep);
 
+  static thread_local std::shared_ptr<UserAttributes> s_geodeTSSUserAttributes;
+
  private:
   std::map<std::string, UserConnectionAttributes*> m_connectionAttr;
   std::shared_ptr<Properties> m_credentials;
@@ -121,24 +123,6 @@ class APACHE_GEODE_EXPORT UserAttributes {
   // Disallow copy constructor and assignment operator.
   UserAttributes(const UserAttributes&);
   UserAttributes& operator=(const UserAttributes&);
-};
-
-class TSSUserAttributesWrapper {
- private:
-  std::shared_ptr<UserAttributes> m_userAttribute;
-  TSSUserAttributesWrapper& operator=(const TSSUserAttributesWrapper&);
-  TSSUserAttributesWrapper(const TSSUserAttributesWrapper&);
-
- public:
-  static ACE_TSS<TSSUserAttributesWrapper> s_geodeTSSUserAttributes;
-  std::shared_ptr<UserAttributes> getUserAttributes() {
-    return m_userAttribute;
-  }
-  void setUserAttributes(std::shared_ptr<UserAttributes> userAttr) {
-    m_userAttribute = userAttr;
-  }
-  TSSUserAttributesWrapper() : m_userAttribute(nullptr) {}
-  ~TSSUserAttributesWrapper() {}
 };
 
 class GuardUserAttributes {

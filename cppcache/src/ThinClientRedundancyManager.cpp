@@ -875,8 +875,7 @@ GfErrType ThinClientRedundancyManager::sendSyncRequestCq(
 
   while (attempts--) {
     if (err != GF_NOERR || m_redundantEndpoints.empty()) {
-      auto userAttr = TSSUserAttributesWrapper::s_geodeTSSUserAttributes
-                          ->getUserAttributes();
+      auto userAttr = UserAttributes::s_geodeTSSUserAttributes;
       if (userAttr) {
         authenticatedView = userAttr->getAuthenticatedView();
       }
