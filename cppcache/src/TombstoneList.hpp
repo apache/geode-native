@@ -25,9 +25,6 @@
 #include <memory>
 #include <unordered_map>
 
-#include <ace/Guard_T.h>
-#include <ace/Recursive_Thread_Mutex.h>
-
 #include <geode/CacheableBuiltins.hpp>
 #include <geode/internal/functional.hpp>
 
@@ -36,8 +33,10 @@
 namespace apache {
 namespace geode {
 namespace client {
+
 class MapSegment;
 class TombstoneExpiryHandler;
+
 class TombstoneEntry {
  public:
   using clock = std::chrono::steady_clock;
@@ -97,11 +96,11 @@ class TombstoneList {
       dereference_equal_to<std::shared_ptr<CacheableKey>>>
       TombstoneMap;
   TombstoneMap m_tombstoneMap;
-  ACE_Recursive_Thread_Mutex m_queueLock;
   MapSegment* m_mapSegment;
   CacheImpl* m_cacheImpl;
   friend class TombstoneExpiryHandler;
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
