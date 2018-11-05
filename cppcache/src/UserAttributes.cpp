@@ -34,12 +34,11 @@ UserAttributes::UserAttributes(std::shared_ptr<Properties> credentials,
 bool UserAttributes::isCacheClosed() { return m_authenticatedView->isClosed(); }
 
 UserAttributes::~UserAttributes() {
-  std::map<std::string, UserConnectionAttributes*>::iterator it;
 
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_listLock);
-  for (it = m_connectionAttr.begin(); it != m_connectionAttr.end(); it++) {
-    UserConnectionAttributes* uca = (*it).second;
-    if (uca != nullptr) {
+  std::lock_guard<decltype(m_listLock)> guard(m_listLock);
+  for (auto& it : m_connectionAttr) {
+    auto uca = it.second;
+    if (uca) {
       _GEODE_SAFE_DELETE(uca);
     }
   }
@@ -47,19 +46,6 @@ UserAttributes::~UserAttributes() {
 
 UserConnectionAttributes* UserAttributes::getConnectionAttribute() {
   LOGDEBUG("UserConnectionAttributes* getConnectionAttribute().");
-  if (m_connectionAttr.size() == 0) return nullptr;
-
-  //  std::map<std::string, UserConnectionAttributes*>::iterator it;
-
-  // ACE_Guard< ACE_Recursive_Thread_Mutex > guard( m_listLock );
-  /*for( it = m_connectionAttr.begin(); it != m_connectionAttr.end(); it++ )
-  {
-    UserConnectionAttributes* uca = &((*it).second);
-    if (uca->isAuthenticated() && uca->getEndpoint()->connected())
-      return uca;
-    else
-      uca->setUnAuthenticated();
-  }*/
   return nullptr;
 }
 
@@ -71,9 +57,9 @@ void UserAttributes::unAuthenticateEP(TcrEndpoint* endpoint) {
   // TODO: chk before returing whether endpoint is up or not
   // std::map<std::string, UserConnectionAttributes>::iterator it;
 
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_listLock);
-  UserConnectionAttributes* uca = m_connectionAttr[endpoint->name()];
-  if (uca != nullptr) {
+  std::lock_guard<decltype(m_listLock)> guard(m_listLock);
+  auto uca = m_connectionAttr[endpoint->name()];
+  if (uca) {
     m_connectionAttr.erase(endpoint->name());
     _GEODE_SAFE_DELETE(uca);
   }
@@ -91,15 +77,7 @@ UserConnectionAttributes* UserAttributes::getConnectionAttribute(
   LOGDEBUG("UserConnectionAttributes* getConnectionAttribute with EP.");
   if (m_connectionAttr.size() == 0) return nullptr;
 
-  // std::map<std::string, UserConnectionAttributes>::iterator it;
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_listLock);
-  /*for( it = m_connectionAttr.begin(); it != m_connectionAttr.end(); it++ )
-  {
-    UserConnectionAttributes* uca = &((*it).second);
-    if (uca->isAuthenticated() && (uca->getEndpoint() == ep))
-      return uca;
-  }*/
-
+  std::lock_guard<decltype(m_listLock)> guard(m_listLock);
   return m_connectionAttr[ep->name()];
 }
 
@@ -108,9 +86,9 @@ bool UserAttributes::isEndpointAuthenticated(TcrEndpoint* ep) {
       "UserAttributes::isEndpointAuthenticated: (TcrEndpoint* ep) with EP.");
   if (m_connectionAttr.size() == 0) return false;
 
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_listLock);
-  UserConnectionAttributes* uca = m_connectionAttr[ep->name()];
-  if (uca != nullptr && uca->isAuthenticated() && (uca->getEndpoint() == ep)) {
+  std::lock_guard<decltype(m_listLock)> guard(m_listLock);
+  auto uca = m_connectionAttr[ep->name()];
+  if (uca && uca->isAuthenticated() && (uca->getEndpoint() == ep)) {
     return true;
   }
   return false;

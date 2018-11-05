@@ -22,6 +22,7 @@
 
 #include <map>
 #include <string>
+#include <mutex>
 
 #include <ace/TSS_T.h>
 
@@ -33,8 +34,10 @@
 namespace apache {
 namespace geode {
 namespace client {
+
 class AuthenticatedView;
 class ThinClientPoolDM;
+
 class UserConnectionAttributes {
  public:
   UserConnectionAttributes(TcrEndpoint* endpoint, uint64_t id) {
@@ -88,11 +91,9 @@ class APACHE_GEODE_EXPORT UserAttributes {
 
   void setConnectionAttributes(TcrEndpoint* endpoint, uint64_t id) {
     m_isUserAuthenticated = true;
-    UserConnectionAttributes* ucb = new UserConnectionAttributes(endpoint, id);
-    ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_listLock);
-    // m_connectionAttr.push_back(ucb);
-    std::string fullName(endpoint->name().c_str());
-    m_connectionAttr[fullName] = ucb;
+    auto ucb = new UserConnectionAttributes(endpoint, id);
+    std::lock_guard<decltype(m_listLock)> guard(m_listLock);
+    m_connectionAttr[endpoint->name()] = ucb;
   }
 
   void unAuthenticateEP(TcrEndpoint* endpoint);
@@ -112,8 +113,7 @@ class APACHE_GEODE_EXPORT UserAttributes {
  private:
   std::map<std::string, UserConnectionAttributes*> m_connectionAttr;
   std::shared_ptr<Properties> m_credentials;
-  // ThinClientPoolDM m_pool;
-  ACE_Recursive_Thread_Mutex m_listLock;
+  std::recursive_mutex m_listLock;
   bool m_isUserAuthenticated;
   AuthenticatedView* m_authenticatedView;
   std::shared_ptr<Pool> m_pool;
@@ -154,6 +154,7 @@ class GuardUserAttributes {
  private:
   AuthenticatedView* m_authenticatedView;
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
