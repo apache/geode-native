@@ -54,31 +54,16 @@ std::string Exception::getStackTrace() const {
 
 // class to store/clear last server exception in TSS area
 
-class TSSExceptionString {
- private:
-  std::string m_exMsg;
-
- public:
-  TSSExceptionString() : m_exMsg() {}
-  virtual ~TSSExceptionString() {}
-
-  inline std::string& str() { return m_exMsg; }
-
-  static ACE_TSS<TSSExceptionString> s_tssExceptionMsg;
-};
-
-ACE_TSS<TSSExceptionString> TSSExceptionString::s_tssExceptionMsg;
+thread_local std::string s_tssExceptionMsg;
 
 void setTSSExceptionMessage(const char* exMsg) {
-  TSSExceptionString::s_tssExceptionMsg->str().clear();
+  s_tssExceptionMsg.clear();
   if (exMsg != nullptr) {
-    TSSExceptionString::s_tssExceptionMsg->str().append(exMsg);
+    s_tssExceptionMsg.assign(exMsg);
   }
 }
 
-const char* getTSSExceptionMessage() {
-  return TSSExceptionString::s_tssExceptionMsg->str().c_str();
-}
+const char* getTSSExceptionMessage() { return s_tssExceptionMsg.c_str(); }
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
