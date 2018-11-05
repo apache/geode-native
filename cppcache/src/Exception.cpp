@@ -17,7 +17,6 @@
 
 #include <cstdlib>
 
-#include <ace/TSS_T.h>
 #include <boost/core/demangle.hpp>
 
 #include <geode/CacheableString.hpp>

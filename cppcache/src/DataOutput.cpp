@@ -17,8 +17,6 @@
 
 #include <vector>
 
-#include <ace/TSS_T.h>
-
 #include <geode/DataOutput.hpp>
 #include <geode/SystemProperties.hpp>
 

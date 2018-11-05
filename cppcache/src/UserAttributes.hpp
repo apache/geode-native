@@ -24,8 +24,6 @@
 #include <mutex>
 #include <string>
 
-#include <ace/TSS_T.h>
-
 #include <geode/Properties.hpp>
 #include <geode/internal/geode_globals.hpp>
 
