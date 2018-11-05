@@ -209,7 +209,7 @@ GfErrType ThinClientPoolHADM::registerInterestAllRegions(
   GfErrType err = GF_NOERR;
   GfErrType opErr = GF_NOERR;
 
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_regionsLock);
+  std::lock_guard<decltype(m_regionsLock)> guard(m_regionsLock);
   for (std::list<ThinClientRegion*>::iterator itr = m_regions.begin();
        itr != m_regions.end(); itr++) {
     if ((opErr = (*itr)->registerKeys(ep, request, reply)) != GF_NOERR) {
@@ -222,17 +222,17 @@ GfErrType ThinClientPoolHADM::registerInterestAllRegions(
 }
 
 void ThinClientPoolHADM::addRegion(ThinClientRegion* theTCR) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_regionsLock);
+  std::lock_guard<decltype(m_regionsLock)> guard(m_regionsLock);
   m_regions.push_back(theTCR);
 }
 void ThinClientPoolHADM::addDisMessToQueue(ThinClientRegion* theTCR) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_regionsLock);
+  std::lock_guard<decltype(m_regionsLock)> guard(m_regionsLock);
   if (m_redundancyManager->allEndPointDiscon()) {
     theTCR->receiveNotification(TcrMessage::getAllEPDisMess());
   }
 }
 void ThinClientPoolHADM::removeRegion(ThinClientRegion* theTCR) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_regionsLock);
+  std::lock_guard<decltype(m_regionsLock)> guard(m_regionsLock);
   for (std::list<ThinClientRegion*>::iterator itr = m_regions.begin();
        itr != m_regions.end(); itr++) {
     if (*itr == theTCR) {
@@ -281,7 +281,7 @@ void ThinClientPoolHADM::removeCallbackConnection(TcrEndpoint* ep) {
 }
 
 void ThinClientPoolHADM::sendNotConMesToAllregions() {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_regionsLock);
+  std::lock_guard<decltype(m_regionsLock)> guard(m_regionsLock);
   for (std::list<ThinClientRegion*>::iterator it = m_regions.begin();
        it != m_regions.end(); it++) {
     (*it)->receiveNotification(TcrMessage::getAllEPDisMess());

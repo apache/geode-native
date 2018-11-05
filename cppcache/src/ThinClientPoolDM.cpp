@@ -582,7 +582,8 @@ std::string ThinClientPoolDM::selectEndpoint(
   } else if (m_attrs->m_initServList
                  .size()) {  // use specified server endpoints
     // highly complex round-robin algorithm
-    std::lock_guard<decltype(m_endpointSelectionLock)> _guard(m_endpointSelectionLock);
+    std::lock_guard<decltype(m_endpointSelectionLock)> _guard(
+        m_endpointSelectionLock);
     if (m_server >= m_attrs->m_initServList.size()) {
       m_server = 0;
     }
@@ -818,11 +819,8 @@ void ThinClientPoolDM::destroy(bool keepAlive) {
     close();
     LOGDEBUG("ThinClientPoolDM::destroy( ): after close ");
 
-    for (ACE_Map_Manager<std::string, TcrEndpoint*,
-                         ACE_Recursive_Thread_Mutex>::iterator iter =
-             m_endpoints.begin();
-         iter != m_endpoints.end(); ++iter) {
-      TcrEndpoint* ep = (*iter).int_id_;
+    for (auto& iter : m_endpoints) {
+      auto ep = iter.int_id_;
       LOGFINE("ThinClientPoolDM: forcing endpoint delete for %d in destructor",
               ep->name().c_str());
       _GEODE_SAFE_DELETE(ep);
@@ -2093,15 +2091,12 @@ void ThinClientPoolDM::netDown() {
 void ThinClientPoolDM::pingServerLocal() {
   ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(getPoolLock());
   std::lock_guard<decltype(m_endpointsLock)> guard(m_endpointsLock);
-  for (ACE_Map_Manager<std::string, TcrEndpoint*,
-                       ACE_Recursive_Thread_Mutex>::iterator it =
-           m_endpoints.begin();
-       it != m_endpoints.end(); it++) {
-    if ((*it).int_id_->connected()) {
-      (*it).int_id_->pingServer(this);
-      if (!(*it).int_id_->connected()) {
-        removeEPConnections((*it).int_id_);
-        removeCallbackConnection((*it).int_id_);
+  for (auto& it : m_endpoints) {
+    if (it.int_id_->connected()) {
+      it.int_id_->pingServer(this);
+      if (!it.int_id_->connected()) {
+        removeEPConnections(it.int_id_);
+        removeCallbackConnection(it.int_id_);
       }
     }
   }

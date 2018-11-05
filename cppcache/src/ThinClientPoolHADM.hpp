@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_THINCLIENTPOOLHADM_H_
-#define GEODE_THINCLIENTPOOLHADM_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,11 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_THINCLIENTPOOLHADM_H_
+#define GEODE_THINCLIENTPOOLHADM_H_
+
+#include <mutex>
+
 #include "PoolAttributes.hpp"
 #include "TcrConnectionManager.hpp"
 #include "ThinClientHARegion.hpp"
 #include "ThinClientPoolDM.hpp"
-//#include "TcrPoolEndPoint.hpp"
+
 namespace apache {
 namespace geode {
 namespace client {
@@ -133,7 +136,7 @@ class ThinClientPoolHADM : public ThinClientPoolDM {
   void removeCallbackConnection(TcrEndpoint*);
 
   std::list<ThinClientRegion*> m_regions;
-  ACE_Recursive_Thread_Mutex m_regionsLock;
+  std::recursive_mutex m_regionsLock;
   void addRegion(ThinClientRegion* theTCR);
   void removeRegion(ThinClientRegion* theTCR);
   void sendNotConMesToAllregions();
