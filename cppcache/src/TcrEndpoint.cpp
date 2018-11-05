@@ -18,7 +18,6 @@
 #include "TcrEndpoint.hpp"
 
 #include <chrono>
-#include <mutex>
 #include <thread>
 
 #include <ace/OS.h>
@@ -88,7 +87,7 @@ TcrEndpoint::~TcrEndpoint() {
   closeConnections();
   {
     // force close the notification channel -- see bug #295
-    ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_notifyReceiverLock);
+    std::lock_guard<decltype(m_notifyReceiverLock)> guard(m_notifyReceiverLock);
     if (m_numRegionListener > 0) {
       LOGFINE(
           "Connection to %s still has references "
@@ -217,7 +216,8 @@ GfErrType TcrEndpoint::createNewConnection(
       if (!isClientNotification && sendUpdateNotification) {
         bool notificationStarted;
         {
-          ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_notifyReceiverLock);
+          std::lock_guard<decltype(m_notifyReceiverLock)> guard(
+              m_notifyReceiverLock);
           notificationStarted = (m_numRegionListener > 0) || m_isQueueHosted;
         }
         if (notificationStarted) {
@@ -289,7 +289,8 @@ void TcrEndpoint::authenticateEndpoint(TcrConnection*& conn) {
       m_isAuthenticated, m_baseDM);
   if (!m_isAuthenticated && m_baseDM) {
     this->setConnected();
-    ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_endpointAuthenticationLock);
+    std::lock_guard<decltype(m_endpointAuthenticationLock)> guard(
+        m_endpointAuthenticationLock);
     GfErrType err = GF_NOERR;
     auto creds = getCredentials();
 
@@ -394,7 +395,7 @@ GfErrType TcrEndpoint::registerDM(bool clientNotification, bool isSecondary,
   bool connected = false;
   GfErrType err = GF_NOERR;
 
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_connectionLock);
+  std::lock_guard<decltype(m_connectionLock)> guard(m_connectionLock);
   // Three cases here:
   // 1. m_connected is false, m_isActiveEndpoint is false and then
   //    if isActiveEndpoint is true, then create 'max' connections
@@ -449,7 +450,7 @@ GfErrType TcrEndpoint::registerDM(bool clientNotification, bool isSecondary,
   if (m_connected || connected) {
     if (clientNotification) {
       if (distMgr != nullptr) {
-        ACE_Guard<ACE_Recursive_Thread_Mutex> guardDistMgrs(m_distMgrsLock);
+        std::lock_guard<decltype(m_distMgrsLock)> guardDistMgrs(m_distMgrsLock);
         m_distMgrs.push_back(distMgr);
       }
       LOGFINEST(
@@ -457,7 +458,8 @@ GfErrType TcrEndpoint::registerDM(bool clientNotification, bool isSecondary,
           "channel for endpoint %s",
           m_name.c_str());
       // setup notification channel for the first region
-      ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_notifyReceiverLock);
+      std::lock_guard<decltype(m_notifyReceiverLock)> guard(
+          m_notifyReceiverLock);
       if (m_numRegionListener == 0) {
         if ((err = createNewConnection(m_notifyConnection, true, isSecondary,
                                        m_cacheImpl->getDistributedSystem()
@@ -512,14 +514,14 @@ void TcrEndpoint::unregisterDM(bool clientNotification,
         "channel for endpoint %s",
         m_name.c_str());
     // close notification channel if there is no region
-    ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_notifyReceiverLock);
+    std::lock_guard<decltype(m_notifyReceiverLock)> guard(m_notifyReceiverLock);
     if (m_numRegionListener > 0 && --m_numRegionListener == 0) {
       closeNotification();
     }
     LOGFINEST("Decremented subscription region count for endpoint %s to %d",
               m_name.c_str(), m_numRegionListener);
     if (distMgr != nullptr) {
-      ACE_Guard<ACE_Recursive_Thread_Mutex> guardDistMgrs(m_distMgrsLock);
+      std::lock_guard<decltype(m_distMgrsLock)> guardDistMgrs(m_distMgrsLock);
       m_distMgrs.remove(distMgr);
     }
     LOGFINEST("Done unsubscribe for endpoint %s", m_name.c_str());
@@ -594,7 +596,8 @@ int TcrEndpoint::receiveNotification(volatile bool& isRunning) {
         if (isRunning) {
           setConnectionStatus(false);
           // close notification channel
-          ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_notifyReceiverLock);
+          std::lock_guard<decltype(m_notifyReceiverLock)> guard(
+              m_notifyReceiverLock);
           if (m_numRegionListener > 0) {
             m_numRegionListener = 0;
             closeNotification();
@@ -704,7 +707,8 @@ int TcrEndpoint::receiveNotification(volatile bool& isRunning) {
       if (m_connected) {
         setConnectionStatus(false);
         // close notification channel
-        ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_notifyReceiverLock);
+        std::lock_guard<decltype(m_notifyReceiverLock)> guard(
+            m_notifyReceiverLock);
         if (m_numRegionListener > 0) {
           m_numRegionListener = 0;
           closeNotification();
@@ -912,7 +916,7 @@ GfErrType TcrEndpoint::sendRequestWithRetry(
     epFailure = false;
     if (useEPPool) {
       if (m_maxConnections == 0) {
-        ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_connectionLock);
+        std::lock_guard<decltype(m_connectionLock)> guard(m_connectionLock);
         if (m_maxConnections == 0) {
           LOGFINE(
               "Creating a new connection when connection-pool-size system "
@@ -1184,7 +1188,7 @@ void TcrEndpoint::setConnectionStatus(bool status) {
   // bool wasActive = m_isActiveEndpoint;
   // Then after taking the lock:
   // If ( !wasActive && isActiveEndpoint ) { return; }
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_connectionLock);
+  std::lock_guard<decltype(m_connectionLock)> guard(m_connectionLock);
   if (m_connected != status) {
     bool connected = m_connected;
     m_connected = status;
@@ -1255,7 +1259,7 @@ void TcrEndpoint::stopNoBlock() {
 
 void TcrEndpoint::stopNotifyReceiverAndCleanup() {
   LOGFINER("Stopping subscription receiver and cleaning up");
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_notifyReceiverLock);
+  std::lock_guard<decltype(m_notifyReceiverLock)> guard(m_notifyReceiverLock);
 
   if (m_notifyReceiver != nullptr) {
     LOGFINER("Waiting for notification thread...");

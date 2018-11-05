@@ -176,7 +176,7 @@ bool ThinClientStickyManager::canThisConnBeDeleted(TcrConnection* conn) {
   ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_stickyLock);
   if (m_dm->canItBeDeletedNoImpl(conn)) return true;
   TcrEndpoint* endPt = conn->getEndpointObject();
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guardQueue(
+  std::lock_guard<decltype(endPt->getQueueHostedMutex())> guardQueue(
       endPt->getQueueHostedMutex());
   if (endPt->isQueueHosted()) {
     for (std::set<TcrConnection**>::iterator it = m_stickyConnList.begin();

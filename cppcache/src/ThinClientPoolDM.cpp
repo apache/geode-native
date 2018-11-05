@@ -2202,7 +2202,7 @@ bool ThinClientPoolDM::canItBeDeleted(TcrConnection* conn) {
     bool queue = false;
     {
       ACE_Guard<ACE_Recursive_Thread_Mutex> poolguard(m_queueLock);  // PXR
-      ACE_Guard<ACE_Recursive_Thread_Mutex> guardQueue(
+      std::lock_guard<decltype(endPt->getQueueHostedMutex())> guardQueue(
           endPt->getQueueHostedMutex());
       queue = endPt->isQueueHosted();
       if (queue) {
