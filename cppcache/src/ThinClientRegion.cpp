@@ -2261,7 +2261,7 @@ GfErrType ThinClientRegion::registerKeysNoThrow(
   CHECK_DESTROY_PENDING_NOTHROW(TryReadGuard);
   GfErrType err = GF_NOERR;
 
-  ACE_Guard<ACE_Recursive_Thread_Mutex> keysGuard(m_keysLock);
+  std::lock_guard<decltype(m_keysLock)> keysGuard(m_keysLock);
   if (keys.empty()) {
     return err;
   }
@@ -2332,7 +2332,7 @@ GfErrType ThinClientRegion::unregisterKeysNoThrow(
   RegionGlobalLocks acquireLocksFailover(this);
   CHECK_DESTROY_PENDING_NOTHROW(TryReadGuard);
   GfErrType err = GF_NOERR;
-  ACE_Guard<ACE_Recursive_Thread_Mutex> keysGuard(m_keysLock);
+  std::lock_guard<decltype(m_keysLock)> keysGuard(m_keysLock);
   TcrMessageReply reply(true, m_tcrdm);
   if (keys.empty()) {
     return err;
@@ -2368,7 +2368,7 @@ GfErrType ThinClientRegion::unregisterKeysNoThrowLocalDestroy(
   RegionGlobalLocks acquireLocksRedundancy(this, false);
   RegionGlobalLocks acquireLocksFailover(this);
   GfErrType err = GF_NOERR;
-  ACE_Guard<ACE_Recursive_Thread_Mutex> keysGuard(m_keysLock);
+  std::lock_guard<decltype(m_keysLock)> keysGuard(m_keysLock);
   TcrMessageReply reply(true, m_tcrdm);
   if (keys.empty()) {
     return err;
@@ -2420,7 +2420,7 @@ GfErrType ThinClientRegion::registerRegexNoThrow(
   GfErrType err = GF_NOERR;
 
   bool allKeys = (regex == ".*");
-  ACE_Guard<ACE_Recursive_Thread_Mutex> keysGuard(m_keysLock);
+  std::lock_guard<decltype(m_keysLock)> keysGuard(m_keysLock);
 
   if (attemptFailover) {
     if ((isDurable &&
@@ -2551,7 +2551,7 @@ GfErrType ThinClientRegion::unregisterRegexNoThrow(const std::string& regex,
 
 GfErrType ThinClientRegion::findRegex(const std::string& regex) {
   GfErrType err = GF_NOERR;
-  ACE_Guard<ACE_Recursive_Thread_Mutex> keysGuard(m_keysLock);
+  std::lock_guard<decltype(m_keysLock)> keysGuard(m_keysLock);
 
   if (m_interestListRegex.find(regex) == m_interestListRegex.end() &&
       m_durableInterestListRegex.find(regex) ==
@@ -2567,7 +2567,7 @@ GfErrType ThinClientRegion::findRegex(const std::string& regex) {
 }
 
 void ThinClientRegion::clearRegex(const std::string& regex) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> keysGuard(m_keysLock);
+  std::lock_guard<decltype(m_keysLock)> keysGuard(m_keysLock);
   m_interestListRegex.erase(regex);
   m_durableInterestListRegex.erase(regex);
   m_interestListRegexForUpdatesAsInvalidates.erase(regex);
@@ -2642,11 +2642,11 @@ void ThinClientRegion::addRegex(const std::string& regex, bool isDurable,
 
 std::vector<std::shared_ptr<CacheableKey>> ThinClientRegion::getInterestList()
     const {
-  ThinClientRegion* nthis = const_cast<ThinClientRegion*>(this);
+  auto nthis = const_cast<ThinClientRegion*>(this);
   RegionGlobalLocks acquireLocksRedundancy(nthis, false);
   RegionGlobalLocks acquireLocksFailover(nthis);
   CHECK_DESTROY_PENDING(TryReadGuard, getInterestList);
-  ACE_Guard<ACE_Recursive_Thread_Mutex> keysGuard(nthis->m_keysLock);
+  std::lock_guard<decltype(m_keysLock)> keysGuard(nthis->m_keysLock);
 
   std::vector<std::shared_ptr<CacheableKey>> vlist;
 
@@ -2665,11 +2665,11 @@ std::vector<std::shared_ptr<CacheableKey>> ThinClientRegion::getInterestList()
 }
 std::vector<std::shared_ptr<CacheableString>>
 ThinClientRegion::getInterestListRegex() const {
-  ThinClientRegion* nthis = const_cast<ThinClientRegion*>(this);
+  auto nthis = const_cast<ThinClientRegion*>(this);
   RegionGlobalLocks acquireLocksRedundancy(nthis, false);
   RegionGlobalLocks acquireLocksFailover(nthis);
   CHECK_DESTROY_PENDING(TryReadGuard, getInterestListRegex);
-  ACE_Guard<ACE_Recursive_Thread_Mutex> keysGuard(nthis->m_keysLock);
+  std::lock_guard<decltype(m_keysLock)> keysGuard(nthis->m_keysLock);
 
   std::vector<std::shared_ptr<CacheableString>> vlist;
 

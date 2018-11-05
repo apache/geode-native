@@ -23,6 +23,8 @@
 #include <mutex>
 #include <unordered_map>
 
+#include <ace/RW_Thread_Mutex.h>
+#include <ace/Semaphore.h>
 #include <ace/Task.h>
 
 #include <geode/ResultCollector.hpp>
@@ -282,7 +284,7 @@ class APACHE_GEODE_EXPORT ThinClientRegion : public LocalRegion {
   bool isDurableClient() { return m_isDurableClnt; }
   /** @brief Protected fields. */
   ThinClientBaseDM* m_tcrdm;
-  ACE_Recursive_Thread_Mutex m_keysLock;
+  std::recursive_mutex m_keysLock;
   mutable ACE_RW_Thread_Mutex m_rwDestroyLock;
   std::unordered_map<std::shared_ptr<CacheableKey>, InterestResultPolicy>
       m_interestList;
