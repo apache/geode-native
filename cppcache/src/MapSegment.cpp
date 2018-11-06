@@ -649,16 +649,18 @@ GfErrType MapSegment::putForTrackedEntry(
       if (oldValue == nullptr || CacheableToken::isDestroyed(oldValue) ||
           CacheableToken::isInvalid(oldValue) ||
           CacheableToken::isTombstone(oldValue)) {
-        if (m_poolDM)
+        if (m_poolDM) {
           m_poolDM->updateNotificationStats(false, std::chrono::nanoseconds(0));
+        }
         return GF_INVALID_DELTA;
       } else if (CacheableToken::isOverflowed(
                      oldValue)) {  // get Value from disc.
         oldValue = getFromDisc(key, entryImpl);
         if (oldValue == nullptr) {
-          if (m_poolDM)
+          if (m_poolDM) {
             m_poolDM->updateNotificationStats(false,
                                               std::chrono::nanoseconds(0));
+          }
           return GF_INVALID_DELTA;
         }
       }

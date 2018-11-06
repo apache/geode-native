@@ -42,7 +42,7 @@ class TombstoneEntry {
   using clock = std::chrono::steady_clock;
   using time_point = clock::time_point;
 
-  TombstoneEntry(const std::shared_ptr<MapEntryImpl>& entry)
+  explicit TombstoneEntry(const std::shared_ptr<MapEntryImpl>& entry)
       : m_entry(entry),
         m_tombstoneCreationTime(TombstoneEntry::clock::now()),
         m_expiryTaskId(0),
