@@ -26,7 +26,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include <ace/Map_Manager.h>
 #include <ace/Recursive_Thread_Mutex.h>
 #include <ace/Semaphore.h>
 #include <ace/Versioned_Namespace.h>
@@ -38,6 +37,7 @@
 #include "Queue.hpp"
 #include "Task.hpp"
 #include "ThinClientRedundancyManager.hpp"
+#include "util/synchronized_map.hpp"
 
 namespace apache {
 namespace geode {
@@ -79,7 +79,8 @@ class APACHE_GEODE_EXPORT TcrConnectionManager {
   void setClientCrashTEST() { TEST_DURABLE_CLIENT_CRASH = true; }
   volatile static bool TEST_DURABLE_CLIENT_CRASH;
 
-  inline ACE_Map_Manager<std::string, TcrEndpoint*, ACE_Recursive_Thread_Mutex>&
+  inline synchronized_map<std::unordered_map<std::string, TcrEndpoint*>,
+                          std::recursive_mutex>&
   getGlobalEndpoints() {
     return m_endpoints;
   }
@@ -145,7 +146,8 @@ class APACHE_GEODE_EXPORT TcrConnectionManager {
  private:
   CacheImpl* m_cache;
   volatile bool m_initGuard;
-  ACE_Map_Manager<std::string, TcrEndpoint*, ACE_Recursive_Thread_Mutex>
+  synchronized_map<std::unordered_map<std::string, TcrEndpoint*>,
+                   std::recursive_mutex>
       m_endpoints;
   std::list<TcrEndpoint*> m_poolEndpointList;
 

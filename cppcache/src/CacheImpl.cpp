@@ -83,7 +83,6 @@ CacheImpl::CacheImpl(Cache* c, const std::shared_ptr<Properties>& dsProps,
   m_cacheTXManager = std::shared_ptr<InternalCacheTransactionManager2PC>(
       new InternalCacheTransactionManager2PCImpl(this));
 
-  m_regions = new MapOfRegionWithLock();
   auto& prop = m_distributedSystem.getSystemProperties();
   if (prop.heapLRULimitEnabled()) {
     m_evictionControllerPtr =
@@ -184,14 +183,11 @@ CacheImpl::RegionKind CacheImpl::getRegionKind(
   return regionKind;
 }
 
-int CacheImpl::removeRegion(const char* name) {
+void CacheImpl::removeRegion(const std::string& name) {
   TryReadGuard guardCacheDestroy(m_destroyCacheMutex, m_destroyPending);
-  if (m_destroyPending) {
-    return 0;
+  if (!m_destroyPending) {
+    m_regions.erase(name);
   }
-
-  MapOfRegionGuard guard(m_regions->mutex());
-  return m_regions->unbind(name);
 }
 
 std::shared_ptr<QueryService> CacheImpl::getQueryService(bool noInit) {
@@ -231,10 +227,6 @@ std::shared_ptr<QueryService> CacheImpl::getQueryService(const char* poolName) {
 CacheImpl::~CacheImpl() {
   if (!m_closed) {
     close();
-  }
-
-  if (m_regions != nullptr) {
-    delete m_regions;
   }
 }
 
@@ -308,15 +300,14 @@ void CacheImpl::close(bool keepalive) {
     m_tcrConnectionManager->close();
   }
 
-  MapOfRegionWithLock regions;
+  std::unordered_map<std::string, std::shared_ptr<Region>> regions;
   getSubRegions(regions);
 
-  for (MapOfRegionWithLock::iterator q = regions.begin(); q != regions.end();
-       ++q) {
+  for (const auto& kv : regions) {
     // TODO: remove dynamic_cast here by having RegionInternal in the regions
     // map
-    auto rImpl = std::dynamic_pointer_cast<RegionInternal>((*q).int_id_);
-    if (rImpl != nullptr) {
+    auto rImpl = std::dynamic_pointer_cast<RegionInternal>(kv.second);
+    if (rImpl) {
       rImpl->destroyRegionNoThrow(
           nullptr, false,
           CacheEventFlags::LOCAL | CacheEventFlags::CACHE_CLOSE);
@@ -343,7 +334,7 @@ void CacheImpl::close(bool keepalive) {
     _GEODE_SAFE_DELETE(m_cacheStats);
   }
 
-  m_regions->unbind_all();
+  m_regions.clear();
   LOGDEBUG("CacheImpl::close( ): destroyed regions.");
 
   _GEODE_SAFE_DELETE(m_tcrConnectionManager);
@@ -406,12 +397,9 @@ void CacheImpl::createRegion(std::string name,
   validateRegionAttributes(name, regionAttributes);
   std::shared_ptr<RegionInternal> rpImpl = nullptr;
   {
-    // For multi threading and the operations between bind and find seems to be
-    // hard to be atomic since a regionImpl needs to be valid before it can be
-    // bound
-    MapOfRegionGuard guard1(m_regions->mutex());
-    std::shared_ptr<Region> tmp;
-    if (0 == m_regions->find(name, tmp)) {
+    auto&& lock = m_regions.make_lock();
+
+    if (m_regions.find(name) != m_regions.end()) {
       throw RegionExistsException("Cache::createRegion: \"" + name +
                                   "\" region exists in local cache");
     }
@@ -455,7 +443,7 @@ void CacheImpl::createRegion(std::string name,
     }
 
     rpImpl->acquireReadLock();
-    m_regions->bind(regionPtr->getName(), regionPtr);
+    m_regions.emplace(regionPtr->getName(), regionPtr);
 
     // When region is created, added that region name in client meta data
     // service to fetch its
@@ -466,13 +454,14 @@ void CacheImpl::createRegion(std::string name,
       auto pool = getPoolManager().find(poolName);
       if (pool != nullptr && !pool->isDestroyed() &&
           pool->getPRSingleHopEnabled()) {
-        ThinClientPoolDM* poolDM = dynamic_cast<ThinClientPoolDM*>(pool.get());
-        if ((poolDM != nullptr) &&
-            (poolDM->getClientMetaDataService() != nullptr)) {
-          LOGFINE("enqueued region " + name +
-                  " for initial metadata refresh for singlehop ");
-          poolDM->getClientMetaDataService()->enqueueForMetadataRefresh(
-              regionPtr->getFullPath(), 0);
+        if (auto poolDM = std::dynamic_pointer_cast<ThinClientPoolDM>(pool)) {
+          if (auto clientMetaDataService =
+                  poolDM->getClientMetaDataService()) {
+            LOGFINE("enqueued region " + name +
+                    " for initial metadata refresh for singlehop ");
+            poolDM->getClientMetaDataService()->enqueueForMetadataRefresh(
+                regionPtr->getFullPath(), 0);
+          }
         }
       }
     }
@@ -481,6 +470,15 @@ void CacheImpl::createRegion(std::string name,
   // schedule the root region expiry if regionExpiry enabled.
   rpImpl->setRegionExpiryTask();
   rpImpl->releaseReadLock();
+}
+
+std::shared_ptr<Region> CacheImpl::findRegion(const std::string& name) {
+  auto&& lock = m_regions.make_lock<std::lock_guard>();
+  const auto& find = m_regions.find(name);
+  if (find != m_regions.end()) {
+    return find->second;
+  }
+  return nullptr;
 }
 
 std::shared_ptr<Region> CacheImpl::getRegion(const std::string& path) {
@@ -494,34 +492,30 @@ std::shared_ptr<Region> CacheImpl::getRegion(const std::string& path) {
     return nullptr;
   }
 
-  MapOfRegionGuard guard(m_regions->mutex());
   static const std::string slash("/");
   if (path == slash || path.length() < 1) {
     LOGERROR("Cache::getRegion: path [" + path + "] is not valid.");
     throw IllegalArgumentException("Cache::getRegion: path is empty or a /");
   }
+
   auto fullname = path;
   if (fullname.substr(0, 1) == slash) {
     fullname = path.substr(1);
   }
 
   // find second separator
-  auto idx = static_cast<uint32_t>(fullname.find('/'));
+  auto idx = fullname.find('/');
   auto stepname = fullname.substr(0, idx);
 
-  std::shared_ptr<Region> region = nullptr;
-
-  if (0 == m_regions->find(stepname, region)) {
+  auto region = findRegion(stepname);
+  if (region) {
     if (stepname != fullname) {
       auto remainder = fullname.substr(stepname.length() + 1);
-
-      if (region != nullptr) {
-        region = region->getSubregion(remainder.c_str());
-      }
+      region = region->getSubregion(remainder);
     }
   }
 
-  if (region != nullptr && isPoolInMultiuserMode(region)) {
+  if (region && isPoolInMultiuserMode(region)) {
     LOGWARN("Pool " + region->getAttributes().getPoolName() +
             " attached with region " + region->getFullPath() +
             " is in multiuser authentication mode. Operations may fail as "
@@ -602,15 +596,14 @@ std::vector<std::shared_ptr<Region>> CacheImpl::rootRegions() {
 
   std::vector<std::shared_ptr<Region>> regions;
 
-  MapOfRegionGuard guard(m_regions->mutex());
+  auto&& lock = m_regions.make_lock();
 
-  if (m_regions->current_size() != 0) {
-    regions.reserve(static_cast<int32_t>(m_regions->current_size()));
+  if (!m_regions.empty()) {
+    regions.reserve(m_regions.size());
 
-    for (MapOfRegionWithLock::iterator q = m_regions->begin();
-         q != m_regions->end(); ++q) {
-      if (!(*q).int_id_->isDestroyed()) {
-        regions.push_back((*q).int_id_);
+    for (const auto& kv : m_regions) {
+      if (!kv.second->isDestroyed()) {
+        regions.push_back(kv.second);
       }
     }
   }
@@ -704,7 +697,7 @@ bool CacheImpl::getEndpointStatus(const std::string& endpoint) {
   auto& mutex = firstPool->m_endpointsLock;
   std::lock_guard<decltype(mutex)> guard(mutex);
   for (const auto& itr : firstPool->m_endpoints) {
-    const auto& ep = itr.int_id_;
+    auto ep = itr.second;
     if (ep->name().find(fullName) != std::string::npos) {
       return ep->getServerQueueStatusTEST();
     }
@@ -718,12 +711,12 @@ void CacheImpl::processMarker() {
     return;
   }
 
-  MapOfRegionGuard guard(m_regions->mutex());
+  auto&& lock = m_regions.make_lock();
 
-  for (const auto& q : *m_regions) {
-    if (!q.int_id_->isDestroyed()) {
+  for (const auto& kv : m_regions) {
+    if (!kv.second->isDestroyed()) {
       if (const auto tcrHARegion =
-              std::dynamic_pointer_cast<ThinClientHARegion>(q.int_id_)) {
+              std::dynamic_pointer_cast<ThinClientHARegion>(kv.second)) {
         auto regionMsg = new TcrMessageClientMarker(
             new DataOutput(createDataOutput()), true);
         tcrHARegion->receiveNotification(regionMsg);

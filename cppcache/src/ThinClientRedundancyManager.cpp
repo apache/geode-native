@@ -983,8 +983,9 @@ GfErrType ThinClientRedundancyManager::sendSyncRequestRegisterInterest(
   }
 }
 
-void ThinClientRedundancyManager::getAllEndpoints(
-    std::vector<TcrEndpoint*>& endpoints) {
+synchronized_map<std::unordered_map<std::string, TcrEndpoint*>,
+                 std::recursive_mutex>&
+ThinClientRedundancyManager::updateAndSelectEndpoints() {
   // 38196 Fix: For durable clients reconnect
   // 1. Get list of endpoints which have HA queue.
   // 2. Get HA endpoint with max queuesize;
@@ -997,33 +998,35 @@ void ThinClientRedundancyManager::getAllEndpoints(
   // Exception: For R =0 ( or when no EP with Max queuesize ),
   //  Old primary would be considered as new. Hence it would be at the end
 
-  ACE_Map_Manager<std::string, TcrEndpoint*, ACE_Recursive_Thread_Mutex>*
-      tempContainer;
   if (m_poolHADM) {
-    tempContainer = &m_poolHADM->m_endpoints;
     // fetch queue servers
     // send queue servers for sorting
     std::set<ServerLocation> exclEndPts;
     std::list<ServerLocation> outEndpoints;
 
     outEndpoints = selectServers(-1, exclEndPts);
-    for (std::list<ServerLocation>::iterator it = outEndpoints.begin();
-         it != outEndpoints.end(); it++) {
-      m_poolHADM->addEP(*it);
+    for (auto& it : outEndpoints) {
+      m_poolHADM->addEP(it);
     }
-  } else {
-    tempContainer = &m_theTcrConnManager->m_endpoints;
-  }
 
+    return m_poolHADM->m_endpoints;
+  } else {
+    return m_theTcrConnManager->m_endpoints;
+  }
+}
+
+void ThinClientRedundancyManager::getAllEndpoints(
+    std::vector<TcrEndpoint*>& endpoints) {
   TcrEndpoint* maxQEp = nullptr;
   TcrEndpoint* primaryEp = nullptr;
 
-  for (auto& currItr : *tempContainer) {
+  auto& selectedEndpoints = updateAndSelectEndpoints();
+  for (const auto& currItr : selectedEndpoints) {
     if (isDurable()) {
-      auto ep = currItr.int_id_;
+      auto ep = currItr.second;
       int32_t queueSize = 0;
       TcrConnection* statusConn = nullptr;
-      ServerQueueStatus status =
+      auto status =
           ep->getFreshServerQueueStatus(queueSize, !m_poolHADM, statusConn);
       if (m_poolHADM && status != NON_REDUNDANT_SERVER) {
         m_poolHADM->addConnection(statusConn);
@@ -1048,13 +1051,13 @@ void ThinClientRedundancyManager::getAllEndpoints(
             "ThinClientRedundancyManager::getAllEndpoints(): sorting "
             "endpoints, found primary endpoint.");
       } else {
-        endpoints.push_back(currItr.int_id_);
+        endpoints.push_back(currItr.second);
         LOGDEBUG(
             "ThinClientRedundancyManager::getAllEndpoints(): sorting "
             "endpoints, found nonredundant endpoint.");
       }
     } else {
-      endpoints.push_back(currItr.int_id_);
+      endpoints.push_back(currItr.second);
     }
     //(*currItr)++;
   }

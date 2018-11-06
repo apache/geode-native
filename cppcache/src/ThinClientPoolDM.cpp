@@ -608,6 +608,7 @@ void ThinClientPoolDM::addConnection(TcrConnection* conn) {
   put(conn, false);
   ++m_poolSize;
 }
+
 GfErrType ThinClientPoolDM::sendRequestToAllServers(
     const char* func, uint8_t getResult, std::chrono::milliseconds timeout,
     std::shared_ptr<Cacheable> args, std::shared_ptr<ResultCollector>& rs,
@@ -626,15 +627,15 @@ GfErrType ThinClientPoolDM::sendRequestToAllServers(
   }
 
   int feIndex = 0;
-  FunctionExecution* fePtrList = new FunctionExecution[csArray->length()];
+  auto fePtrList = new FunctionExecution[csArray->length()];
   auto threadPool = m_connManager.getCacheImpl()->getThreadPool();
   auto userAttr = UserAttributes::threadLocalUserAttributes;
   for (int i = 0; i < csArray->length(); i++) {
     auto cs = (*csArray)[i];
-    std::string endpointStr(cs->value().c_str());
-    TcrEndpoint* ep = nullptr;
-    if (m_endpoints.find(endpointStr, ep)) {
-      ep = addEP(cs->value().c_str());
+    auto endpointStr = cs->value();
+    auto ep = getEndpoint(endpointStr);
+    if (!ep) {
+      ep = addEP(cs->value());
     } else if (!ep->connected()) {
       LOGFINE(
           "ThinClientPoolDM::sendRequestToAllServers server not connected %s ",
@@ -812,8 +813,8 @@ void ThinClientPoolDM::destroy(bool keepAlive) {
     close();
     LOGDEBUG("ThinClientPoolDM::destroy( ): after close ");
 
-    for (auto& iter : m_endpoints) {
-      auto ep = iter.int_id_;
+    for (const auto& iter : m_endpoints) {
+      auto ep = iter.second;
       LOGFINE("ThinClientPoolDM: forcing endpoint delete for %d in destructor",
               ep->name().c_str());
       _GEODE_SAFE_DELETE(ep);
@@ -1179,7 +1180,8 @@ TcrEndpoint* ThinClientPoolDM::getEndPoint(
       return ep;
     }
 
-    if (m_endpoints.find(serverLocation->getEpString(), ep) != -1) {
+    ep = getEndpoint(serverLocation->getEpString());
+    if (ep) {
       LOGDEBUG("Endpoint for single hop is %p", ep);
       return ep;
     }
@@ -1223,14 +1225,13 @@ TcrEndpoint* ThinClientPoolDM::getEndPoint(
   return ep;
 }
 
-// gets the endpoint from the list of endpoints using the endpoint Name
-TcrEndpoint* ThinClientPoolDM::getEndPoint(std::string epNameStr) {
-  TcrEndpoint* ep = nullptr;
-  if (m_endpoints.find(epNameStr, ep) != -1) {
-    LOGDEBUG("Endpoint for single hop is %p", ep);
-    return ep;
+TcrEndpoint* ThinClientPoolDM::getEndpoint(const std::string& endpointName) {
+  auto&& guard = m_endpoints.make_lock();
+  const auto& find = m_endpoints.find(endpointName);
+  if (find == m_endpoints.end()) {
+    return nullptr;
   }
-  return ep;
+  return find->second;
 }
 
 GfErrType ThinClientPoolDM::sendSyncRequest(TcrMessage& request,
@@ -1617,7 +1618,7 @@ GfErrType ThinClientPoolDM::getConnectionToAnEndPoint(std::string epNameStr,
   conn = nullptr;
 
   GfErrType error = GF_NOERR;
-  auto theEP = getEndPoint(epNameStr);
+  auto theEP = getEndpoint(epNameStr);
 
   LOGFINE(
       "ThinClientPoolDM::getConnectionToAnEndPoint( ): Getting endpoint object "
@@ -1792,9 +1793,9 @@ GfErrType ThinClientPoolDM::createPoolConnection(
       LOGFINE("Endpoint selection failed");
       return GF_NOTCON;
     }
+
     LOGFINE("Connecting to %s", epNameStr.c_str());
-    TcrEndpoint* ep = nullptr;
-    ep = addEP(epNameStr.c_str());
+    auto ep = addEP(epNameStr);
 
     if (currentserver != nullptr &&
         epNameStr == currentserver->getEndpointObject()->name()) {
@@ -2040,24 +2041,23 @@ TcrEndpoint* ThinClientPoolDM::addEP(ServerLocation& serverLoc) {
   return addEP(endpointName);
 }
 
-TcrEndpoint* ThinClientPoolDM::addEP(const char* endpointName) {
+TcrEndpoint* ThinClientPoolDM::addEP(const std::string& endpointName) {
   std::lock_guard<decltype(m_endpointsLock)> guard(m_endpointsLock);
-  TcrEndpoint* ep = nullptr;
 
-  std::string fullName = endpointName;
-  if (m_endpoints.find(fullName, ep)) {
-    LOGFINE("Created new endpoint %s for pool %s", fullName.c_str(),
+  auto ep = getEndpoint(endpointName);
+  if (!ep) {
+    LOGFINE("Created new endpoint %s for pool %s", endpointName.c_str(),
             m_poolName.c_str());
-    ep = createEP(fullName.c_str());
-    if (m_endpoints.bind(fullName, ep)) {
-      LOGERROR("Failed to add endpoint %s to pool %s", fullName.c_str(),
+    ep = createEP(endpointName.c_str());
+    if (m_endpoints.emplace(endpointName, ep).second) {
+      LOGERROR("Failed to add endpoint %s to pool %s", endpointName.c_str(),
                m_poolName.c_str());
       GF_DEV_ASSERT(
           "ThinClientPoolDM::addEP( ): failed to add endpoint" ? false : false);
     }
   }
   // Update Server Stats
-  getStats().setServers(static_cast<int32_t>(m_endpoints.current_size()));
+  getStats().setServers(static_cast<int32_t>(m_endpoints.size()));
   return ep;
 }
 
@@ -2071,11 +2071,12 @@ void ThinClientPoolDM::pingServerLocal() {
   ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(getPoolLock());
   std::lock_guard<decltype(m_endpointsLock)> guard(m_endpointsLock);
   for (auto& it : m_endpoints) {
-    if (it.int_id_->connected()) {
-      it.int_id_->pingServer(this);
-      if (!it.int_id_->connected()) {
-        removeEPConnections(it.int_id_);
-        removeCallbackConnection(it.int_id_);
+    auto endpoint = it.second;
+    if (endpoint->connected()) {
+      endpoint->pingServer(this);
+      if (!endpoint->connected()) {
+        removeEPConnections(endpoint);
+        removeCallbackConnection(endpoint);
       }
     }
   }

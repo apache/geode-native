@@ -195,6 +195,16 @@ void LocalRegion::tombstoneOperationNoThrow(
     m_entries->reapTombstones(tombstoneKeys);
   }
 }
+
+std::shared_ptr<Region> LocalRegion::findSubRegion(const std::string& name) {
+  auto&& lock = m_subRegions.make_lock<std::lock_guard>();
+  const auto& find = m_subRegions.find(name);
+  if (find != m_subRegions.end()) {
+    return find->second;
+  }
+  return nullptr;
+}
+
 std::shared_ptr<Region> LocalRegion::getSubregion(const std::string& path) {
   CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::getSubregion);
 
@@ -203,25 +213,28 @@ std::shared_ptr<Region> LocalRegion::getSubregion(const std::string& path) {
     LOGERROR("Get subregion path [" + path + "] is not valid.");
     throw IllegalArgumentException("Get subegion path is empty or a /");
   }
+
   auto fullname = path;
   if (fullname.substr(0, 1) == slash) {
     fullname = path.substr(1);
   }
+
   // find second separator
-  size_t idx = fullname.find('/');
+  auto idx = fullname.find('/');
   auto stepname = fullname.substr(0, idx);
 
-  std::shared_ptr<Region> region, rptr;
-  if (0 == m_subRegions.find(stepname, region)) {
+  auto region = findSubRegion(stepname);
+  if (region) {
     if (stepname == fullname) {
       // done...
-      rptr = region;
+      return region;
     } else {
       std::string remainder = fullname.substr(stepname.length() + 1);
-      rptr = region->getSubregion(remainder.c_str());
+      return region->getSubregion(remainder);
     }
   }
-  return rptr;
+
+  return nullptr;
 }
 
 std::shared_ptr<Region> LocalRegion::createSubregion(
@@ -235,9 +248,9 @@ std::shared_ptr<Region> LocalRegion::createSubregion(
     }
   }
 
-  MapOfRegionGuard guard1(m_subRegions.mutex());
+  auto&& lock = m_subRegions.make_lock();
   std::shared_ptr<Region> region_ptr;
-  if (0 == m_subRegions.find(subregionName, region_ptr)) {
+  if (m_subRegions.find(subregionName) != m_subRegions.end()) {
     throw RegionExistsException(
         "LocalRegion::createSubregion: named region exists in the region");
   }
@@ -265,7 +278,7 @@ std::shared_ptr<Region> LocalRegion::createSubregion(
   }
 
   rPtr->acquireReadLock();
-  m_subRegions.bind(rPtr->getName(), std::shared_ptr<Region>(rPtr));
+  m_subRegions.emplace(rPtr->getName(), rPtr);
 
   // schedule the sub region expiry if regionExpiry enabled.
   rPtr->setRegionExpiryTask();
@@ -276,7 +289,7 @@ std::shared_ptr<Region> LocalRegion::createSubregion(
 std::vector<std::shared_ptr<Region>> LocalRegion::subregions(
     const bool recursive) {
   CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::subregions);
-  if (m_subRegions.current_size() == 0) {
+  if (m_subRegions.empty()) {
     return std::vector<std::shared_ptr<Region>>();
   }
 
@@ -789,16 +802,16 @@ bool LocalRegion::containsKey_internal(
 
 std::vector<std::shared_ptr<Region>> LocalRegion::subregions_internal(
     const bool recursive) {
-  MapOfRegionGuard guard(m_subRegions.mutex());
+  auto&& lock = m_subRegions.make_lock();
 
   std::vector<std::shared_ptr<Region>> regions;
-  regions.reserve(m_subRegions.current_size());
+  regions.reserve(m_subRegions.size());
 
-  for (const auto& entry : m_subRegions) {
-    const auto& subRegion = entry.int_id_;
+  for (const auto& kv : m_subRegions) {
+    const auto& subRegion = kv.second;
     regions.push_back(subRegion);
 
-    if (recursive == true) {
+    if (recursive) {
       if (auto localRegion =
               std::dynamic_pointer_cast<LocalRegion>(subRegion)) {
         auto subRegions = localRegion->subregions_internal(true);
@@ -2246,6 +2259,23 @@ GfErrType LocalRegion::invalidateLocal(
   return err;
 }
 
+GfErrType LocalRegion::invalidateRegionNoThrowOnSubRegions(
+    const std::shared_ptr<Serializable>& aCallbackArgument,
+    const CacheEventFlags eventFlags) {
+  auto&& lock = m_subRegions.make_lock();
+  for (const auto& kv : m_subRegions) {
+    if (auto subRegion = std::dynamic_pointer_cast<RegionInternal>(kv.second)) {
+      auto err =
+          subRegion->invalidateRegionNoThrow(aCallbackArgument, eventFlags);
+      if (err != GF_NOERR) {
+        return err;
+      }
+    }
+  }
+
+  return GF_NOERR;
+}
+
 GfErrType LocalRegion::invalidateRegionNoThrow(
     const std::shared_ptr<Serializable>& aCallbackArgument,
     const CacheEventFlags eventFlags) {
@@ -2254,9 +2284,9 @@ GfErrType LocalRegion::invalidateRegionNoThrow(
 
   if (m_regionAttributes.getCachingEnabled()) {
     std::vector<std::shared_ptr<CacheableKey>> v = keys_internal();
-    const auto size = v.size();
+    auto size = v.size();
     std::shared_ptr<MapEntryImpl> me;
-    for (size_t i = 0; i < size; i++) {
+    for (decltype(size) i = 0; i < size; i++) {
       {
         std::shared_ptr<Cacheable> oldValue;
         // invalidate all the entries with a nullptr versionTag
@@ -2278,20 +2308,11 @@ GfErrType LocalRegion::invalidateRegionNoThrow(
     if (err != GF_NOERR) return err;
   }
 
-  if (m_subRegions.current_size() > 0) {
-    ACE_Guard<ACE_Recursive_Thread_Mutex> subguard(m_subRegions.mutex());
-    for (MapOfRegionWithLock::iterator p = m_subRegions.begin();
-         p != m_subRegions.end(); ++p) {
-      RegionInternal* subRegion =
-          dynamic_cast<RegionInternal*>((*p).int_id_.get());
-      if (subRegion != nullptr) {
-        err = subRegion->invalidateRegionNoThrow(aCallbackArgument, eventFlags);
-        if (err != GF_NOERR) {
-          return err;
-        }
-      }
-    }
+  err = invalidateRegionNoThrowOnSubRegions(aCallbackArgument, eventFlags);
+  if (err != GF_NOERR) {
+    return err;
   }
+
   err = invokeCacheListenerForRegionEvent(aCallbackArgument, eventFlags,
                                           AFTER_REGION_INVALIDATE);
 
@@ -2357,15 +2378,14 @@ GfErrType LocalRegion::destroyRegionNoThrow(
 
   LOGFINE("Region %s is being destroyed", m_fullPath.c_str());
   {
-    MapOfRegionGuard guard(m_subRegions.mutex());
-    for (MapOfRegionWithLock::iterator p = m_subRegions.begin();
-         p != m_subRegions.end(); ++p) {
+    auto&& lock = m_subRegions.make_lock();
+
+    for (const auto& kv : m_subRegions) {
       // TODO: remove unnecessary dynamic_cast by having m_subRegions hold
       // RegionInternal and invoke the destroy method in that
-      RegionInternal* subRegion =
-          dynamic_cast<RegionInternal*>((*p).int_id_.get());
-      if (subRegion != nullptr) {
-        //  for subregions never remove from parent since that will cause
+      if (auto subRegion =
+              std::dynamic_pointer_cast<RegionInternal>(kv.second)) {
+        // for subregions never remove from parent since that will cause
         // the region to be destroyed and SEGV; unbind_all takes care of that
         // Also don't send remote destroy message for sub-regions
         err = subRegion->destroyRegionNoThrow(
@@ -2378,7 +2398,7 @@ GfErrType LocalRegion::destroyRegionNoThrow(
       }
     }
   }
-  m_subRegions.unbind_all();
+  m_subRegions.clear();
 
   //  for the expiry case try the local destroy first and remote
   // destroy only if local destroy succeeds
@@ -2505,20 +2525,17 @@ void LocalRegion::entries_internal(
   m_entries->getEntries(me);
 
   if (recursive == true) {
-    MapOfRegionGuard guard(m_subRegions.mutex());
-    for (MapOfRegionWithLock::iterator p = m_subRegions.begin();
-         p != m_subRegions.end(); ++p) {
-      dynamic_cast<LocalRegion*>((*p).int_id_.get())
-          ->entries_internal(me, true);
+    auto&& lock = m_subRegions.make_lock();
+    for (const auto& kv : m_subRegions) {
+      if (auto subRegion = std::dynamic_pointer_cast<LocalRegion>(kv.second)) {
+        subRegion->entries_internal(me, true);
+      }
     }
   }
 }
 
-int LocalRegion::removeRegion(const std::string& name) {
-  if (m_subRegions.current_size() == 0) {
-    return 0;
-  }
-  return m_subRegions.unbind(name);
+void LocalRegion::removeRegion(const std::string& name) {
+  m_subRegions.erase(name);
 }
 
 bool LocalRegion::invokeCacheWriterForEntryEvent(

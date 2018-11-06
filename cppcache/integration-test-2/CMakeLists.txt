@@ -55,9 +55,9 @@ target_link_libraries(integration-test-2
     Boost::system
     Boost::log
     Boost::filesystem
- PRIVATE
+  PRIVATE
     _WarningsAsError
- internal
+    internal
 )
 
 if(WIN32)

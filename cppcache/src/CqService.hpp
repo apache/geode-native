@@ -33,11 +33,11 @@
 
 #include "CqServiceVsdStats.hpp"
 #include "DistributedSystem.hpp"
-#include "MapWithLock.hpp"
 #include "NonCopyable.hpp"
 #include "Queue.hpp"
 #include "TcrMessage.hpp"
 #include "ThinClientBaseDM.hpp"
+#include "util/synchronized_map.hpp"
 
 /**
  * @file
@@ -64,14 +64,13 @@ class APACHE_GEODE_EXPORT CqService
   ACE_Semaphore m_notificationSema;
 
   bool m_running;
-  MapOfCqQueryWithLock* m_cqQueryMap;
+  synchronized_map<std::unordered_map<std::string, std::shared_ptr<CqQuery>>,
+                   std::recursive_mutex>
+      m_cqQueryMap;
 
   std::shared_ptr<CqServiceStatistics> m_stats;
 
-  inline bool noCq() const {
-    MapOfRegionGuard guard(m_cqQueryMap->mutex());
-    return (0 == m_cqQueryMap->current_size());
-  }
+  inline bool noCq() const { return m_cqQueryMap.empty(); }
 
  public:
   typedef std::vector<std::shared_ptr<CqQuery>> query_container_type;
@@ -81,10 +80,11 @@ class APACHE_GEODE_EXPORT CqService
    */
   CqService(ThinClientBaseDM* tccdm,
             statistics::StatisticsFactory* statisticsFactory);
+  ~CqService() noexcept;
+
   ThinClientBaseDM* getDM() { return m_tccdm; }
 
   void receiveNotification(TcrMessage* msg);
-  ~CqService();
 
   /**
    * Returns the state of the cqService.

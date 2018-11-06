@@ -27,7 +27,6 @@
 #include <string>
 #include <vector>
 
-#include <ace/Map_Manager.h>
 #include <ace/Recursive_Thread_Mutex.h>
 #include <ace/Semaphore.h>
 
@@ -65,19 +64,6 @@ namespace client {
 class CacheImpl;
 class FunctionExecution;
 
-/* adongre
- * CID 28731: Other violation (MISSING_COPY)
- * Class "apache::geode::client::ThinClientPoolDM" owns resources that are
- managed in its
- * constructor and destructor but has no user-written copy constructor.
- * FIX : Make the class no Copyablez
-
- * CID 28717: Other violation (MISSING_ASSIGN)
- * Class "apache::geode::client::ThinClientPoolDM" owns resources that are
- * managed in its constructor and destructor but has no user-written assignment
- operator.
- * Fix : Make the class Non Assinable
- */
 class ThinClientPoolDM
     : public ThinClientBaseDM,
       public Pool,
@@ -119,7 +105,7 @@ class ThinClientPoolDM
 
   TcrEndpoint* addEP(ServerLocation& serverLoc);
 
-  TcrEndpoint* addEP(const char* endpointName);
+  TcrEndpoint* addEP(const std::string& endpointName);
   virtual int pingServer(volatile bool& isRunning);
   virtual int updateLocatorList(volatile bool& isRunning);
   virtual int cliCallback(volatile bool& isRunning);
@@ -170,7 +156,7 @@ class ThinClientPoolDM
 
   virtual inline PoolStats& getStats() { return *m_stats; }
 
-  size_t getNumberOfEndPoints() const { return m_endpoints.current_size(); }
+  size_t getNumberOfEndPoints() const { return m_endpoints.size(); }
 
   int32_t GetPDXIdForType(std::shared_ptr<Serializable> pdxType);
 
@@ -206,7 +192,8 @@ class ThinClientPoolDM
  protected:
   ThinClientStickyManager* m_manager;
   std::vector<std::string> m_canonicalHosts;
-  ACE_Map_Manager<std::string, TcrEndpoint*, ACE_Recursive_Thread_Mutex>
+  synchronized_map<std::unordered_map<std::string, TcrEndpoint*>,
+                   std::recursive_mutex>
       m_endpoints;
   std::recursive_mutex m_endpointsLock;
   std::recursive_mutex m_endpointSelectionLock;
@@ -268,7 +255,7 @@ class ThinClientPoolDM
       std::shared_ptr<UserAttributes> userAttribute);
 
   // get endpoint using the endpoint string
-  TcrEndpoint* getEndPoint(std::string epNameStr);
+  TcrEndpoint* getEndpoint(const std::string& epNameStr);
 
   bool m_isSecurityOn;
   bool m_isMultiUserMode;
@@ -389,9 +376,6 @@ class FunctionExecution : public PooledWork<GfErrType> {
     m_ep = ep;
     m_poolDM = poolDM;
     m_userAttr = userAttr;
-
-    // m_functionExecutionTask = new Task<FunctionExecution>(this,
-    //&FunctionExecution::execute);
   }
 
   GfErrType execute(void) {

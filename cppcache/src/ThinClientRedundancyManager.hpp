@@ -26,6 +26,8 @@
 #include <set>
 #include <string>
 
+#include <ace/ACE.h>
+
 #include "EventIdMap.hpp"
 #include "ExpiryTaskManager.hpp"
 #include "ServerLocation.hpp"
@@ -112,6 +114,10 @@ class ThinClientRedundancyManager {
   bool readyForEvents(TcrEndpoint* primaryCandidate);
   void moveEndpointToLast(std::vector<TcrEndpoint*>& epVector,
                           TcrEndpoint* targetEp);
+
+  synchronized_map<std::unordered_map<std::string, TcrEndpoint*>,
+                   std::recursive_mutex>&
+  updateAndSelectEndpoints();
 
   void getAllEndpoints(std::vector<TcrEndpoint*>& endpoints);
   // For 38196 Fix: Reorder End points.

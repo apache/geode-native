@@ -209,17 +209,13 @@ TcrConnectionManager::~TcrConnectionManager() {
     // sanity cleanup of any remaining endpoints with warning; see bug #298
     //  cleanup of endpoints, when regions are destroyed via notification
     {
-      ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_endpoints.mutex());
-
-      size_t numEndPoints = m_endpoints.current_size();
+      auto &&guard = m_endpoints.make_lock();
+      auto numEndPoints = m_endpoints.size();
       if (numEndPoints > 0) {
         LOGFINE("TCCM: endpoints remain in destructor");
       }
-      for (ACE_Map_Manager<std::string, TcrEndpoint *,
-                           ACE_Recursive_Thread_Mutex>::iterator iter =
-               m_endpoints.begin();
-           iter != m_endpoints.end(); ++iter) {
-        TcrEndpoint *ep = (*iter).int_id_;
+      for (const auto &iter : m_endpoints) {
+        auto ep = iter.second;
         LOGFINE("TCCM: forcing endpoint delete for %d in destructor",
                 ep->name().c_str());
         _GEODE_SAFE_DELETE(ep);
@@ -234,7 +230,7 @@ void TcrConnectionManager::connect(
     const std::unordered_set<std::string> &endpointStrs) {
   std::lock_guard<decltype(m_distMngrsLock)> guardDistMngrs(m_distMngrsLock);
   {
-    ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_endpoints.mutex());
+    auto &&endpointsGuard = m_endpoints.make_lock();
     int32_t numEndPoints = static_cast<int32_t>(endpointStrs.size());
 
     if (numEndPoints == 0) {
@@ -242,12 +238,9 @@ void TcrConnectionManager::connect(
           "TcrConnectionManager::connect(): Empty endpointstr vector "
           "passed to TCCM, will initialize endpoints list with all available "
           "endpoints (%d).",
-          m_endpoints.current_size());
-      for (ACE_Map_Manager<std::string, TcrEndpoint *,
-                           ACE_Recursive_Thread_Mutex>::iterator currItr =
-               m_endpoints.begin();
-           currItr != m_endpoints.end(); ++currItr) {
-        TcrEndpoint *ep = (*currItr).int_id_;
+          m_endpoints.size());
+      for (const auto &currItr : m_endpoints) {
+        auto ep = currItr.second;
         ep->setNumRegions(ep->numRegions() + 1);
         LOGFINER(
             "TCCM 2: incremented region reference count for endpoint %s "
@@ -256,10 +249,8 @@ void TcrConnectionManager::connect(
         endpoints.push_back(ep);
       }
     } else {
-      for (std::unordered_set<std::string>::const_iterator iter =
-               endpointStrs.begin();
-           iter != endpointStrs.end(); ++iter) {
-        TcrEndpoint *ep = addRefToTcrEndpoint(*iter, distMng);
+      for (const auto &iter : endpointStrs) {
+        auto ep = addRefToTcrEndpoint(iter, distMng);
         endpoints.push_back(ep);
       }
     }
@@ -283,14 +274,16 @@ void TcrConnectionManager::connect(
 TcrEndpoint *TcrConnectionManager::addRefToTcrEndpoint(std::string endpointName,
                                                        ThinClientBaseDM *dm) {
   TcrEndpoint *ep = nullptr;
-  /*
-  endpointName = Utils::convertHostToCanonicalForm(endpointName.c_str());
-  */
-  if (0 != m_endpoints.find(endpointName, ep)) {
+
+  auto &&guard = m_endpoints.make_lock();
+  const auto &find = m_endpoints.find(endpointName);
+  if (find == m_endpoints.end()) {
     // this endpoint does not exist
     ep = new TcrEndpoint(endpointName, m_cache, m_failoverSema, m_cleanupSema,
                          m_redundancySema, dm, false);
-    GF_R_ASSERT(0 == m_endpoints.bind(endpointName, ep));
+    m_endpoints.emplace(endpointName, ep);
+  } else {
+    ep = find->second;
   }
   ep->setNumRegions(ep->numRegions() + 1);
 
@@ -305,11 +298,8 @@ void TcrConnectionManager::disconnect(ThinClientBaseDM *distMng,
                                       bool keepEndpoints) {
   std::lock_guard<decltype(m_distMngrsLock)> guardDistMngrs(m_distMngrsLock);
   {
-    ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_endpoints.mutex());
-
-    int32_t numEndPoints = static_cast<int32_t>(endpoints.size());
-    for (int32_t i = 0; i < numEndPoints; ++i) {
-      TcrEndpoint *ep = endpoints[i];
+    auto &&guard = m_endpoints.make_lock();
+    for (const auto &ep : endpoints) {
       removeRefToEndpoint(ep, keepEndpoints);
     }
   }
@@ -331,7 +321,7 @@ bool TcrConnectionManager::removeRefToEndpoint(TcrEndpoint *ep,
 
   if (0 == ep->numRegions()) {
     // this endpoint no longer used
-    GF_R_ASSERT(0 == m_endpoints.unbind(ep->name(), ep));
+    m_endpoints.erase(ep->name());
     LOGFINE("delete endpoint %s", ep->name().c_str());
     _GEODE_SAFE_DELETE(ep);
     hasRemovedEndpoint = true;
@@ -346,15 +336,11 @@ int TcrConnectionManager::processEventIdMap(const ACE_Time_Value &currTime,
 
 int TcrConnectionManager::checkConnection(const ACE_Time_Value &,
                                           const void *) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_endpoints.mutex());
-  ACE_Map_Manager<std::string, TcrEndpoint *,
-                  ACE_Recursive_Thread_Mutex>::iterator currItr =
-      m_endpoints.begin();
-  while (currItr != m_endpoints.end()) {
-    if ((*currItr).int_id_->connected() && !m_isNetDown) {
-      (*currItr).int_id_->pingServer();
+  auto &&guard = m_endpoints.make_lock();
+  for (const auto &currItr : m_endpoints) {
+    if (currItr.second->connected() && !m_isNetDown) {
+      currItr.second->pingServer();
     }
-    currItr++;
   }
   return 0;
 }
@@ -372,9 +358,8 @@ int TcrConnectionManager::failover(volatile bool &isRunning) {
     if (isRunning && !m_isNetDown) {
       try {
         std::lock_guard<decltype(m_distMngrsLock)> guard(m_distMngrsLock);
-        for (std::list<ThinClientBaseDM *>::iterator it = m_distMngrs.begin();
-             it != m_distMngrs.end(); ++it) {
-          (*it)->failover();
+        for (const auto &it : m_distMngrs) {
+          it->failover();
         }
         while (m_failoverSema.tryacquire() != -1) {
           ;
@@ -396,19 +381,14 @@ int TcrConnectionManager::failover(volatile bool &isRunning) {
 
 void TcrConnectionManager::getAllEndpoints(
     std::vector<TcrEndpoint *> &endpoints) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_endpoints.mutex());
-
-  for (ACE_Map_Manager<std::string, TcrEndpoint *,
-                       ACE_Recursive_Thread_Mutex>::iterator currItr =
-           m_endpoints.begin();
-       currItr != m_endpoints.end(); currItr++) {
-    endpoints.push_back((*currItr).int_id_);
+  auto &&guard = m_endpoints.make_lock();
+  for (const auto &currItr : m_endpoints) {
+    endpoints.push_back(currItr.second);
   }
 }
 
 int32_t TcrConnectionManager::getNumEndPoints() {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_endpoints.mutex());
-  return static_cast<int32_t>(m_endpoints.current_size());
+  return static_cast<int32_t>(m_endpoints.size());
 }
 
 GfErrType TcrConnectionManager::registerInterestAllRegions(
@@ -470,12 +450,10 @@ void TcrConnectionManager::initializeHAEndpoints(const char *endpointsStr) {
 }
 
 void TcrConnectionManager::removeHAEndpoints() {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_endpoints.mutex());
-  ACE_Map_Manager<std::string, TcrEndpoint *,
-                  ACE_Recursive_Thread_Mutex>::iterator currItr =
-      m_endpoints.begin();
+  auto &&guard = m_endpoints.make_lock();
+  auto currItr = m_endpoints.begin();
   while (currItr != m_endpoints.end()) {
-    if (removeRefToEndpoint((*currItr).int_id_)) {
+    if (removeRefToEndpoint(currItr->second)) {
       currItr = m_endpoints.begin();
     } else {
       currItr++;
@@ -490,10 +468,9 @@ void TcrConnectionManager::netDown() {
   std::this_thread::sleep_for(std::chrono::seconds(15));
 
   {
-    ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_endpoints.mutex());
-
+    auto &&guard = m_endpoints.make_lock();
     for (auto &currItr : m_endpoints) {
-      currItr.int_id_->setConnectionStatus(false);
+      currItr.second->setConnectionStatus(false);
     }
   }
 
@@ -587,7 +564,7 @@ void TcrConnectionManager::processMarker() {
 //  TESTING: Durable clients - return queue status of endpoing. Not thread safe.
 bool TcrConnectionManager::getEndpointStatus(const std::string &endpoint) {
   for (auto &currItr : m_endpoints) {
-    auto ep = currItr.int_id_;
+    auto ep = currItr.second;
     const std::string epName = ep->name();
     if (epName == endpoint) return ep->getServerQueueStatusTEST();
   }
