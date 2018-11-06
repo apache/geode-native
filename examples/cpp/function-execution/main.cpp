@@ -25,7 +25,6 @@
  */
 #include <iostream>
 #include <memory>
-#include <sstream>
 
 #include <geode/CacheFactory.hpp>
 #include <geode/PoolManager.hpp>
@@ -47,19 +46,18 @@ using apache::geode::client::RegionShortcut;
 
 const auto getFuncIName = std::string("ExampleMultiGetFunction");
 
-const int EXAMPLE_ITEM_COUNT  = 6;
 const int EXAMPLE_SERVER_PORT = 50505;
 
-std::vector<std::string> keys = {
+const std::vector<std::string> keys = {
     "KEY--1",
     "KEY--2",
     "KEY--3",
 };
 
-std::vector<std::string> values = {
+const std::vector<std::string> values = {
     "VALUE--1",
-    "VALUE--3",
-    "VALUE--5"
+    "VALUE--2",
+    "VALUE--3"
 };
 
 Cache setupCache() {
@@ -96,11 +94,11 @@ std::shared_ptr<CacheableVector> populateArguments() {
   return arguments;
 }
 
-std::vector<std::string> executeFunctionOnServer(const std::shared_ptr<Region> regionPtr,
+std::vector<std::string> executeFunctionOnServer(const std::shared_ptr<Region> region,
     const std::shared_ptr<CacheableVector> arguments) {
   std::vector<std::string> resultList;
 
-  auto functionService = FunctionService::onServer(regionPtr->getRegionService());
+  auto functionService = FunctionService::onServer(region->getRegionService());
   if(auto executeFunctionResult = functionService.withArgs(arguments).execute(getFuncIName)->getResult()) {
     for (auto &arrayList: *executeFunctionResult) {
       for (auto &cachedString: *std::dynamic_pointer_cast<CacheableArrayList>(arrayList)) {
@@ -129,13 +127,13 @@ int main(int argc, char** argv) {
 
     createPool(cache);
 
-    auto regionPtr = createRegion(cache);
+    auto region = createRegion(cache);
 
-    populateRegion(regionPtr);
+    populateRegion(region);
 
     auto arguments = populateArguments();
 
-    auto resultList = executeFunctionOnServer(regionPtr, arguments);
+    auto resultList = executeFunctionOnServer(region, arguments);
 
     printResults(resultList);
   }
