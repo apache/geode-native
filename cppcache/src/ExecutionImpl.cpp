@@ -157,7 +157,7 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
 
   LOGDEBUG("ExecutionImpl::execute: isHAHasResultOptimizeForWrite = %d",
            isHAHasResultOptimizeForWrite);
-  TXState* txState = TSSTXStateWrapper::s_geodeTSSTXState->getTXState();
+  TXState* txState = TSSTXStateWrapper::get().getTXState();
 
   if (txState != nullptr && m_allServer == true) {
     throw UnsupportedOperationException(

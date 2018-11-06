@@ -466,9 +466,7 @@ class APACHE_GEODE_EXPORT LocalRegion : public RegionInternal {
 
   void setPool(const std::shared_ptr<Pool>& p) { m_attachedPool = p; }
 
-  TXState* getTXState() const {
-    return TSSTXStateWrapper::s_geodeTSSTXState->getTXState();
-  }
+  TXState* getTXState() const { return TSSTXStateWrapper::get().getTXState(); }
 
   std::shared_ptr<Cacheable> handleReplay(
       GfErrType& err, std::shared_ptr<Cacheable> value) const;

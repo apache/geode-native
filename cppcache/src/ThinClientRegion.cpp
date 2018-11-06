@@ -1642,7 +1642,7 @@ GfErrType ThinClientRegion::putAllNoThrow_remote(
   LOGDEBUG("ThinClientRegion::putAllNoThrow_remote");
 
   auto poolDM = dynamic_cast<ThinClientPoolDM*>(m_tcrdm);
-  auto txState = TSSTXStateWrapper::s_geodeTSSTXState->getTXState();
+  auto txState = TSSTXStateWrapper::get().getTXState();
 
   if (poolDM != nullptr) {
     if (poolDM->getPRSingleHopEnabled() &&
@@ -1967,7 +1967,7 @@ GfErrType ThinClientRegion::removeAllNoThrow_remote(
   LOGDEBUG("ThinClientRegion::removeAllNoThrow_remote");
 
   ThinClientPoolDM* poolDM = dynamic_cast<ThinClientPoolDM*>(m_tcrdm);
-  TXState* txState = TSSTXStateWrapper::s_geodeTSSTXState->getTXState();
+  auto txState = TSSTXStateWrapper::get().getTXState();
 
   if (poolDM != nullptr) {
     if (poolDM->getPRSingleHopEnabled() &&

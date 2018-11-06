@@ -586,7 +586,7 @@ void TcrMessage::writeHeader(uint32_t msgType, uint32_t numOfParts) {
                                  // the end write the length at the (buffer +
                                  // 4) offset.
   m_request->writeInt(static_cast<int32_t>(numOfParts));
-  TXState* txState = TSSTXStateWrapper::s_geodeTSSTXState->getTXState();
+  auto txState = TSSTXStateWrapper::get().getTXState();
   if (txState == nullptr) {
     m_txId = -1;
   } else {

@@ -42,9 +42,7 @@ InternalCacheTransactionManager2PCImpl::
 
 void InternalCacheTransactionManager2PCImpl::prepare() {
   try {
-    auto& txStateWrapper = TSSTXStateWrapper::s_geodeTSSTXState;
-    auto txState = txStateWrapper->getTXState();
-
+    auto txState = TSSTXStateWrapper::get().getTXState();
     if (!txState) {
       GfErrTypeThrowException(
           "Transaction is null, cannot prepare of a null transaction",
@@ -119,7 +117,7 @@ void InternalCacheTransactionManager2PCImpl::rollback() {
 
 void InternalCacheTransactionManager2PCImpl::afterCompletion(int32_t status) {
   try {
-    auto txState = TSSTXStateWrapper::s_geodeTSSTXState->getTXState();
+    auto txState = TSSTXStateWrapper::get().getTXState();
 
     if (!txState) {
       GfErrTypeThrowException(
