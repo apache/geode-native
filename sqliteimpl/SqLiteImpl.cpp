@@ -33,6 +33,10 @@ namespace apache {
 namespace geode {
 namespace client {
 
+static constexpr char const* MAX_PAGE_COUNT = "MaxPageCount";
+static constexpr char const* PAGE_SIZE = "PageSize";
+static constexpr char const* PERSISTENCE_DIR = "PersistenceDirectory";
+
 void SqLiteImpl::init(const std::shared_ptr<Region> &region,
                       const std::shared_ptr<Properties> &diskProperties) {
   // Set the default values
