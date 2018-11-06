@@ -1078,7 +1078,7 @@ class PutActions {
   TXState* m_txState;
 
   inline explicit PutActions(LocalRegion& region) : m_region(region) {
-    m_txState = TSSTXStateWrapper::s_geodeTSSTXState->getTXState();
+    m_txState = TSSTXStateWrapper::get().getTXState();
   }
 
   inline static const char* name() { return "Region::put"; }
@@ -1165,7 +1165,7 @@ class CreateActions {
   TXState* m_txState;
 
   inline explicit CreateActions(LocalRegion& region) : m_region(region) {
-    m_txState = TSSTXStateWrapper::s_geodeTSSTXState->getTXState();
+    m_txState = TSSTXStateWrapper::get().getTXState();
   }
 
   inline static const char* name() { return "Region::create"; }
@@ -1228,7 +1228,7 @@ class DestroyActions {
   TXState* m_txState;
 
   inline explicit DestroyActions(LocalRegion& region) : m_region(region) {
-    m_txState = TSSTXStateWrapper::s_geodeTSSTXState->getTXState();
+    m_txState = TSSTXStateWrapper::get().getTXState();
   }
 
   inline static const char* name() { return "Region::destroy"; }
@@ -1343,7 +1343,7 @@ class RemoveActions {
 
   inline explicit RemoveActions(LocalRegion& region)
       : m_region(region), m_ServerResponse(GF_ENOENT) {
-    m_txState = TSSTXStateWrapper::s_geodeTSSTXState->getTXState();
+    m_txState = TSSTXStateWrapper::get().getTXState();
     allowNULLValue = false;
   }
 
@@ -1550,7 +1550,7 @@ class InvalidateActions {
   TXState* m_txState;
 
   inline explicit InvalidateActions(LocalRegion& region) : m_region(region) {
-    m_txState = TSSTXStateWrapper::s_geodeTSSTXState->getTXState();
+    m_txState = TSSTXStateWrapper::get().getTXState();
   }
 
   inline static const char* name() { return "Region::invalidate"; }

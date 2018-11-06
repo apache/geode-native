@@ -14,12 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * TxCleaner.cpp
- *
- *  Created on: Nov 13, 2015
- *      Author: sshcherbakov
- */
 
 #include "TXCleaner.hpp"
 
@@ -28,8 +22,7 @@ namespace geode {
 namespace client {
 
 TXCleaner::TXCleaner(CacheTransactionManagerImpl* cacheTxMgr) {
-  m_txStateWrapper = TSSTXStateWrapper::s_geodeTSSTXState;
-  m_txState = m_txStateWrapper->getTXState();
+  m_txState = TSSTXStateWrapper::get().getTXState();
   m_cacheTxMgr = cacheTxMgr;
 }
 
@@ -45,15 +38,15 @@ void TXCleaner::clean() {
   if (m_txState != nullptr) {
     m_cacheTxMgr->removeTx(m_txState->getTransactionId().getId());
   }
-  if (m_txStateWrapper != nullptr && m_txState != nullptr) {
-    m_txStateWrapper->setTXState(nullptr);
+  if (m_txState != nullptr) {
+    TSSTXStateWrapper::get().setTXState(nullptr);
   }
 }
 
 TXState* TXCleaner::getTXState() {
-  return (m_txStateWrapper == nullptr) ? nullptr
-                                       : m_txStateWrapper->getTXState();
+  return TSSTXStateWrapper::get().getTXState();
 }
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

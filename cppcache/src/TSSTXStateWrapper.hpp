@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_TSSTXSTATEWRAPPER_H_
-#define GEODE_TSSTXSTATEWRAPPER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,36 +14,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * TSSTXStateWrapper.hpp
- *
- *  Created on: 09-Feb-2011
- *      Author: ankurs
- */
 
-#include <ace/TSS_T.h>
+#pragma once
+
+#ifndef GEODE_TSSTXSTATEWRAPPER_H_
+#define GEODE_TSSTXSTATEWRAPPER_H_
 
 #include "TXId.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
+
 class TXState;
 
 class TSSTXStateWrapper {
  public:
-  TSSTXStateWrapper();
-  virtual ~TSSTXStateWrapper();
+  inline TSSTXStateWrapper() : m_txState(nullptr){};
 
-  static ACE_TSS<TSSTXStateWrapper> s_geodeTSSTXState;
-  TXState* getTXState() { return m_txState; }
-  void setTXState(TXState* conn) { m_txState = conn; }
+  ~TSSTXStateWrapper() noexcept;
+
+  inline static TSSTXStateWrapper& get() {
+    static thread_local TSSTXStateWrapper instance;
+    return instance;
+  }
+
+  inline TXState* getTXState() { return m_txState; }
+
+  inline void setTXState(TXState* conn) { m_txState = conn; }
 
  private:
   TXState* m_txState;
   TSSTXStateWrapper& operator=(const TSSTXStateWrapper&);
   TSSTXStateWrapper(const TSSTXStateWrapper&);
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

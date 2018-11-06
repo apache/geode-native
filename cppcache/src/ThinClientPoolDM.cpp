@@ -2377,7 +2377,7 @@ TcrConnection* ThinClientPoolDM::getConnectionFromQueueW(
   if (request.forTransaction()) {
     bool connFound =
         m_manager->getStickyConnection(conn, error, excludeServers, true);
-    TXState* txState = TSSTXStateWrapper::s_geodeTSSTXState->getTXState();
+    auto txState = TSSTXStateWrapper::get().getTXState();
     if (*error == GF_NOERR && !connFound &&
         (txState == nullptr || txState->isDirty())) {
       *error = doFailover(conn);
