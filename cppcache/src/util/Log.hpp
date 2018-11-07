@@ -157,13 +157,6 @@ class APACHE_GEODE_EXPORT Log {
   static void setLogLevel(LogLevel level) { s_logLevel = level; }
 
   /**
-   * @return the name of the current log file.
-   * NOTE: This function is for debugging only, as it is not completely
-   * thread-safe!
-   */
-  static const char* logFileName();
-
-  /**
    * Initializes logging facility with given level and filenames.
    * This method is called automatically within @ref DistributedSystem::connect
    * with the log-file, log-level, and log-file-size system properties used as
@@ -258,6 +251,10 @@ class APACHE_GEODE_EXPORT Log {
    */
   static void error(const char* msg) {
     if (errorEnabled()) put(LogLevel::Error, msg);
+  }
+
+  static void error(const std::string& msg) {
+    if (errorEnabled()) put(LogLevel::Error, msg.c_str());
   }
 
   /**

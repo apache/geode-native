@@ -20,8 +20,6 @@
 #include <limits>
 #include <random>
 
-#include <boost/endian/conversion.hpp>
-
 #include <gtest/gtest.h>
 
 #include <geode/CacheFactory.hpp>

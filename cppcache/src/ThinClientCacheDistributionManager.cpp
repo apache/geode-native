@@ -52,7 +52,7 @@ GfErrType ThinClientCacheDistributionManager::sendSyncRequestCq(
 
   reply.setDM(this);
 
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_endpointsLock);
+  std::lock_guard<decltype(m_endpointsLock)> guard(m_endpointsLock);
 
   // Return best effort result: If CQ succeeds on ANY server return no-error
   // even if

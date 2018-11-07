@@ -20,7 +20,6 @@
 #include "../util/Log.hpp"
 #include "StatisticDescriptorImpl.hpp"
 #include "StatisticsTypeImpl.hpp"
-#include "ace/OS.h"
 
 namespace apache {
 namespace geode {
@@ -164,7 +163,7 @@ void OsStatisticsImpl::close() {
 void OsStatisticsImpl::_setInt(int32_t offset, int32_t value) {
   if (offset >= statsType->getIntStatCount()) {
     char s[128] = {'\0'};
-    ACE_OS::snprintf(
+    std::snprintf(
         s, 128, "setInt:The id (%d) of the Statistic Descriptor is not valid ",
         offset);
     throw IllegalArgumentException(s);
@@ -175,19 +174,7 @@ void OsStatisticsImpl::_setInt(int32_t offset, int32_t value) {
 void OsStatisticsImpl::_setLong(int32_t offset, int64_t value) {
   if (offset >= statsType->getLongStatCount()) {
     char s[128] = {'\0'};
-    /* adongre  - Coverity II
-     * CID 29275: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-     * "sprintf" can cause a
-     * buffer overflow when done incorrectly. Because sprintf() assumes an
-     * arbitrarily long string,
-     * callers must be careful not to overflow the actual space of the
-     * destination.
-     * Use snprintf() instead, or correct precision specifiers.
-     * Fix : using ACE_OS::snprintf
-     */
-    // sprintf(s, "setLong:The id (%d) of the Statistic Descriptor is not valid
-    // ", offset);
-    ACE_OS::snprintf(
+    std::snprintf(
         s, 128, "setLong:The id (%d) of the Statistic Descriptor is not valid ",
         offset);
     throw IllegalArgumentException(s);
@@ -198,7 +185,7 @@ void OsStatisticsImpl::_setLong(int32_t offset, int64_t value) {
 void OsStatisticsImpl::_setDouble(int32_t offset, double value) {
   if (offset >= statsType->getDoubleStatCount()) {
     char s[128] = {'\0'};
-    ACE_OS::snprintf(
+    std::snprintf(
         s, 128,
         "setDouble:The id (%d) of the Statistic Descriptor is not valid ",
         offset);
@@ -212,7 +199,7 @@ void OsStatisticsImpl::_setDouble(int32_t offset, double value) {
 int32_t OsStatisticsImpl::_getInt(int32_t offset) const {
   if (offset >= statsType->getIntStatCount()) {
     char s[128] = {'\0'};
-    ACE_OS::snprintf(
+    std::snprintf(
         s, 128, "getInt:The id (%d) of the Statistic Descriptor is not valid ",
         offset);
     throw IllegalArgumentException(s);
@@ -224,7 +211,7 @@ int32_t OsStatisticsImpl::_getInt(int32_t offset) const {
 int64_t OsStatisticsImpl::_getLong(int32_t offset) const {
   if (offset >= statsType->getLongStatCount()) {
     char s[128] = {'\0'};
-    ACE_OS::snprintf(
+    std::snprintf(
         s, 128, "getLong:The id (%d) of the Statistic Descriptor is not valid ",
         offset);
     throw IllegalArgumentException(s);
@@ -236,7 +223,7 @@ int64_t OsStatisticsImpl::_getLong(int32_t offset) const {
 double OsStatisticsImpl::_getDouble(int32_t offset) const {
   if (offset >= statsType->getDoubleStatCount()) {
     char s[128] = {'\0'};
-    ACE_OS::snprintf(
+    std::snprintf(
         s, 128,
         "getDouble:The id (%d) of the Statistic Descriptor is not valid ",
         offset);
@@ -274,7 +261,7 @@ int64_t OsStatisticsImpl::_getRawBits(
 int32_t OsStatisticsImpl::_incInt(int32_t offset, int32_t delta) {
   if (offset >= statsType->getIntStatCount()) {
     char s[128] = {'\0'};
-    ACE_OS::snprintf(
+    std::snprintf(
         s, 128, "incInt:The id (%d) of the Statistic Descriptor is not valid ",
         offset);
     throw IllegalArgumentException(s);
@@ -287,20 +274,7 @@ int32_t OsStatisticsImpl::_incInt(int32_t offset, int32_t delta) {
 int64_t OsStatisticsImpl::_incLong(int32_t offset, int64_t delta) {
   if (offset >= statsType->getLongStatCount()) {
     char s[128] = {'\0'};
-    /* adongre  - Coverity II
-     * CID 29274: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-     * "sprintf" can cause a
-     * buffer overflow when done incorrectly. Because sprintf() assumes an
-     * arbitrarily long string,
-     * callers must be careful not to overflow the actual space of the
-     * destination.
-     * Use snprintf() instead, or correct precision specifiers.
-     * Fix : using ACE_OS::snprintf
-     */
-    // sprintf(s, "incLong:The id (%d) of the Statistic Descriptor is not valid
-    // ", offset);
-
-    ACE_OS::snprintf(
+    std::snprintf(
         s, 128, "incLong:The id (%d) of the Statistic Descriptor is not valid ",
         offset);
     throw IllegalArgumentException(s);
@@ -312,7 +286,7 @@ int64_t OsStatisticsImpl::_incLong(int32_t offset, int64_t delta) {
 double OsStatisticsImpl::_incDouble(int32_t offset, double delta) {
   if (offset >= statsType->getDoubleStatCount()) {
     char s[128] = {'\0'};
-    ACE_OS::snprintf(
+    std::snprintf(
         s, 128,
         "incDouble:The id (%d) of the Statistic Descriptor is not valid ",
         offset);

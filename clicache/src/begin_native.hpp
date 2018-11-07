@@ -28,6 +28,9 @@
 #undef nullptr
 #define nullptr __nullptr
 
+#pragma push_macro("_M_CEE")
+#undef _M_CEE
+
 #pragma warning(push)
 
 // Disable XML warnings

@@ -33,9 +33,11 @@
 #include "QueueConnectionResponse.hpp"
 #include "TcpSslConn.hpp"
 #include "ThinClientPoolDM.hpp"
+
 namespace apache {
 namespace geode {
 namespace client {
+
 const int BUFF_SIZE = 3000;
 
 class ConnectionWrapper {
@@ -87,7 +89,7 @@ Connector* ThinClientLocatorHelper::createConnection(
 GfErrType ThinClientLocatorHelper::getAllServers(
     std::vector<std::shared_ptr<ServerLocation> >& servers,
     const std::string& serverGrp) {
-  ACE_Guard<ACE_Thread_Mutex> guard(m_locatorLock);
+  std::lock_guard<decltype(m_locatorLock)> guard(m_locatorLock);
 
   auto& sysProps = m_poolDM->getConnectionManager()
                        .getCacheImpl()
@@ -151,7 +153,7 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewCallBackConn(
     ClientProxyMembershipID& memId, std::list<ServerLocation>& outEndpoint,
     std::string&, int redundancy, const std::set<ServerLocation>& exclEndPts,
     const std::string& serverGrp) {
-  ACE_Guard<ACE_Thread_Mutex> guard(m_locatorLock);
+  std::lock_guard<decltype(m_locatorLock)> guard(m_locatorLock);
   auto& sysProps = m_poolDM->getConnectionManager()
                        .getCacheImpl()
                        ->getDistributedSystem()
@@ -233,7 +235,7 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewFwdConn(
     const std::set<ServerLocation>& exclEndPts, const std::string& serverGrp,
     const TcrConnection* currentServer) {
   bool locatorFound = false;
-  ACE_Guard<ACE_Thread_Mutex> guard(m_locatorLock);
+  std::lock_guard<decltype(m_locatorLock)> guard(m_locatorLock);
   auto& sysProps = m_poolDM->getConnectionManager()
                        .getCacheImpl()
                        ->getDistributedSystem()
@@ -334,7 +336,7 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewFwdConn(
 
 GfErrType ThinClientLocatorHelper::updateLocators(
     const std::string& serverGrp) {
-  ACE_Guard<ACE_Thread_Mutex> guard(m_locatorLock);
+  std::lock_guard<decltype(m_locatorLock)> guard(m_locatorLock);
   auto& sysProps = m_poolDM->getConnectionManager()
                        .getCacheImpl()
                        ->getDistributedSystem()

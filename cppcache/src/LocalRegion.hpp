@@ -27,9 +27,7 @@
 #include <string>
 #include <unordered_map>
 
-#include <ace/ACE.h>
-#include <ace/Hash_Map_Manager_T.h>
-#include <ace/Recursive_Thread_Mutex.h>
+#include <ace/RW_Thread_Mutex.h>
 
 #include <geode/AttributesMutator.hpp>
 #include <geode/Cache.hpp>

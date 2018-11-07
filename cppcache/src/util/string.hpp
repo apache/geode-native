@@ -20,6 +20,7 @@
 #ifndef GEODE_UTIL_STRING_H_
 #define GEODE_UTIL_STRING_H_
 
+#include <cctype>
 #include <codecvt>
 #include <locale>
 #include <string>
@@ -153,6 +154,16 @@ inline std::string to_utf8(const std::u32string& ucs4) {
   return std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t>{}.to_bytes(
       ucs4);
 #endif
+}
+
+inline bool equal_ignore_case(const std::string& str1,
+                              const std::string& str2) {
+  return ((str1.size() == str2.size()) &&
+          std::equal(str1.begin(), str1.end(), str2.begin(),
+                     [](const char& c1, const char& c2) {
+                       return (c1 == c2 ||
+                               std::toupper(c1) == std::toupper(c2));
+                     }));
 }
 
 }  // namespace client

@@ -14,11 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "CacheImpl.hpp"
 
 #include <string>
-
-#include <ace/OS.h>
 
 #include <geode/CacheStatistics.hpp>
 #include <geode/PersistenceManager.hpp>
@@ -65,7 +64,6 @@ CacheImpl::CacheImpl(Cache* c, const std::shared_ptr<Properties>& dsProps,
       m_distributedSystem(DistributedSystem::create(DEFAULT_DS_NAME, dsProps)),
       m_clientProxyMembershipIDFactory(m_distributedSystem.getName()),
       m_cache(c),
-      m_cond(m_mutex),
       m_attributes(nullptr),
       m_evictionControllerPtr(nullptr),
       m_tcrConnectionManager(nullptr),
@@ -384,7 +382,7 @@ void CacheImpl::createRegion(std::string name,
                              RegionAttributes regionAttributes,
                              std::shared_ptr<Region>& regionPtr) {
   {
-    ACE_Guard<ACE_Thread_Mutex> _guard(m_initDoneLock);
+    std::lock_guard<decltype(m_initDoneLock)> _guard(m_initDoneLock);
     if (!m_initDone) {
       if (regionAttributes.getPoolName().empty()) {
         m_tcrConnectionManager->init();
@@ -706,7 +704,8 @@ bool CacheImpl::getEndpointStatus(const std::string& endpoint) {
   const auto firstPool =
       std::static_pointer_cast<ThinClientPoolDM>(pools.begin()->second);
 
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(firstPool->m_endpointsLock);
+  auto& mutex = firstPool->m_endpointsLock;
+  std::lock_guard<decltype(mutex)> guard(mutex);
   for (const auto& itr : firstPool->m_endpoints) {
     const auto& ep = itr.int_id_;
     if (ep->name().find(fullName) != std::string::npos) {

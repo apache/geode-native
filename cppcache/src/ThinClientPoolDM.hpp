@@ -20,11 +20,15 @@
 #ifndef GEODE_THINCLIENTPOOLDM_H_
 #define GEODE_THINCLIENTPOOLDM_H_
 
+#include <chrono>
 #include <memory>
+#include <mutex>
 #include <set>
 #include <string>
 #include <vector>
 
+#include <ace/Map_Manager.h>
+#include <ace/Recursive_Thread_Mutex.h>
 #include <ace/Semaphore.h>
 
 #include <geode/Pool.hpp>
@@ -155,7 +159,8 @@ class ThinClientPoolDM
 
   virtual bool canItBeDeletedNoImpl(TcrConnection* conn);
 
-  void updateNotificationStats(bool isDeltaSuccess, int64_t timeInNanoSecond);
+  void updateNotificationStats(bool isDeltaSuccess,
+                               std::chrono::nanoseconds timeInNanoSecond);
 
   virtual bool isSecurityOn() { return m_isSecurityOn || m_isMultiUserMode; }
 
@@ -203,8 +208,8 @@ class ThinClientPoolDM
   std::vector<std::string> m_canonicalHosts;
   ACE_Map_Manager<std::string, TcrEndpoint*, ACE_Recursive_Thread_Mutex>
       m_endpoints;
-  ACE_Recursive_Thread_Mutex m_endpointsLock;
-  ACE_Recursive_Thread_Mutex m_endpointSelectionLock;
+  std::recursive_mutex m_endpointsLock;
+  std::recursive_mutex m_endpointSelectionLock;
   std::string m_poolName;
   PoolStats* m_stats;
   bool m_sticky;
@@ -346,7 +351,7 @@ class FunctionExecution : public PooledWork<GfErrType> {
   std::shared_ptr<Cacheable> m_args;
   GfErrType m_error;
   std::shared_ptr<ResultCollector>* m_rc;
-  std::shared_ptr<ACE_Recursive_Thread_Mutex> m_resultCollectorLock;
+  std::shared_ptr<std::recursive_mutex> m_resultCollectorLock;
   std::shared_ptr<CacheableString> exceptionPtr;
   std::shared_ptr<UserAttributes> m_userAttr;
 
@@ -370,7 +375,7 @@ class FunctionExecution : public PooledWork<GfErrType> {
                      std::chrono::milliseconds timeout,
                      std::shared_ptr<Cacheable> args, TcrEndpoint* ep,
                      ThinClientPoolDM* poolDM,
-                     const std::shared_ptr<ACE_Recursive_Thread_Mutex>& rCL,
+                     const std::shared_ptr<std::recursive_mutex>& rCL,
                      std::shared_ptr<ResultCollector>* rs,
                      std::shared_ptr<UserAttributes> userAttr) {
     exceptionPtr = nullptr;
@@ -390,7 +395,6 @@ class FunctionExecution : public PooledWork<GfErrType> {
   }
 
   GfErrType execute(void) {
-    // TSSUserAttributesWrapper::s_geodeTSSUserAttributes->setUserAttributes(m_userAttr);
     GuardUserAttributes gua;
 
     if (m_userAttr) {
@@ -461,7 +465,7 @@ class OnRegionFunctionExecution : public PooledWork<GfErrType> {
   std::shared_ptr<CacheableHashSet> m_routingObj;
   std::shared_ptr<ResultCollector> m_rc;
   TcrChunkedResult* m_resultCollector;
-  std::shared_ptr<ACE_Recursive_Thread_Mutex> m_resultCollectorLock;
+  std::shared_ptr<std::recursive_mutex> m_resultCollectorLock;
   std::shared_ptr<UserAttributes> m_userAttr;
   const Region* m_region;
   bool m_allBuckets;
@@ -471,7 +475,7 @@ class OnRegionFunctionExecution : public PooledWork<GfErrType> {
       std::string func, const Region* region, std::shared_ptr<Cacheable> args,
       std::shared_ptr<CacheableHashSet> routingObj, uint8_t getResult,
       std::chrono::milliseconds timeout, ThinClientPoolDM* poolDM,
-      const std::shared_ptr<ACE_Recursive_Thread_Mutex>& rCL,
+      const std::shared_ptr<std::recursive_mutex>& rCL,
       std::shared_ptr<ResultCollector> rs,
       std::shared_ptr<UserAttributes> userAttr, bool isBGThread,
       const std::shared_ptr<BucketServerLocation>& serverLocation,

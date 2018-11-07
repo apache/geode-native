@@ -14,8 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <ace/ACE.h>
-#include <ace/OS.h>
 
 #include <geode/CacheableFileName.hpp>
 #include <geode/DataInput.hpp>

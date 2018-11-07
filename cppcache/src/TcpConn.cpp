@@ -17,7 +17,9 @@
 
 #include "TcpConn.hpp"
 
-#include <memory.h>
+#include <chrono>
+#include <memory>
+#include <thread>
 
 #include <ace/INET_Addr.h>
 #include <ace/OS.h>
@@ -98,8 +100,8 @@ void TcpConn::init() {
     LOGERROR("Failed to create socket. Errno: %d: %s", lastError,
              ACE_OS::strerror(lastError));
     char msg[256];
-    ACE_OS::snprintf(msg, 256, "TcpConn::connect failed with errno: %d: %s",
-                     lastError, ACE_OS::strerror(lastError));
+    std::snprintf(msg, 256, "TcpConn::connect failed with errno: %d: %s",
+                  lastError, ACE_OS::strerror(lastError));
     throw GeodeIOException(msg);
   }
 
@@ -175,8 +177,8 @@ void TcpConn::listen(ACE_INET_Addr addr,
           "TcpConn::listen Attempt to listen timed out after " +
           to_string(waitSeconds) + ".");
     }
-    ACE_OS::snprintf(msg, 256, "TcpConn::listen failed with errno: %d: %s",
-                     lastError, ACE_OS::strerror(lastError));
+    std::snprintf(msg, 256, "TcpConn::listen failed with errno: %d: %s",
+                  lastError, ACE_OS::strerror(lastError));
     throw GeodeIOException(msg);
   }
 }
@@ -230,8 +232,8 @@ void TcpConn::connect() {
           "TcpConn::connect Attempt to connect timed out after" +
           to_string(waitMicroSeconds) + ".");
     }
-    ACE_OS::snprintf(msg, 256, "TcpConn::connect failed with errno: %d: %s",
-                     lastError, ACE_OS::strerror(lastError));
+    std::snprintf(msg, 256, "TcpConn::connect failed with errno: %d: %s",
+                  lastError, ACE_OS::strerror(lastError));
     //  this is only called by constructor, so we must delete m_io
     close();
     throw GeodeIOException(msg);
@@ -240,8 +242,8 @@ void TcpConn::connect() {
   if (-1 == rc) {
     char msg[250];
     int32_t lastError = ACE_OS::last_error();
-    ACE_OS::snprintf(msg, 256, "TcpConn::NONBLOCK: %d: %s", lastError,
-                     ACE_OS::strerror(lastError));
+    std::snprintf(msg, 256, "TcpConn::NONBLOCK: %d: %s", lastError,
+                  ACE_OS::strerror(lastError));
 
     LOGINFO(msg);
   }
@@ -265,22 +267,8 @@ size_t TcpConn::send(const char *buff, size_t len,
 }
 
 size_t TcpConn::socketOp(TcpConn::SockOp op, char *buff, size_t len,
-                         std::chrono::microseconds waitSeconds) {
+                         std::chrono::microseconds waitDuration) {
   {
-    /*{
-      ACE_HANDLE handle = m_io->get_handle();
-       int val = ACE::get_flags (handle);
-
-      if (ACE_BIT_DISABLED (val, ACE_NONBLOCK))
-      {
-        //ACE::set_flags (handle, ACE_NONBLOCK);
-        LOGINFO("Flag is not set");
-      }else
-      {
-          LOGINFO("Flag is set");
-      }
-    }*/
-
     GF_DEV_ASSERT(m_io != nullptr);
     GF_DEV_ASSERT(buff != nullptr);
 
@@ -294,10 +282,8 @@ size_t TcpConn::socketOp(TcpConn::SockOp op, char *buff, size_t len,
     }
 #endif
 
-    ACE_Time_Value waitTime(waitSeconds);
-    ACE_Time_Value endTime(ACE_OS::gettimeofday());
-    endTime += waitTime;
-    ACE_Time_Value sleepTime(0, 100);
+    ACE_Time_Value waitTime(waitDuration);
+    auto endTime = std::chrono::steady_clock::now() + waitDuration;
     size_t readLen = 0;
     ssize_t retVal;
     bool errnoSet = false;
@@ -324,7 +310,7 @@ size_t TcpConn::socketOp(TcpConn::SockOp op, char *buff, size_t len,
         if (retVal < 0) {
           int32_t lastError = ACE_OS::last_error();
           if (lastError == EAGAIN) {
-            ACE_OS::sleep(sleepTime);
+            std::this_thread::sleep_for(std::chrono::microseconds(100));
           } else {
             errnoSet = true;
             break;
@@ -337,7 +323,7 @@ size_t TcpConn::socketOp(TcpConn::SockOp op, char *buff, size_t len,
 
         buff += readLen;
         if (sendlen == 0) break;
-        waitTime = endTime - ACE_OS::gettimeofday();
+        waitTime = endTime - std::chrono::steady_clock::now();
         if (waitTime <= ACE_Time_Value::zero) break;
       } while (sendlen > 0);
       if (errnoSet) break;

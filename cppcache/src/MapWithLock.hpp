@@ -25,8 +25,6 @@
 
 #include <ace/Hash_Map_Manager.h>
 #include <ace/Recursive_Thread_Mutex.h>
-#include <ace/Versioned_Namespace.h>
-#include <ace/config-lite.h>
 
 #include <geode/CacheableKey.hpp>
 #include <geode/internal/geode_globals.hpp>
@@ -56,6 +54,7 @@ typedef ACE_Hash_Map_Manager_Ex<
  * other composite operations. ex.. MapOfRegionGuard guard( map->mutex() );
  */
 typedef ACE_Guard<ACE_Recursive_Thread_Mutex> MapOfRegionGuard;
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

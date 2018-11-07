@@ -21,6 +21,7 @@
 
 #pragma warning(pop)
 
+#pragma pop_macro("_M_CEE")
 #pragma pop_macro("nullptr")
 #pragma pop_macro("_ALLOW_KEYWORD_MACROS")
 

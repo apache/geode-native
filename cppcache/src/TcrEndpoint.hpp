@@ -22,9 +22,10 @@
 
 #include <atomic>
 #include <list>
+#include <mutex>
 #include <string>
 
-#include <ace/Recursive_Thread_Mutex.h>
+#include <ace/Condition_Recursive_Thread_Mutex.h>
 #include <ace/Semaphore.h>
 
 #include <geode/internal/geode_base.hpp>
@@ -166,9 +167,7 @@ class APACHE_GEODE_EXPORT TcrEndpoint {
   void setConnected(volatile bool connected = true) { m_connected = connected; }
   virtual ThinClientPoolDM* getPoolHADM() { return nullptr; }
   bool isQueueHosted();
-  ACE_Recursive_Thread_Mutex& getQueueHostedMutex() {
-    return m_notifyReceiverLock;
-  }
+  std::recursive_mutex& getQueueHostedMutex() { return m_notifyReceiverLock; }
   /*
   void sendNotificationCloseMsg();
   */
@@ -194,9 +193,8 @@ class APACHE_GEODE_EXPORT TcrEndpoint {
   CacheImpl* m_cacheImpl;
   std::list<Task<TcrEndpoint>*> m_notifyReceiverList;
   std::list<TcrConnection*> m_notifyConnectionList;
-  ACE_Condition<ACE_Recursive_Thread_Mutex> m_connectLockCond;
-  ACE_Recursive_Thread_Mutex m_connectLock;
-  ACE_Recursive_Thread_Mutex m_notifyReceiverLock;
+  std::timed_mutex m_connectLock;
+  std::recursive_mutex m_notifyReceiverLock;
   FairQueue<TcrConnection> m_opConnections;
   volatile int m_maxConnections;
   int m_numRegionListener;
@@ -229,9 +227,9 @@ class APACHE_GEODE_EXPORT TcrEndpoint {
   ThinClientBaseDM* m_baseDM;
   std::string m_name;
   std::list<ThinClientBaseDM*> m_distMgrs;
-  ACE_Recursive_Thread_Mutex m_endpointAuthenticationLock;
-  ACE_Recursive_Thread_Mutex m_connectionLock;
-  ACE_Recursive_Thread_Mutex m_distMgrsLock;
+  std::recursive_mutex m_endpointAuthenticationLock;
+  std::recursive_mutex m_connectionLock;
+  std::recursive_mutex m_distMgrsLock;
   ACE_Semaphore m_notificationCleanupSema;
   Set<uint16_t> m_ports;
   int32_t m_numberOfTimesFailed;

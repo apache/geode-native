@@ -26,7 +26,7 @@ namespace geode {
 namespace client {
 
 CqAttributes::listener_container_type CqAttributesImpl::getCqListeners() {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_mutex);
+  std::lock_guard<decltype(m_mutex)> _guard(m_mutex);
   return m_cqListeners;
 }
 
@@ -34,7 +34,7 @@ void CqAttributesImpl::addCqListener(const std::shared_ptr<CqListener>& cql) {
   if (cql == nullptr) {
     throw IllegalArgumentException("addCqListener parameter was null");
   }
-  ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_mutex);
+  std::lock_guard<decltype(m_mutex)> _guard(m_mutex);
   m_cqListeners.push_back(cql);
 }
 
@@ -53,7 +53,7 @@ void CqAttributesImpl::setCqListeners(
 
   decltype(m_cqListeners) oldListeners(m_cqListeners);
   {
-    ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_mutex);
+    std::lock_guard<decltype(m_mutex)> _guard(m_mutex);
     m_cqListeners = addedListeners;
   }
   if (!oldListeners.empty()) {
@@ -75,7 +75,7 @@ void CqAttributesImpl::removeCqListener(
   if (cql == nullptr) {
     throw IllegalArgumentException("removeCqListener parameter was null");
   }
-  ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_mutex);
+  std::lock_guard<decltype(m_mutex)> _guard(m_mutex);
   if (!m_cqListeners.empty()) {
     m_cqListeners.erase(
         std::remove_if(

@@ -22,6 +22,7 @@
 #include "../begin_native.hpp"
 #include <geode/CacheableKey.hpp>
 #include <geode/Delta.hpp>
+#include <geode/PdxSerializable.hpp>
 #include "../end_native.hpp"
 
 #include "../geode_defs.hpp"

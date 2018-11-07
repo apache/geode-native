@@ -19,6 +19,10 @@
 
 #include "PdxFieldType.hpp"
 
+#include "../begin_native.hpp"
+#include <PdxFieldType.hpp>
+#include "../end_native.hpp"
+
 using namespace System;
 using namespace System::Collections::Generic;
 

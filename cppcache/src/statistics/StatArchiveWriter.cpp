@@ -17,6 +17,9 @@
 
 #include "StatArchiveWriter.hpp"
 
+#include <chrono>
+#include <ctime>
+
 #include <ace/ACE.h>
 #include <ace/OS_NS_sys_time.h>
 #include <ace/OS_NS_sys_utsname.h>
@@ -27,6 +30,7 @@
 #include <geode/internal/geode_globals.hpp>
 
 #include "../CacheImpl.hpp"
+#include "../util/chrono/time_point.hpp"
 #include "GeodeStatisticsFactory.hpp"
 
 namespace apache {
@@ -347,11 +351,10 @@ StatArchiveWriter::StatArchiveWriter(std::string outfile,
   tzOffset = tzOffset * -1 * 1000;
   this->dataBuffer->writeInt(tzOffset);
 
-  struct tm *tm_val;
-  time_t clock = ACE_OS::time();
-  tm_val = ACE_OS::localtime(&clock);
+  auto now = std::chrono::system_clock::now();
+  auto tm_val = apache::geode::util::chrono::localtime(now);
   char buf[512] = {0};
-  ACE_OS::strftime(buf, sizeof(buf), "%Z", tm_val);
+  std::strftime(buf, sizeof(buf), "%Z", &tm_val);
   std::string tzId(buf);
   this->dataBuffer->writeUTF(tzId);
 
@@ -396,7 +399,8 @@ int64_t StatArchiveWriter::bytesWritten() { return bytesWrittenToFile; }
 int64_t StatArchiveWriter::getSampleSize() { return m_samplesize; }
 
 void StatArchiveWriter::sample(const steady_clock::time_point &timeStamp) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(sampler->getStatListMutex());
+  std::lock_guard<decltype(sampler->getStatListMutex())> guard(
+      sampler->getStatListMutex());
   m_samplesize = dataBuffer->getBytesWritten();
 
   sampleResources();
@@ -502,7 +506,8 @@ void StatArchiveWriter::sampleResources() {
 }
 
 void StatArchiveWriter::resampleResources() {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(sampler->getStatListMutex());
+  std::lock_guard<decltype(sampler->getStatListMutex())> guard(
+      sampler->getStatListMutex());
   std::vector<Statistics *> &statsList = sampler->getStatistics();
   std::vector<Statistics *>::iterator statlistIter = statsList.begin();
   while (statlistIter != statsList.end()) {

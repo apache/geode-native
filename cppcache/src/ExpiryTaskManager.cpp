@@ -88,7 +88,11 @@ int ExpiryTaskManager::cancelTask(ExpiryTaskManager::id_type id) {
 int ExpiryTaskManager::svc() {
   DistributedSystemImpl::setThreadName(NC_ETM_Thread);
   LOGFINE("ExpiryTaskManager thread is running.");
-  m_reactorEventLoopRunning = true;
+  {
+    std::unique_lock<std::mutex> lock(m_mutex);
+    m_reactorEventLoopRunning = true;
+    m_condition.notify_all();
+  }
   m_reactor->owner(ACE_OS::thr_self());
   m_reactor->run_reactor_event_loop();
   LOGFINE("ExpiryTaskManager thread has stopped.");
@@ -96,21 +100,21 @@ int ExpiryTaskManager::svc() {
 }
 
 void ExpiryTaskManager::stopExpiryTaskManager() {
+  std::unique_lock<std::mutex> lock(m_mutex);
+
   if (m_reactorEventLoopRunning) {
     m_reactor->end_reactor_event_loop();
     this->wait();
     GF_D_ASSERT(m_reactor->reactor_event_loop_done() > 0);
     m_reactorEventLoopRunning = false;
+    m_condition.notify_all();
   }
 }
 
 void ExpiryTaskManager::begin() {
   this->activate();
-  ACE_Time_Value t;
-  t.msec(50);
-  while (!m_reactorEventLoopRunning) {
-    ACE_OS::sleep(t);
-  }
+  std::unique_lock<std::mutex> lock(m_mutex);
+  m_condition.wait(lock, [this] { return m_reactorEventLoopRunning; });
 }
 
 ExpiryTaskManager::~ExpiryTaskManager() {

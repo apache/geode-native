@@ -22,8 +22,6 @@
 
 #include <string>
 
-#include <ace/OS.h>
-
 #include <geode/DataOutput.hpp>
 #include <geode/internal/functional.hpp>
 #include <geode/internal/geode_globals.hpp>
@@ -92,8 +90,8 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
     char hostInfo[255] = {0};
     uint32_t offset = 0;
     for (uint32_t i = 0; i < getHostAddrLen(); i++) {
-      offset += ACE_OS::snprintf(hostInfo + offset, 255 - offset, ":%x",
-                                 m_hostAddr[i]);
+      offset +=
+          std::snprintf(hostInfo + offset, 255 - offset, ":%x", m_hostAddr[i]);
     }
     result +=
         internal::geode_hash<std::string>{}(std::string(hostInfo, offset));

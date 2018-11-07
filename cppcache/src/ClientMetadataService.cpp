@@ -31,6 +31,8 @@ namespace apache {
 namespace geode {
 namespace client {
 
+const BucketStatus::clock::time_point BucketStatus::m_noTimeout{};
+
 const char* ClientMetadataService::NC_CMDSvcThread = "NC CMDSvcThread";
 
 ClientMetadataService::~ClientMetadataService() {
@@ -227,7 +229,6 @@ void ClientMetadataService::getBucketServerLocation(
     const std::shared_ptr<Cacheable>& value,
     const std::shared_ptr<Serializable>& aCallbackArgument, bool isPrimary,
     std::shared_ptr<BucketServerLocation>& serverLocation, int8_t& version) {
-  // ACE_Guard< ACE_Recursive_Thread_Mutex > guard( m_regionMetadataLock );
   if (region != nullptr) {
     ReadGuard guard(m_regionMetadataLock);
     LOGDEBUG(

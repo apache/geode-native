@@ -25,10 +25,9 @@
 #include <string>
 
 #include <ace/Condition_T.h>
+#include <ace/Task.h>
 
 #include <geode/internal/geode_base.hpp>
-
-#include "ace/Task.h"
 
 namespace apache {
 namespace geode {

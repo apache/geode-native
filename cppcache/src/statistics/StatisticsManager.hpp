@@ -21,6 +21,7 @@
 #define GEODE_STATISTICS_STATISTICSMANAGER_H_
 
 #include <memory>
+#include <mutex>
 #include <vector>
 
 #include <geode/ExceptionTypes.hpp>
@@ -59,7 +60,7 @@ class StatisticsManager {
   std::vector<Statistics*> m_newlyAddedStatsList;
 
   // Mutex to lock the list of Stats
-  ACE_Recursive_Thread_Mutex m_statsListLock;
+  std::recursive_mutex m_statsListLock;
 
   std::shared_ptr<AdminRegion> m_adminRegion;
 
@@ -91,7 +92,7 @@ class StatisticsManager {
 
   std::vector<Statistics*>& getNewlyAddedStatsList();
 
-  ACE_Recursive_Thread_Mutex& getListMutex();
+  std::recursive_mutex& getListMutex();
 
   /** Return the first instance that matches the type, or nullptr */
   Statistics* findFirstStatisticsByType(const StatisticsType* type);

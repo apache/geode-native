@@ -120,7 +120,7 @@ std::shared_ptr<Serializable> EventId::createDeserializable() {
 
 EventId::EventId(char* memId, uint32_t memIdLen, int64_t thr, int64_t seq) {
   // TODO: statics being assigned; not thread-safe??
-  ACE_OS::memcpy(m_eidMem, memId, memIdLen);
+  std::memcpy(m_eidMem, memId, memIdLen);
   m_eidMemLen = memIdLen;
   m_eidThr = thr;
   m_eidSeq = seq;

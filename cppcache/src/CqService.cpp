@@ -129,8 +129,7 @@ std::shared_ptr<CqQuery> CqService::newCq(
 
   std::shared_ptr<UserAttributes> ua = nullptr;
   if (m_tccdm != nullptr && m_tccdm->isMultiUserMode()) {
-    ua =
-        TSSUserAttributesWrapper::s_geodeTSSUserAttributes->getUserAttributes();
+    ua = UserAttributes::threadLocalUserAttributes;
   }
 
   auto cQuery = std::make_shared<CqQueryImpl>(
@@ -214,9 +213,7 @@ CqService::query_container_type CqService::getAllCqs() {
  * Executes all the cqs on this client.
  */
 void CqService::executeAllClientCqs(bool afterFailover) {
-  // ACE_Guard< ACE_Recursive_Thread_Mutex > _guard( m_mutex );
   query_container_type cqVec = getAllCqs();
-  // MapOfRegionGuard guard( m_cqQueryMap->mutex() );
   executeCqs(cqVec, afterFailover);
 }
 

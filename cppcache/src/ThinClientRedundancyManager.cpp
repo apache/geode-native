@@ -121,7 +121,8 @@ GfErrType ThinClientRedundancyManager::maintainRedundancyLevel(
   // to nonfatal errors such as server not available
   GfErrType fatalError = GF_NOERR;
   bool fatal = false;
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_redundantEndpointsLock);
+  std::lock_guard<decltype(m_redundantEndpointsLock)> guard(
+      m_redundantEndpointsLock);
   bool isRedundancySatisfied = false;
   int secondaryCount = 0;
   bool isPrimaryConnected = false;
@@ -667,9 +668,8 @@ void ThinClientRedundancyManager::initialize(int redundancyLevel) {
     if (interval < std::chrono::milliseconds(100)) {
       interval = std::chrono::milliseconds(100);
     }
-    m_nextAckInc = ACE_Time_Value(interval);
-    m_nextAck = ACE_OS::gettimeofday();
-    m_nextAck += m_nextAckInc;
+    m_nextAckInc = interval;
+    m_nextAck = clock::now() + interval;
   }
 
   if (m_poolHADM) {
@@ -693,7 +693,8 @@ void ThinClientRedundancyManager::initialize(int redundancyLevel) {
 }
 
 void ThinClientRedundancyManager::sendNotificationCloseMsgs() {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_redundantEndpointsLock);
+  std::lock_guard<decltype(m_redundantEndpointsLock)> guard(
+      m_redundantEndpointsLock);
 
   for (auto&& endpoint : m_redundantEndpoints) {
     LOGDEBUG(
@@ -726,7 +727,8 @@ void ThinClientRedundancyManager::close() {
     _GEODE_SAFE_DELETE(m_periodicAckTask);
   }
 
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_redundantEndpointsLock);
+  std::lock_guard<decltype(m_redundantEndpointsLock)> guard(
+      m_redundantEndpointsLock);
 
   for (auto&& endpoint : m_redundantEndpoints) {
     LOGDEBUG(
@@ -827,7 +829,8 @@ GfErrType ThinClientRedundancyManager::sendSyncRequestCq(
     TcrMessage& request, TcrMessageReply& reply, ThinClientBaseDM* theHADM) {
   LOGDEBUG("ThinClientRedundancyManager::sendSyncRequestCq msgType[%d]",
            request.getMessageType());
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_redundantEndpointsLock);
+  std::lock_guard<decltype(m_redundantEndpointsLock)> guard(
+      m_redundantEndpointsLock);
 
   GfErrType err = GF_NOERR;
   GfErrType opErr;
@@ -872,8 +875,7 @@ GfErrType ThinClientRedundancyManager::sendSyncRequestCq(
 
   while (attempts--) {
     if (err != GF_NOERR || m_redundantEndpoints.empty()) {
-      auto userAttr = TSSUserAttributesWrapper::s_geodeTSSUserAttributes
-                          ->getUserAttributes();
+      auto userAttr = UserAttributes::threadLocalUserAttributes;
       if (userAttr) {
         authenticatedView = userAttr->getAuthenticatedView();
       }
@@ -918,7 +920,8 @@ GfErrType ThinClientRedundancyManager::sendSyncRequestRegisterInterest(
     ThinClientBaseDM* theHADM, ThinClientRegion* region) {
   LOGDEBUG("ThinClientRedundancyManager::sendSyncRequestRegisterInterest ");
   if (!endpoint) {
-    ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_redundantEndpointsLock);
+    std::lock_guard<decltype(m_redundantEndpointsLock)> guard(
+        m_redundantEndpointsLock);
 
     auto err = GF_NOERR;
     auto opErr = GF_NOERR;
@@ -1015,12 +1018,9 @@ void ThinClientRedundancyManager::getAllEndpoints(
   TcrEndpoint* maxQEp = nullptr;
   TcrEndpoint* primaryEp = nullptr;
 
-  for (ACE_Map_Manager<std::string, TcrEndpoint*,
-                       ACE_Recursive_Thread_Mutex>::iterator currItr =
-           (*tempContainer).begin();
-       currItr != (*tempContainer).end(); currItr++) {
+  for (auto& currItr : *tempContainer) {
     if (isDurable()) {
-      TcrEndpoint* ep = (*currItr).int_id_;
+      auto ep = currItr.int_id_;
       int32_t queueSize = 0;
       TcrConnection* statusConn = nullptr;
       ServerQueueStatus status =
@@ -1048,13 +1048,13 @@ void ThinClientRedundancyManager::getAllEndpoints(
             "ThinClientRedundancyManager::getAllEndpoints(): sorting "
             "endpoints, found primary endpoint.");
       } else {
-        endpoints.push_back((*currItr).int_id_);
+        endpoints.push_back(currItr.int_id_);
         LOGDEBUG(
             "ThinClientRedundancyManager::getAllEndpoints(): sorting "
             "endpoints, found nonredundant endpoint.");
       }
     } else {
-      endpoints.push_back((*currItr).int_id_);
+      endpoints.push_back(currItr.int_id_);
     }
     //(*currItr)++;
   }
@@ -1113,7 +1113,8 @@ void ThinClientRedundancyManager::readyForEvents() {
   GfErrType result = GF_NOTCON;
   unsigned int epCount = 0;
 
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guardEPs(m_redundantEndpointsLock);
+  std::lock_guard<decltype(m_redundantEndpointsLock)> guard(
+      m_redundantEndpointsLock);
 
   if (m_sentReadyForEvents) {
     throw IllegalStateException("Already called readyForEvents");
@@ -1177,21 +1178,19 @@ void ThinClientRedundancyManager::doPeriodicAck() {
       "ThinClientRedundancyManager::processEventIdMap( ): Examining eventid "
       "map.");
   // do periodic ack if HA is enabled and the time has come
-  if (m_HAenabled && (m_nextAck < ACE_OS::gettimeofday())) {
+  if (m_HAenabled && (m_nextAck < clock::now())) {
     LOGFINER("Doing periodic ack");
     m_nextAck += m_nextAckInc;
 
-    EventIdMapEntryList entries = m_eventidmap.getUnAcked();
-    uint32_t count = static_cast<uint32_t>(entries.size());
-
+    auto entries = m_eventidmap.getUnAcked();
+    auto count = entries.size();
     if (count > 0) {
       bool acked = false;
 
-      ACE_Guard<ACE_Recursive_Thread_Mutex> guardEPs(m_redundantEndpointsLock);
+      std::lock_guard<decltype(m_redundantEndpointsLock)> guard(
+          m_redundantEndpointsLock);
 
-      std::vector<TcrEndpoint*>::iterator endpoint =
-          m_redundantEndpoints.begin();
-
+      auto endpoint = m_redundantEndpoints.begin();
       if (endpoint != m_redundantEndpoints.end()) {
         TcrMessagePeriodicAck request(
             new DataOutput(
@@ -1277,7 +1276,8 @@ bool ThinClientRedundancyManager::checkDupAndAdd(
 }
 
 void ThinClientRedundancyManager::netDown() {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_redundantEndpointsLock);
+  std::lock_guard<decltype(m_redundantEndpointsLock)> guard(
+      m_redundantEndpointsLock);
 
   if (!m_poolHADM) {
     m_nonredundantEndpoints.insert(m_nonredundantEndpoints.end(),
@@ -1288,13 +1288,15 @@ void ThinClientRedundancyManager::netDown() {
 }
 
 void ThinClientRedundancyManager::removeCallbackConnection(TcrEndpoint* ep) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_redundantEndpointsLock);
+  std::lock_guard<decltype(m_redundantEndpointsLock)> guard(
+      m_redundantEndpointsLock);
 
   ep->unregisterDM(false, nullptr, true);
 }
 GfErrType ThinClientRedundancyManager::sendRequestToPrimary(
     TcrMessage& request, TcrMessageReply& reply) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_redundantEndpointsLock);
+  std::lock_guard<decltype(m_redundantEndpointsLock)> guard(
+      m_redundantEndpointsLock);
   GfErrType err = GF_NOTCON;
   for (size_t count = 0;
        count <= m_redundantEndpoints.size() + m_nonredundantEndpoints.size();

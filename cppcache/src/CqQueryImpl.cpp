@@ -21,7 +21,6 @@
 #include <geode/CqAttributesMutator.hpp>
 #include <geode/ExceptionTypes.hpp>
 
-#include "ReadWriteLock.hpp"
 #include "ResultSetImpl.hpp"
 #include "StructSetImpl.hpp"
 #include "ThinClientRegion.hpp"
@@ -248,7 +247,7 @@ void CqQueryImpl::getCqListeners(
 }
 
 GfErrType CqQueryImpl::execute(TcrEndpoint* endpoint) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_mutex);
+  std::lock_guard<decltype(m_mutex)> _guard(m_mutex);
   if (m_cqState != CqState::RUNNING) {
     return GF_NOERR;
   }
@@ -282,23 +281,13 @@ GfErrType CqQueryImpl::execute(TcrEndpoint* endpoint) {
       reply.getMessageType() == TcrMessage::CQ_EXCEPTION_TYPE) {
     err = ThinClientRegion::handleServerException("CqQuery::execute(endpoint)",
                                                   reply.getException());
-    /*
-    if (err == GF_CACHESERVER_EXCEPTION) {
-      throw CqQueryException("CqQuery::execute(endpoint): exception at the
-    server side: ",
-              reply.getException());
-    }
-    else {
-      GfErrTypeToException("CqQuery::execute(endpoint)", err);
-    }
-    */
   }
 
   return err;
 }
 
 void CqQueryImpl::executeAfterFailover() {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_mutex);
+  std::lock_guard<decltype(m_mutex)> _guard(m_mutex);
   if (m_cqState != CqState::RUNNING) {
     return;
   }
@@ -311,10 +300,10 @@ void CqQueryImpl::execute() {
     gua.setAuthenticatedView(m_authenticatedView);
   }
 
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guardRedundancy(
-      *(m_tccdm->getRedundancyLock()));
+  auto& redundancyMutex = m_tccdm->getRedundancyLock();
+  std::lock_guard<decltype(redundancyMutex)> guardRedundancy(redundancyMutex);
 
-  ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_mutex);
+  std::lock_guard<decltype(m_mutex)> _guard(m_mutex);
   if (m_cqState == CqState::RUNNING) {
     throw IllegalStateException("CqQuery::execute: cq is already running");
   }
@@ -355,7 +344,7 @@ bool CqQueryImpl::executeCq(TcrMessage::MsgType) {
       GfErrTypeToException("CqQuery::executeCq", err);
     }
   }
-  ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_mutex);
+  std::lock_guard<decltype(m_mutex)> _guard(m_mutex);
   m_cqState = CqState::RUNNING;
   updateStats();
   return true;
@@ -371,10 +360,10 @@ std::shared_ptr<CqResults> CqQueryImpl::executeWithInitialResults(
     gua.setAuthenticatedView(m_authenticatedView);
   }
 
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guardRedundancy(
-      *(m_tccdm->getRedundancyLock()));
+  std::lock_guard<decltype(m_tccdm->getRedundancyLock())> guardRedundancy(
+      m_tccdm->getRedundancyLock());
 
-  ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_mutex);
+  std::lock_guard<decltype(m_mutex)> _guard(m_mutex);
   if (m_cqState == CqState::RUNNING) {
     throw IllegalStateException(
         "CqQuery::executeWithInitialResults: cq is already running");
@@ -519,7 +508,7 @@ void CqQueryImpl::setCqState(CqState state) {
   if (isClosed()) {
     throw CqClosedException(("CQ is closed, CqName : " + m_cqName).c_str());
   }
-  ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_mutex);
+  std::lock_guard<decltype(m_mutex)> _guard(m_mutex);
   m_cqState = state;
 }
 
@@ -566,7 +555,7 @@ void CqQueryImpl::updateStats(CqEvent& cqEvent) {
  * @return true if running, false otherwise
  */
 bool CqQueryImpl::isRunning() const {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_mutex);
+  std::lock_guard<decltype(m_mutex)> _guard(m_mutex);
   return m_cqState == CqState::RUNNING;
 }
 
@@ -575,7 +564,7 @@ bool CqQueryImpl::isRunning() const {
  * @return true if stopped, false otherwise
  */
 bool CqQueryImpl::isStopped() const {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_mutex);
+  std::lock_guard<decltype(m_mutex)> _guard(m_mutex);
   return m_cqState == CqState::STOPPED ||
          (m_authenticatedView && m_authenticatedView->isClosed());
 }
@@ -585,7 +574,7 @@ bool CqQueryImpl::isStopped() const {
  * @return true if closed, false otherwise
  */
 bool CqQueryImpl::isClosed() const {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_mutex);
+  std::lock_guard<decltype(m_mutex)> _guard(m_mutex);
   return m_cqState == CqState::CLOSED ||
          (m_authenticatedView && m_authenticatedView->isClosed());
 }

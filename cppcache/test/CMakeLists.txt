@@ -16,8 +16,6 @@
 cmake_minimum_required( VERSION 3.10 )
 project(apache-geode_unittests LANGUAGES CXX)
 
-file(GLOB_RECURSE SOURCES "*.cpp")
-
 add_executable(apache-geode_unittests
   AutoDeleteTest.cpp
   ByteArray.cpp
@@ -43,6 +41,7 @@ add_executable(apache-geode_unittests
   SerializableCreateTests.cpp
   StructSetTest.cpp
   TcrMessage_unittest.cpp
+  CacheableDate.cpp
 )
 
 target_compile_definitions(apache-geode_unittests

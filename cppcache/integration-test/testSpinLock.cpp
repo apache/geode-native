@@ -20,8 +20,6 @@
 #include <mutex>
 #include <util/concurrent/spinlock_mutex.hpp>
 
-#include <Condition.hpp>
-
 #include <ace/Task.h>
 #include <ace/Time_Value.h>
 #include <ace/Guard_T.h>
@@ -117,38 +115,4 @@ DUNIT_TASK(s1p1, TwoThreads)
   }
 END_TASK(TwoThreads)
 
-DUNIT_TASK(s1p1, Cond)
-  {
-    // Test that the Condtion wrapper times out properly.
-    // Does not test signal..
-    ACE_Time_Value stopAt = ACE_OS::gettimeofday();
-    stopAt -= 10;  // Make sure it is in the past.
-
-    ACE_Recursive_Thread_Mutex mutex;
-    ACE_Guard<ACE_Recursive_Thread_Mutex> guard(mutex);
-    apache::geode::client::Condition cond(mutex);
-    LOG("About to wait on Condition with past time.");
-    if (cond.waitUntil(&stopAt) != false) {
-      FAIL("Should have timed out immediately.");
-    }
-
-    stopAt = ACE_OS::gettimeofday();
-    LOG("About to wait on Condition with present time.");
-    if (cond.waitUntil(&stopAt) != false) {
-      FAIL("Should have timed out immediately.");
-    }
-
-    ACE_Time_Value begin = ACE_OS::gettimeofday();
-    stopAt = begin;
-    ACE_Time_Value delay(5);
-    stopAt += delay;
-    if (cond.waitUntil(&stopAt) != false) {
-      FAIL("Should have timed out immediately.");
-    }
-    ACE_Time_Value delta = ACE_OS::gettimeofday();
-    delta -= begin;
-    printf("delta is %lu, delay is %lu", delta.msec(), delay.msec());
-    XASSERT(delta.msec() >= (delay.msec() - 50));
-  }
-ENDTASK
 }  // namespace

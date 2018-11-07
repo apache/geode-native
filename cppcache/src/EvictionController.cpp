@@ -17,6 +17,7 @@
 
 #include "EvictionController.hpp"
 
+#include <chrono>
 #include <string>
 
 #include "CacheImpl.hpp"
@@ -60,13 +61,13 @@ int EvictionController::svc() {
   int64_t pendingEvictions = 0;
   while (m_run) {
     int64_t readInfo = 0;
-    readInfo = m_queue.get(1500);
+    readInfo = m_queue.getFor(std::chrono::microseconds(1500));
     if (readInfo == 0) continue;
 
     processHeapInfo(readInfo, pendingEvictions);
   }
-  int32_t size = m_queue.size();
-  for (int i = 0; i < size; i++) {
+  auto size = m_queue.size();
+  for (decltype(size) i = 0; i < size; i++) {
     int64_t readInfo = 0;
     readInfo = m_queue.get();
     if (readInfo == 0) continue;

@@ -20,6 +20,7 @@
 #ifndef GEODE_CLIENTMETADATASERVICE_H_
 #define GEODE_CLIENTMETADATASERVICE_H_
 
+#include <chrono>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -50,29 +51,30 @@ typedef std::map<std::string, std::shared_ptr<ClientMetadata>>
 
 class BucketStatus {
  private:
-  ACE_Time_Value m_lastTimeout;
+  using clock = std::chrono::steady_clock;
+  const static clock::time_point m_noTimeout;
+  clock::time_point m_lastTimeout;
 
  public:
-  BucketStatus() : m_lastTimeout(ACE_Time_Value::zero) {}
+  BucketStatus() = default;
   bool isTimedoutAndReset(std::chrono::milliseconds millis) {
-    if (m_lastTimeout == ACE_Time_Value::zero) {
+    if (m_lastTimeout == m_noTimeout) {
       return false;
     } else {
-      ACE_Time_Value to(millis);
-      to += m_lastTimeout;
-      if (to > ACE_OS::gettimeofday()) {
+      auto timeout = m_lastTimeout + millis;
+      if (timeout > clock::now()) {
         return true;  // timeout as buckste not recovered yet
       } else {
         // reset to zero as we waited enough to recover bucket
-        m_lastTimeout = ACE_Time_Value::zero;
+        m_lastTimeout = m_noTimeout;
         return false;
       }
     }
   }
 
   void setTimeout() {
-    if (m_lastTimeout == ACE_Time_Value::zero) {
-      m_lastTimeout = ACE_OS::gettimeofday();  // set once only for timeout
+    if (m_lastTimeout == m_noTimeout) {
+      m_lastTimeout = clock::now();  // set once only for timeout
     }
   }
 };
@@ -216,7 +218,6 @@ class ClientMetadataService : public ACE_Task_Base,
       const std::shared_ptr<Region>& region);
 
  private:
-  // ACE_Recursive_Thread_Mutex m_regionMetadataLock;
   ACE_RW_Thread_Mutex m_regionMetadataLock;
   ClientMetadataService();
   ACE_Semaphore m_regionQueueSema;

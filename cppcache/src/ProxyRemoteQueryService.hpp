@@ -19,9 +19,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <memory>
 
-#include <ace/Recursive_Thread_Mutex.h>
+#include <memory>
+#include <mutex>
 
 #include <geode/AuthenticatedView.hpp>
 #include <geode/QueryService.hpp>
@@ -81,7 +81,7 @@ class APACHE_GEODE_EXPORT ProxyRemoteQueryService : public QueryService {
   AuthenticatedView* m_authenticatedView;
   query_container_type m_cqQueries;
   // lock for cqQuery list;
-  mutable ACE_Recursive_Thread_Mutex m_cqQueryListLock;
+  mutable std::recursive_mutex m_cqQueryListLock;
 
   friend class AuthenticatedView;
 };

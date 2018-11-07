@@ -68,7 +68,8 @@ GfErrType TcrPoolEndPoint::registerDM(bool, bool isSecondary, bool,
                                       ThinClientBaseDM*) {
   GfErrType err = GF_NOERR;
   ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_dm->getPoolLock());
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guardQueueHosted(getQueueHostedMutex());
+  std::lock_guard<decltype(getQueueHostedMutex())> guardQueueHosted(
+      getQueueHostedMutex());
   auto& sysProp = m_cacheImpl->getDistributedSystem().getSystemProperties();
   if (!connected()) {
     TcrConnection* newConn;
@@ -111,7 +112,8 @@ GfErrType TcrPoolEndPoint::registerDM(bool, bool isSecondary, bool,
 }
 void TcrPoolEndPoint::unregisterDM(bool, ThinClientBaseDM*,
                                    bool checkQueueHosted) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(getQueueHostedMutex());
+  std::lock_guard<decltype(getQueueHostedMutex())> guardQueueHosted(
+      getQueueHostedMutex());
 
   if (checkQueueHosted && !m_isQueueHosted) {
     LOGFINEST(
@@ -125,7 +127,7 @@ void TcrPoolEndPoint::unregisterDM(bool, ThinClientBaseDM*,
       "TcrEndpoint: unregistering pool DM and closing notification "
       "channel for endpoint %s",
       name().c_str());
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard2(m_notifyReceiverLock);
+  std::lock_guard<decltype(m_notifyReceiverLock)> guard2(m_notifyReceiverLock);
   if (m_numRegionListener > 0 && --m_numRegionListener == 0) {
     closeNotification();
   }

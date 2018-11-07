@@ -17,9 +17,7 @@
 
 #include <cstdlib>
 #include <string>
-
-#include <ace/DLL.h>
-#include <ace/OS.h>
+#include <thread>
 
 #include <geode/CacheableKey.hpp>
 #include <geode/ExceptionTypes.hpp>
@@ -125,7 +123,7 @@ constexpr auto DefaultRedundancyMonitorInterval = std::chrono::seconds(10);
 constexpr auto DefaultNotifyAckInterval = std::chrono::seconds(1);
 constexpr auto DefaultNotifyDupCheckLife = std::chrono::seconds(300);
 const char DefaultSecurityPrefix[] = "security-";
-const uint32_t DefaultThreadPoolSize = ACE_OS::num_processors() * 2;
+const uint32_t DefaultThreadPoolSize = std::thread::hardware_concurrency() * 2;
 constexpr auto DefaultSuspendedTxTimeout = std::chrono::seconds(30);
 constexpr auto DefaultTombstoneTimeout = std::chrono::seconds(480);
 // not disable; all region api will use chunk handler thread

@@ -17,16 +17,16 @@
 
 #include "DistributedSystemImpl.hpp"
 
+#include <boost/filesystem.hpp>
+
 #include <geode/SystemProperties.hpp>
 
 #include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
 #include "CppCacheLibrary.hpp"
-#include "DiffieHellman.hpp"
 #include "PoolStatistics.hpp"
 #include "RegionStats.hpp"
 #include "config.h"
-#include "statistics/StatisticsManager.hpp"
 #include "util/Log.hpp"
 #include "version.h"
 
@@ -36,7 +36,7 @@ namespace client {
 
 volatile bool DistributedSystemImpl::m_isCliCallbackSet = false;
 std::map<int, CliCallbackMethod> DistributedSystemImpl::m_cliCallbackMap;
-ACE_Recursive_Thread_Mutex DistributedSystemImpl::m_cliCallbackLock;
+std::recursive_mutex DistributedSystemImpl::m_cliCallbackLock;
 
 DistributedSystemImpl::DistributedSystemImpl(
     std::string name, DistributedSystem* implementee,
@@ -81,20 +81,12 @@ void DistributedSystemImpl::logSystemInformation() const {
   LOGCONFIG(
       "Running on: SystemName=%s Machine=%s Host=%s Release=%s Version=%s",
       u.sysname, u.machine, u.nodename, u.release, u.version);
-
-#ifdef _WIN32
-  const uint32_t pathMax = _MAX_PATH;
-#else
-  const uint32_t pathMax = PATH_MAX;
-#endif
-  ACE_TCHAR cwd[pathMax + 1];
-  (void)ACE_OS::getcwd(cwd, pathMax);
-  LOGCONFIG("Current directory: %s", cwd);
-  LOGCONFIG("Current value of PATH: %s", ACE_OS::getenv("PATH"));
+  LOGCONFIG("Current directory: %s",
+            boost::filesystem::current_path().string().c_str());
+  LOGCONFIG("Current value of PATH: %s", Utils::getEnv("PATH").c_str());
 #ifndef _WIN32
-  const char* ld_libpath = ACE_OS::getenv("LD_LIBRARY_PATH");
   LOGCONFIG("Current library path: %s",
-            ld_libpath == nullptr ? "nullptr" : ld_libpath);
+            Utils::getEnv("LD_LIBRARY_PATH").c_str());
 #endif
   // Log the Geode system properties
   m_sysProps->logSettings();
@@ -122,7 +114,8 @@ SystemProperties& DistributedSystemImpl::getSystemProperties() const {
 const std::string& DistributedSystemImpl::getName() const { return m_name; }
 
 void DistributedSystemImpl::CallCliCallBack(Cache& cache) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> disconnectGuard(m_cliCallbackLock);
+  std::lock_guard<decltype(m_cliCallbackLock)> disconnectGuard(
+      m_cliCallbackLock);
   if (m_isCliCallbackSet == true) {
     for (const auto& iter : m_cliCallbackMap) {
       iter.second(cache);
@@ -132,13 +125,15 @@ void DistributedSystemImpl::CallCliCallBack(Cache& cache) {
 
 void DistributedSystemImpl::registerCliCallback(int appdomainId,
                                                 CliCallbackMethod clicallback) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> disconnectGuard(m_cliCallbackLock);
+  std::lock_guard<decltype(m_cliCallbackLock)> disconnectGuard(
+      m_cliCallbackLock);
   m_cliCallbackMap[appdomainId] = clicallback;
   m_isCliCallbackSet = true;
 }
 
 void DistributedSystemImpl::unregisterCliCallback(int appdomainId) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> disconnectGuard(m_cliCallbackLock);
+  std::lock_guard<decltype(m_cliCallbackLock)> disconnectGuard(
+      m_cliCallbackLock);
   auto iter = m_cliCallbackMap.find(appdomainId);
   if (iter != m_cliCallbackMap.end()) {
     m_cliCallbackMap.erase(iter);

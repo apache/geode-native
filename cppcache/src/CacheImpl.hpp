@@ -22,11 +22,9 @@
 
 #include <atomic>
 #include <memory>
+#include <mutex>
 
-#include <ace/ACE.h>
-#include <ace/Guard_T.h>
-#include <ace/Recursive_Thread_Mutex.h>
-#include <ace/Time_Value.h>
+#include <ace/RW_Thread_Mutex.h>
 
 #include <geode/Cache.hpp>
 #include <geode/CacheAttributes.hpp>
@@ -37,7 +35,6 @@
 #include "AdminRegion.hpp"
 #include "CachePerfStats.hpp"
 #include "ClientProxyMembershipIDFactory.hpp"
-#include "Condition.hpp"
 #include "DistributedSystem.hpp"
 #include "EvictionController.hpp"
 #include "MapWithLock.hpp"
@@ -384,8 +381,6 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
   ClientProxyMembershipIDFactory m_clientProxyMembershipIDFactory;
   MapOfRegionWithLock* m_regions;
   Cache* m_cache;
-  ACE_Recursive_Thread_Mutex m_mutex;
-  Condition m_cond;
   std::shared_ptr<CacheAttributes> m_attributes;
   EvictionController* m_evictionControllerPtr;
   TcrConnectionManager* m_tcrConnectionManager;
@@ -393,7 +388,7 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
   ACE_RW_Thread_Mutex m_destroyCacheMutex;
   volatile bool m_destroyPending;
   volatile bool m_initDone;
-  ACE_Thread_Mutex m_initDoneLock;
+  std::mutex m_initDoneLock;
   std::shared_ptr<AdminRegion> m_adminRegion;
   std::shared_ptr<CacheTransactionManager> m_cacheTXManager;
 

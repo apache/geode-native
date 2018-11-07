@@ -17,10 +17,6 @@
 
 #include "DistributedSystem.hpp"
 
-#include <ace/Guard_T.h>
-#include <ace/OS.h>
-#include <ace/Recursive_Thread_Mutex.h>
-
 #include <geode/CacheFactory.hpp>
 #include <geode/DataOutput.hpp>
 #include <geode/SystemProperties.hpp>

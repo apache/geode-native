@@ -31,6 +31,7 @@
 #include <ace/OS_NS_sys_utsname.h>
 #include <ace/Task.h>
 #include <ace/Thread_Mutex.h>
+#include <boost/process/environment.hpp>
 
 #include <geode/SystemProperties.hpp>
 #include <geode/internal/geode_globals.hpp>
@@ -81,7 +82,7 @@ int selector(const dirent* d) {
     size_t fileHyphenPos = tempname.find_last_of('-');
     if (fileHyphenPos != std::string::npos) {
       std::string buff1 = tempname.substr(0, fileHyphenPos);
-      if (ACE_OS::strstr(filebasename.c_str(), buff1.c_str()) == nullptr) {
+      if (filebasename.find(buff1) == std::string::npos) {
         return 0;
       }
       if (fileHyphenPos != actualHyphenPos) return 0;
@@ -108,7 +109,7 @@ int comparator(const dirent** d1, const dirent** d2) {
   } else if (strlen((*d1)->d_name) > strlen((*d2)->d_name)) {
     return 1;
   }
-  int diff = ACE_OS::strcmp((*d1)->d_name, (*d2)->d_name);
+  int diff = std::strcmp((*d1)->d_name, (*d2)->d_name);
   if (diff < 0) {
     return -1;
   } else if (diff > 0) {
@@ -146,7 +147,7 @@ HostStatSampler::HostStatSampler(const char* filePath,
   m_archiver = nullptr;
   m_samplerStats = new StatSamplerStats(statMngr->getStatisticsFactory());
   m_startTime = system_clock::now();
-  m_pid = ACE_OS::getpid();
+  m_pid = boost::this_process::get_id();
   m_statMngr = statMngr;
   m_archiveFileName = filePath;
   globals::g_statFile = filePath;
@@ -190,28 +191,15 @@ HostStatSampler::HostStatSampler(const char* filePath,
 
 #ifdef _WIN32
     // replace all '\' with '/' to make everything easier..
-    size_t len = globals::g_statFile.length() + 1;
-    char* slashtmp = new char[len];
-    ACE_OS::strncpy(slashtmp, globals::g_statFile.c_str(), len);
-    for (size_t i = 0; i < globals::g_statFile.length(); i++) {
-      if (slashtmp[i] == '/') {
-        slashtmp[i] = '\\';
-      }
-    }
-    globals::g_statFile = slashtmp;
-    delete[] slashtmp;
-    slashtmp = nullptr;
+    std::replace(globals::g_statFile.begin(), globals::g_statFile.end(), '\\',
+                 '/');
 #endif
 
     std::string dirname = ACE::dirname(globals::g_statFile.c_str());
-    // struct dirent **resultArray;
-    // int entries_count = ACE_OS::scandir(dirname.c_str(), &resultArray,
-    // selector, comparator);
     ACE_Dirent_Selector sds;
     int status = sds.open(dirname.c_str(), selector, comparator);
     if (status != -1) {
       for (int i = 0; i < sds.length(); i++) {
-        // std::string strname = ACE::basename(resultArray[i]->d_name);
         std::string strname = ACE::basename(sds[i]->d_name);
         size_t fileExtPos = strname.find_last_of('.', strname.length());
         if (fileExtPos != std::string::npos) {
@@ -220,34 +208,21 @@ HostStatSampler::HostStatSampler(const char* filePath,
           if (fileHyphenPos != std::string::npos) {
             std::string buff =
                 tempname.substr(fileHyphenPos + 1, tempname.length());
-            rollIndex = ACE_OS::atoi(buff.c_str()) + 1;
+            rollIndex = std::stoi(buff) + 1;
           }
         }
       }
       sds.close();
     }
-    /*for(int i = 0; i < entries_count; i++) {
-      ACE_OS::free ( resultArray[i] );
-    }
-    if (entries_count >= 0) {
-      ACE_OS::free( resultArray );
-      resultArray = nullptr;
-    }*/
 
     FILE* existingFile = fopen(globals::g_statFileWithExt.c_str(), "r");
     if (existingFile != nullptr && statFileLimit > 0) {
       fclose(existingFile);
-      /* adongre
-       * CID 28820: Resource leak (RESOURCE_LEAK)
-       */
       existingFile = nullptr;
       changeArchive(globals::g_statFileWithExt);
     } else {
       writeGfs();
     }
-    /* adongre
-     * CID 28820: Resource leak (RESOURCE_LEAK)
-     */
     if (existingFile != nullptr) {
       fclose(existingFile);
       existingFile = nullptr;
@@ -271,15 +246,15 @@ HostStatSampler::~HostStatSampler() {
 std::string HostStatSampler::createArchiveFileName() {
   if (!m_isStatDiskSpaceEnabled) {
     char buff[1024] = {0};
-    int32_t pid = ACE_OS::getpid();
-    int32_t len = static_cast<int32_t>(m_archiveFileName.length());
-    size_t fileExtPos = m_archiveFileName.find_last_of('.', len);
+    auto pid = boost::this_process::get_id();
+    auto len = m_archiveFileName.length();
+    auto fileExtPos = m_archiveFileName.find_last_of('.', len);
     if (fileExtPos == std::string::npos) {
-      ACE_OS::snprintf(buff, 1024, "%s-%d.gfs", m_archiveFileName.c_str(), pid);
+      std::snprintf(buff, 1024, "%s-%d.gfs", m_archiveFileName.c_str(), pid);
     } else {
       std::string tmp;
       tmp = m_archiveFileName.substr(0, fileExtPos);
-      ACE_OS::snprintf(buff, 1024, "%s-%d.gfs", tmp.c_str(), pid);
+      std::snprintf(buff, 1024, "%s-%d.gfs", tmp.c_str(), pid);
     }
     m_archiveFileName = buff;
     return m_archiveFileName;
@@ -309,7 +284,8 @@ void HostStatSampler::accountForTimeSpentWorking(int64_t nanosSpentWorking) {
 }
 
 bool HostStatSampler::statisticsExists(const int64_t id) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_statMngr->getListMutex());
+  std::lock_guard<decltype(m_statMngr->getListMutex())> guard(
+      m_statMngr->getListMutex());
   std::vector<Statistics*>& statsList = m_statMngr->getStatsList();
   std::vector<Statistics*>::iterator i;
   for (i = statsList.begin(); i != statsList.end(); ++i) {
@@ -321,7 +297,8 @@ bool HostStatSampler::statisticsExists(const int64_t id) {
 }
 
 Statistics* HostStatSampler::findStatistics(const int64_t id) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_statMngr->getListMutex());
+  std::lock_guard<decltype(m_statMngr->getListMutex())> guard(
+      m_statMngr->getListMutex());
   std::vector<Statistics*>& statsList = m_statMngr->getStatsList();
   std::vector<Statistics*>::iterator i;
   for (i = statsList.begin(); i != statsList.end(); ++i) {
@@ -332,7 +309,7 @@ Statistics* HostStatSampler::findStatistics(const int64_t id) {
   return nullptr;
 }
 
-ACE_Recursive_Thread_Mutex& HostStatSampler::getStatListMutex() {
+std::recursive_mutex& HostStatSampler::getStatListMutex() {
   return m_statMngr->getListMutex();
 }
 
@@ -461,13 +438,13 @@ int32_t HostStatSampler::rollArchive(std::string filename) {
   while (!gotNewFileName) {
     char newfilename[1000] = {0};
     if (i < 10) {
-      ACE_OS::snprintf(newfilename, 1000, "%s%c%s-%d.%s", statsdirname.c_str(),
-                       ACE_DIRECTORY_SEPARATOR_CHAR, fnameBeforeExt.c_str(), i,
-                       extName.c_str());
+      std::snprintf(newfilename, 1000, "%s%c%s-%d.%s", statsdirname.c_str(),
+                    ACE_DIRECTORY_SEPARATOR_CHAR, fnameBeforeExt.c_str(), i,
+                    extName.c_str());
     } else {
-      ACE_OS::snprintf(newfilename, 1000, "%s%c%s-%d.%s", statsdirname.c_str(),
-                       ACE_DIRECTORY_SEPARATOR_CHAR, fnameBeforeExt.c_str(), i,
-                       extName.c_str());
+      std::snprintf(newfilename, 1000, "%s%c%s-%d.%s", statsdirname.c_str(),
+                    ACE_DIRECTORY_SEPARATOR_CHAR, fnameBeforeExt.c_str(), i,
+                    extName.c_str());
     }
     FILE* fp = fopen(newfilename, "r");
 
@@ -512,9 +489,6 @@ void HostStatSampler::start() {
 void HostStatSampler::stop() {
   m_stopRequested = true;
   this->wait();
-  // while (m_running) {
-  //  ACE_OS::sleep(100);
-  //}
 }
 
 bool HostStatSampler::isRunning() { return m_running; }
@@ -557,7 +531,7 @@ void HostStatSampler::putStatsInAdminRegion() {
             }
           }
         }
-        static int numCPU = ACE_OS::num_processors();
+        static auto numCPU = std::thread::hardware_concurrency();
         auto obj = client::ClientHealthStats::create(
             gets, puts, misses, numListeners, numThreads, cpuTime, numCPU);
         if (clientId.empty()) {
@@ -589,7 +563,7 @@ void HostStatSampler::writeGfs() {
 }
 
 void HostStatSampler::forceSample() {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> samplingGuard(m_samplingLock);
+  std::lock_guard<decltype(m_samplingLock)> guard(m_samplingLock);
 
   if (m_archiver) {
     sampleSpecialStats();
@@ -599,7 +573,7 @@ void HostStatSampler::forceSample() {
 }
 
 void HostStatSampler::doSample(std::string& archivefilename) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> samplingGuard(m_samplingLock);
+  std::lock_guard<decltype(m_samplingLock)> guard(m_samplingLock);
 
   sampleSpecialStats();
   checkListeners();
@@ -641,29 +615,19 @@ void HostStatSampler::checkDiskLimit() {
   globals::g_spaceUsed = 0;
   char fullpath[512] = {0};
   std::string dirname = ACE::dirname(globals::g_statFile.c_str());
-  // struct dirent **resultArray;
-  // int entries_count = ACE_OS::scandir(dirname.c_str(), &resultArray,
-  // selector, comparator);
   ACE_stat statBuf = {};
   ACE_Dirent_Selector sds;
   int status = sds.open(dirname.c_str(), selector, comparator);
   if (status != -1) {
     for (int i = 1; i < sds.length(); i++) {
-      ACE_OS::snprintf(fullpath, 512, "%s%c%s", dirname.c_str(),
-                       ACE_DIRECTORY_SEPARATOR_CHAR, sds[i]->d_name);
+      std::snprintf(fullpath, 512, "%s%c%s", dirname.c_str(),
+                    ACE_DIRECTORY_SEPARATOR_CHAR, sds[i]->d_name);
       ACE_OS::stat(fullpath, &statBuf);
       globals::g_fileInfoPair = std::make_pair(fullpath, statBuf.st_size);
       fileInfo.push_back(globals::g_fileInfoPair);
       globals::g_spaceUsed += fileInfo[i - 1].second;
     }
     globals::g_spaceUsed += m_archiver->bytesWritten();
-    /*for(int i = 0; i < entries_count; i++) {
-    ACE_OS::free ( resultArray[i] );
-    }
-    if (entries_count >= 0) {
-    ACE_OS::free( resultArray );
-    resultArray = nullptr;
-    }*/
     sds.close();
   }
   int fileIndex = 0;
@@ -697,7 +661,7 @@ int32_t HostStatSampler::svc(void) {
     while (!m_stopRequested) {
       try {
         if (gotexception) {
-          ACE_OS::sleep(1);
+          std::this_thread::sleep_for(std::chrono::seconds(1));
 
           waitTime++;
           if (waitTime < 60) {  // sleep for minute and then try to recreate

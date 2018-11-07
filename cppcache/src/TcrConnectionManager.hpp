@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_TCRCONNECTIONMANAGER_H_
-#define GEODE_TCRCONNECTIONMANAGER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,7 +15,13 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_TCRCONNECTIONMANAGER_H_
+#define GEODE_TCRCONNECTIONMANAGER_H_
+
 #include <list>
+#include <mutex>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -119,20 +120,20 @@ class APACHE_GEODE_EXPORT TcrConnectionManager {
 
   inline void acquireRedundancyLock() {
     m_redundancyManager->acquireRedundancyLock();
-    m_distMngrsLock.acquire_read();
+    m_distMngrsLock.lock();
   }
 
   inline void releaseRedundancyLock() {
     m_redundancyManager->releaseRedundancyLock();
-    m_distMngrsLock.release();
+    m_distMngrsLock.unlock();
   }
 
   bool checkDupAndAdd(std::shared_ptr<EventId> eventid) {
     return m_redundancyManager->checkDupAndAdd(eventid);
   }
 
-  ACE_Recursive_Thread_Mutex* getRedundancyLock() {
-    return &m_redundancyManager->getRedundancyLock();
+  std::recursive_mutex& getRedundancyLock() {
+    return m_redundancyManager->getRedundancyLock();
   }
 
   GfErrType sendRequestToPrimary(TcrMessage& request, TcrMessageReply& reply) {
@@ -150,7 +151,7 @@ class APACHE_GEODE_EXPORT TcrConnectionManager {
 
   // key is hostname:port
   std::list<ThinClientBaseDM*> m_distMngrs;
-  ACE_Recursive_Thread_Mutex m_distMngrsLock;
+  std::recursive_mutex m_distMngrsLock;
 
   ACE_Semaphore m_failoverSema;
   Task<TcrConnectionManager>* m_failoverTask;
@@ -173,7 +174,7 @@ class APACHE_GEODE_EXPORT TcrConnectionManager {
 
   ACE_Semaphore m_redundancySema;
   Task<TcrConnectionManager>* m_redundancyTask;
-  ACE_Recursive_Thread_Mutex m_notificationLock;
+  std::recursive_mutex m_notificationLock;
   bool m_isDurable;
 
   bool m_isNetDown;
@@ -206,10 +207,10 @@ class DistManagersLockGuard {
 
  public:
   explicit DistManagersLockGuard(TcrConnectionManager& tccm) : m_tccm(tccm) {
-    m_tccm.m_distMngrsLock.acquire();
+    m_tccm.m_distMngrsLock.lock();
   }
 
-  ~DistManagersLockGuard() { m_tccm.m_distMngrsLock.release(); }
+  ~DistManagersLockGuard() { m_tccm.m_distMngrsLock.unlock(); }
 };
 }  // namespace client
 }  // namespace geode

@@ -22,6 +22,7 @@
 
 #include <ace/OS.h>
 #include <ace/SOCK_Stream.h>
+#include <boost/interprocess/mapped_region.hpp>
 
 #include <geode/internal/geode_globals.hpp>
 
@@ -62,17 +63,17 @@ class APACHE_GEODE_EXPORT TcpConn : public Connector {
   int32_t maxSize(ACE_HANDLE sock, int32_t flag, int32_t size);
 
   virtual size_t socketOp(SockOp op, char* buff, size_t len,
-                          std::chrono::microseconds waitSeconds);
+                          std::chrono::microseconds waitDuration);
 
   virtual void createSocket(ACE_HANDLE sock);
 
  public:
   size_t m_chunkSize;
 
-  static int getDefaultChunkSize() {
+  static size_t getDefaultChunkSize() {
     // Attempt to set chunk size to nearest OS page size
     // for perf improvement
-    int pageSize = ACE_OS::getpagesize();
+    auto pageSize = boost::interprocess::mapped_region::get_page_size();
     if (pageSize > 16000000) {
       return 16000000;
     } else if (pageSize > 0) {

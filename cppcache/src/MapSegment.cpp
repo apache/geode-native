@@ -17,9 +17,7 @@
 
 #include "MapSegment.hpp"
 
-#include <mutex>
-
-#include <ace/OS.h>
+#include <chrono>
 
 #include "MapEntry.hpp"
 #include "RegionInternal.hpp"
@@ -29,7 +27,6 @@
 #include "TombstoneExpiryHandler.hpp"
 #include "TrackedMapEntry.hpp"
 #include "Utils.hpp"
-#include "ace/Time_Value.h"
 #include "util/concurrent/spinlock_mutex.hpp"
 
 namespace apache {
@@ -67,9 +64,9 @@ void MapSegment::clear() {
   m_map->unbind_all();
 }
 
-int MapSegment::acquire() { return m_segmentMutex.acquire(); }
+void MapSegment::lock() { m_segmentMutex.lock(); }
 
-int MapSegment::release() { return m_segmentMutex.release(); }
+void MapSegment::unlock() { m_segmentMutex.unlock(); }
 
 GfErrType MapSegment::create(const std::shared_ptr<CacheableKey>& key,
                              const std::shared_ptr<Cacheable>& newValue,
@@ -652,41 +649,46 @@ GfErrType MapSegment::putForTrackedEntry(
       if (oldValue == nullptr || CacheableToken::isDestroyed(oldValue) ||
           CacheableToken::isInvalid(oldValue) ||
           CacheableToken::isTombstone(oldValue)) {
-        if (m_poolDM) m_poolDM->updateNotificationStats(false, 0);
+        if (m_poolDM) {
+          m_poolDM->updateNotificationStats(false, std::chrono::nanoseconds(0));
+        }
         return GF_INVALID_DELTA;
       } else if (CacheableToken::isOverflowed(
                      oldValue)) {  // get Value from disc.
         oldValue = getFromDisc(key, entryImpl);
         if (oldValue == nullptr) {
-          if (m_poolDM) m_poolDM->updateNotificationStats(false, 0);
+          if (m_poolDM) {
+            m_poolDM->updateNotificationStats(false,
+                                              std::chrono::nanoseconds(0));
+          }
           return GF_INVALID_DELTA;
         }
       }
+
+      using clock = std::chrono::steady_clock;
 
       auto valueWithDelta = std::dynamic_pointer_cast<Delta>(oldValue);
       auto& newValue1 = const_cast<std::shared_ptr<Cacheable>&>(newValue);
       try {
         if (m_region->getAttributes().getCloningEnabled()) {
           auto tempVal = valueWithDelta->clone();
-          ACE_Time_Value currTimeBefore = ACE_OS::gettimeofday();
+          auto currTimeBefore = clock::now();
           tempVal->fromDelta(*delta);
 
           if (m_poolDM) {
-            m_poolDM->updateNotificationStats(
-                true,
-                ((ACE_OS::gettimeofday() - currTimeBefore).msec()) * 1000000);
+            m_poolDM->updateNotificationStats(true,
+                                              clock::now() - currTimeBefore);
           }
           newValue1 = std::dynamic_pointer_cast<Serializable>(tempVal);
           entryImpl->setValueI(newValue1);
         } else {
-          ACE_Time_Value currTimeBefore = ACE_OS::gettimeofday();
+          auto currTimeBefore = clock::now();
           valueWithDelta->fromDelta(*delta);
           newValue1 = std::dynamic_pointer_cast<Serializable>(valueWithDelta);
 
           if (m_poolDM) {
-            m_poolDM->updateNotificationStats(
-                true,
-                ((ACE_OS::gettimeofday() - currTimeBefore).msec()) * 1000000);
+            m_poolDM->updateNotificationStats(true,
+                                              clock::now() - currTimeBefore);
           }
           entryImpl->setValueI(
               std::dynamic_pointer_cast<Serializable>(valueWithDelta));

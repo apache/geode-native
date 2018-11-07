@@ -51,7 +51,7 @@ std::shared_ptr<PdxFieldType> PdxInstanceImpl::m_DefaultPdxFieldType(
 
 bool sortFunc(std::shared_ptr<PdxFieldType> field1,
               std::shared_ptr<PdxFieldType> field2) {
-  int diff = ACE_OS::strcmp(field1->getFieldName(), field2->getFieldName());
+  const auto diff = field1->getFieldName().compare(field2->getFieldName());
   if (diff < 0) {
     return true;
   } else {
@@ -653,7 +653,7 @@ int32_t PdxInstanceImpl::hashcode() const {
     auto pField = pdxIdentityFieldList.at(i);
 
     LOGDEBUG("hashcode for pdxfield %s  hashcode is %d ",
-             pField->getFieldName(), hashCode);
+             pField->getFieldName().c_str(), hashCode);
     switch (pField->getTypeId()) {
       case PdxFieldTypes::CHAR:
       case PdxFieldTypes::BOOLEAN:
@@ -699,18 +699,8 @@ int32_t PdxInstanceImpl::hashcode() const {
       }
       default: {
         char excpStr[256] = {0};
-        /* adongre  - Coverity II
-         * CID 29264: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-         * "sprintf" can cause a
-         * buffer overflow when done incorrectly. Because sprintf() assumes an
-         * arbitrarily long string,
-         * callers must be careful not to overflow the actual space of the
-         * destination.
-         * Use snprintf() instead, or correct precision specifiers.
-         * Fix : using ACE_OS::snprintf
-         */
-        ACE_OS::snprintf(excpStr, 256, "PdxInstance not found typeid %d ",
-                         static_cast<int>(pField->getTypeId()));
+        std::snprintf(excpStr, 256, "PdxInstance not found typeid %d ",
+                      static_cast<int>(pField->getTypeId()));
         throw IllegalStateException(excpStr);
       }
     }
@@ -880,15 +870,6 @@ void PdxInstanceImpl::getField(const std::string& fieldname, int8_t*** value,
 }
 
 std::string PdxInstanceImpl::toString() const {
-  /* adongre - Coverity II
-   * CID 29265: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-   * "sprintf" can cause a
-   * buffer overflow when done incorrectly. Because sprintf() assumes an
-   * arbitrarily long string,
-   * callers must be careful not to overflow the actual space of the
-   * destination. Use snprintf() instead, or correct precision specifiers. Fix
-   * : using ACE_OS::snprintf
-   */
   auto pt = getPdxType();
   std::string toString = "PDX[" + std::to_string(pt->getTypeId()) + "," +
                          pt->getPdxClassName() + "]{";
@@ -1163,7 +1144,8 @@ bool PdxInstanceImpl::operator==(const CacheableKey& other) const {
 
     LOGDEBUG("pdxfield %s ",
              ((myPFT != m_DefaultPdxFieldType) ? myPFT->getFieldName()
-                                               : otherPFT->getFieldName()));
+                                               : otherPFT->getFieldName())
+                 .c_str());
     if (myPFT->equals(m_DefaultPdxFieldType)) {
       fieldTypeId = otherPFT->getTypeId();
     } else if (otherPFT->equals(m_DefaultPdxFieldType)) {
@@ -1243,18 +1225,8 @@ bool PdxInstanceImpl::operator==(const CacheableKey& other) const {
       }
       default: {
         char excpStr[256] = {0};
-        /* adongre - Coverity II
-         * CID 29267: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-         * "sprintf" can cause a
-         * buffer overflow when done incorrectly. Because sprintf() assumes an
-         * arbitrarily long string,
-         * callers must be careful not to overflow the actual space of the
-         * destination.
-         * Use snprintf() instead, or correct precision specifiers.
-         * Fix : using ACE_OS::snprintf
-         */
-        ACE_OS::snprintf(excpStr, 256, "PdxInstance not found typeid  %d ",
-                         static_cast<int>(myPFT->getTypeId()));
+        std::snprintf(excpStr, 256, "PdxInstance not found typeid  %d ",
+                      static_cast<int>(myPFT->getTypeId()));
         throw IllegalStateException(excpStr);
       }
     }
@@ -1369,7 +1341,7 @@ void PdxInstanceImpl::toDataMutable(PdxWriter& writer) {
     for (size_t i = 0; i < pdxFieldList->size(); i++) {
       auto currPf = pdxFieldList->at(i);
       LOGDEBUG("toData filedname = %s , isVarLengthType = %d ",
-               currPf->getFieldName(), currPf->IsVariableLengthType());
+               currPf->getFieldName().c_str(), currPf->IsVariableLengthType());
       std::shared_ptr<Cacheable> value = nullptr;
 
       auto&& iter = m_updatedFields.find(currPf->getFieldName());
@@ -1399,7 +1371,7 @@ void PdxInstanceImpl::toDataMutable(PdxWriter& writer) {
     for (size_t i = 0; i < pdxFieldList->size(); i++) {
       auto currPf = pdxFieldList->at(i);
       LOGDEBUG("toData1 filedname = %s , isVarLengthType = %d ",
-               currPf->getFieldName(), currPf->IsVariableLengthType());
+               currPf->getFieldName().c_str(), currPf->IsVariableLengthType());
       auto value = m_updatedFields[currPf->getFieldName()];
       writeField(writer, currPf->getFieldName(), currPf->getTypeId(), value);
     }

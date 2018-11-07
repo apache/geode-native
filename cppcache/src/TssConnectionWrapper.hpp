@@ -22,8 +22,6 @@
 #include <map>
 #include <string>
 
-#include <ace/TSS_T.h>
-
 #include <geode/Pool.hpp>
 
 #include "TcrEndpoint.hpp"

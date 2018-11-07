@@ -20,13 +20,8 @@
 #ifndef GEODE_CQQUERYIMPL_H_
 #define GEODE_CQQUERYIMPL_H_
 
+#include <mutex>
 #include <string>
-
-#include <ace/ACE.h>
-#include <ace/Condition_Recursive_Thread_Mutex.h>
-#include <ace/Guard_T.h>
-#include <ace/Recursive_Thread_Mutex.h>
-#include <ace/Time_Value.h>
 
 #include <geode/AuthenticatedView.hpp>
 #include <geode/CqAttributes.hpp>
@@ -271,7 +266,7 @@ class CqQueryImpl : public CqQuery,
 
  private:
   void updateStats();
-  mutable ACE_Recursive_Thread_Mutex m_mutex;
+  mutable std::recursive_mutex m_mutex;
   void sendStopOrClose(TcrMessage::MsgType requestType);
   ThinClientBaseDM* m_tccdm;
   AuthenticatedView* m_authenticatedView;
