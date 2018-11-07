@@ -14,8 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#FROM ubuntu
-FROM ubuntu:16.04
+FROM ubuntu
 LABEL maintainer Apache Geode <dev@geode.apache.org>
 
 ENV CLANG_VERSION 6.0
