@@ -14,14 +14,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM ubuntu
+#FROM ubuntu
+FROM ubuntu:16.04
 LABEL maintainer Apache Geode <dev@geode.apache.org>
 
 ENV CLANG_VERSION 6.0
 RUN apt-get update && \
         apt-get install -y \
             libc++-dev \
-            libc++api-dev \
+            libc++abi-dev \
             clang-${CLANG_VERSION} \
             clang-tidy-${CLANG_VERSION} \
             clang-format-${CLANG_VERSION} \
