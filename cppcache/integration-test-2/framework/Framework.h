@@ -21,19 +21,10 @@
 #define INTEGRATION_TEST_FRAMEWORK_FRAMEWORK_H
 
 #include <chrono>
-#include <cstdint>
-#include <random>
 
 class Framework {
  public:
-  static uint16_t getAvailablePort() {
-    // TODO boost open ephemeral port.
-    std::random_device randomDevice;
-    std::default_random_engine randomEngine(randomDevice());
-    std::uniform_int_distribution<uint16_t> uniformDist;
-    auto port = uniformDist(randomEngine);
-    return port;
-  }
+  static uint16_t getAvailablePort();
 };
 
 template <class _Rep, class _Period>

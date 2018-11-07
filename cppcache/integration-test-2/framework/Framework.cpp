@@ -16,3 +16,19 @@
  */
 
 #include "Framework.h"
+
+#include <boost/asio.hpp>
+
+uint16_t Framework::getAvailablePort() {
+  using boost::asio::io_service;
+  using boost::asio::ip::tcp;
+
+  io_service service;
+  tcp::socket socket{service};
+  socket.open(tcp::v4());
+  socket.bind(tcp::endpoint{tcp::v4(), 0});
+  auto port = socket.local_endpoint().port();
+  socket.close();
+
+  return port;
+}
