@@ -1,5 +1,3 @@
-#!/bin/env bash
-
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -15,20 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-GFSH_PATH=""
-which gfsh 2> /dev/null
+cmake_minimum_required(VERSION 3.10)
 
-if [ $? -eq 0 ]; then
-    GFSH_PATH="gfsh"
-else
-    if [ "$GEODE_HOME" == "" ]; then
-        echo "Could not find gfsh. Please set the GEODE_HOME path."
-        echo "e.g. export GEODE_HOME=<path to Geode>"
-    else
-        GFSH_PATH=$GEODE_HOME/bin/gfsh
-    fi
-fi
+project(examples LANGUAGES NONE)
 
-$GFSH_PATH  -e "start locator --name=locator" -e "deploy --jar=./example.jar" -e "start server --name=the-server --server-port=50505"  -e "create region --name=partition_region --type=PARTITION"
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt.in ${CMAKE_CURRENT_BINARY_DIR}/CMakeLists.txt COPYONLY)
 
+install(FILES
+  ${CMAKE_CURRENT_BINARY_DIR}/CMakeLists.txt
+  ${CMAKE_CURRENT_SOURCE_DIR}/ExampleMultiGetFunction.java
+  DESTINATION examples/utilities)
 

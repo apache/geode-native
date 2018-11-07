@@ -29,6 +29,9 @@ install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/CMakeLists.txt
   DESTINATION examples)
 install(FILES
+  ${CMAKE_CURRENT_SOURCE_DIR}/../cmake/FindGeode.cmake
+  DESTINATION examples/cmake)
+install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/cmake/Find${PRODUCT_NAME_NOSPACE}.cmake
   DESTINATION examples/cmake)
 
@@ -36,3 +39,5 @@ add_subdirectory(cpp)
 if (BUILD_CLI)
   add_subdirectory(dotnet)
 endif()
+add_subdirectory(utilities)
+

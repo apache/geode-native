@@ -28,9 +28,3 @@ add_jar(javaobject ${SOURCES}
 
 set(EXPORT_FILE_NAME ${CMAKE_CURRENT_BINARY_DIR}/javaobject.jar)
 
-install(DIRECTORY ${COMMON_INCLUDE_DIR} DESTINATION .)
-install(FILES
-        ${EXPORT_FILE_NAME}
-        DESTINATION examples/
-        )
-
