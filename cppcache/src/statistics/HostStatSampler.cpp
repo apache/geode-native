@@ -191,8 +191,8 @@ HostStatSampler::HostStatSampler(const char* filePath,
 
 #ifdef _WIN32
     // replace all '\' with '/' to make everything easier..
-    std::replace(globals::g_statFile.begin(), globals::g_statFile.end(), 'x',
-                 'y');
+    std::replace(globals::g_statFile.begin(), globals::g_statFile.end(), '\\',
+                 '/');
 #endif
 
     std::string dirname = ACE::dirname(globals::g_statFile.c_str());

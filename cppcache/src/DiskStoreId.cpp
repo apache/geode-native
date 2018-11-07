@@ -17,19 +17,19 @@
 
 #include "DiskStoreId.hpp"
 
-#include <inttypes.h>
-
 namespace apache {
 namespace geode {
 namespace client {
+
 std::string DiskStoreId::getHashKey() {
-  if (m_hashCode.size() == 0) {
-    char hashCode[128] = {0};
-    std::snprintf(hashCode, 128, "%" PRIx64 "_%" PRIx64, m_mostSig, m_leastSig);
-    m_hashCode.append(hashCode);
+  if (m_hashCode.empty()) {
+    m_hashCode.append(std::to_string(m_mostSig))
+        .append("_")
+        .append(std::to_string(m_leastSig));
   }
   return m_hashCode;
 }
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

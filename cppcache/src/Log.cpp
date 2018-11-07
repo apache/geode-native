@@ -208,7 +208,7 @@ void Log::init(LogLevel level, const char* logFileName, int32_t logFileLimit,
 
 #ifdef _WIN32
     // replace all '\' with '/' to make everything easier..
-    std::replace(g_logFile->begin(), g_logFile->end(), 'x', 'y');
+    std::replace(g_logFile->begin(), g_logFile->end(), '\\', '/');
 #endif
 
     // Appending a ".log" at the end if it does not exist or file has some other

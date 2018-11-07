@@ -31,7 +31,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-std::recursive_mutex g_bigBufferLock;
+std::recursive_mutex globalBigBufferMutex;
 size_t DataOutput::m_highWaterMark = 50 * 1024 * 1024;
 size_t DataOutput::m_lowWaterMark = 8192;
 
@@ -90,7 +90,7 @@ class TSSDataOutput {
     m_buffers.push_back(desc);
   }
 
-  static thread_local TSSDataOutput s_tssDataOutput;
+  static thread_local TSSDataOutput threadLocalBufferPool;
 };
 
 TSSDataOutput::TSSDataOutput() : m_buffers() {
@@ -106,7 +106,7 @@ TSSDataOutput::~TSSDataOutput() {
   }
 }
 
-thread_local TSSDataOutput TSSDataOutput::s_tssDataOutput;
+thread_local TSSDataOutput TSSDataOutput::threadLocalBufferPool;
 
 DataOutput::DataOutput(const CacheImpl* cache, Pool* pool)
     : m_size(0), m_haveBigBuffer(false), m_cache(cache), m_pool(pool) {
@@ -115,11 +115,11 @@ DataOutput::DataOutput(const CacheImpl* cache, Pool* pool)
 }
 
 uint8_t* DataOutput::checkoutBuffer(size_t* size) {
-  return TSSDataOutput::s_tssDataOutput.getBuffer(size);
+  return TSSDataOutput::threadLocalBufferPool.getBuffer(size);
 }
 
 void DataOutput::checkinBuffer(uint8_t* buffer, size_t size) {
-  TSSDataOutput::s_tssDataOutput.poolBuffer(buffer, size);
+  TSSDataOutput::threadLocalBufferPool.poolBuffer(buffer, size);
 }
 
 void DataOutput::writeObjectInternal(const std::shared_ptr<Serializable>& ptr,
@@ -127,9 +127,9 @@ void DataOutput::writeObjectInternal(const std::shared_ptr<Serializable>& ptr,
   getSerializationRegistry().serialize(ptr, *this, isDelta);
 }
 
-void DataOutput::acquireLock() { g_bigBufferLock.lock(); }
+void DataOutput::acquireLock() { globalBigBufferMutex.lock(); }
 
-void DataOutput::releaseLock() { g_bigBufferLock.unlock(); }
+void DataOutput::releaseLock() { globalBigBufferMutex.unlock(); }
 
 const SerializationRegistry& DataOutput::getSerializationRegistry() const {
   return *m_cache->getSerializationRegistry();

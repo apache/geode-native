@@ -252,24 +252,9 @@ int32_t AtomicStatisticsImpl::_incInt(int32_t offset, int32_t delta) {
 
 int64_t AtomicStatisticsImpl::_incLong(int32_t offset, int64_t delta) {
   if (offset >= statsType->getLongStatCount()) {
-    char s[128] = {'\0'};
-    /* adongre  - Coverity II
-     * CID 29273: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-     * "sprintf" can cause a
-     * buffer overflow when done incorrectly. Because sprintf() assumes an
-     * arbitrarily long string,
-     * callers must be careful not to overflow the actual space of the
-     * destination.
-     * Use snprintf() instead, or correct precision specifiers.
-     * Fix : using std::snprintf
-     */
-    // sprintf(s, "incLong:The id (%d) of the Statistic Descriptor is not valid
-    // ", offset);
-
-    std::snprintf(
-        s, 128, "incLong:The id (%d) of the Statistic Descriptor is not valid ",
-        offset);
-    throw IllegalArgumentException(s);
+    throw IllegalArgumentException(
+        "incLong:The id " + std::to_string(offset) +
+        " of the Statistic Descriptor is not valid.");
   }
 
   return (longStorage[offset] += delta);
@@ -277,12 +262,9 @@ int64_t AtomicStatisticsImpl::_incLong(int32_t offset, int64_t delta) {
 
 double AtomicStatisticsImpl::_incDouble(int32_t offset, double delta) {
   if (offset >= statsType->getDoubleStatCount()) {
-    char s[128] = {'\0'};
-    std::snprintf(
-        s, 128,
-        "incDouble:The id (%d) of the Statistic Descriptor is not valid ",
-        offset);
-    throw IllegalArgumentException(s);
+    throw IllegalArgumentException(
+        "incDouble:The id " + std::to_string(offset) +
+        " of the Statistic Descriptor is not valid.");
   }
 
   double expected = doubleStorage[offset];
