@@ -147,7 +147,8 @@ class APACHE_GEODE_EXPORT Queue {
   bool m_deleteObjs;
   const uint32_t m_maxSize;
   bool m_closed;
-};  // namespace client
+};
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

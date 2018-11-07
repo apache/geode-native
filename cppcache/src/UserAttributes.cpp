@@ -108,7 +108,7 @@ AuthenticatedView* UserAttributes::getAuthenticatedView() {
 }
 
 thread_local std::shared_ptr<UserAttributes>
-    UserAttributes::s_geodeTSSUserAttributes;
+    UserAttributes::threadLocalUserAttributes;
 
 GuardUserAttributes::GuardUserAttributes(AuthenticatedView* authenticatedView) {
   setAuthenticatedView(authenticatedView);
@@ -119,7 +119,7 @@ void GuardUserAttributes::setAuthenticatedView(
   m_authenticatedView = authenticatedView;
   LOGDEBUG("GuardUserAttributes::GuardUserAttributes:");
   if (m_authenticatedView != nullptr && !authenticatedView->isClosed()) {
-    UserAttributes::s_geodeTSSUserAttributes =
+    UserAttributes::threadLocalUserAttributes =
         authenticatedView->m_userAttributes;
   } else {
     throw CacheClosedException("User Cache has been closed");
@@ -130,7 +130,7 @@ GuardUserAttributes::GuardUserAttributes() { m_authenticatedView = nullptr; }
 
 GuardUserAttributes::~GuardUserAttributes() {
   if (m_authenticatedView != nullptr) {
-    UserAttributes::s_geodeTSSUserAttributes = nullptr;
+    UserAttributes::threadLocalUserAttributes = nullptr;
   }
 }
 

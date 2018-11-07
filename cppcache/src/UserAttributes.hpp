@@ -108,7 +108,7 @@ class UserAttributes {
 
   bool isEndpointAuthenticated(TcrEndpoint* ep);
 
-  static thread_local std::shared_ptr<UserAttributes> s_geodeTSSUserAttributes;
+  static thread_local std::shared_ptr<UserAttributes> threadLocalUserAttributes;
 
  private:
   std::map<std::string, UserConnectionAttributes*> m_connectionAttr;

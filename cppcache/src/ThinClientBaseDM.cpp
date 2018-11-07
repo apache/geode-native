@@ -272,7 +272,7 @@ void ThinClientBaseDM::beforeSendingRequest(const TcrMessage& request,
     } else {
       connId = conn->getConnectionId();
       if (!(request.getMessageType() == TcrMessage::USER_CREDENTIAL_MESSAGE)) {
-        uniqueId = UserAttributes::s_geodeTSSUserAttributes
+        uniqueId = UserAttributes::threadLocalUserAttributes
                        ->getConnectionAttribute(conn->getEndpointObject())
                        ->getUniqueId();
       }
@@ -300,7 +300,7 @@ void ThinClientBaseDM::afterSendingRequest(const TcrMessage& request,
     if (request.getMessageType() == TcrMessage::USER_CREDENTIAL_MESSAGE) {
       if (TcrMessage::RESPONSE == reply.getMessageType()) {
         if (this->isMultiUserMode()) {
-          UserAttributes::s_geodeTSSUserAttributes->setConnectionAttributes(
+          UserAttributes::threadLocalUserAttributes->setConnectionAttributes(
               conn->getEndpointObject(), reply.getUniqueId(conn));
         } else {
           conn->getEndpointObject()->setUniqueId(reply.getUniqueId(conn));

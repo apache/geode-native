@@ -129,7 +129,7 @@ std::shared_ptr<CqQuery> CqService::newCq(
 
   std::shared_ptr<UserAttributes> ua = nullptr;
   if (m_tccdm != nullptr && m_tccdm->isMultiUserMode()) {
-    ua = UserAttributes::s_geodeTSSUserAttributes;
+    ua = UserAttributes::threadLocalUserAttributes;
   }
 
   auto cQuery = std::make_shared<CqQueryImpl>(

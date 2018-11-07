@@ -82,7 +82,7 @@ std::shared_ptr<Query> RemoteQueryService::newQuery(std::string querystring) {
     LOGDEBUG("RemoteQueryService: creating a new query: " + querystring);
     return std::shared_ptr<Query>(new RemoteQuery(
         querystring, shared_from_this(), m_tccdm,
-        UserAttributes::s_geodeTSSUserAttributes->getAuthenticatedView()));
+        UserAttributes::threadLocalUserAttributes->getAuthenticatedView()));
   }
 }
 

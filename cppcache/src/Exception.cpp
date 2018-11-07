@@ -53,16 +53,18 @@ std::string Exception::getStackTrace() const {
 
 // class to store/clear last server exception in TSS area
 
-thread_local std::string s_tssExceptionMsg;
+thread_local std::string threadLocalExceptionMessage;
 
-void setTSSExceptionMessage(const char* exMsg) {
-  s_tssExceptionMsg.clear();
+void setThreadLocalExceptionMessage(const char* exMsg) {
+  threadLocalExceptionMessage.clear();
   if (exMsg != nullptr) {
-    s_tssExceptionMsg.assign(exMsg);
+    threadLocalExceptionMessage.assign(exMsg);
   }
 }
 
-const char* getTSSExceptionMessage() { return s_tssExceptionMsg.c_str(); }
+const std::string& getThreadLocalExceptionMessage() {
+  return threadLocalExceptionMessage;
+}
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

@@ -51,7 +51,7 @@ namespace client {
 static const std::regex PREDICATE_IS_FULL_QUERY_REGEX(
     "^\\s*(?:select|import)\\b", std::regex::icase);
 
-void setTSSExceptionMessage(const char* exMsg);
+void setThreadLocalExceptionMessage(const char* exMsg);
 
 class PutAllWork : public PooledWork<GfErrType>,
                    private NonCopyable,
@@ -107,7 +107,7 @@ class PutAllWork : public PooledWork<GfErrType>,
         keys.get(), responseLock);
 
     if (m_poolDM->isMultiUserMode()) {
-      m_userAttribute = UserAttributes::s_geodeTSSUserAttributes;
+      m_userAttribute = UserAttributes::threadLocalUserAttributes;
     }
 
     m_request->setTimeout(m_timeout);
@@ -249,7 +249,7 @@ class RemoveAllWork : public PooledWork<GfErrType>,
         keys.get(), responseLock);
 
     if (m_poolDM->isMultiUserMode()) {
-      m_userAttribute = UserAttributes::s_geodeTSSUserAttributes;
+      m_userAttribute = UserAttributes::threadLocalUserAttributes;
     }
 
     m_resultCollector = new ChunkedRemoveAllResponse(
@@ -2767,7 +2767,7 @@ GfErrType ThinClientRegion::clientNotificationHandler(TcrMessage& msg) {
 GfErrType ThinClientRegion::handleServerException(const char* func,
                                                   const char* exceptionMsg) {
   GfErrType error = GF_NOERR;
-  setTSSExceptionMessage(exceptionMsg);
+  setThreadLocalExceptionMessage(exceptionMsg);
   if (strstr(exceptionMsg,
              "org.apache.geode.security.NotAuthorizedException") != nullptr) {
     error = GF_NOT_AUTHORIZED_EXCEPTION;
@@ -3164,7 +3164,7 @@ bool ThinClientRegion::executeFunctionSH(
     std::chrono::milliseconds timeout, bool allBuckets) {
   bool reExecute = false;
   auto resultCollectorLock = std::make_shared<std::recursive_mutex>();
-  const auto& userAttr = UserAttributes::s_geodeTSSUserAttributes;
+  const auto& userAttr = UserAttributes::threadLocalUserAttributes;
   std::vector<std::shared_ptr<OnRegionFunctionExecution>> feWorkers;
   auto* threadPool =
       CacheRegionHelper::getCacheImpl(&getCache())->getThreadPool();

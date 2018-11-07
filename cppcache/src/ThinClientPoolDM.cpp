@@ -91,7 +91,7 @@ class GetAllWork : public PooledWork<GfErrType>,
         m_keys.get(), m_poolDM, m_aCallbackArgument);
     m_reply = new TcrMessageReply(true, m_poolDM);
     if (m_poolDM->isMultiUserMode()) {
-      m_userAttribute = UserAttributes::s_geodeTSSUserAttributes;
+      m_userAttribute = UserAttributes::threadLocalUserAttributes;
     }
 
     m_resultCollector = (new ChunkedGetAllResponse(
@@ -633,7 +633,7 @@ GfErrType ThinClientPoolDM::sendRequestToAllServers(
   int feIndex = 0;
   FunctionExecution* fePtrList = new FunctionExecution[csArray->length()];
   auto threadPool = m_connManager.getCacheImpl()->getThreadPool();
-  auto userAttr = UserAttributes::s_geodeTSSUserAttributes;
+  auto userAttr = UserAttributes::threadLocalUserAttributes;
   for (int i = 0; i < csArray->length(); i++) {
     auto cs = (*csArray)[i];
     std::string endpointStr(cs->value().c_str());
@@ -885,7 +885,7 @@ std::shared_ptr<QueryService> ThinClientPoolDM::getQueryServiceWithoutCheck() {
 }
 void ThinClientPoolDM::sendUserCacheCloseMessage(bool keepAlive) {
   LOGDEBUG("ThinClientPoolDM::sendUserCacheCloseMessage");
-  auto userAttribute = UserAttributes::s_geodeTSSUserAttributes;
+  auto userAttribute = UserAttributes::threadLocalUserAttributes;
 
   auto& ucs = userAttribute->getUserConnectionServers();
 
@@ -1388,7 +1388,7 @@ GfErrType ThinClientPoolDM::sendSyncRequest(
                                      request, version, singleHopConnFound,
                                      connFound, serverLocation);
     } else {
-      userAttr = UserAttributes::s_geodeTSSUserAttributes;
+      userAttr = UserAttributes::threadLocalUserAttributes;
       if (userAttr == nullptr) {
         LOGWARN("Attempted operation type %d without credentials",
                 request.getMessageType());
@@ -1967,7 +1967,7 @@ GfErrType ThinClientPoolDM::sendRequestToEP(const TcrMessage& request,
         error = this->sendUserCredentials(this->getCredentials(currentEndpoint),
                                           conn, false, isServerException);
       } else if (this->m_isMultiUserMode) {
-        ua = UserAttributes::s_geodeTSSUserAttributes;
+        ua = UserAttributes::threadLocalUserAttributes;
         if (ua) {
           UserConnectionAttributes* uca =
               ua->getConnectionAttribute(currentEndpoint);
