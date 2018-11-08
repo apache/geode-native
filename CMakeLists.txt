@@ -43,7 +43,8 @@ set(BUILD_BITS 64 CACHE STRING "Build for 64 (Geode default) or 32 bit.")
 
 set(PRODUCT_VENDOR "Apache" CACHE STRING "Product vendor")
 set(PRODUCT_VENDOR_NAME "The Apache Software Foundation" CACHE STRING "Product vendor full legal name")
-set(PRODUCT_NAME "Geode Native" CACHE STRING "Product name")
+set(PRODUCT_BASE_NAME "Geode" CACHE STRING "Product base name")
+set(PRODUCT_NAME "${PRODUCT_BASE_NAME} Native" CACHE STRING "Product name")
 set(PRODUCT_VERSION "0.0.42-build.0" CACHE STRING "Product version")
 set(PRODUCT_PACKAGE_NAME "apache-geode-native" CACHE STRING "Product package name")
 set(PRODUCT_BUILDDATE "1970-01-01" CACHE STRING "Product build date")
@@ -52,7 +53,7 @@ set(PRODUCT_SOURCE_REPOSITORY "<unspecified>" CACHE STRING "Product source branc
 set(PRODUCT_BITS "${BUILD_BITS}bit")
 
 set(PRODUCT_LIB_NAME "apache-geode" CACHE STRING "Binary name")
-set(PRODUCT_DLL_NAME "Apache.Geode" CACHE STRING ".Net Binary name")
+set(PRODUCT_DLL_NAME "${PRODUCT_VENDOR}.${PRODUCT_BASE_NAME}" CACHE STRING ".Net Binary name")
 
 if(CMAKE_SYSTEM_NAME STREQUAL "SunOS")
   if (CMAKE_SYSTEM_PROCESSOR STREQUAL "sparc")
