@@ -25,7 +25,7 @@ This section describes how to configure OpenSSL, implement SSL-based communicati
 
 The open-source OpenSSL toolkit provides a full-strength general purpose cryptography library to operate along with the PKCS sample implementation for encrypted authentication of native client credentials.
 
-Download and install OpenSSL 1.0.2 for your specific operating system.
+Download and install OpenSSL 1.1.1 for your specific operating system.
 For Windows platforms, you can use either the regular or the "Light" version.
 
 **Note for Windows users:** If you use Cygwin, do not use the OpenSSL library that comes with
@@ -46,7 +46,7 @@ For example, for Bourne and Korn shells (sh, ksh, bash), environment setup would
 <code>
 % LD\_LIBRARY\_PATH=$LD\_LIBRARY\_PATH:_client-install-dir_/lib:_client-install-dir_/ssl\_libs:_openssl-install-dir_/lib<br />
 % export LD\_LIBRARY\_PATH<br />
-% CLASSPATH=_server-install-dir_/lib/securityImpl.jar:$CLASSPATH
+% CLASSPATH=_server-install-dir_/lib/libcryptoImpl.jar:$CLASSPATH
 </code>
 
 where:
@@ -60,7 +60,7 @@ where:
 For Windows, environment setup might resemble this:
 <code>
 \> set PATH=_jdk-or-jre-path_\bin;_client-install-dir_\bin;_client-install-dir_\ssl\_libs;_openssl-install-dir_\bin;%PATH%<br />
-\> set CLASSPATH=_server-installdir_\lib\securityImpl.jar;%CLASSPATH%
+\> set CLASSPATH=_server-installdir_\lib\libcryptoImpl.jar;%CLASSPATH%
 </code>
 
 where _jdk-or-jre-path_ is the directory in which Java is installed.
@@ -68,9 +68,7 @@ where _jdk-or-jre-path_ is the directory in which Java is installed.
 ## Step 3. Enable SSL on the server and on the client
 
 1.  On the server, enable SSL for the `locator` and `server` components, as the SSL-enabled client
-must be able to communicate with both locator and server components. For details on the SSL
-properties available on the server, see "Managing > Security > SSL > Configuring SSL" in the
-[_<%=vars.product_name%> User's Guide_](/serverman/about_<%=vars.product_name.downcase%>.html).
+must be able to communicate with both locator and server components.
 
 1.  On the client, set `ssl-enabled` to `true`. 
 
@@ -89,6 +87,8 @@ Specifically, ensure that:
 -   You have set the system properties.
 
 For details on stopping and starting locators and cache servers with SSL, see [Starting Up and Shutting Down Your System](geodeman/configuring/running/starting_up_shutting_down.html).
+
+The <%=vars.product_name%> Native’s libcryptoImpl found in /lib must be linked at compile time.  This binary is used to interact with OpenSSL.  Link libcryptoImpl, native client, and your application code.  We highly recommend using cmake.
 
 **Example locator start command**
 

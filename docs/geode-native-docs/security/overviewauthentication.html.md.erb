@@ -21,11 +21,7 @@ limitations under the License.
 
 A client is authenticated when it connects, with valid credentials, to a <%=vars.product_name%> cache server that is configured with the client `Authenticator` callback.
 
-Once the client is authenticated, the server assigns the client a unique ID and principal, used to authorize operations. The client must trust all cache servers in the server system as it may connect to any one of them. For information on configuring client/server , see [Client/Server Configuration](geodeman/topologies_and_comm/cs_configuration/chapter_overview.html).
-
--   **[Process and Multiuser Authentication](authentication-levels.html)**
-
-    Client connections can be authenticated at two levels, process and multiuser.
+Once the client is authenticated, the server assigns the client a unique ID and principal, used to authorize operations. The client must trust all cache servers in the server system as it may connect to any one of them.
 
 -   **[Configuring Credentials for Authentication](systempropsforauth.html)**
 
@@ -41,6 +37,3 @@ Once the client is authenticated, the server assigns the client a unique ID and 
 
     To create multiple, secure connections to your servers from a single client, so the client can service different user types, you create an authenticated `RegionService` for each user.
 
--   **[Using an LDAP Server for Client Authentication](LDAPserverauth.html)**
-
-    An LDAP server can be used by a <%=vars.product_name%> cache server using the sample LDAP implementation provided with the <%=vars.product_name%> server.
