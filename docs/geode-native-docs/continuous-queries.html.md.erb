@@ -28,7 +28,7 @@ in the *<%=vars.product_name%> User Guide*.
 
 Continuous querying provides the following features:
 
--   **Standard <%=vars.product_name%> native client query syntax and semantics**. Continuous queries are expressed in the same language used for other native client queries. See [Remote Queries](../remote-querying/remote-queries.html).
+-   **Standard <%=vars.product_name%> native client query syntax and semantics**. Continuous queries are expressed in the same language used for other native client queries. See [Remote Queries](remote-queries.html).
 
 - **Standard <%=vars.product_name%> events-based management of CQ events**. The event handling used
 to process CQ events is based on the standard <%=vars.product_name%> event handling framework. 
@@ -37,11 +37,11 @@ to process CQ events is based on the standard <%=vars.product_name%> event handl
 server-to-client messaging mechanisms to send events. All tuning of your server-to-client
 messaging also tunes the messaging of your CQ events. If your system is configured for high
 availability then your CQs are highly available, with seamless failover provided in case of
-server failure (see [High Availability for Client-to-Server Communication](../preserving-data/high-availability-client-server.html)). 
-If your clients are durable, you can also define any of your CQs as durable (see [Durable Client Messaging](../preserving-data/durable-client-messaging.html)).
+server failure (see [High Availability for Client-to-Server Communication](preserving-data/high-availability-client-server.html)). 
+If your clients are durable, you can also define any of your CQs as durable (see [Durable Client Messaging](preserving-data/durable-client-messaging.html)).
 
 - **Interest criteria based on data values**. Continuous queries are run against the region's entry values. 
-Compare this to register interest by reviewing [Registering Interest for Entries](../client-cache/registering-interest-for-entries.html).
+Compare this to register interest by reviewing [Registering Interest for Entries](client-cache/registering-interest-for-entries.html).
 
 -   **Active query execution**. Once initialized, the queries operate only on new events, rather than on the entire region data set. 
 Events that change the query result are sent to the client immediately.
