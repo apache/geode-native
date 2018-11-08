@@ -1,0 +1,40 @@
+---
+title:  Security
+---
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+The security framework authenticates clients as they connect to a <%=vars.product_name%> cache server and authorizes client cache operations. You can also configure it for client authentication of servers, and you can plug in your own implementations for authentication and authorization.
+
+For an explanation of the server-side implementation of security, see [Security](geodeman/managing/security/chapter_overview.html) in the *<%=vars.product_name%> User Guide*.
+
+The following sections describe some client-specific security considerations:
+
+-   **Authentication**
+
+    Geode Native requires providing an authentication implementation.  Examples of these implementations can be found in /templates/security.  Build and link the implementation and set the implementation’s properties on the cache.
+
+-   **[Security-Related System Properties](security-systemprops.html)**
+
+    The table describes the security-related system properties in the `geode.properties` file for native client authentication and authorization.
+
+-   **[SSL Client/Server Communication](sslclientserver.html)**
+
+    This section describes how to configure OpenSSL, implement SSL-based communication between your clients and servers, and run clients and servers with SSL enabled.
+
+
