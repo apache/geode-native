@@ -31,7 +31,7 @@ add_executable(integration-test-2
   StructTest.cpp
   EnableChunkHandlerThreadTest.cpp
   DataSerializableTest.cpp
-)
+  FunctionExecutionTest.cpp)
 
 target_compile_definitions(integration-test-2
   PUBLIC

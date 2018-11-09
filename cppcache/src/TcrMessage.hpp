@@ -575,7 +575,7 @@ class APACHE_GEODE_EXPORT TcrMessage {
                        int32_t parts = 1);  // skip num parts then read eventid
 
   void skipParts(DataInput& input, int32_t numParts = 1);
-  void readStringPart(DataInput& input, uint32_t* len, char** str);
+  const std::string readStringPart(DataInput& input);
   void readCqsPart(DataInput& input);
   void readHashMapForGCVersions(apache::geode::client::DataInput& input,
                                 std::shared_ptr<CacheableHashMap>& value);
