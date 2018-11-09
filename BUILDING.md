@@ -1,7 +1,7 @@
 # Building
 
 ## Prerequisites (All Platforms)
-* [CMake 3.10](https://cmake.org/) or newer
+* [CMake 3.12](https://cmake.org/) or newer
 * C++11 compiler *(see platform specific requirements)*
 * [Doxygen 8.11](http://www.stack.nl/~dimitri/doxygen/download.html) *(for building source documentation)*
 * [Apache Geode](http://geode.apache.org/releases/) binaries installed or available to link against
