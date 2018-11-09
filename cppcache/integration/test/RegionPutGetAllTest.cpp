@@ -198,4 +198,33 @@ TEST(RegionPutGetAllTest, variousPdxTypes) {
   assert_eq(putAllMap, getAllMap);
 }
 
+// Matt and I wrote this test for GEODE-5962, but it isn't finished yet so disable.
+TEST(RegionPutGetAllTest, DISABLED_nullValue) {
+  Cluster cluster{LocatorCount{1}, ServerCount{2}};
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("region")
+      .withType("REPLICATE")
+      .execute();
+
+  auto cache = cluster.createCache();
+  auto region = setupRegion(cache);
+
+  setupPdxTypes(cache);
+
+  HashMapOfCacheable map;
+
+  // Add a null value
+  map.emplace(CacheableInt32::create(PdxTypesHelper1::index),
+              std::shared_ptr<PdxTypesHelper1::type>());
+
+  auto keys = to_keys(map);
+
+  region->putAll(map);
+
+  // TODO - Understand: Clear local cache to force fetch from server?
+  localDestroy(*region, keys);
+}
+
 }  // namespace
