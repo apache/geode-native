@@ -19,7 +19,7 @@ set -x -e -o pipefail
 
 tmp=`mktemp`
 
-curl -o ${tmp} -v -L https://cmake.org/files/v3.10/cmake-3.10.3-Linux-x86_64.sh
+curl -o ${tmp} -v -L https://cmake.org/files/v3.12/cmake-3.12.4-Linux-x86_64.sh
 
 bash ${tmp} --skip-license --prefix=/usr/local
 
