@@ -20,12 +20,14 @@
 #ifndef GEODE_CLIENTMETADATASERVICE_H_
 #define GEODE_CLIENTMETADATASERVICE_H_
 
+#include <atomic>
 #include <chrono>
+#include <condition_variable>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <unordered_map>
 
-#include <ace/Semaphore.h>
 #include <ace/Task.h>
 
 #include <geode/CacheableKey.hpp>
@@ -101,7 +103,8 @@ class ClientMetadataService : public ACE_Task_Base,
                               private NonAssignable {
  public:
   ~ClientMetadataService();
-  explicit ClientMetadataService(Pool* pool);
+  explicit ClientMetadataService(ThinClientPoolDM* pool);
+  ClientMetadataService() = delete;
 
   inline void start() {
     m_run = true;
@@ -110,7 +113,7 @@ class ClientMetadataService : public ACE_Task_Base,
 
   inline void stop() {
     m_run = false;
-    m_regionQueueSema.release();
+    m_regionQueueCondition.notify_one();
     this->wait();
   }
 
@@ -204,13 +207,6 @@ class ClientMetadataService : public ACE_Task_Base,
       const BucketSet& buckets);
 
  private:
-  // const std::shared_ptr<PartitionResolver>& getResolver(const
-  // std::shared_ptr<Region>& region, const std::shared_ptr<CacheableKey>& key,
-  // const std::shared_ptr<Serializable>& aCallbackArgument);
-
-  // BucketServerLocation getServerLocation(std::shared_ptr<ClientMetadata>
-  // cptr, int bucketId, bool isPrimary);
-
   std::shared_ptr<ClientMetadata> SendClientPRMetadata(
       const char* regionPath, std::shared_ptr<ClientMetadata> cptr);
 
@@ -219,13 +215,13 @@ class ClientMetadataService : public ACE_Task_Base,
 
  private:
   ACE_RW_Thread_Mutex m_regionMetadataLock;
-  ClientMetadataService();
-  ACE_Semaphore m_regionQueueSema;
   RegionMetadataMapType m_regionMetaDataMap;
-  volatile bool m_run;
-  Pool* m_pool;
+  std::atomic<bool> m_run;
+  ThinClientPoolDM* m_pool;
+  CacheImpl* m_cache;
   Queue<std::shared_ptr<std::string>> m_regionQueue;
-
+  std::mutex m_regionQueueMutex;
+  std::condition_variable m_regionQueueCondition;
   ACE_RW_Thread_Mutex m_PRbucketStatusLock;
   std::map<std::string, PRbuckets*> m_bucketStatus;
   std::chrono::milliseconds m_bucketWaitTimeout;
