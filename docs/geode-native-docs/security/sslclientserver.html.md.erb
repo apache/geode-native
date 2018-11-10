@@ -1,5 +1,5 @@
 ---
-title:  SSL Client/Server Communication
+title:  TLS/SSL Client-Server Communication Encryption
 ---
 
 <!--
@@ -19,18 +19,25 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-This section describes how to configure OpenSSL, implement SSL-based communication between your clients and servers, and run clients and servers with SSL enabled.
+This section describes how to implement TLS-based communication between your clients and servers using the OpenSSL encryption utility.
 
 # Set Up OpenSSL
 
-The open-source OpenSSL toolkit provides a full-strength general purpose cryptography library to operate along with the PKCS sample implementation for encrypted authentication of native client credentials.
+The open-source OpenSSL toolkit provides a full-strength general purpose cryptography library for encrypting client-server communications.
 
 Download and install OpenSSL 1.1.1 for your specific operating system.
-For Windows platforms, you can use either the regular or the "Light" version.
 
-**Note for Windows users:** If you use Cygwin, do not use the OpenSSL library that comes with
-Cygwin, which is built with `cygwin.dll` as a dependency. Instead, download a fresh copy from
-OpenSSL as described in the following section.
+**Notes for Windows users:**
+
+- For Windows platforms, you can use either the regular or the "Light" version of SSL.
+
+- Use a 64-bit implementation of OpenSSL.
+
+- If you use Cygwin, do not use the OpenSSL library that comes with Cygwin, which is built with
+`cygwin.dll` as a dependency. Instead, download a fresh copy from OpenSSL.
+
+- For many Windows applications, the most convenient way to install OpenSSL is to use `choco` (see [chocolatey.org] (https://chocolatey.org/packages/OpenSSL.Light)) to install the “Light” version of OpenSSL.
+
 
 ## Step 1. Create keystores
 
