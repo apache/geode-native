@@ -1,5 +1,5 @@
 ---
-title:  Security
+title:  Security&#58; Authentication and Encryption
 ---
 
 <!--
@@ -19,22 +19,20 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-The security framework authenticates clients as they connect to a <%=vars.product_name%> cache server and authorizes client cache operations. You can also configure it for client authentication of servers, and you can plug in your own implementations for authentication and authorization.
+Most security configuration takes place on the <%=vars.product_name%> server. The server's security
+framework authenticates clients as they connect to a cache server and authorizes client cache
+operations using developer-provided implementations for authentication and authorization.
 
-For an explanation of the server-side implementation of security, see [Security](geodeman/managing/security/chapter_overview.html) in the *<%=vars.product_name%> User Guide*.
+For an explanation of the server-side implementation of security features, 
+see [Security](geodeman/managing/security/chapter_overview.html) in the *<%=vars.product_name%> User Guide*.
 
-The following sections describe some client-specific security considerations:
+A Native Client application must address two security concerns when connecting to a <%=vars.product_name%> server: 
 
--   **Authentication**
+-   **[Authentication](authentication.html)**
 
-    Geode Native requires providing an authentication implementation.  Examples of these implementations can be found in /templates/security.  Build and link the implementation and set the implementation’s properties on the cache.
+    The Client must submit its authentication credentials to the server using the developer-provided authentication implementation expected by the server.
 
--   **[Security-Related System Properties](security-systemprops.html)**
+-   **[TLS/SSL Client/Server Communication Encryption](sslclientserver.html)**
 
-    The table describes the security-related system properties in the `geode.properties` file for native client authentication and authorization.
-
--   **[SSL Client/Server Communication](sslclientserver.html)**
-
-    This section describes how to configure OpenSSL, implement SSL-based communication between your clients and servers, and run clients and servers with SSL enabled.
-
+    Communication between client and server must be encrypted so authentication credentials and other transmissions cannot be viewed by third-parties.
 

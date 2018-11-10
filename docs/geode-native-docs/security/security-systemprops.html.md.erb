@@ -24,20 +24,12 @@ The table describes the security-related system properties in the `geode.propert
 <a id="security__section_6DC4C72A2EEB432AA40DE97D438FD1E7"></a><a id="security__table_92A6A66523764199A19BCD66BA189921"></a>
 
 <table>
-<caption><span class="tablecap">Table 1. System Properties for Client Authentication and Authorization</span></caption>
+<caption><span class="tablecap">System Properties for Client Authentication and Authorization</span></caption>
 <colgroup>
 <col width="50%" />
 <col width="50%" />
 </colgroup>
 <tbody>
-<tr class="odd">
-<td><code class="ph codeph">security-client-auth-factory</code></td>
-<td>Sets the key for the <code class="ph codeph">AuthInitialize</code> factory function.</td>
-</tr>
-<tr class="even">
-<td><code class="ph codeph">security-client-auth-library</code></td>
-<td>Registers the path to the <code class="ph codeph">securityImpl.dll</code> library.</td>
-</tr>
 <tr class="odd">
 <td><code class="ph codeph">security-client-dhalgo</code></td>
 <td>Returns the Diffie-Hellman secret key cipher algorithm.</td>
@@ -47,24 +39,12 @@ The table describes the security-related system properties in the `geode.propert
 <td>Path to a .pem file, which contains the public certificates for all <%=vars.product_name%> cache servers to which the client can connect through specified endpoints.</td>
 </tr>
 <tr class="odd">
-<td><code class="ph codeph">security-client-kspasswd</code></td>
-<td>Password for the public key file store on the client.</td>
-</tr>
-<tr class="odd">
-<td><code class="ph codeph">security-alias</code></td>
-<td>Alias name for the key in the keystore.</td>
-</tr>
-<tr class="even">
-<td><code class="ph codeph">security-keystorepass</code></td>
-<td>Sets the password for the password-protected keystore.</td>
-</tr>
-<tr class="odd">
 <td><code class="ph codeph">ssl-enabled</code></td>
 <td>True if SSL connection support is enabled.</td>
 </tr>
 <tr class="even">
 <td><code class="ph codeph">ssl-keystore</code></td>
-<td>Name of the .PEM keystore file, containing the client’s private key. Not set by default. Required if <code class="ph codeph">ssl-enabled</code> is true.</td>
+<td>Name of the .pem keystore file, containing the client’s private key. Not set by default. Required if <code class="ph codeph">ssl-enabled</code> is true.</td>
 </tr>
 <tr class="odd">
 <td><code class="ph codeph">ssl-keystore-password</code></td>
@@ -72,7 +52,7 @@ The table describes the security-related system properties in the `geode.propert
 </tr>
 <tr class="even">
 <td><code class="ph codeph">ssl-truststore</code></td>
-<td><p>Name of the .PEM truststore file, containing the servers’ public certificate. Not set by default. Required if <code class="ph codeph">ssl-enabled</code> is true</p></td>
+<td><p>Name of the .pem truststore file, containing the servers’ public certificate. Not set by default. Required if <code class="ph codeph">ssl-enabled</code> is true</p></td>
 </tr>
 </tbody>
 </table>
