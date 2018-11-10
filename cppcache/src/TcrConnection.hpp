@@ -31,8 +31,8 @@
 
 #include "Connector.hpp"
 #include "DiffieHellman.hpp"
-#include "Set.hpp"
 #include "TcrMessage.hpp"
+#include "util/synchronized_set.hpp"
 
 #define DEFAULT_TIMEOUT_RETRIES 12
 #define PRIMARY_SERVER_TO_CLIENT 101
@@ -114,7 +114,8 @@ class APACHE_GEODE_EXPORT TcrConnection {
    * @param     numPorts  Size of ports list
    */
   bool InitTcrConnection(
-      TcrEndpoint* endpointObj, const char* endpoint, Set<uint16_t>& ports,
+      TcrEndpoint* endpointObj, const char* endpoint,
+      synchronized_set<std::unordered_set<uint16_t>>& ports,
       bool isClientNotification = false, bool isSecondary = false,
       std::chrono::microseconds connectTimeout = DEFAULT_CONNECT_TIMEOUT);
 

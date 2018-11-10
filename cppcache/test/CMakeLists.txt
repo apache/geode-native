@@ -43,6 +43,7 @@ add_executable(apache-geode_unittests
   TcrMessageTest.cpp
   CacheableDateTest.cpp
   util/synchronized_mapTest.cpp
+  util/synchronized_setTest.cpp
   util/JavaModifiedUtf8Tests.cpp
   util/functionalTests.cpp
   util/chrono/durationTest.cpp

@@ -24,6 +24,7 @@
 #include <list>
 #include <mutex>
 #include <string>
+#include <unordered_set>
 
 #include <ace/Condition_Recursive_Thread_Mutex.h>
 #include <ace/Semaphore.h>
@@ -33,9 +34,9 @@
 
 #include "ErrType.hpp"
 #include "FairQueue.hpp"
-#include "Set.hpp"
 #include "Task.hpp"
 #include "TcrConnection.hpp"
+#include "util/synchronized_set.hpp"
 
 namespace apache {
 namespace geode {
@@ -231,7 +232,7 @@ class APACHE_GEODE_EXPORT TcrEndpoint {
   std::recursive_mutex m_connectionLock;
   std::recursive_mutex m_distMgrsLock;
   ACE_Semaphore m_notificationCleanupSema;
-  Set<uint16_t> m_ports;
+  synchronized_set<std::unordered_set<uint16_t>> m_ports;
   int32_t m_numberOfTimesFailed;
   int m_numRegions;
   int m_pingTimeouts;

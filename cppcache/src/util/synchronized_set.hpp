@@ -17,8 +17,8 @@
 
 #pragma once
 
-#ifndef GEODE_UTIL_SYNCHRONIZED_MAP_H_
-#define GEODE_UTIL_SYNCHRONIZED_MAP_H_
+#ifndef GEODE_UTIL_SYNCHRONIZED_SET_H_
+#define GEODE_UTIL_SYNCHRONIZED_SET_H_
 
 #include <mutex>
 #include <utility>
@@ -28,50 +28,49 @@ namespace geode {
 namespace client {
 
 /**
- * Wrapper around std::map, std::unordered_map and other map like
+ * Wrapper around std::set, std::unordered_set and other set like
  * implementations.
  *
  * This is a very incomplete implementation. Add methods as needed.
  *
- * @tparam Map type to wrap.
+ * @tparam Set type to wrap.
  * @tparam Mutex type to synchronize with. Defaults to std::recursive_mutex
  */
-template <class Map, class Mutex = std::recursive_mutex>
-class synchronized_map {
+template <class Set, class Mutex = std::recursive_mutex>
+class synchronized_set {
  private:
-  Map map_;
+  Set set_;
   mutable Mutex mutex_;
 
  public:
   typedef Mutex mutex_type;
-  typedef Map map_type;
-  typedef typename Map::key_type key_type;
-  typedef typename Map::mapped_type mapped_type;
-  typedef typename Map::allocator_type allocator_type;
-  typedef typename Map::value_type value_type;
-  typedef typename Map::reference reference;
-  typedef typename Map::const_reference const_reference;
-  typedef typename Map::iterator iterator;
-  typedef typename Map::const_iterator const_iterator;
-  typedef typename Map::difference_type difference_type;
-  typedef typename Map::size_type size_type;
+  typedef Set set_type;
+  typedef typename Set::key_type key_type;
+  typedef typename Set::allocator_type allocator_type;
+  typedef typename Set::value_type value_type;
+  typedef typename Set::reference reference;
+  typedef typename Set::const_reference const_reference;
+  typedef typename Set::iterator iterator;
+  typedef typename Set::const_iterator const_iterator;
+  typedef typename Set::difference_type difference_type;
+  typedef typename Set::size_type size_type;
 
   inline mutex_type& mutex() const noexcept { return mutex_; }
 
-  inline map_type& map() noexcept { return map_; }
-  inline const map_type& map() const noexcept { return map_; }
+  inline set_type& set() noexcept { return set_; }
+  inline const set_type& set() const noexcept { return set_; }
 
   /**
    * Allocates a Lock object around the Mutex and locks the Mutex.
    *
    * Example:
    * \code{.cpp}
-   * auto&& guard = exampleMap.make_lock();
+   * auto&& guard = exampleSet.make_lock();
    * \endcode
    *
    * Equivalent to:
    * \code{.cpp}
-   * std::lock_guard<decltype(exampleMap)::mutex_type> guard(exampleMap.mutex);
+   * std::lock_guard<decltype(exampleSet)::mutex_type> guard(exampleSet.mutex);
    * \endcode
    *
    * @tparam Lock type to allocate. Defaults to std::lock_guard.
@@ -90,12 +89,12 @@ class synchronized_map {
    *
    * Example:
    * \code{.cpp}
-   * auto&& guard = exampleMap.make_lock<std::unique_lock>(std::defer_lock);
+   * auto&& guard = exampleSet.make_lock<std::unique_lock>(std::defer_lock);
    * \endcode
    *
    * Equivalent to:
    * \code{.cpp}
-   * std::unique_lock<decltype(exampleMap)::mutex_type> guard(exampleMap.mutex,
+   * std::unique_lock<decltype(exampleSet)::mutex_type> guard(exampleSet.mutex,
    * std::defer_lock); \endcode
    *
    * @tparam Lock type to allocate. Defaults to std::lock_guard.
@@ -110,52 +109,62 @@ class synchronized_map {
   }
 
   template <class... Args>
-  inline std::pair<typename Map::iterator, bool> emplace(Args&&... args) {
+  inline std::pair<typename Set::iterator, bool> emplace(Args&&... args) {
     std::lock_guard<Mutex> lock(mutex_);
-    return map_.emplace(std::forward<Args>(args)...);
+    return set_.emplace(std::forward<Args>(args)...);
   }
 
   inline size_type erase(const key_type& key) {
     std::lock_guard<Mutex> lock(mutex_);
-    return map_.erase(key);
+    return set_.erase(key);
   }
 
   inline bool empty() const noexcept {
     std::lock_guard<Mutex> lock(mutex_);
-    return map_.empty();
+    return set_.empty();
   }
 
   inline size_type size() const noexcept {
     std::lock_guard<Mutex> lock(mutex_);
-    return map_.size();
+    return set_.size();
   }
 
   inline void clear() noexcept {
     std::lock_guard<Mutex> lock(mutex_);
-    map_.clear();
+    set_.clear();
   }
 
   inline iterator find(const key_type& key) {
     //    std::lock_guard<Mutex> lock(mutex_);
-    return map_.find(key);
+    return set_.find(key);
   }
 
   inline const_iterator find(const key_type& key) const {
     //    std::lock_guard<Mutex> lock(mutex_);
-    return map_.find(key);
+    return set_.find(key);
   }
 
-  inline iterator begin() noexcept { return map_.begin(); }
-  inline iterator end() noexcept { return map_.end(); }
-  inline const_iterator begin() const noexcept { return map_.begin(); }
-  inline const_iterator end() const noexcept { return map_.end(); }
-  inline const_iterator cbegin() const noexcept { return map_.begin(); }
-  inline const_iterator cend() const noexcept { return map_.end(); }
+  inline iterator begin() noexcept { return set_.begin(); }
+  inline iterator end() noexcept { return set_.end(); }
+  inline const_iterator begin() const noexcept { return set_.begin(); }
+  inline const_iterator end() const noexcept { return set_.end(); }
+  inline const_iterator cbegin() const noexcept { return set_.begin(); }
+  inline const_iterator cend() const noexcept { return set_.end(); }
 
   template <class InputIterator>
   inline void insert(InputIterator first, InputIterator last) {
     std::lock_guard<Mutex> lock(mutex_);
-    map_.insert(first, last);
+    set_.insert(first, last);
+  }
+
+  inline std::pair<iterator, bool> insert(value_type&& value) {
+    std::lock_guard<Mutex> lock(mutex_);
+    return set_.insert(std::move(value));
+  }
+
+  inline std::pair<iterator, bool> insert(const value_type& value) {
+    std::lock_guard<Mutex> lock(mutex_);
+    return set_.insert(value);
   }
 };
 
@@ -163,4 +172,4 @@ class synchronized_map {
 }  // namespace geode
 }  // namespace apache
 
-#endif  // GEODE_UTIL_SYNCHRONIZED_MAP_H_
+#endif  // GEODE_UTIL_SYNCHRONIZED_SET_H_

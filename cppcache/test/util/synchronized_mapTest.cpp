@@ -16,62 +16,15 @@
  */
 
 #include <atomic>
-#include <future>
 #include <mutex>
-#include <stdexcept>
 #include <unordered_map>
-
-#include <boost/thread/barrier.hpp>
 
 #include <gtest/gtest.h>
 
+#include "TestableRecursiveMutex.hpp"
 #include "util/synchronized_map.hpp"
 
 using apache::geode::client::synchronized_map;
-
-class TestableRecursiveMutex {
- public:
-  std::recursive_mutex mutex_;
-  std::atomic<int32_t> recursive_depth_;
-  std::atomic<int32_t> lock_count_;
-  std::atomic<int32_t> unlock_count_;
-  std::atomic<int32_t> try_lock_count_;
-
-  TestableRecursiveMutex() noexcept
-      : recursive_depth_(0),
-        lock_count_(0),
-        unlock_count_(0),
-        try_lock_count_(0) {}
-
-  void lock() {
-    mutex_.lock();
-    ++recursive_depth_;
-    ++lock_count_;
-  }
-
-  void unlock() {
-    mutex_.unlock();
-    --recursive_depth_;
-    ++unlock_count_;
-  }
-
-  bool try_lock() {
-    bool locked = false;
-    if ((locked = mutex_.try_lock())) {
-      ++recursive_depth_;
-    }
-
-    ++try_lock_count_;
-    return locked;
-  }
-
-  void resetCounters() {
-    recursive_depth_ = 0;
-    lock_count_ = 0;
-    unlock_count_ = 0;
-    try_lock_count_ = 0;
-  }
-};
 
 TEST(synchronized_mapTest, emplaceLocks) {
   synchronized_map<std::unordered_map<std::string, std::string>,
