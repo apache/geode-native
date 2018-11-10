@@ -347,7 +347,6 @@ ThinClientRegion::ThinClientRegion(
     : LocalRegion(name, cacheImpl, rPtr, attributes, stats, shared),
       m_tcrdm(nullptr),
       m_notifyRelease(false),
-      m_notificationSema(1),
       m_isMetaDataRefreshed(false) {
   m_transactionEnabled = true;
   m_isDurableClnt = !cacheImpl->getDistributedSystem()
@@ -2797,6 +2796,7 @@ GfErrType ThinClientRegion::handleServerException(const char* func,
 }
 
 void ThinClientRegion::receiveNotification(TcrMessage* msg) {
+  std::unique_lock<std::mutex> lock(m_notificationMutex, std::defer_lock);
   {
     TryReadGuard guard(m_rwLock, m_destroyPending);
     if (m_destroyPending) {
@@ -2805,7 +2805,7 @@ void ThinClientRegion::receiveNotification(TcrMessage* msg) {
       }
       return;
     }
-    m_notificationSema.acquire();
+    lock.lock();
   }
 
   if (msg->getMessageType() == TcrMessage::CLIENT_MARKER) {
@@ -2814,7 +2814,7 @@ void ThinClientRegion::receiveNotification(TcrMessage* msg) {
     clientNotificationHandler(*msg);
   }
 
-  m_notificationSema.release();
+  lock.unlock();
   if (TcrMessage::getAllEPDisMess() != msg) _GEODE_SAFE_DELETE(msg);
 }
 
@@ -2917,8 +2917,10 @@ void ThinClientRegion::release(bool invokeCallbacks) {
   if (m_released) {
     return;
   }
+
+  std::unique_lock<std::mutex> lock(m_notificationMutex, std::defer_lock);
   if (!m_notifyRelease) {
-    m_notificationSema.acquire();
+    lock.lock();
   }
 
   destroyDM(invokeCallbacks);
