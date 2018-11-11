@@ -19,8 +19,6 @@
 
 #include <climits>
 #include <cstdlib>
-#include <iterator>
-#include <unordered_set>
 
 #include <geode/FixedPartitionResolver.hpp>
 
@@ -34,20 +32,6 @@ namespace client {
 const BucketStatus::clock::time_point BucketStatus::m_noTimeout{};
 
 const char* ClientMetadataService::NC_CMDSvcThread = "NC CMDSvcThread";
-
-ClientMetadataService::~ClientMetadataService() {
-  if (m_bucketWaitTimeout > std::chrono::milliseconds::zero()) {
-    try {
-      std::map<std::string, PRbuckets*>::iterator bi;
-      for (bi = m_bucketStatus.begin(); bi != m_bucketStatus.end(); ++bi) {
-        delete bi->second;
-      }
-
-    } catch (...) {
-      LOGINFO("Exception in ClientMetadataService destructor");
-    }
-  }
-}
 
 ClientMetadataService::ClientMetadataService(ThinClientPoolDM* pool)
     : m_run(false),
@@ -131,7 +115,8 @@ void ClientMetadataService::getClientPRMetadata(const char* regionFullPath) {
           reply.getNumBuckets() > 0) {
         boost::unique_lock<decltype(m_PRbucketStatusLock)> lock(
             m_PRbucketStatusLock);
-        m_bucketStatus[regionFullPath] = new PRbuckets(reply.getNumBuckets());
+        m_bucketStatus[regionFullPath] =
+            std::unique_ptr<PRbuckets>(new PRbuckets(reply.getNumBuckets()));
       }
       LOGDEBUG("ClientMetadata buckets %d ", reply.getNumBuckets());
     }
@@ -168,6 +153,7 @@ void ClientMetadataService::getClientPRMetadata(const char* regionFullPath) {
     }
   }
 }
+
 std::shared_ptr<ClientMetadata> ClientMetadataService::SendClientPRMetadata(
     const char* regionPath, std::shared_ptr<ClientMetadata> cptr) {
   TcrMessageGetClientPrMetadata request(
@@ -182,10 +168,11 @@ std::shared_ptr<ClientMetadata> ClientMetadataService::SendClientPRMetadata(
       reply.getMessageType() == TcrMessage::RESPONSE_CLIENT_PR_METADATA) {
     region = m_cache->getRegion(regionPath);
     if (region != nullptr) {
-      auto lregion = dynamic_cast<LocalRegion*>(region.get());
-      lregion->getRegionStats()->incMetaDataRefreshCount();
+      if (auto lregion = std::dynamic_pointer_cast<LocalRegion>(region)) {
+        lregion->getRegionStats()->incMetaDataRefreshCount();
+      }
     }
-    std::vector<BucketServerLocationsType>* metadata = reply.getMetadata();
+    auto metadata = reply.getMetadata();
     if (metadata == nullptr) return nullptr;
     if (metadata->empty()) {
       delete metadata;
@@ -264,12 +251,6 @@ std::shared_ptr<ClientMetadata> ClientMetadataService::getClientMetadata(
     return (*regionMetadataIter).second;
   }
   return nullptr;
-}
-
-void ClientMetadataService::populateDummyServers(
-    const char* regionName, std::shared_ptr<ClientMetadata> cptr) {
-  boost::unique_lock<decltype(m_regionMetadataLock)> lock(m_regionMetadataLock);
-  m_regionMetaDataMap[regionName] = cptr;
 }
 
 void ClientMetadataService::enqueueForMetadataRefresh(
@@ -767,7 +748,7 @@ void ClientMetadataService::markPrimaryBucketForTimeoutButLookSecondaryBucket(
   PRbuckets* prBuckets = nullptr;
   const auto& bs = m_bucketStatus.find(region->getFullPath());
   if (bs != m_bucketStatus.end()) {
-    prBuckets = bs->second;
+    prBuckets = bs->second.get();
   }
 
   if (prBuckets == nullptr) return;

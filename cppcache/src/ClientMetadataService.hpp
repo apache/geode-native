@@ -101,9 +101,9 @@ class PRbuckets {
 
 class ClientMetadataService : private NonCopyable, private NonAssignable {
  public:
-  ~ClientMetadataService();
-  explicit ClientMetadataService(ThinClientPoolDM* pool);
   ClientMetadataService() = delete;
+  explicit ClientMetadataService(ThinClientPoolDM* pool);
+  inline ~ClientMetadataService() noexcept = default;
 
   inline void start() {
     m_run = true;
@@ -127,13 +127,8 @@ class ClientMetadataService : private NonCopyable, private NonAssignable {
       const std::shared_ptr<Serializable>& aCallbackArgument, bool isPrimary,
       std::shared_ptr<BucketServerLocation>& serverLocation, int8_t& version);
 
-  void removeBucketServerLocation(BucketServerLocation serverLocation);
-
   std::shared_ptr<ClientMetadata> getClientMetadata(
       const std::string& regionFullPath);
-
-  void populateDummyServers(const char* regionName,
-                            std::shared_ptr<ClientMetadata> clientmetadata);
 
   void enqueueForMetadataRefresh(const std::string& regionFullPath,
                                  int8_t serverGroupFlag);
@@ -170,8 +165,6 @@ class ClientMetadataService : private NonCopyable, private NonAssignable {
       dereference_hash<std::shared_ptr<BucketServerLocation>>,
       dereference_equal_to<std::shared_ptr<BucketServerLocation>>>
       ServerToBucketsMap;
-  // bool AreBucketSetsEqual(const BucketSet& currentBucketSet,
-  //                        const BucketSet& bucketSet);
 
   std::shared_ptr<BucketServerLocation> findNextServer(
       const ServerToBucketsMap& serverToBucketsMap,
@@ -223,7 +216,7 @@ class ClientMetadataService : private NonCopyable, private NonAssignable {
   std::mutex m_regionQueueMutex;
   std::condition_variable m_regionQueueCondition;
   boost::shared_mutex m_PRbucketStatusLock;
-  std::map<std::string, PRbuckets*> m_bucketStatus;
+  std::map<std::string, std::unique_ptr<PRbuckets>> m_bucketStatus;
   std::chrono::milliseconds m_bucketWaitTimeout;
   static const char* NC_CMDSvcThread;
 };
