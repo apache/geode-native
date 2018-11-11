@@ -108,8 +108,9 @@ void ClientMetadataService::getClientPRMetadata(const char* regionFullPath) {
   std::string path(regionFullPath);
   std::shared_ptr<ClientMetadata> cptr = nullptr;
   {
-    ReadGuard guard(m_regionMetadataLock);
-    RegionMetadataMapType::iterator itr = m_regionMetaDataMap.find(path);
+    boost::shared_lock<decltype(m_regionMetadataLock)> lock(
+        m_regionMetadataLock);
+    const auto& itr = m_regionMetaDataMap.find(path);
     if (itr != m_regionMetaDataMap.end()) {
       cptr = itr->second;
     }
@@ -128,7 +129,8 @@ void ClientMetadataService::getClientPRMetadata(const char* regionFullPath) {
                                               reply.getFpaSet());
       if (m_bucketWaitTimeout > std::chrono::milliseconds::zero() &&
           reply.getNumBuckets() > 0) {
-        WriteGuard guard(m_PRbucketStatusLock);
+        boost::unique_lock<decltype(m_PRbucketStatusLock)> lock(
+            m_PRbucketStatusLock);
         m_bucketStatus[regionFullPath] = new PRbuckets(reply.getNumBuckets());
       }
       LOGDEBUG("ClientMetadata buckets %d ", reply.getNumBuckets());
@@ -146,7 +148,8 @@ void ClientMetadataService::getClientPRMetadata(const char* regionFullPath) {
     if (newCptr != nullptr) {
       cptr->setPreviousone(nullptr);
       newCptr->setPreviousone(cptr);
-      WriteGuard guard(m_regionMetadataLock);
+      boost::unique_lock<decltype(m_regionMetadataLock)> lock(
+          m_regionMetadataLock);
       m_regionMetaDataMap[path] = newCptr;
       LOGINFO("Updated client meta data");
     }
@@ -157,7 +160,8 @@ void ClientMetadataService::getClientPRMetadata(const char* regionFullPath) {
       cptr->setPreviousone(nullptr);
       newCptr->setPreviousone(cptr);
       // now we will get new instance so assign it again
-      WriteGuard guard(m_regionMetadataLock);
+      boost::unique_lock<decltype(m_regionMetadataLock)> lock(
+          m_regionMetadataLock);
       m_regionMetaDataMap[colocatedWith.c_str()] = newCptr;
       m_regionMetaDataMap[path] = newCptr;
       LOGINFO("Updated client meta data");
@@ -206,7 +210,8 @@ void ClientMetadataService::getBucketServerLocation(
     const std::shared_ptr<Serializable>& aCallbackArgument, bool isPrimary,
     std::shared_ptr<BucketServerLocation>& serverLocation, int8_t& version) {
   if (region != nullptr) {
-    ReadGuard guard(m_regionMetadataLock);
+    boost::shared_lock<decltype(m_regionMetadataLock)> lock(
+        m_regionMetadataLock);
     LOGDEBUG(
         "ClientMetadataService::getBucketServerLocation m_regionMetaDataMap "
         "size is %d",
@@ -253,9 +258,8 @@ void ClientMetadataService::getBucketServerLocation(
 
 std::shared_ptr<ClientMetadata> ClientMetadataService::getClientMetadata(
     const std::string& regionFullPath) {
-  ReadGuard guard(m_regionMetadataLock);
-  RegionMetadataMapType::iterator regionMetadataIter =
-      m_regionMetaDataMap.find(regionFullPath);
+  boost::shared_lock<decltype(m_regionMetadataLock)> lock(m_regionMetadataLock);
+  const auto& regionMetadataIter = m_regionMetaDataMap.find(regionFullPath);
   if (regionMetadataIter != m_regionMetaDataMap.end()) {
     return (*regionMetadataIter).second;
   }
@@ -264,7 +268,7 @@ std::shared_ptr<ClientMetadata> ClientMetadataService::getClientMetadata(
 
 void ClientMetadataService::populateDummyServers(
     const char* regionName, std::shared_ptr<ClientMetadata> cptr) {
-  WriteGuard guard(m_regionMetadataLock);
+  boost::unique_lock<decltype(m_regionMetadataLock)> lock(m_regionMetadataLock);
   m_regionMetaDataMap[regionName] = cptr;
 }
 
@@ -305,10 +309,9 @@ void ClientMetadataService::enqueueForMetadataRefresh(
 }
 std::shared_ptr<ClientMetadata> ClientMetadataService::getClientMetadata(
     const std::shared_ptr<Region>& region) {
-  ReadGuard guard(m_regionMetadataLock);
+  boost::shared_lock<decltype(m_regionMetadataLock)> lock(m_regionMetadataLock);
 
   const auto& entry = m_regionMetaDataMap.find(region->getFullPath());
-
   if (entry == m_regionMetaDataMap.end()) {
     return nullptr;
   }
@@ -382,25 +385,25 @@ ClientMetadataService::getServerToFilterMap(
     keyList->push_back(key);
   }
 
-  if (keysWhichLeft.size() > 0 &&
-      serverToFilterMap->size() > 0) {  // add left keys in result
+  if (!keysWhichLeft.empty() && !serverToFilterMap->empty()) {
+    // add left keys in result
     auto keyLefts = keysWhichLeft.size();
     auto totalServers = serverToFilterMap->size();
     auto perServer = keyLefts / totalServers + 1;
 
     size_t keyIdx = 0;
     for (const auto& locationIter : *serverToFilterMap) {
-      const auto keys = locationIter.second;
+      const auto values = locationIter.second;
       for (size_t i = 0; i < perServer; i++) {
         if (keyIdx < keyLefts) {
-          keys->push_back(keysWhichLeft.at(keyIdx++));
+          values->push_back(keysWhichLeft.at(keyIdx++));
         } else {
           break;
         }
       }
       if (keyIdx >= keyLefts) break;  // done
     }
-  } else if (serverToFilterMap->size() == 0) {  // not be able to map any key
+  } else if (serverToFilterMap->empty()) {  // not be able to map any key
     return nullptr;  // it will force all keys to send to one server
   }
 
@@ -415,7 +418,7 @@ void ClientMetadataService::markPrimaryBucketForTimeout(
     std::shared_ptr<BucketServerLocation>& serverLocation, int8_t& version) {
   if (m_bucketWaitTimeout == std::chrono::milliseconds::zero()) return;
 
-  WriteGuard guard(m_PRbucketStatusLock);
+  boost::unique_lock<decltype(m_PRbucketStatusLock)> lock(m_PRbucketStatusLock);
 
   getBucketServerLocation(region, key, value, aCallbackArgument,
                           false /*look for secondary host*/, serverLocation,
@@ -427,8 +430,7 @@ void ClientMetadataService::markPrimaryBucketForTimeout(
              serverLocation->getPort());
     int32_t bId = serverLocation->getBucketId();
 
-    std::map<std::string, PRbuckets*>::iterator bs =
-        m_bucketStatus.find(region->getFullPath());
+    const auto& bs = m_bucketStatus.find(region->getFullPath());
 
     if (bs != m_bucketStatus.end()) {
       bs->second->setBucketTimeout(bId);
@@ -760,12 +762,10 @@ void ClientMetadataService::markPrimaryBucketForTimeoutButLookSecondaryBucket(
     std::shared_ptr<BucketServerLocation>& serverLocation, int8_t& version) {
   if (m_bucketWaitTimeout == std::chrono::milliseconds::zero()) return;
 
-  WriteGuard guard(m_PRbucketStatusLock);
-
-  std::map<std::string, PRbuckets*>::iterator bs =
-      m_bucketStatus.find(region->getFullPath());
+  boost::unique_lock<decltype(m_PRbucketStatusLock)> lock(m_PRbucketStatusLock);
 
   PRbuckets* prBuckets = nullptr;
+  const auto& bs = m_bucketStatus.find(region->getFullPath());
   if (bs != m_bucketStatus.end()) {
     prBuckets = bs->second;
   }
@@ -777,10 +777,10 @@ void ClientMetadataService::markPrimaryBucketForTimeoutButLookSecondaryBucket(
 
   std::shared_ptr<ClientMetadata> cptr = nullptr;
   {
-    ReadGuard guard(m_regionMetadataLock);
-    RegionMetadataMapType::iterator cptrIter =
-        m_regionMetaDataMap.find(region->getFullPath());
+    boost::shared_lock<decltype(m_regionMetadataLock)> lock(
+        m_regionMetadataLock);
 
+    const auto& cptrIter = m_regionMetaDataMap.find(region->getFullPath());
     if (cptrIter != m_regionMetaDataMap.end()) {
       cptr = cptrIter->second;
     }
@@ -792,9 +792,9 @@ void ClientMetadataService::markPrimaryBucketForTimeoutButLookSecondaryBucket(
 
   LOGFINE("Setting in markPrimaryBucketForTimeoutButLookSecondaryBucket");
 
-  int32_t totalBuckets = cptr->getTotalNumBuckets();
+  auto totalBuckets = cptr->getTotalNumBuckets();
 
-  for (int32_t i = 0; i < totalBuckets; i++) {
+  for (decltype(totalBuckets) i = 0; i < totalBuckets; i++) {
     int8_t version;
     std::shared_ptr<BucketServerLocation> bsl;
     cptr->getServerLocation(i, false, bsl, version);
@@ -812,7 +812,7 @@ bool ClientMetadataService::isBucketMarkedForTimeout(const char* regionFullPath,
                                                      int32_t bucketid) {
   if (m_bucketWaitTimeout == std::chrono::milliseconds::zero()) return false;
 
-  ReadGuard guard(m_PRbucketStatusLock);
+  boost::shared_lock<decltype(m_PRbucketStatusLock)> lock(m_PRbucketStatusLock);
 
   const auto& bs = m_bucketStatus.find(regionFullPath);
   if (bs != m_bucketStatus.end()) {

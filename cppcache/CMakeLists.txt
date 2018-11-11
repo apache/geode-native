@@ -89,6 +89,7 @@ target_link_libraries(_apache-geode INTERFACE
   ACE
   Boost::boost
   Boost::filesystem
+  Boost::thread
   libxml2
 )
 

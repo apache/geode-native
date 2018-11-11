@@ -29,7 +29,7 @@
 #include <thread>
 #include <unordered_map>
 
-#include <ace/Task.h>
+#include <boost/thread/shared_mutex.hpp>
 
 #include <geode/CacheableKey.hpp>
 #include <geode/Region.hpp>
@@ -214,7 +214,7 @@ class ClientMetadataService : private NonCopyable, private NonAssignable {
 
  private:
   std::thread m_thread;
-  ACE_RW_Thread_Mutex m_regionMetadataLock;
+  boost::shared_mutex m_regionMetadataLock;
   RegionMetadataMapType m_regionMetaDataMap;
   std::atomic<bool> m_run;
   ThinClientPoolDM* m_pool;
@@ -222,7 +222,7 @@ class ClientMetadataService : private NonCopyable, private NonAssignable {
   Queue<std::shared_ptr<std::string>> m_regionQueue;
   std::mutex m_regionQueueMutex;
   std::condition_variable m_regionQueueCondition;
-  ACE_RW_Thread_Mutex m_PRbucketStatusLock;
+  boost::shared_mutex m_PRbucketStatusLock;
   std::map<std::string, PRbuckets*> m_bucketStatus;
   std::chrono::milliseconds m_bucketWaitTimeout;
   static const char* NC_CMDSvcThread;
