@@ -115,7 +115,6 @@ class ThinClientPoolDM
     destroy();
     _GEODE_SAFE_DELETE(m_locHelper);
     _GEODE_SAFE_DELETE(m_stats);
-    _GEODE_SAFE_DELETE(m_clientMetadataService);
     _GEODE_SAFE_DELETE(m_manager);
   }
   // void updateQueue(const char* regionPath) ;
@@ -182,7 +181,7 @@ class ThinClientPoolDM
       int8_t& version, std::set<ServerLocation>& excludeServers);
 
   ClientMetadataService* getClientMetaDataService() {
-    return m_clientMetadataService;
+    return m_clientMetadataService.get();
   }
   void setPrimaryServerQueueSize(int queueSize) {
     m_primaryServerQueueSize = queueSize;
@@ -320,7 +319,7 @@ class ThinClientPoolDM
   void restoreMinConnections(volatile bool& isRunning);
   std::atomic<int32_t> m_clientOps;  // Actual Size of Pool
   statistics::PoolStatsSampler* m_PoolStatsSampler;
-  ClientMetadataService* m_clientMetadataService;
+  std::unique_ptr<ClientMetadataService> m_clientMetadataService;
   friend class CacheImpl;
   friend class ThinClientStickyManager;
   friend class FunctionExecution;

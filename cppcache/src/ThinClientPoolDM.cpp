@@ -207,7 +207,8 @@ ThinClientPoolDM::ThinClientPoolDM(const char* name,
     }
   }
   if (m_attrs->getPRSingleHopEnabled()) {
-    m_clientMetadataService = new ClientMetadataService(this);
+    m_clientMetadataService =
+        std::unique_ptr<ClientMetadataService>(new ClientMetadataService(this));
   }
   m_manager = new ThinClientStickyManager(this);
 }
@@ -789,14 +790,14 @@ void ThinClientPoolDM::destroy(bool keepAlive) {
     LOGDEBUG("PoolStatsSampler thread closed .");
     stopCliCallbackThread();
     LOGDEBUG("ThinClientPoolDM::destroy( ): Closing connection manager.");
+    auto cacheImpl = m_connManager.getCacheImpl();
     if (m_connManageTask) {
       m_connManageTask->stopNoblock();
       m_connSema.release();
       m_connManageTask->wait();
       _GEODE_SAFE_DELETE(m_connManageTask);
       if (m_connManageTaskId >= 0) {
-        m_connManager.getCacheImpl()->getExpiryTaskManager().cancelTask(
-            m_connManageTaskId);
+        cacheImpl->getExpiryTaskManager().cancelTask(m_connManageTaskId);
       }
     }
 
@@ -822,14 +823,9 @@ void ThinClientPoolDM::destroy(bool keepAlive) {
 
     // Close Stats
     getStats().close();
-    m_connManager.getCacheImpl()->getStatisticsManager().forceSample();
+    cacheImpl->getStatisticsManager().forceSample();
 
-    if (m_clientMetadataService != nullptr) {
-      _GEODE_SAFE_DELETE(m_clientMetadataService);
-    }
-
-    m_connManager.getCacheImpl()->getPoolManager().removePool(
-        m_poolName.c_str());
+    cacheImpl->getPoolManager().removePool(m_poolName.c_str());
 
     stopChunkProcessor();
     m_manager->closeAllStickyConnections();

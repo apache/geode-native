@@ -26,6 +26,7 @@
 #include <memory>
 #include <mutex>
 #include <string>
+#include <thread>
 #include <unordered_map>
 
 #include <ace/Task.h>
@@ -98,9 +99,7 @@ class PRbuckets {
   void setBucketTimeout(int32_t bucketId) { m_buckets[bucketId].setTimeout(); }
 };
 
-class ClientMetadataService : public ACE_Task_Base,
-                              private NonCopyable,
-                              private NonAssignable {
+class ClientMetadataService : private NonCopyable, private NonAssignable {
  public:
   ~ClientMetadataService();
   explicit ClientMetadataService(ThinClientPoolDM* pool);
@@ -108,13 +107,13 @@ class ClientMetadataService : public ACE_Task_Base,
 
   inline void start() {
     m_run = true;
-    this->activate();
+    m_thread = std::thread(&ClientMetadataService::svc, this);
   }
 
   inline void stop() {
     m_run = false;
     m_regionQueueCondition.notify_one();
-    this->wait();
+    m_thread.join();
   }
 
   int svc(void);
@@ -214,6 +213,7 @@ class ClientMetadataService : public ACE_Task_Base,
       const std::shared_ptr<Region>& region);
 
  private:
+  std::thread m_thread;
   ACE_RW_Thread_Mutex m_regionMetadataLock;
   RegionMetadataMapType m_regionMetaDataMap;
   std::atomic<bool> m_run;
