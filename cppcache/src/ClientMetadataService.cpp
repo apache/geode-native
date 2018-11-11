@@ -20,6 +20,8 @@
 #include <climits>
 #include <cstdlib>
 
+#include <boost/thread/lock_types.hpp>
+
 #include <geode/FixedPartitionResolver.hpp>
 
 #include "TcrMessage.hpp"
