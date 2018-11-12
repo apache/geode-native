@@ -48,6 +48,7 @@ add_executable(apache-geode_unittests
   util/functionalTests.cpp
   util/chrono/durationTest.cpp
   LocalRegionTest.cpp
+  util/queueTest.cpp
 )
 
 target_compile_definitions(apache-geode_unittests

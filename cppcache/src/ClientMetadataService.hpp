@@ -23,6 +23,7 @@
 #include <atomic>
 #include <chrono>
 #include <condition_variable>
+#include <deque>
 #include <memory>
 #include <mutex>
 #include <string>
@@ -37,17 +38,15 @@
 #include <geode/internal/functional.hpp>
 
 #include "BucketServerLocation.hpp"
-#include "ClientMetadata.hpp"
-#include "DistributedSystemImpl.hpp"
 #include "NonCopyable.hpp"
-#include "Queue.hpp"
 #include "ServerLocation.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
-class ClienMetadata;
+class ClientMetadata;
+class ThinClientPoolDM;
 
 typedef std::map<std::string, std::shared_ptr<ClientMetadata>>
     RegionMetadataMapType;
@@ -212,7 +211,7 @@ class ClientMetadataService : private NonCopyable, private NonAssignable {
   std::atomic<bool> m_run;
   ThinClientPoolDM* m_pool;
   CacheImpl* m_cache;
-  Queue<std::shared_ptr<std::string>> m_regionQueue;
+  std::deque<std::string> m_regionQueue;
   std::mutex m_regionQueueMutex;
   std::condition_variable m_regionQueueCondition;
   boost::shared_mutex m_PRbucketStatusLock;

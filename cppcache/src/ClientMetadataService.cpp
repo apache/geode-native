@@ -24,8 +24,10 @@
 
 #include <geode/FixedPartitionResolver.hpp>
 
+#include "ClientMetadata.hpp"
 #include "TcrMessage.hpp"
 #include "ThinClientPoolDM.hpp"
+#include "util/queue.hpp"
 
 namespace apache {
 namespace geode {
@@ -57,25 +59,12 @@ int ClientMetadataService::svc() {
       break;
     }
 
-    auto&& regionFullPath = m_regionQueue.get();
-    if (regionFullPath) {
-      while (true) {
-        if (!m_regionQueue.empty()) {
-          auto&& nextRegionFullPath = m_regionQueue.get();
-          if (nextRegionFullPath && *regionFullPath == *nextRegionFullPath) {
-          } else {
-            // different region; put it back
-            m_regionQueue.put(nextRegionFullPath);
-            break;
-          }
-        } else {
-          break;
-        }
-      }
-    }
+    auto regionFullPath = std::move(m_regionQueue.front());
+    m_regionQueue.pop_front();
+    queue::coalesce(m_regionQueue, regionFullPath);
 
-    if (!m_cache->isCacheDestroyPending() && regionFullPath) {
-      getClientPRMetadata(regionFullPath->c_str());
+    if (!m_cache->isCacheDestroyPending()) {
+      getClientPRMetadata(regionFullPath.c_str());
     } else {
       break;
     }
@@ -281,10 +270,9 @@ void ClientMetadataService::enqueueForMetadataRefresh(
       LOGFINE("Network hop so fetching single hop metadata from the server");
       m_cache->setNetworkHopFlag(true);
       tcrRegion->setMetaDataRefreshed(true);
-      auto tempRegionPath = std::make_shared<std::string>(regionFullPath);
       {
         std::lock_guard<decltype(m_regionQueueMutex)> lock(m_regionQueueMutex);
-        m_regionQueue.put(tempRegionPath);
+        m_regionQueue.push_back(regionFullPath);
       }
       m_regionQueueCondition.notify_one();
     }
