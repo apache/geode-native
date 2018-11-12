@@ -805,8 +805,9 @@ void ThinClientPoolDM::destroy(bool keepAlive) {
     stopPingThread();
     stopUpdateLocatorListThread();
 
-    if (m_clientMetadataService != nullptr) {
+    if (m_clientMetadataService) {
       m_clientMetadataService->stop();
+      // m_clientMetadataService = nullptr;
     }
     // closing all the thread local connections ( sticky).
     LOGDEBUG("ThinClientPoolDM::destroy( ): closing FairQueue, pool size = %d",
@@ -825,7 +826,7 @@ void ThinClientPoolDM::destroy(bool keepAlive) {
     getStats().close();
     cacheImpl->getStatisticsManager().forceSample();
 
-    cacheImpl->getPoolManager().removePool(m_poolName.c_str());
+    cacheImpl->getPoolManager().removePool(m_poolName);
 
     stopChunkProcessor();
     m_manager->closeAllStickyConnections();

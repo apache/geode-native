@@ -20,10 +20,6 @@
 #ifndef GEODE_DISTRIBUTEDSYSTEMIMPL_H_
 #define GEODE_DISTRIBUTEDSYSTEMIMPL_H_
 
-/**
- * @file
- */
-
 #include <map>
 #include <memory>
 #include <mutex>
@@ -42,22 +38,19 @@
 namespace apache {
 namespace geode {
 namespace client {
+
 class SystemProperties;
+
+class DistributedSystemImpl;
+
+using CliCallbackMethod = std::function<void(Cache&)>;
 
 /**
  * @class DistributedSystemImpl DistributedSystemImpl.hpp
  * A "connection" to a Geode distributed system.
  * The connection will be through a (host, port) pair.
  */
-
-class DistributedSystemImpl;
-
-using CliCallbackMethod = std::function<void(Cache&)>;
-
 class APACHE_GEODE_EXPORT DistributedSystemImpl {
-  /**
-   * @brief public methods
-   */
  public:
   static void setThreadName(const std::string& threadName) {
     if (threadName.empty()) {
@@ -110,6 +103,7 @@ class APACHE_GEODE_EXPORT DistributedSystemImpl {
   std::unique_ptr<SystemProperties> m_sysProps;
   bool m_connected;
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
