@@ -56,13 +56,9 @@ TEST(FunctionExecutionTest, UnknownFunction) {
   auto cache = cluster.createCache();
   auto region = setupRegion(cache);
 
-  try {
-    FunctionService::onServer(region->getRegionService())
-        .execute("I_Don_t_Exist");
-  } catch (FunctionExecutionException ex) {
-  } catch (...) {
-    FAIL() << "Expected FunctionExecutionException";
-  }
+  ASSERT_THROW(FunctionService::onServer(region->getRegionService())
+                   .execute("I_Don_t_Exist"),
+               FunctionExecutionException);
 }
 
 class TestResultCollector : public ResultCollector {
@@ -90,12 +86,8 @@ TEST(FunctionExecutionTest, UnknownFunctionAsync) {
   auto cache = cluster.createCache();
   auto region = setupRegion(cache);
 
-  try {
-    FunctionService::onServer(region->getRegionService())
-        .withCollector(std::make_shared<TestResultCollector>())
-        .execute("I_Don_t_Exist");
-  } catch (FunctionExecutionException ex) {
-  } catch (...) {
-    FAIL() << "Expected FunctionExecutionException";
-  }
+  ASSERT_THROW(FunctionService::onServer(region->getRegionService())
+                   .withCollector(std::make_shared<TestResultCollector>())
+                   .execute("I_Don_t_Exist"),
+               FunctionExecutionException);
 }
