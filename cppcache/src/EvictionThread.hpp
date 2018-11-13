@@ -20,12 +20,12 @@
 #ifndef GEODE_EVICTIONTHREAD_H_
 #define GEODE_EVICTIONTHREAD_H_
 
+#include <atomic>
+#include <thread>
+
 #include <ace/Task.h>
 
-#include <geode/DataOutput.hpp>
-
 #include "IntQueue.hpp"
-#include "util/Log.hpp"
 
 namespace apache {
 namespace geode {
@@ -36,31 +36,20 @@ class EvictionController;
 /**
  * This class does the actual evictions
  */
-class APACHE_GEODE_EXPORT EvictionThread : public ACE_Task_Base {
+class EvictionThread {
  public:
   explicit EvictionThread(EvictionController* parent);
-
-  inline void start() {
-    m_run = true;
-    this->activate();
-    LOGFINE("Eviction Thread started");
-  }
-
-  inline void stop() {
-    m_run = false;
-    this->wait();
-    m_queue.clear();
-    LOGFINE("Eviction Thread stopped");
-  }
-
+  void start();
+  void stop();
   int svc();
   void putEvictionInfo(int32_t info);
   void processEvictions();
 
  private:
+  std::thread m_thread;
+  std::atomic<bool> m_run;
   EvictionController* m_pParent;
   IntQueue<int32_t> m_queue;
-  bool m_run;
 
   static const char* NC_Evic_Thread;
 };

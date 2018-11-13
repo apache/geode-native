@@ -21,14 +21,32 @@
 
 #include "DistributedSystemImpl.hpp"
 #include "EvictionController.hpp"
+#include "util/Log.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
 const char* EvictionThread::NC_Evic_Thread = "NC Evic Thread";
+
 EvictionThread::EvictionThread(EvictionController* parent)
-    : m_pParent(parent), m_run(false) {}
+    : m_run(false), m_pParent(parent) {}
+
+void EvictionThread::start() {
+  m_run = true;
+  m_thread = std::thread(&EvictionThread::svc, this);
+
+  LOGFINE("Eviction Thread started");
+}
+
+void EvictionThread::stop() {
+  m_run = false;
+  m_thread.join();
+
+  m_queue.clear();
+
+  LOGFINE("Eviction Thread stopped");
+}
 
 int EvictionThread::svc(void) {
   DistributedSystemImpl::setThreadName(NC_Evic_Thread);
