@@ -131,7 +131,7 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
   serverOptimizeForWrite = ((attr->at(2) == 1) ? true : false);
 
   LOGDEBUG(
-      "ExecutionImpl::execute got functionAttributes from srver for function = "
+      "ExecutionImpl::execute got functionAttributes from server for function = "
       "%s serverHasResult = %d "
       " serverIsHA = %d serverOptimizeForWrite = %d ",
       func.c_str(), serverHasResult, serverIsHA, serverOptimizeForWrite);
@@ -392,10 +392,15 @@ GfErrType ExecutionImpl::getFuncAttributes(const std::string& func,
                                         reply.getException());
       break;
     }
+    case TcrMessage::REQUEST_DATA_ERROR: {
+      LOGERROR("Error message from server: " + reply.getValue()->toString());
+      throw FunctionExecutionException(reply.getValue()->toString());
+    }
     default: {
       LOGERROR("Unknown message type %d while getting function attributes.",
                reply.getMessageType());
       err = GF_MSG;
+      break;
     }
   }
   return err;
