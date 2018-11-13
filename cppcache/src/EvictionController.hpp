@@ -21,12 +21,11 @@
 #define GEODE_EVICTIONCONTROLLER_H_
 
 #include <atomic>
-#include <memory>
 #include <string>
 #include <thread>
 #include <vector>
 
-#include <ace/RW_Thread_Mutex.h>
+#include <boost/thread/shared_mutex.hpp>
 
 #include <geode/DataOutput.hpp>
 
@@ -99,7 +98,7 @@ class APACHE_GEODE_EXPORT EvictionController {
   int64_t m_currentHeapSize;
   HeapSizeInfoQueue m_queue;
   std::vector<std::string> m_regions;
-  mutable ACE_RW_Thread_Mutex m_regionLock;
+  boost::shared_mutex m_regionLock;
   EvictionThread* evictionThreadPtr;
   static const char* NC_EC_Thread;
 };

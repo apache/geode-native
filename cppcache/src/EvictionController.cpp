@@ -18,7 +18,6 @@
 #include "EvictionController.hpp"
 
 #include <chrono>
-#include <string>
 
 #include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
@@ -129,15 +128,15 @@ void EvictionController::processHeapInfo(int64_t& readInfo,
 }
 
 void EvictionController::registerRegion(const std::string& name) {
-  WriteGuard guard(m_regionLock);
+  boost::unique_lock<decltype(m_regionLock)> lock(m_regionLock);
   m_regions.push_back(name);
-  LOGFINE("Registered region with Heap LRU eviction controller: name is "+
+  LOGFINE("Registered region with Heap LRU eviction controller: name is " +
           name);
 }
 
 void EvictionController::deregisterRegion(const std::string& name) {
   // Iterate over regions vector and remove the one that we need to remove
-  WriteGuard guard(m_regionLock);
+  boost::unique_lock<decltype(m_regionLock)> lock(m_regionLock);
 
   const auto& removed =
       std::remove_if(m_regions.begin(), m_regions.end(),
@@ -164,7 +163,7 @@ void EvictionController::evict(int32_t percentage) {
   //@TODO: Discuss with team
   decltype(m_regions) regionTempVector;
   {
-    ReadGuard guard(m_regionLock);
+    boost::shared_lock<decltype(m_regionLock)> lock(m_regionLock);
     regionTempVector.reserve(m_regions.size());
     regionTempVector.insert(regionTempVector.end(), m_regions.begin(),
                             m_regions.end());
