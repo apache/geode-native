@@ -104,16 +104,9 @@ class ClientMetadataService : private NonCopyable, private NonAssignable {
   explicit ClientMetadataService(ThinClientPoolDM* pool);
   inline ~ClientMetadataService() noexcept = default;
 
-  inline void start() {
-    m_run = true;
-    m_thread = std::thread(&ClientMetadataService::svc, this);
-  }
+   void start();
 
-  inline void stop() {
-    m_run = false;
-    m_regionQueueCondition.notify_one();
-    m_thread.join();
-  }
+   void stop();
 
   int svc(void);
 

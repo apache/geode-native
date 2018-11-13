@@ -48,6 +48,17 @@ ClientMetadataService::ClientMetadataService(ThinClientPoolDM* pool)
 
 {}
 
+void ClientMetadataService::start() {
+  m_run = true;
+  m_thread = std::thread(&ClientMetadataService::svc, this);
+}
+
+void ClientMetadataService::stop() {
+  m_run = false;
+  m_regionQueueCondition.notify_one();
+  m_thread.join();
+}
+
 int ClientMetadataService::svc() {
   DistributedSystemImpl::setThreadName(NC_CMDSvcThread);
   LOGINFO("ClientMetadataService started for pool " + m_pool->getName());

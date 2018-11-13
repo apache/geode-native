@@ -33,7 +33,6 @@
 #include <geode/Pool.hpp>
 #include <geode/ResultCollector.hpp>
 
-#include "ClientMetadataService.hpp"
 #include "ExecutionImpl.hpp"
 #include "FairQueue.hpp"
 #include "NonCopyable.hpp"
@@ -63,6 +62,7 @@ namespace client {
 
 class CacheImpl;
 class FunctionExecution;
+class ClientMetadataService;
 
 class ThinClientPoolDM
     : public ThinClientBaseDM,
