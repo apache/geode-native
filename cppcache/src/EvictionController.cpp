@@ -19,6 +19,8 @@
 
 #include <chrono>
 
+#include <boost/thread/lock_types.hpp>
+
 #include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
 #include "DistributedSystem.hpp"
