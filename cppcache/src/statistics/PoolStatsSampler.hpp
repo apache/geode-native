@@ -66,8 +66,8 @@ class APACHE_GEODE_EXPORT PoolStatsSampler : public ACE_Task_Base {
 
  private:
   void putStatsInAdminRegion();
-  volatile bool m_running;
-  volatile bool m_stopRequested;
+  std::atomic<bool> m_running;
+  std::atomic<bool> m_stopRequested;
   std::chrono::milliseconds m_sampleRate;
   std::shared_ptr<AdminRegion> m_adminRegion;
   ThinClientPoolDM* m_distMan;

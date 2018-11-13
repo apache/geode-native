@@ -74,33 +74,33 @@ class ThinClientPoolDM
   ThinClientPoolDM(const char* name, std::shared_ptr<PoolAttributes> poolAttrs,
                    TcrConnectionManager& connManager);
 
-  virtual void init();
+  void init() override;
 
-  const std::string& getName() const { return m_poolName; }
+  const std::string& getName() const override { return m_poolName; }
 
-  virtual GfErrType sendSyncRequest(TcrMessage& request, TcrMessageReply& reply,
-                                    bool attemptFailover = true,
-                                    bool isBGThread = false);
-  GfErrType sendSyncRequest(
+  GfErrType sendSyncRequest(TcrMessage& request, TcrMessageReply& reply,
+                            bool attemptFailover = true,
+                            bool isBGThread = false) override;
+  virtual GfErrType sendSyncRequest(
       TcrMessage& request, TcrMessageReply& reply, bool attemptFailover,
       bool isBGThread,
       const std::shared_ptr<BucketServerLocation>& serverLocation);
 
   // Pool Specific Fns.
-  virtual const std::shared_ptr<CacheableStringArray> getLocators() const;
-  virtual const std::shared_ptr<CacheableStringArray> getServers();
-  virtual void destroy(bool keepalive = false);
-  virtual bool isDestroyed() const;
-  virtual std::shared_ptr<QueryService> getQueryService();
+  const std::shared_ptr<CacheableStringArray> getLocators() const override;
+  const std::shared_ptr<CacheableStringArray> getServers() override;
+  void destroy(bool keepalive = false) override;
+  bool isDestroyed() const override;
+  std::shared_ptr<QueryService> getQueryService() override;
   virtual std::shared_ptr<QueryService> getQueryServiceWithoutCheck();
-  virtual bool isEndpointAttached(TcrEndpoint* ep);
+  bool isEndpointAttached(TcrEndpoint* ep) override;
   GfErrType sendRequestToAllServers(
       const char* func, uint8_t getResult, std::chrono::milliseconds timeout,
       std::shared_ptr<Cacheable> args, std::shared_ptr<ResultCollector>& rs,
       std::shared_ptr<CacheableString>& exceptionPtr);
 
   GfErrType sendRequestToEP(const TcrMessage& request, TcrMessageReply& reply,
-                            TcrEndpoint* currentEndpoint);
+                            TcrEndpoint* currentEndpoint) override;
   void addConnection(TcrConnection* conn);
 
   TcrEndpoint* addEP(ServerLocation& serverLoc);
@@ -111,16 +111,12 @@ class ThinClientPoolDM
   virtual int cliCallback(volatile bool& isRunning);
   virtual void pingServerLocal();
 
-  virtual ~ThinClientPoolDM() {
-    destroy();
-    _GEODE_SAFE_DELETE(m_locHelper);
-    _GEODE_SAFE_DELETE(m_stats);
-    _GEODE_SAFE_DELETE(m_manager);
-  }
+  ~ThinClientPoolDM() override;
+
   // void updateQueue(const char* regionPath) ;
   ClientProxyMembershipID* getMembershipId() { return m_memId.get(); }
   virtual void processMarker(){};
-  virtual bool checkDupAndAdd(std::shared_ptr<EventId> eventid) {
+  bool checkDupAndAdd(std::shared_ptr<EventId> eventid) override {
     return m_connManager.checkDupAndAdd(eventid);
   }
   ACE_Recursive_Thread_Mutex& getPoolLock() { return getQueueLock(); }
@@ -132,7 +128,7 @@ class ThinClientPoolDM
                                  bool& maxConnLimit,
                                  const TcrConnection* currentServer = nullptr);
   ThinClientLocatorHelper* getLocatorHelper() { return m_locHelper; }
-  virtual void releaseThreadLocalConnection();
+  void releaseThreadLocalConnection() override;
   virtual void setThreadLocalConnection(TcrConnection* conn);
   bool excludeConnection(TcrConnection*, std::set<ServerLocation>&);
   void incRegionCount();
@@ -147,15 +143,15 @@ class ThinClientPoolDM
   void updateNotificationStats(bool isDeltaSuccess,
                                std::chrono::nanoseconds timeInNanoSecond);
 
-  virtual bool isSecurityOn() { return m_isSecurityOn || m_isMultiUserMode; }
+  bool isSecurityOn() override { return m_isSecurityOn || m_isMultiUserMode; }
 
-  virtual bool isMultiUserMode() { return m_isMultiUserMode; }
+  bool isMultiUserMode() override { return m_isMultiUserMode; }
 
   virtual void sendUserCacheCloseMessage(bool keepAlive);
 
   virtual inline PoolStats& getStats() { return *m_stats; }
 
-  size_t getNumberOfEndPoints() const { return m_endpoints.size(); }
+  size_t getNumberOfEndPoints() const override { return m_endpoints.size(); }
 
   int32_t GetPDXIdForType(std::shared_ptr<Serializable> pdxType);
 
@@ -199,8 +195,6 @@ class ThinClientPoolDM
   std::string m_poolName;
   PoolStats* m_stats;
   bool m_sticky;
-  // PoolStats * m_stats;
-  // PoolStatType* m_poolStatType;
   void netDown();
   ACE_Semaphore m_updateLocatorListSema;
   ACE_Semaphore m_pingSema;
@@ -277,7 +271,7 @@ class ThinClientPoolDM
                               std::set<ServerLocation>& excludeServers,
                               bool& maxConnLimit);
   bool exclude(TcrConnection* conn, std::set<ServerLocation>& excludeServers);
-  void deleteAction() { removeEPConnections(1); }
+  void deleteAction() override { removeEPConnections(1); }
 
   std::string selectEndpoint(std::set<ServerLocation>&,
                              const TcrConnection* currentServer = nullptr);
@@ -318,7 +312,7 @@ class ThinClientPoolDM
   void cleanStaleConnections(volatile bool& isRunning);
   void restoreMinConnections(volatile bool& isRunning);
   std::atomic<int32_t> m_clientOps;  // Actual Size of Pool
-  statistics::PoolStatsSampler* m_PoolStatsSampler;
+  std::unique_ptr<statistics::PoolStatsSampler> m_PoolStatsSampler;
   std::unique_ptr<ClientMetadataService> m_clientMetadataService;
   friend class CacheImpl;
   friend class ThinClientStickyManager;

@@ -235,6 +235,14 @@ void ThinClientPoolDM::init() {
 
   LOGDEBUG("ThinClientPoolDM::init: Completed initialization");
 }
+
+ThinClientPoolDM::~ThinClientPoolDM() {
+  destroy();
+  _GEODE_SAFE_DELETE(m_locHelper);
+  _GEODE_SAFE_DELETE(m_stats);
+  _GEODE_SAFE_DELETE(m_manager);
+}
+
 std::shared_ptr<Properties> ThinClientPoolDM::getCredentials(TcrEndpoint* ep) {
   auto cacheImpl = m_connManager.getCacheImpl();
   const auto& distributedSystem = cacheImpl->getDistributedSystem();
@@ -355,11 +363,12 @@ void ThinClientPoolDM::startBackgroundThreads() {
 
   LOGDEBUG(
       "ThinClientPoolDM::startBackgroundThreads: Starting pool stat sampler");
-  if (m_PoolStatsSampler == nullptr &&
+  if (!m_PoolStatsSampler &&
       getStatisticInterval() > std::chrono::milliseconds::zero() &&
       props.statisticsEnabled()) {
-    m_PoolStatsSampler = new statistics::PoolStatsSampler(
-        getStatisticInterval(), m_connManager.getCacheImpl(), this);
+    m_PoolStatsSampler = std::unique_ptr<statistics::PoolStatsSampler>(
+        new statistics::PoolStatsSampler(getStatisticInterval(),
+                                         m_connManager.getCacheImpl(), this));
     m_PoolStatsSampler->start();
   }
 
@@ -783,9 +792,9 @@ void ThinClientPoolDM::destroy(bool keepAlive) {
     }
 
     LOGDEBUG("Closing PoolStatsSampler thread.");
-    if (m_PoolStatsSampler != nullptr) {
+    if (m_PoolStatsSampler) {
       m_PoolStatsSampler->stop();
-      _GEODE_SAFE_DELETE(m_PoolStatsSampler);
+      m_PoolStatsSampler = nullptr;
     }
     LOGDEBUG("PoolStatsSampler thread closed .");
     stopCliCallbackThread();
