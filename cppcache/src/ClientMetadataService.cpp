@@ -59,7 +59,7 @@ void ClientMetadataService::stop() {
   m_thread.join();
 }
 
-int ClientMetadataService::svc() {
+void ClientMetadataService::svc() {
   DistributedSystemImpl::setThreadName(NC_CMDSvcThread);
 
   LOGINFO("ClientMetadataService started for pool " + m_pool->getName());
@@ -84,7 +84,6 @@ int ClientMetadataService::svc() {
   }
 
   LOGINFO("ClientMetadataService stopped for pool " + m_pool->getName());
-  return 0;
 }
 
 void ClientMetadataService::getClientPRMetadata(const char* regionFullPath) {

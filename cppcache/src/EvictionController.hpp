@@ -21,6 +21,8 @@
 #define GEODE_EVICTIONCONTROLLER_H_
 
 #include <atomic>
+#include <condition_variable>
+#include <mutex>
 #include <string>
 #include <thread>
 #include <vector>
@@ -71,7 +73,7 @@ class EvictionController {
 
   void stop();
 
-  int svc(void);
+  void svc(void);
 
   void updateRegionHeapInfo(int64_t info);
   void registerRegion(const std::string& name);

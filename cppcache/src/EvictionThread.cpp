@@ -41,6 +41,7 @@ void EvictionThread::start() {
 
 void EvictionThread::stop() {
   m_run = false;
+  m_queueCondition.notify_one();
   m_thread.join();
 
   m_queue.clear();
@@ -48,26 +49,28 @@ void EvictionThread::stop() {
   LOGFINE("Eviction Thread stopped");
 }
 
-int EvictionThread::svc(void) {
+void EvictionThread::svc(void) {
   DistributedSystemImpl::setThreadName(NC_Evic_Thread);
+
   while (m_run) {
-    processEvictions();
-  }
-  auto size = m_queue.size();
-  for (decltype(size) i = 0; i < size; i++) {
-    processEvictions();
-  }
-  return 1;
-}
+    std::unique_lock<std::mutex> lock(m_queueMutex);
+    m_queueCondition.wait(lock, [this] { return !m_run || !m_queue.empty(); });
 
-void EvictionThread::processEvictions() {
-  auto percentageToEvict = m_queue.getFor(std::chrono::microseconds(1500));
-  if (percentageToEvict != 0) {
-    m_pParent->evict(percentageToEvict);
+    while (!m_queue.empty()) {
+      auto percentageToEvict = m_queue.front();
+      m_queue.pop_front();
+      if (0 != percentageToEvict) {
+        m_pParent->evict(percentageToEvict);
+      }
+    }
   }
 }
 
-void EvictionThread::putEvictionInfo(int32_t info) { m_queue.put(info); }
+void EvictionThread::putEvictionInfo(int32_t info) {
+  std::unique_lock<std::mutex> lock(m_queueMutex);
+  m_queue.push_back(info);
+  m_queueCondition.notify_one();
+}
 
 }  // namespace client
 }  // namespace geode

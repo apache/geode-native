@@ -108,7 +108,7 @@ class ClientMetadataService : private NonCopyable, private NonAssignable {
 
   void stop();
 
-  int svc(void);
+  void svc(void);
 
   void getClientPRMetadata(const char* regionFullPath);
 

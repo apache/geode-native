@@ -21,11 +21,10 @@
 #define GEODE_EVICTIONTHREAD_H_
 
 #include <atomic>
+#include <condition_variable>
+#include <deque>
+#include <mutex>
 #include <thread>
-
-#include <ace/Task.h>
-
-#include "IntQueue.hpp"
 
 namespace apache {
 namespace geode {
@@ -41,15 +40,16 @@ class EvictionThread {
   explicit EvictionThread(EvictionController* parent);
   void start();
   void stop();
-  int svc();
+  void svc();
   void putEvictionInfo(int32_t info);
-  void processEvictions();
 
  private:
   std::thread m_thread;
   std::atomic<bool> m_run;
   EvictionController* m_pParent;
-  IntQueue<int32_t> m_queue;
+  std::deque<int32_t> m_queue;
+  std::mutex m_queueMutex;
+  std::condition_variable m_queueCondition;
 
   static const char* NC_Evic_Thread;
 };

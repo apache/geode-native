@@ -64,7 +64,7 @@ void EvictionController::stop() {
   LOGFINE("Eviction controller stopped");
 }
 
-int EvictionController::svc() {
+void EvictionController::svc() {
   DistributedSystemImpl::setThreadName(NC_EC_Thread);
 
   int64_t pendingEvictions = 0;
@@ -81,8 +81,6 @@ int EvictionController::svc() {
       }
     }
   }
-
-  return 1;
 }
 
 void EvictionController::updateRegionHeapInfo(int64_t info) {
