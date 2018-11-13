@@ -40,20 +40,27 @@ EvictionController::EvictionController(size_t maxHeapSize,
       m_currentHeapSize(0) {
   evictionThreadPtr = new EvictionThread(this);
   LOGINFO("Maximum heap size for Heap LRU set to %ld bytes", m_maxHeapSize);
-  //  m_currentHeapSize =
-  //  DistributedSystem::getSystemProperties()->gfHighWaterMark(),
-  //  DistributedSystem::getSystemProperties()->gfMessageSize();
 }
 
 EvictionController::~EvictionController() {
   _GEODE_SAFE_DELETE(evictionThreadPtr);
 }
 
-void EvictionController::updateRegionHeapInfo(int64_t info) {
-  // LOGINFO("updateRegionHeapInfo is %d", info);
-  m_queue.put(info);
-  // We could block here if we wanted to prevent any further memory use
-  // until the evictions had been completed.
+void EvictionController::start() {
+  m_run = true;
+  evictionThreadPtr->start();
+  m_thread = std::thread(&EvictionController::svc, this);
+  LOGFINE("Eviction Controller started");
+}
+
+void EvictionController::stop() {
+  m_run = false;
+  evictionThreadPtr->stop();
+  m_thread.join();
+  m_regions.clear();
+  m_queue.clear();
+
+  LOGFINE("Eviction controller stopped");
 }
 
 int EvictionController::svc() {
@@ -74,6 +81,13 @@ int EvictionController::svc() {
     processHeapInfo(readInfo, pendingEvictions);
   }
   return 1;
+}
+
+void EvictionController::updateRegionHeapInfo(int64_t info) {
+  // LOGINFO("updateRegionHeapInfo is %d", info);
+  m_queue.put(info);
+  // We could block here if we wanted to prevent any further memory use
+  // until the evictions had been completed.
 }
 
 void EvictionController::processHeapInfo(int64_t& readInfo,
@@ -114,27 +128,25 @@ void EvictionController::processHeapInfo(int64_t& readInfo,
   }
 }
 
-void EvictionController::registerRegion(std::string& name) {
+void EvictionController::registerRegion(const std::string& name) {
   WriteGuard guard(m_regionLock);
   m_regions.push_back(name);
-  LOGFINE("Registered region with Heap LRU eviction controller: name is %s",
-          name.c_str());
+  LOGFINE("Registered region with Heap LRU eviction controller: name is "+
+          name);
 }
 
-void EvictionController::deregisterRegion(std::string& name) {
+void EvictionController::deregisterRegion(const std::string& name) {
   // Iterate over regions vector and remove the one that we need to remove
   WriteGuard guard(m_regionLock);
-  for (size_t i = 0; i < m_regions.size(); i++) {
-    std::string str = m_regions.at(i);
-    if (str == name) {
-      std::vector<std::string>::iterator iter = m_regions.begin();
-      m_regions.erase(iter + i);
-      LOGFINE(
-          "Deregistered region with Heap LRU eviction controller: name is %s",
-          name.c_str());
-      break;
-    }
+
+  const auto& removed =
+      std::remove_if(m_regions.begin(), m_regions.end(),
+                     [&](const std::string& region) { return region == name; });
+  if (removed != m_regions.cend()) {
+    LOGFINE("Deregistered region with Heap LRU eviction controller: name is " +
+            name);
   }
+  m_regions.erase(removed, m_regions.cend());
 }
 
 void EvictionController::orderEvictions(int32_t percentage) {
@@ -150,25 +162,22 @@ void EvictionController::evict(int32_t percentage) {
   // On the flip side, this requires a copy of the registered region list
   // every time eviction is ordered and that might not be cheap
   //@TODO: Discuss with team
-  VectorOfString regionTempVector;
+  decltype(m_regions) regionTempVector;
   {
     ReadGuard guard(m_regionLock);
-    for (size_t i = 0; i < m_regions.size(); i++) {
-      regionTempVector.push_back(m_regions.at(i));
-    }
+    regionTempVector.reserve(m_regions.size());
+    regionTempVector.insert(regionTempVector.end(), m_regions.begin(),
+                            m_regions.end());
   }
 
-  for (size_t i = 0; i < regionTempVector.size(); i++) {
-    std::string region_name = regionTempVector.at(i);
-    auto region = m_cacheImpl->getRegion(region_name);
-    if (region != nullptr) {
-      RegionInternal* regionImpl = dynamic_cast<RegionInternal*>(region.get());
-      if (regionImpl != nullptr) {
-        regionImpl->evict(percentage);
-      }
+  for (const auto& regionName : regionTempVector) {
+    if (auto region = std::dynamic_pointer_cast<RegionInternal>(
+            m_cacheImpl->getRegion(regionName))) {
+      region->evict(percentage);
     }
   }
 }
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

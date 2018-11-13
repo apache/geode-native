@@ -36,7 +36,6 @@
 #include "CachePerfStats.hpp"
 #include "ClientProxyMembershipIDFactory.hpp"
 #include "DistributedSystem.hpp"
-#include "EvictionController.hpp"
 #include "MemberListForVersionStamp.hpp"
 #include "NonCopyable.hpp"
 #include "PdxTypeRegistry.hpp"
@@ -64,6 +63,7 @@ class Pool;
 class RegionAttributes;
 class SerializationRegistry;
 class ThreadPool;
+class EvictionController;
 
 /**
  * @class Cache Cache.hpp

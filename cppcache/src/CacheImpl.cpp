@@ -29,6 +29,7 @@
 #include "AutoDelete.hpp"
 #include "CacheXmlParser.hpp"
 #include "ClientProxyMembershipID.hpp"
+#include "EvictionController.hpp"
 #include "ExpiryTaskManager.hpp"
 #include "InternalCacheTransactionManager2PCImpl.hpp"
 #include "LocalRegion.hpp"
