@@ -25,6 +25,7 @@
 #include "../util/Log.hpp"
 #include "AtomicStatisticsImpl.hpp"
 #include "GeodeStatisticsFactory.hpp"
+#include "HostStatSampler.hpp"
 #include "OsStatisticsImpl.hpp"
 
 namespace apache {
@@ -46,13 +47,14 @@ StatisticsManager::StatisticsManager(
       std::unique_ptr<GeodeStatisticsFactory>(new GeodeStatisticsFactory(this));
 
   try {
-    if (m_sampler == nullptr && enabled) {
-      m_sampler = new HostStatSampler(filePath, m_sampleIntervalMs, this, cache,
-                                      statFileLimit, statDiskSpaceLimit);
+    if (enabled) {
+      m_sampler = std::unique_ptr<HostStatSampler>(
+          new HostStatSampler(filePath, m_sampleIntervalMs, this, cache,
+                              statFileLimit, statDiskSpaceLimit));
       m_sampler->start();
     }
   } catch (...) {
-    delete m_sampler;
+    m_sampler = nullptr;
     throw;
   }
 }
@@ -109,9 +111,8 @@ std::recursive_mutex& StatisticsManager::getListMutex() {
 }
 
 void StatisticsManager::closeSampler() {
-  if (m_sampler != nullptr) {
+  if (m_sampler) {
     m_sampler->stop();
-    delete m_sampler;
     m_sampler = nullptr;
   }
 }

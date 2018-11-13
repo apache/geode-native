@@ -32,7 +32,6 @@
 #include "../NonCopyable.hpp"
 #include "../SerializationRegistry.hpp"
 #include "../util/Log.hpp"
-#include "HostStatSampler.hpp"
 #include "StatisticDescriptor.hpp"
 #include "StatisticDescriptorImpl.hpp"
 #include "Statistics.hpp"
@@ -64,6 +63,8 @@ const int32_t INT_TIMESTAMP_TOKEN = 65535;
 namespace apache {
 namespace geode {
 namespace statistics {
+
+class HostStatSampler;
 
 using apache::geode::client::CacheImpl;
 using apache::geode::client::DataOutput;
