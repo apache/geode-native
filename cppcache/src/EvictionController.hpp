@@ -96,7 +96,9 @@ class APACHE_GEODE_EXPORT EvictionController {
   int64_t m_heapSizeDelta;
   CacheImpl* m_cacheImpl;
   int64_t m_currentHeapSize;
-  HeapSizeInfoQueue m_queue;
+  std::deque<int64_t> m_queue;
+  std::mutex m_queueMutex;
+  std::condition_variable m_queueCondition;
   std::vector<std::string> m_regions;
   boost::shared_mutex m_regionLock;
   EvictionThread* evictionThreadPtr;

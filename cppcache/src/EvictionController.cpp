@@ -46,16 +46,21 @@ EvictionController::~EvictionController() {
 }
 
 void EvictionController::start() {
-  m_run = true;
   evictionThreadPtr->start();
+
+  m_run = true;
   m_thread = std::thread(&EvictionController::svc, this);
+
   LOGFINE("Eviction Controller started");
 }
 
 void EvictionController::stop() {
   m_run = false;
-  evictionThreadPtr->stop();
+  m_queueCondition.notify_one();
   m_thread.join();
+
+  evictionThreadPtr->stop();
+
   m_regions.clear();
   m_queue.clear();
 
@@ -64,27 +69,30 @@ void EvictionController::stop() {
 
 int EvictionController::svc() {
   DistributedSystemImpl::setThreadName(NC_EC_Thread);
-  int64_t pendingEvictions = 0;
-  while (m_run) {
-    int64_t readInfo = 0;
-    readInfo = m_queue.getFor(std::chrono::microseconds(1500));
-    if (readInfo == 0) continue;
 
-    processHeapInfo(readInfo, pendingEvictions);
+  int64_t pendingEvictions = 0;
+
+  while (m_run) {
+    std::unique_lock<std::mutex> lock(m_queueMutex);
+    m_queueCondition.wait(lock, [this] { return !m_run || !m_queue.empty(); });
+
+    while (!m_queue.empty()) {
+      auto readInfo = m_queue.front();
+      m_queue.pop_front();
+      if (0 != readInfo) {
+        processHeapInfo(readInfo, pendingEvictions);
+      }
+    }
   }
-  auto size = m_queue.size();
-  for (decltype(size) i = 0; i < size; i++) {
-    int64_t readInfo = 0;
-    readInfo = m_queue.get();
-    if (readInfo == 0) continue;
-    processHeapInfo(readInfo, pendingEvictions);
-  }
+
   return 1;
 }
 
 void EvictionController::updateRegionHeapInfo(int64_t info) {
-  // LOGINFO("updateRegionHeapInfo is %d", info);
-  m_queue.put(info);
+  std::unique_lock<std::mutex> lock(m_queueMutex);
+  m_queue.push_back(info);
+  m_queueCondition.notify_one();
+
   // We could block here if we wanted to prevent any further memory use
   // until the evictions had been completed.
 }

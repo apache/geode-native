@@ -104,9 +104,9 @@ class ClientMetadataService : private NonCopyable, private NonAssignable {
   explicit ClientMetadataService(ThinClientPoolDM* pool);
   inline ~ClientMetadataService() noexcept = default;
 
-   void start();
+  void start();
 
-   void stop();
+  void stop();
 
   int svc(void);
 

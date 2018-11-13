@@ -61,7 +61,9 @@ void ClientMetadataService::stop() {
 
 int ClientMetadataService::svc() {
   DistributedSystemImpl::setThreadName(NC_CMDSvcThread);
+
   LOGINFO("ClientMetadataService started for pool " + m_pool->getName());
+
   while (m_run) {
     std::unique_lock<std::mutex> lock(m_regionQueueMutex);
     m_regionQueueCondition.wait(
@@ -80,6 +82,7 @@ int ClientMetadataService::svc() {
       break;
     }
   }
+
   LOGINFO("ClientMetadataService stopped for pool " + m_pool->getName());
   return 0;
 }
