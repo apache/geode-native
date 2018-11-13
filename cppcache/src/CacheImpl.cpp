@@ -66,7 +66,6 @@ CacheImpl::CacheImpl(Cache* c, const std::shared_ptr<Properties>& dsProps,
       m_clientProxyMembershipIDFactory(m_distributedSystem.getName()),
       m_cache(c),
       m_attributes(nullptr),
-      m_evictionControllerPtr(nullptr),
       m_tcrConnectionManager(nullptr),
       m_remoteQueryServicePtr(nullptr),
       m_destroyPending(false),
@@ -86,9 +85,9 @@ CacheImpl::CacheImpl(Cache* c, const std::shared_ptr<Properties>& dsProps,
 
   auto& prop = m_distributedSystem.getSystemProperties();
   if (prop.heapLRULimitEnabled()) {
-    m_evictionControllerPtr =
-        new EvictionController(prop.heapLRULimit(), prop.heapLRUDelta(), this);
-    m_evictionControllerPtr->start();
+    m_evictionController = std::unique_ptr<EvictionController>(
+        new EvictionController(prop.heapLRULimit(), prop.heapLRUDelta(), this));
+    m_evictionController->start();
     LOGINFO("Heap LRU eviction controller thread started");
   }
 
@@ -315,9 +314,8 @@ void CacheImpl::close(bool keepalive) {
     }
   }
 
-  if (m_evictionControllerPtr != nullptr) {
-    m_evictionControllerPtr->stop();
-    _GEODE_SAFE_DELETE(m_evictionControllerPtr);
+  if (m_evictionController) {
+    m_evictionController->stop();
   }
 
   // Close CachePef Stats
@@ -623,7 +621,7 @@ void CacheImpl::initializeDeclarativeCache(const std::string& cacheXml) {
 }
 
 EvictionController* CacheImpl::getEvictionController() {
-  return m_evictionControllerPtr;
+  return m_evictionController.get();
 }
 
 void CacheImpl::readyForEvents() {

@@ -384,7 +384,7 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
       m_regions;
   Cache* m_cache;
   std::shared_ptr<CacheAttributes> m_attributes;
-  EvictionController* m_evictionControllerPtr;
+  std::unique_ptr<EvictionController> m_evictionController;
   TcrConnectionManager* m_tcrConnectionManager;
   std::shared_ptr<RemoteQueryService> m_remoteQueryServicePtr;
   ACE_RW_Thread_Mutex m_destroyCacheMutex;

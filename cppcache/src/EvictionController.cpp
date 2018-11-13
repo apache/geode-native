@@ -24,6 +24,7 @@
 #include "DistributedSystem.hpp"
 #include "ReadWriteLock.hpp"
 #include "RegionInternal.hpp"
+#include "util/Log.hpp"
 
 namespace apache {
 namespace geode {
@@ -36,17 +37,13 @@ EvictionController::EvictionController(size_t maxHeapSize,
       m_maxHeapSize(maxHeapSize * 1024 * 1024),
       m_heapSizeDelta(heapSizeDelta),
       m_cacheImpl(cache),
-      m_currentHeapSize(0) {
-  evictionThreadPtr = new EvictionThread(this);
+      m_currentHeapSize(0),
+      m_evictionThread(this) {
   LOGINFO("Maximum heap size for Heap LRU set to %ld bytes", m_maxHeapSize);
 }
 
-EvictionController::~EvictionController() {
-  _GEODE_SAFE_DELETE(evictionThreadPtr);
-}
-
 void EvictionController::start() {
-  evictionThreadPtr->start();
+  m_evictionThread.start();
 
   m_run = true;
   m_thread = std::thread(&EvictionController::svc, this);
@@ -59,7 +56,7 @@ void EvictionController::stop() {
   m_queueCondition.notify_one();
   m_thread.join();
 
-  evictionThreadPtr->stop();
+  m_evictionThread.stop();
 
   m_regions.clear();
   m_queue.clear();
@@ -157,7 +154,7 @@ void EvictionController::deregisterRegion(const std::string& name) {
 }
 
 void EvictionController::orderEvictions(int32_t percentage) {
-  evictionThreadPtr->putEvictionInfo(percentage);
+  m_evictionThread.putEvictionInfo(percentage);
 }
 
 void EvictionController::evict(int32_t percentage) {
@@ -169,6 +166,7 @@ void EvictionController::evict(int32_t percentage) {
   // On the flip side, this requires a copy of the registered region list
   // every time eviction is ordered and that might not be cheap
   //@TODO: Discuss with team
+
   decltype(m_regions) regionTempVector;
   {
     boost::shared_lock<decltype(m_regionLock)> lock(m_regionLock);

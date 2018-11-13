@@ -27,19 +27,12 @@
 
 #include <boost/thread/shared_mutex.hpp>
 
-#include <geode/DataOutput.hpp>
-
 #include "EvictionThread.hpp"
-#include "IntQueue.hpp"
-#include "util/Log.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
-typedef IntQueue<int64_t> HeapSizeInfoQueue;
-
-class EvictionThread;
 class CacheImpl;
 
 /**
@@ -67,12 +60,12 @@ class CacheImpl;
  * When a region is destroyed, it deregisters itself with the EvictionController
  * Format of object that is put into the region map (int size, int numEntries)
  */
-class APACHE_GEODE_EXPORT EvictionController {
+class EvictionController {
  public:
   EvictionController(size_t maxHeapSize, int32_t heapSizeDelta,
                      CacheImpl* cache);
 
-  ~EvictionController();
+  inline ~EvictionController() noexcept = default;
 
   void start();
 
@@ -101,7 +94,7 @@ class APACHE_GEODE_EXPORT EvictionController {
   std::condition_variable m_queueCondition;
   std::vector<std::string> m_regions;
   boost::shared_mutex m_regionLock;
-  EvictionThread* evictionThreadPtr;
+  EvictionThread m_evictionThread;
   static const char* NC_EC_Thread;
 };
 
