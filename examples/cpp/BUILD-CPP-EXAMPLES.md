@@ -18,7 +18,7 @@
     $ cd workspace/examples/cpp/<example>
     $ mkdir build
     $ cd build
-    $ cmake ..
+    $ cmake .. -DGEODE_ROOT="<geode-install-root-dir>"
     $ cmake --build . -- <optional parallelism parameter>
     ```
   where the optional parallelism parameter is of the form `-j n`.
