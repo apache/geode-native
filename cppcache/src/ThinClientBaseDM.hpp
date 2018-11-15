@@ -20,12 +20,13 @@
 #ifndef GEODE_THINCLIENTBASEDM_H_
 #define GEODE_THINCLIENTBASEDM_H_
 
+#include <memory>
 #include <vector>
 
 #include <geode/internal/geode_globals.hpp>
 
 #include "Queue.hpp"
-#include "Task.hpp"
+#include "Task2.hpp"
 #include "util/Log.hpp"
 
 namespace apache {
@@ -174,7 +175,7 @@ class ThinClientBaseDM {
   ThinClientRegion* m_region;
 
   // methods for the chunk processing thread
-  int processChunks(volatile bool& isRunning);
+  void processChunks(std::atomic<bool>& isRunning);
   void startChunkProcessor();
   void stopChunkProcessor();
 
@@ -195,7 +196,7 @@ class ThinClientBaseDM {
   bool m_clientNotification;
 
   Queue<TcrChunkedContext*> m_chunks;
-  Task<ThinClientBaseDM>* m_chunkProcessor;
+  std::unique_ptr<Task2<ThinClientBaseDM>> m_chunkProcessor;
 
  private:
   static volatile bool s_isDeltaEnabledOnServer;

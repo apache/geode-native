@@ -215,10 +215,10 @@ void ThinClientBaseDM::queueChunk(TcrChunkedContext* chunk) {
 }
 
 // the chunk processing thread
-int ThinClientBaseDM::processChunks(volatile bool& isRunning) {
+void ThinClientBaseDM::processChunks(std::atomic<bool>& isRunning) {
   TcrChunkedContext* chunk;
   LOGFINE("Starting chunk process thread for region %s",
-          (m_region != nullptr ? m_region->getFullPath().c_str() : "(null)"));
+          (m_region ? m_region->getFullPath().c_str() : "(null)"));
   while (isRunning) {
     chunk = m_chunks.getFor(std::chrono::microseconds(100000));
     if (chunk) {
@@ -227,27 +227,27 @@ int ThinClientBaseDM::processChunks(volatile bool& isRunning) {
     }
   }
   LOGFINE("Ending chunk process thread for region %s",
-          (m_region != nullptr ? m_region->getFullPath().c_str() : "(null)"));
+          (m_region ? m_region->getFullPath().c_str() : "(null)"));
   GF_DEV_ASSERT(m_chunks.size() == 0);
-  return 0;
 }
 
 // start the chunk processing thread
 void ThinClientBaseDM::startChunkProcessor() {
   if (m_chunkProcessor == nullptr) {
     m_chunks.open();
-    m_chunkProcessor = new Task<ThinClientBaseDM>(
-        this, &ThinClientBaseDM::processChunks, NC_ProcessChunk);
+    m_chunkProcessor =
+        std::unique_ptr<Task2<ThinClientBaseDM>>(new Task2<ThinClientBaseDM>(
+            this, &ThinClientBaseDM::processChunks, NC_ProcessChunk));
     m_chunkProcessor->start();
   }
 }
 
 // stop the chunk processing thread
 void ThinClientBaseDM::stopChunkProcessor() {
-  if (m_chunkProcessor != nullptr) {
+  if (m_chunkProcessor) {
     m_chunkProcessor->stop();
     m_chunks.close();
-    _GEODE_SAFE_DELETE(m_chunkProcessor);
+    m_chunkProcessor = nullptr;
   }
 }
 

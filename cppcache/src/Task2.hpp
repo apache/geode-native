@@ -43,16 +43,12 @@ class Task2 {
 
   // op_handler is the receiver of the timeout event. timeout is the method to
   // be executed by op_handler_
-  inline Task2(T* op_handler, OPERATION op)
+  inline Task2(T* op_handler, OPERATION op, const char* tn)
       : op_handler_(op_handler),
         m_op(op),
         m_run(false),
-        m_threadName(NC_thread) {}
-
-  // op_handler is the receiver of the timeout event. timeout is the method to
-  // be executed by op_handler_
-  inline Task2(T* op_handler, OPERATION op, const char* tn)
-      : op_handler_(op_handler), m_op(op), m_run(false), m_threadName(tn) {}
+        m_threadName(tn),
+        m_appDomainContext(createAppDomainContext()) {}
 
   inline ~Task2() noexcept = default;
 
@@ -73,7 +69,12 @@ class Task2 {
   inline void svc(void) {
     DistributedSystemImpl::setThreadName(m_threadName);
 
-    (this->op_handler_->*m_op)(m_run);
+    if (m_appDomainContext) {
+      m_appDomainContext->run(
+          [this]() { (this->op_handler_->*this->m_op)(this->m_run); });
+    } else {
+      (this->op_handler_->*m_op)(m_run);
+    }
   }
 
   inline void wait() { m_thread.join(); }
@@ -84,6 +85,7 @@ class Task2 {
   OPERATION m_op;
   std::atomic<bool> m_run;
   const char* m_threadName;
+  std::unique_ptr<AppDomainContext> m_appDomainContext;
 };
 
 }  // namespace client

@@ -33,19 +33,18 @@
 
 #include "CqServiceVsdStats.hpp"
 #include "DistributedSystem.hpp"
+#include "ErrType.hpp"
 #include "NonCopyable.hpp"
 #include "Queue.hpp"
 #include "TcrMessage.hpp"
-#include "ThinClientBaseDM.hpp"
 #include "util/synchronized_map.hpp"
-
-/**
- * @file
- */
 
 namespace apache {
 namespace geode {
 namespace client {
+
+class ThinClientBaseDM;
+class TcrEndpoint;
 
 /**
  * @class CqService CqService.hpp
@@ -53,7 +52,6 @@ namespace client {
  * Implements the CqService functionality.
  *
  */
-
 class APACHE_GEODE_EXPORT CqService
     : private NonCopyable,
       private NonAssignable,
