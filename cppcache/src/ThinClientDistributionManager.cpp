@@ -24,6 +24,7 @@
 
 #include "DistributedSystemImpl.hpp"
 #include "TcrConnectionManager.hpp"
+#include "TcrEndpoint.hpp"
 #include "ThinClientRegion.hpp"
 #include "util/exception.hpp"
 

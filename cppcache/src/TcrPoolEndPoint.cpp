@@ -60,7 +60,7 @@ void TcrPoolEndPoint::closeNotification() {
   LOGFINE("TcrPoolEndPoint::closeNotification..");
   m_notifyReceiver->stopNoblock();
   m_notifyConnectionList.push_back(m_notifyConnection);
-  m_notifyReceiverList.push_back(m_notifyReceiver);
+  m_notifyReceiverList.push_back(m_notifyReceiver.get());
   m_isQueueHosted = false;
 }
 
@@ -98,8 +98,9 @@ GfErrType TcrPoolEndPoint::registerDM(bool, bool isSecondary, bool,
               name().c_str());
       return err;
     }
-    m_notifyReceiver = new Task<TcrEndpoint>(
-        this, &TcrEndpoint::receiveNotification, NC_Notification);
+    m_notifyReceiver =
+        std::unique_ptr<Task2<TcrEndpoint>>(new Task2<TcrEndpoint>(
+            this, &TcrEndpoint::receiveNotification, NC_Notification));
     m_notifyReceiver->start();
   }
   ++m_numRegionListener;

@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "TcrHADistributionManager.hpp"
 
 #include <geode/ExceptionTypes.hpp>
@@ -21,6 +22,7 @@
 
 #include "CacheImpl.hpp"
 #include "RemoteQueryService.hpp"
+#include "TcrEndpoint.hpp"
 #include "TcrMessage.hpp"
 #include "ThinClientHARegion.hpp"
 #include "ThinClientRegion.hpp"

@@ -24,7 +24,6 @@
 #include <geode/internal/geode_base.hpp>
 
 #include "TcrConnectionManager.hpp"
-#include "TcrEndpoint.hpp"
 #include "ThinClientDistributionManager.hpp"
 
 namespace apache {
@@ -33,6 +32,8 @@ namespace client {
 
 class ThinClientRegion;
 class ThinClientHARegion;
+class TcrEndpoint;
+
 /**
  * @brief Distribute data between caches
  */

@@ -29,8 +29,8 @@ void ClientReplacementRequest::toData(DataOutput& output) const {
   this->m_serverLocation.toData(output);
 }
 
-DSFid ClientReplacementRequest::getDSFID() const {
-  return DSFid::ClientReplacementRequest;
+internal::DSFid ClientReplacementRequest::getDSFID() const {
+  return internal::DSFid::ClientReplacementRequest;
 }
 
 }  // namespace client

@@ -35,7 +35,6 @@
 #include "Queue.hpp"
 #include "RegionGlobalLocks.hpp"
 #include "TcrChunkedContext.hpp"
-#include "TcrEndpoint.hpp"
 #include "TcrMessage.hpp"
 
 namespace apache {
@@ -43,6 +42,7 @@ namespace geode {
 namespace client {
 
 class ThinClientBaseDM;
+class TcrEndpoint;
 
 /**
  * @class ThinClientRegion ThinClientRegion.hpp

@@ -504,7 +504,7 @@ void TcrConnectionManager::redundancy(std::atomic<bool> &isRunning) {
 }
 
 void TcrConnectionManager::addNotificationForDeletion(
-    Task<TcrEndpoint> *notifyReceiver, TcrConnection *notifyConnection,
+    Task2<TcrEndpoint> *notifyReceiver, TcrConnection *notifyConnection,
     ACE_Semaphore &notifyCleanupSema) {
   std::lock_guard<decltype(m_notificationLock)> guard(m_notificationLock);
   m_connectionReleaseList.put(notifyConnection);
@@ -537,7 +537,7 @@ void TcrConnectionManager::cleanup(std::atomic<bool> &isRunning) {
 }
 
 void TcrConnectionManager::cleanNotificationLists() {
-  Task<TcrEndpoint> *notifyReceiver;
+  Task2<TcrEndpoint> *notifyReceiver;
   TcrConnection *notifyConnection;
   ACE_Semaphore *notifyCleanupSema;
 
@@ -550,7 +550,7 @@ void TcrConnectionManager::cleanNotificationLists() {
       notifyCleanupSema = m_notifyCleanupSemaList.get();
     }
     notifyReceiver->wait();
-    _GEODE_SAFE_DELETE(notifyReceiver);
+    //_GEODE_SAFE_DELETE(notifyReceiver);
     _GEODE_SAFE_DELETE(notifyConnection);
     notifyCleanupSema->release();
   }

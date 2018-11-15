@@ -475,8 +475,9 @@ GfErrType TcrEndpoint::registerDM(bool clientNotification, bool isSecondary,
                   m_name.c_str());
           return err;
         }
-        m_notifyReceiver = new Task<TcrEndpoint>(
-            this, &TcrEndpoint::receiveNotification, NC_Notification);
+        m_notifyReceiver =
+            std::unique_ptr<Task2<TcrEndpoint>>(new Task2<TcrEndpoint>(
+                this, &TcrEndpoint::receiveNotification, NC_Notification));
         m_notifyReceiver->start();
       }
       ++m_numRegionListener;
@@ -579,7 +580,7 @@ bool TcrEndpoint::checkDupAndAdd(std::shared_ptr<EventId> eventid) {
   return m_cacheImpl->tcrConnectionManager().checkDupAndAdd(eventid);
 }
 
-int TcrEndpoint::receiveNotification(volatile bool& isRunning) {
+void TcrEndpoint::receiveNotification(std::atomic<bool>& isRunning) {
   LOGFINE("Started subscription channel for endpoint %s", m_name.c_str());
   while (isRunning) {
     TcrMessageReply* msg = nullptr;
@@ -731,7 +732,6 @@ int TcrEndpoint::receiveNotification(volatile bool& isRunning) {
     }
   }
   LOGFINE("Ended subscription channel for endpoint %s", m_name.c_str());
-  return 0;
 }
 
 inline bool TcrEndpoint::compareTransactionIds(int32_t reqTransId,
@@ -1240,7 +1240,7 @@ void TcrEndpoint::closeNotification() {
   m_notifyConnection->close();
   m_notifyReceiver->stopNoblock();
   TcrConnectionManager& tccm = m_cacheImpl->tcrConnectionManager();
-  tccm.addNotificationForDeletion(m_notifyReceiver, m_notifyConnection,
+  tccm.addNotificationForDeletion(m_notifyReceiver.get(), m_notifyConnection,
                                   m_notificationCleanupSema);
   m_notifyCount++;
   m_cleanupSema.release();
@@ -1268,14 +1268,14 @@ void TcrEndpoint::stopNotifyReceiverAndCleanup() {
     m_notifyReceiver->wait();
     bool found = false;
     for (const auto& it : m_notifyReceiverList) {
-      if (it == m_notifyReceiver) {
+      if (it == m_notifyReceiver.get()) {
         found = true;
         break;
       }
     }
 
     if (!found) {
-      _GEODE_SAFE_DELETE(m_notifyReceiver);
+      m_notifyReceiver = nullptr;
       _GEODE_SAFE_DELETE(m_notifyConnection);
     }
   }

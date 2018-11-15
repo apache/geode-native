@@ -92,7 +92,7 @@ class TcrConnectionManager {
                                        TcrMessageReply* reply);
   GfErrType sendSyncRequestCq(TcrMessage& request, TcrMessageReply& reply);
 
-  void addNotificationForDeletion(Task<TcrEndpoint>* notifyReceiver,
+  void addNotificationForDeletion(Task2<TcrEndpoint>* notifyReceiver,
                                   TcrConnection* notifyConnection,
                                   ACE_Semaphore& notifyCleanupSema);
 
@@ -169,7 +169,7 @@ class TcrConnectionManager {
 
   ExpiryTaskManager::id_type m_pingTaskId;
   ExpiryTaskManager::id_type m_servermonitorTaskId;
-  Queue<Task<TcrEndpoint>*> m_receiverReleaseList;
+  Queue<Task2<TcrEndpoint>*> m_receiverReleaseList;
   Queue<TcrConnection*> m_connectionReleaseList;
   Queue<ACE_Semaphore*> m_notifyCleanupSemaList;
 

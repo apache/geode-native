@@ -28,11 +28,13 @@
 
 #include <ace/ACE.h>
 
+#include "ErrType.hpp"
 #include "EventIdMap.hpp"
 #include "ExpiryTaskManager.hpp"
 #include "ServerLocation.hpp"
-#include "TcrEndpoint.hpp"
+#include "Task.hpp"
 #include "TcrMessage.hpp"
+#include "util/synchronized_map.hpp"
 
 namespace apache {
 namespace geode {
@@ -42,6 +44,7 @@ class TcrConnectionManager;
 class TcrHADistributionManager;
 class ThinClientRegion;
 class ThinClientPoolHADM;
+class TcrEndpoint;
 
 class ThinClientRedundancyManager {
  public:
