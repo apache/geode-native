@@ -61,24 +61,24 @@ if (${WIN32})
   set ( _COMMAND_PREFIX ${CMAKE_COMMAND} -E chdir ace )
 
   set ( _MSBUILD_FLAGS /m /p:Platform=${_PLATFORM} /p:Configuration=$<$<CONFIG:Debug>:Debug>$<$<NOT:$<CONFIG:Debug>>:Release>)
-  set ( _MSBUILD_FLAGS_STATIC ${_MSBUILD_FLAGS} /t:ace_vc${MSVC_VERSION}_static /t:SSL_vc${MSVC_VERSION}_static ) 
+  set ( _MSBUILD_FLAGS_STATIC ${_MSBUILD_FLAGS} /t:ace_vs2017_static /t:SSL_vs2017_static ) 
 
   include(ProcessorCount)
   ProcessorCount(_NPROCS)
   set ( MPC ${PERL} ..\\bin\\mwc.pl )
-  set ( MPC_FLAGS -type vc${MSVC_VERSION} -expand_vars -features ssl=1 -recurse -hierarchy -workers ${_NPROCS} -value_template MultiProcessorCompilation=true -apply_project )
+  set ( MPC_FLAGS -type vs2017 -expand_vars -features ssl=1 -recurse -hierarchy -workers ${_NPROCS} -value_template MultiProcessorCompilation=true -apply_project )
 
   #TODO add custom targets to build in parallel?
   #TODO MPC has flag to replace variables with absolute paths, think we need that for devstudio builds
   set ( _CONFIGURE_COMMAND ${_COMMAND_PREFIX}
                              ${CMAKE_COMMAND} -E env ACE_ROOT=<SOURCE_DIR> SSL_ROOT=${OPENSSL_ROOT}
-							 ${MPC} ${MPC_FLAGS} -name_modifier "*_vc${MSVC_VERSION}_static" -static 
+							 ${MPC} ${MPC_FLAGS} -name_modifier "*_vs2017_static" -static 
 							 -value_template staticflags+=__ACE_INLINE__ 
 							 -value_template staticflags+=ACE_BUILD_DLL 
 							 -value_template staticflags+=ACE_AS_STATIC_LIBS 
 							 -value_template runtime_library=Multithreaded$<$<CONFIG:Debug>:Debug>Dll 
   )
-  set ( _BUILD_COMMAND ${_COMMAND_PREFIX} ${MSBUILD} ACE_vc${MSVC_VERSION}_static.sln ${_MSBUILD_FLAGS} ${_MSBUILD_FLAGS_STATIC}
+  set ( _BUILD_COMMAND ${_COMMAND_PREFIX} ${MSBUILD} ACE_vs2017_static.sln ${_MSBUILD_FLAGS} ${_MSBUILD_FLAGS_STATIC}
   )
   set ( _INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory lib <INSTALL_DIR>/lib 
                  COMMAND ${CMAKE_COMMAND} -E copy_directory ace <INSTALL_DIR>/include/ace

@@ -51,17 +51,6 @@ if (WIN32)
   # TODO FindPerl
   find_program( PERL perl )
 
-  # Determin the Visual Studio version to generate projects for.
-  if (MSVC10)
-    set(MSVC_VERSION 10)
-  elseif(MSVC11)
-    set(MSVC_VERSION 11)
-  elseif(MSVC12)
-    set(MSVC_VERSION 12)
-  elseif(MSVC14)
-    set(MSVC_VERSION 14)
-  endIF()
-  
   set(DEPENDENCIES ${DEPENDENCIES} sqlite-netFx)
 endif()
 
