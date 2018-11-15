@@ -20,6 +20,7 @@
 #include <geode/SystemProperties.hpp>
 
 #include "ExpiryHandler_T.hpp"
+#include "TcrConnectionManager.hpp"
 #include "util/exception.hpp"
 
 namespace apache {
@@ -281,6 +282,12 @@ void ThinClientPoolHADM::sendNotConMesToAllregions() {
        it != m_regions.end(); it++) {
     (*it)->receiveNotification(TcrMessage::getAllEPDisMess());
   }
+}
+
+TcrEndpoint* ThinClientPoolHADM::createEP(const char* endpointName) {
+  return new TcrPoolEndPoint(
+      endpointName, m_connManager.getCacheImpl(), m_connManager.m_failoverSema,
+      m_connManager.m_cleanupSema, m_redundancySema, this);
 }
 
 }  // namespace client

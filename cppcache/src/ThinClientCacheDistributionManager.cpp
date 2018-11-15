@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "ThinClientCacheDistributionManager.hpp"
 
 #include <algorithm>
@@ -25,6 +26,7 @@
 #include "CacheImpl.hpp"
 #include "ReadWriteLock.hpp"
 #include "RemoteQueryService.hpp"
+#include "TcrConnectionManager.hpp"
 #include "TcrEndpoint.hpp"
 #include "TcrMessage.hpp"
 #include "ThinClientBaseDM.hpp"

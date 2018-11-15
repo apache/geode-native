@@ -31,6 +31,7 @@
 #include "ExpiryHandler_T.hpp"
 #include "ExpiryTaskManager.hpp"
 #include "NonCopyable.hpp"
+#include "TcrConnectionManager.hpp"
 #include "TcrEndpoint.hpp"
 #include "ThinClientRegion.hpp"
 #include "ThinClientStickyManager.hpp"
@@ -2464,6 +2465,106 @@ TcrConnection* ThinClientPoolDM::getConnectionFromQueueW(
       "connFound=%d",
       conn, match, connFound);
   return conn;
+}
+
+bool ThinClientPoolDM::checkDupAndAdd(std::shared_ptr<EventId> eventid) {
+  return m_connManager.checkDupAndAdd(eventid);
+}
+
+TcrEndpoint* ThinClientPoolDM::createEP(const char* endpointName) {
+  return new TcrPoolEndPoint(
+      endpointName, m_connManager.getCacheImpl(), m_connManager.m_failoverSema,
+      m_connManager.m_cleanupSema, m_connManager.m_redundancySema, this);
+}
+
+GfErrType FunctionExecution::execute(void) {
+  GuardUserAttributes gua;
+
+  if (m_userAttr) {
+    gua.setAuthenticatedView(m_userAttr->getAuthenticatedView());
+  }
+
+  std::string funcName(m_func);
+  TcrMessageExecuteFunction request(
+      new DataOutput(
+          m_poolDM->getConnectionManager().getCacheImpl()->createDataOutput()),
+      funcName, m_args, m_getResult, m_poolDM, m_timeout);
+  TcrMessageReply reply(true, m_poolDM);
+  ChunkedFunctionExecutionResponse* resultProcessor(
+      new ChunkedFunctionExecutionResponse(reply, (m_getResult & 2) == 2, *m_rc,
+                                           m_resultCollectorLock));
+  reply.setChunkedResultHandler(resultProcessor);
+  reply.setTimeout(m_timeout);
+  reply.setDM(m_poolDM);
+
+  LOGDEBUG(
+      "ThinClientPoolDM::sendRequestToAllServer sendRequest on endpoint[%s]!",
+      m_ep->name().c_str());
+
+  m_error = m_poolDM->sendRequestToEP(request, reply, m_ep);
+  m_error = m_poolDM->handleEPError(m_ep, reply, m_error);
+  if (m_error != GF_NOERR) {
+    if (m_error == GF_NOTCON || m_error == GF_IOERR) {
+      delete resultProcessor;
+      resultProcessor = nullptr;
+      return GF_NOERR;  // if server is unavailable its not an error for
+      // functionexec OnServers() case
+    }
+    LOGDEBUG("FunctionExecution::execute failed on endpoint[%s]!. Error = %d ",
+             m_ep->name().c_str(), m_error);
+    if (reply.getMessageType() == TcrMessage::EXCEPTION) {
+      exceptionPtr = CacheableString::create(reply.getException());
+    }
+
+    delete resultProcessor;
+    resultProcessor = nullptr;
+    return m_error;
+  } else if (reply.getMessageType() == TcrMessage::EXCEPTION ||
+             reply.getMessageType() == TcrMessage::EXECUTE_FUNCTION_ERROR) {
+    m_error = ThinClientRegion::handleServerException("Execute",
+                                                      reply.getException());
+    exceptionPtr = CacheableString::create(reply.getException());
+  }
+  if (resultProcessor->getResult() == true) {
+  }
+  delete resultProcessor;
+  resultProcessor = nullptr;
+  return m_error;
+}
+
+OnRegionFunctionExecution::OnRegionFunctionExecution(
+    std::string func, const Region* region, std::shared_ptr<Cacheable> args,
+    std::shared_ptr<CacheableHashSet> routingObj, uint8_t getResult,
+    std::chrono::milliseconds timeout, ThinClientPoolDM* poolDM,
+    const std::shared_ptr<std::recursive_mutex>& rCL,
+    std::shared_ptr<ResultCollector> rs,
+    std::shared_ptr<UserAttributes> userAttr, bool isBGThread,
+    const std::shared_ptr<BucketServerLocation>& serverLocation,
+    bool allBuckets)
+    : m_serverLocation(serverLocation),
+      m_isBGThread(isBGThread),
+      m_poolDM(poolDM),
+      m_func(func),
+      m_getResult(getResult),
+      m_timeout(timeout),
+      m_args(args),
+      m_routingObj(routingObj),
+      m_rc(rs),
+      m_resultCollectorLock(rCL),
+      m_userAttr(userAttr),
+      m_region(region),
+      m_allBuckets(allBuckets) {
+  m_request = new TcrMessageExecuteRegionFunctionSingleHop(
+      new DataOutput(
+          m_poolDM->getConnectionManager().getCacheImpl()->createDataOutput()),
+      m_func, m_region, m_args, m_routingObj, m_getResult, nullptr,
+      m_allBuckets, timeout, m_poolDM);
+  m_reply = new TcrMessageReply(true, m_poolDM);
+  m_resultCollector = new ChunkedFunctionExecutionResponse(
+      *m_reply, (m_getResult & 2) == 2, m_rc, m_resultCollectorLock);
+  m_reply->setChunkedResultHandler(m_resultCollector);
+  m_reply->setTimeout(m_timeout);
+  m_reply->setDM(m_poolDM);
 }
 
 }  // namespace client

@@ -23,6 +23,7 @@
 #include <geode/SystemProperties.hpp>
 
 #include "DistributedSystemImpl.hpp"
+#include "TcrConnectionManager.hpp"
 #include "ThinClientRegion.hpp"
 #include "util/exception.hpp"
 

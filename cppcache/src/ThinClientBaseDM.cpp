@@ -21,6 +21,7 @@
 
 #include <geode/AuthenticatedView.hpp>
 
+#include "TcrConnectionManager.hpp"
 #include "ThinClientRegion.hpp"
 #include "UserAttributes.hpp"
 
@@ -329,6 +330,14 @@ GfErrType ThinClientBaseDM::registerInterestForRegion(TcrEndpoint*,
 }
 
 bool ThinClientBaseDM::isEndpointAttached(TcrEndpoint*) { return false; }
+
+bool ThinClientBaseDM::checkDupAndAdd(std::shared_ptr<EventId> eventid) {
+  return m_connManager.checkDupAndAdd(eventid);
+}
+
+std::recursive_mutex& ThinClientBaseDM::getRedundancyLock() {
+  return m_connManager.getRedundancyLock();
+}
 
 }  // namespace client
 }  // namespace geode

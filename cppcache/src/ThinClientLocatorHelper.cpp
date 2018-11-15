@@ -32,6 +32,7 @@
 #include "QueueConnectionRequest.hpp"
 #include "QueueConnectionResponse.hpp"
 #include "TcpSslConn.hpp"
+#include "TcrConnectionManager.hpp"
 #include "ThinClientPoolDM.hpp"
 
 namespace apache {

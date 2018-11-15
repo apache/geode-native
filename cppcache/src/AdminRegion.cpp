@@ -20,6 +20,7 @@
 #include <geode/SystemProperties.hpp>
 
 #include "CacheImpl.hpp"
+#include "TcrConnectionManager.hpp"
 #include "ThinClientPoolDM.hpp"
 #include "ThinClientRegion.hpp"
 #include "statistics/StatisticsManager.hpp"

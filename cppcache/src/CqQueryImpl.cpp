@@ -23,6 +23,7 @@
 
 #include "ResultSetImpl.hpp"
 #include "StructSetImpl.hpp"
+#include "TcrConnectionManager.hpp"
 #include "ThinClientRegion.hpp"
 #include "UserAttributes.hpp"
 #include "util/Log.hpp"

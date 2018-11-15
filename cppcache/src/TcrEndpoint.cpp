@@ -28,6 +28,7 @@
 #include "CacheImpl.hpp"
 #include "DistributedSystemImpl.hpp"
 #include "StackTrace.hpp"
+#include "TcrConnectionManager.hpp"
 #include "ThinClientPoolHADM.hpp"
 #include "ThinClientRegion.hpp"
 #include "Utils.hpp"

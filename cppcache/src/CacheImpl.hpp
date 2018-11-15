@@ -40,7 +40,6 @@
 #include "NonCopyable.hpp"
 #include "PdxTypeRegistry.hpp"
 #include "RemoteQueryService.hpp"
-#include "TcrConnectionManager.hpp"
 #include "util/synchronized_map.hpp"
 
 #define DEFAULT_LRU_MAXIMUM_ENTRIES 100000
@@ -64,6 +63,7 @@ class RegionAttributes;
 class SerializationRegistry;
 class ThreadPool;
 class EvictionController;
+class TcrConnectionManager;
 
 /**
  * @class Cache Cache.hpp
@@ -94,7 +94,7 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
   // drop
   void netDown();
   void revive();
-  void setClientCrashTEST() { m_tcrConnectionManager->setClientCrashTEST(); }
+  void setClientCrashTEST();
 
   // For PrSingleHop C++unit testing.
   void setNetworkHopFlag(bool networkhopflag) {

@@ -116,9 +116,7 @@ class ThinClientPoolDM
   // void updateQueue(const char* regionPath) ;
   ClientProxyMembershipID* getMembershipId() { return m_memId.get(); }
   virtual void processMarker(){};
-  bool checkDupAndAdd(std::shared_ptr<EventId> eventid) override {
-    return m_connManager.checkDupAndAdd(eventid);
-  }
+  bool checkDupAndAdd(std::shared_ptr<EventId> eventid) override;
   ACE_Recursive_Thread_Mutex& getPoolLock() { return getQueueLock(); }
   void reducePoolSize(int num);
   void removeEPConnections(int numConn, bool triggerManagerConn = true);
@@ -277,12 +275,7 @@ class ThinClientPoolDM
                              const TcrConnection* currentServer = nullptr);
   // TODO global - m_memId was volatile
   std::unique_ptr<ClientProxyMembershipID> m_memId;
-  virtual TcrEndpoint* createEP(const char* endpointName) {
-    return new TcrPoolEndPoint(endpointName, m_connManager.getCacheImpl(),
-                               m_connManager.m_failoverSema,
-                               m_connManager.m_cleanupSema,
-                               m_connManager.m_redundancySema, this);
-  }
+  virtual TcrEndpoint* createEP(const char* endpointName);
   virtual void removeCallbackConnection(TcrEndpoint*) {}
 
   bool excludeServer(std::string, std::set<ServerLocation>&);
@@ -371,62 +364,7 @@ class FunctionExecution : public PooledWork<GfErrType> {
     m_userAttr = userAttr;
   }
 
-  GfErrType execute(void) {
-    GuardUserAttributes gua;
-
-    if (m_userAttr) {
-      gua.setAuthenticatedView(m_userAttr->getAuthenticatedView());
-    }
-
-    std::string funcName(m_func);
-    TcrMessageExecuteFunction request(
-        new DataOutput(m_poolDM->getConnectionManager()
-                           .getCacheImpl()
-                           ->createDataOutput()),
-        funcName, m_args, m_getResult, m_poolDM, m_timeout);
-    TcrMessageReply reply(true, m_poolDM);
-    ChunkedFunctionExecutionResponse* resultProcessor(
-        new ChunkedFunctionExecutionResponse(reply, (m_getResult & 2) == 2,
-                                             *m_rc, m_resultCollectorLock));
-    reply.setChunkedResultHandler(resultProcessor);
-    reply.setTimeout(m_timeout);
-    reply.setDM(m_poolDM);
-
-    LOGDEBUG(
-        "ThinClientPoolDM::sendRequestToAllServer sendRequest on endpoint[%s]!",
-        m_ep->name().c_str());
-
-    m_error = m_poolDM->sendRequestToEP(request, reply, m_ep);
-    m_error = m_poolDM->handleEPError(m_ep, reply, m_error);
-    if (m_error != GF_NOERR) {
-      if (m_error == GF_NOTCON || m_error == GF_IOERR) {
-        delete resultProcessor;
-        resultProcessor = nullptr;
-        return GF_NOERR;  // if server is unavailable its not an error for
-                          // functionexec OnServers() case
-      }
-      LOGDEBUG(
-          "FunctionExecution::execute failed on endpoint[%s]!. Error = %d ",
-          m_ep->name().c_str(), m_error);
-      if (reply.getMessageType() == TcrMessage::EXCEPTION) {
-        exceptionPtr = CacheableString::create(reply.getException());
-      }
-
-      delete resultProcessor;
-      resultProcessor = nullptr;
-      return m_error;
-    } else if (reply.getMessageType() == TcrMessage::EXCEPTION ||
-               reply.getMessageType() == TcrMessage::EXECUTE_FUNCTION_ERROR) {
-      m_error = ThinClientRegion::handleServerException("Execute",
-                                                        reply.getException());
-      exceptionPtr = CacheableString::create(reply.getException());
-    }
-    if (resultProcessor->getResult() == true) {
-    }
-    delete resultProcessor;
-    resultProcessor = nullptr;
-    return m_error;
-  }
+  GfErrType execute(void);
 };
 
 class OnRegionFunctionExecution : public PooledWork<GfErrType> {
@@ -456,33 +394,7 @@ class OnRegionFunctionExecution : public PooledWork<GfErrType> {
       std::shared_ptr<ResultCollector> rs,
       std::shared_ptr<UserAttributes> userAttr, bool isBGThread,
       const std::shared_ptr<BucketServerLocation>& serverLocation,
-      bool allBuckets)
-      : m_serverLocation(serverLocation),
-        m_isBGThread(isBGThread),
-        m_poolDM(poolDM),
-        m_func(func),
-        m_getResult(getResult),
-        m_timeout(timeout),
-        m_args(args),
-        m_routingObj(routingObj),
-        m_rc(rs),
-        m_resultCollectorLock(rCL),
-        m_userAttr(userAttr),
-        m_region(region),
-        m_allBuckets(allBuckets) {
-    m_request = new TcrMessageExecuteRegionFunctionSingleHop(
-        new DataOutput(m_poolDM->getConnectionManager()
-                           .getCacheImpl()
-                           ->createDataOutput()),
-        m_func, m_region, m_args, m_routingObj, m_getResult, nullptr,
-        m_allBuckets, timeout, m_poolDM);
-    m_reply = new TcrMessageReply(true, m_poolDM);
-    m_resultCollector = new ChunkedFunctionExecutionResponse(
-        *m_reply, (m_getResult & 2) == 2, m_rc, m_resultCollectorLock);
-    m_reply->setChunkedResultHandler(m_resultCollector);
-    m_reply->setTimeout(m_timeout);
-    m_reply->setDM(m_poolDM);
-  }
+      bool allBuckets);
 
   ~OnRegionFunctionExecution() {
     delete m_request;

@@ -127,8 +127,9 @@ void TcrConnectionManager::init(bool isPool) {
       GfErrTypeToException("TcrConnectionManager::init", err);
     }
 
-    m_redundancyTask = new Task<TcrConnectionManager>(
-        this, &TcrConnectionManager::redundancy, NC_Redundancy);
+    m_redundancyTask = std::unique_ptr<Task2<TcrConnectionManager>>(
+        new Task2<TcrConnectionManager>(this, &TcrConnectionManager::redundancy,
+                                        NC_Redundancy));
     m_redundancyTask->start();
 
     m_redundancyManager->m_HAenabled = true;
@@ -138,19 +139,21 @@ void TcrConnectionManager::init(bool isPool) {
 }
 
 void TcrConnectionManager::startFailoverAndCleanupThreads(bool isPool) {
-  if (m_failoverTask == nullptr || m_cleanupTask == nullptr) {
+  if (!isPool && (m_failoverTask == nullptr || m_cleanupTask == nullptr)) {
     std::lock_guard<decltype(m_distMngrsLock)> _guard(m_distMngrsLock);
-    if (m_failoverTask == nullptr && !isPool) {
-      m_failoverTask = new Task<TcrConnectionManager>(
-          this, &TcrConnectionManager::failover, NC_Failover);
+    if (!m_failoverTask) {
+      m_failoverTask = std::unique_ptr<Task2<TcrConnectionManager>>(
+          new Task2<TcrConnectionManager>(this, &TcrConnectionManager::failover,
+                                          NC_Failover));
       m_failoverTask->start();
     }
-    if (m_cleanupTask == nullptr && !isPool) {
-      if (m_redundancyManager->m_HAenabled && !isPool) {
+    if (!m_cleanupTask) {
+      if (m_redundancyManager->m_HAenabled) {
         m_redundancyManager->startPeriodicAck();
       }
-      m_cleanupTask = new Task<TcrConnectionManager>(
-          this, &TcrConnectionManager::cleanup, NC_CleanUp);
+      m_cleanupTask = std::unique_ptr<Task2<TcrConnectionManager>>(
+          new Task2<TcrConnectionManager>(this, &TcrConnectionManager::cleanup,
+                                          NC_CleanUp));
       m_cleanupTask->start();
     }
   }
@@ -166,7 +169,7 @@ void TcrConnectionManager::close() {
     m_failoverTask->stopNoblock();
     m_failoverSema.release();
     m_failoverTask->wait();
-    _GEODE_SAFE_DELETE(m_failoverTask);
+    m_failoverTask = nullptr;
   }
 
   auto cacheAttributes = m_cache->getAttributes();
@@ -181,7 +184,7 @@ void TcrConnectionManager::close() {
       m_redundancyTask->wait();
       // now stop cleanup task
       // stopCleanupTask();
-      _GEODE_SAFE_DELETE(m_redundancyTask);
+      m_redundancyTask = nullptr;
     }
 
     m_redundancyManager->close();
@@ -204,7 +207,7 @@ TcrConnectionManager::~TcrConnectionManager() {
     m_cleanupTask->wait();
     // Clean notification lists if something remains in there; see bug #250
     cleanNotificationLists();
-    _GEODE_SAFE_DELETE(m_cleanupTask);
+    m_cleanupTask = nullptr;
 
     // sanity cleanup of any remaining endpoints with warning; see bug #298
     //  cleanup of endpoints, when regions are destroyed via notification
@@ -351,7 +354,7 @@ int TcrConnectionManager::checkRedundancy(const ACE_Time_Value &,
   return 0;
 }
 
-int TcrConnectionManager::failover(volatile bool &isRunning) {
+void TcrConnectionManager::failover(std::atomic<bool> &isRunning) {
   LOGFINE("TcrConnectionManager: starting failover thread");
   while (isRunning) {
     m_failoverSema.acquire();
@@ -376,7 +379,6 @@ int TcrConnectionManager::failover(volatile bool &isRunning) {
     }
   }
   LOGFINE("TcrConnectionManager: ending failover thread");
-  return 0;
 }
 
 void TcrConnectionManager::getAllEndpoints(
@@ -487,7 +489,7 @@ void TcrConnectionManager::revive() {
   std::this_thread::sleep_for(std::chrono::seconds(15));
 }
 
-int TcrConnectionManager::redundancy(volatile bool &isRunning) {
+void TcrConnectionManager::redundancy(std::atomic<bool> &isRunning) {
   LOGFINE("Starting subscription maintain redundancy thread.");
   while (isRunning) {
     m_redundancySema.acquire();
@@ -499,7 +501,6 @@ int TcrConnectionManager::redundancy(volatile bool &isRunning) {
     }
   }
   LOGFINE("Ending subscription maintain redundancy thread.");
-  return 0;
 }
 
 void TcrConnectionManager::addNotificationForDeletion(
@@ -511,7 +512,7 @@ void TcrConnectionManager::addNotificationForDeletion(
   m_notifyCleanupSemaList.put(&notifyCleanupSema);
 }
 
-int TcrConnectionManager::cleanup(volatile bool &isRunning) {
+void TcrConnectionManager::cleanup(std::atomic<bool> &isRunning) {
   LOGFINE("TcrConnectionManager: starting cleanup thread");
   do {
     //  If we block on acquire, the queue must be empty (precondition).
@@ -533,7 +534,6 @@ int TcrConnectionManager::cleanup(volatile bool &isRunning) {
   //  Postcondition - all notification channels should be cleaned up by the end
   //  of this function.
   GF_DEV_ASSERT(m_receiverReleaseList.size() == 0);
-  return 0;
 }
 
 void TcrConnectionManager::cleanNotificationLists() {

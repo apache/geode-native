@@ -34,6 +34,7 @@
 #include "ReadWriteLock.hpp"
 #include "RegionGlobalLocks.hpp"
 #include "RemoteQuery.hpp"
+#include "TcrConnectionManager.hpp"
 #include "TcrDistributionManager.hpp"
 #include "TcrEndpoint.hpp"
 #include "ThinClientBaseDM.hpp"

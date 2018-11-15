@@ -23,26 +23,28 @@
 #include <mutex>
 
 #include "PoolAttributes.hpp"
-#include "TcrConnectionManager.hpp"
 #include "ThinClientHARegion.hpp"
 #include "ThinClientPoolDM.hpp"
+#include "ThinClientRedundancyManager.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
+
+class TcrConnectionManager;
 
 class ThinClientPoolHADM : public ThinClientPoolDM {
  public:
   ThinClientPoolHADM(const char* name, std::shared_ptr<PoolAttributes> poolAttr,
                      TcrConnectionManager& connManager);
 
-  void init();
+  void init() override;
 
-  virtual ~ThinClientPoolHADM() { destroy(); }
+  ~ThinClientPoolHADM() override { destroy(); }
 
-  virtual GfErrType sendSyncRequest(TcrMessage& request, TcrMessageReply& reply,
-                                    bool attemptFailover = true,
-                                    bool isBGThread = false);
+  GfErrType sendSyncRequest(TcrMessage& request, TcrMessageReply& reply,
+                            bool attemptFailover = true,
+                            bool isBGThread = false) override;
 
   bool registerInterestForHARegion(TcrEndpoint* ep, const TcrMessage* request,
                                    ThinClientHARegion& region);
@@ -50,38 +52,38 @@ class ThinClientPoolHADM : public ThinClientPoolDM {
   GfErrType sendSyncRequestRegisterInterestEP(TcrMessage& request,
                                               TcrMessageReply& reply,
                                               bool attemptFailover,
-                                              TcrEndpoint* endpoint);
+                                              TcrEndpoint* endpoint) override;
 
   GfErrType registerInterestAllRegions(TcrEndpoint* ep,
                                        const TcrMessage* request,
                                        TcrMessageReply* reply);
 
-  virtual void destroy(bool keepAlive = false);
+  virtual void destroy(bool keepAlive = false) override;
 
   void readyForEvents();
 
   void sendNotificationCloseMsgs();
 
-  bool checkDupAndAdd(std::shared_ptr<EventId> eventid) {
+  bool checkDupAndAdd(std::shared_ptr<EventId> eventid) override {
     return m_redundancyManager->checkDupAndAdd(eventid);
   }
 
-  void processMarker() {
+  void processMarker() override {
     // also set the static bool m_processedMarker for makePrimary messages
     m_redundancyManager->m_globalProcessedMarker = true;
   }
 
   void netDown();
 
-  void pingServerLocal();
+  void pingServerLocal() override;
 
-  virtual void acquireRedundancyLock() {
+  void acquireRedundancyLock() override {
     m_redundancyManager->acquireRedundancyLock();
   };
-  virtual void releaseRedundancyLock() {
+  void releaseRedundancyLock() override {
     m_redundancyManager->releaseRedundancyLock();
   };
-  virtual std::recursive_mutex& getRedundancyLock() {
+  std::recursive_mutex& getRedundancyLock() override {
     return m_redundancyManager->getRedundancyLock();
   }
 
@@ -89,16 +91,17 @@ class ThinClientPoolHADM : public ThinClientPoolDM {
     return m_redundancyManager->sendRequestToPrimary(request, reply);
   }
 
-  virtual void triggerRedundancyThread() { m_redundancySema.release(); }
+  void triggerRedundancyThread() override { m_redundancySema.release(); }
 
   bool isReadyForEvent() const {
     return m_redundancyManager->isSentReadyForEvents();
   }
 
  protected:
-  virtual GfErrType sendSyncRequestRegisterInterest(
+  GfErrType sendSyncRequestRegisterInterest(
       TcrMessage& request, TcrMessageReply& reply, bool attemptFailover = true,
-      ThinClientRegion* region = nullptr, TcrEndpoint* endpoint = nullptr);
+      ThinClientRegion* region = nullptr,
+      TcrEndpoint* endpoint = nullptr) override;
 
   virtual GfErrType sendSyncRequestCq(TcrMessage& request,
                                       TcrMessageReply& reply);
@@ -107,7 +110,7 @@ class ThinClientPoolHADM : public ThinClientPoolDM {
 
   virtual bool postFailoverAction(TcrEndpoint* endpoint);
 
-  virtual void startBackgroundThreads();
+  void startBackgroundThreads() override;
 
  private:
   // Disallow copy constructor and assignment operator.
@@ -126,14 +129,9 @@ class ThinClientPoolHADM : public ThinClientPoolDM {
   ExpiryTaskManager::id_type m_servermonitorTaskId;
   int checkRedundancy(const ACE_Time_Value&, const void*);
 
-  virtual TcrEndpoint* createEP(const char* endpointName) {
-    return new TcrPoolEndPoint(endpointName, m_connManager.getCacheImpl(),
-                               m_connManager.m_failoverSema,
-                               m_connManager.m_cleanupSema, m_redundancySema,
-                               this);
-  }
+  TcrEndpoint* createEP(const char* endpointName) override;
 
-  void removeCallbackConnection(TcrEndpoint*);
+  void removeCallbackConnection(TcrEndpoint*) override;
 
   std::list<ThinClientRegion*> m_regions;
   std::recursive_mutex m_regionsLock;

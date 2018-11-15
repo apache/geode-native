@@ -26,9 +26,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include <ace/Recursive_Thread_Mutex.h>
 #include <ace/Semaphore.h>
-#include <ace/Versioned_Namespace.h>
 #include <ace/config-lite.h>
 
 #include <geode/internal/geode_globals.hpp>
@@ -36,6 +34,7 @@
 #include "ExpiryTaskManager.hpp"
 #include "Queue.hpp"
 #include "Task.hpp"
+#include "Task2.hpp"
 #include "ThinClientRedundancyManager.hpp"
 #include "util/synchronized_map.hpp"
 
@@ -53,7 +52,7 @@ class ThinClientRegion;
 /**
  * @brief transport data between caches
  */
-class APACHE_GEODE_EXPORT TcrConnectionManager {
+class TcrConnectionManager {
  public:
   explicit TcrConnectionManager(CacheImpl* cache);
   ~TcrConnectionManager();
@@ -156,7 +155,7 @@ class APACHE_GEODE_EXPORT TcrConnectionManager {
   std::recursive_mutex m_distMngrsLock;
 
   ACE_Semaphore m_failoverSema;
-  Task<TcrConnectionManager>* m_failoverTask;
+  std::unique_ptr<Task2<TcrConnectionManager>> m_failoverTask;
 
   bool removeRefToEndpoint(TcrEndpoint* ep, bool keepEndpoint = false);
   TcrEndpoint* addRefToTcrEndpoint(std::string endpointName,
@@ -166,7 +165,7 @@ class APACHE_GEODE_EXPORT TcrConnectionManager {
   void removeHAEndpoints();
 
   ACE_Semaphore m_cleanupSema;
-  Task<TcrConnectionManager>* m_cleanupTask;
+  std::unique_ptr<Task2<TcrConnectionManager>> m_cleanupTask;
 
   ExpiryTaskManager::id_type m_pingTaskId;
   ExpiryTaskManager::id_type m_servermonitorTaskId;
@@ -175,7 +174,7 @@ class APACHE_GEODE_EXPORT TcrConnectionManager {
   Queue<ACE_Semaphore*> m_notifyCleanupSemaList;
 
   ACE_Semaphore m_redundancySema;
-  Task<TcrConnectionManager>* m_redundancyTask;
+  std::unique_ptr<Task2<TcrConnectionManager>> m_redundancyTask;
   std::recursive_mutex m_notificationLock;
   bool m_isDurable;
 
@@ -183,11 +182,11 @@ class APACHE_GEODE_EXPORT TcrConnectionManager {
 
   ThinClientRedundancyManager* m_redundancyManager;
 
-  int failover(volatile bool& isRunning);
-  int redundancy(volatile bool& isRunning);
+  void failover(std::atomic<bool>& isRunning);
+  void redundancy(std::atomic<bool>& isRunning);
 
   void cleanNotificationLists();
-  int cleanup(volatile bool& isRunning);
+  void cleanup(std::atomic<bool>& isRunning);
 
   // Disallow copy constructor and assignment operator.
   TcrConnectionManager(const TcrConnectionManager&);

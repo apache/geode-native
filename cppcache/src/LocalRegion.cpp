@@ -33,6 +33,7 @@
 #include "RegionGlobalLocks.hpp"
 #include "SerializableHelper.hpp"
 #include "TXState.hpp"
+#include "TcrConnectionManager.hpp"
 #include "Utils.hpp"
 #include "VersionTag.hpp"
 #include "util/Log.hpp"

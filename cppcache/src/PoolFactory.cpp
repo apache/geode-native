@@ -25,6 +25,7 @@
 #include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
 #include "PoolAttributes.hpp"
+#include "TcrConnectionManager.hpp"
 #include "ThinClientPoolDM.hpp"
 #include "ThinClientPoolHADM.hpp"
 #include "ThinClientPoolStickyDM.hpp"

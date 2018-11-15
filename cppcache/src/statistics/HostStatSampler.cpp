@@ -38,6 +38,7 @@
 #include "../ClientHealthStats.hpp"
 #include "../ClientProxyMembershipID.hpp"
 #include "../DistributedSystem.hpp"
+#include "../TcrConnectionManager.hpp"
 #include "../util/Log.hpp"
 #include "GeodeStatisticsFactory.hpp"
 #include "StatArchiveWriter.hpp"

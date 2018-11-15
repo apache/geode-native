@@ -36,6 +36,7 @@
 #include "PdxTypeRegistry.hpp"
 #include "RegionExpiryHandler.hpp"
 #include "SerializationRegistry.hpp"
+#include "TcrConnectionManager.hpp"
 #include "TcrMessage.hpp"
 #include "ThinClientHARegion.hpp"
 #include "ThinClientPoolDM.hpp"
@@ -876,6 +877,11 @@ AuthenticatedView CacheImpl::createAuthenticatedView(
 }
 
 void CacheImpl::setCache(Cache* cache) { m_cache = cache; }
+
+void CacheImpl::setClientCrashTEST() {
+  m_tcrConnectionManager->setClientCrashTEST();
+}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

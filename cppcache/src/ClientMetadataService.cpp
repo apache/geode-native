@@ -25,6 +25,7 @@
 #include <geode/FixedPartitionResolver.hpp>
 
 #include "ClientMetadata.hpp"
+#include "TcrConnectionManager.hpp"
 #include "TcrMessage.hpp"
 #include "ThinClientPoolDM.hpp"
 #include "util/queue.hpp"

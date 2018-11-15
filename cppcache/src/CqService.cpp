@@ -28,6 +28,7 @@
 #include "CqQueryImpl.hpp"
 #include "DistributedSystem.hpp"
 #include "ReadWriteLock.hpp"
+#include "TcrConnectionManager.hpp"
 #include "ThinClientPoolDM.hpp"
 #include "util/exception.hpp"
 

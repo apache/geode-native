@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_TCRHADISTRIBUTIONMANAGER_H_
-#define GEODE_TCRHADISTRIBUTIONMANAGER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,9 +15,15 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_TCRHADISTRIBUTIONMANAGER_H_
+#define GEODE_TCRHADISTRIBUTIONMANAGER_H_
+
 #include <geode/CacheAttributes.hpp>
 #include <geode/internal/geode_base.hpp>
 
+#include "TcrConnectionManager.hpp"
 #include "TcrEndpoint.hpp"
 #include "ThinClientDistributionManager.hpp"
 
