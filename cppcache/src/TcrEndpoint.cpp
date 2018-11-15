@@ -1266,10 +1266,8 @@ void TcrEndpoint::stopNotifyReceiverAndCleanup() {
     // m_notifyReceiver->stopNoblock();
     m_notifyReceiver->wait();
     bool found = false;
-    for (std::list<Task<TcrEndpoint>*>::iterator it =
-             m_notifyReceiverList.begin();
-         it != m_notifyReceiverList.end(); it++) {
-      if (*it == m_notifyReceiver) {
+    for (const auto& it : m_notifyReceiverList) {
+      if (it == m_notifyReceiver) {
         found = true;
         break;
       }
@@ -1283,16 +1281,14 @@ void TcrEndpoint::stopNotifyReceiverAndCleanup() {
 
   m_numRegionListener = 0;
 
-  if (m_notifyReceiverList.size() > 0) {
+  if (!m_notifyReceiverList.empty()) {
     LOGFINER("TcrEndpoint::stopNotifyReceiverAndCleanup: notifylist size = %d",
              m_notifyReceiverList.size());
-    for (std::list<Task<TcrEndpoint>*>::iterator it =
-             m_notifyReceiverList.begin();
-         it != m_notifyReceiverList.end(); it++) {
+    for (auto& it : m_notifyReceiverList) {
       LOGFINER(
           "TcrEndpoint::stopNotifyReceiverAndCleanup: deleting old notify "
           "recievers.");
-      _GEODE_SAFE_DELETE(*it);
+      _GEODE_SAFE_DELETE(it);
     }
   }
 
