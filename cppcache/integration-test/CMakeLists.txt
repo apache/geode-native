@@ -22,7 +22,6 @@ add_library(test-cppcache-utils STATIC
   CacheHelper.cpp
   CacheableWrapper.cpp
 )
-
 target_link_libraries(test-cppcache-utils
   PRIVATE
     ACE
@@ -31,11 +30,11 @@ target_link_libraries(test-cppcache-utils
     apache-geode
     framework
 )
-
 set_target_properties(test-cppcache-utils PROPERTIES
+  CXX_VISIBILITY_PRESET hidden
+  VISIBILITY_INLINES_HIDDEN ON
 	FOLDER cpp/test/integration
 )
-
 target_compile_definitions(test-cppcache-utils
   PRIVATE
     $<MAKE_C_IDENTIFIER:test-cppcache-utils>_static=1

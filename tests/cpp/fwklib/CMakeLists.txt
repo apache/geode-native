@@ -42,6 +42,11 @@ add_library(framework STATIC
   UDPIpc.hpp
 )
 
+set_target_properties(framework PROPERTIES
+	CXX_VISIBILITY_PRESET hidden
+	VISIBILITY_INLINES_HIDDEN ON
+)
+
 target_compile_options(framework
   PRIVATE
     # Add PIC flags to link later with shared library
