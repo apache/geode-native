@@ -266,8 +266,9 @@ std::shared_ptr<Properties> ThinClientPoolDM::getCredentials(TcrEndpoint* ep) {
 
 void ThinClientPoolDM::startBackgroundThreads() {
   LOGDEBUG("ThinClientPoolDM::startBackgroundThreads: Starting ping thread");
-  m_pingTask = new Task<ThinClientPoolDM>(this, &ThinClientPoolDM::pingServer,
-                                          NC_Ping_Thread);
+  m_pingTask =
+      std::unique_ptr<Task2<ThinClientPoolDM>>(new Task2<ThinClientPoolDM>(
+          this, &ThinClientPoolDM::pingServer, NC_Ping_Thread));
   m_pingTask->start();
 
   auto& props = m_connManager.getCacheImpl()
@@ -276,7 +277,8 @@ void ThinClientPoolDM::startBackgroundThreads() {
 
   if (props.onClientDisconnectClearPdxTypeIds() == true) {
     m_cliCallbackTask =
-        new Task<ThinClientPoolDM>(this, &ThinClientPoolDM::cliCallback);
+        std::unique_ptr<Task2<ThinClientPoolDM>>(new Task2<ThinClientPoolDM>(
+            this, &ThinClientPoolDM::cliCallback, "NC_cliCallback"));
     m_cliCallbackTask->start();
   }
 
@@ -303,7 +305,8 @@ void ThinClientPoolDM::startBackgroundThreads() {
 
   if (updateLocatorListInterval > 0) {
     m_updateLocatorListTask =
-        new Task<ThinClientPoolDM>(this, &ThinClientPoolDM::updateLocatorList);
+        std::unique_ptr<Task2<ThinClientPoolDM>>(new Task2<ThinClientPoolDM>(
+            this, &ThinClientPoolDM::updateLocatorList, "NC_LocatorList"));
     m_updateLocatorListTask->start();
 
     updateLocatorListInterval = updateLocatorListInterval / 1000;  // seconds
@@ -326,8 +329,9 @@ void ThinClientPoolDM::startBackgroundThreads() {
       "ThinClientPoolDM::startBackgroundThreads: Starting manageConnections "
       "thread");
   // Manage Connection Thread
-  m_connManageTask = new Task<ThinClientPoolDM>(
-      this, &ThinClientPoolDM::manageConnections, NC_MC_Thread);
+  m_connManageTask =
+      std::unique_ptr<Task2<ThinClientPoolDM>>(new Task2<ThinClientPoolDM>(
+          this, &ThinClientPoolDM::manageConnections, NC_MC_Thread));
   m_connManageTask->start();
 
   auto idle = getIdleTimeout();
@@ -380,7 +384,7 @@ void ThinClientPoolDM::startBackgroundThreads() {
     m_clientMetadataService->start();
   }
 }
-int ThinClientPoolDM::manageConnections(volatile bool& isRunning) {
+void ThinClientPoolDM::manageConnections(std::atomic<bool>& isRunning) {
   LOGFINE("ThinClientPoolDM: starting manageConnections thread");
 
   while (isRunning) {
@@ -393,10 +397,9 @@ int ThinClientPoolDM::manageConnections(volatile bool& isRunning) {
     }
   }
   LOGFINE("ThinClientPoolDM: ending manageConnections thread");
-  return 0;
 }
 
-void ThinClientPoolDM::cleanStaleConnections(volatile bool& isRunning) {
+void ThinClientPoolDM::cleanStaleConnections(std::atomic<bool>& isRunning) {
   if (!isRunning) {
     return;
   }
@@ -499,9 +502,10 @@ void ThinClientPoolDM::cleanStaleConnections(volatile bool& isRunning) {
 
   LOGDEBUG("Pool size is %d, pool counter is %d", size(), m_poolSize.load());
 }
-void ThinClientPoolDM::cleanStickyConnections(volatile bool&) {}
 
-void ThinClientPoolDM::restoreMinConnections(volatile bool& isRunning) {
+void ThinClientPoolDM::cleanStickyConnections(std::atomic<bool>&) {}
+
+void ThinClientPoolDM::restoreMinConnections(std::atomic<bool>& isRunning) {
   if (!isRunning) {
     return;
   }
@@ -533,7 +537,7 @@ void ThinClientPoolDM::restoreMinConnections(volatile bool& isRunning) {
   LOGDEBUG("Pool size is %d, pool counter is %d", size(), m_poolSize.load());
 }
 
-int ThinClientPoolDM::manageConnectionsInternal(volatile bool& isRunning) {
+void ThinClientPoolDM::manageConnectionsInternal(std::atomic<bool>& isRunning) {
   try {
     LOGFINE(
         "ThinClientPoolDM::manageConnections(): checking connections in pool "
@@ -554,7 +558,6 @@ int ThinClientPoolDM::manageConnectionsInternal(volatile bool& isRunning) {
   } catch (...) {
     LOGERROR("Unexpected exception during manage connections");
   }
-  return 0;
 }
 
 std::string ThinClientPoolDM::selectEndpoint(
@@ -750,7 +753,7 @@ void ThinClientPoolDM::stopPingThread() {
     m_pingTask->stopNoblock();
     m_pingSema.release();
     m_pingTask->wait();
-    _GEODE_SAFE_DELETE(m_pingTask);
+    m_pingTask = nullptr;
     if (m_pingTaskId >= 0) {
       m_connManager.getCacheImpl()->getExpiryTaskManager().cancelTask(
           m_pingTaskId);
@@ -764,7 +767,7 @@ void ThinClientPoolDM::stopUpdateLocatorListThread() {
     m_updateLocatorListTask->stopNoblock();
     m_updateLocatorListSema.release();
     m_updateLocatorListTask->wait();
-    _GEODE_SAFE_DELETE(m_updateLocatorListTask);
+    m_updateLocatorListTask = nullptr;
     if (m_updateLocatorListTaskId >= 0) {
       m_connManager.getCacheImpl()->getExpiryTaskManager().cancelTask(
           m_updateLocatorListTaskId);
@@ -778,7 +781,7 @@ void ThinClientPoolDM::stopCliCallbackThread() {
     m_cliCallbackTask->stopNoblock();
     m_cliCallbackSema.release();
     m_cliCallbackTask->wait();
-    _GEODE_SAFE_DELETE(m_cliCallbackTask);
+    m_cliCallbackTask = nullptr;
   }
 }
 
@@ -805,7 +808,7 @@ void ThinClientPoolDM::destroy(bool keepAlive) {
       m_connManageTask->stopNoblock();
       m_connSema.release();
       m_connManageTask->wait();
-      _GEODE_SAFE_DELETE(m_connManageTask);
+      m_connManageTask = nullptr;
       if (m_connManageTaskId >= 0) {
         cacheImpl->getExpiryTaskManager().cancelTask(m_connManageTaskId);
       }
@@ -2089,7 +2092,7 @@ void ThinClientPoolDM::pingServerLocal() {
   }
 }
 
-int ThinClientPoolDM::updateLocatorList(volatile bool& isRunning) {
+void ThinClientPoolDM::updateLocatorList(std::atomic<bool>& isRunning) {
   LOGFINE("Starting updateLocatorList thread for pool %s", m_poolName.c_str());
   while (isRunning) {
     m_updateLocatorListSema.acquire();
@@ -2098,10 +2101,9 @@ int ThinClientPoolDM::updateLocatorList(volatile bool& isRunning) {
     }
   }
   LOGFINE("Ending updateLocatorList thread for pool %s", m_poolName.c_str());
-  return 0;
 }
 
-int ThinClientPoolDM::pingServer(volatile bool& isRunning) {
+void ThinClientPoolDM::pingServer(std::atomic<bool>& isRunning) {
   LOGFINE("Starting ping thread for pool %s", m_poolName.c_str());
   while (isRunning) {
     m_pingSema.acquire();
@@ -2113,10 +2115,9 @@ int ThinClientPoolDM::pingServer(volatile bool& isRunning) {
     }
   }
   LOGFINE("Ending ping thread for pool %s", m_poolName.c_str());
-  return 0;
 }
 
-int ThinClientPoolDM::cliCallback(volatile bool& isRunning) {
+void ThinClientPoolDM::cliCallback(std::atomic<bool>& isRunning) {
   LOGFINE("Starting cliCallback thread for pool %s", m_poolName.c_str());
   while (isRunning) {
     m_cliCallbackSema.acquire();
@@ -2133,7 +2134,6 @@ int ThinClientPoolDM::cliCallback(volatile bool& isRunning) {
     }
   }
   LOGFINE("Ending cliCallback thread for pool %s", m_poolName.c_str());
-  return 0;
 }
 
 int ThinClientPoolDM::doPing(const ACE_Time_Value&, const void*) {

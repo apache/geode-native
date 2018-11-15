@@ -40,7 +40,7 @@
 #include "PoolStatistics.hpp"
 #include "RemoteQueryService.hpp"
 #include "TXState.hpp"
-#include "Task.hpp"
+#include "Task2.hpp"
 #include "TcrPoolEndPoint.hpp"
 #include "ThinClientBaseDM.hpp"
 #include "ThinClientLocatorHelper.hpp"
@@ -106,9 +106,9 @@ class ThinClientPoolDM
   TcrEndpoint* addEP(ServerLocation& serverLoc);
 
   TcrEndpoint* addEP(const std::string& endpointName);
-  virtual int pingServer(volatile bool& isRunning);
-  virtual int updateLocatorList(volatile bool& isRunning);
-  virtual int cliCallback(volatile bool& isRunning);
+  virtual void pingServer(std::atomic<bool>& isRunning);
+  virtual void updateLocatorList(std::atomic<bool>& isRunning);
+  virtual void cliCallback(std::atomic<bool>& isRunning);
   virtual void pingServerLocal();
 
   ~ThinClientPoolDM() override;
@@ -206,7 +206,7 @@ class ThinClientPoolDM
   virtual void stopPingThread();
   virtual void stopUpdateLocatorListThread();
   virtual void stopCliCallbackThread();
-  virtual void cleanStickyConnections(volatile bool& isRunning);
+  virtual void cleanStickyConnections(std::atomic<bool>& isRunning);
   virtual TcrConnection* getConnectionFromQueue(bool timeout, GfErrType* error,
                                                 std::set<ServerLocation>&,
                                                 bool& maxConnLimit);
@@ -290,20 +290,20 @@ class ThinClientPoolDM
 
   // Manage Connection thread
   ACE_Semaphore m_connSema;
-  Task<ThinClientPoolDM>* m_connManageTask;
-  Task<ThinClientPoolDM>* m_pingTask;
-  Task<ThinClientPoolDM>* m_updateLocatorListTask;
-  Task<ThinClientPoolDM>* m_cliCallbackTask;
+  std::unique_ptr<Task2<ThinClientPoolDM>> m_connManageTask;
+  std::unique_ptr<Task2<ThinClientPoolDM>> m_pingTask;
+  std::unique_ptr<Task2<ThinClientPoolDM>> m_updateLocatorListTask;
+  std::unique_ptr<Task2<ThinClientPoolDM>> m_cliCallbackTask;
   ExpiryTaskManager::id_type m_pingTaskId;
   ExpiryTaskManager::id_type m_updateLocatorListTaskId;
   ExpiryTaskManager::id_type m_connManageTaskId;
-  int manageConnections(volatile bool& isRunning);
+  void manageConnections(std::atomic<bool>& isRunning);
   int doPing(const ACE_Time_Value&, const void*);
   int doUpdateLocatorList(const ACE_Time_Value&, const void*);
   int doManageConnections(const ACE_Time_Value&, const void*);
-  int manageConnectionsInternal(volatile bool& isRunning);
-  void cleanStaleConnections(volatile bool& isRunning);
-  void restoreMinConnections(volatile bool& isRunning);
+  void manageConnectionsInternal(std::atomic<bool>& isRunning);
+  void cleanStaleConnections(std::atomic<bool>& isRunning);
+  void restoreMinConnections(std::atomic<bool>& isRunning);
   std::atomic<int32_t> m_clientOps;  // Actual Size of Pool
   std::unique_ptr<statistics::PoolStatsSampler> m_PoolStatsSampler;
   std::unique_ptr<ClientMetadataService> m_clientMetadataService;
