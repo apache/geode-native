@@ -1282,27 +1282,14 @@ void TcrEndpoint::stopNotifyReceiverAndCleanup() {
 
   m_numRegionListener = 0;
 
-  if (!m_notifyReceiverList.empty()) {
-    LOGFINER("TcrEndpoint::stopNotifyReceiverAndCleanup: notifylist size = %d",
-             m_notifyReceiverList.size());
-    for (auto& it : m_notifyReceiverList) {
-      LOGFINER(
-          "TcrEndpoint::stopNotifyReceiverAndCleanup: deleting old notify "
-          "recievers.");
-      _GEODE_SAFE_DELETE(it);
-    }
-  }
-
-  if (m_notifyConnectionList.size() > 0) {
+  if (!m_notifyConnectionList.empty()) {
     LOGFINER("TcrEndpoint::stopNotifyReceiverAndCleanup: notifylist size = %d",
              m_notifyConnectionList.size());
-    for (std::list<TcrConnection*>::iterator it =
-             m_notifyConnectionList.begin();
-         it != m_notifyConnectionList.end(); it++) {
+    for (auto& it : m_notifyConnectionList) {
       LOGFINER(
           "TcrEndpoint::stopNotifyReceiverAndCleanup: deleting old notify "
           "connections.");
-      _GEODE_SAFE_DELETE(*it);
+      _GEODE_SAFE_DELETE(it);
     }
   }
 }

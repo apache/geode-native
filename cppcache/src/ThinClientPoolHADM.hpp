@@ -20,9 +20,9 @@
 #ifndef GEODE_THINCLIENTPOOLHADM_H_
 #define GEODE_THINCLIENTPOOLHADM_H_
 
+#include <atomic>
 #include <memory>
 #include <mutex>
-#include <atomic>
 
 #include "PoolAttributes.hpp"
 #include "Task2.hpp"
