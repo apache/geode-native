@@ -20,8 +20,10 @@
 #ifndef GEODE_THINCLIENTREDUNDANCYMANAGER_H_
 #define GEODE_THINCLIENTREDUNDANCYMANAGER_H_
 
+#include <atomic>
 #include <chrono>
 #include <list>
+#include <memory>
 #include <mutex>
 #include <set>
 #include <string>
@@ -32,7 +34,7 @@
 #include "EventIdMap.hpp"
 #include "ExpiryTaskManager.hpp"
 #include "ServerLocation.hpp"
-#include "Task.hpp"
+#include "Task2.hpp"
 #include "TcrMessage.hpp"
 #include "util/synchronized_map.hpp"
 
@@ -134,12 +136,12 @@ class ThinClientRedundancyManager {
 
   inline bool isDurable();
   int processEventIdMap(const ACE_Time_Value&, const void*);
-  Task<ThinClientRedundancyManager>* m_periodicAckTask;
+  std::unique_ptr<Task2<ThinClientRedundancyManager>> m_periodicAckTask;
   ACE_Semaphore m_periodicAckSema;
   ExpiryTaskManager::id_type
       m_processEventIdMapTaskId;  // periodic check eventid map for notify ack
                                   // and/or expiry
-  int periodicAck(volatile bool& isRunning);
+  void periodicAck(std::atomic<bool>& isRunning);
   void doPeriodicAck();
   time_point m_nextAck;                    // next ack time
   std::chrono::milliseconds m_nextAckInc;  // next ack time increment

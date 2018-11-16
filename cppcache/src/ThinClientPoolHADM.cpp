@@ -217,6 +217,34 @@ GfErrType ThinClientPoolHADM::registerInterestAllRegions(
   return err;
 }
 
+bool ThinClientPoolHADM::checkDupAndAdd(std::shared_ptr<EventId> eventid) {
+  return m_redundancyManager->checkDupAndAdd(eventid);
+}
+
+void ThinClientPoolHADM::processMarker() {
+  // also set the static bool m_processedMarker for makePrimary messages
+  m_redundancyManager->m_globalProcessedMarker = true;
+}
+
+void ThinClientPoolHADM::acquireRedundancyLock() {
+  m_redundancyManager->acquireRedundancyLock();
+};
+void ThinClientPoolHADM::releaseRedundancyLock() {
+  m_redundancyManager->releaseRedundancyLock();
+};
+std::recursive_mutex& ThinClientPoolHADM::getRedundancyLock() {
+  return m_redundancyManager->getRedundancyLock();
+}
+
+GfErrType ThinClientPoolHADM::sendRequestToPrimary(TcrMessage& request,
+                                                   TcrMessageReply& reply) {
+  return m_redundancyManager->sendRequestToPrimary(request, reply);
+}
+
+bool ThinClientPoolHADM::isReadyForEvent() const {
+  return m_redundancyManager->isSentReadyForEvents();
+}
+
 void ThinClientPoolHADM::addRegion(ThinClientRegion* theTCR) {
   std::lock_guard<decltype(m_regionsLock)> guard(m_regionsLock);
   m_regions.push_back(theTCR);

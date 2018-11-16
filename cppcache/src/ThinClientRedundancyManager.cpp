@@ -724,7 +724,7 @@ void ThinClientRedundancyManager::close() {
     m_periodicAckTask->stopNoblock();
     m_periodicAckSema.release();
     m_periodicAckTask->wait();
-    _GEODE_SAFE_DELETE(m_periodicAckTask);
+    m_periodicAckTask = nullptr;
   }
 
   std::lock_guard<decltype(m_redundantEndpointsLock)> guard(
@@ -1163,7 +1163,7 @@ int ThinClientRedundancyManager::processEventIdMap(const ACE_Time_Value&,
   return 0;
 }
 
-int ThinClientRedundancyManager::periodicAck(volatile bool& isRunning) {
+void ThinClientRedundancyManager::periodicAck(std::atomic<bool>& isRunning) {
   while (isRunning) {
     m_periodicAckSema.acquire();
     if (isRunning) {
@@ -1173,7 +1173,6 @@ int ThinClientRedundancyManager::periodicAck(volatile bool& isRunning) {
       }
     }
   }
-  return 0;
 }
 
 void ThinClientRedundancyManager::doPeriodicAck() {
@@ -1242,8 +1241,9 @@ void ThinClientRedundancyManager::doPeriodicAck() {
 }
 
 void ThinClientRedundancyManager::startPeriodicAck() {
-  m_periodicAckTask = new Task<ThinClientRedundancyManager>(
-      this, &ThinClientRedundancyManager::periodicAck, NC_PerodicACK);
+  m_periodicAckTask = std::unique_ptr<Task2<ThinClientRedundancyManager>>(
+      new Task2<ThinClientRedundancyManager>(
+          this, &ThinClientRedundancyManager::periodicAck, NC_PerodicACK));
   m_periodicAckTask->start();
   const auto& props = m_theTcrConnManager->getCacheImpl()
                           ->getDistributedSystem()

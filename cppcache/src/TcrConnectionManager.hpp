@@ -33,7 +33,6 @@
 
 #include "ExpiryTaskManager.hpp"
 #include "Queue.hpp"
-#include "Task.hpp"
 #include "Task2.hpp"
 #include "ThinClientRedundancyManager.hpp"
 #include "util/synchronized_map.hpp"

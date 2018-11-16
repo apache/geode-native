@@ -28,13 +28,13 @@
 #include "Task2.hpp"
 #include "ThinClientHARegion.hpp"
 #include "ThinClientPoolDM.hpp"
-#include "ThinClientRedundancyManager.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
 class TcrConnectionManager;
+class ThinClientRedundancyManager;
 
 class ThinClientPoolHADM : public ThinClientPoolDM {
  public:
@@ -68,38 +68,25 @@ class ThinClientPoolHADM : public ThinClientPoolDM {
 
   void sendNotificationCloseMsgs();
 
-  bool checkDupAndAdd(std::shared_ptr<EventId> eventid) override {
-    return m_redundancyManager->checkDupAndAdd(eventid);
-  }
+  bool checkDupAndAdd(std::shared_ptr<EventId> eventid) override;
 
-  void processMarker() override {
-    // also set the static bool m_processedMarker for makePrimary messages
-    m_redundancyManager->m_globalProcessedMarker = true;
-  }
+  void processMarker() override;
 
   void netDown();
 
   void pingServerLocal() override;
 
-  void acquireRedundancyLock() override {
-    m_redundancyManager->acquireRedundancyLock();
-  };
-  void releaseRedundancyLock() override {
-    m_redundancyManager->releaseRedundancyLock();
-  };
-  std::recursive_mutex& getRedundancyLock() override {
-    return m_redundancyManager->getRedundancyLock();
-  }
+  void acquireRedundancyLock() override;
 
-  GfErrType sendRequestToPrimary(TcrMessage& request, TcrMessageReply& reply) {
-    return m_redundancyManager->sendRequestToPrimary(request, reply);
-  }
+  void releaseRedundancyLock() override;
+
+  std::recursive_mutex& getRedundancyLock() override;
+
+  GfErrType sendRequestToPrimary(TcrMessage& request, TcrMessageReply& reply);
 
   void triggerRedundancyThread() override { m_redundancySema.release(); }
 
-  bool isReadyForEvent() const {
-    return m_redundancyManager->isSentReadyForEvents();
-  }
+  bool isReadyForEvent() const;
 
  protected:
   GfErrType sendSyncRequestRegisterInterest(

@@ -35,7 +35,6 @@
 
 #include "ErrType.hpp"
 #include "FairQueue.hpp"
-#include "Task.hpp"
 #include "Task2.hpp"
 #include "TcrConnection.hpp"
 #include "util/synchronized_set.hpp"
