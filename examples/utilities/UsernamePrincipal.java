@@ -22,8 +22,6 @@ import java.security.Principal;
 /**
  * An implementation of {@link Principal} class for a simple user name.
  * 
- * 
- * @since 5.5
  */
 public class UsernamePrincipal implements Principal, Serializable {
 

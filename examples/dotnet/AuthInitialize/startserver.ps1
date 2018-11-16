@@ -35,14 +35,11 @@ else
 
 if ($GFSH_PATH -ne "")
 {
-   # Set this variable to include your java object that implements the Authenticator class
-   $CLASSPATH =';../../utilities/example.jar'
+  # Set this variable to include your java object that implements the Authenticator class
+  $RESOLVEDPATH = Resolve-Path -Path "$PSScriptRoot/../../utilities/example.jar"
 
-   # Set this variable to the full name of your Authenticator.create function
-   $AUTHENTICATOR = 'javaobject.DummyAuthenticator.create'
+  # Set this variable to the full name of your Authenticator.create function
+  $AUTHENTICATOR = 'javaobject.SimpleAuthenticator.create'
 
-   Invoke-Expression "$GFSH_PATH
-     -e 'start locator --name=locator --dir=$PSScriptRoot\locator' \
-     -e 'start server --name=server --classpath=$CLASSPATH --J=-Dgemfire.security-client-authenticator=$AUTHENTICATOR --dir=$PSScriptRoot\server' \
-     -e 'create region --name=region --type=PARTITION'"
+  Invoke-Expression "$GFSH_PATH -e 'start locator --name=locator --dir=$PSScriptRoot\locator' -e 'start server --name=server --classpath=$RESOLVEDPATH --J=-Dgemfire.security-client-authenticator=$AUTHENTICATOR --dir=$PSScriptRoot\server' -e 'create region --name=region --type=PARTITION'"
 }

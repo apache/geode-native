@@ -31,16 +31,14 @@ import javaobject.UsernamePrincipal;
  * user name and password allowing authentication depending on the format of the
  * user name.
  * 
- * 
- * @since 5.5
  */
-public class DummyAuthenticator implements Authenticator {
+public class SimpleAuthenticator implements Authenticator {
 
   public static Authenticator create() {
-    return new DummyAuthenticator();
+    return new SimpleAuthenticator();
   }
 
-  public DummyAuthenticator() {
+  public SimpleAuthenticator() {
   }
 
   public void init(Properties systemProps, LogWriter systemLogger,
@@ -60,13 +58,13 @@ public class DummyAuthenticator implements Authenticator {
     String userName = props.getProperty(UserPasswordAuthInit.USER_NAME);
     if (userName == null) {
       throw new AuthenticationFailedException(
-          "DummyAuthenticator: user name property ["
+          "SimpleAuthenticator: user name property ["
               + UserPasswordAuthInit.USER_NAME + "] not provided");
     }
     String password = props.getProperty(UserPasswordAuthInit.PASSWORD);
     if (password == null) {
       throw new AuthenticationFailedException(
-          "DummyAuthenticator: password property ["
+          "SimpleAuthenticator: password property ["
               + UserPasswordAuthInit.PASSWORD + "] not provided");
     }
 
@@ -75,7 +73,7 @@ public class DummyAuthenticator implements Authenticator {
     }
     else {
       throw new AuthenticationFailedException(
-          "DummyAuthenticator: Invalid user name [" + userName
+          "SimpleAuthenticator: Invalid user name [" + userName
               + "], password supplied.");
     }
   }

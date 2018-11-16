@@ -30,9 +30,7 @@ import org.apache.geode.security.AuthenticationFailedException;
  * To use this class the <c>security-client-auth-init</c> property should be
  * set to the fully qualified name the static <code>create</code> function
  * viz. <code>templates.security.UserPasswordAuthInit.create</code>
- * 
- * 
- * @since 5.5
+ *
  */
 public class UserPasswordAuthInit implements AuthInitialize {
 
