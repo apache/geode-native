@@ -132,9 +132,7 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
 
   LOGDEBUG(
       "ExecutionImpl::execute got functionAttributes from server for function "
-      "= "
-      "%s serverHasResult = %d "
-      " serverIsHA = %d serverOptimizeForWrite = %d ",
+      "= %s serverHasResult = %d serverIsHA = %d serverOptimizeForWrite = %d ",
       func.c_str(), serverHasResult, serverIsHA, serverOptimizeForWrite);
 
   if (serverHasResult == false) {
