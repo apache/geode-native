@@ -20,9 +20,12 @@
 #ifndef GEODE_THINCLIENTPOOLHADM_H_
 #define GEODE_THINCLIENTPOOLHADM_H_
 
+#include <memory>
 #include <mutex>
+#include <atomic>
 
 #include "PoolAttributes.hpp"
+#include "Task2.hpp"
 #include "ThinClientHARegion.hpp"
 #include "ThinClientPoolDM.hpp"
 #include "ThinClientRedundancyManager.hpp"
@@ -37,10 +40,11 @@ class ThinClientPoolHADM : public ThinClientPoolDM {
  public:
   ThinClientPoolHADM(const char* name, std::shared_ptr<PoolAttributes> poolAttr,
                      TcrConnectionManager& connManager);
+  ThinClientPoolHADM(const ThinClientPoolHADM&) = delete;
+  ThinClientPoolHADM& operator=(const ThinClientPoolHADM&) = delete;
+  ~ThinClientPoolHADM() override { destroy(); }
 
   void init() override;
-
-  ~ThinClientPoolHADM() override { destroy(); }
 
   GfErrType sendSyncRequest(TcrMessage& request, TcrMessageReply& reply,
                             bool attemptFailover = true,
@@ -113,19 +117,14 @@ class ThinClientPoolHADM : public ThinClientPoolDM {
   void startBackgroundThreads() override;
 
  private:
-  // Disallow copy constructor and assignment operator.
   ThinClientRedundancyManager* m_redundancyManager;
-  ThinClientPoolHADM(const ThinClientPoolHADM&);
-  ThinClientPoolHADM& operator=(const ThinClientPoolHADM&) = delete;
 
   TcrConnectionManager& m_theTcrConnManager;
   ACE_Semaphore m_redundancySema;
-  Task<ThinClientPoolHADM>* m_redundancyTask;
+  std::unique_ptr<Task2<ThinClientPoolHADM>> m_redundancyTask;
 
-  int redundancy(volatile bool& isRunning);
-  /*
-  void stopNotificationThreads();
-  */
+  void redundancy(std::atomic<bool>& isRunning);
+
   ExpiryTaskManager::id_type m_servermonitorTaskId;
   int checkRedundancy(const ACE_Time_Value&, const void*);
 

@@ -81,8 +81,8 @@ void ThinClientPoolHADM::startBackgroundThreads() {
   }
 
   m_redundancyManager->startPeriodicAck();
-  m_redundancyTask = new Task<ThinClientPoolHADM>(
-      this, &ThinClientPoolHADM::redundancy, NC_Redundancy);
+  m_redundancyTask = std::unique_ptr<Task2<ThinClientPoolHADM>>(new Task2<ThinClientPoolHADM>(
+      this, &ThinClientPoolHADM::redundancy, NC_Redundancy));
   m_redundancyTask->start();
 }
 
@@ -143,7 +143,7 @@ bool ThinClientPoolHADM::postFailoverAction(TcrEndpoint*) {
   return true;
 }
 
-int ThinClientPoolHADM::redundancy(volatile bool& isRunning) {
+void ThinClientPoolHADM::redundancy(std::atomic<bool>& isRunning) {
   LOGFINE("ThinClientPoolHADM: Starting maintain redundancy thread.");
   while (isRunning) {
     m_redundancySema.acquire();
@@ -155,7 +155,6 @@ int ThinClientPoolHADM::redundancy(volatile bool& isRunning) {
     }
   }
   LOGFINE("ThinClientPoolHADM: Ending maintain redundancy thread.");
-  return 0;
 }
 
 int ThinClientPoolHADM::checkRedundancy(const ACE_Time_Value&, const void*) {
@@ -195,7 +194,7 @@ void ThinClientPoolHADM::sendNotificationCloseMsgs() {
     m_redundancyTask->stopNoblock();
     m_redundancySema.release();
     m_redundancyTask->wait();
-    _GEODE_SAFE_DELETE(m_redundancyTask);
+    m_redundancyTask = nullptr;
     m_redundancyManager->sendNotificationCloseMsgs();
   }
 }
