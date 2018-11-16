@@ -34,7 +34,7 @@
 #include "EventIdMap.hpp"
 #include "ExpiryTaskManager.hpp"
 #include "ServerLocation.hpp"
-#include "Task2.hpp"
+#include "Task.hpp"
 #include "TcrMessage.hpp"
 #include "util/synchronized_map.hpp"
 
@@ -136,7 +136,7 @@ class ThinClientRedundancyManager {
 
   inline bool isDurable();
   int processEventIdMap(const ACE_Time_Value&, const void*);
-  std::unique_ptr<Task2<ThinClientRedundancyManager>> m_periodicAckTask;
+  std::unique_ptr<Task<ThinClientRedundancyManager>> m_periodicAckTask;
   ACE_Semaphore m_periodicAckSema;
   ExpiryTaskManager::id_type
       m_processEventIdMapTaskId;  // periodic check eventid map for notify ack

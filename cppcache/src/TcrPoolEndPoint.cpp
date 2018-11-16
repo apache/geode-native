@@ -98,9 +98,8 @@ GfErrType TcrPoolEndPoint::registerDM(bool, bool isSecondary, bool,
               name().c_str());
       return err;
     }
-    m_notifyReceiver =
-        std::unique_ptr<Task2<TcrEndpoint>>(new Task2<TcrEndpoint>(
-            this, &TcrEndpoint::receiveNotification, NC_Notification));
+    m_notifyReceiver = std::unique_ptr<Task<TcrEndpoint>>(new Task<TcrEndpoint>(
+        this, &TcrEndpoint::receiveNotification, NC_Notification));
     m_notifyReceiver->start();
   }
   ++m_numRegionListener;

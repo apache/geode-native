@@ -25,7 +25,7 @@
 #include <mutex>
 
 #include "PoolAttributes.hpp"
-#include "Task2.hpp"
+#include "Task.hpp"
 #include "ThinClientHARegion.hpp"
 #include "ThinClientPoolDM.hpp"
 
@@ -108,7 +108,7 @@ class ThinClientPoolHADM : public ThinClientPoolDM {
 
   TcrConnectionManager& m_theTcrConnManager;
   ACE_Semaphore m_redundancySema;
-  std::unique_ptr<Task2<ThinClientPoolHADM>> m_redundancyTask;
+  std::unique_ptr<Task<ThinClientPoolHADM>> m_redundancyTask;
 
   void redundancy(std::atomic<bool>& isRunning);
 

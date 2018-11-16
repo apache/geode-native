@@ -236,7 +236,7 @@ void ThinClientBaseDM::startChunkProcessor() {
   if (m_chunkProcessor == nullptr) {
     m_chunks.open();
     m_chunkProcessor =
-        std::unique_ptr<Task2<ThinClientBaseDM>>(new Task2<ThinClientBaseDM>(
+        std::unique_ptr<Task<ThinClientBaseDM>>(new Task<ThinClientBaseDM>(
             this, &ThinClientBaseDM::processChunks, NC_ProcessChunk));
     m_chunkProcessor->start();
   }

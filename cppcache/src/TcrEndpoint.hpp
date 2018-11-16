@@ -35,7 +35,7 @@
 
 #include "ErrType.hpp"
 #include "FairQueue.hpp"
-#include "Task2.hpp"
+#include "Task.hpp"
 #include "TcrConnection.hpp"
 #include "util/synchronized_set.hpp"
 
@@ -191,9 +191,9 @@ class TcrEndpoint {
 
  protected:
   TcrConnection* m_notifyConnection;
-  std::unique_ptr<Task2<TcrEndpoint>> m_notifyReceiver;
+  std::unique_ptr<Task<TcrEndpoint>> m_notifyReceiver;
   CacheImpl* m_cacheImpl;
-  std::list<Task2<TcrEndpoint>*> m_notifyReceiverList;
+  std::list<Task<TcrEndpoint>*> m_notifyReceiverList;
   std::list<TcrConnection*> m_notifyConnectionList;
   std::timed_mutex m_connectLock;
   std::recursive_mutex m_notifyReceiverLock;

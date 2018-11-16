@@ -26,7 +26,7 @@
 #include <geode/internal/geode_globals.hpp>
 
 #include "Queue.hpp"
-#include "Task2.hpp"
+#include "Task.hpp"
 #include "util/Log.hpp"
 
 namespace apache {
@@ -196,7 +196,7 @@ class ThinClientBaseDM {
   bool m_clientNotification;
 
   Queue<TcrChunkedContext*> m_chunks;
-  std::unique_ptr<Task2<ThinClientBaseDM>> m_chunkProcessor;
+  std::unique_ptr<Task<ThinClientBaseDM>> m_chunkProcessor;
 
  private:
   static volatile bool s_isDeltaEnabledOnServer;

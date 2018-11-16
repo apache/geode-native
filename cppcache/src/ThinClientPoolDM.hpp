@@ -40,7 +40,7 @@
 #include "PoolStatistics.hpp"
 #include "RemoteQueryService.hpp"
 #include "TXState.hpp"
-#include "Task2.hpp"
+#include "Task.hpp"
 #include "TcrPoolEndPoint.hpp"
 #include "ThinClientBaseDM.hpp"
 #include "ThinClientLocatorHelper.hpp"
@@ -290,10 +290,10 @@ class ThinClientPoolDM
 
   // Manage Connection thread
   ACE_Semaphore m_connSema;
-  std::unique_ptr<Task2<ThinClientPoolDM>> m_connManageTask;
-  std::unique_ptr<Task2<ThinClientPoolDM>> m_pingTask;
-  std::unique_ptr<Task2<ThinClientPoolDM>> m_updateLocatorListTask;
-  std::unique_ptr<Task2<ThinClientPoolDM>> m_cliCallbackTask;
+  std::unique_ptr<Task<ThinClientPoolDM>> m_connManageTask;
+  std::unique_ptr<Task<ThinClientPoolDM>> m_pingTask;
+  std::unique_ptr<Task<ThinClientPoolDM>> m_updateLocatorListTask;
+  std::unique_ptr<Task<ThinClientPoolDM>> m_cliCallbackTask;
   ExpiryTaskManager::id_type m_pingTaskId;
   ExpiryTaskManager::id_type m_updateLocatorListTaskId;
   ExpiryTaskManager::id_type m_connManageTaskId;

@@ -267,7 +267,7 @@ std::shared_ptr<Properties> ThinClientPoolDM::getCredentials(TcrEndpoint* ep) {
 void ThinClientPoolDM::startBackgroundThreads() {
   LOGDEBUG("ThinClientPoolDM::startBackgroundThreads: Starting ping thread");
   m_pingTask =
-      std::unique_ptr<Task2<ThinClientPoolDM>>(new Task2<ThinClientPoolDM>(
+      std::unique_ptr<Task<ThinClientPoolDM>>(new Task<ThinClientPoolDM>(
           this, &ThinClientPoolDM::pingServer, NC_Ping_Thread));
   m_pingTask->start();
 
@@ -277,7 +277,7 @@ void ThinClientPoolDM::startBackgroundThreads() {
 
   if (props.onClientDisconnectClearPdxTypeIds() == true) {
     m_cliCallbackTask =
-        std::unique_ptr<Task2<ThinClientPoolDM>>(new Task2<ThinClientPoolDM>(
+        std::unique_ptr<Task<ThinClientPoolDM>>(new Task<ThinClientPoolDM>(
             this, &ThinClientPoolDM::cliCallback, "NC_cliCallback"));
     m_cliCallbackTask->start();
   }
@@ -305,7 +305,7 @@ void ThinClientPoolDM::startBackgroundThreads() {
 
   if (updateLocatorListInterval > 0) {
     m_updateLocatorListTask =
-        std::unique_ptr<Task2<ThinClientPoolDM>>(new Task2<ThinClientPoolDM>(
+        std::unique_ptr<Task<ThinClientPoolDM>>(new Task<ThinClientPoolDM>(
             this, &ThinClientPoolDM::updateLocatorList, "NC_LocatorList"));
     m_updateLocatorListTask->start();
 
@@ -330,7 +330,7 @@ void ThinClientPoolDM::startBackgroundThreads() {
       "thread");
   // Manage Connection Thread
   m_connManageTask =
-      std::unique_ptr<Task2<ThinClientPoolDM>>(new Task2<ThinClientPoolDM>(
+      std::unique_ptr<Task<ThinClientPoolDM>>(new Task<ThinClientPoolDM>(
           this, &ThinClientPoolDM::manageConnections, NC_MC_Thread));
   m_connManageTask->start();
 

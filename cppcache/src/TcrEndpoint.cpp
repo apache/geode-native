@@ -476,7 +476,7 @@ GfErrType TcrEndpoint::registerDM(bool clientNotification, bool isSecondary,
           return err;
         }
         m_notifyReceiver =
-            std::unique_ptr<Task2<TcrEndpoint>>(new Task2<TcrEndpoint>(
+            std::unique_ptr<Task<TcrEndpoint>>(new Task<TcrEndpoint>(
                 this, &TcrEndpoint::receiveNotification, NC_Notification));
         m_notifyReceiver->start();
       }

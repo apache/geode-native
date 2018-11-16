@@ -1241,8 +1241,8 @@ void ThinClientRedundancyManager::doPeriodicAck() {
 }
 
 void ThinClientRedundancyManager::startPeriodicAck() {
-  m_periodicAckTask = std::unique_ptr<Task2<ThinClientRedundancyManager>>(
-      new Task2<ThinClientRedundancyManager>(
+  m_periodicAckTask = std::unique_ptr<Task<ThinClientRedundancyManager>>(
+      new Task<ThinClientRedundancyManager>(
           this, &ThinClientRedundancyManager::periodicAck, NC_PerodicACK));
   m_periodicAckTask->start();
   const auto& props = m_theTcrConnManager->getCacheImpl()
