@@ -131,7 +131,8 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
   serverOptimizeForWrite = ((attr->at(2) == 1) ? true : false);
 
   LOGDEBUG(
-      "ExecutionImpl::execute got functionAttributes from server for function = "
+      "ExecutionImpl::execute got functionAttributes from server for function "
+      "= "
       "%s serverHasResult = %d "
       " serverIsHA = %d serverOptimizeForWrite = %d ",
       func.c_str(), serverHasResult, serverIsHA, serverOptimizeForWrite);
