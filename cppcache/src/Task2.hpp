@@ -38,54 +38,53 @@ namespace client {
 template <class T>
 class Task2 {
  public:
-  /// Handle timeout events.
-  typedef void (T::*OPERATION)(std::atomic<bool>& isRunning);
+  typedef void (T::*Method)(std::atomic<bool>& isRunning);
 
-  // op_handler is the receiver of the timeout event. timeout is the method to
-  // be executed by op_handler_
-  inline Task2(T* op_handler, OPERATION op, const char* tn)
-      : op_handler_(op_handler),
-        m_op(op),
-        m_run(false),
-        m_threadName(tn),
-        m_appDomainContext(createAppDomainContext()) {}
+  inline Task2(T* target, Method method, const char* threadName)
+      : target_(target),
+        method_(method),
+        threadName_(threadName),
+        runnable_(false),
+        appDomainContext_(createAppDomainContext()) {}
 
-  inline ~Task2() noexcept = default;
+  inline ~Task2() noexcept { stop(); };
 
   inline void start() {
-    m_run = true;
-    m_thread = std::thread(&Task2::svc, this);
+    runnable_ = true;
+    thread_ = std::thread(&Task2::svc, this);
   }
 
-  inline void stop() {
-    if (m_run) {
-      m_run = false;
-      m_thread.join();
+  inline void stop() noexcept {
+    stopNoblock();
+    wait();
+  }
+
+  inline void stopNoblock() noexcept { runnable_ = false; }
+
+  inline void wait() noexcept {
+    if (thread_.joinable()) {
+      thread_.join();
     }
   }
-
-  inline void stopNoblock() { m_run = false; }
 
   inline void svc(void) {
-    DistributedSystemImpl::setThreadName(m_threadName);
+    DistributedSystemImpl::setThreadName(threadName_);
 
-    if (m_appDomainContext) {
-      m_appDomainContext->run(
-          [this]() { (this->op_handler_->*this->m_op)(this->m_run); });
+    if (appDomainContext_) {
+      appDomainContext_->run(
+          [this]() { (this->target_->*this->method_)(this->runnable_); });
     } else {
-      (this->op_handler_->*m_op)(m_run);
+      (this->target_->*method_)(runnable_);
     }
   }
 
-  inline void wait() { m_thread.join(); }
-
  private:
-  std::thread m_thread;
-  T* op_handler_;
-  OPERATION m_op;
-  std::atomic<bool> m_run;
-  const char* m_threadName;
-  std::unique_ptr<AppDomainContext> m_appDomainContext;
+  std::thread thread_;
+  T* target_;
+  Method method_;
+  const char* threadName_;
+  std::atomic<bool> runnable_;
+  std::unique_ptr<AppDomainContext> appDomainContext_;
 };
 
 }  // namespace client
