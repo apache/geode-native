@@ -40,8 +40,8 @@ namespace Apache.Geode.Examples.AuthInitialize
       Console.Out.WriteLine("ExampleAuthInitialize::GetCredentials called");
 
       var credentials = new Properties<string, object>();
-      credentials.Insert("username", "john");
-      credentials.Insert("password", "secret");
+      credentials.Insert("security-username", "root");
+      credentials.Insert("security-password", "root");
       return credentials;
     }
   }
