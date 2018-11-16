@@ -22,6 +22,32 @@ namespace Apache.Geode.Examples.AuthInitialize
 {
   class Program
   {
+    class ExampleAuthInitialize : IAuthInitialize
+    {
+      public ExampleAuthInitialize()
+      {
+	  // TODO initialize your resources here
+	  Console.Out.WriteLine("ExampleAuthInitialize::ExampleAuthInitialize called");
+      }
+
+      public void Close()
+      {
+	  // TODO close your resources here
+	  Console.Out.WriteLine("ExampleAuthInitialize::Close called");
+      }
+
+      public Properties<string, object> GetCredentials(Properties<string, string> props, string server)
+      {
+	  // TODO get your username and password
+	  Console.Out.WriteLine("ExampleAuthInitialize::GetCredentials called");
+
+	  var credentials = new Properties<string, object>();
+	  credentials.Insert("username", "john");
+	  credentials.Insert("password", "secret");
+	  return credentials;
+      }
+    }
+
     static void Main(string[] args)
     {
       var cacheFactory = new CacheFactory()
@@ -46,32 +72,6 @@ namespace Apache.Geode.Examples.AuthInitialize
       Console.Out.WriteLine("b = " + b);
 
       cache.Close();
-    }
-  }
-
-  class ExampleAuthInitialize : IAuthInitialize
-  {
-    public ExampleAuthInitialize()
-    {
-        // TODO initialize your resources here
-        Console.Out.WriteLine("ExampleAuthInitialize::ExampleAuthInitialize called");
-    }
-
-    public void Close()
-    {
-        // TODO close your resources here
-        Console.Out.WriteLine("ExampleAuthInitialize::Close called");
-    }
-
-    public Properties<string, object> GetCredentials(Properties<string, string> props, string server)
-    {
-        // TODO get your username and password
-        Console.Out.WriteLine("ExampleAuthInitialize::GetCredentials called");
-
-        var credentials = new Properties<string, object>();
-        credentials.Insert("username", "john");
-        credentials.Insert("password", "secret");
-        return credentials;
     }
   }
 }
