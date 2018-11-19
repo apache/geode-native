@@ -228,10 +228,12 @@ void ThinClientPoolHADM::processMarker() {
 
 void ThinClientPoolHADM::acquireRedundancyLock() {
   m_redundancyManager->acquireRedundancyLock();
-};
+}
+
 void ThinClientPoolHADM::releaseRedundancyLock() {
   m_redundancyManager->releaseRedundancyLock();
-};
+}
+
 std::recursive_mutex& ThinClientPoolHADM::getRedundancyLock() {
   return m_redundancyManager->getRedundancyLock();
 }
