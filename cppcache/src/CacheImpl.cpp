@@ -444,24 +444,21 @@ void CacheImpl::createRegion(std::string name,
 
     rpImpl->acquireReadLock();
     m_regions.emplace(regionPtr->getName(), regionPtr);
+  }
 
-    // When region is created, added that region name in client meta data
-    // service to fetch its
-    // metadata for single hop.
-    auto& props = m_distributedSystem.getSystemProperties();
-    const auto& poolName = regionAttributes.getPoolName();
-    if (!poolName.empty()) {
-      auto pool = getPoolManager().find(poolName);
-      if (pool != nullptr && !pool->isDestroyed() &&
-          pool->getPRSingleHopEnabled()) {
-        if (auto poolDM = std::dynamic_pointer_cast<ThinClientPoolDM>(pool)) {
-          if (auto clientMetaDataService =
-                  poolDM->getClientMetaDataService()) {
-            LOGFINE("enqueued region " + name +
-                    " for initial metadata refresh for singlehop ");
-            poolDM->getClientMetaDataService()->enqueueForMetadataRefresh(
-                regionPtr->getFullPath(), 0);
-          }
+  // When region is created, added that region name in client meta data
+  // service to fetch its metadata for single hop.
+  const auto& poolName = regionAttributes.getPoolName();
+  if (!poolName.empty()) {
+    const auto& pool = getPoolManager().find(poolName);
+    if (pool && !pool->isDestroyed() && pool->getPRSingleHopEnabled()) {
+      if (const auto& poolDM =
+              std::dynamic_pointer_cast<ThinClientPoolDM>(pool)) {
+        if (auto clientMetaDataService = poolDM->getClientMetaDataService()) {
+          LOGFINE("enqueued region " + name +
+                  " for initial metadata refresh for singlehop ");
+          poolDM->getClientMetaDataService()->enqueueForMetadataRefresh(
+              regionPtr->getFullPath(), 0);
         }
       }
     }
