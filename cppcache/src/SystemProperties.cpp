@@ -66,7 +66,6 @@ const char BucketWaitTimeout[] = "bucket-wait-timeout";
 const char ConflateEvents[] = "conflate-events";
 const char SecurityClientDhAlgo[] = "security-client-dhalgo";
 const char SecurityClientKsPath[] = "security-client-kspath";
-const char GridClient[] = "grid-client";
 const char AutoReadyForEvents[] = "auto-ready-for-events";
 const char SslEnabled[] = "ssl-enabled";
 const char TimeStatisticsEnabled[] = "enable-time-statistics";
@@ -99,7 +98,6 @@ const apache::geode::client::LogLevel DefaultLogLevel =
 
 const int DefaultConnectionPoolSize = 5;
 
-const bool DefaultGridClient = false;
 const bool DefaultAutoReadyForEvents = true;
 const bool DefaultSslEnabled = false;
 const bool DefaultTimeStatisticsEnabled = false;  // or true;
@@ -173,7 +171,6 @@ SystemProperties::SystemProperties(
       m_connectTimeout(DefaultConnectTimeout),
       m_connectWaitTimeout(DefaultConnectWaitTimeout),
       m_bucketWaitTimeout(DefaultBucketWaitTimeout),
-      m_gridClient(DefaultGridClient),
       m_autoReadyForEvents(DefaultAutoReadyForEvents),
       m_sslEnabled(DefaultSslEnabled),
       m_timestatisticsEnabled(DefaultTimeStatisticsEnabled),
@@ -305,8 +302,6 @@ void SystemProperties::processProperty(const std::string& property,
     parseDurationProperty(property, std::string(value), m_bucketWaitTimeout);
   } else if (property == DisableShufflingEndpoint) {
     m_disableShufflingEndpoint = parseBooleanProperty(property, value);
-  } else if (property == GridClient) {
-    m_gridClient = parseBooleanProperty(property, value);
   } else if (property == AutoReadyForEvents) {
     m_autoReadyForEvents = parseBooleanProperty(property, value);
   } else if (property == SslEnabled) {
@@ -417,9 +412,6 @@ void SystemProperties::logSettings() {
 
   settings += "\n  enable-time-statistics = ";
   settings += getEnableTimeStatistics() ? "true" : "false";
-
-  settings += "\n  grid-client = ";
-  settings += isGridClient() ? "true" : "false";
 
   settings += "\n  heap-lru-delta = ";
   settings += std::to_string(heapLRUDelta());

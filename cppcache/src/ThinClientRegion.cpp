@@ -362,20 +362,7 @@ void ThinClientRegion::initTCR() {
   if (pool != nullptr) {
     subscription = pool->getSubscriptionEnabled();
   }
-  bool notificationEnabled =
-      getAttributes().getClientNotificationEnabled() || subscription;
-  if (notificationEnabled) {
-    if (m_cacheImpl->getDistributedSystem()
-            .getSystemProperties()
-            .isGridClient()) {
-      LOGWARN(
-          "Region %s: client subscription channel enabled for a grid "
-          "client; starting required internal subscription, cleanup and "
-          "failover threads",
-          m_fullPath.c_str());
-      m_cacheImpl->tcrConnectionManager().startFailoverAndCleanupThreads();
-    }
-  }
+
   try {
     m_tcrdm =
         new TcrDistributionManager(this, m_cacheImpl->tcrConnectionManager());

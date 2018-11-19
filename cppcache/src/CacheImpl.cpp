@@ -461,21 +461,18 @@ void CacheImpl::createRegion(std::string name,
     // service to fetch its
     // metadata for single hop.
     auto& props = m_distributedSystem.getSystemProperties();
-    if (!props.isGridClient()) {
-      const auto& poolName = regionAttributes.getPoolName();
-      if (!poolName.empty()) {
-        auto pool = getPoolManager().find(poolName);
-        if (pool != nullptr && !pool->isDestroyed() &&
-            pool->getPRSingleHopEnabled()) {
-          ThinClientPoolDM* poolDM =
-              dynamic_cast<ThinClientPoolDM*>(pool.get());
-          if ((poolDM != nullptr) &&
-              (poolDM->getClientMetaDataService() != nullptr)) {
-            LOGFINE("enqueued region " + name +
-                    " for initial metadata refresh for singlehop ");
-            poolDM->getClientMetaDataService()->enqueueForMetadataRefresh(
-                regionPtr->getFullPath(), 0);
-          }
+    const auto& poolName = regionAttributes.getPoolName();
+    if (!poolName.empty()) {
+      auto pool = getPoolManager().find(poolName);
+      if (pool != nullptr && !pool->isDestroyed() &&
+          pool->getPRSingleHopEnabled()) {
+        ThinClientPoolDM* poolDM = dynamic_cast<ThinClientPoolDM*>(pool.get());
+        if ((poolDM != nullptr) &&
+            (poolDM->getClientMetaDataService() != nullptr)) {
+          LOGFINE("enqueued region " + name +
+                  " for initial metadata refresh for singlehop ");
+          poolDM->getClientMetaDataService()->enqueueForMetadataRefresh(
+              regionPtr->getFullPath(), 0);
         }
       }
     }

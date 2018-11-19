@@ -47,8 +47,7 @@ void ThinClientBaseDM::init() {
                                      ->getDistributedSystem()
                                      .getSystemProperties();
 
-  if (!systemProperties.isGridClient() &&
-      systemProperties.enableChunkHandlerThread()) {
+  if (systemProperties.enableChunkHandlerThread()) {
     startChunkProcessor();
   }
 

@@ -82,7 +82,7 @@ void TcrConnectionManager::init(bool isPool) {
   auto &props = m_cache->getDistributedSystem().getSystemProperties();
   m_isDurable = !props.durableClientId().empty();
   auto pingInterval = (props.pingInterval() / 2);
-  if (!props.isGridClient() && !isPool) {
+  if (!isPool) {
     ACE_Event_Handler *connectionChecker =
         new ExpiryHandler_T<TcrConnectionManager>(
             this, &TcrConnectionManager::checkConnection);
@@ -134,9 +134,7 @@ void TcrConnectionManager::init(bool isPool) {
     m_redundancyManager->m_HAenabled = true;
   }
 
-  if (!props.isGridClient()) {
-    startFailoverAndCleanupThreads(isPool);
-  }
+  startFailoverAndCleanupThreads(isPool);
 }
 
 void TcrConnectionManager::startFailoverAndCleanupThreads(bool isPool) {

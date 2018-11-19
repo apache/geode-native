@@ -230,12 +230,7 @@ void ThinClientPoolDM::init() {
 
   m_connManager.init(true);
 
-  LOGDEBUG("ThinClientPoolDM::init: is grid client = %d ",
-           sysProp.isGridClient());
-
-  if (!sysProp.isGridClient()) {
-    ThinClientPoolDM::startBackgroundThreads();
-  }
+  ThinClientPoolDM::startBackgroundThreads();
 
   LOGDEBUG("ThinClientPoolDM::init: Completed initialization");
 }
@@ -871,15 +866,7 @@ std::shared_ptr<QueryService> ThinClientPoolDM::getQueryServiceWithoutCheck() {
                     ->getDistributedSystem()
                     .getSystemProperties();
 
-  if (props.isGridClient()) {
-    LOGWARN("Initializing query service while grid-client setting is enabled.");
-    // Init Query Service
-    m_remoteQueryServicePtr = std::make_shared<RemoteQueryService>(
-        m_connManager.getCacheImpl(), this);
-    m_remoteQueryServicePtr->init();
-  } else {
-    LOGWARN("Remote query service is not initialized.");
-  }
+  LOGWARN("Remote query service is not initialized.");
 
   return m_remoteQueryServicePtr;
 }
