@@ -15,9 +15,6 @@
  * limitations under the License.
  */
 
-
-
-
 #include "Execution.hpp"
 #include "begin_native.hpp"
 #include <geode/Execution.hpp>
@@ -49,7 +46,8 @@ namespace Apache
         
           for each(TFilter item in routingObj)
           {
-            rsptr->push_back(Serializable::GetUnmanagedValueGeneric<TFilter>( item ));
+			auto v = Serializable::GetUnmanagedValueGeneric<TFilter>(item);
+			rsptr->push_back(v);
           }
           
           try
@@ -104,7 +102,6 @@ namespace Apache
         }
         _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
       }
-
       generic<class TResult>
       IResultCollector<TResult>^ Execution<TResult>::Execute(String^ func, TimeSpan timeout)
       {
