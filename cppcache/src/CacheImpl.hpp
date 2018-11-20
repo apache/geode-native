@@ -40,6 +40,7 @@
 #include "NonCopyable.hpp"
 #include "PdxTypeRegistry.hpp"
 #include "RemoteQueryService.hpp"
+#include "ThreadPool.hpp"
 #include "util/synchronized_map.hpp"
 
 #define DEFAULT_LRU_MAXIMUM_ENTRIES 100000
@@ -308,7 +309,7 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
     return m_distributedSystem.getSystemProperties();
   }
 
-  ThreadPool* getThreadPool();
+  ThreadPool& getThreadPool();
 
   inline const std::shared_ptr<AuthInitialize>& getAuthInitialize() {
     return m_authInitialize;
@@ -397,7 +398,7 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
   MemberListForVersionStamp& m_memberListForVersionStamp;
   std::shared_ptr<SerializationRegistry> m_serializationRegistry;
   std::shared_ptr<PdxTypeRegistry> m_pdxTypeRegistry;
-  ThreadPool* m_threadPool;
+  ThreadPool m_threadPool;
   const std::shared_ptr<AuthInitialize> m_authInitialize;
   std::unique_ptr<TypeRegistry> m_typeRegistry;
 

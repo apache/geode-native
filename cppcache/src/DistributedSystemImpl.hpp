@@ -31,10 +31,6 @@
 #include "DistributedSystem.hpp"
 #include "statistics/StatisticsManager.hpp"
 
-#ifdef __linux
-#include <sys/prctl.h>
-#endif
-
 namespace apache {
 namespace geode {
 namespace client {
@@ -52,14 +48,7 @@ using CliCallbackMethod = std::function<void(Cache&)>;
  */
 class APACHE_GEODE_EXPORT DistributedSystemImpl {
  public:
-  static void setThreadName(const std::string& threadName) {
-    if (threadName.empty()) {
-      throw IllegalArgumentException("Thread name is empty.");
-    }
-#ifdef __linux
-    prctl(PR_SET_NAME, threadName.c_str(), 0, 0, 0);
-#endif
-  }
+  static void setThreadName(const std::string& threadName);
 
   /**
    * @brief destructor

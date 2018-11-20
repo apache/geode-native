@@ -640,9 +640,9 @@ GfErrType ThinClientPoolDM::sendRequestToAllServers(
     return GF_NOSERVER_FOUND;
   }
 
-  int feIndex = 0;
-  auto fePtrList = new FunctionExecution[csArray->length()];
-  auto threadPool = m_connManager.getCacheImpl()->getThreadPool();
+  std::vector<std::shared_ptr<FunctionExecution>> fePtrList;
+  fePtrList.reserve(csArray->length());
+  auto& threadPool = m_connManager.getCacheImpl()->getThreadPool();
   auto userAttr = UserAttributes::threadLocalUserAttributes;
   for (int i = 0; i < csArray->length(); i++) {
     auto cs = (*csArray)[i];
@@ -655,15 +655,15 @@ GfErrType ThinClientPoolDM::sendRequestToAllServers(
           "ThinClientPoolDM::sendRequestToAllServers server not connected %s ",
           cs->value().c_str());
     }
-    FunctionExecution* funcExe = &fePtrList[feIndex++];
+    auto funcExe = std::make_shared<FunctionExecution>();
     funcExe->setParameters(func, getResult, timeout, args, ep, this,
                            resultCollectorLock, &rs, userAttr);
-    threadPool->perform(funcExe);
+    fePtrList.push_back(funcExe);
+    threadPool.perform(funcExe);
   }
   GfErrType finalErrorReturn = GF_NOERR;
 
-  for (int i = 0; i < feIndex; i++) {
-    FunctionExecution* funcExe = &fePtrList[i];
+  for (auto& funcExe : fePtrList) {
     err = funcExe->getResult();
     if (err != GF_NOERR) {
       if (funcExe->getException() == nullptr) {
@@ -703,7 +703,6 @@ GfErrType ThinClientPoolDM::sendRequestToAllServers(
   getStats().setCurClientOps(--m_clientOps);
   getStats().incSucceedClientOps();
 
-  delete[] fePtrList;
   return finalErrorReturn;
 }
 
@@ -1267,9 +1266,9 @@ GfErrType ThinClientPoolDM::sendSyncRequest(TcrMessage& request,
       return sendSyncRequest(request, reply, attemptFailover, isBGThread,
                              nullptr);
     }
-    std::vector<GetAllWork*> getAllWorkers;
-    auto* threadPool = m_connManager.getCacheImpl()->getThreadPool();
-    ChunkedGetAllResponse* responseHandler =
+    std::vector<std::shared_ptr<GetAllWork>> getAllWorkers;
+    auto& threadPool = m_connManager.getCacheImpl()->getThreadPool();
+    auto responseHandler =
         static_cast<ChunkedGetAllResponse*>(reply.getChunkedResultHandler());
 
     for (const auto& locationIter : *locationMap) {
@@ -1277,18 +1276,16 @@ GfErrType ThinClientPoolDM::sendSyncRequest(TcrMessage& request,
       if (serverLocation == nullptr) {
       }
       const auto& keys = locationIter.second;
-      auto worker =
-          new GetAllWork(this, region, serverLocation, keys, attemptFailover,
-                         isBGThread, responseHandler->getAddToLocalCache(),
-                         responseHandler, request.getCallbackArgument());
-      threadPool->perform(worker);
+      auto worker = std::make_shared<GetAllWork>(
+          this, region, serverLocation, keys, attemptFailover, isBGThread,
+          responseHandler->getAddToLocalCache(), responseHandler,
+          request.getCallbackArgument());
+      threadPool.perform(worker);
       getAllWorkers.push_back(worker);
     }
     reply.setMessageType(TcrMessage::RESPONSE);
 
-    for (std::vector<GetAllWork*>::iterator iter = getAllWorkers.begin();
-         iter != getAllWorkers.end(); iter++) {
-      GetAllWork* worker = *iter;
+    for (auto& worker : getAllWorkers) {
       GfErrType err = worker->getResult();
 
       if (err != GF_NOERR) {
@@ -1299,8 +1296,6 @@ GfErrType ThinClientPoolDM::sendSyncRequest(TcrMessage& request,
       if (currentReply->getMessageType() != TcrMessage::RESPONSE) {
         reply.setMessageType(currentReply->getMessageType());
       }
-
-      delete worker;
     }
     return error;
   } else {

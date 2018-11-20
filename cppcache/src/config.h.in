@@ -22,6 +22,13 @@
 
 #cmakedefine HAVE_SYS_MOUNT_H
 
+#cmakedefine CMAKE_USE_PTHREADS_INIT
+#if defined(CMAKE_USE_PTHREADS_INIT)
+#cmakedefine HAVE_PTHREAD_H
+#cmakedefine HAVE_PTHREAD_HX
+#cmakedefine HAVE_pthread_setname_np
+#endif
+
 #cmakedefine HAVE_SIGSTKFLT
 #cmakedefine HAVE_ACE_Select_Reactor
 

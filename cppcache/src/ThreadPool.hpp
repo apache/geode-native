@@ -23,19 +23,22 @@
 #include <condition_variable>
 #include <deque>
 #include <mutex>
-
-#include <ace/Activation_Queue.h>
-#include <ace/Method_Request.h>
-#include <ace/Recursive_Thread_Mutex.h>
-#include <ace/Singleton.h>
-#include <ace/Task.h>
+#include <thread>
+#include <vector>
+#include <atomic>
 
 namespace apache {
 namespace geode {
 namespace client {
 
+class Callable {
+ public:
+  virtual ~Callable() noexcept = default;
+  virtual void call() = 0;
+};
+
 template <class T>
-class PooledWork : public ACE_Method_Request {
+class PooledWork : public Callable {
  private:
   T m_retVal;
   std::recursive_mutex m_mutex;
@@ -45,9 +48,9 @@ class PooledWork : public ACE_Method_Request {
  public:
   PooledWork() : m_mutex(), m_cond(), m_done(false) {}
 
-  virtual ~PooledWork() {}
+  ~PooledWork() override {}
 
-  virtual int call(void) {
+  void call() override {
     T res = execute();
 
     std::lock_guard<decltype(m_mutex)> lock(m_mutex);
@@ -55,8 +58,6 @@ class PooledWork : public ACE_Method_Request {
     m_retVal = res;
     m_done = true;
     m_cond.notify_all();
-
-    return 0;
   }
 
   T getResult(void) {
@@ -73,54 +74,21 @@ class PooledWork : public ACE_Method_Request {
   virtual T execute(void) = 0;
 };
 
-class ThreadPoolWorker;
-
-class IThreadPool {
+class ThreadPool {
  public:
-  virtual int returnToWork(ThreadPoolWorker* worker) = 0;
-  virtual ~IThreadPool() {}
-};
+  explicit ThreadPool(size_t threadPoolSize);
+  ~ThreadPool();
 
-class ThreadPoolWorker : public ACE_Task<ACE_MT_SYNCH> {
- public:
-  explicit ThreadPoolWorker(IThreadPool* manager);
-  virtual ~ThreadPoolWorker();
-  int perform(ACE_Method_Request* req);
-  int shutDown(void);
+  void perform(std::shared_ptr<Callable> req);
 
-  virtual int svc(void);
-  ACE_thread_t threadId(void);
+  void shutDown(void);
 
  private:
-  IThreadPool* manager_;
-  ACE_thread_t threadId_;
-  ACE_Activation_Queue queue_;
-  int shutdown_;
-};
-
-class ThreadPool : public ACE_Task_Base, IThreadPool {
-  friend class ACE_Singleton<ThreadPool, ACE_Recursive_Thread_Mutex>;
-
- public:
-  explicit ThreadPool(uint32_t threadPoolSize);
-  virtual ~ThreadPool();
-  int perform(ACE_Method_Request* req);
-  int svc(void);
-  int shutDown(void);
-  virtual int returnToWork(ThreadPoolWorker* worker);
-
- private:
-  ThreadPoolWorker* chooseWorker(void);
-  int createWorkerPool(void);
-  int done(void);
-
- private:
-  int poolSize_;
-  int shutdown_;
-  std::mutex workersLock_;
-  std::condition_variable workersCond_;
-  std::deque<ThreadPoolWorker*> workers_;
-  ACE_Activation_Queue queue_;
+  std::atomic<bool> shutdown_;
+  std::vector<std::thread> workers_;
+  std::deque<std::shared_ptr<Callable>> queue_;
+  std::mutex queueMutex_;
+  std::condition_variable queueCondition_;
   static const char* NC_Pool_Thread;
 };
 

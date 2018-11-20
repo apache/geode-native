@@ -76,8 +76,7 @@ CacheImpl::CacheImpl(Cache* c, const std::shared_ptr<Properties>& dsProps,
           *(std::make_shared<MemberListForVersionStamp>())),
       m_serializationRegistry(std::make_shared<SerializationRegistry>()),
       m_pdxTypeRegistry(nullptr),
-      m_threadPool(new ThreadPool(
-          m_distributedSystem.getSystemProperties().threadPoolSize())),
+      m_threadPool(m_distributedSystem.getSystemProperties().threadPoolSize()),
       m_authInitialize(authInitialize) {
   using apache::geode::statistics::StatisticsManager;
 
@@ -787,7 +786,8 @@ std::shared_ptr<SerializationRegistry> CacheImpl::getSerializationRegistry()
   return m_serializationRegistry;
 }
 
-ThreadPool* CacheImpl::getThreadPool() { return m_threadPool; }
+ThreadPool& CacheImpl::getThreadPool() { return m_threadPool; }
+
 std::shared_ptr<CacheTransactionManager>
 CacheImpl::getCacheTransactionManager() {
   this->throwIfClosed();

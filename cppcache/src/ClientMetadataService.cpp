@@ -251,11 +251,18 @@ void ClientMetadataService::getBucketServerLocation(
 std::shared_ptr<ClientMetadata> ClientMetadataService::getClientMetadata(
     const std::string& regionFullPath) {
   boost::shared_lock<decltype(m_regionMetadataLock)> lock(m_regionMetadataLock);
-  const auto& regionMetadataIter = m_regionMetaDataMap.find(regionFullPath);
-  if (regionMetadataIter != m_regionMetaDataMap.end()) {
-    return (*regionMetadataIter).second;
+
+  const auto& entry = m_regionMetaDataMap.find(regionFullPath);
+  if (entry == m_regionMetaDataMap.end()) {
+    return nullptr;
   }
-  return nullptr;
+
+  return entry->second;
+}
+
+std::shared_ptr<ClientMetadata> ClientMetadataService::getClientMetadata(
+    const std::shared_ptr<Region>& region) {
+  return getClientMetadata(region->getFullPath());
 }
 
 void ClientMetadataService::enqueueForMetadataRefresh(
@@ -291,17 +298,6 @@ void ClientMetadataService::enqueueForMetadataRefresh(
       m_regionQueueCondition.notify_one();
     }
   }
-}
-std::shared_ptr<ClientMetadata> ClientMetadataService::getClientMetadata(
-    const std::shared_ptr<Region>& region) {
-  boost::shared_lock<decltype(m_regionMetadataLock)> lock(m_regionMetadataLock);
-
-  const auto& entry = m_regionMetaDataMap.find(region->getFullPath());
-  if (entry == m_regionMetaDataMap.end()) {
-    return nullptr;
-  }
-
-  return entry->second;
 }
 
 std::shared_ptr<ClientMetadataService::ServerToFilterMap>
