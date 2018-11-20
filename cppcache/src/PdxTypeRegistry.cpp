@@ -182,7 +182,8 @@ void PdxTypeRegistry::setPreserveData(
   } else {
     // schedule new expiry task
     auto handler = new PreservedDataExpiryHandler(shared_from_this(), obj);
-    auto id = expiryTaskManager.scheduleExpiryTask(handler, 20, 0, false);
+    auto id = expiryTaskManager.scheduleExpiryTask(
+        handler, std::chrono::seconds(20), std::chrono::seconds::zero(), false);
     pData->setPreservedDataExpiryTaskId(id);
     LOGDEBUG(
         "PdxTypeRegistry::setPreserveData Schedule new expirt task with id=%ld",

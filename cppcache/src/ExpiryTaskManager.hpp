@@ -35,15 +35,9 @@
 #include "ReadWriteLock.hpp"
 #include "util/Log.hpp"
 
-/**
- * @file ExpiryTaskManager.hpp
- */
-
 namespace apache {
 namespace geode {
 namespace client {
-
-using ::apache::geode::internal::chrono::duration::to_string;
 
 /**
  * @class ExpiryTaskManager ExpiryTaskManager.hpp
@@ -230,28 +224,24 @@ class APACHE_GEODE_EXPORT ExpiryTaskManager : public ACE_Task_Base {
    * Constructor
    */
   ExpiryTaskManager();
+
   /**
    * Destructor. Stops the reactors event loop if it is not running
    * and then exits.
    */
   ~ExpiryTaskManager();
+
   /**
    * For scheduling a task for expiration.
    */
-  ExpiryTaskManager::id_type scheduleExpiryTask(
-      ACE_Event_Handler* handler, uint32_t expTime, uint32_t interval = 0,
-      bool cancelExistingTask = false);
-
-  ExpiryTaskManager::id_type scheduleExpiryTask(
-      ACE_Event_Handler* handler, ACE_Time_Value expTimeValue,
-      ACE_Time_Value intervalVal, bool cancelExistingTask = false);
-
   template <class ExpRep, class ExpPeriod, class IntRep, class IntPeriod>
   ExpiryTaskManager::id_type scheduleExpiryTask(
       ACE_Event_Handler* handler,
       std::chrono::duration<ExpRep, ExpPeriod> expTime,
       std::chrono::duration<IntRep, IntPeriod> interval,
       bool cancelExistingTask = false) {
+    using ::apache::geode::internal::chrono::duration::to_string;
+
     LOGFINER(
         "ExpiryTaskManager: expTime %s, interval %s, cancelExistingTask %d",
         to_string(expTime).c_str(), to_string(interval).c_str(),
@@ -262,7 +252,7 @@ class APACHE_GEODE_EXPORT ExpiryTaskManager : public ACE_Task_Base {
 
     ACE_Time_Value expTimeValue(expTime);
     ACE_Time_Value intervalValue(interval);
-    LOGFINER("Scheduled expiration ... in %d seconds.", expTime.count());
+    LOGFINER("Scheduled expiration ... in " + to_string(expTime));
     return m_reactor->schedule_timer(handler, nullptr, expTimeValue,
                                      intervalValue);
   }
@@ -288,12 +278,14 @@ class APACHE_GEODE_EXPORT ExpiryTaskManager : public ACE_Task_Base {
    * id - the id assigned to the expiry task initially.
    */
   int cancelTask(id_type id);
+
   /**
    * A separate thread is started in which the reactor event loop
    * is kept running unless explicitly stopped or when this object
    * goes out of scope.
    */
   int svc();
+
   /**
    * For explicitly stopping the reactor's event loop.
    */
