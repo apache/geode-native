@@ -357,12 +357,6 @@ ThinClientRegion::ThinClientRegion(
 }
 
 void ThinClientRegion::initTCR() {
-  bool subscription = false;
-  auto pool = m_cacheImpl->getPoolManager().find(getAttributes().getPoolName());
-  if (pool != nullptr) {
-    subscription = pool->getSubscriptionEnabled();
-  }
-
   try {
     m_tcrdm =
         new TcrDistributionManager(this, m_cacheImpl->tcrConnectionManager());
