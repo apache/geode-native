@@ -812,7 +812,7 @@ namespace Apache
 
            try
            {
-			 auto v = Serializable::GetUnmanagedValueGeneric<TKey>(key);
+             auto v = Serializable::GetUnmanagedValueGeneric<TKey>(key);
              return m_nativeptr->get()->containsValueForKey(v);
            }
            finally
