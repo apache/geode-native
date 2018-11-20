@@ -20,7 +20,7 @@ $ec2config = [xml] (get-content 'C:\Program Files\Amazon\Ec2ConfigService\Settin
 ($ec2config.ec2configurationsettings.plugins.plugin | where {$_.name -eq "Ec2SetComputerName"}).state = "Enabled"
 ($ec2config.ec2configurationsettings.plugins.plugin | where {$_.name -eq "Ec2EventLog"}).state = "Enabled"
 $ec2config.save("C:\Program Files\Amazon\Ec2ConfigService\Settings\config.xml")
-$ec2DiskConfig = [xml] (get-content 'C:\Program Files\Amazon\Ec2ConfigService\Settings\DiskConfig.xml')
+$ec2DiskConfig = [xml] (get-content 'C:\Program Files\Amazon\Ec2ConfigService\Settings\DriveLetterConfig.xml')
 ($ec2DiskConfig.DriveLetterMapping.Mapping.VolumeName).state = "Temporary Storage 0"
 ($ec2DiskConfig.DriveLetterMapping.Mapping.DriveLetter).state = "D:"
-$ec2DiskConfig.save("C:\Program Files\Amazon\Ec2ConfigService\Settings\DiskConfig.xml")
+$ec2DiskConfig.save("C:\Program Files\Amazon\Ec2ConfigService\Settings\DriveLetterConfig.xml")
