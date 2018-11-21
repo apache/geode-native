@@ -17,12 +17,8 @@ cmake_minimum_required(VERSION 3.10)
 project(testobject LANGUAGES CXX)
 
 IF(MSVC)
-    SET(CMAKE_CXX_FLAGS "/EHsc")
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
 ENDIF(MSVC)
-
-if (WIN32)
-  add_compile_definitions(WIN32)
-endif()
 
 add_library(testobject SHARED 
   ArrayOfByte.hpp

@@ -17,7 +17,7 @@ cmake_minimum_required(VERSION 3.10)
 project(DHImpl LANGUAGES CXX)
 
 IF(MSVC)
-    SET(CMAKE_CXX_FLAGS "/EHsc")
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
 ENDIF(MSVC)
 
 file(GLOB_RECURSE SOURCES "*.cpp")

@@ -32,12 +32,8 @@ add_library(security STATIC
 )
 
 IF(MSVC)
-    SET(CMAKE_CXX_FLAGS "/EHsc")
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
 ENDIF(MSVC)
-
-if (WIN32)
-  add_compile_definitions(WIN32)
-endif()
 
 include(GenerateExportHeader)
 generate_export_header(security)

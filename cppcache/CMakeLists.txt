@@ -41,12 +41,8 @@ set_target_properties(version-header PROPERTIES
 	FOLDER cpp
 )
 
-if (WIN32)
-  add_compile_definitions(WIN32)
-endif()
-
 IF(MSVC)
-    SET(CMAKE_CXX_FLAGS "/EHsc")
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
 ENDIF(MSVC)
 
 if ("SunOS" STREQUAL ${CMAKE_SYSTEM_NAME})
