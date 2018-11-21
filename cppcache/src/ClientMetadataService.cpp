@@ -78,6 +78,7 @@ void ClientMetadataService::svc() {
     queue::coalesce(m_regionQueue, regionFullPath);
 
     if (!m_cache->isCacheDestroyPending()) {
+      lock.unlock();
       getClientPRMetadata(regionFullPath.c_str());
     } else {
       break;
