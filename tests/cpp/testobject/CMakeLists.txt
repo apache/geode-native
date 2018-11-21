@@ -16,10 +16,6 @@
 cmake_minimum_required(VERSION 3.10)
 project(testobject LANGUAGES CXX)
 
-IF(MSVC)
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
-ENDIF(MSVC)
-
 add_library(testobject SHARED 
   ArrayOfByte.hpp
   BatchObject.cpp

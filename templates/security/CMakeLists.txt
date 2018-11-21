@@ -28,10 +28,6 @@ set_target_properties(securityImpl PROPERTIES
 	FOLDER cpp/test/integration
 )
 
-IF(MSVC)
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
-ENDIF(MSVC)
-
 include(GenerateExportHeader)
 generate_export_header(securityImpl)
 

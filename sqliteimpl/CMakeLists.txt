@@ -23,11 +23,6 @@ add_library(SqLiteImpl SHARED
   SqLiteImpl.hpp
 )
 
-
-IF(MSVC)
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
-ENDIF(MSVC)
-
 set_target_properties(SqLiteImpl PROPERTIES
 	FOLDER cpp/test/integration
 )

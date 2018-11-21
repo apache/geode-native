@@ -24,10 +24,6 @@ add_library(cryptoImpl SHARED
   SSLImpl.hpp
   SSLImpl.cpp)
 
-IF(MSVC)
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
-ENDIF(MSVC)
-
 include(GenerateExportHeader)
 generate_export_header(cryptoImpl)
 
