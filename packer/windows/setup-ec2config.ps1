@@ -21,6 +21,9 @@ $ec2config = [xml] (get-content 'C:\Program Files\Amazon\Ec2ConfigService\Settin
 ($ec2config.ec2configurationsettings.plugins.plugin | where {$_.name -eq "Ec2EventLog"}).state = "Enabled"
 $ec2config.save("C:\Program Files\Amazon\Ec2ConfigService\Settings\config.xml")
 $ec2DiskConfig = [xml] (get-content 'C:\Program Files\Amazon\Ec2ConfigService\Settings\DriveLetterConfig.xml')
-($ec2DiskConfig.DriveLetterMapping.Mapping.VolumeName).state = "Temporary Storage 0"
-($ec2DiskConfig.DriveLetterMapping.Mapping.DriveLetter).state = "D:"
+$mappingElement = $ec2DiskConfig.SelectNodes("DriveLetterMapping")[0].AppendChild($ec2DiskConfig.CreateElement("Mapping"))
+$volumeNameElement = $mappingElement.AppendChild($ec2DiskConfig.CreateElement("VolumeName"))
+$volumeName = $volumeNameElement.AppendChild($ec2DiskConfig.CreateTextNode("Temporary Storage 0"))
+$driveLetterElement = $mappingElement.AppendChild($ec2DiskConfig.CreateElement("DriveLetter"))
+$driveLetter = $driveLetterElement.AppendChild($ec2DiskConfig.CreateTextNode("D:"))
 $ec2DiskConfig.save("C:\Program Files\Amazon\Ec2ConfigService\Settings\DriveLetterConfig.xml")
