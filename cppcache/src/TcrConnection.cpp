@@ -1056,16 +1056,6 @@ void TcrConnection::readMessageChunked(
 }
 
 void TcrConnection::close() {
-  // If this is a short lived grid client, don't bother with this close ack
-  // message
-  if (m_poolDM->getConnectionManager()
-          .getCacheImpl()
-          ->getDistributedSystem()
-          .getSystemProperties()
-          .isGridClient()) {
-    return;
-  }
-
   TcrMessage* closeMsg = TcrMessage::getCloseConnMessage(
       m_poolDM->getConnectionManager().getCacheImpl());
   try {

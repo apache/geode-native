@@ -50,11 +50,6 @@ void ThinClientPoolHADM::startBackgroundThreads() {
                     ->getDistributedSystem()
                     .getSystemProperties();
 
-  if (props.isGridClient()) {
-    LOGWARN("Starting background threads and ignoring grid-client setting");
-    ThinClientPoolDM::startBackgroundThreads();
-  }
-
   m_redundancyManager->initialize(m_attrs->getSubscriptionRedundancy());
   //  Call maintain redundancy level, so primary is available for notification
   //  operations.

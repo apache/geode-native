@@ -62,22 +62,9 @@ static int numberOfLocators = 0;
 const char* locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 
-bool g_isGridClient = false;
-
-DUNIT_TASK_DEFINITION(CLIENT1, Alter_Client_Grid_Property_1)
-  { g_isGridClient = !g_isGridClient; }
-END_TASK_DEFINITION
-
-DUNIT_TASK_DEFINITION(CLIENT2, Alter_Client_Grid_Property_2)
-  { g_isGridClient = !g_isGridClient; }
-END_TASK_DEFINITION
-
 void initClient(const bool isthinClient) {
   if (cacheHelper == nullptr) {
     auto config = Properties::create();
-    if (g_isGridClient) {
-      config->insert("grid-client", "true");
-    }
     config->insert("suspended-tx-timeout", std::chrono::seconds(1));
     cacheHelper = new CacheHelper(isthinClient, config);
   }
@@ -1131,9 +1118,6 @@ DUNIT_TASK_DEFINITION(SERVER1, CloseServer1)
 END_TASK_DEFINITION
 
 void runTransactionOps(bool isSticky = false) {
-  CALL_TASK(Alter_Client_Grid_Property_1);
-  CALL_TASK(Alter_Client_Grid_Property_2);
-
   CALL_TASK(CreateLocator1);
   CALL_TASK(CreateServer1_With_Locator)
 
