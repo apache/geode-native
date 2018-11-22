@@ -51,6 +51,31 @@ ExpiryTaskManager::ExpiryTaskManager() : m_reactorEventLoopRunning(false) {
   timer.release();
 }
 
+ExpiryTaskManager::id_type ExpiryTaskManager::scheduleExpiryTask(
+    ACE_Event_Handler* handler, uint32_t expTime, uint32_t interval,
+    bool cancelExistingTask) {
+  LOGFINER("ExpiryTaskManager: expTime %d, interval %d, cancelExistingTask %d",
+           expTime, interval, cancelExistingTask);
+  if (cancelExistingTask) {
+    m_reactor->cancel_timer(handler, 1);
+  }
+
+  ACE_Time_Value expTimeValue(expTime);
+  ACE_Time_Value intervalValue(interval);
+  return m_reactor->schedule_timer(handler, nullptr, expTimeValue,
+                                   intervalValue);
+}
+
+ExpiryTaskManager::id_type ExpiryTaskManager::scheduleExpiryTask(
+    ACE_Event_Handler* handler, ACE_Time_Value expTimeValue,
+    ACE_Time_Value intervalVal, bool cancelExistingTask) {
+  if (cancelExistingTask) {
+    m_reactor->cancel_timer(handler, 1);
+  }
+
+  return m_reactor->schedule_timer(handler, nullptr, expTimeValue, intervalVal);
+}
+
 int ExpiryTaskManager::resetTask(ExpiryTaskManager::id_type id, uint32_t sec) {
   ACE_Time_Value interval(sec);
   return m_reactor->reset_timer_interval(id, interval);

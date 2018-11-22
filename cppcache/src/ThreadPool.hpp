@@ -20,12 +20,12 @@
 #ifndef GEODE_THREADPOOL_H_
 #define GEODE_THREADPOOL_H_
 
-#include <atomic>
 #include <condition_variable>
 #include <deque>
 #include <mutex>
 #include <thread>
 #include <vector>
+#include <atomic>
 
 namespace apache {
 namespace geode {

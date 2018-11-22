@@ -282,16 +282,17 @@ void ThinClientPoolDM::startBackgroundThreads() {
     m_cliCallbackTask->start();
   }
 
-  const auto& pingInterval = getPingInterval();
-  if (pingInterval > std::chrono::seconds::zero()) {
+  auto pingInterval =
+      static_cast<int32_t>(getPingInterval().count() / (1000 * 2));
+  if (pingInterval > 0) {
     LOGDEBUG(
         "ThinClientPoolDM::startBackgroundThreads: Scheduling ping task at %ld",
-        pingInterval.count());
+        pingInterval);
     auto pingHandler =
         new ExpiryHandler_T<ThinClientPoolDM>(this, &ThinClientPoolDM::doPing);
     m_pingTaskId =
         m_connManager.getCacheImpl()->getExpiryTaskManager().scheduleExpiryTask(
-            pingHandler, std::chrono::seconds(1), pingInterval, false);
+            pingHandler, 1, pingInterval, false);
   } else {
     LOGDEBUG(
         "ThinClientPoolDM::startBackgroundThreads: Not Scheduling ping task as "
@@ -299,9 +300,10 @@ void ThinClientPoolDM::startBackgroundThreads() {
         getPingInterval().count());
   }
 
-  auto updateLocatorListInterval = getUpdateLocatorListInterval();
+  auto updateLocatorListInterval =
+      static_cast<uint32_t>(getUpdateLocatorListInterval().count());
 
-  if (updateLocatorListInterval > std::chrono::seconds::zero()) {
+  if (updateLocatorListInterval > 0) {
     m_updateLocatorListTask =
         std::unique_ptr<Task<ThinClientPoolDM>>(new Task<ThinClientPoolDM>(
             this, &ThinClientPoolDM::updateLocatorList, "NC_LocatorList"));
@@ -317,11 +319,10 @@ void ThinClientPoolDM::startBackgroundThreads() {
     LOGDEBUG(
         "ThinClientPoolDM::startBackgroundThreads: Scheduling updater Locator "
         "task at %ld",
-        updateLocatorListInterval.count());
+        updateLocatorListInterval);
     m_updateLocatorListTaskId =
         m_connManager.getCacheImpl()->getExpiryTaskManager().scheduleExpiryTask(
-            updateLocatorListHandler, std::chrono::seconds(1),
-            updateLocatorListInterval, false);
+            updateLocatorListHandler, 1, updateLocatorListInterval, false);
   }
 
   LOGDEBUG(
