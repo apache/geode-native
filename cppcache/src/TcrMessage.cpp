@@ -54,6 +54,8 @@ namespace {
 uint32_t g_headerLen = 17;
 }  // namespace
 
+extern void setThreadLocalExceptionMessage(const char*);
+
 // AtomicInc TcrMessage::m_transactionId = 0;
 uint8_t* TcrMessage::m_keepalive = nullptr;
 const int TcrMessage::m_flag_empty = 0x01;
@@ -836,6 +838,22 @@ void TcrMessage::processChunk(const uint8_t* bytes, int32_t len,
       if (bytes != nullptr) {
         DeleteArray<const uint8_t> delChunk(bytes);
         LOGFINEST("processChunk - got response from secondary, ignoring.");
+      }
+      break;
+    }
+    case PUT_DATA_ERROR: {
+      chunkSecurityHeader(1, bytes, len, isLastChunkAndisSecurityHeader);
+      if (nullptr != bytes) {
+        auto input =
+            m_tcdm->getConnectionManager().getCacheImpl()->createDataInput(
+                bytes, len);
+        auto errorString = readStringPart(input);
+
+        if (!errorString.empty()) {
+          setThreadLocalExceptionMessage(errorString.c_str());
+        }
+
+        _GEODE_SAFE_DELETE_ARRAY(bytes);
       }
       break;
     }

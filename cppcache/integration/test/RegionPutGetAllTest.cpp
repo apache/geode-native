@@ -37,6 +37,7 @@ namespace {
 
 using apache::geode::client::Cache;
 using apache::geode::client::CacheableInt32;
+using apache::geode::client::CacheServerException;
 using apache::geode::client::HashMapOfCacheable;
 using apache::geode::client::Region;
 using apache::geode::client::RegionShortcut;
@@ -198,8 +199,9 @@ TEST(RegionPutGetAllTest, variousPdxTypes) {
   assert_eq(putAllMap, getAllMap);
 }
 
-// Matt and I wrote this test for GEODE-5962, but it isn't finished yet so disable.
-TEST(RegionPutGetAllTest, DISABLED_nullValue) {
+// Matt and I wrote this test for GEODE-5962, but it isn't finished yet so
+// disable.
+TEST(RegionPutGetAllTest, nullValue) {
   Cluster cluster{LocatorCount{1}, ServerCount{2}};
   cluster.getGfsh()
       .create()
@@ -221,10 +223,16 @@ TEST(RegionPutGetAllTest, DISABLED_nullValue) {
 
   auto keys = to_keys(map);
 
-  region->putAll(map);
+  try {
+    region->putAll(map);
+  } catch (CacheServerException) {
+    localDestroy(*region, keys);
+    return;
+  }
 
   // TODO - Understand: Clear local cache to force fetch from server?
   localDestroy(*region, keys);
+  FAIL();
 }
 
 }  // namespace
