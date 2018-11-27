@@ -21,7 +21,7 @@
         "version":"{{user `version`}}",
         "source_ami":"{{user `source_ami`}}"
       },
-      "ssh_username":"ec2-user",
+      "ssh_username":"ubuntu",
       "ssh_pty":true
     }
   ],
