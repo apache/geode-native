@@ -199,8 +199,6 @@ TEST(RegionPutGetAllTest, variousPdxTypes) {
   assert_eq(putAllMap, getAllMap);
 }
 
-// Matt and I wrote this test for GEODE-5962, but it isn't finished yet so
-// disable.
 TEST(RegionPutGetAllTest, nullValue) {
   Cluster cluster{LocatorCount{1}, ServerCount{2}};
   cluster.getGfsh()
