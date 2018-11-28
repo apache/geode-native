@@ -48,19 +48,11 @@
       "inline":[
         "cp -rv /tmp/files/* /",
         "rm -rf /tmp/files",
-        "chmod +x /etc/init-user.sh"
-      ]
-    },
-    {
-      "type":"file",
-      "source":"ubuntu/init-hosts.rc.local",
-      "destination":"/tmp/init-hosts.rc.local"
-    },
-    {
-      "type":"shell",
-      "execute_command":"{{.Vars}} sudo -E -S bash '{{.Path}}'",
-      "inline":[
-        "cat /tmp/init-hosts.rc.local > /etc/rc.local"
+        "chmod +x /etc/init-user.sh",
+        "chmod +x /usr/local/bin/update-hosts.sh",
+        "systemctl daemon-reload",
+        "systemctl enable update-hosts.service",
+        "systemctl start update-hosts.service"
       ]
     },
     {
