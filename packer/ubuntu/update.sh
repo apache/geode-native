@@ -17,4 +17,5 @@
 
 set -x -e -o pipefail
 
-apt update && apt -y full-upgrade && apt-get -y autoremove
+export DEBIAN_FRONTEND=noninteractive
+apt update && apt -yq full-upgrade && apt-get -y autoremove

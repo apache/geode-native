@@ -1,7 +1,7 @@
 {
   "variables":{
     "region":"us-west-2",
-    "source_ami":"ami-1e41877e",
+    "source_ami":"ami-08718fb38f5f50f34",
     "source_image_name":"X.vmx",
     "image_name":"build-linux-ubuntu"
   },
