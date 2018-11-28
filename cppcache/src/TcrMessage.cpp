@@ -841,7 +841,7 @@ void TcrMessage::processChunk(const uint8_t* bytes, int32_t len,
       }
       break;
     }
-    case PUT_DATA_ERROR: {
+    case TcrMessage::PUT_DATA_ERROR: {
       chunkSecurityHeader(1, bytes, len, isLastChunkAndisSecurityHeader);
       if (nullptr != bytes) {
         auto input =

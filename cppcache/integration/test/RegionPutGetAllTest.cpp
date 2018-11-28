@@ -221,16 +221,9 @@ TEST(RegionPutGetAllTest, nullValue) {
 
   auto keys = to_keys(map);
 
-  try {
-    region->putAll(map);
-  } catch (CacheServerException) {
-    localDestroy(*region, keys);
-    return;
-  }
+  EXPECT_THROW(region->putAll(map), CacheServerException);
 
-  // TODO - Understand: Clear local cache to force fetch from server?
   localDestroy(*region, keys);
-  FAIL();
 }
 
 }  // namespace
