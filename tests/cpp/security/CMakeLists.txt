@@ -31,10 +31,6 @@ add_library(security STATIC
   XmlAuthzCredentialGenerator.hpp
 )
 
-#IF(MSVC)
-#    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
-#ENDIF(MSVC)
-
 include(GenerateExportHeader)
 generate_export_header(security)
 
