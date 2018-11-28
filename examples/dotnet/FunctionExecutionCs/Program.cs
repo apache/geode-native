@@ -59,23 +59,7 @@ namespace Apache.Geode.Examples.PutGetRemove
 
       var res = rc.GetResult();
 
-      Console.WriteLine("Result cout of: " + res.Count);
-
-      foreach (object item in res)
-      {
-        Console.WriteLine("Items returned for arrList arguement is {0} ", item);
-      }
-
-      Console.WriteLine("Removing " + rtimmonsKey + " info from the region");
-
-      if (region.Remove(rtimmonsKey))
-      {
-        Console.WriteLine("Info for " + rtimmonsKey + " has been deleted");
-      }
-      else
-      {
-        Console.WriteLine("Info for " + rtimmonsKey + " has not been deleted");
-      }
+      Console.WriteLine("Result count of: " + res.Count);
 
       cache.Close();
     }
