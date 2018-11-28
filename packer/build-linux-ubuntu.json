@@ -60,7 +60,7 @@
       "type":"shell",
       "execute_command":"{{.Vars}} sudo -E -S bash '{{.Path}}'",
       "inline":[
-        "cat /tmp/init-hosts.rc.local >> /etc/rc.local"
+        "cat /tmp/init-hosts.rc.local > /etc/rc.local"
       ]
     },
     {
