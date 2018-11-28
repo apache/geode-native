@@ -56,11 +56,11 @@ TEST(TcrMessageHelperTest, readChunkPartHeaderExpectsAnObject) {
   FAIL() << "Expected to catch a message exception.";
 }
 
-TEST(TcrMessageHelperTest, DISABLED_readChunkPartHeaderExceptionChunkHack) {
+TEST(TcrMessageHelperTest, readChunkPartHeaderExceptionChunkHack) {
   TcrMessageTestFixture msg;
 
   uint8_t fakeBuffer[] = {0, 0, 0,
-                          1, TRUE, static_cast < uint8_t>(DSCode::JavaSerializable)};
+                          1, 1, static_cast < uint8_t>(DSCode::JavaSerializable), 0,0,0,0,0};
 
   auto input = DataInputInternal(fakeBuffer, sizeof(fakeBuffer));
 
@@ -68,6 +68,6 @@ TEST(TcrMessageHelperTest, DISABLED_readChunkPartHeaderExceptionChunkHack) {
 
   EXPECT_EQ(TcrMessageHelper::readChunkPartHeader(
                 msg, input, "TcrMessageHelperTest, readChunkPartHeaderExceptionChunkHack",
-                partLength, 1),
+                partLength, 64),
             TcrMessageHelper::ChunkObjectType::EXCEPTION);
 }

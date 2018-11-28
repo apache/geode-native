@@ -14,6 +14,7 @@
 # limitations under the License.
 
 add_executable(cpp-integration-test
+  ChunkedHeaderTest.cpp
   ExampleTest.cpp
   RegionPutGetAllTest.cpp
   PdxInstanceTest.cpp

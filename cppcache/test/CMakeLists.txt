@@ -29,7 +29,6 @@ add_executable(apache-geode_unittests
   CacheableStringEqualityTest.cpp
   CacheableStringTests.cpp
   CacheXmlParserTest.cpp
-  ChunkedHeaderTest.cpp
   ClientConnectionResponseTest.cpp
   ClientProxyMembershipIDFactoryTest.cpp
   DataInputTest.cpp
