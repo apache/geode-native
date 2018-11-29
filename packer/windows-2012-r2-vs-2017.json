@@ -21,8 +21,10 @@
         "version":"{{user `version`}}",
         "source_ami":"{{user `source_ami`}}"
       },
-      "communicator":"winrm",
-      "winrm_username":"Administrator",
+      "communicator":"ssh",
+      "ssh_username":"Administrator",
+      "ssh_handshake_attempts":100,
+      "ssh_timeout":"15m",
       "launch_block_device_mappings":[
         {
           "device_name":"/dev/sda1",
