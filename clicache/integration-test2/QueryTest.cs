@@ -83,7 +83,7 @@ namespace Apache.Geode.Client.IntegrationTests
     }
 
     [Fact]
-    public void PdxSerializableNotificationsHaveCorrectValues()
+    public void PdxSerializableQueryHaveCorrectValues()
     {
       using (var cluster_ = new Cluster(CreateTestCaseDirectoryName(), 1, 1))
       {
@@ -127,16 +127,16 @@ namespace Apache.Geode.Client.IntegrationTests
         order3.Quantity = 11;
         region.Put("order3", order3);
 
-
         var results = region.Query<QueryOrder>("SELECT * FROM /cqTestRegion WHERE quantity > 30");
         Assert.Equal(results.Size, 1UL);
         Assert.Equal(results[0].Name, "product y");
 
+        region.Clear();
       }
     }
 
     [Fact]
-    public void DataSerializableNotificationsHaveCorrectValues()
+    public void DataSerializableQueryHaveCorrectValues()
     {
       using (var cluster_ = new Cluster(CreateTestCaseDirectoryName(), 1, 1))
       {
@@ -152,7 +152,7 @@ namespace Apache.Geode.Client.IntegrationTests
 
         cluster_.Gfsh.executeFunction()
             .withId("InstantiateDataSerializable")
-            .withMember("DataSerializableNotificationsH_server_0")
+            .withMember("DataSerializableQueryHaveCorre_server_0")
             .execute();
 
         cache_.TypeRegistry.RegisterType(Position.CreateDeserializable, 22);
@@ -194,6 +194,8 @@ namespace Apache.Geode.Client.IntegrationTests
         var results = region.Query<Position>("SELECT * FROM /cqTestRegion WHERE sharesOutstanding > 50");
         Assert.Equal(results.Size, 1UL);
         Assert.Equal(results[0].SecId, "PVTL");
+
+        region.Clear();
       }
     }
   }
