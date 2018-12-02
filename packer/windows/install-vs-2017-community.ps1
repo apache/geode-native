@@ -14,8 +14,28 @@
 # limitations under the License.
 # TODO AdminDeploy.xml
 # vs_community.exe /AdminFile C:\Users\Administrator\AdminDeployment.xml /Log setup.log /Passive
+
 Set-PSDebug -Trace 2
 
-choco install visualstudio2017community -y --ignore-package-exit-codes
+$addComponentIds = @(
+  '--add microsoft.net.component.4.targetingpack'
+  '--add microsoft.net.component.4.5.1.targetingpack'
+  '--add microsoft.visualstudio.component.debugger.justintime'
+  '--add microsoft.visualstudio.component.web'
+  '--add microsoft.visualstudio.component.vc.coreide'
+  '--add microsoft.visualstudio.component.vc.redist.14.latest'
+  '--add microsoft.visualstudio.component.graphics.win81'
+  '--add microsoft.visualstudio.component.vc.cmake.project'
+  '--add microsoft.visualstudio.component.vc.testadapterforgoogletest'
+  '--add microsoft.component.vc.runtime.ucrtsdk'
+  '--add microsoft.visualstudio.component.windows81sdk'
+  '--add microsoft.visualstudio.component.vc.cli.support'
+  '--add microsoft.visualstudio.component.webdeploy'
+  '--add microsoft.component.pythontools'
+  '--add component.cpython2.x64'
+  '--add microsoft.net.component.3.5.developertools'
+)
+
+choco install visualstudio2017community -p --params $addComponentIds
 
 Exit 0
