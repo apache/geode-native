@@ -5,6 +5,7 @@
 .*\.gitignore$
 .*\.lcovrc$
 .*\.ratignore$
+
 .*md$
 .*json$
 .*deprecated_xml_instructions.txt$

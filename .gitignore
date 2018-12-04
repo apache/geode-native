@@ -5,8 +5,8 @@
 /.cproject
 /.project
 /.idea/
-.vs/
-.vscode/
+/.vs/
+/.vscode/
 
 /examples/dotnet/*/bin/
 /examples/dotnet/*/obj/
