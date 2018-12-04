@@ -122,10 +122,8 @@ set(CPACK_PACKAGE_CHECKSUM "SHA512")
 # leave out .git and a couple other items we want in the repository but not in
 # the release.  Everything gets concatenated into a ';' separated list for
 # cpack.
-file(READ ".gitignore" IGNORED_PARTIAL)
-set(IGNORED_FULL ${IGNORED_PARTIAL})
 file(READ ".cpackignore" IGNORED_PARTIAL)
-string(CONCAT IGNORED_FULL ${IGNORED_FULL} ${IGNORED_PARTIAL})
+string(IGNORED_FULL ${IGNORED_PARTIAL})
 string(REGEX REPLACE "\n" ";" IGNORED_FULL "${IGNORED_FULL}")
 string(REGEX REPLACE " " "" IGNORED_FULL "${IGNORED_FULL}")
 
