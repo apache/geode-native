@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-pragma once
+#pragma once
 
 
 #include "begin_native.hpp"
