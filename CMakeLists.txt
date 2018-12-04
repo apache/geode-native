@@ -123,7 +123,7 @@ set(CPACK_PACKAGE_CHECKSUM "SHA512")
 # the release.  Everything gets concatenated into a ';' separated list for
 # cpack.
 file(READ ".cpackignore" IGNORED_PARTIAL)
-string(IGNORED_FULL ${IGNORED_PARTIAL})
+set(IGNORED_FULL ${IGNORED_PARTIAL})
 string(REGEX REPLACE "\n" ";" IGNORED_FULL "${IGNORED_FULL}")
 string(REGEX REPLACE " " "" IGNORED_FULL "${IGNORED_FULL}")
 
