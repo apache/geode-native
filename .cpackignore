@@ -1,3 +1,16 @@
-/.git/
-/.DS_Store
+/\.git/
+/\.DS_Store
 
+/build-.*/
+
+/build/
+/\.settings/
+/\.cproject
+/\.project
+/\.idea/
+\.vs/
+\.vscode/
+
+/examples/dotnet/.*/bin/
+/examples/dotnet/.*/obj/
+\.ruby-version

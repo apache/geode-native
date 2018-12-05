@@ -17,7 +17,7 @@
 cmake_minimum_required(VERSION 3.4)
 project(templates.security)
 
-find_package(OpenSSL 1.0.2 REQUIRED)
+find_package(OpenSSL 1.1.0 REQUIRED)
 
 file(GLOB_RECURSE SOURCES "*.cpp")
 
@@ -28,13 +28,14 @@ generate_export_header(securityImpl)
 
 target_include_directories(securityImpl
   PUBLIC
-	$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
+    $<BUILD_INTERFACE : ${CMAKE_CURRENT_BINARY_DIR}>
+)
 
 include_directories(${NATIVECLIENT_INCLUDE_DIR})
 
 if (${WIN32})
   set(GEODE_NATIVE_CACHE "${NATIVECLIENT_LIBRARIES}/apache-geode${CMAKE_IMPORT_LIBRARY_SUFFIX}")
-else ()
+else()
   get_filename_component(GEODE_NATIVE_CACHE "${NATIVECLIENT_LIBRARIES}/${CMAKE_SHARED_LIBRARY_PREFIX}apache-geode${CMAKE_SHARED_LIBRARY_SUFFIX}" ABSOLUTE)
 endif()
 
@@ -46,6 +47,6 @@ target_link_libraries(securityImpl
 )
 
 install(TARGETS securityImpl
-    RUNTIME DESTINATION ${GEODE_NATIVE_HOME}/bin
-    LIBRARY DESTINATION ${GEODE_NATIVE_HOME}/lib
+  RUNTIME DESTINATION ${GEODE_NATIVE_HOME} /bin
+  LIBRARY DESTINATION ${GEODE_NATIVE_HOME} /lib
 )
