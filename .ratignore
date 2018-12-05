@@ -5,6 +5,8 @@
 .*\.gitignore$
 .*\.lcovrc$
 .*\.ratignore$
+.*\.lgtm.yml$
+.*\.ratCheck.sh$
 
 .*md$
 .*json$
