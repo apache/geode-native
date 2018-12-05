@@ -3,6 +3,7 @@
 .*\.clang-tidy$
 .*\.gitignore$
 .*\.ratignore$
+
 .*md$
 .*json$
 .*deprecated_xml_instructions.txt$
