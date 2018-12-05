@@ -29,7 +29,7 @@ env:
     - SOURCE_DIR="/geode-native"
 
   matrix:
-    - DOCKER_COMMAND="java -jar /apache-rat-0.12/apache-rat-0.12.jar -E ${SOURCE_DIR}/.ratignore -d ${SOURCE_DIR}"
+    - DOCKER_COMMAND="java -jar /apache-rat-0.12/apache-rat-0.12.jar -E ${SOURCE_DIR}/.ratignore -d ${SOURCE_DIR} | grep '== File:' | sed 's/== File://' | wc -l:wq"
     - DOCKER_COMMAND="mkdir build && cd build && cmake ${SOURCE_DIR} -DCMAKE_CXX_FLAGS=-stdlib=libc++ -DCMAKE_CXX_CLANG_TIDY=clang-tidy && cmake --build . -- -j2 && ./cppcache/test/apache-geode_unittests && git -C ${SOURCE_DIR} diff --exit-code"
 
 install:
