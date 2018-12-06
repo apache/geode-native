@@ -20,23 +20,30 @@
 #ifndef GEODE_THINCLIENTBASEDM_H_
 #define GEODE_THINCLIENTBASEDM_H_
 
+#include <memory>
 #include <vector>
 
 #include <geode/internal/geode_globals.hpp>
 
-#include "TcrConnectionManager.hpp"
-#include "TcrEndpoint.hpp"
+#include "Queue.hpp"
+#include "Task.hpp"
+#include "util/Log.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
+class TcrMessage;
+class ThinClientRegion;
+class TcrEndpoint;
+class TcrConnectionManager;
+class TcrMessageReply;
+class TcrChunkedContext;
+class EventId;
+
 /**
  * @brief Distribute data between caches
  */
-class TcrMessage;
-class ThinClientRegion;
-
 class ThinClientBaseDM {
  public:
   ThinClientBaseDM(TcrConnectionManager& connManager, ThinClientRegion* region);
@@ -108,13 +115,9 @@ class ThinClientBaseDM {
 
   virtual TcrEndpoint* getActiveEndpoint() { return nullptr; }
 
-  virtual bool checkDupAndAdd(std::shared_ptr<EventId> eventid) {
-    return m_connManager.checkDupAndAdd(eventid);
-  }
+  virtual bool checkDupAndAdd(std::shared_ptr<EventId> eventid);
 
-  virtual std::recursive_mutex& getRedundancyLock() {
-    return m_connManager.getRedundancyLock();
-  }
+  virtual std::recursive_mutex& getRedundancyLock();
 
   static bool isDeltaEnabledOnServer() { return s_isDeltaEnabledOnServer; }
 
@@ -172,7 +175,7 @@ class ThinClientBaseDM {
   ThinClientRegion* m_region;
 
   // methods for the chunk processing thread
-  int processChunks(volatile bool& isRunning);
+  void processChunks(std::atomic<bool>& isRunning);
   void startChunkProcessor();
   void stopChunkProcessor();
 
@@ -193,7 +196,7 @@ class ThinClientBaseDM {
   bool m_clientNotification;
 
   Queue<TcrChunkedContext*> m_chunks;
-  Task<ThinClientBaseDM>* m_chunkProcessor;
+  std::unique_ptr<Task<ThinClientBaseDM>> m_chunkProcessor;
 
  private:
   static volatile bool s_isDeltaEnabledOnServer;

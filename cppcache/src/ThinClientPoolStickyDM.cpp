@@ -131,7 +131,8 @@ void ThinClientPoolStickyDM::setStickyNull(bool isBGThread) {
   }
 }
 
-void ThinClientPoolStickyDM::cleanStickyConnections(volatile bool& isRunning) {
+void ThinClientPoolStickyDM::cleanStickyConnections(
+    std::atomic<bool>& isRunning) {
   if (!isRunning) {
     return;
   }

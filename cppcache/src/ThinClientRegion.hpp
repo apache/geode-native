@@ -24,7 +24,6 @@
 #include <unordered_map>
 
 #include <ace/RW_Thread_Mutex.h>
-#include <ace/Semaphore.h>
 #include <ace/Task.h>
 
 #include <geode/ResultCollector.hpp>
@@ -36,7 +35,6 @@
 #include "Queue.hpp"
 #include "RegionGlobalLocks.hpp"
 #include "TcrChunkedContext.hpp"
-#include "TcrEndpoint.hpp"
 #include "TcrMessage.hpp"
 
 namespace apache {
@@ -44,6 +42,7 @@ namespace geode {
 namespace client {
 
 class ThinClientBaseDM;
+class TcrEndpoint;
 
 /**
  * @class ThinClientRegion ThinClientRegion.hpp
@@ -303,7 +302,7 @@ class APACHE_GEODE_EXPORT ThinClientRegion : public LocalRegion {
       m_durableInterestListRegexForUpdatesAsInvalidates;
 
   bool m_notifyRelease;
-  ACE_Semaphore m_notificationSema;
+  std::mutex m_notificationMutex;
 
   bool m_isDurableClnt;
 

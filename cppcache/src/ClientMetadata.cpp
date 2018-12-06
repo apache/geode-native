@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "ClientMetadata.hpp"
 
 #include <climits>
@@ -287,17 +288,6 @@ void ClientMetadata::updateBucketServerLocations(
       m_bucketServerLocationsList[bucketId].push_back(*iter);
     }
   }
-}
-
-void ClientMetadata::removeBucketServerLocation(BucketServerLocation) {}
-
-void ClientMetadata::populateDummyServers(int bucketId,
-                                          BucketServerLocationsType locations) {
-  // WriteGuard guard( m_readWriteLock );
-
-  checkBucketId(bucketId);
-
-  m_bucketServerLocationsList[bucketId] = locations;
 }
 
 int ClientMetadata::assignFixedBucketId(

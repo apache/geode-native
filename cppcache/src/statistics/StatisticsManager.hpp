@@ -29,7 +29,6 @@
 
 #include "../AdminRegion.hpp"
 #include "GeodeStatisticsFactory.hpp"
-#include "HostStatSampler.hpp"
 #include "Statistics.hpp"
 #include "StatisticsTypeImpl.hpp"
 
@@ -40,6 +39,7 @@ namespace statistics {
 using apache::geode::client::AdminRegion;
 
 class GeodeStatisticsFactory;
+class HostStatSampler;
 
 /**
  * Head Application Manager for Statistics Module.
@@ -51,7 +51,7 @@ class StatisticsManager {
   std::chrono::milliseconds m_sampleIntervalMs;
 
   // Statistics sampler
-  HostStatSampler* m_sampler;
+  std::unique_ptr<HostStatSampler> m_sampler;
 
   // Vector containing all the Stats objects
   std::vector<Statistics*> m_statsList;

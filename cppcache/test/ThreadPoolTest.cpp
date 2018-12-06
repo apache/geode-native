@@ -15,47 +15,42 @@
  * limitations under the License.
  */
 
-#pragma once
-
-#ifndef GEODE_EVICTIONTHREAD_H_
-#define GEODE_EVICTIONTHREAD_H_
-
 #include <atomic>
+#include <chrono>
 #include <condition_variable>
 #include <deque>
 #include <mutex>
 #include <thread>
 
-namespace apache {
-namespace geode {
-namespace client {
+#include <gtest/gtest.h>
 
-class EvictionController;
+#include "ThreadPool.hpp"
 
-/**
- * This class does the actual evictions
- */
-class EvictionThread {
+using apache::geode::client::Callable;
+using apache::geode::client::ThreadPool;
+
+class TestCallable : public Callable {
  public:
-  explicit EvictionThread(EvictionController* parent);
-  void start();
-  void stop();
-  void svc();
-  void putEvictionInfo(int32_t info);
+  TestCallable() : called_(0) {}
 
- private:
-  std::thread m_thread;
-  std::atomic<bool> m_run;
-  EvictionController* m_pParent;
-  std::deque<int32_t> m_queue;
-  std::mutex m_queueMutex;
-  std::condition_variable m_queueCondition;
+  void call() {
+    std::lock_guard<decltype(mutex_)> lock(mutex_);
+    called_++;
+    condition_.notify_all();
+  }
 
-  static const char* NC_Evic_Thread;
+  size_t called_;
+  std::mutex mutex_;
+  std::condition_variable condition_;
 };
 
-}  // namespace client
-}  // namespace geode
-}  // namespace apache
+TEST(ThreadPoolTest, callableIsCalled) {
+  ThreadPool threadPool(1);
 
-#endif  // GEODE_EVICTIONTHREAD_H_
+  auto c = std::make_shared<TestCallable>();
+  threadPool.perform(c);
+  std::unique_lock<decltype(c->mutex_)> lock(c->mutex_);
+  c->condition_.wait(lock, [&] { return c->called_ > 0; });
+
+  ASSERT_EQ(1, c->called_);
+}

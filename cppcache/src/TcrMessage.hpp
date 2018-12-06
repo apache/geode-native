@@ -33,6 +33,7 @@
 #include <geode/DataInput.hpp>
 #include <geode/DataOutput.hpp>
 #include <geode/ExceptionTypes.hpp>
+#include <geode/Region.hpp>
 #include <geode/Serializable.hpp>
 #include <geode/internal/geode_globals.hpp>
 

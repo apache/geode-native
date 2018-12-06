@@ -108,9 +108,8 @@ Cache CacheFactory::create() const {
       std::bind(VersionTag::createDeserializable, memberListForVersionStamp));
 
   serializationRegistry->addDataSerializableFixedIdType(
-      static_cast<int64_t>(DSFid::DiskVersionTag),
-      std::bind(DiskVersionTag::createDeserializable,
-                memberListForVersionStamp));
+      DSFid::DiskVersionTag, std::bind(DiskVersionTag::createDeserializable,
+                                       memberListForVersionStamp));
 
   serializationRegistry->setPdxTypeHandler(new PdxTypeHandler());
   serializationRegistry->setDataSerializableHandler(

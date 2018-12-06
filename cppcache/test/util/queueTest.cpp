@@ -15,26 +15,22 @@
  * limitations under the License.
  */
 
-#pragma once
+#include <deque>
 
-#ifndef GEODE_MAPWITHLOCK_H_
-#define GEODE_MAPWITHLOCK_H_
+#include <gtest/gtest.h>
 
-#include <unordered_map>
+#include "util/queue.hpp"
 
-#include <geode/CacheableKey.hpp>
-#include <geode/internal/geode_globals.hpp>
+using apache::geode::client::queue::coalesce;
 
-namespace apache {
-namespace geode {
-namespace client {
+TEST(util_queueTest, coalesce) {
+  auto queue = std::deque<int32_t>({1, 1, 1, 2, 3, 4});
 
-typedef std::unordered_map<std::shared_ptr<CacheableKey>, int,
-                           CacheableKey::hash, CacheableKey::equal_to>
-    MapOfUpdateCounters;
+  coalesce(queue, 1);
+  EXPECT_EQ(2, queue.front());
+  EXPECT_EQ(3, queue.size());
 
-}  // namespace client
-}  // namespace geode
-}  // namespace apache
-
-#endif  // GEODE_MAPWITHLOCK_H_
+  coalesce(queue, 3);
+  EXPECT_EQ(2, queue.front());
+  EXPECT_EQ(3, queue.size());
+}

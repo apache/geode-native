@@ -17,24 +17,38 @@
 
 #pragma once
 
-#ifndef GEODE_MAPWITHLOCK_H_
-#define GEODE_MAPWITHLOCK_H_
-
-#include <unordered_map>
-
-#include <geode/CacheableKey.hpp>
-#include <geode/internal/geode_globals.hpp>
+#ifndef NATIVECLIENT_UTIL_QUEUE_H
+#define NATIVECLIENT_UTIL_QUEUE_H
 
 namespace apache {
 namespace geode {
 namespace client {
+namespace queue {
 
-typedef std::unordered_map<std::shared_ptr<CacheableKey>, int,
-                           CacheableKey::hash, CacheableKey::equal_to>
-    MapOfUpdateCounters;
+/**
+ * Coalesce the contents of a Queue structure based on the given value. Will
+ * remove all values at the front of the queue that equal value.
+ *
+ * @tparam Queue type to coalesce
+ * @tparam Type of value to coalesce
+ * @param queue to coalesce
+ * @param value to coalesce
+ */
+template <class Queue, class Type>
+inline void coalesce(Queue& queue, const Type& value) {
+  while (!queue.empty()) {
+    const auto& next = queue.front();
+    if (next == value) {
+      queue.pop_front();
+    } else {
+      break;
+    }
+  }
+}
 
+}  // namespace queue
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
 
-#endif  // GEODE_MAPWITHLOCK_H_
+#endif  // NATIVECLIENT_UTIL_QUEUE_H

@@ -24,6 +24,7 @@
 #include "CacheRegionHelper.hpp"
 #include "CacheTransactionManagerImpl.hpp"
 #include "TXCleaner.hpp"
+#include "TcrConnectionManager.hpp"
 #include "TcrMessage.hpp"
 #include "ThinClientPoolDM.hpp"
 #include "util/exception.hpp"

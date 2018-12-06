@@ -50,7 +50,8 @@ const int64_t INITIAL_CONNECTION_ID = 26739;
     throw ex;                                         \
   }
 bool TcrConnection::InitTcrConnection(
-    TcrEndpoint* endpointObj, const char* endpoint, Set<uint16_t>& ports,
+    TcrEndpoint* endpointObj, const char* endpoint,
+    synchronized_set<std::unordered_set<uint16_t>>& ports,
     bool isClientNotification, bool isSecondary,
     std::chrono::microseconds connectTimeout) {
   m_conn = nullptr;
@@ -127,10 +128,10 @@ bool TcrConnection::InitTcrConnection(
     ports.insert(m_port);
   } else {
     // add the local ports to message
-    Set<uint16_t>::Iterator iter = ports.iterator();
+    auto&& lock = ports.make_lock();
     handShakeMsg.writeInt(static_cast<int32_t>(ports.size()));
-    while (iter.hasNext()) {
-      handShakeMsg.writeInt(static_cast<int32_t>(iter.next()));
+    for (const auto& port : ports) {
+      handShakeMsg.writeInt(static_cast<int32_t>(port));
     }
   }
 

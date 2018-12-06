@@ -34,7 +34,6 @@
 
 #include "CqQueryVsdStats.hpp"
 #include "CqService.hpp"
-#include "MapWithLock.hpp"
 
 /**
  * @file

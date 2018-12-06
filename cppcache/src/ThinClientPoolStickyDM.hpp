@@ -32,26 +32,23 @@ class ThinClientPoolStickyDM : public ThinClientPoolDM {
       : ThinClientPoolDM(name, poolAttrs, connManager) {
     m_sticky = true;
   }
-  virtual ~ThinClientPoolStickyDM() {
-    // m_manager->closeAllStickyConnections();
-    // delete m_manager; m_manager = nullptr;
-  }
-  virtual bool canItBeDeletedNoImpl(TcrConnection* conn);
+  ~ThinClientPoolStickyDM() override {}
+
+  bool canItBeDeletedNoImpl(TcrConnection* conn) override;
 
  protected:
-  virtual void cleanStickyConnections(volatile bool& isRunning);
-  virtual TcrConnection* getConnectionFromQueueW(
+  void cleanStickyConnections(std::atomic<bool>& isRunning) override;
+  TcrConnection* getConnectionFromQueueW(
       GfErrType* error, std::set<ServerLocation>&, bool isBGThread,
       TcrMessage& request, int8_t& version, bool& match, bool& connFound,
-      const std::shared_ptr<BucketServerLocation>& serverLocation = nullptr);
-  virtual void putInQueue(TcrConnection* conn, bool isBGThread,
-                          bool isTransaction = false);
-  virtual void setStickyNull(bool isBGThread);
-  virtual bool canItBeDeleted(TcrConnection* conn);
-  virtual void releaseThreadLocalConnection();
-  virtual void setThreadLocalConnection(TcrConnection* conn);
-
-  // virtual void cleanStickyConnections(volatile bool& isRunning);
+      const std::shared_ptr<BucketServerLocation>& serverLocation =
+          nullptr) override;
+  void putInQueue(TcrConnection* conn, bool isBGThread,
+                  bool isTransaction = false) override;
+  void setStickyNull(bool isBGThread) override;
+  bool canItBeDeleted(TcrConnection* conn) override;
+  void releaseThreadLocalConnection() override;
+  void setThreadLocalConnection(TcrConnection* conn) override;
 };
 }  // namespace client
 }  // namespace geode

@@ -27,10 +27,11 @@
 #include <geode/PdxWriter.hpp>
 #include <geode/PdxReader.hpp>
 #include <geode/Delta.hpp>
+#include <geode/DataSerializable.hpp>
 
 #include "CacheHelper.hpp"
 
-namespace { // NOLINT(google-build-namespaces)
+namespace {  // NOLINT(google-build-namespaces)
 
 using apache::geode::client::DataInput;
 using apache::geode::client::DataOutput;

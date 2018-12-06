@@ -25,6 +25,7 @@
 #include <set>
 #include <vector>
 
+#include "ErrType.hpp"
 #include "TssConnectionWrapper.hpp"
 
 namespace apache {

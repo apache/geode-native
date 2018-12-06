@@ -28,10 +28,6 @@
 #include <typeinfo>
 #include <unordered_map>
 
-#include <ace/Hash_Map_Manager.h>
-#include <ace/Null_Mutex.h>
-#include <ace/Thread_Mutex.h>
-
 #include <geode/DataOutput.hpp>
 #include <geode/DataSerializable.hpp>
 #include <geode/Delta.hpp>
@@ -48,33 +44,27 @@
 #include "config.h"
 #include "util/concurrent/spinlock_mutex.hpp"
 
-namespace ACE_VERSIONED_NAMESPACE_NAME {
+namespace std {
 
-#if defined(_MACOSX)
-// TODO CMake check type int64_t
 template <>
-class ACE_Export ACE_Hash<int64_t> {
- public:
-  // NOLINTNEXTLINE(google-runtime-int)
-  inline unsigned long operator()(int64_t t) const {
-    // NOLINTNEXTLINE(google-runtime-int)
-    return static_cast<unsigned long>(t);
+struct hash<apache::geode::client::internal::DSCode>
+    : public std::unary_function<apache::geode::client::internal::DSCode,
+                                 size_t> {
+  size_t operator()(apache::geode::client::internal::DSCode val) const {
+    return std::hash<int32_t>{}(static_cast<int32_t>(val));
   }
 };
 
-#endif
-
-using apache::geode::client::DSCode;
 template <>
-class ACE_Hash<DSCode> {
- public:
-  inline u_long operator()(const DSCode key) {
-    return static_cast<u_long>(key);
+struct hash<apache::geode::client::internal::DSFid>
+    : public std::unary_function<apache::geode::client::internal::DSFid,
+                                 size_t> {
+  size_t operator()(apache::geode::client::internal::DSFid val) const {
+    return std::hash<int32_t>{}(static_cast<int32_t>(val));
   }
 };
 
-// NOLINTNEXTLINE(google-readability-namespace-comments)
-}  // namespace ACE_VERSIONED_NAMESPACE_NAME
+}  // namespace std
 
 namespace apache {
 namespace geode {
@@ -83,21 +73,14 @@ namespace client {
 using internal::DataSerializableInternal;
 using internal::DataSerializablePrimitive;
 
-typedef ACE_Hash_Map_Manager<DSCode, TypeFactoryMethod, ACE_Null_Mutex>
-    DSCodeToFactoryMap;
-
-typedef ACE_Hash_Map_Manager<int32_t, TypeFactoryMethod, ACE_Null_Mutex>
-    IdToFactoryMap;
-
-typedef ACE_Hash_Map_Manager<std::string, TypeFactoryMethodPdx, ACE_Null_Mutex>
-    StrToPdxFactoryMap;
-
 class TheTypeMap : private NonCopyable {
  private:
-  DSCodeToFactoryMap* m_dataSerializablePrimitiveMap;
-  IdToFactoryMap* m_dataSerializableMap;
-  IdToFactoryMap* m_dataSerializableFixedIdMap;
-  StrToPdxFactoryMap* m_pdxSerializableMap;
+  std::unordered_map<internal::DSCode, TypeFactoryMethod>
+      m_dataSerializablePrimitiveMap;
+  std::unordered_map<int32_t, TypeFactoryMethod> m_dataSerializableMap;
+  std::unordered_map<internal::DSFid, TypeFactoryMethod>
+      m_dataSerializableFixedIdMap;
+  std::unordered_map<std::string, TypeFactoryMethodPdx> m_pdxSerializableMap;
   mutable util::concurrent::spinlock_mutex m_dataSerializablePrimitiveMapLock;
   mutable util::concurrent::spinlock_mutex m_dataSerializableMapLock;
   mutable util::concurrent::spinlock_mutex m_dataSerializableFixedIdMapLock;
@@ -107,35 +90,9 @@ class TheTypeMap : private NonCopyable {
   std::unordered_map<std::type_index, int32_t> typeToClassId;
 
  public:
-  TheTypeMap() {
-    // map to hold DataSerializablePrimitive
-    m_dataSerializablePrimitiveMap = new DSCodeToFactoryMap();
+  TheTypeMap() { setup(); }
 
-    // map to hold Data Serializable IDs
-    m_dataSerializableMap = new IdToFactoryMap();
-
-    // map to hold internal Data Serializable Fixed IDs
-    m_dataSerializableFixedIdMap = new IdToFactoryMap();
-
-    // map to hold PDX types <string, funptr>.
-    m_pdxSerializableMap = new StrToPdxFactoryMap();
-
-    setup();
-  }
-
-  virtual ~TheTypeMap() {
-    if (m_dataSerializableMap != nullptr) {
-      delete m_dataSerializableMap;
-    }
-
-    if (m_dataSerializableFixedIdMap != nullptr) {
-      delete m_dataSerializableFixedIdMap;
-    }
-
-    if (m_pdxSerializableMap != nullptr) {
-      delete m_pdxSerializableMap;
-    }
-  }
+  ~TheTypeMap() noexcept = default;
 
   void setup();
 
@@ -149,13 +106,15 @@ class TheTypeMap : private NonCopyable {
 
   void unbindDataSerializable(int32_t id);
 
-  void findDataSerializableFixedId(int32_t id, TypeFactoryMethod& func) const;
+  void findDataSerializableFixedId(internal::DSFid id,
+                                   TypeFactoryMethod& func) const;
 
   void bindDataSerializableFixedId(TypeFactoryMethod func);
 
-  void rebindDataSerializableFixedId(int32_t idd, TypeFactoryMethod func);
+  void rebindDataSerializableFixedId(internal::DSFid id,
+                                     TypeFactoryMethod func);
 
-  void unbindDataSerializableFixedId(int32_t id);
+  void unbindDataSerializableFixedId(internal::DSFid id);
 
   void bindPdxSerializable(TypeFactoryMethodPdx func);
 
@@ -287,9 +246,10 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
 
   void addDataSerializableFixedIdType(TypeFactoryMethod func);
 
-  void addDataSerializableFixedIdType(int32_t id, TypeFactoryMethod func);
+  void addDataSerializableFixedIdType(internal::DSFid id,
+                                      TypeFactoryMethod func);
 
-  void removeDataSerializableFixeIdType(int32_t id);
+  void removeDataSerializableFixeIdType(internal::DSFid id);
 
   void setDataSerializablePrimitiveType(TypeFactoryMethod func, DSCode dsCode);
 

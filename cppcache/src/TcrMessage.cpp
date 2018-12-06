@@ -36,6 +36,7 @@
 #include "TXState.hpp"
 #include "TcrChunkedContext.hpp"
 #include "TcrConnection.hpp"
+#include "TcrConnectionManager.hpp"
 #include "ThinClientBaseDM.hpp"
 #include "ThinClientPoolDM.hpp"
 #include "ThinClientRegion.hpp"

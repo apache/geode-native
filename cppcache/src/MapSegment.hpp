@@ -25,12 +25,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include <ace/Functor_T.h>
-#include <ace/Hash_Map_Manager.h>
-#include <ace/Null_Mutex.h>
-#include <ace/Versioned_Namespace.h>
-#include <ace/config-lite.h>
-
 #include <geode/CacheableKey.hpp>
 #include <geode/Delta.hpp>
 #include <geode/RegionEntry.hpp>
@@ -42,42 +36,18 @@
 #include "TombstoneList.hpp"
 #include "util/concurrent/spinlock_mutex.hpp"
 
-namespace ACE_VERSIONED_NAMESPACE_NAME {
-
-template <>
-class ACE_Hash<std::shared_ptr<apache::geode::client::CacheableKey>> {
- public:
-  u_long operator()(
-      const std::shared_ptr<apache::geode::client::CacheableKey>& key) {
-    return key->hashcode();
-  }
-};
-
-template <>
-class ACE_Equal_To<std::shared_ptr<apache::geode::client::CacheableKey>> {
- public:
-  bool operator()(
-      const std::shared_ptr<apache::geode::client::CacheableKey>& key1,
-      const std::shared_ptr<apache::geode::client::CacheableKey>& key2) {
-    return key1->operator==(*key2);
-  }
-};
-
-// NOLINTNEXTLINE(google-readability-namespace-comments)
-}  // namespace ACE_VERSIONED_NAMESPACE_NAME
-
 namespace apache {
 namespace geode {
 namespace client {
 
 class RegionInternal;
-typedef ::ACE_Hash_Map_Manager_Ex<
-    std::shared_ptr<CacheableKey>, std::shared_ptr<MapEntry>,
-    ::ACE_Hash<std::shared_ptr<CacheableKey>>,
-    ::ACE_Equal_To<std::shared_ptr<CacheableKey>>, ::ACE_Null_Mutex>
+typedef std::unordered_map<std::shared_ptr<CacheableKey>,
+                           std::shared_ptr<MapEntry>,
+                           dereference_hash<std::shared_ptr<CacheableKey>>,
+                           dereference_equal_to<std::shared_ptr<CacheableKey>>>
     CacheableKeyHashMap;
 
-/** @brief type wrapper around the ACE map implementation. */
+/** @brief type wrapper around the std::unordered_map implementation. */
 class APACHE_GEODE_EXPORT MapSegment {
  private:
   // contain
@@ -115,7 +85,7 @@ class APACHE_GEODE_EXPORT MapSegment {
     std::shared_ptr<MapEntry> newEntry;
     entry->incrementUpdateCount(newEntry);
     if (newEntry != nullptr) {
-      m_map->rebind(key, newEntry);
+      m_map->emplace(key, newEntry);
       entry = newEntry;
       return true;
     }
@@ -139,13 +109,13 @@ class APACHE_GEODE_EXPORT MapSegment {
       entryImpl->getValueI(value);
       if (value == nullptr) {
         // get rid of an entry marked as destroyed
-        m_map->unbind(key);
+        m_map->erase(key);
         return;
       }
     }
     if (trackerPair.first) {
       entry = entryImpl ? entryImpl : entry->getImplPtr();
-      m_map->rebind(key, entry);
+      (*m_map)[key] = entry;
     }
   }
 
@@ -178,7 +148,7 @@ class APACHE_GEODE_EXPORT MapSegment {
         newEntry->getVersionStamp().setVersions(*versionStamp);
       }
     }
-    m_map->bind(key, newEntry);
+    m_map->emplace(key, newEntry);
     return GF_NOERR;
   }
 

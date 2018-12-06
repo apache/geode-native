@@ -15,47 +15,49 @@
  * limitations under the License.
  */
 
-#pragma once
-
-#ifndef GEODE_EVICTIONTHREAD_H_
-#define GEODE_EVICTIONTHREAD_H_
-
 #include <atomic>
-#include <condition_variable>
-#include <deque>
 #include <mutex>
-#include <thread>
 
-namespace apache {
-namespace geode {
-namespace client {
-
-class EvictionController;
-
-/**
- * This class does the actual evictions
- */
-class EvictionThread {
+class TestableRecursiveMutex {
  public:
-  explicit EvictionThread(EvictionController* parent);
-  void start();
-  void stop();
-  void svc();
-  void putEvictionInfo(int32_t info);
+  std::recursive_mutex mutex_;
+  std::atomic<int32_t> recursive_depth_;
+  std::atomic<int32_t> lock_count_;
+  std::atomic<int32_t> unlock_count_;
+  std::atomic<int32_t> try_lock_count_;
 
- private:
-  std::thread m_thread;
-  std::atomic<bool> m_run;
-  EvictionController* m_pParent;
-  std::deque<int32_t> m_queue;
-  std::mutex m_queueMutex;
-  std::condition_variable m_queueCondition;
+  TestableRecursiveMutex() noexcept
+      : recursive_depth_(0),
+        lock_count_(0),
+        unlock_count_(0),
+        try_lock_count_(0) {}
 
-  static const char* NC_Evic_Thread;
+  void lock() {
+    mutex_.lock();
+    ++recursive_depth_;
+    ++lock_count_;
+  }
+
+  void unlock() {
+    mutex_.unlock();
+    --recursive_depth_;
+    ++unlock_count_;
+  }
+
+  bool try_lock() {
+    bool locked = false;
+    if ((locked = mutex_.try_lock())) {
+      ++recursive_depth_;
+    }
+
+    ++try_lock_count_;
+    return locked;
+  }
+
+  void resetCounters() {
+    recursive_depth_ = 0;
+    lock_count_ = 0;
+    unlock_count_ = 0;
+    try_lock_count_ = 0;
+  }
 };
-
-}  // namespace client
-}  // namespace geode
-}  // namespace apache
-
-#endif  // GEODE_EVICTIONTHREAD_H_

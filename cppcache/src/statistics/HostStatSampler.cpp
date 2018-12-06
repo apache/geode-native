@@ -29,8 +29,6 @@
 #include <ace/INET_Addr.h>
 #include <ace/OS_NS_sys_stat.h>
 #include <ace/OS_NS_sys_utsname.h>
-#include <ace/Task.h>
-#include <ace/Thread_Mutex.h>
 #include <boost/process/environment.hpp>
 
 #include <geode/SystemProperties.hpp>
@@ -40,6 +38,7 @@
 #include "../ClientHealthStats.hpp"
 #include "../ClientProxyMembershipID.hpp"
 #include "../DistributedSystem.hpp"
+#include "../TcrConnectionManager.hpp"
 #include "../util/Log.hpp"
 #include "GeodeStatisticsFactory.hpp"
 #include "StatArchiveWriter.hpp"
@@ -480,15 +479,14 @@ void HostStatSampler::closeSpecialStats() {}
 void HostStatSampler::checkListeners() {}
 
 void HostStatSampler::start() {
-  if (!m_running) {
-    m_running = true;
-    this->activate();
+  if (!m_running.exchange(true)) {
+    m_thread = std::thread(&HostStatSampler::svc, this);
   }
 }
 
 void HostStatSampler::stop() {
   m_stopRequested = true;
-  this->wait();
+  m_thread.join();
 }
 
 bool HostStatSampler::isRunning() { return m_running; }
@@ -644,7 +642,7 @@ void HostStatSampler::checkDiskLimit() {
   }
 }
 
-int32_t HostStatSampler::svc(void) {
+void HostStatSampler::svc(void) {
   client::DistributedSystemImpl::setThreadName(NC_HSS_Thread);
   try {
     initSpecialStats();
@@ -716,7 +714,6 @@ int32_t HostStatSampler::svc(void) {
        closeSpecialStats();
    }*/
   m_running = false;
-  return 0;
 }
 }  // namespace statistics
 }  // namespace geode
