@@ -46,6 +46,12 @@
       ]
     },
     {
+      "type":"powershell",
+      "scripts":[
+        "windows/install-doxygen.ps1"
+      ]
+    },
+    {
       "type":"file",
       "source":"windows/init-ssh.ps1",
       "destination":"$Env:ProgramFiles/Amazon/Ec2ConfigService/Scripts/init-ssh.ps1"
