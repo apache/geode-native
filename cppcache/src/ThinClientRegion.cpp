@@ -3263,10 +3263,15 @@ GfErrType ThinClientRegion::getFuncAttributes(const std::string& func,
                                   reply.getException());
       break;
     }
+    case TcrMessage::REQUEST_DATA_ERROR: {
+      LOGERROR("Error message from server: " + reply.getValue()->toString());
+      throw FunctionExecutionException(reply.getValue()->toString());
+    }
     default: {
       LOGERROR("Unknown message type %d while getting function attributes.",
                reply.getMessageType());
       err = GF_MSG;
+      break;
     }
   }
   return err;
