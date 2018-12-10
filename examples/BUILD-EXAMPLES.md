@@ -1,7 +1,7 @@
 # Geode Native C++ Examples
 
 ## Prerequisites
-*a Install [Apache Geode](https://geode.apache.org)
+* Install [Apache Geode](https://geode.apache.org)
 * Install [CMake](https://cmake.org/download/)
 * Build and install [Apache Geode Native](https://github.com/apache/geode-native)
 * **For Windows:** Visual Studio 2015
@@ -33,9 +33,9 @@
     $ cmake --build . -- <optional parallelism parameter>
     ```
   where the optional parallelism parameter is `/m`.
-a
+
 ## Running the Examples
-aTo run an example,
+To run an example,
 
 1. Navigate to the directory for a specific example.
 2. Follow the directions in the `README.md` file in that directory.
