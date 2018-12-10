@@ -26,5 +26,4 @@ file(GLOB_RECURSE SOURCES "*.java")
 
 add_jar(example ${SOURCES}
   INCLUDE_JARS ${Geode_CLASSPATH}
-  OUTPUT_DIR ${CMAKE_CURRENT_SOURCE_DIR}../
 )
