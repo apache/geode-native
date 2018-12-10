@@ -28,7 +28,8 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindGeodeNative.cmake.in ${CMAK
 install(DIRECTORY .
   DESTINATION examples
   USE_SOURCE_PERMISSIONS
-  PATTERN "*.in" EXCLUDE)
+  PATTERN "*.in" EXCLUDE
+  PATTERN "dotnet" EXCLUDE)
 install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/CMakeLists.txt
   DESTINATION examples)
@@ -41,7 +42,11 @@ install(FILES
 
 add_subdirectory(cpp)
 if (BUILD_CLI)
+  install(DIRECTORY dotnet
+    DESTINATION examples
+    USE_SOURCE_PERMISSIONS
+    PATTERN "*.in" EXCLUDE)
+
   add_subdirectory(dotnet)
 endif()
 add_subdirectory(utilities)
-
