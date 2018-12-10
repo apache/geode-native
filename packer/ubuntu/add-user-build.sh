@@ -17,6 +17,6 @@
 
 #set -x -e -o pipefail
 
-useradd build
+useradd -m build
 
 (crontab -l -u build ; echo "@reboot /etc/init-user.sh") | sort - | uniq - | crontab -u build -
