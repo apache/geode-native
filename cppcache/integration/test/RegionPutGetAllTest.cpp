@@ -15,6 +15,10 @@
  * limitations under the License.
  */
 
+#include <framework/Cluster.h>
+#include <framework/Gfsh.h>
+
+#include <VariousPdxTypes.hpp>
 #include <future>
 #include <initializer_list>
 #include <iostream>
@@ -28,11 +32,6 @@
 #include <geode/RegionFactory.hpp>
 #include <geode/RegionShortcut.hpp>
 #include <geode/TypeRegistry.hpp>
-
-#include <VariousPdxTypes.hpp>
-
-#include <framework/Cluster.h>
-#include <framework/Gfsh.h>
 
 namespace {
 

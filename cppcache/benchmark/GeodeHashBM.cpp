@@ -20,6 +20,7 @@
 #include <geode/CacheableString.hpp>
 
 using namespace apache::geode::client;
+using namespace apache::geode::client::internal;
 
 class GeodeHashBM : public benchmark::Fixture {};
 

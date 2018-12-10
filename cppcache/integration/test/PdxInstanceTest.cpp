@@ -15,6 +15,9 @@
  * limitations under the License.
  */
 
+#include <framework/Cluster.h>
+#include <framework/Gfsh.h>
+
 #include <future>
 #include <initializer_list>
 #include <iostream>
@@ -33,9 +36,6 @@
 #include "LocalRegion.hpp"
 #include "NestedPdxObject.hpp"
 #include "PdxType.hpp"
-
-#include <framework/Cluster.h>
-#include <framework/Gfsh.h>
 
 namespace {
 
