@@ -23,6 +23,8 @@ add_library(SqLiteImpl SHARED
   SqLiteImpl.hpp
 )
 
+set_source_files_properties(SqLiteImpl.cpp PROPERTIES COMPILE_FLAGS -Wno-unused-result)
+
 set_target_properties(SqLiteImpl PROPERTIES
 	FOLDER cpp/test/integration
 )
