@@ -44,7 +44,7 @@ std::shared_ptr<Region> setupRegion(Cache &cache) {
   return region;
 }
 
-TEST(FunctionExecutionTest, UnknownFunction) {
+TEST(FunctionExecutionTest, UnknownFunctionOnServer) {
   Cluster cluster{LocatorCount{1}, ServerCount{1}};
   cluster.getGfsh()
       .create()
@@ -61,6 +61,22 @@ TEST(FunctionExecutionTest, UnknownFunction) {
                FunctionExecutionException);
 }
 
+TEST(FunctionExecutionTest, UnknownFunctionOnRegion) {
+  Cluster cluster{LocatorCount{1}, ServerCount{1}};
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("region")
+      .withType("REPLICATE")
+      .execute();
+
+  auto cache = cluster.createCache();
+  auto region = setupRegion(cache);
+
+  ASSERT_THROW(FunctionService::onRegion(region).execute("I_Don_t_Exist"),
+               FunctionExecutionException);
+}
+
 class TestResultCollector : public ResultCollector {
   virtual std::shared_ptr<CacheableVector> getResult(
       std::chrono::milliseconds) override {
@@ -74,7 +90,7 @@ class TestResultCollector : public ResultCollector {
   virtual void clearResults() override {}
 };
 
-TEST(FunctionExecutionTest, UnknownFunctionAsync) {
+TEST(FunctionExecutionTest, UnknownFunctionAsyncOnServer) {
   Cluster cluster{LocatorCount{1}, ServerCount{1}};
   cluster.getGfsh()
       .create()
@@ -87,6 +103,24 @@ TEST(FunctionExecutionTest, UnknownFunctionAsync) {
   auto region = setupRegion(cache);
 
   ASSERT_THROW(FunctionService::onServer(region->getRegionService())
+                   .withCollector(std::make_shared<TestResultCollector>())
+                   .execute("I_Don_t_Exist"),
+               FunctionExecutionException);
+}
+
+TEST(FunctionExecutionTest, UnknownFunctionAsyncOnRegion) {
+  Cluster cluster{LocatorCount{1}, ServerCount{1}};
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("region")
+      .withType("REPLICATE")
+      .execute();
+
+  auto cache = cluster.createCache();
+  auto region = setupRegion(cache);
+
+  ASSERT_THROW(FunctionService::onRegion(region)
                    .withCollector(std::make_shared<TestResultCollector>())
                    .execute("I_Don_t_Exist"),
                FunctionExecutionException);
