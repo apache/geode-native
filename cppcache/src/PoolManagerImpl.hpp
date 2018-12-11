@@ -35,7 +35,8 @@ namespace client {
 
 class Pool;
 class PoolFactory;
-typedef std::unordered_map<std::string, std::shared_ptr<Pool>> HashMapOfPools;
+
+using HashMapOfPools = std::unordered_map<std::string, std::shared_ptr<Pool>>;
 
 class PoolManagerImpl {
  public:

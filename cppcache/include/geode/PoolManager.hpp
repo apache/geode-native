@@ -46,7 +46,7 @@ class PoolFactory;
 class Region;
 class RegionFactory;
 
-typedef std::unordered_map<std::string, std::shared_ptr<Pool>> HashMapOfPools;
+using HashMapOfPools = std::unordered_map<std::string, std::shared_ptr<Pool>>;
 
 /**
  * Manages creation and access to {@link Pool connection pools} for clients.
