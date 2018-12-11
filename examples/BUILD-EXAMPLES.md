@@ -12,7 +12,7 @@
 
    **For Windows:** For reliable behavior of the example scripts, do not choose a workspace with directory names or filenames that contain spaces.
 
-1. Navigate to the directory for a specific example and use `cmake` to build it. For non-Windows systems, the commands are:
+1. Navigate to the examples directory and use `cmake` to build all examples. For non-Windows systems, the commands are:
 
     ```
     $ cd workspace/examples
