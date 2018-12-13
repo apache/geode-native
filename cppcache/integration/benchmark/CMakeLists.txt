@@ -26,3 +26,5 @@ target_link_libraries(cpp-integration-benchmark
   PRIVATE
     _WarningsAsError
   )
+
+add_clangformat(cpp-integration-benchmark)

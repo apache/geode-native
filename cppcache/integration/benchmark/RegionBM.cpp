@@ -16,21 +16,24 @@
  */
 
 #include <benchmark/benchmark.h>
-
-#include <boost/log/core.hpp>
-#include <boost/log/trivial.hpp>
-#include <boost/log/expressions.hpp>
-
 #include <framework/Cluster.h>
 #include <framework/Gfsh.h>
 
-#include <geode/CacheableString.hpp>
+#include <boost/log/core.hpp>
+#include <boost/log/expressions.hpp>
+#include <boost/log/trivial.hpp>
+
 #include <geode/Cache.hpp>
+#include <geode/CacheableString.hpp>
 #include <geode/PoolManager.hpp>
 #include <geode/RegionFactory.hpp>
 #include <geode/RegionShortcut.hpp>
 
-using namespace apache::geode::client;
+using apache::geode::client::Cache;
+using apache::geode::client::CacheableInt32;
+using apache::geode::client::CacheableString;
+using apache::geode::client::Region;
+using apache::geode::client::RegionShortcut;
 
 namespace {
 
@@ -55,8 +58,8 @@ class RegionBM : public benchmark::Fixture {
 
       cache = std::unique_ptr<Cache>(new Cache(cluster->createCache()));
       region = cache->createRegionFactory(RegionShortcut::PROXY)
-          .setPoolName("default")
-          .create("region");
+                   .setPoolName("default")
+                   .create("region");
     }
   }
 
@@ -70,7 +73,6 @@ class RegionBM : public benchmark::Fixture {
   }
 
  protected:
-
   void SetName(const char* name) {
     name_ = name;
 

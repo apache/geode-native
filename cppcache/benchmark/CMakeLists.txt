@@ -25,3 +25,10 @@ target_link_libraries(cpp-benchmark
   PRIVATE
     _WarningsAsError
   )
+
+target_include_directories(cpp-benchmark
+  PRIVATE
+  $<TARGET_PROPERTY:apache-geode-static,SOURCE_DIR>/../src
+  )
+
+add_clangformat(cpp-benchmark)

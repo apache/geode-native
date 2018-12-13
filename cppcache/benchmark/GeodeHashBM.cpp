@@ -19,8 +19,10 @@
 
 #include <geode/CacheableString.hpp>
 
-using namespace apache::geode::client;
-using namespace apache::geode::client::internal;
+#include "util/string.hpp"
+
+using apache::geode::client::to_utf16;
+using apache::geode::client::internal::geode_hash;
 
 class GeodeHashBM : public benchmark::Fixture {};
 
