@@ -12,6 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 # Enable the system password to be retrieved from the AWS Console after this AMI is built and used to launch code
 $ec2config = [xml] (get-content 'C:\Program Files\Amazon\Ec2ConfigService\Settings\config.xml')
 ($ec2config.ec2configurationsettings.plugins.plugin | where {$_.name -eq "Ec2SetPassword"}).state = "Enabled"

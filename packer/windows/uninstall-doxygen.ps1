@@ -12,6 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 # Enable the system password to be retrieved from the AWS Console after this AMI is built and used to launch code
 
 $package = 'doxygen.install'
@@ -20,4 +21,3 @@ $uninstallRegKey = 'HKLM:SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\dox
 Import-Module C:\ProgramData\chocolatey\helpers\chocolateyInstaller.psm1
 $uninstallPath = (Get-ItemProperty $uninstallRegKey UninstallString).UninstallString
 Uninstall-ChocolateyPackage $package 'exe' '/VERYSILENT' $uninstallPath
-

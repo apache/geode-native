@@ -13,17 +13,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-$user = "build"
-$pass = "p1votal!"
+project( rat LANGUAGES NONE )
+# used to check licenses in source
 
-net.exe user $user $pass /add
-net.exe localgroup Administrators $user /add
-wmic.exe UserAccount where "Name='$user'" set PasswordExpires=False
-
-$spw = ConvertTo-SecureString $pass -AsPlainText -Force
-$cred = New-Object System.Management.Automation.PSCredential -ArgumentList $user,$spw
-Start-Process cmd /c -WindowStyle Hidden -Credential $cred -ErrorAction SilentlyContinue
+set( ARTIFACT_VERSION 0.12 )
+set( ARTIFACT_SHA265 cedf78f6d213226464784ecb999b54515c97eab8a2f9b82514292f837cf88b93 )
+set( ARTIFACT_NAME apache-rat-${ARTIFACT_VERSION} )
+set( ARTIFACT_FILE apache-rat-${ARTIFACT_VERSION}-bin.tar.gz )
+set( ARTIFACT_URL "https://www.apache.org/dyn/closer.cgi?action=download&filename=creadur/${ARTIFACT_NAME}/${ARTIFACT_FILE}" )
 
 
-schtasks.exe /Create /TN init-user-build /RU SYSTEM /SC ONSTART /TR "powershell.exe -File 'C:\Users\build\init-user-build.ps1'" 
+file( DOWNLOAD ${ARTIFACT_URL} ${CMAKE_CURRENT_BINARY_DIR}/${ARTIFACT_FILE} )
+execute_process(
+  COMMAND ${CMAKE_COMMAND} -E tar xzf ${ARTIFACT_FILE}
+  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+)
 
+set( Rat_JAR ${CMAKE_CURRENT_BINARY_DIR}/${ARTIFACT_NAME}/${ARTIFACT_NAME}.jar CACHE STRING "Full path to Apaceh Rat jar." )
