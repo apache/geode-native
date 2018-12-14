@@ -16,9 +16,11 @@
 */
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using Apache.Geode.Client;
 
-namespace Apache.Geode.Examples.PutGetRemove
+namespace Apache.Geode.Examples.FunctionExecution
 {
   class Program
   {
@@ -34,14 +36,14 @@ namespace Apache.Geode.Examples.PutGetRemove
 
       var regionFactory = cache.CreateRegionFactory(RegionShortcut.PROXY)
           .SetPoolName("pool");
-      var region = regionFactory.Create<string, string>("partition_region");
+      var region = regionFactory.Create<object, object>("partition_region");
 
       Console.WriteLine("Storing id and username in the region");
 
-      const string rtimmonsKey = "rtimmons";
-      const string rtimmonsValue = "Robert Timmons";
-      const string scharlesKey = "scharles";
-      const string scharlesValue = "Sylvia Charles";
+      string rtimmonsKey = "rtimmons";
+      string rtimmonsValue = "Robert Timmons";
+      string scharlesKey = "scharles";
+      string scharlesValue = "Sylvia Charles";
 
       region.Put(rtimmonsKey, rtimmonsValue, null);
       region.Put(scharlesKey, scharlesValue, null);
@@ -53,11 +55,22 @@ namespace Apache.Geode.Examples.PutGetRemove
       Console.WriteLine(rtimmonsKey + " = " + user1);
       Console.WriteLine(scharlesKey + " = " + user2);
 
-      var exc = Client.FunctionService<object>.OnRegion<string, string>(region);
+      ArrayList keyArgs = new ArrayList();
+      keyArgs.Add(rtimmonsKey);
+      keyArgs.Add(scharlesKey);
 
-      var rc = exc.WithArgs(rtimmonsKey).Execute("ExampleMultiGetFunction");
+      var exc = Client.FunctionService<object>.OnRegion<object, object>(region);
 
-      var res = rc.GetResult();
+      Client.IResultCollector<object> rc = exc.WithArgs<object>(keyArgs).Execute("ExampleMultiGetFunction");
+
+      ICollection<object> res = rc.GetResult();
+
+      List<object> resultList = new List<object>();
+
+      foreach (List<object> item in res)
+      {
+        resultList.Add(item);
+      }
 
       Console.WriteLine("Result count of: " + res.Count);
 
@@ -65,3 +78,4 @@ namespace Apache.Geode.Examples.PutGetRemove
     }
   }
 }
+
