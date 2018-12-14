@@ -67,15 +67,19 @@ namespace Apache.Geode.Examples.FunctionExecution
 
       List<object> resultList = new List<object>();
 
+      Console.WriteLine("Function Execution Results:");
+      Console.WriteLine("   Count = {0}", res.Count);
+
       foreach (List<object> item in res)
       {
-        resultList.Add(item);
+        foreach (object item2 in item)
+        {
+          resultList.Add(item2);
+          Console.WriteLine("   value = {0}", item2.ToString());
+        }
       }
-
-      Console.WriteLine("Result count of: " + res.Count);
 
       cache.Close();
     }
   }
 }
-

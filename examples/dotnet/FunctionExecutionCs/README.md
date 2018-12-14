@@ -6,7 +6,7 @@ This example illustrates how to execute server side java functions.
 * Build and install [Apache Geode Native](https://github.com/apache/geode-native)
 
 ## Running
-* Run the following Powershell script which starts the Geode Locator, deploys the jar file containing your function, start the Geode Server, and create region.
+* Run the following Powershell script which starts the Geode Locator, deploys the jar file containing your function, starts the Geode Server, and creates the region.
   ```
   PS> startserver.ps1
   ```
