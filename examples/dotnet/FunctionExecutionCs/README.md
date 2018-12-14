@@ -1,20 +1,16 @@
-﻿# PutGetRemove Example
-This is a very simple example showing how to create a `Cache` using the `CacheFactory`,
-configure a `Pool` with a `PoolFactory`, and configure a `Region` with a `RegionFactory`.
-We then put, get, and remove some primitive data in the region.
+﻿# FunctionExecution Example
+This example illustrates how to execute server side java functions.
 
 ## Prerequisites
 * Install [Apache Geode](https://geode.apache.org)
 * Build and install [Apache Geode Native](https://github.com/apache/geode-native)
 
 ## Running
-* Start Geode Server and create region.
+* Run the following Powershell script which starts the Geode Locator, deploys the jar file containing your function, start the Geode Server, and create region.
   ```
-  gfsh>start locator --name=locator
-  gfsh>start server --name=server
-  gfsh>create region --name=partition_region --type=PARTITION
+  PS> startserver.ps1
   ```
-* Execute `Apache.Geode.Examples.PutGetRemove.exe`.
+* Execute `Apache.Geode.Examples.FunctionExecutionCs.exe`.
   
   output:
   ```
@@ -22,6 +18,8 @@ We then put, get, and remove some primitive data in the region.
   Getting the user info from the region
   rtimmons = Robert Timmons
   scharles = Sylvia Charles
-  Removing rtimmons info from the region
-  Info for rtimmons has been deleted
+  Function Execution Results:
+     Count = 1
+     value = Robert Timmons
+     value = Sylvia Charles
   ```
