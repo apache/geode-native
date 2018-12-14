@@ -31,8 +31,8 @@ class APACHE_GEODE_EXPORT NonCopyable {
   NonCopyable() {}
   ~NonCopyable() {}
 
- private:
-  NonCopyable(const NonCopyable&);
+ public:
+  NonCopyable(const NonCopyable&) = delete;
 };
 
 class APACHE_GEODE_EXPORT NonAssignable {
@@ -40,8 +40,8 @@ class APACHE_GEODE_EXPORT NonAssignable {
   NonAssignable() {}
   ~NonAssignable() {}
 
- private:
-  const NonAssignable& operator=(const NonAssignable&);
+ public:
+  const NonAssignable& operator=(const NonAssignable&) = delete;
 };
 
 }  // namespace client

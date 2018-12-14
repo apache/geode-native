@@ -32,6 +32,7 @@
 #include "../CacheImpl.hpp"
 #include "../util/chrono/time_point.hpp"
 #include "GeodeStatisticsFactory.hpp"
+#include "HostStatSampler.hpp"
 
 namespace apache {
 namespace geode {

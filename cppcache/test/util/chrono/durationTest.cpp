@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-#include <chrono>
 #include <algorithm>
+#include <chrono>
 
 #include <gtest/gtest.h>
 
@@ -24,8 +24,10 @@
 
 #include "util/chrono/duration_bounds.hpp"
 
-using namespace apache::geode::internal::chrono::duration;
-using namespace apache::geode::util::chrono::duration;
+using apache::geode::internal::chrono::duration::_ceil;
+using apache::geode::internal::chrono::duration::from_string;
+using apache::geode::internal::chrono::duration::to_string;
+using apache::geode::util::chrono::duration::assert_bounds;
 
 TEST(util_chrono_durationTest, ceil) {
   EXPECT_EQ(std::chrono::seconds(1),

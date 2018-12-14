@@ -23,9 +23,10 @@
 #include <set>
 #include <string>
 
+#include <geode/internal/DataSerializableFixedId.hpp>
+
 #include "ServerLocation.hpp"
 #include "ServerLocationRequest.hpp"
-#include "TcrEndpoint.hpp"
 
 namespace apache {
 namespace geode {
@@ -40,7 +41,7 @@ class ClientConnectionRequest : public ServerLocationRequest {
         m_servergroup(servergroup),
         m_excludeServergroup_serverLocation(excludeServergroup) {}
   void toData(DataOutput& output) const override;
-  DSFid getDSFID() const override;
+  internal::DSFid getDSFID() const override;
   std::string getServerGroup() const { return m_servergroup; }
   const std::set<ServerLocation>& getExcludedServerGroup() const {
     return m_excludeServergroup_serverLocation;

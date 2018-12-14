@@ -28,6 +28,7 @@
 #include "CqQueryImpl.hpp"
 #include "DistributedSystem.hpp"
 #include "ReadWriteLock.hpp"
+#include "TcrConnectionManager.hpp"
 #include "ThinClientPoolDM.hpp"
 #include "util/exception.hpp"
 
@@ -41,14 +42,10 @@ CqService::CqService(ThinClientBaseDM* tccdm,
       m_statisticsFactory(statisticsFactory),
       m_notificationSema(1),
       m_stats(std::make_shared<CqServiceVsdStats>(m_statisticsFactory)) {
-  m_cqQueryMap = new MapOfCqQueryWithLock();
   m_running = true;
   LOGDEBUG("CqService Started");
 }
-CqService::~CqService() {
-  if (m_cqQueryMap != nullptr) delete m_cqQueryMap;
-  LOGDEBUG("CqService Destroyed");
-}
+CqService::~CqService() noexcept { LOGDEBUG("CqService Destroyed"); }
 
 void CqService::updateStats() {
   auto stats = std::dynamic_pointer_cast<CqServiceVsdStats>(m_stats);
@@ -56,14 +53,14 @@ void CqService::updateStats() {
   stats->setNumCqsActive(0);
   stats->setNumCqsStopped(0);
 
-  MapOfRegionGuard guard(m_cqQueryMap->mutex());
+  auto&& lock = m_cqQueryMap.make_lock();
 
-  stats->setNumCqsOnClient(static_cast<uint32_t>(m_cqQueryMap->current_size()));
+  stats->setNumCqsOnClient(static_cast<uint32_t>(m_cqQueryMap.size()));
 
-  if (m_cqQueryMap->current_size() == 0) return;
+  if (m_cqQueryMap.empty()) return;
 
-  for (auto q = m_cqQueryMap->begin(); q != m_cqQueryMap->end(); ++q) {
-    auto cquery = ((*q).int_id_);
+  for (const auto& kv : m_cqQueryMap) {
+    auto& cquery = kv.second;
     switch (cquery->getState()) {
       case CqState::RUNNING:
         stats->incNumCqsActive();
@@ -143,15 +140,9 @@ std::shared_ptr<CqQuery> CqService::newCq(
  * Adds the given CQ and cqQuery object into the CQ map.
  */
 void CqService::addCq(const std::string& cqName, std::shared_ptr<CqQuery>& cq) {
-  try {
-    MapOfRegionGuard guard(m_cqQueryMap->mutex());
-    std::shared_ptr<CqQuery> tmp;
-    if (0 == m_cqQueryMap->find(cqName, tmp)) {
-      throw CqExistsException("CQ with given name already exists. ");
-    }
-    m_cqQueryMap->bind(cqName, cq);
-  } catch (Exception& e) {
-    throw e;
+  auto result = m_cqQueryMap.emplace(cqName, cq);
+  if (!result.second) {
+    throw CqExistsException("CQ with given name already exists. ");
   }
 }
 
@@ -159,12 +150,7 @@ void CqService::addCq(const std::string& cqName, std::shared_ptr<CqQuery>& cq) {
  * Removes given CQ from the cqMap..
  */
 void CqService::removeCq(const std::string& cqName) {
-  try {
-    MapOfRegionGuard guard(m_cqQueryMap->mutex());
-    m_cqQueryMap->unbind(cqName);
-  } catch (Exception& e) {
-    throw e;
-  }
+  m_cqQueryMap.erase(cqName);
 }
 
 /**
@@ -172,12 +158,12 @@ void CqService::removeCq(const std::string& cqName) {
  * @return the CqQuery or null if not found
  */
 std::shared_ptr<CqQuery> CqService::getCq(const std::string& cqName) {
-  MapOfRegionGuard guard(m_cqQueryMap->mutex());
-  std::shared_ptr<CqQuery> tmp;
-  if (0 != m_cqQueryMap->find(cqName, tmp)) {
+  auto&& lock = m_cqQueryMap.make_lock();
+  const auto& found = m_cqQueryMap.find(cqName);
+  if (found == m_cqQueryMap.end()) {
     LOGWARN("Failed to get the specified CQ: %s", cqName.c_str());
   } else {
-    return tmp;
+    return found->second;
   }
   return nullptr;
 }
@@ -187,12 +173,7 @@ std::shared_ptr<CqQuery> CqService::getCq(const std::string& cqName) {
  */
 void CqService::clearCqQueryMap() {
   Log::fine("Cleaning clearCqQueryMap.");
-  try {
-    MapOfRegionGuard guard(m_cqQueryMap->mutex());
-    m_cqQueryMap->unbind_all();
-  } catch (Exception& e) {
-    throw e;
-  }
+  m_cqQueryMap.clear();
 }
 
 /**
@@ -200,11 +181,12 @@ void CqService::clearCqQueryMap() {
  */
 CqService::query_container_type CqService::getAllCqs() {
   CqService::query_container_type cqVec;
-  MapOfRegionGuard guard(m_cqQueryMap->mutex());
-  if (m_cqQueryMap->current_size() == 0) return cqVec;
-  cqVec.reserve(static_cast<int32_t>(m_cqQueryMap->current_size()));
-  for (auto& q : *m_cqQueryMap) {
-    cqVec.push_back(q.int_id_);
+  auto&& lock = m_cqQueryMap.make_lock();
+  if (!m_cqQueryMap.empty()) {
+    cqVec.reserve(m_cqQueryMap.size());
+    for (auto& kv : m_cqQueryMap) {
+      cqVec.push_back(kv.second);
+    }
   }
   return cqVec;
 }
@@ -368,7 +350,7 @@ void CqService::closeAllCqs() {
   Log::fine("closeAllCqs()");
   query_container_type cqVec = getAllCqs();
   Log::fine("closeAllCqs() 1");
-  MapOfRegionGuard guard(m_cqQueryMap->mutex());
+  auto&& lock = m_cqQueryMap.make_lock();
   Log::fine("closeAllCqs() 2");
   closeCqs(cqVec);
 }
@@ -393,16 +375,9 @@ void CqService::cleanup() {
  * @return true if exists else false.
  */
 bool CqService::isCqExists(const std::string& cqName) {
-  bool status = false;
-  try {
-    MapOfRegionGuard guard(m_cqQueryMap->mutex());
-    std::shared_ptr<CqQuery> tmp;
-    status = (0 == m_cqQueryMap->find(cqName, tmp));
-  } catch (Exception& ex) {
-    LOGFINE("Exception (%s) in isCQExists, ignored ",
-            ex.what());  // Ignore.
-  }
-  return status;
+  auto&& lock = m_cqQueryMap.make_lock();
+
+  return m_cqQueryMap.find(cqName) != m_cqQueryMap.end();
 }
 void CqService::receiveNotification(TcrMessage* msg) {
   invokeCqListeners(msg->getCqs(), msg->getMessageTypeForCq(), msg->getKey(),

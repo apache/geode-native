@@ -20,6 +20,7 @@
 #include <mutex>
 
 #include "CacheImpl.hpp"
+#include "EvictionController.hpp"
 #include "ExpiryTaskManager.hpp"
 #include "LRUList.cpp"
 #include "MapSegment.hpp"

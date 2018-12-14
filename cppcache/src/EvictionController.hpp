@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_EVICTIONCONTROLLER_H_
-#define GEODE_EVICTIONCONTROLLER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,18 +15,27 @@
  * limitations under the License.
  */
 
-#include <memory>
+#pragma once
+
+#ifndef GEODE_EVICTIONCONTROLLER_H_
+#define GEODE_EVICTIONCONTROLLER_H_
+
+#include <atomic>
+#include <condition_variable>
+#include <mutex>
 #include <string>
+#include <thread>
 #include <vector>
 
-#include <ace/RW_Thread_Mutex.h>
-#include <ace/Task.h>
-
-#include <geode/DataOutput.hpp>
+#include <boost/thread/shared_mutex.hpp>
 
 #include "EvictionThread.hpp"
-#include "IntQueue.hpp"
-#include "util/Log.hpp"
+
+namespace apache {
+namespace geode {
+namespace client {
+
+class CacheImpl;
 
 /**
  * This class ensures that the cache consumes only as much memory as
@@ -58,46 +62,22 @@
  * When a region is destroyed, it deregisters itself with the EvictionController
  * Format of object that is put into the region map (int size, int numEntries)
  */
-namespace apache {
-namespace geode {
-namespace client {
-
-typedef IntQueue<int64_t> HeapSizeInfoQueue;
-typedef std::vector<std::string> VectorOfString;
-
-class EvictionController;
-class EvictionThread;
-class CacheImpl;
-
-class APACHE_GEODE_EXPORT EvictionController : public ACE_Task_Base {
+class EvictionController {
  public:
   EvictionController(size_t maxHeapSize, int32_t heapSizeDelta,
                      CacheImpl* cache);
 
-  ~EvictionController();
+  inline ~EvictionController() noexcept = default;
 
-  inline void start() {
-    m_run = true;
-    evictionThreadPtr->start();
-    this->activate();
-    LOGFINE("Eviction Controller started");
-  }
+  void start();
 
-  inline void stop() {
-    m_run = false;
-    evictionThreadPtr->stop();
-    this->wait();
-    m_regions.clear();
-    m_queue.clear();
+  void stop();
 
-    LOGFINE("Eviction controller stopped");
-  }
-
-  int svc(void);
+  void svc(void);
 
   void updateRegionHeapInfo(int64_t info);
-  void registerRegion(std::string& name);
-  void deregisterRegion(std::string& name);
+  void registerRegion(const std::string& name);
+  void deregisterRegion(const std::string& name);
   void evict(int32_t percentage);
 
  private:
@@ -105,17 +85,21 @@ class APACHE_GEODE_EXPORT EvictionController : public ACE_Task_Base {
   void processHeapInfo(int64_t& readInfo, int64_t& pendingEvictions);
 
  private:
-  bool m_run;
+  std::thread m_thread;
+  std::atomic<bool> m_run;
   int64_t m_maxHeapSize;
   int64_t m_heapSizeDelta;
   CacheImpl* m_cacheImpl;
   int64_t m_currentHeapSize;
-  HeapSizeInfoQueue m_queue;
-  VectorOfString m_regions;
-  mutable ACE_RW_Thread_Mutex m_regionLock;
-  EvictionThread* evictionThreadPtr;
+  std::deque<int64_t> m_queue;
+  std::mutex m_queueMutex;
+  std::condition_variable m_queueCondition;
+  std::vector<std::string> m_regions;
+  boost::shared_mutex m_regionLock;
+  EvictionThread m_evictionThread;
   static const char* NC_EC_Thread;
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

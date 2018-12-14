@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#!/bin/env bash
+#!/usr/bin/env bash
 GFSH_PATH=""
 which gfsh 2> /dev/null
 

@@ -24,6 +24,7 @@
 #include <geode/internal/geode_globals.hpp>
 
 #include "NoResult.hpp"
+#include "TcrConnectionManager.hpp"
 #include "ThinClientPoolDM.hpp"
 #include "ThinClientRegion.hpp"
 #include "UserAttributes.hpp"

@@ -17,130 +17,64 @@
 
 #include "ThreadPool.hpp"
 
-#include <geode/SystemProperties.hpp>
-
-#include "CacheImpl.hpp"
-#include "DistributedSystem.hpp"
 #include "DistributedSystemImpl.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
-ThreadPoolWorker::ThreadPoolWorker(IThreadPool* manager)
-    : manager_(manager), queue_(msg_queue()), shutdown_(0) {
-#if defined(_MACOSX)
-  threadId_ = nullptr;
-#else
-  threadId_ = 0;
-#endif
-}
+const char* ThreadPool::NC_Pool_Thread = "NC Pool Thread";
 
-ThreadPoolWorker::~ThreadPoolWorker() { shutDown(); }
+ThreadPool::ThreadPool(size_t threadPoolSize) : shutdown_(false) {
+  workers_.reserve(threadPoolSize);
+  for (size_t i = 0; i < threadPoolSize; i++) {
+    workers_.emplace_back([this] {
+      DistributedSystemImpl::setThreadName(NC_Pool_Thread);
+      while (true) {
+        std::unique_lock<decltype(queueMutex_)> lock(queueMutex_);
+        queueCondition_.wait(lock,
+                             [this] { return shutdown_ || !queue_.empty(); });
 
-int ThreadPoolWorker::perform(ACE_Method_Request* req) {
-  ACE_TRACE(ACE_TEXT("Worker::perform"));
-  return queue_.enqueue(req);
-}
+        if (shutdown_) {
+          break;
+        }
 
-int ThreadPoolWorker::svc(void) {
-  threadId_ = ACE_Thread::self();
-  while (1) {
-    ACE_Method_Request* request = queue_.dequeue();
-    if (request == nullptr) {
-      shutDown();
-      break;
-    }
+        auto work = queue_.front();
+        queue_.pop_front();
 
-    // Invoke the request
-    request->call();
+        lock.unlock();
 
-    // Return to work.
-    manager_->returnToWork(this);
+        try {
+          work->call();
+        } catch (...) {
+          // ignore
+        }
+      }
+    });
   }
-  return 0;
-}
-
-int ThreadPoolWorker::shutDown(void) {
-  if (shutdown_ != 1) {
-    queue_.queue()->close();
-    wait();
-    shutdown_ = 1;
-  }
-
-  return shutdown_;
-}
-
-ACE_thread_t ThreadPoolWorker::threadId(void) { return threadId_; }
-
-ThreadPool::ThreadPool(uint32_t threadPoolSize)
-    : poolSize_(threadPoolSize), shutdown_(0) {
-  activate();
 }
 
 ThreadPool::~ThreadPool() { shutDown(); }
 
-int ThreadPool::perform(ACE_Method_Request* req) { return queue_.enqueue(req); }
+void ThreadPool::perform(std::shared_ptr<Callable> req) {
+  std::unique_lock<decltype(queueMutex_)> lock(queueMutex_);
+  auto wasEmpty = queue_.empty();
+  queue_.push_back(std::move(req));
+  lock.unlock();
 
-const char* ThreadPool::NC_Pool_Thread = "NC Pool Thread";
-int ThreadPool::svc(void) {
-  DistributedSystemImpl::setThreadName(NC_Pool_Thread);
-  // Create pool when you get in the first time.
-  createWorkerPool();
-  while (!done()) {
-    // Get the next message
-    ACE_Method_Request* request = queue_.dequeue();
-    if (request == nullptr) {
-      shutDown();
-      break;
+  if (wasEmpty) {
+    queueCondition_.notify_all();
+  }
+}
+
+void ThreadPool::shutDown(void) {
+  if (!shutdown_.exchange(true)) {
+    queueCondition_.notify_all();
+    for (auto& worker : workers_) {
+      worker.join();
     }
-    // Choose a worker.
-    auto worker = chooseWorker();
-    // Ask the worker to do the job.
-    worker->perform(request);
   }
-  return 0;
 }
-
-int ThreadPool::shutDown(void) {
-  if (shutdown_ != 1) {
-    queue_.queue()->close();
-    wait();
-    shutdown_ = 1;
-  }
-
-  return shutdown_;
-}
-
-int ThreadPool::returnToWork(ThreadPoolWorker* worker) {
-  std::unique_lock<decltype(workersLock_)> lock(workersLock_);
-  workers_.push_back(worker);
-  workersCond_.notify_one();
-  return 0;
-}
-
-ThreadPoolWorker* ThreadPool::chooseWorker(void) {
-  std::unique_lock<decltype(workersLock_)> lock(workersLock_);
-  if (workers_.empty()) {
-    workersCond_.wait(lock, [this] { return !workers_.empty(); });
-  }
-  auto worker = workers_.front();
-  workers_.pop_front();
-  return worker;
-}
-
-int ThreadPool::createWorkerPool(void) {
-  std::unique_lock<decltype(workersLock_)> lock(workersLock_);
-  for (int i = 0; i < poolSize_; i++) {
-    ThreadPoolWorker* worker;
-    ACE_NEW_RETURN(worker, ThreadPoolWorker(this), -1);
-    workers_.push_back(worker);
-    worker->activate();
-  }
-  return 0;
-}
-
-int ThreadPool::done(void) { return (shutdown_ == 1); }
 
 }  // namespace client
 }  // namespace geode

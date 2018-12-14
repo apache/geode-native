@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_LOCALREGION_H_
-#define GEODE_LOCALREGION_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,9 +15,10 @@
  * limitations under the License.
  */
 
-/**
- * @file
- */
+#pragma once
+
+#ifndef GEODE_LOCALREGION_H_
+#define GEODE_LOCALREGION_H_
 
 #include <string>
 #include <unordered_map>
@@ -49,12 +45,12 @@
 #include "EntriesMapFactory.hpp"
 #include "EventType.hpp"
 #include "ExpMapEntry.hpp"
-#include "MapWithLock.hpp"
 #include "RegionInternal.hpp"
 #include "RegionStats.hpp"
 #include "SerializationRegistry.hpp"
 #include "TSSTXStateWrapper.hpp"
 #include "TombstoneList.hpp"
+#include "util/synchronized_map.hpp"
 
 namespace apache {
 namespace geode {
@@ -508,7 +504,9 @@ class APACHE_GEODE_EXPORT LocalRegion : public RegionInternal {
   /* protected attributes */
   std::string m_name;
   std::shared_ptr<Region> m_parentRegion;
-  MapOfRegionWithLock m_subRegions;
+  synchronized_map<std::unordered_map<std::string, std::shared_ptr<Region>>,
+                   std::recursive_mutex>
+      m_subRegions;
   std::string m_fullPath;
   volatile bool m_destroyPending;
   std::shared_ptr<CacheListener> m_listener;
@@ -527,7 +525,7 @@ class APACHE_GEODE_EXPORT LocalRegion : public RegionInternal {
   mutable ACE_RW_Thread_Mutex m_rwLock;
   std::vector<std::shared_ptr<CacheableKey>> keys_internal();
   bool containsKey_internal(const std::shared_ptr<CacheableKey>& keyPtr) const;
-  int removeRegion(const std::string& name);
+  void removeRegion(const std::string& name);
 
   bool invokeCacheWriterForEntryEvent(
       const std::shared_ptr<CacheableKey>& key,
@@ -575,6 +573,12 @@ class APACHE_GEODE_EXPORT LocalRegion : public RegionInternal {
       std::shared_ptr<EventId> eventId, std::shared_ptr<Cacheable>& fullObject,
       std::shared_ptr<VersionTag>& versionTag);
 
+ private:
+  std::shared_ptr<Region> findSubRegion(const std::string& name);
+  GfErrType invalidateRegionNoThrowOnSubRegions(
+      const std::shared_ptr<Serializable>& aCallbackArgument,
+      const CacheEventFlags eventFlags);
+
   // these classes encapsulate actions specific to update operations
   // used by the template <code>updateNoThrow</code> class
   friend class PutActions;
@@ -584,6 +588,7 @@ class APACHE_GEODE_EXPORT LocalRegion : public RegionInternal {
   friend class RemoveActions;
   friend class InvalidateActions;
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

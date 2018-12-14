@@ -20,6 +20,7 @@
 #include <geode/SystemProperties.hpp>
 
 #include "ExpiryHandler_T.hpp"
+#include "TcrConnectionManager.hpp"
 #include "util/exception.hpp"
 
 namespace apache {
@@ -80,8 +81,9 @@ void ThinClientPoolHADM::startBackgroundThreads() {
   }
 
   m_redundancyManager->startPeriodicAck();
-  m_redundancyTask = new Task<ThinClientPoolHADM>(
-      this, &ThinClientPoolHADM::redundancy, NC_Redundancy);
+  m_redundancyTask =
+      std::unique_ptr<Task<ThinClientPoolHADM>>(new Task<ThinClientPoolHADM>(
+          this, &ThinClientPoolHADM::redundancy, NC_Redundancy));
   m_redundancyTask->start();
 }
 
@@ -142,7 +144,7 @@ bool ThinClientPoolHADM::postFailoverAction(TcrEndpoint*) {
   return true;
 }
 
-int ThinClientPoolHADM::redundancy(volatile bool& isRunning) {
+void ThinClientPoolHADM::redundancy(std::atomic<bool>& isRunning) {
   LOGFINE("ThinClientPoolHADM: Starting maintain redundancy thread.");
   while (isRunning) {
     m_redundancySema.acquire();
@@ -154,7 +156,6 @@ int ThinClientPoolHADM::redundancy(volatile bool& isRunning) {
     }
   }
   LOGFINE("ThinClientPoolHADM: Ending maintain redundancy thread.");
-  return 0;
 }
 
 int ThinClientPoolHADM::checkRedundancy(const ACE_Time_Value&, const void*) {
@@ -194,7 +195,7 @@ void ThinClientPoolHADM::sendNotificationCloseMsgs() {
     m_redundancyTask->stopNoblock();
     m_redundancySema.release();
     m_redundancyTask->wait();
-    _GEODE_SAFE_DELETE(m_redundancyTask);
+    m_redundancyTask = nullptr;
     m_redundancyManager->sendNotificationCloseMsgs();
   }
 }
@@ -214,6 +215,36 @@ GfErrType ThinClientPoolHADM::registerInterestAllRegions(
     }
   }
   return err;
+}
+
+bool ThinClientPoolHADM::checkDupAndAdd(std::shared_ptr<EventId> eventid) {
+  return m_redundancyManager->checkDupAndAdd(eventid);
+}
+
+void ThinClientPoolHADM::processMarker() {
+  // also set the static bool m_processedMarker for makePrimary messages
+  m_redundancyManager->m_globalProcessedMarker = true;
+}
+
+void ThinClientPoolHADM::acquireRedundancyLock() {
+  m_redundancyManager->acquireRedundancyLock();
+}
+
+void ThinClientPoolHADM::releaseRedundancyLock() {
+  m_redundancyManager->releaseRedundancyLock();
+}
+
+std::recursive_mutex& ThinClientPoolHADM::getRedundancyLock() {
+  return m_redundancyManager->getRedundancyLock();
+}
+
+GfErrType ThinClientPoolHADM::sendRequestToPrimary(TcrMessage& request,
+                                                   TcrMessageReply& reply) {
+  return m_redundancyManager->sendRequestToPrimary(request, reply);
+}
+
+bool ThinClientPoolHADM::isReadyForEvent() const {
+  return m_redundancyManager->isSentReadyForEvents();
 }
 
 void ThinClientPoolHADM::addRegion(ThinClientRegion* theTCR) {
@@ -258,7 +289,7 @@ void ThinClientPoolHADM::netDown() {
   {
     std::lock_guard<decltype(m_endpointsLock)> guard(m_endpointsLock);
     for (auto&& currItr : m_endpoints) {
-      currItr.int_id_->setConnectionStatus(false);
+      currItr.second->setConnectionStatus(false);
     }
   }
 
@@ -281,6 +312,12 @@ void ThinClientPoolHADM::sendNotConMesToAllregions() {
        it != m_regions.end(); it++) {
     (*it)->receiveNotification(TcrMessage::getAllEPDisMess());
   }
+}
+
+TcrEndpoint* ThinClientPoolHADM::createEP(const char* endpointName) {
+  return new TcrPoolEndPoint(
+      endpointName, m_connManager.getCacheImpl(), m_connManager.m_failoverSema,
+      m_connManager.m_cleanupSema, m_redundancySema, this);
 }
 
 }  // namespace client

@@ -84,11 +84,9 @@ class APACHE_GEODE_EXPORT ClientMetadata : public NonAssignable {
   // ServerLocation getPrimaryServerLocation(int bucketId);
   void updateBucketServerLocations(
       int bucketId, BucketServerLocationsType bucketServerLocations);
-  void removeBucketServerLocation(BucketServerLocation serverLocation);
   int getTotalNumBuckets();
   // std::shared_ptr<PartitionResolver> getPartitionResolver();
   const std::string& getColocatedWith();
-  void populateDummyServers(int bucketId, BucketServerLocationsType serverlist);
   int assignFixedBucketId(const char* partitionName,
                           std::shared_ptr<CacheableKey> resolvekey);
   std::shared_ptr<CacheableHashSet>& getFixedPartitionNames() {

@@ -20,10 +20,6 @@
 #ifndef GEODE_DISTRIBUTEDSYSTEMIMPL_H_
 #define GEODE_DISTRIBUTEDSYSTEMIMPL_H_
 
-/**
- * @file
- */
-
 #include <map>
 #include <memory>
 #include <mutex>
@@ -35,38 +31,24 @@
 #include "DistributedSystem.hpp"
 #include "statistics/StatisticsManager.hpp"
 
-#ifdef __linux
-#include <sys/prctl.h>
-#endif
-
 namespace apache {
 namespace geode {
 namespace client {
+
 class SystemProperties;
+
+class DistributedSystemImpl;
+
+using CliCallbackMethod = std::function<void(Cache&)>;
 
 /**
  * @class DistributedSystemImpl DistributedSystemImpl.hpp
  * A "connection" to a Geode distributed system.
  * The connection will be through a (host, port) pair.
  */
-
-class DistributedSystemImpl;
-
-using CliCallbackMethod = std::function<void(Cache&)>;
-
 class APACHE_GEODE_EXPORT DistributedSystemImpl {
-  /**
-   * @brief public methods
-   */
  public:
-  static void setThreadName(const std::string& threadName) {
-    if (threadName.empty()) {
-      throw IllegalArgumentException("Thread name is empty.");
-    }
-#ifdef __linux
-    prctl(PR_SET_NAME, threadName.c_str(), 0, 0, 0);
-#endif
-  }
+  static void setThreadName(const std::string& threadName);
 
   /**
    * @brief destructor
@@ -110,6 +92,7 @@ class APACHE_GEODE_EXPORT DistributedSystemImpl {
   std::unique_ptr<SystemProperties> m_sysProps;
   bool m_connected;
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

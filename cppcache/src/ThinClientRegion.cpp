@@ -34,6 +34,7 @@
 #include "ReadWriteLock.hpp"
 #include "RegionGlobalLocks.hpp"
 #include "RemoteQuery.hpp"
+#include "TcrConnectionManager.hpp"
 #include "TcrDistributionManager.hpp"
 #include "TcrEndpoint.hpp"
 #include "ThinClientBaseDM.hpp"
@@ -347,7 +348,6 @@ ThinClientRegion::ThinClientRegion(
     : LocalRegion(name, cacheImpl, rPtr, attributes, stats, shared),
       m_tcrdm(nullptr),
       m_notifyRelease(false),
-      m_notificationSema(1),
       m_isMetaDataRefreshed(false) {
   m_transactionEnabled = true;
   m_isDurableClnt = !cacheImpl->getDistributedSystem()
@@ -1318,9 +1318,8 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
    * method.
    *  e. insert the worker into the vector.
    */
-  std::vector<PutAllWork*> putAllWorkers;
-  auto threadPool =
-      CacheRegionHelper::getCacheImpl(&getCache())->getThreadPool();
+  std::vector<std::shared_ptr<PutAllWork>> putAllWorkers;
+  auto& threadPool = m_cacheImpl->getThreadPool();
   int locationMapIndex = 0;
   for (const auto& locationIter : *locationMap) {
     const auto& serverLocation = locationIter.first;
@@ -1340,10 +1339,10 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
       }
     }
 
-    auto worker = new PutAllWork(tcrdm, serverLocation, region,
-                                 true /*attemptFailover*/, false /*isBGThread*/,
-                                 filteredMap, keys, timeout, aCallbackArgument);
-    threadPool->perform(worker);
+    auto worker = std::make_shared<PutAllWork>(
+        tcrdm, serverLocation, region, true /*attemptFailover*/,
+        false /*isBGThread*/, filteredMap, keys, timeout, aCallbackArgument);
+    threadPool.perform(worker);
     putAllWorkers.push_back(worker);
     locationMapIndex++;
   }
@@ -1407,7 +1406,6 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
     }
     */
 
-    delete worker;
     cnt++;
   }
   /**
@@ -1698,9 +1696,8 @@ GfErrType ThinClientRegion::singleHopRemoveAllNoThrow_remote(
    * method.
    *  e. insert the worker into the vector.
    */
-  std::vector<RemoveAllWork*> removeAllWorkers;
-  auto* threadPool =
-      CacheRegionHelper::getCacheImpl(&getCache())->getThreadPool();
+  std::vector<std::shared_ptr<RemoveAllWork>> removeAllWorkers;
+  auto& threadPool = m_cacheImpl->getThreadPool();
   int locationMapIndex = 0;
   for (const auto& locationIter : *locationMap) {
     const auto& serverLocation = locationIter.first;
@@ -1708,10 +1705,10 @@ GfErrType ThinClientRegion::singleHopRemoveAllNoThrow_remote(
       LOGDEBUG("serverLocation is nullptr");
     }
     const auto& mappedkeys = locationIter.second;
-    auto worker = new RemoveAllWork(
+    auto worker = std::make_shared<RemoveAllWork>(
         tcrdm, serverLocation, region, true /*attemptFailover*/,
         false /*isBGThread*/, mappedkeys, aCallbackArgument);
-    threadPool->perform(worker);
+    threadPool.perform(worker);
     removeAllWorkers.push_back(worker);
     locationMapIndex++;
   }
@@ -1762,7 +1759,6 @@ GfErrType ThinClientRegion::singleHopRemoveAllNoThrow_remote(
         "worker->getResultCollector()->getList()->getVersionedTagsize() = %d ",
         worker->getResultCollector()->getList()->getVersionedTagsize());
 
-    delete worker;
     cnt++;
   }
   /**
@@ -2797,6 +2793,7 @@ GfErrType ThinClientRegion::handleServerException(const char* func,
 }
 
 void ThinClientRegion::receiveNotification(TcrMessage* msg) {
+  std::unique_lock<std::mutex> lock(m_notificationMutex, std::defer_lock);
   {
     TryReadGuard guard(m_rwLock, m_destroyPending);
     if (m_destroyPending) {
@@ -2805,7 +2802,7 @@ void ThinClientRegion::receiveNotification(TcrMessage* msg) {
       }
       return;
     }
-    m_notificationSema.acquire();
+    lock.lock();
   }
 
   if (msg->getMessageType() == TcrMessage::CLIENT_MARKER) {
@@ -2814,7 +2811,7 @@ void ThinClientRegion::receiveNotification(TcrMessage* msg) {
     clientNotificationHandler(*msg);
   }
 
-  m_notificationSema.release();
+  lock.unlock();
   if (TcrMessage::getAllEPDisMess() != msg) _GEODE_SAFE_DELETE(msg);
 }
 
@@ -2917,8 +2914,10 @@ void ThinClientRegion::release(bool invokeCallbacks) {
   if (m_released) {
     return;
   }
+
+  std::unique_lock<std::mutex> lock(m_notificationMutex, std::defer_lock);
   if (!m_notifyRelease) {
-    m_notificationSema.acquire();
+    lock.lock();
   }
 
   destroyDM(invokeCallbacks);
@@ -3147,7 +3146,7 @@ bool ThinClientRegion::executeFunctionSH(
   auto resultCollectorLock = std::make_shared<std::recursive_mutex>();
   const auto& userAttr = UserAttributes::threadLocalUserAttributes;
   std::vector<std::shared_ptr<OnRegionFunctionExecution>> feWorkers;
-  auto* threadPool =
+  auto& threadPool =
       CacheRegionHelper::getCacheImpl(&getCache())->getThreadPool();
 
   for (const auto& locationIter : *locationMap) {
@@ -3157,14 +3156,13 @@ bool ThinClientRegion::executeFunctionSH(
         func, this, args, routingObj, getResult, timeout,
         dynamic_cast<ThinClientPoolDM*>(m_tcrdm), resultCollectorLock, rc,
         userAttr, false, serverLocation, allBuckets);
-    threadPool->perform(worker.get());
+    threadPool.perform(worker);
     feWorkers.push_back(worker);
   }
 
   GfErrType abortError = GF_NOERR;
 
-  for (auto iter = std::begin(feWorkers); iter != std::end(feWorkers);) {
-    auto worker = *iter;
+  for (auto worker : feWorkers) {
     auto err = worker->getResult();
     auto currentReply = worker->getReply();
 
@@ -3230,8 +3228,6 @@ bool ThinClientRegion::executeFunctionSH(
         }
       }
     }
-
-    iter = feWorkers.erase(iter);
   }
 
   if (abortError != GF_NOERR) {
@@ -3263,10 +3259,15 @@ GfErrType ThinClientRegion::getFuncAttributes(const std::string& func,
                                   reply.getException());
       break;
     }
+    case TcrMessage::REQUEST_DATA_ERROR: {
+      LOGERROR("Error message from server: " + reply.getValue()->toString());
+      throw FunctionExecutionException(reply.getValue()->toString());
+    }
     default: {
       LOGERROR("Unknown message type %d while getting function attributes.",
                reply.getMessageType());
       err = GF_MSG;
+      break;
     }
   }
   return err;

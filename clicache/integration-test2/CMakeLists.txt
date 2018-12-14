@@ -39,6 +39,7 @@ add_library( ${PROJECT_NAME} SHARED
     CacheXmlTests.cs
     CqOperationTest.cs
     FunctionExecutionTest.cs
+    QueryTest.cs
     RegionTest.cs
     RegionSSLTest.cs
     Position.cs

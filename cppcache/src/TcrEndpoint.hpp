@@ -22,8 +22,10 @@
 
 #include <atomic>
 #include <list>
+#include <memory>
 #include <mutex>
 #include <string>
+#include <unordered_set>
 
 #include <ace/Condition_Recursive_Thread_Mutex.h>
 #include <ace/Semaphore.h>
@@ -33,9 +35,9 @@
 
 #include "ErrType.hpp"
 #include "FairQueue.hpp"
-#include "Set.hpp"
 #include "Task.hpp"
 #include "TcrConnection.hpp"
+#include "util/synchronized_set.hpp"
 
 namespace apache {
 namespace geode {
@@ -49,7 +51,7 @@ class ThinClientPoolHADM;
 class ThinClientPoolDM;
 class QueryService;
 
-class APACHE_GEODE_EXPORT TcrEndpoint {
+class TcrEndpoint {
  public:
   TcrEndpoint(
       const std::string& name, CacheImpl* cacheImpl,
@@ -74,7 +76,7 @@ class APACHE_GEODE_EXPORT TcrEndpoint {
   // void unregisterPoolDM(  );
 
   void pingServer(ThinClientPoolDM* poolDM = nullptr);
-  int receiveNotification(volatile bool& isRunning);
+  void receiveNotification(std::atomic<bool>& isRunning);
   GfErrType send(const TcrMessage& request, TcrMessageReply& reply);
   GfErrType sendRequestConn(const TcrMessage& request, TcrMessageReply& reply,
                             TcrConnection* conn, std::string& failReason);
@@ -189,7 +191,7 @@ class APACHE_GEODE_EXPORT TcrEndpoint {
 
  protected:
   TcrConnection* m_notifyConnection;
-  Task<TcrEndpoint>* m_notifyReceiver;
+  std::unique_ptr<Task<TcrEndpoint>> m_notifyReceiver;
   CacheImpl* m_cacheImpl;
   std::list<Task<TcrEndpoint>*> m_notifyReceiverList;
   std::list<TcrConnection*> m_notifyConnectionList;
@@ -231,7 +233,7 @@ class APACHE_GEODE_EXPORT TcrEndpoint {
   std::recursive_mutex m_connectionLock;
   std::recursive_mutex m_distMgrsLock;
   ACE_Semaphore m_notificationCleanupSema;
-  Set<uint16_t> m_ports;
+  synchronized_set<std::unordered_set<uint16_t>> m_ports;
   int32_t m_numberOfTimesFailed;
   int m_numRegions;
   int m_pingTimeouts;

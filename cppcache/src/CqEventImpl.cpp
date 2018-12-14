@@ -14,10 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "CqEventImpl.hpp"
 
 #include <geode/CacheableString.hpp>
 
+#include "TcrConnectionManager.hpp"
 #include "TcrMessage.hpp"
 #include "ThinClientCacheDistributionManager.hpp"
 #include "ThinClientPoolHADM.hpp"

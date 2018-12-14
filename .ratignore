@@ -5,6 +5,9 @@
 .*\.gitignore$
 .*\.lcovrc$
 .*\.ratignore$
+.*\.lgtm.yml$
+.*\.ratCheck.sh$
+
 .*md$
 .*json$
 .*deprecated_xml_instructions.txt$

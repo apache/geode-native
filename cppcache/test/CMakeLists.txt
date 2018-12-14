@@ -40,9 +40,16 @@ add_executable(apache-geode_unittests
   RegionAttributesFactoryTest.cpp
   SerializableCreateTests.cpp
   StructSetTest.cpp
-  TcrMessage_unittest.cpp
-  CacheableDate.cpp
-)
+  TcrMessageTest.cpp
+  CacheableDateTest.cpp
+  util/synchronized_mapTest.cpp
+  util/synchronized_setTest.cpp
+  util/JavaModifiedUtf8Tests.cpp
+  util/functionalTests.cpp
+  util/chrono/durationTest.cpp
+  LocalRegionTest.cpp
+  util/queueTest.cpp
+  ThreadPoolTest.cpp)
 
 target_compile_definitions(apache-geode_unittests
   PUBLIC
@@ -59,6 +66,7 @@ target_link_libraries(apache-geode_unittests
     GTest::GTest
     GTest::Main
     Boost::boost
+    Boost::thread
     _WarningsAsError
     _CppCodeCoverage
 )

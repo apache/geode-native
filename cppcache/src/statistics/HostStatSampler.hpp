@@ -20,10 +20,12 @@
 #ifndef GEODE_STATISTICS_HOSTSTATSAMPLER_H_
 #define GEODE_STATISTICS_HOSTSTATSAMPLER_H_
 
+#include <atomic>
 #include <chrono>
 #include <memory>
 #include <mutex>
 #include <string>
+#include <thread>
 #include <vector>
 
 #include <ace/Task.h>
@@ -63,9 +65,7 @@ class StatisticsManager;
  * HostStatSampler implements a thread which will monitor, sample and archive
  * statistics. It only has the common functionalities which any sampler needs.
  */
-class APACHE_GEODE_EXPORT HostStatSampler : public ACE_Task_Base,
-                                            private NonCopyable,
-                                            private NonAssignable {
+class HostStatSampler : private NonCopyable, private NonAssignable {
  public:
   /*
    * Constructor:
@@ -179,7 +179,7 @@ class APACHE_GEODE_EXPORT HostStatSampler : public ACE_Task_Base,
   /**
    * The function executed by the thread
    */
-  int32_t svc(void);
+  void svc(void);
 
   /**
    * Method to know whether the sampling thread is running or not.
@@ -191,10 +191,10 @@ class APACHE_GEODE_EXPORT HostStatSampler : public ACE_Task_Base,
  private:
   std::recursive_mutex m_samplingLock;
   bool m_adminError;
-  // Related to ACE Thread.
-  bool m_running;
-  bool m_stopRequested;
-  volatile bool m_isStatDiskSpaceEnabled;
+  std::thread m_thread;
+  std::atomic<bool> m_running;
+  std::atomic<bool> m_stopRequested;
+  std::atomic<bool> m_isStatDiskSpaceEnabled;
   std::unique_ptr<StatArchiveWriter> m_archiver;
   StatSamplerStats* m_samplerStats;
   const char* m_durableClientId;

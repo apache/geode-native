@@ -21,11 +21,8 @@
 #include <geode/Pool.hpp>
 
 #include "PoolAttributes.hpp"
+#include "TcrConnectionManager.hpp"
 #include "ThinClientPoolHADM.hpp"
-
-/**
- * @file
- */
 
 namespace apache {
 namespace geode {

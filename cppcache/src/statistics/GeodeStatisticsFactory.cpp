@@ -27,6 +27,7 @@
 #include "../util/Log.hpp"
 #include "AtomicStatisticsImpl.hpp"
 #include "OsStatisticsImpl.hpp"
+#include "StatisticDescriptorImpl.hpp"
 
 namespace apache {
 namespace geode {
@@ -50,15 +51,14 @@ GeodeStatisticsFactory::~GeodeStatisticsFactory() {
     m_statMngr = nullptr;
 
     // Clean Map : Delete all the pointers of StatisticsType from the map.
-    if (statsTypeMap.total_size() == 0) return;
+    std::lock_guard<decltype(statsTypeMap)::mutex_type> lock(
+        statsTypeMap.mutex());
+    if (statsTypeMap.empty()) return;
 
-    auto iterFind = statsTypeMap.begin();
-    while (iterFind != statsTypeMap.end()) {
-      delete (*iterFind).int_id_;
-      (*iterFind).int_id_ = nullptr;
-      iterFind++;
+    for (auto& entry : statsTypeMap) {
+      delete entry.second;
     }
-    statsTypeMap.unbind_all();
+    statsTypeMap.clear();
 
   } catch (const Exception& ex) {
     Log::warningCatch("~GeodeStatisticsFactory swallowing Geode exception", ex);
@@ -152,19 +152,16 @@ Statistics* GeodeStatisticsFactory::findFirstStatisticsByType(
 
 StatisticsTypeImpl* GeodeStatisticsFactory::addType(StatisticsTypeImpl* st) {
   const auto& name = st->getName();
-  int status;
   try {
-    StatisticsTypeImpl* st1;
-    status = statsTypeMap.rebind(name, st, st1);
+    auto status = statsTypeMap.emplace(name, st);
+    if (!status.second) {
+      throw IllegalArgumentException(
+          "GeodeStatisticsFactory::addType: failed to add new type " + name);
+    }
   } catch (const std::exception& ex) {
     throw IllegalArgumentException(ex.what());
   } catch (...) {
     throw IllegalArgumentException("addType: unknown exception");
-  }
-  if (status == 1) {
-  } else if (status == -1) {
-    throw IllegalArgumentException(
-        "GeodeStatisticsFactory::addType: failed to add new type " + name);
   }
   return st;
 }
@@ -175,8 +172,7 @@ StatisticsTypeImpl* GeodeStatisticsFactory::addType(StatisticsTypeImpl* st) {
 StatisticsType* GeodeStatisticsFactory::createType(
     const std::string& name, const std::string& description,
     StatisticDescriptor** stats, int32_t statsLength) {
-  StatisticsTypeImpl* st =
-      new StatisticsTypeImpl(name, description, stats, statsLength);
+  auto st = new StatisticsTypeImpl(name, description, stats, statsLength);
 
   if (st != nullptr) {
     st = addType(st);
@@ -189,15 +185,13 @@ StatisticsType* GeodeStatisticsFactory::createType(
 
 StatisticsType* GeodeStatisticsFactory::findType(
     const std::string& name) const {
-  StatisticsTypeImpl* st = nullptr;
-  int status = statsTypeMap.find(name, st);
-  if (status == -1) {
+  auto&& lock = statsTypeMap.make_lock();
+  const auto& entry = statsTypeMap.find(name);
+  if (entry == statsTypeMap.end()) {
     std::string s = "There is no statistic named \"" + name + "\"";
-    // LOGWARN(s.c_str());
-    // throw IllegalArgumentException(s.c_str());
     return nullptr;
   } else {
-    return st;
+    return entry->second;
   }
 }
 
