@@ -36,6 +36,8 @@ $addComponentIds = @(
   '--add microsoft.net.component.3.5.developertools'
 )
 
-choco install visualstudio2017community -p --params $addComponentIds
+choco install visualstudio2017community -p --params $addComponentIds -y
+# choco install visualstudio2017community -y
+# choco install visualstudio2017community --package-parameters "--allWorkloads --includeRecommended --includeOptional --passive --locale en-US" -y
 
 Exit 0
