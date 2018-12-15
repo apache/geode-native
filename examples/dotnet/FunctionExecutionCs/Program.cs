@@ -65,8 +65,6 @@ namespace Apache.Geode.Examples.FunctionExecution
 
       ICollection<object> res = rc.GetResult();
 
-      List<object> resultList = new List<object>();
-
       Console.WriteLine("Function Execution Results:");
       Console.WriteLine("   Count = {0}", res.Count);
 
@@ -74,7 +72,6 @@ namespace Apache.Geode.Examples.FunctionExecution
       {
         foreach (object item2 in item)
         {
-          resultList.Add(item2);
           Console.WriteLine("   value = {0}", item2.ToString());
         }
       }
