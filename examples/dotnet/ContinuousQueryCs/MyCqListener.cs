@@ -21,48 +21,48 @@ using Apache.Geode.Client;
 
 namespace Apache.Geode.Examples.ContinuousQuery
 {
-    public class MyCqListener<TKey, TResult> : ICqListener<TKey, TResult>
+  public class MyCqListener<TKey, TResult> : ICqListener<TKey, TResult>
+  {
+    public virtual void OnEvent(CqEvent<TKey, TResult> ev)
     {
-        public virtual void OnEvent(CqEvent<TKey, TResult> ev)
-        {
-            Order val = ev.getNewValue() as Order;
-            TKey key = ev.getKey();
-            string operationType = "UNKNOWN";
+      Order val = ev.getNewValue() as Order;
+      TKey key = ev.getKey();
+      string operationType = "UNKNOWN";
 
-            switch (ev.getQueryOperation())
-            {
-                case CqOperation.OP_TYPE_CREATE:
-                    operationType = "CREATE";
-                    break;
-                case CqOperation.OP_TYPE_UPDATE:
-                    operationType = "UPDATE";
-                    break;
-                case CqOperation.OP_TYPE_DESTROY:
-                    operationType = "DESTROY";
-                    break;
-                default:
-                    Console.WriteLine("Unexpected operation encountered {0}", ev.getQueryOperation());
-                    break;
-            }
+      switch (ev.getQueryOperation())
+      {
+        case CqOperation.OP_TYPE_CREATE:
+          operationType = "CREATE";
+          break;
+        case CqOperation.OP_TYPE_UPDATE:
+          operationType = "UPDATE";
+          break;
+        case CqOperation.OP_TYPE_DESTROY:
+          operationType = "DESTROY";
+          break;
+        default:
+          Console.WriteLine("Unexpected operation encountered {0}", ev.getQueryOperation());
+          break;
+      }
 
-            if (val != null)
-            {
-                Console.WriteLine("MyCqListener::OnEvent({0}) called with key {1}, value {2}", operationType, key, val.ToString());
-            }
-            else
-            {
-                Console.WriteLine("MyCqListener::OnEvent({0}) called with key {1}, value null", operationType, key);
-            }
-        }
-
-        public virtual void OnError(CqEvent<TKey, TResult> ev)
-        {
-            Console.WriteLine("MyCqListener::OnError called");
-        }
-
-        public virtual void Close()
-        {
-            Console.WriteLine("MyCqListener::close called");
-        }
+      if (val != null)
+      {
+        Console.WriteLine("MyCqListener::OnEvent({0}) called with key {1}, value {2}", operationType, key, val.ToString());
+      }
+      else
+      {
+        Console.WriteLine("MyCqListener::OnEvent({0}) called with key {1}, value null", operationType, key);
+      }
     }
+
+    public virtual void OnError(CqEvent<TKey, TResult> ev)
+    {
+      Console.WriteLine("MyCqListener::OnError called");
+    }
+
+    public virtual void Close()
+    {
+      Console.WriteLine("MyCqListener::close called");
+    }
+  }
 }

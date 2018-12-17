@@ -55,6 +55,9 @@ add_example(NAME ContinuousQueryCs
 add_example(NAME DataSerializableCs
 	SOURCE Order.cs Program.cs)
 
+add_example(NAME FunctionExecutionCs
+	SOURCE Program.cs)
+
 add_example(NAME PdxAutoSerializer
 	SOURCE Order.cs Program.cs)
 

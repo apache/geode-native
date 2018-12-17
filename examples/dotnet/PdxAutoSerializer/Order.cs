@@ -17,27 +17,27 @@
 
 namespace Apache.Geode.Examples.Serializer
 {
-    public class Order
+  public class Order
+  {
+    public int OrderId { get; set; }
+    public string Name { get; set; }
+    public short Quantity { get; set; }
+
+    // A default constructor is required for reflection based autoserialization
+    public Order() { }
+
+    public Order(int orderId, string name, short quantity)
     {
-        public int OrderId { get; set; }
-        public string Name { get; set; }
-        public short Quantity { get; set; }
-
-        // A default constructor is required for reflection based autoserialization
-        public Order() { }
-
-        public Order(int orderId, string name, short quantity)
-        {
-            OrderId = orderId;
-            Name = name;
-            Quantity = quantity;
-        }
-
-        public override string ToString()
-        {
-            return "Order: [" + OrderId + ", " + Name + ", " + Quantity + "]";
-        }
+      OrderId = orderId;
+      Name = name;
+      Quantity = quantity;
     }
+
+    public override string ToString()
+    {
+      return "Order: [" + OrderId + ", " + Name + ", " + Quantity + "]";
+    }
+  }
 }
 
 

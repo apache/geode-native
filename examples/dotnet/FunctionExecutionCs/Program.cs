@@ -1,4 +1,4 @@
-/*
+﻿/*
 * Licensed to the Apache Software Foundation (ASF) under one or more
 * contributor license agreements.  See the NOTICE file distributed with
 * this work for additional information regarding copyright ownership.
@@ -16,9 +16,11 @@
 */
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using Apache.Geode.Client;
 
-namespace Apache.Geode.Examples.PutGetRemove
+namespace Apache.Geode.Examples.FunctionExecution
 {
   class Program
   {
@@ -30,18 +32,18 @@ namespace Apache.Geode.Examples.PutGetRemove
 
       var poolFactory = cache.GetPoolFactory()
           .AddLocator("localhost", 10334);
-      poolFactory.Create("pool");
+      var pool = poolFactory.Create("pool");
 
       var regionFactory = cache.CreateRegionFactory(RegionShortcut.PROXY)
           .SetPoolName("pool");
-      var region = regionFactory.Create<string, string>("example_userinfo");
+      var region = regionFactory.Create<object, object>("partition_region");
 
       Console.WriteLine("Storing id and username in the region");
 
-      const string rtimmonsKey = "rtimmons";
-      const string rtimmonsValue = "Robert Timmons";
-      const string scharlesKey = "scharles";
-      const string scharlesValue = "Sylvia Charles";
+      string rtimmonsKey = "rtimmons";
+      string rtimmonsValue = "Robert Timmons";
+      string scharlesKey = "scharles";
+      string scharlesValue = "Sylvia Charles";
 
       region.Put(rtimmonsKey, rtimmonsValue, null);
       region.Put(scharlesKey, scharlesValue, null);
@@ -53,15 +55,25 @@ namespace Apache.Geode.Examples.PutGetRemove
       Console.WriteLine(rtimmonsKey + " = " + user1);
       Console.WriteLine(scharlesKey + " = " + user2);
 
-      Console.WriteLine("Removing " + rtimmonsKey + " info from the region");
+      ArrayList keyArgs = new ArrayList();
+      keyArgs.Add(rtimmonsKey);
+      keyArgs.Add(scharlesKey);
 
-      if (region.Remove(rtimmonsKey))
+      var exc = Client.FunctionService<object>.OnRegion<object, object>(region);
+
+      Client.IResultCollector<object> rc = exc.WithArgs<object>(keyArgs).Execute("ExampleMultiGetFunction");
+
+      ICollection<object> res = rc.GetResult();
+
+      Console.WriteLine("Function Execution Results:");
+      Console.WriteLine("   Count = {0}", res.Count);
+
+      foreach (List<object> item in res)
       {
-        Console.WriteLine("Info for " + rtimmonsKey + " has been deleted");
-      }
-      else
-      {
-        Console.WriteLine("Info for " + rtimmonsKey + " has not been deleted");
+        foreach (object item2 in item)
+        {
+          Console.WriteLine("   value = {0}", item2.ToString());
+        }
       }
 
       cache.Close();
