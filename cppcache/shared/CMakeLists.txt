@@ -15,7 +15,7 @@
 
 project(apache-geode LANGUAGES CXX)
 
-add_library(apache-geode SHARED ${SOURCES_ALL} ${RESOURCES})
+add_library(apache-geode SHARED ${SOURCES_ALL} ${RESOURCES} ../include/geode/HashMapOfPools.hpp)
 
 if (MSVC)
   set(EXPORT_HEADER_CUSTOM_CONTENT "

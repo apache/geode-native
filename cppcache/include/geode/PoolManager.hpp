@@ -26,6 +26,7 @@
 #include <unordered_map>
 
 #include "Cache.hpp"
+#include "geode/HashMapOfPools.hpp"
 #include "Pool.hpp"
 #include "PoolFactory.hpp"
 #include "Region.hpp"
@@ -45,8 +46,6 @@ class Pool;
 class PoolFactory;
 class Region;
 class RegionFactory;
-
-using HashMapOfPools = std::unordered_map<std::string, std::shared_ptr<Pool>>;
 
 /**
  * Manages creation and access to {@link Pool connection pools} for clients.

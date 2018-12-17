@@ -25,6 +25,7 @@
 #include <string>
 #include <unordered_map>
 
+#include <geode/HashMapOfPools.hpp>
 #include <geode/Region.hpp>
 
 #include "CacheImpl.hpp"
@@ -35,8 +36,6 @@ namespace client {
 
 class Pool;
 class PoolFactory;
-
-using HashMapOfPools = std::unordered_map<std::string, std::shared_ptr<Pool>>;
 
 class PoolManagerImpl {
  public:
