@@ -22,24 +22,51 @@
 #include "util/string.hpp"
 
 using apache::geode::client::to_utf16;
+using apache::geode::client::to_utf8;
 using apache::geode::client::internal::geode_hash;
 
-class GeodeHashBM : public benchmark::Fixture {};
+template <class ToString, class FromString>
+ToString convert(const FromString& from);
 
-BENCHMARK_DEFINE_F(GeodeHashBM, std_string)(benchmark::State& state) {
-  std::string x(state.range(0), 'x');
+template <>
+std::string convert(const std::u32string& from) {
+  return to_utf8(from);
+}
+
+template <>
+std::u16string convert(const std::u32string& from) {
+  return to_utf16(from);
+}
+
+template <class String, char32_t UnicodeChar>
+void GeodeHashBM(benchmark::State& state) {
+  const std::u32string u32String(state.range(0), UnicodeChar);
+  const String string = convert<String>(u32String);
+
   for (auto _ : state) {
     int hashcode;
-    benchmark::DoNotOptimize(hashcode = geode_hash<std::string>{}(x));
+    benchmark::DoNotOptimize(hashcode = geode_hash<String>{}(string));
   }
 }
-BENCHMARK_REGISTER_F(GeodeHashBM, std_string)->Range(8, 8 << 10);
 
-BENCHMARK_DEFINE_F(GeodeHashBM, std_u16string)(benchmark::State& state) {
-  std::u16string x(state.range(0), u'x');
-  for (auto _ : state) {
-    int hashcode;
-    benchmark::DoNotOptimize(hashcode = geode_hash<std::u16string>{}(x));
-  }
-}
-BENCHMARK_REGISTER_F(GeodeHashBM, std_u16string)->Range(8, 8 << 10);
+constexpr char32_t LATIN_CAPITAL_LETTER_C = U'\U00000043';
+constexpr char32_t INVERTED_EXCLAMATION_MARK = U'\U000000A1';
+constexpr char32_t SAMARITAN_PUNCTUATION_ZIQAA = U'\U00000838';
+constexpr char32_t LINEAR_B_SYLLABLE_B008_A = U'\U00010000';
+
+BENCHMARK_TEMPLATE(GeodeHashBM, std::string, LATIN_CAPITAL_LETTER_C)
+    ->Range(8, 8 << 10);
+BENCHMARK_TEMPLATE(GeodeHashBM, std::u16string, LATIN_CAPITAL_LETTER_C)
+    ->Range(8, 8 << 10);
+BENCHMARK_TEMPLATE(GeodeHashBM, std::string, INVERTED_EXCLAMATION_MARK)
+    ->Range(8, 8 << 10);
+BENCHMARK_TEMPLATE(GeodeHashBM, std::u16string, INVERTED_EXCLAMATION_MARK)
+    ->Range(8, 8 << 10);
+BENCHMARK_TEMPLATE(GeodeHashBM, std::string, SAMARITAN_PUNCTUATION_ZIQAA)
+    ->Range(8, 8 << 10);
+BENCHMARK_TEMPLATE(GeodeHashBM, std::u16string, SAMARITAN_PUNCTUATION_ZIQAA)
+    ->Range(8, 8 << 10);
+BENCHMARK_TEMPLATE(GeodeHashBM, std::string, LINEAR_B_SYLLABLE_B008_A)
+    ->Range(8, 8 << 10);
+BENCHMARK_TEMPLATE(GeodeHashBM, std::u16string, LINEAR_B_SYLLABLE_B008_A)
+    ->Range(8, 8 << 10);
