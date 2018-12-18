@@ -17,7 +17,8 @@ cmake_minimum_required(VERSION 3.12)
 project(nativeclient LANGUAGES C CXX)
 
 option(USE_PCH "Use precompiled headers (PCH)." OFF)
-option(USE_CPP_COVERAGE "Enable profiling and coverage report analysis for apache-geode cpp library" OFF)
+option(USE_CPP_COVERAGE "Enable profiling and coverage report analysis for apache-geode cpp library." OFF)
+option(USE_RAT "Enable Apache Rat checking." OFF)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
@@ -40,6 +41,7 @@ endif()
 set(CMAKE_DOTNET_TARGET_FRAMEWORK_VERSION "4.5.2")
 set(DOTNET_TARGET_FRAMEWORK_VERSION "4.5.2")
 set(BUILD_BITS 64 CACHE STRING "Build for 64 (Geode default) or 32 bit.")
+option(BUILD_BENCHMARKS "Build benchmarks" ON)
 
 set(PRODUCT_VENDOR "Apache" CACHE STRING "Product vendor")
 set(PRODUCT_VENDOR_NAME "The Apache Software Foundation" CACHE STRING "Product vendor full legal name")
@@ -363,3 +365,14 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/templates/ DESTINATION templates
   PATTERN "templates/security/CMakeLists.txt" EXCLUDE
   PATTERN "templates/security/CMakeLists.txt.forInstall" EXCLUDE)
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/templates/security/CMakeLists.txt.forInstall RENAME CMakeLists.txt DESTINATION templates/security)
+
+if (USE_RAT)
+  add_custom_target( rat-check
+    COMMAND ${CMAKE_COMMAND}
+        -DJava_JAVA_EXECUTABLE=${Java_JAVA_EXECUTABLE}
+        -DRat_JAR=${Rat_JAR}
+        -P cmake/RatCheck.cmake
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    COMMENT "Checking source with Apache Rat."
+  )
+endif()

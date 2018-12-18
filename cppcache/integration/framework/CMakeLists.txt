@@ -4,26 +4,58 @@
 # The ASF licenses this file to You under the Apache License, Version 2.0
 # (the "License"); you may not use this file except in compliance with
 # the License.  You may obtain a copy of the License at
-# 
+#
 #      http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-$user = "build"
-$pass = "p1votal!"
+configure_file(config.h.in config.h)
 
-net.exe user $user $pass /add
-net.exe localgroup Administrators $user /add
-wmic.exe UserAccount where "Name='$user'" set PasswordExpires=False
+add_library(integration-framework STATIC
+  Gfsh.cpp
+  Gfsh.h
+  Framework.cpp
+  Framework.h
+  Cluster.cpp
+  Cluster.h
+  GfshExecute.cpp
+  GfshExecute.h
+  )
 
-$spw = ConvertTo-SecureString $pass -AsPlainText -Force
-$cred = New-Object System.Management.Automation.PSCredential -ArgumentList $user,$spw
-Start-Process cmd /c -WindowStyle Hidden -Credential $cred -ErrorAction SilentlyContinue
+target_compile_definitions(integration-framework
+  PUBLIC
+    BOOST_ASIO_HAS_MOVE
+)
 
+target_include_directories(integration-framework
+  PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/..
+  PRIVATE
+    ${CMAKE_CURRENT_BINARY_DIR}
 
-schtasks.exe /Create /TN init-user-build /RU SYSTEM /SC ONSTART /TR "powershell.exe -File 'C:\Users\build\init-user-build.ps1'" 
+)
 
+target_link_libraries(integration-framework
+  PUBLIC
+    apache-geode
+    GTest::GTest
+    Boost::boost
+    Boost::system
+    Boost::log
+    Boost::filesystem
+  PRIVATE
+    _WarningsAsError
+    internal
+)
+
+if(WIN32)
+  target_compile_definitions(integration-framework
+    PUBLIC
+      # Required for Boost.WinAPI
+      _WIN32_WINNT=0x06020000
+  )
+endif()

@@ -55,11 +55,11 @@ void GfshExecute::execute(const std::string &command) {
   std::string line;
 
   while (outStream && std::getline(outStream, line)) {
-    BOOST_LOG_TRIVIAL(debug) << "Gfsh::execute: " << line;
+    BOOST_LOG_TRIVIAL(trace) << "Gfsh::execute: " << line;
   }
 
   while (errStream && std::getline(errStream, line)) {
-    BOOST_LOG_TRIVIAL(error) << "Gfsh::execute: " << line;
+    BOOST_LOG_TRIVIAL(debug) << "Gfsh::execute: " << line;
   }
 
   gfsh.wait();

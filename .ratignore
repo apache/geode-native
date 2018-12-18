@@ -1,40 +1,39 @@
-# text files
-.*\.clang-format$
-.*\.clang-tidy$
-.*\.cpackignore$
-.*\.gitignore$
-.*\.lcovrc$
-.*\.ratignore$
-.*\.lgtm.yml$
-.*\.ratCheck.sh$
+# rat -E only matches filename components
+# All matches are anchored automatically to who string
 
-.*md$
-.*json$
-.*deprecated_xml_instructions.txt$
+# /
+\.clang-format
+\.clang-tidy
+\.gitignore
+\.ratignore
+\.lgtm.yml
+\.lcovrc
+\.cpackignore
 
-# generated files
-.*Resources.Designer.cs$
-.*Settings.Designer.cs$
+# dependencies/*/
+patches
 
-# public domain
-.*CPPDictionary.hpp$
-.*CPPSymbol.hpp$
-.*CPP_parser.g$
-.*DictEntry.hpp$
-.*Dictionary.cpp$
-.*Dictionary.hpp$
-.*STDCTokenTypes.txt$
-.*Support.cpp$
+# packer/*/
+.*\.cloud-init
+.*\.json
 
-# expect script
-.*changepasswd$
-.*winrm.cloud-init$
+# docs/
+Gemfile.lock
+package-list
+.*\.md
+.*\.md.erb
 
-# doxygen
-.*package-list$
-.*testframeworkdox.txt$
-docs
+# contrib/pdxautoserializer
+# public domain sources
+CPPDictionary.hpp
+CPPSymbol.hpp
+CPP_parser.g
+DictEntry.hpp
+Dictionary.cpp
+Dictionary.hpp
+STDCTokenTypes.txt
+Support.cpp
 
-# patches
-.*patches$
-.*ACE.config.h.in$
+# well known build directories
+build
+cmake-build-.*

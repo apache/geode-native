@@ -15,6 +15,10 @@
  * limitations under the License.
  */
 
+#include <framework/Cluster.h>
+#include <framework/Framework.h>
+#include <framework/Gfsh.h>
+
 #include <future>
 #include <iostream>
 #include <random>
@@ -26,10 +30,6 @@
 #include <geode/PoolManager.hpp>
 #include <geode/RegionFactory.hpp>
 #include <geode/RegionShortcut.hpp>
-
-#include "framework/Cluster.h"
-#include "framework/Framework.h"
-#include "framework/Gfsh.h"
 
 namespace {
 

@@ -12,6 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 cmake_minimum_required( VERSION 3.10 )
 project( dependencies LANGUAGES NONE )
 
@@ -26,10 +27,11 @@ set ( DEPENDENCIES
 	sqlite
 	doxygen
 	gtest
+  benchmark
 )
 
-if ( "" STREQUAL "${USE_C++}" )
-  set (DEPENDENCIES STLport ${DEPENDENCIES})
+if (USE_RAT)
+  list(APPEND DEPENDENCIES rat)
 endif()
 
 include(CheckCCompilerFlag)
@@ -61,8 +63,8 @@ if (WIN32)
   elseif(MSVC14)
     set(MSVC_VERSION 14)
   endIF()
-  
-  set(DEPENDENCIES ${DEPENDENCIES} sqlite-netFx)
+
+  list(APPEND DEPENDENCIES sqlite-netFx)
 endif()
 
 # TODO autoconfig?
@@ -101,4 +103,3 @@ foreach(_D ${DEPENDENCIES})
 endforeach(_D)
 
 set(sqlite-netFx_SHARED_LIB ${sqlite-netFx_SHARED_LIB} PARENT_SCOPE)
-
