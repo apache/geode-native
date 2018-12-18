@@ -23,10 +23,12 @@ add_library(SqLiteImpl SHARED
   SqLiteImpl.hpp
 )
 
-set_source_files_properties(SqLiteImpl.cpp PROPERTIES COMPILE_FLAGS -Wno-unused-result)
+if(NOT CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+  set_source_files_properties(SqLiteImpl.cpp PROPERTIES COMPILE_FLAGS -Wno-unused-result)
+endif()
 
 set_target_properties(SqLiteImpl PROPERTIES
-	FOLDER cpp/test/integration
+  FOLDER cpp/test/integration
 )
 
 include(GenerateExportHeader)
@@ -34,7 +36,7 @@ generate_export_header(SqLiteImpl)
 
 target_include_directories(SqLiteImpl
   PUBLIC
-	  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
 
 target_link_libraries(SqLiteImpl
   PUBLIC
