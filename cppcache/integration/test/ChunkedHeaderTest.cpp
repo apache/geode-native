@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-#include <TcrMessage.hpp>
 #include <DataInputInternal.hpp>
+#include <TcrMessage.hpp>
 
 #include <gtest/gtest.h>
 
-using apache::geode::client::TcrMessage;
-using apache::geode::client::TcrMessageHelper;
 using apache::geode::client::DataInput;
 using apache::geode::client::DataInputInternal;
+using apache::geode::client::DSCode;
+using apache::geode::client::MessageException;
 using apache::geode::client::Region;
 using apache::geode::client::Serializable;
+using apache::geode::client::TcrMessage;
+using apache::geode::client::TcrMessageHelper;
 using apache::geode::client::ThinClientBaseDM;
-using apache::geode::client::MessageException;
-using apache::geode::client::DSCode;
 
 namespace {
 class TcrMessageTestFixture : public TcrMessage {
@@ -36,32 +36,38 @@ class TcrMessageTestFixture : public TcrMessage {
   TcrMessageTestFixture() : TcrMessage() {}
   virtual ~TcrMessageTestFixture() {}
 };
-}
+}  // namespace
 
 TEST(TcrMessageHelperTest, readChunkPartHeaderExpectsAnObject) {
   TcrMessageTestFixture msg;
 
-  uint8_t fakeBuffer[5] = {0,0,0,1};
+  uint8_t fakeBuffer[5] = {0, 0, 0, 1};
 
   auto input = DataInputInternal(fakeBuffer, sizeof(fakeBuffer));
 
   uint32_t partLength;
 
-  EXPECT_THROW(TcrMessageHelper::readChunkPartHeader(msg, input, "TcrMessageHelperTest, readChunkPartHeaderExpectsAnObject", partLength, 0), MessageException);
+  EXPECT_THROW(TcrMessageHelper::readChunkPartHeader(
+                   msg, input,
+                   "TcrMessageHelperTest, readChunkPartHeaderExpectsAnObject",
+                   partLength, 0),
+               MessageException);
 }
 
 TEST(TcrMessageHelperTest, readChunkPartHeaderExceptionChunkHack) {
   TcrMessageTestFixture msg;
 
-  uint8_t fakeBuffer[] = {0, 0, 0,
-                          1, 1, static_cast < uint8_t>(DSCode::JavaSerializable), 0,0,0,0,0};
+  uint8_t fakeBuffer[] = {
+      0, 0, 0, 1, 1, static_cast<uint8_t>(DSCode::JavaSerializable),
+      0, 0, 0, 0, 0};
 
   auto input = DataInputInternal(fakeBuffer, sizeof(fakeBuffer));
 
   uint32_t partLength;
 
   EXPECT_EQ(TcrMessageHelper::readChunkPartHeader(
-                msg, input, "TcrMessageHelperTest, readChunkPartHeaderExceptionChunkHack",
+                msg, input,
+                "TcrMessageHelperTest, readChunkPartHeaderExceptionChunkHack",
                 partLength, 64),
             TcrMessageHelper::ChunkObjectType::EXCEPTION);
 }
