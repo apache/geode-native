@@ -47,13 +47,7 @@ TEST(TcrMessageHelperTest, readChunkPartHeaderExpectsAnObject) {
 
   uint32_t partLength;
 
-  try {
-  TcrMessageHelper::readChunkPartHeader(msg, input, "TcrMessageHelperTest, readChunkPartHeaderExpectsAnObject", partLength, 0);
-  } catch(MessageException) {
-    return;
-  }
-
-  FAIL() << "Expected to catch a message exception.";
+  EXPECT_THROW(TcrMessageHelper::readChunkPartHeader(msg, input, "TcrMessageHelperTest, readChunkPartHeaderExpectsAnObject", partLength, 0), MessageException);
 }
 
 TEST(TcrMessageHelperTest, readChunkPartHeaderExceptionChunkHack) {
