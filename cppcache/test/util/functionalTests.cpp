@@ -33,11 +33,11 @@ TEST(string, geode_hash) {
   EXPECT_EQ(57, hash("9"));
   EXPECT_EQ(1077910243, hash("supercalifragilisticexpialidocious"));
 
-  EXPECT_EQ(1544552287, hash("You had me at meat tornad\u00F6!\U000F0000"));
+  EXPECT_EQ(1544552287, hash(u8"You had me at meat tornad\u00F6!\U000F0000"));
 
   auto str = std::string("You had me at");
   str.push_back(0);
-  str.append("meat tornad\u00F6!\U000F0000");
+  str.append(u8"meat tornad\u00F6!\U000F0000");
 
   EXPECT_EQ(701776767, hash(str));
 }
