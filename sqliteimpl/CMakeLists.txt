@@ -24,9 +24,7 @@ add_library(SqLiteImpl SHARED
 )
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-  target_compile_options(SqLiteImpl PRIVATE
-          -Wno-unused-function
-          )
+  set_source_files_properties(SqLiteImpl.cpp PROPERTIES COMPILE_FLAGS -Wno-unused-result)
 endif()
 
 set_target_properties(SqLiteImpl PROPERTIES
