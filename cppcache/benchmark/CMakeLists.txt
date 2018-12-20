@@ -13,10 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set(THREADS_PREFER_PTHREAD_FLAG TRUE)
-
-find_package(Threads REQUIRED)
-
 add_executable(cpp-benchmark
   main.cpp
   GeodeHashBM.cpp
