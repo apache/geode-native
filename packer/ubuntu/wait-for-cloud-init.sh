@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -13,35 +15,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cmake_minimum_required(VERSION 3.10)
-project(SqLiteImpl LANGUAGES CXX)
 
-add_library(SqLiteImpl SHARED
-  SqLiteHelper.cpp
-  SqLiteHelper.hpp
-  SqLiteImpl.cpp
-  SqLiteImpl.hpp
-)
+#set -x
+set -e
+set -o pipefail
 
-if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-  set_source_files_properties(SqLiteImpl.cpp PROPERTIES COMPILE_FLAGS -Wno-unused-result)
-endif()
-
-set_target_properties(SqLiteImpl PROPERTIES
-  FOLDER cpp/test/integration
-)
-
-include(GenerateExportHeader)
-generate_export_header(SqLiteImpl)
-
-target_include_directories(SqLiteImpl
-  PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
-
-target_link_libraries(SqLiteImpl
-  PUBLIC
-    apache-geode
-    sqlite
-  PRIVATE
-    _WarningsAsError
-)
+# leaves tail running but we should be restarting anyway
+{ tail -n +1 -f /var/log/cloud-init.log /var/log/cloud-init-output.log & } | sed \
+		-e '/Cloud-init .* finished/q' \
+		-e '/Failed at merging in cloud config/q1'

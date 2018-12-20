@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -13,35 +15,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cmake_minimum_required(VERSION 3.10)
-project(SqLiteImpl LANGUAGES CXX)
+set -x -e -o pipefail
 
-add_library(SqLiteImpl SHARED
-  SqLiteHelper.cpp
-  SqLiteHelper.hpp
-  SqLiteImpl.cpp
-  SqLiteImpl.hpp
-)
+tmp=`mktemp`
 
-if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-  set_source_files_properties(SqLiteImpl.cpp PROPERTIES COMPILE_FLAGS -Wno-unused-result)
-endif()
+curl -o ${tmp} -v -L https://cmake.org/files/v3.12/cmake-3.12.4-Linux-x86_64.sh
 
-set_target_properties(SqLiteImpl PROPERTIES
-  FOLDER cpp/test/integration
-)
+bash ${tmp} --skip-license --prefix=/usr/local
 
-include(GenerateExportHeader)
-generate_export_header(SqLiteImpl)
-
-target_include_directories(SqLiteImpl
-  PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
-
-target_link_libraries(SqLiteImpl
-  PUBLIC
-    apache-geode
-    sqlite
-  PRIVATE
-    _WarningsAsError
-)
+rm -f ${tmp}

@@ -240,7 +240,7 @@ void TcpConn::connect() {
   }
   int rc = this->m_io->enable(ACE_NONBLOCK);
   if (-1 == rc) {
-    char msg[250];
+    char msg[256];
     int32_t lastError = ACE_OS::last_error();
     std::snprintf(msg, 256, "TcpConn::NONBLOCK: %d: %s", lastError,
                   ACE_OS::strerror(lastError));

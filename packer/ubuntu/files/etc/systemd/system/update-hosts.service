@@ -1,0 +1,11 @@
+[Unit]
+Description=Ensure an A record exists for local hostname in /etc/hosts
+After=network.target
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+ExecStart=/usr/local/bin/update-hosts.sh
+
+[Install]
+WantedBy=multi-user.target
