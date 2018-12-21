@@ -15,7 +15,7 @@
 # TODO AdminDeploy.xml
 # vs_community.exe /AdminFile C:\Users\Administrator\AdminDeployment.xml /Log setup.log /Passive
 
-Set-PSDebug -Trace 0
+Set-PSDebug -Trace 2
 
 $vs_community_bootstrapper_uri = "https://download.visualstudio.microsoft.com/download/pr/5df30b3f-9db2-4195-bce3-c5518277da5d/18edc9dd7697111f993c5c06f18b51e5/vs_community.exe"
 $vs_community_bootstrapper = "C:\vs_community.exe"
