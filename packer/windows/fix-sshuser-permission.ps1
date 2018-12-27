@@ -13,10 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-[CmdletBinding(SupportsShouldProcess=$true, ConfirmImpact=“High”)]
+[CmdletBinding(SupportsShouldProcess=$true, ConfirmImpact="High")]
 param ()
 Set-StrictMode -Version 2.0
 If ($PSVersiontable.PSVersion.Major -le 2) {$PSScriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path}
-Import-Module $PSScriptRoot\OpenSSHUtils -Force
+Import-Module "C:\Program Files\OpenSSH-Win64\OpenSSHUtils" -Force
 
 Repair-AuthorizedKeyPermission C:\Users\Administrator\.ssh\authorized_keys -Confirm:$false
