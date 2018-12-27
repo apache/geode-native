@@ -36,8 +36,17 @@ $addComponentIds = @(
   '--add microsoft.net.component.3.5.developertools'
 )
 
-choco install visualstudio2017community -p --params $addComponentIds -y
+#https://visualstudio.microsoft.com/thank-you-downloading-visual-studio/?sku=Community&rel=15
+#https://visualstudio.microsoft.com/thank-you-downloading-visual-studio/?sku=community&rel=15?utm_medium=microsoft&utm_source=docs.microsoft.com&utm_campaign=offline+install&utm_content=download+vs2017
+
+Invoke-WebRequest -Uri 'https://aka.ms/AA369qi' -OutFile $vs_community_bootstrapper
+
+# choco install visualstudio2017community -p --params $addComponentIds -y
 # choco install visualstudio2017community -y
 # choco install visualstudio2017community --package-parameters "--allWorkloads --includeRecommended --includeOptional --passive --locale en-US" -y
+
+$vs_community_bootstrapper `
+--installPath "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community" `
+$addComponentIds
 
 Exit 0
