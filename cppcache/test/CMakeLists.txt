@@ -63,8 +63,8 @@ endif()
 target_link_libraries(apache-geode_unittests
   PRIVATE
     apache-geode-static
-    GTest::GTest
-    GTest::Main
+    GTest::gtest
+    GTest::gtest_main
     Boost::boost
     Boost::thread
     _WarningsAsError

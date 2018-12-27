@@ -24,44 +24,22 @@ namespace Apache.Geode.Client.IntegrationTests
     [Trait("Category", "Integration")]
     public class RegionSSLTest : TestBase, IDisposable
     {
-        private readonly Cache cacheOne_;
+        private readonly Cache cache_;
 
         public RegionSSLTest()
         {
-            var pathvar = Environment.GetEnvironmentVariable("PATH");
-
-            var openSslPath = Environment.CurrentDirectory + Config.OpenSSLPath;
-
-            if (!Directory.Exists(openSslPath))
-            {
-                throw new DirectoryNotFoundException("OpenSSL is a prerequisite for integration tests and the directory was not found.");
-            }
-
-            pathvar += ";" + openSslPath;
-
-            var cryptoImplPath = Environment.CurrentDirectory + Config.CryptoImplPath;
-
-            if (!File.Exists(cryptoImplPath + "\\cryptoImpl.dll"))
-            {
-                throw new System.IO.FileNotFoundException("cryptoImpl.dll was not found at " + cryptoImplPath);
-            }
-
-            pathvar += ";" + cryptoImplPath;
-
-            Environment.SetEnvironmentVariable("PATH", pathvar);
-
             var cacheFactory = new CacheFactory();
             cacheFactory.Set("ssl-enabled", "true");
             cacheFactory.Set("ssl-keystore", Environment.CurrentDirectory + "\\ClientSslKeys\\client_keystore.password.pem");
             cacheFactory.Set("ssl-keystore-password", "gemstone");
             cacheFactory.Set("ssl-truststore", Environment.CurrentDirectory + "\\ClientSslKeys\\client_truststore.pem");
 
-            cacheOne_ = cacheFactory.Create();
+            cache_ = cacheFactory.Create();
         }
 
         public void Dispose()
         {
-            cacheOne_.Close();
+            cache_.Close();
         }
 
         [Fact]
@@ -78,11 +56,11 @@ namespace Apache.Geode.Client.IntegrationTests
                     .withType("PARTITION")
                     .execute(), 0);
 
-                cacheOne_.GetPoolFactory()
+                cache_.GetPoolFactory()
                     .AddLocator(cluster.Gfsh.LocatorBindAddress, cluster.Gfsh.LocatorPort)
                     .Create("default");
 
-                var regionFactory = cacheOne_.CreateRegionFactory(RegionShortcut.PROXY)
+                var regionFactory = cache_.CreateRegionFactory(RegionShortcut.PROXY)
                             .SetPoolName("default");
 
                 var region = regionFactory.Create<string, string>("testRegion1");

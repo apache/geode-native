@@ -28,12 +28,13 @@ generate_export_header(DHImpl)
 
 target_include_directories(DHImpl
   PUBLIC
-	$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+)
 
 target_link_libraries(DHImpl
-  PUBLIC 
+  PUBLIC
     apache-geode
-    crypto
+    OpenSSL::Crypto
     c++11
   PRIVATE
     _WarningsAsError

@@ -13,22 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-project( boost LANGUAGES NONE )
+project( boost VERSION 1.68.0 LANGUAGES NONE )
 
-set( ${PROJECT_NAME}_VERSION 1.68.0 )
-set( ${PROJECT_NAME}_SHA265 da3411ea45622579d419bfda66f45cd0f8c32a181d84adfa936f5688388995cf )
-string(REPLACE "." "_" _VERSION_UNDERSCORE ${${PROJECT_NAME}_VERSION})
-set( ${PROJECT_NAME}_URL "https://dl.bintray.com/boostorg/release/${${PROJECT_NAME}_VERSION}/source/boost_${_VERSION_UNDERSCORE}.tar.gz" )
-set( ${PROJECT_NAME}_EXTERN ${PROJECT_NAME}-extern )
-
-include(ProcessorCount)
-ProcessorCount(_NPROCS)
-
-include(ExternalProject)
+set( SHA265 da3411ea45622579d419bfda66f45cd0f8c32a181d84adfa936f5688388995cf )
 
 set(_B2_FLAGS
   -d0
-  --prefix=<INSTALL_DIR>
+  --prefix=<INSTALL_DIR>/$<CONFIG>
   --with-system
   --with-log
   --layout=system
@@ -38,6 +29,8 @@ set(_B2_FLAGS
   variant=$<LOWER_CASE:$<CONFIG>>
 )
 
+include(ProcessorCount)
+ProcessorCount(_NPROCS)
 if (${_NPROCS})
   set ( _B2_FLAGS ${_B2_FLAGS} -j${_NPROCS} )
 endif()
@@ -61,9 +54,13 @@ elseif ("Clang" STREQUAL ${CMAKE_CXX_COMPILER_ID})
   set ( _BOOTSTRAP_COMMAND ${_BOOTSTRAP_COMMAND} --with-toolset=clang )
 endif()
 
-ExternalProject_Add( ${${PROJECT_NAME}_EXTERN}
-   URL ${${PROJECT_NAME}_URL}
-   URL_HASH SHA256=${${PROJECT_NAME}_SHA265}
+string(REPLACE "." "_" _VERSION_UNDERSCORE ${PROJECT_VERSION})
+set( EXTERN ${PROJECT_NAME}-extern )
+
+include(ExternalProject)
+ExternalProject_Add( ${EXTERN}
+   URL "https://dl.bintray.com/boostorg/release/${PROJECT_VERSION}/source/boost_${_VERSION_UNDERSCORE}.tar.gz"
+   URL_HASH SHA256=${SHA265}
    UPDATE_COMMAND ""
    BUILD_IN_SOURCE 1
    CONFIGURE_COMMAND ${_BOOTSTRAP_COMMAND}
@@ -75,22 +72,20 @@ ExternalProject_Add( ${${PROJECT_NAME}_EXTERN}
    STAMP_DIR ./stamp
 )
 
-ExternalProject_Get_Property( ${${PROJECT_NAME}_EXTERN} SOURCE_DIR )
-set( ${PROJECT_NAME}_SOURCE_DIR ${SOURCE_DIR} )
-ExternalProject_Get_Property( ${${PROJECT_NAME}_EXTERN} INSTALL_DIR )
-set( ${PROJECT_NAME}_INSTALL_DIR ${INSTALL_DIR} )
+ExternalProject_Get_Property( ${EXTERN} SOURCE_DIR )
+ExternalProject_Get_Property( ${EXTERN} INSTALL_DIR )
+set(INSTALL_DIR "${INSTALL_DIR}/$<CONFIG>")
 
 if (NOT WIN32)
 # https://github.com/boostorg/process/issues/51
   set( PATCH_FILE ${CMAKE_CURRENT_SOURCE_DIR}/patches)
-  ExternalProject_Add_Step( ${${PROJECT_NAME}_EXTERN} patches
+  ExternalProject_Add_Step( ${EXTERN} patches
       ALWAYS 0
       DEPENDEES download
       DEPENDERS patch
       DEPENDS ${PATCH_FILE}
-      BYPRODUCTS ${${PROJECT_NAME}_SOURCE_DIR}/boost/process/detail/posix/is_running.hpp
-      WORKING_DIRECTORY ${${PROJECT_NAME}_INSTALL_DIR}
-      COMMAND ${PATCH} -u -N -p1 < ${PATCH_FILE}
+      BYPRODUCTS ${SOURCE_DIR}/boost/process/detail/posix/is_running.hpp
+      COMMAND ${Patch_EXECUTABLE} -u -N -p1 < ${PATCH_FILE}
   )
 endif()
 
@@ -108,7 +103,7 @@ function(ADD_BOOST_LIBRARY)
 
   set(linkLibraries)
   foreach(library ${args_LIBRARIES})
-    list(APPEND linkLibraries "${${PROJECT_NAME}_INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}boost_${args_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}")
+    list(APPEND linkLibraries "${INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}boost_${args_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}")
   endforeach()
 
   add_library(boost_${args_NAME} INTERFACE)
@@ -122,8 +117,7 @@ endfunction()
 
 add_library(${PROJECT_NAME} INTERFACE)
 target_include_directories(${PROJECT_NAME} SYSTEM INTERFACE
-  $<BUILD_INTERFACE:${${PROJECT_NAME}_INSTALL_DIR}/include>
-  $<BUILD_INTERFACE:${${PROJECT_NAME}_INSTALL_DIR}/src>
+  $<BUILD_INTERFACE:${INSTALL_DIR}/include>
 )
 target_compile_definitions(${PROJECT_NAME} INTERFACE
   BOOST_ALL_NO_LIB
@@ -131,7 +125,7 @@ target_compile_definitions(${PROJECT_NAME} INTERFACE
 target_link_libraries(${PROJECT_NAME} INTERFACE
 )
 add_library(Boost::boost ALIAS boost)
-add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXTERN})
+add_dependencies(${PROJECT_NAME} ${EXTERN})
 
 find_package(Threads REQUIRED)
 

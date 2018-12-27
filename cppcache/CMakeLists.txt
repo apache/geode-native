@@ -95,11 +95,11 @@ elseif (WIN32)
 endif()
 
 target_link_libraries(_apache-geode INTERFACE
-  ACE
+  ACE::ACE
   Boost::boost
   Boost::filesystem
   Boost::thread
-  libxml2
+  LibXml2::LibXml2
 )
 
 if (USE_PCH)

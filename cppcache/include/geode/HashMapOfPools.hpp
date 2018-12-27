@@ -17,16 +17,16 @@
 
 #pragma once
 
-#include <unordered_map>
-#include <string>
 #include <memory>
+#include <string>
+#include <unordered_map>
 
 namespace apache {
-    namespace geode {
-        namespace client {
-            class Pool;
+namespace geode {
+namespace client {
+class Pool;
 
-            using HashMapOfPools = std::unordered_map <std::string, std::shared_ptr<Pool>>;
-        }
-    }
-}
+using HashMapOfPools = std::unordered_map<std::string, std::shared_ptr<Pool>>;
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

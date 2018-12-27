@@ -615,7 +615,7 @@
     <Content Include="authz-ldap.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(CMAKE_BINARY_DIR)\plugins\SQLiteCLI\SQLiteCLI.csproj">
+    <ProjectReference Include="$(CMAKE_BINARY_DIR)\plugins\SQLiteCLI\Apache.Geode.Plugins.SQLite.csproj">
       <Project>{FF9597E3-A4DD-4FDE-871D-B0C66088762F}</Project>
       <Name>SQLiteCLI</Name>
     </ProjectReference>
