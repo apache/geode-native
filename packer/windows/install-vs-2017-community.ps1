@@ -15,7 +15,7 @@
 # TODO AdminDeploy.xml
 # vs_community.exe /AdminFile C:\Users\Administrator\AdminDeployment.xml /Log setup.log /Passive
 
-Set-PSDebug -Trace 2
+Set-PSDebug -Trace 0
 
 $addComponentIds = @(
   '--add microsoft.net.component.4.targetingpack'
@@ -36,17 +36,17 @@ $addComponentIds = @(
   '--add microsoft.net.component.3.5.developertools'
 )
 
-#https://visualstudio.microsoft.com/thank-you-downloading-visual-studio/?sku=Community&rel=15
-#https://visualstudio.microsoft.com/thank-you-downloading-visual-studio/?sku=community&rel=15?utm_medium=microsoft&utm_source=docs.microsoft.com&utm_campaign=offline+install&utm_content=download+vs2017
+$vs_community_bootstrapper = "https://visualstudio.microsoft.com/thank-you-downloading-visual-studio/?sku=community&rel=15?utm_medium=microsoft&utm_source=docs.microsoft.com&utm_campaign=offline+install&utm_content=download+vs2017"
 
-Invoke-WebRequest -Uri 'https://aka.ms/AA369qi' -OutFile $vs_community_bootstrapper
+Invoke-WebRequest -Uri $vs_community_bootstrapper -OutFile z:\temp\vs_community.exe
 
-# choco install visualstudio2017community -p --params $addComponentIds -y
-# choco install visualstudio2017community -y
-# choco install visualstudio2017community --package-parameters "--allWorkloads --includeRecommended --includeOptional --passive --locale en-US" -y
-
-$vs_community_bootstrapper `
+z:\temp\vs_community.exe `
 --installPath "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community" `
-$addComponentIds
+--quiet
+
+z:\temp\vs_community.exe modify `
+--installPath "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community" `
+$addComponentIds `
+--quiet
 
 Exit 0
