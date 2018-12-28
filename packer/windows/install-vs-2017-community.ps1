@@ -38,13 +38,13 @@ $addComponentIds = @(
 
 $vs_community_bootstrapper = "https://visualstudio.microsoft.com/thank-you-downloading-visual-studio/?sku=community&rel=15?utm_medium=microsoft&utm_source=docs.microsoft.com&utm_campaign=offline+install&utm_content=download+vs2017"
 
-Invoke-WebRequest -Uri $vs_community_bootstrapper -OutFile c:\temp\vs_community.exe
+Invoke-WebRequest -Uri $vs_community_bootstrapper -OutFile c:\vs_community.exe
 
-c:\temp\vs_community.exe `
+c:\vs_community.exe `
 --installPath "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community" `
 --quiet
 
-c:\temp\vs_community.exe modify `
+c:\vs_community.exe modify `
 --installPath "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community" `
 $addComponentIds `
 --quiet
