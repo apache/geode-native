@@ -15,7 +15,7 @@
 # TODO AdminDeploy.xml
 # vs_community.exe /AdminFile C:\Users\Administrator\AdminDeployment.xml /Log setup.log /Passive
 
-Set-PSDebug -Trace 2
+Set-PSDebug -Trace 0
 
 $vs_community_bootstrapper_uri = "https://download.visualstudio.microsoft.com/download/pr/5df30b3f-9db2-4195-bce3-c5518277da5d/18edc9dd7697111f993c5c06f18b51e5/vs_community.exe"
 $vs_community_bootstrapper = "C:\vs_community.exe"
@@ -42,6 +42,6 @@ $args = @('--installPath "C:\Program Files (x86)\Microsoft Visual Studio\2017\Co
 
 Invoke-WebRequest -Uri $vs_community_bootstrapper_uri -OutFile $vs_community_bootstrapper
 
-Start-Process -Filepath $vs_community_bootstrapper -ArgumentList $args
+Start-Process -Filepath $vs_community_bootstrapper -ArgumentList $args -Wait
 
 Exit 0
