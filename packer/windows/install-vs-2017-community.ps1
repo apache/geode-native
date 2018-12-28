@@ -35,10 +35,9 @@ $addComponentIds = @(
   '--add component.cpython2.x64'
   '--add microsoft.net.component.3.5.developertools'
 )
+$vs_community_bootstrapper = "https://aka.ms/AA369qi"
 
-$vs_community_bootstrapper = "https://visualstudio.microsoft.com/thank-you-downloading-visual-studio/?sku=community&rel=15?utm_medium=microsoft&utm_source=docs.microsoft.com&utm_campaign=offline+install&utm_content=download+vs2017"
-
-Invoke-WebRequest -Uri $vs_community_bootstrapper | Select-Object -ExpandProperty Content | Out-File c:\vs_community.exe
+Invoke-WebRequest -Uri $vs_community_bootstrapper -OutFile c:\vs_community.exe
 
 c:\vs_community.exe `
 --installPath "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community" `
