@@ -23,16 +23,7 @@ if ( -not (Test-Path $authorized_keys -PathType Leaf) ) {
 
   Invoke-WebRequest -Uri 'http://169.254.169.254/latest/meta-data/public-keys/0/openssh-key' -OutFile $authorized_keys
 
-  # Give sshd permission to read authorized_keys
   Import-Module 'C:\Program Files\OpenSSH-Win64\OpenSSHUtils' -force
 
-  $currentUserSid = Get-UserSID -User "NT SERVICE\sshd"
-  $account = Get-UserAccount -UserSid $currentUserSid
-  $ace = New-Object System.Security.AccessControl.FileSystemAccessRule `
-                            ($account, "Read", "None", "None", "Allow")
-  $acl = Get-Acl $authorized_keys
-  $acl.AddAccessRule($ace)
-  Enable-Privilege SeRestorePrivilege | out-null
-  Set-Acl -Path $authorized_keys -AclObject $acl -Confirm:$false
-
+  Repair-AuthorizedKeyPermission $authorized_keys -Confirm:$false
 }

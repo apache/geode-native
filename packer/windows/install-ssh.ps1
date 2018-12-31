@@ -22,4 +22,3 @@ write-host "Installing OpenSSH"
 choco install openssh -params '"/SSHServerFeature"' -confirm
 
 schtasks.exe /Create /TN init-ssh /RU SYSTEM /SC ONSTART /TR "powershell.exe -File 'C:\Program Files\Amazon\Ec2ConfigService\Scripts\init-ssh.ps1'"
-schtasks.exe /Create /TN fix-sshuser-permission /RU SYSTEM /SC ONSTART /TR "powershell.exe -File 'C:\Program Files\Amazon\Ec2ConfigService\Scripts\fix-sshuser-permission.ps1'"
