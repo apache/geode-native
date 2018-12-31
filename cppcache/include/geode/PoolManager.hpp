@@ -26,10 +26,10 @@
 #include <unordered_map>
 
 #include "Cache.hpp"
-#include "geode/HashMapOfPools.hpp"
 #include "Pool.hpp"
 #include "PoolFactory.hpp"
 #include "Region.hpp"
+#include "geode/HashMapOfPools.hpp"
 #include "internal/geode_base.hpp"
 #include "internal/geode_globals.hpp"
 
