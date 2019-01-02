@@ -21,6 +21,7 @@ using Xunit;
 using PdxTests;
 using System.Collections;
 using System.Collections.Generic;
+using Xunit.Abstractions;
 
 namespace Apache.Geode.Client.IntegrationTests
 {
@@ -399,6 +400,10 @@ namespace Apache.Geode.Client.IntegrationTests
     [Trait("Category", "Integration")]
     public class SerializationTests : TestBase
     {
+        public SerializationTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+        {
+        }
+
         private void putAndCheck(IRegion<object, object> region, object key, object value)
         {
             region[key] = value;
@@ -410,25 +415,20 @@ namespace Apache.Geode.Client.IntegrationTests
         [Fact]
         public void BuiltInSerializableTypes()
         {
-            using (var cluster = new Cluster(CreateTestCaseDirectoryName(), 1, 1))
+            using (var cluster = new Cluster(output, CreateTestCaseDirectoryName(), 1, 1))
             {
                 Assert.True(cluster.Start());
-                Assert.Equal(cluster.Gfsh.create()
+                Assert.Equal(0, cluster.Gfsh.create()
                     .region()
                     .withName("testRegion")
                     .withType("REPLICATE")
-                    .execute(), 0);
-                var cacheFactory = new CacheFactory()
-                    .Set("log-level", "none");
-                var cache = cacheFactory.Create();
+                    .execute());
 
-                var poolFactory = cache.GetPoolFactory()
-                    .AddLocator("localhost", cluster.Gfsh.LocatorPort);
-                poolFactory.Create("pool");
+                var cache = cluster.CreateCache();
 
-                var regionFactory = cache.CreateRegionFactory(RegionShortcut.PROXY)
-                    .SetPoolName("pool");
-                var region = regionFactory.Create<object, object>("testRegion");
+                var region = cache.CreateRegionFactory(RegionShortcut.PROXY)
+                    .SetPoolName("default")
+                    .Create<object, object>("testRegion");
                 Assert.NotNull(region);
 
                 putAndCheck(region, "CacheableString", "foo");
@@ -482,27 +482,22 @@ namespace Apache.Geode.Client.IntegrationTests
         [Fact]
         public void PutGetCustomSerializableTypes()
         {
-            using (var cluster = new Cluster(CreateTestCaseDirectoryName(), 1, 1))
+            using (var cluster = new Cluster(output, CreateTestCaseDirectoryName(), 1, 1))
             {
                 Assert.True(cluster.Start());
-                Assert.Equal(cluster.Gfsh.create()
+                Assert.Equal(0, cluster.Gfsh.create()
                     .region()
                     .withName("testRegion")
                     .withType("REPLICATE")
-                    .execute(), 0);
-                var cacheFactory = new CacheFactory()
-                    .Set("log-level", "none");
-                var cache = cacheFactory.Create();
+                    .execute());
+                
+                var cache = cluster.CreateCache();
 
                 cache.TypeRegistry.RegisterType(Order.CreateDeserializable, 0x42);
 
-                var poolFactory = cache.GetPoolFactory()
-                    .AddLocator("localhost", cluster.Gfsh.LocatorPort);
-                poolFactory.Create("pool");
-
-                var regionFactory = cache.CreateRegionFactory(RegionShortcut.PROXY)
-                  .SetPoolName("pool");
-                var orderRegion = regionFactory.Create<int, Order>("testRegion");
+                var orderRegion = cache.CreateRegionFactory(RegionShortcut.PROXY)
+                  .SetPoolName("default")
+                  .Create<int, Order>("testRegion");
                 Assert.NotNull(orderRegion);
 
                 const int orderKey = 65;

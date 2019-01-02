@@ -18,6 +18,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using Apache.Geode.Client;
 using Apache.Geode.Client.Internal;
@@ -48,13 +49,13 @@ namespace PdxTests
 
     public override bool Equals(object obj)
     {
-      Console.WriteLine("in addredd equal");
+      Debug.WriteLine("in addredd equal");
       if (obj == null)
         return false;
       Address other = obj as Address;
       if (other == null)
         return false;
-      Console.WriteLine("in addredd equal2 " + this.ToString() + " : : " + other.ToString());
+      Debug.WriteLine("in addredd equal2 " + this.ToString() + " : : " + other.ToString());
       if (_aptNumber == other._aptNumber
           && _street == other._street
             && _city == other._city)
@@ -168,7 +169,7 @@ namespace PdxTests
       DateTime n = new DateTime((62135596800000/*epoch*/ + 1310447869154) * 10000, DateTimeKind.Utc);
       m_dateTime = n.ToLocalTime();
 
-      Console.WriteLine(m_dateTime.Ticks);
+      Debug.WriteLine(m_dateTime.Ticks);
 
       m_int16Array = new short[] { 0x2332, 0x4545 };
       m_uint16Array = new short[] { 0x3243, 0x3232 };
@@ -288,13 +289,13 @@ namespace PdxTests
     }
     public static byte[] compareByteArray(byte[] a, byte[] a2)
     {
-      Console.WriteLine("Compare byte array " + a.Length + " ; " + a2.Length);
+      Debug.WriteLine("Compare byte array " + a.Length + " ; " + a2.Length);
       if (a.Length == a2.Length)
       {
         int i = 0;
         while (i < a.Length)
         {
-          Console.WriteLine("Compare byte array " + a[i] + " : " + a2[i]);
+          Debug.WriteLine("Compare byte array " + a[i] + " : " + a2[i]);
           if (a[i] != a2[i])
             break;
           else
@@ -366,7 +367,7 @@ namespace PdxTests
     */
     public static DateTime compareData(DateTime b, DateTime b2)
     {
-      Console.WriteLine("date " + b.Ticks + " : " + b2.Ticks);
+      Debug.WriteLine("date " + b.Ticks + " : " + b2.Ticks);
       //TODO: 
       // return b;
       if ((b.Ticks / 10000L) == (b2.Ticks / 10000L))
@@ -869,8 +870,8 @@ namespace PdxTests
         {
           if (!m_address[i].Equals(addressArray[i]))
           {
-            Console.WriteLine(m_address[i]);
-            Console.WriteLine(addressArray[i]);
+            Debug.WriteLine(m_address[i]);
+            Debug.WriteLine(addressArray[i]);
             throw new Exception("Address array not mateched " + i);
           }
         }

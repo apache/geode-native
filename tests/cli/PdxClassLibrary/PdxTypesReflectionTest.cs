@@ -18,6 +18,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using Apache.Geode.Client;
 using Apache.Geode.Client.Internal;
@@ -45,13 +46,13 @@ namespace PdxTests
 
     public override bool Equals(object obj)
     {
-      Console.WriteLine("in addreddR equal");
+      Debug.WriteLine("in addreddR equal");
       if (obj == null)
         return false;
       AddressR other = obj as AddressR;
       if (other == null)
         return false;
-      Console.WriteLine("in addreddr equal2 " + this.ToString() + " : : " + other.ToString());
+      Debug.WriteLine("in addreddr equal2 " + this.ToString() + " : : " + other.ToString());
       if (_aptNumber == other._aptNumber
           && _street == other._street
             && _city == other._city)
@@ -148,7 +149,7 @@ namespace PdxTests
 
       long ticks = 634460644691540000L;
       m_dateTime = new DateTime(ticks);
-      Console.WriteLine(m_dateTime.Ticks);
+      Debug.WriteLine(m_dateTime.Ticks);
 
       m_int16Array = new short[] { 0x2332, 0x4545 };
       m_uint16Array = new short[] { 0x3243, 0x3232 };
@@ -283,13 +284,13 @@ namespace PdxTests
     }
     byte[] compareByteArray(byte[] a, byte[] a2)
     {
-      Console.WriteLine("Compare byte array " + a.Length + " ; " + a2.Length);
+      Debug.WriteLine("Compare byte array " + a.Length + " ; " + a2.Length);
       if (a.Length == a2.Length)
       {
         int i = 0;
         while (i < a.Length)
         {
-          Console.WriteLine("Compare byte array " + a[i] + " : " + a2[i]);
+          Debug.WriteLine("Compare byte array " + a[i] + " : " + a2[i]);
           if (a[i] != a2[i])
             break;
           else
@@ -356,7 +357,7 @@ namespace PdxTests
 
     DateTime compareData(DateTime b, DateTime b2)
     {
-      Console.WriteLine("date " + b.Ticks + " : " + b2.Ticks);
+      Debug.WriteLine("date " + b.Ticks + " : " + b2.Ticks);
       //TODO:
       // return b;
       if ((b.Ticks / 10000L) == (b2.Ticks / 10000L))

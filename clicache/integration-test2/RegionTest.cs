@@ -18,39 +18,42 @@
 using System;
 using System.IO;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Apache.Geode.Client.IntegrationTests
 {
     [Trait("Category", "Integration")]
     public class RegionTest : TestBase
     {
+        public RegionTest(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+        {
+        }
+
         [Fact]
         public void PutOnOneCacheGetOnAnotherCache()
         {
-            using (var cluster = new Cluster(CreateTestCaseDirectoryName(), 1, 1))
+            using (var cluster = new Cluster(output, CreateTestCaseDirectoryName(), 1, 1))
             {
                 Assert.True(cluster.Start());
-                Assert.Equal(cluster.Gfsh
+                Assert.Equal(0, cluster.Gfsh
                     .create()
                     .region()
                     .withName("testRegion1")
                     .withType("PARTITION")
-                    .execute(), 0);
+                    .execute());
 
-                var cacheFactory = new CacheFactory();
+                var cacheFactory = new CacheFactory()
+                    .Set("log-level", "none");
+
                 var cacheOne = cacheFactory.Create();
-                cacheOne.GetPoolFactory()
-                    .AddLocator(cluster.Gfsh.LocatorBindAddress, cluster.Gfsh.LocatorPort)
-                    .Create("default");
-
                 try
                 {
+                    cluster.ApplyLocators(cacheOne.GetPoolFactory()).Create("default");
+
                     var cacheTwo = cacheFactory.Create();
                     try
                     {
-                        cacheTwo.GetPoolFactory()
-                            .AddLocator(cluster.Gfsh.LocatorBindAddress, cluster.Gfsh.LocatorPort)
-                            .Create("default");
+                        cluster.ApplyLocators(cacheTwo.GetPoolFactory()).Create("default");
 
                         var regionFactory1 = cacheOne.CreateRegionFactory(RegionShortcut.PROXY)
                             .SetPoolName("default");

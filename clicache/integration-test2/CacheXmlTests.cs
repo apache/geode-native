@@ -18,6 +18,7 @@
 using System.IO;
 using System.Threading;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Apache.Geode.Client.IntegrationTests
 {
@@ -25,80 +26,50 @@ namespace Apache.Geode.Client.IntegrationTests
     [Trait("Category", "Integration")]
     public class CacheXmlTests : TestBase
     {
+        public CacheXmlTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+        {
+        }
+
         [Fact]
         public void ConstructAndGenerate()
         {
-            using (var gfsh = new GfshExecute())
+            string testDir = CreateTestCaseDirectoryName();
+            CleanTestCaseDirectory(testDir);
+
+            var template = new FileInfo("cache.xml");
+            var cacheXml = new CacheXml(template, 1234);
+            Assert.NotNull(cacheXml.File);
+            Assert.True(cacheXml.File.Exists);
+
+            using (var input = cacheXml.File.OpenText())
             {
-                try
-                {
-                    string testDir = CreateTestCaseDirectoryName();
-                    CleanTestCaseDirectory(testDir);
-
-                    Assert.Equal(gfsh.start()
-                        .locator()
-                        .withDir(testDir)
-                        .withHttpServicePort(0)
-                        .execute(), 0);
-                    var template = new FileInfo("cache.xml");
-                    var cacheXml = new CacheXml(template, gfsh.LocatorPort);
-                    Assert.NotNull(cacheXml.File);
-                    Assert.True(cacheXml.File.Exists);
-
-                    using (var input = cacheXml.File.OpenText())
-                    {
-                        var content = input.ReadToEnd();
-                        Assert.True(content.Contains(gfsh.LocatorPort.ToString()));
-                    }
-                }
-                finally
-                {
-                    Assert.Equal(gfsh.shutdown()
-                        .withIncludeLocators(true)
-                        .execute(), 0);
-                }
+                var content = input.ReadToEnd();
+                Assert.True(content.Contains(1234.ToString()));
             }
         }
 
         [Fact]
         public void DisposeAndCleanup()
         {
-            using (var gfsh = new GfshExecute())
+            var testDir = CreateTestCaseDirectoryName();
+            CleanTestCaseDirectory(testDir);
+
+            FileInfo file;
+
+            var template = new FileInfo("cache.xml");
+            using (var cacheXml = new CacheXml(template, 1234))
             {
-                try
-                {
-                    var testDir = CreateTestCaseDirectoryName();
-                    CleanTestCaseDirectory(testDir);
-
-                    Assert.Equal(gfsh.start()
-                        .locator()
-                        .withDir(testDir)
-                        .withHttpServicePort(0)
-                        .execute(), 0);
-                    FileInfo file;
-
-                    var template = new FileInfo("cache.xml");
-                    using (var cacheXml = new CacheXml(template, gfsh.LocatorPort))
-                    {
-                        Assert.NotNull(cacheXml.File);
-                        file = cacheXml.File;
-                        Assert.True(file.Exists);
-                    }
-
-                    file.Refresh();
-
-                    // File deletion via File.Delete (inside the file.Refresh() call)
-                    // is not synchronous so we need to potentially wait until the file 
-                    // has been deleted here
-                    Assert.True(SpinWait.SpinUntil(() => !file.Exists, 10000));
-                }
-                finally
-                {
-                    Assert.Equal(gfsh.shutdown()
-                        .withIncludeLocators(true)
-                        .execute(), 0);
-                }
+                Assert.NotNull(cacheXml.File);
+                file = cacheXml.File;
+                Assert.True(file.Exists);
             }
+
+            file.Refresh();
+
+            // File deletion via File.Delete (inside the file.Refresh() call)
+            // is not synchronous so we need to potentially wait until the file 
+            // has been deleted here
+            Assert.True(SpinWait.SpinUntil(() => !file.Exists, 10000));
         }
     }
 }

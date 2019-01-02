@@ -20,6 +20,7 @@ using System.IO;
 using Xunit;
 using System.Diagnostics;
 using System.Threading;
+using Xunit.Abstractions;
 
 namespace Apache.Geode.Client.IntegrationTests
 {
@@ -177,40 +178,38 @@ namespace Apache.Geode.Client.IntegrationTests
     [Trait("Category", "Integration")]
     public class CqOperationTest : TestBase, IDisposable
     {
-        private readonly Cache cache_;
         private static int waitInterval_ = 1000;
 
-        public CqOperationTest()
+        public CqOperationTest(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
-            var cacheFactory = new CacheFactory()
-                .Set("log-level", "error");
-            cache_ = cacheFactory.Create();
         }
-  
+
         public void Dispose()
         {
-            cache_.Close();
+           
         }
   
         [Fact]
         public void PdxSerializableNotificationsHaveCorrectValues()
         {
-            using (var cluster_ = new Cluster(CreateTestCaseDirectoryName(), 1, 1))
+            using (var cluster = new Cluster(output, CreateTestCaseDirectoryName(), 1, 1))
             {
-                Assert.Equal(cluster_.Start(), true);
-                Assert.Equal(cluster_.Gfsh.create()
+                Assert.True(cluster.Start());
+                Assert.Equal(0, cluster.Gfsh.create()
                     .region()
                     .withName("cqTestRegion")
                     .withType("REPLICATE")
-                    .execute(), 0);
-                cache_.TypeRegistry.RegisterPdxType(MyOrder.CreateDeserializable);
-                var poolFactory = cache_.GetPoolFactory()
-                    .AddLocator("localhost", cluster_.Gfsh.LocatorPort);
-                var pool = poolFactory
+                    .execute());
+
+                var cache = cluster.CreateCache();
+
+                cache.TypeRegistry.RegisterPdxType(MyOrder.CreateDeserializable);
+
+                var pool = cluster.ApplyLocators(cache.GetPoolFactory())
                     .SetSubscriptionEnabled(true)
                     .Create("pool");
 
-                var regionFactory = cache_.CreateRegionFactory(RegionShortcut.PROXY)
+                var regionFactory = cache.CreateRegionFactory(RegionShortcut.PROXY)
                     .SetPoolName("pool");
           
                 var region = regionFactory.Create<string, MyOrder>("cqTestRegion");
@@ -257,38 +256,39 @@ namespace Apache.Geode.Client.IntegrationTests
                 Assert.True(cqListener.RegionClearEvent.WaitOne(waitInterval_), "Didn't receive expected CLEAR event");
           
                 Assert.False(cqListener.ReceivedUnknownEventType, "An unknown event was received by CQ listener");
+
+                cache.Close();
             }
         }
   
         [Fact]
         public void DataSerializableNotificationsHaveCorrectValues()
         {
-            using (var cluster_ = new Cluster(CreateTestCaseDirectoryName(), 1, 1))
+            using (var cluster = new Cluster(output, CreateTestCaseDirectoryName(), 1, 1))
             {
-                Assert.Equal(cluster_.Start(), true);
-                Assert.Equal(cluster_.Gfsh.deploy()
+                Assert.True(cluster.Start());
+                Assert.Equal(0, cluster.Gfsh.deploy()
                     .withJar(Config.JavaobjectJarPath)
-                    .execute(), 0);
-                Assert.Equal(cluster_.Gfsh.create()
+                    .execute());
+                Assert.Equal(0, cluster.Gfsh.create()
                     .region()
                     .withName("cqTestRegion")
                     .withType("REPLICATE")
-                    .execute(), 0);
-
-                cluster_.Gfsh.executeFunction()
+                    .execute());
+                Assert.Equal(0, cluster.Gfsh.executeFunction()
                     .withId("InstantiateDataSerializable")
-                    .withMember("DataSerializableNotificationsH_server_0")
-                    .execute();
+                    .withMember("DataSerializableNotificationsHaveCorrectValues_server_0")
+                    .execute());
 
-                cache_.TypeRegistry.RegisterType(Position.CreateDeserializable, 22);
+                var cache = cluster.CreateCache();
 
-                var poolFactory = cache_.GetPoolFactory()
-                    .AddLocator("localhost", cluster_.Gfsh.LocatorPort);
-                var pool = poolFactory
+                cache.TypeRegistry.RegisterType(Position.CreateDeserializable, 22);
+
+                var pool = cluster.ApplyLocators(cache.GetPoolFactory())
                     .SetSubscriptionEnabled(true)
                     .Create("pool");
 
-                var regionFactory = cache_.CreateRegionFactory(RegionShortcut.PROXY)
+                var regionFactory = cache.CreateRegionFactory(RegionShortcut.PROXY)
                     .SetPoolName("pool");
 
                 var region = regionFactory.Create<string, Position>("cqTestRegion");
@@ -336,6 +336,8 @@ namespace Apache.Geode.Client.IntegrationTests
                 Assert.True(cqListener.RegionClearEvent.WaitOne(waitInterval_), "Didn't receive expected CLEAR event");
 
                 Assert.False(cqListener.ReceivedUnknownEventType, "An unknown event was received by CQ listener");
+
+                cache.Close();
             }
         }
     }
