@@ -125,33 +125,35 @@ set( DEPENDENCIES_DIR ${INSTALL_DIR} PARENT_SCOPE)
 if ("SunOS" STREQUAL ${CMAKE_SYSTEM_NAME})
 set( PATCH_FILE ${CMAKE_CURRENT_SOURCE_DIR}/patches )
 ExternalProject_Add_Step( ${EXTERN} patches
-    ALWAYS 0
-    DEPENDEES download
-    DEPENDERS patch
-    DEPENDS ${PATCH_FILE}
-    BYPRODUCTS ${SOURCE_DIR}/include/makeinclude/platform_sunos5_sunc++.GNU ${SOURCE_DIR}/ace/config-lite.h ${SOURCE_DIR}/ace/Stats.cpp
-    WORKING_DIRECTORY ${SOURCE_DIR}
-    COMMAND ${Patch_EXECUTABLE} -u -N -p1 < ${PATCH_FILE}
+  ALWAYS 0
+  DEPENDEES download
+  DEPENDERS patch
+  DEPENDS ${PATCH_FILE}
+  BYPRODUCTS ${SOURCE_DIR}/include/makeinclude/platform_sunos5_sunc++.GNU ${SOURCE_DIR}/ace/config-lite.h ${SOURCE_DIR}/ace/Stats.cpp
+  WORKING_DIRECTORY ${SOURCE_DIR}
+  COMMAND ${Patch_EXECUTABLE} -u -N -p1 < ${PATCH_FILE}
 )
 endif()
 
 configure_file(config.h.in config.h)
 ExternalProject_Add_Step( ${EXTERN} config.h
-    DEPENDEES patch
-    DEPENDERS configure
-    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/config.h
-    BYPRODUCTS ${SOURCE_DIR}/ace/config.h
-    COMMAND ${CMAKE_COMMAND} -E copy config.h ${SOURCE_DIR}/ace/config.h
+  DEPENDEES patch
+  DEPENDERS configure
+  DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/config.h
+  BYPRODUCTS ${SOURCE_DIR}/ace/config.h
+  COMMAND ${CMAKE_COMMAND} -E copy config.h ${SOURCE_DIR}/ace/config.h
 )
 
 if (UNIX)
 ExternalProject_Add_Step( ${EXTERN} platform
-    DEPENDEES patch
-    DEPENDERS configure
-    BYPRODUCTS ${SOURCE_DIR}/include/makeinclude/platform_macros.GNU
-    COMMAND echo "INSTALL_PREFIX = ${INSTALL_DIR}" > ${SOURCE_DIR}/include/makeinclude/platform_macros.GNU
-    COMMAND echo "CCFLAGS += ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_COMPILE_OPTIONS_PIC}" >> ${SOURCE_DIR}/include/makeinclude/platform_macros.GNU
-    COMMAND echo "include ${SOURCE_DIR}/include/makeinclude/platform_${ACE_PLATFORM}.GNU" >> ${SOURCE_DIR}/include/makeinclude/platform_macros.GNU
+  DEPENDEES patch
+  DEPENDERS configure
+  BYPRODUCTS ${SOURCE_DIR}/include/makeinclude/platform_macros.GNU
+  COMMAND echo "INSTALL_PREFIX = ${INSTALL_DIR}" > ${SOURCE_DIR}/include/makeinclude/platform_macros.GNU
+  COMMAND echo "CC = ${CMAKE_C_COMPILER}" >> ${SOURCE_DIR}/include/makeinclude/platform_macros.GNU
+  COMMAND echo "CXX = ${CMAKE_CXX_COMPILER}" >> ${SOURCE_DIR}/include/makeinclude/platform_macros.GNU
+  COMMAND echo "CCFLAGS += ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_COMPILE_OPTIONS_PIC}" >> ${SOURCE_DIR}/include/makeinclude/platform_macros.GNU
+  COMMAND echo "include ${SOURCE_DIR}/include/makeinclude/platform_${ACE_PLATFORM}.GNU" >> ${SOURCE_DIR}/include/makeinclude/platform_macros.GNU
 )
 endif()
 
