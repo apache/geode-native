@@ -15,7 +15,7 @@
 
 project( boost VERSION 1.68.0 LANGUAGES NONE )
 
-set( SHA265 da3411ea45622579d419bfda66f45cd0f8c32a181d84adfa936f5688388995cf )
+set( SHA256 da3411ea45622579d419bfda66f45cd0f8c32a181d84adfa936f5688388995cf )
 
 set(_B2_FLAGS
   -d0
@@ -60,7 +60,7 @@ set( EXTERN ${PROJECT_NAME}-extern )
 include(ExternalProject)
 ExternalProject_Add( ${EXTERN}
    URL "https://dl.bintray.com/boostorg/release/${PROJECT_VERSION}/source/boost_${_VERSION_UNDERSCORE}.tar.gz"
-   URL_HASH SHA256=${SHA265}
+   URL_HASH SHA256=${SHA256}
    UPDATE_COMMAND ""
    BUILD_IN_SOURCE 1
    CONFIGURE_COMMAND ${_BOOTSTRAP_COMMAND}

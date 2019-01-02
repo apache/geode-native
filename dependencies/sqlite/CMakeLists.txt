@@ -15,14 +15,14 @@
 
 project( sqlite VERSION 3260000 LANGUAGES NONE )
 
-set( SHA265 de5dcab133aa339a4cf9e97c40aa6062570086d6085d8f9ad7bc6ddf8a52096e )
+set( SHA256 de5dcab133aa339a4cf9e97c40aa6062570086d6085d8f9ad7bc6ddf8a52096e )
 
 
 set( EXTERN ${PROJECT_NAME}-extern )
 include(ExternalProject)
 ExternalProject_Add( ${EXTERN}
   URL "https://www.sqlite.org/2018/sqlite-amalgamation-${PROJECT_VERSION}.zip"
-  URL_HASH SHA256=${SHA265}
+  URL_HASH SHA256=${SHA256}
   UPDATE_COMMAND ""
   CMAKE_ARGS
     -DCMAKE_BUILD_TYPE=$<CONFIG>

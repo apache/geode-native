@@ -16,7 +16,7 @@
 project( openssl LANGUAGES NONE )
 
 set( VERSION 1.1.1a )
-set( SHA265 fc20130f8b7cbd2fb918b2f14e2f429e109c31ddd0fb38fc5d71d9ffed3f9f41 )
+set( SHA256 fc20130f8b7cbd2fb918b2f14e2f429e109c31ddd0fb38fc5d71d9ffed3f9f41 )
 
 if ("SunOS" STREQUAL ${CMAKE_SYSTEM_NAME})
   # No debug for Solaris without patching Configure
@@ -75,7 +75,7 @@ set( EXTERN ${PROJECT_NAME}-extern )
 include(ExternalProject)
 ExternalProject_Add( ${EXTERN}
    URL "https://www.openssl.org/source/openssl-${VERSION}.tar.gz"
-   URL_HASH SHA256=${SHA265}
+   URL_HASH SHA256=${SHA256}
    UPDATE_COMMAND ""
    BUILD_IN_SOURCE 1
    CONFIGURE_COMMAND "${_CONFIGURE_COMMAND}"

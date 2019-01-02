@@ -15,7 +15,7 @@
 
 project( libxml2 VERSION 2.9.7 LANGUAGES NONE )
 
-set( SHA265 f63c5e7d30362ed28b38bfa1ac6313f9a80230720b7fb6c80575eeab3ff5900c )
+set( SHA256 f63c5e7d30362ed28b38bfa1ac6313f9a80230720b7fb6c80575eeab3ff5900c )
 
 set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m64" )
 
@@ -58,7 +58,7 @@ set( EXTERN ${PROJECT_NAME}-extern )
 include(ExternalProject)
 ExternalProject_Add( ${EXTERN}
    URL "http://xmlsoft.org/sources/libxml2-${PROJECT_VERSION}.tar.gz"
-   URL_HASH SHA256=${SHA265}
+   URL_HASH SHA256=${SHA256}
    UPDATE_COMMAND ""
    BUILD_IN_SOURCE 1
    CONFIGURE_COMMAND "${_CONFIGURE_COMMAND}"

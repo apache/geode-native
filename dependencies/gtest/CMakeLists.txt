@@ -15,12 +15,12 @@
 
 project( gtest VERSION 1.8.1 LANGUAGES NONE )
 
-set( SHA265 927827c183d01734cc5cfef85e0ff3f5a92ffe6188e0d18e909c5efebf28a0c7 )
+set( SHA256 927827c183d01734cc5cfef85e0ff3f5a92ffe6188e0d18e909c5efebf28a0c7 )
 
 include(ExternalProject)
 ExternalProject_Add( ${PROJECT_NAME}-extern
   URL "https://github.com/google/googletest/archive/release-${PROJECT_VERSION}.zip"
-  URL_HASH SHA256=${SHA265}
+  URL_HASH SHA256=${SHA256}
   CMAKE_ARGS
     -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
     -DCMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}

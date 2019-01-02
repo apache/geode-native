@@ -15,7 +15,7 @@
 
 project( benchmark VERSION 1.4.1 LANGUAGES NONE )
 
-set( SHA265 61ae07eb5d4a0b02753419eb17a82b7d322786bb36ab62bd3df331a4d47c00a7 )
+set( SHA256 61ae07eb5d4a0b02753419eb17a82b7d322786bb36ab62bd3df331a4d47c00a7 )
 set( DEPENDS GTest::gtest )
 
 
@@ -27,7 +27,7 @@ set( EXTERN ${PROJECT_NAME}-extern )
 include(ExternalProject)
 ExternalProject_Add( ${EXTERN}
    URL "https://github.com/google/benchmark/archive/v${PROJECT_VERSION}.zip"
-   URL_HASH SHA256=${SHA265}
+   URL_HASH SHA256=${SHA256}
    UPDATE_COMMAND ""
    CMAKE_ARGS
     -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
