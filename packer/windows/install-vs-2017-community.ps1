@@ -33,10 +33,13 @@ $args = @('--installPath "C:\Program Files (x86)\Microsoft Visual Studio\2017\Co
 		  '--add microsoft.component.vc.runtime.ucrtsdk'
 		  '--add microsoft.visualstudio.component.windows81sdk'
 		  '--add microsoft.visualstudio.component.vc.cli.support'
+		  '--add microsoft.visualstudio.component.windows10sdk.17134'
+		  '--add microsoft.visualstudio.component.windows10sdk.16299.desktop'
 		  '--add microsoft.visualstudio.component.webdeploy'
 		  '--add microsoft.component.pythontools'
 		  '--add component.cpython2.x64'
 		  '--add microsoft.net.component.3.5.developertools'
+		  '--add microsoft.visualstudio.component.typescript.3.0'
 		  '--quiet'
 		  )
 
