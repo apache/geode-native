@@ -42,9 +42,9 @@ target_link_libraries(cpp-integration-test
     apache-geode
     integration-framework
     testobject
-    ACE
-    GTest::GTest
-    GTest::Main
+    ACE::ACE
+    GTest::gtest
+    GTest::gtest_main
     Boost::boost
     Boost::system
     Boost::log

@@ -13,15 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-project( rat LANGUAGES NONE )
+project( rat VERSION 0.12 LANGUAGES NONE )
 # used to check licenses in source
 
-set( ARTIFACT_VERSION 0.12 )
-set( ARTIFACT_SHA265 cedf78f6d213226464784ecb999b54515c97eab8a2f9b82514292f837cf88b93 )
-set( ARTIFACT_NAME apache-rat-${ARTIFACT_VERSION} )
-set( ARTIFACT_FILE apache-rat-${ARTIFACT_VERSION}-bin.tar.gz )
+set( ARTIFACT_NAME apache-rat-${PROJECT_VERSION} )
+set( ARTIFACT_FILE apache-rat-${PROJECT_VERSION}-bin.tar.gz )
 set( ARTIFACT_URL "https://www.apache.org/dyn/closer.cgi?action=download&filename=creadur/${ARTIFACT_NAME}/${ARTIFACT_FILE}" )
-
 
 file( DOWNLOAD ${ARTIFACT_URL} ${CMAKE_CURRENT_BINARY_DIR}/${ARTIFACT_FILE} )
 execute_process(

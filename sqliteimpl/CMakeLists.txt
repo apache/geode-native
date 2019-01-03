@@ -41,7 +41,7 @@ target_include_directories(SqLiteImpl
 target_link_libraries(SqLiteImpl
   PUBLIC
     apache-geode
-    sqlite
+    SQLite::sqlite3
   PRIVATE
     _WarningsAsError
 )

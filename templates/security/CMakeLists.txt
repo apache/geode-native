@@ -25,7 +25,7 @@ add_library(securityImpl SHARED
 )
 
 set_target_properties(securityImpl PROPERTIES
-	FOLDER cpp/test/integration
+  FOLDER cpp/test/integration
 )
 
 include(GenerateExportHeader)
@@ -33,12 +33,13 @@ generate_export_header(securityImpl)
 
 target_include_directories(securityImpl
   PUBLIC
-	$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+)
 
 target_link_libraries(securityImpl
   PUBLIC
     apache-geode
-    crypto
+    OpenSSL::Crypto
   PRIVATE
     _WarningsAsError
 )

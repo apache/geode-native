@@ -20,44 +20,50 @@ set(CMAKE_CSharp_FLAGS "/langversion:5")
 
 get_target_property(JAVAOBJECT_JAR_PATH javaobject JAR_FILE)
 
-set(CRYPTO_IMPL_PATH "/../../../cryptoimpl/${CMAKE_BUILD_TYPE}")
-set(OPENSSL_PATH "/../../../dependencies/openssl/openssl-extern-prefix/${CMAKE_BUILD_TYPE}/bin")
-
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/packages.config ${CMAKE_CURRENT_BINARY_DIR}/packages.config COPYONLY)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Config.cs.in ${CMAKE_CURRENT_BINARY_DIR}/Config.cs)
 
 add_library( ${PROJECT_NAME} SHARED
-    Cluster.cs
-    ClusterTest.cs
-    Config.cs.in
-    ${CMAKE_CURRENT_BINARY_DIR}/Config.cs
-    GfshTest.cs
-    GfshExecuteTest.cs
-    Gfsh.cs
-    GfshExecute.cs
-    CacheXml.cs
-    CacheXmlTests.cs
-    CqOperationTest.cs
-    FunctionExecutionTest.cs
-    QueryTest.cs
-    RegionTest.cs
-    RegionSSLTest.cs
-    Position.cs
-    TestBase.cs
-    cache.xml
-    geode.properties
-    xunit.runner.json
-    packages.config
-    SerializationTests.cs
-    ClientSslKeys/client_keystore.password.pem
-    ClientSslKeys/client_truststore.pem
-    ServerSslKeys/server_keystore.jks
-    ServerSslKeys/server_truststore.jks
+  Cluster.cs
+  ClusterTest.cs
+  Config.cs.in
+  ${CMAKE_CURRENT_BINARY_DIR}/Config.cs
+  GfshTest.cs
+  GfshExecuteTest.cs
+  Gfsh.cs
+  GfshExecute.cs
+  CacheXml.cs
+  CacheXmlTests.cs
+  CqOperationTest.cs
+  FunctionExecutionTest.cs
+  QueryTest.cs
+  RegionTest.cs
+  RegionSSLTest.cs
+  Position.cs
+  TestBase.cs
+  cache.xml
+  geode.properties
+  xunit.runner.json
+  packages.config
+  SerializationTests.cs
+  ClientSslKeys/client_keystore.password.pem
+  ClientSslKeys/client_truststore.pem
+  ServerSslKeys/server_keystore.jks
+  ServerSslKeys/server_truststore.jks
 )
 
-set_source_files_properties(cache.xml server.xml xunit.runner.json geode.properties ClientSslKeys/client_keystore.password.pem ClientSslKeys/client_truststore.pem ServerSslKeys/server_keystore.jks ServerSslKeys/server_truststore.jks PROPERTIES
-  VS_COPY_TO_OUT_DIR Always
-  VS_TOOL_OVERRIDE "None"
+set_source_files_properties(
+  cache.xml
+  server.xml
+  xunit.runner.json
+  geode.properties
+  ClientSslKeys/client_keystore.password.pem
+  ClientSslKeys/client_truststore.pem
+  ServerSslKeys/server_keystore.jks
+  ServerSslKeys/server_truststore.jks
+  PROPERTIES
+    VS_COPY_TO_OUT_DIR Always
+    VS_TOOL_OVERRIDE None
 )
 
 target_link_libraries(${PROJECT_NAME}
@@ -91,3 +97,13 @@ if(NOT "${STRONG_NAME_KEY}" STREQUAL "")
 endif()
 
 add_dependencies(${PROJECT_NAME} nuget-restore)
+
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_directory
+    $<SHELL_PATH:$<TARGET_GENEX_EVAL:OpenSSL::SSL,$<TARGET_PROPERTY:OpenSSL::SSL,INTERFACE_RUNTIME_DIR>>>
+    $<SHELL_PATH:$<TARGET_FILE_DIR:${PROJECT_NAME}>>
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    $<SHELL_PATH:$<TARGET_FILE:cryptoImpl>>
+    $<$<CONFIG:Debug>:$<SHELL_PATH:$<TARGET_PDB_FILE:cryptoImpl>>>
+    $<SHELL_PATH:$<TARGET_FILE_DIR:${PROJECT_NAME}>>
+)

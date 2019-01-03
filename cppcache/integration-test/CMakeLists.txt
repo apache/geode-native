@@ -24,7 +24,7 @@ add_library(test-cppcache-utils STATIC
 )
 target_link_libraries(test-cppcache-utils
   PRIVATE
-    ACE
+    ACE::ACE
     _WarningsAsError
   PUBLIC
     apache-geode
@@ -49,7 +49,7 @@ add_clangformat(test-cppcache-utils)
 add_library(unit_test_callbacks SHARED LibraryCallbacks.cpp)
 target_link_libraries(unit_test_callbacks
   PRIVATE
-    ACE
+    ACE::ACE
     _WarningsAsError
   PUBLIC
     apache-geode
@@ -76,7 +76,7 @@ macro(generate_config INPUT TEMP OUTPUT)
 endmacro()
 
 # Add lazy loaded shared library paths to test environment
-foreach( lib ssl sqlite )
+foreach( lib OpenSSL::SSL SQLite::sqlite3 )
   get_target_property(library_path ${lib} INTERFACE_LIBRARY_DIR)
   set(LD_LIBRARY_PATH ${LD_LIBRARY_PATH} ${library_path})
   get_target_property(runtime_path ${lib} INTERFACE_RUNTIME_DIR)
@@ -99,7 +99,7 @@ foreach(FILE ${SOURCES})
 
   target_link_libraries(${TEST}
     PRIVATE
-      ACE
+      ACE::ACE
       test-cppcache-utils
       _WarningsAsError
       _CppCodeCoverage

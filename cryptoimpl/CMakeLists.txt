@@ -38,13 +38,13 @@ set_target_properties(cryptoImpl PROPERTIES
 
 target_link_libraries(cryptoImpl
   PRIVATE
-    ACE_SSL
+    ACE::ACE_SSL
     _WarningsAsError
   PUBLIC
-   apache-geode
-   crypto
-   ssl
-   c++11
+    apache-geode
+    OpenSSL::Crypto
+    OpenSSL::SSL
+    c++11
 )
 
 add_clangformat(cryptoImpl)

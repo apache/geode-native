@@ -38,6 +38,12 @@ if(CMAKE_GENERATOR MATCHES Win64*)
   endif()
 endif()
 
+get_property(GENERATOR_IS_MULTI_CONFIG GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
+if(NOT CMAKE_BUILD_TYPE AND NOT GENERATOR_IS_MULTI_CONFIG)
+  message(STATUS "Using default build type 'Debug'.")
+  set(CMAKE_BUILD_TYPE Debug CACHE STRING "Specifies the build type on single-configuration generators." FORCE)
+endif()
+
 set(CMAKE_DOTNET_TARGET_FRAMEWORK_VERSION "4.5.2")
 set(DOTNET_TARGET_FRAMEWORK_VERSION "4.5.2")
 set(BUILD_BITS 64 CACHE STRING "Build for 64 (Geode default) or 32 bit.")
@@ -89,11 +95,6 @@ list(GET PRODUCT_VERSION_LIST 3 PRODUCT_VERSION_BUILD)
 # specified at the time of generation, e.g.:
 # $ cmake -G Xcode -DCMAKE_INSTALL_PREFIX=/my/favorite/location ..
 set(CMAKE_INSTALL_PREFIX "nativeclient" CACHE STRING "Install prefix")
-
-set(CMAKE_CONFIGURATION_TYPES Debug Release)
-if (NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Debug)
-endif()
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -294,14 +295,6 @@ find_package(Java 1.8.0.60 REQUIRED COMPONENTS Development)
 
 if ("${CMAKE_AR}" STREQUAL "CMAKE_AR-NOTFOUND")
   message(FATAL_ERROR "Utility ar not found.")
-endif()
-
-if (WIN32 OR ${CMAKE_GENERATOR} STREQUAL "Xcode")
-  set(CMAKE_USES_BUILDTYPE TRUE)
-  set ( _DEBUG_OR_RELEASE $<$<CONFIG:Debug>:Debug>$<$<NOT:$<CONFIG:Debug>>:Release>)
-else()
-  set(CMAKE_USES_BUILDTYPE FALSE)
-  set ( _DEBUG_OR_RELEASE .)
 endif()
 
 # Default to only showing output on failure for unit tests but allow

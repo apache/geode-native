@@ -17,7 +17,7 @@ cmake_minimum_required(VERSION 3.10)
 project(framework LANGUAGES CXX)
 
 add_library(framework STATIC
-	FwkBB.hpp
+  FwkBB.hpp
   FwkBBClient.cpp
   FwkBBClient.hpp
   FwkBBServer.cpp
@@ -26,25 +26,25 @@ add_library(framework STATIC
   FwkExport.hpp
   FwkLog.cpp
   FwkLog.hpp
-	FwkStrCvt.cpp
+  FwkStrCvt.cpp
   FwkStrCvt.hpp
   GsRandom.cpp
   GsRandom.hpp
   IpcHandler.cpp
   IpcHandler.hpp
-	Service.cpp
+  Service.cpp
   Service.hpp
-	TcpIpc.cpp
+  TcpIpc.cpp
   TcpIpc.hpp
-	TimeBomb.cpp
+  TimeBomb.cpp
   TimeBomb.hpp
-	UDPIpc.cpp
+  UDPIpc.cpp
   UDPIpc.hpp
 )
 
 set_target_properties(framework PROPERTIES
-	CXX_VISIBILITY_PRESET hidden
-	VISIBILITY_INLINES_HIDDEN ON
+  CXX_VISIBILITY_PRESET hidden
+  VISIBILITY_INLINES_HIDDEN ON
 )
 
 target_compile_options(framework
@@ -58,16 +58,16 @@ target_include_directories(framework
     # headers for this library are referenced relative to the parent
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>
   PRIVATE
-  	$<TARGET_PROPERTY:apache-geode,SOURCE_DIR>/../src
+    $<TARGET_PROPERTY:apache-geode,SOURCE_DIR>/../src
 )
 
 target_link_libraries(framework
   PUBLIC
     apache-geode
   PRIVATE
-    ACE
-		internal
-	  _WarningsAsError
+    ACE::ACE
+    internal
+    _WarningsAsError
 )
 
 add_clangformat(framework)
