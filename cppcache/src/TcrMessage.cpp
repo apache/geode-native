@@ -862,7 +862,7 @@ void TcrMessage::processChunk(const uint8_t* bytes, int32_t len,
       if (bytes != nullptr) {
         _GEODE_SAFE_DELETE_ARRAY(bytes);
       }
-      // nothing else to done since this will be taken care of at higher level
+
       break;
     }
     default: {

@@ -221,9 +221,7 @@ TEST(RegionPutGetAllTest, nullValue) {
 
   auto keys = to_keys(map);
 
-  EXPECT_THROW(region->putAll(map), CacheServerException);
-
-  localDestroy(*region, keys);
+  ASSERT_THROW(region->putAll(map), CacheServerException);
 }
 
 }  // namespace
