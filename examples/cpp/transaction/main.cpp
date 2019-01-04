@@ -44,10 +44,8 @@ auto keys = {
 
 
 int getValueFromExternalSystem() {
-  std::random_device rd{};
-  static std::default_random_engine e{rd()};
-  static std::uniform_int_distribution<int> d{0, 9};
-  auto value = d(e);
+  static thread_local std::default_random_engine generator(std::random_device{}());
+  auto value = std::uniform_int_distribution<int32_t>{0, 9}(generator);
 
   if (!value) {
     throw "failed to get from external system";
