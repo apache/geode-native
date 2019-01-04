@@ -51,11 +51,6 @@
       "destination":"$Env:ProgramFiles/Amazon/Ec2ConfigService/Scripts/init-ssh.ps1"
     },
     {
-      "type":"file",
-      "source":"windows/fix-sshuser-permission.ps1",
-      "destination":"$Env:ProgramFiles/Amazon/Ec2ConfigService/Scripts/fix-sshuser-permission.ps1"
-    },
-    {
       "type":"powershell",
       "scripts":[
         "windows/install-ssh.ps1"
