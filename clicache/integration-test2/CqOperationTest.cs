@@ -176,7 +176,7 @@ namespace Apache.Geode.Client.IntegrationTests
     }
 
     [Trait("Category", "Integration")]
-    public class CqOperationTest : TestBase, IDisposable
+    public class CqOperationTest : TestBase
     {
         private static int waitInterval_ = 1000;
 
@@ -184,11 +184,6 @@ namespace Apache.Geode.Client.IntegrationTests
         {
         }
 
-        public void Dispose()
-        {
-           
-        }
-  
         [Fact]
         public void PdxSerializableNotificationsHaveCorrectValues()
         {
