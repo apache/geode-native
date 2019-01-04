@@ -16,6 +16,7 @@
  */
 
 #include <iostream>
+#include <random>
 
 #include <geode/CacheFactory.hpp>
 #include <geode/CacheTransactionManager.hpp>
@@ -41,12 +42,13 @@ auto keys = {
     "Key10"
 };
 
-void initExternalSystem() {
-  srand (time(NULL));
-}
 
-int32_t getValueFromExternalSystem() {
-  auto value = rand() % 10;
+int getValueFromExternalSystem() {
+  std::random_device rd{};
+  static std::default_random_engine e{rd()};
+  static std::uniform_int_distribution<int> d{0, 9};
+  auto value = d(e);
+
   if (!value) {
     throw "failed to get from external system";
   }
@@ -55,7 +57,6 @@ int32_t getValueFromExternalSystem() {
 }
 
 int main(int argc, char** argv) {
-  initExternalSystem();
   auto cache = CacheFactory().set("log-level", "none").create();
   auto poolFactory = cache.getPoolManager().createFactory();
 
@@ -72,8 +73,8 @@ int main(int argc, char** argv) {
 
   auto retries = 5;
   while (retries--) {
-    transactionManager->begin();
     try {
+      transactionManager->begin();
       for (auto& key : keys) {
         auto value = getValueFromExternalSystem();
         region->put(key, value);
