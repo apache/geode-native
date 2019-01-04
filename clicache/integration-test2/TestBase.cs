@@ -52,7 +52,7 @@ namespace Apache.Geode.Client.IntegrationTests
 
         public string CreateTestCaseDirectoryName()
         {
-            return currentTest.TestCase.TestMethod.Method.Name; //currentTest.DisplayName;
+            return currentTest.TestCase.TestMethod.Method.Name;
         }
     }
 }
