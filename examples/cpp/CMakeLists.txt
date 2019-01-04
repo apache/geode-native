@@ -36,6 +36,9 @@ add_example(NAME continuousquery
 add_example(NAME dataserializable
     SOURCE main.cpp Order.cpp Order.hpp)
 
+add_example(NAME function-execution
+        SOURCE main.cpp)
+
 add_example(NAME pdxserializable
     SOURCE main.cpp Order.cpp Order.hpp)
 
@@ -45,11 +48,11 @@ add_example(NAME pdxserializer
 add_example(NAME put-get-remove
     SOURCE main.cpp)
 
-add_example(NAME function-execution
-    SOURCE main.cpp)
-
 add_example(NAME remotequery
     SOURCE main.cpp Order.cpp Order.hpp)
+
+add_example(NAME transaction
+        SOURCE main.cpp)
 
   install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
   DESTINATION examples/
