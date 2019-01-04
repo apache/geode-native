@@ -1,5 +1,5 @@
 # Transaction example
-This is a very simple example showing how to use Transaction Manger.  This example shows
+This is a very simple example showing how to use TransactionManager.  This example shows
 how to begin a transaction, commit a transaction, and rollback a transaction while showing
 exception handling.  We commit two keys and rollback adding a third key and destroying an
 existing key while showing how to handle exceptions.
@@ -39,17 +39,12 @@ existing key while showing how to handle exceptions.
 
   ```
   $ build/transaction
-  Created cache
-  Created region 'exampleRegion'
-  Began transaction #1
-  Committed transaction #1
-  Obtained the first entry from the Region
-  Obtained the second entry from the Region
-  Began transaction #2
-  Rolled back transaction #2
-  Obtained the first entry from the Region
-  Obtained the second entry from the Region
-  Third entry not found
+    Created cache
+    Created region 'exampleRegion'
+    Rolled back transaction - retrying(4)
+    Rolled back transaction - retrying(3)
+    Rolled back transaction - retrying(2)
+    Committed transaction - exiting
   ```
 
 1. Stop the server

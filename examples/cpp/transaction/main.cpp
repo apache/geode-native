@@ -23,91 +23,68 @@
 #include <geode/RegionFactory.hpp>
 #include <geode/RegionShortcut.hpp>
 
-using namespace apache::geode::client;
+using apache::geode::client::Cache;
+using apache::geode::client::CacheFactory;
+using apache::geode::client::CacheTransactionManager;
+using apache::geode::client::RegionShortcut;
+
+auto keys = {
+    "Key1",
+    "Key2",
+    "Key3",
+    "Key4",
+    "Key5",
+    "Key6",
+    "Key7",
+    "Key8",
+    "Key9",
+    "Key10"
+};
+
+void initExternalSystem() {
+  srand (time(NULL));
+}
+
+int32_t getValueFromExternalSystem() {
+  auto value = rand() % 10;
+  if (!value) {
+    throw "failed to get from external system";
+  }
+
+  return value;
+}
 
 int main(int argc, char** argv) {
-  try {
-    auto cacheFactory = CacheFactory();
-    cacheFactory.set("log-level", "none");
-    auto cache = cacheFactory.create();
-    auto poolFactory = cache.getPoolManager().createFactory();
+  initExternalSystem();
+  auto cache = CacheFactory().set("log-level", "none").create();
+  auto poolFactory = cache.getPoolManager().createFactory();
 
-    std::cout << "Created cache" << std::endl;
+  std::cout << "Created cache" << std::endl;
 
-    poolFactory.addLocator("localhost", 10334);
-    auto pool = poolFactory.create("pool");
-    auto regionFactory = cache.createRegionFactory(RegionShortcut::PROXY);
-    auto region = regionFactory.setPoolName("pool").create("exampleRegion");
+  poolFactory.addLocator("localhost", 10334);
+  auto pool = poolFactory.create("pool");
+  auto regionFactory = cache.createRegionFactory(RegionShortcut::PROXY);
+  auto region = regionFactory.setPoolName("pool").create("exampleRegion");
 
-    std::cout << "Created region 'exampleRegion'" << std::endl;
+  std::cout << "Created region 'exampleRegion'" << std::endl;
 
-    auto txManager = cache.getCacheTransactionManager();
+  auto transactionManager = cache.getCacheTransactionManager();
 
-    txManager->begin();
-
-    std::cout << "Began transaction #1" << std::endl;
-
-    region->put("Key1", "Value1");
-    region->put("Key2", "Value2");
-
+  auto retries = 5;
+  while (retries--) {
+    transactionManager->begin();
     try {
-      txManager->commit();
-      std::cout << "Committed transaction #1" << std::endl;
-    } catch (const CommitConflictException&) {
-      std::cout << "Transaction #1 CommitConflictException!" << std::endl;
-      return 1;
+      for (auto& key : keys) {
+        auto value = getValueFromExternalSystem();
+        region->put(key, value);
+      }
+      transactionManager->commit();
+      std::cout << "Committed transaction - exiting" << std::endl;
+      break;
+    } catch ( ... ) {
+      transactionManager->rollback();
+      std::cout << "Rolled back transaction - retrying(" << retries << ")" << std::endl;
     }
-
-    if (region->containsKeyOnServer(CacheableKey::create("Key1"))) {
-      std::cout << "Obtained the first entry from the Region" << std::endl;
-    }
-    else {
-      std::cout << "ERROR: First entry not found" << std::endl;
-    }
-
-    if (region->containsKeyOnServer(CacheableKey::create("Key2"))) {
-      std::cout << "Obtained the second entry from the Region" << std::endl;
-    }
-    else {
-      std::cout << "ERROR: Second entry not found" << std::endl;
-    }
-
-    txManager->begin();
-
-    std::cout << "Began transaction #2" << std::endl;
-
-    region->put("Key3", "Value3");
-
-    region->destroy("Key1");
-
-    txManager->rollback();
-
-    std::cout << "Rolled back transaction #2" << std::endl;
-
-    if (region->containsKeyOnServer(CacheableKey::create("Key1"))) {
-      std::cout << "Obtained the first entry from the Region" << std::endl;
-    }
-    else {
-      std::cout << "ERROR: second entry not found!" << std::endl;
-    }
-
-    if (region->containsKeyOnServer(CacheableKey::create("Key2"))) {
-      std::cout << "Obtained the second entry from the Region" << std::endl;
-    }
-    else {
-      std::cout << "ERROR: second entry not found!" << std::endl;
-    }
-
-    if (region->containsKeyOnServer(CacheableKey::create("Key3"))) {
-      std::cout << "ERROR: Obtained the third entry from the Region" << std::endl;
-    }
-    else {
-      std::cout << "Third entry not found" << std::endl;
-    }
-
-    cache.close();
-  }
-  catch (const Exception& ex) {
-    std::cout << "Transaction Geode Exception: " << ex.getMessage() << std::endl;
   }
 }
+
