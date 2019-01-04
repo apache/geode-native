@@ -133,20 +133,50 @@ namespace Apache.Geode.Client.IntegrationTests
             else
             {
                 WriteLine("GeodeServer Start: gfsh failed to exit, force killing.");
-                try
-                {
-                    gfsh.Kill();
-                }
-                catch
-                {
-                    // ignored
-                }
+                KillAndIgnore(gfsh);
             }
-
+            CancelErrorReadAndIgnore(gfsh);
+            CancelOutputReadAndIgnore(gfsh);
 
             ExtractConnectionCommand(cmd);
 
             return gfsh.ExitCode;
+        }
+
+        private static void CancelOutputReadAndIgnore(Process gfsh)
+        {
+            try
+            {
+                gfsh.CancelOutputRead();
+            }
+            catch
+            {
+                // ignored
+            }
+        }
+
+        private static void CancelErrorReadAndIgnore(Process gfsh)
+        {
+            try
+            {
+                gfsh.CancelErrorRead();
+            }
+            catch
+            {
+                // ignored
+            }
+        }
+
+        private static void KillAndIgnore(Process gfsh)
+        {
+            try
+            {
+                gfsh.Kill();
+            }
+            catch
+            {
+                // ignored
+            }
         }
 
         private void WriteLine(string format, params object[] args)
