@@ -18,6 +18,7 @@
 using System;
 using System.IO;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Apache.Geode.Client.IntegrationTests
 {
@@ -26,13 +27,14 @@ namespace Apache.Geode.Client.IntegrationTests
     {
         private readonly Cache cache_;
 
-        public RegionSSLTest()
+        public RegionSSLTest(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
             var cacheFactory = new CacheFactory();
+            cacheFactory.Set("log-level", "none");
             cacheFactory.Set("ssl-enabled", "true");
-            cacheFactory.Set("ssl-keystore", Environment.CurrentDirectory + "\\ClientSslKeys\\client_keystore.password.pem");
+            cacheFactory.Set("ssl-keystore", Environment.CurrentDirectory + @"\ClientSslKeys\client_keystore.password.pem");
             cacheFactory.Set("ssl-keystore-password", "gemstone");
-            cacheFactory.Set("ssl-truststore", Environment.CurrentDirectory + "\\ClientSslKeys\\client_truststore.pem");
+            cacheFactory.Set("ssl-truststore", Environment.CurrentDirectory + @"\ClientSslKeys\client_truststore.pem");
 
             cache_ = cacheFactory.Create();
         }
@@ -45,20 +47,18 @@ namespace Apache.Geode.Client.IntegrationTests
         [Fact]
         public void SslPutGetTest()
         {
-            using (var cluster = new Cluster(CreateTestCaseDirectoryName(), 1, 1))
+            using (var cluster = new Cluster(output, CreateTestCaseDirectoryName(), 1, 1))
             {
                 cluster.UseSSL = true;
                 Assert.True(cluster.Start());
-                Assert.Equal(cluster.Gfsh
+                Assert.Equal(0, cluster.Gfsh
                     .create()
                     .region()
                     .withName("testRegion1")
                     .withType("PARTITION")
-                    .execute(), 0);
+                    .execute());
 
-                cache_.GetPoolFactory()
-                    .AddLocator(cluster.Gfsh.LocatorBindAddress, cluster.Gfsh.LocatorPort)
-                    .Create("default");
+                cluster.ApplyLocators(cache_.GetPoolFactory()).Create("default");
 
                 var regionFactory = cache_.CreateRegionFactory(RegionShortcut.PROXY)
                             .SetPoolName("default");

@@ -22,6 +22,7 @@ using System.Net;
 using System.IO;
 using System.Net.Sockets;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Apache.Geode.Client.IntegrationTests
 {
@@ -33,37 +34,30 @@ namespace Apache.Geode.Client.IntegrationTests
         private List<Locator> locators_;
         private List<Server> servers_;
         private string name_;
-        private bool usessl_;
+        internal int jmxManagerPort = Framework.FreeTcpPort();
+        internal string keyStore_ = Environment.CurrentDirectory + "/ServerSslKeys/server_keystore.jks";
+        internal string keyStorePassword_ = "gemstone";
+        internal string trustStore_ = Environment.CurrentDirectory + "/ServerSslKeys/server_truststore.jks";
+        internal string trustStorePassword_ = "gemstone";
 
         public Gfsh Gfsh { get; private set; }
 
-        private const string sslPassword_ = "gemstone";
+        public bool UseSSL { get; set; }
 
-        public bool UseSSL
+        internal PoolFactory ApplyLocators(PoolFactory poolFactory)
         {
-            get
+            foreach (var locator in locators_)
             {
-                return usessl_;
+                poolFactory.AddLocator(locator.Address.address, locator.Address.port);
             }
-            set
-            {
-                usessl_ = value;
-                Gfsh.UseSSL = value;
-                if (value)
-                {
-                    var currentDir = Environment.CurrentDirectory;
-                    Gfsh.Keystore = currentDir + "/ServerSslKeys/server_keystore.jks";
-                    Gfsh.KeystorePassword = sslPassword_;
-                    Gfsh.Truststore = currentDir + "/ServerSslKeys/server_truststore.jks";
-                    Gfsh.TruststorePassword = sslPassword_;
-                }
-            }
+
+            return poolFactory;
         }
 
-        public Cluster(string name, int locatorCount, int serverCount)
+        public Cluster(ITestOutputHelper output, string name, int locatorCount, int serverCount)
         {
             started_ = false;
-            Gfsh = new GfshExecute();
+            Gfsh = new GfshExecute(output);
             UseSSL = false;
             name_ = name;
             locatorCount_ = locatorCount;
@@ -134,6 +128,32 @@ namespace Apache.Geode.Client.IntegrationTests
                     .execute();
             }
         }
+
+        public Cache CreateCache(IDictionary<string, string> properties)
+        {
+            var cacheFactory = new CacheFactory();
+
+            cacheFactory
+                .Set("log-level", "none")
+                .Set("statistic-sampling-enabled", "false");
+
+            foreach (var pair in properties)
+            {
+                cacheFactory.Set(pair.Key, pair.Value);
+            }
+
+            var cache = cacheFactory.Create();
+
+            ApplyLocators(cache.GetPoolFactory()).Create("default");
+
+            return cache;
+        }
+
+        public Cache CreateCache()
+        {
+            return CreateCache(new Dictionary<string, string>());
+        }
+
     }
 
     public struct Address
@@ -156,7 +176,7 @@ namespace Apache.Geode.Client.IntegrationTests
             name_ = name;
             var address = new Address();
             address.address = "localhost";
-            address.port = cluster.Gfsh.LocatorPort;
+            address.port = Framework.FreeTcpPort();
             Address = address;
         }
 
@@ -175,15 +195,35 @@ namespace Apache.Geode.Client.IntegrationTests
                     .withBindAddress(Address.address)
                     .withPort(Address.port)
                     .withMaxHeap("256m")
-                    .withJmxManagerPort(cluster_.Gfsh.JmxManagerPort)
+                    .withJmxManagerPort(cluster_.jmxManagerPort)
+                    .withJmxManagerStart(true)
                     .withHttpServicePort(0);
                 if (cluster_.UseSSL)
                 {
-                    locator.withUseSsl()
-                        .withConnect(false);
+                   locator
+                        .withConnect(false)
+                        .withSslEnableComponents("locator,jmx")
+                        .withSslKeyStore(cluster_.keyStore_)
+                        .withSslKeyStorePassword(cluster_.keyStorePassword_)
+                        .withSslTrustStore(cluster_.trustStore_)
+                        .withSslTrustStorePassword(cluster_.trustStorePassword_);
                 }
                 result = locator.execute();
+
+                if (cluster_.UseSSL)
+                {
+                    cluster_.Gfsh.connect()
+                        .withJmxManager(Address.address, cluster_.jmxManagerPort)
+                        .withUseSsl(true)
+                        .withKeyStore(cluster_.keyStore_)
+                        .withKeyStorePassword(cluster_.keyStorePassword_)
+                        .withTrustStore(cluster_.trustStore_)
+                        .withTrustStorePassword(cluster_.trustStorePassword_)
+                        .execute();
+                }
+
                 started_ = true;
+
             }
             return result;
         }
@@ -235,7 +275,13 @@ namespace Apache.Geode.Client.IntegrationTests
                     .withMaxHeap("1g");
                 if (cluster_.UseSSL)
                 {
-                    server.withUseSsl();
+                    server
+                        .withSslEnableComponents("server,locator,jmx")
+                        .withSslKeyStore(cluster_.keyStore_)
+                        .withSslKeyStorePassword(cluster_.keyStorePassword_)
+                        .withSslTrustStore(cluster_.trustStore_)
+                        .withSslTrustStorePassword(cluster_.trustStorePassword_);
+
                 }
                 result = server.execute();
                 started_ = true;
