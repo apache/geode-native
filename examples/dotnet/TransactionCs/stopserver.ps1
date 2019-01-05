@@ -13,17 +13,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cmake_minimum_required(VERSION 3.10)
+$GFSH_PATH = ""
+if (Get-Command gfsh -ErrorAction SilentlyContinue)
+{
+    $GFSH_PATH = "gfsh"
+}
+else
+{
+    if (-not (Test-Path env:GEODE_HOME))
+    {
+        Write-Host "Could not find gfsh.  Please set the GEODE_HOME path. e.g. "
+        Write-Host "(Powershell) `$env:GEODE_HOME = <path to Geode>"
+        Write-Host " OR"
+        Write-Host "(Command-line) set %GEODE_HOME% = <path to Geode>"
+    }
+    else
+    {
+        $GFSH_PATH = "$env:GEODE_HOME\bin\gfsh.bat"
+    }
+}
 
-project(@PRODUCT_DLL_NAME@.DotNet.Examples LANGUAGES NONE)
-
-add_subdirectory(AuthInitialize)
-add_subdirectory(ContinuousQueryCs)
-add_subdirectory(DataSerializableCs)
-add_subdirectory(FunctionExecutionCs)
-add_subdirectory(PdxAutoSerializer)
-add_subdirectory(PdxSerializableCs)
-add_subdirectory(PutGetRemove)
-add_subdirectory(RemoteQueryCs)
-add_subdirectory(TransactionCs)
-
+if ($GFSH_PATH -ne "")
+{
+   Invoke-Expression "$GFSH_PATH -e 'connect' -e 'destroy region --name=exampleRegion' -e 'stop server --name=server' -e 'stop locator --name=locator'"
+}
