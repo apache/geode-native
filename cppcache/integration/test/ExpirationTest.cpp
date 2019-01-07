@@ -75,7 +75,7 @@ std::shared_ptr<Region> setupRegion(Cache& cache,
   return region;
 }
 
-TEST(AttributesMutatorTest, verifyExpiration) {
+TEST(ExpirationTest, verifyExpiration) {
   Cluster cluster{LocatorCount{1}, ServerCount{1}};
   cluster.getGfsh()
       .create()

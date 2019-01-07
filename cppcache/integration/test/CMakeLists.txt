@@ -14,16 +14,15 @@
 # limitations under the License.
 
 add_executable(cpp-integration-test
-  AttributesMutatorTest.cpp
   ChunkedHeaderTest.cpp
-  ExampleTest.cpp
-  RegionPutGetAllTest.cpp
-  PdxInstanceTest.cpp
-  RegisterKeysTest.cpp
-  StructTest.cpp
-  EnableChunkHandlerThreadTest.cpp
   DataSerializableTest.cpp
+  EnableChunkHandlerThreadTest.cpp
+  ExampleTest.cpp
+  ExpirationTest.cpp
   FunctionExecutionTest.cpp
+  PdxInstanceTest.cpp
+  RegionPutGetAllTest.cpp
+  RegisterKeysTest.cpp
   StructTest.cpp
 )
 
