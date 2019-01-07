@@ -14,6 +14,7 @@
 # limitations under the License.
 
 add_executable(cpp-integration-test
+  AttributesMutatorTest.cpp
   ChunkedHeaderTest.cpp
   ExampleTest.cpp
   RegionPutGetAllTest.cpp
