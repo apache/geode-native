@@ -57,17 +57,8 @@ Cache createCache() {
   return cache;
 }
 
-std::shared_ptr<Pool> createPool(Cluster& cluster, Cache& cache) {
-  auto poolFactory = cache.getPoolManager().createFactory();
-  cluster.applyLocators(poolFactory);
-  poolFactory.setPRSingleHopEnabled(true);
-  return poolFactory.create("default");
-}
-
-std::shared_ptr<Region> setupRegion(Cache& cache,
-                                    const std::shared_ptr<Pool>& pool) {
-  auto region = cache.createRegionFactory(RegionShortcut::CACHING_PROXY)
-                    .setPoolName(pool->getName())
+std::shared_ptr<Region> setupRegion(Cache& cache) {
+  auto region = cache.createRegionFactory(RegionShortcut::LOCAL)
                     .setEntryTimeToLive(ExpirationAction::LOCAL_INVALIDATE,
                                         std::chrono::seconds(5))
                     .create("region");
@@ -76,17 +67,8 @@ std::shared_ptr<Region> setupRegion(Cache& cache,
 }
 
 TEST(ExpirationTest, verifyExpiration) {
-  Cluster cluster{LocatorCount{1}, ServerCount{1}};
-  cluster.getGfsh()
-      .create()
-      .region()
-      .withName("region")
-      .withType("PARTITION")
-      .execute();
-
   auto cache = createCache();
-  auto pool = createPool(cluster, cache);
-  auto region = setupRegion(cache, pool);
+  auto region = setupRegion(cache);
 
   region->put(1, "one");
   std::this_thread::sleep_for(std::chrono::seconds(3));
