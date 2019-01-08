@@ -3,7 +3,7 @@
     "region":"us-west-2",
     "source_ami":"",
     "source_image_name":"X.vmx",
-    "image_name":"windows-2012-r2-base"
+    "image_name":"windows-2016-base"
   },
   "builders":[
     {
@@ -32,12 +32,6 @@
       "type":"file",
       "source":"windows/Packer.psm1",
       "destination":"Documents/WindowsPowerShell/Modules/Packer/Packer.psm1"
-    },
-    {
-      "type":"powershell",
-      "scripts":[
-        "windows/install-windows-8.1-2012-r2-wmf-5.ps1"
-      ]
     },
     {
       "type":"powershell",
