@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cmake_minimum_required(VERSION 3.4)
 project(apache-geode-static LANGUAGES CXX)
 
 add_library(apache-geode-static STATIC ${SOURCES_ALL})
@@ -33,6 +32,19 @@ target_link_libraries(apache-geode-static
 
 add_dependencies(client-libraries apache-geode-static)
 
+set_target_properties(apache-geode-static PROPERTIES
+  FOLDER cpp
+)
+
+if (MSVC)
+  cmake_minimum_required(VERSION 3.13)
+  set_target_properties(apache-geode-static PROPERTIES
+    INTERPROCEDURAL_OPTIMIZATION_RELEASE FALSE
+    INTERPROCEDURAL_OPTIMIZATION_RELWITHDEBINFO FALSE
+  )
+endif()
+
+set_target_properties(apache-geode-static PROPERTIES INTERPROCEDURAL_OPTIMIZATION FALSE)
 
 # BEGIN Visual Studio organization
 source_group("Header Files" REGULAR_EXPRESSION "\.(hpp|inl)$")
@@ -50,7 +62,6 @@ if (USE_PCH)
   endif()
 
   set_target_properties(apache-geode-static PROPERTIES
-    FOLDER cpp
     COTIRE_ENABLE_PRECOMPILED_HEADER TRUE
     COTIRE_ADD_UNITY_BUILD TRUE
     COTIRE_PREFIX_HEADER_IGNORE_PATH "${_COTIRE_PREFIX_HEADER_IGNORE_PATH}"
@@ -59,9 +70,6 @@ if (USE_PCH)
   set_source_files_properties(cppcache/version.h PROPERTIES GENERATED TRUE)
 
   cotire(apache-geode-static)
-else()
-  set_target_properties(apache-geode-static PROPERTIES
-    FOLDER cpp)
 endif()
 
 add_clangformat(apache-geode-static)
