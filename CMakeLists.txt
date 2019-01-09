@@ -173,6 +173,13 @@ add_library(c++11 INTERFACE)
 add_library(_WarningsAsError INTERFACE)
 add_library(_CppCodeCoverage INTERFACE)
 
+include(CheckIPOSupported)
+check_ipo_supported(RESULT ipo_supported)
+if(ipo_supported)
+  set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE)
+  set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELWITHDEBINFO TRUE)
+endif()
+
 if(CMAKE_CXX_COMPILER_ID MATCHES "SunPro")
   # Force linker to error on undefined symbols in shared libraries
   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -z defs")
@@ -274,11 +281,6 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 
   # Enables multiprocess compiles
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
-
-  # Enables whole program optimizaion and link time code generation for release.
-  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /GL")
-  set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /LTCG:incremental")
-  set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /LTCG:incremental")
 
   # Enables strong name signing
   set(STRONG_NAME_KEY "" CACHE FILEPATH "Strong Name Key File")

@@ -26,7 +26,8 @@ set(_B2_FLAGS
   address-model=${BUILD_BITS}
   link=static
   threading=multi
-  variant=$<LOWER_CASE:$<CONFIG>>
+  variant=$<IF:$<CONFIG:Debug>,debug,release>
+  debug-symbols=$<IF:$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>,on,off>
 )
 
 include(ProcessorCount)
