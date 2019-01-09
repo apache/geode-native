@@ -57,22 +57,30 @@ ThreadPool::ThreadPool(size_t threadPoolSize) : shutdown_(false) {
 ThreadPool::~ThreadPool() { shutDown(); }
 
 void ThreadPool::perform(std::shared_ptr<Callable> req) {
-  std::unique_lock<decltype(queueMutex_)> lock(queueMutex_);
-  auto wasEmpty = queue_.empty();
-  queue_.push_back(std::move(req));
-  lock.unlock();
-
-  if (wasEmpty) {
-    queueCondition_.notify_all();
+  {
+    std::lock_guard<decltype(queueMutex_)> lock(queueMutex_);
+    queue_.push_back(std::move(req));
+    if (queue_.size() > 1) {
+      return;
+    }
   }
+
+  queueCondition_.notify_all();
 }
 
 void ThreadPool::shutDown(void) {
-  if (!shutdown_.exchange(true)) {
-    queueCondition_.notify_all();
-    for (auto& worker : workers_) {
-      worker.join();
+  {
+    std::lock_guard<decltype(queueMutex_)> lock(queueMutex_);
+    if (shutdown_) {
+      return;
     }
+    shutdown_ = true;
+  }
+
+  queueCondition_.notify_all();
+
+  for (auto& worker : workers_) {
+    worker.join();
   }
 }
 

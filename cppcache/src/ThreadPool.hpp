@@ -84,7 +84,7 @@ class ThreadPool {
   void shutDown(void);
 
  private:
-  std::atomic<bool> shutdown_;
+  bool shutdown_;
   std::vector<std::thread> workers_;
   std::deque<std::shared_ptr<Callable>> queue_;
   std::mutex queueMutex_;
