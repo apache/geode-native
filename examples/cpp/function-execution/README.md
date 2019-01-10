@@ -37,10 +37,10 @@ the example app executes those functions and prints out the result set(s).
   ---------- | ----------------------------------------------
   the-server | Region "/partition_region" created on "the-server"
   
-1. Execute `function-execution` from the `build` directory:
+1. Run the `function-execution` example:
 
   ```
-  $ build/function-execution 
+  $ ./function-execution 
   Result count = 3
 
        Result[0]=VALUE--1

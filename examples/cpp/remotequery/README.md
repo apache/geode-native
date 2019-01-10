@@ -35,7 +35,7 @@ This is a simple example showing how to create and execute a remote query.
 1. Execute `remotequery`:
 
   ```
-  $ build/remotequery
+  $ ./remotequery
   Create orders
   Storing orders in the region
   Getting the orders from the region

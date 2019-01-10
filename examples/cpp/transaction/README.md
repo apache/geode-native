@@ -38,7 +38,7 @@ existing key while showing how to handle exceptions.
 1. Execute `transaction`:
 
   ```
-  $ build/transaction
+  $ ./transaction
     Created cache
     Created region 'exampleRegion'
     Rolled back transaction - retrying(4)
