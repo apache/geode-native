@@ -34,31 +34,32 @@
       ]
     }
   ],
-  "provisioners":[
+  "provisioners": [
     {
-      "pause_before":"30s",
-      "type":"file",
-      "source":"windows/Packer.psm1",
-      "destination":"Documents/WindowsPowerShell/Modules/Packer/Packer.psm1"
+      "pause_before": "30s",
+      "type": "file",
+      "source": "windows/Packer.psm1",
+      "destination": "Documents/WindowsPowerShell/Modules/Packer/Packer.psm1"
     },
     {
-      "type":"powershell",
-      "scripts":[
+      "type": "powershell",
+      "inline": [
+        "C:\\ProgramData\\Amazon\\EC2-Windows\\Launch\\Scripts\\InitializeInstance.ps1 -Schedule",
+        "C:\\ProgramData\\Amazon\\EC2-Windows\\Launch\\Scripts\\SysprepInstance.ps1 -NoShutdown"
+      ]
+    },
+    {
+      "type": "powershell",
+      "scripts": [
         "windows/install-vs-2017-community.ps1"
       ]
     },
     {
-      "type":"powershell",
-      "scripts":[
-        "windows/cleanup.ps1"
-      ]
-    },
-    {
-      "type":"powershell",
-      "scripts":[
-        "windows/setup-ec2config.ps1"
+      "type": "powershell",
+      "scripts": [
+        "windows/setup-ec2launch.ps1"
       ],
-      "only":[
+      "only": [
         "amazon-ebs"
       ]
     }
