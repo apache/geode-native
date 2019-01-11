@@ -37,14 +37,17 @@ existing key while showing how to handle exceptions.
     $ ./startserver.sh
     ```
 
-3. Execute `cpp-transaction`, expect the following output:
+3. Execute `cpp-transaction`. Expect the following output:
 
+    ```bash
+    $ ./cpp-transaction
        Created cache
        Created region 'exampleRegion'
        Rolled back transaction - retrying(4)
        Rolled back transaction - retrying(3)
        Rolled back transaction - retrying(2)
        Committed transaction - exiting
+    ```
 
 4. Run the `stopserver` script to gracefully shutdown the Geode cluster.
 
