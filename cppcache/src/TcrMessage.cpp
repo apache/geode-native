@@ -54,6 +54,8 @@ namespace {
 uint32_t g_headerLen = 17;
 }  // namespace
 
+extern void setThreadLocalExceptionMessage(const char*);
+
 // AtomicInc TcrMessage::m_transactionId = 0;
 uint8_t* TcrMessage::m_keepalive = nullptr;
 const int TcrMessage::m_flag_empty = 0x01;
@@ -839,12 +841,28 @@ void TcrMessage::processChunk(const uint8_t* bytes, int32_t len,
       }
       break;
     }
+    case TcrMessage::PUT_DATA_ERROR: {
+      chunkSecurityHeader(1, bytes, len, isLastChunkAndisSecurityHeader);
+      if (nullptr != bytes) {
+        auto input =
+            m_tcdm->getConnectionManager().getCacheImpl()->createDataInput(
+                bytes, len);
+        auto errorString = readStringPart(input);
+
+        if (!errorString.empty()) {
+          setThreadLocalExceptionMessage(errorString.c_str());
+        }
+
+        _GEODE_SAFE_DELETE_ARRAY(bytes);
+      }
+      break;
+    }
     case TcrMessage::GET_ALL_DATA_ERROR: {
       chunkSecurityHeader(1, bytes, len, isLastChunkAndisSecurityHeader);
       if (bytes != nullptr) {
         _GEODE_SAFE_DELETE_ARRAY(bytes);
       }
-      // nothing else to done since this will be taken care of at higher level
+
       break;
     }
     default: {

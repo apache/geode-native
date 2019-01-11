@@ -37,6 +37,7 @@ namespace {
 
 using apache::geode::client::Cache;
 using apache::geode::client::CacheableInt32;
+using apache::geode::client::CacheServerException;
 using apache::geode::client::HashMapOfCacheable;
 using apache::geode::client::Region;
 using apache::geode::client::RegionShortcut;
@@ -196,6 +197,31 @@ TEST(RegionPutGetAllTest, variousPdxTypes) {
   auto getAllMap = region->getAll(keys);
 
   assert_eq(putAllMap, getAllMap);
+}
+
+TEST(RegionPutGetAllTest, nullValue) {
+  Cluster cluster{LocatorCount{1}, ServerCount{2}};
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("region")
+      .withType("REPLICATE")
+      .execute();
+
+  auto cache = cluster.createCache();
+  auto region = setupRegion(cache);
+
+  setupPdxTypes(cache);
+
+  HashMapOfCacheable map;
+
+  // Add a null value
+  map.emplace(CacheableInt32::create(PdxTypesHelper1::index),
+              std::shared_ptr<PdxTypesHelper1::type>());
+
+  auto keys = to_keys(map);
+
+  ASSERT_THROW(region->putAll(map), CacheServerException);
 }
 
 }  // namespace
