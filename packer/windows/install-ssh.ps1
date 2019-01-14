@@ -21,4 +21,5 @@ write-host "Installing OpenSSH"
 #choco install openssh -params '"/SSHServerFeature"' --version 0.0.24.0 -confirm
 choco install openssh -params '"/SSHServerFeature"' -confirm
 
-schtasks.exe /Create /TN init-ssh /RU SYSTEM /SC ONSTART /TR "powershell.exe -File 'C:\Program Files\Amazon\Ec2ConfigService\Scripts\init-ssh.ps1'"
+schtasks.exe /Create /TN init-ssh /RU SYSTEM /SC ONSTART /TR "powershell.exe -File 'C:\ProgramData\Amazon\EC2-Windows\Launch\Scripts\init-ssh.ps1'"
+

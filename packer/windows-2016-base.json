@@ -42,7 +42,7 @@
     {
       "type":"file",
       "source":"windows/init-ssh.ps1",
-      "destination":"$Env:ProgramFiles/Amazon/Ec2ConfigService/Scripts/init-ssh.ps1"
+      "destination":"$Env:ProgramData/Amazon/EC2-Windows/Launch/Scripts/init-ssh.ps1"
     },
     {
       "type":"powershell",
@@ -59,7 +59,7 @@
     {
       "type":"powershell",
       "scripts":[
-        "windows/setup-ec2config.ps1"
+        "windows/setup-ec2launch.ps1"
       ],
       "only":[
         "amazon-ebs"
