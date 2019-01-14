@@ -55,6 +55,12 @@
       ]
     },
     {
+      "type":"powershell",
+      "scripts":[
+        "windows/cleanup.ps1"
+      ]
+    },
+    {
       "type": "powershell",
       "scripts": [
         "windows/setup-ec2launch.ps1"

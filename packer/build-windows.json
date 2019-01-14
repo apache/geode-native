@@ -77,6 +77,21 @@
       "type": "file",
       "source": "windows/init-user-build.ps1",
       "destination": "C:/Users/build/init-user-build.ps1"
+    },
+    {
+      "type":"powershell",
+      "scripts":[
+        "windows/cleanup.ps1"
+      ]
+    },
+    {
+      "type": "powershell",
+      "scripts": [
+        "windows/setup-ec2launch.ps1"
+      ],
+      "only": [
+        "amazon-ebs"
+      ]
     }
   ]
 }
