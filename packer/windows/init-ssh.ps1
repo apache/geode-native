@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-$ssh = "C:\Users\Administrator\.ssh"
+$ssh = "$Env:UserProfile\.ssh"
 $authorized_keys = "$ssh\authorized_keys"
 if ( -not (Test-Path $authorized_keys -PathType Leaf) ) {
 
@@ -21,9 +21,9 @@ if ( -not (Test-Path $authorized_keys -PathType Leaf) ) {
 
   mkdir -p $ssh -ErrorAction SilentlyContinue
 
-  Invoke-WebRequest -Uri 'http://169.254.169.254/latest/meta-data/public-keys/0/openssh-key' -OutFile $authorized_keys
+  Invoke-WebRequest -Uri "http://169.254.169.254/latest/meta-data/public-keys/0/openssh-key" -OutFile $authorized_keys
 
-  Import-Module 'C:\Program Files\OpenSSH-Win64\OpenSSHUtils' -force
+  Import-Module "$Env:ProgramFiles\OpenSSH-Win64\OpenSSHUtils" -force
 
   Repair-AuthorizedKeyPermission $authorized_keys -Confirm:$false
 }
