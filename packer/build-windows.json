@@ -37,20 +37,6 @@
   ],
   "provisioners": [
     {
-      "pause_before": "30s",
-      "type": "powershell",
-      "inline": [
-        "Install-WindowsFeature -name NET-Framework-Core"
-      ]
-    },
-    {
-      "type": "powershell",
-      "inline": [
-        "C:\\ProgramData\\Amazon\\EC2-Windows\\Launch\\Scripts\\InitializeInstance.ps1 -Schedule",
-        "C:\\ProgramData\\Amazon\\EC2-Windows\\Launch\\Scripts\\SysprepInstance.ps1 -NoShutdown"
-      ]
-    },
-    {
       "type": "powershell",
       "scripts": [
         "windows/install-dependencies.ps1"

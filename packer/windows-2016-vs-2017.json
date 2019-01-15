@@ -36,19 +36,6 @@
   ],
   "provisioners": [
     {
-      "pause_before": "30s",
-      "type": "file",
-      "source": "windows/Packer.psm1",
-      "destination": "Documents/WindowsPowerShell/Modules/Packer/Packer.psm1"
-    },
-    {
-      "type": "powershell",
-      "inline": [
-        "C:\\ProgramData\\Amazon\\EC2-Windows\\Launch\\Scripts\\InitializeInstance.ps1 -Schedule",
-        "C:\\ProgramData\\Amazon\\EC2-Windows\\Launch\\Scripts\\SysprepInstance.ps1 -NoShutdown"
-      ]
-    },
-    {
       "type": "powershell",
       "scripts": [
         "windows/install-vs-2017-community.ps1"
