@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-$ssh = "$Env:UserProfile\.ssh"
+$ssh = "C:\Users\Administrator\.ssh"
 $authorized_keys = "$ssh\authorized_keys"
 if ( -not (Test-Path $authorized_keys -PathType Leaf) ) {
 

@@ -55,8 +55,8 @@
       ]
     },
     {
-      "type":"powershell",
-      "scripts":[
+      "type": "powershell",
+      "scripts": [
         "windows/cleanup.ps1"
       ]
     },

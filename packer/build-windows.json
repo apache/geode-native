@@ -79,8 +79,8 @@
       "destination": "C:/Users/build/init-user-build.ps1"
     },
     {
-      "type":"powershell",
-      "scripts":[
+      "type": "powershell",
+      "scripts": [
         "windows/cleanup.ps1"
       ]
     },

@@ -13,14 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-$launchConfig = Get-Content -Path C:\ProgramData\Amazon\EC2-Windows\Launch\Config\LaunchConfig.json | ConvertFrom-Json
+$launchConfig = Get-Content -Path $Env:ProgramData\Amazon\EC2-Windows\Launch\Config\LaunchConfig.json | ConvertFrom-Json
 $launchConfig.adminPasswordType = 'Random'
 $launchConfig.adminPassword = ''
 $launchConfig.setComputerName = ${True}
 $launchConfig.extendBootVolumeSize = ${True}
 $launchConfig.handleUserData = ${True}
 
-Set-Content -Value ($launchConfig | ConvertTo-Json) -Path C:\ProgramData\Amazon\EC2-Windows\Launch\Config\LaunchConfig.json
-
-C:\ProgramData\Amazon\EC2-Windows\Launch\Scripts\InitializeInstance.ps1 -Schedule
-
+Set-Content -Value ($launchConfig | ConvertTo-Json) -Path $Env:ProgramData\Amazon\EC2-Windows\Launch\Config\LaunchConfig.json
