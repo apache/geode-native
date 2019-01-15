@@ -65,7 +65,7 @@ a custom `ResultsCollector` implementation to replace the default. Use the
 
 For example, to program your client to get the results from a function, use the result collector returned from the function execution, like this:
 
-``` pre
+```cpp
 ResultCollectorPtr rc = FunctionService::onRegion(region)
                     ->withArgs(args)
                     ->withFilter(keySet)
