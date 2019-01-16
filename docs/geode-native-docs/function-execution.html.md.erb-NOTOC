@@ -19,8 +19,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-A client can invoke a server-resident function without the need to send the function code itself to the server.
-The client can pass paramaters to the function and can collect and operate on the returned results.
+A client can invoke a server-resident function, with paramaters, and can collect and operate on the returned results.
 
 ## Server-side Requirements
 
@@ -53,7 +52,7 @@ You can run a data dependent function against custom partitioned and colocated p
 -  Use the `Execution` object as needed for additional function configuration. You can:
     -   Provide a set of data keys to `withFilter` to narrow the execution scope. This works only for `onRegion` Execution objects.
     -   Provide function arguments to `withArgs`.
-    -   Define a custom `ResultCollector` to `withCollector`. See [Programming to Get Function Results](handling-function-results.html#handling-function-results).
+    -   Define a custom `ResultCollector` to `withCollector`.
 
 -  Call the `Execution` object execute method to run the function.
 
@@ -109,7 +108,7 @@ The client:
 - invokes the object's execute method to invoke the server-side function.
 
 If the client expects results, it must create a result
-object. Optionally, the client can used a provided result collector which offers some predefined
+object. Optionally, the client can use a provided result collector which offers some predefined
 methods for iterating over and processing return values.
 
 ## .NET Example
@@ -128,7 +127,7 @@ The .NET example creates a cache, then uses it to create a connection pool.
    var pool = poolFactory.Create("pool");
 ```
 
-It then uses the connection pool to create a region, with the same characteristics and name as the server-side region (`partition_region`).
+The example uses the connection pool to create a region, with the same characteristics and name as the server-side region (`partition_region`).
 
 ```csharp
    var regionFactory = cache.CreateRegionFactory(RegionShortcut.PROXY)
@@ -136,7 +135,7 @@ It then uses the connection pool to create a region, with the same characteristi
    var region = regionFactory.Create<object, object>("partition_region");
 ```
 
-It then populates the server's datastore with values, using the API and some sample key-value pairs.
+The sample client populates the server's datastore with values, using the API and some sample key-value pairs.
 
 ```csharp
    string rtimmonsKey = "rtimmons";
@@ -147,8 +146,8 @@ It then populates the server's datastore with values, using the API and some sam
    region.Put(scharlesKey, scharlesValue, null);
 ```
 
-It then uses the API to retrieve the values and write them to the console as confirmation that the data has been stored. Again,
-this is done without reference to the server-side example function.
+To confirm that the data has been stored, the client uses the API to retrieve the values and write them to the console.
+This is done without reference to the server-side example function.
 
 ```csharp
    var user1 = region.Get(rtimmonsKey, null);
@@ -210,7 +209,7 @@ Cache setupCache() {
 }
 ```
 
-It then uses the cache to create a connection pool, 
+The example client uses the cache to create a connection pool, 
 
 ```cpp
 void createPool(const Cache& cache) {
@@ -221,7 +220,7 @@ void createPool(const Cache& cache) {
 }
 ```
 
-Then,using that pool, it creates a region with the same characteristics and name as the server-side region (`partition_region`).
+Then, using that pool, the client creates a region with the same characteristics and name as the server-side region (`partition_region`).
 
 ```cpp
 std::shared_ptr<Region> createRegion(Cache& cache) {
@@ -232,7 +231,7 @@ std::shared_ptr<Region> createRegion(Cache& cache) {
 }
 ```
 
-It then populates the server's datastore with values, using the API and some sample key-value pairs.
+The sample client populates the server's datastore with values, using the API and some sample key-value pairs.
 
 ```cpp
 void populateRegion(const std::shared_ptr<Region>& region) {
@@ -242,8 +241,8 @@ void populateRegion(const std::shared_ptr<Region>& region) {
 }
 ```
 
-It then uses the API to retrieve the values and write them to the console as confirmation that the data has been stored. Again,
-this is done without reference to the server-side example function.
+As confirmation that the data has been stored, the sample client uses the API to retrieve the values and write them to the console.
+This is done without reference to the server-side example function.
 
 ```cpp
 std::shared_ptr<CacheableVector> populateArguments() {
@@ -298,3 +297,4 @@ void printResults(const std::vector<std::string>& resultList) {
     ++i;
   }
 ```
+
