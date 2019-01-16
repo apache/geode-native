@@ -37,6 +37,7 @@
   ],
   "provisioners": [
     {
+      "pause_before":"60s",      
       "type": "powershell",
       "scripts": [
         "windows/install-dependencies.ps1"

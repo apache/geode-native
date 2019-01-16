@@ -36,6 +36,7 @@
   ],
   "provisioners": [
     {
+      "pause_before":"60s",
       "type": "powershell",
       "scripts": [
         "windows/install-vs-2017-community.ps1"
