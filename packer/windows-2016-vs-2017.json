@@ -44,6 +44,12 @@
     },
     {
       "type": "powershell",
+      "inline": [	
+        "Install-WindowsFeature -name NET-Framework-Core"	
+      ]
+    },
+    {
+      "type": "powershell",
       "scripts": [
         "windows/cleanup.ps1"
       ]
