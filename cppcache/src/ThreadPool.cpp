@@ -25,32 +25,43 @@ namespace client {
 
 const char* ThreadPool::NC_Pool_Thread = "NC Pool Thread";
 
-ThreadPool::ThreadPool(size_t threadPoolSize) : shutdown_(false) {
+ThreadPool::ThreadPool(size_t threadPoolSize) : shutdown_(false),
+appDomainContext_(createAppDomainContext()) {
   workers_.reserve(threadPoolSize);
-  for (size_t i = 0; i < threadPoolSize; i++) {
-    workers_.emplace_back([this] {
-      DistributedSystemImpl::setThreadName(NC_Pool_Thread);
-      while (true) {
-        std::unique_lock<decltype(queueMutex_)> lock(queueMutex_);
-        queueCondition_.wait(lock,
-                             [this] { return shutdown_ || !queue_.empty(); });
 
-        if (shutdown_) {
-          break;
-        }
+  std::function<void()> executeWork = [this] {
+    DistributedSystemImpl::setThreadName(NC_Pool_Thread);
+    while (true) {
+      std::unique_lock<decltype(queueMutex_)> lock(queueMutex_);
+      queueCondition_.wait(lock,
+        [this] { return shutdown_ || !queue_.empty(); });
 
-        auto work = queue_.front();
-        queue_.pop_front();
-
-        lock.unlock();
-
-        try {
-          work->call();
-        } catch (...) {
-          // ignore
-        }
+      if (shutdown_) {
+        break;
       }
-    });
+
+      auto work = queue_.front();
+      queue_.pop_front();
+
+      lock.unlock();
+
+      try {
+        work->call();
+      }
+      catch (...) {
+        // ignore
+      }
+    }
+  };
+
+  if (appDomainContext_) {
+    executeWork = [executeWork, this] {
+      appDomainContext_->run(executeWork);
+    };
+  }
+
+  for (size_t i = 0; i < threadPoolSize; i++) {
+    workers_.emplace_back(executeWork);
   }
 }
 

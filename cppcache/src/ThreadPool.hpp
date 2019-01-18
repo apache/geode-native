@@ -27,6 +27,8 @@
 #include <thread>
 #include <vector>
 
+#include "AppDomainContext.hpp"
+
 namespace apache {
 namespace geode {
 namespace client {
@@ -90,6 +92,7 @@ class ThreadPool {
   std::mutex queueMutex_;
   std::condition_variable queueCondition_;
   static const char* NC_Pool_Thread;
+  AppDomainContext *appDomainContext_;
 };
 
 }  // namespace client
