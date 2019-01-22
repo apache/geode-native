@@ -10,10 +10,10 @@ existing key while showing how to handle exceptions.
 * Apache Geode Native examples, built and installed.
 
 ## Running
-1. Set the current directory to the `transaction` directory in your example workspace.
+1. Set the current directory to the `TransactionCs` directory in your example workspace.
 
   ```
-  $ cd workspace/examples/dotnet/transaction
+  $ cd workspace/examples/dotnet/TransactionCs
   ```
 
 1. Run the `startserver.ps1` script to start the Geode server, create a region, and populate the region with sample data.
@@ -33,10 +33,10 @@ existing key while showing how to handle exceptions.
   server | Region "/exampleRegion" created on "server"
   ```
 
-1. Execute `transaction`:
+1. Execute `TransactionCs`:
 
   ```
-  $ build/transaction
+  $ build/TransactionCs
     Created cache
     Created region 'exampleRegion'
     Rolled back transaction - retrying(4)

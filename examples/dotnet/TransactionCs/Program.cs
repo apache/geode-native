@@ -39,7 +39,7 @@ namespace Apache.Geode.Examples.Transaction
     private static readonly Random getRandom = new Random();
 
     private static int getValueFromExternalSystem() {
-      var value = getRandom.Next(10);
+      var value = getRandom.Next(20);
       if (value == 0)
       {
         throw new Exception("failed to get from external system");
@@ -68,7 +68,8 @@ namespace Apache.Geode.Examples.Transaction
       var retries = 5;
       while(retries-- > 0)
       {
-        try {
+        try 
+        {
           cache.CacheTransactionManager.Begin();
           foreach(var key in keys)
           {
@@ -77,6 +78,7 @@ namespace Apache.Geode.Examples.Transaction
           }
           cache.CacheTransactionManager.Commit();
           Console.WriteLine("Committed transaction - exiting");
+          break;
         } catch
         {
           cache.CacheTransactionManager.Rollback();
