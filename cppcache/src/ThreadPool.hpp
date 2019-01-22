@@ -92,7 +92,7 @@ class ThreadPool {
   std::mutex queueMutex_;
   std::condition_variable queueCondition_;
   static const char* NC_Pool_Thread;
-  AppDomainContext *appDomainContext_;
+  AppDomainContext* appDomainContext_;
 };
 
 }  // namespace client

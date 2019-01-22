@@ -25,8 +25,8 @@ namespace client {
 
 const char* ThreadPool::NC_Pool_Thread = "NC Pool Thread";
 
-ThreadPool::ThreadPool(size_t threadPoolSize) : shutdown_(false),
-appDomainContext_(createAppDomainContext()) {
+ThreadPool::ThreadPool(size_t threadPoolSize)
+    : shutdown_(false), appDomainContext_(createAppDomainContext()) {
   workers_.reserve(threadPoolSize);
 
   std::function<void()> executeWork = [this] {
@@ -34,7 +34,7 @@ appDomainContext_(createAppDomainContext()) {
     while (true) {
       std::unique_lock<decltype(queueMutex_)> lock(queueMutex_);
       queueCondition_.wait(lock,
-        [this] { return shutdown_ || !queue_.empty(); });
+                           [this] { return shutdown_ || !queue_.empty(); });
 
       if (shutdown_) {
         break;
@@ -47,17 +47,14 @@ appDomainContext_(createAppDomainContext()) {
 
       try {
         work->call();
-      }
-      catch (...) {
+      } catch (...) {
         // ignore
       }
     }
   };
 
   if (appDomainContext_) {
-    executeWork = [executeWork, this] {
-      appDomainContext_->run(executeWork);
-    };
+    executeWork = [executeWork, this] { appDomainContext_->run(executeWork); };
   }
 
   for (size_t i = 0; i < threadPoolSize; i++) {
