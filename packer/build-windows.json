@@ -30,59 +30,53 @@
         {
           "device_name":"/dev/sda1",
           "delete_on_termination":true,
-          "volume_size":60
+          "volume_size":100
         }
       ]
     }
   ],
-  "provisioners":[
+  "provisioners": [
     {
-      "pause_before":"30s",
-      "type":"powershell",
-      "inline":[
-        "Install-WindowsFeature -name NET-Framework-Core"
-      ]
-    },
-    {
-      "type":"powershell",
-      "scripts":[
+      "pause_before":"60s",      
+      "type": "powershell",
+      "scripts": [
         "windows/install-dependencies.ps1"
       ]
     },
     {
-      "type":"file",
-      "source":"{{user `gemfire_archive`}}",
-      "destination":"gemfire.tar.gz"
+      "type": "file",
+      "source": "{{user `gemfire_archive`}}",
+      "destination": "gemfire.tar.gz"
     },
     {
-      "type":"powershell",
-      "scripts":[
+      "type": "powershell",
+      "scripts": [
         "windows/install-gemfire.ps1"
       ]
     },
     {
-      "type":"powershell",
-      "scripts":[
+      "type": "powershell",
+      "scripts": [
         "windows/add-user-build.ps1"
       ]
     },
     {
-      "type":"file",
-      "source":"windows/init-user-build.ps1",
-      "destination":"C:/Users/build/init-user-build.ps1"
+      "type": "file",
+      "source": "windows/init-user-build.ps1",
+      "destination": "C:/Users/build/init-user-build.ps1"
     },
     {
-      "type":"powershell",
-      "scripts":[
+      "type": "powershell",
+      "scripts": [
         "windows/cleanup.ps1"
       ]
     },
     {
-      "type":"powershell",
-      "scripts":[
-        "windows/setup-ec2config.ps1"
+      "type": "powershell",
+      "scripts": [
+        "windows/setup-ec2launch.ps1"
       ],
-      "only":[
+      "only": [
         "amazon-ebs"
       ]
     }

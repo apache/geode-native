@@ -31,6 +31,10 @@ ExternalProject_Add( ${PROJECT_NAME}-extern
 
 ExternalProject_Get_Property( ${PROJECT_NAME}-extern INSTALL_DIR )
 
+if(WIN32)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m64 /D_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING")
+endif()
+
 include(GNUInstallDirs)
 
 function(ADD_GTEST_LIBRARY)

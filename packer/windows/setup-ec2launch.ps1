@@ -13,9 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-$ErrorActionPreference = "Stop"
+$launchConfig = Get-Content -Path C:\ProgramData\Amazon\EC2-Windows\Launch\Config\LaunchConfig.json | ConvertFrom-Json
+$launchConfig.adminPasswordType = 'Random'
+$launchConfig.adminPassword = ''
+$launchConfig.setComputerName = ${True}
+$launchConfig.extendBootVolumeSize = ${True}
+$launchConfig.handleUserData = ${True}
 
-Import-Module Packer
+Set-Content -Value ($launchConfig | ConvertTo-Json) -Path C:\ProgramData\Amazon\EC2-Windows\Launch\Config\LaunchConfig.json
 
-Install-Package https://download.microsoft.com/download/2/C/6/2C6E1B4A-EBE5-48A6-B225-2D2058A9CEFB/Win8.1AndW2K12R2-KB3134758-x64.msu `
-    -MsuPackage .\WindowsBlue-KB3134758-x64.cab
+C:\ProgramData\Amazon\EC2-Windows\Launch\Scripts\InitializeInstance.ps1 -Schedule
+C:\ProgramData\Amazon\EC2-Windows\Launch\Scripts\InitializeDisks.ps1 -Schedule
