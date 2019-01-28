@@ -3,7 +3,7 @@
     "region":"us-west-2",
     "source_ami":"",
     "source_image_name":"X.vmx",
-    "image_name":"windows-2012-r2-base"
+    "image_name":"windows-2016-base"
   },
   "builders":[
     {
@@ -36,19 +36,13 @@
     {
       "type":"powershell",
       "scripts":[
-        "windows/install-windows-8.1-2012-r2-wmf-5.ps1"
-      ]
-    },
-    {
-      "type":"powershell",
-      "scripts":[
         "windows/install-chocolatey.ps1"
       ]
     },
     {
       "type":"file",
       "source":"windows/init-ssh.ps1",
-      "destination":"$Env:ProgramFiles/Amazon/Ec2ConfigService/Scripts/init-ssh.ps1"
+      "destination":"$Env:ProgramData/Amazon/EC2-Windows/Launch/Scripts/init-ssh.ps1"
     },
     {
       "type":"powershell",
@@ -65,7 +59,7 @@
     {
       "type":"powershell",
       "scripts":[
-        "windows/setup-ec2config.ps1"
+        "windows/setup-ec2launch.ps1"
       ],
       "only":[
         "amazon-ebs"
