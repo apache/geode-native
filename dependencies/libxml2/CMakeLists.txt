@@ -13,9 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-project( libxml2 VERSION 2.9.7 LANGUAGES NONE )
+project( libxml2 VERSION 2.9.9 LANGUAGES NONE )
 
-set( SHA256 f63c5e7d30362ed28b38bfa1ac6313f9a80230720b7fb6c80575eeab3ff5900c )
+set( SHA256 94fb70890143e3c6549f265cee93ec064c80a84c42ad0f23e85ee1fd6540a871 )
 
 set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m64" )
 
