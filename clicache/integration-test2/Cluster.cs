@@ -202,7 +202,7 @@ namespace Apache.Geode.Client.IntegrationTests
                 {
                    locator
                         .withConnect(false)
-                        .withSslEnableComponents("locator,jmx")
+                        .withSslEnableComponents("all")
                         .withSslKeyStore(cluster_.keyStore_)
                         .withSslKeyStorePassword(cluster_.keyStorePassword_)
                         .withSslTrustStore(cluster_.trustStore_)
@@ -276,7 +276,7 @@ namespace Apache.Geode.Client.IntegrationTests
                 if (cluster_.UseSSL)
                 {
                     server
-                        .withSslEnableComponents("server,locator,jmx")
+                        .withSslEnableComponents("all")
                         .withSslKeyStore(cluster_.keyStore_)
                         .withSslKeyStorePassword(cluster_.keyStorePassword_)
                         .withSslTrustStore(cluster_.trustStore_)
