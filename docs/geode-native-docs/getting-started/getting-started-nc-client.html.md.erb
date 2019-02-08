@@ -23,19 +23,17 @@ or IP address) and port number of one or more locators, and the name of a region
 on the cluster.
 The client API establishes a pool of these network connections for your client application to use.
 
-You can choose whether to use a large, remote, production-quality cluster; a small, local,
-development cluster; or something in-between, such as a testing or experimental lab installation.
-
-In the _<%=vars.product_name%> User's Guide_,
-see [Configuring and Running a Cluster](/serverman/configuring/chapter_overview.html) 
-and [Client/Server Configuration](/serverman/topologies_and_comm/cs_configuration/chapter_overview.html) for instructions on setting up and starting the cluster for a client/server configuration.
+In the _<%=vars.product_name%> User's Guide_, see [Configuring and Running a Cluster](/serverman/configuring/chapter_overview.html)
+and [Client/Server Configuration](/serverman/topologies_and_comm/cs_configuration/chapter_overview.html) for
+instructions on setting up and starting the cluster for a client/server configuration.
 
 ### <a id="connecting_to_server"></a>Connecting to the Server
 
 To connect to a server, your application must follow these steps:
 
-1. Instantiate a `CacheFactory`, setting characteristics of interest (for example, `log-level`).
-1. Create a cache and use it to instantiate a `PoolFactory`, specifying the hostname and port for the server locator.
+1. Instantiate a `CacheFactory`, setting properties of interest (for example, `log-level`).
+1. Create a cache and use it to instantiate a `PoolFactory`.
+1. Using the PoolFactory, specify the hostname and port for the server locator.
 1. Create a named pool of network connections.
 1. Instantiate a region of the desired type (usually CACHING_PROXY or PROXY) and connect it by name to its counterpart on the server.
 
@@ -115,8 +113,6 @@ The application development walkthroughs describe how to set up a native client 
 The <%=vars.product_name%> Client build provides a set of programming examples to help you understand the client API.
 The `examples` directory contains CMake files and a `cpp` subdirectory containing C++ examples.
 The Windows build also includes a `dotnet` subdirectory containing C# examples.
-
-CMake files are located at each level of the directory structure to allow examples to be built individually or in groups.
 
 The directory structure resembles this hierarchy (some entries are omitted for clarity):
 
