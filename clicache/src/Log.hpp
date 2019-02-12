@@ -199,13 +199,6 @@ namespace Apache
         static void SetLevel(LogLevel level);
 
         /// <summary>
-        /// Returns the name of the current log file.
-        /// NOTE: This function is for debugging only, as it is not completely
-        /// thread-safe!
-        /// </summary>
-        static String^ LogFileName();
-
-        /// <summary>
         /// True if log messages at the given level are enabled.
         /// </summary>
         static bool Enabled(LogLevel level);

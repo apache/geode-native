@@ -19,94 +19,77 @@
 
 #include <climits>
 #include <cstdlib>
-#include <iterator>
-#include <unordered_set>
+
+#include <boost/thread/lock_types.hpp>
 
 #include <geode/FixedPartitionResolver.hpp>
 
+#include "ClientMetadata.hpp"
+#include "TcrConnectionManager.hpp"
 #include "TcrMessage.hpp"
 #include "ThinClientPoolDM.hpp"
+#include "util/queue.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
+const BucketStatus::clock::time_point BucketStatus::m_noTimeout{};
+
 const char* ClientMetadataService::NC_CMDSvcThread = "NC CMDSvcThread";
 
-ClientMetadataService::~ClientMetadataService() {
-  if (m_bucketWaitTimeout > std::chrono::milliseconds::zero()) {
-    try {
-      std::map<std::string, PRbuckets*>::iterator bi;
-      for (bi = m_bucketStatus.begin(); bi != m_bucketStatus.end(); ++bi) {
-        delete bi->second;
-      }
-
-    } catch (...) {
-      LOGINFO("Exception in ClientMetadataService destructor");
-    }
-  }
-}
-
-ClientMetadataService::ClientMetadataService(Pool* pool)
+ClientMetadataService::ClientMetadataService(ThinClientPoolDM* pool)
     : m_run(false),
       m_pool(pool),
-      m_regionQueue(false)
+      m_cache(m_pool->getConnectionManager().getCacheImpl()),
+      m_regionQueue(false),
+      m_bucketWaitTimeout(m_cache->getDistributedSystem()
+                              .getSystemProperties()
+                              .bucketWaitTimeout())
 
-{
-  auto tcrdm = dynamic_cast<ThinClientPoolDM*>(m_pool);
-  auto cacheImpl = tcrdm->getConnectionManager().getCacheImpl();
-  m_bucketWaitTimeout = cacheImpl->getDistributedSystem()
-                            .getSystemProperties()
-                            .bucketWaitTimeout();
+{}
+
+void ClientMetadataService::start() {
+  m_run = true;
+  m_thread = std::thread(&ClientMetadataService::svc, this);
 }
 
-int ClientMetadataService::svc() {
+void ClientMetadataService::stop() {
+  m_run = false;
+  m_regionQueueCondition.notify_one();
+  m_thread.join();
+}
+
+void ClientMetadataService::svc() {
   DistributedSystemImpl::setThreadName(NC_CMDSvcThread);
+
   LOGINFO("ClientMetadataService started for pool " + m_pool->getName());
+
   while (m_run) {
-    m_regionQueueSema.acquire();
-    auto tcrdm = dynamic_cast<ThinClientPoolDM*>(m_pool);
-    auto&& cache = tcrdm->getConnectionManager().getCacheImpl();
-    while (true) {
-      auto&& regionFullPath = m_regionQueue.get();
-
-      if (regionFullPath) {
-        while (true) {
-          if (m_regionQueue.size() > 0) {
-            auto&& nextRegionFullPath = m_regionQueue.get();
-            if (nextRegionFullPath != nullptr &&
-                nextRegionFullPath->c_str() != nullptr &&
-                regionFullPath->compare(nextRegionFullPath->c_str()) == 0) {
-            } else {
-              // different region; put it back
-              m_regionQueue.put(nextRegionFullPath);
-              break;
-            }
-          } else {
-            break;
-          }
-        }
-      }
-
-      if (!cache->isCacheDestroyPending() && regionFullPath) {
-        getClientPRMetadata(regionFullPath->c_str());
-      } else {
-        break;
-      }
+    std::unique_lock<std::mutex> lock(m_regionQueueMutex);
+    m_regionQueueCondition.wait(
+        lock, [this] { return !m_run || !m_regionQueue.empty(); });
+    if (!m_run) {
+      break;
     }
-    // while(m_regionQueueSema.tryacquire( ) != -1); // release all
+
+    auto regionFullPath = std::move(m_regionQueue.front());
+    m_regionQueue.pop_front();
+    queue::coalesce(m_regionQueue, regionFullPath);
+
+    if (!m_cache->isCacheDestroyPending()) {
+      lock.unlock();
+      getClientPRMetadata(regionFullPath.c_str());
+    } else {
+      break;
+    }
   }
+
   LOGINFO("ClientMetadataService stopped for pool " + m_pool->getName());
-  return 0;
 }
 
 void ClientMetadataService::getClientPRMetadata(const char* regionFullPath) {
   if (regionFullPath == nullptr) return;
-  ThinClientPoolDM* tcrdm = dynamic_cast<ThinClientPoolDM*>(m_pool);
-  if (tcrdm == nullptr) {
-    throw IllegalArgumentException(
-        "ClientMetaData: pool cast to ThinClientPoolDM failed");
-  }
   // That means metadata for the region not found, So only for the first time
   // for a particular region use GetClientPartitionAttributesOp
   // TcrMessage to fetch the metadata and put it into map for later use.send
@@ -115,8 +98,9 @@ void ClientMetadataService::getClientPRMetadata(const char* regionFullPath) {
   std::string path(regionFullPath);
   std::shared_ptr<ClientMetadata> cptr = nullptr;
   {
-    ReadGuard guard(m_regionMetadataLock);
-    RegionMetadataMapType::iterator itr = m_regionMetaDataMap.find(path);
+    boost::shared_lock<decltype(m_regionMetadataLock)> lock(
+        m_regionMetadataLock);
+    const auto& itr = m_regionMetaDataMap.find(path);
     if (itr != m_regionMetaDataMap.end()) {
       cptr = itr->second;
     }
@@ -125,22 +109,20 @@ void ClientMetadataService::getClientPRMetadata(const char* regionFullPath) {
 
   if (cptr == nullptr) {
     TcrMessageGetClientPartitionAttributes request(
-        new DataOutput(tcrdm->getConnectionManager()
-                           .getCacheImpl()
-                           ->getCache()
-                           ->createDataOutput()),
-        regionFullPath);
-    GfErrType err = tcrdm->sendSyncRequest(request, reply);
+        new DataOutput(m_cache->createDataOutput(m_pool)), regionFullPath);
+    GfErrType err = m_pool->sendSyncRequest(request, reply);
     if (err == GF_NOERR &&
         reply.getMessageType() ==
             TcrMessage::RESPONSE_CLIENT_PARTITION_ATTRIBUTES) {
       cptr = std::make_shared<ClientMetadata>(reply.getNumBuckets(),
-                                              reply.getColocatedWith(), tcrdm,
+                                              reply.getColocatedWith(), m_pool,
                                               reply.getFpaSet());
       if (m_bucketWaitTimeout > std::chrono::milliseconds::zero() &&
           reply.getNumBuckets() > 0) {
-        WriteGuard guard(m_PRbucketStatusLock);
-        m_bucketStatus[regionFullPath] = new PRbuckets(reply.getNumBuckets());
+        boost::unique_lock<decltype(m_PRbucketStatusLock)> lock(
+            m_PRbucketStatusLock);
+        m_bucketStatus[regionFullPath] =
+            std::unique_ptr<PRbuckets>(new PRbuckets(reply.getNumBuckets()));
       }
       LOGDEBUG("ClientMetadata buckets %d ", reply.getNumBuckets());
     }
@@ -157,7 +139,8 @@ void ClientMetadataService::getClientPRMetadata(const char* regionFullPath) {
     if (newCptr != nullptr) {
       cptr->setPreviousone(nullptr);
       newCptr->setPreviousone(cptr);
-      WriteGuard guard(m_regionMetadataLock);
+      boost::unique_lock<decltype(m_regionMetadataLock)> lock(
+          m_regionMetadataLock);
       m_regionMetaDataMap[path] = newCptr;
       LOGINFO("Updated client meta data");
     }
@@ -168,51 +151,43 @@ void ClientMetadataService::getClientPRMetadata(const char* regionFullPath) {
       cptr->setPreviousone(nullptr);
       newCptr->setPreviousone(cptr);
       // now we will get new instance so assign it again
-      WriteGuard guard(m_regionMetadataLock);
+      boost::unique_lock<decltype(m_regionMetadataLock)> lock(
+          m_regionMetadataLock);
       m_regionMetaDataMap[colocatedWith.c_str()] = newCptr;
       m_regionMetaDataMap[path] = newCptr;
       LOGINFO("Updated client meta data");
     }
   }
 }
+
 std::shared_ptr<ClientMetadata> ClientMetadataService::SendClientPRMetadata(
     const char* regionPath, std::shared_ptr<ClientMetadata> cptr) {
-  ThinClientPoolDM* tcrdm = dynamic_cast<ThinClientPoolDM*>(m_pool);
-  if (tcrdm == nullptr) {
-    throw IllegalArgumentException(
-        "ClientMetaData: pool cast to ThinClientPoolDM failed");
-  }
   TcrMessageGetClientPrMetadata request(
-      new DataOutput(
-          tcrdm->getConnectionManager().getCacheImpl()->createDataOutput()),
-      regionPath);
+      new DataOutput(m_cache->createDataOutput(m_pool)), regionPath);
   TcrMessageReply reply(true, nullptr);
   // send this message to server and get metadata from server.
   LOGFINE("Now sending GET_CLIENT_PR_METADATA for getting from server: %s",
           regionPath);
   std::shared_ptr<Region> region = nullptr;
-  GfErrType err = tcrdm->sendSyncRequest(request, reply);
+  GfErrType err = m_pool->sendSyncRequest(request, reply);
   if (err == GF_NOERR &&
       reply.getMessageType() == TcrMessage::RESPONSE_CLIENT_PR_METADATA) {
-    region =
-        tcrdm->getConnectionManager().getCacheImpl()->getRegion(regionPath);
+    region = m_cache->getRegion(regionPath);
     if (region != nullptr) {
-      LocalRegion* lregion = dynamic_cast<LocalRegion*>(region.get());
-      lregion->getRegionStats()->incMetaDataRefreshCount();
+      if (auto lregion = std::dynamic_pointer_cast<LocalRegion>(region)) {
+        lregion->getRegionStats()->incMetaDataRefreshCount();
+      }
     }
-    std::vector<BucketServerLocationsType>* metadata = reply.getMetadata();
+    auto metadata = reply.getMetadata();
     if (metadata == nullptr) return nullptr;
     if (metadata->empty()) {
       delete metadata;
       return nullptr;
     }
     auto newCptr = std::make_shared<ClientMetadata>(*cptr);
-    for (std::vector<BucketServerLocationsType>::iterator iter =
-             metadata->begin();
-         iter != metadata->end(); ++iter) {
-      if (!(*iter).empty()) {
-        newCptr->updateBucketServerLocations((*iter).at(0)->getBucketId(),
-                                             (*iter));
+    for (const auto& v : *metadata) {
+      if (!v.empty()) {
+        newCptr->updateBucketServerLocations(v.at(0)->getBucketId(), v);
       }
     }
     delete metadata;
@@ -227,9 +202,9 @@ void ClientMetadataService::getBucketServerLocation(
     const std::shared_ptr<Cacheable>& value,
     const std::shared_ptr<Serializable>& aCallbackArgument, bool isPrimary,
     std::shared_ptr<BucketServerLocation>& serverLocation, int8_t& version) {
-  // ACE_Guard< ACE_Recursive_Thread_Mutex > guard( m_regionMetadataLock );
   if (region != nullptr) {
-    ReadGuard guard(m_regionMetadataLock);
+    boost::shared_lock<decltype(m_regionMetadataLock)> lock(
+        m_regionMetadataLock);
     LOGDEBUG(
         "ClientMetadataService::getBucketServerLocation m_regionMetaDataMap "
         "size is %d",
@@ -276,35 +251,28 @@ void ClientMetadataService::getBucketServerLocation(
 
 std::shared_ptr<ClientMetadata> ClientMetadataService::getClientMetadata(
     const std::string& regionFullPath) {
-  ReadGuard guard(m_regionMetadataLock);
-  RegionMetadataMapType::iterator regionMetadataIter =
-      m_regionMetaDataMap.find(regionFullPath);
-  if (regionMetadataIter != m_regionMetaDataMap.end()) {
-    return (*regionMetadataIter).second;
+  boost::shared_lock<decltype(m_regionMetadataLock)> lock(m_regionMetadataLock);
+
+  const auto& entry = m_regionMetaDataMap.find(regionFullPath);
+  if (entry == m_regionMetaDataMap.end()) {
+    return nullptr;
   }
-  return nullptr;
+
+  return entry->second;
 }
 
-void ClientMetadataService::populateDummyServers(
-    const char* regionName, std::shared_ptr<ClientMetadata> cptr) {
-  WriteGuard guard(m_regionMetadataLock);
-  m_regionMetaDataMap[regionName] = cptr;
+std::shared_ptr<ClientMetadata> ClientMetadataService::getClientMetadata(
+    const std::shared_ptr<Region>& region) {
+  return getClientMetadata(region->getFullPath());
 }
 
 void ClientMetadataService::enqueueForMetadataRefresh(
     const std::string& regionFullPath, int8_t serverGroupFlag) {
-  ThinClientPoolDM* tcrdm = dynamic_cast<ThinClientPoolDM*>(m_pool);
-  if (tcrdm == nullptr) {
-    throw IllegalArgumentException(
-        "ClientMetaData: pool cast to ThinClientPoolDM failed");
-  }
+  auto region = m_cache->getRegion(regionFullPath);
 
-  auto cache = tcrdm->getConnectionManager().getCacheImpl();
-  auto region = cache->getRegion(regionFullPath);
-
-  std::string serverGroup = tcrdm->getServerGroup();
+  std::string serverGroup = m_pool->getServerGroup();
   if (serverGroup.length() != 0) {
-    cache->setServerGroupFlag(serverGroupFlag);
+    m_cache->setServerGroupFlag(serverGroupFlag);
     if (serverGroupFlag == 2) {
       LOGFINER(
           "Network hop but, from within same server-group, so no metadata "
@@ -314,7 +282,7 @@ void ClientMetadataService::enqueueForMetadataRefresh(
   }
 
   if (region != nullptr) {
-    ThinClientRegion* tcrRegion = dynamic_cast<ThinClientRegion*>(region.get());
+    auto tcrRegion = dynamic_cast<ThinClientRegion*>(region.get());
     {
       TryWriteGuard guardRegionMetaDataRefresh(
           tcrRegion->getMataDataMutex(), tcrRegion->getMetaDataRefreshed());
@@ -322,25 +290,15 @@ void ClientMetadataService::enqueueForMetadataRefresh(
         return;
       }
       LOGFINE("Network hop so fetching single hop metadata from the server");
-      cache->setNetworkHopFlag(true);
+      m_cache->setNetworkHopFlag(true);
       tcrRegion->setMetaDataRefreshed(true);
-      auto tempRegionPath = std::make_shared<std::string>(regionFullPath);
-      m_regionQueue.put(tempRegionPath);
-      m_regionQueueSema.release();
+      {
+        std::lock_guard<decltype(m_regionQueueMutex)> lock(m_regionQueueMutex);
+        m_regionQueue.push_back(regionFullPath);
+      }
+      m_regionQueueCondition.notify_one();
     }
   }
-}
-std::shared_ptr<ClientMetadata> ClientMetadataService::getClientMetadata(
-    const std::shared_ptr<Region>& region) {
-  ReadGuard guard(m_regionMetadataLock);
-
-  const auto& entry = m_regionMetaDataMap.find(region->getFullPath());
-
-  if (entry == m_regionMetaDataMap.end()) {
-    return nullptr;
-  }
-
-  return entry->second;
 }
 
 std::shared_ptr<ClientMetadataService::ServerToFilterMap>
@@ -409,25 +367,25 @@ ClientMetadataService::getServerToFilterMap(
     keyList->push_back(key);
   }
 
-  if (keysWhichLeft.size() > 0 &&
-      serverToFilterMap->size() > 0) {  // add left keys in result
+  if (!keysWhichLeft.empty() && !serverToFilterMap->empty()) {
+    // add left keys in result
     auto keyLefts = keysWhichLeft.size();
     auto totalServers = serverToFilterMap->size();
     auto perServer = keyLefts / totalServers + 1;
 
     size_t keyIdx = 0;
     for (const auto& locationIter : *serverToFilterMap) {
-      const auto keys = locationIter.second;
+      const auto values = locationIter.second;
       for (size_t i = 0; i < perServer; i++) {
         if (keyIdx < keyLefts) {
-          keys->push_back(keysWhichLeft.at(keyIdx++));
+          values->push_back(keysWhichLeft.at(keyIdx++));
         } else {
           break;
         }
       }
       if (keyIdx >= keyLefts) break;  // done
     }
-  } else if (serverToFilterMap->size() == 0) {  // not be able to map any key
+  } else if (serverToFilterMap->empty()) {  // not be able to map any key
     return nullptr;  // it will force all keys to send to one server
   }
 
@@ -442,7 +400,7 @@ void ClientMetadataService::markPrimaryBucketForTimeout(
     std::shared_ptr<BucketServerLocation>& serverLocation, int8_t& version) {
   if (m_bucketWaitTimeout == std::chrono::milliseconds::zero()) return;
 
-  WriteGuard guard(m_PRbucketStatusLock);
+  boost::unique_lock<decltype(m_PRbucketStatusLock)> lock(m_PRbucketStatusLock);
 
   getBucketServerLocation(region, key, value, aCallbackArgument,
                           false /*look for secondary host*/, serverLocation,
@@ -454,8 +412,7 @@ void ClientMetadataService::markPrimaryBucketForTimeout(
              serverLocation->getPort());
     int32_t bId = serverLocation->getBucketId();
 
-    std::map<std::string, PRbuckets*>::iterator bs =
-        m_bucketStatus.find(region->getFullPath());
+    const auto& bs = m_bucketStatus.find(region->getFullPath());
 
     if (bs != m_bucketStatus.end()) {
       bs->second->setBucketTimeout(bId);
@@ -787,14 +744,12 @@ void ClientMetadataService::markPrimaryBucketForTimeoutButLookSecondaryBucket(
     std::shared_ptr<BucketServerLocation>& serverLocation, int8_t& version) {
   if (m_bucketWaitTimeout == std::chrono::milliseconds::zero()) return;
 
-  WriteGuard guard(m_PRbucketStatusLock);
-
-  std::map<std::string, PRbuckets*>::iterator bs =
-      m_bucketStatus.find(region->getFullPath());
+  boost::unique_lock<decltype(m_PRbucketStatusLock)> lock(m_PRbucketStatusLock);
 
   PRbuckets* prBuckets = nullptr;
+  const auto& bs = m_bucketStatus.find(region->getFullPath());
   if (bs != m_bucketStatus.end()) {
-    prBuckets = bs->second;
+    prBuckets = bs->second.get();
   }
 
   if (prBuckets == nullptr) return;
@@ -804,10 +759,10 @@ void ClientMetadataService::markPrimaryBucketForTimeoutButLookSecondaryBucket(
 
   std::shared_ptr<ClientMetadata> cptr = nullptr;
   {
-    ReadGuard guard(m_regionMetadataLock);
-    RegionMetadataMapType::iterator cptrIter =
-        m_regionMetaDataMap.find(region->getFullPath());
+    boost::shared_lock<decltype(m_regionMetadataLock)> lock(
+        m_regionMetadataLock);
 
+    const auto& cptrIter = m_regionMetaDataMap.find(region->getFullPath());
     if (cptrIter != m_regionMetaDataMap.end()) {
       cptr = cptrIter->second;
     }
@@ -819,9 +774,9 @@ void ClientMetadataService::markPrimaryBucketForTimeoutButLookSecondaryBucket(
 
   LOGFINE("Setting in markPrimaryBucketForTimeoutButLookSecondaryBucket");
 
-  int32_t totalBuckets = cptr->getTotalNumBuckets();
+  auto totalBuckets = cptr->getTotalNumBuckets();
 
-  for (int32_t i = 0; i < totalBuckets; i++) {
+  for (decltype(totalBuckets) i = 0; i < totalBuckets; i++) {
     int8_t version;
     std::shared_ptr<BucketServerLocation> bsl;
     cptr->getServerLocation(i, false, bsl, version);
@@ -839,15 +794,13 @@ bool ClientMetadataService::isBucketMarkedForTimeout(const char* regionFullPath,
                                                      int32_t bucketid) {
   if (m_bucketWaitTimeout == std::chrono::milliseconds::zero()) return false;
 
-  ReadGuard guard(m_PRbucketStatusLock);
+  boost::shared_lock<decltype(m_PRbucketStatusLock)> lock(m_PRbucketStatusLock);
 
   const auto& bs = m_bucketStatus.find(regionFullPath);
   if (bs != m_bucketStatus.end()) {
     bool m = bs->second->isBucketTimedOut(bucketid, m_bucketWaitTimeout);
     if (m) {
-      ThinClientPoolDM* tcrdm = dynamic_cast<ThinClientPoolDM*>(m_pool);
-      CacheImpl* cache = tcrdm->getConnectionManager().getCacheImpl();
-      cache->incBlackListBucketTimeouts();
+      m_cache->incBlackListBucketTimeouts();
     }
     LOGFINE("isBucketMarkedForTimeout:: for bucket %d returning = %d", bucketid,
             m);

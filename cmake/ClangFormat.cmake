@@ -32,13 +32,14 @@ function(add_clangformat _target)
     set(_clangformat_SOURCES "")
     foreach (_source ${_target_SOURCES})
       if (NOT TARGET ${_source})
-        get_source_file_property(_source_LOCATION "${_source}" LOCATION)
         get_source_file_property(_source_GENERATED "${_source}" GENERATED)
-
-        if(_source_GENERATED)
+        string(REGEX MATCH "\\.(h(pp|xx)?|c(pp|xx)?)(\\..*)?$" _source_extension_match ${_source})
+        if(_source_GENERATED
+            OR _source_extension_match STREQUAL "")
           break()
         endif()
 
+        get_source_file_property(_source_LOCATION "${_source}" LOCATION)
         file(RELATIVE_PATH _source_RELATIVE_PATH ${_target_SOURCE_DIR} ${_source_LOCATION})
         string(REPLACE ".." "__" _format_file "${_target_BINARY_DIR}/CMakeFiles/${_clangformat}.dir/${_source_RELATIVE_PATH}.format")
         get_filename_component(_format_DIRECTORY ${_format_file} DIRECTORY)

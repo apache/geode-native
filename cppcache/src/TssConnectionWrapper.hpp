@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_TSSCONNECTIONWRAPPER_H_
-#define GEODE_TSSCONNECTIONWRAPPER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_TSSCONNECTIONWRAPPER_H_
+#define GEODE_TSSCONNECTIONWRAPPER_H_
+
 #include <map>
 #include <string>
 
@@ -26,12 +27,13 @@
 
 #include <geode/Pool.hpp>
 
-#include "TcrEndpoint.hpp"
-
 namespace apache {
 namespace geode {
 namespace client {
+
+class TcrEndpoint;
 class TcrConnection;
+
 typedef std::map<std::string, TcrConnection*> EpNameVsConnection;
 
 class PoolWrapper {
@@ -76,6 +78,7 @@ class TssConnectionWrapper {
   void releaseSHConnections(std::shared_ptr<Pool> p);
   TcrConnection* getAnyConnection(const char* poolname);
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

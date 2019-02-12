@@ -21,22 +21,25 @@
 #define GEODE_THINCLIENTLOCATORHELPER_H_
 
 #include <list>
+#include <mutex>
 #include <set>
 #include <string>
 
 #include <geode/internal/geode_globals.hpp>
 
 #include "ClientProxyMembershipID.hpp"
+#include "ErrType.hpp"
 #include "GetAllServersRequest.hpp"
 #include "GetAllServersResponse.hpp"
 #include "ServerLocation.hpp"
-#include "TcrEndpoint.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
-class TcrEndpoint;
+
 class ThinClientPoolDM;
+class Connector;
+
 class ThinClientLocatorHelper {
  public:
   ThinClientLocatorHelper(const std::vector<std::string>& locatorAddresses,
@@ -63,7 +66,7 @@ class ThinClientLocatorHelper {
                               int32_t port,
                               std::chrono::microseconds waitSeconds,
                               int32_t maxBuffSizePool = 0);
-  ACE_Thread_Mutex m_locatorLock;
+  std::mutex m_locatorLock;
   std::vector<ServerLocation> m_locHostPort;
   const ThinClientPoolDM* m_poolDM;
   ThinClientLocatorHelper(const ThinClientLocatorHelper&);

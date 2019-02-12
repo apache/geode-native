@@ -60,9 +60,9 @@ class APACHE_GEODE_EXPORT PdxFieldType
 
   PdxFieldType();
 
-  inline const char* getFieldName() { return m_fieldName.c_str(); }
+  inline const std::string& getFieldName() { return m_fieldName; }
 
-  inline const char* getClassName() { return m_className.c_str(); }
+  inline const std::string& getClassName() { return m_className; }
 
   inline PdxFieldTypes getTypeId() { return m_typeId; }
 

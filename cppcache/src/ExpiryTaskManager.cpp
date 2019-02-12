@@ -51,31 +51,6 @@ ExpiryTaskManager::ExpiryTaskManager() : m_reactorEventLoopRunning(false) {
   timer.release();
 }
 
-ExpiryTaskManager::id_type ExpiryTaskManager::scheduleExpiryTask(
-    ACE_Event_Handler* handler, uint32_t expTime, uint32_t interval,
-    bool cancelExistingTask) {
-  LOGFINER("ExpiryTaskManager: expTime %d, interval %d, cancelExistingTask %d",
-           expTime, interval, cancelExistingTask);
-  if (cancelExistingTask) {
-    m_reactor->cancel_timer(handler, 1);
-  }
-
-  ACE_Time_Value expTimeValue(expTime);
-  ACE_Time_Value intervalValue(interval);
-  return m_reactor->schedule_timer(handler, nullptr, expTimeValue,
-                                   intervalValue);
-}
-
-ExpiryTaskManager::id_type ExpiryTaskManager::scheduleExpiryTask(
-    ACE_Event_Handler* handler, ACE_Time_Value expTimeValue,
-    ACE_Time_Value intervalVal, bool cancelExistingTask) {
-  if (cancelExistingTask) {
-    m_reactor->cancel_timer(handler, 1);
-  }
-
-  return m_reactor->schedule_timer(handler, nullptr, expTimeValue, intervalVal);
-}
-
 int ExpiryTaskManager::resetTask(ExpiryTaskManager::id_type id, uint32_t sec) {
   ACE_Time_Value interval(sec);
   return m_reactor->reset_timer_interval(id, interval);
@@ -88,7 +63,11 @@ int ExpiryTaskManager::cancelTask(ExpiryTaskManager::id_type id) {
 int ExpiryTaskManager::svc() {
   DistributedSystemImpl::setThreadName(NC_ETM_Thread);
   LOGFINE("ExpiryTaskManager thread is running.");
-  m_reactorEventLoopRunning = true;
+  {
+    std::unique_lock<std::mutex> lock(m_mutex);
+    m_reactorEventLoopRunning = true;
+    m_condition.notify_all();
+  }
   m_reactor->owner(ACE_OS::thr_self());
   m_reactor->run_reactor_event_loop();
   LOGFINE("ExpiryTaskManager thread has stopped.");
@@ -96,21 +75,21 @@ int ExpiryTaskManager::svc() {
 }
 
 void ExpiryTaskManager::stopExpiryTaskManager() {
+  std::unique_lock<std::mutex> lock(m_mutex);
+
   if (m_reactorEventLoopRunning) {
     m_reactor->end_reactor_event_loop();
     this->wait();
     GF_D_ASSERT(m_reactor->reactor_event_loop_done() > 0);
     m_reactorEventLoopRunning = false;
+    m_condition.notify_all();
   }
 }
 
 void ExpiryTaskManager::begin() {
   this->activate();
-  ACE_Time_Value t;
-  t.msec(50);
-  while (!m_reactorEventLoopRunning) {
-    ACE_OS::sleep(t);
-  }
+  std::unique_lock<std::mutex> lock(m_mutex);
+  m_condition.wait(lock, [this] { return m_reactorEventLoopRunning; });
 }
 
 ExpiryTaskManager::~ExpiryTaskManager() {

@@ -97,7 +97,7 @@ TcrConnection* ThinClientPoolStickyDM::getConnectionFromQueueW(
                                            request.forTransaction());
 
   if (request.forTransaction()) {
-    TXState* txState = TSSTXStateWrapper::s_geodeTSSTXState->getTXState();
+    auto txState = TSSTXStateWrapper::get().getTXState();
     if (*error == GF_NOERR && !cf &&
         (txState == nullptr || txState->isDirty())) {
       *error = doFailover(conn);
@@ -131,7 +131,8 @@ void ThinClientPoolStickyDM::setStickyNull(bool isBGThread) {
   }
 }
 
-void ThinClientPoolStickyDM::cleanStickyConnections(volatile bool& isRunning) {
+void ThinClientPoolStickyDM::cleanStickyConnections(
+    std::atomic<bool>& isRunning) {
   if (!isRunning) {
     return;
   }

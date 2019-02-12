@@ -21,6 +21,8 @@
 #include <iterator>
 #include <random>
 
+#include <boost/process/environment.hpp>
+
 #include "util/Log.hpp"
 
 namespace apache {
@@ -43,7 +45,7 @@ ClientProxyMembershipIDFactory::ClientProxyMembershipIDFactory(
   std::generate_n(std::back_inserter(randString), 10,
                   [&]() { return alphabet[dist(rng)]; });
 
-  auto pid = ACE_OS::getpid();
+  auto pid = boost::this_process::get_id();
   randString.append(std::to_string(pid));
 
   LOGINFO("Using %s as random data for ClientProxyMembershipID",

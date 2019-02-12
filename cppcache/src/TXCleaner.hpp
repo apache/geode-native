@@ -43,7 +43,6 @@ class TXCleaner {
   TXState* getTXState();
 
  private:
-  TSSTXStateWrapper* m_txStateWrapper;
   TXState* m_txState;
   CacheTransactionManagerImpl* m_cacheTxMgr;
 

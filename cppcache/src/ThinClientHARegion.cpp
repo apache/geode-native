@@ -43,16 +43,6 @@ ThinClientHARegion::ThinClientHARegion(
 void ThinClientHARegion::initTCR() {
   try {
     const bool isPool = !m_attributes.getPoolName().empty();
-    if (m_cacheImpl->getDistributedSystem()
-            .getSystemProperties()
-            .isGridClient()) {
-      LOGWARN(
-          "Region: HA region having notification channel created for grid "
-          "client; force starting required notification, cleanup and "
-          "failover threads");
-      m_cacheImpl->tcrConnectionManager().startFailoverAndCleanupThreads(
-          isPool);
-    }
 
     if (isPool) {
       m_tcrdm = dynamic_cast<ThinClientPoolHADM*>(

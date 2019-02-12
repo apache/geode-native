@@ -34,6 +34,7 @@
 #include "ReadWriteLock.hpp"
 #include "RegionGlobalLocks.hpp"
 #include "RemoteQuery.hpp"
+#include "TcrConnectionManager.hpp"
 #include "TcrDistributionManager.hpp"
 #include "TcrEndpoint.hpp"
 #include "ThinClientBaseDM.hpp"
@@ -51,7 +52,7 @@ namespace client {
 static const std::regex PREDICATE_IS_FULL_QUERY_REGEX(
     "^\\s*(?:select|import)\\b", std::regex::icase);
 
-void setTSSExceptionMessage(const char* exMsg);
+void setThreadLocalExceptionMessage(const char* exMsg);
 
 class PutAllWork : public PooledWork<GfErrType>,
                    private NonCopyable,
@@ -102,13 +103,12 @@ class PutAllWork : public PooledWork<GfErrType>,
     m_reply = new TcrMessageReply(true, m_poolDM);
 
     // create new instanceof VCOPL
-    ACE_Recursive_Thread_Mutex responseLock;
+    std::recursive_mutex responseLock;
     m_verObjPartListPtr = std::make_shared<VersionedCacheableObjectPartList>(
         keys.get(), responseLock);
 
     if (m_poolDM->isMultiUserMode()) {
-      m_userAttribute = TSSUserAttributesWrapper::s_geodeTSSUserAttributes
-                            ->getUserAttributes();
+      m_userAttribute = UserAttributes::threadLocalUserAttributes;
     }
 
     m_request->setTimeout(m_timeout);
@@ -245,13 +245,12 @@ class RemoveAllWork : public PooledWork<GfErrType>,
         *keys, m_aCallbackArgument, m_poolDM);
     m_reply = new TcrMessageReply(true, m_poolDM);
     // create new instanceof VCOPL
-    ACE_Recursive_Thread_Mutex responseLock;
+    std::recursive_mutex responseLock;
     m_verObjPartListPtr = std::make_shared<VersionedCacheableObjectPartList>(
         keys.get(), responseLock);
 
     if (m_poolDM->isMultiUserMode()) {
-      m_userAttribute = TSSUserAttributesWrapper::s_geodeTSSUserAttributes
-                            ->getUserAttributes();
+      m_userAttribute = UserAttributes::threadLocalUserAttributes;
     }
 
     m_resultCollector = new ChunkedRemoveAllResponse(
@@ -349,7 +348,6 @@ ThinClientRegion::ThinClientRegion(
     : LocalRegion(name, cacheImpl, rPtr, attributes, stats, shared),
       m_tcrdm(nullptr),
       m_notifyRelease(false),
-      m_notificationSema(1),
       m_isMetaDataRefreshed(false) {
   m_transactionEnabled = true;
   m_isDurableClnt = !cacheImpl->getDistributedSystem()
@@ -359,25 +357,6 @@ ThinClientRegion::ThinClientRegion(
 }
 
 void ThinClientRegion::initTCR() {
-  bool subscription = false;
-  auto pool = m_cacheImpl->getPoolManager().find(getAttributes().getPoolName());
-  if (pool != nullptr) {
-    subscription = pool->getSubscriptionEnabled();
-  }
-  bool notificationEnabled =
-      getAttributes().getClientNotificationEnabled() || subscription;
-  if (notificationEnabled) {
-    if (m_cacheImpl->getDistributedSystem()
-            .getSystemProperties()
-            .isGridClient()) {
-      LOGWARN(
-          "Region %s: client subscription channel enabled for a grid "
-          "client; starting required internal subscription, cleanup and "
-          "failover threads",
-          m_fullPath.c_str());
-      m_cacheImpl->tcrConnectionManager().startFailoverAndCleanupThreads();
-    }
-  }
   try {
     m_tcrdm =
         new TcrDistributionManager(this, m_cacheImpl->tcrConnectionManager());
@@ -1234,7 +1213,7 @@ GfErrType ThinClientRegion::getAllNoThrow_remote(
       aCallbackArgument);  // now we need to initialize later
 
   TcrMessageReply reply(true, m_tcrdm);
-  ACE_Recursive_Thread_Mutex responseLock;
+  std::recursive_mutex responseLock;
   // need to check
   TcrChunkedResult* resultCollector(new ChunkedGetAllResponse(
       reply, this, keys, values, exceptions, resultKeys, updateCountMap,
@@ -1339,9 +1318,8 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
    * method.
    *  e. insert the worker into the vector.
    */
-  std::vector<PutAllWork*> putAllWorkers;
-  auto threadPool =
-      CacheRegionHelper::getCacheImpl(&getCache())->getThreadPool();
+  std::vector<std::shared_ptr<PutAllWork>> putAllWorkers;
+  auto& threadPool = m_cacheImpl->getThreadPool();
   int locationMapIndex = 0;
   for (const auto& locationIter : *locationMap) {
     const auto& serverLocation = locationIter.first;
@@ -1361,10 +1339,10 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
       }
     }
 
-    auto worker = new PutAllWork(tcrdm, serverLocation, region,
-                                 true /*attemptFailover*/, false /*isBGThread*/,
-                                 filteredMap, keys, timeout, aCallbackArgument);
-    threadPool->perform(worker);
+    auto worker = std::make_shared<PutAllWork>(
+        tcrdm, serverLocation, region, true /*attemptFailover*/,
+        false /*isBGThread*/, filteredMap, keys, timeout, aCallbackArgument);
+    threadPool.perform(worker);
     putAllWorkers.push_back(worker);
     locationMapIndex++;
   }
@@ -1428,7 +1406,6 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
     }
     */
 
-    delete worker;
     cnt++;
   }
   /**
@@ -1439,7 +1416,7 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
    * versions. C. ToDO:: what if the value in the resultMap is of type
    * PutAllPartialResultServerException
    */
-  ACE_Recursive_Thread_Mutex responseLock;
+  std::recursive_mutex responseLock;
   auto result = std::make_shared<PutAllPartialResult>(
       static_cast<int>(map.size()), responseLock);
   LOGDEBUG(
@@ -1608,7 +1585,7 @@ GfErrType ThinClientRegion::multiHopPutAllNoThrow_remote(
   request.setTimeout(timeout);
   reply.setTimeout(timeout);
 
-  ACE_Recursive_Thread_Mutex responseLock;
+  std::recursive_mutex responseLock;
   versionedObjPartList =
       std::make_shared<VersionedCacheableObjectPartList>(this, responseLock);
   // need to check
@@ -1665,7 +1642,7 @@ GfErrType ThinClientRegion::putAllNoThrow_remote(
   LOGDEBUG("ThinClientRegion::putAllNoThrow_remote");
 
   auto poolDM = dynamic_cast<ThinClientPoolDM*>(m_tcrdm);
-  auto txState = TSSTXStateWrapper::s_geodeTSSTXState->getTXState();
+  auto txState = TSSTXStateWrapper::get().getTXState();
 
   if (poolDM != nullptr) {
     if (poolDM->getPRSingleHopEnabled() &&
@@ -1719,9 +1696,8 @@ GfErrType ThinClientRegion::singleHopRemoveAllNoThrow_remote(
    * method.
    *  e. insert the worker into the vector.
    */
-  std::vector<RemoveAllWork*> removeAllWorkers;
-  auto* threadPool =
-      CacheRegionHelper::getCacheImpl(&getCache())->getThreadPool();
+  std::vector<std::shared_ptr<RemoveAllWork>> removeAllWorkers;
+  auto& threadPool = m_cacheImpl->getThreadPool();
   int locationMapIndex = 0;
   for (const auto& locationIter : *locationMap) {
     const auto& serverLocation = locationIter.first;
@@ -1729,10 +1705,10 @@ GfErrType ThinClientRegion::singleHopRemoveAllNoThrow_remote(
       LOGDEBUG("serverLocation is nullptr");
     }
     const auto& mappedkeys = locationIter.second;
-    auto worker = new RemoveAllWork(
+    auto worker = std::make_shared<RemoveAllWork>(
         tcrdm, serverLocation, region, true /*attemptFailover*/,
         false /*isBGThread*/, mappedkeys, aCallbackArgument);
-    threadPool->perform(worker);
+    threadPool.perform(worker);
     removeAllWorkers.push_back(worker);
     locationMapIndex++;
   }
@@ -1783,7 +1759,6 @@ GfErrType ThinClientRegion::singleHopRemoveAllNoThrow_remote(
         "worker->getResultCollector()->getList()->getVersionedTagsize() = %d ",
         worker->getResultCollector()->getList()->getVersionedTagsize());
 
-    delete worker;
     cnt++;
   }
   /**
@@ -1794,7 +1769,7 @@ GfErrType ThinClientRegion::singleHopRemoveAllNoThrow_remote(
    * versions. C. ToDO:: what if the value in the resultMap is of type
    * PutAllPartialResultServerException
    */
-  ACE_Recursive_Thread_Mutex responseLock;
+  std::recursive_mutex responseLock;
   auto result = std::make_shared<PutAllPartialResult>(
       static_cast<int>(keys.size()), responseLock);
   LOGDEBUG(
@@ -1943,7 +1918,7 @@ GfErrType ThinClientRegion::multiHopRemoveAllNoThrow_remote(
                               this, keys, aCallbackArgument, m_tcrdm);
   TcrMessageReply reply(true, m_tcrdm);
 
-  ACE_Recursive_Thread_Mutex responseLock;
+  std::recursive_mutex responseLock;
   versionedObjPartList =
       std::make_shared<VersionedCacheableObjectPartList>(this, responseLock);
   // need to check
@@ -1992,7 +1967,7 @@ GfErrType ThinClientRegion::removeAllNoThrow_remote(
   LOGDEBUG("ThinClientRegion::removeAllNoThrow_remote");
 
   ThinClientPoolDM* poolDM = dynamic_cast<ThinClientPoolDM*>(m_tcrdm);
-  TXState* txState = TSSTXStateWrapper::s_geodeTSSTXState->getTXState();
+  auto txState = TSSTXStateWrapper::get().getTXState();
 
   if (poolDM != nullptr) {
     if (poolDM->getPRSingleHopEnabled() &&
@@ -2261,7 +2236,7 @@ GfErrType ThinClientRegion::registerKeysNoThrow(
   CHECK_DESTROY_PENDING_NOTHROW(TryReadGuard);
   GfErrType err = GF_NOERR;
 
-  ACE_Guard<ACE_Recursive_Thread_Mutex> keysGuard(m_keysLock);
+  std::lock_guard<decltype(m_keysLock)> keysGuard(m_keysLock);
   if (keys.empty()) {
     return err;
   }
@@ -2281,7 +2256,7 @@ GfErrType ThinClientRegion::registerKeysNoThrow(
       new DataOutput(m_cacheImpl->createDataOutput()), this, keys, isDurable,
       getAttributes().getCachingEnabled(), receiveValues, interestPolicy,
       m_tcrdm);
-  ACE_Recursive_Thread_Mutex responseLock;
+  std::recursive_mutex responseLock;
   TcrChunkedResult* resultCollector = nullptr;
   if (interestPolicy.ordinal == InterestResultPolicy::KEYS_VALUES.ordinal) {
     auto values = std::make_shared<HashMapOfCacheable>();
@@ -2332,7 +2307,7 @@ GfErrType ThinClientRegion::unregisterKeysNoThrow(
   RegionGlobalLocks acquireLocksFailover(this);
   CHECK_DESTROY_PENDING_NOTHROW(TryReadGuard);
   GfErrType err = GF_NOERR;
-  ACE_Guard<ACE_Recursive_Thread_Mutex> keysGuard(m_keysLock);
+  std::lock_guard<decltype(m_keysLock)> keysGuard(m_keysLock);
   TcrMessageReply reply(true, m_tcrdm);
   if (keys.empty()) {
     return err;
@@ -2368,7 +2343,7 @@ GfErrType ThinClientRegion::unregisterKeysNoThrowLocalDestroy(
   RegionGlobalLocks acquireLocksRedundancy(this, false);
   RegionGlobalLocks acquireLocksFailover(this);
   GfErrType err = GF_NOERR;
-  ACE_Guard<ACE_Recursive_Thread_Mutex> keysGuard(m_keysLock);
+  std::lock_guard<decltype(m_keysLock)> keysGuard(m_keysLock);
   TcrMessageReply reply(true, m_tcrdm);
   if (keys.empty()) {
     return err;
@@ -2420,7 +2395,7 @@ GfErrType ThinClientRegion::registerRegexNoThrow(
   GfErrType err = GF_NOERR;
 
   bool allKeys = (regex == ".*");
-  ACE_Guard<ACE_Recursive_Thread_Mutex> keysGuard(m_keysLock);
+  std::lock_guard<decltype(m_keysLock)> keysGuard(m_keysLock);
 
   if (attemptFailover) {
     if ((isDurable &&
@@ -2459,7 +2434,7 @@ GfErrType ThinClientRegion::registerRegexNoThrow(
       new DataOutput(m_cacheImpl->createDataOutput()), m_fullPath,
       regex.c_str(), interestPolicy, isDurable,
       getAttributes().getCachingEnabled(), receiveValues, m_tcrdm);
-  ACE_Recursive_Thread_Mutex responseLock;
+  std::recursive_mutex responseLock;
   if (reply == nullptr) {
     TcrMessageReply replyLocal(true, m_tcrdm);
     auto values = std::make_shared<HashMapOfCacheable>();
@@ -2551,7 +2526,7 @@ GfErrType ThinClientRegion::unregisterRegexNoThrow(const std::string& regex,
 
 GfErrType ThinClientRegion::findRegex(const std::string& regex) {
   GfErrType err = GF_NOERR;
-  ACE_Guard<ACE_Recursive_Thread_Mutex> keysGuard(m_keysLock);
+  std::lock_guard<decltype(m_keysLock)> keysGuard(m_keysLock);
 
   if (m_interestListRegex.find(regex) == m_interestListRegex.end() &&
       m_durableInterestListRegex.find(regex) ==
@@ -2567,7 +2542,7 @@ GfErrType ThinClientRegion::findRegex(const std::string& regex) {
 }
 
 void ThinClientRegion::clearRegex(const std::string& regex) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> keysGuard(m_keysLock);
+  std::lock_guard<decltype(m_keysLock)> keysGuard(m_keysLock);
   m_interestListRegex.erase(regex);
   m_durableInterestListRegex.erase(regex);
   m_interestListRegexForUpdatesAsInvalidates.erase(regex);
@@ -2642,11 +2617,11 @@ void ThinClientRegion::addRegex(const std::string& regex, bool isDurable,
 
 std::vector<std::shared_ptr<CacheableKey>> ThinClientRegion::getInterestList()
     const {
-  ThinClientRegion* nthis = const_cast<ThinClientRegion*>(this);
+  auto nthis = const_cast<ThinClientRegion*>(this);
   RegionGlobalLocks acquireLocksRedundancy(nthis, false);
   RegionGlobalLocks acquireLocksFailover(nthis);
   CHECK_DESTROY_PENDING(TryReadGuard, getInterestList);
-  ACE_Guard<ACE_Recursive_Thread_Mutex> keysGuard(nthis->m_keysLock);
+  std::lock_guard<decltype(m_keysLock)> keysGuard(nthis->m_keysLock);
 
   std::vector<std::shared_ptr<CacheableKey>> vlist;
 
@@ -2665,11 +2640,11 @@ std::vector<std::shared_ptr<CacheableKey>> ThinClientRegion::getInterestList()
 }
 std::vector<std::shared_ptr<CacheableString>>
 ThinClientRegion::getInterestListRegex() const {
-  ThinClientRegion* nthis = const_cast<ThinClientRegion*>(this);
+  auto nthis = const_cast<ThinClientRegion*>(this);
   RegionGlobalLocks acquireLocksRedundancy(nthis, false);
   RegionGlobalLocks acquireLocksFailover(nthis);
   CHECK_DESTROY_PENDING(TryReadGuard, getInterestListRegex);
-  ACE_Guard<ACE_Recursive_Thread_Mutex> keysGuard(nthis->m_keysLock);
+  std::lock_guard<decltype(m_keysLock)> keysGuard(nthis->m_keysLock);
 
   std::vector<std::shared_ptr<CacheableString>> vlist;
 
@@ -2769,7 +2744,7 @@ GfErrType ThinClientRegion::clientNotificationHandler(TcrMessage& msg) {
 GfErrType ThinClientRegion::handleServerException(const char* func,
                                                   const char* exceptionMsg) {
   GfErrType error = GF_NOERR;
-  setTSSExceptionMessage(exceptionMsg);
+  setThreadLocalExceptionMessage(exceptionMsg);
   if (strstr(exceptionMsg,
              "org.apache.geode.security.NotAuthorizedException") != nullptr) {
     error = GF_NOT_AUTHORIZED_EXCEPTION;
@@ -2818,6 +2793,7 @@ GfErrType ThinClientRegion::handleServerException(const char* func,
 }
 
 void ThinClientRegion::receiveNotification(TcrMessage* msg) {
+  std::unique_lock<std::mutex> lock(m_notificationMutex, std::defer_lock);
   {
     TryReadGuard guard(m_rwLock, m_destroyPending);
     if (m_destroyPending) {
@@ -2826,7 +2802,7 @@ void ThinClientRegion::receiveNotification(TcrMessage* msg) {
       }
       return;
     }
-    m_notificationSema.acquire();
+    lock.lock();
   }
 
   if (msg->getMessageType() == TcrMessage::CLIENT_MARKER) {
@@ -2835,7 +2811,7 @@ void ThinClientRegion::receiveNotification(TcrMessage* msg) {
     clientNotificationHandler(*msg);
   }
 
-  m_notificationSema.release();
+  lock.unlock();
   if (TcrMessage::getAllEPDisMess() != msg) _GEODE_SAFE_DELETE(msg);
 }
 
@@ -2938,8 +2914,10 @@ void ThinClientRegion::release(bool invokeCallbacks) {
   if (m_released) {
     return;
   }
+
+  std::unique_lock<std::mutex> lock(m_notificationMutex, std::defer_lock);
   if (!m_notifyRelease) {
-    m_notificationSema.acquire();
+    lock.lock();
   }
 
   destroyDM(invokeCallbacks);
@@ -3165,11 +3143,10 @@ bool ThinClientRegion::executeFunctionSH(
     std::shared_ptr<CacheableHashSet>& failedNodes,
     std::chrono::milliseconds timeout, bool allBuckets) {
   bool reExecute = false;
-  auto resultCollectorLock = std::make_shared<ACE_Recursive_Thread_Mutex>();
-  const auto& userAttr =
-      TSSUserAttributesWrapper::s_geodeTSSUserAttributes->getUserAttributes();
+  auto resultCollectorLock = std::make_shared<std::recursive_mutex>();
+  const auto& userAttr = UserAttributes::threadLocalUserAttributes;
   std::vector<std::shared_ptr<OnRegionFunctionExecution>> feWorkers;
-  auto* threadPool =
+  auto& threadPool =
       CacheRegionHelper::getCacheImpl(&getCache())->getThreadPool();
 
   for (const auto& locationIter : *locationMap) {
@@ -3179,14 +3156,13 @@ bool ThinClientRegion::executeFunctionSH(
         func, this, args, routingObj, getResult, timeout,
         dynamic_cast<ThinClientPoolDM*>(m_tcrdm), resultCollectorLock, rc,
         userAttr, false, serverLocation, allBuckets);
-    threadPool->perform(worker.get());
+    threadPool.perform(worker);
     feWorkers.push_back(worker);
   }
 
   GfErrType abortError = GF_NOERR;
 
-  for (auto iter = std::begin(feWorkers); iter != std::end(feWorkers);) {
-    auto worker = *iter;
+  for (auto worker : feWorkers) {
     auto err = worker->getResult();
     auto currentReply = worker->getReply();
 
@@ -3209,7 +3185,8 @@ bool ThinClientRegion::executeFunctionSH(
         }
         worker->getResultCollector()->reset();
         {
-          ACE_Guard<ACE_Recursive_Thread_Mutex> guard(*resultCollectorLock);
+          std::lock_guard<decltype(*resultCollectorLock)> guard(
+              *resultCollectorLock);
           rc->clearResults();
         }
         std::shared_ptr<CacheableHashSet> failedNodeIds(
@@ -3235,7 +3212,8 @@ bool ThinClientRegion::executeFunctionSH(
         }
         worker->getResultCollector()->reset();
         {
-          ACE_Guard<ACE_Recursive_Thread_Mutex> guard(*resultCollectorLock);
+          std::lock_guard<decltype(*resultCollectorLock)> guard(
+              *resultCollectorLock);
           rc->clearResults();
         }
       } else {
@@ -3250,8 +3228,6 @@ bool ThinClientRegion::executeFunctionSH(
         }
       }
     }
-
-    iter = feWorkers.erase(iter);
   }
 
   if (abortError != GF_NOERR) {
@@ -3283,10 +3259,15 @@ GfErrType ThinClientRegion::getFuncAttributes(const std::string& func,
                                   reply.getException());
       break;
     }
+    case TcrMessage::REQUEST_DATA_ERROR: {
+      LOGERROR("Error message from server: " + reply.getValue()->toString());
+      throw FunctionExecutionException(reply.getValue()->toString());
+    }
     default: {
       LOGERROR("Unknown message type %d while getting function attributes.",
                reply.getMessageType());
       err = GF_MSG;
+      break;
     }
   }
   return err;
@@ -3712,7 +3693,8 @@ void ChunkedFunctionExecutionResponse::handleChunk(
       result = value;
     }
     if (m_resultCollectorLock) {
-      ACE_Guard<ACE_Recursive_Thread_Mutex> guard(*m_resultCollectorLock);
+      std::lock_guard<decltype(*m_resultCollectorLock)> guard(
+          *m_resultCollectorLock);
       m_rc->addResult(result);
     } else {
       m_rc->addResult(result);
@@ -3806,7 +3788,7 @@ void ChunkedPutAllResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
 
   if (chunkType == TcrMessageHelper::ChunkObjectType::OBJECT) {
     LOGDEBUG("ChunkedPutAllResponse::handleChunk object");
-    ACE_Recursive_Thread_Mutex responseLock;
+    std::recursive_mutex responseLock;
     auto vcObjPart = std::make_shared<VersionedCacheableObjectPartList>(
         dynamic_cast<ThinClientRegion*>(m_region.get()),
         m_msg.getChunkedResultHandler()->getEndpointMemId(), responseLock);
@@ -3864,7 +3846,7 @@ void ChunkedRemoveAllResponse::handleChunk(const uint8_t* chunk,
 
   if (chunkType == TcrMessageHelper::ChunkObjectType::OBJECT) {
     LOGDEBUG("ChunkedRemoveAllResponse::handleChunk object");
-    ACE_Recursive_Thread_Mutex responseLock;
+    std::recursive_mutex responseLock;
     auto vcObjPart = std::make_shared<VersionedCacheableObjectPartList>(
         dynamic_cast<ThinClientRegion*>(m_region.get()),
         m_msg.getChunkedResultHandler()->getEndpointMemId(), responseLock);
@@ -3912,7 +3894,7 @@ void ChunkedDurableCQListResponse::handleChunk(const uint8_t* chunk,
   if (!input.readBoolean()) {
     // we're currently always expecting an object
     char exMsg[256];
-    ACE_OS::snprintf(
+    std::snprintf(
         exMsg, 255,
         "ChunkedDurableCQListResponse::handleChunk: part is not object");
     throw MessageException(exMsg);

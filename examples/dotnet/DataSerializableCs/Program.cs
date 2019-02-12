@@ -1,4 +1,4 @@
-﻿/*
+/*
 * Licensed to the Apache Software Foundation (ASF) under one or more
 * contributor license agreements.  See the NOTICE file distributed with
 * this work for additional information regarding copyright ownership.
@@ -20,43 +20,43 @@ using Apache.Geode.Client;
 
 namespace Apache.Geode.Examples.Serializer
 {
-    public class Program
+  public class Program
+  {
+    public static void Main(string[] args)
     {
-        public static void Main(string[] args)
-        {
-            var cacheFactory = new CacheFactory()
-                .Set("log-level", "none");
-            var cache = cacheFactory.Create();
+      var cacheFactory = new CacheFactory()
+          .Set("log-level", "none");
+      var cache = cacheFactory.Create();
 
-            Console.WriteLine("Registering for data serialization");
+      Console.WriteLine("Registering for data serialization");
 
-            cache.TypeRegistry.RegisterType(Order.CreateDeserializable, 7);
+      cache.TypeRegistry.RegisterType(Order.CreateDeserializable, 7);
 
-            var poolFactory = cache.GetPoolFactory()
-                .AddLocator("localhost", 10334);
-            poolFactory.Create("pool");
+      var poolFactory = cache.GetPoolFactory()
+          .AddLocator("localhost", 10334);
+      poolFactory.Create("pool");
 
-            var regionFactory = cache.CreateRegionFactory(RegionShortcut.PROXY)
-                .SetPoolName("pool");
-            var orderRegion = regionFactory.Create<int, Order>("example_orderobject");
+      var regionFactory = cache.CreateRegionFactory(RegionShortcut.PROXY)
+          .SetPoolName("pool");
+      var orderRegion = regionFactory.Create<int, Order>("example_orderobject");
 
-            Console.WriteLine("Storing order object in the region");
+      Console.WriteLine("Storing order object in the region");
 
-            const int orderKey = 65;
+      const int orderKey = 65;
 
-            var order = new Order(orderKey, "Donuts", 12);
+      var order = new Order(orderKey, "Donuts", 12);
 
-            Console.WriteLine("order to put is " + order);
-            orderRegion.Put(orderKey, order, null);
+      Console.WriteLine("order to put is " + order);
+      orderRegion.Put(orderKey, order, null);
 
-            Console.WriteLine("Successfully put order, getting now...");
-            var orderRetrieved = orderRegion.Get(orderKey, null);
+      Console.WriteLine("Successfully put order, getting now...");
+      var orderRetrieved = orderRegion.Get(orderKey, null);
 
-            Console.WriteLine("Order key: " + orderKey + " = " + orderRetrieved);
+      Console.WriteLine("Order key: " + orderKey + " = " + orderRetrieved);
 
-            cache.Close();
-        }
+      cache.Close();
     }
+  }
 }
 
 

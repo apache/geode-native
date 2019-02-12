@@ -13,14 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-project( libxml2 LANGUAGES NONE )
+project( libxml2 VERSION 2.9.9 LANGUAGES NONE )
 
-set( ${PROJECT_NAME}_VERSION 2.9.7 )
-set( ${PROJECT_NAME}_SHA265 f63c5e7d30362ed28b38bfa1ac6313f9a80230720b7fb6c80575eeab3ff5900c )
-set( ${PROJECT_NAME}_URL "http://xmlsoft.org/sources/libxml2-${${PROJECT_NAME}_VERSION}.tar.gz" )
-set( ${PROJECT_NAME}_EXTERN ${PROJECT_NAME}-extern )
+set( SHA256 94fb70890143e3c6549f265cee93ec064c80a84c42ad0f23e85ee1fd6540a871 )
 
-set( ${PROJECT_NAME}_CFLAGS "${${PROJECT_NAME}_CFLAGS} ${CFLAGS_ARCH}" )
+set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m64" )
 
 if (${WIN32})
   set (_MAKE_FLAGS ${_MAKE_FLAGS} "CPP=cl.exe /MP /EP" "CC=cl.exe /MP" )
@@ -41,16 +38,27 @@ if (${WIN32})
   set ( _BUILD_COMMAND ${CMAKE_COMMAND} -E chdir win32 nmake -f Makefile.msvc all ${_MAKE_FLAGS} )
   set ( _INSTALL_COMMAND ${CMAKE_COMMAND} -E chdir win32 nmake -f Makefile.msvc install ${_MAKE_FLAGS} )
 else()
-  set ( _CONFIGURE_COMMAND ${CONFIGURE} $<$<CONFIG:Debug>:--with-debug> --libdir=<INSTALL_DIR>/lib --with-pic --enable-static --without-iconv --without-python --without-lzma CFLAGS=${${PROJECT_NAME}_CFLAGS} "MAKE=$(MAKE)")
+  set ( _CONFIGURE_COMMAND ./configure
+          --prefix=<INSTALL_DIR>
+          $<$<CONFIG:Debug>:--with-debug>
+          --libdir=<INSTALL_DIR>/lib
+          --with-pic
+          --enable-static
+          --without-iconv
+          --without-python
+          --without-lzma
+          CC=${CMAKE_C_COMPILER}
+          CFLAGS=${CMAKE_C_FLAGS}
+          "MAKE=$(MAKE)")
   set ( _BUILD_COMMAND $(MAKE) all )
   set ( _INSTALL_COMMAND $(MAKE) install )
 endif()
 
+set( EXTERN ${PROJECT_NAME}-extern )
 include(ExternalProject)
-
-ExternalProject_Add( ${${PROJECT_NAME}_EXTERN}
-   URL ${${PROJECT_NAME}_URL}
-   URL_HASH SHA256=${${PROJECT_NAME}_SHA265}
+ExternalProject_Add( ${EXTERN}
+   URL "http://xmlsoft.org/sources/libxml2-${PROJECT_VERSION}.tar.gz"
+   URL_HASH SHA256=${SHA256}
    UPDATE_COMMAND ""
    BUILD_IN_SOURCE 1
    CONFIGURE_COMMAND "${_CONFIGURE_COMMAND}"
@@ -58,27 +66,26 @@ ExternalProject_Add( ${${PROJECT_NAME}_EXTERN}
    INSTALL_COMMAND "${_INSTALL_COMMAND}"
 )
 
-ExternalProject_Get_Property( ${${PROJECT_NAME}_EXTERN} SOURCE_DIR )
-set( ${PROJECT_NAME}_SOURCE_DIR ${SOURCE_DIR} )
-ExternalProject_Get_Property( ${${PROJECT_NAME}_EXTERN} INSTALL_DIR )
-set( ${PROJECT_NAME}_INSTALL_DIR ${INSTALL_DIR} )
-set( DEPENDENCIES_${PROJECT_NAME}_DIR ${${PROJECT_NAME}_INSTALL_DIR} PARENT_SCOPE)
+ExternalProject_Get_Property( ${EXTERN} INSTALL_DIR )
+set( INSTALL_DIR ${INSTALL_DIR} )
 
 if (${WIN32})
   set(CMAKE_STATIC_LIBRARY_PREFIX lib)
   set(CMAKE_STATIC_LIBRARY_SUFFIX _a$<$<CONFIG:Debug>:d>.lib)
 endif()
 
-add_library(${PROJECT_NAME} INTERFACE)
-target_include_directories(${PROJECT_NAME} SYSTEM INTERFACE
-  $<BUILD_INTERFACE:${${PROJECT_NAME}_INSTALL_DIR}/include/libxml2>
+add_library(LibXml2_LibXml2 INTERFACE)
+target_include_directories(LibXml2_LibXml2 SYSTEM INTERFACE
+  $<BUILD_INTERFACE:${INSTALL_DIR}/include/libxml2>
 )
-target_link_libraries(${PROJECT_NAME} INTERFACE
-    ${${PROJECT_NAME}_INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}xml2${CMAKE_STATIC_LIBRARY_SUFFIX}
+target_link_libraries(LibXml2_LibXml2 INTERFACE
+  ${INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}xml2${CMAKE_STATIC_LIBRARY_SUFFIX}
 )
 if (${UNIX})
-  target_link_libraries(${PROJECT_NAME} INTERFACE
-     z
+  target_link_libraries(LibXml2_LibXml2 INTERFACE
+    z
   )
 endif()
-add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXTERN})
+add_dependencies(LibXml2_LibXml2 ${EXTERN})
+
+add_library(LibXml2::LibXml2 ALIAS LibXml2_LibXml2)

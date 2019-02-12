@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -19,12 +19,17 @@ using System;
 using System.Diagnostics;
 using System.Reflection;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Apache.Geode.Client.IntegrationTests
 {
     [Trait("Category", "Integration")]
     public class ClusterTest : TestBase, IDisposable
     {
+        public ClusterTest(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+        {
+        }
+
         public void Dispose()
         {
 
@@ -33,7 +38,7 @@ namespace Apache.Geode.Client.IntegrationTests
         [Fact]
         public void ClusterStartTest()
         {
-            using (var cluster = new Cluster(CreateTestCaseDirectoryName(), 1, 1))
+            using (var cluster = new Cluster(output, CreateTestCaseDirectoryName(), 1, 1))
             {
                 Assert.True(cluster.Start());
             }
@@ -42,7 +47,7 @@ namespace Apache.Geode.Client.IntegrationTests
         [Fact]
         public void ClusterStartWithTwoServersTest()
         {
-            using (var cluster = new Cluster(CreateTestCaseDirectoryName(), 1, 2))
+            using (var cluster = new Cluster(output, CreateTestCaseDirectoryName(), 1, 2))
             {
                 Assert.True(cluster.Start());
             }
@@ -51,7 +56,7 @@ namespace Apache.Geode.Client.IntegrationTests
         [Fact]
         public void ClusterStartWithSslTest()
         {
-            using (var cluster = new Cluster(CreateTestCaseDirectoryName(), 1, 1))
+            using (var cluster = new Cluster(output, CreateTestCaseDirectoryName(), 1, 1))
             {
                 cluster.UseSSL = true;
 

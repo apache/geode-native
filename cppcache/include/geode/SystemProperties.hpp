@@ -314,23 +314,6 @@ class APACHE_GEODE_EXPORT SystemProperties {
   bool isDhOn() const { return !m_securityClientDhAlgo.empty(); }
 
   /**
-   * Checks to see if this native client is being invoked as part of small
-   * grid jobs; use this setting to disable some creation of threads and
-   * reduce start/stop time. Note that this setting can cause improper
-   * behavior in some cases like:
-   *  1) client that is setup in listening mode and a server failure may not
-   *     lead to failover by client
-   *  2) while shutting down the client will not send a proper CLOSE_CONNECTION
-   *     message so server will report EOF exceptions and may detect client
-   *     disconnect after quite some time
-   * Also note that there may be some performance loss in queries and
-   * Region::getAll due to unavailability of parallel processing threads.
-   *
-   * @return true if the "grid-client" property is set
-   */
-  inline bool isGridClient() const { return m_gridClient; }
-
-  /**
    * Whether a non durable client starts to receive and process
    * subscription events automatically.
    * If set to false then a non-durable client should call the
@@ -402,8 +385,6 @@ class APACHE_GEODE_EXPORT SystemProperties {
   std::chrono::milliseconds m_connectTimeout;
   std::chrono::milliseconds m_connectWaitTimeout;
   std::chrono::milliseconds m_bucketWaitTimeout;
-
-  bool m_gridClient;
 
   bool m_autoReadyForEvents;
 

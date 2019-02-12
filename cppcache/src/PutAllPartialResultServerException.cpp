@@ -29,7 +29,7 @@ PutAllPartialResultServerException::PutAllPartialResultServerException(
 
 PutAllPartialResultServerException::PutAllPartialResultServerException() {
   LOGDEBUG("Partial keys are processed in putAll");
-  ACE_Recursive_Thread_Mutex responseLock;
+  std::recursive_mutex responseLock;
   m_result = std::make_shared<PutAllPartialResult>(-1, responseLock);
 }
 

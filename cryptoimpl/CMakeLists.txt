@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cmake_minimum_required(VERSION 3.4)
 project(cryptoImpl LANGUAGES CXX)
 
 add_library(cryptoImpl SHARED
@@ -38,13 +37,13 @@ set_target_properties(cryptoImpl PROPERTIES
 
 target_link_libraries(cryptoImpl
   PRIVATE
-    ACE_SSL
+    ACE::ACE_SSL
     _WarningsAsError
   PUBLIC
-   apache-geode
-   crypto
-   ssl
-   c++11
+    apache-geode
+    OpenSSL::Crypto
+    OpenSSL::SSL
+    c++11
 )
 
 add_clangformat(cryptoImpl)

@@ -311,7 +311,7 @@ int testXmlCacheCreationWithPools() {
     std::cout << "vc[" << i << "].m_regionPtr=" << vrp.at(i).get() << std::endl;
     std::cout << "vc[" << i << "]=" << vrp.at(i)->getName() << std::endl;
   }
-  auto regPtr1 = vrp.at(0);
+  auto regPtr1 = cptr->getRegion("Root1");
 
   auto &&vr = regPtr1->subregions(true);
   std::cout << "Test if the number of sub regions with the root region Root1 "
@@ -335,7 +335,7 @@ int testXmlCacheCreationWithPools() {
   // pools. Check if this assumption is valid and if so then break up this test.
   auto subRegPtr = vr.at(0);
 
-  auto regPtr2 = vrp.at(1);
+  auto regPtr2 = cptr->getRegion("Root2");
 
   std::cout << "Test if the number of sub regions with the root region Root2 "
                "are correct"

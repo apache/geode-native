@@ -21,7 +21,6 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt.in ${CMAKE_CURRENT_BIN
 
 install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/CMakeLists.txt
-  BUILD-DOTNET-EXAMPLES.md
   DESTINATION examples/dotnet)
 
 function(add_example)
@@ -55,6 +54,9 @@ add_example(NAME ContinuousQueryCs
 
 add_example(NAME DataSerializableCs
 	SOURCE Order.cs Program.cs)
+
+add_example(NAME FunctionExecutionCs
+	SOURCE Program.cs)
 
 add_example(NAME PdxAutoSerializer
 	SOURCE Order.cs Program.cs)

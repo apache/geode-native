@@ -41,7 +41,6 @@ class TcrChunkedResult {
   ACE_Semaphore* m_finalizeSema;
   std::shared_ptr<Exception> m_ex;
   bool m_inSameThread;
-  std::unique_ptr<AppDomainContext> appDomainContext;
 
  protected:
   uint16_t m_dsmemId;
@@ -56,7 +55,6 @@ class TcrChunkedResult {
       : m_finalizeSema(nullptr),
         m_ex(nullptr),
         m_inSameThread(false),
-        appDomainContext(createAppDomainContext()),
         m_dsmemId(0) {}
   virtual ~TcrChunkedResult() {}
   void setFinalizeSemaphore(ACE_Semaphore* finalizeSema) {
@@ -73,14 +71,7 @@ class TcrChunkedResult {
   void fireHandleChunk(const uint8_t* bytes, int32_t len,
                        uint8_t isLastChunkWithSecurity,
                        const CacheImpl* cacheImpl) {
-    if (appDomainContext) {
-      appDomainContext->run(
-          [this, bytes, len, isLastChunkWithSecurity, cacheImpl]() {
-            handleChunk(bytes, len, isLastChunkWithSecurity, cacheImpl);
-          });
-    } else {
-      handleChunk(bytes, len, isLastChunkWithSecurity, cacheImpl);
-    }
+    handleChunk(bytes, len, isLastChunkWithSecurity, cacheImpl);
   }
 
   /**

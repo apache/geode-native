@@ -22,6 +22,10 @@
 #include "IGeodeCache.hpp"
 #include "native_shared_ptr.hpp"
 
+#include "begin_native.hpp"
+#include <geode/Cache.hpp>
+#include "end_native.hpp"
+
 using namespace System;
 
 namespace Apache

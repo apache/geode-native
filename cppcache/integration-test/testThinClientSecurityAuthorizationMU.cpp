@@ -26,7 +26,7 @@
 
 #include "CacheHelper.hpp"
 #include "ThinClientHelper.hpp"
-#include "ace/Process.h"
+#include <ace/Process.h>
 
 #include "ThinClientSecurity.hpp"
 

@@ -20,12 +20,14 @@
 #ifndef GEODE_STATISTICS_HOSTSTATSAMPLER_H_
 #define GEODE_STATISTICS_HOSTSTATSAMPLER_H_
 
+#include <atomic>
 #include <chrono>
 #include <memory>
+#include <mutex>
 #include <string>
+#include <thread>
 #include <vector>
 
-#include <ace/Recursive_Thread_Mutex.h>
 #include <ace/Task.h>
 
 #include <geode/ExceptionTypes.hpp>
@@ -39,8 +41,6 @@
 #include "StatisticsManager.hpp"
 #include "StatisticsType.hpp"
 
-/** @file
- */
 #ifndef GEMFIRE_MAX_STATS_FILE_LIMIT
 #define GEMFIRE_MAX_STATS_FILE_LIMIT (1024 * 1024 * 1024)
 #endif
@@ -48,6 +48,7 @@
 #ifndef GEMFIRE_MAX_STAT_DISK_LIMIT
 #define GEMFIRE_MAX_STAT_DISK_LIMIT (1024LL * 1024LL * 1024LL * 1024LL)
 #endif
+
 namespace apache {
 namespace geode {
 namespace statistics {
@@ -64,9 +65,7 @@ class StatisticsManager;
  * HostStatSampler implements a thread which will monitor, sample and archive
  * statistics. It only has the common functionalities which any sampler needs.
  */
-class APACHE_GEODE_EXPORT HostStatSampler : public ACE_Task_Base,
-                                            private NonCopyable,
-                                            private NonAssignable {
+class HostStatSampler : private NonCopyable, private NonAssignable {
  public:
   /*
    * Constructor:
@@ -122,7 +121,7 @@ class APACHE_GEODE_EXPORT HostStatSampler : public ACE_Task_Base,
   /**
    * Gets list mutex for synchronization
    */
-  ACE_Recursive_Thread_Mutex& getStatListMutex();
+  std::recursive_mutex& getStatListMutex();
   /**
    * Returns a vector of ptrs to all the current statistic resource instances.
    */
@@ -180,7 +179,7 @@ class APACHE_GEODE_EXPORT HostStatSampler : public ACE_Task_Base,
   /**
    * The function executed by the thread
    */
-  int32_t svc(void);
+  void svc(void);
 
   /**
    * Method to know whether the sampling thread is running or not.
@@ -190,12 +189,12 @@ class APACHE_GEODE_EXPORT HostStatSampler : public ACE_Task_Base,
   ~HostStatSampler();
 
  private:
-  ACE_Recursive_Thread_Mutex m_samplingLock;
+  std::recursive_mutex m_samplingLock;
   bool m_adminError;
-  // Related to ACE Thread.
-  bool m_running;
-  bool m_stopRequested;
-  volatile bool m_isStatDiskSpaceEnabled;
+  std::thread m_thread;
+  std::atomic<bool> m_running;
+  std::atomic<bool> m_stopRequested;
+  std::atomic<bool> m_isStatDiskSpaceEnabled;
   std::unique_ptr<StatArchiveWriter> m_archiver;
   StatSamplerStats* m_samplerStats;
   const char* m_durableClientId;
@@ -247,6 +246,7 @@ class APACHE_GEODE_EXPORT HostStatSampler : public ACE_Task_Base,
 
   static const char* NC_HSS_Thread;
 };
+
 }  // namespace statistics
 }  // namespace geode
 }  // namespace apache

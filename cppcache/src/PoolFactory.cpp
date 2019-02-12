@@ -16,7 +16,6 @@
  */
 
 #include <ace/INET_Addr.h>
-#include <ace/Recursive_Thread_Mutex.h>
 
 #include <geode/Pool.hpp>
 #include <geode/PoolFactory.hpp>
@@ -26,6 +25,7 @@
 #include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
 #include "PoolAttributes.hpp"
+#include "TcrConnectionManager.hpp"
 #include "ThinClientPoolDM.hpp"
 #include "ThinClientPoolHADM.hpp"
 #include "ThinClientPoolStickyDM.hpp"

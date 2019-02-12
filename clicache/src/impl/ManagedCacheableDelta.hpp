@@ -22,6 +22,9 @@
 
 #include "../geode_defs.hpp"
 #include "../begin_native.hpp"
+#include <geode/CacheableKey.hpp>
+#include <geode/Delta.hpp>
+#include <geode/DataSerializable.hpp>
 #include "../end_native.hpp"
 #include "../IDelta.hpp"
 #include "../IDataSerializable.hpp"

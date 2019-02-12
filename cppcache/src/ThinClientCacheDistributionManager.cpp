@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "ThinClientCacheDistributionManager.hpp"
 
 #include <algorithm>
@@ -25,6 +26,7 @@
 #include "CacheImpl.hpp"
 #include "ReadWriteLock.hpp"
 #include "RemoteQueryService.hpp"
+#include "TcrConnectionManager.hpp"
 #include "TcrEndpoint.hpp"
 #include "TcrMessage.hpp"
 #include "ThinClientBaseDM.hpp"
@@ -52,7 +54,7 @@ GfErrType ThinClientCacheDistributionManager::sendSyncRequestCq(
 
   reply.setDM(this);
 
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_endpointsLock);
+  std::lock_guard<decltype(m_endpointsLock)> guard(m_endpointsLock);
 
   // Return best effort result: If CQ succeeds on ANY server return no-error
   // even if
@@ -134,8 +136,7 @@ bool ThinClientCacheDistributionManager::preFailoverAction() {
   //  take the global endpoint lock so that the global endpoints list
   // does not change while we are (possibly) adding endpoint to this endpoints
   // list and incrementing the reference count of endpoint
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(
-      m_connManager.getGlobalEndpoints().mutex());
+  auto&& guard = m_connManager.getGlobalEndpoints().make_lock();
   //  This method is called at the time of failover to refresh
   // the list of endpoints.
   std::vector<TcrEndpoint*> currentGlobalEndpointsList;
@@ -143,23 +144,18 @@ bool ThinClientCacheDistributionManager::preFailoverAction() {
 
   //  Update local list with new endpoints.
   std::vector<TcrEndpoint*> newEndpointsList;
-  for (std::vector<TcrEndpoint*>::iterator it =
-           currentGlobalEndpointsList.begin();
-       it != currentGlobalEndpointsList.end(); ++it) {
+  for (const auto& it : currentGlobalEndpointsList) {
     bool found = false;
-    for (std::vector<TcrEndpoint*>::iterator currIter = m_endpoints.begin();
-         currIter != m_endpoints.end(); ++currIter) {
-      if (*currIter == *it) {
+    for (const auto& currIter : m_endpoints) {
+      if (currIter == it) {
         found = true;
         break;
       }
     }
-    if (!found) newEndpointsList.push_back(*it);
+    if (!found) newEndpointsList.push_back(it);
   }
 
-  for (std::vector<TcrEndpoint*>::iterator it = newEndpointsList.begin();
-       it != newEndpointsList.end(); ++it) {
-    TcrEndpoint* ep = *it;
+  for (const auto& ep : newEndpointsList) {
     m_endpoints.push_back(ep);
     ep->setNumRegions(ep->numRegions() + 1);
     LOGFINER(

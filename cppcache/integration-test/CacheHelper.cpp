@@ -1700,6 +1700,8 @@ void CacheHelper::initLocator(int instance, bool ssl, bool, int dsId,
       break;
   }
 
+  int jmxManagerPort = CacheHelper::staticJmxManagerPort;
+
   currDir += locDirname;
 
   ACE_OS::mkdir(locDirname.c_str());
@@ -1720,9 +1722,10 @@ void CacheHelper::initLocator(int instance, bool ssl, bool, int dsId,
           : std::string("--properties-file=") + geodeFile;
   sprintf(cmd,
           "%s/bin/%s start locator --name=%s --port=%d --dir=%s "
-          "%s --http-service-port=0 --classpath=%s",
+          "%s --http-service-port=0 --classpath=%s "
+          "--J=-Dgemfire.jmx-manager-port=%d",
           gfjavaenv, GFSH, locDirname.c_str(), portnum, currDir.c_str(),
-          propertiesFile.c_str(), classpath);
+          propertiesFile.c_str(), classpath, jmxManagerPort);
 
   LOG(cmd);
   ACE_OS::system(cmd);

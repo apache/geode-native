@@ -1,5 +1,3 @@
-#!/bin/env bash
-
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -15,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+#!/usr/bin/env bash
 GFSH_PATH=""
 which gfsh 2> /dev/null
 
@@ -29,6 +28,6 @@ else
     fi
 fi
 
-$GFSH_PATH  -e "start locator --name=locator" -e "deploy --jar=../../javaobject.jar" -e "start server --name=the-server --server-port=40404"  -e "create region --name=partition_region --type=PARTITION" -e "start server --name=the-second-server --server-port=50505"
+$GFSH_PATH  -e "start locator --name=locator" -e "deploy --jar=../../utilities/example.jar" -e "start server --name=the-server --server-port=50505"  -e "create region --name=partition_region --type=PARTITION"
 
 

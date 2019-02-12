@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -18,22 +18,22 @@
 using System;
 using System.Collections.Generic;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Apache.Geode.Client.IntegrationTests
 {
 
     [Trait("Category", "Integration")]
-    public class GfshTest : IDisposable
+    public class GfshTest : TestBase
     {
-        public void Dispose()
+        public GfshTest(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
-
         }
 
         [Fact]
         public void InstantiateGfshClassesTest()
         {
-            var gfsh = new GfshExecute();
+            var gfsh = new GfshExecute(output);
             var start = gfsh.start();
             Assert.NotNull(start);
 
@@ -53,19 +53,13 @@ namespace Apache.Geode.Client.IntegrationTests
         [Fact]
         public void StartLocatorStringsTest()
         {
-            var Gfsh = new GfshExecute();
-
-            var currentDir = Environment.CurrentDirectory;
-            Gfsh.Keystore = "some/path/keystore.jks";
-            Gfsh.KeystorePassword = "password";
-            Gfsh.Truststore = "some/path/truststore.jks";
-            Gfsh.TruststorePassword = "password";
+            var Gfsh = new GfshExecute(output);
 
             var locator = Gfsh
                 .start()
                 .locator();
             var s = locator.ToString();
-            Assert.True(s.Equals("start locator"));
+            Assert.Equal("start locator", s);
 
             locator = Gfsh
                 .start()
@@ -79,31 +73,31 @@ namespace Apache.Geode.Client.IntegrationTests
                 .withLogLevel("fine")
                 .withMaxHeap("someHugeAmount")
                 .withConnect(false)
-                .withUseSsl();
+                .withSslEnableComponents("locator,jmx")
+                .withSslKeyStore("some/path/keystore.jks")
+                .withSslKeyStorePassword("password1")
+                .withSslTrustStore("some/path/truststore.jks")
+                .withSslTrustStorePassword("password2");
             s = locator.ToString();
-            Assert.Equal(s, "start locator --name=name --dir=dir " +
-                "--http-service-port=2222 --log-level=fine --max-heap=someHugeAmount " +
+            Assert.Equal("start locator --name=name --dir=dir --bind-address=address --port=420 " +
+                "--J=-Dgemfire.jmx-manager-port=1111 --http-service-port=2222 --log-level=fine --max-heap=someHugeAmount " +
                 "--connect=false --J=-Dgemfire.ssl-enabled-components=locator,jmx " +
-                "--J=-Dgemfire.ssl-keystore=some/path/keystore.jks --J=-Dgemfire.ssl-keystore-password=password " +
-                "--J=-Dgemfire.ssl-truststore=some/path/truststore.jks --J=-Dgemfire.ssl-truststore-password=password");
+                "--J=-Dgemfire.ssl-keystore=some/path/keystore.jks --J=-Dgemfire.ssl-keystore-password=password1 " +
+                "--J=-Dgemfire.ssl-truststore=some/path/truststore.jks --J=-Dgemfire.ssl-truststore-password=password2", s);
         }
 
         [Fact]
         public void StartServerStringsTest()
         {
-            var Gfsh = new GfshExecute();
+            var Gfsh = new GfshExecute(output);
 
             var currentDir = Environment.CurrentDirectory;
-            Gfsh.Keystore = "some/path/keystore.jks";
-            Gfsh.KeystorePassword = "password";
-            Gfsh.Truststore = "some/path/truststore.jks";
-            Gfsh.TruststorePassword = "password";
 
             var server = Gfsh
                 .start()
                 .server();
             var s = server.ToString();
-            Assert.True(s.Equals("start server"));
+            Assert.Equal("start server", s);
 
             server = Gfsh
                 .start()
@@ -115,119 +109,117 @@ namespace Apache.Geode.Client.IntegrationTests
                 .withLocators("someLocator")
                 .withLogLevel("debug")
                 .withMaxHeap("1.21gigabytes")
-                .withUseSsl();
+                .withSslEnableComponents("server,locator,jmx")
+                .withSslKeyStore("some/path/keystore.jks")
+                .withSslKeyStorePassword("password1")
+                .withSslTrustStore("some/path/truststore.jks")
+                .withSslTrustStorePassword("password2");
             s = server.ToString();
-            Assert.Equal(s, "start server --name=server " +
-                "--dir=someDir --server-port=1234 --locators=someLocator --log-level=debug " +
+            Assert.Equal("start server --name=server " +
+                "--dir=someDir --bind-address=someAddress --server-port=1234 --locators=someLocator --log-level=debug " +
                 "--max-heap=1.21gigabytes --J=-Dgemfire.ssl-enabled-components=server,locator,jmx " +
-                "--J=-Dgemfire.ssl-keystore=some/path/keystore.jks --J=-Dgemfire.ssl-keystore-password=password " +
-                "--J=-Dgemfire.ssl-truststore=some/path/truststore.jks --J=-Dgemfire.ssl-truststore-password=password");
+                "--J=-Dgemfire.ssl-keystore=some/path/keystore.jks --J=-Dgemfire.ssl-keystore-password=password1 " +
+                "--J=-Dgemfire.ssl-truststore=some/path/truststore.jks --J=-Dgemfire.ssl-truststore-password=password2", s);
         }
 
         [Fact]
         public void StopLocatorStringsTest()
         {
-            var locator = new GfshExecute()
+            var locator = new GfshExecute(output)
                 .stop()
                 .locator();
             var s = locator.ToString();
-            Assert.True(s.Equals("stop locator"));
+            Assert.Equal("stop locator", s);
 
-            locator = new GfshExecute().stop().locator()
+            locator = new GfshExecute(output).stop().locator()
                 .withName("name")
                 .withDir("dir");
             s = locator.ToString();
-            Assert.True(s.Equals("stop locator --name=name --dir=dir"));
+            Assert.Equal("stop locator --name=name --dir=dir", s);
         }
 
         [Fact]
         public void StopServerStringsTest()
         {
-            var server = new GfshExecute()
+            var server = new GfshExecute(output)
                 .stop()
                 .server();
             var s = server.ToString();
-            Assert.True(s.Equals("stop server"));
+            Assert.Equal("stop server", s);
 
-            server = new GfshExecute()
+            server = new GfshExecute(output)
                 .stop()
                 .server()
                 .withName("server")
                 .withDir("someDir");
             s = server.ToString();
-            Assert.True(s.Equals("stop server --name=server --dir=someDir"));
+            Assert.Equal("stop server --name=server --dir=someDir", s);
         }
 
         [Fact]
         public void CreateRegionStringsTest()
         {
-            var region = new GfshExecute()
+            var region = new GfshExecute(output)
                 .create()
                 .region();
             var s = region.ToString();
-            Assert.True(s.Equals("create region"));
+            Assert.Equal("create region", s);
 
-            region = new GfshExecute()
+            region = new GfshExecute(output)
                 .create()
                 .region()
                 .withName("region")
                 .withType("PARTITION");
             s = region.ToString();
-            Assert.True(s.Equals("create region --name=region --type=PARTITION"));
+            Assert.Equal("create region --name=region --type=PARTITION", s);
         }
 
         [Fact]
         public void ShutdownStringsTest()
         {
-            var shutdown = new GfshExecute()
+            var shutdown = new GfshExecute(output)
                 .shutdown();
             var s = shutdown.ToString();
-            Assert.True(s.Equals("shutdown"));
+            Assert.Equal("shutdown", s);
 
-            shutdown = new GfshExecute()
+            shutdown = new GfshExecute(output)
                 .shutdown()
                 .withIncludeLocators(true);
             s = shutdown.ToString();
-            Assert.True(s.Equals("shutdown --include-locators=true"));
+            Assert.Equal("shutdown --include-locators=true", s);
 
-            shutdown = new GfshExecute()
+            shutdown = new GfshExecute(output)
                 .shutdown()
                 .withIncludeLocators(false);
             s = shutdown.ToString();
-            Assert.True(s.Equals("shutdown --include-locators=false"));
+            Assert.Equal("shutdown --include-locators=false", s);
         }
 
         [Fact]
         public void ConfigurePdxStringsTest()
         {
-            var configurePdx = new GfshExecute()
+            var configurePdx = new GfshExecute(output)
                 .configurePdx();
             var s = configurePdx.ToString();
-            Assert.Equal(s, "configure pdx");
+            Assert.Equal("configure pdx", s);
 
-            configurePdx = new GfshExecute()
+            configurePdx = new GfshExecute(output)
                 .configurePdx()
                 .withReadSerialized(true);
             s = configurePdx.ToString();
-            Assert.Equal(s, "configure pdx --read-serialized=true");
+            Assert.Equal( "configure pdx --read-serialized=true", s);
 
-            configurePdx = new GfshExecute()
+            configurePdx = new GfshExecute(output)
                 .configurePdx()
                 .withReadSerialized(false);
             s = configurePdx.ToString();
-            Assert.Equal(s, "configure pdx --read-serialized=false");
+            Assert.Equal("configure pdx --read-serialized=false", s);
         }
 
         [Fact]
         public void ConnectStringsTest()
         {
-            var Gfsh = new GfshExecute();
-
-            var currentDir = Environment.CurrentDirectory;
-            Gfsh.Keystore = "some/path/keystore.jks";
-            Gfsh.KeystorePassword = "password";
-            Gfsh.Truststore = "some/path/truststore.jks";
-            Gfsh.TruststorePassword = "password";
+            var Gfsh = new GfshExecute(output);
 
             var connect = Gfsh
                 .connect();
@@ -237,11 +229,15 @@ namespace Apache.Geode.Client.IntegrationTests
             connect = Gfsh
                 .connect()
                 .withJmxManager("localhost", 1234)
-                .withUseSsl();
+                .withUseSsl(true)
+                .withKeyStore("some/path/keystore.jks")
+                .withKeyStorePassword("password1")
+                .withTrustStore("some/path/truststore.jks")
+                .withTrustStorePassword("password2");
             s = connect.ToString();
-            Assert.Equal(s, "connect --jmx-manager=localhost[1234] --use-ssl " +
-                "--key-store=some/path/keystore.jks --key-store-password=password " +
-                "--trust-store=some/path/truststore.jks --trust-store-password=password");
+            Assert.Equal("connect --jmx-manager=localhost[1234] --use-ssl=true " +
+                "--key-store=some/path/keystore.jks --key-store-password=password1 " +
+                "--trust-store=some/path/truststore.jks --trust-store-password=password2", s);
         }
     }
 }

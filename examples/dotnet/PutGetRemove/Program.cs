@@ -1,4 +1,4 @@
-﻿/*
+/*
 * Licensed to the Apache Software Foundation (ASF) under one or more
 * contributor license agreements.  See the NOTICE file distributed with
 * this work for additional information regarding copyright ownership.
@@ -20,51 +20,51 @@ using Apache.Geode.Client;
 
 namespace Apache.Geode.Examples.PutGetRemove
 {
-    class Program
+  class Program
+  {
+    static void Main(string[] args)
     {
-        static void Main(string[] args)
-        {
-            var cacheFactory = new CacheFactory()
-                .Set("log-level", "none");
-            var cache = cacheFactory.Create();
+      var cacheFactory = new CacheFactory()
+          .Set("log-level", "none");
+      var cache = cacheFactory.Create();
 
-            var poolFactory = cache.GetPoolFactory()
-                .AddLocator("localhost", 10334);
-            poolFactory.Create("pool");
+      var poolFactory = cache.GetPoolFactory()
+          .AddLocator("localhost", 10334);
+      poolFactory.Create("pool");
 
-            var regionFactory = cache.CreateRegionFactory(RegionShortcut.PROXY)
-                .SetPoolName("pool");
-            var region = regionFactory.Create<string, string>("example_userinfo");
+      var regionFactory = cache.CreateRegionFactory(RegionShortcut.PROXY)
+          .SetPoolName("pool");
+      var region = regionFactory.Create<string, string>("example_userinfo");
 
-            Console.WriteLine("Storing id and username in the region");
+      Console.WriteLine("Storing id and username in the region");
 
-            const string rtimmonsKey = "rtimmons";
-            const string rtimmonsValue = "Robert Timmons";
-            const string scharlesKey = "scharles";
-            const string scharlesValue = "Sylvia Charles";
+      const string rtimmonsKey = "rtimmons";
+      const string rtimmonsValue = "Robert Timmons";
+      const string scharlesKey = "scharles";
+      const string scharlesValue = "Sylvia Charles";
 
-            region.Put(rtimmonsKey, rtimmonsValue, null);
-            region.Put(scharlesKey, scharlesValue, null);
+      region.Put(rtimmonsKey, rtimmonsValue, null);
+      region.Put(scharlesKey, scharlesValue, null);
 
-            Console.WriteLine("Getting the user info from the region");
-            var user1 = region.Get(rtimmonsKey, null);
-            var user2 = region.Get(scharlesKey, null);
+      Console.WriteLine("Getting the user info from the region");
+      var user1 = region.Get(rtimmonsKey, null);
+      var user2 = region.Get(scharlesKey, null);
 
-            Console.WriteLine(rtimmonsKey + " = " + user1);
-            Console.WriteLine(scharlesKey + " = " + user2);
+      Console.WriteLine(rtimmonsKey + " = " + user1);
+      Console.WriteLine(scharlesKey + " = " + user2);
 
-            Console.WriteLine("Removing " + rtimmonsKey + " info from the region");
+      Console.WriteLine("Removing " + rtimmonsKey + " info from the region");
 
-            if (region.Remove(rtimmonsKey))
-            {
-                Console.WriteLine("Info for " + rtimmonsKey + " has been deleted");
-            }
-            else
-            {
-                Console.WriteLine("Info for " + rtimmonsKey + " has not been deleted");
-            }
+      if (region.Remove(rtimmonsKey))
+      {
+        Console.WriteLine("Info for " + rtimmonsKey + " has been deleted");
+      }
+      else
+      {
+        Console.WriteLine("Info for " + rtimmonsKey + " has not been deleted");
+      }
 
-            cache.Close();
-        }
+      cache.Close();
     }
+  }
 }

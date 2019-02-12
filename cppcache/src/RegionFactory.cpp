@@ -18,9 +18,6 @@
 #include <map>
 #include <string>
 
-#include <ace/Guard_T.h>
-#include <ace/Recursive_Thread_Mutex.h>
-
 #include <geode/Cache.hpp>
 #include <geode/CacheFactory.hpp>
 #include <geode/PoolManager.hpp>
@@ -156,7 +153,7 @@ RegionFactory& RegionFactory::setRegionTimeToLive(
 RegionFactory& RegionFactory::setInitialCapacity(int initialCapacity) {
   char excpStr[256] = {0};
   if (initialCapacity < 0) {
-    ACE_OS::snprintf(excpStr, 256, "initialCapacity must be >= 0 ");
+    std::snprintf(excpStr, 256, "initialCapacity must be >= 0 ");
     throw IllegalArgumentException(excpStr);
   }
   m_regionAttributesFactory->setInitialCapacity(initialCapacity);

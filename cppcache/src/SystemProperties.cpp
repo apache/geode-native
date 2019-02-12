@@ -17,9 +17,7 @@
 
 #include <cstdlib>
 #include <string>
-
-#include <ace/DLL.h>
-#include <ace/OS.h>
+#include <thread>
 
 #include <geode/CacheableKey.hpp>
 #include <geode/ExceptionTypes.hpp>
@@ -68,7 +66,6 @@ const char BucketWaitTimeout[] = "bucket-wait-timeout";
 const char ConflateEvents[] = "conflate-events";
 const char SecurityClientDhAlgo[] = "security-client-dhalgo";
 const char SecurityClientKsPath[] = "security-client-kspath";
-const char GridClient[] = "grid-client";
 const char AutoReadyForEvents[] = "auto-ready-for-events";
 const char SslEnabled[] = "ssl-enabled";
 const char TimeStatisticsEnabled[] = "enable-time-statistics";
@@ -101,7 +98,6 @@ const apache::geode::client::LogLevel DefaultLogLevel =
 
 const int DefaultConnectionPoolSize = 5;
 
-const bool DefaultGridClient = false;
 const bool DefaultAutoReadyForEvents = true;
 const bool DefaultSslEnabled = false;
 const bool DefaultTimeStatisticsEnabled = false;  // or true;
@@ -125,7 +121,7 @@ constexpr auto DefaultRedundancyMonitorInterval = std::chrono::seconds(10);
 constexpr auto DefaultNotifyAckInterval = std::chrono::seconds(1);
 constexpr auto DefaultNotifyDupCheckLife = std::chrono::seconds(300);
 const char DefaultSecurityPrefix[] = "security-";
-const uint32_t DefaultThreadPoolSize = ACE_OS::num_processors() * 2;
+const uint32_t DefaultThreadPoolSize = std::thread::hardware_concurrency() * 2;
 constexpr auto DefaultSuspendedTxTimeout = std::chrono::seconds(30);
 constexpr auto DefaultTombstoneTimeout = std::chrono::seconds(480);
 // not disable; all region api will use chunk handler thread
@@ -175,7 +171,6 @@ SystemProperties::SystemProperties(
       m_connectTimeout(DefaultConnectTimeout),
       m_connectWaitTimeout(DefaultConnectWaitTimeout),
       m_bucketWaitTimeout(DefaultBucketWaitTimeout),
-      m_gridClient(DefaultGridClient),
       m_autoReadyForEvents(DefaultAutoReadyForEvents),
       m_sslEnabled(DefaultSslEnabled),
       m_timestatisticsEnabled(DefaultTimeStatisticsEnabled),
@@ -307,8 +302,6 @@ void SystemProperties::processProperty(const std::string& property,
     parseDurationProperty(property, std::string(value), m_bucketWaitTimeout);
   } else if (property == DisableShufflingEndpoint) {
     m_disableShufflingEndpoint = parseBooleanProperty(property, value);
-  } else if (property == GridClient) {
-    m_gridClient = parseBooleanProperty(property, value);
   } else if (property == AutoReadyForEvents) {
     m_autoReadyForEvents = parseBooleanProperty(property, value);
   } else if (property == SslEnabled) {
@@ -419,9 +412,6 @@ void SystemProperties::logSettings() {
 
   settings += "\n  enable-time-statistics = ";
   settings += getEnableTimeStatistics() ? "true" : "false";
-
-  settings += "\n  grid-client = ";
-  settings += isGridClient() ? "true" : "false";
 
   settings += "\n  heap-lru-delta = ";
   settings += std::to_string(heapLRUDelta());

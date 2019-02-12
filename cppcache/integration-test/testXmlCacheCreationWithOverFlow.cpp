@@ -95,13 +95,13 @@ int testXmlCacheCreationWithOverflow() {
     std::cout << "vc[" << i << "].m_reaPtr=" << vrp.at(i).get() << std::endl;
     std::cout << "vc[" << i << "]=" << vrp.at(i)->getName() << std::endl;
   }
-  auto regPtr1 = vrp.at(0);
+  auto regPtr1 = cptr->getRegion("Root1");
 
   std::cout
       << "Test if the number of sub regions with the root region Root1 are "
          "correct"
       << std::endl;
-  std::vector<std::shared_ptr<Region>> vr = regPtr1->subregions(true);
+  auto vr = regPtr1->subregions(true);
   std::cout << "  vr.size=" << vr.size() << std::endl;
   if (vr.size() != totalSubRegionsRoot1) {
     std::cout << "Number of Subregions does not match" << std::endl;
@@ -116,7 +116,7 @@ int testXmlCacheCreationWithOverflow() {
   }
 
   std::cout << "Test if the nesting of regions is correct" << std::endl;
-  auto regPtr2 = vrp.at(1);
+  auto regPtr2 = cptr->getRegion("Root2");
   auto &&vsr = regPtr2->subregions(true);
   for (auto &&regPtr : vsr) {
     auto &&childName = regPtr->getName();

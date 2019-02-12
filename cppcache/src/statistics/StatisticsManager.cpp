@@ -19,17 +19,13 @@
 
 #include <string>
 
-#include <ace/Guard_T.h>
-#include <ace/OS.h>
-#include <ace/Thread_Mutex.h>
-#include <ace/Time_Value.h>
-
 #include <geode/Exception.hpp>
 #include <geode/internal/geode_globals.hpp>
 
 #include "../util/Log.hpp"
 #include "AtomicStatisticsImpl.hpp"
 #include "GeodeStatisticsFactory.hpp"
+#include "HostStatSampler.hpp"
 #include "OsStatisticsImpl.hpp"
 
 namespace apache {
@@ -51,13 +47,14 @@ StatisticsManager::StatisticsManager(
       std::unique_ptr<GeodeStatisticsFactory>(new GeodeStatisticsFactory(this));
 
   try {
-    if (m_sampler == nullptr && enabled) {
-      m_sampler = new HostStatSampler(filePath, m_sampleIntervalMs, this, cache,
-                                      statFileLimit, statDiskSpaceLimit);
+    if (enabled) {
+      m_sampler = std::unique_ptr<HostStatSampler>(
+          new HostStatSampler(filePath, m_sampleIntervalMs, this, cache,
+                              statFileLimit, statDiskSpaceLimit));
       m_sampler->start();
     }
   } catch (...) {
-    delete m_sampler;
+    m_sampler = nullptr;
     throw;
   }
 }
@@ -73,7 +70,7 @@ StatisticsManager::~StatisticsManager() {
 
     // List should be empty if close() is called on each Stats object
     // If this is not done, delete all the pointers
-    ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_statsListLock);
+    std::lock_guard<decltype(m_statsListLock)> guard(m_statsListLock);
     int32_t count = static_cast<int32_t>(m_statsList.size());
     if (count > 0) {
       LOGFINEST("~StatisticsManager has found %d leftover statistics:", count);
@@ -109,21 +106,20 @@ StatisticsManager::~StatisticsManager() {
   }
 }
 
-ACE_Recursive_Thread_Mutex& StatisticsManager::getListMutex() {
+std::recursive_mutex& StatisticsManager::getListMutex() {
   return m_statsListLock;
 }
 
 void StatisticsManager::closeSampler() {
-  if (m_sampler != nullptr) {
+  if (m_sampler) {
     m_sampler->stop();
-    delete m_sampler;
     m_sampler = nullptr;
   }
 }
 
 void StatisticsManager::addStatisticsToList(Statistics* stat) {
   if (stat) {
-    ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_statsListLock);
+    std::lock_guard<decltype(m_statsListLock)> guard(m_statsListLock);
     m_statsList.push_back(stat);
 
     /* Add to m_newlyAddedStatsList also so that a fresh traversal not needed
@@ -135,7 +131,7 @@ void StatisticsManager::addStatisticsToList(Statistics* stat) {
 }
 
 int32_t StatisticsManager::getStatListModCount() {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_statsListLock);
+  std::lock_guard<decltype(m_statsListLock)> guard(m_statsListLock);
   return static_cast<int32_t>(m_statsList.size());
 }
 
@@ -149,7 +145,7 @@ std::vector<Statistics*>& StatisticsManager::getNewlyAddedStatsList() {
 
 Statistics* StatisticsManager::findFirstStatisticsByType(
     const StatisticsType* type) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_statsListLock);
+  std::lock_guard<decltype(m_statsListLock)> guard(m_statsListLock);
   std::vector<Statistics*>::iterator start = m_statsList.begin();
   while (start != m_statsList.end()) {
     if (!((*start)->isClosed()) && ((*start)->getType() == type)) {
@@ -164,7 +160,7 @@ std::vector<Statistics*> StatisticsManager::findStatisticsByType(
     StatisticsType* type) {
   std::vector<Statistics*> hits;
 
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_statsListLock);
+  std::lock_guard<decltype(m_statsListLock)> guard(m_statsListLock);
 
   std::vector<Statistics*>::iterator start = m_statsList.begin();
   while (start != m_statsList.end()) {
@@ -180,7 +176,7 @@ std::vector<Statistics*> StatisticsManager::findStatisticsByTextId(
     char* textId) {
   std::vector<Statistics*> hits;
 
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_statsListLock);
+  std::lock_guard<decltype(m_statsListLock)> guard(m_statsListLock);
 
   std::vector<Statistics*>::iterator start = m_statsList.begin();
   while (start != m_statsList.end()) {
@@ -196,7 +192,7 @@ std::vector<Statistics*> StatisticsManager::findStatisticsByNumericId(
     int64_t numericId) {
   std::vector<Statistics*> hits;
 
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_statsListLock);
+  std::lock_guard<decltype(m_statsListLock)> guard(m_statsListLock);
 
   std::vector<Statistics*>::iterator start = m_statsList.begin();
   while (start != m_statsList.end()) {
@@ -209,7 +205,7 @@ std::vector<Statistics*> StatisticsManager::findStatisticsByNumericId(
 }
 
 Statistics* StatisticsManager::findStatisticsByUniqueId(int64_t uniqueId) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_statsListLock);
+  std::lock_guard<decltype(m_statsListLock)> guard(m_statsListLock);
 
   std::vector<Statistics*>::iterator start = m_statsList.begin();
   while (start != m_statsList.end()) {

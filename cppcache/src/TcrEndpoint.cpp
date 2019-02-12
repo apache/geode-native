@@ -28,6 +28,7 @@
 #include "CacheImpl.hpp"
 #include "DistributedSystemImpl.hpp"
 #include "StackTrace.hpp"
+#include "TcrConnectionManager.hpp"
 #include "ThinClientPoolHADM.hpp"
 #include "ThinClientRegion.hpp"
 #include "Utils.hpp"
@@ -47,7 +48,6 @@ TcrEndpoint::TcrEndpoint(const std::string& name, CacheImpl* cacheImpl,
     : m_notifyConnection(nullptr),
       m_notifyReceiver(nullptr),
       m_cacheImpl(cacheImpl),
-      m_connectLockCond(m_connectLock),
       m_maxConnections(cacheImpl->getDistributedSystem()
                            .getSystemProperties()
                            .connectionPoolSize()),
@@ -88,7 +88,7 @@ TcrEndpoint::~TcrEndpoint() {
   closeConnections();
   {
     // force close the notification channel -- see bug #295
-    ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_notifyReceiverLock);
+    std::lock_guard<decltype(m_notifyReceiverLock)> guard(m_notifyReceiverLock);
     if (m_numRegionListener > 0) {
       LOGFINE(
           "Connection to %s still has references "
@@ -127,23 +127,25 @@ inline bool TcrEndpoint::needtoTakeConnectLock() {
 GfErrType TcrEndpoint::createNewConnectionWL(
     TcrConnection*& newConn, bool isClientNotification, bool isSecondary,
     std::chrono::microseconds connectTimeout) {
+  using clock = std::chrono::steady_clock;
+
   LOGFINE("TcrEndpoint::createNewConnectionWL");
   auto connectWaitTimeout = m_cacheImpl->getDistributedSystem()
                                 .getSystemProperties()
                                 .connectWaitTimeout();
-  ACE_Time_Value interval(connectWaitTimeout);
-  ACE_Time_Value stopAt(ACE_OS::gettimeofday());
-  stopAt += interval;
-  bool connCreated = false;
 
-  while (ACE_OS::gettimeofday() < stopAt) {
-    int32_t ret = m_connectLock.acquire(&stopAt);
+  auto stopAt = clock::now() + connectWaitTimeout;
+  auto connCreated = false;
+  std::unique_lock<decltype(m_connectLock)> lock(m_connectLock,
+                                                 std::defer_lock);
 
-    LOGFINE(
-        "TcrEndpoint::createNewConnectionWL ret = %d interval = %ld error =%s",
-        ret, interval.get_msec(), ACE_OS::strerror(ACE_OS::last_error()));
+  while (clock::now() < stopAt) {
+    auto locked = lock.try_lock_until(stopAt);
 
-    if (ret != -1) {  // got lock
+    LOGFINE("TcrEndpoint::createNewConnectionWL ret = %d interval = %ld",
+            locked, connectWaitTimeout.count());
+
+    if (locked) {
       try {
         LOGFINE("TcrEndpoint::createNewConnectionWL got lock");
         newConn =
@@ -152,29 +154,20 @@ GfErrType TcrEndpoint::createNewConnectionWL(
                                    isClientNotification, isSecondary,
                                    connectTimeout);
 
-        connCreated = true;  // to break while loop
-
+        connCreated = true;             // to break while loop
         m_needToConnectInLock = false;  // no need to take lock
-
-        m_connectLock.release();
         LOGFINE("New Connection Created");
         break;
       } catch (const TimeoutException&) {
         LOGINFO("Timeout1 in handshake with endpoint[%s]", m_name.c_str());
-        m_connectLock.release();
-        // throw te;
         return GF_CLIENT_WAIT_TIMEOUT_REFRESH_PRMETADATA;
       } catch (std::exception& ex) {
-        m_connectLock.release();
         LOGWARN("Failed1 in handshake with endpoint[%s]: %s", m_name.c_str(),
                 ex.what());
-        // throw ex;
         return GF_CLIENT_WAIT_TIMEOUT_REFRESH_PRMETADATA;
       } catch (...) {
         LOGWARN("Unknown1 failure in handshake with endpoint[%s]",
                 m_name.c_str());
-        m_connectLock.release();
-        // throw;
         return GF_CLIENT_WAIT_TIMEOUT_REFRESH_PRMETADATA;
       }
     }
@@ -224,7 +217,8 @@ GfErrType TcrEndpoint::createNewConnection(
       if (!isClientNotification && sendUpdateNotification) {
         bool notificationStarted;
         {
-          ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_notifyReceiverLock);
+          std::lock_guard<decltype(m_notifyReceiverLock)> guard(
+              m_notifyReceiverLock);
           notificationStarted = (m_numRegionListener > 0) || m_isQueueHosted;
         }
         if (notificationStarted) {
@@ -247,8 +241,8 @@ GfErrType TcrEndpoint::createNewConnection(
       m_needToConnectInLock = true;  // while creating the connection
       std::this_thread::sleep_for(std::chrono::milliseconds(50));
     } catch (const GeodeIOException& ex) {
-      LOGINFO("IO error[%d] in handshake with endpoint[%s]: %s",
-              ACE_OS::last_error(), m_name.c_str(), ex.what());
+      LOGINFO("IO error in handshake with endpoint[%s]: %s", m_name.c_str(),
+              ex.what());
       err = GF_IOERR;
       m_needToConnectInLock = true;  // while creating the connection
       break;
@@ -296,7 +290,8 @@ void TcrEndpoint::authenticateEndpoint(TcrConnection*& conn) {
       m_isAuthenticated, m_baseDM);
   if (!m_isAuthenticated && m_baseDM) {
     this->setConnected();
-    ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_endpointAuthenticationLock);
+    std::lock_guard<decltype(m_endpointAuthenticationLock)> guard(
+        m_endpointAuthenticationLock);
     GfErrType err = GF_NOERR;
     auto creds = getCredentials();
 
@@ -401,7 +396,7 @@ GfErrType TcrEndpoint::registerDM(bool clientNotification, bool isSecondary,
   bool connected = false;
   GfErrType err = GF_NOERR;
 
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_connectionLock);
+  std::lock_guard<decltype(m_connectionLock)> guard(m_connectionLock);
   // Three cases here:
   // 1. m_connected is false, m_isActiveEndpoint is false and then
   //    if isActiveEndpoint is true, then create 'max' connections
@@ -456,7 +451,7 @@ GfErrType TcrEndpoint::registerDM(bool clientNotification, bool isSecondary,
   if (m_connected || connected) {
     if (clientNotification) {
       if (distMgr != nullptr) {
-        ACE_Guard<ACE_Recursive_Thread_Mutex> guardDistMgrs(m_distMgrsLock);
+        std::lock_guard<decltype(m_distMgrsLock)> guardDistMgrs(m_distMgrsLock);
         m_distMgrs.push_back(distMgr);
       }
       LOGFINEST(
@@ -464,7 +459,8 @@ GfErrType TcrEndpoint::registerDM(bool clientNotification, bool isSecondary,
           "channel for endpoint %s",
           m_name.c_str());
       // setup notification channel for the first region
-      ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_notifyReceiverLock);
+      std::lock_guard<decltype(m_notifyReceiverLock)> guard(
+          m_notifyReceiverLock);
       if (m_numRegionListener == 0) {
         if ((err = createNewConnection(m_notifyConnection, true, isSecondary,
                                        m_cacheImpl->getDistributedSystem()
@@ -479,8 +475,9 @@ GfErrType TcrEndpoint::registerDM(bool clientNotification, bool isSecondary,
                   m_name.c_str());
           return err;
         }
-        m_notifyReceiver = new Task<TcrEndpoint>(
-            this, &TcrEndpoint::receiveNotification, NC_Notification);
+        m_notifyReceiver =
+            std::unique_ptr<Task<TcrEndpoint>>(new Task<TcrEndpoint>(
+                this, &TcrEndpoint::receiveNotification, NC_Notification));
         m_notifyReceiver->start();
       }
       ++m_numRegionListener;
@@ -519,14 +516,14 @@ void TcrEndpoint::unregisterDM(bool clientNotification,
         "channel for endpoint %s",
         m_name.c_str());
     // close notification channel if there is no region
-    ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_notifyReceiverLock);
+    std::lock_guard<decltype(m_notifyReceiverLock)> guard(m_notifyReceiverLock);
     if (m_numRegionListener > 0 && --m_numRegionListener == 0) {
       closeNotification();
     }
     LOGFINEST("Decremented subscription region count for endpoint %s to %d",
               m_name.c_str(), m_numRegionListener);
     if (distMgr != nullptr) {
-      ACE_Guard<ACE_Recursive_Thread_Mutex> guardDistMgrs(m_distMgrsLock);
+      std::lock_guard<decltype(m_distMgrsLock)> guardDistMgrs(m_distMgrsLock);
       m_distMgrs.remove(distMgr);
     }
     LOGFINEST("Done unsubscribe for endpoint %s", m_name.c_str());
@@ -583,7 +580,7 @@ bool TcrEndpoint::checkDupAndAdd(std::shared_ptr<EventId> eventid) {
   return m_cacheImpl->tcrConnectionManager().checkDupAndAdd(eventid);
 }
 
-int TcrEndpoint::receiveNotification(volatile bool& isRunning) {
+void TcrEndpoint::receiveNotification(std::atomic<bool>& isRunning) {
   LOGFINE("Started subscription channel for endpoint %s", m_name.c_str());
   while (isRunning) {
     TcrMessageReply* msg = nullptr;
@@ -601,7 +598,8 @@ int TcrEndpoint::receiveNotification(volatile bool& isRunning) {
         if (isRunning) {
           setConnectionStatus(false);
           // close notification channel
-          ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_notifyReceiverLock);
+          std::lock_guard<decltype(m_notifyReceiverLock)> guard(
+              m_notifyReceiverLock);
           if (m_numRegionListener > 0) {
             m_numRegionListener = 0;
             closeNotification();
@@ -711,7 +709,8 @@ int TcrEndpoint::receiveNotification(volatile bool& isRunning) {
       if (m_connected) {
         setConnectionStatus(false);
         // close notification channel
-        ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_notifyReceiverLock);
+        std::lock_guard<decltype(m_notifyReceiverLock)> guard(
+            m_notifyReceiverLock);
         if (m_numRegionListener > 0) {
           m_numRegionListener = 0;
           closeNotification();
@@ -733,7 +732,6 @@ int TcrEndpoint::receiveNotification(volatile bool& isRunning) {
     }
   }
   LOGFINE("Ended subscription channel for endpoint %s", m_name.c_str());
-  return 0;
 }
 
 inline bool TcrEndpoint::compareTransactionIds(int32_t reqTransId,
@@ -919,7 +917,7 @@ GfErrType TcrEndpoint::sendRequestWithRetry(
     epFailure = false;
     if (useEPPool) {
       if (m_maxConnections == 0) {
-        ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_connectionLock);
+        std::lock_guard<decltype(m_connectionLock)> guard(m_connectionLock);
         if (m_maxConnections == 0) {
           LOGFINE(
               "Creating a new connection when connection-pool-size system "
@@ -1191,7 +1189,7 @@ void TcrEndpoint::setConnectionStatus(bool status) {
   // bool wasActive = m_isActiveEndpoint;
   // Then after taking the lock:
   // If ( !wasActive && isActiveEndpoint ) { return; }
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_connectionLock);
+  std::lock_guard<decltype(m_connectionLock)> guard(m_connectionLock);
   if (m_connected != status) {
     bool connected = m_connected;
     m_connected = status;
@@ -1242,7 +1240,7 @@ void TcrEndpoint::closeNotification() {
   m_notifyConnection->close();
   m_notifyReceiver->stopNoblock();
   TcrConnectionManager& tccm = m_cacheImpl->tcrConnectionManager();
-  tccm.addNotificationForDeletion(m_notifyReceiver, m_notifyConnection,
+  tccm.addNotificationForDeletion(m_notifyReceiver.get(), m_notifyConnection,
                                   m_notificationCleanupSema);
   m_notifyCount++;
   m_cleanupSema.release();
@@ -1262,53 +1260,36 @@ void TcrEndpoint::stopNoBlock() {
 
 void TcrEndpoint::stopNotifyReceiverAndCleanup() {
   LOGFINER("Stopping subscription receiver and cleaning up");
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_notifyReceiverLock);
+  std::lock_guard<decltype(m_notifyReceiverLock)> guard(m_notifyReceiverLock);
 
   if (m_notifyReceiver != nullptr) {
     LOGFINER("Waiting for notification thread...");
     // m_notifyReceiver->stopNoblock();
     m_notifyReceiver->wait();
     bool found = false;
-    for (std::list<Task<TcrEndpoint>*>::iterator it =
-             m_notifyReceiverList.begin();
-         it != m_notifyReceiverList.end(); it++) {
-      if (*it == m_notifyReceiver) {
+    for (const auto& it : m_notifyReceiverList) {
+      if (it == m_notifyReceiver.get()) {
         found = true;
         break;
       }
     }
 
     if (!found) {
-      _GEODE_SAFE_DELETE(m_notifyReceiver);
+      m_notifyReceiver = nullptr;
       _GEODE_SAFE_DELETE(m_notifyConnection);
     }
   }
 
   m_numRegionListener = 0;
 
-  if (m_notifyReceiverList.size() > 0) {
-    LOGFINER("TcrEndpoint::stopNotifyReceiverAndCleanup: notifylist size = %d",
-             m_notifyReceiverList.size());
-    for (std::list<Task<TcrEndpoint>*>::iterator it =
-             m_notifyReceiverList.begin();
-         it != m_notifyReceiverList.end(); it++) {
-      LOGFINER(
-          "TcrEndpoint::stopNotifyReceiverAndCleanup: deleting old notify "
-          "recievers.");
-      _GEODE_SAFE_DELETE(*it);
-    }
-  }
-
-  if (m_notifyConnectionList.size() > 0) {
+  if (!m_notifyConnectionList.empty()) {
     LOGFINER("TcrEndpoint::stopNotifyReceiverAndCleanup: notifylist size = %d",
              m_notifyConnectionList.size());
-    for (std::list<TcrConnection*>::iterator it =
-             m_notifyConnectionList.begin();
-         it != m_notifyConnectionList.end(); it++) {
+    for (auto& it : m_notifyConnectionList) {
       LOGFINER(
           "TcrEndpoint::stopNotifyReceiverAndCleanup: deleting old notify "
           "connections.");
-      _GEODE_SAFE_DELETE(*it);
+      _GEODE_SAFE_DELETE(it);
     }
   }
 }

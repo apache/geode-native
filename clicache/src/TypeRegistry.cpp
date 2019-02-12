@@ -250,7 +250,7 @@ namespace Apache
           auto&& serializationRegistry = CacheRegionHelper::getCacheImpl(m_cache->GetNative().get())->getSerializationRegistry();
           auto nativeDelegateFunction = static_cast<std::shared_ptr<native::Serializable>(*)()>(
               System::Runtime::InteropServices::Marshal::GetFunctionPointerForDelegate(nativeDelegate).ToPointer());
-          serializationRegistry->addDataSerializableFixedIdType(fixedId, nativeDelegateFunction);
+          serializationRegistry->addDataSerializableFixedIdType(static_cast<internal::DSFid>(fixedId), nativeDelegateFunction);
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
 

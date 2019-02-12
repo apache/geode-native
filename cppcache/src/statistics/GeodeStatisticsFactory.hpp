@@ -20,14 +20,14 @@
 #ifndef GEODE_STATISTICS_GEODESTATISTICSFACTORY_H_
 #define GEODE_STATISTICS_GEODESTATISTICSFACTORY_H_
 
+#include <mutex>
+#include <unordered_map>
 #include <vector>
-
-#include <ace/Map_Manager.h>
-#include <ace/Recursive_Thread_Mutex.h>
 
 #include <geode/ExceptionTypes.hpp>
 #include <geode/internal/geode_globals.hpp>
 
+#include "../util/synchronized_map.hpp"
 #include "StatisticsFactory.hpp"
 #include "StatisticsManager.hpp"
 #include "StatisticsTypeImpl.hpp"
@@ -56,10 +56,12 @@ class GeodeStatisticsFactory : public StatisticsFactory {
   int64_t m_statsListUniqueId;  // Creates a unique id for each stats object in
                                 // the list
 
-  ACE_Recursive_Thread_Mutex m_statsListUniqueIdLock;
+  std::recursive_mutex m_statsListUniqueIdLock;
 
   /* Maps a stat name to its StatisticDescriptor*/
-  ACE_Map_Manager<std::string, StatisticsTypeImpl*, ACE_Recursive_Thread_Mutex>
+  apache::geode::client::synchronized_map<
+      std::unordered_map<std::string, StatisticsTypeImpl*>,
+      std::recursive_mutex>
       statsTypeMap;
 
   StatisticsTypeImpl* addType(StatisticsTypeImpl* t);

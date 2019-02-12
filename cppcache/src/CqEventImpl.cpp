@@ -14,10 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "CqEventImpl.hpp"
 
 #include <geode/CacheableString.hpp>
 
+#include "TcrConnectionManager.hpp"
 #include "TcrMessage.hpp"
 #include "ThinClientCacheDistributionManager.hpp"
 #include "ThinClientPoolHADM.hpp"
@@ -92,7 +94,7 @@ bool CqEventImpl::getError() { return m_error; }
 
 std::string CqEventImpl::toString() {
   char buffer[1024];
-  ACE_OS::snprintf(
+  std::snprintf(
       buffer, 1024,
       "CqEvent CqName=%s; base operation=%d; cq operation= %d;key=%s;value=%s",
       m_cQuery->getName().c_str(), static_cast<int>(m_baseOp),

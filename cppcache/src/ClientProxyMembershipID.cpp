@@ -22,7 +22,7 @@
 #include <memory>
 #include <string>
 
-#include <ace/OS.h>
+#include <boost/process/environment.hpp>
 
 #include <geode/CacheableBuiltins.hpp>
 
@@ -34,38 +34,19 @@
 #define DCPORT 12334
 #define VMKIND 13
 #define ROLEARRLENGTH 0
-static int synch_counter = 2;
+
 namespace apache {
 namespace geode {
 namespace client {
 
-namespace {
-static class RandomInitializer {
- public:
-  RandomInitializer() {
-    // using current time and
-    // processor time would be good enough for our purpose
-    auto seed = ACE_OS::getpid() + ACE_OS::gettimeofday().msec() + clock();
-    seed += ACE_OS::gettimeofday().usec();
-    // LOGINFO("PID %ld seed %ld ACE_OS::gettimeofday().usec() = %ld clock =
-    // %ld ACE_OS::gettimeofday().msec() = %ld", pid, seed ,
-    // ACE_OS::gettimeofday().usec() , clock(),
-    // ACE_OS::gettimeofday().msec());
-    ACE_OS::srand(seed);
-  }
-} oneTimeRandomInitializer;
-}  // namespace
+static int synch_counter = 2;
 
 const int ClientProxyMembershipID::VERSION_MASK = 0x8;
 const int8_t ClientProxyMembershipID::TOKEN_ORDINAL = -1;
 
 ClientProxyMembershipID::ClientProxyMembershipID()
     : m_hostPort(0),
-      m_hostAddr(nullptr)
-      /* adongre  - Coverity II
-       * CID 29278: Uninitialized scalar field (UNINIT_CTOR)
-       */
-      ,
+      m_hostAddr(nullptr),
       m_hostAddrLen(0),
       m_hostAddrLocalMem(false),
       m_vmViewId(0) {}
@@ -79,7 +60,7 @@ ClientProxyMembershipID::ClientProxyMembershipID(
     uint32_t hostAddr, uint32_t hostPort, const char* durableClientId,
     const std::chrono::seconds durableClntTimeOut)
     : m_hostAddrAsUInt32(hostAddr) {
-  int32_t vmPID = ACE_OS::getpid();
+  auto vmPID = boost::this_process::get_id();
   initObjectVars(hostname, reinterpret_cast<uint8_t*>(&m_hostAddrAsUInt32), 4,
                  false, hostPort, durableClientId, durableClntTimeOut, DCPORT,
                  vmPID, VMKIND, 0, dsName.c_str(), randString.c_str(), 0);
@@ -90,7 +71,7 @@ ClientProxyMembershipID::ClientProxyMembershipID(
 ClientProxyMembershipID::ClientProxyMembershipID(
     uint8_t* hostAddr, uint32_t hostAddrLen, uint32_t hostPort,
     const char* dsname, const char* uniqueTag, uint32_t vmViewId) {
-  int32_t vmPID = ACE_OS::getpid();
+  auto vmPID = boost::this_process::get_id();
   initObjectVars("localhost", hostAddr, hostAddrLen, false, hostPort, "",
                  std::chrono::seconds::zero(), DCPORT, vmPID, VMKIND, 0, dsname,
                  uniqueTag, vmViewId);
@@ -152,15 +133,11 @@ void ClientProxyMembershipID::initObjectVars(
       reinterpret_cast<char*>(const_cast<uint8_t*>(m_memID.getBuffer(&len)));
   m_memIDStr.append(buf, len);
 
-  char PID[15] = {0};
-  char Synch_Counter[15] = {0};
-  ACE_OS::itoa(vPID, PID, 10);
-  ACE_OS::itoa(synch_counter, Synch_Counter, 10);
   clientID.append(hostname);
   clientID.append("(");
-  clientID.append(PID);
+  clientID.append(std::to_string(vPID));
   clientID.append(":loner):");
-  clientID.append(Synch_Counter);
+  clientID.append(std::to_string(synch_counter));
   clientID.append(":");
   clientID.append(getUniqueTag());
   clientID.append(":");
@@ -169,19 +146,11 @@ void ClientProxyMembershipID::initObjectVars(
 
   // int offset = 0;
   for (uint32_t i = 0; i < getHostAddrLen(); i++) {
-    char hostInfo[16] = {0};
-    // offset += ACE_OS::snprintf(hostInfo + offset , 255 - offset, ":%x",
-    // m_hostAddr[i]);
-    ACE_OS::itoa(m_hostAddr[i], hostInfo, 16);
     m_hashKey.append(":");
-    m_hashKey.append(hostInfo);
+    m_hashKey.append(std::to_string(m_hostAddr[i]));
   }
   m_hashKey.append(":");
-  char hostInfoPort[16] = {0};
-  ACE_OS::itoa(getHostPort(), hostInfoPort, 10);
-  //  offset += ACE_OS::snprintf(hostInfo + offset, 255 - offset , ":%d",
-  //  getHostPort());
-  m_hashKey.append(hostInfoPort);
+  m_hashKey.append(std::to_string(getHostPort()));
   m_hashKey.append(":");
   m_hashKey.append(getDSName());
   m_hashKey.append(":");
@@ -189,11 +158,7 @@ void ClientProxyMembershipID::initObjectVars(
     m_hashKey.append(getUniqueTag());
   } else {
     m_hashKey.append(":");
-    char viewid[16] = {0};
-    ACE_OS::itoa(m_vmViewId, viewid, 10);
-    // offset += ACE_OS::snprintf(hostInfo + offset , 255 - offset , ":%d",
-    // m_vmViewId);
-    m_hashKey.append(viewid);
+    m_hashKey.append(std::to_string(m_vmViewId));
   }
   LOGDEBUG("GethashKey %s client id: %s ", m_hashKey.c_str(), clientID.c_str());
 }

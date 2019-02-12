@@ -20,6 +20,7 @@
 #ifndef GEODE_UTIL_STRING_H_
 #define GEODE_UTIL_STRING_H_
 
+#include <cctype>
 #include <codecvt>
 #include <locale>
 #include <string>
@@ -41,7 +42,7 @@ inline std::u16string to_utf16(const std::string& utf8) {
 #if defined(_MSC_VER) && _MSC_VER >= 1900
   /*
    * Workaround for missing std:codecvt identifier.
-   * https://connect.microsoft.com/VisualStudio/feedback/details/1403302
+   * https://stackoverflow.com/questions/32055357/visual-studio-c-2015-stdcodecvt-with-char16-t-or-char32-t
    */
   auto int16String =
       std::wstring_convert<std::codecvt_utf8_utf16<int16_t>, int16_t>{}
@@ -58,7 +59,7 @@ inline std::u16string to_utf16(const std::u32string& ucs4) {
 #if defined(_MSC_VER) && _MSC_VER >= 1900
   /*
    * Workaround for missing std:codecvt identifier.
-   * https://connect.microsoft.com/VisualStudio/feedback/details/1403302
+   * https://stackoverflow.com/questions/32055357/visual-studio-c-2015-stdcodecvt-with-char16-t-or-char32-t
    */
   auto data = reinterpret_cast<const int32_t*>(ucs4.data());
   auto bytes =
@@ -82,7 +83,7 @@ inline std::u16string to_utf16(const char32_t* ucs4, size_t len) {
 #if defined(_MSC_VER) && _MSC_VER >= 1900
   /*
    * Workaround for missing std:codecvt identifier.
-   * https://connect.microsoft.com/VisualStudio/feedback/details/1403302
+   * https://stackoverflow.com/questions/32055357/visual-studio-c-2015-stdcodecvt-with-char16-t-or-char32-t
    */
   auto data = reinterpret_cast<const int32_t*>(ucs4);
   auto bytes =
@@ -106,7 +107,7 @@ inline std::u32string to_ucs4(const std::u16string& utf16) {
 #if defined(_MSC_VER) && _MSC_VER >= 1900
   /*
    * Workaround for missing std:codecvt identifier.
-   * https://connect.microsoft.com/VisualStudio/feedback/details/1403302
+   * https://stackoverflow.com/questions/32055357/visual-studio-c-2015-stdcodecvt-with-char16-t-or-char32-t
    */
   auto data = reinterpret_cast<const char*>(utf16.data());
   auto tmp =
@@ -129,7 +130,7 @@ inline std::string to_utf8(const std::u16string& utf16) {
 #if defined(_MSC_VER) && _MSC_VER >= 1900
   /*
    * Workaround for missing std:codecvt identifier.
-   * https://connect.microsoft.com/VisualStudio/feedback/details/1403302
+   * https://stackoverflow.com/questions/32055357/visual-studio-c-2015-stdcodecvt-with-char16-t-or-char32-t
    */
   auto data = reinterpret_cast<const int16_t*>(utf16.data());
   return std::wstring_convert<std::codecvt_utf8_utf16<int16_t>, int16_t>{}
@@ -144,7 +145,7 @@ inline std::string to_utf8(const std::u32string& ucs4) {
 #if defined(_MSC_VER) && _MSC_VER >= 1900
   /*
    * Workaround for missing std:codecvt identifier.
-   * https://connect.microsoft.com/VisualStudio/feedback/details/1403302
+   * https://stackoverflow.com/questions/32055357/visual-studio-c-2015-stdcodecvt-with-char16-t-or-char32-t
    */
   auto data = reinterpret_cast<const int32_t*>(ucs4.data());
   return std::wstring_convert<std::codecvt_utf8<int32_t>, int32_t>{}.to_bytes(
@@ -153,6 +154,16 @@ inline std::string to_utf8(const std::u32string& ucs4) {
   return std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t>{}.to_bytes(
       ucs4);
 #endif
+}
+
+inline bool equal_ignore_case(const std::string& str1,
+                              const std::string& str2) {
+  return ((str1.size() == str2.size()) &&
+          std::equal(str1.begin(), str1.end(), str2.begin(),
+                     [](const char& c1, const char& c2) {
+                       return (c1 == c2 ||
+                               std::toupper(c1) == std::toupper(c2));
+                     }));
 }
 
 }  // namespace client

@@ -32,15 +32,12 @@
 #include <geode/internal/geode_globals.hpp>
 
 #include "CacheImpl.hpp"
-#include "ThinClientBaseDM.hpp"
-
-/**
- * @file
- */
 
 namespace apache {
 namespace geode {
 namespace client {
+
+class ThinClientBaseDM;
 
 class APACHE_GEODE_EXPORT RemoteQuery : public Query {
   std::string m_queryString;

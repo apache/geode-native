@@ -226,7 +226,7 @@ void compareMaps(HashMapOfCacheable &map, HashMapOfCacheable &expectedMap) {
 }
 
 void stepOne() {
-  initGridClient(true);
+  initClient(true);
   try {
     auto serializationRegistry =
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
@@ -243,6 +243,8 @@ void stepOne() {
         PortfolioPdx::createDeserializable);
   } catch (const IllegalStateException &) {
     // ignore exception
+    LOG("testThinClientRemoteQuerySS stepOne caught exception using "
+        "serializationRegistry");
   }
 
   isPoolConfig = true;

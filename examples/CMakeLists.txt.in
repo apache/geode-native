@@ -19,3 +19,5 @@ project(examples LANGUAGES NONE)
 
 add_subdirectory(cpp)
 @DOTNET_SUB_DIRECTORY@
+add_subdirectory(utilities)
+

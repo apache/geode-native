@@ -73,7 +73,8 @@ generate_export_header(testobject)
 
 target_include_directories(testobject
   PUBLIC
-	$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+)
 
 target_compile_definitions(testobject
   PRIVATE
@@ -89,12 +90,12 @@ target_include_directories(testobject
 )
 
 target_link_libraries(testobject
-  PUBLIC 
+  PUBLIC
     apache-geode
     framework
   PRIVATE
-    ACE
-	  _WarningsAsError
+    ACE::ACE
+    _WarningsAsError
 )
 
 add_clangformat(testobject)

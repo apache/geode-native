@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -20,13 +20,27 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using Xunit;
+using Xunit.Abstractions;
+using Xunit.Sdk;
 
 namespace Apache.Geode.Client.IntegrationTests
 {
     [Trait("Category", "Integration")]
     public class TestBase
     {
-        private const int MaxAllowedDirectoryCharacters = 30;
+        protected ITest currentTest;
+        protected ITestOutputHelper output;
+
+        public TestBase(ITestOutputHelper testOutputHelper)
+        {
+            var helper = (TestOutputHelper)testOutputHelper;
+
+            ITest test = (ITest)helper.GetType().GetField("test", BindingFlags.NonPublic | BindingFlags.Instance)
+                                      .GetValue(helper);
+
+            currentTest = test;
+            output = testOutputHelper;
+        }
 
         public void CleanTestCaseDirectory(string directory)
         {
@@ -38,16 +52,7 @@ namespace Apache.Geode.Client.IntegrationTests
 
         public string CreateTestCaseDirectoryName()
         {
-            var st = new StackTrace();
-            var sf = st.GetFrame(1);
-            var currentMethod = sf.GetMethod();
-            var dirName = currentMethod.Name;
-
-            if (dirName.Length > MaxAllowedDirectoryCharacters)
-            {
-                dirName = dirName.Substring(0, MaxAllowedDirectoryCharacters);
-            }
-            return dirName;
+            return currentTest.TestCase.TestMethod.Method.Name;
         }
     }
 }

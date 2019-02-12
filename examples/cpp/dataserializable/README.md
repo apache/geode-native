@@ -35,7 +35,7 @@ This is a simple example showing how to register for serialization of custom obj
 1. Execute `dataserializable`:
 
   ```
-  $ build/dataserializable
+  $ ./dataserializable
   Create orders
   Storing orders in the region
   Getting the orders from the region
