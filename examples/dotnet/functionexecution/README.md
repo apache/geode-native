@@ -4,22 +4,41 @@ This example illustrates how to execute server side java functions.
 ## Prerequisites
 * Install [Apache Geode](https://geode.apache.org)
 * Build and install [Apache Geode Native](https://github.com/apache/geode-native)
+* Apache Geode Native examples, built and installed
+* Set `GEODE_HOME` to the install directory of Apache Geode
 
 ## Running
-* Run the following Powershell script which starts the Geode Locator, deploys the jar file containing your function, starts the Geode Server, and creates the region.
-  ```
-  PS> startserver.ps1
-  ```
-* Execute `Apache.Geode.Examples.FunctionExecutionCs.exe`.
-  
-  output:
-  ```
-  Storing id and username in the region
-  Getting the user info from the region
-  rtimmons = Robert Timmons
-  scharles = Sylvia Charles
-  Function Execution Results:
-     Count = 1
-     value = Robert Timmons
-     value = Sylvia Charles
-  ```
+1. From a command shell, set the current directory to the `DataSerializableCs` directory in your example workspace.
+
+       $ cd workspace/examples/dotnet/DataSerializableCs
+
+2. Run the `startserver.ps1` script to start the Geode cluster with authentication and create a region.
+
+   For Windows cmd:
+
+       $ powershell.exe -File startserver.ps1
+
+   For Windows Powershell:
+
+       $ startserver.ps1
+
+3. Execute `FunctionExecutionCs.exe`, expect the following output:
+
+       Storing id and username in the region
+       Getting the user info from the region
+       rtimmons = Robert Timmons
+       scharles = Sylvia Charles
+       Function Execution Results:
+          Count = 1
+          value = Robert Timmons
+          value = Sylvia Charles
+
+4. Run the `stopserver.ps1` script to gracefully shutdown the Geode cluster.
+
+   For Windows cmd:
+
+       $ powershell.exe -File stopserver.ps1
+
+   For Windows Powershell:
+
+       $ stopserver.ps1

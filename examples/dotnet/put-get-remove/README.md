@@ -6,22 +6,39 @@ We then put, get, and remove some primitive data in the region.
 ## Prerequisites
 * Install [Apache Geode](https://geode.apache.org)
 * Build and install [Apache Geode Native](https://github.com/apache/geode-native)
+* Apache Geode Native examples, built and installed
+* Set `GEODE_HOME` to the install directory of Apache Geode
 
 ## Running
-* Start Geode Server and create region.
-  ```
-  gfsh>start locator --name=locator
-  gfsh>start server --name=server
-  gfsh>create region --name=example_userinfo --type=PARTITION
-  ```
-* Execute `Apache.Geode.Examples.PutGetRemove.exe`.
+1. From a command shell, set the current directory to the `PutGetRemove` directory in your example workspace.
+
+       $ cd workspace/examples/dotnet/PutGetRemove
+
+2. Run the `startserver.ps1` script to start the Geode cluster with authentication and create a region.
+
+   For Windows cmd:
+
+       $ powershell.exe -File startserver.ps1
+
+   For Windows Powershell:
+
+       $ startserver.ps1
+
+3. Execute `PutGetRemove.exe`, expect the following output:
   
-  output:
-  ```
-  Storing id and username in the region
-  Getting the user info from the region
-  rtimmons = Robert Timmons
-  scharles = Sylvia Charles
-  Removing rtimmons info from the region
-  Info for rtimmons has been deleted
-  ```
+       Storing id and username in the region
+       Getting the user info from the region
+       rtimmons = Robert Timmons
+       scharles = Sylvia Charles
+       Removing rtimmons info from the region
+       Info for rtimmons has been deleted
+
+4. Run the `stopserver.ps1` script to gracefully shutdown the Geode cluster.
+
+   For Windows cmd:
+
+       $ powershell.exe -File stopserver.ps1
+
+   For Windows Powershell:
+
+       $ stopserver.ps1

@@ -1,9 +1,6 @@
-# Function-execution example
-This is a very simple example showing how to execute a function on the server.  
-It creates a `Cache` using the `CacheFactory`, configures a `Pool` with a 
-`PoolFactory`, and configures a `Region` with a `RegionFactory`.  The 
-startserver script deploys a jar file with several custom functions in it, and 
-the example app executes those functions and prints out the result set(s).
+# AuthInitialize Example
+This example shows how to create and register a custom `AuthIntialize` authentication
+handler on the client that authenticates against a server that was started with the corresponding authenticator. 
 
 ## Prerequisites
 * Install [Apache Geode](https://geode.apache.org)
@@ -12,9 +9,9 @@ the example app executes those functions and prints out the result set(s).
 * Set `GEODE_HOME` to the install directory of Apache Geode
 
 ## Running
-1. From a command shell, set the current directory to the `function-execution` directory in your example workspace.
+1. From a command shell, set the current directory to the `authinitialize` directory in your example workspace.
 
-       $ cd workspace/examples/cpp/function-execution
+       $ cd workspace/examples/cpp/authinitialize
 
 2. Run the `startserver` script to start the Geode cluster with authentication and create a region.
 
@@ -29,14 +26,13 @@ the example app executes those functions and prints out the result set(s).
    For Bash:
 
        $ ./startserver.sh
-  
-3. Execute `function-execution`, expect the following output:
 
-       Result count = 3
+3. Execute `authinitialize`, expect the following output:
 
-       Result[0]=VALUE--1
-       Result[1]=VALUE--2
-       Result[2]=VALUE--3
+       ExampleAuthInitialize::ExampleAuthInitialize called
+       ExampleAuthInitialize::getCredentials called
+       a = 1
+       b = 2
 
 4. Run the `stopserver` script to gracefully shutdown the Geode cluster.
 
