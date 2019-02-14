@@ -33,7 +33,7 @@ The client must connect to the server through a connection pool in order to invo
 
 ## <a id="how_functions_execute"></a>How Functions Execute
 
-1.  The calling client application runs the `execute` method on the `Execution` object. The object must already be registered on the servers.
+1.  The calling client application runs the `execute` method on the `Execution` object. The function must already be registered on the servers.
 2.  The function is invoked on all servers where it needs to run. The locations are determined by the `FunctionService on*` 
 method calls, region configuration, and any filters.
 3.  If the function has results, the result is returned in a `ResultCollector` object.
@@ -45,14 +45,13 @@ In every client where you want to execute the function and process the results:
 `onRegion`, `onServer` and `onServers`, define the highest level where the function is run. If
 you use `onRegion` you can further narrow your run scope by setting key filters. The function run
 using `onRegion` is a data dependent function – the others are data-independent functions.
-
-You can run a data dependent function against custom partitioned and colocated partitioned regions. From the client, provide the appropriate key
+You can run a data dependent function against partitioned and colocated partitioned regions. From the client, provide the appropriate key
  sets to the function call.
 
 -  Use the `Execution` object as needed for additional function configuration. You can:
     -   Provide a set of data keys to `withFilter` to narrow the execution scope. This works only for `onRegion` Execution objects.
     -   Provide function arguments to `withArgs`.
-    -   Define a custom `ResultCollector` to `withCollector`.
+    -   Provide a custom `ResultCollector` to `withCollector`.
 
 -  Call the `Execution` object execute method to run the function.
 
@@ -108,7 +107,7 @@ The client:
 - invokes the object's execute method to invoke the server-side function.
 
 If the client expects results, it must create a result
-object. Optionally, the client can use a provided result collector which offers some predefined
+object. Optionally, the client can use a provided ResultCollector which offers some predefined
 methods for iterating over and processing return values.
 
 ## <a id="dotnet_example"></a>.NET Example
