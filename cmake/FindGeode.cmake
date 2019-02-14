@@ -35,20 +35,20 @@ endif()
 set(_GEODE_HINTS)
 if(_GEODE_ROOT)
   set(_GEODE_HINTS ${_GEODE_ROOT}/bin)
+else()
+  set(_GEODE_PATHS
+    /geode/bin
+    /apache-geode/bin
+    /usr/geode/bin
+    /usr/apache-geode/bin
+    /usr/local/geode/bin
+    /usr/local/apache-geode/bin
+    /opt/geode/bin
+    /opt/apache-geode/bin
+    /opt/local/geode/bin
+    /opt/local/apache-geode/bin
+  )
 endif()
-
-set(_GEODE_PATHS
-  /geode/bin
-  /apache-geode/bin
-  /usr/geode/bin
-  /usr/apache-geode/bin
-  /usr/local/geode/bin
-  /usr/local/apache-geode/bin
-  /opt/geode/bin
-  /opt/apache-geode/bin
-  /opt/local/geode/bin
-  /opt/local/apache-geode/bin
-)
 
 if(WIN32)
   set(_GEODE_NAMES gfsh.bat)

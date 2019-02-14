@@ -32,10 +32,17 @@
 #include "begin_native.hpp"
 #include <geode/Cache.hpp>
 #include <geode/CacheableBuiltins.hpp>
-#include <geode/CacheLoader.hpp>
 #include <geode/CacheListener.hpp>
-#include <geode/FixedPartitionResolver.hpp>
+#include <geode/CacheLoader.hpp>
 #include <geode/CacheWriter.hpp>
+#include <geode/DataSerializable.hpp>
+#include <geode/PdxSerializable.hpp>
+#include <geode/FixedPartitionResolver.hpp>
+#include <geode/internal/DataSerializableFixedId.hpp>
+#include <geode/internal/DataSerializablePrimitive.hpp>
+#include <geode/internal/DataSerializableInternal.hpp>
+#include <geode/internal/DSCode.hpp>
+#include <geode/internal/DSFixedId.hpp>
 #include <geode/internal/InternalId.hpp>
 #include "end_native.hpp"
 
@@ -43,4 +50,5 @@
 #include "begin_native.hpp"
 #include <CacheImpl.hpp>
 #include <DistributedSystemImpl.hpp>
+#include <PdxFieldType.hpp>
 #include "end_native.hpp"

@@ -57,22 +57,6 @@ using unitTests::TestUtils;
 
 CacheHelper* cacheHelper = nullptr;
 
-void initGridClient(const bool isthinClient,
-                    const std::shared_ptr<Properties>& configPtr = nullptr) {
-  static bool s_isGridClient = true;
-
-  s_isGridClient = !s_isGridClient;
-  if (cacheHelper == nullptr) {
-    auto config = configPtr;
-    if (config == nullptr) {
-      config = Properties::create();
-    }
-    config->insert("grid-client", s_isGridClient ? "true" : "false");
-    cacheHelper = new CacheHelper(isthinClient, config);
-  }
-  ASSERT(cacheHelper, "Failed to create a CacheHelper client instance.");
-}
-
 void initClient(const bool isthinClient,
                 const std::shared_ptr<Properties>& configPtr = nullptr) {
   if (cacheHelper == nullptr) {
@@ -105,22 +89,6 @@ void initClient(int redundancyLevel,
     if (config == nullptr) {
       config = Properties::create();
     }
-    cacheHelper = new CacheHelper(redundancyLevel, config);
-  }
-  ASSERT(cacheHelper, "Failed to create a CacheHelper client instance.");
-}
-
-void initGridClient(int redundancyLevel,
-                    const std::shared_ptr<Properties>& configPtr = nullptr) {
-  static bool s_isGridClient = true;
-
-  s_isGridClient = !s_isGridClient;
-  if (cacheHelper == nullptr) {
-    auto config = configPtr;
-    if (config == nullptr) {
-      config = Properties::create();
-    }
-    config->insert("grid-client", s_isGridClient ? "true" : "false");
     cacheHelper = new CacheHelper(redundancyLevel, config);
   }
   ASSERT(cacheHelper, "Failed to create a CacheHelper client instance.");

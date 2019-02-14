@@ -19,8 +19,6 @@
 #include <cstdlib>
 #include <string>
 
-#include <ace/TSS_T.h>
-
 #include <geode/Exception.hpp>
 
 #include "CppCacheLibrary.hpp"

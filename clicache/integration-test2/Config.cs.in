@@ -28,14 +28,4 @@ public class Config
   {
     get { return @"@JAVAOBJECT_JAR_PATH@"; }
   }
-
-  public static string CryptoImplPath
-  {
-    get { return @"@CRYPTO_IMPL_PATH@"; }
-  }
-
-  public static string OpenSSLPath
-  {
-    get { return @"@OPENSSL_PATH@"; }
-  }
 }

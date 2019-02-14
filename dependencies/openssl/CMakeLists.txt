@@ -4,9 +4,9 @@
 # The ASF licenses this file to You under the Apache License, Version 2.0
 # (the "License"); you may not use this file except in compliance with
 # the License.  You may obtain a copy of the License at
-# 
+#
 #      http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,12 +15,8 @@
 
 project( openssl LANGUAGES NONE )
 
-set( ${PROJECT_NAME}_VERSION 1.1.0 )
-set( ${PROJECT_NAME}_SHA265 f5c69ff9ac1472c80b868efc1c1c0d8dcfc746d29ebe563de2365dd56dbd8c82 )
-set( ${PROJECT_NAME}_URL "https://www.openssl.org/source/openssl-${${PROJECT_NAME}_VERSION}.tar.gz" )
-set( ${PROJECT_NAME}_EXTERN ${PROJECT_NAME}-extern )
-
-set ( ${PROJECT_NAME}_CFLAGS "${${PROJECT_NAME}_CFLAGS} ${CFLAGS_ARCH}" )
+set( VERSION 1.1.1a )
+set( SHA256 fc20130f8b7cbd2fb918b2f14e2f429e109c31ddd0fb38fc5d71d9ffed3f9f41 )
 
 if ("SunOS" STREQUAL ${CMAKE_SYSTEM_NAME})
   # No debug for Solaris without patching Configure
@@ -63,21 +59,23 @@ if (NOT DEFINED openssl_PLATFORM)
 endif()
 
 if (${WIN32})
+  find_package(Perl REQUIRED)
   # Keeps separate release/debug objects in build script
-  set ( _CONFIGURE_COMMAND ${PERL} Configure ${openssl_PLATFORM} --prefix=<INSTALL_DIR>/${_DEBUG_OR_RELEASE} --openssldir=<INSTALL_DIR>/${_DEBUG_OR_RELEASE} ${openssl_CONFIGURE_FLAGS} )
+  set ( _CONFIGURE_COMMAND ${PERL_EXECUTABLE} Configure ${openssl_PLATFORM} --prefix=<INSTALL_DIR>/$<CONFIG> --openssldir=<INSTALL_DIR>/$<CONFIG> ${openssl_CONFIGURE_FLAGS} )
   set ( _BUILD_COMMAND nmake )
-  set ( _INSTALL_COMMAND nmake install )
+  set ( _INSTALL_COMMAND nmake install_sw )
 else()
    # TODO Configure trips up without MAKE
-  set ( _CONFIGURE_COMMAND MAKE=$(MAKE) ./Configure threads zlib shared --prefix=<INSTALL_DIR>/${_DEBUG_OR_RELEASE} ${openssl_CONFIGURE_FLAGS} ${openssl_PLATFORM} )
+  set ( _CONFIGURE_COMMAND MAKE=$(MAKE) ./Configure threads zlib shared --prefix=<INSTALL_DIR>/$<CONFIG> ${openssl_CONFIGURE_FLAGS} ${openssl_PLATFORM} )
   set ( _BUILD_COMMAND $(MAKE) all )
   set ( _INSTALL_COMMAND $(MAKE) install_sw )
 endif()
 
+set( EXTERN ${PROJECT_NAME}-extern )
 include(ExternalProject)
-ExternalProject_Add( ${${PROJECT_NAME}_EXTERN}
-   URL ${${PROJECT_NAME}_URL}
-   URL_HASH SHA256=${${PROJECT_NAME}_SHA265}
+ExternalProject_Add( ${EXTERN}
+   URL "https://www.openssl.org/source/openssl-${VERSION}.tar.gz"
+   URL_HASH SHA256=${SHA256}
    UPDATE_COMMAND ""
    BUILD_IN_SOURCE 1
    CONFIGURE_COMMAND "${_CONFIGURE_COMMAND}"
@@ -86,39 +84,37 @@ ExternalProject_Add( ${${PROJECT_NAME}_EXTERN}
 # TODO   TEST_COMMAND $(MAKE) test
 )
 
-ExternalProject_Get_Property( ${${PROJECT_NAME}_EXTERN} SOURCE_DIR )
-set( ${PROJECT_NAME}_SOURCE_DIR ${SOURCE_DIR} )
-ExternalProject_Get_Property( ${${PROJECT_NAME}_EXTERN} INSTALL_DIR )
-set( ${PROJECT_NAME}_INSTALL_DIR ${INSTALL_DIR}/${_DEBUG_OR_RELEASE} )
-set( DEPENDENCIES_${PROJECT_NAME}_DIR ${${PROJECT_NAME}_INSTALL_DIR} PARENT_SCOPE)
+ExternalProject_Get_Property( ${EXTERN} INSTALL_DIR )
+set(INSTALL_DIR "${INSTALL_DIR}/$<CONFIG>")
 
 if (${WIN32})
-  set( CRYPTO_NAME libcrypto )
-  set( SSL_NAME libssl )
+  set( CMAKE_SHARED_LIBRARY_PREFIX lib )
 else()
-  set( CRYPTO_NAME crypto )
-  set( SSL_NAME ssl )
   set( CMAKE_LINK_LIBRARY_SUFFIX ${CMAKE_SHARED_LIBRARY_SUFFIX})
 endif()
 
-add_library(ssl INTERFACE)
-target_include_directories(ssl SYSTEM INTERFACE
-  $<BUILD_INTERFACE:${${PROJECT_NAME}_INSTALL_DIR}/include>
+add_library(OpenSSL_SSL INTERFACE)
+target_include_directories(OpenSSL_SSL SYSTEM INTERFACE
+  $<BUILD_INTERFACE:${INSTALL_DIR}/include>
 )
-target_link_libraries(ssl INTERFACE
-  ${${PROJECT_NAME}_INSTALL_DIR}/lib/${CMAKE_SHARED_LIBRARY_PREFIX}${SSL_NAME}${CMAKE_LINK_LIBRARY_SUFFIX}
+target_link_libraries(OpenSSL_SSL INTERFACE
+  ${INSTALL_DIR}/lib/${CMAKE_SHARED_LIBRARY_PREFIX}ssl${CMAKE_LINK_LIBRARY_SUFFIX}
 )
-add_dependencies(ssl ${${PROJECT_NAME}_EXTERN})
+add_dependencies(OpenSSL_SSL ${EXTERN})
 
-add_library(crypto INTERFACE)
-target_include_directories(crypto SYSTEM INTERFACE
-  $<BUILD_INTERFACE:${${PROJECT_NAME}_INSTALL_DIR}/include>
+add_library(OpenSSL_Crypto INTERFACE)
+target_include_directories(OpenSSL_Crypto SYSTEM INTERFACE
+  $<BUILD_INTERFACE:${INSTALL_DIR}/include>
 )
-target_link_libraries(crypto INTERFACE
-  ${${PROJECT_NAME}_INSTALL_DIR}/lib/${CMAKE_SHARED_LIBRARY_PREFIX}${CRYPTO_NAME}${CMAKE_LINK_LIBRARY_SUFFIX}
+target_link_libraries(OpenSSL_Crypto INTERFACE
+  ${INSTALL_DIR}/lib/${CMAKE_SHARED_LIBRARY_PREFIX}crypto${CMAKE_LINK_LIBRARY_SUFFIX}
 )
-add_dependencies(crypto ${${PROJECT_NAME}_EXTERN})
+add_dependencies(OpenSSL_Crypto ${EXTERN})
 
-set_target_properties(ssl crypto PROPERTIES INTERFACE_LIBRARY_DIR ${${PROJECT_NAME}_INSTALL_DIR}/lib)
-set_target_properties(ssl crypto PROPERTIES INTERFACE_RUNTIME_DIR ${${PROJECT_NAME}_INSTALL_DIR}/bin)
+set_target_properties(OpenSSL_SSL OpenSSL_Crypto PROPERTIES
+  INTERFACE_LIBRARY_DIR ${INSTALL_DIR}/lib
+  INTERFACE_RUNTIME_DIR ${INSTALL_DIR}/bin
+)
 
+add_library(OpenSSL::SSL ALIAS OpenSSL_SSL)
+add_library(OpenSSL::Crypto ALIAS OpenSSL_Crypto)

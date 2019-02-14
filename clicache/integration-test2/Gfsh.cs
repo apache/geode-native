@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -26,21 +26,8 @@ using System.Collections.Generic;
 
 namespace Apache.Geode.Client.IntegrationTests
 {
-    public abstract class Gfsh : IDisposable
+    public abstract class Gfsh 
     {
-        public string Name { get; private set; }
-        public string LocatorBindAddress { get; set; }
-        public int LocatorPort { get; private set; }
-        public int JmxManagerPort { get; private set; }
-        public int HttpServicePort { get; private set; }
-        public string ServerBindAddress { get; private set; }
-        public bool UseSSL { get; set; }
-        public string Keystore { get; set; }
-        public string KeystorePassword { get; set; }
-        public string Truststore { get; set; }
-        public string TruststorePassword { get; set; }
-
-        public abstract void Dispose();
 
         //TODO: Understand what C++ Command class is doing.  Why is it a template,
         //when the only <T> class we're passing is void?  How can you call a ctor
@@ -52,6 +39,7 @@ namespace Apache.Geode.Client.IntegrationTests
                 gfsh_ = gfsh;
                 command_ = command;
             }
+
             public int execute()
             {
                 return gfsh_.execute(command_);
@@ -79,6 +67,7 @@ namespace Apache.Geode.Client.IntegrationTests
                 {
                     gfsh_ = gfsh;
                 }
+
                 public Server withName(string name)
                 {
                     command_ += " --name=" + name;
@@ -93,7 +82,7 @@ namespace Apache.Geode.Client.IntegrationTests
 
                 public Server withBindAddress(string bindAddress)
                 {
-                    gfsh_.ServerBindAddress = bindAddress;
+                    command_ += " --bind-address=" + bindAddress;
                     return this;
                 }
 
@@ -121,13 +110,33 @@ namespace Apache.Geode.Client.IntegrationTests
                     return this;
                 }
 
-                public Server withUseSsl()
+               public Server withSslKeyStore(string keyStore)
                 {
-                    command_ += " --J=-Dgemfire.ssl-enabled-components=server,locator,jmx" +
-                        " --J=-Dgemfire.ssl-keystore=" + gfsh_.Keystore +
-                        " --J=-Dgemfire.ssl-keystore-password=" + gfsh_.KeystorePassword +
-                        " --J=-Dgemfire.ssl-truststore=" + gfsh_.Truststore +
-                        " --J=-Dgemfire.ssl-truststore-password=" + gfsh_.TruststorePassword;
+                    command_ += " --J=-Dgemfire.ssl-keystore=" + keyStore;
+                    return this;
+                }
+
+                public Server withSslKeyStorePassword(string keyStorePassword)
+                {
+                    command_ += " --J=-Dgemfire.ssl-keystore-password=" + keyStorePassword;
+                    return this;
+                }
+
+                public Server withSslTrustStore(string trustStore)
+                {
+                    command_ += " --J=-Dgemfire.ssl-truststore=" + trustStore;
+                    return this;
+                }
+
+                public Server withSslTrustStorePassword(string trustStorePassword)
+                {
+                    command_ += " --J=-Dgemfire.ssl-truststore-password=" + trustStorePassword;
+                    return this;
+                }
+
+                public Server withSslEnableComponents(string components)
+                {
+                    command_ += " --J=-Dgemfire.ssl-enabled-components=" + components;
                     return this;
                 }
             }
@@ -157,24 +166,31 @@ namespace Apache.Geode.Client.IntegrationTests
 
                 public Locator withBindAddress(string bindAddress)
                 {
-                    gfsh_.LocatorBindAddress = bindAddress;
+                    command_ += " --bind-address=" + bindAddress;
                     return this;
                 }
 
                 public Locator withPort(int port)
                 {
-                    gfsh_.LocatorPort = port;
-                    return this;
-                }
-                public Locator withJmxManagerPort(int jmxManagerPort)
-                {
-                    gfsh_.JmxManagerPort = jmxManagerPort;
+                    command_ += " --port=" + port;
                     return this;
                 }
 
-                public Locator withHttpServicePort(short httpServicePort)
+                public Locator withJmxManagerPort(int jmxManagerPort)
                 {
-                    command_ += " --http-service-port=" + Convert.ToString(httpServicePort);
+                    command_ += " --J=-Dgemfire.jmx-manager-port=" + jmxManagerPort;
+                    return this;
+                }
+
+                public Locator withJmxManagerStart(bool start)
+                {
+                    command_ += " --J=-Dgemfire.jmx-manager-start=" + (start ? "true" : "false");
+                    return this;
+                }
+                
+                public Locator withHttpServicePort(int httpServicePort)
+                {
+                    command_ += " --http-service-port=" + httpServicePort;
                     return this;
                 }
 
@@ -197,13 +213,33 @@ namespace Apache.Geode.Client.IntegrationTests
                     return this;
                 }
 
-                public Locator withUseSsl()
+                public Locator withSslKeyStore(string keyStore)
                 {
-                    command_ += " --J=-Dgemfire.ssl-enabled-components=locator,jmx" +
-                        " --J=-Dgemfire.ssl-keystore=" + gfsh_.Keystore +
-                        " --J=-Dgemfire.ssl-keystore-password=" + gfsh_.KeystorePassword +
-                        " --J=-Dgemfire.ssl-truststore=" + gfsh_.Truststore +
-                        " --J=-Dgemfire.ssl-truststore-password=" + gfsh_.TruststorePassword;
+                    command_ += " --J=-Dgemfire.ssl-keystore=" + keyStore;
+                    return this;
+                }
+
+                public Locator withSslKeyStorePassword(string keyStorePassword)
+                {
+                    command_ += " --J=-Dgemfire.ssl-keystore-password=" + keyStorePassword;
+                    return this;
+                }
+
+                public Locator withSslTrustStore(string trustStore)
+                {
+                    command_ += " --J=-Dgemfire.ssl-truststore=" + trustStore;
+                    return this;
+                }
+
+                public Locator withSslTrustStorePassword(string trustStorePassword)
+                {
+                    command_ += " --J=-Dgemfire.ssl-truststore-password=" + trustStorePassword;
+                    return this;
+                }
+
+                public Locator withSslEnableComponents(string components)
+                {
+                    command_ += " --J=-Dgemfire.ssl-enabled-components=" + components;
                     return this;
                 }
             }
@@ -227,6 +263,7 @@ namespace Apache.Geode.Client.IntegrationTests
             {
                 gfsh_ = gfsh;
             }
+
             public class Locator : Command
             {
                 public Locator(Gfsh gfsh) : base(gfsh, "stop locator")
@@ -250,6 +287,7 @@ namespace Apache.Geode.Client.IntegrationTests
             {
                 return new Locator(gfsh_);
             }
+
             public class Server : Command
             {
                 public Server(Gfsh gfsh) : base(gfsh, "stop server")
@@ -344,12 +382,33 @@ namespace Apache.Geode.Client.IntegrationTests
                 return this;
             }
 
-            public Connect withUseSsl()
+            public Connect withUseSsl(bool enable)
             {
-                command_ += " --use-ssl --key-store=" + gfsh_.Keystore +
-                    " --key-store-password=" + gfsh_.KeystorePassword +
-                    " --trust-store=" + gfsh_.Truststore +
-                    " --trust-store-password=" + gfsh_.TruststorePassword;
+                command_ += " --use-ssl=" + (enable ? "true" : "false");
+                return this;
+            }
+
+            public Connect withKeyStore(string keyStore)
+            {
+                command_ += " --key-store=" + keyStore;
+                return this;
+            }
+
+            public Connect withKeyStorePassword(string keyStorePassword)
+            {
+                command_ += " --key-store-password=" + keyStorePassword;
+                return this;
+            }
+
+            public Connect withTrustStore(string trustStore)
+            {
+                command_ += " --trust-store=" + trustStore;
+                return this;
+            }
+
+            public Connect withTrustStorePassword(string trustStorePassword)
+            {
+                command_ += " --trust-store-password=" + trustStorePassword;
                 return this;
             }
         }
@@ -424,17 +483,6 @@ namespace Apache.Geode.Client.IntegrationTests
         public ExecuteFunction executeFunction()
         {
             return new ExecuteFunction(this);
-        }
-
-        private static string defaultBindAddress = "localhost";
-        private static int defaultHttpServicePort = 0;
-        public Gfsh()
-        {
-            LocatorBindAddress = defaultBindAddress;
-            HttpServicePort = defaultHttpServicePort;
-            ServerBindAddress = defaultBindAddress;
-            LocatorPort = FreeTcpPort();
-            JmxManagerPort = FreeTcpPort();
         }
 
         private static int FreeTcpPort()

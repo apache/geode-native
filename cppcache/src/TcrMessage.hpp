@@ -26,8 +26,6 @@
 #include <string>
 #include <vector>
 
-#include <ace/OS.h>
-
 #include <geode/CacheableBuiltins.hpp>
 #include <geode/CacheableKey.hpp>
 #include <geode/CacheableString.hpp>
@@ -35,6 +33,7 @@
 #include <geode/DataInput.hpp>
 #include <geode/DataOutput.hpp>
 #include <geode/ExceptionTypes.hpp>
+#include <geode/Region.hpp>
 #include <geode/Serializable.hpp>
 #include <geode/internal/geode_globals.hpp>
 
@@ -577,7 +576,7 @@ class APACHE_GEODE_EXPORT TcrMessage {
                        int32_t parts = 1);  // skip num parts then read eventid
 
   void skipParts(DataInput& input, int32_t numParts = 1);
-  void readStringPart(DataInput& input, uint32_t* len, char** str);
+  const std::string readStringPart(DataInput& input);
   void readCqsPart(DataInput& input);
   void readHashMapForGCVersions(apache::geode::client::DataInput& input,
                                 std::shared_ptr<CacheableHashMap>& value);
@@ -1263,12 +1262,11 @@ class TcrMessageHelper {
     } else if (!isObj) {
       // otherwise we're currently always expecting an object
       char exMsg[256];
-      ACE_OS::snprintf(exMsg, 255,
-                       "TcrMessageHelper::readChunkPartHeader: "
-                       "%s: part is not object",
-                       methodName);
+      std::snprintf(exMsg, sizeof(exMsg),
+                    "TcrMessageHelper::readChunkPartHeader: "
+                    "%s: part is not object",
+                    methodName);
       LOGDEBUG("%s ", exMsg);
-      // throw MessageException(exMsg);
       return ChunkObjectType::EXCEPTION;
     }
 
@@ -1284,8 +1282,8 @@ class TcrMessageHelper {
         return ChunkObjectType::EXCEPTION;
       } else {
         char exMsg[256];
-        ACE_OS::snprintf(
-            exMsg, 255,
+        std::snprintf(
+            exMsg, sizeof(exMsg),
             "TcrMessageHelper::readChunkPartHeader: %s: cannot handle "
             "java serializable object from server",
             methodName);
@@ -1300,10 +1298,10 @@ class TcrMessageHelper {
     if (expectedFirstType > DSCode::FixedIDDefault) {
       if (partType != expectedFirstType) {
         char exMsg[256];
-        ACE_OS::snprintf(exMsg, 255,
-                         "TcrMessageHelper::readChunkPartHeader: "
-                         "%s: got unhandled object class = %" PRId8,
-                         methodName, static_cast<int8_t>(partType));
+        std::snprintf(exMsg, sizeof(exMsg),
+                      "TcrMessageHelper::readChunkPartHeader: "
+                      "%s: got unhandled object class = %" PRId8,
+                      methodName, static_cast<int8_t>(partType));
         throw MessageException(exMsg);
       }
       // This is for GETALL
@@ -1316,8 +1314,8 @@ class TcrMessageHelper {
     }
     if (compId != expectedPartType) {
       char exMsg[256];
-      ACE_OS::snprintf(
-          exMsg, 255,
+      std::snprintf(
+          exMsg, sizeof(exMsg),
           "TcrMessageHelper::readChunkPartHeader: "
           "%s: got unhandled object type = %d, expected = %d, raw = %d",
           methodName, compId, expectedPartType, rawByte);
@@ -1340,10 +1338,10 @@ class TcrMessageHelper {
     } else if (!isObj) {
       // otherwise we're currently always expecting an object
       char exMsg[256];
-      ACE_OS::snprintf(exMsg, 255,
-                       "TcrMessageHelper::readChunkPartHeader: "
-                       "%s: part is not object",
-                       methodName);
+      std::snprintf(exMsg, 255,
+                    "TcrMessageHelper::readChunkPartHeader: "
+                    "%s: part is not object",
+                    methodName);
       throw MessageException(exMsg);
     }
 
@@ -1356,7 +1354,7 @@ class TcrMessageHelper {
         return ChunkObjectType::EXCEPTION;
       } else {
         char exMsg[256];
-        ACE_OS::snprintf(
+        std::snprintf(
             exMsg, 255,
             "TcrMessageHelper::readChunkPartHeader: %s: cannot handle "
             "java serializable object from server",

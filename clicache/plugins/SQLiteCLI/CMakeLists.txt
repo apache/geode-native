@@ -27,12 +27,15 @@ target_link_libraries(${PROJECT_NAME}
     PdxClassLibrary
 )
 
+get_target_property(SQLite_netFx_INTERFACE_LINK_LIBRARIES SQLite::netFx INTERFACE_LINK_LIBRARIES)
+
 set_target_properties( ${PROJECT_NAME} PROPERTIES
-  COMMON_LANGUAGE_RUNTIME ""
   VS_GLOBAL_ROOTNAMESPACE ${PROJECT_NAME}
   VS_GLOBAL_TreatWarningsAsErrors True
   VS_GLOBAL_PROJECT_TYPES "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
-  VS_DOTNET_REFERENCE_System.Data.SQLite ${sqlite-netFx_SHARED_LIB}
+  VS_DOTNET_REFERENCE_System.Data.SQLite "${SQLite_netFx_INTERFACE_LINK_LIBRARIES}"
   VS_DOTNET_REFERENCES "System;System.Data;System.Xml"
   FOLDER cli/plugins
 )
+
+add_dependencies(${PROJECT_NAME} SQLite::netFx)

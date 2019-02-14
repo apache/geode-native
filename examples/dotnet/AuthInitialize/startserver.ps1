@@ -1,4 +1,4 @@
-﻿# Licensed to the Apache Software Foundation (ASF) under one or more
+# Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
 # The ASF licenses this file to You under the Apache License, Version 2.0
@@ -35,5 +35,11 @@ else
 
 if ($GFSH_PATH -ne "")
 {
-   Invoke-Expression "$GFSH_PATH -e 'start locator --name=locator --dir=$PSScriptRoot\locator' -e 'start server --name=server --dir=$PSScriptRoot\server' -e 'create region --name=region --type=PARTITION'"
+  # Set this variable to include your java object that implements the Authenticator class
+  $RESOLVEDPATH = Resolve-Path -Path "$PSScriptRoot/../../utilities/example.jar"
+
+  # Set this variable to the full name of your Authenticator.create function
+  $AUTHENTICATOR = 'javaobject.SimpleAuthenticator.create'
+
+  Invoke-Expression "$GFSH_PATH -e 'start locator --name=locator --dir=$PSScriptRoot\locator' -e 'start server --name=server --classpath=$RESOLVEDPATH --J=-Dgemfire.security-client-authenticator=$AUTHENTICATOR --dir=$PSScriptRoot\server' -e 'create region --name=region --type=PARTITION'"
 }

@@ -16,8 +16,6 @@
 cmake_minimum_required( VERSION 3.10 )
 project(apache-geode_unittests LANGUAGES CXX)
 
-file(GLOB_RECURSE SOURCES "*.cpp")
-
 add_executable(apache-geode_unittests
   AutoDeleteTest.cpp
   ByteArray.cpp
@@ -42,8 +40,16 @@ add_executable(apache-geode_unittests
   RegionAttributesFactoryTest.cpp
   SerializableCreateTests.cpp
   StructSetTest.cpp
-  TcrMessage_unittest.cpp
-)
+  TcrMessageTest.cpp
+  CacheableDateTest.cpp
+  util/synchronized_mapTest.cpp
+  util/synchronized_setTest.cpp
+  util/JavaModifiedUtf8Tests.cpp
+  util/functionalTests.cpp
+  util/chrono/durationTest.cpp
+  LocalRegionTest.cpp
+  util/queueTest.cpp
+  ThreadPoolTest.cpp)
 
 target_compile_definitions(apache-geode_unittests
   PUBLIC
@@ -57,9 +63,10 @@ endif()
 target_link_libraries(apache-geode_unittests
   PRIVATE
     apache-geode-static
-    GTest::GTest
-    GTest::Main
+    GTest::gtest
+    GTest::gtest_main
     Boost::boost
+    Boost::thread
     _WarningsAsError
     _CppCodeCoverage
 )

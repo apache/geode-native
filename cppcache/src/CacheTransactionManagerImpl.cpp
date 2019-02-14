@@ -36,17 +36,17 @@ namespace geode {
 namespace client {
 
 CacheTransactionManagerImpl::CacheTransactionManagerImpl(CacheImpl* cache)
-    : m_cache(cache), m_txCond(m_suspendedTxLock) {}
+    : m_cache(cache) {}
 
 CacheTransactionManagerImpl::~CacheTransactionManagerImpl() {}
 
 void CacheTransactionManagerImpl::begin() {
-  if (TSSTXStateWrapper::s_geodeTSSTXState->getTXState() != nullptr) {
+  if (TSSTXStateWrapper::get().getTXState() != nullptr) {
     GfErrTypeThrowException("Transaction already in progress",
                             GF_CACHE_ILLEGAL_STATE_EXCEPTION);
   }
   auto txState = new TXState(m_cache);
-  TSSTXStateWrapper::s_geodeTSSTXState->setTXState(txState);
+  TSSTXStateWrapper::get().setTXState(txState);
   addTx(txState->getTransactionId().getId());
 }
 
@@ -111,140 +111,6 @@ void CacheTransactionManagerImpl::commit() {
   auto commit = std::dynamic_pointer_cast<TXCommitMessage>(reply.getValue());
   txCleaner.clean();
   commit->apply(m_cache->getCache());
-
-  /*
-          if(m_writer != nullptr)
-          {
-                  try
-                  {
-                          std::shared_ptr<TransactionEvent> event(new
-     TransactionEvent(txState->getTransactionId(),
-     std::shared_ptr<Cache>(m_cache), commit->getEvents(m_cache)));
-                          m_writer->beforeCommit(event);
-                  } catch(const TransactionWriterException& ex)
-                  {
-                          noteCommitFailure(txState, commit);
-                          GfErrTypeThrowException(ex.what(),
-     GF_COMMIT_CONFLICT_EXCEPTION);
-                  }
-                  catch (const Exception& ex)
-                  {
-                          noteCommitFailure(txState, commit);
-                          LOGERROR("Unexpected exception during writer callback
-     %s", ex.what());
-                          throw ex;
-                  }
-                  catch (...)
-                  {
-                          noteCommitFailure(txState, commit);
-                          LOGERROR("Unexpected exception during writer
-     callback");
-                          throw;
-                  }
-          }
-  */
-
-  /*try
-  {
-          TcrMessage requestCommitBefore(TcrMessage::TX_SYNCHRONIZATION,
-BEFORE_COMMIT, txState->getTransactionId()->getId(), STATUS_COMMITTED);
-          TcrMessage replyCommitBefore;
-          err = tcr_dm->sendSyncRequest(requestCommitBefore, replyCommitBefore);
-          if(err != GF_NOERR)
-          {
-                  GfErrTypeThrowException("Error while committing", err);
-          } else {
-                  switch (replyCommitBefore.getMessageType()) {
-                  case TcrMessage::REPLY: {
-                          break;
-                  }
-                  case TcrMessage::EXCEPTION: {
-                          const char* exceptionMsg =
-replyCommitBefore.getException();
-                                                        err =
-ThinClientRegion::handleServerException("CacheTransactionManager::commit",
-                                                            exceptionMsg);
-                                                        GfErrTypeThrowException("Commit
-Failed", err);
-                          break;
-                  }
-                  case TcrMessage::REQUEST_DATA_ERROR: {
-                          GfErrTypeThrowException("Commit Failed",
-GF_COMMIT_CONFLICT_EXCEPTION);
-                          break;
-                  }
-                  default: {
-                          LOGERROR("Unknown message type in commit reply %d",
-reply.getMessageType());
-                                                  GfErrTypeThrowException("Commit
-Failed", GF_MSG);
-                          break;
-                  }
-                  }
-          }
-  }
-  catch (const Exception& ex)
-  {
-//		noteCommitFailure(txState, commit);
-          LOGERROR("Unexpected exception during commit %s", ex.what());
-          throw ex;
-  }
-  catch (...)
-  {
-//		noteCommitFailure(txState, commit);
-          LOGERROR("Unexpected exception during writer callback");
-          throw;
-  }
-
-  try{
-          TcrMessage requestCommitAfter(TcrMessage::TX_SYNCHRONIZATION,
-AFTER_COMMIT, txState->getTransactionId()->getId(), STATUS_COMMITTED);
-          TcrMessage replyCommitAfter;
-          txCleaner.clean();
-          commit->apply(m_cache);
-          err = tcr_dm->sendSyncRequest(requestCommitAfter, replyCommitAfter);
-
-          if(err != GF_NOERR)
-          {
-                  GfErrTypeThrowException("Error while committing", err);
-          } else {
-                  switch (replyCommitAfter.getMessageType()) {
-                  case TcrMessage::RESPONSE: {
-                          //commit = replyCommitAfter.getValue();
-                          break;
-                  }
-                  case TcrMessage::EXCEPTION: {
-                          const char* exceptionMsg =
-replyCommitAfter.getException();
-                                                                                        err = ThinClientRegion::handleServerException("CacheTransactionManager::commit",
-                                                                                            exceptionMsg);
-                                                                                        GfErrTypeThrowException("Commit Failed", err);
-                          break;
-                  }
-                  case TcrMessage::REQUEST_DATA_ERROR: {
-                          GfErrTypeThrowException("Commit Failed",
-GF_COMMIT_CONFLICT_EXCEPTION);
-                          break;
-                  }
-                  default: {
-                          GfErrTypeThrowException("Commit Failed", GF_MSG);
-                          break;
-                  }
-                  }
-          }
-  }
-  catch (const Exception& ex)
-  {
-//		noteCommitFailure(txState, commit);
-          throw ex;
-  }
-  catch (...)
-  {
-//		noteCommitFailure(txState, commit);
-          throw;
-  }*/
-
-  //	noteCommitSuccess(txState, commit);
 }
 
 void CacheTransactionManagerImpl::rollback() {
@@ -309,10 +175,9 @@ GfErrType CacheTransactionManagerImpl::rollback(TXState*, bool) {
 }
 
 ThinClientPoolDM* CacheTransactionManagerImpl::getDM() {
-  TcrConnection* conn =
-      (*TssConnectionWrapper::s_geodeTSSConn)->getConnection();
+  auto conn = (*TssConnectionWrapper::s_geodeTSSConn)->getConnection();
   if (conn != nullptr) {
-    ThinClientPoolDM* dm = conn->getEndpointObject()->getPoolHADM();
+    auto dm = conn->getEndpointObject()->getPoolHADM();
     if (dm != nullptr) {
       return dm;
     }
@@ -323,15 +188,14 @@ ThinClientPoolDM* CacheTransactionManagerImpl::getDM() {
 Cache* CacheTransactionManagerImpl::getCache() { return m_cache->getCache(); }
 TransactionId& CacheTransactionManagerImpl::suspend() {
   // get the current state of the thread
-  TXState* txState = TSSTXStateWrapper::s_geodeTSSTXState->getTXState();
+  auto txState = TSSTXStateWrapper::get().getTXState();
   if (txState == nullptr) {
     LOGFINE("Transaction not in progress. Returning nullptr transaction Id.");
     throw TransactionException("Transaction not in progress.");
   }
 
   // get the current connection that this transaction is using
-  TcrConnection* conn =
-      (*TssConnectionWrapper::s_geodeTSSConn)->getConnection();
+  auto conn = (*TssConnectionWrapper::s_geodeTSSConn)->getConnection();
   if (conn == nullptr) {
     LOGFINE(
         "Thread local connection is null. Returning nullptr transaction Id.");
@@ -366,7 +230,7 @@ TransactionId& CacheTransactionManagerImpl::suspend() {
   addSuspendedTx(txState->getTransactionId().getId(), txState);
 
   // set the current transaction state as null
-  TSSTXStateWrapper::s_geodeTSSTXState->setTXState(nullptr);
+  TSSTXStateWrapper::get().setTXState(nullptr);
 
   // return the transaction ID
   return static_cast<TransactionId&>(txState->getTransactionId());
@@ -374,7 +238,7 @@ TransactionId& CacheTransactionManagerImpl::suspend() {
 
 void CacheTransactionManagerImpl::resume(TransactionId& transactionId) {
   // get the current state of the thread
-  if (TSSTXStateWrapper::s_geodeTSSTXState->getTXState() != nullptr) {
+  if (TSSTXStateWrapper::get().getTXState() != nullptr) {
     GfErrTypeThrowException("A transaction is already in progress",
                             GF_CACHE_ILLEGAL_STATE_EXCEPTION);
   }
@@ -400,7 +264,7 @@ bool CacheTransactionManagerImpl::tryResume(TransactionId& transactionId) {
 bool CacheTransactionManagerImpl::tryResume(TransactionId& transactionId,
                                             bool cancelExpiryTask) {
   // get the current state of the thread
-  if (TSSTXStateWrapper::s_geodeTSSTXState->getTXState() != nullptr) {
+  if (TSSTXStateWrapper::get().getTXState() != nullptr) {
     LOGFINE("A transaction is already in progress. Cannot resume transaction.");
     return false;
   }
@@ -417,7 +281,7 @@ bool CacheTransactionManagerImpl::tryResume(TransactionId& transactionId,
 bool CacheTransactionManagerImpl::tryResume(
     TransactionId& transactionId, std::chrono::milliseconds waitTime) {
   // get the current state of the thread
-  if (TSSTXStateWrapper::s_geodeTSSTXState->getTXState() != nullptr) {
+  if (TSSTXStateWrapper::get().getTXState() != nullptr) {
     LOGFINE("A transaction is already in progress. Cannot resume transaction.");
     return false;
   }
@@ -452,7 +316,7 @@ void CacheTransactionManagerImpl::resumeTxUsingTxState(TXState* txState,
   }
 
   // set the current state as the state of the suspended transaction
-  TSSTXStateWrapper::s_geodeTSSTXState->setTXState(txState);
+  TSSTXStateWrapper::get().setTXState(txState);
 
   LOGFINE("Get connection for transaction id %d",
           txState->getTransactionId().getId());
@@ -462,7 +326,7 @@ void CacheTransactionManagerImpl::resumeTxUsingTxState(TXState* txState,
   if (conn == nullptr || error != GF_NOERR) {
     // throw an exception and set the current state as nullptr because
     // the transaction cannot be resumed
-    TSSTXStateWrapper::s_geodeTSSTXState->setTXState(nullptr);
+    TSSTXStateWrapper::get().setTXState(nullptr);
     GfErrTypeThrowException(
         "Could not get a connection for the transaction id.",
         GF_CACHE_ILLEGAL_STATE_EXCEPTION);
@@ -478,83 +342,65 @@ bool CacheTransactionManagerImpl::exists(TransactionId& transactionId) {
 }
 
 bool CacheTransactionManagerImpl::exists() {
-  return TSSTXStateWrapper::s_geodeTSSTXState->getTXState() != nullptr;
+  return TSSTXStateWrapper::get().getTXState() != nullptr;
 }
 
 void CacheTransactionManagerImpl::addTx(int32_t txId) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_txLock);
+  std::unique_lock<decltype(m_txLock)> _guard(m_txLock);
   m_TXs.push_back(txId);
 }
 
-bool CacheTransactionManagerImpl::removeTx(int32_t txId) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_txLock);
-
-  for (std::vector<int32_t>::iterator iter = m_TXs.begin(); iter != m_TXs.end();
-       ++iter) {
-    if (*iter == txId) {
-      m_TXs.erase(iter);
-      return true;
-    }
-  }
-  return false;
+void CacheTransactionManagerImpl::removeTx(int32_t txId) {
+  std::unique_lock<decltype(m_txLock)> _guard(m_txLock);
+  m_TXs.erase(std::remove(m_TXs.begin(), m_TXs.end(), txId), m_TXs.end());
 }
 bool CacheTransactionManagerImpl::findTx(int32_t txId) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_txLock);
-
-  for (std::vector<int32_t>::iterator iter = m_TXs.begin(); iter != m_TXs.end();
-       ++iter) {
-    if (*iter == txId) return true;
-  }
-  return false;
+  std::unique_lock<decltype(m_txLock)> _guard(m_txLock);
+  return std::find(m_TXs.begin(), m_TXs.end(), txId) != m_TXs.end();
 }
 
 void CacheTransactionManagerImpl::addSuspendedTx(int32_t txId,
                                                  TXState* txState) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_suspendedTxLock);
+  std::unique_lock<decltype(m_suspendedTxLock)> _guard(m_suspendedTxLock);
   m_suspendedTXs[txId] = txState;
-  // signal if some thread is waiting for this transaction to suspend
-  m_txCond.broadcast();
+  m_txCond.notify_all();
 }
 
 TXState* CacheTransactionManagerImpl::getSuspendedTx(int32_t txId) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_suspendedTxLock);
-  std::map<int32_t, TXState*>::iterator it = m_suspendedTXs.find(txId);
+  std::unique_lock<decltype(m_suspendedTxLock)> _guard(m_suspendedTxLock);
+  auto&& it = m_suspendedTXs.find(txId);
   if (it == m_suspendedTXs.end()) return nullptr;
-  TXState* rettxState = (*it).second;
+  auto rettxState = (*it).second;
   return rettxState;
 }
 
 TXState* CacheTransactionManagerImpl::removeSuspendedTx(int32_t txId) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_suspendedTxLock);
-  std::map<int32_t, TXState*>::iterator it = m_suspendedTXs.find(txId);
+  std::unique_lock<decltype(m_suspendedTxLock)> _guard(m_suspendedTxLock);
+  auto&& it = m_suspendedTXs.find(txId);
   if (it == m_suspendedTXs.end()) return nullptr;
-  TXState* rettxState = (*it).second;
+  auto rettxState = (*it).second;
   m_suspendedTXs.erase(it);
   return rettxState;
 }
+
 TXState* CacheTransactionManagerImpl::removeSuspendedTx(
     int32_t txId, std::chrono::milliseconds waitTime) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_suspendedTxLock);
-  TXState* txState = nullptr;
-  ACE_Time_Value currTime(ACE_OS::gettimeofday());
-  ACE_Time_Value stopAt(currTime);
-  stopAt += waitTime;
+  std::unique_lock<decltype(m_suspendedTxLock)> _guard(m_suspendedTxLock);
 
-  do {
-    txState = removeSuspendedTx(txId);
-    if (txState == nullptr) {
-      LOGFINE("Wait for the connection to get suspended, Tid: %d", txId);
-      m_txCond.wait(&stopAt);
-    }
+  auto txState = removeSuspendedTx(txId);
+  if (txState == nullptr) {
+    LOGFINE("Wait for the connection to get suspended, Tid: %d", txId);
+    m_txCond.wait_for(_guard, waitTime, [this, txId, &txState] {
+      return nullptr != (txState = removeSuspendedTx(txId));
+    });
+  }
 
-  } while (txState == nullptr && findTx(txId) &&
-           (currTime = ACE_OS::gettimeofday()) < stopAt);
   return txState;
 }
 
 bool CacheTransactionManagerImpl::isSuspendedTx(int32_t txId) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_suspendedTxLock);
-  std::map<int32_t, TXState*>::iterator it = m_suspendedTXs.find(txId);
+  std::unique_lock<decltype(m_suspendedTxLock)> _guard(m_suspendedTxLock);
+  auto&& it = m_suspendedTXs.find(txId);
   if (it == m_suspendedTXs.end()) {
     return false;
   } else {
@@ -563,114 +409,10 @@ bool CacheTransactionManagerImpl::isSuspendedTx(int32_t txId) {
 }
 
 TransactionId& CacheTransactionManagerImpl::getTransactionId() {
-  TXState* txState = TSSTXStateWrapper::s_geodeTSSTXState->getTXState();
+  auto txState = TSSTXStateWrapper::get().getTXState();
   return txState->getTransactionId();
 }
-/*
-void CacheTransactionManagerImpl::setWriter(std::shared_ptr<TransactionWriter>
-writer)
-{
-        m_writer = writer;
-}
- std::shared_ptr<TransactionWriter> CacheTransactionManagerImpl::getWriter()
-{
-        return m_writer;
-}
 
-
-void
-CacheTransactionManagerImpl::addListener(std::shared_ptr<TransactionListener>
-aListener)
-{
-        if(aListener == nullptr)
-        {
-                GfErrTypeThrowException("Trying to add null listener.",
-GF_CACHE_ILLEGAL_ARGUMENT_EXCEPTION);
-        }
-        if(!m_listeners.contains(aListener))
-        {
-                m_listeners.insert(aListener);
-        }
-}
-
-void
-CacheTransactionManagerImpl::removeListener(std::shared_ptr<TransactionListener>
-aListener)
-{
-        if(aListener == nullptr)
-        {
-                GfErrTypeThrowException("Trying to remove null listener.",
-GF_CACHE_ILLEGAL_ARGUMENT_EXCEPTION);
-        }
-        if(m_listeners.erase(aListener))
-        {
-                aListener->close();
-        }
-}
-
-void CacheTransactionManagerImpl::noteCommitFailure(TXState* txState, const
-std::shared_ptr<TXCommitMessage>& commitMessage)
-{
-        VectorOfEntryEvent events;
-        if(commitMessage!= nullptr)
-        {
-                events = commitMessage->getEvents(m_cache);
-        }
-        std::shared_ptr<TransactionEvent> event(new
-TransactionEvent(txState->getTransactionId(), std::shared_ptr<Cache>(m_cache),
-events));
-
-        for(HashSetOfSharedBase::Iterator iter = m_listeners.begin();
-m_listeners.end() != iter; iter++)
-        {
-               auto listener =
-std::static_pointer_cast<TransactionListener>(*iter);
-                listener->afterFailedCommit(event);
-        }
-}
-
-void CacheTransactionManagerImpl::noteCommitSuccess(TXState* txState, const
-std::shared_ptr<TXCommitMessage>& commitMessage)
-{
-        VectorOfEntryEvent events;
-                if(commitMessage!= nullptr)
-                {
-                        events = commitMessage->getEvents(m_cache);
-                }
-                std::shared_ptr<TransactionEvent> event(new
-TransactionEvent(txState->getTransactionId(), std::shared_ptr<Cache>(m_cache),
-events));
-
-        for(HashSetOfSharedBase::Iterator iter = m_listeners.begin();
-m_listeners.end() != iter; iter++)
-        {
-               auto listener =
-std::static_pointer_cast<std::shared_ptr<TransactionListener>>(*iter);
-                listener->afterCommit(event);
-        }
-}
-
-void CacheTransactionManagerImpl::noteRollbackSuccess(TXState* txState, const
-std::shared_ptr<TXCommitMessage>& commitMessage)
-{
-        VectorOfEntryEvent events;
-        if(commitMessage!= nullptr)
-        {
-                events = commitMessage->getEvents(m_cache);
-        }
-        std::shared_ptr<TransactionEvent> event(new
-TransactionEvent(txState->getTransactionId(), std::shared_ptr<Cache>(m_cache),
-events));
-
-        for(HashSetOfSharedBase::Iterator iter = m_listeners.begin();
-m_listeners.end() != iter; iter++)
-        {
-               auto listener =
-std::static_pointer_cast<TransactionListener>(*iter);
-                listener->afterRollback(event);
-        }
-}
-*/
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

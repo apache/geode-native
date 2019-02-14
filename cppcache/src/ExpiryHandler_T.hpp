@@ -25,8 +25,9 @@
  *@version 1.0
  */
 
+#include <ace/Event_Handler.h>
+
 #include "StackTrace.hpp"
-#include "ace/Event_Handler.h"
 #include "util/Log.hpp"
 namespace apache {
 namespace geode {

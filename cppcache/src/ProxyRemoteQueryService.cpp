@@ -82,7 +82,7 @@ std::shared_ptr<CqQuery> ProxyRemoteQueryService::newCq(
 
 void ProxyRemoteQueryService::addCqQuery(
     const std::shared_ptr<CqQuery>& cqQuery) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_cqQueryListLock);
+  std::lock_guard<decltype(m_cqQueryListLock)> guard(m_cqQueryListLock);
   m_cqQueries.push_back(cqQuery);
 }
 
@@ -113,7 +113,7 @@ std::shared_ptr<CqQuery> ProxyRemoteQueryService::newCq(
 void ProxyRemoteQueryService::closeCqs() { closeCqs(false); }
 
 void ProxyRemoteQueryService::closeCqs(bool keepAlive) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_cqQueryListLock);
+  std::lock_guard<decltype(m_cqQueryListLock)> guard(m_cqQueryListLock);
 
   for (auto&& q : m_cqQueries) {
     try {
@@ -135,7 +135,7 @@ void ProxyRemoteQueryService::closeCqs(bool keepAlive) {
 }
 
 QueryService::query_container_type ProxyRemoteQueryService::getCqs() const {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_cqQueryListLock);
+  std::lock_guard<decltype(m_cqQueryListLock)> guard(m_cqQueryListLock);
   return m_cqQueries;
 }
 
@@ -160,7 +160,7 @@ std::shared_ptr<CqQuery> ProxyRemoteQueryService::getCq(
 }
 
 void ProxyRemoteQueryService::executeCqs() {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_cqQueryListLock);
+  std::lock_guard<decltype(m_cqQueryListLock)> guard(m_cqQueryListLock);
 
   for (auto&& q : m_cqQueries) {
     try {
@@ -176,7 +176,7 @@ void ProxyRemoteQueryService::executeCqs() {
 }
 
 void ProxyRemoteQueryService::stopCqs() {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_cqQueryListLock);
+  std::lock_guard<decltype(m_cqQueryListLock)> guard(m_cqQueryListLock);
 
   for (auto&& q : m_cqQueries) {
     try {

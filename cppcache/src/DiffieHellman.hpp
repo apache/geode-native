@@ -22,8 +22,6 @@
 #include <string>
 
 #include <ace/DLL.h>
-#include <ace/OS.h>
-#include <ace/Recursive_Thread_Mutex.h>
 
 #include <geode/CacheableBuiltins.hpp>
 #include <geode/Properties.hpp>

@@ -121,7 +121,8 @@ GfErrType ThinClientRedundancyManager::maintainRedundancyLevel(
   // to nonfatal errors such as server not available
   GfErrType fatalError = GF_NOERR;
   bool fatal = false;
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_redundantEndpointsLock);
+  std::lock_guard<decltype(m_redundantEndpointsLock)> guard(
+      m_redundantEndpointsLock);
   bool isRedundancySatisfied = false;
   int secondaryCount = 0;
   bool isPrimaryConnected = false;
@@ -667,9 +668,8 @@ void ThinClientRedundancyManager::initialize(int redundancyLevel) {
     if (interval < std::chrono::milliseconds(100)) {
       interval = std::chrono::milliseconds(100);
     }
-    m_nextAckInc = ACE_Time_Value(interval);
-    m_nextAck = ACE_OS::gettimeofday();
-    m_nextAck += m_nextAckInc;
+    m_nextAckInc = interval;
+    m_nextAck = clock::now() + interval;
   }
 
   if (m_poolHADM) {
@@ -693,7 +693,8 @@ void ThinClientRedundancyManager::initialize(int redundancyLevel) {
 }
 
 void ThinClientRedundancyManager::sendNotificationCloseMsgs() {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_redundantEndpointsLock);
+  std::lock_guard<decltype(m_redundantEndpointsLock)> guard(
+      m_redundantEndpointsLock);
 
   for (auto&& endpoint : m_redundantEndpoints) {
     LOGDEBUG(
@@ -723,10 +724,11 @@ void ThinClientRedundancyManager::close() {
     m_periodicAckTask->stopNoblock();
     m_periodicAckSema.release();
     m_periodicAckTask->wait();
-    _GEODE_SAFE_DELETE(m_periodicAckTask);
+    m_periodicAckTask = nullptr;
   }
 
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_redundantEndpointsLock);
+  std::lock_guard<decltype(m_redundantEndpointsLock)> guard(
+      m_redundantEndpointsLock);
 
   for (auto&& endpoint : m_redundantEndpoints) {
     LOGDEBUG(
@@ -827,7 +829,8 @@ GfErrType ThinClientRedundancyManager::sendSyncRequestCq(
     TcrMessage& request, TcrMessageReply& reply, ThinClientBaseDM* theHADM) {
   LOGDEBUG("ThinClientRedundancyManager::sendSyncRequestCq msgType[%d]",
            request.getMessageType());
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_redundantEndpointsLock);
+  std::lock_guard<decltype(m_redundantEndpointsLock)> guard(
+      m_redundantEndpointsLock);
 
   GfErrType err = GF_NOERR;
   GfErrType opErr;
@@ -872,8 +875,7 @@ GfErrType ThinClientRedundancyManager::sendSyncRequestCq(
 
   while (attempts--) {
     if (err != GF_NOERR || m_redundantEndpoints.empty()) {
-      auto userAttr = TSSUserAttributesWrapper::s_geodeTSSUserAttributes
-                          ->getUserAttributes();
+      auto userAttr = UserAttributes::threadLocalUserAttributes;
       if (userAttr) {
         authenticatedView = userAttr->getAuthenticatedView();
       }
@@ -918,7 +920,8 @@ GfErrType ThinClientRedundancyManager::sendSyncRequestRegisterInterest(
     ThinClientBaseDM* theHADM, ThinClientRegion* region) {
   LOGDEBUG("ThinClientRedundancyManager::sendSyncRequestRegisterInterest ");
   if (!endpoint) {
-    ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_redundantEndpointsLock);
+    std::lock_guard<decltype(m_redundantEndpointsLock)> guard(
+        m_redundantEndpointsLock);
 
     auto err = GF_NOERR;
     auto opErr = GF_NOERR;
@@ -980,8 +983,9 @@ GfErrType ThinClientRedundancyManager::sendSyncRequestRegisterInterest(
   }
 }
 
-void ThinClientRedundancyManager::getAllEndpoints(
-    std::vector<TcrEndpoint*>& endpoints) {
+synchronized_map<std::unordered_map<std::string, TcrEndpoint*>,
+                 std::recursive_mutex>&
+ThinClientRedundancyManager::updateAndSelectEndpoints() {
   // 38196 Fix: For durable clients reconnect
   // 1. Get list of endpoints which have HA queue.
   // 2. Get HA endpoint with max queuesize;
@@ -994,36 +998,35 @@ void ThinClientRedundancyManager::getAllEndpoints(
   // Exception: For R =0 ( or when no EP with Max queuesize ),
   //  Old primary would be considered as new. Hence it would be at the end
 
-  ACE_Map_Manager<std::string, TcrEndpoint*, ACE_Recursive_Thread_Mutex>*
-      tempContainer;
   if (m_poolHADM) {
-    tempContainer = &m_poolHADM->m_endpoints;
     // fetch queue servers
     // send queue servers for sorting
     std::set<ServerLocation> exclEndPts;
     std::list<ServerLocation> outEndpoints;
 
     outEndpoints = selectServers(-1, exclEndPts);
-    for (std::list<ServerLocation>::iterator it = outEndpoints.begin();
-         it != outEndpoints.end(); it++) {
-      m_poolHADM->addEP(*it);
+    for (auto& it : outEndpoints) {
+      m_poolHADM->addEP(it);
     }
-  } else {
-    tempContainer = &m_theTcrConnManager->m_endpoints;
-  }
 
+    return m_poolHADM->m_endpoints;
+  } else {
+    return m_theTcrConnManager->m_endpoints;
+  }
+}
+
+void ThinClientRedundancyManager::getAllEndpoints(
+    std::vector<TcrEndpoint*>& endpoints) {
   TcrEndpoint* maxQEp = nullptr;
   TcrEndpoint* primaryEp = nullptr;
 
-  for (ACE_Map_Manager<std::string, TcrEndpoint*,
-                       ACE_Recursive_Thread_Mutex>::iterator currItr =
-           (*tempContainer).begin();
-       currItr != (*tempContainer).end(); currItr++) {
+  auto& selectedEndpoints = updateAndSelectEndpoints();
+  for (const auto& currItr : selectedEndpoints) {
     if (isDurable()) {
-      TcrEndpoint* ep = (*currItr).int_id_;
+      auto ep = currItr.second;
       int32_t queueSize = 0;
       TcrConnection* statusConn = nullptr;
-      ServerQueueStatus status =
+      auto status =
           ep->getFreshServerQueueStatus(queueSize, !m_poolHADM, statusConn);
       if (m_poolHADM && status != NON_REDUNDANT_SERVER) {
         m_poolHADM->addConnection(statusConn);
@@ -1048,13 +1051,13 @@ void ThinClientRedundancyManager::getAllEndpoints(
             "ThinClientRedundancyManager::getAllEndpoints(): sorting "
             "endpoints, found primary endpoint.");
       } else {
-        endpoints.push_back((*currItr).int_id_);
+        endpoints.push_back(currItr.second);
         LOGDEBUG(
             "ThinClientRedundancyManager::getAllEndpoints(): sorting "
             "endpoints, found nonredundant endpoint.");
       }
     } else {
-      endpoints.push_back((*currItr).int_id_);
+      endpoints.push_back(currItr.second);
     }
     //(*currItr)++;
   }
@@ -1113,7 +1116,8 @@ void ThinClientRedundancyManager::readyForEvents() {
   GfErrType result = GF_NOTCON;
   unsigned int epCount = 0;
 
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guardEPs(m_redundantEndpointsLock);
+  std::lock_guard<decltype(m_redundantEndpointsLock)> guard(
+      m_redundantEndpointsLock);
 
   if (m_sentReadyForEvents) {
     throw IllegalStateException("Already called readyForEvents");
@@ -1159,7 +1163,7 @@ int ThinClientRedundancyManager::processEventIdMap(const ACE_Time_Value&,
   return 0;
 }
 
-int ThinClientRedundancyManager::periodicAck(volatile bool& isRunning) {
+void ThinClientRedundancyManager::periodicAck(std::atomic<bool>& isRunning) {
   while (isRunning) {
     m_periodicAckSema.acquire();
     if (isRunning) {
@@ -1169,7 +1173,6 @@ int ThinClientRedundancyManager::periodicAck(volatile bool& isRunning) {
       }
     }
   }
-  return 0;
 }
 
 void ThinClientRedundancyManager::doPeriodicAck() {
@@ -1177,21 +1180,19 @@ void ThinClientRedundancyManager::doPeriodicAck() {
       "ThinClientRedundancyManager::processEventIdMap( ): Examining eventid "
       "map.");
   // do periodic ack if HA is enabled and the time has come
-  if (m_HAenabled && (m_nextAck < ACE_OS::gettimeofday())) {
+  if (m_HAenabled && (m_nextAck < clock::now())) {
     LOGFINER("Doing periodic ack");
     m_nextAck += m_nextAckInc;
 
-    EventIdMapEntryList entries = m_eventidmap.getUnAcked();
-    uint32_t count = static_cast<uint32_t>(entries.size());
-
+    auto entries = m_eventidmap.getUnAcked();
+    auto count = entries.size();
     if (count > 0) {
       bool acked = false;
 
-      ACE_Guard<ACE_Recursive_Thread_Mutex> guardEPs(m_redundantEndpointsLock);
+      std::lock_guard<decltype(m_redundantEndpointsLock)> guard(
+          m_redundantEndpointsLock);
 
-      std::vector<TcrEndpoint*>::iterator endpoint =
-          m_redundantEndpoints.begin();
-
+      auto endpoint = m_redundantEndpoints.begin();
       if (endpoint != m_redundantEndpoints.end()) {
         TcrMessagePeriodicAck request(
             new DataOutput(
@@ -1240,8 +1241,9 @@ void ThinClientRedundancyManager::doPeriodicAck() {
 }
 
 void ThinClientRedundancyManager::startPeriodicAck() {
-  m_periodicAckTask = new Task<ThinClientRedundancyManager>(
-      this, &ThinClientRedundancyManager::periodicAck, NC_PerodicACK);
+  m_periodicAckTask = std::unique_ptr<Task<ThinClientRedundancyManager>>(
+      new Task<ThinClientRedundancyManager>(
+          this, &ThinClientRedundancyManager::periodicAck, NC_PerodicACK));
   m_periodicAckTask->start();
   const auto& props = m_theTcrConnManager->getCacheImpl()
                           ->getDistributedSystem()
@@ -1277,7 +1279,8 @@ bool ThinClientRedundancyManager::checkDupAndAdd(
 }
 
 void ThinClientRedundancyManager::netDown() {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_redundantEndpointsLock);
+  std::lock_guard<decltype(m_redundantEndpointsLock)> guard(
+      m_redundantEndpointsLock);
 
   if (!m_poolHADM) {
     m_nonredundantEndpoints.insert(m_nonredundantEndpoints.end(),
@@ -1288,13 +1291,15 @@ void ThinClientRedundancyManager::netDown() {
 }
 
 void ThinClientRedundancyManager::removeCallbackConnection(TcrEndpoint* ep) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_redundantEndpointsLock);
+  std::lock_guard<decltype(m_redundantEndpointsLock)> guard(
+      m_redundantEndpointsLock);
 
   ep->unregisterDM(false, nullptr, true);
 }
 GfErrType ThinClientRedundancyManager::sendRequestToPrimary(
     TcrMessage& request, TcrMessageReply& reply) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_redundantEndpointsLock);
+  std::lock_guard<decltype(m_redundantEndpointsLock)> guard(
+      m_redundantEndpointsLock);
   GfErrType err = GF_NOTCON;
   for (size_t count = 0;
        count <= m_redundantEndpoints.size() + m_nonredundantEndpoints.size();

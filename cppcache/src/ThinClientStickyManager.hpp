@@ -21,19 +21,22 @@
  */
 
 #include <algorithm>
+#include <mutex>
 #include <set>
 #include <vector>
 
-#include <ace/Recursive_Thread_Mutex.h>
-
+#include "ErrType.hpp"
 #include "TssConnectionWrapper.hpp"
+
 namespace apache {
 namespace geode {
 namespace client {
+
 class ThinClientPoolDM;
 class ServerLocation;
 class TcrConnection;
 class TcrEndpoint;
+
 class ThinClientStickyManager {
  public:
   explicit ThinClientStickyManager(ThinClientPoolDM* poolDM) : m_dm(poolDM) {}
@@ -56,8 +59,9 @@ class ThinClientStickyManager {
   static bool isNULL(TcrConnection** conn);
   ThinClientPoolDM* m_dm;
   std::set<TcrConnection**> m_stickyConnList;
-  ACE_Recursive_Thread_Mutex m_stickyLock;
+  std::recursive_mutex m_stickyLock;
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

@@ -21,9 +21,7 @@
 #define GEODE_EXECUTIONIMPL_H_
 
 #include <map>
-
-#include <ace/Condition_Recursive_Thread_Mutex.h>
-#include <ace/Guard_T.h>
+#include <mutex>
 
 #include <geode/AuthenticatedView.hpp>
 #include <geode/CacheableBuiltins.hpp>
@@ -102,7 +100,6 @@ class ExecutionImpl {
         m_allServer(allServer),
         m_pool(pool),
         m_authenticatedView(authenticatedView) {}
-  // ACE_Recursive_Thread_Mutex m_lock;
   std::shared_ptr<CacheableVector> m_routingObj;
   std::shared_ptr<Cacheable> m_args;
   std::shared_ptr<ResultCollector> m_rc;
@@ -110,7 +107,7 @@ class ExecutionImpl {
   bool m_allServer;
   std::shared_ptr<Pool> m_pool;
   AuthenticatedView* m_authenticatedView;
-  static ACE_Recursive_Thread_Mutex m_func_attrs_lock;
+  static std::recursive_mutex m_func_attrs_lock;
   static FunctionToFunctionAttributes m_func_attrs;
   //  std::vector<int8_t> m_attributes;
 

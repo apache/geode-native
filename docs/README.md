@@ -3,26 +3,30 @@
 This document contains instructions for building and viewing the Apache Geode Native Client User Guide.
 
 - [About](#about)
-- [Prerequisites](#prerequisites)
 - [Bookbinder Usage](#bookbinder-usage)
+- [Docker Setup](#docker-setup)
 - [Building the Documentation](#building-the-documentation)
 
+<a name="about"></a>
 ## About
 
 The Geode-Native repository provides the full source for the Apache Geode Native Client User Guide in markdown format (see _geode-project-dir_/geode-docs/CONTRIBUTE.md for more information on how to use markdown in this context). Users can build the markdown into an HTML user guide using [Bookbinder](https://github.com/pivotal-cf/bookbinder) and the instructions below.
 
 Bookbinder is a Ruby gem that binds  a unified documentation web application from markdown, html, and/or DITA source material. The source material for bookbinder must be stored either in local directories or in GitHub repositories. Bookbinder runs [Middleman](http://middlemanapp.com/) to produce a Rackup app that can be deployed locally or as a web application.
 
+<a name="bookbinder-usage"></a>
 ## Bookbinder Usage
 
 Bookbinder is meant to be used from within a project called a **book**. The book includes a configuration file that describes which documentation repositories to use as source materials. Bookbinder provides a set of scripts to aggregate those repositories and publish them to various locations.
 
 For Geode Native Client, a preconfigured **book** is provided in the directory _geode-native-project-dir_/docs/geode-native-book, which gathers content from the directory _geode-native-project-dir_/docs/geode-native-docs. You can use this configuration to build an HTML version of the Apache Geode Native Client User Guide on your local system.
 
+<a name="docker-setup"></a>
 ## Docker Setup
 
 For ease of use, a Docker image is provided that contains a self-consistent Bookbinder environment. [Install Docker](https://docs.docker.com/install/) if you have not already done so.
 
+<a name="building-the-documentation"></a>
 ## Building the Documentation
 
 1. Navigate to the directory that contains the Dockerfile and run the `docker build` command to create the Bookbinder-enabled Docker image:

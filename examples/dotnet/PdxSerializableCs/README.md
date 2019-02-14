@@ -1,4 +1,4 @@
-﻿# PdxSerializable Example
+# PdxSerializable Example
 This is a simple example showing how to register for serialization of custom objects using the IPDXSerializable class.
 
 ## Prerequisites

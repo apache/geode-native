@@ -23,6 +23,8 @@
 #include <geode/SystemProperties.hpp>
 
 #include "DistributedSystemImpl.hpp"
+#include "TcrConnectionManager.hpp"
+#include "TcrEndpoint.hpp"
 #include "ThinClientRegion.hpp"
 #include "util/exception.hpp"
 
@@ -68,7 +70,7 @@ void ThinClientDistributionManager::destroy(bool keepAlive) {
     return;
   }
   DistManagersLockGuard _guard(m_connManager);
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_endpointsLock);
+  std::lock_guard<decltype(m_endpointsLock)> guard(m_endpointsLock);
   if (m_activeEndpoint >= 0) {
     m_endpoints[m_activeEndpoint]->unregisterDM(m_clientNotification, this);
   }
@@ -160,7 +162,7 @@ GfErrType ThinClientDistributionManager::sendSyncRequest(TcrMessage& request,
   }
 
   if (!isFatalError(error)) {
-    ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_endpointsLock);
+    std::lock_guard<decltype(m_endpointsLock)> guard(m_endpointsLock);
     GfErrType connErr = GF_NOERR;
     while (error != GF_NOERR && !isFatalError(error) &&
            (connErr = selectEndpoint(randIndex, doRand, useActiveEndpoint,
@@ -249,7 +251,7 @@ GfErrType ThinClientDistributionManager::selectEndpoint(
 
   if (currentEndpoint < 0 || !m_endpoints[currentEndpoint]->connected() ||
       forceSelect) {
-    ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_endpointsLock);
+    std::lock_guard<decltype(m_endpointsLock)> guard(m_endpointsLock);
     if (m_activeEndpoint < 0 || !m_endpoints[m_activeEndpoint]->connected() ||
         forceSelect) {  // double check
       currentEndpoint = m_activeEndpoint;

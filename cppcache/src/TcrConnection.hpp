@@ -31,8 +31,8 @@
 
 #include "Connector.hpp"
 #include "DiffieHellman.hpp"
-#include "Set.hpp"
 #include "TcrMessage.hpp"
+#include "util/synchronized_set.hpp"
 
 #define DEFAULT_TIMEOUT_RETRIES 12
 #define PRIMARY_SERVER_TO_CLIENT 101
@@ -86,6 +86,9 @@ class ThinClientPoolDM;
 class TcrConnectionManager;
 class APACHE_GEODE_EXPORT TcrConnection {
  public:
+  using clock = std::chrono::steady_clock;
+  using time_point = clock::time_point;
+
   /** Create one connection, endpoint is in format of hostname:portno
    * It will do handshake with j-server. There're 2 types of handshakes:
    * 1) handshake for request
@@ -111,7 +114,8 @@ class APACHE_GEODE_EXPORT TcrConnection {
    * @param     numPorts  Size of ports list
    */
   bool InitTcrConnection(
-      TcrEndpoint* endpointObj, const char* endpoint, Set<uint16_t>& ports,
+      TcrEndpoint* endpointObj, const char* endpoint,
+      synchronized_set<std::unordered_set<uint16_t>>& ports,
       bool isClientNotification = false, bool isSecondary = false,
       std::chrono::microseconds connectTimeout = DEFAULT_CONNECT_TIMEOUT);
 
@@ -275,7 +279,7 @@ class APACHE_GEODE_EXPORT TcrConnection {
   void touch();
   bool hasExpired(const std::chrono::milliseconds& expiryTime);
   bool isIdle(const std::chrono::milliseconds& idleTime);
-  ACE_Time_Value getLastAccessed();
+  time_point getLastAccessed();
   void updateCreationTime();
 
   int64_t getConnectionId() {
@@ -403,8 +407,10 @@ class APACHE_GEODE_EXPORT TcrConnection {
 
   // semaphore to synchronize with the chunked response processing thread
   ACE_Semaphore m_chunksProcessSema;
-  ACE_Time_Value m_creationTime;
-  ACE_Time_Value m_lastAccessed;
+
+  time_point m_creationTime;
+  time_point m_lastAccessed;
+
   // Disallow copy constructor and assignment operator.
   TcrConnection(const TcrConnection&);
   TcrConnection& operator=(const TcrConnection&);

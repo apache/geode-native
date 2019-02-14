@@ -34,7 +34,7 @@ This is a simple example showing how to create a continuous query.
 1. Execute `continuousquery`:
 
   ```
-  $ build/continuousquery
+  $ ./continuousquery
   Executing continuous query
   Create orders
   Putting and changing Order objects in the region

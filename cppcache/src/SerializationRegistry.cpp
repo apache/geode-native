@@ -230,7 +230,8 @@ SerializationRegistry::deserializeDataSerializableFixedId(DataInput& input,
 
   TypeFactoryMethod createType = nullptr;
 
-  theTypeMap.findDataSerializableFixedId(fixedId, createType);
+  theTypeMap.findDataSerializableFixedId(static_cast<DSFid>(fixedId),
+                                         createType);
 
   if (createType == nullptr) {
     throw IllegalStateException("Unregistered type in deserialization");
@@ -285,11 +286,12 @@ void SerializationRegistry::addDataSerializableFixedIdType(
 }
 
 void SerializationRegistry::addDataSerializableFixedIdType(
-    int32_t id, TypeFactoryMethod func) {
+    internal::DSFid id, TypeFactoryMethod func) {
   theTypeMap.rebindDataSerializableFixedId(id, func);
 }
 
-void SerializationRegistry::removeDataSerializableFixeIdType(int32_t id) {
+void SerializationRegistry::removeDataSerializableFixeIdType(
+    internal::DSFid id) {
   theTypeMap.unbindDataSerializableFixedId(id);
 }
 
@@ -367,36 +369,45 @@ std::shared_ptr<Serializable> SerializationRegistry::GetEnum(
 void TheTypeMap::clear() {
   std::lock_guard<util::concurrent::spinlock_mutex> guard(
       m_dataSerializableMapLock);
-  m_dataSerializableMap->unbind_all();
+  m_dataSerializableMap.clear();
 
   std::lock_guard<util::concurrent::spinlock_mutex> guard2(
       m_dataSerializableFixedIdMapLock);
-  m_dataSerializableFixedIdMap->unbind_all();
+  m_dataSerializableFixedIdMap.clear();
 
   std::lock_guard<util::concurrent::spinlock_mutex> guard3(
       m_pdxSerializableMapLock);
-  m_pdxSerializableMap->unbind_all();
+  m_pdxSerializableMap.clear();
 }
 
 void TheTypeMap::findDataSerializable(int32_t id,
                                       TypeFactoryMethod& func) const {
   std::lock_guard<util::concurrent::spinlock_mutex> guard(
       m_dataSerializableMapLock);
-  m_dataSerializableMap->find(id, func);
+  const auto& found = m_dataSerializableMap.find(id);
+  if (found != m_dataSerializableMap.end()) {
+    func = found->second;
+  }
 }
 
-void TheTypeMap::findDataSerializableFixedId(int32_t id,
+void TheTypeMap::findDataSerializableFixedId(DSFid dsfid,
                                              TypeFactoryMethod& func) const {
   std::lock_guard<util::concurrent::spinlock_mutex> guard(
       m_dataSerializableFixedIdMapLock);
-  m_dataSerializableFixedIdMap->find(id, func);
+  const auto& found = m_dataSerializableFixedIdMap.find(dsfid);
+  if (found != m_dataSerializableFixedIdMap.end()) {
+    func = found->second;
+  }
 }
 
 void TheTypeMap::findDataSerializablePrimitive(DSCode dsCode,
                                                TypeFactoryMethod& func) const {
   std::lock_guard<util::concurrent::spinlock_mutex> guard(
       m_dataSerializablePrimitiveMapLock);
-  m_dataSerializablePrimitiveMap->find(dsCode, func);
+  const auto& found = m_dataSerializablePrimitiveMap.find(dsCode);
+  if (found != m_dataSerializablePrimitiveMap.end()) {
+    func = found->second;
+  }
 }
 
 void TheTypeMap::bindDataSerializable(TypeFactoryMethod func, int32_t id) {
@@ -412,49 +423,34 @@ void TheTypeMap::bindDataSerializable(TypeFactoryMethod func, int32_t id) {
 
   std::lock_guard<util::concurrent::spinlock_mutex> guard(
       m_dataSerializableMapLock);
-  int bindRes = m_dataSerializableMap->bind(id, func);
-  if (bindRes == 1) {
+  const auto& result = m_dataSerializableMap.emplace(id, func);
+  if (!result.second) {
     LOGERROR("A class with ID %d is already registered.", id);
     throw IllegalStateException("A class with given ID is already registered.");
-  } else if (bindRes == -1) {
-    LOGERROR("Unknown error while adding class ID %d to map.", id);
-    throw IllegalStateException("Unknown error while adding type to map.");
   }
 }
 
 void TheTypeMap::rebindDataSerializable(int32_t id, TypeFactoryMethod func) {
   std::lock_guard<util::concurrent::spinlock_mutex> guard(
       m_dataSerializableMapLock);
-  int bindRes = m_dataSerializableMap->rebind(id, func);
-  if (bindRes == -1) {
-    LOGERROR(
-        "Unknown error "
-        "while adding class ID %d to map.",
-        id);
-    throw IllegalStateException(
-        "Unknown error "
-        "while adding type to map.");
-  }
+  m_dataSerializableMap[id] = func;
 }
 
 void TheTypeMap::unbindDataSerializable(int32_t id) {
   std::lock_guard<util::concurrent::spinlock_mutex> guard(
       m_dataSerializableMapLock);
-  m_dataSerializableMap->unbind(id);
+  m_dataSerializableMap.erase(id);
 }
 
 void TheTypeMap::bindDataSerializablePrimitive(TypeFactoryMethod func,
                                                DSCode dsCode) {
   std::lock_guard<util::concurrent::spinlock_mutex> guard(
       m_dataSerializablePrimitiveMapLock);
-  int bindRes = m_dataSerializablePrimitiveMap->bind(dsCode, func);
-  if (bindRes == 1) {
+  const auto& result = m_dataSerializablePrimitiveMap.emplace(dsCode, func);
+  if (!result.second) {
     LOGERROR("A class with DSCode %d is already registered.", dsCode);
     throw IllegalStateException(
         "A class with given DSCode is already registered.");
-  } else if (bindRes == -1) {
-    LOGERROR("Unknown error while adding DSCode %d to map.", dsCode);
-    throw IllegalStateException("Unknown error while adding type to map.");
   }
 }
 
@@ -462,16 +458,16 @@ void TheTypeMap::rebindDataSerializablePrimitive(DSCode dsCode,
                                                  TypeFactoryMethod func) {
   std::lock_guard<util::concurrent::spinlock_mutex> guard(
       m_dataSerializablePrimitiveMapLock);
-  m_dataSerializablePrimitiveMap->rebind(dsCode, func);
+  m_dataSerializablePrimitiveMap[dsCode] = func;
 }
 
 void TheTypeMap::bindDataSerializableFixedId(TypeFactoryMethod func) {
   auto obj = func();
 
-  int32_t id = 0;
+  DSFid id;
   if (const auto dataSerializableFixedId =
           std::dynamic_pointer_cast<DataSerializableFixedId>(obj)) {
-    id = static_cast<int64_t>(dataSerializableFixedId->getDSFID());
+    id = dataSerializableFixedId->getDSFID();
   } else {
     throw UnsupportedOperationException(
         "TheTypeMap::bindDataSerializableInternal: Unknown serialization "
@@ -480,37 +476,25 @@ void TheTypeMap::bindDataSerializableFixedId(TypeFactoryMethod func) {
 
   std::lock_guard<util::concurrent::spinlock_mutex> guard(
       m_dataSerializableFixedIdMapLock);
-  int bindRes = m_dataSerializableFixedIdMap->bind(id, func);
-  if (bindRes == 1) {
-    LOGERROR(
-        "A fixed class with "
-        "ID %d is already registered.",
-        id);
+  const auto& result = m_dataSerializableFixedIdMap.emplace(id, func);
+  if (!result.second) {
+    LOGERROR("A fixed class with ID %d is already registered.", id);
     throw IllegalStateException(
-        "A fixed class with "
-        "given ID is already registered.");
-  } else if (bindRes == -1) {
-    LOGERROR(
-        "Unknown error "
-        "while adding class ID %d to map2.",
-        id);
-    throw IllegalStateException(
-        "Unknown error "
-        "while adding to map2.");
+        "A fixed class with given ID is already registered.");
   }
 }
 
-void TheTypeMap::rebindDataSerializableFixedId(int32_t id,
+void TheTypeMap::rebindDataSerializableFixedId(internal::DSFid id,
                                                TypeFactoryMethod func) {
   std::lock_guard<util::concurrent::spinlock_mutex> guard(
       m_dataSerializableFixedIdMapLock);
-  m_dataSerializableFixedIdMap->rebind(id, func);
+  m_dataSerializableFixedIdMap[id] = func;
 }
 
-void TheTypeMap::unbindDataSerializableFixedId(int32_t id) {
+void TheTypeMap::unbindDataSerializableFixedId(internal::DSFid id) {
   std::lock_guard<util::concurrent::spinlock_mutex> guard(
       m_dataSerializableFixedIdMapLock);
-  m_dataSerializableFixedIdMap->unbind(id);
+  m_dataSerializableFixedIdMap.erase(id);
 }
 
 void TheTypeMap::bindPdxSerializable(TypeFactoryMethodPdx func) {
@@ -519,17 +503,12 @@ void TheTypeMap::bindPdxSerializable(TypeFactoryMethodPdx func) {
       m_pdxSerializableMapLock);
   auto&& objFullName = obj->getClassName();
 
-  int bindRes = m_pdxSerializableMap->bind(objFullName, func);
-
-  if (bindRes == 1) {
+  const auto& result = m_pdxSerializableMap.emplace(objFullName, func);
+  if (!result.second) {
     LOGERROR("A object with FullName " + objFullName +
              " is already registered.");
     throw IllegalStateException(
         "A Object with given FullName is already registered.");
-  } else if (bindRes == -1) {
-    LOGERROR("Unknown error while adding Pdx Object named " + objFullName +
-             " to map.");
-    throw IllegalStateException("Unknown error while adding type to map.");
   }
 }
 
@@ -537,27 +516,23 @@ void TheTypeMap::findPdxSerializable(const std::string& objFullName,
                                      TypeFactoryMethodPdx& func) const {
   std::lock_guard<util::concurrent::spinlock_mutex> guard(
       m_pdxSerializableMapLock);
-  m_pdxSerializableMap->find(objFullName, func);
+  const auto& found = m_pdxSerializableMap.find(objFullName);
+  if (found != m_pdxSerializableMap.end()) {
+    func = found->second;
+  }
 }
 
 void TheTypeMap::rebindPdxSerializable(std::string objFullName,
                                        TypeFactoryMethodPdx func) {
   std::lock_guard<util::concurrent::spinlock_mutex> guard(
       m_pdxSerializableMapLock);
-  int bindRes = m_pdxSerializableMap->rebind(objFullName, func);
-  if (bindRes == -1) {
-    LOGERROR("Unknown error while adding Pdx Object FullName " + objFullName +
-             " to map.");
-    throw IllegalStateException(
-        "Unknown error "
-        "while adding type to map.");
-  }
+  m_pdxSerializableMap[objFullName] = func;
 }
 
 void TheTypeMap::unbindPdxSerializable(const std::string& objFullName) {
   std::lock_guard<util::concurrent::spinlock_mutex> guard(
       m_pdxSerializableMapLock);
-  m_pdxSerializableMap->unbind(objFullName);
+  m_pdxSerializableMap.erase(objFullName);
 }
 
 void PdxTypeHandler::serialize(

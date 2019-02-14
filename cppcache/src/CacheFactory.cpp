@@ -19,9 +19,6 @@
 #include <map>
 #include <string>
 
-#include <ace/Guard_T.h>
-#include <ace/Recursive_Thread_Mutex.h>
-
 #include <geode/Cache.hpp>
 #include <geode/CacheFactory.hpp>
 #include <geode/PoolManager.hpp>
@@ -111,9 +108,8 @@ Cache CacheFactory::create() const {
       std::bind(VersionTag::createDeserializable, memberListForVersionStamp));
 
   serializationRegistry->addDataSerializableFixedIdType(
-      static_cast<int64_t>(DSFid::DiskVersionTag),
-      std::bind(DiskVersionTag::createDeserializable,
-                memberListForVersionStamp));
+      DSFid::DiskVersionTag, std::bind(DiskVersionTag::createDeserializable,
+                                       memberListForVersionStamp));
 
   serializationRegistry->setPdxTypeHandler(new PdxTypeHandler());
   serializationRegistry->setDataSerializableHandler(

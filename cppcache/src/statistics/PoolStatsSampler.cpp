@@ -17,9 +17,7 @@
 
 #include "PoolStatsSampler.hpp"
 
-#include <chrono>
 #include <string>
-#include <thread>
 
 #include "../CacheImpl.hpp"
 #include "../ClientHealthStats.hpp"
@@ -40,18 +38,16 @@ const char* PoolStatsSampler::NC_PSS_Thread = "NC PSS Thread";
 
 PoolStatsSampler::PoolStatsSampler(milliseconds sampleRate, CacheImpl* cache,
                                    ThinClientPoolDM* distMan)
-    : m_sampleRate(sampleRate),
+    : m_running(false),
+      m_stopRequested(false),
+      m_sampleRate(sampleRate),
+      m_adminRegion(AdminRegion::create(cache, distMan)),
       m_distMan(distMan),
       m_statisticsFactory(
-          cache->getStatisticsManager().getStatisticsFactory()) {
-  m_running = false;
-  m_stopRequested = false;
-  m_adminRegion = AdminRegion::create(cache, distMan);
-}
+          cache->getStatisticsManager().getStatisticsFactory()) {}
 
-int32_t PoolStatsSampler::svc() {
+void PoolStatsSampler::svc() {
   client::DistributedSystemImpl::setThreadName(NC_PSS_Thread);
-  // ACE_Guard < ACE_Recursive_Thread_Mutex > _guard( m_lock );
   while (!m_stopRequested) {
     auto sampleStart = high_resolution_clock::now();
     putStatsInAdminRegion();
@@ -65,21 +61,19 @@ int32_t PoolStatsSampler::svc() {
       sleepDuration -= wakeInterval;
     }
   }
-  return 0;
 }
 
 void PoolStatsSampler::start() {
-  if (!m_running) {
-    m_running = true;
-    this->activate();
+  if (!m_running.exchange(true)) {
+    m_thread = std::thread(&PoolStatsSampler::svc, this);
   }
 }
 
 void PoolStatsSampler::stop() {
-  // ACE_Guard < ACE_Recursive_Thread_Mutex > _guard( m_lock );
   m_stopRequested = true;
-  this->wait();
+  m_thread.join();
 }
+
 bool PoolStatsSampler::isRunning() { return m_running; }
 
 void PoolStatsSampler::putStatsInAdminRegion() {
@@ -106,7 +100,7 @@ void PoolStatsSampler::putStatsInAdminRegion() {
           }
         }
       }
-      static int numCPU = ACE_OS::num_processors();
+      static auto numCPU = std::thread::hardware_concurrency();
       auto obj = client::ClientHealthStats::create(
           gets, puts, misses, numListeners, numThreads, cpuTime, numCPU);
       const auto memId = m_distMan->getMembershipId();

@@ -15,8 +15,6 @@ rem WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 rem See the License for the specific language governing permissions and
 rem limitations under the License.
 
-set vs=Microsoft Visual Studio 14.0
-
-call "c:\Program Files (x86)\%vs%\VC\vcvarsall.bat" %1
-
+call "c:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" %1
+C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build
 echo Environment setup for %vs% %1.

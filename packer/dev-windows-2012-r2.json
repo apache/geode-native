@@ -3,7 +3,7 @@
     "region":"us-west-2",
     "source_ami":"",
     "source_image_name":"X.vmx",
-    "image_name":"dev-windows-2012-r2"
+    "image_name":"dev-windows-2016"
   },
   "builders":[
     {

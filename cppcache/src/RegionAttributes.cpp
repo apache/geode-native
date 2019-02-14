@@ -19,7 +19,6 @@
 #include <string>
 
 #include <ace/DLL.h>
-#include <ace/OS.h>
 
 #include <geode/Cache.hpp>
 #include <geode/DataInput.hpp>

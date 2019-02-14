@@ -23,8 +23,6 @@
 
 #include "PdxReaderWithTypeCollector.hpp"
 
-#include <ace/OS_NS_stdio.h>
-
 #include <geode/PdxFieldTypes.hpp>
 
 #include "CacheImpl.hpp"

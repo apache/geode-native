@@ -13,11 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.12)
 project(nativeclient LANGUAGES C CXX)
 
 option(USE_PCH "Use precompiled headers (PCH)." OFF)
-option(USE_CPP_COVERAGE "Enable profiling and coverage report analysis for apache-geode cpp library" OFF)
+option(USE_CPP_COVERAGE "Enable profiling and coverage report analysis for apache-geode cpp library." OFF)
+option(USE_RAT "Enable Apache Rat checking." OFF)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
@@ -37,9 +38,16 @@ if(CMAKE_GENERATOR MATCHES Win64*)
   endif()
 endif()
 
+get_property(GENERATOR_IS_MULTI_CONFIG GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
+if(NOT CMAKE_BUILD_TYPE AND NOT GENERATOR_IS_MULTI_CONFIG)
+  message(STATUS "Using default build type 'Debug'.")
+  set(CMAKE_BUILD_TYPE Debug CACHE STRING "Specifies the build type on single-configuration generators." FORCE)
+endif()
+
 set(CMAKE_DOTNET_TARGET_FRAMEWORK_VERSION "4.5.2")
 set(DOTNET_TARGET_FRAMEWORK_VERSION "4.5.2")
 set(BUILD_BITS 64 CACHE STRING "Build for 64 (Geode default) or 32 bit.")
+option(BUILD_BENCHMARKS "Build benchmarks" ON)
 
 set(PRODUCT_VENDOR "Apache" CACHE STRING "Product vendor")
 set(PRODUCT_VENDOR_NAME "The Apache Software Foundation" CACHE STRING "Product vendor full legal name")
@@ -87,11 +95,6 @@ list(GET PRODUCT_VERSION_LIST 3 PRODUCT_VERSION_BUILD)
 # specified at the time of generation, e.g.:
 # $ cmake -G Xcode -DCMAKE_INSTALL_PREFIX=/my/favorite/location ..
 set(CMAKE_INSTALL_PREFIX "nativeclient" CACHE STRING "Install prefix")
-
-set(CMAKE_CONFIGURATION_TYPES Debug Release)
-if (NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Debug)
-endif()
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -169,6 +172,13 @@ add_library(c++11 INTERFACE)
 # Interface for warning flags
 add_library(_WarningsAsError INTERFACE)
 add_library(_CppCodeCoverage INTERFACE)
+
+include(CheckIPOSupported)
+check_ipo_supported(RESULT ipo_supported)
+if(ipo_supported)
+  set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE)
+  set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELWITHDEBINFO TRUE)
+endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "SunPro")
   # Force linker to error on undefined symbols in shared libraries
@@ -272,11 +282,6 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
   # Enables multiprocess compiles
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
 
-  # Enables whole program optimizaion and link time code generation for release.
-  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /GL")
-  set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /LTCG:incremental")
-  set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /LTCG:incremental")
-
   # Enables strong name signing
   set(STRONG_NAME_KEY "" CACHE FILEPATH "Strong Name Key File")
   if(EXISTS "${STRONG_NAME_KEY}")
@@ -292,14 +297,6 @@ find_package(Java 1.8.0.60 REQUIRED COMPONENTS Development)
 
 if ("${CMAKE_AR}" STREQUAL "CMAKE_AR-NOTFOUND")
   message(FATAL_ERROR "Utility ar not found.")
-endif()
-
-if (WIN32 OR ${CMAKE_GENERATOR} STREQUAL "Xcode")
-  set(CMAKE_USES_BUILDTYPE TRUE)
-  set ( _DEBUG_OR_RELEASE $<$<CONFIG:Debug>:Debug>$<$<NOT:$<CONFIG:Debug>>:Release>)
-else()
-  set(CMAKE_USES_BUILDTYPE FALSE)
-  set ( _DEBUG_OR_RELEASE .)
 endif()
 
 # Default to only showing output on failure for unit tests but allow
@@ -363,3 +360,14 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/templates/ DESTINATION templates
   PATTERN "templates/security/CMakeLists.txt" EXCLUDE
   PATTERN "templates/security/CMakeLists.txt.forInstall" EXCLUDE)
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/templates/security/CMakeLists.txt.forInstall RENAME CMakeLists.txt DESTINATION templates/security)
+
+if (USE_RAT)
+  add_custom_target( rat-check
+    COMMAND ${CMAKE_COMMAND}
+        -DJava_JAVA_EXECUTABLE=${Java_JAVA_EXECUTABLE}
+        -DRat_JAR=${Rat_JAR}
+        -P cmake/RatCheck.cmake
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    COMMENT "Checking source with Apache Rat."
+  )
+endif()

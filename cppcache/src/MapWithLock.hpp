@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_MAPWITHLOCK_H_
-#define GEODE_MAPWITHLOCK_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,13 +15,12 @@
  * limitations under the License.
  */
 
-#include <string>
-#include <unordered_map>
+#pragma once
 
-#include <ace/Hash_Map_Manager.h>
-#include <ace/Recursive_Thread_Mutex.h>
-#include <ace/Versioned_Namespace.h>
-#include <ace/config-lite.h>
+#ifndef GEODE_MAPWITHLOCK_H_
+#define GEODE_MAPWITHLOCK_H_
+
+#include <unordered_map>
 
 #include <geode/CacheableKey.hpp>
 #include <geode/internal/geode_globals.hpp>
@@ -39,23 +33,6 @@ typedef std::unordered_map<std::shared_ptr<CacheableKey>, int,
                            CacheableKey::hash, CacheableKey::equal_to>
     MapOfUpdateCounters;
 
-class Region;
-/** Map type used to hold root regions in the Cache, and subRegions. */
-typedef ACE_Hash_Map_Manager_Ex<
-    std::string, std::shared_ptr<Region>, ACE_Hash<std::string>,
-    ACE_Equal_To<std::string>, ACE_Recursive_Thread_Mutex>
-    MapOfRegionWithLock;
-
-class CqQuery;
-typedef ACE_Hash_Map_Manager_Ex<
-    std::string, std::shared_ptr<CqQuery>, ACE_Hash<std::string>,
-    ACE_Equal_To<std::string>, ACE_Recursive_Thread_Mutex>
-    MapOfCqQueryWithLock;
-
-/** Guard type for locking a MapOfRegionWithLock while iterating or performing
- * other composite operations. ex.. MapOfRegionGuard guard( map->mutex() );
- */
-typedef ACE_Guard<ACE_Recursive_Thread_Mutex> MapOfRegionGuard;
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

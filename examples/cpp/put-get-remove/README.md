@@ -37,7 +37,7 @@ We then put, get, and remove some primitive data in the region.
 1. Execute `put-get-remove`:
 
   ```
-  $ build/put-get-remove
+  $ ./put-get-remove
   Storing id and username in the region
   Getting the user info from the region
     rtimmons = Robert Timmons

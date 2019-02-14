@@ -19,10 +19,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-A client is authenticated when it connects with valid credentials to a <%=vars.product_name%> cache server that is configured with the client `Authenticator` callback.
+A client is authenticated when it connects with valid credentials to a <%=vars.product_name%> cache server that is configured with the client authentication callback.
 For details on the server's role in authentication and what it expects from the client, see [Implementing Authentication](geodeman/managing/security/implementing_authentication.html) in the *<%=vars.product_name%> User Guide*.
-
-Examples of various implementations can be found in the Native Client source distribution's `../templates/security` directory.
 
 In your application, authentication credentials must be set when creating the cache. In practice,
 this means setting the authentication credentials when you create the CacheFactory.
@@ -32,6 +30,15 @@ this means setting the authentication credentials when you create the CacheFacto
 The following excerpt is taken from the .NET example provided with your Native Client distribution in the `..\examples\dotnet\AuthInitialize` directory.
 In this C# authentication example, credentials are implemented in the GetCredentials member function of the ExampleAuthInitialize class, which implements the IAuthInitialize interface.
 
+In this C# authentication example, the `CacheFactory` creation process sets the authentication callback:
+
+```cs
+  var cacheFactory = new CacheFactory()
+    .Set("log-level", "none")
+    .SetAuthInitialize(new ExampleAuthInitialize());
+```
+
+Credentials are implemented in the `GetCredentials` member function of the `ExampleAuthInitialize` class, which implements the `IAuthInitialize` interface:
 
 ```cs
   class ExampleAuthInitialize : IAuthInitialize

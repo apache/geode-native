@@ -21,6 +21,7 @@
 #define GEODE_STATISTICS_STATISTICSMANAGER_H_
 
 #include <memory>
+#include <mutex>
 #include <vector>
 
 #include <geode/ExceptionTypes.hpp>
@@ -28,7 +29,6 @@
 
 #include "../AdminRegion.hpp"
 #include "GeodeStatisticsFactory.hpp"
-#include "HostStatSampler.hpp"
 #include "Statistics.hpp"
 #include "StatisticsTypeImpl.hpp"
 
@@ -39,6 +39,7 @@ namespace statistics {
 using apache::geode::client::AdminRegion;
 
 class GeodeStatisticsFactory;
+class HostStatSampler;
 
 /**
  * Head Application Manager for Statistics Module.
@@ -50,7 +51,7 @@ class StatisticsManager {
   std::chrono::milliseconds m_sampleIntervalMs;
 
   // Statistics sampler
-  HostStatSampler* m_sampler;
+  std::unique_ptr<HostStatSampler> m_sampler;
 
   // Vector containing all the Stats objects
   std::vector<Statistics*> m_statsList;
@@ -59,7 +60,7 @@ class StatisticsManager {
   std::vector<Statistics*> m_newlyAddedStatsList;
 
   // Mutex to lock the list of Stats
-  ACE_Recursive_Thread_Mutex m_statsListLock;
+  std::recursive_mutex m_statsListLock;
 
   std::shared_ptr<AdminRegion> m_adminRegion;
 
@@ -91,7 +92,7 @@ class StatisticsManager {
 
   std::vector<Statistics*>& getNewlyAddedStatsList();
 
-  ACE_Recursive_Thread_Mutex& getListMutex();
+  std::recursive_mutex& getListMutex();
 
   /** Return the first instance that matches the type, or nullptr */
   Statistics* findFirstStatisticsByType(const StatisticsType* type);

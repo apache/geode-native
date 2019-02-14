@@ -17,6 +17,9 @@
 
 #include "TcpSslConn.hpp"
 
+#include <chrono>
+#include <thread>
+
 #include <geode/SystemProperties.hpp>
 
 #include "CacheImpl.hpp"
@@ -31,7 +34,7 @@ Ssl* TcpSslConn::getSSLImpl(ACE_HANDLE sock, const char* pubkeyfile,
   const char* libName = "cryptoImpl";
   if (m_dll.open(libName, RTLD_NOW | RTLD_GLOBAL, 0) == -1) {
     char msg[1000] = {0};
-    ACE_OS::snprintf(msg, 1000, "cannot open library: %s", libName);
+    std::snprintf(msg, 1000, "cannot open library: %s", libName);
     LOGERROR(msg);
     throw FileNotFoundException(msg);
   }
@@ -40,9 +43,9 @@ Ssl* TcpSslConn::getSSLImpl(ACE_HANDLE sock, const char* pubkeyfile,
       reinterpret_cast<gf_create_SslImpl>(m_dll.symbol("gf_create_SslImpl"));
   if (func == nullptr) {
     char msg[1000];
-    ACE_OS::snprintf(msg, 1000,
-                     "cannot find function %s in library gf_create_SslImpl",
-                     "cryptoImpl");
+    std::snprintf(msg, 1000,
+                  "cannot find function %s in library gf_create_SslImpl",
+                  "cryptoImpl");
     LOGERROR(msg);
     throw IllegalStateException(msg);
   }
@@ -71,10 +74,8 @@ void TcpSslConn::listen(ACE_INET_Addr addr,
           "TcpSslConn::listen Attempt to listen timed out after" +
           to_string(waitSeconds) + ".");
     }
-    // sprintf( msg, "TcpSslConn::listen failed with errno: %d: %s", lastError,
-    // ACE_OS::strerror(lastError) );
-    ACE_OS::snprintf(msg, 255, "TcpSslConn::listen failed with errno: %d: %s",
-                     lastError, ACE_OS::strerror(lastError));
+    std::snprintf(msg, 255, "TcpSslConn::listen failed with errno: %d: %s",
+                  lastError, ACE_OS::strerror(lastError));
     throw GeodeIOException(msg);
   }
 }
@@ -106,8 +107,8 @@ void TcpSslConn::connect() {
           "TcpSslConn::connect Attempt to connect timed out after " +
           to_string(waitMicroSeconds) + ".");
     }
-    ACE_OS::snprintf(msg, 256, "TcpSslConn::connect failed with errno: %d: %s",
-                     lastError, ACE_OS::strerror(lastError));
+    std::snprintf(msg, 256, "TcpSslConn::connect failed with errno: %d: %s",
+                  lastError, ACE_OS::strerror(lastError));
     // this is only called by constructor, so we must delete m_ssl
     _GEODE_SAFE_DELETE(m_ssl);
     throw GeodeIOException(msg);
@@ -125,7 +126,7 @@ void TcpSslConn::close() {
 }
 
 size_t TcpSslConn::socketOp(TcpConn::SockOp op, char* buff, size_t len,
-                            std::chrono::microseconds waitSeconds) {
+                            std::chrono::microseconds waitDuration) {
   {
     GF_DEV_ASSERT(m_ssl != nullptr);
     GF_DEV_ASSERT(buff != nullptr);
@@ -140,10 +141,8 @@ size_t TcpSslConn::socketOp(TcpConn::SockOp op, char* buff, size_t len,
     }
 #endif
     // passing wait time as micro seconds
-    ACE_Time_Value waitTime(waitSeconds);
-    ACE_Time_Value endTime(ACE_OS::gettimeofday());
-    endTime += waitTime;
-    ACE_Time_Value sleepTime(0, 100);
+    ACE_Time_Value waitTime(waitDuration);
+    auto endTime = std::chrono::steady_clock::now() + waitDuration;
     size_t readLen = 0;
     bool errnoSet = false;
 
@@ -170,7 +169,7 @@ size_t TcpSslConn::socketOp(TcpConn::SockOp op, char* buff, size_t len,
         if (retVal < 0) {
           int32_t lastError = ACE_OS::last_error();
           if (lastError == EAGAIN) {
-            ACE_OS::sleep(sleepTime);
+            std::this_thread::sleep_for(std::chrono::microseconds(100));
           } else {
             errnoSet = true;
             break;
@@ -183,7 +182,7 @@ size_t TcpSslConn::socketOp(TcpConn::SockOp op, char* buff, size_t len,
 
         buff += readLen;
 
-        waitTime = endTime - ACE_OS::gettimeofday();
+        waitTime = endTime - std::chrono::steady_clock::now();
         if (waitTime <= ACE_Time_Value::zero) break;
       } while (sendlen > 0);
       if (errnoSet) break;

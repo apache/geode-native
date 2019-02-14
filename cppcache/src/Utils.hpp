@@ -98,8 +98,6 @@ class APACHE_GEODE_EXPORT Utils {
     return std::string(typeIdName);
   }
 
-  static int logWideString(char* buf, size_t maxLen, const wchar_t* wStr);
-
   /**
    * The only operations that is well defined on the result is "asChar".
    */

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -21,82 +21,75 @@ using System.Net;
 using System.IO;
 using System.Net.Sockets;
 using Xunit;
+using System.Collections;
+using System.Text.RegularExpressions;
+using System.Collections.Generic;
+using Xunit.Abstractions;
 
 namespace Apache.Geode.Client.IntegrationTests
 {
     public class GfshExecute : Gfsh
     {
-        public GfshExecute()
-        {
-        }
-        public override void Dispose()
-        {
-        }
+        private String connectionCommand_ = null;
+        private ITestOutputHelper output;
 
-        private static string startLocator = "start locator";
-        private static string startServer = "start server";
-
-        private string buildStartLocatorCommand(string options)
+        public GfshExecute(ITestOutputHelper output)
         {
-            var locatorCmd = startLocator;
-            locatorCmd += " --port=" + LocatorPort;
-            locatorCmd += " --bind-address=" + LocatorBindAddress;
-            locatorCmd += " --J=-Dgemfire.jmx-manager-port=" + JmxManagerPort + " ";
-            locatorCmd += " --J=-Dgemfire.jmx-manager-start=true";
-            locatorCmd += options;
-            return locatorCmd;
+            this.output = output;
         }
 
-        private string buildStartServerCommand(string options)
+        private void ExtractConnectionCommand(String command)
         {
-            var connectObject = connect()
-                .withJmxManager(LocatorBindAddress, JmxManagerPort);
-            if (UseSSL)
+            if (command.StartsWith("connect"))
             {
-                connectObject
-                    .withUseSsl();
+                connectionCommand_ = command;
             }
-            var serverCmd = "-e \"" + connectObject.ToString() + "\" -e \"" + startServer;
-            serverCmd += " --bind-address=" + ServerBindAddress;
-            serverCmd += options + "\"";
-            return serverCmd;
-        }
+            else if (command.StartsWith("start locator"))
+            {
+                if (command.Contains("--connect=false"))
+                {
+                    return;
+                }
 
-        private string buildConnectAndExecuteString(string options)
-        {
-            var connectObject = connect()
-                .withJmxManager(LocatorBindAddress, JmxManagerPort);
-            if (UseSSL)
-            {
-                connectObject
-                    .withUseSsl();
-            }
-            return "-e \"" + connectObject.ToString() + "\" -e \"" + options + "\"";
-        }
+                var jmxManagerHost = "localhost";
+                var jmxManagerPort = "1099";
 
-        private string BuildFullCommandString(string baseCmd)
-        {
-            string fullCmd;
+                var jmxManagerHostRegex = new Regex(@"\bbind-address=([^\s])\b");
+                var jmxManagerHostMatch = jmxManagerHostRegex.Match(command);
 
-            if (baseCmd.IndexOf(startLocator) == 0)
-            {
-                fullCmd = buildStartLocatorCommand(baseCmd.Substring(startLocator.Length));
-            }
-            else if (baseCmd.IndexOf(startServer) == 0)
-            {
-                fullCmd = buildStartServerCommand(baseCmd.Substring(startServer.Length));
-            }
-            else
-            {
-                fullCmd = buildConnectAndExecuteString(baseCmd);
+                if (jmxManagerHostMatch.Success)
+                {
+                    jmxManagerHost = jmxManagerHostMatch.Groups[1].Value;
+                }
+
+                var jmxManagerPortRegex = new Regex(@"\bjmx-manager-port=(\d+)\b");
+                var jmxManagerPortMatch = jmxManagerPortRegex.Match(command);
+                if (jmxManagerPortMatch.Success)
+                {
+                    jmxManagerPort = jmxManagerPortMatch.Groups[1].Value;
+                }
+
+                connectionCommand_ = new Connect(this).withJmxManager(jmxManagerHost, int.Parse(jmxManagerPort)).ToString();
             }
 
-            return fullCmd;
         }
 
         public override int execute(string cmd)
         {
-            var fullCmd = BuildFullCommandString(cmd);
+
+            var commands = new List<string>();
+
+            if (null != connectionCommand_)
+            {
+                commands.Add("-e");
+                commands.Add(connectionCommand_);
+            }
+
+            commands.Add("-e");
+            commands.Add(cmd);
+
+            // TODO escape commands
+            var fullCmd = "\"" + string.Join("\" \"", commands) + "\"";
 
             var gfsh = new Process
             {
@@ -116,7 +109,7 @@ namespace Apache.Geode.Client.IntegrationTests
             {
                 if (args.Data != null)
                 {
-                    Debug.WriteLine("GfshExecute: " + args.Data);
+                    WriteLine("GfshExecute: " + args.Data);
                 }
             };
 
@@ -124,7 +117,7 @@ namespace Apache.Geode.Client.IntegrationTests
             {
                 if (args.Data != null)
                 {
-                    Debug.WriteLine("GfshExecute: ERROR: " + args.Data);
+                    WriteLine("GfshExecute: ERROR: " + args.Data);
                 }
             };
 
@@ -133,24 +126,81 @@ namespace Apache.Geode.Client.IntegrationTests
             gfsh.BeginErrorReadLine();
             if (gfsh.WaitForExit(60000))
             {
-                Debug.WriteLine("GeodeServer Start: gfsh.HasExited = {0}, gfsh.ExitCode = {1}",
+                WriteLine("GeodeServer Start: gfsh.HasExited = {0}, gfsh.ExitCode = {1}",
                     gfsh.HasExited,
                     gfsh.ExitCode);
             }
             else
             {
-                Debug.WriteLine("GeodeServer Start: gfsh failed to exit, force killing.");
-                try
-                {
-                    gfsh.Kill();
-                }
-                catch
-                {
-                    // ignored
-                }
+                WriteLine("GeodeServer Start: gfsh failed to exit, force killing.");
+                KillAndIgnore(gfsh);
             }
+            CancelErrorReadAndIgnore(gfsh);
+            CancelOutputReadAndIgnore(gfsh);
+
+            ExtractConnectionCommand(cmd);
 
             return gfsh.ExitCode;
+        }
+
+        private static void CancelOutputReadAndIgnore(Process gfsh)
+        {
+            try
+            {
+                gfsh.CancelOutputRead();
+            }
+            catch
+            {
+                // ignored
+            }
+        }
+
+        private static void CancelErrorReadAndIgnore(Process gfsh)
+        {
+            try
+            {
+                gfsh.CancelErrorRead();
+            }
+            catch
+            {
+                // ignored
+            }
+        }
+
+        private static void KillAndIgnore(Process gfsh)
+        {
+            try
+            {
+                gfsh.Kill();
+            }
+            catch
+            {
+                // ignored
+            }
+        }
+
+        private void WriteLine(string format, params object[] args)
+        {
+            if (null == output)
+            {
+                Debug.WriteLine(format, args);
+            }
+            else
+            {
+                output.WriteLine(format, args);
+            }
+        }
+
+        private void WriteLine(string message)
+        {
+            if (null == output)
+            {
+                Debug.WriteLine(message);
+            }
+            else
+            {
+                output.WriteLine(message);
+            }
         }
     }
 }

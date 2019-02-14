@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -17,259 +17,270 @@
 
 using System;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Apache.Geode.Client.IntegrationTests
 {
     [Trait("Category", "Integration")]
     public class GfshExecuteTest : TestBase, IDisposable
     {
+        public GfshExecuteTest(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+        {
+        }
+
         public void Dispose()
         {
 
         }
 
         [Fact]
-        public void GfshExecuteStartLocatorTest()
+        public void Start1Locator()
         {
-            using (var gfsh = new GfshExecute())
+            var gfsh = new GfshExecute(output);
+            var testDir = CreateTestCaseDirectoryName();
+            CleanTestCaseDirectory(testDir);
+
+            try
             {
-                var testDir = CreateTestCaseDirectoryName();
-                CleanTestCaseDirectory(testDir);
-
-                try
-                {
-                    Assert.Equal(gfsh.start()
-                        .locator()
-                        .withDir(testDir)
-                        .withHttpServicePort(0)
-                        .withPort(gfsh.LocatorPort)
-                        .execute(), 0);
-                }
-                finally
-                {
-                    Assert.Equal(gfsh
-                        .shutdown()
-                        .withIncludeLocators(true)
-                        .execute(), 0);
-                }
-            }
-        }
-
-        [Fact]
-        public void GfshExecuteStartServerTest()
-        {
-            using (var gfsh = new GfshExecute())
-            {
-                var testDir = CreateTestCaseDirectoryName();
-                CleanTestCaseDirectory(testDir);
-
-                try
-                {
-                    Assert.Equal(gfsh.start()
-                        .locator()
-                        .withDir(testDir)
-                        .withHttpServicePort(0)
-                        .withPort(gfsh.LocatorPort)
-                        .execute(), 0);
-
-                    Assert.Equal(gfsh.start()
-                        .server()
-                        .withDir(testDir + "/server/0")
-                        .withPort(0)
-                        .execute(), 0);
-                }
-                finally
-                {
-                    Assert.Equal(gfsh
-                        .shutdown()
-                        .withIncludeLocators(true)
-                        .execute(), 0);
-                }
-            }
-        }
-
-        [Fact]
-        public void GfshExecuteStartTwoServersTest()
-        {
-            using (var gfsh1 = new GfshExecute())
-            {
-                var testDir = CreateTestCaseDirectoryName();
-                CleanTestCaseDirectory(testDir);
-
-                try
-                {
-                    Assert.Equal(gfsh1.start()
-                        .locator()
-                        .withDir(testDir)
-                        .withHttpServicePort(0)
-                        .execute(), 0);
-
-                    Assert.Equal(gfsh1.start()
-                        .server()
-                        .withDir(testDir + "/server/0")
-                        .withPort(0)
-                        .execute(), 0);
-
-                    Assert.Equal(gfsh1.start()
-                        .server()
-                        .withDir(testDir + "/server/1")
-                        .withPort(0)
-                        .execute(), 0);
-                }
-                finally
-                {
-                    Assert.Equal(gfsh1.shutdown()
-                        .withIncludeLocators(true)
-                        .execute(), 0);
-                }
-            }
-        }
-
-        [Fact]
-        public void GfshExecuteStartLocatorWithUseSslTest()
-        {
-            using (var gfsh = new GfshExecute())
-            {
-                var testDir = CreateTestCaseDirectoryName();
-                CleanTestCaseDirectory(testDir);
-
-                var sslPassword = "gemstone";
-                var currentDir = Environment.CurrentDirectory;
-                gfsh.Keystore = currentDir + "/ServerSslKeys/server_keystore.jks";
-                gfsh.KeystorePassword = sslPassword;
-                gfsh.Truststore = currentDir + "/ServerSslKeys/server_truststore.jks";
-                gfsh.TruststorePassword = sslPassword;
-                gfsh.UseSSL = true;
-
-                try
-                {
-                    var locator = gfsh
-                        .start()
-                        .locator()
-                        .withDir(testDir)
-                        .withHttpServicePort(0)
-                        .withUseSsl()
-                        .withConnect(false);
-
-                    Assert.Equal(locator.execute(), 0);
-                }
-                finally
-                {
-                    Assert.Equal(gfsh
-                        .shutdown()
-                        .withIncludeLocators(true)
-                        .execute(), 0);
-                }
-            }
-        }
-
-        [Fact]
-        public void GfshExecuteStartLocatorAndServerWithUseSslTest()
-        {
-            using (var gfsh = new GfshExecute())
-            {
-                var testDir = CreateTestCaseDirectoryName();
-                CleanTestCaseDirectory(testDir);
-
-                var sslPassword = "gemstone";
-                var currentDir = Environment.CurrentDirectory;
-                gfsh.Keystore = currentDir + "/ServerSslKeys/server_keystore.jks";
-                gfsh.KeystorePassword = sslPassword;
-                gfsh.Truststore = currentDir + "/ServerSslKeys/server_truststore.jks";
-                gfsh.TruststorePassword = sslPassword;
-                gfsh.UseSSL = true;
-
-                try
-                {
-                    Assert.Equal(gfsh
-                        .start()
-                        .locator()
-                        .withDir(testDir)
-                        .withHttpServicePort(0)
-                        .withUseSsl()
-                        .withConnect(false)
-                        .execute(), 0);
-
-                    Assert.Equal(gfsh
-                        .start()
-                        .server()
-                        .withDir(testDir + "/server/0")
-                        .withPort(0)
-                        .withUseSsl()
-                        .execute(), 0);
-                }
-                finally
-                {
-                    Assert.Equal(gfsh
-                        .shutdown()
-                        .withIncludeLocators(true)
-                        .execute(), 0);
-                }
-            }
-        }
-
-        [Fact]
-        public void GfshExecuteStartLocatorAndVerifyPortTest()
-        {
-            using (var gfsh = new GfshExecute())
-            {
-                var testDir = CreateTestCaseDirectoryName();
-                CleanTestCaseDirectory(testDir);
-
-                Assert.Equal(gfsh.start()
+                Assert.Equal(0, gfsh.start()
                     .locator()
                     .withDir(testDir)
                     .withHttpServicePort(0)
-                    .execute(), 0);
-
-                Assert.NotEqual(0, gfsh.LocatorPort);
-
-                Assert.Equal(gfsh.shutdown()
+                    .withPort(Framework.FreeTcpPort())
+                    .withJmxManagerPort(Framework.FreeTcpPort())
+                    .execute());
+            }
+            finally
+            {
+                Assert.Equal(0, gfsh
+                    .shutdown()
                     .withIncludeLocators(true)
-                    .execute(), 0);
+                    .execute());
             }
         }
 
         [Fact]
-        public void GfshExecuteStartTwoLocatorsTest()
+        public void Start1Locator1Server()
         {
-            using (var gfsh1 = new GfshExecute())
-            {
-                var testDir = CreateTestCaseDirectoryName();
-                CleanTestCaseDirectory(testDir);
+            var gfsh = new GfshExecute(output);
+            var testDir = CreateTestCaseDirectoryName();
+            CleanTestCaseDirectory(testDir);
 
+            try
+            {
+                Assert.Equal(0, gfsh.start()
+                    .locator()
+                    .withDir(testDir)
+                    .withHttpServicePort(0)
+                    .withPort(Framework.FreeTcpPort())
+                    .withJmxManagerPort(Framework.FreeTcpPort())
+                    .execute());
+
+                Assert.Equal(0, gfsh.start()
+                    .server()
+                    .withDir(testDir + "/server/0")
+                    .withPort(0)
+                    .execute());
+            }
+            finally
+            {
+                Assert.Equal(0, gfsh
+                    .shutdown()
+                    .withIncludeLocators(true)
+                    .execute());
+            }
+        }
+
+        [Fact]
+        public void Start1Locator2Servers()
+        {
+            var gfsh = new GfshExecute(output);
+            var testDir = CreateTestCaseDirectoryName();
+            CleanTestCaseDirectory(testDir);
+
+            try
+            {
+                Assert.Equal(0, gfsh.start()
+                    .locator()
+                    .withDir(testDir)
+                    .withHttpServicePort(0)
+                    .withPort(Framework.FreeTcpPort())
+                    .withJmxManagerPort(Framework.FreeTcpPort())
+                    .execute());
+
+                Assert.Equal(0, gfsh.start()
+                    .server()
+                    .withDir(testDir + "/server/0")
+                    .withPort(0)
+                    .execute());
+
+                Assert.Equal(0, gfsh.start()
+                    .server()
+                    .withDir(testDir + "/server/1")
+                    .withPort(0)
+                    .execute());
+            }
+            finally
+            {
+                Assert.Equal(0, gfsh.shutdown()
+                    .withIncludeLocators(true)
+                    .execute());
+            }
+        }
+
+        [Fact]
+        public void Start1LocatorWithSSL()
+        {
+            var gfsh = new GfshExecute(output);
+            var testDir = CreateTestCaseDirectoryName();
+            CleanTestCaseDirectory(testDir);
+
+            var sslPassword = "gemstone";
+            var currentDir = Environment.CurrentDirectory;
+            var keystore = currentDir + @"\ServerSslKeys\server_keystore.jks";
+            var truststore = currentDir + @"\ServerSslKeys\server_truststore.jks";
+            var jmxManagerPort = Framework.FreeTcpPort();
+
+            try
+            {
+                Assert.Equal(0, gfsh
+                    .start()
+                    .locator()
+                    .withDir(testDir)
+                    .withHttpServicePort(0)
+                    .withPort(Framework.FreeTcpPort())
+                    .withJmxManagerPort(jmxManagerPort)
+                    .withJmxManagerStart(true)
+                    .withSslEnableComponents("locator,jmx")
+                    .withSslKeyStore(keystore)
+                    .withSslKeyStorePassword(sslPassword)
+                    .withSslTrustStore(truststore)
+                    .withSslTrustStorePassword(sslPassword)
+                    .withConnect(false)
+                    .execute());
+
+                Assert.Equal(0, gfsh
+                    .connect()
+                    .withJmxManager("localhost", jmxManagerPort)
+                    .withUseSsl(true)
+                    .withKeyStore(keystore)
+                    .withKeyStorePassword(sslPassword)
+                    .withTrustStore(truststore)
+                    .withTrustStorePassword(sslPassword)
+                    .execute());
+            }
+            finally
+            {
+                Assert.Equal(0, gfsh
+                    .shutdown()
+                    .withIncludeLocators(true)
+                    .execute());
+            }
+        }
+
+        [Fact]
+        public void Start1Locator1ServerWithSSL()
+        {
+            var gfsh = new GfshExecute(output);
+            var testDir = CreateTestCaseDirectoryName();
+            CleanTestCaseDirectory(testDir);
+
+            var sslPassword = "gemstone";
+            var currentDir = Environment.CurrentDirectory;
+            var keystore = currentDir + @"\ServerSslKeys\server_keystore.jks";
+            var truststore = currentDir + @"\ServerSslKeys\server_truststore.jks";
+            var jmxManagerPort = Framework.FreeTcpPort();
+
+            try
+            {
+                Assert.Equal(0, gfsh
+                    .start()
+                    .locator()
+                    .withDir(testDir)
+                    .withHttpServicePort(0)
+                    .withPort(Framework.FreeTcpPort())
+                    .withJmxManagerPort(jmxManagerPort)
+                    .withJmxManagerStart(true)
+                    .withSslEnableComponents("locator,jmx")
+                    .withSslKeyStore(keystore)
+                    .withSslKeyStorePassword(sslPassword)
+                    .withSslTrustStore(truststore)
+                    .withSslTrustStorePassword(sslPassword)
+                    .withConnect(false)
+                    .execute());
+
+                Assert.Equal(0, gfsh
+                    .connect()
+                    .withJmxManager("localhost", jmxManagerPort)
+                    .withUseSsl(true)
+                    .withKeyStore(keystore)
+                    .withKeyStorePassword(sslPassword)
+                    .withTrustStore(truststore)
+                    .withTrustStorePassword(sslPassword)
+                    .execute());
+
+                Assert.Equal(0, gfsh
+                    .start()
+                    .server()
+                    .withDir(testDir + "/server/0")
+                    .withPort(0)
+                    .withSslEnableComponents("server,locator,jmx")
+                    .withSslKeyStore(keystore)
+                    .withSslKeyStorePassword(sslPassword)
+                    .withSslTrustStore(truststore)
+                    .withSslTrustStorePassword(sslPassword)
+                    .execute());
+            }
+            finally
+            {
+                Assert.Equal(0, gfsh
+                    .shutdown()
+                    .withIncludeLocators(true)
+                    .execute());
+            }
+        }
+
+        [Fact]
+        public void Start2ClustersWith1Locator1ServerEach()
+        {
+            var gfsh1 = new GfshExecute(output);
+            var testDir = CreateTestCaseDirectoryName();
+            CleanTestCaseDirectory(testDir);
+
+            try
+            {
+                Assert.Equal(0, gfsh1.start()
+                    .locator()
+                    .withDir(testDir + "/locator/0")
+                    .withHttpServicePort(0)
+                    .withPort(Framework.FreeTcpPort())
+                    .withJmxManagerPort(Framework.FreeTcpPort())
+                    .execute());
+
+                var gfsh2 = new GfshExecute(output);
                 try
                 {
-                    Assert.Equal(gfsh1.start()
+                    Assert.Equal(0, gfsh2.start()
                         .locator()
-                        .withDir(testDir + "/locator/0")
+                        .withDir(testDir + "/locator/1")
                         .withHttpServicePort(0)
-                        .execute(), 0);
-
-                    using (var gfsh2 = new GfshExecute())
-                    {
-                        try
-                        {
-                            Assert.Equal(gfsh2.start()
-                                .locator()
-                                .withDir(testDir + "/locator/1")
-                                .withHttpServicePort(0)
-                                .execute(), 0);
-                        }
-                        finally
-                        {
-                            Assert.Equal(gfsh2.shutdown()
-                                .withIncludeLocators(true)
-                                .execute(), 0);
-                        }
-                    }
+                        .withPort(Framework.FreeTcpPort())
+                        .withJmxManagerPort(Framework.FreeTcpPort())
+                        .execute());
                 }
                 finally
                 {
-                    Assert.Equal(gfsh1.shutdown()
+                    Assert.Equal(0, gfsh2.shutdown()
                         .withIncludeLocators(true)
-                        .execute(), 0);
+                        .execute());
                 }
+
+            }
+            finally
+            {
+                Assert.Equal(0, gfsh1.shutdown()
+                    .withIncludeLocators(true)
+                    .execute());
             }
         }
     }

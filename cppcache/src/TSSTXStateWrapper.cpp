@@ -14,12 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * TSSTXStateWrapper.cpp
- *
- *  Created on: 09-Feb-2011
- *      Author: ankurs
- */
 
 #include "TSSTXStateWrapper.hpp"
 
@@ -28,16 +22,14 @@
 namespace apache {
 namespace geode {
 namespace client {
-ACE_TSS<TSSTXStateWrapper> TSSTXStateWrapper::s_geodeTSSTXState;
 
-TSSTXStateWrapper::TSSTXStateWrapper() { m_txState = nullptr; }
-
-TSSTXStateWrapper::~TSSTXStateWrapper() {
+TSSTXStateWrapper::~TSSTXStateWrapper() noexcept {
   if (m_txState) {
     delete m_txState;
     m_txState = nullptr;
   }
 }
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

@@ -1,5 +1,6 @@
 /build-*/
 
+/cmake-build-*/
 /build/
 /.settings/
 /.cproject
@@ -11,3 +12,5 @@
 /examples/dotnet/*/bin/
 /examples/dotnet/*/obj/
 .ruby-version
+
+.DS_Store

@@ -21,7 +21,7 @@ ENV CLANG_VERSION 6.0
 RUN apt-get update && \
         apt-get install -y \
             libc++-dev \
-            libc++api-dev \
+            libc++abi-dev \
             clang-${CLANG_VERSION} \
             clang-tidy-${CLANG_VERSION} \
             clang-format-${CLANG_VERSION} \

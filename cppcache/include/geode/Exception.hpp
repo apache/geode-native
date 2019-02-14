@@ -33,9 +33,11 @@ namespace client {
 
 class StackTrace;
 
+#if defined(_MSC_VER)
 // Ignore C4275 - This class extends std C++ class
 #pragma warning(push)
 #pragma warning(disable : 4275)
+#endif
 
 /**
  * A description of an exception that occurred during a cache operation.
@@ -73,7 +75,9 @@ class APACHE_GEODE_EXPORT Exception : public std::exception {
   std::shared_ptr<StackTrace> stack_;
 };
 
+#if defined(_MSC_VER)
 #pragma warning(pop)
+#endif
 
 }  // namespace client
 }  // namespace geode

@@ -20,6 +20,10 @@
 #include "geode_defs.hpp"
 #include "IDataSerializablePrimitive.hpp"
 
+#include "begin_native.hpp"
+#include <geode/internal/DSCode.hpp>
+#include "end_native.hpp"
+
 using namespace System;
 using namespace System::Collections::Generic;
 

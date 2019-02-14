@@ -288,6 +288,9 @@ class CacheHelper {
   static int staticLocatorHostPort1;
   static int staticLocatorHostPort2;
   static int staticLocatorHostPort3;
+
+  static int staticJmxManagerPort;
+
   static const char* getstaticLocatorHostPort1();
 
   static const char* getstaticLocatorHostPort2();
@@ -393,6 +396,9 @@ int CacheHelper::staticHostPort4 = CacheHelper::getRandomAvailablePort();
 int CacheHelper::staticLocatorHostPort1 = CacheHelper::getRandomAvailablePort();
 int CacheHelper::staticLocatorHostPort2 = CacheHelper::getRandomAvailablePort();
 int CacheHelper::staticLocatorHostPort3 = CacheHelper::getRandomAvailablePort();
+
+int CacheHelper::staticJmxManagerPort = CacheHelper::getRandomAvailablePort();
+
 #endif
 
 }  // namespace client

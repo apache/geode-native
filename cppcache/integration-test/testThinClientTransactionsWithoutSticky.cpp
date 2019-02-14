@@ -19,9 +19,6 @@
 
 DUNIT_MAIN
   {
-    CALL_TASK(Alter_Client_Grid_Property_1);
-    CALL_TASK(Alter_Client_Grid_Property_2);
-
     CALL_TASK(CreateLocator1);
     CALL_TASK(CreateServer1_With_Locator)
 

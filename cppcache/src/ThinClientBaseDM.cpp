@@ -17,8 +17,11 @@
 
 #include "ThinClientBaseDM.hpp"
 
+#include <chrono>
+
 #include <geode/AuthenticatedView.hpp>
 
+#include "TcrConnectionManager.hpp"
 #include "ThinClientRegion.hpp"
 #include "UserAttributes.hpp"
 
@@ -45,8 +48,7 @@ void ThinClientBaseDM::init() {
                                      ->getDistributedSystem()
                                      .getSystemProperties();
 
-  if (!systemProperties.isGridClient() &&
-      systemProperties.enableChunkHandlerThread()) {
+  if (systemProperties.enableChunkHandlerThread()) {
     startChunkProcessor();
   }
 
@@ -194,19 +196,17 @@ void ThinClientBaseDM::failover() {}
 
 void ThinClientBaseDM::queueChunk(TcrChunkedContext* chunk) {
   LOGDEBUG("ThinClientBaseDM::queueChunk");
-  const uint32_t timeout = 1;
   if (m_chunkProcessor == nullptr) {
     LOGDEBUG("ThinClientBaseDM::queueChunk2");
     // process in same thread if no chunk processor thread
     chunk->handleChunk(true);
     _GEODE_SAFE_DELETE(chunk);
-  } else if (!m_chunks.putUntil(chunk, timeout, 0)) {
+  } else if (!m_chunks.putFor(chunk, std::chrono::seconds(1))) {
     LOGDEBUG("ThinClientBaseDM::queueChunk3");
     // if put in queue fails due to whatever reason then process in same thread
     LOGFINE(
         "addChunkToQueue: timed out while adding to queue of "
-        "unbounded size after waiting for %d secs",
-        timeout);
+        "unbounded size after waiting for 1 secs");
     chunk->handleChunk(true);
     _GEODE_SAFE_DELETE(chunk);
   } else {
@@ -215,39 +215,39 @@ void ThinClientBaseDM::queueChunk(TcrChunkedContext* chunk) {
 }
 
 // the chunk processing thread
-int ThinClientBaseDM::processChunks(volatile bool& isRunning) {
+void ThinClientBaseDM::processChunks(std::atomic<bool>& isRunning) {
   TcrChunkedContext* chunk;
   LOGFINE("Starting chunk process thread for region %s",
-          (m_region != nullptr ? m_region->getFullPath().c_str() : "(null)"));
+          (m_region ? m_region->getFullPath().c_str() : "(null)"));
   while (isRunning) {
-    chunk = m_chunks.getUntil(0, 100000);
+    chunk = m_chunks.getFor(std::chrono::microseconds(100000));
     if (chunk) {
       chunk->handleChunk(false);
       _GEODE_SAFE_DELETE(chunk);
     }
   }
   LOGFINE("Ending chunk process thread for region %s",
-          (m_region != nullptr ? m_region->getFullPath().c_str() : "(null)"));
+          (m_region ? m_region->getFullPath().c_str() : "(null)"));
   GF_DEV_ASSERT(m_chunks.size() == 0);
-  return 0;
 }
 
 // start the chunk processing thread
 void ThinClientBaseDM::startChunkProcessor() {
   if (m_chunkProcessor == nullptr) {
     m_chunks.open();
-    m_chunkProcessor = new Task<ThinClientBaseDM>(
-        this, &ThinClientBaseDM::processChunks, NC_ProcessChunk);
+    m_chunkProcessor =
+        std::unique_ptr<Task<ThinClientBaseDM>>(new Task<ThinClientBaseDM>(
+            this, &ThinClientBaseDM::processChunks, NC_ProcessChunk));
     m_chunkProcessor->start();
   }
 }
 
 // stop the chunk processing thread
 void ThinClientBaseDM::stopChunkProcessor() {
-  if (m_chunkProcessor != nullptr) {
+  if (m_chunkProcessor) {
     m_chunkProcessor->stop();
     m_chunks.close();
-    _GEODE_SAFE_DELETE(m_chunkProcessor);
+    m_chunkProcessor = nullptr;
   }
 }
 
@@ -270,13 +270,11 @@ void ThinClientBaseDM::beforeSendingRequest(const TcrMessage& request,
       connId = conn->getConnectionId();
       uniqueId = conn->getEndpointObject()->getUniqueId();
     } else {
-      auto userAttribute = TSSUserAttributesWrapper::s_geodeTSSUserAttributes
-                               ->getUserAttributes();
       connId = conn->getConnectionId();
       if (!(request.getMessageType() == TcrMessage::USER_CREDENTIAL_MESSAGE)) {
-        uniqueId =
-            userAttribute->getConnectionAttribute(conn->getEndpointObject())
-                ->getUniqueId();
+        uniqueId = UserAttributes::threadLocalUserAttributes
+                       ->getConnectionAttribute(conn->getEndpointObject())
+                       ->getUniqueId();
       }
     }
 
@@ -302,11 +300,8 @@ void ThinClientBaseDM::afterSendingRequest(const TcrMessage& request,
     if (request.getMessageType() == TcrMessage::USER_CREDENTIAL_MESSAGE) {
       if (TcrMessage::RESPONSE == reply.getMessageType()) {
         if (this->isMultiUserMode()) {
-          auto userAttribute =
-              TSSUserAttributesWrapper::s_geodeTSSUserAttributes
-                  ->getUserAttributes();
-          userAttribute->setConnectionAttributes(conn->getEndpointObject(),
-                                                 reply.getUniqueId(conn));
+          UserAttributes::threadLocalUserAttributes->setConnectionAttributes(
+              conn->getEndpointObject(), reply.getUniqueId(conn));
         } else {
           conn->getEndpointObject()->setUniqueId(reply.getUniqueId(conn));
         }
@@ -335,6 +330,14 @@ GfErrType ThinClientBaseDM::registerInterestForRegion(TcrEndpoint*,
 }
 
 bool ThinClientBaseDM::isEndpointAttached(TcrEndpoint*) { return false; }
+
+bool ThinClientBaseDM::checkDupAndAdd(std::shared_ptr<EventId> eventid) {
+  return m_connManager.checkDupAndAdd(eventid);
+}
+
+std::recursive_mutex& ThinClientBaseDM::getRedundancyLock() {
+  return m_connManager.getRedundancyLock();
+}
 
 }  // namespace client
 }  // namespace geode

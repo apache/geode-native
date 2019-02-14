@@ -87,7 +87,7 @@ void VersionedCacheableObjectPartList::readObjectPart(
 }
 
 void VersionedCacheableObjectPartList::fromData(DataInput& input) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_responseLock);
+  std::lock_guard<decltype(m_responseLock)> guard(m_responseLock);
   LOGDEBUG("VersionedCacheableObjectPartList::fromData");
   uint8_t flags = input.read();
   m_hasKeys = (flags & 0x01) == 0x01;

@@ -36,6 +36,7 @@
 #include "TXState.hpp"
 #include "TcrChunkedContext.hpp"
 #include "TcrConnection.hpp"
+#include "TcrConnectionManager.hpp"
 #include "ThinClientBaseDM.hpp"
 #include "ThinClientPoolDM.hpp"
 #include "ThinClientRegion.hpp"
@@ -52,6 +53,8 @@ static const uint32_t REGULAR_EXPRESSION =
 namespace {
 uint32_t g_headerLen = 17;
 }  // namespace
+
+extern void setThreadLocalExceptionMessage(const char*);
 
 // AtomicInc TcrMessage::m_transactionId = 0;
 uint8_t* TcrMessage::m_keepalive = nullptr;
@@ -197,32 +200,31 @@ void TcrMessage::readLongPart(DataInput& input, uint64_t* intValue) {
   *intValue = input.readInt64();
 }
 
-void TcrMessage::readStringPart(DataInput& input, uint32_t* len, char** str) {
-  char* ts;
-  int32_t sl = input.readInt32();
-  ts = new char[sl];
-  if (input.read()) throw Exception("String is not an object");
-  input.readBytesOnly(reinterpret_cast<int8_t*>(ts), sl);
-  *len = sl;
-  *str = ts;
+const std::string TcrMessage::readStringPart(DataInput& input) {
+  char* stringBuffer;
+  int32_t stringLength = input.readInt32();
+  stringBuffer = new char[stringLength + 1];
+  stringBuffer[stringLength] = '\0';
+  if (input.read()) {
+    throw Exception("String is not an object");
+  }
+  input.readBytesOnly(reinterpret_cast<int8_t*>(stringBuffer), stringLength);
+  std::string str = stringBuffer;
+  delete[] stringBuffer;
+  return str;
 }
+
 void TcrMessage::readCqsPart(DataInput& input) {
   m_cqs->clear();
   readIntPart(input, &m_numCqPart);
   for (uint32_t cqCnt = 0; cqCnt < m_numCqPart;) {
-    char* cqName;
-    uint32_t len;
-    readStringPart(input, &len, &cqName);
-    std::string cq(cqName, len);
-    delete[] cqName;
+    auto cq = readStringPart(input);
     cqCnt++;
     int32_t cqOp;
     readIntPart(input, reinterpret_cast<uint32_t*>(&cqOp));
     cqCnt++;
     (*m_cqs)[cq] = cqOp;
-    //	 LOGINFO("read cqName[%s],cqOp[%d]", cq.c_str(), cqOp);
   }
-  // LOGDEBUG("mapsize = %d", m_cqs.size());
 }
 
 inline void TcrMessage::readCallbackObjectPart(DataInput& input,
@@ -234,17 +236,10 @@ inline void TcrMessage::readCallbackObjectPart(DataInput& input,
       input.readObject(m_callbackArgument);
     } else {
       if (defaultString) {
-        // TODO:
-        // m_callbackArgument = CacheableString::create(
-        //  (char*)input.currentBufferPosition( ), lenObj );
         m_callbackArgument = readCacheableString(input, lenObj);
       } else {
-        // TODO::
-        // m_callbackArgument = CacheableBytes::create(
-        //  input.currentBufferPosition( ), lenObj );
         m_callbackArgument = readCacheableBytes(input, lenObj);
       }
-      // input.advanceCursor( lenObj );
     }
   }
 }
@@ -257,15 +252,10 @@ inline void TcrMessage::readObjectPart(DataInput& input, bool defaultString) {
       input.readObject(m_value);
     } else {
       if (defaultString) {
-        // m_value = CacheableString::create(
-        //  (char*)input.currentBufferPosition( ), lenObj );
         m_value = readCacheableString(input, lenObj);
       } else {
-        // m_value = CacheableBytes::create(
-        //  input.currentBufferPosition( ), lenObj );
         m_value = readCacheableBytes(input, lenObj);
       }
-      // input.advanceCursor( lenObj );
     }
   } else if (lenObj == 0 && isObj == 2) {  // EMPTY BYTE ARRAY
     m_value = CacheableBytes::create();
@@ -596,7 +586,7 @@ void TcrMessage::writeHeader(uint32_t msgType, uint32_t numOfParts) {
                                  // the end write the length at the (buffer +
                                  // 4) offset.
   m_request->writeInt(static_cast<int32_t>(numOfParts));
-  TXState* txState = TSSTXStateWrapper::s_geodeTSSTXState->getTXState();
+  auto txState = TSSTXStateWrapper::get().getTXState();
   if (txState == nullptr) {
     m_txId = -1;
   } else {
@@ -851,12 +841,28 @@ void TcrMessage::processChunk(const uint8_t* bytes, int32_t len,
       }
       break;
     }
+    case TcrMessage::PUT_DATA_ERROR: {
+      chunkSecurityHeader(1, bytes, len, isLastChunkAndisSecurityHeader);
+      if (nullptr != bytes) {
+        auto input =
+            m_tcdm->getConnectionManager().getCacheImpl()->createDataInput(
+                bytes, len);
+        auto errorString = readStringPart(input);
+
+        if (!errorString.empty()) {
+          setThreadLocalExceptionMessage(errorString.c_str());
+        }
+
+        _GEODE_SAFE_DELETE_ARRAY(bytes);
+      }
+      break;
+    }
     case TcrMessage::GET_ALL_DATA_ERROR: {
       chunkSecurityHeader(1, bytes, len, isLastChunkAndisSecurityHeader);
       if (bytes != nullptr) {
         _GEODE_SAFE_DELETE_ARRAY(bytes);
       }
-      // nothing else to done since this will be taken care of at higher level
+
       break;
     }
     default: {
@@ -1043,13 +1049,12 @@ void TcrMessage::handleByteArrayResponse(
     case TcrMessage::UNREGISTER_INTEREST_DATA_ERROR:
     case TcrMessage::PUT_DATA_ERROR:
     case TcrMessage::KEY_SET_DATA_ERROR:
-    case TcrMessage::REQUEST_DATA_ERROR:
     case TcrMessage::DESTROY_REGION_DATA_ERROR:
     case TcrMessage::CLEAR_REGION_DATA_ERROR:
     case TcrMessage::CONTAINS_KEY_DATA_ERROR:
-    case TcrMessage::PUT_DELTA_ERROR: {
-      // do nothing. (?) TODO Do we need to process further.
-      m_shouldIgnore = true;
+    case TcrMessage::PUT_DELTA_ERROR:
+    case TcrMessage::REQUEST_DATA_ERROR: {
+      m_value = std::make_shared<CacheableString>(readStringPart(input));
       break;
     }
 
