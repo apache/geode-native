@@ -15,7 +15,7 @@
 
 cmake_minimum_required(VERSION 3.10)
 
-project(SslPutGetCs LANGUAGES CSharp)
+project(dotnet-SslPutGet LANGUAGES CSharp)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../../cmake)
 
@@ -27,12 +27,11 @@ add_executable(${PROJECT_NAME} Program.cs)
 configure_file("startserver.ps1" ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 configure_file("stopserver.ps1" ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 
-file(GLOB SSL_CERTIFICATES
-	"${CMAKE_CURRENT_SOURCE_DIR}/../../utilities/ClientSslKeys/*.pem"
-	"${CMAKE_CURRENT_SOURCE_DIR}/../../utilities/ServerSslKeys/*.jks"
+file(GLOB SSL_CERTIFICATES 
+  "${CMAKE_CURRENT_SOURCE_DIR}/../../utilities/*Keys"
 )
 
-file(COPY ${SSL_CERTIFICATES} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(INSTALL ${SSL_CERTIFICATES} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 target_link_libraries(${PROJECT_NAME}
     GeodeNative::dotnet

@@ -29,9 +29,9 @@ namespace Apache.Geode.Examples.FunctionExecution
       var cacheFactory = new CacheFactory();
       cacheFactory.Set("log-level", "none");
       cacheFactory.Set("ssl-enabled", "true");
-      cacheFactory.Set("ssl-keystore", Environment.CurrentDirectory + @"\ClientSslKeys\client_keystore.password.pem");
+      cacheFactory.Set("ssl-keystore", Environment.CurrentDirectory + @"\..\ClientSslKeys\client_keystore.password.pem");
       cacheFactory.Set("ssl-keystore-password", "gemstone");
-      cacheFactory.Set("ssl-truststore", Environment.CurrentDirectory + @"\ClientSslKeys\client_truststore.pem");
+      cacheFactory.Set("ssl-truststore", Environment.CurrentDirectory + @"\..\ClientSslKeys\client_truststore.pem");
 
       var cache = cacheFactory.Create();
 

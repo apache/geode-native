@@ -70,5 +70,4 @@ add_example(NAME PutGetRemove
 add_example(NAME RemoteQueryCs 
 	SOURCE Order.cs Program.cs)
 
-add_example(NAME SslPutGetCs
-	SOURCE Program.cs)
+add_subdirectory(SslPutGet)
