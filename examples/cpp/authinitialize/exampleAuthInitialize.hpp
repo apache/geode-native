@@ -21,12 +21,9 @@
 #include <geode/AuthInitialize.hpp>
 #include <geode/Properties.hpp>
 
-using apache::geode::client::AuthInitialize;
-using apache::geode::client::Properties;
-
-class ExampleAuthInitialize : public AuthInitialize {
-  std::shared_ptr<Properties> getCredentials(
-      const std::shared_ptr<Properties>& securityprops,
+class ExampleAuthInitialize : public apache::geode::client::AuthInitialize {
+  std::shared_ptr<apache::geode::client::Properties> getCredentials(
+      const std::shared_ptr<apache::geode::client::Properties>& securityprops,
       const std::string& server) override;
 
   void close() override;

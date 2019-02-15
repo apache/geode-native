@@ -24,17 +24,14 @@ find_package(@PRODUCT_NAME_NOSPACE@ REQUIRED COMPONENTS cpp)
 
 add_executable(${PROJECT_NAME} @ADD_EXAMPLE_SOURCE@)
 
-if(CMAKE_GENERATOR MATCHES Win64*)
-  configure_file("startserver.ps1" ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
-  configure_file("stopserver.ps1" ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
-else()
-  configure_file("startserver.sh" ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
-  configure_file("stopserver.sh" ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
-endif()
+configure_file("startserver.ps1" ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
+configure_file("stopserver.ps1" ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
+configure_file("startserver.sh" ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
+configure_file("stopserver.sh" ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 
 configure_file("README.md" ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 
-if(CMAKE_GENERATOR MATCHES Win64*)
+if(WIN32)
   configure_file(../../../bin/apache-geode.dll ${CMAKE_CURRENT_BINARY_DIR}/Debug/apache-geode.dll COPYONLY)
 endif()
 

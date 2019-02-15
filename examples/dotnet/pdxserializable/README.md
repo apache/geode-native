@@ -10,17 +10,23 @@ This is a simple example showing how to register for serialization of custom obj
 ## Running
 1. From a command shell, set the current directory to the `PdxSerializableCs` directory in your example workspace.
 
-       $ cd workspace/examples/dotnet/PdxSerializableCs
+    ```console
+    $ cd workspace/examples/dotnet/PdxSerializableCs
+    ```
 
 2. Run the `startserver.ps1` script to start the Geode cluster with authentication and create a region.
 
    For Windows cmd:
 
-       $ powershell.exe -File startserver.ps1
+    ```console
+    $ powershell.exe -File startserver.ps1
+    ```
 
    For Windows Powershell:
 
-       $ startserver.ps1
+    ```console
+    $ startserver.ps1
+    ```
 
 3. Execute `PdxSerializableCs.exe`, expect the following output:
   
@@ -34,8 +40,12 @@ This is a simple example showing how to register for serialization of custom obj
 
    For Windows cmd:
 
-       $ powershell.exe -File stopserver.ps1
+    ```console
+    $ powershell.exe -File stopserver.ps1
+    ```
 
    For Windows Powershell:
 
-       $ stopserver.ps1
+    ```console
+    $ stopserver.ps1
+    ```

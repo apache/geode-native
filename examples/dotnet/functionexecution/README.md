@@ -10,17 +10,23 @@ This example illustrates how to execute server side java functions.
 ## Running
 1. From a command shell, set the current directory to the `DataSerializableCs` directory in your example workspace.
 
-       $ cd workspace/examples/dotnet/DataSerializableCs
+    ```console
+    $ cd workspace/examples/dotnet/DataSerializableCs
+    ```
 
 2. Run the `startserver.ps1` script to start the Geode cluster with authentication and create a region.
 
    For Windows cmd:
 
-       $ powershell.exe -File startserver.ps1
+    ```console
+    $ powershell.exe -File startserver.ps1
+    ```
 
    For Windows Powershell:
 
-       $ startserver.ps1
+    ```console
+    $ startserver.ps1
+    ```
 
 3. Execute `FunctionExecutionCs.exe`, expect the following output:
 
@@ -37,8 +43,12 @@ This example illustrates how to execute server side java functions.
 
    For Windows cmd:
 
-       $ powershell.exe -File stopserver.ps1
+    ```console
+    $ powershell.exe -File stopserver.ps1
+    ```
 
    For Windows Powershell:
 
-       $ stopserver.ps1
+    ```console
+    $ stopserver.ps1
+    ```

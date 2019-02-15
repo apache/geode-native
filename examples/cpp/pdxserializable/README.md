@@ -10,21 +10,29 @@ This is a simple example showing how to register for serialization of custom obj
 ## Running
 1. From a command shell, set the current directory to the `pdxserializable` directory in your example workspace.
 
-       $ cd workspace/examples/cpp/pdxserializable
+    ```console
+    $ cd workspace/examples/cpp/pdxserializable
+    ```
 
 2. Run the `startserver` script to start the Geode cluster with authentication and create a region.
 
    For Windows cmd:
 
-       $ powershell.exe -File startserver.ps1
+    ```console
+    $ powershell.exe -File startserver.ps1
+    ```
 
    For Windows Powershell:
 
-       $ startserver.ps1
+    ```console
+    $ startserver.ps1
+    ```
 
    For Bash:
 
-       $ ./startserver.sh
+    ```console
+    $ ./startserver.sh
+    ```
 
 3. Execute `pdxserializable`, expect the following output:
 
@@ -42,12 +50,18 @@ This is a simple example showing how to register for serialization of custom obj
 
    For Windows cmd:
 
-       $ powershell.exe -File stopserver.ps1
+    ```console
+    $ powershell.exe -File stopserver.ps1
+    ```
 
    For Windows Powershell:
 
-       $ stopserver.ps1
+    ```console
+    $ stopserver.ps1
+    ```
 
    For Bash:
 
-       $ ./stopserver.sh
+    ```console
+    $ ./stopserver.sh
+    ```

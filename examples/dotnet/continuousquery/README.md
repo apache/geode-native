@@ -10,17 +10,23 @@ This is a simple example showing how to execute a continuous query on a Goede re
 ## Running
 1. From a command shell, set the current directory to the `ContinuousQueryCs` directory in your example workspace.
 
-       $ cd workspace/examples/dotnet/ContinuousQueryCs
+    ```console
+    $ cd workspace/examples/dotnet/ContinuousQueryCs
+    ```
 
 2. Run the `startserver.ps1` script to start the Geode cluster with authentication and create a region.
 
    For Windows cmd:
 
-       $ powershell.exe -File startserver.ps1
+    ```console
+    $ powershell.exe -File startserver.ps1
+    ```
 
    For Windows Powershell:
 
-       $ startserver.ps1
+    ```console
+    $ startserver.ps1
+    ```
 
 3. Execute `ContinuousQueryCs.exe`, expect the following output:
   
@@ -40,8 +46,12 @@ This is a simple example showing how to execute a continuous query on a Goede re
 
    For Windows cmd:
 
-       $ powershell.exe -File stopserver.ps1
+    ```console
+    $ powershell.exe -File stopserver.ps1
+    ```
 
    For Windows Powershell:
 
-       $ stopserver.ps1
+    ```console
+    $ stopserver.ps1
+    ```

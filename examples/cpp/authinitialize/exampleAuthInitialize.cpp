@@ -19,6 +19,9 @@
 
 #include <iostream>
 
+using apache::geode::client::AuthInitialize;
+using apache::geode::client::Properties;
+
 std::shared_ptr<Properties> ExampleAuthInitialize::getCredentials(
     const std::shared_ptr<Properties>& securityprops,
     const std::string& /*server*/) {

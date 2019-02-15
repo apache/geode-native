@@ -11,39 +11,55 @@ handler on the client that authenticates against a server that was started with 
 ## Running
 1. From a command shell, set the current directory to the `authinitialize` directory in your example workspace.
 
-       $ cd workspace/examples/cpp/authinitialize
+    ```console
+    $ cd workspace/examples/cpp/authinitialize
+    ```
 
 2. Run the `startserver` script to start the Geode cluster with authentication and create a region.
 
    For Windows cmd:
 
-       $ powershell.exe -File startserver.ps1
+    ```console
+    $ powershell.exe -File startserver.ps1
+    ```
 
    For Windows Powershell:
 
-       $ startserver.ps1
+    ```console
+    $ startserver.ps1
+    ```
 
    For Bash:
 
-       $ ./startserver.sh
+    ```console
+    $ ./startserver.sh
+    ```
 
 3. Execute `authinitialize`, expect the following output:
 
-       ExampleAuthInitialize::ExampleAuthInitialize called
-       ExampleAuthInitialize::getCredentials called
-       a = 1
-       b = 2
+    ```text
+    ExampleAuthInitialize::ExampleAuthInitialize called
+    ExampleAuthInitialize::getCredentials called
+    a = 1
+    b = 2
+    ```
 
 4. Run the `stopserver` script to gracefully shutdown the Geode cluster.
 
    For Windows cmd:
 
-       $ powershell.exe -File stopserver.ps1
+    ```console
+    $ powershell.exe -File stopserver.ps1
+    ```
 
    For Windows Powershell:
 
-       $ stopserver.ps1
+    ```console
+    $ stopserver.ps1
+    ```
 
    For Bash:
 
-       $ ./stopserver.sh
+    ```console
+    $ ./stopserver.sh
+    ```
