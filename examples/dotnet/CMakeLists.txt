@@ -70,4 +70,5 @@ add_example(NAME PutGetRemove
 add_example(NAME RemoteQueryCs 
 	SOURCE Order.cs Program.cs)
 
+# This example requires its own CMakeLists.txt to copy SSL keys
 add_subdirectory(SslPutGet)
