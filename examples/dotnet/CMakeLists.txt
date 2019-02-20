@@ -46,29 +46,29 @@ function(add_example)
     DESTINATION examples/dotnet/${ADD_EXAMPLE_NAME})
 endfunction()
 
-add_example(NAME AuthInitialize
+add_example(NAME authinitialize
 	SOURCE ExampleAuthInitialize.cs Program.cs)
 
-add_example(NAME ContinuousQueryCs 
+add_example(NAME continuousquery
 	SOURCE Order.cs MyCqListener.cs Program.cs)
 
-add_example(NAME DataSerializableCs
+add_example(NAME dataserializable
 	SOURCE Order.cs Program.cs)
 
-add_example(NAME FunctionExecutionCs
+add_example(NAME functionexecution
 	SOURCE Program.cs)
 
-add_example(NAME PdxAutoSerializer
+add_example(NAME pdxautoserializer
 	SOURCE Order.cs Program.cs)
 
-add_example(NAME PdxSerializableCs
+add_example(NAME pdxserializable
 	SOURCE Order.cs Program.cs)
 
-add_example(NAME PutGetRemove
+add_example(NAME put-get-remove
 	SOURCE Program.cs)
 
-add_example(NAME RemoteQueryCs 
+add_example(NAME remotequery 
 	SOURCE Order.cs Program.cs)
 
-add_example(NAME TransactionCs
+add_example(NAME transaction
 	SOURCE Program.cs)
