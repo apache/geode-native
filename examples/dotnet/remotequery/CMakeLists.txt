@@ -13,20 +13,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.10)
 
-project(cpp-@ADD_EXAMPLE_NAME@ LANGUAGES CXX)
+project(RemoteQueryCs LANGUAGES CSharp)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../../cmake)
-set(CMAKE_CXX_STANDARD 11)
 
-find_package(@PRODUCT_NAME_NOSPACE@ REQUIRED COMPONENTS cpp)
+find_package(GeodeNative REQUIRED COMPONENTS dotnet)
 
-add_executable(${PROJECT_NAME} @ADD_EXAMPLE_SOURCE@)
-
-configure_file("startserver.sh" ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
-configure_file("stopserver.sh" ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
+add_executable(${PROJECT_NAME} Order.cs;Program.cs)
 
 target_link_libraries(${PROJECT_NAME}
-    PUBLIC
-    @PRODUCT_NAME_NOSPACE@::cpp)
+    GeodeNative::dotnet)
+
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    VS_DOTNET_TARGET_FRAMEWORK_VERSION "v4.5.2"
+    VS_DOTNET_REFERENCES "System;${GeodeNative_DOTNET_LIBRARY}")

@@ -13,20 +13,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cmake_minimum_required(VERSION 3.5)
+$GFSH_PATH = ""
+if (Get-Command gfsh -ErrorAction SilentlyContinue)
+{
+    $GFSH_PATH = "gfsh"
+}
+else
+{
+    if (-not (Test-Path env:GEODE_HOME))
+    {
+        Write-Host "Could not find gfsh.  Please set the GEODE_HOME path. e.g. "
+        Write-Host "(Powershell) `$env:GEODE_HOME = <path to Geode>"
+        Write-Host " OR"
+        Write-Host "(Command-line) set %GEODE_HOME% = <path to Geode>"
+    }
+    else
+    {
+        $GFSH_PATH = "$env:GEODE_HOME\bin\gfsh.bat"
+    }
+}
 
-project(cpp-@ADD_EXAMPLE_NAME@ LANGUAGES CXX)
-
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../../cmake)
-set(CMAKE_CXX_STANDARD 11)
-
-find_package(@PRODUCT_NAME_NOSPACE@ REQUIRED COMPONENTS cpp)
-
-add_executable(${PROJECT_NAME} @ADD_EXAMPLE_SOURCE@)
-
-configure_file("startserver.sh" ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
-configure_file("stopserver.sh" ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
-
-target_link_libraries(${PROJECT_NAME}
-    PUBLIC
-    @PRODUCT_NAME_NOSPACE@::cpp)
+if ($GFSH_PATH -ne "")
+{
+   Invoke-Expression "$GFSH_PATH -e 'start locator --name=locator --dir=$PSScriptRoot\locator' -e 'start server --name=server --dir=$PSScriptRoot\server' -e 'create region --name=exampleRegion --type=PARTITION'"
+}
