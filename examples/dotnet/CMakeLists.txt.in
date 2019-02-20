@@ -28,5 +28,5 @@ add_subdirectory(remotequery)
 add_subdirectory(transaction)
 
 if(OPENSSL_FOUND)
-  add_subdirectory(SslPutGet)
+  add_subdirectory(sslputget)
 endif()

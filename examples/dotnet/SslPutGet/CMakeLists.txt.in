@@ -15,7 +15,7 @@
 
 cmake_minimum_required(VERSION 3.10)
 
-project(dotnet-SslPutGet LANGUAGES CSharp)
+project(dotnet-sslputget LANGUAGES CSharp)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../../cmake)
 
