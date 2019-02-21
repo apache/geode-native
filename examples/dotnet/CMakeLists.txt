@@ -70,7 +70,7 @@ add_example(NAME put-get-remove
 add_example(NAME remotequery 
 	SOURCE Order.cs Program.cs)
 
-add_subdirectory(dotnet-sslputget)
+add_subdirectory(sslputget)
 
 add_example(NAME transaction
 	SOURCE Program.cs)
