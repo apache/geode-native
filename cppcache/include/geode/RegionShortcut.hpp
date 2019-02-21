@@ -25,6 +25,8 @@ namespace geode {
 namespace client {
 
 /**
+ * @class RegionShortcut RegionShortcut.hpp
+ *
  * Each enum represents a predefined {@link RegionAttributes} in a {@link
  * Cache}.
  * These enum values can be used to create regions using a {@link RegionFactory}
