@@ -15,20 +15,38 @@
 
 cmake_minimum_required(VERSION 3.10)
 
-project(dotnet-@ADD_EXAMPLE_NAME@ LANGUAGES CSharp)
+project(dotnet-sslputget LANGUAGES CSharp)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../../cmake)
 
-find_package(@PRODUCT_NAME_NOSPACE@ REQUIRED COMPONENTS dotnet)
+find_package(GeodeNative REQUIRED COMPONENTS dotnet crypto)
+find_package(OpenSSL REQUIRED COMPONENTS SSL)
 
-add_executable(${PROJECT_NAME} @ADD_EXAMPLE_SOURCE@)
+add_executable(${PROJECT_NAME} Program.cs)
 
 configure_file("startserver.ps1" ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 configure_file("stopserver.ps1" ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 
+file(GLOB SSL_CERTIFICATES 
+  "${CMAKE_CURRENT_SOURCE_DIR}/../../utilities/*Keys"
+)
+
+file(INSTALL ${SSL_CERTIFICATES} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
 target_link_libraries(${PROJECT_NAME}
-    @PRODUCT_NAME_NOSPACE@::dotnet)
+    GeodeNative::dotnet
+)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
     VS_DOTNET_TARGET_FRAMEWORK_VERSION "v4.5.2"
-    VS_DOTNET_REFERENCES "System;${@PRODUCT_NAME_NOSPACE@_DOTNET_LIBRARY}")
+    VS_DOTNET_REFERENCES "System"
+)
+
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_directory
+    $<SHELL_PATH:$<TARGET_FILE_DIR:OpenSSL::SSL>/../bin>
+    $<SHELL_PATH:$<TARGET_FILE_DIR:${PROJECT_NAME}>>
+  COMMAND ${CMAKE_COMMAND} -E copy
+    $<SHELL_PATH:$<TARGET_FILE:GeodeNative::crypto>>
+    $<SHELL_PATH:$<TARGET_FILE_DIR:${PROJECT_NAME}>>
+)

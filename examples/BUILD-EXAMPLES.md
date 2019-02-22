@@ -1,10 +1,11 @@
-# Geode Native C++ Examples
+# Geode Native C++ and .Net Examples
 
 ## Prerequisites
 * Install [Apache Geode](https://geode.apache.org)
 * Install [CMake](https://cmake.org/download/)
 * Build and install [Apache Geode Native](https://github.com/apache/geode-native)
-* **For Windows:** Visual Studio 2015
+* **For Windows:** Visual Studio 2017
+* Optional: OpenSSL (to build and run the SSL examples)
 
 ## Building the Examples
 
@@ -18,7 +19,7 @@
     $ cd workspace/examples
     $ mkdir build
     $ cd build
-    $ cmake .. -DGEODE_ROOT="<geode-install-root-dir>"
+    $ cmake .. -DGEODE_ROOT="<geode-install-dir>"
     $ cmake --build . -- <optional parallelism parameter>
     ```
   where the optional parallelism parameter is of the form `-j n`.
@@ -29,7 +30,7 @@
     $ cd workspace/examples/
     $ mkdir build
     $ cd build
-    $ cmake .. -G"Visual Studio 14 2015 Win64" -Thost=x64 -DGeodeNative_ROOT="<NC-install-root-dir>"
+    $ cmake .. -G"Visual Studio 15 2017 Win64" -Thost=x64 -DGeodeNative_ROOT="<NC-install-root-dir>" -DGEODE_ROOT="<geode-install-dir>"
     $ cmake --build . -- <optional parallelism parameter>
     ```
   where the optional parallelism parameter is `/m`.

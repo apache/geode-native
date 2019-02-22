@@ -17,7 +17,11 @@ cmake_minimum_required(VERSION 3.10)
 
 project(examples LANGUAGES NONE)
 
+find_package(OpenSSL)
+
 add_subdirectory(cpp)
 @DOTNET_SUB_DIRECTORY@
 add_subdirectory(utilities)
+
+
 
