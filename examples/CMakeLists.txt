@@ -48,5 +48,7 @@ if (BUILD_CLI)
     PATTERN "*.in" EXCLUDE)
 
   add_subdirectory(dotnet)
+  find_package(OpenSSL)
+
 endif()
 add_subdirectory(utilities)
