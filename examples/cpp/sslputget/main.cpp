@@ -29,32 +29,39 @@
 
 #include <geode/Cache.hpp>
 #include <geode/CacheFactory.hpp>
+#include <geode/PoolManager.hpp>
+#include <geode/RegionFactory.hpp>
 #include <geode/RegionShortcut.hpp>
 
-using apache::geode::client::CacheFactory;
 using apache::geode::client::CacheableString;
+using apache::geode::client::CacheFactory;
 using apache::geode::client::RegionShortcut;
 
 int main(int argc, char** argv) {
   const auto argv_str = std::string(argv[0]);
   const auto workingDirectory = argv_str.substr(0, argv_str.find_last_of("/"));
 
-  auto cache = CacheFactory()
-      .set("log-level", "none")
-      .set("ssl-enabled", "true")
-      .set("ssl-keystore", workingDirectory + "\..\ClientSslKeys\client_keystore.password.pem")
-      .set("ssl-keystore-password", "gemstone")
-      .set("ssl-truststore", workingDirectory + "\..\ClientSslKeys\client_truststore.pem")
-      .create();
+  auto cache =
+      CacheFactory()
+          .set("log-level", "all")
+          .set("log-file", "c:/temp/example.log")
+          .set("ssl-enabled", "true")
+          .set("ssl-keystore",
+               workingDirectory +
+                   "/../ClientSslKeys/client_keystore.password.pem")
+          .set("ssl-keystore-password", "gemstone")
+          .set("ssl-truststore",
+               workingDirectory + "/../ClientSslKeys/client_truststore.pem")
+          .create();
 
   const auto pool = cache.getPoolManager()
-      .createFactory()
-      .addServer("localhost", 10334)
-      .create("pool");
+                        .createFactory()
+                        .addServer("localhost", 10334)
+                        .create("pool");
 
   auto region = cache.createRegionFactory(RegionShortcut::PROXY)
-      .setPoolName("pool")
-      .create("testSSLRegion");
+                    .setPoolName("pool")
+                    .create("testSSLRegion");
 
   std::string rtimmonsKey = "rtimmons";
   std::string rtimmonsValue = "Robert Timmons";
@@ -80,4 +87,3 @@ int main(int argc, char** argv) {
 
   cache.close();
 }
-

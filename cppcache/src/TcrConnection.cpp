@@ -568,9 +568,9 @@ Connector* TcrConnection::createConnection(
                                .getSystemProperties();
   if (systemProperties.sslEnabled()) {
     socket = new TcpSslConn(endpoint, connectTimeout, maxBuffSizePool,
-                            systemProperties.sslKeystorePassword().c_str(),
                             systemProperties.sslTrustStore().c_str(),
-                            systemProperties.sslKeyStore().c_str());
+                            systemProperties.sslKeyStore().c_str(),
+                            systemProperties.sslKeystorePassword().c_str());
   } else {
     socket = new TcpConn(endpoint, connectTimeout, maxBuffSizePool);
   }
