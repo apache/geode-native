@@ -28,6 +28,7 @@ else
     fi
 fi
 
-$GFSH_PATH  -e "connect --use-ssl=true --key-store=.\..\..\Utilities\ServerSslKeys\server_keystore.jks --trust-store=.\..\..\Utilities\ServerSslKeys\server_truststore.jks --trust-store-password=gemstone --key-store-password=gemstone"
-            -e "shutdown --include-locators=true"
+BASEDIR="$( cd "$( dirname "$0" )" && pwd )"
+
+$GFSH_PATH  -e "connect --use-ssl=true --key-store=${BASEDIR}/ServerSslKeys/server_keystore.jks --trust-store=${BASEDIR}/ServerSslKeys/server_truststore.jks --trust-store-password=gemstone --key-store-password=gemstone" -e "shutdown --include-locators=true"
 

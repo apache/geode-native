@@ -28,9 +28,8 @@ else
     fi
 fi
 
-$GFSH_PATH  -e "start locator --name=locator --dir=.\locator --connect=false --J=-Dgemfire.ssl-enabled-components=all --J=-Dgemfire.ssl-keystore=.\..\..\Utilities\ServerSslKeys\server_keystore.jks --J=-Dgemfire.ssl-truststore=.\..\..\Utilities\ServerSslKeys\server_truststore.jks  --J=-Dgemfire.ssl-keystore-password=gemstone --J=-Dgemfire.ssl-truststore-password=gemstone"
-            -e "connect --use-ssl=true --key-store=.\..\..\Utilities\ServerSslKeys\server_keystore.jks --trust-store=.\..\..\Utilities\ServerSslKeys\server_truststore.jks --trust-store-password=gemstone --key-store-password=gemstone"
-            -e "start server --dir=.\server --name=server --J=-Dgemfire.ssl-enabled-components=all --J=-Dgemfire.ssl-keystore=.\..\..\Utilities\ServerSslKeys\server_keystore.jks --J=-Dgemfire.ssl-truststore=.\..\..\Utilities\ServerSslKeys\server_truststore.jks --J=-Dgemfire.ssl-truststore-password=gemstone --J=-Dgemfire.ssl-keystore-password=gemstone"
-            -e "create region --name=testSSLRegion --type=PARTITION"
+BASEDIR="$( cd "$( dirname "$0" )" && pwd )"
+
+$GFSH_PATH  -e "start locator --name=locator --dir=locator --connect=false --J=-Dgemfire.ssl-enabled-components=all --J=-Dgemfire.ssl-keystore=${BASEDIR}/ServerSslKeys/server_keystore.jks --J=-Dgemfire.ssl-truststore=${BASEDIR}/ServerSslKeys/server_truststore.jks  --J=-Dgemfire.ssl-keystore-password=gemstone --J=-Dgemfire.ssl-truststore-password=gemstone" -e "connect --use-ssl=true --key-store=${BASEDIR}/ServerSslKeys/server_keystore.jks --trust-store=${BASEDIR}/ServerSslKeys/server_truststore.jks --trust-store-password=gemstone --key-store-password=gemstone" -e "start server --dir=server --name=server --J=-Dgemfire.ssl-enabled-components=all --J=-Dgemfire.ssl-keystore=${BASEDIR}/ServerSslKeys/server_keystore.jks --J=-Dgemfire.ssl-truststore=${BASEDIR}/ServerSslKeys/server_truststore.jks --J=-Dgemfire.ssl-truststore-password=gemstone --J=-Dgemfire.ssl-keystore-password=gemstone" -e "create region --name=testSSLRegion --type=PARTITION"
 
 
