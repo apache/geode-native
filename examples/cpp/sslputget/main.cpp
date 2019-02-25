@@ -14,15 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-/*
- * This example takes the following steps:
- *
- * 1. Create a Geode Cache, Pool, and example Region Programmatically.
- * 3. Populate some objects on the Region.
- * 4. Create Execute Object
- * 5. Execute Function
- */
+#ifdef WIN32
+#include <direct.h>
+#else
+#include <unistd.h>
+#endif
 #include <iostream>
 #include <memory>
 #include <string>
@@ -37,43 +33,66 @@ using apache::geode::client::CacheableString;
 using apache::geode::client::CacheFactory;
 using apache::geode::client::RegionShortcut;
 
+std::string myGetcwd() {
+  char buf[PATH_MAX];
+  std::string cwd;
+
+#ifdef WIN32
+  if (_getcwd(buf, PATH_MAX)) {
+    cwd = buf;
+  }
+#else
+  if (getcwd(buf, PATH_MAX)) {
+    cwd = buf;
+  }
+#endif
+  return cwd;
+}
+
 int main(int argc, char** argv) {
   const auto argv_str = std::string(argv[0]);
-  const auto workingDirectory = argv_str.substr(0, argv_str.find_last_of("/"));
+  const auto workingDirectory = myGetcwd();
+
+#ifdef WIN32
+  const workingDirectory += "/..";
+#endif
+
+  std::cout << workingDirectory << std::endl;
+
+  std::cout << workingDirectory + "/ClientSslKeys/client_keystore.password.pem" << std::endl;
 
   auto cache =
       CacheFactory()
-          .set("log-level", "all")
-          .set("log-file", "c:/temp/example.log")
+          .set("log-level", "none")
           .set("ssl-enabled", "true")
           .set("ssl-keystore",
                workingDirectory +
-                   "/../ClientSslKeys/client_keystore.password.pem")
+                   "/ClientSslKeys/client_keystore.password.pem")
           .set("ssl-keystore-password", "gemstone")
           .set("ssl-truststore",
-               workingDirectory + "/../ClientSslKeys/client_truststore.pem")
+               workingDirectory + "/ClientSslKeys/client_truststore.pem")
           .create();
 
   const auto pool = cache.getPoolManager()
-                        .createFactory()
-                        .addServer("localhost", 10334)
-                        .create("pool");
+      .createFactory()
+      .addLocator("localhost", 10334)
+      .create("pool");
 
   auto region = cache.createRegionFactory(RegionShortcut::PROXY)
-                    .setPoolName("pool")
-                    .create("testSSLRegion");
+      .setPoolName("pool")
+      .create("testSSLRegion");
 
   std::string rtimmonsKey = "rtimmons";
   std::string rtimmonsValue = "Robert Timmons";
   std::string scharlesKey = "scharles";
   std::string scharlesValue = "Sylvia Charles";
 
-  std::cout << "Storing id and username in the region\n";
+  std::cout << "Storing id and username in the region" << std::endl;
 
   region->put(rtimmonsKey, rtimmonsValue);
   region->put(scharlesKey, scharlesValue);
 
-  std::cout << "Getting the user info from the region\n";
+  std::cout << "Getting the user info from the region" << std::endl;
 
   const auto user1 = region->get(rtimmonsKey);
   const auto user2 = region->get(scharlesKey);
