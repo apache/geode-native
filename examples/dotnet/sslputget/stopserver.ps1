@@ -35,5 +35,5 @@ else
 
 if ($GFSH_PATH -ne "")
 {
-   Invoke-Expression "$GFSH_PATH -e 'connect' -e 'shutdown --include-locators=true'"
+   Invoke-Expression "$GFSH_PATH -e 'connect --use-ssl=true --key-store=$PSScriptRoot\..\..\Utilities\ServerSslKeys\server_keystore.jks --trust-store=$PSScriptRoot\..\..\Utilities\ServerSslKeys\server_truststore.jks --trust-store-password=gemstone --key-store-password=gemstone' -e 'shutdown --include-locators=true'"
 }
