@@ -11,7 +11,7 @@ This example illustrates how to use SSL encryption for all traffic between a cli
   ```
   $ ./startserver.sh
   ```
-* Execute `sslputget`.
+* Execute `cpp-sslputget`.
 
   output:
   ```
