@@ -61,10 +61,6 @@ int main(int argc, char** argv) {
   workingDirectory += "/..";
 #endif
 
-  std::cout << workingDirectory << std::endl;
-
-  std::cout << workingDirectory + "/ClientSslKeys/client_keystore.password.pem" << std::endl;
-
   auto cache =
       CacheFactory()
           .set("log-level", "none")

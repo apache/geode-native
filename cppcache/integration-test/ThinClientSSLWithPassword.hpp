@@ -52,8 +52,6 @@ void initClient(const bool isthinClient) {
   if (cacheHelper == nullptr) {
     auto props = Properties::create();
     props->insert("ssl-enabled", "true");
-    props->insert("log-level", "all");
-    props->insert("log-file", "c:/temp/integration-test.log");
     std::string keystore = std::string(ACE_OS::getenv("TESTSRC")) + "/keystore";
     std::string pubkey = keystore + "/client_truststore.pem";
     std::string privkey = keystore + "/client_keystore.password.pem";
