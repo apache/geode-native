@@ -14,8 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifdef WIN32
+#ifdef _MSC_VER
 #include <direct.h>
+#include <windows.h>
+#ifndef PATH_MAX
+#define PATH_MAX MAX_PATH
+#undef max
+#endif
 #else
 #include <unistd.h>
 #endif
@@ -37,7 +42,7 @@ std::string myGetcwd() {
   char buf[PATH_MAX];
   std::string cwd;
 
-#ifdef WIN32
+#ifdef _MSC_VER
   if (_getcwd(buf, PATH_MAX)) {
     cwd = buf;
   }
@@ -50,11 +55,10 @@ std::string myGetcwd() {
 }
 
 int main(int argc, char** argv) {
-  const auto argv_str = std::string(argv[0]);
-  const auto workingDirectory = myGetcwd();
+  auto workingDirectory = myGetcwd();
 
-#ifdef WIN32
-  const workingDirectory += "/..";
+#ifdef _MSC_VER
+  workingDirectory += "/..";
 #endif
 
   std::cout << workingDirectory << std::endl;
