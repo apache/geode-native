@@ -1,5 +1,6 @@
-# PdxSerializer example
-This is a simple example showing how to register for serialization of custom objects using the PdxSerializer class.
+# AuthInitialize Example
+This example shows how to create and register a custom `AuthIntialize` authentication
+handler on the client that authenticates against a server that was started with the corresponding authenticator. 
 
 ## Prerequisites
 * Install [Apache Geode](https://geode.apache.org)
@@ -8,10 +9,10 @@ This is a simple example showing how to register for serialization of custom obj
 * Set `GEODE_HOME` to the install directory of Apache Geode
 
 ## Running
-1. From a command shell, set the current directory to the `pdxserializer` directory in your example workspace.
+1. From a command shell, set the current directory to the `authinitialize` directory in your example workspace.
 
     ```console
-    $ cd workspace/examples/cpp/pdxserializer
+    $ cd workspace/examples/cpp/authinitialize
     ```
 
 2. Run the `startserver` script to start the Geode cluster with authentication and create a region.
@@ -34,13 +35,14 @@ This is a simple example showing how to register for serialization of custom obj
     $ ./startserver.sh
     ```
 
-3. Execute `pdxserializer`, expect the following output:
+3. Execute `authinitialize`, expect the following output:
 
-       Storing orders in the region
-       Getting the orders from the region
-       OrderID: 1
-       Product Name: product x
-       Quantity: 42
+    ```text
+    ExampleAuthInitialize::ExampleAuthInitialize called
+    ExampleAuthInitialize::getCredentials called
+    a = 1
+    b = 2
+    ```
 
 4. Run the `stopserver` script to gracefully shutdown the Geode cluster.
 

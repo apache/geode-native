@@ -30,6 +30,9 @@ function(add_example)
     @ONLY)
 endfunction()
 
+add_example(NAME authinitialize
+	SOURCE main.cpp exampleAuthInitialize.hpp exampleAuthInitialize.cpp)
+
 add_example(NAME continuousquery
     SOURCE main.cpp Order.cpp Order.hpp)
 
@@ -54,7 +57,7 @@ add_example(NAME remotequery
 add_example(NAME transaction
         SOURCE main.cpp)
 
-  install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
   DESTINATION examples/
   PATTERN "./*.in" EXCLUDE
   PATTERN "CMakeFiles" EXCLUDE

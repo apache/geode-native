@@ -4,57 +4,63 @@ configure a `Pool` with a `PoolFactory`, and configure a `Region` with a `Region
 We then put, get, and remove some primitive data in the region.
 
 ## Prerequisites
-* An installation of Apache Geode.
-* Apache Geode Native, built and installed.
-* Apache Geode Native examples, built and installed.
-* A `GEODE_HOME` environment variable set to the location of the Apache Geode installation.
-* `GEODE_HOME/bin` in the execution path.
+* Install [Apache Geode](https://geode.apache.org)
+* Build and install [Apache Geode Native](https://github.com/apache/geode-native)
+* Apache Geode Native examples, built and installed
+* Set `GEODE_HOME` to the install directory of Apache Geode
 
 ## Running
-1. Set the current directory to the `put-get-remove` directory in your example workspace.
+1. From a command shell, set the current directory to the `put-get-remove` directory in your example workspace.
 
-  ```
-  $ cd workspace/examples/cpp/put-get-remove
-  ```
+    ```consaole
+    $ cd workspace/examples/cpp/put-get-remove
+    ```
 
-1. Run the `startserver.sh` script to start the Geode server, create a region, and populate the region with sample data.
+2. Run the `startserver` script to start the Geode cluster with authentication and create a region.
 
-  ```
-  $ sh ./startserver.sh
-  /Users/user/geode/bin/gfsh
+   For Windows cmd:
 
-  (1) Executing - start locator --name=locator
-  ...
-  (2) Executing - start server --name=server
-  ...
-(3) Executing - create region --name=example_userinfo --type=PARTITION
+    ```console
+    $ powershell.exe -File startserver.ps1
+    ```
 
-  Member | Status
-  ------ | ----------------------------------------------
-  server | Region "/example_userinfo" created on "server"
-  ```
+   For Windows Powershell:
 
-1. Execute `put-get-remove`:
+    ```console
+    $ startserver.ps1
+    ```
 
-  ```
-  $ ./put-get-remove
-  Storing id and username in the region
-  Getting the user info from the region
-    rtimmons = Robert Timmons
-    scharles = Sylvia Charles
-  Removing rtimmons info from the region
-  rtimmons's info successfully deleted
-  ```
+   For Bash:
 
-1. Stop the server
+    ```console
+    $ ./startserver.sh
+    ```
 
-  ```
-  $ sh ./stopserver.sh
-  /Users/user/geode/bin/gfsh
-  (1) Executing - connect
-  ...
-  (2) Executing - stop server --name=server
-  ...
-  (3) Executing - stop locator --name=locator
-  ....
-  ```
+3. Execute `put-get-remove` expect the following output:
+
+       Storing id and username in the region
+       Getting the user info from the region
+         rtimmons = Robert Timmons
+         scharles = Sylvia Charles
+       Removing rtimmons info from the region
+       rtimmons's info successfully deleted
+
+4. Run the `stopserver` script to gracefully shutdown the Geode cluster.
+
+   For Windows cmd:
+
+    ```console
+    $ powershell.exe -File stopserver.ps1
+    ```
+
+   For Windows Powershell:
+
+    ```console
+    $ stopserver.ps1
+    ```
+
+   For Bash:
+
+    ```console
+    $ ./stopserver.sh
+    ```
