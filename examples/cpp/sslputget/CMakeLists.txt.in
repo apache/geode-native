@@ -27,6 +27,9 @@ add_executable(${PROJECT_NAME} main.cpp)
 
 configure_file("startserver.sh" ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 configure_file("stopserver.sh" ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
+configure_file("startserver.ps1" ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
+configure_file("stopserver.ps1" ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
+configure_file("README.md" ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 
 file(GLOB SSL_CERTIFICATES 
   "${CMAKE_CURRENT_SOURCE_DIR}/../../utilities/*Keys"
@@ -46,3 +49,11 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     $<SHELL_PATH:$<TARGET_FILE:GeodeNative::crypto>>
     $<SHELL_PATH:$<TARGET_FILE_DIR:${PROJECT_NAME}>>
 )
+
+if(WIN32)
+  add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy
+      $<SHELL_PATH:$<TARGET_FILE_DIR:GeodeNative::cpp>/../bin/@PRODUCT_LIB_NAME@.dll>
+      $<SHELL_PATH:$<TARGET_FILE_DIR:${PROJECT_NAME}>>
+  )
+endif()
