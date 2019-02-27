@@ -16,14 +16,13 @@
  */
 #ifdef _MSC_VER
 #include <direct.h>
+#include <stdlib.h>
 #include <windows.h>
-#ifndef PATH_MAX
-#define PATH_MAX MAX_PATH
 #undef max
-#endif
 #else
 #include <unistd.h>
 #endif
+
 #include <iostream>
 #include <memory>
 #include <string>
@@ -39,14 +38,16 @@ using apache::geode::client::CacheFactory;
 using apache::geode::client::RegionShortcut;
 
 std::string myGetcwd() {
-  char buf[PATH_MAX];
   std::string cwd;
 
 #ifdef _MSC_VER
-  if (_getcwd(buf, PATH_MAX)) {
+  char buf[MAX_PATH];
+
+  if (_getcwd(buf, MAX_PATH)) {
     cwd = buf;
   }
 #else
+  char buf[PATH_MAX];
   if (getcwd(buf, PATH_MAX)) {
     cwd = buf;
   }
@@ -66,21 +67,20 @@ int main(int argc, char** argv) {
           .set("log-level", "none")
           .set("ssl-enabled", "true")
           .set("ssl-keystore",
-               workingDirectory +
-                   "/ClientSslKeys/client_keystore.password.pem")
+               workingDirectory + "/ClientSslKeys/client_keystore.password.pem")
           .set("ssl-keystore-password", "gemstone")
           .set("ssl-truststore",
                workingDirectory + "/ClientSslKeys/client_truststore.pem")
           .create();
 
   const auto pool = cache.getPoolManager()
-      .createFactory()
-      .addLocator("localhost", 10334)
-      .create("pool");
+                        .createFactory()
+                        .addLocator("localhost", 10334)
+                        .create("pool");
 
   auto region = cache.createRegionFactory(RegionShortcut::PROXY)
-      .setPoolName("pool")
-      .create("testSSLRegion");
+                    .setPoolName("pool")
+                    .create("testSSLRegion");
 
   std::string rtimmonsKey = "rtimmons";
   std::string rtimmonsValue = "Robert Timmons";
