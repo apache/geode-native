@@ -13,16 +13,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cmake_minimum_required(VERSION 3.10)
+$GFSH_PATH = ""
+if (Get-Command gfsh -ErrorAction SilentlyContinue)
+{
+    $GFSH_PATH = "gfsh"
+}
+else
+{
+    if (-not (Test-Path env:GEODE_HOME))
+    {
+        Write-Host "Could not find gfsh.  Please set the GEODE_HOME path. e.g. "
+        Write-Host "(Powershell) `$env:GEODE_HOME = <path to Geode>"
+        Write-Host " OR"
+        Write-Host "(Command-line) set %GEODE_HOME% = <path to Geode>"
+    }
+    else
+    {
+        $GFSH_PATH = "$env:GEODE_HOME\bin\gfsh.bat"
+    }
+}
 
-project(@PRODUCT_DLL_NAME@.Cpp.Examples LANGUAGES NONE)
-
-add_subdirectory(authinitialize)
-add_subdirectory(continuousquery)
-add_subdirectory(dataserializable)
-add_subdirectory(function-execution)
-add_subdirectory(pdxserializable)
-add_subdirectory(pdxserializer)
-add_subdirectory(put-get-remove)
-add_subdirectory(remotequery)
-add_subdirectory(transaction)
+if ($GFSH_PATH -ne "")
+{
+   Invoke-Expression "$GFSH_PATH -e 'connect' -e 'destroy region --name=custom_orders' -e 'stop server --name=server' -e 'stop locator --name=locator'"
+}

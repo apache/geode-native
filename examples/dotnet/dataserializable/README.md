@@ -4,50 +4,50 @@ This is a simple example showing how to register for serialization of custom obj
 ## Prerequisites
 * Install [Apache Geode](https://geode.apache.org)
 * Build and install [Apache Geode Native](https://github.com/apache/geode-native)
+* Apache Geode Native examples, built and installed
+* Set `GEODE_HOME` to the install directory of Apache Geode
 
 ## Running
-* Open a PowerShell window and `cd` to the `DataSerializableCs` example directory
-* Run `startserver.ps1` to start the Geode Server and create a region.
+1. From a command shell, set the current directory to the `DataSerializableCs` directory in your example workspace.
 
-  ```
-  PS C:\> startserver.ps1
-  (1) Executing - start locator --name=locator
-  ...
-  (2) Executing - start server --name=server
-  ...
-  (3) Executing - create region --name=custom_orders --type=PARTITION
+    ```console
+    $ cd workspace/examples/dotnet/DataSerializableCs
+    ```
 
-  Member | Status
-  ------ | -------------------------------------------
-  server | Region "/custom_orders" created on "server"
+2. Run the `startserver.ps1` script to start the Geode cluster with authentication and create a region.
 
-  ```
-* Execute `DataSerializable.exe` to store and retrieve serializable `Order` objects.
+   For Windows cmd:
+
+    ```console
+    $ powershell.exe -File startserver.ps1
+    ```
+
+   For Windows Powershell:
+
+    ```console
+    $ startserver.ps1
+    ```
+
+3. Execute `DataSerializableCs.exe`, expect the following output:
   
-  ```
-  PS C:\> DataSerializableCs.exe
-  Create orders
-  Storing orders in the region
-  Getting the orders from the region
-  OrderID: 1
-  Product Name: product x
-  Quantity: 23
-  OrderID: 2 Product Name: product y Quantity: 37
-  ```
-* Run `stopserver.ps1` to shut down the server.
+       Create orders
+       Storing orders in the region
+       Getting the orders from the region
+       OrderID: 1
+       Product Name: product x
+       Quantity: 23
+       OrderID: 2 Product Name: product y Quantity: 37
 
-  ```
-  PS C:\> stopserver.ps1
-  (1) Executing - connect
-  ...
-  (2) Executing - destroy region --name=custom_orders
+4. Run the `stopserver.ps1` script to gracefully shutdown the Geode cluster.
 
-  Member | Status
-  ------ | ----------------------------------------------
-  server | Region '/custom_orders' destroyed successfully
-  
-  (3) Executing - stop server --name=server
-  ...
-  (4) Executing - stop locator --name=locator
+   For Windows cmd:
 
-  ```
+    ```console
+    $ powershell.exe -File stopserver.ps1
+    ```
+
+   For Windows Powershell:
+
+    ```console
+    $ stopserver.ps1
+    ```

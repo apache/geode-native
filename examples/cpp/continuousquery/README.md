@@ -2,60 +2,67 @@
 This is a simple example showing how to create a continuous query.
 
 ## Prerequisites
-* An installation of Apache Geode.
-* Apache Geode Native, built and installed.
-* Apache Geode Native examples, built.
-* A `GEODE_HOME` environment variable set to the location of the Apache Geode installation.
+* Install [Apache Geode](https://geode.apache.org)
+* Build and install [Apache Geode Native](https://github.com/apache/geode-native)
+* Apache Geode Native examples, built and installed
+* Set `GEODE_HOME` to the install directory of Apache Geode
 
 ## Running
-1. Set the current directory to the `continuousquery` directory in your installed example workspace.
+1. From a command shell, set the current directory to the `continuousquery` directory in your example workspace.
 
-  ```
-  $ cd workspace/examples/cpp/continuousquery
-  ```
+    ```console
+    $ cd workspace/examples/cpp/continuousquery
+    ```
 
-1. Run the `startserver.sh` script to start the Geode locator, server, and create a region.
+2. Run the `startserver` script to start the Geode cluster with authentication and create a region.
 
-  ```
-  $ sh ./startserver.sh
-  /Users/user/geode/bin/gfsh
+   For Windows cmd:
 
-  (1) Executing - start locator --name=locator
-  ...
-  (2) Executing - start server --name=server
-  ...
-  (3) Executing - create region --name=custom_orders --type=PARTITION
+   ```console
+   $ powershell.exe -File startserver.ps1
+   ```
 
-  Member | Status
-  ------ | -------------------------------------------
-  server | Region "/custom_orders" created on "server"
-  ```
+   For Windows Powershell:
 
-1. Execute `continuousquery`:
+    ```console
+   $ startserver.ps1
+    ```
 
-  ```
-  $ ./continuousquery
-  Executing continuous query
-  Create orders
-  Putting and changing Order objects in the region
-  MyCqListener::OnEvent called with CREATE, key[Order2], value(2, product y, 37)
-  MyCqListener::OnEvent called with CREATE, key[Order4], value(4, product z, 102)
-  MyCqListener::OnEvent called with CREATE, key[Order6], value(6, product z, 42)
-  MyCqListener::OnEvent called with UPDATE, key[Order2], value(2, product y, 45)
-  MyCqListener::OnEvent called with DESTROY, key[Order2], value(2, product y, 29)
-  MyCqListener::OnEvent called with DESTROY, key[Order6], value is nullptr
-  close called
-  ```
+   For Bash:
 
-1. Stop the server
+    ```console
+    $ ./startserver.sh
+    ```
 
-  ```
-  $ sh ./stopserver.sh
-  /Users/user/geode/bin/gfsh
-  (1) Executing - connect
-  ...
-  (2) Executing - stop server --name=server
-  ...
-  (3) Executing - stop locator --name=locator
-  ....
-  ```
+3. Execute `continuousquery`, expect the following output:
+
+       Executing continuous query
+       Create orders
+       Putting and changing Order objects in the region
+       MyCqListener::OnEvent called with CREATE, key[Order2], value(2, product y, 37)
+       MyCqListener::OnEvent called with CREATE, key[Order4], value(4, product z, 102)
+       MyCqListener::OnEvent called with CREATE, key[Order6], value(6, product z, 42)
+       MyCqListener::OnEvent called with UPDATE, key[Order2], value(2, product y, 45)
+       MyCqListener::OnEvent called with DESTROY, key[Order2], value(2, product y, 29)
+       MyCqListener::OnEvent called with DESTROY, key[Order6], value is nullptr
+       close called
+
+4. Run the `stopserver` script to gracefully shutdown the Geode cluster.
+
+   For Windows cmd:
+
+    ```console
+    $ powershell.exe -File stopserver.ps1
+    ```
+
+   For Windows Powershell:
+
+    ```console
+    $ stopserver.ps1
+    ```
+
+   For Bash:
+
+    ```console
+    $ ./stopserver.sh
+    ```

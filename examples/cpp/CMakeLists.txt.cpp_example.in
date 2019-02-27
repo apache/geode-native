@@ -24,9 +24,20 @@ find_package(@PRODUCT_NAME_NOSPACE@ REQUIRED COMPONENTS cpp)
 
 add_executable(${PROJECT_NAME} @ADD_EXAMPLE_SOURCE@)
 
+configure_file("startserver.ps1" ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
+configure_file("stopserver.ps1" ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 configure_file("startserver.sh" ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 configure_file("stopserver.sh" ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
+configure_file("README.md" ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 
 target_link_libraries(${PROJECT_NAME}
     PUBLIC
     @PRODUCT_NAME_NOSPACE@::cpp)
+
+if(WIN32)
+  add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy
+      $<SHELL_PATH:$<TARGET_FILE_DIR:GeodeNative::cpp>/../bin/@PRODUCT_LIB_NAME@.dll>
+      $<SHELL_PATH:$<TARGET_FILE_DIR:${PROJECT_NAME}>>
+  )
+endif()
