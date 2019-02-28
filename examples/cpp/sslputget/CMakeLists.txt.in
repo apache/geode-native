@@ -53,7 +53,7 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 if(WIN32)
   add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy
-      $<SHELL_PATH:$<TARGET_FILE_DIR:GeodeNative::cpp>/../bin/@PRODUCT_LIB_NAME@.dll>
+      $<SHELL_PATH:$<TARGET_FILE_DIR:@PRODUCT_NAME_NOSPACE@::cpp>/../bin/@PRODUCT_LIB_NAME@.dll>
       $<SHELL_PATH:$<TARGET_FILE_DIR:${PROJECT_NAME}>>
   )
 endif()
