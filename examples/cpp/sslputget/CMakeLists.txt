@@ -15,18 +15,15 @@
 
 cmake_minimum_required(VERSION 3.10)
 
-project(@PRODUCT_DLL_NAME@.Cpp.Examples LANGUAGES NONE)
+project(cpp-sslputget LANGUAGES NONE)
 
-add_subdirectory(authinitialize)
-add_subdirectory(continuousquery)
-add_subdirectory(dataserializable)
-add_subdirectory(function-execution)
-add_subdirectory(pdxserializable)
-add_subdirectory(pdxserializer)
-add_subdirectory(put-get-remove)
-add_subdirectory(remotequery)
-add_subdirectory(transaction)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt.in ${CMAKE_CURRENT_BINARY_DIR}/CMakeLists.txt @ONLY)
 
-if(OPENSSL_FOUND)
-  add_subdirectory(sslputget)
-endif()
+install(FILES
+  ${CMAKE_CURRENT_BINARY_DIR}/CMakeLists.txt
+  main.cpp
+  README.md
+  startserver.sh
+  stopserver.sh
+  DESTINATION examples/cpp/sslputget)
+

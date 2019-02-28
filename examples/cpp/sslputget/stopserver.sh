@@ -13,20 +13,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cmake_minimum_required(VERSION 3.10)
+#!/usr/bin/env bash
+GFSH_PATH=""
+which gfsh 2> /dev/null
 
-project(@PRODUCT_DLL_NAME@.Cpp.Examples LANGUAGES NONE)
+if [ $? -eq 0 ]; then
+    GFSH_PATH="gfsh"
+else
+    if [ "$GEODE_HOME" == "" ]; then
+        echo "Could not find gfsh. Please set the GEODE_HOME path."
+        echo "e.g. export GEODE_HOME=<path to Geode>"
+    else
+        GFSH_PATH=$GEODE_HOME/bin/gfsh
+    fi
+fi
 
-add_subdirectory(authinitialize)
-add_subdirectory(continuousquery)
-add_subdirectory(dataserializable)
-add_subdirectory(function-execution)
-add_subdirectory(pdxserializable)
-add_subdirectory(pdxserializer)
-add_subdirectory(put-get-remove)
-add_subdirectory(remotequery)
-add_subdirectory(transaction)
+BASEDIR="$( cd "$( dirname "$0" )" && pwd )"
 
-if(OPENSSL_FOUND)
-  add_subdirectory(sslputget)
-endif()
+$GFSH_PATH  -e "connect --use-ssl=true --key-store=${BASEDIR}/ServerSslKeys/server_keystore.jks --trust-store=${BASEDIR}/ServerSslKeys/server_truststore.jks --trust-store-password=gemstone --key-store-password=gemstone" -e "shutdown --include-locators=true"
+
