@@ -50,8 +50,7 @@ add_clangformat(cryptoImpl)
 
 if ("Windows" STREQUAL ${CMAKE_SYSTEM_NAME} )
   install(TARGETS cryptoImpl
-    RUNTIME DESTINATION bin
-    ARCHIVE DESTINATION lib)
+    RUNTIME DESTINATION bin)
 else()
   install (TARGETS cryptoImpl DESTINATION lib)
 endif()
