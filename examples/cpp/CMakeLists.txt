@@ -54,8 +54,10 @@ add_example(NAME put-get-remove
 add_example(NAME remotequery
     SOURCE main.cpp Order.cpp Order.hpp)
 
+add_subdirectory(sslputget)
+
 add_example(NAME transaction
-        SOURCE main.cpp)
+    SOURCE main.cpp)
 
 install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
   DESTINATION examples/
