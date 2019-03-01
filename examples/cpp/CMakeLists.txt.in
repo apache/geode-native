@@ -27,6 +27,4 @@ add_subdirectory(put-get-remove)
 add_subdirectory(remotequery)
 add_subdirectory(transaction)
 
-if(OPENSSL_FOUND)
-  add_subdirectory(sslputget)
-endif()
+add_subdirectory(sslputget)
