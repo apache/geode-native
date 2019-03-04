@@ -20,6 +20,7 @@ limitations under the License.
 -->
 
 This section describes how to implement TLS-based communication between your clients and servers using the OpenSSL encryption utility.
+When configuring TLS/SSL security for your client, you may find it helpful to refer to [The SSL section of the <%=vars.product_name%> User Guide](serverman/managing/security/ssl_overview.html).
 
 # Set Up OpenSSL
 
@@ -43,12 +44,10 @@ Download and install OpenSSL 1.1.1 for your specific operating system.
 
 The <%=vars.product_name%> server requires keys and keystores in the Java Key Store (JKS) format while the native client requires them in the clear PEM format. Thus you need to be able to generate private/public keypairs in either format and convert between the two using the `keytool` utility and the `openssl` command.
 
-There are public third party free tools and source code available to download such as the "KeyTool IUI" tool.
-
 
 ## Step 2. Configure environment variables
 
-Configure your system environment to build and run OpenSSL by adding the appropriate executable and library directories to your paths.
+Configure your system environment to run OpenSSL by adding the appropriate executable and library directories to your paths.
 For example, for Bourne and Korn shells (sh, ksh, bash), environment setup would look something like this:
 <code>
 % LD\_LIBRARY\_PATH=$LD\_LIBRARY\_PATH:_client-install-dir_/lib:_client-install-dir_/ssl\_libs:_openssl-install-dir_/lib<br />

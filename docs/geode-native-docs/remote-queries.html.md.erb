@@ -33,7 +33,6 @@ Querying and indexing operate only on remote cache server contents.
 OQL is very similar to SQL, but OQL allows you to query complex objects, object attributes, and methods.
 
 In the context of a query, specify the name of a region by its full path, starting with a slash (`/`).
-The query processor performs binary numeric promotion, method invocation conversion, and temporal type conversion.
 
 The query language supports drilling down into nested object structures.
 Nested data collections can be explicitly referenced in the FROM clause of a query.
@@ -55,25 +54,44 @@ This section gives a general overview of the interfaces and classes that are pro
 
 ### <a id="Query"></a>Query
 
-A `Query` is obtained from a `QueryService` method, which is obtained from the cache. The `Query`
-interface provides methods for managing the compilation and execution of queries, and for retrieving
-an existing query string.
+You must create a `Query` object for each new query. The `Query` interface provides methods for
+managing the compilation and execution of queries, and for retrieving an existing query string.
 
-You must create a `Query` object for each new query.
+A `Query` is obtained from a `QueryService`, which is obtained from one of two sources:
+
+- To create a `Query` that operates on the <%=vars.product_name%> server, start with a `QueryService` obtained from a `Pool`.
+  - For .NET, use `Apache::Geode::Client::Pool::GetQueryService()`.
+  - For C++, use ` apache::geode::client::Pool::getQueryService()`.
+
+- To create a `Query` that operates on your application's local cache, start with a `QueryService` obtained from a `Cache`.
+  - For .NET, use `Apache::Geode::Client::Cache::GetQueryService()`.
+  - For C++, use ` apache::geode::client::Cache::getQueryService()`.
+
+[**QUESTION**] These are also available - when are they used?
+
+.NET:
+
+- Apache::Geode::Client::IRegionService::GetQueryService()
+
+C++:
+
+- apache::geode::client::RegionService::getQueryService()
+- apache::geode::client::AuthenticatedView::getQueryService()
+
 
 ### <a id="ExecutingAQuery"></a>Executing a Query from the Client
 
 The essential steps to create and execute a query are:
 
 1.  Create an instance of the `QueryService` class. If you are using the pool API (recommended), you should obtain the `QueryService` from the pool.
-1.  Create a `QueryPtr` to a query (C++) or create a query instance (.NET) that is compatible with the OQL specification.
+1.  Create a `Query` instance that is compatible with the OQL specification.
 1.  Use the `Query.execute()` method to submit the query string to the cache server. The server
    remotely evaluates the query string and returns the results to the client.
 1.  Iterate through the returned objects.
 
 ### <a id="DotNetQueryExample"></a>.NET Query Example
 
-These C# code excerpts are from the `examples\dotnet\RemoteQueryCs` example included in your client
+These C# code excerpts are from the `examples\dotnet\remotequery` example included in your client
 distribution. See the example for full context.
 
 Following the steps listed above,
@@ -108,14 +126,14 @@ distribution. See the example for full context.
 
 Following the steps listed above,
 
-  1. Obtain pointer to a `QueryService` object from the connection pool:
+  1. Obtain a `QueryService` object from the connection pool:
 
     ```
     std::shared_ptr<QueryService> queryService = nullptr;
     queryService = pool->getQueryService();
     ```
 
-  1. Create a pointer to a `Query` object by calling `QueryService.newQuery()`, specifying your OQL query as a string parameter:
+  1. Create a `Query` object by calling `QueryService.newQuery()`, specifying your OQL query as a string parameter:
 
     ```
     auto query = queryService->newQuery("SELECT * FROM /custom_orders WHERE quantity > 30");    
