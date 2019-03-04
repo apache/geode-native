@@ -28,7 +28,7 @@ in the *<%=vars.product_name%> User Guide*.
 
 Continuous querying provides the following features:
 
--   **Standard <%=vars.product_name%> native client query syntax and semantics**. Continuous queries are expressed in the same language used for other native client queries. See [Remote Queries](remote-queries.html).
+- **Standard <%=vars.product_name%> native client query syntax and semantics**. Continuous queries are expressed in the same language used for other native client queries. See [Remote Queries](remote-queries.html).
 
 - **Standard <%=vars.product_name%> events-based management of CQ events**. The event handling used
 to process CQ events is based on the standard <%=vars.product_name%> event handling framework. 
@@ -41,16 +41,18 @@ server failure (see [High Availability for Client-to-Server Communication](prese
 If your clients are durable, you can also define any of your CQs as durable (see [Durable Client Messaging](preserving-data/durable-client-messaging.html)).
 
 - **Interest criteria based on data values**. Continuous queries are run against the region's entry values. 
-Compare this to register interest by reviewing [Registering Interest for Entries](client-cache/registering-interest-for-entries.html).
+Compare this to register interest by reviewing [Registering Interest for Entries](regions/registering-interest-for-entries.html).
 
--   **Active query execution**. Once initialized, the queries operate only on new events, rather than on the entire region data set. 
-Events that change the query result are sent to the client immediately.
+- **Active query execution**. Once initialized, the queries operate on new events. Events that change the query result are sent to the client immediately.
 
 ## <a id="cq_api"></a>Typical Continuous Query Lifecycle
 
 1.  The client creates the CQ. This sets up everything for running the query and provides the client with a `CqQuery` object, but does not execute the CQ. At this point, the query is in a `STOPPED `state, ready to be closed or run.
-2.  The client initiates the CQ with an API call to one of the `CqQuery execute*` methods. This puts the query into a `RUNNING` state on the client and on the server.  The server remotely evaluates the query string, and optionally returns the results to the client.
-1.  The CqListener waits for events. When it receives events, it takes action accordingly. Events are not result sets. If the action requires doing something with the data, the data must first be retrieved.
+2.  The client initiates the CQ with an API call to one of the `CqQuery execute*` methods. This puts the query into a `RUNNING` state on the client and on the server.  The server remotely evaluates the query string, and optionally returns the results to the client. `CqQuery execute*` methods include:
+  - .NET: `CqQuery.Execute()` and `CqQuery.ExecuteWithInitialResults()`
+  - C++: `CqQuery.execute()` and `CqQuery.executeWithInitialResults()`
+
+1.  A CQ Listener waits for events. When it receives events, it takes action accordingly with the data in the CqEvent.
 3.  The CQ is closed by a client call to `CqQuery.close`. This de-allocates all resources in use for the CQ on the client and server. At this point, the cycle could begin again with the creation of a new `CqQuery` instance.
 
 ## <a id="ExecutingACQ"></a>Executing a Continuous Query from the Client
@@ -58,15 +60,16 @@ Events that change the query result are sent to the client immediately.
 The essential steps to create and execute a continuous query are:
 
 1.  Create an instance of the `QueryService` class. If you are using the pool API (recommended), you should obtain the `QueryService` from the pool.
-1.  Create a `CqListener` to field events sent from the server.
-1.  Use the `Query.execute()` method to submit the query string to the cache server. The server
-   remotely evaluates the query string, then monitors those results and notifies the client if they change.
+1.  Define a CQ Listener (in .NET, an `ICqListener`, in C++, a `CqListener`) to field events sent from the server.
+1.  Use one of the `CqQuery execute*` methods to submit the query string to the cache server.
+1.  The server remotely evaluates the query string, then monitors those results and notifies the client if they change.
+1.  The client listens for changes that match the query predicate.
 1.  Iterate through the returned objects.
 1.  When finished, close down the continuous query.
 
 ### <a id="DotNetCQExample"></a>.NET Continuous Query Example
 
-These C# code excerpts are from the `examples\dotnet\ContinuousQueryCs` example included in your client
+These C# code excerpts are from the `examples\dotnet\continuousquery` example included in your client
 distribution. See the example for full context.
 
 Following the steps listed above,
@@ -77,15 +80,17 @@ Following the steps listed above,
     var queryService = pool.GetQueryService();
     ```
 
-1. Create a CQ Listener:
+1. Define an ICqListener:
+
+    ```
+    public class MyCqListener<TKey, TResult> : ICqListener<TKey, TResult>
+    {
+    ```
+
+1. Create an instance of your ICqListener and insert it into a CQ attributes object:
 
     ```
     var cqListener = new MyCqListener<string, Order>();
-    ```
-
-1. Insert the CQ Listener into a CQ attributes object:
-
-    ```
     var cqAttributesFactory = new CqAttributesFactory<string, Order>();
     cqAttributesFactory.AddCqListener(cqListener);
     var cqAttributes = cqAttributesFactory.Create();
@@ -97,12 +102,18 @@ Following the steps listed above,
     var query = queryService.NewCq("MyCq", "SELECT * FROM /example_orderobject WHERE quantity > 30", cqAttributes, false);
     ```
 
+1. Execute the query:
+
+    ```
+    query.Execute();
+    ```
+
 1. Wait for events and do something with them.
 
     ```
 	/* Excerpt from the CqListener */
 
-	/* Determine OP Type */
+	/* Determine Operation Type */
            switch (ev.getQueryOperation())
             {
                 case CqOperation.OP_TYPE_CREATE:
@@ -149,13 +160,13 @@ Following the steps listed above,
     auto queryService = pool->getQueryService();
     ```
 
-1. Create a CQ Listener:
+1. Define a CqListener:
 
     ```
     class MyCqListener : public CqListener {
     ```
 
-1. Insert the CQ Listener into a CQ attributes object:
+1. Create an instance of your CqListener and insert it into a CQ attributes object:
 
     ```
     CqAttributesFactory cqFactory;
@@ -174,12 +185,18 @@ Following the steps listed above,
 	  cqAttributes);
     ```
 
+1. Execute the query:
+
+    ```
+    query->execute();
+    ```
+
 1. Wait for events and do something with them.
 
     ```
 	/* Excerpt from the CqListener */
 
-	/* Determine OP Type */
+	/* Determine Operation Type */
 	switch (cqEvent.getQueryOperation()) {
 	case CqOperation::OP_TYPE_CREATE:
 	  opStr = "CREATE";

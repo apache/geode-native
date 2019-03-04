@@ -27,39 +27,28 @@ Region attribute settings determine where the data resides, how the region is ma
 
 Specify region attributes before creating the region. You can do this either through the API or
 through the declarative XML file. The API includes classes for defining a region's attributes before
-creation and for modifying some of them after creation. For details, see the API for
-`RegionShortcut`, `RegionAttributes`, `AttributesFactory`, and `AttributesMutator`.
+creation and for modifying some attributes after creation. For details, see the API for
+`RegionShortcut`, `RegionAttributes`, `RegionAttributesFactory`, and `AttributesMutator`.
 
 ## <a id="region-shortcuts"></a>Region Shortcuts
 
 <%=vars.product_name%> provides predefined, shortcut region attributes settings for your use in `RegionShortcut`.
-
-Shortcut attributes are a convenience only. They are named attributes that <%=vars.product_name%>
-has already stored for you. You can override their settings by storing new attributes with the same
-`id` as the predefined attributes.
-
-### <a id="region-shortcuts_shortcut-attribute-options"></a>Shortcut Attribute Options
-
-You can select the most common region attributes settings from `RegionShortcut`, the predefined named region attributes.
-
-This section provides an overview of the options available in the region shortcut settings.
-
-**Communication with Servers and Data Storage**
+The shortcuts are:
 
 `PROXY`
->  does not store data in the client cache, but connects the region to the servers for data requests and updates, interest registrations, and so on.
+>  does not store data in the client cache, but connects the region to the servers.
 
 `CACHING_PROXY`
->  stores data in the client cache and connects the region to the servers for data requests and updates, interest registrations, and so on.
+>  stores data in the client cache and connects the region to the servers.
+
+`CACHING_PROXY_ENTRY_LRU`
+>  stores data in the client cache and connects the region to the servers.
+Limits the amount of data stored locally in the client to a default limit of 100,000 entries by ejecting the least recently used (LRU) entries.
 
 `LOCAL`
 >  stores data in the client cache and does not connect the region to the servers. This is a client-side-only region.
 
-**Data Eviction**
-
-Non-PROXY regions are those that store data in the client cache.
-You can add data eviction for non-PROXY regions:
-
-`ENTRY_LRU`
->  causes least recently used data to be evicted from memory when the region reaches the entry count limit.
+`LOCAL_ENTRY_LRU`
+>  stores data in the client cache and does not connect the region to the servers. This is a client-side-only region.
+Limits the amount of data stored locally in the client to a default limit of 100,000 entries by ejecting the least recently used (LRU) entries.
 
