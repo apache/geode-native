@@ -30,16 +30,16 @@ using apache::geode::client::CacheableString;
 
 int main(int argc, char** argv) {
   auto cache = CacheFactory()
-                   .set("log-level", "none")
-                   .setAuthInitialize(std::make_unique<ExampleAuthInitialize>())
-                   .create();
+      .set("log-level", "none")
+      .setAuthInitialize(std::unique_ptr<ExampleAuthInitialize>(new ExampleAuthInitialize()))
+      .create();
   auto pool = cache.getPoolManager()
-                   .createFactory()
-                   .addLocator("localhost", 10334)
-                   .create("pool");
+      .createFactory()
+      .addLocator("localhost", 10334)
+      .create("pool");
   auto region = cache.createRegionFactory(RegionShortcut::PROXY)
-                     .setPoolName("pool")
-                     .create("region");
+      .setPoolName("pool")
+      .create("region");
 
   region->put("a", "1");
   region->put("b", "2");
