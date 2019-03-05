@@ -64,7 +64,7 @@ add_example(NAME pdxautoserializer
 add_example(NAME pdxserializable
 	SOURCE Order.cs Program.cs)
 
-add_example(NAME put-get-remove
+add_example(NAME putgetremove
 	SOURCE Program.cs)
 
 add_example(NAME remotequery 

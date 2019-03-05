@@ -23,7 +23,7 @@ add_subdirectory(dataserializable)
 add_subdirectory(functionexecution)
 add_subdirectory(pdxautoserializer)
 add_subdirectory(pdxserializable)
-add_subdirectory(put-get-remove)
+add_subdirectory(putgetremove)
 add_subdirectory(remotequery)
 add_subdirectory(transaction)
 
