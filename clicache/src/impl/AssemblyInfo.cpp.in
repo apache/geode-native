@@ -31,7 +31,7 @@ using namespace System::Security::Permissions;
 [assembly:AssemblyConfigurationAttribute("")];
 [assembly:AssemblyCompanyAttribute("@PRODUCT_VENDOR_NAME@")];
 [assembly:AssemblyProductAttribute("@PRODUCT_BASE_NAME@.NETCache")];
-[assembly:AssemblyCopyrightAttribute("Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.  See the NOTICE file distributed with this work for additional information regarding copyright ownership.")];
+[assembly:AssemblyCopyrightAttribute("@PRODUCT_COPYRIGHT@")];
 [assembly:AssemblyTrademarkAttribute("All Rights Reserved")];
 [assembly:AssemblyCultureAttribute("")];
 [assembly:AssemblyVersionAttribute("@PRODUCT_VERSION_DOTTED@")];

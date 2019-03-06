@@ -62,6 +62,7 @@ set(PRODUCT_BITS "${BUILD_BITS}bit")
 
 set(PRODUCT_LIB_NAME "apache-geode" CACHE STRING "Binary name")
 set(PRODUCT_DLL_NAME "${PRODUCT_VENDOR}.${PRODUCT_BASE_NAME}" CACHE STRING ".Net Binary name")
+set(PRODUCT_COPYRIGHT "Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.  See the NOTICE file distributed with this work for additional information regarding copyright ownership.")
 
 if(CMAKE_SYSTEM_NAME STREQUAL "SunOS")
   if (CMAKE_SYSTEM_PROCESSOR STREQUAL "sparc")
