@@ -100,9 +100,10 @@ The client:
 - provides the execution object with a populated input parameter array
 - invokes the object's execute method to invoke the server-side function
 
-If the client expects results, it must create a result object. The C++ example uses a result object to hold the function results.
-Alternatively, the client can use a provided Result Collector which offers some predefined methods for iterating over and processing return values.
-The .NET example uses a built-in result collector (`IResultCollector.getRestults()`) to retrieve the function results.
+If the client expects results, it must create a result object.
+The .NET example uses a built-in result collector (`IResultCollector.getResults()`) to retrieve the function results.
+
+The C++ example creates a result variable to hold the results from the collector.
 
 ## <a id="dotnet_example"></a>.NET Example
 This section contains code snippets showing highlights of the .NET function execution example. They are not intended for cut-and-paste execution.
@@ -262,7 +263,7 @@ The client creates an execution object using `Client.FunctionService.OnRegion` a
   auto functionService = FunctionService::onServer(region->getRegionService());
 ```
 
-The client then calls the server side function with its input arguments and stores the results in a Client.IResultCollector.
+The client then calls the server side function with its input arguments and stores the results in a vector.
 
 ```cpp
   if(auto executeFunctionResult = functionService.withArgs(arguments).execute(getFuncIName)->getResult()) {
@@ -279,7 +280,7 @@ The client then calls the server side function with its input arguments and stor
 }
 ```
 
-It then loops through the results and prints the retrieved values.
+It then loops through the results vector and prints the retrieved values.
 
 ```cpp
 void printResults(const std::vector<std::string>& resultList) {
