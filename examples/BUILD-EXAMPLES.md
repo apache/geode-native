@@ -6,7 +6,7 @@
 * Build and install [Apache Geode Native](https://github.com/apache/geode-native)
 * Set `GEODE_HOME` to the install directory of Apache Geode
 * **For Windows:** Visual Studio 2017
-* Optional: OpenSSL (to build and run the SSL examples)
+* Optional: OpenSSL (to run the SSL examples)
 
 ## Building the Examples
 
@@ -20,18 +20,18 @@
     $ cd workspace/examples
     $ mkdir build
     $ cd build
-    $ cmake .. -DGEODE_ROOT="<geode-install-dir>"
+    $ cmake .. -DGeodeNative_ROOT="<geode-native-install-dir>"
     $ cmake --build . -- <optional parallelism parameter>
     ```
   where the optional parallelism parameter is of the form `-j n`.
   
    **For Windows:** Include options that specify the generator, the architecture toolset, and the path to the Geode Native installation:
 
-       $ cd workspace/examples/
+       $ cd workspace\examples\
        $ mkdir build
        $ cd build
-       $ cmake <geode-native-install-dir>/examples -G"Visual Studio 15 2017 Win64"
-       $ cmake --build .
+       $ cmake .. -G"Visual Studio 15 2017 Win64" -DGeodeNative_ROOT="<geode-native-install-dir>"
+       $ cmake --build . -- <optional parallelism parameter>
 
 ## Running the Examples
 To run an example,

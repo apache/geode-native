@@ -39,7 +39,7 @@ add_example(NAME continuousquery
 add_example(NAME dataserializable
     SOURCE main.cpp Order.cpp Order.hpp)
 
-add_example(NAME function-execution
+add_example(NAME functionexecution
         SOURCE main.cpp)
 
 add_example(NAME pdxserializable
@@ -48,7 +48,7 @@ add_example(NAME pdxserializable
 add_example(NAME pdxserializer
     SOURCE main.cpp Order.cpp Order.hpp OrderSerializer.cpp OrderSerializer.hpp)
 
-add_example(NAME put-get-remove
+add_example(NAME putgetremove
     SOURCE main.cpp)
 
 add_example(NAME remotequery
@@ -61,6 +61,7 @@ add_example(NAME transaction
 
 install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
   DESTINATION examples/
+  USE_SOURCE_PERMISSIONS
   PATTERN "./*.in" EXCLUDE
   PATTERN "CMakeFiles" EXCLUDE
   PATTERN "Makefile" EXCLUDE

@@ -20,7 +20,6 @@ project(dotnet-sslputget LANGUAGES CSharp)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../../cmake)
 
 find_package(GeodeNative REQUIRED COMPONENTS dotnet crypto)
-find_package(OpenSSL REQUIRED COMPONENTS SSL)
 
 add_executable(${PROJECT_NAME} Program.cs)
 
@@ -43,9 +42,6 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 )
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy_directory
-    $<SHELL_PATH:$<TARGET_FILE_DIR:OpenSSL::SSL>/../bin>
-    $<SHELL_PATH:$<TARGET_FILE_DIR:${PROJECT_NAME}>>
   COMMAND ${CMAKE_COMMAND} -E copy
     $<SHELL_PATH:$<TARGET_FILE:GeodeNative::crypto>>
     $<SHELL_PATH:$<TARGET_FILE_DIR:${PROJECT_NAME}>>
