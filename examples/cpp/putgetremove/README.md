@@ -1,4 +1,4 @@
-# Put-get-remove example
+# putgetremove example
 This is a very simple example showing how to create a `Cache` using the `CacheFactory`,
 configure a `Pool` with a `PoolFactory`, and configure a `Region` with a `RegionFactory`.
 We then put, get, and remove some primitive data in the region.
@@ -10,10 +10,10 @@ We then put, get, and remove some primitive data in the region.
 * Set `GEODE_HOME` to the install directory of Apache Geode
 
 ## Running
-1. From a command shell, set the current directory to the `put-get-remove` directory in your example workspace.
+1. From a command shell, set the current directory to the `putgetremove` directory in your example workspace.
 
     ```consaole
-    $ cd workspace/examples/cpp/put-get-remove
+    $ cd workspace/examples/cpp/putgetremove
     ```
 
 2. Run the `startserver` script to start the Geode cluster with authentication and create a region.
@@ -36,7 +36,7 @@ We then put, get, and remove some primitive data in the region.
     $ ./startserver.sh
     ```
 
-3. Execute `put-get-remove` expect the following output:
+3. Execute `putgetremove` expect the following output:
 
        Storing id and username in the region
        Getting the user info from the region

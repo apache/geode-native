@@ -1,5 +1,5 @@
-# AuthInitialize Example
-This example shows how to create and register a custom `AuthIntialize` authentication
+# authinitialize Example
+This example shows how to create and register a custom `authintialize` authentication
 handler on the client that authenticates against a server that was started with the corresponding authenticator. 
 
 ## Prerequisites

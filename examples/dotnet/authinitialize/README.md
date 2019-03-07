@@ -9,10 +9,10 @@ handler on the client that authenticates against a server that was started with 
 * Set `GEODE_HOME` to the install directory of Apache Geode
 
 ## Running
-1. From a command shell, set the current directory to the `AuthInitialize` build directory in your example workspace.
+1. From a command shell, set the current directory to the `authinitialize` build directory in your example workspace.
 
     ```console
-    $ cd workspace/examples/build/dotnet/AuthInitialize
+    $ cd workspace/examples/build/dotnet/authinitialize
     ```
 
 2. Run the `startserver.ps1` script to start the Geode cluster with authentication and create a region.
