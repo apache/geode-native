@@ -20,7 +20,7 @@
     $ cd workspace/examples
     $ mkdir build
     $ cd build
-    $ cmake .. -DGEODE_ROOT="<geode-install-dir>"
+    $ cmake .. -DGeodeNative_ROOT="<geode-native-install-dir>"
     $ cmake --build . -- <optional parallelism parameter>
     ```
   where the optional parallelism parameter is of the form `-j n`.
@@ -30,8 +30,8 @@
        $ cd workspace\examples\
        $ mkdir build
        $ cd build
-       $ cmake <geode-native-install-dir>\examples -G"Visual Studio 15 2017 Win64"
-       $ cmake --build .
+       $ cmake .. -G"Visual Studio 15 2017 Win64" -DGeodeNative_ROOT="<geode-native-install-dir>"
+       $ cmake --build . -- <optional parallelism parameter>
 
 ## Running the Examples
 To run an example,
