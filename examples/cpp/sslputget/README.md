@@ -6,7 +6,7 @@ This example illustrates how to use SSL encryption for all traffic between a cli
 * Build and install [Apache Geode Native](https://github.com/apache/geode-native)
 * Apache Geode Native examples, built and installed
 * Set `GEODE_HOME` to the install directory of Apache Geode
-* Install [OpenSSL]()
+* Install [OpenSSL](https://www.openssl.org/)
 
 ## Running
 1. From a command shell, set the current directory to the `sslputget` directory in your example workspace.
