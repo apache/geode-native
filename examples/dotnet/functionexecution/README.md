@@ -8,10 +8,10 @@ This example illustrates how to execute server side java functions.
 * Set `GEODE_HOME` to the install directory of Apache Geode
 
 ## Running
-1. From a command shell, set the current directory to the `DataSerializableCs` directory in your example workspace.
+1. From a command shell, set the current directory to the `functionexecution` directory in your example workspace.
 
     ```console
-    $ cd workspace/examples/dotnet/DataSerializableCs
+    $ cd workspace/examples/build/dotnet/functionexecution
     ```
 
 2. Run the `startserver.ps1` script to start the Geode cluster with authentication and create a region.

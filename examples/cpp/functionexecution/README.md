@@ -12,10 +12,10 @@ the example app executes those functions and prints out the result set(s).
 * Set `GEODE_HOME` to the install directory of Apache Geode
 
 ## Running
-1. From a command shell, set the current directory to the `function-execution` directory in your example workspace.
+1. From a command shell, set the current directory to the `function-execution` build directory in your example workspace.
 
     ```console
-    $ cd workspace/examples/cpp/function-execution
+    $ cd workspace/examples/build/cpp/function-execution
     ```
 
 2. Run the `startserver` script to start the Geode cluster with authentication and create a region.
