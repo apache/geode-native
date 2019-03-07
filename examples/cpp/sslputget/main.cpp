@@ -14,15 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifdef _MSC_VER
-#include <direct.h>
-#include <stdlib.h>
-#include <windows.h>
-#undef max
-#else
-#include <unistd.h>
-#endif
-
 #include <iostream>
 #include <memory>
 #include <string>
@@ -37,40 +28,37 @@ using apache::geode::client::CacheableString;
 using apache::geode::client::CacheFactory;
 using apache::geode::client::RegionShortcut;
 
-std::string myGetcwd() {
-  std::string cwd;
-
-#ifdef _MSC_VER
-  char buf[MAX_PATH];
-
-  if (_getcwd(buf, MAX_PATH)) {
-    cwd = buf;
-  }
-#else
-  char buf[PATH_MAX];
-  if (getcwd(buf, PATH_MAX)) {
-    cwd = buf;
-  }
-#endif
-  return cwd;
+void print_usage() {
+  printf("Usage: cpp-sslputget <<path>>\n");
+  printf("Where <<path>> is the absolute path to the location of your SSL "
+	"client keystore and truststore\n");
 }
 
 int main(int argc, char** argv) {
-  auto workingDirectory = myGetcwd();
+  if (argc < 2) {
+    print_usage();
+    exit(-1);
+  }
 
-#ifdef _MSC_VER
-  workingDirectory += "/..";
-#endif
+  auto sslKeyPath = std::string(argv[1]);
 
   auto cache =
       CacheFactory()
-          .set("log-level", "none")
+          .set("log-level", "fine")
           .set("ssl-enabled", "true")
           .set("ssl-keystore",
-               workingDirectory + "/ClientSslKeys/client_keystore.password.pem")
+#ifdef WIN32
+               (sslKeyPath + "\\client_keystore.password.pem").c_str())
+#else
+               (sslKeyPath + "/client_keystore.password.pem").c_str())
+#endif
           .set("ssl-keystore-password", "gemstone")
           .set("ssl-truststore",
-               workingDirectory + "/ClientSslKeys/client_truststore.pem")
+#ifdef WIN32
+               (sslKeyPath + "\\client_truststore.pem").c_str())
+#else
+               (sslKeyPath + "/client_truststore.pem").c_str())
+#endif
           .create();
 
   const auto pool = cache.getPoolManager()
