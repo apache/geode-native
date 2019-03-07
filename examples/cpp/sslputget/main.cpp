@@ -44,7 +44,7 @@ int main(int argc, char** argv) {
 
   auto cache =
       CacheFactory()
-          .set("log-level", "fine")
+          .set("log-level", "none")
           .set("ssl-enabled", "true")
           .set("ssl-keystore",
 #ifdef WIN32
