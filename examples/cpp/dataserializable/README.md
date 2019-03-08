@@ -1,4 +1,4 @@
-# DataSerializable example
+# dataserializable example
 This is a simple example showing how to register for serialization of custom objects using the DataSerializable class.
 
 ## Prerequisites
@@ -8,13 +8,13 @@ This is a simple example showing how to register for serialization of custom obj
 * Set `GEODE_HOME` to the install directory of Apache Geode
 
 ## Running
-1. From a command shell, set the current directory to the `dataserializable` directory in your example workspace.
+1. From a command shell, set the current directory to the `dataserializable` build directory in your example workspace.
 
     ```console
-    $ cd workspace/examples/cpp/dataserializable
+    $ cd workspace/examples/build/cpp/dataserializable
     ```
 
-2. Run the `startserver` script to start the Geode cluster with authentication and create a region.
+1. Run the `startserver` script to start the Geode cluster with authentication and create a region.
 
    For Windows cmd:
 
@@ -33,8 +33,8 @@ This is a simple example showing how to register for serialization of custom obj
     ```console
     $ ./startserver.sh
     ```
-
-1. Execute `dataserializable`, expect the following output:
+  
+1. Execute `cpp-dataserializable`, expect the following output:
 
        Create orders
        Storing orders in the region
@@ -46,7 +46,8 @@ This is a simple example showing how to register for serialization of custom obj
        Product Name: product y
        Quantity: 37
 
-4. Run the `stopserver` script to gracefully shutdown the Geode cluster.
+
+1. Run the `stopserver` script to gracefully shutdown the Geode cluster.
 
    For Windows cmd:
 

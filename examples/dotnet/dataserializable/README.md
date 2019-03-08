@@ -1,4 +1,4 @@
-# DataSerializableCs Example
+# dataserializable example
 This is a simple example showing how to register for serialization of custom objects using the IDataSerializable class.
 
 ## Prerequisites
@@ -8,13 +8,13 @@ This is a simple example showing how to register for serialization of custom obj
 * Set `GEODE_HOME` to the install directory of Apache Geode
 
 ## Running
-1. From a command shell, set the current directory to the `DataSerializableCs` directory in your example workspace.
+1. From a command shell, set the current directory to the `dataserializable` directory in your example workspace.
 
     ```console
-    $ cd workspace/examples/dotnet/DataSerializableCs
+    $ cd workspace/examples/build/dotnet/dataserializable
     ```
 
-2. Run the `startserver.ps1` script to start the Geode cluster with authentication and create a region.
+1. Run the `startserver.ps1` script to start the Geode cluster with authentication and create a region.
 
    For Windows cmd:
 
@@ -28,17 +28,17 @@ This is a simple example showing how to register for serialization of custom obj
     $ startserver.ps1
     ```
 
-3. Execute `DataSerializableCs.exe`, expect the following output:
-  
+1. Execute `dotnet-dataserializable.exe`, expect the following output:
+
        Create orders
        Storing orders in the region
        Getting the orders from the region
        OrderID: 1
        Product Name: product x
        Quantity: 23
-       OrderID: 2 Product Name: product y Quantity: 37
+       OrderID: 2 Product Name: product y Quantity: 3s
 
-4. Run the `stopserver.ps1` script to gracefully shutdown the Geode cluster.
+1. Run the `stopserver.ps1` script to gracefully shutdown the Geode cluster.
 
    For Windows cmd:
 
