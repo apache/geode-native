@@ -1,4 +1,4 @@
-# Continuous Query Example
+# continuousquery example
 This is a simple example showing how to create a continuous query.
 
 ## Prerequisites
@@ -8,24 +8,24 @@ This is a simple example showing how to create a continuous query.
 * Set `GEODE_HOME` to the install directory of Apache Geode
 
 ## Running
-1. From a command shell, set the current directory to the `continuousquery` directory in your example workspace.
+1. From a command shell, set the current directory to the `continuousquery` build directory in your example workspace.
 
     ```console
-    $ cd workspace/examples/cpp/continuousquery
+    $ cd workspace/examples/build/cpp/continuousquery
     ```
 
-2. Run the `startserver` script to start the Geode cluster with authentication and create a region.
+1. Run the `startserver` script to start the Geode cluster with authentication and create a region.
 
    For Windows cmd:
 
-   ```console
-   $ powershell.exe -File startserver.ps1
-   ```
+    ```console
+    $ powershell.exe -File startserver.ps1
+    ```
 
    For Windows Powershell:
 
     ```console
-   $ startserver.ps1
+    $ startserver.ps1
     ```
 
    For Bash:
@@ -33,8 +33,8 @@ This is a simple example showing how to create a continuous query.
     ```console
     $ ./startserver.sh
     ```
-
-3. Execute `continuousquery`, expect the following output:
+  
+1. Execute `cpp-continuousquery`, expect the following output:
 
        Executing continuous query
        Create orders
@@ -47,7 +47,7 @@ This is a simple example showing how to create a continuous query.
        MyCqListener::OnEvent called with DESTROY, key[Order6], value is nullptr
        close called
 
-4. Run the `stopserver` script to gracefully shutdown the Geode cluster.
+1. Run the `stopserver` script to gracefully shutdown the Geode cluster.
 
    For Windows cmd:
 

@@ -1,4 +1,4 @@
-# Transaction example
+# transaction example
 This is a very simple example showing how to use TransactionManager.  This example shows
 how to begin a transaction, commit a transaction, and rollback a transaction while showing
 exception handling.  We commit two keys and rollback adding a third key and destroying an
@@ -37,7 +37,7 @@ existing key while showing how to handle exceptions.
     $ ./startserver.sh
     ```
 
-3. Execute `transaction`, expect the following output:
+3. Execute `cpp-transaction`, expect the following output:
 
        Created cache
        Created region 'exampleRegion'

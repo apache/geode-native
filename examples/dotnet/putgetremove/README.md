@@ -1,4 +1,4 @@
-# PutGetRemove Example
+# putgetremove example
 This is a very simple example showing how to create a `Cache` using the `CacheFactory`,
 configure a `Pool` with a `PoolFactory`, and configure a `Region` with a `RegionFactory`.
 We then put, get, and remove some primitive data in the region.
@@ -10,13 +10,13 @@ We then put, get, and remove some primitive data in the region.
 * Set `GEODE_HOME` to the install directory of Apache Geode
 
 ## Running
-1. From a command shell, set the current directory to the `PutGetRemove` directory in your example workspace.
+1. From a command shell, set the current directory to the `putgetremove` directory in your example workspace.
 
     ```console
-    $ cd workspace/examples/dotnet/PutGetRemove
+    $ cd workspace/examples/build/dotnet/putgetremove
     ```
 
-2. Run the `startserver.ps1` script to start the Geode cluster with authentication and create a region.
+1. Run the `startserver.ps1` script to start the Geode cluster with authentication and create a region.
 
    For Windows cmd:
 
@@ -30,8 +30,8 @@ We then put, get, and remove some primitive data in the region.
     $ startserver.ps1
     ```
 
-3. Execute `PutGetRemove.exe`, expect the following output:
-  
+1. Execute `dotnet-putgetremove.exe`, expect the following output:
+
        Storing id and username in the region
        Getting the user info from the region
        rtimmons = Robert Timmons
@@ -39,7 +39,7 @@ We then put, get, and remove some primitive data in the region.
        Removing rtimmons info from the region
        Info for rtimmons has been deleted
 
-4. Run the `stopserver.ps1` script to gracefully shutdown the Geode cluster.
+1. Run the `stopserver.ps1` script to gracefully shutdown the Geode cluster.
 
    For Windows cmd:
 
@@ -48,6 +48,7 @@ We then put, get, and remove some primitive data in the region.
     ```
 
    For Windows Powershell:
+
     ```console
     $ stopserver.ps1
     ```

@@ -1,4 +1,4 @@
-# Function-execution example
+# functionexecution example
 This is a very simple example showing how to execute a function on the server.  
 It creates a `Cache` using the `CacheFactory`, configures a `Pool` with a 
 `PoolFactory`, and configures a `Region` with a `RegionFactory`.  The 
@@ -12,13 +12,13 @@ the example app executes those functions and prints out the result set(s).
 * Set `GEODE_HOME` to the install directory of Apache Geode
 
 ## Running
-1. From a command shell, set the current directory to the `function-execution` directory in your example workspace.
+1. From a command shell, set the current directory to the `functionexecution` build directory in your example workspace.
 
     ```console
-    $ cd workspace/examples/cpp/function-execution
+    $ cd workspace/examples/build/cpp/functionexecution
     ```
 
-2. Run the `startserver` script to start the Geode cluster with authentication and create a region.
+1. Run the `startserver` script to start the Geode cluster with authentication and create a region.
 
    For Windows cmd:
 
@@ -38,7 +38,7 @@ the example app executes those functions and prints out the result set(s).
     $ ./startserver.sh
     ```
   
-3. Execute `function-execution`, expect the following output:
+1. Execute `cpp-functionexecution`, expect the following output:
 
        Result count = 3
 
@@ -46,7 +46,7 @@ the example app executes those functions and prints out the result set(s).
        Result[1]=VALUE--2
        Result[2]=VALUE--3
 
-4. Run the `stopserver` script to gracefully shutdown the Geode cluster.
+1. Run the `stopserver` script to gracefully shutdown the Geode cluster.
 
    For Windows cmd:
 

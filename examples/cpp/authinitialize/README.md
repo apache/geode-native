@@ -1,5 +1,5 @@
-# AuthInitialize Example
-This example shows how to create and register a custom `AuthIntialize` authentication
+# authinitialize example
+This example shows how to create and register a custom `authinitialize` authentication
 handler on the client that authenticates against a server that was started with the corresponding authenticator. 
 
 ## Prerequisites
@@ -9,13 +9,13 @@ handler on the client that authenticates against a server that was started with 
 * Set `GEODE_HOME` to the install directory of Apache Geode
 
 ## Running
-1. From a command shell, set the current directory to the `authinitialize` directory in your example workspace.
+1. From a command shell, set the current directory to the `authinitialize` build directory in your example workspace.
 
     ```console
-    $ cd workspace/examples/cpp/authinitialize
+    $ cd workspace/examples/build/cpp/authinitialize
     ```
 
-2. Run the `startserver` script to start the Geode cluster with authentication and create a region.
+1. Run the `startserver` script to start the Geode cluster with authentication and create a region.
 
    For Windows cmd:
 
@@ -34,17 +34,15 @@ handler on the client that authenticates against a server that was started with 
     ```console
     $ ./startserver.sh
     ```
+  
+1. Execute `cpp-authinitialize`, expect the following output:
 
-3. Execute `authinitialize`, expect the following output:
+       ExampleAuthInitialize::ExampleAuthInitialize called
+       ExampleAuthInitialize::getCredentials called
+       a = 1
+       b = 2
 
-    ```text
-    ExampleAuthInitialize::ExampleAuthInitialize called
-    ExampleAuthInitialize::getCredentials called
-    a = 1
-    b = 2
-    ```
-
-4. Run the `stopserver` script to gracefully shutdown the Geode cluster.
+1. Run the `stopserver` script to gracefully shutdown the Geode cluster.
 
    For Windows cmd:
 

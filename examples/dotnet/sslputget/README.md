@@ -1,4 +1,4 @@
-﻿# SSLPutGet Example
+﻿# sslputget example
 This example illustrates how to use SSL encryption for all traffic between a .NET application and Apache Geode.
 
 ## Prerequisites
@@ -7,16 +7,43 @@ This example illustrates how to use SSL encryption for all traffic between a .NE
 * Install [OpenSSL](https://www.openssl.org/)
 
 ## Running
-* Run the following Powershell script which starts the Geode Locator, defines the keystore and truststore certificates, starts the Geode Server, and creates the region.
-  ```
-  PS> startserver.ps1
-  ```
-* Execute `Apache.Geode.Examples.SSLPutGetCs.exe`.
-  
-  output:
-  ```
-  Storing id and username in the region
-  Getting the user info from the region
-  rtimmons = Robert Timmons
-  scharles = Sylvia Charles
-  ```
+1. From a command shell, set the current directory to the `sslputget` directory in your example workspace.
+
+    ```console
+    $ cd workspace/examples/build/dotnet/sslputget
+    ```
+
+1. Run the `startserver.ps1` script to start the Geode cluster with authentication and create a region.
+
+   For Windows cmd:
+
+    ```console
+    $ powershell.exe -File startserver.ps1
+    ```
+
+   For Windows Powershell:
+
+    ```console
+    $ startserver.ps1
+    ```
+
+1. Execute `dotnet-sslputget.exe`, expect the following output:
+
+       Storing id and username in the region
+       Getting the user info from the region
+       rtimmons = Robert Timmons
+       scharles = Sylvia Charles 
+
+1. Run the `stopserver.ps1` script to gracefully shutdown the Geode cluster.
+
+   For Windows cmd:
+
+    ```console
+    $ powershell.exe -File stopserver.ps1
+    ```
+
+   For Windows Powershell:
+
+    ```console
+    $ stopserver.ps1
+    ```
