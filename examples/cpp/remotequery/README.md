@@ -1,4 +1,4 @@
-# Remote Query Example
+# remote query example
 This is a simple example showing how to create and execute a remote query.
 
 ## Prerequisites
@@ -8,13 +8,13 @@ This is a simple example showing how to create and execute a remote query.
 * Set `GEODE_HOME` to the install directory of Apache Geode
 
 ## Running
-1. From a command shell, set the current directory to the `remotequery` directory in your example workspace.
+1. From a command shell, set the current directory to the `remotequery` build directory in your example workspace.
 
     ```console
-    $ cd workspace/examples/cpp/remotequery
+    $ cd workspace/examples/build/cpp/remotequery
     ```
 
-2. Run the `startserver` script to start the Geode cluster with authentication and create a region.
+1. Run the `startserver` script to start the Geode cluster with authentication and create a region.
 
    For Windows cmd:
 
@@ -24,8 +24,8 @@ This is a simple example showing how to create and execute a remote query.
 
    For Windows Powershell:
 
-   ```console
-   $ startserver.ps1
+    ```console
+    $ startserver.ps1
     ```
 
    For Bash:
@@ -33,8 +33,8 @@ This is a simple example showing how to create and execute a remote query.
     ```console
     $ ./startserver.sh
     ```
-
-3. Execute `remotequery`, expect the following output:
+  
+1. Execute `cpp-remotequery`, expect the following output:
 
        Create orders
        Storing orders in the region
@@ -42,9 +42,9 @@ This is a simple example showing how to create and execute a remote query.
        The following orders have a quantity greater than 30:
        OrderID: 2 Product Name: product y Quantity: 37
        OrderID: 4 Product Name: product z Quantity: 102
-       OrderID: 6 Product Name: product z Quantity: 42
+       OrderID: 6 Product Name: product z Quantity: 4
 
-4. Run the `stopserver` script to gracefully shutdown the Geode cluster.
+1. Run the `stopserver` script to gracefully shutdown the Geode cluster.
 
    For Windows cmd:
 

@@ -1,4 +1,4 @@
-# Transaction example
+# transaction example
 This is a very simple example showing how to use TransactionManager.  This example shows
 how to begin a transaction, commit a transaction, and rollback a transaction while showing
 exception handling.  We commit two keys and rollback adding a third key and destroying an
@@ -10,50 +10,45 @@ existing key while showing how to handle exceptions.
 * Apache Geode Native examples, built and installed.
 
 ## Running
-1. Set the current directory to the `TransactionCs` directory in your example workspace.
+1. From a command shell, set the current directory to the `transaction` directory in your example workspace.
 
-  ```
-  $ cd workspace/examples/dotnet/TransactionCs
-  ```
+    ```console
+    $ cd workspace/examples/build/dotnet/transaction
+    ```
 
-1. Run the `startserver.ps1` script to start the Geode server, create a region, and populate the region with sample data.
+1. Run the `startserver.ps1` script to start the Geode cluster with authentication and create a region.
 
-  ```
-  $ sh ./startserver.ps1
-  /Users/user/geode/bin/gfsh
+   For Windows cmd:
 
-  (1) Executing - start locator --name=locator
-  ...
-  (2) Executing - start server --name=server
-  ...
-  (3) Executing - create region --name=exampleRegion --type=PARTITION
+    ```console
+    $ powershell.exe -File startserver.ps1
+    ```
 
-  Member | Status
-  ------ | ----------------------------------------------
-  server | Region "/exampleRegion" created on "server"
-  ```
+   For Windows Powershell:
 
-1. Execute `TransactionCs`:
+    ```console
+    $ startserver.ps1
+    ```
 
-  ```
-  $ build/TransactionCs
-    Created cache
-    Created region 'exampleRegion'
-    Rolled back transaction - retrying(4)
-    Rolled back transaction - retrying(3)
-    Rolled back transaction - retrying(2)
-    Committed transaction - exiting
-  ```
+1. Execute `dotnet-transaction.exe`, expect the following output:
 
-1. Stop the server
+       Created cache
+       Created region 'exampleRegion'
+       Rolled back transaction - retrying(4)
+       Rolled back transaction - retrying(3)
+       Rolled back transaction - retrying(2)
+       Committed transaction - exiting
 
-  ```
-  $ sh ./stopserver.ps1
-  /Users/user/geode/bin/gfsh
-  (1) Executing - connect
-  ...
-  (2) Executing - stop server --name=server
-  ...
-  (3) Executing - stop locator --name=locator
-  ....
-  ```
+1. Run the `stopserver.ps1` script to gracefully shutdown the Geode cluster.
+
+   For Windows cmd:
+
+    ```console
+    $ powershell.exe -File stopserver.ps1
+    ```
+
+   For Windows Powershell:
+
+    ```console
+    $ stopserver.ps1
+    ```

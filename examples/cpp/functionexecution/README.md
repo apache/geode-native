@@ -18,7 +18,7 @@ the example app executes those functions and prints out the result set(s).
     $ cd workspace/examples/build/cpp/functionexecution
     ```
 
-2. Run the `startserver` script to start the Geode cluster with authentication and create a region.
+1. Run the `startserver` script to start the Geode cluster with authentication and create a region.
 
    For Windows cmd:
 
@@ -38,7 +38,7 @@ the example app executes those functions and prints out the result set(s).
     $ ./startserver.sh
     ```
   
-3. Execute `functionexecution`, expect the following output:
+1. Execute `cpp-functionexecution`, expect the following output:
 
        Result count = 3
 
@@ -46,7 +46,7 @@ the example app executes those functions and prints out the result set(s).
        Result[1]=VALUE--2
        Result[2]=VALUE--3
 
-4. Run the `stopserver` script to gracefully shutdown the Geode cluster.
+1. Run the `stopserver` script to gracefully shutdown the Geode cluster.
 
    For Windows cmd:
 

@@ -10,13 +10,13 @@ We then put, get, and remove some primitive data in the region.
 * Set `GEODE_HOME` to the install directory of Apache Geode
 
 ## Running
-1. From a command shell, set the current directory to the `putgetremove` directory in your example workspace.
+1. From a command shell, set the current directory to the `putgetremove` build directory in your example workspace.
 
-    ```consaole
-    $ cd workspace/examples/cpp/putgetremove
+    ```console
+    $ cd workspace/examples/build/cpp/putgetremove
     ```
 
-2. Run the `startserver` script to start the Geode cluster with authentication and create a region.
+1. Run the `startserver` script to start the Geode cluster with authentication and create a region.
 
    For Windows cmd:
 
@@ -35,17 +35,17 @@ We then put, get, and remove some primitive data in the region.
     ```console
     $ ./startserver.sh
     ```
-
-3. Execute `putgetremove` expect the following output:
+  
+1. Execute `cpp-putgetremove`, expect the following output:
 
        Storing id and username in the region
        Getting the user info from the region
          rtimmons = Robert Timmons
          scharles = Sylvia Charles
        Removing rtimmons info from the region
-       rtimmons's info successfully deleted
+       rtimmons's info successfully deleted3
 
-4. Run the `stopserver` script to gracefully shutdown the Geode cluster.
+1. Run the `stopserver` script to gracefully shutdown the Geode cluster.
 
    For Windows cmd:
 

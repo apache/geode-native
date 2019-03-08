@@ -1,4 +1,4 @@
-# PdxAutoSerializer Example
+# pdxautoserializer example
 This is a simple example showing how to register for auto-serialization of custom objects using the ReflectionBasedAutoSerializer class.
 
 ## Prerequisites
@@ -8,13 +8,13 @@ This is a simple example showing how to register for auto-serialization of custo
 * Set `GEODE_HOME` to the install directory of Apache Geode
 
 ## Running
-1. From a command shell, set the current directory to the `PdxAutoSerializerCs` directory in your example workspace.
+1. From a command shell, set the current directory to the `pdxautoserializer` directory in your example workspace.
 
     ```console
-    $ cd workspace/examples/dotnet/PdxAutoSerializerCs
+    $ cd workspace/examples/build/dotnet/pdxautoserializer
     ```
 
-2. Run the `startserver.ps1` script to start the Geode cluster with authentication and create a region.
+1. Run the `startserver.ps1` script to start the Geode cluster with authentication and create a region.
 
    For Windows cmd:
 
@@ -28,15 +28,15 @@ This is a simple example showing how to register for auto-serialization of custo
     $ startserver.ps1
     ```
 
-3. Execute `PdxAutoSerializerCs.exe`, expect the following output:
-  
+1. Execute `dotnet-pdxautoserializer.exe`, expect the following output:
+
        Registering for reflection-based auto serialization
        Storing order object in the region
        order to put is Order: [65, Vox AC30, 11]
        Successfully put order, getting now...
-       Order key: 65 = Order: [65, Vox AC30, 11]
+       Order key: 65 = Order: [65, Vox AC30, 11
 
-4. Run the `stopserver.ps1` script to gracefully shutdown the Geode cluster.
+1. Run the `stopserver.ps1` script to gracefully shutdown the Geode cluster.
 
    For Windows cmd:
 

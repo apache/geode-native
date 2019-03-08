@@ -1,4 +1,4 @@
-# SSLPutGet Example
+# sslputget example
 This example illustrates how to use SSL encryption for all traffic between a client application and Apache Geode.
 
 ## Prerequisites
@@ -9,13 +9,13 @@ This example illustrates how to use SSL encryption for all traffic between a cli
 * Install [OpenSSL](https://www.openssl.org/)
 
 ## Running
-1. From a command shell, set the current directory to the `sslputget` directory in your example workspace.
+1. From a command shell, set the current directory to the `sslputget` build directory in your example workspace.
 
     ```console
-    $ cd workspace/examples/cpp/sslputget
+    $ cd workspace/examples/build/cpp/sslputget
     ```
 
-2. Run the `startserver` script to start the Geode cluster with authentication and create a region.
+1. Run the `startserver` script to start the Geode cluster with authentication and create a region.
 
    For Windows cmd:
 
@@ -34,10 +34,30 @@ This example illustrates how to use SSL encryption for all traffic between a cli
     ```console
     $ ./startserver.sh
     ```
+  
 1. Execute `cpp-sslputget`, expect the following output:
+
+       Storing id and username in the region
+       Getting the user info from the region
+       rtimmons = Robert Timmons
+       scharles = Sylvia Charles
+
+1. Run the `stopserver` script to gracefully shutdown the Geode cluster.
+
+   For Windows cmd:
+
     ```console
-    Storing id and username in the region
-    Getting the user info from the region
-    rtimmons = Robert Timmons
-    scharles = Sylvia Charles
+    $ powershell.exe -File stopserver.ps1
+    ```
+
+   For Windows Powershell:
+
+    ```console
+    $ stopserver.ps1
+    ```
+
+   For Bash:
+
+    ```console
+    $ ./stopserver.sh
     ```

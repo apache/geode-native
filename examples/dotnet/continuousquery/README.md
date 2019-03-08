@@ -1,4 +1,4 @@
-# ContinuousQuery Example
+# continuousquery example
 This is a simple example showing how to execute a continuous query on a Goede region.
 
 ## Prerequisites
@@ -8,13 +8,13 @@ This is a simple example showing how to execute a continuous query on a Goede re
 * Set `GEODE_HOME` to the install directory of Apache Geode
 
 ## Running
-1. From a command shell, set the current directory to the `ContinuousQueryCs` directory in your example workspace.
+1. From a command shell, set the current directory to the `continuousquery` directory in your example workspace.
 
     ```console
-    $ cd workspace/examples/dotnet/ContinuousQueryCs
+    $ cd workspace/examples/build/dotnet/continuousquery
     ```
 
-2. Run the `startserver.ps1` script to start the Geode cluster with authentication and create a region.
+1. Run the `startserver.ps1` script to start the Geode cluster with authentication and create a region.
 
    For Windows cmd:
 
@@ -28,8 +28,8 @@ This is a simple example showing how to execute a continuous query on a Goede re
     $ startserver.ps1
     ```
 
-3. Execute `ContinuousQueryCs.exe`, expect the following output:
-  
+1. Execute `dotnet-continuousquery.exe`, expect the following output:
+
        Registering for data serialization
        Executing continuous query
        Create orders
@@ -40,9 +40,9 @@ This is a simple example showing how to execute a continuous query on a Goede re
        MyCqListener::OnEvent(UPDATE) called with key Order2, value Order: [2, product y, 45]
        MyCqListener::OnEvent(DESTROY) called with key Order2, value Order: [2, product y, 29]
        MyCqListener::OnEvent(DESTROY) called with key Order6, value null
-       MyCqListener::close called
+       MyCqListener::close calle
 
-4. Run the `stopserver.ps1` script to gracefully shutdown the Geode cluster.
+1. Run the `stopserver.ps1` script to gracefully shutdown the Geode cluster.
 
    For Windows cmd:
 

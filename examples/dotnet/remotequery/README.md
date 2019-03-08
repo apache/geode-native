@@ -1,4 +1,4 @@
-# RemoteQuery Example
+# remotequery example
 This is a simple example showing how to execute a query on a remote region.
 
 ## Prerequisites
@@ -8,13 +8,13 @@ This is a simple example showing how to execute a query on a remote region.
 * Set `GEODE_HOME` to the install directory of Apache Geode
 
 ## Running
-1. From a command shell, set the current directory to the `RemoteQueryCs` directory in your example workspace.
+1. From a command shell, set the current directory to the `remotequery` directory in your example workspace.
 
     ```console
-    $ cd workspace/examples/dotnet/RemoteQueryCs
+    $ cd workspace/examples/build/dotnet/remotequery
     ```
 
-2. Run the `startserver.ps1` script to start the Geode cluster with authentication and create a region.
+1. Run the `startserver.ps1` script to start the Geode cluster with authentication and create a region.
 
    For Windows cmd:
 
@@ -28,7 +28,7 @@ This is a simple example showing how to execute a query on a remote region.
     $ startserver.ps1
     ```
 
-3. Execute `RemoteQueryCs.exe`, expect the following output:
+1. Execute `dotnet-remotequery.exe`, expect the following output:
 
        Registering for data serialization
        Create orders
@@ -37,9 +37,9 @@ This is a simple example showing how to execute a query on a remote region.
        The following orders have a quantity greater than 30:
        Order: [6, product z, 42]
        Order: [4, product z, 102]
-       Order: [2, product y, 37]
+       Order: [2, product y, 37
 
-4. Run the `stopserver.ps1` script to gracefully shutdown the Geode cluster.
+1. Run the `stopserver.ps1` script to gracefully shutdown the Geode cluster.
 
    For Windows cmd:
 

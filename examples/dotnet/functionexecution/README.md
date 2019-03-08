@@ -1,4 +1,4 @@
-﻿# FunctionExecution Example
+﻿# functionexecution example
 This example illustrates how to execute server side java functions.
 
 ## Prerequisites
@@ -14,7 +14,7 @@ This example illustrates how to execute server side java functions.
     $ cd workspace/examples/build/dotnet/functionexecution
     ```
 
-2. Run the `startserver.ps1` script to start the Geode cluster with authentication and create a region.
+1. Run the `startserver.ps1` script to start the Geode cluster with authentication and create a region.
 
    For Windows cmd:
 
@@ -28,7 +28,7 @@ This example illustrates how to execute server side java functions.
     $ startserver.ps1
     ```
 
-3. Execute `FunctionExecutionCs.exe`, expect the following output:
+1. Execute `dotnet-functionexecution.exe`, expect the following output:
 
        Storing id and username in the region
        Getting the user info from the region
@@ -39,7 +39,7 @@ This example illustrates how to execute server side java functions.
           value = Robert Timmons
           value = Sylvia Charles
 
-4. Run the `stopserver.ps1` script to gracefully shutdown the Geode cluster.
+1. Run the `stopserver.ps1` script to gracefully shutdown the Geode cluster.
 
    For Windows cmd:
 
