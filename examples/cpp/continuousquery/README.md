@@ -1,4 +1,4 @@
-# continuous query example
+# continuousquery example
 This is a simple example showing how to create a continuous query.
 
 ## Prerequisites

@@ -1,4 +1,4 @@
-# dataserializablecs example
+# dataserializable example
 This is a simple example showing how to register for serialization of custom objects using the IDataSerializable class.
 
 ## Prerequisites

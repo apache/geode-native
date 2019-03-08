@@ -1,4 +1,4 @@
-# remote query example
+# remotequery example
 This is a simple example showing how to create and execute a remote query.
 
 ## Prerequisites

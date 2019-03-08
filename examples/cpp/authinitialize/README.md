@@ -1,4 +1,4 @@
-# authinitialize Example
+# authinitialize example
 This example shows how to create and register a custom `authinitialize` authentication
 handler on the client that authenticates against a server that was started with the corresponding authenticator. 
 
