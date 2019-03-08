@@ -40,7 +40,7 @@ This is a simple example showing how to execute a continuous query on a Goede re
        MyCqListener::OnEvent(UPDATE) called with key Order2, value Order: [2, product y, 45]
        MyCqListener::OnEvent(DESTROY) called with key Order2, value Order: [2, product y, 29]
        MyCqListener::OnEvent(DESTROY) called with key Order6, value null
-       MyCqListener::close calle
+       MyCqListener::close called
 
 1. Run the `stopserver.ps1` script to gracefully shutdown the Geode cluster.
 
