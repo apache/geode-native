@@ -41,7 +41,7 @@ To connect to a server, your application must follow these steps:
 
 Once the connection pool and the shared region are in place, your client application is ready to share data with the server.
 
-**C++ Example**
+**Server Connection: C++ Example**
 
 This example of connecting to the server is taken from the C++ `put-get-remove` example.
 
@@ -69,7 +69,7 @@ Create a named pool of network connections, and instantiate a region of the desi
   auto region = regionFactory.setPoolName("pool").create("example_userinfo"); // create a connection to the region "example_userinfo" on the server
 ```
 
-**.NET Example**
+**Server Connection: .NET Example**
 
 This example of connecting to the server is taken from the .NET `PutGetRemove` example.
 
@@ -120,32 +120,38 @@ CMake files are located at each level of the directory structure to allow exampl
 
 The directory structure resembles this hierarchy (some entries are omitted for clarity):
 
+    ```
     MyProject/
       cmake/
       CMakeLists.txt
       examples/
-        BUILDING.md
+        BUILD-EXAMPLES.md
         CMakeLists.txt
         CMakeLists.txt.in
         cmake/
         cpp/
-          BUILD-CPP-EXAMPLES.md
-          CMakeLists.txt
+          authinitialize/
+          continuousquery/
           dataserializable/
+          functionexecution/
           pdxserializable/
           pdxserializer/
-          put-get-remove/
+          putgetremove/
           remotequery/
+          sslputget/
+          transaction/
         dotnet/
-          AuthInitialize/
-          BUILD-DOTNET-EXAMPLES.md
-          CMakeLists.txt
-          DataSerializableCs/
-          PdxAutoSerializer/
-          PdxSerializableCs/
-          PutGetRemove/
-          RemoteQueryCs/
+          authinitialize/
+          continuousquery/
+          dataserializable/
+          functionexecution/
+          pdxautoserializer/
+          pdxserializable/
+          putgetremove/
+          remotequery/
+          sslputget/
+          transaction/
+    ```
 
-See the `BUILD-platform-EXAMPLES.md` or `README.md` file in each directory for detailed instructions on building
-and executing the examples, and read the source code to understand how the examples are constructed.
-
+See the `BUILD-EXAMPLES.md` file for detailed instructions on building and executing the examples,
+and read the source code to understand how the examples are constructed.
