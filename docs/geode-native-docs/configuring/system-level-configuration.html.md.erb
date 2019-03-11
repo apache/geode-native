@@ -55,12 +55,11 @@ You can pass in specific properties programmatically by using a `Properties` obj
 Example:
 
 ``` pre
-PropertiesPtr systemProps = Properties::create();
-systemProps->insert( "statistic-archive-file", "stats.gfs" );
-systemProps->insert( "cache-xml-file", "./myapp-cache.xml" );
-systemProps->insert( "stacktrace-enabled", "true" );
-CacheFactoryPtr systemPtr = CacheFactory::createCacheFactory(systemProps);
-    
+auto systemProps = Properties::create();
+systemProps->insert("statistic-archive-file", "stats.gfs");
+systemProps->insert("cache-xml-file", "./myapp-cache.xml");
+systemProps->insert("stacktrace-enabled", "true");
+auto cache = CacheFactory(systemProps).create();    
 ```
 
 ## <a id="native-client-config__section_67D24B8F8C6C46CDA3474E6E42963D04"></a>About the geode.properties Configuration File

@@ -37,7 +37,8 @@ Setting a property programmatically:
 
 ``` cpp
     auto regionFactory = cache.createRegionFactory(RegionShortcut::CACHING_PROXY);
-    auto region = regionFactory.setRegionTimeToLive(ExpirationAction::INVALIDATE, 120)
+    auto region = regionFactory.setRegionTimeToLive(ExpirationAction::INVALIDATE,
+                    std::chrono::seconds(120))
          .create("exampleRegion0");
 ```
 
@@ -47,7 +48,7 @@ XML equivalent:
   <region name="exampleRegion0" refid="CACHING_PROXY">
     <region-attributes pool-name="default">
       <region-time-to-live>
-        <expiration-attributes timeout="120" action="invalidate"/>
+        <expiration-attributes timeout="120s" action="invalidate"/>
       </region-time-to-live>
     </region-attributes>
   </region>

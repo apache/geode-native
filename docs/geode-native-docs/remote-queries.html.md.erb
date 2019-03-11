@@ -67,18 +67,6 @@ A `Query` is obtained from a `QueryService`, which is obtained from one of two s
   - For .NET, use `Apache::Geode::Client::Cache::GetQueryService()`.
   - For C++, use ` apache::geode::client::Cache::getQueryService()`.
 
-[**QUESTION**] These are also available - when are they used?
-
-.NET:
-
-- Apache::Geode::Client::IRegionService::GetQueryService()
-
-C++:
-
-- apache::geode::client::RegionService::getQueryService()
-- apache::geode::client::AuthenticatedView::getQueryService()
-
-
 ### <a id="ExecutingAQuery"></a>Executing a Query from the Client
 
 The essential steps to create and execute a query are:
