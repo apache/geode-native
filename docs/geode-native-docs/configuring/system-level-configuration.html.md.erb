@@ -55,7 +55,7 @@ You can pass in specific properties programmatically by using a `Properties` obj
 Example:
 
 ``` pre
-std::shared_ptr<Properties> systemProps = Properties::create();
+auto systemProps = Properties::create();
 systemProps->insert("statistic-archive-file", "stats.gfs");
 systemProps->insert("cache-xml-file", "./myapp-cache.xml");
 systemProps->insert("stacktrace-enabled", "true");
