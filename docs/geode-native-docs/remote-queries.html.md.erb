@@ -57,7 +57,7 @@ This section gives a general overview of the interfaces and classes that are pro
 You must create a `Query` object for each new query. The `Query` interface provides methods for
 managing the compilation and execution of queries, and for retrieving an existing query string.
 
-A `Query` is obtained from a `QueryService`, which is obtained from one of three sources:
+A `Query` is obtained from a `QueryService`, which is obtained from one of two sources:
 
 - To create a `Query` that operates on the <%=vars.product_name%> server, start with a `QueryService` obtained from a `Pool`.
   - For .NET, use `Apache::Geode::Client::Pool::GetQueryService()`.
@@ -66,17 +66,6 @@ A `Query` is obtained from a `QueryService`, which is obtained from one of three
 - To create a `Query` that operates on your application's local cache, start with a `QueryService` obtained from a `Cache`.
   - For .NET, use `Apache::Geode::Client::Cache::GetQueryService()`.
   - For C++, use ` apache::geode::client::Cache::getQueryService()`.
-
-[**QUESTION**] These are also available - when are they used?
-
-.NET:
-
-- Apache::Geode::Client::IRegionService::GetQueryService()
-
-C++:
-
-- apache::geode::client::RegionService::getQueryService()
-
 
 ### <a id="ExecutingAQuery"></a>Executing a Query from the Client
 
