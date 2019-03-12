@@ -58,8 +58,9 @@ function(add_clangformat _target)
     if (_clangformat_SOURCES)
       add_custom_target(${_clangformat}
           SOURCES ${_clangformat_SOURCES}
-          COMMENT "Clang-Format for target ${_target}")
-
+          COMMENT "Clang-Format for target ${_target}"
+      )
+      set_target_properties(${_clangformat} PROPERTIES FOLDER clangformat)
       add_dependencies(${_target} ${_clangformat})
     endif ()
 
