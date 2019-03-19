@@ -17,7 +17,7 @@
 r301 %r{/releases/latest/javadoc/(.*)}, 'https://geode.apache.org/releases/latest/javadoc/$1'
 
 # Links to User Guides #
-rewrite '/', '/docs/geode-native/18/about-client-users-guide.html'
-rewrite '/index.html', '/docs/geode-native/18/about-client-users-guide.html'
-r301 %r{/serverman/(.*)}, 'https://geode.apache.org/docs/guide/18/$1'
-r301 %r{/geodeman/(.*)}, 'https://geode.apache.org/docs/guide/18/$1'
+rewrite '/', '/docs/geode-native/19/about-client-users-guide.html'
+rewrite '/index.html', '/docs/geode-native/19/about-client-users-guide.html'
+r301 %r{/serverman/(.*)}, 'https://geode.apache.org/docs/guide/19/$1'
+r301 %r{/geodeman/(.*)}, 'https://geode.apache.org/docs/guide/19/$1'
