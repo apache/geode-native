@@ -15,39 +15,46 @@
  * limitations under the License.
  */
 
-#include <geode/CacheableBuiltins.hpp>
-#include <geode/SystemProperties.hpp>
-#include <geode/CacheableObjectArray.hpp>
-
-#include "DistributedSystem.hpp"
 #include "TcrMessage.hpp"
+
+#include <sstream>
+
+#include <geode/CacheableBuiltins.hpp>
+#include <geode/CacheableObjectArray.hpp>
+#include <geode/SystemProperties.hpp>
+
 #include "Assert.hpp"
-#include "TcrConnection.hpp"
 #include "AutoDelete.hpp"
-#include "TcrChunkedContext.hpp"
-#include "ThinClientRegion.hpp"
-#include "ThinClientBaseDM.hpp"
-#include "StackTrace.hpp"
-#include "TcrConnection.hpp"
-#include "ThinClientPoolDM.hpp"
-#include "TSSTXStateWrapper.hpp"
-#include "TXState.hpp"
-#include "DiskStoreId.hpp"
-#include "DiskVersionTag.hpp"
 #include "CacheRegionHelper.hpp"
 #include "DataInputInternal.hpp"
 #include "DataOutputInternal.hpp"
+#include "DiskStoreId.hpp"
+#include "DiskVersionTag.hpp"
+#include "DistributedSystem.hpp"
+#include "StackTrace.hpp"
+#include "TSSTXStateWrapper.hpp"
+#include "TXState.hpp"
+#include "TcrChunkedContext.hpp"
+#include "TcrConnection.hpp"
+#include "TcrConnectionManager.hpp"
+#include "ThinClientBaseDM.hpp"
+#include "ThinClientPoolDM.hpp"
+#include "ThinClientRegion.hpp"
 #include "util/JavaModifiedUtf8.hpp"
 
 #pragma error_messages(off, SEC_UNINITIALIZED_MEM_READ)
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 static const uint32_t REGULAR_EXPRESSION =
     1;  // come from Java InterestType.REGULAR_EXPRESSION
 
 namespace {
 uint32_t g_headerLen = 17;
 }  // namespace
+
+extern void setThreadLocalExceptionMessage(const char*);
 
 // AtomicInc TcrMessage::m_transactionId = 0;
 uint8_t* TcrMessage::m_keepalive = nullptr;
@@ -79,28 +86,28 @@ void TcrMessage::setKeepAlive(bool keepalive) {
 }
 
 void TcrMessage::writeInterestResultPolicyPart(InterestResultPolicy policy) {
-  m_request->writeInt((int32_t)3);           // size
-  m_request->write(static_cast<int8_t>(1));  // isObject
+  m_request->writeInt(static_cast<int32_t>(3));  // size
+  m_request->write(static_cast<int8_t>(1));      // isObject
   m_request->write(static_cast<int8_t>(DSCode::FixedIDByte));
   m_request->write(static_cast<int8_t>(DSCode::InterestResultPolicy));
   m_request->write(static_cast<int8_t>(policy.getOrdinal()));
 }
 
 void TcrMessage::writeIntPart(int32_t intValue) {
-  m_request->writeInt((int32_t)4);
+  m_request->writeInt(static_cast<int32_t>(4));
   m_request->write(static_cast<int8_t>(0));
   m_request->writeInt(intValue);
 }
 
 void TcrMessage::writeBytePart(uint8_t byteValue) {
-  m_request->writeInt((int32_t)1);
+  m_request->writeInt(static_cast<int32_t>(1));
   m_request->write(static_cast<int8_t>(0));
   m_request->write(byteValue);
 }
 
 void TcrMessage::writeByteAndTimeOutPart(uint8_t byteValue,
                                          std::chrono::milliseconds timeout) {
-  m_request->writeInt((int32_t)5);  // 1 (byte) + 4 (timeout)
+  m_request->writeInt(static_cast<int32_t>(5));  // 1 (byte) + 4 (timeout)
   m_request->write(static_cast<int8_t>(0));
   m_request->write(byteValue);
   m_request->writeInt(static_cast<int32_t>(timeout.count()));
@@ -193,32 +200,31 @@ void TcrMessage::readLongPart(DataInput& input, uint64_t* intValue) {
   *intValue = input.readInt64();
 }
 
-void TcrMessage::readStringPart(DataInput& input, uint32_t* len, char** str) {
-  char* ts;
-  int32_t sl = input.readInt32();
-  ts = new char[sl];
-  if (input.read()) throw Exception("String is not an object");
-  input.readBytesOnly(reinterpret_cast<int8_t*>(ts), sl);
-  *len = sl;
-  *str = ts;
+const std::string TcrMessage::readStringPart(DataInput& input) {
+  char* stringBuffer;
+  int32_t stringLength = input.readInt32();
+  stringBuffer = new char[stringLength + 1];
+  stringBuffer[stringLength] = '\0';
+  if (input.read()) {
+    throw Exception("String is not an object");
+  }
+  input.readBytesOnly(reinterpret_cast<int8_t*>(stringBuffer), stringLength);
+  std::string str = stringBuffer;
+  delete[] stringBuffer;
+  return str;
 }
+
 void TcrMessage::readCqsPart(DataInput& input) {
   m_cqs->clear();
   readIntPart(input, &m_numCqPart);
   for (uint32_t cqCnt = 0; cqCnt < m_numCqPart;) {
-    char* cqName;
-    uint32_t len;
-    readStringPart(input, &len, &cqName);
-    std::string cq(cqName, len);
-    delete[] cqName;
+    auto cq = readStringPart(input);
     cqCnt++;
     int32_t cqOp;
     readIntPart(input, reinterpret_cast<uint32_t*>(&cqOp));
     cqCnt++;
     (*m_cqs)[cq] = cqOp;
-    //	 LOGINFO("read cqName[%s],cqOp[%d]", cq.c_str(), cqOp);
   }
-  // LOGDEBUG("mapsize = %d", m_cqs.size());
 }
 
 inline void TcrMessage::readCallbackObjectPart(DataInput& input,
@@ -230,17 +236,10 @@ inline void TcrMessage::readCallbackObjectPart(DataInput& input,
       input.readObject(m_callbackArgument);
     } else {
       if (defaultString) {
-        // TODO:
-        // m_callbackArgument = CacheableString::create(
-        //  (char*)input.currentBufferPosition( ), lenObj );
         m_callbackArgument = readCacheableString(input, lenObj);
       } else {
-        // TODO::
-        // m_callbackArgument = CacheableBytes::create(
-        //  input.currentBufferPosition( ), lenObj );
         m_callbackArgument = readCacheableBytes(input, lenObj);
       }
-      // input.advanceCursor( lenObj );
     }
   }
 }
@@ -253,15 +252,10 @@ inline void TcrMessage::readObjectPart(DataInput& input, bool defaultString) {
       input.readObject(m_value);
     } else {
       if (defaultString) {
-        // m_value = CacheableString::create(
-        //  (char*)input.currentBufferPosition( ), lenObj );
         m_value = readCacheableString(input, lenObj);
       } else {
-        // m_value = CacheableBytes::create(
-        //  input.currentBufferPosition( ), lenObj );
         m_value = readCacheableBytes(input, lenObj);
       }
-      // input.advanceCursor( lenObj );
     }
   } else if (lenObj == 0 && isObj == 2) {  // EMPTY BYTE ARRAY
     m_value = CacheableBytes::create();
@@ -397,7 +391,7 @@ inline void TcrMessage::writeInt(uint8_t* buffer, uint32_t value) {
 }
 std::shared_ptr<Serializable> TcrMessage::readCacheableString(DataInput& input,
                                                               int lenObj) {
-  auto decoded = JavaModifiedUtf8::decode(
+  auto decoded = internal::JavaModifiedUtf8::decode(
       reinterpret_cast<const char*>(input.currentBufferPosition()), lenObj);
   input.advanceCursor(lenObj);
 
@@ -422,8 +416,7 @@ std::shared_ptr<Serializable> TcrMessage::readCacheableBytes(DataInput& input,
     writeInt(buffer + 1, static_cast<uint32_t>(lenObj));
   }
 
-  return input.readDirectObject(
-      static_cast<int8_t>(apache::geode::client::DSCode::CacheableBytes));
+  return input.readDirectObject(static_cast<int8_t>(DSCode::CacheableBytes));
 }
 
 bool TcrMessage::readExceptionPart(DataInput& input, uint8_t isLastChunk,
@@ -493,7 +486,7 @@ void TcrMessage::writeObjectPart(
     deltaPtr->toDelta(*m_request);
   } else if (isObject) {
     if (callToData) {
-      m_request->getSerializationRegistry().serializeWithoutHeader(se.get(),
+      m_request->getSerializationRegistry().serializeWithoutHeader(se,
                                                                    *m_request);
     } else {
       if (getAllKeyList != nullptr) {
@@ -588,11 +581,12 @@ void TcrMessage::writeHeader(uint32_t msgType, uint32_t numOfParts) {
   LOGDEBUG("TcrMessage::writeHeader earlyAck = %d", earlyAck);
 
   m_request->writeInt(static_cast<int32_t>(msgType));
-  m_request->writeInt((int32_t)0);  // write a dummy message len('0' here). At
-                                    // the end write the length at the (buffer +
-                                    // 4) offset.
+  m_request->writeInt(
+      static_cast<int32_t>(0));  // write a dummy message len('0' here). At
+                                 // the end write the length at the (buffer +
+                                 // 4) offset.
   m_request->writeInt(static_cast<int32_t>(numOfParts));
-  TXState* txState = TSSTXStateWrapper::s_geodeTSSTXState->getTXState();
+  auto txState = TSSTXStateWrapper::get().getTXState();
   if (txState == nullptr) {
     m_txId = -1;
   } else {
@@ -621,7 +615,8 @@ void TcrMessage::writeRegionPart(const std::string& regionName) {
   int32_t len = static_cast<int32_t>(regionName.length());
   m_request->writeInt(len);
   m_request->write(static_cast<int8_t>(0));  // isObject = 0
-  m_request->writeBytesOnly(reinterpret_cast<int8_t*>(const_cast<char*>(regionName.c_str())), len);
+  m_request->writeBytesOnly(
+      reinterpret_cast<int8_t*>(const_cast<char*>(regionName.c_str())), len);
 }
 
 void TcrMessage::writeStringPart(const std::string& str) {
@@ -846,12 +841,28 @@ void TcrMessage::processChunk(const uint8_t* bytes, int32_t len,
       }
       break;
     }
+    case TcrMessage::PUT_DATA_ERROR: {
+      chunkSecurityHeader(1, bytes, len, isLastChunkAndisSecurityHeader);
+      if (nullptr != bytes) {
+        auto input =
+            m_tcdm->getConnectionManager().getCacheImpl()->createDataInput(
+                bytes, len);
+        auto errorString = readStringPart(input);
+
+        if (!errorString.empty()) {
+          setThreadLocalExceptionMessage(errorString.c_str());
+        }
+
+        _GEODE_SAFE_DELETE_ARRAY(bytes);
+      }
+      break;
+    }
     case TcrMessage::GET_ALL_DATA_ERROR: {
       chunkSecurityHeader(1, bytes, len, isLastChunkAndisSecurityHeader);
       if (bytes != nullptr) {
         _GEODE_SAFE_DELETE_ARRAY(bytes);
       }
-      // nothing else to done since this will be taken care of at higher level
+
       break;
     }
     default: {
@@ -935,8 +946,8 @@ void TcrMessage::handleByteArrayResponse(
       } else if (m_msgTypeRequest == TcrMessage::GET_PDX_TYPE_BY_ID) {
         // PdxType will come in response
         input.advanceCursor(5);  // part header
-        m_value =
-            serializationRegistry.deserialize(input, static_cast<int8_t>(DSCode::PdxType));
+        m_value = serializationRegistry.deserialize(
+            input, static_cast<int8_t>(DSCode::PdxType));
       } else if (m_msgTypeRequest == TcrMessage::GET_PDX_ENUM_BY_ID) {
         // PdxType will come in response
         input.advanceCursor(5);  // part header
@@ -1038,13 +1049,12 @@ void TcrMessage::handleByteArrayResponse(
     case TcrMessage::UNREGISTER_INTEREST_DATA_ERROR:
     case TcrMessage::PUT_DATA_ERROR:
     case TcrMessage::KEY_SET_DATA_ERROR:
-    case TcrMessage::REQUEST_DATA_ERROR:
     case TcrMessage::DESTROY_REGION_DATA_ERROR:
     case TcrMessage::CLEAR_REGION_DATA_ERROR:
     case TcrMessage::CONTAINS_KEY_DATA_ERROR:
-    case TcrMessage::PUT_DELTA_ERROR: {
-      // do nothing. (?) TODO Do we need to process further.
-      m_shouldIgnore = true;
+    case TcrMessage::PUT_DELTA_ERROR:
+    case TcrMessage::REQUEST_DATA_ERROR: {
+      m_value = std::make_shared<CacheableString>(readStringPart(input));
       break;
     }
 
@@ -1065,8 +1075,9 @@ void TcrMessage::handleByteArrayResponse(
         case TcrMessage::INVALIDATE: {
           uint32_t flags = 0;
           readIntPart(input, &flags);
-          if (flags & 0x01)
+          if (flags & 0x01) {
             readVersionTag(input, endpointMemId, memberListForVersionStamp);
+          }
           readPrMetaData(input);
 
           break;
@@ -1074,8 +1085,9 @@ void TcrMessage::handleByteArrayResponse(
         case TcrMessage::DESTROY: {
           uint32_t flags = 0;
           readIntPart(input, &flags);
-          if (flags & 0x01)
+          if (flags & 0x01) {
             readVersionTag(input, endpointMemId, memberListForVersionStamp);
+          }
           readPrMetaData(input);
           // skip the Destroy65.java response entryNotFound int part so
           // that the readSecureObjectPart() call below gets the security part
@@ -1213,18 +1225,18 @@ void TcrMessage::handleByteArrayResponse(
       m_metadata =
           new std::vector<std::vector<std::shared_ptr<BucketServerLocation>>>();
       for (int32_t i = 0; i < numparts; i++) {
-        int32_t bits32 = input.readInt32();  // partlen;
-        input.read();                        // isObj;
-        auto bits8 = input.read();           // cacheable vector typeid
+        input.readInt32();          // ignore partlen
+        input.read();               // ignore  isObj;
+        auto bits8 = input.read();  // cacheable vector typeid
         LOGDEBUG("Expected typeID %d, got %d", DSCode::CacheableArrayList,
                  bits8);
 
-        bits32 = input.readArrayLength();  // array length
-        LOGDEBUG("Array length = %d ", bits32);
-        if (bits32 > 0) {
+        auto arrayLength = input.readArrayLength();  // array length
+        LOGDEBUG("Array length = %d ", arrayLength);
+        if (arrayLength > 0) {
           std::vector<std::shared_ptr<BucketServerLocation>>
               bucketServerLocations;
-          for (int32_t index = 0; index < bits32; index++) {
+          for (int32_t index = 0; index < arrayLength; index++) {
             // ignore DS typeid, CLASS typeid, and string typeid
             input.advanceCursor(3);
             uint16_t classLen = input.readInt16();  // Read classLen
@@ -1250,39 +1262,39 @@ void TcrMessage::handleByteArrayResponse(
     }
 
     case TcrMessage::RESPONSE_CLIENT_PARTITION_ATTRIBUTES: {
-      int32_t bits32 = input.readInt32();  // partlen;
-      input.read();                        // ignore isObj;
+      input.readInt32();  // ignore partlen;
+      input.read();       // ignore isObj;
 
       // PART1 = bucketCount
       m_bucketCount = input.readNativeInt32();
 
-      bits32 = input.readInt32();  // partlen;
-      input.read();                // ignore isObj;
-      if (bits32 > 0) {
+      auto partLength = input.readInt32();  // partlen;
+      input.read();                         // ignore isObj;
+      if (partLength > 0) {
         // PART2 = colocatedwith
         m_colocatedWith = input.readString();
       }
 
       if (numparts == 4) {
-        bits32 = input.readInt32();  // partlen;
-        input.read();                // ignore isObj;
-        if (bits32 > 0) {
+        partLength = input.readInt32();  // partlen;
+        input.read();                    // ignore isObj;
+        if (partLength > 0) {
           // PART3 = partitionresolvername
           m_partitionResolverName = input.readString();
         }
 
-        bits32 = input.readInt32();  // partlen;
-        input.read();                // ignore isObj;
-        input.read();                // ignore cacheable CacheableHashSet typeid
+        input.readInt32();  // ignore partlen;
+        input.read();       // ignore isObj;
+        input.read();       // ignore cacheable CacheableHashSet typeid
 
-        bits32 = input.readArrayLength();  // array length
-        if (bits32 > 0) {
+        auto arrayLength = input.readArrayLength();  // array length
+        if (arrayLength > 0) {
           m_fpaSet =
               new std::vector<std::shared_ptr<FixedPartitionAttributesImpl>>();
-          for (int32_t index = 0; index < bits32; index++) {
+          for (int32_t index = 0; index < arrayLength; index++) {
             input.advanceCursor(
                 3);  // ignore DS typeid, CLASS typeid, string typeid
-            uint16_t classLen = input.readInt16();  // Read classLen
+            auto classLen = input.readInt16();  // Read classLen
             input.advanceCursor(classLen);
             auto fpa = std::make_shared<FixedPartitionAttributesImpl>();
             fpa->fromData(input);  // PART4 = set of FixedAttributes.
@@ -1381,8 +1393,9 @@ TcrMessageDestroyRegion::TcrMessageDestroyRegion(
 
   numOfParts++;
 
-  if (m_messageResponseTimeout >= std::chrono::milliseconds::zero())
+  if (m_messageResponseTimeout >= std::chrono::milliseconds::zero()) {
     numOfParts++;
+  }
   writeHeader(m_msgType, numOfParts);
   writeRegionPart(m_regionName);
   writeEventIdPart();
@@ -1420,8 +1433,9 @@ TcrMessageClearRegion::TcrMessageClearRegion(
 
   numOfParts++;
 
-  if (m_messageResponseTimeout >= std::chrono::milliseconds::zero())
+  if (m_messageResponseTimeout >= std::chrono::milliseconds::zero()) {
     numOfParts++;
+  }
   writeHeader(m_msgType, numOfParts);
   writeRegionPart(m_regionName);
   writeEventIdPart();
@@ -1450,8 +1464,9 @@ TcrMessageQuery::TcrMessageQuery(
 
   numOfParts++;
 
-  if (m_messageResponseTimeout >= std::chrono::milliseconds::zero())
+  if (m_messageResponseTimeout >= std::chrono::milliseconds::zero()) {
     numOfParts++;
+  }
   writeHeader(m_msgType, numOfParts);
   writeRegionPart(m_regionName);
   writeEventIdPart();
@@ -1799,14 +1814,14 @@ TcrMessagePing::TcrMessagePing(DataOutput* dataOutput, bool decodeAll) {
   m_decodeAll = decodeAll;
   m_request.reset(dataOutput);
   m_request->writeInt(m_msgType);
-  m_request->writeInt(
-      (int32_t)0);  // 17 is fixed message len ...  PING only has a header.
-  m_request->writeInt((int32_t)0);  // Number of parts.
+  m_request->writeInt(static_cast<int32_t>(
+      0));  // 17 is fixed message len ...  PING only has a header.
+  m_request->writeInt(static_cast<int32_t>(0));  // Number of parts.
   // int32_t txId = TcrMessage::m_transactionId++;
   // Setting the txId to 0 for all ping message as it is not being used on the
   // SERVER side or the
   // client side.
-  m_request->writeInt((int32_t)0);
+  m_request->writeInt(static_cast<int32_t>(0));
   m_request->write(static_cast<int8_t>(0));  // Early ack is '0'.
   m_msgLength = g_headerLen;
   m_txId = 0;
@@ -1818,14 +1833,14 @@ TcrMessageCloseConnection::TcrMessageCloseConnection(DataOutput* dataOutput,
   m_decodeAll = decodeAll;
   m_request.reset(dataOutput);
   m_request->writeInt(m_msgType);
-  m_request->writeInt((int32_t)6);
-  m_request->writeInt((int32_t)1);  // Number of parts.
+  m_request->writeInt(static_cast<int32_t>(6));
+  m_request->writeInt(static_cast<int32_t>(1));  // Number of parts.
   // int32_t txId = TcrMessage::m_transactionId++;
-  m_request->writeInt((int32_t)0);
+  m_request->writeInt(static_cast<int32_t>(0));
   m_request->write(static_cast<int8_t>(0));  // Early ack is '0'.
   // last two parts are not used ... setting zero in both the parts.
-  m_request->writeInt((int32_t)1);           // len is 1
-  m_request->write(static_cast<int8_t>(0));  // is obj is '0'.
+  m_request->writeInt(static_cast<int32_t>(1));  // len is 1
+  m_request->write(static_cast<int8_t>(0));      // is obj is '0'.
   // cast away constness here since we want to modify this
   TcrMessage::m_keepalive = const_cast<uint8_t*>(m_request->getCursor());
   m_request->write(static_cast<int8_t>(0));  // keepalive is '0'.
@@ -2125,8 +2140,9 @@ TcrMessagePutAll::TcrMessagePutAll(
 
   // numOfParts++;
 
-  if (m_messageResponseTimeout >= std::chrono::milliseconds::zero())
+  if (m_messageResponseTimeout >= std::chrono::milliseconds::zero()) {
     numOfParts++;
+  }
 
   writeHeader(m_msgType, numOfParts);
   writeRegionPart(m_regionName);
@@ -2181,8 +2197,9 @@ TcrMessageRemoveAll::TcrMessageRemoveAll(
   // value can be nullptr also.
   uint32_t numOfParts = 5 + static_cast<uint32_t>(keys.size());
 
-  if (m_messageResponseTimeout >= std::chrono::milliseconds::zero())
+  if (m_messageResponseTimeout >= std::chrono::milliseconds::zero()) {
     numOfParts++;
+  }
   writeHeader(m_msgType, numOfParts);
   writeRegionPart(m_regionName);
   writeEventIdPart(static_cast<int>(keys.size() - 1));
@@ -2438,7 +2455,7 @@ TcrMessageExecuteRegionFunctionSingleHop::
       LOGDEBUG("All Buckets so putting IntPart for buckets = %d ",
                routingObj->size());
       for (const auto& itr : *routingObj) {
-        writeIntPart(std::static_pointer_cast<CacheableInt32>(itr)->value());
+        writeIntPart(std::dynamic_pointer_cast<CacheableInt32>(itr)->value());
       }
     } else {
       LOGDEBUG("putting keys as withFilter called, routing Keys size = %d ",
@@ -2883,7 +2900,7 @@ std::shared_ptr<DSMemberForVersionStamp> TcrMessage::readDSMember(
     auto memId =
         std::shared_ptr<ClientProxyMembershipID>(new ClientProxyMembershipID());
     memId->fromData(input);
-    return (std::shared_ptr<DSMemberForVersionStamp>)memId;
+    return std::shared_ptr<DSMemberForVersionStamp>(memId);
   } else if (typeidLen == 2) {
     auto typeidofMember = input.readInt16();
     if (typeidofMember != static_cast<int16_t>(DSFid::DiskStoreId)) {
@@ -2949,3 +2966,7 @@ void TcrMessage::readHashSetForGCVersions(
 }
 
 #pragma error_messages(default, SEC_UNINITIALIZED_MEM_READ)
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

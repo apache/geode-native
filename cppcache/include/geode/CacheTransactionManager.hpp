@@ -24,12 +24,17 @@
 
 #include <chrono>
 #include <memory>
-#include "internal/geode_globals.hpp"
+
 #include "TransactionId.hpp"
+#include "internal/geode_globals.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
+
+/**
+ * An interface for objects who perform transaction management
+ */
 
 class APACHE_GEODE_EXPORT CacheTransactionManager {
  public:

@@ -15,13 +15,11 @@
  * limitations under the License.
  */
 
-#include <geode/UserFunctionExecutionException.hpp>
 #include <geode/ExceptionTypes.hpp>
+#include <geode/UserFunctionExecutionException.hpp>
 
 namespace apache {
 namespace geode {
-namespace client {
-
-}  // namespace client
+namespace client {}  // namespace client
 }  // namespace geode
 }  // namespace apache

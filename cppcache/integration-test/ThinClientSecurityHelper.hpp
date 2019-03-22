@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_INTEGRATION_TEST_THINCLIENTSECURITYHELPER_H_
-#define GEODE_INTEGRATION_TEST_THINCLIENTSECURITYHELPER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,12 +14,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_INTEGRATION_TEST_THINCLIENTSECURITYHELPER_H_
+#define GEODE_INTEGRATION_TEST_THINCLIENTSECURITYHELPER_H_
+
+#include <ace/Process.h>
+
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
-#include "ace/Process.h"
+#include "hacks/AceThreadId.h"
 
-using namespace apache::geode::client::testframework::security;
-using namespace apache::geode::client;
+namespace { // NOLINT(google-build-namespaces)
+
+using apache::geode::client::CacheableBoolean;
+using apache::geode::client::Exception;
+using apache::geode::client::testframework::security::CredentialGenerator;
+using apache::geode::client::testframework::security::OP_CONTAINS_KEY;
+using apache::geode::client::testframework::security::OP_CREATE;
+using apache::geode::client::testframework::security::OP_DESTROY;
+using apache::geode::client::testframework::security::OP_EXECUTE_FUNCTION;
+using apache::geode::client::testframework::security::OP_GET;
+using apache::geode::client::testframework::security::OP_GETALL;
+using apache::geode::client::testframework::security::OP_INVALIDATE;
+using apache::geode::client::testframework::security::OP_KEY_SET;
+using apache::geode::client::testframework::security::OP_PUTALL;
+using apache::geode::client::testframework::security::OP_QUERY;
+using apache::geode::client::testframework::security::OP_REGION_CLEAR;
+using apache::geode::client::testframework::security::OP_REGISTER_CQ;
+using apache::geode::client::testframework::security::OP_REGISTER_INTEREST;
+using apache::geode::client::testframework::security::OP_UNREGISTER_INTEREST;
+using apache::geode::client::testframework::security::OP_UPDATE;
+using apache::geode::client::testframework::security::opCodeList;
+
 bool isLocator = false;
 bool isLocalServer = false;
 
@@ -40,7 +63,7 @@ std::string getXmlPath() {
   ASSERT(path != nullptr,
          "Environment variable TESTSRC for test source directory is not set.");
   strncpy(xmlPath, path, strlen(path) - strlen("cppcache"));
-  strcat(xmlPath, "xml/Security/");
+  strncat(xmlPath, "xml/Security/", sizeof(xmlPath) - strlen(xmlPath) - 1);
   return std::string(xmlPath);
 }
 
@@ -109,44 +132,44 @@ opCodeList::value_type tmpAArr[] = {OP_CREATE,       OP_UPDATE,
 #define TYPE_USER_CLIENT 'U'
 
 void initClientAuth(char UserType) {
- auto config = Properties::create();
- opCodeList wr(tmpWArr, tmpWArr + sizeof tmpWArr / sizeof *tmpWArr);
- opCodeList rt(tmpRArr, tmpRArr + sizeof tmpRArr / sizeof *tmpRArr);
- opCodeList ad(tmpAArr, tmpAArr + sizeof tmpAArr / sizeof *tmpAArr);
- credentialGeneratorHandler->getAuthInit(config);
- switch (UserType) {
-   case 'W':
-     credentialGeneratorHandler->getAllowedCredentialsForOps(wr, config,
-                                                             nullptr);
-     printf("User is %s Pass is %s ",
-            config->find("security-username")->value().c_str(),
-            (config->find("security-password") != nullptr
-                 ? config->find("security-password")->value().c_str()
-                 : " not set"));
-     break;
-   case 'R':
-     credentialGeneratorHandler->getAllowedCredentialsForOps(rt, config,
-                                                             nullptr);
-     printf("User is %s Pass is %s ",
-            config->find("security-username")->value().c_str(),
-            (config->find("security-password") != nullptr
-                 ? config->find("security-password")->value().c_str()
-                 : " not set"));
-     break;
-   case 'A':
-     credentialGeneratorHandler->getAllowedCredentialsForOps(ad, config,
-                                                             nullptr);
-     printf("User is %s Pass is %s ",
-            config->find("security-username")->value().c_str(),
-            (config->find("security-password") != nullptr
-                 ? config->find("security-password")->value().c_str()
-                 : " not set"));
-   default:
-     break;
- }
+  auto config = Properties::create();
+  opCodeList wr(tmpWArr, tmpWArr + sizeof tmpWArr / sizeof *tmpWArr);
+  opCodeList rt(tmpRArr, tmpRArr + sizeof tmpRArr / sizeof *tmpRArr);
+  opCodeList ad(tmpAArr, tmpAArr + sizeof tmpAArr / sizeof *tmpAArr);
+  credentialGeneratorHandler->getAuthInit(config);
+  switch (UserType) {
+    case 'W':
+      credentialGeneratorHandler->getAllowedCredentialsForOps(wr, config,
+                                                              nullptr);
+      printf("User is %s Pass is %s ",
+             config->find("security-username")->value().c_str(),
+             (config->find("security-password") != nullptr
+                  ? config->find("security-password")->value().c_str()
+                  : " not set"));
+      break;
+    case 'R':
+      credentialGeneratorHandler->getAllowedCredentialsForOps(rt, config,
+                                                              nullptr);
+      printf("User is %s Pass is %s ",
+             config->find("security-username")->value().c_str(),
+             (config->find("security-password") != nullptr
+                  ? config->find("security-password")->value().c_str()
+                  : " not set"));
+      break;
+    case 'A':
+      credentialGeneratorHandler->getAllowedCredentialsForOps(ad, config,
+                                                              nullptr);
+      printf("User is %s Pass is %s ",
+             config->find("security-username")->value().c_str(),
+             (config->find("security-password") != nullptr
+                  ? config->find("security-password")->value().c_str()
+                  : " not set"));
+    default:
+      break;
+  }
 
- try {
-   initClient(true, config);
+  try {
+    initClient(true, config);
   } catch (...) {
     throw;
   }
@@ -157,7 +180,8 @@ void initClientAuth(char UserType) {
 
 class putThread : public ACE_Task_Base {
  public:
-  putThread(std::shared_ptr<Region> r, bool regInt = false, int waitTime = 0) {
+  explicit putThread(std::shared_ptr<Region> r, bool regInt = false,
+                     int waitTime = 0) {
     m_reg = r;
     m_regInt = regInt;
     m_numthreads = 1;
@@ -192,8 +216,7 @@ class putThread : public ACE_Task_Base {
 
   int svc(void) {
     int ops = 0;
-    int32_t pid = ACE_OS::getpid();
-    ACE_thread_t thr_id = ACE_OS::thr_self();
+    auto pid = ACE_OS::getpid();
     std::shared_ptr<CacheableKey> key;
     std::shared_ptr<CacheableString> value;
     std::vector<std::shared_ptr<CacheableKey>> keys0;
@@ -214,10 +237,10 @@ class putThread : public ACE_Task_Base {
       key = CacheableKey::create(buf);
       if (m_opcode == 0) {
         if (m_isCallBack) {
-         auto boolptr = CacheableBoolean::create("true");
-         sprintf(valbuf, "client1-value%d", ops);
-         value = CacheableString::create(valbuf);
-         m_reg->put(key, value, boolptr);
+          auto boolptr = CacheableBoolean::create("true");
+          sprintf(valbuf, "client1-value%d", ops);
+          value = CacheableString::create(valbuf);
+          m_reg->put(key, value, boolptr);
         } else {
           sprintf(valbuf, "client2-value%d", ops);
           value = CacheableString::create(valbuf);
@@ -235,14 +258,14 @@ class putThread : public ACE_Task_Base {
       } else {
         try {
           if (m_isCallBack) {
-           auto boolptr = CacheableBoolean::create("true");
-           m_reg->destroy(key, boolptr);
+            auto boolptr = CacheableBoolean::create("true");
+            m_reg->destroy(key, boolptr);
           } else {
             m_reg->destroy(key);
           }
         } catch (Exception& ex) {
-          printf("%d: %ld exception got and exception message = %s\n", pid,
-                 (long)thr_id, ex.what());
+          printf("%d: %" PRIu64 " exception got and exception message = %s\n",
+                 pid, hacks::aceThreadId(ACE_OS::thr_self()), ex.what());
         }
       }
     }
@@ -259,5 +282,7 @@ class putThread : public ACE_Task_Base {
   bool m_regInt;
   int m_waitTime;
 };
+
+}  // namespace
 
 #endif  // GEODE_INTEGRATION_TEST_THINCLIENTSECURITYHELPER_H_

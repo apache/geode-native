@@ -15,26 +15,27 @@
  * limitations under the License.
  */
 
+#include "TcrConnection.hpp"
+
 #include <memory.h>
 
 #include <ace/INET_Addr.h>
 #include <ace/OS.h>
 
-#include <geode/SystemProperties.hpp>
 #include <geode/AuthInitialize.hpp>
+#include <geode/SystemProperties.hpp>
 
-#include "TcrConnection.hpp"
-#include "Connector.hpp"
-#include "TcpSslConn.hpp"
 #include "ClientProxyMembershipID.hpp"
-#include "ThinClientPoolHADM.hpp"
-#include "TcrEndpoint.hpp"
-#include "TcrConnectionManager.hpp"
-#include "DistributedSystemImpl.hpp"
-#include "Version.hpp"
+#include "Connector.hpp"
 #include "DiffieHellman.hpp"
-#include "Utils.hpp"
+#include "DistributedSystemImpl.hpp"
+#include "TcpSslConn.hpp"
+#include "TcrConnectionManager.hpp"
+#include "TcrEndpoint.hpp"
+#include "ThinClientPoolHADM.hpp"
 #include "ThinClientRegion.hpp"
+#include "Utils.hpp"
+#include "Version.hpp"
 
 namespace apache {
 namespace geode {
@@ -49,7 +50,8 @@ const int64_t INITIAL_CONNECTION_ID = 26739;
     throw ex;                                         \
   }
 bool TcrConnection::InitTcrConnection(
-    TcrEndpoint* endpointObj, const char* endpoint, Set<uint16_t>& ports,
+    TcrEndpoint* endpointObj, const char* endpoint,
+    synchronized_set<std::unordered_set<uint16_t>>& ports,
     bool isClientNotification, bool isSecondary,
     std::chrono::microseconds connectTimeout) {
   m_conn = nullptr;
@@ -62,9 +64,9 @@ bool TcrConnection::InitTcrConnection(
   m_queueSize = 0;
   m_dh = nullptr;
   // m_chunksProcessSema = 0;
-  m_creationTime = ACE_OS::gettimeofday();
+  m_creationTime = clock::now();
   connectionId = INITIAL_CONNECTION_ID;
-  m_lastAccessed = ACE_OS::gettimeofday();
+  m_lastAccessed = clock::now();
   auto cacheImpl = m_poolDM->getConnectionManager().getCacheImpl();
   const auto& distributedSystem = cacheImpl->getDistributedSystem();
   const auto& sysProp = distributedSystem.getSystemProperties();
@@ -126,10 +128,10 @@ bool TcrConnection::InitTcrConnection(
     ports.insert(m_port);
   } else {
     // add the local ports to message
-    Set<uint16_t>::Iterator iter = ports.iterator();
+    auto&& lock = ports.make_lock();
     handShakeMsg.writeInt(static_cast<int32_t>(ports.size()));
-    while (iter.hasNext()) {
-      handShakeMsg.writeInt(static_cast<int32_t>(iter.next()));
+    for (const auto& port : ports) {
+      handShakeMsg.writeInt(static_cast<int32_t>(port));
     }
   }
 
@@ -139,21 +141,22 @@ bool TcrConnection::InitTcrConnection(
     // permissible value for bug #232 for now.
     //  minus 10 sec because the GFE 5.7 gridDev branch adds a
     // 5 sec buffer which was causing an int overflow.
-    handShakeMsg.writeInt((int32_t)0x7fffffff - 10000);
+    handShakeMsg.writeInt(static_cast<int32_t>(0x7fffffff) - 10000);
   }
 
   // Write header for byte FixedID since GFE 5.7
   handShakeMsg.write(static_cast<int8_t>(DSCode::FixedIDByte));
   // Writing byte for ClientProxyMembershipID class id=38 as registered on the
   // java server.
-  handShakeMsg.write(
-      static_cast<int8_t>(DSCode::ClientProxyMembershipId));
+  handShakeMsg.write(static_cast<int8_t>(DSCode::ClientProxyMembershipId));
   if (endpointObj->getPoolHADM()) {
     ClientProxyMembershipID* memId =
         endpointObj->getPoolHADM()->getMembershipId();
     uint32_t memIdBufferLength;
     auto memIdBuffer = memId->getDSMemberId(memIdBufferLength);
-    handShakeMsg.writeBytes(reinterpret_cast<int8_t*>(const_cast<char*>(memIdBuffer)), memIdBufferLength);
+    handShakeMsg.writeBytes(
+        reinterpret_cast<int8_t*>(const_cast<char*>(memIdBuffer)),
+        memIdBufferLength);
   } else {
     ACE_TCHAR hostName[256];
     ACE_OS::hostname(hostName, sizeof(hostName) - 1);
@@ -172,9 +175,11 @@ bool TcrConnection::InitTcrConnection(
     auto memId = cacheImpl->getClientProxyMembershipIDFactory().create(
         hostName, hostAddr, hostPort, durableId.c_str(), durableTimeOut);
     auto memIdBuffer = memId->getDSMemberId(memIdBufferLength);
-    handShakeMsg.writeBytes(reinterpret_cast<int8_t*>(const_cast<char*>(memIdBuffer)), memIdBufferLength);
+    handShakeMsg.writeBytes(
+        reinterpret_cast<int8_t*>(const_cast<char*>(memIdBuffer)),
+        memIdBufferLength);
   }
-  handShakeMsg.writeInt((int32_t)1);
+  handShakeMsg.writeInt(static_cast<int32_t>(1));
 
   bool isDhOn = false;
   bool requireServerAuth = false;
@@ -294,7 +299,8 @@ bool TcrConnection::InitTcrConnection(
   }
 
   size_t msgLength;
-  auto data = reinterpret_cast<char*>(const_cast<uint8_t*>(handShakeMsg.getBuffer(&msgLength)));
+  auto data = reinterpret_cast<char*>(
+      const_cast<uint8_t*>(handShakeMsg.getBuffer(&msgLength)));
   LOGFINE("Attempting handshake with endpoint %s for %s%s connection", endpoint,
           isClientNotification ? (isSecondary ? "secondary " : "primary ") : "",
           isClientNotification ? "subscription" : "client");
@@ -359,7 +365,8 @@ bool TcrConnection::InitTcrConnection(
       auto sendCreds = cacheImpl->createDataOutput();
       ciphertext->toData(sendCreds);
       size_t credLength;
-      auto credData = reinterpret_cast<char*>(const_cast<uint8_t*>(sendCreds.getBuffer(&credLength)));
+      auto credData = reinterpret_cast<char*>(
+          const_cast<uint8_t*>(sendCreds.getBuffer(&credLength)));
       // send the encrypted bytes and check the response
       error = sendData(credData, credLength, connectTimeout, false);
 
@@ -475,17 +482,20 @@ bool TcrConnection::InitTcrConnection(
         if (isClientNotification) readHandshakeInstantiatorMsg(connectTimeout);
         break;
       case REPLY_AUTHENTICATION_FAILED: {
-        AuthenticationFailedException ex((char*)recvMessage.data());
+        AuthenticationFailedException ex(
+            reinterpret_cast<char*>(recvMessage.data()));
         GF_SAFE_DELETE_CON(m_conn);
         throwException(ex);
       }
       case REPLY_AUTHENTICATION_REQUIRED: {
-        AuthenticationRequiredException ex((char*)recvMessage.data());
+        AuthenticationRequiredException ex(
+            reinterpret_cast<char*>(recvMessage.data()));
         GF_SAFE_DELETE_CON(m_conn);
         throwException(ex);
       }
       case REPLY_DUPLICATE_DURABLE_CLIENT: {
-        DuplicateDurableClientException ex((char*)recvMessage.data());
+        DuplicateDurableClientException ex(
+            reinterpret_cast<char*>(recvMessage.data()));
         GF_SAFE_DELETE_CON(m_conn);
         throwException(ex);
       }
@@ -493,10 +503,11 @@ bool TcrConnection::InitTcrConnection(
       case REPLY_INVALID:
       case UNSUCCESSFUL_SERVER_TO_CLIENT: {
         LOGERROR("Handshake rejected by server[%s]: %s",
-                 m_endpointObj->name().c_str(), (char*)recvMessage.data());
-        auto message =
-            std::string("TcrConnection::TcrConnection: ") +
-            "Handshake rejected by server: " + (char*)recvMessage.data();
+                 m_endpointObj->name().c_str(),
+                 reinterpret_cast<char*>(recvMessage.data()));
+        auto message = std::string("TcrConnection::TcrConnection: ") +
+                       "Handshake rejected by server: " +
+                       reinterpret_cast<char*>(recvMessage.data());
         CacheServerException ex(message);
         GF_SAFE_DELETE_CON(m_conn);
         throw ex;
@@ -509,7 +520,8 @@ bool TcrConnection::InitTcrConnection(
             recvMessage.data());
         auto message =
             std::string("TcrConnection::TcrConnection: Unknown error") +
-            " received from server in handshake: " + (char*)recvMessage.data();
+            " received from server in handshake: " +
+            reinterpret_cast<char*>(recvMessage.data());
         MessageException ex(message);
         GF_SAFE_DELETE_CON(m_conn);
         throw ex;
@@ -556,9 +568,9 @@ Connector* TcrConnection::createConnection(
                                .getSystemProperties();
   if (systemProperties.sslEnabled()) {
     socket = new TcpSslConn(endpoint, connectTimeout, maxBuffSizePool,
-                            systemProperties.sslKeystorePassword().c_str(),
                             systemProperties.sslTrustStore().c_str(),
-                            systemProperties.sslKeyStore().c_str());
+                            systemProperties.sslKeyStore().c_str(),
+                            systemProperties.sslKeystorePassword().c_str());
   } else {
     socket = new TcpConn(endpoint, connectTimeout, maxBuffSizePool);
   }
@@ -698,29 +710,7 @@ void TcrConnection::sendRequestForChunkedResponse(
     const TcrMessage& request, size_t len, TcrMessageReply& reply,
     std::chrono::microseconds sendTimeoutSec,
     std::chrono::microseconds receiveTimeoutSec) {
-  int32_t msgType = request.getMessageType();
-  // ACE_OS::memcpy(&msgType, buffer, 4);
-  // msgType = ntohl(msgType);
-
-  /*receiveTimeoutSec = (msgType == TcrMessage::QUERY ||
-    msgType == TcrMessage::QUERY_WITH_PARAMETERS ||
-    msgType == TcrMessage::EXECUTECQ_WITH_IR_MSG_TYPE ||
-    msgType == TcrMessage::GETDURABLECQS_MSG_TYPE ||
-    msgType == TcrMessage::EXECUTE_FUNCTION ||
-    msgType == TcrMessage::EXECUTE_REGION_FUNCTION ||
-    msgType == TcrMessage::EXECUTE_REGION_FUNCTION_SINGLE_HOP)
-    ? reply.getTimeout() : receiveTimeoutSec;
-
-  //send + recieve should be part of API timeout
-  sendTimeoutSec = (msgType == TcrMessage::QUERY ||
-    msgType == TcrMessage::QUERY_WITH_PARAMETERS ||
-    msgType == TcrMessage::EXECUTECQ_WITH_IR_MSG_TYPE ||
-    msgType == TcrMessage::GETDURABLECQS_MSG_TYPE ||
-    msgType == TcrMessage::EXECUTE_FUNCTION ||
-    msgType == TcrMessage::EXECUTE_REGION_FUNCTION ||
-    msgType == TcrMessage::EXECUTE_REGION_FUNCTION_SINGLE_HOP)
-    ? reply.getTimeout() : sendTimeoutSec;
-    */
+  auto msgType = request.getMessageType();
   switch (msgType) {
     case TcrMessage::QUERY:
     case TcrMessage::QUERY_WITH_PARAMETERS:
@@ -736,18 +726,7 @@ void TcrConnection::sendRequestForChunkedResponse(
     default:
       break;
   }
-  /*if((msgType == TcrMessage::QUERY ||
-    msgType == TcrMessage::QUERY_WITH_PARAMETERS ||
-    msgType == TcrMessage::EXECUTECQ_WITH_IR_MSG_TYPE ||
-    msgType == TcrMessage::GETDURABLECQS_MSG_TYPE ||
-    msgType == TcrMessage::EXECUTE_FUNCTION ||
-    msgType == TcrMessage::EXECUTE_REGION_FUNCTION))
-  {
-    receiveTimeoutSec = reply.getTimeout();
-    sendTimeoutSec = reply.getTimeout();
-  }*/
 
-  // send(buffer, len, sendTimeoutSec);
   std::chrono::microseconds timeSpent{0};
   send(timeSpent, request.getMsgData(), len, sendTimeoutSec, true);
 
@@ -882,7 +861,7 @@ char* TcrConnection::readMessage(size_t* recvLen,
     char* fullMessage;
     *recvLen = HEADER_LENGTH + msgLen;
     _GEODE_NEW(fullMessage, char[HEADER_LENGTH + msgLen]);
-    ACE_OS::memcpy(fullMessage, msg_header, HEADER_LENGTH);
+    std::memcpy(fullMessage, msg_header, HEADER_LENGTH);
     return fullMessage;
     // exit(0);
   }
@@ -892,7 +871,7 @@ char* TcrConnection::readMessage(size_t* recvLen,
   char* fullMessage;
   *recvLen = HEADER_LENGTH + msgLen;
   _GEODE_NEW(fullMessage, char[HEADER_LENGTH + msgLen]);
-  ACE_OS::memcpy(fullMessage, msg_header, HEADER_LENGTH);
+  std::memcpy(fullMessage, msg_header, HEADER_LENGTH);
 
   std::chrono::microseconds mesgBodyTimeout = receiveTimeoutSec;
   if (isNotificationMessage) {
@@ -926,20 +905,7 @@ char* TcrConnection::readMessage(size_t* recvLen,
       "TcrConnection::readMessage: received message body from "
       "endpoint %s; bytes: %s",
       m_endpoint,
-      Utils::convertBytesToString(fullMessage + HEADER_LENGTH, msgLen)
-
-          .c_str());
-
-  // This is the test case when msg type is GET_CLIENT_PR_METADATA and msgLen is
-  // 0.
-  /*if (request == TcrMessage::GET_CLIENT_PR_METADATA) {
-  LOGCONFIG("Amey request == TcrMessage::GET_CLIENT_PR_METADATA");
-  char* fullMessage2;
-  *recvLen = HEADER_LENGTH;
-  _GEODE_NEW( fullMessage2, char[HEADER_LENGTH ] );
-  ACE_OS::memcpy(fullMessage2, msg_header, HEADER_LENGTH);
-  return fullMessage2;
-  }*/
+      Utils::convertBytesToString(fullMessage + HEADER_LENGTH, msgLen).c_str());
 
   return fullMessage;
 }
@@ -1091,16 +1057,6 @@ void TcrConnection::readMessageChunked(
 }
 
 void TcrConnection::close() {
-  // If this is a short lived grid client, don't bother with this close ack
-  // message
-  if (m_poolDM->getConnectionManager()
-          .getCacheImpl()
-          ->getDistributedSystem()
-          .getSystemProperties()
-          .isGridClient()) {
-    return;
-  }
-
   TcrMessage* closeMsg = TcrMessage::getCloseConnMessage(
       m_poolDM->getConnectionManager().getCacheImpl());
   try {
@@ -1388,13 +1344,7 @@ bool TcrConnection::hasExpired(const std::chrono::milliseconds& expiryTime) {
     return false;
   }
 
-  ACE_Time_Value _expiryTime(expiryTime);
-
-  if (ACE_OS::gettimeofday() - m_creationTime > _expiryTime) {
-    return true;
-  } else {
-    return false;
-  }
+  return (clock::now() - m_creationTime) > expiryTime;
 }
 
 bool TcrConnection::isIdle(const std::chrono::milliseconds& idleTime) {
@@ -1402,18 +1352,14 @@ bool TcrConnection::isIdle(const std::chrono::milliseconds& idleTime) {
     return false;
   }
 
-  ACE_Time_Value _idleTime(idleTime);
-
-  if (ACE_OS::gettimeofday() - m_lastAccessed > _idleTime) {
-    return true;
-  } else {
-    return false;
-  }
+  return (clock::now() - m_lastAccessed) > idleTime;
 }
 
-void TcrConnection::touch() { m_lastAccessed = ACE_OS::gettimeofday(); }
+void TcrConnection::touch() { m_lastAccessed = clock::now(); }
 
-ACE_Time_Value TcrConnection::getLastAccessed() { return m_lastAccessed; }
+TcrConnection::time_point TcrConnection::getLastAccessed() {
+  return m_lastAccessed;
+}
 
 uint8_t TcrConnection::getOverrides(const SystemProperties* props) {
   uint8_t conflateByte = 0;
@@ -1429,7 +1375,7 @@ uint8_t TcrConnection::getOverrides(const SystemProperties* props) {
 }
 
 void TcrConnection::updateCreationTime() {
-  m_creationTime = ACE_OS::gettimeofday();
+  m_creationTime = clock::now();
   touch();
 }
 
@@ -1470,8 +1416,10 @@ bool TcrConnection::setAndGetBeingUsed(volatile bool isBeingUsed,
       if (m_isUsed == 2) {  // transaction thread has set, reused it
         return true;
       }
-      if (m_isUsed.compare_exchange_strong(currentValue, 2 /*for transaction*/))
+      if (m_isUsed.compare_exchange_strong(currentValue,
+                                           2 /*for transaction*/)) {
         return true;
+      }
       return false;
     } else {
       // m_isUsed = 0;//this will done by releasing the connection by

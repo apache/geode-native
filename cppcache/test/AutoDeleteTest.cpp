@@ -15,11 +15,9 @@
  * limitations under the License.
  */
 
-#include <gtest/gtest.h>
-
 #include <AutoDelete.hpp>
 
-using namespace apache::geode::client;
+#include <gtest/gtest.h>
 
 namespace {
 class TestSharedBase {

@@ -16,21 +16,24 @@
  */
 
 #include "geode/TypeRegistry.hpp"
-#include "CacheRegionHelper.hpp"
-#include "CacheImpl.hpp"
 
-/**
-  TypeRegistry is the public facing wrapper for the serialization registry.
-**/
+#include "CacheImpl.hpp"
+#include "CacheRegionHelper.hpp"
+
+namespace apache {
+namespace geode {
+namespace client {
 
 TypeRegistry::TypeRegistry(CacheImpl* cache) : m_cache(cache) {}
 
-void TypeRegistry::registerType(TypeFactoryMethod creationFunction) {
-  m_cache->getSerializationRegistry()->addType(creationFunction);
+void TypeRegistry::registerType(TypeFactoryMethod creationFunction,
+                                int32_t id) {
+  m_cache->getSerializationRegistry()->addDataSerializableType(creationFunction,
+                                                               id);
 }
 
 void TypeRegistry::registerPdxType(TypeFactoryMethodPdx creationFunction) {
-  m_cache->getSerializationRegistry()->addPdxType(creationFunction);
+  m_cache->getSerializationRegistry()->addPdxSerializableType(creationFunction);
 }
 
 void TypeRegistry::registerPdxSerializer(
@@ -41,3 +44,12 @@ void TypeRegistry::registerPdxSerializer(
 std::shared_ptr<PdxSerializer> TypeRegistry::getPdxSerializer() {
   return m_cache->getSerializationRegistry()->getPdxSerializer();
 }
+
+TypeFactoryMethod TypeRegistry::getCreationFunction(int32_t objectId) {
+  return m_cache->getSerializationRegistry()->getDataSerializableCreationMethod(
+      objectId);
+}
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

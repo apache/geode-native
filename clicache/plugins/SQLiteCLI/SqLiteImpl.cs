@@ -1,0 +1,261 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+using System;
+using System.Data;
+using System.Data.SQLite;
+using Apache.Geode.Client;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+namespace Apache.Geode.Plugins.SQLite
+{
+
+  public class SqLiteImpl<TKey, TValue> : IPersistenceManager<TKey, TValue>
+  {
+
+    #region Factory Method
+    public static SqLiteImpl<TKey, TValue> Create()
+    {
+      return new SqLiteImpl<TKey, TValue>();
+    }
+
+    #endregion //Factory Method
+
+    #region IPersistenceManager<TKey,TValue> Members
+
+
+    public void Init(IRegion<TKey, TValue> region, Properties<string, string> diskProperties)
+    {
+      try
+      {
+        string pageSize, maxPageCount, persistenceDir;
+        m_tableName = region.Name;
+
+        if (diskProperties == null)
+        {
+          persistenceDir = DefaultPersistenceDir;
+          pageSize = DefaultPageSize;
+          maxPageCount = DefaultMaxPageCount;
+        }
+        else
+        {
+          persistenceDir = string.IsNullOrEmpty(diskProperties.Find(PersistenceDir)) ? DefaultPersistenceDir : diskProperties.Find(PersistenceDir);
+          pageSize = string.IsNullOrEmpty(diskProperties.Find(PageSize)) ? DefaultPageSize : diskProperties.Find(PageSize);
+          maxPageCount = string.IsNullOrEmpty(diskProperties.Find(MaxPageCount)) ? DefaultMaxPageCount : diskProperties.Find(MaxPageCount);
+        }
+
+        // create region db file
+        m_persistenceDir = Path.Combine(Directory.GetCurrentDirectory(), persistenceDir);
+        m_regionDir = Path.Combine(m_persistenceDir, m_tableName);
+        Directory.CreateDirectory(m_regionDir);
+
+        //create sqlite connection string
+        m_connectionString = string.Format("Data Source={0};Version=3;Page Size={1};Max Page Count={2};",
+          Path.Combine(m_regionDir, m_tableName + ".db"), pageSize, maxPageCount);
+        SqliteHelper.InitalizeSqLite(m_tableName, m_connectionString);
+      }
+      catch (Exception)
+      {
+        throw;
+      }
+
+    }
+
+    public TValue Read(TKey key)
+    {
+      try
+      {
+        return (TValue)SqliteHelper.GetValue(key, m_tableName, m_connectionString);
+      }
+      catch (Exception)
+      {
+        throw;
+      }
+    }
+
+    public void Write(TKey key, TValue value)
+    {
+      try
+      {
+        SqliteHelper.InsertKeyValue(key, value, m_tableName, m_connectionString);
+      }
+      catch (Exception)
+      {
+        throw;
+      }
+    }
+
+    public bool WriteAll()
+    {
+      throw new NotImplementedException();
+    }
+
+    public bool ReadAll()
+    {
+      throw new NotImplementedException();
+    }
+
+    public void Destroy(TKey key)
+    {
+      try
+      {
+        SqliteHelper.RemoveKey(key, m_tableName, m_connectionString);
+      }
+      catch (Exception)
+      {
+        throw;
+      }
+    }
+
+    public void Close()
+    {
+      try
+      {
+        SqliteHelper.CloseSqlite();
+        Directory.Delete(m_regionDir, true);
+        Directory.Delete(m_persistenceDir);
+      }
+      catch (Exception)
+      {
+      }
+    }
+
+    #endregion //IPersistenceManager<TKey,TValue> Members
+
+    #region Data Members
+    private string m_connectionString;
+    private string m_tableName;
+    private string m_persistenceDir;
+    private string m_regionDir;
+    #endregion
+
+    #region Constants
+    public static readonly string PersistenceDir = "PersistenceDirectory";
+    public static readonly string MaxPageCount = "max_page_count";
+    public static readonly string PageSize = "page_size";
+    public static readonly string DefaultPersistenceDir = "GeodeRegionData";
+    public static readonly string DefaultMaxPageCount = "2147483646";
+    public static readonly string DefaultPageSize = "65536";
+    #endregion
+
+  }
+
+  internal static class SqliteHelper
+  {
+    public static byte[] GetBytes(object obj)
+    {
+      BinaryFormatter bf = new BinaryFormatter();
+      MemoryStream ms = new MemoryStream();
+      bf.Serialize(ms, obj);
+      return ms.ToArray();
+    }
+
+    public static object GetObject(byte[] bytes)
+    {
+      BinaryFormatter bf = new BinaryFormatter();
+      MemoryStream ms = new MemoryStream(bytes);
+      return bf.Deserialize(ms);
+    }
+
+    public static void InitalizeSqLite(string tableName, string connectionString)
+    {
+
+      //construct create table query for this region
+      string query = string.Format("CREATE TABLE IF NOT EXISTS {0}(key BLOB PRIMARY KEY,value BLOB);", tableName);
+
+      using (SQLiteConnection conn = new SQLiteConnection(connectionString))
+      {
+        conn.Open();
+        using (SQLiteCommand command = new SQLiteCommand(query, conn))
+        {
+          command.ExecuteNonQuery();
+        }
+      }
+    }
+
+    public static void ExecutePragma(string pragmaName, string pragmaValue, string connectionString)
+    {
+      string pragmaQuery = string.Format("PRAGMA {0} = {1};", pragmaName, pragmaValue);
+      using (SQLiteConnection conn = new SQLiteConnection(connectionString))
+      {
+        conn.Open();
+        using (SQLiteCommand command = new SQLiteCommand(pragmaQuery, conn))
+        {
+          command.ExecuteNonQuery();
+        }
+      }
+    }
+
+    public static void InsertKeyValue(object key, object value, string tableName, string connectionString)
+    {
+      //construct query
+      string query = string.Format("REPLACE INTO {0} VALUES(@key,@value);", tableName);
+      using (SQLiteConnection conn = new SQLiteConnection(connectionString))
+      {
+        conn.Open();
+        using (SQLiteCommand command = new SQLiteCommand(query, conn))
+        {
+          command.Parameters.Add(new SQLiteParameter("@key", key));
+          command.Parameters.Add(new SQLiteParameter("@value", GetBytes(value)));
+          command.ExecuteNonQuery();
+        }
+      }
+    }
+
+    public static object GetValue(object key, string tableName, string connectionString)
+    {
+      //construct query
+      string query = string.Format("SELECT value FROM {0} WHERE key=@key;", tableName);
+      object retValue;
+      using (SQLiteConnection conn = new SQLiteConnection(connectionString))
+      {
+        conn.Open();
+        using (SQLiteCommand command = new SQLiteCommand(query, conn))
+        {
+          // create parameters and execute
+          command.Parameters.Add(new SQLiteParameter("@key", key));
+          retValue = SqliteHelper.GetObject((byte[])command.ExecuteScalar());
+        }
+      }
+      return retValue;
+    }
+
+    public static void RemoveKey(object key, string tableName, string connectionString)
+    {
+      //construct query
+      string query = string.Format("DELETE FROM {0} WHERE key=@key;", tableName);
+      using (SQLiteConnection conn = new SQLiteConnection(connectionString))
+      {
+        conn.Open();
+        using (SQLiteCommand command = new SQLiteCommand(query, conn))
+        {
+          // create parameters and execute
+          command.Parameters.Add(new SQLiteParameter("@key", key));
+          command.ExecuteNonQuery();
+        }
+      }
+    }
+
+    public static void CloseSqlite()
+    {
+      // remove the region db files
+      //Directory.Delete(m_persistenceDir, true);
+    }
+
+
+  }
+}

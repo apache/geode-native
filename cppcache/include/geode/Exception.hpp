@@ -20,12 +20,12 @@
 #ifndef GEODE_EXCEPTION_H_
 #define GEODE_EXCEPTION_H_
 
-#include <string>
 #include <stdexcept>
+#include <string>
 #include <unordered_map>
 
-#include "internal/geode_globals.hpp"
 #include "internal/functional.hpp"
+#include "internal/geode_globals.hpp"
 
 namespace apache {
 namespace geode {
@@ -33,9 +33,11 @@ namespace client {
 
 class StackTrace;
 
+#if defined(_MSC_VER)
 // Ignore C4275 - This class extends std C++ class
 #pragma warning(push)
 #pragma warning(disable : 4275)
+#endif
 
 /**
  * A description of an exception that occurred during a cache operation.
@@ -43,8 +45,8 @@ class StackTrace;
 class APACHE_GEODE_EXPORT Exception : public std::exception {
  public:
   explicit Exception(const std::string& message);
-  Exception(std::string&& message);
-  Exception(const char* message);
+  explicit Exception(std::string&& message);
+  explicit Exception(const char* message);
   Exception(const Exception&) = default;
   Exception& operator=(const Exception&) = default;
   Exception(Exception&&) noexcept = default;
@@ -73,7 +75,9 @@ class APACHE_GEODE_EXPORT Exception : public std::exception {
   std::shared_ptr<StackTrace> stack_;
 };
 
+#if defined(_MSC_VER)
 #pragma warning(pop)
+#endif
 
 }  // namespace client
 }  // namespace geode

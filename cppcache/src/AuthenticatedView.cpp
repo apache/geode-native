@@ -15,26 +15,28 @@
  * limitations under the License.
  */
 
-#include <string>
 #include <memory>
+#include <string>
 
-#include <geode/internal/geode_globals.hpp>
+#include <geode/AuthenticatedView.hpp>
 #include <geode/Cache.hpp>
 #include <geode/FunctionService.hpp>
-#include <geode/AuthenticatedView.hpp>
 #include <geode/PoolManager.hpp>
+#include <geode/internal/geode_globals.hpp>
 
-#include "DistributedSystemImpl.hpp"
-#include "CacheXmlParser.hpp"
-#include "CacheRegionHelper.hpp"
 #include "CacheImpl.hpp"
-#include "UserAttributes.hpp"
+#include "CacheRegionHelper.hpp"
+#include "CacheXmlParser.hpp"
+#include "DistributedSystemImpl.hpp"
+#include "FunctionServiceImpl.hpp"
 #include "ProxyRegion.hpp"
 #include "ProxyRemoteQueryService.hpp"
-#include "FunctionServiceImpl.hpp"
 #include "ThinClientPoolDM.hpp"
+#include "UserAttributes.hpp"
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 /**
  * Indicates if this cache has been closed.
@@ -125,7 +127,7 @@ std::shared_ptr<QueryService> AuthenticatedView::getQueryService() {
     if (m_remoteQueryService != nullptr) return m_remoteQueryService;
     auto prqsPtr = std::make_shared<ProxyRemoteQueryService>(this);
     m_remoteQueryService = prqsPtr;
-    return prqsPtr;
+    return std::move(prqsPtr);
   }
   throw IllegalStateException("User cache has been closed.");
 }
@@ -174,3 +176,6 @@ PdxInstanceFactory AuthenticatedView::createPdxInstanceFactory(
                                 .getSystemProperties()
                                 .getEnableTimeStatistics());
 }
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

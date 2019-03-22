@@ -63,24 +63,25 @@
 #define PATH_SEP "/"
 #endif
 
-using namespace apache::geode::client;
-using namespace apache::geode::internal::chrono::duration;
-
 extern ClientCleanup gClientCleanup;
+
+namespace apache {
+namespace geode {
+namespace client {
 
 #define RANDOM_NUMBER_OFFSET 14000
 #define RANDOM_NUMBER_DIVIDER 15000
 std::shared_ptr<Cache> CacheHelper::getCache() { return cachePtr; }
 
-CacheHelper& CacheHelper::getHelper() {
+CacheHelper &CacheHelper::getHelper() {
   if (singleton == nullptr) {
     singleton = new CacheHelper();
   }
   return *singleton;
 }
 
-CacheHelper::CacheHelper(const char*,
-                         const std::shared_ptr<Properties>& configPtr,
+CacheHelper::CacheHelper(const char *,
+                         const std::shared_ptr<Properties> &configPtr,
                          const bool noRootRegion) {
   auto pp = configPtr;
   if (pp == nullptr) {
@@ -98,7 +99,7 @@ CacheHelper::CacheHelper(const char*,
     auto regionFactory =
         cachePtr->createRegionFactory(RegionShortcut::CACHING_PROXY);
     rootRegionPtr = regionFactory.create(ROOT_NAME);
-  } catch (const RegionExistsException&) {
+  } catch (const RegionExistsException &) {
     rootRegionPtr = cachePtr->getRegion(ROOT_NAME);
   }
 
@@ -106,8 +107,8 @@ CacheHelper::CacheHelper(const char*,
 }
 
 /** rootRegionPtr will still be null... */
-CacheHelper::CacheHelper(const char*, const char* cachexml,
-                         const std::shared_ptr<Properties>& configPtr) {
+CacheHelper::CacheHelper(const char *, const char *cachexml,
+                         const std::shared_ptr<Properties> &configPtr) {
   auto pp = configPtr;
   if (pp == nullptr) {
     pp = Properties::create();
@@ -124,7 +125,7 @@ CacheHelper::CacheHelper(const char*, const char* cachexml,
   m_doDisconnect = false;
 }
 
-CacheHelper::CacheHelper(const std::shared_ptr<Properties>& configPtr,
+CacheHelper::CacheHelper(const std::shared_ptr<Properties> &configPtr,
                          const bool noRootRegion) {
   auto pp = configPtr;
   if (pp == nullptr) {
@@ -146,7 +147,7 @@ CacheHelper::CacheHelper(const std::shared_ptr<Properties>& configPtr,
     auto regionFactory =
         cachePtr->createRegionFactory(RegionShortcut::CACHING_PROXY);
     rootRegionPtr = regionFactory.create(ROOT_NAME);
-  } catch (const RegionExistsException&) {
+  } catch (const RegionExistsException &) {
     rootRegionPtr = cachePtr->getRegion(ROOT_NAME);
   }
 
@@ -154,8 +155,8 @@ CacheHelper::CacheHelper(const std::shared_ptr<Properties>& configPtr,
 }
 
 CacheHelper::CacheHelper(const bool,
-                         const std::shared_ptr<AuthInitialize>& authInitialize,
-                         const std::shared_ptr<Properties>& configPtr) {
+                         const std::shared_ptr<AuthInitialize> &authInitialize,
+                         const std::shared_ptr<Properties> &configPtr) {
   auto pp = configPtr;
   if (pp == nullptr) {
     pp = Properties::create();
@@ -165,7 +166,7 @@ CacheHelper::CacheHelper(const bool,
     auto cacheFactory = CacheFactory(pp).setAuthInitialize(authInitialize);
     cachePtr = std::make_shared<Cache>(cacheFactory.create());
     m_doDisconnect = false;
-  } catch (const Exception& excp) {
+  } catch (const Exception &excp) {
     LOG("Geode exception while creating cache, logged in following line");
     LOG(excp.what());
   } catch (...) {
@@ -174,28 +175,21 @@ CacheHelper::CacheHelper(const bool,
 }
 
 CacheHelper::CacheHelper(const bool,
-                         const std::shared_ptr<Properties>& configPtr,
+                         const std::shared_ptr<Properties> &configPtr,
                          const bool) {
   auto pp = configPtr;
   if (pp == nullptr) {
     pp = Properties::create();
   }
-  try {
-    LOG(" in cachehelper before createCacheFactory");
-    auto cacheFactory = CacheFactory(pp);
-    cachePtr = std::make_shared<Cache>(cacheFactory.create());
-    m_doDisconnect = false;
-  } catch (const Exception& excp) {
-    LOG("Geode exception while creating cache, logged in following line");
-    LOG(excp.what());
-  } catch (...) {
-    LOG("Throwing exception while creating cache....");
-  }
+  LOG(" in cachehelper before createCacheFactory");
+  auto cacheFactory = CacheFactory(pp);
+  cachePtr = std::make_shared<Cache>(cacheFactory.create());
+  m_doDisconnect = false;
 }
 
 CacheHelper::CacheHelper(const bool, bool pdxIgnoreUnreadFields,
                          bool pdxReadSerialized,
-                         const std::shared_ptr<Properties>& configPtr,
+                         const std::shared_ptr<Properties> &configPtr,
                          const bool) {
   auto pp = configPtr;
   if (pp == nullptr) {
@@ -209,7 +203,7 @@ CacheHelper::CacheHelper(const bool, bool pdxIgnoreUnreadFields,
     cfPtr.setPdxIgnoreUnreadFields(pdxIgnoreUnreadFields);
     cachePtr = std::make_shared<Cache>(cfPtr.create());
     m_doDisconnect = false;
-  } catch (const Exception& excp) {
+  } catch (const Exception &excp) {
     LOG("Geode exception while creating cache, logged in following line");
     LOG(excp.what());
   } catch (...) {
@@ -217,9 +211,9 @@ CacheHelper::CacheHelper(const bool, bool pdxIgnoreUnreadFields,
   }
 }
 
-CacheHelper::CacheHelper(const bool, const char* poolName, const char* locators,
-                         const char* serverGroup,
-                         const std::shared_ptr<Properties>& configPtr,
+CacheHelper::CacheHelper(const bool, const char *poolName, const char *locators,
+                         const char *serverGroup,
+                         const std::shared_ptr<Properties> &configPtr,
                          int redundancy, bool clientNotification,
                          int subscriptionAckInterval, int connections,
                          int loadConditioningInterval, bool isMultiuserMode,
@@ -264,7 +258,7 @@ CacheHelper::CacheHelper(const bool, const char* poolName, const char* locators,
 
     poolFactory.create(poolName);
 
-  } catch (const Exception& excp) {
+  } catch (const Exception &excp) {
     LOG("Geode exception while creating cache, logged in following line");
     LOG(excp.what());
   } catch (...) {
@@ -273,7 +267,7 @@ CacheHelper::CacheHelper(const bool, const char* poolName, const char* locators,
 }
 
 CacheHelper::CacheHelper(const int,
-                         const std::shared_ptr<Properties>& configPtr) {
+                         const std::shared_ptr<Properties> &configPtr) {
   auto pp = configPtr;
   if (pp == nullptr) {
     pp = Properties::create();
@@ -289,7 +283,7 @@ CacheHelper::~CacheHelper() {
   disconnect();
 }
 
-void CacheHelper::closePool(const char* poolName, bool keepAlive) {
+void CacheHelper::closePool(const char *poolName, bool keepAlive) {
   auto pool = getCache()->getPoolManager().find(poolName);
   pool->destroy(keepAlive);
 }
@@ -310,7 +304,7 @@ void CacheHelper::disconnect(bool keepalive) {
       cachePtr->close(keepalive);
     }
     LOG("Closing cache complete.");
-  } catch (Exception& ex) {
+  } catch (Exception &ex) {
     LOG("Exception thrown while closing cache: ");
     LOG(ex.what());
   } catch (...) {
@@ -323,13 +317,13 @@ void CacheHelper::disconnect(bool keepalive) {
   LOG("Finished cleanup after CacheHelper.");
 }
 
-void CacheHelper::createPlainRegion(const char* regionName,
-                                    std::shared_ptr<Region>& regionPtr) {
+void CacheHelper::createPlainRegion(const char *regionName,
+                                    std::shared_ptr<Region> &regionPtr) {
   createPlainRegion(regionName, regionPtr, 10);
 }
 
-void CacheHelper::createPlainRegion(const char* regionName,
-                                    std::shared_ptr<Region>& regionPtr,
+void CacheHelper::createPlainRegion(const char *regionName,
+                                    std::shared_ptr<Region> &regionPtr,
                                     uint32_t size) {
   RegionAttributesFactory regionAttributesFactory;
   // set lru attributes...
@@ -343,12 +337,12 @@ void CacheHelper::createPlainRegion(const char* regionName,
   ASSERT(regionPtr != nullptr, "failed to create region.");
 }
 
-void CacheHelper::createLRURegion(const char* regionName,
-                                  std::shared_ptr<Region>& regionPtr) {
+void CacheHelper::createLRURegion(const char *regionName,
+                                  std::shared_ptr<Region> &regionPtr) {
   createLRURegion(regionName, regionPtr, 10);
 }
-void CacheHelper::createLRURegion(const char* regionName,
-                                  std::shared_ptr<Region>& regionPtr,
+void CacheHelper::createLRURegion(const char *regionName,
+                                  std::shared_ptr<Region> &regionPtr,
                                   uint32_t size) {
   RegionAttributesFactory regionAttributesFactory;
   // set lru attributes...
@@ -362,13 +356,13 @@ void CacheHelper::createLRURegion(const char* regionName,
   ASSERT(regionPtr != nullptr, "failed to create region.");
 }
 
-void CacheHelper::createDistRegion(const char* regionName,
-                                   std::shared_ptr<Region>& regionPtr) {
+void CacheHelper::createDistRegion(const char *regionName,
+                                   std::shared_ptr<Region> &regionPtr) {
   createDistRegion(regionName, regionPtr, 10);
 }
 
-void CacheHelper::createDistRegion(const char* regionName,
-                                   std::shared_ptr<Region>& regionPtr,
+void CacheHelper::createDistRegion(const char *regionName,
+                                   std::shared_ptr<Region> &regionPtr,
                                    uint32_t size) {
   RegionAttributesFactory regionAttributesFactory;
   // set lru attributes...
@@ -381,12 +375,12 @@ void CacheHelper::createDistRegion(const char* regionName,
   regionPtr = rootRegionPtr->createSubregion(regionName, regionAttributes);
   ASSERT(regionPtr != nullptr, "failed to create region.");
 }
-std::shared_ptr<Region> CacheHelper::getRegion(const std::string& name) {
+std::shared_ptr<Region> CacheHelper::getRegion(const std::string &name) {
   return cachePtr->getRegion(name);
 }
 std::shared_ptr<Region> CacheHelper::createRegion(
-    const char* name, bool, bool caching,
-    const std::shared_ptr<CacheListener>& listener, bool, bool,
+    const char *name, bool, bool caching,
+    const std::shared_ptr<CacheListener> &listener, bool, bool,
     bool concurrencyCheckEnabled, int32_t) {
   RegionAttributesFactory regionAttributeFactory;
   regionAttributeFactory.setCachingEnabled(caching);
@@ -399,16 +393,16 @@ std::shared_ptr<Region> CacheHelper::createRegion(
 
   auto regionAttributes = regionAttributeFactory.create();
 
-  CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cachePtr.get());
+  CacheImpl *cacheImpl = CacheRegionHelper::getCacheImpl(cachePtr.get());
   std::shared_ptr<Region> regionPtr;
   cacheImpl->createRegion(name, regionAttributes, regionPtr);
   return regionPtr;
 }
 std::shared_ptr<Region> CacheHelper::createRegion(
-    const char* name, bool, bool caching, const std::chrono::seconds& ettl,
-    const std::chrono::seconds& eit, const std::chrono::seconds& rttl,
-    const std::chrono::seconds& rit, int lel, ExpirationAction action,
-    const char*, bool) {
+    const char *name, bool, bool caching, const std::chrono::seconds &ettl,
+    const std::chrono::seconds &eit, const std::chrono::seconds &rttl,
+    const std::chrono::seconds &rit, int lel, ExpirationAction action,
+    const char *, bool) {
   RegionAttributesFactory regionAttributeFactory;
   regionAttributeFactory.setCachingEnabled(caching);
   regionAttributeFactory.setLruEntriesLimit(lel);
@@ -419,13 +413,13 @@ std::shared_ptr<Region> CacheHelper::createRegion(
 
   auto regionAttributes = regionAttributeFactory.create();
 
-  CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cachePtr.get());
+  CacheImpl *cacheImpl = CacheRegionHelper::getCacheImpl(cachePtr.get());
   std::shared_ptr<Region> regionPtr;
   cacheImpl->createRegion(name, regionAttributes, regionPtr);
   return regionPtr;
 }
 std::shared_ptr<Pool> CacheHelper::createPool(
-    const std::string& poolName, const char* locators, const char* serverGroup,
+    const std::string &poolName, const char *locators, const char *serverGroup,
     int redundancy, bool clientNotification,
     std::chrono::milliseconds subscriptionAckInterval, int connections,
     int loadConditioningInterval, bool isMultiuserMode) {
@@ -459,16 +453,15 @@ std::shared_ptr<Pool> CacheHelper::createPool(
 
 // this will create pool even endpoints and locatorhost has been not defined
 std::shared_ptr<Pool> CacheHelper::createPool2(
-    const char* poolName, const char* locators, const char* serverGroup,
-    const char* servers, int redundancy, bool clientNotification,
+    const char *poolName, const char *locators, const char *serverGroup,
+    const char *servers, int redundancy, bool clientNotification,
     int subscriptionAckInterval, int connections) {
   auto poolFac = getCache()->getPoolManager().createFactory();
 
   if (servers) {
     addServerLocatorEPs(servers, poolFac, false);
     // do region creation with end
-  }
-  else if (locators) {
+  } else if (locators) {
     addServerLocatorEPs(locators, poolFac);
     if (serverGroup) {
       poolFac.setServerGroup(serverGroup);
@@ -489,8 +482,9 @@ std::shared_ptr<Pool> CacheHelper::createPool2(
   return poolFac.create(poolName);
 }
 
-void CacheHelper::logPoolAttributes(std::shared_ptr<Pool>& pool) {
-  using namespace apache::geode::internal::chrono::duration;
+void CacheHelper::logPoolAttributes(std::shared_ptr<Pool> &pool) {
+  using apache::geode::internal::chrono::duration::to_string;
+
   LOG("logPoolAttributes() entered");
   LOGINFO("CPPTEST: Pool attributes for pool %s are as follows" +
           pool->getName());
@@ -521,10 +515,10 @@ void CacheHelper::logPoolAttributes(std::shared_ptr<Pool>& pool) {
 }
 
 void CacheHelper::createPoolWithLocators(
-    const std::string& name, const char* locators,
+    const std::string &name, const char *locators,
     bool clientNotificationEnabled, int subscriptionRedundancy,
     std::chrono::milliseconds subscriptionAckInterval, int connections,
-    bool isMultiuserMode, const char* serverGroup) {
+    bool isMultiuserMode, const char *serverGroup) {
   LOG("createPool() entered.");
   printf(" in createPoolWithLocators isMultiuserMode = %d\n", isMultiuserMode);
   auto poolPtr = createPool(name, locators, serverGroup, subscriptionRedundancy,
@@ -535,9 +529,9 @@ void CacheHelper::createPoolWithLocators(
   LOG("Pool created.");
 }
 std::shared_ptr<Region> CacheHelper::createRegionAndAttachPool(
-    const std::string& name, bool, const std::string& poolName, bool caching,
-    const std::chrono::seconds& ettl, const std::chrono::seconds& eit,
-    const std::chrono::seconds& rttl, const std::chrono::seconds& rit, int lel,
+    const std::string &name, bool, const std::string &poolName, bool caching,
+    const std::chrono::seconds &ettl, const std::chrono::seconds &eit,
+    const std::chrono::seconds &rttl, const std::chrono::seconds &rit, int lel,
     ExpirationAction action) {
   RegionShortcut preDefRA = RegionShortcut::PROXY;
   if (caching) {
@@ -558,10 +552,10 @@ std::shared_ptr<Region> CacheHelper::createRegionAndAttachPool(
   return regionFactory.create(name);
 }
 std::shared_ptr<Region> CacheHelper::createRegionAndAttachPool2(
-    const char* name, bool, const char* poolName,
-    const std::shared_ptr<PartitionResolver>& aResolver, bool caching,
-    const std::chrono::seconds& ettl, const std::chrono::seconds& eit,
-    const std::chrono::seconds& rttl, const std::chrono::seconds& rit, int lel,
+    const char *name, bool, const char *poolName,
+    const std::shared_ptr<PartitionResolver> &aResolver, bool caching,
+    const std::chrono::seconds &ettl, const std::chrono::seconds &eit,
+    const std::chrono::seconds &rttl, const std::chrono::seconds &rit, int lel,
     ExpirationAction action) {
   RegionShortcut preDefRA = RegionShortcut::PROXY;
   if (caching) {
@@ -581,11 +575,11 @@ std::shared_ptr<Region> CacheHelper::createRegionAndAttachPool2(
   return regionFactory.create(name);
 }
 
-void CacheHelper::addServerLocatorEPs(const char* epList, PoolFactory& pf,
+void CacheHelper::addServerLocatorEPs(const char *epList, PoolFactory &pf,
                                       bool poolLocators) {
   std::unordered_set<std::string> endpointNames;
   Utils::parseEndpointNamesString(epList, endpointNames);
-  for (const auto& endpointName : endpointNames) {
+  for (const auto &endpointName : endpointNames) {
     auto position = endpointName.find_first_of(":");
     if (position != std::string::npos) {
       auto hostname = endpointName.substr(0, position);
@@ -600,11 +594,11 @@ void CacheHelper::addServerLocatorEPs(const char* epList, PoolFactory& pf,
 }
 
 std::shared_ptr<Region> CacheHelper::createPooledRegion(
-    const char* name, bool, const char* locators, const char* poolName,
+    const char *name, bool, const char *locators, const char *poolName,
     bool caching, bool clientNotificationEnabled,
-    const std::chrono::seconds& ettl, const std::chrono::seconds& eit,
-    const std::chrono::seconds& rttl, const std::chrono::seconds& rit, int lel,
-    const std::shared_ptr<CacheListener>& cacheListener,
+    const std::chrono::seconds &ettl, const std::chrono::seconds &eit,
+    const std::chrono::seconds &rttl, const std::chrono::seconds &rit, int lel,
+    const std::shared_ptr<CacheListener> &cacheListener,
     ExpirationAction action) {
   auto poolFac = getCache()->getPoolManager().createFactory();
   poolFac.setSubscriptionEnabled(clientNotificationEnabled);
@@ -639,11 +633,11 @@ std::shared_ptr<Region> CacheHelper::createPooledRegion(
   return regionFactory.create(name);
 }
 std::shared_ptr<Region> CacheHelper::createPooledRegionConcurrencyCheckDisabled(
-    const char* name, bool, const char* locators, const char* poolName,
+    const char *name, bool, const char *locators, const char *poolName,
     bool caching, bool clientNotificationEnabled, bool concurrencyCheckEnabled,
-    const std::chrono::seconds& ettl, const std::chrono::seconds& eit,
-    const std::chrono::seconds& rttl, const std::chrono::seconds& rit, int lel,
-    const std::shared_ptr<CacheListener>& cacheListener,
+    const std::chrono::seconds &ettl, const std::chrono::seconds &eit,
+    const std::chrono::seconds &rttl, const std::chrono::seconds &rit, int lel,
+    const std::shared_ptr<CacheListener> &cacheListener,
     ExpirationAction action) {
   auto poolFac = getCache()->getPoolManager().createFactory();
   poolFac.setSubscriptionEnabled(clientNotificationEnabled);
@@ -677,9 +671,9 @@ std::shared_ptr<Region> CacheHelper::createPooledRegionConcurrencyCheckDisabled(
   return regionFactory.create(name);
 }
 std::shared_ptr<Region> CacheHelper::createRegionDiscOverFlow(
-    const char* name, bool caching, bool, const std::chrono::seconds& ettl,
-    const std::chrono::seconds& eit, const std::chrono::seconds& rttl,
-    const std::chrono::seconds& rit, int lel, ExpirationAction action) {
+    const char *name, bool caching, bool, const std::chrono::seconds &ettl,
+    const std::chrono::seconds &eit, const std::chrono::seconds &rttl,
+    const std::chrono::seconds &rit, int lel, ExpirationAction action) {
   RegionAttributesFactory regionAttributeFactory;
   regionAttributeFactory.setCachingEnabled(caching);
   regionAttributeFactory.setLruEntriesLimit(lel);
@@ -694,25 +688,24 @@ std::shared_ptr<Region> CacheHelper::createRegionDiscOverFlow(
     sqLiteProps->insert("PageSize", "65536");
     sqLiteProps->insert("MaxPageCount", "1073741823");
     std::string sqlite_dir =
-        "SqLiteRegionData" +
-        std::to_string(static_cast<long long int>(ACE_OS::getpid()));
+        "SqLiteRegionData" + std::to_string(ACE_OS::getpid());
     sqLiteProps->insert("PersistenceDirectory", sqlite_dir.c_str());
     regionAttributeFactory.setPersistenceManager(
         "SqLiteImpl", "createSqLiteInstance", sqLiteProps);
   }
 
   auto regionAttributes = regionAttributeFactory.create();
-  CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cachePtr.get());
+  CacheImpl *cacheImpl = CacheRegionHelper::getCacheImpl(cachePtr.get());
   std::shared_ptr<Region> regionPtr;
   cacheImpl->createRegion(name, regionAttributes, regionPtr);
   return regionPtr;
 }
 std::shared_ptr<Region> CacheHelper::createPooledRegionDiscOverFlow(
-    const char* name, bool, const char* locators, const char* poolName,
+    const char *name, bool, const char *locators, const char *poolName,
     bool caching, bool clientNotificationEnabled,
-    const std::chrono::seconds& ettl, const std::chrono::seconds& eit,
-    const std::chrono::seconds& rttl, const std::chrono::seconds& rit, int lel,
-    const std::shared_ptr<CacheListener>& cacheListener,
+    const std::chrono::seconds &ettl, const std::chrono::seconds &eit,
+    const std::chrono::seconds &rttl, const std::chrono::seconds &rit, int lel,
+    const std::shared_ptr<CacheListener> &cacheListener,
     ExpirationAction action) {
   auto poolFac = getCache()->getPoolManager().createFactory();
   poolFac.setSubscriptionEnabled(clientNotificationEnabled);
@@ -752,8 +745,7 @@ std::shared_ptr<Region> CacheHelper::createPooledRegionDiscOverFlow(
     sqLiteProps->insert("PageSize", "65536");
     sqLiteProps->insert("MaxPageCount", "1073741823");
     std::string sqlite_dir =
-        "SqLiteRegionData" +
-        std::to_string(static_cast<long long int>(ACE_OS::getpid()));
+        "SqLiteRegionData" + std::to_string(ACE_OS::getpid());
     sqLiteProps->insert("PersistenceDirectory", sqlite_dir.c_str());
     regionFactory.setPersistenceManager("SqLiteImpl", "createSqLiteInstance",
                                         sqLiteProps);
@@ -764,11 +756,11 @@ std::shared_ptr<Region> CacheHelper::createPooledRegionDiscOverFlow(
   return regionFactory.create(name);
 }
 std::shared_ptr<Region> CacheHelper::createPooledRegionSticky(
-    const char* name, bool, const char* locators, const char* poolName,
+    const char *name, bool, const char *locators, const char *poolName,
     bool caching, bool clientNotificationEnabled,
-    const std::chrono::seconds& ettl, const std::chrono::seconds& eit,
-    const std::chrono::seconds& rttl, const std::chrono::seconds& rit, int lel,
-    const std::shared_ptr<CacheListener>& cacheListener,
+    const std::chrono::seconds &ettl, const std::chrono::seconds &eit,
+    const std::chrono::seconds &rttl, const std::chrono::seconds &rit, int lel,
+    const std::shared_ptr<CacheListener> &cacheListener,
     ExpirationAction action) {
   auto poolFac = getCache()->getPoolManager().createFactory();
   poolFac.setSubscriptionEnabled(clientNotificationEnabled);
@@ -805,11 +797,11 @@ std::shared_ptr<Region> CacheHelper::createPooledRegionSticky(
   return regionFactory.create(name);
 }
 std::shared_ptr<Region> CacheHelper::createPooledRegionStickySingleHop(
-    const char* name, bool, const char* locators, const char* poolName,
+    const char *name, bool, const char *locators, const char *poolName,
     bool caching, bool clientNotificationEnabled,
-    const std::chrono::seconds& ettl, const std::chrono::seconds& eit,
-    const std::chrono::seconds& rttl, const std::chrono::seconds& rit, int lel,
-    const std::shared_ptr<CacheListener>& cacheListener,
+    const std::chrono::seconds &ettl, const std::chrono::seconds &eit,
+    const std::chrono::seconds &rttl, const std::chrono::seconds &rit, int lel,
+    const std::shared_ptr<CacheListener> &cacheListener,
     ExpirationAction action) {
   LOG("createPooledRegionStickySingleHop");
   auto poolFac = getCache()->getPoolManager().createFactory();
@@ -846,8 +838,8 @@ std::shared_ptr<Region> CacheHelper::createPooledRegionStickySingleHop(
   return regionFactory.create(name);
 }
 std::shared_ptr<Region> CacheHelper::createSubregion(
-    std::shared_ptr<Region>& parent, const char* name, bool, bool caching,
-    const std::shared_ptr<CacheListener>& listener) {
+    std::shared_ptr<Region> &parent, const char *name, bool, bool caching,
+    const std::shared_ptr<CacheListener> &listener) {
   RegionAttributesFactory regionAttributeFactory;
   regionAttributeFactory.setCachingEnabled(caching);
   if (listener != nullptr) {
@@ -858,12 +850,12 @@ std::shared_ptr<Region> CacheHelper::createSubregion(
   return parent->createSubregion(name, regionAttributes);
 }
 std::shared_ptr<CacheableString> CacheHelper::createCacheable(
-    const char* value) {
+    const char *value) {
   return CacheableString::create(value);
 }
 
 void CacheHelper::showKeys(
-    std::vector<std::shared_ptr<CacheableKey>>& vecKeys) {
+    std::vector<std::shared_ptr<CacheableKey>> &vecKeys) {
   fprintf(stdout, "vecKeys.size() = %zd\n", vecKeys.size());
   for (size_t i = 0; i < vecKeys.size(); i++) {
     fprintf(stdout, "key[%zd] - %s\n", i, vecKeys.at(i)->toString().c_str());
@@ -889,9 +881,9 @@ std::shared_ptr<QueryService> CacheHelper::getQueryService() {
   return cachePtr->getQueryService();
 }
 
-const char* CacheHelper::getTcrEndpoints(bool& isLocalServer,
+const char *CacheHelper::getTcrEndpoints(bool &isLocalServer,
                                          int numberOfServers) {
-  static char* gfjavaenv = ACE_OS::getenv("GFJAVA");
+  static char *gfjavaenv = ACE_OS::getenv("GFJAVA");
   std::string gfendpoints;
   static bool gflocalserver = false;
   char tmp[100];
@@ -972,15 +964,15 @@ const char* CacheHelper::getTcrEndpoints(bool& isLocalServer,
   return (new std::string(gfendpoints.c_str()))->c_str();
 }
 
-const char* CacheHelper::getstaticLocatorHostPort1() {
+const char *CacheHelper::getstaticLocatorHostPort1() {
   return getLocatorHostPort(staticLocatorHostPort1);
 }
 
-const char* CacheHelper::getstaticLocatorHostPort2() {
+const char *CacheHelper::getstaticLocatorHostPort2() {
   return getLocatorHostPort(staticLocatorHostPort2);
 }
 
-const char* CacheHelper::getLocatorHostPort(int locPort) {
+const char *CacheHelper::getLocatorHostPort(int locPort) {
   char tmp[128];
   std::string gfendpoints;
   gfendpoints = "localhost:";
@@ -990,9 +982,9 @@ const char* CacheHelper::getLocatorHostPort(int locPort) {
   ;
 }
 
-const char* CacheHelper::getTcrEndpoints2(bool& isLocalServer,
+const char *CacheHelper::getTcrEndpoints2(bool &isLocalServer,
                                           int numberOfServers) {
-  static char* gfjavaenv = ACE_OS::getenv("GFJAVA");
+  static char *gfjavaenv = ACE_OS::getenv("GFJAVA");
   std::string gfendpoints;
   static bool gflocalserver = false;
   char tmp[128];
@@ -1075,10 +1067,10 @@ const char* CacheHelper::getTcrEndpoints2(bool& isLocalServer,
   return (new std::string(gfendpoints.c_str()))->c_str();
 }
 
-const char* CacheHelper::getLocatorHostPort(bool& isLocator,
-                                            bool& isLocalServer,
+const char *CacheHelper::getLocatorHostPort(bool &isLocator,
+                                            bool &isLocalServer,
                                             int numberOfLocators) {
-  static char* gfjavaenv = ACE_OS::getenv("GFJAVA");
+  static char *gfjavaenv = ACE_OS::getenv("GFJAVA");
   static std::string gflchostport;
   static bool gflocator = false;
   static bool gflocalserver = false;
@@ -1147,8 +1139,8 @@ void CacheHelper::cleanupServerInstances() {
     }
   }
 }
-void CacheHelper::initServer(int instance, const char* xml,
-                             const char* locHostport, const char* authParam,
+void CacheHelper::initServer(int instance, const char *xml,
+                             const char *locHostport, const char *authParam,
                              bool ssl, bool enableDelta, bool multiDS,
                              bool testServerGC, bool untrustedCert,
                              bool useSecurityManager) {
@@ -1164,13 +1156,13 @@ void CacheHelper::initServer(int instance, const char* xml,
     printf("Inside initServer with authParam as nullptr\n");
     authParam = "";
   }
-  static const char* gfjavaenv = ACE_OS::getenv("GFJAVA");
-  static const char* gfLogLevel = ACE_OS::getenv("GFE_LOGLEVEL");
-  static const char* gfSecLogLevel = ACE_OS::getenv("GFE_SECLOGLEVEL");
-  static const char* path = ACE_OS::getenv("TESTSRC");
-  static const char* mcastPort = ACE_OS::getenv("MCAST_PORT");
-  static const char* mcastAddr = ACE_OS::getenv("MCAST_ADDR");
-  static char* classpath = ACE_OS::getenv("GF_CLASSPATH");
+  static const char *gfjavaenv = ACE_OS::getenv("GFJAVA");
+  static const char *gfLogLevel = ACE_OS::getenv("GFE_LOGLEVEL");
+  static const char *gfSecLogLevel = ACE_OS::getenv("GFE_SECLOGLEVEL");
+  static const char *path = ACE_OS::getenv("TESTSRC");
+  static const char *mcastPort = ACE_OS::getenv("MCAST_PORT");
+  static const char *mcastAddr = ACE_OS::getenv("MCAST_ADDR");
+  static char *classpath = ACE_OS::getenv("GF_CLASSPATH");
 
   char cmd[2048];
   char tmp[128];
@@ -1292,10 +1284,10 @@ void CacheHelper::initServer(int instance, const char* xml,
   if (!enableDelta) {
     deltaProperty = "delta-propagation=false";
   }
-  long defaultTombstone_timeout = 600000;
-  long defaultTombstone_gc_threshold = 100000;
-  long userTombstone_timeout = 1000;
-  long userTombstone_gc_threshold = 10;
+  int64_t defaultTombstone_timeout = 600000;
+  int64_t defaultTombstone_gc_threshold = 100000;
+  int64_t userTombstone_timeout = 1000;
+  int64_t userTombstone_gc_threshold = 10;
   if (testServerGC) {
     ACE_OS::mkdir("backupDirectory1");
     ACE_OS::mkdir("backupDirectory2");
@@ -1312,8 +1304,10 @@ void CacheHelper::initServer(int instance, const char* xml,
         "%s/bin/%s start server --classpath=%s --name=%s "
         "--cache-xml-file=%s %s --dir=%s --server-port=%d --log-level=%s "
         "--properties-file=%s %s %s "
-        "--J=-Dgemfire.tombstone-timeout=%ld "
-        "--J=-Dgemfire.tombstone-gc-hreshold=%ld "
+        "--J=-Dgemfire.tombstone-timeout=%" PRId64
+        " "
+        "--J=-Dgemfire.tombstone-gc-hreshold=%" PRId64
+        " "
         "--J=-Dgemfire.security-log-level=%s --J=-Xmx1024m --J=-Xms128m 2>&1",
         gfjavaenv, GFSH, classpath, sname.c_str(), xmlFile.c_str(),
         useSecurityManager ? "--user=root --password=root-password" : "",
@@ -1328,8 +1322,10 @@ void CacheHelper::initServer(int instance, const char* xml,
         cmd,
         "%s/bin/%s start server --classpath=%s --name=%s "
         "--cache-xml-file=%s %s --dir=%s --server-port=%d --log-level=%s %s %s "
-        "--J=-Dgemfire.tombstone-timeout=%ld "
-        "--J=-Dgemfire.tombstone-gc-hreshold=%ld "
+        "--J=-Dgemfire.tombstone-timeout=%" PRId64
+        " "
+        "--J=-Dgemfire.tombstone-gc-hreshold=%" PRId64
+        " "
         "--J=-Dgemfire.security-log-level=%s --J=-Xmx1024m --J=-Xms128m 2>&1",
         gfjavaenv, GFSH, classpath, sname.c_str(), xmlFile.c_str(),
         useSecurityManager ? "--user=root --password=root-password" : "",
@@ -1348,7 +1344,7 @@ void CacheHelper::initServer(int instance, const char* xml,
   printf("added server instance %d\n", instance);
 }
 
-void CacheHelper::createDuplicateXMLFile(std::string& originalFile,
+void CacheHelper::createDuplicateXMLFile(std::string &originalFile,
                                          int hostport1, int hostport2,
                                          int locport1, int locport2) {
   char cmd[1024];
@@ -1382,8 +1378,8 @@ void CacheHelper::createDuplicateXMLFile(std::string& originalFile,
 // @Solaris 12.4 compiler is missing support for C++11 regex
 void CacheHelper::replacePortsInFile(int hostPort1, int hostPort2,
                                      int hostPort3, int hostPort4, int locPort1,
-                                     int locPort2, const std::string& inFile,
-                                     const std::string& outFile) {
+                                     int locPort2, const std::string &inFile,
+                                     const std::string &outFile) {
   std::ifstream in(inFile, std::ios::in | std::ios::binary);
   if (in) {
     std::string contents;
@@ -1404,9 +1400,9 @@ void CacheHelper::replacePortsInFile(int hostPort1, int hostPort2,
   }
 }
 
-void CacheHelper::replaceInPlace(std::string& searchStr,
-                                 const std::string& matchStr,
-                                 const std::string& replaceStr) {
+void CacheHelper::replaceInPlace(std::string &searchStr,
+                                 const std::string &matchStr,
+                                 const std::string &replaceStr) {
   size_t pos = 0;
   while ((pos = searchStr.find(matchStr, pos)) != std::string::npos) {
     searchStr.replace(pos, matchStr.length(), replaceStr);
@@ -1416,8 +1412,8 @@ void CacheHelper::replaceInPlace(std::string& searchStr,
 #else
 void CacheHelper::replacePortsInFile(int hostPort1, int hostPort2,
                                      int hostPort3, int hostPort4, int locPort1,
-                                     int locPort2, const std::string& inFile,
-                                     const std::string& outFile) {
+                                     int locPort2, const std::string &inFile,
+                                     const std::string &outFile) {
   std::ifstream in(inFile, std::ios::in | std::ios::binary);
   if (in) {
     std::string contents;
@@ -1445,8 +1441,8 @@ void CacheHelper::replacePortsInFile(int hostPort1, int hostPort2,
 }
 #endif
 
-void CacheHelper::createDuplicateXMLFile(std::string& duplicateFile,
-                                         std::string& originalFile) {
+void CacheHelper::createDuplicateXMLFile(std::string &duplicateFile,
+                                         std::string &originalFile) {
   CacheHelper::createDuplicateXMLFile(
       originalFile, CacheHelper::staticHostPort1, CacheHelper::staticHostPort2,
       CacheHelper::staticLocatorHostPort1, CacheHelper::staticLocatorHostPort2);
@@ -1462,7 +1458,7 @@ void CacheHelper::createDuplicateXMLFile(std::string& duplicateFile,
 }
 
 void CacheHelper::closeServer(int instance) {
-  static char* gfjavaenv = ACE_OS::getenv("GFJAVA");
+  static char *gfjavaenv = ACE_OS::getenv("GFJAVA");
 
   char cmd[2048];
   char tmp[128];
@@ -1519,7 +1515,7 @@ void CacheHelper::closeServer(int instance) {
 }
 // closing locator
 void CacheHelper::closeLocator(int instance, bool) {
-  static char* gfjavaenv = ACE_OS::getenv("GFJAVA");
+  static char *gfjavaenv = ACE_OS::getenv("GFJAVA");
 
   char cmd[2048];
   char currWDPath[2048];
@@ -1579,8 +1575,8 @@ void CacheHelper::closeLocator(int instance, bool) {
 
 template <class Rep, class Period>
 void CacheHelper::terminate_process_file(
-    const std::string& pidFileName,
-    const std::chrono::duration<Rep, Period>& duration) {
+    const std::string &pidFileName,
+    const std::chrono::duration<Rep, Period> &duration) {
   auto timeout = std::chrono::system_clock::now() + duration;
 
   std::string pid;
@@ -1613,13 +1609,13 @@ void CacheHelper::terminate_process_file(
   }
 }
 
-bool CacheHelper::file_exists(const std::string& fileName) {
+bool CacheHelper::file_exists(const std::string &fileName) {
   std::ifstream file(fileName);
   return file.is_open();
 }
 
-void CacheHelper::read_single_line(const std::string& fileName,
-                                   std::string& str) {
+void CacheHelper::read_single_line(const std::string &fileName,
+                                   std::string &str) {
   std::ifstream f(fileName);
   std::getline(f, str);
 }
@@ -1659,7 +1655,7 @@ void CacheHelper::initLocator(int instance, bool ssl, bool, int dsId,
       gClientCleanup.registerCallback(&CacheHelper::cleanupLocatorInstances)) {
     isLocatorCleanupCallbackRegistered = true;
   }
-  static char* gfjavaenv = ACE_OS::getenv("GFJAVA");
+  static char *gfjavaenv = ACE_OS::getenv("GFJAVA");
 
   char cmd[2048];
   char currWDPath[2048];
@@ -1704,6 +1700,8 @@ void CacheHelper::initLocator(int instance, bool ssl, bool, int dsId,
       break;
   }
 
+  int jmxManagerPort = CacheHelper::staticJmxManagerPort;
+
   currDir += locDirname;
 
   ACE_OS::mkdir(locDirname.c_str());
@@ -1717,16 +1715,17 @@ void CacheHelper::initLocator(int instance, bool ssl, bool, int dsId,
   LOG(cmd);
   ACE_OS::system(cmd);
 
-  static char* classpath = ACE_OS::getenv("GF_CLASSPATH");
+  static char *classpath = ACE_OS::getenv("GF_CLASSPATH");
   std::string propertiesFile =
       useSecurityManager
           ? std::string("--security-properties-file=") + geodeFile
           : std::string("--properties-file=") + geodeFile;
   sprintf(cmd,
           "%s/bin/%s start locator --name=%s --port=%d --dir=%s "
-          "%s --http-service-port=0 --classpath=%s",
+          "%s --http-service-port=0 --classpath=%s "
+          "--J=-Dgemfire.jmx-manager-port=%d",
           gfjavaenv, GFSH, locDirname.c_str(), portnum, currDir.c_str(),
-          propertiesFile.c_str(), classpath);
+          propertiesFile.c_str(), classpath, jmxManagerPort);
 
   LOG(cmd);
   ACE_OS::system(cmd);
@@ -1742,7 +1741,7 @@ void CacheHelper::clearSecProp() {
   tmpSecProp->remove("security-password");
 }
 
-void CacheHelper::setJavaConnectionPoolSize(long size) {
+void CacheHelper::setJavaConnectionPoolSize(uint32_t size) {
   CacheHelper::getHelper()
       .getCache()
       ->getSystemProperties()
@@ -1750,7 +1749,7 @@ void CacheHelper::setJavaConnectionPoolSize(long size) {
 }
 
 bool CacheHelper::setSeed() {
-  char* testName = ACE_OS::getenv("TESTNAME");
+  char *testName = ACE_OS::getenv("TESTNAME");
 
   int seed = hashcode(testName);
 
@@ -1764,14 +1763,14 @@ bool CacheHelper::setSeed() {
   return true;
 }
 
-int CacheHelper::hashcode(char* str) {
+int CacheHelper::hashcode(char *str) {
   if (str == nullptr) {
     return 0;
   }
   int localHash = 0;
 
   int prime = 31;
-  char* data = str;
+  char *data = str;
   for (int i = 0; i < 50 && (data[i] != '\0'); i++) {
     localHash = prime * localHash + data[i];
   }
@@ -1780,9 +1779,7 @@ int CacheHelper::hashcode(char* str) {
 }
 
 int CacheHelper::getRandomNumber() {
-  // char * testName = ACE_OS::getenv( "TESTNAME" );
-
-  // int seed = hashcode(testName);
+  // NOLINTNEXTLINE(clang-analyzer-security.insecureAPI.rand)
   return (ACE_OS::rand() % RANDOM_NUMBER_DIVIDER) + RANDOM_NUMBER_OFFSET;
 }
 
@@ -1819,10 +1816,10 @@ std::string CacheHelper::unitTestOutputFile() {
   return outputFile;
 }
 
-int CacheHelper::getNumLocatorListUpdates(const char* s) {
+int CacheHelper::getNumLocatorListUpdates(const char *s) {
   std::string searchStr(s);
   std::string testFile = CacheHelper::unitTestOutputFile();
-  FILE* fp = fopen(testFile.c_str(), "r");
+  FILE *fp = fopen(testFile.c_str(), "r");
   ASSERT(nullptr != fp, "Failed to open log file.");
 
   char buf[512];
@@ -1835,7 +1832,7 @@ int CacheHelper::getNumLocatorListUpdates(const char* s) {
 }
 
 std::string CacheHelper::generateGeodeProperties(
-    const std::string& path, const bool ssl, const int dsId,
+    const std::string &path, const bool ssl, const int dsId,
     const int remoteLocator, const bool untrustedCert,
     const bool useSecurityManager) {
   char cmd[2048];
@@ -1847,7 +1844,7 @@ std::string CacheHelper::generateGeodeProperties(
           PATH_SEP);
   LOG(cmd);
   ACE_OS::system(cmd);
-  FILE* urandom = /*ACE_OS::*/
+  FILE *urandom = /*ACE_OS::*/
       fopen(geodeFile.c_str(), "w");
   char gemStr[258];
   sprintf(gemStr, "locators=localhost[%d],localhost[%d],localhost[%d]\n",
@@ -1908,3 +1905,7 @@ std::string CacheHelper::generateGeodeProperties(
   LOG(geodeFile.c_str());
   return geodeFile;
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

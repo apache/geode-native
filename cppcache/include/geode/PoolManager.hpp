@@ -29,6 +29,7 @@
 #include "Pool.hpp"
 #include "PoolFactory.hpp"
 #include "Region.hpp"
+#include "geode/HashMapOfPools.hpp"
 #include "internal/geode_base.hpp"
 #include "internal/geode_globals.hpp"
 
@@ -45,8 +46,6 @@ class Pool;
 class PoolFactory;
 class Region;
 class RegionFactory;
-
-typedef std::unordered_map<std::string, std::shared_ptr<Pool>> HashMapOfPools;
 
 /**
  * Manages creation and access to {@link Pool connection pools} for clients.
@@ -116,7 +115,7 @@ class APACHE_GEODE_EXPORT PoolManager {
 
   std::shared_ptr<PoolManagerImpl> m_pimpl;
 
-  PoolManager(CacheImpl* cache);
+  explicit PoolManager(CacheImpl* cache);
 
   friend Cache;
   friend CacheImpl;

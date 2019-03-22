@@ -16,6 +16,7 @@
  */
 
 #include "ExpMapEntry.hpp"
+
 #include "MapEntryT.hpp"
 
 namespace apache {

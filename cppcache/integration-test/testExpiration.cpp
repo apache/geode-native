@@ -22,27 +22,36 @@
 #include "CacheRegionHelper.hpp"
 #include "CacheImpl.hpp"
 
-using namespace apache::geode::client;
+using apache::geode::client::Cache;
+using apache::geode::client::CacheableKey;
+using apache::geode::client::CacheableString;
+using apache::geode::client::CacheFactory;
+using apache::geode::client::CacheRegionHelper;
+using apache::geode::client::ExpirationAction;
+using apache::geode::client::Properties;
+using apache::geode::client::Region;
+using apache::geode::client::RegionAttributes;
+using apache::geode::client::RegionAttributesFactory;
 
 ExpirationAction action = ExpirationAction::DESTROY;
 
 // This test is for serially running the tests.
 
-size_t getNumOfEntries(std::shared_ptr<Region>& R1) {
+size_t getNumOfEntries(std::shared_ptr<Region> &R1) {
   std::vector<std::shared_ptr<CacheableKey>> v = R1->keys();
   LOGFINE("Number of keys in region %s is %d", R1->getFullPath().c_str(),
           v.size());
   return v.size();
 }
 
-void startDSandCreateCache(std::shared_ptr<Cache>& cache) {
+void startDSandCreateCache(std::shared_ptr<Cache> &cache) {
   auto pp = Properties::create();
   auto cacheFactory = CacheFactory(pp);
   cache = std::make_shared<Cache>(cacheFactory.create());
   ASSERT(cache != nullptr, "cache not equal to null expected");
 }
 
-void doNPuts(std::shared_ptr<Region>& rptr, int n) {
+void doNPuts(std::shared_ptr<Region> &rptr, int n) {
   std::shared_ptr<CacheableString> value;
   char buf[16];
   memset(buf, 'A', 15);
@@ -59,7 +68,7 @@ void doNPuts(std::shared_ptr<Region>& rptr, int n) {
     rptr->put(key, value);
   }
 }
-std::shared_ptr<CacheableKey> do1Put(std::shared_ptr<Region>& rptr) {
+std::shared_ptr<CacheableKey> do1Put(std::shared_ptr<Region> &rptr) {
   std::shared_ptr<CacheableString> value;
   char buf[16];
   memset(buf, 'A', 15);
@@ -77,10 +86,10 @@ std::shared_ptr<CacheableKey> do1Put(std::shared_ptr<Region>& rptr) {
 }
 
 RegionAttributes setRegionAttributesTimeouts(
-    const std::chrono::seconds& entryTimeToLive = std::chrono::seconds::zero(),
-    const std::chrono::seconds& entryIdleTimeout = std::chrono::seconds::zero(),
-    const std::chrono::seconds& regionTimeToLive = std::chrono::seconds::zero(),
-    const std::chrono::seconds& regionIdleTimeout =
+    const std::chrono::seconds &entryTimeToLive = std::chrono::seconds::zero(),
+    const std::chrono::seconds &entryIdleTimeout = std::chrono::seconds::zero(),
+    const std::chrono::seconds &regionTimeToLive = std::chrono::seconds::zero(),
+    const std::chrono::seconds &regionIdleTimeout =
         std::chrono::seconds::zero()) {
   RegionAttributesFactory regionAttributesFactory;
 
@@ -100,7 +109,7 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     ASSERT(cache != nullptr, "Expected cache to be NON-nullptr");
 
-    CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cache.get());
+    auto cacheImpl = CacheRegionHelper::getCacheImpl(cache.get());
 
     size_t n;
 

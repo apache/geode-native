@@ -55,22 +55,59 @@ END_MAIN*/
 #include "CachePerfStats.hpp"
 #include <LocalRegion.hpp>
 
-using namespace apache::geode::client;
-using namespace test;
-using namespace testData;
-using namespace PdxTests;
-
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
 #define CLIENT3 s2p2
 #define LOCATOR s2p2
 #define SERVER1 s2p1
 
+using PdxTests::Address;
+using PdxTests::AddressWithInvalidAPIUsage;
+using PdxTests::InvalidPdxUsage;
+using PdxTests::MixedVersionNestedPdx;
+using PdxTests::NestedPdx;
+using PdxTests::PdxInsideIGeodeSerializable;
+using PdxTests::PdxType1V1;
+using PdxTests::PdxType2V1;
+using PdxTests::PdxType3V1;
+using PdxTests::PdxTypes1;
+using PdxTests::PdxTypes10;
+using PdxTests::PdxTypes1V2;
+using PdxTests::PdxTypes2;
+using PdxTests::PdxTypes2V2;
+using PdxTests::PdxTypes3;
+using PdxTests::PdxTypes3V2;
+using PdxTests::PdxTypes4;
+using PdxTests::PdxTypes5;
+using PdxTests::PdxTypes6;
+using PdxTests::PdxTypes7;
+using PdxTests::PdxTypes8;
+using PdxTests::PdxTypes9;
+using PdxTests::PdxTypesIgnoreUnreadFieldsV1;
+using PdxTests::PdxTypesIgnoreUnreadFieldsV2;
+using PdxTests::PdxTypesR1V2;
+using PdxTests::PdxTypesR2V2;
+using PdxTests::PdxTypesV1R1;
+using PdxTests::PdxTypesV1R2;
+
+using apache::geode::client::CacheableBoolean;
+using apache::geode::client::CacheableInt32;
+using apache::geode::client::CacheableInt64;
+using apache::geode::client::CacheableLinkedList;
+using apache::geode::client::CacheableObjectArray;
+using apache::geode::client::CacheableVector;
+using apache::geode::client::ClassCastException;
+using apache::geode::client::FunctionService;
+using apache::geode::client::IllegalStateException;
+using apache::geode::client::LocalRegion;
+using apache::geode::client::PdxInstance;
+using apache::geode::client::UserFunctionExecutionException;
+
 bool isLocator = false;
 bool isLocalServer = false;
 
-const char* poolNames[] = {"Pool1", "Pool2", "Pool3"};
-const char* locHostPort =
+const char *poolNames[] = {"Pool1", "Pool2", "Pool3"};
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 bool isPoolConfig = false;  // To track if pool case is running
 // const char * qRegionNames[] = { "Portfolios", "Positions", "Portfolios2",
@@ -85,7 +122,7 @@ bool genericValCompare(T1 value1, T2 value2) /*const*/
 }
 
 void initClient(const bool isthinClient, bool isPdxIgnoreUnreadFields,
-                const std::shared_ptr<Properties>& configPtr = nullptr) {
+                const std::shared_ptr<Properties> &configPtr = nullptr) {
   LOGINFO("isPdxIgnoreUnreadFields = %d ", isPdxIgnoreUnreadFields);
   if (cacheHelper == nullptr) {
     cacheHelper = new CacheHelper(isthinClient, isPdxIgnoreUnreadFields, false,
@@ -98,7 +135,7 @@ void initClient(const bool isthinClient, bool isPdxIgnoreUnreadFields,
 
 void initClientN(const bool isthinClient, bool isPdxIgnoreUnreadFields,
                  bool isPdxReadSerialized = false,
-                 const std::shared_ptr<Properties>& configPtr = nullptr) {
+                 const std::shared_ptr<Properties> &configPtr = nullptr) {
   LOGINFO("isPdxIgnoreUnreadFields = %d ", isPdxIgnoreUnreadFields);
   if (cacheHelper == nullptr) {
     cacheHelper = new CacheHelper(isthinClient, isPdxIgnoreUnreadFields,
@@ -113,7 +150,7 @@ void stepOneN(bool isPdxIgnoreUnreadFields = false,
   try {
     // serializationRegistry->addType(Position::createDeserializable);
     // serializationRegistry->addType(Portfolio::createDeserializable);
-  } catch (const IllegalStateException&) {
+  } catch (const IllegalStateException &) {
     // ignore exception
   }
   // Create just one pool and attach all regions to that.
@@ -144,7 +181,7 @@ END_TASK_DEFINITION
 
 void initClient1WithClientName(
     const bool isthinClient,
-    const std::shared_ptr<Properties>& configPtr = nullptr) {
+    const std::shared_ptr<Properties> &configPtr = nullptr) {
   if (cacheHelper == nullptr) {
     auto config = configPtr;
     if (config == nullptr) {
@@ -158,7 +195,7 @@ void initClient1WithClientName(
 
 void initClient2WithClientName(
     const bool isthinClient,
-    const std::shared_ptr<Properties>& configPtr = nullptr) {
+    const std::shared_ptr<Properties> &configPtr = nullptr) {
   if (cacheHelper == nullptr) {
     auto config = configPtr;
     if (config == nullptr) {
@@ -196,7 +233,7 @@ void stepOne(bool isPdxIgnoreUnreadFields = false,
   try {
     // serializationRegistry->addType(Position::createDeserializable);
     // serializationRegistry->addType(Portfolio::createDeserializable);
-  } catch (const IllegalStateException&) {
+  } catch (const IllegalStateException &) {
     // ignore exception
   }
   // Create just one pool and attach all regions to that.
@@ -406,15 +443,16 @@ DUNIT_TASK_DEFINITION(CLIENT1, testPdxWriterAPIsWithInvalidArgs)
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
             ->getSerializationRegistry();
     try {
-      serializationRegistry->addPdxType(InvalidPdxUsage::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          InvalidPdxUsage::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
     try {
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           AddressWithInvalidAPIUsage::createDeserializable);
-    } catch (const IllegalStateException&) {
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
@@ -457,14 +495,15 @@ DUNIT_TASK_DEFINITION(CLIENT2, testPdxReaderAPIsWithInvalidArgs)
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
             ->getSerializationRegistry();
     try {
-      serializationRegistry->addPdxType(InvalidPdxUsage::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          InvalidPdxUsage::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
     try {
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           AddressWithInvalidAPIUsage::createDeserializable);
-    } catch (const IllegalStateException&) {
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
     int expectedExceptionCount = 0;
@@ -495,8 +534,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, testPutWithMultilevelInheritance)
             ->getSerializationRegistry();
 
     try {
-      serializationRegistry->addPdxType(PdxTests::Child::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          PdxTests::Child::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
@@ -531,8 +571,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, testGetWithMultilevelInheritance)
             ->getSerializationRegistry();
 
     try {
-      serializationRegistry->addPdxType(PdxTests::Child::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          PdxTests::Child::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
@@ -572,7 +613,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, JavaPutGet1)
     auto boolPtr =
         std::dynamic_pointer_cast<CacheableBoolean>(regPtr0->get("success"));
 
-    bool isEqual = boolPtr.get()->value();
+    bool isEqual = boolPtr->value();
     ASSERT(isEqual == true,
            "Task JavaPutGet:Objects of type PdxType should be equal");
 
@@ -620,15 +661,16 @@ DUNIT_TASK_DEFINITION(CLIENT1, JavaPutGet)
             ->getSerializationRegistry();
 
     try {
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::PdxType::createDeserializable);
-    } catch (const IllegalStateException&) {
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
     try {
-      serializationRegistry->addPdxType(Address::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          Address::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
@@ -643,7 +685,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, JavaPutGet)
 
     auto boolPtr =
         std::dynamic_pointer_cast<CacheableBoolean>(regPtr0->get("success"));
-    bool isEqual = boolPtr.get()->value();
+    bool isEqual = boolPtr->value();
     LOGDEBUG("Task:JavaPutGet: isEqual = %d", isEqual);
     ASSERT(isEqual == true,
            "Task JavaPutGet:Objects of type PdxType should be equal");
@@ -657,14 +699,15 @@ DUNIT_TASK_DEFINITION(CLIENT2, JavaGet)
             ->getSerializationRegistry();
 
     try {
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::PdxType::createDeserializable);
-    } catch (const IllegalStateException&) {
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
     try {
-      serializationRegistry->addPdxType(Address::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          Address::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
     LOGDEBUG("JavaGet-1 Line_309");
@@ -691,9 +734,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, putAtVersionTwoR21)
             ->getSerializationRegistry();
 
     try {
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::PdxTypesR2V2::createDeserializable);
-    } catch (const IllegalStateException&) {
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
@@ -721,9 +764,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, getPutAtVersionOneR22)
             ->getSerializationRegistry();
 
     try {
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::PdxTypesV1R2::createDeserializable);
-    } catch (const IllegalStateException&) {
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
@@ -790,9 +833,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, putAtVersionOne31)
             ->getSerializationRegistry();
 
     try {
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::PdxType3V1::createDeserializable);
-    } catch (const IllegalStateException&) {
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
@@ -819,9 +862,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, getPutAtVersionTwo32)
             ->getSerializationRegistry();
 
     try {
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::PdxTypes3V2::createDeserializable);
-    } catch (const IllegalStateException&) {
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
@@ -887,9 +930,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, putAtVersionOne21)
             ->getSerializationRegistry();
 
     try {
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::PdxType2V1::createDeserializable);
-    } catch (const IllegalStateException&) {
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
     auto regPtr0 = getHelper()->getRegion("DistRegionAck");
@@ -915,9 +958,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, getPutAtVersionTwo22)
             ->getSerializationRegistry();
 
     try {
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::PdxTypes2V2::createDeserializable);
-    } catch (const IllegalStateException&) {
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
@@ -982,9 +1025,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, putAtVersionOne11)
             ->getSerializationRegistry();
 
     try {
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::PdxType1V1::createDeserializable);
-    } catch (const IllegalStateException&) {
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
@@ -1013,9 +1056,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, putAtVersionTwo1)
             ->getSerializationRegistry();
 
     try {
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::PdxTypesR1V2::createDeserializable);
-    } catch (const IllegalStateException&) {
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
@@ -1044,9 +1087,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, getPutAtVersionOne2)
             ->getSerializationRegistry();
 
     try {
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::PdxTypesV1R1::createDeserializable);
-    } catch (const IllegalStateException&) {
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
@@ -1149,9 +1192,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, putV2PdxUI)
             ->getSerializationRegistry();
 
     try {
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::PdxTypesIgnoreUnreadFieldsV2::createDeserializable);
-    } catch (const IllegalStateException&) {
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
     // PdxTests::PdxTypesIgnoreUnreadFieldsV2::reset(false);
@@ -1181,9 +1224,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, putV1PdxUI)
             ->getSerializationRegistry();
 
     try {
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::PdxTypesIgnoreUnreadFieldsV1::createDeserializable);
-    } catch (const IllegalStateException&) {
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
     // PdxTests::PdxTypesIgnoreUnreadFieldsV1::reset(false);
@@ -1220,9 +1263,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, getPutAtVersionTwo12)
             ->getSerializationRegistry();
 
     try {
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::PdxTypes1V2::createDeserializable);
-    } catch (const IllegalStateException&) {
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
@@ -1354,11 +1397,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, Puts2)
             ->getSerializationRegistry();
 
     try {
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::PdxTypes1::createDeserializable);
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::PdxTypes2::createDeserializable);
-    } catch (const IllegalStateException&) {
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
@@ -1437,11 +1480,11 @@ DUNIT_TASK_DEFINITION(CLIENT2, Get2)
           CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
               ->getSerializationRegistry();
 
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::PdxTypes1::createDeserializable);
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::PdxTypes2::createDeserializable);
-    } catch (const IllegalStateException&) {
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
     auto regPtr0 = getHelper()->getRegion("DistRegionAck");
@@ -1460,15 +1503,16 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyPdxInGet)
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
             ->getSerializationRegistry();
     try {
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::PdxType::createDeserializable);
-    } catch (const IllegalStateException&) {
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
     try {
-      serializationRegistry->addPdxType(Address::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          Address::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
@@ -1488,7 +1532,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyPdxInGet)
     ASSERT(cacheHelper->getCache()->getPdxReadSerialized() == false,
            "Pdx read serialized property should be false.");
 
-    LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
+    LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(regPtr0.get()));
     LOGINFO(
         "PdxSerializations = %d ",
         lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
@@ -1530,22 +1574,23 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyNestedPdxInGet)
             ->getSerializationRegistry();
 
     try {
-      serializationRegistry->addPdxType(NestedPdx::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          NestedPdx::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
     try {
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::PdxTypes1::createDeserializable);
-    } catch (const IllegalStateException&) {
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
     try {
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::PdxTypes2::createDeserializable);
-    } catch (const IllegalStateException&) {
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
@@ -1572,23 +1617,23 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutMixedVersionNestedPdx)
             ->getSerializationRegistry();
 
     try {
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           MixedVersionNestedPdx::createDeserializable);
-    } catch (const IllegalStateException&) {
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
     try {
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::PdxTypes1::createDeserializable);
-    } catch (const IllegalStateException&) {
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
     try {
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::PdxTypes2::createDeserializable);
-    } catch (const IllegalStateException&) {
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
@@ -1620,60 +1665,69 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyPdxInGFSInGet)
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
             ->getSerializationRegistry();
     try {
-      serializationRegistry->addType(
-          PdxInsideIGeodeSerializable::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addDataSerializableType(
+          PdxInsideIGeodeSerializable::createDeserializable, 0x10);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
     try {
-      serializationRegistry->addPdxType(NestedPdx::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          NestedPdx::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
     try {
-      serializationRegistry->addPdxType(PdxTypes1::createDeserializable);
-    } catch (const IllegalStateException&) {
-      // ignore exception
-    }
-
-    try {
-      serializationRegistry->addPdxType(PdxTypes2::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes1::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
     try {
-      serializationRegistry->addPdxType(PdxTypes3::createDeserializable);
-    } catch (const IllegalStateException&) {
-      // ignore exception
-    }
-    try {
-      serializationRegistry->addPdxType(PdxTypes4::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes2::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
     try {
-      serializationRegistry->addPdxType(PdxTypes5::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes3::createDeserializable);
+    } catch (const IllegalStateException &) {
+      // ignore exception
+    }
+    try {
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes4::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
     try {
-      serializationRegistry->addPdxType(PdxTypes6::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes5::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
     try {
-      serializationRegistry->addPdxType(PdxTypes7::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes6::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
     try {
-      serializationRegistry->addPdxType(PdxTypes8::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes7::createDeserializable);
+    } catch (const IllegalStateException &) {
+      // ignore exception
+    }
+
+    try {
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes8::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
@@ -1699,60 +1753,69 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyPdxInGFSGetOnly)
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
             ->getSerializationRegistry();
     try {
-      serializationRegistry->addType(
-          PdxInsideIGeodeSerializable::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addDataSerializableType(
+          PdxInsideIGeodeSerializable::createDeserializable, 0x10);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
     try {
-      serializationRegistry->addPdxType(NestedPdx::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          NestedPdx::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
     try {
-      serializationRegistry->addPdxType(PdxTypes1::createDeserializable);
-    } catch (const IllegalStateException&) {
-      // ignore exception
-    }
-
-    try {
-      serializationRegistry->addPdxType(PdxTypes2::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes1::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
     try {
-      serializationRegistry->addPdxType(PdxTypes3::createDeserializable);
-    } catch (const IllegalStateException&) {
-      // ignore exception
-    }
-    try {
-      serializationRegistry->addPdxType(PdxTypes4::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes2::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
     try {
-      serializationRegistry->addPdxType(PdxTypes5::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes3::createDeserializable);
+    } catch (const IllegalStateException &) {
+      // ignore exception
+    }
+    try {
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes4::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
     try {
-      serializationRegistry->addPdxType(PdxTypes6::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes5::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
     try {
-      serializationRegistry->addPdxType(PdxTypes7::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes6::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
     try {
-      serializationRegistry->addPdxType(PdxTypes8::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes7::createDeserializable);
+    } catch (const IllegalStateException &) {
+      // ignore exception
+    }
+
+    try {
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes8::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
@@ -1778,23 +1841,23 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyMixedVersionNestedGetOnly)
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
             ->getSerializationRegistry();
     try {
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           MixedVersionNestedPdx::createDeserializable);
-    } catch (const IllegalStateException&) {
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
     try {
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::PdxTypes1::createDeserializable);
-    } catch (const IllegalStateException&) {
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
     try {
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::PdxTypes2::createDeserializable);
-    } catch (const IllegalStateException&) {
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
@@ -1826,22 +1889,23 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyNestedGetOnly)
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
             ->getSerializationRegistry();
     try {
-      serializationRegistry->addPdxType(NestedPdx::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          NestedPdx::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
     try {
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::PdxTypes1::createDeserializable);
-    } catch (const IllegalStateException&) {
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
     try {
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::PdxTypes2::createDeserializable);
-    } catch (const IllegalStateException&) {
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
@@ -1864,15 +1928,16 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyGetOnly)
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
             ->getSerializationRegistry();
     try {
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::PdxType::createDeserializable);
-    } catch (const IllegalStateException&) {
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
     try {
-      serializationRegistry->addPdxType(Address::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          Address::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
@@ -1884,7 +1949,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyGetOnly)
 
     checkPdxInstanceToStringAtServer(regPtr0);
 
-    LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
+    LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(regPtr0.get()));
     LOGINFO(
         "PdxSerializations = %d ",
         lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
@@ -1922,59 +1987,69 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
             ->getSerializationRegistry();
     try {
-      serializationRegistry->addPdxType(PdxTypes1::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes1::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
     try {
-      serializationRegistry->addPdxType(PdxTypes2::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes2::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
     try {
-      serializationRegistry->addPdxType(PdxTypes3::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes3::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
     try {
-      serializationRegistry->addPdxType(PdxTypes4::createDeserializable);
-    } catch (const IllegalStateException&) {
-      // ignore exception
-    }
-
-    try {
-      serializationRegistry->addPdxType(PdxTypes5::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes4::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
     try {
-      serializationRegistry->addPdxType(PdxTypes6::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes5::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
     try {
-      serializationRegistry->addPdxType(PdxTypes7::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes6::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
     try {
-      serializationRegistry->addPdxType(PdxTypes8::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes7::createDeserializable);
+    } catch (const IllegalStateException &) {
+      // ignore exception
+    }
+
+    try {
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes8::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
     try {
-      serializationRegistry->addPdxType(PdxTypes9::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes9::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
     try {
-      serializationRegistry->addPdxType(PdxTypes10::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes10::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
     // TODO
@@ -1996,7 +2071,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
       ASSERT(flag == true, "Objects of type PdxTypes1 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
-      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
+      LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(regPtr0.get()));
       LOGINFO(
           "PdxSerializations = %d ",
           lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
@@ -2038,7 +2113,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
       ASSERT(flag == true, "Objects of type PdxTypes2 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
-      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
+      LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(regPtr0.get()));
       LOGINFO(
           "PdxSerializations = %d ",
           lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
@@ -2080,7 +2155,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
       ASSERT(flag == true, "Objects of type PdxTypes3 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
-      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
+      LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(regPtr0.get()));
       LOGINFO(
           "PdxSerializations = %d ",
           lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
@@ -2122,7 +2197,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
       ASSERT(flag == true, "Objects of type PdxTypes4 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
-      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
+      LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(regPtr0.get()));
       LOGINFO(
           "PdxSerializations = %d ",
           lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
@@ -2164,7 +2239,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
       ASSERT(flag == true, "Objects of type PdxTypes5 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
-      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
+      LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(regPtr0.get()));
       LOGINFO(
           "PdxSerializations = %d ",
           lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
@@ -2206,7 +2281,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
       ASSERT(flag == true, "Objects of type PdxTypes6 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
-      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
+      LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(regPtr0.get()));
       LOGINFO(
           "PdxSerializations = %d ",
           lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
@@ -2248,7 +2323,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
       ASSERT(flag == true, "Objects of type PdxTypes7 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
-      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
+      LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(regPtr0.get()));
       LOGINFO(
           "PdxSerializations = %d ",
           lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
@@ -2290,7 +2365,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
       ASSERT(flag == true, "Objects of type PdxTypes8 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
-      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
+      LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(regPtr0.get()));
       LOGINFO(
           "PdxSerializations = %d ",
           lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
@@ -2332,7 +2407,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
       ASSERT(flag == true, "Objects of type PdxTypes9 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
-      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
+      LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(regPtr0.get()));
       LOGINFO(
           "PdxSerializations = %d ",
           lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
@@ -2375,7 +2450,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
       ASSERT(flag == true, "Objects of type PdxTypes10 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
-      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
+      LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(regPtr0.get()));
       LOGINFO(
           "PdxSerializations = %d ",
           lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
@@ -2443,7 +2518,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, generateJavaPdxType)
           ASSERT(resultVal == true,
                  "Function should return true NIL LINE_1508");
           gotResult = true;
-        } catch (ClassCastException& ex) {
+        } catch (ClassCastException &ex) {
           LOG("exFuncNameSendException casting to int for arrayList arguement "
               "exception.");
           std::string logmsg = "";
@@ -2481,53 +2556,63 @@ DUNIT_TASK_DEFINITION(CLIENT1, putAllPdxTypes)
             ->getSerializationRegistry();
 
     try {
-      serializationRegistry->addPdxType(PdxTypes1::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes1::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
     try {
-      serializationRegistry->addPdxType(PdxTypes2::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes2::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
     try {
-      serializationRegistry->addPdxType(PdxTypes3::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes3::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
     try {
-      serializationRegistry->addPdxType(PdxTypes4::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes4::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
     try {
-      serializationRegistry->addPdxType(PdxTypes5::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes5::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
     try {
-      serializationRegistry->addPdxType(PdxTypes6::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes6::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
     try {
-      serializationRegistry->addPdxType(PdxTypes7::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes7::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
     try {
-      serializationRegistry->addPdxType(PdxTypes8::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes8::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
     try {
-      serializationRegistry->addPdxType(PdxTypes9::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes9::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
     try {
-      serializationRegistry->addPdxType(PdxTypes10::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes10::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
     // TODO::Uncomment it once PortfolioPdx/PositionPdx Classes are ready
@@ -2613,7 +2698,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, verifyDotNetPdxTypes)
           ASSERT(resultVal == true,
                  "Function should return true NIL LINE_1508");
           gotResult = true;
-        } catch (ClassCastException& ex) {
+        } catch (ClassCastException &ex) {
           LOG("exFuncNameSendException casting to int for arrayList arguement "
               "exception.");
           std::string logmsg = "";
@@ -2653,9 +2738,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, client1PutsV1Object)
             ->getSerializationRegistry();
 
     try {
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::PdxType3V1::createDeserializable);
-    } catch (const IllegalStateException&) {
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
@@ -2675,9 +2760,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, client2GetsV1ObjectAndPutsV2Object)
             ->getSerializationRegistry();
 
     try {
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::PdxTypes3V2::createDeserializable);
-    } catch (const IllegalStateException&) {
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
     PdxTests::PdxTypes3V2::reset(false);
@@ -2725,7 +2810,7 @@ DUNIT_TASK_DEFINITION(CLIENT3, client3GetsV2Object)
           ASSERT(resultVal == true,
                  "Function should return true NIL LINE_1508");
           gotResult = true;
-        } catch (ClassCastException& ex) {
+        } catch (ClassCastException &ex) {
           LOG("exFuncNameSendException casting to int for arrayList arguement "
               "exception.");
           std::string logmsg = "";
@@ -2763,53 +2848,63 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
             ->getSerializationRegistry();
 
     try {
-      serializationRegistry->addPdxType(PdxTypes1::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes1::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
     try {
-      serializationRegistry->addPdxType(PdxTypes2::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes2::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
     try {
-      serializationRegistry->addPdxType(PdxTypes3::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes3::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
     try {
-      serializationRegistry->addPdxType(PdxTypes4::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes4::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
     try {
-      serializationRegistry->addPdxType(PdxTypes5::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes5::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
     try {
-      serializationRegistry->addPdxType(PdxTypes6::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes6::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
     try {
-      serializationRegistry->addPdxType(PdxTypes7::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes7::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
     try {
-      serializationRegistry->addPdxType(PdxTypes8::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes8::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
     try {
-      serializationRegistry->addPdxType(PdxTypes9::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes9::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
     try {
-      serializationRegistry->addPdxType(PdxTypes10::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes10::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
     // TODO::Uncomment it once PortfolioPdx/PositionPdx Classes are ready
@@ -2829,7 +2924,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
              "VerifyVariousPdxGets:Objects of type PdxTypes1 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
-      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
+      LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(regPtr0.get()));
       LOGINFO(
           "PdxSerializations = %d ",
           lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
@@ -2871,7 +2966,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
              "VerifyVariousPdxGets:Objects of type PdxTypes2 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
-      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
+      LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(regPtr0.get()));
       LOGINFO(
           "PdxSerializations = %d ",
           lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
@@ -2913,7 +3008,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
              "VerifyVariousPdxGets:Objects of type PdxTypes3 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
-      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
+      LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(regPtr0.get()));
       LOGINFO(
           "PdxSerializations = %d ",
           lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
@@ -2955,7 +3050,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
              "VerifyVariousPdxGets:Objects of type PdxTypes4 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
-      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
+      LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(regPtr0.get()));
       LOGINFO(
           "PdxSerializations = %d ",
           lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
@@ -2997,7 +3092,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
              "VerifyVariousPdxGets:Objects of type PdxTypes5 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
-      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
+      LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(regPtr0.get()));
       LOGINFO(
           "PdxSerializations = %d ",
           lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
@@ -3039,7 +3134,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
              "VerifyVariousPdxGets:Objects of type PdxTypes6 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
-      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
+      LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(regPtr0.get()));
       LOGINFO(
           "PdxSerializations = %d ",
           lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
@@ -3081,7 +3176,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
              "VerifyVariousPdxGets:Objects of type PdxTypes7 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
-      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
+      LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(regPtr0.get()));
       LOGINFO(
           "PdxSerializations = %d ",
           lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
@@ -3123,7 +3218,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
              "VerifyVariousPdxGets:Objects of type PdxTypes8 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
-      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
+      LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(regPtr0.get()));
       LOGINFO(
           "PdxSerializations = %d ",
           lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
@@ -3165,7 +3260,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
              "VerifyVariousPdxGets:Objects of type PdxTypes9 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
-      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
+      LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(regPtr0.get()));
       LOGINFO(
           "PdxSerializations = %d ",
           lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
@@ -3208,7 +3303,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
              "VerifyVariousPdxGets:Objects of type PdxTypes10 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
-      LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
+      LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(regPtr0.get()));
       LOGINFO(
           "PdxSerializations = %d ",
           lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
@@ -3251,7 +3346,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, putOperation)
     // Verify the CLientName.::putOperation
     // auto testReg = getHelper()->getRegion("testregion");
     auto valuePtr1 = regPtr0->get("clientName1");
-    const char* clientName1 =
+    const char *clientName1 =
         (std::dynamic_pointer_cast<CacheableString>(valuePtr1))
             ->value()
             .c_str();
@@ -3270,7 +3365,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, getOperation)
 
     // Verify Client Name for C2
     auto valuePtr2 = regPtr0->get("clientName2");
-    const char* clientName2 =
+    const char *clientName2 =
         (std::dynamic_pointer_cast<CacheableString>(valuePtr2))
             ->value()
             .c_str();
@@ -3288,9 +3383,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, putCharTypes)
             ->getSerializationRegistry();
 
     try {
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::CharTypes::createDeserializable);
-    } catch (const IllegalStateException&) {
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
@@ -3322,9 +3417,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, getCharTypes)
 
     LOG("Trying to GET PDX objects.....\n");
     try {
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::CharTypes::createDeserializable);
-    } catch (const IllegalStateException&) {
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
@@ -3336,9 +3431,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, getCharTypes)
         std::dynamic_pointer_cast<PdxTests::CharTypes>(regPtr0->get(keyport));
     LOG("Client-2 PdxTests::CharTypes GET OP Done....");
 
-    PdxTests::CharTypes* localPdx = localPdxptr.get();
-    PdxTests::CharTypes* remotePdx =
-        dynamic_cast<PdxTests::CharTypes*>(remotePdxptr.get());
+    PdxTests::CharTypes *localPdx = localPdxptr.get();
+    PdxTests::CharTypes *remotePdx =
+        dynamic_cast<PdxTests::CharTypes *>(remotePdxptr.get());
 
     LOGINFO("testThinClientPdxTests:StepFour before equal() check");
     ASSERT(remotePdx->equals(*localPdx) == true,
@@ -3365,15 +3460,16 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
 
     // QueryHelper * qh = &QueryHelper::getHelper();
     try {
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::PdxType::createDeserializable);
-    } catch (const IllegalStateException&) {
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
     try {
-      serializationRegistry->addPdxType(Address::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          Address::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
@@ -3426,7 +3522,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
     regPtr0->get(keyport);
     regPtr0->get(keyport2);
 
-    LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(regPtr0.get()));
+    LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(regPtr0.get()));
     LOGINFO(
         "PdxSerializations = %d ",
         lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
@@ -3486,15 +3582,16 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepFour)
 
     LOG("Trying to GET PDX objects.....\n");
     try {
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::PdxType::createDeserializable);
-    } catch (const IllegalStateException&) {
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
     try {
-      serializationRegistry->addPdxType(Address::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          Address::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
@@ -3562,9 +3659,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepFour)
     LOG("Client-2 PdxTests::PdxType GET OP Done....");
 
     //
-    PdxTests::PdxType* localPdx = localPdxptr.get();
-    PdxTests::PdxType* remotePdx =
-        dynamic_cast<PdxTests::PdxType*>(remotePdxptr.get());
+    PdxTests::PdxType *localPdx = localPdxptr.get();
+    PdxTests::PdxType *remotePdx =
+        dynamic_cast<PdxTests::PdxType *>(remotePdxptr.get());
 
     // ToDo open this equals check
     LOGINFO("testThinClientPdxTests:StepFour before equal() check");
@@ -3581,12 +3678,12 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepFour)
     LOGINFO("GET OP Result: Array of byte arrays [2]=%x",
             remotePdx->getArrayOfByteArrays()[1][1]);
 
-    CacheableInt32* element =
-        dynamic_cast<CacheableInt32*>(remotePdx->getArrayList()->at(0).get());
+    CacheableInt32 *element =
+        dynamic_cast<CacheableInt32 *>(remotePdx->getArrayList()->at(0).get());
     LOGINFO("GET OP Result_1233: Array List element Value =%d",
             element->value());
 
-    for (const auto& iter : *(remotePdx->getHashTable())) {
+    for (const auto &iter : *(remotePdx->getHashTable())) {
       const auto remoteKey =
           std::dynamic_pointer_cast<CacheableInt32>(iter.first);
       const auto remoteVal =

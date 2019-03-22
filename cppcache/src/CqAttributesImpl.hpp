@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_CQATTRIBUTESIMPL_H_
-#define GEODE_CQATTRIBUTESIMPL_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,17 +15,15 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_CQATTRIBUTESIMPL_H_
+#define GEODE_CQATTRIBUTESIMPL_H_
+
+#include <mutex>
+
 #include <geode/CqAttributes.hpp>
 #include <geode/CqAttributesMutator.hpp>
-#include <ace/ACE.h>
-#include <ace/Condition_Recursive_Thread_Mutex.h>
-#include <ace/Time_Value.h>
-#include <ace/Guard_T.h>
-#include <ace/Recursive_Thread_Mutex.h>
-
-/**
- * @file
- */
 
 namespace apache {
 namespace geode {
@@ -69,8 +62,9 @@ class APACHE_GEODE_EXPORT CqAttributesImpl : public CqAttributes {
  private:
   listener_container_type m_cqListeners;
   bool m_dataPolicyHasBeenSet;
-  ACE_Recursive_Thread_Mutex m_mutex;
+  std::recursive_mutex m_mutex;
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

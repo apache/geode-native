@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_Task_H_
-#define GEODE_Task_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,65 +15,78 @@
  * limitations under the License.
  */
 
-/**
-*@file Task.hpp
-*@since   1.0
-*@version 1.0
-*/
+#pragma once
 
+#ifndef GEODE_Task_H_
+#define GEODE_Task_H_
+
+#include <atomic>
+#include <memory>
+#include <thread>
+
+#include "AppDomainContext.hpp"
 #include "DistributedSystemImpl.hpp"
-#include <ace/Task.h>
+
 namespace apache {
 namespace geode {
 namespace client {
-const char NC_thread[] = "NC thread";
+
+/**
+ * Re-implementation of the Task class based on std::thread rather then
+ * ACE_Task.
+ */
 template <class T>
-class APACHE_GEODE_EXPORT Task : public ACE_Task_Base {
+class Task {
  public:
-  /// Handle timeout events.
-  typedef int (T::*OPERATION)(volatile bool& isRunning);
+  typedef void (T::*Method)(std::atomic<bool>& isRunning);
 
-  // op_handler is the receiver of the timeout event. timeout is the method to
-  // be executed by op_handler_
-  Task(T* op_handler, OPERATION op)
-      : op_handler_(op_handler),
-        m_op(op),
-        m_run(false),
-        m_threadName(NC_thread) {}
+  inline Task(T* target, Method method, const char* threadName)
+      : target_(target),
+        method_(method),
+        threadName_(threadName),
+        runnable_(false),
+        appDomainContext_(createAppDomainContext()) {}
 
-  // op_handler is the receiver of the timeout event. timeout is the method to
-  // be executed by op_handler_
-  Task(T* op_handler, OPERATION op, const char* tn)
-      : op_handler_(op_handler), m_op(op), m_run(false), m_threadName(tn) {}
+  inline ~Task() noexcept { stop(); };
 
-  ~Task() {}
-
-  void start() {
-    m_run = true;
-    activate();
+  inline void start() {
+    runnable_ = true;
+    thread_ = std::thread(&Task::svc, this);
   }
 
-  void stop() {
-    if (m_run) {
-      m_run = false;
-      wait();
+  inline void stop() noexcept {
+    stopNoblock();
+    wait();
+  }
+
+  inline void stopNoblock() noexcept { runnable_ = false; }
+
+  inline void wait() noexcept {
+    if (thread_.joinable()) {
+      thread_.join();
     }
   }
 
-  void stopNoblock() { m_run = false; }
+  inline void svc(void) {
+    DistributedSystemImpl::setThreadName(threadName_);
 
-  int svc(void) {
-    DistributedSystemImpl::setThreadName(m_threadName);
-    return ((this->op_handler_->*m_op)(m_run));
+    if (appDomainContext_) {
+      appDomainContext_->run(
+          [this]() { (this->target_->*this->method_)(this->runnable_); });
+    } else {
+      (this->target_->*method_)(runnable_);
+    }
   }
 
  private:
-  T* op_handler_;
-  /// Handle timeout events.
-  OPERATION m_op;
-  volatile bool m_run;
-  const char* m_threadName;
+  std::thread thread_;
+  T* target_;
+  Method method_;
+  const char* threadName_;
+  std::atomic<bool> runnable_;
+  std::unique_ptr<AppDomainContext> appDomainContext_;
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

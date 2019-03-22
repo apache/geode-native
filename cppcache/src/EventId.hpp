@@ -22,9 +22,9 @@
 
 #include <string>
 
-#include <geode/internal/geode_globals.hpp>
-#include <geode/internal/DataSerializableFixedId.hpp>
 #include <geode/DataOutput.hpp>
+#include <geode/internal/DataSerializableFixedId.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 /** @file
  */
@@ -32,6 +32,8 @@
 namespace apache {
 namespace geode {
 namespace client {
+
+using internal::DSFid;
 
 /**
  * EventID "token" with a Distributed Member ID, Thread ID and per-thread
@@ -102,10 +104,11 @@ class APACHE_GEODE_EXPORT EventId
   /** Constructor, given the values. */
   EventId(char* memId, uint32_t memIdLen, int64_t thr, int64_t seq);
   /** Constructor, used for deserialization. */
-  EventId(bool doInit = true, uint32_t reserveSize = 0,
-          bool fullValueAfterDeltaFail = false);  // set init=false if we dont
-                                                  // want to inc sequence (for
-                                                  // de-serialization)
+  explicit EventId(
+      bool doInit = true, uint32_t reserveSize = 0,
+      bool fullValueAfterDeltaFail = false);  // set init=false if we dont
+                                              // want to inc sequence (for
+                                              // de-serialization)
 
  protected:
   void initFromTSS();  // init from TSS and increment per-thread sequence number

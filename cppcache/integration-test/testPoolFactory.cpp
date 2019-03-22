@@ -22,15 +22,17 @@
 #include <geode/Cache.hpp>
 #include <geode/PoolManager.hpp>
 #include "CacheImpl.hpp"
-using namespace apache::geode::client;
+
+using apache::geode::client::CacheFactory;
+using apache::geode::client::PoolFactory;
 
 BEGIN_TEST(POOLFACTORY)
-{
-  auto cacheFactory = CacheFactory();
-  auto cache = cacheFactory.create();
-  auto poolFactory = cache.getPoolManager().createFactory();
-  auto& testPoolFactory = poolFactory.setSubscriptionEnabled(true);
-  bool test = &poolFactory == std::addressof<PoolFactory>(testPoolFactory);
-  ASSERT(test, "testPoolFactory and poolFactory not equal");
- }
+  {
+    auto cacheFactory = CacheFactory();
+    auto cache = cacheFactory.create();
+    auto poolFactory = cache.getPoolManager().createFactory();
+    auto &testPoolFactory = poolFactory.setSubscriptionEnabled(true);
+    bool test = &poolFactory == std::addressof<PoolFactory>(testPoolFactory);
+    ASSERT(test, "testPoolFactory and poolFactory not equal");
+  }
 END_TEST(POOLFACTORY)

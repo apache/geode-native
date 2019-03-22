@@ -15,29 +15,24 @@
  * limitations under the License.
  */
 
-#include <ace/OS.h>
-#include <ace/Guard_T.h>
-#include <ace/Recursive_Thread_Mutex.h>
-
-#include <geode/internal/geode_globals.hpp>
-#include <geode/CacheFactory.hpp>
-#include <geode/SystemProperties.hpp>
-#include <geode/DataOutput.hpp>
-
 #include "DistributedSystem.hpp"
+
+#include <geode/CacheFactory.hpp>
+#include <geode/DataOutput.hpp>
+#include <geode/SystemProperties.hpp>
+#include <geode/internal/geode_globals.hpp>
+
+#include "CacheImpl.hpp"
 #include "CppCacheLibrary.hpp"
+#include "DistributedSystemImpl.hpp"
+#include "ExpiryTaskManager.hpp"
+#include "TcrMessage.hpp"
 #include "Utils.hpp"
 #include "util/Log.hpp"
-#include "ExpiryTaskManager.hpp"
-#include "CacheImpl.hpp"
-#include "TcrMessage.hpp"
-#include "DistributedSystemImpl.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
-
-using namespace apache::geode::statistics;
 
 DistributedSystem::DistributedSystem(const std::string& name,
                                      std::unique_ptr<SystemProperties> sysProps)

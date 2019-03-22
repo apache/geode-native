@@ -20,16 +20,13 @@
 #ifndef GEODE_EVENTIDMAP_H_
 #define GEODE_EVENTIDMAP_H_
 
+#include <chrono>
 #include <functional>
 #include <memory>
+#include <mutex>
 #include <unordered_map>
-#include <vector>
 #include <utility>
-
-#include <ace/ACE.h>
-#include <ace/Time_Value.h>
-#include <ace/Recursive_Thread_Mutex.h>
-#include <ace/Guard_T.h>
+#include <vector>
 
 #include <geode/internal/functional.hpp>
 
@@ -47,10 +44,6 @@ typedef std::pair<std::shared_ptr<EventSource>, std::shared_ptr<EventSequence>>
     EventIdMapEntry;
 typedef std::vector<EventIdMapEntry> EventIdMapEntryList;
 
-typedef ACE_Guard<ACE_Recursive_Thread_Mutex> MapGuard;
-
-#define GUARD_MAP MapGuard mapguard(m_lock)
-
 /** @class EventIdMap EventIdMap.hpp
  *
  * This is the class that encapsulates a HashMap and
@@ -67,7 +60,7 @@ class APACHE_GEODE_EXPORT EventIdMap {
 
   std::chrono::milliseconds m_expiry;
   map_type m_map;
-  ACE_Recursive_Thread_Mutex m_lock;
+  std::recursive_mutex m_lock;
 
   // hidden
   EventIdMap(const EventIdMap &);
@@ -86,7 +79,8 @@ class APACHE_GEODE_EXPORT EventIdMap {
   /** Find out if entry is duplicate
    * @return true if the entry exists else false
    */
-  bool isDuplicate(std::shared_ptr<EventSource> key, std::shared_ptr<EventSequence> value);
+  bool isDuplicate(std::shared_ptr<EventSource> key,
+                   std::shared_ptr<EventSequence> value);
 
   /** Construct an EventIdMapEntry from an std::shared_ptr<EventId> */
   static EventIdMapEntry make(std::shared_ptr<EventId> eventid);
@@ -96,7 +90,8 @@ class APACHE_GEODE_EXPORT EventIdMap {
    * @param onlynew Only put if the sequence id does not exist or is higher
    * @return true if the entry was updated or inserted otherwise false
    */
-  bool put(std::shared_ptr<EventSource> key, std::shared_ptr<EventSequence> value, bool onlynew = false);
+  bool put(std::shared_ptr<EventSource> key,
+           std::shared_ptr<EventSequence> value, bool onlynew = false);
 
   /** Update the deadline for the entry
    * @return true if the entry exists else false
@@ -133,9 +128,14 @@ class APACHE_GEODE_EXPORT EventIdMap {
  * a flag indicating whether or not it is ACKed
  */
 class APACHE_GEODE_EXPORT EventSequence {
+ public:
+  using clock = std::chrono::steady_clock;
+  using time_point = clock::time_point;
+
+ private:
   int64_t m_seqNum;
   bool m_acked;
-  ACE_Time_Value m_deadline;  // current time plus the expiration delay (age)
+  time_point m_deadline;  // current time plus the expiration delay (age)
 
   void init();
 
@@ -143,7 +143,7 @@ class APACHE_GEODE_EXPORT EventSequence {
   void clear();
 
   EventSequence();
-  EventSequence(int64_t seqNum);
+  explicit EventSequence(int64_t seqNum);
   ~EventSequence();
 
   // update deadline
@@ -159,8 +159,8 @@ class APACHE_GEODE_EXPORT EventSequence {
   bool getAcked();
   void setAcked(bool acked);
 
-  ACE_Time_Value getDeadline();
-  void setDeadline(ACE_Time_Value deadline);
+  time_point getDeadline();
+  void setDeadline(time_point deadline);
 
   bool operator<=(const EventSequence &rhs) const;
 };

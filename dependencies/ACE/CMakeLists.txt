@@ -13,33 +13,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-project( ACE LANGUAGES NONE )
+project( ACE VERSION 6.5.3 LANGUAGES NONE )
 
-set( ${PROJECT_NAME}_VERSION 6.4.7 )
-set( ${PROJECT_NAME}_SHA265 b2b59a5f49b164121a8d1c109ff04fc23fcd67cfad040772e8c045c8a34cdabe )
-string(REPLACE "." "_" _VERSION_UNDERSCORE ${${PROJECT_NAME}_VERSION})
-set( ${PROJECT_NAME}_URL "https://github.com/DOCGroup/ACE_TAO/releases/download/ACE%2BTAO-${_VERSION_UNDERSCORE}/ACE.tar.gz" )
-set( ${PROJECT_NAME}_EXTERN ${PROJECT_NAME}-extern )
-set( ${PROJECT_NAME}_DEPENDS openssl-extern )
-
+set( SHA256 de20bdbfcbcf7d67836e9a2c0875e4eb348a1153e19b83392608330fec3c056a )
+set( DEPENDS OpenSSL::SSL )
 
 if ("SunOS" STREQUAL ${CMAKE_SYSTEM_NAME})
   set( ACE_PLATFORM sunos5_sunc++ )
   set( ACE_CONFIG sunos${CMAKE_SYSTEM_VERSION} )
-  set( ACE_CPPFLAGS ${ACE_CPPFLAGS} -KPIC )
-  if ( 5.10 VERSION_EQUAL ${CMAKE_C_COMPILER_VERSION} )
-    set( ACE_CPPFLAGS ${ACE_CPPFLAGS} -features=zla )
-  endif()
 elseif ("Linux" STREQUAL ${CMAKE_SYSTEM_NAME} )
-  set( ACE_PLATFORM linux )
+  if ("Clang" STREQUAL ${CMAKE_CXX_COMPILER_ID})
+    set( ACE_PLATFORM linux_clang )
+  else()
+    set( ACE_PLATFORM linux )
+  endif()
   set( ACE_CONFIG linux )
-  set( ACE_CPPFLAGS ${ACE_CPPFLAGS} -fPIC )
   ## TODO fix visibility problem with g++
   set( _MAKE_ARGS ${_MAKE_ARGS} no_hidden_visibility=1 )
 elseif ("Darwin" STREQUAL ${CMAKE_SYSTEM_NAME} )
   set( ACE_PLATFORM macosx_sierra )
   set( ACE_CONFIG macosx-sierra )
-  set( ACE_CPPFLAGS ${ACE_CPPFLAGS} -fPIC )
 elseif ("Windows" STREQUAL ${CMAKE_SYSTEM_NAME} )
   set( ACE_PLATFORM win32-msvc )
   set( ACE_CONFIG win32 )
@@ -49,26 +42,8 @@ if (NOT DEFINED ACE_PLATFORM)
   message( FATAL_ERROR "ACE_PLATFORM unset for ${CMAKE_SYSTEM_NAME}" )
 endif()
 
-set( _MAKE_ARGS ${_MAKE_ARGS} buildbits=${BUILD_BITS} )
 
-if ( 11 EQUAL USE_C++ )
-  if ("${CMAKE_CXX11_STANDARD_COMPILE_OPTION}" STREQUAL "-std=c++0x")
-    set( _MAKE_ARGS ${_MAKE_ARGS} c++0x=1 )
-  else()
-    set( _MAKE_ARGS ${_MAKE_ARGS} c++11=1 )
-  endif()
-elseif ( "" STREQUAL "${USE_C++}" )
-  
-  # TODO config.h
-         #define ACE_LACKS_IOSTREAM_TOTALLY true
-         #define ACE_HAS_VERSIONED_NAMESPACE 1
-         #define ACE_HAS_POLL
-
-endif()
-
-include(ExternalProject)
-
-set( OPENSSL_ROOT ${DEPENDENCIES_openssl_DIR} )
+set( OPENSSL_ROOT $<TARGET_PROPERTY:OpenSSL::SSL,INTERFACE_INCLUDE_DIRECTORIES>/.. )
 
 
 if (${WIN32})
@@ -78,125 +53,138 @@ if (${WIN32})
     set( _PLATFORM win32 )
   endif()
 
+  if (MSVC_VERSION EQUAL 1900)
+    set(_TYPE "vc14")
+  elseif((MSVC_VERSION GREATER_EQUAL 1910) AND (MSVC_VERSION LESS_EQUAL 1919))
+    set(_TYPE "vs2017")
+  endIF()
+
   set ( _COMMAND_PREFIX ${CMAKE_COMMAND} -E chdir ace )
 
-  set ( _MSBUILD_FLAGS /m /p:Platform=${_PLATFORM} /p:Configuration=$<$<CONFIG:Debug>:Debug>$<$<NOT:$<CONFIG:Debug>>:Release>) 
-  set ( _MSBUILD_FLAGS_STATIC ${_MSBUILD_FLAGS} /t:ace_vc${MSVC_VERSION}_static /t:SSL_vc${MSVC_VERSION}_static ) 
+  set ( _MSBUILD_FLAGS /m /p:Platform=${_PLATFORM} /p:Configuration=$<$<CONFIG:Debug>:Debug>$<$<NOT:$<CONFIG:Debug>>:Release>)
+  set ( _MSBUILD_FLAGS_STATIC ${_MSBUILD_FLAGS} /t:ace_${_TYPE}_static /t:SSL_${_TYPE}_static )
 
   include(ProcessorCount)
   ProcessorCount(_NPROCS)
-  set ( MPC ${PERL} ..\\bin\\mwc.pl )
-  set ( MPC_FLAGS -type vc${MSVC_VERSION} -expand_vars -features ssl=1 -recurse -hierarchy -workers ${_NPROCS} -value_template MultiProcessorCompilation=true -apply_project )
+
+  find_package(Perl REQUIRED)
+
+  set ( MPC ${PERL_EXECUTABLE} ..\\bin\\mwc.pl )
+  set ( MPC_FLAGS -type ${_TYPE} -expand_vars -features ssl=1 -recurse -hierarchy -workers ${_NPROCS} -value_template MultiProcessorCompilation=true -apply_project )
 
   #TODO add custom targets to build in parallel?
   #TODO MPC has flag to replace variables with absolute paths, think we need that for devstudio builds
   set ( _CONFIGURE_COMMAND ${_COMMAND_PREFIX}
                              ${CMAKE_COMMAND} -E env ACE_ROOT=<SOURCE_DIR> SSL_ROOT=${OPENSSL_ROOT}
-							 ${MPC} ${MPC_FLAGS} -name_modifier "*_vc${MSVC_VERSION}_static" -static 
+							 ${MPC} ${MPC_FLAGS} -name_modifier "*_${_TYPE}_static" -static
 							 -value_template staticflags+=__ACE_INLINE__ 
 							 -value_template staticflags+=ACE_BUILD_DLL 
 							 -value_template staticflags+=ACE_AS_STATIC_LIBS 
 							 -value_template runtime_library=Multithreaded$<$<CONFIG:Debug>:Debug>Dll 
   )
-  set ( _BUILD_COMMAND ${_COMMAND_PREFIX} ${MSBUILD} ACE_vc${MSVC_VERSION}_static.sln ${_MSBUILD_FLAGS} ${_MSBUILD_FLAGS_STATIC}
+  set ( _BUILD_COMMAND ${_COMMAND_PREFIX} ${CMAKE_VS_MSBUILD_COMMAND} ACE_${_TYPE}_static.sln ${_MSBUILD_FLAGS} ${_MSBUILD_FLAGS_STATIC}
   )
   set ( _INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory lib <INSTALL_DIR>/lib 
                  COMMAND ${CMAKE_COMMAND} -E copy_directory ace <INSTALL_DIR>/include/ace
   )
 
+  set(CMAKE_STATIC_LIBRARY_SUFFIX s$<${MSVC}:$<$<CONFIG:Debug>:d>>.lib)
+
 else()
   # TODO Configure trips up without MAKE
-  # TODO should we do something with STLport includes
   # TODO look into using cmake -E chdir
   # TODO use cmake -E env
 
-  set( _MAKE cd ace && ACE_ROOT=<SOURCE_DIR> SSL_ROOT=${OPENSSL_ROOT} $(MAKE) SHELL=/bin/bash debug=$<CONFIG:Debug> optimize=$<NOT:$<CONFIG:Debug>> static_libs_only=1 ssl=1 ${_MAKE_ARGS})
+  set( _MAKE cd ace && ACE_ROOT=<SOURCE_DIR> SSL_ROOT=${OPENSSL_ROOT} $(MAKE) SHELL=/bin/bash debug=$<CONFIG:Debug> optimize=$<NOT:$<CONFIG:Debug>> buildbits=${BUILD_BITS} c++11=1 static_libs_only=1 ssl=1 ${_MAKE_ARGS})
   set ( _CONFIGURE_COMMAND "" )
   set ( _BUILD_COMMAND ${_MAKE} all )
   set ( _INSTALL_COMMAND ${_MAKE} install )
 endif()
 
-ExternalProject_Add( ${${PROJECT_NAME}_EXTERN}
-   URL ${${PROJECT_NAME}_URL}
-   URL_HASH SHA256=${${PROJECT_NAME}_SHA265}
+string(REPLACE "." "_" _VERSION_UNDERSCORE ${PROJECT_VERSION})
+
+set( EXTERN ${PROJECT_NAME}-extern )
+include(ExternalProject)
+ExternalProject_Add( ${EXTERN}
+   URL "https://github.com/DOCGroup/ACE_TAO/releases/download/ACE%2BTAO-${_VERSION_UNDERSCORE}/ACE-${PROJECT_VERSION}.tar.gz"
+   URL_HASH SHA256=${SHA256}
    UPDATE_COMMAND ""
    BUILD_IN_SOURCE 1
    CONFIGURE_COMMAND "${_CONFIGURE_COMMAND}"
    BUILD_COMMAND "${_BUILD_COMMAND}"
    INSTALL_COMMAND "${_INSTALL_COMMAND}"
-   DEPENDS ${${PROJECT_NAME}_DEPENDS}
+   DEPENDS ${DEPENDS}
 )
 
-ExternalProject_Get_Property( ${${PROJECT_NAME}_EXTERN} SOURCE_DIR )
-set( ${PROJECT_NAME}_SOURCE_DIR ${SOURCE_DIR} )
-ExternalProject_Get_Property( ${${PROJECT_NAME}_EXTERN} INSTALL_DIR )
-set( ${PROJECT_NAME}_INSTALL_DIR ${INSTALL_DIR} )
-set( DEPENDENCIES_${PROJECT_NAME}_DIR ${${PROJECT_NAME}_INSTALL_DIR} PARENT_SCOPE)
-
-if (${WIN32})
-  set(CMAKE_STATIC_LIBRARY_SUFFIX s$<${MSVC}:$<$<CONFIG:Debug>:d>>.lib)
-endif()
+ExternalProject_Get_Property( ${EXTERN} SOURCE_DIR )
+set( SOURCE_DIR ${SOURCE_DIR} )
+ExternalProject_Get_Property( ${EXTERN} INSTALL_DIR )
+set( INSTALL_DIR ${INSTALL_DIR} )
+set( DEPENDENCIES_DIR ${INSTALL_DIR} PARENT_SCOPE)
 
 if ("SunOS" STREQUAL ${CMAKE_SYSTEM_NAME})
 set( PATCH_FILE ${CMAKE_CURRENT_SOURCE_DIR}/patches )
-ExternalProject_Add_Step( ${${PROJECT_NAME}_EXTERN} patches
-    ALWAYS 0
-    DEPENDEES download
-    DEPENDERS patch
-    DEPENDS ${PATCH_FILE}
-    BYPRODUCTS ${${PROJECT_NAME}_SOURCE_DIR}/include/makeinclude/platform_sunos5_sunc++.GNU ${${PROJECT_NAME}_SOURCE_DIR}/ace/config-lite.h ${${PROJECT_NAME}_SOURCE_DIR}/ace/Stats.cpp
-    WORKING_DIRECTORY ${${PROJECT_NAME}_SOURCE_DIR}
-    COMMAND ${PATCH} -u -N -p1 < ${PATCH_FILE}
+ExternalProject_Add_Step( ${EXTERN} patches
+  ALWAYS 0
+  DEPENDEES download
+  DEPENDERS patch
+  DEPENDS ${PATCH_FILE}
+  BYPRODUCTS ${SOURCE_DIR}/include/makeinclude/platform_sunos5_sunc++.GNU ${SOURCE_DIR}/ace/config-lite.h ${SOURCE_DIR}/ace/Stats.cpp
+  WORKING_DIRECTORY ${SOURCE_DIR}
+  COMMAND ${Patch_EXECUTABLE} -u -N -p1 < ${PATCH_FILE}
 )
 endif()
 
 configure_file(config.h.in config.h)
-ExternalProject_Add_Step( ${${PROJECT_NAME}_EXTERN} config.h
-    DEPENDEES patch
-    DEPENDERS configure
-    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/config.h
-    BYPRODUCTS ${${PROJECT_NAME}_SOURCE_DIR}/ace/config.h
-    COMMAND ${CMAKE_COMMAND} -E copy config.h ${${PROJECT_NAME}_SOURCE_DIR}/ace/config.h
+ExternalProject_Add_Step( ${EXTERN} config.h
+  DEPENDEES patch
+  DEPENDERS configure
+  DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/config.h
+  BYPRODUCTS ${SOURCE_DIR}/ace/config.h
+  COMMAND ${CMAKE_COMMAND} -E copy config.h ${SOURCE_DIR}/ace/config.h
 )
 
 if (UNIX)
-ExternalProject_Add_Step( ${${PROJECT_NAME}_EXTERN} platform
-    DEPENDEES patch
-    DEPENDERS configure
-    BYPRODUCTS ${${PROJECT_NAME}_SOURCE_DIR}/include/makeinclude/platform_macros.GNU
-    COMMAND echo "INSTALL_PREFIX = ${${PROJECT_NAME}_INSTALL_DIR}" > ${${PROJECT_NAME}_SOURCE_DIR}/include/makeinclude/platform_macros.GNU
-    COMMAND echo "CCFLAGS += ${ACE_CPPFLAGS}" >> ${${PROJECT_NAME}_SOURCE_DIR}/include/makeinclude/platform_macros.GNU
-    COMMAND echo "include ${${PROJECT_NAME}_SOURCE_DIR}/include/makeinclude/platform_${ACE_PLATFORM}.GNU" >> ${${PROJECT_NAME}_SOURCE_DIR}/include/makeinclude/platform_macros.GNU
+ExternalProject_Add_Step( ${EXTERN} platform
+  DEPENDEES patch
+  DEPENDERS configure
+  BYPRODUCTS ${SOURCE_DIR}/include/makeinclude/platform_macros.GNU
+  COMMAND echo "INSTALL_PREFIX = ${INSTALL_DIR}" > ${SOURCE_DIR}/include/makeinclude/platform_macros.GNU
+  COMMAND echo "CC = ${CMAKE_C_COMPILER}" >> ${SOURCE_DIR}/include/makeinclude/platform_macros.GNU
+  COMMAND echo "CXX = ${CMAKE_CXX_COMPILER}" >> ${SOURCE_DIR}/include/makeinclude/platform_macros.GNU
+  COMMAND echo "CCFLAGS += ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_COMPILE_OPTIONS_PIC}" >> ${SOURCE_DIR}/include/makeinclude/platform_macros.GNU
+  COMMAND echo "include ${SOURCE_DIR}/include/makeinclude/platform_${ACE_PLATFORM}.GNU" >> ${SOURCE_DIR}/include/makeinclude/platform_macros.GNU
 )
 endif()
 
-add_library(${PROJECT_NAME} INTERFACE)
-target_include_directories(${PROJECT_NAME} SYSTEM INTERFACE
-  $<BUILD_INTERFACE:${${PROJECT_NAME}_INSTALL_DIR}/include>
+find_package(Threads)
+
+add_library(ACE_ACE INTERFACE)
+target_include_directories(ACE_ACE SYSTEM INTERFACE
+  $<BUILD_INTERFACE:${INSTALL_DIR}/include>
 )
-target_compile_definitions(${PROJECT_NAME} INTERFACE
+target_compile_definitions(ACE_ACE INTERFACE
 	-D__ACE_INLINE__
 	-DACE_AS_STATIC_LIBS
 )
-target_link_libraries(${PROJECT_NAME} INTERFACE
-    ${${PROJECT_NAME}_INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}ACE${CMAKE_STATIC_LIBRARY_SUFFIX}
+target_link_libraries(ACE_ACE INTERFACE
+  ${INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}ACE${CMAKE_STATIC_LIBRARY_SUFFIX}
+  Threads::Threads
 )
 
 if ("SunOS" STREQUAL ${CMAKE_SYSTEM_NAME})
-  target_link_libraries(${PROJECT_NAME} INTERFACE
+  target_link_libraries(ACE_ACE INTERFACE
     rt
-    pthread
     m
     socket
     nsl
   )
-  target_compile_definitions( ${PROJECT_NAME} INTERFACE
+  target_compile_definitions(ACE_ACE INTERFACE
     _POSIX_PTHREAD_SEMANTICS
   )
 
 elseif ("Linux" STREQUAL ${CMAKE_SYSTEM_NAME} )
-  target_link_libraries(${PROJECT_NAME} INTERFACE
-    pthread
+  target_link_libraries(ACE_ACE INTERFACE
     dl
     rt
   )
@@ -204,11 +192,14 @@ elseif ("Darwin" STREQUAL ${CMAKE_SYSTEM_NAME} )
 elseif ("Windows" STREQUAL ${CMAKE_SYSTEM_NAME} )
 endif()
 
-add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXTERN})
+add_dependencies(ACE_ACE ${EXTERN})
 
-add_library(ACE_SSL INTERFACE)
-target_link_libraries(ACE_SSL INTERFACE
-    ${PROJECT_NAME}
-    ${${PROJECT_NAME}_INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}ACE_SSL${CMAKE_STATIC_LIBRARY_SUFFIX}
+add_library(ACE_ACE_SSL INTERFACE)
+target_link_libraries(ACE_ACE_SSL INTERFACE
+  ${INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}ACE_SSL${CMAKE_STATIC_LIBRARY_SUFFIX}
+  ACE_ACE
+  OpenSSL::SSL
 )
 
+add_library(ACE::ACE ALIAS ACE_ACE)
+add_library(ACE::ACE_SSL ALIAS ACE_ACE_SSL)

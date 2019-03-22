@@ -21,26 +21,23 @@
 #define GEODE_EXPIRYTASKMANAGER_H_
 
 #include <chrono>
+#include <condition_variable>
+#include <mutex>
+#include <type_traits>
 
 #include <ace/Reactor.h>
 #include <ace/Task.h>
 #include <ace/Timer_Heap.h>
 
-#include <geode/internal/geode_globals.hpp>
 #include <geode/internal/chrono/duration.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 #include "ReadWriteLock.hpp"
 #include "util/Log.hpp"
 
-/**
- * @file ExpiryTaskManager.hpp
- */
-
 namespace apache {
 namespace geode {
 namespace client {
-
-using namespace apache::geode::internal::chrono::duration;
 
 /**
  * @class ExpiryTaskManager ExpiryTaskManager.hpp
@@ -50,7 +47,9 @@ using namespace apache::geode::internal::chrono::duration;
  */
 class APACHE_GEODE_EXPORT ExpiryTaskManager : public ACE_Task_Base {
  public:
-  typedef long id_type;
+  typedef decltype(std::declval<ACE_Reactor>().schedule_timer(
+      nullptr, nullptr, std::declval<ACE_Time_Value>())) id_type;
+
   /**
    * This class allows resetting of the timer to take immediate effect when
    * done from inside ACE_Event_Handler::handle_timeout(). With the default
@@ -225,28 +224,24 @@ class APACHE_GEODE_EXPORT ExpiryTaskManager : public ACE_Task_Base {
    * Constructor
    */
   ExpiryTaskManager();
+
   /**
    * Destructor. Stops the reactors event loop if it is not running
    * and then exits.
    */
   ~ExpiryTaskManager();
+
   /**
    * For scheduling a task for expiration.
    */
-  long scheduleExpiryTask(ACE_Event_Handler* handler, uint32_t expTime,
-                          uint32_t interval = 0,
-                          bool cancelExistingTask = false);
-
-  long scheduleExpiryTask(ACE_Event_Handler* handler,
-                          ACE_Time_Value expTimeValue,
-                          ACE_Time_Value intervalVal,
-                          bool cancelExistingTask = false);
-
   template <class ExpRep, class ExpPeriod, class IntRep, class IntPeriod>
-  long scheduleExpiryTask(ACE_Event_Handler* handler,
-                          std::chrono::duration<ExpRep, ExpPeriod> expTime,
-                          std::chrono::duration<IntRep, IntPeriod> interval,
-                          bool cancelExistingTask = false) {
+  ExpiryTaskManager::id_type scheduleExpiryTask(
+      ACE_Event_Handler* handler,
+      std::chrono::duration<ExpRep, ExpPeriod> expTime,
+      std::chrono::duration<IntRep, IntPeriod> interval,
+      bool cancelExistingTask = false) {
+    using ::apache::geode::internal::chrono::duration::to_string;
+
     LOGFINER(
         "ExpiryTaskManager: expTime %s, interval %s, cancelExistingTask %d",
         to_string(expTime).c_str(), to_string(interval).c_str(),
@@ -257,8 +252,9 @@ class APACHE_GEODE_EXPORT ExpiryTaskManager : public ACE_Task_Base {
 
     ACE_Time_Value expTimeValue(expTime);
     ACE_Time_Value intervalValue(interval);
-    LOGFINER("Scheduled expiration ... in %d seconds.", expTime.count());
-    return m_reactor->schedule_timer(handler, nullptr, expTimeValue, intervalValue);
+    LOGFINER("Scheduled expiration ... in " + to_string(expTime));
+    return m_reactor->schedule_timer(handler, nullptr, expTimeValue,
+                                     intervalValue);
   }
 
   /**
@@ -282,12 +278,14 @@ class APACHE_GEODE_EXPORT ExpiryTaskManager : public ACE_Task_Base {
    * id - the id assigned to the expiry task initially.
    */
   int cancelTask(id_type id);
+
   /**
    * A separate thread is started in which the reactor event loop
    * is kept running unless explicitly stopped or when this object
    * goes out of scope.
    */
   int svc();
+
   /**
    * For explicitly stopping the reactor's event loop.
    */
@@ -301,9 +299,10 @@ class APACHE_GEODE_EXPORT ExpiryTaskManager : public ACE_Task_Base {
 
   bool m_reactorEventLoopRunning;  // flag to indicate if the reactor event
                                    // loop is running or not.
-  ACE_Recursive_Thread_Mutex m_taskLock;  // to synchronize scheduling
-                                          // of expiry tasks.
   static const char* NC_ETM_Thread;
+
+  std::mutex m_mutex;
+  std::condition_variable m_condition;
 };
 }  // namespace client
 }  // namespace geode

@@ -20,9 +20,10 @@
 #ifndef GEODE_TRANSACTIONALOPERATION_H_
 #define GEODE_TRANSACTIONALOPERATION_H_
 
-#include <geode/internal/geode_globals.hpp>
-#include <geode/Serializable.hpp>
 #include <vector>
+
+#include <geode/Serializable.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 namespace apache {
 namespace geode {

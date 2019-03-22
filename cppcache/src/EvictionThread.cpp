@@ -14,37 +14,64 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "EvictionThread.hpp"
-#include "EvictionController.hpp"
+
+#include <chrono>
+
 #include "DistributedSystemImpl.hpp"
-using namespace apache::geode::client;
+#include "EvictionController.hpp"
+#include "util/Log.hpp"
+
+namespace apache {
+namespace geode {
+namespace client {
 
 const char* EvictionThread::NC_Evic_Thread = "NC Evic Thread";
+
 EvictionThread::EvictionThread(EvictionController* parent)
-    : m_pParent(parent),
-      /* adongre
-       * CID 28936: Uninitialized scalar field (UNINIT_CTOR)
-       */
-      m_run(false) {}
+    : m_run(false), m_pParent(parent) {}
 
-int EvictionThread::svc(void) {
+void EvictionThread::start() {
+  m_run = true;
+  m_thread = std::thread(&EvictionThread::svc, this);
+
+  LOGFINE("Eviction Thread started");
+}
+
+void EvictionThread::stop() {
+  m_run = false;
+  m_queueCondition.notify_one();
+  m_thread.join();
+
+  m_queue.clear();
+
+  LOGFINE("Eviction Thread stopped");
+}
+
+void EvictionThread::svc(void) {
   DistributedSystemImpl::setThreadName(NC_Evic_Thread);
+
   while (m_run) {
-    processEvictions();
-  }
-  int32_t size = m_queue.size();
-  for (int i = 0; i < size; i++) {
-    processEvictions();
-  }
-  return 1;
-}
+    std::unique_lock<std::mutex> lock(m_queueMutex);
+    m_queueCondition.wait(lock, [this] { return !m_run || !m_queue.empty(); });
 
-void EvictionThread::processEvictions() {
-  int32_t percentageToEvict = 0;
-  percentageToEvict = static_cast<int32_t>(m_queue.get(1500));
-  if (percentageToEvict != 0) {
-    m_pParent->evict(percentageToEvict);
+    while (!m_queue.empty()) {
+      auto percentageToEvict = m_queue.front();
+      m_queue.pop_front();
+      if (0 != percentageToEvict) {
+        m_pParent->evict(percentageToEvict);
+      }
+    }
   }
 }
 
-void EvictionThread::putEvictionInfo(int32_t info) { m_queue.put(info); }
+void EvictionThread::putEvictionInfo(int32_t info) {
+  std::unique_lock<std::mutex> lock(m_queueMutex);
+  m_queue.push_back(info);
+  m_queueCondition.notify_one();
+}
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

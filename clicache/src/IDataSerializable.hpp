@@ -37,6 +37,9 @@ namespace Apache
       ref class DataOutput;
       ref class DataInput;
 
+      /// <summary>
+      /// An interface for objects whose contents can be serialized as primitive types.
+      /// </summary>
       public interface class IDataSerializable : public ISerializable
       {
       public:
@@ -57,24 +60,6 @@ namespace Apache
         /// </param>
         /// <returns>the deserialized object</returns>
         void FromData( DataInput^ input );
-
-        /// <summary>
-        /// Returns the classId of the instance being serialized.
-        /// This is used by deserialization to determine what instance
-        /// type to create and deserialize into.
-        /// </summary>
-        /// <remarks>
-        /// The classId must be unique within an application suite
-        /// and in the range 0 to ((2^31)-1) both inclusive. An application can
-        /// thus define upto 2^31 custom <c>ISerializable</c> classes.
-        /// Returning a value greater than ((2^31)-1) may result in undefined
-        /// behaviour.
-        /// </remarks>
-        /// <returns>the classId</returns>
-        property Int32 ClassId
-        {
-          Int32 get( );
-        }
       };
 
     }  // namespace Client

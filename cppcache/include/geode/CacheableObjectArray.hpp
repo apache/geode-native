@@ -20,13 +20,13 @@
 #ifndef GEODE_CACHEABLEOBJECTARRAY_H_
 #define GEODE_CACHEABLEOBJECTARRAY_H_
 
-#include <vector>
 #include <memory>
+#include <vector>
 
-#include "internal/geode_globals.hpp"
-#include "internal/DataSerializablePrimitive.hpp"
 #include "Serializable.hpp"
 #include "internal/DSCode.hpp"
+#include "internal/DataSerializablePrimitive.hpp"
+#include "internal/geode_globals.hpp"
 
 /** @file
  */
@@ -35,13 +35,14 @@ namespace apache {
 namespace geode {
 namespace client {
 
-/**
- * Implement an immutable Vector of <code>Cacheable</code> objects
- * that can serve as a distributable object for caching.
- */
 class DataInput;
 class DataOutput;
 class Serializable;
+
+/**
+ * Implements an immutable Vector of <code>Cacheable</code> objects
+ * that can serve as a distributable object for caching.
+ */
 
 class APACHE_GEODE_EXPORT CacheableObjectArray
     : public internal::DataSerializablePrimitive,
@@ -51,7 +52,7 @@ class APACHE_GEODE_EXPORT CacheableObjectArray
   inline CacheableObjectArray() : std::vector<std::shared_ptr<Cacheable>>() {}
 
   /** Create a vector with n elements allocated. */
-  inline CacheableObjectArray(int32_t n)
+  inline explicit CacheableObjectArray(int32_t n)
       : std::vector<std::shared_ptr<Cacheable>>(n) {}
 
   ~CacheableObjectArray() noexcept override = default;

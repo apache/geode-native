@@ -29,10 +29,16 @@ namespace {
 std::string g_default_persistence_directory = "GeodeRegionData";
 }  // namespace
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
-void SqLiteImpl::init(const std::shared_ptr<Region>& region,
-                      const std::shared_ptr<Properties>& diskProperties) {
+static constexpr char const* MAX_PAGE_COUNT = "MaxPageCount";
+static constexpr char const* PAGE_SIZE = "PageSize";
+static constexpr char const* PERSISTENCE_DIR = "PersistenceDirectory";
+
+void SqLiteImpl::init(const std::shared_ptr<Region> &region,
+                      const std::shared_ptr<Properties> &diskProperties) {
   // Set the default values
 
   int maxPageCount = 0;
@@ -101,20 +107,21 @@ void SqLiteImpl::init(const std::shared_ptr<Region>& region,
   }
 }
 
-void SqLiteImpl::write(const std::shared_ptr<CacheableKey>& key,
-                       const std::shared_ptr<Cacheable>& value,
-                       std::shared_ptr<void>&) {
+void SqLiteImpl::write(const std::shared_ptr<CacheableKey> &key,
+                       const std::shared_ptr<Cacheable> &value,
+                       std::shared_ptr<void> &) {
   // Serialize key and value.
-  auto& cache = m_regionPtr->getCache();
+  auto &cache = m_regionPtr->getCache();
   auto keyDataBuffer = cache.createDataOutput();
   auto valueDataBuffer = cache.createDataOutput();
   size_t keyBufferSize, valueBufferSize;
 
   keyDataBuffer.writeObject(key);
   valueDataBuffer.writeObject(value);
-  void* keyData = const_cast<uint8_t*>(keyDataBuffer.getBuffer(&keyBufferSize));
-  void* valueData =
-      const_cast<uint8_t*>(valueDataBuffer.getBuffer(&valueBufferSize));
+  void *keyData =
+      const_cast<uint8_t *>(keyDataBuffer.getBuffer(&keyBufferSize));
+  void *valueData =
+      const_cast<uint8_t *>(valueDataBuffer.getBuffer(&valueBufferSize));
 
   if (m_sqliteHelper->insertKeyValue(keyData, static_cast<int>(keyBufferSize),
                                      valueData,
@@ -125,13 +132,14 @@ void SqLiteImpl::write(const std::shared_ptr<CacheableKey>& key,
 
 bool SqLiteImpl::writeAll() { return true; }
 std::shared_ptr<Cacheable> SqLiteImpl::read(
-    const std::shared_ptr<CacheableKey>& key, const std::shared_ptr<void>&) {
+    const std::shared_ptr<CacheableKey> &key, const std::shared_ptr<void> &) {
   // Serialize key.
   auto keyDataBuffer = m_regionPtr->getCache().createDataOutput();
   size_t keyBufferSize;
   keyDataBuffer.writeObject(key);
-  void* keyData = const_cast<uint8_t*>(keyDataBuffer.getBuffer(&keyBufferSize));
-  void* valueData;
+  void *keyData =
+      const_cast<uint8_t *>(keyDataBuffer.getBuffer(&keyBufferSize));
+  void *valueData;
   int valueBufferSize;
 
   if (m_sqliteHelper->getValue(keyData, static_cast<int>(keyBufferSize),
@@ -141,7 +149,7 @@ std::shared_ptr<Cacheable> SqLiteImpl::read(
 
   // Deserialize object and return value.
   auto valueDataBuffer = m_regionPtr->getCache().createDataInput(
-      reinterpret_cast<uint8_t*>(valueData), valueBufferSize);
+      reinterpret_cast<uint8_t *>(valueData), valueBufferSize);
   std::shared_ptr<Cacheable> retValue;
   valueDataBuffer.readObject(retValue);
 
@@ -168,13 +176,14 @@ void SqLiteImpl::destroyRegion() {
 #endif
 }
 
-void SqLiteImpl::destroy(const std::shared_ptr<CacheableKey>& key,
-                         const std::shared_ptr<void>&) {
+void SqLiteImpl::destroy(const std::shared_ptr<CacheableKey> &key,
+                         const std::shared_ptr<void> &) {
   // Serialize key and value.
   auto keyDataBuffer = m_regionPtr->getCache().createDataOutput();
   size_t keyBufferSize;
   keyDataBuffer.writeObject(key);
-  void* keyData = const_cast<uint8_t*>(keyDataBuffer.getBuffer(&keyBufferSize));
+  void *keyData =
+      const_cast<uint8_t *>(keyDataBuffer.getBuffer(&keyBufferSize));
   if (m_sqliteHelper->removeKey(keyData, static_cast<int>(keyBufferSize)) !=
       0) {
     throw IllegalStateException("Failed to destroy the key from SQLITE.");
@@ -197,9 +206,16 @@ void SqLiteImpl::close() {
 #endif
 }
 
+}  // namespace client
+}  // namespace geode
+}  // namespace apache
+
 extern "C" {
 
-SQLITEIMPL_EXPORT PersistenceManager* createSqLiteInstance() {
-  return new SqLiteImpl;
+using apache::geode::client::PersistenceManager;
+using apache::geode::client::SqLiteImpl;
+
+SQLITEIMPL_EXPORT PersistenceManager *createSqLiteInstance() {
+  return new SqLiteImpl();
 }
 }

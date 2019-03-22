@@ -51,8 +51,8 @@ class APACHE_GEODE_EXPORT SystemProperties {
    * If useMemType is true, use the given member type; if false, always set
    * member type to SERVER.
    */
-  SystemProperties(const std::shared_ptr<Properties>& propertiesPtr,
-                   const std::string& configFile = "");
+  explicit SystemProperties(const std::shared_ptr<Properties>& propertiesPtr,
+                            const std::string& configFile = "");
 
   SystemProperties(const SystemProperties& rhs) = delete;
   void operator=(const SystemProperties& rhs) = delete;
@@ -208,16 +208,16 @@ class APACHE_GEODE_EXPORT SystemProperties {
   }
 
   /**
-   * Returns the connect wait timeout(in milliseconds) used for to connect to server
-   * This is only applicable for linux
+   * Returns the connect wait timeout(in milliseconds) used for to connect to
+   * server This is only applicable for linux
    */
   const std::chrono::milliseconds& connectWaitTimeout() const {
     return m_connectWaitTimeout;
   }
 
   /**
-   * Returns the connect wait timeout(in milliseconds) used for to connect to server
-   * This is only applicable for linux
+   * Returns the connect wait timeout(in milliseconds) used for to connect to
+   * server This is only applicable for linux
    */
   const std::chrono::milliseconds& bucketWaitTimeout() const {
     return m_bucketWaitTimeout;
@@ -253,9 +253,7 @@ class APACHE_GEODE_EXPORT SystemProperties {
   uint32_t statsDiskSpaceLimit() const { return m_statsDiskSpaceLimit; }
 
   uint32_t connectionPoolSize() const { return m_connectionPoolSize; }
-  void setjavaConnectionPoolSize(uint32_t size) {
-    m_connectionPoolSize = size;
-  }
+  void setjavaConnectionPoolSize(uint32_t size) { m_connectionPoolSize = size; }
 
   /**
    * Returns true if chunk handler thread is enabled, false if not
@@ -314,23 +312,6 @@ class APACHE_GEODE_EXPORT SystemProperties {
    * @return bool flag to indicate whether DH for credentials is on.
    */
   bool isDhOn() const { return !m_securityClientDhAlgo.empty(); }
-
-  /**
-   * Checks to see if this native client is being invoked as part of small
-   * grid jobs; use this setting to disable some creation of threads and
-   * reduce start/stop time. Note that this setting can cause improper
-   * behavior in some cases like:
-   *  1) client that is setup in listening mode and a server failure may not
-   *     lead to failover by client
-   *  2) while shutting down the client will not send a proper CLOSE_CONNECTION
-   *     message so server will report EOF exceptions and may detect client
-   *     disconnect after quite some time
-   * Also note that there may be some performance loss in queries and
-   * Region::getAll due to unavailability of parallel processing threads.
-   *
-   * @return true if the "grid-client" property is set
-   */
-  inline bool isGridClient() const { return m_gridClient; }
 
   /**
    * Whether a non durable client starts to receive and process
@@ -404,8 +385,6 @@ class APACHE_GEODE_EXPORT SystemProperties {
   std::chrono::milliseconds m_connectTimeout;
   std::chrono::milliseconds m_connectWaitTimeout;
   std::chrono::milliseconds m_bucketWaitTimeout;
-
-  bool m_gridClient;
 
   bool m_autoReadyForEvents;
 

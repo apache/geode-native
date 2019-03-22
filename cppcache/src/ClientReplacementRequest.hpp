@@ -20,12 +20,14 @@
 #ifndef GEODE_CLIENTREPLACEMENTREQUEST_H_
 #define GEODE_CLIENTREPLACEMENTREQUEST_H_
 
-#include "ServerLocationRequest.hpp"
-#include "ClientConnectionRequest.hpp"
-#include "TcrEndpoint.hpp"
-#include <string>
 #include <set>
+#include <string>
+
+#include <geode/internal/DataSerializableFixedId.hpp>
+
+#include "ClientConnectionRequest.hpp"
 #include "ServerLocation.hpp"
+#include "ServerLocationRequest.hpp"
 
 namespace apache {
 namespace geode {
@@ -42,7 +44,7 @@ class ClientReplacementRequest : public ClientConnectionRequest {
   ~ClientReplacementRequest() override = default;
 
   void toData(DataOutput& output) const override;
-  DSFid getDSFID() const override;
+  internal::DSFid getDSFID() const override;
 
  private:
   const ServerLocation m_serverLocation;

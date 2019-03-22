@@ -22,6 +22,10 @@
 #include <vcclr.h>
 #include "../begin_native.hpp"
 #include <geode/CacheableKey.hpp>
+#include <geode/DataSerializable.hpp>
+#include <geode/internal/DataSerializableFixedId.hpp>
+#include <geode/internal/DataSerializablePrimitive.hpp>
+#include <geode/internal/DataSerializableInternal.hpp>
 #include "../end_native.hpp"
 
 #include "../IDataSerializable.hpp"
@@ -60,16 +64,15 @@ namespace apache
       {
       private:
         int m_hashcode;
-        int m_classId;
         size_t m_objectSize;
       public:
 
         inline ManagedCacheableKeyGeneric(
-          Apache::Geode::Client::IDataSerializable^ managedptr, int hashcode, int classId)
+          Apache::Geode::Client::IDataSerializable^ managedptr, int hashcode)
           : m_managedptr(managedptr) {
           m_hashcode = hashcode;
-          m_classId = classId;
           m_objectSize = 0;
+          msclr::interop::marshal_context context;
         }
         /// <summary>
         /// Constructor to initialize with the provided managed object.
@@ -80,8 +83,8 @@ namespace apache
         inline ManagedCacheableKeyGeneric(Apache::Geode::Client::IDataSerializable^ managedptr)
           : m_managedptr(managedptr) {
           m_hashcode = 0;
-          m_classId = managedptr->ClassId;
           m_objectSize = 0;
+          msclr::interop::marshal_context context;
         }
 
         ManagedCacheableKeyGeneric(const ManagedCacheableKeyGeneric&) = delete;
@@ -95,8 +98,6 @@ namespace apache
 
         void fromData(apache::geode::client::DataInput& input) override;
 
-        int32_t getClassId() const override;
-
         bool operator == (const CacheableKey& other) const override;
 
         virtual bool operator == (const ManagedCacheableKeyGeneric& other) const;
@@ -107,6 +108,7 @@ namespace apache
         {
           return m_managedptr;
         }
+
 
 
       private:
@@ -121,7 +123,7 @@ namespace apache
       };
 
       class ManagedDataSerializablePrimitive
-        : public native::DataSerializablePrimitive , public native::CacheableKey
+        : public native::internal::DataSerializablePrimitive , public native::CacheableKey
       {
       public:
 
@@ -141,7 +143,7 @@ namespace apache
 
         void fromData(DataInput& input) override;
 
-        DSCode getDsCode() const override { return static_cast<DSCode>(m_managedptr->DsCode); }
+        native::internal::DSCode getDsCode() const override { return static_cast<native::internal::DSCode>(m_managedptr->DsCode); }
 
         bool operator == (const CacheableKey& other) const override;
 
@@ -158,7 +160,7 @@ namespace apache
       };
 
       class ManagedDataSerializableInternal
-        : public native::DataSerializableInternal
+        : public native::internal::DataSerializableInternal
       {
       public:
 
@@ -178,8 +180,6 @@ namespace apache
 
         void fromData(DataInput& input) override;
 
-        int8_t getInternalId() const override { return 0; }
-
         inline Apache::Geode::Client::IDataSerializableInternal^ ptr() const
         {
           return m_managedptr;
@@ -191,7 +191,7 @@ namespace apache
       };
 
       class ManagedDataSerializableFixedId
-        : public native::DataSerializableFixedId
+        : public native::internal::DataSerializableFixedId
       {
       public:
 
@@ -211,7 +211,7 @@ namespace apache
 
         void fromData(DataInput& input) override;
 
-        DSFid getDSFID() const override { return static_cast<DSFid>(m_managedptr->DSFID); }
+        native::internal::DSFid getDSFID() const override { return static_cast<native::internal::DSFid>(m_managedptr->DSFID); }
 
         inline Apache::Geode::Client::IDataSerializableFixedId^ ptr() const
         {

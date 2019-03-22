@@ -22,13 +22,13 @@
 
 #include <string>
 
-#include <geode/internal/geode_globals.hpp>
+#include <geode/CacheableKey.hpp>
 #include <geode/CqEvent.hpp>
 #include <geode/CqOperation.hpp>
 #include <geode/CqQuery.hpp>
-#include <geode/CacheableKey.hpp>
-#include <geode/Serializable.hpp>
 #include <geode/Exception.hpp>
+#include <geode/Serializable.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 namespace apache {
 namespace geode {
@@ -45,10 +45,8 @@ class ThinClientBaseDM;
 class EventId;
 class CqEventImpl : public CqEvent {
  public:
-  CqEventImpl(std::shared_ptr<CqQuery>& cQuery,
-              CqOperation baseOp,
-              CqOperation cqOp,
-              std::shared_ptr<CacheableKey>& key,
+  CqEventImpl(std::shared_ptr<CqQuery>& cQuery, CqOperation baseOp,
+              CqOperation cqOp, std::shared_ptr<CacheableKey>& key,
               std::shared_ptr<Cacheable>& value, ThinClientBaseDM* tcrdm,
               std::shared_ptr<CacheableBytes> deltaBytes,
               std::shared_ptr<EventId> eventId);

@@ -17,9 +17,11 @@
 
 #include "DeltaFastAssetAccount.hpp"
 
-using namespace apache::geode::client;
-using namespace testframework;
-using namespace testobject;
+namespace testobject {
+
+using apache::geode::client::CacheableHashMap;
+using apache::geode::client::CacheableInt32;
+using apache::geode::client::CacheableString;
 
 DeltaFastAssetAccount::DeltaFastAssetAccount(int index, bool encodeTimestp,
                                              int maxVal, int asstSize,
@@ -80,3 +82,5 @@ void DeltaFastAssetAccount::fromDelta(apache::geode::client::DataInput& input) {
     timestamp = input.readInt64();
   }
 }
+
+}  // namespace testobject

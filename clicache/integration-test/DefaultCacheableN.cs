@@ -75,23 +75,13 @@ namespace Apache.Geode.Client.UnitTests
         m_CacheableStringASCII = "asciistring";
         
         m_cacheableStringArray = new string[] { "one", "two" };
-        
-        /*
-        m_cacheableHashSet = CacheableHashSet.Create(2);
-        m_cacheableHashSet.Add(CacheableString.Create("first"));
-        m_cacheableHashSet.Add(CacheableString.Create("second"));
-         * */
-        
+             
         m_cacheableHashMap = new Dictionary<Object, Object>();
         m_cacheableHashMap.Add("key-hm", "value-hm");
-        
-        //m_cacheableDate = DateTime.Now;
 
         m_cacheableVector = new List<object>();
         m_cacheableVector.Add("one-vec");
         m_cacheableVector.Add("two-vec");
-
-        //m_cacheableObject = new CustomSerializableObject();
       } 
     }
 
@@ -125,24 +115,10 @@ namespace Apache.Geode.Client.UnitTests
       get { return m_cacheableStringArray; }
     }
 
-    /*
-    public CacheableHashSet CHashSet
-    {
-      get { return m_cacheableHashSet; }
-    }
-     * */
-
     public IDictionary<object, object> CHashMap
     {
       get { return m_cacheableHashMap; }
     }
-
-    /*
-    public DateTime CDate
-    {
-      get { return m_cacheableDate; }
-    }
-     * */
 
     public IList<object> CVector
     {
@@ -156,29 +132,8 @@ namespace Apache.Geode.Client.UnitTests
 
     #region IDataSerializable Members
 
-    public Int32 ClassId
-    {
-      get { return 0x04; }
-    }
-
     public void FromData(DataInput input)
     {
-      if (!m_initialized)
-      {
-        /*
-        m_cacheableBoolean = (CacheableBoolean)CacheableBoolean.CreateDeserializable();
-        m_cacheableInt32 = (CacheableInt32)CacheableInt32.CreateDeserializable();
-        m_cacheableInt32Array = (CacheableInt32Array)CacheableInt32Array.CreateDeserializable();
-       // m_cacheableFileName = (CacheableFileName)CacheableFileName.CreateDeserializable();
-        //m_CacheableStringASCII = (CacheableString)CacheableString.CreateDeserializable();
-        m_cacheableStringArray = (CacheableStringArray)CacheableStringArray.CreateDeserializable();
-        m_cacheableHashSet = (CacheableHashSet)CacheableHashSet.CreateDeserializable();
-        m_cacheableHashMap = (CacheableHashMap)CacheableHashMap.CreateDeserializable();
-        m_cacheableDate = (CacheableDate)CacheableDate.CreateDeserializable();
-        m_cacheableVector = (CacheableVector)CacheableVector.CreateDeserializable();
-        m_cacheableObject = (CacheableObject)CacheableObject.CreateDeserializable();
-         * */
-      }
 
       m_cacheableBoolean = input.ReadBoolean();
       m_cacheableInt32 = input.ReadInt32();
@@ -188,8 +143,6 @@ namespace Apache.Geode.Client.UnitTests
       {
         m_cacheableInt32Array[item] = input.ReadInt32();
       }
-      //m_cacheableFileName.FromData(input);
-      //m_CacheableStringASCII.FromData(input);
       m_cacheableFileName = input.ReadUTF();
       m_CacheableStringASCII = input.ReadUTF();
       arraylen = input.ReadArrayLen();
@@ -198,11 +151,8 @@ namespace Apache.Geode.Client.UnitTests
       {
         m_cacheableStringArray[item] = input.ReadUTF();
       }
-      //m_cacheableHashSet.FromData(input);
       m_cacheableHashMap = new Dictionary<Object, Object>();
       input.ReadDictionary((System.Collections.IDictionary)m_cacheableHashMap);
-      //m_cacheableHashMap = input.ReadDictionary();
-      //m_cacheableDate = input.ReadDate();
       arraylen = input.ReadArrayLen();
       m_cacheableVector = new object[arraylen];
       for (int item = 0; item < arraylen; item++)
@@ -227,8 +177,6 @@ namespace Apache.Geode.Client.UnitTests
         {
           output.WriteInt32(item);
         }
-        //m_cacheableFileName.ToData(output);
-        //m_CacheableStringASCII.ToData(output);
         output.WriteUTF(m_cacheableFileName);
         output.WriteUTF(m_CacheableStringASCII);
         output.WriteArrayLen(m_cacheableStringArray.Length);
@@ -236,15 +184,12 @@ namespace Apache.Geode.Client.UnitTests
         {
           output.WriteUTF(item);
         }
-        //m_cacheableHashSet.ToData(output);
         output.WriteDictionary((System.Collections.IDictionary)m_cacheableHashMap);
-        //output.WriteDate(m_cacheableDate);
         output.WriteArrayLen(m_cacheableVector.Count);
         foreach (object item in m_cacheableVector)
         {
           output.WriteObject(item);
         }
-        //output.WriteObject(m_cacheableObject);
       }
     }
 

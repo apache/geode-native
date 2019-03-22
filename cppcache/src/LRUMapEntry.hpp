@@ -20,10 +20,11 @@
  * limitations under the License.
  */
 
-#include <geode/internal/geode_globals.hpp>
 #include <geode/CacheableKey.hpp>
-#include "MapEntry.hpp"
+#include <geode/internal/geode_globals.hpp>
+
 #include "LRUList.hpp"
+#include "MapEntry.hpp"
 #include "VersionStamp.hpp"
 
 namespace apache {
@@ -78,7 +79,7 @@ class APACHE_GEODE_EXPORT LRUMapEntry : public MapEntryImpl,
   inline explicit LRUMapEntry(bool)
       : MapEntryImpl(true), LRUEntryProperties(true) {}
 
-  inline LRUMapEntry(const std::shared_ptr<CacheableKey>& key)
+  inline explicit LRUMapEntry(const std::shared_ptr<CacheableKey>& key)
       : MapEntryImpl(key) {}
 
  private:
@@ -97,7 +98,8 @@ class APACHE_GEODE_EXPORT VersionedLRUMapEntry : public LRUMapEntry,
  protected:
   inline explicit VersionedLRUMapEntry(bool) : LRUMapEntry(true) {}
 
-  inline VersionedLRUMapEntry(const std::shared_ptr<CacheableKey>& key) : LRUMapEntry(key) {}
+  inline explicit VersionedLRUMapEntry(const std::shared_ptr<CacheableKey>& key)
+      : LRUMapEntry(key) {}
 
  private:
   // disabled

@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_STATISTICS_HOSTSTATSAMPLER_H_
-#define GEODE_STATISTICS_HOSTSTATSAMPLER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,29 +15,32 @@
  * limitations under the License.
  */
 
-#include <string>
-#include <vector>
+#pragma once
+
+#ifndef GEODE_STATISTICS_HOSTSTATSAMPLER_H_
+#define GEODE_STATISTICS_HOSTSTATSAMPLER_H_
+
+#include <atomic>
 #include <chrono>
+#include <memory>
+#include <mutex>
+#include <string>
+#include <thread>
+#include <vector>
 
 #include <ace/Task.h>
-#include <ace/Recursive_Thread_Mutex.h>
 
+#include <geode/ExceptionTypes.hpp>
 #include <geode/internal/geode_globals.hpp>
 
-#include "Statistics.hpp"
+#include "../NonCopyable.hpp"
+#include "StatArchiveWriter.hpp"
+#include "StatSamplerStats.hpp"
 #include "StatisticDescriptor.hpp"
+#include "Statistics.hpp"
 #include "StatisticsManager.hpp"
 #include "StatisticsType.hpp"
-#include "StatSamplerStats.hpp"
-#include "StatArchiveWriter.hpp"
-#include <geode/ExceptionTypes.hpp>
 
-#include "../NonCopyable.hpp"
-
-using namespace apache::geode::client;
-
-/** @file
- */
 #ifndef GEMFIRE_MAX_STATS_FILE_LIMIT
 #define GEMFIRE_MAX_STATS_FILE_LIMIT (1024 * 1024 * 1024)
 #endif
@@ -50,10 +48,14 @@ using namespace apache::geode::client;
 #ifndef GEMFIRE_MAX_STAT_DISK_LIMIT
 #define GEMFIRE_MAX_STAT_DISK_LIMIT (1024LL * 1024LL * 1024LL * 1024LL)
 #endif
+
 namespace apache {
 namespace geode {
 namespace statistics {
 
+using apache::geode::client::CacheImpl;
+using apache::geode::client::NonAssignable;
+using apache::geode::client::NonCopyable;
 using std::chrono::system_clock;
 
 class StatArchiveWriter;
@@ -63,9 +65,7 @@ class StatisticsManager;
  * HostStatSampler implements a thread which will monitor, sample and archive
  * statistics. It only has the common functionalities which any sampler needs.
  */
-class APACHE_GEODE_EXPORT HostStatSampler : public ACE_Task_Base,
-                                            private NonCopyable,
-                                            private NonAssignable {
+class HostStatSampler : private NonCopyable, private NonAssignable {
  public:
   /*
    * Constructor:
@@ -121,7 +121,7 @@ class APACHE_GEODE_EXPORT HostStatSampler : public ACE_Task_Base,
   /**
    * Gets list mutex for synchronization
    */
-  ACE_Recursive_Thread_Mutex& getStatListMutex();
+  std::recursive_mutex& getStatListMutex();
   /**
    * Returns a vector of ptrs to all the current statistic resource instances.
    */
@@ -179,7 +179,7 @@ class APACHE_GEODE_EXPORT HostStatSampler : public ACE_Task_Base,
   /**
    * The function executed by the thread
    */
-  int32_t svc(void);
+  void svc(void);
 
   /**
    * Method to know whether the sampling thread is running or not.
@@ -189,13 +189,13 @@ class APACHE_GEODE_EXPORT HostStatSampler : public ACE_Task_Base,
   ~HostStatSampler();
 
  private:
-  ACE_Recursive_Thread_Mutex m_samplingLock;
+  std::recursive_mutex m_samplingLock;
   bool m_adminError;
-  // Related to ACE Thread.
-  bool m_running;
-  bool m_stopRequested;
-  volatile bool m_isStatDiskSpaceEnabled;
-  StatArchiveWriter* m_archiver;
+  std::thread m_thread;
+  std::atomic<bool> m_running;
+  std::atomic<bool> m_stopRequested;
+  std::atomic<bool> m_isStatDiskSpaceEnabled;
+  std::unique_ptr<StatArchiveWriter> m_archiver;
   StatSamplerStats* m_samplerStats;
   const char* m_durableClientId;
   std::chrono::seconds m_durableTimeout;
@@ -246,6 +246,7 @@ class APACHE_GEODE_EXPORT HostStatSampler : public ACE_Task_Base,
 
   static const char* NC_HSS_Thread;
 };
+
 }  // namespace statistics
 }  // namespace geode
 }  // namespace apache

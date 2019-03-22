@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_SECURITY_PKCSCREDENTIALGENERATOR_H_
-#define GEODE_SECURITY_PKCSCREDENTIALGENERATOR_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,6 +15,13 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_SECURITY_PKCSCREDENTIALGENERATOR_H_
+#define GEODE_SECURITY_PKCSCREDENTIALGENERATOR_H_
+
+#include <random>
+
 #include "CredentialGenerator.hpp"
 #include "XmlAuthzCredentialGenerator.hpp"
 
@@ -36,6 +38,13 @@ namespace geode {
 namespace client {
 namespace testframework {
 namespace security {
+
+template <typename T>
+T randomValue(T minValue, T maxValue) {
+  static thread_local std::default_random_engine generator(
+      std::random_device{}());
+  return std::uniform_int_distribution<T>{minValue, maxValue}(generator);
+}
 
 class PKCSCredentialGenerator : public CredentialGenerator {
  public:
@@ -57,10 +66,9 @@ class PKCSCredentialGenerator : public CredentialGenerator {
     }
 
     char* authzXmlUri = ACE_OS::getenv("AUTHZ_XML_URI");
-    additionalArgs =
-        std::string(" --J=-Dgemfire.security-authz-xml-uri=") +
-        std::string(workingDir) +
-        std::string(authzXmlUri ? authzXmlUri : "authz-pkcs.xml");
+    additionalArgs = std::string(" --J=-Dgemfire.security-authz-xml-uri=") +
+                     std::string(workingDir) +
+                     std::string(authzXmlUri ? authzXmlUri : "authz-pkcs.xml");
 
     return additionalArgs;
   }
@@ -111,7 +119,7 @@ class PKCSCredentialGenerator : public CredentialGenerator {
 
   void getValidCredentials(std::shared_ptr<Properties>& p) override {
     char username[20] = {'\0'};
-    sprintf(username, "geode%d", (rand() % 10) + 1);
+    sprintf(username, "geode%d", randomValue(1, 10));
     setPKCSProperties(p, username);
     FWKINFO("inserted valid security-username "
             << p->find("security-username")->value().c_str());
@@ -119,7 +127,7 @@ class PKCSCredentialGenerator : public CredentialGenerator {
 
   void getInvalidCredentials(std::shared_ptr<Properties>& p) override {
     char username[20] = {'\0'};
-    sprintf(username, "%dgeode", (rand() % 11) + 1);
+    sprintf(username, "%dgeode", randomValue(1, 11));
     setPKCSProperties(p, username);
     FWKINFO("inserted invalid security-username "
             << p->find("security-username")->value().c_str());
@@ -134,9 +142,9 @@ class PKCSCredentialGenerator : public CredentialGenerator {
     insertKeyStorePath(p, username);
   }
 
-  void getDisallowedCredentialsForOps(opCodeList& opCodes,
-                                      std::shared_ptr<Properties>& p,
-                                      stringList* regionNames = nullptr) override {
+  void getDisallowedCredentialsForOps(
+      opCodeList& opCodes, std::shared_ptr<Properties>& p,
+      stringList* regionNames = nullptr) override {
     XmlAuthzCredentialGenerator authz(id());
     authz.getDisallowedCredentials(opCodes, p, regionNames);
     const char* username = p->find("security-alias")->value().c_str();

@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 #include "ClientHealthStats.hpp"
+
 #include "CacheImpl.hpp"
 
 namespace apache {
@@ -55,7 +56,7 @@ ClientHealthStats::ClientHealthStats()
       m_numThread(0),
       m_processCpuTime(0),
       m_cpus(0) {
-  m_updateTime = CacheableDate::create(ACE_OS::time(nullptr));
+  m_updateTime = CacheableDate::create();
 }
 
 ClientHealthStats::ClientHealthStats(int gets, int puts, int misses,
@@ -68,7 +69,7 @@ ClientHealthStats::ClientHealthStats(int gets, int puts, int misses,
       m_numThread(numThreads),
       m_processCpuTime(cpuTime),
       m_cpus(cpus) {
-  m_updateTime = CacheableDate::create(ACE_OS::time(nullptr));
+  m_updateTime = CacheableDate::create();
 }
 
 }  // namespace client

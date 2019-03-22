@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_NONCOPYABLE_H_
-#define GEODE_NONCOPYABLE_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,25 +15,35 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_NONCOPYABLE_H_
+#define GEODE_NONCOPYABLE_H_
+
+#include <geode/internal/geode_base.hpp>
+
 namespace apache {
 namespace geode {
 namespace client {
+
 class APACHE_GEODE_EXPORT NonCopyable {
  protected:
   NonCopyable() {}
   ~NonCopyable() {}
 
- private:
-  NonCopyable(const NonCopyable&);
+ public:
+  NonCopyable(const NonCopyable&) = delete;
 };
+
 class APACHE_GEODE_EXPORT NonAssignable {
  protected:
   NonAssignable() {}
   ~NonAssignable() {}
 
- private:
-  const NonAssignable& operator=(const NonAssignable&);
+ public:
+  const NonAssignable& operator=(const NonAssignable&) = delete;
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

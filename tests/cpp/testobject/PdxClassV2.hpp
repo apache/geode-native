@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_TESTOBJECT_PDXCLASSV2_H_
-#define GEODE_TESTOBJECT_PDXCLASSV2_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,25 +14,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * PdxClassV1.hpp
- *
- *  Created on: Feb 3, 2012
- *      Author: npatel
- */
 
+#pragma once
+
+#ifndef GEODE_TESTOBJECT_PDXCLASSV2_H_
+#define GEODE_TESTOBJECT_PDXCLASSV2_H_
+
+#include <util/Log.hpp>
+
+#include <geode/PdxReader.hpp>
 #include <geode/PdxSerializable.hpp>
 #include <geode/PdxSerializer.hpp>
 #include <geode/PdxWriter.hpp>
-#include <geode/PdxReader.hpp>
-#include <util/Log.hpp>
-#include <util/Log.hpp>
 
 #include "testobject_export.h"
 
-using namespace apache::geode::client;
-
 namespace PdxTests {
+
+using apache::geode::client::CacheableDate;
+using apache::geode::client::PdxReader;
+using apache::geode::client::PdxSerializable;
+using apache::geode::client::PdxSerializer;
+using apache::geode::client::PdxUnreadFields;
+using apache::geode::client::PdxWriter;
+using apache::geode::client::UserObjectSizer;
 
 /************************************************************
  *  PdxTypes1V2
@@ -366,7 +366,7 @@ class TESTOBJECT_EXPORT PdxVersionedV2 : public PdxSerializable {
  public:
   PdxVersionedV2();
 
-  PdxVersionedV2(int32_t size);
+  explicit PdxVersionedV2(int32_t size);
 
   ~PdxVersionedV2() noexcept override;
 
@@ -402,7 +402,7 @@ class TESTOBJECT_EXPORT TestKeyV2 {
  public:
   TestKeyV2();
 
-  TestKeyV2(char* id);
+  explicit TestKeyV2(char* id);
 };
 
 /************************************************************
@@ -419,7 +419,7 @@ class TESTOBJECT_EXPORT TestDiffTypePdxSV2 {
  public:
   TestDiffTypePdxSV2();
 
-  TestDiffTypePdxSV2(bool init);
+  explicit TestDiffTypePdxSV2(bool init);
 
   bool equals(const TestDiffTypePdxSV2& obj);
 };
@@ -463,7 +463,7 @@ class TestPdxSerializerForV2 : public PdxSerializer {
     try {
       auto tkv1 = std::shared_ptr<PdxTests::TestKeyV2>();
       tkv1->_id = pr.readString("_id");
-      return tkv1;
+      return std::move(tkv1);
     } catch (...) {
       return nullptr;
     }
@@ -488,7 +488,7 @@ class TestPdxSerializerForV2 : public PdxSerializer {
       dtpv1->_id = pr.readString("_id");
       dtpv1->_name = pr.readString("_name");
       dtpv1->_count = pr.readInt("_count");
-      return dtpv1;
+      return std::move(dtpv1);
     } catch (...) {
       return nullptr;
     }

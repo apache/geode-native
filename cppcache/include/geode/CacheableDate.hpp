@@ -20,14 +20,14 @@
 #ifndef GEODE_CACHEABLEDATE_H_
 #define GEODE_CACHEABLEDATE_H_
 
-#include "internal/geode_globals.hpp"
+#include <chrono>
+#include <ctime>
+#include <string>
+
 #include "CacheableKey.hpp"
 #include "CacheableString.hpp"
 #include "ExceptionTypes.hpp"
-
-#include <string>
-#include <chrono>
-#include <ctime>
+#include "internal/geode_globals.hpp"
 
 /** @file
  */
@@ -40,8 +40,9 @@ namespace client {
  * can serve as a distributable key object for caching as well as being a date
  * value.
  */
-class APACHE_GEODE_EXPORT CacheableDate : public DataSerializablePrimitive,
-                                          public CacheableKey {
+class APACHE_GEODE_EXPORT CacheableDate
+    : public internal::DataSerializablePrimitive,
+      public CacheableKey {
  private:
   /**
    * Milliseconds since January 1, 1970, 00:00:00 GMT to be consistent with Java
@@ -55,17 +56,17 @@ class APACHE_GEODE_EXPORT CacheableDate : public DataSerializablePrimitive,
   typedef std::chrono::milliseconds duration;
 
   /** Constructor, used for deserialization. */
-  CacheableDate(const time_t value = 0);
+  explicit CacheableDate(const time_t value = 0);
 
   /**
    * Construct from std::chrono::time_point<std::chrono::system_clock>.
    */
-  CacheableDate(const time_point& value);
+  explicit CacheableDate(const time_point& value);
 
   /**
    * Construct from std::chrono::seconds since POSIX epoch.
    */
-  CacheableDate(const duration& value);
+  explicit CacheableDate(const duration& value);
 
   ~CacheableDate() noexcept override = default;
 
@@ -100,11 +101,11 @@ class APACHE_GEODE_EXPORT CacheableDate : public DataSerializablePrimitive,
    * @return the hashcode for this object. */
   virtual int32_t hashcode() const override;
 
-  operator time_t() const { return m_timevalue / 1000; }
-  operator time_point() const {
+  explicit operator time_t() const { return m_timevalue / 1000; }
+  explicit operator time_point() const {
     return clock::from_time_t(0) + duration(m_timevalue);
   }
-  operator duration() const { return duration(m_timevalue); }
+  explicit operator duration() const { return duration(m_timevalue); }
 
   /**
    * Factory method for creating an instance of CacheableDate

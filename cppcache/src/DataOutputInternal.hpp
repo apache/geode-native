@@ -21,9 +21,9 @@
 #define GEODE_DATAOUTPUTINTERNAL_H_
 
 #include <geode/DataOutput.hpp>
-
-#include "CacheImpl.hpp"          // TODO remove
 #include <geode/PoolManager.hpp>  // TODO remove
+
+#include "CacheImpl.hpp"  // TODO remove
 
 namespace apache {
 namespace geode {
@@ -35,7 +35,7 @@ class DataOutputInternal : public DataOutput {
  public:
   DataOutputInternal() : DataOutput(nullptr, nullptr) {}
 
-  DataOutputInternal(CacheImpl* cache) : DataOutput(cache, nullptr) {}
+  explicit DataOutputInternal(CacheImpl* cache) : DataOutput(cache, nullptr) {}
 
   inline static Pool* getPool(const DataOutput& dataOutput) {
     return dataOutput.getPool();

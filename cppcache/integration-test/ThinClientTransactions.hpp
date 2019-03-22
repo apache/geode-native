@@ -29,14 +29,23 @@
 #include <geode/TransactionId.hpp>
 #include <geode/CacheTransactionManager.hpp>
 
-
 #define ROOT_NAME "ThinClientTransactions"
 #define ROOT_SCOPE DISTRIBUTED_ACK
 
 #include "CacheHelper.hpp"
 
-using namespace apache::geode::client;
-using namespace test;
+namespace { // NOLINT(google-build-namespaces)
+
+using apache::geode::client::CacheableKey;
+using apache::geode::client::CacheableString;
+using apache::geode::client::CacheHelper;
+using apache::geode::client::CacheServerException;
+using apache::geode::client::EntryExistsException;
+using apache::geode::client::EntryNotFoundException;
+using apache::geode::client::IllegalStateException;
+using apache::geode::client::Properties;
+using apache::geode::client::TransactionException;
+using apache::geode::client::TransactionId;
 
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
@@ -52,22 +61,9 @@ static int numberOfLocators = 0;
 const char* locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 
-bool g_isGridClient = false;
-
-DUNIT_TASK_DEFINITION(CLIENT1, Alter_Client_Grid_Property_1)
-  { g_isGridClient = !g_isGridClient; }
-END_TASK_DEFINITION
-
-DUNIT_TASK_DEFINITION(CLIENT2, Alter_Client_Grid_Property_2)
-  { g_isGridClient = !g_isGridClient; }
-END_TASK_DEFINITION
-
 void initClient(const bool isthinClient) {
   if (cacheHelper == nullptr) {
     auto config = Properties::create();
-    if (g_isGridClient) {
-      config->insert("grid-client", "true");
-    }
     config->insert("suspended-tx-timeout", std::chrono::minutes(1));
     cacheHelper = new CacheHelper(isthinClient, config);
   }
@@ -415,9 +411,7 @@ class SuspendTransactionThread : public ACE_Task_Base {
   }
   void start() { activate(); }
   void stop() { wait(); }
-  TransactionId& getSuspendedTx() {
-    return *m_suspendedTransaction;
-  }
+  TransactionId& getSuspendedTx() { return *m_suspendedTransaction; }
 };
 class ResumeTransactionThread : public ACE_Task_Base {
  private:
@@ -429,9 +423,8 @@ class ResumeTransactionThread : public ACE_Task_Base {
   ACE_Auto_Event* m_txEvent;
 
  public:
-  ResumeTransactionThread(TransactionId& suspendedTransaction,
-                          bool commit, bool tryResumeWithSleep,
-                          ACE_Auto_Event* txEvent)
+  ResumeTransactionThread(TransactionId& suspendedTransaction, bool commit,
+                          bool tryResumeWithSleep, ACE_Auto_Event* txEvent)
       : m_suspendedTransaction(suspendedTransaction),
         m_commit(commit),
         m_tryResumeWithSleep(tryResumeWithSleep),
@@ -649,11 +642,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, SuspendResumeCommit)
     bool threwTransactionException = false;
     try {
       txManager->suspend();
-    }
-    catch (const TransactionException) {
+    } catch (const TransactionException) {
       threwTransactionException = true;
     }
-    ASSERT(threwTransactionException, "SuspendResumeCommit: Transaction shouldnt have been suspended");
+    ASSERT(threwTransactionException,
+           "SuspendResumeCommit: Transaction shouldnt have been suspended");
   }
 END_TASK_DEFINITION
 
@@ -1098,5 +1091,7 @@ DUNIT_TASK_DEFINITION(SERVER1, CloseServer1)
     }
   }
 END_TASK_DEFINITION
+
+}  // namespace
 
 #endif  // GEODE_INTEGRATION_TEST_THINCLIENTTRANSACTIONS_H_

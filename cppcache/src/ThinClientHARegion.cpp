@@ -16,11 +16,13 @@
  */
 
 #include "ThinClientHARegion.hpp"
-#include "TcrHADistributionManager.hpp"
-#include "CacheImpl.hpp"
-#include <geode/SystemProperties.hpp>
-#include "ReadWriteLock.hpp"
+
 #include <geode/PoolManager.hpp>
+#include <geode/SystemProperties.hpp>
+
+#include "CacheImpl.hpp"
+#include "ReadWriteLock.hpp"
+#include "TcrHADistributionManager.hpp"
 #include "ThinClientPoolHADM.hpp"
 namespace apache {
 namespace geode {
@@ -41,16 +43,6 @@ ThinClientHARegion::ThinClientHARegion(
 void ThinClientHARegion::initTCR() {
   try {
     const bool isPool = !m_attributes.getPoolName().empty();
-    if (m_cacheImpl->getDistributedSystem()
-            .getSystemProperties()
-            .isGridClient()) {
-      LOGWARN(
-          "Region: HA region having notification channel created for grid "
-          "client; force starting required notification, cleanup and "
-          "failover threads");
-      m_cacheImpl->tcrConnectionManager().startFailoverAndCleanupThreads(
-          isPool);
-    }
 
     if (isPool) {
       m_tcrdm = dynamic_cast<ThinClientPoolHADM*>(
@@ -144,9 +136,6 @@ void ThinClientHARegion::destroyDM(bool keepEndpoints) {
     ThinClientRegion::destroyDM(keepEndpoints);
   }
 }
-}  // namespace client
-}  // namespace geode
-}  // namespace apache
 
 void ThinClientHARegion::addDisMessToQueue() {
   if (m_poolDM) {
@@ -183,3 +172,7 @@ GfErrType ThinClientHARegion::getNoThrow_FullObject(
   versionTag = reply.getVersionTag();
   return err;
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

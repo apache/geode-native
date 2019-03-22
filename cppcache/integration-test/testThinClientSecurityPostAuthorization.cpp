@@ -31,30 +31,33 @@
 
 #include "ThinClientSecurity.hpp"
 
-using namespace apache::geode::client;
+using apache::geode::client::Exception;
+using apache::geode::client::HashMapOfCacheable;
+using apache::geode::client::HashMapOfException;
+using apache::geode::client::NotAuthorizedException;
 
-const char* locHostPort =
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
-#define HANDLE_NO_NOT_AUTHORIZED_EXCEPTION                       \
-  catch (const apache::geode::client::NotAuthorizedException&) { \
-    LOG("NotAuthorizedException Caught");                        \
-    FAIL("should not have caught NotAuthorizedException");       \
-  }                                                              \
-  catch (const apache::geode::client::Exception& other) {        \
-    LOG("Got apache::geode::client::Exception& other ");         \
-    LOG(other.getStackTrace().c_str());                          \
-    FAIL(other.what());                                          \
+#define HANDLE_NO_NOT_AUTHORIZED_EXCEPTION                 \
+  catch (const NotAuthorizedException &) {                 \
+    LOG("NotAuthorizedException Caught");                  \
+    FAIL("should not have caught NotAuthorizedException"); \
+  }                                                        \
+  catch (const Exception &other) {                         \
+    LOG("Got apache::geode::client::Exception& other ");   \
+    LOG(other.getStackTrace().c_str());                    \
+    FAIL(other.what());                                    \
   }
 
-#define HANDLE_NOT_AUTHORIZED_EXCEPTION                          \
-  catch (const apache::geode::client::NotAuthorizedException&) { \
-    LOG("NotAuthorizedException Caught");                        \
-    LOG("Success");                                              \
-  }                                                              \
-  catch (const apache::geode::client::Exception& other) {        \
-    LOG(other.getStackTrace().c_str());                          \
-    FAIL(other.what());                                          \
+#define HANDLE_NOT_AUTHORIZED_EXCEPTION    \
+  catch (const NotAuthorizedException &) { \
+    LOG("NotAuthorizedException Caught");  \
+    LOG("Success");                        \
+  }                                        \
+  catch (const Exception &other) {         \
+    LOG(other.getStackTrace().c_str());    \
+    FAIL(other.what());                    \
   }
 
 #define ADMIN_CLIENT s1p1
@@ -62,7 +65,7 @@ const char* locHostPort =
 #define READER_CLIENT s2p1
 #define READER2_CLIENT s2p2
 
-const char* regionNamesAuth[] = {"DistRegionAck"};
+const char *regionNamesAuth[] = {"DistRegionAck"};
 
 void initClientAuth(char userType, int clientNum = 1) {
   auto config = Properties::create();
@@ -92,7 +95,7 @@ void initClientAuth(char userType, int clientNum = 1) {
   initClient(true, config);
 }
 
-const char* getServerSecurityParams() {
+const char *getServerSecurityParams() {
   static std::string serverSecurityParams;
 
   if (serverSecurityParams.size() == 0) {
@@ -105,31 +108,31 @@ const char* getServerSecurityParams() {
         "org.apache.geode.internal.security.FilterPostAuthorization.create "
         "log-level=fine security-log-level=finest";
 
-    char* ldapSrv = ACE_OS::getenv("LDAP_SERVER");
+    char *ldapSrv = ACE_OS::getenv("LDAP_SERVER");
     serverSecurityParams += std::string(" security-ldap-server=") +
                             (ldapSrv != nullptr ? ldapSrv : "ldap");
 
-    char* ldapRoot = ACE_OS::getenv("LDAP_BASEDN");
+    char *ldapRoot = ACE_OS::getenv("LDAP_BASEDN");
     serverSecurityParams +=
         std::string(" security-ldap-basedn=") +
         (ldapRoot != nullptr ? ldapRoot
                              : "ou=ldapTesting,dc=ldap,dc=apache,dc=org");
 
-    char* ldapSSL = ACE_OS::getenv("LDAP_USESSL");
+    char *ldapSSL = ACE_OS::getenv("LDAP_USESSL");
     serverSecurityParams += std::string(" security-ldap-usessl=") +
                             (ldapSSL != nullptr ? ldapSSL : "false");
   }
   return serverSecurityParams.c_str();
 }
 
-void getKeysVector(std::vector<std::shared_ptr<CacheableKey>>& keysVec,
+void getKeysVector(std::vector<std::shared_ptr<CacheableKey>> &keysVec,
                    int numKeys) {
   for (int index = 0; index < numKeys; ++index) {
     keysVec.push_back(CacheableString::create(keys[index]));
   }
 }
 
-void checkValuesMap(HashMapOfCacheable& values, int clientNum, int numKeys) {
+void checkValuesMap(HashMapOfCacheable &values, int clientNum, int numKeys) {
   size_t expectedNum = 0;
   std::shared_ptr<CacheableKey> key;
   std::shared_ptr<CacheableString> val;
@@ -137,7 +140,7 @@ void checkValuesMap(HashMapOfCacheable& values, int clientNum, int numKeys) {
   for (int index = clientNum - 1; index < numKeys; index += clientNum) {
     ++expectedNum;
     key = CacheableString::create(keys[index]);
-    const auto& iter = values.find(key);
+    const auto &iter = values.find(key);
     ASSERT(iter != values.end(), "key not found in values map");
     val = std::dynamic_pointer_cast<CacheableString>(iter->second);
     expectedVal = CacheableString::create(nvals[index]);
@@ -148,7 +151,7 @@ void checkValuesMap(HashMapOfCacheable& values, int clientNum, int numKeys) {
   ASSERT(values.size() == expectedNum, "unexpected number of values");
 }
 
-void checkExceptionsMap(HashMapOfException& exceptions, int clientNum,
+void checkExceptionsMap(HashMapOfException &exceptions, int clientNum,
                         int numKeys) {
   size_t expectedNum = 0;
   std::shared_ptr<CacheableKey> key;
@@ -156,13 +159,12 @@ void checkExceptionsMap(HashMapOfException& exceptions, int clientNum,
     if ((index + 1) % clientNum != 0) {
       ++expectedNum;
       key = CacheableString::create(keys[index]);
-      const auto& iter = exceptions.find(key);
+      const auto &iter = exceptions.find(key);
       ASSERT(iter != exceptions.end(), "key not found in exceptions map");
       ASSERT(std::dynamic_pointer_cast<std::shared_ptr<NotAuthorizedException>>(
                  iter->second),
              "unexpected exception type in exception map");
-      printf("Got expected NotAuthorizedException: %s",
-             iter->second->what());
+      printf("Got expected NotAuthorizedException: %s", iter->second->what());
     }
   }
   printf("Expected number of exceptions: %zd; got exceptions: %zd", expectedNum,

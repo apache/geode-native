@@ -36,20 +36,26 @@
 
 #include "testobject/Portfolio.hpp"
 
-using namespace apache::geode::client;
-using namespace test;
-using namespace testobject;
-
 #define CLIENT1 s1p1
 #define SERVER1 s2p1
 #define SERVER2 s2p2
 
-CacheHelper* cacheHelper = nullptr;
+using apache::geode::client::CacheHelper;
+using apache::geode::client::CacheRegionHelper;
+using apache::geode::client::Exception;
+using apache::geode::client::IllegalStateException;
+using apache::geode::client::QueryService;
+using apache::geode::client::SelectResults;
+
+using testobject::Portfolio;
+using testobject::Position;
+
+CacheHelper *cacheHelper = nullptr;
 static bool isLocalServer = false;
 static bool isLocator = false;
 static int numberOfLocators = 1;
 
-const char* locatorsG =
+const char *locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 
 class KillServerThread : public ACE_Task_Base {
@@ -86,9 +92,11 @@ void initClient() {
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
             ->getSerializationRegistry();
 
-    serializationRegistry->addType(Portfolio::createDeserializable);
-    serializationRegistry->addType(Position::createDeserializable);
-  } catch (const IllegalStateException&) {
+    serializationRegistry->addDataSerializableType(
+        Portfolio::createDeserializable, 2);
+    serializationRegistry->addDataSerializableType(
+        Position::createDeserializable, 3);
+  } catch (const IllegalStateException &) {
     // ignore reregistration exception
   }
 }
@@ -113,29 +121,29 @@ void cleanProc() {
   }
 }
 
-CacheHelper* getHelper() {
+CacheHelper *getHelper() {
   ASSERT(cacheHelper != nullptr, "No cacheHelper initialized.");
   return cacheHelper;
 }
 
-void createRegion(const char* name, bool ackMode,
+void createRegion(const char *name, bool ackMode,
                   bool clientNotificationEnabled = true) {
   LOG("createRegion() entered.");
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
-  char* endpoints = nullptr;
+  char *endpoints = nullptr;
   auto regPtr = getHelper()->createRegion(name, ackMode, false, nullptr,
                                           endpoints, clientNotificationEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
 
-const char* regionNames[] = {"Portfolios", "Positions"};
+const char *regionNames[] = {"Portfolios", "Positions"};
 
 const bool USE_ACK = true;
 const bool NO_ACK = false;
 
-KillServerThread* kst = nullptr;
+KillServerThread *kst = nullptr;
 
 void initClientAndRegion(int redundancy) {
   // std::shared_ptr<Properties> pp  = Properties::create();
@@ -249,12 +257,12 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
       }
 
       kst->stop();
-    } catch (IllegalStateException& ise) {
+    } catch (IllegalStateException &ise) {
       char isemsg[500] = {0};
       ACE_OS::snprintf(isemsg, 499, "IllegalStateException: %s", ise.what());
       LOG(isemsg);
       FAIL(isemsg);
-    } catch (Exception& excp) {
+    } catch (Exception &excp) {
       char excpmsg[500] = {0};
       ACE_OS::snprintf(excpmsg, 499, "Exception: %s", excp.what());
       LOG(excpmsg);

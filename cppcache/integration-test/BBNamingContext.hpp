@@ -27,6 +27,12 @@
 // grieve, especially with the stl stuff.
 #include <cstdlib>
 #include <string>
+
+namespace apache {
+namespace geode {
+namespace client {
+namespace testframework {
+
 class BBNamingContextClientImpl;
 class BBNamingContextClient {
   BBNamingContextClientImpl* m_impl;
@@ -47,5 +53,10 @@ class BBNamingContextServer {
   BBNamingContextServer();
   ~BBNamingContextServer();
 };
+
+}  // namespace testframework
+}  // namespace client
+}  // namespace geode
+}  // namespace apache
 
 #endif  // GEODE_INTEGRATION_TEST_BBNAMINGCONTEXT_H_

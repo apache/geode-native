@@ -20,11 +20,13 @@
  * limitations under the License.
  */
 
-#include <geode/internal/geode_base.hpp>
-#include <ace/SOCK_Stream.h>
-#include <ace/SOCK_Acceptor.h>
 #include <cstdint>
 #include <string>
+
+#include <ace/SOCK_Acceptor.h>
+#include <ace/SOCK_Stream.h>
+
+#include <geode/internal/geode_base.hpp>
 
 namespace apache {
 namespace geode {
@@ -42,14 +44,15 @@ class TcpIpc {
   int32_t getSize(ACE_HANDLE sock, int32_t flag);
 
  public:
-  TcpIpc(std::string& ipaddr, int32_t sockBufferSize = 0) : m_ipaddr(ipaddr) {
+  explicit TcpIpc(std::string& ipaddr, int32_t sockBufferSize = 0)
+      : m_ipaddr(ipaddr) {
     init(sockBufferSize);
   }
-  TcpIpc(char* ipaddr, int32_t sockBufferSize = 0) : m_ipaddr(ipaddr) {
+  explicit TcpIpc(char* ipaddr, int32_t sockBufferSize = 0) : m_ipaddr(ipaddr) {
     init(sockBufferSize);
   }
 
-  TcpIpc(int32_t sockBufferSize = 0) { init(sockBufferSize); }
+  explicit TcpIpc(int32_t sockBufferSize = 0) { init(sockBufferSize); }
 
   ~TcpIpc();
 

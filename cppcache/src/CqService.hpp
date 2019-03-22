@@ -21,37 +21,30 @@
 #define GEODE_CQSERVICE_H_
 
 #include <map>
+#include <mutex>
 #include <string>
 
-#include <ace/ACE.h>
-#include <ace/Condition_Recursive_Thread_Mutex.h>
-#include <ace/Time_Value.h>
-#include <ace/Guard_T.h>
-#include <ace/Recursive_Thread_Mutex.h>
 #include <ace/Semaphore.h>
-#include <ace/Task.h>
 
 #include <geode/CacheableKey.hpp>
 #include <geode/CqOperation.hpp>
 #include <geode/CqQuery.hpp>
 #include <geode/internal/geode_globals.hpp>
 
-#include "TcrMessage.hpp"
-#include "Queue.hpp"
-#include "MapWithLock.hpp"
-#include "DistributedSystem.hpp"
-#include "Queue.hpp"
-#include "ThinClientBaseDM.hpp"
 #include "CqServiceVsdStats.hpp"
+#include "DistributedSystem.hpp"
+#include "ErrType.hpp"
 #include "NonCopyable.hpp"
-
-/**
- * @file
- */
+#include "Queue.hpp"
+#include "TcrMessage.hpp"
+#include "util/synchronized_map.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
+
+class ThinClientBaseDM;
+class TcrEndpoint;
 
 /**
  * @class CqService CqService.hpp
@@ -59,7 +52,6 @@ namespace client {
  * Implements the CqService functionality.
  *
  */
-
 class APACHE_GEODE_EXPORT CqService
     : private NonCopyable,
       private NonAssignable,
@@ -67,19 +59,16 @@ class APACHE_GEODE_EXPORT CqService
  private:
   ThinClientBaseDM* m_tccdm;
   statistics::StatisticsFactory* m_statisticsFactory;
-  ACE_Recursive_Thread_Mutex m_mutex;
-  std::string m_queryString;
   ACE_Semaphore m_notificationSema;
 
   bool m_running;
-  MapOfCqQueryWithLock* m_cqQueryMap;
+  synchronized_map<std::unordered_map<std::string, std::shared_ptr<CqQuery>>,
+                   std::recursive_mutex>
+      m_cqQueryMap;
 
   std::shared_ptr<CqServiceStatistics> m_stats;
 
-  inline bool noCq() const {
-    MapOfRegionGuard guard(m_cqQueryMap->mutex());
-    return (0 == m_cqQueryMap->current_size());
-  }
+  inline bool noCq() const { return m_cqQueryMap.empty(); }
 
  public:
   typedef std::vector<std::shared_ptr<CqQuery>> query_container_type;
@@ -89,10 +78,11 @@ class APACHE_GEODE_EXPORT CqService
    */
   CqService(ThinClientBaseDM* tccdm,
             statistics::StatisticsFactory* statisticsFactory);
+  ~CqService() noexcept;
+
   ThinClientBaseDM* getDM() { return m_tccdm; }
 
   void receiveNotification(TcrMessage* msg);
-  ~CqService();
 
   /**
    * Returns the state of the cqService.

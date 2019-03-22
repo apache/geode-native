@@ -24,11 +24,10 @@
 #include <string>
 
 #include <geode/Serializable.hpp>
-#include <geode/Serializable.hpp>
 
-#include "ReadWriteLock.hpp"
-#include "NonCopyable.hpp"
 #include "ErrType.hpp"
+#include "NonCopyable.hpp"
+#include "ReadWriteLock.hpp"
 
 namespace apache {
 namespace geode {
@@ -45,7 +44,6 @@ class CacheImpl;
 class ThinClientBaseDM;
 class TcrConnectionManager;
 class CacheableKey;
-
 
 class AdminRegion : private NonCopyable,
                     private NonAssignable,
@@ -75,7 +73,8 @@ class AdminRegion : private NonCopyable,
   const bool& isDestroyed();
   void close();
   void init();
-  void put(const std::shared_ptr<CacheableKey>& keyPtr, const std::shared_ptr<Cacheable>& valuePtr);
+  void put(const std::shared_ptr<CacheableKey>& keyPtr,
+           const std::shared_ptr<Cacheable>& valuePtr);
   friend class apache::geode::statistics::HostStatSampler;
 };
 

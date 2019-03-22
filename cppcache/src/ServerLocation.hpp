@@ -22,12 +22,12 @@
 
 #include <string>
 
-#include <geode/internal/DataSerializableInternal.hpp>
-#include <geode/Serializable.hpp>
+#include <geode/CacheableBuiltins.hpp>
+#include <geode/CacheableString.hpp>
 #include <geode/DataInput.hpp>
 #include <geode/DataOutput.hpp>
-#include <geode/CacheableString.hpp>
-#include <geode/CacheableBuiltins.hpp>
+#include <geode/Serializable.hpp>
+#include <geode/internal/DataSerializableInternal.hpp>
 
 #include "Utils.hpp"
 
@@ -52,7 +52,7 @@ class APACHE_GEODE_EXPORT ServerLocation
         m_port(-1)  // Default constructor for deserialiozation.
   {}
 
-  ServerLocation(std::string name) {
+  explicit ServerLocation(std::string name) {
     /*
     name = Utils::convertHostToCanonicalForm(name.c_str());
     */
@@ -88,8 +88,6 @@ class APACHE_GEODE_EXPORT ServerLocation
     return size;
   }
 
-  int8_t getInternalId() const override { return 0; }
-
   void printInfo() {
     LOGDEBUG(" Got Host %s, and port %d", getServerName().c_str(), m_port);
   }
@@ -110,12 +108,7 @@ class APACHE_GEODE_EXPORT ServerLocation
 
   inline bool isValid() const { return !m_serverName.empty() && m_port >= 0; }
 
-  inline std::string& getEpString() {
-    /*if (m_epString.empty() == false) {
-      return m_epString;
-    }*/
-    return m_epString;
-  }
+  inline const std::string& getEpString() { return m_epString; }
 
   inline int hashcode() const {
     int prime = 31;

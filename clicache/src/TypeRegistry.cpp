@@ -173,49 +173,36 @@ namespace Apache
         return retVal();
       }
 
-      void TypeRegistry::RegisterType(TypeFactoryMethod^ creationMethod)
+      void TypeRegistry::RegisterType(TypeFactoryMethod^ creationMethod, int32_t id)
       {
         if (creationMethod == nullptr) {
           throw gcnew IllegalArgumentException("Serializable.RegisterType(): "
             "null TypeFactoryMethod delegate passed");
         }
 
-        //--------------------------------------------------------------
-
-        int32_t classId;
-
         //adding user type as well in global builtin hashmap
         auto obj = creationMethod();
-        if (auto dataSerializable = dynamic_cast<IDataSerializable^>(obj))
-        {
-          classId = dataSerializable->ClassId;
-        } else
-        {
+        auto dataSerializable = dynamic_cast<IDataSerializable^>(obj);
+        if (nullptr == dataSerializable) {
           throw gcnew IllegalArgumentException("Unknown serialization type.");
         }
 
-        if (!ManagedDelegatesGeneric->ContainsKey(classId))
+        if (!ObjectIDDelegatesMap->ContainsKey(id))
         {
-          ManagedDelegatesGeneric->Add(classId, creationMethod);
+          ObjectIDDelegatesMap->Add(id, creationMethod);
         }
-
-        auto delegateObj = gcnew DelegateWrapperGeneric(creationMethod);
-        auto nativeDelegate = gcnew TypeFactoryNativeMethodGeneric(delegateObj,
-            &DelegateWrapperGeneric::NativeDelegateGeneric);
-
-        // this is avoid object being Gced
-        NativeDelegatesGeneric->Add(nativeDelegate);
-
+		else
+		{
+			throw gcnew IllegalArgumentException("A class with given ID is already registered");
+		}
+        
+        if (!ObjectTypeIDMap->ContainsKey(dataSerializable->GetType()))
+        {
+          ObjectTypeIDMap->Add(dataSerializable->GetType(), id);
+        }
         // register the type in the DelegateMap, this is pure c# for create domain object 
-        Log::Fine("Registering serializable class ID " + classId);
-        DelegateMapGeneric[classId] = creationMethod;
-
-        _GF_MG_EXCEPTION_TRY2
-          auto&& nativeTypeRegistry = CacheRegionHelper::getCacheImpl(m_cache->GetNative().get())->getSerializationRegistry();
-          auto nativeDelegateFunction = static_cast<std::shared_ptr<native::Serializable>(*)()>(
-              System::Runtime::InteropServices::Marshal::GetFunctionPointerForDelegate(nativeDelegate).ToPointer());
-          nativeTypeRegistry->addType(nativeDelegateFunction);
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        Log::Fine("Registering serializable class ID " + id);
+        DelegateMapGeneric[id] = creationMethod;
       }
 
       void TypeRegistry::RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
@@ -240,7 +227,7 @@ namespace Apache
           auto&& serializationRegistry = CacheRegionHelper::getCacheImpl(m_cache->GetNative().get())->getSerializationRegistry();
           auto nativeDelegateFunction = static_cast<std::shared_ptr<native::Serializable>(*)()>(
               System::Runtime::InteropServices::Marshal::GetFunctionPointerForDelegate(nativeDelegate).ToPointer());
-          serializationRegistry->addType(dsCode, nativeDelegateFunction);
+          serializationRegistry->setDataSerializablePrimitiveType(nativeDelegateFunction, static_cast<DSCode>(dsCode));
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
 
@@ -263,7 +250,7 @@ namespace Apache
           auto&& serializationRegistry = CacheRegionHelper::getCacheImpl(m_cache->GetNative().get())->getSerializationRegistry();
           auto nativeDelegateFunction = static_cast<std::shared_ptr<native::Serializable>(*)()>(
               System::Runtime::InteropServices::Marshal::GetFunctionPointerForDelegate(nativeDelegate).ToPointer());
-          serializationRegistry->addType2(fixedId, nativeDelegateFunction);
+          serializationRegistry->addDataSerializableFixedIdType(static_cast<internal::DSFid>(fixedId), nativeDelegateFunction);
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
 
@@ -272,7 +259,7 @@ namespace Apache
         DsCodeToDataSerializablePrimitiveNativeDelegate->Remove(typeId);
         _GF_MG_EXCEPTION_TRY2
 
-          CacheRegionHelper::getCacheImpl(m_cache->GetNative().get())->getSerializationRegistry()->removeType(typeId);
+          CacheRegionHelper::getCacheImpl(m_cache->GetNative().get())->getSerializationRegistry()->removeDataSerializableType(typeId);
 
         _GF_MG_EXCEPTION_CATCH_ALL2
       }
@@ -327,92 +314,92 @@ namespace Apache
       {
         switch (dataSerializablePrimitive->getDsCode())
         {
-          case native::DSCode::CacheableDate:
+          case native::internal::DSCode::CacheableDate:
           {
             auto ret = SafeGenericUMSerializableConvert<CacheableDate^>(dataSerializablePrimitive);
             return safe_cast<TValue>(ret->Value);
           }
-          case native::DSCode::CacheableBytes:
+          case native::internal::DSCode::CacheableBytes:
           {
             auto ret = SafeGenericUMSerializableConvert<CacheableBytes^>(dataSerializablePrimitive);
             return safe_cast<TValue>(ret->Value);
           }
-          case native::DSCode::CacheableDoubleArray:
+          case native::internal::DSCode::CacheableDoubleArray:
           {
             auto ret = SafeGenericUMSerializableConvert<CacheableDoubleArray^>(dataSerializablePrimitive);
             return safe_cast<TValue>(ret->Value);
           }
-          case native::DSCode::CacheableFloatArray:
+          case native::internal::DSCode::CacheableFloatArray:
           {
             auto ret = SafeGenericUMSerializableConvert<CacheableFloatArray^>(dataSerializablePrimitive);
             return safe_cast<TValue>(ret->Value);
           }
-          case native::DSCode::CacheableInt16Array:
+          case native::internal::DSCode::CacheableInt16Array:
           {
             auto ret = SafeGenericUMSerializableConvert<CacheableInt16Array^>(dataSerializablePrimitive);
             return safe_cast<TValue>(ret->Value);
           }
-          case native::DSCode::CacheableInt32Array:
+          case native::internal::DSCode::CacheableInt32Array:
           {
             auto ret = SafeGenericUMSerializableConvert<CacheableInt32Array^>(dataSerializablePrimitive);
             return safe_cast<TValue>(ret->Value);
           }
-          case native::DSCode::CacheableInt64Array:
+          case native::internal::DSCode::CacheableInt64Array:
           {
             auto ret = SafeGenericUMSerializableConvert<CacheableInt64Array^>(dataSerializablePrimitive);
             return safe_cast<TValue>(ret->Value);
           }
-          case native::DSCode::CacheableStringArray:
+          case native::internal::DSCode::CacheableStringArray:
           {
             auto ret = SafeGenericUMSerializableConvert<CacheableStringArray^>(dataSerializablePrimitive);
             return safe_cast<TValue>(ret->GetValues());
           }
-          case native::DSCode::CacheableArrayList://Ilist generic
+          case native::internal::DSCode::CacheableArrayList://Ilist generic
           {
             auto ret = SafeGenericUMSerializableConvert<CacheableArrayList^>(dataSerializablePrimitive);
             return safe_cast<TValue>(ret->Value);
           }
-          case native::DSCode::CacheableLinkedList://LinkedList generic
+          case native::internal::DSCode::CacheableLinkedList://LinkedList generic
           {
             auto ret = SafeGenericUMSerializableConvert<CacheableLinkedList^>(dataSerializablePrimitive);
             return safe_cast<TValue>(ret->Value);
           }
-          case native::DSCode::CacheableHashTable://collection::hashtable
+          case native::internal::DSCode::CacheableHashTable://collection::hashtable
           {
             auto ret = SafeGenericUMSerializableConvert<CacheableHashTable^>(dataSerializablePrimitive);
             return safe_cast<TValue>(ret->Value);
           }
-          case native::DSCode::CacheableHashMap://generic dictionary
+          case native::internal::DSCode::CacheableHashMap://generic dictionary
           {
             auto ret = SafeGenericUMSerializableConvert<CacheableHashMap^>(dataSerializablePrimitive);
             return safe_cast<TValue>(ret->Value);
           }
-          case native::DSCode::CacheableIdentityHashMap:
+          case native::internal::DSCode::CacheableIdentityHashMap:
           {
             auto ret = SafeGenericUMSerializableConvert<CacheableIdentityHashMap^>(dataSerializablePrimitive);
             return safe_cast<TValue>(ret->Value);
           }
-          case native::DSCode::CacheableHashSet://no need of it, default case should work
+          case native::internal::DSCode::CacheableHashSet://no need of it, default case should work
           {
             auto ret = SafeGenericUMSerializableConvert<CacheableHashSet^>(dataSerializablePrimitive);
             return safe_cast<TValue>(ret);
           }
-          case native::DSCode::CacheableLinkedHashSet://no need of it, default case should work
+          case native::internal::DSCode::CacheableLinkedHashSet://no need of it, default case should work
           {
             auto ret = SafeGenericUMSerializableConvert<CacheableLinkedHashSet^>(dataSerializablePrimitive);
             return safe_cast<TValue>(ret);
           }
-          case native::DSCode::CacheableFileName:
+          case native::internal::DSCode::CacheableFileName:
           {
             auto ret = SafeGenericUMSerializableConvert<CacheableFileName^>(dataSerializablePrimitive);
             return safe_cast<TValue>(ret);
           }
-          case native::DSCode::CacheableObjectArray:
+          case native::internal::DSCode::CacheableObjectArray:
           {
             auto ret = SafeGenericUMSerializableConvert<CacheableObjectArray^>(dataSerializablePrimitive);
             return safe_cast<TValue>(ret);
           }
-          case native::DSCode::CacheableVector://collection::arraylist
+          case native::internal::DSCode::CacheableVector://collection::arraylist
           {
             auto ret = SafeGenericUMSerializableConvert<CacheableVector^>(dataSerializablePrimitive);
             return safe_cast<TValue>(ret->Value);
@@ -426,34 +413,34 @@ namespace Apache
           {
             return safe_cast<TValue>(Struct::Create(dataSerializablePrimitive));
           }
-          case native::DSCode::CacheableStack:
+          case native::internal::DSCode::CacheableStack:
           {
             auto ret = SafeGenericUMSerializableConvert<CacheableStack^>(dataSerializablePrimitive);
             return safe_cast<TValue>(ret->Value);
           }
-          case native::InternalId::CacheableManagedObject:
+          case native::internal::InternalId::CacheableManagedObject:
           {
             auto ret = SafeGenericUMSerializableConvert<CacheableObject^>(dataSerializablePrimitive);
             return safe_cast<TValue>(ret);
           }
-          case native::InternalId::CacheableManagedObjectXml:
+          case native::internal::InternalId::CacheableManagedObjectXml:
           {
             auto ret = SafeGenericUMSerializableConvert<CacheableObjectXml^>(dataSerializablePrimitive);
             return safe_cast<TValue>(ret);
           }
 					/*
-          case native::DSCode::Properties: // TODO: replace with IDictionary<K, V>
+          case native::internal::DSCode::Properties: // TODO: replace with IDictionary<K, V>
           {
             auto ret = SafeGenericUMSerializableConvert<Properties<Object^, Object^>^>(dataSerializablePrimitive);
             return safe_cast<TValue>(ret);
           }
 					*/
-          case native::DSCode::BooleanArray:
+          case native::internal::DSCode::BooleanArray:
           {
             auto ret = SafeGenericUMSerializableConvert<BooleanArray^>(dataSerializablePrimitive);
             return safe_cast<TValue>(ret->Value);
           }
-          case native::DSCode::CharArray:
+          case native::internal::DSCode::CharArray:
           {
             auto ret = SafeGenericUMSerializableConvert<CharArray^>(dataSerializablePrimitive);
             return safe_cast<TValue>(ret->Value);
@@ -480,42 +467,42 @@ namespace Apache
         {
           switch (dataSerializablePrimitive->getDsCode())
           {
-            case native::DSCode::CacheableByte:
+            case native::internal::DSCode::CacheableByte:
             {
               return safe_cast<TValue>(Serializable::getByte(dataSerializablePrimitive));
             }
-            case native::DSCode::CacheableBoolean:
+            case native::internal::DSCode::CacheableBoolean:
             {
               return safe_cast<TValue>(Serializable::getBoolean(dataSerializablePrimitive));
             }
-            case native::DSCode::CacheableCharacter:
+            case native::internal::DSCode::CacheableCharacter:
             {
               return safe_cast<TValue>(Serializable::getChar(dataSerializablePrimitive));
             }
-            case native::DSCode::CacheableDouble:
+            case native::internal::DSCode::CacheableDouble:
             {
               return safe_cast<TValue>(Serializable::getDouble(dataSerializablePrimitive));
             }
-            case native::DSCode::CacheableASCIIString:
-            case native::DSCode::CacheableASCIIStringHuge:
-            case native::DSCode::CacheableString:
-            case native::DSCode::CacheableStringHuge:
+            case native::internal::DSCode::CacheableASCIIString:
+            case native::internal::DSCode::CacheableASCIIStringHuge:
+            case native::internal::DSCode::CacheableString:
+            case native::internal::DSCode::CacheableStringHuge:
             {
               return safe_cast<TValue>(Serializable::getString(dataSerializablePrimitive));
             }
-            case native::DSCode::CacheableFloat:
+            case native::internal::DSCode::CacheableFloat:
             {
               return safe_cast<TValue>(Serializable::getFloat(dataSerializablePrimitive));
             }
-            case native::DSCode::CacheableInt16:
+            case native::internal::DSCode::CacheableInt16:
             {
               return safe_cast<TValue>(Serializable::getInt16(dataSerializablePrimitive));
             }
-            case native::DSCode::CacheableInt32:
+            case native::internal::DSCode::CacheableInt32:
             {
               return safe_cast<TValue>(Serializable::getInt32(dataSerializablePrimitive));
             }
-            case native::DSCode::CacheableInt64:
+            case native::internal::DSCode::CacheableInt64:
             {
               return safe_cast<TValue>(Serializable::getInt64(dataSerializablePrimitive));
             }
@@ -705,39 +692,39 @@ namespace Apache
 
         RegisterDataSerializablePrimitiveWrapper(
           gcnew DataSerializablePrimitiveWrapperDelegate(CacheableByte::Create),
-          static_cast<int8_t>(native::DSCode::CacheableByte), Byte::typeid);
+          static_cast<int8_t>(native::internal::DSCode::CacheableByte), Byte::typeid);
 
         RegisterDataSerializablePrimitiveWrapper(
           gcnew DataSerializablePrimitiveWrapperDelegate(CacheableBoolean::Create),
-          static_cast<int8_t>(native::DSCode::CacheableBoolean), Boolean::typeid);
+          static_cast<int8_t>(native::internal::DSCode::CacheableBoolean), Boolean::typeid);
 
         RegisterDataSerializablePrimitiveWrapper(
           gcnew DataSerializablePrimitiveWrapperDelegate(CacheableCharacter::Create),
-          static_cast<int8_t>(native::DSCode::CacheableCharacter), Char::typeid);
+          static_cast<int8_t>(native::internal::DSCode::CacheableCharacter), Char::typeid);
 
         RegisterDataSerializablePrimitiveWrapper(
           gcnew DataSerializablePrimitiveWrapperDelegate(CacheableDouble::Create),
-          static_cast<int8_t>(native::DSCode::CacheableDouble), Double::typeid);
+          static_cast<int8_t>(native::internal::DSCode::CacheableDouble), Double::typeid);
 
         RegisterDataSerializablePrimitiveWrapper(
           gcnew DataSerializablePrimitiveWrapperDelegate(CacheableString::Create),
-          static_cast<int8_t>(native::DSCode::CacheableASCIIString), String::typeid);
+          static_cast<int8_t>(native::internal::DSCode::CacheableASCIIString), String::typeid);
 
         RegisterDataSerializablePrimitiveWrapper(
           gcnew DataSerializablePrimitiveWrapperDelegate(CacheableFloat::Create),
-          static_cast<int8_t>(native::DSCode::CacheableFloat), float::typeid);
+          static_cast<int8_t>(native::internal::DSCode::CacheableFloat), float::typeid);
 
         RegisterDataSerializablePrimitiveWrapper(
           gcnew DataSerializablePrimitiveWrapperDelegate(CacheableInt16::Create),
-          static_cast<int8_t>(native::DSCode::CacheableInt16), Int16::typeid);
+          static_cast<int8_t>(native::internal::DSCode::CacheableInt16), Int16::typeid);
 
         RegisterDataSerializablePrimitiveWrapper(
           gcnew DataSerializablePrimitiveWrapperDelegate(CacheableInt32::Create),
-          static_cast<int8_t>(native::DSCode::CacheableInt32), Int32::typeid);
+          static_cast<int8_t>(native::internal::DSCode::CacheableInt32), Int32::typeid);
 
         RegisterDataSerializablePrimitiveWrapper(
           gcnew DataSerializablePrimitiveWrapperDelegate(CacheableInt64::Create),
-          static_cast<int8_t>(native::DSCode::CacheableInt64), Int64::typeid);
+          static_cast<int8_t>(native::internal::DSCode::CacheableInt64), Int64::typeid);
       }
 
     }  // namespace Client

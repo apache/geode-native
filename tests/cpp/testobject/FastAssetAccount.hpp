@@ -20,23 +20,27 @@
 #ifndef GEODE_TESTOBJECT_FASTASSETACCOUNT_H_
 #define GEODE_TESTOBJECT_FASTASSETACCOUNT_H_
 
-/*
- * @brief User class for testing the query functionality.
- */
-
 #include <string>
-#include "fwklib/Timer.hpp"
-#include "fwklib/FrameworkTest.hpp"
-#include "TimestampedObject.hpp"
+
 #include <ace/ACE.h>
 #include <ace/OS.h>
 #include <ace/Time_Value.h>
 
+#include <geode/CacheableBuiltins.hpp>
+
+#include "TimestampedObject.hpp"
 #include "testobject_export.h"
 
-using namespace apache::geode::client;
-using namespace testframework;
 namespace testobject {
+
+using apache::geode::client::CacheableHashMap;
+using apache::geode::client::CacheableString;
+using apache::geode::client::DataInput;
+using apache::geode::client::DataOutput;
+
+/**
+ * @brief User class for testing the query functionality.
+ */
 class TESTOBJECT_EXPORT FastAssetAccount : public TimestampedObject {
  protected:
   bool encodeTimestamp;
@@ -62,7 +66,6 @@ class TESTOBJECT_EXPORT FastAssetAccount : public TimestampedObject {
   ~FastAssetAccount() override = default;
   void toData(DataOutput& output) const override;
   void fromData(DataInput& input) override;
-  int32_t getClassId() const override { return 23; }
   std::string toString() const override;
 
   size_t objectSize() const override {

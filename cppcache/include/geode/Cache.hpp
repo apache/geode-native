@@ -22,8 +22,8 @@
 
 #include <string>
 
-#include "internal/geode_globals.hpp"
 #include "GeodeCache.hpp"
+#include "internal/geode_globals.hpp"
 
 /**
  * @file

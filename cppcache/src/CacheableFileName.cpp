@@ -14,19 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <geode/CacheableFileName.hpp>
-#include <geode/DataOutput.hpp>
-#include <geode/DataInput.hpp>
 
-#include <ace/ACE.h>
-#include <ace/OS.h>
+#include <geode/CacheableFileName.hpp>
+#include <geode/DataInput.hpp>
+#include <geode/DataOutput.hpp>
 
 namespace apache {
 namespace geode {
 namespace client {
 
 void CacheableFileName::toData(DataOutput& output) const {
-  output.write(static_cast<int8_t >(m_type));
+  output.write(static_cast<int8_t>(m_type));
   CacheableString::toData(output);
 }
 

@@ -15,22 +15,25 @@
  * limitations under the License.
  */
 
-#include <memory.h>
+#include "TcpConn.hpp"
+
+#include <chrono>
+#include <memory>
+#include <thread>
 
 #include <ace/INET_Addr.h>
-#include <ace/SOCK_IO.h>
-#include <ace/SOCK_Connector.h>
-#include <ace/SOCK_Acceptor.h>
 #include <ace/OS.h>
+#include <ace/SOCK_Acceptor.h>
+#include <ace/SOCK_Connector.h>
+#include <ace/SOCK_IO.h>
 
 #include <geode/SystemProperties.hpp>
 #include <geode/internal/chrono/duration.hpp>
 
-#include "DistributedSystem.hpp"
-#include "TcpConn.hpp"
 #include "CacheImpl.hpp"
-#include "util/Log.hpp"
+#include "DistributedSystem.hpp"
 #include "config.h"
+#include "util/Log.hpp"
 
 namespace apache {
 namespace geode {
@@ -86,7 +89,7 @@ int32_t TcpConn::maxSize(ACE_HANDLE sock, int32_t flag, int32_t size) {
 
 void TcpConn::createSocket(ACE_HANDLE sock) {
   LOGDEBUG("Creating plain socket stream");
-  m_io = new ACE_SOCK_Stream((ACE_HANDLE)sock);
+  m_io = new ACE_SOCK_Stream(sock);
   // m_io->enable(ACE_NONBLOCK);
 }
 
@@ -97,8 +100,8 @@ void TcpConn::init() {
     LOGERROR("Failed to create socket. Errno: %d: %s", lastError,
              ACE_OS::strerror(lastError));
     char msg[256];
-    ACE_OS::snprintf(msg, 256, "TcpConn::connect failed with errno: %d: %s",
-                     lastError, ACE_OS::strerror(lastError));
+    std::snprintf(msg, 256, "TcpConn::connect failed with errno: %d: %s",
+                  lastError, ACE_OS::strerror(lastError));
     throw GeodeIOException(msg);
   }
 
@@ -154,7 +157,7 @@ void TcpConn::listen(const char *ipaddr,
 
 void TcpConn::listen(ACE_INET_Addr addr,
                      std::chrono::microseconds waitSeconds) {
-  using namespace apache::geode::internal::chrono::duration;
+  using apache::geode::internal::chrono::duration::to_string;
 
   GF_DEV_ASSERT(m_io != nullptr);
 
@@ -174,8 +177,8 @@ void TcpConn::listen(ACE_INET_Addr addr,
           "TcpConn::listen Attempt to listen timed out after " +
           to_string(waitSeconds) + ".");
     }
-    ACE_OS::snprintf(msg, 256, "TcpConn::listen failed with errno: %d: %s",
-                     lastError, ACE_OS::strerror(lastError));
+    std::snprintf(msg, 256, "TcpConn::listen failed with errno: %d: %s",
+                  lastError, ACE_OS::strerror(lastError));
     throw GeodeIOException(msg);
   }
 }
@@ -197,7 +200,7 @@ void TcpConn::connect(const char *ipaddr,
 }
 
 void TcpConn::connect() {
-  using namespace apache::geode::internal::chrono::duration;
+  using apache::geode::internal::chrono::duration::to_string;
 
   GF_DEV_ASSERT(m_io != nullptr);
 
@@ -229,18 +232,18 @@ void TcpConn::connect() {
           "TcpConn::connect Attempt to connect timed out after" +
           to_string(waitMicroSeconds) + ".");
     }
-    ACE_OS::snprintf(msg, 256, "TcpConn::connect failed with errno: %d: %s",
-                     lastError, ACE_OS::strerror(lastError));
+    std::snprintf(msg, 256, "TcpConn::connect failed with errno: %d: %s",
+                  lastError, ACE_OS::strerror(lastError));
     //  this is only called by constructor, so we must delete m_io
     close();
     throw GeodeIOException(msg);
   }
   int rc = this->m_io->enable(ACE_NONBLOCK);
   if (-1 == rc) {
-    char msg[250];
+    char msg[256];
     int32_t lastError = ACE_OS::last_error();
-    ACE_OS::snprintf(msg, 256, "TcpConn::NONBLOCK: %d: %s", lastError,
-                     ACE_OS::strerror(lastError));
+    std::snprintf(msg, 256, "TcpConn::NONBLOCK: %d: %s", lastError,
+                  ACE_OS::strerror(lastError));
 
     LOGINFO(msg);
   }
@@ -264,22 +267,8 @@ size_t TcpConn::send(const char *buff, size_t len,
 }
 
 size_t TcpConn::socketOp(TcpConn::SockOp op, char *buff, size_t len,
-                         std::chrono::microseconds waitSeconds) {
+                         std::chrono::microseconds waitDuration) {
   {
-    /*{
-      ACE_HANDLE handle = m_io->get_handle();
-       int val = ACE::get_flags (handle);
-
-      if (ACE_BIT_DISABLED (val, ACE_NONBLOCK))
-      {
-        //ACE::set_flags (handle, ACE_NONBLOCK);
-        LOGINFO("Flag is not set");
-      }else
-      {
-          LOGINFO("Flag is set");
-      }
-    }*/
-
     GF_DEV_ASSERT(m_io != nullptr);
     GF_DEV_ASSERT(buff != nullptr);
 
@@ -293,10 +282,8 @@ size_t TcpConn::socketOp(TcpConn::SockOp op, char *buff, size_t len,
     }
 #endif
 
-    ACE_Time_Value waitTime(waitSeconds);
-    ACE_Time_Value endTime(ACE_OS::gettimeofday());
-    endTime += waitTime;
-    ACE_Time_Value sleepTime(0, 100);
+    ACE_Time_Value waitTime(waitDuration);
+    auto endTime = std::chrono::steady_clock::now() + waitDuration;
     size_t readLen = 0;
     ssize_t retVal;
     bool errnoSet = false;
@@ -323,7 +310,7 @@ size_t TcpConn::socketOp(TcpConn::SockOp op, char *buff, size_t len,
         if (retVal < 0) {
           int32_t lastError = ACE_OS::last_error();
           if (lastError == EAGAIN) {
-            ACE_OS::sleep(sleepTime);
+            std::this_thread::sleep_for(std::chrono::microseconds(100));
           } else {
             errnoSet = true;
             break;
@@ -336,7 +323,7 @@ size_t TcpConn::socketOp(TcpConn::SockOp op, char *buff, size_t len,
 
         buff += readLen;
         if (sendlen == 0) break;
-        waitTime = endTime - ACE_OS::gettimeofday();
+        waitTime = endTime - std::chrono::steady_clock::now();
         if (waitTime <= ACE_Time_Value::zero) break;
       } while (sendlen > 0);
       if (errnoSet) break;
@@ -356,7 +343,7 @@ uint16_t TcpConn::getPort() {
   GF_DEV_ASSERT(m_io != nullptr);
 
   ACE_INET_Addr localAddr;
-  m_io->get_local_addr(*(ACE_Addr *)&localAddr);
+  m_io->get_local_addr(localAddr);
   return localAddr.get_port_number();
 }
 

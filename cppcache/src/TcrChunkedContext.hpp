@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_TCRCHUNKEDCONTEXT_H_
-#define GEODE_TCRCHUNKEDCONTEXT_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,18 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/**
- * @file TcrChunkedContext.hpp
- *
- *
- */
+
+#pragma once
+
+#ifndef GEODE_TCRCHUNKEDCONTEXT_H_
+#define GEODE_TCRCHUNKEDCONTEXT_H_
 
 #include <memory>
+#include <string>
 
 #include <ace/Semaphore.h>
-#include <string>
-#include "Utils.hpp"
+
 #include "AppDomainContext.hpp"
+#include "Utils.hpp"
 
 namespace apache {
 namespace geode {
@@ -45,7 +41,6 @@ class TcrChunkedResult {
   ACE_Semaphore* m_finalizeSema;
   std::shared_ptr<Exception> m_ex;
   bool m_inSameThread;
-  std::unique_ptr<AppDomainContext> appDomainContext;
 
  protected:
   uint16_t m_dsmemId;
@@ -60,7 +55,6 @@ class TcrChunkedResult {
       : m_finalizeSema(nullptr),
         m_ex(nullptr),
         m_inSameThread(false),
-        appDomainContext(createAppDomainContext()),
         m_dsmemId(0) {}
   virtual ~TcrChunkedResult() {}
   void setFinalizeSemaphore(ACE_Semaphore* finalizeSema) {
@@ -77,14 +71,7 @@ class TcrChunkedResult {
   void fireHandleChunk(const uint8_t* bytes, int32_t len,
                        uint8_t isLastChunkWithSecurity,
                        const CacheImpl* cacheImpl) {
-    if (appDomainContext) {
-      appDomainContext->run(
-          [this, bytes, len, isLastChunkWithSecurity, cacheImpl]() {
-            handleChunk(bytes, len, isLastChunkWithSecurity, cacheImpl);
-          });
-    } else {
-      handleChunk(bytes, len, isLastChunkWithSecurity, cacheImpl);
-    }
+    handleChunk(bytes, len, isLastChunkWithSecurity, cacheImpl);
   }
 
   /**

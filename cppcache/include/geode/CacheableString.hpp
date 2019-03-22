@@ -20,10 +20,10 @@
 #ifndef GEODE_CACHEABLESTRING_H_
 #define GEODE_CACHEABLESTRING_H_
 
-#include "internal/geode_globals.hpp"
-#include "internal/DataSerializablePrimitive.hpp"
 #include "CacheableKey.hpp"
 #include "internal/DSCode.hpp"
+#include "internal/DataSerializablePrimitive.hpp"
+#include "internal/geode_globals.hpp"
 
 /** @file
  */
@@ -31,6 +31,8 @@
 namespace apache {
 namespace geode {
 namespace client {
+
+using internal::DSCode;
 
 /**
  * Implement a immutable C string wrapper that can serve as a distributable
@@ -41,17 +43,17 @@ class APACHE_GEODE_EXPORT CacheableString
       public CacheableKey {
  protected:
   std::string m_str;
-  internal::DSCode m_type;
+  DSCode m_type;
   mutable int m_hashcode;
 
  public:
-  inline CacheableString(DSCode type = DSCode::CacheableASCIIString)
+  inline explicit CacheableString(DSCode type = DSCode::CacheableASCIIString)
       : m_str(), m_type(type), m_hashcode(0) {}
 
-  inline CacheableString(const std::string& value)
+  inline explicit CacheableString(const std::string& value)
       : CacheableString(std::string(value)) {}
 
-  inline CacheableString(std::string&& value)
+  inline explicit CacheableString(std::string&& value)
       : m_str(std::move(value)), m_hashcode(0) {
     bool ascii = isAscii(m_str);
 

@@ -24,10 +24,8 @@
 
 #include "Statistics.hpp"
 
-using namespace apache::geode::client;
-
 /** @file
-*/
+ */
 
 namespace apache {
 namespace geode {
@@ -78,7 +76,7 @@ class APACHE_GEODE_EXPORT ProcessStats {
    */
   virtual ~ProcessStats();
 };
-}  // namespace client
+}  // namespace statistics
 }  // namespace geode
 }  // namespace apache
 

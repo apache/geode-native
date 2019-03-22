@@ -19,28 +19,19 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-The client cache provides a framework for clients to store, manage, and distribute application data.
+Client caches provide the framework for clients to store, manage, and distribute application data.
 
-The cache is the entry point for access to <%=vars.product_name%>. Through the cache, clients gain
+A cache is an entry point for access to <%=vars.product_name%>. Through the cache, clients gain
 access to the <%=vars.product_name%> caching framework for data loading, distribution, and
 maintenance.
 
-The `Cache` instance allows your client to set general parameters for communication between a cache
+A `Cache` instance allows your client to set general parameters for communication between a cache
 and other caches in the distributed system, and to create and access any region in the cache.
 
-Regions are created from the `Cache` instance. Regions provide the entry point to the interfaces for
+Regions are created from `Cache` instances. Regions provide the entry points to the interfaces for
 instances of `Region` and `RegionEntry`.
 
 For more information specific to your client programming language, see the
-[C++ Client API](../cpp-caching-api/cpp-caching-api.html) or the
-[.NET Client API](../dotnet-caching-api/dotnet-caching-api.html).
-
-The `Cache` inherits `RegionService` and adds management of these client caching features:
-
--   Region creation
--   Subscription keepalive management for durable clients
--   Access to the underlying distributed system
--   `RegionService` creation for secure access by multiple users
-See [Creating Multiple Secure User Connections with RegionService](../security/createsecureconnregionservice.html)
-
+[C++ Client API](cppdocs) or the
+[.NET Client API](dotnetdocs).
 

@@ -29,11 +29,16 @@
 #include "CacheHelper.hpp"
 #include "fw_dunit.hpp"
 
-using namespace apache::geode::client;
-using namespace test;
-
 #define CLIENT1 s1p1
 #define SERVER1 s2p1
+
+namespace { // NOLINT(google-build-namespaces)
+
+using apache::geode::client::Cache;
+using apache::geode::client::CacheFactory;
+using apache::geode::client::CacheHelper;
+using apache::geode::client::Region;
+using apache::geode::client::RegionShortcut;
 
 static bool isLocalServer = false;
 static bool isLocator = false;
@@ -101,5 +106,7 @@ void run() {
   CALL_TASK(CloseServer);
   CALL_TASK(CloseLocator1);
 }
+
+}  // namespace
 
 #endif  // GEODE_INTEGRATION_TEST_THINCLIENTMULTIPLECACHES_H_

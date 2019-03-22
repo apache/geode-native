@@ -24,14 +24,14 @@
 #pragma warning(disable : 4786)
 #endif  // _MSC_VER > 1000
 
-#include <string>
 #include <map>
+#include <string>
 
-#include <geode/internal/geode_globals.hpp>
 #include <geode/ExceptionTypes.hpp>
+#include <geode/internal/geode_globals.hpp>
 
-#include "RegionConfig.hpp"
 #include "DistributedSystem.hpp"
+#include "RegionConfig.hpp"
 
 //
 // Sneaky structure forward decl;
@@ -50,7 +50,7 @@ typedef std::map<std::string, std::shared_ptr<RegionConfig>> RegionConfigMapT;
 
 class APACHE_GEODE_EXPORT CacheConfig {
  public:
-  CacheConfig(const char* xmlFileName);
+  explicit CacheConfig(const char* xmlFileName);
 
   bool parse();
 

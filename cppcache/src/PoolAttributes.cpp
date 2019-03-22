@@ -15,10 +15,13 @@
  * limitations under the License.
  */
 #include "PoolAttributes.hpp"
+
 #include <geode/ExceptionTypes.hpp>
 #include <geode/PoolFactory.hpp>
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 PoolAttributes::PoolAttributes()
     : m_isThreadLocalConn(PoolFactory::DEFAULT_THREAD_LOCAL_CONN),
@@ -113,3 +116,7 @@ void PoolAttributes::addServer(const std::string& host, int port) {
   }
   m_initServList.push_back(host + ":" + std::to_string(port));
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

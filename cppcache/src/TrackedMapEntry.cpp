@@ -16,9 +16,12 @@
  */
 
 #include "TrackedMapEntry.hpp"
+
 #include "MapEntry.hpp"
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 void TrackedMapEntry::getKey(std::shared_ptr<CacheableKey>& result) const {
   m_entry->getKeyI(result);
@@ -46,3 +49,7 @@ VersionStamp& TrackedMapEntry::getVersionStamp() {
 void TrackedMapEntry::cleanup(const CacheEventFlags eventFlags) {
   m_entry->cleanup(eventFlags);
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

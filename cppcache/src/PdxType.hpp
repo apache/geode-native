@@ -20,21 +20,20 @@
 #ifndef GEODE_PDXTYPE_H_
 #define GEODE_PDXTYPE_H_
 
-#include <map>
-#include <vector>
 #include <list>
+#include <map>
 #include <string>
+#include <vector>
 
-#include <ace/ACE.h>
-#include <ace/Recursive_Thread_Mutex.h>
+#include <ace/RW_Thread_Mutex.h>
 
-#include <geode/Serializable.hpp>
 #include <geode/CacheableBuiltins.hpp>
 #include <geode/PdxFieldTypes.hpp>
+#include <geode/Serializable.hpp>
 
+#include "NonCopyable.hpp"
 #include "PdxFieldType.hpp"
 #include "ReadWriteLock.hpp"
-#include "NonCopyable.hpp"
 
 namespace apache {
 namespace geode {
@@ -44,7 +43,7 @@ typedef std::map<std::string, std::shared_ptr<PdxFieldType>> NameVsPdxType;
 class PdxType;
 class PdxTypeRegistry;
 
-class PdxType : public DataSerializableInternal,
+class PdxType : public internal::DataSerializableInternal,
                 public std::enable_shared_from_this<PdxType>,
                 private NonCopyable,
                 private NonAssignable {
@@ -112,8 +111,6 @@ class PdxType : public DataSerializableInternal,
   void toData(DataOutput& output) const override;
 
   void fromData(DataInput& input) override;
-
-  int8_t getInternalId() const override { return static_cast<int8_t>(DSCode::PdxType); }
 
   static std::shared_ptr<Serializable> CreateDeserializable(
       PdxTypeRegistry& pdxTypeRegistry) {

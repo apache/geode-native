@@ -22,11 +22,13 @@
 
 #include <string>
 #include <vector>
-#include <geode/internal/geode_globals.hpp>
+
 #include <geode/ExceptionTypes.hpp>
 #include <geode/Region.hpp>
-#include "RegionXmlCreation.hpp"
 #include <geode/RegionAttributes.hpp>
+#include <geode/internal/geode_globals.hpp>
+
+#include "RegionXmlCreation.hpp"
 
 namespace apache {
 namespace geode {
@@ -73,7 +75,7 @@ class APACHE_GEODE_EXPORT RegionXmlCreation {
   /**
    * Creates a new <code>RegionCreation</code> with the given name.
    */
-  RegionXmlCreation(const char* name, bool isRoot = false);
+  explicit RegionXmlCreation(std::string name, bool isRoot = false);
 
   /**
    * Adds a subregion with the given name to this region

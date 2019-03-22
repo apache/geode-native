@@ -24,9 +24,9 @@
 
 #include <memory>
 
-#include <geode/internal/geode_globals.hpp>
-#include <geode/RegionEntry.hpp>
 #include <geode/CacheableKey.hpp>
+#include <geode/RegionEntry.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 #include "MapEntry.hpp"
 #include "MapSegment.hpp"
@@ -43,7 +43,8 @@ namespace client {
  */
 class APACHE_GEODE_EXPORT EntriesMap {
  public:
-  EntriesMap(std::unique_ptr<EntryFactory> entryFactory) : m_entryFactory(std::move(entryFactory)) {}
+  explicit EntriesMap(std::unique_ptr<EntryFactory> entryFactory)
+      : m_entryFactory(std::move(entryFactory)) {}
   virtual ~EntriesMap() {}
 
   /**
@@ -190,7 +191,9 @@ class APACHE_GEODE_EXPORT EntriesMap {
   const std::unique_ptr<EntryFactory> m_entryFactory;
 
   /** @brief return the instance of EntryFactory for the segments to use. */
-  inline const EntryFactory* getEntryFactory() const { return m_entryFactory.get(); }
+  inline const EntryFactory* getEntryFactory() const {
+    return m_entryFactory.get();
+  }
 
 };  // class EntriesMap
 

@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_TABLEOFPRIMES_H_
-#define GEODE_TABLEOFPRIMES_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,10 +15,20 @@
  * limitations under the License.
  */
 
-#include <geode/internal/geode_globals.hpp>
+#pragma once
+
+#ifndef GEODE_TABLEOFPRIMES_H_
+#define GEODE_TABLEOFPRIMES_H_
+
 #include <algorithm>
 
-namespace {
+#include <geode/ExceptionTypes.hpp>
+#include <geode/internal/geode_globals.hpp>
+
+namespace apache {
+namespace geode {
+namespace client {
+
 static const uint32_t g_primeTable[] = {
     53,        97,           193,         389,       769,       1543,
     3079,      6151,         12289,       24593,     49157,     98317,
@@ -40,11 +45,6 @@ static const uint8_t g_primeConcurTable[] = {
 static const uint8_t g_primeConcurLen =
     static_cast<uint8_t>(sizeof(g_primeConcurTable) / sizeof(uint8_t));
 
-}  // anonymous namespace
-
-namespace apache {
-namespace geode {
-namespace client {
 /** @brief find a prime number greater than a given integer.
  *  A sampling of primes are used from 0 to 1 million. Not every prime is
  *  necessary, as the map scales, little steps are usually uninteresting.
@@ -87,6 +87,7 @@ class APACHE_GEODE_EXPORT TableOfPrimes {
         "find a prime number that large");
   }
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

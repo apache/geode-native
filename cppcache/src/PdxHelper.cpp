@@ -15,25 +15,26 @@
  * limitations under the License.
  */
 
+#include "PdxHelper.hpp"
+
 #include <geode/Cache.hpp>
 #include <geode/DataInput.hpp>
 #include <geode/PoolManager.hpp>
 
-#include "PdxHelper.hpp"
+#include "CacheRegionHelper.hpp"
+#include "DataInputInternal.hpp"
+#include "DataOutputInternal.hpp"
+#include "PdxInstanceImpl.hpp"
+#include "PdxLocalReader.hpp"
+#include "PdxReaderWithTypeCollector.hpp"
+#include "PdxRemoteReader.hpp"
+#include "PdxRemoteWriter.hpp"
+#include "PdxType.hpp"
 #include "PdxTypeRegistry.hpp"
 #include "PdxWriterWithTypeCollector.hpp"
 #include "SerializationRegistry.hpp"
-#include "PdxLocalReader.hpp"
-#include "PdxRemoteReader.hpp"
-#include "PdxType.hpp"
-#include "PdxReaderWithTypeCollector.hpp"
-#include "PdxInstanceImpl.hpp"
-#include "Utils.hpp"
-#include "PdxRemoteWriter.hpp"
-#include "CacheRegionHelper.hpp"
 #include "ThinClientPoolDM.hpp"
-#include "DataInputInternal.hpp"
-#include "DataOutputInternal.hpp"
+#include "Utils.hpp"
 
 namespace apache {
 namespace geode {
@@ -155,7 +156,7 @@ std::shared_ptr<PdxSerializable> PdxHelper::deserializePdx(DataInput& dataInput,
     LOGDEBUG("deserializePdx ClassName = " + pdxClassname +
              ", isLocal = " + std::to_string(pType->isLocal()));
 
-    pdxObjectptr = serializationRegistry->getPdxType(pdxClassname);
+    pdxObjectptr = serializationRegistry->getPdxSerializableType(pdxClassname);
     if (pType->isLocal())  // local type no need to read Unread data
     {
       auto plr = PdxLocalReader(dataInput, pType, length, pdxTypeRegistry);
@@ -190,7 +191,8 @@ std::shared_ptr<PdxSerializable> PdxHelper::deserializePdx(DataInput& dataInput,
      * Fix : Commented the line
      */
     // pdxClassname = pType->getPdxClassName();
-    pdxObjectptr = serializationRegistry->getPdxType(pType->getPdxClassName());
+    pdxObjectptr =
+        serializationRegistry->getPdxSerializableType(pType->getPdxClassName());
     auto pdxRealObject = pdxObjectptr;
     if (pdxLocalType == nullptr)  // need to know local type
     {
@@ -271,7 +273,7 @@ std::shared_ptr<PdxSerializable> PdxHelper::deserializePdx(
 
     cachePerfStats.incPdxDeSerialization(len + 9);  // pdxLen + 1 + 2*4
 
-    return PdxHelper::deserializePdx(dataInput, (int32_t)typeId, (int32_t)len);
+    return PdxHelper::deserializePdx(dataInput, typeId, len);
 
   } else {
     // Read Length
@@ -302,7 +304,7 @@ std::shared_ptr<PdxSerializable> PdxHelper::deserializePdx(
 
     dataInput.advanceCursor(len);
 
-    return pdxObject;
+    return std::move(pdxObject);
   }
 }
 

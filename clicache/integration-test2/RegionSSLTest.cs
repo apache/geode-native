@@ -18,72 +18,61 @@
 using System;
 using System.IO;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Apache.Geode.Client.IntegrationTests
 {
-  [Trait("Category", "Integration")]
-  public class RegionSSLTest : IDisposable
-  {
-    private readonly Cache _cacheOne;
-    private readonly GeodeServer _geodeServer;
-
-    public RegionSSLTest()
+    [Trait("Category", "Integration")]
+    public class RegionSSLTest : TestBase, IDisposable
     {
-      var pathvar = Environment.GetEnvironmentVariable("PATH");
+        private readonly Cache cache_;
 
-      var openSslPath = Environment.CurrentDirectory + Config.OpenSSLPath;
+        public RegionSSLTest(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+        {
+            var cacheFactory = new CacheFactory();
+            cacheFactory.Set("log-level", "none");
+            cacheFactory.Set("ssl-enabled", "true");
+            cacheFactory.Set("ssl-keystore", Environment.CurrentDirectory + @"\ClientSslKeys\client_keystore.password.pem");
+            cacheFactory.Set("ssl-keystore-password", "gemstone");
+            cacheFactory.Set("ssl-truststore", Environment.CurrentDirectory + @"\ClientSslKeys\client_truststore.pem");
 
-      if (!Directory.Exists(openSslPath))
-      {
-        throw new DirectoryNotFoundException("OpenSSL is a prerequisite for integration tests and the directory was not found.");
-      }
+            cache_ = cacheFactory.Create();
+        }
 
-      pathvar += ";" + openSslPath;
+        public void Dispose()
+        {
+            cache_.Close();
+        }
 
-      var cryptoImplPath = Environment.CurrentDirectory + Config.CryptoImplPath;
+        [Fact]
+        public void SslPutGetTest()
+        {
+            using (var cluster = new Cluster(output, CreateTestCaseDirectoryName(), 1, 1))
+            {
+                cluster.UseSSL = true;
+                Assert.True(cluster.Start());
+                Assert.Equal(0, cluster.Gfsh
+                    .create()
+                    .region()
+                    .withName("testRegion1")
+                    .withType("PARTITION")
+                    .execute());
 
-      if (!File.Exists(cryptoImplPath + "\\cryptoImpl.dll"))
-      {
-        throw new System.IO.FileNotFoundException("cryptoImpl.dll was not found at " + cryptoImplPath);
-      }
+                cluster.ApplyLocators(cache_.GetPoolFactory()).Create("default");
 
-      pathvar += ";" + cryptoImplPath;
+                var regionFactory = cache_.CreateRegionFactory(RegionShortcut.PROXY)
+                            .SetPoolName("default");
 
-      Environment.SetEnvironmentVariable("PATH", pathvar);
+                var region = regionFactory.Create<string, string>("testRegion1");
 
-      var cacheFactory = new CacheFactory();
-      cacheFactory.Set("ssl-enabled", "true");
-      cacheFactory.Set("ssl-keystore", Environment.CurrentDirectory + "\\ClientSslKeys\\client_keystore.password.pem");
-      cacheFactory.Set("ssl-keystore-password", "gemstone" );
-      cacheFactory.Set("ssl-truststore", Environment.CurrentDirectory + "\\ClientSslKeys\\client_truststore.pem");
+                const string key = "hello";
+                const string expectedResult = "dave";
 
-      _cacheOne = cacheFactory.Create();
-      _geodeServer = new GeodeServer(useSsl: true);
+                region.Put(key, expectedResult);
+                var actualResult = region.Get(key);
+
+                Assert.Equal(expectedResult, actualResult);
+            }
+        }
     }
-
-    public void Dispose()
-    {
-      _cacheOne.Close();
-      _geodeServer.Dispose();
-    }
-
-    [Fact]
-    public void PutGet_Works()
-    {
-      using (var cacheXml = new CacheXml(new FileInfo("cache.xml"), _geodeServer))
-      {
-        _cacheOne.InitializeDeclarativeCache(cacheXml.File.FullName);
-
-        var regionForCache1 = _cacheOne.GetRegion<string, string>("testRegion1");
-
-        const string key = "hello";
-        const string expectedResult = "dave";
-
-        regionForCache1.Put(key, expectedResult);
-        var actualResult = regionForCache1.Get(key);
-
-        Assert.Equal(expectedResult, actualResult);
-      }
-    }
-  }
 }

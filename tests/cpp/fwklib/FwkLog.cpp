@@ -15,20 +15,23 @@
  * limitations under the License.
  */
 
-#include "fwklib/FwkLog.hpp"
-#include "fwklib/PerfFwk.hpp"
+#include <cinttypes>
+#include <fwklib/FwkLog.hpp>
+
 #include <geode/Exception.hpp>
 
-using namespace apache::geode::client;
-using namespace testframework;
+#include "hacks/AceThreadId.h"
+
+namespace apache {
+namespace geode {
+namespace client {
+namespace testframework {
 
 static ACE_utsname u;
 
-const char* apache::geode::client::testframework::getNodeName() {
-  return u.nodename;
-}
+const char* getNodeName() { return u.nodename; }
 
-const char* apache::geode::client::testframework::dirAndFile(const char* str) {
+const char* dirAndFile(const char* str) {
   if (!str) {
     return "NULL";
   }
@@ -50,9 +53,7 @@ const char* apache::geode::client::testframework::dirAndFile(const char* str) {
   return ptr;
 }
 
-void apache::geode::client::testframework::plog(const char* l, const char* s,
-                                                const char* filename,
-                                                int32_t lineno) {
+void plog(const char* l, const char* s, const char* filename, int32_t lineno) {
   // ACE_TCHAR tstamp[64];
   // ACE::timestamp( tstamp, 64, 1 );
   // tstamp is like "Tue May 17 2005 12:54:22.546780"
@@ -64,9 +65,9 @@ void apache::geode::client::testframework::plog(const char* l, const char* s,
   struct tm* tm_val = ACE_OS::localtime(&secs);
   char* pbuf = buf;
   pbuf += ACE_OS::strftime(pbuf, MINBUFSIZE, "%Y/%m/%d %H:%M:%S", tm_val);
-  pbuf +=
-      ACE_OS::snprintf(pbuf, 15, ".%06ld ", static_cast<long>(clock.usec()));
-  pbuf += ACE_OS::strftime(pbuf, MINBUFSIZE, "%Z ", tm_val);
+  pbuf += ACE_OS::snprintf(pbuf, 15, ".%06" PRId64 " ",
+                           static_cast<int64_t>(clock.usec()));
+  ACE_OS::strftime(pbuf, MINBUFSIZE, "%Z ", tm_val);
   static bool needInit = true;
   if (needInit) {
     ACE_OS::uname(&u);
@@ -75,14 +76,19 @@ void apache::geode::client::testframework::plog(const char* l, const char* s,
 
   const char* fil = dirAndFile(filename);
 
-  fprintf(stdout, "[%s %s %s:P%d:T%lu]::%s::%d  %s  %s\n", buf, u.sysname,
-          u.nodename, ACE_OS::getpid(), (unsigned long)(ACE_Thread::self()),
-          fil, lineno, l, s);
+  fprintf(stdout, "[%s %s %s:P%d:T%" PRIu64 "]::%s::%d  %s  %s\n", buf,
+          u.sysname, u.nodename, ACE_OS::getpid(),
+          hacks::aceThreadId(ACE_OS::thr_self()), fil, lineno, l, s);
   fflush(stdout);
 }
 
-void apache::geode::client::testframework::dumpStack() {
+void dumpStack() {
   apache::geode::client::Exception trace("StackTrace  ");
   fprintf(stdout, "%s\n", trace.getStackTrace().c_str());
   fflush(stdout);
 }
+
+}  // namespace testframework
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

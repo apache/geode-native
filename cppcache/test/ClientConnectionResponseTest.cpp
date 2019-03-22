@@ -15,12 +15,15 @@
  * limitations under the License.
  */
 
-#include <gtest/gtest.h>
-
 #include <ClientConnectionResponse.hpp>
 #include <DataInputInternal.hpp>
 #include <DataOutputInternal.hpp>
-using namespace apache::geode::client;
+
+#include <gtest/gtest.h>
+
+using apache::geode::client::ClientConnectionResponse;
+using apache::geode::client::DataInputInternal;
+using apache::geode::client::DataOutputInternal;
 
 TEST(ClientConnectionResponseTest, testDefaultServerFound) {
   ClientConnectionResponse clientConnectionResponse;

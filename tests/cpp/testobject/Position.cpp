@@ -15,13 +15,15 @@
  * limitations under the License.
  */
 #include "Position.hpp"
-#include <cwchar>
-#include <wchar.h>
-#include <geode/DataOutput.hpp>
-#include <geode/DataInput.hpp>
 
-using namespace apache::geode::client;
-using namespace testobject;
+#include <wchar.h>
+
+#include <cwchar>
+
+#include <geode/DataInput.hpp>
+#include <geode/DataOutput.hpp>
+
+namespace testobject {
 
 int32_t Position::cnt = 0;
 
@@ -118,3 +120,5 @@ std::string Position::toString() const {
           this->sharesOutstanding, this->pid);
   return buf;
 }
+
+}  // namespace testobject

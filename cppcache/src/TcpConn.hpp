@@ -20,14 +20,15 @@
 #ifndef GEODE_TCPCONN_H_
 #define GEODE_TCPCONN_H_
 
+#include <ace/OS.h>
+#include <ace/SOCK_Stream.h>
+#include <boost/interprocess/mapped_region.hpp>
+
 #include <geode/internal/geode_globals.hpp>
 
-#include <ace/SOCK_Stream.h>
-#include <ace/OS.h>
-
-#include "util/Log.hpp"
-#include "Connector.hpp"
 #include "Assert.hpp"
+#include "Connector.hpp"
+#include "util/Log.hpp"
 
 namespace apache {
 namespace geode {
@@ -39,8 +40,8 @@ namespace client {
 
 #else
 
-#include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/types.h>
 
 #define TCPLEVEL SOL_TCP
 
@@ -62,17 +63,17 @@ class APACHE_GEODE_EXPORT TcpConn : public Connector {
   int32_t maxSize(ACE_HANDLE sock, int32_t flag, int32_t size);
 
   virtual size_t socketOp(SockOp op, char* buff, size_t len,
-                          std::chrono::microseconds waitSeconds);
+                          std::chrono::microseconds waitDuration);
 
   virtual void createSocket(ACE_HANDLE sock);
 
  public:
   size_t m_chunkSize;
 
-  static int getDefaultChunkSize() {
+  static size_t getDefaultChunkSize() {
     // Attempt to set chunk size to nearest OS page size
     // for perf improvement
-    int pageSize = ACE_OS::getpagesize();
+    auto pageSize = boost::interprocess::mapped_region::get_page_size();
     if (pageSize > 16000000) {
       return 16000000;
     } else if (pageSize > 0) {
@@ -129,11 +130,11 @@ class APACHE_GEODE_EXPORT TcpConn : public Connector {
   }
 
   void setIntOption(int32_t level, int32_t option, int32_t val) {
-    setOption(level, option, (void*)&val, sizeof(int32_t));
+    setOption(level, option, &val, sizeof(int32_t));
   }
 
   void setBoolOption(int32_t level, int32_t option, bool val) {
-    setOption(level, option, (void*)&val, sizeof(bool));
+    setOption(level, option, &val, sizeof(bool));
   }
 
   virtual uint16_t getPort() override;

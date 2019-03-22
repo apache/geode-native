@@ -16,21 +16,27 @@
  */
 #include "GetAllServersResponse.hpp"
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 void GetAllServersResponse::toData(DataOutput& output) const {
-  int32_t length = static_cast<int32_t>(m_servers.size());
-  output.writeInt(length);
-  for (int32_t i = 0; i < length; i++) {
-    output.writeObject(&m_servers.at(i));
+  int32_t numServers = static_cast<int32_t>(m_servers.size());
+  output.writeInt(numServers);
+  for (int32_t i = 0; i < numServers; i++) {
+    output.writeObject(m_servers.at(i));
   }
 }
 void GetAllServersResponse::fromData(DataInput& input) {
-  int length = input.readInt32();
-  LOGFINER("GetAllServersResponse::fromData length = %d ", length);
-  for (int i = 0; i < length; i++) {
-    ServerLocation sLoc;
-    sLoc.fromData(input);
+  int numServers = input.readInt32();
+  LOGFINER("GetAllServersResponse::fromData length = %d ", numServers);
+  for (int i = 0; i < numServers; i++) {
+    std::shared_ptr<ServerLocation> sLoc = std::make_shared<ServerLocation>();
+    sLoc->fromData(input);
     m_servers.push_back(sLoc);
   }
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

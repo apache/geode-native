@@ -16,16 +16,13 @@
  */
 
 #include <codecvt>
-#include <locale>
-#include <cwchar>
 #include <cstdlib>
-
-#include <ace/ACE.h>
-#include <ace/OS.h>
+#include <cwchar>
+#include <locale>
 
 #include <geode/CacheableString.hpp>
-#include <geode/DataOutput.hpp>
 #include <geode/DataInput.hpp>
+#include <geode/DataOutput.hpp>
 #include <geode/ExceptionTypes.hpp>
 
 #include "DataOutputInternal.hpp"
@@ -66,8 +63,7 @@ std::shared_ptr<Serializable> CacheableString::createDeserializable() {
 }
 
 std::shared_ptr<Serializable> CacheableString::createDeserializableHuge() {
-  return std::make_shared<CacheableString>(
-      DSCode::CacheableASCIIStringHuge);
+  return std::make_shared<CacheableString>(DSCode::CacheableASCIIStringHuge);
 }
 
 std::shared_ptr<Serializable> CacheableString::createUTFDeserializable() {
@@ -108,7 +104,7 @@ bool CacheableString::operator==(const CacheableKey& other) const {
 
 int32_t CacheableString::hashcode() const {
   if (m_hashcode == 0) {
-    m_hashcode = geode_hash<std::string>{}(m_str);
+    m_hashcode = internal::geode_hash<std::string>{}(m_str);
   }
   return m_hashcode;
 }

@@ -21,20 +21,21 @@
 #define GEODE_TESTOBJECT_EQSTRUCT_H_
 
 #include <inttypes.h>
+
+#include <fwklib/FwkException.hpp>
 #include <string>
 
 #include <ace/ACE.h>
 #include <ace/OS.h>
 #include <ace/Time_Value.h>
 
-#include "fwklib/Timer.hpp"
-#include "fwklib/FrameworkTest.hpp"
-#include "testobject_export.h"
 #include "TimestampedObject.hpp"
+#include "testobject_export.h"
 
-using namespace apache::geode::client;
-using namespace testframework;
 namespace testobject {
+
+using apache::geode::client::testframework::FwkException;
+
 /**
  * @brief User class for testing the put functionality for object.
  */
@@ -97,11 +98,10 @@ class TESTOBJECT_EXPORT EqStruct : public TimestampedObject {
 
  public:
   EqStruct() {}
-  EqStruct(int index);
+  explicit EqStruct(int index);
   ~EqStruct() override = default;
   virtual void toData(apache::geode::client::DataOutput& output) const override;
   virtual void fromData(apache::geode::client::DataInput& input) override;
-  virtual int32_t getClassId() const override { return 101; }
   std::string toString() const override;
 
   virtual size_t objectSize() const override {

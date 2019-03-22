@@ -22,6 +22,10 @@
 #include "IGeodeCache.hpp"
 #include "native_shared_ptr.hpp"
 
+#include "begin_native.hpp"
+#include <geode/Cache.hpp>
+#include "end_native.hpp"
+
 using namespace System;
 
 namespace Apache
@@ -298,7 +302,11 @@ namespace Apache
         {
           return m_pdxTypeRegistry;
         }
-
+		        
+		Apache::Geode::Client::TypeRegistry^ GetTypeRegistry()
+        {
+          return m_typeRegistry;
+        }
       private:
 
         /// <summary>

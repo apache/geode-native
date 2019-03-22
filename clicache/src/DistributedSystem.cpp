@@ -165,60 +165,60 @@ namespace Apache
       {
         // Registers overrides in the C++ layer to incercept deserialization into managed layer.
 
-        auto&& typeRegistry = cache->TypeRegistry;
+        auto typeRegistry = cache->TypeRegistry;
 
         typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
-            static_cast<int8_t>(native::DSCode::CacheableBytes),
+            static_cast<int8_t>(native::internal::DSCode::CacheableBytes),
             gcnew TypeFactoryMethod(CacheableBytes::CreateDeserializable),
             Type::GetType("System.Byte[]"));
 
         typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
-            static_cast<int8_t>(native::DSCode::CacheableDoubleArray),
+            static_cast<int8_t>(native::internal::DSCode::CacheableDoubleArray),
             gcnew TypeFactoryMethod(CacheableDoubleArray::CreateDeserializable),
             Type::GetType("System.Double[]"));
 
         typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
-            static_cast<int8_t>(native::DSCode::CacheableFloatArray),
+            static_cast<int8_t>(native::internal::DSCode::CacheableFloatArray),
             gcnew TypeFactoryMethod(CacheableFloatArray::CreateDeserializable),
             Type::GetType("System.Single[]"));
 
         typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
-            static_cast<int8_t>(native::DSCode::CacheableHashSet),
+            static_cast<int8_t>(native::internal::DSCode::CacheableHashSet),
             gcnew TypeFactoryMethod(CacheableHashSet::CreateDeserializable),
             nullptr);
 
         typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
-            static_cast<int8_t>(native::DSCode::CacheableLinkedHashSet),
+            static_cast<int8_t>(native::internal::DSCode::CacheableLinkedHashSet),
             gcnew TypeFactoryMethod(CacheableLinkedHashSet::CreateDeserializable),
             nullptr);
 
         typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
-            static_cast<int8_t>(native::DSCode::CacheableInt16Array),
+            static_cast<int8_t>(native::internal::DSCode::CacheableInt16Array),
             gcnew TypeFactoryMethod(CacheableInt16Array::CreateDeserializable),
             Type::GetType("System.Int16[]"));
 
         typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
-            static_cast<int8_t>(native::DSCode::CacheableInt32Array),
+            static_cast<int8_t>(native::internal::DSCode::CacheableInt32Array),
             gcnew TypeFactoryMethod(CacheableInt32Array::CreateDeserializable),
             Type::GetType("System.Int32[]"));
 
         typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
-            static_cast<int8_t>(native::DSCode::CacheableInt64Array),
+            static_cast<int8_t>(native::internal::DSCode::CacheableInt64Array),
             gcnew TypeFactoryMethod(CacheableInt64Array::CreateDeserializable),
             Type::GetType("System.Int64[]"));
 
         typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
-            static_cast<int8_t>(native::DSCode::BooleanArray),
+            static_cast<int8_t>(native::internal::DSCode::BooleanArray),
             gcnew TypeFactoryMethod(BooleanArray::CreateDeserializable),
             Type::GetType("System.Boolean[]"));
 
         typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
-            static_cast<int8_t>(native::DSCode::CharArray),
+            static_cast<int8_t>(native::internal::DSCode::CharArray),
             gcnew TypeFactoryMethod(CharArray::CreateDeserializable),
             Type::GetType("System.Char[]"));
 
         typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
-            static_cast<int8_t>(native::DSCode::CacheableStringArray),
+            static_cast<int8_t>(native::internal::DSCode::CacheableStringArray),
             gcnew TypeFactoryMethod(CacheableStringArray::CreateDeserializable),
             Type::GetType("System.String[]"));
 
@@ -228,27 +228,27 @@ namespace Apache
             nullptr);
         
         typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
-            static_cast<int8_t>(native::DSCode::CacheableDate),
+            static_cast<int8_t>(native::internal::DSCode::CacheableDate),
             gcnew TypeFactoryMethod(CacheableDate::CreateDeserializable),
             Type::GetType("System.DateTime"));
 
         typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
-            static_cast<int8_t>(native::DSCode::CacheableFileName),
+            static_cast<int8_t>(native::internal::DSCode::CacheableFileName),
             gcnew TypeFactoryMethod(CacheableFileName::CreateDeserializable),
             nullptr);
 
         typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
-            static_cast<int8_t>(native::DSCode::CacheableHashMap),
+            static_cast<int8_t>(native::internal::DSCode::CacheableHashMap),
             gcnew TypeFactoryMethod(CacheableHashMap::CreateDeserializable),
             nullptr);
 
         typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
-            static_cast<int8_t>(native::DSCode::CacheableHashTable),
+            static_cast<int8_t>(native::internal::DSCode::CacheableHashTable),
             gcnew TypeFactoryMethod(CacheableHashTable::CreateDeserializable),
             Type::GetType("System.Collections.Hashtable"));
 
         typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
-            static_cast<int8_t>(native::DSCode::CacheableIdentityHashMap),
+            static_cast<int8_t>(native::internal::DSCode::CacheableIdentityHashMap),
             gcnew TypeFactoryMethod(CacheableIdentityHashMap::CreateDeserializable),
             nullptr);
 
@@ -258,27 +258,27 @@ namespace Apache
             nullptr);
 
         typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
-            static_cast<int8_t>(native::DSCode::CacheableVector),
+            static_cast<int8_t>(native::internal::DSCode::CacheableVector),
             gcnew TypeFactoryMethod(CacheableVector::CreateDeserializable),
             nullptr);
 
         typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
-            static_cast<int8_t>(native::DSCode::CacheableObjectArray),
+            static_cast<int8_t>(native::internal::DSCode::CacheableObjectArray),
             gcnew TypeFactoryMethod(CacheableObjectArray::CreateDeserializable),
             nullptr);
 
         typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
-            static_cast<int8_t>(native::DSCode::CacheableArrayList),
+            static_cast<int8_t>(native::internal::DSCode::CacheableArrayList),
             gcnew TypeFactoryMethod(CacheableArrayList::CreateDeserializable),
             nullptr);
 
         typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
-            static_cast<int8_t>(native::DSCode::CacheableLinkedList),
+            static_cast<int8_t>(native::internal::DSCode::CacheableLinkedList),
             gcnew TypeFactoryMethod(CacheableLinkedList::CreateDeserializable),
             nullptr);
 
         typeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
-            static_cast<int8_t>(native::DSCode::CacheableStack),
+            static_cast<int8_t>(native::internal::DSCode::CacheableStack),
             gcnew TypeFactoryMethod(CacheableStack::CreateDeserializable),
             nullptr);
 
@@ -295,7 +295,7 @@ namespace Apache
 
       void DistributedSystem::RegisterDataSerializableFixedIdsOverrideNativeDeserialization(Cache^ cache)
       {
-        auto&& typeRegistry = cache->TypeRegistry;
+        auto typeRegistry = cache->TypeRegistry;
  
         typeRegistry->RegisterDataSerializableFixedIdTypeOverrideNativeDeserialization(
             static_cast<int8_t>(native::DSFid::EnumInfo),
@@ -309,7 +309,7 @@ namespace Apache
 
         // Actually an internal type being registered as a primitive
         cache->TypeRegistry->RegisterDataSerializablePrimitiveOverrideNativeDeserialization(
-            static_cast<int8_t>(native::DSCode::PdxType),
+            static_cast<int8_t>(native::internal::DSCode::PdxType),
             gcnew TypeFactoryMethod(Apache::Geode::Client::Internal::PdxType::CreateDeserializable),
             nullptr);
 
@@ -354,27 +354,27 @@ namespace Apache
           TypeRegistry::UnregisterNativesGeneric(cache);
 
           cache->TypeRegistry->UnregisterTypeGeneric(
-            static_cast<int8_t>(native::DSCode::CacheableDate));
+            static_cast<int8_t>(native::internal::DSCode::CacheableDate));
           cache->TypeRegistry->UnregisterTypeGeneric(
-            static_cast<int8_t>(native::DSCode::CacheableFileName));
+            static_cast<int8_t>(native::internal::DSCode::CacheableFileName));
           cache->TypeRegistry->UnregisterTypeGeneric(
-            static_cast<int8_t>(native::DSCode::CacheableHashMap));
+            static_cast<int8_t>(native::internal::DSCode::CacheableHashMap));
           cache->TypeRegistry->UnregisterTypeGeneric(
-            static_cast<int8_t>(native::DSCode::CacheableHashTable));
+            static_cast<int8_t>(native::internal::DSCode::CacheableHashTable));
           cache->TypeRegistry->UnregisterTypeGeneric(
-            static_cast<int8_t>(native::DSCode::CacheableIdentityHashMap));
+            static_cast<int8_t>(native::internal::DSCode::CacheableIdentityHashMap));
           cache->TypeRegistry->UnregisterTypeGeneric(
-            static_cast<int8_t>(native::DSCode::CacheableVector));
+            static_cast<int8_t>(native::internal::DSCode::CacheableVector));
           cache->TypeRegistry->UnregisterTypeGeneric(
-            static_cast<int8_t>(native::DSCode::CacheableObjectArray));
+            static_cast<int8_t>(native::internal::DSCode::CacheableObjectArray));
           cache->TypeRegistry->UnregisterTypeGeneric(
-            static_cast<int8_t>(native::DSCode::CacheableArrayList));
+            static_cast<int8_t>(native::internal::DSCode::CacheableArrayList));
           cache->TypeRegistry->UnregisterTypeGeneric(
-            static_cast<int8_t>(native::DSCode::CacheableStack));
+            static_cast<int8_t>(native::internal::DSCode::CacheableStack));
           cache->TypeRegistry->UnregisterTypeGeneric(
-            static_cast<int8_t>(native::InternalId::CacheableManagedObject));
+            static_cast<int8_t>(native::internal::InternalId::CacheableManagedObject));
           cache->TypeRegistry->UnregisterTypeGeneric(
-            static_cast<int8_t>(native::InternalId::CacheableManagedObjectXml));
+            static_cast<int8_t>(native::internal::InternalId::CacheableManagedObjectXml));
 
         _GF_MG_EXCEPTION_CATCH_ALL2
       }

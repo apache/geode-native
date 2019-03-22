@@ -44,7 +44,7 @@ namespace Apache
       generic<class TKey, class TValue>
       TValue LocalRegion<TKey, TValue>::Get(TKey key, Object^ callbackArg)
       {
-        std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>( key );
+        auto keyptr = Serializable::GetUnmanagedValueGeneric<TKey>( key );
         auto nativeptr= this->getRegionEntryValue(keyptr);
         if (nativeptr == nullptr)
         {
@@ -812,7 +812,8 @@ namespace Apache
 
            try
            {
-             return m_nativeptr->get()->containsValueForKey(Serializable::GetUnmanagedValueGeneric<TKey>(key));
+             auto v = Serializable::GetUnmanagedValueGeneric<TKey>(key);
+             return m_nativeptr->get()->containsValueForKey(v);
            }
            finally
            {

@@ -80,7 +80,7 @@ namespace Apache
         {
           virtual int8_t get()
           {
-            return static_cast<int8_t>(native::DSCode::CacheableLinkedList);
+            return static_cast<int8_t>(native::internal::DSCode::CacheableLinkedList);
           }
         }
 

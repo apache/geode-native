@@ -17,22 +17,41 @@
 FROM ubuntu
 LABEL maintainer Apache Geode <dev@geode.apache.org>
 
+ENV CLANG_VERSION 6.0
 RUN apt-get update && \
-        apt-get install -y build-essential doxygen git graphviz openjdk-8-jdk wget zlib1g-dev && \
-        rm -rf /var/lib/apt/lists/*
+        apt-get install -y \
+            libc++-dev \
+            libc++abi-dev \
+            clang-${CLANG_VERSION} \
+            clang-tidy-${CLANG_VERSION} \
+            clang-format-${CLANG_VERSION} \
+            make \
+            doxygen \
+            git \
+            graphviz \
+            openjdk-8-jdk \
+            wget \
+            zlib1g-dev && \
+        rm -rf /var/lib/apt/lists/* && \
+        update-alternatives --install /usr/bin/clang         clang         /usr/bin/clang-${CLANG_VERSION} 999 && \
+        update-alternatives --install /usr/bin/clang++       clang++       /usr/bin/clang++-${CLANG_VERSION} 999 && \
+        update-alternatives --install /usr/bin/cc            cc            /usr/bin/clang-${CLANG_VERSION} 999 && \
+        update-alternatives --install /usr/bin/c++           c++           /usr/bin/clang++-${CLANG_VERSION} 999 && \
+        update-alternatives --install /usr/bin/clang-tidy    clang-tidy    /usr/bin/clang-tidy-${CLANG_VERSION} 999 && \
+        update-alternatives --install /usr/bin/clang-format  clang-format  /usr/bin/clang-format-${CLANG_VERSION} 999
 
-ENV GEODE_VERSION 1.4.0
-RUN wget "https://www.apache.org/dyn/closer.cgi?action=download&filename=geode/${GEODE_VERSION}/apache-geode-${GEODE_VERSION}.tgz" -O - | \
+ENV GEODE_VERSION 1.6.0
+RUN wget "https://www.apache.org/dyn/closer.cgi?action=download&filename=geode/${GEODE_VERSION}/apache-geode-${GEODE_VERSION}.tgz" --quiet -O - | \
         tar xzf -
 
 ENV RAT_VERSION 0.12
-RUN wget "https://www.apache.org/dyn/closer.cgi?action=download&filename=creadur/apache-rat-${RAT_VERSION}/apache-rat-${RAT_VERSION}-bin.tar.bz2" -O - | \
-        tar xjf -
+RUN wget "https://www.apache.org/dyn/closer.cgi?action=download&filename=creadur/apache-rat-${RAT_VERSION}/apache-rat-${RAT_VERSION}-bin.tar.gz" --quiet -O - | \
+        tar xzf -
 
-ENV CMAKE_VERSION 3.10.3
-RUN wget "https://cmake.org/files/PreviousRelease/cmake-${CMAKE_VERSION}-Linux-x86_64.sh" -O /tmp/cmake && \
+ENV CMAKE_VERSION 3.12.2
+RUN wget "https://cmake.org/files/v${CMAKE_VERSION%.*}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh" --quiet -O /tmp/cmake && \
         bash /tmp/cmake --skip-license --prefix=/usr/local && \
-        rm /tmp/cmake
+        rm -rf /tmp/cmake
 
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
 ENV GEODE_HOME /apache-geode-${GEODE_VERSION}

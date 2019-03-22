@@ -22,14 +22,16 @@
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
 
-using namespace apache::geode::client;
-using namespace test;
+using apache::geode::client::CacheableBytes;
+using apache::geode::client::CacheWriter;
+using apache::geode::client::RegionEvent;
+
 class MyCacheWriter : public CacheWriter {
   uint32_t m_clear;
 
  public:
   MyCacheWriter() : m_clear(0) {}
-  bool beforeRegionClear(const RegionEvent&) override {
+  bool beforeRegionClear(const RegionEvent &) override {
     LOG("beforeRegionClear called");
     m_clear++;
     return true;
@@ -41,7 +43,7 @@ class MyCacheListener : public CacheListener {
 
  public:
   MyCacheListener() : m_clear(0) {}
-  void afterRegionClear(const RegionEvent&) override {
+  void afterRegionClear(const RegionEvent &) override {
     LOG("afterRegionClear called");
     m_clear++;
   }
@@ -51,7 +53,7 @@ class MyCacheListener : public CacheListener {
 static int numberOfLocators = 1;
 bool isLocalServer = true;
 bool isLocator = true;
-const char* locHostPort =
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 
 DUNIT_TASK(SERVER1, StartServer)
@@ -89,9 +91,9 @@ DUNIT_TASK(CLIENT2, SetupClient2)
                                     "__TEST_POOL1__", true, true);
     auto regPtr = getHelper()->getRegion(regionNames[0]);
     regPtr->registerAllKeys();
-    auto keyPtr = CacheableKey::create((const char*)"key01");
-    auto valPtr =
-      CacheableBytes::create(std::vector<int8_t>{'v','a','l','u','e','0','1'});
+    auto keyPtr = CacheableKey::create("key01");
+    auto valPtr = CacheableBytes::create(
+        std::vector<int8_t>{'v', 'a', 'l', 'u', 'e', '0', '1'});
     regPtr->put(keyPtr, valPtr);
     ASSERT(regPtr->size() == 1, "size incorrect");
   }
@@ -111,8 +113,8 @@ DUNIT_TASK(CLIENT2, VerifyClear)
     auto regPtr = getHelper()->getRegion(regionNames[0]);
     ASSERT(regPtr->size() == 0, "size incorrect");
     auto keyPtr = CacheableKey::create("key02");
-    auto valPtr =
-      CacheableBytes::create(std::vector<int8_t>{'v','a','l','u','e','0','2'});
+    auto valPtr = CacheableBytes::create(
+        std::vector<int8_t>{'v', 'a', 'l', 'u', 'e', '0', '2'});
     regPtr->put(keyPtr, valPtr);
     ASSERT(regPtr->size() == 1, "size incorrect");
     regPtr->localClear();
@@ -133,14 +135,17 @@ DUNIT_TASK(CLIENT1, VerifyClear1)
     ASSERT(region->containsKeyOnServer(key), "key should be there");
 
     auto cacheListener = region->getAttributes().getCacheListener();
-    auto myCacheListener = std::dynamic_pointer_cast<MyCacheListener>(cacheListener);
-    auto listenerClearCount = "listener clear count" + std::to_string(myCacheListener->getClearCnt());
+    auto myCacheListener =
+        std::dynamic_pointer_cast<MyCacheListener>(cacheListener);
+    auto listenerClearCount =
+        "listener clear count" + std::to_string(myCacheListener->getClearCnt());
     LOG(listenerClearCount);
     ASSERT(myCacheListener->getClearCnt() == 2, listenerClearCount.c_str());
 
     auto cacheWriter = region->getAttributes().getCacheWriter();
     auto myCacheWriter = std::dynamic_pointer_cast<MyCacheWriter>(cacheWriter);
-    auto writerClearCount = "writer clear count" + std::to_string(myCacheWriter->getClearCnt());
+    auto writerClearCount =
+        "writer clear count" + std::to_string(myCacheWriter->getClearCnt());
     LOG(writerClearCount);
     ASSERT(myCacheWriter->getClearCnt() == 2, writerClearCount.c_str());
   }

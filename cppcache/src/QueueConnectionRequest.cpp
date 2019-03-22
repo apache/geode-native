@@ -16,18 +16,23 @@
  */
 
 #include "QueueConnectionRequest.hpp"
+
 #include <geode/DataInput.hpp>
 #include <geode/DataOutput.hpp>
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 void QueueConnectionRequest::toData(DataOutput& output) const {
   output.writeString(m_serverGp);
   output.write(static_cast<int8_t>(DSCode::FixedIDByte));
   output.write(static_cast<int8_t>(DSCode::ClientProxyMembershipId));
   uint32_t buffLen = 0;
-  output.writeBytes(reinterpret_cast<uint8_t*>(const_cast<char*>(m_membershipID.getDSMemberId(buffLen))), buffLen);
-  output.writeInt((int32_t)1);
+  output.writeBytes(reinterpret_cast<uint8_t*>(const_cast<char*>(
+                        m_membershipID.getDSMemberId(buffLen))),
+                    buffLen);
+  output.writeInt(static_cast<int32_t>(1));
   output.writeInt(static_cast<int32_t>(m_redundantCopies));
   writeSetOfServerLocation(output);
   output.writeBoolean(m_findDurable);
@@ -59,3 +64,7 @@ void QueueConnectionRequest::writeSetOfServerLocation(
     server.toData(output);
   }
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

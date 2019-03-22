@@ -16,11 +16,13 @@
  */
 
 #include "RemoteQuery.hpp"
+
 #include "ResultSetImpl.hpp"
 #include "StructSetImpl.hpp"
+#include "TcrConnectionManager.hpp"
+#include "ThinClientPoolDM.hpp"
 #include "ThinClientRegion.hpp"
 #include "UserAttributes.hpp"
-#include "ThinClientPoolDM.hpp"
 #include "util/bounds.hpp"
 #include "util/exception.hpp"
 
@@ -54,7 +56,7 @@ std::shared_ptr<SelectResults> RemoteQuery::execute(
     std::chrono::milliseconds timeout) {
   util::PROTOCOL_OPERATION_TIMEOUT_BOUNDS(timeout);
   GuardUserAttributes gua;
-  if (m_authenticatedView != nullptr) {
+  if (m_authenticatedView) {
     gua.setAuthenticatedView(m_authenticatedView);
   }
   return execute(timeout, "Query::execute", m_tccdm, paramList);
@@ -63,12 +65,12 @@ std::shared_ptr<SelectResults> RemoteQuery::execute(
 std::shared_ptr<SelectResults> RemoteQuery::execute(
     std::chrono::milliseconds timeout, const char* func, ThinClientBaseDM* tcdm,
     std::shared_ptr<CacheableVector> paramList) {
-  auto* pool = dynamic_cast<ThinClientPoolDM*>(tcdm);
-  if (pool != nullptr) {
+  auto pool = dynamic_cast<ThinClientPoolDM*>(tcdm);
+  if (pool) {
     pool->getStats().incQueryExecutionId();
   }
   /*get the start time for QueryExecutionTime stat*/
-  bool enableTimeStatistics = pool->getConnectionManager()
+  bool enableTimeStatistics = tcdm->getConnectionManager()
                                   .getCacheImpl()
                                   ->getDistributedSystem()
                                   .getSystemProperties()
@@ -95,10 +97,10 @@ std::shared_ptr<SelectResults> RemoteQuery::execute(
   } else {
     if (values->size() % fieldNameVec.size() != 0) {
       char exMsg[1024];
-      ACE_OS::snprintf(exMsg, 1023,
-                       "%s: Number of values coming from "
-                       "server has to be exactly divisible by field count",
-                       func);
+      std::snprintf(exMsg, 1023,
+                    "%s: Number of values coming from "
+                    "server has to be exactly divisible by field count",
+                    func);
       throw MessageException(exMsg);
     } else {
       LOGFINEST("%s: creating StructSet for query: %s", func,
@@ -108,7 +110,7 @@ std::shared_ptr<SelectResults> RemoteQuery::execute(
   }
 
   /*update QueryExecutionTime stat */
-  if (pool != nullptr && enableTimeStatistics) {
+  if (pool && enableTimeStatistics) {
     Utils::updateStatOpTime(pool->getStats().getStats(),
                             pool->getStats().getQueryExecutionTimeId(),
                             sampleStartNanos);

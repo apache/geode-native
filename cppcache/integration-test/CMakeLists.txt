@@ -16,33 +16,40 @@
 cmake_minimum_required(VERSION 3.10)
 project(nativeclient.tests.cppcache LANGUAGES CXX)
 
-set(TEST_UTILS_LIB test-cppcache-utils)
-add_library(${TEST_UTILS_LIB} STATIC
+add_library(test-cppcache-utils STATIC
   fw_dunit.cpp
   BBNamingContext.cpp
   CacheHelper.cpp
-  CacheableWrapper.cpp)
-target_link_libraries(${TEST_UTILS_LIB}
+  CacheableWrapper.cpp
+)
+target_link_libraries(test-cppcache-utils
   PRIVATE
-    ACE
+    ACE::ACE
     _WarningsAsError
   PUBLIC
     apache-geode
-    fwk
+    framework
 )
-target_compile_definitions(${TEST_UTILS_LIB}
+set_target_properties(test-cppcache-utils PROPERTIES
+  CXX_VISIBILITY_PRESET hidden
+  VISIBILITY_INLINES_HIDDEN ON
+	FOLDER cpp/test/integration
+)
+target_compile_definitions(test-cppcache-utils
   PRIVATE
-    $<MAKE_C_IDENTIFIER:${TEST_UTILS_LIB}>_static=1
+    $<MAKE_C_IDENTIFIER:test-cppcache-utils>_static=1
 )
-target_include_directories(${TEST_UTILS_LIB}
+target_include_directories(test-cppcache-utils
   PRIVATE
     $<TARGET_PROPERTY:apache-geode,SOURCE_DIR>/../src
 )
+add_clangformat(test-cppcache-utils)
+
 
 add_library(unit_test_callbacks SHARED LibraryCallbacks.cpp)
 target_link_libraries(unit_test_callbacks
   PRIVATE
-    ACE
+    ACE::ACE
     _WarningsAsError
   PUBLIC
     apache-geode
@@ -51,6 +58,11 @@ target_include_directories(unit_test_callbacks
   PRIVATE
     $<TARGET_PROPERTY:apache-geode,SOURCE_DIR>/../src
 )
+
+set_target_properties(unit_test_callbacks PROPERTIES FOLDER cpp/test/integration)
+
+add_clangformat(unit_test_callbacks)
+
 
 enable_testing()
 
@@ -64,7 +76,7 @@ macro(generate_config INPUT TEMP OUTPUT)
 endmacro()
 
 # Add lazy loaded shared library paths to test environment
-foreach( lib ssl xerces-c sqlite )
+foreach( lib OpenSSL::SSL SQLite::sqlite3 )
   get_target_property(library_path ${lib} INTERFACE_LIBRARY_DIR)
   set(LD_LIBRARY_PATH ${LD_LIBRARY_PATH} ${library_path})
   get_target_property(runtime_path ${lib} INTERFACE_RUNTIME_DIR)
@@ -79,26 +91,42 @@ foreach(FILE ${SOURCES})
   set(TESTS ${TESTS} ${TEST})
   add_dependencies(integration-tests ${TEST})
   add_executable(${TEST} ${FILE})
-  set_target_properties(${TEST} PROPERTIES FOLDER test/cppTests)
+  set_target_properties(${TEST} PROPERTIES
+    CXX_VISIBILITY_PRESET hidden
+    VISIBILITY_INLINES_HIDDEN ON
+    FOLDER cpp/test/integration/legacy
+  )
 
   target_link_libraries(${TEST}
     PRIVATE
-      ACE
-      ${TEST_UTILS_LIB}
+      ACE::ACE
+      test-cppcache-utils
       _WarningsAsError
       _CppCodeCoverage
       internal
     PUBLIC
       apache-geode
       testobject
-      fwk
+      framework
   )
   target_include_directories(${TEST} PRIVATE
     $<TARGET_PROPERTY:apache-geode,SOURCE_DIR>/../src
   )
 
+  if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    target_compile_options(${TEST} PRIVATE
+        -Wno-unused-function
+    )
+  elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    target_compile_options(${TEST} PRIVATE
+        -Wno-unused-member-function
+    )
+  endif()
+
   # Some tests depend on these library
   add_dependencies(${TEST} securityImpl cryptoImpl DHImpl SqLiteImpl)
+
+  add_clangformat(${TEST})
 
   set(TEST_DIR ${CMAKE_CURRENT_BINARY_DIR}/.tests/${TEST})
 
@@ -136,7 +164,6 @@ set_property(TEST testFWHelper PROPERTY LABELS STABLE QUICK)
 set_property(TEST testLRUList PROPERTY LABELS STABLE QUICK)
 set_property(TEST testSystemProperties PROPERTY LABELS STABLE QUICK)
 set_property(TEST testLogger PROPERTY LABELS STABLE QUICK)
-set_property(TEST testCache PROPERTY LABELS STABLE QUICK)
 set_property(TEST testLinkage PROPERTY LABELS STABLE QUICK)
 set_property(TEST testRegionTemplateArgs PROPERTY LABELS STABLE QUICK)
 set_property(TEST testRegionMap PROPERTY LABELS STABLE QUICK)
@@ -145,8 +172,8 @@ set_property(TEST testRegionAttributesFactory PROPERTY LABELS STABLE QUICK)
 set_property(TEST testXmlCacheCreationWithOverFlow PROPERTY LABELS STABLE QUICK)
 set_property(TEST testThinClientRemoveAllLocal PROPERTY LABELS STABLE QUICK)
 set_property(TEST testDunit PROPERTY LABELS STABLE QUICK)
-set_property(TEST testAttributesMutator PROPERTY LABELS STABLE QUICK)
 set_property(TEST testSpinLock PROPERTY LABELS STABLE QUICK)
+set_property(TEST testSubRegions PROPERTY LABELS STABLE QUICK)
 set_property(TEST testThinClientSSLAuthFail PROPERTY LABELS STABLE QUICK)
 set_property(TEST testThinClientSSLAuthCorrupt PROPERTY LABELS STABLE QUICK)
 set_property(TEST testThinClientSSLAuthUntrusted PROPERTY LABELS STABLE QUICK)
@@ -226,6 +253,7 @@ add_dependencies(run-integration-tests run-stable-cppcache-integration-tests)
 set_target_properties(run-stable-cppcache-integration-tests PROPERTIES
     EXCLUDE_FROM_ALL TRUE
     EXCLUDE_FROM_DEFAULT_BUILD TRUE
+	FOLDER cpp/test/integration
 )
 
 add_custom_target(run-quick-cppcache-integration-tests
@@ -235,4 +263,5 @@ add_custom_target(run-quick-cppcache-integration-tests
 set_target_properties(run-quick-cppcache-integration-tests PROPERTIES
     EXCLUDE_FROM_ALL TRUE
     EXCLUDE_FROM_DEFAULT_BUILD TRUE
+	FOLDER cpp/test/integration
 )

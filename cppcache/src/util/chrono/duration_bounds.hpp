@@ -20,8 +20,8 @@
 #ifndef GEODE_UTIL_CHRONO_DURATION_BOUNDS_H_
 #define GEODE_UTIL_CHRONO_DURATION_BOUNDS_H_
 
-#include <chrono>
 #include <algorithm>
+#include <chrono>
 
 #include <geode/ExceptionTypes.hpp>
 
@@ -31,15 +31,15 @@ namespace util {
 namespace chrono {
 namespace duration {
 
-using namespace apache::geode::client;
-using namespace apache::geode::internal::chrono::duration;
-
 template <class LimitRep, class LimitPeriod,
           LimitRep lower = std::numeric_limits<LimitRep>::lowest(),
           LimitRep upper = std::numeric_limits<LimitRep>::max()>
 struct assert_bounds {
   template <class Rep, class Period>
   inline void operator()(const std::chrono::duration<Rep, Period> value) const {
+    using apache::geode::client::IllegalArgumentException;
+    using apache::geode::internal::chrono::duration::to_string;
+
     /* Visual C++ library fails to account for overflow when comparing durations
      * of different periods. To compensate we convert the bounds into the
      * highest resolution duration defined in C++11.

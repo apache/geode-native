@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_INTEGRATION_TEST_THINCLIENTDURABLE_H_
-#define GEODE_INTEGRATION_TEST_THINCLIENTDURABLE_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,12 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * ThinClientDurable.hpp
- *
- *  Created on: Oct 31, 2008
- *      Author: abhaware
- */
+
+#pragma once
+
+#ifndef GEODE_INTEGRATION_TEST_THINCLIENTDURABLE_H_
+#define GEODE_INTEGRATION_TEST_THINCLIENTDURABLE_H_
 
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
@@ -51,6 +45,13 @@ Client 1 is with R =0 and Client 2 with R = 1
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
 #define FEEDER s2p2
+
+namespace { // NOLINT(google-build-namespaces)
+
+using apache::geode::client::EntryEvent;
+using apache::geode::client::Exception;
+using apache::geode::client::HashMapOfCacheable;
+using apache::geode::client::RegionEvent;
 
 class OperMonitor : public CacheListener {
   int m_ops;
@@ -498,5 +499,7 @@ DUNIT_TASK_DEFINITION(SERVER1, CloseServers)
     LOG("SERVERs closed");
   }
 END_TASK_DEFINITION
+
+}  // namespace
 
 #endif  // GEODE_INTEGRATION_TEST_THINCLIENTDURABLE_H_

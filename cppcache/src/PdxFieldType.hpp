@@ -22,13 +22,13 @@
 
 #include <string>
 
-#include <geode/internal/geode_globals.hpp>
-#include <geode/internal/DataSerializableInternal.hpp>
-#include <geode/Serializable.hpp>
 #include <geode/CacheableString.hpp>
 #include <geode/DataInput.hpp>
 #include <geode/DataOutput.hpp>
 #include <geode/PdxFieldTypes.hpp>
+#include <geode/Serializable.hpp>
+#include <geode/internal/DataSerializableInternal.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 namespace apache {
 namespace geode {
@@ -60,9 +60,9 @@ class APACHE_GEODE_EXPORT PdxFieldType
 
   PdxFieldType();
 
-  inline const char* getFieldName() { return m_fieldName.c_str(); }
+  inline const std::string& getFieldName() { return m_fieldName; }
 
-  inline const char* getClassName() { return m_className.c_str(); }
+  inline const std::string& getClassName() { return m_className; }
 
   inline PdxFieldTypes getTypeId() { return m_typeId; }
 
@@ -88,10 +88,6 @@ class APACHE_GEODE_EXPORT PdxFieldType
   void toData(DataOutput& output) const override;
 
   virtual void fromData(DataInput& input) override;
-
-  virtual int8_t getInternalId() const override {
-    return static_cast<int32_t>(m_typeId);
-  }
 
   virtual size_t objectSize() const override {
     auto size = sizeof(PdxFieldType);

@@ -87,7 +87,7 @@
     <ProjectReference Include="$(CMAKE_BINARY_DIR)\clicache\src\Apache.Geode.vcxproj">
       <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
       <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-    </ProjectReference>    
+    </ProjectReference>   
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />

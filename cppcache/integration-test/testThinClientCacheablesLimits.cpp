@@ -26,20 +26,20 @@
 
 #include <cstring>
 
-
 #include "CacheHelper.hpp"
 #include "ThinClientHelper.hpp"
-
-using namespace apache::geode::client;
-using namespace test;
 
 #define CLIENT1 s1p1
 #define SERVER1 s2p1
 
+using apache::geode::client::CacheableBytes;
+using apache::geode::client::CacheHelper;
+using apache::geode::client::OutOfMemoryException;
+
 static bool isLocator = false;
 static bool isLocalServer = true;
 static int numberOfLocators = 1;
-const char* locatorsG =
+const char *locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 #include "LocatorHelper.hpp"
 
@@ -59,7 +59,7 @@ static char charArray[] = {
   "Byte sent and received at boundAry condition are not same for " \
   "CacheableBytes or CacheableString for item %d"
 
-void createRegion(const char* name, bool ackMode,
+void createRegion(const char *name, bool ackMode,
                   bool clientNotificationEnabled = false) {
   LOG("createRegion() entered.");
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
@@ -69,28 +69,36 @@ void createRegion(const char* name, bool ackMode,
   ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
-uint8_t* createRandByteArray(int size) {
-  uint8_t* ptr = new uint8_t[size];
+
+template <typename T>
+T randomValue(T maxValue) {
+  static thread_local std::default_random_engine generator(
+      std::random_device{}());
+  return std::uniform_int_distribution<T>{0, maxValue}(generator);
+}
+
+uint8_t *createRandByteArray(int size) {
+  uint8_t *ptr = new uint8_t[size];
   for (int i = 0; i < size; i++) {
-    ptr[i] = (rand()) % 256;
+    ptr[i] = randomValue(255);
   }
   return ptr;
 }
-char* createRandCharArray(int size) {
-  char* ch;
-  ch = (char *) std::malloc((size + 1) * sizeof(char));
+
+char *createRandCharArray(int size) {
+  char *ch;
+  ch = static_cast<char *>(std::malloc((size + 1) * sizeof(char)));
   if (ch == nullptr) {
-    throw OutOfMemoryException(
-        "Out of Memory while resizing buffer");
+    throw OutOfMemoryException("Out of Memory while resizing buffer");
   }
   ch[size] = '\0';
-  int length = sizeof(charArray) / sizeof(char);
+  auto length = sizeof(charArray) / sizeof(char);
   for (int i = 0; i < size; i++) {
-    ch[i] = charArray[(rand()) % (length)];
+    ch[i] = charArray[randomValue(length - 1)];
   }
   return ch;
 }
-const char* _regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
+const char *_regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepOne)
   {
@@ -107,13 +115,15 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutsTask)
     int sizeArray = sizeof(keyArr) / sizeof(int);
     auto verifyReg = getHelper()->getRegion(_regionNames[1]);
     for (int count = 0; count < sizeArray; count++) {
-      uint8_t* ptr = createRandByteArray(keyArr[count]);
-      char* ptrChar = createRandCharArray(keyArr[count]);
+      uint8_t *ptr = createRandByteArray(keyArr[count]);
+      char *ptrChar = createRandCharArray(keyArr[count]);
 
       auto emptyBytesArr = CacheableBytes::create();
-      auto bytePtrSent = CacheableBytes::create(std::vector<int8_t>(ptr, ptr + keyArr[count]));
+      auto bytePtrSent =
+          CacheableBytes::create(std::vector<int8_t>(ptr, ptr + keyArr[count]));
       auto stringPtrSent =
           CacheableString::create(std::string(ptrChar, keyArr[count]));
+      std::free(ptrChar);
 
       verifyReg->put(KEY_BYTE, bytePtrSent);
       verifyReg->put(KEY_STRING, stringPtrSent);
@@ -144,9 +154,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutsTask)
       ASSERT(emptyBytesArrReturn != nullptr,
              "Empty Bytes Array ptr is nullptr");
 
-      bool isSameBytes = (bytePtrReturn->length() == bytePtrSent->length() &&
-                          !memcmp(bytePtrReturn->value().data(), bytePtrSent->value().data(),
-                                  bytePtrReturn->length()));
+      bool isSameBytes =
+          (bytePtrReturn->length() == bytePtrSent->length() &&
+           !memcmp(bytePtrReturn->value().data(), bytePtrSent->value().data(),
+                   bytePtrReturn->length()));
       bool isSameString =
           (stringPtrReturn->length() == stringPtrSent->length() &&
            !memcmp(stringPtrReturn->value().c_str(),

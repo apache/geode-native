@@ -15,16 +15,18 @@
  * limitations under the License.
  */
 
+#include "ExecutionImpl.hpp"
+
 #include <sstream>
 
-#include <geode/internal/geode_globals.hpp>
-#include <geode/ExceptionTypes.hpp>
 #include <geode/DefaultResultCollector.hpp>
+#include <geode/ExceptionTypes.hpp>
+#include <geode/internal/geode_globals.hpp>
 
-#include "ExecutionImpl.hpp"
-#include "ThinClientRegion.hpp"
-#include "ThinClientPoolDM.hpp"
 #include "NoResult.hpp"
+#include "TcrConnectionManager.hpp"
+#include "ThinClientPoolDM.hpp"
+#include "ThinClientRegion.hpp"
 #include "UserAttributes.hpp"
 #include "util/exception.hpp"
 
@@ -33,10 +35,9 @@ namespace geode {
 namespace client {
 
 FunctionToFunctionAttributes ExecutionImpl::m_func_attrs;
-ACE_Recursive_Thread_Mutex ExecutionImpl::m_func_attrs_lock;
+std::recursive_mutex ExecutionImpl::m_func_attrs_lock;
 Execution ExecutionImpl::withFilter(
     std::shared_ptr<CacheableVector> routingObj) {
-  // ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_lock);
   if (routingObj == nullptr) {
     throw IllegalArgumentException("Execution::withFilter: filter is null");
   }
@@ -52,7 +53,6 @@ Execution ExecutionImpl::withFilter(
 }
 
 Execution ExecutionImpl::withArgs(std::shared_ptr<Cacheable> args) {
-  // ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_lock);
   if (args == nullptr) {
     throw IllegalArgumentException("Execution::withArgs: args is null");
   }
@@ -63,7 +63,6 @@ Execution ExecutionImpl::withArgs(std::shared_ptr<Cacheable> args) {
 }
 
 Execution ExecutionImpl::withCollector(std::shared_ptr<ResultCollector> rs) {
-  // ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_lock);
   if (rs == nullptr) {
     throw IllegalArgumentException(
         "Execution::withCollector: collector is null");
@@ -109,7 +108,7 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
   auto&& attr = getFunctionAttributes(func);
   {
     if (attr == nullptr) {
-      ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_func_attrs_lock);
+      std::lock_guard<decltype(m_func_attrs_lock)> _guard(m_func_attrs_lock);
       GfErrType err = GF_NOERR;
       attr = getFunctionAttributes(func);
       if (attr == nullptr) {
@@ -133,9 +132,8 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
   serverOptimizeForWrite = ((attr->at(2) == 1) ? true : false);
 
   LOGDEBUG(
-      "ExecutionImpl::execute got functionAttributes from srver for function = "
-      "%s serverHasResult = %d "
-      " serverIsHA = %d serverOptimizeForWrite = %d ",
+      "ExecutionImpl::execute got functionAttributes from server for function "
+      "= %s serverHasResult = %d serverIsHA = %d serverOptimizeForWrite = %d ",
       func.c_str(), serverHasResult, serverIsHA, serverOptimizeForWrite);
 
   if (serverHasResult == false) {
@@ -159,7 +157,7 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
 
   LOGDEBUG("ExecutionImpl::execute: isHAHasResultOptimizeForWrite = %d",
            isHAHasResultOptimizeForWrite);
-  TXState* txState = TSSTXStateWrapper::s_geodeTSSTXState->getTXState();
+  TXState* txState = TSSTXStateWrapper::get().getTXState();
 
   if (txState != nullptr && m_allServer == true) {
     throw UnsupportedOperationException(
@@ -394,10 +392,15 @@ GfErrType ExecutionImpl::getFuncAttributes(const std::string& func,
                                         reply.getException());
       break;
     }
+    case TcrMessage::REQUEST_DATA_ERROR: {
+      LOGERROR("Error message from server: " + reply.getValue()->toString());
+      throw FunctionExecutionException(reply.getValue()->toString());
+    }
     default: {
       LOGERROR("Unknown message type %d while getting function attributes.",
                reply.getMessageType());
       err = GF_MSG;
+      break;
     }
   }
   return err;

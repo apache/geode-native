@@ -20,9 +20,9 @@
 #ifndef GEODE_CACHEABLETOKEN_H_
 #define GEODE_CACHEABLETOKEN_H_
 
-#include <geode/internal/geode_globals.hpp>
-#include <geode/internal/DataSerializableInternal.hpp>
 #include <geode/Serializable.hpp>
+#include <geode/internal/DataSerializableInternal.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 namespace apache {
 namespace geode {
@@ -72,8 +72,6 @@ class APACHE_GEODE_EXPORT CacheableToken
    */
   static std::shared_ptr<Serializable> createDeserializable();
 
-  virtual int8_t getInternalId() const override;
-
   ~CacheableToken() override = default;
 
   inline bool isInvalid() { return m_value == INVALID; }
@@ -115,7 +113,7 @@ class APACHE_GEODE_EXPORT CacheableToken
   virtual size_t objectSize() const override;
 
   CacheableToken();  // used for deserialization.
-  CacheableToken(TokenType value);
+  explicit CacheableToken(TokenType value);
 
  private:
   // never implemented.

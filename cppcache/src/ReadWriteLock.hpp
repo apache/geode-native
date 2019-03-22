@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_READWRITELOCK_H_
-#define GEODE_READWRITELOCK_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,31 +15,24 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_READWRITELOCK_H_
+#define GEODE_READWRITELOCK_H_
+
 #include <ace/RW_Thread_Mutex.h>
-#include "Condition.hpp"
+
+#include <geode/internal/geode_globals.hpp>
 
 namespace apache {
 namespace geode {
 namespace client {
-class TimedTryWriteGuard {
- public:
-  TimedTryWriteGuard(ACE_RW_Thread_Mutex& lock, uint32_t usec);
-  bool tryAcquireLock(uint32_t usec);
-  ~TimedTryWriteGuard() {
-    if (isAcquired_) lock_.release();
-  }
-  bool isAcquired() const { return isAcquired_; }
-
- private:
-  ACE_RW_Thread_Mutex& lock_;
-  bool isAcquired_;
-  ACE_Recursive_Thread_Mutex mutex_;
-  Condition cond_;
-};
 
 class APACHE_GEODE_EXPORT ReadGuard {
  public:
-  ReadGuard(ACE_RW_Thread_Mutex& lock) : lock_(lock) { lock_.acquire_read(); }
+  explicit ReadGuard(ACE_RW_Thread_Mutex& lock) : lock_(lock) {
+    lock_.acquire_read();
+  }
 
   ~ReadGuard() { lock_.release(); }
   bool isAcquired() { return true; }
@@ -55,7 +43,9 @@ class APACHE_GEODE_EXPORT ReadGuard {
 
 class WriteGuard {
  public:
-  WriteGuard(ACE_RW_Thread_Mutex& lock) : lock_(lock) { lock_.acquire_write(); }
+  explicit WriteGuard(ACE_RW_Thread_Mutex& lock) : lock_(lock) {
+    lock_.acquire_write();
+  }
 
   ~WriteGuard() { lock_.release(); }
 

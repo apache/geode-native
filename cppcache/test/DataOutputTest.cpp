@@ -16,15 +16,14 @@
  */
 
 #include <stdint.h>
+
 #include <limits>
 #include <random>
 
 #include <gtest/gtest.h>
 
-#include <boost/endian/conversion.hpp>
-
-#include <geode/DataOutput.hpp>
 #include <geode/CacheFactory.hpp>
+#include <geode/DataOutput.hpp>
 
 #include "ByteArrayFixture.hpp"
 #include "DataOutputInternal.hpp"
@@ -32,11 +31,15 @@
 
 namespace {
 
-using namespace apache::geode::client;
+using apache::geode::client::ByteArray;
+using apache::geode::client::Cache;
+using apache::geode::client::CacheableString;
+using apache::geode::client::DataOutputInternal;
+using apache::geode::client::SerializationRegistry;
 
 class TestDataOutput : public DataOutputInternal {
  public:
-  TestDataOutput(Cache*)
+  explicit TestDataOutput(Cache*)
       : DataOutputInternal(nullptr),
         m_byteArray(nullptr),
         m_serializationRegistry() {
@@ -110,9 +113,9 @@ TEST_F(DataOutputTest, TestWriteInt8) {
 
 TEST_F(DataOutputTest, TestWriteSequenceNumber) {
   TestDataOutput dataOutput(nullptr);
-  dataOutput.writeInt((int32_t)55);
-  dataOutput.writeInt((int32_t)17);
-  dataOutput.writeInt((int32_t)0);
+  dataOutput.writeInt(static_cast<int32_t>(55));
+  dataOutput.writeInt(static_cast<int32_t>(17));
+  dataOutput.writeInt(static_cast<int32_t>(0));
   dataOutput.writeInt(getRandomSequenceNumber());
   dataOutput.write(static_cast<uint8_t>(0U));
   EXPECT_BYTEARRAY_EQ("000000370000001100000000\\h{8}00",

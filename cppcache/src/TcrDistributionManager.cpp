@@ -14,20 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <geode/internal/geode_globals.hpp>
 #include "TcrDistributionManager.hpp"
-#include "ThinClientRegion.hpp"
-#include "TcrEndpoint.hpp"
+
 #include <geode/ExceptionTypes.hpp>
+#include <geode/internal/geode_globals.hpp>
+
+#include "TcrEndpoint.hpp"
+#include "ThinClientRegion.hpp"
 #include "Utils.hpp"
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 TcrDistributionManager::TcrDistributionManager(
     ThinClientRegion* region, TcrConnectionManager& connManager)
     : ThinClientDistributionManager(connManager, region) {
   GF_R_ASSERT(region != nullptr);
-  m_clientNotification =
-      region->getAttributes().getClientNotificationEnabled();
+  m_clientNotification = region->getAttributes().getClientNotificationEnabled();
 }
 
 void TcrDistributionManager::getEndpointNames(
@@ -58,3 +61,7 @@ bool TcrDistributionManager::postFailoverAction(TcrEndpoint* endpoint) {
   }
   return true;
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

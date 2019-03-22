@@ -21,8 +21,9 @@
 #define GEODE_LRUEXPMAPENTRY_H_
 
 #include <geode/internal/geode_globals.hpp>
-#include "MapEntry.hpp"
+
 #include "LRUList.hpp"
+#include "MapEntry.hpp"
 #include "VersionStamp.hpp"
 
 namespace apache {

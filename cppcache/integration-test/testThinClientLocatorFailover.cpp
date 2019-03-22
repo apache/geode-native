@@ -17,10 +17,12 @@
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
 
+using apache::geode::client::NoAvailableLocatorsException;
+
 bool isLocalServer = false;
 bool isLocator = false;
 
-const char* locatorsG =
+const char *locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 3);
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
@@ -213,7 +215,7 @@ DUNIT_TASK(CLIENT1, AgainAgainFailoverC1_All)
       FAIL(
           "No locator exception should "
           "have been raised");
-    } catch (const NoAvailableLocatorsException&) {
+    } catch (const NoAvailableLocatorsException &) {
       LOG("Caught expected NoAvailableLocatorsException.");
     } catch (...) {
       FAIL(

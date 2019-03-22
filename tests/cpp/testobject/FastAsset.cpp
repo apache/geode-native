@@ -16,11 +16,15 @@
  */
 
 #include "FastAsset.hpp"
-#include "fwklib/GsRandom.hpp"
 
-using namespace apache::geode::client;
-using namespace testframework;
-using namespace testobject;
+#include <fwklib/GsRandom.hpp>
+
+#include <geode/DataInput.hpp>
+#include <geode/DataOutput.hpp>
+
+namespace testobject {
+
+using apache::geode::client::testframework::GsRandom;
 
 FastAsset::FastAsset(int idx, int maxVal) : assetId(idx) {
   value = GsRandom::getInstance().nextDouble(1, maxVal);
@@ -35,3 +39,5 @@ void FastAsset::fromData(apache::geode::client::DataInput& input) {
   assetId = input.readInt32();
   value = input.readDouble();
 }
+
+}  // namespace testobject

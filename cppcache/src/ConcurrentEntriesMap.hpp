@@ -21,12 +21,12 @@
 #define GEODE_CONCURRENTENTRIESMAP_H_
 #include <atomic>
 
-#include <geode/internal/geode_globals.hpp>
-#include "EntriesMap.hpp"
-#include "MapSegment.hpp"
-
-#include "ExpMapEntry.hpp"
 #include <geode/RegionEntry.hpp>
+#include <geode/internal/geode_globals.hpp>
+
+#include "EntriesMap.hpp"
+#include "ExpMapEntry.hpp"
+#include "MapSegment.hpp"
 
 namespace apache {
 namespace geode {

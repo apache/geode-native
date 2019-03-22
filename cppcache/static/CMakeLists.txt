@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cmake_minimum_required(VERSION 3.4)
 project(apache-geode-static LANGUAGES CXX)
 
 add_library(apache-geode-static STATIC ${SOURCES_ALL})
@@ -33,6 +32,19 @@ target_link_libraries(apache-geode-static
 
 add_dependencies(client-libraries apache-geode-static)
 
+set_target_properties(apache-geode-static PROPERTIES
+  FOLDER cpp
+)
+
+if (MSVC)
+  cmake_minimum_required(VERSION 3.13)
+  set_target_properties(apache-geode-static PROPERTIES
+    INTERPROCEDURAL_OPTIMIZATION_RELEASE FALSE
+    INTERPROCEDURAL_OPTIMIZATION_RELWITHDEBINFO FALSE
+  )
+endif()
+
+set_target_properties(apache-geode-static PROPERTIES INTERPROCEDURAL_OPTIMIZATION FALSE)
 
 # BEGIN Visual Studio organization
 source_group("Header Files" REGULAR_EXPRESSION "\.(hpp|inl)$")
@@ -59,3 +71,5 @@ if (USE_PCH)
 
   cotire(apache-geode-static)
 endif()
+
+add_clangformat(apache-geode-static)

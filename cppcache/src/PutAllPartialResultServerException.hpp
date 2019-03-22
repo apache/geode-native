@@ -20,10 +20,11 @@
 #ifndef GEODE_PUTALLPARTIALRESULTSERVEREXCEPTION_H_
 #define GEODE_PUTALLPARTIALRESULTSERVEREXCEPTION_H_
 
-#include <geode/Serializable.hpp>
 #include <geode/CacheableString.hpp>
-#include "VersionedCacheableObjectPartList.hpp"
+#include <geode/Serializable.hpp>
+
 #include "PutAllPartialResult.hpp"
+#include "VersionedCacheableObjectPartList.hpp"
 
 namespace apache {
 namespace geode {
@@ -41,7 +42,8 @@ class APACHE_GEODE_EXPORT PutAllPartialResultServerException
    * @brief public methods
    */
  public:
-  PutAllPartialResultServerException(std::shared_ptr<PutAllPartialResult> result);
+  explicit PutAllPartialResultServerException(
+      std::shared_ptr<PutAllPartialResult> result);
 
   PutAllPartialResultServerException();
 
@@ -55,7 +57,8 @@ class APACHE_GEODE_EXPORT PutAllPartialResultServerException
   /**
    * Returns the key set in exception
    */
-  std::shared_ptr<VersionedCacheableObjectPartList> getSucceededKeysAndVersions();
+  std::shared_ptr<VersionedCacheableObjectPartList>
+  getSucceededKeysAndVersions();
 
   std::shared_ptr<Exception> getFailure();
 
@@ -74,7 +77,8 @@ class APACHE_GEODE_EXPORT PutAllPartialResultServerException
   /**
    * @brief constructors
    */
-  PutAllPartialResultServerException(std::shared_ptr<CacheableString> msg);
+  explicit PutAllPartialResultServerException(
+      std::shared_ptr<CacheableString> msg);
 
   /**
    *@brief return as std::shared_ptr<CacheableString> the Exception name

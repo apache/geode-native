@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-#include <gtest/gtest.h>
-
 #include <geodeBanner.hpp>
 
-using namespace apache::geode::client;
+#include <gtest/gtest.h>
+
+using apache::geode::client::geodeBanner;
 
 TEST(geodeBannerTest, ValidateBanner) {
   EXPECT_LT(static_cast<size_t>(0), geodeBanner::getBanner().size())

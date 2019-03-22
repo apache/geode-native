@@ -20,9 +20,9 @@
 #ifndef GEODE_STRUCTSET_H_
 #define GEODE_STRUCTSET_H_
 
-#include "internal/geode_globals.hpp"
 #include "CqResults.hpp"
 #include "Struct.hpp"
+#include "internal/geode_globals.hpp"
 
 /**
  * @file

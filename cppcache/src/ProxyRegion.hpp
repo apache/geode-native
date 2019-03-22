@@ -22,26 +22,24 @@
 
 #include <algorithm>
 
-#include <geode/internal/geode_globals.hpp>
-#include <geode/CacheableKey.hpp>
-#include <geode/CacheableString.hpp>
-#include <geode/CacheStatistics.hpp>
-#include <geode/ExceptionTypes.hpp>
-#include <geode/CacheableString.hpp>
-#include <geode/CacheableBuiltins.hpp>
-#include <geode/RegionEntry.hpp>
-#include <geode/CacheListener.hpp>
-#include <geode/CacheWriter.hpp>
-#include <geode/CacheLoader.hpp>
-#include <geode/RegionAttributes.hpp>
 #include <geode/AttributesMutator.hpp>
-#include <geode/RegionAttributesFactory.hpp>
+#include <geode/AuthenticatedView.hpp>
+#include <geode/CacheListener.hpp>
+#include <geode/CacheLoader.hpp>
+#include <geode/CacheStatistics.hpp>
+#include <geode/CacheWriter.hpp>
+#include <geode/CacheableBuiltins.hpp>
 #include <geode/CacheableKey.hpp>
+#include <geode/CacheableString.hpp>
+#include <geode/ExceptionTypes.hpp>
 #include <geode/Query.hpp>
+#include <geode/RegionAttributes.hpp>
+#include <geode/RegionAttributesFactory.hpp>
+#include <geode/RegionEntry.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 #include "RegionInternal.hpp"
 #include "UserAttributes.hpp"
-#include <geode/AuthenticatedView.hpp>
 
 namespace apache {
 namespace geode {
@@ -110,7 +108,9 @@ class APACHE_GEODE_EXPORT ProxyRegion final : public Region {
     auto rPtr = std::static_pointer_cast<RegionInternal>(
         m_realRegion->getSubregion(path));
 
-    if (rPtr == nullptr) return rPtr;
+    if (rPtr == nullptr) {
+      return std::move(rPtr);
+    }
 
     return std::make_shared<ProxyRegion>(*m_authenticatedView, rPtr);
   }

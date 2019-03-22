@@ -4,9 +4,9 @@
 # The ASF licenses this file to You under the Apache License, Version 2.0
 # (the "License"); you may not use this file except in compliance with
 # the License.  You may obtain a copy of the License at
-# 
+#
 #      http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,10 +16,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(framework LANGUAGES CXX)
 
-add_library(${PROJECT_NAME} STATIC 
-  ClientTask.hpp
-  FrameworkTest.cpp
-  FrameworkTest.hpp
+add_library(framework STATIC
   FwkBB.hpp
   FwkBBClient.cpp
   FwkBBClient.hpp
@@ -29,60 +26,51 @@ add_library(${PROJECT_NAME} STATIC
   FwkExport.hpp
   FwkLog.cpp
   FwkLog.hpp
-  FwkObjects.cpp
-  FwkObjects.hpp
   FwkStrCvt.cpp
   FwkStrCvt.hpp
   GsRandom.cpp
   GsRandom.hpp
   IpcHandler.cpp
   IpcHandler.hpp
-  PaceMeter.hpp
-  PerfFwk.cpp
-  PerfFwk.hpp
-  PoolHelper.hpp
-  QueryHelper.hpp
-  RegionHelper.hpp
   Service.cpp
   Service.hpp
-  TaskClient.cpp
-  TaskClient.hpp
   TcpIpc.cpp
   TcpIpc.hpp
-  TestClient.cpp
-  TestClient.hpp
   TimeBomb.cpp
   TimeBomb.hpp
-  TimeLimit.hpp
-  Timer.hpp
-  TimeSync.cpp
-  TimeSync.hpp
   UDPIpc.cpp
   UDPIpc.hpp
 )
 
-target_compile_options(${PROJECT_NAME}
+set_target_properties(framework PROPERTIES
+  CXX_VISIBILITY_PRESET hidden
+  VISIBILITY_INLINES_HIDDEN ON
+)
+
+target_compile_options(framework
   PRIVATE
     # Add PIC flags to link later with shared library
     ${CMAKE_CXX_COMPILE_OPTIONS_PIC}
 )
 
-target_include_directories(${PROJECT_NAME}
+target_include_directories(framework
   PUBLIC
     # headers for this library are referenced relative to the parent
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>
   PRIVATE
-  	$<TARGET_PROPERTY:apache-geode,SOURCE_DIR>/../src
+    $<TARGET_PROPERTY:apache-geode,SOURCE_DIR>/../src
 )
 
-target_link_libraries(${PROJECT_NAME}
-  PUBLIC 
+target_link_libraries(framework
+  PUBLIC
     apache-geode
-    xerces-c
   PRIVATE
-    ACE
-	_WarningsAsError
+    ACE::ACE
+    internal
+    _WarningsAsError
 )
+
+add_clangformat(framework)
 
 # For Visual Studio organization
-set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER test)
+set_target_properties(framework PROPERTIES FOLDER cpp/test/integration)

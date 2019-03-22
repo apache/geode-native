@@ -15,16 +15,15 @@
  * limitations under the License.
  */
 /*
-* NonPdxType.cpp
-*
-*  Created on: Apr 30, 2012
-*      Author: vrao
-*/
+ * NonPdxType.cpp
+ *
+ *  Created on: Apr 30, 2012
+ *      Author: vrao
+ */
 
 #include "NonPdxType.hpp"
 
-using namespace apache::geode::client;
-using namespace PdxTests;
+namespace PdxTests {
 
 template <typename T1, typename T2>
 bool PdxTests::NonPdxType::genericValCompare(T1 value1, T2 value2) const {
@@ -94,17 +93,28 @@ bool PdxTests::NonPdxType::equals(PdxTests::NonPdxType& other,
   if (ot->m_string != m_string) {
     return false;
   }
-  genericCompare(ot->m_byteArray.data(), m_byteArray.data(), m_byteArray.size());
-  genericCompare(ot->m_int16Array.data(), m_int16Array.data(), m_int16Array.size());
-  genericCompare(ot->m_int32Array.data(), m_int32Array.data(), m_int32Array.size());
-  genericCompare(ot->m_longArray.data(), m_longArray.data(), m_longArray.size());
-  genericCompare(ot->m_floatArray.data(), m_floatArray.data(), m_floatArray.size());
-  genericCompare(ot->m_doubleArray.data(), m_doubleArray.data(), m_doubleArray.size());
-  genericCompare(ot->m_uint32Array.data(), m_uint32Array.data(), m_uint32Array.size());
-  genericCompare(ot->m_ulongArray.data(), m_ulongArray.data(), m_ulongArray.size());
-  genericCompare(ot->m_uint16Array.data(), m_uint16Array.data(), m_uint16Array.size());
-  genericCompare(ot->m_sbyteArray.data(), m_sbyteArray.data(), m_sbyteArray.size());
-  genericCompare(ot->m_charArray.data(), m_charArray.data(), m_charArray.size());
+  genericCompare(ot->m_byteArray.data(), m_byteArray.data(),
+                 m_byteArray.size());
+  genericCompare(ot->m_int16Array.data(), m_int16Array.data(),
+                 m_int16Array.size());
+  genericCompare(ot->m_int32Array.data(), m_int32Array.data(),
+                 m_int32Array.size());
+  genericCompare(ot->m_longArray.data(), m_longArray.data(),
+                 m_longArray.size());
+  genericCompare(ot->m_floatArray.data(), m_floatArray.data(),
+                 m_floatArray.size());
+  genericCompare(ot->m_doubleArray.data(), m_doubleArray.data(),
+                 m_doubleArray.size());
+  genericCompare(ot->m_uint32Array.data(), m_uint32Array.data(),
+                 m_uint32Array.size());
+  genericCompare(ot->m_ulongArray.data(), m_ulongArray.data(),
+                 m_ulongArray.size());
+  genericCompare(ot->m_uint16Array.data(), m_uint16Array.data(),
+                 m_uint16Array.size());
+  genericCompare(ot->m_sbyteArray.data(), m_sbyteArray.data(),
+                 m_sbyteArray.size());
+  genericCompare(ot->m_charArray.data(), m_charArray.data(),
+                 m_charArray.size());
   // generic2DCompare(ot->m_byteByteArray, m_byteByteArray, byteByteArrayLen,
   // lengthArr);
 
@@ -143,3 +153,5 @@ bool PdxTests::NonPdxType::equals(PdxTests::NonPdxType& other,
   LOGINFO("NonPdxType::equals done");
   return true;
 }
+
+}  // namespace PdxTests

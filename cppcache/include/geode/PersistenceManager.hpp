@@ -22,8 +22,8 @@
 
 #include <memory>
 
-#include "internal/geode_globals.hpp"
 #include "Serializable.hpp"
+#include "internal/geode_globals.hpp"
 
 /**
  * @file
@@ -51,10 +51,6 @@ typedef std::shared_ptr<PersistenceManager> (*getPersistenceManagerInstance)(
  */
 class APACHE_GEODE_EXPORT PersistenceManager {
  public:
-  static constexpr char const* MAX_PAGE_COUNT = "MaxPageCount";
-  static constexpr char const* PAGE_SIZE = "PageSize";
-  static constexpr char const* PERSISTENCE_DIR = "PersistenceDirectory";
-
   /**
    * Returns the current persistence manager.
    * @return persistence manager
@@ -126,7 +122,7 @@ class APACHE_GEODE_EXPORT PersistenceManager {
    */
   virtual void close() = 0;
 
-  PersistenceManager(const std::shared_ptr<Region>& regionPtr)
+  explicit PersistenceManager(const std::shared_ptr<Region>& regionPtr)
       : m_regionPtr(regionPtr) {}
 
   PersistenceManager() = default;

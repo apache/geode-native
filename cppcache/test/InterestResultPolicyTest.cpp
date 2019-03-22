@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-#include <gtest/gtest.h>
-
 #include <InterestResultPolicy.hpp>
 
-using namespace apache::geode::client;
+#include <gtest/gtest.h>
+
+using apache::geode::client::InterestResultPolicy;
 
 TEST(InterestResultPolicyTest, VerifyOrdinals) {
   EXPECT_NE(InterestResultPolicy::NONE.getOrdinal(),

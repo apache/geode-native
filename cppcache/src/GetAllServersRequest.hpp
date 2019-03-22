@@ -22,23 +22,23 @@
 
 #include <string>
 
-#include <geode/internal/DataSerializableFixedId.hpp>
-#include <geode/Serializable.hpp>
+#include <geode/CacheableString.hpp>
 #include <geode/DataInput.hpp>
 #include <geode/DataOutput.hpp>
-#include <geode/CacheableString.hpp>
-
+#include <geode/Serializable.hpp>
+#include <geode/internal/DataSerializableFixedId.hpp>
 
 namespace apache {
 namespace geode {
 namespace client {
 
 class GetAllServersRequest : public internal::DataSerializableFixedId_t<
-                                 DSFid::GetAllServersRequest> {
+                                 internal::DSFid::GetAllServersRequest> {
   std::shared_ptr<CacheableString> m_serverGroup;
 
  public:
-  GetAllServersRequest(const std::string& serverGroup) : Serializable() {
+  explicit GetAllServersRequest(const std::string& serverGroup)
+      : Serializable() {
     m_serverGroup = CacheableString::create(serverGroup);
   }
   void toData(DataOutput& output) const override;

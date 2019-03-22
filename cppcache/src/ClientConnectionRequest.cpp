@@ -16,18 +16,21 @@
  */
 
 #include "ClientConnectionRequest.hpp"
-#include <geode/DataOutput.hpp>
-#include <geode/DataInput.hpp>
 
-using namespace apache::geode::client;
+#include <geode/DataInput.hpp>
+#include <geode/DataOutput.hpp>
+
+namespace apache {
+namespace geode {
+namespace client {
 
 void ClientConnectionRequest::toData(DataOutput& output) const {
   output.writeString(m_servergroup);
   writeSetOfServerLocation(output);
 }
 
-DSFid ClientConnectionRequest::getDSFID() const {
-  return DSFid::ClientConnectionRequest;
+internal::DSFid ClientConnectionRequest::getDSFID() const {
+  return internal::DSFid::ClientConnectionRequest;
 }
 
 void ClientConnectionRequest::writeSetOfServerLocation(
@@ -41,3 +44,7 @@ void ClientConnectionRequest::writeSetOfServerLocation(
     it++;
   }
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

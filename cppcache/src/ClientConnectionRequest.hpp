@@ -20,11 +20,13 @@
 #ifndef GEODE_CLIENTCONNECTIONREQUEST_H_
 #define GEODE_CLIENTCONNECTIONREQUEST_H_
 
-#include "ServerLocationRequest.hpp"
-#include "TcrEndpoint.hpp"
-#include <string>
 #include <set>
+#include <string>
+
+#include <geode/internal/DataSerializableFixedId.hpp>
+
 #include "ServerLocation.hpp"
+#include "ServerLocationRequest.hpp"
 
 namespace apache {
 namespace geode {
@@ -32,13 +34,14 @@ namespace client {
 
 class ClientConnectionRequest : public ServerLocationRequest {
  public:
-  ClientConnectionRequest(const std::set<ServerLocation>& excludeServergroup,
-                          std::string servergroup = "")
+  explicit ClientConnectionRequest(
+      const std::set<ServerLocation>& excludeServergroup,
+      std::string servergroup = "")
       : ServerLocationRequest(),
         m_servergroup(servergroup),
         m_excludeServergroup_serverLocation(excludeServergroup) {}
   void toData(DataOutput& output) const override;
-  DSFid getDSFID() const override;
+  internal::DSFid getDSFID() const override;
   std::string getServerGroup() const { return m_servergroup; }
   const std::set<ServerLocation>& getExcludedServerGroup() const {
     return m_excludeServergroup_serverLocation;

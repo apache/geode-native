@@ -15,17 +15,19 @@
  * limitations under the License.
  */
 
+#include "StatisticsTypeImpl.hpp"
+
 #include <string>
 
-#include <ace/OS.h>
-
-#include "StatisticsTypeImpl.hpp"
-#include "StatisticDescriptorImpl.hpp"
 #include "../util/Log.hpp"
+#include "StatisticDescriptorImpl.hpp"
 
 namespace apache {
 namespace geode {
 namespace statistics {
+
+using client::IllegalArgumentException;
+using client::NullPointerException;
 
 StatisticsTypeImpl::StatisticsTypeImpl(std::string nameArg,
                                        std::string descriptionArg,
@@ -40,15 +42,10 @@ StatisticsTypeImpl::StatisticsTypeImpl(std::string nameArg,
     throw NullPointerException(s);
   }
   if (statsLengthArg > MAX_DESCRIPTORS_PER_TYPE) {
-    char buffer[100];
-    ACE_OS::snprintf(buffer, 100, "%d", statsLengthArg);
-    std::string temp(buffer);
-    std::string s = "The requested descriptor count " + temp +
-                    " exceeds the maximum which is ";
-    ACE_OS::snprintf(buffer, 100, "%d", MAX_DESCRIPTORS_PER_TYPE);
-    std::string buf(buffer);
-    s += buf + ".";
-    throw IllegalArgumentException(s.c_str());
+    throw IllegalArgumentException(
+        "The requested descriptor count " + std::to_string(statsLengthArg) +
+        " exceeds the maximum which is " +
+        std::to_string(MAX_DESCRIPTORS_PER_TYPE) + ".");
   }
   this->name = nameArg;
   this->description = descriptionArg;
@@ -61,14 +58,6 @@ StatisticsTypeImpl::StatisticsTypeImpl(std::string nameArg,
     // Concrete class required to set the ids only.
     StatisticDescriptorImpl* sd =
         dynamic_cast<StatisticDescriptorImpl*>(stats[i]);
-    /* adongre
-     * CID 28694: Dereference after null check (FORWARD_NULL)Comparing "sd" to
-     * null implies that "sd" might be null.
-     *
-     * FIX : Do not check null from the dynamic_cast
-     *       catch the exception thrown by the dynamic_cast
-     */
-
     if (sd != nullptr) {
       if (sd->getTypeCode() == INT_TYPE) {
         sd->setId(intCount);
@@ -83,9 +72,8 @@ StatisticsTypeImpl::StatisticsTypeImpl(std::string nameArg,
       std::string str = stats[i]->getName();
       StatisticsDescMap::iterator iterFind = statsDescMap.find(str);
       if (iterFind != statsDescMap.end()) {
-        std::string s = "Duplicate StatisticDescriptor named ";
-        s += sd->getName();
-        throw IllegalArgumentException(s.c_str());
+        throw IllegalArgumentException("Duplicate StatisticDescriptor named " +
+                                       sd->getName());
       } else {
         // statsDescMap.insert(make_pair(stats[i]->getName(), stats[i]));
         statsDescMap.insert(
@@ -107,10 +95,8 @@ StatisticsTypeImpl::~StatisticsTypeImpl() {
     }
     // same pointers are also stored in this map.
     // So, Set the pointers to null.
-    StatisticsDescMap::iterator iterFind = statsDescMap.begin();
-    while (iterFind != statsDescMap.end()) {
-      (*iterFind).second = nullptr;
-      iterFind++;
+    for (auto& it : statsDescMap) {
+      it.second = nullptr;
     }
   } catch (...) {
   }
@@ -137,7 +123,7 @@ StatisticDescriptor* StatisticsTypeImpl::nameToDescriptor(
     std::string s = "There is no statistic named " + nameArg +
                     " in this statistics instance ";
     LOGWARN("StatisticsTypeImpl::nameToDescriptor %s", s.c_str());
-    throw IllegalArgumentException(s.c_str());
+    throw IllegalArgumentException(s);
   } else {
     return iterFind->second;
   }

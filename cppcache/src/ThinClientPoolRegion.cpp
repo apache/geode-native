@@ -22,17 +22,20 @@
  */
 
 #include "ThinClientPoolRegion.hpp"
-#include "CacheImpl.hpp"
-#include <geode/SystemProperties.hpp>
-#include "ThinClientPoolDM.hpp"
-#include <geode/PoolManager.hpp>
 
-using namespace apache::geode::client;
+#include <geode/PoolManager.hpp>
+#include <geode/SystemProperties.hpp>
+
+#include "CacheImpl.hpp"
+#include "ThinClientPoolDM.hpp"
+
+namespace apache {
+namespace geode {
+namespace client {
 
 ThinClientPoolRegion::ThinClientPoolRegion(
     const std::string& name, CacheImpl* cache,
-    const std::shared_ptr<RegionInternal>& rPtr,
-    RegionAttributes attributes,
+    const std::shared_ptr<RegionInternal>& rPtr, RegionAttributes attributes,
     const std::shared_ptr<CacheStatistics>& stats, bool shared)
     : ThinClientRegion(name, cache, rPtr, attributes, stats, shared) {}
 
@@ -61,3 +64,7 @@ void ThinClientPoolRegion::initTCR() {
 void ThinClientPoolRegion::destroyDM(bool) {
   dynamic_cast<ThinClientPoolDM*>(m_tcrdm)->decRegionCount();
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

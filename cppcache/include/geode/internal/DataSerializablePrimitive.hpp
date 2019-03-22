@@ -35,7 +35,7 @@ namespace internal {
 class APACHE_GEODE_EXPORT DataSerializablePrimitive
     : public virtual Serializable {
  public:
-  ~DataSerializablePrimitive() override = default;
+  ~DataSerializablePrimitive() noexcept override = default;
   virtual void toData(DataOutput& dataOutput) const = 0;
   virtual void fromData(DataInput& dataInput) = 0;
   virtual DSCode getDsCode() const = 0;

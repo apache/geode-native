@@ -26,23 +26,30 @@
 #include "testUtils.hpp"
 
 #ifndef ROOT_NAME
-ROOT_NAME++ + DEFINE ROOT_NAME before including CacheHelper.hpp
+#define ROOT_NAME "DEFINE ROOT_NAME before including CacheHelper.hpp"
 #endif
 
 #ifndef ROOT_SCOPE
 #define ROOT_SCOPE LOCAL
 #endif
 
-              using namespace apache::geode::client;
-using namespace unitTests;
+namespace { // NOLINT(google-build-namespaces)
+
+using apache::geode::client::CacheHelper;
+using apache::geode::client::Properties;
+using apache::geode::client::RegionAttributesFactory;
+
+using unitTests::TestUtils;
 
 class CacheImplHelper : public CacheHelper {
  public:
-  CacheImplHelper(const char* member_id,
-                  const std::shared_ptr<Properties>& configPtr = nullptr)
+  explicit CacheImplHelper(
+      const char* member_id,
+      const std::shared_ptr<Properties>& configPtr = nullptr)
       : CacheHelper(member_id, configPtr) {}
 
-  CacheImplHelper(const std::shared_ptr<Properties>& configPtr = nullptr)
+  explicit CacheImplHelper(
+      const std::shared_ptr<Properties>& configPtr = nullptr)
       : CacheHelper(configPtr) {}
 
   virtual void createRegion(const char* regionName,
@@ -62,5 +69,6 @@ class CacheImplHelper : public CacheHelper {
     ASSERT(regionPtr != nullptr, "failed to create region.");
   }
 };
+}  // namespace
 
 #endif  // GEODE_INTEGRATION_TEST_CACHEIMPLHELPER_H_

@@ -17,17 +17,16 @@
 
 #include <geode/PdxWrapper.hpp>
 
-#include "Utils.hpp"
 #include "PdxHelper.hpp"
 #include "SerializationRegistry.hpp"
+#include "Utils.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
 PdxWrapper::PdxWrapper(std::shared_ptr<void> userObject, std::string className)
-    : m_userObject(userObject), m_className(className) {
-}
+    : m_userObject(userObject), m_className(className) {}
 
 std::shared_ptr<void> PdxWrapper::getObject() { return m_userObject; }
 

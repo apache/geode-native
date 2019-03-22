@@ -21,6 +21,10 @@ namespace apache {
 namespace geode {
 namespace statistics {
 
+using client::IllegalArgumentException;
+using client::IllegalStateException;
+using client::OutOfMemoryException;
+
 const std::string StatisticDescriptorImpl::IntTypeName = "int_t";
 const std::string StatisticDescriptorImpl::LongTypeName = "Long";
 const std::string StatisticDescriptorImpl::DoubleTypeName = "Float";

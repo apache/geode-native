@@ -15,18 +15,24 @@
  * limitations under the License.
  */
 
-#include <geode/internal/geode_globals.hpp>
+#include "StatArchiveWriter.hpp"
+
+#include <chrono>
+#include <ctime>
 
 #include <ace/ACE.h>
-#include <ace/Thread_Mutex.h>
-#include <ace/Task.h>
+#include <ace/OS_NS_sys_time.h>
 #include <ace/OS_NS_sys_utsname.h>
 #include <ace/OS_NS_time.h>
-#include <ace/OS_NS_sys_time.h>
+#include <ace/Task.h>
+#include <ace/Thread_Mutex.h>
 
-#include "StatArchiveWriter.hpp"
-#include "GeodeStatisticsFactory.hpp"
+#include <geode/internal/geode_globals.hpp>
+
 #include "../CacheImpl.hpp"
+#include "../util/chrono/time_point.hpp"
+#include "GeodeStatisticsFactory.hpp"
+#include "HostStatSampler.hpp"
 
 namespace apache {
 namespace geode {
@@ -37,6 +43,10 @@ using std::chrono::milliseconds;
 using std::chrono::nanoseconds;
 using std::chrono::steady_clock;
 using std::chrono::system_clock;
+
+using client::GeodeIOException;
+using client::IllegalArgumentException;
+using client::NullPointerException;
 
 // Constructor and Member functions of StatDataOutput class
 
@@ -101,7 +111,7 @@ void StatDataOutput::resetBuffer() {
 }
 
 void StatDataOutput::writeByte(int8_t v) {
-  dataBuffer->write((int8_t)v);
+  dataBuffer->write(v);
   bytesWritten += 1;
 }
 
@@ -166,16 +176,15 @@ ResourceInst::ResourceInst(int32_t idArg, Statistics *resourceArg,
                            const ResourceType *typeArg,
                            StatDataOutput *dataOutArg)
     : type(typeArg) {
-  this->id = idArg;
-  this->resource = resourceArg;
-  this->dataOut = dataOutArg;
+  id = idArg;
+  resource = resourceArg;
+  dataOut = dataOutArg;
   int32_t cnt = type->getNumOfDescriptors();
   archivedStatValues = new int64_t[cnt];
   // initialize to zero
   for (int32_t i = 0; i < cnt; i++) {
     archivedStatValues[i] = 0;
   }
-  numOfDescps = cnt;
   firstTime = true;
 }
 
@@ -194,36 +203,37 @@ int64_t ResourceInst::getStatValue(StatisticDescriptor *f) {
 void ResourceInst::writeSample() {
   bool wroteInstId = false;
   bool checkForChange = true;
-  StatisticDescriptor **stats = this->type->getStats();
+  StatisticDescriptor **stats = type->getStats();
   GF_D_ASSERT(stats != nullptr);
   GF_D_ASSERT(*stats != nullptr);
-  if (this->resource->isClosed()) {
+  if (resource->isClosed()) {
     return;
   }
   if (firstTime) {
     firstTime = false;
     checkForChange = false;
   }
-  for (int32_t i = 0; i < numOfDescps; i++) {
+  auto count = type->getNumOfDescriptors();
+  for (int32_t i = 0; i < count; i++) {
     int64_t value = getStatValue(stats[i]);
     if (!checkForChange || value != archivedStatValues[i]) {
       int64_t delta = value - archivedStatValues[i];
       archivedStatValues[i] = value;
       if (!wroteInstId) {
         wroteInstId = true;
-        writeResourceInst(this->dataOut, this->id);
+        writeResourceInst(dataOut, id);
       }
-      this->dataOut->writeByte(i);
+      dataOut->writeByte(i);
       writeStatValue(stats[i], delta);
     }
   }
   if (wroteInstId) {
-    this->dataOut->writeByte(static_cast<unsigned char>(ILLEGAL_STAT_OFFSET));
+    dataOut->writeByte(static_cast<unsigned char>(ILLEGAL_STAT_OFFSET));
   }
 }
 
 void ResourceInst::writeStatValue(StatisticDescriptor *sd, int64_t v) {
-  StatisticDescriptorImpl *sdImpl = (StatisticDescriptorImpl *)sd;
+  auto sdImpl = static_cast<StatisticDescriptorImpl *>(sd);
   if (sdImpl == nullptr) {
     throw NullPointerException("could not downcast to StatisticDescriptorImpl");
   }
@@ -342,11 +352,10 @@ StatArchiveWriter::StatArchiveWriter(std::string outfile,
   tzOffset = tzOffset * -1 * 1000;
   this->dataBuffer->writeInt(tzOffset);
 
-  struct tm *tm_val;
-  time_t clock = ACE_OS::time();
-  tm_val = ACE_OS::localtime(&clock);
+  auto now = std::chrono::system_clock::now();
+  auto tm_val = apache::geode::util::chrono::localtime(now);
   char buf[512] = {0};
-  ACE_OS::strftime(buf, sizeof(buf), "%Z", tm_val);
+  std::strftime(buf, sizeof(buf), "%Z", &tm_val);
   std::string tzId(buf);
   this->dataBuffer->writeUTF(tzId);
 
@@ -391,7 +400,8 @@ int64_t StatArchiveWriter::bytesWritten() { return bytesWrittenToFile; }
 int64_t StatArchiveWriter::getSampleSize() { return m_samplesize; }
 
 void StatArchiveWriter::sample(const steady_clock::time_point &timeStamp) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(sampler->getStatListMutex());
+  std::lock_guard<decltype(sampler->getStatListMutex())> guard(
+      sampler->getStatListMutex());
   m_samplesize = dataBuffer->getBytesWritten();
 
   sampleResources();
@@ -497,7 +507,8 @@ void StatArchiveWriter::sampleResources() {
 }
 
 void StatArchiveWriter::resampleResources() {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(sampler->getStatListMutex());
+  std::lock_guard<decltype(sampler->getStatListMutex())> guard(
+      sampler->getStatListMutex());
   std::vector<Statistics *> &statsList = sampler->getStatistics();
   std::vector<Statistics *>::iterator statlistIter = statsList.begin();
   while (statlistIter != statsList.end()) {
@@ -577,7 +588,7 @@ const ResourceType *StatArchiveWriter::getResourceType(const Statistics *s) {
     for (int32_t i = 0; i < descCnt; i++) {
       std::string statsName = stats[i]->getName();
       this->dataBuffer->writeUTF(statsName);
-      StatisticDescriptorImpl *sdImpl = (StatisticDescriptorImpl *)stats[i];
+      auto sdImpl = static_cast<StatisticDescriptorImpl *>(stats[i]);
       if (sdImpl == nullptr) {
         throw NullPointerException(
             "could not down cast to StatisticDescriptorImpl");

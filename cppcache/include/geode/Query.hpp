@@ -22,9 +22,8 @@
 
 #include <chrono>
 
-#include "internal/geode_globals.hpp"
-
 #include "SelectResults.hpp"
+#include "internal/geode_globals.hpp"
 
 /**
  * @file

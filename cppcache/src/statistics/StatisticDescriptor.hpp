@@ -25,13 +25,11 @@
 #include <geode/internal/geode_globals.hpp>
 
 /** @file
-*/
+ */
 
 namespace apache {
 namespace geode {
 namespace statistics {
-
-using namespace apache::geode::client;
 
 /**
  * Describes an individual statistic whose value is updated by an
@@ -49,10 +47,10 @@ using namespace apache::geode::client;
 class APACHE_GEODE_EXPORT StatisticDescriptor {
  public:
   /**
-    * Returns the id of this statistic in a {@link StatisticsType
-    * }. The id is initialized when its statistics
-    * type is created.
-    */
+   * Returns the id of this statistic in a {@link StatisticsType
+   * }. The id is initialized when its statistics
+   * type is created.
+   */
   virtual int32_t getId() const = 0;
 
   /**

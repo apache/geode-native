@@ -19,6 +19,8 @@
 #define ROOT_SCOPE DISTRIBUTED_ACK
 
 #include <string>
+#include <random>
+#include <limits>
 
 #include <ace/OS.h>
 #include <ace/High_Res_Timer.h>
@@ -38,22 +40,27 @@
 
 #include "ThinClientHelper.hpp"
 
-using namespace apache::geode::client;
-using namespace test;
-
 #define CLIENT1 s1p1
 #define SERVER1 s2p1
 #define SERVER2 s1p2
 #define SERVER3 s2p2
 
+using apache::geode::client::CacheServerException;
+using apache::geode::client::CacheWriterException;
+using apache::geode::client::Exception;
+using apache::geode::client::internal::DSCode;
+
+using apache::geode::client::testing::CacheableWrapper;
+using apache::geode::client::testing::CacheableWrapperFactory;
+
 bool isLocalServer = false;
-const char* endPoints = CacheHelper::getTcrEndpoints(isLocalServer, 3);
+const char *endPoints = CacheHelper::getTcrEndpoints(isLocalServer, 3);
 
 static bool isLocator = false;
-const char* locatorsG =
+const char *locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
-std::string convertHostToCanonicalForm(const char* endpoints) {
+std::string convertHostToCanonicalForm(const char *endpoints) {
   if (endpoints == nullptr) return nullptr;
   std::string hostString("");
   uint16_t port = 0;
@@ -72,14 +79,13 @@ std::string convertHostToCanonicalForm(const char* endpoints) {
     endpointsStr = endpointsStr.substr(pos, length);
   } else {
     hostString = "";
-    port = 0;
     return "";
   }
   hostString = endpoint;
   port = atoi(endpointsStr.c_str());
   if (strcmp(hostString.c_str(), "localhost") == 0) {
     ACE_OS::hostname(hostName, sizeof(hostName) - 1);
-    struct hostent* host;
+    struct hostent *host;
     host = ACE_OS::gethostbyname(hostName);
     ACE_OS::snprintf(fullName, 256, "%s:%d", host->h_name, port);
     return fullName;
@@ -94,6 +100,13 @@ std::string convertHostToCanonicalForm(const char* endpoints) {
   return endpoints;
 }
 
+template <typename T>
+T randomValue(T maxValue) {
+  static thread_local std::default_random_engine generator(
+      std::random_device{}());
+  return std::uniform_int_distribution<T>{0, maxValue}(generator);
+}
+
 class putThread : public ACE_Task_Base {
  private:
   std::shared_ptr<Region> regPtr;
@@ -103,7 +116,7 @@ class putThread : public ACE_Task_Base {
   int m_failureCount;
 
  public:
-  putThread(const char* name, int min, int max, bool isWarmUpTask)
+  putThread(const char *name, int min, int max, bool isWarmUpTask)
       : regPtr(getHelper()->getRegion(name)),
         m_min(min),
         m_max(max),
@@ -114,11 +127,9 @@ class putThread : public ACE_Task_Base {
 
   int svc(void) {
     std::shared_ptr<CacheableKey> keyPtr;
-    int rand;
     for (int i = m_min; i < m_max; i++) {
       if (!m_isWarmUpTask) {
-        unsigned int seed = i;
-        rand = ACE_OS::rand_r(&seed);
+        auto rand = randomValue(std::numeric_limits<int32_t>::max());
         keyPtr = std::dynamic_pointer_cast<CacheableKey>(
             CacheableInt32::create(rand));
         LOGDEBUG("svc: putting key %d  ", rand);
@@ -134,7 +145,7 @@ class putThread : public ACE_Task_Base {
         if (networkhop) {
           m_failureCount++;
         }
-      } catch (const Exception& excp) {
+      } catch (const Exception &excp) {
         LOGINFO("Exception occured in put %s: %s ", excp.getName().c_str(),
                 excp.what());
       } catch (...) {
@@ -149,7 +160,7 @@ class putThread : public ACE_Task_Base {
           if (networkhop) {
             m_failureCount++;
           }
-        } catch (const Exception& excp) {
+        } catch (const Exception &excp) {
           LOGINFO("Exception occured in get %s: %s ", excp.getName().c_str(),
                   excp.what());
         } catch (...) {
@@ -163,7 +174,7 @@ class putThread : public ACE_Task_Base {
           if (networkhop) {
             m_failureCount++;
           }
-        } catch (const Exception& excp) {
+        } catch (const Exception &excp) {
           LOGINFO("Exception occured in destroy %s: %s ",
                   excp.getName().c_str(), excp.what());
         } catch (...) {
@@ -190,21 +201,22 @@ class putThread : public ACE_Task_Base {
 #endif
 #define KEYSIZE 256
 
-std::vector<char*> storeEndPoints(const char* points) {
-  std::vector<char*> endpointNames;
+std::vector<char *> storeEndPoints(const char *points) {
+  std::vector<char *> endpointNames;
   if (points != nullptr) {
-    char* ep = strdup(points);
-    char* token = strtok(ep, ",");
+    char *ep = strdup(points);
+    char *token = strtok(ep, ",");
     while (token) {
       endpointNames.push_back(token);
       token = strtok(nullptr, ",");
     }
+    free(ep);
   }
   ASSERT(endpointNames.size() == 3, "There should be 3 end points");
   return endpointNames;
 }
 
-std::vector<char*> endpointNames = storeEndPoints(endPoints);
+std::vector<char *> endpointNames = storeEndPoints(endPoints);
 
 DUNIT_TASK_DEFINITION(SERVER1, CreateServer1)
   {
@@ -300,7 +312,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, WarmUpTask)
           failureCount++;
         }
         LOGINFO("CPPTEST: put success ");
-      } catch (CacheServerException&) {
+      } catch (CacheServerException &) {
         // This is actually a success situation!
         // bool singlehop = TestUtils::getCacheImpl(getHelper(
         // )->cachePtr)->getAndResetSingleHopFlag();
@@ -310,7 +322,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, WarmUpTask)
         //}
         // LOGINFO("CPPTEST: SINGLEHOP SUCCEEDED while putting key %s with
         // hashcode %d", logmsg, (int32_t)keyPtr->hashcode());
-      } catch (CacheWriterException&) {
+      } catch (CacheWriterException &) {
         // This is actually a success situation! Once bug #521 is fixed.
         // bool singlehop = TestUtils::getCacheImpl(getHelper(
         // )->cachePtr)->getAndResetSingleHopFlag();
@@ -320,7 +332,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, WarmUpTask)
         //}
         // LOGINFO("CPPTEST: SINGLEHOP SUCCEEDED while putting key %s with
         // hashcode %d", logmsg, (int32_t)keyPtr->hashcode());
-      } catch (Exception& ex) {
+      } catch (Exception &ex) {
         LOGERROR("CPPTEST: Unexpected %s: %s", ex.getName().c_str(), ex.what());
         FAIL(ex.what());
       } catch (...) {
@@ -362,7 +374,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, WarmUpTask3)
           failureCount++;
         }
         LOGINFO("CPPTEST: put success ");
-      } catch (CacheServerException&) {
+      } catch (CacheServerException &) {
         // This is actually a success situation!
         // bool singlehop = TestUtils::getCacheImpl(getHelper(
         // )->cachePtr)->getAndResetSingleHopFlag();
@@ -372,7 +384,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, WarmUpTask3)
         //}
         // LOGINFO("CPPTEST: SINGLEHOP SUCCEEDED while putting key %s with
         // hashcode %d", logmsg, (int32_t)keyPtr->hashcode());
-      } catch (CacheWriterException&) {
+      } catch (CacheWriterException &) {
         // This is actually a success situation! Once bug #521 is fixed.
         // bool singlehop = TestUtils::getCacheImpl(getHelper(
         // )->cachePtr)->getAndResetSingleHopFlag();
@@ -382,7 +394,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, WarmUpTask3)
         //}
         // LOGINFO("CPPTEST: SINGLEHOP SUCCEEDED while putting key %s with
         // hashcode %d", logmsg, (int32_t)keyPtr->hashcode());
-      } catch (Exception& ex) {
+      } catch (Exception &ex) {
         LOGERROR("CPPTEST: Unexpected %s: %s", ex.getName().c_str(), ex.what());
         FAIL(ex.what());
       } catch (...) {
@@ -408,7 +420,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, ThreadedWarmUpTask)
   {
     LOG("ThreadedWarmUpTask started.");
     bool isWarmUpTask = true;
-    putThread* threads[1];
+    putThread *threads[1];
 
     for (int thdIdx = 0; thdIdx < 1; thdIdx++) {
       threads[thdIdx] = new putThread(regionNames[0], 0, 200, isWarmUpTask);
@@ -453,7 +465,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForAllKeysTask)
         CacheableWrapperFactory::getTypeForId(keyTypeId).c_str(),
         CacheableWrapperFactory::getTypeForId(valTypeId).c_str(), taskIndexPut);
 
-    CacheableWrapper* key = CacheableWrapperFactory::createInstance(keyTypeId);
+    CacheableWrapper *key = CacheableWrapperFactory::createInstance(keyTypeId);
     int maxKeys =
         (key->maxKeys() < DEFAULTNUMKEYS ? key->maxKeys() : DEFAULTNUMKEYS);
     delete key;
@@ -461,7 +473,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForAllKeysTask)
     auto dataReg = getHelper()->getRegion(regionNames[0]);
     auto verifyReg = getHelper()->getRegion(regionNames[1]);
     for (int i = 0; i < maxKeys; i++) {
-      CacheableWrapper* tmpkey =
+      CacheableWrapper *tmpkey =
           CacheableWrapperFactory::createInstance(keyTypeId);
       tmpkey->initKey(i, KEYSIZE);
       auto keyPtr =
@@ -478,13 +490,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForAllKeysTask)
         bool networkhop = TestUtils::getCacheImpl(getHelper()->cachePtr)
                               ->getAndResetNetworkHopFlag();
         ASSERT(!networkhop, "It is networkhop operation");
-      } catch (CacheServerException&) {
+      } catch (CacheServerException &) {
         LOGERROR("CPPTEST: Put caused extra hop.");
         FAIL("Put caused extra hop.");
-      } catch (CacheWriterException&) {
+      } catch (CacheWriterException &) {
         LOGERROR("CPPTEST: Put caused extra hop.");
         FAIL("Put caused extra hop.");
-      } catch (Exception& ex) {
+      } catch (Exception &ex) {
         LOGERROR("CPPTEST: Put caused unexpected %s: %s", ex.getName().c_str(),
                  ex.what());
         cleanProc();
@@ -505,13 +517,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForAllKeysTask)
         bool networkhop = TestUtils::getCacheImpl(getHelper()->cachePtr)
                               ->getAndResetNetworkHopFlag();
         ASSERT(!networkhop, "It is networkhop operation");
-      } catch (CacheServerException&) {
+      } catch (CacheServerException &) {
         LOGERROR("CPPTEST: Destroy caused extra hop.");
         FAIL("Destroy caused extra hop.");
-      } catch (CacheWriterException&) {
+      } catch (CacheWriterException &) {
         LOGERROR("CPPTEST: Destroy caused extra hop.");
         FAIL("Destroy caused extra hop.");
-      } catch (Exception& ex) {
+      } catch (Exception &ex) {
         LOGERROR("CPPTEST: Destroy caused unexpected %s: %s",
                  ex.getName().c_str(), ex.what());
         cleanProc();
@@ -539,7 +551,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, ThreadedCheckPrSingleHopForIntKeysTask)
     bool isWarmUpTask = false;
     LOG("ThreadedCheckPrSingleHopForIntKeysTask started.");
 
-    putThread* threads[100];
+    putThread *threads[100];
 
     for (int thdIdx = 0; thdIdx < 100; thdIdx++) {
       threads[thdIdx] = new putThread(regionNames[0], 200, 1000, isWarmUpTask);
@@ -591,7 +603,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask2)
         ASSERT(!networkhop, "It is networkhop operation.");
         ASSERT(poolconn == 2, "pool connections should be equal to 2.");
         // ASSERT( singlehop, "It is not single hop operation" );
-      } catch (CacheServerException&) {
+      } catch (CacheServerException &) {
         // This is actually a success situation!
         // bool singlehop = TestUtils::getCacheImpl(getHelper(
         // )->cachePtr)->getAndResetSingleHopFlag();
@@ -599,7 +611,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask2)
         LOGERROR("CPPTEST: Put caused extra hop.");
         FAIL("Put caused extra hop.");
         //}
-      } catch (CacheWriterException&) {
+      } catch (CacheWriterException &) {
         // This is actually a success situation! Once bug #521 is fixed.
         // bool singlehop = TestUtils::getCacheImpl(getHelper(
         // )->cachePtr)->getAndResetSingleHopFlag();
@@ -607,7 +619,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask2)
         LOGERROR("CPPTEST: Put caused extra hop.");
         FAIL("Put caused extra hop.");
         //}
-      } catch (Exception& ex) {
+      } catch (Exception &ex) {
         LOGERROR("CPPTEST: Put caused unexpected %s: %s", ex.getName().c_str(),
                  ex.what());
         cleanProc();
@@ -635,7 +647,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask2)
         // networkhop);
         // ASSERT(!networkhop , "It is networkhop operation.");
         // ASSERT( singlehop , "It is not single hop operation" );
-      } catch (CacheServerException&) {
+      } catch (CacheServerException &) {
         // This is actually a success situation!
         // bool singlehop = TestUtils::getCacheImpl(getHelper(
         // )->cachePtr)->getAndResetSingleHopFlag();
@@ -648,7 +660,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask2)
             "hashcode "
             "%d",
             i, keyPtr->hashcode());
-      } catch (CacheWriterException&) {
+      } catch (CacheWriterException &) {
         // This is actually a success situation! Once bug #521 is fixed.
         // bool singlehop = TestUtils::getCacheImpl(getHelper(
         // )->cachePtr)->getAndResetSingleHopFlag();
@@ -661,7 +673,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask2)
             "hashcode "
             "%d",
             i, keyPtr->hashcode());
-      } catch (Exception& ex) {
+      } catch (Exception &ex) {
         LOGERROR("CPPTEST: Destroy caused unexpected %s: %s",
                  ex.getName().c_str(), ex.what());
         cleanProc();
@@ -695,7 +707,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask2)
         // networkhop);
         // ASSERT(!networkhop , "It is networkhop operation.");
         // ASSERT( singlehop, "It is not single hop operation" );
-      } catch (CacheServerException&) {
+      } catch (CacheServerException &) {
         // This is actually a success situation!
         // bool singlehop = TestUtils::getCacheImpl(getHelper(
         // )->cachePtr)->getAndResetSingleHopFlag();
@@ -707,7 +719,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask2)
             "CPPTEST: SINGLEHOP SUCCEEDED while getting key %d with hashcode "
             "%d",
             i, keyPtr->hashcode());
-      } catch (CacheWriterException&) {
+      } catch (CacheWriterException &) {
         // This is actually a success situation! Once bug #521 is fixed.
         // bool singlehop = TestUtils::getCacheImpl(getHelper(
         // )->cachePtr)->getAndResetSingleHopFlag();
@@ -719,7 +731,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask2)
             "CPPTEST: SINGLEHOP SUCCEEDED while getting key %d with hashcode "
             "%d",
             i, keyPtr->hashcode());
-      } catch (Exception& ex) {
+      } catch (Exception &ex) {
         LOGERROR("CPPTEST: get caused unexpected %s: %s", ex.getName().c_str(),
                  ex.what());
         cleanProc();
@@ -747,7 +759,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask2)
         LOGINFO("CheckPrSingleHopForIntKeysTask2: networkhop %d ", networkhop);
         ASSERT(!networkhop, "It is networkhop operation.");
         // ASSERT( singlehop, "It is not single hop operation" );
-      } catch (CacheServerException&) {
+      } catch (CacheServerException &) {
         // This is actually a success situation!
         // bool singlehop = TestUtils::getCacheImpl(getHelper(
         // )->cachePtr)->getAndResetSingleHopFlag();
@@ -757,7 +769,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask2)
         //}
         // LOGINFO("CPPTEST: SINGLEHOP SUCCEEDED while getting key %d with
         // hashcode %d", i, (int32_t)keyPtr->hashcode());
-      } catch (CacheWriterException&) {
+      } catch (CacheWriterException &) {
         // This is actually a success situation! Once bug #521 is fixed.
         // bool singlehop = TestUtils::getCacheImpl(getHelper(
         // )->cachePtr)->getAndResetSingleHopFlag();
@@ -767,7 +779,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask2)
         //}
         // LOGINFO("CPPTEST: SINGLEHOP SUCCEEDED while getting key %d with
         // hashcode %d", i, (int32_t)keyPtr->hashcode());
-      } catch (Exception& ex) {
+      } catch (Exception &ex) {
         LOGERROR("CPPTEST: getALL caused unexpected %s: %s",
                  ex.getName().c_str(), ex.what());
         cleanProc();
@@ -824,7 +836,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask)
         LOGINFO("CheckPrSingleHopForIntKeysTask: networkhop %d ", networkhop);
         ASSERT(!networkhop, "It is networkhop operation.");
         // ASSERT( singlehop, "It is not single hop operation" );
-      } catch (CacheServerException&) {
+      } catch (CacheServerException &) {
         // This is actually a success situation!
         // bool singlehop = TestUtils::getCacheImpl(getHelper(
         // )->cachePtr)->getAndResetSingleHopFlag();
@@ -832,14 +844,14 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask)
         LOGERROR("CPPTEST: Put caused extra hop.");
         FAIL("Put caused extra hop.");
         //}
-      } catch (CacheWriterException&) {
+      } catch (CacheWriterException &) {
         // This is actually a success situation! Once bug #521 is fixed.
         // bool singlehop = TestUtils::getCacheImpl(getHelper(
         // )->cachePtr)->getAndResetSingleHopFlag();
         // if (!singlehop) {
         LOGERROR("CPPTEST: Put caused extra hop.");
         FAIL("Put caused extra hop.");
-      } catch (Exception& ex) {
+      } catch (Exception &ex) {
         LOGERROR("CPPTEST: Put caused unexpected %s: %s", ex.getName().c_str(),
                  ex.what());
         cleanProc();
@@ -859,7 +871,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask)
         LOGINFO("CheckPrSingleHopForIntKeysTask: networkhop %d ", networkhop);
         ASSERT(!networkhop, "It is networkhop operation.");
         // ASSERT( singlehop , "It is not single hop operation" );
-      } catch (CacheServerException&) {
+      } catch (CacheServerException &) {
         // This is actually a success situation!
         // bool singlehop = TestUtils::getCacheImpl(getHelper(
         // )->cachePtr)->getAndResetSingleHopFlag();
@@ -867,14 +879,14 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask)
         LOGERROR("CPPTEST: Destroy caused extra hop.");
         FAIL("Destroy caused extra hop.");
         //}
-      } catch (CacheWriterException&) {
+      } catch (CacheWriterException &) {
         // This is actually a success situation! Once bug #521 is fixed.
         // bool singlehop = TestUtils::getCacheImpl(getHelper(
         // )->cachePtr)->getAndResetSingleHopFlag();
         // if (!singlehop) {
         LOGERROR("CPPTEST: Destroy caused extra hop.");
         FAIL("Destroy caused extra hop.");
-      } catch (Exception& ex) {
+      } catch (Exception &ex) {
         LOGERROR("CPPTEST: Destroy caused unexpected %s: %s",
                  ex.getName().c_str(), ex.what());
         cleanProc();
@@ -900,7 +912,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask)
         LOGINFO("CheckPrSingleHopForIntKeysTask: networkhop %d ", networkhop);
         ASSERT(!networkhop, "It is networkhop operation.");
         // ASSERT( singlehop, "It is not single hop operation" );
-      } catch (CacheServerException&) {
+      } catch (CacheServerException &) {
         // This is actually a success situation!
         // bool singlehop = TestUtils::getCacheImpl(getHelper(
         // )->cachePtr)->getAndResetSingleHopFlag();
@@ -908,14 +920,14 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask)
         LOGERROR("CPPTEST: get caused extra hop.");
         FAIL("get caused extra hop.");
         //}
-      } catch (CacheWriterException&) {
+      } catch (CacheWriterException &) {
         // This is actually a success situation! Once bug #521 is fixed.
         // bool singlehop = TestUtils::getCacheImpl(getHelper(
         // )->cachePtr)->getAndResetSingleHopFlag();
         // if (!singlehop) {
         LOGERROR("CPPTEST: get caused extra hop.");
         FAIL("get caused extra hop.");
-      } catch (Exception& ex) {
+      } catch (Exception &ex) {
         LOGERROR("CPPTEST: get caused unexpected %s: %s", ex.getName().c_str(),
                  ex.what());
         cleanProc();
@@ -943,7 +955,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask)
         LOGINFO("CheckPrSingleHopForIntKeysTask: networkhop %d ", networkhop);
         ASSERT(!networkhop, "It is networkhop operation.");
         // ASSERT( singlehop, "It is not single hop operation" );
-      } catch (CacheServerException&) {
+      } catch (CacheServerException &) {
         // This is actually a success situation!
         // bool singlehop = TestUtils::getCacheImpl(getHelper(
         // )->cachePtr)->getAndResetSingleHopFlag();
@@ -953,7 +965,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask)
         //}
         // LOGINFO("CPPTEST: SINGLEHOP SUCCEEDED while getting key %d with
         // hashcode %d", i, (int32_t)keyPtr->hashcode());
-      } catch (CacheWriterException&) {
+      } catch (CacheWriterException &) {
         // This is actually a success situation! Once bug #521 is fixed.
         // bool singlehop = TestUtils::getCacheImpl(getHelper(
         // )->cachePtr)->getAndResetSingleHopFlag();
@@ -963,7 +975,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask)
         //}
         // LOGINFO("CPPTEST: SINGLEHOP SUCCEEDED while getting key %d with
         // hashcode %d", i, (int32_t)keyPtr->hashcode());
-      } catch (Exception& ex) {
+      } catch (Exception &ex) {
         LOGERROR("CPPTEST: getALL caused unexpected %s: %s",
                  ex.getName().c_str(), ex.what());
         cleanProc();
@@ -983,7 +995,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask)
         LOGINFO("CheckPrSingleHopForIntKeysTask: networkhop %d ", networkhop);
         ASSERT(!networkhop, "It is networkhop operation.");
         // ASSERT( singlehop, "It is not single hop operation" );
-      } catch (CacheServerException&) {
+      } catch (CacheServerException &) {
         // This is actually a success situation!
         // bool singlehop = TestUtils::getCacheImpl(getHelper(
         // )->cachePtr)->getAndResetSingleHopFlag();
@@ -993,7 +1005,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask)
         //}
         // LOGINFO("CPPTEST: SINGLEHOP SUCCEEDED while getting key %d with
         // hashcode %d", i, (int32_t)keyPtr->hashcode());
-      } catch (CacheWriterException&) {
+      } catch (CacheWriterException &) {
         // This is actually a success situation! Once bug #521 is fixed.
         // bool singlehop = TestUtils::getCacheImpl(getHelper(
         // )->cachePtr)->getAndResetSingleHopFlag();
@@ -1003,7 +1015,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask)
         //}
         // LOGINFO("CPPTEST: SINGLEHOP SUCCEEDED while getting key %d with
         // hashcode %d", i, (int32_t)keyPtr->hashcode());
-      } catch (Exception& ex) {
+      } catch (Exception &ex) {
         LOGERROR("CPPTEST: getALL caused unexpected %s: %s",
                  ex.getName().c_str(), ex.what());
         cleanProc();
@@ -1157,8 +1169,6 @@ DUNIT_MAIN
       CALL_TASK(CheckPrSingleHopForIntKeysTask);
       size_t totKeyTypes =
           CacheableWrapperFactory::getRegisteredKeyTypes().size();
-      size_t totValTypes =
-          CacheableWrapperFactory::getRegisteredValueTypes().size();
 
       CALL_TASK(CheckPrSingleHopForIntKeysTask);
       for (size_t i = 0; i < totKeyTypes; i++) {

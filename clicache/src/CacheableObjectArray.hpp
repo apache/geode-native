@@ -20,6 +20,10 @@
 #include "geode_defs.hpp"
 #include "IDataSerializablePrimitive.hpp"
 
+#include "begin_native.hpp"
+#include <geode/internal/DSCode.hpp>
+#include "end_native.hpp"
+
 using namespace System;
 using namespace System::Collections::Generic;
 
@@ -29,6 +33,8 @@ namespace Apache
   {
     namespace Client
     {
+
+      using namespace apache::geode::client;
 
       /// <summary>
       /// A mutable <c>ISerializable</c> object array wrapper that can serve
@@ -108,7 +114,7 @@ namespace Apache
         {
           virtual int8_t get()
           {
-            return static_cast<int8_t>(DSCode::CacheableObjectArray);
+            return static_cast<int8_t>(internal::DSCode::CacheableObjectArray);
           }
         }
 

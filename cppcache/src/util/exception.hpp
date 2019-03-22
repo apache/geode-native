@@ -23,6 +23,7 @@
 #include <string>
 
 #include <geode/internal/geode_base.hpp>
+
 #include "../ErrType.hpp"
 
 namespace apache {

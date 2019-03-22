@@ -25,7 +25,16 @@
 
 #include "fw_helper.hpp"
 
-using namespace apache::geode::client;
+using apache::geode::client::Cache;
+using apache::geode::client::Cacheable;
+using apache::geode::client::CacheableBytes;
+using apache::geode::client::CacheableInt32;
+using apache::geode::client::CacheableString;
+using apache::geode::client::CacheFactory;
+using apache::geode::client::CacheRegionHelper;
+using apache::geode::client::Region;
+using apache::geode::client::RegionAttributesFactory;
+using apache::geode::client::RegionEntry;
 
 bool CheckBytesEqual(std::shared_ptr<CacheableBytes> result,
                      std::shared_ptr<Cacheable> expected) {
@@ -37,6 +46,7 @@ bool CheckBytesEqual(std::shared_ptr<CacheableBytes> result,
 // This test checks the template methods of Region API with all possible
 // combinations of key and value types.
 
+// NOLINTNEXTLINE(google-readability-function-size)
 BEGIN_TEST(CheckTemplates)
   {
     auto cacheFactory = CacheFactory();
@@ -44,7 +54,7 @@ BEGIN_TEST(CheckTemplates)
     RegionAttributesFactory regionAttributesFactory;
     auto regionAttributes = regionAttributesFactory.create();
     std::shared_ptr<Region> regPtr;
-    CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cache.get());
+    auto &&cacheImpl = CacheRegionHelper::getCacheImpl(cache.get());
     cacheImpl->createRegion("TestRegion", regionAttributes, regPtr);
 
     const char charKey[] = "test key";

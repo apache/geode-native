@@ -320,7 +320,7 @@ namespace Apache
       {
         System::Collections::IList^ list = (System::Collections::IList^)objectArray;
         this->WriteArrayLen(list->Count);
-        WriteByte((int8_t)apache::geode::client::DSCode::Class);
+        WriteByte((int8_t)apache::geode::client::internal::DSCode::Class);
         String^ pdxDomainClassname = m_cache->TypeRegistry->GetPdxTypeName(objectArray->GetType()->GetElementType()->FullName);
         WriteByte((int8_t)DSCode::CacheableASCIIString);
         WriteUTF(pdxDomainClassname);
@@ -719,7 +719,8 @@ namespace Apache
         }
         else if (auto dataSerializable = dynamic_cast<IDataSerializable^>(obj))
         {
-          auto id = dataSerializable->ClassId;
+          auto id = m_cache->TypeRegistry->GetIdForManagedType(dataSerializable->GetType());
+
           auto dsCode = getDataSerializableDsCode(id);
           WriteByte(static_cast<int8_t>(dsCode));
           switch (dsCode) {

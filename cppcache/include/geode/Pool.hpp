@@ -27,9 +27,9 @@
 #include "Cache.hpp"
 #include "CacheFactory.hpp"
 #include "CacheableBuiltins.hpp"
+#include "internal/chrono/duration.hpp"
 #include "internal/geode_base.hpp"
 #include "internal/geode_globals.hpp"
-#include "internal/chrono/duration.hpp"
 
 /**
  * @file
@@ -284,7 +284,7 @@ class APACHE_GEODE_EXPORT Pool : public std::enable_shared_from_this<Pool> {
   int getPendingEventCount() const;
 
  protected:
-  Pool(std::shared_ptr<PoolAttributes> attr);
+  explicit Pool(std::shared_ptr<PoolAttributes> attr);
   std::shared_ptr<PoolAttributes> m_attrs;
 
  private:

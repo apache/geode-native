@@ -26,10 +26,12 @@
  *      Author: ankurs
  */
 
-#include <geode/DataInput.hpp>
-#include <geode/CacheableString.hpp>
-#include <geode/Cache.hpp>
 #include <vector>
+
+#include <geode/Cache.hpp>
+#include <geode/CacheableString.hpp>
+#include <geode/DataInput.hpp>
+
 #include "FarSideEntryOp.hpp"
 
 namespace apache {
@@ -38,7 +40,7 @@ namespace client {
 
 class RegionCommit {
  public:
-  RegionCommit(MemberListForVersionStamp& memberListForVersionStamp)
+  explicit RegionCommit(MemberListForVersionStamp& memberListForVersionStamp)
       : m_memberListForVersionStamp(memberListForVersionStamp){};
   virtual ~RegionCommit(){};
 

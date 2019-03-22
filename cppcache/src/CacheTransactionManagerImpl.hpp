@@ -20,11 +20,14 @@
 #ifndef GEODE_CACHETRANSACTIONMANAGERIMPL_H_
 #define GEODE_CACHETRANSACTIONMANAGERIMPL_H_
 
+#include <condition_variable>
+#include <mutex>
+
 #include <geode/CacheTransactionManager.hpp>
 
+#include "SuspendedTxExpiryHandler.hpp"
 #include "TXCommitMessage.hpp"
 #include "util/Log.hpp"
-#include "SuspendedTxExpiryHandler.hpp"
 
 namespace apache {
 namespace geode {
@@ -35,7 +38,7 @@ enum commitOp { BEFORE_COMMIT, AFTER_COMMIT };
 
 class CacheTransactionManagerImpl : public virtual CacheTransactionManager {
  public:
-  CacheTransactionManagerImpl(CacheImpl* cache);
+  explicit CacheTransactionManagerImpl(CacheImpl* cache);
   virtual ~CacheTransactionManagerImpl() override;
 
   virtual void begin() override;
@@ -69,14 +72,14 @@ class CacheTransactionManagerImpl : public virtual CacheTransactionManager {
   TXState* removeSuspendedTx(int32_t txId, std::chrono::milliseconds waitTime);
   bool isSuspendedTx(int32_t txId);
   void addTx(int32_t txId);
-  bool removeTx(int32_t txId);
+  void removeTx(int32_t txId);
   bool findTx(int32_t txId);
 
   std::map<int32_t, TXState*> m_suspendedTXs;
-  ACE_Recursive_Thread_Mutex m_suspendedTxLock;
+  std::recursive_mutex m_suspendedTxLock;
   std::vector<int32_t> m_TXs;
-  ACE_Recursive_Thread_Mutex m_txLock;
-  ACE_Condition<ACE_Recursive_Thread_Mutex> m_txCond;
+  std::recursive_mutex m_txLock;
+  std::condition_variable_any m_txCond;
 
   friend class TXCleaner;
 };

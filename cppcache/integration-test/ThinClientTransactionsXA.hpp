@@ -34,7 +34,19 @@
 
 #include "CacheHelper.hpp"
 
-using namespace apache::geode::client;
+namespace { // NOLINT(google-build-namespaces)
+
+using apache::geode::client::CacheableKey;
+using apache::geode::client::CacheableString;
+using apache::geode::client::CacheHelper;
+using apache::geode::client::CacheServerException;
+using apache::geode::client::EntryExistsException;
+using apache::geode::client::EntryNotFoundException;
+using apache::geode::client::IllegalStateException;
+using apache::geode::client::InternalCacheTransactionManager2PC;
+using apache::geode::client::Properties;
+using apache::geode::client::TransactionException;
+using apache::geode::client::TransactionId;
 
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
@@ -50,22 +62,9 @@ static int numberOfLocators = 0;
 const char* locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 
-bool g_isGridClient = false;
-
-DUNIT_TASK_DEFINITION(CLIENT1, Alter_Client_Grid_Property_1)
-  { g_isGridClient = !g_isGridClient; }
-END_TASK_DEFINITION
-
-DUNIT_TASK_DEFINITION(CLIENT2, Alter_Client_Grid_Property_2)
-  { g_isGridClient = !g_isGridClient; }
-END_TASK_DEFINITION
-
 void initClient(const bool isthinClient) {
   if (cacheHelper == nullptr) {
     auto config = Properties::create();
-    if (g_isGridClient) {
-      config->insert("grid-client", "true");
-    }
     config->insert("suspended-tx-timeout", std::chrono::seconds(1));
     cacheHelper = new CacheHelper(isthinClient, config);
   }
@@ -656,11 +655,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, SuspendResumeCommit)
     bool threwTransactionException = false;
     try {
       txManager->suspend();
-    }
-    catch (const TransactionException) {
+    } catch (const TransactionException) {
       threwTransactionException = true;
     }
-    ASSERT(threwTransactionException, "SuspendResumeCommit: Transaction shouldnt have been suspended");
+    ASSERT(threwTransactionException,
+           "SuspendResumeCommit: Transaction shouldnt have been suspended");
   }
 END_TASK_DEFINITION
 
@@ -1119,9 +1118,6 @@ DUNIT_TASK_DEFINITION(SERVER1, CloseServer1)
 END_TASK_DEFINITION
 
 void runTransactionOps(bool isSticky = false) {
-  CALL_TASK(Alter_Client_Grid_Property_1);
-  CALL_TASK(Alter_Client_Grid_Property_2);
-
   CALL_TASK(CreateLocator1);
   CALL_TASK(CreateServer1_With_Locator)
 
@@ -1156,5 +1152,7 @@ void runTransactionOps(bool isSticky = false) {
   CALL_TASK(CloseServer1);
   CALL_TASK(CloseLocator1);
 }
+
+}  // namespace
 
 #endif  // GEODE_INTEGRATION_TEST_THINCLIENTTRANSACTIONSXA_H_

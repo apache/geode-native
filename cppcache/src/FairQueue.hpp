@@ -23,14 +23,14 @@
 #include <deque>
 
 #include <ace/ACE.h>
-#include <ace/Thread_Mutex.h>
-#include <ace/Token.h>
 #include <ace/Condition_T.h>
-#include <ace/Time_Value.h>
 #include <ace/Guard_T.h>
+#include <ace/Thread_Mutex.h>
+#include <ace/Time_Value.h>
+#include <ace/Token.h>
 
-#include "util/Log.hpp"
 #include "Assert.hpp"
+#include "util/Log.hpp"
 
 namespace apache {
 namespace geode {
@@ -58,7 +58,7 @@ class FairQueue {
     T* mp = getNoGetLock(isClosed);
 
     if (mp == nullptr && !isClosed) {
-      mp = getUntilWithToken(sec, isClosed, (void*)nullptr);
+      mp = getUntilWithToken(sec, isClosed, static_cast<void*>(nullptr));
     }
     return mp;
   }

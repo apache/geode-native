@@ -32,9 +32,13 @@ namespace client {
 class CacheImpl;
 class PdxSerializer;
 
+/**
+ * Registry for custom serializable types, both PDXSerializable and
+ * DataSerializable.
+ */
 class APACHE_GEODE_EXPORT TypeRegistry {
  public:
-  TypeRegistry(CacheImpl* cache);
+  explicit TypeRegistry(CacheImpl* cache);
 
   /**
    * @brief register an instance factory method for a given type.
@@ -44,7 +48,7 @@ class APACHE_GEODE_EXPORT TypeRegistry {
    * registered, or there is an error in registering the type; check errno
    * for more information in the latter case.
    */
-  void registerType(TypeFactoryMethod creationFunction);
+  void registerType(TypeFactoryMethod creationFunction, int32_t id);
 
   /**
    * @brief register an Pdx instance factory method for a given type.
@@ -60,6 +64,8 @@ class APACHE_GEODE_EXPORT TypeRegistry {
    * @see PdxSerializer
    */
   void registerPdxSerializer(std::shared_ptr<PdxSerializer> pdxSerializer);
+
+  TypeFactoryMethod getCreationFunction(int32_t);
 
   std::shared_ptr<PdxSerializer> getPdxSerializer();
 

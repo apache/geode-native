@@ -31,7 +31,6 @@ else()
 endif()
 
 # Set the .NET Target Framework (Note: This should match the build for Apache.Geode.)
-set (DOTNET_TARGET_FRAMEWORK_VERSION "v4.5.2")
 
 foreach(var CMAKE_CURRENT_SOURCE_DIR CMAKE_SOURCE_DIR CMAKE_BINARY_DIR CMAKE_CURRENT_BINARY_DIR)
   file(TO_NATIVE_PATH ${${var}} ${var}_NATIVE)
@@ -51,6 +50,6 @@ foreach(FILE ${CSPROJECTS})
       ${PROJNAME}  ${CMAKE_CURRENT_BINARY_DIR}/${PROJNAME}/${PROJNAME}.csproj
       TYPE FAE04EC0-301F-11D3-BF4B-00C04F79EFBC
 	  PLATFORM ${PLATFORM})
-  set_target_properties(${PROJNAME} PROPERTIES FOLDER test/cliTests)
+  set_target_properties(${PROJNAME} PROPERTIES FOLDER cli/test/integration)
 
 endforeach()

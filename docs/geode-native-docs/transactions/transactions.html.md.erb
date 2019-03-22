@@ -19,13 +19,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-This section describes how transactions work on the client side. It provides examples for running, suspending, and resuming transactions.
-
 Client transactions run on the server tier. The client uses a server delegate
 that runs the transaction as it would a local transaction.
 Thus, the key to running client transactions lies in making sure the server
 is properly configured and programmed.
-For complete information about transactions in the Java server,
+For complete information about transactions in the <%=vars.product_name%> server,
 see the server documentation at
 [Transactions](geodeman/developing/transactions/chapter_overview.html).
 It provides detailed information including server data requirements,
@@ -33,14 +31,3 @@ interactions of transactions with other operations running on the server tier,
 server-side application plug-ins with transactions,
 and querying with transactions.
 
--   **[How Client Transactions Work](how-client-xacts-work.html)**
-
-    The syntax for writing client transactions is the same as with server or peer transactions, but when a client performs a transaction, the transaction is delegated to a server that brokers the transaction.
-
--   **[Running a Client Transaction](running-client-xact.html)**
-
-    Before you can run a client transaction, you must configure your clients and servers; define your server regions for your transactions; and define your client regions.
-
--   **[Suspending and Resuming Transactions](suspend-resume-xacts.html)**
-
-    The ability to suspend and resume transactions is useful when a thread must perform operations that should not be part of the transaction before the transaction can complete.

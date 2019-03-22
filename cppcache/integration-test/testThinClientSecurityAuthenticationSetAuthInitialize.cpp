@@ -24,21 +24,23 @@
 #include "ThinClientHelper.hpp"
 #include "ThinClientSecurity.hpp"
 
-using namespace apache::geode::client;
-using namespace test;
+using apache::geode::client::AuthenticationFailedException;
+using apache::geode::client::AuthInitialize;
+using apache::geode::client::Cacheable;
+using apache::geode::client::testframework::security::CredentialGenerator;
 
-const char* locHostPort =
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
-const char* regionNamesAuth[] = {"DistRegionAck", "DistRegionNoAck"};
+const char *regionNamesAuth[] = {"DistRegionAck", "DistRegionNoAck"};
 std::shared_ptr<CredentialGenerator> credentialGeneratorHandler;
 
 std::string getXmlPath() {
   char xmlPath[1000] = {'\0'};
-  const char* path = ACE_OS::getenv("TESTSRC");
+  const char *path = ACE_OS::getenv("TESTSRC");
   ASSERT(path != NULL,
          "Environment variable TESTSRC for test source directory is not set.");
   strncpy(xmlPath, path, strlen(path) - strlen("cppcache"));
-  strcat(xmlPath, "xml/Security/");
+  strncat(xmlPath, "xml/Security/", sizeof(xmlPath) - strlen(xmlPath) - 1);
   return std::string(xmlPath);
 }
 
@@ -51,8 +53,8 @@ class UserPasswordAuthInit : public AuthInitialize {
   ~UserPasswordAuthInit() noexcept override = default;
 
   std::shared_ptr<Properties> getCredentials(
-      const std::shared_ptr<Properties>& securityprops,
-      const std::string&) override {
+      const std::shared_ptr<Properties> &securityprops,
+      const std::string &) override {
     // LOGDEBUG("UserPasswordAuthInit: inside userPassword::getCredentials");
     std::shared_ptr<Cacheable> userName;
     if (securityprops == nullptr ||
@@ -68,11 +70,11 @@ class UserPasswordAuthInit : public AuthInitialize {
     // If password is not provided then use empty string as the password.
     if (passwd == nullptr) {
       passwd = CacheableString::create("");
-   }
-   credentials->insert(SECURITY_PASSWORD, passwd->value().c_str());
-   // LOGDEBUG("UserPasswordAuthInit: inserted username:password - %s:%s",
-   //    userName->toString().c_str(), passwd->toString().c_str());
-   return credentials;
+    }
+    credentials->insert(SECURITY_PASSWORD, passwd->value().c_str());
+    // LOGDEBUG("UserPasswordAuthInit: inserted username:password - %s:%s",
+    //    userName->toString().c_str(), passwd->toString().c_str());
+    return credentials;
   }
 
   void close() override { return; }
@@ -119,7 +121,7 @@ DUNIT_TASK_DEFINITION(LOCATORSERVER, CreateServer1)
                cmdServerAuthenticator.c_str());
         CacheHelper::initServer(
             1, nullptr, locHostPort,
-            const_cast<char*>(cmdServerAuthenticator.c_str()));
+            const_cast<char *>(cmdServerAuthenticator.c_str()));
         LOG("Server1 started");
       }
     } catch (...) {
@@ -135,10 +137,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, TestAuthentication)
       createRegionForSecurity(regionNamesAuth[0], USE_ACK, true);
       createEntry(regionNamesAuth[0], keys[0], vals[0]);
       updateEntry(regionNamesAuth[0], keys[0], nvals[0]);
-     auto regPtr0 = getHelper()->getRegion(regionNamesAuth[0]);
-     regPtr0->containsKeyOnServer(
-         apache::geode::client::CacheableKey::create(keys[0]));
-    } catch (const apache::geode::client::Exception& other) {
+      auto regPtr0 = getHelper()->getRegion(regionNamesAuth[0]);
+      regPtr0->containsKeyOnServer(
+          apache::geode::client::CacheableKey::create(keys[0]));
+    } catch (const apache::geode::client::Exception &other) {
       LOG(other.getStackTrace());
       FAIL(other.what());
     }

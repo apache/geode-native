@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-#include <ace/Thread_Mutex.h>
+#include "RegionStats.hpp"
+
 #include <ace/Singleton.h>
+#include <ace/Thread_Mutex.h>
 
 #include <geode/internal/geode_globals.hpp>
 
-#include "RegionStats.hpp"
 #include "util/concurrent/spinlock_mutex.hpp"
 
 namespace apache {

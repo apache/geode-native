@@ -16,20 +16,20 @@
  */
 
 #include <geode/DataInput.hpp>
+#include <geode/PoolManager.hpp>
 
+#include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
 #include "SerializationRegistry.hpp"
-#include "CacheImpl.hpp"
-#include "util/string.hpp"
 #include "util/JavaModifiedUtf8.hpp"
-#include <geode/PoolManager.hpp>
+#include "util/string.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
-DataInput::DataInput(const uint8_t* buffer, size_t len,
-                     const CacheImpl* cache, Pool* pool)
+DataInput::DataInput(const uint8_t* buffer, size_t len, const CacheImpl* cache,
+                     Pool* pool)
     : m_buf(buffer),
       m_bufHead(buffer),
       m_bufLength(len),
@@ -62,8 +62,8 @@ void DataInput::readJavaModifiedUtf8(
     std::basic_string<char16_t, _Traits, _Allocator>& value) {
   uint16_t length = readInt16();
   _GEODE_CHECK_BUFFER_SIZE(length);
-  value =
-      JavaModifiedUtf8::decode(reinterpret_cast<const char*>(m_buf), length);
+  value = internal::JavaModifiedUtf8::decode(
+      reinterpret_cast<const char*>(m_buf), length);
   advanceCursor(length);
 }
 template APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT void

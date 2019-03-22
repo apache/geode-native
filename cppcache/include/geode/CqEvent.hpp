@@ -20,12 +20,12 @@
  * limitations under the License.
  */
 
-#include "internal/geode_globals.hpp"
-#include "Exception.hpp"
-#include "CqOperation.hpp"
-#include "Serializable.hpp"
-#include "CacheableKey.hpp"
 #include "CacheableBuiltins.hpp"
+#include "CacheableKey.hpp"
+#include "CqOperation.hpp"
+#include "Exception.hpp"
+#include "Serializable.hpp"
+#include "internal/geode_globals.hpp"
 
 /**
  * @file
@@ -92,11 +92,11 @@ class APACHE_GEODE_EXPORT CqEvent {
   virtual std::shared_ptr<Cacheable> getNewValue() const = 0;
 
   /**
-  * Get the delta modification.
-  * If there is no delta, returns null. New value may still be available.
-  *
-  * @return CacheableBytes delta value.
-  */
+   * Get the delta modification.
+   * If there is no delta, returns null. New value may still be available.
+   *
+   * @return CacheableBytes delta value.
+   */
   virtual std::shared_ptr<CacheableBytes> getDeltaValue() const = 0;
 
  private:

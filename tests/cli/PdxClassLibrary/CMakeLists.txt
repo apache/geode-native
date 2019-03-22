@@ -37,9 +37,8 @@ set_target_properties( PdxClassLibrary PROPERTIES
   VS_GLOBAL_ROOTNAMESPACE PdxClassLibrary
   VS_GLOBAL_TreatWarningsAsErrors True
   VS_GLOBAL_PROJECT_TYPES "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
-  VS_DOTNET_TARGET_FRAMEWORK_VERSION "v4.5.2"
   VS_DOTNET_REFERENCES "System;System.Xml;System.Data"
-  FOLDER test/cliTests
+  FOLDER cli/test/integration
 )
 
 if(NOT "${STRONG_NAME_KEY}" STREQUAL "")

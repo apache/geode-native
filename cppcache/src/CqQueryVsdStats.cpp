@@ -15,15 +15,14 @@
  * limitations under the License.
  */
 
-
 #include <mutex>
 
 #include "util/concurrent/spinlock_mutex.hpp"
 
 const char* cqStatsName = "CqQueryStatistics";
 const char* cqStatsDesc = "Statistics for this cq query";
-#include <ace/Thread_Mutex.h>
 #include <ace/Singleton.h>
+#include <ace/Thread_Mutex.h>
 
 #include <geode/internal/geode_globals.hpp>
 
@@ -34,8 +33,8 @@ namespace geode {
 namespace client {
 
 using statistics::StatisticsFactory;
-using util::concurrent::spinlock_mutex;
 using std::lock_guard;
+using util::concurrent::spinlock_mutex;
 
 constexpr const char* CqQueryVsdStats::STATS_NAME;
 constexpr const char* CqQueryVsdStats::STATS_DESC;

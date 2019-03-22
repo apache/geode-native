@@ -22,8 +22,8 @@
 
 #include <ace/DLL.h>
 
-#include "TcpConn.hpp"
 #include "../../cryptoimpl/Ssl.hpp"
+#include "TcpConn.hpp"
 
 namespace apache {
 namespace geode {
@@ -47,7 +47,7 @@ class TcpSslConn : public TcpConn {
 
  protected:
   size_t socketOp(SockOp op, char* buff, size_t len,
-                  std::chrono::microseconds waitSeconds) override;
+                  std::chrono::microseconds waitDuration) override;
 
   void createSocket(ACE_HANDLE sock) override;
 

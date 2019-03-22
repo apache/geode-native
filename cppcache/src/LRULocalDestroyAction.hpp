@@ -21,10 +21,12 @@
  */
 
 #include <atomic>
+
 #include <geode/internal/geode_globals.hpp>
+
 #include "LRUAction.hpp"
-#include "RegionInternal.hpp"
 #include "MapEntry.hpp"
+#include "RegionInternal.hpp"
 
 namespace apache {
 namespace geode {

@@ -16,10 +16,11 @@
  */
 
 #include "NoopAuthInit.hpp"
-#include "geode/Properties.hpp"
-#include "geode/ExceptionTypes.hpp"
+
 #include <util/Log.hpp>
 
+#include "geode/ExceptionTypes.hpp"
+#include "geode/Properties.hpp"
 #include "testobject_export.h"
 
 namespace apache {

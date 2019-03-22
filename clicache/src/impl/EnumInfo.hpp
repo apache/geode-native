@@ -20,6 +20,10 @@
 #include "../IDataSerializableFixedId.hpp"
 #include "../ISerializable.hpp"
 
+#include "../begin_native.hpp"
+#include <geode/internal/DSFixedId.hpp>
+#include "../end_native.hpp"
+
 using namespace System;
 using namespace System::Collections::Generic;
 
@@ -69,7 +73,7 @@ namespace Apache
 
           property Int32 DSFID
           {
-            virtual Int32 get() { return static_cast<Int32>(apache::geode::client::DSFid::EnumInfo); }
+            virtual Int32 get() { return static_cast<Int32>(apache::geode::client::internal::DSFid::EnumInfo); }
           }
 
           virtual String^ ToString() override

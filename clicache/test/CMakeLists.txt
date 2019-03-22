@@ -39,8 +39,8 @@ set_target_properties(Apache.Geode.Test PROPERTIES
   VS_GLOBAL_TestProjectType UnitTest
   VS_GLOBAL_PROJECT_TYPES "{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}"
   VS_GLOBAL_ROOTNAMESPACE Apache.Geode.Test
-  VS_DOTNET_TARGET_FRAMEWORK_VERSION "v4.5.2"
   VS_DOTNET_REFERENCES "System;System.Xml;Microsoft.VisualStudio.QualityTools.UnitTestFramework"
+  FOLDER cli/test/unit
 )
 
 target_include_directories(Apache.Geode.Test

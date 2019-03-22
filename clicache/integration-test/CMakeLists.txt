@@ -23,8 +23,6 @@ else()
   set (NUNIT_CONSOLE "nunit-console-x86")
 endif()
 
-# Set the .NET Target Framework (Note: This should match the build for Apache.Geode.)
-set (DOTNET_TARGET_FRAMEWORK_VERSION "v4.5.2")
 
 foreach(var CMAKE_CURRENT_SOURCE_DIR CMAKE_SOURCE_DIR CMAKE_BINARY_DIR CMAKE_CURRENT_BINARY_DIR)
   file(TO_NATIVE_PATH ${${var}} ${var}_NATIVE)
@@ -43,7 +41,7 @@ foreach(FILE ${CSPROJECTS})
   include_external_msproject(
       ${PROJNAME}  ${CMAKE_CURRENT_BINARY_DIR}/${PROJNAME}.csproj
       TYPE FAE04EC0-301F-11D3-BF4B-00C04F79EFBC)
-  set_target_properties(${PROJNAME} PROPERTIES FOLDER test/cliTests)
+  set_target_properties(${PROJNAME} PROPERTIES FOLDER cli/test/integration)
 
 endforeach()
 
@@ -58,7 +56,7 @@ macro(generate_config INPUT TEMP OUTPUT)
     )
 endmacro()
 
-foreach( lib ssl xerces-c sqlite )
+foreach( lib OpenSSL::SSL SQLite::sqlite3 )
   get_target_property(runtime_path ${lib} INTERFACE_RUNTIME_DIR)
   set(PATH ${PATH} ${runtime_path})
 endforeach()
@@ -96,6 +94,7 @@ endforeach()
 
 # Label any flaky tests here
 set_property(TEST ThinClientCqStatusTestTwoServers PROPERTY LABELS FLAKY)
+set_property(TEST ThinClientPoolTestsN PROPERTY LABELS FLAKY)
 set_property(TEST ThinClientQueryTestsN PROPERTY LABELS FLAKY)
 
 # Label any tests that always fail here
@@ -114,5 +113,8 @@ add_custom_target(run-stable-clicache-integration-tests
   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
   USES_TERMINAL)
 add_dependencies(run-integration-tests run-stable-clicache-integration-tests)
-set_target_properties(run-stable-clicache-integration-tests PROPERTIES EXCLUDE_FROM_ALL TRUE EXCLUDE_FROM_DEFAULT_BUILD TRUE)
+set_target_properties(run-stable-clicache-integration-tests PROPERTIES
+  EXCLUDE_FROM_ALL TRUE
+  EXCLUDE_FROM_DEFAULT_BUILD TRUE
+  FOLDER cli/test/integration)
 

@@ -22,8 +22,8 @@
 
 #include <memory>
 
-#include "Serializable.hpp"
 #include "PdxInstance.hpp"
+#include "Serializable.hpp"
 
 namespace apache {
 namespace geode {

@@ -53,4 +53,4 @@ enum class DSFid : int32_t {
 }  // namespace geode
 }  // namespace apache
 
-#endif //NATIVECLIENT_DSFIXEDID_HPP
+#endif  // NATIVECLIENT_DSFIXEDID_HPP

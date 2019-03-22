@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_EVICTIONTHREAD_H_
-#define GEODE_EVICTIONTHREAD_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,51 +15,45 @@
  * limitations under the License.
  */
 
-#include <ace/ACE.h>
-#include <ace/OS.h>
-#include <ace/Singleton.h>
-#include <ace/Thread_Mutex.h>
-#include <ace/Task.h>
-#include <geode/DataOutput.hpp>
-#include "util/Log.hpp"
-#include "IntQueue.hpp"
-/**
- * This class does the actual evictions
- */
+#pragma once
+
+#ifndef GEODE_EVICTIONTHREAD_H_
+#define GEODE_EVICTIONTHREAD_H_
+
+#include <atomic>
+#include <condition_variable>
+#include <deque>
+#include <mutex>
+#include <thread>
+
 namespace apache {
 namespace geode {
 namespace client {
+
 class EvictionController;
-typedef IntQueue<int64_t> HeapSizeInfoQueue;
 
-class APACHE_GEODE_EXPORT EvictionThread : public ACE_Task_Base {
+/**
+ * This class does the actual evictions
+ */
+class EvictionThread {
  public:
-  EvictionThread(EvictionController* parent);
-
-  inline void start() {
-    m_run = true;
-    this->activate();
-    LOGFINE("Eviction Thread started");
-  }
-
-  inline void stop() {
-    m_run = false;
-    this->wait();
-    m_queue.clear();
-    LOGFINE("Eviction Thread stopped");
-  }
-
-  int svc();
+  explicit EvictionThread(EvictionController* parent);
+  void start();
+  void stop();
+  void svc();
   void putEvictionInfo(int32_t info);
-  void processEvictions();
 
  private:
+  std::thread m_thread;
+  std::atomic<bool> m_run;
   EvictionController* m_pParent;
-  HeapSizeInfoQueue m_queue;
-  bool m_run;
+  std::deque<int32_t> m_queue;
+  std::mutex m_queueMutex;
+  std::condition_variable m_queueCondition;
 
   static const char* NC_Evic_Thread;
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

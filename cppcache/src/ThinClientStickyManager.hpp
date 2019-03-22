@@ -20,21 +20,26 @@
  * limitations under the License.
  */
 
-#include "TssConnectionWrapper.hpp"
 #include <algorithm>
-#include <vector>
+#include <mutex>
 #include <set>
-#include <ace/Recursive_Thread_Mutex.h>
+#include <vector>
+
+#include "ErrType.hpp"
+#include "TssConnectionWrapper.hpp"
+
 namespace apache {
 namespace geode {
 namespace client {
+
 class ThinClientPoolDM;
 class ServerLocation;
 class TcrConnection;
 class TcrEndpoint;
+
 class ThinClientStickyManager {
  public:
-  ThinClientStickyManager(ThinClientPoolDM* poolDM) : m_dm(poolDM) {}
+  explicit ThinClientStickyManager(ThinClientPoolDM* poolDM) : m_dm(poolDM) {}
   bool getStickyConnection(TcrConnection*& conn, GfErrType* error,
                            std::set<ServerLocation>& excludeServers,
                            bool forTransaction);
@@ -54,8 +59,9 @@ class ThinClientStickyManager {
   static bool isNULL(TcrConnection** conn);
   ThinClientPoolDM* m_dm;
   std::set<TcrConnection**> m_stickyConnList;
-  ACE_Recursive_Thread_Mutex m_stickyLock;
+  std::recursive_mutex m_stickyLock;
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

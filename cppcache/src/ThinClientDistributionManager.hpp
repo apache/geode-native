@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_THINCLIENTDISTRIBUTIONMANAGER_H_
-#define GEODE_THINCLIENTDISTRIBUTIONMANAGER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,11 +15,19 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_THINCLIENTDISTRIBUTIONMANAGER_H_
+#define GEODE_THINCLIENTDISTRIBUTIONMANAGER_H_
+
+#include <mutex>
+
 #include "ThinClientBaseDM.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
+
 class ThinClientDistributionManager : public ThinClientBaseDM {
  public:
   ThinClientDistributionManager(TcrConnectionManager& connManager,
@@ -40,8 +43,8 @@ class ThinClientDistributionManager : public ThinClientBaseDM {
 
   void failover() override;
 
-  void acquireFailoverLock() override { m_endpointsLock.acquire_read(); };
-  void releaseFailoverLock() override { m_endpointsLock.release(); };
+  void acquireFailoverLock() override { m_endpointsLock.lock(); };
+  void releaseFailoverLock() override { m_endpointsLock.unlock(); };
 
   TcrEndpoint* getActiveEndpoint() override {
     return m_endpoints[m_activeEndpoint];
@@ -76,7 +79,7 @@ class ThinClientDistributionManager : public ThinClientBaseDM {
   volatile int m_activeEndpoint;
 
   std::vector<TcrEndpoint*> m_endpoints;
-  ACE_Recursive_Thread_Mutex m_endpointsLock;
+  std::recursive_mutex m_endpointsLock;
 };
 }  // namespace client
 }  // namespace geode

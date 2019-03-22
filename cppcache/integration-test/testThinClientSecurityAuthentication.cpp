@@ -22,25 +22,24 @@
 #include "ThinClientSecurity.hpp"
 #include <geode/CacheTransactionManager.hpp>
 
-using namespace apache::geode::client;
-using namespace test;
-
 #define CORRECT_CREDENTIALS 'C'
 #define INCORRECT_CREDENTIALS 'I'
 #define NOT_PROVIDED_CREDENTIALS 'N'
 
-const char* locHostPort =
+using apache::geode::client::testframework::security::CredentialGenerator;
+
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
-const char* regionNamesAuth[] = {"DistRegionAck", "DistRegionNoAck"};
+const char *regionNamesAuth[] = {"DistRegionAck", "DistRegionNoAck"};
 std::shared_ptr<CredentialGenerator> credentialGeneratorHandler;
 
 std::string getXmlPath() {
   char xmlPath[1000] = {'\0'};
-  const char* path = ACE_OS::getenv("TESTSRC");
+  const char *path = ACE_OS::getenv("TESTSRC");
   ASSERT(path != nullptr,
          "Environment variable TESTSRC for test source directory is not set.");
   strncpy(xmlPath, path, strlen(path) - strlen("cppcache"));
-  strcat(xmlPath, "xml/Security/");
+  strncat(xmlPath, "xml/Security/", sizeof(xmlPath) - strlen(xmlPath) - 1);
   return std::string(xmlPath);
 }
 
@@ -72,31 +71,31 @@ void initCredentialGenerator() {
 }
 
 void initClientAuth(char credentialsType) {
- auto config = Properties::create();
- if (credentialGeneratorHandler == nullptr) {
-   FAIL("credentialGeneratorHandler is nullptr");
- }
- bool insertAuthInit = true;
- switch (credentialsType) {
-   case 'C':
-     credentialGeneratorHandler->getValidCredentials(config);
-     config->insert("security-password",
-                    config->find("security-username")->value().c_str());
-     printf("Username is %s and Password is %s ",
-            config->find("security-username")->value().c_str(),
-            config->find("security-password")->value().c_str());
-     break;
-   case 'I':
-     credentialGeneratorHandler->getInvalidCredentials(config);
-     config->insert("security-password", "junk");
-     printf("Username is %s and Password is %s ",
-            config->find("security-username")->value().c_str(),
-            config->find("security-password")->value().c_str());
-     break;
-   case 'N':
-   default:
-     insertAuthInit = false;
-     break;
+  auto config = Properties::create();
+  if (credentialGeneratorHandler == nullptr) {
+    FAIL("credentialGeneratorHandler is nullptr");
+  }
+  bool insertAuthInit = true;
+  switch (credentialsType) {
+    case 'C':
+      credentialGeneratorHandler->getValidCredentials(config);
+      config->insert("security-password",
+                     config->find("security-username")->value().c_str());
+      printf("Username is %s and Password is %s ",
+             config->find("security-username")->value().c_str(),
+             config->find("security-password")->value().c_str());
+      break;
+    case 'I':
+      credentialGeneratorHandler->getInvalidCredentials(config);
+      config->insert("security-password", "junk");
+      printf("Username is %s and Password is %s ",
+             config->find("security-username")->value().c_str(),
+             config->find("security-password")->value().c_str());
+      break;
+    case 'N':
+    default:
+      insertAuthInit = false;
+      break;
   }
   if (insertAuthInit) {
     // config->insert(
@@ -140,7 +139,7 @@ DUNIT_TASK_DEFINITION(LOCATORSERVER, CreateServer1)
                cmdServerAuthenticator.c_str());
         CacheHelper::initServer(
             1, nullptr, locHostPort,
-            const_cast<char*>(cmdServerAuthenticator.c_str()));
+            const_cast<char *>(cmdServerAuthenticator.c_str()));
         LOG("Server1 started");
       }
     } catch (...) {
@@ -155,9 +154,9 @@ DUNIT_TASK_DEFINITION(LOCATORSERVER, CreateServer2)
     cmdServerAuthenticator2 = credentialGeneratorHandler->getServerCmdParams(
         "authenticator", getXmlPath());
     printf("Input to server cmd is -->  %s", cmdServerAuthenticator2.c_str());
-    CacheHelper::initServer(2, "cacheserver_notify_subscription2.xml",
-                            locHostPort,
-                            const_cast<char*>(cmdServerAuthenticator2.c_str()));
+    CacheHelper::initServer(
+        2, "cacheserver_notify_subscription2.xml", locHostPort,
+        const_cast<char *>(cmdServerAuthenticator2.c_str()));
     LOG("Server2 started");
   }
 END_TASK_DEFINITION
@@ -168,7 +167,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne)
     try {
       initClientAuth(INCORRECT_CREDENTIALS);
     } catch (
-        const apache::geode::client::AuthenticationFailedException& other) {
+        const apache::geode::client::AuthenticationFailedException &other) {
       LOG(other.getStackTrace());
       LOG(other.what());
     }
@@ -177,10 +176,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne)
       createRegionForSecurity(regionNamesAuth[0], USE_ACK, true);
       FAIL("Should have thrown AuthenticationFailedException.");
     } catch (
-        const apache::geode::client::AuthenticationFailedException& other) {
+        const apache::geode::client::AuthenticationFailedException &other) {
       LOG(other.getStackTrace());
       LOG(other.what());
-    } catch (const apache::geode::client::Exception& other) {
+    } catch (const apache::geode::client::Exception &other) {
       LOG(other.getStackTrace());
       LOG(other.what());
       FAIL("Only AuthenticationFailedException is expected");
@@ -196,10 +195,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepTwo)
       createRegionForSecurity(regionNamesAuth[0], USE_ACK, true);
       createEntry(regionNamesAuth[0], keys[0], vals[0]);
       updateEntry(regionNamesAuth[0], keys[0], nvals[0]);
-     auto regPtr0 = getHelper()->getRegion(regionNamesAuth[0]);
-     regPtr0->containsKeyOnServer(
-         apache::geode::client::CacheableKey::create(keys[0]));
-    } catch (const apache::geode::client::Exception& other) {
+      auto regPtr0 = getHelper()->getRegion(regionNamesAuth[0]);
+      regPtr0->containsKeyOnServer(
+          apache::geode::client::CacheableKey::create(keys[0]));
+    } catch (const apache::geode::client::Exception &other) {
       LOG(other.getStackTrace());
       FAIL(other.what());
     }
@@ -214,7 +213,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepThree)
     initClientAuth(CORRECT_CREDENTIALS);
     try {
       createRegionForSecurity(regionNamesAuth[0], USE_ACK, true);
-    } catch (const apache::geode::client::Exception& other) {
+    } catch (const apache::geode::client::Exception &other) {
       LOG(other.getStackTrace());
       FAIL(other.what());
     }
@@ -229,7 +228,7 @@ DUNIT_TASK_DEFINITION(CLIENT3, StepFour)
     try {
       initClientAuth(NOT_PROVIDED_CREDENTIALS);
     } catch (
-        const apache::geode::client::AuthenticationRequiredException& other) {
+        const apache::geode::client::AuthenticationRequiredException &other) {
       LOG(other.getStackTrace());
       FAIL(other.what());
     }
@@ -238,10 +237,10 @@ DUNIT_TASK_DEFINITION(CLIENT3, StepFour)
       createRegionForSecurity(regionNamesAuth[0], USE_ACK, true);
       FAIL("Should have thrown AuthenticationRequiredException.");
     } catch (
-        const apache::geode::client::AuthenticationRequiredException& other) {
+        const apache::geode::client::AuthenticationRequiredException &other) {
       LOG(other.getStackTrace());
       LOG(other.what());
-    } catch (const apache::geode::client::Exception& other) {
+    } catch (const apache::geode::client::Exception &other) {
       LOG(other.getStackTrace());
       LOG(other.what());
       FAIL("Only AuthenticationRequiredException is expected");
@@ -255,20 +254,20 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepFive)
     SLEEP(80);
     try {
       createRegionForSecurity(regionNamesAuth[1], USE_ACK, true);
-     auto regPtr0 = getHelper()->getRegion(regionNamesAuth[0]);
-     auto keyPtr = CacheableKey::create(keys[0]);
-     auto checkPtr =
-         std::dynamic_pointer_cast<CacheableString>(regPtr0->get(keyPtr));
-     if (checkPtr != nullptr && !strcmp(nvals[0], checkPtr->value().c_str())) {
-       LOG("checkPtr is not null");
-       char buf[1024];
-       sprintf(buf, "In net search, get returned %s for key %s",
-               checkPtr->value().c_str(), keys[0]);
-       LOG(buf);
-     } else {
-       LOG("checkPtr is nullptr");
+      auto regPtr0 = getHelper()->getRegion(regionNamesAuth[0]);
+      auto keyPtr = CacheableKey::create(keys[0]);
+      auto checkPtr =
+          std::dynamic_pointer_cast<CacheableString>(regPtr0->get(keyPtr));
+      if (checkPtr != nullptr && !strcmp(nvals[0], checkPtr->value().c_str())) {
+        LOG("checkPtr is not null");
+        char buf[1024];
+        sprintf(buf, "In net search, get returned %s for key %s",
+                checkPtr->value().c_str(), keys[0]);
+        LOG(buf);
+      } else {
+        LOG("checkPtr is nullptr");
       }
-    } catch (const apache::geode::client::Exception& other) {
+    } catch (const apache::geode::client::Exception &other) {
       LOG(other.getStackTrace());
       FAIL(other.what());
     }
@@ -284,7 +283,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
       createRegionForSecurity(regionNamesAuth[0], USE_ACK, true);
       createEntry(regionNamesAuth[0], keys[0], vals[0]);
       updateEntry(regionNamesAuth[0], keys[0], nvals[0]);
-    } catch (const apache::geode::client::Exception& other) {
+    } catch (const apache::geode::client::Exception &other) {
       LOG(other.getStackTrace());
       FAIL(other.what());
     }
@@ -298,7 +297,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSeven)
     try {
       initClientAuth(INCORRECT_CREDENTIALS);
     } catch (
-        const apache::geode::client::AuthenticationFailedException& other) {
+        const apache::geode::client::AuthenticationFailedException &other) {
       LOG(other.getStackTrace());
       LOG(other.what());
     }
@@ -310,10 +309,10 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSeven)
                               0);
       FAIL("Should have thrown AuthenticationFailedException.");
     } catch (
-        const apache::geode::client::AuthenticationFailedException& other) {
+        const apache::geode::client::AuthenticationFailedException &other) {
       LOG(other.getStackTrace());
       LOG(other.what());
-    } catch (const apache::geode::client::Exception& other) {
+    } catch (const apache::geode::client::Exception &other) {
       LOG(other.getStackTrace());
       LOG(other.what());
       FAIL("Only AuthenticationFailedException is expected");
@@ -322,7 +321,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSeven)
   }
 END_TASK_DEFINITION
 
-void createEntryTx(const char* name, const char* key, const char* value) {
+void createEntryTx(const char *name, const char *key, const char *value) {
   LOG("createEntry() entered.");
   fprintf(stdout, "Creating entry -- key: %s  value: %s in region %s\n", key,
           value, name);
@@ -347,7 +346,7 @@ void createEntryTx(const char* name, const char* key, const char* value) {
   LOG("Entry created.");
 }
 
-void updateEntryTx(const char* name, const char* key, const char* value) {
+void updateEntryTx(const char *name, const char *key, const char *value) {
   LOG("updateEntry() entered.");
   fprintf(stdout, "Updating entry -- key: %s  value: %s in region %s\n", key,
           value, name);
@@ -375,31 +374,32 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight)
     initClientAuth(CORRECT_CREDENTIALS);
     try {
       createRegionForSecurity(regionNamesAuth[1], USE_ACK, true);
-     auto regPtr0 = getHelper()->getRegion(regionNamesAuth[1]);
-     auto txManager = getHelper()->getCache()->getCacheTransactionManager();
-     LOG("txManager got");
-     txManager->begin();
-     LOG("txManager begin done");
-     createEntryTx(regionNamesAuth[1], "TxKey", "TxValue");
-     LOG("createEntryTx done");
-     txManager->commit();
-     LOG("txManager commit done");
+      auto regPtr0 = getHelper()->getRegion(regionNamesAuth[1]);
+      auto txManager = getHelper()->getCache()->getCacheTransactionManager();
+      LOG("txManager got");
+      txManager->begin();
+      LOG("txManager begin done");
+      createEntryTx(regionNamesAuth[1], "TxKey", "TxValue");
+      LOG("createEntryTx done");
+      txManager->commit();
+      LOG("txManager commit done");
 
-     auto keyPtr = CacheableKey::create("TxKey");
-     auto checkPtr =
-         std::dynamic_pointer_cast<CacheableString>(regPtr0->get(keyPtr));
-     ASSERT(checkPtr != nullptr, "Value not found.");
-     LOGINFO("checkPtr->value().c_str() = %s ", checkPtr->value().c_str());
-     ASSERT(strcmp("TxValue", checkPtr->value().c_str()) == 0,
-            "Value not correct.");
-     if (checkPtr != nullptr && !strcmp("TxValue", checkPtr->value().c_str())) {
-       LOG("checkPtr is not null");
-       char buf[1024];
-       sprintf(buf, "In net search, get returned %s for key %s",
-               checkPtr->value().c_str(), "TxKey");
-       LOG(buf);
-     } else {
-       LOG("checkPtr is nullptr");
+      auto keyPtr = CacheableKey::create("TxKey");
+      auto checkPtr =
+          std::dynamic_pointer_cast<CacheableString>(regPtr0->get(keyPtr));
+      ASSERT(checkPtr != nullptr, "Value not found.");
+      LOGINFO("checkPtr->value().c_str() = %s ", checkPtr->value().c_str());
+      ASSERT(strcmp("TxValue", checkPtr->value().c_str()) == 0,
+             "Value not correct.");
+      if (checkPtr != nullptr &&
+          !strcmp("TxValue", checkPtr->value().c_str())) {
+        LOG("checkPtr is not null");
+        char buf[1024];
+        sprintf(buf, "In net search, get returned %s for key %s",
+                checkPtr->value().c_str(), "TxKey");
+        LOG(buf);
+      } else {
+        LOG("checkPtr is nullptr");
       }
 
       txManager->begin();
@@ -425,7 +425,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight)
         LOG("checkPtr is nullptr");
       }
 
-    } catch (const apache::geode::client::Exception& other) {
+    } catch (const apache::geode::client::Exception &other) {
       LOG(other.getStackTrace());
       FAIL(other.what());
     }

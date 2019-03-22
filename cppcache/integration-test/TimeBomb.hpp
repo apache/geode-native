@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_INTEGRATION_TEST_TIMEBOMB_H_
-#define GEODE_INTEGRATION_TEST_TIMEBOMB_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_INTEGRATION_TEST_TIMEBOMB_H_
+#define GEODE_INTEGRATION_TEST_TIMEBOMB_H_
 
 #include <ace/Task.h>
 #include <ace/OS.h>
@@ -68,7 +68,7 @@ class TimeBomb : public ACE_Task_Base {
  public:
   ACE_Time_Value m_sleep;
 
-  TimeBomb(void (*cleanupFunc)() = nullptr)
+  explicit TimeBomb(void (*cleanupFunc)() = nullptr)
       : m_sleep(0) /* UNUSED , m_numberOfClient( -1 )*/
   {
     char* sleepEnv = ACE_OS::getenv("TIMEBOMB");

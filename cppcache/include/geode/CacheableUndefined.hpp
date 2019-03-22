@@ -22,10 +22,10 @@
 
 #include <memory>
 
-#include "internal/DataSerializableFixedId.hpp"
-#include "internal/geode_globals.hpp"
 #include "Serializable.hpp"
 #include "internal/DSFixedId.hpp"
+#include "internal/DataSerializableFixedId.hpp"
+#include "internal/geode_globals.hpp"
 
 /** @file
  */
@@ -38,8 +38,13 @@ class DataInput;
 class DataOutput;
 class Serializable;
 
+/**
+ * Implements a DataSerializable object for undefined query results.
+ */
+
 class APACHE_GEODE_EXPORT CacheableUndefined
-   : public internal::DataSerializableFixedId_t<internal::DSFid::CacheableUndefined> {
+    : public internal::DataSerializableFixedId_t<
+          internal::DSFid::CacheableUndefined> {
  public:
   inline CacheableUndefined() = default;
   virtual ~CacheableUndefined() noexcept override = default;

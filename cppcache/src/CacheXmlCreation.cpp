@@ -15,12 +15,16 @@
  * limitations under the License.
  */
 
-#include <geode/Cache.hpp>
 #include "CacheXmlCreation.hpp"
+
+#include <geode/Cache.hpp>
+
 #include "CacheImpl.hpp"
 #include "PoolAttributes.hpp"
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 void CacheXmlCreation::addRootRegion(std::shared_ptr<RegionXmlCreation> root) {
   rootRegions.push_back(root);
@@ -61,3 +65,6 @@ CacheXmlCreation::CacheXmlCreation()
   m_pdxIgnoreUnreadFields = false;
   m_readPdxSerialized = false;
 }
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

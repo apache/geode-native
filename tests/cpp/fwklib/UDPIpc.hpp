@@ -20,22 +20,20 @@
  * limitations under the License.
  */
 
-#include "Service.hpp"
-#include "PerfFwk.hpp"
-#include "FwkLog.hpp"
-#include "GsRandom.hpp"
-#include "config.h"
+#include <atomic>
+#include <list>
+#include <string>
 
-#include <ace/Task.h>
-#include <ace/Thread_Mutex.h>
 #include <ace/INET_Addr.h>
-
 #include <ace/SOCK_Dgram.h>
 #include <ace/TSS_T.h>
+#include <ace/Task.h>
+#include <ace/Thread_Mutex.h>
 
-#include <atomic>
-#include <string>
-#include <list>
+#include "FwkLog.hpp"
+#include "GsRandom.hpp"
+#include "Service.hpp"
+#include "config.h"
 
 #ifdef _WIN32
 
@@ -78,13 +76,13 @@ class UDPMessage : public IPCMessage {
     m_msg.clear();
   }
 
-  UDPMessage(UdpCmds cmd) {
+  explicit UDPMessage(UdpCmds cmd) {
     clearHdr();
     m_msg.clear();
     setCmd(cmd);
   }
 
-  UDPMessage(std::string content) : IPCMessage(content) { clearHdr(); }
+  explicit UDPMessage(std::string content) : IPCMessage(content) { clearHdr(); }
 
   UDPMessage(UDPMessage& msg) : IPCMessage(msg.what()) {
     clearHdr();
@@ -141,7 +139,7 @@ class UDPMessageClient {
   ACE_SOCK_Dgram m_io;
 
  public:
-  UDPMessageClient(std::string server);
+  explicit UDPMessageClient(std::string server);
 
   ~UDPMessageClient() { m_io.close(); }
 
@@ -162,7 +160,7 @@ class UDPMessageQueues : public SharedTaskObject {
   std::string m_label;
 
  public:
-  UDPMessageQueues(std::string label) : m_label(label) {}
+  explicit UDPMessageQueues(std::string label) : m_label(label) {}
   ~UDPMessageQueues() {
     FWKINFO(m_label << "MessageQueues::Inbound   count: " << m_cntInbound);
     FWKINFO(m_label << "MessageQueues::Processed count: " << m_cntProcessed);
@@ -253,7 +251,7 @@ class Processor : public ServiceTask {
   // UNUSED bool m_sendReply;
 
  public:
-  Processor(UDPMessageQueues* shared) : ServiceTask(shared) {
+  explicit Processor(UDPMessageQueues* shared) : ServiceTask(shared) {
     m_queues = dynamic_cast<UDPMessageQueues*>(m_shared);
   }
 

@@ -21,7 +21,6 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt.in ${CMAKE_CURRENT_BIN
 
 install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/CMakeLists.txt
-  BUILD-DOTNET-EXAMPLES.md
   DESTINATION examples/dotnet)
 
 function(add_example)
@@ -47,20 +46,31 @@ function(add_example)
     DESTINATION examples/dotnet/${ADD_EXAMPLE_NAME})
 endfunction()
 
-add_example(NAME AuthInitialize
+add_example(NAME authinitialize
 	SOURCE ExampleAuthInitialize.cs Program.cs)
 
-add_example(NAME DataSerializableCs
+add_example(NAME continuousquery
+	SOURCE Order.cs MyCqListener.cs Program.cs)
+
+add_example(NAME dataserializable
 	SOURCE Order.cs Program.cs)
 
-add_example(NAME PdxAutoSerializer
-	SOURCE Order.cs Program.cs)
-
-add_example(NAME PdxSerializableCs
-	SOURCE Order.cs Program.cs)
-
-add_example(NAME PutGetRemove
+add_example(NAME functionexecution
 	SOURCE Program.cs)
 
-add_example(NAME RemoteQueryCs 
+add_example(NAME pdxautoserializer
 	SOURCE Order.cs Program.cs)
+
+add_example(NAME pdxserializable
+	SOURCE Order.cs Program.cs)
+
+add_example(NAME putgetremove
+	SOURCE Program.cs)
+
+add_example(NAME remotequery 
+	SOURCE Order.cs Program.cs)
+
+add_subdirectory(sslputget)
+
+add_example(NAME transaction
+	SOURCE Program.cs)

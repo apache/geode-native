@@ -13,8 +13,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cmake_minimum_required(VERSION 3.10)
 project(cppcache LANGUAGES CXX)
+
+include(CheckIncludeFile)
+include(CheckFunctionExists)
+
+find_package(Threads)
+if (CMAKE_USE_PTHREADS_INIT)
+  check_include_file("pthread.h" HAVE_PTHREAD_H)
+  check_function_exists("pthread_setname_np" HAVE_pthread_setname_np)
+endif()
 
 set(COMMON_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(COMMON_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
@@ -37,6 +45,9 @@ list(APPEND CONFIGURE_OUT_FILES ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 
 # adds named target for version.h to avoid parallel generation under windows
 add_custom_target(version-header DEPENDS version.h)
+set_target_properties(version-header PROPERTIES
+	FOLDER cpp
+)
 
 if ("SunOS" STREQUAL ${CMAKE_SYSTEM_NAME})
   set( _SOLARIS 1 )
@@ -62,6 +73,11 @@ set(SOURCES_ALL ${SOURCES} ${PRIVATE_HEADERS} ${PUBLIC_HEADERS} ${CONFIGURE_IN_F
 
 add_library(_apache-geode INTERFACE)
 
+target_compile_definitions(_apache-geode INTERFACE
+  __STDC_FORMAT_MACROS
+  BOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED
+)
+
 if(CMAKE_SYSTEM_NAME STREQUAL "SunOS")
   target_link_libraries(_apache-geode INTERFACE
     demangle
@@ -78,9 +94,11 @@ elseif (WIN32)
 endif()
 
 target_link_libraries(_apache-geode INTERFACE
-  ACE
-  boost
-  libxml2
+  ACE::ACE
+  Boost::boost
+  Boost::filesystem
+  Boost::thread
+  LibXml2::LibXml2
 )
 
 if (USE_PCH)
@@ -110,5 +128,9 @@ add_subdirectory(shared)
 add_subdirectory(static)
 add_subdirectory(test)
 add_subdirectory(internal)
+add_subdirectory(integration)
 add_subdirectory(integration-test)
-add_subdirectory(integration-test-2)
+
+if (BUILD_BENCHMARKS)
+  add_subdirectory(benchmark)
+endif()

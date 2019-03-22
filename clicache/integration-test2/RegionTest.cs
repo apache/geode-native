@@ -18,55 +18,69 @@
 using System;
 using System.IO;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Apache.Geode.Client.IntegrationTests
 {
-  [Trait("Category", "Integration")]
-  public class RegionTest
-  {
-
-    [Fact]
-    public void PutOnOneCacheGetOnAnotherCache()
+    [Trait("Category", "Integration")]
+    public class RegionTest : TestBase
     {
-      using (var geodeServer = new GeodeServer())
-      {
-        using (var cacheXml = new CacheXml(new FileInfo("cache.xml"), geodeServer))
+        public RegionTest(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
-          var cacheFactory = new CacheFactory();
-
-          var cacheOne = cacheFactory.Create();
-          try
-          {
-            cacheOne.InitializeDeclarativeCache(cacheXml.File.FullName);
-
-            var cacheTwo = cacheFactory.Create();
-            try
-            {
-              cacheTwo.InitializeDeclarativeCache(cacheXml.File.FullName);
-
-              var regionForCache1 = cacheOne.GetRegion<string, string>("testRegion1");
-              var regionForCache2 = cacheTwo.GetRegion<string, string>("testRegion1");
-
-              const string key = "hello";
-              const string expectedResult = "dave";
-
-              regionForCache1.Put(key, expectedResult);
-              var actualResult = regionForCache2.Get(key);
-
-              Assert.Equal(expectedResult, actualResult);
-            }
-            finally
-            {
-              cacheTwo.Close();
-            }
-          }
-          finally
-          {
-            cacheOne.Close();
-          }
         }
-      }
-    }
-  }
 
+        [Fact]
+        public void PutOnOneCacheGetOnAnotherCache()
+        {
+            using (var cluster = new Cluster(output, CreateTestCaseDirectoryName(), 1, 1))
+            {
+                Assert.True(cluster.Start());
+                Assert.Equal(0, cluster.Gfsh
+                    .create()
+                    .region()
+                    .withName("testRegion1")
+                    .withType("PARTITION")
+                    .execute());
+
+                var cacheFactory = new CacheFactory()
+                    .Set("log-level", "none");
+
+                var cacheOne = cacheFactory.Create();
+                try
+                {
+                    cluster.ApplyLocators(cacheOne.GetPoolFactory()).Create("default");
+
+                    var cacheTwo = cacheFactory.Create();
+                    try
+                    {
+                        cluster.ApplyLocators(cacheTwo.GetPoolFactory()).Create("default");
+
+                        var regionFactory1 = cacheOne.CreateRegionFactory(RegionShortcut.PROXY)
+                            .SetPoolName("default");
+                        var regionFactory2 = cacheTwo.CreateRegionFactory(RegionShortcut.PROXY)
+                            .SetPoolName("default");
+
+                        var regionForCache1 = regionFactory1.Create<string, string>("testRegion1");
+                        var regionForCache2 = regionFactory2.Create<string, string>("testRegion1");
+
+                        const string key = "hello";
+                        const string expectedResult = "dave";
+
+                        regionForCache1.Put(key, expectedResult);
+                        var actualResult = regionForCache2.Get(key);
+
+                        Assert.Equal(expectedResult, actualResult);
+                    }
+                    finally
+                    {
+                        cacheTwo.Close();
+                    }
+                }
+                finally
+                {
+                    cacheOne.Close();
+                }
+            }
+        }
+    }
 }

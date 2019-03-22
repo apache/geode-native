@@ -38,11 +38,13 @@ Server side two
 #define SERVER1 s2p1
 #define FEEDER s2p2
 
+using apache::geode::client::EntryEvent;
+
 class OperMonitor : public CacheListener {
   int m_events;
   int m_value;
 
-  void check(const EntryEvent& event) {
+  void check(const EntryEvent &event) {
     char buf[256] = {'\0'};
     m_events++;
     auto keyPtr = std::dynamic_pointer_cast<CacheableString>(event.getKey());
@@ -61,9 +63,9 @@ class OperMonitor : public CacheListener {
   OperMonitor() : m_events(0), m_value(0) {}
   ~OperMonitor() {}
 
-  virtual void afterCreate(const EntryEvent& event) { check(event); }
+  virtual void afterCreate(const EntryEvent &event) { check(event); }
 
-  virtual void afterUpdate(const EntryEvent& event) { check(event); }
+  virtual void afterUpdate(const EntryEvent &event) { check(event); }
 
   void validate(bool conflation) {
     LOG("validate called");
@@ -82,7 +84,7 @@ class OperMonitor : public CacheListener {
   }
 };
 
-void setCacheListener(const char* regName,
+void setCacheListener(const char *regName,
                       std::shared_ptr<OperMonitor> monitor) {
   auto reg = getHelper()->getRegion(regName);
   auto attrMutator = reg->getAttributesMutator();
@@ -93,15 +95,15 @@ std::shared_ptr<OperMonitor> mon2C1 = nullptr;
 std::shared_ptr<OperMonitor> mon1C2 = nullptr;
 std::shared_ptr<OperMonitor> mon2C2 = nullptr;
 
-const char* regions[] = {"ConflatedRegion", "NonConflatedRegion"};
+const char *regions[] = {"ConflatedRegion", "NonConflatedRegion"};
 
 #include "ThinClientDurableInit.hpp"
 #include "ThinClientTasks_C2S2.hpp"
 #include "LocatorHelper.hpp"
 
-void initClientCache(std::shared_ptr<OperMonitor>& mon1,
-                     std::shared_ptr<OperMonitor>& mon2, int durableIdx,
-                     const char* conflation) {
+void initClientCache(std::shared_ptr<OperMonitor> &mon1,
+                     std::shared_ptr<OperMonitor> &mon2, int durableIdx,
+                     const char *conflation) {
   initClientAndTwoRegions(durableIdx, 0, std::chrono::seconds(300), conflation,
                           regions);
 

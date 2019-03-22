@@ -20,19 +20,22 @@
  * limitations under the License.
  */
 
-#include <geode/internal/geode_globals.hpp>
 #include <memory>
-#include "DSMemberForVersionStamp.hpp"
-#include "ace/RW_Thread_Mutex.h"
-#include "ReadWriteLock.hpp"
 #include <unordered_map>
+
+#include <ace/RW_Thread_Mutex.h>
+
+#include <geode/internal/geode_globals.hpp>
+
+#include "DSMemberForVersionStamp.hpp"
+#include "ReadWriteLock.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 struct DistributedMemberWithIntIdentifier {
  public:
-  DistributedMemberWithIntIdentifier(
+  explicit DistributedMemberWithIntIdentifier(
       std::shared_ptr<DSMemberForVersionStamp> dsmember = nullptr,
       uint16_t id = 0) {
     this->m_member = dsmember;

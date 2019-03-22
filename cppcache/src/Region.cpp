@@ -16,6 +16,7 @@
  */
 
 #include <geode/Region.hpp>
+
 #include "CacheImpl.hpp"
 
 namespace apache {

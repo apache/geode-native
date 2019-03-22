@@ -16,24 +16,29 @@
  */
 
 #include <stdint.h>
+
 #include <limits>
 #include <regex>
 
 #include <gtest/gtest.h>
 
-#include <geode/DataOutput.hpp>
 #include <geode/CacheFactory.hpp>
+#include <geode/DataOutput.hpp>
 
-#include "gtest_extensions.h"
 #include "ByteArrayFixture.hpp"
-#include "DataOutputInternal.hpp"
-#include "SerializationRegistry.hpp"
 #include "DataInputInternal.hpp"
 #include "DataOutputInternal.hpp"
+#include "SerializationRegistry.hpp"
+#include "gtest_extensions.h"
 
 namespace {
 
-using namespace apache::geode::client;
+using apache::geode::client::ByteArray;
+using apache::geode::client::CacheableString;
+using apache::geode::client::DataInputInternal;
+using apache::geode::client::DataOutput;
+using apache::geode::client::DataOutputInternal;
+using apache::geode::client::SerializationRegistry;
 
 class TestDataOutput : public DataOutputInternal {
  public:
@@ -74,7 +79,7 @@ inline std::string to_hex(const uint8_t* bytes, size_t len) {
   std::stringstream ss;
   ss << std::setfill('0') << std::hex;
   for (size_t i(0); i < len; ++i) {
-    ss << std::setw(2) << (int)bytes[i];
+    ss << std::setw(2) << static_cast<int>(bytes[i]);
   }
   return ss.str();
 }

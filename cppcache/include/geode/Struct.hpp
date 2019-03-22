@@ -23,12 +23,12 @@
 #include <unordered_map>
 #include <vector>
 
-#include "internal/geode_globals.hpp"
-#include "internal/DataSerializableFixedId.hpp"
 #include "CacheableBuiltins.hpp"
-#include "StructSet.hpp"
 #include "SelectResults.hpp"
 #include "Serializable.hpp"
+#include "StructSet.hpp"
+#include "internal/DataSerializableFixedId.hpp"
+#include "internal/geode_globals.hpp"
 
 /**
  * @file
@@ -47,7 +47,7 @@ class StructSet;
  * is obtained from a Cache.
  */
 class APACHE_GEODE_EXPORT Struct
-   : public internal::DataSerializableFixedId_t<DSFid::Struct> {
+    : public internal::DataSerializableFixedId_t<internal::DSFid::Struct> {
  public:
   typedef std::vector<std::shared_ptr<Serializable>>::iterator iterator;
 
@@ -122,7 +122,6 @@ class APACHE_GEODE_EXPORT Struct
   }
 
  private:
-
   void skipClassName(DataInput& input);
 
   typedef std::unordered_map<std::string, int32_t> FieldNameToIndexMap;

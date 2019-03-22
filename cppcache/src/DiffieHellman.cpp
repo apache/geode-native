@@ -16,10 +16,13 @@
  */
 
 #include "DiffieHellman.hpp"
-#include "util/Log.hpp"
+
+#include <ace/Guard_T.h>
+
 #include <geode/ExceptionTypes.hpp>
 #include <geode/SystemProperties.hpp>
-#include <ace/Guard_T.h>
+
+#include "util/Log.hpp"
 namespace apache {
 namespace geode {
 namespace client {
@@ -42,8 +45,8 @@ void* DiffieHellman::getOpenSSLFuncPtr(const char* function_name) {
   void* func = m_dll.symbol(function_name);
   if (func == nullptr) {
     char msg[1000];
-    ACE_OS::snprintf(msg, 1000, "cannot find function %s in library %s",
-                     function_name, "cryptoImpl");
+    std::snprintf(msg, 1000, "cannot find function %s in library %s",
+                  function_name, "cryptoImpl");
     LOGERROR(msg);
     throw IllegalStateException(msg);
   }
@@ -61,7 +64,7 @@ void DiffieHellman::initOpenSSLFuncPtrs() {
 
   if (m_dll.open(libName, ACE_DEFAULT_SHLIB_MODE, 0) == -1) {
     char msg[1000];
-    ACE_OS::snprintf(msg, 1000, "cannot open library: %s", libName);
+    std::snprintf(msg, 1000, "cannot open library: %s", libName);
     LOGERROR(msg);
     throw FileNotFoundException(msg);
   }
@@ -99,13 +102,13 @@ void DiffieHellman::initDhKeys(const std::shared_ptr<Properties>& props) {
 
   if (error == DH_ERR_UNSUPPORTED_ALGO) {  // Unsupported Algorithm
     char msg[64] = {'\0'};
-    ACE_OS::snprintf(msg, 64, "Algorithm %s is not supported.",
-                     dhAlgo->value().c_str());
+    std::snprintf(msg, 64, "Algorithm %s is not supported.",
+                  dhAlgo->value().c_str());
     throw IllegalArgumentException(msg);
   } else if (error == DH_ERR_ILLEGAL_KEYSIZE) {  // Illegal Key size
     char msg[64] = {'\0'};
-    ACE_OS::snprintf(msg, 64, "Illegal key size for algorithm %s.",
-                     dhAlgo->value().c_str());
+    std::snprintf(msg, 64, "Illegal key size for algorithm %s.",
+                  dhAlgo->value().c_str());
     throw IllegalArgumentException(msg);
   } else if (m_dhCtx == nullptr) {
     throw IllegalStateException(

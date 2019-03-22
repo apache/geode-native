@@ -20,15 +20,15 @@
 #ifndef GEODE_DATAOUTPUT_H_
 #define GEODE_DATAOUTPUT_H_
 
+#include <algorithm>
+#include <cstdlib>
 #include <cstring>
 #include <string>
-#include <cstdlib>
-#include <algorithm>
 
-#include "internal/geode_globals.hpp"
+#include "CacheableString.hpp"
 #include "ExceptionTypes.hpp"
 #include "Serializable.hpp"
-#include "CacheableString.hpp"
+#include "internal/geode_globals.hpp"
 
 namespace apache {
 namespace geode {
@@ -174,32 +174,14 @@ class APACHE_GEODE_EXPORT DataOutput {
    */
   inline void writeInt(uint64_t value) {
     ensureCapacity(8);
-    // the defines are not reliable and can be changed by compiler options.
-    // Hence using sizeof() test instead.
-    //#if defined(_LP64) || ( defined(__WORDSIZE) && __WORDSIZE == 64 ) ||
-    //( defined(_INTEGRAL_MAX_BITS) && _INTEGRAL_MAX_BITS >= 64 )
-    if (sizeof(long) == 8) {
-      *(m_buf++) = static_cast<uint8_t>(value >> 56);
-      *(m_buf++) = static_cast<uint8_t>(value >> 48);
-      *(m_buf++) = static_cast<uint8_t>(value >> 40);
-      *(m_buf++) = static_cast<uint8_t>(value >> 32);
-      *(m_buf++) = static_cast<uint8_t>(value >> 24);
-      *(m_buf++) = static_cast<uint8_t>(value >> 16);
-      *(m_buf++) = static_cast<uint8_t>(value >> 8);
-      *(m_buf++) = static_cast<uint8_t>(value);
-    } else {
-      uint32_t hword = static_cast<uint32_t>(value >> 32);
-      *(m_buf++) = static_cast<uint8_t>(hword >> 24);
-      *(m_buf++) = static_cast<uint8_t>(hword >> 16);
-      *(m_buf++) = static_cast<uint8_t>(hword >> 8);
-      *(m_buf++) = static_cast<uint8_t>(hword);
-
-      hword = static_cast<uint32_t>(value);
-      *(m_buf++) = static_cast<uint8_t>(hword >> 24);
-      *(m_buf++) = static_cast<uint8_t>(hword >> 16);
-      *(m_buf++) = static_cast<uint8_t>(hword >> 8);
-      *(m_buf++) = static_cast<uint8_t>(hword);
-    }
+    *(m_buf++) = static_cast<uint8_t>(value >> 56);
+    *(m_buf++) = static_cast<uint8_t>(value >> 48);
+    *(m_buf++) = static_cast<uint8_t>(value >> 40);
+    *(m_buf++) = static_cast<uint8_t>(value >> 32);
+    *(m_buf++) = static_cast<uint8_t>(value >> 24);
+    *(m_buf++) = static_cast<uint8_t>(value >> 16);
+    *(m_buf++) = static_cast<uint8_t>(value >> 8);
+    *(m_buf++) = static_cast<uint8_t>(value);
   }
 
   /**
@@ -357,14 +339,6 @@ class APACHE_GEODE_EXPORT DataOutput {
   }
 
   /**
-   * Write a <code>Serializable</code> object to the <code>DataOutput</code>.
-   *
-   * @param objptr pointer to the <code>Serializable</code> object
-   *   to be written
-   */
-  void writeObject(const Serializable* objptr) { writeObjectInternal(objptr); }
-
-  /**
    * Get an internal pointer to the current location in the
    * <code>DataOutput</code> byte array.
    */
@@ -423,8 +397,7 @@ class APACHE_GEODE_EXPORT DataOutput {
 
   inline uint8_t* getBufferCopy() {
     size_t size = m_buf - m_bytes.get();
-    uint8_t* result;
-    result = (uint8_t*)std::malloc(size * sizeof(uint8_t));
+    auto result = static_cast<uint8_t*>(std::malloc(size * sizeof(uint8_t)));
     if (result == nullptr) {
       throw OutOfMemoryException("Out of Memory while resizing buffer");
     }
@@ -444,7 +417,8 @@ class APACHE_GEODE_EXPORT DataOutput {
   inline void reset() {
     if (m_haveBigBuffer) {
       // create smaller buffer
-      m_bytes.reset((uint8_t*)std::malloc(m_lowWaterMark * sizeof(uint8_t)));
+      m_bytes.reset(
+          static_cast<uint8_t*>(std::malloc(m_lowWaterMark * sizeof(uint8_t))));
       if (m_bytes == nullptr) {
         throw OutOfMemoryException("Out of Memory while resizing buffer");
       }
@@ -471,7 +445,8 @@ class APACHE_GEODE_EXPORT DataOutput {
       m_size = newSize;
 
       auto bytes = m_bytes.release();
-      auto tmp = (uint8_t*)std::realloc(bytes, m_size * sizeof(uint8_t));
+      auto tmp =
+          static_cast<uint8_t*>(std::realloc(bytes, m_size * sizeof(uint8_t)));
       if (tmp == nullptr) {
         throw OutOfMemoryException("Out of Memory while resizing buffer");
       }
@@ -516,14 +491,14 @@ class APACHE_GEODE_EXPORT DataOutput {
   virtual const SerializationRegistry& getSerializationRegistry() const;
 
  private:
-  void writeObjectInternal(const Serializable* ptr, bool isDelta = false);
-  void writeObjectInternal(const std::shared_ptr<Serializable>& ptr, bool isDelta = false);
+  void writeObjectInternal(const std::shared_ptr<Serializable>& ptr,
+                           bool isDelta = false);
 
   static void acquireLock();
   static void releaseLock();
 
   // memory m_buffer to encode to.
-  std::unique_ptr<uint8_t> m_bytes;
+  std::unique_ptr<uint8_t[]> m_bytes;
   // cursor.
   uint8_t* m_buf;
   // size of m_bytes.

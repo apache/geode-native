@@ -20,13 +20,13 @@
  * limitations under the License.
  */
 
-#include <ace/SOCK_Stream.h>
-#include <ace/OS.h>
-
-#include <geode/internal/geode_base.hpp>
-
 #include <cstdint>
 #include <string>
+
+#include <ace/OS.h>
+#include <ace/SOCK_Stream.h>
+
+#include <geode/internal/geode_base.hpp>
 
 namespace apache {
 namespace geode {
@@ -59,9 +59,9 @@ class IpcHandler {
   IpcMsg readIpcMsg(int32_t waitSeconds);
 
  public:
-  IpcHandler(const ACE_INET_Addr &driver, int32_t maxWaitSecs = 0);
+  explicit IpcHandler(const ACE_INET_Addr &driver, int32_t maxWaitSecs = 0);
 
-  inline IpcHandler(ACE_SOCK_Stream *io) : m_io(io) {
+  inline explicit IpcHandler(ACE_SOCK_Stream *io) : m_io(io) {
     ACE_OS::signal(SIGPIPE, SIG_IGN);  // Ignore broken pipe
   }
 

@@ -37,21 +37,23 @@
 #include "CacheRegionHelper.hpp"
 #include "CacheImpl.hpp"
 
-using namespace apache::geode::client;
-using namespace test;
-using namespace testobject;
-
 #define CLIENT1 s1p1
 #define SERVER s2p1
 #define LOCATOR s2p2
 
+using apache::geode::client::IllegalStateException;
+using apache::geode::client::QueryService;
+
+using testobject::Portfolio;
+using testobject::Position;
+
 bool isLocator = false;
 bool isLocalServer = false;
-const char* poolNames[] = {"Pool1", "Pool2", "Pool3"};
-const char* locHostPort =
+const char *poolNames[] = {"Pool1", "Pool2", "Pool3"};
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
-const char* qRegionNames[] = {"Portfolios", "Positions"};
+const char *qRegionNames[] = {"Portfolios", "Positions"};
 
 void clientOperations() {
   initClient(true);
@@ -60,9 +62,11 @@ void clientOperations() {
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
             ->getSerializationRegistry();
 
-    serializationRegistry->addType(Position::createDeserializable);
-    serializationRegistry->addType(Portfolio::createDeserializable);
-  } catch (const IllegalStateException&) {
+    serializationRegistry->addDataSerializableType(
+        Position::createDeserializable, 2);
+    serializationRegistry->addDataSerializableType(
+        Portfolio::createDeserializable, 3);
+  } catch (const IllegalStateException &) {
     // ignore exception
   }
 

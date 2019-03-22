@@ -22,9 +22,9 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include <string.h>
-
 #include "RegionConfig.hpp"
+
+#include <string.h>
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -44,26 +44,25 @@ void RegionConfig::setConcurrency(const std::string& str) {
 }
 
 void RegionConfig::setCaching(const std::string& str) { m_caching = str; }
-unsigned long RegionConfig::entries() { return atol(m_capacity.c_str()); }
-unsigned long RegionConfig::getLruEntriesLimit() {
-  return atol(m_lruEntriesLimit.c_str());
+uint64_t RegionConfig::entries() { return std::stoull(m_capacity); }
+uint64_t RegionConfig::getLruEntriesLimit() {
+  return std::stoull(m_lruEntriesLimit);
 }
 
 uint8_t RegionConfig::getConcurrency() {
-  uint8_t cl = static_cast<uint8_t>(atoi(m_concurrency.c_str()));
+  uint8_t cl = static_cast<uint8_t>(std::stoi(m_concurrency));
   if (cl == 0) return 16;
   return cl;
 }
 
 bool RegionConfig::getCaching() {
-  if (strcmp("true", m_caching.c_str()) == 0) {
-    return true;
-  } else if (strcmp("false", m_caching.c_str()) == 0) {
+  if ("false" == m_caching) {
     return false;
   } else {
     return true;
   }
 }
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

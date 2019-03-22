@@ -27,8 +27,6 @@ add_library(security STATIC
   PkcsAuthInit.cpp
   PkcsAuthInit.hpp
   PkcsCredentialGenerator.hpp
-  Security.cpp
-  Security.hpp
   typedefs.hpp
   XmlAuthzCredentialGenerator.hpp
 )
@@ -38,21 +36,23 @@ generate_export_header(security)
 
 target_include_directories(security
   PUBLIC
-	$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
   PRIVATE
-	$<TARGET_PROPERTY:apache-geode,SOURCE_DIR>/../src
+    $<TARGET_PROPERTY:apache-geode,SOURCE_DIR>/../src
 )
 
 target_link_libraries(security
   PUBLIC
-    fwk
+    framework
     testobject
-    crypto
-    ssl
+    OpenSSL::Crypto
+    OpenSSL::SSL
   PRIVATE
-    ACE
-	_WarningsAsError
+    ACE::ACE
+    _WarningsAsError
 )
 
+add_clangformat(security)
+
 # For Visual Studio organization
-set_target_properties(security PROPERTIES FOLDER test)
+set_target_properties(security PROPERTIES FOLDER cli/test/integration)

@@ -20,14 +20,14 @@
 #ifndef GEODE_STRUCTSETIMPL_H_
 #define GEODE_STRUCTSETIMPL_H_
 
+#include <memory>
 #include <string>
 #include <unordered_map>
-#include <memory>
 
-#include <geode/internal/geode_globals.hpp>
-#include <geode/StructSet.hpp>
-#include <geode/Struct.hpp>
 #include <geode/CacheableBuiltins.hpp>
+#include <geode/Struct.hpp>
+#include <geode/StructSet.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 namespace apache {
 namespace geode {

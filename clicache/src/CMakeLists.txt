@@ -146,6 +146,7 @@ add_library(${PROJECT_NAME} SHARED
   LocalRegion.hpp
   Log.cpp
   Log.hpp
+  ManagedDataSerializableHandler.hpp
   ManagedPdxTypeHandler.hpp
   native_conditional_shared_ptr.hpp
   native_conditional_unique_ptr.hpp
@@ -308,8 +309,8 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
   VS_GLOBAL_KEYWORD "ManagedCProj"
   VS_GLOBAL_PROJECT_TYPES "{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}"
   VS_GLOBAL_ROOTNAMESPACE ${PROJECT_NAME}
-  VS_DOTNET_TARGET_FRAMEWORK_VERSION "v4.5.2"
   VS_DOTNET_REFERENCES "System;System.Xml;System.Core"
+  FOLDER cli
 )
 
 target_compile_options(${PROJECT_NAME}
@@ -354,6 +355,7 @@ install(TARGETS ${PROJECT_NAME}
 add_dependencies(client-libraries ${PROJECT_NAME})
 
 add_subdirectory(templates)
+
 
 # For Visual Studio organization
 source_group("Configure In Files" FILES ${CONFIGURE_IN_FILES})

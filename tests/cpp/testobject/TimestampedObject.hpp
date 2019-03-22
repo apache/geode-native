@@ -26,8 +26,7 @@
 
 namespace testobject {
 
-using namespace apache::geode::client;
-using namespace testframework;
+using apache::geode::client::DataSerializable;
 
 class TESTOBJECT_EXPORT TimestampedObject : public DataSerializable {
  public:

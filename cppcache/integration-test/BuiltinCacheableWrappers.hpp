@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_INTEGRATION_TEST_BUILTINCACHEABLEWRAPPERS_H_
-#define GEODE_INTEGRATION_TEST_BUILTINCACHEABLEWRAPPERS_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,9 +15,15 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_INTEGRATION_TEST_BUILTINCACHEABLEWRAPPERS_H_
+#define GEODE_INTEGRATION_TEST_BUILTINCACHEABLEWRAPPERS_H_
+
 #include <limits.h>
 #include <cstdlib>
 #include <wchar.h>
+#include <random>
 
 #include <ace/Date_Time.h>
 
@@ -35,9 +36,47 @@
 #include <geode/CacheableUndefined.hpp>
 #include <geode/CacheableObjectArray.hpp>
 
-using namespace apache::geode::client;
-
 namespace CacheableHelper {
+
+using apache::geode::client::Cacheable;
+using apache::geode::client::CacheableArrayList;
+using apache::geode::client::CacheableBoolean;
+using apache::geode::client::CacheableByte;
+using apache::geode::client::CacheableBytes;
+using apache::geode::client::CacheableCharacter;
+using apache::geode::client::CacheableDate;
+using apache::geode::client::CacheableDouble;
+using apache::geode::client::CacheableDoubleArray;
+using apache::geode::client::CacheableFileName;
+using apache::geode::client::CacheableFloat;
+using apache::geode::client::CacheableFloatArray;
+using apache::geode::client::CacheableHashMap;
+using apache::geode::client::CacheableHashSet;
+using apache::geode::client::CacheableHashTable;
+using apache::geode::client::CacheableIdentityHashMap;
+using apache::geode::client::CacheableInt16;
+using apache::geode::client::CacheableInt16Array;
+using apache::geode::client::CacheableInt32;
+using apache::geode::client::CacheableInt32Array;
+using apache::geode::client::CacheableInt64;
+using apache::geode::client::CacheableInt64Array;
+using apache::geode::client::CacheableKey;
+using apache::geode::client::CacheableLinkedHashSet;
+using apache::geode::client::CacheableLinkedList;
+using apache::geode::client::CacheableObjectArray;
+using apache::geode::client::CacheableStack;
+using apache::geode::client::CacheableString;
+using apache::geode::client::CacheableStringArray;
+using apache::geode::client::CacheableUndefined;
+using apache::geode::client::CacheableVector;
+using apache::geode::client::CacheHelper;
+using apache::geode::client::Serializable;
+using apache::geode::client::internal::DataSerializablePrimitive;
+using apache::geode::client::internal::DSCode;
+
+using apache::geode::client::testing::CacheableWrapper;
+using apache::geode::client::testing::CacheableWrapperFactory;
+
 const uint32_t m_crc32Table[] = {
     0x00000000, 0x77073096, 0xee0e612c, 0x990951ba, 0x076dc419, 0x706af48f,
     0xe963a535, 0x9e6495a3, 0x0edb8832, 0x79dcb8a4, 0xe0d5e91e, 0x97d2d988,
@@ -84,14 +123,14 @@ const uint32_t m_crc32Table[] = {
     0xb40bbe37, 0xc30c8ea1, 0x5a05df1b, 0x2d02ef8d};
 
 inline double random(double maxValue) {
-  // Random number generator is initialized in registerBuiltins()
-  return (maxValue * static_cast<double>(rand())) /
-         (static_cast<double>(RAND_MAX) + 1.0);
+  static thread_local std::default_random_engine generator(
+      std::random_device{}());
+  return std::uniform_real_distribution<double>{0.0, maxValue}(generator);
 }
 
 template <typename TPRIM>
 inline TPRIM random(TPRIM maxValue) {
-  return (TPRIM)random((double)maxValue);
+  return static_cast<TPRIM>(random(static_cast<double>(maxValue)));
 }
 
 // This returns an array allocated on heap
@@ -187,7 +226,6 @@ inline bool isContainerTypeId(DSCode typeId) {
          (typeId == DSCode::CacheableLinkedHashSet) ||
          (typeId == DSCode::CacheableLinkedList);
 }
-}  // namespace CacheableHelper
 
 // Cacheable types that can be used as keys
 
@@ -301,7 +339,8 @@ class CacheableDateWrapper : public CacheableWrapper {
 
     const ACE_Time_Value currentTime = ACE_OS::gettimeofday();
     timeofday = currentTime.sec();
-    time_t epoctime = (time_t)(timeofday + (rnd * (rnd % 2 == 0 ? 1 : -1)));
+    time_t epoctime =
+        static_cast<time_t>(timeofday + (rnd * (rnd % 2 == 0 ? 1 : -1)));
 
     m_cacheableObject = CacheableDate::create(epoctime);
   }
@@ -358,8 +397,9 @@ class CacheableFileNameWrapper : public CacheableWrapper {
 
   virtual uint32_t getCheckSum(const std::shared_ptr<Cacheable> object) const {
     auto&& obj = std::dynamic_pointer_cast<CacheableFileName>(object);
-    return (obj ? CacheableHelper::crc32(reinterpret_cast<const uint8_t*>(obj->value().c_str()),
-                                         obj->length())
+    return (obj ? CacheableHelper::crc32(
+                      reinterpret_cast<const uint8_t*>(obj->value().c_str()),
+                      obj->length())
                 : 0);
   }
 };
@@ -515,9 +555,11 @@ class CacheableStringWrapper : public CacheableWrapper {
   virtual uint32_t getCheckSum(const std::shared_ptr<Cacheable> object) const {
     const CacheableString* obj =
         dynamic_cast<const CacheableString*>(object.get());
-    return (obj != nullptr ? CacheableHelper::crc32(
-        reinterpret_cast<const uint8_t*>(obj->value().c_str()), obj->length())
-                           : 0);
+    return (obj != nullptr
+                ? CacheableHelper::crc32(
+                      reinterpret_cast<const uint8_t*>(obj->value().c_str()),
+                      obj->length())
+                : 0);
   }
 };
 
@@ -559,8 +601,8 @@ class CacheableHugeStringWrapper : public CacheableWrapper {
     const CacheableString* obj =
         dynamic_cast<const CacheableString*>(object.get());
     ASSERT(obj != nullptr, "getCheckSum: null object.");
-    return CacheableHelper::crc32(reinterpret_cast<const uint8_t*>(obj->value().c_str()),
-                                  obj->length());
+    return CacheableHelper::crc32(
+        reinterpret_cast<const uint8_t*>(obj->value().c_str()), obj->length());
   }
 };
 
@@ -707,8 +749,7 @@ class CacheableHashMapTypeWrapper : public CacheableWrapper {
 
       for (std::vector<DSCode>::iterator valIter = valTypeIds.begin();
            valIter != valTypeIds.end(); valIter++) {
-
-       if (CacheableHelper::isContainerTypeId(static_cast<DSCode>(*valIter))) {
+        if (CacheableHelper::isContainerTypeId(static_cast<DSCode>(*valIter))) {
           continue;
         }
         if ((*valIter == DSCode::CacheableASCIIStringHuge ||
@@ -736,7 +777,8 @@ class CacheableHashMapTypeWrapper : public CacheableWrapper {
             CacheableWrapperFactory::createInstance(*valIter));
         ASSERT(valWrapper != nullptr,
                "initRandomValue: valWrapper null object.");
-        keyWrapper->initKey(((static_cast<int8_t>(*keyIter)) << 8) + item, maxSize);
+        keyWrapper->initKey(((static_cast<int8_t>(*keyIter)) << 8) + item,
+                            maxSize);
         valWrapper->initRandomValue(maxSize);
         chmp->emplace(
             std::dynamic_pointer_cast<CacheableKey>(keyWrapper->getCacheable()),
@@ -847,8 +889,7 @@ class CacheableBytesWrapper : public CacheableWrapper {
   // CacheableWrapper members
 
   virtual void initRandomValue(int32_t maxSize) {
-    auto randArr =
-        CacheableHelper::randomArray<uint8_t>(maxSize, UCHAR_MAX);
+    auto randArr = CacheableHelper::randomArray<uint8_t>(maxSize, UCHAR_MAX);
     m_cacheableObject = CacheableBytes::create(
         std::vector<int8_t>(std::begin(randArr), std::end(randArr)));
   }
@@ -996,7 +1037,7 @@ class CacheableNullStringWrapper : public CacheableWrapper {
   // CacheableWrapper members
 
   void initRandomValue(int32_t) override {
-    m_cacheableObject = CacheableString::create((char*)nullptr);
+    m_cacheableObject = CacheableString::create(static_cast<char*>(nullptr));
   }
 
   uint32_t getCheckSum(const std::shared_ptr<Cacheable> object) const override {
@@ -1038,8 +1079,8 @@ class CacheableStringArrayWrapper : public CacheableWrapper {
       }
     }
     m_cacheableObject = CacheableStringArray::create(
-      std::vector<std::shared_ptr<CacheableString>>(
-        randArr, randArr + arraySize));
+        std::vector<std::shared_ptr<CacheableString>>(randArr,
+                                                      randArr + arraySize));
   }
 
   virtual uint32_t getCheckSum(const std::shared_ptr<Cacheable> object) const {
@@ -1098,7 +1139,8 @@ class CacheableVectorTypeWrapper : public CacheableWrapper {
     maxSize = maxSize / static_cast<int32_t>(sizeOfTheVector) + 1;
     for (size_t i = 0; i < sizeOfTheVector; i++) {
       DSCode valueTypeId = valueTypeIds[i];
-      if (!CacheableHelper::isContainerTypeId(static_cast<DSCode>(valueTypeId))) {
+      if (!CacheableHelper::isContainerTypeId(
+              static_cast<DSCode>(valueTypeId))) {
         auto wrapper = CacheableWrapperFactory::createInstance(valueTypeId);
         wrapper->initRandomValue(maxSize);
         vec->push_back(wrapper->getCacheable());
@@ -1155,7 +1197,8 @@ class CacheableObjectArrayWrapper : public CacheableWrapper {
     maxSize = maxSize / static_cast<int32_t>(sizeOfTheVector) + 1;
     for (size_t i = 0; i < sizeOfTheVector; i++) {
       DSCode valueTypeId = valueTypeIds[i];
-      if (!CacheableHelper::isContainerTypeId(static_cast<DSCode>(valueTypeId))) {
+      if (!CacheableHelper::isContainerTypeId(
+              static_cast<DSCode>(valueTypeId))) {
         auto wrapper = CacheableWrapperFactory::createInstance(valueTypeId);
         wrapper->initRandomValue(maxSize);
         arr->push_back(wrapper->getCacheable());
@@ -1182,8 +1225,6 @@ class CacheableObjectArrayWrapper : public CacheableWrapper {
   }
 };
 
-namespace CacheableHelper {
-
 void registerBuiltins(bool isRegisterFileName = false) {
   // Initialize the random number generator.
   srand(getpid() + static_cast<int>(time(nullptr)));
@@ -1192,14 +1233,12 @@ void registerBuiltins(bool isRegisterFileName = false) {
   CacheableWrapperFactory::registerType(DSCode::CacheableBoolean,
                                         "CacheableBoolean",
                                         CacheableBooleanWrapper::create, true);
-  CacheableWrapperFactory::registerType(DSCode::CacheableByte,
-                                        "CacheableByte",
+  CacheableWrapperFactory::registerType(DSCode::CacheableByte, "CacheableByte",
                                         CacheableByteWrapper::create, true);
   CacheableWrapperFactory::registerType(DSCode::CacheableDouble,
                                         "CacheableDouble",
                                         CacheableDoubleWrapper::create, true);
-  CacheableWrapperFactory::registerType(DSCode::CacheableDate,
-                                        "CacheableDate",
+  CacheableWrapperFactory::registerType(DSCode::CacheableDate, "CacheableDate",
                                         CacheableDateWrapper::create, true);
   if (isRegisterFileName) {
 #ifdef _WIN32
@@ -1293,6 +1332,7 @@ void registerBuiltins(bool isRegisterFileName = false) {
                                         "CacheableStack",
                                         CacheableStackWrapper::create, false);
 }
+
 }  // namespace CacheableHelper
 
 #endif  // GEODE_INTEGRATION_TEST_BUILTINCACHEABLEWRAPPERS_H_

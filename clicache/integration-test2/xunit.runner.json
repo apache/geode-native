@@ -1,4 +1,5 @@
-﻿{
+{
   "methodDisplay": "classAndMethod",
-  "parallelizeTestCollections": "false"
+  "parallelizeAssembly":  true,
+  "parallelizeTestCollections": true 
 }

@@ -22,8 +22,8 @@
 
 #include <string>
 
-#include <geode/internal/geode_globals.hpp>
 #include <geode/CqServiceStatistics.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 #include "statistics/Statistics.hpp"
 #include "statistics/StatisticsFactory.hpp"
@@ -34,15 +34,15 @@ namespace geode {
 namespace client {
 
 using statistics::StatisticDescriptor;
-using statistics::StatisticsType;
 using statistics::Statistics;
+using statistics::StatisticsType;
 using util::concurrent::spinlock_mutex;
 
 class APACHE_GEODE_EXPORT CqServiceVsdStats : public CqServiceStatistics {
  public:
   /** hold statistics for a cq. */
-  CqServiceVsdStats(statistics::StatisticsFactory* factory,
-                    const std::string& cqName = "CqServiceVsdStats");
+  explicit CqServiceVsdStats(statistics::StatisticsFactory* factory,
+                             const std::string& cqName = "CqServiceVsdStats");
 
   /** disable stat collection for this item. */
   virtual ~CqServiceVsdStats();
@@ -104,7 +104,7 @@ class APACHE_GEODE_EXPORT CqServiceVsdStats : public CqServiceStatistics {
   }
 
  private:
-  apache::geode::statistics::Statistics* m_cqServiceVsdStats;
+  Statistics* m_cqServiceVsdStats;
 
   int32_t m_numCqsActiveId;
   int32_t m_numCqsCreatedId;

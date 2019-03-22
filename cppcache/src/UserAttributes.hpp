@@ -20,18 +20,22 @@
 #ifndef GEODE_USERATTRIBUTES_H_
 #define GEODE_USERATTRIBUTES_H_
 
-#include <geode/internal/geode_globals.hpp>
-#include <geode/Properties.hpp>
-#include "TcrEndpoint.hpp"
-#include <ace/TSS_T.h>
-#include <string>
 #include <map>
+#include <mutex>
+#include <string>
+
+#include <geode/Properties.hpp>
+#include <geode/internal/geode_globals.hpp>
+
+#include "TcrEndpoint.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
+
 class AuthenticatedView;
 class ThinClientPoolDM;
+
 class UserConnectionAttributes {
  public:
   UserConnectionAttributes(TcrEndpoint* endpoint, uint64_t id) {
@@ -68,7 +72,7 @@ class UserConnectionAttributes {
   // UserConnectionAttributes & operator =(const UserConnectionAttributes &);
 };
 
-class APACHE_GEODE_EXPORT UserAttributes {
+class UserAttributes {
   // TODO: need to add lock here so that user should not be authenticated at two
   // servers
  public:
@@ -85,11 +89,9 @@ class APACHE_GEODE_EXPORT UserAttributes {
 
   void setConnectionAttributes(TcrEndpoint* endpoint, uint64_t id) {
     m_isUserAuthenticated = true;
-    UserConnectionAttributes* ucb = new UserConnectionAttributes(endpoint, id);
-    ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_listLock);
-    // m_connectionAttr.push_back(ucb);
-    std::string fullName(endpoint->name().c_str());
-    m_connectionAttr[fullName] = ucb;
+    auto ucb = new UserConnectionAttributes(endpoint, id);
+    std::lock_guard<decltype(m_listLock)> guard(m_listLock);
+    m_connectionAttr[endpoint->name()] = ucb;
   }
 
   void unAuthenticateEP(TcrEndpoint* endpoint);
@@ -106,11 +108,12 @@ class APACHE_GEODE_EXPORT UserAttributes {
 
   bool isEndpointAuthenticated(TcrEndpoint* ep);
 
+  static thread_local std::shared_ptr<UserAttributes> threadLocalUserAttributes;
+
  private:
   std::map<std::string, UserConnectionAttributes*> m_connectionAttr;
   std::shared_ptr<Properties> m_credentials;
-  // ThinClientPoolDM m_pool;
-  ACE_Recursive_Thread_Mutex m_listLock;
+  std::recursive_mutex m_listLock;
   bool m_isUserAuthenticated;
   AuthenticatedView* m_authenticatedView;
   std::shared_ptr<Pool> m_pool;
@@ -120,29 +123,11 @@ class APACHE_GEODE_EXPORT UserAttributes {
   UserAttributes& operator=(const UserAttributes&);
 };
 
-class TSSUserAttributesWrapper {
- private:
-  std::shared_ptr<UserAttributes> m_userAttribute;
-  TSSUserAttributesWrapper& operator=(const TSSUserAttributesWrapper&);
-  TSSUserAttributesWrapper(const TSSUserAttributesWrapper&);
-
- public:
-  static ACE_TSS<TSSUserAttributesWrapper> s_geodeTSSUserAttributes;
-  std::shared_ptr<UserAttributes> getUserAttributes() {
-    return m_userAttribute;
-  }
-  void setUserAttributes(std::shared_ptr<UserAttributes> userAttr) {
-    m_userAttribute = userAttr;
-  }
-  TSSUserAttributesWrapper() : m_userAttribute(nullptr) {}
-  ~TSSUserAttributesWrapper() {}
-};
-
 class GuardUserAttributes {
  public:
   GuardUserAttributes();
 
-  GuardUserAttributes(AuthenticatedView* const authenticatedView);
+  explicit GuardUserAttributes(AuthenticatedView* const authenticatedView);
 
   void setAuthenticatedView(AuthenticatedView* const authenticatedView);
 
@@ -151,6 +136,7 @@ class GuardUserAttributes {
  private:
   AuthenticatedView* m_authenticatedView;
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

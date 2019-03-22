@@ -29,18 +29,19 @@
 
 #include "CacheHelper.hpp"
 
+using apache::geode::client::Cache;
+using apache::geode::client::CacheFactory;
+using apache::geode::client::CacheHelper;
+using apache::geode::client::Exception;
+
 static bool isLocalServer = false;
 static bool isLocator = false;
 static int numberOfLocators = 1;
-const char* endPoints = (const char*)nullptr;
-const char* locatorsG =
+const char *endPoints = nullptr;
+const char *locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 
 #include "LocatorHelper.hpp"
-
-using namespace apache::geode::client;
-using namespace test;
-using namespace std;
 
 int testXmlDeclarativeCacheCreation() {
   auto cacheFactory = CacheFactory();
@@ -48,7 +49,9 @@ int testXmlDeclarativeCacheCreation() {
 
   std::string directory(ACE_OS::getenv("TESTSRC"));
 
-  std::cout << "create DistributedSytem with name=XML_DECLARATIVE_CACHE_CREATION_TEST" << std::endl;
+  std::cout
+      << "create DistributedSytem with name=XML_DECLARATIVE_CACHE_CREATION_TEST"
+      << std::endl;
 
   try {
     const auto filePath =
@@ -56,7 +59,7 @@ int testXmlDeclarativeCacheCreation() {
     cptr = std::make_shared<Cache>(
         cacheFactory.set("cache-xml-file", filePath).create());
 
-  } catch (Exception& ex) {
+  } catch (Exception &ex) {
     std::cout << "Exception: msg = " << ex.what() << std::endl;
     LOG(ex.getStackTrace());
     return -1;
@@ -129,7 +132,7 @@ int testSetCacheXmlThenGetRegion() {
             .set("cache-xml-file", duplicateFile)
             .create());
 
-  } catch (Exception& ex) {
+  } catch (Exception &ex) {
     std::cout << "Exception: msg = " << ex.what() << std::endl;
     LOG(ex.getStackTrace());
     return -1;

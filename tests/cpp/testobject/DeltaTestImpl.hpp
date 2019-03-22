@@ -21,21 +21,27 @@
 #define GEODE_TESTOBJECT_DELTATESTIMPL_H_
 
 #include <ace/ACE.h>
-#include <ace/OS.h>
-#include <ace/Task.h>
 #include <ace/Condition_T.h>
+#include <ace/OS.h>
 #include <ace/Recursive_Thread_Mutex.h>
+#include <ace/Task.h>
 #include <ace/Time_Value.h>
 
-#include <geode/Delta.hpp>
 #include <geode/DataSerializable.hpp>
+#include <geode/Delta.hpp>
 
 #include "TestObject1.hpp"
 #include "testobject_export.h"
 
-using namespace apache::geode::client;
-
 namespace testobject {
+
+using apache::geode::client::CacheableBytes;
+using apache::geode::client::CacheableString;
+using apache::geode::client::DataInput;
+using apache::geode::client::DataOutput;
+using apache::geode::client::DataSerializable;
+using apache::geode::client::Delta;
+using apache::geode::client::Serializable;
 
 class TESTOBJECT_EXPORT DeltaTestImpl : public DataSerializable, public Delta {
  private:
@@ -73,8 +79,6 @@ class TESTOBJECT_EXPORT DeltaTestImpl : public DataSerializable, public Delta {
   void toDelta(DataOutput& output) const override;
 
   bool hasDelta() const override { return m_hasDelta; }
-
-  int32_t getClassId() const override { return 30; }
 
   inline std::shared_ptr<Delta> clone() const override {
     return std::make_shared<DeltaTestImpl>(*this);

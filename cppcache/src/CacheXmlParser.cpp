@@ -15,16 +15,18 @@
  * limitations under the License.
  */
 
+#include "CacheXmlParser.hpp"
+
 #include <chrono>
 
-#include <geode/internal/chrono/duration.hpp>
-#include <geode/PoolManager.hpp>
 #include <geode/PoolFactory.hpp>
+#include <geode/PoolManager.hpp>
+#include <geode/internal/chrono/duration.hpp>
 
-#include "CacheXmlParser.hpp"
-#include "CacheRegionHelper.hpp"
 #include "AutoDelete.hpp"
 #include "CacheImpl.hpp"
+#include "CacheRegionHelper.hpp"
+#include "util/string.hpp"
 
 #if defined(_WIN32)
 #include <windows.h>
@@ -42,7 +44,7 @@ void* getFactoryFunc(const std::string& lib, const std::string& funcName);
 
 namespace {
 
-using namespace apache::geode::client::impl;
+using apache::geode::client::impl::getFactoryFunc;
 
 std::vector<std::pair<std::string, int>> parseEndPoints(
     const std::string& str) {
@@ -78,13 +80,15 @@ extern "C" void startElementSAX2Function(void* ctx, const xmlChar* name,
   CacheXmlParser* parser = (CacheXmlParser*)ctx;
   if (!parser) {
     Log::error("CacheXmlParser::startElementSAX2Function:Parser is nullptr");
+    return;
   }
 
   if ((!parser->isCacheXmlException()) &&
       (!parser->isIllegalStateException()) &&
       (!parser->isAnyOtherException())) {
     try {
-      auto uname = reinterpret_cast<const char*>(const_cast<unsigned char*>(name));
+      auto uname =
+          reinterpret_cast<const char*>(const_cast<unsigned char*>(name));
       if (std::strcmp(uname, parser->CACHE) == 0) {
         parser->startCache(ctx, atts);
       } else if (strcmp(uname, parser->CLIENT_CACHE) == 0) {
@@ -125,9 +129,8 @@ extern "C" void startElementSAX2Function(void* ctx, const xmlChar* name,
       } else if (strcmp(uname, parser->SERVER) == 0) {
         parser->startServer(atts);
       } else {
-        std::string temp(uname);
-        std::string s = "XML:Unknown XML element \"" + temp + "\"";
-        throw CacheXmlException(s.c_str());
+        throw CacheXmlException("XML:Unknown XML element \"" +
+                                std::string(uname) + "\"");
       }
     } catch (const CacheXmlException& e) {
       parser->setCacheXmlException();
@@ -158,7 +161,8 @@ extern "C" void endElementSAX2Function(void* ctx, const xmlChar* name) {
       (!parser->isIllegalStateException()) &&
       (!parser->isAnyOtherException())) {
     try {
-      auto uname = reinterpret_cast<const char*>(const_cast<unsigned char*>(name));
+      auto uname =
+          reinterpret_cast<const char*>(const_cast<unsigned char*>(name));
       if (strcmp(uname, parser->CACHE) == 0) {
         parser->endCache();
       } else if (strcmp(uname, parser->CLIENT_CACHE) == 0) {
@@ -197,9 +201,8 @@ extern "C" void endElementSAX2Function(void* ctx, const xmlChar* name) {
       } else if (strcmp(uname, parser->SERVER) == 0) {
         // parser->endServer();
       } else {
-        std::string temp(uname);
-        std::string s = "XML:Unknown XML element \"" + temp + "\"";
-        throw CacheXmlException(s.c_str());
+        throw CacheXmlException("XML:Unknown XML element \"" +
+                                std::string(uname) + "\"");
       }
     } catch (CacheXmlException& e) {
       parser->setCacheXmlException();
@@ -327,9 +330,7 @@ void CacheXmlParser::parseFile(const char* filename) {
   res = xmlSAXUserParseFile(&this->m_saxHandler, this, filename);
 
   if (res == -1) {
-    std::string temp(filename);
-    std::string tempString = "Xml file " + temp + " not found\n";
-    throw CacheXmlException(tempString.c_str());
+    throw CacheXmlException("Xml file " + std::string(filename) + " not found");
   }
   handleParserErrors(res);
 }
@@ -347,27 +348,21 @@ void CacheXmlParser::parseMemory(const char* buffer, int size) {
 void CacheXmlParser::handleParserErrors(int res) {
   if (res != 0)  // xml file is not well-formed
   {
-    char buf[256];
-    ACE_OS::snprintf(buf, 256, "Error code returned by xml parser is : %d ",
-                     res);
-    Log::error(buf);
-
-    std::string temp =
-        "Xml file is not well formed. Error _stack: \n" + this->m_parserMessage;
-    throw CacheXmlException(temp.c_str());
+    Log::error("Error code returned by xml parser is : " + std::to_string(res));
+    throw CacheXmlException("Xml file is not well formed. Error _stack: \n" +
+                            std::string(this->m_parserMessage));
   }
   std::string temp = this->getError();
-  if (temp == "") {
+  if (temp.empty()) {
     Log::info("Xml file parsed successfully");
-  } else  // well formed, but not according to our specs(dtd errors thrown
-          // manually)
-  {
+  } else {
+    // well formed, but not according to our specs(dtd errors thrown manually)
     if (this->m_flagCacheXmlException) {
-      throw CacheXmlException(temp.c_str());
+      throw CacheXmlException(temp);
     } else if (this->m_flagIllegalStateException) {
-      throw IllegalStateException(temp.c_str());
+      throw IllegalStateException(temp);
     } else if (this->m_flagAnyOtherException) {
-      throw UnknownException(temp.c_str());
+      throw UnknownException(temp);
     }
     this->setError("");
   }
@@ -430,8 +425,8 @@ void CacheXmlParser::create(Cache* cache) {
   DeleteObject<CacheXmlCreation> delCacheCreation(m_cacheCreation);
 
   if (cache == nullptr) {
-    std::string s = "XML:No cache specified for performing configuration";
-    throw IllegalArgumentException(s.c_str());
+    throw IllegalArgumentException(
+        "XML:No cache specified for performing configuration");
   }
   if (!m_cacheCreation) {
     throw CacheXmlException("XML: Element <cache> was not provided in the xml");
@@ -441,30 +436,24 @@ void CacheXmlParser::create(Cache* cache) {
   Log::info("Declarative configuration of cache completed successfully");
 }
 
-void CacheXmlParser::startCache(void*, const xmlChar** attrs) {
-  int attrsCount = 0;
-  if (attrs != nullptr) {
-    const char* attrName;
-    const char* attrValue;
-    while ((attrName = reinterpret_cast<const char*>(attrs[attrsCount++])) != nullptr) {
-      attrValue = reinterpret_cast<const char*>(attrs[attrsCount++]);
-      if (attrValue == nullptr) {
-        std::string exStr = "XML: No value provided for attribute: ";
-        exStr += attrName;
-        throw CacheXmlException(exStr.c_str());
+void CacheXmlParser::startCache(void*, const xmlChar** atts) {
+  if (atts) {
+    for (size_t i = 0; atts[i] && atts[i + 1]; i += 2) {
+      auto name = std::string(reinterpret_cast<const char*>(atts[i]));
+      auto value = std::string(reinterpret_cast<const char*>(atts[i + 1]));
+      if (value.empty()) {
+        throw CacheXmlException("XML: No value provided for attribute: " +
+                                name);
       }
-      if (strcmp(attrName, ENDPOINTS) == 0) {
+
+      if (ENDPOINTS == name) {
         if (m_poolFactory) {
-          std::vector<std::pair<std::string, int>> endPoints(
-              parseEndPoints(attrValue));
-          std::vector<std::pair<std::string, int>>::iterator endPoint;
-          for (endPoint = endPoints.begin(); endPoint != endPoints.end();
-               endPoint++) {
-            m_poolFactory->addServer(endPoint->first.c_str(), endPoint->second);
+          for (auto&& endPoint : parseEndPoints(value)) {
+            m_poolFactory->addServer(endPoint.first, endPoint.second);
           }
         }
-      } else if (strcmp(attrName, REDUNDANCY_LEVEL) == 0) {
-        m_poolFactory->setSubscriptionRedundancy(atoi(attrValue));
+      } else if (REDUNDANCY_LEVEL == name) {
+        m_poolFactory->setSubscriptionRedundancy(std::stoi(value));
       }
     }
   }
@@ -476,151 +465,154 @@ void CacheXmlParser::startPdx(const xmlChar** atts) {
     return;
   }
 
-  int attrsCount = 0;
-
-  while (atts[attrsCount] != nullptr) {
-    const char* name = reinterpret_cast<const char*>(atts[attrsCount]);
-    ++attrsCount;
-    const char* value = reinterpret_cast<const char*>(atts[attrsCount]);
-    if (strcmp(name, IGNORE_UNREAD_FIELDS) == 0) {
-      bool ignorePdxUnreadfields = false;
-      if (strcmp("true", value) == 0 || strcmp("TRUE", value) == 0) {
-        ignorePdxUnreadfields = true;
-      } else if (strcmp("false", value) == 0 || strcmp("FALSE", value) == 0) {
-        ignorePdxUnreadfields = false;
-      } else {
-        std::string temp(value);
-        std::string s =
-            "XML: " + temp +
-            " is not a valid value for the attribute <ignore-unread-fields>";
-        throw CacheXmlException(s.c_str());
-      }
-      m_cacheCreation->setPdxIgnoreUnreadField(ignorePdxUnreadfields);
-    } else if (strcmp(name, READ_SERIALIZED) == 0) {
-      bool readSerialized = false;
-      if (strcmp("true", value) == 0 || strcmp("TRUE", value) == 0) {
-        readSerialized = true;
-      } else if (strcmp("false", value) == 0 || strcmp("FALSE", value) == 0) {
-        readSerialized = false;
-      } else {
-        std::string temp(value);
-        std::string s =
-            "XML: " + temp +
-            " is not a valid value for the attribute <ignore-unread-fields>";
-        throw CacheXmlException(s.c_str());
-      }
-      m_cacheCreation->setPdxReadSerialized(readSerialized);
-    } else {
-      throw CacheXmlException("XML:Unrecognized pdx attribute");
+  for (size_t i = 0; atts[i] && atts[i + 1]; i += 2) {
+    auto name = std::string(reinterpret_cast<const char*>(atts[i]));
+    auto value = std::string(reinterpret_cast<const char*>(atts[i + 1]));
+    if (value.empty()) {
+      throw CacheXmlException("XML: No value provided for attribute: " + name);
     }
-    ++attrsCount;
+
+    if (IGNORE_UNREAD_FIELDS == name) {
+      bool flag = false;
+      std::transform(value.begin(), value.end(), value.begin(), ::tolower);
+      if ("false" == value) {
+        flag = false;
+      } else if ("true" == value) {
+        flag = true;
+      } else {
+        throw CacheXmlException(
+            "XML: " + value +
+            " is not a valid value for the attribute <ignore-unread-fields>");
+      }
+      m_cacheCreation->setPdxIgnoreUnreadField(flag);
+    } else if (READ_SERIALIZED == name) {
+      bool flag = false;
+      std::transform(value.begin(), value.end(), value.begin(), ::tolower);
+      if ("false" == value) {
+        flag = false;
+      } else if ("true" == value) {
+        flag = true;
+      } else {
+        throw CacheXmlException(
+            "XML: " + value +
+            " is not a valid value for the attribute <ignore-unread-fields>");
+      }
+      m_cacheCreation->setPdxReadSerialized(flag);
+    } else {
+      throw CacheXmlException("XML:Unrecognized pdx attribute " + name);
+    }
   }
 }
 
 void CacheXmlParser::endPdx() {}
 
 void CacheXmlParser::startLocator(const xmlChar** atts) {
-  int attrsCount = 0;
   if (!atts) {
-    std::string s =
-        "XML:No attributes provided for <locator>. "
-        "A locator requires a host and port";
-    throw CacheXmlException(s.c_str());
+    throw CacheXmlException(
+        "XML:No attributes provided for <locator>. A locator requires a host "
+        "and port");
   }
   m_poolFactory = std::static_pointer_cast<PoolFactory>(_stack.top());
 
-  const char* host = nullptr;
-  const char* port = nullptr;
+  std::string host;
+  std::string port;
+  int attrsCount = 0;
 
-  while (atts[attrsCount] != nullptr) {
-    const char* name = reinterpret_cast<const char*>(atts[attrsCount]);
-    ++attrsCount;
-    const char* value = reinterpret_cast<const char*>(atts[attrsCount]);
-    if (strcmp(name, HOST) == 0) {
-      host = value;
-    } else if (strcmp(name, PORT) == 0) {
-      port = value;
+  for (size_t i = 0; atts[i] && atts[i + 1]; i += 2) {
+    auto name = std::string(reinterpret_cast<const char*>(atts[i]));
+    auto value = std::string(reinterpret_cast<const char*>(atts[i + 1]));
+    if (value.empty()) {
+      throw CacheXmlException("XML: No value provided for attribute: " + name);
+    }
+
+    if (HOST == name) {
+      host = std::move(value);
+    } else if (PORT == name) {
+      port = std::move(value);
     } else {
       throw CacheXmlException("XML:Unrecognized locator attribute");
     }
+
     ++attrsCount;
   }
 
-  if (attrsCount < 4) {
+  if (attrsCount < 2) {
     throw CacheXmlException(
         "XML:Not enough attributes provided for a <locator> - host and port "
         "required");
   }
 
-  m_poolFactory->addLocator(host, atoi(port));
+  m_poolFactory->addLocator(host, std::stoi(port));
 }
 
 void CacheXmlParser::startServer(const xmlChar** atts) {
-  int attrsCount = 0;
   if (!atts) {
-    std::string s =
+    throw CacheXmlException(
         "XML:No attributes provided for <server>. A server requires a host and "
-        "port";
-    throw CacheXmlException(s.c_str());
+        "port");
   }
   auto factory = std::static_pointer_cast<PoolFactory>(_stack.top());
 
-  const char* host = nullptr;
-  const char* port = nullptr;
+  std::string host;
+  std::string port;
+  int attrsCount = 0;
 
-  while (atts[attrsCount] != nullptr) {
-    const char* name = reinterpret_cast<const char*>(atts[attrsCount]);
-    ++attrsCount;
-    const char* value = reinterpret_cast<const char*>(atts[attrsCount]);
-    if (strcmp(name, HOST) == 0) {
-      host = value;
-    } else if (strcmp(name, PORT) == 0) {
-      port = value;
+  for (size_t i = 0; atts[i] && atts[i + 1]; i += 2) {
+    auto name = std::string(reinterpret_cast<const char*>(atts[i]));
+    auto value = std::string(reinterpret_cast<const char*>(atts[i + 1]));
+    if (value.empty()) {
+      throw CacheXmlException("XML: No value provided for attribute: " + name);
+    }
+
+    if (HOST == name) {
+      host = std::move(value);
+    } else if (PORT == name) {
+      port = std::move(value);
     } else {
       throw CacheXmlException("XML:Unrecognized server attribute");
     }
+
     ++attrsCount;
   }
 
-  if (attrsCount < 4) {
+  if (attrsCount < 2) {
     throw CacheXmlException(
         "XML:Not enough attributes provided for a <server> - host and port "
         "required");
   }
 
-  factory->addServer(host, atoi(port));
+  factory->addServer(host, std::stoi(port));
 }
 
 void CacheXmlParser::startPool(const xmlChar** atts) {
-  int attrsCount = 0;
   if (!atts) {
-    std::string s =
-        "XML:No attributes provided for <pool>. "
-        "A pool cannot be created without a name";
-    throw CacheXmlException(s.c_str());
+    throw CacheXmlException(
+        "XML:No attributes provided for <pool>. A pool cannot be created "
+        "without a name");
   }
   auto factory =
       std::make_shared<PoolFactory>(m_cache->getPoolManager().createFactory());
 
-  const char* poolName = nullptr;
+  std::string poolName;
 
-  while (atts[attrsCount] != nullptr) {
-    const char* name = reinterpret_cast<const char*>(atts[attrsCount]);
-    ++attrsCount;
-    const char* value = reinterpret_cast<const char*>(atts[attrsCount]);
-    if (strcmp(name, NAME) == 0) {
-      poolName = value;
-    } else {
-      setPoolInfo(factory.get(), name, value);
+  for (size_t i = 0; atts[i] && atts[i + 1]; i += 2) {
+    auto name = std::string(reinterpret_cast<const char*>(atts[i]));
+    auto value = std::string(reinterpret_cast<const char*>(atts[i + 1]));
+    if (value.empty()) {
+      throw CacheXmlException("XML: No value provided for attribute: " + name);
     }
-    ++attrsCount;
+
+    if (NAME == name) {
+      poolName = std::move(value);
+    } else {
+      setPoolInfo(factory.get(), name.c_str(), value.c_str());
+    }
   }
 
-  if (attrsCount < 2) {
-    std::string s =
+  if (poolName.empty()) {
+    throw CacheXmlException(
         "XML:No attributes provided for a <pool> - at least the name is "
-        "required";
-    throw CacheXmlException(s.c_str());
+        "required");
   }
 
   auto poolxml = std::make_shared<PoolXmlCreation>(poolName, factory);
@@ -638,13 +630,14 @@ void CacheXmlParser::endPool() {
 
 void CacheXmlParser::setPoolInfo(PoolFactory* factory, const char* name,
                                  const char* value) {
-  using namespace apache::geode::internal::chrono::duration;
+  using apache::geode::client::equal_ignore_case;
+  using apache::geode::internal::chrono::duration::from_string;
 
   if (strcmp(name, FREE_CONNECTION_TIMEOUT) == 0) {
     factory->setFreeConnectionTimeout(
         from_string<std::chrono::milliseconds>(std::string(value)));
   } else if (strcmp(name, MULTIUSER_SECURE_MODE) == 0) {
-    if (ACE_OS::strcasecmp(value, "true") == 0) {
+    if (equal_ignore_case(value, "true")) {
       factory->setMultiuserAuthentication(true);
     } else {
       factory->setMultiuserAuthentication(false);
@@ -681,7 +674,7 @@ void CacheXmlParser::setPoolInfo(PoolFactory* factory, const char* name,
     factory->setSubscriptionAckInterval(
         from_string<std::chrono::milliseconds>(std::string(value)));
   } else if (strcmp(name, SUBSCRIPTION_ENABLED) == 0) {
-    if (ACE_OS::strcasecmp(value, "true") == 0) {
+    if (equal_ignore_case(value, "true")) {
       factory->setSubscriptionEnabled(true);
     } else {
       factory->setSubscriptionEnabled(false);
@@ -692,21 +685,20 @@ void CacheXmlParser::setPoolInfo(PoolFactory* factory, const char* name,
   } else if (strcmp(name, SUBSCRIPTION_REDUNDANCY) == 0) {
     factory->setSubscriptionRedundancy(atoi(value));
   } else if (strcmp(name, THREAD_LOCAL_CONNECTIONS) == 0) {
-    if (ACE_OS::strcasecmp(value, "true") == 0) {
+    if (equal_ignore_case(value, "true")) {
       factory->setThreadLocalConnections(true);
     } else {
       factory->setThreadLocalConnections(false);
     }
   } else if (strcmp(name, PR_SINGLE_HOP_ENABLED) == 0) {
-    if (ACE_OS::strcasecmp(value, "true") == 0) {
+    if (equal_ignore_case(value, "true")) {
       factory->setPRSingleHopEnabled(true);
     } else {
       factory->setPRSingleHopEnabled(false);
     }
   } else {
-    std::string s = "XML:Unrecognized pool attribute ";
-    s += name;
-    throw CacheXmlException(s.c_str());
+    throw CacheXmlException("XML:Unrecognized pool attribute " +
+                            std::string(name));
   }
 }
 
@@ -718,48 +710,37 @@ void CacheXmlParser::setPoolInfo(PoolFactory* factory, const char* name,
 void CacheXmlParser::startRegion(const xmlChar** atts, bool isRoot) {
   int attrsCount = 0;
   if (!atts) {
-    std::string s =
-        "XML:No attributes provided for <region>. "
-        "A region cannot be created without a name";
-    throw CacheXmlException(s.c_str());
+    throw CacheXmlException(
+        "XML:No attributes provided for <region>. A region cannot be created "
+        "without a name");
   }
-  while (atts[attrsCount] != nullptr) ++attrsCount;
+  while (atts[attrsCount]) ++attrsCount;
   if (attrsCount < 2 || attrsCount > 4) {
-    std::string s =
-        "XML:Incorrect number of attributes provided for a <region>";
-    throw CacheXmlException(s.c_str());
+    throw CacheXmlException(
+        "XML:Incorrect number of attributes provided for a <region>");
   }
 
-  const char* regionName = nullptr;
-  const char* refid = nullptr;
+  std::string regionName;
+  std::string refid;
 
-  for (int i = 0; (atts[i] != nullptr); i++) {
-    if (atts[i] != nullptr) {
-      const char* name = reinterpret_cast<const char*>(const_cast<xmlChar*>(atts[i]));
-      i++;
-      if (atts[i] != nullptr) {
-        const char* value = reinterpret_cast<const char*>(const_cast<xmlChar*>(atts[i]));
+  for (size_t i = 0; atts[i] && atts[i + 1]; i += 2) {
+    auto name = std::string(reinterpret_cast<const char*>(atts[i]));
+    auto value = std::string(reinterpret_cast<const char*>(atts[i + 1]));
 
-        if (std::strcmp(name, "name") == 0) {
-          regionName = value;
-        } else if (std::strcmp(name, "refid") == 0) {
-          refid = value;
-        } else {
-          std::string temp(name);
-          std::string s =
-              "XML:<region> does not contain the attribute :" + temp + "";
-          throw CacheXmlException(s.c_str());
-        }
-      }
+    if ("name" == name) {
+      regionName = value;
+    } else if ("refid" == name) {
+      refid = value;
+    } else {
+      throw CacheXmlException("XML:<region> does not contain the attribute :" +
+                              name);
     }
   }
 
-  if (regionName == nullptr || strcmp(regionName, "") == 0)  // empty string
-  {
-    std::string s =
+  if (regionName.empty()) {
+    throw CacheXmlException(
         "XML:The attribute name of <region> should be specified and cannot be "
-        "empty ";
-    throw CacheXmlException(s.c_str());
+        "empty");
   }
 
   auto region = std::make_shared<RegionXmlCreation>(regionName, isRoot);
@@ -769,25 +750,17 @@ void CacheXmlParser::startRegion(const xmlChar** atts, bool isRoot) {
 
   _stack.push(region);
 
-  RegionAttributesFactory* regionAttributesFactory = nullptr;
-  if (refid == nullptr) {
-    regionAttributesFactory = new RegionAttributesFactory();
-  } else {
-    std::string refidStr(refid);
-
-    if (namedRegions.find(refidStr) != namedRegions.end()) {
-      regionAttributesFactory =
-          new RegionAttributesFactory(namedRegions[refidStr]);
+  RegionAttributesFactory regionAttributesFactory;
+  if (!refid.empty()) {
+    if (namedRegions.find(refid) != namedRegions.end()) {
+      regionAttributesFactory = RegionAttributesFactory(namedRegions[refid]);
     } else {
-      std::string s =
-          "XML:referenced named attribute '" + refidStr + "' does not exist.";
-      throw CacheXmlException(s.c_str());
+      throw CacheXmlException("XML:referenced named attribute '" + refid +
+                              "' does not exist.");
     }
   }
 
-  region->setAttributes(
-      regionAttributesFactory->create());
-  delete regionAttributesFactory;
+  region->setAttributes(regionAttributesFactory.create());
 }
 
 void CacheXmlParser::startSubregion(const xmlChar** atts) {
@@ -804,56 +777,46 @@ void CacheXmlParser::startRegionAttributes(const xmlChar** atts) {
   std::shared_ptr<RegionAttributesFactory> regionAttributesFactory = nullptr;
   if (atts) {
     int attrsCount = 0;
-    while (atts[attrsCount] != nullptr) ++attrsCount;
-
+    while (atts[attrsCount]) ++attrsCount;
     if (attrsCount > 24)  // Remember to change this when the number changes
     {
-      std::string s =
-          "XML:Number of attributes provided for <region-attributes> are more";
-      throw CacheXmlException(s.c_str());
+      throw CacheXmlException(
+          "XML:Number of attributes provided for <region-attributes> are more");
     }
 
-    const char* refid = nullptr;
+    std::string refid;
 
-    for (int i = 0; (atts[i] != nullptr); i++) {
-      i++;
+    for (size_t i = 0; atts[i] && atts[i + 1]; i += 2) {
+      auto name = std::string(reinterpret_cast<const char*>(atts[i]));
+      auto value = std::string(reinterpret_cast<const char*>(atts[i + 1]));
 
-      if (atts[i] != nullptr) {
-        const char* value = reinterpret_cast<const char*>(atts[i]);
-        if (strcmp(value, "") == 0) {
-          std::string s =
-              "XML:In the <region-attributes> element no "
-              "attribute can be set to empty string. It should either have a "
-              "value or the attribute should be removed. In the latter case "
-              "the default value will be set";
-          throw CacheXmlException(s.c_str());
-        }
+      if (value.empty()) {
+        throw CacheXmlException(
+            "XML:In the <region-attributes> element attribute " + name +
+            " can be set to empty string. It should either have a "
+            "value or the attribute should be removed. In the latter case "
+            "the default value will be set");
+      }
 
-        const char* prev = reinterpret_cast<const char*>(atts[i - 1]);
-        if (strcmp(prev, ID) == 0) {
-          auto region =
-              std::static_pointer_cast<RegionXmlCreation>(_stack.top());
-          region->setAttrId(std::string(value));
-        } else if (strcmp(prev, REFID) == 0) {
-          refid = value;
-        }
+      if (ID == name) {
+        auto region = std::static_pointer_cast<RegionXmlCreation>(_stack.top());
+        region->setAttrId(value);
+      } else if (REFID == name) {
+        refid = std::move(value);
       }
     }
 
-    if (refid == nullptr) {
+    if (refid.empty()) {
       auto region = std::static_pointer_cast<RegionXmlCreation>(_stack.top());
       regionAttributesFactory =
           std::make_shared<RegionAttributesFactory>(region->getAttributes());
     } else {
-      std::string refidStr(refid);
-
-      if (namedRegions.find(refidStr) != namedRegions.end()) {
-        regionAttributesFactory = 
-            std::make_shared<RegionAttributesFactory>(namedRegions[refidStr]);
+      if (namedRegions.find(refid) != namedRegions.end()) {
+        regionAttributesFactory =
+            std::make_shared<RegionAttributesFactory>(namedRegions[refid]);
       } else {
-        std::string s =
-            "XML:referenced named attribute '" + refidStr + "' does not exist.";
-        throw CacheXmlException(s.c_str());
+        throw CacheXmlException("XML:referenced named attribute '" + refid +
+                                "' does not exist.");
       }
     }
 
@@ -864,142 +827,97 @@ void CacheXmlParser::startRegionAttributes(const xmlChar** atts) {
 
     _stack.push(regionAttributesFactory);
 
-    for (int i = 0; (atts[i] != nullptr); i++) {
-      auto name = reinterpret_cast<const char*>(atts[i]);
-      if (strcmp(ID, name) == 0 ||
-          strcmp(REFID, name) == 0) {
-        i++;
+    for (size_t i = 0; atts[i] && atts[i + 1]; i += 2) {
+      auto name = std::string(reinterpret_cast<const char*>(atts[i]));
+      auto value = std::string(reinterpret_cast<const char*>(atts[i + 1]));
+
+      if (ID == name || REFID == name) {
         continue;
-      } else if (strcmp(CLIENT_NOTIFICATION_ENABLED, name) == 0) {
-        i++;
-        auto client_notification_enabled = reinterpret_cast<const char*>(atts[i]);
-        if (strcmp("false", client_notification_enabled) == 0 ||
-            strcmp("FALSE", client_notification_enabled) == 0) {
-          if (m_poolFactory) {
-            m_poolFactory->setSubscriptionEnabled(false);
-          }
-        } else if (strcmp("true", client_notification_enabled) == 0 ||
-                   strcmp("TRUE", client_notification_enabled) == 0) {
-          if (m_poolFactory) {
-            m_poolFactory->setSubscriptionEnabled(true);
-          }
-        } else {
-          std::string temp(client_notification_enabled);
-          std::string s =
-              "XML: " + temp +
-              " is not a valid name for the attribute <client-notification>\n";
-          throw CacheXmlException(s.c_str());
-        }
-      } else if (strcmp(INITIAL_CAPACITY, name) == 0) {
-        i++;
-        auto initialCapacity = reinterpret_cast<const char*>(atts[i]);
-        regionAttributesFactory->setInitialCapacity(atoi(initialCapacity));
-      } else if (strcmp(CONCURRENCY_LEVEL, name) == 0) {
-        i++;
-        auto concurrencyLevel = reinterpret_cast<const char*>(atts[i]);
-        regionAttributesFactory->setConcurrencyLevel(atoi(concurrencyLevel));
-      } else if (strcmp(LOAD_FACTOR, name) == 0) {
-        i++;
-        auto loadFactor = reinterpret_cast<const char*>(atts[i]);
-        regionAttributesFactory->setLoadFactor(
-            static_cast<float>(atof(loadFactor)));  // check whether this works
-      } else if (strcmp(CACHING_ENABLED, name) == 0) {
+      } else if (CLIENT_NOTIFICATION_ENABLED == name) {
         bool flag = false;
-        i++;
-        auto cachingEnabled = reinterpret_cast<const char*>(atts[i]);
-        if (strcmp("true", cachingEnabled) == 0 ||
-            strcmp("TRUE", cachingEnabled) == 0) {
-          flag = true;
-        } else if (strcmp("false", cachingEnabled) == 0 ||
-                   strcmp("FALSE", cachingEnabled) == 0) {
+        std::transform(value.begin(), value.end(), value.begin(), ::tolower);
+        if ("false" == value) {
           flag = false;
+        } else if ("true" == value) {
+          flag = true;
         } else {
-          std::string temp(cachingEnabled);
-          std::string s =
-              "XML: " + temp +
-              " is not a valid name for the attribute <caching-enabled>";
-          throw CacheXmlException(s.c_str());
+          throw CacheXmlException(
+              "XML: " + value +
+              " is not a valid name for the attribute <client-notification>");
         }
-        regionAttributesFactory->setCachingEnabled(
-            flag);  // check whether this works
-      } else if (strcmp(LRU_ENTRIES_LIMIT, name) == 0) {
-        i++;
-        auto lruentriesLimit = reinterpret_cast<const char*>(atts[i]);
-        int lruentriesLimitInt = atoi(lruentriesLimit);
-        uint32_t temp = static_cast<uint32_t>(lruentriesLimitInt);
-        regionAttributesFactory->setLruEntriesLimit(temp);
-      } else if (strcmp(DISK_POLICY, name) == 0) {
-        i++;
-        auto diskPolicy = reinterpret_cast<const char*>(atts[i]);
-        if (strcmp(OVERFLOWS, diskPolicy) == 0) {
-          regionAttributesFactory->setDiskPolicy(
-              apache::geode::client::DiskPolicyType::OVERFLOWS);
-        } else if (strcmp(PERSIST, diskPolicy) == 0) {
-          throw IllegalStateException(" persistence feature is not supported");
-        } else if (strcmp(NONE, diskPolicy) == 0) {
-          regionAttributesFactory->setDiskPolicy(
-              apache::geode::client::DiskPolicyType::NONE);
-        } else {
-          std::string temp(diskPolicy);
-          std::string s =
-              "XML: " + temp +
-              " is not a valid name for the attribute <disk-policy>";
-          throw CacheXmlException(s.c_str());
-        }
-      } else if (strcmp(ENDPOINTS, name) == 0) {
-        i++;
         if (m_poolFactory) {
-          std::vector<std::pair<std::string, int>> endPoints(
-              parseEndPoints(name));
-          std::vector<std::pair<std::string, int>>::iterator endPoint;
-          for (endPoint = endPoints.begin(); endPoint != endPoints.end();
-               endPoint++) {
-            m_poolFactory->addServer(endPoint->first.c_str(), endPoint->second);
+          m_poolFactory->setSubscriptionEnabled(flag);
+        }
+      } else if (INITIAL_CAPACITY == name) {
+        regionAttributesFactory->setInitialCapacity(std::stoi(value));
+      } else if (CONCURRENCY_LEVEL == name) {
+        regionAttributesFactory->setConcurrencyLevel(std::stoi(value));
+      } else if (LOAD_FACTOR == name) {
+        regionAttributesFactory->setLoadFactor(std::stof(value));
+      } else if (CACHING_ENABLED == name) {
+        bool flag = false;
+        std::transform(value.begin(), value.end(), value.begin(), ::tolower);
+        if ("false" == value) {
+          flag = false;
+        } else if ("true" == value) {
+          flag = true;
+        } else {
+          throw CacheXmlException(
+              "XML: " + value +
+              " is not a valid name for the attribute <caching-enabled>");
+        }
+        regionAttributesFactory->setCachingEnabled(flag);
+      } else if (LRU_ENTRIES_LIMIT == name) {
+        regionAttributesFactory->setLruEntriesLimit(std::stoi(value));
+      } else if (DISK_POLICY == name) {
+        auto diskPolicy = apache::geode::client::DiskPolicyType::NONE;
+        if (OVERFLOWS == value) {
+          diskPolicy = apache::geode::client::DiskPolicyType::OVERFLOWS;
+        } else if (PERSIST == value) {
+          throw IllegalStateException("Persistence feature is not supported");
+        } else if (NONE == value) {
+          diskPolicy = apache::geode::client::DiskPolicyType::NONE;
+        } else {
+          throw CacheXmlException(
+              "XML: " + value +
+              " is not a valid name for the attribute <disk-policy>");
+        }
+        regionAttributesFactory->setDiskPolicy(diskPolicy);
+      } else if (ENDPOINTS == name) {
+        if (m_poolFactory) {
+          for (auto&& endPoint : parseEndPoints(name)) {
+            m_poolFactory->addServer(endPoint.first, endPoint.second);
           }
         }
         isTCR = true;
-      } else if (strcmp(POOL_NAME, name) == 0) {
-        i++;
-        auto poolName = reinterpret_cast<const char*>(atts[i]);
-        regionAttributesFactory->setPoolName(poolName);
+      } else if (POOL_NAME == name) {
+        regionAttributesFactory->setPoolName(value);
         isTCR = true;
-      } else if (strcmp(CLONING_ENABLED, name) == 0) {
-        i++;
+      } else if (CLONING_ENABLED == name) {
         bool flag = false;
-        auto isClonable = reinterpret_cast<const char*>(atts[i]);
-
-        if (strcmp("true", isClonable) == 0 ||
-            strcmp("TRUE", isClonable) == 0) {
-          flag = true;
-        } else if (strcmp("false", isClonable) == 0 ||
-                   strcmp("FALSE", isClonable) == 0) {
+        std::transform(value.begin(), value.end(), value.begin(), ::tolower);
+        if ("false" == value) {
           flag = false;
+        } else if ("true" == value) {
+          flag = true;
         } else {
-          std::string temp(isClonable);
-          std::string s =
-              "XML: " + temp +
-              " is not a valid value for the attribute <cloning-enabled>";
-          throw CacheXmlException(s.c_str());
+          throw CacheXmlException(
+              "XML: " + value +
+              " is not a valid value for the attribute <cloning-enabled>");
         }
-
         regionAttributesFactory->setCloningEnabled(flag);
         isTCR = true;
-      } else if (strcmp(CONCURRENCY_CHECKS_ENABLED, name) == 0) {
+      } else if (CONCURRENCY_CHECKS_ENABLED == name) {
         bool flag = false;
-        i++;
-        auto concurrencyChecksEnabled = reinterpret_cast<const char*>(atts[i]);
-        if (strcmp("true", concurrencyChecksEnabled) == 0 ||
-            strcmp("TRUE", concurrencyChecksEnabled) == 0) {
-          flag = true;
-        } else if (strcmp("false", concurrencyChecksEnabled) == 0 ||
-                   strcmp("FALSE", concurrencyChecksEnabled) == 0) {
+        std::transform(value.begin(), value.end(), value.begin(), ::tolower);
+        if ("false" == value) {
           flag = false;
+        } else if ("true" == value) {
+          flag = true;
         } else {
-          std::string temp(name);
-          std::string s = "XML: " + temp +
-                          " is not a valid value for the attribute "
-                          "<concurrency-checks-enabled>";
-          throw CacheXmlException(s.c_str());
+          throw CacheXmlException("XML: " + value +
+                                  " is not a valid value for the attribute "
+                                  "<concurrency-checks-enabled>");
         }
         regionAttributesFactory->setConcurrencyChecksEnabled(flag);
       }
@@ -1014,7 +932,8 @@ void CacheXmlParser::startRegionAttributes(const xmlChar** atts) {
 
   if (isDistributed && isTCR) {
     /* we don't allow DR+TCR at current stage according to sudhir */
-    throw CacheXmlException("XML:endpoints cannot be defined for distributed region.\n");
+    throw CacheXmlException(
+        "XML:endpoints cannot be defined for distributed region.\n");
   }
 }
 
@@ -1048,75 +967,64 @@ void CacheXmlParser::endRegionAttributes() {
  * the element's attributes and push it on the _stack.
  */
 void CacheXmlParser::startExpirationAttributes(const xmlChar** atts) {
+  using apache::geode::internal::chrono::duration::from_string;
+
   if (!atts) {
-    std::string s = "XML:No attributes provided for <expiration-attributes> ";
-    throw CacheXmlException(s.c_str());
+    throw CacheXmlException(
+        "XML:No attributes provided for <expiration-attributes> ");
   }
   m_flagExpirationAttribute = true;
-  int attrsCount = 0;
-  while (atts[attrsCount] != nullptr) ++attrsCount;
+  size_t attrsCount = 0;
+  while (atts[attrsCount]) ++attrsCount;
   if (attrsCount > 4) {
-    std::string s =
+    throw CacheXmlException(
         "XML:Incorrect number of attributes provided for "
-        "<expirartion-attributes>";
-    throw CacheXmlException(s.c_str());
+        "<expirartion-attributes>");
   }
   std::string timeOut;
-  std::chrono::seconds timeOutSeconds;
   ExpirationAction expire = ExpirationAction::INVALID_ACTION;
-  for (int i = 0; (atts[i] != nullptr); i++) {
-    auto name = reinterpret_cast<const char*>(atts[i]);
-    if (strcmp(TIMEOUT, name) == 0) {
-      i++;
-      timeOut = std::string(reinterpret_cast<const char*>(atts[i]));
-      if (timeOut.empty()) {
-        std::string s =
-            "XML:Value for attribute <timeout> needs to be specified";
-        throw CacheXmlException(s.c_str());
+  for (size_t i = 0; atts[i] && atts[i + 1]; i += 2) {
+    auto name = std::string(reinterpret_cast<const char*>(atts[i]));
+    auto value = std::string(reinterpret_cast<const char*>(atts[i + 1]));
+    if (TIMEOUT == name) {
+      if (value.empty()) {
+        throw CacheXmlException(
+            "XML:Value for attribute <timeout> needs to be specified");
       }
-      timeOutSeconds = from_string<std::chrono::seconds>(timeOut);
-    } else if (strcmp(ACTION, name) == 0) {
-      i++;
-      auto action = reinterpret_cast<const char*>(atts[i]);
-      if (strcmp(action, "") == 0)
-
-      {
-        std::string s =
+      timeOut = value;
+    } else if (ACTION == name) {
+      if (value.empty()) {
+        throw CacheXmlException(
             "XML:The attribute <action> of <expiration-attributes> cannot be "
             "set to empty string. It should either have a value or the "
-            "attribute should be removed. In the latter case the default "
-            "value "
-            "will be set";
-        throw CacheXmlException(s.c_str());
-      } else if (strcmp(INVALIDATE, action) == 0) {
+            "attribute should be removed. In the latter case the default value "
+            "will be set");
+      } else if (INVALIDATE == value) {
         expire = ExpirationAction::INVALIDATE;
-      } else if (strcmp(DESTROY, action) == 0) {
+      } else if (DESTROY == value) {
         expire = ExpirationAction::DESTROY;
-      } else if (strcmp(LOCAL_INVALIDATE, action) == 0) {
+      } else if (LOCAL_INVALIDATE == value) {
         expire = ExpirationAction::LOCAL_INVALIDATE;
-      } else if (strcmp(LOCAL_DESTROY, action) == 0) {
+      } else if (LOCAL_DESTROY == value) {
         expire = ExpirationAction::LOCAL_DESTROY;
       } else {
-        std::string temp(action);
-        std::string s =
-            "XML: " + temp + " is not a valid value for the attribute <action>";
-        throw CacheXmlException(s.c_str());
+        throw CacheXmlException(
+            "XML: " + value +
+            " is not a valid value for the attribute <action>");
       }
     } else {
-      std::string temp(name);
-      std::string s =
+      throw CacheXmlException(
           "XML:Incorrect attribute name specified in "
           "<expiration-attributes>: " +
-          temp;
-      throw CacheXmlException(s.c_str());
+          value);
     }
   }
   if (timeOut.empty()) {
-    std::string s =
+    throw CacheXmlException(
         "XML:The attribute <timeout> not specified in "
-        "<expiration-attributes>.";
-    throw CacheXmlException(s.c_str());
+        "<expiration-attributes>.");
   }
+  auto timeOutSeconds = from_string<std::chrono::seconds>(timeOut);
 
   auto expireAttr =
       std::make_shared<ExpirationAttributes>(timeOutSeconds, expire);
@@ -1131,78 +1039,47 @@ void CacheXmlParser::startExpirationAttributes(const xmlChar** atts) {
 void CacheXmlParser::startPersistenceManager(const xmlChar** atts) {
   int attrsCount = 0;
   if (!atts) {
-    std::string s = "XML:No attributes provided for <persistence-manager>";
-    throw CacheXmlException(s.c_str());
+    throw CacheXmlException(
+        "XML:No attributes provided for <persistence-manager>");
   }
-  while (atts[attrsCount] != nullptr) ++attrsCount;
+  while (atts[attrsCount]) ++attrsCount;
   if (attrsCount > 4) {
-    std::string s =
+    throw CacheXmlException(
         "XML:Incorrect number of attributes provided for "
-        "<persistence-manager>";
-    throw CacheXmlException(s.c_str());
+        "<persistence-manager>");
   }
-  char* libraryName = nullptr;
-  char* libraryFunctionName = nullptr;
-  for (int i = 0; (atts[i] != nullptr); i++) {
-    auto name = reinterpret_cast<const char*>(atts[i]);
-    if (std::strcmp(LIBRARY_NAME, name) == 0) {
-      i++;
-      auto value = reinterpret_cast<const char*>(atts[i]);
-      size_t len = strlen(value) + 1;
-      libraryName = new char[len];
+  std::string libraryName;
+  std::string libraryFunctionName;
+  for (size_t i = 0; atts[i] && atts[i + 1]; i += 2) {
+    auto name = std::string(reinterpret_cast<const char*>(atts[i]));
+    auto value = std::string(reinterpret_cast<const char*>(atts[i + 1]));
+    if (value.empty()) {
+      throw CacheXmlException("XML:Value for attribute <" + name +
+                              "> needs to be specified in the "
+                              "<persistence-manager>");
+    }
 
-      if (libraryName == nullptr) {
-        std::string s = "Memory allocation fails";
-        throw CacheXmlException(s.c_str());
-      }
-      std::strncpy(libraryName, value, len);
-
-      if (libraryName == nullptr) {
-        std::string s =
-            "XML:The attribute <library-name> of <persistence-manager> "
-            "cannot "
-            "be set to an empty string. It should either have a value or the "
-            "attribute should be removed. In the latter case the default "
-            "value "
-            "will be set";
-        throw CacheXmlException(s.c_str());
-      }
-    } else if (std::strcmp(LIBRARY_FUNCTION_NAME, name) == 0) {
-      i++;
-      auto value = reinterpret_cast<const char*>(atts[i]);
-      size_t len = strlen(value) + 1;
-      libraryFunctionName = new char[len];
-
-      if (libraryFunctionName == nullptr) {
-        std::string s = "Memory allocation fails";
-        throw CacheXmlException(s.c_str());
-      }
-
-      std::strncpy(libraryFunctionName, value, len);
-      if (libraryFunctionName == nullptr) {
-        throw CacheXmlException("XML:Value for the <library-function-name> needs to be provided");
-      }
+    if (LIBRARY_NAME == name) {
+      libraryName = std::move(value);
+    } else if (LIBRARY_FUNCTION_NAME == name) {
+      libraryFunctionName = std::move(value);
     } else {
-      std::string temp(name);
-      std::string s =
-          "XML:Incorrect attribute name specified in "
-          "<persistence-manager>: " +
-          temp;
-      throw CacheXmlException(s.c_str());
+      throw CacheXmlException(
+          "XML:Incorrect attribute name specified in <persistence-manager>: " +
+          value);
     }
   }
-  if (libraryFunctionName == nullptr) {
-    std::string s =
-        "XML:Library function name not specified in the "
-        "<persistence-manager>";
-    throw CacheXmlException(s.c_str());
+  if (libraryFunctionName.empty()) {
+    throw CacheXmlException(
+        "XML:Library function name not specified in the <persistence-manager>");
   }
 
   try {
-    if (managedPersistenceManagerFn != nullptr &&
-        strchr(libraryFunctionName, '.') != nullptr) {
+    if (managedPersistenceManagerFn &&
+        libraryFunctionName.find('.') != std::string::npos) {
       // this is a managed library
-      (*managedPersistenceManagerFn)(libraryName, libraryFunctionName);
+      (*managedPersistenceManagerFn)(libraryName.c_str(),
+                                     libraryFunctionName.c_str());
     } else {
       getFactoryFunc(libraryName, libraryFunctionName);
     }
@@ -1210,117 +1087,98 @@ void CacheXmlParser::startPersistenceManager(const xmlChar** atts) {
     throw CacheXmlException(ex.what());
   }
 
-  _stack.push(std::make_shared<std::string>(std::string(libraryName)));
-  _stack.push(std::make_shared<std::string>(std::string(libraryFunctionName)));
+  _stack.emplace(std::make_shared<std::string>(std::move(libraryName)));
+  _stack.emplace(std::make_shared<std::string>(std::move(libraryFunctionName)));
 }
 
 void CacheXmlParser::startPersistenceProperties(const xmlChar** atts) {
   if (!atts) {
-    std::string s = "XML:No attributes provided for <property> ";
-    throw CacheXmlException(s.c_str());
+    throw CacheXmlException("XML:No attributes provided for <property>");
   }
   int attrsCount = 0;
-  while (atts[attrsCount] != nullptr) ++attrsCount;
+  while (atts[attrsCount]) ++attrsCount;
   if (attrsCount > 4) {
-    std::string s =
-        "XML:Incorrect number of attributes provided for <property>";
-    throw CacheXmlException(s.c_str());
+    throw CacheXmlException(
+        "XML:Incorrect number of attributes provided for <property>");
   } else {
     if (m_config == nullptr) {
       m_config = Properties::create();
     }
   }
-  const char* propName = nullptr;
-  const char* propValue = nullptr;
-  for (int i = 0; (atts[i] != nullptr); i++) {
-    auto name = reinterpret_cast<const char*>(atts[i]);
-    if (std::strcmp("name", name) == 0) {
-      i++;
-      propName = reinterpret_cast<const char*>(atts[i]);
-      if (propName == nullptr || std::strcmp(propName, "") == 0) {
-        throw CacheXmlException("XML:Value for attribute <name> needs to be specified in the "
-            "<property>");
-      }
-    } else if (strcmp("value", name) == 0) {
-      i++;
-      propValue = reinterpret_cast<const char*>(atts[i]);
-      if (propValue == nullptr || strcmp(propValue, "") == 0) {
-        throw CacheXmlException("XML:Value for attribute <value> needs to be "
-            "specified in the <property>");
-      }
+  std::string propName;
+  std::string propValue;
+  for (size_t i = 0; atts[i] && atts[i + 1]; i += 2) {
+    auto name = std::string(reinterpret_cast<const char*>(atts[i]));
+    auto value = std::string(reinterpret_cast<const char*>(atts[i + 1]));
+
+    if (value.empty()) {
+      throw CacheXmlException("XML:Value for attribute <" + name +
+                              "> needs to be specified in the "
+                              "<property>");
+    }
+
+    if ("name" == name) {
+      propName = value;
+    } else if ("value" == name) {
+      propValue = value;
     } else {
-      std::string temp(name);
-      std::string s =
-          "XML:Incorrect attribute name specified in <property>: " + temp;
-      throw CacheXmlException(s.c_str());
+      throw CacheXmlException(
+          "XML:Incorrect attribute name specified in <property>: " + name);
     }
   }
-  if (propName == nullptr || strcmp(propName, "") == 0) {
-    std::string s =
-        "XML:attribute <name> needs to be specified in the <property>";
-    throw CacheXmlException(s.c_str());
+  if (propName.empty()) {
+    throw CacheXmlException(
+        "XML:attribute <name> needs to be specified in the <property>");
   }
-  if (propValue == nullptr || strcmp(propValue, "") == 0) {
-    std::string s =
-        "XML:attribute <value> needs to be  specified in the <property>";
-    throw CacheXmlException(s.c_str());
+  if (propValue.empty()) {
+    throw CacheXmlException(
+        "XML:attribute <value> needs to be  specified in the <property>");
   }
   m_config->insert(propName, propValue);
 }
 
 void CacheXmlParser::startCacheLoader(const xmlChar** atts) {
-  const char* libraryName = nullptr;
-  const char* libraryFunctionName = nullptr;
+  std::string libraryName;
+  std::string libraryFunctionName;
   int attrsCount = 0;
   if (!atts) {
-    std::string s = "XML:No attributes provided for <cache-loader>";
-    throw CacheXmlException(s.c_str());
+    throw CacheXmlException("XML:No attributes provided for <cache-loader>");
   }
-  while (atts[attrsCount] != nullptr) ++attrsCount;
+  while (atts[attrsCount]) ++attrsCount;
   if (attrsCount > 4) {
-    std::string s =
-        "XML:Incorrect number of attributes provided for <cache-loader>";
-    throw CacheXmlException(s.c_str());
+    throw CacheXmlException(
+        "XML:Incorrect number of attributes provided for <cache-loader>");
   }
 
-  for (int i = 0; (atts[i] != nullptr); i++) {
-    auto name = reinterpret_cast<const char*>(atts[i]);
-    if (strcmp(LIBRARY_NAME, name) == 0) {
-      i++;
-      libraryName = reinterpret_cast<const char*>(atts[i]);
-      if (libraryName == nullptr || strcmp(libraryName, "") == 0) {
-        throw CacheXmlException("XML:The attribute <library-name> of <cache-loader> cannot be "
-            "set "
-            "to an empty string. It should either have a value or the "
-            "attribute should be removed. In the latter case the default "
-            "value "
-            "will be set");
-      }
-    } else if (strcmp(LIBRARY_FUNCTION_NAME, name) == 0) {
-      i++;
-      libraryFunctionName = reinterpret_cast<const char*>(atts[i]);
-      if (libraryFunctionName == nullptr ||
-          strcmp(libraryFunctionName, "") == 0) {
-        throw CacheXmlException("XML:Value for the <library-function-name> needs to be provided");
-      }
+  for (size_t i = 0; atts[i] && atts[i + 1]; i += 2) {
+    auto name = std::string(reinterpret_cast<const char*>(atts[i]));
+    auto value = std::string(reinterpret_cast<const char*>(atts[i + 1]));
+
+    if (value.empty()) {
+      throw CacheXmlException("XML:Value for attribute <" + name +
+                              "> needs to be specified in the "
+                              "<cache-loader>");
+    }
+
+    if (LIBRARY_NAME == name) {
+      libraryName = std::move(value);
+    } else if (LIBRARY_FUNCTION_NAME == name) {
+      libraryFunctionName = std::move(value);
     } else {
-      std::string temp(name);
-      std::string s =
-          "XML:Incorrect attribute name specified in <cache-loader> : " + temp;
-      throw CacheXmlException(s.c_str());
+      throw CacheXmlException(
+          "XML:Incorrect attribute name specified in <cache-loader> : " + name);
     }
   }
-  if (libraryFunctionName == nullptr || strcmp(libraryFunctionName, "") == 0) {
-    std::string s =
-        "XML:<library-function-name> not specified in <cache-loader> ";
-    throw CacheXmlException(s.c_str());
+  if (libraryFunctionName.empty()) {
+    throw CacheXmlException(
+        "XML:<library-function-name> not specified in <cache-loader>");
   }
 
   try {
-    if (managedCacheLoaderFn != nullptr &&
-        strchr(libraryFunctionName, '.') != nullptr) {
+    if (managedCacheLoaderFn &&
+        libraryFunctionName.find('.') != std::string::npos) {
       // this is a managed library
-      (*managedCacheLoaderFn)(libraryName, libraryFunctionName);
+      (*managedCacheLoaderFn)(libraryName.c_str(), libraryFunctionName.c_str());
     } else {
       getFactoryFunc(libraryName, libraryFunctionName);
     }
@@ -1334,57 +1192,49 @@ void CacheXmlParser::startCacheLoader(const xmlChar** atts) {
 }
 
 void CacheXmlParser::startCacheListener(const xmlChar** atts) {
-  const char* libraryName = nullptr;
-  const char* libraryFunctionName = nullptr;
+  std::string libraryName;
+  std::string libraryFunctionName;
   int attrsCount = 0;
   if (!atts) {
-    std::string s = "XML:No attributes provided for <cache-listener> ";
-    throw CacheXmlException(s.c_str());
+    throw CacheXmlException("XML:No attributes provided for <cache-listener>");
   }
-  while (atts[attrsCount] != nullptr) ++attrsCount;
+  while (atts[attrsCount]) ++attrsCount;
   if (attrsCount > 4) {
-    std::string s =
-        "XML:Incorrect number of attributes provided for <cache-listener>";
-    throw CacheXmlException(s.c_str());
+    throw CacheXmlException(
+        "XML:Incorrect number of attributes provided for <cache-listener>");
   }
 
-  for (int i = 0; (atts[i] != nullptr); i++) {
-    auto name = reinterpret_cast<const char*>(atts[i]);
-    if (strcmp(LIBRARY_NAME, name) == 0) {
-      i++;
-      libraryName = reinterpret_cast<const char*>(atts[i]);
-      if (libraryName == nullptr || strcmp(libraryName, "") == 0) {
-        throw CacheXmlException("XML:The attribute <library-name> of the <cache-listener> tag "
-            "cannot be set to an empty string. It should either have a value "
-            "or the attribute should be removed. In the latter case the "
-            "default value will be set");
-      }
-    } else if (strcmp(LIBRARY_FUNCTION_NAME, name) == 0) {
-      i++;
-      libraryFunctionName = reinterpret_cast<const char*>(atts[i]);
-      if (libraryFunctionName == nullptr ||
-          strcmp(libraryFunctionName, "") == 0) {
-        throw CacheXmlException("XML:Value for <library-function-name> needs to be provided");
-      }
+  for (size_t i = 0; atts[i] && atts[i + 1]; i += 2) {
+    auto name = std::string(reinterpret_cast<const char*>(atts[i]));
+    auto value = std::string(reinterpret_cast<const char*>(atts[i + 1]));
+
+    if (value.empty()) {
+      throw CacheXmlException("XML:Value for attribute <" + name +
+                              "> needs to be specified in the "
+                              "<cache-listener>");
+    }
+
+    if (LIBRARY_NAME == name) {
+      libraryName = std::move(value);
+    } else if (LIBRARY_FUNCTION_NAME == name) {
+      libraryFunctionName = std::move(value);
     } else {
-      std::string temp(name);
-      std::string s =
+      throw CacheXmlException(
           "XML:Incorrect attribute name specified in <cache-listener> : " +
-          temp;
-      throw CacheXmlException(s.c_str());
+          name);
     }
   }
-  if (libraryFunctionName == nullptr || strcmp(libraryFunctionName, "") == 0) {
-    std::string s =
-        "XML:Library function name not specified in <cache-listener> ";
-    throw CacheXmlException(s.c_str());
+  if (libraryFunctionName.empty()) {
+    throw CacheXmlException(
+        "XML:Library function name not specified in <cache-listener>");
   }
 
   try {
-    if (managedCacheListenerFn != nullptr &&
-        strchr(libraryFunctionName, '.') != nullptr) {
+    if (managedCacheListenerFn &&
+        libraryFunctionName.find('.') != std::string::npos) {
       // this is a managed library
-      (*managedCacheListenerFn)(libraryName, libraryFunctionName);
+      (*managedCacheListenerFn)(libraryName.c_str(),
+                                libraryFunctionName.c_str());
     } else {
       getFactoryFunc(libraryName, libraryFunctionName);
     }
@@ -1398,58 +1248,52 @@ void CacheXmlParser::startCacheListener(const xmlChar** atts) {
 }
 
 void CacheXmlParser::startPartitionResolver(const xmlChar** atts) {
-  const char* libraryName = nullptr;
-  const char* libraryFunctionName = nullptr;
-  int attrsCount = 0;
   if (!atts) {
-    std::string s = "XML:No attributes provided for <partition-resolver> ";
-    throw CacheXmlException(s.c_str());
-  }
-  while (atts[attrsCount] != nullptr) ++attrsCount;
-  if (attrsCount > 4) {
-    std::string s =
-        "XML:Incorrect number of attributes provided for "
-        "<partition-resolver>";
-    throw CacheXmlException(s.c_str());
+    throw CacheXmlException(
+        "XML:No attributes provided for <partition-resolver> ");
   }
 
-  for (int i = 0; (atts[i] != nullptr); i++) {
-    auto name = reinterpret_cast<const char*>(atts[i]);
-    if (strcmp(LIBRARY_NAME, name) == 0) {
-      i++;
-      libraryName = reinterpret_cast<const char*>(atts[i]);
-      if (libraryName == nullptr || strcmp(libraryName, "") == 0) {
-        throw CacheXmlException("XML:The attribute <library-name> of the <partition-resolver> "
-            "tag "
-            "cannot be set to an empty string. It should either have a value "
-            "or the attribute should be removed. In the latter case the "
-            "default value will be set");
-      }
-    } else if (strcmp(LIBRARY_FUNCTION_NAME, name) == 0) {
-      i++;
-      libraryFunctionName = reinterpret_cast<const char*>(atts[i]);
-      if (libraryFunctionName == nullptr ||
-          strcmp(libraryFunctionName, "") == 0) {
-        throw CacheXmlException("XML:Value for <library-function-name> needs to be provided");
-      }
+  int attrsCount = 0;
+  while (atts[attrsCount]) ++attrsCount;
+  if (attrsCount > 4) {
+    throw CacheXmlException(
+        "XML:Incorrect number of attributes provided for "
+        "<partition-resolver>");
+  }
+
+  std::string libraryName;
+  std::string libraryFunctionName;
+  for (size_t i = 0; atts[i] && atts[i + 1]; i += 2) {
+    auto name = std::string(reinterpret_cast<const char*>(atts[i]));
+    auto value = std::string(reinterpret_cast<const char*>(atts[i + 1]));
+
+    if (value.empty()) {
+      throw CacheXmlException("XML:Value for attribute <" + name +
+                              "> needs to be specified in the "
+                              "<cache-listener>");
+    }
+
+    if (LIBRARY_NAME == name) {
+      libraryName = std::move(value);
+    } else if (LIBRARY_FUNCTION_NAME == name) {
+      libraryFunctionName = std::move(value);
     } else {
-      std::string temp(name);
-      std::string s =
-          "XML:Incorrect attribute name specified in <partition-resolver> "
-          ": " +
-          temp;
-      throw CacheXmlException(s.c_str());
+      throw CacheXmlException(
+          "XML:Incorrect attribute name specified in <partition-resolver>: " +
+          value);
     }
   }
-  if (libraryFunctionName == nullptr || strcmp(libraryFunctionName, "") == 0) {
-    throw CacheXmlException("XML:Library function name not specified in <partition-resolver> ");
+  if (libraryFunctionName.empty()) {
+    throw CacheXmlException(
+        "XML:Library function name not specified in <partition-resolver> ");
   }
 
   try {
     if (managedPartitionResolverFn != nullptr &&
-        strchr(libraryFunctionName, '.') != nullptr) {
+        libraryFunctionName.find('.') != std::string::npos) {
       // this is a managed library
-      (*managedPartitionResolverFn)(libraryName, libraryFunctionName);
+      (*managedPartitionResolverFn)(libraryName.c_str(),
+                                    libraryFunctionName.c_str());
     } else {
       getFactoryFunc(libraryName, libraryFunctionName);
     }
@@ -1464,56 +1308,48 @@ void CacheXmlParser::startPartitionResolver(const xmlChar** atts) {
 }
 
 void CacheXmlParser::startCacheWriter(const xmlChar** atts) {
-  const char* libraryName = nullptr;
-  const char* libraryFunctionName = nullptr;
-  int attrsCount = 0;
   if (!atts) {
-    std::string s = "XML:No attributes provided for <cache-writer>";
-    throw CacheXmlException(s.c_str());
-  }
-  while (atts[attrsCount] != nullptr) ++attrsCount;
-  if (attrsCount > 4) {
-    std::string s =
-        "XML:Incorrect number of attributes provided for <cache-writer>";
-    throw CacheXmlException(s.c_str());
+    throw CacheXmlException("XML:No attributes provided for <cache-writer>");
   }
 
-  for (int i = 0; (atts[i] != nullptr); i++) {
-    auto name = reinterpret_cast<const char*>(atts[i]);
-    if (strcmp(LIBRARY_NAME, name) == 0) {
-      i++;
-      libraryName = reinterpret_cast<const char*>(atts[i]);
-      if (libraryName == nullptr || strcmp(libraryName, "") == 0) {
-        throw CacheXmlException("XML:The attribute <library-name> of <cache-writer> cannot be "
-            "set "
-            "to an empty string. It should either have a value or the "
-            "attribute should be removed. In the latter case the default "
-            "value "
-            "will be set");
-      }
-    } else if (strcmp(LIBRARY_FUNCTION_NAME, name) == 0) {
-      i++;
-      libraryFunctionName = reinterpret_cast<const char*>(atts[i]);
-      if (libraryFunctionName == nullptr ||
-          strcmp(libraryFunctionName, "") == 0) {
-        throw CacheXmlException("XML:Value for the <library-function-name> needs to be provided");
-      }
+  int attrsCount = 0;
+  while (atts[attrsCount] != nullptr) ++attrsCount;
+  if (attrsCount > 4) {
+    throw CacheXmlException(
+        "XML:Incorrect number of attributes provided for <cache-writer>");
+  }
+
+  std::string libraryName;
+  std::string libraryFunctionName;
+
+  for (size_t i = 0; atts[i] && atts[i + 1]; i += 2) {
+    auto name = std::string(reinterpret_cast<const char*>(atts[i]));
+    auto value = std::string(reinterpret_cast<const char*>(atts[i + 1]));
+
+    if (value.empty()) {
+      throw CacheXmlException("XML:Value for attribute <" + name +
+                              "> needs to be specified in the <cache-writer>");
+    }
+
+    if (LIBRARY_NAME == name) {
+      libraryName = std::move(value);
+    } else if (LIBRARY_FUNCTION_NAME == name) {
+      libraryFunctionName = std::move(value);
     } else {
-      std::string temp(name);
-      std::string s =
-          "XML:Incorrect attribute name specified in <cache-writer>: " + temp;
-      throw CacheXmlException(s.c_str());
+      throw CacheXmlException(
+          "XML:Incorrect attribute name specified in <cache-writer>: " + value);
     }
   }
-  if (strcmp(libraryFunctionName, "") == 0) {
-    throw CacheXmlException("XML:Library function name not specified in the <cache-writer>");
+  if (libraryFunctionName.empty()) {
+    throw CacheXmlException(
+        "XML:Library function name not specified in the <cache-writer>");
   }
 
   try {
-    if (managedCacheWriterFn != nullptr &&
-        strchr(libraryFunctionName, '.') != nullptr) {
+    if (managedCacheWriterFn &&
+        libraryFunctionName.find('.') != std::string::npos) {
       // this is a managed library
-      (*managedCacheWriterFn)(libraryName, libraryFunctionName);
+      (*managedCacheWriterFn)(libraryName.c_str(), libraryFunctionName.c_str());
     } else {
       getFactoryFunc(libraryName, libraryFunctionName);
     }
@@ -1536,8 +1372,7 @@ void CacheXmlParser::endRegion(bool isRoot) {
   _stack.pop();
   if (isRoot) {
     if (!_stack.empty()) {
-      std::string s = "Xml file has incorrectly nested region tags";
-      throw CacheXmlException(s.c_str());
+      throw CacheXmlException("Xml file has incorrectly nested region tags");
     }
     if (!m_cacheCreation) {
       throw CacheXmlException(
@@ -1547,8 +1382,7 @@ void CacheXmlParser::endRegion(bool isRoot) {
     m_cacheCreation->addRootRegion(regionPtr);
   } else {
     if (_stack.empty()) {
-      std::string s = "Xml file has incorrectly nested region tags";
-      throw CacheXmlException(s.c_str());
+      throw CacheXmlException("Xml file has incorrectly nested region tags");
     }
     auto parent = std::static_pointer_cast<RegionXmlCreation>(_stack.top());
     parent->addSubregion(regionPtr);
@@ -1572,10 +1406,9 @@ void CacheXmlParser::endCache() {}
  */
 void CacheXmlParser::endRegionTimeToLive() {
   if (!m_flagExpirationAttribute) {
-    std::string s =
+    throw CacheXmlException(
         "XML: <region-time-to-live> cannot be without a "
-        "<expiration-attributes>";
-    throw CacheXmlException(s.c_str());
+        "<expiration-attributes>");
   }
 
   auto expireAttr =
@@ -1597,9 +1430,8 @@ void CacheXmlParser::endRegionTimeToLive() {
  */
 void CacheXmlParser::endRegionIdleTime() {
   if (!m_flagExpirationAttribute) {
-    std::string s =
-        "XML: <region-idle-time> cannot be without <expiration-attributes>";
-    throw CacheXmlException(s.c_str());
+    throw CacheXmlException(
+        "XML: <region-idle-time> cannot be without <expiration-attributes>");
   }
   auto expireAttr =
       std::static_pointer_cast<ExpirationAttributes>(_stack.top());
@@ -1620,10 +1452,8 @@ void CacheXmlParser::endRegionIdleTime() {
  */
 void CacheXmlParser::endEntryTimeToLive() {
   if (!m_flagExpirationAttribute) {
-    std::string s =
-        "XML: <entry-time-to-live> cannot be without "
-        "<expiration-attributes>";
-    throw CacheXmlException(s.c_str());
+    throw CacheXmlException(
+        "XML: <entry-time-to-live> cannot be without <expiration-attributes>");
   }
   auto expireAttr =
       std::static_pointer_cast<ExpirationAttributes>(_stack.top());
@@ -1644,9 +1474,8 @@ void CacheXmlParser::endEntryTimeToLive() {
  */
 void CacheXmlParser::endEntryIdleTime() {
   if (!m_flagExpirationAttribute) {
-    std::string s =
-        "XML: <entry-idle-time> cannot be without <expiration-attributes>";
-    throw CacheXmlException(s.c_str());
+    throw CacheXmlException(
+        "XML: <entry-idle-time> cannot be without <expiration-attributes>");
   }
   auto expireAttr =
       std::static_pointer_cast<ExpirationAttributes>(_stack.top());

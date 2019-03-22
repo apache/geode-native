@@ -23,6 +23,12 @@
 #include <memory>
 #include <mutex>
 #include <string>
+#include <unordered_map>
+
+#include <geode/HashMapOfPools.hpp>
+#include <geode/Region.hpp>
+
+#include "CacheImpl.hpp"
 
 namespace apache {
 namespace geode {
@@ -30,7 +36,6 @@ namespace client {
 
 class Pool;
 class PoolFactory;
-typedef std::unordered_map<std::string, std::shared_ptr<Pool>> HashMapOfPools;
 
 class PoolManagerImpl {
  public:

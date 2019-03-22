@@ -35,6 +35,9 @@ invalidates).
 #define SERVER_AND_FEEDER s2p2
 #define SERVER1 s2p2  // duplicate definition required for a helper file
 
+using apache::geode::client::EntryEvent;
+using apache::geode::client::Exception;
+
 class EventListener : public CacheListener {
  public:
   int m_creates;
@@ -43,7 +46,7 @@ class EventListener : public CacheListener {
   int m_destroys;
   std::string m_name;
 
-  void check(const EntryEvent& event, const char* eventType) {
+  void check(const EntryEvent &event, const char *eventType) {
     char buf[256] = {'\0'};
 
     try {
@@ -55,7 +58,7 @@ class EventListener : public CacheListener {
               keyPtr->value().c_str(),
               (valuePtr == nullptr ? "nullptr" : valuePtr->toString().c_str()));
       LOG(buf);
-    } catch (const Exception& excp) {
+    } catch (const Exception &excp) {
       sprintf(buf, "%s: %s: %s: %s", m_name.c_str(), eventType,
               excp.getName().c_str(), excp.what());
       LOG(buf);
@@ -66,7 +69,7 @@ class EventListener : public CacheListener {
   }
 
  public:
-  explicit EventListener(const char* name)
+  explicit EventListener(const char *name)
       : m_creates(0),
         m_updates(0),
         m_invalidates(0),
@@ -75,22 +78,22 @@ class EventListener : public CacheListener {
 
   ~EventListener() {}
 
-  virtual void afterCreate(const EntryEvent& event) {
+  virtual void afterCreate(const EntryEvent &event) {
     check(event, "afterCreate");
     m_creates++;
   }
 
-  virtual void afterUpdate(const EntryEvent& event) {
+  virtual void afterUpdate(const EntryEvent &event) {
     check(event, "afterUpdate");
     m_updates++;
   }
 
-  virtual void afterInvalidate(const EntryEvent& event) {
+  virtual void afterInvalidate(const EntryEvent &event) {
     check(event, "afterInvalidate");
     m_invalidates++;
   }
 
-  virtual void afterDestroy(const EntryEvent& event) {
+  virtual void afterDestroy(const EntryEvent &event) {
     check(event, "afterDestroy");
     m_destroys++;
   }
@@ -124,7 +127,8 @@ class EventListener : public CacheListener {
   }
 };
 
-void setCacheListener(const char* regName, std::shared_ptr<EventListener> monitor) {
+void setCacheListener(const char *regName,
+                      std::shared_ptr<EventListener> monitor) {
   auto reg = getHelper()->getRegion(regName);
   auto attrMutator = reg->getAttributesMutator();
   attrMutator->setCacheListener(monitor);
@@ -138,17 +142,17 @@ std::shared_ptr<EventListener> clientTrueRegionTrue = nullptr;
 std::shared_ptr<EventListener> clientTrueRegionFalse = nullptr;
 std::shared_ptr<EventListener> clientTrueRegionOther = nullptr;
 
-const char* regions[] = {"RegionTrue", "RegionFalse", "RegionOther"};
-const char* keysForRegex[] = {"key-regex-1", "key-regex-2", "key-regex-3"};
+const char *regions[] = {"RegionTrue", "RegionFalse", "RegionOther"};
+const char *keysForRegex[] = {"key-regex-1", "key-regex-2", "key-regex-3"};
 
 #include "ThinClientDurableInit.hpp"
 #include "ThinClientTasks_C2S2.hpp"
 #include "LocatorHelper.hpp"
 
-void initClientForInterestNotify(std::shared_ptr<EventListener>& mon1,
-                                 std::shared_ptr<EventListener>& mon2,
-                                 std::shared_ptr<EventListener>& mon3,
-                                 const char* clientName) {
+void initClientForInterestNotify(std::shared_ptr<EventListener> &mon1,
+                                 std::shared_ptr<EventListener> &mon2,
+                                 std::shared_ptr<EventListener> &mon3,
+                                 const char *clientName) {
   auto props = Properties::create();
 
   initClient(true, props);
@@ -213,10 +217,10 @@ void feederDestroys() {
   }
 }
 
-void registerInterests(const char* region, bool durable, bool receiveValues) {
- auto regionPtr = getHelper()->getRegion(region);
+void registerInterests(const char *region, bool durable, bool receiveValues) {
+  auto regionPtr = getHelper()->getRegion(region);
 
-  std::vector<std::shared_ptr<CacheableKey>>  keysVector;
+  std::vector<std::shared_ptr<CacheableKey>> keysVector;
 
   keysVector.push_back(CacheableKey::create(keys[0]));
   keysVector.push_back(CacheableKey::create(keys[1]));
@@ -227,10 +231,10 @@ void registerInterests(const char* region, bool durable, bool receiveValues) {
   regionPtr->registerRegex("key-regex.*", durable, true, receiveValues);
 }
 
-void unregisterInterests(const char* region) {
+void unregisterInterests(const char *region) {
   auto regionPtr = getHelper()->getRegion(region);
 
-  std::vector<std::shared_ptr<CacheableKey>>  keysVector;
+  std::vector<std::shared_ptr<CacheableKey>> keysVector;
 
   keysVector.push_back(CacheableKey::create(keys[0]));
   keysVector.push_back(CacheableKey::create(keys[1]));

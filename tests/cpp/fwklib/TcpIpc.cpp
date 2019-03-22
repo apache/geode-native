@@ -16,26 +16,30 @@
  */
 
 #include "TcpIpc.hpp"
-#include "fwklib/PerfFwk.hpp"
-#include "fwklib/FwkLog.hpp"
 
-#include <memory.h>
 #include <errno.h>
+#include <memory.h>
+
+#include <chrono>
+#include <fwklib/FwkLog.hpp>
+#include <thread>
 
 #include <ace/INET_Addr.h>
-#include <ace/SOCK_IO.h>
-#include <ace/SOCK_Connector.h>
-#include <ace/SOCK_Acceptor.h>
 #include <ace/OS.h>
+#include <ace/SOCK_Acceptor.h>
+#include <ace/SOCK_Connector.h>
+#include <ace/SOCK_IO.h>
 
 #include "config.h"
 
-using namespace apache::geode::client;
-using namespace apache::geode::client::testframework;
+namespace apache {
+namespace geode {
+namespace client {
+namespace testframework {
 
 void TcpIpc::clearNagle(ACE_HANDLE sock) {
   int32_t val = 1;
-  char *param = (char *)&val;
+  char *param = reinterpret_cast<char *>(&val);
   int32_t plen = sizeof(val);
 
   if (0 != ACE_OS::setsockopt(sock, IPPROTO_TCP, 1, param, plen)) {
@@ -134,7 +138,7 @@ bool TcpIpc::connect(int32_t waitSecs) {
   ACE_SOCK_Connector conn;
   int32_t retVal = -1;
   while ((retVal == -1) && (waitSecs-- > 0)) {
-    perf::sleepSeconds(1);
+    std::this_thread::sleep_for(std::chrono::seconds(1));
     errno = 0;
     retVal = conn.connect(*m_io, driver);
   }
@@ -179,11 +183,7 @@ int32_t TcpIpc::sendBuffers(int32_t cnt, char *buffers[], int32_t lengths[],
   }
   iovec buffs[2];
   for (int32_t idx = 0; idx < cnt; idx++) {
-#ifdef _LINUX
-    buffs[idx].iov_base = (void *)buffers[idx];
-#else
     buffs[idx].iov_base = buffers[idx];
-#endif
     buffs[idx].iov_len = lengths[idx];
     tot += lengths[idx];
   }
@@ -198,3 +198,8 @@ int32_t TcpIpc::sendBuffers(int32_t cnt, char *buffers[], int32_t lengths[],
   }
   return wrote;
 }
+
+}  // namespace testframework
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

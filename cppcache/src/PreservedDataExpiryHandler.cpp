@@ -20,17 +20,20 @@
  *  Created on: Apr 5, 2012
  *      Author: npatel
  */
-#include "ace/Timer_Queue.h"
-#include "ace/Timer_Heap.h"
-#include "ace/Reactor.h"
-#include "ace/svc_export.h"
-#include "ace/Timer_Heap_T.h"
-#include "ace/Timer_Queue_Adapters.h"
-
 #include "PreservedDataExpiryHandler.hpp"
+
+#include <ace/Reactor.h>
+#include <ace/Timer_Heap.h>
+#include <ace/Timer_Heap_T.h>
+#include <ace/Timer_Queue.h>
+#include <ace/Timer_Queue_Adapters.h>
+#include <ace/svc_export.h>
+
 #include "PdxTypeRegistry.hpp"
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 PreservedDataExpiryHandler::PreservedDataExpiryHandler(
     const std::shared_ptr<PdxTypeRegistry>& pdxTypeRegistry,
@@ -61,3 +64,7 @@ int PreservedDataExpiryHandler::handle_timeout(const ACE_Time_Value&,
 int PreservedDataExpiryHandler::handle_close(ACE_HANDLE, ACE_Reactor_Mask) {
   return 0;
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

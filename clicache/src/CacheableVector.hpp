@@ -22,6 +22,9 @@
 #include "IDataSerializablePrimitive.hpp"
 #include "ISerializable.hpp"
 
+#include "begin_native.hpp"
+#include <geode/internal/DSCode.hpp>
+#include "end_native.hpp"
 
 using namespace System;
 using namespace System::Collections::Generic;
@@ -107,7 +110,7 @@ namespace Apache
         {
           virtual int8_t get()
           {
-            return static_cast<int8_t>(native::DSCode::CacheableVector);
+            return static_cast<int8_t>(native::internal::DSCode::CacheableVector);
           }
         }
 

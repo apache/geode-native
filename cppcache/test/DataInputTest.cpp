@@ -15,20 +15,21 @@
  * limitations under the License.
  */
 
-#include <string>  // for ::memset()
-
 #include <stdint.h>
+
+#include <string>  // for ::memset()
 #define NOMINMAX
 #if defined(NOMINMAX)
 // ifnore unused macro warning
 #endif
 #include <cstdint>
+#include <memory>
 
 #include <gtest/gtest.h>
 
 #include <geode/CacheFactory.hpp>
 #include <geode/DataInput.hpp>
-#include <memory>
+
 #include "ByteArrayFixture.hpp"
 #include "DataInputInternal.hpp"
 #include "DataOutputInternal.hpp"
@@ -36,7 +37,12 @@
 
 namespace {
 
-using namespace apache::geode::client;
+using apache::geode::client::ByteArray;
+using apache::geode::client::CacheableString;
+using apache::geode::client::DataInputInternal;
+using apache::geode::client::DataOutputInternal;
+using apache::geode::client::Serializable;
+using apache::geode::client::SerializationRegistry;
 
 class DataInputUnderTest : public DataInputInternal {
  public:
@@ -160,7 +166,7 @@ class TestDataInput {
 
 class DataInputTest : public ::testing::Test, protected ByteArrayFixture {
  public:
-  ~DataInputTest() noexcept override {} 
+  ~DataInputTest() noexcept override {}
 };
 
 TEST_F(DataInputTest, ThrowsWhenReadingInputWithSizeZero) {

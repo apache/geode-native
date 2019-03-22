@@ -24,8 +24,7 @@
 
 #include "locator_globals.hpp"
 
-using namespace apache::geode::client;
-using namespace test;
+using apache::geode::client::EntryEvent;
 
 class MyListener;
 
@@ -36,7 +35,7 @@ class MyListener : public CacheListener {
   MyListener() : CacheListener() {
     for (int i = 0; i < 5; i++) m_gotit[i] = 0;
   }
-  inline void checkEntry(const EntryEvent& event) {
+  inline void checkEntry(const EntryEvent &event) {
     auto keyPtr = std::dynamic_pointer_cast<CacheableString>(event.getKey());
     for (int i = 0; i < 5; i++) {
       if (!ACE_OS::strcmp(keys[i], keyPtr->value().c_str())) {
@@ -47,17 +46,19 @@ class MyListener : public CacheListener {
       }
     }
   }
-  virtual void afterCreate(const EntryEvent& event) { checkEntry(event); }
-  virtual void afterUpdate(const EntryEvent& event) { checkEntry(event); }
+  virtual void afterCreate(const EntryEvent &event) { checkEntry(event); }
+  virtual void afterUpdate(const EntryEvent &event) { checkEntry(event); }
   inline bool gotAll() {
     for (int i = 0; i < 5; i++) {
       if (m_gotit[i] == 0) return false;
     }
     return true;
   }
-};std::shared_ptr<MyListener> mylistner = nullptr;
+};
+std::shared_ptr<MyListener> mylistner = nullptr;
 
-void setCacheListener(const char* regName, std::shared_ptr<MyListener> regListener) {
+void setCacheListener(const char *regName,
+                      std::shared_ptr<MyListener> regListener) {
   auto reg = getHelper()->getRegion(regName);
   auto attrMutator = reg->getAttributesMutator();
   attrMutator->setCacheListener(regListener);
@@ -91,17 +92,17 @@ DUNIT_TASK(CLIENT2, setupClient2)
                                     "__TEST_POOL1__", true, true);
     mylistner = std::make_shared<MyListener>();
     setCacheListener(regionNames[0], mylistner);
-   auto regPtr = getHelper()->getRegion(regionNames[0]);
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
     regPtr->registerAllKeys(false, true);
   }
 END_TASK(setupClient2)
 
 DUNIT_TASK(CLIENT1, populateServer)
   {
-   auto regPtr = getHelper()->getRegion(regionNames[0]);
+    auto regPtr = getHelper()->getRegion(regionNames[0]);
     for (int i = 0; i < 5; i++) {
-     auto keyPtr = CacheableKey::create(keys[i]);
-     regPtr->create(keyPtr, vals[i]);
+      auto keyPtr = CacheableKey::create(keys[i]);
+      regPtr->create(keyPtr, vals[i]);
     }
     SLEEP(1000);
   }

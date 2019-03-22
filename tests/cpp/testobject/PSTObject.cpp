@@ -16,12 +16,12 @@
  */
 
 #include "PSTObject.hpp"
-#include "fwklib/GsRandom.hpp"
+
+#include <fwklib/GsRandom.hpp>
+
 #include "ArrayOfByte.hpp"
 
-using namespace apache::geode::client;
-using namespace testframework;
-using namespace testobject;
+namespace testobject {
 
 PSTObject::PSTObject(int size, bool encodeKey) {
   ACE_Time_Value startTime;
@@ -55,7 +55,10 @@ void PSTObject::fromData(apache::geode::client::DataInput& input) {
 std::string PSTObject::toString() const {
   char buf[102500];
   sprintf(buf,
-          "PSTObject:[timestamp = %" PRIu64 " field1 = %d field2 = %c valueData=%d ]",
+          "PSTObject:[timestamp = %" PRIu64
+          " field1 = %d field2 = %c valueData=%d ]",
           timestamp, field1, field2, valueData->length());
   return buf;
 }
+
+}  // namespace testobject

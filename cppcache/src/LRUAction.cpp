@@ -14,13 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <geode/Cache.hpp>
 #include "LRUAction.hpp"
-#include "LRULocalDestroyAction.hpp"
-#include "LRUEntriesMap.hpp"
-#include "CacheImpl.hpp"
 
-using namespace apache::geode::client;
+#include <geode/Cache.hpp>
+
+#include "CacheImpl.hpp"
+#include "LRUEntriesMap.hpp"
+#include "LRULocalDestroyAction.hpp"
+
+namespace apache {
+namespace geode {
+namespace client {
 
 LRUAction* LRUAction::newLRUAction(const LRUAction::Action& actionType,
                                    RegionInternal* regionPtr,
@@ -116,3 +120,7 @@ bool LRULocalInvalidateAction::evict(
   }
   return (err == GF_NOERR);
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

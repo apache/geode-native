@@ -20,8 +20,8 @@
 #ifndef GEODE_LOG_H_
 #define GEODE_LOG_H_
 
-#include <cstdio>
 #include <cstdarg>
+#include <cstdio>
 #include <string>
 
 #include <geode/internal/geode_globals.hpp>
@@ -46,7 +46,7 @@
 /******************************************************************************/
 
 /** @file
-*/
+ */
 
 namespace apache {
 namespace geode {
@@ -65,80 +65,80 @@ class Exception;
     apache::geode::client::Log::log(level, expr)
 
 /** Defines methods available to clients that want to write a log message
-  * to their Geode system's shared log file.
-  * <p>
-  * This class must be initialized prior to its use:
-  * @ref Log::init
-  * <p>
-  * For any logged message the log file will contain:
-  * <ul>
-  * <li> The message's level.
-  * <li> The time the message was logged.
-  * <li> The id of the connection and thread that logged the message.
-  * <li> The message itself which can be a const char* (perhaps with
-  * an exception including the exception's stack trace.
-  * </ul>
-  * <p>
-  * A message always has a level.
-  * Logging levels are ordered. Enabling logging at a given level also
-  * enables logging at higher levels. The higher the level the more
-  * important and urgent the message.
-  * <p>
-  * The levels, in descending order of severity, are:
-  * <ul>
-  *
-  * <li> <code>error</code> (highest severity) is a message level
-  * indicating a serious failure.  In general <code>error</code>
-  * messages should describe events that are of considerable
-  * importance and which will prevent normal program execution. They
-  * should be reasonably intelligible to end users and to system
-  * administrators.
-  *
-  * <li> <code>warning</code> is a message level indicating a
-  * potential problem.  In general <code>warning</code> messages
-  * should describe events that will be of interest to end users or
-  * system managers, or which indicate potential problems.
-  *
-  * <li> <code>info</code> is a message level for informational
-  * messages.  Typically <code>info</code> messages should be
-  * reasonably significant and should make sense to end users and
-  * system administrators.
-  *
-  * <li> <code>config</code> is a message level for static
-  * configuration messages.  <code>config</code> messages are intended
-  * to provide a variety of static configuration information, to
-  * assist in debugging problems that may be associated with
-  * particular configurations.
-  *
-  * <li> <code>fine</code> is a message level providing tracing
-  * information.  In general the <code>fine</code> level should be
-  * used for information that will be broadly interesting to
-  * developers. This level is for the lowest volume, and most
-  * important, tracing messages.
-  *
-  * <li> <code>finer</code> indicates a moderately detailed tracing
-  * message.  This is an intermediate level between <code>fine</code>
-  * and <code>finest</code>.
-  *
-  * <li> <code>finest</code> indicates a very detailed tracing
-  * message.  Logging calls for entering, returning, or throwing an
-  * exception are traced at the <code>finest</code> level.
-  *
-  * <li> <code>debug</code> (lowest severity) indicates a highly
-  * detailed tracing message.  In general the <code>debug</code> level
-  * should be used for the most voluminous detailed tracing messages.
-  * </ul>
-  *
-  * <p>
-  * For each level methods exist that will request a message, at that
-  * level, to be logged. These methods are all named after their level.
-  * <p>
-  * For each level a method exists that indicates if messages at that
-  * level will currently be logged. The names of these methods are of
-  * the form: <em>level</em><code>Enabled</code>.
-  *
-  *
-  */
+ * to their Geode system's shared log file.
+ * <p>
+ * This class must be initialized prior to its use:
+ * @ref Log::init
+ * <p>
+ * For any logged message the log file will contain:
+ * <ul>
+ * <li> The message's level.
+ * <li> The time the message was logged.
+ * <li> The id of the connection and thread that logged the message.
+ * <li> The message itself which can be a const char* (perhaps with
+ * an exception including the exception's stack trace.
+ * </ul>
+ * <p>
+ * A message always has a level.
+ * Logging levels are ordered. Enabling logging at a given level also
+ * enables logging at higher levels. The higher the level the more
+ * important and urgent the message.
+ * <p>
+ * The levels, in descending order of severity, are:
+ * <ul>
+ *
+ * <li> <code>error</code> (highest severity) is a message level
+ * indicating a serious failure.  In general <code>error</code>
+ * messages should describe events that are of considerable
+ * importance and which will prevent normal program execution. They
+ * should be reasonably intelligible to end users and to system
+ * administrators.
+ *
+ * <li> <code>warning</code> is a message level indicating a
+ * potential problem.  In general <code>warning</code> messages
+ * should describe events that will be of interest to end users or
+ * system managers, or which indicate potential problems.
+ *
+ * <li> <code>info</code> is a message level for informational
+ * messages.  Typically <code>info</code> messages should be
+ * reasonably significant and should make sense to end users and
+ * system administrators.
+ *
+ * <li> <code>config</code> is a message level for static
+ * configuration messages.  <code>config</code> messages are intended
+ * to provide a variety of static configuration information, to
+ * assist in debugging problems that may be associated with
+ * particular configurations.
+ *
+ * <li> <code>fine</code> is a message level providing tracing
+ * information.  In general the <code>fine</code> level should be
+ * used for information that will be broadly interesting to
+ * developers. This level is for the lowest volume, and most
+ * important, tracing messages.
+ *
+ * <li> <code>finer</code> indicates a moderately detailed tracing
+ * message.  This is an intermediate level between <code>fine</code>
+ * and <code>finest</code>.
+ *
+ * <li> <code>finest</code> indicates a very detailed tracing
+ * message.  Logging calls for entering, returning, or throwing an
+ * exception are traced at the <code>finest</code> level.
+ *
+ * <li> <code>debug</code> (lowest severity) indicates a highly
+ * detailed tracing message.  In general the <code>debug</code> level
+ * should be used for the most voluminous detailed tracing messages.
+ * </ul>
+ *
+ * <p>
+ * For each level methods exist that will request a message, at that
+ * level, to be logged. These methods are all named after their level.
+ * <p>
+ * For each level a method exists that indicates if messages at that
+ * level will currently be logged. The names of these methods are of
+ * the form: <em>level</em><code>Enabled</code>.
+ *
+ *
+ */
 
 class APACHE_GEODE_EXPORT Log {
  public:
@@ -155,13 +155,6 @@ class APACHE_GEODE_EXPORT Log {
    * Set the current log level.
    */
   static void setLogLevel(LogLevel level) { s_logLevel = level; }
-
-  /**
-   * @return the name of the current log file.
-   * NOTE: This function is for debugging only, as it is not completely
-   * thread-safe!
-   */
-  static const char* logFileName();
 
   /**
    * Initializes logging facility with given level and filenames.
@@ -248,8 +241,8 @@ class APACHE_GEODE_EXPORT Log {
    * Returns whether "error" log messages are enabled.
    */
   static bool errorEnabled() {
-    return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Error
-        && s_logLevel >= LogLevel::Error;
+    return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Error &&
+           s_logLevel >= LogLevel::Error;
   }
 
   /**
@@ -258,6 +251,10 @@ class APACHE_GEODE_EXPORT Log {
    */
   static void error(const char* msg) {
     if (errorEnabled()) put(LogLevel::Error, msg);
+  }
+
+  static void error(const std::string& msg) {
+    if (errorEnabled()) put(LogLevel::Error, msg.c_str());
   }
 
   /**
@@ -282,8 +279,8 @@ class APACHE_GEODE_EXPORT Log {
    * Returns whether "warning" log messages are enabled.
    */
   static bool warningEnabled() {
-    return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Warning
-        && s_logLevel >= LogLevel::Warning;
+    return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Warning &&
+           s_logLevel >= LogLevel::Warning;
   }
 
   /**
@@ -316,8 +313,8 @@ class APACHE_GEODE_EXPORT Log {
    * Returns whether "info" log messages are enabled.
    */
   static bool infoEnabled() {
-    return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Info
-        && s_logLevel >= LogLevel::Info;
+    return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Info &&
+           s_logLevel >= LogLevel::Info;
   }
 
   /**
@@ -350,8 +347,8 @@ class APACHE_GEODE_EXPORT Log {
    * Returns whether "config" log messages are enabled.
    */
   static bool configEnabled() {
-    return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Config
-        && s_logLevel >= LogLevel::Config;
+    return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Config &&
+           s_logLevel >= LogLevel::Config;
   }
 
   /**
@@ -384,8 +381,8 @@ class APACHE_GEODE_EXPORT Log {
    * Returns whether "fine" log messages are enabled.
    */
   static bool fineEnabled() {
-    return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Fine
-        && s_logLevel >= LogLevel::Fine;
+    return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Fine &&
+           s_logLevel >= LogLevel::Fine;
   }
 
   /**
@@ -418,8 +415,8 @@ class APACHE_GEODE_EXPORT Log {
    * Returns whether "finer" log messages are enabled.
    */
   static bool finerEnabled() {
-    return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Finer
-        && s_logLevel >= LogLevel::Finer;
+    return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Finer &&
+           s_logLevel >= LogLevel::Finer;
   }
 
   /**
@@ -452,8 +449,8 @@ class APACHE_GEODE_EXPORT Log {
    * Returns whether "finest" log messages are enabled.
    */
   static bool finestEnabled() {
-    return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Finest
-        && s_logLevel >= LogLevel::Finest;
+    return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Finest &&
+           s_logLevel >= LogLevel::Finest;
   }
 
   /**
@@ -487,7 +484,7 @@ class APACHE_GEODE_EXPORT Log {
    */
   static bool debugEnabled() {
     return (s_doingDebug || GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Debug) &&
-        s_logLevel >= LogLevel::Debug;
+           s_logLevel >= LogLevel::Debug;
   }
 
   /**
@@ -525,7 +522,7 @@ class APACHE_GEODE_EXPORT Log {
  private:
   static LogLevel s_logLevel;
 
-/******/
+  /******/
 
 #ifdef DEBUG
   enum { s_doingDebug = 1 };
@@ -556,7 +553,7 @@ class LogFn {
   LogLevel m_level;
 
  public:
-  LogFn(const char *functionName, LogLevel level = LogLevel::Finest)
+  explicit LogFn(const char* functionName, LogLevel level = LogLevel::Finest)
       : m_functionName(functionName), m_level(level) {
     if (Log::enabled(m_level)) Log::enterFn(m_level, m_functionName);
   }
@@ -626,59 +623,59 @@ class APACHE_GEODE_EXPORT LogVarargs {
 
 /************************ LOGDEBUG ***********************************/
 
-#define LOGDEBUG                              \
-  if (apache::geode::client::LogLevel::Debug <=    \
-      apache::geode::client::Log::logLevel()) \
-  apache::geode::client::LogVarargs::debug
+#define LOGDEBUG                                  \
+  if (::apache::geode::client::LogLevel::Debug <= \
+      ::apache::geode::client::Log::logLevel())   \
+  ::apache::geode::client::LogVarargs::debug
 
 /************************ LOGERROR ***********************************/
 
-#define LOGERROR                              \
-  if (apache::geode::client::LogLevel::Error <=    \
-      apache::geode::client::Log::logLevel()) \
-  apache::geode::client::LogVarargs::error
+#define LOGERROR                                  \
+  if (::apache::geode::client::LogLevel::Error <= \
+      ::apache::geode::client::Log::logLevel())   \
+  ::apache::geode::client::LogVarargs::error
 
 /************************ LOGWARN ***********************************/
 
-#define LOGWARN                               \
-  if (apache::geode::client::LogLevel::Warning <=  \
-      apache::geode::client::Log::logLevel()) \
-  apache::geode::client::LogVarargs::warn
+#define LOGWARN                                     \
+  if (::apache::geode::client::LogLevel::Warning <= \
+      ::apache::geode::client::Log::logLevel())     \
+  ::apache::geode::client::LogVarargs::warn
 
 /************************ LOGINFO ***********************************/
 
-#define LOGINFO                               \
-  if (apache::geode::client::LogLevel::Info <=     \
-      apache::geode::client::Log::logLevel()) \
-  apache::geode::client::LogVarargs::info
+#define LOGINFO                                  \
+  if (::apache::geode::client::LogLevel::Info <= \
+      ::apache::geode::client::Log::logLevel())  \
+  ::apache::geode::client::LogVarargs::info
 
 /************************ LOGCONFIG ***********************************/
 
-#define LOGCONFIG                             \
-  if (apache::geode::client::LogLevel::Config <=   \
-      apache::geode::client::Log::logLevel()) \
-  apache::geode::client::LogVarargs::config
+#define LOGCONFIG                                  \
+  if (::apache::geode::client::LogLevel::Config <= \
+      ::apache::geode::client::Log::logLevel())    \
+  ::apache::geode::client::LogVarargs::config
 
 /************************ LOGFINE ***********************************/
 
-#define LOGFINE                               \
-  if (apache::geode::client::LogLevel::Fine <=     \
-      apache::geode::client::Log::logLevel()) \
-  apache::geode::client::LogVarargs::fine
+#define LOGFINE                                  \
+  if (::apache::geode::client::LogLevel::Fine <= \
+      ::apache::geode::client::Log::logLevel())  \
+  ::apache::geode::client::LogVarargs::fine
 
 /************************ LOGFINER ***********************************/
 
-#define LOGFINER                              \
-  if (apache::geode::client::LogLevel::Finer <=    \
-      apache::geode::client::Log::logLevel()) \
-  apache::geode::client::LogVarargs::finer
+#define LOGFINER                                  \
+  if (::apache::geode::client::LogLevel::Finer <= \
+      ::apache::geode::client::Log::logLevel())   \
+  ::apache::geode::client::LogVarargs::finer
 
 /************************ LOGFINEST ***********************************/
 
-#define LOGFINEST                             \
-  if (apache::geode::client::LogLevel::Finest <=   \
-      apache::geode::client::Log::logLevel()) \
-  apache::geode::client::LogVarargs::finest
+#define LOGFINEST                                  \
+  if (::apache::geode::client::LogLevel::Finest <= \
+      ::apache::geode::client::Log::logLevel())    \
+  ::apache::geode::client::LogVarargs::finest
 
 /******************************************************************************/
 

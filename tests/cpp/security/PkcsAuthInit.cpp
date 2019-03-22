@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
+#include "PkcsAuthInit.hpp"
+
 #include <cstdio>
 #include <string>
-
-#include <geode/Properties.hpp>
-#include <geode/CacheableBuiltins.hpp>
-#include <geode/ExceptionTypes.hpp>
-
 #include <util/Log.hpp>
 
+#include <geode/CacheableBuiltins.hpp>
+#include <geode/ExceptionTypes.hpp>
+#include <geode/Properties.hpp>
+
 #include "SerializationRegistry.hpp"
-#include "PkcsAuthInit.hpp"
 #include "security_export.h"
 
 namespace apache {
@@ -69,13 +69,15 @@ uint8_t* createSignature(EVP_PKEY* key, X509* cert,
   X509_ALGOR_get0(&macobj, nullptr, nullptr, algorithm);
   const EVP_MD* signatureDigest = EVP_get_digestbyobj(macobj);
   EVP_MD_CTX* signatureCtx = EVP_MD_CTX_new();
-  uint8_t* signatureData = new uint8_t[EVP_PKEY_size(key)];
-  bool result = (EVP_SignInit_ex(signatureCtx, signatureDigest, nullptr) &&
-                 EVP_SignUpdate(signatureCtx, inputBuffer, inputBufferLen) &&
-                 EVP_SignFinal(signatureCtx, signatureData, signatureLen, key));
+  auto signatureData =
+      std::unique_ptr<uint8_t[]>(new uint8_t[EVP_PKEY_size(key)]);
+  bool result =
+      (EVP_SignInit_ex(signatureCtx, signatureDigest, nullptr) &&
+       EVP_SignUpdate(signatureCtx, inputBuffer, inputBufferLen) &&
+       EVP_SignFinal(signatureCtx, signatureData.get(), signatureLen, key));
   EVP_MD_CTX_free(signatureCtx);
   if (result) {
-    return signatureData;
+    return signatureData.release();
   }
   return nullptr;
 }
@@ -84,8 +86,7 @@ bool readPKCSPublicPrivateKey(FILE* keyStoreFP, const char* keyStorePassword,
                               EVP_PKEY** outPrivateKey, X509** outCertificate) {
   PKCS12* p12;
 
-  if (!keyStoreFP || !keyStorePassword ||
-      (keyStorePassword[0] == '\0')) {
+  if (!keyStoreFP || !keyStorePassword || (keyStorePassword[0] == '\0')) {
     return (false);
   }
 
@@ -183,9 +184,9 @@ std::shared_ptr<Properties> PKCSAuthInitInternal::getCredentials(
   fclose(keyStoreFP);
   unsigned int lengthEncryptedData = 0;
 
-  uint8_t* signatureData = createSignature(
+  auto signatureData = std::unique_ptr<uint8_t[]>(createSignature(
       privateKey, cert, reinterpret_cast<const unsigned char*>(alias),
-      static_cast<uint32_t>(strlen(alias)), &lengthEncryptedData);
+      static_cast<uint32_t>(strlen(alias)), &lengthEncryptedData));
   EVP_PKEY_free(privateKey);
   X509_free(cert);
   if (!signatureData) {
@@ -197,12 +198,12 @@ std::shared_ptr<Properties> PKCSAuthInitInternal::getCredentials(
   if (m_stringCredentials) {
     // convert signature bytes to base64
     signatureValPtr =
-        convertBytesToString(signatureData, lengthEncryptedData, 2048);
+        convertBytesToString(signatureData.get(), lengthEncryptedData, 2048);
     LOGINFO(" Converting CREDS to STRING: %s",
             signatureValPtr->toString().c_str());
   } else {
     signatureValPtr = CacheableBytes::create(std::vector<int8_t>(
-        signatureData, signatureData + lengthEncryptedData));
+        signatureData.get(), signatureData.get() + lengthEncryptedData));
     LOGINFO(" Converting CREDS to BYTES: %s",
             signatureValPtr->toString().c_str());
   }

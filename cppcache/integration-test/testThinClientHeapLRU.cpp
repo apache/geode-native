@@ -26,9 +26,6 @@
 #include <string>
 #include "ThinClientHelper.hpp"
 
-using namespace apache::geode::client;
-using namespace test;
-
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
@@ -36,15 +33,20 @@ using namespace test;
 #include "locator_globals.hpp"
 #include "LocatorHelper.hpp"
 
-const char* _regionNames[] = {"DistRegionAck"};
+using apache::geode::client::internal::DSCode;
+
+using apache::geode::client::testing::CacheableWrapper;
+using apache::geode::client::testing::CacheableWrapperFactory;
+
+const char *_regionNames[] = {"DistRegionAck"};
 
 void createOnekEntries() {
   CacheableHelper::registerBuiltins();
   auto dataReg = getHelper()->getRegion(_regionNames[0]);
   for (int i = 0; i < 2048; i++) {
-    CacheableWrapper* tmpkey =
+    CacheableWrapper *tmpkey =
         CacheableWrapperFactory::createInstance(DSCode::CacheableInt32);
-    CacheableWrapper* tmpval =
+    CacheableWrapper *tmpval =
         CacheableWrapperFactory::createInstance(DSCode::CacheableBytes);
     tmpkey->initKey(i, 32);
     tmpval->initRandomValue(1024);

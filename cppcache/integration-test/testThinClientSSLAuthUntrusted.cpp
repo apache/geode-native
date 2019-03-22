@@ -25,14 +25,17 @@
 
 #include "CacheHelper.hpp"
 
-using namespace apache::geode::client;
-using namespace test;
+using apache::geode::client::CacheableKey;
+using apache::geode::client::CacheableString;
+using apache::geode::client::CacheHelper;
+using apache::geode::client::NotConnectedException;
+using apache::geode::client::Properties;
 
-CacheHelper* cacheHelper = nullptr;
+CacheHelper *cacheHelper = nullptr;
 bool isLocalServer = false;
 
 static bool isLocator = false;
-const char* locatorsG =
+const char *locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
 #define CLIENT1 s1p1
@@ -59,13 +62,13 @@ void cleanProc() {
   }
 }
 
-CacheHelper* getHelper() {
+CacheHelper *getHelper() {
   ASSERT(cacheHelper != nullptr, "No cacheHelper initialized.");
   return cacheHelper;
 }
 
-void createPooledRegion(const char* name, bool ackMode, const char* locators,
-                        const char* poolname,
+void createPooledRegion(const char *name, bool ackMode, const char *locators,
+                        const char *poolname,
                         bool clientNotificationEnabled = false,
                         bool cachingEnable = true) {
   LOG("createRegion_Pool() entered.");
@@ -78,7 +81,7 @@ void createPooledRegion(const char* name, bool ackMode, const char* locators,
   LOG("Pooled Region created.");
 }
 
-void createEntry(const char* name, const char* key, const char* value) {
+void createEntry(const char *name, const char *key, const char *value) {
   LOG("createEntry() entered.");
   fprintf(stdout, "Creating entry -- key: %s  value: %s in region %s\n", key,
           value, name);
@@ -103,12 +106,12 @@ void createEntry(const char* name, const char* key, const char* value) {
   LOG("Entry created.");
 }
 
-const char* keys[] = {"Key-1", "Key-2", "Key-3", "Key-4"};
-const char* vals[] = {"Value-1", "Value-2", "Value-3", "Value-4"};
-const char* nvals[] = {"New Value-1", "New Value-2", "New Value-3",
+const char *keys[] = {"Key-1", "Key-2", "Key-3", "Key-4"};
+const char *vals[] = {"Value-1", "Value-2", "Value-3", "Value-4"};
+const char *nvals[] = {"New Value-1", "New Value-2", "New Value-3",
                        "New Value-4"};
 
-const char* regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
+const char *regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
 
 const bool USE_ACK = true;
 const bool NO_ACK = false;
@@ -124,9 +127,10 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(SERVER1, CreateServer1_With_Locator_And_SSL_untrustedCert)
   {
     // starting servers
-    if (isLocalServer)
+    if (isLocalServer) {
       CacheHelper::initServer(1, nullptr, locatorsG, nullptr, true, true, false,
                               false, false);
+    }
   }
 END_TASK_DEFINITION
 

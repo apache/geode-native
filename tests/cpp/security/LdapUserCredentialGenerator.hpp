@@ -20,11 +20,11 @@
  * limitations under the License.
  */
 
-#include "CredentialGenerator.hpp"
-#include "XmlAuthzCredentialGenerator.hpp"
-
 #include <ace/ACE.h>
 #include <ace/OS.h>
+
+#include "CredentialGenerator.hpp"
+#include "XmlAuthzCredentialGenerator.hpp"
 
 namespace apache {
 namespace geode {
@@ -58,7 +58,7 @@ class LdapUserCredentialGenerator : public CredentialGenerator {
     additionalArgs +=
         std::string(" --J=\\\"-Dgemfire.security-ldap-basedn=") +
         (ldapRoot != nullptr ? ldapRoot
-                          : "ou=ldapTesting,dc=ldap,dc=apache,dc=org") +
+                             : "ou=ldapTesting,dc=ldap,dc=apache,dc=org") +
         "\\\"";
 
     char* ldapSSL = ACE_OS::getenv("LDAP_USESSL");
@@ -107,9 +107,9 @@ class LdapUserCredentialGenerator : public CredentialGenerator {
     authz.getAllowedCredentials(opCodes, p, regionNames);
   }
 
-  void getDisallowedCredentialsForOps(opCodeList& opCodes,
-                                      std::shared_ptr<Properties>& p,
-                                      stringList* regionNames = nullptr) override {
+  void getDisallowedCredentialsForOps(
+      opCodeList& opCodes, std::shared_ptr<Properties>& p,
+      stringList* regionNames = nullptr) override {
     XmlAuthzCredentialGenerator authz(id());
     authz.getDisallowedCredentials(opCodes, p, regionNames);
   }

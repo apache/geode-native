@@ -20,21 +20,24 @@
  * limitations under the License.
  */
 
-#include <stack>
-#include <map>
 #include <libxml/parser.h>
+
+#include <map>
+#include <stack>
+
 #include <geode/Cache.hpp>
 #include <geode/CacheAttributes.hpp>
-#include "CacheXml.hpp"
-#include "RegionXmlCreation.hpp"
-#include "CacheXmlCreation.hpp"
+#include <geode/CacheListener.hpp>
+#include <geode/CacheLoader.hpp>
+#include <geode/ExceptionTypes.hpp>
 #include <geode/ExpirationAction.hpp>
 #include <geode/ExpirationAttributes.hpp>
-#include <geode/CacheLoader.hpp>
-#include <geode/CacheListener.hpp>
 #include <geode/PartitionResolver.hpp>
-#include <geode/ExceptionTypes.hpp>
 #include <geode/RegionShortcut.hpp>
+
+#include "CacheXml.hpp"
+#include "CacheXmlCreation.hpp"
+#include "RegionXmlCreation.hpp"
 
 namespace apache {
 namespace geode {
@@ -77,7 +80,7 @@ class APACHE_GEODE_EXPORT CacheXmlParser : public CacheXml {
   void handleParserErrors(int res);
 
  public:
-  CacheXmlParser(Cache* cache);
+  explicit CacheXmlParser(Cache* cache);
   ~CacheXmlParser();
   static CacheXmlParser* parse(const char* cachexml, Cache* cache);
   void parseFile(const char* filename);

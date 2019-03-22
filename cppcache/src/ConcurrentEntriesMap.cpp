@@ -15,12 +15,15 @@
  * limitations under the License.
  */
 #include "ConcurrentEntriesMap.hpp"
-#include "RegionInternal.hpp"
-#include "TableOfPrimes.hpp"
 
 #include <algorithm>
 
-using namespace apache::geode::client;
+#include "RegionInternal.hpp"
+#include "TableOfPrimes.hpp"
+
+namespace apache {
+namespace geode {
+namespace client {
 
 bool EntriesMap::boolVal = false;
 
@@ -248,3 +251,7 @@ GfErrType ConcurrentEntriesMap::isTombstone(std::shared_ptr<CacheableKey>& key,
                                             bool& result) {
   return segmentFor(key)->isTombstone(key, me, result);
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

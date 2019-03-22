@@ -20,9 +20,9 @@
 #ifndef GEODE_TOMBSTONEEXPIRYHANDLER_H_
 #define GEODE_TOMBSTONEEXPIRYHANDLER_H_
 
-#include <geode/internal/geode_globals.hpp>
-#include <geode/Region.hpp>
 #include <geode/ExpirationAction.hpp>
+#include <geode/Region.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 #include "RegionInternal.hpp"
 #include "TombstoneList.hpp"

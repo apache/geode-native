@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_TESTOBJECT_PDXVERSIONED2_H_
-#define GEODE_TESTOBJECT_PDXVERSIONED2_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,24 +14,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * PdxObject.hpp
- *
- *  Created on: Sep 29, 2011
- *      Author: npatel
- */
 
-#include <geode/PdxSerializable.hpp>
+#pragma once
+
+#ifndef GEODE_TESTOBJECT_PDXVERSIONED2_H_
+#define GEODE_TESTOBJECT_PDXVERSIONED2_H_
+
+#include <fwklib/FwkExport.hpp>
+
 #include <geode/CacheableEnum.hpp>
-#include <geode/PdxWriter.hpp>
 #include <geode/PdxReader.hpp>
-#include "fwklib/FwkExport.hpp"
+#include <geode/PdxSerializable.hpp>
+#include <geode/PdxWriter.hpp>
 
 #include "testobject_export.h"
 
-using namespace apache::geode::client;
-
 namespace PdxTests {
+
+using apache::geode::client::Cacheable;
+using apache::geode::client::CacheableArrayList;
+using apache::geode::client::CacheableDate;
+using apache::geode::client::CacheableEnum;
+using apache::geode::client::CacheableHashMap;
+using apache::geode::client::IllegalStateException;
+using apache::geode::client::PdxReader;
+using apache::geode::client::PdxSerializable;
+using apache::geode::client::PdxWriter;
 
 class TESTOBJECT_EXPORT PdxVersioned2 : public PdxSerializable {
  private:
@@ -111,7 +114,7 @@ class TESTOBJECT_EXPORT PdxVersioned2 : public PdxSerializable {
     }
   */
   PdxVersioned2() { init("abc"); }
-  PdxVersioned2(const char* key);
+  explicit PdxVersioned2(const char* key);
   void init(const char* key);
   inline bool compareBool(bool b, bool b2) {
     if (b == b2) return b;

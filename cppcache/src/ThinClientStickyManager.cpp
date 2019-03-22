@@ -15,14 +15,16 @@
  * limitations under the License.
  */
 #include "ThinClientStickyManager.hpp"
+
 #include "ThinClientPoolDM.hpp"
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 bool ThinClientStickyManager::getStickyConnection(
     TcrConnection*& conn, GfErrType* error,
     std::set<ServerLocation>& excludeServers, bool forTransaction) {
   bool maxConnLimit = false;
   bool connFound = false;
-  // ACE_Guard<ACE_Recursive_Thread_Mutex> guard( m_stickyLock );
   conn = (*TssConnectionWrapper::s_geodeTSSConn)->getConnection();
 
   if (!conn) {
@@ -55,7 +57,7 @@ void ThinClientStickyManager::getSingleHopStickyConnection(
 }
 
 void ThinClientStickyManager::addStickyConnection(TcrConnection* conn) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_stickyLock);
+  std::lock_guard<decltype(m_stickyLock)> keysGuard(m_stickyLock);
   TcrConnection* oldConn =
       (*TssConnectionWrapper::s_geodeTSSConn)->getConnection();
   if (oldConn) {
@@ -83,9 +85,8 @@ void ThinClientStickyManager::addStickyConnection(TcrConnection* conn) {
 
 void ThinClientStickyManager::setStickyConnection(TcrConnection* conn,
                                                   bool forTransaction) {
-  // ACE_Guard<ACE_Recursive_Thread_Mutex> guard( m_stickyLock );
   if (!conn) {
-    ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_stickyLock);
+    std::lock_guard<decltype(m_stickyLock)> keysGuard(m_stickyLock);
     (*TssConnectionWrapper::s_geodeTSSConn)
         ->setConnection(nullptr, m_dm->shared_from_this());
   } else {
@@ -93,7 +94,7 @@ void ThinClientStickyManager::setStickyConnection(TcrConnection* conn,
         (*TssConnectionWrapper::s_geodeTSSConn)->getConnection();
     if (currentConn != conn)  // otherwsie no need to set it again
     {
-      ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_stickyLock);
+      std::lock_guard<decltype(m_stickyLock)> keysGuard(m_stickyLock);
       (*TssConnectionWrapper::s_geodeTSSConn)
           ->setConnection(conn, m_dm->shared_from_this());
       conn->setAndGetBeingUsed(
@@ -117,7 +118,7 @@ void ThinClientStickyManager::setSingleHopStickyConnection(
 void ThinClientStickyManager::cleanStaleStickyConnection() {
   LOGDEBUG("Cleaning sticky connections");
   std::set<ServerLocation> excludeServers;
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_stickyLock);
+  std::lock_guard<decltype(m_stickyLock)> keysGuard(m_stickyLock);
   std::find_if(m_stickyConnList.begin(), m_stickyConnList.end(),
                ThinClientStickyManager::isNULL);
   while (1) {
@@ -156,7 +157,7 @@ void ThinClientStickyManager::cleanStaleStickyConnection() {
 
 void ThinClientStickyManager::closeAllStickyConnections() {
   LOGDEBUG("ThinClientStickyManager::closeAllStickyConnections()");
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_stickyLock);
+  std::lock_guard<decltype(m_stickyLock)> keysGuard(m_stickyLock);
   for (std::set<TcrConnection**>::iterator it = m_stickyConnList.begin();
        it != m_stickyConnList.end(); it++) {
     TcrConnection** tempConn = *it;
@@ -170,10 +171,10 @@ void ThinClientStickyManager::closeAllStickyConnections() {
 bool ThinClientStickyManager::canThisConnBeDeleted(TcrConnection* conn) {
   bool canBeDeleted = false;
   LOGDEBUG("ThinClientStickyManager::canThisConnBeDeleted()");
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_stickyLock);
+  std::lock_guard<decltype(m_stickyLock)> keysGuard(m_stickyLock);
   if (m_dm->canItBeDeletedNoImpl(conn)) return true;
   TcrEndpoint* endPt = conn->getEndpointObject();
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guardQueue(
+  std::lock_guard<decltype(endPt->getQueueHostedMutex())> guardQueue(
       endPt->getQueueHostedMutex());
   if (endPt->isQueueHosted()) {
     for (std::set<TcrConnection**>::iterator it = m_stickyConnList.begin();
@@ -191,7 +192,7 @@ void ThinClientStickyManager::releaseThreadLocalConnection() {
   TcrConnection* conn =
       (*TssConnectionWrapper::s_geodeTSSConn)->getConnection();
   if (conn) {
-    ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_stickyLock);
+    std::lock_guard<decltype(m_stickyLock)> keysGuard(m_stickyLock);
     std::set<TcrConnection**>::iterator it = m_stickyConnList.find(
         (*TssConnectionWrapper::s_geodeTSSConn)->getConnDoublePtr());
     LOGDEBUG("ThinClientStickyManager::releaseThreadLocalConnection()");
@@ -216,3 +217,7 @@ void ThinClientStickyManager::getAnyConnection(TcrConnection*& conn) {
   conn = (*TssConnectionWrapper::s_geodeTSSConn)
              ->getAnyConnection(m_dm->getName().c_str());
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

@@ -14,18 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * TestObject1.cpp
- *
- *  Created on: Jul 15, 2009
- *      Author: abhaware
- */
 
 #include "TestObject1.hpp"
-using namespace testobject;
+
+namespace testobject {
+
+using apache::geode::client::Serializable;
 
 TestObject1::TestObject1()
-    : name(nullptr), arr(CacheableBytes::create(std::vector<int8_t>(4 * 1024))), identifier(1) {}
+    : name(nullptr),
+      arr(CacheableBytes::create(std::vector<int8_t>(4 * 1024))),
+      identifier(1) {}
 
 TestObject1::TestObject1(std::string& str, int32_t id) {
   name = CacheableString::create(str.c_str());
@@ -59,9 +58,11 @@ void TestObject1::fromData(DataInput& input) {
   int32_t len;
   input.readBytes(&bytes, &len);
   arr = CacheableBytes::create(std::vector<int8_t>(bytes, bytes + len));
-  delete bytes;
+  delete[] bytes;
   name = std::dynamic_pointer_cast<CacheableString>(input.readObject());
   identifier = input.readInt32();
 }
 
 Serializable* TestObject1::create() { return new TestObject1(); }
+
+}  // namespace testobject

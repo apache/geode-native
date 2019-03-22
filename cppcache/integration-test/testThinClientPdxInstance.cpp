@@ -39,14 +39,36 @@
 #include "SerializationRegistry.hpp"
 #include "CacheRegionHelper.hpp"
 
-using namespace apache::geode::client;
-using namespace test;
-using namespace testobject;
-using namespace PdxTests;
+using PdxTests::Address;
+
+using testobject::ChildPdx;
+using testobject::ParentPdx;
+using testobject::SerializePdx;
+
+using apache::geode::client::Cacheable;
+using apache::geode::client::CacheableArrayList;
+using apache::geode::client::CacheableDate;
+using apache::geode::client::CacheableEnum;
+using apache::geode::client::CacheableHashMap;
+using apache::geode::client::CacheableHashSet;
+using apache::geode::client::CacheableInt32;
+using apache::geode::client::CacheableKey;
+using apache::geode::client::CacheableLinkedHashSet;
+using apache::geode::client::CacheableObjectArray;
+using apache::geode::client::CacheableVector;
+using apache::geode::client::CacheHelper;
+using apache::geode::client::CacheRegionHelper;
+using apache::geode::client::IllegalStateException;
+using apache::geode::client::LocalRegion;
+using apache::geode::client::PdxFieldTypes;
+using apache::geode::client::PdxInstance;
+using apache::geode::client::PdxSerializable;
+using apache::geode::client::Properties;
+using apache::geode::client::WritablePdxInstance;
 
 bool isLocalServer = false;
 
-CacheHelper* cacheHelper = nullptr;
+CacheHelper *cacheHelper = nullptr;
 
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
@@ -55,10 +77,10 @@ static bool isLocator = false;
 const bool USE_ACK = true;
 const bool NO_ACK = false;
 
-const char* locatorsG =
+const char *locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
-const char* regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
+const char *regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
 
 template <typename T1, typename T2>
 bool genericValCompare(T1 value1, T2 value2) /*const*/
@@ -83,8 +105,8 @@ bool genericCompare(std::vector<T1> value1, std::vector<T2> value2,
 }
 
 template <typename T1, typename T2>
-bool generic2DCompare(T1** value1, T2** value2, int length,
-                      int* arrLengths) /*const*/
+bool generic2DCompare(T1 **value1, T2 **value2, int length,
+                      int *arrLengths) /*const*/
 {
   for (int j = 0; j < length; j++) {
     for (int k = 0; k < arrLengths[j]; k++) {
@@ -109,7 +131,7 @@ void initClient(const bool isthinClient, bool isPdxReadSerailized) {
   ASSERT(cacheHelper, "Failed to create a CacheHelper client instance.");
 }
 static int clientWithXml = 0;
-void initClient(const char* clientXmlFile) {
+void initClient(const char *clientXmlFile) {
   if (cacheHelper == nullptr) {
     auto config = Properties::create();
     if (clientWithXml > 2) config->insert("grid-client", "true");
@@ -125,12 +147,12 @@ void cleanProc() {
     cacheHelper = nullptr;
   }
 }
-CacheHelper* getHelper() {
+CacheHelper *getHelper() {
   ASSERT(cacheHelper != nullptr, "No cacheHelper initialized.");
   return cacheHelper;
 }
-void createPooledRegion(const char* name, bool ackMode, const char* locators,
-                        const char* poolname,
+void createPooledRegion(const char *name, bool ackMode, const char *locators,
+                        const char *poolname,
                         bool clientNotificationEnabled = false,
                         bool cachingEnable = true) {
   LOG("createRegion_Pool() entered.");
@@ -239,9 +261,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, putPdxWithIdentityField)
       auto serializationRegistry =
           CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
               ->getSerializationRegistry();
-      serializationRegistry->addPdxType(SerializePdx::createDeserializable);
+      serializationRegistry->addPdxSerializableType(
+          SerializePdx::createDeserializable);
       LOG("SerializePdx Registered Successfully....");
-    } catch (apache::geode::client::IllegalStateException& /* ex*/) {
+    } catch (apache::geode::client::IllegalStateException & /* ex*/) {
       LOG("SerializePdx IllegalStateException");
     }
 
@@ -265,9 +288,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, putCacheableObjectArrayWithPdxFields)
       auto serializationRegistry =
           CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
               ->getSerializationRegistry();
-      serializationRegistry->addPdxType(Address::createDeserializable);
+      serializationRegistry->addPdxSerializableType(
+          Address::createDeserializable);
       LOG("Address Registered Successfully....");
-    } catch (apache::geode::client::IllegalStateException& /* ex*/) {
+    } catch (apache::geode::client::IllegalStateException & /* ex*/) {
       LOG("Address IllegalStateException");
     }
 
@@ -313,9 +337,10 @@ DUNIT_TASK_DEFINITION(CLIENT2, verifyPdxIdentityField)
       auto serializationRegistry =
           CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
               ->getSerializationRegistry();
-      serializationRegistry->addPdxType(SerializePdx::createDeserializable);
+      serializationRegistry->addPdxSerializableType(
+          SerializePdx::createDeserializable);
       LOG("SerializePdx Registered Successfully....");
-    } catch (apache::geode::client::IllegalStateException& /* ex*/) {
+    } catch (apache::geode::client::IllegalStateException & /* ex*/) {
       LOG("SerializePdx IllegalStateException");
     }
 
@@ -326,7 +351,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, verifyPdxIdentityField)
     LOG("PdxInstancePtr get complete");
 
     LOG("Statistics for for (PdxTests.PdxType) PdxInstance");
-    LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(rptr.get()));
+    LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(rptr.get()));
 
     LOGINFO(
         "pdxInstanceDeserializations for (PdxTests.PdxType) PdxInstance  = %d ",
@@ -375,7 +400,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, verifyPdxIdentityField)
         CacheableKey::create("javaPdxHC");
     auto pIPtr2 = std::dynamic_pointer_cast<Cacheable>(rptr->get(javaPdxHCKey));
     LOG("javaPdxHCKey get done");
-    CacheableInt32* val = dynamic_cast<CacheableInt32*>(pIPtr2.get());
+    CacheableInt32 *val = dynamic_cast<CacheableInt32 *>(pIPtr2.get());
     LOG("javaPdxHCKey cast done");
     int javaPdxHC = val->value();
     LOGINFO("javaPdxHC hash code = %d ", javaPdxHC);
@@ -419,7 +444,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, verifyPdxIdentityField)
            "pdxInstanceDeserializationTime should be greater than 0.");
 
     bool ret = false;
-    ret = (*pi.get() == *pi2.get());
+    ret = (*pi == *pi2);
     LOGINFO("PdxObject ret = %d ", ret);
     ASSERT(ret == true, "Both PdxInstances should be equal.");
 
@@ -435,9 +460,10 @@ DUNIT_TASK_DEFINITION(CLIENT2, verifyCacheableObjectArrayWithPdxField)
       auto serializationRegistry =
           CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
               ->getSerializationRegistry();
-      serializationRegistry->addPdxType(Address::createDeserializable);
+      serializationRegistry->addPdxSerializableType(
+          Address::createDeserializable);
       LOG("Address Registered Successfully....");
-    } catch (apache::geode::client::IllegalStateException& /* ex*/) {
+    } catch (apache::geode::client::IllegalStateException & /* ex*/) {
       LOG("Address IllegalStateException");
     }
 
@@ -468,14 +494,14 @@ DUNIT_TASK_DEFINITION(CLIENT2, verifyCacheableObjectArrayWithPdxField)
       auto newAddrPtr = std::make_shared<Address>(static_cast<int32_t>(i + 1),
                                                   streetStr, cityStr);
       LOG("AddressPtr created using new....");
-      ASSERT(addrPtr.get()->equals(*(newAddrPtr.get())) == true,
+      ASSERT(addrPtr->equals(*newAddrPtr) == true,
              "Both PdxInstances should be equal.");
 
       auto retPtr = pdxFactory.create();
       LOG("PdxInstancePtr created....");
 
       bool ret = false;
-      ret = (*pi.get() == *retPtr.get());
+      ret = (*pi == *retPtr);
       LOGINFO("PdxObject ret = %d ", ret);
       ASSERT(ret == true, "Both PdxInstances should be equal.");
     }
@@ -514,7 +540,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, verifyPdxNullIdentityFieldHC)
         CacheableKey::create("javaPdxHC");
     auto pIPtr2 = std::dynamic_pointer_cast<Cacheable>(rptr->get(javaPdxHCKey));
     LOG("javaPdxHCKey get done");
-    CacheableInt32* val = dynamic_cast<CacheableInt32*>(pIPtr2.get());
+    CacheableInt32 *val = dynamic_cast<CacheableInt32 *>(pIPtr2.get());
     LOG("javaPdxHCKey cast done");
     int javaPdxHC = val->value();
     LOGINFO("javaPdxHC hash code = %d ", javaPdxHC);
@@ -530,7 +556,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, verifyPdxNullIdentityFieldHC)
         rptr->get(CacheableInt32::create(2)));
 
     bool ret = false;
-    ret = (*pi.get() == *pi2.get());
+    ret = (*pi == *pi2);
     LOGINFO("PdxObject ret = %d ", ret);
     ASSERT(ret == true, "Both PdxInstances should be equal.");
 
@@ -554,10 +580,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxPut)
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
             ->getSerializationRegistry();
     try {
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::PdxType::createDeserializable);
       LOG("PdxObject Registered Successfully....");
-    } catch (apache::geode::client::IllegalStateException& /* ex*/) {
+    } catch (apache::geode::client::IllegalStateException & /* ex*/) {
       LOG("PdxObject IllegalStateException");
     }
 
@@ -575,7 +601,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxPut)
     auto pIPtr1 = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
 
     LOG("Statistics for for (PdxTests.PdxType) PdxInstance");
-    LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(rptr.get()));
+    LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(rptr.get()));
 
     LOGINFO(
         "pdxInstanceDeserializations for (PdxTests.PdxType) PdxInstance = %d ",
@@ -613,7 +639,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxPut)
     auto javaPdxHCKey = CacheableKey::create("javaPdxHC");
     auto pIPtr2 = std::dynamic_pointer_cast<Cacheable>(rptr->get(javaPdxHCKey));
     LOG("In verifyPdxInstanceHashcode get done");
-    CacheableInt32* val = dynamic_cast<CacheableInt32*>(pIPtr2.get());
+    CacheableInt32 *val = dynamic_cast<CacheableInt32 *>(pIPtr2.get());
     LOG("In verifyPdxInstanceHashcode cast done");
     int javaPdxHC = val->value();
     LOGINFO("javaPdxHC hash code = %d ", javaPdxHC);
@@ -640,24 +666,26 @@ DUNIT_TASK_DEFINITION(CLIENT2, getObject)
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
             ->getSerializationRegistry();
     try {
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::PdxType::createDeserializable);
       LOG("PdxObject Registered Successfully....");
-    } catch (apache::geode::client::IllegalStateException& /* ex*/) {
+    } catch (apache::geode::client::IllegalStateException & /* ex*/) {
       LOG("PdxObject IllegalStateException");
     }
 
     try {
-      serializationRegistry->addPdxType(ChildPdx::createDeserializable);
+      serializationRegistry->addPdxSerializableType(
+          ChildPdx::createDeserializable);
       LOG("ChildPdx Registered Successfully....");
-    } catch (apache::geode::client::IllegalStateException& /* ex*/) {
+    } catch (apache::geode::client::IllegalStateException & /* ex*/) {
       LOG("ChildPdx IllegalStateException");
     }
 
     try {
-      serializationRegistry->addPdxType(ParentPdx::createDeserializable);
+      serializationRegistry->addPdxSerializableType(
+          ParentPdx::createDeserializable);
       LOG("ParentPdx Registered Successfully....");
-    } catch (apache::geode::client::IllegalStateException& /* ex*/) {
+    } catch (apache::geode::client::IllegalStateException & /* ex*/) {
       LOG("ParentPdx IllegalStateException");
     }
 
@@ -677,7 +705,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, getObject)
     LOG("PdxObject getObject Successful....");
 
     LOG("Statistics for for (PdxTests.PdxType) PdxInstance ");
-    auto&& lregPtr = std::dynamic_pointer_cast<LocalRegion>(rptr);
+    auto &&lregPtr = std::dynamic_pointer_cast<LocalRegion>(rptr);
 
     LOGINFO(
         "pdxInstanceDeserializations for (PdxTests.PdxType) PdxInstance  = %d ",
@@ -709,9 +737,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, getObject)
 
     auto ptorig = std::make_shared<PdxTests::PdxType>();
     LOG("PdxObject ptorig Successful....");
-    PdxTests::PdxType* obj1 = ptorig.get();
+    PdxTests::PdxType *obj1 = ptorig.get();
     LOG("obj1 Successful....");
-    PdxTests::PdxType* obj2 = dynamic_cast<PdxTests::PdxType*>(pt.get());
+    PdxTests::PdxType *obj2 = dynamic_cast<PdxTests::PdxType *>(pt.get());
     LOG("obj2 Successful....");
 
     ASSERT(obj1->equals(*obj2, true) == true,
@@ -754,9 +782,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, getObject)
 
     auto parentPdxObj = std::make_shared<ParentPdx>(1);
     LOG("ParentPdxObject parentPdxObj Successful....");
-    ParentPdx* parentObj1 = parentPdxObj.get();
+    ParentPdx *parentObj1 = parentPdxObj.get();
     LOG("parentObj1 Successful....");
-    ParentPdx* parentObj2 = dynamic_cast<ParentPdx*>(pt1.get());
+    ParentPdx *parentObj2 = dynamic_cast<ParentPdx *>(pt1.get());
     LOG("parentObj2 Successful....");
 
     ASSERT(parentObj1->equals(*parentObj2, true) == true,
@@ -774,10 +802,10 @@ DUNIT_TASK_DEFINITION(CLIENT2, verifyPdxInstanceEquals)
       auto serializationRegistry =
           CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
               ->getSerializationRegistry();
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::PdxType::createDeserializable);
       LOG("PdxObject Registered Successfully....");
-    } catch (apache::geode::client::IllegalStateException& /* ex*/) {
+    } catch (apache::geode::client::IllegalStateException & /* ex*/) {
       LOG("PdxObject IllegalStateException");
     }
 
@@ -791,7 +819,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, verifyPdxInstanceEquals)
     LOG("get2 Successfully....");
 
     bool ret = false;
-    ret = (*pIPtr1.get() == *pIPtr2.get());
+    ret = (*pIPtr1 == *pIPtr2);
     LOGINFO("PdxObject ret = %d ", ret);
     ASSERT(ret == true, "Both PdxInstances should be equal.");
 
@@ -800,8 +828,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, verifyPdxInstanceEquals)
     pIPtr2 = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport1));
     LOG("parentPdx get2 Successfully....");
 
-    ret = false;
-    ret = (*pIPtr1.get() == *pIPtr2.get());
+    ret = (*pIPtr1 == *pIPtr2);
     LOGINFO("parentPdx ret = %d ", ret);
     ASSERT(ret == true, "Both PdxInstances should be equal.");
 
@@ -822,7 +849,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, verifyPdxInstanceHashcode)
 
     auto pIPtr2 = std::dynamic_pointer_cast<Cacheable>(rptr->get(keyport1));
     LOG("In verifyPdxInstanceHashcode get done");
-    CacheableInt32* val1 = dynamic_cast<CacheableInt32*>(pIPtr2.get());
+    CacheableInt32 *val1 = dynamic_cast<CacheableInt32 *>(pIPtr2.get());
     LOG("In verifyPdxInstanceHashcode cast done");
     int javaPdxHC = val1->value();
     LOGINFO("javaPdxHC hash code again = %d ", javaPdxHC);
@@ -841,17 +868,18 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
             ->getSerializationRegistry();
     try {
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::PdxType::createDeserializable);
       LOG("PdxObject Registered Successfully....");
-    } catch (apache::geode::client::IllegalStateException& /* ex*/) {
+    } catch (apache::geode::client::IllegalStateException & /* ex*/) {
       LOG("PdxObject IllegalStateException");
     }
 
     try {
-      serializationRegistry->addPdxType(Address::createDeserializable);
+      serializationRegistry->addPdxSerializableType(
+          Address::createDeserializable);
       LOG("Address Registered Successfully....");
-    } catch (apache::geode::client::IllegalStateException& /* ex*/) {
+    } catch (apache::geode::client::IllegalStateException & /* ex*/) {
       LOG("Address IllegalStateException");
     }
 
@@ -1131,15 +1159,15 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
     ASSERT(pIPtr->getFieldType("m_clhs") == PdxFieldTypes::OBJECT,
            "Type Value OBJECT Mismatch");
 
-    int8_t** byteByteArrayVal = nullptr;
+    int8_t **byteByteArrayVal = nullptr;
     int32_t byteArrayLen = 0;
-    int32_t* elementLength = nullptr;
+    int32_t *elementLength = nullptr;
     pIPtr->getField("m_byteByteArray", &byteByteArrayVal, byteArrayLen,
                     elementLength);
     ASSERT(genericValCompare(pdxobjPtr->getbyteByteArrayLength(),
                              byteArrayLen) == true,
            "byteByteArrayLength should be equal");
-    int8_t** bytArray = pdxobjPtr->getArrayOfByteArrays();
+    int8_t **bytArray = pdxobjPtr->getArrayOfByteArrays();
     ASSERT(generic2DCompare(byteByteArrayVal, bytArray, byteArrayLen,
                             elementLength) == true,
            "byteByteArray should be equal");
@@ -1184,14 +1212,14 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
       auto newAddrPtr = std::make_shared<Address>(static_cast<int32_t>(i + 1),
                                                   streetStr, cityStr);
       LOG("AddressPtr created using new....");
-      ASSERT(addrPtr.get()->equals(*(newAddrPtr.get())) == true,
+      ASSERT(addrPtr->equals(*newAddrPtr) == true,
              "Both PdxInstances should be equal.");
 
       auto retPtr = pdxFactory.create();
       LOG("PdxInstancePtr created....");
 
       bool ret = false;
-      ret = (*pi.get() == *retPtr.get());
+      ret = (*pi == *retPtr);
       LOGINFO("PdxObject ret = %d ", ret);
       ASSERT(ret == true, "Both PdxInstances should be equal.");
     }
@@ -1208,8 +1236,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
     LOGINFO("got childPdx getObject ");
     auto childpdxobjPtr = std::make_shared<ChildPdx>(1);
     LOGINFO("created new childPdx");
-    ASSERT((cpo.get()->equals(*childpdxobjPtr.get())) == true,
-           "child pdx should be equal");
+    ASSERT(cpo->equals(*childpdxobjPtr) == true, "child pdx should be equal");
     LOG("accessPdxInstance complete");
   }
 END_TASK_DEFINITION
@@ -1238,8 +1265,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     ASSERT(newPiPtr->hasField("m_int32") == true, "m_int32 = true expected");
     newVal = newPiPtr->getIntField("m_int32");
     ASSERT(val + 1 == newVal, "val + 1 == newVal expected");
-    ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
-           "PdxInstance should not be equal");
+    ASSERT((*pIPtr == *newPiPtr) == false, "PdxInstance should not be equal");
 
     wpiPtr = pIPtr->createWriter();
     try {
@@ -1247,7 +1273,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
       FAIL(
           "setField on m_int32 with bool value should throw expected "
           "IllegalStateException");
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       LOG("setField on m_int32 with bool value caught expected "
           "IllegalStateException");
     }
@@ -1260,8 +1286,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     ASSERT(newPiPtr->hasField("m_bool") == true, "m_bool = true expected");
     boolVal = newPiPtr->getBooleanField("m_bool");
     ASSERT(boolVal == false, "bool is not equal");
-    ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
-           "PdxInstance should not be equal");
+    ASSERT((*pIPtr == *newPiPtr) == false, "PdxInstance should not be equal");
 
     wpiPtr = pIPtr->createWriter();
     try {
@@ -1269,7 +1294,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
       FAIL(
           "setField on m_bool with int value should throw expected "
           "IllegalStateException");
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       LOG("setField on m_bool with int value caught expected "
           "IllegalStateException");
     }
@@ -1280,7 +1305,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
       FAIL(
           "setField on m_char with float value should throw expected "
           "IllegalStateException");
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       LOG("setField on m_char with float value caught expected "
           "IllegalStateException");
     }
@@ -1294,8 +1319,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     ASSERT(newPiPtr->hasField("m_byte") == true, "m_byte = true expected");
     byteVal = newPiPtr->getByteField("m_byte");
     ASSERT(byteVal == setByteVal, "byte is not equal");
-    ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
-           "PdxInstance should not be equal");
+    ASSERT((*pIPtr == *newPiPtr) == false, "PdxInstance should not be equal");
 
     signed char setSByteVal = 0x57;
     wpiPtr = pIPtr->createWriter();
@@ -1305,8 +1329,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     ASSERT(newPiPtr->hasField("m_sbyte") == true, "m_sbyte = true expected");
     byteVal = newPiPtr->getByteField("m_sbyte");
     ASSERT(byteVal == setSByteVal, "m_sbyte is not equal");
-    ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
-           "PdxInstance should not be equal");
+    ASSERT((*pIPtr == *newPiPtr) == false, "PdxInstance should not be equal");
 
     wpiPtr = pIPtr->createWriter();
     try {
@@ -1314,7 +1337,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
       FAIL(
           "setField on m_byte with int64_t value should throw expected "
           "IllegalStateException");
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       LOG("setField on m_byte with int64_t value caught expected "
           "IllegalStateException");
     }
@@ -1327,8 +1350,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     ASSERT(newPiPtr->hasField("m_int16") == true, "m_int16 = true expected");
     shortVal = newPiPtr->getShortField("m_int16");
     ASSERT(shortVal == 0x5678, "short is not equal");
-    ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
-           "PdxInstance should not be equal");
+    ASSERT((*pIPtr == *newPiPtr) == false, "PdxInstance should not be equal");
 
     wpiPtr = pIPtr->createWriter();
     try {
@@ -1336,7 +1358,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
       FAIL(
           "setField on m_int16 with int64_t value should throw expected "
           "IllegalStateException");
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       LOG("setField on m_int16 with int64_t value caught expected "
           "IllegalStateException");
     }
@@ -1349,8 +1371,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     ASSERT(newPiPtr->hasField("m_long") == true, "m_long = true expected");
     longVal = newPiPtr->getLongField("m_long");
     ASSERT(longVal == 0x56787878, "long is not equal");
-    ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
-           "PdxInstance should not be equal");
+    ASSERT((*pIPtr == *newPiPtr) == false, "PdxInstance should not be equal");
 
     wpiPtr = pIPtr->createWriter();
     try {
@@ -1358,7 +1379,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
       FAIL(
           "setField on m_long with float value should throw expected "
           "IllegalStateException");
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       LOG("setField on m_long with float value caught expected "
           "IllegalStateException");
     }
@@ -1371,8 +1392,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     ASSERT(newPiPtr->hasField("m_float") == true, "m_float = true expected");
     fVal = newPiPtr->getFloatField("m_float");
     ASSERT(fVal == 18389.34f, "fval is not equal");
-    ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
-           "PdxInstance should not be equal");
+    ASSERT((*pIPtr == *newPiPtr) == false, "PdxInstance should not be equal");
 
     wpiPtr = pIPtr->createWriter();
     try {
@@ -1380,7 +1400,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
       FAIL(
           "setField on m_float with char value should throw expected "
           "IllegalStateException");
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       LOG("setField on m_float with char value caught expected "
           "IllegalStateException");
     }
@@ -1393,8 +1413,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     ASSERT(newPiPtr->hasField("m_double") == true, "m_double = true expected");
     dVal = newPiPtr->getDoubleField("m_double");
     ASSERT(dVal == 18389.34, "dval is not equal");
-    ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
-           "PdxInstance should not be equal");
+    ASSERT((*pIPtr == *newPiPtr) == false, "PdxInstance should not be equal");
 
     wpiPtr = pIPtr->createWriter();
     try {
@@ -1402,7 +1421,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
       FAIL(
           "setField on m_double with char value should throw expected "
           "IllegalStateException");
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       LOG("setField on m_double with char value caught expected "
           "IllegalStateException");
     }
@@ -1419,8 +1438,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     ASSERT(
         genericCompare(setBoolArray, getBoolArray, getBoolArray.size()) == true,
         "boolArray should be equal");
-    ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
-           "PdxInstance should not be equal");
+    ASSERT((*pIPtr == *newPiPtr) == false, "PdxInstance should not be equal");
 
     wpiPtr = pIPtr->createWriter();
     try {
@@ -1428,7 +1446,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
       FAIL(
           "setField on m_boolArray with char value should throw expected "
           "IllegalStateException");
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       LOG("setField on m_boolArray with char value caught expected "
           "IllegalStateException");
     }
@@ -1444,8 +1462,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     ASSERT(
         genericCompare(setByteArray, getByteArray, getByteArray.size()) == true,
         "byteArray should be equal");
-    ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
-           "PdxInstance should not be equal");
+    ASSERT((*pIPtr == *newPiPtr) == false, "PdxInstance should not be equal");
 
     wpiPtr = pIPtr->createWriter();
     try {
@@ -1453,7 +1470,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
       FAIL(
           "setField on m_byteArray with string value should throw expected "
           "IllegalStateException");
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       LOG("setField on m_byteArray with string value caught expected "
           "IllegalStateException");
     }
@@ -1469,8 +1486,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     ASSERT(
         genericCompare(setCharArray, getCharArray, getCharArray.size()) == true,
         "charArray should be equal");
-    ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
-           "PdxInstance should not be equal");
+    ASSERT((*pIPtr == *newPiPtr) == false, "PdxInstance should not be equal");
 
     wpiPtr = pIPtr->createWriter();
     try {
@@ -1478,7 +1494,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
       FAIL(
           "setField on m_charArray with string value should throw expected "
           "IllegalStateException");
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       LOG("setField on m_charArray with string value caught expected "
           "IllegalStateException");
     }
@@ -1494,8 +1510,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     ASSERT(genericCompare(setShortArray, getShortArray, getShortArray.size()) ==
                true,
            "shortArray should be equal");
-    ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
-           "PdxInstance should not be equal");
+    ASSERT((*pIPtr == *newPiPtr) == false, "PdxInstance should not be equal");
 
     wpiPtr = pIPtr->createWriter();
     try {
@@ -1503,7 +1518,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
       FAIL(
           "setField on m_int16Array with setCharArray value should throw "
           "expected IllegalStateException");
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       LOG("setField on m_int16Array with setCharArray value caught expected "
           "IllegalStateException");
     }
@@ -1518,8 +1533,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     ASSERT(newValArray.size() == 3, "Arraylength == 3 expected");
     ASSERT(genericCompare(setIntArray, newValArray, newValArray.size()) == true,
            "intArray should be equal");
-    ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
-           "PdxInstance should not be equal");
+    ASSERT((*pIPtr == *newPiPtr) == false, "PdxInstance should not be equal");
 
     wpiPtr = pIPtr->createWriter();
     try {
@@ -1527,7 +1541,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
       FAIL(
           "setField on m_int32Array with setShortArray value should throw "
           "expected IllegalStateException");
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       LOG("setField on m_int32Array with setShortArray value caught expected "
           "IllegalStateException");
     }
@@ -1543,8 +1557,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     ASSERT(
         genericCompare(setLongArray, getLongArray, getLongArray.size()) == true,
         "longArray should be equal");
-    ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
-           "PdxInstance should not be equal");
+    ASSERT((*pIPtr == *newPiPtr) == false, "PdxInstance should not be equal");
 
     wpiPtr = pIPtr->createWriter();
     try {
@@ -1553,7 +1566,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
           "setField on m_longArray with setIntArray value should throw "
           "expected "
           "IllegalStateException");
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       LOG("setField on m_longArray with setIntArray value caught expected "
           "IllegalStateException");
     }
@@ -1569,8 +1582,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     ASSERT(genericCompare(setFloatArray, getFloatArray, getFloatArray.size()) ==
                true,
            "floatArray should be equal");
-    ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
-           "PdxInstance should not be equal");
+    ASSERT((*pIPtr == *newPiPtr) == false, "PdxInstance should not be equal");
 
     wpiPtr = pIPtr->createWriter();
     try {
@@ -1578,7 +1590,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
       FAIL(
           "setField on m_floatArray with setLongArray value should throw "
           "expected IllegalStateException");
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       LOG("setField on m_floatArray with setLongArray value caught expected "
           "IllegalStateException");
     }
@@ -1594,8 +1606,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     ASSERT(genericCompare(setDoubleArray, getDoubleArray,
                           getDoubleArray.size()) == true,
            "doubleArray should be equal");
-    ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
-           "PdxInstance should not be equal");
+    ASSERT((*pIPtr == *newPiPtr) == false, "PdxInstance should not be equal");
 
     wpiPtr = pIPtr->createWriter();
     try {
@@ -1603,7 +1614,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
       FAIL(
           "setField on m_doubleArray with setFloatArray value should throw "
           "expected IllegalStateException");
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       LOG("setField on m_doubleArray with setFloatArray value caught expected "
           "IllegalStateException");
     }
@@ -1614,7 +1625,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
       FAIL(
           "setField on m_string with setFloatArray value should throw expected "
           "IllegalStateException");
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       LOG("setField on m_string with setFloatArray value caught expected "
           "IllegalStateException");
     }
@@ -1627,8 +1638,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     ASSERT(newPiPtr->hasField("m_string") == true, "m_string = true expected");
     auto stringVal = newPiPtr->getStringField("m_string");
     ASSERT(stringVal == setString, "stringVal should be equal");
-    ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
-           "PdxInstance should not be equal");
+    ASSERT((*pIPtr == *newPiPtr) == false, "PdxInstance should not be equal");
 
     std::shared_ptr<CacheableDate> dateVal;
     wpiPtr = pIPtr->createWriter();
@@ -1643,10 +1653,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
            "m_dateTime = true expected");
     ASSERT(pIPtr->hasField("m_dateTime") == true, "m_date = true expected");
     dateVal = newPiPtr->getCacheableDateField("m_dateTime");
-    ASSERT((*(dateVal.get()) == *(datePtr.get())) == true,
-           "dateObject should be equal");
-    ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
-           "PdxInstance should not be equal");
+    ASSERT((*dateVal == *datePtr) == true, "dateObject should be equal");
+    ASSERT((*pIPtr == *newPiPtr) == false, "PdxInstance should not be equal");
 
     wpiPtr = pIPtr->createWriter();
     try {
@@ -1654,7 +1662,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
       FAIL(
           "setField on m_dateTime with setString value should throw expected "
           "IllegalStateException");
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       LOG("setField on m_dateTime with setString value caught expected "
           "IllegalStateException");
     }
@@ -1664,7 +1672,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     auto setVec = CacheableVector::create();
     setVec->push_back(CacheableInt32::create(3));
     setVec->push_back(CacheableInt32::create(4));
-    wpiPtr->setField("m_vector", (std::shared_ptr<Cacheable>)setVec);
+    wpiPtr->setField("m_vector", setVec);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
     ASSERT(newPiPtr->hasField("m_vector") == true, "m_vector = true expected");
@@ -1683,7 +1691,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
       FAIL(
           "setField on m_vector with setString value should throw expected "
           "IllegalStateException");
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       LOG("setField on m_vector with setString value caught expected "
           "IllegalStateException");
     }
@@ -1693,7 +1701,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     setarr->push_back(CacheableInt32::create(3));
     setarr->push_back(CacheableInt32::create(4));
     setarr->push_back(CacheableInt32::create(5));
-    wpiPtr->setField("m_arraylist", (std::shared_ptr<Cacheable>)setarr);
+    wpiPtr->setField("m_arraylist", setarr);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
     ASSERT(newPiPtr->hasField("m_arraylist") == true,
@@ -1714,7 +1722,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
       FAIL(
           "setField on m_arraylist with setFloatArray value should throw "
           "expected IllegalStateException");
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       LOG("setField on m_arraylist with setFloatArray value caught expected "
           "IllegalStateException");
     }
@@ -1724,7 +1732,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     hashset->insert(CacheableInt32::create(3));
     hashset->insert(CacheableInt32::create(4));
     hashset->insert(CacheableInt32::create(5));
-    wpiPtr->setField("m_chs", (std::shared_ptr<Cacheable>)hashset);
+    wpiPtr->setField("m_chs", hashset);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
     ASSERT(newPiPtr->hasField("m_chs") == true, "m_chs = true expected");
@@ -1740,7 +1748,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
       FAIL(
           "setField on m_chs with int value should throw expected "
           "IllegalStateException");
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       LOG("setField on m_chs with int value caught expected "
           "IllegalStateException");
     }
@@ -1750,7 +1758,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     hashmap->emplace(CacheableInt32::create(3), CacheableInt32::create(3));
     hashmap->emplace(CacheableInt32::create(4), CacheableInt32::create(4));
     hashmap->emplace(CacheableInt32::create(5), CacheableInt32::create(5));
-    wpiPtr->setField("m_map", (std::shared_ptr<Cacheable>)hashmap);
+    wpiPtr->setField("m_map", hashmap);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
     ASSERT(newPiPtr->hasField("m_map") == true, "m_map = true expected");
@@ -1766,7 +1774,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
       FAIL(
           "setField on m_map with float value should throw expected "
           "IllegalStateException");
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       LOG("setField on m_map with float value caught expected "
           "IllegalStateException");
     }
@@ -1776,7 +1784,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     linkedhashset->insert(CacheableInt32::create(3));
     linkedhashset->insert(CacheableInt32::create(4));
     linkedhashset->insert(CacheableInt32::create(5));
-    wpiPtr->setField("m_clhs", (std::shared_ptr<Cacheable>)linkedhashset);
+    wpiPtr->setField("m_clhs", linkedhashset);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
     ASSERT(newPiPtr->hasField("m_clhs") == true, "m_clhs = true expected");
@@ -1794,16 +1802,16 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
       FAIL(
           "setField on m_clhs with char value should throw expected "
           "IllegalStateException");
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       LOG("setField on m_clhs with char value caught expected "
           "IllegalStateException");
     }
 
     LOGINFO("Testing byteByteArray");
-    int8_t** getbyteByteArray = nullptr;
+    int8_t **getbyteByteArray = nullptr;
     int byteByteArrayLength = 0;
-    int32_t* elementLength = nullptr;
-    int8_t** setbyteByteArray = new int8_t*[4];
+    int32_t *elementLength = nullptr;
+    int8_t **setbyteByteArray = new int8_t *[4];
     setbyteByteArray[0] = new int8_t[1];
     setbyteByteArray[1] = new int8_t[2];
     setbyteByteArray[2] = new int8_t[1];
@@ -1815,7 +1823,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     setbyteByteArray[3][0] = 0x34;
     setbyteByteArray[3][1] = 0x55;
     wpiPtr = pIPtr->createWriter();
-    int* lengthArr = new int[4];
+    int *lengthArr = new int[4];
     lengthArr[0] = 1;
     lengthArr[1] = 2;
     lengthArr[2] = 1;
@@ -1842,12 +1850,11 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
 
     wpiPtr = pIPtr->createWriter();
     try {
-      wpiPtr->setField("m_byteByteArray",
-                       (std::shared_ptr<Cacheable>)linkedhashset);
+      wpiPtr->setField("m_byteByteArray", linkedhashset);
       FAIL(
           "setField on m_byteByteArray with linkedhashset value should throw "
           "expected IllegalStateException");
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       LOG("setField on m_byteByteArray with linkedhashset value caught "
           "expected "
           "IllegalStateException");
@@ -1865,8 +1872,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
       ASSERT(setStringArray[i] == getStringArray[i],
              "All stringVals should be equal");
     }
-    ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
-           "PdxInstance should not be equal");
+    ASSERT((*pIPtr == *newPiPtr) == false, "PdxInstance should not be equal");
 
     LOGINFO("PdxInstancePtr for ParentPdx modifyPdxInstance ");
     pIPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport1));
@@ -1880,24 +1886,21 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     wpiPtr = pIPtr->createWriter();
     auto childpdxobjPtr = std::make_shared<ChildPdx>(2);
     LOGINFO("created new childPdx");
-    wpiPtr->setField("m_childPdx", (std::shared_ptr<Cacheable>)childpdxobjPtr);
+    wpiPtr->setField("m_childPdx", childpdxobjPtr);
     LOGINFO("childPdx seField done");
     rptr->put(keyport1, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport1));
     LOGINFO("ChildPdx object put get done");
-    ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
-           "PdxInstance should not be equal");
+    ASSERT((*pIPtr == *newPiPtr) == false, "PdxInstance should not be equal");
     childObjPtr = newPiPtr->getCacheableField("m_childPdx");
     ASSERT(childObjPtr != nullptr, "childObjPtr should not be nullptr");
     LOGINFO("got childPdx field ");
     auto cpi1 = std::dynamic_pointer_cast<PdxInstance>(childObjPtr);
-    ASSERT((*cpi.get() == *cpi1.get()) == false,
-           "PdxInstance should not be equal");
+    ASSERT((*cpi == *cpi1) == false, "PdxInstance should not be equal");
 
     auto cpo = std::dynamic_pointer_cast<ChildPdx>(cpi1->getObject());
     LOGINFO("got childPdx getObject ");
-    ASSERT((cpo.get()->equals(*childpdxobjPtr.get())) == true,
-           "child pdx should be equal");
+    ASSERT(cpo->equals(*childpdxobjPtr) == true, "child pdx should be equal");
 
     char16_t parentCharSetVal = 'Z';
     wpiPtr = pIPtr->createWriter();
@@ -1934,7 +1937,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstanceAndCheckLocally)
     LOG("modifyPdxInstanceAndCheckLocally get complete.");
 
     LOG("Statistics for for (PdxTests.PdxType) PdxInstance ");
-    LocalRegion* lregPtr = (dynamic_cast<LocalRegion*>(rptr.get()));
+    LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(rptr.get()));
 
     LOGINFO(
         "pdxInstanceDeserializations for (PdxTests.PdxType) PdxInstance  = %d ",
@@ -1983,24 +1986,21 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstanceAndCheckLocally)
     newVal = newPiPtr->getIntField("m_int32");
     LOGINFO("PdxInstance newVal is %d ", newVal);
     ASSERT(val + 1 == newVal, "val + 1 == newVal expected");
-    ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
-           "PdxInstance should not be equal");
+    ASSERT((*pIPtr == *newPiPtr) == false, "PdxInstance should not be equal");
 
     std::vector<bool> setBoolArray{true, false, true,  false,
                                    true, true,  false, true};
-    auto arrayLen = setBoolArray.size();
     wpiPtr->setField("m_boolArray", setBoolArray);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
     ASSERT(pIPtr->hasField("m_boolArray") == true,
            "m_boolArray = true expected");
     auto getBoolArray = newPiPtr->getBooleanArrayField("m_boolArray");
-    arrayLen = getBoolArray.size();
+    auto arrayLen = getBoolArray.size();
     ASSERT(arrayLen == 8, "Arraylength == 8 expected");
     ASSERT(genericCompare(setBoolArray, getBoolArray, arrayLen) == true,
            "boolArray should be equal");
-    ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
-           "PdxInstance should not be equal");
+    ASSERT((*pIPtr == *newPiPtr) == false, "PdxInstance should not be equal");
 
     std::vector<int8_t> setByteArray{0x34, 0x64, 0x34, 0x64};
     wpiPtr->setField("m_byteArray", setByteArray);
@@ -2013,8 +2013,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstanceAndCheckLocally)
     ASSERT(arrayLen == 4, "Arraylength == 4 expected");
     ASSERT(genericCompare(setByteArray, getByteArray, arrayLen) == true,
            "byteArray should be equal");
-    ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
-           "PdxInstance should not be equal");
+    ASSERT((*pIPtr == *newPiPtr) == false, "PdxInstance should not be equal");
 
     std::vector<int16_t> setShortArray{0x2332, 0x4545, 0x88, 0x898};
     wpiPtr->setField("m_int16Array", setShortArray);
@@ -2027,8 +2026,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstanceAndCheckLocally)
     ASSERT(arrayLen == 4, "Arraylength == 4 expected");
     ASSERT(genericCompare(setShortArray, getShortArray, arrayLen) == true,
            "shortArray should be equal");
-    ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
-           "PdxInstance should not be equal");
+    ASSERT((*pIPtr == *newPiPtr) == false, "PdxInstance should not be equal");
 
     std::vector<int32_t> setIntArray{23, 676868, 34343};
     wpiPtr->setField("m_int32Array", setIntArray);
@@ -2041,8 +2039,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstanceAndCheckLocally)
     ASSERT(arrayLen == 3, "Arraylength == 3 expected");
     ASSERT(genericCompare(setIntArray, newValArray, arrayLen) == true,
            "intArray should be equal");
-    ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
-           "PdxInstance should not be equal");
+    ASSERT((*pIPtr == *newPiPtr) == false, "PdxInstance should not be equal");
 
     std::vector<int64_t> setLongArray{3245435, 3425435};
     wpiPtr->setField("m_longArray", setLongArray);
@@ -2055,8 +2052,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstanceAndCheckLocally)
     ASSERT(arrayLen == 2, "Arraylength == 2 expected");
     ASSERT(genericCompare(setLongArray, getLongArray, arrayLen) == true,
            "longArray should be equal");
-    ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
-           "PdxInstance should not be equal");
+    ASSERT((*pIPtr == *newPiPtr) == false, "PdxInstance should not be equal");
 
     std::vector<float> setFloatArray{232.565f, 234323354.67f};
     wpiPtr->setField("m_floatArray", setFloatArray);
@@ -2069,8 +2065,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstanceAndCheckLocally)
     ASSERT(arrayLen == 2, "Arraylength == 2 expected");
     ASSERT(genericCompare(setFloatArray, getFloatArray, arrayLen) == true,
            "floatArray should be equal");
-    ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
-           "PdxInstance should not be equal");
+    ASSERT((*pIPtr == *newPiPtr) == false, "PdxInstance should not be equal");
 
     std::vector<double> setDoubleArray{23423432.00, 43242354315.00};
     wpiPtr->setField("m_doubleArray", setDoubleArray);
@@ -2083,8 +2078,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstanceAndCheckLocally)
     ASSERT(arrayLen == 2, "Arraylength == 2 expected");
     ASSERT(genericCompare(setDoubleArray, getDoubleArray, arrayLen) == true,
            "doubleArray should be equal");
-    ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
-           "PdxInstance should not be equal");
+    ASSERT((*pIPtr == *newPiPtr) == false, "PdxInstance should not be equal");
 
     bool boolVal = true;
     wpiPtr = pIPtr->createWriter();
@@ -2098,8 +2092,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstanceAndCheckLocally)
     boolVal = newPiPtr->getBooleanField("m_bool");
     LOG("modifyPdxInstanceAndCheckLocally getField complete.");
     ASSERT(boolVal == false, "bool is not equal");
-    ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
-           "PdxInstance should not be equal");
+    ASSERT((*pIPtr == *newPiPtr) == false, "PdxInstance should not be equal");
 
     wpiPtr = pIPtr->createWriter();
     wpiPtr->setField("m_bool", true);
@@ -2112,8 +2105,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstanceAndCheckLocally)
     boolVal = newPiPtr->getBooleanField("m_bool");
     LOG("modifyPdxInstanceAndCheckLocally getField complete.");
     ASSERT(boolVal == true, "bool is not equal");
-    ASSERT((*pIPtr.get() == *newPiPtr.get()) == true,
-           "PdxInstance should be equal");
+    ASSERT((*pIPtr == *newPiPtr) == true, "PdxInstance should be equal");
 
     float fVal = 0.0f;
     wpiPtr = pIPtr->createWriter();
@@ -2128,8 +2120,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstanceAndCheckLocally)
     LOGINFO("modifyPdxInstanceAndCheckLocally getField complete. fval = %f",
             fVal);
     ASSERT(fVal == 18389.34f, "fval is not equal");
-    ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
-           "PdxInstance should not be equal");
+    ASSERT((*pIPtr == *newPiPtr) == false, "PdxInstance should not be equal");
 
     double dVal = 0.0;
     wpiPtr = pIPtr->createWriter();
@@ -2144,8 +2135,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstanceAndCheckLocally)
     LOGINFO("modifyPdxInstanceAndCheckLocally getField complete. fval = %lf",
             dVal);
     ASSERT(dVal == 18389.34, "fval is not equal");
-    ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
-           "PdxInstance should not be equal");
+    ASSERT((*pIPtr == *newPiPtr) == false, "PdxInstance should not be equal");
 
     signed char byteVal = 0;
     signed char setSByteVal = 0x74;
@@ -2161,8 +2151,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstanceAndCheckLocally)
     LOGINFO("modifyPdxInstanceAndCheckLocally getField complete byteVal = %d ",
             byteVal);
     ASSERT(byteVal == setSByteVal, "byte is not equal");
-    ASSERT((*pIPtr.get() == *newPiPtr.get()) == true,
-           "PdxInstance should be equal");
+    ASSERT((*pIPtr == *newPiPtr) == true, "PdxInstance should be equal");
 
     int16_t shortVal = 0;
     wpiPtr = pIPtr->createWriter();
@@ -2177,8 +2166,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstanceAndCheckLocally)
     LOGINFO("modifyPdxInstanceAndCheckLocally getField complete shortVal = %d ",
             shortVal);
     ASSERT(shortVal == 0x5678, "short is not equal");
-    ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
-           "PdxInstance should not be equal");
+    ASSERT((*pIPtr == *newPiPtr) == false, "PdxInstance should not be equal");
 
     int64_t longVal = 0;
     wpiPtr = pIPtr->createWriter();
@@ -2193,8 +2181,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstanceAndCheckLocally)
     LOGINFO("modifyPdxInstanceAndCheckLocally getField complete longVal = %ld ",
             longVal);
     ASSERT(longVal == 0x56787878, "long is not equal");
-    ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
-           "PdxInstance should not be equal");
+    ASSERT((*pIPtr == *newPiPtr) == false, "PdxInstance should not be equal");
 
     std::string str1 = "change the string";
     wpiPtr->setField("m_string", str1);
@@ -2206,8 +2193,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstanceAndCheckLocally)
     LOGINFO("modifyPdxInstanceAndCheckLocally getstringVal = %s , str1 = %s ",
             getstringVal.c_str(), str1.c_str());
     ASSERT(getstringVal == str1, "getstringVal should be equal");
-    ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
-           "PdxInstance should not be equal");
+    ASSERT((*pIPtr == *newPiPtr) == false, "PdxInstance should not be equal");
 
     std::shared_ptr<CacheableDate> dateVal;
     wpiPtr = pIPtr->createWriter();
@@ -2222,8 +2208,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstanceAndCheckLocally)
     dateVal = newPiPtr->getCacheableDateField("m_dateTime");
     ASSERT((*(dateVal.get()) == *(datePtr.get())) == true,
            "dateObject should be equal");
-    ASSERT((*pIPtr.get() == *newPiPtr.get()) == false,
-           "PdxInstance should not be equal");
+    ASSERT((*pIPtr == *newPiPtr) == false, "PdxInstance should not be equal");
 
     LOG("modifyPdxInstanceAndCheckLocally complete.");
   }
@@ -2236,31 +2221,34 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxIFPutGetTest)
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
             ->getSerializationRegistry();
     try {
-      serializationRegistry->addPdxType(Address::createDeserializable);
+      serializationRegistry->addPdxSerializableType(
+          Address::createDeserializable);
       LOG("Address Registered Successfully....");
-    } catch (apache::geode::client::IllegalStateException& /* ex*/) {
+    } catch (apache::geode::client::IllegalStateException & /* ex*/) {
       LOG("Address IllegalStateException");
     }
 
     try {
-      serializationRegistry->addPdxType(
+      serializationRegistry->addPdxSerializableType(
           PdxTests::PdxType::createDeserializable);
       LOG("PdxObject Registered Successfully....");
-    } catch (apache::geode::client::IllegalStateException& /* ex*/) {
+    } catch (apache::geode::client::IllegalStateException & /* ex*/) {
       LOG("PdxObject IllegalStateException");
     }
 
     try {
-      serializationRegistry->addPdxType(ChildPdx::createDeserializable);
+      serializationRegistry->addPdxSerializableType(
+          ChildPdx::createDeserializable);
       LOG("ChildPdx Registered Successfully....");
-    } catch (apache::geode::client::IllegalStateException& /* ex*/) {
+    } catch (apache::geode::client::IllegalStateException & /* ex*/) {
       LOG("ChildPdx IllegalStateException");
     }
 
     try {
-      serializationRegistry->addPdxType(ParentPdx::createDeserializable);
+      serializationRegistry->addPdxSerializableType(
+          ParentPdx::createDeserializable);
       LOG("ParentPdx Registered Successfully....");
-    } catch (apache::geode::client::IllegalStateException& /* ex*/) {
+    } catch (apache::geode::client::IllegalStateException & /* ex*/) {
       LOG("ParentPdx IllegalStateException");
     }
 
@@ -2272,7 +2260,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxIFPutGetTest)
         cacheHelper->getCache()->createPdxInstanceFactory("PdxTests.PdxType");
     LOG("PdxInstanceFactoryPtr created....");
 
-    int* lengthArr = new int[2];
+    int *lengthArr = new int[2];
 
     lengthArr[0] = 1;
     lengthArr[1] = 2;
@@ -2283,7 +2271,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxIFPutGetTest)
       FAIL(
           "calling writeBoolean on same fieldname should have thrown "
           "IllegalStateException");
-    } catch (IllegalStateException&) {
+    } catch (IllegalStateException &) {
       LOG("Got expected IllegalStateException for m_bool");
     }
     pdxFactory.markIdentityField("m_bool");
@@ -2384,7 +2372,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxIFPutGetTest)
     LOG("getObject created....");
 
     LOG("Statistics for for (PdxTests.PdxType) PdxInstance ");
-    auto&& lregPtr = std::dynamic_pointer_cast<LocalRegion>(rptr);
+    auto &&lregPtr = std::dynamic_pointer_cast<LocalRegion>(rptr);
 
     LOGINFO(
         "pdxInstanceDeserializations for (PdxTests.PdxType) PdxInstance  = %d ",
@@ -2414,8 +2402,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxIFPutGetTest)
                    .getPdxInstanceDeserializationTime() == 0,
            "pdxInstanceDeserializationTime should be equal to 0.");
 
-    PdxTests::PdxType* obj2 = pdxobj.get();
-    PdxTests::PdxType* obj1 = dynamic_cast<PdxTests::PdxType*>(psPtr.get());
+    PdxTests::PdxType *obj2 = pdxobj.get();
+    PdxTests::PdxType *obj1 = dynamic_cast<PdxTests::PdxType *>(psPtr.get());
 
     LOGINFO("Avinash Equal Starts");
     ASSERT(obj1->equals(*obj2, false) == true, "PdxObjects should be equal.");
@@ -2456,7 +2444,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxIFPutGetTest)
                    .getPdxInstanceDeserializationTime() > 0,
            "pdxInstanceDeserializationTime should be greater than 0.");
 
-    PdxTests::PdxType* obj3 = dynamic_cast<PdxTests::PdxType*>(newPiPtr.get());
+    PdxTests::PdxType *obj3 = dynamic_cast<PdxTests::PdxType *>(newPiPtr.get());
 
     ASSERT(obj2->equals(*obj3, false) == true, "PdxObjects should be equal.");
 
@@ -2466,7 +2454,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxIFPutGetTest)
     auto javaPdxHCKey = CacheableKey::create("javaPdxHC");
     auto pIPtr2 = std::dynamic_pointer_cast<Cacheable>(rptr->get(javaPdxHCKey));
     LOG("In pdxIFPutGetTest get done");
-    CacheableInt32* val = dynamic_cast<CacheableInt32*>(pIPtr2.get());
+    CacheableInt32 *val = dynamic_cast<CacheableInt32 *>(pIPtr2.get());
     LOG("In pdxIFPutGetTest cast done");
     int javaPdxHC = val->value();
     LOGINFO("javaPdxHC hash code = %d ", javaPdxHC);
@@ -2532,10 +2520,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxIFPutGetTest)
     auto pp1 = std::dynamic_pointer_cast<ParentPdx>(newPiPtr);
     LOG("got std::shared_ptr<ParentPdx>....");
 
-    ParentPdx* rawPP1 = dynamic_cast<ParentPdx*>(pp1.get());
+    ParentPdx *rawPP1 = dynamic_cast<ParentPdx *>(pp1.get());
     LOG("got rawPP1....");
 
-    ParentPdx* rawPP2 = dynamic_cast<ParentPdx*>(pp.get());
+    ParentPdx *rawPP2 = dynamic_cast<ParentPdx *>(pp.get());
     LOG("got rawpp2....");
 
     ASSERT(rawPP1->equals(*rawPP2, false) == true,
@@ -2564,7 +2552,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, pdxInstanceWithEmptyKeys)
     auto getValue = std::dynamic_pointer_cast<PdxInstance>(rptr->get(key));
     LOG("get done with boolean Value and Empty Key....");
 
-    ASSERT(*putValue.get() == *getValue.get(),
+    ASSERT(*putValue == *getValue,
            "Boolean Value Did not match in case of Empty PdxField Key");
     bool fieldValue = getValue->getBooleanField("");
     ASSERT(fieldValue == falseValue,

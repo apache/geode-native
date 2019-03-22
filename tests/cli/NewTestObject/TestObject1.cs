@@ -45,13 +45,7 @@ namespace Apache.Geode.Client.Tests
         return 0;
       }
     }
-    public Int32 ClassId
-    {
-      get
-      {
-        return 0x1F;
-      }
-    }
+
     public void FromData(DataInput input)
     {
       arr = input.ReadBytes();

@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-#include <ace/OS_NS_stdio.h>
+#include "SslSockStream.hpp"
+
+#include <ace/OS.h>
 
 #include <geode/ExceptionTypes.hpp>
 
-#include "SslSockStream.hpp"
 #include "util/Log.hpp"
 
 namespace apache {
@@ -30,8 +31,8 @@ void *SslSockStream::getACESSLFuncPtr(const char *function_name) {
   void *func = m_dll.symbol(function_name);
   if (func == nullptr) {
     char msg[1000];
-    ACE_OS::snprintf(msg, 1000, "cannot find function %s in library %s",
-                     function_name, "cryptoImpl");
+    std::snprintf(msg, 1000, "cannot find function %s in library %s",
+                  function_name, "cryptoImpl");
     LOGERROR(msg);
     throw IllegalStateException(msg);
   }
@@ -45,7 +46,7 @@ void SslSockStream::initACESSLFuncPtrs() {
     LOGERROR("Failed to open cryptoImpl . Errno: %d : %s", lastError,
              ACE_OS::strerror(lastError));
     char msg[1000] = {0};
-    ACE_OS::snprintf(msg, 1000, "cannot open library: %s", libName);
+    std::snprintf(msg, 1000, "cannot open library: %s", libName);
     LOGERROR(msg);
     throw FileNotFoundException(msg);
   }

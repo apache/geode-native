@@ -20,13 +20,13 @@
 #ifndef GEODE_REMOTEQUERYSERVICE_H_
 #define GEODE_REMOTEQUERYSERVICE_H_
 
-#include <string>
 #include <memory>
+#include <string>
 
-#include <ace/Recursive_Thread_Mutex.h>
+#include <ace/RW_Thread_Mutex.h>
 
-#include <geode/internal/geode_globals.hpp>
 #include <geode/QueryService.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 #include "CqService.hpp"
 #include "ThinClientCacheDistributionManager.hpp"
@@ -43,7 +43,8 @@ class APACHE_GEODE_EXPORT RemoteQueryService
     : public QueryService,
       public std::enable_shared_from_this<RemoteQueryService> {
  public:
-  RemoteQueryService(CacheImpl* cptr, ThinClientPoolDM* poolDM = nullptr);
+  explicit RemoteQueryService(CacheImpl* cptr,
+                              ThinClientPoolDM* poolDM = nullptr);
   virtual ~RemoteQueryService() = default;
 
   void init();

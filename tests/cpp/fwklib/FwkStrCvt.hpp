@@ -28,7 +28,7 @@
 
 #include <string>
 
-#include "ace/OS.h"
+#include <ace/OS.h>
 
 #include <geode/internal/geode_globals.hpp>
 
@@ -60,9 +60,9 @@ namespace testframework {
 // ----------------------------------------------------------------------------
 
 /**
-  * @class FwkStrCvt
-  * @brief basic string converting class
-  */
+ * @class FwkStrCvt
+ * @brief basic string converting class
+ */
 class FwkStrCvt {
  public:
   static int64_t hton64(int64_t value);
@@ -74,13 +74,13 @@ class FwkStrCvt {
   static char* hexify(uint8_t* buff, int32_t len);
 
   /** @brief convert from string value */
-  FwkStrCvt(const std::string& text) { m_sText = text; };
+  explicit FwkStrCvt(const std::string& text) { m_sText = text; };
   /** @brief convert from string value */
-  FwkStrCvt(const char* pszText) {
+  explicit FwkStrCvt(const char* pszText) {
     if (pszText) m_sText = pszText;
   };
   /** @brief convert from double value */
-  FwkStrCvt(const double dValue) {
+  explicit FwkStrCvt(const double dValue) {
     char szText[50];
     if (ACE_OS::snprintf(szText, sizeof(szText) - 1, "%lf", dValue)) {
       m_sText = szText;
@@ -89,7 +89,7 @@ class FwkStrCvt {
     }
   };
   /** @brief convert from float value */
-  FwkStrCvt(const float fValue) {
+  explicit FwkStrCvt(const float fValue) {
     char szText[50];
     if (ACE_OS::snprintf(szText, sizeof(szText) - 1, "%f", fValue)) {
       m_sText = szText;
@@ -98,7 +98,7 @@ class FwkStrCvt {
     }
   };
   /** @brief convert from uint32_t value */
-  FwkStrCvt(const uint32_t uiValue) {
+  explicit FwkStrCvt(const uint32_t uiValue) {
     char szText[50];
     if (ACE_OS::snprintf(szText, sizeof(szText) - 1, "%u", uiValue)) {
       m_sText = szText;
@@ -107,7 +107,7 @@ class FwkStrCvt {
     }
   };
   /** @brief convert from int32_t value */
-  FwkStrCvt(const int32_t iValue) {
+  explicit FwkStrCvt(const int32_t iValue) {
     char szText[50];
     if (ACE_OS::snprintf(szText, sizeof(szText) - 1, "%d", iValue)) {
       m_sText = szText;
@@ -116,10 +116,12 @@ class FwkStrCvt {
     }
   };
   /** @brief convert from bool value */
-  FwkStrCvt(const bool bValue) { m_sText = (bValue) ? "true" : "false"; };
+  explicit FwkStrCvt(const bool bValue) {
+    m_sText = (bValue) ? "true" : "false";
+  };
 
   /** @brief convert from uint64_t value */
-  FwkStrCvt(const uint64_t uiValue) {
+  explicit FwkStrCvt(const uint64_t uiValue) {
     char szText[100];
     if (ACE_OS::snprintf(szText, sizeof(szText) - 1, UInt64_FMT, uiValue)) {
       m_sText = szText;
@@ -129,7 +131,7 @@ class FwkStrCvt {
   }
 
   /** @brief convert from int64_t value */
-  FwkStrCvt(const int64_t iValue) {
+  explicit FwkStrCvt(const int64_t iValue) {
     char szText[100];
     if (ACE_OS::snprintf(szText, sizeof(szText) - 1, Int64_FMT, iValue)) {
       m_sText = szText;

@@ -25,12 +25,14 @@
 
 #include "CacheHelper.hpp"
 
-using namespace apache::geode::client;
-using namespace test;
-
 bool isLocalServer = false;
 
-CacheHelper* cacheHelper = nullptr;
+using apache::geode::client::CacheableKey;
+using apache::geode::client::CacheableString;
+using apache::geode::client::CacheHelper;
+using apache::geode::client::Properties;
+
+CacheHelper *cacheHelper = nullptr;
 volatile int g_redundancyLevel = 0;
 
 #define CLIENT1 s1p1
@@ -40,7 +42,7 @@ volatile int g_redundancyLevel = 0;
 
 static bool isLocator = false;
 static int numberOfLocators = 1;
-const char* locatorsG =
+const char *locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 
 void initClient() {
@@ -57,17 +59,17 @@ void cleanProc() {
   }
 }
 
-CacheHelper* getHelper() {
+CacheHelper *getHelper() {
   ASSERT(cacheHelper != nullptr, "No cacheHelper initialized.");
   return cacheHelper;
 }
 
-void _verifyEntry(const char* name, const char* key, const char* val,
+void _verifyEntry(const char *name, const char *key, const char *val,
                   bool noKey, bool isCreated = false) {
   // Verify key and value exist in this region, in this process.
-  const char* value = val ? val : "";
-  char* buf =
-      reinterpret_cast<char*>(malloc(1024 + strlen(key) + strlen(value)));
+  const char *value = val ? val : "";
+  char *buf =
+      reinterpret_cast<char *>(malloc(1024 + strlen(key) + strlen(value)));
   ASSERT(buf, "Unable to malloc buffer for logging.");
   if (!isCreated) {
     if (noKey) {
@@ -156,7 +158,7 @@ void _verifyEntry(const char* name, const char* key, const char* val,
 
 #define verifyEntry(x, y, z) _verifyEntry(x, y, z, __LINE__)
 
-void _verifyEntry(const char* name, const char* key, const char* val,
+void _verifyEntry(const char *name, const char *key, const char *val,
                   int line) {
   char logmsg[1024];
   sprintf(logmsg, "verifyEntry() called from %d.\n", line);
@@ -167,7 +169,7 @@ void _verifyEntry(const char* name, const char* key, const char* val,
 
 #define verifyCreated(x, y) _verifyCreated(x, y, __LINE__)
 
-void _verifyCreated(const char* name, const char* key, int line) {
+void _verifyCreated(const char *name, const char *key, int line) {
   char logmsg[1024];
   sprintf(logmsg, "verifyCreated() called from %d.\n", line);
   LOG(logmsg);
@@ -175,7 +177,7 @@ void _verifyCreated(const char* name, const char* key, int line) {
   LOG("Entry created.");
 }
 
-void createRegion(const char* name, bool ackMode,
+void createRegion(const char *name, bool ackMode,
                   bool clientNotificationEnabled = false) {
   LOG("createRegion() entered.");
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
@@ -187,7 +189,7 @@ void createRegion(const char* name, bool ackMode,
   LOG("Region created.");
 }
 
-void createEntry(const char* name, const char* key, const char* value) {
+void createEntry(const char *name, const char *key, const char *value) {
   LOG("createEntry() entered.");
   fprintf(stdout, "Creating entry -- key: %s  value: %s in region %s\n", key,
           value, name);
@@ -212,7 +214,7 @@ void createEntry(const char* name, const char* key, const char* value) {
   LOG("Entry created.");
 }
 
-void updateEntry(const char* name, const char* key, const char* value) {
+void updateEntry(const char *name, const char *key, const char *value) {
   LOG("updateEntry() entered.");
   fprintf(stdout, "Updating entry -- key: %s  value: %s in region %s\n", key,
           value, name);
@@ -235,7 +237,7 @@ void updateEntry(const char* name, const char* key, const char* value) {
   LOG("Entry updated.");
 }
 
-void doNetsearch(const char* name, const char* key, const char* value) {
+void doNetsearch(const char *name, const char *key, const char *value) {
   LOG("doNetsearch() entered.");
   fprintf(
       stdout,
@@ -271,13 +273,13 @@ void doNetsearch(const char* name, const char* key, const char* value) {
   LOG("Netsearch complete.");
 }
 
-const char* testregex[] = {"Key-*1", "Key-*2", "Key-*3", "Key-*4"};
-const char* keys[] = {"Key-1", "Key-2", "Key-3", "Key-4"};
-const char* vals[] = {"Value-1", "Value-2", "Value-3", "Value-4"};
-const char* nvals[] = {"New Value-1", "New Value-2", "New Value-3",
+const char *testregex[] = {"Key-*1", "Key-*2", "Key-*3", "Key-*4"};
+const char *keys[] = {"Key-1", "Key-2", "Key-3", "Key-4"};
+const char *vals[] = {"Value-1", "Value-2", "Value-3", "Value-4"};
+const char *nvals[] = {"New Value-1", "New Value-2", "New Value-3",
                        "New Value-4"};
 
-const char* regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
+const char *regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
 
 const bool USE_ACK = true;
 void initClientAndRegion(int redundancy) {

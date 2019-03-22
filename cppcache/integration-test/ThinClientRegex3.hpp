@@ -29,12 +29,24 @@
 
 #include "CacheHelper.hpp"
 
-using namespace apache::geode::client;
-using namespace test;
-
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
+
+namespace { // NOLINT(google-build-namespaces)
+
+using apache::geode::client::Cacheable;
+using apache::geode::client::CacheableInt32;
+using apache::geode::client::CacheableInt64;
+using apache::geode::client::CacheableKey;
+using apache::geode::client::CacheableString;
+using apache::geode::client::CacheHelper;
+using apache::geode::client::EntryExistsException;
+using apache::geode::client::EntryNotFoundException;
+using apache::geode::client::Exception;
+using apache::geode::client::IllegalArgumentException;
+using apache::geode::client::Properties;
+using apache::geode::client::RegionDestroyedException;
 
 CacheHelper* cacheHelper = nullptr;
 bool isLocalServer = false;
@@ -374,5 +386,7 @@ DUNIT_TASK_DEFINITION(SERVER1, CloseServer1)
     }
   }
 END_TASK_DEFINITION
+
+}  // namespace
 
 #endif  // GEODE_INTEGRATION_TEST_THINCLIENTREGEX3_H_

@@ -22,14 +22,14 @@
 
 #include <vector>
 
-#include <geode/internal/geode_globals.hpp>
-#include <geode/DataOutput.hpp>
 #include <geode/DataInput.hpp>
+#include <geode/DataOutput.hpp>
 #include <geode/Serializable.hpp>
+#include <geode/internal/geode_globals.hpp>
 
-#include "geode/internal/DataSerializableFixedId.hpp"
-#include "MapWithLock.hpp"
 #include "HashMapOfException.hpp"
+#include "MapWithLock.hpp"
+#include "geode/internal/DataSerializableFixedId.hpp"
 
 /** @file
  */
@@ -37,6 +37,8 @@
 namespace apache {
 namespace geode {
 namespace client {
+
+using internal::DSFid;
 
 class ThinClientRegion;
 
@@ -50,9 +52,9 @@ class ThinClientRegion;
  *
  *
  */
-class CacheableObjectPartList : public DataSerializableFixedId {
+class CacheableObjectPartList : public internal::DataSerializableFixedId {
  protected:
-  const std::vector<std::shared_ptr<CacheableKey>> * m_keys;
+  const std::vector<std::shared_ptr<CacheableKey>>* m_keys;
   uint32_t* m_keysOffset;
   std::shared_ptr<HashMapOfCacheable> m_values;
   std::shared_ptr<HashMapOfException> m_exceptions;
@@ -73,7 +75,7 @@ class CacheableObjectPartList : public DataSerializableFixedId {
         m_destroyTracker(0),
         m_addToLocalCache(false) {}
 
-  inline CacheableObjectPartList(ThinClientRegion* region)
+  inline explicit CacheableObjectPartList(ThinClientRegion* region)
       : m_keys(nullptr),
         m_keysOffset(nullptr),
         m_values(nullptr),
@@ -116,9 +118,7 @@ class CacheableObjectPartList : public DataSerializableFixedId {
 
   void fromData(DataInput& input) override;
 
-  DSFid getDSFID() const override {
-    return DSFid::CacheableObjectPartList;
-  }
+  DSFid getDSFID() const override { return DSFid::CacheableObjectPartList; }
 
   size_t objectSize() const override;
 };

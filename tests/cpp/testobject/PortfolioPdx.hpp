@@ -26,9 +26,11 @@
 
 #include "PositionPdx.hpp"
 
-using namespace apache::geode::client;
-
 namespace testobject {
+
+using apache::geode::client::CacheableDate;
+using apache::geode::client::CacheableHashMap;
+using apache::geode::client::PdxSerializable;
 
 class TESTOBJECT_EXPORT PortfolioPdx : public PdxSerializable {
  private:
@@ -60,7 +62,8 @@ class TESTOBJECT_EXPORT PortfolioPdx : public PdxSerializable {
         arrayNull(),
         arrayZeroSize() {}
 
-  PortfolioPdx(int32_t id, int32_t size = 0, std::vector<std::string> nm = {});
+  explicit PortfolioPdx(int32_t id, int32_t size = 0,
+                        std::vector<std::string> nm = {});
 
   int32_t getID() { return id; }
 
@@ -99,8 +102,8 @@ class TESTOBJECT_EXPORT PortfolioPdx : public PdxSerializable {
     return className;
   }
 
-  using PdxSerializable::toData;
   using PdxSerializable::fromData;
+  using PdxSerializable::toData;
 
   virtual void toData(PdxWriter& pw) const override;
   virtual void fromData(PdxReader& pr) override;

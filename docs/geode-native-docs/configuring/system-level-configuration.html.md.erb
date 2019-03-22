@@ -29,7 +29,7 @@ In case an attribute is defined in more than one place, the first source in this
 -   Programmatic configuration
 -   Properties set at the command line
 -   <code>_current-working-directory_/geode.properties</code> file
--   <code>_native-client-dir_/defaultSystem/geode.properties</code> file
+-   <code>_native-client-installation-directory_/defaultSystem/geode.properties</code> file
 -   defaults
 
 The `geode.properties` files and programmatic configuration are optional. If they are not present,
@@ -39,9 +39,9 @@ object, see [Defining Properties Programmatically](#native-client-config_definin
 ## <a id="native-client-config_search_path_for_props"></a>Search Path for Multiple Properties Files
 
 The client and cache server processes first look for their properties file in the
-<code>_native-client-dir_/defaultSystem</code> directory, then in the working directory.
+<code>_native-client-installation-directory_/defaultSystem</code> directory, then in the working directory.
 
-Any properties set in the working directory override settings in the `defaultSystem/geode.properties` file.
+Any properties set in the working directory override settings in the <code>_native-client-installation-directory_/defaultSystem/geode.properties</code> file.
 
 The `geode.properties` file provides information to the client regarding the expected server
 configuration. Properties set in this file (in the client environment) do not have any effect on the
@@ -55,12 +55,11 @@ You can pass in specific properties programmatically by using a `Properties` obj
 Example:
 
 ``` pre
-PropertiesPtr systemProps = Properties::create();
-systemProps->insert( "statistic-archive-file", "stats.gfs" );
-systemProps->insert( "cache-xml-file", "./myapp-cache.xml" );
-systemProps->insert( "stacktrace-enabled", "true" );
-CacheFactoryPtr systemPtr = CacheFactory::createCacheFactory(systemProps);
-    
+auto systemProps = Properties::create();
+systemProps->insert("statistic-archive-file", "stats.gfs");
+systemProps->insert("cache-xml-file", "./myapp-cache.xml");
+systemProps->insert("stacktrace-enabled", "true");
+auto cache = CacheFactory(systemProps).create();    
 ```
 
 ## <a id="native-client-config__section_67D24B8F8C6C46CDA3474E6E42963D04"></a>About the geode.properties Configuration File
@@ -69,14 +68,14 @@ The `geode.properties` file provides local settings required to connect a client
 
 ## <a id="native-client-config__section_88780874FD6C4BBD9B1B993758A985BB"></a>Configuration File Locations
 
-A client looks for a `geode.properties` file first in the working directory where the process runs, then in <code>_native-client-dir_/defaultSystem</code>.
+A client looks for a `geode.properties` file first in the working directory where the process runs, then in <code>_native-client-installation-directory_/defaultSystem</code>.
 Use the `defaultSystem` directory to group configuration files or to share them among processes for more convenient administration. If `geode.properties` is not found, the process starts up with the default settings.
 
 For the `cache.xml` cache configuration file, a client looks for the path specified by the `cache-xml-file` attribute in `geode.properties` (see [System Properties](sysprops.html#attributes-gfcpp)). If the `cache.xml` is not found, the process starts with an unconfigured cache.
 
 ## <a id="native-client-config_using_default_sample_file"></a>Using the Default Sample File
 
-A sample `geode.properties` file is included with the <%=vars.product_name_long%> native client installation in the <code>_native-client-dir_/defaultSystem</code> directory.
+A sample `geode.properties` file is included with the <%=vars.product_name_long%> native client installation in the <code>_native-client-installation-directory_/defaultSystem</code> directory.
 
 To use this file:
 
@@ -121,7 +120,7 @@ To use this file:
 
 The typical configuration procedure for a client includes the high-level steps listed below.
 
-1.  Place the `geode.properties` file for the application in the working directory or in <code>_native-client-dir_/defaultSystem</code>.
+1.  Place the `geode.properties` file for the application in the working directory or in <code>_native-client-installation-directory_/defaultSystem</code>.
 1.  Place the `cache.xml` file for the application in the desired location and specify its path using the `cache-xml-file` property in the `geode.properties` file.
 1.  Add other attributes to the `geode.properties` file as needed for the local system architecture.
 

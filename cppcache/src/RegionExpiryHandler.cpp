@@ -15,20 +15,22 @@
  * limitations under the License.
  */
 
-#include "ace/Timer_Queue.h"
-#include "ace/Timer_Heap.h"
-#include "ace/Reactor.h"
-#include "ace/svc_export.h"
-#include "ace/Timer_Heap_T.h"
-#include "ace/Timer_Queue_Adapters.h"
+#include "RegionExpiryHandler.hpp"
+
+#include <ace/Reactor.h>
+#include <ace/Timer_Heap.h>
+#include <ace/Timer_Heap_T.h>
+#include <ace/Timer_Queue.h>
+#include <ace/Timer_Queue_Adapters.h>
+#include <ace/svc_export.h>
 
 #include "CacheImpl.hpp"
 #include "ExpiryTaskManager.hpp"
-
-#include "RegionExpiryHandler.hpp"
 #include "RegionInternal.hpp"
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 RegionExpiryHandler::RegionExpiryHandler(std::shared_ptr<RegionInternal>& rptr,
                                          ExpirationAction action,
@@ -135,3 +137,7 @@ void RegionExpiryHandler::DoTheExpirationAction() {
     }
   }
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

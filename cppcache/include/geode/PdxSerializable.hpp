@@ -34,9 +34,11 @@ namespace client {
 class PdxReader;
 class PdxWriter;
 
-class APACHE_GEODE_EXPORT PdxSerializable
-    : public virtual Serializable,
-      public virtual CacheableKey {
+/**
+ * An interface for objects whose contents can be serialized as PDX types.
+ */
+class APACHE_GEODE_EXPORT PdxSerializable : public virtual Serializable,
+                                            public virtual CacheableKey {
  public:
   ~PdxSerializable() noexcept override{};
 

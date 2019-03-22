@@ -20,31 +20,24 @@
 #ifndef GEODE_INTERNAL_UTILS_H_
 #define GEODE_INTERNAL_UTILS_H_
 
-/**
- * @file
- */
-
-#include <typeinfo>
-#include <string>
-#include <unordered_set>
-#include <memory>
-#include <typeinfo>
-#include <string>
-#include <unordered_set>
-#include <memory>
 #include <chrono>
+#include <memory>
+#include <random>
+#include <string>
+#include <typeinfo>
+#include <unordered_set>
 
-#include <geode/internal/geode_globals.hpp>
-#include <geode/internal/geode_base.hpp>
-#include <geode/ExceptionTypes.hpp>
 #include <geode/CacheableString.hpp>
 #include <geode/DataOutput.hpp>
+#include <geode/ExceptionTypes.hpp>
 #include <geode/SystemProperties.hpp>
+#include <geode/internal/geode_base.hpp>
+#include <geode/internal/geode_globals.hpp>
 
+#include "Assert.hpp"
 #include "DistributedSystem.hpp"
 #include "statistics/Statistics.hpp"
 #include "util/Log.hpp"
-#include "Assert.hpp"
 
 #ifdef __GNUC__
 extern "C" {
@@ -104,8 +97,6 @@ class APACHE_GEODE_EXPORT Utils {
 #endif
     return std::string(typeIdName);
   }
-
-  static int logWideString(char* buf, size_t maxLen, const wchar_t* wStr);
 
   /**
    * The only operations that is well defined on the result is "asChar".
@@ -189,8 +180,19 @@ class APACHE_GEODE_EXPORT Utils {
 // Generate random numbers 0 to max-1
 class RandGen {
  public:
-  int operator()(size_t max);
+  template <typename T, class G = std::default_random_engine>
+  inline T operator()(T max) {
+    return std::uniform_int_distribution<T>{0, max - 1}(generator<G>());
+  }
+
+ private:
+  template <class G>
+  inline G& generator() {
+    static thread_local G generator(std::random_device{}());
+    return generator;
+  }
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

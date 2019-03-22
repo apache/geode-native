@@ -27,8 +27,13 @@
 
 #include "testobject_export.h"
 
-using namespace apache::geode::client;
 namespace testobject {
+
+using apache::geode::client::CacheableBytes;
+using apache::geode::client::CacheableString;
+using apache::geode::client::DataInput;
+using apache::geode::client::DataOutput;
+using apache::geode::client::DataSerializable;
 
 class TESTOBJECT_EXPORT TestObject1 : public DataSerializable {
  private:
@@ -38,7 +43,7 @@ class TESTOBJECT_EXPORT TestObject1 : public DataSerializable {
 
  public:
   TestObject1();
-  TestObject1(int32_t id)
+  explicit TestObject1(int32_t id)
       : name(nullptr),
         arr(CacheableBytes::create(std::vector<int8_t>(4 * 1024))),
         identifier(id) {}
@@ -50,8 +55,6 @@ class TESTOBJECT_EXPORT TestObject1 : public DataSerializable {
   void fromData(DataInput& input) override;
 
   int32_t getIdentifier() { return identifier; }
-
-  int32_t getClassId() const override { return 31; }
 
   static Serializable* create();
 };

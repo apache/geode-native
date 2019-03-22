@@ -38,19 +38,22 @@
 
 #include "ThinClientCQ.hpp"
 
-using namespace test;
-using namespace testData;
-
 #include "CacheHelper.hpp"
 #include "ThinClientHelper.hpp"
-#include "ace/Process.h"
+#include <ace/Process.h>
 
-//#include "ThinClientSecurity.hpp"
+using apache::geode::client::testframework::security::CredentialGenerator;
 
-using namespace apache::geode::client::testframework::security;
-using namespace apache::geode::client;
+using apache::geode::client::AuthenticatedView;
+using apache::geode::client::CqAttributesFactory;
+using apache::geode::client::CqEvent;
+using apache::geode::client::CqListener;
+using apache::geode::client::CqOperation;
+using apache::geode::client::Exception;
+using apache::geode::client::IllegalStateException;
+using apache::geode::client::QueryService;
 
-const char* locHostPort =
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 std::shared_ptr<CredentialGenerator> credentialGeneratorHandler;
 #define CLIENT1 s1p1
@@ -59,10 +62,10 @@ std::shared_ptr<CredentialGenerator> credentialGeneratorHandler;
 
 #define MAX_LISTNER 8
 
-const char* cqNames[MAX_LISTNER] = {"MyCq_0", "MyCq_1", "MyCq_2", "MyCq_3",
+const char *cqNames[MAX_LISTNER] = {"MyCq_0", "MyCq_1", "MyCq_2", "MyCq_3",
                                     "MyCq_4", "MyCq_5", "MyCq_6", "MyCq_7"};
 
-const char* queryStrings[MAX_LISTNER] = {
+const char *queryStrings[MAX_LISTNER] = {
     "select * from /Portfolios p where p.ID < 1",
     "select * from /Portfolios p where p.ID < 2",
     "select * from /Portfolios p where p.ID = 2",
@@ -72,7 +75,7 @@ const char* queryStrings[MAX_LISTNER] = {
     "select * from /Portfolios p where p.ID = 6",
     "select * from /Portfolios p where p.ID = 7"};
 
-const char* regionNamesCq[] = {"Portfolios", "Positions", "Portfolios2",
+const char *regionNamesCq[] = {"Portfolios", "Positions", "Portfolios2",
                                "Portfolios3"};
 
 class MyCqListener : public CqListener {
@@ -95,11 +98,11 @@ class MyCqListener : public CqListener {
         m_numDeletes(0),
         m_numEvents(0) {}
   ~MyCqListener() noexcept override = default;
-  inline void updateCount(const CqEvent& cqEvent) {
+  inline void updateCount(const CqEvent &cqEvent) {
     printf(" in cqEvent.getQueryOperation() %d id = %d\n",
            static_cast<int>(cqEvent.getQueryOperation()), m_id);
     printf(" in update key = %s \n",
-           (dynamic_cast<CacheableString*>(cqEvent.getKey().get()))
+           (dynamic_cast<CacheableString *>(cqEvent.getKey().get()))
                ->value()
                .c_str());
     m_numEvents++;
@@ -120,11 +123,11 @@ class MyCqListener : public CqListener {
            m_numUpdates, m_numDeletes);
   }
 
-  void onEvent(const CqEvent& cqe) override {
+  void onEvent(const CqEvent &cqe) override {
     LOG("MyCqListener::OnEvent called");
     updateCount(cqe);
   }
-  void onError(const CqEvent& cqe) override {
+  void onError(const CqEvent &cqe) override {
     updateCount(cqe);
     LOG("MyCqListener::OnError called");
   }
@@ -133,11 +136,11 @@ class MyCqListener : public CqListener {
 
 std::string getXmlPath() {
   char xmlPath[1000] = {'\0'};
-  const char* path = ACE_OS::getenv("TESTSRC");
+  const char *path = ACE_OS::getenv("TESTSRC");
   ASSERT(path != nullptr,
          "Environment variable TESTSRC for test source directory is not set.");
   strncpy(xmlPath, path, strlen(path) - strlen("cppcache"));
-  strcat(xmlPath, "xml/Security/");
+  strncat(xmlPath, "xml/Security/", sizeof(xmlPath) - strlen(xmlPath) - 1);
   return std::string(xmlPath);
 }
 
@@ -163,9 +166,11 @@ void initClientCq(const bool isthinClient) {
     auto serializationRegistry =
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
             ->getSerializationRegistry();
-    serializationRegistry->addType(Position::createDeserializable);
-    serializationRegistry->addType(Portfolio::createDeserializable);
-  } catch (const IllegalStateException&) {
+    serializationRegistry->addDataSerializableType(
+        Position::createDeserializable, 2);
+    serializationRegistry->addDataSerializableType(
+        Portfolio::createDeserializable, 3);
+  } catch (const IllegalStateException &) {
     // ignore exception
   }
 }
@@ -181,7 +186,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateServer1)
       printf("string %s", cmdServerAuthenticator.c_str());
       CacheHelper::initServer(
           1, "remotequery.xml", nullptr,
-          const_cast<char*>(cmdServerAuthenticator.c_str()));
+          const_cast<char *>(cmdServerAuthenticator.c_str()));
       LOG("Server1 started");
     }
   }
@@ -197,7 +202,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateServer2)
       printf("string %s", cmdServerAuthenticator.c_str());
       CacheHelper::initServer(
           2, "remotequery2.xml", nullptr,
-          const_cast<char*>(cmdServerAuthenticator.c_str()));
+          const_cast<char *>(cmdServerAuthenticator.c_str()));
       LOG("Server2 started");
     }
     SLEEP(20000);
@@ -244,7 +249,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepOne2_PoolEP)
     stepOne2();
   }
 END_TASK_DEFINITION
-std::shared_ptr<Pool> getPool(const char* name) {
+std::shared_ptr<Pool> getPool(const char *name) {
   return getHelper()->getCache()->getPoolManager().find(name);
 }
 
@@ -300,7 +305,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
       // qs->executeCqs();
 
       LOG("EXECUTE 1 STOP");
-    } catch (const Exception& excp) {
+    } catch (const Exception &excp) {
       std::string logmsg = "";
       logmsg += excp.getName();
       logmsg += ": ";
@@ -320,7 +325,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepTwo2)
     auto regPtr0 = authenticatedView.getRegion(regionNamesCq[0]);
     auto subregPtr0 = regPtr0->getSubregion(regionNamesCq[1]);
 
-    QueryHelper* qh = &QueryHelper::getHelper();
+    QueryHelper *qh = &QueryHelper::getHelper();
 
     qh->populatePortfolioData(regPtr0, 3, 2, 1);
     qh->populatePositionData(subregPtr0, 3, 2);
@@ -364,7 +369,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
     auto cqAttr = cqy->getCqAttributes();
     auto vl = cqAttr->getCqListeners();
 
-    auto cqListener_3 = static_cast<MyCqListener*>(vl[0].get());
+    auto cqListener_3 = static_cast<MyCqListener *>(vl[0].get());
     printf(" cqListener_3 should have one create event = %d \n",
            cqListener_3->getNumInserts());
     ASSERT(cqListener_3->getNumInserts() == 1,
@@ -374,7 +379,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
     cqAttr = cqy->getCqAttributes();
     vl = cqAttr->getCqListeners();
 
-    auto cqListener_4 = static_cast<MyCqListener*>(vl[0].get());
+    auto cqListener_4 = static_cast<MyCqListener *>(vl[0].get());
     printf(" cqListener_4 should have one create event = %d \n",
            cqListener_4->getNumInserts());
     ASSERT(cqListener_4->getNumInserts() == 1,
@@ -415,7 +420,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour2)
     auto cqAttr = cqy->getCqAttributes();
     auto vl = cqAttr->getCqListeners();
 
-    MyCqListener* cqListener_3 = static_cast<MyCqListener*>(vl[0].get());
+    MyCqListener *cqListener_3 = static_cast<MyCqListener *>(vl[0].get());
     printf(" cqListener_3 should have one update event = %d \n",
            cqListener_3->getNumUpdates());
     ASSERT(cqListener_3->getNumUpdates() == 1,
@@ -425,7 +430,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour2)
     cqAttr = cqy->getCqAttributes();
     vl = cqAttr->getCqListeners();
 
-    auto cqListener_4 = static_cast<MyCqListener*>(vl[0].get());
+    auto cqListener_4 = static_cast<MyCqListener *>(vl[0].get());
     printf(" cqListener_4 should have one update event = %d \n",
            cqListener_4->getNumUpdates());
     ASSERT(cqListener_4->getNumUpdates() == 1,

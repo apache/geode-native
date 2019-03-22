@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 #include "Version.hpp"
+
 #include "CacheImpl.hpp"
 
 namespace apache {
@@ -22,6 +23,7 @@ namespace geode {
 namespace client {
 
 int8_t Version::m_ordinal = 45;  // Geode 1.0.0
-}
-}
-}
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

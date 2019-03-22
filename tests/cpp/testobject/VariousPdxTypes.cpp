@@ -22,10 +22,14 @@
  */
 
 #include "VariousPdxTypes.hpp"
-#include <geode/CacheableEnum.hpp>
+
 #include <util/Log.hpp>
 
+#include <geode/CacheableEnum.hpp>
+
 namespace PdxTests {
+
+using apache::geode::client::CacheableEnum;
 
 /************************************************************
  *  PdxTypes1
@@ -131,14 +135,14 @@ std::string PdxTypes2::toString() const {
   sprintf(idbuf, "PdxTypes2:[m_i1=%d] [m_i2=%d] [m_i3=%d] [m_i4=%d] [m_s1=%s]",
           m_i1, m_i2, m_i3, m_i4, m_s1.c_str());
   return idbuf;
- }
+}
 
- void PdxTypes2::toData(PdxWriter &pw) const {
-   pw.writeString("s1", m_s1);
-   pw.writeInt("i1", m_i1);
-   pw.writeInt("i2", m_i2);
-   pw.writeInt("i3", m_i3);
-   pw.writeInt("i4", m_i4);
+void PdxTypes2::toData(PdxWriter &pw) const {
+  pw.writeString("s1", m_s1);
+  pw.writeInt("i1", m_i1);
+  pw.writeInt("i2", m_i2);
+  pw.writeInt("i3", m_i3);
+  pw.writeInt("i4", m_i4);
 }
 
 void PdxTypes2::fromData(PdxReader &pr) {
@@ -460,26 +464,26 @@ std::string PdxTypes7::toString() const {
       "PdxTypes7:[m_i1=%d] [m_i2=%d] [m_i3=%d] [m_i4=%d] [m_s1=%s] [m_s2=%s]",
       m_i1, m_i2, m_i3, m_i4, m_s1.c_str(), m_s2.c_str());
   return idbuf;
- }
+}
 
- void PdxTypes7::toData(PdxWriter &pw) const {
-   pw.writeInt("i1", m_i1);
-   pw.writeInt("i2", m_i2);
-   pw.writeString("s1", m_s1);
-   pw.writeByteArray("bytes38000", bytes38000);
-   pw.writeInt("i3", m_i3);
-   pw.writeInt("i4", m_i4);
-   pw.writeString("s2", m_s2);
- }
+void PdxTypes7::toData(PdxWriter &pw) const {
+  pw.writeInt("i1", m_i1);
+  pw.writeInt("i2", m_i2);
+  pw.writeString("s1", m_s1);
+  pw.writeByteArray("bytes38000", bytes38000);
+  pw.writeInt("i3", m_i3);
+  pw.writeInt("i4", m_i4);
+  pw.writeString("s2", m_s2);
+}
 
- void PdxTypes7::fromData(PdxReader &pr) {
-   m_i1 = pr.readInt("i1");
-   m_i2 = pr.readInt("i2");
-   m_s1 = pr.readString("s1");
-   bytes38000 = pr.readByteArray("bytes38000");
-   m_i3 = pr.readInt("i3");
-   m_i4 = pr.readInt("i4");
-   m_s2 = pr.readString("s2");
+void PdxTypes7::fromData(PdxReader &pr) {
+  m_i1 = pr.readInt("i1");
+  m_i2 = pr.readInt("i2");
+  m_s1 = pr.readString("s1");
+  bytes38000 = pr.readByteArray("bytes38000");
+  m_i3 = pr.readInt("i3");
+  m_i4 = pr.readInt("i4");
+  m_s2 = pr.readString("s2");
 }
 
 /************************************************************
@@ -524,28 +528,28 @@ std::string PdxTypes8::toString() const {
       "PdxTypes8:[m_i1=%d] [m_i2=%d] [m_i3=%d] [m_i4=%d] [m_s1=%s] [m_s2=%s]",
       m_i1, m_i2, m_i3, m_i4, m_s1.c_str(), m_s2.c_str());
   return idbuf;
- }
+}
 
- void PdxTypes8::toData(PdxWriter &pw) const {
-   pw.writeInt("i1", m_i1);
-   pw.writeInt("i2", m_i2);
-   pw.writeString("s1", m_s1);
-   pw.writeByteArray("bytes300", bytes300);
-   pw.writeObject("_enum", _enum);
-   pw.writeString("s2", m_s2);
-   pw.writeInt("i3", m_i3);
-   pw.writeInt("i4", m_i4);
- }
+void PdxTypes8::toData(PdxWriter &pw) const {
+  pw.writeInt("i1", m_i1);
+  pw.writeInt("i2", m_i2);
+  pw.writeString("s1", m_s1);
+  pw.writeByteArray("bytes300", bytes300);
+  pw.writeObject("_enum", _enum);
+  pw.writeString("s2", m_s2);
+  pw.writeInt("i3", m_i3);
+  pw.writeInt("i4", m_i4);
+}
 
- void PdxTypes8::fromData(PdxReader &pr) {
-   m_i1 = pr.readInt("i1");
-   m_i2 = pr.readInt("i2");
-   m_s1 = pr.readString("s1");
-   bytes300 = pr.readByteArray("bytes300");
-   _enum = pr.readObject("_enum");
-   m_s2 = pr.readString("s2");
-   m_i3 = pr.readInt("i3");
-   m_i4 = pr.readInt("i4");
+void PdxTypes8::fromData(PdxReader &pr) {
+  m_i1 = pr.readInt("i1");
+  m_i2 = pr.readInt("i2");
+  m_s1 = pr.readString("s1");
+  bytes300 = pr.readByteArray("bytes300");
+  _enum = pr.readObject("_enum");
+  m_s2 = pr.readString("s2");
+  m_i3 = pr.readInt("i3");
+  m_i4 = pr.readInt("i4");
 }
 
 /************************************************************

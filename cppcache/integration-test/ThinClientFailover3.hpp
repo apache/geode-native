@@ -31,12 +31,15 @@
 
 #include "CacheHelper.hpp"
 
-using namespace apache::geode::client;
-using namespace test;
+namespace { // NOLINT(google-build-namespaces)
+
+using apache::geode::client::CacheableKey;
+using apache::geode::client::CacheableString;
+using apache::geode::client::CacheHelper;
 
 bool isLocalServer = false;
-const char *endPoints = CacheHelper::getTcrEndpoints(isLocalServer, 3);
-CacheHelper *cacheHelper = nullptr;
+const char* endPoints = CacheHelper::getTcrEndpoints(isLocalServer, 3);
+CacheHelper* cacheHelper = nullptr;
 
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
@@ -44,7 +47,7 @@ CacheHelper *cacheHelper = nullptr;
 #define SERVER2 s2p2
 static bool isLocator = false;
 // static int numberOfLocators = 0;
-const char *locatorsG =
+const char* locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 #include "LocatorHelper.hpp"
 void initClient(const bool isthinClient) {
@@ -60,17 +63,17 @@ void cleanProc() {
   }
 }
 
-CacheHelper *getHelper() {
+CacheHelper* getHelper() {
   ASSERT(cacheHelper != nullptr, "No cacheHelper initialized.");
   return cacheHelper;
 }
 
-void _verifyEntry(const char *name, const char *key, const char *val,
+void _verifyEntry(const char* name, const char* key, const char* val,
                   bool noKey) {
   // Verify key and value exist in this region, in this process.
   const char* value = val ? val : "";
-  char *buf =
-      reinterpret_cast<char *>(malloc(1024 + strlen(key) + strlen(value)));
+  char* buf =
+      reinterpret_cast<char*>(malloc(1024 + strlen(key) + strlen(value)));
   ASSERT(buf, "Unable to malloc buffer for logging.");
   if (noKey) {
     sprintf(buf, "Verify key %s does not exist in region %s", key, name);
@@ -140,7 +143,7 @@ void _verifyEntry(const char *name, const char *key, const char *val,
 
 #define verifyEntry(x, y, z) _verifyEntry(x, y, z, __LINE__)
 
-void _verifyEntry(const char *name, const char *key, const char *val,
+void _verifyEntry(const char* name, const char* key, const char* val,
                   int line) {
   char logmsg[1024];
   sprintf(logmsg, "verifyEntry() called from %d.\n", line);
@@ -149,8 +152,8 @@ void _verifyEntry(const char *name, const char *key, const char *val,
   LOG("Entry verified.");
 }
 
-void createPooledRegion(const char *name, bool ackMode, const char *locators,
-                        const char *poolname,
+void createPooledRegion(const char* name, bool ackMode, const char* locators,
+                        const char* poolname,
                         bool clientNotificationEnabled = false,
                         bool cachingEnable = true) {
   LOG("createRegion_Pool() entered.");
@@ -162,7 +165,7 @@ void createPooledRegion(const char *name, bool ackMode, const char *locators,
   ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Pooled Region created.");
 }
-void createEntry(const char *name, const char *key, const char *value) {
+void createEntry(const char* name, const char* key, const char* value) {
   LOG("createEntry() entered.");
   fprintf(stdout, "Creating entry -- key: %s  value: %s in region %s\n", key,
           value, name);
@@ -187,7 +190,7 @@ void createEntry(const char *name, const char *key, const char *value) {
   LOG("Entry created.");
 }
 
-void updateEntry(const char *name, const char *key, const char *value) {
+void updateEntry(const char* name, const char* key, const char* value) {
   LOG("updateEntry() entered.");
   fprintf(stdout, "Updating entry -- key: %s  value: %s in region %s\n", key,
           value, name);
@@ -208,7 +211,7 @@ void updateEntry(const char *name, const char *key, const char *value) {
   LOG("Entry updated.");
 }
 
-void doNetsearch(const char *name, const char *key, const char *value) {
+void doNetsearch(const char* name, const char* key, const char* value) {
   LOG("doNetsearch() entered.");
   fprintf(
       stdout,
@@ -239,11 +242,11 @@ void doNetsearch(const char *name, const char *key, const char *value) {
   LOG("Netsearch complete.");
 }
 
-std::vector<char *> storeEndPoints(const char *points) {
-  std::vector<char *> endpointNames;
+std::vector<char*> storeEndPoints(const char* points) {
+  std::vector<char*> endpointNames;
   if (points != nullptr) {
-    char *ep = strdup(points);
-    char *token = strtok(ep, ",");
+    char* ep = strdup(points);
+    char* token = strtok(ep, ",");
     while (token) {
       endpointNames.push_back(token);
       token = strtok(nullptr, ",");
@@ -253,13 +256,13 @@ std::vector<char *> storeEndPoints(const char *points) {
   return endpointNames;
 }
 
-std::vector<char *> endpointNames = storeEndPoints(endPoints);
-const char *keys[] = {"Key-1", "Key-2", "Key-3", "Key-4"};
-const char *vals[] = {"Value-1", "Value-2", "Value-3", "Value-4"};
-const char *nvals[] = {"New Value-1", "New Value-2", "New Value-3",
+std::vector<char*> endpointNames = storeEndPoints(endPoints);
+const char* keys[] = {"Key-1", "Key-2", "Key-3", "Key-4"};
+const char* vals[] = {"Value-1", "Value-2", "Value-3", "Value-4"};
+const char* nvals[] = {"New Value-1", "New Value-2", "New Value-3",
                        "New Value-4"};
 
-const char *regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
+const char* regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
 
 const bool USE_ACK = true;
 const bool NO_ACK = false;
@@ -371,5 +374,7 @@ DUNIT_TASK_DEFINITION(SERVER2, CloseServer2and3)
     }
   }
 END_TASK_DEFINITION
+
+}  // namespace
 
 #endif  // GEODE_INTEGRATION_TEST_THINCLIENTFAILOVER3_H_

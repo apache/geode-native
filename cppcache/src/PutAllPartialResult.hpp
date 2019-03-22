@@ -20,10 +20,15 @@
 #ifndef GEODE_PUTALLPARTIALRESULT_H_
 #define GEODE_PUTALLPARTIALRESULT_H_
 
-#include <geode/Serializable.hpp>
-#include <geode/CacheableString.hpp>
-#include "VersionedCacheableObjectPartList.hpp"
+#include <mutex>
+
+#include <ace/RW_Thread_Mutex.h>
 #include <ace/Task.h>
+
+#include <geode/CacheableString.hpp>
+#include <geode/Serializable.hpp>
+
+#include "VersionedCacheableObjectPartList.hpp"
 
 namespace apache {
 namespace geode {
@@ -38,8 +43,7 @@ class PutAllPartialResult final : public Serializable {
   ACE_RW_Thread_Mutex g_readerWriterLock;
 
  public:
-  PutAllPartialResult(int totalMapSize,
-                      ACE_Recursive_Thread_Mutex& responseLock);
+  PutAllPartialResult(int totalMapSize, std::recursive_mutex& responseLock);
   ~PutAllPartialResult() noexcept final {}
 
   void setTotalMapSize(int totalMapSize) { m_totalMapSize = totalMapSize; }
@@ -84,8 +88,8 @@ class PutAllPartialResult final : public Serializable {
   virtual std::string toString() const final {
     char msgStr1[1024];
     if (m_firstFailedKey != nullptr) {
-      ACE_OS::snprintf(msgStr1, 1024, "[ Key =%s ]",
-                       m_firstFailedKey->toString().c_str());
+      std::snprintf(msgStr1, 1024, "[ Key =%s ]",
+                    m_firstFailedKey->toString().c_str());
     }
 
     char msgStr2[1024];
@@ -93,12 +97,12 @@ class PutAllPartialResult final : public Serializable {
       // TODO:: impl. CacheableObjectPartList.size();
       int failedKeyNum = m_totalMapSize - m_succeededKeys->size();
       if (failedKeyNum > 0) {
-        ACE_OS::snprintf(
+        std::snprintf(
             msgStr2, 1024,
             "The putAll operation failed to put %d out of %d entries ",
             failedKeyNum, m_totalMapSize);
       } else {
-        ACE_OS::snprintf(
+        std::snprintf(
             msgStr2, 1024,
             "The putAll operation successfully put %d out of %d entries ",
             m_succeededKeys->size(), m_totalMapSize);
@@ -106,11 +110,10 @@ class PutAllPartialResult final : public Serializable {
     }
 
     char stringBuf[7000];
-    ACE_OS::snprintf(stringBuf, 7000, "PutAllPartialResult: %s%s", msgStr1,
-                     msgStr2);
+    std::snprintf(stringBuf, 7000, "PutAllPartialResult: %s%s", msgStr1,
+                  msgStr2);
     return std::string(stringBuf);
   }
-
 };
 
 }  // namespace client

@@ -25,6 +25,8 @@ namespace geode {
 namespace client {
 
 /**
+ * @class RegionShortcut RegionShortcut.hpp
+ *
  * Each enum represents a predefined {@link RegionAttributes} in a {@link
  * Cache}.
  * These enum values can be used to create regions using a {@link RegionFactory}
@@ -53,8 +55,8 @@ enum class RegionShortcut {
    * a server.
    * If the local state is not found then the operation is sent to the server
    * and the local state is updated to contain the server result.
-   * It will also destroy entries once it detects that the number of enteries
-   * crossing default limit of #100000.
+   * It also destroys entries when it detects that the number of entries
+   * has exceeded the default limit of #100000.
    */
   CACHING_PROXY_ENTRY_LRU,
 
@@ -66,8 +68,8 @@ enum class RegionShortcut {
   /**
    * A LOCAL_LRU region only has local state and never sends operations to a
    * server.
-   * It will also destroy entries once it detects that the number of enteries
-   * crossing default limit of #100000.
+   * It also destroys entries when it detects that the number of entries
+   * has exceeded the default limit of #100000.
    */
   LOCAL_ENTRY_LRU
 };

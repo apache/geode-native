@@ -20,14 +20,23 @@
 #ifndef GEODE_THINCLIENTREDUNDANCYMANAGER_H_
 #define GEODE_THINCLIENTREDUNDANCYMANAGER_H_
 
-#include <set>
+#include <atomic>
+#include <chrono>
 #include <list>
+#include <memory>
+#include <mutex>
+#include <set>
 #include <string>
 
-#include "TcrMessage.hpp"
-#include "TcrEndpoint.hpp"
-#include "ServerLocation.hpp"
+#include <ace/ACE.h>
+
+#include "ErrType.hpp"
 #include "EventIdMap.hpp"
+#include "ExpiryTaskManager.hpp"
+#include "ServerLocation.hpp"
+#include "Task.hpp"
+#include "TcrMessage.hpp"
+#include "util/synchronized_map.hpp"
 
 namespace apache {
 namespace geode {
@@ -37,6 +46,7 @@ class TcrConnectionManager;
 class TcrHADistributionManager;
 class ThinClientRegion;
 class ThinClientPoolHADM;
+class TcrEndpoint;
 
 class ThinClientRedundancyManager {
  public:
@@ -50,11 +60,11 @@ class ThinClientRedundancyManager {
   void close();
   void sendNotificationCloseMsgs();
 
-  ThinClientRedundancyManager(TcrConnectionManager* theConnManager,
-                              int redundencyLevel = 0,
-                              ThinClientPoolHADM* poolHADM = nullptr,
-                              bool sentReadyForEvents = false,
-                              bool globalProcessedMarker = false);
+  explicit ThinClientRedundancyManager(TcrConnectionManager* theConnManager,
+                                       int redundencyLevel = 0,
+                                       ThinClientPoolHADM* poolHADM = nullptr,
+                                       bool sentReadyForEvents = false,
+                                       bool globalProcessedMarker = false);
   GfErrType sendSyncRequestRegisterInterest(TcrMessage& request,
                                             TcrMessageReply& reply,
                                             bool attemptFailover,
@@ -68,19 +78,20 @@ class ThinClientRedundancyManager {
   void startPeriodicAck();
   bool checkDupAndAdd(std::shared_ptr<EventId> eventid);
   void netDown();
-  void acquireRedundancyLock() { m_redundantEndpointsLock.acquire_read(); }
-  void releaseRedundancyLock() { m_redundantEndpointsLock.release(); }
+  void acquireRedundancyLock() { m_redundantEndpointsLock.lock(); }
+  void releaseRedundancyLock() { m_redundantEndpointsLock.unlock(); }
   bool allEndPointDiscon() { return m_IsAllEpDisCon; }
   void removeCallbackConnection(TcrEndpoint*);
 
-  ACE_Recursive_Thread_Mutex& getRedundancyLock() {
-    return m_redundantEndpointsLock;
-  }
+  std::recursive_mutex& getRedundancyLock() { return m_redundantEndpointsLock; }
 
   GfErrType sendRequestToPrimary(TcrMessage& request, TcrMessageReply& reply);
   bool isSentReadyForEvents() const { return m_sentReadyForEvents; }
 
  private:
+  using clock = std::chrono::steady_clock;
+  using time_point = clock::time_point;
+
   // for selectServers
   volatile bool m_IsAllEpDisCon;
   int m_server;
@@ -90,7 +101,7 @@ class ThinClientRedundancyManager {
   ThinClientPoolHADM* m_poolHADM;
   std::vector<TcrEndpoint*> m_redundantEndpoints;
   std::vector<TcrEndpoint*> m_nonredundantEndpoints;
-  ACE_Recursive_Thread_Mutex m_redundantEndpointsLock;
+  std::recursive_mutex m_redundantEndpointsLock;
   TcrConnectionManager* m_theTcrConnManager;
   std::shared_ptr<CacheableStringArray> m_locators;
   std::shared_ptr<CacheableStringArray> m_servers;
@@ -109,6 +120,10 @@ class ThinClientRedundancyManager {
   void moveEndpointToLast(std::vector<TcrEndpoint*>& epVector,
                           TcrEndpoint* targetEp);
 
+  synchronized_map<std::unordered_map<std::string, TcrEndpoint*>,
+                   std::recursive_mutex>&
+  updateAndSelectEndpoints();
+
   void getAllEndpoints(std::vector<TcrEndpoint*>& endpoints);
   // For 38196 Fix: Reorder End points.
   void insertEPInQueueSizeOrder(TcrEndpoint* ep,
@@ -121,14 +136,15 @@ class ThinClientRedundancyManager {
 
   inline bool isDurable();
   int processEventIdMap(const ACE_Time_Value&, const void*);
-  Task<ThinClientRedundancyManager>* m_periodicAckTask;
+  std::unique_ptr<Task<ThinClientRedundancyManager>> m_periodicAckTask;
   ACE_Semaphore m_periodicAckSema;
-  long m_processEventIdMapTaskId;  // periodic check eventid map for notify ack
-                                   // and/or expiry
-  int periodicAck(volatile bool& isRunning);
+  ExpiryTaskManager::id_type
+      m_processEventIdMapTaskId;  // periodic check eventid map for notify ack
+                                  // and/or expiry
+  void periodicAck(std::atomic<bool>& isRunning);
   void doPeriodicAck();
-  ACE_Time_Value m_nextAck;     // next ack time
-  ACE_Time_Value m_nextAckInc;  // next ack time increment
+  time_point m_nextAck;                    // next ack time
+  std::chrono::milliseconds m_nextAckInc;  // next ack time increment
   volatile bool m_HAenabled;
   EventIdMap m_eventidmap;
 

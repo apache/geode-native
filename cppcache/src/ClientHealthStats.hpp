@@ -20,8 +20,8 @@
 #ifndef GEODE_CLIENTHEALTHSTATS_H_
 #define GEODE_CLIENTHEALTHSTATS_H_
 
-#include <geode/Serializable.hpp>
 #include <geode/CacheableDate.hpp>
+#include <geode/Serializable.hpp>
 #include <geode/internal/DataSerializableFixedId.hpp>
 
 #include "util/Log.hpp"
@@ -31,7 +31,7 @@ namespace geode {
 namespace client {
 
 class ClientHealthStats : public internal::DataSerializableFixedId_t<
-                              DSFid::ClientHealthStats> {
+                              internal::DSFid::ClientHealthStats> {
  public:
   void toData(DataOutput& output) const override;
 

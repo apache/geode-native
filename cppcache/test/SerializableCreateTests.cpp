@@ -19,12 +19,22 @@
 
 #include <gtest/gtest.h>
 
-#include <geode/Serializable.hpp>
-#include <geode/CacheableString.hpp>
 #include <geode/CacheableBuiltins.hpp>
 #include <geode/CacheableDate.hpp>
+#include <geode/CacheableString.hpp>
+#include <geode/Serializable.hpp>
 
-using namespace apache::geode::client;
+using apache::geode::client::CacheableBoolean;
+using apache::geode::client::CacheableByte;
+using apache::geode::client::CacheableCharacter;
+using apache::geode::client::CacheableDate;
+using apache::geode::client::CacheableDouble;
+using apache::geode::client::CacheableFloat;
+using apache::geode::client::CacheableInt16;
+using apache::geode::client::CacheableInt32;
+using apache::geode::client::CacheableInt64;
+using apache::geode::client::CacheableString;
+using apache::geode::client::Serializable;
 
 TEST(SerializableCreateTests, forArrayOf_constchar) {
   const auto serializable = Serializable::create("test");
@@ -34,9 +44,9 @@ TEST(SerializableCreateTests, forArrayOf_constchar) {
   ASSERT_TRUE(nullptr != cacheableString);
   ASSERT_EQ(cacheableString->value(), "test");
 }
+
 TEST(SerializableCreateTests, forArrayOf_char) {
-  char* test = new char[10];
-  strcpy(test, "test");
+  char* test = new char[5]{'t', 'e', 's', 't', '\0'};
   const auto serializable = Serializable::create(test);
   ASSERT_TRUE(nullptr != serializable);
   auto&& cacheableString =

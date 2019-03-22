@@ -20,21 +20,24 @@
  * limitations under the License.
  */
 
+#include <fwklib/FwkLog.hpp>
 #include <string>
-#include "fwklib/FwkLog.hpp"
-#include "fwklib/FrameworkTest.hpp"
+
 #include <ace/Time_Value.h>
 
-#include "SerializationRegistry.hpp"
 #include "DataInputInternal.hpp"
 #include "DataOutputInternal.hpp"
-
+#include "SerializationRegistry.hpp"
 #include "testobject_export.h"
 
-using namespace apache::geode::client;
-using namespace testframework;
-
 namespace testobject {
+
+using apache::geode::client::CacheableBytes;
+using apache::geode::client::DataInputInternal;
+using apache::geode::client::DataOutputInternal;
+using apache::geode::client::Exception;
+using apache::geode::client::testframework::FwkException;
+using apache::geode::client::testframework::GsRandom;
 
 class TESTOBJECT_EXPORT ArrayOfByte {
  public:

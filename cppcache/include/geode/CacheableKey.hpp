@@ -24,9 +24,9 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include "internal/geode_globals.hpp"
 #include "Serializable.hpp"
 #include "internal/functional.hpp"
+#include "internal/geode_globals.hpp"
 
 /**
  * @file
@@ -40,8 +40,7 @@ namespace client {
 class APACHE_GEODE_EXPORT CacheableKey : public virtual Cacheable {
  protected:
   CacheableKey() = default;
-  ~CacheableKey() override = default;
-
+  ~CacheableKey() noexcept override = default;
 
  public:
   /** return true if this key matches other. */
@@ -103,7 +102,8 @@ class APACHE_GEODE_EXPORT CacheableKey : public virtual Cacheable {
   void operator=(const CacheableKey& other);
 };
 
-using namespace apache::geode::client::internal;
+using apache::geode::client::internal::dereference_equal_to;
+using apache::geode::client::internal::dereference_hash;
 
 using HashMapOfCacheable =
     std::unordered_map<std::shared_ptr<CacheableKey>,

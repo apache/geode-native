@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-#include <geode/Properties.hpp>
-#include <geode/ExceptionTypes.hpp>
+#include "UserPasswordAuthInit.hpp"
+
 #include <geode/CacheableString.hpp>
+#include <geode/ExceptionTypes.hpp>
+#include <geode/Properties.hpp>
 
 #include "securityimpl_export.h"
-#include "UserPasswordAuthInit.hpp"
 
 #define SECURITY_USERNAME "security-username"
 #define SECURITY_PASSWORD "security-password"

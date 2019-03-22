@@ -23,7 +23,8 @@
 #include "ThinClientSecurity.hpp"
 #include "ThinClientHelper.hpp"
 
-using namespace apache::geode::client;
+using apache::geode::client::CacheFactory;
+using apache::geode::client::RegionShortcut;
 
 #define CLIENT1 s1p1
 #define LOCATORSERVER s2p2
@@ -75,7 +76,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, PerformSecureOperationsWithUserCredentials)
           .getRegion("DistRegionAck")
           ->put("akey", "avalue");
       FAIL("Didn't throw expected AuthenticationFailedException.");
-    } catch (const apache::geode::client::NotAuthorizedException&) {
+    } catch (const apache::geode::client::NotAuthorizedException &) {
       LOG("Caught expected AuthenticationFailedException.");
     }
   }

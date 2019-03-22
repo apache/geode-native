@@ -20,9 +20,9 @@
 #ifndef GEODE_PDXINSTANCE_H_
 #define GEODE_PDXINSTANCE_H_
 
-#include "PdxSerializable.hpp"
 #include "CacheableBuiltins.hpp"
 #include "PdxFieldTypes.hpp"
+#include "PdxSerializable.hpp"
 
 namespace apache {
 namespace geode {

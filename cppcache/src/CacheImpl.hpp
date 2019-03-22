@@ -22,30 +22,26 @@
 
 #include <atomic>
 #include <memory>
+#include <mutex>
 
-#include <ace/ACE.h>
-#include <ace/Time_Value.h>
-#include <ace/Guard_T.h>
-#include <ace/Recursive_Thread_Mutex.h>
+#include <ace/RW_Thread_Mutex.h>
 
-#include <geode/internal/geode_globals.hpp>
 #include <geode/Cache.hpp>
 #include <geode/CacheAttributes.hpp>
-#include <geode/TypeRegistry.hpp>
 #include <geode/PoolManager.hpp>
+#include <geode/TypeRegistry.hpp>
+#include <geode/internal/geode_globals.hpp>
 
-#include "DistributedSystem.hpp"
-#include "MapWithLock.hpp"
-#include "Condition.hpp"
-#include "TcrConnectionManager.hpp"
-#include "EvictionController.hpp"
-#include "RemoteQueryService.hpp"
 #include "AdminRegion.hpp"
 #include "CachePerfStats.hpp"
-#include "PdxTypeRegistry.hpp"
-#include "MemberListForVersionStamp.hpp"
 #include "ClientProxyMembershipIDFactory.hpp"
+#include "DistributedSystem.hpp"
+#include "MemberListForVersionStamp.hpp"
 #include "NonCopyable.hpp"
+#include "PdxTypeRegistry.hpp"
+#include "RemoteQueryService.hpp"
+#include "ThreadPool.hpp"
+#include "util/synchronized_map.hpp"
 
 #define DEFAULT_LRU_MAXIMUM_ENTRIES 100000
 /** @todo period '.' consistency */
@@ -67,6 +63,8 @@ class Pool;
 class RegionAttributes;
 class SerializationRegistry;
 class ThreadPool;
+class EvictionController;
+class TcrConnectionManager;
 
 /**
  * @class Cache Cache.hpp
@@ -97,7 +95,7 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
   // drop
   void netDown();
   void revive();
-  void setClientCrashTEST() { m_tcrConnectionManager->setClientCrashTEST(); }
+  void setClientCrashTEST();
 
   // For PrSingleHop C++unit testing.
   void setNetworkHopFlag(bool networkhopflag) {
@@ -183,6 +181,17 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
   void createRegion(std::string name, RegionAttributes aRegionAttributes,
                     std::shared_ptr<Region>& regionPtr);
 
+  /**
+   * Return the existing region (or subregion) with the specified
+   * path that already exists or is already mapped into the cache.
+   * Whether or not the path starts with a forward slash it is interpreted as a
+   * full path starting at a root.
+   *
+   * @param path the path to the region
+   * @param[out] rptr the region pointer that is returned
+   * @return the Region or null if not found
+   * @throws IllegalArgumentException if path is null, the empty string, or "/"
+   */
   std::shared_ptr<Region> getRegion(const std::string& path);
 
   /**
@@ -228,7 +237,7 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
     return *m_tcrConnectionManager;
   }
 
-  int removeRegion(const char* name);
+  void removeRegion(const std::string& name);
 
   std::shared_ptr<QueryService> getQueryService(bool noInit = false);
 
@@ -259,7 +268,11 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
     return m_attributes == nullptr ? false : m_attributes->m_cacheMode;
   }
 
-  bool getPdxIgnoreUnreadFields() { return m_ignorePdxUnreadFields; }
+  bool getPdxIgnoreUnreadFields() {
+    this->throwIfClosed();
+
+    return m_ignorePdxUnreadFields;
+  }
 
   void setPdxIgnoreUnreadFields(bool ignore) {
     m_ignorePdxUnreadFields = ignore;
@@ -267,7 +280,10 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
 
   void setPdxReadSerialized(bool val) { m_readPdxSerialized = val; }
 
-  bool getPdxReadSerialized() { return m_readPdxSerialized; }
+  bool getPdxReadSerialized() {
+    this->throwIfClosed();
+    return m_readPdxSerialized;
+  }
 
   bool isCacheDestroyPending() const;
 
@@ -278,17 +294,22 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
   std::shared_ptr<SerializationRegistry> getSerializationRegistry() const;
   inline CachePerfStats& getCachePerfStats() { return *m_cacheStats; }
 
-  PoolManager& getPoolManager() const { return *m_poolManager; }
+  PoolManager& getPoolManager() const {
+    this->throwIfClosed();
+    return *m_poolManager;
+  }
 
   const std::shared_ptr<Pool>& getDefaultPool() {
     return m_poolManager->getDefaultPool();
   }
 
   SystemProperties& getSystemProperties() const {
+    this->throwIfClosed();
+
     return m_distributedSystem.getSystemProperties();
   }
 
-  ThreadPool* getThreadPool();
+  ThreadPool& getThreadPool();
 
   inline const std::shared_ptr<AuthInitialize>& getAuthInitialize() {
     return m_authInitialize;
@@ -343,14 +364,14 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
   void validateRegionAttributes(const std::string& name,
                                 const RegionAttributes attrs) const;
 
-  inline void getSubRegions(MapOfRegionWithLock& srm) {
-    MapOfRegionGuard guard(m_regions->mutex());
-    if (m_regions->current_size() == 0) return;
-    for (MapOfRegionWithLock::iterator p = m_regions->begin();
-         p != m_regions->end(); ++p) {
-      srm.bind((*p).ext_id_, (*p).int_id_);
-    }
+  inline void getSubRegions(
+      std::unordered_map<std::string, std::shared_ptr<Region>>& srm) {
+    auto&& lock = m_regions.make_lock<std::lock_guard>();
+    if (m_regions.empty()) return;
+    srm.insert(m_regions.begin(), m_regions.end());
   }
+
+  std::shared_ptr<Region> findRegion(const std::string& name);
 
   void setCache(Cache* cache);
 
@@ -359,27 +380,33 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
 
   DistributedSystem m_distributedSystem;
   ClientProxyMembershipIDFactory m_clientProxyMembershipIDFactory;
-  MapOfRegionWithLock* m_regions;
+  synchronized_map<std::unordered_map<std::string, std::shared_ptr<Region>>,
+                   std::recursive_mutex>
+      m_regions;
   Cache* m_cache;
-  ACE_Recursive_Thread_Mutex m_mutex;
-  Condition m_cond;
   std::shared_ptr<CacheAttributes> m_attributes;
-  EvictionController* m_evictionControllerPtr;
+  std::unique_ptr<EvictionController> m_evictionController;
   TcrConnectionManager* m_tcrConnectionManager;
   std::shared_ptr<RemoteQueryService> m_remoteQueryServicePtr;
   ACE_RW_Thread_Mutex m_destroyCacheMutex;
   volatile bool m_destroyPending;
   volatile bool m_initDone;
-  ACE_Thread_Mutex m_initDoneLock;
+  std::mutex m_initDoneLock;
   std::shared_ptr<AdminRegion> m_adminRegion;
   std::shared_ptr<CacheTransactionManager> m_cacheTXManager;
 
   MemberListForVersionStamp& m_memberListForVersionStamp;
   std::shared_ptr<SerializationRegistry> m_serializationRegistry;
   std::shared_ptr<PdxTypeRegistry> m_pdxTypeRegistry;
-  ThreadPool* m_threadPool;
+  ThreadPool m_threadPool;
   const std::shared_ptr<AuthInitialize> m_authInitialize;
   std::unique_ptr<TypeRegistry> m_typeRegistry;
+
+  inline void throwIfClosed() const {
+    if (m_closed) {
+      throw CacheClosedException("Cache is closed.");
+    }
+  }
 
   friend class CacheFactory;
   friend class Cache;

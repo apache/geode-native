@@ -20,11 +20,12 @@
 #ifndef GEODE_GETALLSERVERSRESPONSE_H_
 #define GEODE_GETALLSERVERSRESPONSE_H_
 
-#include <geode/internal/DataSerializableFixedId.hpp>
-#include <geode/Serializable.hpp>
+#include <vector>
+
 #include <geode/DataInput.hpp>
 #include <geode/DataOutput.hpp>
-#include <vector>
+#include <geode/Serializable.hpp>
+#include <geode/internal/DataSerializableFixedId.hpp>
 
 #include "ServerLocation.hpp"
 
@@ -33,8 +34,8 @@ namespace geode {
 namespace client {
 
 class GetAllServersResponse : public internal::DataSerializableFixedId_t<
-                                  DSFid::GetAllServersResponse> {
-  std::vector<ServerLocation> m_servers;
+                                  internal::DSFid::GetAllServersResponse> {
+  std::vector<std::shared_ptr<ServerLocation> > m_servers;
 
  public:
   static std::shared_ptr<Serializable> create() {
@@ -47,7 +48,9 @@ class GetAllServersResponse : public internal::DataSerializableFixedId_t<
   size_t objectSize() const override {
     return sizeof(GetAllServersResponse) + m_servers.capacity();
   }
-  std::vector<ServerLocation> getServers() { return m_servers; }
+  std::vector<std::shared_ptr<ServerLocation> > getServers() {
+    return m_servers;
+  }
   ~GetAllServersResponse() override = default;
 };
 

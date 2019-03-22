@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_INTEGRATION_TEST_THINCLIENTVERSIONEDOPS_H_
-#define GEODE_INTEGRATION_TEST_THINCLIENTVERSIONEDOPS_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_INTEGRATION_TEST_THINCLIENTVERSIONEDOPS_H_
+#define GEODE_INTEGRATION_TEST_THINCLIENTVERSIONEDOPS_H_
 
 #define ROOT_NAME "testThinClientVersionedOps"
 
@@ -135,7 +135,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StartClient1)
     // 0/*redundancy*/, true/*clientNotification*/,
     // -1/*subscriptionAckInterval*/,
     // 5/*connections*/, 60000/*loadConditioningInterval*/);
-    //auto regPtr0 = createRegionAndAttachPool(regNames[0],USE_ACK,
+    // auto regPtr0 = createRegionAndAttachPool(regNames[0],USE_ACK,
     // nullptr);
 
     initClient(true);
@@ -176,7 +176,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StartClient2)
     getHelper()->createPoolWithLocators("__TEST_POOL1__", locatorsG, true, -1,
                                         std::chrono::milliseconds::zero(), -1,
                                         false, group2);
-   auto regPtr0 = getHelper()->createRegionAndAttachPool(
+    auto regPtr0 = getHelper()->createRegionAndAttachPool(
         regNames[0], USE_ACK, "__TEST_POOL1__", true);
     LOG("StepOne_Pooled_Locator1 complete.");
 
@@ -198,13 +198,12 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, transactionPutOnClient2)
   {
-   auto rptr = getHelper()->getRegion(regNames[0]);
-   auto txManager =
-        getHelper()->getCache()->getCacheTransactionManager();
+    auto rptr = getHelper()->getRegion(regNames[0]);
+    auto txManager = getHelper()->getCache()->getCacheTransactionManager();
 
-   txManager->begin();
-   auto keyPtr1 = CacheableKey::create("key-1");
-   auto valPtr = CacheableString::create("client2-value1");
+    txManager->begin();
+    auto keyPtr1 = CacheableKey::create("key-1");
+    auto valPtr = CacheableString::create("client2-value1");
     rptr->put(keyPtr1, valPtr);
 
     auto keyPtr2 = CacheableKey::create("key-2");
@@ -251,11 +250,11 @@ DUNIT_TASK_DEFINITION(CLIENT2, transactionPutOnClient2)
         "Val3 = %s ",
         c2v13->value().c_str(), s2v13->value().c_str());
 
-    ASSERT(*c2v11.get() == *c2v11.get(),
+    ASSERT(*c2v11 == *c2v11,
            "transactionPutOnClient2:Values should be equal-1");
-    ASSERT(*c2v12.get() == *c2v12.get(),
+    ASSERT(*c2v12 == *c2v12,
            "transactionPutOnClient2:Values should be equal-2");
-    ASSERT(*c2v13.get() == *c2v13.get(),
+    ASSERT(*c2v13 == *c2v13,
            "transactionPutOnClient2:Values should be equal-3");
 
     LOG("CLIENT-2 :: TASK: transactionPutOnClient2 completed successfully");
@@ -267,56 +266,53 @@ DUNIT_TASK_DEFINITION(CLIENT1, verifyGetonClient1)
     thread4->stop();
     delete thread4;
 
-   auto rptr = getHelper()->getRegion(regNames[0]);
+    auto rptr = getHelper()->getRegion(regNames[0]);
 
-   auto keyPtr1 = CacheableKey::create("key-1");
-   auto keyPtr2 = CacheableKey::create("key-2");
-   auto keyPtr3 = CacheableKey::create("key-3");
+    auto keyPtr1 = CacheableKey::create("key-1");
+    auto keyPtr2 = CacheableKey::create("key-2");
+    auto keyPtr3 = CacheableKey::create("key-3");
 
-   // localGet
-   c1v11 = std::dynamic_pointer_cast<CacheableString>(rptr->get(keyPtr1));
-   c1v12 = std::dynamic_pointer_cast<CacheableString>(rptr->get(keyPtr2));
-   c1v13 = std::dynamic_pointer_cast<CacheableString>(rptr->get(keyPtr3));
+    // localGet
+    c1v11 = std::dynamic_pointer_cast<CacheableString>(rptr->get(keyPtr1));
+    c1v12 = std::dynamic_pointer_cast<CacheableString>(rptr->get(keyPtr2));
+    c1v13 = std::dynamic_pointer_cast<CacheableString>(rptr->get(keyPtr3));
 
-   // localDestroy
-   rptr->localDestroy(keyPtr1);
-   rptr->localDestroy(keyPtr2);
-   rptr->localDestroy(keyPtr3);
+    // localDestroy
+    rptr->localDestroy(keyPtr1);
+    rptr->localDestroy(keyPtr2);
+    rptr->localDestroy(keyPtr3);
 
-   // remoteGet
-   s1v11 = std::dynamic_pointer_cast<CacheableString>(rptr->get(keyPtr1));
-   s1v12 = std::dynamic_pointer_cast<CacheableString>(rptr->get(keyPtr2));
-   s1v13 = std::dynamic_pointer_cast<CacheableString>(rptr->get(keyPtr3));
+    // remoteGet
+    s1v11 = std::dynamic_pointer_cast<CacheableString>(rptr->get(keyPtr1));
+    s1v12 = std::dynamic_pointer_cast<CacheableString>(rptr->get(keyPtr2));
+    s1v13 = std::dynamic_pointer_cast<CacheableString>(rptr->get(keyPtr3));
 
-   // Print remoteGet Values
-   LOGINFO(
-       "CLIENT-2 :: verifyGetonClient1: localGet Val1 = %s remoteGet Val1 = "
-       "%s ",
-       c1v11->value().c_str(), s1v11->value().c_str());
-   LOGINFO(
-       "CLIENT-2 :: verifyGetonClient1: localGet Val2 = %s remoteGet Val2 = "
-       "%s ",
-       c1v12->value().c_str(), s1v12->value().c_str());
-   LOGINFO(
-       "CLIENT-2 :: verifyGetonClient1: localGet Val3 = %s remoteGet Val3 = "
-       "%s ",
-       c1v13->value().c_str(), s1v13->value().c_str());
+    // Print remoteGet Values
+    LOGINFO(
+        "CLIENT-2 :: verifyGetonClient1: localGet Val1 = %s remoteGet Val1 = "
+        "%s ",
+        c1v11->value().c_str(), s1v11->value().c_str());
+    LOGINFO(
+        "CLIENT-2 :: verifyGetonClient1: localGet Val2 = %s remoteGet Val2 = "
+        "%s ",
+        c1v12->value().c_str(), s1v12->value().c_str());
+    LOGINFO(
+        "CLIENT-2 :: verifyGetonClient1: localGet Val3 = %s remoteGet Val3 = "
+        "%s ",
+        c1v13->value().c_str(), s1v13->value().c_str());
 
-   ASSERT(*c1v11.get() == *s1v11.get(),
-          "verifyGetonClient1:Values should be equal-1");
-   ASSERT(*c1v12.get() == *s1v12.get(),
-          "verifyGetonClient1:Values should be equal-2");
-   ASSERT(*c1v13.get() == *s1v13.get(),
-          "verifyGetonClient1:Values should be equal-3");
+    ASSERT(*c1v11 == *s1v11, "verifyGetonClient1:Values should be equal-1");
+    ASSERT(*c1v12 == *s1v12, "verifyGetonClient1:Values should be equal-2");
+    ASSERT(*c1v13 == *s1v13, "verifyGetonClient1:Values should be equal-3");
 
-   LOG("CLIENT-2 :: TASK: verifyGetonClient1 completed successfully");
+    LOG("CLIENT-2 :: TASK: verifyGetonClient1 completed successfully");
   }
 END_TASK_DEFINITION
 
 //
 DUNIT_TASK_DEFINITION(CLIENT1, PutOnClient1)
   {
-   auto rptr = getHelper()->getRegion(regNames[0]);
+    auto rptr = getHelper()->getRegion(regNames[0]);
     thread1 = new putThread(rptr, false);
     thread1->setParams(0, 5, 1, true, false, 1);
     thread1->start();
@@ -326,7 +322,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, PutOnClient2)
   {
-   auto rptr = getHelper()->getRegion(regNames[0]);
+    auto rptr = getHelper()->getRegion(regNames[0]);
     thread2 = new putThread(rptr, false);
     thread2->setParams(0, 5, 1, false, false, 0);  // 0, 5, 1, false, false, 0
     thread2->start();
@@ -360,147 +356,138 @@ DUNIT_TASK_DEFINITION(CLIENT1, GetOnClient1)
     thread1->stop();
     delete thread1;
     dunit::sleep(3000);
-   auto regPtr = getHelper()->getRegion(regNames[0]);
+    auto regPtr = getHelper()->getRegion(regNames[0]);
     // localGet
-   auto keyPtr1 = CacheableKey::create("key-1");
-   auto keyPtr2 = CacheableKey::create("key-2");
-   auto keyPtr3 = CacheableKey::create("key-3");
-   auto keyPtr4 = CacheableKey::create("key-4");
-   auto keyPtr5 = CacheableKey::create("key-5");
+    auto keyPtr1 = CacheableKey::create("key-1");
+    auto keyPtr2 = CacheableKey::create("key-2");
+    auto keyPtr3 = CacheableKey::create("key-3");
+    auto keyPtr4 = CacheableKey::create("key-4");
+    auto keyPtr5 = CacheableKey::create("key-5");
 
-   c1v11 = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr1));
-   c1v12 = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr2));
-   c1v13 = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr3));
-   c1v14 = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr4));
-   c1v15 = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr5));
+    c1v11 = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr1));
+    c1v12 = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr2));
+    c1v13 = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr3));
+    c1v14 = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr4));
+    c1v15 = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr5));
 
-   // Print local Get Values
-   LOGINFO("CLIENT-1 :: local GET operation -6 c1v11 = %s",
-           c1v11->value().c_str());
-   LOGINFO("CLIENT-1 :: local GET operation -7 c1v12 = %s",
-           c1v12->value().c_str());
-   LOGINFO("CLIENT-1 :: local GET operation -8 c1v13 = %s",
-           c1v13->value().c_str());
-   LOGINFO("CLIENT-1 :: local GET operation -9 c1v14=%s",
-           c1v14->value().c_str());
-   LOGINFO("CLIENT-1 :: local GET operation....Done c1v15=%s",
-           c1v15->value().c_str());
+    // Print local Get Values
+    LOGINFO("CLIENT-1 :: local GET operation -6 c1v11 = %s",
+            c1v11->value().c_str());
+    LOGINFO("CLIENT-1 :: local GET operation -7 c1v12 = %s",
+            c1v12->value().c_str());
+    LOGINFO("CLIENT-1 :: local GET operation -8 c1v13 = %s",
+            c1v13->value().c_str());
+    LOGINFO("CLIENT-1 :: local GET operation -9 c1v14=%s",
+            c1v14->value().c_str());
+    LOGINFO("CLIENT-1 :: local GET operation....Done c1v15=%s",
+            c1v15->value().c_str());
 
-   // localDestroy
-   regPtr->localDestroy(keyPtr1);
-   regPtr->localDestroy(keyPtr2);
-   regPtr->localDestroy(keyPtr3);
-   regPtr->localDestroy(keyPtr4);
-   regPtr->localDestroy(keyPtr5);
+    // localDestroy
+    regPtr->localDestroy(keyPtr1);
+    regPtr->localDestroy(keyPtr2);
+    regPtr->localDestroy(keyPtr3);
+    regPtr->localDestroy(keyPtr4);
+    regPtr->localDestroy(keyPtr5);
 
-   LOG("CLIENT-1 :: localDestroy() operation....Done");
+    LOG("CLIENT-1 :: localDestroy() operation....Done");
 
-   // remoteGet
-   s1v11 = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr1));
-   s1v12 = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr2));
-   s1v13 = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr3));
-   s1v14 = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr4));
-   s1v15 = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr5));
+    // remoteGet
+    s1v11 = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr1));
+    s1v12 = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr2));
+    s1v13 = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr3));
+    s1v14 = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr4));
+    s1v15 = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr5));
 
-   // Print remoteGet Values
-   LOGINFO("CLIENT-1 :: remoteGet operation -6 s1v11 = %s",
-           s1v11->value().c_str());
-   LOGINFO("CLIENT-1 :: remoteGet operation -6 s1v12 = %s",
-           s1v12->value().c_str());
-   LOGINFO("CLIENT-1 :: remoteGet operation -6 s1v13 = %s",
-           s1v13->value().c_str());
-   LOGINFO("CLIENT-1 :: remoteGet operation -6 s1v14 = %s",
-           s1v14->value().c_str());
-   LOGINFO("CLIENT-1 :: remoteGet operation -6 s1v15 = %s",
-           s1v15->value().c_str());
+    // Print remoteGet Values
+    LOGINFO("CLIENT-1 :: remoteGet operation -6 s1v11 = %s",
+            s1v11->value().c_str());
+    LOGINFO("CLIENT-1 :: remoteGet operation -6 s1v12 = %s",
+            s1v12->value().c_str());
+    LOGINFO("CLIENT-1 :: remoteGet operation -6 s1v13 = %s",
+            s1v13->value().c_str());
+    LOGINFO("CLIENT-1 :: remoteGet operation -6 s1v14 = %s",
+            s1v14->value().c_str());
+    LOGINFO("CLIENT-1 :: remoteGet operation -6 s1v15 = %s",
+            s1v15->value().c_str());
 
-   ASSERT(*c1v11.get() == *s1v11.get(),
-          "GetOnClient1:Values should be equal-1");
-   ASSERT(*c1v12.get() == *s1v12.get(),
-          "GetOnClient1:Values should be equal-2");
-   ASSERT(*c1v13.get() == *s1v13.get(),
-          "GetOnClient1:Values should be equal-3");
-   ASSERT(*c1v14.get() == *s1v14.get(),
-          "GetOnClient1:Values should be equal-4");
-   ASSERT(*c1v15.get() == *s1v15.get(),
-          "GetOnClient1:Values should be equal-5");
-   LOG("CLIENT-1 ::local GET operation....Done");
+    ASSERT(*c1v11 == *s1v11, "GetOnClient1:Values should be equal-1");
+    ASSERT(*c1v12 == *s1v12, "GetOnClient1:Values should be equal-2");
+    ASSERT(*c1v13 == *s1v13, "GetOnClient1:Values should be equal-3");
+    ASSERT(*c1v14 == *s1v14, "GetOnClient1:Values should be equal-4");
+    ASSERT(*c1v15 == *s1v15, "GetOnClient1:Values should be equal-5");
+    LOG("CLIENT-1 ::local GET operation....Done");
   }
 END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, GetOnClient2)
   {
-   auto regPtr = getHelper()->getRegion(regNames[0]);
+    auto regPtr = getHelper()->getRegion(regNames[0]);
     thread2->stop();
     delete thread2;
 
     dunit::sleep(3000);
     // localGet
-   auto keyPtr1 = CacheableKey::create("key-1");
-   auto keyPtr2 = CacheableKey::create("key-2");
-   auto keyPtr3 = CacheableKey::create("key-3");
-   auto keyPtr4 = CacheableKey::create("key-4");
-   auto keyPtr5 = CacheableKey::create("key-5");
+    auto keyPtr1 = CacheableKey::create("key-1");
+    auto keyPtr2 = CacheableKey::create("key-2");
+    auto keyPtr3 = CacheableKey::create("key-3");
+    auto keyPtr4 = CacheableKey::create("key-4");
+    auto keyPtr5 = CacheableKey::create("key-5");
 
-   c2v11 = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr1));
-   c2v12 = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr2));
-   c2v13 = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr3));
-   c2v14 = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr4));
-   c2v15 = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr5));
+    c2v11 = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr1));
+    c2v12 = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr2));
+    c2v13 = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr3));
+    c2v14 = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr4));
+    c2v15 = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr5));
 
-   // Print localGets
-   // Print local Get Values
-   LOGINFO("CLIENT-2 :: local GET operation  c2v11 = %s",
-           c2v11->value().c_str());
-   LOGINFO("CLIENT-2 :: local GET operation  c2v12 = %s",
-           c2v12->value().c_str());
-   LOGINFO("CLIENT-2 :: local GET operation  c2v13 = %s",
-           c2v13->value().c_str());
-   LOGINFO("CLIENT-2 :: local GET operation  c2v14=%s", c2v14->value().c_str());
-   LOGINFO("CLIENT-2 :: local GET operation....Done c2v15=%s",
-           c2v15->value().c_str());
+    // Print localGets
+    // Print local Get Values
+    LOGINFO("CLIENT-2 :: local GET operation  c2v11 = %s",
+            c2v11->value().c_str());
+    LOGINFO("CLIENT-2 :: local GET operation  c2v12 = %s",
+            c2v12->value().c_str());
+    LOGINFO("CLIENT-2 :: local GET operation  c2v13 = %s",
+            c2v13->value().c_str());
+    LOGINFO("CLIENT-2 :: local GET operation  c2v14=%s",
+            c2v14->value().c_str());
+    LOGINFO("CLIENT-2 :: local GET operation....Done c2v15=%s",
+            c2v15->value().c_str());
 
-   LOG("CLIENT-2 :: local GET operation....Done");
+    LOG("CLIENT-2 :: local GET operation....Done");
 
-   // localDestroy
-   regPtr->localDestroy(keyPtr1);
-   regPtr->localDestroy(keyPtr2);
-   regPtr->localDestroy(keyPtr3);
-   regPtr->localDestroy(keyPtr4);
-   regPtr->localDestroy(keyPtr5);
-   LOG("CLIENT-2 :: localDestroy() operation....Done");
+    // localDestroy
+    regPtr->localDestroy(keyPtr1);
+    regPtr->localDestroy(keyPtr2);
+    regPtr->localDestroy(keyPtr3);
+    regPtr->localDestroy(keyPtr4);
+    regPtr->localDestroy(keyPtr5);
+    LOG("CLIENT-2 :: localDestroy() operation....Done");
 
-   // remoteGet
-   s2v11 = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr1));
-   s2v12 = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr2));
-   s2v13 = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr3));
-   s2v14 = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr4));
-   s2v15 = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr5));
+    // remoteGet
+    s2v11 = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr1));
+    s2v12 = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr2));
+    s2v13 = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr3));
+    s2v14 = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr4));
+    s2v15 = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr5));
 
-   // Print remoteGet Values
-   LOGINFO("CLIENT-2 :: remoteGet operation  s2v11 = %s",
-           s2v11->value().c_str());
-   LOGINFO("CLIENT-2 :: remoteGet operation  s2v12 = %s",
-           s2v12->value().c_str());
-   LOGINFO("CLIENT-2 :: remoteGet operation  s2v13 = %s",
-           s2v13->value().c_str());
-   LOGINFO("CLIENT-2 :: remoteGet operation  s2v14 = %s",
-           s2v14->value().c_str());
-   LOGINFO("CLIENT-2 :: remoteGet operation  s2v15 = %s",
-           s2v15->value().c_str());
+    // Print remoteGet Values
+    LOGINFO("CLIENT-2 :: remoteGet operation  s2v11 = %s",
+            s2v11->value().c_str());
+    LOGINFO("CLIENT-2 :: remoteGet operation  s2v12 = %s",
+            s2v12->value().c_str());
+    LOGINFO("CLIENT-2 :: remoteGet operation  s2v13 = %s",
+            s2v13->value().c_str());
+    LOGINFO("CLIENT-2 :: remoteGet operation  s2v14 = %s",
+            s2v14->value().c_str());
+    LOGINFO("CLIENT-2 :: remoteGet operation  s2v15 = %s",
+            s2v15->value().c_str());
 
-   ASSERT(*c2v11.get() == *s2v11.get(),
-          "GetOnClient2:Values should be equal-1");
-   ASSERT(*c2v12.get() == *s2v12.get(),
-          "GetOnClient2:Values should be equal-2");
-   ASSERT(*c2v13.get() == *s2v13.get(),
-          "GetOnClient2:Values should be equal-3");
-   ASSERT(*c2v14.get() == *s2v14.get(),
-          "GetOnClient2:Values should be equal-4");
-   ASSERT(*c2v15.get() == *s2v15.get(),
-          "GetOnClient2:Values should be equal-5");
+    ASSERT(*c2v11 == *s2v11, "GetOnClient2:Values should be equal-1");
+    ASSERT(*c2v12 == *s2v12, "GetOnClient2:Values should be equal-2");
+    ASSERT(*c2v13 == *s2v13, "GetOnClient2:Values should be equal-3");
+    ASSERT(*c2v14 == *s2v14, "GetOnClient2:Values should be equal-4");
+    ASSERT(*c2v15 == *s2v15, "GetOnClient2:Values should be equal-5");
 
-   LOG("GetOnClient2 completed");
+    LOG("GetOnClient2 completed");
   }
 END_TASK_DEFINITION
 

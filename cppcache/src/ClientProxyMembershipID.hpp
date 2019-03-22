@@ -22,17 +22,17 @@
 
 #include <string>
 
-#include <ace/OS.h>
-
-#include <geode/internal/geode_globals.hpp>
 #include <geode/DataOutput.hpp>
 #include <geode/internal/functional.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 #include "DSMemberForVersionStamp.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
+
+using internal::DSFid;
 
 class ClientProxyMembershipID;
 
@@ -67,9 +67,7 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
   // Serializable interface:
   void toData(DataOutput& output) const override;
   void fromData(DataInput& input) override;
-  DSFid getDSFID() const override {
-    return DSFid::InternalDistributedMember;
-  }
+  DSFid getDSFID() const override { return DSFid::InternalDistributedMember; }
   size_t objectSize() const override { return 0; }
 
   void initObjectVars(const char* hostname, uint8_t* hostAddr,
@@ -92,10 +90,11 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
     char hostInfo[255] = {0};
     uint32_t offset = 0;
     for (uint32_t i = 0; i < getHostAddrLen(); i++) {
-      offset += ACE_OS::snprintf(hostInfo + offset, 255 - offset, ":%x",
-                                 m_hostAddr[i]);
+      offset +=
+          std::snprintf(hostInfo + offset, 255 - offset, ":%x", m_hostAddr[i]);
     }
-    result += geode_hash<std::string>{}(std::string(hostInfo, offset));
+    result +=
+        internal::geode_hash<std::string>{}(std::string(hostInfo, offset));
     result += m_hostPort;
     return result;
   }

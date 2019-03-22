@@ -15,22 +15,20 @@
  * limitations under the License.
  */
 
+#include <thread>
+
 #include <geode/internal/geode_globals.hpp>
 
 #include <ace/Time_Value.h>
 #include <ace/OS.h>
 
 namespace test {
+
 void dummyFunc() {}
 
-void millisleep(uint32_t x) {
-  ACE_Time_Value timeV(0);
-  timeV.msec(static_cast<long>(x));
-  ACE_OS::sleep(timeV);
-}
 }  // namespace test
 
-#define SLEEP(x) test::millisleep(x);
+#define SLEEP(x) std::this_thread::sleep_for(std::chrono::milliseconds(x))
 #define LOG LOGDEBUG
 
 #include "TallyListener.hpp"
@@ -46,17 +44,21 @@ void millisleep(uint32_t x) {
 
 extern "C" {
 
-_T_DLL_EXPORT apache::geode::client::CacheListener* createCacheListener() {
-  TallyListener* tl = new TallyListener();
+using apache::geode::client::testing::TallyListener;
+using apache::geode::client::testing::TallyLoader;
+using apache::geode::client::testing::TallyWriter;
+
+_T_DLL_EXPORT apache::geode::client::CacheListener *createCacheListener() {
+  TallyListener *tl = new TallyListener();
   tl->beQuiet(true);
   return tl;
 }
 
-_T_DLL_EXPORT apache::geode::client::CacheLoader* createCacheLoader() {
+_T_DLL_EXPORT apache::geode::client::CacheLoader *createCacheLoader() {
   return new TallyLoader();
 }
 
-_T_DLL_EXPORT apache::geode::client::CacheWriter* createCacheWriter() {
+_T_DLL_EXPORT apache::geode::client::CacheWriter *createCacheWriter() {
   return new TallyWriter();
 }
 }

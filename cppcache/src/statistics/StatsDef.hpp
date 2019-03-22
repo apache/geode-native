@@ -21,7 +21,7 @@
  */
 
 /** @file
-*/
+ */
 
 namespace apache {
 namespace geode {

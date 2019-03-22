@@ -1,5 +1,5 @@
 ---
-title:  SSL Client/Server Communication
+title:  TLS/SSL Client-Server Communication Encryption
 ---
 
 <!--
@@ -19,58 +19,36 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-This section describes how to configure OpenSSL, implement SSL-based communication between your clients and servers, and run clients and servers with SSL enabled.
+This section describes how to implement TLS-based communication between your clients and servers using the OpenSSL encryption utility.
+When configuring TLS/SSL security for your client, you may find it helpful to refer to [The SSL section of the <%=vars.product_name%> User Guide](serverman/managing/security/ssl_overview.html).
 
 # Set Up OpenSSL
 
-The open-source OpenSSL toolkit provides a full-strength general purpose cryptography library to operate along with the PKCS sample implementation for encrypted authentication of native client credentials.
+The open-source OpenSSL toolkit provides a full-strength general purpose cryptography library for encrypting client-server communications.
 
-Download and install OpenSSL 1.0.2 for your specific operating system.
-For Windows platforms, you can use either the regular or the "Light" version.
+Download and install OpenSSL 1.1.1 for your specific operating system.
 
-**Note for Windows users:** If you use Cygwin, do not use the OpenSSL library that comes with
-Cygwin, which is built with `cygwin.dll` as a dependency. Instead, download a fresh copy from
-OpenSSL as described in the following section.
+**Notes for Windows users:**
+
+- For Windows platforms, you can use either the regular or the "Light" version of SSL.
+
+- Use a 64-bit implementation of OpenSSL.
+
+- If you use Cygwin, do not use the OpenSSL library that comes with Cygwin, which is built with
+`cygwin.dll` as a dependency. Instead, download a fresh copy from OpenSSL.
+
+- For many Windows applications, the most convenient way to install OpenSSL is to use `choco` (see [chocolatey.org] (https://chocolatey.org/packages/OpenSSL.Light)) to install the “Light” version of OpenSSL.
+
 
 ## Step 1. Create keystores
 
 The <%=vars.product_name%> server requires keys and keystores in the Java Key Store (JKS) format while the native client requires them in the clear PEM format. Thus you need to be able to generate private/public keypairs in either format and convert between the two using the `keytool` utility and the `openssl` command.
 
-There are public third party free tools and source code available to download such as the "KeyTool IUI" tool.
 
-
-## Step 2. Configure environment variables
-
-Configure your system environment to build and run OpenSSL by adding the appropriate executable and library directories to your paths.
-For example, for Bourne and Korn shells (sh, ksh, bash), environment setup would look something like this:
-<code>
-% LD\_LIBRARY\_PATH=$LD\_LIBRARY\_PATH:_client-install-dir_/lib:_client-install-dir_/ssl\_libs:_openssl-install-dir_/lib<br />
-% export LD\_LIBRARY\_PATH<br />
-% CLASSPATH=_server-install-dir_/lib/securityImpl.jar:$CLASSPATH
-</code>
-
-where:
-
-  _client-install-dir_ is the directory in which you installed your client.
-
-  _openssl-install-dir_ is the directory in which you installed OpenSSL.
-
-  _server-install-dir_ is the directory in which you installed your server.
-
-For Windows, environment setup might resemble this:
-<code>
-\> set PATH=_jdk-or-jre-path_\bin;_client-install-dir_\bin;_client-install-dir_\ssl\_libs;_openssl-install-dir_\bin;%PATH%<br />
-\> set CLASSPATH=_server-installdir_\lib\securityImpl.jar;%CLASSPATH%
-</code>
-
-where _jdk-or-jre-path_ is the directory in which Java is installed.
-
-## Step 3. Enable SSL on the server and on the client
+## Step 2. Enable SSL on the server and on the client
 
 1.  On the server, enable SSL for the `locator` and `server` components, as the SSL-enabled client
-must be able to communicate with both locator and server components. For details on the SSL
-properties available on the server, see "Managing > Security > SSL > Configuring SSL" in the
-[_<%=vars.product_name%> User's Guide_](/serverman/about_<%=vars.product_name.downcase%>.html).
+must be able to communicate with both locator and server components.
 
 1.  On the client, set `ssl-enabled` to `true`. 
 
@@ -84,11 +62,13 @@ SSL properties as described and with the servers or locators specified as usual.
 
 Specifically, ensure that:
 
--   OpenSSL and ACE\_SSL `DLL`s locations are in the right environment variables for your system: `PATH` for Windows, and `LD_LIBRARY_PATH` for Unix.
+-   The OpenSSL and <%=vars.product_name%> DLLs are in the right environment variables for your system: `PATH` for Windows, and `LD_LIBRARY_PATH` for Unix.
 -   You have generated the keys and keystores.
 -   You have set the system properties.
 
 For details on stopping and starting locators and cache servers with SSL, see [Starting Up and Shutting Down Your System](geodeman/configuring/running/starting_up_shutting_down.html).
+
+The <%=vars.product_name%> Native’s libcryptoImpl found in /lib must be linked at compile time.  This binary is used to interact with OpenSSL.  Link libcryptoImpl, native client, and your application code.  We highly recommend using cmake.
 
 **Example locator start command**
 

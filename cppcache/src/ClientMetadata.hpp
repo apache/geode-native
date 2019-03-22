@@ -20,20 +20,17 @@
 #ifndef GEODE_CLIENTMETADATA_H_
 #define GEODE_CLIENTMETADATA_H_
 
-#include <vector>
 #include <map>
-
-#include <ace/ACE.h>
-#include <ace/Recursive_Thread_Mutex.h>
+#include <vector>
 
 #include <geode/PartitionResolver.hpp>
 
-#include "util/Log.hpp"
-#include "ServerLocation.hpp"
 #include "BucketServerLocation.hpp"
-#include "ReadWriteLock.hpp"
 #include "FixedPartitionAttributesImpl.hpp"
 #include "NonCopyable.hpp"
+#include "ReadWriteLock.hpp"
+#include "ServerLocation.hpp"
+#include "util/Log.hpp"
 
 /*Stores the information such as partition attributes and meta data details*/
 
@@ -49,7 +46,7 @@ typedef std::vector<std::shared_ptr<BucketServerLocation>>
 // typedef std::map<int,BucketServerLocationsType >
 // BucketServerLocationsListType;
 typedef std::vector<BucketServerLocationsType> BucketServerLocationsListType;
-typedef std::map<std::string, std::vector<int> > FixedMapType;
+typedef std::map<std::string, std::vector<int>> FixedMapType;
 
 class APACHE_GEODE_EXPORT ClientMetadata : public NonAssignable {
  private:
@@ -61,7 +58,6 @@ class APACHE_GEODE_EXPORT ClientMetadata : public NonAssignable {
   int m_totalNumBuckets;
   // std::shared_ptr<PartitionResolver> m_partitionResolver;
   std::string m_colocatedWith;
-  // ACE_RW_Thread_Mutex m_readWriteLock;
   ThinClientPoolDM* m_tcrdm;
   FixedMapType m_fpaMap;
   inline void checkBucketId(size_t bucketId) {
@@ -88,11 +84,9 @@ class APACHE_GEODE_EXPORT ClientMetadata : public NonAssignable {
   // ServerLocation getPrimaryServerLocation(int bucketId);
   void updateBucketServerLocations(
       int bucketId, BucketServerLocationsType bucketServerLocations);
-  void removeBucketServerLocation(BucketServerLocation serverLocation);
   int getTotalNumBuckets();
   // std::shared_ptr<PartitionResolver> getPartitionResolver();
   const std::string& getColocatedWith();
-  void populateDummyServers(int bucketId, BucketServerLocationsType serverlist);
   int assignFixedBucketId(const char* partitionName,
                           std::shared_ptr<CacheableKey> resolvekey);
   std::shared_ptr<CacheableHashSet>& getFixedPartitionNames() {

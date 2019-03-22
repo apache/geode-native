@@ -1,0 +1,19 @@
+---
+Checks:          '-*,clang-diagnostic-*,clang-analyzer-*,-clang-analyzer-alpha*,google-*,-google-readability-todo,-google-runtime-references,-google-default-arguments,-clang-analyzer-core.uninitialized.UndefReturn,-clang-analyzer-core.UndefinedBinaryOperatorResult,-clang-analyzer-optin.cplusplus.VirtualCall,-clang-analyzer-cplusplus.NewDeleteLeaks'
+WarningsAsErrors: '*'
+HeaderFilterRegex: '.*'
+FormatStyle:     file
+...
+
+# Disable Checks
+# google-runtime-references - We have diverged from this rule due to both legacy and disagreement with the rule.
+# google-readability-todo - Adds current user name when fix applied.
+# clang-analyzer-cplusplus.NewDeleteLeaks - Fundamental design flaw in dunit::Task
+
+# TODO - Fix these checks
+# google-default-arguments
+# clang-analyzer-core.uninitialized.UndefReturn - Generates errors in ACE, how do we ignore?
+# clang-analyzer-core.UndefinedBinaryOperatorResult - Generates errors in ACE, how do we ignore?
+
+# TEMP
+# clang-analyzer-optin.cplusplus.VirtualCall

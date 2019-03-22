@@ -38,6 +38,10 @@
 #define SERVER1 s2p1
 #define FEEDER s2p2
 
+namespace { // NOLINT(google-build-namespaces)
+
+using apache::geode::client::EntryEvent;
+
 class OperMonitor : public CacheListener {
   bool m_first, m_second, m_close;
 
@@ -65,11 +69,13 @@ class OperMonitor : public CacheListener {
   }
 };
 
-void setCacheListener(const char* regName, std::shared_ptr<OperMonitor> monitor) {
+void setCacheListener(const char* regName,
+                      std::shared_ptr<OperMonitor> monitor) {
   auto reg = getHelper()->getRegion(regName);
   auto attrMutator = reg->getAttributesMutator();
   attrMutator->setCacheListener(monitor);
-}std::shared_ptr<OperMonitor> mon1 = nullptr;
+}
+std::shared_ptr<OperMonitor> mon1 = nullptr;
 
 const char* mixKeys[] = {"D-Key-1"};
 
@@ -87,7 +93,7 @@ void initClientCache(int redundancy, std::shared_ptr<OperMonitor>& mon) {
   setCacheListener(regionNames[0], mon);
 
   getHelper()->cachePtr->readyForEvents();
- auto regPtr0 = getHelper()->getRegion(regionNames[0]);
+  auto regPtr0 = getHelper()->getRegion(regionNames[0]);
   regPtr0->registerAllKeys(true);
 }
 
@@ -166,5 +172,7 @@ void doThinClientDurableReconnect() {
 
   closeLocator();
 }
+
+}  // namespace
 
 #endif  // GEODE_INTEGRATION_TEST_THINCLIENTDURABLERECONNECT_H_

@@ -20,16 +20,16 @@
 #ifndef GEODE_REGIONINTERNAL_H_
 #define GEODE_REGIONINTERNAL_H_
 
-#include <string>
-#include <map>
 #include <chrono>
+#include <map>
+#include <string>
 
 #include <geode/Region.hpp>
 
-#include "RegionStats.hpp"
+#include "ErrType.hpp"
 #include "EventId.hpp"
 #include "HashMapOfException.hpp"
-#include "ErrType.hpp"
+#include "RegionStats.hpp"
 
 namespace apache {
 namespace geode {
@@ -56,7 +56,7 @@ class CacheEventFlags {
   static const uint8_t GF_NOCACHEWRITER = 0x80;
 
   // private constructor
-  inline CacheEventFlags(const uint8_t flags) : m_flags(flags) {}
+  inline explicit CacheEventFlags(const uint8_t flags) : m_flags(flags) {}
 
   // disable constructors and assignment
   CacheEventFlags();

@@ -29,8 +29,11 @@
 
 #include "CacheHelper.hpp"
 
-using namespace apache::geode::client;
-using namespace test;
+namespace { // NOLINT(google-build-namespaces)
+
+using apache::geode::client::CacheableKey;
+using apache::geode::client::CacheableString;
+using apache::geode::client::CacheHelper;
 
 CacheHelper* cacheHelper = nullptr;
 bool isLocalServer = false;
@@ -492,5 +495,7 @@ DUNIT_TASK_DEFINITION(SERVER2, CloseServer2)
     }
   }
 END_TASK_DEFINITION
+
+}  // namespace
 
 #endif  // GEODE_INTEGRATION_TEST_THINCLIENTFAILOVERINTERESTALLWITHCACHE_H_

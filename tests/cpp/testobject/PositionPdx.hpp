@@ -24,16 +24,19 @@
  * @brief User class for testing the put functionality for object.
  */
 
+#include <string>
+
+#include <geode/PdxReader.hpp>
 #include <geode/PdxSerializable.hpp>
 #include <geode/PdxWriter.hpp>
-#include <geode/PdxReader.hpp>
-#include <string>
 
 #include "testobject_export.h"
 
 namespace testobject {
 
-using namespace apache::geode::client;
+using apache::geode::client::PdxReader;
+using apache::geode::client::PdxSerializable;
+using apache::geode::client::PdxWriter;
 
 class TESTOBJECT_EXPORT PositionPdx : public PdxSerializable {
  private:
@@ -63,7 +66,7 @@ class TESTOBJECT_EXPORT PositionPdx : public PdxSerializable {
   PositionPdx();
   PositionPdx(const char* id, int32_t out);
   // This constructor is just for some internal data validation test
-  PositionPdx(int32_t iForExactVal);
+  explicit PositionPdx(int32_t iForExactVal);
   ~PositionPdx() override = default;
 
   using PdxSerializable::fromData;

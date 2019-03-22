@@ -20,12 +20,11 @@
 #ifndef GEODE_RESULTCOLLECTOR_H_
 #define GEODE_RESULTCOLLECTOR_H_
 
-#include <memory>
 #include <chrono>
-
-#include "internal/geode_globals.hpp"
+#include <memory>
 
 #include "CacheableBuiltins.hpp"
+#include "internal/geode_globals.hpp"
 
 /**
  * @file

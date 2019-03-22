@@ -14,14 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * TransactionSuspender.cpp
- *
- *  Created on: 16-Feb-2011
- *      Author: ankurs
- */
 
 #include "TransactionSuspender.hpp"
+
 #include "TSSTXStateWrapper.hpp"
 
 namespace apache {
@@ -29,14 +24,14 @@ namespace geode {
 namespace client {
 
 TransactionSuspender::TransactionSuspender() {
-  TSSTXStateWrapper* txStateWrapper = TSSTXStateWrapper::s_geodeTSSTXState;
-  m_TXState = txStateWrapper->getTXState();
-  txStateWrapper->setTXState(nullptr);
+  m_TXState = TSSTXStateWrapper::get().getTXState();
+  TSSTXStateWrapper::get().setTXState(nullptr);
 }
 
 TransactionSuspender::~TransactionSuspender() {
-  TSSTXStateWrapper::s_geodeTSSTXState->setTXState(m_TXState);
+  TSSTXStateWrapper::get().setTXState(m_TXState);
 }
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

@@ -22,8 +22,8 @@
 
 #include <chrono>
 
-#include "internal/geode_globals.hpp"
 #include "ExpirationAction.hpp"
+#include "internal/geode_globals.hpp"
 
 /**
  * @file
@@ -49,8 +49,8 @@ namespace client {
  */
 class APACHE_GEODE_EXPORT ExpirationAttributes {
   /**
-    * @brief public methods
-    */
+   * @brief public methods
+   */
  public:
   /**
    *@brief  constructors
@@ -69,7 +69,7 @@ class APACHE_GEODE_EXPORT ExpirationAttributes {
    * @param expirationAction the action to take when the value expires
    * @throws IllegalArgumentException if expirationTime is nonpositive
    */
-  ExpirationAttributes(
+  explicit ExpirationAttributes(
       const std::chrono::seconds& expirationTime,
       const ExpirationAction expirationAction = ExpirationAction::INVALIDATE);
 

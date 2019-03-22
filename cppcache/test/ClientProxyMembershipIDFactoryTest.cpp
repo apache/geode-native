@@ -17,16 +17,18 @@
 
 #include <regex>
 
+#include <boost/endian/conversion.hpp>
+
 #include <gtest/gtest.h>
 
-#include <ClientProxyMembershipIDFactory.hpp>
+#include "ClientProxyMembershipIDFactory.hpp"
 
-using namespace apache::geode::client;
+using apache::geode::client::ClientProxyMembershipIDFactory;
 
 TEST(ClientProxyMembershipIDFactoryTest, testCreate) {
   ClientProxyMembershipIDFactory factory("myDs");
 
-  auto hostAddr = htonl(1);
+  auto hostAddr = boost::endian::native_to_big(1);
   auto id = factory.create("myHost", hostAddr, 2, "myClientID",
                            std::chrono::seconds(3));
   ASSERT_NE(nullptr, id);

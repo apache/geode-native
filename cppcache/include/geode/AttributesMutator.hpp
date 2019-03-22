@@ -25,8 +25,8 @@
 #include <memory>
 #include <string>
 
-#include "internal/geode_globals.hpp"
 #include "ExpirationAction.hpp"
+#include "internal/geode_globals.hpp"
 
 /**
  * @file
@@ -65,7 +65,7 @@ class APACHE_GEODE_EXPORT AttributesMutator {
  public:
   /** Internal constructor. Use Region::getAttributesMutator() to acquire the
    * mutator for a region. */
-  AttributesMutator(const std::shared_ptr<Region>& region);
+  explicit AttributesMutator(const std::shared_ptr<Region>& region);
 
   virtual ~AttributesMutator();
 

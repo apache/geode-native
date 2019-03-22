@@ -34,14 +34,21 @@
 #include "testobject/PortfolioPdx.hpp"
 #include "SerializationRegistry.hpp"
 #include "CacheRegionHelper.hpp"
-using namespace apache::geode::client;
-using namespace test;
-using namespace testobject;
 
 #define CLIENT1 s1p1
 #define LOCATOR s1p2
 #define SERVER1 s2p1
 #define SERVER2 s2p2
+
+using testobject::Portfolio;
+using testobject::PortfolioPdx;
+using testobject::Position;
+using testobject::PositionPdx;
+
+using apache::geode::client::Exception;
+using apache::geode::client::IllegalStateException;
+using apache::geode::client::QueryService;
+using apache::geode::client::SelectResults;
 
 class KillServerThread : public ACE_Task_Base {
  public:
@@ -68,10 +75,10 @@ class KillServerThread : public ACE_Task_Base {
 bool isLocator = false;
 bool isLocalServer = false;
 
-const char* qRegionNames[] = {"Portfolios", "Positions"};
-KillServerThread* kst = nullptr;
-const char* poolNames[] = {"Pool1", "Pool2", "Pool3"};
-const char* locHostPort =
+const char *qRegionNames[] = {"Portfolios", "Positions"};
+KillServerThread *kst = nullptr;
+const char *poolNames[] = {"Pool1", "Pool2", "Pool3"};
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 bool isPoolConfig = false;  // To track if pool case is running
 
@@ -114,12 +121,16 @@ DUNIT_TASK_DEFINITION(CLIENT1, RegisterTypesAndCreatePoolAndRegion)
       auto serializationRegistry =
           CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
               ->getSerializationRegistry();
-      serializationRegistry->addType(Position::createDeserializable);
-      serializationRegistry->addType(Portfolio::createDeserializable);
+      serializationRegistry->addDataSerializableType(
+          Position::createDeserializable, 2);
+      serializationRegistry->addDataSerializableType(
+          Portfolio::createDeserializable, 3);
 
-      serializationRegistry->addPdxType(PositionPdx::createDeserializable);
-      serializationRegistry->addPdxType(PortfolioPdx::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          PositionPdx::createDeserializable);
+      serializationRegistry->addPdxSerializableType(
+          PortfolioPdx::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
 
@@ -181,12 +192,12 @@ DUNIT_TASK_DEFINITION(CLIENT1, ValidateQueryExecutionAcrossServerFailure)
       }
 
       kst->stop();
-    } catch (IllegalStateException& ise) {
+    } catch (IllegalStateException &ise) {
       char isemsg[500] = {0};
       ACE_OS::snprintf(isemsg, 499, "IllegalStateException: %s", ise.what());
       LOG(isemsg);
       FAIL(isemsg);
-    } catch (Exception& excp) {
+    } catch (Exception &excp) {
       char excpmsg[500] = {0};
       ACE_OS::snprintf(excpmsg, 499, "Exception: %s", excp.what());
       LOG(excpmsg);
@@ -227,15 +238,16 @@ DUNIT_TASK_DEFINITION(LOCATOR, CloseLocator)
   }
 END_TASK_DEFINITION
 
-void runRemoteQueryFailoverTest(){
-    CALL_TASK(StartLocator) CALL_TASK(CreateServer1WithLocator)
-        CALL_TASK(RegisterTypesAndCreatePoolAndRegion)
-            CALL_TASK(CreateServer2WithLocator)
-                CALL_TASK(ValidateQueryExecutionAcrossServerFailure)
-                    CALL_TASK(CloseCache1) CALL_TASK(CloseServer2)
-                        CALL_TASK(CloseLocator)}
-
-DUNIT_MAIN {
-  runRemoteQueryFailoverTest();
+void runRemoteQueryFailoverTest() {
+  CALL_TASK(StartLocator);
+  CALL_TASK(CreateServer1WithLocator);
+  CALL_TASK(RegisterTypesAndCreatePoolAndRegion);
+  CALL_TASK(CreateServer2WithLocator);
+  CALL_TASK(ValidateQueryExecutionAcrossServerFailure);
+  CALL_TASK(CloseCache1) CALL_TASK(CloseServer2);
+  CALL_TASK(CloseLocator);
 }
+
+DUNIT_MAIN
+  { runRemoteQueryFailoverTest(); }
 END_MAIN

@@ -21,19 +21,25 @@
 #define GEODE_TESTOBJECT_VARIOUSPDXTYPES_H_
 
 #include <geode/DataSerializable.hpp>
+#include <geode/PdxReader.hpp>
 #include <geode/PdxSerializable.hpp>
 #include <geode/PdxWriter.hpp>
-#include <geode/PdxReader.hpp>
 
 #include "testobject_export.h"
 
-using namespace apache::geode::client;
-
 namespace PdxTests {
+
+using apache::geode::client::Cacheable;
+using apache::geode::client::DataInput;
+using apache::geode::client::DataOutput;
+using apache::geode::client::DataSerializable;
+using apache::geode::client::PdxReader;
+using apache::geode::client::PdxSerializable;
+using apache::geode::client::PdxWriter;
+
 /************************************************************
  *  PdxTypes1
  * *********************************************************/
-
 class TESTOBJECT_EXPORT PdxTypes1 : public PdxSerializable {
  private:
   int32_t m_i1;
@@ -445,7 +451,7 @@ class TESTOBJECT_EXPORT NestedPdx : public PdxSerializable {
 
  public:
   NestedPdx();
-  NestedPdx(char* key);
+  explicit NestedPdx(char* key);
 
   ~NestedPdx() noexcept override;
 
@@ -492,7 +498,7 @@ class TESTOBJECT_EXPORT MixedVersionNestedPdx : public PdxSerializable {
 
  public:
   MixedVersionNestedPdx();
-  MixedVersionNestedPdx(char* key);
+  explicit MixedVersionNestedPdx(char* key);
 
   ~MixedVersionNestedPdx() noexcept override;
 
@@ -551,13 +557,6 @@ class TESTOBJECT_EXPORT PdxInsideIGeodeSerializable : public DataSerializable {
   virtual void fromData(DataInput& input) override;
 
   void toData(DataOutput& output) const override;
-
-  virtual int32_t getClassId() const override { return 0x10; }
-
-  //  const std::string& getClassName() const override {
-  //    static std::string className = "PdxTests.PdxInsideIGeodeSerializable";
-  //    return className;
-  //  }
 
   static std::shared_ptr<Serializable> createDeserializable() {
     return std::make_shared<PdxInsideIGeodeSerializable>();

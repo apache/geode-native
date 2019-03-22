@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_INTEGRATION_TEST_THINCLIENTPUTGETALL_H_
-#define GEODE_INTEGRATION_TEST_THINCLIENTPUTGETALL_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,6 +15,11 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_INTEGRATION_TEST_THINCLIENTPUTGETALL_H_
+#define GEODE_INTEGRATION_TEST_THINCLIENTPUTGETALL_H_
+
 #include "fw_dunit.hpp"
 #include <ace/OS.h>
 #include <ace/High_Res_Timer.h>
@@ -34,13 +34,26 @@
 #include "testobject/PdxClassV1.hpp"
 #include "testobject/PdxClassV2.hpp"
 
-using namespace PdxTests;
-using namespace apache::geode::client;
-using namespace test;
-
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
+
+namespace { // NOLINT(google-build-namespaces)
+
+using PdxTests::PdxTypes1;
+using PdxTests::PdxTypes10;
+using PdxTests::PdxTypes2;
+using PdxTests::PdxTypes3;
+using PdxTests::PdxTypes4;
+using PdxTests::PdxTypes5;
+using PdxTests::PdxTypes6;
+using PdxTests::PdxTypes7;
+using PdxTests::PdxTypes8;
+using PdxTests::PdxTypes9;
+
+using apache::geode::client::Cacheable;
+using apache::geode::client::HashMapOfCacheable;
+using apache::geode::client::IllegalStateException;
 
 static bool isLocalServer = false;
 static bool isLocator = false;
@@ -224,58 +237,68 @@ DUNIT_TASK_DEFINITION(CLIENT1, putallAndGetallPdxWithCallBackArg)
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
             ->getSerializationRegistry();
     try {
-      serializationRegistry->addPdxType(PdxTypes1::createDeserializable);
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes1::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
 
     try {
-      serializationRegistry->addPdxType(PdxTypes2::createDeserializable);
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes2::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
 
     try {
-      serializationRegistry->addPdxType(PdxTypes3::createDeserializable);
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes3::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
     try {
-      serializationRegistry->addPdxType(PdxTypes4::createDeserializable);
-    } catch (const IllegalStateException&) {
-      // ignore exception
-    }
-
-    try {
-      serializationRegistry->addPdxType(PdxTypes5::createDeserializable);
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes4::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
 
     try {
-      serializationRegistry->addPdxType(PdxTypes6::createDeserializable);
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes5::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
 
     try {
-      serializationRegistry->addPdxType(PdxTypes7::createDeserializable);
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes6::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
 
     try {
-      serializationRegistry->addPdxType(PdxTypes8::createDeserializable);
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes7::createDeserializable);
+    } catch (const IllegalStateException&) {
+      // ignore exception
+    }
+
+    try {
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes8::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
     try {
-      serializationRegistry->addPdxType(PdxTypes9::createDeserializable);
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes9::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
     try {
-      serializationRegistry->addPdxType(PdxTypes10::createDeserializable);
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes10::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
@@ -401,58 +424,68 @@ DUNIT_TASK_DEFINITION(CLIENT1, putallAndGetallPdx)
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
             ->getSerializationRegistry();
     try {
-      serializationRegistry->addPdxType(PdxTypes1::createDeserializable);
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes1::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
 
     try {
-      serializationRegistry->addPdxType(PdxTypes2::createDeserializable);
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes2::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
 
     try {
-      serializationRegistry->addPdxType(PdxTypes3::createDeserializable);
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes3::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
     try {
-      serializationRegistry->addPdxType(PdxTypes4::createDeserializable);
-    } catch (const IllegalStateException&) {
-      // ignore exception
-    }
-
-    try {
-      serializationRegistry->addPdxType(PdxTypes5::createDeserializable);
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes4::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
 
     try {
-      serializationRegistry->addPdxType(PdxTypes6::createDeserializable);
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes5::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
 
     try {
-      serializationRegistry->addPdxType(PdxTypes7::createDeserializable);
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes6::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
 
     try {
-      serializationRegistry->addPdxType(PdxTypes8::createDeserializable);
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes7::createDeserializable);
+    } catch (const IllegalStateException&) {
+      // ignore exception
+    }
+
+    try {
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes8::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
     try {
-      serializationRegistry->addPdxType(PdxTypes9::createDeserializable);
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes9::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
     try {
-      serializationRegistry->addPdxType(PdxTypes10::createDeserializable);
+      serializationRegistry->addPdxSerializableType(
+          PdxTypes10::createDeserializable);
     } catch (const IllegalStateException&) {
       // ignore exception
     }
@@ -616,5 +649,7 @@ void runPutGetAll() {
 
   CALL_TASK(CloseLocator1);
 }
+
+}  // namespace
 
 #endif  // GEODE_INTEGRATION_TEST_THINCLIENTPUTGETALL_H_

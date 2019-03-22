@@ -20,39 +20,40 @@
  * limitations under the License.
  */
 
-#include <geode/PdxReader.hpp>
-#include "PdxType.hpp"
-#include <geode/DataInput.hpp>
-#include <geode/CacheableObjectArray.hpp>
 #include <geode/CacheableDate.hpp>
+#include <geode/CacheableObjectArray.hpp>
+#include <geode/DataInput.hpp>
+#include <geode/PdxReader.hpp>
+
 #include "PdxRemotePreservedData.hpp"
+#include "PdxType.hpp"
 namespace apache {
 namespace geode {
 namespace client {
 
 class PdxLocalReader : public PdxReader {
  protected:
-  DataInput* m_dataInput;
+  DataInput *m_dataInput;
   std::shared_ptr<PdxType> m_pdxType;
-  uint8_t* m_startBuffer;
+  uint8_t *m_startBuffer;
   int32_t m_startPosition;
   int32_t m_serializedLength;
   int32_t m_serializedLengthWithOffsets;
   int32_t m_offsetSize;
-  uint8_t* m_offsetsBuffer;
+  uint8_t *m_offsetsBuffer;
   bool m_isDataNeedToPreserve;
   std::shared_ptr<PdxRemotePreservedData> m_pdxRemotePreserveData;
-  int32_t* m_localToRemoteMap;
-  int32_t* m_remoteToLocalMap;
+  int32_t *m_localToRemoteMap;
+  int32_t *m_remoteToLocalMap;
   int32_t m_remoteToLocalMapSize;
 
   void initialize();
   void resettoPdxHead();
 
  public:
-  PdxLocalReader(std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry);
+  explicit PdxLocalReader(std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry);
 
-  PdxLocalReader(DataInput& input, std::shared_ptr<PdxType> remoteType,
+  PdxLocalReader(DataInput &input, std::shared_ptr<PdxType> remoteType,
                  int32_t pdxLen,
                  std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry);
 

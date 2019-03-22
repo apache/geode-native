@@ -35,7 +35,8 @@
 
 #include "ThinClientHelper.hpp"
 
-using namespace apache::geode::client;
+using apache::geode::client::EntryEvent;
+using apache::geode::client::PartitionResolver;
 
 class CustomPartitionResolver : public PartitionResolver {
  public:
@@ -77,6 +78,7 @@ std::vector<char *> storeEndPoints(const char *points) {
       endpointNames.push_back(token);
       token = strtok(nullptr, ",");
     }
+    free(ep);
   }
   ASSERT(endpointNames.size() == 3, "There should be 3 end points");
   return endpointNames;
@@ -121,7 +123,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutThroughPartitionResolver)
     LOG("PutThroughPartitionResolver started.");
 
     for (int i = 0; i < 100; i++) {
-      //auto dataReg = getHelper()->getRegion("LocalRegion");
+      // auto dataReg = getHelper()->getRegion("LocalRegion");
       auto dataReg = getHelper()->getRegion(regionNames[0]);
       auto keyPtr =
           std::dynamic_pointer_cast<CacheableKey>(CacheableInt32::create(i));

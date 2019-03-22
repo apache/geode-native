@@ -19,6 +19,10 @@
 
 #include "PdxFieldType.hpp"
 
+#include "../begin_native.hpp"
+#include <PdxFieldType.hpp>
+#include "../end_native.hpp"
+
 using namespace System;
 using namespace System::Collections::Generic;
 
@@ -130,11 +134,7 @@ namespace Apache
             Int32 get() { return m_geodeTypeId; }
             void set(Int32 value) { m_geodeTypeId = value; }
           }
-          /* property Type^ PdxDomainType
-           {
-           Type^ get() {return m_pdxDomainType;}
-           void set(Type^ type) {m_pdxDomainType = type;}
-           }*/
+
           property String^ PdxClassName
           {
             String^ get() { return m_className; }

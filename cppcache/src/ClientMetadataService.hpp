@@ -20,58 +20,63 @@
 #ifndef GEODE_CLIENTMETADATASERVICE_H_
 #define GEODE_CLIENTMETADATASERVICE_H_
 
-#include <unordered_map>
+#include <atomic>
+#include <chrono>
+#include <condition_variable>
+#include <deque>
 #include <memory>
+#include <mutex>
 #include <string>
+#include <thread>
+#include <unordered_map>
 
-#include <ace/Task.h>
+#include <boost/thread/shared_mutex.hpp>
 
 #include <geode/CacheableKey.hpp>
-#include <geode/Serializable.hpp>
 #include <geode/Region.hpp>
+#include <geode/Serializable.hpp>
 #include <geode/internal/functional.hpp>
 
-#include "ClientMetadata.hpp"
-#include "ServerLocation.hpp"
 #include "BucketServerLocation.hpp"
-#include "Queue.hpp"
-#include "DistributedSystemImpl.hpp"
 #include "NonCopyable.hpp"
+#include "ServerLocation.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
-class ClienMetadata;
+class ClientMetadata;
+class ThinClientPoolDM;
 
 typedef std::map<std::string, std::shared_ptr<ClientMetadata>>
     RegionMetadataMapType;
 
 class BucketStatus {
  private:
-  ACE_Time_Value m_lastTimeout;
+  using clock = std::chrono::steady_clock;
+  const static clock::time_point m_noTimeout;
+  clock::time_point m_lastTimeout;
 
  public:
-  BucketStatus() : m_lastTimeout(ACE_Time_Value::zero) {}
+  BucketStatus() = default;
   bool isTimedoutAndReset(std::chrono::milliseconds millis) {
-    if (m_lastTimeout == ACE_Time_Value::zero) {
+    if (m_lastTimeout == m_noTimeout) {
       return false;
     } else {
-      ACE_Time_Value to(millis);
-      to += m_lastTimeout;
-      if (to > ACE_OS::gettimeofday()) {
+      auto timeout = m_lastTimeout + millis;
+      if (timeout > clock::now()) {
         return true;  // timeout as buckste not recovered yet
       } else {
         // reset to zero as we waited enough to recover bucket
-        m_lastTimeout = ACE_Time_Value::zero;
+        m_lastTimeout = m_noTimeout;
         return false;
       }
     }
   }
 
   void setTimeout() {
-    if (m_lastTimeout == ACE_Time_Value::zero) {
-      m_lastTimeout = ACE_OS::gettimeofday();  // set once only for timeout
+    if (m_lastTimeout == m_noTimeout) {
+      m_lastTimeout = clock::now();  // set once only for timeout
     }
   }
 };
@@ -81,7 +86,9 @@ class PRbuckets {
   BucketStatus* m_buckets;
 
  public:
-  PRbuckets(int32_t nBuckets) { m_buckets = new BucketStatus[nBuckets]; }
+  explicit PRbuckets(int32_t nBuckets) {
+    m_buckets = new BucketStatus[nBuckets];
+  }
   ~PRbuckets() { delete[] m_buckets; }
 
   bool isBucketTimedOut(int32_t bucketId, std::chrono::milliseconds millis) {
@@ -91,25 +98,17 @@ class PRbuckets {
   void setBucketTimeout(int32_t bucketId) { m_buckets[bucketId].setTimeout(); }
 };
 
-class ClientMetadataService : public ACE_Task_Base,
-                              private NonCopyable,
-                              private NonAssignable {
+class ClientMetadataService : private NonCopyable, private NonAssignable {
  public:
-  ~ClientMetadataService();
-  ClientMetadataService(Pool* pool);
+  ClientMetadataService() = delete;
+  explicit ClientMetadataService(ThinClientPoolDM* pool);
+  inline ~ClientMetadataService() noexcept = default;
 
-  inline void start() {
-    m_run = true;
-    this->activate();
-  }
+  void start();
 
-  inline void stop() {
-    m_run = false;
-    m_regionQueueSema.release();
-    this->wait();
-  }
+  void stop();
 
-  int svc(void);
+  void svc(void);
 
   void getClientPRMetadata(const char* regionFullPath);
 
@@ -120,13 +119,8 @@ class ClientMetadataService : public ACE_Task_Base,
       const std::shared_ptr<Serializable>& aCallbackArgument, bool isPrimary,
       std::shared_ptr<BucketServerLocation>& serverLocation, int8_t& version);
 
-  void removeBucketServerLocation(BucketServerLocation serverLocation);
-
   std::shared_ptr<ClientMetadata> getClientMetadata(
       const std::string& regionFullPath);
-
-  void populateDummyServers(const char* regionName,
-                            std::shared_ptr<ClientMetadata> clientmetadata);
 
   void enqueueForMetadataRefresh(const std::string& regionFullPath,
                                  int8_t serverGroupFlag);
@@ -163,8 +157,6 @@ class ClientMetadataService : public ACE_Task_Base,
       dereference_hash<std::shared_ptr<BucketServerLocation>>,
       dereference_equal_to<std::shared_ptr<BucketServerLocation>>>
       ServerToBucketsMap;
-  // bool AreBucketSetsEqual(const BucketSet& currentBucketSet,
-  //                        const BucketSet& bucketSet);
 
   std::shared_ptr<BucketServerLocation> findNextServer(
       const ServerToBucketsMap& serverToBucketsMap,
@@ -199,30 +191,24 @@ class ClientMetadataService : public ACE_Task_Base,
       const BucketSet& buckets);
 
  private:
-  // const std::shared_ptr<PartitionResolver>& getResolver(const
-  // std::shared_ptr<Region>& region, const std::shared_ptr<CacheableKey>& key,
-  // const std::shared_ptr<Serializable>& aCallbackArgument);
-
-  // BucketServerLocation getServerLocation(std::shared_ptr<ClientMetadata>
-  // cptr, int bucketId, bool isPrimary);
-
   std::shared_ptr<ClientMetadata> SendClientPRMetadata(
       const char* regionPath, std::shared_ptr<ClientMetadata> cptr);
 
-  std::shared_ptr<ClientMetadata> getClientMetadata(const std::shared_ptr<Region>& region);
+  std::shared_ptr<ClientMetadata> getClientMetadata(
+      const std::shared_ptr<Region>& region);
 
  private:
-  // ACE_Recursive_Thread_Mutex m_regionMetadataLock;
-  ACE_RW_Thread_Mutex m_regionMetadataLock;
-  ClientMetadataService();
-  ACE_Semaphore m_regionQueueSema;
+  std::thread m_thread;
+  boost::shared_mutex m_regionMetadataLock;
   RegionMetadataMapType m_regionMetaDataMap;
-  volatile bool m_run;
-  Pool* m_pool;
-  Queue<std::string>* m_regionQueue;
-
-  ACE_RW_Thread_Mutex m_PRbucketStatusLock;
-  std::map<std::string, PRbuckets*> m_bucketStatus;
+  std::atomic<bool> m_run;
+  ThinClientPoolDM* m_pool;
+  CacheImpl* m_cache;
+  std::deque<std::string> m_regionQueue;
+  std::mutex m_regionQueueMutex;
+  std::condition_variable m_regionQueueCondition;
+  boost::shared_mutex m_PRbucketStatusLock;
+  std::map<std::string, std::unique_ptr<PRbuckets>> m_bucketStatus;
   std::chrono::milliseconds m_bucketWaitTimeout;
   static const char* NC_CMDSvcThread;
 };

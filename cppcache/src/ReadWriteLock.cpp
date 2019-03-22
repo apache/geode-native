@@ -16,47 +16,12 @@
  */
 
 #include "ReadWriteLock.hpp"
+
 #include <ace/Guard_T.h>
 
-using namespace apache::geode::client;
-
-TimedTryWriteGuard::TimedTryWriteGuard(ACE_RW_Thread_Mutex& lock, uint32_t usec)
-    : lock_(lock), isAcquired_(false), mutex_(), cond_(mutex_) {
-  int cnt = 10;
-  uint32_t timeSlice = usec / cnt;
-  do {
-    if (lock_.tryacquire_write() != -1) {
-      isAcquired_ = true;
-      break;
-    }
-    ACE_Time_Value tv = ACE_OS::gettimeofday();
-    ACE_Time_Value offset(0, timeSlice);
-    tv += offset;
-    ACE_Time_Value stopAt(tv);
-    ACE_OS::thr_yield();
-    ACE_Guard<ACE_Recursive_Thread_Mutex> guard(cond_.mutex());
-    cond_.waitUntil(&stopAt);
-  } while (cnt-- > 0);
-}
-
-bool TimedTryWriteGuard::tryAcquireLock(uint32_t usec) {
-  int cnt = 10;
-  uint32_t timeSlice = usec / cnt;
-  do {
-    if (lock_.tryacquire_write() != -1) {
-      isAcquired_ = true;
-      break;
-    }
-    ACE_Time_Value tv = ACE_OS::gettimeofday();
-    ACE_Time_Value offset(0, timeSlice);
-    tv += offset;
-    ACE_Time_Value stopAt(tv);
-    ACE_OS::thr_yield();
-    ACE_Guard<ACE_Recursive_Thread_Mutex> guard(cond_.mutex());
-    cond_.waitUntil(&stopAt);
-  } while (cnt-- > 0);
-  return isAcquired();
-}
+namespace apache {
+namespace geode {
+namespace client {
 
 TryReadGuard::TryReadGuard(ACE_RW_Thread_Mutex& lock,
                            const volatile bool& exitCondition)
@@ -81,3 +46,7 @@ TryWriteGuard::TryWriteGuard(ACE_RW_Thread_Mutex& lock,
     ACE_OS::thr_yield();
   } while (!exitCondition);
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

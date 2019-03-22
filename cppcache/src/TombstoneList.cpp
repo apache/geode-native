@@ -14,12 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "TombstoneList.hpp"
-#include "TombstoneExpiryHandler.hpp"
-#include "MapSegment.hpp"
+
 #include <unordered_map>
 
-using namespace apache::geode::client;
+#include "MapSegment.hpp"
+#include "TombstoneExpiryHandler.hpp"
+
+namespace apache {
+namespace geode {
+namespace client {
 
 #define SIZEOF_PTR (sizeof(void*))
 #define SIZEOF_SHAREDPTR (SIZEOF_PTR + 4)
@@ -35,19 +40,19 @@ using namespace apache::geode::client;
 #define SIZEOF_TOMBSTONEOVERHEAD \
   (SIZEOF_EXPIRYHANDLER + SIZEOF_TOMBSTONELISTENTRY)
 
-long TombstoneList::getExpiryTask(TombstoneExpiryHandler** handler) {
+ExpiryTaskManager::id_type TombstoneList::getExpiryTask(
+    TombstoneExpiryHandler** handler) {
   // This function is not guarded as all functions of this class are called from
   // MapSegment
   auto duration = m_cacheImpl->getDistributedSystem()
                       .getSystemProperties()
                       .tombstoneTimeout();
-  ACE_Time_Value currTime(ACE_OS::gettimeofday());
-  auto tombstoneEntryPtr = std::make_shared<TombstoneEntry>(
-      nullptr, static_cast<int64_t>(currTime.get_msec()));
+
+  auto tombstoneEntryPtr = std::make_shared<TombstoneEntry>(nullptr);
   *handler = new TombstoneExpiryHandler(tombstoneEntryPtr, this, duration,
                                         m_cacheImpl);
   tombstoneEntryPtr->setHandler(*handler);
-  long id = m_cacheImpl->getExpiryTaskManager().scheduleExpiryTask(
+  auto id = m_cacheImpl->getExpiryTaskManager().scheduleExpiryTask(
       *handler, duration, std::chrono::seconds::zero());
   return id;
 }
@@ -56,11 +61,8 @@ void TombstoneList::add(const std::shared_ptr<MapEntryImpl>& entry,
                         TombstoneExpiryHandler* handler,
                         ExpiryTaskManager::id_type taskid) {
   // This function is not guarded as all functions of this class are called from
-  // MapSegment
-  // read TombstoneTImeout from systemProperties.
-  ACE_Time_Value currTime(ACE_OS::gettimeofday());
-  auto tombstoneEntryPtr = std::make_shared<TombstoneEntry>(
-      entry, static_cast<int64_t>(currTime.get_msec()));
+  // MapSegment read TombstoneTImeout from systemProperties.
+  auto tombstoneEntryPtr = std::make_shared<TombstoneEntry>(entry);
   handler->setTombstoneEntry(tombstoneEntryPtr);
   tombstoneEntryPtr->setHandler(handler);
   std::shared_ptr<CacheableKey> key;
@@ -139,7 +141,7 @@ void TombstoneList::eraseEntryFromTombstoneList(
   if (exists(key)) {
     if (cancelTask) {
       m_cacheImpl->getExpiryTaskManager().cancelTask(
-          static_cast<long>(m_tombstoneMap[key]->getExpiryTaskId()));
+          m_tombstoneMap[key]->getExpiryTaskId());
       delete m_tombstoneMap[key]->getHandler();
     }
 
@@ -150,14 +152,15 @@ void TombstoneList::eraseEntryFromTombstoneList(
   }
 }
 
-long TombstoneList::eraseEntryFromTombstoneListWithoutCancelTask(
+ExpiryTaskManager::id_type
+TombstoneList::eraseEntryFromTombstoneListWithoutCancelTask(
     const std::shared_ptr<CacheableKey>& key,
     TombstoneExpiryHandler*& handler) {
   // This function is not guarded as all functions of this class are called from
   // MapSegment
-  long taskid = -1;
+  ExpiryTaskManager::id_type taskid = -1;
   if (exists(key)) {
-    taskid = static_cast<long>(m_tombstoneMap[key]->getExpiryTaskId());
+    taskid = m_tombstoneMap[key]->getExpiryTaskId();
     handler = m_tombstoneMap[key]->getHandler();
     m_cacheImpl->getCachePerfStats().decTombstoneCount();
     auto tombstonesize = key->objectSize() + SIZEOF_TOMBSTONEOVERHEAD;
@@ -176,3 +179,7 @@ void TombstoneList::cleanUp() {
     delete queIter.second->getHandler();
   }
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

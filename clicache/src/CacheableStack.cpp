@@ -68,7 +68,7 @@ namespace Apache
 
       int8_t CacheableStack::DsCode::get()
       {
-        return static_cast<int8_t>(native::DSCode::CacheableStack);
+        return static_cast<int8_t>(native::internal::DSCode::CacheableStack);
       }
 
       System::UInt64 CacheableStack::ObjectSize::get()

@@ -14,13 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "CqEventImpl.hpp"
-#include <geode/CacheableString.hpp>
-#include "ThinClientPoolHADM.hpp"
-#include "ThinClientCacheDistributionManager.hpp"
-#include "TcrMessage.hpp"
 
-using namespace apache::geode::client;
+#include "CqEventImpl.hpp"
+
+#include <geode/CacheableString.hpp>
+
+#include "TcrConnectionManager.hpp"
+#include "TcrMessage.hpp"
+#include "ThinClientCacheDistributionManager.hpp"
+#include "ThinClientPoolHADM.hpp"
+
+namespace apache {
+namespace geode {
+namespace client {
 CqEventImpl::CqEventImpl(std::shared_ptr<CqQuery>& cQuery, CqOperation baseOp,
                          CqOperation cqOp, std::shared_ptr<CacheableKey>& key,
                          std::shared_ptr<Cacheable>& value,
@@ -52,9 +58,7 @@ CqOperation CqEventImpl::getQueryOperation() const { return m_queryOp; }
  * Get the key relating to the event.
  * @return Object key.
  */
-std::shared_ptr<CacheableKey> CqEventImpl::getKey() const {
-  return m_key;
-}
+std::shared_ptr<CacheableKey> CqEventImpl::getKey() const { return m_key; }
 /**
  * Get the new value of the modification.
  *  If there is no new value because this is a delete, then
@@ -66,9 +70,8 @@ std::shared_ptr<Cacheable> CqEventImpl::getNewValue() const {
   } else {
     // Get full object for delta
     TcrMessageRequestEventValue fullObjectMsg(
-        new DataOutput(m_tcrdm->getConnectionManager()
-                           .getCacheImpl()
-                           ->createDataOutput()),
+        new DataOutput(
+            m_tcrdm->getConnectionManager().getCacheImpl()->createDataOutput()),
         m_eventId);
     TcrMessageReply reply(true, nullptr);
     ThinClientPoolHADM* poolHADM = dynamic_cast<ThinClientPoolHADM*>(m_tcrdm);
@@ -91,7 +94,7 @@ bool CqEventImpl::getError() { return m_error; }
 
 std::string CqEventImpl::toString() {
   char buffer[1024];
-  ACE_OS::snprintf(
+  std::snprintf(
       buffer, 1024,
       "CqEvent CqName=%s; base operation=%d; cq operation= %d;key=%s;value=%s",
       m_cQuery->getName().c_str(), static_cast<int>(m_baseOp),
@@ -102,3 +105,7 @@ std::string CqEventImpl::toString() {
 std::shared_ptr<CacheableBytes> CqEventImpl::getDeltaValue() const {
   return m_deltaValue;
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

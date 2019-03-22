@@ -17,26 +17,21 @@
 
 #include <vector>
 
-#include <ace/TSS_T.h>
-#include <ace/Recursive_Thread_Mutex.h>
-
 #include <geode/DataOutput.hpp>
 #include <geode/SystemProperties.hpp>
 
-#include "SerializationRegistry.hpp"
 #include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
+#include "SerializationRegistry.hpp"
+#include "util/JavaModifiedUtf8.hpp"
 #include "util/Log.hpp"
 #include "util/string.hpp"
-#include "util/JavaModifiedUtf8.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
-using namespace internal;
-
-ACE_Recursive_Thread_Mutex g_bigBufferLock;
+std::recursive_mutex globalBigBufferMutex;
 size_t DataOutput::m_highWaterMark = 50 * 1024 * 1024;
 size_t DataOutput::m_lowWaterMark = 8192;
 
@@ -82,7 +77,7 @@ class TSSDataOutput {
     } else {
       uint8_t* buf;
       *size = 8192;
-      buf = (uint8_t*)std::malloc(8192 * sizeof(uint8_t));
+      buf = static_cast<uint8_t*>(std::malloc(8192 * sizeof(uint8_t)));
       if (buf == nullptr) {
         throw OutOfMemoryException("Out of Memory while resizing buffer");
       }
@@ -95,7 +90,7 @@ class TSSDataOutput {
     m_buffers.push_back(desc);
   }
 
-  static ACE_TSS<TSSDataOutput> s_tssDataOutput;
+  static thread_local TSSDataOutput threadLocalBufferPool;
 };
 
 TSSDataOutput::TSSDataOutput() : m_buffers() {
@@ -111,7 +106,7 @@ TSSDataOutput::~TSSDataOutput() {
   }
 }
 
-ACE_TSS<TSSDataOutput> TSSDataOutput::s_tssDataOutput;
+thread_local TSSDataOutput TSSDataOutput::threadLocalBufferPool;
 
 DataOutput::DataOutput(const CacheImpl* cache, Pool* pool)
     : m_size(0), m_haveBigBuffer(false), m_cache(cache), m_pool(pool) {
@@ -120,24 +115,21 @@ DataOutput::DataOutput(const CacheImpl* cache, Pool* pool)
 }
 
 uint8_t* DataOutput::checkoutBuffer(size_t* size) {
-  return TSSDataOutput::s_tssDataOutput->getBuffer(size);
+  return TSSDataOutput::threadLocalBufferPool.getBuffer(size);
 }
 
 void DataOutput::checkinBuffer(uint8_t* buffer, size_t size) {
-  TSSDataOutput::s_tssDataOutput->poolBuffer(buffer, size);
+  TSSDataOutput::threadLocalBufferPool.poolBuffer(buffer, size);
 }
 
-void DataOutput::writeObjectInternal(const Serializable* ptr, bool isDelta) {
+void DataOutput::writeObjectInternal(const std::shared_ptr<Serializable>& ptr,
+                                     bool isDelta) {
   getSerializationRegistry().serialize(ptr, *this, isDelta);
 }
 
-void DataOutput::writeObjectInternal(const std::shared_ptr<Serializable>& ptr, bool isDelta) {
-  getSerializationRegistry().serialize(ptr, *this, isDelta);
-}
+void DataOutput::acquireLock() { globalBigBufferMutex.lock(); }
 
-void DataOutput::acquireLock() { g_bigBufferLock.acquire(); }
-
-void DataOutput::releaseLock() { g_bigBufferLock.release(); }
+void DataOutput::releaseLock() { globalBigBufferMutex.unlock(); }
 
 const SerializationRegistry& DataOutput::getSerializationRegistry() const {
   return *m_cache->getSerializationRegistry();
@@ -188,7 +180,7 @@ void DataOutput::writeJavaModifiedUtf8(const char32_t* data, size_t len) {
 
 size_t DataOutput::getJavaModifiedUtf8EncodedLength(const char16_t* data,
                                                     size_t length) {
-  return JavaModifiedUtf8::encodedLength(data, length);
+  return internal::JavaModifiedUtf8::encodedLength(data, length);
 }
 
 template <class _Traits, class _Allocator>

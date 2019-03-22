@@ -32,22 +32,27 @@
 
 #include "SerializationRegistry.hpp"
 #include "CacheRegionHelper.hpp"
-using namespace apache::geode::client;
-using namespace test;
-using namespace testData;
 
 #define CLIENT1 s1p1
 #define LOCATOR s1p2
 #define SERVER1 s2p1
 
+using testData::QueryStrings;
+using testData::regionQueries;
+using testData::regionQueryRowCounts;
+using testData::unsupported;
+
+using apache::geode::client::IllegalStateException;
+using apache::geode::client::QueryException;
+
 bool isLocalServer = false;
 bool isLocator = false;
 
-const char* poolNames[] = {"Pool1", "Pool2", "Pool3"};
-const char* locHostPort =
+const char *poolNames[] = {"Pool1", "Pool2", "Pool3"};
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 static bool m_isPdx = false;
-const char* qRegionNames[] = {"Portfolios", "Positions", "Portfolios2",
+const char *qRegionNames[] = {"Portfolios", "Positions", "Portfolios2",
                               "Portfolios3"};
 
 DUNIT_TASK_DEFINITION(LOCATOR, StartLocator)
@@ -89,12 +94,16 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOnePoolLocator)
       auto serializationRegistry =
           CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
               ->getSerializationRegistry();
-      serializationRegistry->addType(Position::createDeserializable);
-      serializationRegistry->addType(Portfolio::createDeserializable);
+      serializationRegistry->addDataSerializableType(
+          Position::createDeserializable, 2);
+      serializationRegistry->addDataSerializableType(
+          Portfolio::createDeserializable, 3);
 
-      serializationRegistry->addPdxType(PositionPdx::createDeserializable);
-      serializationRegistry->addPdxType(PortfolioPdx::createDeserializable);
-    } catch (const IllegalStateException&) {
+      serializationRegistry->addPdxSerializableType(
+          PositionPdx::createDeserializable);
+      serializationRegistry->addPdxSerializableType(
+          PortfolioPdx::createDeserializable);
+    } catch (const IllegalStateException &) {
       // ignore exception
     }
     createPool(poolNames[0], locHostPort, nullptr, 0, true);
@@ -107,7 +116,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOnePoolLocator)
     createRegionAndAttachPool(qRegionNames[3], USE_ACK, poolNames[1]);
 
     auto regptr = getHelper()->getRegion(qRegionNames[0]);
-    auto subregPtr = regptr->createSubregion(qRegionNames[1], regptr->getAttributes());
+    auto subregPtr =
+        regptr->createSubregion(qRegionNames[1], regptr->getAttributes());
 
     LOG("StepOne complete.");
   }
@@ -122,7 +132,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepTwo)
     auto regPtr2 = getHelper()->getRegion(qRegionNames[2]);
     auto regPtr3 = getHelper()->getRegion(qRegionNames[3]);
 
-    QueryHelper* qh = &QueryHelper::getHelper();
+    QueryHelper *qh = &QueryHelper::getHelper();
 
     char buf[100];
     sprintf(buf, "SetSize %zd, NumSets %zd", qh->getPortfolioSetSize(),
@@ -241,8 +251,6 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
   {
-    bool doAnyErrorOccured = false;
-
     auto region = getHelper()->getRegion(qRegionNames[0]);
 
     for (int i = 0; i < QueryStrings::RQsize(); i++) {
@@ -260,7 +268,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
             failmsg,
             "FAIL: Query # %d existsValue expected is %s, actual is %s", i,
             expectedResult ? "true" : "false", existsValue ? "true" : "false");
-        doAnyErrorOccured = true;
         ASSERT(false, failmsg);
       }
     }
@@ -298,13 +305,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
     } catch (QueryException ex) {
       LOG("got expected QueryException exception for wrong predicate:");
       LOG(ex.what());
-    }
-
-    if (!doAnyErrorOccured) {
-      LOG("ALL QUERIES PASSED");
-    } else {
-      LOG("QUERY ERROR(S) OCCURED");
-      FAIL("QUERY ERROR(S) OCCURED");
     }
 
     LOG("StepFour complete.");
@@ -350,7 +350,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
           LOG(logmsg);
           doAnyErrorOccured = true;
         }
-      } catch (const QueryException&) {
+      } catch (const QueryException &) {
         if (regionQueryRowCounts[i] == 0 || regionQueryRowCounts[i] == 1) {
           char logmsg[100] = {0};
           ACE_OS::sprintf(

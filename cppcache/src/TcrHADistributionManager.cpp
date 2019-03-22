@@ -14,17 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <geode/internal/geode_globals.hpp>
+
 #include "TcrHADistributionManager.hpp"
+
 #include <geode/ExceptionTypes.hpp>
-#include "TcrMessage.hpp"
-#include "Utils.hpp"
-#include "ThinClientRegion.hpp"
-#include "ThinClientHARegion.hpp"
+#include <geode/internal/geode_globals.hpp>
+
 #include "CacheImpl.hpp"
 #include "RemoteQueryService.hpp"
+#include "TcrEndpoint.hpp"
+#include "TcrMessage.hpp"
+#include "ThinClientHARegion.hpp"
+#include "ThinClientRegion.hpp"
+#include "Utils.hpp"
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 TcrHADistributionManager::TcrHADistributionManager(
     ThinClientRegion* theRegion, TcrConnectionManager& connManager,
@@ -95,3 +101,7 @@ GfErrType TcrHADistributionManager::sendSyncRequestRegisterInterest(
   return m_connManager.sendSyncRequestRegisterInterest(
       request, reply, attemptFailover, endpoint, this, m_region);
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

@@ -15,17 +15,22 @@
  * limitations under the License.
  */
 
+#include "ThinClientDistributionManager.hpp"
+
 #include <algorithm>
 
-#include <geode/SystemProperties.hpp>
 #include <geode/AuthInitialize.hpp>
+#include <geode/SystemProperties.hpp>
 
-#include "ThinClientDistributionManager.hpp"
-#include "ThinClientRegion.hpp"
 #include "DistributedSystemImpl.hpp"
+#include "TcrConnectionManager.hpp"
+#include "TcrEndpoint.hpp"
+#include "ThinClientRegion.hpp"
 #include "util/exception.hpp"
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 ThinClientDistributionManager::ThinClientDistributionManager(
     TcrConnectionManager& connManager, ThinClientRegion* region)
     : ThinClientBaseDM(connManager, region), m_activeEndpoint(-1) {}
@@ -65,7 +70,7 @@ void ThinClientDistributionManager::destroy(bool keepAlive) {
     return;
   }
   DistManagersLockGuard _guard(m_connManager);
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_endpointsLock);
+  std::lock_guard<decltype(m_endpointsLock)> guard(m_endpointsLock);
   if (m_activeEndpoint >= 0) {
     m_endpoints[m_activeEndpoint]->unregisterDM(m_clientNotification, this);
   }
@@ -157,7 +162,7 @@ GfErrType ThinClientDistributionManager::sendSyncRequest(TcrMessage& request,
   }
 
   if (!isFatalError(error)) {
-    ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_endpointsLock);
+    std::lock_guard<decltype(m_endpointsLock)> guard(m_endpointsLock);
     GfErrType connErr = GF_NOERR;
     while (error != GF_NOERR && !isFatalError(error) &&
            (connErr = selectEndpoint(randIndex, doRand, useActiveEndpoint,
@@ -246,7 +251,7 @@ GfErrType ThinClientDistributionManager::selectEndpoint(
 
   if (currentEndpoint < 0 || !m_endpoints[currentEndpoint]->connected() ||
       forceSelect) {
-    ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_endpointsLock);
+    std::lock_guard<decltype(m_endpointsLock)> guard(m_endpointsLock);
     if (m_activeEndpoint < 0 || !m_endpoints[m_activeEndpoint]->connected() ||
         forceSelect) {  // double check
       currentEndpoint = m_activeEndpoint;
@@ -430,3 +435,7 @@ GfErrType ThinClientDistributionManager::sendRequestToEP(
   }
   return error;
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

@@ -24,14 +24,18 @@
  * @brief User class for testing the put functionality for object.
  */
 
-#include <geode/CacheableBuiltins.hpp>
-#include <geode/CacheableDate.hpp>
-#include "Position.hpp"
 #include <util/Log.hpp>
 
-using namespace apache::geode::client;
+#include <geode/CacheableBuiltins.hpp>
+#include <geode/CacheableDate.hpp>
+
+#include "Position.hpp"
 
 namespace testobject {
+
+using apache::geode::client::CacheableDate;
+using apache::geode::client::CacheableHashMap;
+using apache::geode::client::CacheableStringArray;
 
 class TESTOBJECT_EXPORT Portfolio : public DataSerializable {
  private:
@@ -64,8 +68,8 @@ class TESTOBJECT_EXPORT Portfolio : public DataSerializable {
         creationDate(nullptr),
         arrayNull(nullptr),
         arrayZeroSize(nullptr) {}
-  Portfolio(int32_t id, uint32_t size = 0,
-            std::shared_ptr<CacheableStringArray> nm = nullptr);
+  explicit Portfolio(int32_t id, uint32_t size = 0,
+                     std::shared_ptr<CacheableStringArray> nm = nullptr);
   ~Portfolio() noexcept override;
 
   size_t objectSize() const override {
@@ -112,8 +116,6 @@ class TESTOBJECT_EXPORT Portfolio : public DataSerializable {
 
   int32_t getNewValSize() const { return newValSize; }
 
-  std::shared_ptr<CacheableString> getType() const { return this->type; }
-
   std::shared_ptr<CacheableDate> getCreationDate() const {
     return creationDate;
   }
@@ -128,7 +130,6 @@ class TESTOBJECT_EXPORT Portfolio : public DataSerializable {
 
   void toData(DataOutput& output) const override;
   void fromData(DataInput& input) override;
-  int32_t getClassId() const override { return 0x03; }
   std::string toString() const override;
 };
 

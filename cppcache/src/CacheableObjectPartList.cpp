@@ -15,10 +15,12 @@
  * limitations under the License.
  */
 #include "CacheableObjectPartList.hpp"
-#include <geode/ExceptionTypes.hpp>
+
 #include <geode/CacheableString.hpp>
-#include "ThinClientRegion.hpp"
+#include <geode/ExceptionTypes.hpp>
+
 #include "CacheableToken.hpp"
+#include "ThinClientRegion.hpp"
 
 namespace apache {
 namespace geode {
@@ -112,7 +114,6 @@ void CacheableObjectPartList::fromData(DataInput& input) {
     }
   }
 }
-
 
 size_t CacheableObjectPartList::objectSize() const { return 0; }
 }  // namespace client

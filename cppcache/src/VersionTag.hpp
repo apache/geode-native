@@ -21,11 +21,14 @@
 #define GEODE_VERSIONTAG_H_
 
 #include <geode/Serializable.hpp>
+
 #include "MemberListForVersionStamp.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
+
+using internal::DSFid;
 
 class RegionInternal;
 class CacheImpl;
@@ -53,7 +56,7 @@ class VersionTag : public DataSerializableFixedId {
   virtual void readMembers(uint16_t flags, DataInput& input);
 
  public:
-  VersionTag(MemberListForVersionStamp& memberListForVersionStamp);
+  explicit VersionTag(MemberListForVersionStamp& memberListForVersionStamp);
 
   ~VersionTag() override = default;
 
@@ -61,9 +64,7 @@ class VersionTag : public DataSerializableFixedId {
 
   void fromData(DataInput& input) override;
 
-  DSFid getDSFID() const override {
-    return DSFid::VersionTag;
-  }
+  DSFid getDSFID() const override { return DSFid::VersionTag; }
 
   static std::shared_ptr<Serializable> createDeserializable(
       MemberListForVersionStamp& memberListForVersionStamp);

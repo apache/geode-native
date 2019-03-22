@@ -17,23 +17,10 @@
 
 #include "ByteArray.hpp"
 
-#include "config.h"
-
 #include <cstdlib>  // For wcstombs()
 #include <cstring>
 
-namespace {
-std::string convertWstringToString(const wchar_t* wstr) {
-  if (wstr) {
-    const std::size_t len = ::wcslen(wstr);
-    char* dst = new char[len + 1];
-    ::wcstombs(dst, wstr, len);
-    delete[] dst;
-    return dst;
-  }
-  return std::string();
-}
-}  // namespace
+#include "config.h"
 
 namespace apache {
 namespace geode {
@@ -68,10 +55,6 @@ ByteArray ByteArray::fromString(const std::string& str) {
     }
   }
   return ba;
-}
-
-ByteArray ByteArray::fromString(const wchar_t* wstr) {
-  return fromString(convertWstringToString(wstr));
 }
 
 std::string ByteArray::toString(const ByteArray& ba) {

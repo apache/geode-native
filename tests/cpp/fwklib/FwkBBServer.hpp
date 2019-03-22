@@ -21,19 +21,19 @@
  */
 
 /**
-  * @file    FwkBBServer.hpp
-  * @since   1.0
-  * @version 1.0
-  * @see
-  */
+ * @file    FwkBBServer.hpp
+ * @since   1.0
+ * @version 1.0
+ * @see
+ */
+
+#include <map>
+#include <string>
+
+#include <ace/OS.h>
 
 #include "FwkBB.hpp"
 #include "UDPIpc.hpp"
-
-#include <string>
-#include <map>
-
-#include <ace/OS.h>
 
 // ----------------------------------------------------------------------------
 
@@ -45,8 +45,8 @@ namespace testframework {
 // ----------------------------------------------------------------------------
 
 /** @class NameKeyPair
-  * @brief basic name/key pair
-  */
+ * @brief basic name/key pair
+ */
 class NameKeyPair {
  public:
   NameKeyPair(std::string sName, std::string sKey)
@@ -66,8 +66,8 @@ class NameKeyPair {
 // ----------------------------------------------------------------------------
 
 /** @class NameKeyCmp
-  * @brief name/key compare
-  */
+ * @brief name/key compare
+ */
 class NameKeyCmp {
  public:
   /** @brief Compares two NameKeyPair objects */
@@ -85,8 +85,8 @@ typedef std::map<NameKeyPair, int64_t, NameKeyCmp> NameCounterMap;
 // ----------------------------------------------------------------------------
 
 /** @class FwkBBServer
-  * @brief Framework BB server
-  */
+ * @brief Framework BB server
+ */
 class FwkBBServer {
  public:
   FwkBBServer() {}
@@ -207,8 +207,7 @@ class BBProcessor : public ServiceTask {
           m_queues->putOutbound(msg);
         }
       } catch (FwkException& ex) {
-        FWKSEVERE(
-            "BBProcessor::doTask() caught exception: " << ex.what());
+        FWKSEVERE("BBProcessor::doTask() caught exception: " << ex.what());
       } catch (...) {
         FWKSEVERE("BBProcessor::doTask() caught unknown exception");
       }

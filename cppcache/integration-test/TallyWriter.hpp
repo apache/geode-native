@@ -20,10 +20,20 @@
 #ifndef GEODE_INTEGRATION_TEST_TALLYWRITER_H_
 #define GEODE_INTEGRATION_TEST_TALLYWRITER_H_
 
+#include <geode/CacheableKey.hpp>
 #include <geode/CacheWriter.hpp>
 
-using namespace apache::geode::client;
-using namespace test;
+namespace apache {
+namespace geode {
+namespace client {
+namespace testing {
+
+using apache::geode::client::Cacheable;
+using apache::geode::client::CacheableKey;
+using apache::geode::client::CacheWriter;
+using apache::geode::client::EntryEvent;
+using apache::geode::client::Region;
+using apache::geode::client::RegionEvent;
 
 class TallyWriter : virtual public CacheWriter {
  private:
@@ -148,5 +158,10 @@ class TallyWriter : virtual public CacheWriter {
     }
   }
 };
+
+}  // namespace testing
+}  // namespace client
+}  // namespace geode
+}  // namespace apache
 
 #endif  // GEODE_INTEGRATION_TEST_TALLYWRITER_H_

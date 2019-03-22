@@ -21,12 +21,12 @@
  */
 
 /**
-  * @file    FwkException.hpp
-  * @since   1.0
-  * @version 1.0
-  * @see
-  *
-  */
+ * @file    FwkException.hpp
+ * @since   1.0
+ * @version 1.0
+ * @see
+ *
+ */
 
 // ----------------------------------------------------------------------------
 
@@ -41,15 +41,17 @@ namespace testframework {
 // ----------------------------------------------------------------------------
 
 /** @class FwkException
-  * @brief Framework exception handler
-  */
+ * @brief Framework exception handler
+ */
 class FwkException {
  public:
   /** @brief exception message to handle */
-  inline FwkException(const std::string& sMessage) : m_sMessage(sMessage) {}
+  inline explicit FwkException(const std::string& sMessage)
+      : m_sMessage(sMessage) {}
 
   /** @brief exception message to handle */
-  inline FwkException(const char* pszMessage) : m_sMessage(pszMessage) {}
+  inline explicit FwkException(const char* pszMessage)
+      : m_sMessage(pszMessage) {}
 
   /** @brief get message */
   inline const char* getMessage() const { return m_sMessage.c_str(); }

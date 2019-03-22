@@ -23,17 +23,17 @@
 #include <chrono>
 #include <string>
 
-#include "internal/geode_globals.hpp"
-#include "ExceptionTypes.hpp"
-#include "ExpirationAction.hpp"
+#include "CacheListener.hpp"
 #include "CacheLoader.hpp"
 #include "CacheWriter.hpp"
-#include "CacheListener.hpp"
-#include "PartitionResolver.hpp"
-#include "RegionAttributes.hpp"
 #include "DiskPolicyType.hpp"
+#include "ExceptionTypes.hpp"
+#include "ExpirationAction.hpp"
+#include "PartitionResolver.hpp"
 #include "Pool.hpp"
+#include "RegionAttributes.hpp"
 #include "internal/chrono/duration.hpp"
+#include "internal/geode_globals.hpp"
 
 /**
  * @file
@@ -175,7 +175,7 @@ class APACHE_GEODE_EXPORT RegionAttributesFactory {
    * @param regionAttributes the <code>RegionAttributes</code> used to
    * initialize this RegionAttributesFactory
    */
-  RegionAttributesFactory(const RegionAttributes regionAttributes);
+  explicit RegionAttributesFactory(const RegionAttributes regionAttributes);
 
   RegionAttributesFactory(const RegionAttributesFactory&) = default;
 
@@ -225,7 +225,7 @@ class APACHE_GEODE_EXPORT RegionAttributesFactory {
    * @return a reference to <code>this</code>
    */
   RegionAttributesFactory& setCacheLoader(const std::string& libpath,
-                                    const std::string& factoryFuncName);
+                                          const std::string& factoryFuncName);
 
   /**
    * Sets the library path for the library that will be invoked for the writer
@@ -234,7 +234,7 @@ class APACHE_GEODE_EXPORT RegionAttributesFactory {
    */
 
   RegionAttributesFactory& setCacheWriter(const std::string& libpath,
-                                    const std::string& factoryFuncName);
+                                          const std::string& factoryFuncName);
 
   /**
    * Sets the library path for the library that will be invoked for the listener
@@ -242,15 +242,15 @@ class APACHE_GEODE_EXPORT RegionAttributesFactory {
    * @return a reference to <code>this</code>
    */
   RegionAttributesFactory& setCacheListener(const std::string& libpath,
-                                      const std::string& factoryFuncName);
+                                            const std::string& factoryFuncName);
 
   /**
    * Sets the library path for the library that will be invoked for the
    * partition resolver of the region.
    * @return a reference to <code>this</code>
    */
-  RegionAttributesFactory& setPartitionResolver(const std::string& libpath,
-                                          const std::string& factoryFuncName);
+  RegionAttributesFactory& setPartitionResolver(
+      const std::string& libpath, const std::string& factoryFuncName);
 
   // EXPIRATION ATTRIBUTES
 
@@ -264,8 +264,8 @@ class APACHE_GEODE_EXPORT RegionAttributesFactory {
    * @param idleTimeout the idleTimeout for entries in this region.
    * @return a reference to <code>this</code>
    */
-  RegionAttributesFactory& setEntryIdleTimeout(ExpirationAction action,
-                                         std::chrono::seconds idleTimeout);
+  RegionAttributesFactory& setEntryIdleTimeout(
+      ExpirationAction action, std::chrono::seconds idleTimeout);
 
   /**
    * Sets the timeToLive expiration attributes for region entries for the next
@@ -278,7 +278,7 @@ class APACHE_GEODE_EXPORT RegionAttributesFactory {
    * @return a reference to <code>this</code>
    */
   RegionAttributesFactory& setEntryTimeToLive(ExpirationAction action,
-                                        std::chrono::seconds timeToLive);
+                                              std::chrono::seconds timeToLive);
 
   /**
    * Sets the idleTimeout expiration attributes for the region itself for the
@@ -290,8 +290,8 @@ class APACHE_GEODE_EXPORT RegionAttributesFactory {
    * @param idleTimeout the idleTimeout for the region as a whole.
    * @return a reference to <code>this</code>
    */
-  RegionAttributesFactory& setRegionIdleTimeout(ExpirationAction action,
-                                          std::chrono::seconds idleTimeout);
+  RegionAttributesFactory& setRegionIdleTimeout(
+      ExpirationAction action, std::chrono::seconds idleTimeout);
 
   /**
    * Sets the timeToLive expiration attributes for the region itself for the
@@ -304,7 +304,7 @@ class APACHE_GEODE_EXPORT RegionAttributesFactory {
    * @return a reference to <code>this</code>
    */
   RegionAttributesFactory& setRegionTimeToLive(ExpirationAction action,
-                                         std::chrono::seconds timeToLive);
+                                               std::chrono::seconds timeToLive);
 
   // PERSISTENCE
   /**
@@ -338,7 +338,7 @@ class APACHE_GEODE_EXPORT RegionAttributesFactory {
    * @return a reference to <code>this</code>
    * @throws IllegalArgumentException if initialCapacity is negative.
    */
-  RegionAttributesFactory& setInitialCapacity(int initialCapacity);
+  RegionAttributesFactory& setInitialCapacity(int32_t initialCapacity);
 
   /**
    * Sets the entry load factor for the next <code>RegionAttributes</code>
@@ -424,7 +424,8 @@ class APACHE_GEODE_EXPORT RegionAttributesFactory {
    * operations
    * @return a reference to <code>this</code>
    */
-  RegionAttributesFactory& setConcurrencyChecksEnabled(bool concurrencyChecksEnabled);
+  RegionAttributesFactory& setConcurrencyChecksEnabled(
+      bool concurrencyChecksEnabled);
 
   // FACTORY METHOD
 

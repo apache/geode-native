@@ -15,11 +15,16 @@
  * limitations under the License.
  */
 #include "LocatorListRequest.hpp"
+
+#include <geode/CacheableString.hpp>
 #include <geode/DataInput.hpp>
 #include <geode/DataOutput.hpp>
-#include <geode/CacheableString.hpp>
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
+
+using internal::DSFid;
 
 LocatorListRequest::LocatorListRequest(const std::string& servergroup)
     : m_servergroup(servergroup) {}
@@ -28,6 +33,8 @@ void LocatorListRequest::toData(DataOutput& output) const {
   output.writeString(m_servergroup);
 }
 
-DSFid LocatorListRequest::getDSFID() const {
-  return DSFid::LocatorListRequest;
-}
+DSFid LocatorListRequest::getDSFID() const { return DSFid::LocatorListRequest; }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

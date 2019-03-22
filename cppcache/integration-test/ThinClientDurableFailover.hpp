@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_INTEGRATION_TEST_THINCLIENTDURABLEFAILOVER_H_
-#define GEODE_INTEGRATION_TEST_THINCLIENTDURABLEFAILOVER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,12 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * ThinClientDurableFailover.hpp
- *
- *  Created on: Nov 4, 2008
- *      Author: abhaware
- */
+
+#pragma once
+
+#ifndef GEODE_INTEGRATION_TEST_THINCLIENTDURABLEFAILOVER_H_
+#define GEODE_INTEGRATION_TEST_THINCLIENTDURABLEFAILOVER_H_
 
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
@@ -50,6 +44,13 @@ Shutdown
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
 #define FEEDER s2p2
+
+namespace { // NOLINT(google-build-namespaces)
+
+using apache::geode::client::EntryEvent;
+using apache::geode::client::Exception;
+using apache::geode::client::HashMapOfCacheable;
+using apache::geode::client::RegionEvent;
 
 class OperMonitor : public CacheListener {
   int m_ops;
@@ -411,5 +412,7 @@ void doThinClientDurableFailoverClientClosedRedundancy() {
 
   CALL_TASK(CloseLocator);
 }
+
+}  // namespace
 
 #endif  // GEODE_INTEGRATION_TEST_THINCLIENTDURABLEFAILOVER_H_

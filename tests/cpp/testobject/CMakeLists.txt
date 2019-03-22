@@ -73,11 +73,13 @@ generate_export_header(testobject)
 
 target_include_directories(testobject
   PUBLIC
-	$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+)
 
 target_compile_definitions(testobject
   PRIVATE
-    -DBUILD_TESTOBJECT
+    BUILD_TESTOBJECT
+    __STDC_FORMAT_MACROS
 )
 
 target_include_directories(testobject
@@ -88,13 +90,15 @@ target_include_directories(testobject
 )
 
 target_link_libraries(testobject
-  PUBLIC 
+  PUBLIC
     apache-geode
-    fwk
+    framework
   PRIVATE
-    ACE
-	  _WarningsAsError
+    ACE::ACE
+    _WarningsAsError
 )
 
+add_clangformat(testobject)
+
 # For Visual Studio organization
-set_target_properties(testobject PROPERTIES FOLDER test)
+set_target_properties(testobject PROPERTIES FOLDER test-common)

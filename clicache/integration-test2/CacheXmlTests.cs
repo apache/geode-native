@@ -18,37 +18,46 @@
 using System.IO;
 using System.Threading;
 using Xunit;
+using Xunit.Abstractions;
 
-[Trait("Category", "Integration")]
-public class CacheXmlTests
+namespace Apache.Geode.Client.IntegrationTests
 {
-    [Fact]
-    public void ConstructAndGenerate()
+
+    [Trait("Category", "Integration")]
+    public class CacheXmlTests : TestBase
     {
-        using (var gfs = new GeodeServer())
+        public CacheXmlTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
+        }
+
+        [Fact]
+        public void ConstructAndGenerate()
+        {
+            string testDir = CreateTestCaseDirectoryName();
+            CleanTestCaseDirectory(testDir);
+
             var template = new FileInfo("cache.xml");
-            var cacheXml = new CacheXml(template, gfs);
+            var cacheXml = new CacheXml(template, 1234);
             Assert.NotNull(cacheXml.File);
             Assert.True(cacheXml.File.Exists);
 
             using (var input = cacheXml.File.OpenText())
             {
                 var content = input.ReadToEnd();
-                Assert.True(content.Contains(gfs.LocatorPort.ToString()));
+                Assert.True(content.Contains(1234.ToString()));
             }
         }
-    }
 
-    [Fact]
-    public void DisposeAndCleanup()
-    {
-        using (var gfs = new GeodeServer())
+        [Fact]
+        public void DisposeAndCleanup()
         {
+            var testDir = CreateTestCaseDirectoryName();
+            CleanTestCaseDirectory(testDir);
+
             FileInfo file;
 
             var template = new FileInfo("cache.xml");
-            using (var cacheXml = new CacheXml(template, gfs))
+            using (var cacheXml = new CacheXml(template, 1234))
             {
                 Assert.NotNull(cacheXml.File);
                 file = cacheXml.File;

@@ -21,6 +21,7 @@
 #define GEODE_MAPENTRYT_H_
 
 #include <geode/internal/geode_globals.hpp>
+
 #include "MapEntry.hpp"
 #include "TrackedMapEntry.hpp"
 
@@ -126,7 +127,8 @@ class MapEntryT final : public TBase {
     return std::make_shared<MapEntryT>(expiryTaskManager, key);
   }
 
-  inline MapEntryT(const std::shared_ptr<CacheableKey>& key) : TBase(key) {}
+  inline explicit MapEntryT(const std::shared_ptr<CacheableKey>& key)
+      : TBase(key) {}
   inline MapEntryT(ExpiryTaskManager* expiryTaskManager,
                    const std::shared_ptr<CacheableKey>& key)
       : TBase(expiryTaskManager, key) {}

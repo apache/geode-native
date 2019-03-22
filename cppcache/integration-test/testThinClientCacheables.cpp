@@ -29,14 +29,23 @@
 
 #include "CacheHelper.hpp"
 
-using namespace apache::geode::client;
-using namespace test;
-
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
 
-CacheHelper* cacheHelper = nullptr;
+using apache::geode::client::Cacheable;
+using apache::geode::client::CacheableInt32;
+using apache::geode::client::CacheableKey;
+using apache::geode::client::CacheHelper;
+using apache::geode::client::EntryNotFoundException;
+using apache::geode::client::Region;
+using apache::geode::client::Utils;
+using apache::geode::client::internal::DSCode;
+
+using apache::geode::client::testing::CacheableWrapper;
+using apache::geode::client::testing::CacheableWrapperFactory;
+
+CacheHelper *cacheHelper = nullptr;
 bool isLocalServer = false;
 
 #if defined(WIN32)
@@ -61,12 +70,12 @@ void cleanProc() {
   }
 }
 
-CacheHelper* getHelper() {
+CacheHelper *getHelper() {
   ASSERT(cacheHelper != nullptr, "No cacheHelper initialized.");
   return cacheHelper;
 }
 
-void createRegion(const char* name, bool ackMode,
+void createRegion(const char *name, bool ackMode,
                   bool clientNotificationEnabled = false) {
   LOG("createRegion() entered.");
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
@@ -78,13 +87,13 @@ void createRegion(const char* name, bool ackMode,
 }
 
 void checkGets(int maxKeys, DSCode keyTypeId, DSCode valTypeId,
-               const std::shared_ptr<Region>& dataReg,
-               const std::shared_ptr<Region>& verifyReg) {
+               const std::shared_ptr<Region> &dataReg,
+               const std::shared_ptr<Region> &verifyReg) {
   for (int i = 0; i < maxKeys; i++) {
-    CacheableWrapper* tmpkey =
+    CacheableWrapper *tmpkey =
         CacheableWrapperFactory::createInstance(keyTypeId);
     ASSERT(tmpkey != nullptr, "tmpkey is nullptr");
-    CacheableWrapper* tmpval =
+    CacheableWrapper *tmpval =
         CacheableWrapperFactory::createInstance(valTypeId);
     ASSERT(tmpval != nullptr, "tmpval is nullptr");
     tmpkey->initKey(i, KEYSIZE);
@@ -113,7 +122,7 @@ void checkGets(int maxKeys, DSCode keyTypeId, DSCode valTypeId,
   }
 }
 
-const char* regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
+const char *regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
 
 const bool USE_ACK = true;
 const bool NO_ACK = false;
@@ -164,7 +173,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutsTask)
            CacheableWrapperFactory::getTypeForId(valTypeId).c_str(),
            taskIndexPut);
 
-    CacheableWrapper* key = CacheableWrapperFactory::createInstance(keyTypeId);
+    CacheableWrapper *key = CacheableWrapperFactory::createInstance(keyTypeId);
     int maxKeys =
         (key->maxKeys() < DEFAULTNUMKEYS ? key->maxKeys() : DEFAULTNUMKEYS);
     delete key;
@@ -172,9 +181,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutsTask)
     auto dataReg = getHelper()->getRegion(regionNames[0]);
     auto verifyReg = getHelper()->getRegion(regionNames[1]);
     for (int i = 0; i < maxKeys; i++) {
-      CacheableWrapper* tmpkey =
+      CacheableWrapper *tmpkey =
           CacheableWrapperFactory::createInstance(keyTypeId);
-      CacheableWrapper* tmpval =
+      CacheableWrapper *tmpval =
           CacheableWrapperFactory::createInstance(valTypeId);
       tmpkey->initKey(i, KEYSIZE);
       tmpval->initRandomValue(CacheableHelper::random(VALUESIZE) + 1);
@@ -189,7 +198,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutsTask)
         try {
           dataReg->destroy(
               std::dynamic_pointer_cast<CacheableKey>(tmpkey->getCacheable()));
-        } catch (const EntryNotFoundException&) {
+        } catch (const EntryNotFoundException &) {
           // expected
         }
         dataReg->create(
@@ -237,7 +246,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, GetsTask)
            CacheableWrapperFactory::getTypeForId(valTypeId).c_str(),
            taskIndexGet);
 
-    CacheableWrapper* key = CacheableWrapperFactory::createInstance(keyTypeId);
+    CacheableWrapper *key = CacheableWrapperFactory::createInstance(keyTypeId);
     int maxKeys =
         (key->maxKeys() < DEFAULTNUMKEYS ? key->maxKeys() : DEFAULTNUMKEYS);
     delete key;
@@ -252,7 +261,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, GetsTask)
     // have deserialized on server so checks serialization/deserialization
     // compatibility with java server.
     std::string queryStr = "SELECT DISTINCT iter.key, iter.value FROM /";
-    queryStr += ((std::string)regionNames[0] + ".entrySet AS iter");
+    queryStr += (std::string(regionNames[0]) + ".entrySet AS iter");
     dataReg->query(queryStr.c_str());
     dataReg->localInvalidateRegion();
     verifyReg->localInvalidateRegion();

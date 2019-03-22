@@ -15,9 +15,12 @@
  * limitations under the License.
  */
 #include "TssConnectionWrapper.hpp"
+
 #include "TcrConnection.hpp"
 #include "ThinClientPoolDM.hpp"
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 ACE_TSS<TssConnectionWrapper>* TssConnectionWrapper::s_geodeTSSConn =
     new ACE_TSS<TssConnectionWrapper>();
 TssConnectionWrapper::TssConnectionWrapper() {
@@ -135,3 +138,7 @@ TcrConnection* PoolWrapper::getAnyConnection() {
   }
   return nullptr;
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

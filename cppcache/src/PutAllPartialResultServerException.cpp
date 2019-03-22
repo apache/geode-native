@@ -29,7 +29,7 @@ PutAllPartialResultServerException::PutAllPartialResultServerException(
 
 PutAllPartialResultServerException::PutAllPartialResultServerException() {
   LOGDEBUG("Partial keys are processed in putAll");
-  ACE_Recursive_Thread_Mutex responseLock;
+  std::recursive_mutex responseLock;
   m_result = std::make_shared<PutAllPartialResult>(-1, responseLock);
 }
 
@@ -66,8 +66,7 @@ PutAllPartialResultServerException::getFirstFailedKey() {
   return m_result->getFirstFailedKey();
 }
 
-std::shared_ptr<CacheableString>
-PutAllPartialResultServerException::what() {
+std::shared_ptr<CacheableString> PutAllPartialResultServerException::what() {
   return CacheableString::create(m_result->toString().c_str());
 }
 

@@ -20,26 +20,24 @@
  * limitations under the License.
  */
 
-#include <map>
-#include <list>
 #include <chrono>
+#include <list>
+#include <map>
 
-#include <geode/internal/geode_globals.hpp>
-#include <geode/ExceptionTypes.hpp>
 #include <geode/Cache.hpp>
 #include <geode/DataOutput.hpp>
+#include <geode/ExceptionTypes.hpp>
+#include <geode/internal/geode_globals.hpp>
 
-#include "StatsDef.hpp"
-#include "Statistics.hpp"
-#include "StatisticDescriptor.hpp"
-#include "StatisticDescriptorImpl.hpp"
-#include "StatisticsType.hpp"
-#include "HostStatSampler.hpp"
-#include "../util/Log.hpp"
 #include "../NonCopyable.hpp"
 #include "../SerializationRegistry.hpp"
+#include "../util/Log.hpp"
+#include "StatisticDescriptor.hpp"
+#include "StatisticDescriptorImpl.hpp"
+#include "Statistics.hpp"
+#include "StatisticsType.hpp"
+#include "StatsDef.hpp"
 
-using namespace apache::geode::client;
 /**
  * some constants to be used while archiving
  */
@@ -66,8 +64,14 @@ namespace apache {
 namespace geode {
 namespace statistics {
 
-using std::chrono::system_clock;
+class HostStatSampler;
+
+using apache::geode::client::CacheImpl;
+using apache::geode::client::DataOutput;
+using apache::geode::client::NonAssignable;
+using apache::geode::client::NonCopyable;
 using std::chrono::steady_clock;
+using std::chrono::system_clock;
 
 /**
  * Some of the classes which are used by the StatArchiveWriter Class
@@ -81,8 +85,8 @@ using std::chrono::steady_clock;
 
 class APACHE_GEODE_EXPORT StatDataOutput {
  public:
-  StatDataOutput(CacheImpl* cache);
-  StatDataOutput(std::string, CacheImpl* cache);
+  explicit StatDataOutput(CacheImpl *cache);
+  StatDataOutput(std::string, CacheImpl *cache);
   ~StatDataOutput();
   /**
    * Returns the number of bytes written into the buffer so far.
@@ -189,8 +193,6 @@ class APACHE_GEODE_EXPORT ResourceInst : private NonCopyable,
   /* This will contain the previous values of the descriptors */
   int64_t *archivedStatValues;
   StatDataOutput *dataOut;
-  /* Number of descriptors this resource instnace has */
-  int32_t numOfDescps;
   /* To know whether the instance has come for the first time */
   bool firstTime;
 };
@@ -204,7 +206,7 @@ class APACHE_GEODE_EXPORT StatArchiveWriter {
  private:
   HostStatSampler *sampler;
   StatDataOutput *dataBuffer;
-  CacheImpl* cache;
+  CacheImpl *cache;
   steady_clock::time_point previousTimeStamp;
   int32_t resourceTypeId;
   int32_t resourceInstId;
@@ -227,7 +229,7 @@ class APACHE_GEODE_EXPORT StatArchiveWriter {
 
  public:
   StatArchiveWriter(std::string archiveName, HostStatSampler *sampler,
-                    CacheImpl* cache);
+                    CacheImpl *cache);
   ~StatArchiveWriter();
   /**
    * Returns the number of bytes written so far to this archive.

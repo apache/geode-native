@@ -24,6 +24,8 @@
 #include "locator_globals.hpp"
 #include "LocatorHelper.hpp"
 
+using apache::geode::client::EntryNotFoundException;
+
 DUNIT_TASK_DEFINITION(SERVER1, CreateServerWithNBSTrue)
   {
     // starting server with notify_subscription true
@@ -89,7 +91,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, verifyKeyDestroyedfromClient1)
     try {
       auto regPtr = getHelper()->getRegion(regionNames[0]);
       regPtr->get(keys[0]);
-    } catch (const EntryNotFoundException&) {
+    } catch (const EntryNotFoundException &) {
       // expected
     }
     LOG("verifyKeyDestroyedOnServer from client 1 completed");

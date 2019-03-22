@@ -49,14 +49,14 @@ void initializeClient() {
   initClientAuth('A');
   LOG("client initialized.");
 }
-void startServer(int instance, const char* xmlfile, const char* lochostport) {
+void startServer(int instance, const char *xmlfile, const char *lochostport) {
   credentialGeneratorHandler = CredentialGenerator::create("DUMMY");
   std::string cmdServerAuthenticator;
   cmdServerAuthenticator = credentialGeneratorHandler->getServerCmdParams(
       "authenticator:dummy", getXmlPath());
   printf("string %s", cmdServerAuthenticator.c_str());
   CacheHelper::initServer(instance, xmlfile, lochostport,
-                          const_cast<char*>(cmdServerAuthenticator.c_str()),
+                          const_cast<char *>(cmdServerAuthenticator.c_str()),
                           false, true, true);
   LOG("Server started");
 }
@@ -84,7 +84,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, InitClient1_Pool)
   {
     try {
       initClient();
-    } catch (Exception& excp) {
+    } catch (Exception &excp) {
       LOG(excp.what());
     }
   }
@@ -94,7 +94,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, InitClient2_Pool)
   {
     try {
       initClient();
-    } catch (Exception& excp) {
+    } catch (Exception &excp) {
       LOG(excp.what());
     }
   }
@@ -125,7 +125,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne_Pool_EndPoint)
         regPtr0->put(keys[0], vals[0]);
         regPtr1->put(keys[2], vals[2]);
       }
-    } catch (Exception& excp) {
+    } catch (Exception &excp) {
       LOG(excp.what());
       ASSERT(false, "Got unexpected exception");
     }
@@ -158,7 +158,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepTwo_Pool_EndPoint)
         regPtr0->put(keys[1], vals[1]);
         regPtr1->put(keys[3], vals[3]);
       }
-    } catch (Exception& excp) {
+    } catch (Exception &excp) {
       LOG(excp.what());
       ASSERT(false, "Got unexpected exception");
     }
@@ -177,7 +177,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne_1)
       auto checkPtr1 =
           std::dynamic_pointer_cast<CacheableString>(regPtr0->get(keys[0]));
       ASSERT(checkPtr1 != nullptr, "checkPtr1 should not be null");
-    } catch (Exception& excp) {
+    } catch (Exception &excp) {
       LOG(excp.what());
       ASSERT(false, "Got unexpected exception");
     }
@@ -199,7 +199,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne_2)
         regPtr1->put(keys[2], regPtr0->get(keys[0]));
       }
 
-    } catch (Exception& excp) {
+    } catch (Exception &excp) {
       LOG(excp.what());
       ASSERT(false, "Got unexpected exception");
     }
@@ -295,7 +295,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne_Pool_SecureEndPoint)
         regPtr0->put(keys[0], vals[0]);
         regPtr1->put(keys[2], vals[2]);
       }
-    } catch (Exception& excp) {
+    } catch (Exception &excp) {
       LOG(excp.what());
       ASSERT(false, "Got unexpected exception");
     }
@@ -329,7 +329,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepTwo_Pool_SecureEndPoint)
         regPtr0->put(keys[1], vals[1]);
         regPtr1->put(keys[3], vals[3]);
       }
-    } catch (Exception& excp) {
+    } catch (Exception &excp) {
       LOG(excp.what());
       ASSERT(false, "Got unexpected exception");
     }
@@ -348,7 +348,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne_secureclient1)
       auto checkPtr1 =
           std::dynamic_pointer_cast<CacheableString>(regPtr0->get(keys[0]));
       ASSERT(checkPtr1 != nullptr, "checkPtr1 should not be null");
-    } catch (Exception& excp) {
+    } catch (Exception &excp) {
       LOG(excp.what());
       ASSERT(false, "Got unexpected exception");
     }
@@ -365,7 +365,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne_secureclient2)
         regPtr1->put(keys[2], regPtr0->get(keys[0]));
       }
 
-    } catch (Exception& excp) {
+    } catch (Exception &excp) {
       LOG(excp.what());
       ASSERT(false, "Got unexpected exception");
     }

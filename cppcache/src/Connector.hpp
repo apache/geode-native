@@ -22,8 +22,8 @@
 
 #include <chrono>
 
-#include <geode/internal/geode_globals.hpp>
 #include <geode/ExceptionTypes.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 namespace apache {
 namespace geode {

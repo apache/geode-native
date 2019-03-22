@@ -20,7 +20,7 @@
 bool isLocalServer = false;
 bool isLocator = false;
 
-const char* locHostPort =
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
 #define CLIENT1 s1p1

@@ -20,11 +20,14 @@
 #ifndef GEODE_REGIONEXPIRYHANDLER_H_
 #define GEODE_REGIONEXPIRYHANDLER_H_
 
+#include <ace/Event_Handler.h>
 #include <ace/Time_Value_T.h>
 
-#include <geode/internal/geode_globals.hpp>
-#include <geode/Region.hpp>
 #include <geode/ExpirationAction.hpp>
+#include <geode/Region.hpp>
+#include <geode/internal/geode_globals.hpp>
+
+#include "ExpiryTaskManager.hpp"
 #include "RegionInternal.hpp"
 
 namespace apache {
@@ -51,13 +54,15 @@ class APACHE_GEODE_EXPORT RegionExpiryHandler : public ACE_Event_Handler {
 
   int handle_close(ACE_HANDLE handle, ACE_Reactor_Mask close_mask) override;
 
-  void setExpiryTaskId(long expiryTaskId) { m_expiryTaskId = expiryTaskId; }
+  void setExpiryTaskId(ExpiryTaskManager::id_type expiryTaskId) {
+    m_expiryTaskId = expiryTaskId;
+  }
 
  private:
   std::shared_ptr<RegionInternal> m_regionPtr;
   ExpirationAction m_action;
   std::chrono::seconds m_duration;
-  long m_expiryTaskId;
+  ExpiryTaskManager::id_type m_expiryTaskId;
   // perform the actual expiration action
   void DoTheExpirationAction();
 };

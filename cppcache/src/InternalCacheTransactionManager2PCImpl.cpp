@@ -15,16 +15,18 @@
  * limitations under the License.
  */
 
-#include <geode/TransactionId.hpp>
+#include "InternalCacheTransactionManager2PCImpl.hpp"
+
 #include <geode/ExceptionTypes.hpp>
 #include <geode/PoolManager.hpp>
+#include <geode/TransactionId.hpp>
 
-#include "InternalCacheTransactionManager2PCImpl.hpp"
+#include "CacheRegionHelper.hpp"
 #include "CacheTransactionManagerImpl.hpp"
+#include "TXCleaner.hpp"
+#include "TcrConnectionManager.hpp"
 #include "TcrMessage.hpp"
 #include "ThinClientPoolDM.hpp"
-#include "CacheRegionHelper.hpp"
-#include "TXCleaner.hpp"
 #include "util/exception.hpp"
 
 namespace apache {
@@ -40,16 +42,15 @@ InternalCacheTransactionManager2PCImpl::
 
 void InternalCacheTransactionManager2PCImpl::prepare() {
   try {
-    TSSTXStateWrapper* txStateWrapper = TSSTXStateWrapper::s_geodeTSSTXState;
-    TXState* txState = txStateWrapper->getTXState();
-
-    if (txState == nullptr) {
+    auto txState = TSSTXStateWrapper::get().getTXState();
+    if (!txState) {
       GfErrTypeThrowException(
           "Transaction is null, cannot prepare of a null transaction",
           GF_CACHE_ILLEGAL_STATE_EXCEPTION);
+      return;  // never called
     }
 
-    ThinClientPoolDM* tcr_dm = getDM();
+    auto tcr_dm = getDM();
     // This is for the case when no cache operation/s is performed between
     // tx->begin() and tx->commit()/rollback(),
     // simply return without sending COMMIT message to server. tcr_dm is nullptr
@@ -116,23 +117,23 @@ void InternalCacheTransactionManager2PCImpl::rollback() {
 
 void InternalCacheTransactionManager2PCImpl::afterCompletion(int32_t status) {
   try {
-    TSSTXStateWrapper* txStateWrapper = TSSTXStateWrapper::s_geodeTSSTXState;
-    TXState* txState = txStateWrapper->getTXState();
+    auto txState = TSSTXStateWrapper::get().getTXState();
 
-    if (txState == nullptr) {
+    if (!txState) {
       GfErrTypeThrowException(
           "Transaction is null, cannot commit a null transaction",
           GF_CACHE_ILLEGAL_STATE_EXCEPTION);
+      return;  // never called
     }
 
-    ThinClientPoolDM* tcr_dm = getDM();
+    auto tcr_dm = getDM();
     // This is for the case when no cache operation/s is performed between
     // tx->begin() and tx->commit()/rollback(),
     // simply return without sending COMMIT message to server. tcr_dm is nullptr
     // implies no cache operation is performed.
     // Theres no need to call txCleaner.clean(); here, because TXCleaner
     // destructor is called which cleans ThreadLocal.
-    if (tcr_dm == nullptr) {
+    if (!tcr_dm) {
       return;
     }
 
@@ -172,9 +173,8 @@ void InternalCacheTransactionManager2PCImpl::afterCompletion(int32_t status) {
         case TcrMessage::RESPONSE: {
           auto commit = std::dynamic_pointer_cast<TXCommitMessage>(
               replyCommitAfter.getValue());
-          if (commit.get() !=
-              nullptr)  // e.g. when afterCompletion(STATUS_ROLLEDBACK) called
-          {
+          if (commit) {
+            // e.g. when afterCompletion(STATUS_ROLLEDBACK) called
             txCleaner.clean();
             commit->apply(this->getCache());
           }

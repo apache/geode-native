@@ -47,7 +47,7 @@ class BucketServerLocation : public ServerLocation {
         m_serverGroups(nullptr),
         m_numServerGroups(static_cast<int8_t>(0)) {}
 
-  BucketServerLocation(std::string host)
+  explicit BucketServerLocation(std::string host)
       : ServerLocation(host),
         m_bucketId(-1),
         m_isPrimary(false),
@@ -83,7 +83,7 @@ class BucketServerLocation : public ServerLocation {
         // TODO:  should fail here since m_numServerGroups is int8_t?
       }
       m_serverGroups = CacheableStringArray::create(
-		  std::vector<std::shared_ptr<CacheableString>>(ptrArr, ptrArr + size));
+          std::vector<std::shared_ptr<CacheableString>>(ptrArr, ptrArr + size));
       m_numServerGroups = static_cast<int8_t>(size);
     } else {
       m_serverGroups = nullptr;
@@ -124,17 +124,15 @@ class BucketServerLocation : public ServerLocation {
       }
     }
     if (m_numServerGroups > 0) {
-      m_serverGroups =
-          CacheableStringArray::create(
-			  std::vector<std::shared_ptr<CacheableString>>(serverGroups, serverGroups + m_numServerGroups));
+      m_serverGroups = CacheableStringArray::create(
+          std::vector<std::shared_ptr<CacheableString>>(
+              serverGroups, serverGroups + m_numServerGroups));
     }
   }
 
   size_t objectSize() const override {
     return sizeof(int32_t) + sizeof(bool) + sizeof(int8_t);
   }
-
-  int8_t getInternalId() const override { return 0; }
 
   BucketServerLocation& operator=(const BucketServerLocation& rhs) {
     if (this == &rhs) return *this;
@@ -162,7 +160,9 @@ class BucketServerLocation : public ServerLocation {
     this->m_serverGroups = rhs.m_serverGroups;
   }
 
-  inline std::shared_ptr<CacheableStringArray> getServerGroups() { return m_serverGroups; }
+  inline std::shared_ptr<CacheableStringArray> getServerGroups() {
+    return m_serverGroups;
+  }
 };
 
 }  // namespace client

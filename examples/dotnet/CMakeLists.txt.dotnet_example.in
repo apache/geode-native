@@ -15,13 +15,16 @@
 
 cmake_minimum_required(VERSION 3.10)
 
-project(@ADD_EXAMPLE_NAME@ LANGUAGES CSharp)
+project(dotnet-@ADD_EXAMPLE_NAME@ LANGUAGES CSharp)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../../cmake)
 
 find_package(@PRODUCT_NAME_NOSPACE@ REQUIRED COMPONENTS dotnet)
 
 add_executable(${PROJECT_NAME} @ADD_EXAMPLE_SOURCE@)
+
+configure_file("startserver.ps1" ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
+configure_file("stopserver.ps1" ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 
 target_link_libraries(${PROJECT_NAME}
     @PRODUCT_NAME_NOSPACE@::dotnet)

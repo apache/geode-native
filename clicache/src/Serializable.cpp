@@ -154,117 +154,117 @@ namespace Apache
 
         switch (typeId)
         {
-        case native::DSCode::CacheableByte: {
+        case native::internal::DSCode::CacheableByte: {
           return Serializable::getCacheableByte((Byte)key);
         }
-        case native::DSCode::CacheableBoolean:
+        case native::internal::DSCode::CacheableBoolean:
           return Serializable::getCacheableBoolean((bool)key);
-        case native::DSCode::CacheableCharacter:
+        case native::internal::DSCode::CacheableCharacter:
           return Serializable::getCacheableWideChar((Char)key);
-        case native::DSCode::CacheableDouble:
+        case native::internal::DSCode::CacheableDouble:
           return Serializable::getCacheableDouble((double)key);
-        case native::DSCode::CacheableASCIIString:
+        case native::internal::DSCode::CacheableASCIIString:
           return Serializable::GetCacheableString((String^)key);
-        case native::DSCode::CacheableFloat:
+        case native::internal::DSCode::CacheableFloat:
           return Serializable::getCacheableFloat((float)key);
-        case native::DSCode::CacheableInt16: {
+        case native::internal::DSCode::CacheableInt16: {
           return Serializable::getCacheableInt16((System::Int16)key);
         }
-        case native::DSCode::CacheableInt32: {
+        case native::internal::DSCode::CacheableInt32: {
           return Serializable::getCacheableInt32((System::Int32)key);
         }
-        case native::DSCode::CacheableInt64: {
+        case native::internal::DSCode::CacheableInt64: {
           return Serializable::getCacheableInt64((System::Int64)key);
         }
-        case native::DSCode::CacheableBytes:
+        case native::internal::DSCode::CacheableBytes:
         {
           return GetNativeCacheableKeyWrapperForManagedISerializable(Apache::Geode::Client::CacheableBytes::Create((array<Byte>^)key));
         }
-        case native::DSCode::CacheableDoubleArray:
+        case native::internal::DSCode::CacheableDoubleArray:
         {
           return GetNativeCacheableKeyWrapperForManagedISerializable(Apache::Geode::Client::CacheableDoubleArray::Create((array<Double>^)key));
         }
-        case native::DSCode::CacheableFloatArray:
+        case native::internal::DSCode::CacheableFloatArray:
         {
           return GetNativeCacheableKeyWrapperForManagedISerializable(Apache::Geode::Client::CacheableFloatArray::Create((array<float>^)key));
         }
-        case native::DSCode::CacheableInt16Array:
+        case native::internal::DSCode::CacheableInt16Array:
         {
           return GetNativeCacheableKeyWrapperForManagedISerializable(Apache::Geode::Client::CacheableInt16Array::Create((array<Int16>^)key));
         }
-        case native::DSCode::CacheableInt32Array:
+        case native::internal::DSCode::CacheableInt32Array:
         {
           return GetNativeCacheableKeyWrapperForManagedISerializable(Apache::Geode::Client::CacheableInt32Array::Create((array<Int32>^)key));
         }
-        case native::DSCode::CacheableInt64Array:
+        case native::internal::DSCode::CacheableInt64Array:
         {
           return GetNativeCacheableKeyWrapperForManagedISerializable(Apache::Geode::Client::CacheableInt64Array::Create((array<Int64>^)key));
         }
-        case native::DSCode::CacheableStringArray:
+        case native::internal::DSCode::CacheableStringArray:
         {
           return GetNativeCacheableKeyWrapperForManagedISerializable(Apache::Geode::Client::CacheableStringArray::Create((array<String^>^)key));
         }
-        case native::DSCode::CacheableFileName:
+        case native::internal::DSCode::CacheableFileName:
         {
           return GetNativeCacheableKeyWrapperForManagedISerializable((Apache::Geode::Client::CacheableFileName^)key);
         }
-        case native::DSCode::CacheableHashTable://collection::hashtable
+        case native::internal::DSCode::CacheableHashTable://collection::hashtable
         {
           return GetNativeCacheableKeyWrapperForManagedISerializable(Apache::Geode::Client::CacheableHashTable::Create((System::Collections::Hashtable^)key));
         }
-        case native::DSCode::CacheableHashMap://generic dictionary
+        case native::internal::DSCode::CacheableHashMap://generic dictionary
         {
           return GetNativeCacheableKeyWrapperForManagedISerializable(Apache::Geode::Client::CacheableHashMap::Create((System::Collections::IDictionary^)key));
         }
-        case native::DSCode::CacheableVector://collection::arraylist
+        case native::internal::DSCode::CacheableVector://collection::arraylist
         {
           return GetNativeCacheableKeyWrapperForManagedISerializable(CacheableVector::Create((System::Collections::IList^)key));
         }
-        case native::DSCode::CacheableArrayList://generic ilist
+        case native::internal::DSCode::CacheableArrayList://generic ilist
         {
           return GetNativeCacheableKeyWrapperForManagedISerializable(Apache::Geode::Client::CacheableArrayList::Create((System::Collections::IList^)key));
         }
-        case native::DSCode::CacheableLinkedList://generic linked list
+        case native::internal::DSCode::CacheableLinkedList://generic linked list
         {
           return GetNativeCacheableKeyWrapperForManagedISerializable(Apache::Geode::Client::CacheableLinkedList::Create((System::Collections::Generic::LinkedList<Object^>^)key));
         }
-        case native::DSCode::CacheableStack:
+        case native::internal::DSCode::CacheableStack:
         {
           return GetNativeCacheableKeyWrapperForManagedISerializable(Apache::Geode::Client::CacheableStack::Create((System::Collections::ICollection^)key));
         }
-        case native::InternalId::CacheableManagedObject:
+        case native::internal::InternalId::CacheableManagedObject:
         {
           return GetNativeCacheableKeyWrapperForManagedISerializable((Apache::Geode::Client::CacheableObject^)key);
         }
-        case native::InternalId::CacheableManagedObjectXml:
+        case native::internal::InternalId::CacheableManagedObjectXml:
         {
           return GetNativeCacheableKeyWrapperForManagedISerializable((Apache::Geode::Client::CacheableObjectXml^)key);
         }
-        case native::DSCode::CacheableObjectArray:
+        case native::internal::DSCode::CacheableObjectArray:
         {
           return GetNativeCacheableKeyWrapperForManagedISerializable((Apache::Geode::Client::CacheableObjectArray^)key);
         }
-        case native::DSCode::CacheableIdentityHashMap:
+        case native::internal::DSCode::CacheableIdentityHashMap:
         {
           return GetNativeCacheableKeyWrapperForManagedISerializable(Apache::Geode::Client::CacheableIdentityHashMap::Create((System::Collections::IDictionary^)key));
         }
-        case native::DSCode::CacheableHashSet://no need of it, default case should work
+        case native::internal::DSCode::CacheableHashSet://no need of it, default case should work
         {
           return GetNativeCacheableKeyWrapperForManagedISerializable((Apache::Geode::Client::CacheableHashSet^)key);
         }
-        case native::DSCode::CacheableLinkedHashSet://no need of it, default case should work
+        case native::internal::DSCode::CacheableLinkedHashSet://no need of it, default case should work
         {
           return GetNativeCacheableKeyWrapperForManagedISerializable((Apache::Geode::Client::CacheableLinkedHashSet^)key);
         }
-        case native::DSCode::CacheableDate:
+        case native::internal::DSCode::CacheableDate:
         {
           return GetNativeCacheableKeyWrapperForManagedISerializable(Apache::Geode::Client::CacheableDate::Create((System::DateTime)key));
         }
-        case native::DSCode::BooleanArray:
+        case native::internal::DSCode::BooleanArray:
         {
           return GetNativeCacheableKeyWrapperForManagedISerializable(Apache::Geode::Client::BooleanArray::Create((array<bool>^)key));
         }
-        case native::DSCode::CharArray:
+        case native::internal::DSCode::CharArray:
         {
           return GetNativeCacheableKeyWrapperForManagedISerializable(Apache::Geode::Client::CharArray::Create((array<Char>^)key));
         }

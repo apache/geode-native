@@ -24,20 +24,20 @@
  * @file
  */
 
-#include <string>
 #include <memory>
+#include <string>
 #include <unordered_map>
 
-#include "internal/geode_globals.hpp"
+#include "CacheableKey.hpp"
 #include "internal/DataSerializablePrimitive.hpp"
 #include "internal/chrono/duration.hpp"
-#include "CacheableKey.hpp"
+#include "internal/geode_globals.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
-using namespace apache::geode::internal::chrono::duration;
+using apache::geode::internal::chrono::duration::to_string;
 
 class DataInput;
 class DataOutput;
@@ -149,8 +149,7 @@ class APACHE_GEODE_EXPORT Properties
 
   void fromData(DataInput& input) override;
 
-  DSCode getDsCode() const override;
-
+  internal::DSCode getDsCode() const override;
 
  private:
   HashMapOfCacheable m_map;

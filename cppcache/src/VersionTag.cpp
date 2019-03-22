@@ -15,12 +15,15 @@
  * limitations under the License.
  */
 #include "VersionTag.hpp"
-#include "CacheImpl.hpp"
-#include "RegionInternal.hpp"
-#include "MemberListForVersionStamp.hpp"
-#include "ClientProxyMembershipID.hpp"
 
-using namespace apache::geode::client;
+#include "CacheImpl.hpp"
+#include "ClientProxyMembershipID.hpp"
+#include "MemberListForVersionStamp.hpp"
+#include "RegionInternal.hpp"
+
+namespace apache {
+namespace geode {
+namespace client {
 
 VersionTag::VersionTag(MemberListForVersionStamp& memberListForVersionStamp)
     : VersionTag(0, 0, 0, 0, 0, memberListForVersionStamp) {}
@@ -79,7 +82,7 @@ void VersionTag::readMembers(uint16_t flags, DataInput& input) {
     auto internalMemId = std::make_shared<ClientProxyMembershipID>();
     internalMemId->readEssentialData(input);
     m_internalMemId = m_memberListForVersionStamp.add(
-        (std::shared_ptr<DSMemberForVersionStamp>)internalMemId);
+        std::dynamic_pointer_cast<DSMemberForVersionStamp>(internalMemId));
   }
   if ((flags & HAS_PREVIOUS_MEMBER_ID) != 0) {
     if ((flags & DUPLICATE_MEMBER_IDS) != 0) {
@@ -91,3 +94,7 @@ void VersionTag::readMembers(uint16_t flags, DataInput& input) {
     }
   }
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

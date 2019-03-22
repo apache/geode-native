@@ -13,17 +13,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.12)
 project(nativeclient LANGUAGES C CXX)
 
 option(USE_PCH "Use precompiled headers (PCH)." OFF)
-option(USE_CPP_COVERAGE "Enable profiling and coverage report analysis for apache-geode cpp library" OFF)
+option(USE_CPP_COVERAGE "Enable profiling and coverage report analysis for apache-geode cpp library." OFF)
+option(USE_RAT "Enable Apache Rat checking." OFF)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
 if (USE_PCH)
   include(cotire)
 endif()
+
+include(ClangFormat)
 
 if(CMAKE_GENERATOR MATCHES Win64*)
 
@@ -35,11 +38,21 @@ if(CMAKE_GENERATOR MATCHES Win64*)
   endif()
 endif()
 
+get_property(GENERATOR_IS_MULTI_CONFIG GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
+if(NOT CMAKE_BUILD_TYPE AND NOT GENERATOR_IS_MULTI_CONFIG)
+  message(STATUS "Using default build type 'Debug'.")
+  set(CMAKE_BUILD_TYPE Debug CACHE STRING "Specifies the build type on single-configuration generators." FORCE)
+endif()
+
+set(CMAKE_DOTNET_TARGET_FRAMEWORK_VERSION "4.5.2")
+set(DOTNET_TARGET_FRAMEWORK_VERSION "4.5.2")
 set(BUILD_BITS 64 CACHE STRING "Build for 64 (Geode default) or 32 bit.")
+option(BUILD_BENCHMARKS "Build benchmarks" ON)
 
 set(PRODUCT_VENDOR "Apache" CACHE STRING "Product vendor")
 set(PRODUCT_VENDOR_NAME "The Apache Software Foundation" CACHE STRING "Product vendor full legal name")
-set(PRODUCT_NAME "Geode Native" CACHE STRING "Product name")
+set(PRODUCT_BASE_NAME "Geode" CACHE STRING "Product base name")
+set(PRODUCT_NAME "${PRODUCT_BASE_NAME} Native" CACHE STRING "Product name")
 set(PRODUCT_VERSION "0.0.42-build.0" CACHE STRING "Product version")
 set(PRODUCT_PACKAGE_NAME "apache-geode-native" CACHE STRING "Product package name")
 set(PRODUCT_BUILDDATE "1970-01-01" CACHE STRING "Product build date")
@@ -48,7 +61,7 @@ set(PRODUCT_SOURCE_REPOSITORY "<unspecified>" CACHE STRING "Product source branc
 set(PRODUCT_BITS "${BUILD_BITS}bit")
 
 set(PRODUCT_LIB_NAME "apache-geode" CACHE STRING "Binary name")
-set(PRODUCT_DLL_NAME "Apache.Geode" CACHE STRING ".Net Binary name")
+set(PRODUCT_DLL_NAME "${PRODUCT_VENDOR}.${PRODUCT_BASE_NAME}" CACHE STRING ".Net Binary name")
 
 if(CMAKE_SYSTEM_NAME STREQUAL "SunOS")
   if (CMAKE_SYSTEM_PROCESSOR STREQUAL "sparc")
@@ -83,11 +96,6 @@ list(GET PRODUCT_VERSION_LIST 3 PRODUCT_VERSION_BUILD)
 # $ cmake -G Xcode -DCMAKE_INSTALL_PREFIX=/my/favorite/location ..
 set(CMAKE_INSTALL_PREFIX "nativeclient" CACHE STRING "Install prefix")
 
-set(CMAKE_CONFIGURATION_TYPES Debug Release)
-if (NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Debug)
-endif()
-
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # TODO this doesn't seem to have effect
@@ -105,6 +113,7 @@ set(CPACK_PACKAGE_VENDOR "${PRODUCT_VENDOR}")
 set(CPACK_PACKAGE_NAME "${PRODUCT_PACKAGE_NAME}")
 set(CPACK_SYSTEM_NAME "${PRODUCT_SYSTEM_NAME}-${PRODUCT_BITS}")
 set(CPACK_PACKAGE_FILE_NAME ${CPACK_PACKAGE_NAME}-${PRODUCT_VERSION}-${CPACK_SYSTEM_NAME})
+set(CPACK_SOURCE_PACKAGE_FILE_NAME ${CPACK_PACKAGE_NAME}-${PRODUCT_VERSION}-src)
 set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY 0)
 set(CPACK_PACKAGING_INSTALL_PREFIX "/${CPACK_PACKAGE_NAME}")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/dist/LICENSE")
@@ -117,29 +126,12 @@ set(CPACK_PACKAGE_CHECKSUM "SHA512")
 # leave out .git and a couple other items we want in the repository but not in
 # the release.  Everything gets concatenated into a ';' separated list for
 # cpack.
-file(READ ".gitignore" IGNORED_PARTIAL)
-set(IGNORED_FULL ${IGNORED_PARTIAL})
 file(READ ".cpackignore" IGNORED_PARTIAL)
-string(CONCAT IGNORED_FULL ${IGNORED_FULL} ${IGNORED_PARTIAL})
+set(IGNORED_FULL ${IGNORED_PARTIAL})
 string(REGEX REPLACE "\n" ";" IGNORED_FULL "${IGNORED_FULL}")
 string(REGEX REPLACE " " "" IGNORED_FULL "${IGNORED_FULL}")
 
 list(APPEND CPACK_SOURCE_IGNORE_FILES ${IGNORED_FULL})
-
-option(ENABLE_CLANG_TIDY "Enable clang-tidy checks." false)
-if(ENABLE_CLANG_TIDY)
-  find_program(CLANG_TIDY "clang-tidy")
-  if(CLANG_TIDY)
-    set(CMAKE_CXX_CLANG_TIDY ${CLANG_TIDY} -header-filter=${CMAKE_CURRENT_SOURCE_DIR})
-    option(ENABLE_CLANG_TIDY_FIX "Enable clang-tidy fix." false)
-    if(ENABLE_CLANG_TIDY_FIX)
-      set(CMAKE_CXX_CLANG_TIDY ${CMAKE_CXX_CLANG_TIDY} -fix -fix-errors)
-    endif()
-    message(STATUS "clang-tidy enabled.")
-  else()
-    message(SEND_ERROR "clang-tidy enabled but not found.")
-  endif()
-endif()
 
 if(CMAKE_GENERATOR MATCHES Win64*)
   set(CMAKE_GENERATOR_TOOLSET "host=x64")
@@ -181,6 +173,13 @@ add_library(c++11 INTERFACE)
 # Interface for warning flags
 add_library(_WarningsAsError INTERFACE)
 add_library(_CppCodeCoverage INTERFACE)
+
+include(CheckIPOSupported)
+check_ipo_supported(RESULT ipo_supported)
+if(ipo_supported)
+  set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE)
+  set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELWITHDEBINFO TRUE)
+endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "SunPro")
   # Force linker to error on undefined symbols in shared libraries
@@ -274,21 +273,15 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 
   target_compile_options(_WarningsAsError INTERFACE
     /WX
+	/wd4996
 	/wd4068 # TODO fix
 	)
 
-  # TODO error on warnings
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4996")
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /ignore:4099")
   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /ignore:4099")
 
   # Enables multiprocess compiles
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
-
-  # Enables whole program optimizaion and link time code generation for release.
-  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /GL")
-  set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /LTCG:incremental")
-  set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /LTCG:incremental")
 
   # Enables strong name signing
   set(STRONG_NAME_KEY "" CACHE FILEPATH "Strong Name Key File")
@@ -307,14 +300,6 @@ if ("${CMAKE_AR}" STREQUAL "CMAKE_AR-NOTFOUND")
   message(FATAL_ERROR "Utility ar not found.")
 endif()
 
-if (WIN32 OR ${CMAKE_GENERATOR} STREQUAL "Xcode")
-  set(CMAKE_USES_BUILDTYPE TRUE)
-  set ( _DEBUG_OR_RELEASE $<$<CONFIG:Debug>:Debug>$<$<NOT:$<CONFIG:Debug>>:Release>)
-else()
-  set(CMAKE_USES_BUILDTYPE FALSE)
-  set ( _DEBUG_OR_RELEASE .)
-endif()
-
 # Default to only showing output on failure for unit tests but allow
 # overriding with the CTEST_UNITTEST_VERBOSITY environment variable.
 set(CTEST_UNITTEST_VERBOSITY --output-on-failure)
@@ -325,21 +310,32 @@ endif()
 find_package(Geode 1.0 REQUIRED)
 
 add_custom_target(client-libraries)
+set_target_properties(client-libraries PROPERTIES
+	FOLDER test-common
+)
 
 add_custom_target(unit-tests)
+set_target_properties(unit-tests PROPERTIES
+	FOLDER cpp/test/unit
+)
+
 add_custom_target(run-unit-tests)
 add_dependencies(run-unit-tests unit-tests)
 set_target_properties(run-unit-tests PROPERTIES
     EXCLUDE_FROM_ALL TRUE
     EXCLUDE_FROM_DEFAULT_BUILD TRUE
+	FOLDER cpp/test/unit
 )
 
 add_custom_target(integration-tests)
+set_target_properties(integration-tests PROPERTIES FOLDER cpp/test/integration)
+
 add_custom_target(run-integration-tests)
 add_dependencies(run-integration-tests integration-tests)
 set_target_properties(run-integration-tests PROPERTIES
     EXCLUDE_FROM_ALL TRUE
     EXCLUDE_FROM_DEFAULT_BUILD TRUE
+	FOLDER test-common
 )
 
 add_subdirectory(dependencies)
@@ -353,7 +349,6 @@ add_subdirectory(examples)
 add_subdirectory(tests/javaobject)
 if (${BUILD_CLI})
   add_subdirectory(clicache)
-  add_subdirectory(plugins/SQLiteCLI)
 endif()
 add_subdirectory(tests)
 
@@ -366,3 +361,14 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/templates/ DESTINATION templates
   PATTERN "templates/security/CMakeLists.txt" EXCLUDE
   PATTERN "templates/security/CMakeLists.txt.forInstall" EXCLUDE)
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/templates/security/CMakeLists.txt.forInstall RENAME CMakeLists.txt DESTINATION templates/security)
+
+if (USE_RAT)
+  add_custom_target( rat-check
+    COMMAND ${CMAKE_COMMAND}
+        -DJava_JAVA_EXECUTABLE=${Java_JAVA_EXECUTABLE}
+        -DRat_JAR=${Rat_JAR}
+        -P cmake/RatCheck.cmake
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    COMMENT "Checking source with Apache Rat."
+  )
+endif()

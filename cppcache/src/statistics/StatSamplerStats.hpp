@@ -23,20 +23,16 @@
 #include <geode/internal/geode_globals.hpp>
 
 #include "StatisticDescriptor.hpp"
-#include "StatisticsType.hpp"
 #include "Statistics.hpp"
 #include "StatisticsFactory.hpp"
-
-using namespace apache::geode::client;
-
-/** @file
- */
+#include "StatisticsType.hpp"
 
 namespace apache {
 namespace geode {
 namespace statistics {
 
 class StatisticsFactory;
+
 /**
  * Statistics related to the statistic sampler.
  */
@@ -49,7 +45,7 @@ class APACHE_GEODE_EXPORT StatSamplerStats {
   StatisticDescriptor** statDescriptorArr;
 
  public:
-  StatSamplerStats(StatisticsFactory* statFactory);
+  explicit StatSamplerStats(StatisticsFactory* statFactory);
   void tookSample(int64_t nanosSpentWorking);
   void close();
   void setInitialValues();

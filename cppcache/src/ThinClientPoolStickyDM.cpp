@@ -15,9 +15,13 @@
  * limitations under the License.
  */
 #include "ThinClientPoolStickyDM.hpp"
-#include "TssConnectionWrapper.hpp"
+
 #include <algorithm>
-using namespace apache::geode::client;
+
+#include "TssConnectionWrapper.hpp"
+namespace apache {
+namespace geode {
+namespace client {
 TcrConnection* ThinClientPoolStickyDM::getConnectionFromQueueW(
     GfErrType* error, std::set<ServerLocation>& excludeServers, bool isBGThread,
     TcrMessage& request, int8_t& version, bool& match, bool& connFound,
@@ -93,7 +97,7 @@ TcrConnection* ThinClientPoolStickyDM::getConnectionFromQueueW(
                                            request.forTransaction());
 
   if (request.forTransaction()) {
-    TXState* txState = TSSTXStateWrapper::s_geodeTSSTXState->getTXState();
+    auto txState = TSSTXStateWrapper::get().getTXState();
     if (*error == GF_NOERR && !cf &&
         (txState == nullptr || txState->isDirty())) {
       *error = doFailover(conn);
@@ -127,7 +131,8 @@ void ThinClientPoolStickyDM::setStickyNull(bool isBGThread) {
   }
 }
 
-void ThinClientPoolStickyDM::cleanStickyConnections(volatile bool& isRunning) {
+void ThinClientPoolStickyDM::cleanStickyConnections(
+    std::atomic<bool>& isRunning) {
   if (!isRunning) {
     return;
   }
@@ -146,3 +151,7 @@ void ThinClientPoolStickyDM::setThreadLocalConnection(TcrConnection* conn) {
 bool ThinClientPoolStickyDM::canItBeDeletedNoImpl(TcrConnection* conn) {
   return ThinClientPoolDM::canItBeDeleted(conn);
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

@@ -20,14 +20,14 @@
  * limitations under the License.
  */
 
-#include <geode/internal/geode_base.hpp>
 #include <atomic>
-#include "fwklib/FwkLog.hpp"
-
-#include "ace/Task.h"
-#include <ace/Condition_T.h>
-
+#include <fwklib/FwkLog.hpp>
 #include <string>
+
+#include <ace/Condition_T.h>
+#include <ace/Task.h>
+
+#include <geode/internal/geode_base.hpp>
 
 namespace apache {
 namespace geode {
@@ -50,7 +50,8 @@ class ServiceTask {
   SharedTaskObject* m_shared;
 
  public:
-  ServiceTask(SharedTaskObject* shared) : m_run(nullptr), m_shared(shared) {}
+  explicit ServiceTask(SharedTaskObject* shared)
+      : m_run(nullptr), m_shared(shared) {}
 
   virtual ~ServiceTask() {}
 
@@ -82,7 +83,7 @@ class Service : public ACE_Task_Base {
   }
 
  public:
-  Service(int32_t threadCnt);
+  explicit Service(int32_t threadCnt);
 
   inline ~Service() { stopThreads(); }
 
@@ -142,7 +143,7 @@ class IPCMessage {
 
  public:
   IPCMessage() {}
-  IPCMessage(std::string content) { m_msg = content; }
+  explicit IPCMessage(std::string content) { m_msg = content; }
 
   virtual ~IPCMessage() {}
 

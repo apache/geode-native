@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_TRANSACTIONSUSPENDER_H_
-#define GEODE_TRANSACTIONSUSPENDER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,12 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * TransactionSuspender.hpp
- *
- *  Created on: 16-Feb-2011
- *      Author: ankurs
- */
+
+#pragma once
+
+#ifndef GEODE_TRANSACTIONSUSPENDER_H_
+#define GEODE_TRANSACTIONSUSPENDER_H_
 
 #include "TXState.hpp"
 

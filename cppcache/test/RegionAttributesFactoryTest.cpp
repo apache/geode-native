@@ -19,60 +19,61 @@
 
 #include <geode/RegionAttributesFactory.hpp>
 
-using namespace apache::geode::client;
+using apache::geode::client::ExpirationAction;
+using apache::geode::client::RegionAttributesFactory;
 
 TEST(RegionAttributesFactoryTest, setEntryIdleTimeoutSeconds) {
   RegionAttributesFactory regionAttributesFactory;
-  auto regionAttributes =
-      regionAttributesFactory
-          .setEntryIdleTimeout(ExpirationAction::DESTROY,
-                               std::chrono::seconds(10))
-          .create();
+  auto regionAttributes = regionAttributesFactory
+                              .setEntryIdleTimeout(ExpirationAction::DESTROY,
+                                                   std::chrono::seconds(10))
+                              .create();
   EXPECT_EQ(std::chrono::seconds(10), regionAttributes.getEntryIdleTimeout());
 }
 
 TEST(RegionAttributesFactoryTest, setEntryTimeToLiveSeconds) {
   RegionAttributesFactory regionAttributesFactory;
-  auto regionAttributes =
-      regionAttributesFactory
-          .setEntryTimeToLive(ExpirationAction::DESTROY,
-                              std::chrono::seconds(10))
-          .create();
+  auto regionAttributes = regionAttributesFactory
+                              .setEntryTimeToLive(ExpirationAction::DESTROY,
+                                                  std::chrono::seconds(10))
+                              .create();
   EXPECT_EQ(std::chrono::seconds(10), regionAttributes.getEntryTimeToLive());
 }
 
 TEST(RegionAttributesFactoryTest, setRegionIdleTimeoutSeconds) {
   RegionAttributesFactory regionAttributesFactory;
-  auto regionAttributes =
-      regionAttributesFactory
-          .setRegionIdleTimeout(ExpirationAction::DESTROY,
-                                std::chrono::seconds(10))
-          .create();
+  auto regionAttributes = regionAttributesFactory
+                              .setRegionIdleTimeout(ExpirationAction::DESTROY,
+                                                    std::chrono::seconds(10))
+                              .create();
   EXPECT_EQ(std::chrono::seconds(10), regionAttributes.getRegionIdleTimeout());
 }
 
 TEST(RegionAttributesFactoryTest, setRegionTimeToLiveSeconds) {
   RegionAttributesFactory regionAttributesFactory;
-  auto regionAttributes =
-      regionAttributesFactory
-          .setRegionTimeToLive(ExpirationAction::DESTROY,
-                               std::chrono::seconds(10))
-          .create();
+  auto regionAttributes = regionAttributesFactory
+                              .setRegionTimeToLive(ExpirationAction::DESTROY,
+                                                   std::chrono::seconds(10))
+                              .create();
   EXPECT_EQ(std::chrono::seconds(10), regionAttributes.getRegionTimeToLive());
 }
 
 TEST(RegionAttributesFactoryTest, setInitialCapacity) {
-  RegionAttributesFactory* regionAttributesFactory = new RegionAttributesFactory();
+  RegionAttributesFactory* regionAttributesFactory =
+      new RegionAttributesFactory();
   EXPECT_NE(regionAttributesFactory, nullptr);
-  auto regionAttributes =
-      regionAttributesFactory->setLruEntriesLimit(2).setInitialCapacity(5).create();
+  auto regionAttributes = regionAttributesFactory->setLruEntriesLimit(2)
+                              .setInitialCapacity(5)
+                              .create();
   EXPECT_EQ(regionAttributes.getInitialCapacity(), 5);
 }
 
 TEST(RegionAttributesFactoryTest, setLruEntriesLimit) {
-  RegionAttributesFactory* regionAttributesFactory = new RegionAttributesFactory();
+  RegionAttributesFactory* regionAttributesFactory =
+      new RegionAttributesFactory();
   EXPECT_NE(regionAttributesFactory, nullptr);
-  auto regionAttributes =
-      regionAttributesFactory->setLruEntriesLimit(2).setInitialCapacity(5).create();
+  auto regionAttributes = regionAttributesFactory->setLruEntriesLimit(2)
+                              .setInitialCapacity(5)
+                              .create();
   EXPECT_EQ(regionAttributes.getLruEntriesLimit(), 2u);
 }

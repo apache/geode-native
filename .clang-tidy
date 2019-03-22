@@ -1,47 +1,18 @@
 ---
-Checks:          'clang-diagnostic-*,clang-analyzer-*,-clang-analyzer-alpha*,-*,google-*,-google-readability-todo,-google-explicit-constructor'
-WarningsAsErrors: ''
-HeaderFilterRegex: ''
-AnalyzeTemporaryDtors: false
-CheckOptions:    
-  - key:             cert-oop11-cpp.UseCERTSemantics
-    value:           '1'
-  - key:             google-build-namespaces.HeaderFileExtensions
-    value:           h,hh,hpp,hxx
-  - key:             google-global-names-in-headers.HeaderFileExtensions
-    value:           h
-  - key:             google-readability-braces-around-statements.ShortStatementLines
-    value:           '1'
-  - key:             google-readability-function-size.BranchThreshold
-    value:           '4294967295'
-  - key:             google-readability-function-size.LineThreshold
-    value:           '4294967295'
-  - key:             google-readability-function-size.StatementThreshold
-    value:           '800'
-  - key:             google-readability-namespace-comments.ShortNamespaceLines
-    value:           '0'
-  - key:             google-readability-namespace-comments.SpacesBeforeComments
-    value:           '2'
-  - key:             google-runtime-int.SignedTypePrefix
-    value:           int
-  - key:             google-runtime-int.TypeSuffix
-    value:           ''
-  - key:             google-runtime-int.UnsignedTypePrefix
-    value:           uint
-  - key:             modernize-loop-convert.MaxCopySize
-    value:           '16'
-  - key:             modernize-loop-convert.MinConfidence
-    value:           reasonable
-  - key:             modernize-loop-convert.NamingStyle
-    value:           CamelCase
-  - key:             modernize-pass-by-value.IncludeStyle
-    value:           llvm
-  - key:             modernize-replace-auto-ptr.IncludeStyle
-    value:           llvm
-  - key:             modernize-use-nullptr.NullMacros
-    value:           'NULL'
+Checks:          '-*,clang-diagnostic-*,clang-analyzer-*,-clang-analyzer-alpha*,google-*,-google-readability-todo,-google-runtime-references,-google-default-arguments,-clang-analyzer-core.uninitialized.UndefReturn,-clang-analyzer-core.UndefinedBinaryOperatorResult,-clang-analyzer-optin.cplusplus.VirtualCall'
+WarningsAsErrors: '*'
+HeaderFilterRegex: '.*'
+FormatStyle:     file
 ...
 
+# Disable Checks
+# google-runtime-references - We have diverged from this rule due to both legacy and disagreement with the rule.
+# google-readability-todo - Adds current user name when fix applied.
 
-# google-explicit-constructor - disabled due to SharedBase issues.
-# google-readability-todo - disabled because it adds names.
+# TODO - Fix these checks
+# google-default-arguments
+# clang-analyzer-core.uninitialized.UndefReturn - Generates errors in ACE, how do we ignore?
+# clang-analyzer-core.UndefinedBinaryOperatorResult - Generates errors in ACE, how do we ignore?
+
+# TEMP
+# clang-analyzer-optin.cplusplus.VirtualCall

@@ -293,7 +293,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       try
       {
-        CacheHelper.DCache.TypeRegistry.RegisterType(OtherType.CreateDeserializable);
+        CacheHelper.DCache.TypeRegistry.RegisterType(OtherType.CreateDeserializable, 0);
       }
       catch (IllegalStateException)
       {

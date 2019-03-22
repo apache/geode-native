@@ -23,28 +23,30 @@
 #define CLIENT1 s1p1
 #define SERVER1 s2p1
 #include <geode/CacheListener.hpp>
+
+using apache::geode::client::RegionEvent;
+
 // CacheHelper* cacheHelper = nullptr;
 static bool isLocator = false;
 static bool isLocalServer = true;
 static int numberOfLocators = 1;
 static bool isRegionLive[4] = {false, false, false, false};
 static bool isRegionDead[4] = {false, false, false, false};
-const char* locatorsG =
+const char *locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
-using namespace apache::geode::client;
-using namespace test;
+
 class DisconnectCacheListioner : public CacheListener {
   int m_index;
 
  public:
   explicit DisconnectCacheListioner(int index) { m_index = index; };
 
-  void afterRegionDisconnected(Region&) override {
+  void afterRegionDisconnected(Region &) override {
     isRegionDead[m_index] = true;
     LOG("After Region Disconnected event received");
   }
 
-  void afterRegionLive(const RegionEvent&) override {
+  void afterRegionLive(const RegionEvent &) override {
     isRegionLive[m_index] = true;
     LOG("After region live received ");
   }
@@ -58,7 +60,7 @@ auto cptr4 = std::make_shared<DisconnectCacheListioner>(3);
 #include "LocatorHelper.hpp"
 
 void createPooledRegionMine(bool callReadyForEventsAPI = false) {
-  auto& poolManager = getHelper()->getCache()->getPoolManager();
+  auto &poolManager = getHelper()->getCache()->getPoolManager();
   auto poolFac = poolManager.createFactory();
   poolFac.setSubscriptionEnabled(true);
   getHelper()->addServerLocatorEPs(locatorsG, poolFac);
@@ -70,10 +72,14 @@ void createPooledRegionMine(bool callReadyForEventsAPI = false) {
   RegionAttributesFactory regionAttributesFactory;
   regionAttributesFactory.setCachingEnabled(true);
   regionAttributesFactory.setLruEntriesLimit(0);
-  regionAttributesFactory.setEntryIdleTimeout(ExpirationAction::DESTROY, std::chrono::seconds(0));
-  regionAttributesFactory.setEntryTimeToLive(ExpirationAction::DESTROY, std::chrono::seconds(0));
-  regionAttributesFactory.setRegionIdleTimeout(ExpirationAction::DESTROY, std::chrono::seconds(0));
-  regionAttributesFactory.setRegionTimeToLive(ExpirationAction::DESTROY, std::chrono::seconds(0));
+  regionAttributesFactory.setEntryIdleTimeout(ExpirationAction::DESTROY,
+                                              std::chrono::seconds(0));
+  regionAttributesFactory.setEntryTimeToLive(ExpirationAction::DESTROY,
+                                             std::chrono::seconds(0));
+  regionAttributesFactory.setRegionIdleTimeout(ExpirationAction::DESTROY,
+                                               std::chrono::seconds(0));
+  regionAttributesFactory.setRegionTimeToLive(ExpirationAction::DESTROY,
+                                              std::chrono::seconds(0));
   regionAttributesFactory.setPoolName("__TEST_POOL1__");
   LOG("poolName = ");
   LOG("__TEST_POOL1__");
@@ -85,7 +91,7 @@ void createPooledRegionMine(bool callReadyForEventsAPI = false) {
   auto regionAttributes3 = regionAttributesFactory.create();
   regionAttributesFactory.setCacheListener(cptr4);
   auto regionAttributes4 = regionAttributesFactory.create();
-  CacheImpl* cacheImpl =
+  CacheImpl *cacheImpl =
       CacheRegionHelper::getCacheImpl(getHelper()->cachePtr.get());
   std::shared_ptr<Region> region1;
   cacheImpl->createRegion(regionNames[0], regionAttributes1, region1);

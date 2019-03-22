@@ -17,9 +17,10 @@
 
 #include "EqStruct.hpp"
 
-using namespace apache::geode::client;
-using namespace testframework;
-using namespace testobject;
+#include <geode/DataInput.hpp>
+#include <geode/DataOutput.hpp>
+
+namespace testobject {
 
 EqStruct::EqStruct(int index) {
   myIndex = index;  // index
@@ -79,7 +80,7 @@ EqStruct::EqStruct(int index) {
   var9 = "abcdefghijklmnopqrstuvwxyz";
 }
 
-void EqStruct::toData(apache::geode::client::DataOutput &out) const {
+void EqStruct::toData(apache::geode::client::DataOutput& out) const {
   // Strings
   out.writeUTF(state);
   out.writeUTF(demandInd);
@@ -139,7 +140,7 @@ void EqStruct::toData(apache::geode::client::DataOutput &out) const {
   out.writeDouble(discretionOffset);
 }
 
-void EqStruct::fromData(apache::geode::client::DataInput &in) {
+void EqStruct::fromData(apache::geode::client::DataInput& in) {
   // Strings
   state = in.readUTF();
   demandInd = in.readUTF();
@@ -204,3 +205,5 @@ std::string EqStruct::toString() const {
           timestamp, myIndex, cxlQty);
   return buf;
 }
+
+}  // namespace testobject

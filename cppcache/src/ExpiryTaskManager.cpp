@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-#include "config.h"
 #include "ExpiryTaskManager.hpp"
-#include "util/Log.hpp"
-#include "DistributedSystem.hpp"
+
 #include "Assert.hpp"
+#include "DistributedSystem.hpp"
 #include "DistributedSystemImpl.hpp"
+#include "config.h"
+#include "util/Log.hpp"
 
 #if defined(_WIN32)
 #include <ace/WFMO_Reactor.h>
@@ -31,46 +32,23 @@
 #include <ace/Dev_Poll_Reactor.h>
 #endif
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 const char* ExpiryTaskManager::NC_ETM_Thread = "NC ETM Thread";
 
 ExpiryTaskManager::ExpiryTaskManager() : m_reactorEventLoopRunning(false) {
+  auto timer = std::unique_ptr<GF_Timer_Heap_ImmediateReset>(
+      new GF_Timer_Heap_ImmediateReset());
 #if defined(_WIN32)
-  m_reactor = new ACE_Reactor(
-      new ACE_WFMO_Reactor(nullptr, new GF_Timer_Heap_ImmediateReset()), 1);
+  m_reactor = new ACE_Reactor(new ACE_WFMO_Reactor(nullptr, timer.get()), 1);
 #elif defined(WITH_ACE_Select_Reactor)
-  m_reactor = new ACE_Reactor(
-      new ACE_Select_Reactor(nullptr, new GF_Timer_Heap_ImmediateReset()), 1);
+  m_reactor = new ACE_Reactor(new ACE_Select_Reactor(nullptr, timer.get()), 1);
 #else
-  m_reactor = new ACE_Reactor(
-      new ACE_Dev_Poll_Reactor(nullptr, new GF_Timer_Heap_ImmediateReset()), 1);
+  m_reactor = new ACE_Reactor(new ACE_Dev_Poll_Reactor(nullptr, timer.get()) 1);
 #endif
-}
-
-long ExpiryTaskManager::scheduleExpiryTask(ACE_Event_Handler* handler,
-                                           uint32_t expTime, uint32_t interval,
-                                           bool cancelExistingTask) {
-  LOGFINER("ExpiryTaskManager: expTime %d, interval %d, cancelExistingTask %d",
-           expTime, interval, cancelExistingTask);
-  if (cancelExistingTask) {
-    m_reactor->cancel_timer(handler, 1);
-  }
-
-  ACE_Time_Value expTimeValue(expTime);
-  ACE_Time_Value intervalValue(interval);
-  return m_reactor->schedule_timer(handler, nullptr, expTimeValue, intervalValue);
-}
-
-long ExpiryTaskManager::scheduleExpiryTask(ACE_Event_Handler* handler,
-                                           ACE_Time_Value expTimeValue,
-                                           ACE_Time_Value intervalVal,
-                                           bool cancelExistingTask) {
-  if (cancelExistingTask) {
-    m_reactor->cancel_timer(handler, 1);
-  }
-
-  return m_reactor->schedule_timer(handler, nullptr, expTimeValue, intervalVal);
+  timer.release();
 }
 
 int ExpiryTaskManager::resetTask(ExpiryTaskManager::id_type id, uint32_t sec) {
@@ -85,7 +63,11 @@ int ExpiryTaskManager::cancelTask(ExpiryTaskManager::id_type id) {
 int ExpiryTaskManager::svc() {
   DistributedSystemImpl::setThreadName(NC_ETM_Thread);
   LOGFINE("ExpiryTaskManager thread is running.");
-  m_reactorEventLoopRunning = true;
+  {
+    std::unique_lock<std::mutex> lock(m_mutex);
+    m_reactorEventLoopRunning = true;
+    m_condition.notify_all();
+  }
   m_reactor->owner(ACE_OS::thr_self());
   m_reactor->run_reactor_event_loop();
   LOGFINE("ExpiryTaskManager thread has stopped.");
@@ -93,21 +75,21 @@ int ExpiryTaskManager::svc() {
 }
 
 void ExpiryTaskManager::stopExpiryTaskManager() {
+  std::unique_lock<std::mutex> lock(m_mutex);
+
   if (m_reactorEventLoopRunning) {
     m_reactor->end_reactor_event_loop();
     this->wait();
     GF_D_ASSERT(m_reactor->reactor_event_loop_done() > 0);
     m_reactorEventLoopRunning = false;
+    m_condition.notify_all();
   }
 }
 
 void ExpiryTaskManager::begin() {
   this->activate();
-  ACE_Time_Value t;
-  t.msec(50);
-  while (!m_reactorEventLoopRunning) {
-    ACE_OS::sleep(t);
-  }
+  std::unique_lock<std::mutex> lock(m_mutex);
+  m_condition.wait(lock, [this] { return m_reactorEventLoopRunning; });
 }
 
 ExpiryTaskManager::~ExpiryTaskManager() {
@@ -115,3 +97,7 @@ ExpiryTaskManager::~ExpiryTaskManager() {
   delete m_reactor;
   m_reactor = nullptr;
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

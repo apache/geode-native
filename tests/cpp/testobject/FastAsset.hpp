@@ -25,18 +25,18 @@
  */
 
 #include <string>
-#include "fwklib/Timer.hpp"
-#include "fwklib/FrameworkTest.hpp"
-#include "TimestampedObject.hpp"
+
 #include <ace/ACE.h>
 #include <ace/OS.h>
 #include <ace/Time_Value.h>
 
+#include "TimestampedObject.hpp"
 #include "testobject_export.h"
 
-using namespace apache::geode::client;
-using namespace testframework;
 namespace testobject {
+
+using apache::geode::client::DataInput;
+using apache::geode::client::DataOutput;
 
 class TESTOBJECT_EXPORT FastAsset : public TimestampedObject {
  private:
@@ -53,7 +53,6 @@ class TESTOBJECT_EXPORT FastAsset : public TimestampedObject {
   ~FastAsset() override = default;
   void toData(DataOutput& output) const override;
   void fromData(DataInput& input) override;
-  int32_t getClassId() const override { return 24; }
 
   size_t objectSize() const override {
     auto objectSize = sizeof(FastAsset);

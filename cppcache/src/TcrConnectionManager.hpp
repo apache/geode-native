@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_TCRCONNECTIONMANAGER_H_
-#define GEODE_TCRCONNECTIONMANAGER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,27 +15,32 @@
  * limitations under the License.
  */
 
-#include <geode/internal/geode_globals.hpp>
-#include "Task.hpp"
-#include <string>
-#include <ace/Recursive_Thread_Mutex.h>
-#include <ace/Map_Manager.h>
-#include <ace/Semaphore.h>
-#include <vector>
-#include <unordered_map>
-#include <list>
-#include "ace/config-lite.h"
-#include "ace/Versioned_Namespace.h"
-#include "Queue.hpp"
-#include "ThinClientRedundancyManager.hpp"
+#pragma once
 
-namespace ACE_VERSIONED_NAMESPACE_NAME {
-class ACE_Task_Base;
-}  // namespace ACE_VERSIONED_NAMESPACE_NAME
+#ifndef GEODE_TCRCONNECTIONMANAGER_H_
+#define GEODE_TCRCONNECTIONMANAGER_H_
+
+#include <list>
+#include <mutex>
+#include <string>
+#include <unordered_map>
+#include <vector>
+
+#include <ace/Semaphore.h>
+#include <ace/config-lite.h>
+
+#include <geode/internal/geode_globals.hpp>
+
+#include "ExpiryTaskManager.hpp"
+#include "Queue.hpp"
+#include "Task.hpp"
+#include "ThinClientRedundancyManager.hpp"
+#include "util/synchronized_map.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
+
 class TcrConnection;
 class TcrEndpoint;
 class TcrMessage;
@@ -51,9 +51,9 @@ class ThinClientRegion;
 /**
  * @brief transport data between caches
  */
-class APACHE_GEODE_EXPORT TcrConnectionManager {
+class TcrConnectionManager {
  public:
-  TcrConnectionManager(CacheImpl* cache);
+  explicit TcrConnectionManager(CacheImpl* cache);
   ~TcrConnectionManager();
   void init(bool isPool = false);
   void startFailoverAndCleanupThreads(bool isPool = false);
@@ -65,7 +65,7 @@ class APACHE_GEODE_EXPORT TcrConnectionManager {
   int checkConnection(const ACE_Time_Value&, const void*);
   int checkRedundancy(const ACE_Time_Value&, const void*);
   int processEventIdMap(const ACE_Time_Value&, const void*);
-  long getPingTaskId();
+  ExpiryTaskManager::id_type getPingTaskId();
   void close();
 
   void readyForEvents();
@@ -77,7 +77,8 @@ class APACHE_GEODE_EXPORT TcrConnectionManager {
   void setClientCrashTEST() { TEST_DURABLE_CLIENT_CRASH = true; }
   volatile static bool TEST_DURABLE_CLIENT_CRASH;
 
-  inline ACE_Map_Manager<std::string, TcrEndpoint*, ACE_Recursive_Thread_Mutex>&
+  inline synchronized_map<std::unordered_map<std::string, TcrEndpoint*>,
+                          std::recursive_mutex>&
   getGlobalEndpoints() {
     return m_endpoints;
   }
@@ -118,20 +119,20 @@ class APACHE_GEODE_EXPORT TcrConnectionManager {
 
   inline void acquireRedundancyLock() {
     m_redundancyManager->acquireRedundancyLock();
-    m_distMngrsLock.acquire_read();
+    m_distMngrsLock.lock();
   }
 
   inline void releaseRedundancyLock() {
     m_redundancyManager->releaseRedundancyLock();
-    m_distMngrsLock.release();
+    m_distMngrsLock.unlock();
   }
 
   bool checkDupAndAdd(std::shared_ptr<EventId> eventid) {
     return m_redundancyManager->checkDupAndAdd(eventid);
   }
 
-  ACE_Recursive_Thread_Mutex* getRedundancyLock() {
-    return &m_redundancyManager->getRedundancyLock();
+  std::recursive_mutex& getRedundancyLock() {
+    return m_redundancyManager->getRedundancyLock();
   }
 
   GfErrType sendRequestToPrimary(TcrMessage& request, TcrMessageReply& reply) {
@@ -143,16 +144,17 @@ class APACHE_GEODE_EXPORT TcrConnectionManager {
  private:
   CacheImpl* m_cache;
   volatile bool m_initGuard;
-  ACE_Map_Manager<std::string, TcrEndpoint*, ACE_Recursive_Thread_Mutex>
+  synchronized_map<std::unordered_map<std::string, TcrEndpoint*>,
+                   std::recursive_mutex>
       m_endpoints;
   std::list<TcrEndpoint*> m_poolEndpointList;
 
   // key is hostname:port
   std::list<ThinClientBaseDM*> m_distMngrs;
-  ACE_Recursive_Thread_Mutex m_distMngrsLock;
+  std::recursive_mutex m_distMngrsLock;
 
   ACE_Semaphore m_failoverSema;
-  Task<TcrConnectionManager>* m_failoverTask;
+  std::unique_ptr<Task<TcrConnectionManager>> m_failoverTask;
 
   bool removeRefToEndpoint(TcrEndpoint* ep, bool keepEndpoint = false);
   TcrEndpoint* addRefToTcrEndpoint(std::string endpointName,
@@ -162,28 +164,28 @@ class APACHE_GEODE_EXPORT TcrConnectionManager {
   void removeHAEndpoints();
 
   ACE_Semaphore m_cleanupSema;
-  Task<TcrConnectionManager>* m_cleanupTask;
+  std::unique_ptr<Task<TcrConnectionManager>> m_cleanupTask;
 
-  long m_pingTaskId;
-  long m_servermonitorTaskId;
-  Queue<Task<TcrEndpoint> > m_receiverReleaseList;
-  Queue<TcrConnection> m_connectionReleaseList;
-  Queue<ACE_Semaphore> m_notifyCleanupSemaList;
+  ExpiryTaskManager::id_type m_pingTaskId;
+  ExpiryTaskManager::id_type m_servermonitorTaskId;
+  Queue<Task<TcrEndpoint>*> m_receiverReleaseList;
+  Queue<TcrConnection*> m_connectionReleaseList;
+  Queue<ACE_Semaphore*> m_notifyCleanupSemaList;
 
   ACE_Semaphore m_redundancySema;
-  Task<TcrConnectionManager>* m_redundancyTask;
-  ACE_Recursive_Thread_Mutex m_notificationLock;
+  std::unique_ptr<Task<TcrConnectionManager>> m_redundancyTask;
+  std::recursive_mutex m_notificationLock;
   bool m_isDurable;
 
   bool m_isNetDown;
 
   ThinClientRedundancyManager* m_redundancyManager;
 
-  int failover(volatile bool& isRunning);
-  int redundancy(volatile bool& isRunning);
+  void failover(std::atomic<bool>& isRunning);
+  void redundancy(std::atomic<bool>& isRunning);
 
   void cleanNotificationLists();
-  int cleanup(volatile bool& isRunning);
+  void cleanup(std::atomic<bool>& isRunning);
 
   // Disallow copy constructor and assignment operator.
   TcrConnectionManager(const TcrConnectionManager&);
@@ -204,11 +206,11 @@ class DistManagersLockGuard {
   TcrConnectionManager& m_tccm;
 
  public:
-  DistManagersLockGuard(TcrConnectionManager& tccm) : m_tccm(tccm) {
-    m_tccm.m_distMngrsLock.acquire();
+  explicit DistManagersLockGuard(TcrConnectionManager& tccm) : m_tccm(tccm) {
+    m_tccm.m_distMngrsLock.lock();
   }
 
-  ~DistManagersLockGuard() { m_tccm.m_distMngrsLock.release(); }
+  ~DistManagersLockGuard() { m_tccm.m_distMngrsLock.unlock(); }
 };
 }  // namespace client
 }  // namespace geode

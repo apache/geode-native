@@ -41,8 +41,8 @@ namespace Apache
       void CacheableObjectArray::ToData(DataOutput^ output)
       {
         output->WriteArrayLen((System::Int32)Count);
-        output->WriteByte((int8_t)apache::geode::client::DSCode::Class);
-        output->WriteByte((int8_t)apache::geode::client::DSCode::CacheableASCIIString);
+        output->WriteByte((int8_t)apache::geode::client::internal::DSCode::Class);
+        output->WriteByte((int8_t)apache::geode::client::internal::DSCode::CacheableASCIIString);
         output->WriteUTF("java.lang.Object");
 
         for each (Object^ obj in this) {

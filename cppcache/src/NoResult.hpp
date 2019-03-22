@@ -20,9 +20,9 @@
 #ifndef GEODE_NORESULT_H_
 #define GEODE_NORESULT_H_
 
-#include <geode/internal/geode_globals.hpp>
 #include <geode/ExceptionTypes.hpp>
 #include <geode/ResultCollector.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 namespace apache {
 namespace geode {

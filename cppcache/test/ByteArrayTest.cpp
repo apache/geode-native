@@ -17,7 +17,7 @@
 
 #include "ByteArrayFixture.hpp"
 
-using namespace apache::geode::client;
+using apache::geode::client::ByteArray;
 
 TEST(ByteArrayTest, TestNoArgConstructor) {
   const ByteArray ba;

@@ -23,7 +23,6 @@
 #include <memory>
 #include <string>
 
-#define BOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED
 #include <boost/stacktrace.hpp>
 
 namespace apache {
@@ -32,7 +31,7 @@ namespace client {
 
 class StackTrace {
  public:
-  StackTrace(size_t skip = 0);
+  explicit StackTrace(size_t skip = 0);
   ~StackTrace() noexcept;
   std::string getString() const;
 

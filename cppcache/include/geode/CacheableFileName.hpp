@@ -20,8 +20,6 @@
 #ifndef GEODE_CACHEABLEFILENAME_H_
 #define GEODE_CACHEABLEFILENAME_H_
 
-
-
 #include <memory>
 
 #include "CacheableKey.hpp"
@@ -35,19 +33,21 @@ namespace apache {
 namespace geode {
 namespace client {
 
-/**
- * Implement an immutable wrapper for filenames that can serve as a
- * distributable filename object for caching as both key and value.
- */
 class DataInput;
 class DataOutput;
 class Serializable;
 
+/**
+ * Implements an immutable wrapper for filenames that can serve as a
+ * distributable filename object for caching as both key and value.
+ */
+
 class APACHE_GEODE_EXPORT CacheableFileName : public CacheableString {
  public:
   inline CacheableFileName() = default;
-  inline CacheableFileName(const std::string& value) : CacheableString(value) {}
-  inline CacheableFileName(std::string&& value)
+  inline explicit CacheableFileName(const std::string& value)
+      : CacheableString(value) {}
+  inline explicit CacheableFileName(std::string&& value)
       : CacheableString(std::move(value)) {}
   ~CacheableFileName() noexcept override = default;
   void operator=(const CacheableFileName& other) = delete;

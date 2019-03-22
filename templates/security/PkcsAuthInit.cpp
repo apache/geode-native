@@ -20,15 +20,14 @@
 #include <cstdio>
 #include <string>
 
-#include "geode/Properties.hpp"
-#include "geode/CacheableBuiltins.hpp"
-#include "geode/ExceptionTypes.hpp"
-
-#include "securityimpl_export.h"
-
-#include <geode/Properties.hpp>
 #include <geode/CacheableBuiltins.hpp>
 #include <geode/ExceptionTypes.hpp>
+#include <geode/Properties.hpp>
+
+#include "geode/CacheableBuiltins.hpp"
+#include "geode/ExceptionTypes.hpp"
+#include "geode/Properties.hpp"
+#include "securityimpl_export.h"
 
 namespace apache {
 namespace geode {
@@ -68,8 +67,7 @@ bool readPKCSPublicPrivateKey(FILE* keyStoreFP, const char* keyStorePassword,
                               EVP_PKEY** outPrivateKey, X509** outCertificate) {
   PKCS12* p12;
 
-  if (!keyStoreFP || !keyStorePassword ||
-      (keyStorePassword[0] == '\0')) {
+  if (!keyStoreFP || !keyStorePassword || (keyStorePassword[0] == '\0')) {
     return (false);
   }
 

@@ -24,9 +24,9 @@
  * @file
  */
 
-#include "internal/geode_globals.hpp"
 #include "CacheableKey.hpp"
 #include "Serializable.hpp"
+#include "internal/geode_globals.hpp"
 
 namespace apache {
 namespace geode {
@@ -72,8 +72,7 @@ class APACHE_GEODE_EXPORT CacheLoader {
    *@see Region::get .
    */
   virtual std::shared_ptr<Cacheable> load(
-      Region& rp,
-      const std::shared_ptr<CacheableKey>& key,
+      Region& rp, const std::shared_ptr<CacheableKey>& key,
       const std::shared_ptr<Serializable>& aCallbackArgument) = 0;
 
   /** Called when the region containing this callback is destroyed, when

@@ -20,8 +20,8 @@
  * limitations under the License.
  */
 
-#include "PartitionResolver.hpp"
 #include "CacheableBuiltins.hpp"
+#include "PartitionResolver.hpp"
 
 namespace apache {
 namespace geode {
@@ -73,20 +73,20 @@ class EntryEvent;
  */
 class APACHE_GEODE_EXPORT FixedPartitionResolver : public PartitionResolver {
   /**
-  * @brief public methods
-  */
+   * @brief public methods
+   */
 
  public:
   /**
-  * This method is used to get the name of the partition for the given entry
-  * operation.
-  *
-  * @param opDetails
-  *          the details of the entry event e.g. {@link Region#get(Object)}
-  *
-  * @return partition-name associated with node which allows mapping of given
-  *         data to user defined partition
-  */
+   * This method is used to get the name of the partition for the given entry
+   * operation.
+   *
+   * @param opDetails
+   *          the details of the entry event e.g. {@link Region#get(Object)}
+   *
+   * @return partition-name associated with node which allows mapping of given
+   *         data to user defined partition
+   */
   virtual const std::string& getPartitionName(const EntryEvent& opDetails) = 0;
 };
 }  // namespace client

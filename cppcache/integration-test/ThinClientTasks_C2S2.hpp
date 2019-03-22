@@ -32,6 +32,10 @@
 #define PROCESS3 s2p1
 #define PROCESS4 s2p2
 
+namespace { // NOLINT(google-build-namespaces)
+
+using apache::geode::client::CacheHelper;
+
 DUNIT_TASK_DEFINITION(SERVER1, StartLocator)
   {
     CacheHelper::initLocator(1);
@@ -92,5 +96,7 @@ void startServers() { CALL_TASK(StartServersWithLocator); }
 void startServer() { CALL_TASK(startServerWithLocator); }
 
 void closeLocator() { CALL_TASK(CloseLocator); }
+
+}  // namespace
 
 #endif  // GEODE_INTEGRATION_TEST_THINCLIENTTASKS_C2S2_H_

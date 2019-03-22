@@ -44,6 +44,12 @@ recieved.
 #define SERVER1 s2p1
 #define FEEDER s2p2
 
+namespace { // NOLINT(google-build-namespaces)
+
+using apache::geode::client::EntryEvent;
+using apache::geode::client::HashMapOfCacheable;
+using apache::geode::client::RegionEvent;
+
 class OperMonitor : public CacheListener {
   int m_ops;
   HashMapOfCacheable m_map;
@@ -67,7 +73,7 @@ class OperMonitor : public CacheListener {
  public:
   OperMonitor() : m_ops(0), m_id(-1) {}
 
-  OperMonitor(int id) : m_ops(0), m_id(id) {
+  explicit OperMonitor(int id) : m_ops(0), m_id(id) {
     LOGINFO("Inside OperMonitor %d ", m_id);
   }
 
@@ -364,5 +370,7 @@ DUNIT_TASK_DEFINITION(SERVER1, closeServer)
     LOG("SERVER closed");
   }
 END_TASK_DEFINITION
+
+}  // namespace
 
 #endif  // GEODE_INTEGRATION_TEST_THINCLIENTDURABLEINTEREST_H_

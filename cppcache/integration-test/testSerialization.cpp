@@ -33,22 +33,25 @@
 
 #include "CacheHelper.hpp"
 
-using namespace apache::geode::client;
-
 #include "locator_globals.hpp"
+
+using apache::geode::client::Cacheable;
+using apache::geode::client::DataInput;
+using apache::geode::client::DataOutput;
+using apache::geode::client::DataSerializable;
 
 int32_t g_classIdToReturn = 0x04;
 int32_t g_classIdToReturn2 = 0x1234;
 int32_t g_classIdToReturn4 = 0x123456;
 
 template <class T>
-std::shared_ptr<T> duplicate(const std::shared_ptr<T>& orig) {
+std::shared_ptr<T> duplicate(const std::shared_ptr<T> &orig) {
   std::shared_ptr<T> result;
   auto dout = getHelper()->getCache()->createDataOutput();
   dout.writeObject(orig);
 
   size_t length = 0;
-  auto&& buffer = dout.getBuffer(&length);
+  auto &&buffer = dout.getBuffer(&length);
   auto din = getHelper()->getCache()->createDataInput(buffer, length);
   din.readObject(result);
 
@@ -68,48 +71,37 @@ class OtherType : public DataSerializable {
   CData m_struct;
   int32_t m_classIdToReturn;
 
-  explicit OtherType(int32_t classIdToReturn = g_classIdToReturn)
-      : m_classIdToReturn(classIdToReturn) {
+  OtherType() {
     m_struct.a = 0;
     m_struct.b = 0;
     m_struct.c = 0;
     m_struct.d = 0;
   }
 
-  void toData(DataOutput& output) const override {
+  void toData(DataOutput &output) const override {
     // TODO: refactor - this insane
-    output.writeBytes(reinterpret_cast<const uint8_t*>(&m_struct), sizeof(CData));
+    output.writeBytes(reinterpret_cast<const uint8_t *>(&m_struct),
+                      sizeof(CData));
     output.writeInt(m_classIdToReturn);
   }
 
   size_t objectSize() const override { return sizeof(CData); }
 
-  void fromData(DataInput& input) override {
+  void fromData(DataInput &input) override {
     int32_t size = input.readArrayLength();
-    input.readBytesOnly(reinterpret_cast<uint8_t*>(&m_struct), size);
+    input.readBytesOnly(reinterpret_cast<uint8_t *>(&m_struct), size);
     m_classIdToReturn = input.readInt32();
   }
 
   static std::shared_ptr<Serializable> createDeserializable() {
-    return std::make_shared<OtherType>(g_classIdToReturn);
+    return std::make_shared<OtherType>();
   }
-
-  static std::shared_ptr<Serializable> createDeserializable2() {
-    return std::make_shared<OtherType>(g_classIdToReturn2);
-  }
-
-  static std::shared_ptr<Serializable> createDeserializable4() {
-    return std::make_shared<OtherType>(g_classIdToReturn4);
-  }
-
-  int32_t getClassId() const override { return m_classIdToReturn; }
 
   uint32_t size() const { return sizeof(CData); }
 
-  static std::shared_ptr<Cacheable> uniqueCT(
-      int32_t i, int32_t classIdToReturn = g_classIdToReturn) {
-    auto ot = std::make_shared<OtherType>(classIdToReturn);
-    ot->m_struct.a = (int)i;
+  static std::shared_ptr<Cacheable> uniqueCT(int32_t i) {
+    auto ot = std::make_shared<OtherType>();
+    ot->m_struct.a = static_cast<int>(i);
     ot->m_struct.b = (i % 2 == 0) ? true : false;
     ot->m_struct.c = static_cast<char>(65) + i;
     ot->m_struct.d = ((2.0) * static_cast<double>(i));
@@ -119,7 +111,7 @@ class OtherType : public DataSerializable {
 
     printf("double hex 0x%016" PRIX64 "\n", ot->m_struct.e);
 
-    return ot;
+    return std::move(ot);
   }
 
   static void validateCT(int32_t i, const std::shared_ptr<Cacheable> otPtr) {
@@ -162,9 +154,8 @@ DUNIT_TASK(Sender, SetupAndPutInts)
     auto serializationRegistry =
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
             ->getSerializationRegistry();
-    serializationRegistry->addType(OtherType::createDeserializable);
-    serializationRegistry->addType(OtherType::createDeserializable2);
-    serializationRegistry->addType(OtherType::createDeserializable4);
+    serializationRegistry->addDataSerializableType(
+        OtherType::createDeserializable, g_classIdToReturn);
 
     getHelper()->createPooledRegion("DistRegionAck", USE_ACK, locatorsG,
                                     "__TEST_POOL1__", true, true);
@@ -181,10 +172,8 @@ DUNIT_TASK(Sender, SendCT)
   {
     for (int32_t i = 0; i < 30; i += 3) {
       try {
-        regionPtr->put(i, OtherType::uniqueCT(i, g_classIdToReturn));
-        regionPtr->put(i + 1, OtherType::uniqueCT(i + 1, g_classIdToReturn2));
-        regionPtr->put(i + 2, OtherType::uniqueCT(i + 2, g_classIdToReturn4));
-      } catch (const apache::geode::client::TimeoutException&) {
+        regionPtr->put(i, OtherType::uniqueCT(i));
+      } catch (const apache::geode::client::TimeoutException &) {
       }
     }
   }
@@ -194,8 +183,6 @@ DUNIT_TASK(Sender, RValidateCT)
   {
     for (int32_t i = 0; i < 30; i += 3) {
       OtherType::validateCT(i, regionPtr->get(i));
-      OtherType::validateCT(i + 1, regionPtr->get(i + 1));
-      OtherType::validateCT(i + 2, regionPtr->get(i + 2));
     }
   }
 ENDTASK

@@ -24,24 +24,24 @@
 #include <memory>
 #include <utility>
 
-#include <geode/internal/geode_globals.hpp>
-#include <geode/Serializable.hpp>
 #include <geode/CacheableKey.hpp>
 #include <geode/ExceptionTypes.hpp>
+#include <geode/Serializable.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 #include "CacheImpl.hpp"
+#include "CacheableToken.hpp"
 #include "ExpiryTaskManager.hpp"
 #include "RegionInternal.hpp"
-#include "CacheableToken.hpp"
 #include "VersionStamp.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
-class APACHE_GEODE_EXPORT MapEntry;
-class APACHE_GEODE_EXPORT MapEntryImpl;
 
-class APACHE_GEODE_EXPORT LRUEntryProperties;
+class MapEntry;
+class MapEntryImpl;
+class LRUEntryProperties;
 class CacheImpl;
 
 /**
@@ -52,11 +52,10 @@ class APACHE_GEODE_EXPORT ExpEntryProperties {
  public:
   typedef std::chrono::system_clock::time_point time_point;
 
-  inline ExpEntryProperties(ExpiryTaskManager* expiryTaskManager)
-      :
-      m_lastAccessTime(0),
-      m_lastModifiedTime(0),
-      m_expiryTaskId(-1),
+  inline explicit ExpEntryProperties(ExpiryTaskManager* expiryTaskManager)
+      : m_lastAccessTime(0),
+        m_lastModifiedTime(0),
+        m_expiryTaskId(-1),
         m_expiryTaskManager(expiryTaskManager) {
     // The reactor always gives +ve id while scheduling.
     // -1 will indicate that an expiry task has not been scheduled
@@ -87,9 +86,13 @@ class APACHE_GEODE_EXPORT ExpEntryProperties {
     m_lastModifiedTime = currTime.time_since_epoch().count();
   }
 
-  inline void setExpiryTaskId(long id) { m_expiryTaskId = id; }
+  inline void setExpiryTaskId(ExpiryTaskManager::id_type id) {
+    m_expiryTaskId = id;
+  }
 
-  inline long getExpiryTaskId() const { return m_expiryTaskId; }
+  inline ExpiryTaskManager::id_type getExpiryTaskId() const {
+    return m_expiryTaskId;
+  }
 
   inline void cancelExpiryTaskId(
       const std::shared_ptr<CacheableKey>& key) const {
@@ -109,7 +112,7 @@ class APACHE_GEODE_EXPORT ExpEntryProperties {
   /** last modified time in secs, 32bit.. */
   std::atomic<time_point::duration::rep> m_lastModifiedTime;
   /** The expiry task id for this particular entry.. **/
-  long m_expiryTaskId;
+  ExpiryTaskManager::id_type m_expiryTaskId;
   ExpiryTaskManager* m_expiryTaskManager;
 };
 
@@ -259,7 +262,7 @@ class MapEntryImpl : public MapEntry,
  protected:
   inline explicit MapEntryImpl(bool) : MapEntry(true) {}
 
-  inline MapEntryImpl(const std::shared_ptr<CacheableKey>& key)
+  inline explicit MapEntryImpl(const std::shared_ptr<CacheableKey>& key)
       : MapEntry(), m_key(key) {}
 
   std::shared_ptr<Cacheable> m_value;
@@ -276,7 +279,8 @@ class APACHE_GEODE_EXPORT VersionedMapEntryImpl : public MapEntryImpl,
  protected:
   inline explicit VersionedMapEntryImpl(bool) : MapEntryImpl(true) {}
 
-  inline VersionedMapEntryImpl(const std::shared_ptr<CacheableKey>& key)
+  inline explicit VersionedMapEntryImpl(
+      const std::shared_ptr<CacheableKey>& key)
       : MapEntryImpl(key) {}
 
  private:
@@ -287,7 +291,7 @@ class APACHE_GEODE_EXPORT VersionedMapEntryImpl : public MapEntryImpl,
 
 class APACHE_GEODE_EXPORT EntryFactory {
  public:
-  EntryFactory(const bool concurrencyChecksEnabled)
+  explicit EntryFactory(const bool concurrencyChecksEnabled)
       : m_concurrencyChecksEnabled(concurrencyChecksEnabled) {}
 
   virtual ~EntryFactory() {}

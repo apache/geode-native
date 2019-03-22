@@ -15,32 +15,38 @@
  * limitations under the License.
  */
 
+#include "util/Log.hpp"
+
+#include <algorithm>
 #include <cctype>
+#include <chrono>
+#include <cinttypes>
+#include <ctime>
+#include <mutex>
 #include <string>
+#include <thread>
 #include <utility>
 #include <vector>
-#include <thread>
-#include <chrono>
 
 #include <ace/ACE.h>
-#include <ace/Guard_T.h>
-#include <ace/Thread_Mutex.h>
-#include <ace/OS.h>
-#include <ace/OS_NS_time.h>
-#include <ace/OS_NS_sys_time.h>
-#include <ace/OS_NS_unistd.h>
-#include <ace/OS_NS_Thread.h>
 #include <ace/Dirent.h>
 #include <ace/Dirent_Selector.h>
+#include <ace/OS.h>
+#include <ace/OS_NS_Thread.h>
 #include <ace/OS_NS_sys_stat.h>
+#include <ace/OS_NS_sys_time.h>
+#include <ace/OS_NS_time.h>
+#include <ace/OS_NS_unistd.h>
+#include <boost/process/environment.hpp>
 
-#include <geode/internal/geode_globals.hpp>
 #include <geode/ExceptionTypes.hpp>
+#include <geode/internal/geode_globals.hpp>
 #include <geode/util/LogLevel.hpp>
 
-#include "util/Log.hpp"
-#include "geodeBanner.hpp"
+#include "../internal/hacks/AceThreadId.h"
 #include "Assert.hpp"
+#include "geodeBanner.hpp"
+#include "util/chrono/time_point.hpp"
 
 #if defined(_WIN32)
 #include <io.h>
@@ -76,7 +82,7 @@ size_t g_diskSpaceLimit = GEODE_MAX_LOG_DISK_LIMIT;
 
 char g_logFileNameBuffer[2048] = {0};
 
-ACE_Thread_Mutex* g_logMutex = new ACE_Thread_Mutex("Log::logMutex");
+std::mutex g_logMutex;
 
 int g_rollIndex = 0;
 size_t g_spaceUsed = 0;
@@ -138,7 +144,7 @@ static int comparator(const dirent** d1, const dirent** d2) {
     return 1;
   }
 
-  int diff = ACE_OS::strcmp((*d1)->d_name, (*d2)->d_name);
+  int diff = std::strcmp((*d1)->d_name, (*d2)->d_name);
   if (diff < 0) {
     return -1;
   } else if (diff > 0) {
@@ -155,26 +161,22 @@ namespace client {
 
 LogLevel Log::s_logLevel = LogLevel::Default;
 
-using namespace apache::geode::log::globals;
+using apache::geode::log::globals::g_bytesWritten;
+using apache::geode::log::globals::g_diskSpaceLimit;
+using apache::geode::log::globals::g_fileInfo;
+using apache::geode::log::globals::g_fileInfoPair;
+using apache::geode::log::globals::g_fileSizeLimit;
+using apache::geode::log::globals::g_isLogFileOpened;
+using apache::geode::log::globals::g_log;
+using apache::geode::log::globals::g_logFile;
+using apache::geode::log::globals::g_logFileWithExt;
+using apache::geode::log::globals::g_logMutex;
+using apache::geode::log::globals::g_pid;
+using apache::geode::log::globals::g_rollIndex;
+using apache::geode::log::globals::g_spaceUsed;
+using apache::geode::log::globals::g_uname;
 
 /*****************************************************************************/
-
-const char* Log::logFileName() {
-  ACE_Guard<ACE_Thread_Mutex> guard(*g_logMutex);
-
-  if (!g_logFile) {
-    g_logFileNameBuffer[0] = '\0';
-  } else {
-    if (g_logFile->size() >= sizeof g_logFileNameBuffer) {
-      throw IllegalStateException(
-          ("Log file name is too long: " + *g_logFile).c_str());
-    }
-    ACE_OS::strncpy(g_logFileNameBuffer, g_logFile->c_str(),
-                    sizeof(g_logFileNameBuffer));
-  }
-
-  return g_logFileNameBuffer;
-}
 
 void Log::init(LogLevel level, const char* logFileName, int32_t logFileLimit,
                int64_t logDiskSpaceLimit) {
@@ -184,7 +186,6 @@ void Log::init(LogLevel level, const char* logFileName, int32_t logFileLimit,
         "Call Log::close() before calling Log::init again.");
   }
   s_logLevel = level;
-  if (g_logMutex == nullptr) g_logMutex = new ACE_Thread_Mutex("Log::logMutex");
 
   if (logDiskSpaceLimit <
       0 /*|| logDiskSpaceLimit > GEODE_MAX_LOG_DISK_LIMIT*/) {
@@ -195,14 +196,10 @@ void Log::init(LogLevel level, const char* logFileName, int32_t logFileLimit,
     logFileLimit = GEODE_MAX_LOG_FILE_LIMIT;
   }
 
-  ACE_Guard<ACE_Thread_Mutex> guard(*g_logMutex);
+  std::lock_guard<decltype(g_logMutex)> guard(g_logMutex);
 
   if (logFileName && logFileName[0]) {
     std::string filename = logFileName;
-    if (filename.size() >= sizeof g_logFileNameBuffer) {
-      throw IllegalStateException(
-          ("Log file name is too long: " + filename).c_str());
-    }
     if (g_logFile) {
       *g_logFile = filename;
     } else {
@@ -211,17 +208,7 @@ void Log::init(LogLevel level, const char* logFileName, int32_t logFileLimit,
 
 #ifdef _WIN32
     // replace all '\' with '/' to make everything easier..
-    size_t length = g_logFile->length() + 1;
-    char* slashtmp = new char[length];
-    ACE_OS::strncpy(slashtmp, g_logFile->c_str(), length);
-    for (size_t i = 0; i < g_logFile->length(); i++) {
-      if (slashtmp[i] == '/') {
-        slashtmp[i] = '\\';
-      }
-    }
-    *g_logFile = slashtmp;
-    delete[] slashtmp;
-    slashtmp = nullptr;
+    std::replace(g_logFile->begin(), g_logFile->end(), '\\', '/');
 #endif
 
     // Appending a ".log" at the end if it does not exist or file has some other
@@ -278,7 +265,7 @@ void Log::init(LogLevel level, const char* logFileName, int32_t logFileLimit,
           if (fileHyphenPos != std::string::npos) {
             std::string buff =
                 tempname.substr(fileHyphenPos + 1, tempname.length());
-            g_rollIndex = ACE_OS::atoi(buff.c_str()) + 1;
+            g_rollIndex = std::stoi(buff) + 1;
           }
         }  // if loop
       }    // for loop
@@ -287,17 +274,6 @@ void Log::init(LogLevel level, const char* logFileName, int32_t logFileLimit,
 
     FILE* existingFile = fopen(g_logFileWithExt->c_str(), "r");
     if (existingFile != nullptr && logFileLimit > 0) {
-      /* adongre
-       * Coverity - II
-       * CID 29205: Calling risky function (SECURE_CODING)[VERY RISKY]. Using
-       * "sprintf" can cause a
-       * buffer overflow when done incorrectly. Because sprintf() assumes an
-       * arbitrarily long string,
-       * callers must be careful not to overflow the actual space of the
-       * destination.
-       * Use snprintf() instead, or correct precision specifiers.
-       * Fix : using ACE_OS::snprintf
-       */
       char rollFile[1024] = {0};
       std::string logsdirname;
       std::string logsbasename;
@@ -324,18 +300,18 @@ void Log::init(LogLevel level, const char* logFileName, int32_t logFileLimit,
         fnameBeforeExt = logsbasename.substr(0, posOfExt);
         extName = logsbasename.substr(posOfExt + 1, baselen);
       }
-      ACE_OS::snprintf(rollFile, 1024, "%s%c%s-%d.%s", logsdirname.c_str(),
-                       ACE_DIRECTORY_SEPARATOR_CHAR, fnameBeforeExt.c_str(),
-                       g_rollIndex++, extName.c_str());
+      std::snprintf(rollFile, 1024, "%s%c%s-%d.%s", logsdirname.c_str(),
+                    ACE_DIRECTORY_SEPARATOR_CHAR, fnameBeforeExt.c_str(),
+                    g_rollIndex++, extName.c_str());
       bool rollFileNameGot = false;
       while (!rollFileNameGot) {
         FILE* checkFile = fopen(rollFile, "r");
         if (checkFile != nullptr) {
           fclose(checkFile);
           checkFile = nullptr;
-          ACE_OS::snprintf(rollFile, 1024, "%s%c%s-%d.%s", logsdirname.c_str(),
-                           ACE_DIRECTORY_SEPARATOR_CHAR, fnameBeforeExt.c_str(),
-                           g_rollIndex++, extName.c_str());
+          std::snprintf(rollFile, 1024, "%s%c%s-%d.%s", logsdirname.c_str(),
+                        ACE_DIRECTORY_SEPARATOR_CHAR, fnameBeforeExt.c_str(),
+                        g_rollIndex++, extName.c_str());
         } else {
           rollFileNameGot = true;
         }
@@ -376,7 +352,7 @@ void Log::init(LogLevel level, const char* logFileName, int32_t logFileLimit,
 }
 
 void Log::close() {
-  ACE_Guard<ACE_Thread_Mutex> guard(*g_logMutex);
+  std::lock_guard<decltype(g_logMutex)> guard(g_logMutex);
 
   std::string oldfile;
 
@@ -493,8 +469,8 @@ const char* Log::levelToChars(LogLevel level) {
 
     default: {
       char buf[64] = {0};
-      ACE_OS::snprintf(buf, 64, "Unexpected log level: %d",
-                       static_cast<int>(level));
+      std::snprintf(buf, 64, "Unexpected log level: %d",
+                    static_cast<int>(level));
       throw IllegalArgumentException(buf);
     }
   }
@@ -536,22 +512,24 @@ LogLevel Log::charsToLevel(const std::string& chars) {
 
 char* Log::formatLogLine(char* buf, LogLevel level) {
   if (g_pid == 0) {
-    g_pid = ACE_OS::getpid();
+    g_pid = boost::this_process::get_id();
     ACE_OS::uname(&g_uname);
   }
   const size_t MINBUFSIZE = 128;
-  ACE_Time_Value clock = ACE_OS::gettimeofday();
-  time_t secs = clock.sec();
-  struct tm* tm_val = ACE_OS::localtime(&secs);
-  char* pbuf = buf;
-  pbuf += ACE_OS::snprintf(pbuf, 15, "[%s ", Log::levelToChars(level));
-  pbuf += ACE_OS::strftime(pbuf, MINBUFSIZE, "%Y/%m/%d %H:%M:%S", tm_val);
-  pbuf +=
-      ACE_OS::snprintf(pbuf, 15, ".%06ld ", static_cast<long>(clock.usec()));
-  pbuf += ACE_OS::strftime(pbuf, MINBUFSIZE, "%Z ", tm_val);
+  auto now = std::chrono::system_clock::now();
+  auto secs = std::chrono::system_clock::to_time_t(now);
+  auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(
+      now - std::chrono::system_clock::from_time_t(secs));
+  auto tm_val = apache::geode::util::chrono::localtime(secs);
+  auto pbuf = buf;
+  pbuf += std::snprintf(pbuf, 15, "[%s ", Log::levelToChars(level));
+  pbuf += std::strftime(pbuf, MINBUFSIZE, "%Y/%m/%d %H:%M:%S", &tm_val);
+  pbuf += std::snprintf(pbuf, 15, ".%06" PRId64 " ",
+                        static_cast<int64_t>(microseconds.count()));
+  pbuf += std::strftime(pbuf, MINBUFSIZE, "%Z ", &tm_val);
 
-  ACE_OS::snprintf(pbuf, 300, "%s:%d %lu] ", g_uname.nodename, g_pid,
-                   (unsigned long)ACE_OS::thr_self());
+  std::snprintf(pbuf, 300, "%s:%d %" PRIu64 "] ", g_uname.nodename, g_pid,
+                hacks::aceThreadId(ACE_OS::thr_self()));
 
   return buf;
 }
@@ -562,7 +540,7 @@ void Log::put(LogLevel level, const std::string& msg) {
 
 // int g_count = 0;
 void Log::put(LogLevel level, const char* msg) {
-  ACE_Guard<ACE_Thread_Mutex> guard(*g_logMutex);
+  std::lock_guard<decltype(g_logMutex)> guard(g_logMutex);
 
   g_fileInfo fileInfo;
 
@@ -591,8 +569,7 @@ void Log::put(LogLevel level, const char* msg) {
     }
 
     formatLogLine(buf, level);
-    size_t numChars =
-        static_cast<int>(ACE_OS::strlen(buf) + ACE_OS::strlen(msg));
+    size_t numChars = static_cast<int>(std::strlen(buf) + std::strlen(msg));
     g_bytesWritten +=
         numChars + 2;  // bcoz we have to count trailing new line (\n)
 
@@ -623,17 +600,17 @@ void Log::put(LogLevel level, const char* msg) {
         fnameBeforeExt = logsbasename.substr(0, posOfExt);
         extName = logsbasename.substr(posOfExt + 1, baselen);
       }
-      ACE_OS::snprintf(rollFile, 1024, "%s%c%s-%d.%s", logsdirname.c_str(),
-                       ACE_DIRECTORY_SEPARATOR_CHAR, fnameBeforeExt.c_str(),
-                       g_rollIndex++, extName.c_str());
+      std::snprintf(rollFile, 1024, "%s%c%s-%d.%s", logsdirname.c_str(),
+                    ACE_DIRECTORY_SEPARATOR_CHAR, fnameBeforeExt.c_str(),
+                    g_rollIndex++, extName.c_str());
       bool rollFileNameGot = false;
       while (!rollFileNameGot) {
         FILE* fp1 = fopen(rollFile, "r");
         if (fp1 != nullptr) {
           fclose(fp1);
-          ACE_OS::snprintf(rollFile, 1024, "%s%c%s-%d.%s", logsdirname.c_str(),
-                           ACE_DIRECTORY_SEPARATOR_CHAR, fnameBeforeExt.c_str(),
-                           g_rollIndex++, extName.c_str());
+          std::snprintf(rollFile, 1024, "%s%c%s-%d.%s", logsdirname.c_str(),
+                        ACE_DIRECTORY_SEPARATOR_CHAR, fnameBeforeExt.c_str(),
+                        g_rollIndex++, extName.c_str());
         } else {
           rollFileNameGot = true;
         }
@@ -662,8 +639,8 @@ void Log::put(LogLevel level, const char* msg) {
       int status = sds.open(dirname.c_str(), selector, comparator);
       if (status != -1) {
         for (int index = 1; index < sds.length(); ++index) {
-          ACE_OS::snprintf(fullpath, 512, "%s%c%s", dirname.c_str(),
-                           ACE_DIRECTORY_SEPARATOR_CHAR, sds[index]->d_name);
+          std::snprintf(fullpath, 512, "%s%c%s", dirname.c_str(),
+                        ACE_DIRECTORY_SEPARATOR_CHAR, sds[index]->d_name);
           ACE_OS::stat(fullpath, &statBuf);
           g_fileInfoPair = std::make_pair(fullpath, statBuf.st_size);
           fileInfo.push_back(g_fileInfoPair);
@@ -680,8 +657,8 @@ void Log::put(LogLevel level, const char* msg) {
           g_spaceUsed -= fileSize;
         } else {
           char printmsg[256];
-          ACE_OS::snprintf(printmsg, 256, "%s\t%s\n", "Could not delete",
-                           fileInfo[fileIndex].first.c_str());
+          std::snprintf(printmsg, 256, "%s\t%s\n", "Could not delete",
+                        fileInfo[fileIndex].first.c_str());
           int numChars =
               fprintf(g_log, "%s%s\n", formatLogLine(buf, level), printmsg);
           g_bytesWritten +=
@@ -728,7 +705,7 @@ void Log::enterFn(LogLevel level, const char* functionName) {
     fn = fn.substr(fn.size() - MAX_NAME_LENGTH, MAX_NAME_LENGTH);
   }
   char buf[MAX_NAME_LENGTH + 512] = {0};
-  ACE_OS::snprintf(buf, 1536, "{{{===>>> Entering function %s", fn.c_str());
+  std::snprintf(buf, 1536, "{{{===>>> Entering function %s", fn.c_str());
   put(level, buf);
 }
 
@@ -739,7 +716,7 @@ void Log::exitFn(LogLevel level, const char* functionName) {
     fn = fn.substr(fn.size() - MAX_NAME_LENGTH, MAX_NAME_LENGTH);
   }
   char buf[MAX_NAME_LENGTH + 512] = {0};
-  ACE_OS::snprintf(buf, 1536, "<<<===}}} Exiting function %s", fn.c_str());
+  std::snprintf(buf, 1536, "<<<===}}} Exiting function %s", fn.c_str());
   put(level, buf);
 }
 

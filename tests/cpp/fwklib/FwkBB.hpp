@@ -21,18 +21,18 @@
  */
 
 /**
-  * @file    FwkBB.hpp
-  * @since   1.0
-  * @version 1.0
-  * @see
-  */
+ * @file    FwkBB.hpp
+ * @since   1.0
+ * @version 1.0
+ * @see
+ */
+
+#include <fwklib/FwkLog.hpp>
+#include <sstream>
+#include <string>
+#include <vector>
 
 #include <geode/internal/geode_base.hpp>
-#include "fwklib/FwkLog.hpp"
-
-#include <vector>
-#include <string>
-#include <sstream>
 
 // ----------------------------------------------------------------------------
 
@@ -82,12 +82,12 @@ namespace testframework {
   */
 class FwkBBMessage {
  public:
-  FwkBBMessage(const char* cmd) : m_cmd(cmd) {}
+  explicit FwkBBMessage(const char* cmd) : m_cmd(cmd) {}
   FwkBBMessage() {}
   virtual ~FwkBBMessage() {}
 
   /** @brief clear message data
-    */
+   */
   void clear() {
     m_parameterVector.clear();
     m_id.clear();
@@ -96,10 +96,10 @@ class FwkBBMessage {
   }
 
   /** @brief pass to data to parse onReceive message
-    * @param psData data pointer, not null terminated
-    * @param dataSize data size of message
-    * @retval true = Success, false = Failed
-    */
+   * @param psData data pointer, not null terminated
+   * @param dataSize data size of message
+   * @retval true = Success, false = Failed
+   */
   void fromMessageStream(std::string data) {
     //        FWKINFO( "FwkBBMessage::fromMessageStream: " << data );
     char* str = const_cast<char*>(data.c_str());
@@ -140,9 +140,9 @@ class FwkBBMessage {
   }
 
   /** @brief get data stream to send
-    * @param sStream data stream
-    * @retval true = Success, false = Failed
-    */
+   * @param sStream data stream
+   * @retval true = Success, false = Failed
+   */
   std::string& toMessageStream() {
     m_stream.clear();
     std::ostringstream osMessage;
@@ -168,47 +168,47 @@ class FwkBBMessage {
   }
 
   /** @brief set Id of message
-    * @param sId id of message
-    */
+   * @param sId id of message
+   */
   void setId(std::string id) { m_id = id; };
 
   /** @brief set command of message
-    * @param sCommand command of message
-    */
+   * @param sCommand command of message
+   */
   void setCommand(std::string cmd) { m_cmd = cmd; };
 
   /** @brief set result of message
-    * @param sResult result of message
-    */
+   * @param sResult result of message
+   */
   void setResult(std::string result) { m_result = result; };
 
   /** @brief add parameter value to message
-    * @param sParameter parameter of message
-    */
+   * @param sParameter parameter of message
+   */
   void addParameter(std::string parameter) {
     m_parameterVector.push_back(parameter);
   };
 
   /** @brief get id of message
-    * @retval id of message
-    */
+   * @retval id of message
+   */
   std::string getId() { return m_id; };
 
   /** @brief get command of message
-    * @retval command of message
-    */
+   * @retval command of message
+   */
   std::string getCommand() { return m_cmd; };
   char getCmdChar() { return m_cmd.at(0); }
 
   /** @brief get result of message
-    * @retval result of message
-    */
+   * @retval result of message
+   */
   std::string getResult() { return m_result; };
 
   /** @brief get parameter of message
-    * @retval parameter of message
-    */
-  std::string getParameter(unsigned short index) {
+   * @retval parameter of message
+   */
+  std::string getParameter(size_t index) {
     std::string value;
     if (index < m_parameterVector.size()) value = m_parameterVector[index];
 

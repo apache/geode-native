@@ -20,65 +20,34 @@
 #ifndef GEODE_MAPSEGMENT_H_
 #define GEODE_MAPSEGMENT_H_
 
-#include <vector>
 #include <memory>
-
-#include <geode/internal/geode_globals.hpp>
+#include <mutex>
+#include <unordered_map>
+#include <vector>
 
 #include <geode/CacheableKey.hpp>
-#include "MapEntry.hpp"
-#include <geode/RegionEntry.hpp>
-#include "MapWithLock.hpp"
-#include "CacheableToken.hpp"
 #include <geode/Delta.hpp>
+#include <geode/RegionEntry.hpp>
+#include <geode/internal/geode_globals.hpp>
 
-#include <ace/Hash_Map_Manager.h>
-#include <ace/Functor_T.h>
-#include <ace/Null_Mutex.h>
-#include <ace/Thread_Mutex.h>
-#include <ace/Recursive_Thread_Mutex.h>
-#include <vector>
-#include <ace/config-lite.h>
-#include <ace/Versioned_Namespace.h>
+#include "CacheableToken.hpp"
+#include "MapEntry.hpp"
+#include "MapWithLock.hpp"
 #include "TombstoneList.hpp"
-#include <unordered_map>
-
 #include "util/concurrent/spinlock_mutex.hpp"
-
-ACE_BEGIN_VERSIONED_NAMESPACE_DECL
-
-template <>
-class ACE_Hash<std::shared_ptr<apache::geode::client::CacheableKey>> {
- public:
-  u_long operator()(
-      const std::shared_ptr<apache::geode::client::CacheableKey>& key) {
-    return key->hashcode();
-  }
-};
-
-template <>
-class ACE_Equal_To<std::shared_ptr<apache::geode::client::CacheableKey>> {
- public:
-  bool operator()(
-      const std::shared_ptr<apache::geode::client::CacheableKey>& key1,
-      const std::shared_ptr<apache::geode::client::CacheableKey>& key2) {
-    return key1->operator==(*key2);
-  }
-};
-ACE_END_VERSIONED_NAMESPACE_DECL
 
 namespace apache {
 namespace geode {
 namespace client {
 
 class RegionInternal;
-typedef ::ACE_Hash_Map_Manager_Ex<
-    std::shared_ptr<CacheableKey>, std::shared_ptr<MapEntry>,
-    ::ACE_Hash<std::shared_ptr<CacheableKey>>,
-    ::ACE_Equal_To<std::shared_ptr<CacheableKey>>, ::ACE_Null_Mutex>
+typedef std::unordered_map<std::shared_ptr<CacheableKey>,
+                           std::shared_ptr<MapEntry>,
+                           dereference_hash<std::shared_ptr<CacheableKey>>,
+                           dereference_equal_to<std::shared_ptr<CacheableKey>>>
     CacheableKeyHashMap;
 
-/** @brief type wrapper around the ACE map implementation. */
+/** @brief type wrapper around the std::unordered_map implementation. */
 class APACHE_GEODE_EXPORT MapSegment {
  private:
   // contain
@@ -92,7 +61,7 @@ class APACHE_GEODE_EXPORT MapSegment {
   // index of the current prime in the primes table
   uint32_t m_primeIndex;
   spinlock_mutex m_spinlock;
-  ACE_Recursive_Thread_Mutex m_segmentMutex;
+  std::recursive_mutex m_segmentMutex;
 
   bool m_concurrencyChecksEnabled;
   // number of operations that are tracking destroys
@@ -116,7 +85,7 @@ class APACHE_GEODE_EXPORT MapSegment {
     std::shared_ptr<MapEntry> newEntry;
     entry->incrementUpdateCount(newEntry);
     if (newEntry != nullptr) {
-      m_map->rebind(key, newEntry);
+      m_map->emplace(key, newEntry);
       entry = newEntry;
       return true;
     }
@@ -140,13 +109,13 @@ class APACHE_GEODE_EXPORT MapSegment {
       entryImpl->getValueI(value);
       if (value == nullptr) {
         // get rid of an entry marked as destroyed
-        m_map->unbind(key);
+        m_map->erase(key);
         return;
       }
     }
     if (trackerPair.first) {
       entry = entryImpl ? entryImpl : entry->getImplPtr();
-      m_map->rebind(key, entry);
+      (*m_map)[key] = entry;
     }
   }
 
@@ -173,13 +142,13 @@ class APACHE_GEODE_EXPORT MapSegment {
     m_entryFactory->newMapEntry(m_expiryTaskManager, key, newEntry);
     newEntry->setValueI(newValue);
     if (m_concurrencyChecksEnabled) {
-      if (versionTag != nullptr && versionTag.get() != nullptr) {
+      if (versionTag) {
         newEntry->getVersionStamp().setVersions(versionTag);
       } else if (versionStamp != nullptr) {
         newEntry->getVersionStamp().setVersions(*versionStamp);
       }
     }
-    m_map->bind(key, newEntry);
+    m_map->emplace(key, newEntry);
     return GF_NOERR;
   }
 
@@ -217,10 +186,9 @@ class APACHE_GEODE_EXPORT MapSegment {
 
   ~MapSegment();
 
-  // methods to acquire/release MapSegment mutex (not SpinLock)
-  // that allow using MapSegment with ACE_Guard
-  int acquire();
-  int release();
+  // methods for BasicLockable
+  void lock();
+  void unlock();
 
   /**
    * @brief initialize underlying map structures. Not called by constructor.

@@ -21,21 +21,26 @@
 #define GEODE_TESTOBJECT_DELTAFASTASSETACCOUNT_H_
 
 #include <inttypes.h>
+
 #include <string>
 
 #include <ace/ACE.h>
 #include <ace/OS.h>
 #include <ace/Time_Value.h>
 
+#include <geode/CacheableBuiltins.hpp>
 #include <geode/Delta.hpp>
 
-#include "fwklib/FrameworkTest.hpp"
 #include "FastAsset.hpp"
 #include "testobject_export.h"
 
-using namespace apache::geode::client;
-using namespace testframework;
 namespace testobject {
+
+using apache::geode::client::CacheableHashMap;
+using apache::geode::client::CacheableInt32;
+using apache::geode::client::CacheableString;
+using apache::geode::client::DataSerializable;
+using apache::geode::client::Delta;
 
 class TESTOBJECT_EXPORT DeltaFastAssetAccount : public DataSerializable,
                                                 public Delta {
@@ -117,8 +122,6 @@ class TESTOBJECT_EXPORT DeltaFastAssetAccount : public DataSerializable,
     }
   }
 
-  int32_t getClassId() const override { return 41; }
-
   bool hasDelta() const override { return true; }
 
   size_t objectSize() const override {
@@ -134,7 +137,7 @@ class TESTOBJECT_EXPORT DeltaFastAssetAccount : public DataSerializable,
       auto asset = std::dynamic_pointer_cast<FastAsset>(item.second);
       clonePtr->assets->emplace(key, asset->copy());
     }
-    return clonePtr;
+    return std::move(clonePtr);
   }
 
   static apache::geode::client::Serializable* createDeserializable() {

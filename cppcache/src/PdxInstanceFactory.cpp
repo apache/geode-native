@@ -17,10 +17,10 @@
 
 #include <geode/PdxInstanceFactory.hpp>
 
+#include "PdxHelper.hpp"
+#include "PdxInstanceImpl.hpp"
 #include "PdxType.hpp"
 #include "PdxTypes.hpp"
-#include "PdxInstanceImpl.hpp"
-#include "PdxHelper.hpp"
 
 namespace apache {
 namespace geode {
@@ -52,7 +52,7 @@ std::shared_ptr<PdxInstance> PdxInstanceFactory::create() {
   auto dataOutput = m_cacheImpl.createDataOutput();
   PdxHelper::serializePdx(dataOutput, pi);
 
-  return pi;
+  return std::move(pi);
 }
 PdxInstanceFactory& PdxInstanceFactory::writeChar(const std::string& fieldName,
                                                   char16_t value) {
@@ -197,8 +197,7 @@ PdxInstanceFactory& PdxInstanceFactory::writeByteArray(
   isFieldAdded(fieldName);
   m_pdxType->addVariableLengthTypeField(fieldName, "byte[]",
                                         PdxFieldTypes::BYTE_ARRAY);
-  auto cacheableObject =
-      CacheableArray<int8_t, DSCode::CacheableBytes>::create(value);
+  auto cacheableObject = CacheableBytes::create(value);
   m_FieldVsValues.emplace(fieldName, cacheableObject);
   return *this;
 }

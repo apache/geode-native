@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_THINCLIENTPOOLHADM_H_
-#define GEODE_THINCLIENTPOOLHADM_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,27 +14,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "ThinClientPoolDM.hpp"
+
+#pragma once
+
+#ifndef GEODE_THINCLIENTPOOLHADM_H_
+#define GEODE_THINCLIENTPOOLHADM_H_
+
+#include <atomic>
+#include <memory>
+#include <mutex>
+
 #include "PoolAttributes.hpp"
-#include "TcrConnectionManager.hpp"
+#include "Task.hpp"
 #include "ThinClientHARegion.hpp"
-//#include "TcrPoolEndPoint.hpp"
+#include "ThinClientPoolDM.hpp"
+
 namespace apache {
 namespace geode {
 namespace client {
+
+class TcrConnectionManager;
+class ThinClientRedundancyManager;
 
 class ThinClientPoolHADM : public ThinClientPoolDM {
  public:
   ThinClientPoolHADM(const char* name, std::shared_ptr<PoolAttributes> poolAttr,
                      TcrConnectionManager& connManager);
+  ThinClientPoolHADM(const ThinClientPoolHADM&) = delete;
+  ThinClientPoolHADM& operator=(const ThinClientPoolHADM&) = delete;
+  ~ThinClientPoolHADM() override { destroy(); }
 
-  void init();
+  void init() override;
 
-  virtual ~ThinClientPoolHADM() { destroy(); }
-
-  virtual GfErrType sendSyncRequest(TcrMessage& request, TcrMessageReply& reply,
-                                    bool attemptFailover = true,
-                                    bool isBGThread = false);
+  GfErrType sendSyncRequest(TcrMessage& request, TcrMessageReply& reply,
+                            bool attemptFailover = true,
+                            bool isBGThread = false) override;
 
   bool registerInterestForHARegion(TcrEndpoint* ep, const TcrMessage* request,
                                    ThinClientHARegion& region);
@@ -47,55 +56,43 @@ class ThinClientPoolHADM : public ThinClientPoolDM {
   GfErrType sendSyncRequestRegisterInterestEP(TcrMessage& request,
                                               TcrMessageReply& reply,
                                               bool attemptFailover,
-                                              TcrEndpoint* endpoint);
+                                              TcrEndpoint* endpoint) override;
 
   GfErrType registerInterestAllRegions(TcrEndpoint* ep,
                                        const TcrMessage* request,
                                        TcrMessageReply* reply);
 
-  virtual void destroy(bool keepAlive = false);
+  virtual void destroy(bool keepAlive = false) override;
 
   void readyForEvents();
 
   void sendNotificationCloseMsgs();
 
-  bool checkDupAndAdd(std::shared_ptr<EventId> eventid) {
-    return m_redundancyManager->checkDupAndAdd(eventid);
-  }
+  bool checkDupAndAdd(std::shared_ptr<EventId> eventid) override;
 
-  void processMarker() {
-    // also set the static bool m_processedMarker for makePrimary messages
-    m_redundancyManager->m_globalProcessedMarker = true;
-  }
+  void processMarker() override;
 
   void netDown();
 
-  void pingServerLocal();
+  void pingServerLocal() override;
 
-  virtual void acquireRedundancyLock() {
-    m_redundancyManager->acquireRedundancyLock();
-  };
-  virtual void releaseRedundancyLock() {
-    m_redundancyManager->releaseRedundancyLock();
-  };
-  virtual ACE_Recursive_Thread_Mutex* getRedundancyLock() {
-    return &m_redundancyManager->getRedundancyLock();
-  }
+  void acquireRedundancyLock() override;
 
-  GfErrType sendRequestToPrimary(TcrMessage& request, TcrMessageReply& reply) {
-    return m_redundancyManager->sendRequestToPrimary(request, reply);
-  }
+  void releaseRedundancyLock() override;
 
-  virtual void triggerRedundancyThread() { m_redundancySema.release(); }
+  std::recursive_mutex& getRedundancyLock() override;
 
-  bool isReadyForEvent() const {
-    return m_redundancyManager->isSentReadyForEvents();
-  }
+  GfErrType sendRequestToPrimary(TcrMessage& request, TcrMessageReply& reply);
+
+  void triggerRedundancyThread() override { m_redundancySema.release(); }
+
+  bool isReadyForEvent() const;
 
  protected:
-  virtual GfErrType sendSyncRequestRegisterInterest(
+  GfErrType sendSyncRequestRegisterInterest(
       TcrMessage& request, TcrMessageReply& reply, bool attemptFailover = true,
-      ThinClientRegion* region = nullptr, TcrEndpoint* endpoint = nullptr);
+      ThinClientRegion* region = nullptr,
+      TcrEndpoint* endpoint = nullptr) override;
 
   virtual GfErrType sendSyncRequestCq(TcrMessage& request,
                                       TcrMessageReply& reply);
@@ -104,36 +101,26 @@ class ThinClientPoolHADM : public ThinClientPoolDM {
 
   virtual bool postFailoverAction(TcrEndpoint* endpoint);
 
-  virtual void startBackgroundThreads();
+  void startBackgroundThreads() override;
 
  private:
-  // Disallow copy constructor and assignment operator.
   ThinClientRedundancyManager* m_redundancyManager;
-  ThinClientPoolHADM(const ThinClientPoolHADM&);
-  ThinClientPoolHADM& operator=(const ThinClientPoolHADM&) = delete;
 
   TcrConnectionManager& m_theTcrConnManager;
   ACE_Semaphore m_redundancySema;
-  Task<ThinClientPoolHADM>* m_redundancyTask;
+  std::unique_ptr<Task<ThinClientPoolHADM>> m_redundancyTask;
 
-  int redundancy(volatile bool& isRunning);
-  /*
-  void stopNotificationThreads();
-  */
-  long m_servermonitorTaskId;
+  void redundancy(std::atomic<bool>& isRunning);
+
+  ExpiryTaskManager::id_type m_servermonitorTaskId;
   int checkRedundancy(const ACE_Time_Value&, const void*);
 
-  virtual TcrEndpoint* createEP(const char* endpointName) {
-    return new TcrPoolEndPoint(endpointName, m_connManager.getCacheImpl(),
-                               m_connManager.m_failoverSema,
-                               m_connManager.m_cleanupSema, m_redundancySema,
-                               this);
-  }
+  TcrEndpoint* createEP(const char* endpointName) override;
 
-  void removeCallbackConnection(TcrEndpoint*);
+  void removeCallbackConnection(TcrEndpoint*) override;
 
   std::list<ThinClientRegion*> m_regions;
-  ACE_Recursive_Thread_Mutex m_regionsLock;
+  std::recursive_mutex m_regionsLock;
   void addRegion(ThinClientRegion* theTCR);
   void removeRegion(ThinClientRegion* theTCR);
   void sendNotConMesToAllregions();

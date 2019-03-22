@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_INTEGRATION_TEST_THINCLIENTLISTENERINIT_H_
-#define GEODE_INTEGRATION_TEST_THINCLIENTLISTENERINIT_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,6 +15,11 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_INTEGRATION_TEST_THINCLIENTLISTENERINIT_H_
+#define GEODE_INTEGRATION_TEST_THINCLIENTLISTENERINIT_H_
+
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
 #include "TallyListener.hpp"
@@ -30,8 +30,13 @@
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
 
-using namespace apache::geode::client;
-using namespace test;
+namespace { // NOLINT(google-build-namespaces)
+
+using apache::geode::client::Cacheable;
+
+using apache::geode::client::testing::TallyListener;
+using apache::geode::client::testing::TallyLoader;
+using apache::geode::client::testing::TallyWriter;
 
 static bool isLocator = false;
 static bool isLocalServer = true;
@@ -55,8 +60,7 @@ class ThinClientTallyLoader : public TallyLoader {
   virtual ~ThinClientTallyLoader() = default;
 
   std::shared_ptr<Cacheable> load(
-      Region& rp,
-      const std::shared_ptr<CacheableKey>& key,
+      Region& rp, const std::shared_ptr<CacheableKey>& key,
       const std::shared_ptr<Serializable>& aCallbackArgument) {
     int32_t loadValue = std::dynamic_pointer_cast<CacheableInt32>(
                             TallyLoader::load(rp, key, aCallbackArgument))
@@ -70,7 +74,7 @@ class ThinClientTallyLoader : public TallyLoader {
                lstrvalue);
       rp.put(key, lreturnValue);
     }
-    return lreturnValue;
+    return std::move(lreturnValue);
   }
 };
 
@@ -257,5 +261,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, CloseCache1)
   { cleanProc(); }
 END_TASK_DEFINITION
+
+}  // namespace
 
 #endif  // GEODE_INTEGRATION_TEST_THINCLIENTLISTENERINIT_H_

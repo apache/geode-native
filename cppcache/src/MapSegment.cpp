@@ -16,26 +16,23 @@
  */
 
 #include "MapSegment.hpp"
+
+#include <chrono>
+
 #include "MapEntry.hpp"
-#include "TrackedMapEntry.hpp"
 #include "RegionInternal.hpp"
 #include "TableOfPrimes.hpp"
-#include "Utils.hpp"
 #include "ThinClientPoolDM.hpp"
 #include "ThinClientRegion.hpp"
 #include "TombstoneExpiryHandler.hpp"
-#include <ace/OS.h>
-#include "ace/Time_Value.h"
-
-#include <mutex>
+#include "TrackedMapEntry.hpp"
+#include "Utils.hpp"
 #include "util/concurrent/spinlock_mutex.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
-#define _VERSION_TAG_NULL_CHK \
-  (versionTag != nullptr && versionTag.get() != nullptr)
 bool MapSegment::boolVal = false;
 MapSegment::~MapSegment() {
   delete m_map;
@@ -50,7 +47,7 @@ void MapSegment::open(RegionInternal* region, const EntryFactory* entryFactory,
   uint32_t mapSize = TableOfPrimes::nextLargerPrime(size, m_primeIndex);
   LOGFINER("Initializing MapSegment with size %d (given size %d).", mapSize,
            size);
-  m_map->open(mapSize);
+  m_map->reserve(mapSize);
   m_entryFactory = entryFactory;
   m_region = region;
   m_tombstoneList =
@@ -60,16 +57,16 @@ void MapSegment::open(RegionInternal* region, const EntryFactory* entryFactory,
   m_concurrencyChecksEnabled = concurrencyChecksEnabled;
 }
 
-void MapSegment::close() { m_map->close(); }
+void MapSegment::close() {}
 
 void MapSegment::clear() {
   std::lock_guard<spinlock_mutex> lk(m_spinlock);
-  m_map->unbind_all();
+  m_map->clear();
 }
 
-int MapSegment::acquire() { return m_segmentMutex.acquire(); }
+void MapSegment::lock() { m_segmentMutex.lock(); }
 
-int MapSegment::release() { return m_segmentMutex.release(); }
+void MapSegment::unlock() { m_segmentMutex.unlock(); }
 
 GfErrType MapSegment::create(const std::shared_ptr<CacheableKey>& key,
                              const std::shared_ptr<Cacheable>& newValue,
@@ -83,17 +80,19 @@ GfErrType MapSegment::create(const std::shared_ptr<CacheableKey>& key,
   {
     std::lock_guard<spinlock_mutex> lk(m_spinlock);
     // if size is greater than 75 percent of prime, rehash
-    uint32_t mapSize = TableOfPrimes::getPrime(m_primeIndex);
-    if (((m_map->current_size() * 75) / 100) > mapSize) {
+    auto mapSize = TableOfPrimes::getPrime(m_primeIndex);
+    if (((m_map->size() * 75) / 100) > mapSize) {
       rehash();
     }
-    std::shared_ptr<MapEntry> entry;
-    if ((m_map->find(key, entry)) == -1) {
+
+    const auto& find = m_map->find(key);
+    if (find == m_map->end()) {
       if ((err = putNoEntry(key, newValue, me, updateCount, destroyTracker,
                             versionTag)) != GF_NOERR) {
         return err;
       }
     } else {
+      auto& entry = find->second;
       auto entryImpl = entry->getImplPtr();
       entryImpl->getValueI(oldValue);
       if (oldValue == nullptr || CacheableToken::isTombstone(oldValue)) {
@@ -101,7 +100,7 @@ GfErrType MapSegment::create(const std::shared_ptr<CacheableKey>& key,
         VersionStamp versionStamp;
         if (m_concurrencyChecksEnabled) {
           versionStamp = entry->getVersionStamp();
-          if (_VERSION_TAG_NULL_CHK) {
+          if (versionTag) {
             err = versionStamp.processVersionTag(m_region, key, versionTag,
                                                  false);
             if (err != GF_NOERR) return err;
@@ -152,11 +151,12 @@ GfErrType MapSegment::put(const std::shared_ptr<CacheableKey>& key,
     std::lock_guard<spinlock_mutex> lk(m_spinlock);
     // if size is greater than 75 percent of prime, rehash
     uint32_t mapSize = TableOfPrimes::getPrime(m_primeIndex);
-    if (((m_map->current_size() * 75) / 100) > mapSize) {
+    if (((m_map->size() * 75) / 100) > mapSize) {
       rehash();
     }
-    std::shared_ptr<MapEntry> entry;
-    if ((m_map->find(key, entry)) == -1) {
+
+    const auto& find = m_map->find(key);
+    if (find == m_map->end()) {
       if (delta != nullptr) {
         return GF_INVALID_DELTA;  // You can not apply delta when there is no
       }
@@ -165,6 +165,7 @@ GfErrType MapSegment::put(const std::shared_ptr<CacheableKey>& key,
       err = putNoEntry(key, newValue, me, updateCount, destroyTracker,
                        versionTag);
     } else {
+      auto& entry = find->second;
       auto entryImpl = entry->getImplPtr();
       std::shared_ptr<Cacheable> meOldValue;
       entryImpl->getValueI(meOldValue);
@@ -172,7 +173,7 @@ GfErrType MapSegment::put(const std::shared_ptr<CacheableKey>& key,
       VersionStamp versionStamp;
       if (m_concurrencyChecksEnabled) {
         versionStamp = entry->getVersionStamp();
-        if (_VERSION_TAG_NULL_CHK) {
+        if (versionTag) {
           if (delta == nullptr) {
             err = versionStamp.processVersionTag(m_region, key, versionTag,
                                                  false);
@@ -215,12 +216,14 @@ GfErrType MapSegment::invalidate(const std::shared_ptr<CacheableKey>& key,
   std::lock_guard<spinlock_mutex> lk(m_spinlock);
   isTokenAdded = false;
   GfErrType err = GF_NOERR;
-  std::shared_ptr<MapEntry> entry;
-  if ((m_map->find(key, entry)) != -1) {
+
+  const auto& find = m_map->find(key);
+  if (find != m_map->end()) {
+    auto entry = find->second;
     VersionStamp versionStamp;
     if (m_concurrencyChecksEnabled) {
       versionStamp = entry->getVersionStamp();
-      if (_VERSION_TAG_NULL_CHK) {
+      if (versionTag) {
         err = versionStamp.processVersionTag(m_region, key, versionTag, false);
         if (err != GF_NOERR) return err;
         versionStamp.setVersions(versionTag);
@@ -261,15 +264,16 @@ GfErrType MapSegment::removeWhenConcurrencyEnabled(
     bool& isEntryFound, ExpiryTaskManager::id_type expiryTaskID,
     TombstoneExpiryHandler* handler, bool& expTaskSet) {
   GfErrType err = GF_NOERR;
-  std::shared_ptr<MapEntry> entry;
   VersionStamp versionStamp;
   // If entry found, else return no entry
-  if ((m_map->find(key, entry)) != -1) {
+  const auto& find = m_map->find(key);
+  if (find != m_map->end()) {
+    auto entry = find->second;
     isEntryFound = true;
     // If the version tag is null, use the version tag of
     // the existing entry
     versionStamp = entry->getVersionStamp();
-    if (_VERSION_TAG_NULL_CHK) {
+    if (versionTag) {
       std::shared_ptr<CacheableKey> keyPtr;
       entry->getImplPtr()->getKeyI(keyPtr);
       if ((err = entry->getVersionStamp().processVersionTag(
@@ -303,7 +307,7 @@ GfErrType MapSegment::removeWhenConcurrencyEnabled(
     // If entry not found than add a tombstone for this entry
     // so that any future updates for this entry are checked for version
     // no entry
-    if (_VERSION_TAG_NULL_CHK) {
+    if (versionTag) {
       std::shared_ptr<MapEntryImpl> mapEntry;
       putNoEntry(key, CacheableToken::tombstone(), mapEntry, -1, 0, versionTag);
       m_tombstoneList->add(mapEntry->getImplPtr(), handler, expiryTaskID);
@@ -349,8 +353,7 @@ GfErrType MapSegment::remove(const std::shared_ptr<CacheableKey>& key,
   }
 
   std::lock_guard<spinlock_mutex> lk(m_spinlock);
-  std::shared_ptr<Cacheable> value;
-  if ((m_map->unbind(key, entry)) == -1) {
+  if (m_map->erase(key) == 0) {
     // didn't unbind, probably no entry...
     oldValue = nullptr;
     volatile int destroyTrackers = *m_numDestroyTrackers;
@@ -375,9 +378,8 @@ GfErrType MapSegment::remove(const std::shared_ptr<CacheableKey>& key,
 
 bool MapSegment::unguardedRemoveActualEntry(
     const std::shared_ptr<CacheableKey>& key, bool cancelTask) {
-  std::shared_ptr<MapEntry> entry;
   m_tombstoneList->eraseEntryFromTombstoneList(key, cancelTask);
-  if (m_map->unbind(key, entry) == -1) {
+  if (m_map->erase(key) == 0) {
     return false;
   }
   return true;
@@ -389,7 +391,7 @@ bool MapSegment::unguardedRemoveActualEntryWithoutCancelTask(
   std::shared_ptr<MapEntry> entry;
   taskid = m_tombstoneList->eraseEntryFromTombstoneListWithoutCancelTask(
       key, handler);
-  if (m_map->unbind(key, entry) == -1) {
+  if (m_map->erase(key) == 0) {
     return false;
   }
   return true;
@@ -407,12 +409,14 @@ bool MapSegment::getEntry(const std::shared_ptr<CacheableKey>& key,
                           std::shared_ptr<MapEntryImpl>& result,
                           std::shared_ptr<Cacheable>& value) {
   std::lock_guard<spinlock_mutex> lk(m_spinlock);
-  std::shared_ptr<MapEntry> entry;
-  if ((m_map->find(key, entry)) == -1) {
+
+  const auto& find = m_map->find(key);
+  if (find == m_map->end()) {
     result = nullptr;
     value = nullptr;
     return false;
   }
+  auto entry = find->second;
 
   // If the value is a tombstone return not found
   auto mePtr = entry->getImplPtr();
@@ -431,10 +435,13 @@ bool MapSegment::getEntry(const std::shared_ptr<CacheableKey>& key,
  */
 bool MapSegment::containsKey(const std::shared_ptr<CacheableKey>& key) {
   std::lock_guard<spinlock_mutex> lk(m_spinlock);
-  std::shared_ptr<MapEntry> mePtr;
-  if ((m_map->find(key, mePtr)) == -1) {
+
+  const auto& find = m_map->find(key);
+  if (find == m_map->end()) {
     return false;
   }
+  auto mePtr = find->second;
+
   // If the value is a tombstone return not found
   std::shared_ptr<Cacheable> value;
   auto mePtr1 = mePtr->getImplPtr();
@@ -449,12 +456,12 @@ bool MapSegment::containsKey(const std::shared_ptr<CacheableKey>& key) {
  */
 void MapSegment::getKeys(std::vector<std::shared_ptr<CacheableKey>>& result) {
   std::lock_guard<spinlock_mutex> lk(m_spinlock);
-  for (CacheableKeyHashMap::iterator iter = m_map->begin();
-       iter != m_map->end(); iter++) {
+
+  for (const auto& kv : *m_map) {
     std::shared_ptr<Cacheable> valuePtr;
-    (*iter).int_id_->getImplPtr()->getValueI(valuePtr);
+    kv.second->getImplPtr()->getValueI(valuePtr);
     if (!CacheableToken::isTombstone(valuePtr)) {
-      result.push_back((*iter).ext_id_);
+      result.push_back(kv.first);
     }
   }
 }
@@ -464,13 +471,13 @@ void MapSegment::getKeys(std::vector<std::shared_ptr<CacheableKey>>& result) {
  */
 void MapSegment::getEntries(std::vector<std::shared_ptr<RegionEntry>>& result) {
   std::lock_guard<spinlock_mutex> lk(m_spinlock);
-  for (CacheableKeyHashMap::iterator iter = m_map->begin();
-       iter != m_map->end(); iter++) {
+
+  for (const auto& kv : *m_map) {
     std::shared_ptr<CacheableKey> keyPtr;
     std::shared_ptr<Cacheable> valuePtr;
-    auto me = ((*iter).int_id_)->getImplPtr();
+    auto me = kv.second->getImplPtr();
     me->getValueI(valuePtr);
-    if (valuePtr != nullptr && !CacheableToken::isTombstone(valuePtr)) {
+    if (valuePtr && !CacheableToken::isTombstone(valuePtr)) {
       if (CacheableToken::isInvalid(valuePtr)) {
         valuePtr = nullptr;
       }
@@ -486,28 +493,21 @@ void MapSegment::getEntries(std::vector<std::shared_ptr<RegionEntry>>& result) {
  */
 void MapSegment::getValues(std::vector<std::shared_ptr<Cacheable>>& result) {
   std::lock_guard<spinlock_mutex> lk(m_spinlock);
-  for (CacheableKeyHashMap::iterator iter = m_map->begin();
-       iter != m_map->end(); iter++) {
-    std::shared_ptr<Cacheable> valuePtr;
-    std::shared_ptr<CacheableKey> keyPtr;
-    std::shared_ptr<MapEntry> entry;
-    int status;
+  for (const auto& kv : *m_map) {
+    auto& entry = kv.second;
+    std::shared_ptr<Cacheable> value;
+    entry->getValue(value);
+    auto entryImpl = entry->getImplPtr();
 
-    keyPtr = (*iter).ext_id_;
-    (*iter).int_id_->getValue(valuePtr);
-    status = m_map->find(keyPtr, entry);
-
-    if (status != -1) {
-      auto entryImpl = entry->getImplPtr();
-      if (valuePtr != nullptr && !CacheableToken::isInvalid(valuePtr) &&
-          !CacheableToken::isDestroyed(valuePtr) &&
-          !CacheableToken::isTombstone(valuePtr)) {
-        if (CacheableToken::isOverflowed(valuePtr)) {  // get Value from disc.
-          valuePtr = getFromDisc(keyPtr, entryImpl);
-          entryImpl->setValueI(valuePtr);
-        }
-        result.push_back(valuePtr);
+    if (value && !CacheableToken::isInvalid(value) &&
+        !CacheableToken::isDestroyed(value) &&
+        !CacheableToken::isTombstone(value)) {
+      if (CacheableToken::isOverflowed(value)) {  // get Value from disc.
+        auto& key = kv.first;
+        value = getFromDisc(key, entryImpl);
+        entryImpl->setValueI(value);
       }
+      result.push_back(value);
     }
   }
 }
@@ -523,8 +523,8 @@ int MapSegment::addTrackerForEntry(const std::shared_ptr<CacheableKey>& key,
   std::lock_guard<spinlock_mutex> lk(m_spinlock);
   std::shared_ptr<MapEntry> entry;
   std::shared_ptr<MapEntry> newEntry;
-  int status;
-  if ((status = m_map->find(key, entry)) == -1) {
+  const auto& find = m_map->find(key);
+  if (find == m_map->end()) {
     oldValue = nullptr;
     if (addIfAbsent) {
       std::shared_ptr<MapEntryImpl> entryImpl;
@@ -538,6 +538,7 @@ int MapSegment::addTrackerForEntry(const std::shared_ptr<CacheableKey>& key,
       return -1;
     }
   } else {
+    entry = find->second;
     entry->getValue(oldValue);
     if (failIfPresent) {
       // return -1 without adding an entry; the callee should check on
@@ -552,11 +553,11 @@ int MapSegment::addTrackerForEntry(const std::shared_ptr<CacheableKey>& key,
   } else {
     updateCount = entry->addTracker(newEntry);
   }
-  if (newEntry != nullptr) {
-    if (status == -1) {
-      m_map->bind(key, newEntry);
+  if (newEntry) {
+    if (find == m_map->end()) {
+      m_map->emplace(key, newEntry);
     } else {
-      m_map->rebind(key, newEntry);
+      find->second = newEntry;
     }
   }
   return updateCount;
@@ -569,8 +570,10 @@ void MapSegment::removeTrackerForEntry(
     const std::shared_ptr<CacheableKey>& key) {
   if (m_concurrencyChecksEnabled) return;
   std::lock_guard<spinlock_mutex> lk(m_spinlock);
-  std::shared_ptr<MapEntry> entry;
-  if ((m_map->find(key, entry)) != -1) {
+
+  const auto& find = m_map->find(key);
+  if (find != m_map->end()) {
+    auto& entry = find->second;
     auto impl = entry->getImplPtr();
     removeTrackerForEntry(key, entry, impl);
   }
@@ -583,16 +586,16 @@ void MapSegment::addTrackerForAllEntries(
     MapOfUpdateCounters& updateCounterMap) {
   if (m_concurrencyChecksEnabled) return;
   std::lock_guard<spinlock_mutex> lk(m_spinlock);
+
   std::shared_ptr<MapEntry> newEntry;
   std::shared_ptr<CacheableKey> key;
-  for (CacheableKeyHashMap::iterator iter = m_map->begin();
-       iter != m_map->end(); ++iter) {
-    (*iter).int_id_->getKey(key);
-    int updateCount = (*iter).int_id_->addTracker(newEntry);
+  for (auto& kv : *m_map) {
+    kv.second->getKey(key);
+    int updateCount = kv.second->addTracker(newEntry);
     if (newEntry != nullptr) {
-      m_map->rebind(key, newEntry);
+      kv.second = newEntry;
     }
-    updateCounterMap.insert(std::make_pair(key, updateCount));
+    updateCounterMap.emplace(key, updateCount);
   }
 }
 
@@ -609,25 +612,11 @@ void MapSegment::removeDestroyTracking() {
  * @brief replace the existing hash map with one that is wider
  *   to reduce collision chains.
  */
-void MapSegment::rehash() {  // Only called from put, segment must already be
-                             // locked...
-
-  uint32_t newMapSize = TableOfPrimes::getPrime(++m_primeIndex);
+void MapSegment::rehash() {
+  // Only called from put, segment must already be locked...
+  auto newMapSize = TableOfPrimes::getPrime(++m_primeIndex);
   LOGFINER("Rehashing MapSegment to size %d.", newMapSize);
-  auto* newMap = new CacheableKeyHashMap();
-  newMap->open(newMapSize);
-
-  // copy all entries into newMap..
-  for (CacheableKeyHashMap::iterator iter = m_map->begin();
-       iter != m_map->end(); ++iter) {
-    newMap->bind((*iter).ext_id_, (*iter).int_id_);
-  }
-
-  // plug newMap into real member.
-  CacheableKeyHashMap* oldMap = m_map;
-  m_map = newMap;
-  // clean up the old map.
-  delete oldMap;
+  m_map->reserve(newMapSize);
   m_rehashCount++;
 }
 std::shared_ptr<Cacheable> MapSegment::getFromDisc(
@@ -649,7 +638,8 @@ GfErrType MapSegment::putForTrackedEntry(
     auto* thinClientRegion = dynamic_cast<ThinClientRegion*>(m_region);
     ThinClientPoolDM* m_poolDM = nullptr;
     if (thinClientRegion) {
-      m_poolDM = dynamic_cast<ThinClientPoolDM*>(thinClientRegion->getDistMgr());
+      m_poolDM =
+          dynamic_cast<ThinClientPoolDM*>(thinClientRegion->getDistMgr());
     }
 
     if (delta != nullptr) {
@@ -658,41 +648,46 @@ GfErrType MapSegment::putForTrackedEntry(
       if (oldValue == nullptr || CacheableToken::isDestroyed(oldValue) ||
           CacheableToken::isInvalid(oldValue) ||
           CacheableToken::isTombstone(oldValue)) {
-        if (m_poolDM) m_poolDM->updateNotificationStats(false, 0);
+        if (m_poolDM) {
+          m_poolDM->updateNotificationStats(false, std::chrono::nanoseconds(0));
+        }
         return GF_INVALID_DELTA;
       } else if (CacheableToken::isOverflowed(
                      oldValue)) {  // get Value from disc.
         oldValue = getFromDisc(key, entryImpl);
         if (oldValue == nullptr) {
-          if (m_poolDM) m_poolDM->updateNotificationStats(false, 0);
+          if (m_poolDM) {
+            m_poolDM->updateNotificationStats(false,
+                                              std::chrono::nanoseconds(0));
+          }
           return GF_INVALID_DELTA;
         }
       }
+
+      using clock = std::chrono::steady_clock;
 
       auto valueWithDelta = std::dynamic_pointer_cast<Delta>(oldValue);
       auto& newValue1 = const_cast<std::shared_ptr<Cacheable>&>(newValue);
       try {
         if (m_region->getAttributes().getCloningEnabled()) {
           auto tempVal = valueWithDelta->clone();
-          ACE_Time_Value currTimeBefore = ACE_OS::gettimeofday();
+          auto currTimeBefore = clock::now();
           tempVal->fromDelta(*delta);
 
           if (m_poolDM) {
-            m_poolDM->updateNotificationStats(
-                true,
-                ((ACE_OS::gettimeofday() - currTimeBefore).msec()) * 1000000);
+            m_poolDM->updateNotificationStats(true,
+                                              clock::now() - currTimeBefore);
           }
           newValue1 = std::dynamic_pointer_cast<Serializable>(tempVal);
           entryImpl->setValueI(newValue1);
         } else {
-          ACE_Time_Value currTimeBefore = ACE_OS::gettimeofday();
+          auto currTimeBefore = clock::now();
           valueWithDelta->fromDelta(*delta);
           newValue1 = std::dynamic_pointer_cast<Serializable>(valueWithDelta);
 
           if (m_poolDM) {
-            m_poolDM->updateNotificationStats(
-                true,
-                ((ACE_OS::gettimeofday() - currTimeBefore).msec()) * 1000000);
+            m_poolDM->updateNotificationStats(true,
+                                              clock::now() - currTimeBefore);
           }
           entryImpl->setValueI(
               std::dynamic_pointer_cast<Serializable>(valueWithDelta));
@@ -735,12 +730,13 @@ GfErrType MapSegment::isTombstone(std::shared_ptr<CacheableKey> key,
                                   std::shared_ptr<MapEntryImpl>& me,
                                   bool& result) {
   std::shared_ptr<Cacheable> value;
-  std::shared_ptr<MapEntry> entry;
   std::shared_ptr<MapEntryImpl> mePtr;
-  if (m_map->find(key, entry) == -1) {
+  const auto& find = m_map->find(key);
+  if (find == m_map->end()) {
     result = false;
     return GF_NOERR;
   }
+  auto& entry = find->second;
   mePtr = entry->getImplPtr();
 
   if (!mePtr) {
@@ -757,8 +753,9 @@ GfErrType MapSegment::isTombstone(std::shared_ptr<CacheableKey> key,
   if (CacheableToken::isTombstone(value)) {
     if (m_tombstoneList->exists(key)) {
       std::shared_ptr<MapEntry> entry;
-      if (m_map->find(key, entry) != -1) {
-        auto mePtr = entry->getImplPtr();
+      const auto find = m_map->find(key);
+      if (find != m_map->end()) {
+        auto mePtr = find->second->getImplPtr();
         me = mePtr;
       }
       result = true;

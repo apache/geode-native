@@ -20,15 +20,14 @@
 #ifndef GEODE_DEFAULTRESULTCOLLECTOR_H_
 #define GEODE_DEFAULTRESULTCOLLECTOR_H_
 
-#include <memory>
 #include <chrono>
-#include <mutex>
 #include <condition_variable>
-
-#include "internal/geode_globals.hpp"
+#include <memory>
+#include <mutex>
 
 #include "CacheableBuiltins.hpp"
 #include "ResultCollector.hpp"
+#include "internal/geode_globals.hpp"
 
 /**
  * @file
@@ -47,7 +46,8 @@ class APACHE_GEODE_EXPORT DefaultResultCollector : public ResultCollector {
       std::chrono::milliseconds timeout =
           DEFAULT_QUERY_RESPONSE_TIMEOUT) override;
 
-  void addResult(const std::shared_ptr<Cacheable>& resultOfSingleExecution) override;
+  void addResult(
+      const std::shared_ptr<Cacheable>& resultOfSingleExecution) override;
 
   void endResults() override;
 

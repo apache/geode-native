@@ -37,20 +37,19 @@
 #include "CacheImpl.hpp"
 #include <hacks/range.h>
 
-using namespace apache::geode::client;
-using namespace test;
-using namespace testobject;
-
 #define CLIENT1 s1p1
 #define SERVER1 s2p1
+
+using apache::geode::client::Exception;
+using apache::geode::client::IllegalStateException;
 
 static int numberOfLocators = 1;
 bool isLocalServer = true;
 bool isLocator = true;
-const char* locHostPort =
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 
-const char* _regionNames[] = {"Portfolios", "Positions"};
+const char *_regionNames[] = {"Portfolios", "Positions"};
 
 DUNIT_TASK(SERVER1, CreateServer1)
   {
@@ -71,15 +70,17 @@ DUNIT_TASK(CLIENT1, StepOne)
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
             ->getSerializationRegistry();
 
-    serializationRegistry->addType(Position::createDeserializable);
-    serializationRegistry->addType(Portfolio::createDeserializable);
+    serializationRegistry->addDataSerializableType(
+        Position::createDeserializable, 2);
+    serializationRegistry->addDataSerializableType(
+        Portfolio::createDeserializable, 3);
 
     auto regptr = getHelper()->createPooledRegion(
         _regionNames[0], USE_ACK, locHostPort, "__TEST_POOL1__", true, true);
     auto subregPtr =
         regptr->createSubregion(_regionNames[1], regptr->getAttributes());
 
-    auto&& qh = &QueryHelper::getHelper();
+    auto &&qh = &QueryHelper::getHelper();
     std::vector<std::shared_ptr<CacheableString>> cstr{
         CacheableString::create("Taaa"), CacheableString::create("Tbbb"),
         CacheableString::create("Tccc"), CacheableString::create("Tddd")};
@@ -94,16 +95,16 @@ END_TASK(StepOne)
 DUNIT_TASK(CLIENT1, StepThree)
   {
     try {
-      auto&& qs = getHelper()->cachePtr->getQueryService("__TEST_POOL1__");
+      auto &&qs = getHelper()->cachePtr->getQueryService("__TEST_POOL1__");
       auto qryStr = "select * from /Portfolios p where p.ID < 3";
-      auto&& qry = qs->newQuery(qryStr);
-      auto&& results = qry->execute();
+      auto &&qry = qs->newQuery(qryStr);
+      auto &&results = qry->execute();
 
       char buf[100];
       auto count = results->size();
       sprintf(buf, "results size=%zd", count);
       LOG(buf);
-      for (auto&& ser : hacks::range(*results)) {
+      for (auto &&ser : hacks::range(*results)) {
         count--;
 
         if (auto portfolio = std::dynamic_pointer_cast<Portfolio>(ser)) {
@@ -114,19 +115,19 @@ DUNIT_TASK(CLIENT1, StepThree)
                  position->getSecId()->value().c_str(),
                  position->getSharesOutstanding());
         } else if (ser) {
-            printf(" query pulled object %s\n", ser->toString().c_str());
+          printf(" query pulled object %s\n", ser->toString().c_str());
         } else {
           printf("   query pulled nullptr object\n");
         }
       }
       sprintf(buf, "results last count=%zd", count);
       LOG(buf);
-    } catch (IllegalStateException& ise) {
+    } catch (IllegalStateException &ise) {
       char isemsg[500] = {0};
       ACE_OS::snprintf(isemsg, 499, "IllegalStateException: %s", ise.what());
       LOG(isemsg);
       FAIL(isemsg);
-    } catch (Exception& excp) {
+    } catch (Exception &excp) {
       char excpmsg[500] = {0};
       ACE_OS::snprintf(excpmsg, 499, "Exception: %s", excp.what());
       LOG(excpmsg);

@@ -27,22 +27,23 @@
 
 #include "fw_helper.hpp"
 
-using namespace apache::geode::client;
+using apache::geode::client::DataInputInternal;
+using apache::geode::client::DataOutputInternal;
 
-void dumpnbytes(const uint8_t* buf, size_t length) {
+void dumpnbytes(const uint8_t *buf, size_t length) {
   for (size_t i = 0; i < length; i++) {
     std::cout << "buf[" << i << "] = " << std::setfill('0') << std::setw(2)
               << std::hex << (static_cast<int16_t>(buf[i]) & 0xff) << std::dec
               << " " << static_cast<char>(buf[i]) << std::endl;
   }
 }
-void dumpnshorts(const uint16_t* buf, size_t length) {
+void dumpnshorts(const uint16_t *buf, size_t length) {
   for (size_t i = 0; i < length; i++) {
     std::cout << "buf[" << i << "] = " << std::hex
               << static_cast<uint16_t>(buf[i]) << std::dec << std::endl;
   }
 }
-void dumpnwords(const uint32_t* buf, size_t length) {
+void dumpnwords(const uint32_t *buf, size_t length) {
   for (size_t i = 0; i < length; i++) {
     std::cout << "buf[" << i << "] = " << std::hex
               << static_cast<uint32_t>(buf[i]) << std::dec << std::endl;
@@ -54,7 +55,7 @@ BEGIN_TEST(Byte)
     DataOutputInternal dataOutput;
 
     dataOutput.write(static_cast<uint8_t>(0x11));
-    const uint8_t* buffer = dataOutput.getBuffer();
+    const uint8_t *buffer = dataOutput.getBuffer();
 
     ASSERT(buffer[0] == (uint8_t)0x11, "expected 0x11.");
 
@@ -70,7 +71,7 @@ BEGIN_TEST(Boolean)
 
     dataOutput.writeBoolean(true);
     dataOutput.writeBoolean(false);
-    const uint8_t* buffer = dataOutput.getBuffer();
+    const uint8_t *buffer = dataOutput.getBuffer();
 
     ASSERT(buffer[0] == (uint8_t)0x1, "expected 0x1.");
     ASSERT(buffer[1] == (uint8_t)0x0, "expected 0x0.");
@@ -88,7 +89,7 @@ BEGIN_TEST(Short)
     DataOutputInternal dataOutput;
 
     dataOutput.writeInt(static_cast<int16_t>(0x1122));
-    const uint8_t* buffer = dataOutput.getBuffer();
+    const uint8_t *buffer = dataOutput.getBuffer();
     ASSERT(buffer[0] == (uint8_t)0x11, "expected 0x11.");
     ASSERT(buffer[1] == (uint8_t)0x22, "expected 0x11.");
 
@@ -102,8 +103,8 @@ BEGIN_TEST(int_t)
   {
     DataOutputInternal dataOutput;
 
-    dataOutput.writeInt((int32_t)0x11223344);
-    const uint8_t* buffer = dataOutput.getBuffer();
+    dataOutput.writeInt(static_cast<int32_t>(0x11223344));
+    const uint8_t *buffer = dataOutput.getBuffer();
     dumpnbytes(buffer, 4);
     ASSERT(buffer[0] == (uint8_t)0x11, "expected 0x11.");
     ASSERT(buffer[1] == (uint8_t)0x22, "expected 0x22.");
@@ -122,7 +123,7 @@ BEGIN_TEST(Long)
 
     int64_t value = ((static_cast<int64_t>(0x11223344)) << 32) | 0x55667788;
     dataOutput.writeInt(value);
-    const uint8_t* buffer = dataOutput.getBuffer();
+    const uint8_t *buffer = dataOutput.getBuffer();
     ASSERT(buffer[0] == (uint8_t)0x11, "expected 0x11.");
     ASSERT(buffer[1] == (uint8_t)0x22, "expected 0x22.");
     ASSERT(buffer[2] == (uint8_t)0x33, "expected 0x33.");
@@ -143,7 +144,7 @@ BEGIN_TEST(Float)
     DataOutputInternal dataOutput;
 
     dataOutput.writeFloat(1.2f);
-    const uint8_t* buffer = dataOutput.getBuffer();
+    const uint8_t *buffer = dataOutput.getBuffer();
     ASSERT(buffer[0] == (uint8_t)0x3f, "expected 0x3f.");
     ASSERT(buffer[1] == (uint8_t)0x99, "expected 0x99.");
     ASSERT(buffer[2] == (uint8_t)0x99, "expected 0x99.");
@@ -160,7 +161,7 @@ BEGIN_TEST(Double)
     DataOutputInternal dataOutput;
 
     dataOutput.writeDouble(1.2);
-    const uint8_t* buffer = dataOutput.getBuffer();
+    const uint8_t *buffer = dataOutput.getBuffer();
     ASSERT(buffer[0] == (uint8_t)0x3f, "expected 0x3f.");
     ASSERT(buffer[1] == (uint8_t)0xf3, "expected 0xf3.");
     ASSERT(buffer[2] == (uint8_t)0x33, "expected 0x33.");
@@ -203,17 +204,17 @@ BEGIN_TEST(WideStrings)
   {
     DataOutputInternal dataOutput;
 
-    wchar_t* strOrig = new wchar_t[40];
+    wchar_t *strOrig = new wchar_t[40];
     strOrig[0] = 0;
     strOrig[1] = 0x7f;
     strOrig[2] = 0x80;
     strOrig[3] = 0x81;
     strOrig[4] = 0xfffd;
 
-    dumpnshorts(reinterpret_cast<uint16_t*>(strOrig), 5);
+    dumpnshorts(reinterpret_cast<uint16_t *>(strOrig), 5);
     dataOutput.writeUTF(std::wstring(strOrig, 5));
 
-    const uint8_t* buffer = dataOutput.getBuffer();
+    const uint8_t *buffer = dataOutput.getBuffer();
     std::cout << "Wrote to buffer..." << std::endl;
     dumpnbytes(buffer, dataOutput.getBufferLength());
 
@@ -234,7 +235,7 @@ BEGIN_TEST(WideStrings)
     auto str = dataInput.readUTF<wchar_t>();
     ASSERT(str.length() == 5, "expected length 5.");
     std::cout << "Read from buffer..." << std::endl;
-    dumpnshorts(reinterpret_cast<const uint16_t*>(str.data()), 5);
+    dumpnshorts(reinterpret_cast<const uint16_t *>(str.data()), 5);
 
     ASSERT(str[0] == 0x00, "wrong decoded value");
     ASSERT(str[1] == 0x7f, "wrong decoded value");

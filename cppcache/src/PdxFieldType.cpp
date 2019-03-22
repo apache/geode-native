@@ -22,11 +22,10 @@
  */
 
 #include "PdxFieldType.hpp"
-#include "PdxTypes.hpp"
-#include <geode/PdxFieldTypes.hpp>
-//#include <malloc.h>
 
-#include "ace/OS.h"
+#include <geode/PdxFieldTypes.hpp>
+
+#include "PdxTypes.hpp"
 
 namespace apache {
 namespace geode {
@@ -133,11 +132,10 @@ int32_t PdxFieldType::getFixedTypeSize() const {
 
 std::string PdxFieldType::toString() const {
   char stringBuf[1024];
-  ACE_OS::snprintf(
-      stringBuf, 1024,
-      " PdxFieldName=%s TypeId=%d VarLenFieldIdx=%d sequenceid=%d\n",
-      this->m_fieldName.c_str(), static_cast<int>(this->m_typeId),
-      this->m_varLenFieldIdx, this->m_sequenceId);
+  std::snprintf(stringBuf, 1024,
+                " PdxFieldName=%s TypeId=%d VarLenFieldIdx=%d sequenceid=%d\n",
+                this->m_fieldName.c_str(), static_cast<int>(this->m_typeId),
+                this->m_varLenFieldIdx, this->m_sequenceId);
   return std::string(stringBuf);
 }
 

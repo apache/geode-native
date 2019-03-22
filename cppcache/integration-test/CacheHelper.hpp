@@ -44,7 +44,9 @@
 #define ROOT_SCOPE LOCAL
 #endif
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 class CacheHelper {
  public:
@@ -61,20 +63,20 @@ class CacheHelper {
   static std::string unitTestOutputFile();
   static int getNumLocatorListUpdates(const char* s);
 
-  CacheHelper(const char* member_id,
-              const std::shared_ptr<Properties>& configPtr = nullptr,
-              const bool noRootRegion = false);
+  explicit CacheHelper(const char* member_id,
+                       const std::shared_ptr<Properties>& configPtr = nullptr,
+                       const bool noRootRegion = false);
 
   /** rootRegionPtr will still be null... */
   CacheHelper(const char* member_id, const char* cachexml,
               const std::shared_ptr<Properties>& configPtr = nullptr);
 
-  CacheHelper(const std::shared_ptr<Properties>& configPtr = nullptr,
-              const bool noRootRegion = false);
+  explicit CacheHelper(const std::shared_ptr<Properties>& configPtr = nullptr,
+                       const bool noRootRegion = false);
 
-  CacheHelper(const bool isThinclient,
-              const std::shared_ptr<Properties>& configPtr = nullptr,
-              const bool noRootRegion = false);
+  explicit CacheHelper(const bool isThinclient,
+                       const std::shared_ptr<Properties>& configPtr = nullptr,
+                       const bool noRootRegion = false);
 
   CacheHelper(const bool isThinclient,
               const std::shared_ptr<AuthInitialize>& authInitialize,
@@ -93,8 +95,8 @@ class CacheHelper {
               int loadConditioningInterval = -1, bool isMultiuserMode = false,
               bool prSingleHop = false, bool threadLocal = false);
 
-  CacheHelper(const int redundancyLevel,
-              const std::shared_ptr<Properties>& configPtr = nullptr);
+  explicit CacheHelper(const int redundancyLevel,
+                       const std::shared_ptr<Properties>& configPtr = nullptr);
 
   virtual ~CacheHelper();
 
@@ -286,6 +288,9 @@ class CacheHelper {
   static int staticLocatorHostPort1;
   static int staticLocatorHostPort2;
   static int staticLocatorHostPort3;
+
+  static int staticJmxManagerPort;
+
   static const char* getstaticLocatorHostPort1();
 
   static const char* getstaticLocatorHostPort2();
@@ -351,7 +356,7 @@ class CacheHelper {
 
   static void clearSecProp();
 
-  static void setJavaConnectionPoolSize(long size);
+  static void setJavaConnectionPoolSize(uint32_t size);
 
   static bool isSeedSet;
   static bool setSeed();
@@ -391,6 +396,13 @@ int CacheHelper::staticHostPort4 = CacheHelper::getRandomAvailablePort();
 int CacheHelper::staticLocatorHostPort1 = CacheHelper::getRandomAvailablePort();
 int CacheHelper::staticLocatorHostPort2 = CacheHelper::getRandomAvailablePort();
 int CacheHelper::staticLocatorHostPort3 = CacheHelper::getRandomAvailablePort();
+
+int CacheHelper::staticJmxManagerPort = CacheHelper::getRandomAvailablePort();
+
 #endif
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache
 
 #endif  // GEODE_INTEGRATION_TEST_CACHEHELPER_H_

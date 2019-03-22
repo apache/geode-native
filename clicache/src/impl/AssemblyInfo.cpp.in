@@ -26,11 +26,11 @@ using namespace System::Security::Permissions;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 //
-[assembly:AssemblyTitleAttribute("Geode.NETCache")];
-[assembly:AssemblyDescriptionAttribute("Geode Native Client .NET Cache")];
+[assembly:AssemblyTitleAttribute("@PRODUCT_BASE_NAME@.NETCache")];
+[assembly:AssemblyDescriptionAttribute("@PRODUCT_NAME@ Client .NET Cache")];
 [assembly:AssemblyConfigurationAttribute("")];
-[assembly:AssemblyCompanyAttribute("Apache Software Foundation")];
-[assembly:AssemblyProductAttribute("Geode.NETCache")];
+[assembly:AssemblyCompanyAttribute("@PRODUCT_VENDOR_NAME@")];
+[assembly:AssemblyProductAttribute("@PRODUCT_BASE_NAME@.NETCache")];
 [assembly:AssemblyCopyrightAttribute("Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.  See the NOTICE file distributed with this work for additional information regarding copyright ownership.")];
 [assembly:AssemblyTrademarkAttribute("All Rights Reserved")];
 [assembly:AssemblyCultureAttribute("")];

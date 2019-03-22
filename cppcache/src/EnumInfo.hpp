@@ -20,8 +20,8 @@
 #ifndef GEODE_ENUMINFO_H_
 #define GEODE_ENUMINFO_H_
 
-#include <geode/CacheableString.hpp>
 #include <geode/CacheableKey.hpp>
+#include <geode/CacheableString.hpp>
 
 #include "geode/internal/DataSerializableFixedId.hpp"
 
@@ -29,8 +29,11 @@ namespace apache {
 namespace geode {
 namespace client {
 
+using internal::DataSerializableFixedId_t;
+using internal::DSFid;
+
 class APACHE_GEODE_EXPORT EnumInfo
- : public DataSerializableFixedId_t<DSFid::EnumInfo>,
+    : public DataSerializableFixedId_t<DSFid::EnumInfo>,
       public CacheableKey {
  private:
   std::shared_ptr<CacheableString> m_enumClassName;

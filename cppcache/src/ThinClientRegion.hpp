@@ -20,30 +20,29 @@
 #ifndef GEODE_THINCLIENTREGION_H_
 #define GEODE_THINCLIENTREGION_H_
 
+#include <mutex>
 #include <unordered_map>
 
+#include <ace/RW_Thread_Mutex.h>
 #include <ace/Task.h>
 
 #include <geode/ResultCollector.hpp>
+#include <geode/internal/functional.hpp>
 
-#include "LocalRegion.hpp"
-#include "TcrMessage.hpp"
-#include "TcrEndpoint.hpp"
-#include "RegionGlobalLocks.hpp"
-#include "Queue.hpp"
-#include "TcrChunkedContext.hpp"
 #include "CacheableObjectPartList.hpp"
 #include "ClientMetadataService.hpp"
-#include <geode/internal/functional.hpp>
-/**
- * @file
- */
+#include "LocalRegion.hpp"
+#include "Queue.hpp"
+#include "RegionGlobalLocks.hpp"
+#include "TcrChunkedContext.hpp"
+#include "TcrMessage.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
 class ThinClientBaseDM;
+class TcrEndpoint;
 
 /**
  * @class ThinClientRegion ThinClientRegion.hpp
@@ -52,7 +51,6 @@ class ThinClientBaseDM;
  * region. It will inherit from DistributedRegion and overload some methods
  *
  */
-
 class APACHE_GEODE_EXPORT ThinClientRegion : public LocalRegion {
  public:
   /**
@@ -285,7 +283,7 @@ class APACHE_GEODE_EXPORT ThinClientRegion : public LocalRegion {
   bool isDurableClient() { return m_isDurableClnt; }
   /** @brief Protected fields. */
   ThinClientBaseDM* m_tcrdm;
-  ACE_Recursive_Thread_Mutex m_keysLock;
+  std::recursive_mutex m_keysLock;
   mutable ACE_RW_Thread_Mutex m_rwDestroyLock;
   std::unordered_map<std::shared_ptr<CacheableKey>, InterestResultPolicy>
       m_interestList;
@@ -304,7 +302,7 @@ class APACHE_GEODE_EXPORT ThinClientRegion : public LocalRegion {
       m_durableInterestListRegexForUpdatesAsInvalidates;
 
   bool m_notifyRelease;
-  ACE_Semaphore m_notificationSema;
+  std::mutex m_notificationMutex;
 
   bool m_isDurableClnt;
 
@@ -438,7 +436,7 @@ class ChunkedQueryResponse : public TcrChunkedResult {
   ChunkedQueryResponse& operator=(const ChunkedQueryResponse&);
 
  public:
-  inline ChunkedQueryResponse(TcrMessage& msg)
+  inline explicit ChunkedQueryResponse(TcrMessage& msg)
       : TcrChunkedResult(),
         m_msg(msg),
         m_queryResults(CacheableVector::create()) {}
@@ -470,7 +468,7 @@ class ChunkedFunctionExecutionResponse : public TcrChunkedResult {
   // std::shared_ptr<CacheableVector>  m_functionExecutionResults;
   bool m_getResult;
   std::shared_ptr<ResultCollector> m_rc;
-  std::shared_ptr<ACE_Recursive_Thread_Mutex> m_resultCollectorLock;
+  std::shared_ptr<std::recursive_mutex> m_resultCollectorLock;
 
   // disabled
   ChunkedFunctionExecutionResponse(const ChunkedFunctionExecutionResponse&);
@@ -484,7 +482,7 @@ class ChunkedFunctionExecutionResponse : public TcrChunkedResult {
 
   inline ChunkedFunctionExecutionResponse(
       TcrMessage& msg, bool getResult, std::shared_ptr<ResultCollector> rc,
-      const std::shared_ptr<ACE_Recursive_Thread_Mutex>& resultCollectorLock)
+      const std::shared_ptr<std::recursive_mutex>& resultCollectorLock)
       : TcrChunkedResult(),
         m_msg(msg),
         m_getResult(getResult),
@@ -526,7 +524,7 @@ class ChunkedGetAllResponse : public TcrChunkedResult {
   int32_t m_destroyTracker;
   bool m_addToLocalCache;
   uint32_t m_keysOffset;
-  ACE_Recursive_Thread_Mutex& m_responseLock;
+  std::recursive_mutex& m_responseLock;
   // disabled
   ChunkedGetAllResponse(const ChunkedGetAllResponse&);
   ChunkedGetAllResponse& operator=(const ChunkedGetAllResponse&);
@@ -540,7 +538,7 @@ class ChunkedGetAllResponse : public TcrChunkedResult {
       const std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>>&
           resultKeys,
       MapOfUpdateCounters& trackerMap, int32_t destroyTracker,
-      bool addToLocalCache, ACE_Recursive_Thread_Mutex& responseLock)
+      bool addToLocalCache, std::recursive_mutex& responseLock)
       : TcrChunkedResult(),
         m_msg(msg),
         m_region(region),
@@ -567,7 +565,7 @@ class ChunkedGetAllResponse : public TcrChunkedResult {
     return m_resultKeys;
   }
   MapOfUpdateCounters& getUpdateCounters() { return m_trackerMap; }
-  ACE_Recursive_Thread_Mutex& getResponseLock() { return m_responseLock; }
+  std::recursive_mutex& getResponseLock() { return m_responseLock; }
 };
 
 /**
@@ -577,7 +575,7 @@ class ChunkedPutAllResponse : public TcrChunkedResult {
  private:
   TcrMessage& m_msg;
   const std::shared_ptr<Region> m_region;
-  ACE_Recursive_Thread_Mutex& m_responseLock;
+  std::recursive_mutex& m_responseLock;
   std::shared_ptr<VersionedCacheableObjectPartList> m_list;
   // disabled
   ChunkedPutAllResponse(const ChunkedPutAllResponse&);
@@ -586,7 +584,7 @@ class ChunkedPutAllResponse : public TcrChunkedResult {
  public:
   inline ChunkedPutAllResponse(
       const std::shared_ptr<Region>& region, TcrMessage& msg,
-      ACE_Recursive_Thread_Mutex& responseLock,
+      std::recursive_mutex& responseLock,
       std::shared_ptr<VersionedCacheableObjectPartList>& list)
       : TcrChunkedResult(),
         m_msg(msg),
@@ -599,7 +597,7 @@ class ChunkedPutAllResponse : public TcrChunkedResult {
                            const CacheImpl* cacheImpl);
   virtual void reset();
   std::shared_ptr<VersionedCacheableObjectPartList> getList() { return m_list; }
-  ACE_Recursive_Thread_Mutex& getResponseLock() { return m_responseLock; }
+  std::recursive_mutex& getResponseLock() { return m_responseLock; }
 };
 
 /**
@@ -609,7 +607,7 @@ class ChunkedRemoveAllResponse : public TcrChunkedResult {
  private:
   TcrMessage& m_msg;
   const std::shared_ptr<Region> m_region;
-  ACE_Recursive_Thread_Mutex& m_responseLock;
+  std::recursive_mutex& m_responseLock;
   std::shared_ptr<VersionedCacheableObjectPartList> m_list;
   // disabled
   ChunkedRemoveAllResponse(const ChunkedRemoveAllResponse&);
@@ -618,7 +616,7 @@ class ChunkedRemoveAllResponse : public TcrChunkedResult {
  public:
   inline ChunkedRemoveAllResponse(
       const std::shared_ptr<Region>& region, TcrMessage& msg,
-      ACE_Recursive_Thread_Mutex& responseLock,
+      std::recursive_mutex& responseLock,
       std::shared_ptr<VersionedCacheableObjectPartList>& list)
       : TcrChunkedResult(),
         m_msg(msg),
@@ -631,7 +629,7 @@ class ChunkedRemoveAllResponse : public TcrChunkedResult {
                            const CacheImpl* cacheImpl);
   virtual void reset();
   std::shared_ptr<VersionedCacheableObjectPartList> getList() { return m_list; }
-  ACE_Recursive_Thread_Mutex& getResponseLock() { return m_responseLock; }
+  std::recursive_mutex& getResponseLock() { return m_responseLock; }
 };
 
 /**
@@ -674,7 +672,7 @@ class ChunkedDurableCQListResponse : public TcrChunkedResult {
   ChunkedDurableCQListResponse& operator=(const ChunkedDurableCQListResponse&);
 
  public:
-  inline ChunkedDurableCQListResponse(TcrMessage& msg)
+  inline explicit ChunkedDurableCQListResponse(TcrMessage& msg)
       : TcrChunkedResult(),
         m_msg(msg),
         m_resultList(CacheableArrayList::create()) {}

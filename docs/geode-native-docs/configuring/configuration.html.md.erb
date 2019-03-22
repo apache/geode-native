@@ -19,12 +19,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-You configure your native client to establish connectivity to a server, which requires specifying
-
-  - Locator address and port
-  - Connection credentials
-  - Identity of a shared region on the server
-
 You can configure your native client application:
 
  - Programmatically in your app code
@@ -43,7 +37,8 @@ Setting a property programmatically:
 
 ``` cpp
     auto regionFactory = cache.createRegionFactory(RegionShortcut::CACHING_PROXY);
-    auto region = regionFactory.setRegionTimeToLive(ExpirationAction::INVALIDATE, 120)
+    auto region = regionFactory.setRegionTimeToLive(ExpirationAction::INVALIDATE,
+                    std::chrono::seconds(120))
          .create("exampleRegion0");
 ```
 
@@ -53,7 +48,7 @@ XML equivalent:
   <region name="exampleRegion0" refid="CACHING_PROXY">
     <region-attributes pool-name="default">
       <region-time-to-live>
-        <expiration-attributes timeout="120" action="invalidate"/>
+        <expiration-attributes timeout="120s" action="invalidate"/>
       </region-time-to-live>
     </region-attributes>
   </region>
@@ -70,6 +65,6 @@ When redundancy is enabled, secondary servers maintain queue backups while the p
 events to the client. If the primary server fails, one of the secondary servers steps in as primary
 to provide uninterrupted event messaging to the client. 
 To configure high availability, set the `subscription-redundancy` in the client’s pool configuration. This setting indicates the number of secondary servers to use.
-See the _<%=vars.product_name%> User Guide_ section [Configuring Highly Available Servers](/serverman/developing/events/configuring_highly_available_servers.html)
+See the _<%=vars.product_name%> User Guide_ section [Configuring Highly Available Servers](serverman/developing/events/configuring_highly_available_servers.html)
 for more details.
 

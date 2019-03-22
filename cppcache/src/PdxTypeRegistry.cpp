@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
+#include "PdxTypeRegistry.hpp"
+
 #include <geode/PoolManager.hpp>
 
-#include "PdxTypeRegistry.hpp"
+#include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
 #include "ThinClientPoolDM.hpp"
-#include "CacheImpl.hpp"
 
 namespace apache {
 namespace geode {
@@ -181,7 +182,8 @@ void PdxTypeRegistry::setPreserveData(
   } else {
     // schedule new expiry task
     auto handler = new PreservedDataExpiryHandler(shared_from_this(), obj);
-    long id = expiryTaskManager.scheduleExpiryTask(handler, 20, 0, false);
+    auto id = expiryTaskManager.scheduleExpiryTask(
+        handler, std::chrono::seconds(20), std::chrono::seconds::zero(), false);
     pData->setPreservedDataExpiryTaskId(id);
     LOGDEBUG(
         "PdxTypeRegistry::setPreserveData Schedule new expirt task with id=%ld",
@@ -241,7 +243,7 @@ std::shared_ptr<EnumInfo> PdxTypeRegistry::getEnum(int32_t enumVal) {
     if (entry != tmp->end()) {
       auto&& ret = std::dynamic_pointer_cast<EnumInfo>(entry->second);
       if (ret) {
-        return ret;
+        return std::move(ret);
       }
     }
   }
@@ -253,7 +255,7 @@ std::shared_ptr<EnumInfo> PdxTypeRegistry::getEnum(int32_t enumVal) {
     if (entry != tmp->end()) {
       auto&& ret = std::dynamic_pointer_cast<EnumInfo>(entry->second);
       if (ret) {
-        return ret;
+        return std::move(ret);
       }
     }
   }
@@ -265,7 +267,7 @@ std::shared_ptr<EnumInfo> PdxTypeRegistry::getEnum(int32_t enumVal) {
   tmp = intToEnum;
   (*tmp)[enumValPtr] = ret;
   intToEnum = tmp;
-  return ret;
+  return std::move(ret);
 }
 }  // namespace client
 }  // namespace geode

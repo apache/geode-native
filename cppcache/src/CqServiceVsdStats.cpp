@@ -15,12 +15,15 @@
  * limitations under the License.
  */
 
-#include <ace/Thread_Mutex.h>
-#include <ace/Singleton.h>
+#include "CqServiceVsdStats.hpp"
+
 #include <mutex>
+
+#include <ace/Singleton.h>
+#include <ace/Thread_Mutex.h>
+
 #include <geode/internal/geode_globals.hpp>
 
-#include "CqServiceVsdStats.hpp"
 #include "statistics/StatisticsFactory.hpp"
 
 namespace apache {
@@ -28,8 +31,8 @@ namespace geode {
 namespace client {
 
 using statistics::StatisticsFactory;
-using util::concurrent::spinlock_mutex;
 using std::lock_guard;
+using util::concurrent::spinlock_mutex;
 
 constexpr const char* CqServiceVsdStats::STATS_NAME;
 constexpr const char* CqServiceVsdStats::STATS_DESC;

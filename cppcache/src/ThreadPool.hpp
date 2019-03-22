@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_THREADPOOL_H_
-#define GEODE_THREADPOOL_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,28 +14,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * ThreadPool.hpp
- *
- *  Created on: 16-Mar-2010
- *      Author: ankurs
- */
 
-#include <ace/Task.h>
-#include <ace/Method_Request.h>
-//#include <ace/Future.h>
-#include <ace/Activation_Queue.h>
-#include <ace/Condition_T.h>
-#include <ace/Singleton.h>
-#include <ace/Guard_T.h>
-#include <mutex>
+#pragma once
+
+#ifndef GEODE_THREADPOOL_H_
+#define GEODE_THREADPOOL_H_
+
+#include <atomic>
 #include <condition_variable>
+#include <deque>
+#include <mutex>
+#include <thread>
+#include <vector>
+
+#include "AppDomainContext.hpp"
+
 namespace apache {
 namespace geode {
 namespace client {
 
+class Callable {
+ public:
+  virtual ~Callable() noexcept = default;
+  virtual void call() = 0;
+};
+
 template <class T>
-class PooledWork : public ACE_Method_Request {
+class PooledWork : public Callable {
  private:
   T m_retVal;
   std::recursive_mutex m_mutex;
@@ -50,9 +50,9 @@ class PooledWork : public ACE_Method_Request {
  public:
   PooledWork() : m_mutex(), m_cond(), m_done(false) {}
 
-  virtual ~PooledWork() {}
+  ~PooledWork() override {}
 
-  virtual int call(void) {
+  void call() override {
     T res = execute();
 
     std::lock_guard<decltype(m_mutex)> lock(m_mutex);
@@ -60,8 +60,6 @@ class PooledWork : public ACE_Method_Request {
     m_retVal = res;
     m_done = true;
     m_cond.notify_all();
-
-    return 0;
   }
 
   T getResult(void) {
@@ -78,73 +76,25 @@ class PooledWork : public ACE_Method_Request {
   virtual T execute(void) = 0;
 };
 
-template <typename S, typename R = int>
-class PooledWorkFP : public PooledWork<R> {
+class ThreadPool {
  public:
-  typedef R (S::*OPERATION)(void);
-  PooledWorkFP(S* op_handler, OPERATION op)
-      : op_handler_(op_handler), m_op(op) {}
-  virtual ~PooledWorkFP() {}
+  explicit ThreadPool(size_t threadPoolSize);
+  ~ThreadPool();
 
- protected:
-  virtual R execute(void) { return (this->op_handler_->*m_op)(); }
+  void perform(std::shared_ptr<Callable> req);
+
+  void shutDown(void);
 
  private:
-  S* op_handler_;
-  OPERATION m_op;
-};
-
-class ThreadPoolWorker;
-
-class IThreadPool {
- public:
-  virtual int returnToWork(ThreadPoolWorker* worker) = 0;
-  virtual ~IThreadPool() {}
-};
-
-class ThreadPoolWorker : public ACE_Task<ACE_MT_SYNCH> {
- public:
-  ThreadPoolWorker(IThreadPool* manager);
-  virtual ~ThreadPoolWorker();
-  int perform(ACE_Method_Request* req);
-  int shutDown(void);
-
-  virtual int svc(void);
-  ACE_thread_t threadId(void);
-
- private:
-  IThreadPool* manager_;
-  ACE_thread_t threadId_;
-  ACE_Activation_Queue queue_;
-  int shutdown_;
-};
-
-class ThreadPool : public ACE_Task_Base, IThreadPool {
-  friend class ACE_Singleton<ThreadPool, ACE_Recursive_Thread_Mutex>;
-
- public:
-  ThreadPool(uint32_t threadPoolSize);
-  virtual ~ThreadPool();
-  int perform(ACE_Method_Request* req);
-  int svc(void);
-  int shutDown(void);
-  virtual int returnToWork(ThreadPoolWorker* worker);
-
- private:
-  ThreadPoolWorker* chooseWorker(void);
-  int createWorkerPool(void);
-  int done(void);
-  ACE_thread_t threadId(ThreadPoolWorker* worker);
-
- private:
-  int poolSize_;
-  int shutdown_;
-  ACE_Thread_Mutex workersLock_;
-  ACE_Condition<ACE_Thread_Mutex> workersCond_;
-  ACE_Unbounded_Queue<ThreadPoolWorker*> workers_;
-  ACE_Activation_Queue queue_;
+  bool shutdown_;
+  std::vector<std::thread> workers_;
+  std::deque<std::shared_ptr<Callable>> queue_;
+  std::mutex queueMutex_;
+  std::condition_variable queueCondition_;
   static const char* NC_Pool_Thread;
+  AppDomainContext* appDomainContext_;
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

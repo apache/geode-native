@@ -14,18 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "ace/Timer_Queue.h"
-#include "ace/Timer_Heap.h"
-#include "ace/Reactor.h"
-#include "ace/svc_export.h"
-#include "ace/Timer_Heap_T.h"
-#include "ace/Timer_Queue_Adapters.h"
+#include "SuspendedTxExpiryHandler.hpp"
+
+#include <ace/Reactor.h>
+#include <ace/Timer_Heap.h>
+#include <ace/Timer_Heap_T.h>
+#include <ace/Timer_Queue.h>
+#include <ace/Timer_Queue_Adapters.h>
+#include <ace/svc_export.h>
 
 #include "CacheImpl.hpp"
 #include "ExpiryTaskManager.hpp"
-#include "SuspendedTxExpiryHandler.hpp"
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 SuspendedTxExpiryHandler::SuspendedTxExpiryHandler(
     CacheTransactionManagerImpl* cacheTxMgr, TransactionId& tid)
@@ -49,3 +52,7 @@ int SuspendedTxExpiryHandler::handle_timeout(const ACE_Time_Value&,
 int SuspendedTxExpiryHandler::handle_close(ACE_HANDLE, ACE_Reactor_Mask) {
   return 0;
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

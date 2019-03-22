@@ -20,6 +20,8 @@
 #ifndef INTERNAL_HACKS_RANGE_H
 #define INTERNAL_HACKS_RANGE_H
 
+#include <utility>
+
 namespace hacks {
 
 /**
@@ -34,14 +36,9 @@ namespace hacks {
 template <class Range>
 struct range_wrapper {
   Range&& range_;
-  range_wrapper(Range&& range) : range_(range) {
-  }
-  inline decltype(range_.begin()) begin() {
-    return range_.begin();
-  }
-  inline decltype(range_.end()) end() {
-    return range_.end();
-  }
+  range_wrapper(Range&& range) : range_(range) {}
+  inline decltype(range_.begin()) begin() { return range_.begin(); }
+  inline decltype(range_.end()) end() { return range_.end(); }
 };
 
 template <class Range>
@@ -60,4 +57,4 @@ inline Range range(Range&& range) {
 
 }  // namespace hacks
 
-#endif //INTERNAL_HACKS_RANGE_H
+#endif  // INTERNAL_HACKS_RANGE_H

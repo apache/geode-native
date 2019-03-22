@@ -20,16 +20,12 @@
 #ifndef GEODE_VERSIONEDCACHEABLEOBJECTPARTLIST_H_
 #define GEODE_VERSIONEDCACHEABLEOBJECTPARTLIST_H_
 
+#include <mutex>
 #include <vector>
-
-#include <ace/Task.h>
 
 #include "CacheableObjectPartList.hpp"
 #include "VersionTag.hpp"
 #include "util/Log.hpp"
-
-/** @file
- */
 
 namespace apache {
 namespace geode {
@@ -56,27 +52,21 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
   std::vector<std::shared_ptr<VersionTag>> m_versionTags;
   std::vector<uint8_t> m_byteArray;
   uint16_t m_endpointMemId;
-  std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>> > m_tempKeys;
-  ACE_Recursive_Thread_Mutex& m_responseLock;
+  std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>> m_tempKeys;
+  std::recursive_mutex& m_responseLock;
 
   static const uint8_t FLAG_NULL_TAG;
   static const uint8_t FLAG_FULL_TAG;
   static const uint8_t FLAG_TAG_WITH_NEW_ID;
   static const uint8_t FLAG_TAG_WITH_NUMBER_ID;
 
-  void readObjectPart(int32_t index, DataInput& input, std::shared_ptr<CacheableKey> keyPtr);
+  void readObjectPart(int32_t index, DataInput& input,
+                      std::shared_ptr<CacheableKey> keyPtr);
   // never implemented.
   VersionedCacheableObjectPartList& operator=(
       const VersionedCacheableObjectPartList& other);
   VersionedCacheableObjectPartList(
       const VersionedCacheableObjectPartList& other);
-  /*inline VersionedCacheableObjectPartList() : m_responseLock()
-  {
-        m_regionIsVersioned = false;
-        m_serializeValues = false;
-        m_endpointMemId = 0;
-        _GEODE_NEW(m_tempKeys, std::vector<std::shared_ptr<CacheableKey>> );
-  }*/
 
  public:
   VersionedCacheableObjectPartList(
@@ -87,7 +77,7 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
           resultKeys,
       ThinClientRegion* region, MapOfUpdateCounters* trackerMap,
       int32_t destroyTracker, bool addToLocalCache, uint16_t m_dsmemId,
-      ACE_Recursive_Thread_Mutex& responseLock)
+      std::recursive_mutex& responseLock)
       : CacheableObjectPartList(keys, keysOffset, values, exceptions,
                                 resultKeys, region, trackerMap, destroyTracker,
                                 addToLocalCache),
@@ -101,9 +91,9 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
     m_hasKeys = false;
   }
 
-  VersionedCacheableObjectPartList(std::vector<std::shared_ptr<CacheableKey>> * keys,
-                                   int32_t totalMapSize,
-                                   ACE_Recursive_Thread_Mutex& responseLock)
+  VersionedCacheableObjectPartList(
+      std::vector<std::shared_ptr<CacheableKey>>* keys, int32_t totalMapSize,
+      std::recursive_mutex& responseLock)
       : m_tempKeys(keys), m_responseLock(responseLock) {
     m_regionIsVersioned = false;
     m_serializeValues = false;
@@ -115,7 +105,7 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
   }
 
   VersionedCacheableObjectPartList(ThinClientRegion* region, uint16_t dsmemId,
-                                   ACE_Recursive_Thread_Mutex& responseLock)
+                                   std::recursive_mutex& responseLock)
       : CacheableObjectPartList(region),
         m_endpointMemId(dsmemId),
         m_responseLock(responseLock) {
@@ -126,8 +116,9 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
     ;
   }
 
-  VersionedCacheableObjectPartList(std::vector<std::shared_ptr<CacheableKey>> * keys,
-                                   ACE_Recursive_Thread_Mutex& responseLock)
+  VersionedCacheableObjectPartList(
+      std::vector<std::shared_ptr<CacheableKey>>* keys,
+      std::recursive_mutex& responseLock)
       : m_tempKeys(keys), m_responseLock(responseLock) {
     m_regionIsVersioned = false;
     m_serializeValues = false;
@@ -136,9 +127,10 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
     this->m_hasKeys = false;
   }
 
-  VersionedCacheableObjectPartList(ThinClientRegion* region,
-                                   std::vector<std::shared_ptr<CacheableKey>> * keys,
-                                   ACE_Recursive_Thread_Mutex& responseLock)
+  VersionedCacheableObjectPartList(
+      ThinClientRegion* region,
+      std::vector<std::shared_ptr<CacheableKey>>* keys,
+      std::recursive_mutex& responseLock)
       : CacheableObjectPartList(region),
         m_tempKeys(keys),
         m_responseLock(responseLock) {
@@ -150,7 +142,7 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
   }
 
   VersionedCacheableObjectPartList(ThinClientRegion* region,
-                                   ACE_Recursive_Thread_Mutex& responseLock)
+                                   std::recursive_mutex& responseLock)
       : CacheableObjectPartList(region), m_responseLock(responseLock) {
     m_regionIsVersioned = false;
     m_serializeValues = false;
@@ -161,9 +153,12 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
 
   inline uint16_t getEndpointMemId() { return m_endpointMemId; }
 
-  std::vector<std::shared_ptr<VersionTag>>& getVersionedTagptr() { return m_versionTags; }
+  std::vector<std::shared_ptr<VersionTag>>& getVersionedTagptr() {
+    return m_versionTags;
+  }
 
-  void setVersionedTagptr(std::vector<std::shared_ptr<VersionTag>>& versionTags) {
+  void setVersionedTagptr(
+      std::vector<std::shared_ptr<VersionTag>>& versionTags) {
     m_versionTags = versionTags;
     m_hasTags = (m_versionTags.size() > 0);
   }
@@ -172,10 +167,13 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
     return static_cast<int>(m_versionTags.size());
   }
 
-  std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>> > getSucceededKeys() { return m_tempKeys; }
+  std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>>
+  getSucceededKeys() {
+    return m_tempKeys;
+  }
 
-  inline VersionedCacheableObjectPartList(
-      uint16_t endpointMemId, ACE_Recursive_Thread_Mutex& responseLock)
+  inline VersionedCacheableObjectPartList(uint16_t endpointMemId,
+                                          std::recursive_mutex& responseLock)
       : m_tempKeys(
             std::make_shared<std::vector<std::shared_ptr<CacheableKey>>>()),
         m_responseLock(responseLock) {
@@ -187,8 +185,6 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
   }
 
   void addAll(std::shared_ptr<VersionedCacheableObjectPartList> other) {
-    // LOGDEBUG("DEBUG:: COPL.addAll called");
-    // ACE_Guard< ACE_Recursive_Thread_Mutex > guard( this->m_responseLock );
     if (other->m_tempKeys != nullptr) {
       if (this->m_tempKeys == nullptr) {
         this->m_tempKeys =
@@ -252,9 +248,7 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
 
   void fromData(DataInput& input) override;
 
-  DSFid getDSFID() const override {
-    return DSFid::VersionedObjectPartList;
-  }
+  DSFid getDSFID() const override { return DSFid::VersionedObjectPartList; }
 };
 
 }  // namespace client

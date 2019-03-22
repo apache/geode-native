@@ -34,14 +34,18 @@
 #include "ThinClientPdxSerializers.hpp"
 #include "CacheRegionHelper.hpp"
 
-using namespace apache::geode::client;
-using namespace test;
-using namespace PdxTests;
-
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
 #define LOCATOR s2p2
 #define SERVER1 s2p1
+
+namespace { // NOLINT(google-build-namespaces)
+
+using apache::geode::client::CacheableBoolean;
+using apache::geode::client::UserObjectSizer;
+
+using PdxTests::PdxWrapper;
+using PdxTests::TestPdxSerializerForV1;
 
 bool isLocator = false;
 bool isLocalServer = false;
@@ -175,7 +179,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, JavaPutGet)
 
     auto regionGetSuccess =
         std::dynamic_pointer_cast<CacheableBoolean>(region0->get("success"));
-    bool actualValue = regionGetSuccess.get()->value();
+    bool actualValue = regionGetSuccess->value();
 
     ASSERT(actualValue == true,
            "Task JavaPutGet:Objects of type NonPdxType should be equal");
@@ -388,5 +392,7 @@ DUNIT_TASK_DEFINITION(LOCATOR, CloseLocator)
     }
   }
 END_TASK_DEFINITION
+
+}  // namespace
 
 #endif  // GEODE_INTEGRATION_TEST_THINCLIENTPDXSERIALIZER_H_

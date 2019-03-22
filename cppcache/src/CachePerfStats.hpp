@@ -22,21 +22,23 @@
 
 #include <geode/internal/geode_globals.hpp>
 
+#include "Assert.hpp"
 #include "statistics/Statistics.hpp"
 #include "statistics/StatisticsFactory.hpp"
 #include "statistics/StatisticsManager.hpp"
-#include "Assert.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
-using namespace apache::geode::statistics;
+using statistics::StatisticDescriptor;
+using statistics::Statistics;
+using statistics::StatisticsFactory;
 
 /** hold statistics for cache.. */
 class APACHE_GEODE_EXPORT CachePerfStats {
  public:
-  CachePerfStats(StatisticsFactory* factory) {
+  explicit CachePerfStats(StatisticsFactory* factory) {
     auto statsType = factory->findType("CachePerfStats");
 
     if (statsType == nullptr) {
@@ -247,7 +249,7 @@ class APACHE_GEODE_EXPORT CachePerfStats {
     m_cachePerfStats->incInt(m_deltaFailedOnReceive, 1);
   }
 
-  inline void incTimeSpentOnDeltaApplication(long time) {
+  inline void incTimeSpentOnDeltaApplication(int32_t time) {
     m_cachePerfStats->incInt(m_processedDeltaMessagesTime, time);
   }
 
@@ -280,9 +282,7 @@ class APACHE_GEODE_EXPORT CachePerfStats {
     m_cachePerfStats->incInt(m_pdxInstanceDeserializationsId, 1);
   }
 
-  inline apache::geode::statistics::Statistics* getStat() {
-    return m_cachePerfStats;
-  }
+  inline Statistics* getStat() { return m_cachePerfStats; }
 
   inline int32_t getPdxInstanceDeserializationTimeId() {
     return m_pdxInstanceDeserializationTimeId;

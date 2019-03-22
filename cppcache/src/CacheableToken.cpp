@@ -14,15 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <geode/internal/geode_globals.hpp>
-
 #include "CacheableToken.hpp"
 
+#include <geode/CacheableString.hpp>
 #include <geode/DataInput.hpp>
 #include <geode/DataOutput.hpp>
-#include <geode/CacheableString.hpp>
+#include <geode/internal/geode_globals.hpp>
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 //---- statics
 std::shared_ptr<CacheableToken> CacheableToken::invalidToken =
@@ -48,12 +49,6 @@ void CacheableToken::fromData(DataInput& input) {
   m_value = static_cast<TokenType>(input.readInt32());
 }
 
-int8_t CacheableToken::getInternalId() const {
-  return static_cast<int8_t>(DSCode::CacheableToken);
-}
-
-//------ ctor
-
 CacheableToken::CacheableToken() : m_value(CacheableToken::NOT_USED) {}
 
 CacheableToken::CacheableToken(TokenType value) : m_value(value) {}
@@ -73,3 +68,7 @@ std::string CacheableToken::toString() const {
 }
 
 size_t CacheableToken::objectSize() const { return sizeof(m_value); }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

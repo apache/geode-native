@@ -22,13 +22,13 @@
 // Spawn.cpp,v 1.4 2004/01/07 22:40:16 shuston Exp
 
 // @TODO, this out this include list..
-#include "ace/OS_NS_stdio.h"
-#include "ace/OS_NS_fcntl.h"
-#include "ace/OS_NS_pwd.h"
-#include "ace/os_include/os_pwd.h"
-#include "ace/OS_NS_stdlib.h"
-#include "ace/OS_NS_string.h"
-#include "ace/OS_NS_unistd.h"
+#include <ace/OS_NS_stdio.h>
+#include <ace/OS_NS_fcntl.h>
+#include <ace/OS_NS_pwd.h>
+#include <ace/os_include/os_pwd.h>
+#include <ace/OS_NS_stdlib.h>
+#include <ace/OS_NS_string.h>
+#include <ace/OS_NS_unistd.h>
 
 #if defined(_WIN32)
 #if (FD_SETSIZE != 1024)
@@ -36,16 +36,16 @@
 #endif
 #endif
 
-#include "ace/Process.h"
-#include "ace/Log_Msg.h"
+#include <ace/Process.h>
+#include <ace/Log_Msg.h>
 
     namespace dunit {
 
   // Listing 1 code/ch10
   class Manager : virtual public ACE_Process {
    public:
-    Manager(const ACE_TCHAR *program_name) : ACE_Process() {
-      ACE_OS::strcpy(programName_, program_name);
+    explicit Manager(const ACE_TCHAR *program_name) : ACE_Process() {
+      ACE_OS::strncpy(programName_, program_name, sizeof(programName_));
     }
 
     virtual int doWork(void) {

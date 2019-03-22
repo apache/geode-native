@@ -26,10 +26,9 @@
 #include <string>
 #include <vector>
 
-#include "internal/geode_globals.hpp"
 #include "ExceptionTypes.hpp"
 #include "internal/DSCode.hpp"
-#include "ExceptionTypes.hpp"
+#include "internal/geode_globals.hpp"
 
 /**
  * @file
@@ -195,28 +194,14 @@ class APACHE_GEODE_EXPORT DataInput {
   inline int64_t readInt64() {
     _GEODE_CHECK_BUFFER_SIZE(8);
     int64_t tmp;
-    if (sizeof(long) == 8) {
-      tmp = *(m_buf++);
-      tmp = (tmp << 8) | *(m_buf++);
-      tmp = (tmp << 8) | *(m_buf++);
-      tmp = (tmp << 8) | *(m_buf++);
-      tmp = (tmp << 8) | *(m_buf++);
-      tmp = (tmp << 8) | *(m_buf++);
-      tmp = (tmp << 8) | *(m_buf++);
-      tmp = (tmp << 8) | *(m_buf++);
-    } else {
-      uint32_t hword = *(m_buf++);
-      hword = (hword << 8) | *(m_buf++);
-      hword = (hword << 8) | *(m_buf++);
-      hword = (hword << 8) | *(m_buf++);
-
-      tmp = hword;
-      hword = *(m_buf++);
-      hword = (hword << 8) | *(m_buf++);
-      hword = (hword << 8) | *(m_buf++);
-      hword = (hword << 8) | *(m_buf++);
-      tmp = (tmp << 32) | hword;
-    }
+    tmp = *(m_buf++);
+    tmp = (tmp << 8) | *(m_buf++);
+    tmp = (tmp << 8) | *(m_buf++);
+    tmp = (tmp << 8) | *(m_buf++);
+    tmp = (tmp << 8) | *(m_buf++);
+    tmp = (tmp << 8) | *(m_buf++);
+    tmp = (tmp << 8) | *(m_buf++);
+    tmp = (tmp << 8) | *(m_buf++);
     return tmp;
   }
 
@@ -310,7 +295,7 @@ class APACHE_GEODE_EXPORT DataInput {
   template <class CharT = char, class... Tail>
   inline std::basic_string<CharT, Tail...> readString() {
     std::basic_string<CharT, Tail...> value;
-    auto type = static_cast<internal::DSCode >(read());
+    auto type = static_cast<internal::DSCode>(read());
     switch (type) {
       case internal::DSCode::CacheableString:
         readJavaModifiedUtf8(value);

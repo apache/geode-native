@@ -32,15 +32,17 @@ END_TEST(NotOnWindows)
 #include <LRUList.cpp>
 #include <geode/CacheableKey.hpp>
 
-using namespace apache::geode::client;
+using apache::geode::client::CacheableKey;
+using apache::geode::client::LRUEntryProperties;
+using apache::geode::client::LRUList;
 
 class MyNode : public LRUEntryProperties {
  public:
-  static MyNode* create(const std::shared_ptr<CacheableKey>& = nullptr) {
+  static MyNode *create(const std::shared_ptr<CacheableKey> & = nullptr) {
     return new MyNode();
   }
   virtual ~MyNode() {}
-  LRUEntryProperties& getLRUProperties() { return *this; }
+  LRUEntryProperties &getLRUProperties() { return *this; }
   void setValue(int value) { m_value = value; }
   int getValue() { return m_value; }
 
@@ -57,7 +59,7 @@ BEGIN_TEST(LRUListTest)
   {
     LRUList<MyNode, MyNode> lruList;
     // Create 10 Nodes to keep track of.
-    std::shared_ptr<MyNode>* tenNodes = new std::shared_ptr<MyNode>[10];
+    std::shared_ptr<MyNode> *tenNodes = new std::shared_ptr<MyNode>[10];
 
     for (int i = 0; i < 10; i++) {
       tenNodes[i] = std::shared_ptr<MyNode>(MyNode::create());

@@ -26,24 +26,28 @@
 
 #include <chrono>
 
-#include "internal/geode_globals.hpp"
-#include "internal/DataSerializableInternal.hpp"
-#include "CacheLoader.hpp"
-#include "ExpirationAttributes.hpp"
-#include "CacheWriter.hpp"
 #include "CacheListener.hpp"
+#include "CacheLoader.hpp"
+#include "CacheWriter.hpp"
+#include "DiskPolicyType.hpp"
+#include "ExpirationAttributes.hpp"
 #include "PartitionResolver.hpp"
 #include "Properties.hpp"
 #include "Serializable.hpp"
-#include "DiskPolicyType.hpp"
-#include "PersistenceManager.hpp"
+#include "internal/DataSerializableInternal.hpp"
 #include "internal/chrono/duration.hpp"
+#include "internal/geode_globals.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
 class CacheImpl;
+class RegionAttributesFactory;
+class AttributesMutator;
+class Cache;
+class Region;
+class PersistenceManager;
 
 /**
  * @class RegionAttributes RegionAttributes.hpp
@@ -69,11 +73,6 @@ class CacheImpl;
  * @see AttributesMutator
  * @see Region::getAttributes
  */
-class RegionAttributesFactory;
-class AttributesMutator;
-class Cache;
-class Region;
-
 class APACHE_GEODE_EXPORT RegionAttributes
     : public internal::DataSerializableInternal {
   /**
@@ -205,8 +204,6 @@ class APACHE_GEODE_EXPORT RegionAttributes
   void toData(DataOutput& out) const override;
 
   void fromData(DataInput& in) override;
-
-  int8_t getInternalId() const override;
 
   /**
    * This method returns the path of the library from which

@@ -15,12 +15,14 @@
  * limitations under the License.
  */
 
+#include "PoolXmlCreation.hpp"
+
 #include <geode/Cache.hpp>
 #include <geode/PoolManager.hpp>
 
-#include "PoolXmlCreation.hpp"
-
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 /*
 void PoolXmlCreation::addLocator(const char * host, const char * port)
@@ -36,12 +38,17 @@ void PoolXmlCreation::addServer(const char * host, const char * port)
 }
 */
 std::shared_ptr<Pool> PoolXmlCreation::create() {
-  return poolFactory->create(poolName.c_str());
+  return poolFactory->create(poolName);
 }
 
-PoolXmlCreation::PoolXmlCreation(const char* name, std::shared_ptr<PoolFactory> factory) {
-  poolName = name;
+PoolXmlCreation::PoolXmlCreation(std::string name,
+                                 std::shared_ptr<PoolFactory> factory) {
+  poolName = std::move(name);
   poolFactory = factory;
 }
 
 PoolXmlCreation::~PoolXmlCreation() {}
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

@@ -1,7 +1,7 @@
 # Building
 
 ## Prerequisites (All Platforms)
-* [CMake 3.10](https://cmake.org/) or newer
+* [CMake 3.12](https://cmake.org/) or newer
 * C++11 compiler *(see platform specific requirements)*
 * [Doxygen 8.11](http://www.stack.nl/~dimitri/doxygen/download.html) *(for building source documentation)*
 * [Apache Geode](http://geode.apache.org/releases/) binaries installed or available to link against
@@ -22,14 +22,15 @@ Building requires access to an installation of Geode. There are two ways to achi
 
 
 ## Steps to build
-
-    $ cd <clone>
-    $ mkdir build
-    $ cd build
-    // configuration step
-    $ cmake .. <platform-specific generator parameters (see below)>
-    // build step
-    $ cmake --build . -- <platform-specific parallelism parameters (see below)>
+```console
+$ cd <clone>
+$ mkdir build
+$ cd build
+# configuration step
+$ cmake .. <platform-specific generator parameters (see below)>
+# build step
+$ cmake --build . -- <platform-specific parallelism parameters (see below)>
+```
 
 To explicitly specify the location in which the Native Client will be installed, add `-DCMAKE_INSTALL_PREFIX=/path/to/installation/destination` to this initial `cmake` execution command.
 
@@ -38,44 +39,67 @@ CMake uses a "generator" to produce configuration files for use by a variety of 
 
 #### CLion / Eclipse / Other
 The recommended generator for most unix platforms is 'Makefiles' (default):
-
-	$ cmake ..
+```console
+$ cmake ..
+```
 
 #### Xcode
 The recommended generator for Xcode is `Xcode`:
-
-	$ cmake .. -G "Xcode"
+```console
+$ cmake .. -G "Xcode"
+```
 
 #### Windows / Visual Studio
 When running cmake commands on Windows, be sure to use [Visual Studio Native Tools Command Prompt](https://msdn.microsoft.com/en-us/library/f35ctcxw.aspx) so environment variables are set properly.
 
 The recommended generator on Windows is `Visual Studio 14 2015 Win64`:
-
-	$ cmake .. -G "Visual Studio 14 2015 Win64" -Thost=x64
+```console
+$ cmake .. -G "Visual Studio 14 2015 Win64" -Thost=x64
+```
 
 ### Build Parallelism
 For faster builds, use optional parallelism parameters in the last build step:
 
 #### Unix
-
-	$ cmake --build . -- -j <# of jobs>
+```console
+$ cmake --build . -- -j <# of jobs>
+```
 
 #### Windows
+```console
+$ cmake --build . -- /m
+```
 
-	$ cmake --build . -- /m
+### Optional Configuration
 
-### Code Coverage
+#### Code Coverage
 
 If building with GCC or Clang you can enable C++ code coverage by adding `-DUSE_CPP_COVERAGE=ON` to the CMake [Generator](#generator) command. 
-
-    $ cmake ... -DUSE_CPP_COVERAGE=ON ...
-
+```console
+$ cmake … -DUSE_CPP_COVERAGE=ON …
+```
 You can then generate a C++ code coverage report by downloading [lcov](http://ltp.sourceforge.net/coverage/lcov.php).  After acquiring lcov, finish the [Steps to build](#Steps-to-build) section above.  Then, run the tests as described in the [CONTRIBUTING.md](CONTRIBUTING.md). Finally, run the following commands from the `build` directory:
-
-    $ lcov --capture --directory . --output-file coverage.info
-    $ genhtml coverage.info --output-directory coverage_report
+```console
+$ lcov --capture --directory . --output-file coverage.info
+$ genhtml coverage.info --output-directory coverage_report
+```
 
 You can then open the `index.html` file in the `coverage_report` directory using any browser.
+
+#### Clang-Tidy
+To enable `clang-tidy`:
+```console
+$ cmake … -DCMAKE_CXX_CLANG_TIDY=clang-tidy …
+```
+To use specific `clang-tidy`:
+```console
+$ cmake … -DCMAKE_CXX_CLANG_TIDY=/path/to/clang-tidy …
+```
+By default `clang-tidy` uses the configuration found in `.clang-tidy`
+To override `clang-tidy` options:
+```console
+$ cmake … -DCMAKE_CXX_CLANG_TIDY=clang-tidy;<options> …
+```
 
 ## Installing
 By default a system-specific location is used by CMake as the destination of the `install` target, e.g., `/usr/local` on UNIX system. To explicitly specify the location in which the Native Client will be installed, add `-DCMAKE_INSTALL_PREFIX=/path/to/installation/destination` to the _initial_ `cmake` execution command.
@@ -85,10 +109,12 @@ Interpretation of the symbol varies depending on the option being specified, and
 
 Due to limitations in CMake, the documentation must be built as a separate step before installation:
 
-    $ cd <clone>
-    $ cd build
-    $ cmake --build . --target docs
-    $ cmake --build . --target install
+```console
+$ cd <clone>
+$ cd build
+$ cmake --build . --target docs
+$ cmake --build . --target install
+```
 
 # Platform-Specific Prerequisites
 
@@ -99,8 +125,9 @@ Due to limitations in CMake, the documentation must be built as a separate step 
 ### Required Tools
 * [Xcode](https://developer.apple.com/xcode/download/)
 * Xcode command line developer tools
-
-    `$ xcode-select --install`
+```console
+$ xcode-select --install
+```
 
 ### Optional Tools
 * [CMake GUI](https://cmake.org/)

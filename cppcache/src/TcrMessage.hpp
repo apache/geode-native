@@ -21,33 +21,31 @@
 #define GEODE_TCRMESSAGE_H_
 
 #include <atomic>
-#include <string>
-#include <map>
-#include <vector>
-#define __STDC_FORMAT_MACROS
 #include <cinttypes>
+#include <map>
+#include <string>
+#include <vector>
 
-#include <ace/OS.h>
-
-#include <geode/internal/geode_globals.hpp>
-#include <geode/Serializable.hpp>
+#include <geode/CacheableBuiltins.hpp>
 #include <geode/CacheableKey.hpp>
 #include <geode/CacheableString.hpp>
-#include <geode/DataOutput.hpp>
-#include <geode/DataInput.hpp>
-#include <geode/ExceptionTypes.hpp>
-#include <geode/CacheableBuiltins.hpp>
 #include <geode/CqState.hpp>
+#include <geode/DataInput.hpp>
+#include <geode/DataOutput.hpp>
+#include <geode/ExceptionTypes.hpp>
+#include <geode/Region.hpp>
+#include <geode/Serializable.hpp>
+#include <geode/internal/geode_globals.hpp>
 
-#include "InterestResultPolicy.hpp"
+#include "BucketServerLocation.hpp"
 #include "EventId.hpp"
 #include "EventIdMap.hpp"
-#include "TcrChunkedContext.hpp"
-#include "BucketServerLocation.hpp"
 #include "FixedPartitionAttributesImpl.hpp"
+#include "InterestResultPolicy.hpp"
+#include "SerializationRegistry.hpp"
+#include "TcrChunkedContext.hpp"
 #include "VersionTag.hpp"
 #include "VersionedCacheableObjectPartList.hpp"
-#include "SerializationRegistry.hpp"
 
 namespace apache {
 namespace geode {
@@ -467,35 +465,55 @@ class APACHE_GEODE_EXPORT TcrMessage {
 
  protected:
   TcrMessage()
-      : m_feAnotherHop(false),
-        m_connectionIDBytes(nullptr),
-        isSecurityOn(false),
-        m_isLastChunkAndisSecurityHeader(0),
-        m_isSecurityHeaderAdded(false),
-        m_creds(),
-        m_securityHeaderLength(0),
-        m_isMetaRegion(false),
-        exceptionMessage(),
-        m_request(nullptr),
-        m_msgType(TcrMessage::INVALID),
-        m_msgLength(-1),
-        m_msgTypeRequest(0),
-        m_txId(-1),
-        m_decodeAll(false),
+      : m_request(nullptr),
         m_tcdm(nullptr),
         m_chunkedResult(nullptr),
         m_keyList(nullptr),
+        m_region(nullptr),
+        m_timeout(15 /*DEFAULT_TIMEOUT_SECONDS*/),
+        m_metadata(),
+        m_cqs(nullptr),
+        m_messageResponseTimeout(-1),
+        m_delta(nullptr),
+        m_deltaBytes(nullptr),
+        m_fpaSet(),
+        m_functionAttributes(),
+        m_connectionIDBytes(nullptr),
+        m_creds(),
         m_key(),
         m_value(nullptr),
         m_failedNode(),
         m_callbackArgument(nullptr),
         m_versionTag(),
         m_eventid(nullptr),
+        m_vectorPtr(),
+        m_bucketServerLocation(nullptr),
+        m_tombstoneVersions(),
+        m_tombstoneKeys(),
+        m_versionObjPartListptr(),
+        exceptionMessage(),
         m_regionName("INVALID_REGION_NAME"),
-        m_region(nullptr),
         m_regex(),
+        m_bucketServerLocations(),
+        m_colocatedWith(),
+        m_partitionResolverName(),
+        m_securityHeaderLength(0),
+        m_msgType(TcrMessage::INVALID),
+        m_msgLength(-1),
+        m_msgTypeRequest(0),
+        m_txId(-1),
+        m_bucketCount(0),
+        m_numCqPart(0),
+        m_msgTypeForCq(0),
+        m_deltaBytesLen(0),
+        m_entryNotFound(0),
+        m_feAnotherHop(false),
+        isSecurityOn(false),
+        m_isLastChunkAndisSecurityHeader(0),
+        m_isSecurityHeaderAdded(false),
+        m_isMetaRegion(false),
+        m_decodeAll(false),
         m_interestPolicy(0),
-        m_timeout(15 /*DEFAULT_TIMEOUT_SECONDS*/),
         m_isDurable(false),
         m_receiveValues(false),
         m_hasCqsPart(false),
@@ -503,52 +521,16 @@ class APACHE_GEODE_EXPORT TcrMessage {
         m_shouldIgnore(false),
         m_metaDataVersion(0),
         m_serverGroupVersion(0),
-        m_bucketServerLocations(),
-        m_metadata(),
-        m_bucketCount(0),
-        m_colocatedWith(),
-        m_partitionResolverName(),
-        m_vectorPtr(),
-        m_numCqPart(0),
-        m_msgTypeForCq(0),
-        m_cqs(nullptr),
-        m_messageResponseTimeout(-1),
         m_boolValue(0),
-        m_delta(nullptr),
-        m_deltaBytes(nullptr),
-        m_deltaBytesLen(0),
         m_isCallBackArguement(false),
-        m_bucketServerLocation(nullptr),
-        m_entryNotFound(0),
-        m_fpaSet(),
-        m_functionAttributes(),
-        m_hasResult(0),
-        m_tombstoneVersions(),
-        m_tombstoneKeys(),
-        m_versionObjPartListptr() {}
+        m_hasResult(0) {}
 
   void handleSpecialFECase();
-  bool m_feAnotherHop;
   void writeBytesOnly(const std::shared_ptr<Serializable>& se);
   std::shared_ptr<Serializable> readCacheableBytes(DataInput& input,
                                                    int lenObj);
   std::shared_ptr<Serializable> readCacheableString(DataInput& input,
                                                     int lenObj);
-
-  static std::atomic<int32_t> m_transactionId;
-  static uint8_t* m_keepalive;
-  const static int m_flag_empty;
-  const static int m_flag_concurrency_checks;
-
-  std::shared_ptr<CacheableBytes> m_connectionIDBytes;
-  bool isSecurityOn;
-  uint8_t m_isLastChunkAndisSecurityHeader;
-  bool m_isSecurityHeaderAdded;
-  std::shared_ptr<Properties> m_creds;
-  int32_t m_securityHeaderLength;
-  bool m_isMetaRegion;
-
-  std::string exceptionMessage;
 
   TcrMessage(const TcrMessage&) = delete;
   TcrMessage& operator=(const TcrMessage&) = delete;
@@ -594,7 +576,7 @@ class APACHE_GEODE_EXPORT TcrMessage {
                        int32_t parts = 1);  // skip num parts then read eventid
 
   void skipParts(DataInput& input, int32_t numParts = 1);
-  void readStringPart(DataInput& input, uint32_t* len, char** str);
+  const std::string readStringPart(DataInput& input);
   void readCqsPart(DataInput& input);
   void readHashMapForGCVersions(apache::geode::client::DataInput& input,
                                 std::shared_ptr<CacheableHashMap>& value);
@@ -602,32 +584,59 @@ class APACHE_GEODE_EXPORT TcrMessage {
                                 std::shared_ptr<CacheableHashSet>& value);
   std::shared_ptr<DSMemberForVersionStamp> readDSMember(
       apache::geode::client::DataInput& input);
+
   std::unique_ptr<DataOutput> m_request;
-  int32_t m_msgType;
-  int32_t m_msgLength;
-  int32_t m_msgTypeRequest;  // the msgType of the request if this TcrMessage is
-                             // a reply msg
-
-  int32_t m_txId;
-  bool m_decodeAll;  // used only when decoding reply message, if false, decode
-                     // header only
-
-  // the associated region that is handling processing of chunked responses
+  /** the associated region that is handling processing of chunked responses */
   ThinClientBaseDM* m_tcdm;
   TcrChunkedResult* m_chunkedResult;
-
   const std::vector<std::shared_ptr<CacheableKey>>* m_keyList;
+  const Region* m_region;
+  std::chrono::milliseconds m_timeout;
+  std::vector<std::vector<std::shared_ptr<BucketServerLocation>>>* m_metadata;
+  std::map<std::string, int>* m_cqs;
+  std::chrono::milliseconds m_messageResponseTimeout;
+  std::unique_ptr<DataInput> m_delta;
+  int8_t* m_deltaBytes;
+  std::vector<std::shared_ptr<FixedPartitionAttributesImpl>>* m_fpaSet;
+  std::vector<int8_t>* m_functionAttributes;
+  std::shared_ptr<CacheableBytes> m_connectionIDBytes;
+  std::shared_ptr<Properties> m_creds;
   std::shared_ptr<CacheableKey> m_key;
   std::shared_ptr<Cacheable> m_value;
   std::shared_ptr<CacheableHashSet> m_failedNode;
   std::shared_ptr<Cacheable> m_callbackArgument;
   std::shared_ptr<VersionTag> m_versionTag;
   std::shared_ptr<EventId> m_eventid;
+  std::shared_ptr<CacheableVector> m_vectorPtr;
+  std::shared_ptr<BucketServerLocation> m_bucketServerLocation;
+  std::shared_ptr<CacheableHashMap> m_tombstoneVersions;
+  std::shared_ptr<CacheableHashSet> m_tombstoneKeys;
+  std::shared_ptr<VersionedCacheableObjectPartList> m_versionObjPartListptr;
+  std::string exceptionMessage;
   std::string m_regionName;
-  const Region* m_region;
   std::string m_regex;
+  std::vector<std::shared_ptr<BucketServerLocation>> m_bucketServerLocations;
+  std::string m_colocatedWith;
+  std::string m_partitionResolverName;
+  int32_t m_securityHeaderLength;
+  int32_t m_msgType;
+  int32_t m_msgLength;
+  /** the msgType of the request if this TcrMessage is  a reply msg */
+  int32_t m_msgTypeRequest;
+  int32_t m_txId;
+  int32_t m_bucketCount;
+  uint32_t m_numCqPart;
+  uint32_t m_msgTypeForCq;
+  int32_t m_deltaBytesLen;
+  uint32_t m_entryNotFound;
+  bool m_feAnotherHop;
+  bool isSecurityOn;
+  uint8_t m_isLastChunkAndisSecurityHeader;
+  bool m_isSecurityHeaderAdded;
+  bool m_isMetaRegion;
+  /** used only when decoding reply message, if false, decode header only */
+  bool m_decodeAll;
   char m_interestPolicy;
-  std::chrono::milliseconds m_timeout;
   bool m_isDurable;
   bool m_receiveValues;
   bool m_hasCqsPart;
@@ -635,30 +644,14 @@ class APACHE_GEODE_EXPORT TcrMessage {
   bool m_shouldIgnore;
   int8_t m_metaDataVersion;
   int8_t m_serverGroupVersion;
-  std::vector<std::shared_ptr<BucketServerLocation>> m_bucketServerLocations;
-  std::vector<std::vector<std::shared_ptr<BucketServerLocation>>>* m_metadata;
-  int32_t m_bucketCount;
-  std::string m_colocatedWith;
-  std::string m_partitionResolverName;
-  std::shared_ptr<CacheableVector> m_vectorPtr;
-  uint32_t m_numCqPart;
-  uint32_t m_msgTypeForCq;  // new part since 7.0 for cq event message type.
-  std::map<std::string, int>* m_cqs;
-  std::chrono::milliseconds m_messageResponseTimeout;
   bool m_boolValue;
-  std::unique_ptr<DataInput> m_delta;
-  int8_t* m_deltaBytes;
-  int32_t m_deltaBytesLen;
   bool m_isCallBackArguement;
-  std::shared_ptr<BucketServerLocation> m_bucketServerLocation;
-  uint32_t m_entryNotFound;
-  std::vector<std::shared_ptr<FixedPartitionAttributesImpl>>* m_fpaSet;
-  std::vector<int8_t>* m_functionAttributes;
   uint8_t m_hasResult;
-  std::shared_ptr<CacheableHashMap> m_tombstoneVersions;
-  std::shared_ptr<CacheableHashSet> m_tombstoneKeys;
-  /*Added this member for PutALL versioning changes*/
-  std::shared_ptr<VersionedCacheableObjectPartList> m_versionObjPartListptr;
+
+  static std::atomic<int32_t> m_transactionId;
+  static uint8_t* m_keepalive;
+  const static int m_flag_empty;
+  const static int m_flag_concurrency_checks;
 
   friend class TcrMessageHelper;
 };
@@ -884,7 +877,7 @@ class TcrMessageTxSynchronization : public TcrMessage {
 
 class TcrMessageClientReady : public TcrMessage {
  public:
-  TcrMessageClientReady(DataOutput* dataOutput);
+  explicit TcrMessageClientReady(DataOutput* dataOutput);
 
   virtual ~TcrMessageClientReady() {}
 
@@ -893,7 +886,7 @@ class TcrMessageClientReady : public TcrMessage {
 
 class TcrMessageCommit : public TcrMessage {
  public:
-  TcrMessageCommit(DataOutput* dataOutput);
+  explicit TcrMessageCommit(DataOutput* dataOutput);
 
   virtual ~TcrMessageCommit() {}
 
@@ -902,7 +895,7 @@ class TcrMessageCommit : public TcrMessage {
 
 class TcrMessageRollback : public TcrMessage {
  public:
-  TcrMessageRollback(DataOutput* dataOutput);
+  explicit TcrMessageRollback(DataOutput* dataOutput);
 
   virtual ~TcrMessageRollback() {}
 
@@ -911,7 +904,7 @@ class TcrMessageRollback : public TcrMessage {
 
 class TcrMessageTxFailover : public TcrMessage {
  public:
-  TcrMessageTxFailover(DataOutput* dataOutput);
+  explicit TcrMessageTxFailover(DataOutput* dataOutput);
 
   virtual ~TcrMessageTxFailover() {}
 
@@ -1269,12 +1262,11 @@ class TcrMessageHelper {
     } else if (!isObj) {
       // otherwise we're currently always expecting an object
       char exMsg[256];
-      ACE_OS::snprintf(exMsg, 255,
-                       "TcrMessageHelper::readChunkPartHeader: "
-                       "%s: part is not object",
-                       methodName);
+      std::snprintf(exMsg, sizeof(exMsg),
+                    "TcrMessageHelper::readChunkPartHeader: "
+                    "%s: part is not object",
+                    methodName);
       LOGDEBUG("%s ", exMsg);
-      // throw MessageException(exMsg);
       return ChunkObjectType::EXCEPTION;
     }
 
@@ -1290,8 +1282,8 @@ class TcrMessageHelper {
         return ChunkObjectType::EXCEPTION;
       } else {
         char exMsg[256];
-        ACE_OS::snprintf(
-            exMsg, 255,
+        std::snprintf(
+            exMsg, sizeof(exMsg),
             "TcrMessageHelper::readChunkPartHeader: %s: cannot handle "
             "java serializable object from server",
             methodName);
@@ -1306,10 +1298,10 @@ class TcrMessageHelper {
     if (expectedFirstType > DSCode::FixedIDDefault) {
       if (partType != expectedFirstType) {
         char exMsg[256];
-        ACE_OS::snprintf(exMsg, 255,
-                         "TcrMessageHelper::readChunkPartHeader: "
-                         "%s: got unhandled object class = %" PRId8,
-                         methodName, static_cast<int8_t>(partType));
+        std::snprintf(exMsg, sizeof(exMsg),
+                      "TcrMessageHelper::readChunkPartHeader: "
+                      "%s: got unhandled object class = %" PRId8,
+                      methodName, static_cast<int8_t>(partType));
         throw MessageException(exMsg);
       }
       // This is for GETALL
@@ -1322,19 +1314,21 @@ class TcrMessageHelper {
     }
     if (compId != expectedPartType) {
       char exMsg[256];
-      ACE_OS::snprintf(exMsg, 255,
-                       "TcrMessageHelper::readChunkPartHeader: "
-                       "%s: got unhandled object type = %d, expected = %d, raw = %d",
-                       methodName, compId, expectedPartType, rawByte);
+      std::snprintf(
+          exMsg, sizeof(exMsg),
+          "TcrMessageHelper::readChunkPartHeader: "
+          "%s: got unhandled object type = %d, expected = %d, raw = %d",
+          methodName, compId, expectedPartType, rawByte);
       throw MessageException(exMsg);
     }
     return ChunkObjectType::OBJECT;
   }
 
-  inline static ChunkObjectType readChunkPartHeader(TcrMessage& msg, DataInput& input,
-                                           const char* methodName,
-                                           uint32_t& partLen,
-                                           uint8_t isLastChunk) {
+  inline static ChunkObjectType readChunkPartHeader(TcrMessage& msg,
+                                                    DataInput& input,
+                                                    const char* methodName,
+                                                    uint32_t& partLen,
+                                                    uint8_t isLastChunk) {
     partLen = input.readInt32();
     const auto isObj = input.readBoolean();
 
@@ -1344,10 +1338,10 @@ class TcrMessageHelper {
     } else if (!isObj) {
       // otherwise we're currently always expecting an object
       char exMsg[256];
-      ACE_OS::snprintf(exMsg, 255,
-                       "TcrMessageHelper::readChunkPartHeader: "
-                       "%s: part is not object",
-                       methodName);
+      std::snprintf(exMsg, 255,
+                    "TcrMessageHelper::readChunkPartHeader: "
+                    "%s: part is not object",
+                    methodName);
       throw MessageException(exMsg);
     }
 
@@ -1360,7 +1354,7 @@ class TcrMessageHelper {
         return ChunkObjectType::EXCEPTION;
       } else {
         char exMsg[256];
-        ACE_OS::snprintf(
+        std::snprintf(
             exMsg, 255,
             "TcrMessageHelper::readChunkPartHeader: %s: cannot handle "
             "java serializable object from server",

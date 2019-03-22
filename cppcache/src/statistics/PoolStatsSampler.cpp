@@ -15,16 +15,15 @@
  * limitations under the License.
  */
 
-#include <string>
-#include <chrono>
-#include <thread>
-
 #include "PoolStatsSampler.hpp"
-#include "GeodeStatisticsFactory.hpp"
-#include "../ReadWriteLock.hpp"
+
+#include <string>
+
 #include "../CacheImpl.hpp"
-#include "../ThinClientPoolDM.hpp"
 #include "../ClientHealthStats.hpp"
+#include "../ReadWriteLock.hpp"
+#include "../ThinClientPoolDM.hpp"
+#include "GeodeStatisticsFactory.hpp"
 
 namespace apache {
 namespace geode {
@@ -39,22 +38,16 @@ const char* PoolStatsSampler::NC_PSS_Thread = "NC PSS Thread";
 
 PoolStatsSampler::PoolStatsSampler(milliseconds sampleRate, CacheImpl* cache,
                                    ThinClientPoolDM* distMan)
-    : m_sampleRate(sampleRate),
+    : m_running(false),
+      m_stopRequested(false),
+      m_sampleRate(sampleRate),
+      m_adminRegion(AdminRegion::create(cache, distMan)),
       m_distMan(distMan),
       m_statisticsFactory(
-          cache->getStatisticsManager().getStatisticsFactory()) {
-  m_running = false;
-  m_stopRequested = false;
-  m_adminRegion = AdminRegion::create(cache, distMan);
-}
+          cache->getStatisticsManager().getStatisticsFactory()) {}
 
-PoolStatsSampler::~PoolStatsSampler() {
-  // _GEODE_SAFE_DELETE(m_adminRegion);
-}
-
-int32_t PoolStatsSampler::svc() {
-  DistributedSystemImpl::setThreadName(NC_PSS_Thread);
-  // ACE_Guard < ACE_Recursive_Thread_Mutex > _guard( m_lock );
+void PoolStatsSampler::svc() {
+  client::DistributedSystemImpl::setThreadName(NC_PSS_Thread);
   while (!m_stopRequested) {
     auto sampleStart = high_resolution_clock::now();
     putStatsInAdminRegion();
@@ -68,21 +61,19 @@ int32_t PoolStatsSampler::svc() {
       sleepDuration -= wakeInterval;
     }
   }
-  return 0;
 }
 
 void PoolStatsSampler::start() {
-  if (!m_running) {
-    m_running = true;
-    this->activate();
+  if (!m_running.exchange(true)) {
+    m_thread = std::thread(&PoolStatsSampler::svc, this);
   }
 }
 
 void PoolStatsSampler::stop() {
-  // ACE_Guard < ACE_Recursive_Thread_Mutex > _guard( m_lock );
   m_stopRequested = true;
-  this->wait();
+  m_thread.join();
 }
+
 bool PoolStatsSampler::isRunning() { return m_running; }
 
 void PoolStatsSampler::putStatsInAdminRegion() {
@@ -109,20 +100,20 @@ void PoolStatsSampler::putStatsInAdminRegion() {
           }
         }
       }
-      static int numCPU = ACE_OS::num_processors();
-      auto obj = ClientHealthStats::create(gets, puts, misses, numListeners,
-                                           numThreads, cpuTime, numCPU);
+      static auto numCPU = std::thread::hardware_concurrency();
+      auto obj = client::ClientHealthStats::create(
+          gets, puts, misses, numListeners, numThreads, cpuTime, numCPU);
       const auto memId = m_distMan->getMembershipId();
       clientId = memId->getDSMemberIdForThinClientUse();
-      auto keyPtr = CacheableString::create(clientId.c_str());
+      auto keyPtr = client::CacheableString::create(clientId.c_str());
       m_adminRegion->put(keyPtr, obj);
     }
-  } catch (const AllConnectionsInUseException&) {
+  } catch (const client::AllConnectionsInUseException&) {
     LOGDEBUG("All connection are in use, trying again.");
-  } catch (const NotConnectedException& ex) {
+  } catch (const client::NotConnectedException& ex) {
     try {
       std::rethrow_if_nested(ex);
-    } catch (const NoAvailableLocatorsException&) {
+    } catch (const client::NoAvailableLocatorsException&) {
       LOGDEBUG("No locators available, trying again.");
     } catch (...) {
       LOGDEBUG("Not connected to geode, trying again.");

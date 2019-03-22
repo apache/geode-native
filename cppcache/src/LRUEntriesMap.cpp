@@ -14,18 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "LRUEntriesMap.hpp"
-#include "LRUList.cpp"
-#include "ExpiryTaskManager.hpp"
-#include "MapSegment.hpp"
-#include "CacheImpl.hpp"
 
 #include <mutex>
+
+#include "CacheImpl.hpp"
+#include "EvictionController.hpp"
+#include "ExpiryTaskManager.hpp"
+#include "LRUList.cpp"
+#include "MapSegment.hpp"
 #include "util/concurrent/spinlock_mutex.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
+
 /**
  * @brief LRUAction for testing map outside of a region....
  */
@@ -163,7 +167,6 @@ GfErrType LRUEntriesMap::processLRU() {
 
 GfErrType LRUEntriesMap::evictionHelper() {
   GfErrType err = GF_NOERR;
-  //  ACE_Guard< ACE_Recursive_Thread_Mutex > guard( m_mutex );
   std::shared_ptr<MapEntryImpl> lruEntryPtr;
   m_lruList.getLRUEntry(lruEntryPtr);
   if (lruEntryPtr == nullptr) {
@@ -217,7 +220,7 @@ GfErrType LRUEntriesMap::invalidate(const std::shared_ptr<CacheableKey>& key,
   // later value
   // TODO: assess any other effects of this race
   if (CacheableToken::isOverflowed(oldValue)) {
-    ACE_Guard<MapSegment> _guard(*segmentRPtr);
+    std::lock_guard<MapSegment> _guard(*segmentRPtr);
     auto&& persistenceInfo = me->getLRUProperties().getPersistenceInfo();
     //  get the old value first which is required for heapLRU
     // calculation and for listeners; note even though there is a race
@@ -264,14 +267,14 @@ GfErrType LRUEntriesMap::put(const std::shared_ptr<CacheableKey>& key,
   {
     if (m_action != nullptr &&
         m_action->getType() == LRUAction::OVERFLOW_TO_DISK) {
-      segmentRPtr->acquire();
+      segmentRPtr->lock();
       segmentLocked = true;
     }
     std::shared_ptr<MapEntryImpl> mePtr;
     if ((err = segmentRPtr->put(key, newValue, me, oldValue, updateCount,
                                 destroyTracker, isUpdate, versionTag, delta)) !=
         GF_NOERR) {
-      if (segmentLocked == true) segmentRPtr->release();
+      if (segmentLocked == true) segmentRPtr->unlock();
       return err;
     }
 
@@ -291,7 +294,7 @@ GfErrType LRUEntriesMap::put(const std::shared_ptr<CacheableKey>& key,
     // unless very careful thought has gone into it.
     if (CacheableToken::isOverflowed(oldValue)) {
       if (!segmentLocked) {
-        segmentRPtr->release();
+        segmentRPtr->unlock();
         segmentLocked = true;
       }
       auto&& persistenceInfo = me->getLRUProperties().getPersistenceInfo();
@@ -359,7 +362,7 @@ GfErrType LRUEntriesMap::put(const std::shared_ptr<CacheableKey>& key,
   err = processLRU();
 
   if (segmentLocked) {
-    segmentRPtr->release();
+    segmentRPtr->unlock();
   }
   return err;
 }
@@ -377,14 +380,14 @@ bool LRUEntriesMap::get(const std::shared_ptr<CacheableKey>& key,
   bool segmentLocked = false;
   if (m_action != nullptr &&
       m_action->getType() == LRUAction::OVERFLOW_TO_DISK) {
-    segmentRPtr->acquire();
+    segmentRPtr->lock();
     segmentLocked = true;
   }
   {
     returnPtr = nullptr;
     std::shared_ptr<MapEntryImpl> mePtr;
     if (false == segmentRPtr->getEntry(key, mePtr, returnPtr)) {
-      if (segmentLocked == true) segmentRPtr->release();
+      if (segmentLocked == true) segmentRPtr->unlock();
       return false;
     }
     // segmentRPtr->get(key, returnPtr, mePtr);
@@ -397,7 +400,7 @@ bool LRUEntriesMap::get(const std::shared_ptr<CacheableKey>& key,
         tmpObj = m_pmPtr->read(key, persistenceInfo);
       } catch (Exception& ex) {
         LOGERROR("read on the persistence layer failed - %s", ex.what());
-        if (segmentLocked == true) segmentRPtr->release();
+        if (segmentLocked == true) segmentRPtr->unlock();
         return false;
       }
       m_region->getRegionStats()->incRetrieves();
@@ -434,13 +437,13 @@ bool LRUEntriesMap::get(const std::shared_ptr<CacheableKey>& key,
       GfErrType IsProcessLru = processLRU();
       if ((IsProcessLru != GF_NOERR)) {
         if (segmentLocked) {
-          segmentRPtr->release();
+          segmentRPtr->unlock();
         }
         return false;
       }
     }
     if (segmentLocked) {
-      segmentRPtr->release();
+      segmentRPtr->unlock();
     }
     return true;
   }
@@ -466,7 +469,7 @@ GfErrType LRUEntriesMap::remove(const std::shared_ptr<CacheableKey>& key,
         --m_validEntries;
       }
       if (CacheableToken::isOverflowed(result)) {
-        ACE_Guard<MapSegment> _guard(*segmentRPtr);
+        std::lock_guard<MapSegment> _guard(*segmentRPtr);
         auto&& persistenceInfo = lruProps.getPersistenceInfo();
         //  get the old value first which is required for heapLRU
         // calculation and for listeners; note even though there is a race

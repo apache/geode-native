@@ -20,8 +20,10 @@
  * limitations under the License.
  */
 
-#include <geode/internal/geode_globals.hpp>
 #include <memory>
+
+#include <geode/internal/geode_globals.hpp>
+
 #include "ThinClientDistributionManager.hpp"
 
 namespace apache {
@@ -36,7 +38,8 @@ class TcrConnection;
 class APACHE_GEODE_EXPORT ThinClientCacheDistributionManager
     : public ThinClientDistributionManager {
  public:
-  ThinClientCacheDistributionManager(TcrConnectionManager& connManager);
+  explicit ThinClientCacheDistributionManager(
+      TcrConnectionManager& connManager);
   ~ThinClientCacheDistributionManager(){};
 
   void init();

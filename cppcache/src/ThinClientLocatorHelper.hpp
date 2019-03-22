@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_THINCLIENTLOCATORHELPER_H_
-#define GEODE_THINCLIENTLOCATORHELPER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,24 +15,34 @@
  * limitations under the License.
  */
 
-#include <string>
-#include <geode/internal/geode_globals.hpp>
-#include "TcrEndpoint.hpp"
-#include "ServerLocation.hpp"
-#include <set>
+#pragma once
+
+#ifndef GEODE_THINCLIENTLOCATORHELPER_H_
+#define GEODE_THINCLIENTLOCATORHELPER_H_
+
 #include <list>
+#include <mutex>
+#include <set>
+#include <string>
+
+#include <geode/internal/geode_globals.hpp>
+
 #include "ClientProxyMembershipID.hpp"
+#include "ErrType.hpp"
 #include "GetAllServersRequest.hpp"
 #include "GetAllServersResponse.hpp"
+#include "ServerLocation.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
-class TcrEndpoint;
+
 class ThinClientPoolDM;
+class Connector;
+
 class ThinClientLocatorHelper {
  public:
-  ThinClientLocatorHelper(std::vector<std::string> locHostPort,
+  ThinClientLocatorHelper(const std::vector<std::string>& locatorAddresses,
                           const ThinClientPoolDM* poolDM);
   GfErrType getEndpointForNewFwdConn(
       ServerLocation& outEndpoint, std::string& additionalLoc,
@@ -47,11 +52,10 @@ class ThinClientLocatorHelper {
   GfErrType getEndpointForNewCallBackConn(
       ClientProxyMembershipID& memId, std::list<ServerLocation>& outEndpoint,
       std::string& additionalLoc, int redundancy,
-      const std::set<ServerLocation>& exclEndPts,
-      /*const std::set<TcrEndpoint*>& exclEndPts,*/
+      const std::set<ServerLocation>& exclEndPts, const std::string& serverGrp);
+  GfErrType getAllServers(
+      std::vector<std::shared_ptr<ServerLocation> >& servers,
       const std::string& serverGrp);
-  GfErrType getAllServers(std::vector<ServerLocation>& servers,
-                          const std::string& serverGrp);
   int32_t getCurLocatorsNum() {
     return static_cast<int32_t>(m_locHostPort.size());
   }
@@ -62,7 +66,7 @@ class ThinClientLocatorHelper {
                               int32_t port,
                               std::chrono::microseconds waitSeconds,
                               int32_t maxBuffSizePool = 0);
-  ACE_Thread_Mutex m_locatorLock;
+  std::mutex m_locatorLock;
   std::vector<ServerLocation> m_locHostPort;
   const ThinClientPoolDM* m_poolDM;
   ThinClientLocatorHelper(const ThinClientLocatorHelper&);

@@ -17,13 +17,10 @@
 
 #include <cstdlib>
 
-#include <ace/OS.h>
-#include <ace/TSS_T.h>
-
 #include <boost/core/demangle.hpp>
 
-#include <geode/Exception.hpp>
 #include <geode/CacheableString.hpp>
+#include <geode/Exception.hpp>
 
 #include "StackTrace.hpp"
 
@@ -56,30 +53,17 @@ std::string Exception::getStackTrace() const {
 
 // class to store/clear last server exception in TSS area
 
-class TSSExceptionString {
- private:
-  std::string m_exMsg;
+thread_local std::string threadLocalExceptionMessage;
 
- public:
-  TSSExceptionString() : m_exMsg() {}
-  virtual ~TSSExceptionString() {}
-
-  inline std::string& str() { return m_exMsg; }
-
-  static ACE_TSS<TSSExceptionString> s_tssExceptionMsg;
-};
-
-ACE_TSS<TSSExceptionString> TSSExceptionString::s_tssExceptionMsg;
-
-void setTSSExceptionMessage(const char* exMsg) {
-  TSSExceptionString::s_tssExceptionMsg->str().clear();
+void setThreadLocalExceptionMessage(const char* exMsg) {
+  threadLocalExceptionMessage.clear();
   if (exMsg != nullptr) {
-    TSSExceptionString::s_tssExceptionMsg->str().append(exMsg);
+    threadLocalExceptionMessage.assign(exMsg);
   }
 }
 
-const char* getTSSExceptionMessage() {
-  return TSSExceptionString::s_tssExceptionMsg->str().c_str();
+const std::string& getThreadLocalExceptionMessage() {
+  return threadLocalExceptionMessage;
 }
 }  // namespace client
 }  // namespace geode

@@ -15,10 +15,15 @@
  * limitations under the License.
  */
 #include "ClientConnectionResponse.hpp"
-#include <geode/DataOutput.hpp>
-#include <geode/DataInput.hpp>
 
-using namespace apache::geode::client;
+#include <geode/DataInput.hpp>
+#include <geode/DataOutput.hpp>
+
+namespace apache {
+namespace geode {
+namespace client {
+
+using internal::DSFid;
 
 void ClientConnectionResponse::fromData(DataInput& input) {
   m_serverFound = input.readBoolean();
@@ -38,3 +43,7 @@ size_t ClientConnectionResponse::objectSize() const {
 ServerLocation ClientConnectionResponse::getServerLocation() const {
   return m_server;
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

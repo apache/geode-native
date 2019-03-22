@@ -15,19 +15,18 @@
  * limitations under the License.
  */
 
-#include <geode/Pool.hpp>
+#include <geode/AuthenticatedView.hpp>
 #include <geode/Cache.hpp>
 #include <geode/CacheFactory.hpp>
+#include <geode/Pool.hpp>
 
 #include "PoolAttributes.hpp"
-#include <geode/AuthenticatedView.hpp>
+#include "TcrConnectionManager.hpp"
 #include "ThinClientPoolHADM.hpp"
 
-/**
- * @file
- */
-
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 Pool::Pool(std::shared_ptr<PoolAttributes> attr) : m_attrs(attr) {}
 Pool::~Pool() {}
@@ -107,9 +106,8 @@ AuthenticatedView Pool::createAuthenticatedView(
       throw IllegalStateException("cache has been closed. ");
     }
 
-    if (credentials != nullptr && credentials.get() == nullptr) {
+    if (!credentials) {
       LOGDEBUG("Pool::createSecureUserCache creds are null");
-      credentials = nullptr;
     }
 
     return AuthenticatedView(credentials, shared_from_this(), cacheImpl);
@@ -139,3 +137,7 @@ int Pool::getPendingEventCount() const {
   }
   return poolHADM->getPrimaryServerQueueSize();
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

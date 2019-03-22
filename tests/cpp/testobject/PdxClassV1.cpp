@@ -14,17 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * PdxClassV1.cpp
- *
- *  Created on: Feb 3, 2012
- *      Author: npatel
- */
 
 #include "PdxClassV1.hpp"
 
-using namespace apache::geode::client;
-using namespace PdxTests;
+namespace PdxTests {
+
+using apache::geode::client::Exception;
 
 /************************************************************
  *  PdxType1V1
@@ -666,7 +661,7 @@ std::string PdxVersionedV1::toString() const {
 
 TestKeyV1::TestKeyV1() {}
 
-TestKeyV1::TestKeyV1(char *id) { _id = id; }
+TestKeyV1::TestKeyV1(char* id) { _id = id; }
 
 /************************************************************
  *  TestDiffTypePdxSV1
@@ -726,3 +721,5 @@ std::string TestEqualsV1::toString() const {
   sprintf(idbuf, "TestEqualsV1:[i1=%d ] [i2=%d] ", i1, i2);
   return idbuf;
 }
+
+}  // namespace PdxTests

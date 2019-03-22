@@ -74,7 +74,8 @@ class APACHE_GEODE_EXPORT CqAttributesFactory {
    *          the <code>CqAttributes</code> used to initialize this
    *          AttributesFactory
    */
-  CqAttributesFactory(const std::shared_ptr<CqAttributes>& cqAttributes);
+  explicit CqAttributesFactory(
+      const std::shared_ptr<CqAttributes>& cqAttributes);
 
   /**
    * Adds a CQ listener to the end of the list of cq listeners on this factory.

@@ -26,17 +26,32 @@
  *      Author: vrao
  */
 
-#include "SerializationRegistry.hpp"
+#include <util/Log.hpp>
+
 #include <geode/CacheableEnum.hpp>
 #include <geode/CacheableObjectArray.hpp>
 #include <geode/PdxWrapper.hpp>
-#include <util/Log.hpp>
 
+#include "SerializationRegistry.hpp"
 #include "testobject_export.h"
 
-using namespace apache::geode::client;
-
 namespace PdxTests {
+
+using apache::geode::client::Cacheable;
+using apache::geode::client::CacheableArrayList;
+using apache::geode::client::CacheableDate;
+using apache::geode::client::CacheableEnum;
+using apache::geode::client::CacheableHashMap;
+using apache::geode::client::CacheableHashSet;
+using apache::geode::client::CacheableHashTable;
+using apache::geode::client::CacheableInt32;
+using apache::geode::client::CacheableLinkedHashSet;
+using apache::geode::client::CacheableObjectArray;
+using apache::geode::client::CacheableString;
+using apache::geode::client::CacheableVector;
+using apache::geode::client::IllegalStateException;
+using apache::geode::client::PdxWrapper;
+using apache::geode::client::Serializable;
 
 class TESTOBJECT_EXPORT NonPdxAddress {
  public:

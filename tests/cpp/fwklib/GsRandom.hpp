@@ -20,10 +20,10 @@
  * limitations under the License.
  */
 
-#include <geode/internal/geode_base.hpp>
-
-#include <string>
 #include <random>
+#include <string>
+
+#include <geode/internal/geode_base.hpp>
 
 namespace apache {
 namespace geode {

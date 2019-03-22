@@ -22,9 +22,9 @@
 
 #include <geode/DataOutput.hpp>
 
+#include "CacheImpl.hpp"
 #include "EnumInfo.hpp"
 #include "PdxType.hpp"
-#include "CacheImpl.hpp"
 
 namespace apache {
 namespace geode {

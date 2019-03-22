@@ -29,16 +29,19 @@
 #define LOCATOR1 s2p1
 #define SERVER s2p2
 
+using apache::geode::client::Exception;
+using apache::geode::client::IllegalStateException;
+
 bool isLocalServer = false;
 bool isLocator = false;
 
-const char* locHostPort =
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
-const char* poolRegNames[] = {"PoolRegion1"};
-const char* poolName = "__TEST_POOL1__";
-const char* poolName1 = "clientPool";
+const char *poolRegNames[] = {"PoolRegion1"};
+const char *poolName = "__TEST_POOL1__";
+const char *poolName1 = "clientPool";
 
-const char* serverGroup = "ServerGroup1";
+const char *serverGroup = "ServerGroup1";
 std::shared_ptr<Cache> cachePtr;
 
 class putThread : public ACE_Task_Base {
@@ -46,7 +49,7 @@ class putThread : public ACE_Task_Base {
   std::shared_ptr<Region> regPtr;
 
  public:
-  explicit putThread(const char* name) : regPtr(getHelper()->getRegion(name)) {}
+  explicit putThread(const char *name) : regPtr(getHelper()->getRegion(name)) {}
 
   int svc(void) {
     // TODO: No. of connection should be = minConnection
@@ -54,7 +57,7 @@ class putThread : public ACE_Task_Base {
     for (int i = 0; i < 10000; i++) {
       try {
         regPtr->put(keys[i % 5], vals[i % 6]);
-      } catch (const Exception&) {
+      } catch (const Exception &) {
         // ignore
       } catch (...) {
         // ignore
@@ -68,7 +71,7 @@ class putThread : public ACE_Task_Base {
   void stop() { wait(); }
 };
 
-void doAttrTestingAndCreatePool(const char* poolName) {
+void doAttrTestingAndCreatePool(const char *poolName) {
   auto poolFac = getHelper()->getCache()->getPoolManager().createFactory();
   poolFac.setFreeConnectionTimeout(std::chrono::milliseconds(10000));
   poolFac.setLoadConditioningInterval(std::chrono::milliseconds(60000));
@@ -91,48 +94,50 @@ void doAttrTestingAndCreatePool(const char* poolName) {
   // poolFacPtr->setMultiuserSecurityMode(true);
   poolFac.setPRSingleHopEnabled(false);
 
- auto pptr = poolFac.create(poolName);
+  auto pptr = poolFac.create(poolName);
 
- // Validate the attributes
- ASSERT(pptr->getFreeConnectionTimeout() == std::chrono::milliseconds(10000),
-        "FreeConnectionTimeout Should have been 10000");
- ASSERT(pptr->getLoadConditioningInterval() == std::chrono::milliseconds(60000),
-        "LoadConditioningInterval Should have been 60000");
- ASSERT(pptr->getSocketBufferSize() == 1024,
-        "SocketBufferSize Should have been 1024");
- ASSERT(pptr->getReadTimeout() == std::chrono::milliseconds(10000),
-        "ReadTimeout Should have been 10000");
- ASSERT(pptr->getMinConnections() == 4, "MinConnections Should have been 4");
- ASSERT(pptr->getMaxConnections() == 8, "MaxConnections Should have been 8");
- ASSERT(pptr->getIdleTimeout() == std::chrono::seconds(5),
-        "IdleTimeout Should have been 5s");
- ASSERT(pptr->getRetryAttempts() == 5, "RetryAttempts Should have been 5");
- ASSERT(pptr->getPingInterval() == std::chrono::milliseconds(120000),
-        "PingInterval Should have been 120000");
- ASSERT(
-     pptr->getUpdateLocatorListInterval() == std::chrono::milliseconds(122000),
-     "UpdateLocatorListInterval Should have been 122000");
- ASSERT(pptr->getStatisticInterval() == std::chrono::milliseconds(120000),
-        "StatisticInterval Should have been 120000");
- ASSERT(pptr->getServerGroup() == "ServerGroup1",
-        "ServerGroup Should have been ServerGroup1");
- ASSERT(pptr->getSubscriptionEnabled() == true,
-        "SubscriptionEnabled Should have been true");
- ASSERT(pptr->getSubscriptionRedundancy() == 1,
-        "SubscriptionRedundancy Should have been 1");
- ASSERT(pptr->getSubscriptionMessageTrackingTimeout() ==
-            std::chrono::milliseconds(500000),
-        "SubscriptionMessageTrackingTimeout Should have been 500000");
- ASSERT(pptr->getSubscriptionAckInterval() == std::chrono::milliseconds(120000),
-        "SubscriptionAckInterval Should have been 120000");
- // ASSERT(pptr->getMultiuserSecurityMode()==true,"SetMultiuserSecurityMode
- // Should have been true");
- ASSERT(pptr->getPRSingleHopEnabled() == false,
-        "PRSingleHopEnabled should have been false");
+  // Validate the attributes
+  ASSERT(pptr->getFreeConnectionTimeout() == std::chrono::milliseconds(10000),
+         "FreeConnectionTimeout Should have been 10000");
+  ASSERT(
+      pptr->getLoadConditioningInterval() == std::chrono::milliseconds(60000),
+      "LoadConditioningInterval Should have been 60000");
+  ASSERT(pptr->getSocketBufferSize() == 1024,
+         "SocketBufferSize Should have been 1024");
+  ASSERT(pptr->getReadTimeout() == std::chrono::milliseconds(10000),
+         "ReadTimeout Should have been 10000");
+  ASSERT(pptr->getMinConnections() == 4, "MinConnections Should have been 4");
+  ASSERT(pptr->getMaxConnections() == 8, "MaxConnections Should have been 8");
+  ASSERT(pptr->getIdleTimeout() == std::chrono::seconds(5),
+         "IdleTimeout Should have been 5s");
+  ASSERT(pptr->getRetryAttempts() == 5, "RetryAttempts Should have been 5");
+  ASSERT(pptr->getPingInterval() == std::chrono::milliseconds(120000),
+         "PingInterval Should have been 120000");
+  ASSERT(
+      pptr->getUpdateLocatorListInterval() == std::chrono::milliseconds(122000),
+      "UpdateLocatorListInterval Should have been 122000");
+  ASSERT(pptr->getStatisticInterval() == std::chrono::milliseconds(120000),
+         "StatisticInterval Should have been 120000");
+  ASSERT(pptr->getServerGroup() == "ServerGroup1",
+         "ServerGroup Should have been ServerGroup1");
+  ASSERT(pptr->getSubscriptionEnabled() == true,
+         "SubscriptionEnabled Should have been true");
+  ASSERT(pptr->getSubscriptionRedundancy() == 1,
+         "SubscriptionRedundancy Should have been 1");
+  ASSERT(pptr->getSubscriptionMessageTrackingTimeout() ==
+             std::chrono::milliseconds(500000),
+         "SubscriptionMessageTrackingTimeout Should have been 500000");
+  ASSERT(
+      pptr->getSubscriptionAckInterval() == std::chrono::milliseconds(120000),
+      "SubscriptionAckInterval Should have been 120000");
+  // ASSERT(pptr->getMultiuserSecurityMode()==true,"SetMultiuserSecurityMode
+  // Should have been true");
+  ASSERT(pptr->getPRSingleHopEnabled() == false,
+         "PRSingleHopEnabled should have been false");
 }
 
-void doAttrTesting(const char* poolName1) {
-  //auto poolFacPtr = cachePtr->getPoolFactory();
+void doAttrTesting(const char *poolName1) {
+  // auto poolFacPtr = cachePtr->getPoolFactory();
   auto pptr = getHelper()->getCache()->getPoolManager().find(poolName1);
   // auto pptr = poolFacPtr->find(poolName1);
 
@@ -194,24 +199,24 @@ END_TASK(StartS12)
 
 DUNIT_TASK(CLIENT1, StartC1)
   {
-   auto props = Properties::create();
-   props->insert("redundancy-monitor-interval", "120s");
-   props->insert("statistic-sampling-enabled", "false");
-   props->insert("statistic-sample-rate", "120s");
+    auto props = Properties::create();
+    props->insert("redundancy-monitor-interval", "120s");
+    props->insert("statistic-sampling-enabled", "false");
+    props->insert("statistic-sample-rate", "120s");
 
-   initClient(true, props);
+    initClient(true, props);
 
-   doAttrTestingAndCreatePool(poolName);
+    doAttrTestingAndCreatePool(poolName);
 
-   // Do PoolCreation testing , create another pool with same name
-   auto poolFac = getHelper()->getCache()->getPoolManager().createFactory();
-   try {
-     auto pptr = poolFac.create(poolName);
-     FAIL("Pool creation with same name should fail");
-   } catch (IllegalStateException&) {
-     LOG("OK:Pool creation with same name should fail");
-   } catch (...) {
-     FAIL("Pool creation with same name should fail");
+    // Do PoolCreation testing , create another pool with same name
+    auto poolFac = getHelper()->getCache()->getPoolManager().createFactory();
+    try {
+      auto pptr = poolFac.create(poolName);
+      FAIL("Pool creation with same name should fail");
+    } catch (IllegalStateException &) {
+      LOG("OK:Pool creation with same name should fail");
+    } catch (...) {
+      FAIL("Pool creation with same name should fail");
     }
 
     createRegionAndAttachPool(poolRegNames[0], USE_ACK, poolName);
@@ -221,26 +226,26 @@ END_TASK(StartC1)
 
 DUNIT_TASK(CLIENT2, StartC2)
   {
-   auto props = Properties::create();
-   std::string path = "cacheserver_pool_client.xml";
-   std::string duplicateFile;
-   CacheHelper::createDuplicateXMLFile(duplicateFile, path);
+    auto props = Properties::create();
+    std::string path = "cacheserver_pool_client.xml";
+    std::string duplicateFile;
+    CacheHelper::createDuplicateXMLFile(duplicateFile, path);
 
-   props->insert("cache-xml-file", duplicateFile.c_str());
+    props->insert("cache-xml-file", duplicateFile.c_str());
 
-   try {
-     LOG(" starts client");
-     initClient(true, props);
-     LOG(" started client");
-     ASSERT(getHelper()
-                    ->getCache()
-                    ->getPoolManager()
-                    .find("clientPoolMultiUser")
-                    ->getMultiuserAuthentication() == true,
-            "MultiUser secure mode should be true for Pool");
-   } catch (const Exception& excp) {
-     LOG("Exception during client 2 XML creation");
-     LOG(excp.what());
+    try {
+      LOG(" starts client");
+      initClient(true, props);
+      LOG(" started client");
+      ASSERT(getHelper()
+                     ->getCache()
+                     ->getPoolManager()
+                     .find("clientPoolMultiUser")
+                     ->getMultiuserAuthentication() == true,
+             "MultiUser secure mode should be true for Pool");
+    } catch (const Exception &excp) {
+      LOG("Exception during client 2 XML creation");
+      LOG(excp.what());
     }
     doAttrTesting(poolName1);
   }
@@ -267,7 +272,7 @@ DUNIT_TASK(CLIENT1, ClientOp)
             min, level);
     ASSERT(level == min, logmsg);
 
-    putThread* threads[25];
+    putThread *threads[25];
     for (int thdIdx = 0; thdIdx < 10; thdIdx++) {
       threads[thdIdx] = new putThread(poolRegNames[0]);
       threads[thdIdx]->start();

@@ -52,21 +52,20 @@ portion in this test.
 #define CORRECT_CREDENTIALS 'C'
 #define INCORRECT_CREDENTIALS 'I'
 
-using namespace apache::geode::client;
-using namespace test;
+using apache::geode::client::testframework::security::CredentialGenerator;
 
-const char* locHostPort =
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
-const char* regionNamesAuth[] = {"DistRegionAck", "DistRegionNoAck"};
+const char *regionNamesAuth[] = {"DistRegionAck", "DistRegionNoAck"};
 std::shared_ptr<CredentialGenerator> credentialGeneratorHandler;
 
 std::string getXmlPath() {
   char xmlPath[1000] = {'\0'};
-  const char* path = ACE_OS::getenv("TESTSRC");
+  const char *path = ACE_OS::getenv("TESTSRC");
   ASSERT(path != nullptr,
          "Environment variable TESTSRC for test source directory is not set.");
   strncpy(xmlPath, path, strlen(path) - strlen("cppcache"));
-  strcat(xmlPath, "xml/Security/");
+  strncat(xmlPath, "xml/Security/", sizeof(xmlPath) - strlen(xmlPath) - 1);
   return std::string(xmlPath);
 }
 
@@ -100,11 +99,11 @@ void initCredentialGenerator() {
   if (loopNum > 3) loopNum = 1;
 }
 
-void initClientAuth(char credentialsType, const char* dhAlgo) {
+void initClientAuth(char credentialsType, const char *dhAlgo) {
   printf("Initializing Client with %s credential and %s DH Algo\n",
          credentialsType == CORRECT_CREDENTIALS ? "Valid" : "Invalid", dhAlgo);
 
- auto config = Properties::create();
+  auto config = Properties::create();
 
   config->insert("security-client-dhalgo", dhAlgo);
   std::string testsrc = ACE_OS::getenv("TESTSRC");
@@ -147,10 +146,10 @@ void initClientAuth(char credentialsType, const char* dhAlgo) {
   }
 }
 
-void InitIncorrectClients(const char* dhAlgo) {
+void InitIncorrectClients(const char *dhAlgo) {
   try {
     initClientAuth(INCORRECT_CREDENTIALS, dhAlgo);
-  } catch (const apache::geode::client::Exception& other) {
+  } catch (const apache::geode::client::Exception &other) {
     LOG(other.getStackTrace());
     LOG(other.what());
   }
@@ -158,10 +157,10 @@ void InitIncorrectClients(const char* dhAlgo) {
   try {
     createRegionForSecurity(regionNamesAuth[0], USE_ACK, true);
     FAIL("Should have thrown AuthenticationFailedException.");
-  } catch (const apache::geode::client::AuthenticationFailedException& other) {
+  } catch (const apache::geode::client::AuthenticationFailedException &other) {
     LOG(other.getStackTrace());
     LOG(other.what());
-  } catch (const apache::geode::client::Exception& other) {
+  } catch (const apache::geode::client::Exception &other) {
     LOG(other.getStackTrace());
     LOG(other.what());
     FAIL("Only AuthenticationFailedException is expected");
@@ -169,10 +168,10 @@ void InitIncorrectClients(const char* dhAlgo) {
   LOG("InitIncorrectClients Completed");
 }
 
-void InitCorrectClients(const char* dhAlgo) {
+void InitCorrectClients(const char *dhAlgo) {
   try {
     initClientAuth(CORRECT_CREDENTIALS, dhAlgo);
-  } catch (const apache::geode::client::Exception& other) {
+  } catch (const apache::geode::client::Exception &other) {
     LOG(other.getStackTrace());
     LOG(other.what());
   }
@@ -180,7 +179,7 @@ void InitCorrectClients(const char* dhAlgo) {
     createRegionForSecurity(regionNamesAuth[0], USE_ACK, true);
     createEntry(regionNamesAuth[0], keys[0], vals[0]);
     updateEntry(regionNamesAuth[0], keys[0], nvals[0]);
-  } catch (const apache::geode::client::Exception& other) {
+  } catch (const apache::geode::client::Exception &other) {
     LOG(other.getStackTrace());
     FAIL(other.what());
   }
@@ -190,20 +189,20 @@ void InitCorrectClients(const char* dhAlgo) {
 void DoNetSearch() {
   try {
     createRegionForSecurity(regionNamesAuth[1], USE_ACK, true);
-   auto regPtr0 = getHelper()->getRegion(regionNamesAuth[0]);
-   auto keyPtr = CacheableKey::create(keys[0]);
-   auto checkPtr =
-       std::dynamic_pointer_cast<CacheableString>(regPtr0->get(keyPtr));
-   if (checkPtr != nullptr && !strcmp(nvals[0], checkPtr->value().c_str())) {
-     LOG("checkPtr is not null");
-     char buf[1024];
-     sprintf(buf, "In net search, get returned %s for key %s",
-             checkPtr->value().c_str(), keys[0]);
-     LOG(buf);
-   } else {
-     LOG("checkPtr is nullptr");
+    auto regPtr0 = getHelper()->getRegion(regionNamesAuth[0]);
+    auto keyPtr = CacheableKey::create(keys[0]);
+    auto checkPtr =
+        std::dynamic_pointer_cast<CacheableString>(regPtr0->get(keyPtr));
+    if (checkPtr != nullptr && !strcmp(nvals[0], checkPtr->value().c_str())) {
+      LOG("checkPtr is not null");
+      char buf[1024];
+      sprintf(buf, "In net search, get returned %s for key %s",
+              checkPtr->value().c_str(), keys[0]);
+      LOG(buf);
+    } else {
+      LOG("checkPtr is nullptr");
     }
-  } catch (const apache::geode::client::Exception& other) {
+  } catch (const apache::geode::client::Exception &other) {
     LOG(other.getStackTrace());
     FAIL(other.what());
   }
@@ -242,7 +241,7 @@ void initSecurityServer(int instance) {
              cmdServerAuthenticator.c_str());
       CacheHelper::initServer(
           instance, nullptr, locHostPort,
-          const_cast<char*>(cmdServerAuthenticator.c_str()));
+          const_cast<char *>(cmdServerAuthenticator.c_str()));
     }
   } catch (...) {
     printf("this is some exception");

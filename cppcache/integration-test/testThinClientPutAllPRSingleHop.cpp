@@ -38,18 +38,21 @@
 
 #include "ThinClientHelper.hpp"
 
-using namespace apache::geode::client;
-using namespace test;
-
 #define CLIENT1 s1p1
 #define SERVER1 s2p1
 #define SERVER2 s1p2
 #define SERVER3 s2p2
 
+using apache::geode::client::Cacheable;
+using apache::geode::client::CacheServerException;
+using apache::geode::client::CacheWriterException;
+using apache::geode::client::Exception;
+using apache::geode::client::HashMapOfCacheable;
+
 bool isLocalServer = false;
 
 static bool isLocator = false;
-const char* locatorsG =
+const char *locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
 DUNIT_TASK_DEFINITION(SERVER1, CreateServer1)
@@ -129,7 +132,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, WarmUpTask)
           failureCount++;
         }
         LOGINFO("CPPTEST: put success ");
-      } catch (CacheServerException&) {
+      } catch (CacheServerException &) {
         // This is actually a success situation!
         // bool singlehop = TestUtils::getCacheImpl(getHelper(
         // )->cachePtr)->getAndResetSingleHopFlag();
@@ -139,7 +142,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, WarmUpTask)
         //}
         // LOGINFO("CPPTEST: SINGLEHOP SUCCEEDED while putting key %s with
         // hashcode %d", logmsg, (int32_t)keyPtr->hashcode());
-      } catch (CacheWriterException&) {
+      } catch (CacheWriterException &) {
         // This is actually a success situation! Once bug #521 is fixed.
         // bool singlehop = TestUtils::getCacheImpl(getHelper(
         // )->cachePtr)->getAndResetSingleHopFlag();
@@ -149,7 +152,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, WarmUpTask)
         //}
         // LOGINFO("CPPTEST: SINGLEHOP SUCCEEDED while putting key %s with
         // hashcode %d", logmsg, (int32_t)keyPtr->hashcode());
-      } catch (Exception& ex) {
+      } catch (Exception &ex) {
         LOGERROR("CPPTEST: Unexpected %s: %s", ex.getName().c_str(), ex.what());
         FAIL(ex.what());
       } catch (...) {
@@ -201,13 +204,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask)
         LOGINFO("CheckPrSingleHopForIntKeysTask2: putALL OP :: networkhop %d ",
                 networkhop);
         ASSERT(networkhop == false, "PutAll : Should not cause network hop");
-      } catch (CacheServerException&) {
+      } catch (CacheServerException &) {
         LOGERROR("CPPTEST: putAll caused extra hop.");
         FAIL("putAll caused extra hop.");
-      } catch (CacheWriterException&) {
+      } catch (CacheWriterException &) {
         LOGERROR("CPPTEST: putAll caused extra hop.");
         FAIL("putAll caused extra hop.");
-      } catch (Exception& ex) {
+      } catch (Exception &ex) {
         LOGERROR("CPPTEST: putAll caused unexpected %s: %s",
                  ex.getName().c_str(), ex.what());
         cleanProc();
@@ -272,13 +275,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopRemoveAllForIntKeysTask)
             "CheckPrSingleHopForIntKeysTask2: removeall OP :: networkhop %d ",
             networkhop);
         ASSERT(networkhop == false, "RemoveAll : Should not cause network hop");
-      } catch (CacheServerException&) {
+      } catch (CacheServerException &) {
         LOGERROR("CPPTEST: removeall caused extra hop.");
         FAIL("removeall caused extra hop.");
-      } catch (CacheWriterException&) {
+      } catch (CacheWriterException &) {
         LOGERROR("CPPTEST: removeall caused extra hop.");
         FAIL("removeall caused extra hop.");
-      } catch (Exception& ex) {
+      } catch (Exception &ex) {
         LOGERROR("CPPTEST: removeall caused unexpected %s: %s",
                  ex.getName().c_str(), ex.what());
         cleanProc();

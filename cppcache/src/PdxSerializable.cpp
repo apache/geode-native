@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-#include <geode/PdxSerializable.hpp>
 #include <geode/CacheableString.hpp>
+#include <geode/PdxSerializable.hpp>
 #include <geode/internal/CacheableKeys.hpp>
 
 #include "PdxHelper.hpp"
@@ -32,8 +32,8 @@ bool PdxSerializable::operator==(const CacheableKey& other) const {
 }
 
 int32_t PdxSerializable::hashcode() const {
-  int64_t hash = static_cast<int64_t>((intptr_t)this);
-  return apache::geode::client::internal::hashcode(hash);
+  return internal::hashcode(
+      static_cast<int64_t>(reinterpret_cast<uintptr_t>(this)));
 }
 
 }  // namespace client

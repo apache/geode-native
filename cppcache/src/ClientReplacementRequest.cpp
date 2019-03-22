@@ -16,16 +16,23 @@
  */
 
 #include "ClientReplacementRequest.hpp"
-#include <geode/DataOutput.hpp>
-#include <geode/DataInput.hpp>
 
-using namespace apache::geode::client;
+#include <geode/DataInput.hpp>
+#include <geode/DataOutput.hpp>
+
+namespace apache {
+namespace geode {
+namespace client {
 
 void ClientReplacementRequest::toData(DataOutput& output) const {
   ClientConnectionRequest::toData(output);
   this->m_serverLocation.toData(output);
 }
 
-DSFid ClientReplacementRequest::getDSFID() const {
-  return DSFid::ClientReplacementRequest;
+internal::DSFid ClientReplacementRequest::getDSFID() const {
+  return internal::DSFid::ClientReplacementRequest;
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

@@ -25,25 +25,24 @@
 #include "ThinClientSecurity.hpp"
 #include <geode/CacheTransactionManager.hpp>
 
-using namespace apache::geode::client;
-using namespace test;
-
 #define CORRECT_CREDENTIALS 'C'
 #define INCORRECT_CREDENTIALS 'I'
 #define NOT_PROVIDED_CREDENTIALS 'N'
 
-const char* locHostPort =
+using apache::geode::client::testframework::security::CredentialGenerator;
+
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
-const char* regionNamesAuth[] = {"DistRegionAck", "DistRegionNoAck"};
+const char *regionNamesAuth[] = {"DistRegionAck", "DistRegionNoAck"};
 std::shared_ptr<CredentialGenerator> credentialGeneratorHandler;
 
 std::string getXmlPath() {
   char xmlPath[1000] = {'\0'};
-  const char* path = ACE_OS::getenv("TESTSRC");
+  const char *path = ACE_OS::getenv("TESTSRC");
   ASSERT(path != nullptr,
          "Environment variable TESTSRC for test source directory is not set.");
   strncpy(xmlPath, path, strlen(path) - strlen("cppcache"));
-  strcat(xmlPath, "xml/Security/");
+  strncat(xmlPath, "xml/Security/", sizeof(xmlPath) - strlen(xmlPath) - 1);
   return std::string(xmlPath);
 }
 
@@ -147,7 +146,7 @@ DUNIT_TASK_DEFINITION(LOCATORSERVER, CreateServer1)
                cmdServerAuthenticator.c_str());
         CacheHelper::initServer(
             1, nullptr, locHostPort,
-            const_cast<char*>(cmdServerAuthenticator.c_str()));
+            const_cast<char *>(cmdServerAuthenticator.c_str()));
         LOG("Server1 started");
       }
     } catch (...) {
@@ -162,9 +161,9 @@ DUNIT_TASK_DEFINITION(LOCATORSERVER, CreateServer2)
     cmdServerAuthenticator2 = credentialGeneratorHandler->getServerCmdParams(
         "authenticator", getXmlPath());
     printf("Input to server cmd is -->  %s", cmdServerAuthenticator2.c_str());
-    CacheHelper::initServer(2, "cacheserver_notify_subscription2.xml",
-                            locHostPort,
-                            const_cast<char*>(cmdServerAuthenticator2.c_str()));
+    CacheHelper::initServer(
+        2, "cacheserver_notify_subscription2.xml", locHostPort,
+        const_cast<char *>(cmdServerAuthenticator2.c_str()));
     LOG("Server2 started");
   }
 END_TASK_DEFINITION
@@ -178,7 +177,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne)
       initClientAuth(INCORRECT_CREDENTIALS);
       LOG(" 3");
     } catch (
-        const apache::geode::client::AuthenticationFailedException& other) {
+        const apache::geode::client::AuthenticationFailedException &other) {
       LOG(other.getStackTrace().c_str());
       LOG(other.what());
     }
@@ -202,10 +201,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne)
       }
       FAIL("Should have thrown AuthenticationFailedException.");
     } catch (
-        const apache::geode::client::AuthenticationFailedException& other) {
+        const apache::geode::client::AuthenticationFailedException &other) {
       LOG(other.getStackTrace().c_str());
       LOG(other.what());
-    } catch (const apache::geode::client::Exception& other) {
+    } catch (const apache::geode::client::Exception &other) {
       LOG(other.getStackTrace().c_str());
       LOG(other.what());
       FAIL("Only AuthenticationFailedException is expected");
@@ -234,7 +233,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepTwo)
       } else {
         LOG("Pool is nullptr");
       }
-    } catch (const apache::geode::client::Exception& other) {
+    } catch (const apache::geode::client::Exception &other) {
       LOG(other.getStackTrace().c_str());
       FAIL(other.what());
     }
@@ -258,7 +257,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepThree)
       } else {
         LOG("Pool is nullptr");
       }
-    } catch (const apache::geode::client::Exception& other) {
+    } catch (const apache::geode::client::Exception &other) {
       LOG(other.getStackTrace().c_str());
       FAIL(other.what());
     }
@@ -273,7 +272,7 @@ DUNIT_TASK_DEFINITION(CLIENT3, StepFour)
     try {
       initClientAuth(NOT_PROVIDED_CREDENTIALS);
     } catch (
-        const apache::geode::client::AuthenticationRequiredException& other) {
+        const apache::geode::client::AuthenticationRequiredException &other) {
       LOG(other.getStackTrace().c_str());
       FAIL(other.what());
     }
@@ -291,14 +290,14 @@ DUNIT_TASK_DEFINITION(CLIENT3, StepFour)
       }
       FAIL("Should have thrown AuthenticationRequiredException.");
     } catch (
-        const apache::geode::client::AuthenticationRequiredException& other) {
+        const apache::geode::client::AuthenticationRequiredException &other) {
       LOG(other.getStackTrace().c_str());
       LOG(other.what());
     } catch (
-        const apache::geode::client::AuthenticationFailedException& other) {
+        const apache::geode::client::AuthenticationFailedException &other) {
       LOG(other.getStackTrace().c_str());
       LOG(other.what());
-    } catch (const apache::geode::client::Exception& other) {
+    } catch (const apache::geode::client::Exception &other) {
       LOG(other.getStackTrace().c_str());
       LOG(other.what());
       FAIL("Only AuthenticationRequiredException is expected");
@@ -336,7 +335,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepFive)
       } else {
         LOG("checkPtr is nullptr");
       }
-    } catch (const apache::geode::client::Exception& other) {
+    } catch (const apache::geode::client::Exception &other) {
       LOG(other.getStackTrace().c_str());
       FAIL(other.what());
     }
@@ -363,7 +362,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
       } else {
         LOG("Pool is nullptr");
       }
-    } catch (const apache::geode::client::Exception& other) {
+    } catch (const apache::geode::client::Exception &other) {
       LOG(other.getStackTrace().c_str());
       FAIL(other.what());
     }
@@ -377,7 +376,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSeven)
     try {
       initClientAuth(INCORRECT_CREDENTIALS);
     } catch (
-        const apache::geode::client::AuthenticationFailedException& other) {
+        const apache::geode::client::AuthenticationFailedException &other) {
       LOG(other.getStackTrace().c_str());
       LOG(other.what());
     }
@@ -401,10 +400,10 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSeven)
       }
       FAIL("Should have thrown AuthenticationFailedException.");
     } catch (
-        const apache::geode::client::AuthenticationFailedException& other) {
+        const apache::geode::client::AuthenticationFailedException &other) {
       LOG(other.getStackTrace().c_str());
       LOG(other.what());
-    } catch (const apache::geode::client::Exception& other) {
+    } catch (const apache::geode::client::Exception &other) {
       LOG(other.getStackTrace().c_str());
       LOG(other.what());
       FAIL("Only AuthenticationFailedException is expected");
@@ -478,7 +477,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight)
       } else {
         LOG("checkPtr is nullptr");
       }
-    } catch (const apache::geode::client::Exception& other) {
+    } catch (const apache::geode::client::Exception &other) {
       LOG(other.getStackTrace().c_str());
       FAIL(other.what());
     }

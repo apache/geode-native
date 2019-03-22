@@ -17,24 +17,24 @@
 
 #include "CppCacheLibrary.hpp"
 
-#include <ace/OS.h>
+#include <string>
+
 #include <ace/ACE.h>
 #include <ace/Init_ACE.h>
 #include <ace/Log_Msg.h>
 #include <ace/Singleton.h>
 
-#include "config.h"
-#include "MapEntry.hpp"
-#include "ExpMapEntry.hpp"
-#include "LRUMapEntry.hpp"
-#include "LRUExpMapEntry.hpp"
 #include <geode/CacheFactory.hpp>
-#include "SerializationRegistry.hpp"
 #include <geode/DataOutput.hpp>
+
+#include "ExpMapEntry.hpp"
+#include "LRUExpMapEntry.hpp"
+#include "LRUMapEntry.hpp"
+#include "MapEntry.hpp"
+#include "SerializationRegistry.hpp"
 #include "TcrMessage.hpp"
 #include "Utils.hpp"
-
-#include <string>
+#include "config.h"
 
 // called during DLL initialization
 void initLibDllEntry(void) {
@@ -62,17 +62,6 @@ void CppCacheLibrary::closeLib(void) {
   // using geode.
 }
 
-// Returns pathname of product's lib directory, adds 'addon' to it if 'addon' is
-// not null.
-std::string CppCacheLibrary::getProductLibDir(const char* addon) {
-  std::string proddir = CppCacheLibrary::getProductDir();
-  proddir += "/lib/";
-  if (addon != nullptr) {
-    proddir += addon;
-  }
-  return proddir;
-}
-
 // return the directory where the library/DLL resides
 std::string CppCacheLibrary::getProductLibDir() {
   // otherwise... get the DLL path, and work backwards from it.
@@ -81,71 +70,38 @@ std::string CppCacheLibrary::getProductLibDir() {
   DllMainGetPath(buffer, PATH_MAX);
 
   std::string path(buffer);
-  std::string::size_type pos = std::string::npos;
+
 #ifdef WIN32
-  std::string cppName = PRODUCT_LIB_NAME;
-  cppName += ".dll";
-  pos = path.find(cppName);
-  if (std::string::npos == pos) {
-    std::string dotNetName = PRODUCT_DLL_NAME;
-    dotNetName += ".dll";
-    pos = path.find(dotNetName);
-  }
-#else
-  std::string cppName = "lib";
-  cppName += PRODUCT_LIB_NAME;
-  pos = path.find(cppName);
+  std::replace(path.begin(), path.end(), '\\', '/');
 #endif
-  if (0 < pos) {
-    return path.substr(0, --pos);
+
+  const auto pos = path.rfind('/');
+  if (std::string::npos != pos) {
+    return path.substr(0, pos);
   }
+
   return std::string();
 }
 
 std::string CppCacheLibrary::getProductDir() {
   // If the environment variable is set, use it.
-  std::string geodeNativeEnvironment = Utils::getEnv("GEODE_NATIVE_HOME");
+  auto geodeNativeEnvironment = Utils::getEnv("GEODE_NATIVE_HOME");
   if (geodeNativeEnvironment.length() > 0) {
     return geodeNativeEnvironment;
   }
 
   // otherwise... get the DLL path, and work backwards from it.
-  std::string productLibraryDirectoryName = getProductLibDir();
-  if (productLibraryDirectoryName.size() == 0) {
+  auto productLibraryDirectoryName = getProductLibDir();
+  if (productLibraryDirectoryName.empty()) {
     fprintf(stderr,
             "Cannot determine location of product directory.\n"
             "Please set GEODE_NATIVE_HOME environment variable.\n");
     fflush(stderr);
     throw apache::geode::client::IllegalStateException(
-        "Product installation directory "
-        "not found. Please set GEODE_NATIVE_HOME environment variable.");
+        "Product installation directory not found. Please set "
+        "GEODE_NATIVE_HOME environment variable.");
   }
-  // replace all '\' with '/' to make everything easier..
-  size_t len = productLibraryDirectoryName.length() + 1;
-  char* slashtmp = new char[len];
-  ACE_OS::strncpy(slashtmp, productLibraryDirectoryName.c_str(), len);
-  for (size_t i = 0; i < productLibraryDirectoryName.length(); i++) {
-    if (slashtmp[i] == '\\') {
-      slashtmp[i] = '/';
-    }
-  }
-  productLibraryDirectoryName = slashtmp;
-  delete[] slashtmp;
-  slashtmp = nullptr;
 
-  // check if it is "hidden/lib/debug" and work back from build area.
-  size_t hiddenidx = productLibraryDirectoryName.find("hidden");
-  if (hiddenidx != std::string::npos) {
-    // make sure hidden was a whole word...
-    hiddenidx--;
-    if (productLibraryDirectoryName[hiddenidx] == '/' ||
-        productLibraryDirectoryName[hiddenidx] == '\\') {
-      // odds are high hiddenidx terminates osbuild.dir.
-      std::string hiddenroute =
-          productLibraryDirectoryName.substr(0, hiddenidx) + "/product";
-      return hiddenroute;
-    }
-  }
   // check if bin on windows, and go back one...
   GF_D_ASSERT(productLibraryDirectoryName.length() > 4);
 #ifdef WIN32

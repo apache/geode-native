@@ -15,15 +15,19 @@
  * limitations under the License.
  */
 
+#include <chrono>
+#include <fwklib/FwkLog.hpp>
+#include <fwklib/TimeBomb.hpp>
+#include <thread>
+
 #include <geode/internal/geode_globals.hpp>
-#include "fwklib/TimeBomb.hpp"
-#include "fwklib/FwkLog.hpp"
-#include "fwklib/PerfFwk.hpp"
+
 #include "config.h"
 
-using namespace apache::geode::client;
-using namespace apache::geode::client::testframework;
-using namespace apache::geode::client::testframework::perf;
+namespace apache {
+namespace geode {
+namespace client {
+namespace testframework {
 
 int32_t TimeBomb::svc() {
   while (!m_stop) {
@@ -43,14 +47,14 @@ int32_t TimeBomb::svc() {
         char buf[8192];
         sprintf(buf, "bash -c \"pstack %d\"", pid);
         FILE* pip = popen(buf, "r");
-        if (pip == NULL) {
+        if (!pip) {
           FWKSEVERE("TimeBomb: Unable to dump threads.");
         } else {
-          perf::sleepSeconds(10);
+          std::this_thread::sleep_for(std::chrono::seconds(10));
 
           std::string dump;
           buf[0] = 0;
-          while (fgets(buf, 8192, pip) != NULL) {
+          while (fgets(buf, 8192, pip)) {
             dump.append(buf);
             buf[0] = 0;
           }
@@ -67,20 +71,20 @@ int32_t TimeBomb::svc() {
 
         int32_t pid = ACE_OS::getpid();
         char buf[8192];
-        sprintf(
-            buf,
-            "bash -c \"perl $GEODE_NATIVE_HOME/../framework/scripts/gdb.pl %d ; cat "
-            "gdbout.%d\"",
-            pid, pid);
+        sprintf(buf,
+                "bash -c \"perl $GEODE_NATIVE_HOME/../framework/scripts/gdb.pl "
+                "%d ; cat "
+                "gdbout.%d\"",
+                pid, pid);
         FILE* pip = popen(buf, "r");
-        if (pip == NULL) {
+        if (!pip) {
           FWKSEVERE("TimeBomb: Unable to dump threads.");
         } else {
-          perf::sleepSeconds(10);
+          std::this_thread::sleep_for(std::chrono::seconds(10));
 
           std::string dump;
           buf[0] = 0;
-          while (fgets(buf, 8192, pip) != NULL) {
+          while (fgets(buf, 8192, pip)) {
             dump.append(buf);
             buf[0] = 0;
           }
@@ -97,17 +101,18 @@ int32_t TimeBomb::svc() {
         char buf[8192];
 
         sprintf(buf,
-                "bash -c \"perl $GEODE_NATIVE_HOME/../framework/scripts/cdb.pl %d\"",
+                "bash -c \"perl $GEODE_NATIVE_HOME/../framework/scripts/cdb.pl "
+                "%d\"",
                 pid);
         FILE* pip = _popen(buf, "r");
-        if (pip == NULL) {
+        if (!pip) {
           FWKSEVERE("TimeBomb: Unable to dump threads.");
         } else {
-          perf::sleepSeconds(20);
+          std::this_thread::sleep_for(std::chrono::seconds(20));
 
           std::string dump;
           buf[0] = 0;
-          while (fgets(buf, 8192, pip) != NULL) {
+          while (fgets(buf, 8192, pip)) {
             dump.append(buf);
             buf[0] = 0;
           }
@@ -124,7 +129,12 @@ int32_t TimeBomb::svc() {
         exit(m_exitCode);
       }
     }
-    sleepSeconds(1);
+    std::this_thread::sleep_for(std::chrono::seconds(1));
   }
   return 0;
 }
+
+}  // namespace testframework
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

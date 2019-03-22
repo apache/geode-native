@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
+#include "RegionXmlCreation.hpp"
+
 #include <geode/Cache.hpp>
 
-#include "CacheRegionHelper.hpp"
-#include "RegionXmlCreation.hpp"
 #include "CacheImpl.hpp"
+#include "CacheRegionHelper.hpp"
 
 namespace apache {
 namespace geode {
@@ -30,14 +31,11 @@ void RegionXmlCreation::addSubregion(
   subRegions.push_back(regionPtr);
 }
 
-void RegionXmlCreation::setAttributes(
-    const RegionAttributes attributes) {
+void RegionXmlCreation::setAttributes(const RegionAttributes attributes) {
   regionAttributes = attributes;
 }
 
-RegionAttributes RegionXmlCreation::getAttributes() {
-  return regionAttributes;
-}
+RegionAttributes RegionXmlCreation::getAttributes() { return regionAttributes; }
 
 void RegionXmlCreation::fillIn(std::shared_ptr<Region> regionPtr) {
   for (const auto& regXmlCreation : subRegions) {
@@ -50,7 +48,7 @@ void RegionXmlCreation::createRoot(Cache* cache) {
   std::shared_ptr<Region> rootRegPtr = nullptr;
 
   CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cache);
-  cacheImpl->createRegion(regionName.c_str(), regionAttributes, rootRegPtr);
+  cacheImpl->createRegion(regionName, regionAttributes, rootRegPtr);
   fillIn(rootRegPtr);
 }
 
@@ -58,13 +56,12 @@ void RegionXmlCreation::create(std::shared_ptr<Region> parent) {
   GF_D_ASSERT(!(this->isRoot));
   std::shared_ptr<Region> subRegPtr = nullptr;
 
-  subRegPtr = parent->createSubregion(regionName.c_str(), regionAttributes);
+  subRegPtr = parent->createSubregion(regionName, regionAttributes);
   fillIn(subRegPtr);
 }
 
-RegionXmlCreation::RegionXmlCreation(const char* name, bool isRootRegion) {
-  std::string tempName(name);
-  regionName = tempName;
+RegionXmlCreation::RegionXmlCreation(std::string name, bool isRootRegion) {
+  regionName = std::move(name);
   isRoot = isRootRegion;
   attrId = "";
 }

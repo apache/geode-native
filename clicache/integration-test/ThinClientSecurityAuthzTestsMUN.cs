@@ -238,8 +238,8 @@ namespace Apache.Geode.Client.UnitTests
 
       try
       {
-        CacheHelper.DCache.TypeRegistry.RegisterType(Portfolio.CreateDeserializable);
-        CacheHelper.DCache.TypeRegistry.RegisterType(Position.CreateDeserializable);
+        CacheHelper.DCache.TypeRegistry.RegisterType(Portfolio.CreateDeserializable, 8);
+        CacheHelper.DCache.TypeRegistry.RegisterType(Position.CreateDeserializable, 7);
         Util.Log("registerCQ portfolio registered");
       }
       catch (IllegalStateException)
@@ -267,8 +267,8 @@ namespace Apache.Geode.Client.UnitTests
 
       try
       {
-        CacheHelper.DCache.TypeRegistry.RegisterType(Portfolio.CreateDeserializable);
-        CacheHelper.DCache.TypeRegistry.RegisterType(Position.CreateDeserializable);
+        CacheHelper.DCache.TypeRegistry.RegisterType(Portfolio.CreateDeserializable, 8);
+        CacheHelper.DCache.TypeRegistry.RegisterType(Position.CreateDeserializable, 7);
         Util.Log("doCQPut portfolio registered");
       }
       catch (IllegalStateException)

@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_INTEGRATION_TEST_TESTUTILS_H_
-#define GEODE_INTEGRATION_TEST_TESTUTILS_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_INTEGRATION_TEST_TESTUTILS_H_
+#define GEODE_INTEGRATION_TEST_TESTUTILS_H_
 
 /* use CacheHelper to gain the impl pointer from cache or region object
  */
@@ -40,7 +40,15 @@
 #include <DistributedSystemImpl.hpp>
 #include <CacheImpl.hpp>
 
-using namespace apache::geode::client;
+namespace { // NOLINT(google-build-namespaces)
+
+using apache::geode::client::Cache;
+using apache::geode::client::CacheableKey;
+using apache::geode::client::CacheableString;
+using apache::geode::client::CacheImpl;
+using apache::geode::client::CacheRegionHelper;
+using apache::geode::client::Region;
+using apache::geode::client::RegionInternal;
 
 namespace unitTests {
 
@@ -179,5 +187,7 @@ class TestUtils {
   }
 };
 }  // namespace unitTests
+
+}  // namespace
 
 #endif  // GEODE_INTEGRATION_TEST_TESTUTILS_H_

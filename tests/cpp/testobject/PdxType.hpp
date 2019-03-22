@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_TESTOBJECT_PDXTYPE_H_
-#define GEODE_TESTOBJECT_PDXTYPE_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,25 +14,43 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * PdxObject.hpp
- *
- *  Created on: Sep 29, 2011
- *      Author: npatel
- */
 
-#include <geode/PdxSerializable.hpp>
-#include <geode/CacheableEnum.hpp>
-#include <geode/PdxWriter.hpp>
-#include <geode/PdxReader.hpp>
-#include <geode/CacheableObjectArray.hpp>
+#pragma once
+
+#ifndef GEODE_TESTOBJECT_PDXTYPE_H_
+#define GEODE_TESTOBJECT_PDXTYPE_H_
+
 #include <util/Log.hpp>
+
+#include <geode/CacheableEnum.hpp>
+#include <geode/CacheableObjectArray.hpp>
+#include <geode/PdxReader.hpp>
+#include <geode/PdxSerializable.hpp>
+#include <geode/PdxWriter.hpp>
 
 #include "testobject_export.h"
 
-using namespace apache::geode::client;
-
 namespace PdxTests {
+
+using apache::geode::client::Cache;
+using apache::geode::client::Cacheable;
+using apache::geode::client::CacheableArrayList;
+using apache::geode::client::CacheableDate;
+using apache::geode::client::CacheableEnum;
+using apache::geode::client::CacheableHashMap;
+using apache::geode::client::CacheableHashSet;
+using apache::geode::client::CacheableHashTable;
+using apache::geode::client::CacheableInt32;
+using apache::geode::client::CacheableLinkedHashSet;
+using apache::geode::client::CacheableLinkedList;
+using apache::geode::client::CacheableObjectArray;
+using apache::geode::client::CacheableString;
+using apache::geode::client::CacheableVector;
+using apache::geode::client::IllegalStateException;
+using apache::geode::client::PdxReader;
+using apache::geode::client::PdxSerializable;
+using apache::geode::client::PdxWriter;
+using apache::geode::client::Serializable;
 
 class TESTOBJECT_EXPORT GrandParent {
  public:

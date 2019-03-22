@@ -20,14 +20,16 @@
 #ifndef GEODE_STATISTICS_POOLSTATSSAMPLER_H_
 #define GEODE_STATISTICS_POOLSTATSSAMPLER_H_
 
-#include <ace/Task.h>
+#include <atomic>
+#include <chrono>
+#include <memory>
+#include <thread>
 
 #include <geode/internal/geode_globals.hpp>
 
-#include "GeodeStatisticsFactory.hpp"
-
 namespace apache {
 namespace geode {
+
 namespace client {
 
 class CacheImpl;
@@ -36,38 +38,44 @@ class AdminRegion;
 class ThinClientPoolDM;
 
 }  // namespace client
+
 namespace statistics {
 
+using client::AdminRegion;
 using client::CacheImpl;
 using client::ThinClientPoolDM;
-using client::AdminRegion;
 
 class StatisticsManager;
-class APACHE_GEODE_EXPORT PoolStatsSampler : public ACE_Task_Base {
+class GeodeStatisticsFactory;
+
+class PoolStatsSampler {
  public:
+  PoolStatsSampler() = delete;
   PoolStatsSampler(std::chrono::milliseconds sampleRate, CacheImpl* cache,
                    ThinClientPoolDM* distMan);
+  PoolStatsSampler& operator=(const PoolStatsSampler&) = delete;
+  PoolStatsSampler(const PoolStatsSampler& PoolStatsSampler) = delete;
+  ~PoolStatsSampler() noexcept {}
+
   void start();
   void stop();
-  int32_t svc(void);
+  void svc(void);
   bool isRunning();
-  virtual ~PoolStatsSampler();
 
  private:
-  PoolStatsSampler();
-  PoolStatsSampler& operator=(const PoolStatsSampler&);
-  PoolStatsSampler(const PoolStatsSampler& PoolStatsSampler);
   void putStatsInAdminRegion();
-  volatile bool m_running;
-  volatile bool m_stopRequested;
+  std::thread m_thread;
+  std::atomic<bool> m_running;
+  std::atomic<bool> m_stopRequested;
   std::chrono::milliseconds m_sampleRate;
   std::shared_ptr<AdminRegion> m_adminRegion;
   ThinClientPoolDM* m_distMan;
-  ACE_Recursive_Thread_Mutex m_lock;
   static const char* NC_PSS_Thread;
   GeodeStatisticsFactory* m_statisticsFactory;
 };
+
 }  // namespace statistics
+
 }  // namespace geode
 }  // namespace apache
 

@@ -38,7 +38,7 @@ Region creation is subject to attribute consistency checks.
 To create a region:
 
 1. Instantiate a `CacheFactory` and use it to create a cache.
-1. The cache includes an instance of `PoolManager` -- use it to create a connection pool.
+1. The cache includes an instance of `PoolManager`&mdash;use it to create a connection pool.
 1. Use cache to instantiate a `RegionFactory` and use it to create a region, specifying any desired attributes
 and an association with the connection pool.
 
@@ -110,7 +110,7 @@ Like the programmatic examples above, the following example creates two regions 
     
 ```
 
-The `cache.xml` file contents must conform to the XML described in the XSD file provided in your distribution's `xsd`
+The `cache.xml` file contents must conform to the XML described in the `cpp-cache-1.0.xsd` file provided in your distribution's `xsds`
 subdirectory.
 
 
@@ -144,7 +144,7 @@ Whether carried out explicitly or through expiration activities, invalidation an
 
 You can use `Cache::getRegion` to retrieve a reference to a specified region.
 
-`RegionPtr` returns `NULL` if the region is not already present in the application's cache. A server region must already exist.
+`Cache::getRegion` returns `nullptr` if the region is not already present in the application's cache. A server region must already exist.
 
 A region name *cannot* contain these characters:
 
@@ -163,7 +163,5 @@ A region name *cannot* contain these characters:
 ## <a id="getting-region-size"></a>Getting the Region Size
 
 The `Region` API provides a `size` method (`Size` property for .NET) that gets the size of a region.
-
 For client regions, this gives the number of entries in the local cache, not on the servers.
-
 See the `Region` API documentation for details.

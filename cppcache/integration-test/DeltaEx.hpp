@@ -27,8 +27,20 @@
 #include <geode/PdxWriter.hpp>
 #include <geode/PdxReader.hpp>
 #include <geode/Delta.hpp>
+#include <geode/DataSerializable.hpp>
 
 #include "CacheHelper.hpp"
+
+namespace {  // NOLINT(google-build-namespaces)
+
+using apache::geode::client::DataInput;
+using apache::geode::client::DataOutput;
+using apache::geode::client::DataSerializable;
+using apache::geode::client::Delta;
+using apache::geode::client::InvalidDeltaException;
+using apache::geode::client::PdxReader;
+using apache::geode::client::PdxSerializable;
+using apache::geode::client::PdxWriter;
 
 class DeltaEx : public DataSerializable, public Delta {
  public:
@@ -42,7 +54,7 @@ class DeltaEx : public DataSerializable, public Delta {
   static int fromDataCount;
   static int cloneCount;
   DeltaEx() : Delta(), counter(1), isDelta(false) {}
-  DeltaEx(int count) : Delta(), counter(count), isDelta(false) {}
+  explicit DeltaEx(int count) : Delta(), counter(count), isDelta(false) {}
   DeltaEx(const DeltaEx& rhs) = default;
 
   virtual bool hasDelta() const override { return isDelta; }
@@ -70,7 +82,6 @@ class DeltaEx : public DataSerializable, public Delta {
     counter = input.readInt32();
     fromDataCount++;
   }
-  virtual int32_t getClassId() const override { return 1; }
   std::shared_ptr<Delta> clone() const override {
     cloneCount++;
     return std::make_shared<DeltaEx>(*this);
@@ -94,7 +105,8 @@ class PdxDeltaEx : public PdxSerializable, public Delta {
   static int m_fromDataCount;
   static int m_cloneCount;
   PdxDeltaEx() : Delta(), m_counter(1), m_isDelta(false) {}
-  PdxDeltaEx(int count) : Delta(), m_counter(count), m_isDelta(false) {}
+  explicit PdxDeltaEx(int count)
+      : Delta(), m_counter(count), m_isDelta(false) {}
   PdxDeltaEx(const PdxDeltaEx& rhs)
       : Delta(), m_counter(rhs.m_counter), m_isDelta(rhs.m_isDelta) {}
   virtual bool hasDelta() const override { return m_isDelta; }
@@ -154,5 +166,7 @@ class PdxDeltaEx : public PdxSerializable, public Delta {
     return idbuf;
   }
 };
+
+}  // namespace
 
 #endif  // GEODE_INTEGRATION_TEST_DELTAEX_H_

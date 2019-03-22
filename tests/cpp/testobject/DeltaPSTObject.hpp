@@ -21,21 +21,23 @@
 #define GEODE_TESTOBJECT_DELTAPSTOBJECT_H_
 
 #include <inttypes.h>
+
 #include <string>
 
 #include <ace/ACE.h>
 #include <ace/OS.h>
 #include <ace/Time_Value.h>
 
-#include "fwklib/Timer.hpp"
-#include "fwklib/FrameworkTest.hpp"
+#include <geode/Delta.hpp>
+
 #include "TimestampedObject.hpp"
 #include "testobject/PSTObject.hpp"
 #include "testobject_export.h"
 
-using namespace apache::geode::client;
-using namespace testframework;
 namespace testobject {
+
+using apache::geode::client::Delta;
+
 class TESTOBJECT_EXPORT DeltaPSTObject : public DataSerializable, public Delta {
  private:
   uint64_t timestamp;
@@ -53,7 +55,6 @@ class TESTOBJECT_EXPORT DeltaPSTObject : public DataSerializable, public Delta {
   void toDelta(DataOutput& output) const override;
   std::string toString() const override;
   bool hasDelta() const override { return true; }
-  int32_t getClassId() const override { return 42; }
 
   size_t objectSize() const override {
     auto objectSize = sizeof(DeltaPSTObject);

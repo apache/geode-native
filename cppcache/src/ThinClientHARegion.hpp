@@ -20,8 +20,9 @@
  * limitations under the License.
  */
 
-#include "ThinClientRegion.hpp"
 #include <geode/Pool.hpp>
+
+#include "ThinClientRegion.hpp"
 
 /**
  * @file

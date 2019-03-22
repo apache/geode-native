@@ -109,7 +109,7 @@ namespace Apache
         {
           int8_t get() override
           {
-            return static_cast<int8_t>(native::DSCode::CacheableIdentityHashMap);
+            return static_cast<int8_t>(native::internal::DSCode::CacheableIdentityHashMap);
           }
         }
 

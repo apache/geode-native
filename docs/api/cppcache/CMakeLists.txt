@@ -22,7 +22,10 @@ if(DOXYGEN_FOUND)
       ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
       COMMENT "Generating C++ API documentation with Doxygen" VERBATIM)
-  set_target_properties(docs-cppcache PROPERTIES EXCLUDE_FROM_ALL TRUE EXCLUDE_FROM_DEFAULT_BUILD TRUE)
+  set_target_properties(docs-cppcache PROPERTIES
+    EXCLUDE_FROM_ALL TRUE
+	EXCLUDE_FROM_DEFAULT_BUILD TRUE
+	FOLDER cpp/docs)
   add_dependencies(docs docs-cppcache)
   
   install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html/ DESTINATION docs/cppdocs)

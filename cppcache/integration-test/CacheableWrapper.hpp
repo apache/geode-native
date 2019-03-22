@@ -26,14 +26,21 @@
 
 #include <geode/CacheableBuiltins.hpp>
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
+namespace testing {
+
+using apache::geode::client::Cacheable;
+using apache::geode::client::IllegalArgumentException;
+using apache::geode::client::internal::DSCode;
 
 class CacheableWrapper {
  protected:
   std::shared_ptr<Cacheable> m_cacheableObject;
 
  public:
-  CacheableWrapper(const std::shared_ptr<Cacheable> cacheableObject)
+  explicit CacheableWrapper(const std::shared_ptr<Cacheable> cacheableObject)
       : m_cacheableObject(cacheableObject) {}
 
   virtual std::shared_ptr<Cacheable> getCacheable() const {
@@ -78,6 +85,9 @@ class CacheableWrapperFactory {
   static std::map<DSCode, std::string> m_typeIdNameMap;
 };
 
-
+}  // namespace testing
+}  // namespace client
+}  // namespace geode
+}  // namespace apache
 
 #endif  // GEODE_INTEGRATION_TEST_CACHEABLEWRAPPER_H_

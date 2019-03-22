@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_INTEGRATION_TEST_THINCLIENTDISTOPS_H_
-#define GEODE_INTEGRATION_TEST_THINCLIENTDISTOPS_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,12 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * ThinClientDistOps.hpp
- *
- *  Created on: Oct 22, 2008
- *      Author: abhaware
- */
+
+#pragma once
+
+#ifndef GEODE_INTEGRATION_TEST_THINCLIENTDISTOPS_H_
+#define GEODE_INTEGRATION_TEST_THINCLIENTDISTOPS_H_
 
 #include "fw_dunit.hpp"
 #include <ace/OS.h>
@@ -38,15 +32,25 @@
 
 #include "CacheHelper.hpp"
 
-using namespace apache::geode::client;
-using namespace test;
-
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
 #define SERVER2 s2p2
 #define CREATE_TWICE_KEY "__create_twice_key"
 #define CREATE_TWICE_VALUE "__create_twice_value"
+
+namespace { // NOLINT(google-build-namespaces)
+
+using apache::geode::client::CacheableInt32;
+using apache::geode::client::CacheableInt64;
+using apache::geode::client::CacheableKey;
+using apache::geode::client::CacheableString;
+using apache::geode::client::CacheHelper;
+using apache::geode::client::CacheServerException;
+using apache::geode::client::EntryExistsException;
+using apache::geode::client::IllegalArgumentException;
+using apache::geode::client::Properties;
+
 CacheHelper* cacheHelper = nullptr;
 static bool isLocalServer = false;
 static bool isLocator = false;
@@ -55,22 +59,9 @@ static int numberOfLocators = 0;
 const char* locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 
-bool g_isGridClient = false;
-
-DUNIT_TASK_DEFINITION(CLIENT1, Alter_Client_Grid_Property_1)
-  { g_isGridClient = !g_isGridClient; }
-END_TASK_DEFINITION
-
-DUNIT_TASK_DEFINITION(CLIENT2, Alter_Client_Grid_Property_2)
-  { g_isGridClient = !g_isGridClient; }
-END_TASK_DEFINITION
-
 void initClient(const bool isthinClient, const bool redirectLog) {
   if (cacheHelper == nullptr) {
     auto config = Properties::create();
-    if (g_isGridClient) {
-      config->insert("grid-client", "true");
-    }
     config->insert("log-level", "finer");
 
     if (redirectLog) {
@@ -596,11 +587,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, VerifyUpdateLocatorListThread)
       //    too strict.
       //    Assert(numLocatorListUpdates <= numExpectedLocatorListUpdates+2) is
       //    ideal.
-      ASSERT(numLocatorListUpdates >= numExpectedLocatorListUpdates -
-                                          1 /*&& numLocatorListUpdates <=
-                                               numExpectedLocatorListUpdates+2*/
-             ,
-             "Got unexpected number of LocatorList updates");
+      ASSERT(
+          numLocatorListUpdates >=
+              numExpectedLocatorListUpdates -
+                  1 /*&& numLocatorListUpdates <=
+                                                   numExpectedLocatorListUpdates+2*/
+          ,
+          "Got unexpected number of LocatorList updates");
     } else {
       ASSERT(
           numLocatorListUpdates == 0,
@@ -813,9 +806,6 @@ DUNIT_TASK_DEFINITION(SERVER1, CloseServer1)
 END_TASK_DEFINITION
 
 void runDistOpsNotSticky() {
-  CALL_TASK(Alter_Client_Grid_Property_1);
-  CALL_TASK(Alter_Client_Grid_Property_2);
-
   CALL_TASK(CreateLocator1);
   CALL_TASK(CreateServer1_With_Locator)
 
@@ -840,9 +830,6 @@ void runDistOpsNotSticky() {
 }
 
 void runDistOpsSticky() {
-  CALL_TASK(Alter_Client_Grid_Property_1);
-  CALL_TASK(Alter_Client_Grid_Property_2);
-
   CALL_TASK(CreateLocator1);
   CALL_TASK(CreateServer1_With_Locator)
 
@@ -891,5 +878,7 @@ void runDistOpsDontUpdateLocatorList() {
   CALL_TASK(CloseServer1);
   CALL_TASK(CloseLocator1);
 }
+
+}  // namespace
 
 #endif  // GEODE_INTEGRATION_TEST_THINCLIENTDISTOPS_H_

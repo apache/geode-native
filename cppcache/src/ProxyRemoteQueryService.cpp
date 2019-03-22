@@ -16,9 +16,11 @@
  */
 
 #include "ProxyRemoteQueryService.hpp"
-#include "ThinClientPoolDM.hpp"
+
 #include <geode/PoolManager.hpp>
+
 #include "CqQueryImpl.hpp"
+#include "ThinClientPoolDM.hpp"
 
 namespace apache {
 namespace geode {
@@ -31,8 +33,9 @@ std::shared_ptr<Query> ProxyRemoteQueryService::newQuery(
     std::string querystring) {
   if (!m_authenticatedView->isClosed()) {
     auto userAttachedPool = m_authenticatedView->m_userAttributes->getPool();
-    auto pool = m_authenticatedView->m_cacheImpl->getCache()->getPoolManager().find(
-        userAttachedPool->getName());
+    auto pool =
+        m_authenticatedView->m_cacheImpl->getCache()->getPoolManager().find(
+            userAttachedPool->getName());
     if (pool != nullptr && pool.get() == userAttachedPool.get() &&
         !pool->isDestroyed()) {
       GuardUserAttributes gua(m_authenticatedView);
@@ -58,8 +61,9 @@ std::shared_ptr<CqQuery> ProxyRemoteQueryService::newCq(
     bool isDurable) {
   if (!m_authenticatedView->isClosed()) {
     auto userAttachedPool = m_authenticatedView->m_userAttributes->getPool();
-    auto pool = m_authenticatedView->m_cacheImpl->getCache()->getPoolManager().find(
-        userAttachedPool->getName());
+    auto pool =
+        m_authenticatedView->m_cacheImpl->getCache()->getPoolManager().find(
+            userAttachedPool->getName());
     if (pool != nullptr && pool.get() == userAttachedPool.get() &&
         !pool->isDestroyed()) {
       GuardUserAttributes gua(m_authenticatedView);
@@ -78,7 +82,7 @@ std::shared_ptr<CqQuery> ProxyRemoteQueryService::newCq(
 
 void ProxyRemoteQueryService::addCqQuery(
     const std::shared_ptr<CqQuery>& cqQuery) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_cqQueryListLock);
+  std::lock_guard<decltype(m_cqQueryListLock)> guard(m_cqQueryListLock);
   m_cqQueries.push_back(cqQuery);
 }
 
@@ -87,8 +91,9 @@ std::shared_ptr<CqQuery> ProxyRemoteQueryService::newCq(
     const std::shared_ptr<CqAttributes>& cqAttr, bool isDurable) {
   if (!m_authenticatedView->isClosed()) {
     auto userAttachedPool = m_authenticatedView->m_userAttributes->getPool();
-    auto pool = m_authenticatedView->m_cacheImpl->getCache()->getPoolManager().find(
-        userAttachedPool->getName());
+    auto pool =
+        m_authenticatedView->m_cacheImpl->getCache()->getPoolManager().find(
+            userAttachedPool->getName());
     if (pool != nullptr && pool.get() == userAttachedPool.get() &&
         !pool->isDestroyed()) {
       GuardUserAttributes gua(m_authenticatedView);
@@ -108,7 +113,7 @@ std::shared_ptr<CqQuery> ProxyRemoteQueryService::newCq(
 void ProxyRemoteQueryService::closeCqs() { closeCqs(false); }
 
 void ProxyRemoteQueryService::closeCqs(bool keepAlive) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_cqQueryListLock);
+  std::lock_guard<decltype(m_cqQueryListLock)> guard(m_cqQueryListLock);
 
   for (auto&& q : m_cqQueries) {
     try {
@@ -130,7 +135,7 @@ void ProxyRemoteQueryService::closeCqs(bool keepAlive) {
 }
 
 QueryService::query_container_type ProxyRemoteQueryService::getCqs() const {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_cqQueryListLock);
+  std::lock_guard<decltype(m_cqQueryListLock)> guard(m_cqQueryListLock);
   return m_cqQueries;
 }
 
@@ -138,8 +143,9 @@ std::shared_ptr<CqQuery> ProxyRemoteQueryService::getCq(
     const std::string& name) const {
   if (!m_authenticatedView->isClosed()) {
     auto userAttachedPool = m_authenticatedView->m_userAttributes->getPool();
-    auto pool = m_authenticatedView->m_cacheImpl->getCache()->getPoolManager().find(
-        userAttachedPool->getName());
+    auto pool =
+        m_authenticatedView->m_cacheImpl->getCache()->getPoolManager().find(
+            userAttachedPool->getName());
     if (pool != nullptr && pool.get() == userAttachedPool.get() &&
         !pool->isDestroyed()) {
       GuardUserAttributes gua(m_authenticatedView);
@@ -154,7 +160,7 @@ std::shared_ptr<CqQuery> ProxyRemoteQueryService::getCq(
 }
 
 void ProxyRemoteQueryService::executeCqs() {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_cqQueryListLock);
+  std::lock_guard<decltype(m_cqQueryListLock)> guard(m_cqQueryListLock);
 
   for (auto&& q : m_cqQueries) {
     try {
@@ -170,7 +176,7 @@ void ProxyRemoteQueryService::executeCqs() {
 }
 
 void ProxyRemoteQueryService::stopCqs() {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_cqQueryListLock);
+  std::lock_guard<decltype(m_cqQueryListLock)> guard(m_cqQueryListLock);
 
   for (auto&& q : m_cqQueries) {
     try {

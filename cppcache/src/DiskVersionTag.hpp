@@ -20,8 +20,8 @@
 #ifndef GEODE_DISKVERSIONTAG_H_
 #define GEODE_DISKVERSIONTAG_H_
 
-#include "VersionTag.hpp"
 #include "DiskStoreId.hpp"
+#include "VersionTag.hpp"
 
 namespace apache {
 namespace geode {
@@ -51,7 +51,7 @@ class DiskVersionTag : public VersionTag {
   }
 
  public:
-  DiskVersionTag(MemberListForVersionStamp& memberListForVersionStamp)
+  explicit DiskVersionTag(MemberListForVersionStamp& memberListForVersionStamp)
       : VersionTag(memberListForVersionStamp) {}
 
   DSFid getDSFID() const override { return DSFid::DiskVersionTag; }

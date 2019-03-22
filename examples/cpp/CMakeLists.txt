@@ -19,45 +19,51 @@ project(examples LANGUAGES NONE)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt.in ${CMAKE_CURRENT_BINARY_DIR}/CMakeLists.txt COPYONLY)
 
-install(FILES
-  ${CMAKE_CURRENT_BINARY_DIR}/CMakeLists.txt
-  BUILD-CPP-EXAMPLES.md
-  DESTINATION examples/cpp)
-
 function(add_example)
   set(options)
   set(oneValueArgs NAME)
   set(multiValueArgs SOURCE)
   cmake_parse_arguments(ADD_EXAMPLE "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
 
-  foreach(SOURCE ${ADD_EXAMPLE_SOURCE})
-    list(APPEND EXAMPLE_SOURCES_PATHS ${ADD_EXAMPLE_NAME}/${SOURCE})
-  endforeach()
-
   configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt.cpp_example.in
     ${CMAKE_CURRENT_BINARY_DIR}/${ADD_EXAMPLE_NAME}/CMakeLists.txt
     @ONLY)
-
-  install(FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/${ADD_EXAMPLE_NAME}/CMakeLists.txt
-    ${EXAMPLE_SOURCES_PATHS}
-    ${ADD_EXAMPLE_NAME}/README.md
-    ${ADD_EXAMPLE_NAME}/startserver.sh
-    ${ADD_EXAMPLE_NAME}/stopserver.sh
-    DESTINATION examples/cpp/${ADD_EXAMPLE_NAME})
 endfunction()
 
+add_example(NAME authinitialize
+	SOURCE main.cpp exampleAuthInitialize.hpp exampleAuthInitialize.cpp)
+
+add_example(NAME continuousquery
+    SOURCE main.cpp Order.cpp Order.hpp)
+
 add_example(NAME dataserializable
-	SOURCE main.cpp Order.cpp Order.hpp)
+    SOURCE main.cpp Order.cpp Order.hpp)
+
+add_example(NAME functionexecution
+        SOURCE main.cpp)
 
 add_example(NAME pdxserializable
-	SOURCE main.cpp Order.cpp Order.hpp)
+    SOURCE main.cpp Order.cpp Order.hpp)
 
 add_example(NAME pdxserializer
-	SOURCE main.cpp Order.cpp Order.hpp OrderSerializer.cpp OrderSerializer.hpp)
+    SOURCE main.cpp Order.cpp Order.hpp OrderSerializer.cpp OrderSerializer.hpp)
 
-add_example(NAME put-get-remove
-	SOURCE main.cpp)
+add_example(NAME putgetremove
+    SOURCE main.cpp)
 
 add_example(NAME remotequery
-	SOURCE main.cpp Order.cpp Order.hpp)
+    SOURCE main.cpp Order.cpp Order.hpp)
+
+add_subdirectory(sslputget)
+
+add_example(NAME transaction
+    SOURCE main.cpp)
+
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+  DESTINATION examples/
+  USE_SOURCE_PERMISSIONS
+  PATTERN "./*.in" EXCLUDE
+  PATTERN "CMakeFiles" EXCLUDE
+  PATTERN "Makefile" EXCLUDE
+  PATTERN "cmake_install.cmake" EXCLUDE)
+

@@ -24,16 +24,21 @@
 
 #include "fw_helper.hpp"
 
-using namespace apache::geode::client;
+using apache::geode::client::Cache;
+using apache::geode::client::CacheFactory;
+using apache::geode::client::CacheXmlException;
+using apache::geode::client::ExpirationAction;
+using apache::geode::client::Region;
 
-int testXmlCacheCreationWithRefid(const char* fileName) {
+int testXmlCacheCreationWithRefid(const char *fileName) {
   auto cacheFactory = CacheFactory();
   std::shared_ptr<Cache> cptr;
 
-  char* path = ACE_OS::getenv("TESTSRC");
+  char *path = ACE_OS::getenv("TESTSRC");
   std::string directory(path);
 
-  std::cout << "create DistributedSytem with name=XML_CACHE_CREATION_TEST" << std::endl;
+  std::cout << "create DistributedSytem with name=XML_CACHE_CREATION_TEST"
+            << std::endl;
 
   std::cout << "Create cache with the configurations provided in "
                "valid_cache_refid.xml"
@@ -49,7 +54,7 @@ int testXmlCacheCreationWithRefid(const char* fileName) {
     } else {
       std::cout << "getPdxIgnoreUnreadFields returned false." << std::endl;
     }
-  } catch (CacheXmlException& ex) {
+  } catch (CacheXmlException &ex) {
     std::cout << "CacheXmlException: msg = " << ex.what() << std::endl;
     LOG(ex.getStackTrace());
     return -1;

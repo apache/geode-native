@@ -15,18 +15,20 @@
  * limitations under the License.
  */
 
-#include <vector>
-#include <string>
-#include <sstream>
-
 #include "UDPIpc.hpp"
-#include "GsRandom.hpp"
+
+#include <sstream>
+#include <string>
+#include <vector>
+
 #include "FwkStrCvt.hpp"
+#include "GsRandom.hpp"
 #include "config.h"
 
-using namespace std;
-using namespace apache::geode::client;
-using namespace testframework;
+namespace apache {
+namespace geode {
+namespace client {
+namespace testframework {
 
 bool UDPMessage::ping(ACE_SOCK_Dgram& io, ACE_INET_Addr& who) {
   clear();
@@ -75,7 +77,7 @@ bool UDPMessage::receiveFrom(ACE_SOCK_Dgram& io,
     FWKEXCEPTION("UDPMessage::receiveFrom: Failed, header length: " << len);
   }
   clear();
-  memcpy((void*)&m_hdr, buffs.iov_base, UDP_HEADER_SIZE);
+  memcpy(&m_hdr, buffs.iov_base, UDP_HEADER_SIZE);
   if (m_hdr.tag != UDP_MSG_TAG) {
     FWKEXCEPTION("UDPMessage::receiveFrom: Failed, invalid tag: " << m_hdr.tag);
   }
@@ -110,21 +112,13 @@ bool UDPMessage::send(ACE_SOCK_Dgram& io) {
   int32_t vcnt = 1;
   iovec buffs[2];
   m_hdr.length = 0;
-#ifdef _LINUX
-  buffs[0].iov_base = (void*)&m_hdr;
-#else
   buffs[0].iov_base = reinterpret_cast<char*>(&m_hdr);
-#endif
   buffs[0].iov_len = UDP_HEADER_SIZE;
   tot += UDP_HEADER_SIZE;
   if (!m_msg.empty()) {
-    int32_t len = static_cast<int32_t>(m_msg.size());
+    auto len = static_cast<uint32_t>(m_msg.size());
     m_hdr.length = htonl(len);
-#ifdef _LINUX
-    buffs[1].iov_base = (void*)m_msg.c_str();
-#else
     buffs[1].iov_base = const_cast<char*>(m_msg.c_str());
-#endif
     buffs[1].iov_len = len;
     vcnt = 2;
     tot += len;
@@ -205,7 +199,7 @@ UDPMessageClient::UDPMessageClient(std::string server)
 }
 
 int32_t Receiver::doTask() {
-  UDPMessage* msg = new UDPMessage();
+  auto msg = std::unique_ptr<UDPMessage>(new UDPMessage());
   UDPMessage cmsg;
   try {
     while (*m_run) {
@@ -214,7 +208,7 @@ int32_t Receiver::doTask() {
         ACE_Time_Value wait(30);  // Timeout is relative time.
         if (cmsg.receiveFrom(*m_io, &wait)) {
           if (cmsg.getCmd() == ADDR_REQUEST) {
-            std::string addr = m_addrs.front();
+            auto&& addr = m_addrs.front();
             m_addrs.pop_front();
             m_addrs.push_back(addr);
             cmsg.clear();
@@ -229,7 +223,7 @@ int32_t Receiver::doTask() {
         if (msg->receiveFrom(
                 *m_io, &timeout)) {  // Timeout is relative time, send ack.
           if (msg->getCmd() == ADDR_REQUEST) {
-            std::string addr = m_addrs.front();
+            auto&& addr = m_addrs.front();
             m_addrs.pop_front();
             m_addrs.push_back(addr);
             cmsg.clear();
@@ -238,8 +232,8 @@ int32_t Receiver::doTask() {
             cmsg.send(*m_io);
           }
           if (msg->length() > 0) {
-            m_queues->putInbound(msg);
-            msg = new UDPMessage();
+            m_queues->putInbound(msg.release());
+            msg.reset(new UDPMessage());
           }
         }
       }
@@ -287,7 +281,7 @@ void Receiver::initialize() {
 }
 
 int32_t STReceiver::doTask() {
-  UDPMessage* msg = new UDPMessage();
+  auto msg = std::unique_ptr<UDPMessage>(new UDPMessage());
   try {
     while (*m_run) {
       msg->clear();
@@ -300,8 +294,8 @@ int32_t STReceiver::doTask() {
           msg->send(m_io);
         } else {
           if (msg->length() > 0) {
-            m_queues->putInbound(msg);
-            msg = new UDPMessage();
+            m_queues->putInbound(msg.release());
+            msg.reset(new UDPMessage());
           }
         }
       }
@@ -368,3 +362,8 @@ void Responder::initialize() {
     FWKEXCEPTION("Server failed to open io, " << errno);
   }
 }
+
+}  // namespace testframework
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

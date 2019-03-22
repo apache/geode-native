@@ -34,22 +34,34 @@
 #include "CacheRegionHelper.hpp"
 #include "CacheImpl.hpp"
 
-using namespace apache::geode::client;
-using namespace test;
-using namespace testData;
-
 #define CLIENT1 s1p1
 #define LOCATOR s1p2
 #define SERVER1 s2p1
 
+using testData::noofQueryParam;
+using testData::queryparamSet;
+using testData::QueryStrings;
+using testData::resultsetparamQueries;
+using testData::resultsetQueries;
+using testData::resultsetQueriesOPL;
+using testData::resultsetRowCounts;
+using testData::resultsetRowCountsOPL;
+using testData::resultsetRowCountsPQ;
+using testData::unsupported;
+
+using apache::geode::client::Cacheable;
+using apache::geode::client::CacheableVector;
+using apache::geode::client::IllegalStateException;
+using apache::geode::client::QueryService;
+
 bool isLocator = false;
 bool isLocalServer = false;
 
-const char* poolNames[] = {"Pool1", "Pool2", "Pool3"};
-const char* locHostPort =
+const char *poolNames[] = {"Pool1", "Pool2", "Pool3"};
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 bool isPoolConfig = false;  // To track if pool case is running
-const char* qRegionNames[] = {"Portfolios", "Positions", "Portfolios2",
+const char *qRegionNames[] = {"Portfolios", "Positions", "Portfolios2",
                               "Portfolios3"};
 static bool m_isPdx = false;
 void stepOne() {
@@ -59,11 +71,15 @@ void stepOne() {
     auto serializationRegistry =
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
             ->getSerializationRegistry();
-    serializationRegistry->addType(Position::createDeserializable);
-    serializationRegistry->addType(Portfolio::createDeserializable);
-    serializationRegistry->addPdxType(PositionPdx::createDeserializable);
-    serializationRegistry->addPdxType(PortfolioPdx::createDeserializable);
-  } catch (const IllegalStateException&) {
+    serializationRegistry->addDataSerializableType(
+        Position::createDeserializable, 2);
+    serializationRegistry->addDataSerializableType(
+        Portfolio::createDeserializable, 3);
+    serializationRegistry->addPdxSerializableType(
+        PositionPdx::createDeserializable);
+    serializationRegistry->addPdxSerializableType(
+        PortfolioPdx::createDeserializable);
+  } catch (const IllegalStateException &) {
     // ignore exception
   }
   isPoolConfig = true;
@@ -74,7 +90,8 @@ void stepOne() {
   createRegionAndAttachPool(qRegionNames[3], USE_ACK, poolNames[0]);
 
   auto regptr = getHelper()->getRegion(qRegionNames[0]);
-  auto subregPtr = regptr->createSubregion(qRegionNames[1], regptr->getAttributes());
+  auto subregPtr =
+      regptr->createSubregion(qRegionNames[1], regptr->getAttributes());
 
   LOG("StepOne complete.");
 }
@@ -131,7 +148,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
     auto regPtr2 = getHelper()->getRegion(qRegionNames[2]);
     auto regPtr3 = getHelper()->getRegion(qRegionNames[3]);
 
-    QueryHelper* qh = &QueryHelper::getHelper();
+    QueryHelper *qh = &QueryHelper::getHelper();
 
     char buf[100];
     sprintf(buf, "SetSize %zd, NumSets %zd", qh->getPortfolioSetSize(),
@@ -172,7 +189,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
   {
     SLEEP(500);
     bool doAnyErrorOccured = false;
-    QueryHelper* qh = &QueryHelper::getHelper();
+    QueryHelper *qh = &QueryHelper::getHelper();
 
     std::shared_ptr<QueryService> qs = nullptr;
     if (isPoolConfig) {
@@ -187,7 +204,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
       if (!qh->verifyRS(results, resultsetRowCountsOPL[i])) {
         char failmsg[100] = {0};
         ACE_OS::sprintf(failmsg, "Query verify failed for query index %d", i);
-        doAnyErrorOccured = true;
         ASSERT(false, failmsg);
       }
 
@@ -261,7 +277,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
   {
     SLEEP(500);
     bool doAnyErrorOccured = false;
-    QueryHelper* qh = &QueryHelper::getHelper();
+    QueryHelper *qh = &QueryHelper::getHelper();
 
     std::shared_ptr<QueryService> qs = nullptr;
     if (isPoolConfig) {
@@ -289,7 +305,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
                                               qh->getPortfolioNumSets()))) {
           char failmsg[100] = {0};
           ACE_OS::sprintf(failmsg, "Query verify failed for query index %d", i);
-          doAnyErrorOccured = true;
           ASSERT(false, failmsg);
         }
 
@@ -367,7 +382,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
   {
     SLEEP(500);
     bool doAnyErrorOccured = false;
-    QueryHelper* qh = &QueryHelper::getHelper();
+    QueryHelper *qh = &QueryHelper::getHelper();
 
     std::shared_ptr<QueryService> qs = nullptr;
     if (isPoolConfig) {
@@ -401,7 +416,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
                                               qh->getPortfolioNumSets()))) {
           char failmsg[100] = {0};
           ACE_OS::sprintf(failmsg, "Query verify failed for query index %d", i);
-          doAnyErrorOccured = true;
           ASSERT(false, failmsg);
         }
 
@@ -497,7 +511,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, DoQueryRSError)
                           i);
           LOG(failmsg);
           FAIL(failmsg);
-        } catch (apache::geode::client::QueryException&) {
+        } catch (apache::geode::client::QueryException &) {
           // ok, expecting an exception, do nothing
         } catch (...) {
           ASSERT(false, "Got unexpected exception");

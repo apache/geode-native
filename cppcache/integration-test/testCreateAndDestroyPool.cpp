@@ -25,9 +25,6 @@
 
 #include "ThinClientHelper.hpp"
 
-using namespace apache::geode::client;
-using namespace test;
-
 #define CLIENT1 s1p1
 #define SERVER1 s2p1
 #define SERVER2 s2p2
@@ -35,7 +32,7 @@ using namespace test;
 #include "locator_globals.hpp"
 #include "LocatorHelper.hpp"
 
-const char* poolNames[] = {"Pool1"};
+const char *poolNames[] = {"Pool1"};
 
 void stepOne() {
   initClient(true);

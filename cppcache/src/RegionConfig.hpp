@@ -27,11 +27,11 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include <memory>
-
-#include <string>
-#include <geode/Properties.hpp>
 #include <cstdlib>
+#include <memory>
+#include <string>
+
+#include <geode/Properties.hpp>
 
 namespace apache {
 namespace geode {
@@ -41,14 +41,14 @@ class RegionConfig;
 
 class APACHE_GEODE_EXPORT RegionConfig {
  public:
-  RegionConfig(const std::string& capacity);
+  explicit RegionConfig(const std::string& capacity);
 
-  unsigned long entries();
+  uint64_t entries();
   void setConcurrency(const std::string& str);
   void setLru(const std::string& str);
   void setCaching(const std::string& str);
   uint8_t getConcurrency();
-  unsigned long getLruEntriesLimit();
+  uint64_t getLruEntriesLimit();
   bool getCaching();
 
  private:

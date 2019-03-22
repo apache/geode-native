@@ -25,26 +25,31 @@
 
 #include <geode/EntryEvent.hpp>
 
-
 #define ROOT_NAME "testThinClientHAEventIDMap"
 #define ROOT_SCOPE DISTRIBUTED_ACK
 
 #include "CacheHelper.hpp"
 
-using namespace apache::geode::client;
-using namespace test;
+using apache::geode::client::CacheableInt32;
+using apache::geode::client::CacheableKey;
+using apache::geode::client::CacheableString;
+using apache::geode::client::CacheHelper;
+using apache::geode::client::CacheListener;
+using apache::geode::client::EntryEvent;
+using apache::geode::client::HashMapOfCacheable;
+using apache::geode::client::Properties;
 
 class DupChecker : public CacheListener {
   int m_ops;
   HashMapOfCacheable m_map;
 
-  void check(const EntryEvent& event) {
+  void check(const EntryEvent &event) {
     m_ops++;
 
     auto key = event.getKey();
     auto value = std::dynamic_pointer_cast<CacheableInt32>(event.getNewValue());
 
-    const auto& item = m_map.find(key);
+    const auto &item = m_map.find(key);
 
     if (item != m_map.end()) {
       auto check = std::dynamic_pointer_cast<CacheableInt32>(item->second);
@@ -65,15 +70,15 @@ class DupChecker : public CacheListener {
     ASSERT(m_map.size() == 4, "Expected 4 keys for the region");
     ASSERT(m_ops == 400, "Expected 400 events (100 per key) for the region");
 
-    for (const auto& item : m_map) {
+    for (const auto &item : m_map) {
       auto check = std::dynamic_pointer_cast<CacheableInt32>(item.second);
       ASSERT(check->value() == 100, "Expected final value to be 100");
     }
   }
 
-  void afterCreate(const EntryEvent& event) override { check(event); }
+  void afterCreate(const EntryEvent &event) override { check(event); }
 
-  void afterUpdate(const EntryEvent& event) override { check(event); }
+  void afterUpdate(const EntryEvent &event) override { check(event); }
 };
 
 ///////////////////////////////////////////////////////
@@ -83,12 +88,12 @@ class DupChecker : public CacheListener {
 #define SERVER1 s2p1
 #define SERVER2 s2p2
 
-CacheHelper* cacheHelper = nullptr;
+CacheHelper *cacheHelper = nullptr;
 static bool isLocalServer = false;
 static bool isLocator = false;
 static int numberOfLocators = 1;
 
-const char* locatorsG =
+const char *locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 int g_redundancyLevel = 0;
 
@@ -110,17 +115,17 @@ void cleanProc() {
   }
 }
 
-CacheHelper* getHelper() {
+CacheHelper *getHelper() {
   ASSERT(cacheHelper != nullptr, "No cacheHelper initialized.");
   return cacheHelper;
 }
 
-void _verifyEntry(const char* name, const char* key, const char* val,
+void _verifyEntry(const char *name, const char *key, const char *val,
                   bool noKey, bool isCreated = false) {
   // Verify key and value exist in this region, in this process.
-  const char* value = val ? val : "";
-  char* buf =
-      reinterpret_cast<char*>(malloc(1024 + strlen(key) + strlen(value)));
+  const char *value = val ? val : "";
+  char *buf =
+      reinterpret_cast<char *>(malloc(1024 + strlen(key) + strlen(value)));
   ASSERT(buf, "Unable to malloc buffer for logging.");
   if (!isCreated) {
     if (noKey) {
@@ -207,11 +212,11 @@ void _verifyEntry(const char* name, const char* key, const char* val,
   }
 }
 
-void _verifyIntEntry(const char* name, const char* key, const int val,
+void _verifyIntEntry(const char *name, const char *key, const int val,
                      bool noKey, bool isCreated = false) {
   // Verify key and value exist in this region, in this process.
   int value = val;
-  char* buf = reinterpret_cast<char*>(malloc(1024 + strlen(key) + 20));
+  char *buf = reinterpret_cast<char *>(malloc(1024 + strlen(key) + 20));
   ASSERT(buf, "Unable to malloc buffer for logging.");
   if (!isCreated) {
     if (noKey) {
@@ -301,7 +306,7 @@ void _verifyIntEntry(const char* name, const char* key, const int val,
 
 #define verifyEntry(x, y, z) _verifyEntry(x, y, z, __LINE__)
 
-void _verifyEntry(const char* name, const char* key, const char* val,
+void _verifyEntry(const char *name, const char *key, const char *val,
                   int line) {
   char logmsg[1024];
   sprintf(logmsg, "verifyEntry() called from %d.\n", line);
@@ -312,7 +317,7 @@ void _verifyEntry(const char* name, const char* key, const char* val,
 
 #define verifyIntEntry(x, y, z) _verifyIntEntry(x, y, z, __LINE__)
 
-void _verifyIntEntry(const char* name, const char* key, const int val,
+void _verifyIntEntry(const char *name, const char *key, const int val,
                      int line) {
   char logmsg[1024];
   sprintf(logmsg, "verifyIntEntry() called from %d.\n", line);
@@ -321,7 +326,7 @@ void _verifyIntEntry(const char* name, const char* key, const int val,
   LOG("Entry verified.");
 }
 
-void _verifyCreated(const char* name, const char* key, int line) {
+void _verifyCreated(const char *name, const char *key, int line) {
   char logmsg[1024];
   sprintf(logmsg, "verifyCreated() called from %d.\n", line);
   LOG(logmsg);
@@ -329,12 +334,12 @@ void _verifyCreated(const char* name, const char* key, int line) {
   LOG("Entry created.");
 }
 
-void createRegion(const char* name, bool ackMode,
+void createRegion(const char *name, bool ackMode,
                   bool clientNotificationEnabled = true) {
   LOG("createRegion() entered.");
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
-  char* endpoints = nullptr;
+  char *endpoints = nullptr;
   // ack, caching
   auto regPtr = getHelper()->createRegion(name, ackMode, true, nullptr,
                                           endpoints, clientNotificationEnabled);
@@ -342,7 +347,7 @@ void createRegion(const char* name, bool ackMode,
   LOG("Region created.");
 }
 
-void createEntry(const char* name, const char* key, const char* value) {
+void createEntry(const char *name, const char *key, const char *value) {
   LOG("createEntry() entered.");
   fprintf(stdout, "Creating entry -- key: %s  value: %s in region %s\n", key,
           value, name);
@@ -367,7 +372,7 @@ void createEntry(const char* name, const char* key, const char* value) {
   LOG("Entry created.");
 }
 
-void createIntEntry(const char* name, const char* key, const int value) {
+void createIntEntry(const char *name, const char *key, const int value) {
   LOG("createEntry() entered.");
   fprintf(stdout, "Creating entry -- key: %s  value: %d in region %s\n", key,
           value, name);
@@ -392,19 +397,19 @@ void createIntEntry(const char* name, const char* key, const int value) {
   LOG("Entry created.");
 }
 
-void setCacheListener(const char* regName,
+void setCacheListener(const char *regName,
                       std::shared_ptr<DupChecker> checker) {
   auto reg = getHelper()->getRegion(regName);
   auto attrMutator = reg->getAttributesMutator();
   attrMutator->setCacheListener(checker);
 }
 
-const char* keys[] = {"Key-1", "Key-2", "Key-3", "Key-4"};
-const char* vals[] = {"Value-1", "Value-2", "Value-3", "Value-4"};
-const char* nvals[] = {"New Value-1", "New Value-2", "New Value-3",
+const char *keys[] = {"Key-1", "Key-2", "Key-3", "Key-4"};
+const char *vals[] = {"Value-1", "Value-2", "Value-3", "Value-4"};
+const char *nvals[] = {"New Value-1", "New Value-2", "New Value-3",
                        "New Value-4"};
 
-const char* regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
+const char *regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
 
 const bool USE_ACK = true;
 const bool NO_ACK = false;

@@ -15,14 +15,15 @@
  * limitations under the License.
  */
 
+#include "VersionStamp.hpp"
+
 #include <string>
 
-#include "VersionStamp.hpp"
-#include "MemberListForVersionStamp.hpp"
 #include "CacheImpl.hpp"
+#include "MemberListForVersionStamp.hpp"
 #include "RegionInternal.hpp"
-#include "ThinClientRegion.hpp"
 #include "ThinClientPoolDM.hpp"
+#include "ThinClientRegion.hpp"
 
 namespace apache {
 namespace geode {
@@ -186,7 +187,9 @@ GfErrType VersionStamp::checkForDeltaConflict(
         "delta requires full value due to version mismatch. key=%s tagVersion "
         "%lld stampVersion %lld ",
         keystr.c_str(), tagVersion, stampVersion);
-    if (poolDM) poolDM->updateNotificationStats(false, 0);
+    if (poolDM) {
+      poolDM->updateNotificationStats(false, std::chrono::nanoseconds(0));
+    }
     return GF_INVALID_DELTA;
 
   } else {
@@ -198,7 +201,9 @@ GfErrType VersionStamp::checkForDeltaConflict(
           "MemberId of the version stamp could not be found. Requesting full "
           "delta value. key=%s",
           keystr.c_str());
-      if (poolDM) poolDM->updateNotificationStats(false, 0);
+      if (poolDM) {
+        poolDM->updateNotificationStats(false, std::chrono::nanoseconds(0));
+      }
       return GF_INVALID_DELTA;
     }
 
@@ -208,7 +213,9 @@ GfErrType VersionStamp::checkForDeltaConflict(
           "Previous MemberId of the version tag could not be found. Requesting "
           "full delta value. key=%s",
           keystr.c_str());
-      if (poolDM) poolDM->updateNotificationStats(false, 0);
+      if (poolDM) {
+        poolDM->updateNotificationStats(false, std::chrono::nanoseconds(0));
+      }
       return GF_INVALID_DELTA;
     }
 
@@ -219,7 +226,9 @@ GfErrType VersionStamp::checkForDeltaConflict(
           keystr.c_str(), tagID->getHashKey().c_str(),
           stampID->getHashKey().c_str());
 
-      if (poolDM) poolDM->updateNotificationStats(false, 0);
+      if (poolDM) {
+        poolDM->updateNotificationStats(false, std::chrono::nanoseconds(0));
+      }
       return GF_INVALID_DELTA;
     }
     return GF_NOERR;

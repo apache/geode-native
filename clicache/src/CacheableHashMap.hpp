@@ -22,6 +22,10 @@
 #include "ISerializable.hpp"
 #include "IDataSerializablePrimitive.hpp"
 
+#include "begin_native.hpp"
+#include <geode/internal/DSCode.hpp>
+#include "end_native.hpp"
+
 using namespace System;
 using namespace System::Collections::Generic;
 
@@ -33,7 +37,7 @@ namespace Apache
   {
     namespace Client
     {
-			namespace native = apache::geode::client;
+      namespace native = apache::geode::client;
 
       /// <summary>
       /// A mutable <c>ICacheableKey</c> to <c>ISerializable</c> hash map
@@ -120,7 +124,7 @@ namespace Apache
         {
           virtual int8_t get()
           {
-            return static_cast<int8_t>(native::DSCode::CacheableHashMap);
+            return static_cast<int8_t>(native::internal::DSCode::CacheableHashMap);
           }
         }
 

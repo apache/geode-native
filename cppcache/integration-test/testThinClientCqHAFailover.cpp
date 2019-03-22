@@ -38,18 +38,21 @@
 #include "ThinClientCQ.hpp"
 #include <hacks/range.h>
 
-using namespace apache::geode::client;
-using namespace test;
-using namespace testobject;
-
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
 #define SERVER2 s2p2
 
-const char* cqName = "MyCq";
+using apache::geode::client::CqAttributesFactory;
+using apache::geode::client::CqEvent;
+using apache::geode::client::CqListener;
+using apache::geode::client::Exception;
+using apache::geode::client::IllegalStateException;
+using apache::geode::client::QueryService;
 
-const char* regionNamesCq[] = {"Portfolios", "Positions"};
+const char *cqName = "MyCq";
+
+const char *regionNamesCq[] = {"Portfolios", "Positions"};
 
 class MyCqListener : public CqListener {
   bool m_failedOver;
@@ -63,7 +66,7 @@ class MyCqListener : public CqListener {
   uint32_t getCountBefore() { return m_cnt_before; }
   uint32_t getCountAfter() { return m_cnt_after; }
 
-  void onEvent(const CqEvent&) override {
+  void onEvent(const CqEvent &) override {
     if (m_failedOver) {
       // LOG("after:MyCqListener::OnEvent called");
       m_cnt_after++;
@@ -72,7 +75,7 @@ class MyCqListener : public CqListener {
       m_cnt_before++;
     }
   }
-  void onError(const CqEvent&) override {
+  void onError(const CqEvent &) override {
     if (m_failedOver) {
       // LOG("after: MyCqListener::OnError called");
       m_cnt_after++;
@@ -87,8 +90,8 @@ class MyCqListener : public CqListener {
 class KillServerThread : public ACE_Task_Base {
  public:
   bool m_running;
-  MyCqListener* m_listener;
-  explicit KillServerThread(MyCqListener* listener)
+  MyCqListener *m_listener;
+  explicit KillServerThread(MyCqListener *listener)
       : m_running(false), m_listener(listener) {}
   int svc(void) {
     while (m_running == true) {
@@ -120,14 +123,16 @@ void initClientCq() {
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
             ->getSerializationRegistry();
 
-    serializationRegistry->addType(Position::createDeserializable);
-    serializationRegistry->addType(Portfolio::createDeserializable);
-  } catch (const IllegalStateException&) {
+    serializationRegistry->addDataSerializableType(
+        Position::createDeserializable, 2);
+    serializationRegistry->addDataSerializableType(
+        Portfolio::createDeserializable, 3);
+  } catch (const IllegalStateException &) {
     // ignore exception
   }
 }
 
-KillServerThread* kst = nullptr;
+KillServerThread *kst = nullptr;
 
 DUNIT_TASK_DEFINITION(SERVER1, CreateLocator)
   {
@@ -172,7 +177,7 @@ void stepOne() {
   auto subregPtr =
       regptr->createSubregion(regionNamesCq[1], regptr->getAttributes());
 
-  QueryHelper* qh = &QueryHelper::getHelper();
+  QueryHelper *qh = &QueryHelper::getHelper();
 
   qh->populatePortfolioData(regptr, 100, 20, 10);
   qh->populatePositionData(subregPtr, 100, 20);
@@ -217,14 +222,14 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
       auto qryStr = "select * from /Portfolios p where p.ID != 1";
       // char* qryStr = (char*)"select * from /Portfolios p where p.ID != 2";
       // char* qryStr = (char*)"select * from /Portfolios p where p.ID < 3";
-      auto&& qry = qs->newCq(cqName, qryStr, cqAttr);
-      auto&& results = qry->executeWithInitialResults();
+      auto &&qry = qs->newCq(cqName, qryStr, cqAttr);
+      auto &&results = qry->executeWithInitialResults();
 
       char buf[100];
       auto count = results->size();
       sprintf(buf, "results size=%zd", count);
       LOG(buf);
-      for (auto&& ser: hacks::range(*results)) {
+      for (auto &&ser : hacks::range(*results)) {
         count--;
         if (auto portfolio = std::dynamic_pointer_cast<Portfolio>(ser)) {
           printf("   query pulled portfolio object ID %d, pkid %s\n",
@@ -235,20 +240,20 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
                  position->getSharesOutstanding());
         } else if (ser) {
           printf(" query pulled object %s\n", ser->toString().c_str());
-          } else {
-            printf("   query pulled nullptr object\n");
-          }
+        } else {
+          printf("   query pulled nullptr object\n");
+        }
       }
       sprintf(buf, "results last count=%zd", count);
       LOG(buf);
       //  ASSERT( count==0, "results traversal count incorrect!" );
       SLEEP(15000);
-    } catch (IllegalStateException& ise) {
+    } catch (IllegalStateException &ise) {
       char isemsg[500] = {0};
       ACE_OS::snprintf(isemsg, 499, "IllegalStateException: %s", ise.what());
       LOG(isemsg);
       FAIL(isemsg);
-    } catch (Exception& excp) {
+    } catch (Exception &excp) {
       char excpmsg[500] = {0};
       ACE_OS::snprintf(excpmsg, 499, "Exception: %s", excp.what());
       LOG(excpmsg);
@@ -267,7 +272,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepThree2)
     auto regPtr0 = getHelper()->getRegion(regionNamesCq[0]);
     auto subregPtr0 = regPtr0->getSubregion(regionNamesCq[1]);
 
-    QueryHelper* qh = &QueryHelper::getHelper();
+    QueryHelper *qh = &QueryHelper::getHelper();
 
     qh->populatePortfolioData(regPtr0, 150, 40, 10);
     qh->populatePositionData(subregPtr0, 150, 40);
@@ -303,14 +308,14 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree3)
     try {
       auto vl = cqAttr->getCqListeners();
       cqLstner = vl[0];
-    } catch (Exception& excp) {
+    } catch (Exception &excp) {
       char excpmsg[500] = {0};
       ACE_OS::snprintf(excpmsg, 499, "Exception: %s", excp.what());
       LOG(excpmsg);
       ASSERT(false, "get listener failed");
     }
     ASSERT(cqLstner != nullptr, "listener is nullptr");
-    MyCqListener* myListener = dynamic_cast<MyCqListener*>(cqLstner.get());
+    MyCqListener *myListener = dynamic_cast<MyCqListener *>(cqLstner.get());
     ASSERT(myListener != nullptr, "my listener is nullptr<cast failed>");
     kst = new KillServerThread(myListener);
     char buf[1024];
@@ -354,7 +359,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepThree4)
     auto regPtr0 = getHelper()->getRegion(regionNamesCq[0]);
     auto subregPtr0 = regPtr0->getSubregion(regionNamesCq[1]);
 
-    QueryHelper* qh = &QueryHelper::getHelper();
+    QueryHelper *qh = &QueryHelper::getHelper();
 
     qh->populatePortfolioData(regPtr0, 150, 40, 10);
     qh->populatePositionData(subregPtr0, 150, 40);
@@ -390,14 +395,14 @@ DUNIT_TASK_DEFINITION(CLIENT1, CloseCache1)
     try {
       auto vl = cqAttr->getCqListeners();
       cqLstner = vl[0];
-    } catch (Exception& excp) {
+    } catch (Exception &excp) {
       char excpmsg[500] = {0};
       ACE_OS::snprintf(excpmsg, 499, "Exception: %s", excp.what());
       LOG(excpmsg);
       ASSERT(false, "get listener failed");
     }
     ASSERT(cqLstner != nullptr, "listener is nullptr");
-    MyCqListener* myListener = dynamic_cast<MyCqListener*>(cqLstner.get());
+    MyCqListener *myListener = dynamic_cast<MyCqListener *>(cqLstner.get());
     ASSERT(myListener != nullptr, "my listener is nullptr<cast failed>");
     char buf[1024];
     sprintf(buf, "after failed over: before=%d, after=%d",

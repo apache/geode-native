@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-#include <geode/Properties.hpp>
 #include <geode/CacheableKey.hpp>
 #include <geode/CacheableString.hpp>
-#include <geode/ExceptionTypes.hpp>
-#include <geode/DataOutput.hpp>
 #include <geode/DataInput.hpp>
+#include <geode/DataOutput.hpp>
+#include <geode/ExceptionTypes.hpp>
+#include <geode/Properties.hpp>
 
 namespace apache {
 namespace geode {
@@ -88,9 +88,7 @@ void Properties::remove(const std::shared_ptr<CacheableKey>& key) {
   m_map.erase(key);
 }
 
-size_t Properties::getSize() const {
-  return m_map.size();
-}
+size_t Properties::getSize() const { return m_map.size(); }
 
 void Properties::foreach (Visitor& visitor) const {
   for (auto& entry : m_map) {

@@ -21,11 +21,12 @@
 #define GEODE_SECURITY_XMLAUTHZCREDENTIALGENERATOR_H_
 
 #include <algorithm>
-#include <ctime>
 #include <cstdlib>
+#include <ctime>
+#include <random>
 
-#include <geode/Properties.hpp>
 #include <geode/CacheableString.hpp>
+#include <geode/Properties.hpp>
 
 #include "typedefs.hpp"
 
@@ -34,6 +35,13 @@ namespace geode {
 namespace client {
 namespace testframework {
 namespace security {
+
+template <typename T>
+T randomValue(T maxValue) {
+  static thread_local std::default_random_engine generator(
+      std::random_device{}());
+  return std::uniform_int_distribution<T>{0, maxValue}(generator);
+}
 
 const opCodeList::value_type RArr[] = {
     OP_GET,     OP_GETALL,      OP_REGISTER_INTEREST, OP_UNREGISTER_INTEREST,
@@ -64,7 +72,7 @@ class XmlAuthzCredentialGenerator {
   stringList QueryRegions;
 
  public:
-  XmlAuthzCredentialGenerator(ID id)
+  explicit XmlAuthzCredentialGenerator(ID id)
       : m_id(id),
         Readers(RArr, RArr + sizeof RArr / sizeof *RArr),
         Writers(WArr, WArr + sizeof WArr / sizeof *WArr),
@@ -124,12 +132,16 @@ class XmlAuthzCredentialGenerator {
       switch (role) {
         case READER_ROLE:
           role = WRITER_ROLE;
+          break;
         case WRITER_ROLE:
           role = READER_ROLE;
+          break;
         case QUERY_ROLE:
           role = WRITER_ROLE;
+          break;
         case ADMIN_ROLE:
           role = QUERY_ROLE;
+          break;
         default:
           /* UNNECESSARY role = role*/ break;
       };
@@ -168,19 +180,19 @@ class XmlAuthzCredentialGenerator {
     char userName[100];
     switch (role) {
       case READER_ROLE:
-        sprintf(userName, PRiUsnm, "reader", rand() % 3);
+        sprintf(userName, PRiUsnm, "reader", randomValue(2));
         break;
       case WRITER_ROLE:
-        sprintf(userName, PRiUsnm, "writer", rand() % 3);
+        sprintf(userName, PRiUsnm, "writer", randomValue(2));
         break;
       case QUERY_ROLE:
-        sprintf(userName, PRiUsnm, "reader", (rand() % 2) + 3);
+        sprintf(userName, PRiUsnm, "reader", randomValue(1) + 3);
         break;
       case ADMIN_ROLE:
-        sprintf(userName, "%s", adminUsers[rand() % adminUsrSz]);
+        sprintf(userName, "%s", adminUsers[randomValue(adminUsrSz)]);
         break;
       default:
-        sprintf(userName, PRiUsnm, "user", rand() % 3);
+        sprintf(userName, PRiUsnm, "user", randomValue(2));
         break;
     };
 
@@ -217,20 +229,20 @@ class XmlAuthzCredentialGenerator {
     switch (role) {
       case READER_ROLE:
         sprintf(userName, PRiUsnm, userPrefix.c_str(),
-                readerIndices[rand() % readerIndSz]);
+                readerIndices[randomValue(readerIndSz)]);
         break;
       case WRITER_ROLE:
         sprintf(userName, PRiUsnm, userPrefix.c_str(),
-                writerIndices[rand() % writerIndSz]);
+                writerIndices[randomValue(writerIndSz)]);
         break;
       case QUERY_ROLE:
         sprintf(userName, PRiUsnm, userPrefix.c_str(),
-                queryIndices[rand() % queryIndSz]);
+                queryIndices[randomValue(queryIndSz)]);
         break;
       case ADMIN_ROLE:
       default:
         sprintf(userName, PRiUsnm, userPrefix.c_str(),
-                adminIndices[rand() % adminIndSz]);
+                adminIndices[randomValue(adminIndSz)]);
         break;
     };
     FWKINFO("inserted " << validity << " username " << userName);

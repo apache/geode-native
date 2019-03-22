@@ -31,23 +31,24 @@
 #include "SerializationRegistry.hpp"
 #include "CacheRegionHelper.hpp"
 
-using namespace apache::geode::client;
-using namespace test;
-using namespace testobject;
-
 #define CLIENT1 s1p1
 #define LOCATOR s1p2
 #define SERVER1 s2p1
 #define SERVER2 s2p2
 
+using apache::geode::client::IllegalStateException;
+using apache::geode::client::Query;
+using apache::geode::client::QueryException;
+using apache::geode::client::QueryService;
+
 bool isLocalServer = false;
 bool isLocator = false;
-const char* poolNames[] = {"Pool1", "Pool2", "Pool3"};
-const char* locHostPort =
+const char *poolNames[] = {"Pool1", "Pool2", "Pool3"};
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
-const char* qRegionNames[] = {"Portfolios", "Positions"};
-const char* sGNames[] = {"ServerGroup1", "ServerGroup2"};
+const char *qRegionNames[] = {"Portfolios", "Positions"};
+const char *sGNames[] = {"ServerGroup1", "ServerGroup2"};
 
 void initClient() {
   initClient(true);
@@ -56,10 +57,11 @@ void initClient() {
     auto serializationRegistry =
         CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
             ->getSerializationRegistry();
-    serializationRegistry->addType(Position::createDeserializable);
-    serializationRegistry->addType(Portfolio::createDeserializable);
-  }
-  catch (const IllegalStateException&) {
+    serializationRegistry->addDataSerializableType(
+        Position::createDeserializable, 2);
+    serializationRegistry->addDataSerializableType(
+        Portfolio::createDeserializable, 3);
+  } catch (const IllegalStateException &) {
     // ignore exception
   }
 }
@@ -96,12 +98,12 @@ DUNIT_TASK_DEFINITION(CLIENT1, InitClientCreateRegionAndRunQueries)
 
     // populate the region
     auto reg = getHelper()->getRegion(qRegionNames[0]);
-    QueryHelper& qh = QueryHelper::getHelper();
+    QueryHelper &qh = QueryHelper::getHelper();
     qh.populatePortfolioData(reg, qh.getPortfolioSetSize(),
                              qh.getPortfolioNumSets());
 
-    std::string qry1Str = (std::string) "select * from /" + qRegionNames[0];
-    std::string qry2Str = (std::string) "select * from /" + qRegionNames[1];
+    std::string qry1Str = std::string("select * from /") + qRegionNames[0];
+    std::string qry2Str = std::string("select * from /") + qRegionNames[1];
 
     std::shared_ptr<QueryService> qs = nullptr;
     qs = pool1->getQueryService();
@@ -116,7 +118,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, InitClientCreateRegionAndRunQueries)
       qry = qs->newQuery(qry2Str.c_str());
       results = qry->execute();
       FAIL("Expected a QueryException");
-    } catch (const QueryException& ex) {
+    } catch (const QueryException &ex) {
       printf("Good expected exception: %s\n", ex.what());
     }
 
@@ -128,7 +130,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, InitClientCreateRegionAndRunQueries)
     try {
       results = reg->query(qry2Str.c_str());
       FAIL("Expected a QueryException");
-    } catch (const QueryException& ex) {
+    } catch (const QueryException &ex) {
       printf("Good expected exception: %s\n", ex.what());
     }
 
@@ -158,12 +160,12 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateRegionAndRunQueries)
 
     // populate the region
     auto reg = getHelper()->getRegion(qRegionNames[1]);
-    QueryHelper& qh = QueryHelper::getHelper();
+    QueryHelper &qh = QueryHelper::getHelper();
     qh.populatePositionData(reg, qh.getPositionSetSize(),
                             qh.getPositionNumSets());
 
-    std::string qry1Str = (std::string) "select * from /" + qRegionNames[0];
-    std::string qry2Str = (std::string) "select * from /" + qRegionNames[1];
+    std::string qry1Str = std::string("select * from /") + qRegionNames[0];
+    std::string qry2Str = std::string("select * from /") + qRegionNames[1];
 
     std::shared_ptr<QueryService> qs = nullptr;
     qs = pool2->getQueryService();
@@ -174,7 +176,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateRegionAndRunQueries)
     try {
       results = reg->query(qry1Str.c_str());
       FAIL("Expected a QueryException");
-    } catch (const QueryException& ex) {
+    } catch (const QueryException &ex) {
       printf("Good expected exception: %s\n", ex.what());
     }
     results = reg->query(qry2Str.c_str());

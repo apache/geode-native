@@ -16,6 +16,7 @@
  */
 
 #include "LRUMapEntry.hpp"
+
 #include "MapEntryT.hpp"
 
 namespace apache {

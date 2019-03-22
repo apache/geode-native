@@ -27,7 +27,6 @@ set_target_properties(QueryWrapper PROPERTIES
   VS_GLOBAL_KEYWORD "ManagedCProj"
   VS_GLOBAL_PROJECT_TYPES "{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}"
   VS_GLOBAL_ROOTNAMESPACE "Apache.Geode.Client.Tests"
-  VS_DOTNET_TARGET_FRAMEWORK_VERSION "v4.5.2"
   VS_DOTNET_REFERENCES "System;System.Xml"
 )
 
@@ -59,4 +58,4 @@ string(REPLACE "/RTC1" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
 set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${SHARED_LINKER_FLAGS_STRONG_KEY}")
 
 # For Visual Studio organization
-set_target_properties(QueryWrapper PROPERTIES FOLDER test/cliTests)
+set_target_properties(QueryWrapper PROPERTIES FOLDER cli/test/integration)

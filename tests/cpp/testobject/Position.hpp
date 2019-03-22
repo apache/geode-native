@@ -33,7 +33,10 @@
 
 namespace testobject {
 
-using namespace apache::geode::client;
+using apache::geode::client::CacheableString;
+using apache::geode::client::DataInput;
+using apache::geode::client::DataOutput;
+using apache::geode::client::DataSerializable;
 
 class TESTOBJECT_EXPORT Position : public DataSerializable {
  private:
@@ -65,11 +68,10 @@ class TESTOBJECT_EXPORT Position : public DataSerializable {
   Position();
   Position(const char* id, int32_t out);
   // This constructor is just for some internal data validation test
-  Position(int32_t iForExactVal);
+  explicit Position(int32_t iForExactVal);
   ~Position() override = default;
   void toData(DataOutput& output) const override;
   void fromData(DataInput& input) override;
-  int32_t getClassId() const override { return 0x02; }
   std::string toString() const override;
 
   size_t objectSize() const override {

@@ -20,9 +20,9 @@
 #ifndef GEODE_REGIONENTRY_H_
 #define GEODE_REGIONENTRY_H_
 
-#include "internal/geode_globals.hpp"
-#include "CacheableKey.hpp"
 #include "CacheStatistics.hpp"
+#include "CacheableKey.hpp"
+#include "internal/geode_globals.hpp"
 
 /**
  * @file

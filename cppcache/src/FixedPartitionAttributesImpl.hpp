@@ -20,17 +20,17 @@
 #ifndef GEODE_FIXEDPARTITIONATTRIBUTESIMPL_H_
 #define GEODE_FIXEDPARTITIONATTRIBUTESIMPL_H_
 
-#include <geode/Serializable.hpp>
+#include <geode/CacheableBuiltins.hpp>
+#include <geode/CacheableString.hpp>
 #include <geode/DataInput.hpp>
 #include <geode/DataOutput.hpp>
-#include <geode/CacheableString.hpp>
-#include <geode/CacheableBuiltins.hpp>
+#include <geode/Serializable.hpp>
 
 namespace apache {
 namespace geode {
 namespace client {
 
-class FixedPartitionAttributesImpl : public DataSerializableInternal {
+class FixedPartitionAttributesImpl : public internal::DataSerializableInternal {
  private:
   std::string m_partitionName;
   bool m_isPrimary;
@@ -70,8 +70,6 @@ class FixedPartitionAttributesImpl : public DataSerializableInternal {
            (m_partitionName.length() *
             sizeof(decltype(m_partitionName)::value_type));
   }
-
-  int8_t getInternalId() const override { return 0; }
 
   FixedPartitionAttributesImpl& operator=(
       const FixedPartitionAttributesImpl& rhs) {

@@ -22,8 +22,7 @@
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
 
-using namespace apache::geode::client;
-using namespace test;
+using apache::geode::client::CacheableBytes;
 
 #include "locator_globals.hpp"
 
@@ -45,7 +44,7 @@ DUNIT_TASK(CLIENT1, SetupClient1)
     getHelper()->createPooledRegion(regionNames[0], false, locatorsG,
                                     "__TEST_POOL1__", true, true);
     auto regPtr = getHelper()->getRegion(regionNames[0]);
-    auto key = CacheableKey::create((const char*)"key01");
+    auto key = CacheableKey::create("key01");
     ASSERT(!regPtr->containsKeyOnServer(key), "key should not be there");
   }
 END_TASK(SetupClient1)
@@ -66,8 +65,8 @@ DUNIT_TASK(CLIENT1, puts)
   {
     auto regPtr = getHelper()->getRegion(regionNames[0]);
     auto keyPtr = CacheableKey::create("key01");
-    auto valPtr =
-      CacheableBytes::create(std::vector<int8_t>{'v','a','l','u','e','0','1'});
+    auto valPtr = CacheableBytes::create(
+        std::vector<int8_t>{'v', 'a', 'l', 'u', 'e', '0', '1'});
     regPtr->put(keyPtr, valPtr);
     ASSERT(regPtr->containsKeyOnServer(keyPtr), "key should be there");
   }
@@ -90,9 +89,11 @@ DUNIT_TASK(SERVER1, StopServer)
     LOG("SERVER stopped");
   }
 END_TASK(StopServer)
+
 DUNIT_TASK(CLIENT1, CloseCache1)
   { cleanProc(); }
 END_TASK(CloseCache1)
+
 DUNIT_TASK(CLIENT2, CloseCache2)
   { cleanProc(); }
 END_TASK(CloseCache2)

@@ -15,16 +15,20 @@
  * limitations under the License.
  */
 
-#include <geode/Cache.hpp>
 #include "EntriesMapFactory.hpp"
-#include "LRUEntriesMap.hpp"
-#include "ExpMapEntry.hpp"
-#include "LRUExpMapEntry.hpp"
+
+#include <geode/Cache.hpp>
 #include <geode/DiskPolicyType.hpp>
+
+#include "ExpMapEntry.hpp"
+#include "LRUEntriesMap.hpp"
+#include "LRUExpMapEntry.hpp"
 //#include <geode/ExpirationAction.hpp>
 #include <geode/SystemProperties.hpp>
 
-using namespace apache::geode::client;
+namespace apache {
+namespace geode {
+namespace client {
 
 /**
  * @brief Return a ConcurrentEntriesMap if no LRU, otherwise return a
@@ -32,8 +36,8 @@ using namespace apache::geode::client;
  * In the future, a EntriesMap facade can be put over the SharedRegionData to
  * support shared regions directly.
  */
-EntriesMap* EntriesMapFactory::createMap(
-    RegionInternal* region, RegionAttributes attrs) {
+EntriesMap* EntriesMapFactory::createMap(RegionInternal* region,
+                                         RegionAttributes attrs) {
   EntriesMap* result = nullptr;
   uint32_t initialCapacity = attrs.getInitialCapacity();
   uint8_t concurrency = attrs.getConcurrencyLevel();
@@ -95,3 +99,7 @@ EntriesMap* EntriesMapFactory::createMap(
   result->open(initialCapacity);
   return result;
 }
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

@@ -21,20 +21,24 @@
 #define GEODE_TESTOBJECT_PSTOBJECT_H_
 
 #include <inttypes.h>
+
 #include <string>
 
 #include <ace/ACE.h>
 #include <ace/OS.h>
 #include <ace/Time_Value.h>
 
-#include "fwklib/Timer.hpp"
-#include "fwklib/FrameworkTest.hpp"
-#include "testobject_export.h"
-#include "TimestampedObject.hpp"
+#include <geode/CacheableBuiltins.hpp>
 
-using namespace apache::geode::client;
-using namespace testframework;
+#include "TimestampedObject.hpp"
+#include "testobject_export.h"
+
 namespace testobject {
+
+using apache::geode::client::CacheableBytes;
+using apache::geode::client::DataInput;
+using apache::geode::client::DataOutput;
+
 /**
  * @brief User class for testing the put functionality for object.
  */
@@ -55,7 +59,6 @@ class TESTOBJECT_EXPORT PSTObject : public TimestampedObject {
   ~PSTObject() override = default;
   void toData(DataOutput& output) const override;
   void fromData(DataInput& input) override;
-  int32_t getClassId() const override { return 0x04; }
   std::string toString() const override;
 
   size_t objectSize() const override {
