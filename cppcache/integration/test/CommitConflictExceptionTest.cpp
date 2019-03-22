@@ -15,27 +15,27 @@
  * limitations under the License.
  */
 
-#include <thread>
-#include <future>
-
-#include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
+#include <future>
+#include <thread>
+
+#include <gtest/gtest.h>
+
 #include <geode/CacheTransactionManager.hpp>
-#include <geode/RegionShortcut.hpp>
 #include <geode/RegionFactory.hpp>
+#include <geode/RegionShortcut.hpp>
 
 #include "framework/Cluster.h"
 
 namespace {
 
-using namespace apache::geode::client;
-using namespace std::chrono;
-
-std::shared_ptr<Region> setupRegion(Cache& cache) {
-  auto region = cache.createRegionFactory(RegionShortcut::PROXY)
-                     .setPoolName("default")
-                     .create("region");
+std::shared_ptr<apache::geode::client::Region> setupRegion(
+    apache::geode::client::Cache& cache) {
+  auto region =
+      cache.createRegionFactory(apache::geode::client::RegionShortcut::PROXY)
+          .setPoolName("default")
+          .create("region");
   return region;
 }
 
@@ -53,7 +53,8 @@ TEST(CommitConflictExceptionTest, putPartitionTx) {
   std::promise<void> putTx2;
   std::promise<void> committedTx2;
 
-  auto task1 = std::async(std::launch::async, [&cluster, &begunTx1, &putTx1, &putTx2, &committedTx2] {
+  auto task1 = std::async(std::launch::async, [&cluster, &begunTx1, &putTx1,
+                                               &putTx2, &committedTx2] {
     SCOPED_TRACE("task1");
     auto cache = cluster.createCache();
     auto region = setupRegion(cache);
@@ -61,17 +62,20 @@ TEST(CommitConflictExceptionTest, putPartitionTx) {
     cache.getCacheTransactionManager()->begin();
     begunTx1.set_value();
     region->put("one", "one");
-    ASSERT_EQ(std::future_status::ready,
-              putTx2.get_future().wait_for(debug_safe(minutes(1))));
+    ASSERT_EQ(
+        std::future_status::ready,
+        putTx2.get_future().wait_for(debug_safe(std::chrono::minutes(1))));
     putTx1.set_value();
     ASSERT_EQ(std::future_status::ready,
-              committedTx2.get_future().wait_for(debug_safe(minutes(1))));
+              committedTx2.get_future().wait_for(
+                  debug_safe(std::chrono::minutes(1))));
     try {
       cache.getCacheTransactionManager()->commit();
       FAIL();
-    } catch (apache::geode::client::Exception & ex) {
+    } catch (apache::geode::client::Exception& ex) {
       using ::testing::StartsWith;
-      EXPECT_THAT(ex.what(), StartsWith("org.apache.geode.cache.CommitConflictException"));
+      EXPECT_THAT(ex.what(),
+                  StartsWith("org.apache.geode.cache.CommitConflictException"));
     }
 
     cache.getCacheTransactionManager()->begin();
@@ -79,24 +83,29 @@ TEST(CommitConflictExceptionTest, putPartitionTx) {
     ASSERT_NO_THROW(cache.getCacheTransactionManager()->commit());
   });
 
-  auto task2 = std::async(std::launch::async, [&cluster, &begunTx1, &putTx1, &putTx2, &committedTx2] {
+  auto task2 = std::async(std::launch::async, [&cluster, &begunTx1, &putTx1,
+                                               &putTx2, &committedTx2] {
     SCOPED_TRACE("task2");
     auto cache = cluster.createCache();
     auto region = setupRegion(cache);
 
     cache.getCacheTransactionManager()->begin();
-    ASSERT_EQ(std::future_status::ready,
-              begunTx1.get_future().wait_for(debug_safe(minutes(1))));
+    ASSERT_EQ(
+        std::future_status::ready,
+        begunTx1.get_future().wait_for(debug_safe(std::chrono::minutes(1))));
     region->put("one", "two");
     putTx2.set_value();
-    ASSERT_EQ(std::future_status::ready,
-              putTx1.get_future().wait_for(debug_safe(minutes(1))));
+    ASSERT_EQ(
+        std::future_status::ready,
+        putTx1.get_future().wait_for(debug_safe(std::chrono::minutes(1))));
     cache.getCacheTransactionManager()->commit();
     committedTx2.set_value();
   });
 
-  ASSERT_EQ(std::future_status::ready, task1.wait_for(debug_safe(minutes(1))));
-  ASSERT_EQ(std::future_status::ready, task2.wait_for(debug_safe(minutes(1))));
+  ASSERT_EQ(std::future_status::ready,
+            task1.wait_for(debug_safe(std::chrono::minutes(1))));
+  ASSERT_EQ(std::future_status::ready,
+            task2.wait_for(debug_safe(std::chrono::minutes(1))));
 }
 
 }  // namespace

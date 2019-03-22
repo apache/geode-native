@@ -15,27 +15,27 @@
  * limitations under the License.
  */
 
-#include <thread>
-#include <future>
-
-#include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
+#include <future>
+#include <thread>
+
+#include <gtest/gtest.h>
+
 #include <geode/CacheTransactionManager.hpp>
-#include <geode/RegionShortcut.hpp>
 #include <geode/RegionFactory.hpp>
+#include <geode/RegionShortcut.hpp>
 
 #include "framework/Cluster.h"
 
 namespace {
 
-using namespace apache::geode::client;
-using namespace std::chrono;
-
-std::shared_ptr<Region> setupRegion(Cache& cache) {
-  auto region = cache.createRegionFactory(RegionShortcut::PROXY)
-                     .setPoolName("default")
-                     .create("region");
+std::shared_ptr<apache::geode::client::Region> setupRegion(
+    apache::geode::client::Cache &cache) {
+  auto region =
+      cache.createRegionFactory(apache::geode::client::RegionShortcut::PROXY)
+          .setPoolName("default")
+          .create("region");
   return region;
 }
 
@@ -55,20 +55,17 @@ TEST(TransactionCleaningTest, txWithStoppedServer) {
   region->put("one", "one");
   cache.getCacheTransactionManager()->commit();
 
-  std::cout << "good 1" << std::endl;
-
   cluster.getGfsh().stop().server();
 
   try {
     cache.getCacheTransactionManager()->begin();
     region->put("one", "two");
-  } catch (apache::geode::client::Exception & ex) {
+  } catch (apache::geode::client::Exception &) {
   }
 
   try {
     cache.getCacheTransactionManager()->rollback();
-  } catch (apache::geode::client::Exception & ex) {
-      std::cout << ex.what();
+  } catch (apache::geode::client::Exception &) {
   }
 
   cluster.getGfsh().start().server();
