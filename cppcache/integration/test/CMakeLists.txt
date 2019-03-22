@@ -26,6 +26,7 @@ add_executable(cpp-integration-test
   StructTest.cpp
   EnableChunkHandlerThreadTest.cpp
   CommitConflictExceptionTest.cpp
+  TransactionCleaningTest.cpp
   )
 
 target_compile_definitions(cpp-integration-test
