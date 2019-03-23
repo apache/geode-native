@@ -24,7 +24,6 @@ add_executable(cpp-integration-test
   RegionPutGetAllTest.cpp
   RegisterKeysTest.cpp
   StructTest.cpp
-  EnableChunkHandlerThreadTest.cpp
   CommitConflictExceptionTest.cpp
   TransactionCleaningTest.cpp
   )
