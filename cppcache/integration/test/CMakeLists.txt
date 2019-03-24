@@ -21,6 +21,7 @@ add_executable(cpp-integration-test
   ExpirationTest.cpp
   FunctionExecutionTest.cpp
   PdxInstanceTest.cpp
+  RegionPutAllTest.cpp
   RegionPutGetAllTest.cpp
   RegisterKeysTest.cpp
   StructTest.cpp
