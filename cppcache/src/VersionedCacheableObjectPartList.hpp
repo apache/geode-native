@@ -117,7 +117,7 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
   }
 
   VersionedCacheableObjectPartList(
-      std::vector<std::shared_ptr<CacheableKey>>* keys,
+      std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>> keys,
       std::recursive_mutex& responseLock)
       : m_tempKeys(keys), m_responseLock(responseLock) {
     m_regionIsVersioned = false;

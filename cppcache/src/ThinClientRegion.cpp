@@ -104,8 +104,8 @@ class PutAllWork : public PooledWork<GfErrType>,
 
     // create new instanceof VCOPL
     std::recursive_mutex responseLock;
-    m_verObjPartListPtr = std::make_shared<VersionedCacheableObjectPartList>(
-        keys.get(), responseLock);
+    m_verObjPartListPtr =
+        std::make_shared<VersionedCacheableObjectPartList>(keys, responseLock);
 
     if (m_poolDM->isMultiUserMode()) {
       m_userAttribute = UserAttributes::threadLocalUserAttributes;
@@ -246,8 +246,8 @@ class RemoveAllWork : public PooledWork<GfErrType>,
     m_reply = new TcrMessageReply(true, m_poolDM);
     // create new instanceof VCOPL
     std::recursive_mutex responseLock;
-    m_verObjPartListPtr = std::make_shared<VersionedCacheableObjectPartList>(
-        keys.get(), responseLock);
+    m_verObjPartListPtr =
+        std::make_shared<VersionedCacheableObjectPartList>(keys, responseLock);
 
     if (m_poolDM->isMultiUserMode()) {
       m_userAttribute = UserAttributes::threadLocalUserAttributes;
