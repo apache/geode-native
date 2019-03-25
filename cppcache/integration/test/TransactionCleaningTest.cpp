@@ -55,7 +55,7 @@ TEST(TransactionCleaningTest, txWithStoppedServer) {
   region->put("one", "one");
   cache.getCacheTransactionManager()->commit();
 
-  cluster.getGfsh().stop().server();
+  cluster.getServers()[0].stop();
 
   try {
     cache.getCacheTransactionManager()->begin();
@@ -68,7 +68,7 @@ TEST(TransactionCleaningTest, txWithStoppedServer) {
   } catch (apache::geode::client::Exception &) {
   }
 
-  cluster.getGfsh().start().server();
+  cluster.getServers()[0].start();
 
   cache.getCacheTransactionManager()->begin();
   region->put("one", "three");
