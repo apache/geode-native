@@ -17,4 +17,4 @@
 
 set -x -e -o pipefail
 
-yum install -y git2u make doxygen zlib-devel patch
+yum install -y git2u make doxygen zlib-devel patch openssl-devel
