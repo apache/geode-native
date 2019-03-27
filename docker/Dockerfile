@@ -22,6 +22,8 @@ RUN apt-get update && \
         apt-get install -y \
             libc++-dev \
             libc++abi-dev \
+            libssl-dev \
+            zlib1g-dev \
             clang-${CLANG_VERSION} \
             clang-tidy-${CLANG_VERSION} \
             clang-format-${CLANG_VERSION} \
@@ -30,8 +32,7 @@ RUN apt-get update && \
             git \
             graphviz \
             openjdk-8-jdk \
-            wget \
-            zlib1g-dev && \
+            wget && \
         rm -rf /var/lib/apt/lists/* && \
         update-alternatives --install /usr/bin/clang         clang         /usr/bin/clang-${CLANG_VERSION} 999 && \
         update-alternatives --install /usr/bin/clang++       clang++       /usr/bin/clang++-${CLANG_VERSION} 999 && \
