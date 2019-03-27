@@ -219,7 +219,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
       char logmsg[50] = {0};
       ACE_OS::sprintf(logmsg, "Result size is %zd", results->size());
       LOG(logmsg);
-    } catch (Exception excp) {
+    } catch (Exception &excp) {
       std::string failmsg = "";
       failmsg += "Second execute unwanted exception ";
       failmsg += excp.getName();
@@ -301,7 +301,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
       char logmsg[50] = {0};
       ACE_OS::sprintf(logmsg, "Result size is %zd", results->size());
       LOG(logmsg);
-    } catch (Exception excp) {
+    } catch (Exception &excp) {
       std::string failmsg = "";
       failmsg += "Fourth execute unwanted exception ";
       failmsg += excp.getName();
@@ -402,7 +402,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight)
       char logmsg[50] = {0};
       ACE_OS::sprintf(logmsg, "Result size is %zd", results->size());
       LOG(logmsg);
-    } catch (Exception excp) {
+    } catch (Exception &excp) {
       std::string failmsg = "";
       failmsg += "Sixth execute unwanted exception ";
       failmsg += excp.getName();

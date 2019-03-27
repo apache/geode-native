@@ -73,6 +73,11 @@ std::shared_ptr<Region> setupRegion(Cache& cache,
   return region;
 }
 
+void putAll(HashMapOfCacheable &all, std::shared_ptr<Region> region) {
+  
+  region->putAll(all);
+}
+
 TEST(RegionPutAllTest, putAllToPartitionedRegion) {
   Cluster cluster{LocatorCount{1}, ServerCount{2}};
   cluster.getGfsh()
@@ -94,7 +99,11 @@ TEST(RegionPutAllTest, putAllToPartitionedRegion) {
 
   for (int i = 0; i < 100; i++) {
     // TODO some way force synchronous client metadata update first.
-    region->putAll(all);
+    //region->putAll(all);
+    auto task2 = std::async(std::launch::async, [&all, &region] {
+      HashMapOfCacheable allTmp = all;
+      putAll(allTmp, region);
+    });
     std::this_thread::sleep_for(std::chrono::seconds(1));
   }
 }

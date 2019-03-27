@@ -205,7 +205,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
     try {
       auto results = region->query("");
       FAIL("Expected IllegalArgumentException exception for empty predicate");
-    } catch (apache::geode::client::IllegalArgumentException ex) {
+    } catch (apache::geode::client::IllegalArgumentException &ex) {
       LOG("got expected IllegalArgumentException exception for empty "
           "predicate:");
       LOG(ex.what());
@@ -215,7 +215,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
       auto results = region->query((regionQueries[0].query()),
                                    std::chrono::seconds(2200000));
       FAIL("Expected IllegalArgumentException exception for invalid timeout");
-    } catch (apache::geode::client::IllegalArgumentException ex) {
+    } catch (apache::geode::client::IllegalArgumentException &ex) {
       LOG("got expected IllegalArgumentException exception for invalid "
           "timeout:");
       LOG(ex.what());
@@ -225,7 +225,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
       auto results =
           region->query((regionQueries[0].query()), std::chrono::seconds(-1));
       FAIL("Expected IllegalArgumentException exception for invalid timeout");
-    } catch (apache::geode::client::IllegalArgumentException ex) {
+    } catch (apache::geode::client::IllegalArgumentException &ex) {
       LOG("got expected IllegalArgumentException exception for invalid "
           "timeout:");
       LOG(ex.what());
@@ -233,7 +233,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
     try {
       auto results = region->query("bad predicate");
       FAIL("Expected QueryException exception for wrong predicate");
-    } catch (QueryException ex) {
+    } catch (QueryException &ex) {
       LOG("got expected QueryException exception for wrong predicate:");
       LOG(ex.what());
     }
@@ -275,7 +275,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
     try {
       region->existsValue("");
       FAIL("Expected IllegalArgumentException exception for empty predicate");
-    } catch (apache::geode::client::IllegalArgumentException ex) {
+    } catch (apache::geode::client::IllegalArgumentException &ex) {
       LOG("got expected IllegalArgumentException exception for empty "
           "predicate:");
       LOG(ex.what());
@@ -285,7 +285,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
       region->existsValue((regionQueries[0].query()),
                           std::chrono::seconds(2200000));
       FAIL("Expected IllegalArgumentException exception for invalid timeout");
-    } catch (apache::geode::client::IllegalArgumentException ex) {
+    } catch (apache::geode::client::IllegalArgumentException &ex) {
       LOG("got expected IllegalArgumentException exception for invalid "
           "timeout:");
       LOG(ex.what());
@@ -294,7 +294,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
     try {
       region->existsValue((regionQueries[0].query()), std::chrono::seconds(-1));
       FAIL("Expected IllegalArgumentException exception for invalid timeout");
-    } catch (apache::geode::client::IllegalArgumentException ex) {
+    } catch (apache::geode::client::IllegalArgumentException &ex) {
       LOG("got expected IllegalArgumentException exception for invalid "
           "timeout:");
       LOG(ex.what());
@@ -302,7 +302,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
     try {
       region->existsValue("bad predicate");
       FAIL("Expected QueryException exception for wrong predicate");
-    } catch (QueryException ex) {
+    } catch (QueryException &ex) {
       LOG("got expected QueryException exception for wrong predicate:");
       LOG(ex.what());
     }
@@ -371,7 +371,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
       auto results =
           std::dynamic_pointer_cast<SelectResults>(region->selectValue(""));
       FAIL("Expected IllegalArgumentException exception for empty predicate");
-    } catch (apache::geode::client::IllegalArgumentException ex) {
+    } catch (apache::geode::client::IllegalArgumentException &ex) {
       LOG("got expected IllegalArgumentException exception for empty "
           "predicate:");
       LOG(ex.what());
@@ -382,7 +382,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
           std::dynamic_pointer_cast<SelectResults>(region->selectValue(
               (regionQueries[0].query()), std::chrono::seconds(2200000)));
       FAIL("Expected IllegalArgumentException exception for invalid timeout");
-    } catch (apache::geode::client::IllegalArgumentException ex) {
+    } catch (apache::geode::client::IllegalArgumentException &ex) {
       LOG("got expected IllegalArgumentException exception for invalid "
           "timeout:");
       LOG(ex.what());
@@ -393,7 +393,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
           std::dynamic_pointer_cast<SelectResults>(region->selectValue(
               (regionQueries[0].query()), std::chrono::seconds(-1)));
       FAIL("Expected IllegalArgumentException exception for invalid timeout");
-    } catch (apache::geode::client::IllegalArgumentException ex) {
+    } catch (apache::geode::client::IllegalArgumentException &ex) {
       LOG("got expected IllegalArgumentException exception for invalid "
           "timeout:");
       LOG(ex.what());
@@ -402,7 +402,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
       auto results = std::dynamic_pointer_cast<SelectResults>(
           region->selectValue("bad predicate"));
       FAIL("Expected IllegalArgumentException exception for wrong predicate");
-    } catch (QueryException ex) {
+    } catch (QueryException &ex) {
       LOG("got expected QueryException for wrong predicate:");
       LOG(ex.what());
     }
@@ -435,7 +435,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, QueryError)
         ACE_OS::sprintf(failmsg, "Query exception didnt occur for index %d", i);
         LOG(failmsg);
         FAIL(failmsg);
-      } catch (apache::geode::client::QueryException ex) {
+      } catch (apache::geode::client::QueryException &ex) {
         // ok, expecting an exception, do nothing
       } catch (...) {
         LOG("Got unexpected exception");

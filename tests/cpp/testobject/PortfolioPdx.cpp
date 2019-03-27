@@ -146,8 +146,8 @@ std::string PortfolioPdx::toString() const {
     sprintf(creationdatebuf, "creation Date %s", "NULL");
   }
 
-  char stringBuf[7000];
-  sprintf(stringBuf, "%s%s%s%s%s", idbuf, pkidbuf, creationdatebuf,
+  char stringBuf[9000];
+  snprintf(stringBuf, sizeof(stringBuf), "%s%s%s%s%s", idbuf, pkidbuf, creationdatebuf,
           position1buf, position2buf);
   return stringBuf;
 }
