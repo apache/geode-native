@@ -25,7 +25,9 @@ add_executable(cpp-integration-test
   RegionPutGetAllTest.cpp
   RegisterKeysTest.cpp
   StructTest.cpp
-)
+  CommitConflictExceptionTest.cpp
+  TransactionCleaningTest.cpp
+  )
 
 target_compile_definitions(cpp-integration-test
   PUBLIC

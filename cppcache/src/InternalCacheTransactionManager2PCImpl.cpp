@@ -134,6 +134,7 @@ void InternalCacheTransactionManager2PCImpl::afterCompletion(int32_t status) {
     // Theres no need to call txCleaner.clean(); here, because TXCleaner
     // destructor is called which cleans ThreadLocal.
     if (!tcr_dm) {
+      TXCleaner txCleaner(this);
       return;
     }
 

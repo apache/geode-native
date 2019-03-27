@@ -246,6 +246,10 @@ class Cluster {
 
   Gfsh &getGfsh() noexcept { return gfsh_; }
 
+  std::vector<Server>& getServers() {
+    return servers_;
+  }
+
  private:
   std::string name_;
 
