@@ -147,7 +147,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateRegions1_PoolLocators)
     try {
       regPtr->registerAllKeys(false, false, false);
       FAIL("Should have got NotConnectedException during registerAllKeys");
-    } catch (NotConnectedException &exp) {
+    } catch (NotConnectedException &) {
       LOG("Connection Failed as expected via NotConnectedException");
     }
     LOG("CreateRegions1_PoolLocators complete.");

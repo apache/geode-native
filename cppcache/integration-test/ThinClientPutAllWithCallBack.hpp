@@ -402,7 +402,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, RegisterClient1Keys)
           PdxTests::Address::createDeserializable);
       serializationRegistry->addPdxSerializableType(
           PdxTests::PdxTypes3::createDeserializable);
-    } catch (Exception &e) {
+    } catch (Exception&) {
       LOG("Got expected Exception for Serialization, already registered");
     }
     // the client1 will register k0 and k1
@@ -447,7 +447,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, RegisterClient2Keys)
           PdxTests::Address::createDeserializable);
       serializationRegistry->addPdxSerializableType(
           PdxTests::PdxTypes3::createDeserializable);
-    } catch (Exception &e) {
+    } catch (Exception&) {
       LOG("Got expected Exception for Serialization, already registered");
     }
     HashMapOfCacheable map0;
@@ -634,7 +634,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, InvalidateKeys)
       std::shared_ptr<CacheableKey> key;
       regPtr0->invalidate(key);
       FAIL("Invalidate on nullptr should throw exception");
-    } catch (IllegalArgumentException &e) {
+    } catch (IllegalArgumentException&) {
       LOG(" Got an expected exception invalidate on nullptr should be throwing "
           "exception ");
     }

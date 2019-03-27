@@ -645,7 +645,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, SuspendResumeCommit)
     bool resumeExc = false;
     try {
       txManager->resume(m_suspendedTransaction);
-    } catch (const IllegalStateException &e) {
+    } catch (const IllegalStateException&) {
       resumeExc = true;
     }
 
@@ -655,7 +655,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, SuspendResumeCommit)
     bool threwTransactionException = false;
     try {
       txManager->suspend();
-    } catch (const TransactionException &e) {
+    } catch (const TransactionException&) {
       threwTransactionException = true;
     }
     ASSERT(threwTransactionException,
@@ -789,7 +789,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, SuspendResumeRollback)
     bool resumeExc = false;
     try {
       txManager->resume(m_suspendedTransaction);
-    } catch (const IllegalStateException &e) {
+    } catch (const IllegalStateException&) {
       resumeExc = true;
     }
 

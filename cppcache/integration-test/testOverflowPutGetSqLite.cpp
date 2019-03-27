@@ -510,8 +510,8 @@ BEGIN_TEST(OverFlowTest_SqLiteFull)
       FAIL("Didn't get the expected exception");
     } catch (apache::geode::client::Exception
                  &ex) {  // expected sqlite full exception
-                        // catching generic message as we dont
-                        // have any specific sqlitefull exception
+                         // catching generic message as we dont
+                         // have any specific sqlitefull exception
       char buffer[1024];
       sprintf(buffer, "Got expected exception %s: msg = %s",
               ex.getName().c_str(), ex.what());
