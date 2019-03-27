@@ -17,6 +17,7 @@
 
 #include "DHImpl.hpp"
 
+#include <openssl-compat.h>
 #include <openssl/aes.h>
 #include <openssl/asn1.h>
 #include <openssl/err.h>
@@ -33,8 +34,6 @@
 #include <memory>
 
 #include <geode/internal/geode_globals.hpp>
-
-#include "../openssl-compat/openssl-compat.h"
 
 /*
 static DH * m_dh = nullptr;

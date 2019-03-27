@@ -13,36 +13,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cmake_minimum_required(VERSION 3.10)
-project(templates.security LANGUAGES CXX)
+project(openssl-compat LANGUAGES CXX)
 
-add_library(securityImpl SHARED
-  PkcsAuthInit.cpp
-  PkcsAuthInit.hpp
-  UserPasswordAuthInit.cpp
-  UserPasswordAuthInit.hpp
-  CMakeLists.txt.forInstall
+add_library(openssl-compat INTERFACE)
+
+target_include_directories(openssl-compat
+  INTERFACE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
 )
 
-set_target_properties(securityImpl PROPERTIES
-  FOLDER cpp/test/integration
-)
+find_package(OpenSSL COMPONENTS Crypto)
 
-include(GenerateExportHeader)
-generate_export_header(securityImpl)
-
-target_include_directories(securityImpl
-  PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
-)
-
-target_link_libraries(securityImpl
-  PUBLIC
-    apache-geode
+target_link_libraries(openssl-compat
+  INTERFACE
     OpenSSL::Crypto
-  PRIVATE
-    openssl-compat
-    _WarningsAsError
 )
-
-add_clangformat(securityImpl)

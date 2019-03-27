@@ -17,6 +17,8 @@
 
 #include "PkcsAuthInit.hpp"
 
+#include <openssl-compat.h>
+
 #include <cstdio>
 #include <string>
 
@@ -24,7 +26,6 @@
 #include <geode/ExceptionTypes.hpp>
 #include <geode/Properties.hpp>
 
-#include "../../openssl-compat/openssl-compat.h"
 #include "geode/CacheableBuiltins.hpp"
 #include "geode/ExceptionTypes.hpp"
 #include "geode/Properties.hpp"

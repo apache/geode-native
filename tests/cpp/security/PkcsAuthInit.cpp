@@ -17,6 +17,8 @@
 
 #include "PkcsAuthInit.hpp"
 
+#include <openssl-compat.h>
+
 #include <cstdio>
 #include <string>
 #include <util/Log.hpp>
@@ -25,7 +27,6 @@
 #include <geode/ExceptionTypes.hpp>
 #include <geode/Properties.hpp>
 
-#include "../../../openssl-compat/openssl-compat.h"
 #include "SerializationRegistry.hpp"
 #include "security_export.h"
 
