@@ -55,6 +55,17 @@
       ]
     },
     {
+      "type":"file",
+      "source":"windows/Packer.psm1",
+      "destination":"Documents/WindowsPowerShell/Modules/Packer/Packer.psm1"
+    },
+    {
+      "type": "powershell",
+      "scripts": [
+        "windows/install-openssl.ps1"
+      ]
+    },
+    {
       "type": "powershell",
       "scripts": [
         "windows/add-user-build.ps1"
