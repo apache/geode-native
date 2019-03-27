@@ -76,7 +76,7 @@ macro(generate_config INPUT TEMP OUTPUT)
 endmacro()
 
 # Add lazy loaded shared library paths to test environment
-foreach( lib OpenSSL::SSL SQLite::sqlite3 )
+foreach( lib SQLite::sqlite3 )
   get_target_property(library_path ${lib} INTERFACE_LIBRARY_DIR)
   set(LD_LIBRARY_PATH ${LD_LIBRARY_PATH} ${library_path})
   get_target_property(runtime_path ${lib} INTERFACE_RUNTIME_DIR)

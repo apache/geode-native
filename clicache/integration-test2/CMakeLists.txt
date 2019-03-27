@@ -100,9 +100,6 @@ endif()
 add_dependencies(${PROJECT_NAME} nuget-restore)
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy_directory
-    $<SHELL_PATH:$<TARGET_GENEX_EVAL:OpenSSL::SSL,$<TARGET_PROPERTY:OpenSSL::SSL,INTERFACE_RUNTIME_DIR>>>
-    $<SHELL_PATH:$<TARGET_FILE_DIR:${PROJECT_NAME}>>
   COMMAND ${CMAKE_COMMAND} -E copy_if_different
     $<SHELL_PATH:$<TARGET_FILE:cryptoImpl>>
     $<$<CONFIG:Debug>:$<SHELL_PATH:$<TARGET_PDB_FILE:cryptoImpl>>>
