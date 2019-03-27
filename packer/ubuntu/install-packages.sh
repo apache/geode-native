@@ -17,6 +17,17 @@
 
 set -x -e -o pipefail
 
-apt-get -y install libc++-dev libc++abi-dev wget doxygen openjdk-8-jdk zlib1g-dev graphviz build-essential python python-pip
+apt-get -y install \
+    build-essential \
+    libc++-dev \
+    libc++abi-dev \
+    zlib1g-dev \
+    libssl-dev \
+    wget \
+    doxygen \
+    graphviz \
+    openjdk-8-jdk \
+    python \
+    python-pip
 
 pip install --upgrade pip
