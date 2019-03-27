@@ -18,7 +18,11 @@ project(DHImpl LANGUAGES CXX)
 
 file(GLOB_RECURSE SOURCES "*.cpp")
 
-add_library(DHImpl SHARED ${SOURCES})
+add_library(DHImpl SHARED
+  DHImpl.cpp
+  DHImpl.hpp
+  ../openssl-compat/openssl-compat.h
+)
 
 set_target_properties(DHImpl PROPERTIES
   FOLDER cpp/test/integration)

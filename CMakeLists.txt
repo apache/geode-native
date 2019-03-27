@@ -338,6 +338,8 @@ set_target_properties(run-integration-tests PROPERTIES
 	FOLDER test-common
 )
 
+find_package(OpenSSL REQUIRED)
+
 add_subdirectory(dependencies)
 add_subdirectory(cppcache)
 add_subdirectory(cryptoimpl)

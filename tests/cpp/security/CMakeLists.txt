@@ -29,7 +29,8 @@ add_library(security STATIC
   PkcsCredentialGenerator.hpp
   typedefs.hpp
   XmlAuthzCredentialGenerator.hpp
-)
+  ../../../openssl-compat/openssl-compat.h
+  )
 
 include(GenerateExportHeader)
 generate_export_header(security)

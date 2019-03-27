@@ -20,12 +20,14 @@
  * limitations under the License.
  */
 
-#include <openssl/dh.h>
 #include <openssl/asn1t.h>
+#include <openssl/dh.h>
 #include <openssl/x509.h>
+
 #include <string>
 #include <vector>
 
+#include "../openssl-compat/openssl-compat.h"
 #include "dhimpl_export.h"
 
 #define DH_ERR_NO_ERROR 0

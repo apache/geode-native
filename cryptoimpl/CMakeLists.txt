@@ -21,7 +21,9 @@ add_library(cryptoImpl SHARED
   DHImpl.cpp
   Ssl.hpp
   SSLImpl.hpp
-  SSLImpl.cpp)
+  SSLImpl.cpp
+  ../openssl-compat/openssl-compat.h
+  )
 
 include(GenerateExportHeader)
 generate_export_header(cryptoImpl)

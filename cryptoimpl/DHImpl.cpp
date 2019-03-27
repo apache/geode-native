@@ -34,6 +34,8 @@
 
 #include <geode/internal/geode_globals.hpp>
 
+#include "../openssl-compat/openssl-compat.h"
+
 /*
 static DH * m_dh = nullptr;
 static string m_skAlgo;

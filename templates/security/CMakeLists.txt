@@ -21,6 +21,7 @@ add_library(securityImpl SHARED
   PkcsAuthInit.hpp
   UserPasswordAuthInit.cpp
   UserPasswordAuthInit.hpp
+  ../../openssl-compat/openssl-compat.h
   CMakeLists.txt.forInstall
 )
 
