@@ -79,7 +79,6 @@ target_include_directories(testobject
 target_compile_definitions(testobject
   PRIVATE
     BUILD_TESTOBJECT
-    __STDC_FORMAT_MACROS
 )
 
 target_include_directories(testobject

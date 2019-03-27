@@ -181,6 +181,12 @@ if(ipo_supported)
   set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELWITHDEBINFO TRUE)
 endif()
 
+include(CheckCXXSymbolExists)
+check_cxx_symbol_exists("PRId8" "cinttypes" HAVE_STDC_FORMAT_MACROS)
+if (NOT HAVE_STDC_FORMAT_MACROS)
+  target_compile_definitions(c++11 INTERFACE __STDC_FORMAT_MACROS)
+endif()
+
 if(CMAKE_CXX_COMPILER_ID MATCHES "SunPro")
   # Force linker to error on undefined symbols in shared libraries
   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -z defs")

@@ -20,8 +20,7 @@
 #ifndef GEODE_TESTOBJECT_EQSTRUCT_H_
 #define GEODE_TESTOBJECT_EQSTRUCT_H_
 
-#include <inttypes.h>
-
+#include <cinttypes>
 #include <fwklib/FwkException.hpp>
 #include <string>
 

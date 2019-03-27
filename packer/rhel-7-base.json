@@ -41,8 +41,7 @@
       "type":"shell",
       "execute_command":"{{.Vars}} sudo -E -S bash '{{.Path}}'",
       "scripts":[
-        "rhel/cleanup.sh",
-        "rhel/zerodisk.sh"
+        "rhel/cleanup.sh"
       ]
     }
   ]

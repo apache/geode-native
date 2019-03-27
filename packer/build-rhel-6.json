@@ -1,9 +1,9 @@
 {
   "variables":{
     "region":"us-west-2",
-    "source_ami":"",
+    "source_ami":"ami-80296ff8",
     "source_image_name":"",
-    "image_name":"build-linux"
+    "image_name":"build-rhel6"
   },
   "builders":[
     {
@@ -16,6 +16,14 @@
       "source_ami":"{{user `source_ami`}}",
       "subnet_id":"{{user `subnet_id`}}",
       "vpc_id":"{{user `vpc_id`}}",
+      "launch_block_device_mappings":[
+        {
+          "device_name":"/dev/sda1",
+          "delete_on_termination":true,
+          "volume_type": "gp2",
+          "volume_size":100
+        }
+      ],
       "tags":{
         "team":"native",
         "version":"{{user `version`}}",
@@ -52,28 +60,13 @@
       ]
     },
     {
-      "type":"file",
-      "source":"rhel/init-hosts.rc.local",
-      "destination":"/tmp/init-hosts.rc.local"
-    },
-    {
-      "type":"shell",
-      "execute_command":"{{.Vars}} sudo -E -S bash '{{.Path}}'",
-      "inline":[
-        "cat /tmp/init-hosts.rc.local >> /etc/rc.local"
-      ]
-    },
-    {
       "type":"shell",
       "execute_command":"{{.Vars}} sudo -E -S bash '{{.Path}}'",
       "scripts":[
         "rhel/disable-selinux.sh",
         "rhel/add-user-build.sh",
-        "rhel/install-repos.sh",
         "rhel/install-scl-devtoolset.sh",
-        "rhel/install-scl-python27.sh",
         "rhel/install-build-rpms.sh",
-        "rhel/install-coverage-tools.sh",
         "rhel/install-cmake.sh",
         "rhel/install-jdk-1.8.sh"
       ]

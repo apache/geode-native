@@ -67,9 +67,13 @@ target_link_libraries(benchmark_benchmark INTERFACE
   Threads::Threads
 )
 if (WIN32)
-target_link_libraries(benchmark_benchmark INTERFACE
-  Shlwapi
-)
+  target_link_libraries(benchmark_benchmark INTERFACE
+    Shlwapi
+  )
+elseif (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+  target_link_libraries(benchmark_benchmark INTERFACE
+    rt
+  )
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "SunPro")
   target_link_libraries(benchmark_benchmark INTERFACE
     kstat

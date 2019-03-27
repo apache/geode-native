@@ -17,7 +17,7 @@
 
 #include "FastAssetAccount.hpp"
 
-#include <inttypes.h>
+#include <cinttypes>
 
 #include "FastAsset.hpp"
 

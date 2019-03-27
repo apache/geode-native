@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#include <inttypes.h>
+#include <cinttypes>
 #include <cstdint>
 #include <iostream>
 #include <string>

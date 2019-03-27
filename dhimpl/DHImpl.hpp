@@ -22,7 +22,6 @@
 
 #include <openssl-compat.h>
 #include <openssl/asn1t.h>
-#include <openssl/dh.h>
 #include <openssl/x509.h>
 
 #include <string>

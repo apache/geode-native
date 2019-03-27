@@ -17,11 +17,7 @@
 
 set -x -e -o pipefail
 
-bin=`dirname "$0"`
-bin=`cd "$bin">/dev/null; pwd`
-
-main() {
-  cat > /etc/sysconfig/selinux <<EOF
+cat > /etc/sysconfig/selinux <<EOF
 # This file controls the state of SELinux on the system.
 # SELINUX= can take one of these three values:
 #     enforcing - SELinux security policy is enforced.
@@ -34,7 +30,3 @@ SELINUX=disabled
 #     mls - Multi Level Security protection.
 SELINUXTYPE=targeted
 EOF
-
-}
-
-main "$@"

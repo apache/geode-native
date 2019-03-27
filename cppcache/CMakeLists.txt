@@ -74,7 +74,6 @@ set(SOURCES_ALL ${SOURCES} ${PRIVATE_HEADERS} ${PUBLIC_HEADERS} ${CONFIGURE_IN_F
 add_library(_apache-geode INTERFACE)
 
 target_compile_definitions(_apache-geode INTERFACE
-  __STDC_FORMAT_MACROS
   BOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED
 )
 
