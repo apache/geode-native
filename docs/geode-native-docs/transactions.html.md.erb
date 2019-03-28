@@ -24,7 +24,7 @@ Thus, the key to running client transactions lies in making sure the server is p
 For complete information about how transactions are conducted on the <%=vars.product_name%> server, see the
 [Transactions section of the <%=vars.product_name%> User Guide](geodeman/developing/transactions/chapter_overview.html).
 
-# <a id="client-transaction-apis" class="no-quick-link"></a>Native Client Transaction APIs
+## <a id="client-transaction-apis"></a>Native Client Transaction APIs
 
 The API for distributed transactions has the familiar relational database methods, `begin`,
 `commit`, and `rollback`. There are also APIs available to suspend and resume transactions.
@@ -39,7 +39,7 @@ The C++ classes for executing transactions are:
 -   `apache.geode.client.CacheTransactionManager`
 -   `apache.geode.client.TransactionId`
 
-# <a id=""></a>Running Native Client Transactions
+## <a id="running-nc-transactions"></a>Running Native Client Transactions
 
 The syntax for writing client transactions is the same as with server or peer transactions, but when
 a client performs a transaction, the transaction is delegated to a server that brokers the
@@ -60,7 +60,7 @@ In addition to the failure conditions common to all transactions, client transac
 if the transaction delegate fails. If the delegate performing the transaction fails, the transaction
 code throws a `TransactionException`.
 
-# <a id="examples"></a>Client Transaction Examples
+## <a id="nc-transaction-examples"></a>Client Transaction Examples
 
 The native client release contains transaction examples written for .NET and C++. The examples are
 located in `../examples/dotnet/transaction` and `../examples/cpp/transaction`, respectively. 
@@ -87,7 +87,7 @@ treated as unsuccessful. The transaction is retried until it succeeds.
   - In case the transaction repeatedly fails, the retry loop uses a counter to set a limit of 5 retries.
 
 
-## .NET Example
+### <a id="dotnet-example"></a>.NET Example
 
 This section contains code snippets showing highlights of the .NET transaction example. They are not intended for cut-and-paste execution.
 For the complete source, see the example source directory.
@@ -144,7 +144,7 @@ If all `put` operations succeed, the application commits the transaction. Otherw
       }
 ```
 
-## C++ Example
+### <a id="cpp-example"></a>C++ Example
 
 This section contains code snippets showing highlights of the C++ transaction example. They are not intended for cut-and-paste execution.
 For the complete source, see the example source directory.

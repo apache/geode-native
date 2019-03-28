@@ -21,7 +21,7 @@ limitations under the License.
 
 A client can invoke a server-resident function, with parameters, and can collect and operate on the returned results.
 
-## <a id="server_side_requirements"></a>Server-side Requirements
+## <a id="nc-fe-server_side_requirements"></a>Server-side Requirements
 
 To be callable from your client, a function must be 
 
@@ -31,11 +31,11 @@ To be callable from your client, a function must be
 See [Executing a Function in <%=vars.product_name_long%>](serverman/developing/function_exec/function_execution.html) 
 in the <%=vars.product_name%> User Guide for details on how to write and register server-resident functions.
 
-## <a id="client_side_requirements"></a>Client-side Requirements
+## <a id="nc-fe-client_side_requirements"></a>Client-side Requirements
 
 The client must connect to the server through a connection pool in order to invoke a server-side function.
 
-## <a id="how_functions_execute"></a>How Functions Execute
+## <a id="nc-fe-how_functions_execute"></a>How Functions Execute
 
 1.  The calling client application runs the `execute` method on the `Execution` object. The function must already be registered on the servers.
 2.  The function is invoked on the servers where it needs to run. The servers are determined by the `FunctionService on*` 
@@ -59,7 +59,7 @@ In every client where you want to execute the function and process the results:
 
 -  Call the `Execution.execute()` method to run the function.
 
-## <a id="processing_function_results"></a>Processing Function Results
+## <a id="nc-fe-processing_function_results"></a>Processing Function Results
 
 To get the results from the function in the client app, use the result collector returned from the function execution.
 The `getResult` methods of the default result collector block until all results are received, then return the full result set.
@@ -75,7 +75,7 @@ To handle the results in a custom manner:
     -  `clearResults` is called to clear partial results from the results collector. This is used only for highly available `onRegion` functions where the calling application waits for the results. If the call fails, before <%=vars.product_name%> retries the execution, it calls `clearResults` to ready the instance for a clean set of results.
 2.  Use the `Execution` object in your executing member to call `withCollector`, passing your custom collector.
 
-# <a id="examples"></a>Examples
+## <a id="nc-fe-examples"></a>Function Execution Examples
 
 The native client release contains examples of function execution written for .NET and
 C++. The examples are located in `../examples/dotnet/functionexecution` and
@@ -105,7 +105,7 @@ The .NET example uses a built-in result collector (`IResultCollector.getResults(
 
 The C++ example creates a result variable to hold the results from the collector.
 
-## <a id="dotnet_example"></a>.NET Example
+### <a id="nc-fe-dotnet_example"></a>.NET Example
 This section contains code snippets showing highlights of the .NET function execution example. They are not intended for cut-and-paste execution.
 For the complete source, see the example source directory.
 
@@ -189,7 +189,7 @@ It then loops through the results and prints the retrieved values.
    }
 ```
 
-## <a id="cpp_example"></a>C++ Example
+### <a id="nc-fe-cpp_example"></a>C++ Example
 This section contains code snippets showing highlights of the C++ function execution example. They are not intended for cut-and-paste execution.
 For the complete source, see the example source directory.
 
