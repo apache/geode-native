@@ -109,9 +109,10 @@ std::string Portfolio::toString() const {
   }
   char position2buf[2048];
   if (position2 != nullptr) {
-    sprintf(position2buf, " P2: %s", position2->toString().c_str());
+    snprintf(position2buf, sizeof(position2buf), " P2: %s",
+             position2->toString().c_str());
   } else {
-    sprintf(position2buf, " P2: %s ]", "NULL");
+    snprintf(position2buf, sizeof(position2buf), " P2: %s ]", "NULL");
   }
   char creationdatebuf[2048];
   if (creationDate != nullptr) {
@@ -121,9 +122,9 @@ std::string Portfolio::toString() const {
     sprintf(creationdatebuf, "creation Date %s", "NULL");
   }
 
-  char stringBuf[7000];
-  sprintf(stringBuf, "%s%s%s%s%s", idbuf, pkidbuf, creationdatebuf,
-          position1buf, position2buf);
+  char stringBuf[9000];
+  snprintf(stringBuf, sizeof(stringBuf), "%.1024s%.1024s%.1024s%.2048s%.2048s",
+           idbuf, pkidbuf, creationdatebuf, position1buf, position2buf);
   return stringBuf;
 }
 

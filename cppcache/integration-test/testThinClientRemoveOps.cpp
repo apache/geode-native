@@ -506,7 +506,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
       FAIL(
           "local destroy on already removed key should have thrown "
           "EntryNotFoundException");
-    } catch (EntryNotFoundException /*& ex*/) {
+    } catch (EntryNotFoundException &) {
       LOG("Got expected EntryNotFoundException for "
           "localDestroy operation on already removed entry.");
     }
@@ -516,7 +516,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
       FAIL(
           "local destroy on already removed key should have thrown "
           "EntryNotFoundException");
-    } catch (EntryNotFoundException /*& ex*/) {
+    } catch (EntryNotFoundException &) {
       LOG("Got expected EntryNotFoundException for "
           "localDestroy operation on already removed entry.");
     }
@@ -749,7 +749,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSix)
       FAIL(
           "destroy on already removed key should have thrown "
           "EntryNotFoundException");
-    } catch (EntryNotFoundException /*& ex*/) {
+    } catch (EntryNotFoundException &) {
       LOG("Got expected EntryNotFoundException for "
           "destroy operation on already removed entry.");
     }
@@ -758,7 +758,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSix)
       FAIL(
           "destroy on already removed key should have thrown "
           "EntryNotFoundException");
-    } catch (EntryNotFoundException /*& ex*/) {
+    } catch (EntryNotFoundException &) {
       LOG("Got expected EntryNotFoundException for "
           "destroy operation on already removed entry.");
     }
@@ -779,7 +779,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSix)
       FAIL(
           "local destroy on already removed key should have thrown "
           "EntryNotFoundException");
-    } catch (EntryNotFoundException /*& ex*/) {
+    } catch (EntryNotFoundException &) {
       LOG("Got expected EntryNotFoundException for "
           "localDestroy operation on already removed entry.");
     }
@@ -788,7 +788,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSix)
       FAIL(
           "local destroy on already removed key should have thrown "
           "EntryNotFoundException");
-    } catch (EntryNotFoundException /*& ex*/) {
+    } catch (EntryNotFoundException &) {
       LOG("Got expected EntryNotFoundException for "
           "localDestroy operation on already removed entry.");
     }
@@ -931,7 +931,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight)
       FAIL(
           "destroy on already removed key should have thrown "
           "EntryNotFoundException");
-    } catch (EntryNotFoundException /*& ex*/) {
+    } catch (EntryNotFoundException &) {
       LOG("Got expected EntryNotFoundException for "
           "destroy operation on already removed entry.");
     }
@@ -940,7 +940,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight)
       FAIL(
           "destroy on already removed key should have thrown "
           "EntryNotFoundException");
-    } catch (EntryNotFoundException /*& ex*/) {
+    } catch (EntryNotFoundException &) {
       LOG("Got expected EntryNotFoundException for "
           "destroy operation on already removed entry.");
     }
@@ -994,7 +994,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight)
       FAIL(
           "destroy on already removed key should have thrown "
           "EntryNotFoundException");
-    } catch (EntryNotFoundException /*& ex*/) {
+    } catch (EntryNotFoundException &) {
       LOG("Got expected EntryNotFoundException for "
           "destroy operation on already removed entry.");
     }
@@ -1003,7 +1003,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight)
       FAIL(
           "destroy on already removed key should have thrown "
           "EntryNotFoundException");
-    } catch (EntryNotFoundException /*& ex*/) {
+    } catch (EntryNotFoundException &) {
       LOG("Got expected EntryNotFoundException for "
           "destroy operation on already removed entry.");
     }
@@ -1068,7 +1068,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight)
       FAIL(
           "destroy on non=existent key should have thrown "
           "EntryNotFoundException");
-    } catch (EntryNotFoundException & /*ex*/) {
+    } catch (EntryNotFoundException &) {
       LOG("Got expected EntryNotFoundException for key300");
     }
 
@@ -1152,7 +1152,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFiveA)
       FAIL(
           "local destroy on already removed key should have thrown "
           "EntryNotFoundException");
-    } catch (EntryNotFoundException /*& ex*/) {
+    } catch (EntryNotFoundException &) {
       LOG("Got expected EntryNotFoundException for "
           "localDestroy operation on already removed entry.");
     }
@@ -1162,7 +1162,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFiveA)
       FAIL(
           "local destroy on already removed key should have thrown "
           "EntryNotFoundException");
-    } catch (EntryNotFoundException /*& ex*/) {
+    } catch (EntryNotFoundException &) {
       LOG("Got expected EntryNotFoundException for "
           "localDestroy operation on already removed entry.");
     }
@@ -1197,7 +1197,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepTwelve)
                            CacheableInt32::create(val1));
       auto vall = std::dynamic_pointer_cast<CacheableInt32>(regPtr0->get(key1));
       FAIL("Expected EntryExistException here");
-    } catch (EntryExistsException e) {
+    } catch (EntryExistsException &) {
       LOG(" Expected EntryExistsException exception thrown by localCreate");
     }
 
@@ -1261,7 +1261,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepTwelve)
       FAIL(
           "Should have thrown EntryExistsException if entry already exist in "
           "region.");
-    } catch (EntryExistsException e) {
+    } catch (EntryExistsException &) {
       LOG("Expected : check EntryExistsException if entry already exist in "
           "region.");
     }
@@ -1277,7 +1277,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepTwelve)
       regPtr0->localCreate(x, 1);
       LOG("Entry with null key and value locally created successfully");
       FAIL("Expected IllegalArgumentException here");
-    } catch (IllegalArgumentException ex) {
+    } catch (IllegalArgumentException &ex) {
       LOGINFO("Expected IllegalArgumentException : %s", ex.what());
     }
 
@@ -1285,7 +1285,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepTwelve)
       regPtr0->localPut(x, 1);
       LOG("Entry with null key and value locally put successfully");
       FAIL("Expected IllegalArgumentException here");
-    } catch (IllegalArgumentException ex) {
+    } catch (IllegalArgumentException &ex) {
       LOGINFO("Expected IllegalArgumentException : %s", ex.what());
     }
 
@@ -1293,28 +1293,28 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepTwelve)
       regPtr0->localDestroy(x);
       LOG("Entry with null key locally deleted successfully");
       FAIL("Expected IllegalArgumentException here");
-    } catch (IllegalArgumentException ex) {
+    } catch (IllegalArgumentException &ex) {
       LOGINFO("Expected IllegalArgumentException : %s", ex.what());
     }
     try {
       regPtr0->localInvalidate(x);
       LOG("Entry with null key locally invalidated successfully");
       FAIL("Expected IllegalArgumentException here");
-    } catch (IllegalArgumentException ex) {
+    } catch (IllegalArgumentException &ex) {
       LOGINFO("Expected IllegalArgumentException : %s", ex.what());
     }
     try {
       regPtr0->localRemove(x, 1);
       LOG("Entry with null key and value locally removed successfully");
       FAIL("Expected IllegalArgumentException here");
-    } catch (IllegalArgumentException ex) {
+    } catch (IllegalArgumentException &ex) {
       LOGINFO("Expected IllegalArgumentException : %s", ex.what());
     }
     try {
       regPtr0->localRemoveEx(x);
       LOG("Entry with null key locally removed if value exist successfully");
       FAIL("Expected IllegalArgumentException here");
-    } catch (IllegalArgumentException ex) {
+    } catch (IllegalArgumentException &ex) {
       LOGINFO("Expected IllegalArgumentException : %s", ex.what());
     }
 
@@ -1345,13 +1345,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepTwelve)
       retVal = regPtr0->get(x);
       ASSERT(retVal == nullptr, "value should not be found");
       FAIL("Expected IllegalArgumentException here for get");
-    } catch (Exception) {
+    } catch (Exception &) {
       LOG(" Expected exception thrown by get");
     }
 
     try {
       regPtr0->localPut(keyObject1, x);
-    } catch (IllegalArgumentException ex) {
+    } catch (IllegalArgumentException &ex) {
       LOGINFO("Expected IllegalArgumentException : %s", ex.what());
     }
     retVal = regPtr0->get(keyObject1);
@@ -1392,7 +1392,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepTwelve)
         regPtr0->localCreate(keyObject3, 1);
         FAIL("Expected EntryExistException here");
       }
-    } catch (EntryExistsException e) {
+    } catch (EntryExistsException &) {
       LOG(" Expected EntryExistsException exception thrown by localCreate");
     }
 
@@ -1440,7 +1440,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepTwelve)
       regPtr2->localCreate(CacheableString::create("XY"),
                            CacheableString::create("Y"));
       FAIL("localDestroyRegion should have thrown exception");
-    } catch (RegionDestroyedException e) {
+    } catch (RegionDestroyedException &) {
       LOG(" Expected exception thrown by localCreate, since Region does not "
           "exist");
     }
@@ -1483,7 +1483,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSixA)
       FAIL(
           "destroy on already removed key should have thrown "
           "EntryNotFoundException");
-    } catch (EntryNotFoundException /*& ex*/) {
+    } catch (EntryNotFoundException &) {
       LOG("Got expected EntryNotFoundException for "
           "destroy operation on already removed entry.");
     }
@@ -1493,7 +1493,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSixA)
       FAIL(
           "destroy on already removed key should have thrown "
           "EntryNotFoundException");
-    } catch (EntryNotFoundException /*& ex*/) {
+    } catch (EntryNotFoundException &) {
       LOG("Got expected EntryNotFoundException for "
           "destroy operation on already removed entry.");
     }
@@ -1568,7 +1568,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSixA)
       FAIL(
           "local destroy on already removed key should have thrown "
           "EntryNotFoundException");
-    } catch (EntryNotFoundException /*& ex*/) {
+    } catch (EntryNotFoundException &) {
       LOG("Got expected EntryNotFoundException for "
           "localDestroy operation on already removed entry.");
     }
@@ -1577,7 +1577,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSixA)
       FAIL(
           "local destroy on already removed key should have thrown "
           "EntryNotFoundException");
-    } catch (EntryNotFoundException /*& ex*/) {
+    } catch (EntryNotFoundException &) {
       LOG("Got expected EntryNotFoundException for "
           "localDestroy operation on already removed entry.");
     }
