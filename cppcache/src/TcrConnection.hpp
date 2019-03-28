@@ -338,7 +338,7 @@ class APACHE_GEODE_EXPORT TcrConnection {
   /*
    * To read the arraysize
    */
-  uint32_t readHandshakeArraySize(std::chrono::microseconds connectTimeout);
+  int32_t readHandshakeArraySize(std::chrono::microseconds connectTimeout);
 
   /*
    * This function reads "numberOfBytes" and ignores it.

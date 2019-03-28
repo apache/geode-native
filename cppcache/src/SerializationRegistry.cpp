@@ -158,9 +158,9 @@ std::shared_ptr<Serializable> SerializationRegistry::deserialize(
     dsCode = static_cast<DSCode>(input.read());
   }
 
-  LOGDEBUG(
-      "SerializationRegistry::deserialize typeid = %d currentTypeId= %" PRId8,
-      typeId, dsCode);
+  LOGDEBUG("SerializationRegistry::deserialize typeId = %" PRId8
+           " dsCode = % " PRId8,
+           typeId, dsCode);
 
   switch (dsCode) {
     case DSCode::CacheableNullString: {

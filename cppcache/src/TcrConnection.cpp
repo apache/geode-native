@@ -301,9 +301,10 @@ bool TcrConnection::InitTcrConnection(
   size_t msgLength;
   auto data = reinterpret_cast<char*>(
       const_cast<uint8_t*>(handShakeMsg.getBuffer(&msgLength)));
-  LOGFINE("Attempting handshake with endpoint %s for %s%s connection", endpoint,
-          isClientNotification ? (isSecondary ? "secondary " : "primary ") : "",
-          isClientNotification ? "subscription" : "client");
+  LOGFINE(
+      "Attempting handshake with endpoint %s for %s%s connection", endpoint,
+      isClientNotification ? (isSecondary ? "secondary " : "primary ") : "",
+      isClientNotification ? "subscription" : "client");
   ConnErrType error = sendData(data, msgLength, connectTimeout, false);
 
   if (error == CONN_NOERR) {
@@ -428,23 +429,8 @@ bool TcrConnection::InitTcrConnection(
     }
 
     if (!isClientNotification) {
-      // Read and ignore the DistributedMember object
-      auto arrayLenHeader = readHandshakeData(1, connectTimeout);
-      int32_t recvMsgLen = static_cast<int32_t>(arrayLenHeader[0]);
-      // now check for array length headers - since GFE 5.7
-      if (static_cast<int8_t>(arrayLenHeader[0]) == -2) {
-        auto recvMsgLenBytes = readHandshakeData(2, connectTimeout);
-        auto dataInput2 = m_connectionManager->getCacheImpl()->createDataInput(
-            reinterpret_cast<const uint8_t*>(recvMsgLenBytes.data()),
-            recvMsgLenBytes.size());
-        recvMsgLen = dataInput2.readInt16();
-      } else if (static_cast<int8_t>(arrayLenHeader[0]) == -3) {
-        auto recvMsgLenBytes = readHandshakeData(4, connectTimeout);
-        auto dataInput2 = m_connectionManager->getCacheImpl()->createDataInput(
-            reinterpret_cast<const uint8_t*>(recvMsgLenBytes.data()),
-            recvMsgLenBytes.size());
-        recvMsgLen = dataInput2.readInt32();
-      }
+      // Read the DistributedMember object
+      auto recvMsgLen = readHandshakeArraySize(connectTimeout);
       auto recvMessage = readHandshakeData(recvMsgLen, connectTimeout);
       // If the distributed member has not been set yet, set it.
       if (getEndpointObject()->getDistributedMemberID() == 0) {
@@ -1143,39 +1129,28 @@ std::shared_ptr<CacheableBytes> TcrConnection::readHandshakeByteArray(
 }
 
 // read a byte array
-uint32_t TcrConnection::readHandshakeArraySize(
+int32_t TcrConnection::readHandshakeArraySize(
     std::chrono::microseconds connectTimeout) {
-  auto codeBytes = readHandshakeData(1, connectTimeout);
-  auto codeDI = m_connectionManager->getCacheImpl()->createDataInput(
-      reinterpret_cast<const uint8_t*>(codeBytes.data()), codeBytes.size());
-  uint8_t code = codeDI.read();
-  uint32_t arraySize = 0;
-  if (code == 0xFF) {
-    return 0;
-  } else {
-    int32_t tempLen = code;
-    if (tempLen > 252) {  // 252 is java's ((byte)-4 && 0xFF)
-      if (code == 0xFE) {
-        auto lenBytes = readHandshakeData(2, connectTimeout);
-        auto lenDI = m_connectionManager->getCacheImpl()->createDataInput(
-            reinterpret_cast<const uint8_t*>(lenBytes.data()), lenBytes.size());
-        uint16_t val = lenDI.readInt16();
-        tempLen = val;
-      } else if (code == 0xFD) {
-        auto lenBytes = readHandshakeData(4, connectTimeout);
-        auto lenDI = m_connectionManager->getCacheImpl()->createDataInput(
-            reinterpret_cast<const uint8_t*>(lenBytes.data()), lenBytes.size());
-        uint32_t val = lenDI.readInt32();
-        tempLen = val;
-      } else {
-        GF_SAFE_DELETE_CON(m_conn);
-        throwException(IllegalStateException("unexpected array length code"));
-      }
-    }
-    arraySize = tempLen;
-  }
+  auto arrayLenHeader = readHandshakeData(1, connectTimeout);
+  LOGDEBUG("Handshake: arrayLenHeader = %" PRIu8, arrayLenHeader[0]);
 
-  return arraySize;
+  int32_t arrayLength = static_cast<uint8_t>(arrayLenHeader[0]);
+  if (static_cast<int8_t>(arrayLenHeader[0]) == -2) {
+    auto arrayLengthBytes = readHandshakeData(2, connectTimeout);
+    auto dataInput2 = m_connectionManager->getCacheImpl()->createDataInput(
+        reinterpret_cast<const uint8_t*>(arrayLengthBytes.data()),
+        arrayLengthBytes.size());
+    arrayLength = dataInput2.readInt16();
+  } else if (static_cast<int8_t>(arrayLenHeader[0]) == -3) {
+    auto arrayLengthBytes = readHandshakeData(4, connectTimeout);
+    auto dataInput2 = m_connectionManager->getCacheImpl()->createDataInput(
+        reinterpret_cast<const uint8_t*>(arrayLengthBytes.data()),
+        arrayLengthBytes.size());
+    arrayLength = dataInput2.readInt32();
+  }
+  LOGDEBUG("Handshake: recvMsgLen = %" PRIu32, arrayLength);
+
+  return arrayLength;
 }
 
 void TcrConnection::readHandshakeInstantiatorMsg(
