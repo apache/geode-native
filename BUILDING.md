@@ -8,10 +8,12 @@
 * [Apache Geode](http://geode.apache.org/releases/) binaries installed or available to link against
 
 ### Platform-Specific Prerequisites
-* [Mac OS X](#mac-os-x)
-* [Linux](#linux)
-* [Solaris](#solaris)
+
 * [Windows](#windows)
+* [Linux](#linux)
+* [Mac OS X](#mac-os-x)
+* [Solaris](#solaris)
+
 
 ## Setting Path to Geode
 Building requires access to an installation of Geode. There are two ways to achieve this:
@@ -23,6 +25,7 @@ Building requires access to an installation of Geode. There are two ways to achi
 
 
 ## Steps to build
+
 ```console
 $ cd <clone>
 $ mkdir build
@@ -40,13 +43,15 @@ CMake uses a "generator" to produce configuration files for use by a variety of 
 
 #### CLion / Eclipse / Other
 The recommended generator for most unix platforms is 'Makefiles' (default):
+
 ```console
 $ cmake ..
 ```
 
 #### Xcode
 The recommended generator for Xcode is `Xcode`:
-```console
+
+```bash
 $ cmake .. -G "Xcode"
 ```
 
@@ -54,6 +59,7 @@ $ cmake .. -G "Xcode"
 When running cmake commands on Windows, be sure to use [Visual Studio Native Tools Command Prompt](https://msdn.microsoft.com/en-us/library/f35ctcxw.aspx) so environment variables are set properly.
 
 The recommended generator on Windows is `Visual Studio 14 2015 Win64`:
+
 ```console
 $ cmake .. -G "Visual Studio 14 2015 Win64" -Thost=x64
 ```
@@ -62,11 +68,13 @@ $ cmake .. -G "Visual Studio 14 2015 Win64" -Thost=x64
 For faster builds, use optional parallelism parameters in the last build step:
 
 #### Unix
+
 ```console
 $ cmake --build . -- -j <# of jobs>
 ```
 
 #### Windows
+
 ```console
 $ cmake --build . -- /m
 ```
@@ -76,10 +84,12 @@ $ cmake --build . -- /m
 #### Code Coverage
 
 If building with GCC or Clang you can enable C++ code coverage by adding `-DUSE_CPP_COVERAGE=ON` to the CMake [Generator](#generator) command. 
+
 ```console
 $ cmake … -DUSE_CPP_COVERAGE=ON …
 ```
 You can then generate a C++ code coverage report by downloading [lcov](http://ltp.sourceforge.net/coverage/lcov.php).  After acquiring lcov, finish the [Steps to build](#Steps-to-build) section above.  Then, run the tests as described in the [CONTRIBUTING.md](CONTRIBUTING.md). Finally, run the following commands from the `build` directory:
+
 ```console
 $ lcov --capture --directory . --output-file coverage.info
 $ genhtml coverage.info --output-directory coverage_report
@@ -89,15 +99,18 @@ You can then open the `index.html` file in the `coverage_report` directory using
 
 #### Clang-Tidy
 To enable `clang-tidy`:
+
 ```console
 $ cmake … -DCMAKE_CXX_CLANG_TIDY=clang-tidy …
 ```
 To use specific `clang-tidy`:
+
 ```console
 $ cmake … -DCMAKE_CXX_CLANG_TIDY=/path/to/clang-tidy …
 ```
 By default `clang-tidy` uses the configuration found in `.clang-tidy`
 To override `clang-tidy` options:
+
 ```console
 $ cmake … -DCMAKE_CXX_CLANG_TIDY=clang-tidy;<options> …
 ```
@@ -119,7 +132,31 @@ $ cmake --build . --target install
 
 # Platform-Specific Prerequisites
 
-## Mac OS X
+## <a id="windows"></a>Windows
+* Windows 8.1 64-bit
+* Windows 10 64-bit
+* Windows Server 2012 R2 64-bit
+* Windows Server 2016 64-bit
+
+### Required Tools
+* [Visual Studio 2015](https://www.visualstudio.com) or newer
+* .NET 4.5.2 or later
+* Chocolately
+* [Other dependencies installed via Powershell](packer/windows/install-dependencies.ps1)
+
+## <a id="linux"></a>Linux
+* RHEL/CentOS 6
+* RHEL/CentOS 7
+* SLES 11
+* SLES 12
+
+### Required Tools
+* [GCC 5](https://gcc.gnu.org) or newer
+
+### Optional Tools
+* [Eclipse CDT 8.8](https://eclipse.org/cdt/) or newer
+
+## <a id="mac-os-x"></a>Mac OS X
 * Mac OS X 10.12 (Sierra) or newer
 * Xcode 8.2 or newer
 
@@ -135,31 +172,7 @@ $ xcode-select --install
 * [Doxygen GUI](http://ftp.stack.nl/pub/users/dimitri/Doxygen-1.8.11.dmg)
 * [CLion](https://www.jetbrains.com/clion/)
 
-## Windows
-* Windows 8.1 64-bit
-* Windows 10 64-bit
-* Windows Server 2012 R2 64-bit
-* Windows Server 2016 64-bit
-
-### Required Tools
-* [Visual Studio 2015](https://www.visualstudio.com) or newer
-* .NET 4.5.2 or later
-* Chocolately
-* [Other dependencies installed via Powershell](packer/windows/install-dependencies.ps1)
-
-## Linux
-* RHEL/CentOS 6
-* RHEL/CentOS 7
-* SLES 11
-* SLES 12
-
-### Required Tools
-* [GCC 5](https://gcc.gnu.org) or newer
-
-### Optional Tools
-* [Eclipse CDT 8.8](https://eclipse.org/cdt/) or newer
-
-## Solaris
+## <a id="solaris"></a>Solaris
 * Solaris 11 SPARC
 * Solaris 11 x86
 

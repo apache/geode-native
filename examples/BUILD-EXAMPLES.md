@@ -27,12 +27,14 @@
   
    **For Windows:** Include options that specify the generator, the architecture toolset, and the path to the Geode Native installation:
 
-       $ cd workspace\examples\
-       $ mkdir build
-       $ cd build
-       $ cmake .. -G"Visual Studio 15 2017 Win64" -DGeodeNative_ROOT="<geode-native-install-dir>"
-       $ cmake --build . -- <optional parallelism parameter>
-
+    ```
+    $ cd workspace\examples\
+    $ mkdir build
+    $ cd build
+    $ cmake .. -G"Visual Studio 15 2017 Win64" -DGeodeNative_ROOT="<geode-native-install-dir>"
+    $ cmake --build . -- <optional parallelism parameter>
+    ```
+    
 ## Running the Examples
 To run an example,
 
