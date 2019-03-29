@@ -78,6 +78,18 @@
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'RelWithDebInfo|x64' ">
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <IntermediateOutputPath>RelWithDebInfo</IntermediateOutputPath>
+    <OutputPath>RelWithDebInfo</OutputPath>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Runtime.Remoting" />
