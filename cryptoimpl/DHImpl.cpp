@@ -17,6 +17,7 @@
 
 #include "DHImpl.hpp"
 
+#include <openssl-compat.h>
 #include <openssl/aes.h>
 #include <openssl/asn1.h>
 #include <openssl/err.h>

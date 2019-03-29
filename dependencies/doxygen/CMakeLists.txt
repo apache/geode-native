@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-project( doxygen VERSION 1.8 LANGUAGES NONE )
+project( doxygen VERSION 1.6 LANGUAGES NONE )
 # used to compile documents
 
 # Not a runtime requirement, so look for existing installation.

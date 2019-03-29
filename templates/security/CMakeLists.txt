@@ -41,6 +41,7 @@ target_link_libraries(securityImpl
     apache-geode
     OpenSSL::Crypto
   PRIVATE
+    openssl-compat
     _WarningsAsError
 )
 

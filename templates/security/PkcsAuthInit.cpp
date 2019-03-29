@@ -17,6 +17,8 @@
 
 #include "PkcsAuthInit.hpp"
 
+#include <openssl-compat.h>
+
 #include <cstdio>
 #include <string>
 

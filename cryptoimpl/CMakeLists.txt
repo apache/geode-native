@@ -21,7 +21,8 @@ add_library(cryptoImpl SHARED
   DHImpl.cpp
   Ssl.hpp
   SSLImpl.hpp
-  SSLImpl.cpp)
+  SSLImpl.cpp
+)
 
 include(GenerateExportHeader)
 generate_export_header(cryptoImpl)
@@ -37,6 +38,7 @@ set_target_properties(cryptoImpl PROPERTIES
 
 target_link_libraries(cryptoImpl
   PRIVATE
+    openssl-compat
     ACE::ACE_SSL
     _WarningsAsError
   PUBLIC

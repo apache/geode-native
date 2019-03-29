@@ -14,7 +14,6 @@
 # limitations under the License.
 
 $ErrorActionPreference = "Stop"
-Import-Module Packer -Force
 
 mkdir C:\gemfire
 cd C:\gemfire

@@ -13,15 +13,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cmake_minimum_required(VERSION 3.10)
 project(DHImpl LANGUAGES CXX)
 
-file(GLOB_RECURSE SOURCES "*.cpp")
-
-add_library(DHImpl SHARED ${SOURCES})
+add_library(DHImpl SHARED
+  DHImpl.cpp
+  DHImpl.hpp
+)
 
 set_target_properties(DHImpl PROPERTIES
-  FOLDER cpp/test/integration)
+  FOLDER cpp/test/integration
+)
 
 include(GenerateExportHeader)
 generate_export_header(DHImpl)
@@ -37,6 +38,7 @@ target_link_libraries(DHImpl
     OpenSSL::Crypto
     c++11
   PRIVATE
+    openssl-compat
     _WarningsAsError
 )
 
