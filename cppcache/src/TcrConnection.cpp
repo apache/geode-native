@@ -1132,8 +1132,7 @@ std::shared_ptr<CacheableBytes> TcrConnection::readHandshakeByteArray(
 int32_t TcrConnection::readHandshakeArraySize(
     std::chrono::microseconds connectTimeout) {
   auto arrayLenHeader = readHandshakeData(1, connectTimeout);
-  LOGDEBUG("Handshake: arrayLenHeader = %" PRIu8, arrayLenHeader[0]);
-
+  
   int32_t arrayLength = static_cast<uint8_t>(arrayLenHeader[0]);
   if (static_cast<int8_t>(arrayLenHeader[0]) == -2) {
     auto arrayLengthBytes = readHandshakeData(2, connectTimeout);
@@ -1148,8 +1147,7 @@ int32_t TcrConnection::readHandshakeArraySize(
         arrayLengthBytes.size());
     arrayLength = dataInput2.readInt32();
   }
-  LOGDEBUG("Handshake: recvMsgLen = %" PRIu32, arrayLength);
-
+  
   return arrayLength;
 }
 
