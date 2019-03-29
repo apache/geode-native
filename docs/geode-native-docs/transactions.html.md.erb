@@ -140,8 +140,8 @@ If all `put` operations succeed, the application commits the transaction. Otherw
      {
        cache.CacheTransactionManager.Rollback();
        Console.WriteLine("Rolled back transaction - retrying({0})", retries);
-        }
-      }
+     }
+   }
 ```
 
 ### <a id="cpp-example"></a>C++ Example
@@ -193,4 +193,5 @@ If all `put` operations succeed, the application commits the transaction. Otherw
       transactionManager->rollback();
       std::cout << "Rolled back transaction - retrying(" << retries << ")" << std::endl;
     }
+  }
 ```
