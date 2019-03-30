@@ -301,10 +301,9 @@ bool TcrConnection::InitTcrConnection(
   size_t msgLength;
   auto data = reinterpret_cast<char*>(
       const_cast<uint8_t*>(handShakeMsg.getBuffer(&msgLength)));
-  LOGFINE(
-      "Attempting handshake with endpoint %s for %s%s connection", endpoint,
-      isClientNotification ? (isSecondary ? "secondary " : "primary ") : "",
-      isClientNotification ? "subscription" : "client");
+  LOGFINE("Attempting handshake with endpoint %s for %s%s connection", endpoint,
+          isClientNotification ? (isSecondary ? "secondary " : "primary ") : "",
+          isClientNotification ? "subscription" : "client");
   ConnErrType error = sendData(data, msgLength, connectTimeout, false);
 
   if (error == CONN_NOERR) {
@@ -1132,7 +1131,7 @@ std::shared_ptr<CacheableBytes> TcrConnection::readHandshakeByteArray(
 int32_t TcrConnection::readHandshakeArraySize(
     std::chrono::microseconds connectTimeout) {
   auto arrayLenHeader = readHandshakeData(1, connectTimeout);
-  
+
   int32_t arrayLength = static_cast<uint8_t>(arrayLenHeader[0]);
   if (static_cast<int8_t>(arrayLenHeader[0]) == -2) {
     auto arrayLengthBytes = readHandshakeData(2, connectTimeout);
@@ -1147,7 +1146,7 @@ int32_t TcrConnection::readHandshakeArraySize(
         arrayLengthBytes.size());
     arrayLength = dataInput2.readInt32();
   }
-  
+
   return arrayLength;
 }
 
