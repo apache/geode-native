@@ -45,13 +45,17 @@ ClientMetadataService::ClientMetadataService(ThinClientPoolDM* pool)
       m_regionQueue(false),
       m_bucketWaitTimeout(m_cache->getDistributedSystem()
                               .getSystemProperties()
-                              .bucketWaitTimeout())
-
-{}
+                              .bucketWaitTimeout()),
+      m_appDomainContext(createAppDomainContext()) {}
 
 void ClientMetadataService::start() {
   m_run = true;
-  m_thread = std::thread(&ClientMetadataService::svc, this);
+  if (m_appDomainContext) {
+    m_thread =
+        std::thread([this] { m_appDomainContext->run([&] { this->svc(); }); });
+  } else {
+    m_thread = std::thread(&ClientMetadataService::svc, this);
+  }
 }
 
 void ClientMetadataService::stop() {
