@@ -37,6 +37,7 @@
 #include <geode/Serializable.hpp>
 #include <geode/internal/functional.hpp>
 
+#include "AppDomainContext.hpp"
 #include "BucketServerLocation.hpp"
 #include "NonCopyable.hpp"
 #include "ServerLocation.hpp"
@@ -211,6 +212,7 @@ class ClientMetadataService : private NonCopyable, private NonAssignable {
   std::map<std::string, std::unique_ptr<PRbuckets>> m_bucketStatus;
   std::chrono::milliseconds m_bucketWaitTimeout;
   static const char* NC_CMDSvcThread;
+  std::unique_ptr<AppDomainContext> m_appDomainContext;
 };
 }  // namespace client
 }  // namespace geode
