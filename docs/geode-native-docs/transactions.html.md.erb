@@ -19,7 +19,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-The Native Client API provides a server delegate that runs transactions on the server as if they were local to the client application.
+The Native Client API runs transactions on the server as if they were local to the client application.
 Thus, the key to running client transactions lies in making sure the server is properly configured and programmed.
 For complete information about how transactions are conducted on the <%=vars.product_name%> server, see the
 [Transactions section of the <%=vars.product_name%> User Guide](geodeman/developing/transactions/chapter_overview.html).
@@ -47,9 +47,8 @@ transaction.
 
 Start each transaction with a `begin` operation, and end the transaction with a `commit` or a `rollback`.
 
-To maintain cache consistency, the local client cache is blocked during a transaction, as it may
-reflect information inconsistent with the transaction in progress. When the transaction completes or
-is suspended, the block is removed.
+To maintain cache consistency, the local client cache is not used during a transaction.
+When the transaction completes or is suspended, local cache usage is reinstated.
 
 If the transaction runs on server regions that are a mix of partitioned and replicated regions,
 perform the first transaction operation on a partitioned region. This sets the server data host for
