@@ -58,10 +58,10 @@ $ cmake .. -G "Xcode"
 #### Windows / Visual Studio
 When running cmake commands on Windows, be sure to use [Visual Studio Native Tools Command Prompt](https://msdn.microsoft.com/en-us/library/f35ctcxw.aspx) so environment variables are set properly.
 
-The recommended generator on Windows is `Visual Studio 14 2015 Win64`:
+The recommended generator on Windows is `Visual Studio 15 2017 Win64`:
 
 ```console
-$ cmake .. -G "Visual Studio 14 2015 Win64" -Thost=x64
+$ cmake .. -G "Visual Studio 15 2017 Win64" -Thost=x64
 ```
 
 ### Build Parallelism
@@ -137,6 +137,7 @@ $ cmake --build . --target install
 * Windows 10 64-bit
 * Windows Server 2012 R2 64-bit
 * Windows Server 2016 64-bit
+* NUnit 2.6.4 (to run clicache tests)
 
 ### Required Tools
 * [Visual Studio 2015](https://www.visualstudio.com) or newer
