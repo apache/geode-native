@@ -88,6 +88,8 @@ list(GET PRODUCT_VERSION_LIST 1 PRODUCT_VERSION_MINOR)
 list(GET PRODUCT_VERSION_LIST 2 PRODUCT_VERSION_PATCH)
 list(GET PRODUCT_VERSION_LIST 3 PRODUCT_VERSION_BUILD)
 
+set(APIDOC_VERSION ${PRODUCT_VERSION_MAJOR}.${PRODUCT_VERSION_MINOR}.${PRODUCT_VERSION_PATCH})
+
 # Please note that attempts to set CMAKE_INSTALL_PREFIX to a *ROOTED*
 # path here will fail due to the design of CMake according to its
 # development team. Setting it to a relative path appears to work.
