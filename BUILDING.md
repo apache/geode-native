@@ -22,7 +22,9 @@ Building requires access to an installation of Geode. There are two ways to achi
 * Pass in `GEODE_ROOT` during the CMake configuration step.
   * e.g.  add `-DGEODE_ROOT=/path/to/geode` to the _initial_ `cmake` execution command.
 
-
+## Setting Path to OpenSSL
+Building requires access to an installation of OpenSSL. You can pass `OPENSSL_ROOT_DIR` during the CMake configuration step:
+  * e.g.  add `-DOPENSSL_ROOT_DIR=/path/to/openssl` to the _initial_ `cmake` execution command.
 
 ## Steps to build
 
