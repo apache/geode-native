@@ -39,8 +39,6 @@ ThinClientPoolRegion::ThinClientPoolRegion(
     const std::shared_ptr<CacheStatistics>& stats, bool shared)
     : ThinClientRegion(name, cache, rPtr, attributes, stats, shared) {}
 
-ThinClientPoolRegion::~ThinClientPoolRegion() { m_tcrdm = nullptr; }
-
 void ThinClientPoolRegion::initTCR() {
   try {
     auto poolDM = std::dynamic_pointer_cast<ThinClientPoolDM>(

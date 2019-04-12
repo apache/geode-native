@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_THINCLIENTHAREGION_H_
-#define GEODE_THINCLIENTHAREGION_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,14 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#pragma once
+
+#ifndef GEODE_THINCLIENTHAREGION_H_
+#define GEODE_THINCLIENTHAREGION_H_
 
 #include <geode/Pool.hpp>
 
 #include "ThinClientRegion.hpp"
-
-/**
- * @file
- */
 
 namespace apache {
 namespace geode {
@@ -44,14 +39,14 @@ namespace client {
  */
 class APACHE_GEODE_EXPORT ThinClientHARegion : public ThinClientRegion {
  public:
-  /**
-   * @brief constructor/destructor
-   */
   ThinClientHARegion(const std::string& name, CacheImpl* cache,
                      const std::shared_ptr<RegionInternal>& rPtr,
                      RegionAttributes attributes,
                      const std::shared_ptr<CacheStatistics>& stats,
                      bool shared = false, bool enableNotification = true);
+
+  ThinClientHARegion(const ThinClientHARegion&) = delete;
+  ThinClientHARegion& operator=(const ThinClientHARegion&) = delete;
 
   ~ThinClientHARegion() noexcept override = default;
 
@@ -74,15 +69,12 @@ class APACHE_GEODE_EXPORT ThinClientHARegion : public ThinClientRegion {
   volatile bool m_processedMarker;
   void handleMarker() override;
 
-  // Disallow copy constructor and assignment operator.
-  ThinClientHARegion(const ThinClientHARegion&);
-  ThinClientHARegion& operator=(const ThinClientHARegion&);
-
   void acquireGlobals(bool isFailover) override;
   void releaseGlobals(bool isFailover) override;
 
   void destroyDM(bool keepEndpoints) override;
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

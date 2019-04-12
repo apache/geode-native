@@ -25,7 +25,7 @@ namespace client {
 
 Region::Region(CacheImpl* cacheImpl) : m_cacheImpl(cacheImpl) {}
 
-Region::~Region() {}
+Region::~Region() noexcept = default;
 
 Cache& Region::getCache() { return *m_cacheImpl->getCache(); }
 
