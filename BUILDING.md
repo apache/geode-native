@@ -33,9 +33,11 @@ $ cmake .. <platform-specific generator parameters (see below)>
 # build step
 $ cmake --build . -- <platform-specific parallelism parameters (see below)>
 ```
-If OpenSSL is installed in a custom location, then one must pass `OPENSSL_ROOT_DIR` during the CMake configuration step. e.g.  add `-DOPENSSL_ROOT_DIR=/path/to/openssl`.
+If OpenSSL is installed in a custom location, then you  must pass `OPENSSL_ROOT_DIR` during the CMake configuration step. For example, `-DOPENSSL_ROOT_DIR=/path/to/openssl`.
 
 To explicitly specify the location in which the Native Client will be installed, add `-DCMAKE_INSTALL_PREFIX=/path/to/installation/destination` to this initial `cmake` execution command.
+
+To set the version header on the API docs, specify PRODUCT_VERSION on the configuration command line. For example, `-DPRODUCT_VERSION=1.2.3`.
 
 ### Generator
 CMake uses a "generator" to produce configuration files for use by a variety of build tools, e.g., UNIX makefiles, Visual Studio projects. By default a system-specific generator is used by CMake during configuration. (Please see [the CMake documentation](https://cmake.org/documentation/) for further information.) However, in many cases there is a better choice.
