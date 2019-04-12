@@ -149,7 +149,7 @@ class APACHE_GEODE_EXPORT ThinClientRegion : public LocalRegion {
 
   void localInvalidateFailover();
 
-  inline ThinClientBaseDM* getDistMgr() const { return m_tcrdm; }
+  inline ThinClientBaseDM* getDistMgr() const { return m_tcrdm.get(); }
 
   std::shared_ptr<CacheableVector> reExecuteFunction(
       const std::string& func, const std::shared_ptr<Cacheable>& args,
@@ -281,8 +281,7 @@ class APACHE_GEODE_EXPORT ThinClientRegion : public LocalRegion {
   GfErrType unregisterKeysBeforeDestroyRegion() override;
 
   bool isDurableClient() { return m_isDurableClnt; }
-  /** @brief Protected fields. */
-  ThinClientBaseDM* m_tcrdm;
+  std::shared_ptr<ThinClientBaseDM> m_tcrdm;
   std::recursive_mutex m_keysLock;
   mutable ACE_RW_Thread_Mutex m_rwDestroyLock;
   std::unordered_map<std::shared_ptr<CacheableKey>, InterestResultPolicy>

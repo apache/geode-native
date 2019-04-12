@@ -94,46 +94,7 @@ void TcrConnectionManager::init(bool isPool) {
         m_pingTaskId, pingInterval.count());
   }
 
-  auto cacheAttributes = m_cache->getAttributes();
-  const auto &endpoints = cacheAttributes->getEndpoints();
   m_redundancyManager->m_HAenabled = false;
-
-  if (cacheAttributes != nullptr &&
-      (cacheAttributes->getRedundancyLevel() > 0 || m_isDurable) &&
-      !endpoints.empty() && endpoints != "none") {
-    // no distributaion manager at this point
-    initializeHAEndpoints(endpoints.c_str());
-    m_redundancyManager->initialize(cacheAttributes->getRedundancyLevel());
-    //  Call maintain redundancy level, so primary is available for notification
-    //  operations.
-    GfErrType err = m_redundancyManager->maintainRedundancyLevel(true);
-    m_redundancyManager->m_HAenabled =
-        m_redundancyManager->m_HAenabled ||
-        ThinClientBaseDM::isDeltaEnabledOnServer();
-
-    const auto redundancyChecker = new ExpiryHandler_T<TcrConnectionManager>(
-        this, &TcrConnectionManager::checkRedundancy);
-    const auto redundancyMonitorInterval = props.redundancyMonitorInterval();
-
-    m_servermonitorTaskId = m_cache->getExpiryTaskManager().scheduleExpiryTask(
-        redundancyChecker, std::chrono::seconds(1), redundancyMonitorInterval,
-        false);
-    LOGFINE(
-        "TcrConnectionManager::TcrConnectionManager Registered server "
-        "monitor task with id = %ld, interval = %ld",
-        m_servermonitorTaskId, redundancyMonitorInterval.count());
-
-    if (ThinClientBaseDM::isFatalError(err)) {
-      GfErrTypeToException("TcrConnectionManager::init", err);
-    }
-
-    m_redundancyTask = std::unique_ptr<Task<TcrConnectionManager>>(
-        new Task<TcrConnectionManager>(this, &TcrConnectionManager::redundancy,
-                                       NC_Redundancy));
-    m_redundancyTask->start();
-
-    m_redundancyManager->m_HAenabled = true;
-  }
 
   startFailoverAndCleanupThreads(isPool);
 }
@@ -161,6 +122,7 @@ void TcrConnectionManager::startFailoverAndCleanupThreads(bool isPool) {
 
 void TcrConnectionManager::close() {
   LOGFINE("TcrConnectionManager is closing");
+
   if (m_pingTaskId > 0) {
     m_cache->getExpiryTaskManager().cancelTask(m_pingTaskId);
   }
@@ -172,27 +134,6 @@ void TcrConnectionManager::close() {
     m_failoverTask = nullptr;
   }
 
-  auto cacheAttributes = m_cache->getAttributes();
-  if (cacheAttributes != nullptr &&
-      (cacheAttributes->getRedundancyLevel() > 0 || m_isDurable)) {
-    if (m_servermonitorTaskId > 0) {
-      m_cache->getExpiryTaskManager().cancelTask(m_servermonitorTaskId);
-    }
-    if (m_redundancyTask != nullptr) {
-      m_redundancyTask->stopNoblock();
-      m_redundancySema.release();
-      m_redundancyTask->wait();
-      // now stop cleanup task
-      // stopCleanupTask();
-      m_redundancyTask = nullptr;
-    }
-
-    m_redundancyManager->close();
-    delete m_redundancyManager;
-    m_redundancyManager = nullptr;
-
-    removeHAEndpoints();
-  }
   LOGFINE("TcrConnectionManager is closed");
 }
 

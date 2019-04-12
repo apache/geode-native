@@ -66,7 +66,6 @@ CacheImpl::CacheImpl(Cache* c, const std::shared_ptr<Properties>& dsProps,
       m_distributedSystem(DistributedSystem::create(DEFAULT_DS_NAME, dsProps)),
       m_clientProxyMembershipIDFactory(m_distributedSystem.getName()),
       m_cache(c),
-      m_attributes(nullptr),
       m_tcrConnectionManager(nullptr),
       m_remoteQueryServicePtr(nullptr),
       m_destroyPending(false),
@@ -116,22 +115,6 @@ CacheImpl::CacheImpl(Cache* c, const std::shared_ptr<Properties>& dsProps,
 
 void CacheImpl::initServices() {
   m_tcrConnectionManager = new TcrConnectionManager(this);
-  if (!m_initDone && m_attributes != nullptr &&
-      !m_attributes->getEndpoints().empty()) {
-    if (getPoolManager().getAll().size() > 0 && getCacheMode()) {
-      LOGWARN(
-          "At least one pool has been created so ignoring cache level "
-          "redundancy setting");
-    }
-    m_tcrConnectionManager->init();
-    m_remoteQueryServicePtr = std::make_shared<RemoteQueryService>(this);
-    // StartAdminRegion
-    auto& prop = m_distributedSystem.getSystemProperties();
-    if (prop.statisticsEnabled()) {
-      m_adminRegion = AdminRegion::create(this);
-    }
-    m_initDone = true;
-  }
 }
 
 void CacheImpl::netDown() {
@@ -153,12 +136,7 @@ CacheImpl::RegionKind CacheImpl::getRegionKind(
   RegionKind regionKind = CPP_REGION;
   std::string endpoints;
 
-  if (m_attributes != nullptr &&
-      !(endpoints = m_attributes->getEndpoints()).empty() &&
-      (m_attributes->getRedundancyLevel() > 0 ||
-       m_tcrConnectionManager->isDurable())) {
-    regionKind = THINCLIENT_HA_REGION;
-  } else if (!endpoints.empty() && regionAttributes.getEndpoints().empty()) {
+  if (!endpoints.empty() && regionAttributes.getEndpoints().empty()) {
     regionAttributes.setEndpoints(endpoints);
   }
 
@@ -173,8 +151,8 @@ CacheImpl::RegionKind CacheImpl::getRegionKind(
     if ((pPtr != nullptr && (pPtr->getSubscriptionRedundancy() > 0 ||
                              pPtr->getSubscriptionEnabled())) ||
         m_tcrConnectionManager->isDurable()) {
-      regionKind = THINCLIENT_HA_REGION;  // As of now ThinClinetHARegion deals
-      // with Pool as well.
+      // As of now ThinClinetHARegion deals with Pool as well.
+      regionKind = THINCLIENT_HA_REGION;
     } else {
       regionKind = THINCLIENT_POOL_REGION;
     }
@@ -237,13 +215,6 @@ const std::string& CacheImpl::getName() const {
 }
 
 bool CacheImpl::isClosed() const { return m_closed; }
-
-void CacheImpl::setAttributes(
-    const std::shared_ptr<CacheAttributes>& attributes) {
-  if (m_attributes == nullptr && attributes != nullptr) {
-    m_attributes = attributes;
-  }
-}
 
 DistributedSystem& CacheImpl::getDistributedSystem() {
   return m_distributedSystem;
@@ -529,8 +500,6 @@ std::shared_ptr<RegionInternal> CacheImpl::createRegion_internal(
   RegionKind regionKind = getRegionKind(attrs);
   const auto& poolName = attrs.getPoolName();
   const auto& regionEndpoints = attrs.getEndpoints();
-  const std::string cacheEndpoints =
-      m_attributes ? m_attributes->getEndpoints() : "";
 
   if (!poolName.empty()) {
     auto pool = getPoolManager().find(poolName);
@@ -548,8 +517,7 @@ std::shared_ptr<RegionInternal> CacheImpl::createRegion_internal(
     }
   }
 
-  if (!poolName.empty() &&
-      (!regionEndpoints.empty() || !cacheEndpoints.empty())) {
+  if (!poolName.empty() && !regionEndpoints.empty()) {
     LOGERROR(
         "Cache or region endpoints cannot be specified when pool name is "
         "specified for region %s",

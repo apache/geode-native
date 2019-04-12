@@ -27,7 +27,6 @@
 #include <ace/RW_Thread_Mutex.h>
 
 #include <geode/Cache.hpp>
-#include <geode/CacheAttributes.hpp>
 #include <geode/PoolManager.hpp>
 #include <geode/TypeRegistry.hpp>
 #include <geode/internal/geode_globals.hpp>
@@ -130,14 +129,6 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
    * @return true, if this cache is closed; false, otherwise
    */
   bool isClosed() const;
-
-  /** Get the <code>CacheAttributes</code> for this cache. */
-  inline std::shared_ptr<CacheAttributes> getAttributes() const {
-    return m_attributes;
-  }
-
-  /** Set the <code>CacheAttributes</code> for this cache. */
-  void setAttributes(const std::shared_ptr<CacheAttributes>& attributes);
 
   /**
    * Returns the distributed system that this cache was
@@ -264,10 +255,6 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
   // Pool helpers for unit tests
   int getPoolSize(const char* poolName);
 
-  bool getCacheMode() {
-    return m_attributes == nullptr ? false : m_attributes->m_cacheMode;
-  }
-
   bool getPdxIgnoreUnreadFields() {
     this->throwIfClosed();
 
@@ -384,7 +371,6 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
                    std::recursive_mutex>
       m_regions;
   Cache* m_cache;
-  std::shared_ptr<CacheAttributes> m_attributes;
   std::unique_ptr<EvictionController> m_evictionController;
   TcrConnectionManager* m_tcrConnectionManager;
   std::shared_ptr<RemoteQueryService> m_remoteQueryServicePtr;

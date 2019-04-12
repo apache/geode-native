@@ -33,10 +33,8 @@ namespace geode {
 namespace client {
 
 TcrHADistributionManager::TcrHADistributionManager(
-    ThinClientRegion* theRegion, TcrConnectionManager& connManager,
-    std::shared_ptr<CacheAttributes> cacheAttributes)
+    ThinClientRegion* theRegion, TcrConnectionManager& connManager)
     : ThinClientDistributionManager(connManager, theRegion),
-      m_cacheAttributes(cacheAttributes),
       m_theTcrConnManager(connManager) {
   GF_R_ASSERT(theRegion != nullptr);
 }
@@ -62,10 +60,8 @@ GfErrType TcrHADistributionManager::registerInterestForRegion(
 }
 
 void TcrHADistributionManager::getEndpointNames(
-    std::unordered_set<std::string>& endpointNames) {
-  Utils::parseEndpointNamesString(m_cacheAttributes->getEndpoints(),
-                                  endpointNames);
-}
+    std::unordered_set<std::string>&) {}
+
 GfErrType TcrHADistributionManager::sendRequestToEP(const TcrMessage& request,
                                                     TcrMessageReply& reply,
                                                     TcrEndpoint* endpoint) {

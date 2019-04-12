@@ -121,38 +121,6 @@ Cache CacheFactory::create() const {
   return cache;
 }
 
-Cache CacheFactory::create(
-    const std::shared_ptr<CacheAttributes>& attrs) const {
-  auto cache =
-      Cache(dsProp, ignorePdxUnreadFields, pdxReadSerialized, authInitialize);
-  cache.m_cacheImpl->setAttributes(attrs);
-
-  try {
-    auto&& cacheXml = cache.m_cacheImpl->getDistributedSystem()
-                          .getSystemProperties()
-                          .cacheXMLFile();
-    if (!cacheXml.empty()) {
-      cache.initializeDeclarativeCache(cacheXml);
-    } else {
-      cache.m_cacheImpl->initServices();
-    }
-  } catch (const RegionExistsException&) {
-    LOGWARN("Attempt to create existing regions declaratively");
-  } catch (const Exception&) {
-    if (!cache.isClosed()) {
-      cache.close();
-    }
-    throw;
-  } catch (...) {
-    if (!cache.isClosed()) {
-      cache.close();
-    }
-    throw UnknownException("Exception thrown in CacheFactory::create");
-  }
-
-  return cache;
-}
-
 CacheFactory& CacheFactory::set(std::string name, std::string value) {
   if (this->dsProp == nullptr) {
     this->dsProp = Properties::create();

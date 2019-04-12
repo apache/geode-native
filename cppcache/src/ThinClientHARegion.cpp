@@ -35,42 +35,26 @@ ThinClientHARegion::ThinClientHARegion(
     bool enableNotification)
     : ThinClientRegion(name, cache, rPtr, attributes, stats, shared),
       m_attributes(attributes),
-      m_processedMarker(false),
-      m_poolDM(false) {
+      m_processedMarker(false) {
   setClientNotificationEnabled(enableNotification);
 }
 
 void ThinClientHARegion::initTCR() {
   try {
-    const bool isPool = !m_attributes.getPoolName().empty();
-
-    if (isPool) {
-      m_tcrdm = dynamic_cast<ThinClientPoolHADM*>(
-          m_cacheImpl->getCache()
-              ->getPoolManager()
-              .find(m_attributes.getPoolName())
-              .get());
-      if (m_tcrdm) {
-        m_poolDM = true;
-        // Pool DM should only be inited once and it
-        // is already done in PoolFactory::create();
-        // m_tcrdm->init();
-        ThinClientPoolHADM* poolDM = dynamic_cast<ThinClientPoolHADM*>(m_tcrdm);
-        poolDM->addRegion(this);
-        poolDM->incRegionCount();
-
-      } else {
-        throw IllegalStateException("pool not found");
-      }
+    m_tcrdm = std::dynamic_pointer_cast<ThinClientBaseDM>(
+        m_cacheImpl->getCache()->getPoolManager().find(
+            m_attributes.getPoolName()));
+    if (m_tcrdm) {
+      // Pool DM should only be inited once and it
+      // is already done in PoolFactory::create();
+      // m_tcrdm->init();
+      auto poolDM = std::dynamic_pointer_cast<ThinClientPoolHADM>(m_tcrdm);
+      poolDM->addRegion(this);
+      poolDM->incRegionCount();
     } else {
-      m_poolDM = false;
-      m_tcrdm = new TcrHADistributionManager(
-          this, m_cacheImpl->tcrConnectionManager(),
-          m_cacheImpl->getAttributes());
-      m_tcrdm->init();
+      throw IllegalStateException("pool not found");
     }
   } catch (const Exception& ex) {
-    _GEODE_SAFE_DELETE(m_tcrdm);
     LOGERROR(
         "ThinClientHARegion: failed to create a DistributionManager "
         "object due to: %s: %s",
@@ -124,30 +108,24 @@ bool ThinClientHARegion::getProcessedMarker() {
   return m_processedMarker || !isDurableClient();
 }
 
-void ThinClientHARegion::destroyDM(bool keepEndpoints) {
-  if (m_poolDM) {
-    LOGDEBUG(
-        "ThinClientHARegion::destroyDM( ): removing region from "
-        "ThinClientPoolHADM list.");
-    ThinClientPoolHADM* poolDM = dynamic_cast<ThinClientPoolHADM*>(m_tcrdm);
-    poolDM->removeRegion(this);
-    poolDM->decRegionCount();
-  } else {
-    ThinClientRegion::destroyDM(keepEndpoints);
-  }
+void ThinClientHARegion::destroyDM(bool) {
+  LOGDEBUG(
+      "ThinClientHARegion::destroyDM( ): removing region from "
+      "ThinClientPoolHADM list.");
+  auto poolDM = std::dynamic_pointer_cast<ThinClientPoolHADM>(m_tcrdm);
+  poolDM->removeRegion(this);
+  poolDM->decRegionCount();
 }
 
 void ThinClientHARegion::addDisMessToQueue() {
-  if (m_poolDM) {
-    ThinClientPoolHADM* poolDM = dynamic_cast<ThinClientPoolHADM*>(m_tcrdm);
-    poolDM->addDisMessToQueue(this);
+  auto poolDM = std::dynamic_pointer_cast<ThinClientPoolHADM>(m_tcrdm);
+  poolDM->addDisMessToQueue(this);
 
-    if (poolDM->m_redundancyManager->m_globalProcessedMarker &&
-        !m_processedMarker) {
-      TcrMessage* regionMsg = new TcrMessageClientMarker(
-          new DataOutput(m_cacheImpl->createDataOutput()), true);
-      receiveNotification(regionMsg);
-    }
+  if (poolDM->m_redundancyManager->m_globalProcessedMarker &&
+      !m_processedMarker) {
+    TcrMessage* regionMsg = new TcrMessageClientMarker(
+        new DataOutput(m_cacheImpl->createDataOutput()), true);
+    receiveNotification(regionMsg);
   }
 }
 
@@ -158,13 +136,13 @@ GfErrType ThinClientHARegion::getNoThrow_FullObject(
       new DataOutput(m_cacheImpl->createDataOutput()), eventId);
   TcrMessageReply reply(true, nullptr);
 
-  ThinClientPoolHADM* poolHADM = dynamic_cast<ThinClientPoolHADM*>(m_tcrdm);
+  auto poolHADM = std::dynamic_pointer_cast<ThinClientPoolHADM>(m_tcrdm);
   GfErrType err = GF_NOTCON;
   if (poolHADM) {
     err = poolHADM->sendRequestToPrimary(fullObjectMsg, reply);
   } else {
-    err = static_cast<TcrHADistributionManager*>(m_tcrdm)->sendRequestToPrimary(
-        fullObjectMsg, reply);
+    err = std::static_pointer_cast<TcrHADistributionManager>(m_tcrdm)
+              ->sendRequestToPrimary(fullObjectMsg, reply);
   }
   if (err == GF_NOERR) {
     fullObject = reply.getValue();

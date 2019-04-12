@@ -43,14 +43,10 @@ ThinClientPoolRegion::~ThinClientPoolRegion() { m_tcrdm = nullptr; }
 
 void ThinClientPoolRegion::initTCR() {
   try {
-    ThinClientPoolDM* poolDM = dynamic_cast<ThinClientPoolDM*>(
-        getCache()
-            .getPoolManager()
-            .find(m_regionAttributes.getPoolName())
-            .get());
-    m_tcrdm = dynamic_cast<ThinClientBaseDM*>(poolDM);
+    auto poolDM = std::dynamic_pointer_cast<ThinClientPoolDM>(
+        getCache().getPoolManager().find(m_regionAttributes.getPoolName()));
+    m_tcrdm = poolDM;
     if (!m_tcrdm) {
-      //  TODO: create a PoolNotFound exception.
       throw IllegalStateException("pool not found");
     }
     poolDM->incRegionCount();
@@ -62,7 +58,7 @@ void ThinClientPoolRegion::initTCR() {
 }
 
 void ThinClientPoolRegion::destroyDM(bool) {
-  dynamic_cast<ThinClientPoolDM*>(m_tcrdm)->decRegionCount();
+  std::dynamic_pointer_cast<ThinClientPoolDM>(m_tcrdm)->decRegionCount();
 }
 
 }  // namespace client

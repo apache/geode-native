@@ -53,37 +53,35 @@ class APACHE_GEODE_EXPORT ThinClientHARegion : public ThinClientRegion {
                      const std::shared_ptr<CacheStatistics>& stats,
                      bool shared = false, bool enableNotification = true);
 
-  virtual ~ThinClientHARegion() {
-    if (m_poolDM) m_tcrdm = nullptr;
-  };
+  ~ThinClientHARegion() noexcept override = default;
 
-  virtual void initTCR();
+  void initTCR() override;
 
-  bool getProcessedMarker();
+  bool getProcessedMarker() override;
 
-  void setProcessedMarker(bool mark = true) { m_processedMarker = mark; }
-  void addDisMessToQueue();
+  void setProcessedMarker(bool mark = true) override {
+    m_processedMarker = mark;
+  }
+  void addDisMessToQueue() override;
 
  protected:
-  virtual GfErrType getNoThrow_FullObject(
+  GfErrType getNoThrow_FullObject(
       std::shared_ptr<EventId> eventId, std::shared_ptr<Cacheable>& fullObject,
-      std::shared_ptr<VersionTag>& versionTag);
+      std::shared_ptr<VersionTag>& versionTag) override;
 
  private:
   RegionAttributes m_attributes;
   volatile bool m_processedMarker;
-  void handleMarker();
-
-  bool m_poolDM;
+  void handleMarker() override;
 
   // Disallow copy constructor and assignment operator.
   ThinClientHARegion(const ThinClientHARegion&);
   ThinClientHARegion& operator=(const ThinClientHARegion&);
 
-  void acquireGlobals(bool isFailover);
-  void releaseGlobals(bool isFailover);
+  void acquireGlobals(bool isFailover) override;
+  void releaseGlobals(bool isFailover) override;
 
-  void destroyDM(bool keepEndpoints);
+  void destroyDM(bool keepEndpoints) override;
 };
 }  // namespace client
 }  // namespace geode

@@ -358,11 +358,10 @@ ThinClientRegion::ThinClientRegion(
 
 void ThinClientRegion::initTCR() {
   try {
-    m_tcrdm =
-        new TcrDistributionManager(this, m_cacheImpl->tcrConnectionManager());
+    m_tcrdm = std::make_shared<TcrDistributionManager>(
+        this, m_cacheImpl->tcrConnectionManager());
     m_tcrdm->init();
   } catch (const Exception& ex) {
-    _GEODE_SAFE_DELETE(m_tcrdm);
     LOGERROR("Exception while initializing region: %s: %s",
              ex.getName().c_str(), ex.what());
     throw;
@@ -628,10 +627,7 @@ std::shared_ptr<SelectResults> ThinClientRegion::query(
 
   std::shared_ptr<RemoteQuery> queryPtr;
 
-  // TODO:
-  ThinClientPoolDM* poolDM = dynamic_cast<ThinClientPoolDM*>(m_tcrdm);
-
-  if (poolDM) {
+  if (auto poolDM = std::dynamic_pointer_cast<ThinClientPoolDM>(m_tcrdm)) {
     queryPtr = std::dynamic_pointer_cast<RemoteQuery>(
         poolDM->getQueryServiceWithoutCheck()->newQuery(squery.c_str()));
   } else {
@@ -639,7 +635,7 @@ std::shared_ptr<SelectResults> ThinClientRegion::query(
         m_cacheImpl->getQueryService()->newQuery(squery.c_str()));
   }
 
-  return queryPtr->execute(timeout, "Region::query", m_tcrdm, nullptr);
+  return queryPtr->execute(timeout, "Region::query", m_tcrdm.get(), nullptr);
 }
 
 bool ThinClientRegion::existsValue(const std::string& predicate,
@@ -723,9 +719,9 @@ std::shared_ptr<Serializable> ThinClientRegion::selectValue(
 std::vector<std::shared_ptr<CacheableKey>> ThinClientRegion::serverKeys() {
   CHECK_DESTROY_PENDING(TryReadGuard, Region::serverKeys);
 
-  TcrMessageReply reply(true, m_tcrdm);
+  TcrMessageReply reply(true, m_tcrdm.get());
   TcrMessageKeySet request(new DataOutput(m_cacheImpl->createDataOutput()),
-                           m_fullPath, m_tcrdm);
+                           m_fullPath, m_tcrdm.get());
   reply.setMessageTypeRequest(TcrMessage::KEY_SET);
   std::vector<std::shared_ptr<CacheableKey>> serverKeys;
   ChunkedKeySetResponse resultCollector(request, serverKeys, reply);
@@ -772,11 +768,10 @@ bool ThinClientRegion::containsKeyOnServer(
 
   TcrMessageContainsKey request(
       new DataOutput(m_cacheImpl->createDataOutput()), this, keyPtr,
-      static_cast<std::shared_ptr<Serializable>>(nullptr), true, m_tcrdm);
-  TcrMessageReply reply(true, m_tcrdm);
+      static_cast<std::shared_ptr<Serializable>>(nullptr), true, m_tcrdm.get());
+  TcrMessageReply reply(true, m_tcrdm.get());
   reply.setMessageTypeRequest(TcrMessage::CONTAINS_KEY);
   err = m_tcrdm->sendSyncRequest(request, reply);
-  // if ( err != GF_NOERR ) return ret;
 
   switch (reply.getMessageType()) {
     case TcrMessage::RESPONSE:
@@ -818,8 +813,9 @@ bool ThinClientRegion::containsValueForKey_remote(
 
   TcrMessageContainsKey request(
       new DataOutput(m_cacheImpl->createDataOutput()), this, keyPtr,
-      static_cast<std::shared_ptr<Serializable>>(nullptr), false, m_tcrdm);
-  TcrMessageReply reply(true, m_tcrdm);
+      static_cast<std::shared_ptr<Serializable>>(nullptr), false,
+      m_tcrdm.get());
+  TcrMessageReply reply(true, m_tcrdm.get());
   reply.setMessageTypeRequest(TcrMessage::CONTAINS_KEY);
   err = m_tcrdm->sendSyncRequest(request, reply);
   // if ( err != GF_NOERR ) return ret;
@@ -866,8 +862,8 @@ void ThinClientRegion::clear(
 
   TcrMessageClearRegion request(new DataOutput(m_cacheImpl->createDataOutput()),
                                 this, aCallbackArgument,
-                                std::chrono::milliseconds(-1), m_tcrdm);
-  TcrMessageReply reply(true, m_tcrdm);
+                                std::chrono::milliseconds(-1), m_tcrdm.get());
+  TcrMessageReply reply(true, m_tcrdm.get());
   err = m_tcrdm->sendSyncRequest(request, reply);
   if (err != GF_NOERR) GfErrTypeToException("Region::clear", err);
 
@@ -909,8 +905,8 @@ GfErrType ThinClientRegion::getNoThrow_remote(
   /** @brief Create message and send to bridge server */
 
   TcrMessageRequest request(new DataOutput(m_cacheImpl->createDataOutput()),
-                            this, keyPtr, aCallbackArgument, m_tcrdm);
-  TcrMessageReply reply(true, m_tcrdm);
+                            this, keyPtr, aCallbackArgument, m_tcrdm.get());
+  TcrMessageReply reply(true, m_tcrdm.get());
   err = m_tcrdm->sendSyncRequest(request, reply);
   if (err != GF_NOERR) return err;
 
@@ -947,11 +943,9 @@ GfErrType ThinClientRegion::invalidateNoThrow_remote(
     std::shared_ptr<VersionTag>& versionTag) {
   GfErrType err = GF_NOERR;
 
-  /** @brief Create message and send to bridge server */
-
   TcrMessageInvalidate request(new DataOutput(m_cacheImpl->createDataOutput()),
-                               this, keyPtr, aCallbackArgument, m_tcrdm);
-  TcrMessageReply reply(true, m_tcrdm);
+                               this, keyPtr, aCallbackArgument, m_tcrdm.get());
+  TcrMessageReply reply(true, m_tcrdm.get());
   err = m_tcrdm->sendSyncRequest(request, reply);
   if (err != GF_NOERR) return err;
 
@@ -966,8 +960,6 @@ GfErrType ThinClientRegion::invalidateNoThrow_remote(
       break;
     }
     case TcrMessage::INVALIDATE_ERROR: {
-      // LOGERROR("A read error occurred on the endpoint %s",
-      //    m_tcrdm->getActiveEndpoint()->name().c_str());
       err = GF_CACHESERVER_EXCEPTION;
       break;
     }
@@ -1000,19 +992,20 @@ GfErrType ThinClientRegion::putNoThrow_remote(
     delta = temp && temp->hasDelta();
   }
   TcrMessagePut request(new DataOutput(m_cacheImpl->createDataOutput()), this,
-                        keyPtr, valuePtr, aCallbackArgument, delta, m_tcrdm);
-  TcrMessageReply* reply = new TcrMessageReply(true, m_tcrdm);
+                        keyPtr, valuePtr, aCallbackArgument, delta,
+                        m_tcrdm.get());
+  TcrMessageReply* reply = new TcrMessageReply(true, m_tcrdm.get());
   err = m_tcrdm->sendSyncRequest(request, *reply);
   if (delta) {
-    m_cacheImpl->getCachePerfStats()
-        .incDeltaPut();  // Does not chcek whether success of failure..
-    if (reply->getMessageType() ==
-        TcrMessage::PUT_DELTA_ERROR) {  // Try without delta
+    // Does not check whether success of failure..
+    m_cacheImpl->getCachePerfStats().incDeltaPut();
+    if (reply->getMessageType() == TcrMessage::PUT_DELTA_ERROR) {
+      // Try without delta
       TcrMessagePut request(new DataOutput(m_cacheImpl->createDataOutput()),
                             this, keyPtr, valuePtr, aCallbackArgument, false,
-                            m_tcrdm, false, true);
+                            m_tcrdm.get(), false, true);
       delete reply;
-      reply = new TcrMessageReply(true, m_tcrdm);
+      reply = new TcrMessageReply(true, m_tcrdm.get());
       err = m_tcrdm->sendSyncRequest(request, *reply);
     }
   }
@@ -1029,8 +1022,6 @@ GfErrType ThinClientRegion::putNoThrow_remote(
       break;
     }
     case TcrMessage::PUT_DATA_ERROR: {
-      // LOGERROR("A write error occurred on the endpoint %s",
-      //    m_tcrdm->getActiveEndpoint()->name().c_str());
       err = GF_CACHESERVER_EXCEPTION;
       break;
     }
@@ -1062,8 +1053,9 @@ GfErrType ThinClientRegion::destroyNoThrow_remote(
 
   // do TCR destroy
   TcrMessageDestroy request(new DataOutput(m_cacheImpl->createDataOutput()),
-                            this, keyPtr, nullptr, aCallbackArgument, m_tcrdm);
-  TcrMessageReply reply(true, m_tcrdm);
+                            this, keyPtr, nullptr, aCallbackArgument,
+                            m_tcrdm.get());
+  TcrMessageReply reply(true, m_tcrdm.get());
   err = m_tcrdm->sendSyncRequest(request, reply);
   if (err != GF_NOERR) return err;
 
@@ -1105,8 +1097,9 @@ GfErrType ThinClientRegion::removeNoThrow_remote(
 
   // do TCR remove
   TcrMessageDestroy request(new DataOutput(m_cacheImpl->createDataOutput()),
-                            this, keyPtr, cvalue, aCallbackArgument, m_tcrdm);
-  TcrMessageReply reply(true, m_tcrdm);
+                            this, keyPtr, cvalue, aCallbackArgument,
+                            m_tcrdm.get());
+  TcrMessageReply reply(true, m_tcrdm.get());
   err = m_tcrdm->sendSyncRequest(request, reply);
   if (err != GF_NOERR) {
     return err;
@@ -1147,8 +1140,9 @@ GfErrType ThinClientRegion::removeNoThrowEX_remote(
 
   // do TCR remove
   TcrMessageDestroy request(new DataOutput(m_cacheImpl->createDataOutput()),
-                            this, keyPtr, nullptr, aCallbackArgument, m_tcrdm);
-  TcrMessageReply reply(true, m_tcrdm);
+                            this, keyPtr, nullptr, aCallbackArgument,
+                            m_tcrdm.get());
+  TcrMessageReply reply(true, m_tcrdm.get());
   err = m_tcrdm->sendSyncRequest(request, reply);
   if (err != GF_NOERR) {
     return err;
@@ -1208,11 +1202,10 @@ GfErrType ThinClientRegion::getAllNoThrow_remote(
     }
   }
   // create the GET_ALL request
-  TcrMessageGetAll request(
-      new DataOutput(m_cacheImpl->createDataOutput()), this, keys, m_tcrdm,
-      aCallbackArgument);  // now we need to initialize later
+  TcrMessageGetAll request(new DataOutput(m_cacheImpl->createDataOutput()),
+                           this, keys, m_tcrdm.get(), aCallbackArgument);
 
-  TcrMessageReply reply(true, m_tcrdm);
+  TcrMessageReply reply(true, m_tcrdm.get());
   std::recursive_mutex responseLock;
   // need to check
   TcrChunkedResult* resultCollector(new ChunkedGetAllResponse(
@@ -1580,8 +1573,9 @@ GfErrType ThinClientRegion::multiHopPutAllNoThrow_remote(
 
   // Construct request/reply for putAll
   TcrMessagePutAll request(new DataOutput(m_cacheImpl->createDataOutput()),
-                           this, map, timeout, m_tcrdm, aCallbackArgument);
-  TcrMessageReply reply(true, m_tcrdm);
+                           this, map, timeout, m_tcrdm.get(),
+                           aCallbackArgument);
+  TcrMessageReply reply(true, m_tcrdm.get());
   request.setTimeout(timeout);
   reply.setTimeout(timeout);
 
@@ -1641,15 +1635,11 @@ GfErrType ThinClientRegion::putAllNoThrow_remote(
     const std::shared_ptr<Serializable>& aCallbackArgument) {
   LOGDEBUG("ThinClientRegion::putAllNoThrow_remote");
 
-  auto poolDM = dynamic_cast<ThinClientPoolDM*>(m_tcrdm);
-  auto txState = TSSTXStateWrapper::get().getTXState();
-
-  if (poolDM != nullptr) {
-    if (poolDM->getPRSingleHopEnabled() &&
-        poolDM->getClientMetaDataService() != nullptr &&
-        txState == nullptr /*For Tx use multi-hop*/) {
-      return singleHopPutAllNoThrow_remote(poolDM, map, versionedObjPartList,
-                                           timeout, aCallbackArgument);
+  if (auto poolDM = std::dynamic_pointer_cast<ThinClientPoolDM>(m_tcrdm)) {
+    if (poolDM->getPRSingleHopEnabled() && poolDM->getClientMetaDataService() &&
+        !TSSTXStateWrapper::get().getTXState()) {
+      return singleHopPutAllNoThrow_remote(
+          poolDM.get(), map, versionedObjPartList, timeout, aCallbackArgument);
     } else {
       return multiHopPutAllNoThrow_remote(map, versionedObjPartList, timeout,
                                           aCallbackArgument);
@@ -1915,8 +1905,8 @@ GfErrType ThinClientRegion::multiHopRemoveAllNoThrow_remote(
 
   // Construct request/reply for putAll
   TcrMessageRemoveAll request(new DataOutput(m_cacheImpl->createDataOutput()),
-                              this, keys, aCallbackArgument, m_tcrdm);
-  TcrMessageReply reply(true, m_tcrdm);
+                              this, keys, aCallbackArgument, m_tcrdm.get());
+  TcrMessageReply reply(true, m_tcrdm.get());
 
   std::recursive_mutex responseLock;
   versionedObjPartList =
@@ -1966,15 +1956,11 @@ GfErrType ThinClientRegion::removeAllNoThrow_remote(
     const std::shared_ptr<Serializable>& aCallbackArgument) {
   LOGDEBUG("ThinClientRegion::removeAllNoThrow_remote");
 
-  ThinClientPoolDM* poolDM = dynamic_cast<ThinClientPoolDM*>(m_tcrdm);
-  auto txState = TSSTXStateWrapper::get().getTXState();
-
-  if (poolDM != nullptr) {
-    if (poolDM->getPRSingleHopEnabled() &&
-        poolDM->getClientMetaDataService() != nullptr &&
-        txState == nullptr /*For Tx use multi-hop*/) {
+  if (auto poolDM = std::dynamic_pointer_cast<ThinClientPoolDM>(m_tcrdm)) {
+    if (poolDM->getPRSingleHopEnabled() && poolDM->getClientMetaDataService() &&
+        !TSSTXStateWrapper::get().getTXState()) {
       return singleHopRemoveAllNoThrow_remote(
-          poolDM, keys, versionedObjPartList, aCallbackArgument);
+          poolDM.get(), keys, versionedObjPartList, aCallbackArgument);
     } else {
       return multiHopRemoveAllNoThrow_remote(keys, versionedObjPartList,
                                              aCallbackArgument);
@@ -1993,7 +1979,7 @@ uint32_t ThinClientRegion::size_remote() {
   // do TCR size
   TcrMessageSize request(new DataOutput(m_cacheImpl->createDataOutput()),
                          m_fullPath.c_str());
-  TcrMessageReply reply(true, m_tcrdm);
+  TcrMessageReply reply(true, m_tcrdm.get());
   err = m_tcrdm->sendSyncRequest(request, reply);
 
   if (err != GF_NOERR) {
@@ -2197,8 +2183,8 @@ GfErrType ThinClientRegion::destroyRegionNoThrow_remote(
   // do TCR destroyRegion
   TcrMessageDestroyRegion request(
       new DataOutput(m_cacheImpl->createDataOutput()), this, aCallbackArgument,
-      std::chrono::milliseconds(-1), m_tcrdm);
-  TcrMessageReply reply(true, m_tcrdm);
+      std::chrono::milliseconds(-1), m_tcrdm.get());
+  TcrMessageReply reply(true, m_tcrdm.get());
   err = m_tcrdm->sendSyncRequest(request, reply);
   if (err != GF_NOERR) return err;
 
@@ -2241,7 +2227,7 @@ GfErrType ThinClientRegion::registerKeysNoThrow(
     return err;
   }
 
-  TcrMessageReply replyLocal(true, m_tcrdm);
+  TcrMessageReply replyLocal(true, m_tcrdm.get());
   bool needToCreateRC = true;
   if (reply == nullptr) {
     reply = &replyLocal;
@@ -2255,7 +2241,7 @@ GfErrType ThinClientRegion::registerKeysNoThrow(
   TcrMessageRegisterInterestList request(
       new DataOutput(m_cacheImpl->createDataOutput()), this, keys, isDurable,
       getAttributes().getCachingEnabled(), receiveValues, interestPolicy,
-      m_tcrdm);
+      m_tcrdm.get());
   std::recursive_mutex responseLock;
   TcrChunkedResult* resultCollector = nullptr;
   if (interestPolicy.ordinal == InterestResultPolicy::KEYS_VALUES.ordinal) {
@@ -2308,7 +2294,7 @@ GfErrType ThinClientRegion::unregisterKeysNoThrow(
   CHECK_DESTROY_PENDING_NOTHROW(TryReadGuard);
   GfErrType err = GF_NOERR;
   std::lock_guard<decltype(m_keysLock)> keysGuard(m_keysLock);
-  TcrMessageReply reply(true, m_tcrdm);
+  TcrMessageReply reply(true, m_tcrdm.get());
   if (keys.empty()) {
     return err;
   }
@@ -2322,7 +2308,7 @@ GfErrType ThinClientRegion::unregisterKeysNoThrow(
 
   TcrMessageUnregisterInterestList request(
       new DataOutput(m_cacheImpl->createDataOutput()), this, keys, false, true,
-      InterestResultPolicy::NONE, m_tcrdm);
+      InterestResultPolicy::NONE, m_tcrdm.get());
   err = m_tcrdm->sendSyncRequestRegisterInterest(request, reply);
   if (err == GF_NOERR /*|| err == GF_CACHE_REDUNDANCY_FAILURE*/) {
     if (attemptFailover) {
@@ -2344,7 +2330,7 @@ GfErrType ThinClientRegion::unregisterKeysNoThrowLocalDestroy(
   RegionGlobalLocks acquireLocksFailover(this);
   GfErrType err = GF_NOERR;
   std::lock_guard<decltype(m_keysLock)> keysGuard(m_keysLock);
-  TcrMessageReply reply(true, m_tcrdm);
+  TcrMessageReply reply(true, m_tcrdm.get());
   if (keys.empty()) {
     return err;
   }
@@ -2358,7 +2344,7 @@ GfErrType ThinClientRegion::unregisterKeysNoThrowLocalDestroy(
 
   TcrMessageUnregisterInterestList request(
       new DataOutput(m_cacheImpl->createDataOutput()), this, keys, false, true,
-      InterestResultPolicy::NONE, m_tcrdm);
+      InterestResultPolicy::NONE, m_tcrdm.get());
   err = m_tcrdm->sendSyncRequestRegisterInterest(request, reply);
   if (err == GF_NOERR) {
     if (attemptFailover) {
@@ -2433,10 +2419,10 @@ GfErrType ThinClientRegion::registerRegexNoThrow(
   TcrMessageRegisterInterest request(
       new DataOutput(m_cacheImpl->createDataOutput()), m_fullPath,
       regex.c_str(), interestPolicy, isDurable,
-      getAttributes().getCachingEnabled(), receiveValues, m_tcrdm);
+      getAttributes().getCachingEnabled(), receiveValues, m_tcrdm.get());
   std::recursive_mutex responseLock;
   if (reply == nullptr) {
-    TcrMessageReply replyLocal(true, m_tcrdm);
+    TcrMessageReply replyLocal(true, m_tcrdm.get());
     auto values = std::make_shared<HashMapOfCacheable>();
     auto exceptions = std::make_shared<HashMapOfException>();
 
@@ -2510,10 +2496,10 @@ GfErrType ThinClientRegion::unregisterRegexNoThrow(const std::string& regex,
   err = findRegex(regex);
 
   if (err == GF_NOERR) {
-    TcrMessageReply reply(false, m_tcrdm);
+    TcrMessageReply reply(false, m_tcrdm.get());
     TcrMessageUnregisterInterest request(
         new DataOutput(m_cacheImpl->createDataOutput()), m_fullPath, regex,
-        InterestResultPolicy::NONE, false, true, m_tcrdm);
+        InterestResultPolicy::NONE, false, true, m_tcrdm.get());
     err = m_tcrdm->sendSyncRequestRegisterInterest(request, reply);
     if (err == GF_NOERR /*|| err == GF_CACHE_REDUNDANCY_FAILURE*/) {
       if (attemptFailover) {
@@ -2556,10 +2542,10 @@ GfErrType ThinClientRegion::unregisterRegexNoThrowLocalDestroy(
   err = findRegex(regex);
 
   if (err == GF_NOERR) {
-    TcrMessageReply reply(false, m_tcrdm);
+    TcrMessageReply reply(false, m_tcrdm.get());
     TcrMessageUnregisterInterest request(
         new DataOutput(m_cacheImpl->createDataOutput()), m_fullPath, regex,
-        InterestResultPolicy::NONE, false, true, m_tcrdm);
+        InterestResultPolicy::NONE, false, true, m_tcrdm.get());
     err = m_tcrdm->sendSyncRequestRegisterInterest(request, reply);
     if (err == GF_NOERR) {
       if (attemptFailover) {
@@ -2940,7 +2926,6 @@ ThinClientRegion::~ThinClientRegion() {
   if (!m_destroyPending) {
     release(false);
   }
-  _GEODE_SAFE_DELETE(m_tcrdm);
 }
 
 void ThinClientRegion::acquireGlobals(bool isFailover) {
@@ -2976,15 +2961,15 @@ void ThinClientRegion::executeFunction(
     if (reExecuteForServ) {
       msg = new TcrMessageExecuteRegionFunction(
           new DataOutput(m_cacheImpl->createDataOutput()), func, this, args,
-          routingObj, getResult, failedNodes, timeout, m_tcrdm,
+          routingObj, getResult, failedNodes, timeout, m_tcrdm.get(),
           static_cast<int8_t>(1));
     } else {
       msg = new TcrMessageExecuteRegionFunction(
           new DataOutput(m_cacheImpl->createDataOutput()), func, this, args,
-          routingObj, getResult, failedNodes, timeout, m_tcrdm,
+          routingObj, getResult, failedNodes, timeout, m_tcrdm.get(),
           static_cast<int8_t>(0));
     }
-    TcrMessageReply reply(true, m_tcrdm);
+    TcrMessageReply reply(true, m_tcrdm.get());
     // need to check
     ChunkedFunctionExecutionResponse* resultCollector(
         new ChunkedFunctionExecutionResponse(reply, (getResult & 2) == 2, rc));
@@ -3076,9 +3061,9 @@ std::shared_ptr<CacheableVector> ThinClientRegion::reExecuteFunction(
     reExecute = false;
     TcrMessageExecuteRegionFunction msg(
         new DataOutput(m_cacheImpl->createDataOutput()), func, this, args,
-        routingObj, getResult, failedNodes, timeout, m_tcrdm,
+        routingObj, getResult, failedNodes, timeout, m_tcrdm.get(),
         static_cast<int8_t>(1));
-    TcrMessageReply reply(true, m_tcrdm);
+    TcrMessageReply reply(true, m_tcrdm.get());
     // need to check
     ChunkedFunctionExecutionResponse* resultCollector(
         new ChunkedFunctionExecutionResponse(reply, (getResult & 2) == 2, rc));
@@ -3154,7 +3139,7 @@ bool ThinClientRegion::executeFunctionSH(
     const auto& routingObj = locationIter.second;
     auto worker = std::make_shared<OnRegionFunctionExecution>(
         func, this, args, routingObj, getResult, timeout,
-        dynamic_cast<ThinClientPoolDM*>(m_tcrdm), resultCollectorLock, rc,
+        dynamic_cast<ThinClientPoolDM*>(m_tcrdm.get()), resultCollectorLock, rc,
         userAttr, false, serverLocation, allBuckets);
     threadPool.perform(worker);
     feWorkers.push_back(worker);
@@ -3177,7 +3162,8 @@ bool ThinClientRegion::executeFunctionSH(
     if (err != GF_NOERR) {
       if (err == GF_FUNCTION_EXCEPTION) {
         reExecute = true;
-        if (auto poolDM = dynamic_cast<ThinClientPoolDM*>(m_tcrdm)) {
+        if (auto poolDM =
+                std::dynamic_pointer_cast<ThinClientPoolDM>(m_tcrdm)) {
           if (poolDM->getClientMetaDataService()) {
             poolDM->getClientMetaDataService()->enqueueForMetadataRefresh(
                 this->getFullPath(), 0);
@@ -3204,7 +3190,8 @@ bool ThinClientRegion::executeFunctionSH(
         LOGINFO(
             "ThinClientRegion::executeFunctionSH with GF_NOTCON or "
             "GF_CLIENT_WAIT_TIMEOUT ");
-        if (auto poolDM = dynamic_cast<ThinClientPoolDM*>(m_tcrdm)) {
+        if (auto poolDM =
+                std::dynamic_pointer_cast<ThinClientPoolDM>(m_tcrdm)) {
           if (poolDM->getClientMetaDataService()) {
             poolDM->getClientMetaDataService()->enqueueForMetadataRefresh(
                 this->getFullPath(), 0);
@@ -3243,8 +3230,8 @@ GfErrType ThinClientRegion::getFuncAttributes(const std::string& func,
   // do TCR GET_FUNCTION_ATTRIBUTES
   LOGDEBUG("Tcrmessage request GET_FUNCTION_ATTRIBUTES ");
   TcrMessageGetFunctionAttributes request(
-      new DataOutput(m_cacheImpl->createDataOutput()), func, m_tcrdm);
-  TcrMessageReply reply(true, m_tcrdm);
+      new DataOutput(m_cacheImpl->createDataOutput()), func, m_tcrdm.get());
+  TcrMessageReply reply(true, m_tcrdm.get());
   err = m_tcrdm->sendSyncRequest(request, reply);
   if (err != GF_NOERR) {
     return err;

@@ -19,7 +19,6 @@
 
 #include <algorithm>
 
-#include <geode/CacheAttributes.hpp>
 #include <geode/ExceptionTypes.hpp>
 #include <geode/internal/geode_globals.hpp>
 
