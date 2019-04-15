@@ -18,6 +18,7 @@
 #include "ThinClientPoolDM.hpp"
 
 #include <algorithm>
+#include <thread>
 
 #include <ace/INET_Addr.h>
 
@@ -430,6 +431,14 @@ void ThinClientPoolDM::cleanStaleConnections(std::atomic<bool>& isRunning) {
     size_t replaceCount =
         m_attrs->getMinConnections() - static_cast<int>(savelist.size());
 
+    LOGDEBUG("Preserving %d connections", savelist.size());
+
+    for (auto savedconn : savelist) {
+      put(savedconn, false);
+    }
+    savelist.clear();
+    int count = 0;
+
     for (std::vector<TcrConnection*>::const_iterator iter = replacelist.begin();
          iter != replacelist.end(); ++iter) {
       TcrConnection* conn = *iter;
@@ -451,7 +460,7 @@ void ThinClientPoolDM::cleanStaleConnections(std::atomic<bool>& isRunning) {
           if (nextIdle > std::chrono::seconds::zero() && nextIdle < _nextIdle) {
             _nextIdle = nextIdle;
           }
-          savelist.push_back(newConn);
+          put(newConn, false);
           if (newConn != conn) {
             GF_SAFE_DELETE_CON(conn);
             removeEPConnections(1, false);
@@ -474,20 +483,19 @@ void ThinClientPoolDM::cleanStaleConnections(std::atomic<bool>& isRunning) {
                 nextIdle < _nextIdle) {
               _nextIdle = nextIdle;
             }
-            savelist.push_back(conn);
+            put(conn, false);
           }
         }
       }
       replaceCount--;
+      count++;
+      if (count % 10 == 0) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+      }
     }
-
-    LOGDEBUG("Preserving %d connections", savelist.size());
-
-    for (std::vector<TcrConnection*>::const_iterator iter = savelist.begin();
-         iter != savelist.end(); ++iter) {
-      put(*iter, false);
-    }
+    replacelist.clear();
   }
+
   if (m_connManageTaskId >= 0 && isRunning &&
       m_connManager.getCacheImpl()->getExpiryTaskManager().resetTask(
           m_connManageTaskId, _nextIdle)) {
