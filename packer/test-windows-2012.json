@@ -37,7 +37,7 @@
       "pause_before":"30s",
       "type":"powershell",
       "inline":[
-        "choco install jdk8 -confirm",
+        "choco install adoptopenjdk8 -confirm",
         "choco install cmake.portable -confirm"
       ]
     },

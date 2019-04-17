@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-choco install jdk8 -confirm
+choco install adoptopenjdk8 -confirm
 choco install cmake.portable -confirm
 choco install git.install -confirm
 choco install activeperl -confirm
