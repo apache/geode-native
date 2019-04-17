@@ -33,6 +33,7 @@
     {
       "type":"shell",
       "execute_command":"{{.Vars}} sudo -E -S bash '{{.Path}}'",
+      "pause_before":"30s",
       "scripts":[
         "ubuntu/update.sh"
       ]
