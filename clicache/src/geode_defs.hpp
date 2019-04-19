@@ -61,12 +61,6 @@
 /// @file AttributesMutator.hpp
 /// Declares the AttributesMutator class.
 
-/// @file CacheAttributes.hpp
-/// Declares the CacheAttributes class.
-
-/// @file CacheAttributesFactory.hpp
-/// Declares the CacheAttributesFactory class.
-
 /// @file CacheableBuiltins.hpp
 /// Declares the CacheableBuiltinKey and CacheableBuiltinArray
 /// template classes and their instantiations for CacheableBoolean,

@@ -26,7 +26,6 @@
 #include <stack>
 
 #include <geode/Cache.hpp>
-#include <geode/CacheAttributes.hpp>
 #include <geode/CacheListener.hpp>
 #include <geode/CacheLoader.hpp>
 #include <geode/ExceptionTypes.hpp>

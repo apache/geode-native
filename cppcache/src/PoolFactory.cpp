@@ -249,11 +249,7 @@ std::shared_ptr<Pool> PoolFactory::create(std::string name) {
   if (m_cache.isClosed()) {
     throw CacheClosedException("Cache is closed");
   }
-  if (cacheImpl->getCacheMode() && m_isSubscriptionRedundancy) {
-    LOGWARN(
-        "At least one pool has been created so ignoring cache level "
-        "redundancy setting");
-  }
+
   auto&& tccm = cacheImpl->tcrConnectionManager();
 
   LOGDEBUG("PoolFactory::create mulitusermode = %d ",

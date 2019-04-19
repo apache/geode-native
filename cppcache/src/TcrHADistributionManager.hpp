@@ -20,7 +20,6 @@
 #ifndef GEODE_TCRHADISTRIBUTIONMANAGER_H_
 #define GEODE_TCRHADISTRIBUTIONMANAGER_H_
 
-#include <geode/CacheAttributes.hpp>
 #include <geode/internal/geode_base.hpp>
 
 #include "TcrConnectionManager.hpp"
@@ -41,8 +40,7 @@ class APACHE_GEODE_EXPORT TcrHADistributionManager
     : public ThinClientDistributionManager {
  public:
   TcrHADistributionManager(ThinClientRegion* theRegion,
-                           TcrConnectionManager& connManager,
-                           std::shared_ptr<CacheAttributes> cacheAttributes);
+                           TcrConnectionManager& connManager);
   ~TcrHADistributionManager() override = default;
   TcrHADistributionManager(const TcrHADistributionManager&) = delete;
   TcrHADistributionManager& operator=(const TcrHADistributionManager&) = delete;
@@ -88,7 +86,6 @@ class APACHE_GEODE_EXPORT TcrHADistributionManager
   bool postFailoverAction(TcrEndpoint* endpoint) override;
 
  private:
-  std::shared_ptr<CacheAttributes> m_cacheAttributes;
   TcrConnectionManager& m_theTcrConnManager;
 
   GfErrType sendRequestToPrimary(TcrMessage& request, TcrMessageReply& reply) {

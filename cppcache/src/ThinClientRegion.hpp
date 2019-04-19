@@ -61,41 +61,43 @@ class APACHE_GEODE_EXPORT ThinClientRegion : public LocalRegion {
                    RegionAttributes attributes,
                    const std::shared_ptr<CacheStatistics>& stats,
                    bool shared = false);
+
+  ThinClientRegion(const ThinClientRegion&) = delete;
+  ThinClientRegion& operator=(const ThinClientRegion&) = delete;
+
   virtual void initTCR();
-  virtual ~ThinClientRegion() override;
+  ~ThinClientRegion() noexcept override;
 
   /** @brief Public Methods from Region
    */
   // Unhide function to prevent SunPro Warnings
   using RegionInternal::registerKeys;
-  virtual void registerKeys(
-      const std::vector<std::shared_ptr<CacheableKey>>& keys,
-      bool isDurable = false, bool getInitialValues = false,
-      bool receiveValues = true) override;
-  virtual void unregisterKeys(
+  void registerKeys(const std::vector<std::shared_ptr<CacheableKey>>& keys,
+                    bool isDurable = false, bool getInitialValues = false,
+                    bool receiveValues = true) override;
+  void unregisterKeys(
       const std::vector<std::shared_ptr<CacheableKey>>& keys) override;
-  virtual void registerAllKeys(bool isDurable = false,
-                               bool getInitialValues = false,
-                               bool receiveValues = true) override;
-  virtual void unregisterAllKeys() override;
-  virtual void registerRegex(const std::string& regex, bool isDurable = false,
-                             bool getInitialValues = false,
-                             bool receiveValues = true) override;
-  virtual void unregisterRegex(const std::string& regex) override;
-  virtual std::vector<std::shared_ptr<CacheableKey>> serverKeys() override;
-  virtual void clear(const std::shared_ptr<Serializable>& aCallbackArgument =
-                         nullptr) override;
+  void registerAllKeys(bool isDurable = false, bool getInitialValues = false,
+                       bool receiveValues = true) override;
+  void unregisterAllKeys() override;
+  void registerRegex(const std::string& regex, bool isDurable = false,
+                     bool getInitialValues = false,
+                     bool receiveValues = true) override;
+  void unregisterRegex(const std::string& regex) override;
+  std::vector<std::shared_ptr<CacheableKey>> serverKeys() override;
+  void clear(const std::shared_ptr<Serializable>& aCallbackArgument =
+                 nullptr) override;
 
-  virtual std::shared_ptr<SelectResults> query(
+  std::shared_ptr<SelectResults> query(
       const std::string& predicate,
       std::chrono::milliseconds timeout =
           DEFAULT_QUERY_RESPONSE_TIMEOUT) override;
 
-  virtual bool existsValue(const std::string& predicate,
-                           std::chrono::milliseconds timeout =
-                               DEFAULT_QUERY_RESPONSE_TIMEOUT) override;
+  bool existsValue(const std::string& predicate,
+                   std::chrono::milliseconds timeout =
+                       DEFAULT_QUERY_RESPONSE_TIMEOUT) override;
 
-  virtual std::shared_ptr<Serializable> selectValue(
+  std::shared_ptr<Serializable> selectValue(
       const std::string& predicate,
       std::chrono::milliseconds timeout =
           DEFAULT_QUERY_RESPONSE_TIMEOUT) override;
@@ -128,28 +130,23 @@ class APACHE_GEODE_EXPORT ThinClientRegion : public LocalRegion {
 
   bool containsKeyOnServer(
       const std::shared_ptr<CacheableKey>& keyPtr) const override;
-  virtual bool containsValueForKey_remote(
+  bool containsValueForKey_remote(
       const std::shared_ptr<CacheableKey>& keyPtr) const override;
-  virtual std::vector<std::shared_ptr<CacheableKey>> getInterestList()
-      const override;
-  virtual std::vector<std::shared_ptr<CacheableString>> getInterestListRegex()
+  std::vector<std::shared_ptr<CacheableKey>> getInterestList() const override;
+  std::vector<std::shared_ptr<CacheableString>> getInterestListRegex()
       const override;
 
-  /** @brief Public Methods from RegionInternal
-   *  These are all virtual methods
-   */
   void receiveNotification(TcrMessage* msg);
 
-  /** @brief Misc utility methods. */
   static GfErrType handleServerException(const char* func,
                                          const char* exceptionMsg);
 
-  virtual void acquireGlobals(bool failover) override;
-  virtual void releaseGlobals(bool failover) override;
+  void acquireGlobals(bool failover) override;
+  void releaseGlobals(bool failover) override;
 
   void localInvalidateFailover();
 
-  inline ThinClientBaseDM* getDistMgr() const { return m_tcrdm; }
+  inline ThinClientBaseDM* getDistMgr() const { return m_tcrdm.get(); }
 
   std::shared_ptr<CacheableVector> reExecuteFunction(
       const std::string& func, const std::shared_ptr<Cacheable>& args,
@@ -186,20 +183,18 @@ class APACHE_GEODE_EXPORT ThinClientRegion : public LocalRegion {
 
   uint32_t size_remote() override;
 
-  virtual void txDestroy(const std::shared_ptr<CacheableKey>& key,
-                         const std::shared_ptr<Serializable>& callBack,
-                         std::shared_ptr<VersionTag> versionTag) override;
-  virtual void txInvalidate(const std::shared_ptr<CacheableKey>& key,
-                            const std::shared_ptr<Serializable>& callBack,
-                            std::shared_ptr<VersionTag> versionTag) override;
-  virtual void txPut(const std::shared_ptr<CacheableKey>& key,
-                     const std::shared_ptr<Cacheable>& value,
-                     const std::shared_ptr<Serializable>& callBack,
-                     std::shared_ptr<VersionTag> versionTag) override;
+  void txDestroy(const std::shared_ptr<CacheableKey>& key,
+                 const std::shared_ptr<Serializable>& callBack,
+                 std::shared_ptr<VersionTag> versionTag) override;
+  void txInvalidate(const std::shared_ptr<CacheableKey>& key,
+                    const std::shared_ptr<Serializable>& callBack,
+                    std::shared_ptr<VersionTag> versionTag) override;
+  void txPut(const std::shared_ptr<CacheableKey>& key,
+             const std::shared_ptr<Cacheable>& value,
+             const std::shared_ptr<Serializable>& callBack,
+             std::shared_ptr<VersionTag> versionTag) override;
 
  protected:
-  /** @brief the methods need to be overloaded in TCR
-   */
   GfErrType getNoThrow_remote(
       const std::shared_ptr<CacheableKey>& keyPtr,
       std::shared_ptr<Cacheable>& valPtr,
@@ -276,13 +271,12 @@ class APACHE_GEODE_EXPORT ThinClientRegion : public LocalRegion {
       std::vector<std::shared_ptr<CacheableKey>>& keysVector,
       std::unordered_map<std::shared_ptr<CacheableKey>, InterestResultPolicy>&
           interestList) const;
-  virtual void release(bool invokeCallbacks = true) override;
+  void release(bool invokeCallbacks = true) override;
 
   GfErrType unregisterKeysBeforeDestroyRegion() override;
 
   bool isDurableClient() { return m_isDurableClnt; }
-  /** @brief Protected fields. */
-  ThinClientBaseDM* m_tcrdm;
+  std::shared_ptr<ThinClientBaseDM> m_tcrdm;
   std::recursive_mutex m_keysLock;
   mutable ACE_RW_Thread_Mutex m_rwDestroyLock;
   std::unordered_map<std::shared_ptr<CacheableKey>, InterestResultPolicy>
@@ -340,9 +334,6 @@ class APACHE_GEODE_EXPORT ThinClientRegion : public LocalRegion {
       std::shared_ptr<EventId> eventId, std::shared_ptr<Cacheable>& fullObject,
       std::shared_ptr<VersionTag>& versionTag) override;
 
-  // Disallow copy constructor and assignment operator.
-  ThinClientRegion(const ThinClientRegion&);
-  ThinClientRegion& operator=(const ThinClientRegion&);
   GfErrType singleHopPutAllNoThrow_remote(
       ThinClientPoolDM* tcrdm, const HashMapOfCacheable& map,
       std::shared_ptr<VersionedCacheableObjectPartList>& versionedObjPartList,

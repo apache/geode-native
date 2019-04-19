@@ -23,7 +23,6 @@
 #include <string>
 
 #include "Cache.hpp"
-#include "CacheAttributes.hpp"
 #include "PoolFactory.hpp"
 #include "internal/geode_globals.hpp"
 
@@ -143,8 +142,6 @@ class APACHE_GEODE_EXPORT CacheFactory {
   bool ignorePdxUnreadFields;
   bool pdxReadSerialized;
   std::shared_ptr<AuthInitialize> authInitialize;
-
-  Cache create(const std::shared_ptr<CacheAttributes>& attrs) const;
 
   friend class CppCacheLibrary;
   friend class RegionFactory;

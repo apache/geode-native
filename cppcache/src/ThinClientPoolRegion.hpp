@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_THINCLIENTPOOLREGION_H_
-#define GEODE_THINCLIENTPOOLREGION_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,12 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * ThinClientPoolRegion.hpp
- *
- *  Created on: Nov 20, 2008
- *      Author: abhaware
- */
+
+#pragma once
+
+#ifndef GEODE_THINCLIENTPOOLREGION_H_
+#define GEODE_THINCLIENTPOOLREGION_H_
 
 #include "ThinClientHARegion.hpp"
 
@@ -33,25 +27,22 @@ namespace geode {
 namespace client {
 class ThinClientPoolRegion : public ThinClientRegion {
  public:
-  /**
-   * @brief constructor/initializer/destructor
-   */
   ThinClientPoolRegion(const std::string& name, CacheImpl* cache,
                        const std::shared_ptr<RegionInternal>& rPtr,
                        RegionAttributes attributes,
                        const std::shared_ptr<CacheStatistics>& stats,
                        bool shared = false);
 
-  virtual void initTCR();
-  virtual ~ThinClientPoolRegion();
+  ThinClientPoolRegion(const ThinClientPoolRegion&) = delete;
+  ThinClientPoolRegion& operator=(const ThinClientPoolRegion&) = delete;
+
+  void initTCR() override;
+  ~ThinClientPoolRegion() noexcept override = default;
 
  private:
-  virtual void destroyDM(bool keepEndpoints);
-
-  // Disallow copy constructor and assignment operator.
-  ThinClientPoolRegion(const ThinClientPoolRegion&);
-  ThinClientPoolRegion& operator=(const ThinClientPoolRegion&);
+  void destroyDM(bool keepEndpoints) override;
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

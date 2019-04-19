@@ -55,12 +55,7 @@ class CacheEventFlags {
   static const uint8_t GF_CACHE_CLOSE = 0x40;
   static const uint8_t GF_NOCACHEWRITER = 0x80;
 
-  // private constructor
   inline explicit CacheEventFlags(const uint8_t flags) : m_flags(flags) {}
-
-  // disable constructors and assignment
-  CacheEventFlags();
-  CacheEventFlags& operator=(const CacheEventFlags&);
 
  public:
   static const CacheEventFlags NORMAL;
@@ -72,8 +67,10 @@ class CacheEventFlags {
   static const CacheEventFlags CACHE_CLOSE;
   static const CacheEventFlags NOCACHEWRITER;
 
-  inline CacheEventFlags(const CacheEventFlags& flags)
-      : m_flags(flags.m_flags) {}
+  inline CacheEventFlags(const CacheEventFlags& flags) = default;
+
+  CacheEventFlags() = delete;
+  CacheEventFlags& operator=(const CacheEventFlags&) = delete;
 
   inline CacheEventFlags operator|(const CacheEventFlags& flags) const {
     return CacheEventFlags(m_flags | flags.m_flags);
@@ -141,26 +138,25 @@ class MapEntryImpl;
  */
 class RegionInternal : public Region {
  public:
-  /**
-   * @brief destructor
-   */
-  virtual ~RegionInternal() override;
-  /** @brief Default implementation of Public Methods from Region
-   */
-  virtual void registerKeys(
-      const std::vector<std::shared_ptr<CacheableKey>>& keys,
-      bool isDurable = false, bool getInitialValues = false,
-      bool receiveValues = true) override;
-  virtual void unregisterKeys(
-      const std::vector<std::shared_ptr<CacheableKey>>& keys) override;
-  virtual void registerAllKeys(bool isDurable = false,
-                               bool getInitialValues = false,
-                               bool receiveValues = true) override;
-  virtual void unregisterAllKeys() override;
+  RegionInternal(const RegionInternal&) = delete;
+  RegionInternal& operator=(const RegionInternal&) = delete;
 
-  virtual void registerRegex(const std::string& regex, bool isDurable = false,
-                             bool getInitialValues = false,
-                             bool receiveValues = true) override;
+  ~RegionInternal() noexcept override;
+
+  void registerKeys(const std::vector<std::shared_ptr<CacheableKey>>& keys,
+                    bool isDurable = false, bool getInitialValues = false,
+                    bool receiveValues = true) override;
+
+  void unregisterKeys(
+      const std::vector<std::shared_ptr<CacheableKey>>& keys) override;
+
+  void registerAllKeys(bool isDurable = false, bool getInitialValues = false,
+                       bool receiveValues = true) override;
+  void unregisterAllKeys() override;
+
+  void registerRegex(const std::string& regex, bool isDurable = false,
+                     bool getInitialValues = false,
+                     bool receiveValues = true) override;
   virtual void unregisterRegex(const std::string& regex) override;
 
   virtual std::shared_ptr<SelectResults> query(
@@ -168,11 +164,11 @@ class RegionInternal : public Region {
       std::chrono::milliseconds timeout =
           DEFAULT_QUERY_RESPONSE_TIMEOUT) override;
 
-  virtual bool existsValue(const std::string& predicate,
-                           std::chrono::milliseconds timeout =
-                               DEFAULT_QUERY_RESPONSE_TIMEOUT) override;
+  bool existsValue(const std::string& predicate,
+                   std::chrono::milliseconds timeout =
+                       DEFAULT_QUERY_RESPONSE_TIMEOUT) override;
 
-  virtual std::shared_ptr<Serializable> selectValue(
+  std::shared_ptr<Serializable> selectValue(
       const std::string& predicate,
       std::chrono::milliseconds timeout =
           DEFAULT_QUERY_RESPONSE_TIMEOUT) override;
@@ -263,7 +259,7 @@ class RegionInternal : public Region {
 
   virtual RegionStats* getRegionStats() = 0;
   virtual bool cacheEnabled() = 0;
-  virtual bool isDestroyed() const override = 0;
+  bool isDestroyed() const override = 0;
   virtual void evict(int32_t percentage) = 0;
   virtual CacheImpl* getCacheImpl() const = 0;
   virtual std::shared_ptr<TombstoneList> getTombstoneList();
@@ -290,12 +286,9 @@ class RegionInternal : public Region {
   inline bool isConcurrencyCheckEnabled() const {
     return m_regionAttributes.getConcurrencyChecksEnabled();
   }
-  virtual const std::shared_ptr<Pool>& getPool() const override = 0;
+  const std::shared_ptr<Pool>& getPool() const override = 0;
 
  protected:
-  /**
-   * @brief constructor
-   */
   RegionInternal(CacheImpl* cache, RegionAttributes attributes);
 
   void setLruEntriesLimit(uint32_t limit);
@@ -332,9 +325,6 @@ class RegionInternal : public Region {
   inline bool regionExpiryEnabled() const {
     return m_regionAttributes.getRegionExpiryEnabled();
   }
-
-  RegionInternal(const RegionInternal&) = delete;
-  RegionInternal& operator=(const RegionInternal&) = delete;
 };
 
 }  // namespace client

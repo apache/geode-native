@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_THINCLIENTHAREGION_H_
-#define GEODE_THINCLIENTHAREGION_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,14 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#pragma once
+
+#ifndef GEODE_THINCLIENTHAREGION_H_
+#define GEODE_THINCLIENTHAREGION_H_
 
 #include <geode/Pool.hpp>
 
 #include "ThinClientRegion.hpp"
-
-/**
- * @file
- */
 
 namespace apache {
 namespace geode {
@@ -44,47 +39,42 @@ namespace client {
  */
 class APACHE_GEODE_EXPORT ThinClientHARegion : public ThinClientRegion {
  public:
-  /**
-   * @brief constructor/destructor
-   */
   ThinClientHARegion(const std::string& name, CacheImpl* cache,
                      const std::shared_ptr<RegionInternal>& rPtr,
                      RegionAttributes attributes,
                      const std::shared_ptr<CacheStatistics>& stats,
                      bool shared = false, bool enableNotification = true);
 
-  virtual ~ThinClientHARegion() {
-    if (m_poolDM) m_tcrdm = nullptr;
-  };
+  ThinClientHARegion(const ThinClientHARegion&) = delete;
+  ThinClientHARegion& operator=(const ThinClientHARegion&) = delete;
 
-  virtual void initTCR();
+  ~ThinClientHARegion() noexcept override = default;
 
-  bool getProcessedMarker();
+  void initTCR() override;
 
-  void setProcessedMarker(bool mark = true) { m_processedMarker = mark; }
-  void addDisMessToQueue();
+  bool getProcessedMarker() override;
+
+  void setProcessedMarker(bool mark = true) override {
+    m_processedMarker = mark;
+  }
+  void addDisMessToQueue() override;
 
  protected:
-  virtual GfErrType getNoThrow_FullObject(
+  GfErrType getNoThrow_FullObject(
       std::shared_ptr<EventId> eventId, std::shared_ptr<Cacheable>& fullObject,
-      std::shared_ptr<VersionTag>& versionTag);
+      std::shared_ptr<VersionTag>& versionTag) override;
 
  private:
   RegionAttributes m_attributes;
   volatile bool m_processedMarker;
-  void handleMarker();
+  void handleMarker() override;
 
-  bool m_poolDM;
+  void acquireGlobals(bool isFailover) override;
+  void releaseGlobals(bool isFailover) override;
 
-  // Disallow copy constructor and assignment operator.
-  ThinClientHARegion(const ThinClientHARegion&);
-  ThinClientHARegion& operator=(const ThinClientHARegion&);
-
-  void acquireGlobals(bool isFailover);
-  void releaseGlobals(bool isFailover);
-
-  void destroyDM(bool keepEndpoints);
+  void destroyDM(bool keepEndpoints) override;
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
