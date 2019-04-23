@@ -45,6 +45,9 @@ class Gfsh {
   class Shutdown;
   Shutdown shutdown() { return Shutdown{*this}; }
 
+  class Deploy;
+  Deploy deploy() { return Deploy(*this); }
+
   class Verb {
    public:
    protected:
@@ -250,6 +253,17 @@ class Gfsh {
                   std::string(includeLocators ? "true" : "false");
       return *this;
     };
+  };
+
+  class Deploy : public Command<void> {
+   public:
+    explicit Deploy(Gfsh &gfsh) : Command{gfsh, "deploy"} {}
+
+    Deploy &jar(const std::string &jarFile) {
+      command_ += " --jars=" + jarFile;
+
+      return *this;
+    }
   };
 
  protected:
