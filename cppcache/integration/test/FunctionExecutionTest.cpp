@@ -25,13 +25,15 @@
 #include <geode/PoolManager.hpp>
 #include <geode/RegionFactory.hpp>
 #include <geode/RegionShortcut.hpp>
+
 #include "framework/Cluster.h"
+#include "framework/config.h"
 #include "framework/Gfsh.h"
 
 using apache::geode::client::Cache;
-using apache::geode::client::CacheFactory;
 using apache::geode::client::Cacheable;
 using apache::geode::client::CacheableVector;
+using apache::geode::client::CacheFactory;
 using apache::geode::client::FunctionExecutionException;
 using apache::geode::client::FunctionService;
 using apache::geode::client::Region;
@@ -140,9 +142,7 @@ TEST(DISABLED_FunctionExecutionTest,
 
   cluster.getGfsh()
       .deploy()
-      .jar(
-          "/Users/pivotal/Workspace/cmake-build-debug/geode-native/tests/"
-          "javaobject/javaobject.jar")
+      .jar(JAVAOBJECT_JAR_PATH)
       .execute();
 
   auto cache = CacheFactory().set("log-level", "none").create();

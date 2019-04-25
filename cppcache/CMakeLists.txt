@@ -59,6 +59,8 @@ elseif ("Windows" STREQUAL ${CMAKE_SYSTEM_NAME} )
   set( _WIN32 1 )
 endif()
 
+get_target_property(JAVAOBJECT_JAR_PATH javaobject JAR_FILE)
+
 list(APPEND CONFIGURE_IN_FILES ${COMMON_SOURCE_DIR}/config.h.in)
 list(APPEND CONFIGURE_OUT_FILES ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 configure_file(${COMMON_SOURCE_DIR}/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
