@@ -691,6 +691,45 @@ char* TcrConnection::sendRequest(const char* buffer, size_t len,
   return readMessage(recvLen, receiveTimeoutSec, true, &opErr, false, request);
 }
 
+std::chrono::microseconds TcrConnection::sendWithTimeouts(
+    const char* data,
+    size_t len,
+    std::chrono::microseconds sendTimeout,
+    std::chrono::microseconds receiveTimeout
+    ) {
+  std::chrono::microseconds timeSpent{0};
+  send(timeSpent, data, len, sendTimeout, true);
+
+  if (timeSpent >= receiveTimeout) {
+    throwException(
+        TimeoutException("TcrConnection::send: connection timed out"));
+  }
+
+  return timeSpent;
+}
+
+bool TcrConnection::replyHasResult(
+    const TcrMessage& request,
+    TcrMessageReply& reply
+    ) {
+  auto hasResult = true;
+
+  // no need of it now, this will not come here
+  if (request.getMessageType() == TcrMessage::EXECUTE_REGION_FUNCTION_SINGLE_HOP) {
+    ChunkedFunctionExecutionResponse* resultCollector =
+        static_cast<ChunkedFunctionExecutionResponse*>(
+            reply.getChunkedResultHandler());
+    if (resultCollector->getResult() == false) {
+      LOGDEBUG(
+            "TcrConnection::sendRequestForChunkedResponse: function execution, "
+            "no response desired");
+      hasResult = false;
+    }
+  }
+
+  return hasResult;
+}
+
 void TcrConnection::sendRequestForChunkedResponse(
     const TcrMessage& request, size_t len, TcrMessageReply& reply,
     std::chrono::microseconds sendTimeoutSec,
@@ -701,31 +740,14 @@ void TcrConnection::sendRequestForChunkedResponse(
     sendTimeoutSec = reply.getTimeout();
   }
 
-  std::chrono::microseconds timeSpent{0};
-  send(timeSpent, request.getMsgData(), len, sendTimeoutSec, true);
-
-  if (timeSpent >= receiveTimeoutSec) {
-    throwException(
-        TimeoutException("TcrConnection::send: connection timed out"));
-  }
-
-  receiveTimeoutSec -= timeSpent;
+  receiveTimeoutSec -= sendWithTimeouts(request.getMsgData(), len, sendTimeoutSec, receiveTimeoutSec);
 
   // to help in decoding the reply based on what was the request type
   reply.setMessageTypeRequest(request.getMessageType());
-  // no need of it now, this will not come here
-  if (request.getMessageType() == TcrMessage::EXECUTE_REGION_FUNCTION_SINGLE_HOP) {
-    ChunkedFunctionExecutionResponse* resultCollector =
-        static_cast<ChunkedFunctionExecutionResponse*>(
-            reply.getChunkedResultHandler());
-    if (resultCollector->getResult() == false) {
-      LOGDEBUG(
-          "TcrConnection::sendRequestForChunkedResponse: function execution, "
-          "no response desired");
-      return;
-    }
+
+  if (replyHasResult(request, reply)) {
+    readMessageChunked(reply, receiveTimeoutSec, true);
   }
-  readMessageChunked(reply, receiveTimeoutSec, true);
 }
 
 bool TcrConnection::replyHasValidTimeout(const TcrMessage& request) const {
