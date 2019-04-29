@@ -35,6 +35,7 @@ using apache::geode::client::CacheableVector;
 using apache::geode::client::CacheFactory;
 using apache::geode::client::FunctionExecutionException;
 using apache::geode::client::FunctionService;
+using apache::geode::client::NotConnectedException;
 using apache::geode::client::Region;
 using apache::geode::client::RegionShortcut;
 using apache::geode::client::ResultCollector;
@@ -129,7 +130,7 @@ TEST(FunctionExecutionTest, UnknownFunctionAsyncOnRegion) {
                FunctionExecutionException);
 }
 
-TEST(DISABLED_FunctionExecutionTest,
+TEST(FunctionExecutionTest,
      FunctionReturnsObjectWhichCantBeDeserializedOnServer) {
   Cluster cluster{LocatorCount{1}, ServerCount{2}};
   cluster.getGfsh()
@@ -157,7 +158,7 @@ TEST(DISABLED_FunctionExecutionTest,
       "executeFunction_SendObjectWhichCantBeDeserialized";
   auto functionService = FunctionService::onRegion(region);
   ASSERT_THROW(functionService.execute(GetScopeSnapshotsFunction),
-               FunctionExecutionException);
+               NotConnectedException);
 
   cache.close();
 }
