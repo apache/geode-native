@@ -21,6 +21,10 @@
 
 #include <ace/Guard_T.h>
 
+#include <geode/Exception.hpp>
+
+#include "../cppcache/src/util/exception.hpp"
+
 namespace apache {
 namespace geode {
 namespace client {
@@ -56,7 +60,9 @@ SSLImpl::SSLImpl(ACE_HANDLE sock, const char *pubkeyfile,
 
     SSL_CTX_set_cipher_list(sslctx->context(), "DEFAULT");
     sslctx->set_mode(ACE_SSL_Context::SSLv23_client);
-    sslctx->load_trusted_ca(pubkeyfile);
+    if (sslctx->load_trusted_ca(pubkeyfile) != 0) {
+      throw Exception("Failed to read trust store.");
+    }
 
     if (strlen(password) > 0) {
       SSL_CTX_set_default_passwd_cb(sslctx->context(), pem_passwd_cb);
@@ -64,8 +70,16 @@ SSLImpl::SSLImpl(ACE_HANDLE sock, const char *pubkeyfile,
                                              const_cast<char *>(password));
     }
 
-    sslctx->private_key(privkeyfile);
-    sslctx->certificate(privkeyfile);
+    if (sslctx->private_key(privkeyfile) != 0) {
+      throw Exception("Failed to read private key.");
+    }
+    if (sslctx->certificate(privkeyfile) != 0) {
+      throw Exception("Failed to read certificate.");
+    }
+    if (::SSL_CTX_use_certificate_chain_file(sslctx->context(), privkeyfile) <=
+        0) {
+      throw Exception("Failed to read certificate chain.");
+    }
     SSLImpl::s_initialized = true;
   }
   m_io = new ACE_SSL_SOCK_Stream();
