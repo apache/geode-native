@@ -210,9 +210,6 @@ class TcrEndpoint {
   virtual void processMarker();
   virtual void triggerRedundancyThread();
   virtual std::shared_ptr<QueryService> getQueryService();
-  virtual void sendRequestForChunkedResponse(const TcrMessage& request,
-                                             TcrMessageReply& reply,
-                                             TcrConnection* conn);
   virtual void closeFailedConnection(TcrConnection*& conn);
   void closeConnection(TcrConnection*& conn);
   virtual void handleNotificationStats(int64_t byteLength);
