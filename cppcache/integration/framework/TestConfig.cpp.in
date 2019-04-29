@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#include "TestConfig.h"
+#include "framework/TestConfig.h"
 
 const char *getFrameworkString(FrameworkVariable name) {
   switch(name) {
