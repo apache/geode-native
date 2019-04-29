@@ -340,8 +340,8 @@ set_target_properties(run-integration-tests PROPERTIES
 
 find_package(OpenSSL REQUIRED)
 
-add_subdirectory(dependencies)
 add_subdirectory(tests/javaobject)
+add_subdirectory(dependencies)
 add_subdirectory(openssl-compat)
 add_subdirectory(cppcache)
 add_subdirectory(cryptoimpl)

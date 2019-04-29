@@ -23,6 +23,10 @@ add_library(integration-framework STATIC
   ${CMAKE_CURRENT_BINARY_DIR}/TestConfig.cpp
   )
 
+add_dependencies(integration-framework javaobject)
+
+get_target_property(JAVAOBJECT_JAR_PATH javaobject JAR_FILE)
+
 target_compile_definitions(integration-framework
   PUBLIC
     BOOST_ASIO_HAS_MOVE
