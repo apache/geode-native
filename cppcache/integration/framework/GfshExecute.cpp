@@ -80,6 +80,6 @@ child GfshExecute::executeChild(std::vector<std::string> &commands,
   // https://github.com/klemens-morgenstern/boost-process/issues/159
   std::lock_guard<std::mutex> guard(g_child_mutex);
 #endif
-  return child(GFSH_EXECUTABLE, args = commands, env, std_out > outStream,
+  return child(getFrameworkString(FrameworkVariable::GfShExecutable), args = commands, env, std_out > outStream,
                std_err > errStream);
 }

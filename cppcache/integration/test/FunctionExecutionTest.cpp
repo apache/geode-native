@@ -27,7 +27,7 @@
 
 #include "framework/Cluster.h"
 #include "framework/Gfsh.h"
-#include "framework/config.h"
+#include "framework/TestConfig.h"
 
 using apache::geode::client::Cache;
 using apache::geode::client::Cacheable;
@@ -139,7 +139,10 @@ TEST(DISABLED_FunctionExecutionTest,
       .withType("REPLICATE")
       .execute();
 
-  cluster.getGfsh().deploy().jar(JAVAOBJECT_JAR_PATH).execute();
+  cluster.getGfsh()
+      .deploy()
+      .jar(getFrameworkString(FrameworkVariable::JavaObjectJarPath))
+      .execute();
 
   auto cache = CacheFactory().set("log-level", "none").create();
   auto pool = cache.getPoolManager()

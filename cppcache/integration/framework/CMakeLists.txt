@@ -13,17 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-configure_file(config.h.in config.h)
+configure_file(TestConfig.cpp.in TestConfig.cpp)
 
 add_library(integration-framework STATIC
   Gfsh.cpp
-  Gfsh.h
   Framework.cpp
-  Framework.h
   Cluster.cpp
-  Cluster.h
   GfshExecute.cpp
-  GfshExecute.h
+  ${CMAKE_CURRENT_BINARY_DIR}/TestConfig.cpp
   )
 
 target_compile_definitions(integration-framework
