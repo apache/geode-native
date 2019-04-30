@@ -218,7 +218,7 @@ namespace Apache
         /// Returns the instance of <see cref="RegionFactory" /> to create the region
         /// </summary>
         /// <remarks>
-        /// Pass the <see cref="RegionShortcut" /> to set the deafult region attributes
+        /// Pass the <see cref="RegionShortcut" /> to set the default region attributes
         /// </remarks>
         /// <param name="regionShortcut">the regionShortcut to set the default region attributes</param>
         /// <returns>Instance of RegionFactory</returns>
@@ -228,7 +228,7 @@ namespace Apache
         /// Returns the instance of <see cref="IRegionService" /> to do the operation on Cache with different Credential.
         /// </summary>
         /// <remarks>
-        /// Deafault pool should be in multiuser mode <see cref="CacheFactory.SetMultiuserAuthentication" />
+        /// Default pool should be in multiuser mode <see cref="CacheFactory.SetMultiuserAuthentication" />
         /// </remarks>
         /// <param name="credentials">the user Credentials.</param>
         /// <returns>Instance of IRegionService</returns>
@@ -238,7 +238,7 @@ namespace Apache
         /// Returns the instance of <see cref="IRegionService" /> to do the operation on Cache with different Credential.
         /// </summary>
         /// <remarks>
-        /// Deafault pool should be in multiuser mode <see cref="CacheFactory.SetMultiuserAuthentication" />
+        /// Default pool should be in multiuser mode <see cref="CacheFactory.SetMultiuserAuthentication" />
         /// </remarks>
         /// <param name="credentials">the user Credentials.</param>
         /// <param name="poolName">Pool, which is in multiuser mode.</param>

@@ -108,7 +108,7 @@ class APACHE_GEODE_EXPORT PoolFactory {
   static const int DEFAULT_MAX_CONNECTIONS = -1;
 
   /**
-   * The default amount of time in to wait for a connection to become idle.
+   * The default amount of time to wait for a connection to become idle.
    * <p>Current value: <code>5s</code>.
    */
   static const std::chrono::milliseconds DEFAULT_IDLE_TIMEOUT;
@@ -121,7 +121,7 @@ class APACHE_GEODE_EXPORT PoolFactory {
   static const int DEFAULT_RETRY_ATTEMPTS = -1;
 
   /**
-   * The default frequenc, to ping servers.
+   * The default frequency, to ping servers.
    * <p>Current value: <code>10s</code>.
    */
   static const std::chrono::milliseconds DEFAULT_PING_INTERVAL;
@@ -186,7 +186,7 @@ class APACHE_GEODE_EXPORT PoolFactory {
   static constexpr bool DEFAULT_MULTIUSER_SECURE_MODE = false;
 
   /**
-   * The default value for whether to have single hop optimisations enabled.
+   * The default value for whether to have single hop optimizations enabled.
    * <p>Current value: <code>true</code>.
    */
   static constexpr bool DEFAULT_PR_SINGLE_HOP_ENABLED = true;
@@ -254,7 +254,7 @@ class APACHE_GEODE_EXPORT PoolFactory {
    * see.
    * <p>If <code>false</code> then connections are returned to the pool as soon
    * as the operation being done with the connection completes. This allows
-   * connections to be shared amonst multiple threads keeping the number of
+   * connections to be shared among multiple threads keeping the number of
    * connections down.
    *
    * @param threadLocalConnections if <code>true</code> then enable thread local
@@ -485,7 +485,7 @@ class APACHE_GEODE_EXPORT PoolFactory {
    * Sets whether Pool is in multi user secure mode.
    * If its in multiuser mode then app needs to get RegionService instance of
    * Cache.
-   * Deafult value is false.
+   * Default value is false.
    * @return a reference to <code>this</code>
    */
   PoolFactory& setMultiuserAuthentication(bool multiuserAuthentication);
@@ -510,22 +510,22 @@ class APACHE_GEODE_EXPORT PoolFactory {
   std::shared_ptr<Pool> create(std::string name);
 
   /**
-   * By default setPRSingleHopEnabled is true<br>
-   * The client is aware of location of partitions on servers hosting
-   * {@link Region}s.
-   * Using this information, the client routes the client cache operations
+   * By default setPRSingleHopEnabled is true.<br>
+   * The client is aware of the locations of partitions on servers hosting
+   * partitioned regions.
+   * Using this information, the client routes client cache operations
    * directly to the server which is hosting the required partition for the
    * cache operation.
    * If setPRSingleHopEnabled is false the client can do an extra hop on servers
    * to go to the required partition for that cache operation.
-   * The setPRSingleHopEnabled avoids extra hops only for following cache
+   * The setPRSingleHopEnabled setting avoids extra hops only for the following cache
    * operations:<br>
    * 1. {@link Region#put(Object, Object)}<br>
    * 2. {@link Region#get(Object)}<br>
    * 3. {@link Region#destroy(Object)}<br>
    * If true, works best when {@link PoolFactory#setMaxConnections(int)} is set
    * to -1.
-   * @param name is boolean whether PR Single Hop optimization is enabled or
+   * @param enabled is a boolean indicating whether PR Single Hop optimization should be enabled or
    * not.
    * @return a reference to <code>this</code>
    */
