@@ -111,6 +111,8 @@ class TcrChunkedResult {
   inline void setException(std::shared_ptr<Exception> ex) { m_ex = ex; }
 
   inline std::shared_ptr<Exception>& getException() { return m_ex; }
+
+  inline void clearException() { m_ex = nullptr; }
 };
 
 /**

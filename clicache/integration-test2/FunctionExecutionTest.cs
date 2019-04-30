@@ -132,5 +132,30 @@ namespace Apache.Geode.Client.IntegrationTests
                 Assert.Equal(expectedResultCount, resultList.Count);
             }
         }
+
+    [Fact(Skip = "Waiting for a fix from Geode server.")]
+    public void FunctionReturnsObjectWhichCantBeDeserializedOnServer()
+    {
+      using (var cluster = new Cluster(output, CreateTestCaseDirectoryName(), 1, 2))
+      {
+        Assert.True(cluster.Start());
+        Assert.Equal(0, cluster.Gfsh.create().region()
+            .withName("region")
+            .withType("REPLICATE")
+            .execute());
+        Assert.Equal(0, cluster.Gfsh.deploy()
+            .withJar(Config.JavaobjectJarPath)
+            .execute());
+
+        var cache = cluster.CreateCache();
+        var pool = cache.GetPoolFactory().AddLocator("localhost", 10334).Create("pool");
+        var region = cache.CreateRegionFactory(RegionShortcut.PROXY)
+            .SetPoolName("pool")
+            .Create<object, object>("region");
+
+        var exc = Client.FunctionService<List<object>>.OnRegion<object, object>(region);
+        Assert.Throws<FunctionExecutionException>(() => exc.Execute("executeFunction_SendObjectWhichCantBeDeserialized"));
+      }
     }
+  }
 }

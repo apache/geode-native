@@ -34,7 +34,7 @@
                        w_constexprnonlitret, explctspectypename)
 
 #include "Gfsh.h"
-#include "config.h"
+#include "TestConfig.h"
 
 template <class _T>
 bool starts_with(const _T &input, const _T &match) {

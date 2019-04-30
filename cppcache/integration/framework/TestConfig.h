@@ -20,7 +20,8 @@
 #ifndef INTEGRATION_TEST_FRAMEWORK_CONFIG_H
 #define INTEGRATION_TEST_FRAMEWORK_CONFIG_H
 
-#define GFSH_EXECUTABLE "@Geode_gfsh_EXECUTABLE@"
-#define JAVAOBJECT_JAR_PATH "@JAVAOBJECT_JAR_PATH@"
+enum class FrameworkVariable {JavaObjectJarPath, GfShExecutable};
 
-#endif  // INTEGRATION_TEST_FRAMEWORK_CONFIG_H
+const char *getFrameworkString(FrameworkVariable name);
+
+#endif // INTEGRATION_TEST_FRAMEWORK_CONFIG_H

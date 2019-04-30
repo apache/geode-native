@@ -348,6 +348,7 @@ set_target_properties(run-integration-tests PROPERTIES
 
 find_package(OpenSSL REQUIRED)
 
+add_subdirectory(tests/javaobject)
 add_subdirectory(dependencies)
 add_subdirectory(openssl-compat)
 add_subdirectory(cppcache)
@@ -357,7 +358,6 @@ add_subdirectory(sqliteimpl)
 add_subdirectory(templates/security)
 add_subdirectory(docs/api)
 add_subdirectory(examples)
-add_subdirectory(tests/javaobject)
 if (${BUILD_CLI})
   add_subdirectory(clicache)
 endif()
