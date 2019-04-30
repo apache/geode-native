@@ -794,7 +794,8 @@ GfErrType TcrEndpoint::sendRequestConn(const TcrMessage& request,
         type == TcrMessage::EXECUTE_REGION_FUNCTION) &&
        (request.hasResult() & 2))) {
     conn->sendRequestForChunkedResponse(request, request.getMsgLength(), reply,
-                                        request.getTimeout(), reply.getTimeout());
+                                        request.getTimeout(),
+                                        reply.getTimeout());
   } else if (type == TcrMessage::REGISTER_INTEREST_LIST ||
              type == TcrMessage::REGISTER_INTEREST ||
              type == TcrMessage::QUERY ||
@@ -826,7 +827,8 @@ GfErrType TcrEndpoint::sendRequestConn(const TcrMessage& request,
              type == TcrMessage::EXECUTECQ_WITH_IR_MSG_TYPE ||
              type == TcrMessage::GETDURABLECQS_MSG_TYPE) {
     conn->sendRequestForChunkedResponse(request, request.getMsgLength(), reply,
-                                        request.getTimeout(), reply.getTimeout());
+                                        request.getTimeout(),
+                                        reply.getTimeout());
     LOGDEBUG("sendRequestConn: calling sendRequestForChunkedResponse DONE");
   } else {
     // Chk request type to request if so request.getCallBackArg flag & setCall
