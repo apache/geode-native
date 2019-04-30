@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+get_target_property(JAVAOBJECT_JAR_PATH javaobject JAR_FILE)
+
 configure_file(TestConfig.cpp.in TestConfig.cpp)
 
 add_library(integration-framework STATIC
@@ -24,8 +26,6 @@ add_library(integration-framework STATIC
   )
 
 add_dependencies(integration-framework javaobject)
-
-get_target_property(JAVAOBJECT_JAR_PATH javaobject JAR_FILE)
 
 target_compile_definitions(integration-framework
   PUBLIC
