@@ -20,8 +20,7 @@
 #ifndef GEODE_TESTOBJECT_DELTAFASTASSETACCOUNT_H_
 #define GEODE_TESTOBJECT_DELTAFASTASSETACCOUNT_H_
 
-#include <inttypes.h>
-
+#include <cinttypes>
 #include <string>
 
 #include <ace/ACE.h>

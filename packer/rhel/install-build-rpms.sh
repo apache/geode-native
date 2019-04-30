@@ -17,4 +17,7 @@
 
 set -x -e -o pipefail
 
-yum install -y git2u make doxygen zlib-devel patch openssl-devel
+yum install -y make doxygen zlib-devel patch openssl-devel
+
+yum install -y rh-git29
+echo "source scl_source enable rh-git29" >> ~build/.bashrc

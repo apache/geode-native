@@ -162,8 +162,9 @@ target_include_directories(ACE_ACE SYSTEM INTERFACE
   $<BUILD_INTERFACE:${INSTALL_DIR}/include>
 )
 target_compile_definitions(ACE_ACE INTERFACE
-	-D__ACE_INLINE__
-	-DACE_AS_STATIC_LIBS
+  __ACE_INLINE__
+  ACE_AS_STATIC_LIBS
+  __STDC_FORMAT_MACROS # ACE slurps in inttypes.h before cinttypes and clobbers these macros
 )
 target_link_libraries(ACE_ACE INTERFACE
   ${INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}ACE${CMAKE_STATIC_LIBRARY_SUFFIX}

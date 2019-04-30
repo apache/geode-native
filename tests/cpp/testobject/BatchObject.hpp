@@ -20,8 +20,7 @@
 #ifndef GEODE_TESTOBJECT_BATCHOBJECT_H_
 #define GEODE_TESTOBJECT_BATCHOBJECT_H_
 
-#include <inttypes.h>
-
+#include <cinttypes>
 #include <string>
 
 #include <ace/ACE.h>

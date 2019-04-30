@@ -15,8 +15,7 @@
  * limitations under the License.
  */
 
-#define __STDC_FORMAT_MACROS
-#include <inttypes.h>
+#include <cinttypes>
 
 #include <geode/internal/geode_base.hpp>
 

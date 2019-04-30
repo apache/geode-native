@@ -23,7 +23,7 @@
 #include "config.h"
 
 #if defined(_MACOSX)
-#include <inttypes.h>
+#include <cinttypes>
 #endif
 
 #include <string>
