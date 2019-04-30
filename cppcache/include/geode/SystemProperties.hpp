@@ -269,7 +269,7 @@ class APACHE_GEODE_EXPORT SystemProperties {
 
   /**
    * Returns true if app wants to clear pdx type ids when client disconnect.
-   * deafult is false.
+   * default is false.
    */
   bool onClientDisconnectClearPdxTypeIds() const {
     return m_onClientDisconnectClearPdxTypeIds;

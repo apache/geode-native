@@ -293,7 +293,7 @@ namespace Apache
         /// By default SetPRSingleHopEnabled is true.
         /// </summary>
         /// <remarks>
-        /// The client is aware of location of partitions on servers hosting
+        /// The client is aware of the locations of partitions on servers hosting partitioned regions.
         /// Using this information, the client routes the client cache operations
         /// directly to the server which is hosting the required partition for the
         /// cache operation. 
@@ -361,7 +361,7 @@ namespace Apache
         /// for the connections but increases the number of connections the servers see.
         /// If false then connections are returned to the pool as soon
         /// as the operation being done with the connection completes. This allows
-        /// connections to be shared amonst multiple threads keeping the number of
+        /// connections to be shared among multiple threads keeping the number of
         /// connections down.
         /// </remarks>
         PoolFactory^ SetThreadLocalConnections(Boolean enabled);

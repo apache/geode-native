@@ -182,7 +182,7 @@ class APACHE_GEODE_EXPORT Pool : public std::enable_shared_from_this<Pool> {
   bool getMultiuserAuthentication() const;
 
   /**
-   * Returns true if single-hop optimisation is enabled on this pool.
+   * Returns true if single-hop optimization is enabled on this pool.
    * @see PoolFactory#setPRSingleHopEnabled
    */
   bool getPRSingleHopEnabled() const;

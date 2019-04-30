@@ -139,8 +139,8 @@ void InternalCacheTransactionManager2PCImpl::afterCompletion(int32_t status) {
     }
 
     if (!txState->isPrepared()) {
-      // Fallback to deafult 1PC commit
-      // The inherited 1PC implmentation clears the transaction state
+      // Fallback to default 1PC commit
+      // The inherited 1PC implementation clears the transaction state
       switch (status) {
         case STATUS_COMMITTED:
           CacheTransactionManagerImpl::commit();
