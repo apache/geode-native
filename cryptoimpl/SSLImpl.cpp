@@ -21,7 +21,7 @@
 
 #include <ace/Guard_T.h>
 
-#include <geode/Exception.hpp>
+#include <geode/ExceptionTypes.hpp>
 
 #include "../cppcache/src/util/exception.hpp"
 
@@ -61,7 +61,7 @@ SSLImpl::SSLImpl(ACE_HANDLE sock, const char *pubkeyfile,
     SSL_CTX_set_cipher_list(sslctx->context(), "DEFAULT");
     sslctx->set_mode(ACE_SSL_Context::SSLv23_client);
     if (sslctx->load_trusted_ca(pubkeyfile) != 0) {
-      throw Exception("Failed to read trust store.");
+      throw SSLException("Failed to read SSL trust store.");
     }
 
     if (strlen(password) > 0) {
@@ -71,14 +71,14 @@ SSLImpl::SSLImpl(ACE_HANDLE sock, const char *pubkeyfile,
     }
 
     if (sslctx->private_key(privkeyfile) != 0) {
-      throw Exception("Failed to read private key.");
+      throw SSLException("Invalid SSL keystore password.");
     }
     if (sslctx->certificate(privkeyfile) != 0) {
-      throw Exception("Failed to read certificate.");
+      throw SSLException("Failed to read SSL certificate.");
     }
     if (::SSL_CTX_use_certificate_chain_file(sslctx->context(), privkeyfile) <=
         0) {
-      throw Exception("Failed to read certificate chain.");
+      throw SSLException("Failed to read SSL certificate chain.");
     }
     SSLImpl::s_initialized = true;
   }
