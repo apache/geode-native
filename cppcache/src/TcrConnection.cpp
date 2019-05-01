@@ -691,6 +691,37 @@ char* TcrConnection::sendRequest(const char* buffer, size_t len,
   return readMessage(recvLen, receiveTimeoutSec, true, &opErr, false, request);
 }
 
+void TcrConnection::sendRequestForChunkedResponse(
+    const TcrMessage& request, size_t len, TcrMessageReply& reply,
+    std::chrono::microseconds sendTimeoutSec,
+    std::chrono::microseconds receiveTimeoutSec) {
+  if (replyHasValidTimeout(request)) {
+    receiveTimeoutSec = reply.getTimeout();
+    sendTimeoutSec = reply.getTimeout();
+  }
+
+  receiveTimeoutSec -= sendWithTimeouts(request.getMsgData(), len,
+                                        sendTimeoutSec, receiveTimeoutSec);
+
+  // to help in decoding the reply based on what was the request type
+  reply.setMessageTypeRequest(request.getMessageType());
+
+  if (replyHasResult(request, reply)) {
+    readMessageChunked(reply, receiveTimeoutSec, true);
+  }
+}
+
+bool TcrConnection::replyHasValidTimeout(const TcrMessage& request) const {
+  auto messageType = request.getMessageType();
+  return ((messageType == TcrMessage::QUERY) ||
+      (messageType == TcrMessage::QUERY_WITH_PARAMETERS) ||
+      (messageType == TcrMessage::EXECUTECQ_WITH_IR_MSG_TYPE) ||
+      (messageType == TcrMessage::GETDURABLECQS_MSG_TYPE) ||
+      (messageType == TcrMessage::EXECUTE_FUNCTION) ||
+      (messageType == TcrMessage::EXECUTE_REGION_FUNCTION) ||
+      (messageType == TcrMessage::EXECUTE_REGION_FUNCTION_SINGLE_HOP));
+}
+
 std::chrono::microseconds TcrConnection::sendWithTimeouts(
     const char* data, size_t len, std::chrono::microseconds sendTimeout,
     std::chrono::microseconds receiveTimeout) {
@@ -717,44 +748,13 @@ bool TcrConnection::replyHasResult(const TcrMessage& request,
             reply.getChunkedResultHandler());
     if (resultCollector->getResult() == false) {
       LOGDEBUG(
-          "TcrConnection::sendRequestForChunkedResponse: function execution, "
-          "no response desired");
+            "TcrConnection::sendRequestForChunkedResponse: function execution, "
+            "no response desired");
       hasResult = false;
     }
   }
 
   return hasResult;
-}
-
-void TcrConnection::sendRequestForChunkedResponse(
-    const TcrMessage& request, size_t len, TcrMessageReply& reply,
-    std::chrono::microseconds sendTimeoutSec,
-    std::chrono::microseconds receiveTimeoutSec) {
-  if (replyHasValidTimeout(request)) {
-    receiveTimeoutSec = reply.getTimeout();
-    sendTimeoutSec = reply.getTimeout();
-  }
-
-  receiveTimeoutSec -= sendWithTimeouts(request.getMsgData(), len,
-                                        sendTimeoutSec, receiveTimeoutSec);
-
-  // to help in decoding the reply based on what was the request type
-  reply.setMessageTypeRequest(request.getMessageType());
-
-  if (replyHasResult(request, reply)) {
-    readMessageChunked(reply, receiveTimeoutSec, true);
-  }
-}
-
-bool TcrConnection::replyHasValidTimeout(const TcrMessage& request) const {
-  auto messageType = request.getMessageType();
-  return ((messageType == TcrMessage::QUERY) ||
-          (messageType == TcrMessage::QUERY_WITH_PARAMETERS) ||
-          (messageType == TcrMessage::EXECUTECQ_WITH_IR_MSG_TYPE) ||
-          (messageType == TcrMessage::GETDURABLECQS_MSG_TYPE) ||
-          (messageType == TcrMessage::EXECUTE_FUNCTION) ||
-          (messageType == TcrMessage::EXECUTE_REGION_FUNCTION) ||
-          (messageType == TcrMessage::EXECUTE_REGION_FUNCTION_SINGLE_HOP));
 }
 
 void TcrConnection::send(const char* buffer, size_t len,
