@@ -61,7 +61,7 @@ SSLImpl::SSLImpl(ACE_HANDLE sock, const char *pubkeyfile,
     SSL_CTX_set_cipher_list(sslctx->context(), "DEFAULT");
     sslctx->set_mode(ACE_SSL_Context::SSLv23_client);
     if (sslctx->load_trusted_ca(pubkeyfile) != 0) {
-      throw SSLException("Failed to read SSL trust store.");
+      throw SslException("Failed to read SSL trust store.");
     }
 
     if (strlen(password) > 0) {
@@ -71,14 +71,14 @@ SSLImpl::SSLImpl(ACE_HANDLE sock, const char *pubkeyfile,
     }
 
     if (sslctx->private_key(privkeyfile) != 0) {
-      throw SSLException("Invalid SSL keystore password.");
+      throw SslException("Invalid SSL keystore password.");
     }
     if (sslctx->certificate(privkeyfile) != 0) {
-      throw SSLException("Failed to read SSL certificate.");
+      throw SslException("Failed to read SSL certificate.");
     }
     if (::SSL_CTX_use_certificate_chain_file(sslctx->context(), privkeyfile) <=
         0) {
-      throw SSLException("Failed to read SSL certificate chain.");
+      throw SslException("Failed to read SSL certificate chain.");
     }
     SSLImpl::s_initialized = true;
   }

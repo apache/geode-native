@@ -518,15 +518,15 @@ class APACHE_GEODE_EXPORT PoolFactory {
    * cache operation.
    * If setPRSingleHopEnabled is false the client can do an extra hop on servers
    * to go to the required partition for that cache operation.
-   * The setPRSingleHopEnabled setting avoids extra hops only for the following cache
-   * operations:<br>
+   * The setPRSingleHopEnabled setting avoids extra hops only for the following
+   * cache operations:<br>
    * 1. {@link Region#put(Object, Object)}<br>
    * 2. {@link Region#get(Object)}<br>
    * 3. {@link Region#destroy(Object)}<br>
    * If true, works best when {@link PoolFactory#setMaxConnections(int)} is set
    * to -1.
-   * @param enabled is a boolean indicating whether PR Single Hop optimization should be enabled or
-   * not.
+   * @param enabled is a boolean indicating whether PR Single Hop optimization
+   * should be enabled or not.
    * @return a reference to <code>this</code>
    */
   PoolFactory& setPRSingleHopEnabled(bool enabled);
