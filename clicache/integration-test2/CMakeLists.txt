@@ -104,4 +104,8 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     $<SHELL_PATH:$<TARGET_FILE:cryptoImpl>>
     $<$<CONFIG:Debug>:$<SHELL_PATH:$<TARGET_PDB_FILE:cryptoImpl>>>
     $<SHELL_PATH:$<TARGET_FILE_DIR:${PROJECT_NAME}>>
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    $<SHELL_PATH:$<TARGET_FILE:apache-geode>>
+    $<$<CONFIG:Debug>:$<SHELL_PATH:$<TARGET_PDB_FILE:apache-geode>>>
+    $<SHELL_PATH:$<TARGET_FILE_DIR:${PROJECT_NAME}>>
 )
