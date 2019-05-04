@@ -1,0 +1,414 @@
+---
+title: Client Cache XML Reference
+---
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+This section documents the XML elements you can use to configure your <%=vars.product_name%>
+native client application.
+
+Set cache configuration parameters in a declarative XML file.
+When you run your application, the native client runtime library reads the file `cache.xml` in the current executable directory, if it exists.
+You can set the filename and path to other values by modifying the `geode.properties` file's `cache-xml-file` property.
+
+The declarative XML file is used to populate a client cache when it is created.
+The contents of the XML file correspond to APIs found in the`apache::geode::client` package for C++ applications,
+and the `Apache::Geode::Client` package for .NET applications.
+
+Elements are defined in the Client Cache XSD file, named `cpp-cache-1.0.xsd`, which you can find in
+your native client distribution in the `xsds` directory, and online at
+`https://geode.apache.org/schema/cpp-cache/cpp-cache-1.0.xsd`.
+
+# Cache Initialization File: XML Essentials
+
+This section assumes you are familiar with XML. When creating a cache initialization file for your native client application, keep these
+basics in mind:
+
+- Place an XML prolog at the top of the file. For example:
+
+    ```xml
+    <?xml version="1.0" encoding="UTF-8"?>
+    ```
+- Quote all parameter values, including numbers and booleans. For example:
+
+    ```xml
+    concurrency-level="10"
+    caching-enabled="true"
+    ```
+
+Some types are specific to the <%=vars.product_name%> cache initialization file:
+
+- **Duration:** Time specified as a non-negative integer and a unit, with no intervening space. The recognized units are `h`, `min`, `s`, `ms`, `us`, and `ns`. For example:
+
+    ```xml
+    idle-timeout = "5555ms"
+    statistic-interval = "10s"
+    update-locator-list-interval="5min"
+    ```
+
+- **Expiration:** Complex type consisting of a duration (integer + unit) and an action, where the action is one of `invalidate`, `destroy`, `local-invalidate`, or `local-destroy`. For example:
+
+    ```xml
+    <expiration-attributes timeout="20s" action="destroy"/>
+    <expiration-attributes timeout="10s" action="invalidate"/>
+    ```
+
+- **Library:** Complex type consisting of a library name and a function name. Used by the client to invoke server-side functions.
+For example:
+
+    ```xml
+    <persistence-manager library-name="SqLiteImpl"
+     library-function-name="createSqLiteInstance">
+    ```
+
+# Cache Initialization File Element Descriptions
+
+This section shows the hierarchy of `<client-cache>` sub-elements that you use to configure <%=vars.product_name%> caches and clients.
+The top-level element in this syntax is `<client-cache>`.
+
+[`<client-cache>`](#client-cache-ref)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[`<pool>`](#pool-ref)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[`<locator>`](#locator-ref)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[`<server>`](#server-ref)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[`<region>`](#region-ref)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[`<region-attributes>`](#region-attributes-ref)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[`<region-time-to-live>`](#region-time-to-live-ref)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[`<region-idle-time>`](#region-idle-time-ref)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[`<entry-time-to-live>`](#entry-time-to-live-ref)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[`<entry-idle-time>`](#entry-idle-time-ref)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[`<partition-resolver>`](#partition-resolver-ref)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[`<cache-loader>`](#cache-loader-ref)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[`<cache-listener>`](#cache-listener-ref)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[`<cache-writer>`](#cache-writer-ref)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[`<persistence-manager>`](#persistence-manager-ref)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[`<pdx>`](#pdx-ref)<br/>
+
+In the descriptions, elements and attributes not designated "required" are optional.
+
+<a id="client-cache-ref"></a>
+## \<client-cache\> Element
+
+The \<client-cache\> element is the top-level element of the XSD file.
+
+Your declarative cache file must include a schema of the following form:
+
+```pre
+<client-cache
+ xmlns="http://geode.apache.org/schema/cpp-cache"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://geode.apache.org/schema/cpp-cache
+   http://geode.apache.org/schema/cpp-cache/cpp-cache-1.0.xsd"
+ version="1.0">
+  ...
+</client-cache>
+```
+
+### Attributes of \<client-cache\>
+
+| Attribute | Description | Default |
+|-----------|-------------|---------|
+| version   | Required. Must be "1.0" | |
+
+
+### Sub-elements of \<client-cache\>
+
+`<client-cache>` must contain at least one of these sub-elements:
+
+| Element | Minimum Occurrences | Maximum Occurrences |
+|---------|---------------------|---------------------|
+| <a href="#pool-ref">\<pool\></a> | 0 | unbounded |
+| <a href="#region-ref">\<region\></a> | 0 | unbounded |
+| <a href="#pdx-ref">\<pdx\></a> | 0 | 1 |
+
+<a id="pool-ref"></a>
+## \<pool\> Element
+
+The \<pool\> element is a collection of the connections by which your client application
+communicates with the <%=vars.product_name%> server.
+
+- A connection can specify either a locator or a server.
+- A `<pool>` must contain at least one connection, locator or server, and can contain multiples of either or both.
+
+### Sub-elements of \<pool\>
+
+A `<pool>` must contain at least one sub-element that specifies a connection, which can be either a server or a locator.
+Multiples of either or both types are permitted.
+
+| Element | Minimum Occurrences | Maximum Occurrences |
+|---------|---------------------|---------------------|
+| <a href="#locator-ref">\<locator\></a> | 0 | unbounded |
+| <a href="#server-ref">\<server\></a> | 0 | unbounded |
+
+### Attributes of \<pool\>
+
+| Attribute | Description | Default |
+|-----------|-------------|---------|
+| name      | String. Required. Name of the pool, used when connecting regions to this pool.  |   |
+| free-connection-timeout | Duration.  The amount of time to wait for a free connection if max-connections is set and all of the connections are in use. | 10s |
+| load-conditioning-interval | Duration. The interval at which the pool checks to see if a connection to a given server should be moved to a different server to improve the load balance. | 5min |
+| min-connections | Non-negative integer.  The minimum number of connections to keep available at all times.  When the pool is created, it will create this many connections. If 0 (zero), then connections are not made until an operation is performed that requires client-to-server communication. | 1 |
+| max-connections | Integer >= -1.  The maximum number of connections to be created.  If all of the connections are in use, an operation requiring a client to server connection blocks until a connection is available. A value of -1 means no maximum. | -1 |
+| retry-attempts | Integer >= -1.  The number of times to retry an operation after a timeout or exception.  A value of -1 indicates that a request should be tried against every available server before failing. | -1 |
+| idle-timeout | Duration.  Sets the amount of time a connection can be idle before it expires. A value of 0 (zero) indicates that connections should never expire. | 5s |
+| ping-interval | Duration. The interval at which the pool pings servers. | 10s |
+| read-timeout | Duration. The amount of time to wait for a response from a server before timing out and trying the operation on another server (if any are available). | 10s |
+| server-group | String.  Specifies the name of the server group to which this pool should connect. If the value is null or &#34;&#34; then the pool connects to all servers. | &#34;&#34; |
+| socket-buffer-size | String.  The size in bytes of the socket buffer on each connection established. | 32768 |
+| subscription-enabled | Boolean.  When `true`, establish a server to client subscription. | false |
+| subscription-message-tracking-timeout | String.  The amount of time that messages sent from a server to a client will be tracked. The tracking is done to minimize duplicate events. Entries that have not been modified for this amount of time are expired from the list. | 900s |
+| subscription-ack-interval | String. The amount of time to wait before sending an acknowledgement to the server for events received from server subscriptions. | 100ms |
+| subscription-redundancy | String. Sets the redundancy level for this pool's server-to-client subscriptions.  An effort is made to maintain the requested number of copies (one copy per server) of the server-to-client subscriptions. At most, one copy per server is made up to the requested level. If 0 then no redundant copies are kept on the servers. |  0 |
+| statistic-interval | Duration. The interval at which client statistics are sent to the server. A value of 0 (zero) means do not send statistics. | 0ms (disabled) |
+| pr-single-hop-enabled | String. When `true`, enable single hop optimizations for partitioned regions. | true |
+| thread-local-connections | Boolean. Sets the thread local connections policy for this pool. When `true` then any time a thread goes to use a connection from this pool it will check a thread local cache and see if it already has a connection in it. If so it will use it. If not it will get one from this pool and cache it in the thread local. This gets rid of thread contention for the connections but increases the number of connections the servers see.  When `false` then connections are returned to the pool as soon as the operation being done with the connection completes. This allows connections to be shared among multiple threads keeping the number of connections down. | false |
+| multiuser-authentication | Boolean. Sets the pool to use multi-user secure mode. If in multiuser mode, then app needs to get `RegionService` instance of `Cache`. | false |
+| update-locator-list-interval | Duration. The frequency with which client updates the locator list. To disable this set its value to `std::chrono::milliseconds::zero()`. ||
+
+<a id="locator-ref"></a>
+## \<locator\>
+
+`<locator>` is a sub-element of `<pool>` that defines a connection to a <%=vars.product_name%> locator, specified by a host and port combination.
+
+## Attributes of \<locator\>
+
+| Attribute | Description | Default |
+|-----------|-------------|---------|
+| host      | String. Locator host name. | |
+| port      | Integer in the range 0 - 65535, inclusive. Locator port number. | |
+
+For example:
+
+```xml
+<locator host="stax01" port="1001" />
+```
+
+<a id="server-ref"></a>
+## \<server\>
+
+`<server>` is a sub-element of `<pool>` that defines a connection to a <%=vars.product_name%> server, specified by a host and port combination.
+
+## Attributes of \<server\>
+
+| Attribute | Description | Default |
+|-----------|-------------|---------|
+| host      | String. Server host name. | |
+| port      | Integer in the range 0 - 65535, inclusive. Server port number. | |
+
+For example:
+
+```xml
+<server host="motown01" port="2001" />
+```
+
+<a id="region-ref"></a>
+## \<region\>
+
+You can specify 0 or more regions per `<client-cache>`. There is no maximum limit on the number of regions a `<client-cache>` can contain.
+
+In order to connect to a <%=vars.product_name%> server, a client application must define at least one region 
+whose name corresponds to that of a region on the server.
+
+Regions can be nested.
+
+### Sub-elements of \<region\>
+
+Use the `<region-attributes>` sub-element to specify most of the characteristics of a region. Regions may be nested.
+
+| Element | Minimum Occurrences | Maximum Occurrences |
+|---------|---------------------|---------------------|
+| <a href="#region-attributes-ref">\<region-attributes\></a> | 0 | 1 |
+| \<region\> | 0 | unbounded |
+
+### Attributes of \<region\>
+
+You can specify many attributes to configure a region, but most of these attributes are encapsulated in the <a href="#region-attributes-ref">`<region-attributes>`</a> sub-element.
+The `<region>` element itself has only two attributes: a required name and an optional reference identifier.
+
+| Attribute | Description | Default |
+|-----------|-------------|---------|
+| name | String. Required. | |
+| refid |  String. | |
+
+<a id="region-attributes-ref"></a>
+## \<region-attributes\>
+
+Specify 0 or 1 `<region-attributes>` element for each `<region>` you define.
+
+If you specify a `<region-attributes>` element, you must specify at least one of these
+sub-elements. When more than one sub-element is specified, they must be defined in this order:
+
+| Element | Type | Minimum Occurrences | Maximum Occurrences |
+|---------|------|---------------------|---------------------|
+| [\<region-time-to-live\>](#region-time-to-live-ref) | expiration | 0 | 1 |
+| [\<region-idle-time\>](#region-idle-time-ref) | expiration | 0 | 1 |
+| [\<entry-time-to-live\>](#entry-time-to-live-ref) | expiration | 0 | 1 |
+| [\<entry-idle-time\>](#entry-idle-time-ref) | expiration | 0 | 1 |
+| [\<partition-resolver\>](#partition-resolver-ref) | library | 0 | 1 |
+| [\<cache-loader\>](#cache-loader-ref)  | library | 0 | 1 |
+| [\<cache-listener\>](#cache-listener-ref)  | library | 0 | 1 |
+| [\<cache-writer\>](#cache-writer-ref)  | library | 0 | 1 |
+| [\<persistence-manager\>](#persistence-manager-ref) | list of properties | 0 | 1 |
+
+### Attributes of \<region-attributes\>
+
+| Attribute | Description | Default |
+|-----------|-------------|---------|
+| caching-enabled | Boolean. If true, cache data for this region in this process. If false, then no data is stored in the local process, but events and distributions will still occur, and the region can still be used to put and remove, etc. | true |
+| cloning-enabled | Boolean. Sets cloning on region. | |
+| scope | Enumeration: `local`, `distributed-no-ack`, `distributed-ack` | |
+| initial-capacity | String. Sets the entry initial capacity for the region. | |
+| load-factor | String. Sets the entry load factor for the next `RegionAttributes` to be created. | |
+| concurrency-level | String. Sets the concurrency level of the next `RegionAttributes` to be created. | |
+| lru-entries-limit | String. Sets the maximum number of entries this cache will hold before using LRU eviction. A return value of zero, 0, indicates no limit. | |
+| disk-policy | Enumeration: `none`, `overflows`, `persist`. Sets the disk policy for this region. | none |
+| endpoints | String. A list of `servername:port-number` pairs separated by commas. | |
+| client-notification | Boolean true/false (on/off) | |
+| pool-name | String. The name of the pool to attach to this region. The pool with the specified name must already exist. | |
+| concurrency-checks-enabled | Boolean: true/false. Enables concurrent modification checks. | |
+| id | String. | |
+| refid | String. | |
+
+<a id="region-time-to-live-ref"></a>
+## \<region-time-to-live\>
+
+\<region-time-to-live\> specifies how long this region remains in the cache after the last create or update, and the expiration action to invoke when time runs out.
+A create or update operation on any entry in the region resets the region's counter, as well. Get (read) operations do not reset the counter.
+
+Use the `<expiration-attributes>` sub-element to specify duration and expiration action.
+<a id="expiration-attributes-ref"></a>
+The attributes of \<expiration-attributes\> must be defined in this order:
+
+| Attribute | Description | Default |
+|-----------|-------------|---------|
+| timeout |  Duration, specified as an integer and units. Required. | |
+| action | Enumeration. One of: `invalidate`, `destroy`, `local-invalidate`, `local-destroy` | |
+
+<a id="region-idle-time-ref"></a>
+## \<region-idle-time\>
+
+\<region-idle-time\> specifies how long this region remains in the cache after the last access, and the expiration action to invoke when time runs out.
+The counter is reset after any access, including create, put, and get operations. Access to any entry in the region resets the region's counter, as well.
+
+Use the `<expiration-attributes>` sub-element to specify duration and expiration action. The attributes of \<expiration-attributes\> must be defined in this order:
+
+| Attribute | Description | Default |
+|-----------|-------------|---------|
+| timeout |  Duration, specified as an integer and units. Required. | |
+| action | Enumeration. One of: `invalidate`, `destroy`, `local-invalidate`, `local-destroy` | |
+
+<a id="entry-time-to-live-ref"></a>
+## \<entry-time-to-live\>
+
+\<entry-time-to-live\> specifies how long this entry remains in the cache after the last create or update, and the expiration action to invoke when time runs out.
+Get (read) operations do not reset the counter.
+
+Use the `<expiration-attributes>` sub-element to specify duration and expiration action. The attributes of \<expiration-attributes\> must be defined in this order:
+
+| Attribute | Description | Default |
+|-----------|-------------|---------|
+| timeout |  Duration, specified as an integer and units. Required. | |
+| action | Enumeration. One of: `invalidate`, `destroy`, `local-invalidate`, `local-destroy` | |
+
+<a id="entry-idle-time-ref"></a>
+## \<entry-idle-time\>
+
+\<entry-idle-time\> specifies how long this entry remains in the cache after the last access, and the expiration action to invoke when time runs out.
+The counter is reset after any access, including create, put, and get operations. 
+
+Use the `<expiration-attributes>` sub-element to specify duration and expiration action. The attributes of \<expiration-attributes\> must be defined in this order:
+
+| Attribute | Description | Default |
+|-----------|-------------|---------|
+| timeout |  Duration, specified as an integer and units. Required. | |
+| action | Enumeration. One of: `invalidate`, `destroy`, `local-invalidate`, `local-destroy` | |
+
+<a id="partition-resolver-ref"></a>
+## \<partition-resolver\>
+
+\<partition-resolver\> identifies a server-side function by specifying `library-name` and `library-function-name`.
+
+A partition resolver is used for single-hop access to partitioned region entries on the server side. This resolver
+implementation must match that of the `PartitionResolver` on the server side.
+See [Custom Partitioning and Colocating Data](/serverman/developing/partitioned_regions/overview_custom_partitioning_and_data_colocation.html) in the <%=vars.product_name%> User Guide for more on implementing partition resolvers.
+
+For example:
+
+```xml
+<partition-resolver library-name="appl-lib"
+ library-function-name="createTradeKeyResolver"/>
+```
+
+<a id="cache-loader-ref"></a>
+## \<cache-loader\>
+
+\<cache-loader\> identifies a server-side function by specifying `library-name` and `library-function-name`.
+
+<a id="cache-listener-ref"></a>
+## \<cache-listener\>
+
+\<cache-listener\> identifies a server-side function by specifying `library-name` and `library-function-name`.
+
+<a id="cache-writer-ref"></a>
+## \<cache-writer\>
+
+\<cache-writer\> identifies a server-side function by specifying `library-name` and `library-function-name`.
+
+<a id="persistence-manager-ref"></a>
+## \<persistence-manager\>
+
+For each region, if the disk-policy attribute is set to `overflows`, a persistence-manager plug-in
+must perform cache-to-disk and disk-to-cache operations.
+
+\<persistence-manager\> identifies a server-side function by specifying `library-name` and `library-function-name`.
+You can also specify a set of properties to be passed to the function as parameters.
+
+The sub-element `<properties>` is a sequence of 0 or more `<property>` elements.
+
+Each `<property>` is a name-value pair. Where the attributes must be specified in this order: 
+
+- `name`
+-  `value`
+
+For example:
+
+```xml
+<region-attributes>
+   <persistence-manager library-name="libSqLiteImpl.so" library-function-name="createSqLiteInstance">
+      <properties>
+         <property name="PersistenceDirectory" value="/xyz"/>
+         <property name="PageSize" value="65536"/>
+         <property name="MaxPageCount" value="1073741823"/>
+      </properties>
+   </persistence-manager>
+</region-attributes>
+```
+
+<a id="pdx-ref"></a>
+## \<pdx\>
+
+Specifies the configuration for the Portable Data eXchange (PDX) method of serialization.
+
+### Attributes of \<pdx\>
+
+| Attribute | Description | Default |
+|-----------|-------------|---------|
+| ignore-unread-fields |  Boolean. When `true`, do not preserve unread PDX fields during deserialization. You can use this option to save memory. Set this attribute to `true` only in members that are only reading data from the cache. | |
+| read-serialized | Boolean. When `true`, PDX deserialization produces a `PdxInstance` instead of an instance of the domain class. | |
+
+
+
