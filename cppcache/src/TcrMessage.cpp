@@ -51,13 +51,13 @@ const uint32_t g_headerLen = 17;
 const uint32_t REGULAR_EXPRESSION =
     1;  // come from Java InterestType.REGULAR_EXPRESSION
 
-void readInt(uint8_t* buffer, uint16_t* value) {
+inline void readInt(uint8_t* buffer, uint16_t* value) {
   uint16_t tmp = *(buffer++);
   tmp = (tmp << 8) | *(buffer);
   *value = tmp;
 }
 
-void readInt(uint8_t* buffer, uint32_t* value) {
+inline void readInt(uint8_t* buffer, uint32_t* value) {
   uint32_t tmp = *(buffer++);
   tmp = (tmp << 8) | *(buffer++);
   tmp = (tmp << 8) | *(buffer++);
@@ -65,12 +65,12 @@ void readInt(uint8_t* buffer, uint32_t* value) {
   *value = tmp;
 }
 
-void writeInt(uint8_t* buffer, uint16_t value) {
+inline void writeInt(uint8_t* buffer, uint16_t value) {
   *(buffer++) = static_cast<uint8_t>(value >> 8);
   *(buffer++) = static_cast<uint8_t>(value);
 }
 
-void writeInt(uint8_t* buffer, uint32_t value) {
+inline void writeInt(uint8_t* buffer, uint32_t value) {
   *(buffer++) = static_cast<uint8_t>(value >> 24);
   *(buffer++) = static_cast<uint8_t>(value >> 16);
   *(buffer++) = static_cast<uint8_t>(value >> 8);
