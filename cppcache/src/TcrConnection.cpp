@@ -714,12 +714,12 @@ void TcrConnection::sendRequestForChunkedResponse(
 bool TcrConnection::replyHasValidTimeout(const TcrMessage& request) const {
   auto messageType = request.getMessageType();
   return ((messageType == TcrMessage::QUERY) ||
-      (messageType == TcrMessage::QUERY_WITH_PARAMETERS) ||
-      (messageType == TcrMessage::EXECUTECQ_WITH_IR_MSG_TYPE) ||
-      (messageType == TcrMessage::GETDURABLECQS_MSG_TYPE) ||
-      (messageType == TcrMessage::EXECUTE_FUNCTION) ||
-      (messageType == TcrMessage::EXECUTE_REGION_FUNCTION) ||
-      (messageType == TcrMessage::EXECUTE_REGION_FUNCTION_SINGLE_HOP));
+          (messageType == TcrMessage::QUERY_WITH_PARAMETERS) ||
+          (messageType == TcrMessage::EXECUTECQ_WITH_IR_MSG_TYPE) ||
+          (messageType == TcrMessage::GETDURABLECQS_MSG_TYPE) ||
+          (messageType == TcrMessage::EXECUTE_FUNCTION) ||
+          (messageType == TcrMessage::EXECUTE_REGION_FUNCTION) ||
+          (messageType == TcrMessage::EXECUTE_REGION_FUNCTION_SINGLE_HOP));
 }
 
 std::chrono::microseconds TcrConnection::sendWithTimeouts(
@@ -748,8 +748,8 @@ bool TcrConnection::replyHasResult(const TcrMessage& request,
             reply.getChunkedResultHandler());
     if (resultCollector->getResult() == false) {
       LOGDEBUG(
-            "TcrConnection::sendRequestForChunkedResponse: function execution, "
-            "no response desired");
+          "TcrConnection::sendRequestForChunkedResponse: function execution, "
+          "no response desired");
       hasResult = false;
     }
   }
