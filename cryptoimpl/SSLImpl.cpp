@@ -18,6 +18,7 @@
 #include "SSLImpl.hpp"
 
 #include <cstdint>
+#include <exception>
 
 #include <ace/Guard_T.h>
 
