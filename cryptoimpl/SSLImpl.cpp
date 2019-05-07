@@ -21,10 +21,6 @@
 
 #include <ace/Guard_T.h>
 
-//#include <geode/ExceptionTypes.hpp>
-
-//#include "../cppcache/src/util/exception.hpp"
-
 namespace apache {
 namespace geode {
 namespace client {
