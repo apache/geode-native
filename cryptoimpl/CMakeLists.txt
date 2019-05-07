@@ -42,7 +42,6 @@ target_link_libraries(cryptoImpl
     ACE::ACE_SSL
     _WarningsAsError
   PUBLIC
-    apache-geode
     OpenSSL::Crypto
     OpenSSL::SSL
     c++11
