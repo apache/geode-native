@@ -695,7 +695,7 @@ void TcrConnection::sendRequestForChunkedResponse(
     const TcrMessage& request, size_t len, TcrMessageReply& reply,
     std::chrono::microseconds sendTimeoutSec,
     std::chrono::microseconds receiveTimeoutSec) {
-  if (replyHasValidTimeout(request)) {
+  if (useReplyTimeout(request)) {
     receiveTimeoutSec = reply.getTimeout();
     sendTimeoutSec = reply.getTimeout();
   }
@@ -711,7 +711,7 @@ void TcrConnection::sendRequestForChunkedResponse(
   }
 }
 
-bool TcrConnection::replyHasValidTimeout(const TcrMessage& request) const {
+bool TcrConnection::useReplyTimeout(const TcrMessage& request) const {
   auto messageType = request.getMessageType();
   return ((messageType == TcrMessage::QUERY) ||
           (messageType == TcrMessage::QUERY_WITH_PARAMETERS) ||
