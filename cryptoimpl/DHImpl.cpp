@@ -33,8 +33,6 @@
 #include <cstring>
 #include <memory>
 
-#include <geode/internal/geode_globals.hpp>
-
 /*
 static DH * m_dh = nullptr;
 static string m_skAlgo;

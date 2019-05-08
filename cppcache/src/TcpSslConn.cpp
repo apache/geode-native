@@ -55,7 +55,11 @@ Ssl* TcpSslConn::getSSLImpl(ACE_HANDLE sock, const char* pubkeyfile,
 
 void TcpSslConn::createSocket(ACE_HANDLE sock) {
   LOGDEBUG("Creating SSL socket stream");
-  m_ssl = getSSLImpl(sock, m_pubkeyfile, m_privkeyfile);
+  try {
+    m_ssl = getSSLImpl(sock, m_pubkeyfile, m_privkeyfile);
+  } catch (std::exception e) {
+    throw SslException(e.what());
+  }
 }
 
 void TcpSslConn::listen(ACE_INET_Addr addr,
