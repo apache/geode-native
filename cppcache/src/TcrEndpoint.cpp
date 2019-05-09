@@ -793,7 +793,9 @@ GfErrType TcrEndpoint::sendRequestConn(const TcrMessage& request,
   if (((type == TcrMessage::EXECUTE_FUNCTION ||
         type == TcrMessage::EXECUTE_REGION_FUNCTION) &&
        (request.hasResult() & 2))) {
-    sendRequestForChunkedResponse(request, reply, conn);
+    conn->sendRequestForChunkedResponse(request, request.getMsgLength(), reply,
+                                        request.getTimeout(),
+                                        reply.getTimeout());
   } else if (type == TcrMessage::REGISTER_INTEREST_LIST ||
              type == TcrMessage::REGISTER_INTEREST ||
              type == TcrMessage::QUERY ||
@@ -824,7 +826,9 @@ GfErrType TcrEndpoint::sendRequestConn(const TcrMessage& request,
              type == TcrMessage::MONITORCQ_MSG_TYPE ||
              type == TcrMessage::EXECUTECQ_WITH_IR_MSG_TYPE ||
              type == TcrMessage::GETDURABLECQS_MSG_TYPE) {
-    sendRequestForChunkedResponse(request, reply, conn);
+    conn->sendRequestForChunkedResponse(request, request.getMsgLength(), reply,
+                                        request.getTimeout(),
+                                        reply.getTimeout());
     LOGDEBUG("sendRequestConn: calling sendRequestForChunkedResponse DONE");
   } else {
     // Chk request type to request if so request.getCallBackArg flag & setCall
@@ -1311,12 +1315,6 @@ void TcrEndpoint::processMarker() {
 
 std::shared_ptr<QueryService> TcrEndpoint::getQueryService() {
   return m_cacheImpl->getQueryService(true);
-}
-
-void TcrEndpoint::sendRequestForChunkedResponse(const TcrMessage& request,
-                                                TcrMessageReply& reply,
-                                                TcrConnection* conn) {
-  conn->sendRequestForChunkedResponse(request, request.getMsgLength(), reply);
 }
 
 void TcrEndpoint::closeFailedConnection(TcrConnection*& conn) {

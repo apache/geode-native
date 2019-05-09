@@ -417,6 +417,11 @@ class APACHE_GEODE_EXPORT TcrConnection {
   volatile bool m_isBeingUsed;
   std::atomic<uint32_t> m_isUsed;
   ThinClientPoolDM* m_poolDM;
+  bool useReplyTimeout(const TcrMessage& request) const;
+  std::chrono::microseconds sendWithTimeouts(
+      const char* data, size_t len, std::chrono::microseconds sendTimeout,
+      std::chrono::microseconds receiveTimeout);
+  bool replyHasResult(const TcrMessage& request, TcrMessageReply& reply);
 };
 }  // namespace client
 }  // namespace geode

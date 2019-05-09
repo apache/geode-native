@@ -40,12 +40,6 @@ void TcrPoolEndPoint::processMarker() { m_dm->processMarker(); }
 std::shared_ptr<QueryService> TcrPoolEndPoint::getQueryService() {
   return m_dm->getQueryServiceWithoutCheck();
 }
-void TcrPoolEndPoint::sendRequestForChunkedResponse(const TcrMessage& request,
-                                                    TcrMessageReply& reply,
-                                                    TcrConnection* conn) {
-  conn->sendRequestForChunkedResponse(request, request.getMsgLength(), reply,
-                                      request.getTimeout(), reply.getTimeout());
-}
 ThinClientPoolDM* TcrPoolEndPoint::getPoolHADM() { return m_dm; }
 void TcrPoolEndPoint::triggerRedundancyThread() {
   m_dm->triggerRedundancyThread();

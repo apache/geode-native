@@ -39,9 +39,6 @@ class TcrPoolEndPoint : public TcrEndpoint {
   bool checkDupAndAdd(std::shared_ptr<EventId> eventid) override;
   void processMarker() override;
   std::shared_ptr<QueryService> getQueryService() override;
-  void sendRequestForChunkedResponse(const TcrMessage& request,
-                                     TcrMessageReply& reply,
-                                     TcrConnection* conn) override;
   void closeFailedConnection(TcrConnection*& conn) override;
   GfErrType registerDM(bool clientNotification, bool isSecondary = false,
                        bool isActiveEndpoint = false,
