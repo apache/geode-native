@@ -21,7 +21,6 @@
 #include "geode_defs.hpp"
 #include "begin_native.hpp"
 #include <geode/CacheTransactionManager.hpp>
-#include "InternalCacheTransactionManager2PC.hpp"
 #include "end_native.hpp"
 #include "native_shared_ptr.hpp"
 #include "TransactionId.hpp"
@@ -204,7 +203,7 @@ namespace Apache
 
       internal:
 
-        inline static CacheTransactionManager^ Create(native::InternalCacheTransactionManager2PC* nativeptr )
+        inline static CacheTransactionManager^ Create(native::CacheTransactionManager* nativeptr )
         {
           return ( nativeptr != nullptr ?
             gcnew CacheTransactionManager( nativeptr ) : nullptr );
@@ -217,12 +216,12 @@ namespace Apache
         /// Private constructor to wrap a native object pointer
         /// </summary>
         /// <param name="nativeptr">The native object pointer</param>
-        inline CacheTransactionManager(native::InternalCacheTransactionManager2PC* nativeptr )
+        inline CacheTransactionManager(native::CacheTransactionManager* nativeptr )
           : m_nativeptr(nativeptr)
         {
         }
 
-        native::InternalCacheTransactionManager2PC* m_nativeptr;
+        native::CacheTransactionManager* m_nativeptr;
       };
     }  // namespace Client
   }  // namespace Geode

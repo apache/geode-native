@@ -79,7 +79,7 @@ CacheImpl::CacheImpl(Cache* c, const std::shared_ptr<Properties>& dsProps,
       m_authInitialize(authInitialize) {
   using apache::geode::statistics::StatisticsManager;
 
-  m_cacheTXManager = std::shared_ptr<InternalCacheTransactionManager2PC>(
+  m_cacheTXManager = std::shared_ptr<CacheTransactionManager>(
       new InternalCacheTransactionManager2PCImpl(this));
 
   auto& prop = m_distributedSystem.getSystemProperties();

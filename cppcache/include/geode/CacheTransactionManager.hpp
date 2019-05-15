@@ -47,6 +47,38 @@ class APACHE_GEODE_EXPORT CacheTransactionManager {
    */
   virtual void begin() = 0;
 
+  /**
+   * Performs prepare during 2 phase commit completion, for the transaction
+   * associated with the current thread.
+   * Locks of the entries modified in the current transaction on the server
+   * side. If the prepare operation fails due to a conflict it will destroy
+   * the transaction state and throw a {@link CommitConflictException}.
+   * If the prepare operation succeeds, transaction state is set to
+   * prepared state.  When this method completes, the thread is still
+   * associated with a transaction, and is waiting on commit or rollback
+   * operation.
+   *
+   * @throws IllegalStateException if the thread is not associated with a
+   * transaction
+   *
+   * @throws CommitConflictException if the commit operation fails due to
+   * a write conflict.
+   *
+   * @throws TransactionDataNodeHasDepartedException if the node hosting the
+   * transaction data has departed. This is only relevant for transaction that
+   * involve PartitionedRegions.
+   *
+   * @throws TransactionDataNotColocatedException if at commit time, the data
+   * involved in the transaction has moved away from the transaction hosting
+   * node. This can only happen if rebalancing/recovery happens during a
+   * transaction that involves a PartitionedRegion.
+   *
+   * @throws TransactionInDoubtException when Geode cannot tell which nodes
+   * have applied the transaction and which have not. This only occurs if nodes
+   * fail mid-commit, and only then in very rare circumstances.
+   */
+  virtual void prepare() = 0;
+
   /** Commit the transaction associated with the current thread. If
    *  the commit operation fails due to a conflict it will destroy
    *  the transaction state and throw a {@link

@@ -33,6 +33,10 @@ DUNIT_MAIN
     CALL_TASK(CreateClient1EntryTwice);
 
     CALL_TASK(CreateClient1KeyThriceWithSticky);
+    CALL_TASK(CreateClient1additionalEntries);
+    CALL_TASK(CreateClient2additionalEntries);
+    CALL_TASK(UpdateClient1additionalEntries);
+    CALL_TASK(UpdateClient2additionalEntries);
 
     CALL_TASK(SuspendResumeInThread);
     CALL_TASK(SuspendResumeCommit);
