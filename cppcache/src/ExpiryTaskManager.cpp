@@ -17,7 +17,7 @@
 
 #include "ExpiryTaskManager.hpp"
 
-#include "Assert.hpp"
+
 #include "DistributedSystem.hpp"
 #include "DistributedSystemImpl.hpp"
 #include "config.h"
@@ -80,7 +80,7 @@ void ExpiryTaskManager::stopExpiryTaskManager() {
   if (m_reactorEventLoopRunning) {
     m_reactor->end_reactor_event_loop();
     this->wait();
-    GF_D_ASSERT(m_reactor->reactor_event_loop_done() > 0);
+
     m_reactorEventLoopRunning = false;
     m_condition.notify_all();
   }

@@ -204,8 +204,8 @@ void ResourceInst::writeSample() {
   bool wroteInstId = false;
   bool checkForChange = true;
   StatisticDescriptor **stats = type->getStats();
-  GF_D_ASSERT(stats != nullptr);
-  GF_D_ASSERT(*stats != nullptr);
+
+
   if (resource->isClosed()) {
     return;
   }

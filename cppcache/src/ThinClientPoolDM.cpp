@@ -2055,8 +2055,6 @@ TcrEndpoint* ThinClientPoolDM::addEP(const std::string& endpointName) {
     if (m_endpoints.emplace(endpointName, ep).second) {
       LOGERROR("Failed to add endpoint %s to pool %s", endpointName.c_str(),
                m_poolName.c_str());
-      GF_DEV_ASSERT(
-          "ThinClientPoolDM::addEP( ): failed to add endpoint" ? false : false);
     }
   }
   // Update Server Stats

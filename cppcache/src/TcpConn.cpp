@@ -159,7 +159,7 @@ void TcpConn::listen(ACE_INET_Addr addr,
                      std::chrono::microseconds waitSeconds) {
   using apache::geode::internal::chrono::duration::to_string;
 
-  GF_DEV_ASSERT(m_io != nullptr);
+
 
   ACE_SOCK_Acceptor listener(addr, 1);
   int32_t retVal = 0;
@@ -202,7 +202,7 @@ void TcpConn::connect(const char *ipaddr,
 void TcpConn::connect() {
   using apache::geode::internal::chrono::duration::to_string;
 
-  GF_DEV_ASSERT(m_io != nullptr);
+
 
   ACE_INET_Addr ipaddr = m_addr;
   std::chrono::microseconds waitMicroSeconds = m_waitMilliSeconds;
@@ -269,19 +269,6 @@ size_t TcpConn::send(const char *buff, size_t len,
 size_t TcpConn::socketOp(TcpConn::SockOp op, char *buff, size_t len,
                          std::chrono::microseconds waitDuration) {
   {
-    GF_DEV_ASSERT(m_io != nullptr);
-    GF_DEV_ASSERT(buff != nullptr);
-
-#if GF_DEVEL_ASSERTS == 1
-    if (len <= 0) {
-      LOGERROR(
-          "TcpConn::socketOp called with a length of %d specified. "
-          "No operation performed.",
-          len);
-      GF_DEV_ASSERT(false);
-    }
-#endif
-
     ACE_Time_Value waitTime(waitDuration);
     auto endTime = std::chrono::steady_clock::now() + waitDuration;
     size_t readLen = 0;
@@ -333,14 +320,14 @@ size_t TcpConn::socketOp(TcpConn::SockOp op, char *buff, size_t len,
       ACE_OS::last_error(ETIME);
     }
 
-    GF_DEV_ASSERT(len >= 0);
+
     return totalsend;
   }
 }
 
 //  Return the local port for this TCP connection.
 uint16_t TcpConn::getPort() {
-  GF_DEV_ASSERT(m_io != nullptr);
+
 
   ACE_INET_Addr localAddr;
   m_io->get_local_addr(localAddr);

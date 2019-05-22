@@ -22,7 +22,7 @@
 
 #include <geode/internal/geode_globals.hpp>
 
-#include "Assert.hpp"
+
 #include "statistics/Statistics.hpp"
 #include "statistics/StatisticsFactory.hpp"
 #include "statistics/StatisticsManager.hpp"
@@ -142,7 +142,7 @@ class APACHE_GEODE_EXPORT CachePerfStats {
                                       "Statistics about native client cache",
                                       statDescArr, 24);
     }
-    GF_D_ASSERT(statsType != nullptr);
+
     // Create Statistics object
     m_cachePerfStats =
         factory->createAtomicStatistics(statsType, "CachePerfStats");

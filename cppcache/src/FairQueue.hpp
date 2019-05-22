@@ -29,7 +29,7 @@
 #include <ace/Time_Value.h>
 #include <ace/Token.h>
 
-#include "Assert.hpp"
+
 #include "util/Log.hpp"
 
 namespace apache {
@@ -64,7 +64,7 @@ class FairQueue {
   }
 
   void put(T* mp, bool openQueue) {
-    GF_DEV_ASSERT(mp != 0);
+
 
     bool delMp = false;
     {
