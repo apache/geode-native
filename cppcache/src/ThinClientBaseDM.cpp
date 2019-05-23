@@ -228,7 +228,6 @@ void ThinClientBaseDM::processChunks(std::atomic<bool>& isRunning) {
   }
   LOGFINE("Ending chunk process thread for region %s",
           (m_region ? m_region->getFullPath().c_str() : "(null)"));
-
 }
 
 // start the chunk processing thread

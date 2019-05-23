@@ -22,7 +22,6 @@
 
 #include <geode/internal/geode_globals.hpp>
 
-
 #include "statistics/Statistics.hpp"
 #include "statistics/StatisticsFactory.hpp"
 #include "statistics/StatisticsManager.hpp"
@@ -142,7 +141,6 @@ class APACHE_GEODE_EXPORT CachePerfStats {
                                       "Statistics about native client cache",
                                       statDescArr, 24);
     }
-
     // Create Statistics object
     m_cachePerfStats =
         factory->createAtomicStatistics(statsType, "CachePerfStats");

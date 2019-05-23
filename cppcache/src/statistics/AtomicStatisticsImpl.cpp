@@ -67,7 +67,6 @@ AtomicStatisticsImpl::AtomicStatisticsImpl(StatisticsType* typeArg,
     this->uniqueId = uniqueIdArg;
     this->closed = false;
     this->statsType = dynamic_cast<StatisticsTypeImpl*>(typeArg);
-
     int32_t intCount = statsType->getIntStatCount();
     int32_t longCount = statsType->getLongStatCount();
     int32_t doubleCount = statsType->getDoubleStatCount();

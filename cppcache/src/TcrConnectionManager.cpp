@@ -389,7 +389,6 @@ void TcrConnectionManager::initializeHAEndpoints(const char *endpointsStr) {
   }
   // Postconditions:
   // 1. endpointsList.size() > 0
-
 }
 
 void TcrConnectionManager::removeHAEndpoints() {
@@ -474,7 +473,6 @@ void TcrConnectionManager::cleanup(std::atomic<bool> &isRunning) {
   LOGFINE("TcrConnectionManager: ending cleanup thread");
   //  Postcondition - all notification channels should be cleaned up by the end
   //  of this function.
-
 }
 
 void TcrConnectionManager::cleanNotificationLists() {

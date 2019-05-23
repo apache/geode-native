@@ -29,7 +29,6 @@
 #include <ace/Time_Value.h>
 #include <ace/Token.h>
 
-
 #include "util/Log.hpp"
 
 namespace apache {
@@ -64,7 +63,6 @@ class FairQueue {
   }
 
   void put(T* mp, bool openQueue) {
-
 
     bool delMp = false;
     {

@@ -95,8 +95,6 @@ TcrEndpoint::~TcrEndpoint() {
           "to subscription channel while closing",
           m_name.c_str());
       // fail in dev build to track #295 better in regressions
-
-
       m_numRegionListener = 0;
       closeNotification();
     }
@@ -391,7 +389,6 @@ GfErrType TcrEndpoint::registerDM(bool clientNotification, bool isSecondary,
                                   ThinClientBaseDM* distMgr) {
   // Pre-conditions:
   // 1. If this is a secondary server then clientNotification must be true
-
 
   bool connected = false;
   GfErrType err = GF_NOERR;

@@ -66,8 +66,6 @@ void TcpSslConn::listen(ACE_INET_Addr addr,
                         std::chrono::microseconds waitSeconds) {
   using apache::geode::internal::chrono::duration::to_string;
 
-
-
   int32_t retVal = m_ssl->listen(addr, waitSeconds);
 
   if (retVal == -1) {
@@ -86,8 +84,6 @@ void TcpSslConn::listen(ACE_INET_Addr addr,
 
 void TcpSslConn::connect() {
   using apache::geode::internal::chrono::duration::to_string;
-
-
 
   ACE_OS::signal(SIGPIPE, SIG_IGN);  // Ignore broken pipe
 
@@ -184,13 +180,11 @@ size_t TcpSslConn::socketOp(TcpConn::SockOp op, char* buff, size_t len,
       ACE_OS::last_error(ETIME);
     }
 
-
     return totalsend;
   }
 }
 
 uint16_t TcpSslConn::getPort() {
-
 
   ACE_INET_Addr localAddr;
   m_ssl->getLocalAddr(localAddr);

@@ -494,7 +494,6 @@ void ThinClientRedundancyManager::removeEndpointsInOrder(
   // Postconditions:
   // 1. size of destVector decreases by the size of srcVector
 
-
 }
 
 void ThinClientRedundancyManager::addEndpointsInOrder(
@@ -739,7 +738,6 @@ bool ThinClientRedundancyManager::readyForEvents(
 void ThinClientRedundancyManager::moveEndpointToLast(
     std::vector<TcrEndpoint*>& epVector, TcrEndpoint* targetEp) {
   // Pre-condition
-
 
   // Remove Ep
   for (std::vector<TcrEndpoint*>::iterator it = epVector.begin();
@@ -1013,7 +1011,6 @@ void ThinClientRedundancyManager::getAllEndpoints(
             "endpoints, found redundant endpoint.");
       } else if (status == PRIMARY_SERVER) {
         // Primary should be unique
-
         primaryEp = ep;
         LOGDEBUG(
             "ThinClientRedundancyManager::getAllEndpoints(): sorting "

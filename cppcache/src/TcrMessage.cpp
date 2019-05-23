@@ -23,7 +23,6 @@
 #include <geode/CacheableObjectArray.hpp>
 #include <geode/SystemProperties.hpp>
 
-
 #include "AutoDelete.hpp"
 #include "CacheRegionHelper.hpp"
 #include "DataInputInternal.hpp"
@@ -2107,7 +2106,6 @@ TcrMessagePeriodicAck::TcrMessagePeriodicAck(
   m_request.reset(dataOutput);
 
   uint32_t numParts = static_cast<uint32_t>(entries.size());
-
   writeHeader(m_msgType, numParts);
   for (EventIdMapEntryList::const_iterator entry = entries.begin();
        entry != entries.end(); ++entry) {

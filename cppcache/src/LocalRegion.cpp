@@ -2420,7 +2420,6 @@ GfErrType LocalRegion::destroyRegionNoThrow(
     _GEODE_SAFE_DELETE(m_entries);
   }
 
-
   if (removeFromParent) {
     if (m_parentRegion == nullptr) {
       m_cacheImpl->removeRegion(m_name.c_str());

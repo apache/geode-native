@@ -40,7 +40,6 @@ ConcurrentEntriesMap::ConcurrentEntriesMap(
       m_numDestroyTrackers(0),
       m_concurrencyChecksEnabled(concurrencyChecksEnabled) {
 
-
   uint8_t maxConcurrency = TableOfPrimes::getMaxPrimeForConcurrency();
   if (concurrency > maxConcurrency) {
     m_concurrency = maxConcurrency;

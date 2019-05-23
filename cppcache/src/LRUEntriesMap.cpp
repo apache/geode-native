@@ -260,8 +260,6 @@ GfErrType LRUEntriesMap::put(const std::shared_ptr<CacheableKey>& key,
                              std::shared_ptr<VersionTag> versionTag,
                              bool& isUpdate, DataInput* delta) {
   MapSegment* segmentRPtr = segmentFor(key);
-
-
   GfErrType err = GF_NOERR;
   bool segmentLocked = false;
   {

@@ -62,7 +62,6 @@ std::shared_ptr<Pool> PoolManagerImpl::find(const std::string& name) const {
 
     if (iter != m_connectionPools.end()) {
       poolPtr = iter->second;
-
     }
 
     return poolPtr;

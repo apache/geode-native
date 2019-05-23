@@ -204,8 +204,6 @@ void ResourceInst::writeSample() {
   bool wroteInstId = false;
   bool checkForChange = true;
   StatisticDescriptor **stats = type->getStats();
-
-
   if (resource->isClosed()) {
     return;
   }

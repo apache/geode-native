@@ -44,7 +44,6 @@
 #include <geode/util/LogLevel.hpp>
 
 #include "../internal/hacks/AceThreadId.h"
-
 #include "geodeBanner.hpp"
 #include "util/chrono/time_point.hpp"
 
@@ -413,7 +412,6 @@ void Log::writeBanner() {
     fflush(stdout);
     return;
   }  // else
-
 
   if (fprintf(g_log, "%s", bannertext.c_str()) == 0 || ferror(g_log)) {
     // we should be continue,

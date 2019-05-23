@@ -17,7 +17,6 @@
 
 #include "ExpiryTaskManager.hpp"
 
-
 #include "DistributedSystem.hpp"
 #include "DistributedSystemImpl.hpp"
 #include "config.h"
@@ -80,7 +79,6 @@ void ExpiryTaskManager::stopExpiryTaskManager() {
   if (m_reactorEventLoopRunning) {
     m_reactor->end_reactor_event_loop();
     this->wait();
-
     m_reactorEventLoopRunning = false;
     m_condition.notify_all();
   }

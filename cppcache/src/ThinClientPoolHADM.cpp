@@ -266,7 +266,6 @@ void ThinClientPoolHADM::removeRegion(ThinClientRegion* theTCR) {
       return;
     }
   }
-
 }
 
 void ThinClientPoolHADM::readyForEvents() {
