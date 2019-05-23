@@ -185,7 +185,6 @@ size_t TcpSslConn::socketOp(TcpConn::SockOp op, char* buff, size_t len,
 }
 
 uint16_t TcpSslConn::getPort() {
-
   ACE_INET_Addr localAddr;
   m_ssl->getLocalAddr(localAddr);
   return localAddr.get_port_number();

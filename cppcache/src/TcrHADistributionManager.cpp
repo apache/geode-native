@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-#include <boost/stacktrace.hpp>
-
 #include "TcrHADistributionManager.hpp"
+
+#include <cassert>
 
 #include <geode/ExceptionTypes.hpp>
 #include <geode/internal/geode_globals.hpp>
@@ -38,15 +38,7 @@ TcrHADistributionManager::TcrHADistributionManager(
     ThinClientRegion* theRegion, TcrConnectionManager& connManager)
     : ThinClientDistributionManager(connManager, theRegion),
       m_theTcrConnManager(connManager) {
-  if (theRegion == nullptr) {
-    auto expressionText = "region == nullptr";
-    AssertionException ae(expressionText);
-    LOGERROR("AssertionException: ( %s ) at %s:%d", expressionText, __FILE__, __LINE__);
-    std::stringstream ss;
-    ss << boost::stacktrace::stacktrace();
-    LOGERROR(ss.str().c_str());
-    throw ae;
-  }
+  assert(theRegion != nullptr);
 }
 
 void TcrHADistributionManager::init() {

@@ -493,7 +493,6 @@ void ThinClientRedundancyManager::removeEndpointsInOrder(
 
   // Postconditions:
   // 1. size of destVector decreases by the size of srcVector
-
 }
 
 void ThinClientRedundancyManager::addEndpointsInOrder(

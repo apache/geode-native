@@ -574,9 +574,6 @@ Connector* TcrConnection::createConnection(
 inline ConnErrType TcrConnection::receiveData(
     char* buffer, size_t length, std::chrono::microseconds receiveTimeoutSec,
     bool checkConnected, bool isNotificationMessage) {
-
-
-
   std::chrono::microseconds defaultWaitSecs =
       isNotificationMessage ? std::chrono::seconds(1) : std::chrono::seconds(2);
   if (defaultWaitSecs > receiveTimeoutSec) defaultWaitSecs = receiveTimeoutSec;
@@ -757,7 +754,6 @@ void TcrConnection::send(const char* buffer, size_t len,
 void TcrConnection::send(std::chrono::microseconds& timeSpent,
                          const char* buffer, size_t len,
                          std::chrono::microseconds sendTimeoutSec, bool) {
-
   // LOGINFO("TcrConnection::send: [%p] sending request to endpoint %s;",
   //:  this, m_endpoint);
 
@@ -785,7 +781,6 @@ void TcrConnection::send(std::chrono::microseconds& timeSpent,
 
 char* TcrConnection::receive(size_t* recvLen, ConnErrType* opErr,
                              std::chrono::microseconds receiveTimeoutSec) {
-
   return readMessage(recvLen, receiveTimeoutSec, false, opErr, true);
 }
 

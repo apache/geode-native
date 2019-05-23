@@ -322,7 +322,6 @@ size_t TcpConn::socketOp(TcpConn::SockOp op, char *buff, size_t len,
 
 //  Return the local port for this TCP connection.
 uint16_t TcpConn::getPort() {
-
   ACE_INET_Addr localAddr;
   m_io->get_local_addr(localAddr);
   return localAddr.get_port_number();

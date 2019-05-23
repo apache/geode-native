@@ -63,7 +63,6 @@ class FairQueue {
   }
 
   void put(T* mp, bool openQueue) {
-
     bool delMp = false;
     {
       ACE_Guard<MUTEX> _guard(m_queueLock);

@@ -1924,15 +1924,7 @@ TcrMessageUnregisterInterestList::TcrMessageUnregisterInterestList(
   m_receiveValues = receiveValues;
 
   auto numInItrestList = keys.size();
-  if (numInItrestList == 0) {
-    auto expressionText = "numInItrestList == 0";
-    AssertionException ae(expressionText);
-    LOGERROR("AssertionException: ( %s ) at %s:%d", expressionText, __FILE__, __LINE__);
-    std::stringstream ss;
-    ss << boost::stacktrace::stacktrace();
-    LOGERROR(ss.str().c_str());
-    throw ae;
-  }
+  assert(numInItrestList != 0);
   uint32_t numOfParts = 2 + static_cast<uint32_t>(numInItrestList);
 
   numOfParts += 2;

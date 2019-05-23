@@ -287,12 +287,12 @@ GfErrType ThinClientDistributionManager::selectEndpoint(
     }
   }
 
-// Postconditions:
-// 1. If initial size of randIndex > 0 && failover was attempted,  final size of
-// randIndex < initial size of randIndex
-// 2. If CONN_NOERR, then m_activeEndpoint > -1, m_activeEndpoint should be
-// connected.
-// 3. Number of endpoints on which DM is registered <= 1
+  // Postconditions:
+  // 1. If initial size of randIndex > 0 && failover was attempted,  final size
+  // of randIndex < initial size of randIndex
+  // 2. If CONN_NOERR, then m_activeEndpoint > -1, m_activeEndpoint should be
+  // connected.
+  // 3. Number of endpoints on which DM is registered <= 1
   return err;
 }
 

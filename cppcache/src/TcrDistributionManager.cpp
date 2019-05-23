@@ -14,9 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <boost/stacktrace.hpp>
-
 #include "TcrDistributionManager.hpp"
+
+#include <cassert>
 
 #include <geode/ExceptionTypes.hpp>
 #include <geode/internal/geode_globals.hpp>
@@ -31,15 +31,7 @@ namespace client {
 TcrDistributionManager::TcrDistributionManager(
     ThinClientRegion* region, TcrConnectionManager& connManager)
     : ThinClientDistributionManager(connManager, region) {
-  if (region == nullptr) {
-    auto expressionText = "region == nullptr";
-    AssertionException ae(expressionText);
-    LOGERROR("AssertionException: ( %s ) at %s:%d", expressionText, __FILE__, __LINE__);
-    std::stringstream ss;
-    ss << boost::stacktrace::stacktrace();
-    LOGERROR(ss.str().c_str());
-    throw ae;
-  }
+  assert(region != nullptr);
   m_clientNotification = region->getAttributes().getClientNotificationEnabled();
 }
 
