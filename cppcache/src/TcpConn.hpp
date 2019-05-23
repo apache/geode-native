@@ -26,7 +26,6 @@
 
 #include <geode/internal/geode_globals.hpp>
 
-#include "Assert.hpp"
 #include "Connector.hpp"
 #include "util/Log.hpp"
 
@@ -120,8 +119,6 @@ class APACHE_GEODE_EXPORT TcpConn : public Connector {
               std::chrono::microseconds waitSeconds) override;
 
   virtual void setOption(int32_t level, int32_t option, void* val, size_t len) {
-    GF_DEV_ASSERT(m_io != nullptr);
-
     if (m_io->set_option(level, option, val, static_cast<int32_t>(len)) == -1) {
       int32_t lastError = ACE_OS::last_error();
       LOGERROR("Failed to set option, errno: %d: %s", lastError,

@@ -399,14 +399,6 @@ GfErrType ThinClientRedundancyManager::maintainRedundancyLevel(
   // 3. If primary is connected, m_redundantEndpoints[0] is primary. ( Not
   // checked. To verify, We may have to modify
   //    TcrEndpoint class.)
-
-  GF_DEV_ASSERT(!isRedundancySatisfied || ((m_redundantEndpoints.size() ==
-                                            (size_t)(m_redundancyLevel + 1)) &&
-                                           isPrimaryConnected));
-  GF_DEV_ASSERT(isRedundancySatisfied ||
-                ((int)m_redundantEndpoints.size() <= m_redundancyLevel) ||
-                m_redundancyLevel == -1);
-
   std::shared_ptr<RemoteQueryService> queryServicePtr;
   ThinClientPoolDM* poolDM = dynamic_cast<ThinClientPoolDM*>(m_poolHADM);
   if (poolDM) {
@@ -429,14 +421,6 @@ GfErrType ThinClientRedundancyManager::maintainRedundancyLevel(
     }
   }
 
-#if GF_DEVEL_ASSERTS == 1
-  if (isPrimaryConnected && !m_redundantEndpoints[0]->connected()) {
-    LOGWARN(
-        "GF_DEV_ASSERT Warning: Failed condition ( isPrimaryConnected ==> "
-        "m_redundantEndpoints[ 0 ]->connected( ) )");
-  }
-#endif
-
   // Invariants:
   // 1. m_redundantEndpoints UNION m_nonredundantEndpionts = All Endpoints
   // 2. m_redundantEndpoints INTERSECTION m_nonredundantEndpoints = Empty
@@ -444,13 +428,7 @@ GfErrType ThinClientRedundancyManager::maintainRedundancyLevel(
   // The global endpoint list does not change ever for HA so getAllEndpoints
   // result or redundantEndpoints/nonredundantEndpoints cannot have stale or
   // deleted endpoints
-  if (!m_poolHADM) {
-    GF_DEV_ASSERT(m_redundantEndpoints.size() +
-                      m_nonredundantEndpoints.size() ==
-                  (unsigned)m_theTcrConnManager->getNumEndPoints());
-  }
 
-  // Update pool stats
   if (m_poolHADM) {
     m_poolHADM->getStats().setSubsServers(
         static_cast<int32_t>(m_redundantEndpoints.size()));
@@ -497,10 +475,6 @@ GfErrType ThinClientRedundancyManager::maintainRedundancyLevel(
 void ThinClientRedundancyManager::removeEndpointsInOrder(
     std::vector<TcrEndpoint*>& destVector,
     const std::vector<TcrEndpoint*>& srcVector) {
-#if GF_DEVEL_ASSERTS == 1
-  size_t destInitSize = destVector.size();
-#endif
-
   std::vector<TcrEndpoint*> tempDestVector;
   std::vector<TcrEndpoint*>::iterator itDest;
   std::vector<TcrEndpoint*>::const_iterator itSrc;
@@ -519,23 +493,15 @@ void ThinClientRedundancyManager::removeEndpointsInOrder(
 
   // Postconditions:
   // 1. size of destVector decreases by the size of srcVector
-
-  GF_DEV_ASSERT(destInitSize == destVector.size() + srcVector.size());
 }
 
 void ThinClientRedundancyManager::addEndpointsInOrder(
     std::vector<TcrEndpoint*>& destVector,
     const std::vector<TcrEndpoint*>& srcVector) {
-#if GF_DEVEL_ASSERTS == 1
-  size_t destInitSize = destVector.size();
-#endif
-
   destVector.insert(destVector.end(), srcVector.begin(), srcVector.end());
 
   // Postconditions:
   // 1. Length of destVector increases by the length of srcVector
-
-  GF_DEV_ASSERT(destVector.size() == destInitSize + srcVector.size());
 }
 
 GfErrType ThinClientRedundancyManager::createQueueEP(TcrEndpoint* ep,
@@ -771,7 +737,6 @@ bool ThinClientRedundancyManager::readyForEvents(
 void ThinClientRedundancyManager::moveEndpointToLast(
     std::vector<TcrEndpoint*>& epVector, TcrEndpoint* targetEp) {
   // Pre-condition
-  GF_DEV_ASSERT(epVector.size() > 0 && targetEp != nullptr);
 
   // Remove Ep
   for (std::vector<TcrEndpoint*>::iterator it = epVector.begin();
@@ -1045,7 +1010,6 @@ void ThinClientRedundancyManager::getAllEndpoints(
             "endpoints, found redundant endpoint.");
       } else if (status == PRIMARY_SERVER) {
         // Primary should be unique
-        GF_DEV_ASSERT(primaryEp == nullptr);
         primaryEp = ep;
         LOGDEBUG(
             "ThinClientRedundancyManager::getAllEndpoints(): sorting "

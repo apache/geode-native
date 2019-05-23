@@ -34,7 +34,6 @@
 #include <geode/internal/geode_base.hpp>
 #include <geode/internal/geode_globals.hpp>
 
-#include "Assert.hpp"
 #include "DistributedSystem.hpp"
 #include "statistics/Statistics.hpp"
 #include "util/Log.hpp"
@@ -142,7 +141,6 @@ class APACHE_GEODE_EXPORT Utils {
           theObject->toString().c_str());
       youHaveBeenWarned = true;
     }
-    GF_DEV_ASSERT(objectSize != 0);
     return objectSize;
   }
 

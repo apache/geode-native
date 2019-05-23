@@ -287,23 +287,12 @@ GfErrType ThinClientDistributionManager::selectEndpoint(
     }
   }
 
-// Postconditions:
-// 1. If initial size of randIndex > 0 && failover was attempted,  final size of
-// randIndex < initial size of randIndex
-// 2. If CONN_NOERR, then m_activeEndpoint > -1, m_activeEndpoint should be
-// connected.
-// 3. Number of endpoints on which DM is registered <= 1
-#if GF_DEVEL_ASSERTS == 1
-  currentEndpoint = m_activeEndpoint;
-  if ((err == GF_NOERR) &&
-      (currentEndpoint < 0 || !m_endpoints[currentEndpoint]->connected())) {
-    LOGWARN(
-        "Current endpoint %s is not connected after failover.",
-        (currentEndpoint < 0 ? "(null)"
-                             : m_endpoints[currentEndpoint]->name().c_str()));
-  }
-#endif
-
+  // Postconditions:
+  // 1. If initial size of randIndex > 0 && failover was attempted,  final size
+  // of randIndex < initial size of randIndex
+  // 2. If CONN_NOERR, then m_activeEndpoint > -1, m_activeEndpoint should be
+  // connected.
+  // 3. Number of endpoints on which DM is registered <= 1
   return err;
 }
 

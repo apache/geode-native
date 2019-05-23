@@ -103,7 +103,6 @@ std::string CppCacheLibrary::getProductDir() {
   }
 
   // check if bin on windows, and go back one...
-  GF_D_ASSERT(productLibraryDirectoryName.length() > 4);
 #ifdef WIN32
   std::string libpart = "bin";
 #else

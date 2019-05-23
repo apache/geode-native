@@ -72,10 +72,6 @@ namespace Apache
         {
           System::Runtime::InteropServices::Marshal::FreeHGlobal( m_str );
         }
-#if GF_DEVEL_ASSERTS == 1
-        throw gcnew System::ApplicationException(
-          "Finalizer for ManagedString should not have been called!!" );
-#endif
       }
 
       inline static String^ Get( const char* str )

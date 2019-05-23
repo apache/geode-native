@@ -2419,7 +2419,6 @@ GfErrType LocalRegion::destroyRegionNoThrow(
   if (m_regionAttributes.getCachingEnabled()) {
     _GEODE_SAFE_DELETE(m_entries);
   }
-  GF_D_ASSERT(m_destroyPending);
 
   if (removeFromParent) {
     if (m_parentRegion == nullptr) {

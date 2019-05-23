@@ -78,12 +78,9 @@ bool TcrConnection::InitTcrConnection(
       m_endpointObj->getConnRefCounter());
   bool isPool = false;
   m_isBeingUsed = false;
-  GF_DEV_ASSERT(endpoint != nullptr);
   m_endpoint = endpoint;
   // Precondition:
   // 1. isSecondary ==> isClientNotification
-
-  GF_DEV_ASSERT(!isSecondary || isClientNotification);
 
   // Create TcpConn object which manages a socket connection with the endpoint.
   if (endpointObj && endpointObj->getPoolHADM()) {
@@ -96,8 +93,6 @@ bool TcrConnection::InitTcrConnection(
     m_conn = createConnection(m_endpoint, connectTimeout,
                               sysProp.maxSocketBufferSize());
   }
-
-  GF_DEV_ASSERT(m_conn != nullptr);
 
   auto handShakeMsg = cacheImpl->createDataOutput();
   bool isNotificationChannel = false;
@@ -579,9 +574,6 @@ Connector* TcrConnection::createConnection(
 inline ConnErrType TcrConnection::receiveData(
     char* buffer, size_t length, std::chrono::microseconds receiveTimeoutSec,
     bool checkConnected, bool isNotificationMessage) {
-  GF_DEV_ASSERT(buffer != nullptr);
-  GF_DEV_ASSERT(m_conn != nullptr);
-
   std::chrono::microseconds defaultWaitSecs =
       isNotificationMessage ? std::chrono::seconds(1) : std::chrono::seconds(2);
   if (defaultWaitSecs > receiveTimeoutSec) defaultWaitSecs = receiveTimeoutSec;
@@ -620,8 +612,6 @@ inline ConnErrType TcrConnection::receiveData(
     }
   }
   //  Postconditions for checking bounds.
-  GF_DEV_ASSERT(startLen >= length);
-  GF_DEV_ASSERT(length >= 0);
   return (length == 0 ? CONN_NOERR
                       : (length == startLen ? CONN_NODATA : CONN_TIMEOUT));
 }
@@ -636,9 +626,6 @@ inline ConnErrType TcrConnection::sendData(
 inline ConnErrType TcrConnection::sendData(
     std::chrono::microseconds& timeSpent, const char* buffer, size_t length,
     std::chrono::microseconds sendTimeout, bool checkConnected) {
-  GF_DEV_ASSERT(buffer != nullptr);
-  GF_DEV_ASSERT(m_conn != nullptr);
-
   std::chrono::microseconds defaultWaitSecs = std::chrono::seconds(2);
   if (defaultWaitSecs > sendTimeout) defaultWaitSecs = sendTimeout;
   LOGDEBUG(
@@ -767,8 +754,6 @@ void TcrConnection::send(const char* buffer, size_t len,
 void TcrConnection::send(std::chrono::microseconds& timeSpent,
                          const char* buffer, size_t len,
                          std::chrono::microseconds sendTimeoutSec, bool) {
-  GF_DEV_ASSERT(m_conn != nullptr);
-
   // LOGINFO("TcrConnection::send: [%p] sending request to endpoint %s;",
   //:  this, m_endpoint);
 
@@ -796,8 +781,6 @@ void TcrConnection::send(std::chrono::microseconds& timeSpent,
 
 char* TcrConnection::receive(size_t* recvLen, ConnErrType* opErr,
                              std::chrono::microseconds receiveTimeoutSec) {
-  GF_DEV_ASSERT(m_conn != nullptr);
-
   return readMessage(recvLen, receiveTimeoutSec, false, opErr, true);
 }
 
@@ -869,7 +852,6 @@ char* TcrConnection::readMessage(size_t* recvLen,
     return fullMessage;
     // exit(0);
   }
-  // GF_DEV_ASSERT(msgLen > 0);
 
   // user has to delete this pointer
   char* fullMessage;
@@ -1024,7 +1006,6 @@ void TcrConnection::readMessageChunked(
       int32_t chunkLen;
       chunkLen = input.readInt32();
       //  check that chunk length is valid.
-      GF_DEV_ASSERT(chunkLen > 0);
       isLastChunk = input.read();
 
       uint8_t* chunk_body;

@@ -16,6 +16,8 @@
  */
 #include "TcrDistributionManager.hpp"
 
+#include <cassert>
+
 #include <geode/ExceptionTypes.hpp>
 #include <geode/internal/geode_globals.hpp>
 
@@ -29,7 +31,7 @@ namespace client {
 TcrDistributionManager::TcrDistributionManager(
     ThinClientRegion* region, TcrConnectionManager& connManager)
     : ThinClientDistributionManager(connManager, region) {
-  GF_R_ASSERT(region != nullptr);
+  assert(region != nullptr);
   m_clientNotification = region->getAttributes().getClientNotificationEnabled();
 }
 

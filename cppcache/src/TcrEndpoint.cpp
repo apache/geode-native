@@ -95,8 +95,6 @@ TcrEndpoint::~TcrEndpoint() {
           "to subscription channel while closing",
           m_name.c_str());
       // fail in dev build to track #295 better in regressions
-      GF_DEV_ASSERT(m_numRegionListener == 0);
-
       m_numRegionListener = 0;
       closeNotification();
     }
@@ -391,7 +389,6 @@ GfErrType TcrEndpoint::registerDM(bool clientNotification, bool isSecondary,
                                   ThinClientBaseDM* distMgr) {
   // Pre-conditions:
   // 1. If this is a secondary server then clientNotification must be true
-  GF_DEV_ASSERT(!isSecondary || clientNotification);
 
   bool connected = false;
   GfErrType err = GF_NOERR;
@@ -491,20 +488,6 @@ GfErrType TcrEndpoint::registerDM(bool clientNotification, bool isSecondary,
   // 1. The endpoint should be marked as active, only if m_connected is true
   // 2. If this is not an active endpoint and it is connected then only one
   //    connection + notify channel
-  GF_DEV_ASSERT(!m_isActiveEndpoint || m_connected);
-#if GF_DEVEL_ASSERTS == 1
-  int numConnections = m_opConnections.size();
-  if (!m_isActiveEndpoint && !isActiveEndpoint && m_connected &&
-      (numConnections != 1 || m_numRegionListener <= 0 ||
-       m_notifyReceiver == nullptr)) {
-    LOGWARN(
-        "Inactive connected endpoint does not have exactly one "
-        "connection. Number of connections: %d, number of region listeners: "
-        "%d",
-        numConnections, m_numRegionListener);
-  }
-#endif
-
   return err;
 }
 
@@ -1090,8 +1073,6 @@ GfErrType TcrEndpoint::sendRequestWithRetry(
         }
       } else {
         LOGERROR("Unexpected failure while sending request to server.");
-        GF_DEV_ASSERT("Bug in TcrEndpoint::sendRequestWithRetry()?" ? false
-                                                                    : true);
       }
     }
   } while (++sendRetryCount <= maxSendRetries);
@@ -1132,17 +1113,6 @@ GfErrType TcrEndpoint::send(const TcrMessage& request, TcrMessageReply& reply) {
             failReason.c_str());
     setConnectionStatus(false);
   }
-
-// Postconditions:
-#if GF_DEVEL_ASSERTS == 1
-  int opConnectionsSize = m_opConnections.size();
-  if (!m_isActiveEndpoint && (opConnectionsSize > 1)) {
-    LOGWARN("Connections size = %d, expected maximum %d", opConnectionsSize, 1);
-  } else if (opConnectionsSize > m_maxConnections) {
-    LOGWARN("Connections size = %d, expected maximum %d", opConnectionsSize,
-            m_maxConnections);
-  }
-#endif
 
   return error;
 }

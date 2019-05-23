@@ -66,8 +66,6 @@ void TcpSslConn::listen(ACE_INET_Addr addr,
                         std::chrono::microseconds waitSeconds) {
   using apache::geode::internal::chrono::duration::to_string;
 
-  GF_DEV_ASSERT(m_ssl != nullptr);
-
   int32_t retVal = m_ssl->listen(addr, waitSeconds);
 
   if (retVal == -1) {
@@ -86,8 +84,6 @@ void TcpSslConn::listen(ACE_INET_Addr addr,
 
 void TcpSslConn::connect() {
   using apache::geode::internal::chrono::duration::to_string;
-
-  GF_DEV_ASSERT(m_ssl != nullptr);
 
   ACE_OS::signal(SIGPIPE, SIG_IGN);  // Ignore broken pipe
 
@@ -132,18 +128,6 @@ void TcpSslConn::close() {
 size_t TcpSslConn::socketOp(TcpConn::SockOp op, char* buff, size_t len,
                             std::chrono::microseconds waitDuration) {
   {
-    GF_DEV_ASSERT(m_ssl != nullptr);
-    GF_DEV_ASSERT(buff != nullptr);
-
-#if GF_DEVEL_ASSERTS == 1
-    if (len <= 0) {
-      LOGERROR(
-          "TcpSslConn::socketOp called with a length of %d specified. "
-          "No operation performed.",
-          len);
-      GF_DEV_ASSERT(false);
-    }
-#endif
     // passing wait time as micro seconds
     ACE_Time_Value waitTime(waitDuration);
     auto endTime = std::chrono::steady_clock::now() + waitDuration;
@@ -196,14 +180,11 @@ size_t TcpSslConn::socketOp(TcpConn::SockOp op, char* buff, size_t len,
       ACE_OS::last_error(ETIME);
     }
 
-    GF_DEV_ASSERT(len >= 0);
     return totalsend;
   }
 }
 
 uint16_t TcpSslConn::getPort() {
-  GF_DEV_ASSERT(m_ssl != nullptr);
-
   ACE_INET_Addr localAddr;
   m_ssl->getLocalAddr(localAddr);
   return localAddr.get_port_number();

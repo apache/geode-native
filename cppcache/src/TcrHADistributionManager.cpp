@@ -17,6 +17,8 @@
 
 #include "TcrHADistributionManager.hpp"
 
+#include <cassert>
+
 #include <geode/ExceptionTypes.hpp>
 #include <geode/internal/geode_globals.hpp>
 
@@ -36,7 +38,7 @@ TcrHADistributionManager::TcrHADistributionManager(
     ThinClientRegion* theRegion, TcrConnectionManager& connManager)
     : ThinClientDistributionManager(connManager, theRegion),
       m_theTcrConnManager(connManager) {
-  GF_R_ASSERT(theRegion != nullptr);
+  assert(theRegion != nullptr);
 }
 
 void TcrHADistributionManager::init() {

@@ -87,8 +87,6 @@ class TcpSslConn : public TcpConn {
 
   void setOption(int32_t level, int32_t option, void* val,
                  size_t len) override {
-    GF_DEV_ASSERT(m_ssl != nullptr);
-
     if (m_ssl->setOption(level, option, val, static_cast<int32_t>(len)) == -1) {
       int32_t lastError = ACE_OS::last_error();
       LOGERROR("Failed to set option, errno: %d: %s", lastError,

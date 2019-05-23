@@ -21,7 +21,6 @@
 
 #include <geode/internal/geode_globals.hpp>
 
-#include "../Assert.hpp"
 #include "StatisticDescriptorImpl.hpp"
 #include "StatisticsTypeImpl.hpp"
 
@@ -68,7 +67,6 @@ AtomicStatisticsImpl::AtomicStatisticsImpl(StatisticsType* typeArg,
     this->uniqueId = uniqueIdArg;
     this->closed = false;
     this->statsType = dynamic_cast<StatisticsTypeImpl*>(typeArg);
-    GF_D_ASSERT(this->statsType != nullptr);
     int32_t intCount = statsType->getIntStatCount();
     int32_t longCount = statsType->getLongStatCount();
     int32_t doubleCount = statsType->getDoubleStatCount();

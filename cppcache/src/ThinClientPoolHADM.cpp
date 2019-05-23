@@ -266,7 +266,6 @@ void ThinClientPoolHADM::removeRegion(ThinClientRegion* theTCR) {
       return;
     }
   }
-  GF_DEV_ASSERT("Region not found in ThinClientPoolHADM list" ? false : false);
 }
 
 void ThinClientPoolHADM::readyForEvents() {

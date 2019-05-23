@@ -19,7 +19,6 @@
 
 #include <mutex>
 
-#include "Assert.hpp"
 #include "util/concurrent/spinlock_mutex.hpp"
 
 namespace apache {
@@ -60,8 +59,6 @@ void LRUList<TEntry, TCreateEntry>::appendEntry(
 template <typename TEntry, typename TCreateEntry>
 void LRUList<TEntry, TCreateEntry>::appendNode(LRUListNode* aNode) {
   std::lock_guard<spinlock_mutex> lk(m_tailLock);
-
-  GF_D_ASSERT(aNode != nullptr);
 
   aNode->clearNextLRUListNode();
   m_tailNode->setNextLRUListNode(aNode);

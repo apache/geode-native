@@ -23,7 +23,6 @@
 #include <geode/CacheableObjectArray.hpp>
 #include <geode/SystemProperties.hpp>
 
-#include "Assert.hpp"
 #include "AutoDelete.hpp"
 #include "CacheRegionHelper.hpp"
 #include "DataInputInternal.hpp"
@@ -1925,7 +1924,7 @@ TcrMessageUnregisterInterestList::TcrMessageUnregisterInterestList(
   m_receiveValues = receiveValues;
 
   auto numInItrestList = keys.size();
-  GF_R_ASSERT(numInItrestList != 0);
+  assert(numInItrestList != 0);
   uint32_t numOfParts = 2 + static_cast<uint32_t>(numInItrestList);
 
   numOfParts += 2;
@@ -2099,7 +2098,6 @@ TcrMessagePeriodicAck::TcrMessagePeriodicAck(
   m_request.reset(dataOutput);
 
   uint32_t numParts = static_cast<uint32_t>(entries.size());
-  GF_D_ASSERT(numParts > 0);
   writeHeader(m_msgType, numParts);
   for (EventIdMapEntryList::const_iterator entry = entries.begin();
        entry != entries.end(); ++entry) {
