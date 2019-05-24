@@ -63,7 +63,8 @@
         "ubuntu/add-user-build.sh",
         "ubuntu/install-packages.sh",
         "ubuntu/install-coverage-tools.sh",
-        "ubuntu/install-cmake.sh"
+        "ubuntu/install-cmake.sh",
+        "ubuntu/install-clang-format.sh"
       ]
     },
     {
