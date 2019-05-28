@@ -958,11 +958,6 @@ void TcrConnection::readMessageChunked(
   txId = input.readInt32();
   reply.setTransId(txId);
 
-  // bool isLastChunk = false;
-  uint8_t isLastChunk = 0x0;
-
-  int chunkNum = 0;
-
   // Initialize the chunk processing
   reply.startProcessChunk(m_chunksProcessSema);
 
@@ -972,10 +967,12 @@ void TcrConnection::readMessageChunked(
                                        m_endpointObj->getDistributedMemberID());
 
   try {
-    bool first = true;
+    auto isLastChunk = false;
+    int chunkNum = 0;
+
     do {
       // uint8_t chunk_header[HDR_LEN];
-      if (!first) {
+      if (chunkNum) {
         error = receiveData(reinterpret_cast<char*>(msg_header + HDR_LEN_12),
                             HDR_LEN, headerTimeout, true, false);
         if (error != CONN_NOERR) {
@@ -989,8 +986,6 @@ void TcrConnection::readMessageChunked(
                 "connection failure while receiving chunk header"));
           }
         }
-      } else {
-        first = false;
       }
       ++chunkNum;
 
@@ -1007,7 +1002,7 @@ void TcrConnection::readMessageChunked(
       int32_t chunkLen;
       chunkLen = input.readInt32();
       //  check that chunk length is valid.
-      isLastChunk = input.read();
+      isLastChunk = (input.read() & 0x01) ? true : false;
 
       uint8_t* chunk_body;
       _GEODE_NEW(chunk_body, uint8_t[chunkLen]);
@@ -1036,7 +1031,7 @@ void TcrConnection::readMessageChunked(
 
       reply.processChunk(chunk_body, chunkLen,
                          m_endpointObj->getDistributedMemberID(), isLastChunk);
-    } while (!(isLastChunk & 0x1));
+    } while (isLastChunk);
   } catch (const Exception&) {
     auto ex = reply.getChunkedResultHandler()->getException();
     LOGDEBUG("Found existing exception ", ex->what());
