@@ -967,8 +967,8 @@ void TcrConnection::readMessageChunked(
                                        m_endpointObj->getDistributedMemberID());
 
   try {
-    auto isLastChunk = false;
     int8_t flags = 0x0;
+    auto hasMoreChunks = true;
     int chunkNum = 0;
 
     do {
@@ -1004,7 +1004,7 @@ void TcrConnection::readMessageChunked(
       chunkLen = input.readInt32();
       flags = input.read();
       //  check that chunk length is valid.
-      isLastChunk = (flags & 0x01) ? true : false;
+      hasMoreChunks = (flags & 0x01) ? false : true;
 
       uint8_t* chunk_body;
       _GEODE_NEW(chunk_body, uint8_t[chunkLen]);
@@ -1033,7 +1033,7 @@ void TcrConnection::readMessageChunked(
 
       reply.processChunk(chunk_body, chunkLen,
                          m_endpointObj->getDistributedMemberID(), flags);
-    } while (!isLastChunk);
+    } while (hasMoreChunks);
   } catch (const Exception&) {
     auto ex = reply.getChunkedResultHandler()->getException();
     LOGDEBUG("Found existing exception ", ex->what());
