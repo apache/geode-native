@@ -49,6 +49,21 @@ const int64_t INITIAL_CONNECTION_ID = 26739;
     LOGFINEST(ex.getName() + ": " + ex.getMessage()); \
     throw ex;                                         \
   }
+
+struct FinalizeProcessChunk {
+ private:
+  TcrMessage& m_reply;
+  uint16_t m_endpointmemId;
+
+ public:
+  FinalizeProcessChunk(TcrMessageReply& reply, uint16_t endpointmemId)
+      : m_reply(reply), m_endpointmemId(endpointmemId) {}
+  ~FinalizeProcessChunk() noexcept(false) {
+    // Enqueue a nullptr chunk indicating a wait for processing to complete.
+    m_reply.processChunk(nullptr, 0, m_endpointmemId);
+  }
+};
+
 bool TcrConnection::InitTcrConnection(
     TcrEndpoint* endpointObj, const char* endpoint,
     synchronized_set<std::unordered_set<uint16_t>>& ports,
@@ -954,21 +969,10 @@ void TcrConnection::readMessageChunked(
   // Initialize the chunk processing
   reply.startProcessChunk(m_chunksProcessSema);
 
-  //  indicate an end to chunk processing and wait for processing
+  // indicate an end to chunk processing and wait for processing
   // to end even if reading the chunks fails in middle
-  struct FinalizeProcessChunk {
-   private:
-    TcrMessage& m_reply;
-    uint16_t m_endpointmemId;
-
-   public:
-    FinalizeProcessChunk(TcrMessageReply& reply, uint16_t endpointmemId)
-        : m_reply(reply), m_endpointmemId(endpointmemId) {}
-    ~FinalizeProcessChunk() noexcept(false) {
-      // Enqueue a nullptr chunk indicating a wait for processing to complete.
-      m_reply.processChunk(nullptr, 0, m_endpointmemId);
-    }
-  } endProcessChunk(reply, m_endpointObj->getDistributedMemberID());
+  FinalizeProcessChunk endProcessChunk(reply,
+                                       m_endpointObj->getDistributedMemberID());
 
   try {
     bool first = true;
