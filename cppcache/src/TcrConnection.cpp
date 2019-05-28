@@ -919,11 +919,8 @@ void TcrConnection::readMessageChunked(
   uint8_t msg_header[HDR_LEN_12 + HDR_LEN];
   ConnErrType error;
 
-  std::chrono::microseconds headerTimeout = receiveTimeoutSec;
-  if (doHeaderTimeoutRetries &&
-      receiveTimeoutSec == DEFAULT_READ_TIMEOUT_SECS) {
-    headerTimeout = DEFAULT_READ_TIMEOUT_SECS * DEFAULT_TIMEOUT_RETRIES;
-  }
+  auto headerTimeout =
+      calculateHeaderTimeout(receiveTimeoutSec, doHeaderTimeoutRetries);
 
   LOGFINER(
       "TcrConnection::readMessageChunked: receiving reply from "
@@ -1051,6 +1048,15 @@ void TcrConnection::readMessageChunked(
       "TcrConnection::readMessageChunked: read full reply "
       "from endpoint %s",
       m_endpoint);
+}
+
+std::chrono::microseconds TcrConnection::calculateHeaderTimeout(
+    std::chrono::microseconds receiveTimeout, bool retry) {
+  auto headerTimeout = receiveTimeout;
+  if (retry && receiveTimeout == DEFAULT_READ_TIMEOUT_SECS) {
+    headerTimeout *= DEFAULT_TIMEOUT_RETRIES;
+  }
+  return headerTimeout;
 }
 
 void TcrConnection::close() {

@@ -318,6 +318,10 @@ class APACHE_GEODE_EXPORT TcrConnection {
   int64_t connectionId;
   const TcrConnectionManager* m_connectionManager;
   DiffieHellman* m_dh;
+
+  std::chrono::microseconds calculateHeaderTimeout(
+      std::chrono::microseconds receiveTimeout, bool retry);
+
   /**
    * To read Intantiator message(which meant for java client), here we are
    * ignoring it
