@@ -913,8 +913,14 @@ char* TcrConnection::readMessage(size_t* recvLen,
   return fullMessage;
 }
 
+// void readResponseHeader(std::chrono::microseconds timeout,
+//                        int32_t& messageType, int32_t& numberOfParts,
+//                        int32_t& transactionId);
 void TcrConnection::readResponseHeader(std::chrono::microseconds timeout,
-                                       uint8_t* msg_header) {
+                                       uint8_t* msg_header,
+                                       int32_t& messageType,
+                                       int32_t& numberOfParts,
+                                       int32_t& transactionId) {
   auto error = receiveData(reinterpret_cast<char*>(msg_header),
                            HDR_LEN_12 + HDR_LEN, timeout, true, false);
   if (error != CONN_NOERR) {
@@ -933,7 +939,12 @@ void TcrConnection::readResponseHeader(std::chrono::microseconds timeout,
       "TcrConnection::readMessageChunked: received header from "
       "endpoint %s; bytes: %s",
       m_endpoint, Utils::convertBytesToString(msg_header, HDR_LEN_12).c_str());
-}
+
+  auto input = m_connectionManager->getCacheImpl()->createDataInput(msg_header,
+                                                                    HDR_LEN_12);
+  readResponseHeaderVariables(&input, messageType, numberOfParts,
+                              transactionId);
+}  // namespace client
 
 void TcrConnection::readResponseHeaderVariables(DataInput* di, int32_t& msgType,
                                                 int32_t& numberOfParts,
@@ -947,7 +958,7 @@ void TcrConnection::readMessageChunked(
     TcrMessageReply& reply, std::chrono::microseconds receiveTimeoutSec,
     bool doHeaderTimeoutRetries) {
   uint8_t msg_header[HDR_LEN_12 + HDR_LEN];
-  ConnErrType error;
+  //  ConnErrType error;
 
   auto headerTimeout =
       calculateHeaderTimeout(receiveTimeoutSec, doHeaderTimeoutRetries);
@@ -981,21 +992,16 @@ void TcrConnection::readMessageChunked(
   //  auto input =
   //  m_connectionManager->getCacheImpl()->createDataInput(msg_header,
   //                                                                    HDR_LEN_12);
-  readResponseHeader(headerTimeout, msg_header);
-  auto input = m_connectionManager->getCacheImpl()->createDataInput(msg_header,
-                                                                    HDR_LEN_12);
 
   int32_t msgType;
   int32_t txId;
   int32_t numOfParts;
 
-  readResponseHeaderVariables(&input, msgType, numOfParts, txId);
+  readResponseHeader(headerTimeout, msg_header, msgType, numOfParts, txId);
 
   reply.setMessageType(msgType);
   LOGDEBUG("TcrConnection::readMessageChunked numberof parts = %d ",
            numOfParts);
-  // input->advanceCursor(4);
-  //  txId = input.readInt32();
   reply.setTransId(txId);
 
   // Initialize the chunk processing
@@ -1010,6 +1016,7 @@ void TcrConnection::readMessageChunked(
     int8_t flags = 0x0;
     auto hasMoreChunks = true;
     int chunkNum = 0;
+    ConnErrType error = CONN_NOERR;
 
     do {
       // uint8_t chunk_header[HDR_LEN];
