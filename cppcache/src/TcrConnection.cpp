@@ -942,17 +942,10 @@ void TcrConnection::readResponseHeader(std::chrono::microseconds timeout,
 
   auto input = m_connectionManager->getCacheImpl()->createDataInput(msg_header,
                                                                     HDR_LEN_12);
-  readResponseHeaderVariables(&input, messageType, numberOfParts,
-                              transactionId);
+  messageType = input.readInt32();
+  numberOfParts = input.readInt32();
+  transactionId = input.readInt32();
 }  // namespace client
-
-void TcrConnection::readResponseHeaderVariables(DataInput* di, int32_t& msgType,
-                                                int32_t& numberOfParts,
-                                                int32_t& transactionId) {
-  msgType = di->readInt32();
-  numberOfParts = di->readInt32();
-  transactionId = di->readInt32();
-}
 
 void TcrConnection::readMessageChunked(
     TcrMessageReply& reply, std::chrono::microseconds receiveTimeoutSec,

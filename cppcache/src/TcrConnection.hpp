@@ -326,10 +326,6 @@ class APACHE_GEODE_EXPORT TcrConnection {
                           uint8_t* msg_header, int32_t& messageType,
                           int32_t& numberOfParts, int32_t& transactionId);
 
-  void readResponseHeaderVariables(DataInput* di, int32_t& msgType,
-                                   int32_t& numberOfParts,
-                                   int32_t& transactionId);
-
   //  void readResponseHeader(std::chrono::microseconds timeout,
   //                          uint32_t& messageType, uint32_t& numberOfParts,
   //                          uint32_t& transactionId);
