@@ -935,6 +935,14 @@ void TcrConnection::readResponseHeader(std::chrono::microseconds timeout,
       m_endpoint, Utils::convertBytesToString(msg_header, HDR_LEN_12).c_str());
 }
 
+void TcrConnection::readResponseHeaderVariables(DataInput* di, int32_t& msgType,
+                                                int32_t& numberOfParts,
+                                                int32_t& transactionId) {
+  msgType = di->readInt32();
+  numberOfParts = di->readInt32();
+  transactionId = di->readInt32();
+}
+
 void TcrConnection::readMessageChunked(
     TcrMessageReply& reply, std::chrono::microseconds receiveTimeoutSec,
     bool doHeaderTimeoutRetries) {
@@ -977,14 +985,17 @@ void TcrConnection::readMessageChunked(
   auto input = m_connectionManager->getCacheImpl()->createDataInput(msg_header,
                                                                     HDR_LEN_12);
 
-  int32_t msgType = input.readInt32();
-  reply.setMessageType(msgType);
+  int32_t msgType;
   int32_t txId;
-  int32_t numOfParts = input.readInt32();
+  int32_t numOfParts;
+
+  readResponseHeaderVariables(&input, msgType, numOfParts, txId);
+
+  reply.setMessageType(msgType);
   LOGDEBUG("TcrConnection::readMessageChunked numberof parts = %d ",
            numOfParts);
   // input->advanceCursor(4);
-  txId = input.readInt32();
+  //  txId = input.readInt32();
   reply.setTransId(txId);
 
   // Initialize the chunk processing
