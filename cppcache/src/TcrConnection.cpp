@@ -42,6 +42,8 @@ namespace geode {
 namespace client {
 
 const int HEADER_LENGTH = 17;
+const int HDR_LEN = 5;
+const int HDR_LEN_12 = 12;
 const int64_t INITIAL_CONNECTION_ID = 26739;
 
 #define throwException(ex)                            \
@@ -911,24 +913,10 @@ char* TcrConnection::readMessage(size_t* recvLen,
   return fullMessage;
 }
 
-void TcrConnection::readMessageChunked(
-    TcrMessageReply& reply, std::chrono::microseconds receiveTimeoutSec,
-    bool doHeaderTimeoutRetries) {
-  const int HDR_LEN = 5;
-  const int HDR_LEN_12 = 12;
-  uint8_t msg_header[HDR_LEN_12 + HDR_LEN];
-  ConnErrType error;
-
-  auto headerTimeout =
-      calculateHeaderTimeout(receiveTimeoutSec, doHeaderTimeoutRetries);
-
-  LOGFINER(
-      "TcrConnection::readMessageChunked: receiving reply from "
-      "endpoint %s",
-      m_endpoint);
-
-  error = receiveData(reinterpret_cast<char*>(msg_header), HDR_LEN_12 + HDR_LEN,
-                      headerTimeout, true, false);
+void TcrConnection::readResponseHeader(std::chrono::microseconds timeout,
+                                       uint8_t* msg_header) {
+  auto error = receiveData(reinterpret_cast<char*>(msg_header),
+                           HDR_LEN_12 + HDR_LEN, timeout, true, false);
   if (error != CONN_NOERR) {
     if (error & CONN_TIMEOUT) {
       throwException(TimeoutException(
@@ -945,9 +933,50 @@ void TcrConnection::readMessageChunked(
       "TcrConnection::readMessageChunked: received header from "
       "endpoint %s; bytes: %s",
       m_endpoint, Utils::convertBytesToString(msg_header, HDR_LEN_12).c_str());
+}
 
+void TcrConnection::readMessageChunked(
+    TcrMessageReply& reply, std::chrono::microseconds receiveTimeoutSec,
+    bool doHeaderTimeoutRetries) {
+  uint8_t msg_header[HDR_LEN_12 + HDR_LEN];
+  ConnErrType error;
+
+  auto headerTimeout =
+      calculateHeaderTimeout(receiveTimeoutSec, doHeaderTimeoutRetries);
+
+  LOGFINER(
+      "TcrConnection::readMessageChunked: receiving reply from "
+      "endpoint %s",
+      m_endpoint);
+
+  //  error = receiveData(reinterpret_cast<char*>(msg_header), HDR_LEN_12 +
+  //  HDR_LEN,
+  //                      headerTimeout, true, false);
+  //  if (error != CONN_NOERR) {
+  //    if (error & CONN_TIMEOUT) {
+  //      throwException(TimeoutException(
+  //          "TcrConnection::readMessageChunked: "
+  //          "connection timed out while receiving message header"));
+  //    } else {
+  //      throwException(GeodeIOException(
+  //          "TcrConnection::readMessageChunked: "
+  //          "connection failure while receiving message header"));
+  //    }
+  //  }
+
+  //  LOGDEBUG(
+  //      "TcrConnection::readMessageChunked: received header from "
+  //      "endpoint %s; bytes: %s",
+  //      m_endpoint, Utils::convertBytesToString(msg_header,
+  //      HDR_LEN_12).c_str());
+  //
+  //  auto input =
+  //  m_connectionManager->getCacheImpl()->createDataInput(msg_header,
+  //                                                                    HDR_LEN_12);
+  readResponseHeader(headerTimeout, msg_header);
   auto input = m_connectionManager->getCacheImpl()->createDataInput(msg_header,
                                                                     HDR_LEN_12);
+
   int32_t msgType = input.readInt32();
   reply.setMessageType(msgType);
   int32_t txId;
