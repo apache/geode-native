@@ -340,7 +340,7 @@ Use the `<expiration-attributes>` sub-element to specify duration and expiration
 <a id="partition-resolver-ref"></a>
 ## \<partition-resolver\>
 
-\<partition-resolver\> identifies a server-side function by specifying `library-name` and `library-function-name`.
+\<partition-resolver\> identifies a function by specifying `library-name` and `library-function-name`.
 
 A partition resolver is used for single-hop access to partitioned region entries on the server side. This resolver
 implementation must match that of the `PartitionResolver` on the server side.
@@ -356,17 +356,17 @@ For example:
 <a id="cache-loader-ref"></a>
 ## \<cache-loader\>
 
-\<cache-loader\> identifies a server-side function by specifying `library-name` and `library-function-name`.
+\<cache-loader\> identifies a cache loader function by specifying `library-name` and `library-function-name`.
 
 <a id="cache-listener-ref"></a>
 ## \<cache-listener\>
 
-\<cache-listener\> identifies a server-side function by specifying `library-name` and `library-function-name`.
+\<cache-listener\> identifies a cache listener function by specifying `library-name` and `library-function-name`.
 
 <a id="cache-writer-ref"></a>
 ## \<cache-writer\>
 
-\<cache-writer\> identifies a server-side function by specifying `library-name` and `library-function-name`.
+\<cache-writer\> identifies a cache writer function by specifying `library-name` and `library-function-name`.
 
 <a id="persistence-manager-ref"></a>
 ## \<persistence-manager\>
@@ -374,7 +374,7 @@ For example:
 For each region, if the disk-policy attribute is set to `overflows`, a persistence-manager plug-in
 must perform cache-to-disk and disk-to-cache operations.
 
-\<persistence-manager\> identifies a server-side function by specifying `library-name` and `library-function-name`.
+\<persistence-manager\> identifies a persistence manager function by specifying `library-name` and `library-function-name`.
 You can also specify a set of properties to be passed to the function as parameters.
 
 The sub-element `<properties>` is a sequence of 0 or more `<property>` elements.
