@@ -324,13 +324,14 @@ class APACHE_GEODE_EXPORT TcrConnection {
 
   void readResponseHeader(std::chrono::microseconds timeout,
                           uint8_t* msg_header, int32_t& messageType,
-                          int32_t& numberOfParts, int32_t& transactionId);
+                          int32_t& numberOfParts, int32_t& transactionId,
+                          int32_t& chunkLength, int8_t& flags);
 
   //  void readResponseHeader(std::chrono::microseconds timeout,
   //                          uint32_t& messageType, uint32_t& numberOfParts,
   //                          uint32_t& transactionId);
   void readChunkHeader(std::chrono::microseconds timeout, int32_t& chunkLength,
-                       uint8_t& lastChunkAndSecurityFlags);
+                       int8_t& lastChunkAndSecurityFlags);
 
   /**
    * To read Intantiator message(which meant for java client), here we are
