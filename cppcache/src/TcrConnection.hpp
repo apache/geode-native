@@ -333,6 +333,9 @@ class APACHE_GEODE_EXPORT TcrConnection {
   void readChunkHeader(std::chrono::microseconds timeout, int32_t& chunkLength,
                        int8_t& lastChunkAndSecurityFlags);
 
+  void readChunkBody(std::chrono::microseconds timeout, int32_t chunkLength,
+                     uint8_t** chunkBody);
+
   /**
    * To read Intantiator message(which meant for java client), here we are
    * ignoring it

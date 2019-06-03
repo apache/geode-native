@@ -988,6 +988,30 @@ void TcrConnection::readChunkHeader(std::chrono::microseconds timeout,
       chunkLength, lastChunkAndSecurityFlags);
 }
 
+void TcrConnection::readChunkBody(std::chrono::microseconds timeout,
+                                  int32_t chunkLength, uint8_t** chunkBody) {
+  _GEODE_NEW(*chunkBody, uint8_t[chunkLength]);
+  auto error = receiveData(reinterpret_cast<char*>(*chunkBody), chunkLength,
+                           timeout, true, false);
+  if (error != CONN_NOERR) {
+    delete[] chunkBody;
+    if (error & CONN_TIMEOUT) {
+      throwException(
+          TimeoutException("TcrConnection::readMessageChunked: "
+                           "connection timed out while receiving chunk body"));
+    } else {
+      throwException(
+          GeodeIOException("TcrConnection::readMessageChunked: "
+                           "connection failure while receiving chunk body"));
+    }
+  }
+
+  LOGDEBUG(
+      "TcrConnection::readMessageChunked: received chunk body from endpoint "
+      "%s; bytes: %s",
+      m_endpoint, Utils::convertBytesToString(*chunkBody, chunkLength).c_str());
+}
+
 void TcrConnection::readMessageChunked(
     TcrMessageReply& reply, std::chrono::microseconds receiveTimeoutSec,
     bool doHeaderTimeoutRetries) {
@@ -1029,7 +1053,6 @@ void TcrConnection::readMessageChunked(
   try {
     auto hasMoreChunks = true;
     int chunkNum = 0;
-    ConnErrType error = CONN_NOERR;
 
     do {
       // uint8_t chunk_header[HDR_LEN];
@@ -1047,27 +1070,8 @@ void TcrConnection::readMessageChunked(
       hasMoreChunks = (flags & 0x01) ? false : true;
 
       uint8_t* chunk_body;
-      _GEODE_NEW(chunk_body, uint8_t[chunkLen]);
-      error = receiveData(reinterpret_cast<char*>(chunk_body), chunkLen,
-                          receiveTimeoutSec, true, false);
-      if (error != CONN_NOERR) {
-        delete[] chunk_body;
-        if (error & CONN_TIMEOUT) {
-          throwException(TimeoutException(
-              "TcrConnection::readMessageChunked: "
-              "connection timed out while receiving chunk body"));
-        } else {
-          throwException(GeodeIOException(
-              "TcrConnection::readMessageChunked: "
-              "connection failure while receiving chunk body"));
-        }
-      }
+      readChunkBody(receiveTimeoutSec, chunkLen, &chunk_body);
 
-      LOGDEBUG(
-          "TcrConnection::readMessageChunked: received chunk body %d "
-          "from endpoint %s; bytes: %s",
-          chunkNum, m_endpoint,
-          Utils::convertBytesToString(chunk_body, chunkLen).c_str());
       // Process the chunk; the actual processing is done by a separate thread
       // ThinClientBaseDM::m_chunkProcessor.
 
