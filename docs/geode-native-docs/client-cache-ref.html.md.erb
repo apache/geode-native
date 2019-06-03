@@ -26,7 +26,7 @@ Set cache configuration parameters in a declarative XML file.
 When you run your application, the native client runtime library reads the file `cache.xml` in the current executable directory, if it exists.
 You can set the filename and path to other values by modifying the `geode.properties` file's `cache-xml-file` property.
 
-The declarative XML file is used to populate a client cache when it is created.
+The declarative XML file is used to externalize the configuration of the client cache.
 The contents of the XML file correspond to APIs found in the`apache::geode::client` package for C++ applications,
 and the `Apache::Geode::Client` package for .NET applications.
 
@@ -344,7 +344,7 @@ Use the `<expiration-attributes>` sub-element to specify duration and expiration
 
 A partition resolver is used for single-hop access to partitioned region entries on the server side. This resolver
 implementation must match that of the `PartitionResolver` on the server side.
-See [Custom Partitioning and Colocating Data](/serverman/developing/partitioned_regions/overview_custom_partitioning_and_data_colocation.html) in the <%=vars.product_name%> User Guide for more on implementing partition resolvers.
+See the [API Class Reference](/cppdocs/hierarchy.html) for the **PartitionResolver** class.
 
 For example:
 
@@ -357,22 +357,26 @@ For example:
 ## \<cache-loader\>
 
 \<cache-loader\> identifies a cache loader function by specifying `library-name` and `library-function-name`.
+See the [API Class Reference](/cppdocs/hierarchy.html) for the **CacheLoader** class.
 
 <a id="cache-listener-ref"></a>
 ## \<cache-listener\>
 
 \<cache-listener\> identifies a cache listener function by specifying `library-name` and `library-function-name`.
+See the [API Class Reference](/cppdocs/hierarchy.html) for the **CacheListener** class.
 
 <a id="cache-writer-ref"></a>
 ## \<cache-writer\>
 
 \<cache-writer\> identifies a cache writer function by specifying `library-name` and `library-function-name`.
+See the [API Class Reference](/cppdocs/hierarchy.html) for the **CacheWriter** class.
 
 <a id="persistence-manager-ref"></a>
 ## \<persistence-manager\>
 
 For each region, if the disk-policy attribute is set to `overflows`, a persistence-manager plug-in
 must perform cache-to-disk and disk-to-cache operations.
+See the [API Class Reference](/cppdocs/hierarchy.html) for the **PersistenceManager** class.
 
 \<persistence-manager\> identifies a persistence manager function by specifying `library-name` and `library-function-name`.
 You can also specify a set of properties to be passed to the function as parameters.
