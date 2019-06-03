@@ -1016,6 +1016,22 @@ void TcrConnection::readChunkBody(std::chrono::microseconds timeout,
       m_endpoint, Utils::convertBytesToString(*chunkBody, chunkLength).c_str());
 }
 
+void TcrConnection::processChunk(TcrMessageReply& reply,
+                                 std::chrono::microseconds timeout,
+                                 int32_t chunkLength,
+                                 int8_t lastChunkAndSecurityFlags) {
+  // NOTE: this buffer is allocated by readChunkBody, and reply.processChunk
+  // takes ownership, so we don't delete it here on failure
+  uint8_t* chunkBody;
+  readChunkBody(timeout, chunkLength, &chunkBody);
+
+  // Process the chunk; the actual processing is done by a separate thread
+  // ThinClientBaseDM::m_chunkProcessor.
+  reply.processChunk(chunkBody, chunkLength,
+                     m_endpointObj->getDistributedMemberID(),
+                     lastChunkAndSecurityFlags);
+}
+
 void TcrConnection::readMessageChunked(
     TcrMessageReply& reply, std::chrono::microseconds receiveTimeoutSec,
     bool doHeaderTimeoutRetries) {
@@ -1051,6 +1067,10 @@ void TcrConnection::readMessageChunked(
     auto hasMoreChunks = true;
     int chunkNumber = 0;
 
+    processChunk(reply, receiveTimeoutSec, chunkLength, flags);
+
+    hasMoreChunks = (flags & 0x01) ? false : true;
+
     while (hasMoreChunks) {
       readChunkHeader(headerTimeout, chunkNumber, chunkLength, flags);
 
@@ -1058,15 +1078,7 @@ void TcrConnection::readMessageChunked(
                chunkNumber);
       hasMoreChunks = (flags & 0x01) ? false : true;
 
-      // NOTE: this buffer is allocated by readChunkBody, and reply.processChunk
-      // takes ownership, so we don't delete it here on failure
-      uint8_t* chunkBody;
-      readChunkBody(receiveTimeoutSec, chunkLength, &chunkBody);
-
-      // Process the chunk; the actual processing is done by a separate thread
-      // ThinClientBaseDM::m_chunkProcessor.
-      reply.processChunk(chunkBody, chunkLength,
-                         m_endpointObj->getDistributedMemberID(), flags);
+      processChunk(reply, receiveTimeoutSec, chunkLength, flags);
 
       ++chunkNumber;
     };
