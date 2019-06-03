@@ -327,16 +327,13 @@ class APACHE_GEODE_EXPORT TcrConnection {
                           int32_t& transactionId, int32_t& chunkLength,
                           int8_t& flags);
 
-  //  void readResponseHeader(std::chrono::microseconds timeout,
-  //                          uint32_t& messageType, uint32_t& numberOfParts,
-  //                          uint32_t& transactionId);
-  void readChunkHeader(std::chrono::microseconds timeout, int32_t chunkNumber,
-                       int32_t& chunkLength, int8_t& lastChunkAndSecurityFlags);
+  void readChunkHeader(std::chrono::microseconds timeout, int32_t& chunkLength,
+                       int8_t& lastChunkAndSecurityFlags);
 
   void readChunkBody(std::chrono::microseconds timeout, int32_t chunkLength,
                      uint8_t** chunkBody);
 
-  void processChunk(TcrMessageReply& reply, std::chrono::microseconds timeout,
+  bool processChunk(TcrMessageReply& reply, std::chrono::microseconds timeout,
                     int32_t chunkLength, int8_t lastChunkAndSecurityFlags);
 
   /**
