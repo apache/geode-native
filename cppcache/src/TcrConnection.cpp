@@ -916,13 +916,13 @@ char* TcrConnection::readMessage(size_t* recvLen,
 }
 
 void TcrConnection::readResponseHeader(std::chrono::microseconds timeout,
-                                       uint8_t* msg_header,
                                        int32_t& messageType,
                                        int32_t& numberOfParts,
                                        int32_t& transactionId,
                                        int32_t& chunkLength, int8_t& flags) {
-  auto error = receiveData(reinterpret_cast<char*>(msg_header), HEADER_LENGTH,
-                           timeout, true, false);
+  uint8_t responseHeader[HEADER_LENGTH];
+  auto error = receiveData(reinterpret_cast<char*>(responseHeader),
+                           HEADER_LENGTH, timeout, true, false);
   if (error != CONN_NOERR) {
     if (error & CONN_TIMEOUT) {
       throwException(TimeoutException(
@@ -939,10 +939,10 @@ void TcrConnection::readResponseHeader(std::chrono::microseconds timeout,
       "TcrConnection::readMessageChunked: received header from "
       "endpoint %s; bytes: %s",
       m_endpoint,
-      Utils::convertBytesToString(msg_header, HEADER_LENGTH).c_str());
+      Utils::convertBytesToString(responseHeader, HEADER_LENGTH).c_str());
 
   auto input = m_connectionManager->getCacheImpl()->createDataInput(
-      msg_header, HEADER_LENGTH);
+      responseHeader, HEADER_LENGTH);
   messageType = input.readInt32();
   numberOfParts = input.readInt32();
   transactionId = input.readInt32();
@@ -991,9 +991,6 @@ void TcrConnection::readChunkHeader(std::chrono::microseconds timeout,
 void TcrConnection::readMessageChunked(
     TcrMessageReply& reply, std::chrono::microseconds receiveTimeoutSec,
     bool doHeaderTimeoutRetries) {
-  uint8_t msg_header[HDR_LEN_12 + HDR_LEN];
-  //  ConnErrType error;
-
   auto headerTimeout =
       calculateHeaderTimeout(receiveTimeoutSec, doHeaderTimeoutRetries);
 
@@ -1011,8 +1008,7 @@ void TcrConnection::readMessageChunked(
   LOGERROR("TcrConnection::readMessageChunked: chunk len == %" PRId32
            " before readResponseHeader",
            chunkLen);
-  readResponseHeader(headerTimeout, msg_header, msgType, numOfParts, txId,
-                     chunkLen, flags);
+  readResponseHeader(headerTimeout, msgType, numOfParts, txId, chunkLen, flags);
   LOGERROR("TcrConnection::readMessageChunked: chunk len == %" PRId32
            " after readResponseHeader",
            chunkLen);

@@ -323,9 +323,9 @@ class APACHE_GEODE_EXPORT TcrConnection {
       std::chrono::microseconds receiveTimeout, bool retry);
 
   void readResponseHeader(std::chrono::microseconds timeout,
-                          uint8_t* msg_header, int32_t& messageType,
-                          int32_t& numberOfParts, int32_t& transactionId,
-                          int32_t& chunkLength, int8_t& flags);
+                          int32_t& messageType, int32_t& numberOfParts,
+                          int32_t& transactionId, int32_t& chunkLength,
+                          int8_t& flags);
 
   //  void readResponseHeader(std::chrono::microseconds timeout,
   //                          uint32_t& messageType, uint32_t& numberOfParts,
