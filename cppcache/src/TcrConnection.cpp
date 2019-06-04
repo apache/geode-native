@@ -914,6 +914,63 @@ char* TcrConnection::readMessage(size_t* recvLen,
   return fullMessage;
 }
 
+void TcrConnection::readMessageChunked(
+    TcrMessageReply& reply, std::chrono::microseconds receiveTimeoutSec,
+    bool doHeaderTimeoutRetries) {
+  int32_t messageType;
+  int32_t transactionId;
+  int32_t numberOfParts;
+  int32_t chunkLength;
+  int8_t flags = 0x0;
+
+  auto headerTimeout =
+      calculateHeaderTimeout(receiveTimeoutSec, doHeaderTimeoutRetries);
+
+  LOGFINER(
+      "TcrConnection::readMessageChunked: receiving reply from "
+      "endpoint %s",
+      m_endpoint);
+
+  readResponseHeader(headerTimeout, messageType, numberOfParts, transactionId,
+                     chunkLength, flags);
+
+  reply.setMessageType(messageType);
+  reply.setTransId(transactionId);
+
+  // Initialize the chunk processing
+  reply.startProcessChunk(m_chunksProcessSema);
+
+  // indicate an end to chunk processing and wait for processing
+  // to end even if reading the chunks fails in middle
+  FinalizeProcessChunk endProcessChunk(reply,
+                                       m_endpointObj->getDistributedMemberID());
+
+  try {
+    while (processChunk(reply, receiveTimeoutSec, chunkLength, flags)) {
+      readChunkHeader(headerTimeout, chunkLength, flags);
+    }
+  } catch (const Exception&) {
+    auto ex = reply.getChunkedResultHandler()->getException();
+    LOGDEBUG("Found existing exception ", ex->what());
+    reply.getChunkedResultHandler()->clearException();
+    throw;
+  }
+
+  LOGFINER(
+      "TcrConnection::readMessageChunked: read full reply "
+      "from endpoint %s",
+      m_endpoint);
+}
+
+std::chrono::microseconds TcrConnection::calculateHeaderTimeout(
+    std::chrono::microseconds receiveTimeout, bool retry) {
+  auto headerTimeout = receiveTimeout;
+  if (retry && receiveTimeout == DEFAULT_READ_TIMEOUT_SECS) {
+    headerTimeout *= DEFAULT_TIMEOUT_RETRIES;
+  }
+  return headerTimeout;
+}
+
 void TcrConnection::readResponseHeader(std::chrono::microseconds timeout,
                                        int32_t& messageType,
                                        int32_t& numberOfParts,
@@ -1029,63 +1086,6 @@ bool TcrConnection::processChunk(TcrMessageReply& reply,
                      m_endpointObj->getDistributedMemberID(),
                      lastChunkAndSecurityFlags);
   return (lastChunkAndSecurityFlags & 0x01) ? false : true;
-}
-
-void TcrConnection::readMessageChunked(
-    TcrMessageReply& reply, std::chrono::microseconds receiveTimeoutSec,
-    bool doHeaderTimeoutRetries) {
-  int32_t messageType;
-  int32_t transactionId;
-  int32_t numberOfParts;
-  int32_t chunkLength;
-  int8_t flags = 0x0;
-
-  auto headerTimeout =
-      calculateHeaderTimeout(receiveTimeoutSec, doHeaderTimeoutRetries);
-
-  LOGFINER(
-      "TcrConnection::readMessageChunked: receiving reply from "
-      "endpoint %s",
-      m_endpoint);
-
-  readResponseHeader(headerTimeout, messageType, numberOfParts, transactionId,
-                     chunkLength, flags);
-
-  reply.setMessageType(messageType);
-  reply.setTransId(transactionId);
-
-  // Initialize the chunk processing
-  reply.startProcessChunk(m_chunksProcessSema);
-
-  // indicate an end to chunk processing and wait for processing
-  // to end even if reading the chunks fails in middle
-  FinalizeProcessChunk endProcessChunk(reply,
-                                       m_endpointObj->getDistributedMemberID());
-
-  try {
-    while (processChunk(reply, receiveTimeoutSec, chunkLength, flags)) {
-      readChunkHeader(headerTimeout, chunkLength, flags);
-    }
-  } catch (const Exception&) {
-    auto ex = reply.getChunkedResultHandler()->getException();
-    LOGDEBUG("Found existing exception ", ex->what());
-    reply.getChunkedResultHandler()->clearException();
-    throw;
-  }
-
-  LOGFINER(
-      "TcrConnection::readMessageChunked: read full reply "
-      "from endpoint %s",
-      m_endpoint);
-}
-
-std::chrono::microseconds TcrConnection::calculateHeaderTimeout(
-    std::chrono::microseconds receiveTimeout, bool retry) {
-  auto headerTimeout = receiveTimeout;
-  if (retry && receiveTimeout == DEFAULT_READ_TIMEOUT_SECS) {
-    headerTimeout *= DEFAULT_TIMEOUT_RETRIES;
-  }
-  return headerTimeout;
 }
 
 void TcrConnection::close() {
