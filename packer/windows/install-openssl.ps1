@@ -16,4 +16,4 @@
 $ErrorActionPreference = "Stop"
 Import-Module Packer -Force
 
-Install-Package https://slproweb.com/download/Win64OpenSSL-1_1_1b.exe -ArgumentList /silent
+Install-Package https://slproweb.com/download/Win64OpenSSL-1_1_1c.exe -ArgumentList /silent
