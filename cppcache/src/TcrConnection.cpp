@@ -44,8 +44,7 @@ namespace geode {
 namespace client {
 
 const int HEADER_LENGTH = 17;
-const int HDR_LEN = 5;
-const int HDR_LEN_12 = 12;
+const int CHUNK_HEADER_LENGTH= 5;
 const int64_t INITIAL_CONNECTION_ID = 26739;
 
 #define throwException(ex)                            \
@@ -1017,8 +1016,8 @@ void TcrConnection::readResponseHeader(std::chrono::microseconds timeout,
 void TcrConnection::readChunkHeader(std::chrono::microseconds timeout,
                                     int32_t& chunkLength,
                                     int8_t& lastChunkAndSecurityFlags) {
-  uint8_t chunkHeader[HDR_LEN];
-  auto error = receiveData(reinterpret_cast<char*>(chunkHeader), HDR_LEN,
+  uint8_t chunkHeader[CHUNK_HEADER_LENGTH];
+  auto error = receiveData(reinterpret_cast<char*>(chunkHeader), CHUNK_HEADER_LENGTH,
                            timeout, true, false);
   if (error != CONN_NOERR) {
     if (error & CONN_TIMEOUT) {
@@ -1035,10 +1034,10 @@ void TcrConnection::readChunkHeader(std::chrono::microseconds timeout,
   LOGDEBUG(
       "TcrConnection::readChunkHeader: received header from "
       "endpoint %s; bytes: %s",
-      m_endpoint, Utils::convertBytesToString(chunkHeader, HDR_LEN).c_str());
+      m_endpoint, Utils::convertBytesToString(chunkHeader, CHUNK_HEADER_LENGTH).c_str());
 
   auto input = m_connectionManager->getCacheImpl()->createDataInput(chunkHeader,
-                                                                    HDR_LEN);
+                                                                    CHUNK_HEADER_LENGTH);
   chunkLength = input.readInt32();
   lastChunkAndSecurityFlags = input.read();
   LOGDEBUG(
