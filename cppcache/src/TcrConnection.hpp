@@ -66,6 +66,18 @@ namespace apache {
 namespace geode {
 namespace client {
 
+struct chunkHeader {
+  int32_t chunkLength;
+  int8_t flags;
+};
+
+struct chunkedResponseHeader {
+  int32_t messageType;
+  int32_t numberOfParts;
+  int32_t transactionId;
+  chunkHeader header;
+};
+
 enum ConnErrType {
   CONN_NOERR = 0x0,
   CONN_NODATA = 0x1,
@@ -322,13 +334,9 @@ class APACHE_GEODE_EXPORT TcrConnection {
   std::chrono::microseconds calculateHeaderTimeout(
       std::chrono::microseconds receiveTimeout, bool retry);
 
-  void readResponseHeader(std::chrono::microseconds timeout,
-                          int32_t& messageType, int32_t& numberOfParts,
-                          int32_t& transactionId, int32_t& chunkLength,
-                          int8_t& flags);
+  chunkedResponseHeader readResponseHeader(std::chrono::microseconds timeout);
 
-  void readChunkHeader(std::chrono::microseconds timeout, int32_t& chunkLength,
-                       int8_t& lastChunkAndSecurityFlags);
+  chunkHeader readChunkHeader(std::chrono::microseconds timeout);
 
   void readChunkBody(std::chrono::microseconds timeout, int32_t chunkLength,
                      uint8_t** chunkBody);
