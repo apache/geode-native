@@ -224,7 +224,7 @@ class TcrMessage {
   bool forTransaction() const;
 
   /* destroy the connection */
-  virtual ~TcrMessage();
+  virtual ~TcrMessage() override;
 
   const std::string& getRegionName() const;
   Region* getRegion() const;
@@ -947,8 +947,9 @@ class TcrMessageReply : public TcrMessage {
  * methods that response processor methods require to access here.
  */
 class TcrMessageHelper {
-  TcrMessageHelper() = delete;
   public:
+    TcrMessageHelper() = delete;
+
     /**
      * result types returned by readChunkPartHeader
      */
