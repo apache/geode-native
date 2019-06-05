@@ -259,13 +259,13 @@ class APACHE_GEODE_EXPORT TcrConnection {
    * connection and sets the reply message
    * parameter.
    * @param      reply response message
-   * @param      receiveTimeoutSec read timeout in sec
+   * @param      receiveTimeout read timeout
    * @param      doHeaderTimeoutRetries retry when header receive times out
    * @exception  GeodeIOException  if an I/O error occurs (socket failure).
    * @exception  TimeoutException  if timeout happens during read
    */
   void readMessageChunked(TcrMessageReply& reply,
-                          std::chrono::microseconds receiveTimeoutSec,
+                          std::chrono::microseconds receiveTimeout,
                           bool doHeaderTimeoutRetries);
 
   /**

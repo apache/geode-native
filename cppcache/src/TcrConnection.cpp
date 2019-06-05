@@ -55,14 +55,14 @@ const int64_t INITIAL_CONNECTION_ID = 26739;
 struct FinalizeProcessChunk {
  private:
   TcrMessage& m_reply;
-  uint16_t m_endpointmemId;
+  uint16_t m_endpointMemId;
 
  public:
-  FinalizeProcessChunk(TcrMessageReply& reply, uint16_t endpointmemId)
-      : m_reply(reply), m_endpointmemId(endpointmemId) {}
+  FinalizeProcessChunk(TcrMessageReply& reply, uint16_t endpointMemId)
+      : m_reply(reply), m_endpointMemId(endpointMemId) {}
   ~FinalizeProcessChunk() noexcept(false) {
     // Enqueue a nullptr chunk indicating a wait for processing to complete.
-    m_reply.processChunk(std::vector<uint8_t>(), 0, m_endpointmemId);
+    m_reply.processChunk(std::vector<uint8_t>(), 0, m_endpointMemId);
   }
 };
 
@@ -912,11 +912,11 @@ char* TcrConnection::readMessage(size_t* recvLen,
   return fullMessage;
 }
 
-void TcrConnection::readMessageChunked(
-    TcrMessageReply& reply, std::chrono::microseconds receiveTimeoutSec,
-    bool doHeaderTimeoutRetries) {
+void TcrConnection::readMessageChunked(TcrMessageReply& reply,
+                                       std::chrono::microseconds receiveTimeout,
+                                       bool doHeaderTimeoutRetries) {
   auto headerTimeout =
-      calculateHeaderTimeout(receiveTimeoutSec, doHeaderTimeoutRetries);
+      calculateHeaderTimeout(receiveTimeout, doHeaderTimeoutRetries);
 
   LOGFINER(
       "TcrConnection::readMessageChunked: receiving reply from "
@@ -938,8 +938,8 @@ void TcrConnection::readMessageChunked(
 
   auto header = responseHeader.header;
   try {
-    while (processChunk(reply, receiveTimeoutSec, header.chunkLength,
-                        header.flags)) {
+    while (
+        processChunk(reply, receiveTimeout, header.chunkLength, header.flags)) {
       header = readChunkHeader(headerTimeout);
     }
   } catch (const Exception&) {
@@ -1081,6 +1081,9 @@ bool TcrConnection::processChunk(TcrMessageReply& reply,
   reply.processChunk(chunkBody, chunkLength,
                      m_endpointObj->getDistributedMemberID(),
                      lastChunkAndSecurityFlags);
+  // Return boolean indicating whether or not there are more chunks, i.e.
+  // the *inverse* of the flag indicating this is the last chunk.  It's a
+  // little confusing here, but makes calling code clearer.
   return (lastChunkAndSecurityFlags & LAST_CHUNK_MASK) ? false : true;
 }
 
