@@ -64,7 +64,7 @@ struct FinalizeProcessChunk {
       : m_reply(reply), m_endpointmemId(endpointmemId) {}
   ~FinalizeProcessChunk() noexcept(false) {
     // Enqueue a nullptr chunk indicating a wait for processing to complete.
-    m_reply.processChunk(nullptr, 0, m_endpointmemId);
+    m_reply.processChunk(std::vector<uint8_t>(), 0, m_endpointmemId);
   }
 };
 
@@ -1045,13 +1045,12 @@ chunkHeader TcrConnection::readChunkHeader(std::chrono::microseconds timeout) {
   return header;
 }
 
-void TcrConnection::readChunkBody(std::chrono::microseconds timeout,
-                                  int32_t chunkLength, uint8_t** chunkBody) {
-  _GEODE_NEW(*chunkBody, uint8_t[chunkLength]);
-  auto error = receiveData(reinterpret_cast<char*>(*chunkBody), chunkLength,
-                           timeout, true, false);
+std::vector<uint8_t> TcrConnection::readChunkBody(
+    std::chrono::microseconds timeout, int32_t chunkLength) {
+  std::vector<uint8_t> chunkBody(chunkLength);
+  auto error = receiveData(reinterpret_cast<char*>(chunkBody.data()),
+                           chunkLength, timeout, true, false);
   if (error != CONN_NOERR) {
-    delete[] chunkBody;
     if (error & CONN_TIMEOUT) {
       throwException(
           TimeoutException("TcrConnection::readChunkBody: "
@@ -1066,7 +1065,9 @@ void TcrConnection::readChunkBody(std::chrono::microseconds timeout,
   LOGDEBUG(
       "TcrConnection::readChunkBody: received chunk body from endpoint "
       "%s; bytes: %s",
-      m_endpoint, Utils::convertBytesToString(*chunkBody, chunkLength).c_str());
+      m_endpoint,
+      Utils::convertBytesToString(chunkBody.data(), chunkLength).c_str());
+  return chunkBody;
 }
 
 bool TcrConnection::processChunk(TcrMessageReply& reply,
@@ -1075,8 +1076,7 @@ bool TcrConnection::processChunk(TcrMessageReply& reply,
                                  int8_t lastChunkAndSecurityFlags) {
   // NOTE: this buffer is allocated by readChunkBody, and reply.processChunk
   // takes ownership, so we don't delete it here on failure
-  uint8_t* chunkBody;
-  readChunkBody(timeout, chunkLength, &chunkBody);
+  std::vector<uint8_t> chunkBody = readChunkBody(timeout, chunkLength);
 
   // Process the chunk; the actual processing is done by a separate thread
   // ThinClientBaseDM::m_chunkProcessor.

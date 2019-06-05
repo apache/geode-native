@@ -338,8 +338,8 @@ class APACHE_GEODE_EXPORT TcrConnection {
 
   chunkHeader readChunkHeader(std::chrono::microseconds timeout);
 
-  void readChunkBody(std::chrono::microseconds timeout, int32_t chunkLength,
-                     uint8_t** chunkBody);
+  std::vector<uint8_t> readChunkBody(std::chrono::microseconds timeout,
+                                     int32_t chunkLength);
 
   bool processChunk(TcrMessageReply& reply, std::chrono::microseconds timeout,
                     int32_t chunkLength, int8_t lastChunkAndSecurityFlags);

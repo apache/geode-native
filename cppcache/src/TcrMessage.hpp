@@ -221,7 +221,7 @@ class APACHE_GEODE_EXPORT TcrMessage {
 
   void startProcessChunk(ACE_Semaphore& finalizeSema);
   // nullptr chunk means that this is the last chunk
-  void processChunk(const uint8_t* chunk, int32_t chunkLen,
+  void processChunk(const std::vector<uint8_t>& chunk, int32_t chunkLen,
                     uint16_t endpointmemId,
                     const uint8_t isLastChunkAndisSecurityHeader = 0x00);
   /* For creating a region on the java server */

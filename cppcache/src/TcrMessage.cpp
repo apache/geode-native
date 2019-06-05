@@ -713,9 +713,15 @@ void TcrMessage::handleSpecialFECase() {
   }
 }
 
-void TcrMessage::processChunk(const uint8_t* bytes, int32_t len,
+void TcrMessage::processChunk(const std::vector<uint8_t>& chunk, int32_t len,
                               uint16_t endpointmemId,
                               const uint8_t isLastChunkAndisSecurityHeader) {
+  uint8_t* bytes = nullptr;
+  if (chunk.size()) {
+    _GEODE_NEW(bytes, uint8_t[chunk.size()]);
+    memcpy(bytes, chunk.data(), chunk.size());
+  }
+
   // TODO: see if security header is there
   LOGDEBUG(
       "TcrMessage::processChunk isLastChunkAndisSecurityHeader = %d chunklen = "
@@ -748,11 +754,11 @@ void TcrMessage::processChunk(const uint8_t* bytes, int32_t len,
         break;
       } else if (m_msgTypeRequest == TcrMessage::PUTALL ||
                  m_msgTypeRequest == TcrMessage::PUT_ALL_WITH_CALLBACK) {
-        TcrChunkedContext* chunk = new TcrChunkedContext(
+        TcrChunkedContext* chunkedContext = new TcrChunkedContext(
             bytes, len, m_chunkedResult, isLastChunkAndisSecurityHeader,
             m_tcdm->getConnectionManager().getCacheImpl());
         m_chunkedResult->setEndpointMemId(endpointmemId);
-        m_tcdm->queueChunk(chunk);
+        m_tcdm->queueChunk(chunkedContext);
         if (bytes == nullptr) {
           // last chunk -- wait for processing of all the chunks to complete
           m_chunkedResult->waitFinalize();
@@ -772,11 +778,11 @@ void TcrMessage::processChunk(const uint8_t* bytes, int32_t len,
     case TcrMessage::RESPONSE_FROM_PRIMARY: {
       if (m_chunkedResult != nullptr) {
         LOGDEBUG("tcrmessage in case22 ");
-        TcrChunkedContext* chunk = new TcrChunkedContext(
+        TcrChunkedContext* chunkedContext = new TcrChunkedContext(
             bytes, len, m_chunkedResult, isLastChunkAndisSecurityHeader,
             m_tcdm->getConnectionManager().getCacheImpl());
         m_chunkedResult->setEndpointMemId(endpointmemId);
-        m_tcdm->queueChunk(chunk);
+        m_tcdm->queueChunk(chunkedContext);
         if (bytes == nullptr) {
           // last chunk -- wait for processing of all the chunks to complete
           m_chunkedResult->waitFinalize();
@@ -821,7 +827,7 @@ void TcrMessage::processChunk(const uint8_t* bytes, int32_t len,
     }
     case TcrMessage::EXCEPTION: {
       if (bytes != nullptr) {
-        DeleteArray<const uint8_t> delChunk(bytes);
+        DeleteArray<uint8_t> delChunk(bytes);
         auto input =
             m_tcdm->getConnectionManager().getCacheImpl()->createDataInput(
                 bytes, len);
@@ -835,7 +841,7 @@ void TcrMessage::processChunk(const uint8_t* bytes, int32_t len,
       // TODO: how many parts
       chunkSecurityHeader(1, bytes, len, isLastChunkAndisSecurityHeader);
       if (bytes != nullptr) {
-        DeleteArray<const uint8_t> delChunk(bytes);
+        DeleteArray<uint8_t> delChunk(bytes);
         LOGFINEST("processChunk - got response from secondary, ignoring.");
       }
       break;
