@@ -795,7 +795,7 @@ void TcrMessage::processChunk(const std::vector<uint8_t>& chunk, int32_t len,
       } else if (TcrMessage::CQ_EXCEPTION_TYPE == m_msgType ||
                  TcrMessage::CQDATAERROR_MSG_TYPE == m_msgType ||
                  TcrMessage::GET_ALL_DATA_ERROR == m_msgType) {
-        if (chunk.size()) {
+        if (!chunk.empty()) {
           chunkSecurityHeader(1, chunk, len, isLastChunkAndisSecurityHeader);
         }
       }
@@ -805,7 +805,7 @@ void TcrMessage::processChunk(const std::vector<uint8_t>& chunk, int32_t len,
                                                     // error
     case EXECUTE_FUNCTION_ERROR:
     case EXECUTE_REGION_FUNCTION_ERROR: {
-      if (chunk.size()) {
+      if (!chunk.empty()) {
         // DeleteArray<const uint8_t> delChunk(bytes);
         //  DataInput input(bytes, len);
         // TODO: this not send two part...
@@ -818,7 +818,7 @@ void TcrMessage::processChunk(const std::vector<uint8_t>& chunk, int32_t len,
       break;
     }
     case TcrMessage::EXCEPTION: {
-      if (chunk.size()) {
+      if (!chunk.empty()) {
         auto input =
             m_tcdm->getConnectionManager().getCacheImpl()->createDataInput(
                 chunk.data(), len);
@@ -838,7 +838,7 @@ void TcrMessage::processChunk(const std::vector<uint8_t>& chunk, int32_t len,
     }
     case TcrMessage::PUT_DATA_ERROR: {
       chunkSecurityHeader(1, chunk, len, isLastChunkAndisSecurityHeader);
-      if (chunk.size()) {
+      if (!chunk.empty()) {
         auto input =
             m_tcdm->getConnectionManager().getCacheImpl()->createDataInput(
                 chunk.data(), len);

@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-project( rat VERSION 0.12 LANGUAGES NONE )
+project( rat VERSION 0.13 LANGUAGES NONE )
 # used to check licenses in source
 
 set( ARTIFACT_NAME apache-rat-${PROJECT_VERSION} )
@@ -26,4 +26,4 @@ execute_process(
   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 )
 
-set( Rat_JAR ${CMAKE_CURRENT_BINARY_DIR}/${ARTIFACT_NAME}/${ARTIFACT_NAME}.jar CACHE STRING "Full path to Apaceh Rat jar." )
+set( Rat_JAR ${CMAKE_CURRENT_BINARY_DIR}/${ARTIFACT_NAME}/${ARTIFACT_NAME}.jar CACHE STRING "Full path to Apache Rat jar." FORCE)
