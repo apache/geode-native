@@ -759,7 +759,7 @@ void TcrMessage::processChunk(const std::vector<uint8_t>& chunk, int32_t len,
             m_tcdm->getConnectionManager().getCacheImpl());
         m_chunkedResult->setEndpointMemId(endpointmemId);
         m_tcdm->queueChunk(chunkedContext);
-        if (bytes == nullptr) {
+        if (chunk.empty()) {
           // last chunk -- wait for processing of all the chunks to complete
           m_chunkedResult->waitFinalize();
           auto ex = m_chunkedResult->getException();
@@ -783,7 +783,7 @@ void TcrMessage::processChunk(const std::vector<uint8_t>& chunk, int32_t len,
             m_tcdm->getConnectionManager().getCacheImpl());
         m_chunkedResult->setEndpointMemId(endpointmemId);
         m_tcdm->queueChunk(chunkedContext);
-        if (bytes == nullptr) {
+        if (chunk.empty()) {
           // last chunk -- wait for processing of all the chunks to complete
           m_chunkedResult->waitFinalize();
           //  Throw any exception during processing here.
@@ -801,7 +801,7 @@ void TcrMessage::processChunk(const std::vector<uint8_t>& chunk, int32_t len,
       } else if (TcrMessage::CQ_EXCEPTION_TYPE == m_msgType ||
                  TcrMessage::CQDATAERROR_MSG_TYPE == m_msgType ||
                  TcrMessage::GET_ALL_DATA_ERROR == m_msgType) {
-        if (bytes != nullptr) {
+        if (chunk.size()) {
           chunkSecurityHeader(1, bytes, len, isLastChunkAndisSecurityHeader);
           _GEODE_SAFE_DELETE_ARRAY(bytes);
         }
@@ -812,7 +812,7 @@ void TcrMessage::processChunk(const std::vector<uint8_t>& chunk, int32_t len,
                                                     // error
     case EXECUTE_FUNCTION_ERROR:
     case EXECUTE_REGION_FUNCTION_ERROR: {
-      if (bytes != nullptr) {
+      if (chunk.size()) {
         // DeleteArray<const uint8_t> delChunk(bytes);
         //  DataInput input(bytes, len);
         // TODO: this not send two part...
@@ -826,7 +826,7 @@ void TcrMessage::processChunk(const std::vector<uint8_t>& chunk, int32_t len,
       break;
     }
     case TcrMessage::EXCEPTION: {
-      if (bytes != nullptr) {
+      if (chunk.size()) {
         DeleteArray<uint8_t> delChunk(bytes);
         auto input =
             m_tcdm->getConnectionManager().getCacheImpl()->createDataInput(
@@ -840,7 +840,7 @@ void TcrMessage::processChunk(const std::vector<uint8_t>& chunk, int32_t len,
     case TcrMessage::RESPONSE_FROM_SECONDARY: {
       // TODO: how many parts
       chunkSecurityHeader(1, bytes, len, isLastChunkAndisSecurityHeader);
-      if (bytes != nullptr) {
+      if (chunk.size()) {
         DeleteArray<uint8_t> delChunk(bytes);
         LOGFINEST("processChunk - got response from secondary, ignoring.");
       }
@@ -848,7 +848,7 @@ void TcrMessage::processChunk(const std::vector<uint8_t>& chunk, int32_t len,
     }
     case TcrMessage::PUT_DATA_ERROR: {
       chunkSecurityHeader(1, bytes, len, isLastChunkAndisSecurityHeader);
-      if (nullptr != bytes) {
+      if (chunk.size()) {
         auto input =
             m_tcdm->getConnectionManager().getCacheImpl()->createDataInput(
                 bytes, len);
@@ -864,7 +864,7 @@ void TcrMessage::processChunk(const std::vector<uint8_t>& chunk, int32_t len,
     }
     case TcrMessage::GET_ALL_DATA_ERROR: {
       chunkSecurityHeader(1, bytes, len, isLastChunkAndisSecurityHeader);
-      if (bytes != nullptr) {
+      if (chunk.size()) {
         _GEODE_SAFE_DELETE_ARRAY(bytes);
       }
 
@@ -872,7 +872,7 @@ void TcrMessage::processChunk(const std::vector<uint8_t>& chunk, int32_t len,
     }
     default: {
       // TODO: how many parts what should we do here
-      if (bytes != nullptr) {
+      if (chunk.size()) {
         _GEODE_SAFE_DELETE_ARRAY(bytes);
       } else {
         LOGWARN(
