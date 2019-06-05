@@ -1,0 +1,129 @@
+---
+title:  Put/Get/Remove Examples
+---
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+The native client release contains examples, written for .NET and C++, showing how a client application
+can establish a connection to a cluster and then use that connection to perform basic operations on a remote server. 
+The examples are located in `../examples/dotnet/putgetremove` and `../examples/cpp/putgetremove`, respectively. 
+
+Both examples perform the same sequence of operations, displaying simple log entries as they run.
+
+- To run an example, follow the instructions in the `README.md` file in the example directory.
+- Review the source code in the example directory to see exactly how it operates.
+
+- Begin by running a script that sets up the server-side environment by invoking `gfsh` commands to create a region, simply called "example_userinfo".
+
+- Run the example client application, which performs the following steps:
+
+  - Connects to the server
+  - Performs region put operations using key/value pairs
+  - Uses region get to retrieve the values
+  - Uses region remove to remove the values
+
+### .NET Example
+
+This section contains code snippets showing highlights of the .NET put/get/remove example. They are not intended for cut-and-paste execution.
+For the complete source, see the example source directory.
+
+The .NET example creates a cache, then uses it to create a connection pool and a region object (of class `IRegion`).
+
+```csharp
+   var cacheFactory = new CacheFactory()
+       .Set("log-level", "none");
+   var cache = cacheFactory.Create();
+
+   var poolFactory = cache.GetPoolFactory()
+       .AddLocator("localhost", 10334);
+   poolFactory.Create("pool");
+
+   var regionFactory = cache.CreateRegionFactory(RegionShortcut.PROXY)
+       .SetPoolName("pool");
+   var region = regionFactory.Create<string, string("example_userinfo");
+```
+
+After declaring some keys and values, the client then populates the data store with two key/value pairs. 
+
+```csharp
+      region.Put(rtimmonsKey, rtimmonsValue);
+      region.Put(scharlesKey, scharlesValue);
+```
+
+Next, the application retrieves the stored values using `Get` operations.
+
+```csharp
+      var user1 = region.Get(rtimmonsKey, null);
+      var user2 = region.Get(scharlesKey, null);
+```
+
+Finally, the application deletes one of the stored values using the `Remove` method.
+
+```csharp
+      if (region.Remove(rtimmonsKey))
+      {
+        Console.WriteLine("Info for " + rtimmonsKey + " has been deleted");
+      }
+      else
+      {
+        Console.WriteLine("Info for " + rtimmonsKey + " has not been deleted");
+      }
+```
+
+### C++ Example
+
+This section contains code snippets showing highlights of the C++ put/get/remove example. They are not intended for cut-and-paste execution.
+For the complete source, see the example source directory.
+
+The C++ example creates a cache, then uses it to create a connection pool and a region object (of class `Region`).
+
+```cpp
+  auto cacheFactory = CacheFactory();
+  cacheFactory.set("log-level", "none");
+  auto cache = cacheFactory.create();
+  auto poolFactory = cache.getPoolManager().createFactory();
+
+  poolFactory.addLocator("localhost", 10334);
+  auto pool = poolFactory.create("pool");
+  auto regionFactory = cache.createRegionFactory(RegionShortcut::PROXY);
+  auto region = regionFactory.setPoolName("pool").create("example_userinfo");
+```
+
+The client then populates the data store with two key/value pairs. 
+
+```cpp
+  region->put("rtimmons", "Robert Timmons");
+  region->put("scharles", "Sylvia Charles");
+```
+
+Next, the application retrieves the stored values using `Get` operations.
+
+```cpp
+  auto user1 = region->get("rtimmons");
+  auto user2 = region->get("scharles");
+```
+
+Finally, the application deletes one of the stored values using the `Remove` method.
+
+```cpp
+  if (region->existsValue("rtimmons")) {
+    std::cout << "rtimmons's info not deleted" << std::endl;
+  } else {
+    std::cout << "rtimmons's info successfully deleted" << std::endl;
+  }
+```
