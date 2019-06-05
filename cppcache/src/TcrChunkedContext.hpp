@@ -142,7 +142,7 @@ class TcrChunkedContext {
 
   inline const uint8_t* getBytes() const { return m_chunk.data(); }
 
-  inline int32_t getLen() const { return m_chunk.size(); }
+  inline int32_t getLen() const { return static_cast<int32_t>(m_chunk.size()); }
 
   void handleChunk(bool inSameThread) {
     if (m_chunk.empty()) {
