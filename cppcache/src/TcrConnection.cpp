@@ -17,7 +17,7 @@
 
 #include "TcrConnection.hpp"
 
-#include <memory.h>
+#include <cinttypes>
 
 #include <ace/INET_Addr.h>
 #include <ace/OS.h>
@@ -42,6 +42,8 @@ namespace geode {
 namespace client {
 
 const int HEADER_LENGTH = 17;
+const int CHUNK_HEADER_LENGTH = 5;
+const int8_t LAST_CHUNK_MASK = 0x1;
 const int64_t INITIAL_CONNECTION_ID = 26739;
 
 #define throwException(ex)                            \
@@ -49,6 +51,21 @@ const int64_t INITIAL_CONNECTION_ID = 26739;
     LOGFINEST(ex.getName() + ": " + ex.getMessage()); \
     throw ex;                                         \
   }
+
+struct FinalizeProcessChunk {
+ private:
+  TcrMessage& m_reply;
+  uint16_t m_endpointMemId;
+
+ public:
+  FinalizeProcessChunk(TcrMessageReply& reply, uint16_t endpointMemId)
+      : m_reply(reply), m_endpointMemId(endpointMemId) {}
+  ~FinalizeProcessChunk() noexcept(false) {
+    // Enqueue a nullptr chunk indicating a wait for processing to complete.
+    m_reply.processChunk(std::vector<uint8_t>(), 0, m_endpointMemId);
+  }
+};
+
 bool TcrConnection::InitTcrConnection(
     TcrEndpoint* endpointObj, const char* endpoint,
     synchronized_set<std::unordered_set<uint16_t>>& ports,
@@ -122,7 +139,6 @@ bool TcrConnection::InitTcrConnection(
     m_port = m_conn->getPort();
     ports.insert(m_port);
   } else {
-    // add the local ports to message
     auto&& lock = ports.make_lock();
     handShakeMsg.writeInt(static_cast<int32_t>(ports.size()));
     for (const auto& port : ports) {
@@ -896,146 +912,36 @@ char* TcrConnection::readMessage(size_t* recvLen,
   return fullMessage;
 }
 
-void TcrConnection::readMessageChunked(
-    TcrMessageReply& reply, std::chrono::microseconds receiveTimeoutSec,
-    bool doHeaderTimeoutRetries) {
-  const int HDR_LEN = 5;
-  const int HDR_LEN_12 = 12;
-  uint8_t msg_header[HDR_LEN_12 + HDR_LEN];
-  ConnErrType error;
-
-  std::chrono::microseconds headerTimeout = receiveTimeoutSec;
-  if (doHeaderTimeoutRetries &&
-      receiveTimeoutSec == DEFAULT_READ_TIMEOUT_SECS) {
-    headerTimeout = DEFAULT_READ_TIMEOUT_SECS * DEFAULT_TIMEOUT_RETRIES;
-  }
+void TcrConnection::readMessageChunked(TcrMessageReply& reply,
+                                       std::chrono::microseconds receiveTimeout,
+                                       bool doHeaderTimeoutRetries) {
+  auto headerTimeout =
+      calculateHeaderTimeout(receiveTimeout, doHeaderTimeoutRetries);
 
   LOGFINER(
       "TcrConnection::readMessageChunked: receiving reply from "
       "endpoint %s",
       m_endpoint);
 
-  error = receiveData(reinterpret_cast<char*>(msg_header), HDR_LEN_12 + HDR_LEN,
-                      headerTimeout, true, false);
-  if (error != CONN_NOERR) {
-    if (error & CONN_TIMEOUT) {
-      throwException(TimeoutException(
-          "TcrConnection::readMessageChunked: "
-          "connection timed out while receiving message header"));
-    } else {
-      throwException(GeodeIOException(
-          "TcrConnection::readMessageChunked: "
-          "connection failure while receiving message header"));
-    }
-  }
+  auto responseHeader = readResponseHeader(headerTimeout);
 
-  LOGDEBUG(
-      "TcrConnection::readMessageChunked: received header from "
-      "endpoint %s; bytes: %s",
-      m_endpoint, Utils::convertBytesToString(msg_header, HDR_LEN_12).c_str());
-
-  auto input = m_connectionManager->getCacheImpl()->createDataInput(msg_header,
-                                                                    HDR_LEN_12);
-  int32_t msgType = input.readInt32();
-  reply.setMessageType(msgType);
-  int32_t txId;
-  int32_t numOfParts = input.readInt32();
-  LOGDEBUG("TcrConnection::readMessageChunked numberof parts = %d ",
-           numOfParts);
-  // input->advanceCursor(4);
-  txId = input.readInt32();
-  reply.setTransId(txId);
-
-  // bool isLastChunk = false;
-  uint8_t isLastChunk = 0x0;
-
-  int chunkNum = 0;
+  reply.setMessageType(responseHeader.messageType);
+  reply.setTransId(responseHeader.transactionId);
 
   // Initialize the chunk processing
   reply.startProcessChunk(m_chunksProcessSema);
 
-  //  indicate an end to chunk processing and wait for processing
+  // indicate an end to chunk processing and wait for processing
   // to end even if reading the chunks fails in middle
-  struct FinalizeProcessChunk {
-   private:
-    TcrMessage& m_reply;
-    uint16_t m_endpointmemId;
+  FinalizeProcessChunk endProcessChunk(reply,
+                                       m_endpointObj->getDistributedMemberID());
 
-   public:
-    FinalizeProcessChunk(TcrMessageReply& reply, uint16_t endpointmemId)
-        : m_reply(reply), m_endpointmemId(endpointmemId) {}
-    ~FinalizeProcessChunk() noexcept(false) {
-      // Enqueue a nullptr chunk indicating a wait for processing to complete.
-      m_reply.processChunk(nullptr, 0, m_endpointmemId);
-    }
-  } endProcessChunk(reply, m_endpointObj->getDistributedMemberID());
-
+  auto header = responseHeader.header;
   try {
-    bool first = true;
-    do {
-      // uint8_t chunk_header[HDR_LEN];
-      if (!first) {
-        error = receiveData(reinterpret_cast<char*>(msg_header + HDR_LEN_12),
-                            HDR_LEN, headerTimeout, true, false);
-        if (error != CONN_NOERR) {
-          if (error & CONN_TIMEOUT) {
-            throwException(TimeoutException(
-                "TcrConnection::readMessageChunked: "
-                "connection timed out while receiving chunk header"));
-          } else {
-            throwException(GeodeIOException(
-                "TcrConnection::readMessageChunked: "
-                "connection failure while receiving chunk header"));
-          }
-        }
-      } else {
-        first = false;
-      }
-      ++chunkNum;
-
-      LOGDEBUG(
-          "TcrConnection::readMessageChunked: received chunk header %d "
-          "from endpoint %s; bytes: %s",
-          chunkNum, m_endpoint,
-          Utils::convertBytesToString((msg_header + HDR_LEN_12), HDR_LEN)
-
-              .c_str());
-
-      auto input = m_connectionManager->getCacheImpl()->createDataInput(
-          msg_header + HDR_LEN_12, HDR_LEN);
-      int32_t chunkLen;
-      chunkLen = input.readInt32();
-      //  check that chunk length is valid.
-      isLastChunk = input.read();
-
-      uint8_t* chunk_body;
-      _GEODE_NEW(chunk_body, uint8_t[chunkLen]);
-      error = receiveData(reinterpret_cast<char*>(chunk_body), chunkLen,
-                          receiveTimeoutSec, true, false);
-      if (error != CONN_NOERR) {
-        delete[] chunk_body;
-        if (error & CONN_TIMEOUT) {
-          throwException(TimeoutException(
-              "TcrConnection::readMessageChunked: "
-              "connection timed out while receiving chunk body"));
-        } else {
-          throwException(GeodeIOException(
-              "TcrConnection::readMessageChunked: "
-              "connection failure while receiving chunk body"));
-        }
-      }
-
-      LOGDEBUG(
-          "TcrConnection::readMessageChunked: received chunk body %d "
-          "from endpoint %s; bytes: %s",
-          chunkNum, m_endpoint,
-          Utils::convertBytesToString(chunk_body, chunkLen).c_str());
-      // Process the chunk; the actual processing is done by a separate thread
-      // ThinClientBaseDM::m_chunkProcessor.
-
-      reply.processChunk(chunk_body, chunkLen,
-                         m_endpointObj->getDistributedMemberID(), isLastChunk);
-    } while (!(isLastChunk & 0x1));
+    while (
+        processChunk(reply, receiveTimeout, header.chunkLength, header.flags)) {
+      header = readChunkHeader(headerTimeout);
+    }
   } catch (const Exception&) {
     auto ex = reply.getChunkedResultHandler()->getException();
     LOGDEBUG("Found existing exception ", ex->what());
@@ -1047,6 +953,138 @@ void TcrConnection::readMessageChunked(
       "TcrConnection::readMessageChunked: read full reply "
       "from endpoint %s",
       m_endpoint);
+}
+
+std::chrono::microseconds TcrConnection::calculateHeaderTimeout(
+    std::chrono::microseconds receiveTimeout, bool retry) {
+  auto headerTimeout = receiveTimeout;
+  if (retry && receiveTimeout == DEFAULT_READ_TIMEOUT_SECS) {
+    headerTimeout *= DEFAULT_TIMEOUT_RETRIES;
+  }
+  return headerTimeout;
+}
+
+chunkedResponseHeader TcrConnection::readResponseHeader(
+    std::chrono::microseconds timeout) {
+  uint8_t receiveBuffer[HEADER_LENGTH];
+  chunkedResponseHeader header;
+
+  auto error = receiveData(reinterpret_cast<char*>(receiveBuffer),
+                           HEADER_LENGTH, timeout, true, false);
+  if (error != CONN_NOERR) {
+    if (error & CONN_TIMEOUT) {
+      throwException(TimeoutException(
+          "TcrConnection::readResponseHeader: "
+          "connection timed out while receiving message header"));
+    } else {
+      throwException(GeodeIOException(
+          "TcrConnection::readResponseHeader: "
+          "connection failure while receiving message header"));
+    }
+  }
+
+  LOGDEBUG(
+      "TcrConnection::readResponseHeader: received header from "
+      "endpoint %s; bytes: %s",
+      m_endpoint,
+      Utils::convertBytesToString(receiveBuffer, HEADER_LENGTH).c_str());
+
+  auto input = m_connectionManager->getCacheImpl()->createDataInput(
+      receiveBuffer, HEADER_LENGTH);
+  header.messageType = input.readInt32();
+  header.numberOfParts = input.readInt32();
+  header.transactionId = input.readInt32();
+  header.header.chunkLength = input.readInt32();
+  header.header.flags = input.read();
+  LOGDEBUG(
+      "TcrConnection::readResponseHeader: "
+      "messageType=%" PRId32 ", numberOfParts=%" PRId32
+      ", transactionId=%" PRId32 ", chunkLength=%" PRId32
+      ", lastChunkAndSecurityFlags=0x%" PRIx8,
+      header.messageType, header.numberOfParts, header.transactionId,
+      header.header.chunkLength, header.header.flags);
+
+  return header;
+}  // namespace client
+
+chunkHeader TcrConnection::readChunkHeader(std::chrono::microseconds timeout) {
+  uint8_t receiveBuffer[CHUNK_HEADER_LENGTH];
+  chunkHeader header;
+
+  auto error = receiveData(reinterpret_cast<char*>(receiveBuffer),
+                           CHUNK_HEADER_LENGTH, timeout, true, false);
+  if (error != CONN_NOERR) {
+    if (error & CONN_TIMEOUT) {
+      throwException(TimeoutException(
+          "TcrConnection::readChunkHeader: "
+          "connection timed out while receiving message header"));
+    } else {
+      throwException(GeodeIOException(
+          "TcrConnection::readChunkHeader: "
+          "connection failure while receiving message header"));
+    }
+  }
+
+  LOGDEBUG(
+      "TcrConnection::readChunkHeader: received header from "
+      "endpoint %s; bytes: %s",
+      m_endpoint,
+      Utils::convertBytesToString(receiveBuffer, CHUNK_HEADER_LENGTH).c_str());
+
+  auto input = m_connectionManager->getCacheImpl()->createDataInput(
+      receiveBuffer, CHUNK_HEADER_LENGTH);
+  header.chunkLength = input.readInt32();
+  header.flags = input.read();
+  LOGDEBUG(
+      "TcrConnection::readChunkHeader: "
+      ", chunkLen=%" PRId32 ", lastChunkAndSecurityFlags=0x%" PRIx8,
+      header.chunkLength, header.flags);
+
+  return header;
+}
+
+std::vector<uint8_t> TcrConnection::readChunkBody(
+    std::chrono::microseconds timeout, int32_t chunkLength) {
+  std::vector<uint8_t> chunkBody(chunkLength);
+  auto error = receiveData(reinterpret_cast<char*>(chunkBody.data()),
+                           chunkLength, timeout, true, false);
+  if (error != CONN_NOERR) {
+    if (error & CONN_TIMEOUT) {
+      throwException(
+          TimeoutException("TcrConnection::readChunkBody: "
+                           "connection timed out while receiving chunk body"));
+    } else {
+      throwException(
+          GeodeIOException("TcrConnection::readChunkBody: "
+                           "connection failure while receiving chunk body"));
+    }
+  }
+
+  LOGDEBUG(
+      "TcrConnection::readChunkBody: received chunk body from endpoint "
+      "%s; bytes: %s",
+      m_endpoint,
+      Utils::convertBytesToString(chunkBody.data(), chunkLength).c_str());
+  return chunkBody;
+}
+
+bool TcrConnection::processChunk(TcrMessageReply& reply,
+                                 std::chrono::microseconds timeout,
+                                 int32_t chunkLength,
+                                 int8_t lastChunkAndSecurityFlags) {
+  // NOTE: this buffer is allocated by readChunkBody, and reply.processChunk
+  // takes ownership, so we don't delete it here on failure
+  std::vector<uint8_t> chunkBody = readChunkBody(timeout, chunkLength);
+
+  // Process the chunk; the actual processing is done by a separate thread
+  // ThinClientBaseDM::m_chunkProcessor.
+  reply.processChunk(chunkBody, chunkLength,
+                     m_endpointObj->getDistributedMemberID(),
+                     lastChunkAndSecurityFlags);
+  // Return boolean indicating whether or not there are more chunks, i.e.
+  // the *inverse* of the flag indicating this is the last chunk.  It's a
+  // little confusing here, but makes calling code clearer.
+  return (lastChunkAndSecurityFlags & LAST_CHUNK_MASK) ? false : true;
 }
 
 void TcrConnection::close() {

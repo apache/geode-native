@@ -66,6 +66,18 @@ namespace apache {
 namespace geode {
 namespace client {
 
+struct chunkHeader {
+  int32_t chunkLength;
+  int8_t flags;
+};
+
+struct chunkedResponseHeader {
+  int32_t messageType;
+  int32_t numberOfParts;
+  int32_t transactionId;
+  chunkHeader header;
+};
+
 enum ConnErrType {
   CONN_NOERR = 0x0,
   CONN_NODATA = 0x1,
@@ -247,13 +259,13 @@ class APACHE_GEODE_EXPORT TcrConnection {
    * connection and sets the reply message
    * parameter.
    * @param      reply response message
-   * @param      receiveTimeoutSec read timeout in sec
+   * @param      receiveTimeout read timeout
    * @param      doHeaderTimeoutRetries retry when header receive times out
    * @exception  GeodeIOException  if an I/O error occurs (socket failure).
    * @exception  TimeoutException  if timeout happens during read
    */
   void readMessageChunked(TcrMessageReply& reply,
-                          std::chrono::microseconds receiveTimeoutSec,
+                          std::chrono::microseconds receiveTimeout,
                           bool doHeaderTimeoutRetries);
 
   /**
@@ -318,6 +330,20 @@ class APACHE_GEODE_EXPORT TcrConnection {
   int64_t connectionId;
   const TcrConnectionManager* m_connectionManager;
   DiffieHellman* m_dh;
+
+  std::chrono::microseconds calculateHeaderTimeout(
+      std::chrono::microseconds receiveTimeout, bool retry);
+
+  chunkedResponseHeader readResponseHeader(std::chrono::microseconds timeout);
+
+  chunkHeader readChunkHeader(std::chrono::microseconds timeout);
+
+  std::vector<uint8_t> readChunkBody(std::chrono::microseconds timeout,
+                                     int32_t chunkLength);
+
+  bool processChunk(TcrMessageReply& reply, std::chrono::microseconds timeout,
+                    int32_t chunkLength, int8_t lastChunkAndSecurityFlags);
+
   /**
    * To read Intantiator message(which meant for java client), here we are
    * ignoring it
