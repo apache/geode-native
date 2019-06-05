@@ -569,8 +569,8 @@ class APACHE_GEODE_EXPORT TcrMessage {
   void writeMillisecondsPart(std::chrono::milliseconds millis);
   void writeByteAndTimeOutPart(uint8_t byteValue,
                                std::chrono::milliseconds timeout);
-  void chunkSecurityHeader(int skipParts, const uint8_t* bytes, int32_t len,
-                           uint8_t isLastChunkAndSecurityHeader);
+  void chunkSecurityHeader(int skipParts, const std::vector<uint8_t> bytes,
+                           int32_t len, uint8_t isLastChunkAndSecurityHeader);
 
   void readEventIdPart(DataInput& input, bool skip = false,
                        int32_t parts = 1);  // skip num parts then read eventid

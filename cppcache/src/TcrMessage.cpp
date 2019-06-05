@@ -738,7 +738,7 @@ void TcrMessage::processChunk(const std::vector<uint8_t>& chunk, int32_t len,
   switch (m_msgType) {
     case TcrMessage::REPLY: {
       LOGDEBUG("processChunk - got reply for request %d", m_msgTypeRequest);
-      chunkSecurityHeader(1, bytes, len, isLastChunkAndisSecurityHeader);
+      chunkSecurityHeader(1, chunk, len, isLastChunkAndisSecurityHeader);
       break;
     }
     case TcrMessage::RESPONSE: {
@@ -802,7 +802,7 @@ void TcrMessage::processChunk(const std::vector<uint8_t>& chunk, int32_t len,
                  TcrMessage::CQDATAERROR_MSG_TYPE == m_msgType ||
                  TcrMessage::GET_ALL_DATA_ERROR == m_msgType) {
         if (chunk.size()) {
-          chunkSecurityHeader(1, bytes, len, isLastChunkAndisSecurityHeader);
+          chunkSecurityHeader(1, chunk, len, isLastChunkAndisSecurityHeader);
           _GEODE_SAFE_DELETE_ARRAY(bytes);
         }
       }
@@ -820,7 +820,7 @@ void TcrMessage::processChunk(const std::vector<uint8_t>& chunk, int32_t len,
         // readExceptionPart(input, false);
         // readSecureObjectPart(input, false, true,
         // isLastChunkAndisSecurityHeader );
-        chunkSecurityHeader(1, bytes, len, isLastChunkAndisSecurityHeader);
+        chunkSecurityHeader(1, chunk, len, isLastChunkAndisSecurityHeader);
         _GEODE_SAFE_DELETE_ARRAY(bytes);
       }
       break;
@@ -839,7 +839,7 @@ void TcrMessage::processChunk(const std::vector<uint8_t>& chunk, int32_t len,
     }
     case TcrMessage::RESPONSE_FROM_SECONDARY: {
       // TODO: how many parts
-      chunkSecurityHeader(1, bytes, len, isLastChunkAndisSecurityHeader);
+      chunkSecurityHeader(1, chunk, len, isLastChunkAndisSecurityHeader);
       if (chunk.size()) {
         DeleteArray<uint8_t> delChunk(bytes);
         LOGFINEST("processChunk - got response from secondary, ignoring.");
@@ -847,7 +847,7 @@ void TcrMessage::processChunk(const std::vector<uint8_t>& chunk, int32_t len,
       break;
     }
     case TcrMessage::PUT_DATA_ERROR: {
-      chunkSecurityHeader(1, bytes, len, isLastChunkAndisSecurityHeader);
+      chunkSecurityHeader(1, chunk, len, isLastChunkAndisSecurityHeader);
       if (chunk.size()) {
         auto input =
             m_tcdm->getConnectionManager().getCacheImpl()->createDataInput(
@@ -863,7 +863,7 @@ void TcrMessage::processChunk(const std::vector<uint8_t>& chunk, int32_t len,
       break;
     }
     case TcrMessage::GET_ALL_DATA_ERROR: {
-      chunkSecurityHeader(1, bytes, len, isLastChunkAndisSecurityHeader);
+      chunkSecurityHeader(1, chunk, len, isLastChunkAndisSecurityHeader);
       if (chunk.size()) {
         _GEODE_SAFE_DELETE_ARRAY(bytes);
       }
@@ -895,13 +895,14 @@ Pool* TcrMessage::getPool() const {
   return nullptr;
 }
 
-void TcrMessage::chunkSecurityHeader(int skipPart, const uint8_t* bytes,
+void TcrMessage::chunkSecurityHeader(int skipPart,
+                                     const std::vector<uint8_t> bytes,
                                      int32_t len,
                                      uint8_t isLastChunkAndSecurityHeader) {
   LOGDEBUG("TcrMessage::chunkSecurityHeader:: skipParts = %d", skipPart);
   if ((isLastChunkAndSecurityHeader & 0x3) == 0x3) {
     auto di = m_tcdm->getConnectionManager().getCacheImpl()->createDataInput(
-        bytes, len);
+        bytes.data(), len);
     skipParts(di, skipPart);
     readSecureObjectPart(di, false, true, isLastChunkAndSecurityHeader);
   }
