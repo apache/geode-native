@@ -59,7 +59,7 @@ class DiffieHellman {
 
   static void initOpenSSLFuncPtrs();
 
-  DiffieHellman() : m_dhCtx(nullptr) {}
+  DiffieHellman();
 
  private:
   void* m_dhCtx;

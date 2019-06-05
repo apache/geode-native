@@ -139,6 +139,16 @@ TcrConnection* PoolWrapper::getAnyConnection() {
   return nullptr;
 }
 
+TcrConnection* TssConnectionWrapper::getConnection() { return m_tcrConn; }
+
+void TssConnectionWrapper::setConnection(TcrConnection* conn,
+                                         const std::shared_ptr<Pool>& pool) {
+  m_tcrConn = conn;
+  m_pool = pool;
+}
+
+TcrConnection** TssConnectionWrapper::getConnDoublePtr() { return &m_tcrConn; }
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

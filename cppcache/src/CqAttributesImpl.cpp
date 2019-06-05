@@ -25,6 +25,8 @@ namespace apache {
 namespace geode {
 namespace client {
 
+CqAttributesImpl::~CqAttributesImpl() {}
+
 CqAttributes::listener_container_type CqAttributesImpl::getCqListeners() {
   std::lock_guard<decltype(m_mutex)> _guard(m_mutex);
   return m_cqListeners;

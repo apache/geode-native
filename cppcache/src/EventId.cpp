@@ -162,6 +162,34 @@ void EventId::initFromTSS_SameThreadIdAndSameSequenceId() {
   m_eidSeq = EventIdTSS::s_eventId.getSeqNum();
 }
 
+size_t EventId::objectSize() const {
+  size_t objectSize = 0;
+  objectSize += sizeof(uint8_t);
+  objectSize += sizeof(int64_t);
+  objectSize += sizeof(uint8_t);
+  objectSize += sizeof(int64_t);
+  objectSize += sizeof(int32_t);  // bucketID
+  objectSize += sizeof(int8_t);   // breadCrumbCounter
+  return objectSize;
+}
+
+std::shared_ptr<EventId> EventId::create(char* memId, uint32_t memIdLen,
+                                         int64_t thr, int64_t seq) {
+  return std::shared_ptr<EventId>(new EventId(memId, memIdLen, thr, seq));
+}
+
+void EventId::writeIdsData(DataOutput& output) {
+  //  Write EventId threadid and seqno.
+  int idsBufferLength = 18;
+  output.writeInt(idsBufferLength);
+  output.write(static_cast<uint8_t>(0));
+  char longCode = 3;
+  output.write(static_cast<uint8_t>(longCode));
+  output.writeInt(m_eidThr);
+  output.write(static_cast<uint8_t>(longCode));
+  output.writeInt(m_eidSeq);
+}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

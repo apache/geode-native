@@ -91,7 +91,7 @@ class MapEntryST<TBase, 0, UPDATE_COUNT> {
 template <typename TBase, int NUM_TRACKERS, int UPDATE_COUNT>
 class MapEntryT final : public TBase {
  public:
-  inline explicit MapEntryT(bool) : TBase(true) {}
+  inline  MapEntryT(bool) : TBase(true) {}
 
   ~MapEntryT() final = default;
 
@@ -127,7 +127,7 @@ class MapEntryT final : public TBase {
     return std::make_shared<MapEntryT>(expiryTaskManager, key);
   }
 
-  inline explicit MapEntryT(const std::shared_ptr<CacheableKey>& key)
+  inline  MapEntryT(const std::shared_ptr<CacheableKey>& key)
       : TBase(key) {}
   inline MapEntryT(ExpiryTaskManager* expiryTaskManager,
                    const std::shared_ptr<CacheableKey>& key)
@@ -139,7 +139,7 @@ class MapEntryT final : public TBase {
 template <typename TBase, int NUM_TRACKERS>
 class MapEntryT<TBase, NUM_TRACKERS, GF_UPDATE_MAX> final : public TBase {
  public:
-  inline explicit MapEntryT(bool) : TBase(true) {}
+  inline  MapEntryT(bool) : TBase(true) {}
 
   ~MapEntryT() final = default;
 
@@ -173,7 +173,7 @@ class MapEntryT<TBase, NUM_TRACKERS, GF_UPDATE_MAX> final : public TBase {
 template <typename TBase, int UPDATE_COUNT>
 class MapEntryT<TBase, GF_TRACK_MAX, UPDATE_COUNT> final : public TBase {
  public:
-  inline explicit MapEntryT(bool) : TBase(true) {}
+  inline  MapEntryT(bool) : TBase(true) {}
 
   ~MapEntryT() final = default;
 
@@ -207,7 +207,7 @@ class MapEntryT<TBase, GF_TRACK_MAX, UPDATE_COUNT> final : public TBase {
 template <typename TBase>
 class MapEntryT<TBase, GF_TRACK_MAX, GF_UPDATE_MAX> final : public TBase {
  public:
-  inline explicit MapEntryT(bool) : TBase(true) {}
+  inline  MapEntryT(bool) : TBase(true) {}
 
   ~MapEntryT() final = default;
 

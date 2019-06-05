@@ -38,90 +38,37 @@ namespace client {
 class APACHE_GEODE_EXPORT ServerLocation
     : public internal::DataSerializableInternal {
  public:
-  ServerLocation(std::string serverName, int port)
-      : Serializable(), m_serverName(std::move(serverName)), m_port(port) {
-    LOGDEBUG(
-        "ServerLocation::ServerLocation(): creating ServerLocation for %s:%d",
-        serverName.c_str(), port);
-    makeEpString();
-  }
+  ServerLocation(std::string serverName, int port);
 
-  ServerLocation()
-      : Serializable(),
-        m_serverName(),
-        m_port(-1)  // Default constructor for deserialiozation.
-  {}
+  ServerLocation();
 
-  explicit ServerLocation(std::string name) {
-    /*
-    name = Utils::convertHostToCanonicalForm(name.c_str());
-    */
-    auto position = name.find_first_of(":");
-    m_serverName = name.substr(0, position);
-    m_port = std::stoi(name.substr(position + 1));
-    makeEpString();
-  }
+   ServerLocation(std::string name);
 
-  const std::string& getServerName() const { return m_serverName; }
+  const std::string& getServerName() const;
 
-  void setServername(std::string serverName) {
-    m_serverName = std::move(serverName);
-    makeEpString();
-  }
+  void setServername(std::string serverName);
 
-  int getPort() const { return m_port; }
+  int getPort() const;
 
-  void toData(DataOutput& output) const override {
-    output.writeString(m_serverName);
-    output.writeInt(m_port);
-  }
+  void toData(DataOutput& output) const override;
 
-  void fromData(DataInput& input) override {
-    m_serverName = input.readString();
-    m_port = input.readInt32();
-    makeEpString();
-  }
+  void fromData(DataInput& input) override;
 
-  size_t objectSize() const override {
-    size_t size = sizeof(ServerLocation);
-    size += m_serverName.length();
-    return size;
-  }
+  size_t objectSize() const override;
 
-  void printInfo() {
-    LOGDEBUG(" Got Host %s, and port %d", getServerName().c_str(), m_port);
-  }
+  void printInfo();
 
-  bool operator<(const ServerLocation rhs) const {
-    if (m_serverName < rhs.m_serverName) {
-      return true;
-    } else if (m_serverName == rhs.m_serverName) {
-      return (m_port < rhs.m_port);
-    } else {
-      return false;
-    }
-  }
+  bool operator<(const ServerLocation rhs) const;
 
-  bool operator==(const ServerLocation& rhs) const {
-    return (m_serverName == rhs.m_serverName) && (m_port == rhs.m_port);
-  }
+  bool operator==(const ServerLocation& rhs) const;
 
-  inline bool isValid() const { return !m_serverName.empty() && m_port >= 0; }
+  bool isValid() const;
 
-  inline const std::string& getEpString() { return m_epString; }
+  const std::string& getEpString();
 
-  inline int hashcode() const {
-    int prime = 31;
-    int result = 1;
-    result = prime * result +
-             static_cast<int>(std::hash<std::string>{}(m_serverName));
-    result = prime * result + m_port;
-    return result;
-  }
+  int hashcode() const;
 
-  inline void makeEpString() {
-    m_epString = m_serverName + ":" + std::to_string(m_port);
-  }
+  void makeEpString();
 
  protected:
   std::string m_serverName;

@@ -38,8 +38,8 @@ enum commitOp { BEFORE_COMMIT, AFTER_COMMIT };
 
 class CacheTransactionManagerImpl : public virtual CacheTransactionManager {
  public:
-  explicit CacheTransactionManagerImpl(CacheImpl* cache);
-  virtual ~CacheTransactionManagerImpl() override;
+  CacheTransactionManagerImpl(CacheImpl* cache);
+  ~CacheTransactionManagerImpl() override;
 
   virtual void begin() override;
   virtual void commit() override;

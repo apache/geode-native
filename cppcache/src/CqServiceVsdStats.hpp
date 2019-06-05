@@ -41,67 +41,37 @@ using util::concurrent::spinlock_mutex;
 class APACHE_GEODE_EXPORT CqServiceVsdStats : public CqServiceStatistics {
  public:
   /** hold statistics for a cq. */
-  explicit CqServiceVsdStats(statistics::StatisticsFactory* factory,
+   CqServiceVsdStats(statistics::StatisticsFactory* factory,
                              const std::string& cqName = "CqServiceVsdStats");
 
   /** disable stat collection for this item. */
-  virtual ~CqServiceVsdStats();
+  ~CqServiceVsdStats();
 
-  void close() { m_cqServiceVsdStats->close(); }
-  inline void decNumCqsActive() {
-    m_cqServiceVsdStats->incInt(m_numCqsActiveId, -1);
-  }
+  void close();
+  void decNumCqsActive();
 
-  inline void incNumCqsActive() const {
-    m_cqServiceVsdStats->incInt(m_numCqsActiveId, 1);
-  }
-  inline uint32_t numCqsActive() const {
-    return m_cqServiceVsdStats->getInt(m_numCqsActiveId);
-  }
+  void incNumCqsActive() const;
+  uint32_t numCqsActive() const;
 
-  inline void incNumCqsCreated() {
-    m_cqServiceVsdStats->incInt(m_numCqsCreatedId, 1);
-  }
-  inline uint32_t numCqsCreated() const {
-    return m_cqServiceVsdStats->getInt(m_numCqsCreatedId);
-  }
+  void incNumCqsCreated();
+  uint32_t numCqsCreated() const;
 
-  inline uint32_t numCqsOnClient() const {
-    return m_cqServiceVsdStats->getInt(m_numCqsOnClientId);
-  }
+  uint32_t numCqsOnClient() const;
 
-  inline void incNumCqsClosed() {
-    m_cqServiceVsdStats->incInt(m_numCqsClosedId, 1);
-  }
-  inline uint32_t numCqsClosed() const {
-    return m_cqServiceVsdStats->getInt(m_numCqsClosedId);
-  }
+  void incNumCqsClosed();
+  uint32_t numCqsClosed() const;
 
-  inline void incNumCqsStopped() {
-    m_cqServiceVsdStats->incInt(m_numCqsStoppedId, 1);
-  }
-  inline void decNumCqsStopped() {
-    m_cqServiceVsdStats->incInt(m_numCqsStoppedId, -1);
-  }
-  inline uint32_t numCqsStopped() const {
-    return m_cqServiceVsdStats->getInt(m_numCqsStoppedId);
-  }
+  void incNumCqsStopped();
+  void decNumCqsStopped();
+  uint32_t numCqsStopped() const;
 
-  inline void setNumCqsActive(uint32_t value) {
-    m_cqServiceVsdStats->setInt(m_numCqsActiveId, value);
-  }
+  void setNumCqsActive(uint32_t value);
 
-  inline void setNumCqsOnClient(uint32_t value) {
-    m_cqServiceVsdStats->setInt(m_numCqsOnClientId, value);
-  }
+  void setNumCqsOnClient(uint32_t value);
 
-  inline void setNumCqsClosed(uint32_t value) {
-    m_cqServiceVsdStats->setInt(m_numCqsClosedId, value);
-  }
+  void setNumCqsClosed(uint32_t value);
 
-  inline void setNumCqsStopped(uint32_t value) {
-    m_cqServiceVsdStats->setInt(m_numCqsStoppedId, value);
-  }
+  void setNumCqsStopped(uint32_t value);
 
  private:
   Statistics* m_cqServiceVsdStats;

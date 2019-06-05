@@ -33,17 +33,15 @@ using internal::DSFid;
 
 class ClientConnectionResponse : public ServerLocationResponse {
  public:
-  ClientConnectionResponse() : ServerLocationResponse(), m_serverFound(false) {}
+  ClientConnectionResponse();
   void fromData(DataInput& input) override;
   DSFid getDSFID() const override;
   size_t objectSize() const override;
   virtual ServerLocation getServerLocation() const;
-  void printInfo() { m_server.printInfo(); }
-  static std::shared_ptr<Serializable> create() {
-    return std::make_shared<ClientConnectionResponse>();
-  }
+  void printInfo();
+  static std::shared_ptr<Serializable> create();
   ~ClientConnectionResponse() override = default;
-  bool serverFound() { return m_serverFound; }
+  bool serverFound();
 
  private:
   bool m_serverFound;

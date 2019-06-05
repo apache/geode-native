@@ -108,7 +108,7 @@ TcrEndpoint::~TcrEndpoint() {
   LOGFINE("Connection to %s deleted", m_name.c_str());
 }
 
-inline bool TcrEndpoint::needtoTakeConnectLock() {
+bool TcrEndpoint::needtoTakeConnectLock() {
 #ifdef __linux
   if (m_cacheImpl->getDistributedSystem()
           .getSystemProperties()
@@ -284,10 +284,10 @@ GfErrType TcrEndpoint::createNewConnection(
 void TcrEndpoint::authenticateEndpoint(TcrConnection*& conn) {
   LOGDEBUG(
       "TcrEndpoint::authenticateEndpoint m_isAuthenticated  = %d "
-      "this->m_baseDM = %d",
+      "m_baseDM = %d",
       m_isAuthenticated, m_baseDM);
   if (!m_isAuthenticated && m_baseDM) {
-    this->setConnected();
+    setConnected();
     std::lock_guard<decltype(m_endpointAuthenticationLock)> guard(
         m_endpointAuthenticationLock);
     GfErrType err = GF_NOERR;
@@ -304,9 +304,9 @@ void TcrEndpoint::authenticateEndpoint(TcrConnection*& conn) {
         new DataOutput(m_cacheImpl->createDataOutput()), creds, m_baseDM);
 
     LOGDEBUG("request is created");
-    TcrMessageReply reply(true, this->m_baseDM);
-    // err = this->sendRequestToEP(request, reply, ( *it ).int_id_);
-    err = this->sendRequestConnWithRetry(request, reply, conn);
+    TcrMessageReply reply(true, m_baseDM);
+    // err = sendRequestToEP(request, reply, ( *it ).int_id_);
+    err = sendRequestConnWithRetry(request, reply, conn);
     LOGDEBUG("authenticateEndpoint error = %d", err);
     if (err == GF_NOERR) {
       // put the object into local region
@@ -595,7 +595,7 @@ void TcrEndpoint::receiveNotification(std::atomic<bool>& isRunning) {
         msg = new TcrMessageReply(true, m_baseDM);
         msg->initCqMap();
         msg->setData(data, static_cast<int32_t>(dataLen),
-                     this->getDistributedMemberID(),
+                     getDistributedMemberID(),
                      *(m_cacheImpl->getSerializationRegistry()),
                      *(m_cacheImpl->getMemberListForVersionStamp()));
         handleNotificationStats(static_cast<int64_t>(dataLen));
@@ -717,10 +717,10 @@ void TcrEndpoint::receiveNotification(std::atomic<bool>& isRunning) {
   LOGFINE("Ended subscription channel for endpoint %s", m_name.c_str());
 }
 
-inline bool TcrEndpoint::compareTransactionIds(int32_t reqTransId,
-                                               int32_t replyTransId,
-                                               std::string& failReason,
-                                               TcrConnection* conn) {
+bool TcrEndpoint::compareTransactionIds(int32_t reqTransId,
+                                        int32_t replyTransId,
+                                        std::string& failReason,
+                                        TcrConnection* conn) {
   LOGDEBUG("TcrEndpoint::compareTransactionIds requested id = %d ,replied = %d",
            reqTransId, replyTransId);
   if (replyTransId != reqTransId) {
@@ -735,8 +735,8 @@ inline bool TcrEndpoint::compareTransactionIds(int32_t reqTransId,
   return true;
 }
 
-inline bool TcrEndpoint::handleIOException(const std::string& message,
-                                           TcrConnection*& conn, bool) {
+bool TcrEndpoint::handleIOException(const std::string& message,
+                                    TcrConnection*& conn, bool) {
   int32_t lastError = ACE_OS::last_error();
   if (lastError == ECONNRESET || lastError == EPIPE) {
     _GEODE_SAFE_DELETE(conn);
@@ -828,7 +828,7 @@ GfErrType TcrEndpoint::sendRequestConn(const TcrMessage& request,
                                   reply.getTimeout(), request.getMessageType());
     reply.setMessageTypeRequest(type);
     reply.setData(
-        data, static_cast<int32_t>(dataLen), this->getDistributedMemberID(),
+        data, static_cast<int32_t>(dataLen), getDistributedMemberID(),
         *(m_cacheImpl->getSerializationRegistry()),
         *(m_cacheImpl
               ->getMemberListForVersionStamp()));  // memory is released by
@@ -1292,6 +1292,71 @@ void TcrEndpoint::closeFailedConnection(TcrConnection*& conn) {
 }
 
 void TcrEndpoint::handleNotificationStats(int64_t) {}
+
+bool TcrEndpoint::connected() const { return m_connected; }
+
+int TcrEndpoint::numRegions() const { return m_numRegions; }
+
+void TcrEndpoint::setNumRegions(int numRegions) { m_numRegions = numRegions; }
+
+const std::string& TcrEndpoint::name() const { return m_name; }
+
+int TcrEndpoint::getNumRegionListeners() const { return m_numRegionListener; }
+
+// TODO: for single user mode only
+void TcrEndpoint::setUniqueId(int64_t uniqueId) {
+  LOGDEBUG("tcrEndpoint:setUniqueId:: %d ", uniqueId);
+  m_isAuthenticated = true;
+  m_uniqueId = uniqueId;
+}
+
+int64_t TcrEndpoint::getUniqueId() {
+  LOGDEBUG("tcrEndpoint:getUniqueId:: %d ", m_uniqueId);
+  return m_uniqueId;
+}
+
+bool TcrEndpoint::isAuthenticated() { return m_isAuthenticated; }
+
+void TcrEndpoint::setAuthenticated(bool isAuthenticated) {
+  m_isAuthenticated = isAuthenticated;
+}
+
+bool TcrEndpoint::getServerQueueStatusTEST() {
+  return (m_serverQueueStatus == REDUNDANT_SERVER ||
+          m_serverQueueStatus == PRIMARY_SERVER);
+}
+
+// Get cached server queue props.
+int32_t TcrEndpoint::getServerQueueSize() { return m_queueSize; }
+ServerQueueStatus TcrEndpoint::getServerQueueStatus() {
+  return m_serverQueueStatus;
+}
+
+void TcrEndpoint::setConnected(volatile bool connected) {
+  m_connected = connected;
+}
+ThinClientPoolDM* TcrEndpoint::getPoolHADM() { return nullptr; }
+
+std::recursive_mutex& TcrEndpoint::getQueueHostedMutex() {
+  return m_notifyReceiverLock;
+}
+
+void TcrEndpoint::setDM(ThinClientBaseDM* dm) {
+  LOGDEBUG("tcrendpoint setDM");
+  m_baseDM = dm;
+}
+
+int32_t TcrEndpoint::numberOfTimesFailed() { return m_numberOfTimesFailed; }
+
+void TcrEndpoint::addConnRefCounter(int count) { m_noOfConnRefs += count; }
+
+int TcrEndpoint::getConnRefCounter() { return m_noOfConnRefs; }
+
+uint16_t TcrEndpoint::getDistributedMemberID() { return m_distributedMemId; }
+
+void TcrEndpoint::setDistributedMemberID(uint16_t memId) {
+  m_distributedMemId = memId;
+}
 
 }  // namespace client
 }  // namespace geode

@@ -24,10 +24,10 @@
 #include <string>
 
 #include <geode/Serializable.hpp>
+#include <geode/CacheableKey.hpp>
 
 #include "ErrType.hpp"
-#include "NonCopyable.hpp"
-#include "ReadWriteLock.hpp"
+#include <ace/RW_Thread_Mutex.h>
 
 namespace apache {
 namespace geode {
@@ -43,28 +43,25 @@ namespace client {
 class CacheImpl;
 class ThinClientBaseDM;
 class TcrConnectionManager;
-class CacheableKey;
 
-class AdminRegion : private NonCopyable,
-                    private NonAssignable,
-                    public std::enable_shared_from_this<AdminRegion> {
- private:
+class AdminRegion : public std::enable_shared_from_this<AdminRegion> {
+  friend class apache::geode::statistics::HostStatSampler;
+
   ThinClientBaseDM* m_distMngr;
   std::string m_fullPath;
   TcrConnectionManager* m_connectionMgr;
   ACE_RW_Thread_Mutex m_rwLock;
   bool m_destroyPending;
 
+  AdminRegion(const AdminRegion&) = delete;
+  AdminRegion &operator=(const AdminRegion&) = delete;
+
   GfErrType putNoThrow(const std::shared_ptr<CacheableKey>& keyPtr,
                        const std::shared_ptr<Cacheable>& valuePtr);
   TcrConnectionManager* getConnectionManager();
 
  public:
-  AdminRegion()
-      : m_distMngr(nullptr),
-        m_fullPath("/__ADMIN_CLIENT_HEALTH_MONITORING__"),
-        m_connectionMgr(nullptr),
-        m_destroyPending(false) {}
+  AdminRegion();
   ~AdminRegion();
 
   static std::shared_ptr<AdminRegion> create(
@@ -75,7 +72,6 @@ class AdminRegion : private NonCopyable,
   void init();
   void put(const std::shared_ptr<CacheableKey>& keyPtr,
            const std::shared_ptr<Cacheable>& valuePtr);
-  friend class apache::geode::statistics::HostStatSampler;
 };
 
 }  // namespace client

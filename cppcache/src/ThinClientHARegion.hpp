@@ -48,15 +48,13 @@ class APACHE_GEODE_EXPORT ThinClientHARegion : public ThinClientRegion {
   ThinClientHARegion(const ThinClientHARegion&) = delete;
   ThinClientHARegion& operator=(const ThinClientHARegion&) = delete;
 
-  ~ThinClientHARegion() noexcept override = default;
+  ~ThinClientHARegion() override = default;
 
   void initTCR() override;
 
   bool getProcessedMarker() override;
 
-  void setProcessedMarker(bool mark = true) override {
-    m_processedMarker = mark;
-  }
+  void setProcessedMarker(bool mark = true) override;
   void addDisMessToQueue() override;
 
  protected:

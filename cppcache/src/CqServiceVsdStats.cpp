@@ -86,6 +86,63 @@ CqServiceVsdStats::~CqServiceVsdStats() {
     m_cqServiceVsdStats = nullptr;
   }
 }
+
+void CqServiceVsdStats::close() { m_cqServiceVsdStats->close(); }
+void CqServiceVsdStats::decNumCqsActive() {
+  m_cqServiceVsdStats->incInt(m_numCqsActiveId, -1);
+}
+
+void CqServiceVsdStats::incNumCqsActive() const {
+  m_cqServiceVsdStats->incInt(m_numCqsActiveId, 1);
+}
+uint32_t CqServiceVsdStats::numCqsActive() const {
+  return m_cqServiceVsdStats->getInt(m_numCqsActiveId);
+}
+
+void CqServiceVsdStats::incNumCqsCreated() {
+  m_cqServiceVsdStats->incInt(m_numCqsCreatedId, 1);
+}
+uint32_t CqServiceVsdStats::numCqsCreated() const {
+  return m_cqServiceVsdStats->getInt(m_numCqsCreatedId);
+}
+
+uint32_t CqServiceVsdStats::numCqsOnClient() const {
+  return m_cqServiceVsdStats->getInt(m_numCqsOnClientId);
+}
+
+void CqServiceVsdStats::incNumCqsClosed() {
+  m_cqServiceVsdStats->incInt(m_numCqsClosedId, 1);
+}
+uint32_t CqServiceVsdStats::numCqsClosed() const {
+  return m_cqServiceVsdStats->getInt(m_numCqsClosedId);
+}
+
+void CqServiceVsdStats::incNumCqsStopped() {
+  m_cqServiceVsdStats->incInt(m_numCqsStoppedId, 1);
+}
+void CqServiceVsdStats::decNumCqsStopped() {
+  m_cqServiceVsdStats->incInt(m_numCqsStoppedId, -1);
+}
+uint32_t CqServiceVsdStats::numCqsStopped() const {
+  return m_cqServiceVsdStats->getInt(m_numCqsStoppedId);
+}
+
+void CqServiceVsdStats::setNumCqsActive(uint32_t value) {
+  m_cqServiceVsdStats->setInt(m_numCqsActiveId, value);
+}
+
+void CqServiceVsdStats::setNumCqsOnClient(uint32_t value) {
+  m_cqServiceVsdStats->setInt(m_numCqsOnClientId, value);
+}
+
+void CqServiceVsdStats::setNumCqsClosed(uint32_t value) {
+  m_cqServiceVsdStats->setInt(m_numCqsClosedId, value);
+}
+
+void CqServiceVsdStats::setNumCqsStopped(uint32_t value) {
+  m_cqServiceVsdStats->setInt(m_numCqsStoppedId, value);
+}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

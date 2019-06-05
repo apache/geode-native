@@ -69,28 +69,17 @@ class APACHE_GEODE_EXPORT TcpConn : public Connector {
  public:
   size_t m_chunkSize;
 
-  static size_t getDefaultChunkSize() {
-    // Attempt to set chunk size to nearest OS page size
-    // for perf improvement
-    auto pageSize = boost::interprocess::mapped_region::get_page_size();
-    if (pageSize > 16000000) {
-      return 16000000;
-    } else if (pageSize > 0) {
-      return pageSize + (16000000 / pageSize) * pageSize;
-    }
-
-    return 16000000;
-  }
+  static size_t getDefaultChunkSize();
 
   TcpConn(const char* hostname, int32_t port,
           std::chrono::microseconds waitSeconds, int32_t maxBuffSizePool);
   TcpConn(const char* ipaddr, std::chrono::microseconds waitSeconds,
           int32_t maxBuffSizePool);
 
-  virtual ~TcpConn() override { close(); }
+  ~TcpConn() override;
 
   // Close this tcp connection
-  virtual void close() override;
+  void close() override;
 
   void init() override;
 
@@ -118,23 +107,13 @@ class APACHE_GEODE_EXPORT TcpConn : public Connector {
   size_t send(const char* buff, size_t len,
               std::chrono::microseconds waitSeconds) override;
 
-  virtual void setOption(int32_t level, int32_t option, void* val, size_t len) {
-    if (m_io->set_option(level, option, val, static_cast<int32_t>(len)) == -1) {
-      int32_t lastError = ACE_OS::last_error();
-      LOGERROR("Failed to set option, errno: %d: %s", lastError,
-               ACE_OS::strerror(lastError));
-    }
-  }
+  virtual void setOption(int32_t level, int32_t option, void* val, size_t len);
 
-  void setIntOption(int32_t level, int32_t option, int32_t val) {
-    setOption(level, option, &val, sizeof(int32_t));
-  }
+  void setIntOption(int32_t level, int32_t option, int32_t val);
 
-  void setBoolOption(int32_t level, int32_t option, bool val) {
-    setOption(level, option, &val, sizeof(bool));
-  }
+  void setBoolOption(int32_t level, int32_t option, bool val);
 
-  virtual uint16_t getPort() override;
+  uint16_t getPort() override;
 };
 }  // namespace client
 }  // namespace geode

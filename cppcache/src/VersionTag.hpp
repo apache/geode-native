@@ -56,7 +56,7 @@ class VersionTag : public DataSerializableFixedId {
   virtual void readMembers(uint16_t flags, DataInput& input);
 
  public:
-  explicit VersionTag(MemberListForVersionStamp& memberListForVersionStamp);
+   VersionTag(MemberListForVersionStamp& memberListForVersionStamp);
 
   ~VersionTag() override = default;
 
@@ -64,20 +64,18 @@ class VersionTag : public DataSerializableFixedId {
 
   void fromData(DataInput& input) override;
 
-  DSFid getDSFID() const override { return DSFid::VersionTag; }
+  DSFid getDSFID() const override;
 
   static std::shared_ptr<Serializable> createDeserializable(
       MemberListForVersionStamp& memberListForVersionStamp);
 
-  int32_t getEntryVersion() const { return m_entryVersion; }
-  int16_t getRegionVersionHighBytes() const { return m_regionVersionHighBytes; }
-  int32_t getRegionVersionLowBytes() const { return m_regionVersionLowBytes; }
-  uint16_t getInternalMemID() const { return m_internalMemId; }
-  uint16_t getPreviousMemID() const { return m_previousMemId; }
+  int32_t getEntryVersion() const;
+  int16_t getRegionVersionHighBytes() const;
+  int32_t getRegionVersionLowBytes() const;
+  uint16_t getInternalMemID() const;
+  uint16_t getPreviousMemID() const;
   void replaceNullMemberId(uint16_t memId);
-  void setInternalMemID(uint16_t internalMemId) {
-    m_internalMemId = internalMemId;
-  }
+  void setInternalMemID(uint16_t internalMemId);
 
   /**
    * for internal testing

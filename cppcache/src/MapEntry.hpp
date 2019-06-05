@@ -52,59 +52,30 @@ class APACHE_GEODE_EXPORT ExpEntryProperties {
  public:
   typedef std::chrono::system_clock::time_point time_point;
 
-  inline explicit ExpEntryProperties(ExpiryTaskManager* expiryTaskManager)
-      : m_lastAccessTime(0),
-        m_lastModifiedTime(0),
-        m_expiryTaskId(-1),
-        m_expiryTaskManager(expiryTaskManager) {
-    // The reactor always gives +ve id while scheduling.
-    // -1 will indicate that an expiry task has not been scheduled
-    // for this entry. // TODO confirm
-  }
+   ExpEntryProperties(ExpiryTaskManager* expiryTaskManager);
 
-  inline time_point getLastAccessTime() const {
-    return time_point(std::chrono::system_clock::duration(m_lastAccessTime));
-  }
+  time_point getLastAccessTime() const;
 
-  inline time_point getLastModifiedTime() const {
-    return time_point(std::chrono::system_clock::duration(m_lastModifiedTime));
-  }
+  time_point getLastModifiedTime() const;
 
   //  moved time initialization outside of constructor to avoid
   // the costly gettimeofday call in MapSegment spinlock
-  inline void initStartTime() {
-    time_point currentTime = std::chrono::system_clock::now();
-    m_lastAccessTime = currentTime.time_since_epoch().count();
-    m_lastModifiedTime = currentTime.time_since_epoch().count();
-  }
+  void initStartTime();
 
-  inline void updateLastAccessTime(time_point currTime) {
-    m_lastAccessTime = currTime.time_since_epoch().count();
-  }
+  void updateLastAccessTime(time_point currTime);
 
-  inline void updateLastModifiedTime(time_point currTime) {
-    m_lastModifiedTime = currTime.time_since_epoch().count();
-  }
+  void updateLastModifiedTime(time_point currTime);
 
-  inline void setExpiryTaskId(ExpiryTaskManager::id_type id) {
-    m_expiryTaskId = id;
-  }
+  void setExpiryTaskId(ExpiryTaskManager::id_type id);
 
-  inline ExpiryTaskManager::id_type getExpiryTaskId() const {
-    return m_expiryTaskId;
-  }
+  ExpiryTaskManager::id_type getExpiryTaskId() const;
 
-  inline void cancelExpiryTaskId(
-      const std::shared_ptr<CacheableKey>& key) const {
-    LOGDEBUG("Cancelling expiration task for key [%s] with id [%d]",
-             Utils::nullSafeToString(key).c_str(), m_expiryTaskId);
-    m_expiryTaskManager->cancelTask(m_expiryTaskId);
-  }
+  void cancelExpiryTaskId(
+      const std::shared_ptr<CacheableKey>& key) const;
 
  protected:
   // this constructor deliberately skips initializing any fields
-  inline explicit ExpEntryProperties(bool)
-      : m_lastAccessTime(0), m_lastModifiedTime(0) {}
+   ExpEntryProperties(bool);
 
  private:
   /** last access time in secs, 32bit.. */
@@ -121,7 +92,7 @@ class APACHE_GEODE_EXPORT ExpEntryProperties {
  */
 class APACHE_GEODE_EXPORT MapEntry {
  public:
-  virtual ~MapEntry() {}
+  virtual ~MapEntry();
 
   virtual void getKey(std::shared_ptr<CacheableKey>& result) const = 0;
   virtual void getValue(std::shared_ptr<Cacheable>& result) const = 0;
@@ -190,9 +161,9 @@ class APACHE_GEODE_EXPORT MapEntry {
   virtual void cleanup(const CacheEventFlags eventFlags) = 0;
 
  protected:
-  inline MapEntry() {}
+  MapEntry();
 
-  inline explicit MapEntry(bool) {}
+   MapEntry(bool);
 };
 
 /**
@@ -206,64 +177,32 @@ class MapEntryImpl : public MapEntry,
   MapEntryImpl(const MapEntryImpl&) = delete;
   MapEntryImpl& operator=(const MapEntryImpl&) = delete;
 
-  inline void getKeyI(std::shared_ptr<CacheableKey>& result) const {
-    result = m_key;
-  }
+  void getKeyI(std::shared_ptr<CacheableKey>& result) const;
 
-  inline void getValueI(std::shared_ptr<Cacheable>& result) const {
-    // If value is destroyed, then this returns nullptr
-    if (CacheableToken::isDestroyed(m_value)) {
-      result = nullptr;
-    } else {
-      result = m_value;
-    }
-  }
+  void getValueI(std::shared_ptr<Cacheable>& result) const;
 
-  inline void setValueI(const std::shared_ptr<Cacheable>& value) {
-    m_value = value;
-  }
+  void setValueI(const std::shared_ptr<Cacheable>& value);
 
-  void getKey(std::shared_ptr<CacheableKey>& result) const override {
-    getKeyI(result);
-  }
+  void getKey(std::shared_ptr<CacheableKey>& result) const override;
 
-  void getValue(std::shared_ptr<Cacheable>& result) const override {
-    getValueI(result);
-  }
+  void getValue(std::shared_ptr<Cacheable>& result) const override;
 
-  void setValue(const std::shared_ptr<Cacheable>& value) override {
-    setValueI(value);
-  }
+  void setValue(const std::shared_ptr<Cacheable>& value) override;
 
-  std::shared_ptr<MapEntryImpl> getImplPtr() override {
-    return shared_from_this();
-  }
+  std::shared_ptr<MapEntryImpl> getImplPtr() override;
 
-  LRUEntryProperties& getLRUProperties() override {
-    throw FatalInternalException(
-        "MapEntry::getLRUProperties called for "
-        "non-LRU MapEntry");
-  }
+  LRUEntryProperties& getLRUProperties() override;
 
-  ExpEntryProperties& getExpProperties() override {
-    throw FatalInternalException(
-        "MapEntry::getExpProperties called for "
-        "non-expiration MapEntry");
-  }
+  ExpEntryProperties& getExpProperties() override;
 
-  VersionStamp& getVersionStamp() override {
-    throw FatalInternalException(
-        "MapEntry::getVersionStamp called for "
-        "non-versioned MapEntry");
-  }
+  VersionStamp& getVersionStamp() override;
 
-  void cleanup(const CacheEventFlags) override{};
+  void cleanup(const CacheEventFlags) override;
 
  protected:
-  inline explicit MapEntryImpl(bool) : MapEntry(true) {}
+   MapEntryImpl(bool);
 
-  inline explicit MapEntryImpl(const std::shared_ptr<CacheableKey>& key)
-      : MapEntry(), m_key(key) {}
+   MapEntryImpl(const std::shared_ptr<CacheableKey>& key);
 
   std::shared_ptr<Cacheable> m_value;
   std::shared_ptr<CacheableKey> m_key;
@@ -272,16 +211,15 @@ class MapEntryImpl : public MapEntry,
 class APACHE_GEODE_EXPORT VersionedMapEntryImpl : public MapEntryImpl,
                                                   public VersionStamp {
  public:
-  virtual ~VersionedMapEntryImpl() {}
+  ~VersionedMapEntryImpl() override;
 
-  virtual VersionStamp& getVersionStamp() { return *this; }
+  virtual VersionStamp& getVersionStamp();
 
  protected:
-  inline explicit VersionedMapEntryImpl(bool) : MapEntryImpl(true) {}
+   VersionedMapEntryImpl(bool);
 
-  inline explicit VersionedMapEntryImpl(
-      const std::shared_ptr<CacheableKey>& key)
-      : MapEntryImpl(key) {}
+   VersionedMapEntryImpl(
+      const std::shared_ptr<CacheableKey>& key);
 
  private:
   // disabled
@@ -291,10 +229,9 @@ class APACHE_GEODE_EXPORT VersionedMapEntryImpl : public MapEntryImpl,
 
 class APACHE_GEODE_EXPORT EntryFactory {
  public:
-  explicit EntryFactory(const bool concurrencyChecksEnabled)
-      : m_concurrencyChecksEnabled(concurrencyChecksEnabled) {}
+   EntryFactory(const bool concurrencyChecksEnabled);
 
-  virtual ~EntryFactory() {}
+  virtual ~EntryFactory();
 
   virtual void newMapEntry(ExpiryTaskManager* expiryTaskManager,
                            const std::shared_ptr<CacheableKey>& key,

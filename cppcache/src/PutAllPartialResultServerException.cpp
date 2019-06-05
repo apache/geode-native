@@ -21,6 +21,12 @@ namespace apache {
 namespace geode {
 namespace client {
 
+std::shared_ptr<CacheableString> PutAllPartialResultServerException::getName() {
+  const char* msg = "PutAllPartialResultServerException";
+  auto str = CacheableString::create(msg);
+  return str;
+}
+
 PutAllPartialResultServerException::PutAllPartialResultServerException(
     std::shared_ptr<PutAllPartialResult> result) {
   LOGDEBUG("Partial keys are processed in putAll");

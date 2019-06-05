@@ -22,10 +22,6 @@
 #include "MapSegment.hpp"
 #include "TombstoneExpiryHandler.hpp"
 
-namespace apache {
-namespace geode {
-namespace client {
-
 #define SIZEOF_PTR (sizeof(void*))
 #define SIZEOF_SHAREDPTR (SIZEOF_PTR + 4)
 // 3 variables in expiry handler, two variables for ace_reactor expiry, one
@@ -39,6 +35,43 @@ namespace client {
   (SIZEOF_SHAREDPTR * 4 + SIZEOF_PTR * 2 + SIZEOF_TOMBSTONEENTRY)
 #define SIZEOF_TOMBSTONEOVERHEAD \
   (SIZEOF_EXPIRYHANDLER + SIZEOF_TOMBSTONELISTENTRY)
+
+namespace apache {
+namespace geode {
+namespace client {
+
+TombstoneEntry::TombstoneEntry(const std::shared_ptr<MapEntryImpl>& entry)
+    : m_entry(entry),
+      m_tombstoneCreationTime(TombstoneEntry::clock::now()),
+      m_expiryTaskId(0),
+      m_handler(nullptr) {}
+
+TombstoneEntry::~TombstoneEntry() {}
+
+std::shared_ptr<MapEntryImpl> TombstoneEntry::getEntry() { return m_entry; }
+
+TombstoneEntry::time_point TombstoneEntry::getTombstoneCreationTime() {
+  return m_tombstoneCreationTime;
+}
+
+ExpiryTaskManager::id_type TombstoneEntry::getExpiryTaskId() {
+  return m_expiryTaskId;
+}
+
+void TombstoneEntry::setExpiryTaskId(ExpiryTaskManager::id_type expiryTaskId) {
+  m_expiryTaskId = expiryTaskId;
+}
+
+TombstoneExpiryHandler* TombstoneEntry::getHandler() { return m_handler; }
+
+void TombstoneEntry::setHandler(TombstoneExpiryHandler* handler) {
+  m_handler = handler;
+}
+
+TombstoneList::TombstoneList(MapSegment* mapSegment, CacheImpl* cacheImpl)
+    : m_mapSegment(mapSegment), m_cacheImpl(cacheImpl) {}
+
+TombstoneList::~TombstoneList() { cleanUp(); }
 
 ExpiryTaskManager::id_type TombstoneList::getExpiryTask(
     TombstoneExpiryHandler** handler) {

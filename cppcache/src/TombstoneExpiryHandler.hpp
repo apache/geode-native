@@ -50,9 +50,7 @@ class APACHE_GEODE_EXPORT TombstoneExpiryHandler : public ACE_Event_Handler {
 
   int handle_close(ACE_HANDLE handle, ACE_Reactor_Mask close_mask) override;
 
-  void setTombstoneEntry(std::shared_ptr<TombstoneEntry> entryPtr) {
-    m_entryPtr = entryPtr;
-  }
+  void setTombstoneEntry(std::shared_ptr<TombstoneEntry> entryPtr);
 
  private:
   // The entry contained in the tombstone list

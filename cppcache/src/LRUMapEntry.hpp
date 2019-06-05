@@ -63,24 +63,16 @@ namespace client {
 class APACHE_GEODE_EXPORT LRUMapEntry : public MapEntryImpl,
                                         public LRUEntryProperties {
  public:
-  virtual ~LRUMapEntry() {}
+  ~LRUMapEntry() override = default;
 
-  virtual LRUEntryProperties& getLRUProperties() { return *this; }
+  LRUEntryProperties& getLRUProperties() override;
 
-  virtual void cleanup(const CacheEventFlags eventFlags) {
-    if (!eventFlags.isEviction()) {
-      // TODO:  this needs an implementation of doubly-linked list
-      // to remove from the list; also add this to LRUExpMapEntry since MI
-      // has been removed
-    }
-  }
+  void cleanup(const CacheEventFlags eventFlags) override;
 
  protected:
-  inline explicit LRUMapEntry(bool)
-      : MapEntryImpl(true), LRUEntryProperties(true) {}
+   LRUMapEntry(bool);
 
-  inline explicit LRUMapEntry(const std::shared_ptr<CacheableKey>& key)
-      : MapEntryImpl(key) {}
+   LRUMapEntry(const std::shared_ptr<CacheableKey>& key);
 
  private:
   // disabled
@@ -91,15 +83,14 @@ class APACHE_GEODE_EXPORT LRUMapEntry : public MapEntryImpl,
 class APACHE_GEODE_EXPORT VersionedLRUMapEntry : public LRUMapEntry,
                                                  public VersionStamp {
  public:
-  virtual ~VersionedLRUMapEntry() {}
+  ~VersionedLRUMapEntry() override = default;
 
-  virtual VersionStamp& getVersionStamp() { return *this; }
+  VersionStamp& getVersionStamp() override;
 
  protected:
-  inline explicit VersionedLRUMapEntry(bool) : LRUMapEntry(true) {}
+   VersionedLRUMapEntry(bool);
 
-  inline explicit VersionedLRUMapEntry(const std::shared_ptr<CacheableKey>& key)
-      : LRUMapEntry(key) {}
+   VersionedLRUMapEntry(const std::shared_ptr<CacheableKey>& key);
 
  private:
   // disabled
@@ -111,11 +102,11 @@ class APACHE_GEODE_EXPORT LRUEntryFactory : public EntryFactory {
  public:
   using EntryFactory::EntryFactory;
 
-  virtual ~LRUEntryFactory() {}
+  ~LRUEntryFactory() override = default;
 
-  virtual void newMapEntry(ExpiryTaskManager* expiryTaskManager,
+  void newMapEntry(ExpiryTaskManager* expiryTaskManager,
                            const std::shared_ptr<CacheableKey>& key,
-                           std::shared_ptr<MapEntryImpl>& result) const;
+                           std::shared_ptr<MapEntryImpl>& result) const override;
 };
 }  // namespace client
 }  // namespace geode

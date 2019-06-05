@@ -24,6 +24,7 @@
 namespace apache {
 namespace geode {
 namespace client {
+FunctionServiceImpl::~FunctionServiceImpl() {}
 
 FunctionServiceImpl::FunctionServiceImpl(AuthenticatedView* authenticatedView) {
   m_authenticatedView = authenticatedView;

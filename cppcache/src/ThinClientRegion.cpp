@@ -3898,6 +3898,168 @@ void ChunkedDurableCQListResponse::handleChunk(const uint8_t* chunk,
   }
 }
 
+ThinClientBaseDM* ThinClientRegion::getDistMgr() const { return m_tcrdm.get(); }
+
+ACE_RW_Thread_Mutex& ThinClientRegion::getMataDataMutex() {
+  return m_RegionMutex;
+}
+
+bool const& ThinClientRegion::getMetaDataRefreshed() {
+  return m_isMetaDataRefreshed;
+}
+
+void ThinClientRegion::setMetaDataRefreshed(bool aMetaDataRefreshed) {
+  m_isMetaDataRefreshed = aMetaDataRefreshed;
+}
+
+bool ThinClientRegion::isDurableClient() { return m_isDurableClnt; }
+
+void ThinClientRegion::handleMarker() {}
+
+ChunkedInterestResponse::ChunkedInterestResponse(
+    TcrMessage& msg,
+    const std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>>&
+        resultKeys,
+    TcrMessageReply& replyMsg)
+    : TcrChunkedResult(),
+      m_msg(msg),
+      m_replyMsg(replyMsg),
+      m_resultKeys(resultKeys) {}
+
+const std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>>&
+ChunkedInterestResponse::getResultKeys() const {
+  return m_resultKeys;
+}
+
+ChunkedQueryResponse::ChunkedQueryResponse(TcrMessage& msg)
+    : TcrChunkedResult(),
+      m_msg(msg),
+      m_queryResults(CacheableVector::create()) {}
+
+const std::shared_ptr<CacheableVector>& ChunkedQueryResponse::getQueryResults()
+    const {
+  return m_queryResults;
+}
+
+const std::vector<std::string>& ChunkedQueryResponse::getStructFieldNames()
+    const {
+  return m_structFieldNames;
+}
+
+ChunkedFunctionExecutionResponse::ChunkedFunctionExecutionResponse(
+    TcrMessage& msg, bool getResult, std::shared_ptr<ResultCollector> rc)
+    : TcrChunkedResult(), m_msg(msg), m_getResult(getResult), m_rc(rc) {}
+
+ChunkedFunctionExecutionResponse::ChunkedFunctionExecutionResponse(
+    TcrMessage& msg, bool getResult, std::shared_ptr<ResultCollector> rc,
+    const std::shared_ptr<std::recursive_mutex>& resultCollectorLock)
+    : TcrChunkedResult(),
+      m_msg(msg),
+      m_getResult(getResult),
+      m_rc(rc),
+      m_resultCollectorLock(resultCollectorLock) {}
+
+bool ChunkedFunctionExecutionResponse::getResult() const { return m_getResult; }
+
+ChunkedGetAllResponse::ChunkedGetAllResponse(
+    TcrMessage& msg, ThinClientRegion* region,
+    const std::vector<std::shared_ptr<CacheableKey>>* keys,
+    const std::shared_ptr<HashMapOfCacheable>& values,
+    const std::shared_ptr<HashMapOfException>& exceptions,
+    const std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>>&
+        resultKeys,
+    MapOfUpdateCounters& trackerMap, int32_t destroyTracker,
+    bool addToLocalCache, std::recursive_mutex& responseLock)
+    : TcrChunkedResult(),
+      m_msg(msg),
+      m_region(region),
+      m_keys(keys),
+      m_values(values),
+      m_exceptions(exceptions),
+      m_resultKeys(resultKeys),
+      m_trackerMap(trackerMap),
+      m_destroyTracker(destroyTracker),
+      m_addToLocalCache(addToLocalCache),
+      m_keysOffset(0),
+      m_responseLock(responseLock) {}
+
+bool ChunkedGetAllResponse::getAddToLocalCache() { return m_addToLocalCache; }
+
+std::shared_ptr<HashMapOfCacheable> ChunkedGetAllResponse::getValues() {
+  return m_values;
+}
+
+std::shared_ptr<HashMapOfException> ChunkedGetAllResponse::getExceptions() {
+  return m_exceptions;
+}
+
+std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>>
+ChunkedGetAllResponse::getResultKeys() {
+  return m_resultKeys;
+}
+
+MapOfUpdateCounters& ChunkedGetAllResponse::getUpdateCounters() {
+  return m_trackerMap;
+}
+
+std::recursive_mutex& ChunkedGetAllResponse::getResponseLock() {
+  return m_responseLock;
+}
+
+ChunkedPutAllResponse::ChunkedPutAllResponse(
+    const std::shared_ptr<Region>& region, TcrMessage& msg,
+    std::recursive_mutex& responseLock,
+    std::shared_ptr<VersionedCacheableObjectPartList>& list)
+    : TcrChunkedResult(),
+      m_msg(msg),
+      m_region(region),
+      m_responseLock(responseLock),
+      m_list(list) {}
+
+std::shared_ptr<VersionedCacheableObjectPartList>
+ChunkedPutAllResponse::getList() {
+  return m_list;
+}
+
+std::recursive_mutex& ChunkedPutAllResponse::getResponseLock() {
+  return m_responseLock;
+}
+
+ChunkedRemoveAllResponse::ChunkedRemoveAllResponse(
+    const std::shared_ptr<Region>& region, TcrMessage& msg,
+    std::recursive_mutex& responseLock,
+    std::shared_ptr<VersionedCacheableObjectPartList>& list)
+    : TcrChunkedResult(),
+      m_msg(msg),
+      m_region(region),
+      m_responseLock(responseLock),
+      m_list(list) {}
+
+std::shared_ptr<VersionedCacheableObjectPartList>
+ChunkedRemoveAllResponse::getList() {
+  return m_list;
+}
+
+std::recursive_mutex& ChunkedRemoveAllResponse::getResponseLock() {
+  return m_responseLock;
+}
+
+ChunkedKeySetResponse::ChunkedKeySetResponse(
+    TcrMessage& msg, std::vector<std::shared_ptr<CacheableKey>>& resultKeys,
+    TcrMessageReply& replyMsg)
+    : TcrChunkedResult(),
+      m_msg(msg),
+      m_replyMsg(replyMsg),
+      m_resultKeys(resultKeys) {}
+
+ChunkedDurableCQListResponse::ChunkedDurableCQListResponse(TcrMessage& msg)
+    : TcrChunkedResult(),
+      m_msg(msg),
+      m_resultList(CacheableArrayList::create()) {}
+
+std::shared_ptr<CacheableArrayList> ChunkedDurableCQListResponse::getResults() {
+  return m_resultList;
+}
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

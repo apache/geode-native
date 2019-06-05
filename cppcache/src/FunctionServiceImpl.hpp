@@ -38,12 +38,12 @@ namespace client {
 
 class APACHE_GEODE_EXPORT FunctionServiceImpl : public FunctionService {
  public:
-  explicit FunctionServiceImpl(AuthenticatedView* authenticatedView);
+   FunctionServiceImpl(AuthenticatedView* authenticatedView);
 
-  virtual ~FunctionServiceImpl() {}
+  ~FunctionServiceImpl() override;
 
  private:
-  explicit FunctionServiceImpl(const FunctionService&);
+   FunctionServiceImpl(const FunctionService&);
   FunctionServiceImpl& operator=(const FunctionService&);
 
   static std::shared_ptr<FunctionService> getFunctionService(

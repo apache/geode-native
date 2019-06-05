@@ -189,7 +189,7 @@ SystemProperties::SystemProperties(
     SystemProperties* m_sysProps;
 
    public:
-    explicit ProcessPropsVisitor(SystemProperties* sysProps)
+     ProcessPropsVisitor(SystemProperties* sysProps)
         : m_sysProps(sysProps) {}
     void visit(const std::shared_ptr<CacheableKey>& key,
                const std::shared_ptr<Cacheable>& value) {

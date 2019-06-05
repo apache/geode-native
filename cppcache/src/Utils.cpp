@@ -30,6 +30,86 @@ namespace apache {
 namespace geode {
 namespace client {
 
+#ifdef __GNUC__
+char* Utils::_gnuDemangledName(const char* typeIdName, size_t& len) {
+  int status;
+  char* demangledName = abi::__cxa_demangle(typeIdName, nullptr, &len, &status);
+  if (status == 0 && demangledName != nullptr) {
+    return demangledName;
+  }
+  return nullptr;
+}
+#endif
+
+void Utils::demangleTypeName(const char* typeIdName, std::string& str) {
+#ifdef __GNUC__
+  size_t len;
+  char* demangledName = _gnuDemangledName(typeIdName, len);
+  if (demangledName != nullptr) {
+    str.append(demangledName, len);
+    free(demangledName);
+    return;
+  }
+#endif
+  str.append(typeIdName);
+}
+
+std::string Utils::demangleTypeName(const char* typeIdName) {
+#ifdef __GNUC__
+  size_t len;
+  char* demangledName = _gnuDemangledName(typeIdName, len);
+  if (demangledName != nullptr) {
+    return std::string(demangledName, len);
+  }
+#endif
+  return std::string(typeIdName);
+}
+
+std::string Utils::nullSafeToString(const std::shared_ptr<CacheableKey>& key) {
+  std::string result;
+  if (key) {
+    result = key->toString();
+  } else {
+    result = "(null)";
+  }
+  return result;
+}
+
+std::string Utils::nullSafeToString(const std::shared_ptr<Cacheable>& val) {
+  std::string result;
+  if (val) {
+    if (const auto key = std::dynamic_pointer_cast<CacheableKey>(val)) {
+      result = nullSafeToString(key);
+    } else {
+      return result = val->toString();
+    }
+  } else {
+    result = "(null)";
+  }
+
+  return result;
+}
+
+size_t Utils::checkAndGetObjectSize(
+    const std::shared_ptr<Cacheable>& theObject) {
+  auto objectSize = theObject->objectSize();
+  static bool youHaveBeenWarned = false;
+  if (objectSize == 0 && !youHaveBeenWarned) {
+    LOGWARN(
+        "Object size for Heap LRU returned by %s is 0 (zero). Even for empty "
+        "objects the size returned should be at least one (1 byte).",
+        theObject->toString().c_str());
+    youHaveBeenWarned = true;
+  }
+  return objectSize;
+}
+
+std::string Utils::convertBytesToString(const char* bytes, size_t length,
+                                        size_t maxLength) {
+  return convertBytesToString(reinterpret_cast<const uint8_t*>(bytes), length,
+                              maxLength);
+}
+
 int32_t Utils::getLastError() { return ACE_OS::last_error(); }
 
 std::string Utils::getEnv(const char* varName) {

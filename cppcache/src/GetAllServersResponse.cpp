@@ -19,6 +19,19 @@
 namespace apache {
 namespace geode {
 namespace client {
+std::shared_ptr<Serializable> GetAllServersResponse::create() {
+  return std::make_shared<GetAllServersResponse>();
+}
+
+GetAllServersResponse::GetAllServersResponse() : Serializable() {}
+
+size_t GetAllServersResponse::objectSize() const {
+  return sizeof(GetAllServersResponse) + m_servers.capacity();
+}
+
+std::vector<std::shared_ptr<ServerLocation> > GetAllServersResponse::getServers() {
+  return m_servers;
+}
 
 void GetAllServersResponse::toData(DataOutput& output) const {
   int32_t numServers = static_cast<int32_t>(m_servers.size());
@@ -27,6 +40,7 @@ void GetAllServersResponse::toData(DataOutput& output) const {
     output.writeObject(m_servers.at(i));
   }
 }
+
 void GetAllServersResponse::fromData(DataInput& input) {
   int numServers = input.readInt32();
   LOGFINER("GetAllServersResponse::fromData length = %d ", numServers);

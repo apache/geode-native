@@ -45,6 +45,20 @@ void QueueConnectionResponse::readList(DataInput& input) {
   }
 }
 
+QueueConnectionResponse::QueueConnectionResponse()
+    : ServerLocationResponse(), m_durableQueueFound(false) {}
+
+std::list<ServerLocation> QueueConnectionResponse::getServers() {
+  return m_list;
+}
+
+bool QueueConnectionResponse::isDurableQueueFound() {
+  return m_durableQueueFound;
+}
+
+std::shared_ptr<Serializable> QueueConnectionResponse::create() {
+  return std::make_shared<QueueConnectionResponse>();
+}
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

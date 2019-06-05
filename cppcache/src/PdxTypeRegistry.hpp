@@ -42,10 +42,7 @@ namespace client {
 
 struct PdxTypeLessThan {
   bool operator()(std::shared_ptr<PdxType> const& n1,
-                  std::shared_ptr<PdxType> const& n2) const {
-    // call to PdxType::operator <()
-    return *n1 < *n2;
-  }
+                  std::shared_ptr<PdxType> const& n2) const;
 };
 
 typedef std::map<int32_t, std::shared_ptr<PdxType>> TypeIdVsPdxType;
@@ -87,10 +84,10 @@ class APACHE_GEODE_EXPORT PdxTypeRegistry
   std::shared_ptr<CacheableHashMap> intToEnum;
 
  public:
-  explicit PdxTypeRegistry(CacheImpl* cache);
+   PdxTypeRegistry(CacheImpl* cache);
   PdxTypeRegistry(const PdxTypeRegistry& other) = delete;
 
-  virtual ~PdxTypeRegistry();
+  ~PdxTypeRegistry();
 
   // test hook
   size_t testNumberOfPreservedData() const;
@@ -121,17 +118,15 @@ class APACHE_GEODE_EXPORT PdxTypeRegistry
   int32_t getPDXIdForType(const std::string& type, Pool* pool,
                           std::shared_ptr<PdxType> nType, bool checkIfThere);
 
-  bool getPdxIgnoreUnreadFields() const { return pdxIgnoreUnreadFields; }
+  bool getPdxIgnoreUnreadFields() const;
 
-  void setPdxIgnoreUnreadFields(bool value) { pdxIgnoreUnreadFields = value; }
+  void setPdxIgnoreUnreadFields(bool value);
 
-  void setPdxReadSerialized(bool value) { pdxReadSerialized = value; }
+  void setPdxReadSerialized(bool value);
 
-  bool getPdxReadSerialized() const { return pdxReadSerialized; }
+  bool getPdxReadSerialized() const;
 
-  inline const PreservedHashMap& getPreserveDataMap() const {
-    return preserveData;
-  };
+  const PreservedHashMap& getPreserveDataMap() const;
 
   int32_t getEnumValue(std::shared_ptr<EnumInfo> ei);
 
@@ -139,9 +134,7 @@ class APACHE_GEODE_EXPORT PdxTypeRegistry
 
   int32_t getPDXIdForType(std::shared_ptr<PdxType> nType, Pool* pool);
 
-  ACE_RW_Thread_Mutex& getPreservedDataLock() const {
-    return g_preservedDataLock;
-  }
+  ACE_RW_Thread_Mutex& getPreservedDataLock() const;
 };
 
 }  // namespace client

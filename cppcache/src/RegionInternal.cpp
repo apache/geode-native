@@ -40,6 +40,62 @@ const CacheEventFlags CacheEventFlags::CACHE_CLOSE(
 const CacheEventFlags CacheEventFlags::NOCACHEWRITER(
     CacheEventFlags::GF_NOCACHEWRITER);
 
+CacheEventFlags::CacheEventFlags(const uint8_t flags) : m_flags(flags) {}
+
+CacheEventFlags CacheEventFlags::operator|(const CacheEventFlags& flags) const {
+  return CacheEventFlags(m_flags | flags.m_flags);
+}
+
+uint32_t CacheEventFlags::operator&(const CacheEventFlags& flags) const {
+  return (m_flags & flags.m_flags);
+}
+
+bool CacheEventFlags::operator==(const CacheEventFlags& flags) const {
+  return (m_flags == flags.m_flags);
+}
+
+bool CacheEventFlags::isNormal() const {
+  return (m_flags & GF_NORMAL) > 0 ? true : false;
+}
+
+bool CacheEventFlags::isLocal() const {
+  return (m_flags & GF_LOCAL) > 0 ? true : false;
+}
+
+bool CacheEventFlags::isNotification() const {
+  return (m_flags & GF_NOTIFICATION) > 0 ? true : false;
+}
+
+bool CacheEventFlags::isNotificationUpdate() const {
+  return (m_flags & GF_NOTIFICATION_UPDATE) > 0 ? true : false;
+}
+
+bool CacheEventFlags::isEviction() const {
+  return (m_flags & GF_EVICTION) > 0 ? true : false;
+}
+
+bool CacheEventFlags::isExpiration() const {
+  return (m_flags & GF_EXPIRATION) > 0 ? true : false;
+}
+
+bool CacheEventFlags::isCacheClose() const {
+  return (m_flags & GF_CACHE_CLOSE) > 0 ? true : false;
+}
+
+bool CacheEventFlags::isNoCacheWriter() const {
+  return (m_flags & GF_NOCACHEWRITER) > 0 ? true : false;
+}
+
+bool CacheEventFlags::isEvictOrExpire() const {
+  return (m_flags & (GF_EVICTION | GF_EXPIRATION)) > 0 ? true : false;
+}
+
+// special optimized method for CacheWriter invocation condition
+bool CacheEventFlags::invokeCacheWriter() const {
+  return ((m_flags & (GF_NOTIFICATION | GF_EVICTION | GF_EXPIRATION |
+                      GF_NOCACHEWRITER)) == 0x0);
+}
+
 RegionInternal::RegionInternal(CacheImpl* cacheImpl,
                                RegionAttributes attributes)
     : Region(cacheImpl), m_regionAttributes(attributes) {}
@@ -217,6 +273,20 @@ void RegionInternal::txPut(const std::shared_ptr<CacheableKey>&,
                            std::shared_ptr<VersionTag>) {
   throw UnsupportedOperationException(
       "txPut only supported by Thin Client Region.");
+}
+
+void RegionInternal::addDisMessToQueue() {}
+
+bool RegionInternal::isConcurrencyCheckEnabled() const {
+  return m_regionAttributes.getConcurrencyChecksEnabled();
+}
+
+bool RegionInternal::entryExpiryEnabled() const {
+  return m_regionAttributes.getEntryExpiryEnabled();
+}
+
+bool RegionInternal::regionExpiryEnabled() const {
+  return m_regionAttributes.getRegionExpiryEnabled();
 }
 }  // namespace client
 }  // namespace geode

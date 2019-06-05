@@ -45,7 +45,7 @@ class APACHE_GEODE_EXPORT CqQueryVsdStats : public CqStatistics {
                   const std::string& cqqueryName);
 
   /** disable stat collection for this item. */
-  virtual ~CqQueryVsdStats();
+  ~CqQueryVsdStats();
 
   void close() { m_cqQueryVsdStats->close(); }
 

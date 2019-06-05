@@ -1077,7 +1077,7 @@ class PutActions {
   static const bool s_failIfPresent = false;
   TXState* m_txState;
 
-  inline explicit PutActions(LocalRegion& region) : m_region(region) {
+  inline  PutActions(LocalRegion& region) : m_region(region) {
     m_txState = TSSTXStateWrapper::get().getTXState();
   }
 
@@ -1144,7 +1144,7 @@ class PutActions {
 // null values in Put during transaction. See defect #743
 class PutActionsTx : public PutActions {
  public:
-  inline explicit PutActionsTx(LocalRegion& region) : PutActions(region) {}
+  inline  PutActionsTx(LocalRegion& region) : PutActions(region) {}
   inline static GfErrType checkArgs(const std::shared_ptr<CacheableKey>& key,
                                     const std::shared_ptr<Cacheable>& /*value*/,
                                     DataInput* /*delta*/ = nullptr) {
@@ -1164,7 +1164,7 @@ class CreateActions {
   static const bool s_failIfPresent = true;
   TXState* m_txState;
 
-  inline explicit CreateActions(LocalRegion& region) : m_region(region) {
+  inline  CreateActions(LocalRegion& region) : m_region(region) {
     m_txState = TSSTXStateWrapper::get().getTXState();
   }
 
@@ -1227,7 +1227,7 @@ class DestroyActions {
   static const bool s_failIfPresent = false;
   TXState* m_txState;
 
-  inline explicit DestroyActions(LocalRegion& region) : m_region(region) {
+  inline  DestroyActions(LocalRegion& region) : m_region(region) {
     m_txState = TSSTXStateWrapper::get().getTXState();
   }
 
@@ -1341,7 +1341,7 @@ class RemoveActions {
   TXState* m_txState;
   bool allowNULLValue;
 
-  inline explicit RemoveActions(LocalRegion& region)
+  inline  RemoveActions(LocalRegion& region)
       : m_region(region), m_ServerResponse(GF_ENOENT) {
     m_txState = TSSTXStateWrapper::get().getTXState();
     allowNULLValue = false;
@@ -1535,7 +1535,7 @@ class RemoveActions {
 
 class RemoveActionsEx : public RemoveActions {
  public:
-  inline explicit RemoveActionsEx(LocalRegion& region) : RemoveActions(region) {
+  inline  RemoveActionsEx(LocalRegion& region) : RemoveActions(region) {
     allowNULLValue = true;
   }
 };
@@ -1549,7 +1549,7 @@ class InvalidateActions {
   static const bool s_failIfPresent = false;
   TXState* m_txState;
 
-  inline explicit InvalidateActions(LocalRegion& region) : m_region(region) {
+  inline  InvalidateActions(LocalRegion& region) : m_region(region) {
     m_txState = TSSTXStateWrapper::get().getTXState();
   }
 
@@ -3174,6 +3174,42 @@ void LocalRegion::updateStatOpTime(Statistics* statistics, int32_t statId,
 void LocalRegion::acquireGlobals(bool) {}
 
 void LocalRegion::releaseGlobals(bool) {}
+
+std::shared_ptr<PersistenceManager> LocalRegion::getPersistenceManager() {
+  return m_persistenceManager;
+}
+
+void LocalRegion::acquireReadLock() { m_rwLock.acquire_read(); }
+void LocalRegion::releaseReadLock() { m_rwLock.release(); }
+
+RegionStats* LocalRegion::getRegionStats() { return m_regionStats; }
+
+bool LocalRegion::cacheEnabled() {
+  return m_regionAttributes.getCachingEnabled();
+}
+
+bool LocalRegion::cachelessWithListener() {
+  return !m_regionAttributes.getCachingEnabled() && (m_listener != nullptr);
+}
+
+bool LocalRegion::isDestroyed() const { return m_destroyPending; }
+
+bool LocalRegion::getProcessedMarker() { return true; }
+
+EntriesMap* LocalRegion::getEntryMap() { return m_entries; }
+
+const std::shared_ptr<Pool>& LocalRegion::getPool() const {
+    return m_attachedPool;
+  }
+
+void LocalRegion::setPool(const std::shared_ptr<Pool>& p) { m_attachedPool = p; }
+
+TXState* LocalRegion::getTXState() const { return TSSTXStateWrapper::get().getTXState(); }
+
+bool LocalRegion::isLocalOp(const CacheEventFlags* eventFlags) {
+    return typeid(*this) == typeid(LocalRegion) ||
+           (eventFlags && eventFlags->isLocal());
+  }
 
 }  // namespace client
 }  // namespace geode

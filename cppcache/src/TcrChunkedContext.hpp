@@ -51,17 +51,11 @@ class TcrChunkedResult {
                            const CacheImpl* cacheImpl) = 0;
 
  public:
-  inline TcrChunkedResult()
-      : m_finalizeSema(nullptr),
-        m_ex(nullptr),
-        m_inSameThread(false),
-        m_dsmemId(0) {}
-  virtual ~TcrChunkedResult() {}
-  void setFinalizeSemaphore(ACE_Semaphore* finalizeSema) {
-    m_finalizeSema = finalizeSema;
-  }
-  virtual void setEndpointMemId(uint16_t dsmemId) { m_dsmemId = dsmemId; }
-  uint16_t getEndpointMemId() { return m_dsmemId; }
+  TcrChunkedResult();
+  virtual ~TcrChunkedResult();
+  void setFinalizeSemaphore(ACE_Semaphore* finalizeSema);
+  virtual void setEndpointMemId(uint16_t dsmemId);
+  uint16_t getEndpointMemId();
   /**
    * Any cleanup to be done before starting chunk processing, or after
    * failover to a new endpoint.
@@ -70,49 +64,29 @@ class TcrChunkedResult {
 
   void fireHandleChunk(const uint8_t* bytes, int32_t len,
                        uint8_t isLastChunkWithSecurity,
-                       const CacheImpl* cacheImpl) {
-    handleChunk(bytes, len, isLastChunkWithSecurity, cacheImpl);
-  }
+                       const CacheImpl* cacheImpl);
 
   /**
    * Send signal from chunk processor thread that processing of chunks
    * is complete
    */
-  virtual void finalize(bool inSamethread) {
-    if (inSamethread) {
-      m_inSameThread = true;
-      return;
-    }
-    if (m_finalizeSema != nullptr) {
-      m_finalizeSema->release();
-    } else {
-      throw NullPointerException("TcrChunkedResult::finalize: null semaphore");
-    }
-  }
+  virtual void finalize(bool inSamethread);
 
   /**
    * Wait for the chunk processor thread to complete processing
    * of the chunks
    */
-  virtual void waitFinalize() const {
-    if (m_inSameThread) return;
-    if (m_finalizeSema != nullptr) {
-      m_finalizeSema->acquire();
-    } else {
-      throw NullPointerException(
-          "TcrChunkedResult::waitFinalize: null semaphore");
-    }
-  }
+  virtual void waitFinalize() const;
 
   // getters/setters for the exception, if any, during chunk processing
 
-  inline bool exceptionOccurred() const { return (m_ex != nullptr); }
+  bool exceptionOccurred() const;
 
-  inline void setException(std::shared_ptr<Exception> ex) { m_ex = ex; }
+  void setException(std::shared_ptr<Exception> ex);
 
-  inline std::shared_ptr<Exception>& getException() { return m_ex; }
+  std::shared_ptr<Exception>& getException();
 
-  inline void clearException() { m_ex = nullptr; }
+  void clearException();
 };
 
 /**
@@ -128,52 +102,17 @@ class TcrChunkedContext {
   TcrChunkedResult* m_result;
 
  public:
-  inline TcrChunkedContext(const std::vector<uint8_t> chunk, int32_t len,
-                           TcrChunkedResult* result,
-                           uint8_t isLastChunkWithSecurity,
-                           const CacheImpl* cacheImpl)
-      : m_chunk(chunk),
-        m_len(len),
-        m_isLastChunkWithSecurity(isLastChunkWithSecurity),
-        m_cache(cacheImpl),
-        m_result(result) {}
+  TcrChunkedContext(const std::vector<uint8_t> chunk, int32_t len,
+                    TcrChunkedResult* result, uint8_t isLastChunkWithSecurity,
+                    const CacheImpl* cacheImpl);
 
-  inline ~TcrChunkedContext() = default;
+  ~TcrChunkedContext();
 
-  inline const uint8_t* getBytes() const { return m_chunk.data(); }
+  const uint8_t* getBytes() const;
 
-  inline size_t getLen() const { return m_chunk.size(); }
+  int32_t getLen() const;
 
-  void handleChunk(bool inSameThread) {
-    if (m_chunk.empty()) {
-      // this is the last chunk for some set of chunks
-      m_result->finalize(inSameThread);
-    } else if (!m_result->exceptionOccurred()) {
-      try {
-        m_result->fireHandleChunk(m_chunk.data(), m_len,
-                                  m_isLastChunkWithSecurity, m_cache);
-      } catch (Exception& ex) {
-        LOGERROR("HandleChunk error message %s, name = %s", ex.what(),
-                 ex.getName().c_str());
-        m_result->setException(std::make_shared<Exception>(ex));
-      } catch (std::exception& stdEx) {
-        std::string exMsg("HandleChunk exception:: ");
-        exMsg += stdEx.what();
-        LOGERROR("HandleChunk exception: %s", stdEx.what());
-        auto ex = std::make_shared<UnknownException>(exMsg.c_str());
-        m_result->setException(ex);
-      } catch (...) {
-        std::string exMsg("Unknown exception in ");
-        exMsg += Utils::demangleTypeName(typeid(*m_result).name());
-        exMsg +=
-            "::handleChunk while processing response, possible serialization "
-            "mismatch";
-        LOGERROR(exMsg.c_str());
-        auto ex = std::make_shared<UnknownException>(exMsg.c_str());
-        m_result->setException(ex);
-      }
-    }
-  }
+  void handleChunk(bool inSameThread);
 };
 }  // namespace client
 }  // namespace geode

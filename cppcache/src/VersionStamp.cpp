@@ -29,6 +29,32 @@ namespace apache {
 namespace geode {
 namespace client {
 
+VersionStamp::VersionStamp()
+    : m_memberID(0),
+      m_entryVersionHighByte(0),
+      m_entryVersionLowBytes(0),
+      m_regionVersionHighBytes(0),
+      m_regionVersionLowBytes(0) {}
+
+VersionStamp::VersionStamp(const VersionStamp& rhs)
+    : m_memberID(rhs.m_memberID),
+      m_entryVersionHighByte(rhs.m_entryVersionHighByte),
+      m_entryVersionLowBytes(rhs.m_entryVersionLowBytes),
+      m_regionVersionHighBytes(rhs.m_regionVersionHighBytes),
+      m_regionVersionLowBytes(rhs.m_regionVersionLowBytes) {}
+
+VersionStamp::~VersionStamp() {}
+
+VersionStamp& VersionStamp::operator=(const VersionStamp& rhs) {
+  if (this == &rhs) return *this;
+  this->m_memberID = rhs.m_memberID;
+  this->m_entryVersionHighByte = rhs.m_entryVersionHighByte;
+  this->m_entryVersionLowBytes = rhs.m_entryVersionLowBytes;
+  this->m_regionVersionHighBytes = rhs.m_regionVersionHighBytes;
+  this->m_regionVersionLowBytes = rhs.m_regionVersionLowBytes;
+  return *this;
+}
+
 void VersionStamp::setVersions(std::shared_ptr<VersionTag> versionTag) {
   int32_t eVersion = versionTag->getEntryVersion();
   m_entryVersionLowBytes = static_cast<uint16_t>(eVersion & 0xffff);

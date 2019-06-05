@@ -32,7 +32,7 @@ class DeleteObject {
   bool m_cond;
 
  public:
-  explicit DeleteObject(T*& p) : m_p(p), m_cond(true) {}
+  DeleteObject(T*& p) : m_p(p), m_cond(true) {}
 
   inline void noDelete() { m_cond = false; }
 
@@ -52,7 +52,7 @@ class DeleteArray {
   bool m_cond;
 
  public:
-  explicit DeleteArray(T*& p) : m_p(p), m_cond(true) {}
+  DeleteArray(T*& p) : m_p(p), m_cond(true) {}
 
   inline T operator[](int32_t index) { return m_p[index]; }
 

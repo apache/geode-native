@@ -42,7 +42,7 @@ class ThinClientPoolHADM : public ThinClientPoolDM {
                      TcrConnectionManager& connManager);
   ThinClientPoolHADM(const ThinClientPoolHADM&) = delete;
   ThinClientPoolHADM& operator=(const ThinClientPoolHADM&) = delete;
-  ~ThinClientPoolHADM() override { destroy(); }
+  ~ThinClientPoolHADM() override;
 
   void init() override;
 
@@ -84,7 +84,7 @@ class ThinClientPoolHADM : public ThinClientPoolDM {
 
   GfErrType sendRequestToPrimary(TcrMessage& request, TcrMessageReply& reply);
 
-  void triggerRedundancyThread() override { m_redundancySema.release(); }
+  void triggerRedundancyThread() override;
 
   bool isReadyForEvent() const;
 

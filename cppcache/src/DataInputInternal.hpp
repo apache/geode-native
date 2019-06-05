@@ -26,17 +26,13 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class DataInputInternal : public DataInput {
+class APACHE_GEODE_EXPORT DataInputInternal : public DataInput {
  public:
-  DataInputInternal(const uint8_t* buffer, size_t len)
-      : DataInput(buffer, len, nullptr, nullptr) {}
+  DataInputInternal(const uint8_t* buffer, size_t len);
 
-  DataInputInternal(const uint8_t* buffer, size_t len, const CacheImpl* cache)
-      : DataInput(buffer, len, cache, nullptr) {}
+  DataInputInternal(const uint8_t* buffer, size_t len, const CacheImpl* cache);
 
-  inline static Pool* getPool(const DataInput& dataInput) {
-    return dataInput.getPool();
-  }
+  static Pool* getPool(const DataInput& dataInput);
 };
 
 }  // namespace client

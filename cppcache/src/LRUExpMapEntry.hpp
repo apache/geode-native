@@ -36,27 +36,19 @@ class APACHE_GEODE_EXPORT LRUExpMapEntry : public MapEntryImpl,
                                            public LRUEntryProperties,
                                            public ExpEntryProperties {
  public:
-  virtual ~LRUExpMapEntry() {}
+  ~LRUExpMapEntry() override = default;
 
-  virtual LRUEntryProperties& getLRUProperties() { return *this; }
+  LRUEntryProperties& getLRUProperties() override;
 
-  virtual ExpEntryProperties& getExpProperties() { return *this; }
+  ExpEntryProperties& getExpProperties() override;
 
-  virtual void cleanup(const CacheEventFlags eventFlags) {
-    if (!eventFlags.isExpiration()) {
-      cancelExpiryTaskId(m_key);
-    }
-  }
+  void cleanup(const CacheEventFlags eventFlags) override;
 
  protected:
-  inline explicit LRUExpMapEntry(bool)
-      : MapEntryImpl(true),
-        LRUEntryProperties(true),
-        ExpEntryProperties(true) {}
+   LRUExpMapEntry(bool);
 
-  inline LRUExpMapEntry(ExpiryTaskManager* expiryTaskManager,
-                        const std::shared_ptr<CacheableKey>& key)
-      : MapEntryImpl(key), ExpEntryProperties(expiryTaskManager) {}
+  LRUExpMapEntry(ExpiryTaskManager* expiryTaskManager,
+                        const std::shared_ptr<CacheableKey>& key);
 
  private:
   // disabled
@@ -67,16 +59,15 @@ class APACHE_GEODE_EXPORT LRUExpMapEntry : public MapEntryImpl,
 class APACHE_GEODE_EXPORT VersionedLRUExpMapEntry : public LRUExpMapEntry,
                                                     public VersionStamp {
  public:
-  virtual ~VersionedLRUExpMapEntry() {}
+  ~VersionedLRUExpMapEntry() override = default;
 
-  virtual VersionStamp& getVersionStamp() { return *this; }
+  VersionStamp& getVersionStamp() override;
 
  protected:
-  inline explicit VersionedLRUExpMapEntry(bool) : LRUExpMapEntry(true) {}
+   VersionedLRUExpMapEntry(bool);
 
-  inline VersionedLRUExpMapEntry(ExpiryTaskManager* expiryTaskManager,
-                                 const std::shared_ptr<CacheableKey>& key)
-      : LRUExpMapEntry(expiryTaskManager, key) {}
+  VersionedLRUExpMapEntry(ExpiryTaskManager* expiryTaskManager,
+                                 const std::shared_ptr<CacheableKey>& key);
 
  private:
   // disabled
@@ -88,11 +79,11 @@ class APACHE_GEODE_EXPORT LRUExpEntryFactory : public EntryFactory {
  public:
   using EntryFactory::EntryFactory;
 
-  virtual ~LRUExpEntryFactory() {}
+  ~LRUExpEntryFactory() override = default;
 
-  virtual void newMapEntry(ExpiryTaskManager* expiryTaskManager,
+  void newMapEntry(ExpiryTaskManager* expiryTaskManager,
                            const std::shared_ptr<CacheableKey>& key,
-                           std::shared_ptr<MapEntryImpl>& result) const;
+                           std::shared_ptr<MapEntryImpl>& result) const override;
 };
 }  // namespace client
 }  // namespace geode

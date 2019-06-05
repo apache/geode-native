@@ -22,6 +22,33 @@
 namespace apache {
 namespace geode {
 namespace client {
+std::size_t EventSource::hash::operator()(const EventSource &val) const {
+  return val.hashcode();
+}
+
+std::size_t EventSource::hash::operator()(const EventSource *val) const {
+  return val->hashcode();
+}
+
+std::size_t EventSource::hash::operator()(
+    const std::shared_ptr<EventSource> &val) const {
+  return val->hashcode();
+}
+
+bool EventSource::equal_to::operator()(const EventSource &lhs,
+                        const EventSource &rhs) const {
+  return lhs == rhs;
+}
+
+bool EventSource::equal_to::operator()(const EventSource *lhs,
+                        const EventSource *rhs) const {
+  return (*lhs) == (*rhs);
+}
+
+bool EventSource::equal_to::operator()(const std::shared_ptr<EventSource> &lhs,
+                        const std::shared_ptr<EventSource> &rhs) const {
+  return (*lhs) == (*rhs);
+}
 
 EventSource::EventSource(const char* memId, int32_t memIdLen, int64_t thrId) {
   init();

@@ -53,22 +53,18 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
   ClientProxyMembershipID(uint8_t* hostAddr, uint32_t hostAddrLen,
                           uint32_t hostPort, const char* dsname,
                           const char* uniqueTag, uint32_t vmViewId);
-  // ClientProxyMembershipID(const char *durableClientId = nullptr, const
-  // uint32_t durableClntTimeOut = 0);
   ClientProxyMembershipID();
-  ~ClientProxyMembershipID() noexcept override;
+  ~ClientProxyMembershipID() override;
   static void increaseSynchCounter();
-  static std::shared_ptr<Serializable> createDeserializable() {
-    return std::make_shared<ClientProxyMembershipID>();
-  }
+  static std::shared_ptr<Serializable> createDeserializable();
   // Do an empty check on the returned value. Only use after handshake is done.
   const std::string& getDSMemberIdForThinClientUse();
 
   // Serializable interface:
   void toData(DataOutput& output) const override;
   void fromData(DataInput& input) override;
-  DSFid getDSFID() const override { return DSFid::InternalDistributedMember; }
-  size_t objectSize() const override { return 0; }
+  DSFid getDSFID() const override;
+  size_t objectSize() const override;
 
   void initObjectVars(const char* hostname, uint8_t* hostAddr,
                       uint32_t hostAddrLen, bool hostAddrLocalMem,
@@ -78,31 +74,16 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
                       int8_t splitBrainFlag, const char* dsname,
                       const char* uniqueTag, uint32_t vmViewId);
 
-  std::string getDSName() const { return m_dsname; }
-  std::string getUniqueTag() const { return m_uniqueTag; }
-  uint8_t* getHostAddr() const { return m_hostAddr; }
-  uint32_t getHostAddrLen() const { return m_hostAddrLen; }
-  uint32_t getHostPort() const { return m_hostPort; }
+  std::string getDSName() const;
+  std::string getUniqueTag() const;
+  uint8_t* getHostAddr() const;
+  uint32_t getHostAddrLen() const;
+  uint32_t getHostPort() const;
   std::string getHashKey() override;
   int16_t compareTo(const DSMemberForVersionStamp&) const override;
-  int32_t hashcode() const override {
-    uint32_t result = 0;
-    char hostInfo[255] = {0};
-    uint32_t offset = 0;
-    for (uint32_t i = 0; i < getHostAddrLen(); i++) {
-      offset +=
-          std::snprintf(hostInfo + offset, 255 - offset, ":%x", m_hostAddr[i]);
-    }
-    result +=
-        internal::geode_hash<std::string>{}(std::string(hostInfo, offset));
-    result += m_hostPort;
-    return result;
-  }
+  int32_t hashcode() const override;
 
-  bool operator==(const CacheableKey& other) const override {
-    return (this->compareTo(
-                dynamic_cast<const DSMemberForVersionStamp&>(other)) == 0);
-  }
+  bool operator==(const CacheableKey& other) const override;
 
   Serializable* readEssentialData(DataInput& input);
 

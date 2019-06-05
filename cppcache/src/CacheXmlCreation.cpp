@@ -65,6 +65,11 @@ CacheXmlCreation::CacheXmlCreation()
   m_pdxIgnoreUnreadFields = false;
   m_readPdxSerialized = false;
 }
+
+bool CacheXmlCreation::getPdxIgnoreUnreadField() { return m_pdxIgnoreUnreadFields; }
+
+bool CacheXmlCreation::getPdxReadSerialized() { return m_readPdxSerialized; }
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

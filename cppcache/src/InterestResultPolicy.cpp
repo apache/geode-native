@@ -26,6 +26,10 @@ InterestResultPolicy InterestResultPolicy::NONE;
 InterestResultPolicy InterestResultPolicy::KEYS;
 InterestResultPolicy InterestResultPolicy::KEYS_VALUES;
 
+char InterestResultPolicy::getOrdinal() { return ordinal; }
+
+InterestResultPolicy::InterestResultPolicy() { ordinal = nextOrdinal++; }
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

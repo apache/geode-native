@@ -55,7 +55,7 @@ class CacheEventFlags {
   static const uint8_t GF_CACHE_CLOSE = 0x40;
   static const uint8_t GF_NOCACHEWRITER = 0x80;
 
-  inline explicit CacheEventFlags(const uint8_t flags) : m_flags(flags) {}
+   CacheEventFlags(const uint8_t flags);
 
  public:
   static const CacheEventFlags NORMAL;
@@ -67,64 +67,37 @@ class CacheEventFlags {
   static const CacheEventFlags CACHE_CLOSE;
   static const CacheEventFlags NOCACHEWRITER;
 
-  inline CacheEventFlags(const CacheEventFlags& flags) = default;
+  CacheEventFlags(const CacheEventFlags& flags) = default;
 
   CacheEventFlags() = delete;
   CacheEventFlags& operator=(const CacheEventFlags&) = delete;
 
-  inline CacheEventFlags operator|(const CacheEventFlags& flags) const {
-    return CacheEventFlags(m_flags | flags.m_flags);
-  }
+  CacheEventFlags operator|(const CacheEventFlags& flags) const;
 
-  inline uint32_t operator&(const CacheEventFlags& flags) const {
-    return (m_flags & flags.m_flags);
-  }
+  uint32_t operator&(const CacheEventFlags& flags) const;
 
-  inline bool operator==(const CacheEventFlags& flags) const {
-    return (m_flags == flags.m_flags);
-  }
+  bool operator==(const CacheEventFlags& flags) const;
 
-  inline bool isNormal() const {
-    return (m_flags & GF_NORMAL) > 0 ? true : false;
-  }
+  bool isNormal() const;
 
-  inline bool isLocal() const {
-    return (m_flags & GF_LOCAL) > 0 ? true : false;
-  }
+  bool isLocal() const;
 
-  inline bool isNotification() const {
-    return (m_flags & GF_NOTIFICATION) > 0 ? true : false;
-  }
+  bool isNotification() const;
 
-  inline bool isNotificationUpdate() const {
-    return (m_flags & GF_NOTIFICATION_UPDATE) > 0 ? true : false;
-  }
+  bool isNotificationUpdate() const;
 
-  inline bool isEviction() const {
-    return (m_flags & GF_EVICTION) > 0 ? true : false;
-  }
+  bool isEviction() const;
 
-  inline bool isExpiration() const {
-    return (m_flags & GF_EXPIRATION) > 0 ? true : false;
-  }
+  bool isExpiration() const;
 
-  inline bool isCacheClose() const {
-    return (m_flags & GF_CACHE_CLOSE) > 0 ? true : false;
-  }
+  bool isCacheClose() const;
 
-  inline bool isNoCacheWriter() const {
-    return (m_flags & GF_NOCACHEWRITER) > 0 ? true : false;
-  }
+  bool isNoCacheWriter() const;
 
-  inline bool isEvictOrExpire() const {
-    return (m_flags & (GF_EVICTION | GF_EXPIRATION)) > 0 ? true : false;
-  }
+  bool isEvictOrExpire() const;
 
   // special optimized method for CacheWriter invocation condition
-  inline bool invokeCacheWriter() const {
-    return ((m_flags & (GF_NOTIFICATION | GF_EVICTION | GF_EXPIRATION |
-                        GF_NOCACHEWRITER)) == 0x0);
-  }
+  bool invokeCacheWriter() const;
 };
 
 class TombstoneList;
@@ -141,7 +114,7 @@ class RegionInternal : public Region {
   RegionInternal(const RegionInternal&) = delete;
   RegionInternal& operator=(const RegionInternal&) = delete;
 
-  ~RegionInternal() noexcept override;
+  ~RegionInternal() override;
 
   void registerKeys(const std::vector<std::shared_ptr<CacheableKey>>& keys,
                     bool isDurable = false, bool getInitialValues = false,
@@ -271,7 +244,7 @@ class RegionInternal : public Region {
   std::shared_ptr<RegionEntry> createRegionEntry(
       const std::shared_ptr<CacheableKey>& key,
       const std::shared_ptr<Cacheable>& value);
-  virtual void addDisMessToQueue(){};
+  virtual void addDisMessToQueue();
 
   virtual void txDestroy(const std::shared_ptr<CacheableKey>& key,
                          const std::shared_ptr<Serializable>& callBack,
@@ -283,9 +256,7 @@ class RegionInternal : public Region {
                      const std::shared_ptr<Cacheable>& value,
                      const std::shared_ptr<Serializable>& callBack,
                      std::shared_ptr<VersionTag> versionTag);
-  inline bool isConcurrencyCheckEnabled() const {
-    return m_regionAttributes.getConcurrencyChecksEnabled();
-  }
+  bool isConcurrencyCheckEnabled() const;
   const std::shared_ptr<Pool>& getPool() const override = 0;
 
  protected:
@@ -318,13 +289,9 @@ class RegionInternal : public Region {
 
   RegionAttributes m_regionAttributes;
 
-  inline bool entryExpiryEnabled() const {
-    return m_regionAttributes.getEntryExpiryEnabled();
-  }
+  bool entryExpiryEnabled() const;
 
-  inline bool regionExpiryEnabled() const {
-    return m_regionAttributes.getRegionExpiryEnabled();
-  }
+  bool regionExpiryEnabled() const;
 };
 
 }  // namespace client

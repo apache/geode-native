@@ -44,12 +44,7 @@ class APACHE_GEODE_EXPORT LRUAction {
   bool m_distributes;
   bool m_overflows;
 
-  LRUAction() {
-    m_invalidates = false;
-    m_destroys = false;
-    m_distributes = false;
-    m_overflows = false;
-  }
+  LRUAction();
 
  public:
   // types of action
@@ -77,19 +72,19 @@ class APACHE_GEODE_EXPORT LRUAction {
                                  RegionInternal* regionPtr,
                                  LRUEntriesMap* entriesMapPtr);
 
-  virtual ~LRUAction() {}
+  virtual ~LRUAction();
 
   virtual bool evict(const std::shared_ptr<MapEntryImpl>& mePtr) = 0;
 
   virtual LRUAction::Action getType() = 0;
 
-  inline bool invalidates() { return m_invalidates; }
+  bool invalidates();
 
-  inline bool destroys() { return m_destroys; }
+  bool destroys();
 
-  inline bool distributes() { return m_distributes; }
+  bool distributes();
 
-  inline bool overflows() { return m_overflows; }
+  bool overflows();
 };
 
 /**
@@ -99,32 +94,14 @@ class APACHE_GEODE_EXPORT LRUDestroyAction : public virtual LRUAction {
  private:
   RegionInternal* m_regionPtr;
 
-  explicit LRUDestroyAction(RegionInternal* regionPtr)
-      : m_regionPtr(regionPtr) {
-    m_destroys = true;
-    m_distributes = true;
-  }
+   LRUDestroyAction(RegionInternal* regionPtr);
 
  public:
-  virtual ~LRUDestroyAction() = default;
+  ~LRUDestroyAction() override = default;
 
-  virtual bool evict(const std::shared_ptr<MapEntryImpl>& mePtr) {
-    std::shared_ptr<CacheableKey> keyPtr;
-    mePtr->getKeyI(keyPtr);
-    std::shared_ptr<VersionTag> versionTag;
-    //  we should invoke the destroyNoThrow with appropriate
-    // flags to correctly invoke listeners
-    LOGDEBUG("LRUDestroy: evicting entry with key [%s]",
-             Utils::nullSafeToString(keyPtr).c_str());
-    GfErrType err = GF_NOERR;
-    if (!m_regionPtr->isDestroyed()) {
-      err = m_regionPtr->destroyNoThrow(keyPtr, nullptr, -1,
-                                        CacheEventFlags::EVICTION, versionTag);
-    }
-    return (err == GF_NOERR);
-  }
+  bool evict(const std::shared_ptr<MapEntryImpl>& mePtr) override;
 
-  virtual LRUAction::Action getType() { return LRUAction::DESTROY; }
+  LRUAction::Action getType() override;
 
   friend class LRUAction;
 };
@@ -136,17 +113,14 @@ class APACHE_GEODE_EXPORT LRULocalInvalidateAction : public virtual LRUAction {
  private:
   RegionInternal* m_regionPtr;
 
-  explicit LRULocalInvalidateAction(RegionInternal* regionPtr)
-      : m_regionPtr(regionPtr) {
-    m_invalidates = true;
-  }
+   LRULocalInvalidateAction(RegionInternal* regionPtr);
 
  public:
-  virtual ~LRULocalInvalidateAction() = default;
+  ~LRULocalInvalidateAction() override = default;
 
-  virtual bool evict(const std::shared_ptr<MapEntryImpl>& mePtr);
+  bool evict(const std::shared_ptr<MapEntryImpl>& mePtr) override;
 
-  virtual LRUAction::Action getType() { return LRUAction::LOCAL_INVALIDATE; }
+  LRUAction::Action getType() override;
 
   friend class LRUAction;
 };
@@ -160,17 +134,14 @@ class APACHE_GEODE_EXPORT LRUOverFlowToDiskAction : public virtual LRUAction {
   LRUEntriesMap* m_entriesMapPtr;
 
   LRUOverFlowToDiskAction(RegionInternal* regionPtr,
-                          LRUEntriesMap* entriesMapPtr)
-      : m_regionPtr(regionPtr), m_entriesMapPtr(entriesMapPtr) {
-    m_overflows = true;
-  }
+                          LRUEntriesMap* entriesMapPtr);
 
  public:
-  virtual ~LRUOverFlowToDiskAction() {}
+  ~LRUOverFlowToDiskAction() override = default;
 
-  virtual bool evict(const std::shared_ptr<MapEntryImpl>& mePtr);
+  bool evict(const std::shared_ptr<MapEntryImpl>& mePtr) override;
 
-  virtual LRUAction::Action getType() { return LRUAction::OVERFLOW_TO_DISK; }
+  LRUAction::Action getType() override;
 
   friend class LRUAction;
 };

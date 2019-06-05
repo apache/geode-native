@@ -60,26 +60,9 @@ class BucketStatus {
 
  public:
   BucketStatus() = default;
-  bool isTimedoutAndReset(std::chrono::milliseconds millis) {
-    if (m_lastTimeout == m_noTimeout) {
-      return false;
-    } else {
-      auto timeout = m_lastTimeout + millis;
-      if (timeout > clock::now()) {
-        return true;  // timeout as buckste not recovered yet
-      } else {
-        // reset to zero as we waited enough to recover bucket
-        m_lastTimeout = m_noTimeout;
-        return false;
-      }
-    }
-  }
+  bool isTimedoutAndReset(std::chrono::milliseconds millis);
 
-  void setTimeout() {
-    if (m_lastTimeout == m_noTimeout) {
-      m_lastTimeout = clock::now();  // set once only for timeout
-    }
-  }
+  void setTimeout();
 };
 
 class PRbuckets {
@@ -87,23 +70,19 @@ class PRbuckets {
   BucketStatus* m_buckets;
 
  public:
-  explicit PRbuckets(int32_t nBuckets) {
-    m_buckets = new BucketStatus[nBuckets];
-  }
-  ~PRbuckets() { delete[] m_buckets; }
+   PRbuckets(int32_t nBuckets);
+  ~PRbuckets();
 
-  bool isBucketTimedOut(int32_t bucketId, std::chrono::milliseconds millis) {
-    return m_buckets[bucketId].isTimedoutAndReset(millis);
-  }
+  bool isBucketTimedOut(int32_t bucketId, std::chrono::milliseconds millis);
 
-  void setBucketTimeout(int32_t bucketId) { m_buckets[bucketId].setTimeout(); }
+  void setBucketTimeout(int32_t bucketId);
 };
 
 class ClientMetadataService : private NonCopyable, private NonAssignable {
  public:
   ClientMetadataService() = delete;
-  explicit ClientMetadataService(ThinClientPoolDM* pool);
-  inline ~ClientMetadataService() noexcept = default;
+   ClientMetadataService(ThinClientPoolDM* pool);
+  ~ClientMetadataService() = default;
 
   void start();
 

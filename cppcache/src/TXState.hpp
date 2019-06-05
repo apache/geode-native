@@ -34,36 +34,32 @@ namespace client {
 class ThinClientPoolDM;
 class TXState {
  public:
-  explicit TXState(CacheImpl* cacheImpl);
+   TXState(CacheImpl* cacheImpl);
   virtual ~TXState();
 
   TXId& getTransactionId();
-  bool isDirty() { return m_dirty; }
-  void setDirty() { m_dirty = true; }
-  bool isReplay() { return m_replay; }
-  bool isPrepared() { return m_prepared; }
-  void setPrepared() { m_prepared = true; }
+  bool isDirty();
+  void setDirty();
+  bool isReplay();
+  bool isPrepared();
+  void setPrepared();
   std::shared_ptr<Cacheable> replay(bool isRollback);
   void releaseStickyConnection();
 
   // This variable is used only when the transaction is suspended and resumed.
   // For using this variable somewhere else, care needs to be taken
-  std::string getEPStr() { return epNameStr; }
-  void setEPStr(std::string ep) { epNameStr = ep; }
+  std::string getEPStr();
+  void setEPStr(std::string ep);
 
-  ThinClientPoolDM* getPoolDM() { return m_pooldm; }
-  void setPoolDM(ThinClientPoolDM* dm) { m_pooldm = dm; }
+  ThinClientPoolDM* getPoolDM();
+  void setPoolDM(ThinClientPoolDM* dm);
   void setSuspendedExpiryTaskId(
-      ExpiryTaskManager::id_type suspendedExpiryTaskId) {
-    m_suspendedExpiryTaskId = suspendedExpiryTaskId;
-  }
-  ExpiryTaskManager::id_type getSuspendedExpiryTaskId() {
-    return m_suspendedExpiryTaskId;
-  }
+      ExpiryTaskManager::id_type suspendedExpiryTaskId);
+  ExpiryTaskManager::id_type getSuspendedExpiryTaskId();
 
  private:
-  void startReplay() { m_replay = true; };
-  void endReplay() { m_replay = false; };
+  void startReplay();
+  void endReplay();
 
  private:
   TXId m_txId;
@@ -87,10 +83,8 @@ class TXState {
   ExpiryTaskManager::id_type m_suspendedExpiryTaskId;
   class ReplayControl {
    public:
-    explicit ReplayControl(TXState* txState) : m_txState(txState) {
-      m_txState->startReplay();
-    };
-    virtual ~ReplayControl() { m_txState->endReplay(); };
+     ReplayControl(TXState* txState);
+    virtual ~ReplayControl();
 
    private:
     TXState* m_txState;

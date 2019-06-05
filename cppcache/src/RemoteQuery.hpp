@@ -51,7 +51,7 @@ class APACHE_GEODE_EXPORT RemoteQuery : public Query {
               ThinClientBaseDM* tccdmptr,
               AuthenticatedView* authenticatedView = nullptr);
 
-  ~RemoteQuery() noexcept override = default;
+  ~RemoteQuery() override = default;
 
   std::shared_ptr<SelectResults> execute(
       std::chrono::milliseconds timeout =

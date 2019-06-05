@@ -67,7 +67,7 @@ class EvictionController {
   EvictionController(size_t maxHeapSize, int32_t heapSizeDelta,
                      CacheImpl* cache);
 
-  inline ~EvictionController() noexcept = default;
+  ~EvictionController() = default;
 
   void start();
 

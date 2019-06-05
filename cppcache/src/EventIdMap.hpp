@@ -67,7 +67,7 @@ class APACHE_GEODE_EXPORT EventIdMap {
   EventIdMap &operator=(const EventIdMap &);
 
  public:
-  EventIdMap() : m_expiry(0){};
+  EventIdMap();
 
   void clear();
 
@@ -143,7 +143,7 @@ class APACHE_GEODE_EXPORT EventSequence {
   void clear();
 
   EventSequence();
-  explicit EventSequence(int64_t seqNum);
+   EventSequence(int64_t seqNum);
   ~EventSequence();
 
   // update deadline

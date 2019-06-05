@@ -100,6 +100,20 @@ GfErrType TcrHADistributionManager::sendSyncRequestRegisterInterest(
       request, reply, attemptFailover, endpoint, this, m_region);
 }
 
+ThinClientRegion* TcrHADistributionManager::getRegion() { return m_region; }
+
+void TcrHADistributionManager::acquireRedundancyLock() {
+  m_connManager.acquireRedundancyLock();
+}
+
+void TcrHADistributionManager::releaseRedundancyLock() {
+  m_connManager.releaseRedundancyLock();
+}
+
+GfErrType TcrHADistributionManager::sendRequestToPrimary(
+    TcrMessage& request, TcrMessageReply& reply) {
+  return m_theTcrConnManager.sendRequestToPrimary(request, reply);
+}
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

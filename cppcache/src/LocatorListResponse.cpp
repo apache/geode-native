@@ -27,6 +27,8 @@ namespace client {
 
 using internal::DSFid;
 
+LocatorListResponse::LocatorListResponse() : m_isBalanced(false) {}
+
 void LocatorListResponse::fromData(DataInput& input) {
   readList(input);
   m_isBalanced = input.readBoolean();

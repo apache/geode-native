@@ -20,11 +20,18 @@
 namespace apache {
 namespace geode {
 namespace client {
+EntriesMap::EntriesMap(std::unique_ptr<EntryFactory> entryFactory)
+      : m_entryFactory(std::move(entryFactory)) {}
+EntriesMap::~EntriesMap() {}
 
 std::shared_ptr<Cacheable> EntriesMap::getFromDisk(
     const std::shared_ptr<CacheableKey>&,
     std::shared_ptr<MapEntryImpl>&) const {
   return nullptr;
+}
+
+const EntryFactory* EntriesMap::getEntryFactory() const {
+  return m_entryFactory.get();
 }
 
 }  // namespace client

@@ -52,21 +52,17 @@ class APACHE_GEODE_EXPORT ConcurrentEntriesMap : public EntriesMap {
    * be stored.
    */
   virtual MapSegment* segmentFor(
-      const std::shared_ptr<CacheableKey>& key) const {
-    return &(m_segments[segmentIdx(key)]);
-  }
+      const std::shared_ptr<CacheableKey>& key) const;
 
   /**
    * Return the segment index number for the given key.
    */
-  inline int segmentIdx(const std::shared_ptr<CacheableKey>& key) const {
-    return segmentIdx(key->hashcode());
-  }
+  int segmentIdx(const std::shared_ptr<CacheableKey>& key) const;
 
   /**
    * Return the segment index number for the given hash.
    */
-  inline int segmentIdx(uint32_t hash) const { return (hash % m_concurrency); }
+  int segmentIdx(uint32_t hash) const;
 
  public:
   /**
@@ -84,7 +80,7 @@ class APACHE_GEODE_EXPORT ConcurrentEntriesMap : public EntriesMap {
 
   virtual void close();
 
-  virtual ~ConcurrentEntriesMap();
+  ~ConcurrentEntriesMap() override;
 
   virtual void clear();
 

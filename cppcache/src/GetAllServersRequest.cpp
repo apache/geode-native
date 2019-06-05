@@ -20,6 +20,14 @@
 namespace apache {
 namespace geode {
 namespace client {
+GetAllServersRequest::GetAllServersRequest(const std::string& serverGroup)
+    : Serializable() {
+  m_serverGroup = CacheableString::create(serverGroup);
+}
+
+size_t GetAllServersRequest::objectSize() const {
+  return sizeof(GetAllServersRequest) + m_serverGroup->objectSize();
+}
 
 void GetAllServersRequest::toData(DataOutput& output) const {
   output.writeObject(m_serverGroup);

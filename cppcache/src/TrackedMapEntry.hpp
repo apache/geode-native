@@ -30,53 +30,36 @@ class TrackedMapEntry final : public MapEntry {
  public:
   // Constructor should be invoked only when starting the tracking
   // of a MapEntry, so m_trackingNumber is initialized with 1.
-  inline TrackedMapEntry(const std::shared_ptr<MapEntryImpl>& entry,
-                         int trackingNumber, int updateCount)
-      : m_entry(const_cast<std::shared_ptr<MapEntryImpl>&>(entry)),
-        m_trackingNumber(trackingNumber),
-        m_updateCount(updateCount) {}
+  TrackedMapEntry(const std::shared_ptr<MapEntryImpl>& entry,
+                         int trackingNumber, int updateCount);
 
-  virtual ~TrackedMapEntry() {}
+  ~TrackedMapEntry() override;
 
-  std::shared_ptr<MapEntryImpl> getImplPtr() final { return m_entry; }
+  std::shared_ptr<MapEntryImpl> getImplPtr();
 
-  int addTracker(std::shared_ptr<MapEntry>&) final {
-    ++m_trackingNumber;
-    return m_updateCount;
-  }
+  int addTracker(std::shared_ptr<MapEntry>&);
 
-  std::pair<bool, int> removeTracker() final {
-    if (m_trackingNumber > 0) {
-      --m_trackingNumber;
-    }
-    if (m_trackingNumber == 0) {
-      m_updateCount = 0;
-      return std::make_pair(true, 0);
-    }
-    return std::make_pair(false, m_trackingNumber);
-  }
+  std::pair<bool, int> removeTracker();
 
-  int incrementUpdateCount(std::shared_ptr<MapEntry>&) final {
-    return ++m_updateCount;
-  }
+  int incrementUpdateCount(std::shared_ptr<MapEntry>&);
 
-  int getTrackingNumber() const final { return m_trackingNumber; }
+  int getTrackingNumber() const;
 
-  int getUpdateCount() const final { return m_updateCount; }
+  int getUpdateCount() const;
 
-  void getKey(std::shared_ptr<CacheableKey>& result) const final;
+  void getKey(std::shared_ptr<CacheableKey>& result) const;
 
-  void getValue(std::shared_ptr<Cacheable>& result) const final;
+  void getValue(std::shared_ptr<Cacheable>& result) const;
 
-  void setValue(const std::shared_ptr<Cacheable>& value) final;
+  void setValue(const std::shared_ptr<Cacheable>& value);
 
-  LRUEntryProperties& getLRUProperties() final;
+  LRUEntryProperties& getLRUProperties();
 
-  ExpEntryProperties& getExpProperties() final;
+  ExpEntryProperties& getExpProperties();
 
-  VersionStamp& getVersionStamp() final;
+  VersionStamp& getVersionStamp();
 
-  void cleanup(const CacheEventFlags eventFlags) final;
+  void cleanup(const CacheEventFlags eventFlags);
 
  private:
   std::shared_ptr<MapEntryImpl> m_entry;

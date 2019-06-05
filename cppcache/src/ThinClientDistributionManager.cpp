@@ -425,6 +425,18 @@ GfErrType ThinClientDistributionManager::sendRequestToEP(
   return error;
 }
 
+void ThinClientDistributionManager::acquireFailoverLock() {
+  m_endpointsLock.lock();
+}
+
+void ThinClientDistributionManager::releaseFailoverLock() {
+  m_endpointsLock.unlock();
+}
+
+TcrEndpoint* ThinClientDistributionManager::getActiveEndpoint() {
+  return m_endpoints[m_activeEndpoint];
+}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

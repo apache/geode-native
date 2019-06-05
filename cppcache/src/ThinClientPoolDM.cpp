@@ -2149,7 +2149,7 @@ void ThinClientPoolDM::setThreadLocalConnection(TcrConnection* conn) {
   m_manager->addStickyConnection(conn);
 }
 
-inline bool ThinClientPoolDM::hasExpired(TcrConnection* conn) {
+bool ThinClientPoolDM::hasExpired(TcrConnection* conn) {
   return conn->hasExpired(getLoadConditioningInterval());
 }
 
@@ -2556,6 +2556,134 @@ OnRegionFunctionExecution::OnRegionFunctionExecution(
   m_reply->setChunkedResultHandler(m_resultCollector);
   m_reply->setTimeout(m_timeout);
   m_reply->setDM(m_poolDM);
+}
+
+const std::string& ThinClientPoolDM::getName() const { return m_poolName; }
+
+ClientProxyMembershipID* ThinClientPoolDM::getMembershipId() {
+  return m_memId.get();
+}
+
+void ThinClientPoolDM::processMarker() {}
+
+ACE_Recursive_Thread_Mutex& ThinClientPoolDM::getPoolLock() {
+  return getQueueLock();
+}
+
+ThinClientLocatorHelper* ThinClientPoolDM::getLocatorHelper() {
+  return m_locHelper;
+}
+
+void ThinClientPoolDM::setStickyNull(bool isBGThread) {
+  if (!isBGThread) m_manager->setStickyConnection(nullptr, false);
+}
+
+bool ThinClientPoolDM::isSecurityOn() {
+  return m_isSecurityOn || m_isMultiUserMode;
+}
+
+bool ThinClientPoolDM::isMultiUserMode() { return m_isMultiUserMode; }
+
+PoolStats& ThinClientPoolDM::getStats() { return *m_stats; }
+
+size_t ThinClientPoolDM::getNumberOfEndPoints() const {
+  return m_endpoints.size();
+}
+
+bool ThinClientPoolDM::isSticky() { return m_sticky; }
+
+ClientMetadataService* ThinClientPoolDM::getClientMetaDataService() {
+  return m_clientMetadataService.get();
+}
+
+void ThinClientPoolDM::setPrimaryServerQueueSize(int queueSize) {
+  m_primaryServerQueueSize = queueSize;
+}
+
+int ThinClientPoolDM::getPrimaryServerQueueSize() const {
+  return m_primaryServerQueueSize;
+}
+
+TcrConnection* ThinClientPoolDM::getUntil(
+    std::chrono::microseconds& sec, GfErrType* error,
+    std::set<ServerLocation>& excludeServers, bool& maxConnLimit) {
+  bool isClosed;
+  TcrConnection* mp =
+      getNoGetLock(isClosed, error, excludeServers, maxConnLimit);
+
+  if (mp == nullptr && !isClosed) {
+    mp = getUntilWithToken(sec, isClosed, &excludeServers);
+  }
+
+  return mp;
+}
+
+void ThinClientPoolDM::deleteAction() { removeEPConnections(1); }
+
+void ThinClientPoolDM::removeCallbackConnection(TcrEndpoint*) {}
+
+FunctionExecution::FunctionExecution() {
+  m_poolDM = nullptr;
+  m_ep = nullptr;
+  m_func = nullptr;
+  m_getResult = 0;
+  m_error = GF_NOERR;
+  m_rc = nullptr;
+  m_resultCollectorLock = nullptr;
+  m_userAttr = nullptr;
+}
+
+FunctionExecution::~FunctionExecution() {}
+
+std::shared_ptr<CacheableString> FunctionExecution::getException() {
+  return exceptionPtr;
+}
+
+void FunctionExecution::setParameters(
+    const char* func, uint8_t getResult, std::chrono::milliseconds timeout,
+    std::shared_ptr<Cacheable> args, TcrEndpoint* ep, ThinClientPoolDM* poolDM,
+    const std::shared_ptr<std::recursive_mutex>& rCL,
+    std::shared_ptr<ResultCollector>* rs,
+    std::shared_ptr<UserAttributes> userAttr) {
+  exceptionPtr = nullptr;
+  m_resultCollectorLock = rCL;
+  m_rc = rs;
+  m_error = GF_NOTCON;
+  m_func = func;
+  m_getResult = getResult;
+  m_timeout = timeout;
+  m_args = args;
+  m_ep = ep;
+  m_poolDM = poolDM;
+  m_userAttr = userAttr;
+}
+
+OnRegionFunctionExecution::~OnRegionFunctionExecution() {
+  delete m_request;
+  delete m_reply;
+  delete m_resultCollector;
+}
+
+TcrMessage* OnRegionFunctionExecution::getReply() { return m_reply; }
+
+std::shared_ptr<CacheableHashSet> OnRegionFunctionExecution::getFailedNode() {
+  return m_reply->getFailedNode();
+}
+
+ChunkedFunctionExecutionResponse*
+OnRegionFunctionExecution::getResultCollector() {
+  return static_cast<ChunkedFunctionExecutionResponse*>(m_resultCollector);
+}
+
+GfErrType OnRegionFunctionExecution::execute() {
+  GuardUserAttributes gua;
+
+  if (m_userAttr) {
+    gua.setAuthenticatedView(m_userAttr->getAuthenticatedView());
+  }
+
+  return m_poolDM->sendSyncRequest(*m_request, *m_reply, !(m_getResult & 1),
+                                   m_isBGThread, m_serverLocation);
 }
 
 }  // namespace client

@@ -35,8 +35,7 @@ using internal::DSFid;
 
 class QueueConnectionResponse : public ServerLocationResponse {
  public:
-  QueueConnectionResponse()
-      : ServerLocationResponse(), m_durableQueueFound(false) {}
+  QueueConnectionResponse();
 
   ~QueueConnectionResponse() override = default;
 
@@ -44,13 +43,11 @@ class QueueConnectionResponse : public ServerLocationResponse {
 
   DSFid getDSFID() const override;
 
-  virtual std::list<ServerLocation> getServers() { return m_list; }
+  virtual std::list<ServerLocation> getServers();
 
-  virtual bool isDurableQueueFound() { return m_durableQueueFound; }
+  virtual bool isDurableQueueFound();
 
-  static std::shared_ptr<Serializable> create() {
-    return std::make_shared<QueueConnectionResponse>();
-  }
+  static std::shared_ptr<Serializable> create();
 
  private:
   void readList(DataInput& input);

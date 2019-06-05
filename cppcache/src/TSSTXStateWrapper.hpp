@@ -32,7 +32,7 @@ class TSSTXStateWrapper {
  public:
   inline TSSTXStateWrapper() : m_txState(nullptr){};
 
-  ~TSSTXStateWrapper() noexcept;
+  ~TSSTXStateWrapper();
 
   inline static TSSTXStateWrapper& get() {
     static thread_local TSSTXStateWrapper instance;

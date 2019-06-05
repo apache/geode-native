@@ -28,11 +28,8 @@ class ThinClientPoolStickyHADM : public ThinClientPoolHADM {
  public:
   ThinClientPoolStickyHADM(const char* name,
                            std::shared_ptr<PoolAttributes> poolAttrs,
-                           TcrConnectionManager& connManager)
-      : ThinClientPoolHADM(name, poolAttrs, connManager) {
-    m_sticky = true;
-  }
-  virtual ~ThinClientPoolStickyHADM() {}
+                           TcrConnectionManager& connManager);
+  ~ThinClientPoolStickyHADM() override;
 };
 }  // namespace client
 }  // namespace geode

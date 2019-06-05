@@ -43,12 +43,10 @@ class ThinClientDistributionManager : public ThinClientBaseDM {
 
   void failover() override;
 
-  void acquireFailoverLock() override { m_endpointsLock.lock(); };
-  void releaseFailoverLock() override { m_endpointsLock.unlock(); };
+  void acquireFailoverLock() override;
+  void releaseFailoverLock() override;
 
-  TcrEndpoint* getActiveEndpoint() override {
-    return m_endpoints[m_activeEndpoint];
-  }
+  TcrEndpoint* getActiveEndpoint() override;
   bool isEndpointAttached(TcrEndpoint* ep) override;
 
   GfErrType sendRequestToEP(const TcrMessage& request, TcrMessageReply& reply,

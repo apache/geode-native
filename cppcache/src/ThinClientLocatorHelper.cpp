@@ -46,7 +46,7 @@ class ConnectionWrapper {
   Connector*& m_conn;
 
  public:
-  explicit ConnectionWrapper(Connector*& conn) : m_conn(conn) {}
+   ConnectionWrapper(Connector*& conn) : m_conn(conn) {}
   ~ConnectionWrapper() {
     LOGDEBUG("closing the connection locator1");
     if (m_conn != nullptr) {
@@ -414,6 +414,10 @@ GfErrType ThinClientLocatorHelper::updateLocators(
     }
   }
   return GF_NOTCON;
+}
+
+int32_t ThinClientLocatorHelper::getCurLocatorsNum() {
+  return static_cast<int32_t>(m_locHostPort.size());
 }
 
 }  // namespace client

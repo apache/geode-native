@@ -37,7 +37,7 @@ class ThinClientPoolRegion : public ThinClientRegion {
   ThinClientPoolRegion& operator=(const ThinClientPoolRegion&) = delete;
 
   void initTCR() override;
-  ~ThinClientPoolRegion() noexcept override = default;
+  ~ThinClientPoolRegion() override = default;
 
  private:
   void destroyDM(bool keepEndpoints) override;

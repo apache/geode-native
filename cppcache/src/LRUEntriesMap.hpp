@@ -79,7 +79,7 @@ class APACHE_GEODE_EXPORT LRUEntriesMap : public ConcurrentEntriesMap,
                 const uint32_t limit, bool concurrencyChecksEnabled,
                 const uint8_t concurrency = 16, bool heapLRUEnabled = false);
 
-  virtual ~LRUEntriesMap();
+  ~LRUEntriesMap() override;
 
   virtual GfErrType put(const std::shared_ptr<CacheableKey>& key,
                         const std::shared_ptr<Cacheable>& newValue,
@@ -109,10 +109,8 @@ class APACHE_GEODE_EXPORT LRUEntriesMap : public ConcurrentEntriesMap,
   void processLRU(int32_t numEntriesToEvict);
   GfErrType evictionHelper();
   void updateMapSize(int64_t size);
-  inline void setPersistenceManager(
-      std::shared_ptr<PersistenceManager>& pmPtr) {
-    m_pmPtr = pmPtr;
-  }
+  void setPersistenceManager(
+      std::shared_ptr<PersistenceManager>& pmPtr);
 
   /**
    * @brief remove an entry, marking it evicted for LRUList maintainance.
@@ -125,23 +123,11 @@ class APACHE_GEODE_EXPORT LRUEntriesMap : public ConcurrentEntriesMap,
 
   virtual void close();
 
-  inline bool mustEvict() const {
-    if (m_action == nullptr) {
-      LOGFINE("Eviction action is nullptr");
-      return false;
-    }
-    if (m_action->overflows()) {
-      return validEntriesSize() > m_limit;
-    } else if ((m_heapLRUEnabled) && (m_limit == 0)) {
-      return false;
-    } else {
-      return size() > m_limit;
-    }
-  }
+  bool mustEvict() const;
 
-  inline uint32_t validEntriesSize() const { return m_validEntries; }
+  uint32_t validEntriesSize() const;
 
-  inline void adjustLimit(uint32_t limit) { m_limit = limit; }
+  void adjustLimit(uint32_t limit);
 
   virtual void clear();
 

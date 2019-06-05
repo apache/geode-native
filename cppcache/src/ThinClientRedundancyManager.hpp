@@ -60,7 +60,7 @@ class ThinClientRedundancyManager {
   void close();
   void sendNotificationCloseMsgs();
 
-  explicit ThinClientRedundancyManager(TcrConnectionManager* theConnManager,
+   ThinClientRedundancyManager(TcrConnectionManager* theConnManager,
                                        int redundencyLevel = 0,
                                        ThinClientPoolHADM* poolHADM = nullptr,
                                        bool sentReadyForEvents = false,
@@ -78,15 +78,15 @@ class ThinClientRedundancyManager {
   void startPeriodicAck();
   bool checkDupAndAdd(std::shared_ptr<EventId> eventid);
   void netDown();
-  void acquireRedundancyLock() { m_redundantEndpointsLock.lock(); }
-  void releaseRedundancyLock() { m_redundantEndpointsLock.unlock(); }
-  bool allEndPointDiscon() { return m_IsAllEpDisCon; }
+  void acquireRedundancyLock();
+  void releaseRedundancyLock();
+  bool allEndPointDiscon();
   void removeCallbackConnection(TcrEndpoint*);
 
-  std::recursive_mutex& getRedundancyLock() { return m_redundantEndpointsLock; }
+  std::recursive_mutex& getRedundancyLock();
 
   GfErrType sendRequestToPrimary(TcrMessage& request, TcrMessageReply& reply);
-  bool isSentReadyForEvents() const { return m_sentReadyForEvents; }
+  bool isSentReadyForEvents() const;
 
  private:
   using clock = std::chrono::steady_clock;

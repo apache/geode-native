@@ -94,7 +94,7 @@ class CqQueryImpl : public CqQuery,
       statistics::StatisticsFactory* factory, const bool isDurable = false,
       const std::shared_ptr<UserAttributes>& userAttributesPtr = nullptr);
 
-  virtual ~CqQueryImpl();
+  ~CqQueryImpl();
 
   /**
    * returns CQ name
@@ -157,9 +157,7 @@ class CqQueryImpl : public CqQuery,
    */
   std::shared_ptr<CqStatistics> getStatistics() const override;
 
-  CqQueryVsdStats& getVsdStats() {
-    return *dynamic_cast<CqQueryVsdStats*>(m_stats.get());
-  }
+  CqQueryVsdStats& getVsdStats();
 
   std::shared_ptr<CqAttributes> getCqAttributes() const override;
 
@@ -261,7 +259,7 @@ class CqQueryImpl : public CqQuery,
    */
   bool isDurable() const override;
 
-  inline ThinClientBaseDM* getDM() { return m_tccdm; }
+  ThinClientBaseDM* getDM();
 
  private:
   void updateStats();

@@ -113,7 +113,7 @@ class APACHE_GEODE_EXPORT CacheableToken
   virtual size_t objectSize() const override;
 
   CacheableToken();  // used for deserialization.
-  explicit CacheableToken(TokenType value);
+  CacheableToken(TokenType value);
 
  private:
   // never implemented.

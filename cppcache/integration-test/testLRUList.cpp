@@ -29,7 +29,7 @@ END_TEST(NotOnWindows)
 
 //#define BUILD_CPPCACHE
 
-#include <LRUList.cpp>
+#include <LRUList.hpp>
 #include <geode/CacheableKey.hpp>
 
 using apache::geode::client::CacheableKey;

@@ -38,38 +38,27 @@ class ThinClientPoolDM;
 
 class UserConnectionAttributes {
  public:
-  UserConnectionAttributes(TcrEndpoint* endpoint, uint64_t id) {
-    m_numberOfTimesEndpointFailed = endpoint->numberOfTimesFailed();
-    m_connectedEndpoint = endpoint;
-    m_uniqueId = id;
-    m_isAuthenticated = true;
-  }
+  UserConnectionAttributes(TcrEndpoint* endpoint, uint64_t id);
 
-  ~UserConnectionAttributes() {}
+  ~UserConnectionAttributes();
 
-  TcrEndpoint* getEndpoint() { return m_connectedEndpoint; }
+  TcrEndpoint* getEndpoint();
 
-  void setEndpoint(TcrEndpoint* endpoint) { m_connectedEndpoint = endpoint; }
+  void setEndpoint(TcrEndpoint* endpoint);
 
-  int64_t getUniqueId() { return m_uniqueId; }
+  int64_t getUniqueId();
 
-  void setUniqueId(int64_t id) { m_uniqueId = id; }
+  void setUniqueId(int64_t id);
 
-  void setUnAuthenticated() { m_isAuthenticated = false; }
+  void setUnAuthenticated();
 
-  bool isAuthenticated() {
-    // second condition checks whether endpoint got failed and again up
-    return m_isAuthenticated && (m_connectedEndpoint->numberOfTimesFailed() ==
-                                 m_numberOfTimesEndpointFailed);
-  }
+  bool isAuthenticated();
 
  private:
   TcrEndpoint* m_connectedEndpoint;
   int64_t m_uniqueId;
   bool m_isAuthenticated;
   int32_t m_numberOfTimesEndpointFailed;
-  // UserConnectionAttributes(const UserConnectionAttributes &);
-  // UserConnectionAttributes & operator =(const UserConnectionAttributes &);
 };
 
 class UserAttributes {
@@ -87,12 +76,7 @@ class UserAttributes {
 
   std::shared_ptr<Pool> getPool();
 
-  void setConnectionAttributes(TcrEndpoint* endpoint, uint64_t id) {
-    m_isUserAuthenticated = true;
-    auto ucb = new UserConnectionAttributes(endpoint, id);
-    std::lock_guard<decltype(m_listLock)> guard(m_listLock);
-    m_connectionAttr[endpoint->name()] = ucb;
-  }
+  void setConnectionAttributes(TcrEndpoint* endpoint, uint64_t id);
 
   void unAuthenticateEP(TcrEndpoint* endpoint);
 
@@ -100,11 +84,9 @@ class UserAttributes {
   UserConnectionAttributes* getConnectionAttribute(TcrEndpoint* ep);
   std::shared_ptr<Properties> getCredentials();
 
-  std::map<std::string, UserConnectionAttributes*>& getUserConnectionServers() {
-    return m_connectionAttr;
-  }
+  std::map<std::string, UserConnectionAttributes*>& getUserConnectionServers();
 
-  void unSetCredentials() { m_credentials = nullptr; }
+  void unSetCredentials();
 
   bool isEndpointAuthenticated(TcrEndpoint* ep);
 
@@ -127,7 +109,7 @@ class GuardUserAttributes {
  public:
   GuardUserAttributes();
 
-  explicit GuardUserAttributes(AuthenticatedView* const authenticatedView);
+   GuardUserAttributes(AuthenticatedView* const authenticatedView);
 
   void setAuthenticatedView(AuthenticatedView* const authenticatedView);
 

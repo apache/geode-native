@@ -35,23 +35,17 @@ namespace client {
 class APACHE_GEODE_EXPORT ExpMapEntry : public MapEntryImpl,
                                         public ExpEntryProperties {
  public:
-  virtual ~ExpMapEntry() {}
+  ~ExpMapEntry() override;
 
-  virtual ExpEntryProperties& getExpProperties() { return *this; }
+  virtual ExpEntryProperties& getExpProperties();
 
-  virtual void cleanup(const CacheEventFlags eventFlags) {
-    if (!eventFlags.isExpiration()) {
-      cancelExpiryTaskId(m_key);
-    }
-  }
+  virtual void cleanup(const CacheEventFlags eventFlags);
 
   // this constructor deliberately skips touching or initializing any members
-  inline explicit ExpMapEntry(bool)
-      : MapEntryImpl(true), ExpEntryProperties(true) {}
+   ExpMapEntry(bool);
 
-  inline ExpMapEntry(ExpiryTaskManager* expiryTaskManager,
-                     const std::shared_ptr<CacheableKey>& key)
-      : MapEntryImpl(key), ExpEntryProperties(expiryTaskManager) {}
+  ExpMapEntry(ExpiryTaskManager* expiryTaskManager,
+                     const std::shared_ptr<CacheableKey>& key);
 
  private:
   // disabled
@@ -62,15 +56,14 @@ class APACHE_GEODE_EXPORT ExpMapEntry : public MapEntryImpl,
 class APACHE_GEODE_EXPORT VersionedExpMapEntry : public ExpMapEntry,
                                                  public VersionStamp {
  public:
-  inline VersionedExpMapEntry(ExpiryTaskManager* expiryTaskManager,
-                              const std::shared_ptr<CacheableKey>& key)
-      : ExpMapEntry(expiryTaskManager, key) {}
+  VersionedExpMapEntry(ExpiryTaskManager* expiryTaskManager,
+                              const std::shared_ptr<CacheableKey>& key);
 
-  inline explicit VersionedExpMapEntry(bool) : ExpMapEntry(true) {}
+   VersionedExpMapEntry(bool);
 
-  virtual ~VersionedExpMapEntry() {}
+  ~VersionedExpMapEntry() override;
 
-  virtual VersionStamp& getVersionStamp() { return *this; }
+  virtual VersionStamp& getVersionStamp();
 
  private:
   // disabled
@@ -82,7 +75,7 @@ class APACHE_GEODE_EXPORT ExpEntryFactory : public EntryFactory {
  public:
   using EntryFactory::EntryFactory;
 
-  virtual ~ExpEntryFactory() {}
+  ~ExpEntryFactory() override;
 
   virtual void newMapEntry(ExpiryTaskManager* expiryTaskManager,
                            const std::shared_ptr<CacheableKey>& key,

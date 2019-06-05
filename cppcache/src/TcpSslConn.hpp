@@ -55,25 +55,15 @@ class TcpSslConn : public TcpConn {
   TcpSslConn(const char* hostname, int32_t port,
              std::chrono::microseconds waitSeconds, int32_t maxBuffSizePool,
              const char* pubkeyfile, const char* privkeyfile,
-             const char* pemPassword)
-      : TcpConn(hostname, port, waitSeconds, maxBuffSizePool),
-        m_ssl(nullptr),
-        m_pubkeyfile(pubkeyfile),
-        m_privkeyfile(privkeyfile),
-        m_pemPassword(pemPassword){};
+             const char* pemPassword);
 
   TcpSslConn(const char* ipaddr, std::chrono::microseconds waitSeconds,
              int32_t maxBuffSizePool, const char* pubkeyfile,
-             const char* privkeyfile, const char* pemPassword)
-      : TcpConn(ipaddr, waitSeconds, maxBuffSizePool),
-        m_ssl(nullptr),
-        m_pubkeyfile(pubkeyfile),
-        m_privkeyfile(privkeyfile),
-        m_pemPassword(pemPassword){};
+             const char* privkeyfile, const char* pemPassword);
 
   // TODO:  Watch out for virt dtor calling virt methods!
 
-  virtual ~TcpSslConn() override {}
+  ~TcpSslConn() override;
 
   // Close this tcp connection
   void close() override;
@@ -86,13 +76,7 @@ class TcpSslConn : public TcpConn {
   void connect() override;
 
   void setOption(int32_t level, int32_t option, void* val,
-                 size_t len) override {
-    if (m_ssl->setOption(level, option, val, static_cast<int32_t>(len)) == -1) {
-      int32_t lastError = ACE_OS::last_error();
-      LOGERROR("Failed to set option, errno: %d: %s", lastError,
-               ACE_OS::strerror(lastError));
-    }
-  }
+                 size_t len) override;
 
   uint16_t getPort() override;
 };
