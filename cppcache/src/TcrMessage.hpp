@@ -224,7 +224,7 @@ class TcrMessage {
   bool forTransaction() const;
 
   /* destroy the connection */
-  virtual ~TcrMessage() override;
+  virtual ~TcrMessage();
 
   const std::string& getRegionName() const;
   Region* getRegion() const;
@@ -484,7 +484,7 @@ class TcrMessageDestroyRegion : public TcrMessage {
       std::chrono::milliseconds messageResponsetimeout,
       ThinClientBaseDM* connectionDM);
 
-  ~TcrMessageDestroyRegion() override;
+  ~TcrMessageDestroyRegion() override = default;
 };
 
 class TcrMessageClearRegion : public TcrMessage {
@@ -494,7 +494,7 @@ class TcrMessageClearRegion : public TcrMessage {
                         std::chrono::milliseconds messageResponsetimeout,
                         ThinClientBaseDM* connectionDM);
 
-  ~TcrMessageClearRegion() override;
+  ~TcrMessageClearRegion() override = default;
 };
 
 class TcrMessageQuery : public TcrMessage {
@@ -503,7 +503,7 @@ class TcrMessageQuery : public TcrMessage {
                   std::chrono::milliseconds messageResponsetimeout,
                   ThinClientBaseDM* connectionDM);
 
-  ~TcrMessageQuery() override;
+  ~TcrMessageQuery() override = default;
 };
 
 class TcrMessageStopCQ : public TcrMessage {
@@ -512,7 +512,7 @@ class TcrMessageStopCQ : public TcrMessage {
                    std::chrono::milliseconds messageResponsetimeout,
                    ThinClientBaseDM* connectionDM);
 
-  ~TcrMessageStopCQ() override;
+  ~TcrMessageStopCQ() override = default;
 };
 
 class TcrMessageCloseCQ : public TcrMessage {
@@ -521,7 +521,7 @@ class TcrMessageCloseCQ : public TcrMessage {
                     std::chrono::milliseconds messageResponsetimeout,
                     ThinClientBaseDM* connectionDM);
 
-  ~TcrMessageCloseCQ() override;
+  ~TcrMessageCloseCQ() override = default;
 };
 
 class TcrMessageQueryWithParameters : public TcrMessage {
@@ -533,7 +533,7 @@ class TcrMessageQueryWithParameters : public TcrMessage {
       std::chrono::milliseconds messageResponsetimeout,
       ThinClientBaseDM* connectionDM);
 
-  ~TcrMessageQueryWithParameters() override;
+  ~TcrMessageQueryWithParameters() override = default;
 };
 
 class TcrMessageContainsKey : public TcrMessage {
@@ -543,7 +543,7 @@ class TcrMessageContainsKey : public TcrMessage {
                         const std::shared_ptr<Serializable>& aCallbackArgument,
                         bool isContainsKey, ThinClientBaseDM* connectionDM);
 
-  ~TcrMessageContainsKey() override;
+  ~TcrMessageContainsKey() override = default;
 };
 
 class TcrMessageGetDurableCqs : public TcrMessage {
@@ -551,7 +551,7 @@ class TcrMessageGetDurableCqs : public TcrMessage {
   TcrMessageGetDurableCqs(DataOutput* dataOutput,
                           ThinClientBaseDM* connectionDM);
 
-  ~TcrMessageGetDurableCqs() override;
+  ~TcrMessageGetDurableCqs() override = default;
 };
 
 class TcrMessageRequest : public TcrMessage {
@@ -561,7 +561,7 @@ class TcrMessageRequest : public TcrMessage {
                     const std::shared_ptr<Serializable>& aCallbackArgument,
                     ThinClientBaseDM* connectionDM = nullptr);
 
-  ~TcrMessageRequest() override;
+  ~TcrMessageRequest() override = default;
 };
 
 class TcrMessageInvalidate : public TcrMessage {
@@ -571,7 +571,7 @@ class TcrMessageInvalidate : public TcrMessage {
                        const std::shared_ptr<Serializable>& aCallbackArgument,
                        ThinClientBaseDM* connectionDM = nullptr);
 
- ~TcrMessageInvalidate() override;
+ ~TcrMessageInvalidate() override = default;
 };
 
 class TcrMessageDestroy : public TcrMessage {
@@ -582,7 +582,7 @@ class TcrMessageDestroy : public TcrMessage {
                     const std::shared_ptr<Serializable>& aCallbackArgument,
                     ThinClientBaseDM* connectionDM = nullptr);
 
- ~TcrMessageDestroy() override;
+ ~TcrMessageDestroy() override = default;
 };
 
 class TcrMessageRegisterInterestList : public TcrMessage {
@@ -595,7 +595,7 @@ class TcrMessageRegisterInterestList : public TcrMessage {
       InterestResultPolicy interestPolicy = InterestResultPolicy::NONE,
       ThinClientBaseDM* connectionDM = nullptr);
 
-  ~TcrMessageRegisterInterestList() override;
+  ~TcrMessageRegisterInterestList() override = default;
 };
 
 class TcrMessageUnregisterInterestList : public TcrMessage {
@@ -607,7 +607,7 @@ class TcrMessageUnregisterInterestList : public TcrMessage {
       InterestResultPolicy interestPolicy = InterestResultPolicy::NONE,
       ThinClientBaseDM* connectionDM = nullptr);
 
-  ~TcrMessageUnregisterInterestList() override;
+  ~TcrMessageUnregisterInterestList() override = default;
 };
 
 class TcrMessagePut : public TcrMessage {
@@ -620,7 +620,7 @@ class TcrMessagePut : public TcrMessage {
                 bool isMetaRegion = false, bool fullValueAfterDeltaFail = false,
                 const char* regionName = nullptr);
 
-  ~TcrMessagePut() override;
+  ~TcrMessagePut() override = default;
 };
 
 class TcrMessageCreateRegion : public TcrMessage {
@@ -630,7 +630,7 @@ class TcrMessageCreateRegion : public TcrMessage {
                          bool receiveValues = true,
                          ThinClientBaseDM* connectionDM = nullptr);
 
-  ~TcrMessageCreateRegion() override;
+  ~TcrMessageCreateRegion() override = default;
 };
 
 class TcrMessageRegisterInterest : public TcrMessage {
@@ -641,7 +641,7 @@ class TcrMessageRegisterInterest : public TcrMessage {
       bool isDurable = false, bool isCachingEnabled = false,
       bool receiveValues = true, ThinClientBaseDM* connectionDM = nullptr);
 
-  ~TcrMessageRegisterInterest() override;
+  ~TcrMessageRegisterInterest() override = default;
 };
 
 class TcrMessageUnregisterInterest : public TcrMessage {
@@ -652,7 +652,7 @@ class TcrMessageUnregisterInterest : public TcrMessage {
       bool isDurable = false, bool receiveValues = true,
       ThinClientBaseDM* connectionDM = nullptr);
 
-  ~TcrMessageUnregisterInterest() override;
+  ~TcrMessageUnregisterInterest() override = default;
 };
 
 class TcrMessageTxSynchronization : public TcrMessage {
@@ -660,42 +660,42 @@ class TcrMessageTxSynchronization : public TcrMessage {
   TcrMessageTxSynchronization(DataOutput* dataOutput, int ordinal, int txid,
                               int status);
 
-  ~TcrMessageTxSynchronization() override;
+  ~TcrMessageTxSynchronization() override = default;
 };
 
 class TcrMessageClientReady : public TcrMessage {
  public:
   explicit TcrMessageClientReady(DataOutput* dataOutput);
 
-  ~TcrMessageClientReady() override;
+  ~TcrMessageClientReady() override = default;
 };
 
 class TcrMessageCommit : public TcrMessage {
  public:
   explicit TcrMessageCommit(DataOutput* dataOutput);
 
-  ~TcrMessageCommit() override;
+  ~TcrMessageCommit() override = default;
 };
 
 class TcrMessageRollback : public TcrMessage {
  public:
   explicit TcrMessageRollback(DataOutput* dataOutput);
 
-  ~TcrMessageRollback() override;
+  ~TcrMessageRollback() override = default;
 };
 
 class TcrMessageTxFailover : public TcrMessage {
  public:
   explicit TcrMessageTxFailover(DataOutput* dataOutput);
 
-  ~TcrMessageTxFailover() override;
+  ~TcrMessageTxFailover() override = default;
 };
 
 class TcrMessageMakePrimary : public TcrMessage {
  public:
   TcrMessageMakePrimary(DataOutput* dataOutput, bool processedMarker);
 
-  ~TcrMessageMakePrimary() override;
+  ~TcrMessageMakePrimary() override = default;
 };
 
 class TcrMessagePutAll : public TcrMessage {
@@ -706,7 +706,7 @@ class TcrMessagePutAll : public TcrMessage {
                    ThinClientBaseDM* connectionDM,
                    const std::shared_ptr<Serializable>& aCallbackArgument);
 
-  ~TcrMessagePutAll() override;
+  ~TcrMessagePutAll() override = default;
 };
 
 class TcrMessageRemoveAll : public TcrMessage {
@@ -716,7 +716,7 @@ class TcrMessageRemoveAll : public TcrMessage {
                       const std::shared_ptr<Serializable>& aCallbackArgument,
                       ThinClientBaseDM* connectionDM = nullptr);
 
-  ~TcrMessageRemoveAll() override;
+  ~TcrMessageRemoveAll() override = default;
 };
 
 class TcrMessageExecuteCq : public TcrMessage {
@@ -725,7 +725,7 @@ class TcrMessageExecuteCq : public TcrMessage {
                       const std::string& str2, CqState state, bool isDurable,
                       ThinClientBaseDM* connectionDM);
 
-  ~TcrMessageExecuteCq() override;
+  ~TcrMessageExecuteCq() override = default;
 };
 
 class TcrMessageExecuteCqWithIr : public TcrMessage {
@@ -734,7 +734,7 @@ class TcrMessageExecuteCqWithIr : public TcrMessage {
                             const std::string& str2, CqState state,
                             bool isDurable, ThinClientBaseDM* connectionDM);
 
-  ~TcrMessageExecuteCqWithIr() override;
+  ~TcrMessageExecuteCqWithIr() override = default;
 };
 
 class TcrMessageExecuteRegionFunction : public TcrMessage {
@@ -747,7 +747,7 @@ class TcrMessageExecuteRegionFunction : public TcrMessage {
       std::chrono::milliseconds timeout,
       ThinClientBaseDM* connectionDM = nullptr, int8_t reExecute = 0);
 
-  ~TcrMessageExecuteRegionFunction() override;
+  ~TcrMessageExecuteRegionFunction() override = default;
 };
 
 class TcrMessageExecuteRegionFunctionSingleHop : public TcrMessage {
@@ -759,7 +759,7 @@ class TcrMessageExecuteRegionFunctionSingleHop : public TcrMessage {
       std::shared_ptr<CacheableHashSet> failedNodes, bool allBuckets,
       std::chrono::milliseconds timeout, ThinClientBaseDM* connectionDM);
 
-  ~TcrMessageExecuteRegionFunctionSingleHop() override;
+  ~TcrMessageExecuteRegionFunctionSingleHop() override = default;
 };
 
 class TcrMessageGetClientPartitionAttributes : public TcrMessage {
@@ -767,21 +767,21 @@ class TcrMessageGetClientPartitionAttributes : public TcrMessage {
   TcrMessageGetClientPartitionAttributes(DataOutput* dataOutput,
                                          const char* regionName);
 
-  ~TcrMessageGetClientPartitionAttributes() override;
+  ~TcrMessageGetClientPartitionAttributes() override = default;
 };
 
 class TcrMessageGetClientPrMetadata : public TcrMessage {
  public:
   TcrMessageGetClientPrMetadata(DataOutput* dataOutput, const char* regionName);
 
-  ~TcrMessageGetClientPrMetadata() override;
+  ~TcrMessageGetClientPrMetadata() override = default;
 };
 
 class TcrMessageSize : public TcrMessage {
  public:
   TcrMessageSize(DataOutput* dataOutput, const char* regionName);
 
-  ~TcrMessageSize() override;
+  ~TcrMessageSize() override = default;
 };
 
 class TcrMessageUserCredential : public TcrMessage {
@@ -790,7 +790,7 @@ class TcrMessageUserCredential : public TcrMessage {
                            std::shared_ptr<Properties> creds,
                            ThinClientBaseDM* connectionDM = nullptr);
 
-  ~TcrMessageUserCredential() override;
+  ~TcrMessageUserCredential() override = default;
 };
 
 class TcrMessageRemoveUserAuth : public TcrMessage {
@@ -798,7 +798,7 @@ class TcrMessageRemoveUserAuth : public TcrMessage {
   TcrMessageRemoveUserAuth(DataOutput* dataOutput, bool keepAlive,
                            ThinClientBaseDM* connectionDM);
 
-  ~TcrMessageRemoveUserAuth() override;
+  ~TcrMessageRemoveUserAuth() override = default;
 };
 
 class TcrMessageGetPdxIdForType : public TcrMessage {
@@ -807,7 +807,7 @@ class TcrMessageGetPdxIdForType : public TcrMessage {
                             const std::shared_ptr<Cacheable>& pdxType,
                             ThinClientBaseDM* connectionDM);
 
-  ~TcrMessageGetPdxIdForType() override;
+  ~TcrMessageGetPdxIdForType() override = default;
 };
 
 class TcrMessageAddPdxType : public TcrMessage {
@@ -816,7 +816,7 @@ class TcrMessageAddPdxType : public TcrMessage {
                        const std::shared_ptr<Cacheable>& pdxType,
                        ThinClientBaseDM* connectionDM, int32_t pdxTypeId = 0);
 
-  ~TcrMessageAddPdxType() override;
+  ~TcrMessageAddPdxType() override = default;
 };
 
 class TcrMessageGetPdxIdForEnum : public TcrMessage {
@@ -825,7 +825,7 @@ class TcrMessageGetPdxIdForEnum : public TcrMessage {
                             const std::shared_ptr<Cacheable>& pdxType,
                             ThinClientBaseDM* connectionDM);
 
-  ~TcrMessageGetPdxIdForEnum() override;
+  ~TcrMessageGetPdxIdForEnum() override = default;
 };
 
 class TcrMessageAddPdxEnum : public TcrMessage {
@@ -834,7 +834,7 @@ class TcrMessageAddPdxEnum : public TcrMessage {
                        const std::shared_ptr<Cacheable>& pdxType,
                        ThinClientBaseDM* connectionDM, int32_t pdxTypeId = 0);
 
-  ~TcrMessageAddPdxEnum() override;
+  ~TcrMessageAddPdxEnum() override = default;
 };
 
 class TcrMessageGetPdxTypeById : public TcrMessage {
@@ -842,7 +842,7 @@ class TcrMessageGetPdxTypeById : public TcrMessage {
   TcrMessageGetPdxTypeById(DataOutput* dataOutput, int32_t typeId,
                            ThinClientBaseDM* connectionDM);
 
-  ~TcrMessageGetPdxTypeById() override;
+  ~TcrMessageGetPdxTypeById() override = default;
 };
 
 class TcrMessageGetPdxEnumById : public TcrMessage {
@@ -850,7 +850,7 @@ class TcrMessageGetPdxEnumById : public TcrMessage {
   TcrMessageGetPdxEnumById(DataOutput* dataOutput, int32_t typeId,
                            ThinClientBaseDM* connectionDM);
 
-  ~TcrMessageGetPdxEnumById() override;
+  ~TcrMessageGetPdxEnumById() override = default;
 };
 
 class TcrMessageGetFunctionAttributes : public TcrMessage {
@@ -859,7 +859,7 @@ class TcrMessageGetFunctionAttributes : public TcrMessage {
                                   const std::string& funcName,
                                   ThinClientBaseDM* connectionDM = nullptr);
 
-  ~TcrMessageGetFunctionAttributes() override;
+  ~TcrMessageGetFunctionAttributes() override = default;
 };
 
 class TcrMessageKeySet : public TcrMessage {
@@ -867,7 +867,7 @@ class TcrMessageKeySet : public TcrMessage {
   TcrMessageKeySet(DataOutput* dataOutput, const std::string& funcName,
                    ThinClientBaseDM* connectionDM = nullptr);
 
-  ~TcrMessageKeySet() override;
+  ~TcrMessageKeySet() override = default;
 };
 
 class TcrMessageRequestEventValue : public TcrMessage {
@@ -875,7 +875,7 @@ class TcrMessageRequestEventValue : public TcrMessage {
   TcrMessageRequestEventValue(DataOutput* dataOutput,
                               std::shared_ptr<EventId> eventId);
 
-  ~TcrMessageRequestEventValue() override;
+  ~TcrMessageRequestEventValue() override = default;
 };
 
 class TcrMessagePeriodicAck : public TcrMessage {
@@ -883,14 +883,14 @@ class TcrMessagePeriodicAck : public TcrMessage {
   TcrMessagePeriodicAck(DataOutput* dataOutput,
                         const EventIdMapEntryList& entries);
 
-  ~TcrMessagePeriodicAck() override;
+  ~TcrMessagePeriodicAck() override = default;
 };
 
 class TcrMessageUpdateClientNotification : public TcrMessage {
  public:
   TcrMessageUpdateClientNotification(DataOutput* dataOutput, int32_t port);
 
-  ~TcrMessageUpdateClientNotification() override;
+  ~TcrMessageUpdateClientNotification() override = default;
 };
 
 class TcrMessageGetAll : public TcrMessage {
@@ -901,7 +901,7 @@ class TcrMessageGetAll : public TcrMessage {
       ThinClientBaseDM* connectionDM = nullptr,
       const std::shared_ptr<Serializable>& aCallbackArgument = nullptr);
 
-  ~TcrMessageGetAll() override;
+  ~TcrMessageGetAll() override = default;
 };
 
 class TcrMessageExecuteFunction : public TcrMessage {
@@ -911,35 +911,35 @@ class TcrMessageExecuteFunction : public TcrMessage {
                             uint8_t getResult, ThinClientBaseDM* connectionDM,
                             std::chrono::milliseconds timeout);
 
-  ~TcrMessageExecuteFunction() override;
+  ~TcrMessageExecuteFunction() override = default;
 };
 
 class TcrMessagePing : public TcrMessage {
  public:
   TcrMessagePing(DataOutput* dataOutput, bool decodeAll);
 
-  ~TcrMessagePing() override;
+  ~TcrMessagePing() override = default;
 };
 
 class TcrMessageCloseConnection : public TcrMessage {
  public:
   TcrMessageCloseConnection(DataOutput* dataOutput, bool decodeAll);
 
-  ~TcrMessageCloseConnection() override;
+  ~TcrMessageCloseConnection() override = default;
 };
 
 class TcrMessageClientMarker : public TcrMessage {
  public:
   TcrMessageClientMarker(DataOutput* dataOutput, bool decodeAll);
 
-  ~TcrMessageClientMarker() override;
+  ~TcrMessageClientMarker() override = default;
 };
 
 class TcrMessageReply : public TcrMessage {
  public:
   TcrMessageReply(bool decodeAll, ThinClientBaseDM* connectionDM);
 
-  ~TcrMessageReply() override;
+  ~TcrMessageReply() override = default;
 };
 
 /**
