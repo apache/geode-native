@@ -26,6 +26,7 @@
 namespace apache {
 namespace geode {
 namespace client {
+DiffieHellman::DiffieHellman() : m_dhCtx(nullptr) {}
 
 ACE_DLL DiffieHellman::m_dll;
 

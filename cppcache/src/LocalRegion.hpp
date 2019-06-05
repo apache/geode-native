@@ -128,7 +128,7 @@ class APACHE_GEODE_EXPORT LocalRegion : public RegionInternal {
   LocalRegion(const LocalRegion&) = delete;
   LocalRegion& operator=(const LocalRegion&) = delete;
 
-  ~LocalRegion() noexcept override;
+  ~LocalRegion() override;
 
   const std::string& getName() const override;
   const std::string& getFullPath() const override;
@@ -252,9 +252,7 @@ class APACHE_GEODE_EXPORT LocalRegion : public RegionInternal {
   /** @brief Public Methods from RegionInternal
    *  There are all virtual methods
    */
-  std::shared_ptr<PersistenceManager> getPersistenceManager() override {
-    return m_persistenceManager;
-  }
+  std::shared_ptr<PersistenceManager> getPersistenceManager() override;
   void setPersistenceManager(
       std::shared_ptr<PersistenceManager>& pmPtr) override;
 
@@ -354,8 +352,8 @@ class APACHE_GEODE_EXPORT LocalRegion : public RegionInternal {
                             std::shared_ptr<VersionTag> versionTag);
 
   void setRegionExpiryTask() override;
-  void acquireReadLock() override { m_rwLock.acquire_read(); }
-  void releaseReadLock() override { m_rwLock.release(); }
+  void acquireReadLock() override;
+  void releaseReadLock() override;
 
   // behaviors for attributes mutator
   uint32_t adjustLruEntriesLimit(uint32_t limit) override;
@@ -367,17 +365,13 @@ class APACHE_GEODE_EXPORT LocalRegion : public RegionInternal {
       const std::chrono::seconds& duration) override;
 
   // other public methods
-  RegionStats* getRegionStats() override { return m_regionStats; }
+  RegionStats* getRegionStats() override;
 
-  bool cacheEnabled() override {
-    return m_regionAttributes.getCachingEnabled();
-  }
+  bool cacheEnabled() override;
 
-  inline bool cachelessWithListener() {
-    return !m_regionAttributes.getCachingEnabled() && (m_listener != nullptr);
-  }
+  inline bool cachelessWithListener();
 
-  bool isDestroyed() const override { return m_destroyPending; }
+  bool isDestroyed() const override;
   /* above public methods are inherited from RegionInternal */
 
   void adjustCacheListener(
@@ -401,9 +395,9 @@ class APACHE_GEODE_EXPORT LocalRegion : public RegionInternal {
 
   virtual void releaseGlobals(bool isFailover);
 
-  virtual bool getProcessedMarker() { return true; }
+  virtual bool getProcessedMarker();
 
-  EntriesMap* getEntryMap() { return m_entries; }
+  EntriesMap* getEntryMap();
 
   std::shared_ptr<TombstoneList> getTombstoneList() override;
 
@@ -464,21 +458,16 @@ class APACHE_GEODE_EXPORT LocalRegion : public RegionInternal {
   virtual GfErrType destroyRegionNoThrow_remote(
       const std::shared_ptr<Serializable>& aCallbackArgument);
   virtual GfErrType unregisterKeysBeforeDestroyRegion();
-  const std::shared_ptr<Pool>& getPool() const override {
-    return m_attachedPool;
-  }
+  const std::shared_ptr<Pool>& getPool() const override;
 
-  void setPool(const std::shared_ptr<Pool>& p) { m_attachedPool = p; }
+  void setPool(const std::shared_ptr<Pool>& p);
 
-  TXState* getTXState() const { return TSSTXStateWrapper::get().getTXState(); }
+  TXState* getTXState() const;
 
   std::shared_ptr<Cacheable> handleReplay(
       GfErrType& err, std::shared_ptr<Cacheable> value) const;
 
-  bool isLocalOp(const CacheEventFlags* eventFlags = nullptr) {
-    return typeid(*this) == typeid(LocalRegion) ||
-           (eventFlags && eventFlags->isLocal());
-  }
+  bool isLocalOp(const CacheEventFlags* eventFlags = nullptr);
 
   // template method for put and create
   template <typename TAction>

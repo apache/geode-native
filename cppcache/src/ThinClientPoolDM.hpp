@@ -76,7 +76,7 @@ class ThinClientPoolDM
 
   void init() override;
 
-  const std::string& getName() const override { return m_poolName; }
+  const std::string& getName() const override;
 
   GfErrType sendSyncRequest(TcrMessage& request, TcrMessageReply& reply,
                             bool attemptFailover = true,
@@ -113,11 +113,10 @@ class ThinClientPoolDM
 
   ~ThinClientPoolDM() override;
 
-  // void updateQueue(const char* regionPath) ;
-  ClientProxyMembershipID* getMembershipId() { return m_memId.get(); }
-  virtual void processMarker(){};
+  ClientProxyMembershipID* getMembershipId();
+  virtual void processMarker();
   bool checkDupAndAdd(std::shared_ptr<EventId> eventid) override;
-  ACE_Recursive_Thread_Mutex& getPoolLock() { return getQueueLock(); }
+  ACE_Recursive_Thread_Mutex& getPoolLock();
   void reducePoolSize(int num);
   void removeEPConnections(int numConn, bool triggerManagerConn = true);
   void removeEPConnections(TcrEndpoint* ep);
@@ -125,31 +124,28 @@ class ThinClientPoolDM
                                  std::set<ServerLocation>& excludeServers,
                                  bool& maxConnLimit,
                                  const TcrConnection* currentServer = nullptr);
-  ThinClientLocatorHelper* getLocatorHelper() { return m_locHelper; }
+  ThinClientLocatorHelper* getLocatorHelper();
   void releaseThreadLocalConnection() override;
   virtual void setThreadLocalConnection(TcrConnection* conn);
   bool excludeConnection(TcrConnection*, std::set<ServerLocation>&);
   void incRegionCount();
   void decRegionCount();
 
-  virtual void setStickyNull(bool isBGThread) {
-    if (!isBGThread) m_manager->setStickyConnection(nullptr, false);
-  };
+  virtual void setStickyNull(bool isBGThread);
 
   virtual bool canItBeDeletedNoImpl(TcrConnection* conn);
 
   void updateNotificationStats(bool isDeltaSuccess,
                                std::chrono::nanoseconds timeInNanoSecond);
 
-  bool isSecurityOn() override { return m_isSecurityOn || m_isMultiUserMode; }
-
-  bool isMultiUserMode() override { return m_isMultiUserMode; }
+  bool isSecurityOn() override;
+  bool isMultiUserMode() override;
 
   virtual void sendUserCacheCloseMessage(bool keepAlive);
 
-  virtual inline PoolStats& getStats() { return *m_stats; }
+  virtual PoolStats& getStats();
 
-  size_t getNumberOfEndPoints() const override { return m_endpoints.size(); }
+  size_t getNumberOfEndPoints() const override;
 
   int32_t GetPDXIdForType(std::shared_ptr<Serializable> pdxType);
 
@@ -169,18 +165,14 @@ class ThinClientPoolDM
   GfErrType getConnectionToAnEndPoint(std::string epNameStr,
                                       TcrConnection*& conn);
 
-  virtual inline bool isSticky() { return m_sticky; }
+  virtual bool isSticky();
   virtual TcrEndpoint* getEndPoint(
       const std::shared_ptr<BucketServerLocation>& serverLocation,
       int8_t& version, std::set<ServerLocation>& excludeServers);
 
-  ClientMetadataService* getClientMetaDataService() {
-    return m_clientMetadataService.get();
-  }
-  void setPrimaryServerQueueSize(int queueSize) {
-    m_primaryServerQueueSize = queueSize;
-  }
-  int getPrimaryServerQueueSize() const { return m_primaryServerQueueSize; }
+  ClientMetadataService* getClientMetaDataService();
+  void setPrimaryServerQueueSize(int queueSize);
+  int getPrimaryServerQueueSize() const;
 
  protected:
   ThinClientStickyManager* m_manager;
@@ -253,30 +245,20 @@ class ThinClientPoolDM
 
   TcrConnection* getUntil(std::chrono::microseconds& sec, GfErrType* error,
                           std::set<ServerLocation>& excludeServers,
-                          bool& maxConnLimit) {
-    bool isClosed;
-    TcrConnection* mp =
-        getNoGetLock(isClosed, error, excludeServers, maxConnLimit);
-
-    if (mp == nullptr && !isClosed) {
-      mp = getUntilWithToken(sec, isClosed, &excludeServers);
-    }
-
-    return mp;
-  }
+                          bool& maxConnLimit);
 
   TcrConnection* getNoGetLock(bool& isClosed, GfErrType* error,
                               std::set<ServerLocation>& excludeServers,
                               bool& maxConnLimit);
   bool exclude(TcrConnection* conn, std::set<ServerLocation>& excludeServers);
-  void deleteAction() override { removeEPConnections(1); }
+  void deleteAction() override;
 
   std::string selectEndpoint(std::set<ServerLocation>&,
                              const TcrConnection* currentServer = nullptr);
   // TODO global - m_memId was volatile
   std::unique_ptr<ClientProxyMembershipID> m_memId;
   virtual TcrEndpoint* createEP(const char* endpointName);
-  virtual void removeCallbackConnection(TcrEndpoint*) {}
+  virtual void removeCallbackConnection(TcrEndpoint*);
 
   bool excludeServer(std::string, std::set<ServerLocation>&);
 
@@ -329,20 +311,11 @@ class FunctionExecution : public PooledWork<GfErrType> {
   std::shared_ptr<UserAttributes> m_userAttr;
 
  public:
-  FunctionExecution() {
-    m_poolDM = nullptr;
-    m_ep = nullptr;
-    m_func = nullptr;
-    m_getResult = 0;
-    m_error = GF_NOERR;
-    m_rc = nullptr;
-    m_resultCollectorLock = nullptr;
-    m_userAttr = nullptr;
-  }
+  FunctionExecution();
 
-  ~FunctionExecution() {}
+  ~FunctionExecution() override;
 
-  std::shared_ptr<CacheableString> getException() { return exceptionPtr; }
+  std::shared_ptr<CacheableString> getException();
 
   void setParameters(const char* func, uint8_t getResult,
                      std::chrono::milliseconds timeout,
@@ -350,21 +323,9 @@ class FunctionExecution : public PooledWork<GfErrType> {
                      ThinClientPoolDM* poolDM,
                      const std::shared_ptr<std::recursive_mutex>& rCL,
                      std::shared_ptr<ResultCollector>* rs,
-                     std::shared_ptr<UserAttributes> userAttr) {
-    exceptionPtr = nullptr;
-    m_resultCollectorLock = rCL;
-    m_rc = rs;
-    m_error = GF_NOTCON;
-    m_func = func;
-    m_getResult = getResult;
-    m_timeout = timeout;
-    m_args = args;
-    m_ep = ep;
-    m_poolDM = poolDM;
-    m_userAttr = userAttr;
-  }
+                     std::shared_ptr<UserAttributes> userAttr);
 
-  GfErrType execute(void);
+  GfErrType execute();
 };
 
 class OnRegionFunctionExecution : public PooledWork<GfErrType> {
@@ -396,32 +357,15 @@ class OnRegionFunctionExecution : public PooledWork<GfErrType> {
       const std::shared_ptr<BucketServerLocation>& serverLocation,
       bool allBuckets);
 
-  ~OnRegionFunctionExecution() {
-    delete m_request;
-    delete m_reply;
-    delete m_resultCollector;
-  }
+  ~OnRegionFunctionExecution() override;
 
-  TcrMessage* getReply() { return m_reply; }
+  TcrMessage* getReply();
 
-  std::shared_ptr<CacheableHashSet> getFailedNode() {
-    return m_reply->getFailedNode();
-  }
+  std::shared_ptr<CacheableHashSet> getFailedNode();
 
-  ChunkedFunctionExecutionResponse* getResultCollector() {
-    return static_cast<ChunkedFunctionExecutionResponse*>(m_resultCollector);
-  }
+  ChunkedFunctionExecutionResponse* getResultCollector();
 
-  GfErrType execute(void) {
-    GuardUserAttributes gua;
-
-    if (m_userAttr) {
-      gua.setAuthenticatedView(m_userAttr->getAuthenticatedView());
-    }
-
-    return m_poolDM->sendSyncRequest(*m_request, *m_reply, !(m_getResult & 1),
-                                     m_isBGThread, m_serverLocation);
-  }
+  GfErrType execute();
 };
 
 }  // namespace client

@@ -42,7 +42,7 @@ class APACHE_GEODE_EXPORT PutAllPartialResultServerException
    * @brief public methods
    */
  public:
-  explicit PutAllPartialResultServerException(
+   PutAllPartialResultServerException(
       std::shared_ptr<PutAllPartialResult> result);
 
   PutAllPartialResultServerException();
@@ -77,18 +77,14 @@ class APACHE_GEODE_EXPORT PutAllPartialResultServerException
   /**
    * @brief constructors
    */
-  explicit PutAllPartialResultServerException(
+   PutAllPartialResultServerException(
       std::shared_ptr<CacheableString> msg);
 
   /**
    *@brief return as std::shared_ptr<CacheableString> the Exception name
    *returned from geode sendException api.
    **/
-  std::shared_ptr<CacheableString> getName() {
-    const char* msg = "PutAllPartialResultServerException";
-    auto str = CacheableString::create(msg);
-    return str;
-  }
+  std::shared_ptr<CacheableString> getName();
 
  private:
   // never implemented.

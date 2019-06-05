@@ -39,66 +39,66 @@ class PdxReaderWithTypeCollector : public PdxLocalReader {
                              std::shared_ptr<PdxType> pdxType, int pdxlen,
                              std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry);
 
-  virtual ~PdxReaderWithTypeCollector() override;
+  ~PdxReaderWithTypeCollector() override;
 
-  std::shared_ptr<PdxType> getLocalType() const { return m_newPdxType; }
+  std::shared_ptr<PdxType> getLocalType() const;
 
-  virtual char16_t readChar(const std::string& fieldName) override;
+  char16_t readChar(const std::string& fieldName) override;
 
-  virtual bool readBoolean(const std::string& fieldName) override;
+  bool readBoolean(const std::string& fieldName) override;
 
-  virtual int8_t readByte(const std::string& fieldName) override;
+  int8_t readByte(const std::string& fieldName) override;
 
-  virtual int16_t readShort(const std::string& fieldName) override;
+  int16_t readShort(const std::string& fieldName) override;
 
-  virtual int32_t readInt(const std::string& fieldName) override;
+  int32_t readInt(const std::string& fieldName) override;
 
-  virtual int64_t readLong(const std::string& fieldName) override;
+  int64_t readLong(const std::string& fieldName) override;
 
-  virtual float readFloat(const std::string& fieldName) override;
+  float readFloat(const std::string& fieldName) override;
 
-  virtual double readDouble(const std::string& fieldName) override;
+  double readDouble(const std::string& fieldName) override;
 
-  virtual std::string readString(const std::string& fieldName) override;
+  std::string readString(const std::string& fieldName) override;
 
-  virtual std::shared_ptr<Serializable> readObject(
+  std::shared_ptr<Serializable> readObject(
       const std::string& fieldName) override;
 
-  virtual std::vector<char16_t> readCharArray(
+  std::vector<char16_t> readCharArray(
       const std::string& fieldName) override;
 
-  virtual std::vector<bool> readBooleanArray(
+  std::vector<bool> readBooleanArray(
       const std::string& fieldName) override;
 
-  virtual std::vector<int8_t> readByteArray(
+  std::vector<int8_t> readByteArray(
       const std::string& fieldName) override;
 
-  virtual std::vector<int16_t> readShortArray(
+  std::vector<int16_t> readShortArray(
       const std::string& fieldName) override;
 
-  virtual std::vector<int32_t> readIntArray(
+  std::vector<int32_t> readIntArray(
       const std::string& fieldName) override;
 
-  virtual std::vector<int64_t> readLongArray(
+  std::vector<int64_t> readLongArray(
       const std::string& fieldName) override;
 
-  virtual std::vector<float> readFloatArray(
+  std::vector<float> readFloatArray(
       const std::string& fieldName) override;
 
-  virtual std::vector<double> readDoubleArray(
+  std::vector<double> readDoubleArray(
       const std::string& fieldName) override;
 
-  virtual std::vector<std::string> readStringArray(
+  std::vector<std::string> readStringArray(
       const std::string& fieldName) override;
 
-  virtual std::shared_ptr<CacheableObjectArray> readObjectArray(
+  std::shared_ptr<CacheableObjectArray> readObjectArray(
       const std::string& fieldName) override;
 
-  virtual int8_t** readArrayOfByteArrays(const std::string& fieldName,
+  int8_t** readArrayOfByteArrays(const std::string& fieldName,
                                          int32_t& arrayLength,
                                          int32_t** elementLength) override;
 
-  virtual std::shared_ptr<CacheableDate> readDate(
+  std::shared_ptr<CacheableDate> readDate(
       const std::string& fieldName) override;
 };
 

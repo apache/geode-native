@@ -53,7 +53,7 @@ class ThinClientRegion;
  */
 class TcrConnectionManager {
  public:
-  explicit TcrConnectionManager(CacheImpl* cache);
+   TcrConnectionManager(CacheImpl* cache);
   ~TcrConnectionManager();
   void init(bool isPool = false);
   void startFailoverAndCleanupThreads(bool isPool = false);
@@ -74,14 +74,12 @@ class TcrConnectionManager {
   // network drop
   void netDown();
   void revive();
-  void setClientCrashTEST() { TEST_DURABLE_CLIENT_CRASH = true; }
+  void setClientCrashTEST();
   volatile static bool TEST_DURABLE_CLIENT_CRASH;
 
-  inline synchronized_map<std::unordered_map<std::string, TcrEndpoint*>,
-                          std::recursive_mutex>&
-  getGlobalEndpoints() {
-    return m_endpoints;
-  }
+  synchronized_map<std::unordered_map<std::string, TcrEndpoint*>,
+                   std::recursive_mutex>&
+  getGlobalEndpoints();
 
   void getAllEndpoints(std::vector<TcrEndpoint*>& endpoints);
   int getNumEndPoints();
@@ -99,13 +97,11 @@ class TcrConnectionManager {
 
   bool getEndpointStatus(const std::string& endpoint);
 
-  void addPoolEndpoints(TcrEndpoint* endpoint) {
-    m_poolEndpointList.push_back(endpoint);
-  }
+  void addPoolEndpoints(TcrEndpoint* endpoint);
 
-  bool isDurable() { return m_isDurable; };
-  bool haEnabled() { return m_redundancyManager->m_HAenabled; };
-  CacheImpl* getCacheImpl() const { return m_cache; };
+  bool isDurable();
+  bool haEnabled();
+  CacheImpl* getCacheImpl() const;
 
   GfErrType sendSyncRequestCq(TcrMessage& request, TcrMessageReply& reply,
                               TcrHADistributionManager* theHADM);
@@ -115,31 +111,19 @@ class TcrConnectionManager {
       TcrHADistributionManager* theHADM = nullptr,
       ThinClientRegion* region = nullptr);
 
-  inline void triggerRedundancyThread() { m_redundancySema.release(); }
+  void triggerRedundancyThread();
 
-  inline void acquireRedundancyLock() {
-    m_redundancyManager->acquireRedundancyLock();
-    m_distMngrsLock.lock();
-  }
+  void acquireRedundancyLock();
 
-  inline void releaseRedundancyLock() {
-    m_redundancyManager->releaseRedundancyLock();
-    m_distMngrsLock.unlock();
-  }
+  void releaseRedundancyLock();
 
-  bool checkDupAndAdd(std::shared_ptr<EventId> eventid) {
-    return m_redundancyManager->checkDupAndAdd(eventid);
-  }
+  bool checkDupAndAdd(std::shared_ptr<EventId> eventid);
 
-  std::recursive_mutex& getRedundancyLock() {
-    return m_redundancyManager->getRedundancyLock();
-  }
+  std::recursive_mutex& getRedundancyLock();
 
-  GfErrType sendRequestToPrimary(TcrMessage& request, TcrMessageReply& reply) {
-    return m_redundancyManager->sendRequestToPrimary(request, reply);
-  }
+  GfErrType sendRequestToPrimary(TcrMessage& request, TcrMessageReply& reply);
 
-  bool isNetDown() const { return m_isNetDown; }
+  bool isNetDown() const;
 
  private:
   CacheImpl* m_cache;
@@ -206,11 +190,9 @@ class DistManagersLockGuard {
   TcrConnectionManager& m_tccm;
 
  public:
-  explicit DistManagersLockGuard(TcrConnectionManager& tccm) : m_tccm(tccm) {
-    m_tccm.m_distMngrsLock.lock();
-  }
+   DistManagersLockGuard(TcrConnectionManager& tccm);
 
-  ~DistManagersLockGuard() { m_tccm.m_distMngrsLock.unlock(); }
+  ~DistManagersLockGuard();
 };
 }  // namespace client
 }  // namespace geode

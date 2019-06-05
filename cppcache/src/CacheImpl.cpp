@@ -209,7 +209,7 @@ CacheImpl::~CacheImpl() {
 }
 
 const std::string& CacheImpl::getName() const {
-  this->throwIfClosed();
+  throwIfClosed();
 
   return m_distributedSystem.getName();
 }
@@ -221,7 +221,7 @@ DistributedSystem& CacheImpl::getDistributedSystem() {
 }
 
 TypeRegistry& CacheImpl::getTypeRegistry() {
-  this->throwIfClosed();
+  throwIfClosed();
   return *m_typeRegistry;
 }
 
@@ -235,7 +235,7 @@ void CacheImpl::sendNotificationCloseMsgs() {
 }
 
 void CacheImpl::close(bool keepalive) {
-  this->throwIfClosed();
+  throwIfClosed();
 
   TcrMessage::setKeepAlive(keepalive);
   // bug #247 fix for durable clients missing events when recycled
@@ -357,7 +357,7 @@ void CacheImpl::createRegion(std::string name,
     }
   }
 
-  this->throwIfClosed();
+  throwIfClosed();
 
   if (name.find('/') != std::string::npos) {
     throw IllegalArgumentException(
@@ -451,7 +451,7 @@ std::shared_ptr<Region> CacheImpl::findRegion(const std::string& name) {
 std::shared_ptr<Region> CacheImpl::getRegion(const std::string& path) {
   LOGDEBUG("Cache::getRegion " + path);
 
-  this->throwIfClosed();
+  throwIfClosed();
 
   TryReadGuard guardCacheDestroy(m_destroyCacheMutex, m_destroyPending);
 
@@ -556,7 +556,7 @@ std::shared_ptr<RegionInternal> CacheImpl::createRegion_internal(
 }
 
 std::vector<std::shared_ptr<Region>> CacheImpl::rootRegions() {
-  this->throwIfClosed();
+  throwIfClosed();
 
   std::vector<std::shared_ptr<Region>> regions;
 
@@ -576,7 +576,7 @@ std::vector<std::shared_ptr<Region>> CacheImpl::rootRegions() {
 }
 
 void CacheImpl::initializeDeclarativeCache(const std::string& cacheXml) {
-  this->throwIfClosed();
+  throwIfClosed();
 
   auto xmlParser = std::unique_ptr<CacheXmlParser>(
       CacheXmlParser::parse(cacheXml.c_str(), m_cache));
@@ -590,7 +590,7 @@ EvictionController* CacheImpl::getEvictionController() {
 }
 
 void CacheImpl::readyForEvents() {
-  this->throwIfClosed();
+  throwIfClosed();
 
   bool autoReadyForEvents =
       m_distributedSystem.getSystemProperties().autoReadyForEvents();
@@ -709,7 +709,7 @@ int CacheImpl::getPoolSize(const char* poolName) {
 }
 
 RegionFactory CacheImpl::createRegionFactory(RegionShortcut preDefinedRegion) {
-  this->throwIfClosed();
+  throwIfClosed();
 
   return RegionFactory(preDefinedRegion, this);
 }
@@ -758,7 +758,7 @@ ThreadPool& CacheImpl::getThreadPool() { return m_threadPool; }
 
 std::shared_ptr<CacheTransactionManager>
 CacheImpl::getCacheTransactionManager() {
-  this->throwIfClosed();
+  throwIfClosed();
 
   return m_cacheTXManager;
 }
@@ -772,23 +772,23 @@ CacheImpl::getMemberListForVersionStamp() {
 }
 
 DataOutput CacheImpl::createDataOutput() const {
-  this->throwIfClosed();
+  throwIfClosed();
 
   return CacheImpl::createDataOutput(nullptr);
 }
 
 DataOutput CacheImpl::createDataOutput(Pool* pool) const {
-  this->throwIfClosed();
+  throwIfClosed();
 
   if (!pool) {
-    pool = this->getPoolManager().getDefaultPool().get();
+    pool = getPoolManager().getDefaultPool().get();
   }
 
   return DataOutput(this, pool);
 }
 
 DataInput CacheImpl::createDataInput(const uint8_t* buffer, size_t len) const {
-  this->throwIfClosed();
+  throwIfClosed();
 
   return CacheImpl::createDataInput(buffer, len, nullptr);
 }
@@ -796,14 +796,14 @@ DataInput CacheImpl::createDataInput(const uint8_t* buffer, size_t len) const {
 DataInput CacheImpl::createDataInput(const uint8_t* buffer, size_t len,
                                      Pool* pool) const {
   if (!pool) {
-    pool = this->getPoolManager().getDefaultPool().get();
+    pool = getPoolManager().getDefaultPool().get();
   }
   return DataInput(buffer, len, this, pool);
 }
 
 PdxInstanceFactory CacheImpl::createPdxInstanceFactory(
     const std::string& className) const {
-  this->throwIfClosed();
+  throwIfClosed();
 
   return PdxInstanceFactory(
       className, *m_cacheStats, *m_pdxTypeRegistry, *this,
@@ -813,11 +813,11 @@ PdxInstanceFactory CacheImpl::createPdxInstanceFactory(
 AuthenticatedView CacheImpl::createAuthenticatedView(
     std::shared_ptr<Properties> userSecurityProperties,
     const std::string& poolName) {
-  this->throwIfClosed();
+  throwIfClosed();
 
   if (poolName.empty()) {
     auto pool = m_poolManager->getDefaultPool();
-    if (!this->isClosed() && pool != nullptr) {
+    if (!isClosed() && pool != nullptr) {
       return pool->createAuthenticatedView(userSecurityProperties, this);
     }
 
@@ -825,7 +825,7 @@ AuthenticatedView CacheImpl::createAuthenticatedView(
         "Either cache has been closed or there are more than two pool."
         "Pass poolname to get the secure Cache");
   } else {
-    if (!this->isClosed()) {
+    if (!isClosed()) {
       if (!poolName.empty()) {
         auto poolPtr = m_poolManager->find(poolName);
         if (poolPtr != nullptr && !poolPtr->isDestroyed()) {
@@ -847,6 +847,88 @@ void CacheImpl::setClientCrashTEST() {
   m_tcrConnectionManager->setClientCrashTEST();
 }
 
+  void CacheImpl::setNetworkHopFlag(bool networkhopflag) {
+    m_networkhop = networkhopflag;
+  }
+
+  bool CacheImpl::getAndResetNetworkHopFlag() { return m_networkhop.exchange(false); }
+
+  int CacheImpl::getBlackListBucketTimeouts() { return m_blacklistBucketTimeout; }
+
+  void CacheImpl::incBlackListBucketTimeouts() { ++m_blacklistBucketTimeout; }
+
+  int8_t CacheImpl::getAndResetServerGroupFlag() { return m_serverGroupFlag.exchange(0); }
+
+  void CacheImpl::setServerGroupFlag(int8_t serverGroupFlag) {
+    m_serverGroupFlag = serverGroupFlag;
+  }
+
+  ExpiryTaskManager& CacheImpl::getExpiryTaskManager() { return *m_expiryTaskManager; }
+
+  ClientProxyMembershipIDFactory& CacheImpl::getClientProxyMembershipIDFactory() {
+    return m_clientProxyMembershipIDFactory;
+  }
+
+  Cache* CacheImpl::getCache() const { return m_cache; }
+
+  TcrConnectionManager& CacheImpl::tcrConnectionManager() {
+    return *m_tcrConnectionManager;
+  }
+
+  bool CacheImpl::getPdxIgnoreUnreadFields() {
+    throwIfClosed();
+
+    return m_ignorePdxUnreadFields;
+  }
+
+  void CacheImpl::setPdxIgnoreUnreadFields(bool ignore) {
+    m_ignorePdxUnreadFields = ignore;
+  }
+
+  void CacheImpl::setPdxReadSerialized(bool val) { m_readPdxSerialized = val; }
+
+  bool CacheImpl::getPdxReadSerialized() {
+    throwIfClosed();
+    return m_readPdxSerialized;
+  }
+
+  CachePerfStats& CacheImpl::getCachePerfStats() { return *m_cacheStats; }
+
+  PoolManager& CacheImpl::getPoolManager() const {
+    throwIfClosed();
+    return *m_poolManager;
+  }
+
+  const std::shared_ptr<Pool>& CacheImpl::getDefaultPool() {
+    return m_poolManager->getDefaultPool();
+  }
+
+  SystemProperties& CacheImpl::getSystemProperties() const {
+    throwIfClosed();
+
+    return m_distributedSystem.getSystemProperties();
+  }
+
+  const std::shared_ptr<AuthInitialize>& CacheImpl::getAuthInitialize() {
+    return m_authInitialize;
+  }
+
+  statistics::StatisticsManager& CacheImpl::getStatisticsManager() const {
+    return *(m_statisticsManager.get());
+  }
+
+  void CacheImpl::getSubRegions(
+      std::unordered_map<std::string, std::shared_ptr<Region>>& srm) {
+    auto&& lock = m_regions.make_lock<std::lock_guard>();
+    if (m_regions.empty()) return;
+    srm.insert(m_regions.begin(), m_regions.end());
+  }
+
+  void CacheImpl::throwIfClosed() const {
+    if (m_closed) {
+      throw CacheClosedException("Cache is closed.");
+    }
+  }
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

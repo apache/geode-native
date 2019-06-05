@@ -38,7 +38,7 @@ class APACHE_GEODE_EXPORT StructSetImpl : public StructSet {
   StructSetImpl(const std::shared_ptr<CacheableVector>& values,
                 const std::vector<std::string>& fieldNames);
 
-  ~StructSetImpl() noexcept override = default;
+  ~StructSetImpl() override = default;
 
   size_t size() const override;
 

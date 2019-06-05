@@ -62,16 +62,7 @@ class APACHE_GEODE_EXPORT EventId
 
   void fromData(DataInput& input) override;
 
-  size_t objectSize() const override {
-    size_t objectSize = 0;
-    objectSize += sizeof(uint8_t);
-    objectSize += sizeof(int64_t);
-    objectSize += sizeof(uint8_t);
-    objectSize += sizeof(int64_t);
-    objectSize += sizeof(int32_t);  // bucketID
-    objectSize += sizeof(int8_t);   // breadCrumbCounter
-    return objectSize;
-  }
+  size_t objectSize() const override;
 
   /**
    * @brief creation function for strings.
@@ -80,31 +71,19 @@ class APACHE_GEODE_EXPORT EventId
 
   /** Returns a pointer to a new eventid value. */
   static std::shared_ptr<EventId> create(char* memId, uint32_t memIdLen,
-                                         int64_t thr, int64_t seq) {
-    return std::shared_ptr<EventId>(new EventId(memId, memIdLen, thr, seq));
-  }
+                                         int64_t thr, int64_t seq);
 
   /** Destructor. */
   ~EventId() override = default;
 
   int64_t getEventIdData(DataInput& input, char numberCode);
 
-  inline void writeIdsData(DataOutput& output) {
-    //  Write EventId threadid and seqno.
-    int idsBufferLength = 18;
-    output.writeInt(idsBufferLength);
-    output.write(static_cast<uint8_t>(0));
-    char longCode = 3;
-    output.write(static_cast<uint8_t>(longCode));
-    output.writeInt(m_eidThr);
-    output.write(static_cast<uint8_t>(longCode));
-    output.writeInt(m_eidSeq);
-  }
+  void writeIdsData(DataOutput& output);
 
   /** Constructor, given the values. */
   EventId(char* memId, uint32_t memIdLen, int64_t thr, int64_t seq);
   /** Constructor, used for deserialization. */
-  explicit EventId(
+   EventId(
       bool doInit = true, uint32_t reserveSize = 0,
       bool fullValueAfterDeltaFail = false);  // set init=false if we dont
                                               // want to inc sequence (for

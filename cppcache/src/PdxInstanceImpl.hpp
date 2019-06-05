@@ -40,156 +40,156 @@ typedef std::map<std::string, std::shared_ptr<Cacheable>> FieldVsValues;
 
 class APACHE_GEODE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
  public:
-  ~PdxInstanceImpl() noexcept override;
+  ~PdxInstanceImpl() override;
 
-  virtual std::shared_ptr<PdxSerializable> getObject() override;
+  std::shared_ptr<PdxSerializable> getObject() override;
 
-  virtual bool hasField(const std::string& fieldname) override;
+  bool hasField(const std::string& fieldname) override;
 
-  virtual bool getBooleanField(const std::string& fieldname) const override;
+  bool getBooleanField(const std::string& fieldname) const override;
 
-  virtual int8_t getByteField(const std::string& fieldname) const override;
+  int8_t getByteField(const std::string& fieldname) const override;
 
-  virtual int16_t getShortField(const std::string& fieldname) const override;
+  int16_t getShortField(const std::string& fieldname) const override;
 
-  virtual int32_t getIntField(const std::string& fieldname) const override;
+  int32_t getIntField(const std::string& fieldname) const override;
 
-  virtual int64_t getLongField(const std::string& fieldname) const override;
+  int64_t getLongField(const std::string& fieldname) const override;
 
-  virtual float getFloatField(const std::string& fieldname) const override;
+  float getFloatField(const std::string& fieldname) const override;
 
-  virtual double getDoubleField(const std::string& fieldname) const override;
+  double getDoubleField(const std::string& fieldname) const override;
 
-  virtual char16_t getCharField(const std::string& fieldName) const override;
+  char16_t getCharField(const std::string& fieldName) const override;
 
-  virtual std::string getStringField(
+  std::string getStringField(
       const std::string& fieldName) const override;
 
-  virtual std::vector<bool> getBooleanArrayField(
+  std::vector<bool> getBooleanArrayField(
       const std::string& fieldname) const override;
 
-  virtual std::vector<int8_t> getByteArrayField(
+  std::vector<int8_t> getByteArrayField(
       const std::string& fieldname) const override;
 
-  virtual std::vector<int16_t> getShortArrayField(
+  std::vector<int16_t> getShortArrayField(
       const std::string& fieldname) const override;
 
-  virtual std::vector<int32_t> getIntArrayField(
+  std::vector<int32_t> getIntArrayField(
       const std::string& fieldname) const override;
 
-  virtual std::vector<int64_t> getLongArrayField(
+  std::vector<int64_t> getLongArrayField(
       const std::string& fieldname) const override;
 
-  virtual std::vector<float> getFloatArrayField(
+  std::vector<float> getFloatArrayField(
       const std::string& fieldname) const override;
 
-  virtual std::vector<double> getDoubleArrayField(
+  std::vector<double> getDoubleArrayField(
       const std::string& fieldname) const override;
 
   // charArray
-  virtual std::vector<char16_t> getCharArrayField(
+  std::vector<char16_t> getCharArrayField(
       const std::string& fieldName) const override;
 
-  virtual std::vector<std::string> getStringArrayField(
+  std::vector<std::string> getStringArrayField(
       const std::string& fieldname) const override;
 
-  virtual std::shared_ptr<CacheableDate> getCacheableDateField(
+  std::shared_ptr<CacheableDate> getCacheableDateField(
       const std::string& fieldname) const override;
 
-  virtual void getField(const std::string& fieldName, int8_t*** value,
+  void getField(const std::string& fieldName, int8_t*** value,
                         int32_t& arrayLength,
                         int32_t*& elementLength) const override;
 
-  virtual std::shared_ptr<Cacheable> getCacheableField(
+  std::shared_ptr<Cacheable> getCacheableField(
       const std::string& fieldname) const override;
 
-  virtual std::shared_ptr<CacheableObjectArray> getCacheableObjectArrayField(
+  std::shared_ptr<CacheableObjectArray> getCacheableObjectArrayField(
       const std::string& fieldname) const override;
 
-  virtual void setField(const std::string& fieldName, bool value) override;
+  void setField(const std::string& fieldName, bool value) override;
 
-  virtual void setField(const std::string& fieldName,
+  void setField(const std::string& fieldName,
                         signed char value) override;
 
-  virtual void setField(const std::string& fieldName,
+  void setField(const std::string& fieldName,
                         unsigned char value) override;
 
-  virtual void setField(const std::string& fieldName, int16_t value) override;
+  void setField(const std::string& fieldName, int16_t value) override;
 
-  virtual void setField(const std::string& fieldName, int32_t value) override;
+  void setField(const std::string& fieldName, int32_t value) override;
 
-  virtual void setField(const std::string& fieldName, int64_t value) override;
+  void setField(const std::string& fieldName, int64_t value) override;
 
-  virtual void setField(const std::string& fieldName, float value) override;
+  void setField(const std::string& fieldName, float value) override;
 
-  virtual void setField(const std::string& fieldName, double value) override;
+  void setField(const std::string& fieldName, double value) override;
 
-  virtual void setField(const std::string& fieldName, char16_t value) override;
+  void setField(const std::string& fieldName, char16_t value) override;
 
-  virtual void setField(const std::string& fieldName,
+  void setField(const std::string& fieldName,
                         std::shared_ptr<CacheableDate> value) override;
 
-  virtual void setField(const std::string& fieldName,
+  void setField(const std::string& fieldName,
                         const std::vector<bool>& value) override;
 
-  virtual void setField(const std::string& fieldName,
+  void setField(const std::string& fieldName,
                         const std::vector<int8_t>& value) override;
 
-  virtual void setField(const std::string& fieldName,
+  void setField(const std::string& fieldName,
                         const std::vector<int16_t>& value) override;
 
-  virtual void setField(const std::string& fieldName,
+  void setField(const std::string& fieldName,
                         const std::vector<int32_t>& value) override;
 
-  virtual void setField(const std::string& fieldName,
+  void setField(const std::string& fieldName,
                         const std::vector<int64_t>& value) override;
 
-  virtual void setField(const std::string& fieldName,
+  void setField(const std::string& fieldName,
                         const std::vector<float>& value) override;
 
-  virtual void setField(const std::string& fieldName,
+  void setField(const std::string& fieldName,
                         const std::vector<double>& value) override;
 
-  virtual void setField(const std::string& fieldName,
+  void setField(const std::string& fieldName,
                         const std::string& value) override;
 
-  virtual void setField(const std::string& fieldName,
+  void setField(const std::string& fieldName,
                         const std::vector<char16_t>& value) override;
 
-  virtual void setField(const std::string& fieldName, std::string* value,
+  void setField(const std::string& fieldName, std::string* value,
                         int32_t length) override;
 
-  virtual void setField(const std::string& fieldName, int8_t** value,
+  void setField(const std::string& fieldName, int8_t** value,
                         int32_t arrayLength, int32_t* elementLength) override;
 
-  virtual void setField(const std::string& fieldName,
+  void setField(const std::string& fieldName,
                         std::shared_ptr<Cacheable> value) override;
 
-  virtual void setField(const std::string& fieldName,
+  void setField(const std::string& fieldName,
                         std::shared_ptr<CacheableObjectArray> value) override;
 
-  virtual bool isIdentityField(const std::string& fieldname) override;
+  bool isIdentityField(const std::string& fieldname) override;
 
-  virtual std::shared_ptr<WritablePdxInstance> createWriter() override;
+  std::shared_ptr<WritablePdxInstance> createWriter() override;
 
-  virtual int32_t hashcode() const override;
+  int32_t hashcode() const override;
 
-  virtual std::string toString() const override;
+  std::string toString() const override;
 
-  virtual bool operator==(const CacheableKey& other) const override;
+  bool operator==(const CacheableKey& other) const override;
 
-  virtual size_t objectSize() const override;
+  size_t objectSize() const override;
 
-  virtual std::shared_ptr<CacheableStringArray> getFieldNames() override;
+  std::shared_ptr<CacheableStringArray> getFieldNames() override;
 
   // From PdxSerializable
-  virtual void toData(PdxWriter& output) const override;
+  void toData(PdxWriter& output) const override;
 
-  virtual void fromData(PdxReader& input) override;
+  void fromData(PdxReader& input) override;
 
-  virtual const std::string& getClassName() const override;
+  const std::string& getClassName() const override;
 
-  virtual PdxFieldTypes getFieldType(
+  PdxFieldTypes getFieldType(
       const std::string& fieldname) const override;
 
   void setPdxId(int32_t typeId);

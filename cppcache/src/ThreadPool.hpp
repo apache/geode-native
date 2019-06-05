@@ -35,7 +35,7 @@ namespace client {
 
 class Callable {
  public:
-  virtual ~Callable() noexcept = default;
+  virtual ~Callable() = default;
   virtual void call() = 0;
 };
 
@@ -78,7 +78,7 @@ class PooledWork : public Callable {
 
 class ThreadPool {
  public:
-  explicit ThreadPool(size_t threadPoolSize);
+   ThreadPool(size_t threadPoolSize);
   ~ThreadPool();
 
   void perform(std::shared_ptr<Callable> req);

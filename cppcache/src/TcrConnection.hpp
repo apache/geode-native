@@ -132,21 +132,7 @@ class APACHE_GEODE_EXPORT TcrConnection {
       std::chrono::microseconds connectTimeout = DEFAULT_CONNECT_TIMEOUT);
 
   TcrConnection(const TcrConnectionManager& connectionManager,
-                volatile const bool& isConnected)
-      : connectionId(0),
-        m_connectionManager(&connectionManager),
-        m_dh(nullptr),
-        m_endpoint(nullptr),
-        m_endpointObj(nullptr),
-        m_connected(isConnected),
-        m_conn(nullptr),
-        m_hasServerQueue(NON_REDUNDANT_SERVER),
-        m_queueSize(0),
-        m_port(0),
-        m_chunksProcessSema(0),
-        m_isBeingUsed(false),
-        m_isUsed(0),
-        m_poolDM(nullptr) {}
+                volatile const bool& isConnected);
 
   /* destroy the connection */
   ~TcrConnection();
@@ -274,15 +260,12 @@ class APACHE_GEODE_EXPORT TcrConnection {
   void close();
 
   //  Durable clients: return true if server has HA queue.
-  ServerQueueStatus inline getServerQueueStatus(int32_t& queueSize) {
-    queueSize = m_queueSize;
-    return m_hasServerQueue;
-  }
+  ServerQueueStatus getServerQueueStatus(int32_t& queueSize);
 
-  uint16_t inline getPort() { return m_port; }
+  uint16_t getPort();
 
-  TcrEndpoint* getEndpointObject() const { return m_endpointObj; }
-  bool isBeingUsed() { return m_isBeingUsed; }
+  TcrEndpoint* getEndpointObject() const;
+  bool isBeingUsed();
   bool setAndGetBeingUsed(
       volatile bool isBeingUsed,
       bool forTransaction);  // { m_isBeingUsed = isBeingUsed ;}
@@ -294,37 +277,17 @@ class APACHE_GEODE_EXPORT TcrConnection {
   time_point getLastAccessed();
   void updateCreationTime();
 
-  int64_t getConnectionId() {
-    LOGDEBUG("TcrConnection::getConnectionId() = %d ", connectionId);
-    return connectionId;
-  }
+  int64_t getConnectionId();
 
-  void setConnectionId(int64_t id) {
-    LOGDEBUG("Tcrconnection:setConnectionId() = %d ", id);
-    connectionId = id;
-  }
+  void setConnectionId(int64_t id);
 
-  const TcrConnectionManager& getConnectionManager() {
-    return *m_connectionManager;
-  }
+  const TcrConnectionManager& getConnectionManager();
 
   std::shared_ptr<CacheableBytes> encryptBytes(
-      std::shared_ptr<CacheableBytes> data) {
-    if (m_dh != nullptr) {
-      return m_dh->encrypt(data);
-    } else {
-      return data;
-    }
-  }
+      std::shared_ptr<CacheableBytes> data);
 
   std::shared_ptr<CacheableBytes> decryptBytes(
-      std::shared_ptr<CacheableBytes> data) {
-    if (m_dh != nullptr) {
-      return m_dh->decrypt(data);
-    } else {
-      return data;
-    }
-  }
+      std::shared_ptr<CacheableBytes> data);
 
  private:
   int64_t connectionId;

@@ -85,7 +85,7 @@ using std::chrono::system_clock;
 
 class APACHE_GEODE_EXPORT StatDataOutput {
  public:
-  explicit StatDataOutput(CacheImpl *cache);
+   StatDataOutput(CacheImpl *cache);
   StatDataOutput(std::string, CacheImpl *cache);
   ~StatDataOutput();
   /**
@@ -129,7 +129,7 @@ class APACHE_GEODE_EXPORT StatDataOutput {
   /**
    * This method is for the unit tests only for this class.
    */
-  const uint8_t *getBuffer() { return dataBuffer->getBuffer(); }
+  const uint8_t *getBuffer();
   void close();
 
   void openFile(std::string, int64_t);

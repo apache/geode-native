@@ -54,9 +54,7 @@ class APACHE_GEODE_EXPORT RegionExpiryHandler : public ACE_Event_Handler {
 
   int handle_close(ACE_HANDLE handle, ACE_Reactor_Mask close_mask) override;
 
-  void setExpiryTaskId(ExpiryTaskManager::id_type expiryTaskId) {
-    m_expiryTaskId = expiryTaskId;
-  }
+  void setExpiryTaskId(ExpiryTaskManager::id_type expiryTaskId);
 
  private:
   std::shared_ptr<RegionInternal> m_regionPtr;

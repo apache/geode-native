@@ -21,6 +21,8 @@ namespace apache {
 namespace geode {
 namespace client {
 
+EventIdMap::EventIdMap() : m_expiry(0) {}
+
 EventIdMap::~EventIdMap() { clear(); }
 
 void EventIdMap::init(std::chrono::milliseconds expirySecs) {

@@ -23,6 +23,35 @@ namespace apache {
 namespace geode {
 namespace client {
 
+ExpMapEntry::~ExpMapEntry() {}
+
+ExpEntryProperties& ExpMapEntry::getExpProperties() { return *this; }
+
+void ExpMapEntry::cleanup(const CacheEventFlags eventFlags) {
+    if (!eventFlags.isExpiration()) {
+      cancelExpiryTaskId(m_key);
+    }
+  }
+
+ExpMapEntry::ExpMapEntry(bool)
+      : MapEntryImpl(true), ExpEntryProperties(true) {}
+
+ExpMapEntry::ExpMapEntry(ExpiryTaskManager* expiryTaskManager,
+                     const std::shared_ptr<CacheableKey>& key)
+      : MapEntryImpl(key), ExpEntryProperties(expiryTaskManager) {}
+
+VersionedExpMapEntry::VersionedExpMapEntry(ExpiryTaskManager* expiryTaskManager,
+                              const std::shared_ptr<CacheableKey>& key)
+      : ExpMapEntry(expiryTaskManager, key) {}
+
+VersionedExpMapEntry::VersionedExpMapEntry(bool) : ExpMapEntry(true) {}
+
+VersionedExpMapEntry::~VersionedExpMapEntry() {}
+
+VersionStamp& VersionedExpMapEntry::getVersionStamp() { return *this; }
+
+ExpEntryFactory::~ExpEntryFactory() {}
+
 void ExpEntryFactory::newMapEntry(ExpiryTaskManager* expiryTaskManager,
                                   const std::shared_ptr<CacheableKey>& key,
                                   std::shared_ptr<MapEntryImpl>& result) const {

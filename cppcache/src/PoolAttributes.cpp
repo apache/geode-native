@@ -117,6 +117,156 @@ void PoolAttributes::addServer(const std::string& host, int port) {
   m_initServList.push_back(host + ":" + std::to_string(port));
 }
 
+const std::chrono::milliseconds& PoolAttributes::getFreeConnectionTimeout()
+    const {
+  return m_freeConnTimeout;
+}
+
+void PoolAttributes::setFreeConnectionTimeout(
+    const std::chrono::milliseconds& connectionTimeout) {
+  m_freeConnTimeout = connectionTimeout;
+}
+
+const std::chrono::milliseconds& PoolAttributes::getLoadConditioningInterval()
+    const {
+  return m_loadCondInterval;
+}
+
+void PoolAttributes::setLoadConditioningInterval(
+    const std::chrono::milliseconds& loadConditioningInterval) {
+  m_loadCondInterval = loadConditioningInterval;
+}
+
+int PoolAttributes::getSocketBufferSize() const { return m_sockBufferSize; }
+
+void PoolAttributes::setSocketBufferSize(int bufferSize) {
+  m_sockBufferSize = bufferSize;
+}
+
+const std::chrono::milliseconds& PoolAttributes::getReadTimeout() const {
+  return m_readTimeout;
+}
+
+void PoolAttributes::setReadTimeout(const std::chrono::milliseconds& timeout) {
+  m_readTimeout = timeout;
+}
+
+bool PoolAttributes::getThreadLocalConnectionSetting() {
+  return m_isThreadLocalConn;
+}
+
+void PoolAttributes::setThreadLocalConnectionSetting(bool isThreadLocal) {
+  m_isThreadLocalConn = isThreadLocal;
+}
+
+int PoolAttributes::getMinConnections() const { return m_minConns; }
+
+void PoolAttributes::setMinConnections(int minConnections) {
+  m_minConns = minConnections;
+}
+
+int PoolAttributes::getMaxConnections() const { return m_maxConns; }
+
+void PoolAttributes::setMaxConnections(int maxConnections) {
+  m_maxConns = maxConnections;
+}
+
+const std::chrono::milliseconds& PoolAttributes::getIdleTimeout() const {
+  return m_idleTimeout;
+}
+
+void PoolAttributes::setIdleTimeout(
+    const std::chrono::milliseconds& idleTimeout) {
+  m_idleTimeout = idleTimeout;
+}
+
+int PoolAttributes::getRetryAttempts() const { return m_retryAttempts; }
+
+void PoolAttributes::setRetryAttempts(int retryAttempts) {
+  m_retryAttempts = retryAttempts;
+}
+
+const std::chrono::milliseconds& PoolAttributes::getPingInterval() const {
+  return m_pingInterval;
+}
+
+void PoolAttributes::setPingInterval(
+    const std::chrono::milliseconds& pingInterval) {
+  m_pingInterval = pingInterval;
+}
+
+const std::chrono::milliseconds& PoolAttributes::getUpdateLocatorListInterval()
+    const {
+  return m_updateLocatorListInterval;
+}
+
+void PoolAttributes::setUpdateLocatorListInterval(
+    const std::chrono::milliseconds& updateLocatorListInterval) {
+  m_updateLocatorListInterval = updateLocatorListInterval;
+}
+
+const std::chrono::milliseconds& PoolAttributes::getStatisticInterval() const {
+  return m_statsInterval;
+}
+
+void PoolAttributes::setStatisticInterval(
+    const std::chrono::milliseconds& statisticInterval) {
+  m_statsInterval = statisticInterval;
+}
+
+const std::string& PoolAttributes::getServerGroup() const {
+  return m_serverGrp;
+}
+
+void PoolAttributes::setServerGroup(std::string group) { m_serverGrp = group; }
+
+bool PoolAttributes::getSubscriptionEnabled() const { return m_subsEnabled; }
+
+void PoolAttributes::setSubscriptionEnabled(bool enabled) {
+  m_subsEnabled = enabled;
+}
+
+int PoolAttributes::getSubscriptionRedundancy() const { return m_redundancy; }
+
+void PoolAttributes::setSubscriptionRedundancy(int redundancy) {
+  m_redundancy = redundancy;
+}
+
+const std::chrono::milliseconds&
+PoolAttributes::getSubscriptionMessageTrackingTimeout() const {
+  return m_msgTrackTimeout;
+}
+
+void PoolAttributes::setSubscriptionMessageTrackingTimeout(
+    const std::chrono::milliseconds& messageTrackingTimeout) {
+  m_msgTrackTimeout = messageTrackingTimeout;
+}
+
+const std::chrono::milliseconds& PoolAttributes::getSubscriptionAckInterval()
+    const {
+  return m_subsAckInterval;
+}
+
+void PoolAttributes::setSubscriptionAckInterval(
+    const std::chrono::milliseconds& ackInterval) {
+  m_subsAckInterval = ackInterval;
+}
+
+bool PoolAttributes::getPRSingleHopEnabled() const {
+  return m_isPRSingleHopEnabled;
+}
+
+void PoolAttributes::setPRSingleHopEnabled(bool enabled) {
+  m_isPRSingleHopEnabled = enabled;
+}
+
+bool PoolAttributes::getMultiuserSecureModeEnabled() const {
+  return m_multiuserSecurityMode;
+}
+
+void PoolAttributes::setMultiuserSecureModeEnabled(bool multiuserSecureMode) {
+  m_multiuserSecurityMode = multiuserSecureMode;
+}
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

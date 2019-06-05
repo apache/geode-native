@@ -580,6 +580,14 @@ std::shared_ptr<CacheableArrayList> CqService::getAllDurableCqsFromServer() {
   return tmpRes;
 }
 
+bool CqService::noCq() const { return m_cqQueryMap.empty(); }
+
+CqServiceVsdStats& CqService::getCqServiceVsdStats() {
+  return *dynamic_cast<CqServiceVsdStats*>(m_stats.get());
+}
+
+ThinClientBaseDM* CqService::getDM() { return m_tccdm; }
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

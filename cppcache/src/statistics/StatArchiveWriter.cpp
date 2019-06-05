@@ -617,6 +617,8 @@ void StatArchiveWriter::writeResourceInst(StatDataOutput *dataOut,
     dataOut->writeByte(static_cast<uint8_t>(instId));
   }
 }
+
+const uint8_t *StatDataOutput::getBuffer() { return dataBuffer->getBuffer(); }
 }  // namespace statistics
 }  // namespace geode
 }  // namespace apache

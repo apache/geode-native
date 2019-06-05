@@ -72,6 +72,17 @@ ClientHealthStats::ClientHealthStats(int gets, int puts, int misses,
   m_updateTime = CacheableDate::create();
 }
 
+size_t ClientHealthStats::objectSize() const { return sizeof(ClientHealthStats); }
+
+std::shared_ptr<ClientHealthStats> ClientHealthStats::create(int gets, int puts,
+                                                   int misses, int listCalls,
+                                                   int numThreads,
+                                                   int64_t cpuTime,
+                                                   int cpus) {
+    return std::shared_ptr<ClientHealthStats>(new ClientHealthStats(
+        gets, puts, misses, listCalls, numThreads, cpuTime, cpus));
+  }
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

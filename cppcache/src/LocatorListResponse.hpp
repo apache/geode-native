@@ -40,7 +40,7 @@ class LocatorListResponse : public ServerLocationResponse {
   void readList(DataInput& input);
 
  public:
-  LocatorListResponse() : m_isBalanced(false) {}
+  LocatorListResponse();
   ~LocatorListResponse() override = default;
 
   void fromData(DataInput& input) override;

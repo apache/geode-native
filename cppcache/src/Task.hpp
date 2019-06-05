@@ -47,7 +47,7 @@ class Task {
         runnable_(false),
         appDomainContext_(createAppDomainContext()) {}
 
-  inline ~Task() noexcept { stop(); };
+  inline ~Task() { stop(); };
 
   inline void start() {
     runnable_ = true;

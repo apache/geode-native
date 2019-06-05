@@ -22,6 +22,136 @@
 namespace apache {
 namespace geode {
 namespace client {
+ExpEntryProperties::ExpEntryProperties(ExpiryTaskManager* expiryTaskManager)
+    : m_lastAccessTime(0),
+      m_lastModifiedTime(0),
+      m_expiryTaskId(-1),
+      m_expiryTaskManager(expiryTaskManager) {
+  // The reactor always gives +ve id while scheduling.
+  // -1 will indicate that an expiry task has not been scheduled
+  // for this entry. // TODO confirm
+}
+
+ExpEntryProperties::time_point ExpEntryProperties::getLastAccessTime() const {
+  return time_point(std::chrono::system_clock::duration(m_lastAccessTime));
+}
+
+ExpEntryProperties::time_point ExpEntryProperties::getLastModifiedTime() const {
+  return time_point(std::chrono::system_clock::duration(m_lastModifiedTime));
+}
+
+//  moved time initialization outside of constructor to avoid
+// the costly gettimeofday call in MapSegment spinlock
+void ExpEntryProperties::initStartTime() {
+  time_point currentTime = std::chrono::system_clock::now();
+  m_lastAccessTime = currentTime.time_since_epoch().count();
+  m_lastModifiedTime = currentTime.time_since_epoch().count();
+}
+
+void ExpEntryProperties::updateLastAccessTime(time_point currTime) {
+  m_lastAccessTime = currTime.time_since_epoch().count();
+}
+
+void ExpEntryProperties::updateLastModifiedTime(time_point currTime) {
+  m_lastModifiedTime = currTime.time_since_epoch().count();
+}
+
+void ExpEntryProperties::setExpiryTaskId(ExpiryTaskManager::id_type id) {
+  m_expiryTaskId = id;
+}
+
+ExpiryTaskManager::id_type ExpEntryProperties::getExpiryTaskId() const {
+  return m_expiryTaskId;
+}
+
+void ExpEntryProperties::cancelExpiryTaskId(
+    const std::shared_ptr<CacheableKey>& key) const {
+  LOGDEBUG("Cancelling expiration task for key [%s] with id [%d]",
+            Utils::nullSafeToString(key).c_str(), m_expiryTaskId);
+  m_expiryTaskManager->cancelTask(m_expiryTaskId);
+}
+
+ExpEntryProperties::ExpEntryProperties(bool)
+    : m_lastAccessTime(0), m_lastModifiedTime(0) {}
+
+
+MapEntry::MapEntry() {}
+MapEntry::~MapEntry() {}
+
+MapEntry::MapEntry(bool) {}
+
+void MapEntryImpl::getKeyI(std::shared_ptr<CacheableKey>& result) const {
+  result = m_key;
+}
+
+void MapEntryImpl::getValueI(std::shared_ptr<Cacheable>& result) const {
+  // If value is destroyed, then this returns nullptr
+  if (CacheableToken::isDestroyed(m_value)) {
+    result = nullptr;
+  } else {
+    result = m_value;
+  }
+}
+
+void MapEntryImpl::setValueI(const std::shared_ptr<Cacheable>& value) {
+  m_value = value;
+}
+
+void MapEntryImpl::getKey(std::shared_ptr<CacheableKey>& result) const {
+  getKeyI(result);
+}
+
+void MapEntryImpl::getValue(std::shared_ptr<Cacheable>& result) const {
+  getValueI(result);
+}
+
+void MapEntryImpl::setValue(const std::shared_ptr<Cacheable>& value) {
+  setValueI(value);
+}
+
+std::shared_ptr<MapEntryImpl> MapEntryImpl::getImplPtr() {
+  return shared_from_this();
+}
+
+LRUEntryProperties& MapEntryImpl::getLRUProperties() {
+  throw FatalInternalException(
+      "MapEntry::getLRUProperties called for "
+      "non-LRU MapEntry");
+}
+
+ExpEntryProperties& MapEntryImpl::getExpProperties() {
+  throw FatalInternalException(
+      "MapEntry::getExpProperties called for "
+      "non-expiration MapEntry");
+}
+
+VersionStamp& MapEntryImpl::getVersionStamp() {
+  throw FatalInternalException(
+      "MapEntry::getVersionStamp called for "
+      "non-versioned MapEntry");
+}
+
+void MapEntryImpl::cleanup(const CacheEventFlags) {}
+
+MapEntryImpl::MapEntryImpl(bool) : MapEntry(true) {}
+
+MapEntryImpl::MapEntryImpl(const std::shared_ptr<CacheableKey>& key)
+    : MapEntry(), m_key(key) {}
+
+VersionedMapEntryImpl::~VersionedMapEntryImpl() {}
+
+VersionStamp& VersionedMapEntryImpl::getVersionStamp() { return *this; }
+
+VersionedMapEntryImpl::VersionedMapEntryImpl(bool) : MapEntryImpl(true) {}
+
+VersionedMapEntryImpl::VersionedMapEntryImpl(
+    const std::shared_ptr<CacheableKey>& key)
+    : MapEntryImpl(key) {}
+
+EntryFactory::EntryFactory(const bool concurrencyChecksEnabled)
+    : m_concurrencyChecksEnabled(concurrencyChecksEnabled) {}
+
+EntryFactory::~EntryFactory() {}
 
 void EntryFactory::newMapEntry(ExpiryTaskManager*,
                                const std::shared_ptr<CacheableKey>& key,

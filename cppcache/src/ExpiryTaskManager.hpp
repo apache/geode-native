@@ -229,7 +229,7 @@ class APACHE_GEODE_EXPORT ExpiryTaskManager : public ACE_Task_Base {
    * Destructor. Stops the reactors event loop if it is not running
    * and then exits.
    */
-  ~ExpiryTaskManager();
+  ~ExpiryTaskManager() override;
 
   /**
    * For scheduling a task for expiration.

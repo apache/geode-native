@@ -66,7 +66,7 @@ class APACHE_GEODE_EXPORT InternalCacheTransactionManager2PC
 
  protected:
   InternalCacheTransactionManager2PC();
-  virtual ~InternalCacheTransactionManager2PC();
+  ~InternalCacheTransactionManager2PC() override;
 };
 }  // namespace client
 }  // namespace geode

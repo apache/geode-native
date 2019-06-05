@@ -39,6 +39,8 @@ ThinClientCacheDistributionManager::ThinClientCacheDistributionManager(
     TcrConnectionManager& connManager)
     : ThinClientDistributionManager(connManager, nullptr) {}
 
+ThinClientCacheDistributionManager::~ThinClientCacheDistributionManager() {}
+
 void ThinClientCacheDistributionManager::init() {
   LOGDEBUG("ThinClientCacheDistributionManager::init");
   if (m_connManager.getNumEndPoints() == 0) {

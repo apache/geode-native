@@ -47,6 +47,28 @@ TryWriteGuard::TryWriteGuard(ACE_RW_Thread_Mutex& lock,
   } while (!exitCondition);
 }
 
+ReadGuard::ReadGuard(ACE_RW_Thread_Mutex& lock) : lock_(lock) {
+  lock_.acquire_read();
+}
+
+ReadGuard::~ReadGuard() { lock_.release(); }
+bool ReadGuard::isAcquired() { return true; }
+
+WriteGuard::WriteGuard(ACE_RW_Thread_Mutex& lock) : lock_(lock) {
+  lock_.acquire_write();
+}
+
+WriteGuard::~WriteGuard() { lock_.release(); }
+
+TryReadGuard::~TryReadGuard() {
+  if (isAcquired_) lock_.release();
+}
+bool TryReadGuard::isAcquired() const { return isAcquired_; }
+
+TryWriteGuard::~TryWriteGuard() {
+  if (isAcquired_) lock_.release();
+}
+bool TryWriteGuard::isAcquired() const { return isAcquired_; }
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

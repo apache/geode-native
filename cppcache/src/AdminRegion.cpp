@@ -134,6 +134,13 @@ void AdminRegion::close() {
   }
 }
 
+AdminRegion::AdminRegion()
+      : m_distMngr(nullptr),
+        m_fullPath("/__ADMIN_CLIENT_HEALTH_MONITORING__"),
+        m_connectionMgr(nullptr),
+        m_destroyPending(false) {
+}
+
 AdminRegion::~AdminRegion() {
   // destructor should be single threaded in any case, so no need of guard
   if (m_distMngr != nullptr) {

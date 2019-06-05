@@ -23,6 +23,40 @@ namespace apache {
 namespace geode {
 namespace client {
 
+TrackedMapEntry::TrackedMapEntry(const std::shared_ptr<MapEntryImpl>& entry,
+                                 int trackingNumber, int updateCount)
+    : m_entry(const_cast<std::shared_ptr<MapEntryImpl>&>(entry)),
+      m_trackingNumber(trackingNumber),
+      m_updateCount(updateCount) {}
+
+TrackedMapEntry::~TrackedMapEntry() {}
+
+std::shared_ptr<MapEntryImpl> TrackedMapEntry::getImplPtr() { return m_entry; }
+
+int TrackedMapEntry::addTracker(std::shared_ptr<MapEntry>&) {
+  ++m_trackingNumber;
+  return m_updateCount;
+}
+
+std::pair<bool, int> TrackedMapEntry::removeTracker() {
+  if (m_trackingNumber > 0) {
+    --m_trackingNumber;
+  }
+  if (m_trackingNumber == 0) {
+    m_updateCount = 0;
+    return std::make_pair(true, 0);
+  }
+  return std::make_pair(false, m_trackingNumber);
+}
+
+int TrackedMapEntry::incrementUpdateCount(std::shared_ptr<MapEntry>&) {
+  return ++m_updateCount;
+}
+
+int TrackedMapEntry::getTrackingNumber() const { return m_trackingNumber; }
+
+int TrackedMapEntry::getUpdateCount() const { return m_updateCount; }
+
 void TrackedMapEntry::getKey(std::shared_ptr<CacheableKey>& result) const {
   m_entry->getKeyI(result);
 }

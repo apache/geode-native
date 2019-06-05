@@ -46,6 +46,38 @@ TXState::TXState(CacheImpl* cacheImpl) {
 }
 
 TXState::~TXState() {}
+
+bool TXState::isDirty() { return m_dirty; }
+
+void TXState::setDirty() { m_dirty = true; }
+
+bool TXState::isReplay() { return m_replay; }
+
+bool TXState::isPrepared() { return m_prepared; }
+
+void TXState::setPrepared() { m_prepared = true; }
+
+std::string TXState::getEPStr() { return epNameStr; }
+
+void TXState::setEPStr(std::string ep) { epNameStr = ep; }
+
+ThinClientPoolDM* TXState::getPoolDM() { return m_pooldm; }
+
+void TXState::setPoolDM(ThinClientPoolDM* dm) { m_pooldm = dm; }
+
+void TXState::setSuspendedExpiryTaskId(
+    ExpiryTaskManager::id_type suspendedExpiryTaskId) {
+  m_suspendedExpiryTaskId = suspendedExpiryTaskId;
+}
+
+ExpiryTaskManager::id_type TXState::getSuspendedExpiryTaskId() {
+  return m_suspendedExpiryTaskId;
+}
+
+void TXState::startReplay() { m_replay = true; }
+
+void TXState::endReplay() { m_replay = false; }
+
 TXId& TXState::getTransactionId() { return m_txId; }
 
 int32_t TXState::nextModSerialNum() {
@@ -122,6 +154,13 @@ void TXState::releaseStickyConnection() {
     }
   }
 }
+
+TXState::ReplayControl::ReplayControl(TXState* txState) : m_txState(txState) {
+  m_txState->startReplay();
+}
+
+TXState::ReplayControl::~ReplayControl() { m_txState->endReplay(); }
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

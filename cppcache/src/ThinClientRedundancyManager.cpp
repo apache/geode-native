@@ -1280,6 +1280,25 @@ GfErrType ThinClientRedundancyManager::sendRequestToPrimary(
   return err;
 }
 
+void ThinClientRedundancyManager::acquireRedundancyLock() {
+  m_redundantEndpointsLock.lock();
+}
+
+void ThinClientRedundancyManager::releaseRedundancyLock() {
+  m_redundantEndpointsLock.unlock();
+}
+
+bool ThinClientRedundancyManager::allEndPointDiscon() {
+  return m_IsAllEpDisCon;
+}
+
+std::recursive_mutex& ThinClientRedundancyManager::getRedundancyLock() {
+  return m_redundantEndpointsLock;
+}
+
+bool ThinClientRedundancyManager::isSentReadyForEvents() const {
+  return m_sentReadyForEvents;
+}
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

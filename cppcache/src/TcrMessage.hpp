@@ -667,28 +667,28 @@ class TcrMessageTxSynchronization : public TcrMessage {
 
 class TcrMessageClientReady : public TcrMessage {
  public:
-  explicit TcrMessageClientReady(DataOutput* dataOutput);
+   TcrMessageClientReady(DataOutput* dataOutput);
 
   ~TcrMessageClientReady() override = default;
 };
 
 class TcrMessageCommit : public TcrMessage {
  public:
-  explicit TcrMessageCommit(DataOutput* dataOutput);
+   TcrMessageCommit(DataOutput* dataOutput);
 
   ~TcrMessageCommit() override = default;
 };
 
 class TcrMessageRollback : public TcrMessage {
  public:
-  explicit TcrMessageRollback(DataOutput* dataOutput);
+   TcrMessageRollback(DataOutput* dataOutput);
 
   ~TcrMessageRollback() override = default;
 };
 
 class TcrMessageTxFailover : public TcrMessage {
  public:
-  explicit TcrMessageTxFailover(DataOutput* dataOutput);
+   TcrMessageTxFailover(DataOutput* dataOutput);
 
   ~TcrMessageTxFailover() override = default;
 };

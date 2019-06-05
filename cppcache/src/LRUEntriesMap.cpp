@@ -22,7 +22,7 @@
 #include "CacheImpl.hpp"
 #include "EvictionController.hpp"
 #include "ExpiryTaskManager.hpp"
-#include "LRUList.cpp"
+#include "LRUList.hpp"
 #include "MapSegment.hpp"
 #include "util/concurrent/spinlock_mutex.hpp"
 
@@ -38,7 +38,7 @@ class APACHE_GEODE_EXPORT TestMapAction : public virtual LRUAction {
   EntriesMap* m_eMap;
 
  public:
-  explicit TestMapAction(EntriesMap* eMap) : m_eMap(eMap) { m_destroys = true; }
+   TestMapAction(EntriesMap* eMap) : m_eMap(eMap) { m_destroys = true; }
 
   virtual ~TestMapAction() {}
 
@@ -517,6 +517,30 @@ std::shared_ptr<Cacheable> LRUEntriesMap::getFromDisk(
   }
   return tmpObj;
 }
+
+void LRUEntriesMap::setPersistenceManager(
+    std::shared_ptr<PersistenceManager>& pmPtr) {
+  m_pmPtr = pmPtr;
+}
+
+bool LRUEntriesMap::mustEvict() const {
+  if (m_action == nullptr) {
+    LOGFINE("Eviction action is nullptr");
+    return false;
+  }
+  if (m_action->overflows()) {
+    return validEntriesSize() > m_limit;
+  } else if ((m_heapLRUEnabled) && (m_limit == 0)) {
+    return false;
+  } else {
+    return size() > m_limit;
+  }
+}
+
+uint32_t LRUEntriesMap::validEntriesSize() const { return m_validEntries; }
+
+void LRUEntriesMap::adjustLimit(uint32_t limit) { m_limit = limit; }
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

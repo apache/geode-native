@@ -36,6 +36,8 @@ using std::chrono::nanoseconds;
 
 const char* PoolStatsSampler::NC_PSS_Thread = "NC PSS Thread";
 
+PoolStatsSampler::~PoolStatsSampler() {}
+
 PoolStatsSampler::PoolStatsSampler(milliseconds sampleRate, CacheImpl* cache,
                                    ThinClientPoolDM* distMan)
     : m_running(false),

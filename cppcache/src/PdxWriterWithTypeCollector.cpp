@@ -276,6 +276,8 @@ PdxWriter& PdxWriterWithTypeCollector::markIdentityField(
   pft->setIdentityField(true);
   return *this;
 }
+
+std::shared_ptr<PdxType> PdxWriterWithTypeCollector::getPdxLocalType() { return m_pdxType; }
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

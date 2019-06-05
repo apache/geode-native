@@ -814,6 +814,38 @@ bool ClientMetadataService::isBucketMarkedForTimeout(const char* regionFullPath,
 
   return false;
 }
+
+  bool BucketStatus::isTimedoutAndReset(std::chrono::milliseconds millis) {
+    if (m_lastTimeout == m_noTimeout) {
+      return false;
+    } else {
+      auto timeout = m_lastTimeout + millis;
+      if (timeout > clock::now()) {
+        return true;  // timeout as buckste not recovered yet
+      } else {
+        // reset to zero as we waited enough to recover bucket
+        m_lastTimeout = m_noTimeout;
+        return false;
+      }
+    }
+  }
+
+  void BucketStatus::setTimeout() {
+    if (m_lastTimeout == m_noTimeout) {
+      m_lastTimeout = clock::now();  // set once only for timeout
+    }
+  }
+
+  PRbuckets::PRbuckets(int32_t nBuckets) {
+    m_buckets = new BucketStatus[nBuckets];
+  }
+  PRbuckets::~PRbuckets() { delete[] m_buckets; }
+
+  bool PRbuckets::isBucketTimedOut(int32_t bucketId, std::chrono::milliseconds millis) {
+    return m_buckets[bucketId].isTimedoutAndReset(millis);
+  }
+
+  void PRbuckets::setBucketTimeout(int32_t bucketId) { m_buckets[bucketId].setTimeout(); }
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

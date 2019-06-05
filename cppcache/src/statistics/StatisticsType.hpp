@@ -88,7 +88,7 @@ class APACHE_GEODE_EXPORT StatisticsType {
   /**
    * Destructor
    */
-  virtual ~StatisticsType() {}
+  virtual ~StatisticsType() = default;
 };
 
 }  // namespace statistics

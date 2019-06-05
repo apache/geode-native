@@ -68,12 +68,10 @@ class TcrEndpoint {
                                bool isSecondary = false,
                                bool isActiveEndpoint = false,
                                ThinClientBaseDM* distMgr = nullptr);
-  // GfErrType registerPoolDM( bool isSecondary, ThinClientPoolHADM* poolDM );
 
   virtual void unregisterDM(bool clientNotification,
                             ThinClientBaseDM* distMgr = nullptr,
                             bool checkQueueHosted = false);
-  // void unregisterPoolDM(  );
 
   void pingServer(ThinClientPoolDM* poolDM = nullptr);
   void receiveNotification(std::atomic<bool>& isRunning);
@@ -94,45 +92,30 @@ class TcrEndpoint {
   void stopNotifyReceiverAndCleanup();
   void stopNoBlock();
 
-  bool inline connected() const { return m_connected; }
+  bool connected() const;
 
-  int inline numRegions() const { return m_numRegions; }
+  int numRegions() const;
 
-  void inline setNumRegions(int numRegions) { m_numRegions = numRegions; }
+  void setNumRegions(int numRegions);
 
-  inline const std::string& name() const { return m_name; }
+  const std::string& name() const;
 
   //  setConnectionStatus is now a public method, as it is used by
   //  TcrDistributionManager.
   void setConnectionStatus(bool status);
 
-  inline int getNumRegionListeners() const { return m_numRegionListener; }
+  int getNumRegionListeners() const;
 
   // TODO: for single user mode only
-  void setUniqueId(int64_t uniqueId) {
-    LOGDEBUG("tcrEndpoint:setUniqueId:: %d ", uniqueId);
-    m_isAuthenticated = true;
-    m_uniqueId = uniqueId;
-  }
+  void setUniqueId(int64_t uniqueId);
 
-  int64_t getUniqueId() {
-    LOGDEBUG("tcrEndpoint:getUniqueId:: %d ", m_uniqueId);
-    return m_uniqueId;
-  }
+  int64_t getUniqueId();
 
-  bool isAuthenticated() { return m_isAuthenticated; }
+  bool isAuthenticated();
 
-  void setAuthenticated(bool isAuthenticated) {
-    m_isAuthenticated = isAuthenticated;
-  }
+  void setAuthenticated(bool isAuthenticated);
 
   virtual bool isMultiUserMode();
-  /*{
-    if(m_baseDM != nullptr)
-      return this->m_baseDM->isMultiUserMode();
-    else
-      return false;
-  }*/
 
   void authenticateEndpoint(TcrConnection*& conn);
 
@@ -141,14 +124,11 @@ class TcrEndpoint {
                                               TcrConnection*& statusConn);
 
   //  TESTING: return true or false
-  bool inline getServerQueueStatusTEST() {
-    return (m_serverQueueStatus == REDUNDANT_SERVER ||
-            m_serverQueueStatus == PRIMARY_SERVER);
-  }
+  bool getServerQueueStatusTEST();
 
   // Get cached server queue props.
-  int32_t inline getServerQueueSize() { return m_queueSize; }
-  ServerQueueStatus getServerQueueStatus() { return m_serverQueueStatus; }
+  int32_t getServerQueueSize();
+  ServerQueueStatus getServerQueueStatus();
 
   // Set server queue props.
   void setServerQueueStatus(ServerQueueStatus queueStatus, int32_t queueSize);
@@ -166,28 +146,20 @@ class TcrEndpoint {
                                   bool isClientNotification, bool isSecondary,
                                   std::chrono::microseconds connectTimeout);
 
-  void setConnected(volatile bool connected = true) { m_connected = connected; }
-  virtual ThinClientPoolDM* getPoolHADM() { return nullptr; }
+  void setConnected(volatile bool connected = true);
+  virtual ThinClientPoolDM* getPoolHADM();
   bool isQueueHosted();
-  std::recursive_mutex& getQueueHostedMutex() { return m_notifyReceiverLock; }
-  /*
-  void sendNotificationCloseMsg();
-  */
+  std::recursive_mutex& getQueueHostedMutex();
 
-  void setDM(ThinClientBaseDM* dm) {
-    LOGDEBUG("tcrendpoint setDM");
-    this->m_baseDM = dm;
-  }
+  void setDM(ThinClientBaseDM* dm);
 
-  int32_t numberOfTimesFailed() { return m_numberOfTimesFailed; }
+  int32_t numberOfTimesFailed();
 
-  void addConnRefCounter(int count) { m_noOfConnRefs += count; }
+  void addConnRefCounter(int count);
 
-  int getConnRefCounter() { return m_noOfConnRefs; }
-  virtual uint16_t getDistributedMemberID() { return m_distributedMemId; }
-  virtual void setDistributedMemberID(uint16_t memId) {
-    m_distributedMemId = memId;
-  }
+  int getConnRefCounter();
+  virtual uint16_t getDistributedMemberID();
+  virtual void setDistributedMemberID(uint16_t memId);
 
  protected:
   TcrConnection* m_notifyConnection;

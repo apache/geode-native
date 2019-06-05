@@ -21,6 +21,12 @@
 namespace apache {
 namespace geode {
 namespace client {
+DistributedMemberWithIntIdentifier::DistributedMemberWithIntIdentifier(
+    std::shared_ptr<DSMemberForVersionStamp> dsmember,
+    uint16_t id) {
+  m_member = dsmember;
+  m_identifier = id;
+}
 
 MemberListForVersionStamp::MemberListForVersionStamp() { m_memberCounter = 0; }
 

@@ -26,6 +26,7 @@
 namespace apache {
 namespace geode {
 namespace client {
+PoolManagerImpl::PoolManagerImpl(CacheImpl* cache) : m_cache(cache) {}
 
 void PoolManagerImpl::removePool(const std::string& name) {
   std::lock_guard<std::recursive_mutex> guard(m_connectionPoolsLock);

@@ -22,21 +22,21 @@
 
 #include <atomic>
 
+#include <geode/internal/geode_globals.hpp>
+
 namespace apache {
 namespace geode {
 namespace util {
 namespace concurrent {
 
-class spinlock_mutex final {
+class APACHE_GEODE_EXPORT spinlock_mutex final {
  private:
   std::atomic_flag flag = ATOMIC_FLAG_INIT;
 
  public:
-  void lock() {
-    while (flag.test_and_set(std::memory_order_acquire)) continue;
-  }
+  void lock();
 
-  void unlock() { flag.clear(std::memory_order_release); }
+  void unlock();
 
   spinlock_mutex() = default;
   spinlock_mutex(const spinlock_mutex &) = delete;

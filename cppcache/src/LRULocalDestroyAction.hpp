@@ -40,17 +40,14 @@ class APACHE_GEODE_EXPORT LRULocalDestroyAction : public virtual LRUAction {
   RegionInternal* m_regionPtr;
   LRUEntriesMap* m_entriesMapPtr;
 
-  LRULocalDestroyAction(RegionInternal* regionPtr, LRUEntriesMap* entriesMapPtr)
-      : m_regionPtr(regionPtr), m_entriesMapPtr(entriesMapPtr) {
-    m_destroys = true;
-  }
+  LRULocalDestroyAction(RegionInternal* regionPtr, LRUEntriesMap* entriesMapPtr);
 
  public:
-  virtual ~LRULocalDestroyAction() {}
+  ~LRULocalDestroyAction() override = default;
 
-  virtual bool evict(const std::shared_ptr<MapEntryImpl>& mePtr);
+  bool evict(const std::shared_ptr<MapEntryImpl>& mePtr) override;
 
-  virtual LRUAction::Action getType() { return LRUAction::LOCAL_DESTROY; }
+  LRUAction::Action getType() override;
   friend class LRUAction;
 };
 }  // namespace client

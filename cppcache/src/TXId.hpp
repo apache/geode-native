@@ -41,7 +41,7 @@ class TXId : public apache::geode::client::TransactionId {
 
   TXId& operator=(const TXId&);
 
-  virtual ~TXId();
+  ~TXId() override;
 
   int32_t getId();
 

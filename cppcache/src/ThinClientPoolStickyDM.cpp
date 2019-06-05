@@ -22,6 +22,15 @@
 namespace apache {
 namespace geode {
 namespace client {
+ThinClientPoolStickyDM::ThinClientPoolStickyDM(
+    const char* name, std::shared_ptr<PoolAttributes> poolAttrs,
+    TcrConnectionManager& connManager)
+    : ThinClientPoolDM(name, poolAttrs, connManager) {
+  m_sticky = true;
+}
+
+ThinClientPoolStickyDM::~ThinClientPoolStickyDM() {}
+
 TcrConnection* ThinClientPoolStickyDM::getConnectionFromQueueW(
     GfErrType* error, std::set<ServerLocation>& excludeServers, bool isBGThread,
     TcrMessage& request, int8_t& version, bool& match, bool& connFound,

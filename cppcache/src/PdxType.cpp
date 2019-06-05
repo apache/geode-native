@@ -554,6 +554,83 @@ bool PdxType::operator<(const PdxType& other) const {
   return this->m_className < other.m_className;
 }
 
+std::shared_ptr<Serializable> PdxType::CreateDeserializable(
+    PdxTypeRegistry& pdxTypeRegistry) {
+  return std::make_shared<PdxType>(pdxTypeRegistry, "", false);
+}
+
+size_t PdxType::objectSize() const {
+  auto size = sizeof(PdxType);
+  if (m_pdxFieldTypes != nullptr) {
+    for (size_t i = 0; i < m_pdxFieldTypes->size(); i++) {
+      size += m_pdxFieldTypes->at(i)->objectSize();
+    }
+  }
+  size += static_cast<uint32_t>(m_className.length());
+  for (auto&& iter : m_fieldNameVsPdxType) {
+    size += iter.first.length();
+    size += iter.second->objectSize();
+  }
+  if (m_remoteToLocalFieldMap != nullptr) {
+    if (m_pdxFieldTypes != nullptr) {
+      size += sizeof(int32_t) * m_pdxFieldTypes->size();
+    }
+  }
+  if (m_localToRemoteFieldMap != nullptr) {
+    if (m_pdxFieldTypes != nullptr) {
+      size += sizeof(int32_t) * m_pdxFieldTypes->size();
+    }
+  }
+  return size;
+}
+
+int32_t PdxType::getTypeId() const { return m_geodeTypeId; }
+
+void PdxType::setTypeId(int32_t typeId) { m_geodeTypeId = typeId; }
+
+int32_t PdxType::getNumberOfVarLenFields() const {
+  return m_numberOfVarLenFields;
+}
+
+void PdxType::setNumberOfVarLenFields(int32_t value) {
+  m_numberOfVarLenFields = value;
+}
+
+int32_t PdxType::getTotalFields() const {
+  return static_cast<int32_t>(m_pdxFieldTypes->size());
+}
+
+const std::string& PdxType::getPdxClassName() const { return m_className; }
+
+void PdxType::setPdxClassName(std::string className) {
+  m_className = className;
+}
+
+int32_t PdxType::getNumberOfExtraFields() const {
+  return m_numberOfFieldsExtra;
+}
+
+void PdxType::setVarLenFieldIdx(int32_t value) { m_varLenFieldIdx = value; }
+
+int32_t PdxType::getVarLenFieldIdx() const { return m_varLenFieldIdx; }
+
+std::shared_ptr<PdxFieldType> PdxType::getPdxField(
+    const std::string& fieldName) {
+  auto&& iter = m_fieldNameVsPdxType.find(fieldName);
+  if (iter != m_fieldNameVsPdxType.end()) {
+    return iter->second;
+  }
+  return nullptr;
+}
+
+bool PdxType::isLocal() const { return m_isLocal; }
+
+void PdxType::setLocal(bool local) { m_isLocal = local; }
+
+std::vector<std::shared_ptr<PdxFieldType>>* PdxType::getPdxFieldTypes() const {
+  return m_pdxFieldTypes;
+}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

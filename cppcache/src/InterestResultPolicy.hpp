@@ -43,10 +43,10 @@ class APACHE_GEODE_EXPORT InterestResultPolicy {
 
   char ordinal;
 
-  char getOrdinal() { return ordinal; }
+  char getOrdinal();
 
  private:
-  InterestResultPolicy() { ordinal = nextOrdinal++; }
+  InterestResultPolicy();
 };
 }  // namespace client
 }  // namespace geode

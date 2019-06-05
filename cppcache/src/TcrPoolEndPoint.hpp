@@ -50,7 +50,7 @@ class TcrPoolEndPoint : public TcrEndpoint {
   bool handleIOException(const std::string& message, TcrConnection*& conn,
                          bool isBgThread = false) override;
   void handleNotificationStats(int64_t byteLength) override;
-  ~TcrPoolEndPoint() override { m_dm = nullptr; }
+  ~TcrPoolEndPoint() override;
   bool isMultiUserMode() override;
 
  protected:

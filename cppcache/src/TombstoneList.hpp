@@ -42,20 +42,14 @@ class TombstoneEntry {
   using clock = std::chrono::steady_clock;
   using time_point = clock::time_point;
 
-  explicit TombstoneEntry(const std::shared_ptr<MapEntryImpl>& entry)
-      : m_entry(entry),
-        m_tombstoneCreationTime(TombstoneEntry::clock::now()),
-        m_expiryTaskId(0),
-        m_handler(nullptr) {}
-  virtual ~TombstoneEntry() {}
-  std::shared_ptr<MapEntryImpl> getEntry() { return m_entry; }
-  time_point getTombstoneCreationTime() { return m_tombstoneCreationTime; }
-  ExpiryTaskManager::id_type getExpiryTaskId() { return m_expiryTaskId; }
-  void setExpiryTaskId(ExpiryTaskManager::id_type expiryTaskId) {
-    m_expiryTaskId = expiryTaskId;
-  }
-  TombstoneExpiryHandler* getHandler() { return m_handler; };
-  void setHandler(TombstoneExpiryHandler* handler) { m_handler = handler; };
+   TombstoneEntry(const std::shared_ptr<MapEntryImpl>& entry);
+  virtual ~TombstoneEntry();
+  std::shared_ptr<MapEntryImpl> getEntry();
+  time_point getTombstoneCreationTime();
+  ExpiryTaskManager::id_type getExpiryTaskId();
+  void setExpiryTaskId(ExpiryTaskManager::id_type expiryTaskId);
+  TombstoneExpiryHandler* getHandler();
+  void setHandler(TombstoneExpiryHandler* handler);
 
  private:
   std::shared_ptr<MapEntryImpl> m_entry;
@@ -66,9 +60,8 @@ class TombstoneEntry {
 
 class TombstoneList {
  public:
-  TombstoneList(MapSegment* mapSegment, CacheImpl* cacheImpl)
-      : m_mapSegment(mapSegment), m_cacheImpl(cacheImpl) {}
-  virtual ~TombstoneList() { cleanUp(); }
+  TombstoneList(MapSegment* mapSegment, CacheImpl* cacheImpl);
+  virtual ~TombstoneList();
   void add(const std::shared_ptr<MapEntryImpl>& entry,
            TombstoneExpiryHandler* handler, ExpiryTaskManager::id_type taskID);
 

@@ -60,41 +60,34 @@ class APACHE_GEODE_EXPORT PdxFieldType
 
   PdxFieldType();
 
-  inline const std::string& getFieldName() { return m_fieldName; }
+  const std::string& getFieldName();
 
-  inline const std::string& getClassName() { return m_className; }
+  const std::string& getClassName();
 
-  inline PdxFieldTypes getTypeId() { return m_typeId; }
+  PdxFieldTypes getTypeId();
 
-  inline uint8_t getSequenceId() { return m_sequenceId; }
+  uint8_t getSequenceId();
 
-  inline bool IsVariableLengthType() { return m_isVariableLengthType; }
+  bool IsVariableLengthType();
 
-  bool getIdentityField() const { return m_isIdentityField; }
+  bool getIdentityField() const;
 
-  int32_t getVarLenFieldIdx() const { return m_varLenFieldIdx; }
+  int32_t getVarLenFieldIdx() const;
 
-  void setVarLenOffsetIndex(int32_t value) { m_vlOffsetIndex = value; }
+  void setVarLenOffsetIndex(int32_t value);
 
-  void setRelativeOffset(int32_t value) { m_relativeOffset = value; }
+  void setRelativeOffset(int32_t value);
 
-  int32_t getFixedSize() const { return m_fixedSize; }
-  void setIdentityField(bool identityField) {
-    m_isIdentityField = identityField;
-  }
+  int32_t getFixedSize() const;
+  void setIdentityField(bool identityField);
 
   // TODO:add more getters for the remaining members.
 
   void toData(DataOutput& output) const override;
 
-  virtual void fromData(DataInput& input) override;
+  void fromData(DataInput& input) override;
 
-  virtual size_t objectSize() const override {
-    auto size = sizeof(PdxFieldType);
-    size += m_className.length();
-    size += m_fieldName.length();
-    return size;
-  }
+  size_t objectSize() const override;
 
   std::string toString() const override;
 
@@ -102,9 +95,9 @@ class APACHE_GEODE_EXPORT PdxFieldType
 
   bool equals(std::shared_ptr<PdxFieldType> otherObj);
 
-  int32_t getVarLenOffsetIndex() const { return m_vlOffsetIndex; }
+  int32_t getVarLenOffsetIndex() const;
 
-  int32_t getRelativeOffset() const { return m_relativeOffset; }
+  int32_t getRelativeOffset() const;
 };
 
 }  // namespace client

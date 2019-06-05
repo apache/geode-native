@@ -202,6 +202,76 @@ RegionStats::~RegionStats() {
     m_regionStats = nullptr;
   }
 }
+
+void RegionStats::close() { m_regionStats->close(); }
+
+void RegionStats::incDestroys() { m_regionStats->incInt(m_destroysId, 1); }
+
+void RegionStats::incCreates() { m_regionStats->incInt(m_createsId, 1); }
+
+void RegionStats::incPuts() { m_regionStats->incInt(m_putsId, 1); }
+
+void RegionStats::incGets() { m_regionStats->incInt(m_getsId, 1); }
+
+void RegionStats::incGetAll() { m_regionStats->incInt(m_getAllId, 1); }
+
+void RegionStats::incPutAll() { m_regionStats->incInt(m_putAllId, 1); }
+
+void RegionStats::incRemoveAll() { m_regionStats->incInt(m_removeAllId, 1); }
+
+void RegionStats::incHits() { m_regionStats->incInt(m_hitsId, 1); }
+
+void RegionStats::incMisses() { m_regionStats->incInt(m_missesId, 1); }
+
+void RegionStats::incOverflows() { m_regionStats->incInt(m_overflowsId, 1); }
+
+void RegionStats::incRetrieves() { m_regionStats->incInt(m_retrievesId, 1); }
+
+void RegionStats::incMetaDataRefreshCount() {
+  m_regionStats->incInt(m_metaDataRefreshId, 1);
+}
+
+void RegionStats::setEntries(int32_t entries) {
+  m_regionStats->setInt(m_entriesId, entries);
+}
+
+void RegionStats::incLoaderCallsCompleted() {
+  m_regionStats->incInt(m_LoaderCallsCompletedId, 1);
+}
+
+void RegionStats::incWriterCallsCompleted() {
+  m_regionStats->incInt(m_WriterCallsCompletedId, 1);
+}
+
+void RegionStats::incListenerCallsCompleted() {
+  m_regionStats->incInt(m_ListenerCallsCompletedId, 1);
+}
+
+void RegionStats::incClears() { m_regionStats->incInt(m_clearsId, 1); }
+
+void RegionStats::updateGetTime() { m_regionStats->incInt(m_clearsId, 1); }
+
+apache::geode::statistics::Statistics* RegionStats::getStat() {
+  return m_regionStats;
+}
+
+int32_t RegionStats::getGetTimeId() { return m_getTimeId; }
+
+int32_t RegionStats::getPutTimeId() { return m_putTimeId; }
+
+int32_t RegionStats::getGetAllTimeId() { return m_getAllTimeId; }
+
+int32_t RegionStats::getPutAllTimeId() { return m_putAllTimeId; }
+
+int32_t RegionStats::getRemoveAllTimeId() { return m_removeAllTimeId; }
+
+int32_t RegionStats::getLoaderCallTimeId() { return m_LoaderCallTimeId; }
+
+int32_t RegionStats::getWriterCallTimeId() { return m_WriterCallTimeId; }
+
+int32_t RegionStats::getListenerCallTimeId() { return m_ListenerCallTimeId; }
+
+int32_t RegionStats::getClearsId() { return m_clearsId; }
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

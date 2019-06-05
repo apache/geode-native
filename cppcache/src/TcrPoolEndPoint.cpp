@@ -144,6 +144,8 @@ void TcrPoolEndPoint::handleNotificationStats(int64_t byteLength) {
   m_dm->getStats().incMessageBeingReceived();
 }
 
+TcrPoolEndPoint::~TcrPoolEndPoint() { m_dm = nullptr; }
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

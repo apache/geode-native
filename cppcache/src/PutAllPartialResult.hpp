@@ -44,16 +44,16 @@ class PutAllPartialResult final : public Serializable {
 
  public:
   PutAllPartialResult(int totalMapSize, std::recursive_mutex& responseLock);
-  ~PutAllPartialResult() noexcept final {}
+  ~PutAllPartialResult() override;
 
-  void setTotalMapSize(int totalMapSize) { m_totalMapSize = totalMapSize; }
+  void setTotalMapSize(int totalMapSize);
 
   // Add all succeededKeys and firstfailedKey.
   // Before calling this, we must read PutAllPartialResultServerException and
   // formulate obj of type PutAllPartialResult.
   void consolidate(std::shared_ptr<PutAllPartialResult> other);
 
-  std::shared_ptr<Exception> getFailure() { return m_firstCauseOfFailure; }
+  std::shared_ptr<Exception> getFailure();
 
   void addKeysAndVersions(
       std::shared_ptr<VersionedCacheableObjectPartList> keysAndVersion);
@@ -62,58 +62,21 @@ class PutAllPartialResult final : public Serializable {
       std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>> m_keys);
 
   void saveFailedKey(std::shared_ptr<CacheableKey> key,
-                     std::shared_ptr<Exception> cause) {
-    if (key == nullptr) {
-      return;
-    }
-    // TODO:: Do we need to handle server cancelException.
-    if (m_firstFailedKey == nullptr /*|| cause instanceof CaccelException */) {
-      m_firstFailedKey = key;
-      m_firstCauseOfFailure = cause;
-    }
-  }
+                     std::shared_ptr<Exception> cause);
 
   std::shared_ptr<VersionedCacheableObjectPartList>
   getSucceededKeysAndVersions();
 
   // Returns the first key that failed
-  std::shared_ptr<CacheableKey> getFirstFailedKey() { return m_firstFailedKey; }
+  std::shared_ptr<CacheableKey> getFirstFailedKey();
 
   // Returns there's failedKeys
-  bool hasFailure() { return m_firstFailedKey != nullptr; }
+  bool hasFailure();
 
   // Returns there's saved succeed keys
   bool hasSucceededKeys();
 
-  virtual std::string toString() const final {
-    char msgStr1[1024];
-    if (m_firstFailedKey != nullptr) {
-      std::snprintf(msgStr1, 1024, "[ Key =%s ]",
-                    m_firstFailedKey->toString().c_str());
-    }
-
-    char msgStr2[1024];
-    if (m_totalMapSize > 0) {
-      // TODO:: impl. CacheableObjectPartList.size();
-      int failedKeyNum = m_totalMapSize - m_succeededKeys->size();
-      if (failedKeyNum > 0) {
-        std::snprintf(
-            msgStr2, 1024,
-            "The putAll operation failed to put %d out of %d entries ",
-            failedKeyNum, m_totalMapSize);
-      } else {
-        std::snprintf(
-            msgStr2, 1024,
-            "The putAll operation successfully put %d out of %d entries ",
-            m_succeededKeys->size(), m_totalMapSize);
-      }
-    }
-
-    char stringBuf[7000];
-    std::snprintf(stringBuf, 7000, "PutAllPartialResult: %s%s", msgStr1,
-                  msgStr2);
-    return std::string(stringBuf);
-  }
+  std::string toString() const override;
 };
 
 }  // namespace client

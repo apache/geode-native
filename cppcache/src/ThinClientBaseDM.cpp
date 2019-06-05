@@ -338,6 +338,86 @@ std::recursive_mutex& ThinClientBaseDM::getRedundancyLock() {
   return m_connManager.getRedundancyLock();
 }
 
+void ThinClientBaseDM::acquireFailoverLock(){}
+void ThinClientBaseDM::releaseFailoverLock(){}
+void ThinClientBaseDM::acquireRedundancyLock(){}
+void ThinClientBaseDM::releaseRedundancyLock(){}
+void ThinClientBaseDM::triggerRedundancyThread(){}
+
+bool ThinClientBaseDM::isMultiUserMode() { return false; }
+
+bool ThinClientBaseDM::isFatalError(GfErrType err) {
+  return (err == GF_MSG || err == GF_CACHESERVER_EXCEPTION ||
+          err == GF_NOT_AUTHORIZED_EXCEPTION ||
+          err == GF_AUTHENTICATION_REQUIRED_EXCEPTION ||
+          err == GF_AUTHENTICATION_FAILED_EXCEPTION ||
+          err == GF_CACHE_LOCATOR_EXCEPTION);
+}
+
+bool ThinClientBaseDM::isFatalClientError(GfErrType err) {
+  return (err == GF_NOT_AUTHORIZED_EXCEPTION ||
+          err == GF_AUTHENTICATION_REQUIRED_EXCEPTION ||
+          err == GF_AUTHENTICATION_FAILED_EXCEPTION ||
+          err == GF_CACHE_LOCATOR_EXCEPTION);
+}
+
+TcrEndpoint* ThinClientBaseDM::getActiveEndpoint() { return nullptr; }
+
+bool ThinClientBaseDM::isDeltaEnabledOnServer() {
+  return s_isDeltaEnabledOnServer;
+}
+
+void ThinClientBaseDM::setDeltaEnabledOnServer(bool isDeltaEnabledOnServer) {
+  s_isDeltaEnabledOnServer = isDeltaEnabledOnServer;
+  LOGFINE("Delta enabled on server: %s",
+          s_isDeltaEnabledOnServer ? "true" : "false");
+}
+TcrConnectionManager& ThinClientBaseDM::getConnectionManager() const {
+  return m_connManager;
+}
+
+size_t ThinClientBaseDM::getNumberOfEndPoints() const { return 0; }
+
+bool ThinClientBaseDM::isNotAuthorizedException(const char* exceptionMsg) {
+  if (exceptionMsg != nullptr &&
+      strstr(exceptionMsg,
+             "org.apache.geode.security.NotAuthorizedException") != nullptr) {
+    LOGDEBUG(
+        "isNotAuthorizedException() An exception (%s) happened at remote "
+        "server.",
+        exceptionMsg);
+    return true;
+  }
+  return false;
+}
+
+bool ThinClientBaseDM::isPutAllPartialResultException(
+    const char* exceptionMsg) {
+  if (exceptionMsg != nullptr &&
+      strstr(exceptionMsg,
+             "org.apache.geode.internal.cache.PutAllPartialResultException") !=
+          nullptr) {
+    LOGDEBUG(
+        "isNotAuthorizedException() An exception (%s) happened at remote "
+        "server.",
+        exceptionMsg);
+    return true;
+  }
+  return false;
+}
+
+bool ThinClientBaseDM::isAuthRequireException(const char* exceptionMsg) {
+  if (exceptionMsg != nullptr &&
+      strstr(exceptionMsg,
+             "org.apache.geode.security.AuthenticationRequiredException") !=
+          nullptr) {
+    LOGDEBUG(
+        "isAuthRequireExcep() An exception (%s) happened at remote server.",
+        exceptionMsg);
+    return true;
+  }
+  return false;
+}
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

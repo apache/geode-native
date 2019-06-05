@@ -39,26 +39,17 @@ namespace client {
  */
 class APACHE_GEODE_EXPORT NoResult final : public ResultCollector {
  public:
-  NoResult() = default;
-  ~NoResult() final = default;
+  NoResult();
+  ~NoResult() override;
 
-  void addResult(const std::shared_ptr<Cacheable>&) final {
-    throw UnsupportedOperationException("can not add to NoResult");
-  }
+  void addResult(const std::shared_ptr<Cacheable>&);
 
-  void endResults() final {
-    throw UnsupportedOperationException("can not close on NoResult");
-  }
+  void endResults();
 
-  inline std::shared_ptr<CacheableVector> getResult(
-      std::chrono::milliseconds) final {
-    throw FunctionExecutionException(
-        "Cannot return any result, as Function.hasResult() is false");
-  }
+  std::shared_ptr<CacheableVector> getResult(
+      std::chrono::milliseconds);
 
-  inline void clearResults() final {
-    throw UnsupportedOperationException("can not clear results on NoResult");
-  }
+  void clearResults();
 };
 
 }  // namespace client

@@ -37,6 +37,12 @@
 #include "Utils.hpp"
 #include "Version.hpp"
 
+#define throwException(ex)                            \
+  {                                                   \
+    LOGFINEST(ex.getName() + ": " + ex.getMessage()); \
+    throw ex;                                         \
+  }
+
 namespace apache {
 namespace geode {
 namespace client {
@@ -65,6 +71,23 @@ struct FinalizeProcessChunk {
     m_reply.processChunk(std::vector<uint8_t>(), 0, m_endpointMemId);
   }
 };
+
+TcrConnection::TcrConnection(const TcrConnectionManager& connectionManager,
+                             volatile const bool& isConnected)
+    : connectionId(0),
+      m_connectionManager(&connectionManager),
+      m_dh(nullptr),
+      m_endpoint(nullptr),
+      m_endpointObj(nullptr),
+      m_connected(isConnected),
+      m_conn(nullptr),
+      m_hasServerQueue(NON_REDUNDANT_SERVER),
+      m_queueSize(0),
+      m_port(0),
+      m_chunksProcessSema(0),
+      m_isBeingUsed(false),
+      m_isUsed(0),
+      m_poolDM(nullptr) {}
 
 bool TcrConnection::InitTcrConnection(
     TcrEndpoint* endpointObj, const char* endpoint,
@@ -587,7 +610,7 @@ Connector* TcrConnection::createConnection(
  *           that is used instead
  *   Body: default timeout
  */
-inline ConnErrType TcrConnection::receiveData(
+ConnErrType TcrConnection::receiveData(
     char* buffer, size_t length, std::chrono::microseconds receiveTimeoutSec,
     bool checkConnected, bool isNotificationMessage) {
   std::chrono::microseconds defaultWaitSecs =
@@ -632,16 +655,17 @@ inline ConnErrType TcrConnection::receiveData(
                       : (length == startLen ? CONN_NODATA : CONN_TIMEOUT));
 }
 
-inline ConnErrType TcrConnection::sendData(
-    const char* buffer, size_t length, std::chrono::microseconds sendTimeout,
-    bool checkConnected) {
+ConnErrType TcrConnection::sendData(const char* buffer, size_t length,
+                                    std::chrono::microseconds sendTimeout,
+                                    bool checkConnected) {
   std::chrono::microseconds dummy{0};
   return sendData(dummy, buffer, length, sendTimeout, checkConnected);
 }
 
-inline ConnErrType TcrConnection::sendData(
-    std::chrono::microseconds& timeSpent, const char* buffer, size_t length,
-    std::chrono::microseconds sendTimeout, bool checkConnected) {
+ConnErrType TcrConnection::sendData(std::chrono::microseconds& timeSpent,
+                                    const char* buffer, size_t length,
+                                    std::chrono::microseconds sendTimeout,
+                                    bool checkConnected) {
   std::chrono::microseconds defaultWaitSecs = std::chrono::seconds(2);
   if (defaultWaitSecs > sendTimeout) defaultWaitSecs = sendTimeout;
   LOGDEBUG(
@@ -1444,6 +1468,48 @@ bool TcrConnection::setAndGetBeingUsed(volatile bool isBeingUsed,
       // transaction at the end of transaction
       return true;
     }
+  }
+}
+
+ServerQueueStatus TcrConnection::getServerQueueStatus(int32_t& queueSize) {
+  queueSize = m_queueSize;
+  return m_hasServerQueue;
+}
+
+uint16_t TcrConnection::getPort() { return m_port; }
+
+TcrEndpoint* TcrConnection::getEndpointObject() const { return m_endpointObj; }
+bool TcrConnection::isBeingUsed() { return m_isBeingUsed; }
+
+int64_t TcrConnection::getConnectionId() {
+  LOGDEBUG("TcrConnection::getConnectionId() = %d ", connectionId);
+  return connectionId;
+}
+
+void TcrConnection::setConnectionId(int64_t id) {
+  LOGDEBUG("Tcrconnection:setConnectionId() = %d ", id);
+  connectionId = id;
+}
+
+const TcrConnectionManager& TcrConnection::getConnectionManager() {
+  return *m_connectionManager;
+}
+
+std::shared_ptr<CacheableBytes> TcrConnection::encryptBytes(
+    std::shared_ptr<CacheableBytes> data) {
+  if (m_dh != nullptr) {
+    return m_dh->encrypt(data);
+  } else {
+    return data;
+  }
+}
+
+std::shared_ptr<CacheableBytes> TcrConnection::decryptBytes(
+    std::shared_ptr<CacheableBytes> data) {
+  if (m_dh != nullptr) {
+    return m_dh->decrypt(data);
+  } else {
+    return data;
   }
 }
 

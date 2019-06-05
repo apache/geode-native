@@ -46,6 +46,8 @@ void ThinClientPoolHADM::init() {
   startBackgroundThreads();
 }
 
+ThinClientPoolHADM::~ThinClientPoolHADM() { destroy(); }
+
 void ThinClientPoolHADM::startBackgroundThreads() {
   auto& props = m_connManager.getCacheImpl()
                     ->getDistributedSystem()
@@ -318,6 +320,8 @@ TcrEndpoint* ThinClientPoolHADM::createEP(const char* endpointName) {
       endpointName, m_connManager.getCacheImpl(), m_connManager.m_failoverSema,
       m_connManager.m_cleanupSema, m_redundancySema, this);
 }
+
+void ThinClientPoolHADM::triggerRedundancyThread() { m_redundancySema.release(); }
 
 }  // namespace client
 }  // namespace geode

@@ -31,8 +31,8 @@ class InternalCacheTransactionManager2PCImpl
     : public CacheTransactionManagerImpl,
       public InternalCacheTransactionManager2PC {
  public:
-  explicit InternalCacheTransactionManager2PCImpl(CacheImpl* cache);
-  virtual ~InternalCacheTransactionManager2PCImpl() override;
+   InternalCacheTransactionManager2PCImpl(CacheImpl* cache);
+  ~InternalCacheTransactionManager2PCImpl() override;
 
   virtual void prepare() override;
   virtual void commit() override;
