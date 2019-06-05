@@ -716,12 +716,6 @@ void TcrMessage::handleSpecialFECase() {
 void TcrMessage::processChunk(const std::vector<uint8_t>& chunk, int32_t len,
                               uint16_t endpointmemId,
                               const uint8_t isLastChunkAndisSecurityHeader) {
-  uint8_t* bytes = nullptr;
-  if (chunk.size()) {
-    _GEODE_NEW(bytes, uint8_t[chunk.size()]);
-    memcpy(bytes, chunk.data(), chunk.size());
-  }
-
   // TODO: see if security header is there
   LOGDEBUG(
       "TcrMessage::processChunk isLastChunkAndisSecurityHeader = %d chunklen = "
@@ -755,7 +749,7 @@ void TcrMessage::processChunk(const std::vector<uint8_t>& chunk, int32_t len,
       } else if (m_msgTypeRequest == TcrMessage::PUTALL ||
                  m_msgTypeRequest == TcrMessage::PUT_ALL_WITH_CALLBACK) {
         TcrChunkedContext* chunkedContext = new TcrChunkedContext(
-            bytes, len, m_chunkedResult, isLastChunkAndisSecurityHeader,
+            chunk, len, m_chunkedResult, isLastChunkAndisSecurityHeader,
             m_tcdm->getConnectionManager().getCacheImpl());
         m_chunkedResult->setEndpointMemId(endpointmemId);
         m_tcdm->queueChunk(chunkedContext);
@@ -779,7 +773,7 @@ void TcrMessage::processChunk(const std::vector<uint8_t>& chunk, int32_t len,
       if (m_chunkedResult != nullptr) {
         LOGDEBUG("tcrmessage in case22 ");
         TcrChunkedContext* chunkedContext = new TcrChunkedContext(
-            bytes, len, m_chunkedResult, isLastChunkAndisSecurityHeader,
+            chunk, len, m_chunkedResult, isLastChunkAndisSecurityHeader,
             m_tcdm->getConnectionManager().getCacheImpl());
         m_chunkedResult->setEndpointMemId(endpointmemId);
         m_tcdm->queueChunk(chunkedContext);
@@ -803,7 +797,6 @@ void TcrMessage::processChunk(const std::vector<uint8_t>& chunk, int32_t len,
                  TcrMessage::GET_ALL_DATA_ERROR == m_msgType) {
         if (chunk.size()) {
           chunkSecurityHeader(1, chunk, len, isLastChunkAndisSecurityHeader);
-          _GEODE_SAFE_DELETE_ARRAY(bytes);
         }
       }
       break;
@@ -821,16 +814,14 @@ void TcrMessage::processChunk(const std::vector<uint8_t>& chunk, int32_t len,
         // readSecureObjectPart(input, false, true,
         // isLastChunkAndisSecurityHeader );
         chunkSecurityHeader(1, chunk, len, isLastChunkAndisSecurityHeader);
-        _GEODE_SAFE_DELETE_ARRAY(bytes);
       }
       break;
     }
     case TcrMessage::EXCEPTION: {
       if (chunk.size()) {
-        DeleteArray<uint8_t> delChunk(bytes);
         auto input =
             m_tcdm->getConnectionManager().getCacheImpl()->createDataInput(
-                bytes, len);
+                chunk.data(), len);
         readExceptionPart(input, isLastChunkAndisSecurityHeader);
         readSecureObjectPart(input, false, true,
                              isLastChunkAndisSecurityHeader);
@@ -841,7 +832,6 @@ void TcrMessage::processChunk(const std::vector<uint8_t>& chunk, int32_t len,
       // TODO: how many parts
       chunkSecurityHeader(1, chunk, len, isLastChunkAndisSecurityHeader);
       if (chunk.size()) {
-        DeleteArray<uint8_t> delChunk(bytes);
         LOGFINEST("processChunk - got response from secondary, ignoring.");
       }
       break;
@@ -851,30 +841,23 @@ void TcrMessage::processChunk(const std::vector<uint8_t>& chunk, int32_t len,
       if (chunk.size()) {
         auto input =
             m_tcdm->getConnectionManager().getCacheImpl()->createDataInput(
-                bytes, len);
+                chunk.data(), len);
         auto errorString = readStringPart(input);
 
         if (!errorString.empty()) {
           setThreadLocalExceptionMessage(errorString.c_str());
         }
-
-        _GEODE_SAFE_DELETE_ARRAY(bytes);
       }
       break;
     }
     case TcrMessage::GET_ALL_DATA_ERROR: {
       chunkSecurityHeader(1, chunk, len, isLastChunkAndisSecurityHeader);
-      if (chunk.size()) {
-        _GEODE_SAFE_DELETE_ARRAY(bytes);
-      }
 
       break;
     }
     default: {
       // TODO: how many parts what should we do here
-      if (chunk.size()) {
-        _GEODE_SAFE_DELETE_ARRAY(bytes);
-      } else {
+      if (chunk.empty()) {
         LOGWARN(
             "Got unhandled message type %d while processing response, possible "
             "serialization mismatch",

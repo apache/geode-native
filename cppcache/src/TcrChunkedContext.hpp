@@ -121,37 +121,37 @@ class TcrChunkedResult {
  */
 class TcrChunkedContext {
  private:
-  const uint8_t* m_bytes;
+  const std::vector<uint8_t> m_chunk;
   const int32_t m_len;
   const uint8_t m_isLastChunkWithSecurity;
   const CacheImpl* m_cache;
   TcrChunkedResult* m_result;
 
  public:
-  inline TcrChunkedContext(const uint8_t* bytes, int32_t len,
+  inline TcrChunkedContext(const std::vector<uint8_t> chunk, int32_t len,
                            TcrChunkedResult* result,
                            uint8_t isLastChunkWithSecurity,
                            const CacheImpl* cacheImpl)
-      : m_bytes(bytes),
+      : m_chunk(chunk),
         m_len(len),
         m_isLastChunkWithSecurity(isLastChunkWithSecurity),
         m_cache(cacheImpl),
         m_result(result) {}
 
-  inline ~TcrChunkedContext() { _GEODE_SAFE_DELETE_ARRAY(m_bytes); }
+  inline ~TcrChunkedContext() = default;
 
-  inline const uint8_t* getBytes() const { return m_bytes; }
+  inline const uint8_t* getBytes() const { return m_chunk.data(); }
 
-  inline int32_t getLen() const { return m_len; }
+  inline int32_t getLen() const { return m_chunk.size(); }
 
   void handleChunk(bool inSameThread) {
-    if (m_bytes == nullptr) {
+    if (m_chunk.empty()) {
       // this is the last chunk for some set of chunks
       m_result->finalize(inSameThread);
     } else if (!m_result->exceptionOccurred()) {
       try {
-        m_result->fireHandleChunk(m_bytes, m_len, m_isLastChunkWithSecurity,
-                                  m_cache);
+        m_result->fireHandleChunk(m_chunk.data(), m_len,
+                                  m_isLastChunkWithSecurity, m_cache);
       } catch (Exception& ex) {
         LOGERROR("HandleChunk error message %s, name = %s", ex.what(),
                  ex.getName().c_str());
