@@ -17,8 +17,6 @@
 
 #include "TcrConnection.hpp"
 
-#include <memory.h>
-
 #include <cinttypes>
 
 #include <ace/INET_Addr.h>
