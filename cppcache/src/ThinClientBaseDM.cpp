@@ -338,11 +338,11 @@ std::recursive_mutex& ThinClientBaseDM::getRedundancyLock() {
   return m_connManager.getRedundancyLock();
 }
 
-void ThinClientBaseDM::acquireFailoverLock(){}
-void ThinClientBaseDM::releaseFailoverLock(){}
-void ThinClientBaseDM::acquireRedundancyLock(){}
-void ThinClientBaseDM::releaseRedundancyLock(){}
-void ThinClientBaseDM::triggerRedundancyThread(){}
+void ThinClientBaseDM::acquireFailoverLock() {}
+void ThinClientBaseDM::releaseFailoverLock() {}
+void ThinClientBaseDM::acquireRedundancyLock() {}
+void ThinClientBaseDM::releaseRedundancyLock() {}
+void ThinClientBaseDM::triggerRedundancyThread() {}
 
 bool ThinClientBaseDM::isMultiUserMode() { return false; }
 

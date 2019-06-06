@@ -78,7 +78,7 @@ class PooledWork : public Callable {
 
 class ThreadPool {
  public:
-   ThreadPool(size_t threadPoolSize);
+  ThreadPool(size_t threadPoolSize);
   ~ThreadPool();
 
   void perform(std::shared_ptr<Callable> req);

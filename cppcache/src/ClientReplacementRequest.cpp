@@ -24,11 +24,11 @@ namespace apache {
 namespace geode {
 namespace client {
 
-ClientReplacementRequest::ClientReplacementRequest(const std::string& serverName,
-                           const std::set<ServerLocation>& excludeServergroup,
-                           std::string servergroup)
-      : ClientConnectionRequest(excludeServergroup, servergroup),
-        m_serverLocation(ServerLocation(serverName)) {}
+ClientReplacementRequest::ClientReplacementRequest(
+    const std::string& serverName,
+    const std::set<ServerLocation>& excludeServergroup, std::string servergroup)
+    : ClientConnectionRequest(excludeServergroup, servergroup),
+      m_serverLocation(ServerLocation(serverName)) {}
 
 void ClientReplacementRequest::toData(DataOutput& output) const {
   ClientConnectionRequest::toData(output);

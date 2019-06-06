@@ -345,7 +345,9 @@ std::shared_ptr<PdxTypeRegistry> PdxLocalWriter::getPdxTypeRegistry() const {
   return m_pdxTypeRegistry;
 }
 
-void PdxLocalWriter::writeObject(bool value) { m_dataOutput->writeBoolean(value); }
+void PdxLocalWriter::writeObject(bool value) {
+  m_dataOutput->writeBoolean(value);
+}
 
 void PdxLocalWriter::writeObject(char16_t value) {
   m_dataOutput->writeInt(static_cast<uint16_t>(value));
@@ -353,17 +355,29 @@ void PdxLocalWriter::writeObject(char16_t value) {
 
 void PdxLocalWriter::writeObject(int8_t value) { m_dataOutput->write(value); }
 
-void PdxLocalWriter::writeObject(int16_t value) { m_dataOutput->writeInt(value); }
+void PdxLocalWriter::writeObject(int16_t value) {
+  m_dataOutput->writeInt(value);
+}
 
-void PdxLocalWriter::writeObject(int32_t value) { m_dataOutput->writeInt(value); }
+void PdxLocalWriter::writeObject(int32_t value) {
+  m_dataOutput->writeInt(value);
+}
 
-void PdxLocalWriter::writeObject(int64_t value) { m_dataOutput->writeInt(value); }
+void PdxLocalWriter::writeObject(int64_t value) {
+  m_dataOutput->writeInt(value);
+}
 
-void PdxLocalWriter::writeObject(float value) { m_dataOutput->writeFloat(value); }
+void PdxLocalWriter::writeObject(float value) {
+  m_dataOutput->writeFloat(value);
+}
 
-void PdxLocalWriter::writeObject(double value) { m_dataOutput->writeDouble(value); }
+void PdxLocalWriter::writeObject(double value) {
+  m_dataOutput->writeDouble(value);
+}
 
-int32_t PdxLocalWriter::getStartPositionOffset() { return m_startPositionOffset; }
+int32_t PdxLocalWriter::getStartPositionOffset() {
+  return m_startPositionOffset;
+}
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

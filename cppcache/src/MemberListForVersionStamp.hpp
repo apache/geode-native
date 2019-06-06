@@ -35,7 +35,7 @@ namespace geode {
 namespace client {
 struct DistributedMemberWithIntIdentifier {
  public:
-   DistributedMemberWithIntIdentifier(
+  DistributedMemberWithIntIdentifier(
       std::shared_ptr<DSMemberForVersionStamp> dsmember = nullptr,
       uint16_t id = 0);
   std::shared_ptr<DSMemberForVersionStamp> m_member;

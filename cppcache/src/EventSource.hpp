@@ -67,19 +67,16 @@ class APACHE_GEODE_EXPORT EventSource {
 
     std::size_t operator()(const EventSource *val) const;
 
-    std::size_t operator()(
-        const std::shared_ptr<EventSource> &val) const;
+    std::size_t operator()(const std::shared_ptr<EventSource> &val) const;
   };
 
   struct equal_to {
-    bool operator()(const EventSource &lhs,
-                           const EventSource &rhs) const;
+    bool operator()(const EventSource &lhs, const EventSource &rhs) const;
 
-    bool operator()(const EventSource *lhs,
-                           const EventSource *rhs) const;
+    bool operator()(const EventSource *lhs, const EventSource *rhs) const;
 
     bool operator()(const std::shared_ptr<EventSource> &lhs,
-                           const std::shared_ptr<EventSource> &rhs) const;
+                    const std::shared_ptr<EventSource> &rhs) const;
   };
 };
 

@@ -33,8 +33,7 @@ void LRUMapEntry::cleanup(const CacheEventFlags eventFlags) {
   }
 }
 
-LRUMapEntry::LRUMapEntry(bool)
-    : MapEntryImpl(true), LRUEntryProperties(true) {}
+LRUMapEntry::LRUMapEntry(bool) : MapEntryImpl(true), LRUEntryProperties(true) {}
 
 LRUMapEntry::LRUMapEntry(const std::shared_ptr<CacheableKey>& key)
     : MapEntryImpl(key) {}
@@ -43,7 +42,8 @@ VersionStamp& VersionedLRUMapEntry::getVersionStamp() { return *this; }
 
 VersionedLRUMapEntry::VersionedLRUMapEntry(bool) : LRUMapEntry(true) {}
 
-VersionedLRUMapEntry::VersionedLRUMapEntry(const std::shared_ptr<CacheableKey>& key)
+VersionedLRUMapEntry::VersionedLRUMapEntry(
+    const std::shared_ptr<CacheableKey>& key)
     : LRUMapEntry(key) {}
 
 void LRUEntryFactory::newMapEntry(ExpiryTaskManager*,

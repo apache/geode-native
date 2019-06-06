@@ -70,7 +70,7 @@ class PRbuckets {
   BucketStatus* m_buckets;
 
  public:
-   PRbuckets(int32_t nBuckets);
+  PRbuckets(int32_t nBuckets);
   ~PRbuckets();
 
   bool isBucketTimedOut(int32_t bucketId, std::chrono::milliseconds millis);
@@ -81,7 +81,7 @@ class PRbuckets {
 class ClientMetadataService : private NonCopyable, private NonAssignable {
  public:
   ClientMetadataService() = delete;
-   ClientMetadataService(ThinClientPoolDM* pool);
+  ClientMetadataService(ThinClientPoolDM* pool);
   ~ClientMetadataService() = default;
 
   void start();

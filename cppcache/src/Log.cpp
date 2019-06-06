@@ -808,10 +808,9 @@ LogLevel Log::logLevel() { return s_logLevel; }
 
 void Log::setLogLevel(LogLevel level) { s_logLevel = level; }
 
-
 bool Log::enabled(LogLevel level) {
   return (((s_doingDebug && level == LogLevel::Debug) ||
-            GEODE_HIGHEST_LOG_LEVEL >= level) &&
+           GEODE_HIGHEST_LOG_LEVEL >= level) &&
           s_logLevel >= level);
 }
 
@@ -829,7 +828,7 @@ void Log::logCatch(LogLevel level, const char* msg, const Exception& ex) {
 
 bool Log::errorEnabled() {
   return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Error &&
-          s_logLevel >= LogLevel::Error;
+         s_logLevel >= LogLevel::Error;
 }
 
 void Log::error(const char* msg) {
@@ -850,7 +849,7 @@ void Log::errorCatch(const char* msg, const Exception& ex) {
 
 bool Log::warningEnabled() {
   return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Warning &&
-          s_logLevel >= LogLevel::Warning;
+         s_logLevel >= LogLevel::Warning;
 }
 
 void Log::warning(const char* msg) {
@@ -867,7 +866,7 @@ void Log::warningCatch(const char* msg, const Exception& ex) {
 
 bool Log::infoEnabled() {
   return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Info &&
-          s_logLevel >= LogLevel::Info;
+         s_logLevel >= LogLevel::Info;
 }
 
 void Log::info(const char* msg) {
@@ -884,7 +883,7 @@ void Log::infoCatch(const char* msg, const Exception& ex) {
 
 bool Log::configEnabled() {
   return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Config &&
-          s_logLevel >= LogLevel::Config;
+         s_logLevel >= LogLevel::Config;
 }
 
 void Log::config(const char* msg) {
@@ -901,7 +900,7 @@ void Log::configCatch(const char* msg, const Exception& ex) {
 
 bool Log::fineEnabled() {
   return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Fine &&
-          s_logLevel >= LogLevel::Fine;
+         s_logLevel >= LogLevel::Fine;
 }
 
 void Log::fine(const char* msg) {
@@ -918,7 +917,7 @@ void Log::fineCatch(const char* msg, const Exception& ex) {
 
 bool Log::finerEnabled() {
   return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Finer &&
-          s_logLevel >= LogLevel::Finer;
+         s_logLevel >= LogLevel::Finer;
 }
 
 void Log::finer(const char* msg) {
@@ -935,7 +934,7 @@ void Log::finerCatch(const char* msg, const Exception& ex) {
 
 bool Log::finestEnabled() {
   return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Finest &&
-          s_logLevel >= LogLevel::Finest;
+         s_logLevel >= LogLevel::Finest;
 }
 
 void Log::finest(const char* msg) {
@@ -952,7 +951,7 @@ void Log::finestCatch(const char* msg, const Exception& ex) {
 
 bool Log::debugEnabled() {
   return (s_doingDebug || GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Debug) &&
-          s_logLevel >= LogLevel::Debug;
+         s_logLevel >= LogLevel::Debug;
 }
 
 void Log::debug(const char* msg) {
@@ -975,7 +974,6 @@ LogFn::LogFn(const char* functionName, LogLevel level)
 LogFn::~LogFn() {
   if (Log::enabled(m_level)) Log::exitFn(m_level, m_functionName);
 }
-
 
 void LogVarargs::debug(const std::string& message) {
   Log::put(LogLevel::Debug, message.c_str());

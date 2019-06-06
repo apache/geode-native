@@ -53,7 +53,7 @@ class ThinClientRegion;
  */
 class TcrConnectionManager {
  public:
-   TcrConnectionManager(CacheImpl* cache);
+  TcrConnectionManager(CacheImpl* cache);
   ~TcrConnectionManager();
   void init(bool isPool = false);
   void startFailoverAndCleanupThreads(bool isPool = false);
@@ -190,7 +190,7 @@ class DistManagersLockGuard {
   TcrConnectionManager& m_tccm;
 
  public:
-   DistManagersLockGuard(TcrConnectionManager& tccm);
+  DistManagersLockGuard(TcrConnectionManager& tccm);
 
   ~DistManagersLockGuard();
 };

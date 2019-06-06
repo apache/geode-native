@@ -37,7 +37,7 @@ class EvictionController;
  */
 class EvictionThread {
  public:
-   EvictionThread(EvictionController* parent);
+  EvictionThread(EvictionController* parent);
   void start();
   void stop();
   void svc();

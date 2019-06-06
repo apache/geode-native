@@ -23,11 +23,12 @@
 #include <memory>
 #include <string>
 
-#include <geode/Serializable.hpp>
+#include <ace/RW_Thread_Mutex.h>
+
 #include <geode/CacheableKey.hpp>
+#include <geode/Serializable.hpp>
 
 #include "ErrType.hpp"
-#include <ace/RW_Thread_Mutex.h>
 
 namespace apache {
 namespace geode {
@@ -54,7 +55,7 @@ class AdminRegion : public std::enable_shared_from_this<AdminRegion> {
   bool m_destroyPending;
 
   AdminRegion(const AdminRegion&) = delete;
-  AdminRegion &operator=(const AdminRegion&) = delete;
+  AdminRegion& operator=(const AdminRegion&) = delete;
 
   GfErrType putNoThrow(const std::shared_ptr<CacheableKey>& keyPtr,
                        const std::shared_ptr<Cacheable>& valuePtr);

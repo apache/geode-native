@@ -21,7 +21,6 @@ namespace apache {
 namespace geode {
 namespace client {
 
-
 std::u16string to_utf16(const std::string& utf8) {
 #if defined(_MSC_VER) && _MSC_VER >= 1900
   /*
@@ -140,8 +139,7 @@ std::string to_utf8(const std::u32string& ucs4) {
 #endif
 }
 
-bool equal_ignore_case(const std::string& str1,
-                              const std::string& str2) {
+bool equal_ignore_case(const std::string& str1, const std::string& str2) {
   return ((str1.size() == str2.size()) &&
           std::equal(str1.begin(), str1.end(), str2.begin(),
                      [](const char& c1, const char& c2) {

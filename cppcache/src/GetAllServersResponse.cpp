@@ -29,7 +29,8 @@ size_t GetAllServersResponse::objectSize() const {
   return sizeof(GetAllServersResponse) + m_servers.capacity();
 }
 
-std::vector<std::shared_ptr<ServerLocation> > GetAllServersResponse::getServers() {
+std::vector<std::shared_ptr<ServerLocation> >
+GetAllServersResponse::getServers() {
   return m_servers;
 }
 

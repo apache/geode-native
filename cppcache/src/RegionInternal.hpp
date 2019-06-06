@@ -55,7 +55,7 @@ class CacheEventFlags {
   static const uint8_t GF_CACHE_CLOSE = 0x40;
   static const uint8_t GF_NOCACHEWRITER = 0x80;
 
-   CacheEventFlags(const uint8_t flags);
+  CacheEventFlags(const uint8_t flags);
 
  public:
   static const CacheEventFlags NORMAL;

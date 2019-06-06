@@ -20,8 +20,9 @@
 #ifndef GEODE_BUCKETSERVERLOCATION_H_
 #define GEODE_BUCKETSERVERLOCATION_H_
 
-#include <memory>
 #include <stdint.h>
+
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -67,9 +68,7 @@ class BucketServerLocation : public ServerLocation {
 
   BucketServerLocation& operator=(const BucketServerLocation& rhs);
 
-  BucketServerLocation(
-      const BucketServerLocation&
-          rhs);
+  BucketServerLocation(const BucketServerLocation& rhs);
 
   std::shared_ptr<CacheableStringArray> getServerGroups();
 };

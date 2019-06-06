@@ -64,16 +64,14 @@ class APACHE_GEODE_EXPORT Utils {
   static char* _gnuDemangledName(const char* typeIdName, size_t& len);
 #endif
 
-  static void demangleTypeName(const char* typeIdName,
-                                      std::string& str);
+  static void demangleTypeName(const char* typeIdName, std::string& str);
 
   static std::string demangleTypeName(const char* typeIdName);
 
   /**
    * The only operations that is well defined on the result is "asChar".
    */
-  static std::string nullSafeToString(
-      const std::shared_ptr<CacheableKey>& key);
+  static std::string nullSafeToString(const std::shared_ptr<CacheableKey>& key);
 
   static std::string nullSafeToString(const std::shared_ptr<Cacheable>& val);
 
@@ -108,8 +106,8 @@ class APACHE_GEODE_EXPORT Utils {
    * Convert the byte array to a string as "%d %d ...".
    * <code>maxLength</code> as zero implies no limit.
    */
-  static std::string convertBytesToString(
-      const char* bytes, size_t length, size_t maxLength = _GF_MSG_LIMIT);
+  static std::string convertBytesToString(const char* bytes, size_t length,
+                                          size_t maxLength = _GF_MSG_LIMIT);
 };
 
 // Generate random numbers 0 to max-1

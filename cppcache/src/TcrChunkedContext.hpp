@@ -106,11 +106,11 @@ class TcrChunkedContext {
                     TcrChunkedResult* result, uint8_t isLastChunkWithSecurity,
                     const CacheImpl* cacheImpl);
 
-  ~TcrChunkedContext();
+  ~TcrChunkedContext() = default;
 
   const uint8_t* getBytes() const;
 
-  int32_t getLen() const;
+  size_t getLen() const;
 
   void handleChunk(bool inSameThread);
 };

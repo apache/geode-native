@@ -28,7 +28,7 @@ namespace client {
 
 class APACHE_GEODE_EXPORT RegionGlobalLocks {
  public:
-   RegionGlobalLocks(LocalRegion* region, bool isFailover = true);
+  RegionGlobalLocks(LocalRegion* region, bool isFailover = true);
 
   ~RegionGlobalLocks();
 

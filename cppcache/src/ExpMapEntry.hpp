@@ -42,10 +42,10 @@ class APACHE_GEODE_EXPORT ExpMapEntry : public MapEntryImpl,
   virtual void cleanup(const CacheEventFlags eventFlags);
 
   // this constructor deliberately skips touching or initializing any members
-   ExpMapEntry(bool);
+  ExpMapEntry(bool);
 
   ExpMapEntry(ExpiryTaskManager* expiryTaskManager,
-                     const std::shared_ptr<CacheableKey>& key);
+              const std::shared_ptr<CacheableKey>& key);
 
  private:
   // disabled
@@ -57,9 +57,9 @@ class APACHE_GEODE_EXPORT VersionedExpMapEntry : public ExpMapEntry,
                                                  public VersionStamp {
  public:
   VersionedExpMapEntry(ExpiryTaskManager* expiryTaskManager,
-                              const std::shared_ptr<CacheableKey>& key);
+                       const std::shared_ptr<CacheableKey>& key);
 
-   VersionedExpMapEntry(bool);
+  VersionedExpMapEntry(bool);
 
   ~VersionedExpMapEntry() override;
 

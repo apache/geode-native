@@ -321,7 +321,9 @@ TcrEndpoint* ThinClientPoolHADM::createEP(const char* endpointName) {
       m_connManager.m_cleanupSema, m_redundancySema, this);
 }
 
-void ThinClientPoolHADM::triggerRedundancyThread() { m_redundancySema.release(); }
+void ThinClientPoolHADM::triggerRedundancyThread() {
+  m_redundancySema.release();
+}
 
 }  // namespace client
 }  // namespace geode

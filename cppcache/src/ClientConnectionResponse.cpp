@@ -44,11 +44,12 @@ ServerLocation ClientConnectionResponse::getServerLocation() const {
   return m_server;
 }
 
-ClientConnectionResponse::ClientConnectionResponse() : ServerLocationResponse(), m_serverFound(false) {}
+ClientConnectionResponse::ClientConnectionResponse()
+    : ServerLocationResponse(), m_serverFound(false) {}
 void ClientConnectionResponse::printInfo() { m_server.printInfo(); }
 std::shared_ptr<Serializable> ClientConnectionResponse::create() {
-    return std::make_shared<ClientConnectionResponse>();
-  }
+  return std::make_shared<ClientConnectionResponse>();
+}
 bool ClientConnectionResponse::serverFound() { return m_serverFound; }
 
 }  // namespace client

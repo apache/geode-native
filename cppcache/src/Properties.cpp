@@ -31,7 +31,7 @@ class PropertiesFile {
   std::string m_fileName;
 
  public:
-   PropertiesFile(Properties& props);
+  PropertiesFile(Properties& props);
 
   void parseLine(const std::string& line);
   void readFile(const std::string& fileName);

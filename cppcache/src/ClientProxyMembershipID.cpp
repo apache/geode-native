@@ -370,13 +370,19 @@ std::shared_ptr<Serializable> ClientProxyMembershipID::createDeserializable() {
   return std::make_shared<ClientProxyMembershipID>();
 }
 
-DSFid ClientProxyMembershipID::getDSFID() const { return DSFid::InternalDistributedMember; }
+DSFid ClientProxyMembershipID::getDSFID() const {
+  return DSFid::InternalDistributedMember;
+}
 size_t ClientProxyMembershipID::objectSize() const { return 0; }
 
 std::string ClientProxyMembershipID::getDSName() const { return m_dsname; }
-std::string ClientProxyMembershipID::getUniqueTag() const { return m_uniqueTag; }
+std::string ClientProxyMembershipID::getUniqueTag() const {
+  return m_uniqueTag;
+}
 uint8_t* ClientProxyMembershipID::getHostAddr() const { return m_hostAddr; }
-uint32_t ClientProxyMembershipID::getHostAddrLen() const { return m_hostAddrLen; }
+uint32_t ClientProxyMembershipID::getHostAddrLen() const {
+  return m_hostAddrLen;
+}
 uint32_t ClientProxyMembershipID::getHostPort() const { return m_hostPort; }
 int32_t ClientProxyMembershipID::hashcode() const {
   uint32_t result = 0;
@@ -386,15 +392,13 @@ int32_t ClientProxyMembershipID::hashcode() const {
     offset +=
         std::snprintf(hostInfo + offset, 255 - offset, ":%x", m_hostAddr[i]);
   }
-  result +=
-      internal::geode_hash<std::string>{}(std::string(hostInfo, offset));
+  result += internal::geode_hash<std::string>{}(std::string(hostInfo, offset));
   result += m_hostPort;
   return result;
 }
 
 bool ClientProxyMembershipID::operator==(const CacheableKey& other) const {
-  return compareTo(
-              dynamic_cast<const DSMemberForVersionStamp&>(other)) == 0;
+  return compareTo(dynamic_cast<const DSMemberForVersionStamp&>(other)) == 0;
 }
 }  // namespace client
 }  // namespace geode

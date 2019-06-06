@@ -45,10 +45,10 @@ class APACHE_GEODE_EXPORT LRUExpMapEntry : public MapEntryImpl,
   void cleanup(const CacheEventFlags eventFlags) override;
 
  protected:
-   LRUExpMapEntry(bool);
+  LRUExpMapEntry(bool);
 
   LRUExpMapEntry(ExpiryTaskManager* expiryTaskManager,
-                        const std::shared_ptr<CacheableKey>& key);
+                 const std::shared_ptr<CacheableKey>& key);
 
  private:
   // disabled
@@ -64,10 +64,10 @@ class APACHE_GEODE_EXPORT VersionedLRUExpMapEntry : public LRUExpMapEntry,
   VersionStamp& getVersionStamp() override;
 
  protected:
-   VersionedLRUExpMapEntry(bool);
+  VersionedLRUExpMapEntry(bool);
 
   VersionedLRUExpMapEntry(ExpiryTaskManager* expiryTaskManager,
-                                 const std::shared_ptr<CacheableKey>& key);
+                          const std::shared_ptr<CacheableKey>& key);
 
  private:
   // disabled
@@ -82,8 +82,8 @@ class APACHE_GEODE_EXPORT LRUExpEntryFactory : public EntryFactory {
   ~LRUExpEntryFactory() override = default;
 
   void newMapEntry(ExpiryTaskManager* expiryTaskManager,
-                           const std::shared_ptr<CacheableKey>& key,
-                           std::shared_ptr<MapEntryImpl>& result) const override;
+                   const std::shared_ptr<CacheableKey>& key,
+                   std::shared_ptr<MapEntryImpl>& result) const override;
 };
 }  // namespace client
 }  // namespace geode

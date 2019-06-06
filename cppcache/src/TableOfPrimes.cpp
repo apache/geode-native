@@ -39,39 +39,39 @@ const uint8_t g_primeConcurLen =
 
 uint32_t TableOfPrimes::getPrimeLength() { return g_primeLen; }
 
-  uint32_t TableOfPrimes::getPrime(uint32_t index) {
-    if (index < g_primeLen) {
-      return g_primeTable[index];
-    }
-    throw OutOfRangeException("getPrime: index beyond size of prime table");
+uint32_t TableOfPrimes::getPrime(uint32_t index) {
+  if (index < g_primeLen) {
+    return g_primeTable[index];
   }
+  throw OutOfRangeException("getPrime: index beyond size of prime table");
+}
 
-  uint32_t TableOfPrimes::nextLargerPrime(uint32_t val, uint32_t& resIndex) {
-    const uint32_t* tableEnd = g_primeTable + g_primeLen;
-    const uint32_t* idxPtr = std::lower_bound(g_primeTable, tableEnd, val);
-    if (idxPtr != tableEnd) {
-      resIndex = static_cast<uint32_t>(idxPtr - g_primeTable);
-      return *idxPtr;
-    }
-    throw OutOfRangeException(
-        "nextLargerPrime: could not find a prime "
-        "number that large");
+uint32_t TableOfPrimes::nextLargerPrime(uint32_t val, uint32_t& resIndex) {
+  const uint32_t* tableEnd = g_primeTable + g_primeLen;
+  const uint32_t* idxPtr = std::lower_bound(g_primeTable, tableEnd, val);
+  if (idxPtr != tableEnd) {
+    resIndex = static_cast<uint32_t>(idxPtr - g_primeTable);
+    return *idxPtr;
   }
+  throw OutOfRangeException(
+      "nextLargerPrime: could not find a prime "
+      "number that large");
+}
 
-  uint8_t TableOfPrimes::getMaxPrimeForConcurrency() {
-    return g_primeConcurTable[g_primeConcurLen - 1];
-  }
+uint8_t TableOfPrimes::getMaxPrimeForConcurrency() {
+  return g_primeConcurTable[g_primeConcurLen - 1];
+}
 
-  uint8_t TableOfPrimes::nextLargerPrimeForConcurrency(uint8_t val) {
-    const uint8_t* tableEnd = g_primeConcurTable + g_primeConcurLen;
-    const uint8_t* idxPtr = std::lower_bound(g_primeConcurTable, tableEnd, val);
-    if (idxPtr != tableEnd) {
-      return *idxPtr;
-    }
-    throw OutOfRangeException(
-        "nextLargerPrimeForConcurrency: could not "
-        "find a prime number that large");
+uint8_t TableOfPrimes::nextLargerPrimeForConcurrency(uint8_t val) {
+  const uint8_t* tableEnd = g_primeConcurTable + g_primeConcurLen;
+  const uint8_t* idxPtr = std::lower_bound(g_primeConcurTable, tableEnd, val);
+  if (idxPtr != tableEnd) {
+    return *idxPtr;
   }
+  throw OutOfRangeException(
+      "nextLargerPrimeForConcurrency: could not "
+      "find a prime number that large");
+}
 
 }  // namespace client
 }  // namespace geode

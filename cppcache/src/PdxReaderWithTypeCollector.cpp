@@ -500,7 +500,9 @@ std::shared_ptr<CacheableDate> PdxReaderWithTypeCollector::readDate(
   }
 }
 
-std::shared_ptr<PdxType> PdxReaderWithTypeCollector::getLocalType() const { return m_newPdxType; }
+std::shared_ptr<PdxType> PdxReaderWithTypeCollector::getLocalType() const {
+  return m_newPdxType;
+}
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

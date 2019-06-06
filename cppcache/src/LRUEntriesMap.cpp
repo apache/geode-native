@@ -38,7 +38,7 @@ class APACHE_GEODE_EXPORT TestMapAction : public virtual LRUAction {
   EntriesMap* m_eMap;
 
  public:
-   TestMapAction(EntriesMap* eMap) : m_eMap(eMap) { m_destroys = true; }
+  TestMapAction(EntriesMap* eMap) : m_eMap(eMap) { m_destroys = true; }
 
   virtual ~TestMapAction() {}
 

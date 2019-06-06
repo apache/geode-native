@@ -153,9 +153,13 @@ bool PdxFieldType::getIdentityField() const { return m_isIdentityField; }
 
 int32_t PdxFieldType::getVarLenFieldIdx() const { return m_varLenFieldIdx; }
 
-void PdxFieldType::setVarLenOffsetIndex(int32_t value) { m_vlOffsetIndex = value; }
+void PdxFieldType::setVarLenOffsetIndex(int32_t value) {
+  m_vlOffsetIndex = value;
+}
 
-void PdxFieldType::setRelativeOffset(int32_t value) { m_relativeOffset = value; }
+void PdxFieldType::setRelativeOffset(int32_t value) {
+  m_relativeOffset = value;
+}
 
 int32_t PdxFieldType::getFixedSize() const { return m_fixedSize; }
 void PdxFieldType::setIdentityField(bool identityField) {

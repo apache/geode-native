@@ -29,12 +29,12 @@ namespace apache {
 namespace geode {
 namespace client {
 
-PdxRemoteReader::PdxRemoteReader(DataInput& dataInput, std::shared_ptr<PdxType> remoteType,
-                  int32_t pdxLen,
-                  std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry)
-      : PdxLocalReader(dataInput, remoteType, pdxLen, pdxTypeRegistry) {
-    m_currentIndex = 0;
-  }
+PdxRemoteReader::PdxRemoteReader(
+    DataInput& dataInput, std::shared_ptr<PdxType> remoteType, int32_t pdxLen,
+    std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry)
+    : PdxLocalReader(dataInput, remoteType, pdxLen, pdxTypeRegistry) {
+  m_currentIndex = 0;
+}
 
 PdxRemoteReader::~PdxRemoteReader() {
   // TODO Auto-generated destructor stub

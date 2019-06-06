@@ -43,8 +43,7 @@ class APACHE_GEODE_EXPORT RemoteQueryService
     : public QueryService,
       public std::enable_shared_from_this<RemoteQueryService> {
  public:
-   RemoteQueryService(CacheImpl* cptr,
-                              ThinClientPoolDM* poolDM = nullptr);
+  RemoteQueryService(CacheImpl* cptr, ThinClientPoolDM* poolDM = nullptr);
   ~RemoteQueryService() = default;
 
   void init();

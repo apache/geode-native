@@ -27,7 +27,7 @@ namespace apache {
 namespace geode {
 namespace client {
 bool PdxTypeLessThan::operator()(std::shared_ptr<PdxType> const& n1,
-                std::shared_ptr<PdxType> const& n2) const {
+                                 std::shared_ptr<PdxType> const& n2) const {
   return *n1 < *n2;
 }
 
@@ -274,11 +274,17 @@ std::shared_ptr<EnumInfo> PdxTypeRegistry::getEnum(int32_t enumVal) {
   return std::move(ret);
 }
 
-bool PdxTypeRegistry::getPdxIgnoreUnreadFields() const { return pdxIgnoreUnreadFields; }
+bool PdxTypeRegistry::getPdxIgnoreUnreadFields() const {
+  return pdxIgnoreUnreadFields;
+}
 
-void PdxTypeRegistry::setPdxIgnoreUnreadFields(bool value) { pdxIgnoreUnreadFields = value; }
+void PdxTypeRegistry::setPdxIgnoreUnreadFields(bool value) {
+  pdxIgnoreUnreadFields = value;
+}
 
-void PdxTypeRegistry::setPdxReadSerialized(bool value) { pdxReadSerialized = value; }
+void PdxTypeRegistry::setPdxReadSerialized(bool value) {
+  pdxReadSerialized = value;
+}
 
 bool PdxTypeRegistry::getPdxReadSerialized() const { return pdxReadSerialized; }
 

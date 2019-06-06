@@ -42,7 +42,7 @@ class APACHE_GEODE_EXPORT ServerLocation
 
   ServerLocation();
 
-   ServerLocation(std::string name);
+  ServerLocation(std::string name);
 
   const std::string& getServerName() const;
 

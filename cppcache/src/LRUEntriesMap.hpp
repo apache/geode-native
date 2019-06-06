@@ -109,8 +109,7 @@ class APACHE_GEODE_EXPORT LRUEntriesMap : public ConcurrentEntriesMap,
   void processLRU(int32_t numEntriesToEvict);
   GfErrType evictionHelper();
   void updateMapSize(int64_t size);
-  void setPersistenceManager(
-      std::shared_ptr<PersistenceManager>& pmPtr);
+  void setPersistenceManager(std::shared_ptr<PersistenceManager>& pmPtr);
 
   /**
    * @brief remove an entry, marking it evicted for LRUList maintainance.

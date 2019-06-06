@@ -30,7 +30,7 @@ namespace client {
 
 class APACHE_GEODE_EXPORT ReadGuard {
  public:
-   ReadGuard(ACE_RW_Thread_Mutex& lock);
+  ReadGuard(ACE_RW_Thread_Mutex& lock);
 
   ~ReadGuard();
   bool isAcquired();
@@ -41,7 +41,7 @@ class APACHE_GEODE_EXPORT ReadGuard {
 
 class WriteGuard {
  public:
-   WriteGuard(ACE_RW_Thread_Mutex& lock);
+  WriteGuard(ACE_RW_Thread_Mutex& lock);
 
   ~WriteGuard();
 

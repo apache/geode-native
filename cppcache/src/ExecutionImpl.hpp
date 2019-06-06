@@ -40,11 +40,11 @@ typedef std::map<std::string, std::vector<int8_t>*>
 
 class ExecutionImpl {
  public:
-   ExecutionImpl(std::shared_ptr<Region> rptr = nullptr,
-                         AuthenticatedView* authenticatedView = nullptr,
-                         std::shared_ptr<Pool> pp = nullptr);
-   ExecutionImpl(std::shared_ptr<Pool> pool, bool allServer = false,
-                         AuthenticatedView* authenticatedView = nullptr);
+  ExecutionImpl(std::shared_ptr<Region> rptr = nullptr,
+                AuthenticatedView* authenticatedView = nullptr,
+                std::shared_ptr<Pool> pp = nullptr);
+  ExecutionImpl(std::shared_ptr<Pool> pool, bool allServer = false,
+                AuthenticatedView* authenticatedView = nullptr);
   virtual ~ExecutionImpl() = default;
   virtual Execution withFilter(std::shared_ptr<CacheableVector> routingObj);
   virtual Execution withArgs(std::shared_ptr<Cacheable> args);

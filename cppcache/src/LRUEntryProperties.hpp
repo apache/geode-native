@@ -17,9 +17,10 @@
 
 #pragma once
 
+#include <stdint.h>
+
 #include <atomic>
 #include <memory>
-#include <stdint.h>
 
 #include <geode/internal/geode_globals.hpp>
 
@@ -51,7 +52,7 @@ class APACHE_GEODE_EXPORT LRUEntryProperties {
 
  protected:
   // this constructor deliberately skips initializing any fields
-   LRUEntryProperties(bool);
+  LRUEntryProperties(bool);
 
  private:
   std::atomic<uint32_t> m_bits;

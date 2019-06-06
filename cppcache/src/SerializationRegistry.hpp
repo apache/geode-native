@@ -174,11 +174,11 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
    * then write whatever the object's toData requires. The length at the
    * front is backfilled after the serialization.
    */
-  void serialize(const std::shared_ptr<Serializable>& obj,
-                        DataOutput& output, bool isDelta = false) const;
+  void serialize(const std::shared_ptr<Serializable>& obj, DataOutput& output,
+                 bool isDelta = false) const;
 
   void serializeWithoutHeader(const std::shared_ptr<Serializable>& obj,
-                                     DataOutput& output) const;
+                              DataOutput& output) const;
 
   /**
    * Read the length, typeid, and run the objs fromData. Returns the New
@@ -238,27 +238,27 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
       DataInput& input, DSCode dsCode) const;
 
   void serialize(const std::shared_ptr<DataSerializableFixedId>& obj,
-                        DataOutput& output) const;
+                 DataOutput& output) const;
 
   void serializeWithoutHeader(
       const std::shared_ptr<DataSerializableFixedId>& obj,
       DataOutput& output) const;
 
   void serialize(const std::shared_ptr<DataSerializablePrimitive>& obj,
-                        DataOutput& output) const;
+                 DataOutput& output) const;
 
   void serializeWithoutHeader(
       const std::shared_ptr<DataSerializablePrimitive>& obj,
       DataOutput& output) const;
 
   void serialize(const std::shared_ptr<PdxSerializable>& obj,
-                        DataOutput& output) const;
+                 DataOutput& output) const;
 
   void serializeWithoutHeader(const std::shared_ptr<PdxSerializable>& obj,
                               DataOutput& output) const;
 
   void serialize(const std::shared_ptr<DataSerializableInternal>& obj,
-                        DataOutput& output) const;
+                 DataOutput& output) const;
 
   void serializeWithoutHeader(
       const std::shared_ptr<DataSerializableInternal>& obj,

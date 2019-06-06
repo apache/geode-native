@@ -67,13 +67,12 @@ ExpiryTaskManager::id_type ExpEntryProperties::getExpiryTaskId() const {
 void ExpEntryProperties::cancelExpiryTaskId(
     const std::shared_ptr<CacheableKey>& key) const {
   LOGDEBUG("Cancelling expiration task for key [%s] with id [%d]",
-            Utils::nullSafeToString(key).c_str(), m_expiryTaskId);
+           Utils::nullSafeToString(key).c_str(), m_expiryTaskId);
   m_expiryTaskManager->cancelTask(m_expiryTaskId);
 }
 
 ExpEntryProperties::ExpEntryProperties(bool)
     : m_lastAccessTime(0), m_lastModifiedTime(0) {}
-
 
 MapEntry::MapEntry() {}
 MapEntry::~MapEntry() {}

@@ -77,19 +77,19 @@ class APACHE_GEODE_EXPORT MapSegment {
   // increment update counter of the given entry and return true if entry
   // was rebound
   bool incrementUpdateCount(const std::shared_ptr<CacheableKey>& key,
-                                   std::shared_ptr<MapEntry>& entry);
+                            std::shared_ptr<MapEntry>& entry);
 
   // remove a tracker for the given entry
   void removeTrackerForEntry(const std::shared_ptr<CacheableKey>& key,
-                                    std::shared_ptr<MapEntry>& entry,
-                                    std::shared_ptr<MapEntryImpl>& entryImpl);
+                             std::shared_ptr<MapEntry>& entry,
+                             std::shared_ptr<MapEntryImpl>& entryImpl);
 
   GfErrType putNoEntry(const std::shared_ptr<CacheableKey>& key,
-                              const std::shared_ptr<Cacheable>& newValue,
-                              std::shared_ptr<MapEntryImpl>& newEntry,
-                              int updateCount, int destroyTracker,
-                              std::shared_ptr<VersionTag> versionTag,
-                              VersionStamp* versionStamp = nullptr);
+                       const std::shared_ptr<Cacheable>& newValue,
+                       std::shared_ptr<MapEntryImpl>& newEntry, int updateCount,
+                       int destroyTracker,
+                       std::shared_ptr<VersionTag> versionTag,
+                       VersionStamp* versionStamp = nullptr);
 
   GfErrType putForTrackedEntry(const std::shared_ptr<CacheableKey>& key,
                                const std::shared_ptr<Cacheable>& newValue,

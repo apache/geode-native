@@ -67,7 +67,7 @@ class GeodeStatisticsFactory : public StatisticsFactory {
   StatisticsTypeImpl* addType(StatisticsTypeImpl* t);
 
  public:
-   GeodeStatisticsFactory(StatisticsManager* statMngr);
+  GeodeStatisticsFactory(StatisticsManager* statMngr);
   ~GeodeStatisticsFactory() override;
 
   const std::string& getName() const override;

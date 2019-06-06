@@ -62,8 +62,7 @@ class APACHE_GEODE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
 
   char16_t getCharField(const std::string& fieldName) const override;
 
-  std::string getStringField(
-      const std::string& fieldName) const override;
+  std::string getStringField(const std::string& fieldName) const override;
 
   std::vector<bool> getBooleanArrayField(
       const std::string& fieldname) const override;
@@ -97,8 +96,7 @@ class APACHE_GEODE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
       const std::string& fieldname) const override;
 
   void getField(const std::string& fieldName, int8_t*** value,
-                        int32_t& arrayLength,
-                        int32_t*& elementLength) const override;
+                int32_t& arrayLength, int32_t*& elementLength) const override;
 
   std::shared_ptr<Cacheable> getCacheableField(
       const std::string& fieldname) const override;
@@ -108,11 +106,9 @@ class APACHE_GEODE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
 
   void setField(const std::string& fieldName, bool value) override;
 
-  void setField(const std::string& fieldName,
-                        signed char value) override;
+  void setField(const std::string& fieldName, signed char value) override;
 
-  void setField(const std::string& fieldName,
-                        unsigned char value) override;
+  void setField(const std::string& fieldName, unsigned char value) override;
 
   void setField(const std::string& fieldName, int16_t value) override;
 
@@ -127,46 +123,46 @@ class APACHE_GEODE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
   void setField(const std::string& fieldName, char16_t value) override;
 
   void setField(const std::string& fieldName,
-                        std::shared_ptr<CacheableDate> value) override;
+                std::shared_ptr<CacheableDate> value) override;
 
   void setField(const std::string& fieldName,
-                        const std::vector<bool>& value) override;
+                const std::vector<bool>& value) override;
 
   void setField(const std::string& fieldName,
-                        const std::vector<int8_t>& value) override;
+                const std::vector<int8_t>& value) override;
 
   void setField(const std::string& fieldName,
-                        const std::vector<int16_t>& value) override;
+                const std::vector<int16_t>& value) override;
 
   void setField(const std::string& fieldName,
-                        const std::vector<int32_t>& value) override;
+                const std::vector<int32_t>& value) override;
 
   void setField(const std::string& fieldName,
-                        const std::vector<int64_t>& value) override;
+                const std::vector<int64_t>& value) override;
 
   void setField(const std::string& fieldName,
-                        const std::vector<float>& value) override;
+                const std::vector<float>& value) override;
 
   void setField(const std::string& fieldName,
-                        const std::vector<double>& value) override;
+                const std::vector<double>& value) override;
 
   void setField(const std::string& fieldName,
-                        const std::string& value) override;
+                const std::string& value) override;
 
   void setField(const std::string& fieldName,
-                        const std::vector<char16_t>& value) override;
+                const std::vector<char16_t>& value) override;
 
   void setField(const std::string& fieldName, std::string* value,
-                        int32_t length) override;
+                int32_t length) override;
 
   void setField(const std::string& fieldName, int8_t** value,
-                        int32_t arrayLength, int32_t* elementLength) override;
+                int32_t arrayLength, int32_t* elementLength) override;
 
   void setField(const std::string& fieldName,
-                        std::shared_ptr<Cacheable> value) override;
+                std::shared_ptr<Cacheable> value) override;
 
   void setField(const std::string& fieldName,
-                        std::shared_ptr<CacheableObjectArray> value) override;
+                std::shared_ptr<CacheableObjectArray> value) override;
 
   bool isIdentityField(const std::string& fieldname) override;
 
@@ -189,8 +185,7 @@ class APACHE_GEODE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
 
   const std::string& getClassName() const override;
 
-  PdxFieldTypes getFieldType(
-      const std::string& fieldname) const override;
+  PdxFieldTypes getFieldType(const std::string& fieldname) const override;
 
   void setPdxId(int32_t typeId);
 

@@ -26,8 +26,8 @@
 
 #include <geode/internal/geode_globals.hpp>
 
-#include "util/concurrent/spinlock_mutex.hpp"
 #include "LRUEntryProperties.hpp"
+#include "util/concurrent/spinlock_mutex.hpp"
 
 namespace apache {
 namespace geode {
@@ -49,7 +49,7 @@ class LRUList {
    */
   class LRUListNode {
    public:
-    inline  LRUListNode(const std::shared_ptr<TEntry>& entry)
+    inline LRUListNode(const std::shared_ptr<TEntry>& entry)
         : m_entry(entry), m_nextLRUListNode(nullptr) {}
 
     inline ~LRUListNode() {}
@@ -96,8 +96,7 @@ class LRUList {
   /**
    * @brief add an entry to the tail of the list.
    */
-  void appendEntry(
-      const std::shared_ptr<TEntry>& entry) {
+  void appendEntry(const std::shared_ptr<TEntry>& entry) {
     std::lock_guard<spinlock_mutex> lk(m_tailLock);
 
     LRUListNode* aNode = new LRUListNode(entry);

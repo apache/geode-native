@@ -95,10 +95,11 @@ void TombstoneExpiryHandler::DoTheExpirationAction(
   m_tombstoneList->removeEntryFromMapSegment(key);
 }
 
-void TombstoneExpiryHandler::setTombstoneEntry(std::shared_ptr<TombstoneEntry> entryPtr) {
-    m_entryPtr = entryPtr;
-  }
-  
+void TombstoneExpiryHandler::setTombstoneEntry(
+    std::shared_ptr<TombstoneEntry> entryPtr) {
+  m_entryPtr = entryPtr;
+}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

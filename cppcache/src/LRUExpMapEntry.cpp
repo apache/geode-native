@@ -34,22 +34,20 @@ void LRUExpMapEntry::cleanup(const CacheEventFlags eventFlags) {
 }
 
 LRUExpMapEntry::LRUExpMapEntry(bool)
-      : MapEntryImpl(true),
-        LRUEntryProperties(true),
-        ExpEntryProperties(true) {}
+    : MapEntryImpl(true), LRUEntryProperties(true), ExpEntryProperties(true) {}
 
 LRUExpMapEntry::LRUExpMapEntry(ExpiryTaskManager* expiryTaskManager,
-                        const std::shared_ptr<CacheableKey>& key)
-      : MapEntryImpl(key), ExpEntryProperties(expiryTaskManager) {}
-
+                               const std::shared_ptr<CacheableKey>& key)
+    : MapEntryImpl(key), ExpEntryProperties(expiryTaskManager) {}
 
 VersionStamp& VersionedLRUExpMapEntry::getVersionStamp() { return *this; }
 
 VersionedLRUExpMapEntry::VersionedLRUExpMapEntry(bool) : LRUExpMapEntry(true) {}
 
-VersionedLRUExpMapEntry::VersionedLRUExpMapEntry(ExpiryTaskManager* expiryTaskManager,
-                                 const std::shared_ptr<CacheableKey>& key)
-      : LRUExpMapEntry(expiryTaskManager, key) {}
+VersionedLRUExpMapEntry::VersionedLRUExpMapEntry(
+    ExpiryTaskManager* expiryTaskManager,
+    const std::shared_ptr<CacheableKey>& key)
+    : LRUExpMapEntry(expiryTaskManager, key) {}
 
 void LRUExpEntryFactory::newMapEntry(
     ExpiryTaskManager* expiryTaskManager,

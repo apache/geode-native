@@ -469,7 +469,7 @@ class APACHE_GEODE_EXPORT LogFn {
   LogLevel m_level;
 
  public:
-   LogFn(const char* functionName, LogLevel level = LogLevel::Finest);
+  LogFn(const char* functionName, LogLevel level = LogLevel::Finest);
 
   ~LogFn();
 

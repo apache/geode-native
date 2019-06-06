@@ -23,12 +23,15 @@
 namespace apache {
 namespace geode {
 namespace client {
-LRULocalDestroyAction::LRULocalDestroyAction(RegionInternal* regionPtr, LRUEntriesMap* entriesMapPtr)
+LRULocalDestroyAction::LRULocalDestroyAction(RegionInternal* regionPtr,
+                                             LRUEntriesMap* entriesMapPtr)
     : m_regionPtr(regionPtr), m_entriesMapPtr(entriesMapPtr) {
   m_destroys = true;
 }
 
-LRUAction::Action LRULocalDestroyAction::getType() { return LRUAction::LOCAL_DESTROY; }
+LRUAction::Action LRULocalDestroyAction::getType() {
+  return LRUAction::LOCAL_DESTROY;
+}
 
 bool LRULocalDestroyAction::evict(const std::shared_ptr<MapEntryImpl>& mePtr) {
   std::shared_ptr<CacheableKey> keyPtr;

@@ -75,8 +75,7 @@ class TcpSslConn : public TcpConn {
   // connect
   void connect() override;
 
-  void setOption(int32_t level, int32_t option, void* val,
-                 size_t len) override;
+  void setOption(int32_t level, int32_t option, void* val, size_t len) override;
 
   uint16_t getPort() override;
 };

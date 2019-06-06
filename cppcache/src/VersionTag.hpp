@@ -56,7 +56,7 @@ class VersionTag : public DataSerializableFixedId {
   virtual void readMembers(uint16_t flags, DataInput& input);
 
  public:
-   VersionTag(MemberListForVersionStamp& memberListForVersionStamp);
+  VersionTag(MemberListForVersionStamp& memberListForVersionStamp);
 
   ~VersionTag() override = default;
 
