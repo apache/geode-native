@@ -13,21 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-add_executable(cpp-integration-test
-  ChunkedHeaderTest.cpp
-  DataSerializableTest.cpp
-  EnableChunkHandlerThreadTest.cpp
-  ExampleTest.cpp
-  ExpirationTest.cpp
-  FunctionExecutionTest.cpp
-  PdxInstanceTest.cpp
-  RegionPutAllTest.cpp
-  RegionPutGetAllTest.cpp
-  RegisterKeysTest.cpp
-  StructTest.cpp
-  CommitConflictExceptionTest.cpp
-  TransactionCleaningTest.cpp
-  )
+file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
+
+add_executable(cpp-integration-test ${SOURCES})
 
 target_compile_definitions(cpp-integration-test
   PUBLIC
