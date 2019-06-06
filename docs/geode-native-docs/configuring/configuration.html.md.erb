@@ -22,12 +22,18 @@ limitations under the License.
 You can configure your native client application:
 
  - Programmatically in your app code
- - Via XML files and properties files
+ - Via XML files and properties files (see [Client Cache XML Reference](../client-cache-ref.html))
  - Through a combination of programmatic and file-based approaches
 
 This section describes configuration on two levels, the system level and the cache level.
+System property settings describe your application's behavior, while cache configuration describes data.
 
 ## <a id="config_programmatic_vs_xml"></a>Programmatic Configuration vs XML Configuration
+
+Programmatic configuration enables your client application to dynamically adapt to changing runtime conditions.
+
+In contrast, XML configuration externalizes properties, such as locator addresses and pool
+connection details, so they can be changed without requiring that you recompile your application.
 
 **C++ RegionFactory Example**
 
