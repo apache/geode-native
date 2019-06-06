@@ -349,15 +349,12 @@ void doNetsearch(const char* name, const char* key, const char* value) {
 }
 
 const char* keys[] = {"Key-1", "Key-2", "Key-3", "Key-4",
-                      "Key-5", "Key-6", "Key-7", "Key-8",
-                      "Key-9", "Key-10", "Key-11"};
+                      "Key-5", "Key-6", "Key-7"};
 const char* vals[] = {"Value-1", "Value-2", "Value-3", "Value-4",
-                      "Value-5", "Value-6", "Value-7", "Value-8",
-                      "Value-9", "Value-10", "Value-11"};
+                      "Value-5", "Value-6", "Value-7"};
 const char* nvals[] = {"New Value-1", "New Value-2", "New Value-3",
                        "New Value-4", "New Value-5", "New Value-6",
-                       "New Value-7", "New Value-8", "New Value-9",
-                       "New Value-10", "New Value-11"};
+                       "New Value-7"};
 
 const char* regionNames[] = {"DistRegionAck", "DistRegionNoAck", "testregion"};
 
@@ -1003,97 +1000,6 @@ DUNIT_TASK_DEFINITION(CLIENT2, UpdateClient2Entries)
     updateEntry(regionNames[1], keys[3], nvals[3]);
     txManager->commit();
     LOG("StepSix complete.");
-  }
-END_TASK_DEFINITION
-DUNIT_TASK_DEFINITION(CLIENT1, CreateClient1additionalEntries)
-  {
-    auto txManager = getHelper()->getCache()->getCacheTransactionManager();
-    txManager->begin();
-    createEntry(regionNames[0], keys[7], vals[7]);
-    createEntry(regionNames[1], keys[8], vals[8]);
-    txManager->prepare();
-    txManager->commit();
-    verifyEntry(regionNames[0], keys[7], vals[7]);
-    verifyEntry(regionNames[1], keys[8], vals[8]);
-    txManager->begin();
-    updateEntry(regionNames[0], keys[7], nvals[7]);
-    updateEntry(regionNames[1], keys[8], nvals[8]);
-    txManager->commit();
-    verifyEntry(regionNames[0], keys[7], nvals[7]);
-    verifyEntry(regionNames[1], keys[8], nvals[8]);
-    LOG("StepSeven complete.");
-  }
-END_TASK_DEFINITION
-DUNIT_TASK_DEFINITION(CLIENT2, CreateClient2additionalEntries)
-  {
-    doNetsearch(regionNames[0], keys[0], vals[0]);
-    doNetsearch(regionNames[1], keys[2], vals[2]);
-    auto txManager = getHelper()->getCache()->getCacheTransactionManager();
-    txManager->begin();
-    createEntry(regionNames[0], keys[9], vals[9]);
-    createEntry(regionNames[1], keys[10], vals[10]);
-    txManager->commit();
-    verifyEntry(regionNames[0], keys[9], vals[9]);
-    verifyEntry(regionNames[1], keys[10], vals[10]);
-    txManager->begin();
-    updateEntry(regionNames[0], keys[9], nvals[9]);
-    updateEntry(regionNames[1], keys[10], nvals[10]);
-    txManager->prepare();
-    txManager->commit();
-    verifyEntry(regionNames[0], keys[9], nvals[9]);
-    verifyEntry(regionNames[1], keys[10], nvals[10]);
-    LOG("StepEight complete.");
-  }
-END_TASK_DEFINITION
-DUNIT_TASK_DEFINITION(CLIENT1, UpdateClient1additionalEntries)
-  {
-    auto txManager = getHelper()->getCache()->getCacheTransactionManager();
-    txManager->begin();
-    updateEntry(regionNames[0], keys[7], vals[5]);
-    updateEntry(regionNames[1], keys[8], vals[6]);
-    txManager->commit();
-    verifyEntry(regionNames[0], keys[7], vals[5]);
-    verifyEntry(regionNames[1], keys[8], vals[6]);
-    txManager->begin();
-    updateEntry(regionNames[0], keys[7], vals[7]);
-    updateEntry(regionNames[1], keys[8], vals[8]);
-    txManager->prepare();
-    txManager->rollback();
-    verifyEntry(regionNames[0], keys[7], vals[5]);
-    verifyEntry(regionNames[1], keys[8], vals[6]);
-    txManager->begin();
-    updateEntry(regionNames[0], keys[7], nvals[7]);
-    updateEntry(regionNames[1], keys[8], nvals[8]);
-    txManager->commit();
-    verifyEntry(regionNames[0], keys[7], nvals[7]);
-    verifyEntry(regionNames[1], keys[8], nvals[8]);
-    LOG("StepNine complete.");
-  }
-END_TASK_DEFINITION
-DUNIT_TASK_DEFINITION(CLIENT2, UpdateClient2additionalEntries)
-  {
-    auto txManager = getHelper()->getCache()->getCacheTransactionManager();
-    txManager->begin();
-    updateEntry(regionNames[0], keys[9], nvals[7]);
-    updateEntry(regionNames[1], keys[10], nvals[8]);
-    txManager->prepare();
-    txManager->commit();
-    verifyEntry(regionNames[0], keys[9], nvals[7]);
-    verifyEntry(regionNames[1], keys[10], nvals[8]);
-    txManager->begin();
-    updateEntry(regionNames[0], keys[9], nvals[9]);
-    updateEntry(regionNames[1], keys[10], nvals[10]);
-    txManager->rollback();
-    verifyEntry(regionNames[0], keys[9], nvals[7]);
-    verifyEntry(regionNames[1], keys[10], nvals[8]);
-    txManager->begin();
-    updateEntry(regionNames[0], keys[9], nvals[9]);
-    updateEntry(regionNames[1], keys[10], nvals[10]);
-    txManager->prepare();
-    txManager->commit();
-    verifyEntry(regionNames[0], keys[9], nvals[9]);
-    verifyEntry(regionNames[1], keys[10], nvals[10]);
-    LOG("StepTen complete.");
   }
 END_TASK_DEFINITION
 
