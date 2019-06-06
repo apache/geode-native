@@ -323,7 +323,8 @@ class TcrMessage {
 
   const std::string& getPartitionResolver() const;
 
-  std::vector<std::vector<std::shared_ptr<BucketServerLocation>>>* getMetadata();
+  std::vector<std::vector<std::shared_ptr<BucketServerLocation>>>*
+  getMetadata();
 
   std::vector<std::shared_ptr<FixedPartitionAttributesImpl>>* getFpaSet();
 
@@ -333,7 +334,8 @@ class TcrMessage {
 
   void setCallBackArguement(bool aCallBackArguement);
 
-  void setBucketServerLocation(std::shared_ptr<BucketServerLocation> serverLocation);
+  void setBucketServerLocation(
+      std::shared_ptr<BucketServerLocation> serverLocation);
   void setVersionTag(std::shared_ptr<VersionTag> versionTag);
   std::shared_ptr<VersionTag> getVersionTag();
   uint8_t hasResult() const;
@@ -571,7 +573,7 @@ class TcrMessageInvalidate : public TcrMessage {
                        const std::shared_ptr<Serializable>& aCallbackArgument,
                        ThinClientBaseDM* connectionDM = nullptr);
 
- ~TcrMessageInvalidate() override = default;
+  ~TcrMessageInvalidate() override = default;
 };
 
 class TcrMessageDestroy : public TcrMessage {
@@ -582,7 +584,7 @@ class TcrMessageDestroy : public TcrMessage {
                     const std::shared_ptr<Serializable>& aCallbackArgument,
                     ThinClientBaseDM* connectionDM = nullptr);
 
- ~TcrMessageDestroy() override = default;
+  ~TcrMessageDestroy() override = default;
 };
 
 class TcrMessageRegisterInterestList : public TcrMessage {
@@ -947,38 +949,41 @@ class TcrMessageReply : public TcrMessage {
  * methods that response processor methods require to access here.
  */
 class TcrMessageHelper {
-  public:
-    TcrMessageHelper() = delete;
+ public:
+  TcrMessageHelper() = delete;
 
-    /**
-     * result types returned by readChunkPartHeader
-     */
-    enum class ChunkObjectType { OBJECT, EXCEPTION, NULL_OBJECT };
+  /**
+   * result types returned by readChunkPartHeader
+   */
+  enum class ChunkObjectType { OBJECT, EXCEPTION, NULL_OBJECT };
 
-    /**
-     * Tries to read an exception part and returns true if the exception
-     * was successfully read.
-     */
-    static bool readExceptionPart(TcrMessage& msg, DataInput& input, uint8_t isLastChunk);
+  /**
+   * Tries to read an exception part and returns true if the exception
+   * was successfully read.
+   */
+  static bool readExceptionPart(TcrMessage& msg, DataInput& input,
+                                uint8_t isLastChunk);
 
-    static void skipParts(TcrMessage& msg, DataInput& input, int32_t numParts = 1);
+  static void skipParts(TcrMessage& msg, DataInput& input,
+                        int32_t numParts = 1);
 
-    /**
-     * Reads header of a chunk part. Returns true if header was successfully
-     * read and false if it is a chunk exception part.
-     * Throws a MessageException with relevant message if an unknown
-     * message type is encountered in the header.
-     */
-    static ChunkObjectType readChunkPartHeader(
-        TcrMessage& msg, DataInput& input, DSCode expectedFirstType,
-        int32_t expectedPartType, const char* methodName, uint32_t& partLen,
-        uint8_t isLastChunk);
+  /**
+   * Reads header of a chunk part. Returns true if header was successfully
+   * read and false if it is a chunk exception part.
+   * Throws a MessageException with relevant message if an unknown
+   * message type is encountered in the header.
+   */
+  static ChunkObjectType readChunkPartHeader(TcrMessage& msg, DataInput& input,
+                                             DSCode expectedFirstType,
+                                             int32_t expectedPartType,
+                                             const char* methodName,
+                                             uint32_t& partLen,
+                                             uint8_t isLastChunk);
 
-    static ChunkObjectType readChunkPartHeader(TcrMessage& msg,
-                                                      DataInput& input,
-                                                      const char* methodName,
-                                                      uint32_t& partLen,
-                                                      uint8_t isLastChunk);
+  static ChunkObjectType readChunkPartHeader(TcrMessage& msg, DataInput& input,
+                                             const char* methodName,
+                                             uint32_t& partLen,
+                                             uint8_t isLastChunk);
 };
 }  // namespace client
 }  // namespace geode
