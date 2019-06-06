@@ -22,9 +22,22 @@ limitations under the License.
 This section documents the XML elements you can use to configure your <%=vars.product_name%>
 native client application.
 
-Set cache configuration parameters in a declarative XML file.
-When you run your application, the native client runtime library reads the file `cache.xml` in the current executable directory, if it exists.
-You can set the filename and path to other values by modifying the `geode.properties` file's `cache-xml-file` property.
+To define a configuration using XML:
+
+1. Set cache configuration parameters in a declarative XML file. By convention, this user guide refers to the file as `cache.xml`, but you can choose any name.
+
+1. Specify the filename and path to your XML configuration file by setting the `cache-xml-file`
+property in the `geode.properties` file. If you do not specify path, the application will search for
+the file in its runtime startup directory.
+
+For example:
+
+```
+cache-xml-file=cache.xml
+```
+
+When you run your application, the native client runtime library reads and applies the configuration
+specified in the XML file.
 
 The declarative XML file is used to externalize the configuration of the client cache.
 The contents of the XML file correspond to APIs found in the`apache::geode::client` package for C++ applications,
@@ -36,8 +49,8 @@ your native client distribution in the `xsds` directory, and online at
 
 # Cache Initialization File: XML Essentials
 
-This section assumes you are familiar with XML. When creating a cache initialization file for your native client application, keep these
-basics in mind:
+This section assumes you are familiar with XML. When creating a cache initialization file for your
+native client application, keep these basics in mind:
 
 - Place an XML prolog at the top of the file. For example:
 
