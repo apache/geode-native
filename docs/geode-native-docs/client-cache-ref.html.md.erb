@@ -133,9 +133,9 @@ Your declarative cache file must include a schema of the following form:
 
 ### Attributes of \<client-cache\>
 
-| Attribute | Description | Default |
-|-----------|-------------|---------|
-| version   | Required. Must be "1.0" | |
+| Attribute | Description |
+|-----------|-------------|
+| version   | Required. Must be "1.0" |
 
 
 ### Sub-elements of \<client-cache\>
@@ -199,10 +199,10 @@ Multiples of either or both types are permitted.
 
 ## Attributes of \<locator\>
 
-| Attribute | Description | Default |
-|-----------|-------------|---------|
-| host      | String. Locator host name. | |
-| port      | Integer in the range 0 - 65535, inclusive. Locator port number. | |
+| Attribute | Description |
+|-----------|-------------|
+| host      | String. Locator host name. |
+| port      | Integer in the range 0 - 65535, inclusive. Locator port number. |
 
 For example:
 
@@ -217,10 +217,10 @@ For example:
 
 ## Attributes of \<server\>
 
-| Attribute | Description | Default |
-|-----------|-------------|---------|
-| host      | String. Server host name. | |
-| port      | Integer in the range 0 - 65535, inclusive. Server port number. | |
+| Attribute | Description |
+|-----------|-------------|
+| host      | String. Server host name. |
+| port      | Integer in the range 0 - 65535, inclusive. Server port number. |
 
 For example:
 
@@ -252,10 +252,10 @@ Use the `<region-attributes>` sub-element to specify most of the characteristics
 You can specify many attributes to configure a region, but most of these attributes are encapsulated in the <a href="#region-attributes-ref">`<region-attributes>`</a> sub-element.
 The `<region>` element itself has only two attributes: a required name and an optional reference identifier.
 
-| Attribute | Description | Default |
-|-----------|-------------|---------|
-| name | String. Required. | |
-| refid |  String. | |
+| Attribute | Description |
+|-----------|-------------|
+| name | String. Required. |
+| refid |  String. |
 
 <a id="region-attributes-ref"></a>
 ## \<region-attributes\>
@@ -282,17 +282,17 @@ sub-elements. When more than one sub-element is specified, they must be defined 
 | Attribute | Description | Default |
 |-----------|-------------|---------|
 | caching-enabled | Boolean. If true, cache data for this region in this process. If false, then no data is stored in the local process, but events and distributions will still occur, and the region can still be used to put and remove, etc. | true |
-| cloning-enabled | Boolean. Sets cloning on region. | |
+| cloning-enabled | Boolean. Sets cloning on region. | false |
 | scope | Enumeration: `local`, `distributed-no-ack`, `distributed-ack` | |
-| initial-capacity | String. Sets the entry initial capacity for the region. | |
-| load-factor | String. Sets the entry load factor for the next `RegionAttributes` to be created. | |
-| concurrency-level | String. Sets the concurrency level of the next `RegionAttributes` to be created. | |
-| lru-entries-limit | String. Sets the maximum number of entries this cache will hold before using LRU eviction. A return value of zero, 0, indicates no limit. | |
+| initial-capacity | String. Sets the initial entry capacity for the region. | 10000 |
+| load-factor | String. Sets the entry load factor for the next `RegionAttributes` to be created. | 0.75 |
+| concurrency-level | String. Sets the concurrency level of the next `RegionAttributes` to be created. | 16 |
+| lru-entries-limit | String. Sets the maximum number of entries this cache will hold before using LRU eviction. A return value of zero, 0, indicates no limit. If disk-policy is `overflows`, must be greater than zero. | |
 | disk-policy | Enumeration: `none`, `overflows`, `persist`. Sets the disk policy for this region. | none |
 | endpoints | String. A list of `servername:port-number` pairs separated by commas. | |
-| client-notification | Boolean true/false (on/off) | |
+| client-notification | Boolean true/false (on/off) | false |
 | pool-name | String. The name of the pool to attach to this region. The pool with the specified name must already exist. | |
-| concurrency-checks-enabled | Boolean: true/false. Enables concurrent modification checks. | |
+| concurrency-checks-enabled | Boolean: true/false. Enables concurrent modification checks. | true |
 | id | String. | |
 | refid | String. | |
 
@@ -306,10 +306,10 @@ Use the `<expiration-attributes>` sub-element to specify duration and expiration
 <a id="expiration-attributes-ref"></a>
 The attributes of \<expiration-attributes\> must be defined in this order:
 
-| Attribute | Description | Default |
-|-----------|-------------|---------|
-| timeout |  Duration, specified as an integer and units. Required. | |
-| action | Enumeration. One of: `invalidate`, `destroy`, `local-invalidate`, `local-destroy` | |
+| Attribute | Description |
+|-----------|-------------|
+| timeout |  Duration, specified as an integer and units. Required. |
+| action | Enumeration. One of: `invalidate`, `destroy`, `local-invalidate`, `local-destroy` |
 
 <a id="region-idle-time-ref"></a>
 ## \<region-idle-time\>
@@ -319,10 +319,10 @@ The counter is reset after any access, including create, put, and get operations
 
 Use the `<expiration-attributes>` sub-element to specify duration and expiration action. The attributes of \<expiration-attributes\> must be defined in this order:
 
-| Attribute | Description | Default |
-|-----------|-------------|---------|
-| timeout |  Duration, specified as an integer and units. Required. | |
-| action | Enumeration. One of: `invalidate`, `destroy`, `local-invalidate`, `local-destroy` | |
+| Attribute | Description |
+|-----------|-------------|
+| timeout |  Duration, specified as an integer and units. Required. |
+| action | Enumeration. One of: `invalidate`, `destroy`, `local-invalidate`, `local-destroy` |
 
 <a id="entry-time-to-live-ref"></a>
 ## \<entry-time-to-live\>
@@ -332,10 +332,10 @@ Get (read) operations do not reset the counter.
 
 Use the `<expiration-attributes>` sub-element to specify duration and expiration action. The attributes of \<expiration-attributes\> must be defined in this order:
 
-| Attribute | Description | Default |
-|-----------|-------------|---------|
-| timeout |  Duration, specified as an integer and units. Required. | |
-| action | Enumeration. One of: `invalidate`, `destroy`, `local-invalidate`, `local-destroy` | |
+| Attribute | Description |
+|-----------|-------------|
+| timeout |  Duration, specified as an integer and units. Required. |
+| action | Enumeration. One of: `invalidate`, `destroy`, `local-invalidate`, `local-destroy` |
 
 <a id="entry-idle-time-ref"></a>
 ## \<entry-idle-time\>
@@ -345,10 +345,10 @@ The counter is reset after any access, including create, put, and get operations
 
 Use the `<expiration-attributes>` sub-element to specify duration and expiration action. The attributes of \<expiration-attributes\> must be defined in this order:
 
-| Attribute | Description | Default |
-|-----------|-------------|---------|
-| timeout |  Duration, specified as an integer and units. Required. | |
-| action | Enumeration. One of: `invalidate`, `destroy`, `local-invalidate`, `local-destroy` | |
+| Attribute | Description |
+|-----------|-------------|
+| timeout |  Duration, specified as an integer and units. Required. |
+| action | Enumeration. One of: `invalidate`, `destroy`, `local-invalidate`, `local-destroy` |
 
 <a id="partition-resolver-ref"></a>
 ## \<partition-resolver\>
@@ -422,10 +422,10 @@ Specifies the configuration for the Portable Data eXchange (PDX) method of seria
 
 ### Attributes of \<pdx\>
 
-| Attribute | Description | Default |
-|-----------|-------------|---------|
-| ignore-unread-fields |  Boolean. When `true`, do not preserve unread PDX fields during deserialization. You can use this option to save memory. Set this attribute to `true` only in members that are only reading data from the cache. | |
-| read-serialized | Boolean. When `true`, PDX deserialization produces a `PdxInstance` instead of an instance of the domain class. | |
+| Attribute | Description |
+|-----------|-------------|
+| ignore-unread-fields |  Boolean. When `true`, do not preserve unread PDX fields during deserialization. You can use this option to save memory. Set this attribute to `true` only in members that are only reading data from the cache. |
+| read-serialized | Boolean. When `true`, PDX deserialization produces a `PdxInstance` instead of an instance of the domain class. |
 
 
 
