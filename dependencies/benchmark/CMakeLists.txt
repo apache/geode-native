@@ -63,7 +63,7 @@ target_include_directories(benchmark_benchmark SYSTEM INTERFACE
   $<BUILD_INTERFACE:${INSTALL_DIR}/include>
 )
 target_link_libraries(benchmark_benchmark INTERFACE
-  ${INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}benchmark${CMAKE_STATIC_LIBRARY_SUFFIX}
+  ${INSTALL_DIR}/${CMAKE_INSTALL_LIBDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}benchmark${CMAKE_STATIC_LIBRARY_SUFFIX}
   Threads::Threads
 )
 if (WIN32)
