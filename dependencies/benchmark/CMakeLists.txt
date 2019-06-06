@@ -13,9 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-project( benchmark VERSION 1.4.1 LANGUAGES NONE )
+project( benchmark VERSION 1.5.0 LANGUAGES NONE )
 
-set( SHA256 61ae07eb5d4a0b02753419eb17a82b7d322786bb36ab62bd3df331a4d47c00a7 )
+set( SHA256 2d22dd3758afee43842bb504af1a8385cccb3ee1f164824e4837c1c1b04d92a0 )
 set( DEPENDS GTest::gtest )
 
 
