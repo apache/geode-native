@@ -78,11 +78,13 @@ class GfshExecute : public Gfsh {
                                      boost::process::ipstream &errStream);
 
   void extractConnectionCommand(const std::string &command) {
-    if (starts_with(command, std::string("connect"))) {
-      connection_ = command;
+        if (starts_with(command, std::string("connect"))) {
+          connection_ = command;
     } else if (starts_with(command, std::string("start locator"))) {
       auto jmxManagerHost = std::string("localhost");
       auto jmxManagerPort = std::string("1099");
+//      auto securityManagerUser = std::string("user");
+//      auto securityManagerPassword = std::string("password");
 
       std::regex jmxManagerHostRegex("bind-address=([^\\s]+)");
       std::smatch jmxManagerHostMatch;
@@ -98,8 +100,15 @@ class GfshExecute : public Gfsh {
         jmxManagerPort = jmxManagerPortMatch[1];
       }
 
+//      std::regex securityManagerUserRegex("--user=(^\\s+)");
+//      std::smatch securityManagerUserMatch;
+//      if (std::regex_search(command, jmxManagerHostMatch,
+//          jmxManagerHostRegex)) {
+//            jmxManagerHost = jmxManagerHostMatch[1];
+//          }
+
       connection_ = "connect --jmx-manager=" + jmxManagerHost + "[" +
-                    jmxManagerPort + "]";
+                    jmxManagerPort + "] --user=root --password=root-password";
     }
   }
 

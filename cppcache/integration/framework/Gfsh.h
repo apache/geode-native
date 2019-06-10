@@ -121,6 +121,21 @@ class Gfsh {
         command_ += " --max-heap=" + maxHeap;
         return *this;
       };
+
+      Locator &withClasspath(const std::string classpath) {
+        command_ += " --classpath=" + classpath;
+        return *this;
+      };
+
+      Locator &withSecurityManager(const std::string securityManager) {
+        command_ += " --J=-Dgemfire.security-manager=" + securityManager;
+        return *this;
+      };
+
+      Locator &withConnect(const std::string connect) {
+        command_ += " --connect=" + connect;
+        return *this;
+      };
     };
 
     class Server : public Command<void> {
@@ -159,6 +174,26 @@ class Gfsh {
 
       Server &withMaxHeap(const std::string maxHeap) {
         command_ += " --max-heap=" + maxHeap;
+        return *this;
+      };
+
+      Server &withClasspath(const std::string classpath) {
+        command_ += " --classpath=" + classpath;
+        return *this;
+      };
+
+      Server &withSecurityManager(const std::string securityManager) {
+        command_ += " --J=-Dgemfire.security-manager=" + securityManager;
+        return *this;
+      };
+
+      Server &withUser(const std::string user) {
+        command_ += " --user=" + user;
+        return *this;
+      };
+
+      Server &withPassword(const std::string password) {
+        command_ += " --password=" + password;
         return *this;
       };
     };
@@ -240,6 +275,16 @@ class Gfsh {
 
     Connect &withJmxManager(const std::string &jmxManager) {
       command_ += " --jmx-manager=" + jmxManager;
+      return *this;
+    };
+
+    Connect &withUser(const std::string &user) {
+      command_ += " --user=" + user;
+      return *this;
+    };
+
+    Connect &withPassword(const std::string &password) {
+      command_ += " --password=" + password;
       return *this;
     };
   };
