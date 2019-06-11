@@ -673,7 +673,7 @@ GfErrType ThinClientPoolDM::sendRequestToAllServers(
     err = funcExe->getResult();
     if (err != GF_NOERR) {
       if (funcExe->getException() == nullptr) {
-        if (err == GF_TIMOUT) {
+        if (err == GF_TIMEOUT) {
           getStats().incTimeoutClientOps();
         } else {
           getStats().incFailedClientOps();
@@ -1370,7 +1370,7 @@ GfErrType ThinClientPoolDM::sendSyncRequest(
          type == TcrMessage::EXECUTE_REGION_FUNCTION ||
          type == TcrMessage::EXECUTE_REGION_FUNCTION_SINGLE_HOP ||
          type == TcrMessage::EXECUTECQ_WITH_IR_MSG_TYPE) &&
-        error == GF_TIMOUT) {
+        error == GF_TIMEOUT) {
       return error;
     }
 
@@ -1492,7 +1492,7 @@ GfErrType ThinClientPoolDM::sendSyncRequest(
                                                  // for Sticky conn.
           LOGDEBUG("putting connection back in queue DONE");
         } else {
-          if (error != GF_TIMOUT) removeEPConnections(ep);
+          if (error != GF_TIMEOUT) removeEPConnections(ep);
           // Update stats for the connection that failed.
           removeEPConnections(1, false);
           setStickyNull(isBGThread ||
@@ -1572,7 +1572,7 @@ GfErrType ThinClientPoolDM::sendSyncRequest(
       getStats().setCurClientOps(--m_clientOps);
       if (error == GF_NOERR) {
         getStats().incSucceedClientOps(); /*inc Id for clientOs stat*/
-      } else if (error == GF_TIMOUT) {
+      } else if (error == GF_TIMEOUT) {
         getStats().incTimeoutClientOps();
       } else {
         getStats().incFailedClientOps();
@@ -1592,7 +1592,7 @@ GfErrType ThinClientPoolDM::sendSyncRequest(
 
   if (error == GF_NOERR) {
     getStats().incSucceedClientOps();
-  } else if (error == GF_TIMOUT) {
+  } else if (error == GF_TIMEOUT) {
     getStats().incTimeoutClientOps();
   } else {
     getStats().incFailedClientOps();

@@ -865,7 +865,7 @@ GfErrType ThinClientRedundancyManager::sendSyncRequestCq(
         gua.setAuthenticatedView(authenticatedView);
       }
       err = theHADM->sendRequestToEP(request, reply, primaryEndpoint);
-      if (err == GF_NOERR || err == GF_TIMOUT ||
+      if (err == GF_NOERR || err == GF_TIMEOUT ||
           ThinClientBaseDM::isFatalClientError(err)) {
         break;
       }

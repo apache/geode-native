@@ -235,7 +235,7 @@ GfErrType TcrEndpoint::createNewConnection(
       break;
     } catch (const TimeoutException&) {
       LOGINFO("Timeout in handshake with endpoint[%s]", m_name.c_str());
-      err = GF_TIMOUT;
+      err = GF_TIMEOUT;
       m_needToConnectInLock = true;  // while creating the connection
       std::this_thread::sleep_for(std::chrono::milliseconds(50));
     } catch (const GeodeIOException& ex) {
@@ -535,7 +535,7 @@ void TcrEndpoint::pingServer(ThinClientPoolDM* poolDM) {
     if (error == GF_NOERR) {
       m_pingSent = true;
     }
-    if (error == GF_TIMOUT && m_pingTimeouts < 2) {
+    if (error == GF_TIMEOUT && m_pingTimeouts < 2) {
       ++m_pingTimeouts;
     } else {
       m_pingTimeouts = 0;
@@ -972,7 +972,7 @@ GfErrType TcrEndpoint::sendRequestWithRetry(
           return GF_NOERR;
         }
       } catch (const TimeoutException&) {
-        error = GF_TIMOUT;
+        error = GF_TIMEOUT;
         LOGFINE(
             "Send timed out for endpoint %s. "
             "Message txid = %d",
@@ -1059,7 +1059,7 @@ GfErrType TcrEndpoint::sendRequestWithRetry(
         epFailure = true;
         failReason = "server connection could not be obtained";
         if (timeout <= std::chrono::microseconds::zero()) {
-          error = GF_TIMOUT;
+          error = GF_TIMEOUT;
           LOGWARN(
               "No connection available for %ld seconds "
               "for endpoint %s.",

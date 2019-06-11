@@ -157,7 +157,7 @@ GfErrType ThinClientDistributionManager::sendSyncRequest(TcrMessage& request,
        type == TcrMessage::EXECUTE_REGION_FUNCTION ||
        type == TcrMessage::EXECUTE_REGION_FUNCTION_SINGLE_HOP ||
        type == TcrMessage::EXECUTECQ_WITH_IR_MSG_TYPE) &&
-      error == GF_TIMOUT) {
+      error == GF_TIMEOUT) {
     forceSelect = true;
   }
 
@@ -178,7 +178,7 @@ GfErrType ThinClientDistributionManager::sendSyncRequest(TcrMessage& request,
            type == TcrMessage::EXECUTE_REGION_FUNCTION ||
            type == TcrMessage::EXECUTE_REGION_FUNCTION_SINGLE_HOP ||
            type == TcrMessage::EXECUTECQ_WITH_IR_MSG_TYPE) &&
-          error == GF_TIMOUT) {
+          error == GF_TIMEOUT) {
         return error;
       }
       currentEndpoint = m_activeEndpoint;
