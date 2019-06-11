@@ -24,6 +24,28 @@ if (CMAKE_USE_PTHREADS_INIT)
   check_function_exists("pthread_setname_np" HAVE_pthread_setname_np)
 endif()
 
+# Add clang-tidy if available
+if(CMAKE_VERSION VERSION_GREATER 3.6)
+  option(CLANG_TIDY_FIX "Perform fixes for Clang-Tidy - changes source inplace" OFF)
+  find_program(
+    CLANG_TIDY
+    NAMES "clang-tidy"
+    DOC "Path to clang-tidy executable"
+  )
+
+  if(CLANG_TIDY)
+    if(CLANG_TIDY_FIX)
+      message("-- Found Clang-Tidy: ${CLANG_TIDY} (applying suggested fixes)")
+      set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY}" "-fix-errors")
+      set(CMAKE_C_CLANG_TIDY "${CLANG_TIDY}" "-fix-errors")
+    else()
+      message("-- Found Clang-Tidy: ${CLANG_TIDY} (reporting suggested fixes)")
+      set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY}")
+      set(CMAKE_C_CLANG_TIDY "${CLANG_TIDY}")
+    endif()
+  endif()
+endif()
+
 set(COMMON_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(COMMON_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
