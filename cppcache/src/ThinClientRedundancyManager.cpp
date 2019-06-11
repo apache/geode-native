@@ -44,6 +44,8 @@ namespace apache {
 namespace geode {
 namespace client {
 
+const int MIN_RETRY_ATTEMPTS = 5;
+
 const char* ThinClientRedundancyManager::NC_PerodicACK = "NC PerodicACK";
 
 ThinClientRedundancyManager::ThinClientRedundancyManager(
@@ -831,9 +833,8 @@ GfErrType ThinClientRedundancyManager::sendSyncRequestCq(
 
   int32_t attempts = static_cast<int32_t>(m_redundantEndpoints.size()) +
                      static_cast<int32_t>(m_nonredundantEndpoints.size());
-  // TODO: FIXME: avoid magic number 5 for retry attempts
-  attempts = attempts < 5
-                 ? 5
+  attempts = attempts < MIN_RETRY_ATTEMPTS
+                 ? MIN_RETRY_ATTEMPTS
                  : attempts;  // at least 5 attempts if ep lists are small.
 
   AuthenticatedView* authenticatedView = nullptr;
