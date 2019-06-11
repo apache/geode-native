@@ -64,29 +64,21 @@ class PdxReaderWithTypeCollector : public PdxLocalReader {
   std::shared_ptr<Serializable> readObject(
       const std::string& fieldName) override;
 
-  std::vector<char16_t> readCharArray(
-      const std::string& fieldName) override;
+  std::vector<char16_t> readCharArray(const std::string& fieldName) override;
 
-  std::vector<bool> readBooleanArray(
-      const std::string& fieldName) override;
+  std::vector<bool> readBooleanArray(const std::string& fieldName) override;
 
-  std::vector<int8_t> readByteArray(
-      const std::string& fieldName) override;
+  std::vector<int8_t> readByteArray(const std::string& fieldName) override;
 
-  std::vector<int16_t> readShortArray(
-      const std::string& fieldName) override;
+  std::vector<int16_t> readShortArray(const std::string& fieldName) override;
 
-  std::vector<int32_t> readIntArray(
-      const std::string& fieldName) override;
+  std::vector<int32_t> readIntArray(const std::string& fieldName) override;
 
-  std::vector<int64_t> readLongArray(
-      const std::string& fieldName) override;
+  std::vector<int64_t> readLongArray(const std::string& fieldName) override;
 
-  std::vector<float> readFloatArray(
-      const std::string& fieldName) override;
+  std::vector<float> readFloatArray(const std::string& fieldName) override;
 
-  std::vector<double> readDoubleArray(
-      const std::string& fieldName) override;
+  std::vector<double> readDoubleArray(const std::string& fieldName) override;
 
   std::vector<std::string> readStringArray(
       const std::string& fieldName) override;
@@ -95,8 +87,8 @@ class PdxReaderWithTypeCollector : public PdxLocalReader {
       const std::string& fieldName) override;
 
   int8_t** readArrayOfByteArrays(const std::string& fieldName,
-                                         int32_t& arrayLength,
-                                         int32_t** elementLength) override;
+                                 int32_t& arrayLength,
+                                 int32_t** elementLength) override;
 
   std::shared_ptr<CacheableDate> readDate(
       const std::string& fieldName) override;

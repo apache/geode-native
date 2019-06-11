@@ -24,8 +24,8 @@
 #include <geode/CacheableString.hpp>
 #include <geode/DataInput.hpp>
 #include <geode/DataOutput.hpp>
-#include <geode/internal/DataSerializableInternal.hpp>
 #include <geode/Serializable.hpp>
+#include <geode/internal/DataSerializableInternal.hpp>
 
 namespace apache {
 namespace geode {

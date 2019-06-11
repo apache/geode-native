@@ -23,11 +23,12 @@ namespace client {
 DataInputInternal::DataInputInternal(const uint8_t* buffer, size_t len)
     : DataInput(buffer, len, nullptr, nullptr) {}
 
-DataInputInternal::DataInputInternal(const uint8_t* buffer, size_t len, const CacheImpl* cache)
+DataInputInternal::DataInputInternal(const uint8_t* buffer, size_t len,
+                                     const CacheImpl* cache)
     : DataInput(buffer, len, cache, nullptr) {}
 
 Pool* DataInputInternal::getPool(const DataInput& dataInput) {
-    return dataInput.getPool();
+  return dataInput.getPool();
 }
 
 }  // namespace client

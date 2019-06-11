@@ -20,18 +20,18 @@
 #ifndef GEODE_CACHEABLEOBJECTPARTLIST_H_
 #define GEODE_CACHEABLEOBJECTPARTLIST_H_
 
-#include <memory>
 #include <stdint.h>
+
+#include <memory>
 #include <vector>
 
-#include <geode/CacheableKey.hpp>
 #include <geode/CacheableBuiltins.hpp>
-#include "MapWithLock.hpp"
-#include "geode/internal/DataSerializableFixedId.hpp"
-#include "HashMapOfException.hpp"
-
+#include <geode/CacheableKey.hpp>
 #include <geode/internal/geode_globals.hpp>
 
+#include "HashMapOfException.hpp"
+#include "MapWithLock.hpp"
+#include "geode/internal/DataSerializableFixedId.hpp"
 
 /** @file
  */

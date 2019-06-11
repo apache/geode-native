@@ -20,7 +20,8 @@
 namespace apache {
 namespace geode {
 namespace client {
-ThinClientStickyManager::ThinClientStickyManager(ThinClientPoolDM* poolDM) : m_dm(poolDM) {}
+ThinClientStickyManager::ThinClientStickyManager(ThinClientPoolDM* poolDM)
+    : m_dm(poolDM) {}
 
 bool ThinClientStickyManager::getStickyConnection(
     TcrConnection*& conn, GfErrType* error,

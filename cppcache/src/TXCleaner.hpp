@@ -36,7 +36,7 @@ namespace client {
 
 class TXCleaner {
  public:
-   TXCleaner(CacheTransactionManagerImpl* cacheTxMgr);
+  TXCleaner(CacheTransactionManagerImpl* cacheTxMgr);
   ~TXCleaner();
 
   void clean();

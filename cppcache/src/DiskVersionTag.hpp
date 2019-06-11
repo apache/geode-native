@@ -35,7 +35,7 @@ class DiskVersionTag : public VersionTag {
   void readMembers(uint16_t flags, DataInput& input) override;
 
  public:
-   DiskVersionTag(MemberListForVersionStamp& memberListForVersionStamp);
+  DiskVersionTag(MemberListForVersionStamp& memberListForVersionStamp);
 
   DSFid getDSFID() const override;
 

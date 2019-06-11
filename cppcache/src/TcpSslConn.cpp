@@ -37,7 +37,7 @@ TcpSslConn::TcpSslConn(const char* hostname, int32_t port,
       m_ssl(nullptr),
       m_pubkeyfile(pubkeyfile),
       m_privkeyfile(privkeyfile),
-      m_pemPassword(pemPassword){}
+      m_pemPassword(pemPassword) {}
 
 TcpSslConn::TcpSslConn(const char* ipaddr,
                        std::chrono::microseconds waitSeconds,
@@ -47,18 +47,18 @@ TcpSslConn::TcpSslConn(const char* ipaddr,
       m_ssl(nullptr),
       m_pubkeyfile(pubkeyfile),
       m_privkeyfile(privkeyfile),
-      m_pemPassword(pemPassword){}
+      m_pemPassword(pemPassword) {}
 
 TcpSslConn::~TcpSslConn() {}
 
 void TcpSslConn::setOption(int32_t level, int32_t option, void* val,
-                 size_t len) {
-    if (m_ssl->setOption(level, option, val, static_cast<int32_t>(len)) == -1) {
-      int32_t lastError = ACE_OS::last_error();
-      LOGERROR("Failed to set option, errno: %d: %s", lastError,
-               ACE_OS::strerror(lastError));
-    }
+                           size_t len) {
+  if (m_ssl->setOption(level, option, val, static_cast<int32_t>(len)) == -1) {
+    int32_t lastError = ACE_OS::last_error();
+    LOGERROR("Failed to set option, errno: %d: %s", lastError,
+             ACE_OS::strerror(lastError));
   }
+}
 
 Ssl* TcpSslConn::getSSLImpl(ACE_HANDLE sock, const char* pubkeyfile,
                             const char* privkeyfile) {

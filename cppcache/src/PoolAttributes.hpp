@@ -88,8 +88,7 @@ class PoolAttributes {
 
   const std::chrono::milliseconds& getStatisticInterval() const;
 
-  void setStatisticInterval(
-      const std::chrono::milliseconds& statisticInterval);
+  void setStatisticInterval(const std::chrono::milliseconds& statisticInterval);
 
   const std::string& getServerGroup() const;
 
@@ -103,15 +102,15 @@ class PoolAttributes {
 
   void setSubscriptionRedundancy(int redundancy);
 
-  const std::chrono::milliseconds& getSubscriptionMessageTrackingTimeout() const;
+  const std::chrono::milliseconds& getSubscriptionMessageTrackingTimeout()
+      const;
 
   void setSubscriptionMessageTrackingTimeout(
       const std::chrono::milliseconds& messageTrackingTimeout);
 
   const std::chrono::milliseconds& getSubscriptionAckInterval() const;
 
-  void setSubscriptionAckInterval(
-      const std::chrono::milliseconds& ackInterval);
+  void setSubscriptionAckInterval(const std::chrono::milliseconds& ackInterval);
 
   bool getPRSingleHopEnabled() const;
 

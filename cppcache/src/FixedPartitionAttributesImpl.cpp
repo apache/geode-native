@@ -22,60 +22,67 @@ namespace geode {
 namespace client {
 FixedPartitionAttributesImpl::FixedPartitionAttributesImpl()
     : Serializable(),
-    m_partitionName(nullptr),
-    m_isPrimary(false),
-    m_numBuckets(1),
-    m_startingBucketId(-1) {}
+      m_partitionName(nullptr),
+      m_isPrimary(false),
+      m_numBuckets(1),
+      m_startingBucketId(-1) {}
 
-const std::string& FixedPartitionAttributesImpl::getPartitionName() { return m_partitionName; }
+const std::string& FixedPartitionAttributesImpl::getPartitionName() {
+  return m_partitionName;
+}
 
 int FixedPartitionAttributesImpl::getNumBuckets() const { return m_numBuckets; }
 
 int FixedPartitionAttributesImpl::isPrimary() const { return m_isPrimary; }
 
 void FixedPartitionAttributesImpl::toData(DataOutput& output) const {
-    output.writeString(m_partitionName);
-    output.writeBoolean(m_isPrimary);
-    output.writeInt(m_numBuckets);
-    output.writeInt(m_startingBucketId);
+  output.writeString(m_partitionName);
+  output.writeBoolean(m_isPrimary);
+  output.writeInt(m_numBuckets);
+  output.writeInt(m_startingBucketId);
 }
 
 void FixedPartitionAttributesImpl::fromData(DataInput& input) {
-    m_partitionName = input.readString();
-    m_isPrimary = input.readBoolean();
-    m_numBuckets = input.readInt32();
-    m_startingBucketId = input.readInt32();
+  m_partitionName = input.readString();
+  m_isPrimary = input.readBoolean();
+  m_numBuckets = input.readInt32();
+  m_startingBucketId = input.readInt32();
 }
 
 size_t FixedPartitionAttributesImpl::objectSize() const {
-    return sizeof(int) + sizeof(int) + sizeof(bool) +
-            (m_partitionName.length() *
-            sizeof(decltype(m_partitionName)::value_type));
+  return sizeof(int) + sizeof(int) + sizeof(bool) +
+         (m_partitionName.length() *
+          sizeof(decltype(m_partitionName)::value_type));
 }
 
 FixedPartitionAttributesImpl& FixedPartitionAttributesImpl::operator=(
     const FixedPartitionAttributesImpl& rhs) {
-    if (this == &rhs) return *this;
-    m_partitionName = rhs.m_partitionName;
-    m_isPrimary = rhs.m_isPrimary;
-    m_numBuckets = rhs.m_numBuckets;
-    m_startingBucketId = rhs.m_startingBucketId;
-    return *this;
+  if (this == &rhs) return *this;
+  m_partitionName = rhs.m_partitionName;
+  m_isPrimary = rhs.m_isPrimary;
+  m_numBuckets = rhs.m_numBuckets;
+  m_startingBucketId = rhs.m_startingBucketId;
+  return *this;
 }
 
-FixedPartitionAttributesImpl::FixedPartitionAttributesImpl(const FixedPartitionAttributesImpl& rhs) {
-    m_partitionName = rhs.m_partitionName;
-    m_isPrimary = rhs.m_isPrimary;
-    m_numBuckets = rhs.m_numBuckets;
-    m_startingBucketId = rhs.m_startingBucketId;
+FixedPartitionAttributesImpl::FixedPartitionAttributesImpl(
+    const FixedPartitionAttributesImpl& rhs) {
+  m_partitionName = rhs.m_partitionName;
+  m_isPrimary = rhs.m_isPrimary;
+  m_numBuckets = rhs.m_numBuckets;
+  m_startingBucketId = rhs.m_startingBucketId;
 }
 
-int FixedPartitionAttributesImpl::getStartingBucketID() const { return m_startingBucketId; }
+int FixedPartitionAttributesImpl::getStartingBucketID() const {
+  return m_startingBucketId;
+}
 
-int FixedPartitionAttributesImpl::getLastBucketID() const { return m_startingBucketId + m_numBuckets - 1; }
+int FixedPartitionAttributesImpl::getLastBucketID() const {
+  return m_startingBucketId + m_numBuckets - 1;
+}
 
 bool FixedPartitionAttributesImpl::hasBucket(int bucketId) {
-    return getStartingBucketID() <= bucketId && bucketId <= getLastBucketID();
+  return getStartingBucketID() <= bucketId && bucketId <= getLastBucketID();
 }
 
 }  // namespace client

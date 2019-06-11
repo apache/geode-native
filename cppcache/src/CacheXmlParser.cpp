@@ -1521,7 +1521,9 @@ void CacheXmlParser::incNesting() { m_nestedRegions++; }
 void CacheXmlParser::decNesting() { m_nestedRegions--; }
 bool CacheXmlParser::isRootLevel() { return (m_nestedRegions == 1); }
 
-bool CacheXmlParser::isCacheXmlException() const { return m_flagCacheXmlException; }
+bool CacheXmlParser::isCacheXmlException() const {
+  return m_flagCacheXmlException;
+}
 
 void CacheXmlParser::setCacheXmlException() { m_flagCacheXmlException = true; }
 
@@ -1529,9 +1531,13 @@ bool CacheXmlParser::isIllegalStateException() const {
   return m_flagIllegalStateException;
 }
 
-void CacheXmlParser::setIllegalStateException() { m_flagIllegalStateException = true; }
+void CacheXmlParser::setIllegalStateException() {
+  m_flagIllegalStateException = true;
+}
 
-bool CacheXmlParser::isAnyOtherException() const { return m_flagAnyOtherException; }
+bool CacheXmlParser::isAnyOtherException() const {
+  return m_flagAnyOtherException;
+}
 
 void CacheXmlParser::setAnyOtherException() { m_flagAnyOtherException = true; }
 
@@ -1539,9 +1545,13 @@ bool CacheXmlParser::isExpirationAttribute() const {
   return m_flagExpirationAttribute;
 }
 
-void CacheXmlParser::setExpirationAttribute() { m_flagExpirationAttribute = true; }
+void CacheXmlParser::setExpirationAttribute() {
+  m_flagExpirationAttribute = true;
+}
 
-const std::string& CacheXmlParser::getParserMessage() const { return m_parserMessage; }
+const std::string& CacheXmlParser::getParserMessage() const {
+  return m_parserMessage;
+}
 
 void CacheXmlParser::setParserMessage(const std::string& str) {
   m_parserMessage = str;

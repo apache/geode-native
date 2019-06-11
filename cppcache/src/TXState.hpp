@@ -34,7 +34,7 @@ namespace client {
 class ThinClientPoolDM;
 class TXState {
  public:
-   TXState(CacheImpl* cacheImpl);
+  TXState(CacheImpl* cacheImpl);
   virtual ~TXState();
 
   TXId& getTransactionId();
@@ -83,7 +83,7 @@ class TXState {
   ExpiryTaskManager::id_type m_suspendedExpiryTaskId;
   class ReplayControl {
    public:
-     ReplayControl(TXState* txState);
+    ReplayControl(TXState* txState);
     virtual ~ReplayControl();
 
    private:

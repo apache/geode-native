@@ -21,69 +21,71 @@ namespace apache {
 namespace geode {
 namespace client {
 PdxRemotePreservedData::PdxRemotePreservedData()
-      : m_typeId(0),
-        m_mergedTypeId(0),
-        m_currentIndex(0),
-        m_expiryTakId(0) {}
+    : m_typeId(0), m_mergedTypeId(0), m_currentIndex(0), m_expiryTakId(0) {}
 
-PdxRemotePreservedData::~PdxRemotePreservedData() {
+PdxRemotePreservedData::~PdxRemotePreservedData() {}
+
+PdxRemotePreservedData::PdxRemotePreservedData(
+    int32_t typeId, int32_t mergedTypeId, std::shared_ptr<Serializable> owner) {
+  m_typeId = typeId;
+  m_mergedTypeId = mergedTypeId;
+  m_currentIndex = 0;
+  m_owner = owner;
+  m_expiryTakId = 0;
 }
 
-PdxRemotePreservedData::PdxRemotePreservedData(int32_t typeId, int32_t mergedTypeId,
-                         std::shared_ptr<Serializable> owner) {
-    m_typeId = typeId;
-    m_mergedTypeId = mergedTypeId;
-    m_currentIndex = 0;
-    m_owner = owner;
-    m_expiryTakId = 0;
+void PdxRemotePreservedData::initialize(int32_t typeId, int32_t mergedTypeId,
+                                        std::shared_ptr<Serializable> owner) {
+  m_typeId = typeId;
+  m_mergedTypeId = mergedTypeId;
+  m_currentIndex = 0;
+  m_owner = owner;
+  m_expiryTakId = 0;
 }
 
- void PdxRemotePreservedData::initialize(int32_t typeId, int32_t mergedTypeId,
-                  std::shared_ptr<Serializable> owner) {
-    m_typeId = typeId;
-    m_mergedTypeId = mergedTypeId;
-    m_currentIndex = 0;
-    m_owner = owner;
-    m_expiryTakId = 0;
+int32_t PdxRemotePreservedData::getMergedTypeId() { return m_mergedTypeId; }
+
+void PdxRemotePreservedData::setPreservedDataExpiryTaskId(
+    ExpiryTaskManager::id_type expId) {
+  m_expiryTakId = expId;
 }
 
-  int32_t PdxRemotePreservedData::getMergedTypeId() { return m_mergedTypeId; }
+ExpiryTaskManager::id_type
+PdxRemotePreservedData::getPreservedDataExpiryTaskId() {
+  return m_expiryTakId;
+}
 
-  void PdxRemotePreservedData::setPreservedDataExpiryTaskId(ExpiryTaskManager::id_type expId) {
-    m_expiryTakId = expId;
+std::shared_ptr<Serializable> PdxRemotePreservedData::getOwner() {
+  return m_owner;
+}
+
+void PdxRemotePreservedData::setOwner(std::shared_ptr<Serializable> val) {
+  m_owner = val;
+}
+
+std::vector<int8_t> PdxRemotePreservedData::getPreservedData(int32_t idx) {
+  return m_preservedData[idx];
+}
+
+void PdxRemotePreservedData::setPreservedData(std::vector<int8_t> inputVector) {
+  m_preservedData.push_back(inputVector);
+}
+
+bool PdxRemotePreservedData::equals(std::shared_ptr<Serializable> otherObject) {
+  if (otherObject == nullptr) return false;
+
+  if (m_owner == nullptr) return false;
+
+  return m_owner == otherObject;
+}
+
+int PdxRemotePreservedData::GetHashCode() {
+  if (m_owner != nullptr) {
+    // TODO
+    return 1;  // m_owner->GetHashCode();
   }
-
-  ExpiryTaskManager::id_type PdxRemotePreservedData::getPreservedDataExpiryTaskId() {
-    return m_expiryTakId;
-  }
-
-  std::shared_ptr<Serializable> PdxRemotePreservedData::getOwner() { return m_owner; }
-
-  void PdxRemotePreservedData::setOwner(std::shared_ptr<Serializable> val) { m_owner = val; }
-
-  std::vector<int8_t> PdxRemotePreservedData::getPreservedData(int32_t idx) {
-    return m_preservedData[idx];
-  }
-
-  void PdxRemotePreservedData::setPreservedData(std::vector<int8_t> inputVector) {
-    m_preservedData.push_back(inputVector);
-  }
-
-  bool PdxRemotePreservedData::equals(std::shared_ptr<Serializable> otherObject) {
-    if (otherObject == nullptr) return false;
-
-    if (m_owner == nullptr) return false;
-
-    return m_owner == otherObject;
-  }
-
-  int PdxRemotePreservedData::GetHashCode() {
-    if (m_owner != nullptr) {
-      // TODO
-      return 1;  // m_owner->GetHashCode();
-    }
-    return 0;
-  }
+  return 0;
+}
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

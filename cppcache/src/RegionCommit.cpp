@@ -65,7 +65,7 @@ void RegionCommit::fillEvents(
 }
 
 RegionCommit::RegionCommit(MemberListForVersionStamp& memberListForVersionStamp)
-    : m_memberListForVersionStamp(memberListForVersionStamp){}
+    : m_memberListForVersionStamp(memberListForVersionStamp) {}
 
 std::shared_ptr<Region> RegionCommit::getRegion(Cache* cache) {
   return cache->getRegion(m_regionPath->value());

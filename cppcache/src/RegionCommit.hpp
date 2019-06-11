@@ -40,7 +40,7 @@ namespace client {
 
 class RegionCommit {
  public:
-   RegionCommit(MemberListForVersionStamp& memberListForVersionStamp);
+  RegionCommit(MemberListForVersionStamp& memberListForVersionStamp);
   virtual ~RegionCommit() = default;
 
   void fromData(DataInput& input);

@@ -35,7 +35,7 @@ class APACHE_GEODE_EXPORT DataOutputInternal : public DataOutput {
  public:
   DataOutputInternal();
 
-   DataOutputInternal(CacheImpl* cache);
+  DataOutputInternal(CacheImpl* cache);
 
   static Pool* getPool(const DataOutput& dataOutput);
 };

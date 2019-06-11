@@ -37,8 +37,8 @@ class QueueConnectionRequest : public ServerLocationRequest {
                          const std::set<ServerLocation>& excludedServers,
                          int redundantCopies, bool findDurable,
                          std::string serverGp = "");
-                         // No need for default constructor as creating
-                         // request with it does not make sense.
+  // No need for default constructor as creating
+  // request with it does not make sense.
   void toData(DataOutput& output) const override;
   DSFid getDSFID() const override;
 

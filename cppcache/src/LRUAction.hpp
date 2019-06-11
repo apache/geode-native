@@ -94,7 +94,7 @@ class APACHE_GEODE_EXPORT LRUDestroyAction : public virtual LRUAction {
  private:
   RegionInternal* m_regionPtr;
 
-   LRUDestroyAction(RegionInternal* regionPtr);
+  LRUDestroyAction(RegionInternal* regionPtr);
 
  public:
   ~LRUDestroyAction() override = default;
@@ -113,7 +113,7 @@ class APACHE_GEODE_EXPORT LRULocalInvalidateAction : public virtual LRUAction {
  private:
   RegionInternal* m_regionPtr;
 
-   LRULocalInvalidateAction(RegionInternal* regionPtr);
+  LRULocalInvalidateAction(RegionInternal* regionPtr);
 
  public:
   ~LRULocalInvalidateAction() override = default;

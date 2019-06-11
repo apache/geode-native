@@ -41,8 +41,7 @@ std::tm localtime(const time_t& time);
  * @param time to get local time for
  * @return local time
  */
-std::tm localtime(
-    const std::chrono::system_clock::time_point& time_point);
+std::tm localtime(const std::chrono::system_clock::time_point& time_point);
 
 /**
  * Produces string representation for given time.
@@ -56,8 +55,7 @@ std::string to_string(const time_t& time);
  * @param time_point to get string for
  * @return string representation of given time_point
  */
-std::string to_string(
-    const std::chrono::system_clock::time_point& time_point);
+std::string to_string(const std::chrono::system_clock::time_point& time_point);
 
 }  // namespace chrono
 }  // namespace util

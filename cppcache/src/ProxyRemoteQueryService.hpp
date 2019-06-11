@@ -40,33 +40,30 @@ class ThinClientPoolDM;
 
 class APACHE_GEODE_EXPORT ProxyRemoteQueryService : public QueryService {
  public:
-   ProxyRemoteQueryService(AuthenticatedView* cptr);
+  ProxyRemoteQueryService(AuthenticatedView* cptr);
   ~ProxyRemoteQueryService() = default;
 
   std::shared_ptr<Query> newQuery(std::string querystring) override;
 
-  std::shared_ptr<CqQuery> newCq(
-      std::string querystr, const std::shared_ptr<CqAttributes>& cqAttr,
-      bool isDurable = false) override;
+  std::shared_ptr<CqQuery> newCq(std::string querystr,
+                                 const std::shared_ptr<CqAttributes>& cqAttr,
+                                 bool isDurable = false) override;
 
-  std::shared_ptr<CqQuery> newCq(
-      std::string name, std::string querystr,
-      const std::shared_ptr<CqAttributes>& cqAttr,
-      bool isDurable = false) override;
+  std::shared_ptr<CqQuery> newCq(std::string name, std::string querystr,
+                                 const std::shared_ptr<CqAttributes>& cqAttr,
+                                 bool isDurable = false) override;
 
   void closeCqs() override;
 
   QueryService::query_container_type getCqs() const override;
 
-  std::shared_ptr<CqQuery> getCq(
-      const std::string& name) const override;
+  std::shared_ptr<CqQuery> getCq(const std::string& name) const override;
 
   void executeCqs() override;
 
   void stopCqs() override;
 
-  std::shared_ptr<CqServiceStatistics> getCqServiceStatistics()
-      const override;
+  std::shared_ptr<CqServiceStatistics> getCqServiceStatistics() const override;
 
   std::shared_ptr<CacheableArrayList> getAllDurableCqsFromServer()
       const override;

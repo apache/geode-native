@@ -32,7 +32,7 @@ namespace statistics {
 class StatisticDescriptor;
 class Statistics;
 class StatisticsFactory;
-}
+}  // namespace statistics
 
 namespace client {
 

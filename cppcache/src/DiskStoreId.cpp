@@ -32,63 +32,61 @@ std::string DiskStoreId::getHashKey() {
 
 DiskStoreId::DiskStoreId() : m_hashCode(""), m_mostSig(0), m_leastSig(0) {}
 
-  DiskStoreId::DiskStoreId(int64_t mostSig, int64_t leastSig)
-      : m_hashCode(""), m_mostSig(mostSig), m_leastSig(leastSig) {}
+DiskStoreId::DiskStoreId(int64_t mostSig, int64_t leastSig)
+    : m_hashCode(""), m_mostSig(mostSig), m_leastSig(leastSig) {}
 
-  DiskStoreId::DiskStoreId(const DiskStoreId& rhs)
-      : m_mostSig(rhs.m_mostSig), m_leastSig(rhs.m_leastSig) {}
+DiskStoreId::DiskStoreId(const DiskStoreId& rhs)
+    : m_mostSig(rhs.m_mostSig), m_leastSig(rhs.m_leastSig) {}
 
-  DiskStoreId& DiskStoreId::operator=(const DiskStoreId& rhs) {
-    if (this == &rhs) return *this;
-    m_leastSig = rhs.m_leastSig;
-    m_mostSig = rhs.m_mostSig;
-    return *this;
+DiskStoreId& DiskStoreId::operator=(const DiskStoreId& rhs) {
+  if (this == &rhs) return *this;
+  m_leastSig = rhs.m_leastSig;
+  m_mostSig = rhs.m_mostSig;
+  return *this;
+}
+
+void DiskStoreId::toData(DataOutput&) const {
+  throw IllegalStateException("DiskStoreId::toData not implemented");
+}
+
+void DiskStoreId::fromData(DataInput& input) {
+  m_mostSig = input.readInt64();
+  m_leastSig = input.readInt64();
+}
+
+DSFid DiskStoreId::getDSFID() const { return DSFid::DiskStoreId; }
+
+int16_t DiskStoreId::compareTo(const DSMemberForVersionStamp& tagID) const {
+  const DiskStoreId& otherDiskStoreId = static_cast<const DiskStoreId&>(tagID);
+  int64_t result = m_mostSig - otherDiskStoreId.m_mostSig;
+  if (result == 0) {
+    result = m_leastSig - otherDiskStoreId.m_leastSig;
   }
-
-  void DiskStoreId::toData(DataOutput&) const {
-    throw IllegalStateException("DiskStoreId::toData not implemented");
+  if (result < 0) {
+    return -1;
+  } else if (result > 0) {
+    return 1;
+  } else {
+    return 0;
   }
+}
+std::shared_ptr<Serializable> DiskStoreId::createDeserializable() {
+  return std::make_shared<DiskStoreId>();
+}
 
-  void DiskStoreId::fromData(DataInput& input) {
-    m_mostSig = input.readInt64();
-    m_leastSig = input.readInt64();
-  }
+int32_t DiskStoreId::hashcode() const {
+  static uint32_t prime = 31;
+  uint32_t result = 1;
+  result =
+      prime * result + static_cast<uint32_t>(m_leastSig ^ (m_leastSig >> 32));
+  result =
+      prime * result + static_cast<uint32_t>(m_mostSig ^ (m_mostSig >> 32));
+  return result;
+}
 
-  DSFid DiskStoreId::getDSFID() const { return DSFid::DiskStoreId; }
-
-  int16_t DiskStoreId::compareTo(const DSMemberForVersionStamp& tagID) const {
-    const DiskStoreId& otherDiskStoreId =
-        static_cast<const DiskStoreId&>(tagID);
-    int64_t result = m_mostSig - otherDiskStoreId.m_mostSig;
-    if (result == 0) {
-      result = m_leastSig - otherDiskStoreId.m_leastSig;
-    }
-    if (result < 0) {
-      return -1;
-    } else if (result > 0) {
-      return 1;
-    } else {
-      return 0;
-    }
-  }
-  std::shared_ptr<Serializable> DiskStoreId::createDeserializable() {
-    return std::make_shared<DiskStoreId>();
-  }
-
-  int32_t DiskStoreId::hashcode() const {
-    static uint32_t prime = 31;
-    uint32_t result = 1;
-    result =
-        prime * result + static_cast<uint32_t>(m_leastSig ^ (m_leastSig >> 32));
-    result =
-        prime * result + static_cast<uint32_t>(m_mostSig ^ (m_mostSig >> 32));
-    return result;
-  }
-
-  bool DiskStoreId::operator==(const CacheableKey& other) const {
-    return (compareTo(
-                dynamic_cast<const DSMemberForVersionStamp&>(other)) == 0);
-  }
+bool DiskStoreId::operator==(const CacheableKey& other) const {
+  return (compareTo(dynamic_cast<const DSMemberForVersionStamp&>(other)) == 0);
+}
 
 }  // namespace client
 }  // namespace geode

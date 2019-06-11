@@ -46,8 +46,7 @@ class APACHE_GEODE_EXPORT NoResult final : public ResultCollector {
 
   void endResults();
 
-  std::shared_ptr<CacheableVector> getResult(
-      std::chrono::milliseconds);
+  std::shared_ptr<CacheableVector> getResult(std::chrono::milliseconds);
 
   void clearResults();
 };

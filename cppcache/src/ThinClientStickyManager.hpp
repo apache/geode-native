@@ -39,7 +39,7 @@ class TcrEndpoint;
 
 class ThinClientStickyManager {
  public:
-   ThinClientStickyManager(ThinClientPoolDM* poolDM);
+  ThinClientStickyManager(ThinClientPoolDM* poolDM);
   bool getStickyConnection(TcrConnection*& conn, GfErrType* error,
                            std::set<ServerLocation>& excludeServers,
                            bool forTransaction);

@@ -85,7 +85,7 @@ class RegionCommit;
 
 class FarSideEntryOp {
  public:
-   FarSideEntryOp(MemberListForVersionStamp& memberListForVersionStamp);
+  FarSideEntryOp(MemberListForVersionStamp& memberListForVersionStamp);
   virtual ~FarSideEntryOp() = default;
 
   void fromData(DataInput& input, bool largeModCount, uint16_t memId);

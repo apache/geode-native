@@ -50,8 +50,7 @@ std::string to_utf8(const std::u16string& utf16);
 
 std::string to_utf8(const std::u32string& ucs4);
 
-bool equal_ignore_case(const std::string& str1,
-                              const std::string& str2);
+bool equal_ignore_case(const std::string& str1, const std::string& str2);
 
 }  // namespace client
 }  // namespace geode

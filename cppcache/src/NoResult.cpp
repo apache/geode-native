@@ -25,21 +25,21 @@ NoResult::NoResult() {}
 NoResult::~NoResult() {}
 
 void NoResult::addResult(const std::shared_ptr<Cacheable>&) {
-throw UnsupportedOperationException("can not add to NoResult");
+  throw UnsupportedOperationException("can not add to NoResult");
 }
 
 void NoResult::endResults() {
-throw UnsupportedOperationException("can not close on NoResult");
+  throw UnsupportedOperationException("can not close on NoResult");
 }
 
 std::shared_ptr<CacheableVector> NoResult::getResult(
     std::chrono::milliseconds) {
-throw FunctionExecutionException(
-    "Cannot return any result, as Function.hasResult() is false");
+  throw FunctionExecutionException(
+      "Cannot return any result, as Function.hasResult() is false");
 }
 
 void NoResult::clearResults() {
-throw UnsupportedOperationException("can not clear results on NoResult");
+  throw UnsupportedOperationException("can not clear results on NoResult");
 }
 
 }  // namespace client

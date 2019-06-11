@@ -36,7 +36,7 @@ class LocatorListRequest : public ServerLocationRequest {
   std::string m_servergroup;
 
  public:
-   LocatorListRequest(const std::string& servergroup = "");
+  LocatorListRequest(const std::string& servergroup = "");
   ~LocatorListRequest() override = default;
 
   void toData(DataOutput& output) const override;

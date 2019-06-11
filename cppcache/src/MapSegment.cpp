@@ -779,7 +779,7 @@ GfErrType MapSegment::isTombstone(std::shared_ptr<CacheableKey> key,
 }
 
 bool MapSegment::incrementUpdateCount(const std::shared_ptr<CacheableKey>& key,
-                                   std::shared_ptr<MapEntry>& entry) {
+                                      std::shared_ptr<MapEntry>& entry) {
   // This function is disabled if concurrency checks are enabled. The
   // versioning
   // changes takes care of the version and no need for tracking the entry
@@ -795,9 +795,9 @@ bool MapSegment::incrementUpdateCount(const std::shared_ptr<CacheableKey>& key,
 }
 
 // remove a tracker for the given entry
-void MapSegment::removeTrackerForEntry(const std::shared_ptr<CacheableKey>& key,
-                                    std::shared_ptr<MapEntry>& entry,
-                                    std::shared_ptr<MapEntryImpl>& entryImpl) {
+void MapSegment::removeTrackerForEntry(
+    const std::shared_ptr<CacheableKey>& key, std::shared_ptr<MapEntry>& entry,
+    std::shared_ptr<MapEntryImpl>& entryImpl) {
   // This function is disabled if concurrency checks are enabled. The
   // versioning
   // changes takes care of the version and no need for tracking the entry
@@ -822,11 +822,11 @@ void MapSegment::removeTrackerForEntry(const std::shared_ptr<CacheableKey>& key,
 }
 
 GfErrType MapSegment::putNoEntry(const std::shared_ptr<CacheableKey>& key,
-                              const std::shared_ptr<Cacheable>& newValue,
-                              std::shared_ptr<MapEntryImpl>& newEntry,
-                              int updateCount, int destroyTracker,
-                              std::shared_ptr<VersionTag> versionTag,
-                              VersionStamp* versionStamp) {
+                                 const std::shared_ptr<Cacheable>& newValue,
+                                 std::shared_ptr<MapEntryImpl>& newEntry,
+                                 int updateCount, int destroyTracker,
+                                 std::shared_ptr<VersionTag> versionTag,
+                                 VersionStamp* versionStamp) {
   if (!m_concurrencyChecksEnabled) {
     if (updateCount >= 0) {
       // entry was removed while being tracked

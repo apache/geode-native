@@ -66,7 +66,9 @@ CacheXmlCreation::CacheXmlCreation()
   m_readPdxSerialized = false;
 }
 
-bool CacheXmlCreation::getPdxIgnoreUnreadField() { return m_pdxIgnoreUnreadFields; }
+bool CacheXmlCreation::getPdxIgnoreUnreadField() {
+  return m_pdxIgnoreUnreadFields;
+}
 
 bool CacheXmlCreation::getPdxReadSerialized() { return m_readPdxSerialized; }
 

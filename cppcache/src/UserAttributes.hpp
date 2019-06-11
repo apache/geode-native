@@ -109,7 +109,7 @@ class GuardUserAttributes {
  public:
   GuardUserAttributes();
 
-   GuardUserAttributes(AuthenticatedView* const authenticatedView);
+  GuardUserAttributes(AuthenticatedView* const authenticatedView);
 
   void setAuthenticatedView(AuthenticatedView* const authenticatedView);
 

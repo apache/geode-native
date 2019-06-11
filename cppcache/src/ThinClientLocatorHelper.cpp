@@ -46,7 +46,7 @@ class ConnectionWrapper {
   Connector*& m_conn;
 
  public:
-   ConnectionWrapper(Connector*& conn) : m_conn(conn) {}
+  ConnectionWrapper(Connector*& conn) : m_conn(conn) {}
   ~ConnectionWrapper() {
     LOGDEBUG("closing the connection locator1");
     if (m_conn != nullptr) {

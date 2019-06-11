@@ -40,7 +40,8 @@ class APACHE_GEODE_EXPORT LRULocalDestroyAction : public virtual LRUAction {
   RegionInternal* m_regionPtr;
   LRUEntriesMap* m_entriesMapPtr;
 
-  LRULocalDestroyAction(RegionInternal* regionPtr, LRUEntriesMap* entriesMapPtr);
+  LRULocalDestroyAction(RegionInternal* regionPtr,
+                        LRUEntriesMap* entriesMapPtr);
 
  public:
   ~LRULocalDestroyAction() override = default;

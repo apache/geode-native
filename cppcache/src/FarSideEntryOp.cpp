@@ -165,7 +165,7 @@ void FarSideEntryOp::skipFilterRoutingInfo(DataInput& input) {
 }
 
 bool FarSideEntryOp::cmp(const std::shared_ptr<FarSideEntryOp>& lhs,
-                  const std::shared_ptr<FarSideEntryOp>& rhs) {
+                         const std::shared_ptr<FarSideEntryOp>& rhs) {
   return lhs->m_modSerialNum > rhs->m_modSerialNum;
 }
 }  // namespace client

@@ -25,7 +25,8 @@
 namespace apache {
 namespace geode {
 namespace client {
-LRUEntryProperties::LRUEntryProperties() : m_bits(0), m_persistenceInfo(nullptr) {}
+LRUEntryProperties::LRUEntryProperties()
+    : m_bits(0), m_persistenceInfo(nullptr) {}
 
 void LRUEntryProperties::setRecentlyUsed() { m_bits |= RECENTLY_USED_BITS; }
 
@@ -47,7 +48,8 @@ const std::shared_ptr<void>& LRUEntryProperties::getPersistenceInfo() const {
   return m_persistenceInfo;
 }
 
-void LRUEntryProperties::setPersistenceInfo(const std::shared_ptr<void>& persistenceInfo) {
+void LRUEntryProperties::setPersistenceInfo(
+    const std::shared_ptr<void>& persistenceInfo) {
   m_persistenceInfo = persistenceInfo;
 }
 

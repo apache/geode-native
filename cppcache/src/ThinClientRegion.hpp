@@ -419,7 +419,7 @@ class ChunkedQueryResponse : public TcrChunkedResult {
   ChunkedQueryResponse& operator=(const ChunkedQueryResponse&);
 
  public:
-   ChunkedQueryResponse(TcrMessage& msg);
+  ChunkedQueryResponse(TcrMessage& msg);
 
   const std::shared_ptr<CacheableVector>& getQueryResults() const;
 
@@ -452,7 +452,7 @@ class ChunkedFunctionExecutionResponse : public TcrChunkedResult {
 
  public:
   ChunkedFunctionExecutionResponse(TcrMessage& msg, bool getResult,
-                                          std::shared_ptr<ResultCollector> rc);
+                                   std::shared_ptr<ResultCollector> rc);
 
   ChunkedFunctionExecutionResponse(
       TcrMessage& msg, bool getResult, std::shared_ptr<ResultCollector> rc,
@@ -583,9 +583,9 @@ class ChunkedKeySetResponse : public TcrChunkedResult {
   ChunkedKeySetResponse& operator=(const ChunkedKeySetResponse&);
 
  public:
-  ChunkedKeySetResponse(
-      TcrMessage& msg, std::vector<std::shared_ptr<CacheableKey>>& resultKeys,
-      TcrMessageReply& replyMsg);
+  ChunkedKeySetResponse(TcrMessage& msg,
+                        std::vector<std::shared_ptr<CacheableKey>>& resultKeys,
+                        TcrMessageReply& replyMsg);
 
   virtual void handleChunk(const uint8_t* chunk, int32_t chunkLen,
                            uint8_t isLastChunkWithSecurity,
@@ -603,7 +603,7 @@ class ChunkedDurableCQListResponse : public TcrChunkedResult {
   ChunkedDurableCQListResponse& operator=(const ChunkedDurableCQListResponse&);
 
  public:
-   ChunkedDurableCQListResponse(TcrMessage& msg);
+  ChunkedDurableCQListResponse(TcrMessage& msg);
   std::shared_ptr<CacheableArrayList> getResults();
 
   virtual void handleChunk(const uint8_t* chunk, int32_t chunkLen,

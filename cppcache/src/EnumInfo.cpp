@@ -81,7 +81,9 @@ std::shared_ptr<CacheableString> EnumInfo::getEnumClassName() const {
   return m_enumClassName;
 }
 
-std::shared_ptr<CacheableString> EnumInfo::getEnumName() const { return m_enumName; }
+std::shared_ptr<CacheableString> EnumInfo::getEnumName() const {
+  return m_enumName;
+}
 
 int32_t EnumInfo::getEnumOrdinal() const { return m_ordinal; }
 

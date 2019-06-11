@@ -111,7 +111,7 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
   getSucceededKeys();
 
   VersionedCacheableObjectPartList(uint16_t endpointMemId,
-                                          std::recursive_mutex& responseLock);
+                                   std::recursive_mutex& responseLock);
 
   void addAll(std::shared_ptr<VersionedCacheableObjectPartList> other);
 

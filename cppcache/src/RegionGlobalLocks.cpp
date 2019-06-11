@@ -21,8 +21,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-RegionGlobalLocks::RegionGlobalLocks(LocalRegion* region,
-                                     bool isFailover)
+RegionGlobalLocks::RegionGlobalLocks(LocalRegion* region, bool isFailover)
     : m_region(region), m_isFailover(isFailover) {
   m_region->acquireGlobals(m_isFailover);
 }

@@ -211,7 +211,9 @@ void VersionedCacheableObjectPartList::addAllKeys(
   }
 }
 
-DSFid VersionedCacheableObjectPartList::getDSFID() const { return DSFid::VersionedObjectPartList; }
+DSFid VersionedCacheableObjectPartList::getDSFID() const {
+  return DSFid::VersionedObjectPartList;
+}
 
 void VersionedCacheableObjectPartList::toData(DataOutput&) const {
   throw UnsupportedOperationException(

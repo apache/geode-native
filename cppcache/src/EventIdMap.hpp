@@ -143,7 +143,7 @@ class APACHE_GEODE_EXPORT EventSequence {
   void clear();
 
   EventSequence();
-   EventSequence(int64_t seqNum);
+  EventSequence(int64_t seqNum);
   ~EventSequence();
 
   // update deadline

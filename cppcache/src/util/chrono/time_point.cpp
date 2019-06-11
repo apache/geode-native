@@ -32,8 +32,7 @@ std::tm localtime(const time_t& time) {
   return localtime;
 }
 
-std::tm localtime(
-    const std::chrono::system_clock::time_point& time_point) {
+std::tm localtime(const std::chrono::system_clock::time_point& time_point) {
   return localtime(std::chrono::system_clock::to_time_t(time_point));
 }
 
@@ -61,8 +60,7 @@ std::string to_string(const time_t& time) {
   return stringstream.str();
 }
 
-std::string to_string(
-    const std::chrono::system_clock::time_point& time_point) {
+std::string to_string(const std::chrono::system_clock::time_point& time_point) {
   return to_string(std::chrono::system_clock::to_time_t(time_point));
 }
 

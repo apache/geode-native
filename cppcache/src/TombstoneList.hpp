@@ -42,7 +42,7 @@ class TombstoneEntry {
   using clock = std::chrono::steady_clock;
   using time_point = clock::time_point;
 
-   TombstoneEntry(const std::shared_ptr<MapEntryImpl>& entry);
+  TombstoneEntry(const std::shared_ptr<MapEntryImpl>& entry);
   virtual ~TombstoneEntry();
   std::shared_ptr<MapEntryImpl> getEntry();
   time_point getTombstoneCreationTime();

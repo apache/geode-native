@@ -255,11 +255,14 @@ MapSegment* ConcurrentEntriesMap::segmentFor(
   return &(m_segments[segmentIdx(key)]);
 }
 
-int ConcurrentEntriesMap::segmentIdx(const std::shared_ptr<CacheableKey>& key) const {
+int ConcurrentEntriesMap::segmentIdx(
+    const std::shared_ptr<CacheableKey>& key) const {
   return segmentIdx(key->hashcode());
 }
 
-int ConcurrentEntriesMap::segmentIdx(uint32_t hash) const { return (hash % m_concurrency); }
+int ConcurrentEntriesMap::segmentIdx(uint32_t hash) const {
+  return (hash % m_concurrency);
+}
 
 }  // namespace client
 }  // namespace geode

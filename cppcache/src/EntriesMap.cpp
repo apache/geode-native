@@ -21,7 +21,7 @@ namespace apache {
 namespace geode {
 namespace client {
 EntriesMap::EntriesMap(std::unique_ptr<EntryFactory> entryFactory)
-      : m_entryFactory(std::move(entryFactory)) {}
+    : m_entryFactory(std::move(entryFactory)) {}
 EntriesMap::~EntriesMap() {}
 
 std::shared_ptr<Cacheable> EntriesMap::getFromDisk(

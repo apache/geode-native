@@ -22,10 +22,11 @@ namespace geode {
 namespace client {
 DataOutputInternal::DataOutputInternal() : DataOutput(nullptr, nullptr) {}
 
-DataOutputInternal::DataOutputInternal(CacheImpl* cache) : DataOutput(cache, nullptr) {}
+DataOutputInternal::DataOutputInternal(CacheImpl* cache)
+    : DataOutput(cache, nullptr) {}
 
 Pool* DataOutputInternal::getPool(const DataOutput& dataOutput) {
-    return dataOutput.getPool();
+  return dataOutput.getPool();
 }
 
 }  // namespace client

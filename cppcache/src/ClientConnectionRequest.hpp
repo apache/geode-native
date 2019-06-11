@@ -34,9 +34,8 @@ namespace client {
 
 class ClientConnectionRequest : public ServerLocationRequest {
  public:
-  ClientConnectionRequest(
-      const std::set<ServerLocation>& excludeServergroup,
-      std::string servergroup = "");
+  ClientConnectionRequest(const std::set<ServerLocation>& excludeServergroup,
+                          std::string servergroup = "");
   void toData(DataOutput& output) const override;
   internal::DSFid getDSFID() const override;
   std::string getServerGroup() const;
