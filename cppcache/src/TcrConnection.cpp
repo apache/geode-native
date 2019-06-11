@@ -943,9 +943,14 @@ void TcrConnection::readMessageChunked(TcrMessageReply& reply,
       header = readChunkHeader(headerTimeout);
     }
   } catch (const Exception&) {
-    auto ex = reply.getChunkedResultHandler()->getException();
-    LOGDEBUG("Found existing exception ", ex->what());
-    reply.getChunkedResultHandler()->clearException();
+    auto handler = reply.getChunkedResultHandler();
+    if (handler) {
+      auto ex = handler->getException();
+      if (ex) {
+        LOGDEBUG("Found existing exception ", ex->what());
+        handler->clearException();
+      }
+    }
     throw;
   }
 
