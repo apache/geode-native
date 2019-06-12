@@ -41,6 +41,7 @@ std::shared_ptr<apache::geode::client::Region> setupRegion(
 
 TEST(CommitConflictExceptionTest, putPartitionTx) {
   Cluster cluster{LocatorCount{1}, ServerCount{1}};
+  cluster.start();
   cluster.getGfsh()
       .create()
       .region()

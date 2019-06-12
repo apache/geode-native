@@ -53,6 +53,7 @@ std::shared_ptr<Region> setupRegion(Cache& cache) {
  */
 TEST(ExampleTest, DISABLED_putAndGetWith2Servers) {
   Cluster cluster{LocatorCount{1}, ServerCount{2}};
+  cluster.start();
   cluster.getGfsh()
       .create()
       .region()
@@ -87,6 +88,7 @@ TEST(ExampleTest, DISABLED_putAndGetWith2Servers) {
  */
 TEST(ExampleTest, DISABLED_putGetAndUpdateWith1Server) {
   Cluster cluster{LocatorCount{1}, ServerCount{1}};
+  cluster.start();
   cluster.getGfsh()
       .create()
       .region()

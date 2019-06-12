@@ -76,6 +76,7 @@ class SerializableWithThreadId : public PdxSerializable {
 
 TEST(ChunkHandlerThreadTest, isDisabledUsesSameThread) {
   Cluster cluster{LocatorCount{1}, ServerCount{1}};
+  cluster.start();
   cluster.getGfsh()
       .create()
       .region()
@@ -108,6 +109,7 @@ TEST(ChunkHandlerThreadTest, isDisabledUsesSameThread) {
 
 TEST(ChunkHandlerThreadTest, isEnabledUsesDifferentThread) {
   Cluster cluster{LocatorCount{1}, ServerCount{1}};
+  cluster.start();
   cluster.getGfsh()
       .create()
       .region()

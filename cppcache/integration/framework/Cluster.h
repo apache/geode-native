@@ -257,7 +257,7 @@ class Cluster {
 
     removeServerDirectory();
     start();
-  };
+  }
 
   ~Cluster() noexcept {
     try {
