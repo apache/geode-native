@@ -669,16 +669,12 @@ class TcrMessageClientReady : public TcrMessage {
  public:
   TcrMessageClientReady(DataOutput* dataOutput);
 
-  virtual ~TcrMessageClientReady() {}
-
   ~TcrMessageClientReady() override = default;
 };
 
 class TcrMessageCommit : public TcrMessage {
  public:
   TcrMessageCommit(DataOutput* dataOutput);
-
-  virtual ~TcrMessageCommit() {}
 
   ~TcrMessageCommit() override = default;
 };
@@ -693,8 +689,6 @@ class TcrMessageRollback : public TcrMessage {
 class TcrMessageTxFailover : public TcrMessage {
  public:
   TcrMessageTxFailover(DataOutput* dataOutput);
-
-  virtual ~TcrMessageTxFailover() {}
 
   ~TcrMessageTxFailover() override = default;
 };
