@@ -325,7 +325,7 @@ class FunctionExecution : public PooledWork<GfErrType> {
                      std::shared_ptr<ResultCollector>* rs,
                      std::shared_ptr<UserAttributes> userAttr);
 
-  GfErrType execute();
+  GfErrType execute() override;
 };
 
 class OnRegionFunctionExecution : public PooledWork<GfErrType> {
@@ -365,7 +365,7 @@ class OnRegionFunctionExecution : public PooledWork<GfErrType> {
 
   ChunkedFunctionExecutionResponse* getResultCollector();
 
-  GfErrType execute();
+  GfErrType execute() override;
 };
 
 }  // namespace client

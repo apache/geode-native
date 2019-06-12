@@ -43,8 +43,6 @@ DistributedSystem::DistributedSystem(DistributedSystem&& moved)
   m_impl->m_implementee = this;
 }
 
-DistributedSystem::~DistributedSystem() noexcept = default;
-
 DistributedSystem DistributedSystem::create(
     const std::string& _name, const std::shared_ptr<Properties>& configPtr) {
   // TODO global - Refactory out the static initialization

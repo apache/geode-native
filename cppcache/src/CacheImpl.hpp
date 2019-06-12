@@ -36,7 +36,6 @@
 #include "ClientProxyMembershipIDFactory.hpp"
 #include "DistributedSystem.hpp"
 #include "MemberListForVersionStamp.hpp"
-#include "NonCopyable.hpp"
 #include "PdxTypeRegistry.hpp"
 #include "RemoteQueryService.hpp"
 #include "ThreadPool.hpp"
@@ -84,12 +83,13 @@ class TcrConnectionManager;
  *
  */
 
-class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
-                                      private NonAssignable {
+class APACHE_GEODE_EXPORT CacheImpl {
   /**
    * @brief public methods
    */
  public:
+  CacheImpl(const CacheImpl&) = delete;
+  CacheImpl& operator=(const CacheImpl&) = delete;
   // added netDown and revive for tests to simulate client crash and network
   // drop
   void netDown();
@@ -191,7 +191,7 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
    */
   std::vector<std::shared_ptr<Region>> rootRegions();
 
-  virtual RegionFactory createRegionFactory(RegionShortcut preDefinedRegion);
+  RegionFactory createRegionFactory(RegionShortcut preDefinedRegion);
 
   void initializeDeclarativeCache(const std::string& cacheXml);
 
@@ -276,14 +276,14 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
 
   statistics::StatisticsManager& getStatisticsManager() const;
 
-  virtual DataOutput createDataOutput() const;
+  DataOutput createDataOutput() const;
 
-  virtual DataOutput createDataOutput(Pool* pool) const;
+  DataOutput createDataOutput(Pool* pool) const;
 
-  virtual DataInput createDataInput(const uint8_t* buffer, size_t len) const;
+  DataInput createDataInput(const uint8_t* buffer, size_t len) const;
 
-  virtual DataInput createDataInput(const uint8_t* buffer, size_t len,
-                                    Pool* pool) const;
+  DataInput createDataInput(const uint8_t* buffer, size_t len,
+                            Pool* pool) const;
 
   PdxInstanceFactory createPdxInstanceFactory(
       const std::string& className) const;

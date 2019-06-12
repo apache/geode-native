@@ -38,6 +38,7 @@ namespace client {
  */
 class APACHE_GEODE_EXPORT CqServiceStatistics {
  public:
+  virtual ~CqServiceStatistics() = default;
   /**
    * Get the number of CQs currently active.
    * Active CQs are those which are executing (in running state).

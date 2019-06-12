@@ -35,31 +35,31 @@ class TrackedMapEntry final : public MapEntry {
 
   ~TrackedMapEntry() override;
 
-  std::shared_ptr<MapEntryImpl> getImplPtr();
+  std::shared_ptr<MapEntryImpl> getImplPtr() override;
 
-  int addTracker(std::shared_ptr<MapEntry>&);
+  int addTracker(std::shared_ptr<MapEntry>&) override;
 
-  std::pair<bool, int> removeTracker();
+  std::pair<bool, int> removeTracker() override;
 
-  int incrementUpdateCount(std::shared_ptr<MapEntry>&);
+  int incrementUpdateCount(std::shared_ptr<MapEntry>&) override;
 
-  int getTrackingNumber() const;
+  int getTrackingNumber() const override;
 
-  int getUpdateCount() const;
+  int getUpdateCount() const override;
 
-  void getKey(std::shared_ptr<CacheableKey>& result) const;
+  void getKey(std::shared_ptr<CacheableKey>& result) const override;
 
-  void getValue(std::shared_ptr<Cacheable>& result) const;
+  void getValue(std::shared_ptr<Cacheable>& result) const override;
 
-  void setValue(const std::shared_ptr<Cacheable>& value);
+  void setValue(const std::shared_ptr<Cacheable>& value) override;
 
-  LRUEntryProperties& getLRUProperties();
+  LRUEntryProperties& getLRUProperties() override;
 
-  ExpEntryProperties& getExpProperties();
+  ExpEntryProperties& getExpProperties() override;
 
-  VersionStamp& getVersionStamp();
+  VersionStamp& getVersionStamp() override;
 
-  void cleanup(const CacheEventFlags eventFlags);
+  void cleanup(const CacheEventFlags eventFlags) override;
 
  private:
   std::shared_ptr<MapEntryImpl> m_entry;

@@ -59,9 +59,7 @@ bool sortFunc(std::shared_ptr<PdxFieldType> field1,
   }
 }
 
-PdxInstanceImpl::~PdxInstanceImpl() noexcept {
-  _GEODE_SAFE_DELETE_ARRAY(m_buffer);
-}
+PdxInstanceImpl::~PdxInstanceImpl() { _GEODE_SAFE_DELETE_ARRAY(m_buffer); }
 
 PdxInstanceImpl::PdxInstanceImpl(uint8_t* buffer, int length, int typeId,
                                  CachePerfStats& cacheStats,

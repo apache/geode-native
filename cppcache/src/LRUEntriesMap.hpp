@@ -81,30 +81,29 @@ class APACHE_GEODE_EXPORT LRUEntriesMap : public ConcurrentEntriesMap,
 
   ~LRUEntriesMap() override;
 
-  virtual GfErrType put(const std::shared_ptr<CacheableKey>& key,
-                        const std::shared_ptr<Cacheable>& newValue,
-                        std::shared_ptr<MapEntryImpl>& me,
-                        std::shared_ptr<Cacheable>& oldValue, int updateCount,
-                        int destroyTracker,
-                        std::shared_ptr<VersionTag> versionTag,
-                        bool& isUpdate = EntriesMap::boolVal,
-                        DataInput* delta = nullptr);
-  virtual GfErrType invalidate(const std::shared_ptr<CacheableKey>& key,
-                               std::shared_ptr<MapEntryImpl>& me,
-                               std::shared_ptr<Cacheable>& oldValue,
-                               std::shared_ptr<VersionTag> versionTag);
-  virtual GfErrType create(const std::shared_ptr<CacheableKey>& key,
-                           const std::shared_ptr<Cacheable>& newValue,
-                           std::shared_ptr<MapEntryImpl>& me,
-                           std::shared_ptr<Cacheable>& oldValue,
-                           int updateCount, int destroyTracker,
-                           std::shared_ptr<VersionTag> versionTag);
-  virtual bool get(const std::shared_ptr<CacheableKey>& key,
-                   std::shared_ptr<Cacheable>& returnPtr,
-                   std::shared_ptr<MapEntryImpl>& me);
-  virtual std::shared_ptr<Cacheable> getFromDisk(
+  GfErrType put(const std::shared_ptr<CacheableKey>& key,
+                const std::shared_ptr<Cacheable>& newValue,
+                std::shared_ptr<MapEntryImpl>& me,
+                std::shared_ptr<Cacheable>& oldValue, int updateCount,
+                int destroyTracker, std::shared_ptr<VersionTag> versionTag,
+                bool& isUpdate = EntriesMap::boolVal,
+                DataInput* delta = nullptr) override;
+  GfErrType invalidate(const std::shared_ptr<CacheableKey>& key,
+                       std::shared_ptr<MapEntryImpl>& me,
+                       std::shared_ptr<Cacheable>& oldValue,
+                       std::shared_ptr<VersionTag> versionTag) override;
+  GfErrType create(const std::shared_ptr<CacheableKey>& key,
+                   const std::shared_ptr<Cacheable>& newValue,
+                   std::shared_ptr<MapEntryImpl>& me,
+                   std::shared_ptr<Cacheable>& oldValue, int updateCount,
+                   int destroyTracker,
+                   std::shared_ptr<VersionTag> versionTag) override;
+  bool get(const std::shared_ptr<CacheableKey>& key,
+           std::shared_ptr<Cacheable>& returnPtr,
+           std::shared_ptr<MapEntryImpl>& me) override;
+  std::shared_ptr<Cacheable> getFromDisk(
       const std::shared_ptr<CacheableKey>& key,
-      std::shared_ptr<MapEntryImpl>& me) const;
+      std::shared_ptr<MapEntryImpl>& me) const override;
   GfErrType processLRU();
   void processLRU(int32_t numEntriesToEvict);
   GfErrType evictionHelper();
@@ -114,13 +113,13 @@ class APACHE_GEODE_EXPORT LRUEntriesMap : public ConcurrentEntriesMap,
   /**
    * @brief remove an entry, marking it evicted for LRUList maintainance.
    */
-  virtual GfErrType remove(const std::shared_ptr<CacheableKey>& key,
-                           std::shared_ptr<Cacheable>& result,
-                           std::shared_ptr<MapEntryImpl>& me, int updateCount,
-                           std::shared_ptr<VersionTag> versionTag,
-                           bool afterRemote);
+  GfErrType remove(const std::shared_ptr<CacheableKey>& key,
+                   std::shared_ptr<Cacheable>& result,
+                   std::shared_ptr<MapEntryImpl>& me, int updateCount,
+                   std::shared_ptr<VersionTag> versionTag,
+                   bool afterRemote) override;
 
-  virtual void close();
+  void close() override;
 
   bool mustEvict() const;
 
@@ -128,7 +127,7 @@ class APACHE_GEODE_EXPORT LRUEntriesMap : public ConcurrentEntriesMap,
 
   void adjustLimit(uint32_t limit);
 
-  virtual void clear();
+  void clear() override;
 
 };  // class LRUEntriesMap
 }  // namespace client

@@ -37,9 +37,9 @@ class APACHE_GEODE_EXPORT ExpMapEntry : public MapEntryImpl,
  public:
   ~ExpMapEntry() override;
 
-  virtual ExpEntryProperties& getExpProperties();
+  ExpEntryProperties& getExpProperties() override;
 
-  virtual void cleanup(const CacheEventFlags eventFlags);
+  void cleanup(const CacheEventFlags eventFlags) override;
 
   // this constructor deliberately skips touching or initializing any members
   ExpMapEntry(bool);
@@ -63,7 +63,7 @@ class APACHE_GEODE_EXPORT VersionedExpMapEntry : public ExpMapEntry,
 
   ~VersionedExpMapEntry() override;
 
-  virtual VersionStamp& getVersionStamp();
+  VersionStamp& getVersionStamp() override;
 
  private:
   // disabled
@@ -77,9 +77,9 @@ class APACHE_GEODE_EXPORT ExpEntryFactory : public EntryFactory {
 
   ~ExpEntryFactory() override;
 
-  virtual void newMapEntry(ExpiryTaskManager* expiryTaskManager,
-                           const std::shared_ptr<CacheableKey>& key,
-                           std::shared_ptr<MapEntryImpl>& result) const;
+  void newMapEntry(ExpiryTaskManager* expiryTaskManager,
+                   const std::shared_ptr<CacheableKey>& key,
+                   std::shared_ptr<MapEntryImpl>& result) const override;
 };
 }  // namespace client
 }  // namespace geode

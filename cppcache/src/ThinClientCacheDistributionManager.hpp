@@ -41,17 +41,17 @@ class APACHE_GEODE_EXPORT ThinClientCacheDistributionManager
   ThinClientCacheDistributionManager(TcrConnectionManager& connManager);
   ~ThinClientCacheDistributionManager() override;
 
-  void init();
-  virtual GfErrType sendSyncRequest(TcrMessage& request, TcrMessageReply& reply,
-                                    bool attemptFailover = true,
-                                    bool isBGThread = false);
+  void init() override;
+  GfErrType sendSyncRequest(TcrMessage& request, TcrMessageReply& reply,
+                            bool attemptFailover = true,
+                            bool isBGThread = false) override;
 
   GfErrType sendSyncRequestCq(TcrMessage& request, TcrMessageReply& reply);
   GfErrType sendRequestToPrimary(TcrMessage& request, TcrMessageReply& reply);
 
  protected:
-  virtual bool preFailoverAction();
-  virtual bool postFailoverAction(TcrEndpoint* endpoint);
+  bool preFailoverAction() override;
+  bool postFailoverAction(TcrEndpoint* endpoint) override;
 
  private:
   // Disallow default/copy constructor and assignment operator.

@@ -45,25 +45,25 @@ class APACHE_GEODE_EXPORT CqServiceVsdStats : public CqServiceStatistics {
                     const std::string& cqName = "CqServiceVsdStats");
 
   /** disable stat collection for this item. */
-  ~CqServiceVsdStats();
+  ~CqServiceVsdStats() override;
 
   void close();
   void decNumCqsActive();
 
   void incNumCqsActive() const;
-  uint32_t numCqsActive() const;
+  uint32_t numCqsActive() const override;
 
   void incNumCqsCreated();
-  uint32_t numCqsCreated() const;
+  uint32_t numCqsCreated() const override;
 
-  uint32_t numCqsOnClient() const;
+  uint32_t numCqsOnClient() const override;
 
   void incNumCqsClosed();
-  uint32_t numCqsClosed() const;
+  uint32_t numCqsClosed() const override;
 
   void incNumCqsStopped();
   void decNumCqsStopped();
-  uint32_t numCqsStopped() const;
+  uint32_t numCqsStopped() const override;
 
   void setNumCqsActive(uint32_t value);
 

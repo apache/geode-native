@@ -284,7 +284,7 @@ class APACHE_GEODE_EXPORT ExpiryTaskManager : public ACE_Task_Base {
    * is kept running unless explicitly stopped or when this object
    * goes out of scope.
    */
-  int svc();
+  int svc() override;
 
   /**
    * For explicitly stopping the reactor's event loop.

@@ -40,6 +40,7 @@ namespace client {
  */
 class APACHE_GEODE_EXPORT CqStatistics {
  public:
+  virtual ~CqStatistics() = default;
   /**
    * Get number of Insert events qualified by this CQ.
    * @return number of inserts.

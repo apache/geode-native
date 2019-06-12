@@ -114,7 +114,7 @@ class RegionInternal : public Region {
   RegionInternal(const RegionInternal&) = delete;
   RegionInternal& operator=(const RegionInternal&) = delete;
 
-  ~RegionInternal() override;
+  ~RegionInternal() override = default;
 
   void registerKeys(const std::vector<std::shared_ptr<CacheableKey>>& keys,
                     bool isDurable = false, bool getInitialValues = false,

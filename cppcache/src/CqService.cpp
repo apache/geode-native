@@ -45,7 +45,7 @@ CqService::CqService(ThinClientBaseDM* tccdm,
   m_running = true;
   LOGDEBUG("CqService Started");
 }
-CqService::~CqService() noexcept { LOGDEBUG("CqService Destroyed"); }
+CqService::~CqService() { LOGDEBUG("CqService Destroyed"); }
 
 void CqService::updateStats() {
   auto stats = std::dynamic_pointer_cast<CqServiceVsdStats>(m_stats);

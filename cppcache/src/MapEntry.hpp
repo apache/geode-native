@@ -212,7 +212,7 @@ class APACHE_GEODE_EXPORT VersionedMapEntryImpl : public MapEntryImpl,
  public:
   ~VersionedMapEntryImpl() override;
 
-  virtual VersionStamp& getVersionStamp();
+  VersionStamp& getVersionStamp() override;
 
  protected:
   VersionedMapEntryImpl(bool);

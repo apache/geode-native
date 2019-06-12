@@ -34,7 +34,7 @@ namespace client {
 
 const char* PdxType::m_javaPdxClass = "org.apache.geode.pdx.internal.PdxType";
 
-PdxType::~PdxType() noexcept {
+PdxType::~PdxType() {
   _GEODE_SAFE_DELETE(m_pdxFieldTypes);
   _GEODE_SAFE_DELETE_ARRAY(m_remoteToLocalFieldMap);
   _GEODE_SAFE_DELETE_ARRAY(m_localToRemoteFieldMap);

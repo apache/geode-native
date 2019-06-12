@@ -57,7 +57,7 @@ class APACHE_GEODE_EXPORT DistributedSystem {
    */
  public:
   DistributedSystem() = delete;
-  ~DistributedSystem();
+  ~DistributedSystem() = default;
   DistributedSystem(const DistributedSystem&) = delete;
   DistributedSystem& operator=(const DistributedSystem&) = delete;
   DistributedSystem(DistributedSystem&&);

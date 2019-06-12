@@ -45,7 +45,7 @@ class APACHE_GEODE_EXPORT CqQueryVsdStats : public CqStatistics {
                   const std::string& cqqueryName);
 
   /** disable stat collection for this item. */
-  ~CqQueryVsdStats();
+  ~CqQueryVsdStats() override;
 
   void close() { m_cqQueryVsdStats->close(); }
 
@@ -57,16 +57,16 @@ class APACHE_GEODE_EXPORT CqQueryVsdStats : public CqStatistics {
 
   inline void incNumEvents() { m_cqQueryVsdStats->incInt(m_numEventsId, 1); }
 
-  inline uint32_t numInserts() const {
+  uint32_t numInserts() const override {
     return m_cqQueryVsdStats->getInt(m_numInsertsId);
   }
-  inline uint32_t numUpdates() const {
+  uint32_t numUpdates() const override {
     return m_cqQueryVsdStats->getInt(m_numUpdatesId);
   }
-  inline uint32_t numDeletes() const {
+  uint32_t numDeletes() const override {
     return m_cqQueryVsdStats->getInt(m_numDeletesId);
   }
-  inline uint32_t numEvents() const {
+  uint32_t numEvents() const override {
     return m_cqQueryVsdStats->getInt(m_numEventsId);
   }
 

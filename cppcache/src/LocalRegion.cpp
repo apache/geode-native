@@ -726,7 +726,7 @@ void LocalRegion::registerEntryExpiryTask(
   expProps.setExpiryTaskId(id);
 }
 
-LocalRegion::~LocalRegion() noexcept {
+LocalRegion::~LocalRegion() {
   TryWriteGuard guard(m_rwLock, m_destroyPending);
   if (!m_destroyPending) {
     release(false);

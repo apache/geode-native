@@ -100,8 +100,6 @@ RegionInternal::RegionInternal(CacheImpl* cacheImpl,
                                RegionAttributes attributes)
     : Region(cacheImpl), m_regionAttributes(attributes) {}
 
-RegionInternal::~RegionInternal() noexcept = default;
-
 void RegionInternal::registerKeys(
     const std::vector<std::shared_ptr<CacheableKey>>&, bool, bool, bool) {
   throw UnsupportedOperationException(

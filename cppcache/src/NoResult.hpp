@@ -42,13 +42,14 @@ class APACHE_GEODE_EXPORT NoResult final : public ResultCollector {
   NoResult();
   ~NoResult() override;
 
-  void addResult(const std::shared_ptr<Cacheable>&);
+  void addResult(const std::shared_ptr<Cacheable>&) override;
 
-  void endResults();
+  void endResults() override;
 
-  std::shared_ptr<CacheableVector> getResult(std::chrono::milliseconds);
+  std::shared_ptr<CacheableVector> getResult(
+      std::chrono::milliseconds) override;
 
-  void clearResults();
+  void clearResults() override;
 };
 
 }  // namespace client
