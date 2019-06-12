@@ -43,8 +43,8 @@ namespace Apache.Geode.Examples.PutGetRemove
       const string scharlesKey = "scharles";
       const string scharlesValue = "Sylvia Charles";
 
-      region.Put(rtimmonsKey, rtimmonsValue, null);
-      region.Put(scharlesKey, scharlesValue, null);
+      region.Put(rtimmonsKey, rtimmonsValue);
+      region.Put(scharlesKey, scharlesValue);
 
       Console.WriteLine("Getting the user info from the region");
       var user1 = region.Get(rtimmonsKey, null);

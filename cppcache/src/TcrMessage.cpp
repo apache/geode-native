@@ -46,11 +46,36 @@
 namespace apache {
 namespace geode {
 namespace client {
-static const uint32_t REGULAR_EXPRESSION =
+namespace {
+const uint32_t g_headerLen = 17;
+const uint32_t REGULAR_EXPRESSION =
     1;  // come from Java InterestType.REGULAR_EXPRESSION
 
-namespace {
-uint32_t g_headerLen = 17;
+inline void readInt(uint8_t* buffer, uint16_t* value) {
+  uint16_t tmp = *(buffer++);
+  tmp = (tmp << 8) | *(buffer);
+  *value = tmp;
+}
+
+inline void readInt(uint8_t* buffer, uint32_t* value) {
+  uint32_t tmp = *(buffer++);
+  tmp = (tmp << 8) | *(buffer++);
+  tmp = (tmp << 8) | *(buffer++);
+  tmp = (tmp << 8) | *(buffer++);
+  *value = tmp;
+}
+
+inline void writeInt(uint8_t* buffer, uint16_t value) {
+  *(buffer++) = static_cast<uint8_t>(value >> 8);
+  *(buffer++) = static_cast<uint8_t>(value);
+}
+
+inline void writeInt(uint8_t* buffer, uint32_t value) {
+  *(buffer++) = static_cast<uint8_t>(value >> 24);
+  *(buffer++) = static_cast<uint8_t>(value >> 16);
+  *(buffer++) = static_cast<uint8_t>(value >> 8);
+  *(buffer++) = static_cast<uint8_t>(value);
+}
 }  // namespace
 
 extern void setThreadLocalExceptionMessage(const char*);
@@ -59,6 +84,260 @@ extern void setThreadLocalExceptionMessage(const char*);
 uint8_t* TcrMessage::m_keepalive = nullptr;
 const int TcrMessage::m_flag_empty = 0x01;
 const int TcrMessage::m_flag_concurrency_checks = 0x02;
+
+bool TcrMessage::isKeepAlive() { return *m_keepalive > 0; }
+
+bool TcrMessage::isUserInitiativeOps(const TcrMessage& msg) {
+  int32_t msgType = msg.getMessageType();
+
+  if (!msg.isMetaRegion() &&
+      !(msgType == TcrMessage::PING || msgType == TcrMessage::PERIODIC_ACK ||
+        msgType == TcrMessage::MAKE_PRIMARY ||
+        msgType == TcrMessage::CLOSE_CONNECTION ||
+        msgType == TcrMessage::CLIENT_READY || msgType == TcrMessage::INVALID ||
+        msgType == TcrMessage::MONITORCQ_MSG_TYPE ||
+        msgType == TcrMessage::GETCQSTATS_MSG_TYPE ||
+        msgType == TcrMessage::REQUEST_EVENT_VALUE ||
+        msgType == TcrMessage::GET_CLIENT_PR_METADATA ||
+        msgType == TcrMessage::GET_CLIENT_PARTITION_ATTRIBUTES ||
+        msgType == TcrMessage::GET_PDX_ID_FOR_TYPE ||
+        msgType == TcrMessage::GET_PDX_TYPE_BY_ID ||
+        msgType == TcrMessage::ADD_PDX_TYPE || msgType == TcrMessage::SIZE ||
+        msgType == TcrMessage::TX_FAILOVER ||
+        msgType == TcrMessage::GET_ENTRY ||
+        msgType == TcrMessage::TX_SYNCHRONIZATION ||
+        msgType == TcrMessage::GET_FUNCTION_ATTRIBUTES ||
+        msgType == TcrMessage::ADD_PDX_ENUM ||
+        msgType == TcrMessage::GET_PDX_ENUM_BY_ID ||
+        msgType == TcrMessage::GET_PDX_ID_FOR_ENUM ||
+        msgType == TcrMessage::COMMIT || msgType == TcrMessage::ROLLBACK)) {
+    return true;
+  }
+  return false;
+}
+
+TcrMessage::TcrMessage()
+    : m_request(nullptr),
+      m_tcdm(nullptr),
+      m_chunkedResult(nullptr),
+      m_keyList(nullptr),
+      m_region(nullptr),
+      m_timeout(15 /*DEFAULT_TIMEOUT_SECONDS*/),
+      m_metadata(),
+      m_cqs(nullptr),
+      m_messageResponseTimeout(-1),
+      m_delta(nullptr),
+      m_deltaBytes(nullptr),
+      m_fpaSet(),
+      m_functionAttributes(),
+      m_connectionIDBytes(nullptr),
+      m_creds(),
+      m_key(),
+      m_value(nullptr),
+      m_failedNode(),
+      m_callbackArgument(nullptr),
+      m_versionTag(),
+      m_eventid(nullptr),
+      m_vectorPtr(),
+      m_bucketServerLocation(nullptr),
+      m_tombstoneVersions(),
+      m_tombstoneKeys(),
+      m_versionObjPartListptr(),
+      exceptionMessage(),
+      m_regionName("INVALID_REGION_NAME"),
+      m_regex(),
+      m_bucketServerLocations(),
+      m_colocatedWith(),
+      m_partitionResolverName(),
+      m_securityHeaderLength(0),
+      m_msgType(TcrMessage::INVALID),
+      m_msgLength(-1),
+      m_msgTypeRequest(0),
+      m_txId(-1),
+      m_bucketCount(0),
+      m_numCqPart(0),
+      m_msgTypeForCq(0),
+      m_deltaBytesLen(0),
+      m_entryNotFound(0),
+      m_feAnotherHop(false),
+      isSecurityOn(false),
+      m_isLastChunkAndisSecurityHeader(0),
+      m_isSecurityHeaderAdded(false),
+      m_isMetaRegion(false),
+      m_decodeAll(false),
+      m_interestPolicy(0),
+      m_isDurable(false),
+      m_receiveValues(false),
+      m_hasCqsPart(false),
+      m_isInterestListPassed(false),
+      m_shouldIgnore(false),
+      m_metaDataVersion(0),
+      m_serverGroupVersion(0),
+      m_boolValue(0),
+      m_isCallBackArguement(false),
+      m_hasResult(0) {}
+
+const std::vector<std::shared_ptr<CacheableKey>>* TcrMessage::getKeys() const {
+  return m_keyList;
+}
+
+const std::string& TcrMessage::getRegex() const { return m_regex; }
+
+InterestResultPolicy TcrMessage::getInterestResultPolicy() const {
+  if (m_interestPolicy == 2) {
+    return InterestResultPolicy::KEYS_VALUES;
+  } else if (m_interestPolicy == 1) {
+    return InterestResultPolicy::KEYS;
+  } else {
+    return InterestResultPolicy::NONE;
+  }
+}
+
+bool TcrMessage::forPrimary() const {
+  return m_msgType == TcrMessage::PUT || m_msgType == TcrMessage::DESTROY ||
+         m_msgType == TcrMessage::EXECUTE_REGION_FUNCTION;
+}
+
+void TcrMessage::initCqMap() { m_cqs = new std::map<std::string, int>(); }
+
+bool TcrMessage::forSingleHop() const {
+  return m_msgType == TcrMessage::PUT || m_msgType == TcrMessage::DESTROY ||
+         m_msgType == TcrMessage::REQUEST ||
+         m_msgType == TcrMessage::GET_ALL_70 ||
+         m_msgType == TcrMessage::GET_ALL_WITH_CALLBACK ||
+         m_msgType == TcrMessage::EXECUTE_REGION_FUNCTION ||
+         m_msgType == TcrMessage::PUTALL ||
+         m_msgType == TcrMessage::PUT_ALL_WITH_CALLBACK;
+}
+
+bool TcrMessage::forTransaction() const { return m_txId != -1; }
+
+bool TcrMessage::getBoolValue() const { return m_boolValue; }
+
+const char* TcrMessage::getException() {
+  exceptionMessage = Utils::nullSafeToString(m_value);
+  return exceptionMessage.c_str();
+}
+
+bool TcrMessage::isDurable() const { return m_isDurable; }
+
+bool TcrMessage::receiveValues() const { return m_receiveValues; }
+
+bool TcrMessage::hasCqPart() const { return m_hasCqsPart; }
+
+uint32_t TcrMessage::getMessageTypeForCq() const { return m_msgTypeForCq; }
+
+bool TcrMessage::isInterestListPassed() const { return m_isInterestListPassed; }
+
+bool TcrMessage::shouldIgnore() const { return m_shouldIgnore; }
+
+int8_t TcrMessage::getMetaDataVersion() const { return m_metaDataVersion; }
+
+uint32_t TcrMessage::getEntryNotFound() const { return m_entryNotFound; }
+
+int8_t TcrMessage::getserverGroupVersion() const {
+  return m_serverGroupVersion;
+}
+
+std::vector<int8_t>* TcrMessage::getFunctionAttributes() {
+  return m_functionAttributes;
+}
+
+void TcrMessage::setDM(ThinClientBaseDM* dm) { m_tcdm = dm; }
+
+ThinClientBaseDM* TcrMessage::getDM() { return m_tcdm; }
+
+// set the chunked response handler
+void TcrMessage::setChunkedResultHandler(TcrChunkedResult* chunkedResult) {
+  m_isLastChunkAndisSecurityHeader = 0x0;
+  m_chunkedResult = chunkedResult;
+}
+
+TcrChunkedResult* TcrMessage::getChunkedResultHandler() {
+  return m_chunkedResult;
+}
+
+void TcrMessage::setVersionedObjectPartList(
+    std::shared_ptr<VersionedCacheableObjectPartList> versionObjPartListptr) {
+  m_versionObjPartListptr = versionObjPartListptr;
+}
+
+std::shared_ptr<VersionedCacheableObjectPartList>
+TcrMessage::getVersionedObjectPartList() {
+  return m_versionObjPartListptr;
+}
+
+DataInput* TcrMessage::getDelta() { return m_delta.get(); }
+
+//  getDeltaBytes( ) is called *only* by CqService, returns a CacheableBytes
+//  that
+// takes ownership of delta bytes.
+std::shared_ptr<CacheableBytes> TcrMessage::getDeltaBytes() {
+  if (m_deltaBytes == nullptr) {
+    return nullptr;
+  }
+  auto retVal = CacheableBytes::create(
+      std::vector<int8_t>(m_deltaBytes, m_deltaBytes + m_deltaBytesLen));
+  m_deltaBytes = nullptr;
+  return retVal;
+}
+
+bool TcrMessage::hasDelta() { return (m_delta != nullptr); }
+
+void TcrMessage::setMetaRegion(bool isMetaRegion) {
+  m_isMetaRegion = isMetaRegion;
+}
+
+bool TcrMessage::isMetaRegion() const { return m_isMetaRegion; }
+
+int32_t TcrMessage::getNumBuckets() const { return m_bucketCount; }
+
+const std::string& TcrMessage::getColocatedWith() const {
+  return m_colocatedWith;
+}
+
+const std::string& TcrMessage::getPartitionResolver() const {
+  return m_partitionResolverName;
+}
+
+std::vector<std::vector<std::shared_ptr<BucketServerLocation>>>*
+TcrMessage::getMetadata() {
+  return m_metadata;
+}
+
+std::vector<std::shared_ptr<FixedPartitionAttributesImpl>>*
+TcrMessage::getFpaSet() {
+  return m_fpaSet;
+}
+
+std::shared_ptr<CacheableHashSet> TcrMessage::getFailedNode() {
+  return m_failedNode;
+}
+
+bool TcrMessage::isCallBackArguement() const { return m_isCallBackArguement; }
+
+void TcrMessage::setCallBackArguement(bool aCallBackArguement) {
+  m_isCallBackArguement = aCallBackArguement;
+}
+
+void TcrMessage::setBucketServerLocation(
+    std::shared_ptr<BucketServerLocation> serverLocation) {
+  m_bucketServerLocation = serverLocation;
+}
+void TcrMessage::setVersionTag(std::shared_ptr<VersionTag> versionTag) {
+  m_versionTag = versionTag;
+}
+std::shared_ptr<VersionTag> TcrMessage::getVersionTag() { return m_versionTag; }
+
+uint8_t TcrMessage::hasResult() const { return m_hasResult; }
+
+std::shared_ptr<CacheableHashMap> TcrMessage::getTombstoneVersions() const {
+  return m_tombstoneVersions;
+}
+
+std::shared_ptr<CacheableHashSet> TcrMessage::getTombstoneKeys() const {
+  return m_tombstoneKeys;
+}
 
 TcrMessagePing* TcrMessage::getPingMessage(CacheImpl* cacheImpl) {
   static auto pingMsg =
@@ -226,8 +505,7 @@ void TcrMessage::readCqsPart(DataInput& input) {
   }
 }
 
-inline void TcrMessage::readCallbackObjectPart(DataInput& input,
-                                               bool defaultString) {
+void TcrMessage::readCallbackObjectPart(DataInput& input, bool defaultString) {
   int32_t lenObj = input.readInt32();
   const auto isObj = input.readBoolean();
   if (lenObj > 0) {
@@ -243,7 +521,7 @@ inline void TcrMessage::readCallbackObjectPart(DataInput& input,
   }
 }
 
-inline void TcrMessage::readObjectPart(DataInput& input, bool defaultString) {
+void TcrMessage::readObjectPart(DataInput& input, bool defaultString) {
   int32_t lenObj = input.readInt32();
   auto isObj = input.read();
   if (lenObj > 0) {
@@ -352,7 +630,7 @@ int64_t TcrMessage::getUniqueId(TcrConnection* conn) {
   return 0;
 }
 
-inline void TcrMessage::readFailedNodePart(DataInput& input) {
+void TcrMessage::readFailedNodePart(DataInput& input) {
   // read and ignore length
   input.readInt32();
   // read and ignore isObj
@@ -364,7 +642,7 @@ inline void TcrMessage::readFailedNodePart(DataInput& input) {
   LOGDEBUG("readFailedNodePart m_failedNode size = %d ", m_failedNode->size());
 }
 
-inline void TcrMessage::readKeyPart(DataInput& input) {
+void TcrMessage::readKeyPart(DataInput& input) {
   int32_t lenObj = input.readInt32();
   const auto isObj = input.readBoolean();
   if (lenObj > 0) {
@@ -377,17 +655,6 @@ inline void TcrMessage::readKeyPart(DataInput& input) {
   }
 }
 
-inline void TcrMessage::writeInt(uint8_t* buffer, uint16_t value) {
-  *(buffer++) = static_cast<uint8_t>(value >> 8);
-  *(buffer++) = static_cast<uint8_t>(value);
-}
-
-inline void TcrMessage::writeInt(uint8_t* buffer, uint32_t value) {
-  *(buffer++) = static_cast<uint8_t>(value >> 24);
-  *(buffer++) = static_cast<uint8_t>(value >> 16);
-  *(buffer++) = static_cast<uint8_t>(value >> 8);
-  *(buffer++) = static_cast<uint8_t>(value);
-}
 std::shared_ptr<Serializable> TcrMessage::readCacheableString(DataInput& input,
                                                               int lenObj) {
   auto decoded = internal::JavaModifiedUtf8::decode(
@@ -512,20 +779,6 @@ void TcrMessage::writeObjectPart(
   m_request->rewindCursor(sizeOfSerializedObj + 1 + 4);  //
   m_request->writeInt(static_cast<int32_t>(sizeOfSerializedObj));
   m_request->advanceCursor(sizeOfSerializedObj + 1);
-}
-
-void TcrMessage::readInt(uint8_t* buffer, uint16_t* value) {
-  uint16_t tmp = *(buffer++);
-  tmp = (tmp << 8) | *(buffer);
-  *value = tmp;
-}
-
-void TcrMessage::readInt(uint8_t* buffer, uint32_t* value) {
-  uint32_t tmp = *(buffer++);
-  tmp = (tmp << 8) | *(buffer++);
-  tmp = (tmp << 8) | *(buffer++);
-  tmp = (tmp << 8) | *(buffer++);
-  *value = tmp;
 }
 
 void TcrMessage::writeBytesOnly(const std::shared_ptr<Serializable>& se) {
@@ -2951,6 +3204,130 @@ void TcrMessage::readHashSetForGCVersions(
     auto keyPtr = std::dynamic_pointer_cast<CacheableKey>(input.readObject());
     value->insert(keyPtr);
   }
+}
+
+bool TcrMessageHelper::readExceptionPart(TcrMessage& msg, DataInput& input,
+                                         uint8_t isLastChunk) {
+  return msg.readExceptionPart(input, isLastChunk);
+}
+
+void TcrMessageHelper::skipParts(TcrMessage& msg, DataInput& input,
+                                 int32_t numParts) {
+  msg.skipParts(input, numParts);
+}
+
+TcrMessageHelper::ChunkObjectType TcrMessageHelper::readChunkPartHeader(
+    TcrMessage& msg, DataInput& input, DSCode expectedFirstType,
+    int32_t expectedPartType, const char* methodName, uint32_t& partLen,
+    uint8_t isLastChunk) {
+  partLen = input.readInt32();
+  const auto isObj = input.readBoolean();
+
+  if (partLen == 0) {
+    // special null object is case for scalar query result
+    return ChunkObjectType::NULL_OBJECT;
+  } else if (!isObj) {
+    // otherwise we're currently always expecting an object
+    char exMsg[256];
+    std::snprintf(exMsg, sizeof(exMsg),
+                  "TcrMessageHelper::readChunkPartHeader: "
+                  "%s: part is not object",
+                  methodName);
+    LOGDEBUG("%s ", exMsg);
+    return ChunkObjectType::EXCEPTION;
+  }
+
+  auto rawByte = input.read();
+  auto partType = static_cast<DSCode>(rawByte);
+  auto compId = static_cast<int32_t>(partType);
+
+  //  ugly hack to check for exception chunk
+  if (partType == DSCode::JavaSerializable) {
+    input.reset();
+    if (TcrMessageHelper::readExceptionPart(msg, input, isLastChunk)) {
+      msg.setMessageType(TcrMessage::EXCEPTION);
+      return ChunkObjectType::EXCEPTION;
+    } else {
+      char exMsg[256];
+      std::snprintf(exMsg, sizeof(exMsg),
+                    "TcrMessageHelper::readChunkPartHeader: %s: cannot handle "
+                    "java serializable object from server",
+                    methodName);
+      throw MessageException(exMsg);
+    }
+  } else if (partType == DSCode::NullObj) {
+    // special null object is case for scalar query result
+    return ChunkObjectType::NULL_OBJECT;
+  }
+
+  // TODO enum - wtf?
+  if (expectedFirstType > DSCode::FixedIDDefault) {
+    if (partType != expectedFirstType) {
+      char exMsg[256];
+      std::snprintf(exMsg, sizeof(exMsg),
+                    "TcrMessageHelper::readChunkPartHeader: "
+                    "%s: got unhandled object class = %" PRId8,
+                    methodName, static_cast<int8_t>(partType));
+      throw MessageException(exMsg);
+    }
+    // This is for GETALL
+    if (expectedFirstType == DSCode::FixedIDShort) {
+      compId = input.readInt16();
+    }  // This is for QUERY or REGISTER INTEREST.
+    else if (expectedFirstType == DSCode::FixedIDByte) {
+      compId = input.read();
+    }
+  }
+  if (compId != expectedPartType) {
+    char exMsg[256];
+    std::snprintf(exMsg, sizeof(exMsg),
+                  "TcrMessageHelper::readChunkPartHeader: "
+                  "%s: got unhandled object type = %d, expected = %d, raw = %d",
+                  methodName, compId, expectedPartType, rawByte);
+    throw MessageException(exMsg);
+  }
+  return ChunkObjectType::OBJECT;
+}
+
+TcrMessageHelper::ChunkObjectType TcrMessageHelper::readChunkPartHeader(
+    TcrMessage& msg, DataInput& input, const char* methodName,
+    uint32_t& partLen, uint8_t isLastChunk) {
+  partLen = input.readInt32();
+  const auto isObj = input.readBoolean();
+
+  if (partLen == 0) {
+    // special null object is case for scalar query result
+    return ChunkObjectType::NULL_OBJECT;
+  } else if (!isObj) {
+    // otherwise we're currently always expecting an object
+    char exMsg[256];
+    std::snprintf(exMsg, 255,
+                  "TcrMessageHelper::readChunkPartHeader: "
+                  "%s: part is not object",
+                  methodName);
+    throw MessageException(exMsg);
+  }
+
+  const auto partType = static_cast<const DSCode>(input.read());
+  //  ugly hack to check for exception chunk
+  if (partType == DSCode::JavaSerializable) {
+    input.reset();
+    if (TcrMessageHelper::readExceptionPart(msg, input, isLastChunk)) {
+      msg.setMessageType(TcrMessage::EXCEPTION);
+      return ChunkObjectType::EXCEPTION;
+    } else {
+      char exMsg[256];
+      std::snprintf(exMsg, 255,
+                    "TcrMessageHelper::readChunkPartHeader: %s: cannot handle "
+                    "java serializable object from server",
+                    methodName);
+      throw MessageException(exMsg);
+    }
+  } else if (partType == DSCode::NullObj) {
+    // special null object is case for scalar query result
+    return ChunkObjectType::NULL_OBJECT;
+  }
+  return ChunkObjectType::OBJECT;
 }
 
 #pragma error_messages(default, SEC_UNINITIALIZED_MEM_READ)

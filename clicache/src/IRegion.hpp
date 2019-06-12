@@ -104,7 +104,7 @@ namespace Apache
           /// This property is applicable to local as well as distributed region.
           /// For local region instance - Puts/Gets a new value into an entry in this region in the local cache only.
           /// For distributed region instance - Puts/Gets a new value into an entry in this region
-          /// and this operation is propogated to the Geode cache server to which it is connected with.
+          /// and this operation is propogated to the Geode cache server to which it is connected.
           /// </remarks>
           /// <param name="key">
           /// The key of the element to get or set.
@@ -487,7 +487,7 @@ namespace Apache
           /// <para>
           /// For local region instance - removes the value with the specified key in the local cache only.
           /// For distributed region instance - destroy is propogated to the Geode cache server
-          /// to which it is connected with.          
+          /// to which it is connected.          
           /// </para>
           /// <para>
           /// Does not update any <c>CacheStatistics</c>.
@@ -679,7 +679,7 @@ namespace Apache
           /// from this region.
           /// </para>
           /// <para>
-          /// The Remove is propogated to the Geode cache server to which it is connected with.
+          /// The Remove is propogated to the Geode cache server to which it is connected.
           /// </para>
           /// <para>
           /// Does not update any <c>CacheStatistics</c>.
@@ -727,7 +727,7 @@ namespace Apache
           /// from this region.
           /// </para>
           /// <para>
-          /// The Remove is propogated to the Geode cache server to which it is connected with.
+          /// The Remove is propogated to the Geode cache server to which it is connected.
           /// </para>
           /// <para>
           /// Does not update any <c>CacheStatistics</c>.
@@ -845,13 +845,13 @@ namespace Apache
           /// <para>
           /// If there is already an entry associated with the specified key in
           /// this region, the entry's previous value is overwritten.
-          /// The new put value is propogated to the java server to which it is connected with.
+          /// The new put value is propogated to the java server to which it is connected.
           /// Put is intended for very simple caching situations. In general
           /// it is better to create a <c>ICacheLoader</c> object and allow the
           /// cache to manage the creation and loading of objects.
           /// For local region instance - Puts a new value into an entry in this region in the local cache only.
           /// For distributed region instance - Puts a new value into an entry in this region
-          /// and this operation is propogated to the Geode cache server to which it is connected with.
+          /// and this operation is propogated to the Geode cache server to which it is connected.
           /// </para><para>
           /// Updates the <see cref="CacheStatistics.LastAccessedTime" /> and
           /// <see cref="CacheStatistics.LastModifiedTime" /> for this region and the entry.
@@ -903,21 +903,19 @@ namespace Apache
           void Put(TKey key, TValue value, Object^ callbackArg);
 
           /// <summary>
-          /// Puts a new value into an entry in this region with the specified key,
-          /// passing the callback argument to any cache writers and cache listeners
-          /// that are invoked in the operation.
+          /// Puts a new value into an entry in this region with the specified key.
           /// </summary>
           /// <remarks>
           /// <para>
           /// If there is already an entry associated with the specified key in
           /// this region, the entry's previous value is overwritten.
-          /// The new put value is propogated to the java server to which it is connected with.
+          /// The new put value is propogated to the java server to which it is connected.
           /// Put is intended for very simple caching situations. In general
           /// it is better to create a <c>ICacheLoader</c> object and allow the
           /// cache to manage the creation and loading of objects.
           /// For local region instance - Puts a new value into an entry in this region in the local cache only.
           /// For distributed region instance - Puts a new value into an entry in this region
-          /// and this operation is propogated to the Geode cache server to which it is connected with.
+          /// and this operation is propogated to the Geode cache server to which it is connected.
           /// </para><para>
           /// Updates the <see cref="CacheStatistics.LastAccessedTime" /> and
           /// <see cref="CacheStatistics.LastModifiedTime" /> for this region and the entry.
@@ -930,7 +928,7 @@ namespace Apache
           /// </para>
           /// </remarks>
           /// <param name="key">
-          /// a key object associated with the value to be put into this region.
+          /// a key object associated with the value to be put into this region
           /// </param>
           /// <param name="value">the value to be put into this region</param>
           /// <exception cref="IllegalArgumentException">
@@ -1096,7 +1094,7 @@ namespace Apache
           /// and the entries in it will still exist.
           /// For local region instance - invalidates this region without distributing to other caches.
           /// For distributed region instance - Invalidates this region and this 
-          /// operation is propogated to the Geode cache server to which it is connected with.
+          /// operation is propogated to the Geode cache server to which it is connected.
           /// </para>          
           /// <para>
           /// To remove all the
@@ -1132,7 +1130,7 @@ namespace Apache
           /// and the entries in it will still exist.
           /// For local region instance - invalidates this region without distributing to other caches.
           /// For distributed region instance - Invalidates this region and this 
-          /// operation is propogated to the Geode cache server to which it is connected with.
+          /// operation is propogated to the Geode cache server to which it is connected.
           /// </para>
           /// <para>
           /// To remove all the
@@ -1174,7 +1172,7 @@ namespace Apache
           /// server region.
           /// For local region instance - destroys the whole local region only
           /// For distributed region instance - destroys the whole local region and this
-          /// operation is also propogated to the Geode cache server to which it is connected with.
+          /// operation is also propogated to the Geode cache server to which it is connected.
           /// </para><para>
           /// Does not update any <c>CacheStatistics</c>.
           /// </para>
@@ -1216,7 +1214,7 @@ namespace Apache
           /// server region.
           /// For local region instance - destroys the whole local region only
           /// For distributed region instance - destroys the whole local region and this
-          /// operation is also propogated to the Geode cache server to which it is connected with.
+          /// operation is also propogated to the Geode cache server to which it is connected.
           /// </para><para>
           /// Does not update any <c>CacheStatistics</c>.
           /// </para>
@@ -1261,7 +1259,7 @@ namespace Apache
           /// </para>
           /// <para>
           /// For both local & distributed region instaces, invalidate is not propogated to the 
-          /// Geode cache server to which it is connected with.
+          /// Geode cache server to which it is connected.
           /// </para>
           /// <para>
           /// Does not update any <c>CacheStatistics</c>.
@@ -1292,7 +1290,7 @@ namespace Apache
           /// </para>
           /// <para>
           /// For both local & distributed region instaces, invalidate is not propogated to the 
-          /// Geode cache server to which it is connected with.
+          /// Geode cache server to which it is connected.
           /// </para>
           /// <para>
           /// Does not update any <c>CacheStatistics</c>.
@@ -1320,7 +1318,7 @@ namespace Apache
           /// <para>
           /// If there is already an entry associated with any key in the map in
           /// this region, the entry's previous value is overwritten.
-          /// The new values are propogated to the java server to which it is connected with.
+          /// The new values are propogated to the java server to which it is connected.
           /// PutAll is intended for speed up large amount of put operation into
           /// the same region.
           /// For local region instance - this method is not applicable.
@@ -1365,7 +1363,7 @@ namespace Apache
           /// <para>
           /// If there is already an entry associated with any key in the map in
           /// this region, the entry's previous value is overwritten.
-          /// The new values are propogated to the java server to which it is connected with.
+          /// The new values are propogated to the java server to which it is connected.
           /// PutAll is intended for speed up large amount of put operation into
           /// the same region.
           /// For local region instance - this method is not applicable.
@@ -1417,7 +1415,7 @@ namespace Apache
           /// <para>
           /// If there is already an entry associated with any key in the map in
           /// this region, the entry's previous value is overwritten.
-          /// The new values are propogated to the java server to which it is connected with.
+          /// The new values are propogated to the java server to which it is connected.
           /// PutAll is intended for speed up large amount of put operation into
           /// the same region.
           /// For local region instance - this method is not applicable.

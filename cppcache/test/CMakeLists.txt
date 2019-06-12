@@ -16,40 +16,9 @@
 cmake_minimum_required( VERSION 3.10 )
 project(apache-geode_unittests LANGUAGES CXX)
 
-add_executable(apache-geode_unittests
-  AutoDeleteTest.cpp
-  ByteArray.cpp
-  ByteArray.hpp
-  ByteArrayFixture.cpp
-  ByteArrayFixture.hpp
-  ByteArrayTest.cpp
-  CacheTest.cpp
-  CacheableKeyCreateTests.cpp
-  CacheableKeysTest.cpp
-  CacheableStringEqualityTest.cpp
-  CacheableStringTests.cpp
-  CacheXmlParserTest.cpp
-  ClientConnectionResponseTest.cpp
-  ClientProxyMembershipIDFactoryTest.cpp
-  DataInputTest.cpp
-  DataOutputTest.cpp
-  ExceptionTypesTest.cpp
-  geodeBannerTest.cpp
-  gtest_extensions.h
-  InterestResultPolicyTest.cpp
-  RegionAttributesFactoryTest.cpp
-  SerializableCreateTests.cpp
-  StructSetTest.cpp
-  TcrMessageTest.cpp
-  CacheableDateTest.cpp
-  util/synchronized_mapTest.cpp
-  util/synchronized_setTest.cpp
-  util/JavaModifiedUtf8Tests.cpp
-  util/functionalTests.cpp
-  util/chrono/durationTest.cpp
-  LocalRegionTest.cpp
-  util/queueTest.cpp
-  ThreadPoolTest.cpp)
+file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
+
+add_executable(apache-geode_unittests ${SOURCES})
 
 target_compile_definitions(apache-geode_unittests
   PUBLIC

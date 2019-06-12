@@ -120,38 +120,41 @@ CMake files are located at each level of the directory structure to allow exampl
 
 The directory structure resembles this hierarchy (some entries are omitted for clarity):
 
-    ```
-    MyProject/
-      cmake/
-      CMakeLists.txt
-      examples/
-        BUILD-EXAMPLES.md
-        CMakeLists.txt
-        CMakeLists.txt.in
-        cmake/
-        cpp/
-          authinitialize/
-          continuousquery/
-          dataserializable/
-          functionexecution/
-          pdxserializable/
-          pdxserializer/
-          putgetremove/
-          remotequery/
-          sslputget/
-          transaction/
-        dotnet/
-          authinitialize/
-          continuousquery/
-          dataserializable/
-          functionexecution/
-          pdxautoserializer/
-          pdxserializable/
-          putgetremove/
-          remotequery/
-          sslputget/
-          transaction/
-    ```
+```
+MyProject/
+  cmake/
+  CMakeLists.txt
+  examples/
+    BUILD-EXAMPLES.md
+    CMakeLists.txt
+    CMakeLists.txt.in
+    cmake/
+    cpp/
+      authinitialize/
+      continuousquery/
+      dataserializable/
+      functionexecution/
+      pdxserializable/
+      pdxserializer/
+      putgetremove/
+      remotequery/
+      sslputget/
+      transaction/
+    dotnet/
+      authinitialize/
+      continuousquery/
+      dataserializable/
+      functionexecution/
+      pdxautoserializer/
+      pdxserializable/
+      putgetremove/
+      remotequery/
+      sslputget/
+      transaction/
+```
 
 See the `BUILD-EXAMPLES.md` file for detailed instructions on building and executing the examples,
 and read the source code to understand how the examples are constructed.
+
+See [Put/Get/Remove Examples](put-get-example.html) for sample code showing the basics of how a client application
+connects to a <%=vars.product_name%> cluster and performs basic operations on a remote server.

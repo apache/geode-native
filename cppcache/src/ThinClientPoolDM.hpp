@@ -325,7 +325,11 @@ class FunctionExecution : public PooledWork<GfErrType> {
                      std::shared_ptr<ResultCollector>* rs,
                      std::shared_ptr<UserAttributes> userAttr);
 
+<<<<<<< HEAD
   GfErrType execute() override;
+=======
+  GfErrType execute();
+>>>>>>> a19624e008cc49a89c9b0d6ca68c19f8a75d0a8d
 };
 
 class OnRegionFunctionExecution : public PooledWork<GfErrType> {
