@@ -148,7 +148,7 @@ GfErrType TcrEndpoint::createNewConnectionWL(
         LOGFINE("TcrEndpoint::createNewConnectionWL got lock");
         newConn =
             new TcrConnection(m_cacheImpl->tcrConnectionManager(), m_connected);
-        newConn->InitTcrConnection(this, m_name.c_str(), m_ports,
+        newConn->initTcrConnection(this, m_name.c_str(), m_ports,
                                    isClientNotification, isSecondary,
                                    connectTimeout);
 
@@ -196,7 +196,7 @@ GfErrType TcrEndpoint::createNewConnection(
         if (!needtoTakeConnectLock() || !appThreadRequest) {
           newConn = new TcrConnection(m_cacheImpl->tcrConnectionManager(),
                                       m_connected);
-          bool authenticate = newConn->InitTcrConnection(
+          bool authenticate = newConn->initTcrConnection(
               this, m_name.c_str(), m_ports, isClientNotification, isSecondary,
               connectTimeout);
           if (authenticate) {
