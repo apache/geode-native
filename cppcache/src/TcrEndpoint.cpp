@@ -284,10 +284,10 @@ GfErrType TcrEndpoint::createNewConnection(
 void TcrEndpoint::authenticateEndpoint(TcrConnection*& conn) {
   LOGDEBUG(
       "TcrEndpoint::authenticateEndpoint m_isAuthenticated  = %d "
-      "this->m_baseDM = %d",
-      m_isAuthenticated, m_baseDM);
+      "m_baseDM = %d, connection = %p",
+      m_isAuthenticated, m_baseDM, conn);
   if (!m_isAuthenticated && m_baseDM) {
-    this->setConnected();
+    setConnected();
     std::lock_guard<decltype(m_endpointAuthenticationLock)> guard(
         m_endpointAuthenticationLock);
     GfErrType err = GF_NOERR;
@@ -304,11 +304,11 @@ void TcrEndpoint::authenticateEndpoint(TcrConnection*& conn) {
         new DataOutput(m_cacheImpl->createDataOutput()), creds, m_baseDM);
 
     LOGDEBUG("request is created");
-    TcrMessageReply reply(true, this->m_baseDM);
-    // err = this->sendRequestToEP(request, reply, ( *it ).int_id_);
-    err = this->sendRequestConnWithRetry(request, reply, conn);
-    LOGDEBUG("authenticateEndpoint error = %d", err);
+    TcrMessageReply reply(true, m_baseDM);
+    err = sendRequestConnWithRetry(request, reply, conn);
+    LOGDEBUG("TcrEndpoint::authenticateEndpoint - ERROR: %d", err);
     if (err == GF_NOERR) {
+      LOGDEBUG("TcrEndpoint::authenticateEndpoint - successfully authenticated on conn %p", conn);
       // put the object into local region
       switch (reply.getMessageType()) {
         case TcrMessage::RESPONSE: {
@@ -595,7 +595,7 @@ void TcrEndpoint::receiveNotification(std::atomic<bool>& isRunning) {
         msg = new TcrMessageReply(true, m_baseDM);
         msg->initCqMap();
         msg->setData(data, static_cast<int32_t>(dataLen),
-                     this->getDistributedMemberID(),
+                     getDistributedMemberID(),
                      *(m_cacheImpl->getSerializationRegistry()),
                      *(m_cacheImpl->getMemberListForVersionStamp()));
         handleNotificationStats(static_cast<int64_t>(dataLen));
@@ -828,7 +828,7 @@ GfErrType TcrEndpoint::sendRequestConn(const TcrMessage& request,
                                   reply.getTimeout(), request.getMessageType());
     reply.setMessageTypeRequest(type);
     reply.setData(
-        data, static_cast<int32_t>(dataLen), this->getDistributedMemberID(),
+        data, static_cast<int32_t>(dataLen), getDistributedMemberID(),
         *(m_cacheImpl->getSerializationRegistry()),
         *(m_cacheImpl
               ->getMemberListForVersionStamp()));  // memory is released by

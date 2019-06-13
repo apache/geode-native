@@ -171,7 +171,7 @@ ThinClientPoolDM::ThinClientPoolDM(const char* name,
 
   auto& sysProp = distributedSystem.getSystemProperties();
   // to set security flag at pool level
-  this->m_isSecurityOn = cacheImpl->getAuthInitialize() != nullptr;
+  m_isSecurityOn = cacheImpl->getAuthInitialize() != nullptr;
 
   ACE_TCHAR hostName[256];
   ACE_OS::hostname(hostName, sizeof(hostName) - 1);
@@ -219,17 +219,17 @@ void ThinClientPoolDM::init() {
   LOGDEBUG("ThinClientPoolDM::init: Starting pool initialization");
   auto cacheImpl = m_connManager.getCacheImpl();
   auto& sysProp = cacheImpl->getDistributedSystem().getSystemProperties();
-  m_isMultiUserMode = this->getMultiuserAuthentication();
+  m_isMultiUserMode = getMultiuserAuthentication();
 
   if (m_isMultiUserMode) {
     LOGINFO("Multiuser authentication is enabled for pool %s",
             m_poolName.c_str());
   }
   // to set security flag at pool level
-  this->m_isSecurityOn = cacheImpl->getAuthInitialize() != nullptr;
+  m_isSecurityOn = cacheImpl->getAuthInitialize() != nullptr;
 
   LOGDEBUG("ThinClientPoolDM::init: security in on/off = %d ",
-           this->m_isSecurityOn);
+           m_isSecurityOn);
 
   m_connManager.init(true);
 
@@ -1214,7 +1214,7 @@ TcrEndpoint* ThinClientPoolDM::getEndPoint(
     // if servergroup is there, then verify otherwise you may reach to another
     // group
     if (m_attrs->m_initLocList.size()) {
-      auto&& servGrp = this->getServerGroup();
+      auto&& servGrp = getServerGroup();
       if (servGrp.length() > 0) {
         auto groups = serverLocation->getServerGroups();
         if ((groups != nullptr) && (groups->length() > 0)) {
@@ -1340,8 +1340,8 @@ GfErrType ThinClientPoolDM::sendSyncRequest(
         type == TcrMessage::EXECUTE_REGION_FUNCTION_SINGLE_HOP ||
         type == TcrMessage::EXECUTECQ_WITH_IR_MSG_TYPE)) {
     // set only when message is not query, putall and executeCQ
-    reply.setTimeout(this->getReadTimeout());
-    request.setTimeout(this->getReadTimeout());
+    reply.setTimeout(getReadTimeout());
+    request.setTimeout(getReadTimeout());
   }
 
   bool retryAllEPsOnce = false;
@@ -1381,7 +1381,7 @@ GfErrType ThinClientPoolDM::sendSyncRequest(
     bool isUserNeedToReAuthenticate = false;
     bool singleHopConnFound = false;
     bool connFound = false;
-    if (!this->m_isMultiUserMode ||
+    if (!m_isMultiUserMode ||
         (!TcrMessage::isUserInitiativeOps(request))) {
       conn = getConnectionFromQueueW(&queueErr, excludeServers, isBGThread,
                                      request, version, singleHopConnFound,
@@ -1460,13 +1460,13 @@ GfErrType ThinClientPoolDM::sendSyncRequest(
       GfErrType userCredMsgErr = GF_NOERR;
       bool isServerException = false;
       if (TcrMessage::isUserInitiativeOps(request) &&
-          (this->m_isSecurityOn || this->m_isMultiUserMode)) {
-        if (!this->m_isMultiUserMode && !ep->isAuthenticated()) {
+          (m_isSecurityOn || m_isMultiUserMode)) {
+        if (!m_isMultiUserMode && !ep->isAuthenticated()) {
           // first authenticate him on this endpoint
-          userCredMsgErr = this->sendUserCredentials(
-              this->getCredentials(ep), conn, isBGThread, isServerException);
+          userCredMsgErr = sendUserCredentials(
+              getCredentials(ep), conn, isBGThread, isServerException);
         } else if (isUserNeedToReAuthenticate) {
-          userCredMsgErr = this->sendUserCredentials(
+          userCredMsgErr = sendUserCredentials(
               userAttr->getCredentials(), conn, isBGThread, isServerException);
         }
       }
@@ -1513,11 +1513,11 @@ GfErrType ThinClientPoolDM::sendSyncRequest(
     }
 
     if (error == GF_NOERR) {
-      if ((this->m_isSecurityOn || this->m_isMultiUserMode)) {
+      if ((m_isSecurityOn || m_isMultiUserMode)) {
         if (reply.getMessageType() == TcrMessage::EXCEPTION) {
           if (isAuthRequireException(reply.getException())) {
             TcrEndpoint* ep = conn->getEndpointObject();
-            if (!this->m_isMultiUserMode) {
+            if (!m_isMultiUserMode) {
               ep->setAuthenticated(false);
             } else if (userAttr != nullptr) {
               userAttr->unAuthenticateEP(ep);
@@ -1948,7 +1948,7 @@ GfErrType ThinClientPoolDM::sendRequestToEP(const TcrMessage& request,
           type == TcrMessage::EXECUTE_REGION_FUNCTION ||
           type == TcrMessage::EXECUTE_REGION_FUNCTION_SINGLE_HOP ||
           type == TcrMessage::EXECUTECQ_WITH_IR_MSG_TYPE)) {
-      reply.setTimeout(this->getReadTimeout());
+      reply.setTimeout(getReadTimeout());
     }
 
     reply.setDM(this);
@@ -1956,23 +1956,23 @@ GfErrType ThinClientPoolDM::sendRequestToEP(const TcrMessage& request,
     // in multi user mode need to chk whether user is authenticated or not
     // and then follow usual process which we did in send syncrequest.
     // need to user initiative ops
-    LOGDEBUG("ThinClientPoolDM::sendRequestToEP: this->m_isMultiUserMode = %d",
-             this->m_isMultiUserMode);
+    LOGDEBUG("ThinClientPoolDM::sendRequestToEP: m_isMultiUserMode = %d",
+             m_isMultiUserMode);
     bool isServerException = false;
     if (TcrMessage::isUserInitiativeOps((request)) &&
-        (this->m_isSecurityOn || this->m_isMultiUserMode)) {
-      if (!this->m_isMultiUserMode && !currentEndpoint->isAuthenticated()) {
+        (m_isSecurityOn || m_isMultiUserMode)) {
+      if (!m_isMultiUserMode && !currentEndpoint->isAuthenticated()) {
         // first authenticate him on this endpoint
-        error = this->sendUserCredentials(this->getCredentials(currentEndpoint),
+        error = sendUserCredentials(getCredentials(currentEndpoint),
                                           conn, false, isServerException);
-      } else if (this->m_isMultiUserMode) {
+      } else if (m_isMultiUserMode) {
         ua = UserAttributes::threadLocalUserAttributes;
         if (ua) {
           UserConnectionAttributes* uca =
               ua->getConnectionAttribute(currentEndpoint);
 
           if (uca == nullptr) {
-            error = this->sendUserCredentials(ua->getCredentials(), conn, false,
+            error = sendUserCredentials(ua->getCredentials(), conn, false,
                                               isServerException);
           }
         } else {
@@ -2020,10 +2020,10 @@ GfErrType ThinClientPoolDM::sendRequestToEP(const TcrMessage& request,
 
     if (error == GF_NOERR || error == GF_CACHESERVER_EXCEPTION ||
         error == GF_AUTHENTICATION_REQUIRED_EXCEPTION) {
-      if ((this->m_isSecurityOn || this->m_isMultiUserMode)) {
+      if ((m_isSecurityOn || m_isMultiUserMode)) {
         if (reply.getMessageType() == TcrMessage::EXCEPTION) {
           if (isAuthRequireException(reply.getException())) {
-            if (!this->m_isMultiUserMode) {
+            if (!m_isMultiUserMode) {
               currentEndpoint->setAuthenticated(false);
             } else if (ua != nullptr) {
               ua->unAuthenticateEP(currentEndpoint);
@@ -2096,7 +2096,7 @@ void ThinClientPoolDM::updateLocatorList(std::atomic<bool>& isRunning) {
   while (isRunning) {
     m_updateLocatorListSema.acquire();
     if (isRunning && !m_connManager.isNetDown()) {
-      (m_locHelper)->updateLocators(this->getServerGroup());
+      (m_locHelper)->updateLocators(getServerGroup());
     }
   }
   LOGFINE("Ending updateLocatorList thread for pool %s", m_poolName.c_str());
@@ -2328,7 +2328,7 @@ GfErrType ThinClientPoolDM::doFailover(TcrConnection* conn) {
       new DataOutput(m_connManager.getCacheImpl()->createDataOutput()));
   TcrMessageReply reply(true, nullptr);
 
-  GfErrType err = this->sendSyncRequest(request, reply);
+  GfErrType err = sendSyncRequest(request, reply);
 
   if (err == GF_NOERR) {
     switch (reply.getMessageType()) {
