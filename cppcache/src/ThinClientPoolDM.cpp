@@ -1434,7 +1434,7 @@ GfErrType ThinClientPoolDM::sendSyncRequest(
         "ThinClientPoolDM::sendSyncRequest: isUserNeedToReAuthenticate = %d ",
         isUserNeedToReAuthenticate);
     LOGDEBUG(
-        "ThinClientPoolDM::sendSyncRequest: m_isMultiUserMode = %d  conn = %d  "
+        "ThinClientPoolDM::sendSyncRequest: m_isMultiUserMode = %d  conn = %p  "
         "type = %d",
         m_isMultiUserMode, conn, type);
 
