@@ -49,14 +49,14 @@ class APACHE_GEODE_EXPORT PdxSerializable : public virtual Serializable,
   int32_t hashcode() const override;
 
   /**
-   *@brief serialize this object in geode PDX format
+   *@brief Serialize this object in Geode PDX format
    *@param PdxWriter to serialize the PDX object
    **/
   virtual void toData(PdxWriter& output) const = 0;
 
   /**
    *@brief Deserialize this object
-   *@param PdxReader to Deserialize the PDX object
+   *@param PdxReader to deserialize the PDX object
    **/
   virtual void fromData(PdxReader& input) = 0;
 

@@ -29,8 +29,8 @@ namespace geode {
 namespace client {
 
 /**
- * Function pointer type which takes a void pointer to an instance of a user
- * object and class name to return the size of the user object.
+ * Function pointer type that takes a void pointer to an instance of a user
+ * object and a class name to return the size of the user object.
  */
 using UserObjectSizer = std::function<size_t(const std::shared_ptr<const void>&,
                                              const std::string&)>;
@@ -40,8 +40,8 @@ using UserObjectSizer = std::function<size_t(const std::shared_ptr<const void>&,
  * serialized and deserialized as PDXs without modification
  * of the domain class.
  * A domain class should register function {@link
- * Serializable::registerPdxSerializer} to create new
- * instance of type for de-serilization.
+ * Serializable::registerPdxSerializer} to create a new
+ * instance of type for de-serialization.
  */
 class APACHE_GEODE_EXPORT PdxSerializer {
  public:
@@ -52,15 +52,15 @@ class APACHE_GEODE_EXPORT PdxSerializer {
   /**
    * Deserialize this object.
    *
-   * @param className the class name whose object need to de-serialize
+   * @param className the class name whose object needs to be de-serialized
    * @param pr the PdxReader stream to use for reading the object data
    */
   virtual std::shared_ptr<void> fromData(const std::string& className,
                                          PdxReader& pdxReader) = 0;
 
   /**
-   * Serializes this object in geode PDX format.
-   * @param userObject the object which need to serialize
+   * Serializes this object in Geode PDX format.
+   * @param userObject the object which needs to be serialized
    * @param pw the PdxWriter object to use for serializing the object
    */
   virtual bool toData(const std::shared_ptr<const void>& userObject,
