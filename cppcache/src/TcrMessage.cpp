@@ -81,11 +81,11 @@ inline void writeInt(uint8_t* buffer, uint32_t value) {
 extern void setThreadLocalExceptionMessage(const char*);
 
 // AtomicInc TcrMessage::m_transactionId = 0;
-uint8_t* TcrMessage::m_keepalive = nullptr;
+uint8_t* TcrMessage::m_keepAlive = nullptr;
 const int TcrMessage::m_flag_empty = 0x01;
 const int TcrMessage::m_flag_concurrency_checks = 0x02;
 
-bool TcrMessage::isKeepAlive() { return *m_keepalive > 0; }
+bool TcrMessage::isKeepAlive() { return (m_keepAlive && (*m_keepAlive > 0)); }
 
 bool TcrMessage::isUserInitiativeOps(const TcrMessage& msg) {
   int32_t msgType = msg.getMessageType();
@@ -358,8 +358,8 @@ TcrMessage* TcrMessage::getCloseConnMessage(CacheImpl* cacheImpl) {
 
 void TcrMessage::setKeepAlive(bool keepalive) {
   // TODO global
-  if (TcrMessage::m_keepalive != nullptr) {
-    *TcrMessage::m_keepalive = keepalive ? 1 : 0;
+  if (TcrMessage::m_keepAlive != nullptr) {
+    *TcrMessage::m_keepAlive = keepalive ? 1 : 0;
   }
 }
 
@@ -2084,7 +2084,7 @@ TcrMessageCloseConnection::TcrMessageCloseConnection(DataOutput* dataOutput,
   m_request->writeInt(static_cast<int32_t>(1));  // len is 1
   m_request->write(static_cast<int8_t>(0));      // is obj is '0'.
   // cast away constness here since we want to modify this
-  TcrMessage::m_keepalive = const_cast<uint8_t*>(m_request->getCursor());
+  TcrMessage::m_keepAlive = const_cast<uint8_t*>(m_request->getCursor());
   m_request->write(static_cast<int8_t>(0));  // keepalive is '0'.
 }
 
