@@ -57,7 +57,7 @@ class APACHE_GEODE_EXPORT RegionEntry {
   RegionEntry(const std::shared_ptr<Region>& region,
               const std::shared_ptr<CacheableKey>& key,
               const std::shared_ptr<Cacheable>& value);
-  virtual ~RegionEntry() noexcept;
+  virtual ~RegionEntry();
 
   /** Returns the key for this entry.
    *

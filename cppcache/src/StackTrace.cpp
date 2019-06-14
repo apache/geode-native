@@ -27,7 +27,7 @@ StackTrace::StackTrace(size_t skip)
     : stacktrace(boost::stacktrace::stacktrace(skip + 2,
                                                static_cast<std::size_t>(-1))) {}
 
-StackTrace::~StackTrace() noexcept = default;
+StackTrace::~StackTrace() {}
 
 std::string StackTrace::getString() const {
   std::stringstream ss;

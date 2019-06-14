@@ -110,7 +110,7 @@ class TcrChunkedContext {
 
   const uint8_t* getBytes() const;
 
-  int32_t getLen() const;
+  size_t getLen() const;
 
   void handleChunk(bool inSameThread);
 };

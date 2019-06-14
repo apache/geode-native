@@ -44,7 +44,7 @@ std::shared_ptr<Properties> Properties::create() {
 
 std::shared_ptr<CacheableString> Properties::find(const std::string& key) {
   return std::dynamic_pointer_cast<CacheableString>(
-      this->find(CacheableString::create(key)));
+      find(CacheableString::create(key)));
 }
 
 std::shared_ptr<Cacheable> Properties::find(
@@ -62,13 +62,13 @@ std::shared_ptr<Cacheable> Properties::find(
 }
 
 void Properties::insert(std::string key, std::string value) {
-  this->insert(CacheableString::create(std::move(key)),
-               CacheableString::create(std::move(value)));
+  insert(CacheableString::create(std::move(key)),
+         CacheableString::create(std::move(value)));
 }
 
 void Properties::insert(std::string key, const int value) {
-  this->insert(CacheableString::create(std::move(key)),
-               CacheableString::create(std::to_string(value)));
+  insert(CacheableString::create(std::move(key)),
+         CacheableString::create(std::to_string(value)));
 }
 
 void Properties::insert(const std::shared_ptr<CacheableKey>& key,
@@ -81,7 +81,7 @@ void Properties::insert(const std::shared_ptr<CacheableKey>& key,
 }
 
 void Properties::remove(const std::string& key) {
-  this->remove(CacheableString::create(key));
+  remove(CacheableString::create(key));
 }
 
 void Properties::remove(const std::shared_ptr<CacheableKey>& key) {
@@ -99,9 +99,7 @@ void Properties::foreach (Visitor& visitor) const {
 void Properties::addAll(const std::shared_ptr<Properties>& other) {
   if (other == nullptr) return;
 
-  for (auto& entry : other->m_map) {
-    m_map[entry.first] = entry.second;
-  }
+  m_map.insert(std::begin(other->m_map), std::end(other->m_map));
 }
 
 void Properties::load(const std::string& fileName) {

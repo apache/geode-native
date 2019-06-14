@@ -23,13 +23,17 @@ namespace apache {
 namespace geode {
 namespace client {
 
-Execution::Execution() = default;
+Execution::Execution() {}
 
-Execution::~Execution() noexcept = default;
+Execution::~Execution() {}
 
-Execution::Execution(Execution&& move) noexcept = default;
+Execution::Execution(Execution&& other) : impl_(std::move(other.impl_)) {}
 
-Execution& Execution::operator=(Execution&& move) noexcept = default;
+Execution& Execution::operator=(Execution&& other) {
+  impl_ = std::move(other.impl_);
+
+  return *this;
+}
 
 Execution::Execution(std::unique_ptr<ExecutionImpl> impl)
     : impl_(std::move(impl)) {}

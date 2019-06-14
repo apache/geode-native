@@ -2921,7 +2921,7 @@ void ThinClientRegion::release(bool invokeCallbacks) {
   LocalRegion::release(invokeCallbacks);
 }
 
-ThinClientRegion::~ThinClientRegion() noexcept {
+ThinClientRegion::~ThinClientRegion() {
   TryWriteGuard guard(m_rwLock, m_destroyPending);
   if (!m_destroyPending) {
     release(false);

@@ -24,7 +24,7 @@ namespace client {
 DefaultResultCollector::DefaultResultCollector()
     : resultList(CacheableVector::create()), ready(false) {}
 
-DefaultResultCollector::~DefaultResultCollector() noexcept {}
+DefaultResultCollector::~DefaultResultCollector() {}
 std::shared_ptr<CacheableVector> DefaultResultCollector::getResult(
     std::chrono::milliseconds timeout) {
   std::unique_lock<std::mutex> lk(readyMutex);

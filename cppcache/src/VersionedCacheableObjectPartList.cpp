@@ -283,8 +283,6 @@ void VersionedCacheableObjectPartList::fromData(DataInput& input) {
   int32_t len = 0;
   bool valuesNULL = false;
   int32_t keysOffset = (m_keysOffset != nullptr ? *m_keysOffset : 0);
-  // bool readObjLen = false;
-  // int32_t lenOfObjects = 0;
   if (m_values == nullptr) {
     m_values = std::make_shared<HashMapOfCacheable>();
     valuesNULL = true;
@@ -311,22 +309,6 @@ void VersionedCacheableObjectPartList::fromData(DataInput& input) {
     }
   } else if (m_keys != nullptr) {
     LOGDEBUG("VersionedCacheableObjectPartList::fromData: m_keys NOT nullptr");
-    /*
-       if (m_hasKeys) {
-       int64_t tempLen;
-       input.readUnsignedVL(&tempLen);
-       len = (int32_t)tempLen;
-       }else{
-       len = m_keys->size();
-       }
-       lenOfObjects = len;
-       readObjLen = true;
-       for (int32_t index = keysOffset; index < keysOffset + len; ++index) {
-       key = m_keys->at(index);
-       if (m_resultKeys != nullptr) {
-       m_resultKeys->push_back(key);
-       }
-       }*/
   } else if (hasObjects) {
     if (m_keys == nullptr && m_resultKeys == nullptr) {
       LOGERROR(
@@ -354,94 +336,89 @@ void VersionedCacheableObjectPartList::fromData(DataInput& input) {
         readObjectPart(index, input, m_keys->at(index + keysOffset));
       } else /*if (m_resultKeys != nullptr && m_resultKeys->size() > 0)*/ {
         readObjectPart(index, input, localKeys->at(index));
-      } /*else{
-         LOGERROR("VersionedCacheableObjectPartList::fromData: hasObjects = true
-       but m_keys is nullptr and m_resultKeys== nullptr or m_resultKeys->size=0"
-       );
-       }*/
+      }
     }
   }  // hasObjects ends here
 
   if (m_hasTags) {
     len = static_cast<int32_t>(input.readUnsignedVL());
-    ;
+
     m_versionTags.resize(len);
     std::vector<uint16_t> ids;
     MemberListForVersionStamp& memberListForVersionStamp =
         *(m_region->getCacheImpl()->getMemberListForVersionStamp());
-    for (int32_t index = 0; index < len; index++) {
-      uint8_t entryType = input.read();
-      std::shared_ptr<VersionTag> versionTag;
-      switch (entryType) {
-        case FLAG_NULL_TAG: {
-          break;
-        }
-        case FLAG_FULL_TAG: {
-          if (persistent) {
-            versionTag = std::shared_ptr<VersionTag>(
-                new DiskVersionTag(memberListForVersionStamp));
-          } else {
-            versionTag = std::shared_ptr<VersionTag>(
-                new VersionTag(memberListForVersionStamp));
-          }
-          versionTag->fromData(input);
-          versionTag->replaceNullMemberId(getEndpointMemId());
-          break;
-        }
 
-        case FLAG_TAG_WITH_NEW_ID: {
-          if (persistent) {
-            versionTag = std::shared_ptr<VersionTag>(
-                new DiskVersionTag(memberListForVersionStamp));
-          } else {
-            versionTag = std::shared_ptr<VersionTag>(
-                new VersionTag(memberListForVersionStamp));
-          }
-          versionTag->fromData(input);
-          ids.push_back(versionTag->getInternalMemID());
-          break;
-        }
+    std::generate(std::begin(m_versionTags), std::end(m_versionTags),
+                  [&]() -> std::shared_ptr<VersionTag> {
+                    uint8_t entryType = input.read();
+                    std::shared_ptr<VersionTag> versionTag;
+                    switch (entryType) {
+                      case FLAG_NULL_TAG: {
+                        break;
+                      }
+                      case FLAG_FULL_TAG: {
+                        if (persistent) {
+                          versionTag = std::shared_ptr<VersionTag>(
+                              new DiskVersionTag(memberListForVersionStamp));
+                        } else {
+                          versionTag = std::shared_ptr<VersionTag>(
+                              new VersionTag(memberListForVersionStamp));
+                        }
+                        versionTag->fromData(input);
+                        versionTag->replaceNullMemberId(getEndpointMemId());
+                        break;
+                      }
 
-        case FLAG_TAG_WITH_NUMBER_ID: {
-          if (persistent) {
-            versionTag = std::shared_ptr<VersionTag>(
-                new DiskVersionTag(memberListForVersionStamp));
-          } else {
-            versionTag = std::shared_ptr<VersionTag>(
-                new VersionTag(memberListForVersionStamp));
-          }
-          versionTag->fromData(input);
-          auto idNumber = input.readUnsignedVL();
-          versionTag->setInternalMemID(ids.at(idNumber));
-          break;
-        }
-        default: { break; }
-      }
-      m_versionTags[index] = versionTag;
-    }
+                      case FLAG_TAG_WITH_NEW_ID: {
+                        if (persistent) {
+                          versionTag = std::shared_ptr<VersionTag>(
+                              new DiskVersionTag(memberListForVersionStamp));
+                        } else {
+                          versionTag = std::shared_ptr<VersionTag>(
+                              new VersionTag(memberListForVersionStamp));
+                        }
+                        versionTag->fromData(input);
+                        ids.push_back(versionTag->getInternalMemID());
+                        break;
+                      }
+
+                      case FLAG_TAG_WITH_NUMBER_ID: {
+                        if (persistent) {
+                          versionTag = std::shared_ptr<VersionTag>(
+                              new DiskVersionTag(memberListForVersionStamp));
+                        } else {
+                          versionTag = std::shared_ptr<VersionTag>(
+                              new VersionTag(memberListForVersionStamp));
+                        }
+                        versionTag->fromData(input);
+                        auto idNumber = input.readUnsignedVL();
+                        versionTag->setInternalMemID(ids.at(idNumber));
+                        break;
+                      }
+                      default: { break; }
+                    }
+
+                    return versionTag;
+                  });
   } else {  // if consistancyEnabled=false, we need to pass empty or
             // std::shared_ptr<NULL> m_versionTags
-    for (int32_t index = 0; index < len; ++index) {
-      std::shared_ptr<VersionTag> versionTag;
-      m_versionTags[index] = versionTag;
-    }
+    std::generate_n(std::begin(m_versionTags), len,
+                    []() -> std::shared_ptr<VersionTag> {
+                      return std::shared_ptr<VersionTag>();
+                    });
   }
 
   if (hasObjects) {
-    std::shared_ptr<CacheableKey> key;
-    std::shared_ptr<VersionTag> versionTag;
-    std::shared_ptr<Cacheable> value;
-
     for (int32_t index = 0; index < len; ++index) {
+      std::shared_ptr<CacheableKey> key;
+      std::shared_ptr<VersionTag> versionTag;
+      std::shared_ptr<Cacheable> value;
+
       if (m_keys != nullptr && !m_hasKeys) {
         key = m_keys->at(index + keysOffset);
-      } else /*if (m_resultKeys != nullptr && m_resultKeys->size() > 0)*/ {
+      } else {
         key = localKeys->at(index);
-      } /*else{
-         LOGERROR("VersionedCacheableObjectPartList::fromData: hasObjects = true
-       but m_keys is nullptr AND m_resultKeys=nullptr or m_resultKeys->size=0"
-       );
-       }*/
+      }
 
       const auto& iter = m_values->find(key);
       value = iter == m_values->end() ? nullptr : iter->second;
@@ -460,7 +437,8 @@ void VersionedCacheableObjectPartList::fromData(DataInput& input) {
                   already contains an entry with higher version.",
                 Utils::nullSafeToString(key).c_str());
             // replace the value with higher version tag
-            (*m_values)[key] = oldValue;
+            m_values->erase(key);
+            m_values->emplace(HashMapOfCacheable::value_type(key, oldValue));
           }
         }       // END::m_addToLocalCache
         else {  // m_addToLocalCache = false
@@ -469,7 +447,8 @@ void VersionedCacheableObjectPartList::fromData(DataInput& input) {
           // another thread, then return that
           if (oldValue != nullptr && !CacheableToken::isInvalid(oldValue)) {
             // replace the value with new value
-            (*m_values)[key] = oldValue;
+            m_values->erase(key);
+            m_values->emplace(HashMapOfCacheable::value_type(key, oldValue));
           }
         }
       }

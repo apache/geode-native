@@ -593,7 +593,7 @@ void MapSegment::addTrackerForAllEntries(
     kv.second->getKey(key);
     int updateCount = kv.second->addTracker(newEntry);
     if (newEntry != nullptr) {
-      kv.second = newEntry;
+      kv.second = std::move(newEntry);
     }
     updateCounterMap.emplace(key, updateCount);
   }

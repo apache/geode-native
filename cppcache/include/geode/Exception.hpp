@@ -51,7 +51,7 @@ class APACHE_GEODE_EXPORT Exception : public std::exception {
   Exception& operator=(const Exception&) = default;
   Exception(Exception&&) noexcept = default;
   Exception& operator=(Exception&&) = default;
-  ~Exception() noexcept override;
+  ~Exception() override;
 
   /**
    * Get a stacktrace string from the location the exception was created.

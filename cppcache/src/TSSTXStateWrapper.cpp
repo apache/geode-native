@@ -23,7 +23,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-TSSTXStateWrapper::~TSSTXStateWrapper() noexcept {
+TSSTXStateWrapper::~TSSTXStateWrapper() {
   if (m_txState) {
     delete m_txState;
     m_txState = nullptr;

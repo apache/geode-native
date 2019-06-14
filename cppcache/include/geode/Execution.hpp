@@ -47,9 +47,9 @@ class FunctionService;
 class APACHE_GEODE_EXPORT Execution {
  public:
   Execution();
-  ~Execution() noexcept;
-  Execution(Execution&& move) noexcept;
-  Execution& operator=(Execution&& move) noexcept;
+  ~Execution();
+  Execution(Execution&& move);
+  Execution& operator=(Execution&& move);
 
   /**
    * Specifies a data filter of routing objects for selecting the Geode

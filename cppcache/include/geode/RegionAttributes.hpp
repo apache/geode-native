@@ -196,7 +196,7 @@ class APACHE_GEODE_EXPORT RegionAttributes
   /*destructor
    *
    */
-  ~RegionAttributes() noexcept override;
+  ~RegionAttributes() override;
 
   /** Return an empty instance for deserialization. */
   static std::shared_ptr<Serializable> createDeserializable();

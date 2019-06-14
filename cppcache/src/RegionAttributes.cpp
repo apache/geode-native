@@ -57,7 +57,7 @@ RegionAttributes::RegionAttributes()
       m_isClonable(false),
       m_isConcurrencyChecksEnabled(true) {}
 
-RegionAttributes::~RegionAttributes() noexcept = default;
+RegionAttributes::~RegionAttributes() {}
 
 namespace impl {
 

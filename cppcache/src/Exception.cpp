@@ -41,7 +41,7 @@ const std::string& Exception::getMessage() const noexcept { return message_; }
 
 const char* Exception::what() const noexcept { return message_.c_str(); }
 
-Exception::~Exception() noexcept {}
+Exception::~Exception() {}
 
 std::string Exception::getName() const {
   return boost::core::demangle(typeid(*this).name());

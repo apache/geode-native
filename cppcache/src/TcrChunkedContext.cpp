@@ -83,6 +83,8 @@ TcrChunkedContext::TcrChunkedContext(const std::vector<uint8_t> chunk,
       m_cache(cacheImpl),
       m_result(result) {}
 
+TcrChunkedContext::~TcrChunkedContext() {}
+
 const uint8_t* TcrChunkedContext::getBytes() const { return m_chunk.data(); }
 
 size_t TcrChunkedContext::getLen() const { return m_chunk.size(); }
