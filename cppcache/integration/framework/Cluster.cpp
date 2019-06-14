@@ -33,7 +33,7 @@ void Locator::start() {
     cluster_.getGfsh().stop().locator().withDir(name_).execute();
   }
 
-  cluster_.getGfsh()
+  auto locator = cluster_.getGfsh()
       .start()
       .locator()
       .withDir(name_)
@@ -46,7 +46,32 @@ void Locator::start() {
       .withClasspath(cluster_.getClasspath())
       .withSecurityManager(cluster_.getSecurityManager())
       .withPreferIPv6(cluster_.getUseIPv6())
-      .execute(cluster_.getUser(), cluster_.getPassword());
+      .withJmxManagerStart(true);
+
+  if (cluster_.useSsl()) {
+    locator.withConnect(false)
+        .withSslEnabledComponents("all")
+        .withSslKeystore(cluster_.keystore())
+        .withSslTruststore(cluster_.truststore())
+        .withSslKeystorePassword(cluster_.keystorePassword())
+        .withSslTruststorePassword(cluster_.truststorePassword());
+  }
+
+  locator.execute(cluster_.getUser(), cluster_.getPassword());
+
+  auto connect = cluster_.getGfsh()
+      .connect()
+      .withJmxManager(cluster_.getJmxManager());
+
+  if (cluster_.useSsl()) {
+    connect.withUseSsl(true)
+        .withKeystore(cluster_.keystore())
+        .withTruststore(cluster_.truststore())
+        .withKeystorePassword(cluster_.keystorePassword())
+        .withTruststorePassword(cluster_.truststorePassword());
+  }
+
+  connect.execute();
 
   started_ = true;
 }
@@ -54,7 +79,6 @@ void Locator::start() {
 void Locator::stop() {
   cluster_.getGfsh().stop().locator().withDir(name_).execute();
 
-//  std::cout << "locator: " << locatorAddress_.port << ": stopped" << std::endl << std::flush;
   started_ = false;
 }
 
@@ -62,7 +86,7 @@ void Server::start() {
   auto safeName = name_;
   std::replace(safeName.begin(), safeName.end(), '/', '_');
 
-  cluster_.getGfsh()
+  auto server = cluster_.getGfsh()
       .start()
       .server()
       .withDir(name_)
@@ -77,10 +101,17 @@ void Server::start() {
       .withUser(cluster_.getUser())
       .withPassword(cluster_.getPassword())
       .withCacheXMLFile(getCacheXMLFile())
-      .withPreferIPv6(cluster_.getUseIPv6())
-      .execute();
+      .withPreferIPv6(cluster_.getUseIPv6());
 
-//  std::cout << "server: " << serverAddress_.port << ": started" << std::endl << std::flush;
+  if (cluster_.useSsl()) {
+    server.withSslEnabledComponents("all")
+      .withSslKeystore(cluster_.keystore())
+      .withSslTruststore(cluster_.truststore())
+      .withSslKeystorePassword(cluster_.keystorePassword())
+      .withSslTruststorePassword(cluster_.truststorePassword());
+  }
+
+  server.execute();
 
   started_ = true;
 }
@@ -88,7 +119,6 @@ void Server::start() {
 void Server::stop() {
   cluster_.getGfsh().stop().server().withDir(name_).execute();
 
-//  std::cout << "server: " << serverAddress_.port << ": stopped" << std::endl << std::flush;
   started_ = false;
 }
 
@@ -114,11 +144,19 @@ void Cluster::start(std::function<void()> extraGfshCommands) {
   startLocators();
 
   extraGfshCommands();
-  
+
   startServers();
 
-  //    std::cout << "cluster: " << jmxManagerPort_ << ": started" << std::endl;
   started_ = true;
+}
+
+std::string Cluster::getJmxManager() {
+  return locators_.begin()->getAddress().address + "[" +
+      std::to_string(jmxManagerPort_) + "]";
+}
+
+uint16_t Cluster::getLocatorPort() {
+  return locators_.begin()->getAddress().port;
 }
 
 void Cluster::startServers() {
@@ -161,6 +199,33 @@ void Cluster::stop() {
     future.wait();
   }
 
-  //    std::cout << "cluster: " << jmxManagerPort_ << ": stopped" << std::endl;
   started_ = false;
+}
+
+void Cluster::useSsl(const std::string keystore, const std::string truststore, const std::string keystorePassword, const std::string truststorePassword) {
+  useSsl_ = true;
+  keystore_ = keystore;
+  truststore_ = truststore;
+  keystorePassword_ = keystorePassword;
+  truststorePassword_ = truststorePassword;
+}
+
+bool Cluster::useSsl() {
+  return useSsl_;
+}
+
+std::string Cluster::keystore() {
+  return keystore_;
+}
+
+std::string Cluster::truststore() {
+  return truststore_;
+}
+
+std::string Cluster::keystorePassword() {
+  return keystorePassword_;
+}
+
+std::string Cluster::truststorePassword() {
+  return truststorePassword_;
 }

@@ -59,16 +59,6 @@ class GfshExecute : public Gfsh {
   GfshExecute() = default;
   virtual ~GfshExecute() override = default;
 
-  class Connect : public Command<void> {
-   public:
-    explicit Connect(Gfsh &gfsh) : Command{gfsh, "connect"} {}
-
-    Connect &withJmxManager(const std::string &jmxManager) {
-      command_ += " --jmx-manager=" + jmxManager;
-      return *this;
-    };
-  };
-
  protected:
   void execute(const std::string &command, const std::string &user, const std::string &password) override;
 

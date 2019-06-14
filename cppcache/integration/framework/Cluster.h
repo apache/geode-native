@@ -54,8 +54,6 @@ class Locator {
     auto port = Framework::getAvailablePort();
 
     locatorAddress_ = LocatorAddress{hostname, port};
-
-    // start();
   }
 
   ~Locator() noexcept {
@@ -78,7 +76,6 @@ class Locator {
         started_(move.started_) {
     move.started_ = false;
   };
-  //  Locator &operator=(Locator &&move) = default;
 
   const LocatorAddress &getAddress() const { return locatorAddress_; }
 
@@ -121,8 +118,6 @@ class Server {
 
     auto port = static_cast<uint16_t>(0);
     serverAddress_ = ServerAddress{hostname, port};
-
-    // start();
   }
 
   std::string getCacheXMLFile() { return xmlFile_; }
@@ -273,10 +268,9 @@ class Cluster {
   Cluster(Cluster &&copy) = default;
   Cluster &operator=(Cluster &&other) = default;
 
-  std::string getJmxManager() {
-    return locators_.begin()->getAddress().address + "[" +
-           std::to_string(jmxManagerPort_) + "]";
-  }
+  std::string getJmxManager();
+
+  uint16_t getLocatorPort();
 
   void start(std::function<void()> fn = []() {});
 
@@ -325,6 +319,14 @@ class Cluster {
     }
   }
 
+  void useSsl(const std::string keystore, const std::string truststore, const std::string keystorePassword, const std::string truststorePassword);
+
+  bool useSsl();
+  std::string keystore();
+  std::string truststore();
+  std::string keystorePassword();
+  std::string truststorePassword();
+
   Gfsh &getGfsh() noexcept { return gfsh_; }
 
   std::vector<Server> &getServers() { return servers_; }
@@ -359,6 +361,12 @@ class Cluster {
 
   bool started_ = false;
   uint16_t jmxManagerPort_;
+
+  bool useSsl_ = false;
+  std::string keystore_;
+  std::string keystorePassword_;
+  std::string truststore_;
+  std::string truststorePassword_;
 
   bool useIPv6_ = false;
 

@@ -102,3 +102,9 @@ add_clangformat(cpp-integration-test)
 enable_testing()
 include(GoogleTest)
 gtest_discover_tests(cpp-integration-test)
+
+file(GLOB SSL_CERTIFICATES
+        "${CMAKE_CURRENT_SOURCE_DIR}/*Keys"
+        )
+
+file(INSTALL ${SSL_CERTIFICATES} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
