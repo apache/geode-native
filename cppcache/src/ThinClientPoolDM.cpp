@@ -228,8 +228,7 @@ void ThinClientPoolDM::init() {
   // to set security flag at pool level
   m_isSecurityOn = cacheImpl->getAuthInitialize() != nullptr;
 
-  LOGDEBUG("ThinClientPoolDM::init: security in on/off = %d ",
-           m_isSecurityOn);
+  LOGDEBUG("ThinClientPoolDM::init: security in on/off = %d ", m_isSecurityOn);
 
   m_connManager.init(true);
 
@@ -1381,8 +1380,7 @@ GfErrType ThinClientPoolDM::sendSyncRequest(
     bool isUserNeedToReAuthenticate = false;
     bool singleHopConnFound = false;
     bool connFound = false;
-    if (!m_isMultiUserMode ||
-        (!TcrMessage::isUserInitiativeOps(request))) {
+    if (!m_isMultiUserMode || (!TcrMessage::isUserInitiativeOps(request))) {
       conn = getConnectionFromQueueW(&queueErr, excludeServers, isBGThread,
                                      request, version, singleHopConnFound,
                                      connFound, serverLocation);
@@ -1463,11 +1461,11 @@ GfErrType ThinClientPoolDM::sendSyncRequest(
           (m_isSecurityOn || m_isMultiUserMode)) {
         if (!m_isMultiUserMode && !ep->isAuthenticated()) {
           // first authenticate him on this endpoint
-          userCredMsgErr = sendUserCredentials(
-              getCredentials(ep), conn, isBGThread, isServerException);
+          userCredMsgErr = sendUserCredentials(getCredentials(ep), conn,
+                                               isBGThread, isServerException);
         } else if (isUserNeedToReAuthenticate) {
-          userCredMsgErr = sendUserCredentials(
-              userAttr->getCredentials(), conn, isBGThread, isServerException);
+          userCredMsgErr = sendUserCredentials(userAttr->getCredentials(), conn,
+                                               isBGThread, isServerException);
         }
       }
 
@@ -1963,8 +1961,8 @@ GfErrType ThinClientPoolDM::sendRequestToEP(const TcrMessage& request,
         (m_isSecurityOn || m_isMultiUserMode)) {
       if (!m_isMultiUserMode && !currentEndpoint->isAuthenticated()) {
         // first authenticate him on this endpoint
-        error = sendUserCredentials(getCredentials(currentEndpoint),
-                                          conn, false, isServerException);
+        error = sendUserCredentials(getCredentials(currentEndpoint), conn,
+                                    false, isServerException);
       } else if (m_isMultiUserMode) {
         ua = UserAttributes::threadLocalUserAttributes;
         if (ua) {
@@ -1973,7 +1971,7 @@ GfErrType ThinClientPoolDM::sendRequestToEP(const TcrMessage& request,
 
           if (uca == nullptr) {
             error = sendUserCredentials(ua->getCredentials(), conn, false,
-                                              isServerException);
+                                        isServerException);
           }
         } else {
           LOGWARN("Attempted operation type %d without credentials",

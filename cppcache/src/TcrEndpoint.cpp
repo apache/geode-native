@@ -308,7 +308,10 @@ void TcrEndpoint::authenticateEndpoint(TcrConnection*& conn) {
     err = sendRequestConnWithRetry(request, reply, conn);
     LOGDEBUG("TcrEndpoint::authenticateEndpoint - ERROR: %d", err);
     if (err == GF_NOERR) {
-      LOGDEBUG("TcrEndpoint::authenticateEndpoint - successfully authenticated on conn %p", conn);
+      LOGDEBUG(
+          "TcrEndpoint::authenticateEndpoint - successfully authenticated on "
+          "conn %p",
+          conn);
       // put the object into local region
       switch (reply.getMessageType()) {
         case TcrMessage::RESPONSE: {
