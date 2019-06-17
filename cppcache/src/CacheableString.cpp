@@ -34,27 +34,94 @@ namespace apache {
 namespace geode {
 namespace client {
 
+CacheableString::CacheableString(DSCode type)
+    : m_str(), m_type(type), m_hashcode(0) {}
+
+CacheableString::CacheableString(const std::string& value)
+    : CacheableString(std::string(value)) {}
+
+CacheableString::CacheableString(std::string&& value)
+    : m_str(std::move(value)), m_hashcode(0) {
+  bool ascii = isAscii(m_str);
+
+  m_type = m_str.length() > std::numeric_limits<uint16_t>::max()
+               ? ascii ? DSCode::CacheableASCIIStringHuge
+                       : DSCode::CacheableStringHuge
+               : ascii ? DSCode::CacheableASCIIString : DSCode::CacheableString;
+}
+
+DSCode CacheableString::getDsCode() const { return m_type; }
+
+std::shared_ptr<CacheableString> CacheableString::create(
+    const std::string& value) {
+  return std::make_shared<CacheableString>(value);
+}
+
+std::shared_ptr<CacheableString> CacheableString::create(std::string&& value) {
+  return std::make_shared<CacheableString>(std::move(value));
+}
+
+std::shared_ptr<CacheableString> CacheableString::create(
+    const std::wstring& value) {
+  return std::make_shared<CacheableString>(
+      std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
+          .to_bytes(value));
+}
+
+std::shared_ptr<CacheableString> CacheableString::create(std::wstring&& value) {
+  return std::make_shared<CacheableString>(
+      std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
+          .to_bytes(std::move(value)));
+}
+
+std::string::size_type CacheableString::length() const {
+  return m_str.length();
+}
+
+const std::string& CacheableString::value() const { return m_str; }
+
 void CacheableString::toData(DataOutput& output) const {
-  if (m_type == DSCode::CacheableASCIIString) {
-    output.writeAscii(m_str);
-  } else if (m_type == DSCode::CacheableString) {
-    output.writeJavaModifiedUtf8(m_str);
-  } else if (m_type == DSCode::CacheableASCIIStringHuge) {
-    output.writeAsciiHuge(m_str);
-  } else if (m_type == DSCode::CacheableStringHuge) {
-    output.writeUtf16Huge(m_str);
+  switch (m_type) {
+    case DSCode::CacheableASCIIString: {
+      output.writeAscii(m_str);
+      break;
+    }
+    case DSCode::CacheableString: {
+      output.writeJavaModifiedUtf8(m_str);
+      break;
+    }
+    case DSCode::CacheableASCIIStringHuge: {
+      output.writeAsciiHuge(m_str);
+    }
+    case DSCode::CacheableStringHuge: {
+      output.writeUtf16Huge(m_str);
+      break;
+    }
+    default:
+      break;
   }
 }
 
 void CacheableString::fromData(DataInput& input) {
-  if (m_type == DSCode::CacheableASCIIString) {
-    input.readAscii(m_str);
-  } else if (m_type == DSCode::CacheableString) {
-    input.readJavaModifiedUtf8(m_str);
-  } else if (m_type == DSCode::CacheableASCIIStringHuge) {
-    input.readAsciiHuge(m_str);
-  } else if (m_type == DSCode::CacheableStringHuge) {
-    input.readUtf16Huge(m_str);
+  switch (m_type) {
+    case DSCode::CacheableASCIIString: {
+      input.readAscii(m_str);
+      break;
+    }
+    case DSCode::CacheableString: {
+      input.readJavaModifiedUtf8(m_str);
+      break;
+    }
+    case DSCode::CacheableASCIIStringHuge: {
+      input.readAsciiHuge(m_str);
+      break;
+    }
+    case DSCode::CacheableStringHuge: {
+      input.readUtf16Huge(m_str);
+      break;
+    }
+    default:
+      break;
   }
 }
 

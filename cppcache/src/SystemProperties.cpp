@@ -488,6 +488,174 @@ void SystemProperties::logSettings() {
   LOGCONFIG(settings);
 }
 
+uint32_t SystemProperties::threadPoolSize() const { return m_threadPoolSize; }
+
+const std::chrono::milliseconds SystemProperties::statisticsSampleInterval()
+    const {
+  return m_statisticsSampleInterval;
+}
+
+bool SystemProperties::statisticsEnabled() const { return m_statisticsEnabled; }
+
+bool SystemProperties::sslEnabled() const { return m_sslEnabled; }
+
+bool SystemProperties::getEnableTimeStatistics() const {
+  return m_timestatisticsEnabled;
+}
+
+const std::string& SystemProperties::sslKeyStore() const {
+  return m_sslKeyStore;
+}
+
+const std::string& SystemProperties::sslKeystorePassword() const {
+  return m_sslKeystorePassword;
+}
+
+const std::string& SystemProperties::sslTrustStore() const {
+  return m_sslTrustStore;
+}
+
+const std::string& SystemProperties::statisticsArchiveFile() const {
+  return m_statisticsArchiveFile;
+}
+
+const std::string& SystemProperties::logFilename() const {
+  return m_logFilename;
+}
+
+LogLevel SystemProperties::logLevel() const { return m_logLevel; }
+
+bool SystemProperties::heapLRULimitEnabled() const {
+  return (m_heapLRULimit > 0);
+}
+
+size_t SystemProperties::heapLRULimit() const { return m_heapLRULimit; }
+
+int32_t SystemProperties::heapLRUDelta() const { return m_heapLRUDelta; }
+
+int32_t SystemProperties::maxSocketBufferSize() const {
+  return m_maxSocketBufferSize;
+}
+
+const std::chrono::seconds& SystemProperties::pingInterval() const {
+  return m_pingInterval;
+}
+
+const std::chrono::seconds& SystemProperties::redundancyMonitorInterval()
+    const {
+  return m_redundancyMonitorInterval;
+}
+
+const std::chrono::milliseconds& SystemProperties::notifyAckInterval() const {
+  return m_notifyAckInterval;
+}
+
+const std::chrono::milliseconds& SystemProperties::notifyDupCheckLife() const {
+  return m_notifyDupCheckLife;
+}
+
+const std::string& SystemProperties::durableClientId() const {
+  return m_durableClientId;
+}
+
+const std::chrono::seconds& SystemProperties::durableTimeout() const {
+  return m_durableTimeout;
+}
+
+const std::chrono::milliseconds& SystemProperties::connectTimeout() const {
+  return m_connectTimeout;
+}
+
+const std::chrono::milliseconds& SystemProperties::connectWaitTimeout() const {
+  return m_connectWaitTimeout;
+}
+
+const std::chrono::milliseconds& SystemProperties::bucketWaitTimeout() const {
+  return m_bucketWaitTimeout;
+}
+
+const std::string& SystemProperties::conflateEvents() const {
+  return m_conflateEvents;
+}
+
+const std::string& SystemProperties::name() const { return m_name; }
+
+const std::string& SystemProperties::cacheXMLFile() const {
+  return m_cacheXMLFile;
+}
+
+uint32_t SystemProperties::logFileSizeLimit() const {
+  return m_logFileSizeLimit;
+}
+
+uint32_t SystemProperties::logDiskSpaceLimit() const {
+  return m_logDiskSpaceLimit;
+}
+
+uint32_t SystemProperties::statsFileSizeLimit() const {
+  return m_statsFileSizeLimit;
+}
+
+uint32_t SystemProperties::statsDiskSpaceLimit() const {
+  return m_statsDiskSpaceLimit;
+}
+
+uint32_t SystemProperties::connectionPoolSize() const {
+  return m_connectionPoolSize;
+}
+
+void SystemProperties::setjavaConnectionPoolSize(uint32_t size) {
+  m_connectionPoolSize = size;
+}
+
+bool SystemProperties::enableChunkHandlerThread() const {
+  return m_enableChunkHandlerThread;
+}
+
+void SystemProperties::setEnableChunkHandlerThread(bool set) {
+  m_enableChunkHandlerThread = set;
+}
+
+bool SystemProperties::onClientDisconnectClearPdxTypeIds() const {
+  return m_onClientDisconnectClearPdxTypeIds;
+}
+
+void SystemProperties::setOnClientDisconnectClearPdxTypeIds(bool set) {
+  m_onClientDisconnectClearPdxTypeIds = set;
+}
+
+const std::string& SystemProperties::securityClientDhAlgo() const {
+  return m_securityClientDhAlgo;
+}
+
+const std::string& SystemProperties::securityClientKsPath() const {
+  return m_securityClientKsPath;
+}
+
+std::shared_ptr<Properties> SystemProperties::getSecurityProperties() const {
+  return m_securityPropertiesPtr;
+}
+
+bool SystemProperties::isEndpointShufflingDisabled() const {
+  return m_disableShufflingEndpoint;
+}
+
+bool SystemProperties::isDhOn() const {
+  return !m_securityClientDhAlgo.empty();
+}
+
+bool SystemProperties::autoReadyForEvents() const {
+  return m_autoReadyForEvents;
+}
+
+const std::chrono::seconds SystemProperties::suspendedTxTimeout() const {
+  return m_suspendedTxTimeout;
+}
+
+const std::chrono::milliseconds SystemProperties::tombstoneTimeout() const {
+  return m_tombstoneTimeout;
+}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

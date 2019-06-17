@@ -117,9 +117,7 @@ class APACHE_GEODE_EXPORT Struct
   /**
    * always returns 0
    */
-  size_t objectSize() const override {
-    return 0;  // does not get cached, so no need to account for it
-  }
+  size_t objectSize() const override;
 
  private:
   void skipClassName(DataInput& input);

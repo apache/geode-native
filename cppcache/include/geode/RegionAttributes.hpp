@@ -145,7 +145,7 @@ class APACHE_GEODE_EXPORT RegionAttributes
    * If true, this region will store data in the current process.
    * @return true or false, indicating cachingEnabled state.
    */
-  inline bool getCachingEnabled() const { return m_caching; }
+  bool getCachingEnabled() const;
 
   // MAP ATTRIBUTES
 
@@ -187,7 +187,7 @@ class APACHE_GEODE_EXPORT RegionAttributes
   /**
    * Returns the name of the pool attached to the region.
    */
-  const std::string& getPoolName() const { return m_poolName; }
+  const std::string& getPoolName() const;
 
   // will be created by the factory
   RegionAttributes();
@@ -301,16 +301,15 @@ class APACHE_GEODE_EXPORT RegionAttributes
    */
   std::shared_ptr<PersistenceManager> getPersistenceManager() const;
 
-  bool getCloningEnabled() const { return m_isClonable; }
+  bool getCloningEnabled() const;
 
   /**
    * Returns true if concurrent update checks are turned on for this region.
    * <p>
    * @return true if concurrent update checks are turned on
    */
-  bool getConcurrencyChecksEnabled() const {
-    return m_isConcurrencyChecksEnabled;
-  }
+  bool getConcurrencyChecksEnabled() const;
+
   RegionAttributes& operator=(const RegionAttributes&) = default;
 
  private:
@@ -332,15 +331,9 @@ class APACHE_GEODE_EXPORT RegionAttributes
   void setDiskPolicy(DiskPolicyType diskPolicy);
   void setConcurrencyChecksEnabled(bool enable);
 
-  inline bool getEntryExpiryEnabled() const {
-    return (m_entryTimeToLive > std::chrono::seconds::zero() ||
-            m_entryIdleTimeout > std::chrono::seconds::zero());
-  }
+  bool getEntryExpiryEnabled() const;
 
-  inline bool getRegionExpiryEnabled() const {
-    return (m_regionTimeToLive > std::chrono::seconds::zero() ||
-            m_regionIdleTimeout > std::chrono::seconds::zero());
-  }
+  bool getRegionExpiryEnabled() const;
 
   ExpirationAction m_regionTimeToLiveExpirationAction;
   ExpirationAction m_regionIdleTimeoutExpirationAction;
@@ -386,8 +379,6 @@ class APACHE_GEODE_EXPORT RegionAttributes
   friend class Region;
   friend class RegionInternal;
   friend class RegionXmlCreation;
-
- private:
 };
 
 }  // namespace client

@@ -45,9 +45,9 @@ using UserObjectSizer = std::function<size_t(const std::shared_ptr<const void>&,
  */
 class APACHE_GEODE_EXPORT PdxSerializer {
  public:
-  PdxSerializer() {}
+  PdxSerializer();
 
-  virtual ~PdxSerializer() {}
+  virtual ~PdxSerializer();
 
   /**
    * Deserialize this object.

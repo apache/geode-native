@@ -51,6 +51,20 @@ int32_t CacheableFileName::hashcode() const {
   }
   return m_hashcode;
 }
+
+CacheableFileName::CacheableFileName(const std::string& value)
+    : CacheableString(value) {}
+CacheableFileName::CacheableFileName(std::string&& value)
+    : CacheableString(std::move(value)) {}
+
+std::shared_ptr<Serializable> CacheableFileName::createDeserializable() {
+  return std::make_shared<CacheableFileName>();
+}
+
+std::shared_ptr<CacheableFileName> CacheableFileName::create(
+    const std::string& value) {
+  return std::make_shared<CacheableFileName>(value);
+}
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

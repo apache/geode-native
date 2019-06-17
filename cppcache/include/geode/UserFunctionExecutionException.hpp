@@ -40,8 +40,7 @@ class DataOutput;
  */
 class APACHE_GEODE_EXPORT UserFunctionExecutionException : public Serializable {
  public:
-  explicit UserFunctionExecutionException(std::string message)
-      : m_message(std::move(message)) {}
+  explicit UserFunctionExecutionException(std::string message);
   UserFunctionExecutionException(const UserFunctionExecutionException& other) =
       delete;
   void operator=(const UserFunctionExecutionException& other) = delete;
@@ -52,18 +51,15 @@ class APACHE_GEODE_EXPORT UserFunctionExecutionException : public Serializable {
    * @brief return as std::string the Exception message returned from geode
    * sendException api.
    */
-  const std::string& getMessage() const { return m_message; }
+  const std::string& getMessage() const;
 
-  std::string toString() const override { return this->getMessage(); }
+  std::string toString() const override;
 
   /**
    * @brief return as std::string the Exception name returned from geode
    * sendException api.
    */
-  const std::string& getName() const {
-    static const std::string name = "UserFunctionExecutionException";
-    return name;
-  }
+  const std::string& getName() const;
 
  private:
   std::string m_message;

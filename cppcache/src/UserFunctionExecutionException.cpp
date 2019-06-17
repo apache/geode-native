@@ -20,6 +20,23 @@
 
 namespace apache {
 namespace geode {
-namespace client {}  // namespace client
+namespace client {
+UserFunctionExecutionException::UserFunctionExecutionException(
+    std::string message)
+    : m_message(std::move(message)) {}
+
+const std::string& UserFunctionExecutionException::getMessage() const {
+  return m_message;
+}
+
+std::string UserFunctionExecutionException::toString() const {
+  return getMessage();
+}
+
+const std::string& UserFunctionExecutionException::getName() const {
+  static const std::string name = "UserFunctionExecutionException";
+  return name;
+}
+}  // namespace client
 }  // namespace geode
 }  // namespace apache

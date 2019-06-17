@@ -25,6 +25,14 @@ void CacheableUndefined::toData(DataOutput&) const {}
 
 void CacheableUndefined::fromData(DataInput&) {}
 
+std::shared_ptr<Serializable> CacheableUndefined::createDeserializable() {
+  return std::make_shared<CacheableUndefined>();
+}
+
+std::shared_ptr<CacheableUndefined> CacheableUndefined::create() {
+  return std::make_shared<CacheableUndefined>();
+}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

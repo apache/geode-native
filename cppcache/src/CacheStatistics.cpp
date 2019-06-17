@@ -21,6 +21,9 @@ namespace apache {
 namespace geode {
 namespace client {
 
+CacheStatistics::CacheStatistics()
+    : m_lastAccessTime(0), m_lastModifiedTime(0) {}
+
 void CacheStatistics::setLastModifiedTime(time_point lmt) {
   m_lastModifiedTime = lmt.time_since_epoch().count();
 }

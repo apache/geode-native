@@ -19,6 +19,9 @@
 
 namespace apache {
 namespace geode {
-namespace client {}  // namespace client
+namespace client {
+PersistenceManager::PersistenceManager(const std::shared_ptr<Region>& regionPtr)
+    : m_regionPtr(regionPtr) {}
+}  // namespace client
 }  // namespace geode
 }  // namespace apache

@@ -154,6 +154,24 @@ Execution FunctionService::onServersWithCache(RegionService& cache) {
   }
 }
 
+Execution FunctionService::onServer(const std::shared_ptr<Pool>& pool) {
+  return onServerWithPool(pool);
+}
+
+Execution FunctionService::onServer(RegionService& regionService) {
+  return onServerWithCache(regionService);
+}
+
+Execution FunctionService::onServers(const std::shared_ptr<Pool>& pool) {
+  return onServersWithPool(pool);
+}
+
+Execution FunctionService::onServers(RegionService& regionService) {
+  return onServersWithCache(regionService);
+}
+
+FunctionService::~FunctionService() {}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

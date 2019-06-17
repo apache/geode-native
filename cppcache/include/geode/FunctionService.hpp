@@ -77,9 +77,7 @@ class APACHE_GEODE_EXPORT FunctionService {
    * @throws UnsupportedOperationException
    *                 if Pool is in multiusersecure Mode
    */
-  inline static Execution onServer(const std::shared_ptr<Pool>& pool) {
-    return onServerWithPool(pool);
-  }
+  static Execution onServer(const std::shared_ptr<Pool>& pool);
 
   /**
    * Returns a {@link Execution} object that can be used to execute a data
@@ -95,9 +93,7 @@ class APACHE_GEODE_EXPORT FunctionService {
    * @throws UnsupportedOperationException
    *                 if Pool is in multiusersecure Mode
    */
-  inline static Execution onServer(RegionService& regionService) {
-    return onServerWithCache(regionService);
-  }
+  static Execution onServer(RegionService& regionService);
 
   /**
    * Returns a {@link Execution} object that can be used to execute a data
@@ -112,9 +108,7 @@ class APACHE_GEODE_EXPORT FunctionService {
    * @throws UnsupportedOperationException
    *                 if Pool is in multiusersecure Mode
    */
-  inline static Execution onServers(const std::shared_ptr<Pool>& pool) {
-    return onServersWithPool(pool);
-  }
+  static Execution onServers(const std::shared_ptr<Pool>& pool);
 
   /**
    * Returns a {@link Execution} object that can be used to execute a data
@@ -130,11 +124,9 @@ class APACHE_GEODE_EXPORT FunctionService {
    * @throws UnsupportedOperationException
    *                 if Pool is in multiusersecure Mode
    */
-  inline static Execution onServers(RegionService& regionService) {
-    return onServersWithCache(regionService);
-  }
+  static Execution onServers(RegionService& regionService);
 
-  virtual ~FunctionService() {}
+  virtual ~FunctionService();
 
  private:
   static Execution onServerWithPool(const std::shared_ptr<Pool>& pool);

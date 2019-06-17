@@ -67,34 +67,32 @@ class APACHE_GEODE_EXPORT EntryEvent {
   EntryEvent();
 
   /** @return the region this event occurred in. */
-  inline std::shared_ptr<Region> getRegion() const { return m_region; }
+  std::shared_ptr<Region> getRegion() const;
 
   /** @return the key this event describes. */
-  inline std::shared_ptr<CacheableKey> getKey() const { return m_key; }
+  std::shared_ptr<CacheableKey> getKey() const;
 
   /** If the prior state of the entry was invalid, or non-existent/destroyed,
    * then the old value will be nullptr.
    * @return the old value in the cache.
    */
-  inline std::shared_ptr<Cacheable> getOldValue() const { return m_oldValue; }
+  std::shared_ptr<Cacheable> getOldValue() const;
 
   /** If the event is a destroy or invalidate operation, then the new value
    * will be nullptr.
    * @return the updated value from this event
    */
-  inline std::shared_ptr<Cacheable> getNewValue() const { return m_newValue; }
+  std::shared_ptr<Cacheable> getNewValue() const;
 
   /**
    * Returns the callbackArgument passed to the method that generated
    * this event. See the {@link Region} interface methods that take
    * a callbackArgument parameter.
    */
-  inline std::shared_ptr<Serializable> getCallbackArgument() const {
-    return m_callbackArgument;
-  }
+  std::shared_ptr<Serializable> getCallbackArgument() const;
 
   /** If the event originated in a remote process, returns true. */
-  inline bool remoteOrigin() const { return m_remoteOrigin; }
+  bool remoteOrigin() const;
 
  private:
   // never implemented.

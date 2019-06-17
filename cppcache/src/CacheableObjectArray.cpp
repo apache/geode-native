@@ -23,6 +23,28 @@ namespace apache {
 namespace geode {
 namespace client {
 
+CacheableObjectArray::CacheableObjectArray()
+    : std::vector<std::shared_ptr<Cacheable>>() {}
+
+CacheableObjectArray::CacheableObjectArray(int32_t n)
+    : std::vector<std::shared_ptr<Cacheable>>(n) {}
+
+std::shared_ptr<Serializable> CacheableObjectArray::createDeserializable() {
+  return std::make_shared<CacheableObjectArray>();
+}
+
+internal::DSCode CacheableObjectArray::getDsCode() const {
+  return internal::DSCode::CacheableObjectArray;
+}
+
+std::shared_ptr<CacheableObjectArray> CacheableObjectArray::create() {
+  return std::make_shared<CacheableObjectArray>();
+}
+
+std::shared_ptr<CacheableObjectArray> CacheableObjectArray::create(int32_t n) {
+  return std::make_shared<CacheableObjectArray>(n);
+}
+
 void CacheableObjectArray::toData(DataOutput& output) const {
   int32_t len = static_cast<int32_t>(size());
   output.writeArrayLen(len);

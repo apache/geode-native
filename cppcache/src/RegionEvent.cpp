@@ -30,6 +30,14 @@ RegionEvent::RegionEvent(const std::shared_ptr<Region>& region,
 RegionEvent::RegionEvent() : m_remoteOrigin(false) {}
 
 RegionEvent::~RegionEvent() {}
+
+std::shared_ptr<Region> RegionEvent::getRegion() const { return m_region; }
+
+std::shared_ptr<Serializable> RegionEvent::getCallbackArgument() const {
+  return m_callbackArgument;
+}
+
+bool RegionEvent::remoteOrigin() const { return m_remoteOrigin; }
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

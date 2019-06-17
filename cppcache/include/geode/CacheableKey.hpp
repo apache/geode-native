@@ -65,41 +65,24 @@ class APACHE_GEODE_EXPORT CacheableKey : public virtual Cacheable {
   }
 
   struct hash {
-    inline std::size_t operator()(const CacheableKey& s) const {
-      return s.hashcode();
-    }
+    std::size_t operator()(const CacheableKey& s) const;
 
-    inline std::size_t operator()(const CacheableKey*& s) const {
-      return s->hashcode();
-    }
+    std::size_t operator()(const CacheableKey*& s) const;
 
-    inline std::size_t operator()(
-        const std::shared_ptr<CacheableKey>& s) const {
-      return s->hashcode();
-    }
+    std::size_t operator()(const std::shared_ptr<CacheableKey>& s) const;
   };
 
   struct equal_to {
-    inline bool operator()(const CacheableKey& lhs,
-                           const CacheableKey& rhs) const {
-      return lhs == rhs;
-    }
+    bool operator()(const CacheableKey& lhs, const CacheableKey& rhs) const;
 
-    inline bool operator()(const CacheableKey*& lhs,
-                           const CacheableKey*& rhs) const {
-      return (*lhs) == (*rhs);
-    }
+    bool operator()(const CacheableKey*& lhs, const CacheableKey*& rhs) const;
 
-    inline bool operator()(const std::shared_ptr<CacheableKey>& lhs,
-                           const std::shared_ptr<CacheableKey>& rhs) const {
-      return (*lhs) == (*rhs);
-    }
+    bool operator()(const std::shared_ptr<CacheableKey>& lhs,
+                    const std::shared_ptr<CacheableKey>& rhs) const;
   };
 
- private:
-  // Never defined.
-  CacheableKey(const CacheableKey& other);
-  void operator=(const CacheableKey& other);
+  CacheableKey(const CacheableKey& other) = delete;
+  void operator=(const CacheableKey& other) = delete;
 };
 
 using apache::geode::client::internal::dereference_equal_to;

@@ -46,8 +46,8 @@ class APACHE_GEODE_EXPORT CacheableUndefined
     : public internal::DataSerializableFixedId_t<
           internal::DSFid::CacheableUndefined> {
  public:
-  inline CacheableUndefined() = default;
-  virtual ~CacheableUndefined() noexcept override = default;
+  CacheableUndefined() = default;
+  ~CacheableUndefined() override = default;
   CacheableUndefined& operator=(const CacheableUndefined& other) = delete;
   CacheableUndefined(const CacheableUndefined& other) = delete;
 
@@ -58,16 +58,12 @@ class APACHE_GEODE_EXPORT CacheableUndefined
   /**
    * @brief creation function for undefined query result
    */
-  inline static std::shared_ptr<Serializable> createDeserializable() {
-    return std::make_shared<CacheableUndefined>();
-  }
+  static std::shared_ptr<Serializable> createDeserializable();
 
   /**
    * Factory method for creating the default instance of CacheableUndefined.
    */
-  inline static std::shared_ptr<CacheableUndefined> create() {
-    return std::make_shared<CacheableUndefined>();
-  }
+  static std::shared_ptr<CacheableUndefined> create();
 };
 
 }  // namespace client

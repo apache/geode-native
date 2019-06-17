@@ -119,6 +119,11 @@ Struct::iterator Struct::end() { return m_fieldValues.end(); }
 std::shared_ptr<Serializable> Struct::createDeserializable() {
   return std::make_shared<Struct>();
 }
+
+size_t Struct::objectSize() const {
+  return 0;  // does not get cached, so no need to account for it
+}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

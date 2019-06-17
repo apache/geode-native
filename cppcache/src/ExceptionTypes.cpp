@@ -356,6 +356,332 @@ const std::string& getThreadLocalExceptionMessage();
     }
   }
 }
+
+AssertionException::~AssertionException() {}
+std::string AssertionException::getName() const {
+  return "apache::geode::client::AssertionException";
+}
+
+IllegalArgumentException::~IllegalArgumentException() {}
+std::string IllegalArgumentException::getName() const {
+  return "apache::geode::client::IllegalArgumentException";
+}
+
+IllegalStateException::~IllegalStateException() {}
+std::string IllegalStateException::getName() const {
+  return "apache::geode::client::IllegalStateException";
+}
+
+CacheExistsException::~CacheExistsException() {}
+std::string CacheExistsException::getName() const {
+  return "apache::geode::client::CacheExistsException";
+}
+
+CacheXmlException::~CacheXmlException() {}
+std::string CacheXmlException::getName() const {
+  return "apache::geode::client::CacheXmlException";
+}
+
+TimeoutException::~TimeoutException() {}
+std::string TimeoutException::getName() const {
+  return "apache::geode::client::TimeoutException";
+}
+
+CacheWriterException::~CacheWriterException() {}
+std::string CacheWriterException::getName() const {
+  return "apache::geode::client::CacheWriterException";
+}
+
+RegionExistsException::~RegionExistsException() {}
+std::string RegionExistsException::getName() const {
+  return "apache::geode::client::RegionExistsException";
+}
+
+CacheClosedException::~CacheClosedException() {}
+std::string CacheClosedException::getName() const {
+  return "apache::geode::client::CacheClosedException";
+}
+
+LeaseExpiredException::~LeaseExpiredException() {}
+std::string LeaseExpiredException::getName() const {
+  return "apache::geode::client::LeaseExpiredException";
+}
+
+CacheLoaderException::~CacheLoaderException() {}
+std::string CacheLoaderException::getName() const {
+  return "apache::geode::client::CacheLoaderException";
+}
+
+RegionDestroyedException::~RegionDestroyedException() {}
+std::string RegionDestroyedException::getName() const {
+  return "apache::geode::client::RegionDestroyedException";
+}
+
+EntryDestroyedException::~EntryDestroyedException() {}
+std::string EntryDestroyedException::getName() const {
+  return "apache::geode::client::EntryDestroyedException";
+}
+
+NoSystemException::~NoSystemException() {}
+std::string NoSystemException::getName() const {
+  return "apache::geode::client::NoSystemException";
+}
+
+AlreadyConnectedException::~AlreadyConnectedException() {}
+std::string AlreadyConnectedException::getName() const {
+  return "apache::geode::client::AlreadyConnectedException";
+}
+
+FileNotFoundException::~FileNotFoundException() {}
+std::string FileNotFoundException::getName() const {
+  return "apache::geode::client::FileNotFoundException";
+}
+
+InterruptedException::~InterruptedException() {}
+std::string InterruptedException::getName() const {
+  return "apache::geode::client::InterruptedException";
+}
+
+UnsupportedOperationException::~UnsupportedOperationException() {}
+std::string UnsupportedOperationException::getName() const {
+  return "apache::geode::client::UnsupportedOperationException";
+}
+
+StatisticsDisabledException::~StatisticsDisabledException() {}
+std::string StatisticsDisabledException::getName() const {
+  return "apache::geode::client::StatisticsDisabledException";
+}
+
+ConcurrentModificationException::~ConcurrentModificationException() {}
+std::string ConcurrentModificationException::getName() const {
+  return "apache::geode::client::ConcurrentModificationException";
+}
+
+UnknownException::~UnknownException() {}
+std::string UnknownException::getName() const {
+  return "apache::geode::client::UnknownException";
+}
+
+ClassCastException::~ClassCastException() {}
+std::string ClassCastException::getName() const {
+  return "apache::geode::client::ClassCastException";
+}
+
+EntryNotFoundException::~EntryNotFoundException() {}
+std::string EntryNotFoundException::getName() const {
+  return "apache::geode::client::EntryNotFoundException";
+}
+
+GeodeIOException::~GeodeIOException() {}
+std::string GeodeIOException::getName() const {
+  return "apache::geode::client::GeodeIOException";
+}
+
+GeodeConfigException::~GeodeConfigException() {}
+std::string GeodeConfigException::getName() const {
+  return "apache::geode::client::GeodeConfigException";
+}
+
+NullPointerException::~NullPointerException() {}
+std::string NullPointerException::getName() const {
+  return "apache::geode::client::NullPointerException";
+}
+
+EntryExistsException::~EntryExistsException() {}
+std::string EntryExistsException::getName() const {
+  return "apache::geode::client::EntryExistsException";
+}
+
+NotConnectedException::~NotConnectedException() {}
+std::string NotConnectedException::getName() const {
+  return "apache::geode::client::NotConnectedException";
+}
+
+CacheProxyException::~CacheProxyException() {}
+std::string CacheProxyException::getName() const {
+  return "apache::geode::client::CacheProxyException";
+}
+
+OutOfMemoryException::~OutOfMemoryException() {}
+std::string OutOfMemoryException::getName() const {
+  return "apache::geode::client::OutOfMemoryException";
+}
+
+NotOwnerException::~NotOwnerException() {}
+std::string NotOwnerException::getName() const {
+  return "apache::geode::client::NotOwnerException";
+}
+
+WrongRegionScopeException::~WrongRegionScopeException() {}
+std::string WrongRegionScopeException::getName() const {
+  return "apache::geode::client::WrongRegionScopeException";
+}
+
+BufferSizeExceededException::~BufferSizeExceededException() {}
+std::string BufferSizeExceededException::getName() const {
+  return "apache::geode::client::BufferSizeExceededException";
+}
+
+RegionCreationFailedException::~RegionCreationFailedException() {}
+std::string RegionCreationFailedException::getName() const {
+  return "apache::geode::client::RegionCreationFailedException";
+}
+
+FatalInternalException::~FatalInternalException() {}
+std::string FatalInternalException::getName() const {
+  return "apache::geode::client::FatalInternalException";
+}
+
+DiskFailureException::~DiskFailureException() {}
+std::string DiskFailureException::getName() const {
+  return "apache::geode::client::DiskFailureException";
+}
+
+DiskCorruptException::~DiskCorruptException() {}
+std::string DiskCorruptException::getName() const {
+  return "apache::geode::client::DiskCorruptException";
+}
+
+InitFailedException::~InitFailedException() {}
+std::string InitFailedException::getName() const {
+  return "apache::geode::client::InitFailedException";
+}
+
+ShutdownFailedException::~ShutdownFailedException() {}
+std::string ShutdownFailedException::getName() const {
+  return "apache::geode::client::ShutdownFailedException";
+}
+
+CacheServerException::~CacheServerException() {}
+std::string CacheServerException::getName() const {
+  return "apache::geode::client::CacheServerException";
+}
+
+OutOfRangeException::~OutOfRangeException() {}
+std::string OutOfRangeException::getName() const {
+  return "apache::geode::client::OutOfRangeException";
+}
+
+QueryException::~QueryException() {}
+std::string QueryException::getName() const {
+  return "apache::geode::client::QueryException";
+}
+
+MessageException::~MessageException() {}
+std::string MessageException::getName() const {
+  return "apache::geode::client::MessageException";
+}
+
+NotAuthorizedException::~NotAuthorizedException() {}
+std::string NotAuthorizedException::getName() const {
+  return "apache::geode::client::NotAuthorizedException";
+}
+
+AuthenticationFailedException::~AuthenticationFailedException() {}
+std::string AuthenticationFailedException::getName() const {
+  return "apache::geode::client::AuthenticationFailedException";
+}
+
+AuthenticationRequiredException::~AuthenticationRequiredException() {}
+std::string AuthenticationRequiredException::getName() const {
+  return "apache::geode::client::AuthenticationRequiredException";
+}
+
+DuplicateDurableClientException::~DuplicateDurableClientException() {}
+std::string DuplicateDurableClientException::getName() const {
+  return "apache::geode::client::DuplicateDurableClientException";
+}
+
+CacheListenerException::~CacheListenerException() {}
+std::string CacheListenerException::getName() const {
+  return "apache::geode::client::CacheListenerException";
+}
+
+CqException::~CqException() {}
+std::string CqException::getName() const {
+  return "apache::geode::client::CqException";
+}
+
+CqClosedException::~CqClosedException() {}
+std::string CqClosedException::getName() const {
+  return "apache::geode::client::CqClosedException";
+}
+
+CqQueryException::~CqQueryException() {}
+std::string CqQueryException::getName() const {
+  return "apache::geode::client::CqQueryException";
+}
+
+CqExistsException::~CqExistsException() {}
+std::string CqExistsException::getName() const {
+  return "apache::geode::client::CqExistsException";
+}
+
+CqInvalidException::~CqInvalidException() {}
+std::string CqInvalidException::getName() const {
+  return "apache::geode::client::CqInvalidException";
+}
+
+FunctionExecutionException::~FunctionExecutionException() {}
+std::string FunctionExecutionException::getName() const {
+  return "apache::geode::client::FunctionExecutionException";
+}
+
+NoAvailableLocatorsException::~NoAvailableLocatorsException() {}
+std::string NoAvailableLocatorsException::getName() const {
+  return "apache::geode::client::NoAvailableLocatorsException";
+}
+
+AllConnectionsInUseException::~AllConnectionsInUseException() {}
+std::string AllConnectionsInUseException::getName() const {
+  return "apache::geode::client::AllConnectionsInUseException";
+}
+
+InvalidDeltaException::~InvalidDeltaException() {}
+std::string InvalidDeltaException::getName() const {
+  return "apache::geode::client::InvalidDeltaException";
+}
+
+KeyNotFoundException::~KeyNotFoundException() {}
+std::string KeyNotFoundException::getName() const {
+  return "apache::geode::client::KeyNotFoundException";
+}
+
+TransactionException::~TransactionException() {}
+std::string TransactionException::getName() const {
+  return "apache::geode::client::TransactionException";
+}
+
+RollbackException::~RollbackException() {}
+std::string RollbackException::getName() const {
+  return "apache::geode::client::RollbackException";
+}
+
+CommitConflictException::~CommitConflictException() {}
+std::string CommitConflictException::getName() const {
+  return "apache::geode::client::CommitConflictException";
+}
+
+TransactionDataNodeHasDepartedException::
+    ~TransactionDataNodeHasDepartedException() {}
+std::string TransactionDataNodeHasDepartedException::getName() const {
+  return "apache::geode::client::TransactionDataNodeHasDepartedException";
+}
+
+TransactionDataRebalancedException::~TransactionDataRebalancedException() {}
+std::string TransactionDataRebalancedException::getName() const {
+  return "apache::geode::client::TransactionDataRebalancedException";
+}
+
+PutAllPartialResultException::~PutAllPartialResultException() {}
+std::string PutAllPartialResultException::getName() const {
+  return "apache::geode::client::PutAllPartialResultException";
+}
+
+SslException::~SslException() {}
+std::string SslException::getName() const {
+  return "apache::geode::client::SslException";
+}
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

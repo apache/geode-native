@@ -39,7 +39,7 @@ class CacheListener;
  */
 class APACHE_GEODE_EXPORT CqListener {
  public:
-  virtual ~CqListener() noexcept = default;
+  virtual ~CqListener() = default;
 
   CqListener();
   CqListener(const CacheListener& other) = delete;

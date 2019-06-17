@@ -45,10 +45,8 @@ class Serializable;
 class APACHE_GEODE_EXPORT CacheableFileName : public CacheableString {
  public:
   inline CacheableFileName() = default;
-  inline explicit CacheableFileName(const std::string& value)
-      : CacheableString(value) {}
-  inline explicit CacheableFileName(std::string&& value)
-      : CacheableString(std::move(value)) {}
+  inline explicit CacheableFileName(const std::string& value);
+  inline explicit CacheableFileName(std::string&& value);
   ~CacheableFileName() noexcept override = default;
   void operator=(const CacheableFileName& other) = delete;
   CacheableFileName(const CacheableFileName& other) = delete;
@@ -62,17 +60,13 @@ class APACHE_GEODE_EXPORT CacheableFileName : public CacheableString {
   /**
    * @brief creation function for filenames.
    */
-  static std::shared_ptr<Serializable> createDeserializable() {
-    return std::make_shared<CacheableFileName>();
-  }
+  static std::shared_ptr<Serializable> createDeserializable();
 
   /**
    * Factory method for creating an instance of CacheableFileName from a
    * C string optionally given the length.
    */
-  static std::shared_ptr<CacheableFileName> create(const std::string& value) {
-    return std::make_shared<CacheableFileName>(value);
-  }
+  static std::shared_ptr<CacheableFileName> create(const std::string& value);
 
   /** return the hashcode for this key. */
   virtual int32_t hashcode() const override;

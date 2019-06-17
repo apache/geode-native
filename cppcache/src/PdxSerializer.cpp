@@ -21,6 +21,10 @@ namespace apache {
 namespace geode {
 namespace client {
 
+PdxSerializer::PdxSerializer() {}
+
+PdxSerializer::~PdxSerializer() {}
+
 UserObjectSizer PdxSerializer::getObjectSizer(const std::string&) {
   return nullptr;
 }

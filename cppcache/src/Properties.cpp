@@ -26,6 +26,8 @@ namespace apache {
 namespace geode {
 namespace client {
 
+Properties::Visitor::~Visitor() {}
+
 class PropertiesFile {
   Properties& m_props;
   std::string m_fileName;

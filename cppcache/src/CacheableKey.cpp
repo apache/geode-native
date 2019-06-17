@@ -15,27 +15,39 @@
  * limitations under the License.
  */
 
-#include <geode/CacheableString.hpp>
-#include <geode/PdxSerializable.hpp>
-#include <geode/internal/CacheableKeys.hpp>
-
-#include "PdxHelper.hpp"
+#include <geode/CacheableKey.hpp>
 
 namespace apache {
 namespace geode {
 namespace client {
 
-PdxSerializable::~PdxSerializable() {}
-
-std::string PdxSerializable::toString() const { return getClassName(); }
-
-bool PdxSerializable::operator==(const CacheableKey& other) const {
-  return (this == &other);
+std::size_t CacheableKey::hash::operator()(const CacheableKey& s) const {
+  return s.hashcode();
 }
 
-int32_t PdxSerializable::hashcode() const {
-  return internal::hashcode(
-      static_cast<int64_t>(reinterpret_cast<uintptr_t>(this)));
+std::size_t CacheableKey::hash::operator()(const CacheableKey*& s) const {
+  return s->hashcode();
+}
+
+std::size_t CacheableKey::hash::operator()(
+    const std::shared_ptr<CacheableKey>& s) const {
+  return s->hashcode();
+}
+
+bool CacheableKey::equal_to::operator()(const CacheableKey& lhs,
+                                        const CacheableKey& rhs) const {
+  return lhs == rhs;
+}
+
+bool CacheableKey::equal_to::operator()(const CacheableKey*& lhs,
+                                        const CacheableKey*& rhs) const {
+  return (*lhs) == (*rhs);
+}
+
+bool CacheableKey::equal_to::operator()(
+    const std::shared_ptr<CacheableKey>& lhs,
+    const std::shared_ptr<CacheableKey>& rhs) const {
+  return (*lhs) == (*rhs);
 }
 
 }  // namespace client

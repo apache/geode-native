@@ -40,7 +40,7 @@ class PdxWriter;
 class APACHE_GEODE_EXPORT PdxSerializable : public virtual Serializable,
                                             public virtual CacheableKey {
  public:
-  ~PdxSerializable() noexcept override{};
+  ~PdxSerializable() override;
 
   std::string toString() const override;
 

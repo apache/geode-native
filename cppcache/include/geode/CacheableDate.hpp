@@ -75,20 +75,20 @@ class APACHE_GEODE_EXPORT CacheableDate
 
   void toData(DataOutput& output) const override;
 
-  virtual void fromData(DataInput& input) override;
+  void fromData(DataInput& input) override;
 
   /**
    * @brief creation function for dates.
    */
   static std::shared_ptr<Serializable> createDeserializable();
 
-  virtual DSCode getDsCode() const override;
+  DSCode getDsCode() const override;
 
   /** @return the size of the object in bytes */
-  virtual size_t objectSize() const override { return sizeof(CacheableDate); }
+  size_t objectSize() const override;
 
   /** @return true if this key matches other. */
-  virtual bool operator==(const CacheableKey& other) const override;
+  bool operator==(const CacheableKey& other) const override;
 
   /** @return milliseconds elapsed since January 1, 1970, 00:00:00 GMT. */
   virtual int64_t milliseconds() const;
@@ -99,32 +99,22 @@ class APACHE_GEODE_EXPORT CacheableDate
    * milliseconds() method.
    *
    * @return the hashcode for this object. */
-  virtual int32_t hashcode() const override;
+  int32_t hashcode() const override;
 
-  explicit operator time_t() const { return m_timevalue / 1000; }
-  explicit operator time_point() const {
-    return clock::from_time_t(0) + duration(m_timevalue);
-  }
-  explicit operator duration() const { return duration(m_timevalue); }
+  explicit operator time_t() const;
+  explicit operator time_point() const;
+  explicit operator duration() const;
 
   /**
    * Factory method for creating an instance of CacheableDate
    */
-  static std::shared_ptr<CacheableDate> create() {
-    return std::make_shared<CacheableDate>();
-  }
+  static std::shared_ptr<CacheableDate> create();
 
-  static std::shared_ptr<CacheableDate> create(const time_t& value) {
-    return std::make_shared<CacheableDate>(value);
-  }
+  static std::shared_ptr<CacheableDate> create(const time_t& value);
 
-  static std::shared_ptr<CacheableDate> create(const time_point& value) {
-    return std::make_shared<CacheableDate>(value);
-  }
+  static std::shared_ptr<CacheableDate> create(const time_point& value);
 
-  static std::shared_ptr<CacheableDate> create(const duration& value) {
-    return std::make_shared<CacheableDate>(value);
-  }
+  static std::shared_ptr<CacheableDate> create(const duration& value);
 
   std::string toString() const override;
 };

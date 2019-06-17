@@ -49,11 +49,10 @@ class APACHE_GEODE_EXPORT CacheableObjectArray
       public std::vector<std::shared_ptr<Cacheable>> {
  public:
   /** Constructor, used for deserialization. */
-  inline CacheableObjectArray() : std::vector<std::shared_ptr<Cacheable>>() {}
+  CacheableObjectArray();
 
   /** Create a vector with n elements allocated. */
-  inline explicit CacheableObjectArray(int32_t n)
-      : std::vector<std::shared_ptr<Cacheable>>(n) {}
+  CacheableObjectArray(int32_t n);
 
   ~CacheableObjectArray() noexcept override = default;
 
@@ -67,28 +66,20 @@ class APACHE_GEODE_EXPORT CacheableObjectArray
   /**
    * @brief creation function for java Object[]
    */
-  inline static std::shared_ptr<Serializable> createDeserializable() {
-    return std::make_shared<CacheableObjectArray>();
-  }
+  static std::shared_ptr<Serializable> createDeserializable();
 
-  internal::DSCode getDsCode() const override {
-    return internal::DSCode::CacheableObjectArray;
-  }
+  internal::DSCode getDsCode() const override;
 
   /**
    * Factory method for creating the default instance of CacheableObjectArray.
    */
-  inline static std::shared_ptr<CacheableObjectArray> create() {
-    return std::make_shared<CacheableObjectArray>();
-  }
+  static std::shared_ptr<CacheableObjectArray> create();
 
   /**
    * Factory method for creating an instance of CacheableObjectArray with
    * given size.
    */
-  inline static std::shared_ptr<CacheableObjectArray> create(int32_t n) {
-    return std::make_shared<CacheableObjectArray>(n);
-  }
+  static std::shared_ptr<CacheableObjectArray> create(int32_t n);
 
   virtual size_t objectSize() const override;
 };

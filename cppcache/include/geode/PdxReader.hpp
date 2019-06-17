@@ -60,12 +60,12 @@ class APACHE_GEODE_EXPORT PdxReader {
   /**
    * @brief constructors
    */
-  PdxReader() {}
+  PdxReader();
 
   /**
    * @brief destructor
    */
-  virtual ~PdxReader() {}
+  virtual ~PdxReader();
 
   /**
    * Read a wide char value from the <code>PdxReader</code>.

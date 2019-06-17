@@ -25,6 +25,8 @@ namespace apache {
 namespace geode {
 namespace client {
 
+PdxWrapper::~PdxWrapper() {}
+
 PdxWrapper::PdxWrapper(std::shared_ptr<void> userObject, std::string className)
     : m_userObject(userObject), m_className(className) {}
 

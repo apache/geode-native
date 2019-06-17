@@ -77,7 +77,7 @@ class APACHE_GEODE_EXPORT PdxWrapper : public PdxSerializable {
 
   std::string toString() const override;
 
-  ~PdxWrapper() noexcept override {}
+  ~PdxWrapper() override;
 
  private:
   PdxWrapper() = delete;

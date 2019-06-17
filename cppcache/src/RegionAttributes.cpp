@@ -59,6 +59,26 @@ RegionAttributes::RegionAttributes()
 
 RegionAttributes::~RegionAttributes() {}
 
+bool RegionAttributes::getCachingEnabled() const { return m_caching; }
+
+const std::string& RegionAttributes::getPoolName() const { return m_poolName; }
+
+bool RegionAttributes::getCloningEnabled() const { return m_isClonable; }
+
+bool RegionAttributes::getConcurrencyChecksEnabled() const {
+  return m_isConcurrencyChecksEnabled;
+}
+
+bool RegionAttributes::getEntryExpiryEnabled() const {
+  return (m_entryTimeToLive > std::chrono::seconds::zero() ||
+          m_entryIdleTimeout > std::chrono::seconds::zero());
+}
+
+bool RegionAttributes::getRegionExpiryEnabled() const {
+  return (m_regionTimeToLive > std::chrono::seconds::zero() ||
+          m_regionIdleTimeout > std::chrono::seconds::zero());
+}
+
 namespace impl {
 
 /**

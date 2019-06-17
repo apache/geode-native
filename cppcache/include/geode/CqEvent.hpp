@@ -52,9 +52,9 @@ class CqQuery;
  */
 class APACHE_GEODE_EXPORT CqEvent {
  public:
-  CqEvent() {}
+  CqEvent();
 
-  virtual ~CqEvent() {}
+  virtual ~CqEvent();
   /**
    * Get the CqQuery object of this event.
    * @see CqQuery
@@ -99,9 +99,8 @@ class APACHE_GEODE_EXPORT CqEvent {
    */
   virtual std::shared_ptr<CacheableBytes> getDeltaValue() const = 0;
 
- private:
-  CqEvent(const CqEvent&);
-  void operator=(const CqEvent&);
+  CqEvent(const CqEvent&) = delete;
+  void operator=(const CqEvent&) = delete;
 };
 }  // namespace client
 }  // namespace geode

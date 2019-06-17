@@ -47,22 +47,11 @@ class APACHE_GEODE_EXPORT CacheableString
   mutable int m_hashcode;
 
  public:
-  inline explicit CacheableString(DSCode type = DSCode::CacheableASCIIString)
-      : m_str(), m_type(type), m_hashcode(0) {}
+  CacheableString(DSCode type = DSCode::CacheableASCIIString);
 
-  inline explicit CacheableString(const std::string& value)
-      : CacheableString(std::string(value)) {}
+  CacheableString(const std::string& value);
 
-  inline explicit CacheableString(std::string&& value)
-      : m_str(std::move(value)), m_hashcode(0) {
-    bool ascii = isAscii(m_str);
-
-    m_type =
-        m_str.length() > std::numeric_limits<uint16_t>::max()
-            ? ascii ? DSCode::CacheableASCIIStringHuge
-                    : DSCode::CacheableStringHuge
-            : ascii ? DSCode::CacheableASCIIString : DSCode::CacheableString;
-  }
+  CacheableString(std::string&& value);
 
   ~CacheableString() noexcept override = default;
 
@@ -73,7 +62,7 @@ class APACHE_GEODE_EXPORT CacheableString
 
   void fromData(DataInput& input) override;
 
-  DSCode getDsCode() const override { return m_type; }
+  DSCode getDsCode() const override;
 
   /** creation function for strings */
   static std::shared_ptr<Serializable> createDeserializable();
@@ -93,14 +82,9 @@ class APACHE_GEODE_EXPORT CacheableString
   /** return the hashcode for this key. */
   virtual int32_t hashcode() const override;
 
-  inline static std::shared_ptr<CacheableString> create(
-      const std::string& value) {
-    return std::make_shared<CacheableString>(value);
-  }
+  static std::shared_ptr<CacheableString> create(const std::string& value);
 
-  inline static std::shared_ptr<CacheableString> create(std::string&& value) {
-    return std::make_shared<CacheableString>(std::move(value));
-  }
+  static std::shared_ptr<CacheableString> create(std::string&& value);
 
   static std::shared_ptr<CacheableString> create(const std::u16string& value);
 
@@ -110,23 +94,14 @@ class APACHE_GEODE_EXPORT CacheableString
 
   static std::shared_ptr<CacheableString> create(std::u32string&& value);
 
-  inline static std::shared_ptr<CacheableString> create(
-      const std::wstring& value) {
-    return std::make_shared<CacheableString>(
-        std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-            .to_bytes(value));
-  }
+  static std::shared_ptr<CacheableString> create(const std::wstring& value);
 
-  inline static std::shared_ptr<CacheableString> create(std::wstring&& value) {
-    return std::make_shared<CacheableString>(
-        std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t>{}
-            .to_bytes(std::move(value)));
-  }
+  static std::shared_ptr<CacheableString> create(std::wstring&& value);
 
   /** Return the length of the contained string. */
-  inline std::string::size_type length() const { return m_str.length(); }
+  std::string::size_type length() const;
 
-  inline const std::string& value() const { return m_str; }
+  const std::string& value() const;
 
   virtual std::string toString() const override;
 

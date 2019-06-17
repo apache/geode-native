@@ -83,6 +83,33 @@ std::string CacheableDate::toString() const {
   return apache::geode::util::chrono::to_string(static_cast<time_t>(*this));
 }
 
+size_t CacheableDate::objectSize() const { return sizeof(CacheableDate); }
+
+CacheableDate::operator time_t() const { return m_timevalue / 1000; }
+CacheableDate::operator time_point() const {
+  return clock::from_time_t(0) + duration(m_timevalue);
+}
+CacheableDate::operator duration() const { return duration(m_timevalue); }
+
+/**
+ * Factory method for creating an instance of CacheableDate
+ */
+std::shared_ptr<CacheableDate> CacheableDate::create() {
+  return std::make_shared<CacheableDate>();
+}
+
+std::shared_ptr<CacheableDate> CacheableDate::create(const time_t& value) {
+  return std::make_shared<CacheableDate>(value);
+}
+
+std::shared_ptr<CacheableDate> CacheableDate::create(const time_point& value) {
+  return std::make_shared<CacheableDate>(value);
+}
+
+std::shared_ptr<CacheableDate> CacheableDate::create(const duration& value) {
+  return std::make_shared<CacheableDate>(value);
+}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

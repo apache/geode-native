@@ -15,27 +15,14 @@
  * limitations under the License.
  */
 
-#include <geode/CacheableString.hpp>
-#include <geode/PdxSerializable.hpp>
-#include <geode/internal/CacheableKeys.hpp>
-
-#include "PdxHelper.hpp"
+#include <geode/DataSerializable.hpp>
 
 namespace apache {
 namespace geode {
 namespace client {
 
-PdxSerializable::~PdxSerializable() {}
-
-std::string PdxSerializable::toString() const { return getClassName(); }
-
-bool PdxSerializable::operator==(const CacheableKey& other) const {
-  return (this == &other);
-}
-
-int32_t PdxSerializable::hashcode() const {
-  return internal::hashcode(
-      static_cast<int64_t>(reinterpret_cast<uintptr_t>(this)));
+const std::type_info& DataSerializable::getType() const {
+  return typeid(*this);
 }
 
 }  // namespace client

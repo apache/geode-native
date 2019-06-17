@@ -65,69 +65,60 @@ class APACHE_GEODE_EXPORT SystemProperties {
   /** print all settings to the process log. */
   void logSettings();
 
-  uint32_t threadPoolSize() const { return m_threadPoolSize; }
+  uint32_t threadPoolSize() const;
 
   /**
    * Returns the sampling interval of the sampling thread.
    * This would be how often the statistics thread writes to disk.
    */
-  const std::chrono::milliseconds statisticsSampleInterval() const {
-    return m_statisticsSampleInterval;
-  }
+  const std::chrono::milliseconds statisticsSampleInterval() const;
 
   /**
    * Tells whether statistics needs to be archived or not.
    */
-  bool statisticsEnabled() const { return m_statisticsEnabled; }
+  bool statisticsEnabled() const;
 
   /**
    * Whether SSL is enabled for socket connections.
    */
-  bool sslEnabled() const { return m_sslEnabled; }
+  bool sslEnabled() const;
 
   /**
    * Whether time stats are enabled for the statistics.
    */
-  bool getEnableTimeStatistics() const /*timestatisticsEnabled()*/
-  {
-    return m_timestatisticsEnabled;
-  } /*m_timestatisticsEnabled*/
+  bool getEnableTimeStatistics() const;
 
   /**
    * Returns the path of the private key file for SSL use.
    */
-  const std::string& sslKeyStore() const { return m_sslKeyStore; }
+  const std::string& sslKeyStore() const;
 
   /**
    * Returns the client keystore password.
    */
-  const std::string& sslKeystorePassword() const {
-    return m_sslKeystorePassword;
-  }
+  const std::string& sslKeystorePassword() const;
 
   /**
    * Returns the path of the public key file for SSL use.
    */
-  const std::string& sslTrustStore() const { return m_sslTrustStore; }
+  const std::string& sslTrustStore() const;
 
   /**
    * Returns the name of the filename into which statistics would
    * be archived.
    */
-  const std::string& statisticsArchiveFile() const {
-    return m_statisticsArchiveFile;
-  }
+  const std::string& statisticsArchiveFile() const;
 
   /**
    * Returns the name of the filename into which logging would
    * be done.
    */
-  const std::string& logFilename() const { return m_logFilename; }
+  const std::string& logFilename() const;
 
   /**
    * Returns the log level at which logging would be done.
    */
-  LogLevel logLevel() const { return m_logLevel; }
+  LogLevel logLevel() const;
 
   /**
    * Returns a boolean that specifies if heapLRULimit has been enabled for the
@@ -138,7 +129,7 @@ class APACHE_GEODE_EXPORT SystemProperties {
    * memory
    *
    */
-  bool heapLRULimitEnabled() const { return (m_heapLRULimit > 0); }
+  bool heapLRULimitEnabled() const;
 
   /**
    * Returns the HeapLRULimit value (in bytes), the maximum memory that values
@@ -147,171 +138,144 @@ class APACHE_GEODE_EXPORT SystemProperties {
    * cache memory usage
    *
    */
-  size_t heapLRULimit() const { return m_heapLRULimit; }
+  size_t heapLRULimit() const;
 
   /**
    * Returns the HeapLRUDelta value (a percent value). This specifies the
    * percentage of entries the system will evict each time it detects that
    * it has exceeded the HeapLRULimit. Defaults to 10%
    */
-  int32_t heapLRUDelta() const { return m_heapLRUDelta; }
+  int32_t heapLRUDelta() const;
 
   /**
    * Returns the maximum socket buffer size to use
    */
-  int32_t maxSocketBufferSize() const { return m_maxSocketBufferSize; }
+  int32_t maxSocketBufferSize() const;
 
   /**
    * Returns the time between two consecutive pings to servers
    */
-  const std::chrono::seconds& pingInterval() const { return m_pingInterval; }
+  const std::chrono::seconds& pingInterval() const;
 
   /**
    * Returns the time between two consecutive checks for redundancy for HA
    */
-  const std::chrono::seconds& redundancyMonitorInterval() const {
-    return m_redundancyMonitorInterval;
-  }
+  const std::chrono::seconds& redundancyMonitorInterval() const;
 
   /**
    * Returns the periodic notify ack interval
    */
-  const std::chrono::milliseconds& notifyAckInterval() const {
-    return m_notifyAckInterval;
-  }
+  const std::chrono::milliseconds& notifyAckInterval() const;
 
   /**
    * Returns the expiry time of an idle event id map entry for duplicate
    * notification checking
    */
-  const std::chrono::milliseconds& notifyDupCheckLife() const {
-    return m_notifyDupCheckLife;
-  }
+  const std::chrono::milliseconds& notifyDupCheckLife() const;
 
   /**
    * Returns the durable client ID
    */
-  const std::string& durableClientId() const { return m_durableClientId; }
+  const std::string& durableClientId() const;
 
   /**
    * Returns the durable timeout
    */
-  const std::chrono::seconds& durableTimeout() const {
-    return m_durableTimeout;
-  }
+  const std::chrono::seconds& durableTimeout() const;
 
   /**
    * Returns the connect timeout used for server and locator handshakes
    */
-  const std::chrono::milliseconds& connectTimeout() const {
-    return m_connectTimeout;
-  }
+  const std::chrono::milliseconds& connectTimeout() const;
 
   /**
    * Returns the connect wait timeout(in milliseconds) used for to connect to
    * server This is only applicable for linux
    */
-  const std::chrono::milliseconds& connectWaitTimeout() const {
-    return m_connectWaitTimeout;
-  }
+  const std::chrono::milliseconds& connectWaitTimeout() const;
 
   /**
    * Returns the connect wait timeout(in milliseconds) used for to connect to
    * server This is only applicable for linux
    */
-  const std::chrono::milliseconds& bucketWaitTimeout() const {
-    return m_bucketWaitTimeout;
-  }
+  const std::chrono::milliseconds& bucketWaitTimeout() const;
 
   /**
    * Returns client Queueconflation option
    */
-  const std::string& conflateEvents() const { return m_conflateEvents; }
+  const std::string& conflateEvents() const;
 
-  const std::string& name() const { return m_name; }
+  const std::string& name() const;
 
-  const std::string& cacheXMLFile() const { return m_cacheXMLFile; }
+  const std::string& cacheXMLFile() const;
 
   /**
    * Returns the log-file-size-limit.
    */
-  uint32_t logFileSizeLimit() const { return m_logFileSizeLimit; }
+  uint32_t logFileSizeLimit() const;
 
   /**
    * Returns the log-disk-space-limit.
    */
-  uint32_t logDiskSpaceLimit() const { return m_logDiskSpaceLimit; }
+  uint32_t logDiskSpaceLimit() const;
 
   /**
    * Returns the stat-file-space-limit.
    */
-  uint32_t statsFileSizeLimit() const { return m_statsFileSizeLimit; }
+  uint32_t statsFileSizeLimit() const;
 
   /**
    * Returns the stat-disk-size-limit.
    */
-  uint32_t statsDiskSpaceLimit() const { return m_statsDiskSpaceLimit; }
+  uint32_t statsDiskSpaceLimit() const;
 
-  uint32_t connectionPoolSize() const { return m_connectionPoolSize; }
-  void setjavaConnectionPoolSize(uint32_t size) { m_connectionPoolSize = size; }
+  uint32_t connectionPoolSize() const;
+
+  void setjavaConnectionPoolSize(uint32_t size);
 
   /**
    * Returns true if chunk handler thread is enabled, false if not
    */
-  bool enableChunkHandlerThread() const { return m_enableChunkHandlerThread; }
+  bool enableChunkHandlerThread() const;
 
   /**
    * Enables or disables the chunk handler thread
    */
-  void setEnableChunkHandlerThread(bool set) {
-    m_enableChunkHandlerThread = set;
-  }
+  void setEnableChunkHandlerThread(bool set);
 
   /**
    * Returns true if app wants to clear pdx type ids when client disconnect.
    * default is false.
    */
-  bool onClientDisconnectClearPdxTypeIds() const {
-    return m_onClientDisconnectClearPdxTypeIds;
-  }
+  bool onClientDisconnectClearPdxTypeIds() const;
 
   /**
    * Set to true if app wants to clear pdx type ids when client disconnect.
    * Default is false.
    */
-  void setOnClientDisconnectClearPdxTypeIds(bool set) {
-    m_onClientDisconnectClearPdxTypeIds = set;
-  }
+  void setOnClientDisconnectClearPdxTypeIds(bool set);
 
   /** Return the security Diffie-Hellman secret key algorithm */
-  const std::string& securityClientDhAlgo() const {
-    return m_securityClientDhAlgo;
-  }
+  const std::string& securityClientDhAlgo() const;
 
   /** Return the keystore (.pem file ) path */
-  const std::string& securityClientKsPath() const {
-    return m_securityClientKsPath;
-  }
+  const std::string& securityClientKsPath() const;
 
   /** Returns securityPropertiesPtr.
    * @return  std::shared_ptr<Properties> value.
    */
-  std::shared_ptr<Properties> getSecurityProperties() const {
-    return m_securityPropertiesPtr;
-  }
+  std::shared_ptr<Properties> getSecurityProperties() const;
 
   /** Checks whether list of endpoint is shuffled or not.
    * @return  bool value.
    */
-  inline bool isEndpointShufflingDisabled() const {
-    return m_disableShufflingEndpoint;
-  }
+  bool isEndpointShufflingDisabled() const;
 
   /**
    * Check whether Diffie-Hellman based credentials encryption is on.
    * @return bool flag to indicate whether DH for credentials is on.
    */
-  bool isDhOn() const { return !m_securityClientDhAlgo.empty(); }
+  bool isDhOn() const;
 
   /**
    * Whether a non durable client starts to receive and process
@@ -322,21 +286,17 @@ class APACHE_GEODE_EXPORT SystemProperties {
    * whether the client is initialized programmatically or declaratively.
    * @return the value of the property.
    */
-  inline bool autoReadyForEvents() const { return m_autoReadyForEvents; }
+  bool autoReadyForEvents() const;
 
   /**
    * Returns the timeout after which suspended transactions are rolled back.
    */
-  const std::chrono::seconds suspendedTxTimeout() const {
-    return m_suspendedTxTimeout;
-  }
+  const std::chrono::seconds suspendedTxTimeout() const;
 
   /**
    * Returns the tombstone timeout
    */
-  const std::chrono::milliseconds tombstoneTimeout() const {
-    return m_tombstoneTimeout;
-  }
+  const std::chrono::milliseconds tombstoneTimeout() const;
 
  private:
   std::chrono::milliseconds m_statisticsSampleInterval;
