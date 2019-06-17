@@ -44,10 +44,10 @@ class Serializable;
 
 class APACHE_GEODE_EXPORT CacheableFileName : public CacheableString {
  public:
-  inline CacheableFileName() = default;
-  inline explicit CacheableFileName(const std::string& value)
+  CacheableFileName() = default;
+  explicit CacheableFileName(const std::string& value)
       : CacheableString(value) {}
-  inline explicit CacheableFileName(std::string&& value)
+  explicit CacheableFileName(std::string&& value)
       : CacheableString(std::move(value)) {}
   ~CacheableFileName() noexcept override = default;
   void operator=(const CacheableFileName& other) = delete;
