@@ -30,6 +30,19 @@ TSSTXStateWrapper::~TSSTXStateWrapper() {
   }
 }
 
+TSSTXStateWrapper::TSSTXStateWrapper() : m_txState(nullptr) {}
+
+TSSTXStateWrapper::~TSSTXStateWrapper();
+
+TSSTXStateWrapper& TSSTXStateWrapper::get() {
+  static thread_local TSSTXStateWrapper instance;
+  return instance;
+}
+
+TXState* TSSTXStateWrapper::getTXState() { return m_txState; }
+
+void TSSTXStateWrapper::setTXState(TXState* conn) { m_txState = conn; }
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

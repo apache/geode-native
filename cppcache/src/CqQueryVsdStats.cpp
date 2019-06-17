@@ -82,6 +82,38 @@ CqQueryVsdStats::~CqQueryVsdStats() {
     m_cqQueryVsdStats = nullptr;
   }
 }
+
+void CqQueryVsdStats::close() { m_cqQueryVsdStats->close(); }
+
+void CqQueryVsdStats::incNumInserts() {
+  m_cqQueryVsdStats->incInt(m_numInsertsId, 1);
+}
+
+void CqQueryVsdStats::incNumUpdates() {
+  m_cqQueryVsdStats->incInt(m_numUpdatesId, 1);
+}
+
+void CqQueryVsdStats::incNumDeletes() {
+  m_cqQueryVsdStats->incInt(m_numDeletesId, 1);
+}
+
+void CqQueryVsdStats::incNumEvents() {
+  m_cqQueryVsdStats->incInt(m_numEventsId, 1);
+}
+
+uint32_t CqQueryVsdStats::numInserts() const {
+  return m_cqQueryVsdStats->getInt(m_numInsertsId);
+}
+uint32_t CqQueryVsdStats::numUpdates() const {
+  return m_cqQueryVsdStats->getInt(m_numUpdatesId);
+}
+uint32_t CqQueryVsdStats::numDeletes() const {
+  return m_cqQueryVsdStats->getInt(m_numDeletesId);
+}
+uint32_t CqQueryVsdStats::numEvents() const {
+  return m_cqQueryVsdStats->getInt(m_numEventsId);
+}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

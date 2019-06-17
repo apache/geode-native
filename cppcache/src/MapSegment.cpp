@@ -866,6 +866,8 @@ MapSegment::MapSegment()
       m_numDestroyTrackers(nullptr),
       m_rehashCount(0),
       m_tombstoneList(nullptr) {}
+
+uint32_t MapSegment::rehashCount() { return m_rehashCount; }
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

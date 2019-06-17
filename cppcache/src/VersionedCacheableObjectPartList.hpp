@@ -98,7 +98,7 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
   VersionedCacheableObjectPartList(ThinClientRegion* region,
                                    std::recursive_mutex& responseLock);
 
-  inline uint16_t getEndpointMemId();
+  uint16_t getEndpointMemId();
 
   std::vector<std::shared_ptr<VersionTag>>& getVersionedTagptr();
 

@@ -133,14 +133,8 @@ class APACHE_GEODE_EXPORT LocalRegion : public RegionInternal {
   const std::string& getName() const override;
   const std::string& getFullPath() const override;
   std::shared_ptr<Region> getParentRegion() const override;
-  const RegionAttributes& getAttributes() const override {
-    return m_regionAttributes;
-  }
-  std::shared_ptr<AttributesMutator> getAttributesMutator() const override {
-    return std::make_shared<AttributesMutator>(
-        std::const_pointer_cast<LocalRegion>(
-            std::static_pointer_cast<const LocalRegion>(shared_from_this())));
-  }
+  const RegionAttributes& getAttributes() const override;
+  std::shared_ptr<AttributesMutator> getAttributesMutator() const override;
   void updateAccessAndModifiedTime(bool modified) override;
   std::shared_ptr<CacheStatistics> getStatistics() const override;
   void clear(const std::shared_ptr<Serializable>& aCallbackArgument =
@@ -369,7 +363,7 @@ class APACHE_GEODE_EXPORT LocalRegion : public RegionInternal {
 
   bool cacheEnabled() override;
 
-  inline bool cachelessWithListener();
+  bool cachelessWithListener();
 
   bool isDestroyed() const override;
   /* above public methods are inherited from RegionInternal */

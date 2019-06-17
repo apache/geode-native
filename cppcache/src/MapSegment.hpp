@@ -195,7 +195,7 @@ class APACHE_GEODE_EXPORT MapSegment {
    */
   void getValues(std::vector<std::shared_ptr<Cacheable>>& result);
 
-  inline uint32_t rehashCount() { return m_rehashCount; }
+  uint32_t rehashCount();
 
   int addTrackerForEntry(const std::shared_ptr<CacheableKey>& key,
                          std::shared_ptr<Cacheable>& oldValue, bool addIfAbsent,

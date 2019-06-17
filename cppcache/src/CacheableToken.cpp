@@ -69,6 +69,51 @@ std::string CacheableToken::toString() const {
 
 size_t CacheableToken::objectSize() const { return sizeof(m_value); }
 
+std::shared_ptr<CacheableToken>& CacheableToken::invalid() {
+  return invalidToken;
+}
+
+std::shared_ptr<CacheableToken>& CacheableToken::destroyed() {
+  return destroyedToken;
+}
+
+std::shared_ptr<CacheableToken>& CacheableToken::overflowed() {
+  return overflowedToken;
+}
+
+std::shared_ptr<CacheableToken>& CacheableToken::tombstone() {
+  return tombstoneToken;
+}
+
+bool CacheableToken::isInvalid() { return m_value == INVALID; }
+
+bool CacheableToken::isDestroyed() { return m_value == DESTROYED; }
+
+bool CacheableToken::isOverflowed() { return m_value == OVERFLOWED; }
+
+bool CacheableToken::isTombstone() { return m_value == TOMBSTONE; }
+
+bool CacheableToken::isToken(const std::shared_ptr<Cacheable>& ptr) {
+  return (invalidToken == ptr) || (destroyedToken == ptr) ||
+         (overflowedToken == ptr) || (tombstoneToken == ptr);
+}
+
+bool CacheableToken::isInvalid(const std::shared_ptr<Cacheable>& ptr) {
+  return invalidToken == ptr;
+}
+
+bool CacheableToken::isDestroyed(const std::shared_ptr<Cacheable>& ptr) {
+  return destroyedToken == ptr;
+}
+
+bool CacheableToken::isOverflowed(const std::shared_ptr<Cacheable>& ptr) {
+  return overflowedToken == ptr;
+}
+
+bool CacheableToken::isTombstone(const std::shared_ptr<Cacheable>& ptr) {
+  return tombstoneToken == ptr;
+}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

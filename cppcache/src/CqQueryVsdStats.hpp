@@ -47,28 +47,20 @@ class APACHE_GEODE_EXPORT CqQueryVsdStats : public CqStatistics {
   /** disable stat collection for this item. */
   ~CqQueryVsdStats() override;
 
-  void close() { m_cqQueryVsdStats->close(); }
+  void close();
 
-  inline void incNumInserts() { m_cqQueryVsdStats->incInt(m_numInsertsId, 1); }
+  void incNumInserts();
 
-  inline void incNumUpdates() { m_cqQueryVsdStats->incInt(m_numUpdatesId, 1); }
+  void incNumUpdates();
 
-  inline void incNumDeletes() { m_cqQueryVsdStats->incInt(m_numDeletesId, 1); }
+  void incNumDeletes();
 
-  inline void incNumEvents() { m_cqQueryVsdStats->incInt(m_numEventsId, 1); }
+  void incNumEvents();
 
-  uint32_t numInserts() const override {
-    return m_cqQueryVsdStats->getInt(m_numInsertsId);
-  }
-  uint32_t numUpdates() const override {
-    return m_cqQueryVsdStats->getInt(m_numUpdatesId);
-  }
-  uint32_t numDeletes() const override {
-    return m_cqQueryVsdStats->getInt(m_numDeletesId);
-  }
-  uint32_t numEvents() const override {
-    return m_cqQueryVsdStats->getInt(m_numEventsId);
-  }
+  uint32_t numInserts() const override;
+  uint32_t numUpdates() const override;
+  uint32_t numDeletes() const override;
+  uint32_t numEvents() const override;
 
  private:
   Statistics* m_cqQueryVsdStats;

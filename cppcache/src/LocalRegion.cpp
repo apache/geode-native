@@ -3215,6 +3215,16 @@ bool LocalRegion::isLocalOp(const CacheEventFlags* eventFlags) {
          (eventFlags && eventFlags->isLocal());
 }
 
+const RegionAttributes& LocalRegion::getAttributes() const {
+  return m_regionAttributes;
+}
+
+std::shared_ptr<AttributesMutator> LocalRegion::getAttributesMutator() const {
+  return std::make_shared<AttributesMutator>(
+      std::const_pointer_cast<LocalRegion>(
+          std::static_pointer_cast<const LocalRegion>(shared_from_this())));
+}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

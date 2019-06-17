@@ -45,18 +45,10 @@ class APACHE_GEODE_EXPORT CacheableToken
   static std::shared_ptr<CacheableToken> tombstoneToken;
 
  public:
-  inline static std::shared_ptr<CacheableToken>& invalid() {
-    return invalidToken;
-  }
-  inline static std::shared_ptr<CacheableToken>& destroyed() {
-    return destroyedToken;
-  }
-  inline static std::shared_ptr<CacheableToken>& overflowed() {
-    return overflowedToken;
-  }
-  inline static std::shared_ptr<CacheableToken>& tombstone() {
-    return tombstoneToken;
-  }
+  static std::shared_ptr<CacheableToken>& invalid();
+  static std::shared_ptr<CacheableToken>& destroyed();
+  static std::shared_ptr<CacheableToken>& overflowed();
+  static std::shared_ptr<CacheableToken>& tombstone();
   /**
    *@brief serialize this object
    **/
@@ -74,34 +66,23 @@ class APACHE_GEODE_EXPORT CacheableToken
 
   ~CacheableToken() override = default;
 
-  inline bool isInvalid() { return m_value == INVALID; }
+  bool isInvalid();
 
-  inline bool isDestroyed() { return m_value == DESTROYED; }
+  bool isDestroyed();
 
-  inline bool isOverflowed() { return m_value == OVERFLOWED; }
+  bool isOverflowed();
 
-  inline bool isTombstone() { return m_value == TOMBSTONE; }
+  bool isTombstone();
 
-  static bool isToken(const std::shared_ptr<Cacheable>& ptr) {
-    return (invalidToken == ptr) || (destroyedToken == ptr) ||
-           (overflowedToken == ptr) || (tombstoneToken == ptr);
-  }
+  static bool isToken(const std::shared_ptr<Cacheable>& ptr);
 
-  static bool isInvalid(const std::shared_ptr<Cacheable>& ptr) {
-    return invalidToken == ptr;
-  }
+  static bool isInvalid(const std::shared_ptr<Cacheable>& ptr);
 
-  static bool isDestroyed(const std::shared_ptr<Cacheable>& ptr) {
-    return destroyedToken == ptr;
-  }
+  static bool isDestroyed(const std::shared_ptr<Cacheable>& ptr);
 
-  static bool isOverflowed(const std::shared_ptr<Cacheable>& ptr) {
-    return overflowedToken == ptr;
-  }
+  static bool isOverflowed(const std::shared_ptr<Cacheable>& ptr);
 
-  static bool isTombstone(const std::shared_ptr<Cacheable>& ptr) {
-    return tombstoneToken == ptr;
-  }
+  static bool isTombstone(const std::shared_ptr<Cacheable>& ptr);
 
   /**
    * Display this object as 'string', which depend on the implementation in

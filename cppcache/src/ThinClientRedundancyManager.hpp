@@ -134,7 +134,7 @@ class ThinClientRedundancyManager {
   GfErrType createPoolQueueEP(TcrEndpoint* ep, const TcrMessage* request,
                               TcrMessageReply* reply, bool isPrimary);
 
-  inline bool isDurable();
+  bool isDurable();
   int processEventIdMap(const ACE_Time_Value&, const void*);
   std::unique_ptr<Task<ThinClientRedundancyManager>> m_periodicAckTask;
   ACE_Semaphore m_periodicAckSema;
