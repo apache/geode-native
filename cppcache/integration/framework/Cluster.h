@@ -163,6 +163,10 @@ class Server {
 using LocatorCount = NamedType<size_t, struct LocatorCountParameter>;
 using ServerCount = NamedType<size_t, struct ServerCountParameter>;
 using Name = NamedType<std::string, struct NameParameter>;
+using Classpath = NamedType<std::string, struct ClasspathParameter>;
+using SecurityManager = NamedType<std::string, struct SecurityManagerParameter>;
+using User = NamedType<std::string, struct UserParameter>;
+using Password = NamedType<std::string, struct PasswordParameter>;
 
 class Cluster {
  public:
@@ -177,14 +181,27 @@ class Cluster {
                 initialLocators, initialServers){};
 
   Cluster(Name name, LocatorCount initialLocators, ServerCount initialServers)
-      : name_(name.get()),
-        initialLocators_(initialLocators.get()),
-        initialServers_(initialServers.get()) {
+      : Cluster(Name(name.get()),
+                Classpath(""),
+                SecurityManager(""),
+                User(""),
+                Password(""),
+                initialLocators, initialServers){};
+
+  Cluster(Name name,
+      Classpath classpath,
+      SecurityManager securityManager,
+      User user,
+      Password password,
+      LocatorCount initialLocators,
+      ServerCount initialServers) :
+    name_(name.get()), classpath_(classpath.get()), securityManager_(securityManager.get()), user_(user.get()), password_(password.get()), initialLocators_(initialLocators.get()), initialServers_(initialServers.get()) {
+
     jmxManagerPort_ = Framework::getAvailablePort();
 
     removeServerDirectory();
     start();
-  }
+  };
 
   ~Cluster() noexcept {
     try {
@@ -218,6 +235,11 @@ class Cluster {
 
   apache::geode::client::Cache createCache(
       const std::unordered_map<std::string, std::string> &properties) {
+    return createCache(properties, false);
+  }
+
+  apache::geode::client::Cache createCache(
+      const std::unordered_map<std::string, std::string> &properties, bool subscriptionEnabled) {
     using apache::geode::client::CacheFactory;
 
     CacheFactory cacheFactory;
@@ -230,7 +252,7 @@ class Cluster {
                      .set("statistic-sampling-enabled", "false")
                      .create();
 
-    auto poolFactory = cache.getPoolManager().createFactory();
+    auto poolFactory = cache.getPoolManager().createFactory().setSubscriptionEnabled(subscriptionEnabled);
     applyLocators(poolFactory);
     poolFactory.create("default");
 
@@ -250,8 +272,28 @@ class Cluster {
     return servers_;
   }
 
+  std::string& getClasspath() {
+    return classpath_;
+  }
+
+  std::string& getSecurityManager() {
+    return securityManager_;
+  }
+
+  std::string& getUser() {
+    return user_;
+  }
+
+  std::string& getPassword() {
+    return password_;
+  }
+
  private:
   std::string name_;
+  std::string classpath_;
+  std::string securityManager_;
+  std::string user_;
+  std::string password_;
 
   size_t initialLocators_;
   std::vector<Locator> locators_;

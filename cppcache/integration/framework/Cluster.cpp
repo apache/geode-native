@@ -33,7 +33,7 @@ void Locator::start() {
     cluster_.getGfsh().stop().locator().withDir(name_).execute();
   }
 
-  cluster_.getGfsh()
+  auto locator = cluster_.getGfsh()
       .start()
       .locator()
       .withDir(name_)
@@ -42,8 +42,17 @@ void Locator::start() {
       .withPort(locatorAddress_.port)
       .withMaxHeap("256m")
       .withJmxManagerPort(jmxManagerPort_)
-      .withHttpServicePort(0)
-      .execute();
+      .withHttpServicePort(0);
+
+  if (!cluster_.getClasspath().empty()) {
+    locator.withClasspath(cluster_.getClasspath());
+  }
+
+  if (!cluster_.getSecurityManager().empty()) {
+    locator.withSecurityManager(cluster_.getSecurityManager());
+  }
+
+  locator.execute();
 
   //    std::cout << "locator: " << locatorAddress_.port << ": started"
   //              << std::endl;
@@ -62,7 +71,7 @@ void Server::start() {
   auto safeName = name_;
   std::replace(safeName.begin(), safeName.end(), '/', '_');
 
-  cluster_.getGfsh()
+  auto server = cluster_.getGfsh()
       .start()
       .server()
       .withDir(name_)
@@ -71,8 +80,25 @@ void Server::start() {
       .withPort(serverAddress_.port)
       .withMaxHeap("1g")
       .withLocators(locators_.front().getAddress().address + "[" +
-                    std::to_string(locators_.front().getAddress().port) + "]")
-      .execute();
+                    std::to_string(locators_.front().getAddress().port) + "]");
+
+  if (!cluster_.getClasspath().empty()) {
+    server.withClasspath(cluster_.getClasspath());
+  }
+
+  if (!cluster_.getSecurityManager().empty()) {
+    server.withSecurityManager(cluster_.getSecurityManager());
+  }
+
+  if (!cluster_.getUser().empty()) {
+    server.withUser(cluster_.getUser());
+  }
+
+  if (!cluster_.getPassword().empty()) {
+    server.withPassword(cluster_.getPassword());
+  }
+
+  server.execute();
 
   //    std::cout << "server: " << serverAddress_.port << ": started" <<
   //    std::endl;

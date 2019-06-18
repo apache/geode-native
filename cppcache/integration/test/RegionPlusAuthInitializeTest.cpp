@@ -35,6 +35,7 @@
 #include <geode/RegionShortcut.hpp>
 
 #include "CacheRegionHelper.hpp"
+#include "SimpleCqListener.hpp"
 #include "framework/Cluster.h"
 #include "framework/Framework.h"
 #include "framework/Gfsh.h"
@@ -52,6 +53,7 @@ using apache::geode::client::CqAttributesFactory;
 using apache::geode::client::CqEvent;
 using apache::geode::client::CqListener;
 using apache::geode::client::CqOperation;
+using apache::geode::client::Exception;
 using apache::geode::client::HashMapOfCacheable;
 using apache::geode::client::Pool;
 using apache::geode::client::Properties;
@@ -61,11 +63,15 @@ using apache::geode::client::RegionShortcut;
 
 using std::chrono::minutes;
 
+const int32_t CQ_PLUS_AUTH_TEST_REGION_ENTRY_COUNT = 94;
+
 class SimpleAuthInitialize : public apache::geode::client::AuthInitialize {
   std::shared_ptr<Properties> getCredentials(
       const std::shared_ptr<Properties>& securityprops,
       const std::string& /*server*/) override {
     std::cout << "SimpleAuthInitialize::GetCredentials called\n";
+    Exception ex("Debugging SimpleAuthInitialize::getCredentials");
+    std::cout << ex.getStackTrace() << std::endl;
 
     securityprops->insert("security-username", "root");
     securityprops->insert("security-password", "root-password");
@@ -92,41 +98,6 @@ Cache createCache() {
   return cache;
 }
 
-class SimpleCqListener : public CqListener {
- public:
-  void onEvent(const CqEvent& cqEvent) override {
-    auto opStr = "Default";
-
-    auto key(dynamic_cast<CacheableString*>(cqEvent.getKey().get()));
-    auto value(dynamic_cast<CacheableString*>(cqEvent.getNewValue().get()));
-
-    switch (cqEvent.getQueryOperation()) {
-      case CqOperation::OP_TYPE_CREATE:
-        opStr = "CREATE";
-        std::cout << "CqListener CREATE event received" << std::endl;
-        break;
-      case CqOperation::OP_TYPE_UPDATE:
-        opStr = "UPDATE";
-        std::cout << "CqListener UPDATE event received" << std::endl;
-        break;
-      case CqOperation::OP_TYPE_DESTROY:
-        opStr = "DESTROY";
-        std::cout << "CqListener DESTROY event received" << std::endl;
-        break;
-      default:
-        break;
-    }
-  }
-
-  void onError(const CqEvent& cqEvent) override {
-    std::cout << __FUNCTION__ << " called"
-              << dynamic_cast<CacheableString*>(cqEvent.getKey().get())->value()
-              << std::endl;
-  }
-
-  void close() override { std::cout << __FUNCTION__ << " called" << std::endl; }
-};
-
 std::shared_ptr<Pool> createPool(Cluster& cluster, Cache& cache) {
   auto poolFactory =
       cache.getPoolManager().createFactory().setSubscriptionEnabled(true);
@@ -147,71 +118,62 @@ std::shared_ptr<Region> setupRegion(Cache& cache,
 }
 
 TEST(RegionPlusAuthInitializeTest, putInALoopWhileSubscribedAndAuthenticated) {
-  auto locatorPort = Framework::getAvailablePort();
-  auto jmxManagerPort = Framework::getAvailablePort();
-  auto serverPort = Framework::getAvailablePort();
-
-  auto gfe = GfshExecute();
-  gfe.start()
-      .locator()
-      .withDir("putInALoopWhileSubscribedAndAuthenticated")
-      //      .withName("locator")
-      .withBindAddress("localhost")
-      .withPort(locatorPort)
-      .withClasspath("../../../../tests/javaobject/javaobject.jar")
-      .withSecurityManager("javaobject.SimpleSecurityManager")
-      .withJmxManagerPort(jmxManagerPort)
-      .withHttpServicePort(0)
-      //            .withStartJmxManager("true")
-      //      .withConnect("false")
-      .execute();
-
-  gfe.start()
-      .server()
-      .withDir("putInALoopWhileSubscribedAndAuthenticated")
-      //      .withName("server")
-      .withBindAddress("localhost")
-      .withPort(serverPort)
-      .withMaxHeap("1g")
-      .withClasspath("../../../../tests/javaobject/javaobject.jar")
-      .withSecurityManager("javaobject.SimpleSecurityManager")
-      .withUser("root")
-      .withPassword("root-password")
-
-      .execute();
-
-  gfe.create().region().withName("region").withType("PARTITION").execute();
+  Cluster cluster(
+      Name(std::string(::testing::UnitTest::GetInstance()
+                           ->current_test_info()
+                           ->test_case_name()) +
+           "/" +
+           ::testing::UnitTest::GetInstance()->current_test_info()->name()),
+      Classpath{getFrameworkString(FrameworkVariable::JavaObjectJarPath)},
+      SecurityManager{"javaobject.SimpleSecurityManager"}, User{"root"},
+      Password{"root-password"}, LocatorCount{1}, ServerCount{1});
 
   auto cache = createCache();
-
-  auto pool = cache.getPoolManager()
-                  .createFactory()
-                  .setSubscriptionEnabled(true)
-                  .addServer("localhost", serverPort)
-                  .create("default");
-
-  auto region = cache.createRegionFactory(RegionShortcut::PROXY)
-                    .setPoolName(pool->getName())
-                    .create("region");
-  std::cerr << "Created region" << std::endl;
-
+  auto pool = createPool(cluster, cache);
+  auto region = setupRegion(cache, pool);
   auto queryService = cache.getQueryService();
-  std::cerr << "Got query service" << std::endl;
+
   CqAttributesFactory attributesFactory;
-  attributesFactory.addCqListener(std::make_shared<SimpleCqListener>());
-  std::cerr << "Added CqListener" << std::endl;
+  auto testListener = std::make_shared<SimpleCqListener>();
+  attributesFactory.addCqListener(testListener);
+  auto cqAttributes = attributesFactory.create();
 
-  auto attributes = attributesFactory.create();
+  auto query =
+      queryService->newCq("SimpleCQ", "SELECT * FROM /region", cqAttributes);
 
-  auto query = queryService->newCq("select * from /region", attributes);
-  std::cerr << "Created query" << std::endl;
+  try {
+    query->execute();
+  } catch (const Exception& ex) {
+    std::cerr << "Caught exception: " << ex.what() << std::endl;
+    FAIL();
+  }
+
+  for (int i = 0; i < CQ_PLUS_AUTH_TEST_REGION_ENTRY_COUNT; i++) {
+    region->put("key" + std::to_string(i), "value" + std::to_string(i));
+  }
+
+  for (int i = 0; i < CQ_PLUS_AUTH_TEST_REGION_ENTRY_COUNT; i++) {
+    region->put("key" + std::to_string(i), "value" + std::to_string(i + 1));
+  }
+
+  for (int i = 0; i < CQ_PLUS_AUTH_TEST_REGION_ENTRY_COUNT; i++) {
+    region->destroy("key" + std::to_string(i));
+  }
 
   for (int i = 0; i < 100; i++) {
-    auto key = "key" + std::to_string(i);
-    auto value = "value" + std::to_string(i);
-    region->put(key, value);
-    std::cerr << "Put (" << key << ", " << value << ")" << std::endl;
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    if (testListener->getCreationCount() ==
+        CQ_PLUS_AUTH_TEST_REGION_ENTRY_COUNT) {
+      break;
+    }
   }
+
+  ASSERT_EQ(testListener->getCreationCount(),
+            CQ_PLUS_AUTH_TEST_REGION_ENTRY_COUNT);
+  ASSERT_EQ(testListener->getUpdateCount(),
+            CQ_PLUS_AUTH_TEST_REGION_ENTRY_COUNT);
+  ASSERT_EQ(testListener->getDestructionCount(),
+            CQ_PLUS_AUTH_TEST_REGION_ENTRY_COUNT);
 }
 
 }  // namespace
