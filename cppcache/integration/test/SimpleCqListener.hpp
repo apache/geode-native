@@ -41,5 +41,4 @@ class SimpleCqListener : public apache::geode::client::CqListener {
   int32_t destructionCount_;
 };
 
-#endif // SIMPLE_CQ_LISTENER_H
-
+#endif  // SIMPLE_CQ_LISTENER_H
