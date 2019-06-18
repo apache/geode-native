@@ -35,9 +35,9 @@ The type of serialization and its implementation can be specified entirely in th
 application, with no need to create corresponding code on the <%=product_name%> server.
 
 The native client release contains examples, written for .NET and C++, showing how a client application
-can register for serialiation of custom objects using the .NET `IPdxSerializable` or C++ `PdxSerializable` interface.
+can register for serialization of custom objects using the .NET IPdxSerializable interface or the C++ PdxSerializable interface.
 
-The examples are located in `examples/dotnet/pdxserializable` and `examples/cpp/pdxserializable`, respectively. 
+The examples are located in `examples\dotnet\pdxserializable` and `examples/cpp/pdxserializable`, respectively. 
 
 ## Setup
 
@@ -45,9 +45,8 @@ PdxSerializable provides custom serialization to an individual class. Fields wit
 
 Setting up a class for PdxSerializable treatment requires some preparatory steps:
 
-- The class must inherit from the .NET `IPdxSerializable` of C++ `PdxSerializable` interface.
-- You must provide serialization instructions for objects of this class. Specifically, you must provide implementations of the 
-serialization and deserialization methods, which in .NET are named `ToData()` and `FromData()`, and in C++ arer named `toData()` and `fromData()`.
+- The class must inherit from the .NET IPdxSerializable interface or the C++ PdxSerializable interface.
+- You must provide serialization instructions for objects of this class. Specifically, you must implement `ToData()` and `FromData()` methods for .NET applications, and  `toData()` and `fromData()` methods in C++ applications.
 - The class must be registered with the cache, which takes care of informing the server.
 
 The examples define the serializable class, Orders, and supplies its serialization and deserialization methods.
@@ -57,7 +56,7 @@ Once these pieces are in place, execution is simple: the main.cpp routine regist
 
 Both examples perform the same sequence of operations, displaying simple log entries as they run.
 
-- To run an example, follow the instructions in the `README.md` file in the example directory.
+- To run an example, follow the instructions in the README.md file in the example directory.
 - Review the source code in the example directory to see exactly how it operates.
 
 - Begin by running a script that sets up the server-side environment by invoking `gfsh` commands to create a region.
@@ -94,7 +93,7 @@ From Order.cs:
     public short Quantity { get; set; }
 ```
 
-Using the IPdxSerializable read and write methods, the `Order` class defines `ToData` and `FromData`
+Using the `IPdxSerializable` read and write methods, the `Order` class defines `ToData()` and `FromData()`
 methods that perform the serialization and deserialization operations, respectively.
 
 From Order.cs:
@@ -191,7 +190,7 @@ class Order : public PdxSerializable {
 
 ```
 
-Using the PdxSerializable read and write methods, the `Order` class defines `fromData` and `toData`
+Using the PdxSerializable read and write methods, the `Order` class defines `fromData()` and `toData()`
 methods that perform the deserialization and serialization operations, respectively.
 
 From Order.cpp:
