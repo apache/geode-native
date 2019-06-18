@@ -43,7 +43,7 @@ class AuthenticatedView;
  * Call the write methods to populate the field data and then call {@link
  * #create}
  * to produce an actual instance that contains the data.
- * To create a factory call {@link Cache#createPdxInstanceFactory}
+ * To create a factory call {@link Cache#createPdxInstanceFactory}.
  * A factory can only create a single instance. To create multiple instances
  * create
  * multiple factories or use {@link PdxInstance#createWriter} to create

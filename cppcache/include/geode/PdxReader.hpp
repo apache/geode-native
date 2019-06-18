@@ -72,7 +72,7 @@ class APACHE_GEODE_EXPORT PdxReader {
    * <p>C++ char16_t is mapped to Java char</p>
    * @param fieldName name of the field to read.
    * @return value of type wchar_t.
-   * @throws IllegalStateException if PdxReader doesn't has the named field.
+   * @throws IllegalStateException if PdxReader doesn't have the named field.
    *
    * @see PdxReader#hasField
    */
@@ -83,7 +83,7 @@ class APACHE_GEODE_EXPORT PdxReader {
    * <p>C++ bool is mapped to Java boolean</p>
    * @param fieldName name of the field to read
    * @return value of type bool.
-   * @throws IllegalStateException if PdxReader doesn't has the named field.
+   * @throws IllegalStateException if PdxReader doesn't have the named field.
    *
    * @see PdxReader#hasField
    */
@@ -94,7 +94,7 @@ class APACHE_GEODE_EXPORT PdxReader {
    * <p>C++ int8_t is mapped to Java byte</p>
    * @param fieldName name of the field to read
    * @return value of type int8_t.
-   * @throws IllegalStateException if PdxReader doesn't has the named field.
+   * @throws IllegalStateException if PdxReader doesn't have the named field.
    *
    * @see PdxReader#hasField
    */
@@ -105,7 +105,7 @@ class APACHE_GEODE_EXPORT PdxReader {
    * <p>C++ int16_t is mapped to Java short</p>
    * @param fieldName name of the field to read
    * @return value of type int16_t.
-   * @throws IllegalStateException if PdxReader doesn't has the named field.
+   * @throws IllegalStateException if PdxReader doesn't have the named field.
    *
    * @see PdxReader#hasField
    */
@@ -116,7 +116,7 @@ class APACHE_GEODE_EXPORT PdxReader {
    * <p>C++ int32_t is mapped to Java int</p>
    * @param fieldName name of the field to read
    * @return value of type int32_t.
-   * @throws IllegalStateException if PdxReader doesn't has the named field.
+   * @throws IllegalStateException if PdxReader doesn't have the named field.
    *
    * @see PdxReader#hasField
    */
@@ -127,7 +127,7 @@ class APACHE_GEODE_EXPORT PdxReader {
    * <p>C++ int64_t is mapped to Java long</p>
    * @param fieldName name of the field to read
    * @return value of type int64_t.
-   * @throws IllegalStateException if PdxReader doesn't has the named field.
+   * @throws IllegalStateException if PdxReader doesn't have the named field.
    *
    * @see PdxReader#hasField
    */
@@ -138,7 +138,7 @@ class APACHE_GEODE_EXPORT PdxReader {
    * <p>C++ float is mapped to Java float</p>
    * @param fieldName name of the field to read
    * @return value of type float.
-   * @throws IllegalStateException if PdxReader doesn't has the named field.
+   * @throws IllegalStateException if PdxReader doesn't have the named field.
    *
    * @see PdxReader#hasField
    */
@@ -149,7 +149,7 @@ class APACHE_GEODE_EXPORT PdxReader {
    * <p>C++ double is mapped to Java double</p>
    * @param fieldName name of the field to read
    * @return value of type double.
-   * @throws IllegalStateException if PdxReader doesn't has the named field.
+   * @throws IllegalStateException if PdxReader doesn't have the named field.
    *
    * @see PdxReader#hasField
    */
@@ -161,7 +161,7 @@ class APACHE_GEODE_EXPORT PdxReader {
    * @param fieldName name of the field to read
    * @return value of type std::string*. Refer to the class description for
    *         how to free the return value.
-   * @throws IllegalStateException if PdxReader doesn't has the named field.
+   * @throws IllegalStateException if PdxReader doesn't have the named field.
    *
    * @see PdxReader#hasField
    */
@@ -172,7 +172,7 @@ class APACHE_GEODE_EXPORT PdxReader {
    * <p>C++ std::shared_ptr<Cacheable> is mapped to Java object</p>
    * @param fieldName name of the field to read
    * @return value of type std::shared_ptr<Cacheable>.
-   * @throws IllegalStateException if PdxReader doesn't has the named field.
+   * @throws IllegalStateException if PdxReader doesn't have the named field.
    *
    * @see PdxReader#hasField
    */
@@ -185,7 +185,7 @@ class APACHE_GEODE_EXPORT PdxReader {
    * @param fieldName name of the field to read
    * @param length length is set with number of char16_t elements.
    * @return value of type char16_t*.
-   * @throws IllegalStateException if PdxReader doesn't has the named field.
+   * @throws IllegalStateException if PdxReader doesn't have the named field.
    *
    * @see PdxReader#hasField
    */
@@ -196,7 +196,7 @@ class APACHE_GEODE_EXPORT PdxReader {
    * <p>C++ bool* is mapped to Java boolean[]</p>
    * @param fieldName name of the field to read
    * @param length length is set with number of bool elements.
-   * @throws IllegalStateException if PdxReader doesn't has the named field.
+   * @throws IllegalStateException if PdxReader doesn't have the named field.
    *
    * @see PdxReader#hasField
    */
@@ -208,7 +208,7 @@ class APACHE_GEODE_EXPORT PdxReader {
    * @param fieldName name of the field to read
    * @param length length is set with number of int8_t elements
    * @return value of type int8_t*.
-   * @throws IllegalStateException if PdxReader doesn't has the named field.
+   * @throws IllegalStateException if PdxReader doesn't have the named field.
    *
    * @see PdxReader#hasField
    */
@@ -221,7 +221,7 @@ class APACHE_GEODE_EXPORT PdxReader {
    * @param fieldName name of the field to read
    * @param length length is set with number of int16_t elements
    * @return value of type int16_t*.
-   * @throws IllegalStateException if PdxReader doesn't has the named field.
+   * @throws IllegalStateException if PdxReader doesn't have the named field.
    *
    * @see PdxReader#hasField
    */
@@ -234,7 +234,7 @@ class APACHE_GEODE_EXPORT PdxReader {
    * @param fieldName name of the field to read
    * @param length length is set with number of int32_t elements
    * @return value of type int32_t*.
-   * @throws IllegalStateException if PdxReader doesn't has the named field.
+   * @throws IllegalStateException if PdxReader doesn't have the named field.
    *
    * @see PdxReader#hasField
    */
@@ -247,7 +247,7 @@ class APACHE_GEODE_EXPORT PdxReader {
    * @param fieldName name of the field to read
    * @param length length is set with number of int64_t elements
    * @return value of type int64_t*.
-   * @throws IllegalStateException if PdxReader doesn't has the named field.
+   * @throws IllegalStateException if PdxReader doesn't have the named field.
    *
    * @see PdxReader#hasField
    */
@@ -259,7 +259,7 @@ class APACHE_GEODE_EXPORT PdxReader {
    * @param fieldName name of the field to read
    * @param length length is set with number of float elements
    * @return value of type float*.
-   * @throws IllegalStateException if PdxReader doesn't has the named field.
+   * @throws IllegalStateException if PdxReader doesn't have the named field.
    *
    * @see PdxReader#hasField
    */
@@ -271,7 +271,7 @@ class APACHE_GEODE_EXPORT PdxReader {
    * @param fieldName name of the field to read
    * @param length length is set with number of double elements
    * @return value of type double*.
-   * @throws IllegalStateException if PdxReader doesn't has the named field.
+   * @throws IllegalStateException if PdxReader doesn't have the named field.
    *
    * @see PdxReader#hasField
    */
@@ -283,7 +283,7 @@ class APACHE_GEODE_EXPORT PdxReader {
    * @param fieldName name of the field to read
    * @return value of type std::vector<std::string>. Refer to the class
    * description for how to free the return value.
-   * @throws IllegalStateException if PdxReader doesn't has the named field.
+   * @throws IllegalStateException if PdxReader doesn't have the named field.
    *
    * @see PdxReader#hasField
    */
@@ -296,7 +296,7 @@ class APACHE_GEODE_EXPORT PdxReader {
    * to Java Object[].
    * @param fieldName name of the field to read
    * @return value of type std::shared_ptr<CacheableObjectArray>.
-   * @throws IllegalStateException if PdxReader doesn't has the named field.
+   * @throws IllegalStateException if PdxReader doesn't have the named field.
    *
    * @see PdxReader#hasField
    */
@@ -312,7 +312,7 @@ class APACHE_GEODE_EXPORT PdxReader {
    * @param elementLength elementLength is set with the length value of
    * individual byte arrays.
    * @return value of type int8_t**.
-   * @throws IllegalStateException if PdxReader doesn't has the named field.
+   * @throws IllegalStateException if PdxReader doesn't have the named field.
    *
    * @see PdxReader#hasField
    */
@@ -326,7 +326,7 @@ class APACHE_GEODE_EXPORT PdxReader {
    * Java Date</p>
    * @param fieldName name of the field to read
    * @return value of type std::shared_ptr<CacheableDate>.
-   * @throws IllegalStateException if PdxReader doesn't has the named field.
+   * @throws IllegalStateException if PdxReader doesn't have the named field.
    *
    * @see PdxReader#hasField
    */
