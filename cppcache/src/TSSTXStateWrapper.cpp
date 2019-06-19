@@ -32,8 +32,6 @@ TSSTXStateWrapper::~TSSTXStateWrapper() {
 
 TSSTXStateWrapper::TSSTXStateWrapper() : m_txState(nullptr) {}
 
-TSSTXStateWrapper::~TSSTXStateWrapper();
-
 TSSTXStateWrapper& TSSTXStateWrapper::get() {
   static thread_local TSSTXStateWrapper instance;
   return instance;

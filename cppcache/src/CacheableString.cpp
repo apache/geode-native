@@ -92,6 +92,7 @@ void CacheableString::toData(DataOutput& output) const {
     }
     case DSCode::CacheableASCIIStringHuge: {
       output.writeAsciiHuge(m_str);
+      break;
     }
     case DSCode::CacheableStringHuge: {
       output.writeUtf16Huge(m_str);

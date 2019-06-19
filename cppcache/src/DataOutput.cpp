@@ -108,114 +108,6 @@ TSSDataOutput::~TSSDataOutput() {
 
 thread_local TSSDataOutput TSSDataOutput::threadLocalBufferPool;
 
-void DataOutput::writeUtf16(const std::string& value) {
-  // TODO string OPTIMIZE convert from UTF-8 to UTF-16 directly
-  if (!value.empty()) {
-    writeUtf16(to_utf16(value));
-  }
-}
-
-void DataOutput::writeUtf16(const std::u32string& value) {
-  // TODO string OPTIMIZE convert from UCS-4 to UTF-16 directly
-  if (!value.empty()) {
-    writeUtf16(to_utf16(value));
-  }
-}
-
-void DataOutput::writeUtf16(const std::u16string& value) {
-  typedef std::conditional<sizeof(wchar_t) == sizeof(char16_t), char16_t,
-                           std::conditional<sizeof(wchar_t) == sizeof(char32_t),
-                                            char32_t, char>::type>::type
-      _Convert;
-  writeUtf16(reinterpret_cast<const _Convert*>(value.data()), value.length());
-}
-
-void DataOutput::writeUtf16(const std::wstring& value) {
-  typedef std::conditional<sizeof(wchar_t) == sizeof(char16_t), char16_t,
-                           std::conditional<sizeof(wchar_t) == sizeof(char32_t),
-                                            char32_t, char>::type>::type
-      _Convert;
-  writeUtf16(reinterpret_cast<const _Convert*>(value.data()), value.length());
-}
-
-void DataOutput::writeUtf16Huge(const std::string& value) {
-  // TODO string OPTIMIZE convert from UTF-8 to UTF-16 directly
-  if (value.empty()) {
-    writeInt(static_cast<uint16_t>(0));
-  } else {
-    writeUtf16Huge(to_utf16(value));
-  }
-}
-
-void DataOutput::writeUtf16Huge(const std::u32string& value) {
-  // TODO string OPTIMIZE convert from UCS-4 to UTF-16 directly
-  if (value.empty()) {
-    writeInt(static_cast<uint16_t>(0));
-  } else {
-    writeUtf16Huge(to_utf16(value));
-  }
-}
-
-void DataOutput::writeUtf16Huge(const std::u16string& value) {
-  typedef std::conditional<sizeof(wchar_t) == sizeof(char16_t), char16_t,
-                           std::conditional<sizeof(wchar_t) == sizeof(char32_t),
-                                            char32_t, char>::type>::type
-      _Convert;
-  writeUtf16Huge(reinterpret_cast<const _Convert*>(value.data()),
-                 value.length());
-}
-
-void DataOutput::writeUtf16Huge(const std::wstring& value) {
-  typedef std::conditional<sizeof(wchar_t) == sizeof(char16_t), char16_t,
-                           std::conditional<sizeof(wchar_t) == sizeof(char32_t),
-                                            char32_t, char>::type>::type
-      _Convert;
-  writeUtf16Huge(reinterpret_cast<const _Convert*>(value.data()),
-                 value.length());
-}
-
-void DataOutput::writeJavaModifiedUtf8(const std::string& value) {
-  /*
-   * OPTIMIZE convert from UTF-8 to CESU-8/Java Modified UTF-8 directly
-   * http://www.unicode.org/reports/tr26/
-   */
-  if (value.empty()) {
-    writeInt(static_cast<uint16_t>(0));
-  } else {
-    writeJavaModifiedUtf8(to_utf16(value));
-  }
-}
-
-void DataOutput::writeJavaModifiedUtf8(const std::u32string& value) {
-  /*
-   * OPTIMIZE convert from UCS-4 to CESU-8/Java Modified UTF-8 directly
-   * http://www.unicode.org/reports/tr26/
-   */
-  if (value.empty()) {
-    writeInt(static_cast<uint16_t>(0));
-  } else {
-    writeJavaModifiedUtf8(to_utf16(value));
-  }
-}
-
-void DataOutput::writeJavaModifiedUtf8(const std::u16string& value) {
-  typedef std::conditional<sizeof(wchar_t) == sizeof(char16_t), char16_t,
-                           std::conditional<sizeof(wchar_t) == sizeof(char32_t),
-                                            char32_t, char>::type>::type
-      _Convert;
-  writeJavaModifiedUtf8(reinterpret_cast<const _Convert*>(value.data()),
-                        value.length());
-}
-
-void DataOutput::writeJavaModifiedUtf8(const std::wstring& value) {
-  typedef std::conditional<sizeof(wchar_t) == sizeof(char16_t), char16_t,
-                           std::conditional<sizeof(wchar_t) == sizeof(char32_t),
-                                            char32_t, char>::type>::type
-      _Convert;
-  writeJavaModifiedUtf8(reinterpret_cast<const _Convert*>(value.data()),
-                        value.length());
-}
-
 DataOutput::DataOutput(const CacheImpl* cache, Pool* pool)
     : m_size(0), m_haveBigBuffer(false), m_cache(cache), m_pool(pool) {
   m_bytes.reset(DataOutput::checkoutBuffer(&m_size));
@@ -245,7 +137,37 @@ const SerializationRegistry& DataOutput::getSerializationRegistry() const {
 
 Cache* DataOutput::getCache() const { return m_cache->getCache(); }
 
-const uint8_t* DataOutput::getCursor() { return m_buf; }
+template <class _Traits, class _Allocator>
+void DataOutput::writeJavaModifiedUtf8(
+    const std::basic_string<char, _Traits, _Allocator>& value) {
+  /*
+   * OPTIMIZE convert from UTF-8 to CESU-8/Java Modified UTF-8 directly
+   * http://www.unicode.org/reports/tr26/
+   */
+  if (value.empty()) {
+    writeInt(static_cast<uint16_t>(0));
+  } else {
+    writeJavaModifiedUtf8(to_utf16(value));
+  }
+}
+template APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT void
+DataOutput::writeJavaModifiedUtf8(const std::string&);
+
+template <class _Traits, class _Allocator>
+void DataOutput::writeJavaModifiedUtf8(
+    const std::basic_string<char32_t, _Traits, _Allocator>& value) {
+  /*
+   * OPTIMIZE convert from UCS-4 to CESU-8/Java Modified UTF-8 directly
+   * http://www.unicode.org/reports/tr26/
+   */
+  if (value.empty()) {
+    writeInt(static_cast<uint16_t>(0));
+  } else {
+    writeJavaModifiedUtf8(to_utf16(value));
+  }
+}
+template APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT void
+DataOutput::writeJavaModifiedUtf8(const std::u32string&);
 
 void DataOutput::writeJavaModifiedUtf8(const char32_t* data, size_t len) {
   // TODO string optimize from UCS-4 to jmutf8
@@ -261,6 +183,32 @@ size_t DataOutput::getJavaModifiedUtf8EncodedLength(const char16_t* data,
   return internal::JavaModifiedUtf8::encodedLength(data, length);
 }
 
+template <class _Traits, class _Allocator>
+void DataOutput::writeUtf16Huge(
+    const std::basic_string<char, _Traits, _Allocator>& value) {
+  // TODO string OPTIMIZE convert from UTF-8 to UTF-16 directly
+  if (value.empty()) {
+    writeInt(static_cast<uint16_t>(0));
+  } else {
+    writeUtf16Huge(to_utf16(value));
+  }
+}
+template APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT void DataOutput::writeUtf16Huge(
+    const std::string&);
+
+template <class _Traits, class _Allocator>
+void DataOutput::writeUtf16Huge(
+    const std::basic_string<char32_t, _Traits, _Allocator>& value) {
+  // TODO string OPTIMIZE convert from UCS-4 to UTF-16 directly
+  if (value.empty()) {
+    writeInt(static_cast<uint16_t>(0));
+  } else {
+    writeUtf16Huge(to_utf16(value));
+  }
+}
+template APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT void DataOutput::writeUtf16Huge(
+    const std::u32string&);
+
 void DataOutput::writeUtf16Huge(const char32_t* data, size_t len) {
   // TODO string optimize from UCS-4 to UTF-16
   if (0 == len) {
@@ -269,6 +217,28 @@ void DataOutput::writeUtf16Huge(const char32_t* data, size_t len) {
     writeUtf16Huge(to_utf16(data, len));
   }
 }
+
+template <class _Traits, class _Allocator>
+void DataOutput::writeUtf16(
+    const std::basic_string<char, _Traits, _Allocator>& value) {
+  // TODO string OPTIMIZE convert from UTF-8 to UTF-16 directly
+  if (!value.empty()) {
+    writeUtf16(to_utf16(value));
+  }
+}
+template APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT void DataOutput::writeUtf16(
+    const std::string&);
+
+template <class _Traits, class _Allocator>
+void DataOutput::writeUtf16(
+    const std::basic_string<char32_t, _Traits, _Allocator>& value) {
+  // TODO string OPTIMIZE convert from UCS-4 to UTF-16 directly
+  if (!value.empty()) {
+    writeUtf16(to_utf16(value));
+  }
+}
+template APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT void DataOutput::writeUtf16(
+    const std::u32string&);
 
 void DataOutput::writeUtf16(const char32_t* data, size_t len) {
   // TODO string optimize from UCS-4 to UTF-16
@@ -391,6 +361,8 @@ void DataOutput::writeDouble(double value) {
   writeInt(v.ll);
 }
 
+const uint8_t* DataOutput::getCursor() { return m_buf; }
+
 void DataOutput::advanceCursor(size_t offset) {
   ensureCapacity(offset);
   m_buf += offset;
@@ -406,19 +378,14 @@ uint8_t DataOutput::getValueAtPos(size_t offset) {
   return m_bytes.get()[offset];
 }
 
-const uint8_t* DataOutput::getBuffer() const {
-  // GF_R_ASSERT(!((uint32_t)(m_bytes) % 4));
-  return m_bytes.get();
-}
+const uint8_t* DataOutput::getBuffer() const { return m_bytes.get(); }
 
 size_t DataOutput::getRemainingBufferLength() const {
-  // GF_R_ASSERT(!((uint32_t)(m_bytes) % 4));
   return m_size - getBufferLength();
 }
 
 const uint8_t* DataOutput::getBuffer(size_t* rsize) const {
   *rsize = m_buf - m_bytes.get();
-  // GF_R_ASSERT(!((uint32_t)(m_bytes) % 4));
   return m_bytes.get();
 }
 

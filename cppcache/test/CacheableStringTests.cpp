@@ -152,17 +152,16 @@ TEST_F(CacheableStringTests, TestFromDataNonAscii) {
 }
 
 TEST_F(CacheableStringTests, TestToDataAsciiHuge) {
-  size_t originalLen = std::numeric_limits<uint16_t>::max();
-  std::string utf8(originalLen, 'a');
-  utf8.append("a");
-  originalLen++;
-
-  auto origStr = CacheableString::create(utf8.c_str());
+  const auto utf8 = std::string(std::numeric_limits<uint16_t>::max() + 1, 'a');
+  const auto origStr = CacheableString::create(utf8.c_str());
   TestDataOutput out;
+
   origStr->toData(out);
 
-  auto&& bufLen = originalLen + 4;  // strLen (unit32_t)
-  EXPECT_EQ(bufLen, out.getBufferLength());
+  EXPECT_EQ(apache::geode::client::DSCode::CacheableASCIIStringHuge,
+            origStr->getDsCode());
+
+  EXPECT_EQ(utf8.length() + 4, out.getBufferLength());
 
   // 0x00010000 - length
   // 0x61 - first 'a'

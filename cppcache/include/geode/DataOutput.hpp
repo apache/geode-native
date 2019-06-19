@@ -367,37 +367,85 @@ class APACHE_GEODE_EXPORT DataOutput {
 
   void writeAsciiHuge(const std::string& value);
 
-  void writeJavaModifiedUtf8(const std::string& value);
+  template <class _CharT, class _Traits, class _Allocator>
+  void writeJavaModifiedUtf8(
+      const std::basic_string<_CharT, _Traits, _Allocator>& value) {
+    writeJavaModifiedUtf8(value.data(), value.length());
+  }
 
-  void writeJavaModifiedUtf8(const std::wstring& value);
+  template <class _Traits, class _Allocator>
+  void writeJavaModifiedUtf8(
+      const std::basic_string<char, _Traits, _Allocator>& value);
 
-  void writeJavaModifiedUtf8(const std::u16string& value);
+  template <class _Traits, class _Allocator>
+  void writeJavaModifiedUtf8(
+      const std::basic_string<char32_t, _Traits, _Allocator>& value);
 
-  void writeJavaModifiedUtf8(const std::u32string& value);
+  template <class _Traits, class _Allocator>
+  void writeJavaModifiedUtf8(
+      const std::basic_string<wchar_t, _Traits, _Allocator>& value) {
+    typedef std::conditional<
+        sizeof(wchar_t) == sizeof(char16_t), char16_t,
+        std::conditional<sizeof(wchar_t) == sizeof(char32_t), char32_t,
+                         char>::type>::type _Convert;
+    writeJavaModifiedUtf8(reinterpret_cast<const _Convert*>(value.data()),
+                          value.length());
+  }
 
   void writeJavaModifiedUtf8(const char16_t* data, size_t len);
 
   void writeJavaModifiedUtf8(const char32_t* data, size_t len);
 
-  void writeUtf16Huge(const std::string& value);
+  template <class _CharT, class _Traits, class _Allocator>
+  void writeUtf16Huge(
+      const std::basic_string<_CharT, _Traits, _Allocator>& value) {
+    writeUtf16Huge(value.data(), value.length());
+  }
 
-  void writeUtf16Huge(const std::wstring& value);
+  template <class _Traits, class _Allocator>
+  void writeUtf16Huge(
+      const std::basic_string<char, _Traits, _Allocator>& value);
 
-  void writeUtf16Huge(const std::u16string& value);
+  template <class _Traits, class _Allocator>
+  void writeUtf16Huge(
+      const std::basic_string<char32_t, _Traits, _Allocator>& value);
 
-  void writeUtf16Huge(const std::u32string& value);
+  template <class _Traits, class _Allocator>
+  void writeUtf16Huge(
+      const std::basic_string<wchar_t, _Traits, _Allocator>& value) {
+    typedef std::conditional<
+        sizeof(wchar_t) == sizeof(char16_t), char16_t,
+        std::conditional<sizeof(wchar_t) == sizeof(char32_t), char32_t,
+                         char>::type>::type _Convert;
+    writeUtf16Huge(reinterpret_cast<const _Convert*>(value.data()),
+                   value.length());
+  }
 
   void writeUtf16Huge(const char16_t* data, size_t length);
 
   void writeUtf16Huge(const char32_t* data, size_t len);
 
-  void writeUtf16(const std::string& value);
+  template <class _CharT, class _Traits, class _Allocator>
+  void writeUtf16(const std::basic_string<_CharT, _Traits, _Allocator>& value) {
+    writeUtf16(value.data(), value.length());
+  }
 
-  void writeUtf16(const std::wstring& value);
+  template <class _Traits, class _Allocator>
+  void writeUtf16(const std::basic_string<char, _Traits, _Allocator>& value);
 
-  void writeUtf16(const std::u16string& value);
+  template <class _Traits, class _Allocator>
+  void writeUtf16(
+      const std::basic_string<char32_t, _Traits, _Allocator>& value);
 
-  void writeUtf16(const std::u32string& value);
+  template <class _Traits, class _Allocator>
+  void writeUtf16(
+      const std::basic_string<wchar_t, _Traits, _Allocator>& value) {
+    typedef std::conditional<
+        sizeof(wchar_t) == sizeof(char16_t), char16_t,
+        std::conditional<sizeof(wchar_t) == sizeof(char32_t), char32_t,
+                         char>::type>::type _Convert;
+    writeUtf16(reinterpret_cast<const _Convert*>(value.data()), value.length());
+  }
 
   void writeUtf16(const char16_t* data, size_t length);
 
@@ -432,6 +480,9 @@ class APACHE_GEODE_EXPORT DataOutput {
   friend CacheableString;
   friend TcrMessage;
 };
+
+template void DataOutput::writeJavaModifiedUtf8(const std::u16string&);
+template void DataOutput::writeJavaModifiedUtf8(const std::wstring&);
 
 }  // namespace client
 }  // namespace geode
