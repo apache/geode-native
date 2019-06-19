@@ -27,39 +27,53 @@ the best combination of versatility and ease-of-use for most applications.
 
 To learn more about other serialization options, see the [Data Serialization section in the _<%=vars.product_name_long%> User Guide_](serverman/developing/data_serialization/chapter_overview.html).
 
-# PdxSerializable Examples
+<a id="implementing_pdxsbl_class"></a>
+## Implementing a PdxSerializable Custom Class
 
 PdxSerializable provides custom serialization to an individual class. Fields within an object can be serialized separately from the rest of the class.
 
 The type of serialization and its implementation can be specified entirely in the client
 application, with no need to create corresponding code on the <%=product_name%> server.
 
+<a id="setup_pdxsbl_class"></a>
+### Setup
+
+PdxSerializable provides custom serialization to an individual class. Fields within an object can be serialized separately from the rest of the class.
+
+Setting up a custom class for PdxSerializable treatment requires some preparatory steps:
+
+- The custom class must inherit from the .NET IPdxSerializable interface or the C++ PdxSerializable interface.
+
+- You must provide serialization instructions for objects of the custom class. Specifically:
+
+  -  You must implement the `ToData()` and `FromData()` methods for .NET applications, or the `toData()` and
+  `fromData()` methods in C++ applications.
+  -  You must provide a "factory method" that returns an instance of the custom object.
+
+- Your application must register your custom class with the cache, which takes care of informing the server of your
+  serialization scheme. With registration, you provide the name of the "factory method" you created for instantiating
+  objects of the custom class.
+
+<a id="pdxsbl_examples"></a>
+## PdxSerializable Examples
+
 The native client release contains examples, written for .NET and C++, showing how a client application
 can register for serialization of custom objects using the .NET IPdxSerializable interface or the C++ PdxSerializable interface.
 
 The examples are located in `examples\dotnet\pdxserializable` and `examples/cpp/pdxserializable`, respectively. 
 
-## Setup
+The examples define the serializable class, `Orders`, including its serialization and deserialization methods and its factory method.
+Once these pieces are in place, execution is simple: the main routine of the example registers the serializable class then performs some put and get operations.
 
-PdxSerializable provides custom serialization to an individual class. Fields within an object can be serialized separately from the rest of the class.
-
-Setting up a class for PdxSerializable treatment requires some preparatory steps:
-
-- The class must inherit from the .NET IPdxSerializable interface or the C++ PdxSerializable interface.
-- You must provide serialization instructions for objects of this class. Specifically, you must implement the `ToData()` and `FromData()` methods for .NET applications, or the `toData()` and `fromData()` methods in C++ applications.
-- The class must be registered with the cache, which takes care of informing the server.
-
-The examples define the serializable class, Orders, and supplies its serialization and deserialization methods.
-Once these pieces are in place, execution is simple: the main.cpp routine registers the serializable class then performs some put and get operations.
-
-## Execution
+<a id="pdxsbl_execution"></a>
+### Execution
 
 Both examples perform the same sequence of operations, displaying simple log entries as they run.
 
 - To run an example, follow the instructions in the README.md file in the example directory.
 - Review the source code in the example directory to see exactly how it operates.
 
-- Begin by running a script that sets up the server-side environment by invoking `gfsh` commands to create a region.
+- Begin by running a script that sets up the server-side environment by invoking `gfsh` commands to create a region, a locator, and a server.
 
 - Run the example client application, which performs the following steps:
 
@@ -70,6 +84,7 @@ Both examples perform the same sequence of operations, displaying simple log ent
   - Retrieves orders
 
 
+<a id="pdsxbl_dotnet_example"></a>
 ### .NET Example
 
 This section contains code snippets showing highlights of the .NET PdxSerializable example. They are not intended for cut-and-paste execution.
@@ -94,7 +109,7 @@ From Order.cs:
 ```
 
 Using the `IPdxSerializable` read and write methods, the `Order` class defines `ToData()` and `FromData()`
-methods that perform the serialization and deserialization operations, respectively.
+methods that perform the serialization and deserialization operations, respectively, and the `CreateDeserializable()` factory method:
 
 From Order.cs:
 
@@ -116,6 +131,11 @@ From Order.cs:
       OrderId = input.ReadLong(ORDER_ID_KEY_);
       Name = input.ReadString(NAME_KEY_);
       Quantity = (short)input.ReadInt(QUANTITY_KEY_);
+    }
+
+    public static IPdxSerializable CreateDeserializable()
+    {
+      return new Order();
     }
 ```
 
@@ -163,6 +183,7 @@ Finally, the application closes the cache:
     cache.Close();
 ```
 
+<a id="pdxsbl_cpp_example"></a>
 ### C++ Example
 
 This section contains code snippets showing highlights of the C++ PdxSerialiable example. They are not intended for cut-and-paste execution.
@@ -191,7 +212,8 @@ class Order : public PdxSerializable {
 ```
 
 Using the PdxSerializable read and write methods, the `Order` class defines `fromData()` and `toData()`
-methods that perform the deserialization and serialization operations, respectively.
+methods that perform the deserialization and serialization operations, respectively, and the
+`createDeserializable()` factory method:
 
 From Order.cpp:
 
@@ -211,6 +233,12 @@ void Order::toData(PdxWriter& pdxWriter) const {
 
   pdxWriter.writeShort(QUANTITY_KEY_, quantity_);
   pdxWriter.markIdentityField(QUANTITY_KEY_);
+}
+
+...
+
+std::shared_ptr<PdxSerializable> Order::createDeserializable() {
+  return std::make_shared<Order>();
 }
 ```
 
