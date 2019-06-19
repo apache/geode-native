@@ -36,6 +36,7 @@ void Locator::start() {
   auto locator = cluster_.getGfsh()
       .start()
       .locator()
+      .withLogLevel("INFO")
       .withDir(name_)
       .withName(safeName)
       .withBindAddress(locatorAddress_.address)

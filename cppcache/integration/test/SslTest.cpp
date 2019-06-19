@@ -77,11 +77,9 @@ TEST(SslTest, PutGet) {
                    .set("ssl-truststore", clientTruststore.string())
                    .create();
 
-  const auto locatorPort = cluster.getLocatorPort();
-
   const auto pool = cache.getPoolManager()
                         .createFactory()
-                        .addLocator("localhost", locatorPort)
+                        .addLocator("localhost", cluster.getLocatorPort())
                         .create("pool");
 
   auto region = cache.createRegionFactory(RegionShortcut::PROXY)
