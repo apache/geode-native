@@ -137,9 +137,7 @@ const SerializationRegistry& DataOutput::getSerializationRegistry() const {
 
 Cache* DataOutput::getCache() const { return m_cache->getCache(); }
 
-template <class _Traits, class _Allocator>
-void DataOutput::writeJavaModifiedUtf8(
-    const std::basic_string<char, _Traits, _Allocator>& value) {
+void DataOutput::writeJavaModifiedUtf8(const std::string& value) {
   /*
    * OPTIMIZE convert from UTF-8 to CESU-8/Java Modified UTF-8 directly
    * http://www.unicode.org/reports/tr26/
@@ -150,12 +148,8 @@ void DataOutput::writeJavaModifiedUtf8(
     writeJavaModifiedUtf8(to_utf16(value));
   }
 }
-template APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT void
-DataOutput::writeJavaModifiedUtf8(const std::string&);
 
-template <class _Traits, class _Allocator>
-void DataOutput::writeJavaModifiedUtf8(
-    const std::basic_string<char32_t, _Traits, _Allocator>& value) {
+void DataOutput::writeJavaModifiedUtf8(const std::u32string& value) {
   /*
    * OPTIMIZE convert from UCS-4 to CESU-8/Java Modified UTF-8 directly
    * http://www.unicode.org/reports/tr26/
@@ -166,8 +160,19 @@ void DataOutput::writeJavaModifiedUtf8(
     writeJavaModifiedUtf8(to_utf16(value));
   }
 }
-template APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT void
-DataOutput::writeJavaModifiedUtf8(const std::u32string&);
+
+void DataOutput::writeJavaModifiedUtf8(const std::wstring& value) {
+  typedef std::conditional<sizeof(wchar_t) == sizeof(char16_t), char16_t,
+                           std::conditional<sizeof(wchar_t) == sizeof(char32_t),
+                                            char32_t, char>::type>::type
+      _Convert;
+  writeJavaModifiedUtf8(reinterpret_cast<const _Convert*>(value.data()),
+                        value.length());
+}
+
+void DataOutput::writeJavaModifiedUtf8(const std::u16string& value) {
+  writeJavaModifiedUtf8(value.data(), value.length());
+}
 
 void DataOutput::writeJavaModifiedUtf8(const char32_t* data, size_t len) {
   // TODO string optimize from UCS-4 to jmutf8
@@ -183,9 +188,7 @@ size_t DataOutput::getJavaModifiedUtf8EncodedLength(const char16_t* data,
   return internal::JavaModifiedUtf8::encodedLength(data, length);
 }
 
-template <class _Traits, class _Allocator>
-void DataOutput::writeUtf16Huge(
-    const std::basic_string<char, _Traits, _Allocator>& value) {
+void DataOutput::writeUtf16Huge(const std::string& value) {
   // TODO string OPTIMIZE convert from UTF-8 to UTF-16 directly
   if (value.empty()) {
     writeInt(static_cast<uint16_t>(0));
@@ -193,12 +196,8 @@ void DataOutput::writeUtf16Huge(
     writeUtf16Huge(to_utf16(value));
   }
 }
-template APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT void DataOutput::writeUtf16Huge(
-    const std::string&);
 
-template <class _Traits, class _Allocator>
-void DataOutput::writeUtf16Huge(
-    const std::basic_string<char32_t, _Traits, _Allocator>& value) {
+void DataOutput::writeUtf16Huge(const std::u32string& value) {
   // TODO string OPTIMIZE convert from UCS-4 to UTF-16 directly
   if (value.empty()) {
     writeInt(static_cast<uint16_t>(0));
@@ -206,8 +205,19 @@ void DataOutput::writeUtf16Huge(
     writeUtf16Huge(to_utf16(value));
   }
 }
-template APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT void DataOutput::writeUtf16Huge(
-    const std::u32string&);
+
+void DataOutput::writeUtf16Huge(const std::wstring& value) {
+  typedef std::conditional<sizeof(wchar_t) == sizeof(char16_t), char16_t,
+                           std::conditional<sizeof(wchar_t) == sizeof(char32_t),
+                                            char32_t, char>::type>::type
+      _Convert;
+  writeUtf16Huge(reinterpret_cast<const _Convert*>(value.data()),
+                 value.length());
+}
+
+void DataOutput::writeUtf16Huge(const std::u16string& value) {
+  writeUtf16Huge(value.data(), value.length());
+}
 
 void DataOutput::writeUtf16Huge(const char32_t* data, size_t len) {
   // TODO string optimize from UCS-4 to UTF-16
@@ -218,33 +228,37 @@ void DataOutput::writeUtf16Huge(const char32_t* data, size_t len) {
   }
 }
 
-template <class _Traits, class _Allocator>
-void DataOutput::writeUtf16(
-    const std::basic_string<char, _Traits, _Allocator>& value) {
+void DataOutput::writeUtf16(const std::string& value) {
   // TODO string OPTIMIZE convert from UTF-8 to UTF-16 directly
   if (!value.empty()) {
     writeUtf16(to_utf16(value));
   }
 }
-template APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT void DataOutput::writeUtf16(
-    const std::string&);
 
-template <class _Traits, class _Allocator>
-void DataOutput::writeUtf16(
-    const std::basic_string<char32_t, _Traits, _Allocator>& value) {
+void DataOutput::writeUtf16(const std::u32string& value) {
   // TODO string OPTIMIZE convert from UCS-4 to UTF-16 directly
   if (!value.empty()) {
     writeUtf16(to_utf16(value));
   }
 }
-template APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT void DataOutput::writeUtf16(
-    const std::u32string&);
 
 void DataOutput::writeUtf16(const char32_t* data, size_t len) {
   // TODO string optimize from UCS-4 to UTF-16
   if (len > 0) {
     writeUtf16(to_utf16(data, len));
   }
+}
+
+void DataOutput::writeUtf16(const std::u16string& value) {
+  writeUtf16(value.data(), value.length());
+}
+
+void DataOutput::writeUtf16(const std::wstring& value) {
+  typedef std::conditional<sizeof(wchar_t) == sizeof(char16_t), char16_t,
+                           std::conditional<sizeof(wchar_t) == sizeof(char32_t),
+                                            char32_t, char>::type>::type
+      _Convert;
+  writeUtf16(reinterpret_cast<const _Convert*>(value.data()), value.length());
 }
 
 void DataOutput::write(uint8_t value) {
@@ -588,6 +602,162 @@ void DataOutput::writeNoCheck(int8_t value) {
 
 Pool* DataOutput::getPool() const { return m_pool; }
 
+void DataOutput::DataOutput::writeString(const char* value) {
+  // TODO string should we convert to empty string?
+  if (nullptr == value) {
+    write(static_cast<uint8_t>(DSCode::CacheableNullString));
+  } else {
+    writeString(std::string(value));
+  }
+}
+
+void DataOutput::writeString(const wchar_t* value) {
+  // TODO string should we convert to empty string?
+  if (nullptr == value) {
+    write(static_cast<uint8_t>(DSCode::CacheableNullString));
+  } else {
+    writeString(std::wstring(value));
+  }
+}
+
+void DataOutput::writeString(const char16_t* value) {
+  // TODO string should we convert to empty string?
+  if (nullptr == value) {
+    write(static_cast<uint8_t>(DSCode::CacheableNullString));
+  } else {
+    writeString(std::u16string(value));
+  }
+}
+
+void DataOutput::writeString(const char32_t* value) {
+  // TODO string should we convert to empty string?
+  if (nullptr == value) {
+    write(static_cast<uint8_t>(DSCode::CacheableNullString));
+  } else {
+    writeString(std::u32string(value));
+  }
+}
+
+void DataOutput::writeString(const std::string& value) {
+  // without scanning string, making worst case choices.
+  // TODO constexp for each string type to jmutf8 length conversion
+  if (value.length() * 3 <= std::numeric_limits<uint16_t>::max()) {
+    write(static_cast<uint8_t>(DSCode::CacheableString));
+    writeJavaModifiedUtf8(value);
+  } else {
+    write(static_cast<uint8_t>(DSCode::CacheableStringHuge));
+    writeUtf16Huge(value);
+  }
+}
+
+void DataOutput::writeString(const std::wstring& value) {
+  // without scanning string, making worst case choices.
+  // TODO constexp for each string type to jmutf8 length conversion
+  if (value.length() * 3 <= std::numeric_limits<uint16_t>::max()) {
+    write(static_cast<uint8_t>(DSCode::CacheableString));
+    writeJavaModifiedUtf8(value);
+  } else {
+    write(static_cast<uint8_t>(DSCode::CacheableStringHuge));
+    writeUtf16Huge(value);
+  }
+}
+
+void DataOutput::writeString(const std::u16string& value) {
+  // without scanning string, making worst case choices.
+  // TODO constexp for each string type to jmutf8 length conversion
+  if (value.length() * 3 <= std::numeric_limits<uint16_t>::max()) {
+    write(static_cast<uint8_t>(DSCode::CacheableString));
+    writeJavaModifiedUtf8(value);
+  } else {
+    write(static_cast<uint8_t>(DSCode::CacheableStringHuge));
+    writeUtf16Huge(value);
+  }
+}
+
+void DataOutput::writeString(const std::u32string& value) {
+  // without scanning string, making worst case choices.
+  // TODO constexp for each string type to jmutf8 length conversion
+  if (value.length() * 3 <= std::numeric_limits<uint16_t>::max()) {
+    write(static_cast<uint8_t>(DSCode::CacheableString));
+    writeJavaModifiedUtf8(value);
+  } else {
+    write(static_cast<uint8_t>(DSCode::CacheableStringHuge));
+    writeUtf16Huge(value);
+  }
+}
+
+void DataOutput::writeUTF(const char* value) {
+  if (nullptr == value) {
+    throw NullPointerException("Parameter value must not be null.");
+  }
+  writeUTF(std::string(value));
+}
+
+void DataOutput::writeUTF(const wchar_t* value) {
+  if (nullptr == value) {
+    throw NullPointerException("Parameter value must not be null.");
+  }
+  writeUTF(std::wstring(value));
+}
+
+void DataOutput::writeUTF(const char16_t* value) {
+  if (nullptr == value) {
+    throw NullPointerException("Parameter value must not be null.");
+  }
+  writeUTF(std::u16string(value));
+}
+
+void DataOutput::writeUTF(const char32_t* value) {
+  if (nullptr == value) {
+    throw NullPointerException("Parameter value must not be null.");
+  }
+  writeUTF(std::u32string(value));
+}
+
+void DataOutput::writeUTF(const std::string& value) {
+  writeJavaModifiedUtf8(value);
+}
+
+void DataOutput::writeUTF(const std::wstring& value) {
+  writeJavaModifiedUtf8(value);
+}
+
+void DataOutput::writeUTF(const std::u16string& value) {
+  writeJavaModifiedUtf8(value);
+}
+
+void DataOutput::writeUTF(const std::u32string& value) {
+  writeJavaModifiedUtf8(value);
+}
+
+void DataOutput::writeChars(const std::string& value) { writeUtf16(value); }
+
+void DataOutput::writeChars(const std::wstring& value) { writeUtf16(value); }
+
+void DataOutput::writeChars(const std::u16string& value) { writeUtf16(value); }
+
+void DataOutput::writeChars(const std::u32string& value) { writeUtf16(value); }
+
+void DataOutput::writeChars(const char* value) {
+  writeChars(std::string(value));
+}
+
+void DataOutput::writeChars(const wchar_t* value) {
+  writeChars(std::wstring(value));
+}
+
+void DataOutput::writeChars(const char16_t* value) {
+  writeChars(std::u16string(value));
+}
+
+void DataOutput::writeChars(const char32_t* value) {
+  writeChars(std::u32string(value));
+}
+
+void DataOutput::writeObject(const std::shared_ptr<Serializable>& objptr,
+                             bool isDelta) {
+  writeObjectInternal(objptr, isDelta);
+}
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

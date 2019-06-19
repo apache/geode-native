@@ -181,42 +181,25 @@ class APACHE_GEODE_EXPORT DataOutput {
    * @param value the double precision real number to be written
    */
   void writeDouble(double value);
+  void writeString(const char* value);
+  void writeString(const wchar_t* value);
+  void writeString(const char16_t* value);
+  void writeString(const char32_t* value);
 
-  template <class _CharT>
-  void writeString(const _CharT* value) {
-    // TODO string should we convert to empty string?
-    if (nullptr == value) {
-      write(static_cast<uint8_t>(DSCode::CacheableNullString));
-    } else {
-      writeString(std::basic_string<_CharT>(value));
-    }
-  }
+  void writeString(const std::string& value);
+  void writeString(const std::wstring& value);
+  void writeString(const std::u16string& value);
+  void writeString(const std::u32string& value);
 
-  template <class _CharT, class... _Tail>
-  void writeString(const std::basic_string<_CharT, _Tail...>& value) {
-    // without scanning string, making worst case choices.
-    // TODO constexp for each string type to jmutf8 length conversion
-    if (value.length() * 3 <= std::numeric_limits<uint16_t>::max()) {
-      write(static_cast<uint8_t>(DSCode::CacheableString));
-      writeJavaModifiedUtf8(value);
-    } else {
-      write(static_cast<uint8_t>(DSCode::CacheableStringHuge));
-      writeUtf16Huge(value);
-    }
-  }
+  void writeUTF(const char* value);
+  void writeUTF(const wchar_t* value);
+  void writeUTF(const char16_t* value);
+  void writeUTF(const char32_t* value);
 
-  template <class _CharT>
-  void writeUTF(const _CharT* value) {
-    if (nullptr == value) {
-      throw NullPointerException("Parameter value must not be null.");
-    }
-    writeUTF(std::basic_string<_CharT>(value));
-  }
-
-  template <class _CharT, class... Tail>
-  void writeUTF(const std::basic_string<_CharT, Tail...>& value) {
-    writeJavaModifiedUtf8(value);
-  }
+  void writeUTF(const std::string& value);
+  void writeUTF(const std::wstring& value);
+  void writeUTF(const std::u16string& value);
+  void writeUTF(const std::u32string& value);
 
   /**
    * Writes a sequence of UTF-16 code units representing the given string value.
@@ -227,10 +210,10 @@ class APACHE_GEODE_EXPORT DataOutput {
    * std::basic_string.
    * @param value string to write as UTF-16 units
    */
-  template <class _CharT, class... _Tail>
-  void writeChars(const std::basic_string<_CharT, _Tail...>& value) {
-    writeUtf16(value);
-  }
+  void writeChars(const std::string& value);
+  void writeChars(const std::wstring& value);
+  void writeChars(const std::u16string& value);
+  void writeChars(const std::u32string& value);
 
   /**
    * Writes a sequence of UTF-16 code units representing the given string value.
@@ -244,10 +227,10 @@ class APACHE_GEODE_EXPORT DataOutput {
    * @tparam _CharT matches character type used for std::basic_string.
    * @param value NULL (\u0000) terminated string to write as UTF-16 units
    */
-  template <class _CharT>
-  void writeChars(const _CharT* value) {
-    writeChars(std::basic_string<_CharT>(value));
-  }
+  void writeChars(const char* value);
+  void writeChars(const wchar_t* value);
+  void writeChars(const char16_t* value);
+  void writeChars(const char32_t* value);
 
   /**
    * Write a <code>Serializable</code> object to the <code>DataOutput</code>.
@@ -255,10 +238,8 @@ class APACHE_GEODE_EXPORT DataOutput {
    * @param objptr smart pointer to the <code>Serializable</code> object
    *   to be written
    */
-  template <class PTR>
-  void writeObject(const std::shared_ptr<PTR>& objptr, bool isDelta = false) {
-    writeObjectInternal(objptr, isDelta);
-  }
+  void writeObject(const std::shared_ptr<Serializable>& objptr,
+                   bool isDelta = false);
 
   /**
    * Get an internal pointer to the current location in the
@@ -367,85 +348,37 @@ class APACHE_GEODE_EXPORT DataOutput {
 
   void writeAsciiHuge(const std::string& value);
 
-  template <class _CharT, class _Traits, class _Allocator>
-  void writeJavaModifiedUtf8(
-      const std::basic_string<_CharT, _Traits, _Allocator>& value) {
-    writeJavaModifiedUtf8(value.data(), value.length());
-  }
+  void writeJavaModifiedUtf8(const std::u16string& value);
 
-  template <class _Traits, class _Allocator>
-  void writeJavaModifiedUtf8(
-      const std::basic_string<char, _Traits, _Allocator>& value);
+  void writeJavaModifiedUtf8(const std::string& value);
 
-  template <class _Traits, class _Allocator>
-  void writeJavaModifiedUtf8(
-      const std::basic_string<char32_t, _Traits, _Allocator>& value);
+  void writeJavaModifiedUtf8(const std::u32string& value);
 
-  template <class _Traits, class _Allocator>
-  void writeJavaModifiedUtf8(
-      const std::basic_string<wchar_t, _Traits, _Allocator>& value) {
-    typedef std::conditional<
-        sizeof(wchar_t) == sizeof(char16_t), char16_t,
-        std::conditional<sizeof(wchar_t) == sizeof(char32_t), char32_t,
-                         char>::type>::type _Convert;
-    writeJavaModifiedUtf8(reinterpret_cast<const _Convert*>(value.data()),
-                          value.length());
-  }
+  void writeJavaModifiedUtf8(const std::wstring& value);
 
   void writeJavaModifiedUtf8(const char16_t* data, size_t len);
 
   void writeJavaModifiedUtf8(const char32_t* data, size_t len);
 
-  template <class _CharT, class _Traits, class _Allocator>
-  void writeUtf16Huge(
-      const std::basic_string<_CharT, _Traits, _Allocator>& value) {
-    writeUtf16Huge(value.data(), value.length());
-  }
+  void writeUtf16Huge(const std::u16string& value);
 
-  template <class _Traits, class _Allocator>
-  void writeUtf16Huge(
-      const std::basic_string<char, _Traits, _Allocator>& value);
+  void writeUtf16Huge(const std::string& value);
 
-  template <class _Traits, class _Allocator>
-  void writeUtf16Huge(
-      const std::basic_string<char32_t, _Traits, _Allocator>& value);
+  void writeUtf16Huge(const std::u32string& value);
 
-  template <class _Traits, class _Allocator>
-  void writeUtf16Huge(
-      const std::basic_string<wchar_t, _Traits, _Allocator>& value) {
-    typedef std::conditional<
-        sizeof(wchar_t) == sizeof(char16_t), char16_t,
-        std::conditional<sizeof(wchar_t) == sizeof(char32_t), char32_t,
-                         char>::type>::type _Convert;
-    writeUtf16Huge(reinterpret_cast<const _Convert*>(value.data()),
-                   value.length());
-  }
+  void writeUtf16Huge(const std::wstring& value);
 
   void writeUtf16Huge(const char16_t* data, size_t length);
 
   void writeUtf16Huge(const char32_t* data, size_t len);
 
-  template <class _CharT, class _Traits, class _Allocator>
-  void writeUtf16(const std::basic_string<_CharT, _Traits, _Allocator>& value) {
-    writeUtf16(value.data(), value.length());
-  }
+  void writeUtf16(const std::u16string& value);
 
-  template <class _Traits, class _Allocator>
-  void writeUtf16(const std::basic_string<char, _Traits, _Allocator>& value);
+  void writeUtf16(const std::string& value);
 
-  template <class _Traits, class _Allocator>
-  void writeUtf16(
-      const std::basic_string<char32_t, _Traits, _Allocator>& value);
+  void writeUtf16(const std::u32string& value);
 
-  template <class _Traits, class _Allocator>
-  void writeUtf16(
-      const std::basic_string<wchar_t, _Traits, _Allocator>& value) {
-    typedef std::conditional<
-        sizeof(wchar_t) == sizeof(char16_t), char16_t,
-        std::conditional<sizeof(wchar_t) == sizeof(char32_t), char32_t,
-                         char>::type>::type _Convert;
-    writeUtf16(reinterpret_cast<const _Convert*>(value.data()), value.length());
-  }
+  void writeUtf16(const std::wstring& value);
 
   void writeUtf16(const char16_t* data, size_t length);
 
@@ -480,9 +413,6 @@ class APACHE_GEODE_EXPORT DataOutput {
   friend CacheableString;
   friend TcrMessage;
 };
-
-template void DataOutput::writeJavaModifiedUtf8(const std::u16string&);
-template void DataOutput::writeJavaModifiedUtf8(const std::wstring&);
 
 }  // namespace client
 }  // namespace geode
