@@ -163,17 +163,11 @@ void FarSideEntryOp::skipFilterRoutingInfo(DataInput& input) {
         GF_CACHE_ILLEGAL_STATE_EXCEPTION);
   }
 }
-/* std::shared_ptr<EntryEvent> FarSideEntryOp::getEntryEvent(Cache* cache)
-{
-        return std::shared_ptr<EntryEvent>(new EntryEvent(
-                        m_region->getRegion(cache),
-                        m_key,
-                        nullptr,
-                        m_value,
-                        m_callbackArg,
-                        false));
+
+bool FarSideEntryOp::cmp(const std::shared_ptr<FarSideEntryOp>& lhs,
+                         const std::shared_ptr<FarSideEntryOp>& rhs) {
+  return lhs->m_modSerialNum > rhs->m_modSerialNum;
 }
-*/
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

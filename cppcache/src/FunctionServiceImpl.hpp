@@ -40,7 +40,7 @@ class APACHE_GEODE_EXPORT FunctionServiceImpl : public FunctionService {
  public:
   explicit FunctionServiceImpl(AuthenticatedView* authenticatedView);
 
-  virtual ~FunctionServiceImpl() {}
+  virtual ~FunctionServiceImpl() = default;
 
  private:
   explicit FunctionServiceImpl(const FunctionService&);

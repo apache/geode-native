@@ -91,9 +91,7 @@ class FarSideEntryOp {
   void fromData(DataInput& input, bool largeModCount, uint16_t memId);
   void apply(std::shared_ptr<Region>& region);
   static bool cmp(const std::shared_ptr<FarSideEntryOp>& lhs,
-                  const std::shared_ptr<FarSideEntryOp>& rhs) {
-    return lhs->m_modSerialNum > rhs->m_modSerialNum;
-  }
+                  const std::shared_ptr<FarSideEntryOp>& rhs);
 
  private:
   int8_t m_op;

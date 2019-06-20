@@ -30,6 +30,15 @@ void GetAllServersRequest::fromData(DataInput& input) {
       std::dynamic_pointer_cast<CacheableString>(input.readObject());
 }
 
+GetAllServersRequest::GetAllServersRequest(const std::string& serverGroup)
+    : Serializable() {
+  m_serverGroup = CacheableString::create(serverGroup);
+}
+
+size_t GetAllServersRequest::objectSize() const {
+  return sizeof(GetAllServersRequest) + m_serverGroup->objectSize();
+}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
