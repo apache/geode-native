@@ -22,6 +22,7 @@
 
 #include <atomic>
 #include <memory>
+#include <mutex>
 
 #include <geode/internal/geode_globals.hpp>
 
@@ -30,6 +31,8 @@
 namespace apache {
 namespace geode {
 namespace client {
+
+using util::concurrent::spinlock_mutex;
 
 // Bit mask for recently used
 #define RECENTLY_USED_BITS 1u
@@ -112,31 +115,117 @@ class LRUList {
   };
 
  public:
-  LRUList();
-  ~LRUList();
+  LRUList() : m_headLock(), m_tailLock() {
+    std::shared_ptr<TEntry> headEntry(TCreateEntry::create(nullptr));
+    headEntry->getLRUProperties().setEvicted();  // create empty evicted entry.
+    m_headNode = new LRUListNode(headEntry);
+    m_tailNode = m_headNode;
+  }
+
+  ~LRUList() {
+    m_tailNode = nullptr;
+    LRUListNode* next;
+    while (m_headNode != nullptr) {
+      next = m_headNode->getNextLRUListNode();
+      delete m_headNode;
+      m_headNode = next;
+    }
+  }
 
   /**
    * @brief add an entry to the tail of the list.
    */
-  void appendEntry(const std::shared_ptr<TEntry>& entry);
+  void appendEntry(const std::shared_ptr<TEntry>& entry) {
+    std::lock_guard<spinlock_mutex> lk(m_tailLock);
+
+    LRUListNode* aNode = new LRUListNode(entry);
+    m_tailNode->setNextLRUListNode(aNode);
+    m_tailNode = aNode;
+  }
 
   /**
    * @brief return the least recently used node from the list,
    * and removing it from the list.
    */
-  void getLRUEntry(std::shared_ptr<TEntry>& result);
+  void getLRUEntry(std::shared_ptr<TEntry>& result) {
+    bool isLast = false;
+    LRUListNode* aNode;
+    while (true) {
+      aNode = getHeadNode(isLast);
+      if (aNode == nullptr) {
+        result = nullptr;
+        break;
+      }
+      aNode->getEntry(result);
+      if (isLast) {
+        break;
+      }
+      // otherwise, check if it should be discarded or put back on the list
+      // instead of returned...
+      LRUEntryProperties& lruProps = result->getLRUProperties();
+      if (!lruProps.testEvicted()) {
+        if (lruProps.testRecentlyUsed()) {
+          lruProps.clearRecentlyUsed();
+          appendNode(aNode);
+          // now try again.
+        } else {
+          delete aNode;
+          break;  // found unused entry
+        }
+      } else {
+        result = nullptr;  // remove the reference to entry
+        delete aNode;      // drop the entry to the floor ...
+      }
+    }
+  }
 
  private:
   /**
    * @brief add a node to the tail of the list.
    */
-  void appendNode(LRUListNode* aNode);
+  void appendNode(LRUListNode* aNode) {
+    std::lock_guard<spinlock_mutex> lk(m_tailLock);
+
+    aNode->clearNextLRUListNode();
+    m_tailNode->setNextLRUListNode(aNode);
+    m_tailNode = aNode;
+  }
 
   /**
    * @brief return the head entry in the list,
    * and removing it from the list.
    */
-  LRUListNode* getHeadNode(bool& isLast);
+  LRUListNode* getHeadNode(bool& isLast) {
+    std::lock_guard<spinlock_mutex> lk(m_headLock);
+
+    LRUListNode* result = m_headNode;
+    LRUListNode* nextNode;
+
+    {
+      std::lock_guard<spinlock_mutex> lk(m_tailLock);
+
+      nextNode = m_headNode->getNextLRUListNode();
+      if (nextNode == nullptr) {
+        // last one in the list...
+        isLast = true;
+        std::shared_ptr<TEntry> entry;
+        result->getEntry(entry);
+        if (entry->getLRUProperties().testEvicted()) {
+          // list is empty.
+          return nullptr;
+        } else {
+          entry->getLRUProperties().setEvicted();
+          return result;
+        }
+      }
+    }
+
+    isLast = false;
+    // advance head node, and return old value.
+    m_headNode = nextNode;
+
+    return result;
+  }
 
   spinlock_mutex m_headLock;
   spinlock_mutex m_tailLock;

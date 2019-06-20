@@ -22,7 +22,7 @@
 #include "CacheImpl.hpp"
 #include "EvictionController.hpp"
 #include "ExpiryTaskManager.hpp"
-#include "LRUList.cpp"
+#include "LRUList.hpp"
 #include "MapSegment.hpp"
 #include "util/concurrent/spinlock_mutex.hpp"
 
