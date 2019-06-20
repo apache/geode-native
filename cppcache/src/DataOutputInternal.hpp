@@ -31,15 +31,13 @@ namespace client {
 
 class CacheImpl;
 
-class DataOutputInternal : public DataOutput {
+class APACHE_GEODE_EXPORT DataOutputInternal : public DataOutput {
  public:
-  DataOutputInternal() : DataOutput(nullptr, nullptr) {}
+  DataOutputInternal();
 
-  explicit DataOutputInternal(CacheImpl* cache) : DataOutput(cache, nullptr) {}
+  explicit DataOutputInternal(CacheImpl* cache);
 
-  inline static Pool* getPool(const DataOutput& dataOutput) {
-    return dataOutput.getPool();
-  }
+  static Pool* getPool(const DataOutput& dataOutput);
 };
 
 }  // namespace client

@@ -15,28 +15,23 @@
  * limitations under the License.
  */
 
-#pragma once
-
-#ifndef GEODE_DATAINPUTINTERNAL_H_
-#define GEODE_DATAINPUTINTERNAL_H_
-
-#include <geode/DataInput.hpp>
+#include "DataInputInternal.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
-class APACHE_GEODE_EXPORT DataInputInternal : public DataInput {
- public:
-  DataInputInternal(const uint8_t* buffer, size_t len);
+DataInputInternal::DataInputInternal(const uint8_t* buffer, size_t len)
+    : DataInput(buffer, len, nullptr, nullptr) {}
 
-  DataInputInternal(const uint8_t* buffer, size_t len, const CacheImpl* cache);
+DataInputInternal::DataInputInternal(const uint8_t* buffer, size_t len,
+                                     const CacheImpl* cache)
+    : DataInput(buffer, len, cache, nullptr) {}
 
-  static Pool* getPool(const DataInput& dataInput);
-};
+Pool* DataInputInternal::getPool(const DataInput& dataInput) {
+  return dataInput.getPool();
+}
 
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
-
-#endif  // GEODE_DATAINPUTINTERNAL_H_
