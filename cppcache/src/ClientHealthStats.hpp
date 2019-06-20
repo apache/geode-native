@@ -43,7 +43,7 @@ class ClientHealthStats : public internal::DataSerializableFixedId_t<
   static std::shared_ptr<Serializable> createDeserializable();
 
   /** @return the size of the object in bytes */
-  size_t objectSize() const override { return sizeof(ClientHealthStats); }
+  size_t objectSize() const override;
   /**
    * Factory method for creating an instance of ClientHealthStats
    */
@@ -51,10 +51,7 @@ class ClientHealthStats : public internal::DataSerializableFixedId_t<
                                                    int misses, int listCalls,
                                                    int numThreads,
                                                    int64_t cpuTime = 0,
-                                                   int cpus = 0) {
-    return std::shared_ptr<ClientHealthStats>(new ClientHealthStats(
-        gets, puts, misses, listCalls, numThreads, cpuTime, cpus));
-  }
+                                                   int cpus = 0);
   ~ClientHealthStats() override = default;
 
   ClientHealthStats();

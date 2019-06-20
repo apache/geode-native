@@ -45,6 +45,21 @@ void ClientConnectionRequest::writeSetOfServerLocation(
   }
 }
 
+ClientConnectionRequest::ClientConnectionRequest(
+    const std::set<ServerLocation>& excludeServergroup, std::string servergroup)
+    : ServerLocationRequest(),
+      m_servergroup(servergroup),
+      m_excludeServergroup_serverLocation(excludeServergroup) {}
+
+std::string ClientConnectionRequest::getServerGroup() const {
+  return m_servergroup;
+}
+
+const std::set<ServerLocation>&
+ClientConnectionRequest::getExcludedServerGroup() const {
+  return m_excludeServergroup_serverLocation;
+}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
