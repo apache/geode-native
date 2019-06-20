@@ -17,8 +17,6 @@
 
 #include "time_point.hpp"
 
-#include <chrono>
-
 namespace apache {
 namespace geode {
 namespace util {

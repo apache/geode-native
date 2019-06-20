@@ -15,37 +15,20 @@
  * limitations under the License.
  */
 
-#pragma once
-
-#ifndef GEODE_UTIL_CONCURRENT_SPINLOCK_MUTEX_H_
-#define GEODE_UTIL_CONCURRENT_SPINLOCK_MUTEX_H_
-
-#include <atomic>
-
-#include "apache-geode_export.h"
+#include "spinlock_mutex.hpp"
 
 namespace apache {
 namespace geode {
 namespace util {
 namespace concurrent {
 
-class APACHE_GEODE_EXPORT spinlock_mutex final {
- private:
-  std::atomic_flag flag = ATOMIC_FLAG_INIT;
+void spinlock_mutex::lock() {
+  while (flag.test_and_set(std::memory_order_acquire)) continue;
+}
 
- public:
-  void lock();
-
-  void unlock();
-
-  spinlock_mutex() = default;
-  spinlock_mutex(const spinlock_mutex &) = delete;
-  spinlock_mutex &operator=(const spinlock_mutex &) = delete;
-};
+void spinlock_mutex::unlock() { flag.clear(std::memory_order_release); }
 
 } /* namespace concurrent */
 } /* namespace util */
 } /* namespace geode */
 } /* namespace apache */
-
-#endif /* GEODE_UTIL_CONCURRENT_SPINLOCK_MUTEX_H_ */
