@@ -44,9 +44,9 @@ constexpr std::chrono::milliseconds DEFAULT_WRITE_TIMEOUT =
 class Connector {
  public:
   /* create one socket connection with settings */
-  Connector() {}
+  Connector() = default;
   /* destroy the connection */
-  virtual ~Connector() {}
+  virtual ~Connector() = default;
 
   /**
    * Reads <code>len</code> bytes of data and stores them into the buffer

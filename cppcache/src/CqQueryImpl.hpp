@@ -261,7 +261,7 @@ class CqQueryImpl : public CqQuery,
    */
   bool isDurable() const override;
 
-  inline ThinClientBaseDM* getDM() { return m_tccdm; }
+  ThinClientBaseDM* getDM();
 
  private:
   void updateStats();

@@ -586,6 +586,8 @@ bool CqQueryImpl::isClosed() const {
  */
 bool CqQueryImpl::isDurable() const { return m_isDurable; }
 
+ThinClientBaseDM* CqQueryImpl::getDM() { return m_tccdm; }
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

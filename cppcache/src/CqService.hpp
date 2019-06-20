@@ -68,7 +68,7 @@ class APACHE_GEODE_EXPORT CqService
 
   std::shared_ptr<CqServiceStatistics> m_stats;
 
-  inline bool noCq() const { return m_cqQueryMap.empty(); }
+  inline bool noCq() const;
 
  public:
   typedef std::vector<std::shared_ptr<CqQuery>> query_container_type;
@@ -80,7 +80,7 @@ class APACHE_GEODE_EXPORT CqService
             statistics::StatisticsFactory* statisticsFactory);
   ~CqService() noexcept;
 
-  ThinClientBaseDM* getDM() { return m_tccdm; }
+  ThinClientBaseDM* getDM();
 
   void receiveNotification(TcrMessage* msg);
 
@@ -91,9 +91,7 @@ class APACHE_GEODE_EXPORT CqService
 
   void updateStats();
 
-  CqServiceVsdStats& getCqServiceVsdStats() {
-    return *dynamic_cast<CqServiceVsdStats*>(m_stats.get());
-  }
+  CqServiceVsdStats& getCqServiceVsdStats();
 
   /**
    * Constructs a new named continuous query, represented by an instance of

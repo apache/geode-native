@@ -47,28 +47,20 @@ class APACHE_GEODE_EXPORT CqQueryVsdStats : public CqStatistics {
   /** disable stat collection for this item. */
   virtual ~CqQueryVsdStats();
 
-  void close() { m_cqQueryVsdStats->close(); }
+  void close();
 
-  inline void incNumInserts() { m_cqQueryVsdStats->incInt(m_numInsertsId, 1); }
+  void incNumInserts();
 
-  inline void incNumUpdates() { m_cqQueryVsdStats->incInt(m_numUpdatesId, 1); }
+  void incNumUpdates();
 
-  inline void incNumDeletes() { m_cqQueryVsdStats->incInt(m_numDeletesId, 1); }
+  void incNumDeletes();
 
-  inline void incNumEvents() { m_cqQueryVsdStats->incInt(m_numEventsId, 1); }
+  void incNumEvents();
 
-  inline uint32_t numInserts() const {
-    return m_cqQueryVsdStats->getInt(m_numInsertsId);
-  }
-  inline uint32_t numUpdates() const {
-    return m_cqQueryVsdStats->getInt(m_numUpdatesId);
-  }
-  inline uint32_t numDeletes() const {
-    return m_cqQueryVsdStats->getInt(m_numDeletesId);
-  }
-  inline uint32_t numEvents() const {
-    return m_cqQueryVsdStats->getInt(m_numEventsId);
-  }
+  uint32_t numInserts() const;
+  uint32_t numUpdates() const;
+  uint32_t numDeletes() const;
+  uint32_t numEvents() const;
 
  private:
   Statistics* m_cqQueryVsdStats;
