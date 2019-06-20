@@ -42,76 +42,33 @@ class PdxRemotePreservedData : public PdxUnreadFields {
   ExpiryTaskManager::id_type m_expiryTakId;
 
  public:
-  PdxRemotePreservedData()
-      : /* adongre  - Coverity II
-         * CID 29283: Uninitialized scalar field (UNINIT_CTOR)
-         */
-        m_typeId(0),
-        m_mergedTypeId(0),
-        m_currentIndex(0),
-        m_expiryTakId(0) {}
+  PdxRemotePreservedData();
 
-  virtual ~PdxRemotePreservedData() {
-    /*for(int i=0;i<numberOfFields;i++)
-            delete[] m_preservedData[i];
+  virtual ~PdxRemotePreservedData() = default;
 
-    delete[] m_preservedData;*/
-  }
   PdxRemotePreservedData(int32_t typeId, int32_t mergedTypeId,
-                         std::shared_ptr<Serializable> owner) {
-    m_typeId = typeId;
-    m_mergedTypeId = mergedTypeId;
-    m_currentIndex = 0;
-    m_owner = owner;
-    m_expiryTakId = 0;
-  }
+                         std::shared_ptr<Serializable> owner);
 
   void initialize(int32_t typeId, int32_t mergedTypeId,
-                  std::shared_ptr<Serializable> owner) {
-    m_typeId = typeId;
-    m_mergedTypeId = mergedTypeId;
-    m_currentIndex = 0;
-    m_owner = owner;
-    m_expiryTakId = 0;
-  }
+                  std::shared_ptr<Serializable> owner);
 
-  inline int32_t getMergedTypeId() { return m_mergedTypeId; }
+  int32_t getMergedTypeId();
 
-  inline void setPreservedDataExpiryTaskId(ExpiryTaskManager::id_type expId) {
-    m_expiryTakId = expId;
-  }
+  void setPreservedDataExpiryTaskId(ExpiryTaskManager::id_type expId);
 
-  inline ExpiryTaskManager::id_type getPreservedDataExpiryTaskId() {
-    return m_expiryTakId;
-  }
+  ExpiryTaskManager::id_type getPreservedDataExpiryTaskId();
 
-  std::shared_ptr<Serializable> getOwner() { return m_owner; }
+  std::shared_ptr<Serializable> getOwner();
 
-  void setOwner(std::shared_ptr<Serializable> val) { m_owner = val; }
+  void setOwner(std::shared_ptr<Serializable> val);
 
-  inline std::vector<int8_t> getPreservedData(int32_t idx) {
-    return m_preservedData[idx];
-  }
+  std::vector<int8_t> getPreservedData(int32_t idx);
 
-  inline void setPreservedData(std::vector<int8_t> inputVector) {
-    m_preservedData.push_back(inputVector);
-  }
+  void setPreservedData(std::vector<int8_t> inputVector);
 
-  virtual bool equals(std::shared_ptr<Serializable> otherObject) {
-    if (otherObject == nullptr) return false;
+  virtual bool equals(std::shared_ptr<Serializable> otherObject);
 
-    if (m_owner == nullptr) return false;
-
-    return m_owner == otherObject;
-  }
-
-  virtual int GetHashCode() {
-    if (m_owner != nullptr) {
-      // TODO
-      return 1;  // m_owner->GetHashCode();
-    }
-    return 0;
-  }
+  virtual int GetHashCode();
 };
 }  // namespace client
 }  // namespace geode

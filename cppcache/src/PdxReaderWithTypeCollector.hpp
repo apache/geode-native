@@ -41,7 +41,7 @@ class PdxReaderWithTypeCollector : public PdxLocalReader {
 
   virtual ~PdxReaderWithTypeCollector() override;
 
-  std::shared_ptr<PdxType> getLocalType() const { return m_newPdxType; }
+  std::shared_ptr<PdxType> getLocalType() const;
 
   virtual char16_t readChar(const std::string& fieldName) override;
 

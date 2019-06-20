@@ -601,6 +601,13 @@ std::shared_ptr<CacheableDate> PdxRemoteReader::readDate(
   }
 }
 
+PdxRemoteReader::PdxRemoteReader(DataInput& dataInput, std::shared_ptr<PdxType> remoteType,
+                  int32_t pdxLen,
+                  std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry)
+      : PdxLocalReader(dataInput, remoteType, pdxLen, pdxTypeRegistry) {
+    m_currentIndex = 0;
+  }
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
