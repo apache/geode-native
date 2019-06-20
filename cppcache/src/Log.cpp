@@ -804,6 +804,209 @@ void LogVarargs::finest(const char* fmt, ...) {
   va_end(argp);
 }
 
+LogLevel Log::logLevel() { return s_logLevel; }
+
+void Log::setLogLevel(LogLevel level) { s_logLevel = level; }
+
+bool Log::enabled(LogLevel level) {
+  return (((s_doingDebug && level == LogLevel::Debug) ||
+           GEODE_HIGHEST_LOG_LEVEL >= level) &&
+          s_logLevel >= level);
+}
+
+void Log::log(LogLevel level, const char* msg) {
+  if (enabled(level)) put(level, msg);
+}
+
+void Log::logThrow(LogLevel level, const char* msg, const Exception& ex) {
+  if (enabled(level)) putThrow(level, msg, ex);
+}
+
+void Log::logCatch(LogLevel level, const char* msg, const Exception& ex) {
+  if (enabled(level)) putCatch(level, msg, ex);
+}
+
+bool Log::errorEnabled() {
+  return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Error &&
+         s_logLevel >= LogLevel::Error;
+}
+
+void Log::error(const char* msg) {
+  if (errorEnabled()) put(LogLevel::Error, msg);
+}
+
+void Log::error(const std::string& msg) {
+  if (errorEnabled()) put(LogLevel::Error, msg.c_str());
+}
+
+void Log::errorThrow(const char* msg, const Exception& ex) {
+  if (errorEnabled()) putThrow(LogLevel::Error, msg, ex);
+}
+
+void Log::errorCatch(const char* msg, const Exception& ex) {
+  if (errorEnabled()) putCatch(LogLevel::Error, msg, ex);
+}
+
+bool Log::warningEnabled() {
+  return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Warning &&
+         s_logLevel >= LogLevel::Warning;
+}
+
+void Log::warning(const char* msg) {
+  if (warningEnabled()) put(LogLevel::Warning, msg);
+}
+
+void Log::warningThrow(const char* msg, const Exception& ex) {
+  if (warningEnabled()) putThrow(LogLevel::Warning, msg, ex);
+}
+
+void Log::warningCatch(const char* msg, const Exception& ex) {
+  if (warningEnabled()) putCatch(LogLevel::Warning, msg, ex);
+}
+
+bool Log::infoEnabled() {
+  return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Info &&
+         s_logLevel >= LogLevel::Info;
+}
+
+void Log::info(const char* msg) {
+  if (infoEnabled()) put(LogLevel::Info, msg);
+}
+
+void Log::infoThrow(const char* msg, const Exception& ex) {
+  if (infoEnabled()) putThrow(LogLevel::Info, msg, ex);
+}
+
+void Log::infoCatch(const char* msg, const Exception& ex) {
+  if (infoEnabled()) putCatch(LogLevel::Info, msg, ex);
+}
+
+bool Log::configEnabled() {
+  return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Config &&
+         s_logLevel >= LogLevel::Config;
+}
+
+void Log::config(const char* msg) {
+  if (configEnabled()) put(LogLevel::Config, msg);
+}
+
+void Log::configThrow(const char* msg, const Exception& ex) {
+  if (configEnabled()) putThrow(LogLevel::Config, msg, ex);
+}
+
+void Log::configCatch(const char* msg, const Exception& ex) {
+  if (configEnabled()) putCatch(LogLevel::Config, msg, ex);
+}
+
+bool Log::fineEnabled() {
+  return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Fine &&
+         s_logLevel >= LogLevel::Fine;
+}
+
+void Log::fine(const char* msg) {
+  if (fineEnabled()) put(LogLevel::Fine, msg);
+}
+
+void Log::fineThrow(const char* msg, const Exception& ex) {
+  if (fineEnabled()) putThrow(LogLevel::Fine, msg, ex);
+}
+
+void Log::fineCatch(const char* msg, const Exception& ex) {
+  if (fineEnabled()) putCatch(LogLevel::Fine, msg, ex);
+}
+
+bool Log::finerEnabled() {
+  return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Finer &&
+         s_logLevel >= LogLevel::Finer;
+}
+
+void Log::finer(const char* msg) {
+  if (finerEnabled()) put(LogLevel::Finer, msg);
+}
+
+void Log::finerThrow(const char* msg, const Exception& ex) {
+  if (finerEnabled()) putThrow(LogLevel::Finer, msg, ex);
+}
+
+void Log::finerCatch(const char* msg, const Exception& ex) {
+  if (finerEnabled()) putCatch(LogLevel::Finer, msg, ex);
+}
+
+bool Log::finestEnabled() {
+  return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Finest &&
+         s_logLevel >= LogLevel::Finest;
+}
+
+void Log::finest(const char* msg) {
+  if (finestEnabled()) put(LogLevel::Finest, msg);
+}
+
+void Log::finestThrow(const char* msg, const Exception& ex) {
+  if (finestEnabled()) putThrow(LogLevel::Finest, msg, ex);
+}
+
+void Log::finestCatch(const char* msg, const Exception& ex) {
+  if (finestEnabled()) putCatch(LogLevel::Finest, msg, ex);
+}
+
+bool Log::debugEnabled() {
+  return (s_doingDebug || GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Debug) &&
+         s_logLevel >= LogLevel::Debug;
+}
+
+void Log::debug(const char* msg) {
+  if (debugEnabled()) put(LogLevel::Debug, msg);
+}
+
+void Log::debugThrow(const char* msg, const Exception& ex) {
+  if (debugEnabled()) putThrow(LogLevel::Debug, msg, ex);
+}
+
+void Log::debugCatch(const char* msg, const Exception& ex) {
+  if (debugEnabled()) putCatch(LogLevel::Debug, msg, ex);
+}
+
+LogFn::LogFn(const char* functionName, LogLevel level)
+    : m_functionName(functionName), m_level(level) {
+  if (Log::enabled(m_level)) Log::enterFn(m_level, m_functionName);
+}
+
+LogFn::~LogFn() {
+  if (Log::enabled(m_level)) Log::exitFn(m_level, m_functionName);
+}
+
+void LogVarargs::debug(const std::string& message) {
+  Log::put(LogLevel::Debug, message.c_str());
+}
+
+void LogVarargs::error(const std::string& message) {
+  Log::put(LogLevel::Error, message.c_str());
+}
+
+void LogVarargs::warn(const std::string& message) {
+  Log::put(LogLevel::Warning, message.c_str());
+}
+
+void LogVarargs::info(const std::string& message) {
+  Log::put(LogLevel::Info, message.c_str());
+}
+
+void LogVarargs::config(const std::string& message) {
+  Log::put(LogLevel::Config, message.c_str());
+}
+
+void LogVarargs::fine(const std::string& message) {
+  Log::put(LogLevel::Fine, message.c_str());
+}
+
+void LogVarargs::finer(const std::string& message) {
+  Log::put(LogLevel::Finer, message.c_str());
+}
+
+void LogVarargs::finest(const std::string& message) {
+  Log::put(LogLevel::Finest, message.c_str());
+}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
