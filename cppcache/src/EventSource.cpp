@@ -23,7 +23,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-EventSource::EventSource(const char* memId, int32_t memIdLen, int64_t thrId) {
+EventSource::EventSource(const char *memId, int32_t memIdLen, int64_t thrId) {
   init();
 
   if (memId == nullptr || memIdLen <= 0) {
@@ -54,11 +54,11 @@ void EventSource::clear() {
   init();
 }
 
-char* EventSource::getSrcId() { return m_srcId; }
+char *EventSource::getSrcId() { return m_srcId; }
 
 int32_t EventSource::getSrcIdLen() { return m_srcIdLen; }
 
-char* EventSource::getMemId() { return m_srcId; }
+char *EventSource::getMemId() { return m_srcId; }
 
 int32_t EventSource::getMemIdLen() { return m_srcIdLen - sizeof(m_thrId); }
 
@@ -76,13 +76,42 @@ int32_t EventSource::hashcode() const {
   return m_hash;
 }
 
-bool EventSource::operator==(const EventSource& rhs) const {
+bool EventSource::operator==(const EventSource &rhs) const {
   if (this->m_srcId == nullptr || (&rhs)->m_srcId == nullptr ||
       this->m_srcIdLen != (&rhs)->m_srcIdLen) {
     return false;
   }
 
   return memcmp(this->m_srcId, (&rhs)->m_srcId, this->m_srcIdLen) == 0;
+}
+
+std::size_t EventSource::hash::operator()(const EventSource &val) const {
+  return val.hashcode();
+}
+
+std::size_t EventSource::hash::operator()(const EventSource *val) const {
+  return val->hashcode();
+}
+
+std::size_t EventSource::hash::operator()(
+    const std::shared_ptr<EventSource> &val) const {
+  return val->hashcode();
+}
+
+bool EventSource::equal_to::operator()(const EventSource &lhs,
+                                       const EventSource &rhs) const {
+  return lhs == rhs;
+}
+
+bool EventSource::equal_to::operator()(const EventSource *lhs,
+                                       const EventSource *rhs) const {
+  return (*lhs) == (*rhs);
+}
+
+bool EventSource::equal_to::operator()(
+    const std::shared_ptr<EventSource> &lhs,
+    const std::shared_ptr<EventSource> &rhs) const {
+  return (*lhs) == (*rhs);
 }
 
 }  // namespace client

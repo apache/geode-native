@@ -43,9 +43,8 @@ namespace client {
  */
 class APACHE_GEODE_EXPORT EntriesMap {
  public:
-  explicit EntriesMap(std::unique_ptr<EntryFactory> entryFactory)
-      : m_entryFactory(std::move(entryFactory)) {}
-  virtual ~EntriesMap() {}
+  explicit EntriesMap(std::unique_ptr<EntryFactory> entryFactory);
+  virtual ~EntriesMap() = default;
 
   /**
    * Initialize segments with proper EntryFactory.
@@ -191,9 +190,7 @@ class APACHE_GEODE_EXPORT EntriesMap {
   const std::unique_ptr<EntryFactory> m_entryFactory;
 
   /** @brief return the instance of EntryFactory for the segments to use. */
-  inline const EntryFactory* getEntryFactory() const {
-    return m_entryFactory.get();
-  }
+  const EntryFactory* getEntryFactory() const;
 
 };  // class EntriesMap
 

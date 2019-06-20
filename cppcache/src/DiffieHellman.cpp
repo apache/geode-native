@@ -193,6 +193,9 @@ bool DiffieHellman::verify(const std::shared_ptr<CacheableString>& subject,
 
   return result;
 }
+
+DiffieHellman::DiffieHellman() : m_dhCtx(nullptr) {}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

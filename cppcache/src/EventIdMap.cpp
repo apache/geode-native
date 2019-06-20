@@ -199,6 +199,8 @@ bool EventSequence::operator<=(const EventSequence& rhs) const {
   return this->m_seqNum <= (&rhs)->m_seqNum;
 }
 
+EventIdMap::EventIdMap() : m_expiry(0) {}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

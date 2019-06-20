@@ -564,6 +564,51 @@ std::shared_ptr<CacheableVector> ExecutionImpl::executeOnPool(
   return nullptr;
 }
 
+ExecutionImpl::ExecutionImpl(std::shared_ptr<Region> rptr,
+                             AuthenticatedView* authenticatedView,
+                             std::shared_ptr<Pool> pp)
+    : m_routingObj(nullptr),
+      m_args(nullptr),
+      m_rc(nullptr),
+      m_region(rptr),
+      m_allServer(false),
+      m_pool(pp),
+      m_authenticatedView(authenticatedView) {}
+
+ExecutionImpl::ExecutionImpl(std::shared_ptr<Pool> pool, bool allServer,
+                             AuthenticatedView* authenticatedView)
+    : m_routingObj(nullptr),
+      m_args(nullptr),
+      m_rc(nullptr),
+      m_region(nullptr),
+      m_allServer(allServer),
+      m_pool(pool),
+      m_authenticatedView(authenticatedView) {}
+
+ExecutionImpl::ExecutionImpl(const ExecutionImpl& rhs)
+    : m_routingObj(rhs.m_routingObj),
+      m_args(rhs.m_args),
+      m_rc(rhs.m_rc),
+      m_region(rhs.m_region),
+      m_allServer(rhs.m_allServer),
+      m_pool(rhs.m_pool),
+      m_authenticatedView(rhs.m_authenticatedView) {}
+
+ExecutionImpl::ExecutionImpl(const std::shared_ptr<CacheableVector>& routingObj,
+                             const std::shared_ptr<Cacheable>& args,
+                             const std::shared_ptr<ResultCollector>& rc,
+                             const std::shared_ptr<Region>& region,
+                             const bool allServer,
+                             const std::shared_ptr<Pool>& pool,
+                             AuthenticatedView* authenticatedView)
+    : m_routingObj(routingObj),
+      m_args(args),
+      m_rc(rc),
+      m_region(region),
+      m_allServer(allServer),
+      m_pool(pool),
+      m_authenticatedView(authenticatedView) {}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

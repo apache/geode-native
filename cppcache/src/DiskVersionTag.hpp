@@ -32,34 +32,15 @@ class CacheImpl;
 
 class DiskVersionTag : public VersionTag {
  protected:
-  void readMembers(uint16_t flags, DataInput& input) override {
-    if ((flags & HAS_MEMBER_ID) != 0) {
-      auto internalMemId = std::make_shared<DiskStoreId>();
-      internalMemId->fromData(input);
-      m_internalMemId = m_memberListForVersionStamp.add(internalMemId);
-    }
-
-    if ((flags & HAS_PREVIOUS_MEMBER_ID) != 0) {
-      if ((flags & DUPLICATE_MEMBER_IDS) != 0) {
-        m_previousMemId = m_internalMemId;
-      } else {
-        auto previousMemId = std::make_shared<DiskStoreId>();
-        previousMemId->fromData(input);
-        m_previousMemId = m_memberListForVersionStamp.add(previousMemId);
-      }
-    }
-  }
+  void readMembers(uint16_t flags, DataInput& input) override;
 
  public:
-  explicit DiskVersionTag(MemberListForVersionStamp& memberListForVersionStamp)
-      : VersionTag(memberListForVersionStamp) {}
+  explicit DiskVersionTag(MemberListForVersionStamp& memberListForVersionStamp);
 
-  DSFid getDSFID() const override { return DSFid::DiskVersionTag; }
+  DSFid getDSFID() const override;
 
   static std::shared_ptr<Serializable> createDeserializable(
-      MemberListForVersionStamp& memberListForVersionStamp) {
-    return std::make_shared<DiskVersionTag>(memberListForVersionStamp);
-  }
+      MemberListForVersionStamp& memberListForVersionStamp);
 
   /**
    * for internal testing
@@ -67,9 +48,7 @@ class DiskVersionTag : public VersionTag {
   DiskVersionTag(int32_t entryVersion, int16_t regionVersionHighBytes,
                  int32_t regionVersionLowBytes, uint16_t internalMemId,
                  uint16_t previousMemId,
-                 MemberListForVersionStamp& memberListForVersionStamp)
-      : VersionTag(entryVersion, regionVersionHighBytes, regionVersionLowBytes,
-                   internalMemId, previousMemId, memberListForVersionStamp) {}
+                 MemberListForVersionStamp& memberListForVersionStamp);
 };
 }  // namespace client
 }  // namespace geode

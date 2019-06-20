@@ -45,35 +45,25 @@ class APACHE_GEODE_EXPORT EnumInfo
   EnumInfo();
   EnumInfo(const char* enumClassName, const char* enumName, int32_t m_ordinal);
 
-  static std::shared_ptr<Serializable> createDeserializable() {
-    return std::make_shared<EnumInfo>();
-  }
+  static std::shared_ptr<Serializable> createDeserializable();
 
   void toData(DataOutput& output) const override;
 
   virtual void fromData(DataInput& input) override;
 
-  virtual size_t objectSize() const override {
-    auto size = sizeof(EnumInfo);
-    size += sizeof(int32_t);
-    size += m_enumClassName->objectSize();
-    size += m_enumName->objectSize();
-    return size;
-  }
+  virtual size_t objectSize() const override;
 
-  virtual std::string toString() const override { return "EnumInfo"; }
+  virtual std::string toString() const override;
 
   virtual bool operator==(const CacheableKey& other) const override;
 
   virtual int32_t hashcode() const override;
 
-  std::shared_ptr<CacheableString> getEnumClassName() const {
-    return m_enumClassName;
-  }
+  std::shared_ptr<CacheableString> getEnumClassName() const;
 
-  std::shared_ptr<CacheableString> getEnumName() const { return m_enumName; }
+  std::shared_ptr<CacheableString> getEnumName() const;
 
-  int32_t getEnumOrdinal() const { return m_ordinal; }
+  int32_t getEnumOrdinal() const;
 };
 
 }  // namespace client

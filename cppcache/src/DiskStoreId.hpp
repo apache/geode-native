@@ -33,70 +33,31 @@ using internal::DSFid;
 
 class DiskStoreId : public DSMemberForVersionStamp {
  public:
-  DiskStoreId() : m_hashCode(""), m_mostSig(0), m_leastSig(0) {}
+  DiskStoreId();
 
   /**
    * for internal testing
    */
-  DiskStoreId(int64_t mostSig, int64_t leastSig)
-      : m_hashCode(""), m_mostSig(mostSig), m_leastSig(leastSig) {}
+  DiskStoreId(int64_t mostSig, int64_t leastSig);
 
-  DiskStoreId(const DiskStoreId& rhs)
-      : m_mostSig(rhs.m_mostSig), m_leastSig(rhs.m_leastSig) {}
+  DiskStoreId(const DiskStoreId& rhs);
 
-  DiskStoreId& operator=(const DiskStoreId& rhs) {
-    if (this == &rhs) return *this;
-    this->m_leastSig = rhs.m_leastSig;
-    this->m_mostSig = rhs.m_mostSig;
-    return *this;
-  }
+  DiskStoreId& operator=(const DiskStoreId& rhs);
 
-  void toData(DataOutput&) const override {
-    throw IllegalStateException("DiskStoreId::toData not implemented");
-  }
+  void toData(DataOutput&) const override;
 
-  void fromData(DataInput& input) override {
-    m_mostSig = input.readInt64();
-    m_leastSig = input.readInt64();
-  }
+  void fromData(DataInput& input) override;
 
-  DSFid getDSFID() const override { return DSFid::DiskStoreId; }
+  DSFid getDSFID() const override;
 
-  int16_t compareTo(const DSMemberForVersionStamp& tagID) const override {
-    const DiskStoreId& otherDiskStoreId =
-        static_cast<const DiskStoreId&>(tagID);
-    int64_t result = m_mostSig - otherDiskStoreId.m_mostSig;
-    if (result == 0) {
-      result = m_leastSig - otherDiskStoreId.m_leastSig;
-    }
-    if (result < 0) {
-      return -1;
-    } else if (result > 0) {
-      return 1;
-    } else {
-      return 0;
-    }
-  }
-  static std::shared_ptr<Serializable> createDeserializable() {
-    return std::make_shared<DiskStoreId>();
-  }
+  int16_t compareTo(const DSMemberForVersionStamp& tagID) const override;
+  static std::shared_ptr<Serializable> createDeserializable();
 
   std::string getHashKey() override;
 
-  int32_t hashcode() const override {
-    static uint32_t prime = 31;
-    uint32_t result = 1;
-    result =
-        prime * result + static_cast<uint32_t>(m_leastSig ^ (m_leastSig >> 32));
-    result =
-        prime * result + static_cast<uint32_t>(m_mostSig ^ (m_mostSig >> 32));
-    return result;
-  }
+  int32_t hashcode() const override;
 
-  bool operator==(const CacheableKey& other) const override {
-    return (this->compareTo(
-                dynamic_cast<const DSMemberForVersionStamp&>(other)) == 0);
-  }
+  bool operator==(const CacheableKey& other) const override;
 
  private:
   std::string m_hashCode;

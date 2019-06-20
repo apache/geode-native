@@ -38,7 +38,7 @@ class APACHE_GEODE_EXPORT EntriesMapFactory {
 
  private:
   /** @brief not to be instantiated. */
-  EntriesMapFactory() {}
+  EntriesMapFactory() = default;
 
 };  // class
 }  // namespace client

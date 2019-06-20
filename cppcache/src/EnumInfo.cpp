@@ -63,6 +63,30 @@ void EnumInfo::fromData(apache::geode::client::DataInput &input) {
   m_ordinal = input.readInt32();
 }
 
+std::shared_ptr<Serializable> EnumInfo::createDeserializable() {
+  return std::make_shared<EnumInfo>();
+}
+
+size_t EnumInfo::objectSize() const {
+  auto size = sizeof(EnumInfo);
+  size += sizeof(int32_t);
+  size += m_enumClassName->objectSize();
+  size += m_enumName->objectSize();
+  return size;
+}
+
+std::string EnumInfo::toString() const { return "EnumInfo"; }
+
+std::shared_ptr<CacheableString> EnumInfo::getEnumClassName() const {
+  return m_enumClassName;
+}
+
+std::shared_ptr<CacheableString> EnumInfo::getEnumName() const {
+  return m_enumName;
+}
+
+int32_t EnumInfo::getEnumOrdinal() const { return m_ordinal; }
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

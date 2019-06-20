@@ -27,6 +27,13 @@ std::shared_ptr<Cacheable> EntriesMap::getFromDisk(
   return nullptr;
 }
 
+EntriesMap::EntriesMap(std::unique_ptr<EntryFactory> entryFactory)
+    : m_entryFactory(std::move(entryFactory)) {}
+
+const EntryFactory* EntriesMap::getEntryFactory() const {
+  return m_entryFactory.get();
+}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
