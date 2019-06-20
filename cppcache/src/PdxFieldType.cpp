@@ -139,6 +139,44 @@ std::string PdxFieldType::toString() const {
   return std::string(stringBuf);
 }
 
+const std::string& PdxFieldType::getFieldName() { return m_fieldName; }
+
+const std::string& PdxFieldType::getClassName() { return m_className; }
+
+PdxFieldTypes PdxFieldType::getTypeId() { return m_typeId; }
+
+uint8_t PdxFieldType::getSequenceId() { return m_sequenceId; }
+
+bool PdxFieldType::IsVariableLengthType() { return m_isVariableLengthType; }
+
+bool PdxFieldType::getIdentityField() const { return m_isIdentityField; }
+
+int32_t PdxFieldType::getVarLenFieldIdx() const { return m_varLenFieldIdx; }
+
+void PdxFieldType::setVarLenOffsetIndex(int32_t value) {
+  m_vlOffsetIndex = value;
+}
+
+void PdxFieldType::setRelativeOffset(int32_t value) {
+  m_relativeOffset = value;
+}
+
+int32_t PdxFieldType::getFixedSize() const { return m_fixedSize; }
+
+void PdxFieldType::setIdentityField(bool identityField) {
+  m_isIdentityField = identityField;
+}
+
+size_t PdxFieldType::objectSize() const {
+  auto size = sizeof(PdxFieldType);
+  size += m_className.length();
+  size += m_fieldName.length();
+  return size;
+}
+
+int32_t PdxFieldType::getVarLenOffsetIndex() const { return m_vlOffsetIndex; }
+
+int32_t PdxFieldType::getRelativeOffset() const { return m_relativeOffset; }
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

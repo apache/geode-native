@@ -15,44 +15,30 @@
  * limitations under the License.
  */
 
-#pragma once
-
-#ifndef GEODE_NORESULT_H_
-#define GEODE_NORESULT_H_
-
-#include <geode/ExceptionTypes.hpp>
-#include <geode/ResultCollector.hpp>
-#include <geode/internal/geode_globals.hpp>
+#include "NoResult.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
-/**
- * A Special ResultCollector implementation. Functions having
- * {@link Function#hasResult()} false, this ResultCollector will be returned.
- * <br>
- * Calling getResult on this NoResult will throw
- * {@link FunctionException}
- *
- *
- */
-class APACHE_GEODE_EXPORT NoResult final : public ResultCollector {
- public:
-  NoResult() = default;
-  ~NoResult() final = default;
+void NoResult::addResult(const std::shared_ptr<Cacheable>&) {
+  throw UnsupportedOperationException("can not add to NoResult");
+}
 
-  void addResult(const std::shared_ptr<Cacheable>&);
+void NoResult::endResults() {
+  throw UnsupportedOperationException("can not close on NoResult");
+}
 
-  void endResults();
+std::shared_ptr<CacheableVector> NoResult::getResult(
+    std::chrono::milliseconds) {
+  throw FunctionExecutionException(
+      "Cannot return any result, as Function.hasResult() is false");
+}
 
-  std::shared_ptr<CacheableVector> getResult(std::chrono::milliseconds);
-
-  void clearResults();
-};
+void NoResult::clearResults() {
+  throw UnsupportedOperationException("can not clear results on NoResult");
+}
 
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
-
-#endif  // GEODE_NORESULT_H_

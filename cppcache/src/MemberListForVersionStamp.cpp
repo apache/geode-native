@@ -59,11 +59,10 @@ std::shared_ptr<DSMemberForVersionStamp> MemberListForVersionStamp::getDSMember(
 }
 
 DistributedMemberWithIntIdentifier::DistributedMemberWithIntIdentifier(
-      std::shared_ptr<DSMemberForVersionStamp> dsmember,
-      uint16_t id) {
-    this->m_member = dsmember;
-    this->m_identifier = id;
-  }
+    std::shared_ptr<DSMemberForVersionStamp> dsmember, uint16_t id) {
+  this->m_member = dsmember;
+  this->m_identifier = id;
+}
 
 }  // namespace client
 }  // namespace geode

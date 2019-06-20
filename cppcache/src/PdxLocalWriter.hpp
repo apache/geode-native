@@ -76,23 +76,21 @@ class PdxLocalWriter : public PdxWriter {
 
   virtual bool isFieldWritingStarted();
 
-  inline void writeObject(bool value) { m_dataOutput->writeBoolean(value); }
+  void writeObject(bool value);
 
-  inline void writeObject(char16_t value) {
-    m_dataOutput->writeInt(static_cast<uint16_t>(value));
-  }
+  void writeObject(char16_t value);
 
-  inline void writeObject(int8_t value) { m_dataOutput->write(value); }
+  void writeObject(int8_t value);
 
-  inline void writeObject(int16_t value) { m_dataOutput->writeInt(value); }
+  void writeObject(int16_t value);
 
-  inline void writeObject(int32_t value) { m_dataOutput->writeInt(value); }
+  void writeObject(int32_t value);
 
-  inline void writeObject(int64_t value) { m_dataOutput->writeInt(value); }
+  void writeObject(int64_t value);
 
-  inline void writeObject(float value) { m_dataOutput->writeFloat(value); }
+  void writeObject(float value);
 
-  inline void writeObject(double value) { m_dataOutput->writeDouble(value); }
+  void writeObject(double value);
 
   template <typename mType>
   void writeObject(mType* objArray, int arrayLen) {
@@ -202,7 +200,7 @@ class PdxLocalWriter : public PdxWriter {
 
   void writeByte(int8_t byte);
 
-  inline int32_t getStartPositionOffset() { return m_startPositionOffset; }
+  int32_t getStartPositionOffset();
 
  private:
   std::shared_ptr<PdxTypeRegistry> getPdxTypeRegistry() const;
