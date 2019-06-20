@@ -133,6 +133,36 @@ LRUList<TEntry, TCreateEntry>::getHeadNode(bool& isLast) {
   return result;
 }
 
+LRUEntryProperties::LRUEntryProperties()
+    : m_bits(0), m_persistenceInfo(nullptr) {}
+
+void LRUEntryProperties::setRecentlyUsed() { m_bits |= RECENTLY_USED_BITS; }
+
+void LRUEntryProperties::clearRecentlyUsed() { m_bits &= ~RECENTLY_USED_BITS; }
+
+bool LRUEntryProperties::testRecentlyUsed() const {
+  return (m_bits.load() & RECENTLY_USED_BITS) == RECENTLY_USED_BITS;
+}
+
+bool LRUEntryProperties::testEvicted() const {
+  return (m_bits.load() & EVICTED_BITS) == EVICTED_BITS;
+}
+
+void LRUEntryProperties::setEvicted() { m_bits |= EVICTED_BITS; }
+
+void LRUEntryProperties::clearEvicted() { m_bits &= ~EVICTED_BITS; }
+
+const std::shared_ptr<void>& LRUEntryProperties::getPersistenceInfo() const {
+  return m_persistenceInfo;
+}
+
+void LRUEntryProperties::setPersistenceInfo(
+    const std::shared_ptr<void>& persistenceInfo) {
+  m_persistenceInfo = persistenceInfo;
+}
+
+LRUEntryProperties::LRUEntryProperties(bool) {}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

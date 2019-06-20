@@ -517,6 +517,36 @@ std::shared_ptr<Cacheable> LRUEntriesMap::getFromDisk(
   }
   return tmpObj;
 }
+
+void LRUEntriesMap::setPersistenceManager(
+    std::shared_ptr<PersistenceManager>& pmPtr) {
+  m_pmPtr = pmPtr;
+}
+
+GfErrType LRUEntriesMap::remove(const std::shared_ptr<CacheableKey>& key,
+                                std::shared_ptr<Cacheable>& result,
+                                std::shared_ptr<MapEntryImpl>& me,
+                                int updateCount,
+                                std::shared_ptr<VersionTag> versionTag,
+                                bool afterRemote);
+
+bool LRUEntriesMap::mustEvict() const {
+  if (m_action == nullptr) {
+    LOGFINE("Eviction action is nullptr");
+    return false;
+  }
+  if (m_action->overflows()) {
+    return validEntriesSize() > m_limit;
+  } else if ((m_heapLRUEnabled) && (m_limit == 0)) {
+    return false;
+  } else {
+    return size() > m_limit;
+  }
+}
+
+uint32_t LRUEntriesMap::validEntriesSize() const { return m_validEntries; }
+
+void LRUEntriesMap::adjustLimit(uint32_t limit) { m_limit = limit; }
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

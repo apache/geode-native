@@ -41,35 +41,27 @@ namespace client {
  */
 class APACHE_GEODE_EXPORT LRUEntryProperties {
  public:
-  inline LRUEntryProperties() : m_bits(0), m_persistenceInfo(nullptr) {}
+  LRUEntryProperties();
 
-  inline void setRecentlyUsed() { m_bits |= RECENTLY_USED_BITS; }
+  void setRecentlyUsed();
 
-  inline void clearRecentlyUsed() { m_bits &= ~RECENTLY_USED_BITS; }
+  void clearRecentlyUsed();
 
-  inline bool testRecentlyUsed() const {
-    return (m_bits.load() & RECENTLY_USED_BITS) == RECENTLY_USED_BITS;
-  }
+  bool testRecentlyUsed() const;
 
-  inline bool testEvicted() const {
-    return (m_bits.load() & EVICTED_BITS) == EVICTED_BITS;
-  }
+  bool testEvicted() const;
 
-  inline void setEvicted() { m_bits |= EVICTED_BITS; }
+  void setEvicted();
 
-  inline void clearEvicted() { m_bits &= ~EVICTED_BITS; }
+  void clearEvicted();
 
-  inline const std::shared_ptr<void>& getPersistenceInfo() const {
-    return m_persistenceInfo;
-  }
+  const std::shared_ptr<void>& getPersistenceInfo() const;
 
-  inline void setPersistenceInfo(const std::shared_ptr<void>& persistenceInfo) {
-    m_persistenceInfo = persistenceInfo;
-  }
+  void setPersistenceInfo(const std::shared_ptr<void>& persistenceInfo);
 
  protected:
   // this constructor deliberately skips initializing any fields
-  inline explicit LRUEntryProperties(bool) {}
+  explicit LRUEntryProperties(bool);
 
  private:
   std::atomic<uint32_t> m_bits;

@@ -121,6 +121,56 @@ bool LRULocalInvalidateAction::evict(
   return (err == GF_NOERR);
 }
 
+bool LRUAction::invalidates() { return m_invalidates; }
+
+bool LRUAction::destroys() { return m_destroys; }
+
+bool LRUAction::distributes() { return m_distributes; }
+
+bool LRUAction::overflows() { return m_overflows; }
+
+LRUDestroyAction::LRUDestroyAction(RegionInternal* regionPtr)
+    : m_regionPtr(regionPtr) {
+  m_destroys = true;
+  m_distributes = true;
+}
+
+bool LRUDestroyAction::evict(const std::shared_ptr<MapEntryImpl>& mePtr) {
+  std::shared_ptr<CacheableKey> keyPtr;
+  mePtr->getKeyI(keyPtr);
+  std::shared_ptr<VersionTag> versionTag;
+  //  we should invoke the destroyNoThrow with appropriate
+  // flags to correctly invoke listeners
+  LOGDEBUG("LRUDestroy: evicting entry with key [%s]",
+           Utils::nullSafeToString(keyPtr).c_str());
+  GfErrType err = GF_NOERR;
+  if (!m_regionPtr->isDestroyed()) {
+    err = m_regionPtr->destroyNoThrow(keyPtr, nullptr, -1,
+                                      CacheEventFlags::EVICTION, versionTag);
+  }
+  return (err == GF_NOERR);
+}
+
+LRUAction::Action LRUDestroyAction::getType() { return LRUAction::DESTROY; }
+
+LRULocalInvalidateAction::LRULocalInvalidateAction(RegionInternal* regionPtr)
+    : m_regionPtr(regionPtr) {
+  m_invalidates = true;
+}
+
+LRUAction::Action LRULocalInvalidateAction::getType() {
+  return LRUAction::LOCAL_INVALIDATE;
+}
+
+LRUOverFlowToDiskAction::LRUOverFlowToDiskAction(RegionInternal* regionPtr,
+                                                 LRUEntriesMap* entriesMapPtr)
+    : m_regionPtr(regionPtr), m_entriesMapPtr(entriesMapPtr) {
+  m_overflows = true;
+}
+
+LRUAction::Action LRUOverFlowToDiskAction::getType() {
+  return LRUAction::OVERFLOW_TO_DISK;
+}
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

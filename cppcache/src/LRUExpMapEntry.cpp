@@ -35,6 +35,32 @@ void LRUExpEntryFactory::newMapEntry(
   }
 }
 
+LRUEntryProperties& LRUExpMapEntry::getLRUProperties() { return *this; }
+
+ExpEntryProperties& LRUExpMapEntry::getExpProperties() { return *this; }
+
+void LRUExpMapEntry::cleanup(const CacheEventFlags eventFlags) {
+  if (!eventFlags.isExpiration()) {
+    cancelExpiryTaskId(m_key);
+  }
+}
+
+LRUExpMapEntry::LRUExpMapEntry(bool)
+    : MapEntryImpl(true), LRUEntryProperties(true), ExpEntryProperties(true) {}
+
+LRUExpMapEntry::LRUExpMapEntry(ExpiryTaskManager* expiryTaskManager,
+                               const std::shared_ptr<CacheableKey>& key)
+    : MapEntryImpl(key), ExpEntryProperties(expiryTaskManager) {}
+
+VersionStamp& VersionedLRUExpMapEntry::getVersionStamp() { return *this; }
+
+VersionedLRUExpMapEntry::VersionedLRUExpMapEntry(bool) : LRUExpMapEntry(true) {}
+
+VersionedLRUExpMapEntry::VersionedLRUExpMapEntry(
+    ExpiryTaskManager* expiryTaskManager,
+    const std::shared_ptr<CacheableKey>& key)
+    : LRUExpMapEntry(expiryTaskManager, key) {}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
