@@ -122,6 +122,8 @@ void PoolStatsSampler::putStatsInAdminRegion() {
     LOGDEBUG("Exception occurred, trying again.");
   }
 }
+
+PoolStatsSampler::~PoolStatsSampler() {}
 }  // namespace statistics
 }  // namespace geode
 }  // namespace apache
