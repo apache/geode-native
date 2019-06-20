@@ -77,9 +77,9 @@ class APACHE_GEODE_EXPORT CacheXmlCreation {
 
   void setPdxReadSerialized(bool val);
 
-  bool getPdxIgnoreUnreadField() { return m_pdxIgnoreUnreadFields; }
+  bool getPdxIgnoreUnreadField();
 
-  bool getPdxReadSerialized() { return m_readPdxSerialized; }
+  bool getPdxReadSerialized();
 
   ~CacheXmlCreation() = default;
 

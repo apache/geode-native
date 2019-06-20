@@ -97,21 +97,17 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
   void setClientCrashTEST();
 
   // For PrSingleHop C++unit testing.
-  void setNetworkHopFlag(bool networkhopflag) {
-    m_networkhop = networkhopflag;
-  };
+  void setNetworkHopFlag(bool networkhopflag);
 
-  bool getAndResetNetworkHopFlag() { return m_networkhop.exchange(false); }
+  bool getAndResetNetworkHopFlag();
 
-  int getBlackListBucketTimeouts() { return m_blacklistBucketTimeout; }
+  int getBlackListBucketTimeouts();
 
-  void incBlackListBucketTimeouts() { ++m_blacklistBucketTimeout; }
+  void incBlackListBucketTimeouts();
 
-  int8_t getAndResetServerGroupFlag() { return m_serverGroupFlag.exchange(0); }
+  int8_t getAndResetServerGroupFlag();
 
-  void setServerGroupFlag(int8_t serverGroupFlag) {
-    m_serverGroupFlag = serverGroupFlag;
-  }
+  void setServerGroupFlag(int8_t serverGroupFlag);
 
   std::shared_ptr<MemberListForVersionStamp> getMemberListForVersionStamp();
 
@@ -216,17 +212,13 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
   void initServices();
   EvictionController* getEvictionController();
 
-  ExpiryTaskManager& getExpiryTaskManager() { return *m_expiryTaskManager; }
+  ExpiryTaskManager& getExpiryTaskManager();
 
-  ClientProxyMembershipIDFactory& getClientProxyMembershipIDFactory() {
-    return m_clientProxyMembershipIDFactory;
-  }
+  ClientProxyMembershipIDFactory& getClientProxyMembershipIDFactory();
 
-  Cache* getCache() const { return m_cache; }
+  Cache* getCache() const;
 
-  TcrConnectionManager& tcrConnectionManager() {
-    return *m_tcrConnectionManager;
-  }
+  TcrConnectionManager& tcrConnectionManager();
 
   void removeRegion(const std::string& name);
 
@@ -255,22 +247,13 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
   // Pool helpers for unit tests
   int getPoolSize(const char* poolName);
 
-  bool getPdxIgnoreUnreadFields() {
-    this->throwIfClosed();
+  bool getPdxIgnoreUnreadFields();
 
-    return m_ignorePdxUnreadFields;
-  }
+  void setPdxIgnoreUnreadFields(bool ignore);
 
-  void setPdxIgnoreUnreadFields(bool ignore) {
-    m_ignorePdxUnreadFields = ignore;
-  }
+  void setPdxReadSerialized(bool val);
 
-  void setPdxReadSerialized(bool val) { m_readPdxSerialized = val; }
-
-  bool getPdxReadSerialized() {
-    this->throwIfClosed();
-    return m_readPdxSerialized;
-  }
+  bool getPdxReadSerialized();
 
   bool isCacheDestroyPending() const;
 
@@ -279,32 +262,19 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
   std::shared_ptr<PdxTypeRegistry> getPdxTypeRegistry() const;
 
   std::shared_ptr<SerializationRegistry> getSerializationRegistry() const;
-  inline CachePerfStats& getCachePerfStats() { return *m_cacheStats; }
+  CachePerfStats& getCachePerfStats();
 
-  PoolManager& getPoolManager() const {
-    this->throwIfClosed();
-    return *m_poolManager;
-  }
+  PoolManager& getPoolManager() const;
 
-  const std::shared_ptr<Pool>& getDefaultPool() {
-    return m_poolManager->getDefaultPool();
-  }
+  const std::shared_ptr<Pool>& getDefaultPool();
 
-  SystemProperties& getSystemProperties() const {
-    this->throwIfClosed();
-
-    return m_distributedSystem.getSystemProperties();
-  }
+  SystemProperties& getSystemProperties() const;
 
   ThreadPool& getThreadPool();
 
-  inline const std::shared_ptr<AuthInitialize>& getAuthInitialize() {
-    return m_authInitialize;
-  }
+  const std::shared_ptr<AuthInitialize>& getAuthInitialize();
 
-  statistics::StatisticsManager& getStatisticsManager() const {
-    return *(m_statisticsManager.get());
-  }
+  statistics::StatisticsManager& getStatisticsManager() const;
 
   virtual DataOutput createDataOutput() const;
 
@@ -351,12 +321,8 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
   void validateRegionAttributes(const std::string& name,
                                 const RegionAttributes attrs) const;
 
-  inline void getSubRegions(
-      std::unordered_map<std::string, std::shared_ptr<Region>>& srm) {
-    auto&& lock = m_regions.make_lock<std::lock_guard>();
-    if (m_regions.empty()) return;
-    srm.insert(m_regions.begin(), m_regions.end());
-  }
+  void getSubRegions(
+      std::unordered_map<std::string, std::shared_ptr<Region>>& srm);
 
   std::shared_ptr<Region> findRegion(const std::string& name);
 
@@ -388,11 +354,7 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
   const std::shared_ptr<AuthInitialize> m_authInitialize;
   std::unique_ptr<TypeRegistry> m_typeRegistry;
 
-  inline void throwIfClosed() const {
-    if (m_closed) {
-      throw CacheClosedException("Cache is closed.");
-    }
-  }
+  void throwIfClosed() const;
 
   friend class CacheFactory;
   friend class Cache;

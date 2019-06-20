@@ -847,6 +847,95 @@ void CacheImpl::setClientCrashTEST() {
   m_tcrConnectionManager->setClientCrashTEST();
 }
 
+void CacheImpl::setNetworkHopFlag(bool networkhopflag) {
+  m_networkhop = networkhopflag;
+}
+
+bool CacheImpl::getAndResetNetworkHopFlag() {
+  return m_networkhop.exchange(false);
+}
+
+int CacheImpl::getBlackListBucketTimeouts() { return m_blacklistBucketTimeout; }
+
+void CacheImpl::incBlackListBucketTimeouts() { ++m_blacklistBucketTimeout; }
+
+int8_t CacheImpl::getAndResetServerGroupFlag() {
+  return m_serverGroupFlag.exchange(0);
+}
+
+void CacheImpl::setServerGroupFlag(int8_t serverGroupFlag) {
+  m_serverGroupFlag = serverGroupFlag;
+}
+
+ExpiryTaskManager& CacheImpl::getExpiryTaskManager() {
+  return *m_expiryTaskManager;
+}
+
+ClientProxyMembershipIDFactory& CacheImpl::getClientProxyMembershipIDFactory() {
+  return m_clientProxyMembershipIDFactory;
+}
+
+Cache* CacheImpl::getCache() const { return m_cache; }
+
+TcrConnectionManager& CacheImpl::tcrConnectionManager() {
+  return *m_tcrConnectionManager;
+}
+
+bool CacheImpl::getPdxIgnoreUnreadFields() {
+  this->throwIfClosed();
+
+  return m_ignorePdxUnreadFields;
+}
+
+void CacheImpl::setPdxIgnoreUnreadFields(bool ignore) {
+  m_ignorePdxUnreadFields = ignore;
+}
+
+void CacheImpl::setPdxReadSerialized(bool val) { m_readPdxSerialized = val; }
+
+bool CacheImpl::getPdxReadSerialized() {
+  this->throwIfClosed();
+  return m_readPdxSerialized;
+}
+
+CachePerfStats& CacheImpl::getCachePerfStats() { return *m_cacheStats; }
+
+PoolManager& CacheImpl::getPoolManager() const {
+  this->throwIfClosed();
+  return *m_poolManager;
+}
+
+const std::shared_ptr<Pool>& CacheImpl::getDefaultPool() {
+  return m_poolManager->getDefaultPool();
+}
+
+SystemProperties& CacheImpl::getSystemProperties() const {
+  this->throwIfClosed();
+
+  return m_distributedSystem.getSystemProperties();
+}
+
+const std::shared_ptr<AuthInitialize>& CacheImpl::getAuthInitialize() {
+  return m_authInitialize;
+}
+
+statistics::StatisticsManager& CacheImpl::getStatisticsManager() const {
+  return *(m_statisticsManager.get());
+}
+
+void CacheImpl::getSubRegions(
+    std::unordered_map<std::string, std::shared_ptr<Region>>& srm) {
+  auto&& lock = m_regions.make_lock<std::lock_guard>();
+  if (m_regions.empty()) return;
+  srm.insert(m_regions.begin(), m_regions.end());
+}
+
+void CacheImpl::throwIfClosed() const {
+  if (m_closed) {
+    throw CacheClosedException("Cache is closed.");
+  }
+}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
