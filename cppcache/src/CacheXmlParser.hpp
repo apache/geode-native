@@ -112,9 +112,9 @@ class APACHE_GEODE_EXPORT CacheXmlParser : public CacheXml {
   void endPersistenceManager();
   void setError(const std::string& s);
   const std::string& getError() const;
-  void incNesting() { m_nestedRegions++; }
-  void decNesting() { m_nestedRegions--; }
-  bool isRootLevel() { return (m_nestedRegions == 1); }
+  void incNesting();
+  void decNesting();
+  bool isRootLevel();
 
   /** Pool handlers */
   void startPool(const xmlChar** atts);
@@ -123,31 +123,25 @@ class APACHE_GEODE_EXPORT CacheXmlParser : public CacheXml {
   void startServer(const xmlChar** atts);
 
   // getters/setters for flags and other members
-  inline bool isCacheXmlException() const { return m_flagCacheXmlException; }
+  bool isCacheXmlException() const;
 
-  inline void setCacheXmlException() { m_flagCacheXmlException = true; }
+  void setCacheXmlException();
 
-  inline bool isIllegalStateException() const {
-    return m_flagIllegalStateException;
-  }
+  bool isIllegalStateException() const;
 
-  inline void setIllegalStateException() { m_flagIllegalStateException = true; }
+  void setIllegalStateException();
 
-  inline bool isAnyOtherException() const { return m_flagAnyOtherException; }
+  bool isAnyOtherException() const;
 
-  inline void setAnyOtherException() { m_flagAnyOtherException = true; }
+  void setAnyOtherException();
 
-  inline bool isExpirationAttribute() const {
-    return m_flagExpirationAttribute;
-  }
+  bool isExpirationAttribute() const;
 
-  inline void setExpirationAttribute() { m_flagExpirationAttribute = true; }
+  void setExpirationAttribute();
 
-  inline const std::string& getParserMessage() const { return m_parserMessage; }
+  const std::string& getParserMessage() const;
 
-  inline void setParserMessage(const std::string& str) {
-    m_parserMessage = str;
-  }
+  void setParserMessage(const std::string& str);
 
   // hooks for .NET managed cache listener/loader/writers
   static LibraryCacheLoaderFn managedCacheLoaderFn;
