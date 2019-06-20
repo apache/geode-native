@@ -3175,6 +3175,53 @@ void LocalRegion::acquireGlobals(bool) {}
 
 void LocalRegion::releaseGlobals(bool) {}
 
+const RegionAttributes& LocalRegion::getAttributes() const {
+  return m_regionAttributes;
+}
+
+std::shared_ptr<AttributesMutator> LocalRegion::getAttributesMutator() const {
+  return std::make_shared<AttributesMutator>(
+      std::const_pointer_cast<LocalRegion>(
+          std::static_pointer_cast<const LocalRegion>(shared_from_this())));
+}
+
+void LocalRegion::acquireReadLock() { m_rwLock.acquire_read(); }
+
+void LocalRegion::releaseReadLock() { m_rwLock.release(); }
+
+RegionStats* LocalRegion::getRegionStats() { return m_regionStats; }
+
+bool LocalRegion::cacheEnabled() {
+  return m_regionAttributes.getCachingEnabled();
+}
+
+bool LocalRegion::cachelessWithListener() {
+  return !m_regionAttributes.getCachingEnabled() && (m_listener != nullptr);
+}
+
+bool LocalRegion::isDestroyed() const { return m_destroyPending; }
+
+bool LocalRegion::getProcessedMarker() { return true; }
+
+EntriesMap* LocalRegion::getEntryMap() { return m_entries; }
+
+const std::shared_ptr<Pool>& LocalRegion::getPool() const {
+  return m_attachedPool;
+}
+
+void LocalRegion::setPool(const std::shared_ptr<Pool>& p) {
+  m_attachedPool = p;
+}
+
+TXState* LocalRegion::getTXState() const {
+  return TSSTXStateWrapper::get().getTXState();
+}
+
+bool LocalRegion::isLocalOp(const CacheEventFlags* eventFlags) {
+  return typeid(*this) == typeid(LocalRegion) ||
+         (eventFlags && eventFlags->isLocal());
+}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

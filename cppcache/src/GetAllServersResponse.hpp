@@ -38,19 +38,13 @@ class GetAllServersResponse : public internal::DataSerializableFixedId_t<
   std::vector<std::shared_ptr<ServerLocation> > m_servers;
 
  public:
-  static std::shared_ptr<Serializable> create() {
-    return std::make_shared<GetAllServersResponse>();
-  }
-  GetAllServersResponse() : Serializable() {}
+  static std::shared_ptr<Serializable> create();
+  GetAllServersResponse() = default;
   void toData(DataOutput& output) const override;
   void fromData(DataInput& input) override;
 
-  size_t objectSize() const override {
-    return sizeof(GetAllServersResponse) + m_servers.capacity();
-  }
-  std::vector<std::shared_ptr<ServerLocation> > getServers() {
-    return m_servers;
-  }
+  size_t objectSize() const override;
+  std::vector<std::shared_ptr<ServerLocation> > getServers();
   ~GetAllServersResponse() override = default;
 };
 

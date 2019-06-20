@@ -55,6 +55,8 @@ std::shared_ptr<Serializable> LocatorListResponse::create() {
   return std::make_shared<LocatorListResponse>();
 }
 
+LocatorListResponse::LocatorListResponse() : m_isBalanced(false) {}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

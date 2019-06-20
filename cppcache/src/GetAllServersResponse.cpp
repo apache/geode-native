@@ -37,6 +37,19 @@ void GetAllServersResponse::fromData(DataInput& input) {
   }
 }
 
+std::shared_ptr<Serializable> GetAllServersResponse::create() {
+  return std::make_shared<GetAllServersResponse>();
+}
+
+size_t GetAllServersResponse::objectSize() const {
+  return sizeof(GetAllServersResponse) + m_servers.capacity();
+}
+
+std::vector<std::shared_ptr<ServerLocation> >
+GetAllServersResponse::getServers() {
+  return m_servers;
+}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
