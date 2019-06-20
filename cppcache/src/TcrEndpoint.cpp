@@ -332,7 +332,7 @@ void TcrEndpoint::authenticateEndpoint(TcrConnection*& conn) {
       }
     }
     // throw exception if it is not authenticated
-    GfErrTypeToException("TcrEndpoint::authenticateEndpoint", err);
+    throwExceptionIfError("TcrEndpoint::authenticateEndpoint", err);
 
     m_isAuthenticated = true;
   }

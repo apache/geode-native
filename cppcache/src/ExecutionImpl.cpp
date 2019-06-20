@@ -119,7 +119,7 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
           err = getFuncAttributes(func, &attr);
         }
         if (err != GF_NOERR) {
-          GfErrTypeToException("Execute::GET_FUNCTION_ATTRIBUTES", err);
+          throwExceptionIfError("Execute::GET_FUNCTION_ATTRIBUTES", err);
         }
         if (!attr->empty() && err == GF_NOERR) {
           m_func_attrs[func] = attr;
@@ -437,14 +437,14 @@ void ExecutionImpl::executeOnAllServers(const std::string& func,
       throw FunctionExecutionException(
           "Execute: failed to execute function with server.");
     } else {
-      GfErrTypeToException("Execute", err);
+      throwExceptionIfError("Execute", err);
     }
   }
 
   if (err == GF_AUTHENTICATION_FAILED_EXCEPTION ||
       err == GF_NOT_AUTHORIZED_EXCEPTION ||
       err == GF_AUTHENTICATION_REQUIRED_EXCEPTION) {
-    GfErrTypeToException("Execute", err);
+    throwExceptionIfError("Execute", err);
   }
 
   if (err != GF_NOERR) {
@@ -515,7 +515,7 @@ std::shared_ptr<CacheableVector> ExecutionImpl::executeOnPool(
                                                     reply.getException());
     }
     if (ThinClientBaseDM::isFatalClientError(err)) {
-      GfErrTypeToException("ExecuteOnPool:", err);
+      throwExceptionIfError("ExecuteOnPool:", err);
     } else if (err != GF_NOERR) {
       if (getResult & 1) {
         resultCollector->reset();
@@ -527,7 +527,7 @@ std::shared_ptr<CacheableVector> ExecutionImpl::executeOnPool(
         }
         continue;
       } else {
-        GfErrTypeToException("ExecuteOnPool:", err);
+        throwExceptionIfError("ExecuteOnPool:", err);
       }
     }
     // auto values =

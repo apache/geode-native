@@ -142,28 +142,28 @@ void LocalRegion::invalidateRegion(
     const std::shared_ptr<Serializable>& aCallbackArgument) {
   GfErrType err =
       invalidateRegionNoThrow(aCallbackArgument, CacheEventFlags::NORMAL);
-  GfErrTypeToException("Region::invalidateRegion", err);
+  throwExceptionIfError("Region::invalidateRegion", err);
 }
 
 void LocalRegion::localInvalidateRegion(
     const std::shared_ptr<Serializable>& aCallbackArgument) {
   GfErrType err =
       invalidateRegionNoThrow(aCallbackArgument, CacheEventFlags::LOCAL);
-  GfErrTypeToException("Region::localInvalidateRegion", err);
+  throwExceptionIfError("Region::localInvalidateRegion", err);
 }
 
 void LocalRegion::destroyRegion(
     const std::shared_ptr<Serializable>& aCallbackArgument) {
   GfErrType err =
       destroyRegionNoThrow(aCallbackArgument, true, CacheEventFlags::NORMAL);
-  GfErrTypeToException("Region::destroyRegion", err);
+  throwExceptionIfError("Region::destroyRegion", err);
 }
 
 void LocalRegion::localDestroyRegion(
     const std::shared_ptr<Serializable>& aCallbackArgument) {
   GfErrType err =
       destroyRegionNoThrow(aCallbackArgument, true, CacheEventFlags::LOCAL);
-  GfErrTypeToException("Region::localDestroyRegion", err);
+  throwExceptionIfError("Region::localDestroyRegion", err);
 }
 
 void LocalRegion::tombstoneOperationNoThrow(
@@ -334,7 +334,7 @@ std::shared_ptr<Cacheable> LocalRegion::get(
 
   // rptr = handleReplay(err, rptr);
 
-  GfErrTypeToException("Region::get", err);
+  throwExceptionIfError("Region::get", err);
 
   return rptr;
 }
@@ -350,7 +350,7 @@ void LocalRegion::put(const std::shared_ptr<CacheableKey>& key,
   updateStatOpTime(m_regionStats->getStat(), m_regionStats->getPutTimeId(),
                    sampleStartNanos);
   //  handleReplay(err, nullptr);
-  GfErrTypeToException("Region::put", err);
+  throwExceptionIfError("Region::put", err);
 }
 
 void LocalRegion::localPut(
@@ -361,7 +361,7 @@ void LocalRegion::localPut(
   std::shared_ptr<VersionTag> versionTag;
   GfErrType err = putNoThrow(key, value, aCallbackArgument, oldValue, -1,
                              CacheEventFlags::LOCAL, versionTag);
-  GfErrTypeToException("Region::localPut", err);
+  throwExceptionIfError("Region::localPut", err);
 }
 
 void LocalRegion::putAll(
@@ -374,7 +374,7 @@ void LocalRegion::putAll(
   updateStatOpTime(m_regionStats->getStat(), m_regionStats->getPutAllTimeId(),
                    sampleStartNanos);
   // handleReplay(err, nullptr);
-  GfErrTypeToException("Region::putAll", err);
+  throwExceptionIfError("Region::putAll", err);
 }
 
 void LocalRegion::removeAll(
@@ -387,7 +387,7 @@ void LocalRegion::removeAll(
   GfErrType err = removeAllNoThrow(keys, aCallbackArgument);
   updateStatOpTime(m_regionStats->getStat(),
                    m_regionStats->getRemoveAllTimeId(), sampleStartNanos);
-  GfErrTypeToException("Region::removeAll", err);
+  throwExceptionIfError("Region::removeAll", err);
 }
 
 void LocalRegion::create(
@@ -398,7 +398,7 @@ void LocalRegion::create(
   GfErrType err = createNoThrow(key, value, aCallbackArgument, -1,
                                 CacheEventFlags::NORMAL, versionTag);
   // handleReplay(err, nullptr);
-  GfErrTypeToException("Region::create", err);
+  throwExceptionIfError("Region::create", err);
 }
 
 void LocalRegion::localCreate(
@@ -408,7 +408,7 @@ void LocalRegion::localCreate(
   std::shared_ptr<VersionTag> versionTag;
   GfErrType err = createNoThrow(key, value, aCallbackArgument, -1,
                                 CacheEventFlags::LOCAL, versionTag);
-  GfErrTypeToException("Region::localCreate", err);
+  throwExceptionIfError("Region::localCreate", err);
 }
 
 void LocalRegion::invalidate(
@@ -418,7 +418,7 @@ void LocalRegion::invalidate(
   GfErrType err = invalidateNoThrow(key, aCallbackArgument, -1,
                                     CacheEventFlags::NORMAL, versionTag);
   //  handleReplay(err, nullptr);
-  GfErrTypeToException("Region::invalidate", err);
+  throwExceptionIfError("Region::invalidate", err);
 }
 
 void LocalRegion::localInvalidate(
@@ -427,7 +427,7 @@ void LocalRegion::localInvalidate(
   std::shared_ptr<VersionTag> versionTag;
   GfErrType err = invalidateNoThrow(keyPtr, aCallbackArgument, -1,
                                     CacheEventFlags::LOCAL, versionTag);
-  GfErrTypeToException("Region::localInvalidate", err);
+  throwExceptionIfError("Region::localInvalidate", err);
 }
 
 void LocalRegion::destroy(
@@ -438,7 +438,7 @@ void LocalRegion::destroy(
   GfErrType err = destroyNoThrow(key, aCallbackArgument, -1,
                                  CacheEventFlags::NORMAL, versionTag);
   // handleReplay(err, nullptr);
-  GfErrTypeToException("Region::destroy", err);
+  throwExceptionIfError("Region::destroy", err);
 }
 
 void LocalRegion::localDestroy(
@@ -447,7 +447,7 @@ void LocalRegion::localDestroy(
   std::shared_ptr<VersionTag> versionTag;
   GfErrType err = destroyNoThrow(key, aCallbackArgument, -1,
                                  CacheEventFlags::LOCAL, versionTag);
-  GfErrTypeToException("Region::localDestroy", err);
+  throwExceptionIfError("Region::localDestroy", err);
 }
 
 bool LocalRegion::remove(
@@ -463,7 +463,7 @@ bool LocalRegion::remove(
   if (err == GF_NOERR) {
     result = true;
   } else if (err != GF_ENOENT && err != GF_CACHE_ENTRY_NOT_FOUND) {
-    GfErrTypeToException("Region::remove", err);
+    throwExceptionIfError("Region::remove", err);
   }
 
   return result;
@@ -480,7 +480,7 @@ bool LocalRegion::removeEx(
   if (err == GF_NOERR) {
     result = true;
   } else if (err != GF_ENOENT && err != GF_CACHE_ENTRY_NOT_FOUND) {
-    GfErrTypeToException("Region::removeEx", err);
+    throwExceptionIfError("Region::removeEx", err);
   }
 
   return result;
@@ -499,7 +499,7 @@ bool LocalRegion::localRemove(
   if (err == GF_NOERR) {
     result = true;
   } else if (err != GF_ENOENT && err != GF_CACHE_ENTRY_NOT_FOUND) {
-    GfErrTypeToException("Region::localRemove", err);
+    throwExceptionIfError("Region::localRemove", err);
   }
 
   return result;
@@ -517,7 +517,7 @@ bool LocalRegion::localRemoveEx(
   if (err == GF_NOERR) {
     result = true;
   } else if (err != GF_ENOENT && err != GF_CACHE_ENTRY_NOT_FOUND) {
-    GfErrTypeToException("Region::localRemoveEx", err);
+    throwExceptionIfError("Region::localRemoveEx", err);
   }
 
   return result;
@@ -582,7 +582,7 @@ HashMapOfCacheable LocalRegion::getAll_internal(
   updateStatOpTime(m_regionStats->getStat(), m_regionStats->getGetAllTimeId(),
                    sampleStartNanos);
 
-  GfErrTypeToException("Region::getAll", err);
+  throwExceptionIfError("Region::getAll", err);
 
   return *values;
 }
@@ -2169,7 +2169,7 @@ void LocalRegion::clear(
 void LocalRegion::localClear(
     const std::shared_ptr<Serializable>& aCallbackArgument) {
   GfErrType err = localClearNoThrow(aCallbackArgument, CacheEventFlags::LOCAL);
-  if (err != GF_NOERR) GfErrTypeToException("LocalRegion::localClear", err);
+  if (err != GF_NOERR) throwExceptionIfError("LocalRegion::localClear", err);
 }
 GfErrType LocalRegion::localClearNoThrow(
     const std::shared_ptr<Serializable>& aCallbackArgument,

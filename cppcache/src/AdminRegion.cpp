@@ -70,7 +70,7 @@ TcrConnectionManager* AdminRegion::getConnectionManager() {
 void AdminRegion::put(const std::shared_ptr<CacheableKey>& keyPtr,
                       const std::shared_ptr<Cacheable>& valuePtr) {
   GfErrType err = putNoThrow(keyPtr, valuePtr);
-  GfErrTypeToException("AdminRegion::put", err);
+  throwExceptionIfError("AdminRegion::put", err);
 }
 
 GfErrType AdminRegion::putNoThrow(const std::shared_ptr<CacheableKey>& keyPtr,

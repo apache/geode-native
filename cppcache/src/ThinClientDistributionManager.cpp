@@ -58,7 +58,7 @@ void ThinClientDistributionManager::init() {
               m_endpoints[m_activeEndpoint]->name().c_str());
     } else if (isFatalError(err)) {
       m_connManager.disconnect(this, m_endpoints);
-      GfErrTypeToException("ThinClientDistributionManager::init", err);
+      throwExceptionIfError("ThinClientDistributionManager::init", err);
     }
   }
   ThinClientBaseDM::init();
@@ -370,7 +370,7 @@ GfErrType ThinClientDistributionManager::sendUserCredentials(
       }
     }
     // throw exception if it is not authenticated
-    // GfErrTypeToException("ThinClientDistributionManager::sendUserCredentials",
+    // throwExceptionIfError("ThinClientDistributionManager::sendUserCredentials",
     // err);
   }
 

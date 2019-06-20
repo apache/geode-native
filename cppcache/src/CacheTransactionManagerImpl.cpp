@@ -125,7 +125,7 @@ void CacheTransactionManagerImpl::rollback() {
   try {
     GfErrType err = rollback(txState, true);
     if (err != GF_NOERR) {
-      GfErrTypeToException("Error while committing", err);
+      throwExceptionIfError("Error while committing", err);
     }
   } catch (const Exception& ex) {
     // TODO: put a log message
