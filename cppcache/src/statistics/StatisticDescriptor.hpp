@@ -83,7 +83,7 @@ class APACHE_GEODE_EXPORT StatisticDescriptor {
   /*
    * Destructor
    */
-  virtual ~StatisticDescriptor() {}
+  virtual ~StatisticDescriptor() = default;
 
 };  // class
 }  // namespace statistics
