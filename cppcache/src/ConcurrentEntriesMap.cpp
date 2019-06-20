@@ -250,6 +250,20 @@ GfErrType ConcurrentEntriesMap::isTombstone(std::shared_ptr<CacheableKey>& key,
   return segmentFor(key)->isTombstone(key, me, result);
 }
 
+MapSegment* ConcurrentEntriesMap::segmentFor(
+    const std::shared_ptr<CacheableKey>& key) const {
+  return &(m_segments[segmentIdx(key)]);
+}
+
+int ConcurrentEntriesMap::segmentIdx(
+    const std::shared_ptr<CacheableKey>& key) const {
+  return segmentIdx(key->hashcode());
+}
+
+int ConcurrentEntriesMap::segmentIdx(uint32_t hash) const {
+  return (hash % m_concurrency);
+}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

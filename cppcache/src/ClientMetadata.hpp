@@ -60,18 +60,10 @@ class APACHE_GEODE_EXPORT ClientMetadata : public NonAssignable {
   std::string m_colocatedWith;
   ThinClientPoolDM* m_tcrdm;
   FixedMapType m_fpaMap;
-  inline void checkBucketId(size_t bucketId) {
-    if (bucketId >= m_bucketServerLocationsList.size()) {
-      LOGERROR("ClientMetadata::getServerLocation(): BucketId out of range.");
-      throw IllegalStateException(
-          "ClientMetadata::getServerLocation(): BucketId out of range.");
-    }
-  }
+  void checkBucketId(size_t bucketId);
 
  public:
-  void setPreviousone(std::shared_ptr<ClientMetadata> cptr) {
-    m_previousOne = cptr;
-  }
+  void setPreviousone(std::shared_ptr<ClientMetadata> cptr);
   ~ClientMetadata();
   ClientMetadata();
   ClientMetadata(
@@ -81,26 +73,13 @@ class APACHE_GEODE_EXPORT ClientMetadata : public NonAssignable {
   void getServerLocation(int bucketId, bool tryPrimary,
                          std::shared_ptr<BucketServerLocation>& serverLocation,
                          int8_t& version);
-  // ServerLocation getPrimaryServerLocation(int bucketId);
   void updateBucketServerLocations(
       int bucketId, BucketServerLocationsType bucketServerLocations);
   int getTotalNumBuckets();
-  // std::shared_ptr<PartitionResolver> getPartitionResolver();
   const std::string& getColocatedWith();
   int assignFixedBucketId(const char* partitionName,
                           std::shared_ptr<CacheableKey> resolvekey);
-  std::shared_ptr<CacheableHashSet>& getFixedPartitionNames() {
-    /* if(m_fpaMap.size() >0)
-     {
-      auto partitionNames = CacheableHashSet::create();
-       for ( FixedMapType::iterator it=m_fpaMap.begin() ; it != m_fpaMap.end();
-     it++ ) {
-         partitionNames->insert(CacheableString::create(((*it).first).c_str()));
-       }
-       return partitionNames;
-     }*/
-    return m_partitionNames;
-  }
+  std::shared_ptr<CacheableHashSet>& getFixedPartitionNames();
   ClientMetadata(ClientMetadata& other);
   std::vector<std::shared_ptr<BucketServerLocation>> adviseServerLocations(
       int bucketId);

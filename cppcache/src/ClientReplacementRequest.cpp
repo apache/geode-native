@@ -33,6 +33,12 @@ internal::DSFid ClientReplacementRequest::getDSFID() const {
   return internal::DSFid::ClientReplacementRequest;
 }
 
+ClientReplacementRequest::ClientReplacementRequest(
+    const std::string& serverName,
+    const std::set<ServerLocation>& excludeServergroup, std::string servergroup)
+    : ClientConnectionRequest(excludeServergroup, servergroup),
+      m_serverLocation(ServerLocation(serverName)) {}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

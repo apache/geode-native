@@ -97,29 +97,16 @@ void ClientMetadata::setPartitionNames() {
   }
 }
 
-int ClientMetadata::getTotalNumBuckets() {
-  // ReadGuard guard (m_readWriteLock);
-  return m_totalNumBuckets;
-}
+int ClientMetadata::getTotalNumBuckets() { return m_totalNumBuckets; }
 
-/*PartitionResolverPtr ClientMetadata::getPartitionResolver()
-{
-  ReadGuard guard (m_readWriteLock);
-  LOGFINE("Inside getPartitionResolver");
-  return m_partitionResolver;
-}*/
 const std::string& ClientMetadata::getColocatedWith() {
-  // ReadGuard guard (m_readWriteLock);
   return m_colocatedWith;
 }
 
 void ClientMetadata::getServerLocation(
     int bucketId, bool tryPrimary,
     std::shared_ptr<BucketServerLocation>& serverLocation, int8_t& version) {
-  // ReadGuard guard (m_readWriteLock);
   checkBucketId(bucketId);
-  // BucketServerLocationsType locations =
-  // m_bucketServerLocationsList[bucketId];
   if (m_bucketServerLocationsList[bucketId].empty()) {
     return;
   } else if (tryPrimary) {
@@ -146,25 +133,7 @@ void ClientMetadata::getServerLocation(
     serverLocation = m_bucketServerLocationsList[bucketId].at(randgen(
         static_cast<int>(m_bucketServerLocationsList[bucketId].size())));
   }
-  // return m_bucketServerLocationsList[bucketId].at(0);
 }
-
-/*
-ServerLocation ClientMetadata::getPrimaryServerLocation(int bucketId)
-{
-  ReadGuard guard (m_readWriteLock);
-
-  checkBucketId(bucketId);
-
-  BucketServerLocationsType locations = m_bucketServerLocationsList[bucketId];
-
-  if (locations.size() > 0 && locations[0].isPrimary()) {
-    return locations[0];
-  }
-
-  return ServerLocation();
-}
-*/
 
 void ClientMetadata::updateBucketServerLocations(
     int bucketId, BucketServerLocationsType bucketServerLocations) {
@@ -337,6 +306,23 @@ ClientMetadata::adviseRandomServerLocation() {
   }
   return nullptr;
 }
+
+void ClientMetadata::checkBucketId(size_t bucketId) {
+  if (bucketId >= m_bucketServerLocationsList.size()) {
+    LOGERROR("ClientMetadata::getServerLocation(): BucketId out of range.");
+    throw IllegalStateException(
+        "ClientMetadata::getServerLocation(): BucketId out of range.");
+  }
+}
+
+void ClientMetadata::setPreviousone(std::shared_ptr<ClientMetadata> cptr) {
+  m_previousOne = cptr;
+}
+
+std::shared_ptr<CacheableHashSet>& ClientMetadata::getFixedPartitionNames() {
+  return m_partitionNames;
+}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

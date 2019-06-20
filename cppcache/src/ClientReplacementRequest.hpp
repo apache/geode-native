@@ -37,9 +37,7 @@ class ClientReplacementRequest : public ClientConnectionRequest {
  public:
   ClientReplacementRequest(const std::string& serverName,
                            const std::set<ServerLocation>& excludeServergroup,
-                           std::string servergroup = "")
-      : ClientConnectionRequest(excludeServergroup, servergroup),
-        m_serverLocation(ServerLocation(serverName)) {}
+                           std::string servergroup = "");
 
   ~ClientReplacementRequest() override = default;
 
