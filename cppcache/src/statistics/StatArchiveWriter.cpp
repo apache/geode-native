@@ -618,9 +618,7 @@ void StatArchiveWriter::writeResourceInst(StatDataOutput *dataOut,
   }
 }
 
-const uint8_t *StatArchiveWriter::getBuffer() {
-  return dataBuffer->getBuffer();
-}
+const uint8_t *StatDataOutput::getBuffer() { return dataBuffer->getBuffer(); }
 
 }  // namespace statistics
 }  // namespace geode
