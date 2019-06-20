@@ -229,6 +229,18 @@ void StatisticsManager::deleteStatistics(Statistics*& stat) {
   stat = nullptr;
 }
 
+void StatisticsManager::RegisterAdminRegion(
+    std::shared_ptr<AdminRegion> adminRegPtr) {
+  m_adminRegion = adminRegPtr;
+}
+
+std::shared_ptr<AdminRegion> StatisticsManager::getAdminRegion() {
+  return m_adminRegion;
+}
+
+GeodeStatisticsFactory* StatisticsManager::getStatisticsFactory() const {
+  return m_statisticsFactory.get();
+}
 }  // namespace statistics
 }  // namespace geode
 }  // namespace apache
