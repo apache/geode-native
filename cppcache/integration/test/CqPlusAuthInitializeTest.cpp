@@ -35,6 +35,7 @@
 #include <geode/RegionShortcut.hpp>
 
 #include "CacheRegionHelper.hpp"
+#include "SimpleAuthInitialize.hpp"
 #include "SimpleCqListener.hpp"
 #include "framework/Cluster.h"
 #include "framework/Framework.h"
@@ -65,43 +66,12 @@ using std::chrono::minutes;
 
 const int32_t CQ_PLUS_AUTH_TEST_REGION_ENTRY_COUNT = 100000;
 
-class SimpleAuthInitialize : public apache::geode::client::AuthInitialize {
-  std::shared_ptr<Properties> getCredentials(
-      const std::shared_ptr<Properties>& securityprops,
-      const std::string& /*server*/) override {
-    std::cout << "SimpleAuthInitialize::GetCredentials called\n";
-    //    Exception ex("Debugging SimpleAuthInitialize::getCredentials");
-    //    std::cout << ex.getStackTrace() << std::endl;
-
-    securityprops->insert("security-username", username_);
-    securityprops->insert("security-password", password_);
-
-    return securityprops;
-  }
-
-  void close() override { std::cout << "SimpleAuthInitialize::close called\n"; }
-
- public:
-  SimpleAuthInitialize()
-      : AuthInitialize(), username_("root"), password_("root-password") {
-    std::cout << "SimpleAuthInitialize::SimpleAuthInitialize called\n";
-  }
-  SimpleAuthInitialize(std::string username, std::string password)
-      : username_(std::move(username)), password_(std::move(password)) {}
-
-  ~SimpleAuthInitialize() override = default;
-
- private:
-  std::string username_;
-  std::string password_;
-};
-
-Cache createCache() {
+Cache createCache(std::shared_ptr<SimpleAuthInitialize> auth) {
   auto cache = CacheFactory()
                    .set("log-level", "debug")
                    .set("log-file", "geode_native.log")
                    .set("statistic-sampling-enabled", "false")
-                   .setAuthInitialize(std::make_shared<SimpleAuthInitialize>())
+                   .setAuthInitialize(auth)
                    .create();
 
   return cache;
@@ -133,7 +103,10 @@ Cache createCacheWithBadUsername() {
 
 std::shared_ptr<Pool> createPool(Cluster& cluster, Cache& cache,
                                  bool subscriptionEnabled) {
-  auto poolFactory = cache.getPoolManager().createFactory();
+  auto poolFactory = cache.getPoolManager().createFactory().setIdleTimeout(
+      std::chrono::milliseconds(0));
+  //                         .setMinConnections(1)
+  //                         .setMaxConnections(1);
 
   cluster.applyLocators(poolFactory);
   poolFactory.setPRSingleHopEnabled(true).setSubscriptionEnabled(
@@ -168,7 +141,8 @@ TEST(CqPlusAuthInitializeTest, putInALoopWhileSubscribedAndAuthenticated) {
       .withType("PARTITION")
       .execute();
 
-  auto cache = createCache();
+  auto authInitialize = std::make_shared<SimpleAuthInitialize>();
+  auto cache = createCache(authInitialize);
   auto pool = createPool(cluster, cache, true);
   auto region = setupRegion(cache, pool);
 
@@ -205,6 +179,7 @@ TEST(CqPlusAuthInitializeTest, putInALoopWhileSubscribedAndAuthenticated) {
   try {
     for (i = 0; i < CQ_PLUS_AUTH_TEST_REGION_ENTRY_COUNT; i++) {
       region->put("key" + std::to_string(i), "value" + std::to_string(i));
+      std::this_thread::yield();
     }
   } catch (const Exception& ex) {
     std::cerr << "Caught exception: " << ex.what() << std::endl;
@@ -216,6 +191,7 @@ TEST(CqPlusAuthInitializeTest, putInALoopWhileSubscribedAndAuthenticated) {
   try {
     for (i = 0; i < CQ_PLUS_AUTH_TEST_REGION_ENTRY_COUNT; i++) {
       region->put("key" + std::to_string(i), "value" + std::to_string(i + 1));
+      std::this_thread::yield();
     }
   } catch (const Exception& ex) {
     std::cerr << "Caught exception: " << ex.what() << std::endl;
@@ -227,6 +203,7 @@ TEST(CqPlusAuthInitializeTest, putInALoopWhileSubscribedAndAuthenticated) {
   try {
     for (i = 0; i < CQ_PLUS_AUTH_TEST_REGION_ENTRY_COUNT; i++) {
       region->destroy("key" + std::to_string(i));
+      std::this_thread::yield();
     }
   } catch (const Exception& ex) {
     std::cerr << "Caught exception: " << ex.what() << std::endl;
@@ -249,6 +226,7 @@ TEST(CqPlusAuthInitializeTest, putInALoopWhileSubscribedAndAuthenticated) {
             CQ_PLUS_AUTH_TEST_REGION_ENTRY_COUNT);
   ASSERT_EQ(testListener->getDestructionCount(),
             CQ_PLUS_AUTH_TEST_REGION_ENTRY_COUNT);
+  ASSERT_GT(authInitialize->getGetCredentialsCallCount(), 0);
 }
 
 }  // namespace

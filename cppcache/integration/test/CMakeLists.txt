@@ -28,6 +28,8 @@ add_executable(cpp-integration-test
   RegionPutAllTest.cpp
   RegionPutGetAllTest.cpp
   RegisterKeysTest.cpp
+  SimpleAuthInitialize.cpp
+  SimpleAuthInitialize.hpp
   SimpleCqListener.cpp
   SimpleCqListener.hpp
   StructTest.cpp

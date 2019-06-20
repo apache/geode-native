@@ -35,6 +35,7 @@
 #include <geode/RegionShortcut.hpp>
 
 #include "CacheRegionHelper.hpp"
+#include "SimpleAuthInitialize.hpp"
 #include "SimpleCqListener.hpp"
 #include "framework/Cluster.h"
 #include "framework/Framework.h"
@@ -64,46 +65,6 @@ using apache::geode::client::RegionShortcut;
 using std::chrono::minutes;
 
 const int32_t CQ_PLUS_AUTH_TEST_REGION_ENTRY_COUNT = 100000;
-
-class SimpleAuthInitialize : public apache::geode::client::AuthInitialize {
- public:
-  std::shared_ptr<Properties> getCredentials(
-      const std::shared_ptr<Properties>& securityprops,
-      const std::string& /*server*/) override {
-    std::cout << "SimpleAuthInitialize::GetCredentials called\n";
-    //    Exception ex("Debugging SimpleAuthInitialize::getCredentials");
-    //    std::cout << ex.getStackTrace() << std::endl;
-
-    securityprops->insert("security-username", username_);
-    securityprops->insert("security-password", password_);
-
-    countOfGetCredentialsCalls_++;
-    return securityprops;
-  }
-
-  void close() override { std::cout << "SimpleAuthInitialize::close called\n"; }
-
-  SimpleAuthInitialize()
-      : AuthInitialize(),
-        username_("root"),
-        password_("root-password"),
-        countOfGetCredentialsCalls_(0) {
-    std::cout << "SimpleAuthInitialize::SimpleAuthInitialize called\n";
-  }
-  SimpleAuthInitialize(std::string username, std::string password)
-      : username_(std::move(username)),
-        password_(std::move(password)),
-        countOfGetCredentialsCalls_(0) {}
-
-  ~SimpleAuthInitialize() override = default;
-
-  int32_t getGetCredentialsCallCount() { return countOfGetCredentialsCalls_; }
-
- private:
-  std::string username_;
-  std::string password_;
-  int32_t countOfGetCredentialsCalls_;
-};
 
 Cache createCache(std::shared_ptr<SimpleAuthInitialize> auth) {
   auto cache = CacheFactory()
