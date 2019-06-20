@@ -60,11 +60,7 @@ class AdminRegion : private NonCopyable,
   TcrConnectionManager* getConnectionManager();
 
  public:
-  AdminRegion()
-      : m_distMngr(nullptr),
-        m_fullPath("/__ADMIN_CLIENT_HEALTH_MONITORING__"),
-        m_connectionMgr(nullptr),
-        m_destroyPending(false) {}
+  AdminRegion();
   ~AdminRegion();
 
   static std::shared_ptr<AdminRegion> create(

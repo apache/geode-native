@@ -64,27 +64,9 @@ class CacheableObjectPartList : public internal::DataSerializableFixedId {
   int32_t m_destroyTracker;
   bool m_addToLocalCache;
 
-  inline CacheableObjectPartList()
-      : m_keys(nullptr),
-        m_keysOffset(nullptr),
-        m_values(nullptr),
-        m_exceptions(nullptr),
-        m_resultKeys(nullptr),
-        m_region(nullptr),
-        m_updateCountMap(nullptr),
-        m_destroyTracker(0),
-        m_addToLocalCache(false) {}
+  CacheableObjectPartList();
 
-  inline explicit CacheableObjectPartList(ThinClientRegion* region)
-      : m_keys(nullptr),
-        m_keysOffset(nullptr),
-        m_values(nullptr),
-        m_exceptions(nullptr),
-        m_resultKeys(nullptr),
-        m_region(region),
-        m_updateCountMap(nullptr),
-        m_destroyTracker(0),
-        m_addToLocalCache(false) {}
+  explicit CacheableObjectPartList(ThinClientRegion* region);
 
   // never implemented.
   CacheableObjectPartList& operator=(const CacheableObjectPartList& other);
@@ -103,22 +85,13 @@ class CacheableObjectPartList : public internal::DataSerializableFixedId {
       const std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>>&
           resultKeys,
       ThinClientRegion* region, MapOfUpdateCounters* trackerMap,
-      int32_t destroyTracker, bool addToLocalCache)
-      : m_keys(keys),
-        m_keysOffset(keysOffset),
-        m_values(values),
-        m_exceptions(exceptions),
-        m_resultKeys(resultKeys),
-        m_region(region),
-        m_updateCountMap(trackerMap),
-        m_destroyTracker(destroyTracker),
-        m_addToLocalCache(addToLocalCache) {}
+      int32_t destroyTracker, bool addToLocalCache);
 
   void toData(DataOutput& output) const override;
 
   void fromData(DataInput& input) override;
 
-  DSFid getDSFID() const override { return DSFid::CacheableObjectPartList; }
+  DSFid getDSFID() const override;
 
   size_t objectSize() const override;
 };

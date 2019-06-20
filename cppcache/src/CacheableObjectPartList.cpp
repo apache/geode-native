@@ -116,6 +116,50 @@ void CacheableObjectPartList::fromData(DataInput& input) {
 }
 
 size_t CacheableObjectPartList::objectSize() const { return 0; }
+
+CacheableObjectPartList::CacheableObjectPartList()
+    : m_keys(nullptr),
+      m_keysOffset(nullptr),
+      m_values(nullptr),
+      m_exceptions(nullptr),
+      m_resultKeys(nullptr),
+      m_region(nullptr),
+      m_updateCountMap(nullptr),
+      m_destroyTracker(0),
+      m_addToLocalCache(false) {}
+
+CacheableObjectPartList::CacheableObjectPartList(ThinClientRegion* region)
+    : m_keys(nullptr),
+      m_keysOffset(nullptr),
+      m_values(nullptr),
+      m_exceptions(nullptr),
+      m_resultKeys(nullptr),
+      m_region(region),
+      m_updateCountMap(nullptr),
+      m_destroyTracker(0),
+      m_addToLocalCache(false) {}
+
+CacheableObjectPartList::CacheableObjectPartList(
+    const std::vector<std::shared_ptr<CacheableKey>>* keys,
+    uint32_t* keysOffset, const std::shared_ptr<HashMapOfCacheable>& values,
+    const std::shared_ptr<HashMapOfException>& exceptions,
+    const std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>>&
+        resultKeys,
+    ThinClientRegion* region, MapOfUpdateCounters* trackerMap,
+    int32_t destroyTracker, bool addToLocalCache)
+    : m_keys(keys),
+      m_keysOffset(keysOffset),
+      m_values(values),
+      m_exceptions(exceptions),
+      m_resultKeys(resultKeys),
+      m_region(region),
+      m_updateCountMap(trackerMap),
+      m_destroyTracker(destroyTracker),
+      m_addToLocalCache(addToLocalCache) {}
+
+DSFid CacheableObjectPartList::getDSFID() const {
+  return DSFid::CacheableObjectPartList;
+}
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

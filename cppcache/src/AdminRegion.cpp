@@ -144,6 +144,12 @@ AdminRegion::~AdminRegion() {
 const bool& AdminRegion::isDestroyed() { return m_destroyPending; }
 ACE_RW_Thread_Mutex& AdminRegion::getRWLock() { return m_rwLock; }
 
+AdminRegion::AdminRegion()
+    : m_distMngr(nullptr),
+      m_fullPath("/__ADMIN_CLIENT_HEALTH_MONITORING__"),
+      m_connectionMgr(nullptr),
+      m_destroyPending(false) {}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
