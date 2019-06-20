@@ -38,6 +38,16 @@ bool LRULocalDestroyAction::evict(const std::shared_ptr<MapEntryImpl>& mePtr) {
   return (err == GF_NOERR);
 }
 
+LRULocalDestroyAction::LRULocalDestroyAction(RegionInternal* regionPtr,
+                                             LRUEntriesMap* entriesMapPtr)
+    : m_regionPtr(regionPtr), m_entriesMapPtr(entriesMapPtr) {
+  m_destroys = true;
+}
+
+LRUAction::Action LRULocalDestroyAction::getType() {
+  return LRUAction::LOCAL_DESTROY;
+}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

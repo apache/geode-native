@@ -777,6 +777,96 @@ GfErrType MapSegment::isTombstone(std::shared_ptr<CacheableKey> key,
     }
   }
 }
+
+bool MapSegment::incrementUpdateCount(const std::shared_ptr<CacheableKey>& key,
+                                      std::shared_ptr<MapEntry>& entry) {
+  // This function is disabled if concurrency checks are enabled. The
+  // versioning
+  // changes takes care of the version and no need for tracking the entry
+  if (m_concurrencyChecksEnabled) return false;
+  std::shared_ptr<MapEntry> newEntry;
+  entry->incrementUpdateCount(newEntry);
+  if (newEntry != nullptr) {
+    m_map->emplace(key, newEntry);
+    entry = newEntry;
+    return true;
+  }
+  return false;
+}
+
+void MapSegment::removeTrackerForEntry(
+    const std::shared_ptr<CacheableKey>& key, std::shared_ptr<MapEntry>& entry,
+    std::shared_ptr<MapEntryImpl>& entryImpl) {
+  // This function is disabled if concurrency checks are enabled. The
+  // versioning
+  // changes takes care of the version and no need for tracking the entry
+  if (m_concurrencyChecksEnabled) return;
+  std::pair<bool, int> trackerPair = entry->removeTracker();
+  if (trackerPair.second <= 0) {
+    std::shared_ptr<Cacheable> value;
+    if (entryImpl == nullptr) {
+      entryImpl = entry->getImplPtr();
+    }
+    entryImpl->getValueI(value);
+    if (value == nullptr) {
+      // get rid of an entry marked as destroyed
+      m_map->erase(key);
+      return;
+    }
+  }
+  if (trackerPair.first) {
+    entry = entryImpl ? entryImpl : entry->getImplPtr();
+    (*m_map)[key] = entry;
+  }
+}
+
+GfErrType MapSegment::putNoEntry(const std::shared_ptr<CacheableKey>& key,
+                                 const std::shared_ptr<Cacheable>& newValue,
+                                 std::shared_ptr<MapEntryImpl>& newEntry,
+                                 int updateCount, int destroyTracker,
+                                 std::shared_ptr<VersionTag> versionTag,
+                                 VersionStamp* versionStamp) {
+  if (!m_concurrencyChecksEnabled) {
+    if (updateCount >= 0) {
+      // entry was removed while being tracked
+      // abort the create and do not change the MapEntry
+      return GF_CACHE_ENTRY_UPDATED;
+    } else if (destroyTracker > 0 && *m_numDestroyTrackers > 0) {
+      MapOfUpdateCounters::iterator pos = m_destroyedKeys.find(key);
+      if (pos != m_destroyedKeys.end() && pos->second > destroyTracker) {
+        // destroy received for a non-existent entry while being tracked
+        // abort the create and do not change the MapEntry
+        return GF_CACHE_ENTRY_UPDATED;
+      }
+    }
+  }
+  m_entryFactory->newMapEntry(m_expiryTaskManager, key, newEntry);
+  newEntry->setValueI(newValue);
+  if (m_concurrencyChecksEnabled) {
+    if (versionTag) {
+      newEntry->getVersionStamp().setVersions(versionTag);
+    } else if (versionStamp != nullptr) {
+      newEntry->getVersionStamp().setVersions(*versionStamp);
+    }
+  }
+  m_map->emplace(key, newEntry);
+  return GF_NOERR;
+}
+
+MapSegment::MapSegment()
+    : m_map(nullptr),
+      m_entryFactory(nullptr),
+      m_region(nullptr),
+      m_expiryTaskManager(nullptr),
+      m_primeIndex(0),
+      m_spinlock(),
+      m_segmentMutex(),
+      m_concurrencyChecksEnabled(false),
+      m_numDestroyTrackers(nullptr),
+      m_rehashCount(0),
+      m_tombstoneList(nullptr) {}
+
+uint32_t MapSegment::rehashCount() { return m_rehashCount; }
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

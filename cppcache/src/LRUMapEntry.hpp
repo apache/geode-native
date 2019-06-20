@@ -63,24 +63,16 @@ namespace client {
 class APACHE_GEODE_EXPORT LRUMapEntry : public MapEntryImpl,
                                         public LRUEntryProperties {
  public:
-  virtual ~LRUMapEntry() {}
+  virtual ~LRUMapEntry() = default;
 
-  virtual LRUEntryProperties& getLRUProperties() { return *this; }
+  virtual LRUEntryProperties& getLRUProperties();
 
-  virtual void cleanup(const CacheEventFlags eventFlags) {
-    if (!eventFlags.isEviction()) {
-      // TODO:  this needs an implementation of doubly-linked list
-      // to remove from the list; also add this to LRUExpMapEntry since MI
-      // has been removed
-    }
-  }
+  virtual void cleanup(const CacheEventFlags eventFlags);
 
  protected:
-  inline explicit LRUMapEntry(bool)
-      : MapEntryImpl(true), LRUEntryProperties(true) {}
+  explicit LRUMapEntry(bool);
 
-  inline explicit LRUMapEntry(const std::shared_ptr<CacheableKey>& key)
-      : MapEntryImpl(key) {}
+  explicit LRUMapEntry(const std::shared_ptr<CacheableKey>& key);
 
  private:
   // disabled
@@ -91,15 +83,14 @@ class APACHE_GEODE_EXPORT LRUMapEntry : public MapEntryImpl,
 class APACHE_GEODE_EXPORT VersionedLRUMapEntry : public LRUMapEntry,
                                                  public VersionStamp {
  public:
-  virtual ~VersionedLRUMapEntry() {}
+  virtual ~VersionedLRUMapEntry() = default;
 
-  virtual VersionStamp& getVersionStamp() { return *this; }
+  virtual VersionStamp& getVersionStamp();
 
  protected:
-  inline explicit VersionedLRUMapEntry(bool) : LRUMapEntry(true) {}
+  explicit VersionedLRUMapEntry(bool);
 
-  inline explicit VersionedLRUMapEntry(const std::shared_ptr<CacheableKey>& key)
-      : LRUMapEntry(key) {}
+  explicit VersionedLRUMapEntry(const std::shared_ptr<CacheableKey>& key);
 
  private:
   // disabled
@@ -111,7 +102,7 @@ class APACHE_GEODE_EXPORT LRUEntryFactory : public EntryFactory {
  public:
   using EntryFactory::EntryFactory;
 
-  virtual ~LRUEntryFactory() {}
+  virtual ~LRUEntryFactory() = default;
 
   virtual void newMapEntry(ExpiryTaskManager* expiryTaskManager,
                            const std::shared_ptr<CacheableKey>& key,

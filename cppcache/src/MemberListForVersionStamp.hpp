@@ -37,10 +37,7 @@ struct DistributedMemberWithIntIdentifier {
  public:
   explicit DistributedMemberWithIntIdentifier(
       std::shared_ptr<DSMemberForVersionStamp> dsmember = nullptr,
-      uint16_t id = 0) {
-    this->m_member = dsmember;
-    this->m_identifier = id;
-  }
+      uint16_t id = 0);
   std::shared_ptr<DSMemberForVersionStamp> m_member;
   uint16_t m_identifier;
 };

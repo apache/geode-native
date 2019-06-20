@@ -33,6 +33,28 @@ void LRUEntryFactory::newMapEntry(ExpiryTaskManager*,
   }
 }
 
+LRUEntryProperties& LRUMapEntry::getLRUProperties() { return *this; }
+
+void LRUMapEntry::cleanup(const CacheEventFlags eventFlags) {
+  if (!eventFlags.isEviction()) {
+    // TODO:  this needs an implementation of doubly-linked list
+    // to remove from the list; also add this to LRUExpMapEntry since MI
+    // has been removed
+  }
+}
+
+LRUMapEntry::LRUMapEntry(bool) : MapEntryImpl(true), LRUEntryProperties(true) {}
+
+LRUMapEntry::LRUMapEntry(const std::shared_ptr<CacheableKey>& key)
+    : MapEntryImpl(key) {}
+
+VersionStamp& VersionedLRUMapEntry::getVersionStamp() { return *this; }
+
+VersionedLRUMapEntry::VersionedLRUMapEntry(bool) : LRUMapEntry(true) {}
+
+VersionedLRUMapEntry::VersionedLRUMapEntry(
+    const std::shared_ptr<CacheableKey>& key)
+    : LRUMapEntry(key) {}
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
