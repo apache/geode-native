@@ -331,6 +331,18 @@ void RemoteQueryService::invokeCqConnectedListeners(ThinClientPoolDM* pool,
   m_cqService->invokeCqConnectedListeners(poolName, connected);
 }
 
+ACE_RW_Thread_Mutex& RemoteQueryService::getLock() { return m_rwLock; }
+
+const volatile bool& RemoteQueryService::invalid() { return m_invalid; }
+
+void RemoteQueryService::initCqService() {
+  if (m_cqService == nullptr) {
+    LOGFINE("RemoteQueryService: starting cq service");
+    m_cqService = std::make_shared<CqService>(m_tccdm, m_statisticsFactory);
+    LOGFINE("RemoteQueryService: started cq service");
+  }
+}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

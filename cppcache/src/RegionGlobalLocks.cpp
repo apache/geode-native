@@ -15,48 +15,21 @@
  * limitations under the License.
  */
 
-#pragma once
-
-#ifndef GEODE_QUEUECONNECTIONRESPONSE_H_
-#define GEODE_QUEUECONNECTIONRESPONSE_H_
-
-#include <list>
-
-#include <geode/DataInput.hpp>
-
-#include "ServerLocation.hpp"
-#include "ServerLocationResponse.hpp"
+#include "RegionGlobalLocks.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
-using internal::DSFid;
+RegionGlobalLocks::RegionGlobalLocks(LocalRegion* region, bool isFailover)
+    : m_region(region), m_isFailover(isFailover) {
+  m_region->acquireGlobals(m_isFailover);
+}
 
-class QueueConnectionResponse : public ServerLocationResponse {
- public:
-  QueueConnectionResponse();
-
-  ~QueueConnectionResponse() override = default;
-
-  void fromData(DataInput& input) override;
-
-  DSFid getDSFID() const override;
-
-  virtual std::list<ServerLocation> getServers();
-
-  virtual bool isDurableQueueFound();
-
-  static std::shared_ptr<Serializable> create();
-
- private:
-  void readList(DataInput& input);
-  std::list<ServerLocation> m_list;
-  bool m_durableQueueFound;
-};
+RegionGlobalLocks::~RegionGlobalLocks() {
+  m_region->releaseGlobals(m_isFailover);
+}
 
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
-
-#endif  // GEODE_QUEUECONNECTIONRESPONSE_H_

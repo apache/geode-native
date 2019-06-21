@@ -90,7 +90,7 @@ class TheTypeMap : private NonCopyable {
   std::unordered_map<std::type_index, int32_t> typeToClassId;
 
  public:
-  TheTypeMap() { setup(); }
+  TheTypeMap();
 
   ~TheTypeMap() noexcept = default;
 
@@ -168,64 +168,17 @@ class DataSerializableHandler {
 
 class APACHE_GEODE_EXPORT SerializationRegistry {
  public:
-  SerializationRegistry() : theTypeMap() {}
+  SerializationRegistry();
 
   /** write the length of the serialization, write the typeId of the object,
    * then write whatever the object's toData requires. The length at the
    * front is backfilled after the serialization.
    */
-  inline void serialize(const std::shared_ptr<Serializable>& obj,
-                        DataOutput& output, bool isDelta = false) const {
-    if (obj == nullptr) {
-      output.write(static_cast<int8_t>(DSCode::NullObj));
-    } else if (auto&& pdxSerializable =
-                   std::dynamic_pointer_cast<PdxSerializable>(obj)) {
-      serialize(pdxSerializable, output);
-    } else if (const auto&& dataSerializableFixedId =
-                   std::dynamic_pointer_cast<DataSerializableFixedId>(obj)) {
-      serialize(dataSerializableFixedId, output);
-    } else if (const auto&& dataSerializablePrimitive =
-                   std::dynamic_pointer_cast<DataSerializablePrimitive>(obj)) {
-      serialize(dataSerializablePrimitive, output);
-    } else if (const auto&& dataSerializable =
-                   std::dynamic_pointer_cast<DataSerializable>(obj)) {
-      dataSerializeableHandler->serialize(dataSerializable, output, isDelta);
-    } else if (const auto&& dataSerializableInternal =
-                   std::dynamic_pointer_cast<DataSerializableInternal>(obj)) {
-      serialize(dataSerializableInternal, output);
-    } else {
-      throw UnsupportedOperationException(
-          "SerializationRegistry::serialize: Serialization type not "
-          "implemented.");
-    }
-  }
+  void serialize(const std::shared_ptr<Serializable>& obj, DataOutput& output,
+                 bool isDelta = false) const;
 
-  inline void serializeWithoutHeader(const std::shared_ptr<Serializable>& obj,
-                                     DataOutput& output) const {
-    if (auto&& pdxSerializable =
-            std::dynamic_pointer_cast<PdxSerializable>(obj)) {
-      serializeWithoutHeader(pdxSerializable, output);
-    } else if (const auto&& dataSerializableFixedId =
-                   std::dynamic_pointer_cast<DataSerializableFixedId>(obj)) {
-      serializeWithoutHeader(dataSerializableFixedId, output);
-    } else if (const auto&& dataSerializablePrimitive =
-                   std::dynamic_pointer_cast<DataSerializablePrimitive>(obj)) {
-      serializeWithoutHeader(dataSerializablePrimitive, output);
-    } else if (const auto&& dataSerializable =
-                   std::dynamic_pointer_cast<DataSerializable>(obj)) {
-      serializeWithoutHeader(dataSerializable, output);
-    } else if (const auto&& pdxSerializable =
-                   std::dynamic_pointer_cast<PdxSerializable>(obj)) {
-      serializeWithoutHeader(pdxSerializable, output);
-    } else if (const auto&& dataSerializableInternal =
-                   std::dynamic_pointer_cast<DataSerializableInternal>(obj)) {
-      serializeWithoutHeader(dataSerializableInternal, output);
-    } else {
-      throw UnsupportedOperationException(
-          "SerializationRegistry::serializeWithoutHeader: Serialization type "
-          "not implemented.");
-    }
-  }
+  void serializeWithoutHeader(const std::shared_ptr<Serializable>& obj,
+                              DataOutput& output) const;
 
   /**
    * Read the length, typeid, and run the objs fromData. Returns the New
@@ -268,25 +221,12 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
   std::shared_ptr<PdxSerializable> getPdxSerializableType(
       const std::string& className) const;
 
-  void setPdxTypeHandler(PdxTypeHandler* handler) {
-    this->pdxTypeHandler = std::unique_ptr<PdxTypeHandler>(handler);
-  }
-  void setDataSerializableHandler(DataSerializableHandler* handler) {
-    this->dataSerializeableHandler =
-        std::unique_ptr<DataSerializableHandler>(handler);
-  }
+  void setPdxTypeHandler(PdxTypeHandler* handler);
+  void setDataSerializableHandler(DataSerializableHandler* handler);
 
-  TypeFactoryMethod getDataSerializableCreationMethod(int32_t objectId) {
-    TypeFactoryMethod createType;
-    theTypeMap.findDataSerializable(objectId, createType);
-    return createType;
-  }
+  TypeFactoryMethod getDataSerializableCreationMethod(int32_t objectId);
 
-  int32_t getIdForDataSerializableType(std::type_index objectType) const {
-    auto&& typeIterator = theTypeMap.typeToClassId.find(objectType);
-    auto&& id = typeIterator->second;
-    return id;
-  }
+  int32_t getIdForDataSerializableType(std::type_index objectType) const;
 
  private:
   std::unique_ptr<PdxTypeHandler> pdxTypeHandler;
@@ -297,77 +237,35 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
   std::shared_ptr<Serializable> deserializeDataSerializableFixedId(
       DataInput& input, DSCode dsCode) const;
 
-  inline void serialize(const std::shared_ptr<DataSerializableFixedId>& obj,
-                        DataOutput& output) const {
-    auto id = static_cast<int32_t>(obj->getDSFID());
-    if (id <= std::numeric_limits<int8_t>::max() &&
-        id >= std::numeric_limits<int8_t>::min()) {
-      output.write(static_cast<int8_t>(DSCode::FixedIDByte));
-      output.write(static_cast<int8_t>(id));
-    } else if (id <= std::numeric_limits<int16_t>::max() &&
-               id >= std::numeric_limits<int16_t>::min()) {
-      output.write(static_cast<int8_t>(DSCode::FixedIDShort));
-      output.writeInt(static_cast<int16_t>(id));
-    } else {
-      output.write(static_cast<int8_t>(DSCode::FixedIDInt));
-      output.writeInt(static_cast<int32_t>(id));
-    }
+  void serialize(const std::shared_ptr<DataSerializableFixedId>& obj,
+                 DataOutput& output) const;
 
-    serializeWithoutHeader(obj, output);
-  }
-
-  inline void serializeWithoutHeader(
+  void serializeWithoutHeader(
       const std::shared_ptr<DataSerializableFixedId>& obj,
-      DataOutput& output) const {
-    obj->toData(output);
-  }
+      DataOutput& output) const;
 
-  inline void serialize(const std::shared_ptr<DataSerializablePrimitive>& obj,
-                        DataOutput& output) const {
-    auto id = obj->getDsCode();
-    output.write(static_cast<int8_t>(id));
+  void serialize(const std::shared_ptr<DataSerializablePrimitive>& obj,
+                 DataOutput& output) const;
 
-    serializeWithoutHeader(obj, output);
-  }
-
-  inline void serializeWithoutHeader(
+  void serializeWithoutHeader(
       const std::shared_ptr<DataSerializablePrimitive>& obj,
-      DataOutput& output) const {
-    obj->toData(output);
-  }
+      DataOutput& output) const;
 
-  inline void serialize(const std::shared_ptr<PdxSerializable>& obj,
-                        DataOutput& output) const {
-    output.write(static_cast<int8_t>(DSCode::PDX));
-    serializeWithoutHeader(obj, output);
-  }
+  void serialize(const std::shared_ptr<PdxSerializable>& obj,
+                 DataOutput& output) const;
 
   void serializeWithoutHeader(const std::shared_ptr<PdxSerializable>& obj,
                               DataOutput& output) const;
 
-  inline void serialize(const std::shared_ptr<DataSerializableInternal>& obj,
-                        DataOutput& output) const {
-    serializeWithoutHeader(obj, output);
-  }
+  void serialize(const std::shared_ptr<DataSerializableInternal>& obj,
+                 DataOutput& output) const;
 
-  inline void serializeWithoutHeader(
+  void serializeWithoutHeader(
       const std::shared_ptr<DataSerializableInternal>& obj,
-      DataOutput& output) const {
-    obj->toData(output);
-  }
+      DataOutput& output) const;
 
  public:
-  static inline DSCode getSerializableDataDsCode(int32_t classId) {
-    if (classId <= std::numeric_limits<int8_t>::max() &&
-        classId >= std::numeric_limits<int8_t>::min()) {
-      return DSCode::CacheableUserData;
-    } else if (classId <= std::numeric_limits<int16_t>::max() &&
-               classId >= std::numeric_limits<int16_t>::min()) {
-      return DSCode::CacheableUserData2;
-    } else {
-      return DSCode::CacheableUserData4;
-    }
-  }
+  static DSCode getSerializableDataDsCode(int32_t classId);
 
  private:
   void deserialize(DataInput& input,

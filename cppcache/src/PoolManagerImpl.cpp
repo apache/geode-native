@@ -92,6 +92,8 @@ const std::shared_ptr<Pool>& PoolManagerImpl::getDefaultPool() const {
   return m_defaultPool;
 }
 
+PoolManagerImpl::PoolManagerImpl(CacheImpl* cache) : m_cache(cache) {}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

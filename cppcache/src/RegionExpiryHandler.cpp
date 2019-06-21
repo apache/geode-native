@@ -138,6 +138,11 @@ void RegionExpiryHandler::DoTheExpirationAction() {
   }
 }
 
+void RegionExpiryHandler::setExpiryTaskId(
+    ExpiryTaskManager::id_type expiryTaskId) {
+  m_expiryTaskId = expiryTaskId;
+}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

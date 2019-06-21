@@ -63,6 +63,14 @@ void RegionCommit::fillEvents(
     ops.push_back(std::static_pointer_cast<FarSideEntryOp>(entryOp));
   }
 }
+
+RegionCommit::RegionCommit(MemberListForVersionStamp& memberListForVersionStamp)
+    : m_memberListForVersionStamp(memberListForVersionStamp){};
+
+std::shared_ptr<Region> RegionCommit::getRegion(Cache* cache) {
+  return cache->getRegion(m_regionPath->value());
+}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

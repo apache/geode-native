@@ -40,16 +40,13 @@ namespace client {
 
 class RegionCommit {
  public:
-  explicit RegionCommit(MemberListForVersionStamp& memberListForVersionStamp)
-      : m_memberListForVersionStamp(memberListForVersionStamp){};
-  virtual ~RegionCommit(){};
+  explicit RegionCommit(MemberListForVersionStamp& memberListForVersionStamp);
+  virtual ~RegionCommit() = default;
 
   void fromData(DataInput& input);
   void apply(Cache* cache);
   void fillEvents(std::vector<std::shared_ptr<FarSideEntryOp>>& ops);
-  std::shared_ptr<Region> getRegion(Cache* cache) {
-    return cache->getRegion(m_regionPath->value());
-  }
+  std::shared_ptr<Region> getRegion(Cache* cache);
 
  private:
   std::shared_ptr<CacheableString> m_regionPath;

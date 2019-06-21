@@ -30,12 +30,10 @@ namespace client {
 
 class APACHE_GEODE_EXPORT ReadGuard {
  public:
-  explicit ReadGuard(ACE_RW_Thread_Mutex& lock) : lock_(lock) {
-    lock_.acquire_read();
-  }
+  explicit ReadGuard(ACE_RW_Thread_Mutex& lock);
 
-  ~ReadGuard() { lock_.release(); }
-  bool isAcquired() { return true; }
+  ~ReadGuard();
+  bool isAcquired();
 
  private:
   ACE_RW_Thread_Mutex& lock_;
@@ -43,11 +41,9 @@ class APACHE_GEODE_EXPORT ReadGuard {
 
 class WriteGuard {
  public:
-  explicit WriteGuard(ACE_RW_Thread_Mutex& lock) : lock_(lock) {
-    lock_.acquire_write();
-  }
+  explicit WriteGuard(ACE_RW_Thread_Mutex& lock);
 
-  ~WriteGuard() { lock_.release(); }
+  ~WriteGuard();
 
  private:
   ACE_RW_Thread_Mutex& lock_;
@@ -56,10 +52,8 @@ class WriteGuard {
 class TryReadGuard {
  public:
   TryReadGuard(ACE_RW_Thread_Mutex& lock, const volatile bool& exitCondition);
-  ~TryReadGuard() {
-    if (isAcquired_) lock_.release();
-  }
-  bool isAcquired() const { return isAcquired_; }
+  ~TryReadGuard();
+  bool isAcquired() const;
 
  private:
   ACE_RW_Thread_Mutex& lock_;
@@ -69,10 +63,8 @@ class TryReadGuard {
 class TryWriteGuard {
  public:
   TryWriteGuard(ACE_RW_Thread_Mutex& lock, const volatile bool& exitCondition);
-  ~TryWriteGuard() {
-    if (isAcquired_) lock_.release();
-  }
-  bool isAcquired() const { return isAcquired_; }
+  ~TryWriteGuard();
+  bool isAcquired() const;
 
  private:
   ACE_RW_Thread_Mutex& lock_;

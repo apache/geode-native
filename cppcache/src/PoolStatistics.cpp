@@ -200,6 +200,115 @@ PoolStats::~PoolStats() {
     m_poolStats = nullptr;
   }
 }
+
+void PoolStats::close() { getStats()->close(); }
+
+void PoolStats::setLocators(int32_t curVal) {
+  getStats()->setInt(m_locatorsId, curVal);
+}
+
+void PoolStats::setServers(int32_t curVal) {
+  getStats()->setInt(m_serversId, curVal);
+}
+
+void PoolStats::setSubsServers(int32_t curVal) {
+  getStats()->setInt(m_subsServsId, curVal);
+}
+
+void PoolStats::incLoctorRequests() { getStats()->incLong(m_locReqsId, 1); }
+
+void PoolStats::incLoctorResposes() { getStats()->incLong(m_locRespsId, 1); }
+
+void PoolStats::setCurPoolConnections(int32_t curVal) {
+  getStats()->setInt(m_poolConnsId, curVal);
+}
+
+void PoolStats::incPoolConnects() { getStats()->incInt(m_connectsId, 1); }
+
+void PoolStats::incPoolDisconnects() { getStats()->incInt(m_disconnectsId, 1); }
+
+void PoolStats::incPoolDisconnects(int numConn) {
+  getStats()->incInt(m_disconnectsId, numConn);
+}
+
+void PoolStats::incMinPoolSizeConnects() {
+  getStats()->incInt(m_minPoolConnectsId, 1);
+}
+
+void PoolStats::incLoadCondConnects() {
+  getStats()->incInt(m_loadCondConnectsId, 1);
+}
+
+void PoolStats::incIdleDisconnects() {
+  getStats()->incInt(m_idleDisconnectsId, 1);
+}
+
+void PoolStats::incLoadCondDisconnects() {
+  getStats()->incInt(m_loadCondDisconnectsId, 1);
+}
+
+void PoolStats::setCurWaitingConnections(int32_t curVal) {
+  getStats()->setInt(m_waitingConnectionsId, curVal);
+}
+
+void PoolStats::incWaitingConnections() {
+  getStats()->incInt(m_totalWaitingConnsId, 1);
+}
+
+void PoolStats::setCurClientOps(int32_t curVal) {
+  getStats()->setInt(m_curClientOpsId, curVal);
+}
+
+void PoolStats::incSucceedClientOps() {
+  getStats()->incInt(m_clientOpsSuccessId, 1);
+}
+
+void PoolStats::incFailedClientOps() {
+  getStats()->incInt(m_clientOpsFailedId, 1);
+}
+
+void PoolStats::incTimeoutClientOps() {
+  getStats()->incInt(m_clientOpsTimeoutId, 1);
+}
+
+void PoolStats::incReceivedBytes(int64_t value) {  // counter
+  getStats()->incLong(m_receivedBytesId, value);
+}
+
+void PoolStats::incMessageBeingReceived() {  // counter
+  getStats()->incLong(m_messagesBeingReceivedId, 1);
+}
+
+void PoolStats::incProcessedDeltaMessages() {  // counter
+  getStats()->incLong(m_processedDeltaMessagesId, 1);
+}
+void PoolStats::incDeltaMessageFailures() {  // counter
+  getStats()->incLong(m_deltaMessageFailuresId, 1);
+}
+void PoolStats::incProcessedDeltaMessagesTime(int64_t value) {  // counter
+  getStats()->incLong(m_processedDeltaMessagesTimeId, value);
+}
+
+void PoolStats::incTotalWaitingConnTime(int64_t value) {  // counter
+  getStats()->incLong(m_totalWaitingConnTimeId, value);
+}
+void PoolStats::incClientOpsSuccessTime(int64_t value) {  // counter
+  getStats()->incLong(m_clientOpsSuccessTimeId, value);
+}
+void PoolStats::incQueryExecutionId() {  // counter
+  getStats()->incInt(m_queryExecutionsId, 1);
+}
+void PoolStats::incQueryExecutionTimeId(int64_t value) {  // counter
+  getStats()->incLong(m_queryExecutionTimeId, value);
+}
+apache::geode::statistics::Statistics* PoolStats::getStats() {
+  return m_poolStats;
+}
+int32_t PoolStats::getTotalWaitingConnTimeId() {
+  return m_totalWaitingConnTimeId;
+}
+
+int32_t PoolStats::getQueryExecutionTimeId() { return m_queryExecutionTimeId; }
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

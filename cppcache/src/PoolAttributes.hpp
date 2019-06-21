@@ -39,128 +39,86 @@ class PoolAttributes {
  public:
   PoolAttributes();
 
-  const std::chrono::milliseconds& getFreeConnectionTimeout() const {
-    return m_freeConnTimeout;
-  }
+  const std::chrono::milliseconds& getFreeConnectionTimeout() const;
 
   void setFreeConnectionTimeout(
-      const std::chrono::milliseconds& connectionTimeout) {
-    m_freeConnTimeout = connectionTimeout;
-  }
+      const std::chrono::milliseconds& connectionTimeout);
 
-  const std::chrono::milliseconds& getLoadConditioningInterval() const {
-    return m_loadCondInterval;
-  }
+  const std::chrono::milliseconds& getLoadConditioningInterval() const;
 
   void setLoadConditioningInterval(
-      const std::chrono::milliseconds& loadConditioningInterval) {
-    m_loadCondInterval = loadConditioningInterval;
-  }
+      const std::chrono::milliseconds& loadConditioningInterval);
 
-  int getSocketBufferSize() const { return m_sockBufferSize; }
+  int getSocketBufferSize() const;
 
-  void setSocketBufferSize(int bufferSize) { m_sockBufferSize = bufferSize; }
+  void setSocketBufferSize(int bufferSize);
 
-  const std::chrono::milliseconds& getReadTimeout() const {
-    return m_readTimeout;
-  }
+  const std::chrono::milliseconds& getReadTimeout() const;
 
-  void setReadTimeout(const std::chrono::milliseconds& timeout) {
-    m_readTimeout = timeout;
-  }
+  void setReadTimeout(const std::chrono::milliseconds& timeout);
 
-  bool getThreadLocalConnectionSetting() { return m_isThreadLocalConn; }
+  bool getThreadLocalConnectionSetting();
 
-  void setThreadLocalConnectionSetting(bool isThreadLocal) {
-    m_isThreadLocalConn = isThreadLocal;
-  }
+  void setThreadLocalConnectionSetting(bool isThreadLocal);
 
-  int getMinConnections() const { return m_minConns; }
+  int getMinConnections() const;
 
-  void setMinConnections(int minConnections) { m_minConns = minConnections; }
+  void setMinConnections(int minConnections);
 
-  int getMaxConnections() const { return m_maxConns; }
+  int getMaxConnections() const;
 
-  void setMaxConnections(int maxConnections) { m_maxConns = maxConnections; }
+  void setMaxConnections(int maxConnections);
 
-  const std::chrono::milliseconds& getIdleTimeout() const {
-    return m_idleTimeout;
-  }
+  const std::chrono::milliseconds& getIdleTimeout() const;
 
-  void setIdleTimeout(const std::chrono::milliseconds& idleTimeout) {
-    m_idleTimeout = idleTimeout;
-  }
+  void setIdleTimeout(const std::chrono::milliseconds& idleTimeout);
 
-  int getRetryAttempts() const { return m_retryAttempts; }
+  int getRetryAttempts() const;
 
-  void setRetryAttempts(int retryAttempts) { m_retryAttempts = retryAttempts; }
+  void setRetryAttempts(int retryAttempts);
 
-  const std::chrono::milliseconds& getPingInterval() const {
-    return m_pingInterval;
-  }
+  const std::chrono::milliseconds& getPingInterval() const;
 
-  void setPingInterval(const std::chrono::milliseconds& pingInterval) {
-    m_pingInterval = pingInterval;
-  }
+  void setPingInterval(const std::chrono::milliseconds& pingInterval);
 
-  const std::chrono::milliseconds& getUpdateLocatorListInterval() const {
-    return m_updateLocatorListInterval;
-  }
+  const std::chrono::milliseconds& getUpdateLocatorListInterval() const;
 
   void setUpdateLocatorListInterval(
-      const std::chrono::milliseconds& updateLocatorListInterval) {
-    m_updateLocatorListInterval = updateLocatorListInterval;
-  }
+      const std::chrono::milliseconds& updateLocatorListInterval);
 
-  const std::chrono::milliseconds& getStatisticInterval() const {
-    return m_statsInterval;
-  }
+  const std::chrono::milliseconds& getStatisticInterval() const;
 
-  void setStatisticInterval(
-      const std::chrono::milliseconds& statisticInterval) {
-    m_statsInterval = statisticInterval;
-  }
+  void setStatisticInterval(const std::chrono::milliseconds& statisticInterval);
 
-  const std::string& getServerGroup() const { return m_serverGrp; }
+  const std::string& getServerGroup() const;
 
-  void setServerGroup(std::string group) { m_serverGrp = group; }
+  void setServerGroup(std::string group);
 
-  bool getSubscriptionEnabled() const { return m_subsEnabled; }
+  bool getSubscriptionEnabled() const;
 
-  void setSubscriptionEnabled(bool enabled) { m_subsEnabled = enabled; }
+  void setSubscriptionEnabled(bool enabled);
 
-  int getSubscriptionRedundancy() const { return m_redundancy; }
+  int getSubscriptionRedundancy() const;
 
-  void setSubscriptionRedundancy(int redundancy) { m_redundancy = redundancy; }
+  void setSubscriptionRedundancy(int redundancy);
 
   const std::chrono::milliseconds& getSubscriptionMessageTrackingTimeout()
-      const {
-    return m_msgTrackTimeout;
-  }
+      const;
 
   void setSubscriptionMessageTrackingTimeout(
-      const std::chrono::milliseconds& messageTrackingTimeout) {
-    m_msgTrackTimeout = messageTrackingTimeout;
-  }
+      const std::chrono::milliseconds& messageTrackingTimeout);
 
-  const std::chrono::milliseconds& getSubscriptionAckInterval() const {
-    return m_subsAckInterval;
-  }
+  const std::chrono::milliseconds& getSubscriptionAckInterval() const;
 
-  void setSubscriptionAckInterval(
-      const std::chrono::milliseconds& ackInterval) {
-    m_subsAckInterval = ackInterval;
-  }
+  void setSubscriptionAckInterval(const std::chrono::milliseconds& ackInterval);
 
-  bool getPRSingleHopEnabled() const { return m_isPRSingleHopEnabled; }
+  bool getPRSingleHopEnabled() const;
 
-  void setPRSingleHopEnabled(bool enabled) { m_isPRSingleHopEnabled = enabled; }
+  void setPRSingleHopEnabled(bool enabled);
 
-  bool getMultiuserSecureModeEnabled() const { return m_multiuserSecurityMode; }
+  bool getMultiuserSecureModeEnabled() const;
 
-  void setMultiuserSecureModeEnabled(bool multiuserSecureMode) {
-    m_multiuserSecurityMode = multiuserSecureMode;
-  }
+  void setMultiuserSecureModeEnabled(bool multiuserSecureMode);
 
   void addLocator(const std::string& host, int port);
 

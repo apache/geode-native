@@ -39,7 +39,7 @@ class PoolFactory;
 
 class PoolManagerImpl {
  public:
-  explicit PoolManagerImpl(CacheImpl* cache) : m_cache(cache) {}
+  explicit PoolManagerImpl(CacheImpl* cache);
   PoolManagerImpl(const PoolManagerImpl& copy) = default;
   ~PoolManagerImpl() = default;
 

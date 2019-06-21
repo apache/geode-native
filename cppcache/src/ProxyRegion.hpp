@@ -53,94 +53,39 @@ class FunctionService;
  */
 class APACHE_GEODE_EXPORT ProxyRegion final : public Region {
  public:
-  const std::string& getName() const final { return m_realRegion->getName(); }
+  const std::string& getName() const;
 
-  const std::string& getFullPath() const final {
-    return m_realRegion->getFullPath();
-  }
+  const std::string& getFullPath() const;
 
-  std::shared_ptr<Region> getParentRegion() const final {
-    return m_realRegion->getParentRegion();
-  }
+  std::shared_ptr<Region> getParentRegion() const;
 
-  const RegionAttributes& getAttributes() const final {
-    return m_realRegion->getAttributes();
-  }
+  const RegionAttributes& getAttributes() const;
 
-  std::shared_ptr<AttributesMutator> getAttributesMutator() const final {
-    throw UnsupportedOperationException("Region.getAttributesMutator()");
-  }
+  std::shared_ptr<AttributesMutator> getAttributesMutator() const;
 
-  std::shared_ptr<CacheStatistics> getStatistics() const final {
-    return m_realRegion->getStatistics();
-  }
+  std::shared_ptr<CacheStatistics> getStatistics() const;
 
-  void invalidateRegion(const std::shared_ptr<Serializable>&) final {
-    throw UnsupportedOperationException("Region.invalidateRegion()");
-  }
+  void invalidateRegion(const std::shared_ptr<Serializable>&);
 
-  void localInvalidateRegion(const std::shared_ptr<Serializable>&) final {
-    throw UnsupportedOperationException("Region.localInvalidateRegion()");
-  }
+  void localInvalidateRegion(const std::shared_ptr<Serializable>&);
 
   void destroyRegion(
-      const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) final {
-    GuardUserAttributes gua(m_authenticatedView);
-    m_realRegion->destroyRegion(aCallbackArgument);
-  }
+      const std::shared_ptr<Serializable>& aCallbackArgument = nullptr);
 
-  void clear(
-      const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) final {
-    GuardUserAttributes gua(m_authenticatedView);
-    m_realRegion->clear(aCallbackArgument);
-  }
+  void clear(const std::shared_ptr<Serializable>& aCallbackArgument = nullptr);
 
-  void localClear(const std::shared_ptr<Serializable>&) final {
-    throw UnsupportedOperationException("localClear()");
-  }
+  void localClear(const std::shared_ptr<Serializable>&);
 
-  void localDestroyRegion(const std::shared_ptr<Serializable>&) final {
-    throw UnsupportedOperationException("Region.localDestroyRegion()");
-  }
+  void localDestroyRegion(const std::shared_ptr<Serializable>&);
 
-  std::shared_ptr<Region> getSubregion(const std::string& path) final {
-    LOGDEBUG("ProxyRegion getSubregion");
-    auto rPtr = std::static_pointer_cast<RegionInternal>(
-        m_realRegion->getSubregion(path));
+  std::shared_ptr<Region> getSubregion(const std::string& path);
 
-    if (rPtr == nullptr) {
-      return std::move(rPtr);
-    }
+  std::shared_ptr<Region> createSubregion(const std::string&, RegionAttributes);
 
-    return std::make_shared<ProxyRegion>(*m_authenticatedView, rPtr);
-  }
-
-  std::shared_ptr<Region> createSubregion(const std::string&,
-                                          RegionAttributes) final {
-    throw UnsupportedOperationException("createSubregion()");
-  }
-
-  std::vector<std::shared_ptr<Region>> subregions(const bool recursive) final {
-    std::vector<std::shared_ptr<Region>> realVectorRegion =
-        m_realRegion->subregions(recursive);
-    std::vector<std::shared_ptr<Region>> proxyRegions(realVectorRegion.size());
-
-    std::transform(realVectorRegion.begin(), realVectorRegion.end(),
-                   std::back_inserter(proxyRegions),
-                   [this](const std::shared_ptr<Region>& realRegion)
-                       -> std::shared_ptr<ProxyRegion> {
-                     return std::make_shared<ProxyRegion>(
-                         *m_authenticatedView,
-                         std::static_pointer_cast<RegionInternal>(realRegion));
-                   });
-
-    return proxyRegions;
-  }
+  std::vector<std::shared_ptr<Region>> subregions(const bool recursive);
 
   std::shared_ptr<RegionEntry> getEntry(
-      const std::shared_ptr<CacheableKey>& key) final {
-    return m_realRegion->getEntry(key);
-  }
+      const std::shared_ptr<CacheableKey>& key);
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
@@ -150,10 +95,7 @@ class APACHE_GEODE_EXPORT ProxyRegion final : public Region {
 
   std::shared_ptr<Cacheable> get(
       const std::shared_ptr<CacheableKey>& key,
-      const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) final {
-    GuardUserAttributes gua(m_authenticatedView);
-    return m_realRegion->get(key, aCallbackArgument);
-  }
+      const std::shared_ptr<Serializable>& aCallbackArgument = nullptr);
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
@@ -163,13 +105,9 @@ class APACHE_GEODE_EXPORT ProxyRegion final : public Region {
     return get(CacheableKey::create(key), callbackArg);
   }
 
-  void put(
-      const std::shared_ptr<CacheableKey>& key,
-      const std::shared_ptr<Cacheable>& value,
-      const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) final {
-    GuardUserAttributes gua(m_authenticatedView);
-    return m_realRegion->put(key, value, aCallbackArgument);
-  }
+  void put(const std::shared_ptr<CacheableKey>& key,
+           const std::shared_ptr<Cacheable>& value,
+           const std::shared_ptr<Serializable>& aCallbackArgument = nullptr);
 
   /** Convenience method allowing both key and value to be a const char* */
   template <class KEYTYPE, class VALUETYPE>
@@ -193,19 +131,13 @@ class APACHE_GEODE_EXPORT ProxyRegion final : public Region {
     put(key, Serializable::create(value), arg);
   }
 
-  void putAll(
-      const HashMapOfCacheable& map,
-      std::chrono::milliseconds timeout = DEFAULT_RESPONSE_TIMEOUT,
-      const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) final {
-    GuardUserAttributes gua(m_authenticatedView);
-    return m_realRegion->putAll(map, timeout, aCallbackArgument);
-  }
+  void putAll(const HashMapOfCacheable& map,
+              std::chrono::milliseconds timeout = DEFAULT_RESPONSE_TIMEOUT,
+              const std::shared_ptr<Serializable>& aCallbackArgument = nullptr);
 
   void localPut(const std::shared_ptr<CacheableKey>&,
                 const std::shared_ptr<Cacheable>&,
-                const std::shared_ptr<Serializable>&) final {
-    throw UnsupportedOperationException("Region.localPut()");
-  }
+                const std::shared_ptr<Serializable>&);
 
   /** Convenience method allowing both key and value to be a const char* */
   template <class KEYTYPE, class VALUETYPE>
@@ -230,13 +162,9 @@ class APACHE_GEODE_EXPORT ProxyRegion final : public Region {
     localPut(key, Serializable::create(value), arg);
   }
 
-  void create(
-      const std::shared_ptr<CacheableKey>& key,
-      const std::shared_ptr<Cacheable>& value,
-      const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) final {
-    GuardUserAttributes gua(m_authenticatedView);
-    m_realRegion->create(key, value, aCallbackArgument);
-  }
+  void create(const std::shared_ptr<CacheableKey>& key,
+              const std::shared_ptr<Cacheable>& value,
+              const std::shared_ptr<Serializable>& aCallbackArgument = nullptr);
 
   /** Convenience method allowing both key and value to be a const char* */
   template <class KEYTYPE, class VALUETYPE>
@@ -263,9 +191,7 @@ class APACHE_GEODE_EXPORT ProxyRegion final : public Region {
 
   void localCreate(const std::shared_ptr<CacheableKey>&,
                    const std::shared_ptr<Cacheable>&,
-                   const std::shared_ptr<Serializable>&) final {
-    throw UnsupportedOperationException("Region.localCreate()");
-  }
+                   const std::shared_ptr<Serializable>&);
 
   /** Convenience method allowing both key and value to be a const char* */
   template <class KEYTYPE, class VALUETYPE>
@@ -292,10 +218,7 @@ class APACHE_GEODE_EXPORT ProxyRegion final : public Region {
 
   void invalidate(
       const std::shared_ptr<CacheableKey>& key,
-      const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) final {
-    GuardUserAttributes gua(m_authenticatedView);
-    m_realRegion->invalidate(key, aCallbackArgument);
-  }
+      const std::shared_ptr<Serializable>& aCallbackArgument = nullptr);
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
@@ -305,9 +228,7 @@ class APACHE_GEODE_EXPORT ProxyRegion final : public Region {
   }
 
   void localInvalidate(const std::shared_ptr<CacheableKey>&,
-                       const std::shared_ptr<Serializable>&) final {
-    throw UnsupportedOperationException("Region.localInvalidate()");
-  }
+                       const std::shared_ptr<Serializable>&);
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
@@ -318,10 +239,7 @@ class APACHE_GEODE_EXPORT ProxyRegion final : public Region {
 
   void destroy(
       const std::shared_ptr<CacheableKey>& key,
-      const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) final {
-    GuardUserAttributes gua(m_authenticatedView);
-    m_realRegion->destroy(key, aCallbackArgument);
-  }
+      const std::shared_ptr<Serializable>& aCallbackArgument = nullptr);
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
@@ -331,9 +249,7 @@ class APACHE_GEODE_EXPORT ProxyRegion final : public Region {
   }
 
   void localDestroy(const std::shared_ptr<CacheableKey>&,
-                    const std::shared_ptr<Serializable>&) final {
-    throw UnsupportedOperationException("Region.localDestroy()");
-  }
+                    const std::shared_ptr<Serializable>&);
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
@@ -342,13 +258,9 @@ class APACHE_GEODE_EXPORT ProxyRegion final : public Region {
     localDestroy(CacheableKey::create(key), arg);
   }
 
-  bool remove(
-      const std::shared_ptr<CacheableKey>& key,
-      const std::shared_ptr<Cacheable>& value,
-      const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) final {
-    GuardUserAttributes gua(m_authenticatedView);
-    return m_realRegion->remove(key, value, aCallbackArgument);
-  }
+  bool remove(const std::shared_ptr<CacheableKey>& key,
+              const std::shared_ptr<Cacheable>& value,
+              const std::shared_ptr<Serializable>& aCallbackArgument = nullptr);
 
   /** Convenience method allowing both key and value to be a const char* */
   template <class KEYTYPE, class VALUETYPE>
@@ -375,10 +287,7 @@ class APACHE_GEODE_EXPORT ProxyRegion final : public Region {
 
   bool removeEx(
       const std::shared_ptr<CacheableKey>& key,
-      const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) final {
-    GuardUserAttributes gua(m_authenticatedView);
-    return m_realRegion->removeEx(key, aCallbackArgument);
-  }
+      const std::shared_ptr<Serializable>& aCallbackArgument = nullptr);
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
@@ -389,9 +298,7 @@ class APACHE_GEODE_EXPORT ProxyRegion final : public Region {
 
   bool localRemove(const std::shared_ptr<CacheableKey>&,
                    const std::shared_ptr<Cacheable>&,
-                   const std::shared_ptr<Serializable>&) final {
-    throw UnsupportedOperationException("Region.localRemove()");
-  }
+                   const std::shared_ptr<Serializable>&);
 
   /** Convenience method allowing both key and value to be a const char* */
   template <class KEYTYPE, class VALUETYPE>
@@ -418,9 +325,7 @@ class APACHE_GEODE_EXPORT ProxyRegion final : public Region {
   }
 
   bool localRemoveEx(const std::shared_ptr<CacheableKey>&,
-                     const std::shared_ptr<Serializable>&) final {
-    throw UnsupportedOperationException("Region.localRemoveEx()");
-  }
+                     const std::shared_ptr<Serializable>&);
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
@@ -433,30 +338,19 @@ class APACHE_GEODE_EXPORT ProxyRegion final : public Region {
    * Return all the keys in the local process for this region. This includes
    * keys for which the entry is invalid.
    */
-  std::vector<std::shared_ptr<CacheableKey>> keys() final {
-    throw UnsupportedOperationException("Region.keys()");
-  }
+  std::vector<std::shared_ptr<CacheableKey>> keys();
 
-  std::vector<std::shared_ptr<CacheableKey>> serverKeys() final {
-    GuardUserAttributes gua(m_authenticatedView);
-    return m_realRegion->serverKeys();
-  }
+  std::vector<std::shared_ptr<CacheableKey>> serverKeys();
 
-  std::vector<std::shared_ptr<Cacheable>> values() final {
-    throw UnsupportedOperationException("Region.values()");
-  }
+  std::vector<std::shared_ptr<Cacheable>> values();
 
-  std::vector<std::shared_ptr<RegionEntry>> entries(bool) final {
-    throw UnsupportedOperationException("Region.entries()");
-  }
+  std::vector<std::shared_ptr<RegionEntry>> entries(bool);
 
-  RegionService& getRegionService() const final { return *m_authenticatedView; }
+  RegionService& getRegionService() const;
 
-  bool isDestroyed() const final { return m_realRegion->isDestroyed(); }
+  bool isDestroyed() const;
 
-  bool containsValueForKey(const std::shared_ptr<CacheableKey>&) const final {
-    throw UnsupportedOperationException("Region.containsValueForKey()");
-  }
+  bool containsValueForKey(const std::shared_ptr<CacheableKey>&) const;
 
   /**
    * Convenience method allowing key to be a const char*
@@ -469,24 +363,13 @@ class APACHE_GEODE_EXPORT ProxyRegion final : public Region {
     return containsValueForKey(CacheableKey::create(key));
   }
 
-  bool containsKey(const std::shared_ptr<CacheableKey>&) const final {
-    throw UnsupportedOperationException("Region.containsKey()");
-  }
+  bool containsKey(const std::shared_ptr<CacheableKey>&) const;
 
-  bool containsKeyOnServer(
-      const std::shared_ptr<CacheableKey>& keyPtr) const final {
-    GuardUserAttributes gua(m_authenticatedView);
-    return m_realRegion->containsKeyOnServer(keyPtr);
-  }
+  bool containsKeyOnServer(const std::shared_ptr<CacheableKey>& keyPtr) const;
 
-  std::vector<std::shared_ptr<CacheableKey>> getInterestList() const final {
-    throw UnsupportedOperationException("Region.getInterestList()");
-  }
+  std::vector<std::shared_ptr<CacheableKey>> getInterestList() const;
 
-  std::vector<std::shared_ptr<CacheableString>> getInterestListRegex()
-      const final {
-    throw UnsupportedOperationException("Region.getInterestListRegex()");
-  }
+  std::vector<std::shared_ptr<CacheableString>> getInterestListRegex() const;
 
   /**
    * Convenience method allowing key to be a const char*
@@ -500,79 +383,46 @@ class APACHE_GEODE_EXPORT ProxyRegion final : public Region {
   }
 
   void registerKeys(const std::vector<std::shared_ptr<CacheableKey>>&, bool,
-                    bool, bool) final {
-    throw UnsupportedOperationException("Region.registerKeys()");
-  }
+                    bool, bool);
 
-  void unregisterKeys(const std::vector<std::shared_ptr<CacheableKey>>&) final {
-    throw UnsupportedOperationException("Region.unregisterKeys()");
-  }
+  void unregisterKeys(const std::vector<std::shared_ptr<CacheableKey>>&);
 
-  void registerAllKeys(bool, bool, bool) final {
-    throw UnsupportedOperationException("Region.registerAllKeys()");
-  }
+  void registerAllKeys(bool, bool, bool);
 
-  void unregisterAllKeys() final {
-    throw UnsupportedOperationException("Region.unregisterAllKeys()");
-  }
+  void unregisterAllKeys();
 
-  void registerRegex(const std::string&, bool, bool, bool) final {
-    throw UnsupportedOperationException("Region.registerRegex()");
-  }
+  void registerRegex(const std::string&, bool, bool, bool);
 
-  void unregisterRegex(const std::string&) final {
-    throw UnsupportedOperationException("Region.unregisterRegex()");
-  }
+  void unregisterRegex(const std::string&);
 
   HashMapOfCacheable getAll(
       const std::vector<std::shared_ptr<CacheableKey>>& keys,
-      const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) final {
-    GuardUserAttributes gua(m_authenticatedView);
-    return m_realRegion->getAll_internal(keys, aCallbackArgument, false);
-  }
+      const std::shared_ptr<Serializable>& aCallbackArgument = nullptr);
 
   std::shared_ptr<SelectResults> query(
-      const std::string& predicate, std::chrono::milliseconds timeout =
-                                        DEFAULT_QUERY_RESPONSE_TIMEOUT) final {
-    GuardUserAttributes gua(m_authenticatedView);
-    return m_realRegion->query(predicate, timeout);
-  }
+      const std::string& predicate,
+      std::chrono::milliseconds timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
 
-  bool existsValue(const std::string& predicate,
-                   std::chrono::milliseconds timeout =
-                       DEFAULT_QUERY_RESPONSE_TIMEOUT) final {
-    GuardUserAttributes gua(m_authenticatedView);
-    return m_realRegion->existsValue(predicate, timeout);
-  }
+  bool existsValue(
+      const std::string& predicate,
+      std::chrono::milliseconds timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
 
   std::shared_ptr<Serializable> selectValue(
-      const std::string& predicate, std::chrono::milliseconds timeout =
-                                        DEFAULT_QUERY_RESPONSE_TIMEOUT) final {
-    GuardUserAttributes gua(m_authenticatedView);
-    return m_realRegion->selectValue(predicate, timeout);
-  }
+      const std::string& predicate,
+      std::chrono::milliseconds timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
 
   void removeAll(
       const std::vector<std::shared_ptr<CacheableKey>>& keys,
-      const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) final {
-    GuardUserAttributes gua(m_authenticatedView);
-    m_realRegion->removeAll(keys, aCallbackArgument);
-  }
+      const std::shared_ptr<Serializable>& aCallbackArgument = nullptr);
 
-  uint32_t size() final { return m_realRegion->size(); }
+  uint32_t size();
 
-  const std::shared_ptr<Pool>& getPool() const final {
-    return m_realRegion->getPool();
-  }
+  const std::shared_ptr<Pool>& getPool() const;
 
   ProxyRegion(AuthenticatedView& authenticatedView,
-              const std::shared_ptr<RegionInternal>& realRegion)
-      : Region(authenticatedView.m_cacheImpl) {
-    m_authenticatedView = &authenticatedView;
-    m_realRegion = realRegion;
-  }
+              const std::shared_ptr<RegionInternal>& realRegion);
 
-  ~ProxyRegion() final = default;
+  ~ProxyRegion() = default;
 
   ProxyRegion(const ProxyRegion&) = delete;
   ProxyRegion& operator=(const ProxyRegion&) = delete;

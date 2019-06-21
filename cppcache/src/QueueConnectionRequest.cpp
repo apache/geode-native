@@ -65,6 +65,17 @@ void QueueConnectionRequest::writeSetOfServerLocation(
   }
 }
 
+QueueConnectionRequest::QueueConnectionRequest(
+    const ClientProxyMembershipID& memId,
+    const std::set<ServerLocation>& excludedServers, int redundantCopies,
+    bool findDurable, std::string serverGp)
+    : ServerLocationRequest(),
+      m_membershipID(memId),
+      m_excludedServers(excludedServers),
+      m_redundantCopies(redundantCopies),
+      m_findDurable(findDurable),
+      m_serverGp(serverGp) {}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

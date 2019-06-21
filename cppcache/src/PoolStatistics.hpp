@@ -46,96 +46,62 @@ class PoolStats {
   /** disable stat collection for this item. */
   virtual ~PoolStats();
 
-  void close() { getStats()->close(); }
+  void close();
 
-  void setLocators(int32_t curVal) { getStats()->setInt(m_locatorsId, curVal); }
+  void setLocators(int32_t curVal);
 
-  void setServers(int32_t curVal) { getStats()->setInt(m_serversId, curVal); }
+  void setServers(int32_t curVal);
 
-  void setSubsServers(int32_t curVal) {
-    getStats()->setInt(m_subsServsId, curVal);
-  }
+  void setSubsServers(int32_t curVal);
 
-  void incLoctorRequests() { getStats()->incLong(m_locReqsId, 1); }
+  void incLoctorRequests();
 
-  void incLoctorResposes() { getStats()->incLong(m_locRespsId, 1); }
+  void incLoctorResposes();
 
-  void setCurPoolConnections(int32_t curVal) {
-    getStats()->setInt(m_poolConnsId, curVal);
-  }
+  void setCurPoolConnections(int32_t curVal);
 
-  void incPoolConnects() { getStats()->incInt(m_connectsId, 1); }
+  void incPoolConnects();
 
-  void incPoolDisconnects() { getStats()->incInt(m_disconnectsId, 1); }
+  void incPoolDisconnects();
 
-  void incPoolDisconnects(int numConn) {
-    getStats()->incInt(m_disconnectsId, numConn);
-  }
+  void incPoolDisconnects(int numConn);
 
-  void incMinPoolSizeConnects() { getStats()->incInt(m_minPoolConnectsId, 1); }
+  void incMinPoolSizeConnects();
 
-  void incLoadCondConnects() { getStats()->incInt(m_loadCondConnectsId, 1); }
+  void incLoadCondConnects();
 
-  void incIdleDisconnects() { getStats()->incInt(m_idleDisconnectsId, 1); }
+  void incIdleDisconnects();
 
-  void incLoadCondDisconnects() {
-    getStats()->incInt(m_loadCondDisconnectsId, 1);
-  }
+  void incLoadCondDisconnects();
 
-  void setCurWaitingConnections(int32_t curVal) {
-    getStats()->setInt(m_waitingConnectionsId, curVal);
-  }
+  void setCurWaitingConnections(int32_t curVal);
 
-  void incWaitingConnections() { getStats()->incInt(m_totalWaitingConnsId, 1); }
+  void incWaitingConnections();
 
-  void setCurClientOps(int32_t curVal) {
-    getStats()->setInt(m_curClientOpsId, curVal);
-  }
+  void setCurClientOps(int32_t curVal);
 
-  void incSucceedClientOps() { getStats()->incInt(m_clientOpsSuccessId, 1); }
+  void incSucceedClientOps();
 
-  void incFailedClientOps() { getStats()->incInt(m_clientOpsFailedId, 1); }
+  void incFailedClientOps();
 
-  void incTimeoutClientOps() { getStats()->incInt(m_clientOpsTimeoutId, 1); }
+  void incTimeoutClientOps();
 
-  void incReceivedBytes(int64_t value) {  // counter
-    getStats()->incLong(m_receivedBytesId, value);
-  }
+  void incReceivedBytes(int64_t value);
 
-  void incMessageBeingReceived() {  // counter
-    getStats()->incLong(m_messagesBeingReceivedId, 1);
-  }
+  void incMessageBeingReceived();
 
-  void incProcessedDeltaMessages() {  // counter
-    getStats()->incLong(m_processedDeltaMessagesId, 1);
-  }
-  void incDeltaMessageFailures() {  // counter
-    getStats()->incLong(m_deltaMessageFailuresId, 1);
-  }
-  void incProcessedDeltaMessagesTime(int64_t value) {  // counter
-    getStats()->incLong(m_processedDeltaMessagesTimeId, value);
-  }
+  void incProcessedDeltaMessages();
+  void incDeltaMessageFailures();
+  void incProcessedDeltaMessagesTime(int64_t value);
 
-  void incTotalWaitingConnTime(int64_t value) {  // counter
-    getStats()->incLong(m_totalWaitingConnTimeId, value);
-  }
-  void incClientOpsSuccessTime(int64_t value) {  // counter
-    getStats()->incLong(m_clientOpsSuccessTimeId, value);
-  }
-  void incQueryExecutionId() {  // counter
-    getStats()->incInt(m_queryExecutionsId, 1);
-  }
-  void incQueryExecutionTimeId(int64_t value) {  // counter
-    getStats()->incLong(m_queryExecutionTimeId, value);
-  }
-  inline apache::geode::statistics::Statistics* getStats() {
-    return m_poolStats;
-  }
-  inline int32_t getTotalWaitingConnTimeId() {
-    return m_totalWaitingConnTimeId;
-  }
+  void incTotalWaitingConnTime(int64_t value);
+  void incClientOpsSuccessTime(int64_t value);
+  void incQueryExecutionId();
+  void incQueryExecutionTimeId(int64_t value);
+  apache::geode::statistics::Statistics* getStats();
+  int32_t getTotalWaitingConnTimeId();
 
-  inline int32_t getQueryExecutionTimeId() { return m_queryExecutionTimeId; }
+  int32_t getQueryExecutionTimeId();
 
  private:
   // volatile apache::geode::statistics::Statistics* m_poolStats;
