@@ -523,6 +523,66 @@ GfErrType TcrConnectionManager::sendSyncRequestRegisterInterest(
   return m_redundancyManager->sendSyncRequestRegisterInterest(
       request, reply, attemptFailover, endpoint, theHADM, region);
 }
+
+void TcrConnectionManager::setClientCrashTEST() {
+  TEST_DURABLE_CLIENT_CRASH = true;
+}
+
+synchronized_map<std::unordered_map<std::string, TcrEndpoint *>,
+                 std::recursive_mutex>
+    &TcrConnectionManager::getGlobalEndpoints() {
+  return m_endpoints;
+}
+
+void TcrConnectionManager::addPoolEndpoints(TcrEndpoint *endpoint) {
+  m_poolEndpointList.push_back(endpoint);
+}
+
+bool TcrConnectionManager::isDurable() { return m_isDurable; }
+
+bool TcrConnectionManager::haEnabled() {
+  return m_redundancyManager->m_HAenabled;
+}
+
+CacheImpl *TcrConnectionManager::getCacheImpl() const { return m_cache; }
+
+void TcrConnectionManager::triggerRedundancyThread() {
+  m_redundancySema.release();
+}
+
+void TcrConnectionManager::acquireRedundancyLock() {
+  m_redundancyManager->acquireRedundancyLock();
+  m_distMngrsLock.lock();
+}
+
+void TcrConnectionManager::releaseRedundancyLock() {
+  m_redundancyManager->releaseRedundancyLock();
+  m_distMngrsLock.unlock();
+}
+
+bool TcrConnectionManager::checkDupAndAdd(std::shared_ptr<EventId> eventid) {
+  return m_redundancyManager->checkDupAndAdd(eventid);
+}
+
+std::recursive_mutex &TcrConnectionManager::getRedundancyLock() {
+  return m_redundancyManager->getRedundancyLock();
+}
+
+GfErrType TcrConnectionManager::sendRequestToPrimary(TcrMessage &request,
+                                                     TcrMessageReply &reply) {
+  return m_redundancyManager->sendRequestToPrimary(request, reply);
+}
+
+bool TcrConnectionManager::isNetDown() const { return m_isNetDown; }
+
+DistManagersLockGuard::DistManagersLockGuard(TcrConnectionManager &tccm)
+    : m_tccm(tccm) {
+  m_tccm.m_distMngrsLock.lock();
+}
+
+DistManagersLockGuard::~DistManagersLockGuard() {
+  m_tccm.m_distMngrsLock.unlock();
+}
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

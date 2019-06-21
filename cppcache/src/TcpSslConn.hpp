@@ -73,7 +73,7 @@ class TcpSslConn : public TcpConn {
 
   // TODO:  Watch out for virt dtor calling virt methods!
 
-  virtual ~TcpSslConn() override {}
+  virtual ~TcpSslConn() override = default;
 
   // Close this tcp connection
   void close() override;
@@ -85,14 +85,7 @@ class TcpSslConn : public TcpConn {
   // connect
   void connect() override;
 
-  void setOption(int32_t level, int32_t option, void* val,
-                 size_t len) override {
-    if (m_ssl->setOption(level, option, val, static_cast<int32_t>(len)) == -1) {
-      int32_t lastError = ACE_OS::last_error();
-      LOGERROR("Failed to set option, errno: %d: %s", lastError,
-               ACE_OS::strerror(lastError));
-    }
-  }
+  void setOption(int32_t level, int32_t option, void* val, size_t len) override;
 
   uint16_t getPort() override;
 };

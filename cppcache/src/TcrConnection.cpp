@@ -1447,6 +1447,65 @@ bool TcrConnection::setAndGetBeingUsed(volatile bool isBeingUsed,
   }
 }
 
+TcrConnection::TcrConnection(const TcrConnectionManager& connectionManager,
+                             volatile const bool& isConnected)
+    : connectionId(0),
+      m_connectionManager(&connectionManager),
+      m_dh(nullptr),
+      m_endpoint(nullptr),
+      m_endpointObj(nullptr),
+      m_connected(isConnected),
+      m_conn(nullptr),
+      m_hasServerQueue(NON_REDUNDANT_SERVER),
+      m_queueSize(0),
+      m_port(0),
+      m_chunksProcessSema(0),
+      m_isBeingUsed(false),
+      m_isUsed(0),
+      m_poolDM(nullptr) {}
+
+ServerQueueStatus TcrConnection::getServerQueueStatus(int32_t& queueSize) {
+  queueSize = m_queueSize;
+  return m_hasServerQueue;
+}
+
+uint16_t TcrConnection::getPort() { return m_port; }
+
+TcrEndpoint* TcrConnection::getEndpointObject() const { return m_endpointObj; }
+
+bool TcrConnection::isBeingUsed() { return m_isBeingUsed; }
+
+int64_t TcrConnection::getConnectionId() {
+  LOGDEBUG("TcrConnection::getConnectionId() = %d ", connectionId);
+  return connectionId;
+}
+
+void TcrConnection::setConnectionId(int64_t id) {
+  LOGDEBUG("Tcrconnection:setConnectionId() = %d ", id);
+  connectionId = id;
+}
+
+const TcrConnectionManager& TcrConnection::getConnectionManager() {
+  return *m_connectionManager;
+}
+
+std::shared_ptr<CacheableBytes> TcrConnection::encryptBytes(
+    std::shared_ptr<CacheableBytes> data) {
+  if (m_dh != nullptr) {
+    return m_dh->encrypt(data);
+  } else {
+    return data;
+  }
+}
+
+std::shared_ptr<CacheableBytes> TcrConnection::decryptBytes(
+    std::shared_ptr<CacheableBytes> data) {
+  if (m_dh != nullptr) {
+    return m_dh->decrypt(data);
+  } else {
+    return data;
+  }
+}
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

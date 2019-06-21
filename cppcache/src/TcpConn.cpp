@@ -327,6 +327,36 @@ uint16_t TcpConn::getPort() {
   return localAddr.get_port_number();
 }
 
+size_t TcpConn::getDefaultChunkSize() {
+  // Attempt to set chunk size to nearest OS page size
+  // for perf improvement
+  auto pageSize = boost::interprocess::mapped_region::get_page_size();
+  if (pageSize > 16000000) {
+    return 16000000;
+  } else if (pageSize > 0) {
+    return pageSize + (16000000 / pageSize) * pageSize;
+  }
+
+  return 16000000;
+}
+
+TcpConn::~TcpConn() { close(); }
+
+void TcpConn::setOption(int32_t level, int32_t option, void *val, size_t len) {
+  if (m_io->set_option(level, option, val, static_cast<int32_t>(len)) == -1) {
+    int32_t lastError = ACE_OS::last_error();
+    LOGERROR("Failed to set option, errno: %d: %s", lastError,
+             ACE_OS::strerror(lastError));
+  }
+}
+
+void TcpConn::setIntOption(int32_t level, int32_t option, int32_t val) {
+  setOption(level, option, &val, sizeof(int32_t));
+}
+
+void TcpConn::setBoolOption(int32_t level, int32_t option, bool val) {
+  setOption(level, option, &val, sizeof(bool));
+}
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

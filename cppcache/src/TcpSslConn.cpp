@@ -190,6 +190,14 @@ uint16_t TcpSslConn::getPort() {
   return localAddr.get_port_number();
 }
 
+void TcpSslConn::setOption(int32_t level, int32_t option, void* val,
+                           size_t len) {
+  if (m_ssl->setOption(level, option, val, static_cast<int32_t>(len)) == -1) {
+    int32_t lastError = ACE_OS::last_error();
+    LOGERROR("Failed to set option, errno: %d: %s", lastError,
+             ACE_OS::strerror(lastError));
+  }
+}
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
