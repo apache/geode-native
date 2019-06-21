@@ -30,18 +30,15 @@ class TXState;
 
 class TSSTXStateWrapper {
  public:
-  inline TSSTXStateWrapper() : m_txState(nullptr){};
+  TSSTXStateWrapper();
 
   ~TSSTXStateWrapper() noexcept;
 
-  inline static TSSTXStateWrapper& get() {
-    static thread_local TSSTXStateWrapper instance;
-    return instance;
-  }
+  static TSSTXStateWrapper& get();
 
-  inline TXState* getTXState() { return m_txState; }
+  TXState* getTXState();
 
-  inline void setTXState(TXState* conn) { m_txState = conn; }
+  void setTXState(TXState* conn);
 
  private:
   TXState* m_txState;

@@ -218,6 +218,9 @@ void ThinClientStickyManager::getAnyConnection(TcrConnection*& conn) {
              ->getAnyConnection(m_dm->getName().c_str());
 }
 
+ThinClientStickyManager::ThinClientStickyManager(ThinClientPoolDM* poolDM)
+    : m_dm(poolDM) {}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

@@ -86,7 +86,7 @@ int TombstoneExpiryHandler::handle_close(ACE_HANDLE, ACE_Reactor_Mask) {
   return 0;
 }
 
-inline void TombstoneExpiryHandler::DoTheExpirationAction(
+void TombstoneExpiryHandler::DoTheExpirationAction(
     const std::shared_ptr<CacheableKey>& key) {
   LOGDEBUG(
       "EntryExpiryHandler::DoTheExpirationAction LOCAL_DESTROY "
@@ -95,6 +95,10 @@ inline void TombstoneExpiryHandler::DoTheExpirationAction(
   m_tombstoneList->removeEntryFromMapSegment(key);
 }
 
+void TombstoneExpiryHandler::setTombstoneEntry(
+    std::shared_ptr<TombstoneEntry> entryPtr) {
+  m_entryPtr = entryPtr;
+}
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

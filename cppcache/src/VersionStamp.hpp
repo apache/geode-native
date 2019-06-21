@@ -36,36 +36,18 @@ namespace client {
  */
 class APACHE_GEODE_EXPORT VersionStamp {
  public:
-  VersionStamp()
-      : m_memberID(0),
-        m_entryVersionHighByte(0),
-        m_entryVersionLowBytes(0),
-        m_regionVersionHighBytes(0),
-        m_regionVersionLowBytes(0) {}
+  VersionStamp();
 
-  VersionStamp(const VersionStamp& rhs)
-      : m_memberID(rhs.m_memberID),
-        m_entryVersionHighByte(rhs.m_entryVersionHighByte),
-        m_entryVersionLowBytes(rhs.m_entryVersionLowBytes),
-        m_regionVersionHighBytes(rhs.m_regionVersionHighBytes),
-        m_regionVersionLowBytes(rhs.m_regionVersionLowBytes) {}
+  VersionStamp(const VersionStamp& rhs);
 
-  virtual ~VersionStamp() {}
+  virtual ~VersionStamp() = default;
   void setVersions(std::shared_ptr<VersionTag> versionTag);
   void setVersions(VersionStamp& versionStamp);
   int32_t getEntryVersion() const;
   int64_t getRegionVersion() const;
   uint16_t getMemberId() const;
 
-  VersionStamp& operator=(const VersionStamp& rhs) {
-    if (this == &rhs) return *this;
-    this->m_memberID = rhs.m_memberID;
-    this->m_entryVersionHighByte = rhs.m_entryVersionHighByte;
-    this->m_entryVersionLowBytes = rhs.m_entryVersionLowBytes;
-    this->m_regionVersionHighBytes = rhs.m_regionVersionHighBytes;
-    this->m_regionVersionLowBytes = rhs.m_regionVersionLowBytes;
-    return *this;
-  }
+  VersionStamp& operator=(const VersionStamp& rhs);
   GfErrType processVersionTag(const RegionInternal* region,
                               const std::shared_ptr<CacheableKey>& keyPtr,
                               const std::shared_ptr<VersionTag>& tag,

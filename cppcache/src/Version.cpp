@@ -24,6 +24,7 @@ namespace client {
 
 int8_t Version::m_ordinal = 45;  // Geode 1.0.0
 
+int8_t Version::getOrdinal() { return Version::m_ordinal; }
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

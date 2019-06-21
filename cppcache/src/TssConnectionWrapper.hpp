@@ -65,14 +65,11 @@ class TssConnectionWrapper {
  public:
   // TODO shared_ptr - remove or refactor with global work
   static ACE_TSS<TssConnectionWrapper>* s_geodeTSSConn;
-  TcrConnection* getConnection() { return m_tcrConn; }
+  TcrConnection* getConnection();
   TcrConnection* getSHConnection(TcrEndpoint* ep, const char* poolname);
-  void setConnection(TcrConnection* conn, const std::shared_ptr<Pool>& pool) {
-    m_tcrConn = conn;
-    m_pool = pool;
-  }
+  void setConnection(TcrConnection* conn, const std::shared_ptr<Pool>& pool);
   void setSHConnection(TcrEndpoint* ep, TcrConnection* conn);
-  TcrConnection** getConnDoublePtr() { return &m_tcrConn; }
+  TcrConnection** getConnDoublePtr();
   TssConnectionWrapper();
   ~TssConnectionWrapper();
   void releaseSHConnections(std::shared_ptr<Pool> p);

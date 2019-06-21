@@ -180,6 +180,36 @@ void TombstoneList::cleanUp() {
   }
 }
 
+TombstoneEntry::TombstoneEntry(const std::shared_ptr<MapEntryImpl>& entry)
+    : m_entry(entry),
+      m_tombstoneCreationTime(TombstoneEntry::clock::now()),
+      m_expiryTaskId(0),
+      m_handler(nullptr) {}
+
+std::shared_ptr<MapEntryImpl> TombstoneEntry::getEntry() { return m_entry; }
+
+TombstoneEntry::time_point TombstoneEntry::getTombstoneCreationTime() {
+  return m_tombstoneCreationTime;
+}
+
+ExpiryTaskManager::id_type TombstoneEntry::getExpiryTaskId() {
+  return m_expiryTaskId;
+}
+
+void TombstoneEntry::setExpiryTaskId(ExpiryTaskManager::id_type expiryTaskId) {
+  m_expiryTaskId = expiryTaskId;
+}
+
+TombstoneExpiryHandler* TombstoneEntry::getHandler() { return m_handler; }
+
+void TombstoneEntry::setHandler(TombstoneExpiryHandler* handler) {
+  m_handler = handler;
+}
+
+TombstoneList::TombstoneList(MapSegment* mapSegment, CacheImpl* cacheImpl)
+    : m_mapSegment(mapSegment), m_cacheImpl(cacheImpl) {}
+
+TombstoneList::~TombstoneList() { cleanUp(); }
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

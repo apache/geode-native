@@ -95,6 +95,25 @@ void VersionTag::readMembers(uint16_t flags, DataInput& input) {
   }
 }
 
+DSFid VersionTag::getDSFID() const { return DSFid::VersionTag; }
+
+int32_t VersionTag::getEntryVersion() const { return m_entryVersion; }
+
+int16_t VersionTag::getRegionVersionHighBytes() const {
+  return m_regionVersionHighBytes;
+}
+
+int32_t VersionTag::getRegionVersionLowBytes() const {
+  return m_regionVersionLowBytes;
+}
+
+uint16_t VersionTag::getInternalMemID() const { return m_internalMemId; }
+
+uint16_t VersionTag::getPreviousMemID() const { return m_previousMemId; }
+
+void VersionTag::setInternalMemID(uint16_t internalMemId) {
+  m_internalMemId = internalMemId;
+}
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

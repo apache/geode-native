@@ -134,6 +134,50 @@ GuardUserAttributes::~GuardUserAttributes() {
   }
 }
 
+UserConnectionAttributes::UserConnectionAttributes(TcrEndpoint* endpoint,
+                                                   uint64_t id) {
+  m_numberOfTimesEndpointFailed = endpoint->numberOfTimesFailed();
+  m_connectedEndpoint = endpoint;
+  m_uniqueId = id;
+  m_isAuthenticated = true;
+}
+
+TcrEndpoint* UserConnectionAttributes::getEndpoint() {
+  return m_connectedEndpoint;
+}
+
+void UserConnectionAttributes::setEndpoint(TcrEndpoint* endpoint) {
+  m_connectedEndpoint = endpoint;
+}
+
+int64_t UserConnectionAttributes::getUniqueId() { return m_uniqueId; }
+
+void UserConnectionAttributes::setUniqueId(int64_t id) { m_uniqueId = id; }
+
+void UserConnectionAttributes::setUnAuthenticated() {
+  m_isAuthenticated = false;
+}
+
+bool UserConnectionAttributes::isAuthenticated() {
+  // second condition checks whether endpoint got failed and again up
+  return m_isAuthenticated && (m_connectedEndpoint->numberOfTimesFailed() ==
+                               m_numberOfTimesEndpointFailed);
+}
+
+void UserAttributes::setConnectionAttributes(TcrEndpoint* endpoint,
+                                             uint64_t id) {
+  m_isUserAuthenticated = true;
+  auto ucb = new UserConnectionAttributes(endpoint, id);
+  std::lock_guard<decltype(m_listLock)> guard(m_listLock);
+  m_connectionAttr[endpoint->name()] = ucb;
+}
+
+std::map<std::string, UserConnectionAttributes*>&
+UserAttributes::getUserConnectionServers() {
+  return m_connectionAttr;
+}
+
+void UserAttributes::unSetCredentials() { m_credentials = nullptr; }
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

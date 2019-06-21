@@ -29,7 +29,7 @@ namespace client {
 class Version {
  public:
   // getter for ordinal
-  static int8_t getOrdinal() { return Version::m_ordinal; }
+  static int8_t getOrdinal();
 
  private:
   static int8_t m_ordinal;
