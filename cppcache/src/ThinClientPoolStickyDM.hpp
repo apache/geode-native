@@ -28,11 +28,8 @@ class ThinClientPoolStickyDM : public ThinClientPoolDM {
  public:
   ThinClientPoolStickyDM(const char* name,
                          std::shared_ptr<PoolAttributes> poolAttrs,
-                         TcrConnectionManager& connManager)
-      : ThinClientPoolDM(name, poolAttrs, connManager) {
-    m_sticky = true;
-  }
-  ~ThinClientPoolStickyDM() override {}
+                         TcrConnectionManager& connManager);
+  ~ThinClientPoolStickyDM() override = default;
 
   bool canItBeDeletedNoImpl(TcrConnection* conn) override;
 

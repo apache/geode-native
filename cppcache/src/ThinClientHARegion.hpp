@@ -54,9 +54,7 @@ class APACHE_GEODE_EXPORT ThinClientHARegion : public ThinClientRegion {
 
   bool getProcessedMarker() override;
 
-  void setProcessedMarker(bool mark = true) override {
-    m_processedMarker = mark;
-  }
+  void setProcessedMarker(bool mark = true) override;
   void addDisMessToQueue() override;
 
  protected:

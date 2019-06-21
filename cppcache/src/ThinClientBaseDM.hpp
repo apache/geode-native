@@ -67,11 +67,11 @@ class ThinClientBaseDM {
 
   virtual void failover();
 
-  virtual void acquireFailoverLock(){};
-  virtual void releaseFailoverLock(){};
-  virtual void acquireRedundancyLock(){};
-  virtual void releaseRedundancyLock(){};
-  virtual void triggerRedundancyThread(){};
+  virtual void acquireFailoverLock();
+  virtual void releaseFailoverLock();
+  virtual void acquireRedundancyLock();
+  virtual void releaseRedundancyLock();
+  virtual void triggerRedundancyThread();
   virtual bool isSecurityOn();
 
   virtual bool isMultiUserMode() { return false; }
@@ -85,20 +85,9 @@ class ThinClientBaseDM {
                                               const TcrMessage* request,
                                               TcrMessageReply* reply);
 
-  inline static bool isFatalError(GfErrType err) {
-    return (err == GF_MSG || err == GF_CACHESERVER_EXCEPTION ||
-            err == GF_NOT_AUTHORIZED_EXCEPTION ||
-            err == GF_AUTHENTICATION_REQUIRED_EXCEPTION ||
-            err == GF_AUTHENTICATION_FAILED_EXCEPTION ||
-            err == GF_CACHE_LOCATOR_EXCEPTION);
-  }
+  static bool isFatalError(GfErrType err);
 
-  inline static bool isFatalClientError(GfErrType err) {
-    return (err == GF_NOT_AUTHORIZED_EXCEPTION ||
-            err == GF_AUTHENTICATION_REQUIRED_EXCEPTION ||
-            err == GF_AUTHENTICATION_FAILED_EXCEPTION ||
-            err == GF_CACHE_LOCATOR_EXCEPTION);
-  }
+  static bool isFatalClientError(GfErrType err);
 
   // add a new chunk to the queue
   void queueChunk(TcrChunkedContext* chunk);
@@ -113,64 +102,25 @@ class ThinClientBaseDM {
                                     TcrMessageReply& reply,
                                     TcrEndpoint* currentEndpoint) = 0;
 
-  virtual TcrEndpoint* getActiveEndpoint() { return nullptr; }
+  virtual TcrEndpoint* getActiveEndpoint();
 
   virtual bool checkDupAndAdd(std::shared_ptr<EventId> eventid);
 
   virtual std::recursive_mutex& getRedundancyLock();
 
-  static bool isDeltaEnabledOnServer() { return s_isDeltaEnabledOnServer; }
+  static bool isDeltaEnabledOnServer();
 
-  inline static void setDeltaEnabledOnServer(bool isDeltaEnabledOnServer) {
-    s_isDeltaEnabledOnServer = isDeltaEnabledOnServer;
-    LOGFINE("Delta enabled on server: %s",
-            s_isDeltaEnabledOnServer ? "true" : "false");
-  }
-  TcrConnectionManager& getConnectionManager() const { return m_connManager; }
+  static void setDeltaEnabledOnServer(bool isDeltaEnabledOnServer);
+  TcrConnectionManager& getConnectionManager() const;
 
-  virtual size_t getNumberOfEndPoints() const { return 0; }
+  virtual size_t getNumberOfEndPoints() const;
 
-  bool isNotAuthorizedException(const char* exceptionMsg) {
-    if (exceptionMsg != nullptr &&
-        strstr(exceptionMsg,
-               "org.apache.geode.security.NotAuthorizedException") != nullptr) {
-      LOGDEBUG(
-          "isNotAuthorizedException() An exception (%s) happened at remote "
-          "server.",
-          exceptionMsg);
-      return true;
-    }
-    return false;
-  }
+  bool isNotAuthorizedException(const char* exceptionMsg);
 
-  bool isPutAllPartialResultException(const char* exceptionMsg) {
-    if (exceptionMsg != nullptr &&
-        strstr(
-            exceptionMsg,
-            "org.apache.geode.internal.cache.PutAllPartialResultException") !=
-            nullptr) {
-      LOGDEBUG(
-          "isNotAuthorizedException() An exception (%s) happened at remote "
-          "server.",
-          exceptionMsg);
-      return true;
-    }
-    return false;
-  }
+  bool isPutAllPartialResultException(const char* exceptionMsg);
 
  protected:
-  bool isAuthRequireException(const char* exceptionMsg) {
-    if (exceptionMsg != nullptr &&
-        strstr(exceptionMsg,
-               "org.apache.geode.security.AuthenticationRequiredException") !=
-            nullptr) {
-      LOGDEBUG(
-          "isAuthRequireExcep() An exception (%s) happened at remote server.",
-          exceptionMsg);
-      return true;
-    }
-    return false;
-  }
+  bool isAuthRequireException(const char* exceptionMsg);
 
   ThinClientRegion* m_region;
 

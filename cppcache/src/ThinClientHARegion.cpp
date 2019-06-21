@@ -151,6 +151,9 @@ GfErrType ThinClientHARegion::getNoThrow_FullObject(
   return err;
 }
 
+void ThinClientHARegion::setProcessedMarker(bool mark) {
+  m_processedMarker = mark;
+}
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

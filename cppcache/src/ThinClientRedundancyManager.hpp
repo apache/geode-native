@@ -78,15 +78,15 @@ class ThinClientRedundancyManager {
   void startPeriodicAck();
   bool checkDupAndAdd(std::shared_ptr<EventId> eventid);
   void netDown();
-  void acquireRedundancyLock() { m_redundantEndpointsLock.lock(); }
-  void releaseRedundancyLock() { m_redundantEndpointsLock.unlock(); }
-  bool allEndPointDiscon() { return m_IsAllEpDisCon; }
+  void acquireRedundancyLock();
+  void releaseRedundancyLock();
+  bool allEndPointDiscon();
   void removeCallbackConnection(TcrEndpoint*);
 
-  std::recursive_mutex& getRedundancyLock() { return m_redundantEndpointsLock; }
+  std::recursive_mutex& getRedundancyLock();
 
   GfErrType sendRequestToPrimary(TcrMessage& request, TcrMessageReply& reply);
-  bool isSentReadyForEvents() const { return m_sentReadyForEvents; }
+  bool isSentReadyForEvents() const;
 
  private:
   using clock = std::chrono::steady_clock;
@@ -134,7 +134,7 @@ class ThinClientRedundancyManager {
   GfErrType createPoolQueueEP(TcrEndpoint* ep, const TcrMessage* request,
                               TcrMessageReply* reply, bool isPrimary);
 
-  inline bool isDurable();
+  bool isDurable();
   int processEventIdMap(const ACE_Time_Value&, const void*);
   std::unique_ptr<Task<ThinClientRedundancyManager>> m_periodicAckTask;
   ACE_Semaphore m_periodicAckSema;

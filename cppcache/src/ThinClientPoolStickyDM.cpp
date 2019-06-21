@@ -152,6 +152,13 @@ bool ThinClientPoolStickyDM::canItBeDeletedNoImpl(TcrConnection* conn) {
   return ThinClientPoolDM::canItBeDeleted(conn);
 }
 
+ThinClientPoolStickyDM::ThinClientPoolStickyDM(
+    const char* name, std::shared_ptr<PoolAttributes> poolAttrs,
+    TcrConnectionManager& connManager)
+    : ThinClientPoolDM(name, poolAttrs, connManager) {
+  m_sticky = true;
+}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

@@ -416,6 +416,9 @@ GfErrType ThinClientLocatorHelper::updateLocators(
   return GF_NOTCON;
 }
 
+int32_t ThinClientLocatorHelper::getCurLocatorsNum() {
+  return static_cast<int32_t>(m_locHostPort.size());
+}
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

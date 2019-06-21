@@ -100,6 +100,16 @@ GfErrType TcrHADistributionManager::sendSyncRequestRegisterInterest(
       request, reply, attemptFailover, endpoint, this, m_region);
 }
 
+ThinClientRegion* TcrHADistributionManager::getRegion() { return m_region; }
+
+void TcrHADistributionManager::acquireRedundancyLock() {
+  m_connManager.acquireRedundancyLock();
+}
+
+void TcrHADistributionManager::releaseRedundancyLock() {
+  m_connManager.releaseRedundancyLock();
+}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

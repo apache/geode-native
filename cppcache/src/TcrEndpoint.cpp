@@ -1293,6 +1293,71 @@ void TcrEndpoint::closeFailedConnection(TcrConnection*& conn) {
 
 void TcrEndpoint::handleNotificationStats(int64_t) {}
 
+bool TcrEndpoint::connected() const { return m_connected; }
+
+int TcrEndpoint::numRegions() const { return m_numRegions; }
+
+void TcrEndpoint::setNumRegions(int numRegions) { m_numRegions = numRegions; }
+
+const std::string& TcrEndpoint::name() const { return m_name; }
+
+int TcrEndpoint::getNumRegionListeners() const { return m_numRegionListener; }
+
+// TODO: for single user mode only
+void TcrEndpoint::setUniqueId(int64_t uniqueId) {
+  LOGDEBUG("tcrEndpoint:setUniqueId:: %d ", uniqueId);
+  m_isAuthenticated = true;
+  m_uniqueId = uniqueId;
+}
+
+int64_t TcrEndpoint::getUniqueId() {
+  LOGDEBUG("tcrEndpoint:getUniqueId:: %d ", m_uniqueId);
+  return m_uniqueId;
+}
+
+bool TcrEndpoint::isAuthenticated() { return m_isAuthenticated; }
+
+void TcrEndpoint::setAuthenticated(bool isAuthenticated) {
+  m_isAuthenticated = isAuthenticated;
+}
+
+bool TcrEndpoint::getServerQueueStatusTEST() {
+  return (m_serverQueueStatus == REDUNDANT_SERVER ||
+          m_serverQueueStatus == PRIMARY_SERVER);
+}
+
+int32_t TcrEndpoint::getServerQueueSize() { return m_queueSize; }
+
+ServerQueueStatus TcrEndpoint::getServerQueueStatus() {
+  return m_serverQueueStatus;
+}
+
+void TcrEndpoint::setConnected(volatile bool connected) {
+  m_connected = connected;
+}
+
+ThinClientPoolDM* TcrEndpoint::getPoolHADM() { return nullptr; }
+
+std::recursive_mutex& TcrEndpoint::getQueueHostedMutex() {
+  return m_notifyReceiverLock;
+}
+
+void TcrEndpoint::setDM(ThinClientBaseDM* dm) {
+  LOGDEBUG("tcrendpoint setDM");
+  this->m_baseDM = dm;
+}
+
+int32_t TcrEndpoint::numberOfTimesFailed() { return m_numberOfTimesFailed; }
+
+void TcrEndpoint::addConnRefCounter(int count) { m_noOfConnRefs += count; }
+
+int TcrEndpoint::getConnRefCounter() { return m_noOfConnRefs; }
+
+uint16_t TcrEndpoint::getDistributedMemberID() { return m_distributedMemId; }
+
+void TcrEndpoint::setDistributedMemberID(uint16_t memId) {
+  m_distributedMemId = memId;
+}
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

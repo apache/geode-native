@@ -59,15 +59,11 @@ class APACHE_GEODE_EXPORT TcrHADistributionManager
   GfErrType sendRequestToEP(const TcrMessage& request, TcrMessageReply& reply,
                             TcrEndpoint* endpoint) override;
 
-  ThinClientRegion* getRegion() { return m_region; }
+  ThinClientRegion* getRegion();
 
-  void acquireRedundancyLock() override {
-    m_connManager.acquireRedundancyLock();
-  };
+  void acquireRedundancyLock() override;
 
-  void releaseRedundancyLock() override {
-    m_connManager.releaseRedundancyLock();
-  };
+  void releaseRedundancyLock() override;
 
  protected:
   GfErrType sendSyncRequestRegisterInterest(
