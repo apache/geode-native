@@ -15,27 +15,14 @@
  * limitations under the License.
  */
 
-#pragma once
-
-#ifndef GEODE_SERVERLOCATIONREQUEST_H_
-#define GEODE_SERVERLOCATIONREQUEST_H_
-
-#include <geode/internal/DataSerializableFixedId.hpp>
+#include "ServerLocationRequest.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
-class ServerLocationRequest : public internal::DataSerializableFixedId {
- public:
-  ServerLocationRequest() = default;
-  ~ServerLocationRequest() override = default;
-
-  void fromData(DataInput&) final override;
-};
+void ServerLocationRequest::fromData(DataInput&) {}
 
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
-
-#endif  // GEODE_SERVERLOCATIONREQUEST_H_

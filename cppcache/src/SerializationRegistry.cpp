@@ -625,8 +625,7 @@ TheTypeMap::TheTypeMap() { setup(); }
 SerializationRegistry::SerializationRegistry() : theTypeMap() {}
 
 void SerializationRegistry::serialize(const std::shared_ptr<Serializable>& obj,
-                                      DataOutput& output,
-                                      bool isDelta = false) const {
+                                      DataOutput& output, bool isDelta) const {
   if (obj == nullptr) {
     output.write(static_cast<int8_t>(DSCode::NullObj));
   } else if (auto&& pdxSerializable =
