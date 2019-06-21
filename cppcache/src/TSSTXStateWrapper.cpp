@@ -30,7 +30,7 @@ TSSTXStateWrapper::~TSSTXStateWrapper() noexcept {
   }
 }
 
-TSSTXStateWrapper::TSSTXStateWrapper() : m_txState(nullptr){};
+TSSTXStateWrapper::TSSTXStateWrapper() : m_txState(nullptr){}
 
 TSSTXStateWrapper& TSSTXStateWrapper::get() {
   static thread_local TSSTXStateWrapper instance;
