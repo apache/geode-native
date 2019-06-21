@@ -37,7 +37,7 @@ class PdxWriterWithTypeCollector : public PdxLocalWriter {
 
   ~PdxWriterWithTypeCollector() override = default;
 
-  std::shared_ptr<PdxType> getPdxLocalType() { return m_pdxType; }
+  std::shared_ptr<PdxType> getPdxLocalType();
   virtual void endObjectWriting() override;
 
   virtual void addOffset() override;

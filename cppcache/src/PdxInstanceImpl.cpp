@@ -249,7 +249,9 @@ void PdxInstanceImpl::writeField(PdxWriter& writer,
       }
       break;
     }
-    default: { writer.writeObject(fieldName, value); }
+    default: {
+      writer.writeObject(fieldName, value);
+    }
   }
 }
 std::shared_ptr<WritablePdxInstance> PdxInstanceImpl::createWriter() {

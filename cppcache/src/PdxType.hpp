@@ -113,74 +113,37 @@ class PdxType : public internal::DataSerializableInternal,
   void fromData(DataInput& input) override;
 
   static std::shared_ptr<Serializable> CreateDeserializable(
-      PdxTypeRegistry& pdxTypeRegistry) {
-    return std::make_shared<PdxType>(pdxTypeRegistry, "", false);
-  }
+      PdxTypeRegistry& pdxTypeRegistry);
 
-  size_t objectSize() const override {
-    auto size = sizeof(PdxType);
-    if (m_pdxFieldTypes != nullptr) {
-      for (size_t i = 0; i < m_pdxFieldTypes->size(); i++) {
-        size += m_pdxFieldTypes->at(i)->objectSize();
-      }
-    }
-    size += static_cast<uint32_t>(m_className.length());
-    for (auto&& iter : m_fieldNameVsPdxType) {
-      size += iter.first.length();
-      size += iter.second->objectSize();
-    }
-    if (m_remoteToLocalFieldMap != nullptr) {
-      if (m_pdxFieldTypes != nullptr) {
-        size += sizeof(int32_t) * m_pdxFieldTypes->size();
-      }
-    }
-    if (m_localToRemoteFieldMap != nullptr) {
-      if (m_pdxFieldTypes != nullptr) {
-        size += sizeof(int32_t) * m_pdxFieldTypes->size();
-      }
-    }
-    return size;
-  }
+  size_t objectSize() const override;
 
-  virtual int32_t getTypeId() const { return m_geodeTypeId; }
+  virtual int32_t getTypeId() const;
 
-  virtual void setTypeId(int32_t typeId) { m_geodeTypeId = typeId; }
+  virtual void setTypeId(int32_t typeId);
 
-  int32_t getNumberOfVarLenFields() const { return m_numberOfVarLenFields; }
+  int32_t getNumberOfVarLenFields() const;
 
-  void setNumberOfVarLenFields(int32_t value) {
-    m_numberOfVarLenFields = value;
-  }
+  void setNumberOfVarLenFields(int32_t value);
 
-  int32_t getTotalFields() const {
-    return static_cast<int32_t>(m_pdxFieldTypes->size());
-  }
+  int32_t getTotalFields() const;
 
-  const std::string& getPdxClassName() const { return m_className; }
+  const std::string& getPdxClassName() const;
 
-  void setPdxClassName(std::string className) { m_className = className; }
+  void setPdxClassName(std::string className);
 
-  int32_t getNumberOfExtraFields() const { return m_numberOfFieldsExtra; }
+  int32_t getNumberOfExtraFields() const;
 
-  void setVarLenFieldIdx(int32_t value) { m_varLenFieldIdx = value; }
+  void setVarLenFieldIdx(int32_t value);
 
-  int32_t getVarLenFieldIdx() const { return m_varLenFieldIdx; }
+  int32_t getVarLenFieldIdx() const;
 
-  std::shared_ptr<PdxFieldType> getPdxField(const std::string& fieldName) {
-    auto&& iter = m_fieldNameVsPdxType.find(fieldName);
-    if (iter != m_fieldNameVsPdxType.end()) {
-      return iter->second;
-    }
-    return nullptr;
-  }
+  std::shared_ptr<PdxFieldType> getPdxField(const std::string& fieldName);
 
-  bool isLocal() const { return m_isLocal; }
+  bool isLocal() const;
 
-  void setLocal(bool local) { m_isLocal = local; }
+  void setLocal(bool local);
 
-  std::vector<std::shared_ptr<PdxFieldType>>* getPdxFieldTypes() const {
-    return m_pdxFieldTypes;
-  }
+  std::vector<std::shared_ptr<PdxFieldType>>* getPdxFieldTypes() const;
 
   void addFixedLengthTypeField(const std::string& fieldName,
                                const std::string& className,

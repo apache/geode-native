@@ -123,7 +123,7 @@ void PoolStatsSampler::putStatsInAdminRegion() {
   }
 }
 
-PoolStatsSampler::~PoolStatsSampler() {}
+PoolStatsSampler::~PoolStatsSampler() noexcept {}
 }  // namespace statistics
 }  // namespace geode
 }  // namespace apache

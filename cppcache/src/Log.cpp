@@ -809,9 +809,17 @@ LogLevel Log::logLevel() { return s_logLevel; }
 void Log::setLogLevel(LogLevel level) { s_logLevel = level; }
 
 bool Log::enabled(LogLevel level) {
+#ifdef __clang__  // Clang does not appreciate s_doingDebug being the result of
+                  // a macro trick.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunreachable-code"
+#endif
   return (((s_doingDebug && level == LogLevel::Debug) ||
            GEODE_HIGHEST_LOG_LEVEL >= level) &&
           s_logLevel >= level);
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 }
 
 void Log::log(LogLevel level, const char* msg) {

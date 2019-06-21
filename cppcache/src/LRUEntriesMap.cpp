@@ -523,13 +523,6 @@ void LRUEntriesMap::setPersistenceManager(
   m_pmPtr = pmPtr;
 }
 
-GfErrType LRUEntriesMap::remove(const std::shared_ptr<CacheableKey>& key,
-                                std::shared_ptr<Cacheable>& result,
-                                std::shared_ptr<MapEntryImpl>& me,
-                                int updateCount,
-                                std::shared_ptr<VersionTag> versionTag,
-                                bool afterRemote);
-
 bool LRUEntriesMap::mustEvict() const {
   if (m_action == nullptr) {
     LOGFINE("Eviction action is nullptr");
