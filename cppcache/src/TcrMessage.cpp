@@ -2469,15 +2469,15 @@ TcrMessageRemoveAll::TcrMessageRemoveAll(
   writeMessageLength();
 }
 
-TcrMessageUpdateClientNotification::TcrMessageUpdateClientNotification(
-    DataOutput* dataOutput, int32_t port) {
-  m_msgType = TcrMessage::UPDATE_CLIENT_NOTIFICATION;
-  m_request.reset(dataOutput);
-
-  writeHeader(m_msgType, 1);
-  writeIntPart(port);
-  writeMessageLength();
-}
+//TcrMessageUpdateClientNotification::TcrMessageUpdateClientNotification(
+//    DataOutput* dataOutput, int32_t port) {
+//  m_msgType = TcrMessage::UPDATE_CLIENT_NOTIFICATION;
+//  m_request.reset(dataOutput);
+//
+//  writeHeader(m_msgType, 1);
+//  writeIntPart(port);
+//  writeMessageLength();
+//}
 
 TcrMessageGetAll::TcrMessageGetAll(
     DataOutput* dataOutput, const Region* region,
@@ -2805,7 +2805,7 @@ void TcrMessage::createUserCredentialMessage(TcrConnection* conn) {
   writeObjectPart(encryptBytes);
 
   writeMessageLength();
-  LOGDEBUG("TcrMessage CUCM() = %s ",
+  LOGDEBUG("TcrMessage::createUserCredentialMessage  msg = %s ",
            Utils::convertBytesToString(m_request->getBuffer(),
                                        m_request->getBufferLength())
                .c_str());
@@ -2835,13 +2835,20 @@ void TcrMessage::addSecurityPart(int64_t connectionId, int64_t unique_id,
 
   auto encryptBytes = conn->encryptBytes(bytes);
 
+  LOGDEBUG("TcrMessage::addSecurityPart [%p] length = %" PRId32
+           ", encrypted ID = %s ",
+           this, encryptBytes->length(),
+           Utils::convertBytesToString(encryptBytes->value().data(),
+                                       encryptBytes->length())
+               .c_str());
+
   writeObjectPart(encryptBytes);
   writeMessageLength();
   m_securityHeaderLength = 4 + 1 + encryptBytes->length();
-  LOGDEBUG("TcrMessage addsp = %s ",
-           Utils::convertBytesToString(m_request->getBuffer(),
-                                       m_request->getBufferLength())
-               .c_str());
+  //  LOGDEBUG("TcrMessage addsp = %s ",
+  //           Utils::convertBytesToString(m_request->getBuffer(),
+  //                                       m_request->getBufferLength())
+  //               .c_str());
 }
 
 void TcrMessage::addSecurityPart(int64_t connectionId, TcrConnection* conn) {

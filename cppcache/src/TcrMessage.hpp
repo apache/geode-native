@@ -888,12 +888,12 @@ class TcrMessagePeriodicAck : public TcrMessage {
   ~TcrMessagePeriodicAck() override = default;
 };
 
-class TcrMessageUpdateClientNotification : public TcrMessage {
- public:
-  TcrMessageUpdateClientNotification(DataOutput* dataOutput, int32_t port);
-
-  ~TcrMessageUpdateClientNotification() override = default;
-};
+//class TcrMessageUpdateClientNotification : public TcrMessage {
+// public:
+//  TcrMessageUpdateClientNotification(DataOutput* dataOutput, int32_t port);
+//
+//  ~TcrMessageUpdateClientNotification() override = default;
+//};
 
 class TcrMessageGetAll : public TcrMessage {
  public:

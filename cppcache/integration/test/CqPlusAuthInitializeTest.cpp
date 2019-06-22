@@ -212,9 +212,9 @@ TEST(CqPlusAuthInitializeTest, putInALoopWhileSubscribedAndAuthenticated) {
     FAIL();
   }
 
-  for (i = 0; i < 100; i++) {
+  for (i = 0; i < 1000; i++) {
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    if (testListener->getCreationCount() ==
+    if (testListener->getDestructionCount() ==
         CQ_PLUS_AUTH_TEST_REGION_ENTRY_COUNT) {
       break;
     }

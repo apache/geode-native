@@ -168,6 +168,13 @@ class APACHE_GEODE_EXPORT Utils {
    * Convert the byte array to a string as "%d %d ...".
    * <code>maxLength</code> as zero implies no limit.
    */
+  static std::string convertBytesToString(const int8_t* bytes, size_t length,
+                                          size_t maxLength = _GF_MSG_LIMIT);
+
+  /**
+   * Convert the byte array to a string as "%d %d ...".
+   * <code>maxLength</code> as zero implies no limit.
+   */
   inline static std::string convertBytesToString(
       const char* bytes, size_t length, size_t maxLength = _GF_MSG_LIMIT) {
     return convertBytesToString(reinterpret_cast<const uint8_t*>(bytes), length,

@@ -1734,7 +1734,7 @@ GfErrType ThinClientPoolDM::createPoolConnectionToAEndPoint(
                                          ->getDistributedSystem()
                                          .getSystemProperties()
                                          .connectTimeout(),
-                                     false, true, appThreadrequest);
+                                     false, appThreadrequest);
   if (conn == nullptr || error != GF_NOERR) {
     LOGFINE("2Failed to connect to %s", theEP->name().c_str());
     if (conn != nullptr) _GEODE_SAFE_DELETE(conn);
