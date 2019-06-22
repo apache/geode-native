@@ -2469,16 +2469,6 @@ TcrMessageRemoveAll::TcrMessageRemoveAll(
   writeMessageLength();
 }
 
-//TcrMessageUpdateClientNotification::TcrMessageUpdateClientNotification(
-//    DataOutput* dataOutput, int32_t port) {
-//  m_msgType = TcrMessage::UPDATE_CLIENT_NOTIFICATION;
-//  m_request.reset(dataOutput);
-//
-//  writeHeader(m_msgType, 1);
-//  writeIntPart(port);
-//  writeMessageLength();
-//}
-
 TcrMessageGetAll::TcrMessageGetAll(
     DataOutput* dataOutput, const Region* region,
     const std::vector<std::shared_ptr<CacheableKey>>* keys,

@@ -212,25 +212,6 @@ GfErrType TcrEndpoint::createNewConnection(
         }
         // m_connected = true;
       }
-//      if (!isClientNotification && sendUpdateNotification) {
-//        bool notificationStarted;
-//        {
-//          std::lock_guard<decltype(m_notifyReceiverLock)> guard(
-//              m_notifyReceiverLock);
-//          notificationStarted = (m_numRegionListener > 0) || m_isQueueHosted;
-//        }
-//        if (notificationStarted) {
-//          LOGFINE("Sending update notification message to endpoint %s",
-//                  m_name.c_str());
-//          TcrMessageUpdateClientNotification updateNotificationMsg(
-//              new DataOutput(newConn->getConnectionManager()
-//                                 .getCacheImpl()
-//                                 ->createDataOutput()),
-//              static_cast<int32_t>(newConn->getPort()));
-//          newConn->send(updateNotificationMsg.getMsgData(),
-//                        updateNotificationMsg.getMsgLength());
-//        }
-//      }
       err = GF_NOERR;
       break;
     } catch (const TimeoutException&) {
