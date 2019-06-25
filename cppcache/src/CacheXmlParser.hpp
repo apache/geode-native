@@ -20,8 +20,6 @@
  * limitations under the License.
  */
 
-#include <libxml/parser.h>
-
 #include <map>
 #include <stack>
 

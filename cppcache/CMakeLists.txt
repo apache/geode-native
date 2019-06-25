@@ -92,12 +92,16 @@ elseif (WIN32)
   )
 endif()
 
+include(FindXercesC)
+find_package(XercesC REQUIRED)
+include_directories( ${XercesC_INCLUDE_DIR} )
+
 target_link_libraries(_apache-geode INTERFACE
   ACE::ACE
   Boost::boost
   Boost::filesystem
   Boost::thread
-  LibXml2::LibXml2
+  ${XercesC_LIBRARY}
 )
 
 if (USE_PCH)

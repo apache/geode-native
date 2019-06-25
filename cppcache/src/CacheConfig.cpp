@@ -21,8 +21,6 @@
 
 #include "CacheConfig.hpp"
 
-#include <libxml/parser.h>
-#include <libxml/tree.h>
 #include <string.h>
 
 namespace apache {
