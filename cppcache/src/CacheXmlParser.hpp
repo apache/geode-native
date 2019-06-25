@@ -32,7 +32,6 @@
 #include <geode/PartitionResolver.hpp>
 #include <geode/RegionShortcut.hpp>
 
-#include "CacheXml.hpp"
 #include "CacheXmlCreation.hpp"
 #include "RegionXmlCreation.hpp"
 
@@ -53,7 +52,7 @@ typedef CacheWriter* (*LibraryCacheWriterFn)(const char* assemblyPath,
 typedef PersistenceManager* (*LibraryPersistenceManagerFn)(
     const char* assemblyPath, const char* factFuncName);
 
-class APACHE_GEODE_EXPORT CacheXmlParser : public CacheXml {
+class APACHE_GEODE_EXPORT CacheXmlParser {
  private:
   std::stack<std::shared_ptr<void>> _stack;
   xmlSAXHandler m_saxHandler;

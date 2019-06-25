@@ -24,7 +24,6 @@
 #include <geode/PoolManager.hpp>
 #include <geode/SystemProperties.hpp>
 
-#include "CacheConfig.hpp"
 #include "CacheImpl.hpp"
 #include "CppCacheLibrary.hpp"
 #include "DiskVersionTag.hpp"

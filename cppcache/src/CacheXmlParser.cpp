@@ -43,6 +43,169 @@ void* getFactoryFunc(const std::string& lib, const std::string& funcName);
 }  // namespace impl
 
 namespace {
+/** The name of the <code>cache</code> element */
+auto CACHE = "cache";
+auto CLIENT_CACHE = "client-cache";
+auto PDX = "pdx";
+
+/** The name of the <code>redundancy-level</code> element */
+auto REDUNDANCY_LEVEL = "redundancy-level";
+
+/** The name of the <code>region</code> element */
+auto REGION = "region";
+
+/** The name of the <code>root-region</code> element */
+auto ROOT_REGION = "root-region";
+
+/** The name of the <code>region-attributes</code> element */
+auto REGION_ATTRIBUTES = "region-attributes";
+
+auto LRU_ENTRIES_LIMIT = "lru-entries-limit";
+
+auto DISK_POLICY = "disk-policy";
+
+auto ENDPOINTS = "endpoints";
+
+/** The name of the <code>region-time-to-live</code> element */
+auto REGION_TIME_TO_LIVE = "region-time-to-live";
+
+/** The name of the <code>region-idle-time</code> element */
+auto REGION_IDLE_TIME = "region-idle-time";
+
+/** The name of the <code>entry-time-to-live</code> element */
+auto ENTRY_TIME_TO_LIVE = "entry-time-to-live";
+
+/** The name of the <code>entry-idle-time</code> element */
+auto ENTRY_IDLE_TIME = "entry-idle-time";
+
+/** The name of the <code>expiration-attributes</code> element */
+auto EXPIRATION_ATTRIBUTES = "expiration-attributes";
+
+/** The name of the <code>cache-loader</code> element */
+auto CACHE_LOADER = "cache-loader";
+
+/** The name of the <code>cache-writer</code> element */
+auto CACHE_WRITER = "cache-writer";
+
+/** The name of the <code>cache-listener</code> element */
+auto CACHE_LISTENER = "cache-listener";
+
+/** The name of the <code>partition-resolver</code> element */
+auto PARTITION_RESOLVER = "partition-resolver";
+
+auto LIBRARY_NAME = "library-name";
+
+auto LIBRARY_FUNCTION_NAME = "library-function-name";
+
+auto CACHING_ENABLED = "caching-enabled";
+
+auto INTEREST_LIST_ENABLED = "interest-list-enabled";
+
+auto MAX_DISTRIBUTE_VALUE_LENGTH_WHEN_CREATE =
+    "max-distribute-value-length-when-create";
+/** The name of the <code>scope</code> attribute */
+auto SCOPE = "scope";
+
+/** The name of the <code>client-notification</code> attribute */
+auto CLIENT_NOTIFICATION_ENABLED = "client-notification";
+
+/** The name of the <code>initial-capacity</code> attribute */
+auto INITIAL_CAPACITY = "initial-capacity";
+
+/** The name of the <code>initial-capacity</code> attribute */
+auto CONCURRENCY_LEVEL = "concurrency-level";
+
+/** The name of the <code>load-factor</code> attribute */
+auto LOAD_FACTOR = "load-factor";
+
+/** The name of the <code>statistics-enabled</code> attribute */
+auto STATISTICS_ENABLED = "statistics-enabled";
+
+/** The name of the <code>timeout</code> attribute */
+auto TIMEOUT = "timeout";
+
+/** The name of the <code>action</code> attribute */
+auto ACTION = "action";
+
+/** The name of the <code>local</code> value */
+auto LOCAL = "local";
+
+/** The name of the <code>distributed-no-ack</code> value */
+auto DISTRIBUTED_NO_ACK = "distributed-no-ack";
+
+/** The name of the <code>distributed-ack</code> value */
+auto DISTRIBUTED_ACK = "distributed-ack";
+
+/** The name of the <code>global</code> value */
+auto GLOBAL = "global";
+
+/** The name of the <code>invalidate</code> value */
+auto INVALIDATE = "invalidate";
+
+/** The name of the <code>destroy</code> value */
+auto DESTROY = "destroy";
+
+/** The name of the <code>overflow</code> value */
+auto OVERFLOWS = "overflows";
+
+/** The name of the <code>overflow</code> value */
+auto PERSIST = "persist";
+
+/** The name of the <code>none</code> value */
+auto NONE = "none";
+
+/** The name of the <code>local-invalidate</code> value */
+auto LOCAL_INVALIDATE = "local-invalidate";
+
+/** The name of the <code>local-destroy</code> value */
+auto LOCAL_DESTROY = "local-destroy";
+
+/** The name of the <code>persistence-manager</code> value */
+auto PERSISTENCE_MANAGER = "persistence-manager";
+
+/** The name of the <code>properties</code> value */
+auto PROPERTIES = "properties";
+
+/** The name of the <code>property</code> value */
+auto PROPERTY = "property";
+
+auto CONCURRENCY_CHECKS_ENABLED = "concurrency-checks-enabled";
+
+auto TOMBSTONE_TIMEOUT = "tombstone-timeout";
+
+/** Pool elements and attributes */
+
+auto POOL_NAME = "pool-name";
+auto POOL = "pool";
+auto NAME = "name";
+auto LOCATOR = "locator";
+auto SERVER = "server";
+auto HOST = "host";
+auto PORT = "port";
+auto IGNORE_UNREAD_FIELDS = "ignore-unread-fields";
+auto READ_SERIALIZED = "read-serialized";
+auto FREE_CONNECTION_TIMEOUT = "free-connection-timeout";
+auto MULTIUSER_SECURE_MODE = "multiuser-authentication";
+auto IDLE_TIMEOUT = "idle-timeout";
+auto LOAD_CONDITIONING_INTERVAL = "load-conditioning-interval";
+auto MAX_CONNECTIONS = "max-connections";
+auto MIN_CONNECTIONS = "min-connections";
+auto PING_INTERVAL = "ping-interval";
+auto UPDATE_LOCATOR_LIST_INTERVAL = "update-locator-list-interval";
+auto READ_TIMEOUT = "read-timeout";
+auto RETRY_ATTEMPTS = "retry-attempts";
+auto SERVER_GROUP = "server-group";
+auto SOCKET_BUFFER_SIZE = "socket-buffer-size";
+auto STATISTIC_INTERVAL = "statistic-interval";
+auto SUBSCRIPTION_ACK_INTERVAL = "subscription-ack-interval";
+auto SUBSCRIPTION_ENABLED = "subscription-enabled";
+auto SUBSCRIPTION_MTT = "subscription-message-tracking-timeout";
+auto SUBSCRIPTION_REDUNDANCY = "subscription-redundancy";
+auto THREAD_LOCAL_CONNECTIONS = "thread-local-connections";
+auto CLONING_ENABLED = "cloning-enabled";
+auto ID = "id";
+auto REFID = "refid";
+auto PR_SINGLE_HOP_ENABLED = "pr-single-hop-enabled";
 
 using apache::geode::client::impl::getFactoryFunc;
 
@@ -89,44 +252,44 @@ extern "C" void startElementSAX2Function(void* ctx, const xmlChar* name,
     try {
       auto uname =
           reinterpret_cast<const char*>(const_cast<unsigned char*>(name));
-      if (std::strcmp(uname, parser->CACHE) == 0) {
+      if (std::strcmp(uname, CACHE) == 0) {
         parser->startCache(ctx, atts);
-      } else if (strcmp(uname, parser->CLIENT_CACHE) == 0) {
+      } else if (strcmp(uname, CLIENT_CACHE) == 0) {
         parser->startCache(ctx, atts);
-      } else if (strcmp(uname, parser->PDX) == 0) {
+      } else if (strcmp(uname, PDX) == 0) {
         parser->startPdx(atts);
-      } else if (strcmp(uname, parser->REGION) == 0) {
+      } else if (strcmp(uname, REGION) == 0) {
         parser->incNesting();
         parser->startRegion(atts, parser->isRootLevel());
-      } else if (strcmp(uname, parser->ROOT_REGION) == 0) {
+      } else if (strcmp(uname, ROOT_REGION) == 0) {
         parser->incNesting();
         parser->startRegion(atts, parser->isRootLevel());
-      } else if (strcmp(uname, parser->REGION_ATTRIBUTES) == 0) {
+      } else if (strcmp(uname, REGION_ATTRIBUTES) == 0) {
         parser->startRegionAttributes(atts);
-      } else if (strcmp(uname, parser->REGION_TIME_TO_LIVE) == 0) {
-      } else if (strcmp(uname, parser->REGION_IDLE_TIME) == 0) {
-      } else if (strcmp(uname, parser->ENTRY_TIME_TO_LIVE) == 0) {
-      } else if (strcmp(uname, parser->ENTRY_IDLE_TIME) == 0) {
-      } else if (strcmp(uname, parser->EXPIRATION_ATTRIBUTES) == 0) {
+      } else if (strcmp(uname, REGION_TIME_TO_LIVE) == 0) {
+      } else if (strcmp(uname, REGION_IDLE_TIME) == 0) {
+      } else if (strcmp(uname, ENTRY_TIME_TO_LIVE) == 0) {
+      } else if (strcmp(uname, ENTRY_IDLE_TIME) == 0) {
+      } else if (strcmp(uname, EXPIRATION_ATTRIBUTES) == 0) {
         parser->startExpirationAttributes(atts);
-      } else if (strcmp(uname, parser->CACHE_LOADER) == 0) {
+      } else if (strcmp(uname, CACHE_LOADER) == 0) {
         parser->startCacheLoader(atts);
-      } else if (strcmp(uname, parser->CACHE_WRITER) == 0) {
+      } else if (strcmp(uname, CACHE_WRITER) == 0) {
         parser->startCacheWriter(atts);
-      } else if (strcmp(uname, parser->CACHE_LISTENER) == 0) {
+      } else if (strcmp(uname, CACHE_LISTENER) == 0) {
         parser->startCacheListener(atts);
-      } else if (strcmp(uname, parser->PARTITION_RESOLVER) == 0) {
+      } else if (strcmp(uname, PARTITION_RESOLVER) == 0) {
         parser->startPartitionResolver(atts);
-      } else if (strcmp(uname, parser->PERSISTENCE_MANAGER) == 0) {
+      } else if (strcmp(uname, PERSISTENCE_MANAGER) == 0) {
         parser->startPersistenceManager(atts);
-      } else if (strcmp(uname, parser->PROPERTIES) == 0) {
-      } else if (strcmp(uname, parser->PROPERTY) == 0) {
+      } else if (strcmp(uname, PROPERTIES) == 0) {
+      } else if (strcmp(uname, PROPERTY) == 0) {
         parser->startPersistenceProperties(atts);
-      } else if (strcmp(uname, parser->POOL) == 0) {
+      } else if (strcmp(uname, POOL) == 0) {
         parser->startPool(atts);
-      } else if (strcmp(uname, parser->LOCATOR) == 0) {
+      } else if (strcmp(uname, LOCATOR) == 0) {
         parser->startLocator(atts);
-      } else if (strcmp(uname, parser->SERVER) == 0) {
+      } else if (strcmp(uname, SERVER) == 0) {
         parser->startServer(atts);
       } else {
         throw CacheXmlException("XML:Unknown XML element \"" +
@@ -163,43 +326,39 @@ extern "C" void endElementSAX2Function(void* ctx, const xmlChar* name) {
     try {
       auto uname =
           reinterpret_cast<const char*>(const_cast<unsigned char*>(name));
-      if (strcmp(uname, parser->CACHE) == 0) {
+      if (strcmp(uname, CACHE) == 0) {
         parser->endCache();
-      } else if (strcmp(uname, parser->CLIENT_CACHE) == 0) {
+      } else if (strcmp(uname, CLIENT_CACHE) == 0) {
         parser->endCache();
-      } else if (strcmp(uname, parser->PDX) == 0) {
+      } else if (strcmp(uname, PDX) == 0) {
         parser->endPdx();
-      } else if (strcmp(uname, parser->REGION) == 0) {
+      } else if (strcmp(uname, REGION) == 0) {
         parser->endRegion(parser->isRootLevel());
         parser->decNesting();
-      } else if (strcmp(uname, parser->ROOT_REGION) == 0) {
+      } else if (strcmp(uname, ROOT_REGION) == 0) {
         parser->endRegion(parser->isRootLevel());
         parser->decNesting();
-      } else if (strcmp(uname, parser->REGION_ATTRIBUTES) == 0) {
+      } else if (strcmp(uname, REGION_ATTRIBUTES) == 0) {
         parser->endRegionAttributes();
-      } else if (strcmp(uname, parser->REGION_TIME_TO_LIVE) == 0) {
+      } else if (strcmp(uname, REGION_TIME_TO_LIVE) == 0) {
         parser->endRegionTimeToLive();
-      } else if (strcmp(uname, parser->REGION_IDLE_TIME) == 0) {
+      } else if (strcmp(uname, REGION_IDLE_TIME) == 0) {
         parser->endRegionIdleTime();
-      } else if (strcmp(uname, parser->ENTRY_TIME_TO_LIVE) == 0) {
+      } else if (strcmp(uname, ENTRY_TIME_TO_LIVE) == 0) {
         parser->endEntryTimeToLive();
-      } else if (strcmp(uname, parser->ENTRY_IDLE_TIME) == 0) {
+      } else if (strcmp(uname, ENTRY_IDLE_TIME) == 0) {
         parser->endEntryIdleTime();
-      } else if (strcmp(uname, parser->EXPIRATION_ATTRIBUTES) == 0) {
-      } else if (strcmp(uname, parser->CACHE_LOADER) == 0) {
-      } else if (strcmp(uname, parser->CACHE_WRITER) == 0) {
-      } else if (strcmp(uname, parser->CACHE_LISTENER) == 0) {
-      } else if (strcmp(uname, parser->PARTITION_RESOLVER) == 0) {
-      } else if (strcmp(uname, parser->PERSISTENCE_MANAGER) == 0) {
+      } else if (strcmp(uname, EXPIRATION_ATTRIBUTES) == 0) {
+      } else if (strcmp(uname, CACHE_LOADER) == 0) {
+      } else if (strcmp(uname, CACHE_WRITER) == 0) {
+      } else if (strcmp(uname, CACHE_LISTENER) == 0) {
+      } else if (strcmp(uname, PARTITION_RESOLVER) == 0) {
+      } else if (strcmp(uname, PERSISTENCE_MANAGER) == 0) {
         parser->endPersistenceManager();
-      } else if (strcmp(uname, parser->PROPERTIES) == 0) {
-      } else if (strcmp(uname, parser->PROPERTY) == 0) {
-      } else if (strcmp(uname, parser->POOL) == 0) {
+      } else if (strcmp(uname, PROPERTIES) == 0) {
+      } else if (strcmp(uname, PROPERTY) == 0) {
+      } else if (strcmp(uname, POOL) == 0) {
         parser->endPool();
-      } else if (strcmp(uname, parser->LOCATOR) == 0) {
-        // parser->endLocator();
-      } else if (strcmp(uname, parser->SERVER) == 0) {
-        // parser->endServer();
       } else {
         throw CacheXmlException("XML:Unknown XML element \"" +
                                 std::string(uname) + "\"");
