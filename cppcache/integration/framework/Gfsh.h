@@ -58,7 +58,8 @@ class Gfsh {
   template <class Result>
   class Command {
    public:
-    virtual Result execute() { Result{gfsh_}.parse(gfsh_.execute(command_)); }
+    virtual Result execute(const std::string &user, const std::string &password) { Result{gfsh_}.parse(gfsh_.execute(command_, user, password)); }
+    virtual Result execute() { Result{gfsh_}.parse(gfsh_.execute(command_, "", "")); }
 
    protected:
     Command(Gfsh &gfsh, std::string command)
@@ -312,12 +313,18 @@ class Gfsh {
   };
 
  protected:
-  virtual void execute(const std::string &command) = 0;
+  virtual void execute(const std::string &command, const std::string &user, const std::string &password) = 0;
 };
 
 template <>
-inline void Gfsh::Command<void>::execute() {
-  gfsh_.execute(command_);
+inline void Gfsh::Command<void>::execute(const std::string &user, const std::string &password) {
+  gfsh_.execute(command_, user, password);
 }
+
+template <>
+inline void Gfsh::Command<void>::execute() {
+  gfsh_.execute(command_, "", "");
+}
+
 
 #endif  // INTEGRATION_TEST_FRAMEWORK_GFSH_H

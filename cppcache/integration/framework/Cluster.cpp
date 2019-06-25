@@ -52,18 +52,21 @@ void Locator::start() {
     locator.withSecurityManager(cluster_.getSecurityManager());
   }
 
-  locator.execute();
+  if ((!cluster_.getUser().empty()) && (!cluster_.getPassword().empty())) {
+    locator.execute(cluster_.getUser(), cluster_.getPassword());
+  } else {
+    locator.execute();
+  }
 
-  //    std::cout << "locator: " << locatorAddress_.port << ": started"
-  //              << std::endl;
+//  std::cout << "locator: " << locatorAddress_.port << ": started" << std::endl << std::flush;
+
   started_ = true;
 }
 
 void Locator::stop() {
   cluster_.getGfsh().stop().locator().withDir(name_).execute();
 
-  //    std::cout << "locator: " << locatorAddress_.port << ": stopped"
-  //              << std::endl;
+//  std::cout << "locator: " << locatorAddress_.port << ": stopped" << std::endl << std::flush;
   started_ = false;
 }
 
@@ -100,16 +103,15 @@ void Server::start() {
 
   server.execute();
 
-  //    std::cout << "server: " << serverAddress_.port << ": started" <<
-  //    std::endl;
+//  std::cout << "server: " << serverAddress_.port << ": started" << std::endl << std::flush;
+
   started_ = true;
 }
 
 void Server::stop() {
   cluster_.getGfsh().stop().server().withDir(name_).execute();
 
-  //    std::cout << "server: " << serverAddress_.port << ": stopped" <<
-  //    std::endl;
+//  std::cout << "server: " << serverAddress_.port << ": stopped" << std::endl << std::flush;
   started_ = false;
 }
 

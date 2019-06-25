@@ -70,47 +70,14 @@ class GfshExecute : public Gfsh {
   };
 
  protected:
-  void execute(const std::string &command) override;
+  void execute(const std::string &command, const std::string &user, const std::string &password) override;
 
   boost::process::child executeChild(std::vector<std::string> &commands,
                                      boost::process::environment &env,
                                      boost::process::ipstream &outStream,
                                      boost::process::ipstream &errStream);
 
-  void extractConnectionCommand(const std::string &command) {
-        if (starts_with(command, std::string("connect"))) {
-          connection_ = command;
-    } else if (starts_with(command, std::string("start locator"))) {
-      auto jmxManagerHost = std::string("localhost");
-      auto jmxManagerPort = std::string("1099");
-//      auto securityManagerUser = std::string("user");
-//      auto securityManagerPassword = std::string("password");
-
-      std::regex jmxManagerHostRegex("bind-address=([^\\s]+)");
-      std::smatch jmxManagerHostMatch;
-      if (std::regex_search(command, jmxManagerHostMatch,
-                            jmxManagerHostRegex)) {
-        jmxManagerHost = jmxManagerHostMatch[1];
-      }
-
-      std::regex jmxManagerPortRegex("jmx-manager-port=(\\d+)");
-      std::smatch jmxManagerPortMatch;
-      if (std::regex_search(command, jmxManagerPortMatch,
-                            jmxManagerPortRegex)) {
-        jmxManagerPort = jmxManagerPortMatch[1];
-      }
-
-//      std::regex securityManagerUserRegex("--user=(^\\s+)");
-//      std::smatch securityManagerUserMatch;
-//      if (std::regex_search(command, jmxManagerHostMatch,
-//          jmxManagerHostRegex)) {
-//            jmxManagerHost = jmxManagerHostMatch[1];
-//          }
-
-      connection_ = "connect --jmx-manager=" + jmxManagerHost + "[" +
-                    jmxManagerPort + "] --user=root --password=root-password";
-    }
-  }
+  void extractConnectionCommand(const std::string &command, const std::string &user = "", const std::string &password = "");
 
  private:
   std::string connection_;

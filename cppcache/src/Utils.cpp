@@ -166,7 +166,8 @@ std::string Utils::convertBytesToString(const uint8_t* bytes, size_t length,
 
 std::string Utils::convertBytesToString(const int8_t* bytes, size_t length,
                                         size_t maxLength) {
-  return Utils::convertBytesToString(reinterpret_cast<const uint8_t*>(bytes), length, maxLength);
+  return Utils::convertBytesToString(reinterpret_cast<const uint8_t*>(bytes),
+                                     length, maxLength);
 }
 
 int64_t Utils::startStatOpTime() {

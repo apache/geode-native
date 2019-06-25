@@ -33,7 +33,7 @@ namespace client {
 extern void APACHE_GEODE_EXPORT GfErrTypeThrowException(const char* str,
                                                         GfErrType err);
 
-#define throwExceptionIfError(str, err)   \
+#define throwExceptionIfError(str, err)  \
   {                                      \
     if (err != GF_NOERR) {               \
       GfErrTypeThrowException(str, err); \

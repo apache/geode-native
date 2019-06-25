@@ -2827,7 +2827,7 @@ void TcrMessage::addSecurityPart(int64_t connectionId, int64_t unique_id,
 
   LOGDEBUG("TcrMessage::addSecurityPart [%p] length = %" PRId32
            ", encrypted ID = %s ",
-           this, encryptBytes->length(),
+           conn, encryptBytes->length(),
            Utils::convertBytesToString(encryptBytes->value().data(),
                                        encryptBytes->length())
                .c_str());
