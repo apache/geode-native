@@ -22,8 +22,13 @@
 
 #include <map>
 #include <stack>
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundef"
+#pragma clang diagnostic ignored "-Wzero-as-null-pointer-constant"
 #include <xercesc/sax2/Attributes.hpp>
 #include <xercesc/sax2/DefaultHandler.hpp>
+#pragma clang diagnostic pop
 
 #include <geode/Cache.hpp>
 #include <geode/CacheListener.hpp>
@@ -80,7 +85,7 @@ class APACHE_GEODE_EXPORT CacheXmlParser : public xercesc::DefaultHandler {
   std::map<std::string, RegionAttributes> namedRegions;
   std::shared_ptr<PoolFactory> m_poolFactory;
 
-  Cache* m_cache;
+//  Cache* m_cache;
   /** Pool helper */
   void setPoolInfo(PoolFactory* poolFactory, const char* name,
                    const char* value);
