@@ -269,7 +269,7 @@ extern "C" void fatalErrorDebug(void *const char *msg, ...) {
   va_list args;
 
   va_start(args, msg);
-  CacheXmlParser *parser = (CacheXmlParser *) ctx;
+  CacheXmlParser *parser = (CacheXmlParser *)ctx;
   vsprintf(buf, msg, args);
   std::string stringMsg(buf);
   setParserMessage(getParserMessage() + stringMsg);
@@ -301,44 +301,73 @@ CacheXmlParser::CacheXmlParser(Cache *cache)
       namedRegions(CacheImpl::getRegionShortcut()),
       m_poolFactory(nullptr),
       m_cache(cache) {
-  start_element_map_.emplace(std::make_tuple(std::string(CACHE), &CacheXmlParser::startCache));
-  start_element_map_.emplace(std::make_tuple(std::string(CLIENT_CACHE), &CacheXmlParser::startCache));
-  start_element_map_.emplace(std::make_tuple(std::string(PDX), &CacheXmlParser::startPdx));
-  start_element_map_.emplace(std::make_tuple(std::string(REGION), &CacheXmlParser::startRegion));
-  start_element_map_.emplace(std::make_tuple(std::string(ROOT_REGION), &CacheXmlParser::startRegion));
-  start_element_map_.emplace(std::make_tuple(std::string(REGION_ATTRIBUTES), &CacheXmlParser::startRegionAttributes));
-  start_element_map_.emplace(std::make_tuple(std::string(EXPIRATION_ATTRIBUTES), &CacheXmlParser::startExpirationAttributes));
-  start_element_map_.emplace(std::make_tuple(std::string(CACHE_LOADER), &CacheXmlParser::startCacheLoader));
-  start_element_map_.emplace(std::make_tuple(std::string(CACHE_WRITER), &CacheXmlParser::startCacheWriter));
-  start_element_map_.emplace(std::make_tuple(std::string(CACHE_LISTENER), &CacheXmlParser::startCacheListener));
-  start_element_map_.emplace(std::make_tuple(std::string(PARTITION_RESOLVER), &CacheXmlParser::startPartitionResolver));
-  start_element_map_.emplace(std::make_tuple(std::string(PERSISTENCE_MANAGER), &CacheXmlParser::startPersistenceManager));
-  start_element_map_.emplace(std::make_tuple(std::string(PROPERTY), &CacheXmlParser::startPersistenceProperties));
-  start_element_map_.emplace(std::make_tuple(std::string(POOL), &CacheXmlParser::startPool));
-  start_element_map_.emplace(std::make_tuple(std::string(LOCATOR), &CacheXmlParser::startLocator));
-  start_element_map_.emplace(std::make_tuple(std::string(SERVER), &CacheXmlParser::startServer));
+  start_element_map_.emplace(
+      std::make_tuple(std::string(CACHE), &CacheXmlParser::startCache));
+  start_element_map_.emplace(
+      std::make_tuple(std::string(CLIENT_CACHE), &CacheXmlParser::startCache));
+  start_element_map_.emplace(
+      std::make_tuple(std::string(PDX), &CacheXmlParser::startPdx));
+  start_element_map_.emplace(
+      std::make_tuple(std::string(REGION), &CacheXmlParser::startRegion));
+  start_element_map_.emplace(
+      std::make_tuple(std::string(ROOT_REGION), &CacheXmlParser::startRegion));
+  start_element_map_.emplace(std::make_tuple(
+      std::string(REGION_ATTRIBUTES), &CacheXmlParser::startRegionAttributes));
+  start_element_map_.emplace(
+      std::make_tuple(std::string(EXPIRATION_ATTRIBUTES),
+                      &CacheXmlParser::startExpirationAttributes));
+  start_element_map_.emplace(std::make_tuple(
+      std::string(CACHE_LOADER), &CacheXmlParser::startCacheLoader));
+  start_element_map_.emplace(std::make_tuple(
+      std::string(CACHE_WRITER), &CacheXmlParser::startCacheWriter));
+  start_element_map_.emplace(std::make_tuple(
+      std::string(CACHE_LISTENER), &CacheXmlParser::startCacheListener));
+  start_element_map_.emplace(
+      std::make_tuple(std::string(PARTITION_RESOLVER),
+                      &CacheXmlParser::startPartitionResolver));
+  start_element_map_.emplace(
+      std::make_tuple(std::string(PERSISTENCE_MANAGER),
+                      &CacheXmlParser::startPersistenceManager));
+  start_element_map_.emplace(std::make_tuple(
+      std::string(PROPERTY), &CacheXmlParser::startPersistenceProperties));
+  start_element_map_.emplace(
+      std::make_tuple(std::string(POOL), &CacheXmlParser::startPool));
+  start_element_map_.emplace(
+      std::make_tuple(std::string(LOCATOR), &CacheXmlParser::startLocator));
+  start_element_map_.emplace(
+      std::make_tuple(std::string(SERVER), &CacheXmlParser::startServer));
 
-  end_element_map_.emplace(std::make_tuple(std::string(CACHE), &CacheXmlParser::endCache));
-  end_element_map_.emplace(std::make_tuple(std::string(CLIENT_CACHE), &CacheXmlParser::endCache));
-  end_element_map_.emplace(std::make_tuple(std::string(PDX), &CacheXmlParser::endPdx));
-  end_element_map_.emplace(std::make_tuple(std::string(REGION), &CacheXmlParser::endRegion));
-  end_element_map_.emplace(std::make_tuple(std::string(ROOT_REGION), &CacheXmlParser::endRegion));
-  end_element_map_.emplace(std::make_tuple(std::string(REGION_ATTRIBUTES), &CacheXmlParser::endRegionAttributes));
-  end_element_map_.emplace(std::make_tuple(std::string(REGION_TIME_TO_LIVE), &CacheXmlParser::endRegionTimeToLive));
-  end_element_map_.emplace(std::make_tuple(std::string(REGION_IDLE_TIME), &CacheXmlParser::endRegionIdleTime));
-  end_element_map_.emplace(std::make_tuple(std::string(ENTRY_TIME_TO_LIVE), &CacheXmlParser::endEntryTimeToLive));
-  end_element_map_.emplace(std::make_tuple(std::string(ENTRY_IDLE_TIME), &CacheXmlParser::endEntryIdleTime));
-  end_element_map_.emplace(std::make_tuple(std::string(PERSISTENCE_MANAGER), &CacheXmlParser::endPersistenceManager));
-  end_element_map_.emplace(std::make_tuple(std::string(POOL), &CacheXmlParser::endPool));
+  end_element_map_.emplace(
+      std::make_tuple(std::string(CACHE), &CacheXmlParser::endCache));
+  end_element_map_.emplace(
+      std::make_tuple(std::string(CLIENT_CACHE), &CacheXmlParser::endCache));
+  end_element_map_.emplace(
+      std::make_tuple(std::string(PDX), &CacheXmlParser::endPdx));
+  end_element_map_.emplace(
+      std::make_tuple(std::string(REGION), &CacheXmlParser::endRegion));
+  end_element_map_.emplace(
+      std::make_tuple(std::string(ROOT_REGION), &CacheXmlParser::endRegion));
+  end_element_map_.emplace(std::make_tuple(
+      std::string(REGION_ATTRIBUTES), &CacheXmlParser::endRegionAttributes));
+  end_element_map_.emplace(std::make_tuple(
+      std::string(REGION_TIME_TO_LIVE), &CacheXmlParser::endRegionTimeToLive));
+  end_element_map_.emplace(std::make_tuple(std::string(REGION_IDLE_TIME),
+                                           &CacheXmlParser::endRegionIdleTime));
+  end_element_map_.emplace(std::make_tuple(
+      std::string(ENTRY_TIME_TO_LIVE), &CacheXmlParser::endEntryTimeToLive));
+  end_element_map_.emplace(std::make_tuple(std::string(ENTRY_IDLE_TIME),
+                                           &CacheXmlParser::endEntryIdleTime));
+  end_element_map_.emplace(
+      std::make_tuple(std::string(PERSISTENCE_MANAGER),
+                      &CacheXmlParser::endPersistenceManager));
+  end_element_map_.emplace(
+      std::make_tuple(std::string(POOL), &CacheXmlParser::endPool));
 }
 
-void CacheXmlParser::startElement(
-    const XMLCh *const uri,
-    const XMLCh *const localname,
-    const XMLCh *const qname,
-    const xercesc::Attributes &attrs
-) {
-
+void CacheXmlParser::startElement(const XMLCh *const uri,
+                                  const XMLCh *const localname,
+                                  const XMLCh *const qname,
+                                  const xercesc::Attributes &attrs) {
   auto message = xercesc::XMLString::transcode(localname);
   auto name = std::string(message);
   auto iter = start_element_map_.find(name);
@@ -348,12 +377,9 @@ void CacheXmlParser::startElement(
   xercesc::XMLString::release(&message);
 }
 
-void CacheXmlParser::endElement
-    (
-        const XMLCh *const uri,
-        const XMLCh *const localname,
-        const XMLCh *const qname
-    ) {
+void CacheXmlParser::endElement(const XMLCh *const uri,
+                                const XMLCh *const localname,
+                                const XMLCh *const qname) {
   auto message = xercesc::XMLString::transcode(localname);
   auto name = std::string(message);
   auto iter = end_element_map_.find(name);
@@ -366,7 +392,8 @@ void CacheXmlParser::endElement
 void CacheXmlParser::fatalError(const xercesc::SAXParseException &exception) {
   using namespace xercesc;
   char *message = XMLString::transcode(exception.getMessage());
-  LOGDEBUG("Fatal Error: \"%s\" at line: %ulld", message, exception.getLineNumber());
+  LOGDEBUG("Fatal Error: \"%s\" at line: %ulld", message,
+           exception.getLineNumber());
   XMLString::release(&message);
 }
 
@@ -396,7 +423,7 @@ void CacheXmlParser::handleParserErrors(int res) {
   {
     Log::error("Error code returned by xml parser is : " + std::to_string(res));
     throw CacheXmlException("Xml file is not well formed. Error _stack: \n" +
-        std::string(this->m_parserMessage));
+                            std::string(this->m_parserMessage));
   }
   std::string temp = this->getError();
   if (temp.empty()) {
@@ -483,26 +510,30 @@ void CacheXmlParser::create(Cache *cache) {
 }
 
 void CacheXmlParser::startCache(const xercesc::Attributes &attrs) {
-  using unique_xml_char = std::unique_ptr<XMLCh, std::function<void(XMLCh*)>>;
-  using unique_xerces_char = std::unique_ptr<char, std::function<void(char*)>>;
-  auto xml_deleter = [](XMLCh*ch) { xercesc::XMLString::release(&ch); };
+  using unique_xml_char = std::unique_ptr<XMLCh, std::function<void(XMLCh *)>>;
+  using unique_xerces_char = std::unique_ptr<char, std::function<void(char *)>>;
+  auto xml_deleter = [](XMLCh *ch) { xercesc::XMLString::release(&ch); };
   auto xerces_deleter = [](char *ch) { xercesc::XMLString::release(&ch); };
 
-  unique_xml_char endpoints(xercesc::XMLString::transcode(ENDPOINTS), xml_deleter);
-  unique_xml_char redundancy_level(xercesc::XMLString::transcode(REDUNDANCY_LEVEL), xml_deleter);
+  unique_xml_char endpoints(xercesc::XMLString::transcode(ENDPOINTS),
+                            xml_deleter);
+  unique_xml_char redundancy_level(
+      xercesc::XMLString::transcode(REDUNDANCY_LEVEL), xml_deleter);
 
-  if(auto value = attrs.getValue(endpoints.get())) {
+  if (auto value = attrs.getValue(endpoints.get())) {
     if (m_poolFactory) {
-      unique_xerces_char v(xercesc::XMLString::transcode(value), xerces_deleter);
+      unique_xerces_char v(xercesc::XMLString::transcode(value),
+                           xerces_deleter);
       for (auto &&endPoint : parseEndPoints(v.get())) {
         m_poolFactory->addServer(endPoint.first, endPoint.second);
       }
     }
-  } else if(auto value = attrs.getValue(redundancy_level.get())) {
+  } else if (auto value = attrs.getValue(redundancy_level.get())) {
     unique_xerces_char v(xercesc::XMLString::transcode(value), xerces_deleter);
     m_poolFactory->setSubscriptionRedundancy(std::stoi(v.get()));
   } else {
-    throw CacheXmlException("XML: No value provided for attribute: " + std::string(CACHE) + " or " + CLIENT_CACHE);
+    throw CacheXmlException("XML: No value provided for attribute: " +
+                            std::string(CACHE) + " or " + CLIENT_CACHE);
   }
 
   _GEODE_NEW(m_cacheCreation, CacheXmlCreation());
@@ -530,7 +561,7 @@ void CacheXmlParser::startPdx(const xercesc::Attributes &attrs) {
       } else {
         throw CacheXmlException(
             "XML: " + value +
-                " is not a valid value for the attribute <ignore-unread-fields>");
+            " is not a valid value for the attribute <ignore-unread-fields>");
       }
       m_cacheCreation->setPdxIgnoreUnreadField(flag);
     } else if (READ_SERIALIZED == name) {
@@ -543,7 +574,7 @@ void CacheXmlParser::startPdx(const xercesc::Attributes &attrs) {
       } else {
         throw CacheXmlException(
             "XML: " + value +
-                " is not a valid value for the attribute <ignore-unread-fields>");
+            " is not a valid value for the attribute <ignore-unread-fields>");
       }
       m_cacheCreation->setPdxReadSerialized(flag);
     } else {
@@ -746,7 +777,7 @@ void CacheXmlParser::setPoolInfo(PoolFactory *factory, const char *name,
     }
   } else {
     throw CacheXmlException("XML:Unrecognized pool attribute " +
-        std::string(name));
+                            std::string(name));
   }
 }
 
@@ -783,7 +814,7 @@ void CacheXmlParser::startRegion(const xercesc::Attributes &attrs) {
       refid = value;
     } else {
       throw CacheXmlException("XML:<region> does not contain the attribute :" +
-          name);
+                              name);
     }
   }
 
@@ -806,7 +837,7 @@ void CacheXmlParser::startRegion(const xercesc::Attributes &attrs) {
       regionAttributesFactory = RegionAttributesFactory(namedRegions[refid]);
     } else {
       throw CacheXmlException("XML:referenced named attribute '" + refid +
-          "' does not exist.");
+                              "' does not exist.");
     }
   }
 
@@ -835,9 +866,9 @@ void CacheXmlParser::startRegionAttributes(const xercesc::Attributes &attrs) {
       if (value.empty()) {
         throw CacheXmlException(
             "XML:In the <region-attributes> element attribute " + name +
-                " can be set to empty string. It should either have a "
-                "value or the attribute should be removed. In the latter case "
-                "the default value will be set");
+            " can be set to empty string. It should either have a "
+            "value or the attribute should be removed. In the latter case "
+            "the default value will be set");
       }
 
       if (ID == name) {
@@ -858,7 +889,7 @@ void CacheXmlParser::startRegionAttributes(const xercesc::Attributes &attrs) {
             std::make_shared<RegionAttributesFactory>(namedRegions[refid]);
       } else {
         throw CacheXmlException("XML:referenced named attribute '" + refid +
-            "' does not exist.");
+                                "' does not exist.");
       }
     }
 
@@ -885,7 +916,7 @@ void CacheXmlParser::startRegionAttributes(const xercesc::Attributes &attrs) {
         } else {
           throw CacheXmlException(
               "XML: " + value +
-                  " is not a valid name for the attribute <client-notification>");
+              " is not a valid name for the attribute <client-notification>");
         }
         if (m_poolFactory) {
           m_poolFactory->setSubscriptionEnabled(flag);
@@ -906,7 +937,7 @@ void CacheXmlParser::startRegionAttributes(const xercesc::Attributes &attrs) {
         } else {
           throw CacheXmlException(
               "XML: " + value +
-                  " is not a valid name for the attribute <caching-enabled>");
+              " is not a valid name for the attribute <caching-enabled>");
         }
         regionAttributesFactory->setCachingEnabled(flag);
       } else if (LRU_ENTRIES_LIMIT == name) {
@@ -922,7 +953,7 @@ void CacheXmlParser::startRegionAttributes(const xercesc::Attributes &attrs) {
         } else {
           throw CacheXmlException(
               "XML: " + value +
-                  " is not a valid name for the attribute <disk-policy>");
+              " is not a valid name for the attribute <disk-policy>");
         }
         regionAttributesFactory->setDiskPolicy(diskPolicy);
       } else if (ENDPOINTS == name) {
@@ -945,7 +976,7 @@ void CacheXmlParser::startRegionAttributes(const xercesc::Attributes &attrs) {
         } else {
           throw CacheXmlException(
               "XML: " + value +
-                  " is not a valid value for the attribute <cloning-enabled>");
+              " is not a valid value for the attribute <cloning-enabled>");
         }
         regionAttributesFactory->setCloningEnabled(flag);
         isTCR = true;
@@ -958,8 +989,8 @@ void CacheXmlParser::startRegionAttributes(const xercesc::Attributes &attrs) {
           flag = true;
         } else {
           throw CacheXmlException("XML: " + value +
-              " is not a valid value for the attribute "
-              "<concurrency-checks-enabled>");
+                                  " is not a valid value for the attribute "
+                                  "<concurrency-checks-enabled>");
         }
         regionAttributesFactory->setConcurrencyChecksEnabled(flag);
       }
@@ -1008,7 +1039,8 @@ void CacheXmlParser::endRegionAttributes() {
  * encountered, we create an {@link ExpirationAttibutes} object from
  * the element's attributes and push it on the _stack.
  */
-void CacheXmlParser::startExpirationAttributes(const xercesc::Attributes &attrs) {
+void CacheXmlParser::startExpirationAttributes(
+    const xercesc::Attributes &attrs) {
   using apache::geode::internal::chrono::duration::from_string;
 
   if (!attrs) {
@@ -1052,13 +1084,13 @@ void CacheXmlParser::startExpirationAttributes(const xercesc::Attributes &attrs)
       } else {
         throw CacheXmlException(
             "XML: " + value +
-                " is not a valid value for the attribute <action>");
+            " is not a valid value for the attribute <action>");
       }
     } else {
       throw CacheXmlException(
           "XML:Incorrect attribute name specified in "
           "<expiration-attributes>: " +
-              value);
+          value);
     }
   }
   if (timeOut.empty()) {
@@ -1097,8 +1129,8 @@ void CacheXmlParser::startPersistenceManager(const xercesc::Attributes &attrs) {
     auto value = std::string(reinterpret_cast<const char *>(attrs[i + 1]));
     if (value.empty()) {
       throw CacheXmlException("XML:Value for attribute <" + name +
-          "> needs to be specified in the "
-          "<persistence-manager>");
+                              "> needs to be specified in the "
+                              "<persistence-manager>");
     }
 
     if (LIBRARY_NAME == name) {
@@ -1108,7 +1140,7 @@ void CacheXmlParser::startPersistenceManager(const xercesc::Attributes &attrs) {
     } else {
       throw CacheXmlException(
           "XML:Incorrect attribute name specified in <persistence-manager>: " +
-              value);
+          value);
     }
   }
   if (libraryFunctionName.empty()) {
@@ -1133,7 +1165,8 @@ void CacheXmlParser::startPersistenceManager(const xercesc::Attributes &attrs) {
   _stack.emplace(std::make_shared<std::string>(std::move(libraryFunctionName)));
 }
 
-void CacheXmlParser::startPersistenceProperties(const xercesc::Attributes &attrs) {
+void CacheXmlParser::startPersistenceProperties(
+    const xercesc::Attributes &attrs) {
   if (!attrs) {
     throw CacheXmlException("XML:No attributes provided for <property>");
   }
@@ -1155,8 +1188,8 @@ void CacheXmlParser::startPersistenceProperties(const xercesc::Attributes &attrs
 
     if (value.empty()) {
       throw CacheXmlException("XML:Value for attribute <" + name +
-          "> needs to be specified in the "
-          "<property>");
+                              "> needs to be specified in the "
+                              "<property>");
     }
 
     if ("name" == name) {
@@ -1198,8 +1231,8 @@ void CacheXmlParser::startCacheLoader(const xercesc::Attributes &attrs) {
 
     if (value.empty()) {
       throw CacheXmlException("XML:Value for attribute <" + name +
-          "> needs to be specified in the "
-          "<cache-loader>");
+                              "> needs to be specified in the "
+                              "<cache-loader>");
     }
 
     if (LIBRARY_NAME == name) {
@@ -1252,8 +1285,8 @@ void CacheXmlParser::startCacheListener(const xercesc::Attributes &attrs) {
 
     if (value.empty()) {
       throw CacheXmlException("XML:Value for attribute <" + name +
-          "> needs to be specified in the "
-          "<cache-listener>");
+                              "> needs to be specified in the "
+                              "<cache-listener>");
     }
 
     if (LIBRARY_NAME == name) {
@@ -1263,7 +1296,7 @@ void CacheXmlParser::startCacheListener(const xercesc::Attributes &attrs) {
     } else {
       throw CacheXmlException(
           "XML:Incorrect attribute name specified in <cache-listener> : " +
-              name);
+          name);
     }
   }
   if (libraryFunctionName.empty()) {
@@ -1311,8 +1344,8 @@ void CacheXmlParser::startPartitionResolver(const xercesc::Attributes &attrs) {
 
     if (value.empty()) {
       throw CacheXmlException("XML:Value for attribute <" + name +
-          "> needs to be specified in the "
-          "<cache-listener>");
+                              "> needs to be specified in the "
+                              "<cache-listener>");
     }
 
     if (LIBRARY_NAME == name) {
@@ -1322,7 +1355,7 @@ void CacheXmlParser::startPartitionResolver(const xercesc::Attributes &attrs) {
     } else {
       throw CacheXmlException(
           "XML:Incorrect attribute name specified in <partition-resolver>: " +
-              value);
+          value);
     }
   }
   if (libraryFunctionName.empty()) {
@@ -1370,7 +1403,7 @@ void CacheXmlParser::startCacheWriter(const xercesc::Attributes &attrs) {
 
     if (value.empty()) {
       throw CacheXmlException("XML:Value for attribute <" + name +
-          "> needs to be specified in the <cache-writer>");
+                              "> needs to be specified in the <cache-writer>");
     }
 
     if (LIBRARY_NAME == name) {
@@ -1551,7 +1584,7 @@ void CacheXmlParser::endPersistenceManager() {
   }
 }
 
-CacheXmlParser::~CacheXmlParser() {_GEODE_SAFE_DELETE(m_cacheCreation); }
+CacheXmlParser::~CacheXmlParser() { _GEODE_SAFE_DELETE(m_cacheCreation); }
 
 void CacheXmlParser::setError(const std::string &err) { m_error = err; }
 
