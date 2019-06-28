@@ -18,10 +18,16 @@ get_target_property(JAVAOBJECT_JAR_PATH javaobject JAR_FILE)
 configure_file(TestConfig.cpp.in TestConfig.cpp)
 
 add_library(integration-framework STATIC
-  Gfsh.cpp
-  Framework.cpp
   Cluster.cpp
+  Cluster.h
+  Framework.cpp
+  Framework.h
+  Gfsh.cpp
+  Gfsh.h
   GfshExecute.cpp
+  GfshExecute.h
+  NamedType.h
+  TestConfig.h
   ${CMAKE_CURRENT_BINARY_DIR}/TestConfig.cpp
   )
 

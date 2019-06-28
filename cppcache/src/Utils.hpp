@@ -165,6 +165,15 @@ class APACHE_GEODE_EXPORT Utils {
                                           size_t maxLength = _GF_MSG_LIMIT);
 
   /**
+   * lib should be in the form required by ACE_DLL, typically just like
+   * specifying
+   * a
+   * lib in java System.loadLibrary( "x" ); Where x is a component of the name
+   * lib<x>.so on unix, or <x>.dll on windows.
+   */
+  static void* getFactoryFunc(const std::string& lib, const std::string& funcName);
+
+  /**
    * Convert the byte array to a string as "%d %d ...".
    * <code>maxLength</code> as zero implies no limit.
    */

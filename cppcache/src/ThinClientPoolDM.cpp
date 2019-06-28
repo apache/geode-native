@@ -162,9 +162,11 @@ ThinClientPoolDM::ThinClientPoolDM(const char* name,
       m_PoolStatsSampler(nullptr),
       m_clientMetadataService(nullptr),
       m_primaryServerQueueSize(PRIMARY_QUEUE_NOT_AVAILABLE) {
-  static bool firstGurd = false;
-  if (firstGurd) ClientProxyMembershipID::increaseSynchCounter();
-  firstGurd = true;
+  static bool firstGuard = false;
+  if (firstGuard) {
+    ClientProxyMembershipID::increaseSynchCounter();
+  }
+  firstGuard = true;
 
   auto cacheImpl = m_connManager.getCacheImpl();
   auto& distributedSystem = cacheImpl->getDistributedSystem();

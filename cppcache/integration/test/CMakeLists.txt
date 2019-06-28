@@ -15,6 +15,7 @@
 
 add_executable(cpp-integration-test
   AuthInitializeTest.cpp
+  CacheXmlTest.cpp
   CommitConflictExceptionTest.cpp
   CqPlusAuthInitializeTest.cpp
   CqTest.cpp

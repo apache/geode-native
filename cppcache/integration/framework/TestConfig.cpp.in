@@ -21,6 +21,7 @@ const char *getFrameworkString(FrameworkVariable name) {
   switch(name) {
     case FrameworkVariable::JavaObjectJarPath: return "@JAVAOBJECT_JAR_PATH@";
     case FrameworkVariable::GfShExecutable: return "@Geode_gfsh_EXECUTABLE@";
+    case FrameworkVariable::TestCacheXmlDir: return "@CMAKE_CURRENT_SOURCE_DIR@/../../integration-test/resources";
     default: return "";
   }
 }

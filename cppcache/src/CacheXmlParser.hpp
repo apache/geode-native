@@ -26,8 +26,13 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundef"
 #pragma clang diagnostic ignored "-Wzero-as-null-pointer-constant"
+
 #include <xercesc/sax2/Attributes.hpp>
 #include <xercesc/sax2/DefaultHandler.hpp>
+#include <xercesc/sax2/SAX2XMLReader.hpp>
+#include <xercesc/sax2/XMLReaderFactory.hpp>
+#include <xercesc/util/XMLString.hpp>
+
 #pragma clang diagnostic pop
 
 #include <geode/Cache.hpp>
@@ -41,6 +46,7 @@
 
 #include "CacheXmlCreation.hpp"
 #include "RegionXmlCreation.hpp"
+#include "Utils.hpp"
 
 namespace apache {
 namespace geode {
@@ -48,16 +54,8 @@ namespace client {
 
 // Factory function typedefs to register the managed
 // cacheloader/writer/listener/resolver
-typedef CacheLoader* (*LibraryCacheLoaderFn)(const char* assemblyPath,
-                                             const char* factFuncName);
-typedef CacheListener* (*LibraryCacheListenerFn)(const char* assemblyPath,
-                                                 const char* factFuncName);
-typedef PartitionResolver* (*LibraryPartitionResolverFn)(
-    const char* assemblyPath, const char* factFuncName);
-typedef CacheWriter* (*LibraryCacheWriterFn)(const char* assemblyPath,
-                                             const char* factFuncName);
-typedef PersistenceManager* (*LibraryPersistenceManagerFn)(
-    const char* assemblyPath, const char* factFuncName);
+template<typename T>
+using FactoryLoaderFn = std::function<T*(const char*, const char*)>;
 
 class APACHE_GEODE_EXPORT CacheXmlParser : public xercesc::DefaultHandler {
   void startElement(const XMLCh* const uri, const XMLCh* const localname,
@@ -73,24 +71,18 @@ class APACHE_GEODE_EXPORT CacheXmlParser : public xercesc::DefaultHandler {
 
  private:
   std::stack<std::shared_ptr<void>> _stack;
-  CacheXmlCreation* m_cacheCreation;
-  std::string m_error;
-  int32_t m_nestedRegions;
-  std::shared_ptr<Properties> m_config;
-  std::string m_parserMessage;
-  bool m_flagCacheXmlException;
-  bool m_flagIllegalStateException;
-  bool m_flagAnyOtherException;
-  bool m_flagExpirationAttribute;
-  std::map<std::string, RegionAttributes> namedRegions;
-  std::shared_ptr<PoolFactory> m_poolFactory;
+  CacheXmlCreation* cacheCreation_;
+  int32_t nestedRegions_;
+  std::shared_ptr<Properties> config_;
+  std::string parserMessage_;
+  bool flagCacheXmlException_;
+  bool flagIllegalStateException_;
+  bool flagAnyOtherException_;
+  bool flagExpirationAttribute_;
+  std::map<std::string, RegionAttributes> namedRegions_;
+  std::shared_ptr<PoolFactory> poolFactory_;
 
-//  Cache* m_cache;
-  /** Pool helper */
-  void setPoolInfo(PoolFactory* poolFactory, const char* name,
-                   const char* value);
-
-  void handleParserErrors(int res);
+  Cache* cache_;
 
  public:
   explicit CacheXmlParser(Cache* cache);
@@ -103,10 +95,9 @@ class APACHE_GEODE_EXPORT CacheXmlParser : public xercesc::DefaultHandler {
   void endRegion();
   void startExpirationAttributes(const xercesc::Attributes& attrs);
   void startPersistenceManager(const xercesc::Attributes& attrs);
-  void startPersistenceProperties(const xercesc::Attributes& attrs);
+  void startPersistenceProperty(const xercesc::Attributes& attrs);
   void startRegionAttributes(const xercesc::Attributes& attrs);
   void startPdx(const xercesc::Attributes& attrs);
-  void endPdx();
   void startRegion(const xercesc::Attributes& attrs);
   void startCache(const xercesc::Attributes& attrs);
   void endCache();
@@ -120,11 +111,9 @@ class APACHE_GEODE_EXPORT CacheXmlParser : public xercesc::DefaultHandler {
   void endRegionTimeToLive();
   void endRegionAttributes();
   void endPersistenceManager();
-  void setError(const std::string& s);
-  const std::string& getError() const;
-  void incNesting() { m_nestedRegions++; }
-  void decNesting() { m_nestedRegions--; }
-  bool isRootLevel() { return (m_nestedRegions == 1); }
+  void incNesting() { nestedRegions_++; }
+  void decNesting() { nestedRegions_--; }
+  bool isRootLevel() { return (nestedRegions_ == 1); }
 
   /** Pool handlers */
   void startPool(const xercesc::Attributes& attrs);
@@ -133,38 +122,61 @@ class APACHE_GEODE_EXPORT CacheXmlParser : public xercesc::DefaultHandler {
   void startServer(const xercesc::Attributes& attrs);
 
   // getters/setters for flags and other members
-  inline bool isCacheXmlException() const { return m_flagCacheXmlException; }
+  inline bool isCacheXmlException() const { return flagCacheXmlException_; }
 
-  inline void setCacheXmlException() { m_flagCacheXmlException = true; }
+  inline void setCacheXmlException() { flagCacheXmlException_ = true; }
 
   inline bool isIllegalStateException() const {
-    return m_flagIllegalStateException;
+    return flagIllegalStateException_;
   }
 
-  inline void setIllegalStateException() { m_flagIllegalStateException = true; }
+  inline void setIllegalStateException() { flagIllegalStateException_ = true; }
 
-  inline bool isAnyOtherException() const { return m_flagAnyOtherException; }
+  inline bool isAnyOtherException() const { return flagAnyOtherException_; }
 
-  inline void setAnyOtherException() { m_flagAnyOtherException = true; }
+  inline void setAnyOtherException() { flagAnyOtherException_ = true; }
 
   inline bool isExpirationAttribute() const {
-    return m_flagExpirationAttribute;
+    return flagExpirationAttribute_;
   }
 
-  inline void setExpirationAttribute() { m_flagExpirationAttribute = true; }
+  inline void setExpirationAttribute() { flagExpirationAttribute_ = true; }
 
-  inline const std::string& getParserMessage() const { return m_parserMessage; }
+  inline const std::string& getParserMessage() const { return parserMessage_; }
 
   inline void setParserMessage(const std::string& str) {
-    m_parserMessage = str;
+    parserMessage_ = str;
   }
 
   // hooks for .NET managed cache listener/loader/writers
-  static LibraryCacheLoaderFn managedCacheLoaderFn;
-  static LibraryCacheListenerFn managedCacheListenerFn;
-  static LibraryPartitionResolverFn managedPartitionResolverFn;
-  static LibraryCacheWriterFn managedCacheWriterFn;
-  static LibraryPersistenceManagerFn managedPersistenceManagerFn;
+  static FactoryLoaderFn<CacheLoader> managedCacheLoaderFn_;
+  static FactoryLoaderFn<CacheListener> managedCacheListenerFn_;
+  static FactoryLoaderFn<PartitionResolver> managedPartitionResolverFn_;
+  static FactoryLoaderFn<CacheWriter> managedCacheWriterFn_;
+  static FactoryLoaderFn<PersistenceManager> managedPersistenceManagerFn_;
+
+ private:
+  std::string getOptionalValue(const xercesc::Attributes& attrs,
+                               const char* attributeName);
+  std::string getRequiredValue(const xercesc::Attributes& attrs,
+                               const char* attributeName);
+  std::string getLibraryName(const xercesc::Attributes &attrs);
+  std::string getLibraryFunctionName(const xercesc::Attributes &attrs);
+
+  template<typename T>
+  void verifyFactoryFunction(FactoryLoaderFn<T> loader, const std::string& libraryName, const std::string& functionName) {
+    try {
+      if (loader &&
+          functionName.find('.') != std::string::npos) {
+        // this is a managed library
+        (loader)(libraryName.c_str(), functionName.c_str());
+      } else {
+        apache::geode::client::Utils::getFactoryFunc(libraryName, functionName);
+      }
+    } catch (IllegalArgumentException &ex) {
+      throw CacheXmlException(ex.what());
+    }
+  }
 };
 }  // namespace client
 }  // namespace geode

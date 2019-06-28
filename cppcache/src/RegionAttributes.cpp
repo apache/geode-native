@@ -18,8 +18,6 @@
 #include <cstdlib>
 #include <string>
 
-#include <ace/DLL.h>
-
 #include <geode/Cache.hpp>
 #include <geode/DataInput.hpp>
 #include <geode/DataOutput.hpp>
@@ -32,6 +30,8 @@
 namespace apache {
 namespace geode {
 namespace client {
+
+using apache::geode::client::Utils;
 
 RegionAttributes::RegionAttributes()
     : Serializable(),
@@ -59,40 +59,17 @@ RegionAttributes::RegionAttributes()
 
 RegionAttributes::~RegionAttributes() noexcept = default;
 
-namespace impl {
-
-/**
- * lib should be in the form required by ACE_DLL, typically just like specifying
- * a
- * lib in java System.loadLibrary( "x" ); Where x is a component of the name
- * lib<x>.so on unix, or <x>.dll on windows.
- */
-void* getFactoryFunc(const std::string& lib, const std::string& funcName) {
-  ACE_DLL dll;
-  if (dll.open(lib.c_str(), ACE_DEFAULT_SHLIB_MODE, 0) == -1) {
-    throw IllegalArgumentException("cannot open library: " + lib);
-  }
-  void* func = dll.symbol(funcName.c_str());
-  if (func == nullptr) {
-    throw IllegalArgumentException("cannot find factory function " + funcName +
-                                   " in library " + lib);
-  }
-  return func;
-}
-
-}  // namespace impl
-
 std::shared_ptr<CacheLoader> RegionAttributes::getCacheLoader() const {
   if (!m_cacheLoader && !m_cacheLoaderLibrary.empty()) {
-    if (CacheXmlParser::managedCacheLoaderFn &&
+    if (CacheXmlParser::managedCacheLoaderFn_ &&
         m_cacheLoaderFactory.find('.') != std::string::npos) {
       // this is a managed library
-      m_cacheLoader.reset((*CacheXmlParser::managedCacheLoaderFn)(
+      m_cacheLoader.reset((CacheXmlParser::managedCacheLoaderFn_)(
           m_cacheLoaderLibrary.c_str(), m_cacheLoaderFactory.c_str()));
     } else {
       CacheLoader* (*funcptr)();
       funcptr = reinterpret_cast<CacheLoader* (*)()>(
-          apache::geode::client::impl::getFactoryFunc(m_cacheLoaderLibrary,
+          Utils::getFactoryFunc(m_cacheLoaderLibrary,
                                                       m_cacheLoaderFactory));
       m_cacheLoader.reset(funcptr());
     }
@@ -102,15 +79,15 @@ std::shared_ptr<CacheLoader> RegionAttributes::getCacheLoader() const {
 
 std::shared_ptr<CacheWriter> RegionAttributes::getCacheWriter() const {
   if (!m_cacheWriter && !m_cacheWriterLibrary.empty()) {
-    if (CacheXmlParser::managedCacheWriterFn &&
+    if (CacheXmlParser::managedCacheWriterFn_ &&
         m_cacheWriterFactory.find('.') != std::string::npos) {
       // this is a managed library
-      m_cacheWriter.reset((*CacheXmlParser::managedCacheWriterFn)(
+      m_cacheWriter.reset((CacheXmlParser::managedCacheWriterFn_)(
           m_cacheWriterLibrary.c_str(), m_cacheWriterFactory.c_str()));
     } else {
       CacheWriter* (*funcptr)();
       funcptr = reinterpret_cast<CacheWriter* (*)()>(
-          apache::geode::client::impl::getFactoryFunc(m_cacheWriterLibrary,
+          Utils::getFactoryFunc(m_cacheWriterLibrary,
                                                       m_cacheWriterFactory));
       m_cacheWriter.reset(funcptr());
     }
@@ -120,15 +97,15 @@ std::shared_ptr<CacheWriter> RegionAttributes::getCacheWriter() const {
 
 std::shared_ptr<CacheListener> RegionAttributes::getCacheListener() const {
   if (!m_cacheListener && !m_cacheListenerLibrary.empty()) {
-    if (CacheXmlParser::managedCacheListenerFn &&
+    if (CacheXmlParser::managedCacheListenerFn_ &&
         m_cacheListenerFactory.find('.') != std::string::npos) {
       // this is a managed library
-      m_cacheListener.reset((*CacheXmlParser::managedCacheListenerFn)(
+      m_cacheListener.reset((CacheXmlParser::managedCacheListenerFn_)(
           m_cacheListenerLibrary.c_str(), m_cacheListenerFactory.c_str()));
     } else {
       CacheListener* (*funcptr)();
       funcptr = reinterpret_cast<CacheListener* (*)()>(
-          apache::geode::client::impl::getFactoryFunc(m_cacheListenerLibrary,
+          Utils::getFactoryFunc(m_cacheListenerLibrary,
                                                       m_cacheListenerFactory));
       m_cacheListener.reset(funcptr());
     }
@@ -139,16 +116,16 @@ std::shared_ptr<CacheListener> RegionAttributes::getCacheListener() const {
 std::shared_ptr<PartitionResolver> RegionAttributes::getPartitionResolver()
     const {
   if (!m_partitionResolver && !m_partitionResolverLibrary.empty()) {
-    if (CacheXmlParser::managedPartitionResolverFn &&
+    if (CacheXmlParser::managedPartitionResolverFn_ &&
         m_partitionResolverFactory.find('.') != std::string::npos) {
       // this is a managed library
-      m_partitionResolver.reset((*CacheXmlParser::managedPartitionResolverFn)(
+      m_partitionResolver.reset((CacheXmlParser::managedPartitionResolverFn_)(
           m_partitionResolverLibrary.c_str(),
           m_partitionResolverFactory.c_str()));
     } else {
       PartitionResolver* (*funcptr)();
       funcptr = reinterpret_cast<PartitionResolver* (*)()>(
-          apache::geode::client::impl::getFactoryFunc(
+          Utils::getFactoryFunc(
               m_partitionResolverLibrary, m_partitionResolverFactory));
       m_partitionResolver.reset(funcptr());
     }
@@ -159,15 +136,15 @@ std::shared_ptr<PartitionResolver> RegionAttributes::getPartitionResolver()
 std::shared_ptr<PersistenceManager> RegionAttributes::getPersistenceManager()
     const {
   if (!m_persistenceManager && !m_persistenceLibrary.empty()) {
-    if (CacheXmlParser::managedPartitionResolverFn &&
+    if (CacheXmlParser::managedPersistenceManagerFn_ &&
         m_persistenceFactory.find('.') != std::string::npos) {
       // this is a managed library
-      m_persistenceManager.reset((*CacheXmlParser::managedPersistenceManagerFn)(
+      m_persistenceManager.reset((CacheXmlParser::managedPersistenceManagerFn_)(
           m_persistenceLibrary.c_str(), m_persistenceFactory.c_str()));
     } else {
       PersistenceManager* (*funcptr)();
       funcptr = reinterpret_cast<PersistenceManager* (*)()>(
-          apache::geode::client::impl::getFactoryFunc(m_persistenceLibrary,
+          Utils::getFactoryFunc(m_persistenceLibrary,
                                                       m_persistenceFactory));
       m_persistenceManager.reset(funcptr());
     }
