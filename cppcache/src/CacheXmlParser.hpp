@@ -58,7 +58,7 @@ namespace client {
 template <typename T>
 using FactoryLoaderFn = std::function<T*(const char*, const char*)>;
 
-class APACHE_GEODE_EXPORT CacheXmlParser : public xercesc::DefaultHandler {
+class CacheXmlParser : public xercesc::DefaultHandler {
   void startElement(const XMLCh* const uri, const XMLCh* const localname,
                     const XMLCh* const qname, const xercesc::Attributes& attrs);
   void endElement(const XMLCh* const uri, const XMLCh* const localname,

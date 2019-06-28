@@ -275,64 +275,64 @@ CacheXmlParser::CacheXmlParser(Cache *cache)
       poolFactory_(nullptr),
       cache_(cache) {
   start_element_map_.emplace(
-      std::make_tuple(std::string(CACHE), &CacheXmlParser::startCache));
+      std::make_pair(std::string(CACHE), &CacheXmlParser::startCache));
   start_element_map_.emplace(
-      std::make_tuple(std::string(CLIENT_CACHE), &CacheXmlParser::startCache));
+      std::make_pair(std::string(CLIENT_CACHE), &CacheXmlParser::startCache));
   start_element_map_.emplace(
-      std::make_tuple(std::string(PDX), &CacheXmlParser::startPdx));
+      std::make_pair(std::string(PDX), &CacheXmlParser::startPdx));
   start_element_map_.emplace(
-      std::make_tuple(std::string(REGION), &CacheXmlParser::startRegion));
+      std::make_pair(std::string(REGION), &CacheXmlParser::startRegion));
   start_element_map_.emplace(
-      std::make_tuple(std::string(ROOT_REGION), &CacheXmlParser::startRegion));
-  start_element_map_.emplace(std::make_tuple(
+      std::make_pair(std::string(ROOT_REGION), &CacheXmlParser::startRegion));
+  start_element_map_.emplace(std::make_pair(
       std::string(REGION_ATTRIBUTES), &CacheXmlParser::startRegionAttributes));
   start_element_map_.emplace(
-      std::make_tuple(std::string(EXPIRATION_ATTRIBUTES),
-                      &CacheXmlParser::startExpirationAttributes));
-  start_element_map_.emplace(std::make_tuple(
-      std::string(CACHE_LOADER), &CacheXmlParser::startCacheLoader));
-  start_element_map_.emplace(std::make_tuple(
-      std::string(CACHE_WRITER), &CacheXmlParser::startCacheWriter));
-  start_element_map_.emplace(std::make_tuple(
+      std::make_pair(std::string(EXPIRATION_ATTRIBUTES),
+                     &CacheXmlParser::startExpirationAttributes));
+  start_element_map_.emplace(std::make_pair(std::string(CACHE_LOADER),
+                                            &CacheXmlParser::startCacheLoader));
+  start_element_map_.emplace(std::make_pair(std::string(CACHE_WRITER),
+                                            &CacheXmlParser::startCacheWriter));
+  start_element_map_.emplace(std::make_pair(
       std::string(CACHE_LISTENER), &CacheXmlParser::startCacheListener));
   start_element_map_.emplace(
-      std::make_tuple(std::string(PARTITION_RESOLVER),
-                      &CacheXmlParser::startPartitionResolver));
+      std::make_pair(std::string(PARTITION_RESOLVER),
+                     &CacheXmlParser::startPartitionResolver));
   start_element_map_.emplace(
-      std::make_tuple(std::string(PERSISTENCE_MANAGER),
-                      &CacheXmlParser::startPersistenceManager));
-  start_element_map_.emplace(std::make_tuple(
+      std::make_pair(std::string(PERSISTENCE_MANAGER),
+                     &CacheXmlParser::startPersistenceManager));
+  start_element_map_.emplace(std::make_pair(
       std::string(PROPERTY), &CacheXmlParser::startPersistenceProperty));
   start_element_map_.emplace(
-      std::make_tuple(std::string(POOL), &CacheXmlParser::startPool));
+      std::make_pair(std::string(POOL), &CacheXmlParser::startPool));
   start_element_map_.emplace(
-      std::make_tuple(std::string(LOCATOR), &CacheXmlParser::startLocator));
+      std::make_pair(std::string(LOCATOR), &CacheXmlParser::startLocator));
   start_element_map_.emplace(
-      std::make_tuple(std::string(SERVER), &CacheXmlParser::startServer));
+      std::make_pair(std::string(SERVER), &CacheXmlParser::startServer));
 
   end_element_map_.emplace(
-      std::make_tuple(std::string(CACHE), &CacheXmlParser::endCache));
+      std::make_pair(std::string(CACHE), &CacheXmlParser::endCache));
   end_element_map_.emplace(
-      std::make_tuple(std::string(CLIENT_CACHE), &CacheXmlParser::endCache));
+      std::make_pair(std::string(CLIENT_CACHE), &CacheXmlParser::endCache));
   end_element_map_.emplace(
-      std::make_tuple(std::string(REGION), &CacheXmlParser::endRegion));
+      std::make_pair(std::string(REGION), &CacheXmlParser::endRegion));
   end_element_map_.emplace(
-      std::make_tuple(std::string(ROOT_REGION), &CacheXmlParser::endRegion));
-  end_element_map_.emplace(std::make_tuple(
+      std::make_pair(std::string(ROOT_REGION), &CacheXmlParser::endRegion));
+  end_element_map_.emplace(std::make_pair(
       std::string(REGION_ATTRIBUTES), &CacheXmlParser::endRegionAttributes));
-  end_element_map_.emplace(std::make_tuple(
+  end_element_map_.emplace(std::make_pair(
       std::string(REGION_TIME_TO_LIVE), &CacheXmlParser::endRegionTimeToLive));
-  end_element_map_.emplace(std::make_tuple(std::string(REGION_IDLE_TIME),
-                                           &CacheXmlParser::endRegionIdleTime));
-  end_element_map_.emplace(std::make_tuple(
-      std::string(ENTRY_TIME_TO_LIVE), &CacheXmlParser::endEntryTimeToLive));
-  end_element_map_.emplace(std::make_tuple(std::string(ENTRY_IDLE_TIME),
-                                           &CacheXmlParser::endEntryIdleTime));
+  end_element_map_.emplace(std::make_pair(std::string(REGION_IDLE_TIME),
+                                          &CacheXmlParser::endRegionIdleTime));
+  end_element_map_.emplace(std::make_pair(std::string(ENTRY_TIME_TO_LIVE),
+                                          &CacheXmlParser::endEntryTimeToLive));
+  end_element_map_.emplace(std::make_pair(std::string(ENTRY_IDLE_TIME),
+                                          &CacheXmlParser::endEntryIdleTime));
   end_element_map_.emplace(
-      std::make_tuple(std::string(PERSISTENCE_MANAGER),
-                      &CacheXmlParser::endPersistenceManager));
+      std::make_pair(std::string(PERSISTENCE_MANAGER),
+                     &CacheXmlParser::endPersistenceManager));
   end_element_map_.emplace(
-      std::make_tuple(std::string(POOL), &CacheXmlParser::endPool));
+      std::make_pair(std::string(POOL), &CacheXmlParser::endPool));
 }
 
 void CacheXmlParser::startElement(const XMLCh *const,

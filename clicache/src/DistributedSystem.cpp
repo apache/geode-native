@@ -316,19 +316,19 @@ namespace Apache
         _GF_MG_EXCEPTION_TRY2
 
           // Set the Generic ManagedCacheLoader/Listener/Writer factory functions.
-          native::CacheXmlParser::managedCacheLoaderFn =
+          native::CacheXmlParser::managedCacheLoaderFn_ =
             native::ManagedCacheLoaderGeneric::create;
-          native::CacheXmlParser::managedCacheListenerFn =
+          native::CacheXmlParser::managedCacheListenerFn_ =
             native::ManagedCacheListenerGeneric::create;
-          native::CacheXmlParser::managedCacheWriterFn =
+          native::CacheXmlParser::managedCacheWriterFn_ =
             native::ManagedCacheWriterGeneric::create;
 
           // Set the Generic ManagedPartitionResolver factory function
-          native::CacheXmlParser::managedPartitionResolverFn =
+          native::CacheXmlParser::managedPartitionResolverFn_ =
             native::ManagedFixedPartitionResolverGeneric::create;
 
           // Set the Generic ManagedPersistanceManager factory function
-          native::CacheXmlParser::managedPersistenceManagerFn =
+          native::CacheXmlParser::managedPersistenceManagerFn_ =
             native::ManagedPersistenceManagerGeneric::create;
 
         _GF_MG_EXCEPTION_CATCH_ALL2
