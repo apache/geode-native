@@ -151,15 +151,16 @@ char* Utils::copyString(const char* str) {
   return resStr;
 }
 
-void* Utils::getFactoryFunc(const std::string& lib, const std::string& funcName) {
+void* Utils::getFactoryFunc(const std::string& lib,
+                            const std::string& funcName) {
   ACE_DLL dll;
   if (dll.open(lib.c_str(), ACE_DEFAULT_SHLIB_MODE, 0) == -1) {
     throw IllegalArgumentException("cannot open library: " + lib);
   }
   void* func = dll.symbol(funcName.c_str());
   if (func == nullptr) {
-    throw IllegalArgumentException("cannot find factory function " +
-        funcName + " in library " + lib);
+    throw IllegalArgumentException("cannot find factory function " + funcName +
+                                   " in library " + lib);
   }
   return func;
 }

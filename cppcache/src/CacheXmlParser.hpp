@@ -55,7 +55,7 @@ namespace client {
 
 // Factory function typedefs to register the managed
 // cacheloader/writer/listener/resolver
-template<typename T>
+template <typename T>
 using FactoryLoaderFn = std::function<T*(const char*, const char*)>;
 
 class APACHE_GEODE_EXPORT CacheXmlParser : public xercesc::DefaultHandler {
@@ -137,17 +137,13 @@ class APACHE_GEODE_EXPORT CacheXmlParser : public xercesc::DefaultHandler {
 
   inline void setAnyOtherException() { flagAnyOtherException_ = true; }
 
-  inline bool isExpirationAttribute() const {
-    return flagExpirationAttribute_;
-  }
+  inline bool isExpirationAttribute() const { return flagExpirationAttribute_; }
 
   inline void setExpirationAttribute() { flagExpirationAttribute_ = true; }
 
   inline const std::string& getParserMessage() const { return parserMessage_; }
 
-  inline void setParserMessage(const std::string& str) {
-    parserMessage_ = str;
-  }
+  inline void setParserMessage(const std::string& str) { parserMessage_ = str; }
 
   // hooks for .NET managed cache listener/loader/writers
   static FactoryLoaderFn<CacheLoader> managedCacheLoaderFn_;
@@ -157,24 +153,25 @@ class APACHE_GEODE_EXPORT CacheXmlParser : public xercesc::DefaultHandler {
   static FactoryLoaderFn<PersistenceManager> managedPersistenceManagerFn_;
 
  private:
-  std::string getOptionalValue(const xercesc::Attributes& attrs,
-                               const char* attributeName);
-  std::string getRequiredValue(const xercesc::Attributes& attrs,
-                               const char* attributeName);
-  std::string getLibraryName(const xercesc::Attributes &attrs);
-  std::string getLibraryFunctionName(const xercesc::Attributes &attrs);
+  std::string getOptionalAttribute(const xercesc::Attributes& attrs,
+                                   const char* attributeName);
+  std::string getRequiredAttribute(const xercesc::Attributes& attrs,
+                                   const char* attributeName);
+  std::string getLibraryName(const xercesc::Attributes& attrs);
+  std::string getLibraryFunctionName(const xercesc::Attributes& attrs);
 
-  template<typename T>
-  void verifyFactoryFunction(FactoryLoaderFn<T> loader, const std::string& libraryName, const std::string& functionName) {
+  template <typename T>
+  void verifyFactoryFunction(FactoryLoaderFn<T> loader,
+                             const std::string& libraryName,
+                             const std::string& functionName) {
     try {
-      if (loader &&
-          functionName.find('.') != std::string::npos) {
+      if (loader && functionName.find('.') != std::string::npos) {
         // this is a managed library
         (loader)(libraryName.c_str(), functionName.c_str());
       } else {
         apache::geode::client::Utils::getFactoryFunc(libraryName, functionName);
       }
-    } catch (IllegalArgumentException &ex) {
+    } catch (IllegalArgumentException& ex) {
       throw CacheXmlException(ex.what());
     }
   }

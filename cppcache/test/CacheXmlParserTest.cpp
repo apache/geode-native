@@ -23,13 +23,14 @@ using apache::geode::client::CacheXmlParser;
 
 std::string xsd_prefix = R"(<?xml version='1.0' encoding='UTF-8'?>
 <client-cache
+  xmlns="http://geode.apache.org/schema/cpp-cache"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns="http://geode.apache.org/schema/cache"
-  xsi:schemaLocation="http://geode.apache.org/schema/cpp-cache-1.0.xsd"
-  version='10.0'
+  xsi:schemaLocation="http://geode.apache.org/schema/cpp-cache
+                      http//geode.apache.org/schema/cpp-cache/cpp-cache-1.0.xsd"
+  version='1.0'
 >)";
 
-std::string valid_cache_config_body = R"(<root-region name = 'Root1' >
+std::string valid_cache_config_body = R"(<region name = 'Root1' >
         <region-attributes scope='local'
                            caching-enabled='true'
                            initial-capacity='25'
@@ -57,8 +58,8 @@ std::string valid_cache_config_body = R"(<root-region name = 'Root1' >
                                concurrency-level='52'>
             </region-attributes>
         </region>
-    </root-region>
-    <root-region name= 'Root2'>
+    </region>
+    <region name= 'Root2'>
         <region-attributes scope='local'
                            caching-enabled='true'
                            initial-capacity='16'
@@ -95,11 +96,87 @@ std::string valid_cache_config_body = R"(<root-region name = 'Root1' >
             <region name='SubSubRegion221'>
             </region>
         </region>
-    </root-region>
+    </region>
+</client-cache>)";
+
+std::string invalid_cache_config_body = R"(<region >
+        <region-attributes scope='local'
+                           caching-enabled='true'
+                           initial-capacity='25'
+                           load-factor='0.32'
+                           concurrency-level='10'
+                           lru-entries-limit = '35'>
+            <region-idle-time>
+                <expiration-attributes timeout='20s' action='destroy'/>
+            </region-idle-time>
+            <entry-idle-time>
+                <expiration-attributes timeout='10s' action='invalidate'/>
+            </entry-idle-time>
+            <region-time-to-live>
+                <expiration-attributes timeout='0s' action='local-destroy'/>
+            </region-time-to-live>
+            <entry-time-to-live>
+                <expiration-attributes timeout='0s' action='local-invalidate'/>
+            </entry-time-to-live>
+        </region-attributes>
+        <region name='SubRegion1'>
+            <region-attributes scope='local'
+                               caching-enabled='true'
+                               initial-capacity='23'
+                               load-factor='0.89'
+                               concurrency-level='52'>
+            </region-attributes>
+        </region>
+    </region>
+    <region name= 'Root2'>
+        <region-attributes scope='local'
+                           caching-enabled='true'
+                           initial-capacity='16'
+                           load-factor='0.75'
+                           concurrency-level='16'>
+            <region-time-to-live>
+                <expiration-attributes timeout='0s' action='destroy'/>
+            </region-time-to-live>
+            <region-idle-time>
+                <expiration-attributes timeout='0s' action='invalidate'/>
+            </region-idle-time>
+            <entry-time-to-live>
+                <expiration-attributes timeout='0s' action='destroy'/>
+            </entry-time-to-live>
+            <entry-idle-time>
+                <expiration-attributes timeout='0s' action='invalidate'/>
+            </entry-idle-time>
+        </region-attributes>
+        <region name='SubRegion21'>
+            <region-attributes scope='local'
+                               caching-enabled='true'
+                               initial-capacity='16'
+                               load-factor='0.75'
+                               concurrency-level='16'>
+                <region-idle-time>
+                    <expiration-attributes timeout='20s' action='destroy'/>
+                </region-idle-time>
+                <entry-idle-time>
+                    <expiration-attributes timeout='10s' action='invalidate'/>
+                </entry-idle-time>
+            </region-attributes>
+        </region>
+        <region name='SubRegion22'>
+            <region name='SubSubRegion221'>
+            </region>
+        </region>
+    </region>
 </client-cache>)";
 
 TEST(CacheXmlParser, CanParseRegionConfigFromAValidXsdCacheConfig) {
   CacheXmlParser parser(nullptr);
   std::string xml = xsd_prefix + valid_cache_config_body;
   parser.parseMemory(xml.c_str(), static_cast<int>(xml.length()));
+}
+
+TEST(CacheXmlParser, ParseRegionConfigFromInvalidCacheConfigThrowsException) {
+  CacheXmlParser parser(nullptr);
+  std::string xml = xsd_prefix + invalid_cache_config_body;
+  ASSERT_THROW(parser.parseMemory(xml.c_str(), static_cast<int>(xml.length())),
+               apache::geode::client::CacheXmlException);
 }

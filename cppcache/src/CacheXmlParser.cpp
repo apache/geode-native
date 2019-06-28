@@ -365,7 +365,9 @@ void CacheXmlParser::fatalError(const xercesc::SAXParseException &exception) {
   char *message = XMLString::transcode(exception.getMessage());
   LOGDEBUG("Fatal Error: \"%s\" at line: %ulld", message,
            exception.getLineNumber());
+  auto ex = CacheXmlException(message);
   XMLString::release(&message);
+  throw ex;
 }
 
 void CacheXmlParser::parseFile(const char *filename) {
@@ -505,8 +507,8 @@ void CacheXmlParser::create(Cache *cache) {
   Log::info("Declarative configuration of cache completed successfully");
 }
 
-std::string CacheXmlParser::getOptionalValue(const xercesc::Attributes &attrs,
-                                             const char *attributeName) {
+std::string CacheXmlParser::getOptionalAttribute(
+    const xercesc::Attributes &attrs, const char *attributeName) {
   using unique_xml_char = std::unique_ptr<XMLCh, std::function<void(XMLCh *)>>;
   using unique_xerces_char = std::unique_ptr<char, std::function<void(char *)>>;
   auto xml_deleter = [](XMLCh *ch) { xercesc::XMLString::release(&ch); };
@@ -529,8 +531,8 @@ std::string CacheXmlParser::getOptionalValue(const xercesc::Attributes &attrs,
   return {translatedValue.get()};
 }
 
-std::string CacheXmlParser::getRequiredValue(const xercesc::Attributes &attrs,
-                                             const char *attributeName) {
+std::string CacheXmlParser::getRequiredAttribute(
+    const xercesc::Attributes &attrs, const char *attributeName) {
   using unique_xml_char = std::unique_ptr<XMLCh, std::function<void(XMLCh *)>>;
   auto xml_deleter = [](XMLCh *ch) { xercesc::XMLString::release(&ch); };
 
@@ -542,11 +544,11 @@ std::string CacheXmlParser::getRequiredValue(const xercesc::Attributes &attrs,
                             std::string(attributeName));
   }
 
-  return getOptionalValue(attrs, attributeName);
+  return getOptionalAttribute(attrs, attributeName);
 }
 
 void CacheXmlParser::startCache(const xercesc::Attributes &attrs) {
-  auto value = getOptionalValue(attrs, ENDPOINTS);
+  auto value = getOptionalAttribute(attrs, ENDPOINTS);
   if (!value.empty()) {
     if (poolFactory_) {
       for (auto &&endPoint : parseEndPoints(value)) {
@@ -555,7 +557,7 @@ void CacheXmlParser::startCache(const xercesc::Attributes &attrs) {
     }
   }
 
-  value = getOptionalValue(attrs, REDUNDANCY_LEVEL);
+  value = getOptionalAttribute(attrs, REDUNDANCY_LEVEL);
   if (!value.empty()) {
     if (poolFactory_) {
       poolFactory_->setSubscriptionRedundancy(std::stoi(value));
@@ -566,7 +568,7 @@ void CacheXmlParser::startCache(const xercesc::Attributes &attrs) {
 }
 
 void CacheXmlParser::startPdx(const xercesc::Attributes &attrs) {
-  auto ignoreUnreadFields = getOptionalValue(attrs, IGNORE_UNREAD_FIELDS);
+  auto ignoreUnreadFields = getOptionalAttribute(attrs, IGNORE_UNREAD_FIELDS);
   if (!ignoreUnreadFields.empty()) {
     if (equal_ignore_case(ignoreUnreadFields, "true")) {
       cacheCreation_->setPdxIgnoreUnreadField(true);
@@ -575,7 +577,7 @@ void CacheXmlParser::startPdx(const xercesc::Attributes &attrs) {
     }
   }
 
-  auto pdxReadSerialized = getOptionalValue(attrs, READ_SERIALIZED);
+  auto pdxReadSerialized = getOptionalAttribute(attrs, READ_SERIALIZED);
   if (!pdxReadSerialized.empty()) {
     if (equal_ignore_case(pdxReadSerialized, "true")) {
       cacheCreation_->setPdxReadSerialized(true);
@@ -588,8 +590,8 @@ void CacheXmlParser::startPdx(const xercesc::Attributes &attrs) {
 void CacheXmlParser::startLocator(const xercesc::Attributes &attrs) {
   poolFactory_ = std::static_pointer_cast<PoolFactory>(_stack.top());
 
-  auto host = getRequiredValue(attrs, HOST);
-  auto port = getRequiredValue(attrs, PORT);
+  auto host = getRequiredAttribute(attrs, HOST);
+  auto port = getRequiredAttribute(attrs, PORT);
 
   poolFactory_->addLocator(host, std::stoi(port));
 }
@@ -597,8 +599,8 @@ void CacheXmlParser::startLocator(const xercesc::Attributes &attrs) {
 void CacheXmlParser::startServer(const xercesc::Attributes &attrs) {
   auto factory = std::static_pointer_cast<PoolFactory>(_stack.top());
 
-  auto host = getRequiredValue(attrs, HOST);
-  auto port = getRequiredValue(attrs, PORT);
+  auto host = getRequiredAttribute(attrs, HOST);
+  auto port = getRequiredAttribute(attrs, PORT);
 
   factory->addServer(host, std::stoi(port));
 }
@@ -610,17 +612,18 @@ void CacheXmlParser::startPool(const xercesc::Attributes &attrs) {
   auto factory =
       std::make_shared<PoolFactory>(cache_->getPoolManager().createFactory());
 
-  auto poolName = getRequiredValue(attrs, NAME);
+  auto poolName = getRequiredAttribute(attrs, NAME);
 
   auto poolxml = std::make_shared<PoolXmlCreation>(poolName, factory);
 
-  auto freeConnectionTimeout = getOptionalValue(attrs, FREE_CONNECTION_TIMEOUT);
+  auto freeConnectionTimeout =
+      getOptionalAttribute(attrs, FREE_CONNECTION_TIMEOUT);
   if (!freeConnectionTimeout.empty()) {
     factory->setFreeConnectionTimeout(
         from_string<std::chrono::milliseconds>(freeConnectionTimeout));
   }
 
-  auto multiUserSecureMode = getOptionalValue(attrs, MULTIUSER_SECURE_MODE);
+  auto multiUserSecureMode = getOptionalAttribute(attrs, MULTIUSER_SECURE_MODE);
   if (!multiUserSecureMode.empty()) {
     if (equal_ignore_case(multiUserSecureMode, "true")) {
       factory->setMultiuserAuthentication(true);
@@ -629,77 +632,77 @@ void CacheXmlParser::startPool(const xercesc::Attributes &attrs) {
     }
   }
 
-  auto idleTimeout = getOptionalValue(attrs, IDLE_TIMEOUT);
+  auto idleTimeout = getOptionalAttribute(attrs, IDLE_TIMEOUT);
   if (!idleTimeout.empty()) {
     factory->setIdleTimeout(
         from_string<std::chrono::milliseconds>(idleTimeout));
   }
 
   auto loadConditioningInterval =
-      getOptionalValue(attrs, LOAD_CONDITIONING_INTERVAL);
+      getOptionalAttribute(attrs, LOAD_CONDITIONING_INTERVAL);
   if (!loadConditioningInterval.empty()) {
     factory->setLoadConditioningInterval(
         from_string<std::chrono::milliseconds>(loadConditioningInterval));
   }
 
-  auto maxConnections = getOptionalValue(attrs, MAX_CONNECTIONS);
+  auto maxConnections = getOptionalAttribute(attrs, MAX_CONNECTIONS);
   if (!maxConnections.empty()) {
     factory->setMaxConnections(atoi(maxConnections.c_str()));
   }
 
-  auto minConnections = getOptionalValue(attrs, MIN_CONNECTIONS);
+  auto minConnections = getOptionalAttribute(attrs, MIN_CONNECTIONS);
   if (!minConnections.empty()) {
     factory->setMinConnections(atoi(minConnections.c_str()));
   }
 
-  auto pingInterval = getOptionalValue(attrs, PING_INTERVAL);
+  auto pingInterval = getOptionalAttribute(attrs, PING_INTERVAL);
   if (!pingInterval.empty()) {
     factory->setPingInterval(
         from_string<std::chrono::milliseconds>(std::string(pingInterval)));
   }
 
   auto updateLocatorListInterval =
-      getOptionalValue(attrs, UPDATE_LOCATOR_LIST_INTERVAL);
+      getOptionalAttribute(attrs, UPDATE_LOCATOR_LIST_INTERVAL);
   if (!updateLocatorListInterval.empty()) {
     factory->setUpdateLocatorListInterval(
         from_string<std::chrono::milliseconds>(updateLocatorListInterval));
   }
 
-  auto readTimeout = getOptionalValue(attrs, READ_TIMEOUT);
+  auto readTimeout = getOptionalAttribute(attrs, READ_TIMEOUT);
   if (!readTimeout.empty()) {
     factory->setReadTimeout(
         from_string<std::chrono::milliseconds>(std::string(readTimeout)));
   }
 
-  auto retryAttempts = getOptionalValue(attrs, RETRY_ATTEMPTS);
+  auto retryAttempts = getOptionalAttribute(attrs, RETRY_ATTEMPTS);
   if (!retryAttempts.empty()) {
     factory->setRetryAttempts(atoi(retryAttempts.c_str()));
   }
 
-  auto serverGroup = getOptionalValue(attrs, SERVER_GROUP);
+  auto serverGroup = getOptionalAttribute(attrs, SERVER_GROUP);
   if (!serverGroup.empty()) {
     factory->setServerGroup(serverGroup);
   }
 
-  auto socketBufferSize = getOptionalValue(attrs, SOCKET_BUFFER_SIZE);
+  auto socketBufferSize = getOptionalAttribute(attrs, SOCKET_BUFFER_SIZE);
   if (!socketBufferSize.empty()) {
     factory->setSocketBufferSize(atoi(socketBufferSize.c_str()));
   }
 
-  auto statisticInterval = getOptionalValue(attrs, STATISTIC_INTERVAL);
+  auto statisticInterval = getOptionalAttribute(attrs, STATISTIC_INTERVAL);
   if (!statisticInterval.empty()) {
     factory->setStatisticInterval(
         from_string<std::chrono::milliseconds>(statisticInterval));
   }
 
   auto subscriptionAckInterval =
-      getOptionalValue(attrs, SUBSCRIPTION_ACK_INTERVAL);
+      getOptionalAttribute(attrs, SUBSCRIPTION_ACK_INTERVAL);
   if (!subscriptionAckInterval.empty()) {
     factory->setSubscriptionAckInterval(
         from_string<std::chrono::milliseconds>(subscriptionAckInterval));
   }
 
-  auto subscriptionEnabled = getOptionalValue(attrs, SUBSCRIPTION_ENABLED);
+  auto subscriptionEnabled = getOptionalAttribute(attrs, SUBSCRIPTION_ENABLED);
   if (!subscriptionEnabled.empty()) {
     if (equal_ignore_case(subscriptionEnabled, "true")) {
       factory->setSubscriptionEnabled(true);
@@ -709,7 +712,7 @@ void CacheXmlParser::startPool(const xercesc::Attributes &attrs) {
   }
 
   auto subscriptionMessageTrackingTimeout =
-      getOptionalValue(attrs, SUBSCRIPTION_MTT);
+      getOptionalAttribute(attrs, SUBSCRIPTION_MTT);
   if (!subscriptionMessageTrackingTimeout.empty()) {
     factory->setSubscriptionMessageTrackingTimeout(
         from_string<std::chrono::milliseconds>(
@@ -717,13 +720,13 @@ void CacheXmlParser::startPool(const xercesc::Attributes &attrs) {
   }
 
   auto subscriptionRedundancy =
-      getOptionalValue(attrs, SUBSCRIPTION_REDUNDANCY);
+      getOptionalAttribute(attrs, SUBSCRIPTION_REDUNDANCY);
   if (!subscriptionRedundancy.empty()) {
     factory->setSubscriptionRedundancy(atoi(subscriptionRedundancy.c_str()));
   }
 
   auto threadLocalConnections =
-      getOptionalValue(attrs, THREAD_LOCAL_CONNECTIONS);
+      getOptionalAttribute(attrs, THREAD_LOCAL_CONNECTIONS);
   if (!threadLocalConnections.empty()) {
     if (equal_ignore_case(threadLocalConnections, "true")) {
       factory->setThreadLocalConnections(true);
@@ -732,7 +735,7 @@ void CacheXmlParser::startPool(const xercesc::Attributes &attrs) {
     }
   }
 
-  auto prSingleHopEnabled = getOptionalValue(attrs, PR_SINGLE_HOP_ENABLED);
+  auto prSingleHopEnabled = getOptionalAttribute(attrs, PR_SINGLE_HOP_ENABLED);
   if (!prSingleHopEnabled.empty()) {
     if (equal_ignore_case(prSingleHopEnabled, "true")) {
       factory->setPRSingleHopEnabled(true);
@@ -760,13 +763,7 @@ void CacheXmlParser::endPool() {
 void CacheXmlParser::startRegion(const xercesc::Attributes &attrs) {
   incNesting();
   auto isRoot = isRootLevel();
-
-  if ((attrs.getLength() == 0) || (attrs.getLength() > 2)) {
-    throw CacheXmlException(
-        "XML:Incorrect number of attributes provided for a <region>");
-  }
-
-  auto regionName = getRequiredValue(attrs, NAME);
+  auto regionName = getRequiredAttribute(attrs, NAME);
 
   auto region = std::make_shared<RegionXmlCreation>(regionName, isRoot);
   if (!region) {
@@ -775,7 +772,7 @@ void CacheXmlParser::startRegion(const xercesc::Attributes &attrs) {
 
   _stack.push(region);
 
-  auto refid = getOptionalValue(attrs, REFID);
+  auto refid = getOptionalAttribute(attrs, REFID);
   if (!refid.empty()) {
     if (namedRegions_.find(refid) != namedRegions_.end()) {
       auto regionAttributesFactory =
@@ -803,13 +800,13 @@ void CacheXmlParser::startRegionAttributes(const xercesc::Attributes &attrs) {
     regionAttributesFactory =
         std::make_shared<RegionAttributesFactory>(region->getAttributes());
   } else {
-    auto id = getOptionalValue(attrs, ID);
+    auto id = getOptionalAttribute(attrs, ID);
     if (!id.empty()) {
       auto region = std::static_pointer_cast<RegionXmlCreation>(_stack.top());
       region->setAttrId(id);
     }
 
-    auto refid = getOptionalValue(attrs, REFID);
+    auto refid = getOptionalAttribute(attrs, REFID);
     if (refid.empty()) {
       auto region = std::static_pointer_cast<RegionXmlCreation>(_stack.top());
       regionAttributesFactory =
@@ -830,7 +827,7 @@ void CacheXmlParser::startRegionAttributes(const xercesc::Attributes &attrs) {
     }
 
     auto clientNotificationEnabled =
-        getOptionalValue(attrs, CLIENT_NOTIFICATION_ENABLED);
+        getOptionalAttribute(attrs, CLIENT_NOTIFICATION_ENABLED);
     if (!clientNotificationEnabled.empty()) {
       bool flag = false;
       std::transform(clientNotificationEnabled.begin(),
@@ -850,22 +847,22 @@ void CacheXmlParser::startRegionAttributes(const xercesc::Attributes &attrs) {
       }
     }
 
-    auto initialCapacity = getOptionalValue(attrs, INITIAL_CAPACITY);
+    auto initialCapacity = getOptionalAttribute(attrs, INITIAL_CAPACITY);
     if (!initialCapacity.empty()) {
       regionAttributesFactory->setInitialCapacity(std::stoi(initialCapacity));
     }
 
-    auto concurrencyLevel = getOptionalValue(attrs, CONCURRENCY_LEVEL);
+    auto concurrencyLevel = getOptionalAttribute(attrs, CONCURRENCY_LEVEL);
     if (!concurrencyLevel.empty()) {
       regionAttributesFactory->setConcurrencyLevel(std::stoi(concurrencyLevel));
     }
 
-    auto loadFactor = getOptionalValue(attrs, LOAD_FACTOR);
+    auto loadFactor = getOptionalAttribute(attrs, LOAD_FACTOR);
     if (!loadFactor.empty()) {
       regionAttributesFactory->setLoadFactor(std::stof(loadFactor));
     }
 
-    auto cachingEnabled = getOptionalValue(attrs, CACHING_ENABLED);
+    auto cachingEnabled = getOptionalAttribute(attrs, CACHING_ENABLED);
     if (!cachingEnabled.empty()) {
       bool flag = false;
       std::transform(cachingEnabled.begin(), cachingEnabled.end(),
@@ -882,12 +879,12 @@ void CacheXmlParser::startRegionAttributes(const xercesc::Attributes &attrs) {
       regionAttributesFactory->setCachingEnabled(flag);
     }
 
-    auto lruEntriesLimit = getOptionalValue(attrs, LRU_ENTRIES_LIMIT);
+    auto lruEntriesLimit = getOptionalAttribute(attrs, LRU_ENTRIES_LIMIT);
     if (!lruEntriesLimit.empty()) {
       regionAttributesFactory->setLruEntriesLimit(std::stoi(lruEntriesLimit));
     }
 
-    auto diskPolicyString = getOptionalValue(attrs, DISK_POLICY);
+    auto diskPolicyString = getOptionalAttribute(attrs, DISK_POLICY);
     if (!diskPolicyString.empty()) {
       auto diskPolicy = apache::geode::client::DiskPolicyType::NONE;
       if (OVERFLOWS == diskPolicyString) {
@@ -904,7 +901,7 @@ void CacheXmlParser::startRegionAttributes(const xercesc::Attributes &attrs) {
       regionAttributesFactory->setDiskPolicy(diskPolicy);
     }
 
-    auto endpoints = getOptionalValue(attrs, ENDPOINTS);
+    auto endpoints = getOptionalAttribute(attrs, ENDPOINTS);
     if (!endpoints.empty()) {
       if (poolFactory_) {
         for (auto &&endPoint : parseEndPoints(ENDPOINTS)) {
@@ -914,13 +911,13 @@ void CacheXmlParser::startRegionAttributes(const xercesc::Attributes &attrs) {
       isTCR = true;
     }
 
-    auto poolName = getOptionalValue(attrs, POOL_NAME);
+    auto poolName = getOptionalAttribute(attrs, POOL_NAME);
     if (!poolName.empty()) {
       regionAttributesFactory->setPoolName(poolName);
       isTCR = true;
     }
 
-    auto cloningEnabled = getOptionalValue(attrs, CLONING_ENABLED);
+    auto cloningEnabled = getOptionalAttribute(attrs, CLONING_ENABLED);
     if (!cloningEnabled.empty()) {
       bool flag = false;
       std::transform(cloningEnabled.begin(), cloningEnabled.end(),
@@ -940,7 +937,7 @@ void CacheXmlParser::startRegionAttributes(const xercesc::Attributes &attrs) {
     }
 
     auto concurrencyChecksEnabled =
-        getOptionalValue(attrs, CONCURRENCY_CHECKS_ENABLED);
+        getOptionalAttribute(attrs, CONCURRENCY_CHECKS_ENABLED);
     if (!concurrencyChecksEnabled.empty()) {
       bool flag = false;
       std::transform(concurrencyChecksEnabled.begin(),
@@ -1011,7 +1008,7 @@ void CacheXmlParser::startExpirationAttributes(
   }
 
   ExpirationAction expire = ExpirationAction::INVALID_ACTION;
-  auto action = getOptionalValue(attrs, ACTION);
+  auto action = getOptionalAttribute(attrs, ACTION);
   if (action.empty()) {
     throw CacheXmlException(
         "XML:The attribute <action> of <expiration-attributes> cannot be"
@@ -1031,7 +1028,7 @@ void CacheXmlParser::startExpirationAttributes(
                             " is not a valid value for the attribute <action>");
   }
 
-  auto timeOut = getOptionalValue(attrs, TIMEOUT);
+  auto timeOut = getOptionalAttribute(attrs, TIMEOUT);
   if (timeOut.empty()) {
     throw CacheXmlException(
         "XML:Value for attribute <timeout> needs to be specified");
@@ -1051,12 +1048,12 @@ void CacheXmlParser::startExpirationAttributes(
 }
 
 std::string CacheXmlParser::getLibraryName(const xercesc::Attributes &attrs) {
-  return getRequiredValue(attrs, LIBRARY_NAME);
+  return getRequiredAttribute(attrs, LIBRARY_NAME);
 }
 
 std::string CacheXmlParser::getLibraryFunctionName(
     const xercesc::Attributes &attrs) {
-  return getRequiredValue(attrs, LIBRARY_FUNCTION_NAME);
+  return getRequiredAttribute(attrs, LIBRARY_FUNCTION_NAME);
 }
 
 void CacheXmlParser::startPersistenceManager(const xercesc::Attributes &attrs) {
@@ -1072,8 +1069,8 @@ void CacheXmlParser::startPersistenceManager(const xercesc::Attributes &attrs) {
 
 void CacheXmlParser::startPersistenceProperty(
     const xercesc::Attributes &attrs) {
-  auto propertyName = getRequiredValue(attrs, NAME);
-  auto propertyValue = getRequiredValue(attrs, VALUE);
+  auto propertyName = getRequiredAttribute(attrs, NAME);
+  auto propertyValue = getRequiredAttribute(attrs, VALUE);
 
   if (config_ == nullptr) {
     config_ = Properties::create();

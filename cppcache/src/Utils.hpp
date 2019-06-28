@@ -171,7 +171,8 @@ class APACHE_GEODE_EXPORT Utils {
    * lib in java System.loadLibrary( "x" ); Where x is a component of the name
    * lib<x>.so on unix, or <x>.dll on windows.
    */
-  static void* getFactoryFunc(const std::string& lib, const std::string& funcName);
+  static void* getFactoryFunc(const std::string& lib,
+                              const std::string& funcName);
 
   /**
    * Convert the byte array to a string as "%d %d ...".
