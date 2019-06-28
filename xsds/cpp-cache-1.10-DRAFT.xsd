@@ -21,7 +21,6 @@ limitations under the License.
     xmlns:nc="http://geode.apache.org/schema/cpp-cache"
     xmlns:xsd="http://www.w3.org/2001/XMLSchema"
     elementFormDefault="qualified"
-    attributeFormDefault="unqualified"
     version="1.0">
   <xsd:annotation>
     <xsd:documentation><![CDATA[
@@ -61,8 +60,8 @@ declarative caching XML file elements unless indicated otherwise.
         <xsd:element minOccurs="0" maxOccurs="unbounded" name="pool">
           <xsd:complexType>
             <xsd:choice>
-              <xsd:element minOccurs="1" maxOccurs="unbounded" name="locator" type="nc:host-port-type" />
-              <xsd:element minOccurs="1" maxOccurs="unbounded" name="server" type="nc:host-port-type" />
+              <xsd:element maxOccurs="unbounded" name="locator" type="nc:host-port-type" />
+              <xsd:element maxOccurs="unbounded" name="server" type="nc:host-port-type" />
             </xsd:choice>
             <xsd:attribute name="name" type="xsd:string" use="required" />
             <xsd:attribute name="free-connection-timeout" type="nc:duration-type" />
@@ -87,7 +86,7 @@ declarative caching XML file elements unless indicated otherwise.
           </xsd:complexType>
         </xsd:element>
         <xsd:element minOccurs="0" maxOccurs="unbounded" name="region" type="nc:region-type" />
-        <xsd:element minOccurs="0" maxOccurs="1" name="pdx">
+        <xsd:element minOccurs="0" name="pdx">
           <xsd:complexType>
             <xsd:attribute name="ignore-unread-fields" type="xsd:boolean" />
             <xsd:attribute name="read-serialized" type="xsd:boolean" />
@@ -100,7 +99,7 @@ declarative caching XML file elements unless indicated otherwise.
 
   <xsd:complexType name="region-type">
     <xsd:sequence>
-      <xsd:element minOccurs="0" maxOccurs="1" name="region-attributes" type="nc:region-attributes-type" />
+      <xsd:element minOccurs="0" name="region-attributes" type="nc:region-attributes-type" />
       <xsd:element minOccurs="0" maxOccurs="unbounded" name="region" type="nc:region-type" />
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string" use="required" />
