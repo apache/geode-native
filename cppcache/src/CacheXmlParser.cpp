@@ -252,11 +252,13 @@ extern "C" void warningDebug(void *, const char *msg, ...) {
 ///////////////static variables of the class////////////////////////
 
 FactoryLoaderFn<CacheLoader> CacheXmlParser::managedCacheLoaderFn_ = nullptr;
-FactoryLoaderFn<CacheListener> CacheXmlParser::managedCacheListenerFn_ = nullptr;
-FactoryLoaderFn<PartitionResolver> CacheXmlParser::managedPartitionResolverFn_ = nullptr;
-FactoryLoaderFn<CacheWriter> CacheXmlParser::managedCacheWriterFn_ = nullptr;
-FactoryLoaderFn<PersistenceManager> CacheXmlParser::managedPersistenceManagerFn_ =
+FactoryLoaderFn<CacheListener> CacheXmlParser::managedCacheListenerFn_ =
     nullptr;
+FactoryLoaderFn<PartitionResolver> CacheXmlParser::managedPartitionResolverFn_ =
+    nullptr;
+FactoryLoaderFn<CacheWriter> CacheXmlParser::managedCacheWriterFn_ = nullptr;
+FactoryLoaderFn<PersistenceManager>
+    CacheXmlParser::managedPersistenceManagerFn_ = nullptr;
 
 //////////////////////////////////////////////////////////////////
 
@@ -399,15 +401,40 @@ void CacheXmlParser::parseFile(const char *filename) {
   xercesc::XMLPlatformUtils::Terminate();
 }
 
-void CacheXmlParser::parseMemory(const char *, int) {
-  int res = 0;
-  // TODO: replace with Xerces equivalent
-  //  res = xmlSAXUserParseMemory(&this->m_saxHandler, this, buffer, size);
-
-  if (res == -1) {
-    throw CacheXmlException("Unable to read buffer.");
+void CacheXmlParser::parseMemory(const char *buffer, int size) {
+  try {
+    xercesc::XMLPlatformUtils::Initialize();
+  } catch (const xercesc::XMLException &toCatch) {
+    char *message = xercesc::XMLString::transcode(toCatch.getMessage());
+    auto exceptionMessage = "Error parsing XML file: " + std::string(message);
+    xercesc::XMLString::release(&message);
+    throw CacheXmlException(exceptionMessage);
   }
-  //  handleParserErrors(res);
+
+  auto parser = xercesc::XMLReaderFactory::createXMLReader();
+
+  parser->setContentHandler(this);
+  parser->setErrorHandler(this);
+
+  try {
+    xercesc::MemBufInputSource myxml_buf(
+        reinterpret_cast<const XMLByte *>(buffer), size,
+        "CacheXmlParser memory source");
+    parser->parse(myxml_buf);
+  } catch (const xercesc::XMLException &toCatch) {
+    char *message = xercesc::XMLString::transcode(toCatch.getMessage());
+    auto exceptionMessage = "Error parsing XML file: " + std::string(message);
+    xercesc::XMLString::release(&message);
+    throw CacheXmlException(exceptionMessage);
+  } catch (const xercesc::SAXParseException &toCatch) {
+    char *message = xercesc::XMLString::transcode(toCatch.getMessage());
+    auto exceptionMessage = "Error parsing XML file: " + std::string(message);
+    xercesc::XMLString::release(&message);
+    throw CacheXmlException(exceptionMessage);
+  }
+
+  delete parser;
+  xercesc::XMLPlatformUtils::Terminate();
 }
 
 //////////////////////  Static Methods  //////////////////////
@@ -539,7 +566,6 @@ void CacheXmlParser::startCache(const xercesc::Attributes &attrs) {
 }
 
 void CacheXmlParser::startPdx(const xercesc::Attributes &attrs) {
-
   auto ignoreUnreadFields = getOptionalValue(attrs, IGNORE_UNREAD_FIELDS);
   if (!ignoreUnreadFields.empty()) {
     if (equal_ignore_case(ignoreUnreadFields, "true")) {
@@ -1028,7 +1054,8 @@ std::string CacheXmlParser::getLibraryName(const xercesc::Attributes &attrs) {
   return getRequiredValue(attrs, LIBRARY_NAME);
 }
 
-std::string CacheXmlParser::getLibraryFunctionName(const xercesc::Attributes &attrs) {
+std::string CacheXmlParser::getLibraryFunctionName(
+    const xercesc::Attributes &attrs) {
   return getRequiredValue(attrs, LIBRARY_FUNCTION_NAME);
 }
 
@@ -1036,7 +1063,8 @@ void CacheXmlParser::startPersistenceManager(const xercesc::Attributes &attrs) {
   auto libraryName = getLibraryName(attrs);
   auto libraryFunctionName = getLibraryFunctionName(attrs);
 
-  verifyFactoryFunction(managedPersistenceManagerFn_, libraryName, libraryFunctionName);
+  verifyFactoryFunction(managedPersistenceManagerFn_, libraryName,
+                        libraryFunctionName);
 
   _stack.emplace(std::make_shared<std::string>(std::move(libraryName)));
   _stack.emplace(std::make_shared<std::string>(std::move(libraryFunctionName)));
@@ -1058,7 +1086,8 @@ void CacheXmlParser::startCacheLoader(const xercesc::Attributes &attrs) {
   auto libraryName = getLibraryName(attrs);
   auto libraryFunctionName = getLibraryFunctionName(attrs);
 
-  verifyFactoryFunction(managedCacheLoaderFn_, libraryName, libraryFunctionName);
+  verifyFactoryFunction(managedCacheLoaderFn_, libraryName,
+                        libraryFunctionName);
 
   auto regionAttributesFactory =
       std::static_pointer_cast<RegionAttributesFactory>(_stack.top());
@@ -1069,19 +1098,20 @@ void CacheXmlParser::startCacheListener(const xercesc::Attributes &attrs) {
   auto libraryName = getLibraryName(attrs);
   auto libraryFunctionName = getLibraryFunctionName(attrs);
 
-  verifyFactoryFunction(managedCacheListenerFn_, libraryName, libraryFunctionName);
+  verifyFactoryFunction(managedCacheListenerFn_, libraryName,
+                        libraryFunctionName);
 
   auto regionAttributesFactory =
       std::static_pointer_cast<RegionAttributesFactory>(_stack.top());
-  regionAttributesFactory->setCacheListener(libraryName,
-  libraryFunctionName);
+  regionAttributesFactory->setCacheListener(libraryName, libraryFunctionName);
 }
 
 void CacheXmlParser::startPartitionResolver(const xercesc::Attributes &attrs) {
   auto libraryName = getLibraryName(attrs);
   auto libraryFunctionName = getLibraryFunctionName(attrs);
 
-  verifyFactoryFunction(managedPartitionResolverFn_, libraryName, libraryFunctionName);
+  verifyFactoryFunction(managedPartitionResolverFn_, libraryName,
+                        libraryFunctionName);
 
   auto regionAttributesFactory =
       std::static_pointer_cast<RegionAttributesFactory>(_stack.top());
@@ -1093,7 +1123,8 @@ void CacheXmlParser::startCacheWriter(const xercesc::Attributes &attrs) {
   auto libraryName = getLibraryName(attrs);
   auto libraryFunctionName = getLibraryFunctionName(attrs);
 
-  verifyFactoryFunction(managedCacheWriterFn_, libraryName, libraryFunctionName);
+  verifyFactoryFunction(managedCacheWriterFn_, libraryName,
+                        libraryFunctionName);
 
   auto regionAttributesFactory =
       std::static_pointer_cast<RegionAttributesFactory>(_stack.top());
