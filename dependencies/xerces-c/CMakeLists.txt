@@ -61,6 +61,13 @@ target_include_directories(${PROJECT_NAME} INTERFACE
 target_link_libraries(${PROJECT_NAME} INTERFACE
     ${${PROJECT_NAME}_INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}${LIBRARY_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}
 )
+if ("Darwin" STREQUAL ${CMAKE_SYSTEM_NAME})
+  target_link_libraries(${PROJECT_NAME} INTERFACE
+      "-framework CoreServices"
+      curl
+      )
+endif()
+
 add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXTERN})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES INTERFACE_LIBRARY_DIR ${${PROJECT_NAME}_INSTALL_DIR}/lib)
