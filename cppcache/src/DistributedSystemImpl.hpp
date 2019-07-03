@@ -26,6 +26,7 @@
 #include <string>
 
 #include <geode/internal/geode_globals.hpp>
+#include <geode/SystemProperties.hpp>
 
 #include "DiffieHellman.hpp"
 #include "DistributedSystem.hpp"
@@ -37,7 +38,6 @@ namespace client {
 
 class SystemProperties;
 
-class DistributedSystemImpl;
 
 using CliCallbackMethod = std::function<void(Cache&)>;
 
