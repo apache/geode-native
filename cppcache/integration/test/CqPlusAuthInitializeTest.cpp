@@ -64,7 +64,7 @@ using apache::geode::client::RegionShortcut;
 
 using std::chrono::minutes;
 
-const int32_t CQ_PLUS_AUTH_TEST_REGION_ENTRY_COUNT = 100000;
+const int32_t CQ_PLUS_AUTH_TEST_REGION_ENTRY_COUNT = 50000;
 
 Cache createCache(std::shared_ptr<SimpleAuthInitialize> auth) {
   auto cache = CacheFactory()
