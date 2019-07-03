@@ -77,29 +77,6 @@ Cache createCache(std::shared_ptr<SimpleAuthInitialize> auth) {
   return cache;
 }
 
-Cache createCacheWithBadPassword(std::shared_ptr<SimpleAuthInitialize> auth) {
-  auto cache = CacheFactory()
-                   .set("log-level", "debug")
-                   .set("log-file", "geode_native.log")
-                   .set("statistic-sampling-enabled", "false")
-                   .setAuthInitialize(auth)
-                   .create();
-
-  return cache;
-}
-
-Cache createCacheWithBadUsername() {
-  auto cache = CacheFactory()
-                   .set("log-level", "debug")
-                   .set("log-file", "geode_native.log")
-                   .set("statistic-sampling-enabled", "false")
-                   .setAuthInitialize(std::make_shared<SimpleAuthInitialize>(
-                       "unauthorized-user", "root-password"))
-                   .create();
-
-  return cache;
-}
-
 std::shared_ptr<Pool> createPool(Cluster& cluster, Cache& cache,
                                  bool subscriptionEnabled) {
   auto poolFactory = cache.getPoolManager().createFactory();

@@ -77,36 +77,10 @@ Cache createCache(std::shared_ptr<SimpleAuthInitialize> auth) {
   return cache;
 }
 
-Cache createCacheWithBadPassword() {
-  auto cache = CacheFactory()
-                   .set("log-level", "debug")
-                   .set("log-file", "geode_native.log")
-                   .set("statistic-sampling-enabled", "false")
-                   .setAuthInitialize(std::make_shared<SimpleAuthInitialize>(
-                       "root", "bad-password"))
-                   .create();
-
-  return cache;
-}
-
-Cache createCacheWithBadUsername() {
-  auto cache = CacheFactory()
-                   .set("log-level", "debug")
-                   .set("log-file", "geode_native.log")
-                   .set("statistic-sampling-enabled", "false")
-                   .setAuthInitialize(std::make_shared<SimpleAuthInitialize>(
-                       "unauthorized-user", "root-password"))
-                   .create();
-
-  return cache;
-}
-
 std::shared_ptr<Pool> createPool(Cluster& cluster, Cache& cache,
                                  bool subscriptionEnabled) {
   auto poolFactory = cache.getPoolManager().createFactory().setIdleTimeout(
       std::chrono::milliseconds(0));
-  //                         .setMinConnections(1)
-  //                         .setMaxConnections(1);
 
   cluster.applyLocators(poolFactory);
   poolFactory.setPRSingleHopEnabled(true).setSubscriptionEnabled(
