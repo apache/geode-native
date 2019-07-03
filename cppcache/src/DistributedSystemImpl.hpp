@@ -25,8 +25,8 @@
 #include <mutex>
 #include <string>
 
-#include <geode/internal/geode_globals.hpp>
 #include <geode/SystemProperties.hpp>
+#include <geode/internal/geode_globals.hpp>
 
 #include "DiffieHellman.hpp"
 #include "DistributedSystem.hpp"
@@ -37,7 +37,6 @@ namespace geode {
 namespace client {
 
 class SystemProperties;
-
 
 using CliCallbackMethod = std::function<void(Cache&)>;
 

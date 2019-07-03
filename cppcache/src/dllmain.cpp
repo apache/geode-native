@@ -21,9 +21,8 @@
 
 #include <geode/Exception.hpp>
 
-#include "DistributedSystemImpl.hpp" // Must be included before Utils.hpp
-
 #include "CppCacheLibrary.hpp"
+#include "DistributedSystemImpl.hpp"  // Must be included before Utils.hpp
 #include "Utils.hpp"
 #include "config.h"
 
