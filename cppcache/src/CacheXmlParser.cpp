@@ -382,6 +382,7 @@ void CacheXmlParser::parseFile(const char *filename) {
 
   auto parser = xercesc::XMLReaderFactory::createXMLReader();
 
+  parser->setFeature(xercesc::XMLUni::fgXercesSchema, false);
   parser->setContentHandler(this);
   parser->setErrorHandler(this);
 
