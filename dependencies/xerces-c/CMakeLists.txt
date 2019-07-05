@@ -13,11 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-project( xerces-c )
+project( xerces-c VERSION 3.2.2 LANGUAGES NONE )
 
-set( ${PROJECT_NAME}_VERSION 3.2.2 )
-set( ${PROJECT_NAME}_SHA265 dd6191f8aa256d3b4686b64b0544eea2b450d98b4254996ffdfe630e0c610413)
-set( ${PROJECT_NAME}_URL "http://archive.apache.org/dist/xerces/c/3/sources/xerces-c-${${PROJECT_NAME}_VERSION}.tar.gz" )
+set( SHA256 dd6191f8aa256d3b4686b64b0544eea2b450d98b4254996ffdfe630e0c610413)
 set( ${PROJECT_NAME}_EXTERN ${PROJECT_NAME}-extern )
 
 if (${WIN32})
@@ -27,9 +25,9 @@ endif()
 include(GNUInstallDirs)
 include(ExternalProject)
 
-ExternalProject_Add( ${${PROJECT_NAME}_EXTERN}
-  URL ${${PROJECT_NAME}_URL}
-  URL_HASH SHA256=${${PROJECT_NAME}_SHA265}
+ExternalProject_Add( ${PROJECT_NAME}-extern
+  URL "http://archive.apache.org/dist/xerces/c/3/sources/xerces-c-${PROJECT_VERSION}.tar.gz"
+  URL_HASH SHA256=${SHA256}
   UPDATE_COMMAND ""
   CMAKE_ARGS
     -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS}
@@ -41,31 +39,24 @@ ExternalProject_Add( ${${PROJECT_NAME}_EXTERN}
     -DCMAKE_POSITION_INDEPENDENT_CODE=ON
 )
 
-ExternalProject_Get_Property( ${${PROJECT_NAME}_EXTERN} SOURCE_DIR )
-set( ${PROJECT_NAME}_SOURCE_DIR ${SOURCE_DIR} )
-ExternalProject_Get_Property( ${${PROJECT_NAME}_EXTERN} INSTALL_DIR )
-set( ${PROJECT_NAME}_INSTALL_DIR ${INSTALL_DIR} )
-set( DEPENDENCIES_${PROJECT_NAME}_DIR ${${PROJECT_NAME}_INSTALL_DIR} PARENT_SCOPE)
+ExternalProject_Get_Property( ${PROJECT_NAME}-extern INSTALL_DIR )
 
 if (${WIN32})
-
   set(LIBRARY_NAME xerces-c_3$<$<CONFIG:Debug>:D>)
 else()
   set(LIBRARY_NAME xerces-c-3.2)
 endif()
 
-if (${WIN32})
-  #TODO find better way to handle import lib on windows
-  set(CMAKE_SHARED_LIBRARY_SUFFIX .lib)
-endif()
-
 add_library(${PROJECT_NAME} INTERFACE)
+
 target_include_directories(${PROJECT_NAME} INTERFACE
-  $<BUILD_INTERFACE:${${PROJECT_NAME}_INSTALL_DIR}/include>
+  $<BUILD_INTERFACE:${INSTALL_DIR}/include>
 )
+
 target_link_libraries(${PROJECT_NAME} INTERFACE
-    ${${PROJECT_NAME}_INSTALL_DIR}/${CMAKE_INSTALL_LIBDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}${LIBRARY_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}
+    ${INSTALL_DIR}/${CMAKE_INSTALL_LIBDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}${LIBRARY_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}
 )
+
 if ("Darwin" STREQUAL ${CMAKE_SYSTEM_NAME})
   target_link_libraries(${PROJECT_NAME} INTERFACE
       "-framework CoreServices"
@@ -73,8 +64,8 @@ if ("Darwin" STREQUAL ${CMAKE_SYSTEM_NAME})
       )
 endif()
 
-add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXTERN})
+add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}-extern)
 
-set_target_properties(${PROJECT_NAME} PROPERTIES INTERFACE_LIBRARY_DIR ${${PROJECT_NAME}_INSTALL_DIR}/lib)
-set_target_properties(${PROJECT_NAME} PROPERTIES INTERFACE_RUNTIME_DIR ${${PROJECT_NAME}_INSTALL_DIR}/bin)
+# set_target_properties(${PROJECT_NAME} PROPERTIES INTERFACE_LIBRARY_DIR ${INSTALL_DIR}/${CMAKE_INSTALL_LIBDIR})
+# set_target_properties(${PROJECT_NAME} PROPERTIES INTERFACE_RUNTIME_DIR ${INSTALL_DIR}/${CMAKE_INSTALL_BINDIR})
 
