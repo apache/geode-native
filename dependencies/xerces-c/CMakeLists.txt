@@ -18,10 +18,6 @@ project( xerces-c VERSION 3.2.2 LANGUAGES NONE )
 set( SHA256 dd6191f8aa256d3b4686b64b0544eea2b450d98b4254996ffdfe630e0c610413)
 set( ${PROJECT_NAME}_EXTERN ${PROJECT_NAME}-extern )
 
-if (${WIN32})
-  set ( ${PROJECT_NAME}_CXXFLAGS "${${PROJECT_NAME}_CXXFLAGS} -DWIN32" )
-endif()
-
 include(GNUInstallDirs)
 include(ExternalProject)
 
