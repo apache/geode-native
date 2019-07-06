@@ -148,7 +148,7 @@ GfErrType TcrEndpoint::createNewConnectionWL(
         LOGFINE("TcrEndpoint::createNewConnectionWL got lock");
         newConn =
             new TcrConnection(m_cacheImpl->tcrConnectionManager(), m_connected);
-        newConn->InitTcrConnection(this, m_name.c_str(), m_ports,
+        newConn->initTcrConnection(this, m_name.c_str(), m_ports,
                                    isClientNotification, isSecondary,
                                    connectTimeout);
 
@@ -183,7 +183,7 @@ GfErrType TcrEndpoint::createNewConnectionWL(
 GfErrType TcrEndpoint::createNewConnection(
     TcrConnection*& newConn, bool isClientNotification, bool isSecondary,
     std::chrono::microseconds connectTimeout, int32_t timeoutRetries,
-    bool sendUpdateNotification, bool appThreadRequest) {
+    bool appThreadRequest) {
   LOGFINE(
       "TcrEndpoint::createNewConnection: connectTimeout =%d "
       "m_needToConnectInLock=%d appThreadRequest =%d",
@@ -196,7 +196,7 @@ GfErrType TcrEndpoint::createNewConnection(
         if (!needtoTakeConnectLock() || !appThreadRequest) {
           newConn = new TcrConnection(m_cacheImpl->tcrConnectionManager(),
                                       m_connected);
-          bool authenticate = newConn->InitTcrConnection(
+          bool authenticate = newConn->initTcrConnection(
               this, m_name.c_str(), m_ports, isClientNotification, isSecondary,
               connectTimeout);
           if (authenticate) {
@@ -212,30 +212,11 @@ GfErrType TcrEndpoint::createNewConnection(
         }
         // m_connected = true;
       }
-      if (!isClientNotification && sendUpdateNotification) {
-        bool notificationStarted;
-        {
-          std::lock_guard<decltype(m_notifyReceiverLock)> guard(
-              m_notifyReceiverLock);
-          notificationStarted = (m_numRegionListener > 0) || m_isQueueHosted;
-        }
-        if (notificationStarted) {
-          LOGFINE("Sending update notification message to endpoint %s",
-                  m_name.c_str());
-          TcrMessageUpdateClientNotification updateNotificationMsg(
-              new DataOutput(newConn->getConnectionManager()
-                                 .getCacheImpl()
-                                 ->createDataOutput()),
-              static_cast<int32_t>(newConn->getPort()));
-          newConn->send(updateNotificationMsg.getMsgData(),
-                        updateNotificationMsg.getMsgLength());
-        }
-      }
       err = GF_NOERR;
       break;
     } catch (const TimeoutException&) {
       LOGINFO("Timeout in handshake with endpoint[%s]", m_name.c_str());
-      err = GF_TIMOUT;
+      err = GF_TIMEOUT;
       m_needToConnectInLock = true;  // while creating the connection
       std::this_thread::sleep_for(std::chrono::milliseconds(50));
     } catch (const GeodeIOException& ex) {
@@ -284,10 +265,10 @@ GfErrType TcrEndpoint::createNewConnection(
 void TcrEndpoint::authenticateEndpoint(TcrConnection*& conn) {
   LOGDEBUG(
       "TcrEndpoint::authenticateEndpoint m_isAuthenticated  = %d "
-      "this->m_baseDM = %d",
-      m_isAuthenticated, m_baseDM);
+      "m_baseDM = %d, connection = %p",
+      m_isAuthenticated, m_baseDM, conn);
   if (!m_isAuthenticated && m_baseDM) {
-    this->setConnected();
+    setConnected();
     std::lock_guard<decltype(m_endpointAuthenticationLock)> guard(
         m_endpointAuthenticationLock);
     GfErrType err = GF_NOERR;
@@ -304,11 +285,14 @@ void TcrEndpoint::authenticateEndpoint(TcrConnection*& conn) {
         new DataOutput(m_cacheImpl->createDataOutput()), creds, m_baseDM);
 
     LOGDEBUG("request is created");
-    TcrMessageReply reply(true, this->m_baseDM);
-    // err = this->sendRequestToEP(request, reply, ( *it ).int_id_);
-    err = this->sendRequestConnWithRetry(request, reply, conn);
-    LOGDEBUG("authenticateEndpoint error = %d", err);
+    TcrMessageReply reply(true, m_baseDM);
+    err = sendRequestConnWithRetry(request, reply, conn);
+    LOGDEBUG("TcrEndpoint::authenticateEndpoint - ERROR: %d", err);
     if (err == GF_NOERR) {
+      LOGDEBUG(
+          "TcrEndpoint::authenticateEndpoint - successfully authenticated on "
+          "conn %p",
+          conn);
       // put the object into local region
       switch (reply.getMessageType()) {
         case TcrMessage::RESPONSE: {
@@ -329,7 +313,7 @@ void TcrEndpoint::authenticateEndpoint(TcrConnection*& conn) {
       }
     }
     // throw exception if it is not authenticated
-    GfErrTypeToException("TcrEndpoint::authenticateEndpoint", err);
+    throwExceptionIfError("TcrEndpoint::authenticateEndpoint", err);
 
     m_isAuthenticated = true;
   }
@@ -535,7 +519,7 @@ void TcrEndpoint::pingServer(ThinClientPoolDM* poolDM) {
     if (error == GF_NOERR) {
       m_pingSent = true;
     }
-    if (error == GF_TIMOUT && m_pingTimeouts < 2) {
+    if (error == GF_TIMEOUT && m_pingTimeouts < 2) {
       ++m_pingTimeouts;
     } else {
       m_pingTimeouts = 0;
@@ -595,7 +579,7 @@ void TcrEndpoint::receiveNotification(std::atomic<bool>& isRunning) {
         msg = new TcrMessageReply(true, m_baseDM);
         msg->initCqMap();
         msg->setData(data, static_cast<int32_t>(dataLen),
-                     this->getDistributedMemberID(),
+                     getDistributedMemberID(),
                      *(m_cacheImpl->getSerializationRegistry()),
                      *(m_cacheImpl->getMemberListForVersionStamp()));
         handleNotificationStats(static_cast<int64_t>(dataLen));
@@ -828,7 +812,7 @@ GfErrType TcrEndpoint::sendRequestConn(const TcrMessage& request,
                                   reply.getTimeout(), request.getMessageType());
     reply.setMessageTypeRequest(type);
     reply.setData(
-        data, static_cast<int32_t>(dataLen), this->getDistributedMemberID(),
+        data, static_cast<int32_t>(dataLen), getDistributedMemberID(),
         *(m_cacheImpl->getSerializationRegistry()),
         *(m_cacheImpl
               ->getMemberListForVersionStamp()));  // memory is released by
@@ -972,7 +956,7 @@ GfErrType TcrEndpoint::sendRequestWithRetry(
           return GF_NOERR;
         }
       } catch (const TimeoutException&) {
-        error = GF_TIMOUT;
+        error = GF_TIMEOUT;
         LOGFINE(
             "Send timed out for endpoint %s. "
             "Message txid = %d",
@@ -1059,7 +1043,7 @@ GfErrType TcrEndpoint::sendRequestWithRetry(
         epFailure = true;
         failReason = "server connection could not be obtained";
         if (timeout <= std::chrono::microseconds::zero()) {
-          error = GF_TIMOUT;
+          error = GF_TIMEOUT;
           LOGWARN(
               "No connection available for %ld seconds "
               "for endpoint %s.",

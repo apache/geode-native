@@ -157,8 +157,7 @@ class TcrEndpoint {
       TcrConnection*& newConn, bool isClientNotification = false,
       bool isSecondary = false,
       std::chrono::microseconds connectTimeout = DEFAULT_CONNECT_TIMEOUT,
-      int32_t timeoutRetries = 1, bool sendUpdateNotification = true,
-      bool appThreadRequest = false);
+      int32_t timeoutRetries = 1, bool appThreadRequest = false);
 
   bool needtoTakeConnectLock();
 

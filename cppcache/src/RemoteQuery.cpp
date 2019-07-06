@@ -82,7 +82,7 @@ std::shared_ptr<SelectResults> RemoteQuery::execute(
   reply.setChunkedResultHandler(
       static_cast<TcrChunkedResult*>(resultCollector));
   GfErrType err = executeNoThrow(timeout, reply, func, tcdm, paramList);
-  GfErrTypeToException(func, err);
+  throwExceptionIfError(func, err);
 
   std::shared_ptr<SelectResults> sr;
 

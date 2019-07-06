@@ -43,18 +43,17 @@ void Locator::start() {
       .withMaxHeap("256m")
       .withJmxManagerPort(jmxManagerPort_)
       .withHttpServicePort(0)
-      .execute();
+      .withClasspath(cluster_.getClasspath())
+      .withSecurityManager(cluster_.getSecurityManager())
+      .execute(cluster_.getUser(), cluster_.getPassword());
 
-  //    std::cout << "locator: " << locatorAddress_.port << ": started"
-  //              << std::endl;
   started_ = true;
 }
 
 void Locator::stop() {
   cluster_.getGfsh().stop().locator().withDir(name_).execute();
 
-  //    std::cout << "locator: " << locatorAddress_.port << ": stopped"
-  //              << std::endl;
+//  std::cout << "locator: " << locatorAddress_.port << ": stopped" << std::endl << std::flush;
   started_ = false;
 }
 
@@ -72,18 +71,21 @@ void Server::start() {
       .withMaxHeap("1g")
       .withLocators(locators_.front().getAddress().address + "[" +
                     std::to_string(locators_.front().getAddress().port) + "]")
+      .withClasspath(cluster_.getClasspath())
+      .withSecurityManager(cluster_.getSecurityManager())
+      .withUser(cluster_.getUser())
+      .withPassword(cluster_.getPassword())
       .execute();
 
-  //    std::cout << "server: " << serverAddress_.port << ": started" <<
-  //    std::endl;
+//  std::cout << "server: " << serverAddress_.port << ": started" << std::endl << std::flush;
+
   started_ = true;
 }
 
 void Server::stop() {
   cluster_.getGfsh().stop().server().withDir(name_).execute();
 
-  //    std::cout << "server: " << serverAddress_.port << ": stopped" <<
-  //    std::endl;
+//  std::cout << "server: " << serverAddress_.port << ": stopped" << std::endl << std::flush;
   started_ = false;
 }
 

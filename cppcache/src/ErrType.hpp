@@ -40,7 +40,7 @@ typedef enum {
   GF_NOTSUP = 12,         /**< operation not supported          */
   GF_SCPGBL = 13,         /**< attempt to exit global scope     */
   GF_SCPEXC = 14,         /**< maximum scopes exceeded          */
-  GF_TIMOUT = 15,         /**< operation timed out              */
+  GF_TIMEOUT = 15,        /**< operation timed out              */
   GF_OVRFLW = 16,         /**< arithmetic overflow              */
   GF_IOERR = 17,          /**< paging file I/O error            */
   GF_EINTR = 18,          /**< interrupted Geode call         */

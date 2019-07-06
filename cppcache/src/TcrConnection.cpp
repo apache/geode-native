@@ -66,7 +66,7 @@ struct FinalizeProcessChunk {
   }
 };
 
-bool TcrConnection::InitTcrConnection(
+bool TcrConnection::initTcrConnection(
     TcrEndpoint* endpointObj, const char* endpoint,
     synchronized_set<std::unordered_set<uint16_t>>& ports,
     bool isClientNotification, bool isSecondary,
@@ -943,9 +943,12 @@ void TcrConnection::readMessageChunked(TcrMessageReply& reply,
       header = readChunkHeader(headerTimeout);
     }
   } catch (const Exception&) {
-    auto ex = reply.getChunkedResultHandler()->getException();
-    LOGDEBUG("Found existing exception ", ex->what());
-    reply.getChunkedResultHandler()->clearException();
+    if (auto handler = reply.getChunkedResultHandler()) {
+      if (auto ex = handler->getException()) {
+        LOGDEBUG("Found existing exception ", ex->what());
+        handler->clearException();
+      }
+    }
     throw;
   }
 

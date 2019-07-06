@@ -471,7 +471,7 @@ class TcrMessage {
   uint8_t m_hasResult;
 
   static std::atomic<int32_t> m_transactionId;
-  static uint8_t* m_keepalive;
+  static uint8_t* m_keepAlive;
   const static int m_flag_empty;
   const static int m_flag_concurrency_checks;
 
@@ -886,13 +886,6 @@ class TcrMessagePeriodicAck : public TcrMessage {
                         const EventIdMapEntryList& entries);
 
   ~TcrMessagePeriodicAck() override = default;
-};
-
-class TcrMessageUpdateClientNotification : public TcrMessage {
- public:
-  TcrMessageUpdateClientNotification(DataOutput* dataOutput, int32_t port);
-
-  ~TcrMessageUpdateClientNotification() override = default;
 };
 
 class TcrMessageGetAll : public TcrMessage {

@@ -58,7 +58,8 @@ class Gfsh {
   template <class Result>
   class Command {
    public:
-    virtual Result execute() { Result{gfsh_}.parse(gfsh_.execute(command_)); }
+    virtual Result execute(const std::string &user, const std::string &password) { Result{gfsh_}.parse(gfsh_.execute(command_, user, password)); }
+    virtual Result execute() { Result{gfsh_}.parse(gfsh_.execute(command_, "", "")); }
 
    protected:
     Command(Gfsh &gfsh, std::string command)
@@ -121,6 +122,25 @@ class Gfsh {
         command_ += " --max-heap=" + maxHeap;
         return *this;
       };
+
+      Locator &withClasspath(const std::string classpath) {
+        if (!classpath.empty()) {
+          command_ += " --classpath=" + classpath;
+        }
+        return *this;
+      };
+
+      Locator &withSecurityManager(const std::string securityManager) {
+        if (!securityManager.empty()) {
+          command_ += " --J=-Dgemfire.security-manager=" + securityManager;
+        }
+        return *this;
+      };
+
+      Locator &withConnect(const std::string connect) {
+        command_ += " --connect=" + connect;
+        return *this;
+      };
     };
 
     class Server : public Command<void> {
@@ -159,6 +179,35 @@ class Gfsh {
 
       Server &withMaxHeap(const std::string maxHeap) {
         command_ += " --max-heap=" + maxHeap;
+        return *this;
+      };
+
+      Server &withClasspath(const std::string classpath) {
+        if (!classpath.empty()) {
+          command_ += " --classpath=" + classpath;
+        }
+        return *this;
+      };
+
+      Server &withSecurityManager(const std::string securityManager) {
+        if (!securityManager.empty()) {
+          command_ += " --J=-Dgemfire.security-manager=" + securityManager;
+        }
+        return *this;
+      };
+
+      Server &withUser(const std::string user) {
+        if (!user.empty()) {
+          command_ += " --user=" + user;
+        }
+
+        return *this;
+      };
+
+      Server &withPassword(const std::string password) {
+        if (!password.empty()) {
+          command_ += " --password=" + password;
+        }
         return *this;
       };
     };
@@ -242,6 +291,16 @@ class Gfsh {
       command_ += " --jmx-manager=" + jmxManager;
       return *this;
     };
+
+    Connect &withUser(const std::string &user) {
+      command_ += " --user=" + user;
+      return *this;
+    };
+
+    Connect &withPassword(const std::string &password) {
+      command_ += " --password=" + password;
+      return *this;
+    };
   };
 
   class Shutdown : public Command<void> {
@@ -267,12 +326,18 @@ class Gfsh {
   };
 
  protected:
-  virtual void execute(const std::string &command) = 0;
+  virtual void execute(const std::string &command, const std::string &user, const std::string &password) = 0;
 };
 
 template <>
-inline void Gfsh::Command<void>::execute() {
-  gfsh_.execute(command_);
+inline void Gfsh::Command<void>::execute(const std::string &user, const std::string &password) {
+  gfsh_.execute(command_, user, password);
 }
+
+template <>
+inline void Gfsh::Command<void>::execute() {
+  gfsh_.execute(command_, "", "");
+}
+
 
 #endif  // INTEGRATION_TEST_FRAMEWORK_GFSH_H

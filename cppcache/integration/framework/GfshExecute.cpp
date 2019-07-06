@@ -32,7 +32,7 @@ using boost::process::ipstream;
 using boost::process::std_err;
 using boost::process::std_out;
 
-void GfshExecute::execute(const std::string &command) {
+void GfshExecute::execute(const std::string &command, const std::string &user, const std::string &password) {
   BOOST_LOG_TRIVIAL(info) << "Gfsh::execute: " << command;
 
   std::vector<std::string> commands;
@@ -70,7 +70,7 @@ void GfshExecute::execute(const std::string &command) {
   if (exit_code) {
     throw new GfshExecuteException("gfsh error", exit_code);
   }
-  extractConnectionCommand(command);
+  extractConnectionCommand(command, user, password);
 }
 
 child GfshExecute::executeChild(std::vector<std::string> &commands,
@@ -83,3 +83,34 @@ child GfshExecute::executeChild(std::vector<std::string> &commands,
   return child(getFrameworkString(FrameworkVariable::GfShExecutable), args = commands, env, std_out > outStream,
                std_err > errStream);
 }
+
+void GfshExecute::extractConnectionCommand(const std::string &command, const std::string &user, const std::string &password) {
+  if (starts_with(command, std::string("connect"))) {
+    connection_ = command;
+  } else if (starts_with(command, std::string("start locator"))) {
+    auto jmxManagerHost = std::string("localhost");
+    auto jmxManagerPort = std::string("1099");
+
+    std::regex jmxManagerHostRegex("bind-address=([^\\s]+)");
+    std::smatch jmxManagerHostMatch;
+    if (std::regex_search(command, jmxManagerHostMatch,
+                          jmxManagerHostRegex)) {
+      jmxManagerHost = jmxManagerHostMatch[1];
+    }
+
+    std::regex jmxManagerPortRegex("jmx-manager-port=(\\d+)");
+    std::smatch jmxManagerPortMatch;
+    if (std::regex_search(command, jmxManagerPortMatch,
+                          jmxManagerPortRegex)) {
+      jmxManagerPort = jmxManagerPortMatch[1];
+    }
+
+    connection_ = "connect --jmx-manager=" + jmxManagerHost + "[" +
+        jmxManagerPort + "]";
+
+    if (!(user.empty() || password.empty())) {
+      connection_ += " --user=" + user + " --password=" + password;
+    }
+  }
+}
+

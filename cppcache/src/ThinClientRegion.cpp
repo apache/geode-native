@@ -416,10 +416,10 @@ void ThinClientRegion::registerKeys(
                                       interestPolicy, receiveValues);
 
   if (m_tcrdm->isFatalError(err)) {
-    GfErrTypeToException("Region::registerKeys", err);
+    throwExceptionIfError("Region::registerKeys", err);
   }
 
-  GfErrTypeToException("Region::registerKeys", err);
+  throwExceptionIfError("Region::registerKeys", err);
 }
 
 void ThinClientRegion::unregisterKeys(
@@ -452,7 +452,7 @@ void ThinClientRegion::unregisterKeys(
         "keys vector is empty");
   }
   GfErrType err = unregisterKeysNoThrow(keys);
-  GfErrTypeToException("Region::unregisterKeys", err);
+  throwExceptionIfError("Region::unregisterKeys", err);
 }
 
 void ThinClientRegion::registerAllKeys(bool isDurable, bool getInitialValues,
@@ -504,11 +504,11 @@ void ThinClientRegion::registerAllKeys(bool isDurable, bool getInitialValues,
                            interestPolicy, receiveValues);
 
   if (m_tcrdm->isFatalError(err)) {
-    GfErrTypeToException("Region::registerAllKeys", err);
+    throwExceptionIfError("Region::registerAllKeys", err);
   }
 
   // Get the entries from the server using a special GET_ALL message
-  GfErrTypeToException("Region::registerAllKeys", err);
+  throwExceptionIfError("Region::registerAllKeys", err);
 }
 
 void ThinClientRegion::registerRegex(const std::string& regex, bool isDurable,
@@ -558,10 +558,10 @@ void ThinClientRegion::registerRegex(const std::string& regex, bool isDurable,
                            interestPolicy, receiveValues);
 
   if (m_tcrdm->isFatalError(err)) {
-    GfErrTypeToException("Region::registerRegex", err);
+    throwExceptionIfError("Region::registerRegex", err);
   }
 
-  GfErrTypeToException("Region::registerRegex", err);
+  throwExceptionIfError("Region::registerRegex", err);
 }
 
 void ThinClientRegion::unregisterRegex(const std::string& regex) {
@@ -584,7 +584,7 @@ void ThinClientRegion::unregisterRegex(const std::string& regex) {
   }
 
   GfErrType err = unregisterRegexNoThrow(regex);
-  GfErrTypeToException("Region::unregisterRegex", err);
+  throwExceptionIfError("Region::unregisterRegex", err);
 }
 
 void ThinClientRegion::unregisterAllKeys() {
@@ -601,7 +601,7 @@ void ThinClientRegion::unregisterAllKeys() {
     }
   }
   GfErrType err = unregisterRegexNoThrow(".*");
-  GfErrTypeToException("Region::unregisterAllKeys", err);
+  throwExceptionIfError("Region::unregisterAllKeys", err);
 }
 
 std::shared_ptr<SelectResults> ThinClientRegion::query(
@@ -731,7 +731,7 @@ std::vector<std::shared_ptr<CacheableKey>> ThinClientRegion::serverKeys() {
 
   err = m_tcrdm->sendSyncRequest(request, reply);
 
-  GfErrTypeToException("Region::serverKeys", err);
+  throwExceptionIfError("Region::serverKeys", err);
 
   switch (reply.getMessageType()) {
     case TcrMessage::RESPONSE: {
@@ -754,7 +754,7 @@ std::vector<std::shared_ptr<CacheableKey>> ThinClientRegion::serverKeys() {
       break;
     }
   }
-  GfErrTypeToException("Region::serverKeys", err);
+  throwExceptionIfError("Region::serverKeys", err);
 
   return serverKeys;
 }
@@ -800,7 +800,7 @@ bool ThinClientRegion::containsKeyOnServer(
   auto rptr = CacheableBoolean::create(ret);
 
   rptr = std::dynamic_pointer_cast<CacheableBoolean>(handleReplay(err, rptr));
-  GfErrTypeToException("Region::containsKeyOnServer ", err);
+  throwExceptionIfError("Region::containsKeyOnServer ", err);
   return rptr->value();
 }
 
@@ -848,7 +848,7 @@ bool ThinClientRegion::containsValueForKey_remote(
 
   rptr = std::dynamic_pointer_cast<CacheableBoolean>(handleReplay(err, rptr));
 
-  GfErrTypeToException("Region::containsValueForKey ", err);
+  throwExceptionIfError("Region::containsValueForKey ", err);
   return rptr->value();
 }
 
@@ -856,7 +856,7 @@ void ThinClientRegion::clear(
     const std::shared_ptr<Serializable>& aCallbackArgument) {
   GfErrType err = GF_NOERR;
   err = localClearNoThrow(aCallbackArgument, CacheEventFlags::NORMAL);
-  if (err != GF_NOERR) GfErrTypeToException("Region::clear", err);
+  if (err != GF_NOERR) throwExceptionIfError("Region::clear", err);
 
   /** @brief Create message and send to bridge server */
 
@@ -865,7 +865,7 @@ void ThinClientRegion::clear(
                                 std::chrono::milliseconds(-1), m_tcrdm.get());
   TcrMessageReply reply(true, m_tcrdm.get());
   err = m_tcrdm->sendSyncRequest(request, reply);
-  if (err != GF_NOERR) GfErrTypeToException("Region::clear", err);
+  if (err != GF_NOERR) throwExceptionIfError("Region::clear", err);
 
   switch (reply.getMessageType()) {
     case TcrMessage::REPLY:
@@ -892,7 +892,7 @@ void ThinClientRegion::clear(
     err = invokeCacheListenerForRegionEvent(
         aCallbackArgument, CacheEventFlags::NORMAL, AFTER_REGION_CLEAR);
   }
-  GfErrTypeToException("Region::clear", err);
+  throwExceptionIfError("Region::clear", err);
 }
 
 GfErrType ThinClientRegion::getNoThrow_remote(
@@ -1983,7 +1983,7 @@ uint32_t ThinClientRegion::size_remote() {
   err = m_tcrdm->sendSyncRequest(request, reply);
 
   if (err != GF_NOERR) {
-    GfErrTypeToException("Region::size", err);
+    throwExceptionIfError("Region::size", err);
   }
 
   switch (reply.getMessageType()) {
@@ -2004,7 +2004,7 @@ uint32_t ThinClientRegion::size_remote() {
       err = GF_NOTOBJ;
   }
 
-  GfErrTypeToException("Region::size", err);
+  throwExceptionIfError("Region::size", err);
   return 0;
 }
 
@@ -2881,7 +2881,7 @@ void ThinClientRegion::registerInterestGetValues(
   auto exceptions = std::make_shared<HashMapOfException>();
   auto err = getAllNoThrow_remote(keys, nullptr, exceptions, resultKeys, true,
                                   nullptr);
-  GfErrTypeToException(method, err);
+  throwExceptionIfError(method, err);
   // log any exceptions here
   for (const auto& iter : *exceptions) {
     LOGWARN("%s Exception for key %s:: %s: %s", method,
@@ -2988,7 +2988,7 @@ void ThinClientRegion::executeFunction(
     }
 
     if (ThinClientBaseDM::isFatalClientError(err)) {
-      GfErrTypeToException("ExecuteOnRegion:", err);
+      throwExceptionIfError("ExecuteOnRegion:", err);
     } else if (err != GF_NOERR) {
       if (err == GF_FUNCTION_EXCEPTION) {
         reExecute = true;
@@ -3009,17 +3009,17 @@ void ThinClientRegion::executeFunction(
             "%d ",
             attempt);
         if (attempt > retryAttempts) {
-          GfErrTypeToException("ExecuteOnRegion:", err);
+          throwExceptionIfError("ExecuteOnRegion:", err);
         }
         reExecuteForServ = true;
         rc->clearResults();
         failedNodes->clear();
-      } else if (err == GF_TIMOUT) {
+      } else if (err == GF_TIMEOUT) {
         LOGINFO(
             "function timeout. Name: %s, timeout: %d, params: %d, "
             "retryAttempts: %d ",
             func.c_str(), timeout.count(), getResult, retryAttempts);
-        GfErrTypeToException("ExecuteOnRegion", GF_TIMOUT);
+        throwExceptionIfError("ExecuteOnRegion", GF_TIMEOUT);
       } else if (err == GF_CLIENT_WAIT_TIMEOUT ||
                  err == GF_CLIENT_WAIT_TIMEOUT_REFRESH_PRMETADATA) {
         LOGINFO(
@@ -3027,10 +3027,10 @@ void ThinClientRegion::executeFunction(
             "blacklisted. Name: %s, timeout: %d, params: %d, retryAttempts: "
             "%d ",
             func.c_str(), timeout.count(), getResult, retryAttempts);
-        GfErrTypeToException("ExecuteOnRegion", GF_CLIENT_WAIT_TIMEOUT);
+        throwExceptionIfError("ExecuteOnRegion", GF_CLIENT_WAIT_TIMEOUT);
       } else {
         LOGDEBUG("executeFunction err = %d ", err);
-        GfErrTypeToException("ExecuteOnRegion:", err);
+        throwExceptionIfError("ExecuteOnRegion:", err);
       }
     } else {
       reExecute = false;
@@ -3081,7 +3081,7 @@ std::shared_ptr<CacheableVector> ThinClientRegion::reExecuteFunction(
     }
 
     if (ThinClientBaseDM::isFatalClientError(err)) {
-      GfErrTypeToException("ExecuteOnRegion:", err);
+      throwExceptionIfError("ExecuteOnRegion:", err);
     } else if (err != GF_NOERR) {
       if (err == GF_FUNCTION_EXCEPTION) {
         reExecute = true;
@@ -3104,17 +3104,17 @@ std::shared_ptr<CacheableVector> ThinClientRegion::reExecuteFunction(
             "= %d ",
             attempt);
         if (attempt > retryAttempts) {
-          GfErrTypeToException("ExecuteOnRegion:", err);
+          throwExceptionIfError("ExecuteOnRegion:", err);
         }
         reExecute = true;
         rc->clearResults();
         failedNodes->clear();
-      } else if (err == GF_TIMOUT) {
+      } else if (err == GF_TIMEOUT) {
         LOGINFO("function timeout");
-        GfErrTypeToException("ExecuteOnRegion", GF_CACHE_TIMEOUT_EXCEPTION);
+        throwExceptionIfError("ExecuteOnRegion", GF_CACHE_TIMEOUT_EXCEPTION);
       } else {
         LOGDEBUG("reExecuteFunction err = %d ", err);
-        GfErrTypeToException("ExecuteOnRegion:", err);
+        throwExceptionIfError("ExecuteOnRegion:", err);
       }
     }
   } while (reExecute);
@@ -3218,7 +3218,7 @@ bool ThinClientRegion::executeFunctionSH(
   }
 
   if (abortError != GF_NOERR) {
-    GfErrTypeToException("ExecuteOnRegion:", abortError);
+    throwExceptionIfError("ExecuteOnRegion:", abortError);
   }
   return reExecute;
 }
@@ -3282,7 +3282,7 @@ void ThinClientRegion::txDestroy(
     std::shared_ptr<VersionTag> versionTag) {
   GfErrType err = destroyNoThrowTX(key, aCallbackArgument, -1,
                                    CacheEventFlags::NORMAL, versionTag);
-  GfErrTypeToException("Region::destroyTX", err);
+  throwExceptionIfError("Region::destroyTX", err);
 }
 
 void ThinClientRegion::txInvalidate(
@@ -3291,7 +3291,7 @@ void ThinClientRegion::txInvalidate(
     std::shared_ptr<VersionTag> versionTag) {
   GfErrType err = invalidateNoThrowTX(key, aCallbackArgument, -1,
                                       CacheEventFlags::NORMAL, versionTag);
-  GfErrTypeToException("Region::invalidateTX", err);
+  throwExceptionIfError("Region::invalidateTX", err);
 }
 
 void ThinClientRegion::txPut(
@@ -3306,7 +3306,7 @@ void ThinClientRegion::txPut(
 
   updateStatOpTime(m_regionStats->getStat(), m_regionStats->getPutTimeId(),
                    sampleStartNanos);
-  GfErrTypeToException("Region::putTX", err);
+  throwExceptionIfError("Region::putTX", err);
 }
 
 void ThinClientRegion::setProcessedMarker(bool) {}

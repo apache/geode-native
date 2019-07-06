@@ -81,11 +81,11 @@ inline void writeInt(uint8_t* buffer, uint32_t value) {
 extern void setThreadLocalExceptionMessage(const char*);
 
 // AtomicInc TcrMessage::m_transactionId = 0;
-uint8_t* TcrMessage::m_keepalive = nullptr;
+uint8_t* TcrMessage::m_keepAlive = nullptr;
 const int TcrMessage::m_flag_empty = 0x01;
 const int TcrMessage::m_flag_concurrency_checks = 0x02;
 
-bool TcrMessage::isKeepAlive() { return *m_keepalive > 0; }
+bool TcrMessage::isKeepAlive() { return (m_keepAlive && (*m_keepAlive > 0)); }
 
 bool TcrMessage::isUserInitiativeOps(const TcrMessage& msg) {
   int32_t msgType = msg.getMessageType();
@@ -358,8 +358,8 @@ TcrMessage* TcrMessage::getCloseConnMessage(CacheImpl* cacheImpl) {
 
 void TcrMessage::setKeepAlive(bool keepalive) {
   // TODO global
-  if (TcrMessage::m_keepalive != nullptr) {
-    *TcrMessage::m_keepalive = keepalive ? 1 : 0;
+  if (TcrMessage::m_keepAlive != nullptr) {
+    *TcrMessage::m_keepAlive = keepalive ? 1 : 0;
   }
 }
 
@@ -2084,7 +2084,7 @@ TcrMessageCloseConnection::TcrMessageCloseConnection(DataOutput* dataOutput,
   m_request->writeInt(static_cast<int32_t>(1));  // len is 1
   m_request->write(static_cast<int8_t>(0));      // is obj is '0'.
   // cast away constness here since we want to modify this
-  TcrMessage::m_keepalive = const_cast<uint8_t*>(m_request->getCursor());
+  TcrMessage::m_keepAlive = const_cast<uint8_t*>(m_request->getCursor());
   m_request->write(static_cast<int8_t>(0));  // keepalive is '0'.
 }
 
@@ -2469,16 +2469,6 @@ TcrMessageRemoveAll::TcrMessageRemoveAll(
   writeMessageLength();
 }
 
-TcrMessageUpdateClientNotification::TcrMessageUpdateClientNotification(
-    DataOutput* dataOutput, int32_t port) {
-  m_msgType = TcrMessage::UPDATE_CLIENT_NOTIFICATION;
-  m_request.reset(dataOutput);
-
-  writeHeader(m_msgType, 1);
-  writeIntPart(port);
-  writeMessageLength();
-}
-
 TcrMessageGetAll::TcrMessageGetAll(
     DataOutput* dataOutput, const Region* region,
     const std::vector<std::shared_ptr<CacheableKey>>* keys,
@@ -2805,7 +2795,7 @@ void TcrMessage::createUserCredentialMessage(TcrConnection* conn) {
   writeObjectPart(encryptBytes);
 
   writeMessageLength();
-  LOGDEBUG("TcrMessage CUCM() = %s ",
+  LOGDEBUG("TcrMessage::createUserCredentialMessage  msg = %s ",
            Utils::convertBytesToString(m_request->getBuffer(),
                                        m_request->getBufferLength())
                .c_str());
@@ -2835,13 +2825,16 @@ void TcrMessage::addSecurityPart(int64_t connectionId, int64_t unique_id,
 
   auto encryptBytes = conn->encryptBytes(bytes);
 
+  LOGDEBUG("TcrMessage::addSecurityPart [%p] length = %" PRId32
+           ", encrypted ID = %s ",
+           conn, encryptBytes->length(),
+           Utils::convertBytesToString(encryptBytes->value().data(),
+                                       encryptBytes->length())
+               .c_str());
+
   writeObjectPart(encryptBytes);
   writeMessageLength();
   m_securityHeaderLength = 4 + 1 + encryptBytes->length();
-  LOGDEBUG("TcrMessage addsp = %s ",
-           Utils::convertBytesToString(m_request->getBuffer(),
-                                       m_request->getBufferLength())
-               .c_str());
 }
 
 void TcrMessage::addSecurityPart(int64_t connectionId, TcrConnection* conn) {

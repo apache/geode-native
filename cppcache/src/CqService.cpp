@@ -559,7 +559,7 @@ std::shared_ptr<CacheableArrayList> CqService::getAllDurableCqsFromServer() {
   err = m_tccdm->sendSyncRequest(msg, reply);
   if (err != GF_NOERR) {
     LOGDEBUG("CqService::getAllDurableCqsFromServer!!!!");
-    GfErrTypeToException("CqService::getAllDurableCqsFromServer:", err);
+    throwExceptionIfError("CqService::getAllDurableCqsFromServer:", err);
   }
   if (reply.getMessageType() == TcrMessage::EXCEPTION ||
       reply.getMessageType() == TcrMessage::GET_DURABLE_CQS_DATA_ERROR) {
@@ -571,7 +571,7 @@ std::shared_ptr<CacheableArrayList> CqService::getAllDurableCqsFromServer() {
               << "at the server side: " << reply.getException();
       throw CqQueryException(message.str());
     } else {
-      GfErrTypeToException("CqService::getAllDurableCqsFromServer", err);
+      throwExceptionIfError("CqService::getAllDurableCqsFromServer", err);
     }
   }
 

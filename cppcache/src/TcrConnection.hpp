@@ -125,7 +125,7 @@ class APACHE_GEODE_EXPORT TcrConnection {
    * @param     ports     List of local ports for connections to endpoint
    * @param     numPorts  Size of ports list
    */
-  bool InitTcrConnection(
+  bool initTcrConnection(
       TcrEndpoint* endpointObj, const char* endpoint,
       synchronized_set<std::unordered_set<uint16_t>>& ports,
       bool isClientNotification = false, bool isSecondary = false,

@@ -17,31 +17,34 @@
 
 #pragma once
 
-#ifndef GEODE_UTIL_EXCEPTION_H_
-#define GEODE_UTIL_EXCEPTION_H_
+#ifndef SIMPLEAUTHINITIALIZE_H_
+#define SIMPLEAUTHINITIALIZE_H_
 
 #include <string>
 
-#include <geode/internal/geode_base.hpp>
+#include <geode/AuthInitialize.hpp>
+#include <geode/Properties.hpp>
 
-#include "../ErrType.hpp"
+class SimpleAuthInitialize : public apache::geode::client::AuthInitialize {
+ public:
+  std::shared_ptr<apache::geode::client::Properties> getCredentials(
+      const std::shared_ptr<apache::geode::client::Properties>& securityprops,
+      const std::string& /*server*/) override;
 
-namespace apache {
-namespace geode {
-namespace client {
+  void close() override;
 
-extern void APACHE_GEODE_EXPORT GfErrTypeThrowException(const char* str,
-                                                        GfErrType err);
+  SimpleAuthInitialize();
 
-#define throwExceptionIfError(str, err)  \
-  {                                      \
-    if (err != GF_NOERR) {               \
-      GfErrTypeThrowException(str, err); \
-    }                                    \
-  }
+  SimpleAuthInitialize(std::string username, std::string password);
 
-}  // namespace client
-}  // namespace geode
-}  // namespace apache
+  ~SimpleAuthInitialize() override = default;
 
-#endif  // GEODE_UTIL_EXCEPTION_H_
+  int32_t getGetCredentialsCallCount();
+
+ private:
+  std::string username_;
+  std::string password_;
+  int32_t countOfGetCredentialsCalls_;
+};
+
+#endif  // SIMPLEAUTHINITIALIZE_H_

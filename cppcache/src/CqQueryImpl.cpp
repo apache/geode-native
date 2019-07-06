@@ -273,7 +273,6 @@ GfErrType CqQueryImpl::execute(TcrEndpoint* endpoint) {
   err = m_tccdm->sendRequestToEP(request, reply, endpoint);
 
   if (err != GF_NOERR) {
-    // GfErrTypeToException("CqQuery::execute(endpoint)", err);
     return err;
   }
 
@@ -330,7 +329,7 @@ bool CqQueryImpl::executeCq(TcrMessage::MsgType) {
   GfErrType err = GF_NOERR;
   err = m_tccdm->sendSyncRequest(msg, reply);
   if (err != GF_NOERR) {
-    GfErrTypeToException("CqQuery::executeCq:", err);
+    throwExceptionIfError("CqQuery::executeCq:", err);
   }
   if (reply.getMessageType() == TcrMessage::EXCEPTION ||
       reply.getMessageType() == TcrMessage::CQDATAERROR_MSG_TYPE ||
@@ -342,7 +341,7 @@ bool CqQueryImpl::executeCq(TcrMessage::MsgType) {
           std::string("CqQuery::executeCq: exception at the server side: ") +
           reply.getException());
     } else {
-      GfErrTypeToException("CqQuery::executeCq", err);
+      throwExceptionIfError("CqQuery::executeCq", err);
     }
   }
   std::lock_guard<decltype(m_mutex)> _guard(m_mutex);
@@ -387,7 +386,7 @@ std::shared_ptr<CqResults> CqQueryImpl::executeWithInitialResults(
   err = m_tccdm->sendSyncRequest(msg, reply);
   if (err != GF_NOERR) {
     LOGDEBUG("CqQueryImpl::executeCqWithInitialResults errorred!!!!");
-    GfErrTypeToException("CqQuery::executeCqWithInitialResults:", err);
+    throwExceptionIfError("CqQuery::executeCqWithInitialResults:", err);
   }
   if (reply.getMessageType() == TcrMessage::EXCEPTION ||
       reply.getMessageType() == TcrMessage::CQDATAERROR_MSG_TYPE ||
@@ -399,7 +398,7 @@ std::shared_ptr<CqResults> CqQueryImpl::executeWithInitialResults(
           std::string("CqQuery::executeWithInitialResults: exception ") +
           "at the server side: " + reply.getException());
     } else {
-      GfErrTypeToException("CqQuery::executeWithInitialResults", err);
+      throwExceptionIfError("CqQuery::executeWithInitialResults", err);
     }
   }
   m_cqState = CqState::RUNNING;
@@ -478,7 +477,7 @@ void CqQueryImpl::sendStopOrClose(TcrMessage::MsgType requestType) {
   }
 
   if (err != GF_NOERR) {
-    GfErrTypeToException("CqQuery::stop/close:", err);
+    throwExceptionIfError("CqQuery::stop/close:", err);
   }
   if (reply.getMessageType() == TcrMessage::EXCEPTION ||
       reply.getMessageType() == TcrMessage::CQDATAERROR_MSG_TYPE ||
@@ -490,7 +489,7 @@ void CqQueryImpl::sendStopOrClose(TcrMessage::MsgType requestType) {
           std::string("CqQuery::stop/close: exception at the server side: ") +
           reply.getException());
     } else {
-      GfErrTypeToException("CqQuery::stop/close", err);
+      throwExceptionIfError("CqQuery::stop/close", err);
     }
   }
 }

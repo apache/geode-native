@@ -165,7 +165,7 @@ const std::string& getThreadLocalExceptionMessage();
       setThreadLocalExceptionMessage(nullptr);
       throw ex;
     }
-    case GF_TIMOUT: {
+    case GF_TIMEOUT: {
       message.append(!exMsg.empty() ? exMsg : ": timed out");
       TimeoutException ex(message);
       setThreadLocalExceptionMessage(nullptr);

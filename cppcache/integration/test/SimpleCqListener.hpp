@@ -17,31 +17,28 @@
 
 #pragma once
 
-#ifndef GEODE_UTIL_EXCEPTION_H_
-#define GEODE_UTIL_EXCEPTION_H_
+#ifndef SIMPLE_CQ_LISTENER_H
+#define SIMPLE_CQ_LISTENER_H
 
-#include <string>
+#include <geode/CacheableString.hpp>
+#include <geode/CqListener.hpp>
+#include <geode/CqOperation.hpp>
 
-#include <geode/internal/geode_base.hpp>
+class SimpleCqListener : public apache::geode::client::CqListener {
+ public:
+  SimpleCqListener();
+  void onEvent(const apache::geode::client::CqEvent& cqEvent) override;
+  void onError(const apache::geode::client::CqEvent& cqEvent) override;
+  void close() override;
 
-#include "../ErrType.hpp"
+  int32_t getCreationCount();
+  int32_t getUpdateCount();
+  int32_t getDestructionCount();
 
-namespace apache {
-namespace geode {
-namespace client {
+ private:
+  int32_t creationCount_;
+  int32_t updateCount_;
+  int32_t destructionCount_;
+};
 
-extern void APACHE_GEODE_EXPORT GfErrTypeThrowException(const char* str,
-                                                        GfErrType err);
-
-#define throwExceptionIfError(str, err)  \
-  {                                      \
-    if (err != GF_NOERR) {               \
-      GfErrTypeThrowException(str, err); \
-    }                                    \
-  }
-
-}  // namespace client
-}  // namespace geode
-}  // namespace apache
-
-#endif  // GEODE_UTIL_EXCEPTION_H_
+#endif  // SIMPLE_CQ_LISTENER_H

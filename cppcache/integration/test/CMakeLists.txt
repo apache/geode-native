@@ -13,9 +13,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
-
-add_executable(cpp-integration-test ${SOURCES})
+add_executable(cpp-integration-test
+  AuthInitializeTest.cpp
+  CommitConflictExceptionTest.cpp
+  CqPlusAuthInitializeTest.cpp
+  CqTest.cpp
+  DataSerializableTest.cpp
+  EnableChunkHandlerThreadTest.cpp
+  ExampleTest.cpp
+  ExpirationTest.cpp
+  FunctionExecutionTest.cpp
+  PdxInstanceTest.cpp
+  RegionGetAllTest.cpp
+  RegionPutAllTest.cpp
+  RegionPutGetAllTest.cpp
+  RegisterKeysTest.cpp
+  SimpleAuthInitialize.cpp
+  SimpleAuthInitialize.hpp
+  SimpleCqListener.cpp
+  SimpleCqListener.hpp
+  StructTest.cpp
+  TransactionCleaningTest.cpp
+)
 
 target_compile_definitions(cpp-integration-test
   PUBLIC

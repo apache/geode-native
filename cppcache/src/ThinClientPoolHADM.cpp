@@ -76,7 +76,7 @@ void ThinClientPoolHADM::startBackgroundThreads() {
           "No locators were available during pool initialization with "
           "subscription redundancy.");
     } else {
-      GfErrTypeToException("ThinClientPoolHADM::init", err);
+      throwExceptionIfError("ThinClientPoolHADM::init", err);
     }
   }
 

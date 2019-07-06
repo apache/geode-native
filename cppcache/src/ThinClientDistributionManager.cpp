@@ -58,7 +58,7 @@ void ThinClientDistributionManager::init() {
               m_endpoints[m_activeEndpoint]->name().c_str());
     } else if (isFatalError(err)) {
       m_connManager.disconnect(this, m_endpoints);
-      GfErrTypeToException("ThinClientDistributionManager::init", err);
+      throwExceptionIfError("ThinClientDistributionManager::init", err);
     }
   }
   ThinClientBaseDM::init();
@@ -157,7 +157,7 @@ GfErrType ThinClientDistributionManager::sendSyncRequest(TcrMessage& request,
        type == TcrMessage::EXECUTE_REGION_FUNCTION ||
        type == TcrMessage::EXECUTE_REGION_FUNCTION_SINGLE_HOP ||
        type == TcrMessage::EXECUTECQ_WITH_IR_MSG_TYPE) &&
-      error == GF_TIMOUT) {
+      error == GF_TIMEOUT) {
     forceSelect = true;
   }
 
@@ -178,7 +178,7 @@ GfErrType ThinClientDistributionManager::sendSyncRequest(TcrMessage& request,
            type == TcrMessage::EXECUTE_REGION_FUNCTION ||
            type == TcrMessage::EXECUTE_REGION_FUNCTION_SINGLE_HOP ||
            type == TcrMessage::EXECUTECQ_WITH_IR_MSG_TYPE) &&
-          error == GF_TIMOUT) {
+          error == GF_TIMEOUT) {
         return error;
       }
       currentEndpoint = m_activeEndpoint;
@@ -370,7 +370,7 @@ GfErrType ThinClientDistributionManager::sendUserCredentials(
       }
     }
     // throw exception if it is not authenticated
-    // GfErrTypeToException("ThinClientDistributionManager::sendUserCredentials",
+    // throwExceptionIfError("ThinClientDistributionManager::sendUserCredentials",
     // err);
   }
 
