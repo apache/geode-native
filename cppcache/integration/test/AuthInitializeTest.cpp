@@ -41,14 +41,13 @@
 #include "framework/Framework.h"
 #include "framework/Gfsh.h"
 
-namespace {
-
 using apache::geode::client::AuthInitialize;
+using apache::geode::client::AuthenticationFailedException;
 using apache::geode::client::Cache;
+using apache::geode::client::CacheFactory;
 using apache::geode::client::Cacheable;
 using apache::geode::client::CacheableKey;
 using apache::geode::client::CacheableString;
-using apache::geode::client::CacheFactory;
 using apache::geode::client::CqAttributes;
 using apache::geode::client::CqAttributesFactory;
 using apache::geode::client::CqEvent;
@@ -56,6 +55,7 @@ using apache::geode::client::CqListener;
 using apache::geode::client::CqOperation;
 using apache::geode::client::Exception;
 using apache::geode::client::HashMapOfCacheable;
+using apache::geode::client::NotConnectedException;
 using apache::geode::client::Pool;
 using apache::geode::client::Properties;
 using apache::geode::client::QueryService;
@@ -150,8 +150,8 @@ TEST(AuthInitializeTest, putWithBadUsername) {
 
   try {
     region->put("foo", "bar");
-  } catch (const apache::geode::client::NotConnectedException&) {
-  } catch (const apache::geode::client::Exception& ex) {
+  } catch (const NotConnectedException&) {
+  } catch (const Exception& ex) {
     std::cerr << "Caught unexpected exception: " << ex.what() << std::endl;
     FAIL();
   }
@@ -178,8 +178,8 @@ TEST(AuthInitializeTest, putWithBadPassword) {
 
   try {
     region->put("foo", "bar");
-  } catch (const apache::geode::client::NotConnectedException&) {
-  } catch (const apache::geode::client::Exception& ex) {
+  } catch (const NotConnectedException&) {
+  } catch (const Exception& ex) {
     std::cerr << "Caught unexpected exception: " << ex.what() << std::endl;
     FAIL();
   }
@@ -204,8 +204,8 @@ TEST(AuthInitializeTest, badCredentialsWithSubscriptionEnabled) {
 
   try {
     createPool(cluster, cache, true);
-  } catch (const apache::geode::client::AuthenticationFailedException&) {
-  } catch (const apache::geode::client::Exception& ex) {
+  } catch (const AuthenticationFailedException&) {
+  } catch (const Exception& ex) {
     std::cerr << "Caught unexpected exception: " << ex.what() << std::endl;
     FAIL();
   }
@@ -213,4 +213,3 @@ TEST(AuthInitializeTest, badCredentialsWithSubscriptionEnabled) {
   ASSERT_GT(authInitialize->getGetCredentialsCallCount(), 0);
 }
 
-}  // namespace

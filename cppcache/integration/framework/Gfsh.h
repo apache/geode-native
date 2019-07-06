@@ -124,12 +124,16 @@ class Gfsh {
       };
 
       Locator &withClasspath(const std::string classpath) {
-        command_ += " --classpath=" + classpath;
+        if (!classpath.empty()) {
+          command_ += " --classpath=" + classpath;
+        }
         return *this;
       };
 
       Locator &withSecurityManager(const std::string securityManager) {
-        command_ += " --J=-Dgemfire.security-manager=" + securityManager;
+        if (!securityManager.empty()) {
+          command_ += " --J=-Dgemfire.security-manager=" + securityManager;
+        }
         return *this;
       };
 
@@ -179,22 +183,31 @@ class Gfsh {
       };
 
       Server &withClasspath(const std::string classpath) {
-        command_ += " --classpath=" + classpath;
+        if (!classpath.empty()) {
+          command_ += " --classpath=" + classpath;
+        }
         return *this;
       };
 
       Server &withSecurityManager(const std::string securityManager) {
-        command_ += " --J=-Dgemfire.security-manager=" + securityManager;
+        if (!securityManager.empty()) {
+          command_ += " --J=-Dgemfire.security-manager=" + securityManager;
+        }
         return *this;
       };
 
       Server &withUser(const std::string user) {
-        command_ += " --user=" + user;
+        if (!user.empty()) {
+          command_ += " --user=" + user;
+        }
+
         return *this;
       };
 
       Server &withPassword(const std::string password) {
-        command_ += " --password=" + password;
+        if (!password.empty()) {
+          command_ += " --password=" + password;
+        }
         return *this;
       };
     };

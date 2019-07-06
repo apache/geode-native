@@ -273,7 +273,6 @@ GfErrType CqQueryImpl::execute(TcrEndpoint* endpoint) {
   err = m_tccdm->sendRequestToEP(request, reply, endpoint);
 
   if (err != GF_NOERR) {
-    // throwExceptionIfError("CqQuery::execute(endpoint)", err);
     return err;
   }
 

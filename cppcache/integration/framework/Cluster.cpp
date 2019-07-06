@@ -33,7 +33,7 @@ void Locator::start() {
     cluster_.getGfsh().stop().locator().withDir(name_).execute();
   }
 
-  auto locator = cluster_.getGfsh()
+  cluster_.getGfsh()
       .start()
       .locator()
       .withDir(name_)
@@ -42,23 +42,10 @@ void Locator::start() {
       .withPort(locatorAddress_.port)
       .withMaxHeap("256m")
       .withJmxManagerPort(jmxManagerPort_)
-      .withHttpServicePort(0);
-
-  if (!cluster_.getClasspath().empty()) {
-    locator.withClasspath(cluster_.getClasspath());
-  }
-
-  if (!cluster_.getSecurityManager().empty()) {
-    locator.withSecurityManager(cluster_.getSecurityManager());
-  }
-
-  if ((!cluster_.getUser().empty()) && (!cluster_.getPassword().empty())) {
-    locator.execute(cluster_.getUser(), cluster_.getPassword());
-  } else {
-    locator.execute();
-  }
-
-//  std::cout << "locator: " << locatorAddress_.port << ": started" << std::endl << std::flush;
+      .withHttpServicePort(0)
+      .withClasspath(cluster_.getClasspath())
+      .withSecurityManager(cluster_.getSecurityManager())
+      .execute(cluster_.getUser(), cluster_.getPassword());
 
   started_ = true;
 }
@@ -74,7 +61,7 @@ void Server::start() {
   auto safeName = name_;
   std::replace(safeName.begin(), safeName.end(), '/', '_');
 
-  auto server = cluster_.getGfsh()
+  cluster_.getGfsh()
       .start()
       .server()
       .withDir(name_)
@@ -83,25 +70,12 @@ void Server::start() {
       .withPort(serverAddress_.port)
       .withMaxHeap("1g")
       .withLocators(locators_.front().getAddress().address + "[" +
-                    std::to_string(locators_.front().getAddress().port) + "]");
-
-  if (!cluster_.getClasspath().empty()) {
-    server.withClasspath(cluster_.getClasspath());
-  }
-
-  if (!cluster_.getSecurityManager().empty()) {
-    server.withSecurityManager(cluster_.getSecurityManager());
-  }
-
-  if (!cluster_.getUser().empty()) {
-    server.withUser(cluster_.getUser());
-  }
-
-  if (!cluster_.getPassword().empty()) {
-    server.withPassword(cluster_.getPassword());
-  }
-
-  server.execute();
+                    std::to_string(locators_.front().getAddress().port) + "]")
+      .withClasspath(cluster_.getClasspath())
+      .withSecurityManager(cluster_.getSecurityManager())
+      .withUser(cluster_.getUser())
+      .withPassword(cluster_.getPassword())
+      .execute();
 
 //  std::cout << "server: " << serverAddress_.port << ": started" << std::endl << std::flush;
 

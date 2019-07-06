@@ -2835,10 +2835,6 @@ void TcrMessage::addSecurityPart(int64_t connectionId, int64_t unique_id,
   writeObjectPart(encryptBytes);
   writeMessageLength();
   m_securityHeaderLength = 4 + 1 + encryptBytes->length();
-  //  LOGDEBUG("TcrMessage addsp = %s ",
-  //           Utils::convertBytesToString(m_request->getBuffer(),
-  //                                       m_request->getBufferLength())
-  //               .c_str());
 }
 
 void TcrMessage::addSecurityPart(int64_t connectionId, TcrConnection* conn) {
