@@ -151,8 +151,8 @@ char* Utils::copyString(const char* str) {
   return resStr;
 }
 
-void* Utils::getFactoryFunc(const std::string& lib,
-                            const std::string& funcName) {
+void* Utils::getFactoryFunction(const std::string& lib,
+                                const std::string& funcName) {
   ACE_DLL dll;
   if (dll.open(lib.c_str(), ACE_DEFAULT_SHLIB_MODE, 0) == -1) {
     throw IllegalArgumentException("cannot open library: " + lib);

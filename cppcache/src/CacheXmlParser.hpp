@@ -22,19 +22,12 @@
 
 #include <map>
 #include <stack>
-
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wundef"
-#pragma clang diagnostic ignored "-Wzero-as-null-pointer-constant"
-
 #include <xercesc/framework/MemBufInputSource.hpp>
 #include <xercesc/sax2/Attributes.hpp>
 #include <xercesc/sax2/DefaultHandler.hpp>
 #include <xercesc/sax2/SAX2XMLReader.hpp>
 #include <xercesc/sax2/XMLReaderFactory.hpp>
 #include <xercesc/util/XMLString.hpp>
-
-#pragma clang diagnostic pop
 
 #include <geode/Cache.hpp>
 #include <geode/CacheListener.hpp>
@@ -169,7 +162,8 @@ class CacheXmlParser : public xercesc::DefaultHandler {
         // this is a managed library
         (loader)(libraryName.c_str(), functionName.c_str());
       } else {
-        apache::geode::client::Utils::getFactoryFunc(libraryName, functionName);
+        apache::geode::client::Utils::getFactoryFunction(libraryName,
+                                                         functionName);
       }
     } catch (IllegalArgumentException& ex) {
       throw CacheXmlException(ex.what());

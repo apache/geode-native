@@ -45,7 +45,7 @@ endif()
 
 add_library(${PROJECT_NAME} INTERFACE)
 
-target_include_directories(${PROJECT_NAME} INTERFACE
+target_include_directories(${PROJECT_NAME} SYSTEM INTERFACE
   $<BUILD_INTERFACE:${INSTALL_DIR}/include>
 )
 
@@ -61,4 +61,5 @@ if ("Darwin" STREQUAL ${CMAKE_SYSTEM_NAME})
 endif()
 
 add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}-extern)
+add_library(XercesC::XercesC ALIAS xerces-c)
 

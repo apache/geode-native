@@ -68,8 +68,8 @@ std::shared_ptr<CacheLoader> RegionAttributes::getCacheLoader() const {
           m_cacheLoaderLibrary.c_str(), m_cacheLoaderFactory.c_str()));
     } else {
       CacheLoader* (*funcptr)();
-      funcptr = reinterpret_cast<CacheLoader* (*)()>(
-          Utils::getFactoryFunc(m_cacheLoaderLibrary, m_cacheLoaderFactory));
+      funcptr = reinterpret_cast<CacheLoader* (*)()>(Utils::getFactoryFunction(
+          m_cacheLoaderLibrary, m_cacheLoaderFactory));
       m_cacheLoader.reset(funcptr());
     }
   }
@@ -85,8 +85,8 @@ std::shared_ptr<CacheWriter> RegionAttributes::getCacheWriter() const {
           m_cacheWriterLibrary.c_str(), m_cacheWriterFactory.c_str()));
     } else {
       CacheWriter* (*funcptr)();
-      funcptr = reinterpret_cast<CacheWriter* (*)()>(
-          Utils::getFactoryFunc(m_cacheWriterLibrary, m_cacheWriterFactory));
+      funcptr = reinterpret_cast<CacheWriter* (*)()>(Utils::getFactoryFunction(
+          m_cacheWriterLibrary, m_cacheWriterFactory));
       m_cacheWriter.reset(funcptr());
     }
   }
@@ -102,8 +102,9 @@ std::shared_ptr<CacheListener> RegionAttributes::getCacheListener() const {
           m_cacheListenerLibrary.c_str(), m_cacheListenerFactory.c_str()));
     } else {
       CacheListener* (*funcptr)();
-      funcptr = reinterpret_cast<CacheListener* (*)()>(Utils::getFactoryFunc(
-          m_cacheListenerLibrary, m_cacheListenerFactory));
+      funcptr =
+          reinterpret_cast<CacheListener* (*)()>(Utils::getFactoryFunction(
+              m_cacheListenerLibrary, m_cacheListenerFactory));
       m_cacheListener.reset(funcptr());
     }
   }
@@ -122,7 +123,7 @@ std::shared_ptr<PartitionResolver> RegionAttributes::getPartitionResolver()
     } else {
       PartitionResolver* (*funcptr)();
       funcptr =
-          reinterpret_cast<PartitionResolver* (*)()>(Utils::getFactoryFunc(
+          reinterpret_cast<PartitionResolver* (*)()>(Utils::getFactoryFunction(
               m_partitionResolverLibrary, m_partitionResolverFactory));
       m_partitionResolver.reset(funcptr());
     }
@@ -140,8 +141,9 @@ std::shared_ptr<PersistenceManager> RegionAttributes::getPersistenceManager()
           m_persistenceLibrary.c_str(), m_persistenceFactory.c_str()));
     } else {
       PersistenceManager* (*funcptr)();
-      funcptr = reinterpret_cast<PersistenceManager* (*)()>(
-          Utils::getFactoryFunc(m_persistenceLibrary, m_persistenceFactory));
+      funcptr =
+          reinterpret_cast<PersistenceManager* (*)()>(Utils::getFactoryFunction(
+              m_persistenceLibrary, m_persistenceFactory));
       m_persistenceManager.reset(funcptr());
     }
   }
