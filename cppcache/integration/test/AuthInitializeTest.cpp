@@ -41,13 +41,13 @@
 #include "framework/Framework.h"
 #include "framework/Gfsh.h"
 
-using apache::geode::client::AuthInitialize;
 using apache::geode::client::AuthenticationFailedException;
+using apache::geode::client::AuthInitialize;
 using apache::geode::client::Cache;
-using apache::geode::client::CacheFactory;
 using apache::geode::client::Cacheable;
 using apache::geode::client::CacheableKey;
 using apache::geode::client::CacheableString;
+using apache::geode::client::CacheFactory;
 using apache::geode::client::CqAttributes;
 using apache::geode::client::CqAttributesFactory;
 using apache::geode::client::CqEvent;
@@ -212,4 +212,3 @@ TEST(AuthInitializeTest, badCredentialsWithSubscriptionEnabled) {
 
   ASSERT_GT(authInitialize->getGetCredentialsCallCount(), 0);
 }
-
