@@ -25,6 +25,7 @@ add_subdirectory(doxygen)
 add_subdirectory(gtest)
 add_subdirectory(benchmark)
 add_subdirectory(xerces-c)
+add_subdirectory(spdlog)
 
 if (USE_RAT)
   add_subdirectory( rat )

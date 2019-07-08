@@ -141,11 +141,10 @@ bool Cache::getPdxReadSerialized() const {
 }
 
 void Cache::setLogLevel(LogLevel newLevel) {
-  Log::setLogLevel(newLevel);
-  this->getSystemProperties().setLogLevel(newLevel);
+  getSystemProperties().setLogLevel(newLevel);
 }
 
-LogLevel Cache::getLogLevel() { return Log::logLevel(); }
+LogLevel Cache::getLogLevel() { return getSystemProperties().logLevel(); }
 
 PdxInstanceFactory Cache::createPdxInstanceFactory(
     const std::string& className) const {

@@ -27,7 +27,7 @@
 #include <geode/internal/geode_globals.hpp>
 #include <geode/util/LogLevel.hpp>
 
-/******************************************************************************/
+#include "spdlog/spdlog.h"
 
 #ifndef GEODE_HIGHEST_LOG_LEVEL
 #define GEODE_HIGHEST_LOG_LEVEL LogLevel::All
@@ -143,13 +143,13 @@ class APACHE_GEODE_EXPORT Log {
    * with the log-file, log-level, and log-file-size system properties used as
    * arguments
    */
-  static void init
-      // 0 => use default value (currently 1GB for file, 1TB for disk)
-      (LogLevel level, const char* logFileName, int32_t logFileLimit = 0,
-       int64_t logDiskSpaceLimit = 0);
-
-  static void init(LogLevel level, const std::string& logFileName,
+  static void init(LogLevel level, const char* logFileName,
                    int32_t logFileLimit = 0, int64_t logDiskSpaceLimit = 0);
+
+  static void init
+      // 0 => use maximum value (currently 1G)
+      (LogLevel level, const std::string& logFileName = "",
+       uint32_t logFileLimit = 0, uint64_t logDiskSpaceLimit = 0);
 
   /**
    * closes logging facility (until next init).
@@ -162,61 +162,34 @@ class APACHE_GEODE_EXPORT Log {
    * lower case. Out of range values will throw
    * IllegalArgumentException.
    */
-  static const char* levelToChars(LogLevel level);
+  static std::string logLevelToString(LogLevel level);
 
   /**
    * returns log level specified by "chars", or throws
    * IllegalArgumentException.  Allowed values are identical to the
    * enum declaration above for LogLevel, but with character case ignored.
    */
-  static LogLevel charsToLevel(const std::string& chars);
-
-  /**
-   * formats and returns a line for logging.
-   *
-   * This is provided so that applications wishing to use the same format
-   * as Geode log-lines can do so easily. A log-line starts with the prefix
-   * given below which is filled in by this method:
-   * [<level> <date> <time> <timezone> <host>:<process ID> <thread ID>]
-   *
-   * This method is not thread-safe for the first invocation.
-   * When invoking from outside either <init> should have been invoked,
-   * or at least the first invocation should be single-threaded.
-   */
-  static std::string formatLogLine(LogLevel level);
+  static LogLevel stringToLogLevel(const std::string& chars);
 
   static void log(LogLevel level, const std::string& msg);
-
   static void log(LogLevel level, const char* fmt, ...);
-
   static void logCatch(LogLevel level, const char* msg, const Exception& ex);
 
   static bool enabled(LogLevel level);
 
  private:
-  static LogLevel s_logLevel;
-
-  static void writeBanner();
-
   static void validateSizeLimits(int64_t fileSizeLimit, int64_t diskSpaceLimit);
-
-  static void validateLogFileName(const std::string& filename);
-
-  static void rollLogFile();
-
-  static void removeOldestRolledLogFile();
-
-  static void buildRollFileMapping();
-
-  static void setRollFileIndex();
-
-  static void setSizeLimits(int32_t logFileLimit, int64_t logDiskSpaceLimit);
-
+  static void setSizeLimits(int32_t logFileLimit, int64_t logDiskSpaceLimit,
+                            int32_t& adjustedFileLimit,
+                            int64_t& adjustedDiskLimit);
+  static uint32_t calculateMaxFilesForSpaceLimit(uint64_t logDiskSpaceLimit,
+                                                 uint32_t logFileSizeLimit);
+  static void writeBanner();
   static void logInternal(LogLevel level, const std::string& msg);
 
   static void calculateUsedDiskSpace();
+  static std::string logLineFormat();
 };
-
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

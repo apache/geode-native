@@ -42,7 +42,7 @@ const auto __4K__ = 4 * __1K__;
 const auto __1M__ = (__1K__ * __1K__);
 const auto __1G__ = (__1K__ * __1K__ * __1K__);
 
-const auto LENGTH_OF_BANNER = 16;
+const auto LENGTH_OF_BANNER = 17;
 
 const char* __1KStringLiteral =
     "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
@@ -103,7 +103,7 @@ class LoggingTest : public testing::Test {
                                  const char* filename, int32_t rollIndex) {
     auto baseName = boost::filesystem::path(filename).stem().string();
     auto rolledPath =
-        logdir / boost::filesystem::path(baseName + "-" +
+        logdir / boost::filesystem::path(baseName + "." +
                                          std::to_string(rollIndex) + ".log");
     auto rolledFile = fopen(rolledPath.string().c_str(), "w");
     fwrite("Test", 1, 4, rolledFile);
@@ -158,11 +158,11 @@ class LoggingTest : public testing::Test {
       LOGFINEST("Finest Message");
       LOGDEBUG("Debug Message");
 
+      apache::geode::client::Log::close();
       int lines = LoggingTest::numOfLinesInFile(logFilename);
 
       ASSERT_TRUE(lines == LoggingTest::expectedWithBanner(level));
 
-      apache::geode::client::Log::close();
       boost::filesystem::remove(logFilename);
     }
   }
@@ -173,7 +173,7 @@ class LoggingTest : public testing::Test {
     const auto basePath =
         boost::filesystem::absolute(boost::filesystem::path(logFilePath)) /
         filename;
-    const auto filterstring = basePath.stem().string() + "-(\\d+)\\.log$";
+    const auto filterstring = basePath.stem().string() + "\\.(\\d+)\\.log$";
     const boost::regex my_filter(filterstring);
 
     rolledFiles.clear();
@@ -295,14 +295,6 @@ TEST_F(LoggingTest, logInit) {
         apache::geode::client::Log::init(
             apache::geode::client::LogLevel::Config, logFilename, 1, __1G__),
         apache::geode::client::IllegalArgumentException);
-
-    // Init twice without closing
-    ASSERT_NO_THROW(apache::geode::client::Log::init(
-        apache::geode::client::LogLevel::All, logFilename, 1, 4));
-    ASSERT_THROW(apache::geode::client::Log::init(
-                     apache::geode::client::LogLevel::All, logFilename, 1, 4),
-                 apache::geode::client::IllegalStateException);
-    apache::geode::client::Log::close();
   }
 
   // Init with valid filename
@@ -316,18 +308,14 @@ TEST_F(LoggingTest, logInit) {
   apache::geode::client::Log::close();
   boost::filesystem::remove("LoggingTest (#).log");
 
-  // Init with invalid filename
+#ifdef WIN32
+  // Init with invalid filename.  Windows-only test, on Linux et al
+  // basically any character is legal in a filename, however ill-advised
+  // that may be.
   ASSERT_THROW(apache::geode::client::Log::init(
                    apache::geode::client::LogLevel::Config, "#?$?%.log"),
                apache::geode::client::IllegalArgumentException);
-
-  // Specify disk or file limit without a filename
-  ASSERT_NO_THROW(apache::geode::client::Log::init(
-      apache::geode::client::LogLevel::Config, nullptr, 4));
-  apache::geode::client::Log::close();
-  ASSERT_NO_THROW(apache::geode::client::Log::init(
-      apache::geode::client::LogLevel::Config, nullptr, 0, 4));
-  apache::geode::client::Log::close();
+#endif
 }
 
 TEST_F(LoggingTest, logToFileAtEachLevel) {
@@ -419,25 +407,26 @@ TEST_F(LoggingTest, verifyFileSizeLimit) {
     // Original file should still be around
     ASSERT_TRUE(boost::filesystem::exists(logFilename));
 
-    // Check for 'rolled' log files.  With a 1MB file size limit and each logged
-    // string having a length of 1K chars, we should have at least one less
-    // rolled log file than the number of strings logged, i.e. 3 rolled files
-    // for 4K strings in this case.  spdlog rolled files look like
+    // Check for 'rolled' log files.  With a 1MB file size limit and each
+    // logged string having a length of 1K chars, we should have at least one
+    // less rolled log file than the number of strings logged, i.e. 3 rolled
+    // files for 4K strings in this case.  spdlog rolled files look like
     // <<basename>>.<<#>>.<<extension>>, so for LoggingTest.log we should find
     // LoggingTest.1.log, LoggingTest.2.log, etc.
     auto base = boost::filesystem::path(logFilename).stem();
     auto ext = boost::filesystem::path(logFilename).extension();
 
-    // File size limit is treated as a "soft" limit.  If the last message in the
-    // log puts the file size over the limit, the file is rolled and the message
-    // is preserved intact, rather than truncated or split across files.  We'll
-    // assume the file size never exceeds 110% of the specified limit.
+    // File size limit is treated as a "soft" limit.  If the last message in
+    // the log puts the file size over the limit, the file is rolled and the
+    // message is preserved intact, rather than truncated or split across
+    // files.  We'll assume the file size never exceeds 110% of the specified
+    // limit.
     auto adjustedFileSizeLimit =
         static_cast<uint32_t>(static_cast<uint64_t>(__1M__) * 11 / 10);
 
-    for (auto i = 0; i < 4; i++) {
+    for (auto i = 1; i < 5; i++) {
       auto rolledLogFileName =
-          base.string() + "-" + std::to_string(i) + ext.string();
+          base.string() + "." + std::to_string(i) + ext.string();
 
       ASSERT_TRUE(boost::filesystem::exists(rolledLogFileName));
       ASSERT_TRUE(adjustedFileSizeLimit >
@@ -484,7 +473,7 @@ TEST_F(LoggingTest, verifyDiskSpaceLimit) {
 TEST_F(LoggingTest, verifyWithExistingRolledFile) {
   for (auto logFilename : testFileNames) {
     LoggingTest::writeRolledLogFile(boost::filesystem::current_path(),
-                                    logFilename, 11);
+                                    logFilename, 1);
     ASSERT_NO_THROW(apache::geode::client::Log::init(
         apache::geode::client::LogLevel::Debug, logFilename, 1, 5));
     for (auto i = 0; i < 2 * __1K__; i++) {
@@ -495,24 +484,25 @@ TEST_F(LoggingTest, verifyWithExistingRolledFile) {
     // Original file should still be around
     ASSERT_TRUE(boost::filesystem::exists(logFilename));
 
-    // Check for 'rolled' log files.  With a 1MB file size limit and each logged
-    // string having a length of 1K chars, we should have at least one less
-    // rolled log file than the number of strings logged, i.e. 3 rolled files
-    // for 4K strings in this case.  spdlog rolled files look like
+    // Check for 'rolled' log files.  With a 1MB file size limit and each
+    // logged string having a length of 1K chars, we should have at least one
+    // less rolled log file than the number of strings logged, i.e. 3 rolled
+    // files for 4K strings in this case.  spdlog rolled files look like
     // <<basename>>.<<#>>.<<extension>>, so for LoggingTest.log we should find
     // LoggingTest.1.log, LoggingTest.2.log, etc.
     auto base = boost::filesystem::path(logFilename).stem();
     auto ext = boost::filesystem::path(logFilename).extension();
 
-    // File size limit is treated as a "soft" limit.  If the last message in the
-    // log puts the file size over the limit, the file is rolled and the message
-    // is preserved intact, rather than truncated or split across files.  We'll
-    // assume the file size never exceeds 110% of the specified limit.
+    // File size limit is treated as a "soft" limit.  If the last message in
+    // the log puts the file size over the limit, the file is rolled and the
+    // message is preserved intact, rather than truncated or split across
+    // files.  We'll assume the file size never exceeds 110% of the specified
+    // limit.
     auto adjustedFileSizeLimit =
         static_cast<uint32_t>(static_cast<uint64_t>(__1M__) * 11 / 10);
 
     auto rolledLogFileName =
-        base.string() + "-" + std::to_string(12) + ext.string();
+        base.string() + "." + std::to_string(2) + ext.string();
 
     ASSERT_TRUE(boost::filesystem::exists(rolledLogFileName));
     ASSERT_TRUE(adjustedFileSizeLimit >
@@ -536,25 +526,26 @@ void verifyWithPath(const boost::filesystem::path& path, int32_t fileSizeLimit,
     // Original file should still be around
     ASSERT_TRUE(boost::filesystem::exists(relativePath));
 
-    // Check for 'rolled' log files.  With a 1MB file size limit and each logged
-    // string having a length of 1K chars, we should have at least one less
-    // rolled log file than the number of strings logged, i.e. 3 rolled files
-    // for 4K strings in this case.  spdlog rolled files look like
+    // Check for 'rolled' log files.  With a 1MB file size limit and each
+    // logged string having a length of 1K chars, we should have at least one
+    // less rolled log file than the number of strings logged, i.e. 3 rolled
+    // files for 4K strings in this case.  spdlog rolled files look like
     // <<basename>>.<<#>>.<<extension>>, so for LoggingTest.log we should find
     // LoggingTest.1.log, LoggingTest.2.log, etc.
     auto base = boost::filesystem::path(relativePath).stem();
     auto ext = boost::filesystem::path(relativePath).extension();
 
-    // File size limit is treated as a "soft" limit.  If the last message in the
-    // log puts the file size over the limit, the file is rolled and the message
-    // is preserved intact, rather than truncated or split across files.  We'll
-    // assume the file size never exceeds 110% of the specified limit.
+    // File size limit is treated as a "soft" limit.  If the last message in
+    // the log puts the file size over the limit, the file is rolled and the
+    // message is preserved intact, rather than truncated or split across
+    // files.  We'll assume the file size never exceeds 110% of the specified
+    // limit.
     auto adjustedFileSizeLimit = static_cast<uint32_t>(
         static_cast<uint64_t>(__1M__ * fileSizeLimit) * 11 / 10);
 
     auto rolledLogFileName =
         relativePath.parent_path() /
-        boost::filesystem::path(base.string() + "-" + std::to_string(0) +
+        boost::filesystem::path(base.string() + "." + std::to_string(1) +
                                 ext.string());
 
     if (fileSizeLimit == diskSpaceLimit) {
@@ -643,11 +634,11 @@ TEST_F(LoggingTest, countLinesAllLevels) {
       LOGFINEST("Finest Message");
       LOGDEBUG("Debug Message");
 
+      apache::geode::client::Log::close();
       int lines = LoggingTest::numOfLinesInFile(logFilename);
 
       ASSERT_TRUE(lines == LoggingTest::expectedWithBanner(level));
 
-      apache::geode::client::Log::close();
       boost::filesystem::remove(logFilename);
     }
   }

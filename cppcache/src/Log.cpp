@@ -14,70 +14,53 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include "util/Log.hpp"
 
-#include <algorithm>
-#include <cctype>
-#include <chrono>
+#include <cstdarg>
 #include <cstdio>
-#include <ctime>
-#include <map>
-#include <mutex>
 #include <sstream>
 #include <string>
-#include <thread>
-#include <utility>
 
 #include <boost/asio/ip/host_name.hpp>
 #include <boost/filesystem.hpp>
-#include <boost/process/environment.hpp>
-#include <boost/regex.hpp>
 
 #include <geode/ExceptionTypes.hpp>
 #include <geode/util/LogLevel.hpp>
 
 #include "geodeBanner.hpp"
+#include "spdlog/sinks/rotating_file_sink.h"
+#include "spdlog/sinks/stdout_color_sinks.h"
+#include "spdlog/spdlog.h"
 #include "util/chrono/time_point.hpp"
-
-namespace {
-
-static size_t g_bytesWritten = 0;
-
-static size_t g_fileSizeLimit = GEODE_MAX_LOG_FILE_LIMIT;
-static size_t g_diskSpaceLimit = GEODE_MAX_LOG_DISK_LIMIT;
-
-static std::mutex g_logMutex;
-
-static int g_rollIndex = 0;
-static size_t g_spaceUsed = 0;
-
-static boost::filesystem::path g_fullpath;
-static std::map<int32_t, boost::filesystem::path> g_rollFiles;
-
-static FILE* g_log = nullptr;
-
-static std::string g_hostName;
-
-const int __1K__ = 1024;
-const int __1M__ = (__1K__ * __1K__);
-
-}  // namespace
 
 namespace apache {
 namespace geode {
 namespace client {
 
-LogLevel Log::s_logLevel = LogLevel::Default;
+const int __1K__ = 1024;
+const int __1M__ = __1K__ * __1K__;
+const int __1G__ = __1K__ * __1M__;
+const int LOG_SCRATCH_BUFFER_SIZE = 16 * __1K__;
 
-/*****************************************************************************/
+static std::recursive_mutex g_logMutex;
+static std::shared_ptr<spdlog::logger> currentLogger;
+static LogLevel currentLevel = LogLevel::None;
+static std::string logFilePath;
+static int32_t adjustedFileSizeLimit;
+static int32_t maxFiles;
 
-LogLevel Log::logLevel() { return s_logLevel; }
-
-/**
- * Set the current log level.
- */
-void Log::setLogLevel(LogLevel level) { s_logLevel = level; }
+const std::shared_ptr<spdlog::logger>& getCurrentLogger() {
+  if (logFilePath.empty()) {
+    static auto consoleLogger = spdlog::stderr_color_mt("console");
+    return consoleLogger;
+  } else {
+    if (!currentLogger) {
+      currentLogger = spdlog::rotating_logger_mt(
+          "file", logFilePath, adjustedFileSizeLimit, maxFiles);
+    }
+    return currentLogger;
+  }
+}
 
 void Log::validateSizeLimits(int64_t fileSizeLimit, int64_t diskSpaceLimit) {
   if (fileSizeLimit * __1M__ > GEODE_MAX_LOG_FILE_LIMIT) {
@@ -107,334 +90,257 @@ void Log::init(LogLevel level, const char* logFileName, int32_t logFileLimit,
   init(level, logFileNameString, logFileLimit, logDiskSpaceLimit);
 }
 
-void Log::rollLogFile() {
-  if (g_log) {
-    fclose(g_log);
-    g_log = nullptr;
-  }
+std::string Log::logLineFormat() {
+  std::stringstream format;
+  const size_t MINBUFSIZE = 128;
+  auto now = std::chrono::system_clock::now();
+  auto secs = std::chrono::system_clock::to_time_t(now);
+  auto tm_val = apache::geode::util::chrono::localtime(secs);
 
-  auto rollFileName =
-      (g_fullpath.parent_path() /
-       (g_fullpath.stem().string() + "-" + std::to_string(g_rollIndex) +
-        g_fullpath.extension().string()))
-          .string();
-  try {
-    auto rollFile = boost::filesystem::path(rollFileName);
-    boost::filesystem::rename(g_fullpath, rollFile);
-    g_rollFiles[g_rollIndex] = rollFile;
-    g_rollIndex++;
-  } catch (const boost::filesystem::filesystem_error&) {
-    throw IllegalStateException("Failed to roll log file");
-  }
+  format << "[%l %Y/%m/%d %H:%M:%S.%f " << std::put_time(&tm_val, "%Z  ")
+         << boost::asio::ip::host_name() << ":%P %t] %v";
+
+  return format.str();
 }
 
-void Log::removeOldestRolledLogFile() {
-  if (g_rollFiles.size()) {
-    auto index = g_rollFiles.begin()->first;
-    auto fileToRemove = g_rollFiles.begin()->second;
-    auto fileSize = boost::filesystem::file_size(fileToRemove);
-    boost::filesystem::remove(fileToRemove);
-    g_rollFiles.erase(index);
-    g_spaceUsed -= fileSize;
-  } else {
-    throw IllegalStateException(
-        "Failed to free sufficient disk space for logs");
-  }
-}
-
-void Log::calculateUsedDiskSpace() {
-  g_spaceUsed = 0;
-  if (boost::filesystem::exists(g_fullpath)) {
-    g_spaceUsed = boost::filesystem::file_size(g_fullpath);
-    for (auto const& item : g_rollFiles) {
-      g_spaceUsed += boost::filesystem::file_size(item.second);
-    }
-  }
-}
-
-void Log::buildRollFileMapping() {
-  const auto filterstring = g_fullpath.stem().string() + "-(\\d+)\\.log$";
-  const boost::regex my_filter(filterstring);
-
-  g_rollFiles.clear();
-
-  boost::filesystem::directory_iterator end_itr;
-  for (boost::filesystem::directory_iterator i(
-           g_fullpath.parent_path().string());
-       i != end_itr; ++i) {
-    if (boost::filesystem::is_regular_file(i->status())) {
-      std::string filename = i->path().filename().string();
-      boost::regex testPattern(filterstring);
-      boost::match_results<std::string::const_iterator> testMatches;
-      if (boost::regex_search(std::string::const_iterator(filename.begin()),
-                              filename.cend(), testMatches, testPattern)) {
-        auto index = std::atoi(
-            std::string(testMatches[1].first, testMatches[1].second).c_str());
-        g_rollFiles[index] = i->path();
-      }
-    }
-  }
-}
-
-void Log::setRollFileIndex() {
-  g_rollIndex = 0;
-  if (g_rollFiles.size()) {
-    g_rollIndex = g_rollFiles.rbegin()->first + 1;
-  }
-}
-
-void Log::setSizeLimits(int32_t logFileLimit, int64_t logDiskSpaceLimit) {
+void Log::setSizeLimits(int32_t logFileLimit, int64_t logDiskSpaceLimit,
+                        int32_t& adjustedFileLimit,
+                        int64_t& adjustedDiskLimit) {
   validateSizeLimits(logFileLimit, logDiskSpaceLimit);
 
   // Default to 10MB file limit and 1GB disk limit
   if (logFileLimit == 0 && logDiskSpaceLimit == 0) {
-    g_fileSizeLimit = 10 * __1M__;
-    g_diskSpaceLimit = 1000 * __1M__;
+    adjustedFileLimit = 10 * __1M__;
+    adjustedDiskLimit = 1000 * __1M__;
   }
   // disk space specified but file size is defaulted.  Just use a single
   // log file, i.e. set file limit == disk limit
   else if (logFileLimit == 0) {
-    g_diskSpaceLimit = logDiskSpaceLimit * __1M__;
-    g_fileSizeLimit = g_diskSpaceLimit;
+    adjustedDiskLimit = logDiskSpaceLimit * __1M__;
+    adjustedFileLimit = static_cast<int32_t>(adjustedDiskLimit);
   } else if (logDiskSpaceLimit == 0) {
-    g_fileSizeLimit = logFileLimit * __1M__;
-    g_diskSpaceLimit = g_fileSizeLimit;
+    adjustedFileLimit = logFileLimit * __1M__;
+    adjustedDiskLimit = adjustedFileLimit;
   } else {
-    g_fileSizeLimit = logFileLimit * __1M__;
-    g_diskSpaceLimit = logDiskSpaceLimit * __1M__;
+    adjustedFileLimit = logFileLimit * __1M__;
+    adjustedDiskLimit = logDiskSpaceLimit * __1M__;
   }
 }
 
-void Log::init(LogLevel level, const std::string& logFileName,
-               int32_t logFileLimit, int64_t logDiskSpaceLimit) {
-  if (g_log != nullptr) {
-    throw IllegalStateException(
-        "The Log has already been initialized. "
-        "Call Log::close() before calling Log::init again.");
+uint32_t Log::calculateMaxFilesForSpaceLimit(uint64_t logDiskSpaceLimit,
+                                             uint32_t logFileSizeLimit) {
+  uint32_t maxFileCount = 1;
+
+  maxFileCount =
+      static_cast<uint32_t>(logDiskSpaceLimit / logFileSizeLimit) - 1;
+  // Must specify at least 1!
+  maxFileCount = maxFileCount > 0 ? maxFileCount : 0;
+
+  return maxFileCount;
+}
+
+spdlog::level::level_enum geodeLogLevelToSpdlogLevel(LogLevel logLevel) {
+  auto level = spdlog::level::level_enum::off;
+  switch (logLevel) {
+    case LogLevel::None:
+      level = spdlog::level::level_enum::off;
+      break;
+    case LogLevel::Error:
+      level = spdlog::level::level_enum::err;
+      break;
+    case LogLevel::Warning:
+      level = spdlog::level::level_enum::warn;
+      break;
+    case LogLevel::Info:
+      level = spdlog::level::level_enum::info;
+      break;
+    case LogLevel::Default:
+      level = spdlog::level::level_enum::info;
+      break;
+    case LogLevel::Config:
+      level = spdlog::level::level_enum::info;
+      break;
+    case LogLevel::Fine:
+      level = spdlog::level::level_enum::debug;
+      break;
+    case LogLevel::Finer:
+      level = spdlog::level::level_enum::debug;
+      break;
+    case LogLevel::Finest:
+      level = spdlog::level::level_enum::debug;
+      break;
+    case LogLevel::Debug:
+      level = spdlog::level::level_enum::debug;
+      break;
+    case LogLevel::All:
+      level = spdlog::level::level_enum::debug;
+      break;
   }
-  s_logLevel = level;
+
+  return level;
+}
+
+void Log::init(LogLevel logLevel, const std::string& logFilename,
+               uint32_t logFileSizeLimit, uint64_t logDiskSpaceLimit) {
+  if (logLevel == LogLevel::None) {
+    currentLevel = LogLevel::None;
+    return;
+  }
 
   try {
     std::lock_guard<decltype(g_logMutex)> guard(g_logMutex);
 
-    g_hostName = boost::asio::ip::host_name();
-
-    g_fullpath =
-        boost::filesystem::absolute(boost::filesystem::path(logFileName));
-
-    // if no extension then add .log extension
-    if (g_fullpath.extension().empty() || (g_fullpath.extension() != ".log")) {
-      g_fullpath = g_fullpath.string() + ".log";
+    if (logFilename.empty()) {
+      if (logFileSizeLimit || logDiskSpaceLimit) {
+        IllegalArgumentException ex(
+            "Cannot specify a file or disk space size limit without specifying "
+            "a log file name.");
+        throw ex;
+      }
+      currentLevel = logLevel;
+      getCurrentLogger()->set_level(geodeLogLevelToSpdlogLevel(currentLevel));
+      getCurrentLogger()->set_pattern(logLineFormat());
+      return;
+    } else if (logDiskSpaceLimit && logFileSizeLimit > logDiskSpaceLimit) {
+      IllegalArgumentException ex(
+          "File size limit must be smaller than disk space limit for "
+          "logging.");
+      throw ex;
     }
 
-    setSizeLimits(logFileLimit, logDiskSpaceLimit);
+    int64_t adjustedDiskSpaceLimit;
 
-    g_bytesWritten = 0;
-    g_spaceUsed = 0;
+    setSizeLimits(logFileSizeLimit, logDiskSpaceLimit, adjustedFileSizeLimit,
+                  adjustedDiskSpaceLimit);
+    maxFiles = calculateMaxFilesForSpaceLimit(adjustedDiskSpaceLimit,
+                                              adjustedFileSizeLimit);
+    currentLevel = logLevel;
+
+    auto fullpath =
+        boost::filesystem::absolute(boost::filesystem::path(logFilename));
+
+    // if no extension then add .log extension
+    if (fullpath.extension().empty() || (fullpath.extension() != ".log")) {
+      fullpath = fullpath.string() + ".log";
+    }
 
     // Ensure that directory exists for log files.  We're going to attempt
     // to iterate through files in that folder, and if it doesn't exist boost
     // will throw an exception.
-    const auto target_path = g_fullpath.parent_path().string();
+    const auto target_path = fullpath.parent_path().string();
     if (!boost::filesystem::exists(target_path)) {
       boost::filesystem::create_directories(target_path);
     }
 
-    buildRollFileMapping();
-    setRollFileIndex();
-    calculateUsedDiskSpace();
-    while (g_spaceUsed > g_diskSpaceLimit) {
-      removeOldestRolledLogFile();
-    }
-
-    if (boost::filesystem::exists(g_fullpath) && logFileLimit > 0) {
-      rollLogFile();
-    }
+    logFilePath = fullpath.string();
+    getCurrentLogger()->set_level(geodeLogLevelToSpdlogLevel(currentLevel));
     writeBanner();
-  } catch (const boost::exception&) {
-    auto msg = std::string("Unable to log to file '") + logFileName + "'";
-    throw IllegalArgumentException(msg.c_str());
-  } catch (const std::exception& ex) {
-    auto msg = std::string("Unable to log to file '") + logFileName +
-               "': " + ex.what();
-    throw IllegalArgumentException(msg.c_str());
+    getCurrentLogger()->set_pattern(logLineFormat());
+  } catch (const spdlog::spdlog_ex& ex) {
+    throw IllegalArgumentException(ex.what());
   }
-}
+}  // namespace client
 
 void Log::close() {
-  std::lock_guard<decltype(g_logMutex)> guard(g_logMutex);
-
-  if (g_log) {
-    fclose(g_log);
-    g_log = nullptr;
+  if (currentLogger) {
+    spdlog::drop("file");
+    currentLogger = nullptr;
   }
-  g_fullpath = "";
 }
 
-void Log::writeBanner() {
-  if (s_logLevel != LogLevel::None) {
-    std::string bannertext = geodeBanner::getBanner();
+LogLevel Log::stringToLogLevel(const std::string& levelName) {
+  auto level = LogLevel::None;
 
-    // fullpath empty --> we're logging to stdout
-    if (g_fullpath.string().empty()) {
-      fprintf(stdout, "%s", bannertext.c_str());
-      fflush(stdout);
+  if (levelName.size()) {
+    auto localLevelName = levelName;
+
+    std::transform(localLevelName.begin(), localLevelName.end(),
+                   localLevelName.begin(), ::tolower);
+
+    if (localLevelName == "none") {
+      level = LogLevel::None;
+    } else if (localLevelName == "error") {
+      level = LogLevel::Error;
+    } else if (localLevelName == "warning") {
+      level = LogLevel::Warning;
+    } else if (localLevelName == "info") {
+      level = LogLevel::Info;
+    } else if (localLevelName == "default") {
+      level = LogLevel::Default;
+    } else if (localLevelName == "config") {
+      level = LogLevel::Config;
+    } else if (localLevelName == "fine") {
+      level = LogLevel::Fine;
+    } else if (localLevelName == "finer") {
+      level = LogLevel::Finer;
+    } else if (localLevelName == "finest") {
+      level = LogLevel::Finest;
+    } else if (localLevelName == "debug") {
+      level = LogLevel::Debug;
+    } else if (localLevelName == "all") {
+      level = LogLevel::All;
     } else {
-      if (boost::filesystem::exists(
-              g_fullpath.parent_path().string().c_str()) ||
-          boost::filesystem::create_directories(g_fullpath.parent_path())) {
-        g_log = fopen(g_fullpath.string().c_str(), "a");
-        if (g_log) {
-          if (fprintf(g_log, "%s", bannertext.c_str())) {
-            g_bytesWritten += static_cast<int32_t>(bannertext.length());
-            fflush(g_log);
-          }
-        }
-      }
+      throw IllegalArgumentException(
+          ("Unexpected log level name: " + localLevelName).c_str());
     }
   }
+
+  return level;
 }
 
-const char* Log::levelToChars(LogLevel level) {
+std::string Log::logLevelToString(LogLevel level) {
+  std::string levelName = "None";
   switch (level) {
     case LogLevel::None:
-      return "none";
-
+      levelName = "none";
+      break;
     case LogLevel::Error:
-      return "error";
-
+      levelName = "error";
+      break;
     case LogLevel::Warning:
-      return "warning";
-
+      levelName = "warning";
+      break;
     case LogLevel::Info:
-      return "info";
-
+      levelName = "info";
+      break;
     case LogLevel::Default:
-      return "default";
-
+      levelName = "default";
+      break;
     case LogLevel::Config:
-      return "config";
-
+      levelName = "config";
+      break;
     case LogLevel::Fine:
-      return "fine";
-
+      levelName = "fine";
+      break;
     case LogLevel::Finer:
-      return "finer";
-
+      levelName = "finer";
+      break;
     case LogLevel::Finest:
-      return "finest";
-
+      levelName = "finest";
+      break;
     case LogLevel::Debug:
-      return "debug";
-
+      levelName = "debug";
+      break;
     case LogLevel::All:
-      return "all";
+      levelName = "all";
+      break;
   }
-  throw IllegalArgumentException(std::string("Unexpected log level: ") +
-                                 std::to_string(static_cast<int>(level)));
+  return levelName;
 }
 
-LogLevel Log::charsToLevel(const std::string& chars) {
-  std::string level = chars;
+LogLevel Log::logLevel() { return currentLevel; }
 
-  if (level.empty()) return LogLevel::None;
-
-  std::transform(level.begin(), level.end(), level.begin(), ::tolower);
-
-  if (level == "none") {
-    return LogLevel::None;
-  } else if (level == "error") {
-    return LogLevel::Error;
-  } else if (level == "warning") {
-    return LogLevel::Warning;
-  } else if (level == "info") {
-    return LogLevel::Info;
-  } else if (level == "default") {
-    return LogLevel::Default;
-  } else if (level == "config") {
-    return LogLevel::Config;
-  } else if (level == "fine") {
-    return LogLevel::Fine;
-  } else if (level == "finer") {
-    return LogLevel::Finer;
-  } else if (level == "finest") {
-    return LogLevel::Finest;
-  } else if (level == "debug") {
-    return LogLevel::Debug;
-  } else if (level == "all") {
-    return LogLevel::All;
-  } else {
-    throw IllegalArgumentException(("Unexpected log level: " + level).c_str());
-  }
-}
-
-std::string Log::formatLogLine(LogLevel level) {
-  std::stringstream msg;
-  const size_t MINBUFSIZE = 128;
-  auto now = std::chrono::system_clock::now();
-  auto secs = std::chrono::system_clock::to_time_t(now);
-  auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(
-      now - std::chrono::system_clock::from_time_t(secs));
-  auto tm_val = apache::geode::util::chrono::localtime(secs);
-
-  msg << "[" << Log::levelToChars(level) << " "
-      << std::put_time(&tm_val, "%Y/%m/%d %H:%M:%S") << '.' << std::setfill('0')
-      << std::setw(6) << microseconds.count() << ' '
-      << std::put_time(&tm_val, "%z  ") << g_hostName << ":"
-      << boost::this_process::get_id() << " " << std::this_thread::get_id()
-      << "] ";
-
-  return msg.str();
-}
-
-void Log::log(LogLevel level, const std::string& msg) {
-  Log::logInternal(level, msg);
+void Log::setLogLevel(LogLevel level) {
+  currentLevel = level;
+  getCurrentLogger()->set_level(geodeLogLevelToSpdlogLevel(level));
 }
 
 void Log::logInternal(LogLevel level, const std::string& msg) {
-  std::lock_guard<decltype(g_logMutex)> guard(g_logMutex);
+  getCurrentLogger()->log(geodeLogLevelToSpdlogLevel(level), msg);
+}
 
-  std::string buf;
-  char fullpath[512] = {0};
-
-  if (g_fullpath.string().empty()) {
-    fprintf(stdout, "%s%s\n", formatLogLine(level).c_str(), msg.c_str());
-    fflush(stdout);
-  } else {
-    if (!g_log) {
-      g_log = fopen(g_fullpath.string().c_str(), "a");
-    }
-
-    if (g_log) {
-      buf = formatLogLine(level);
-      auto numChars = static_cast<int>(buf.length() + msg.length());
-      g_bytesWritten +=
-          numChars + 2;  // bcoz we have to count trailing new line (\n)
-
-      if ((g_fileSizeLimit != 0) && (g_bytesWritten >= g_fileSizeLimit)) {
-        rollLogFile();
-        g_bytesWritten = numChars + 2;  // Account for trailing newline
-        writeBanner();
-      }
-
-      g_spaceUsed += numChars + 2;
-
-      // Remove existing rolled log files until we're below the limit
-      while (g_spaceUsed >= g_diskSpaceLimit) {
-        removeOldestRolledLogFile();
-      }
-
-      if (fprintf(g_log, "%s%s\n", buf.c_str(), msg.c_str()) == 0 ||
-          ferror(g_log)) {
-        // Let's continue without throwing the exception.  It should not cause
-        // process to terminate
-        fclose(g_log);
-        g_log = nullptr;
-      } else {
-        fflush(g_log);
-      }
-    }
-  }
+void Log::log(LogLevel level, const std::string& msg) {
+  Log::logInternal(level, std::string(msg));
 }
 
 void Log::log(LogLevel level, const char* fmt, ...) {
@@ -457,6 +363,15 @@ void Log::logCatch(LogLevel level, const char* msg, const Exception& ex) {
 
 bool Log::enabled(LogLevel level) {
   return (level != LogLevel::None && level <= logLevel());
+}
+
+void Log::writeBanner() {
+  std::lock_guard<decltype(g_logMutex)> guard(g_logMutex);
+  if (logLevel() != LogLevel::None) {
+    getCurrentLogger()->set_pattern("%v");
+    getCurrentLogger()->log(geodeLogLevelToSpdlogLevel(logLevel()),
+                            geodeBanner::getBanner());
+  }
 }
 
 }  // namespace client

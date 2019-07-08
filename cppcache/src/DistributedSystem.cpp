@@ -70,7 +70,7 @@ DistributedSystem DistributedSystem::create(
   if (!logFilename.empty()) {
     try {
       Log::close();
-      Log::init(systemProperties->logLevel(), logFilename.c_str(),
+      Log::init(systemProperties->logLevel(), logFilename,
                 systemProperties->logFileSizeLimit(),
                 systemProperties->logDiskSpaceLimit());
     } catch (const GeodeIOException&) {
@@ -79,7 +79,7 @@ DistributedSystem DistributedSystem::create(
       throw;
     }
   } else {
-    Log::setLogLevel(systemProperties->logLevel());
+    Log::init(systemProperties->logLevel());
   }
 
   try {
