@@ -57,7 +57,6 @@ apache::geode::client::Cache createCacheUsingXmlConfig(
  * furtures.
  */
 TEST(CacheXmlTest, loadCacheXml) {
-  Cluster cluster{LocatorCount{0}, ServerCount{0}};
   auto cacheXml =
       std::string(getFrameworkString(FrameworkVariable::TestCacheXmlDir)) +
       "/valid_cache_refid.xml";
@@ -69,7 +68,6 @@ TEST(CacheXmlTest, loadCacheXml) {
  * furtures.
  */
 TEST(CacheXmlTest, loadCacheXmlWithBadSchema) {
-  Cluster cluster{LocatorCount{0}, ServerCount{0}};
   auto cacheXml =
       std::string(getFrameworkString(FrameworkVariable::TestCacheXmlDir)) +
       "/bad_schema.xml";
