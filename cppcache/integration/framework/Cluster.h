@@ -142,7 +142,6 @@ class Server {
         xmlFile_(move.xmlFile_) {
     move.started_ = false;
   };
-  //  Server &operator=(Server &&other) = default;
 
   void start();
 

@@ -54,7 +54,6 @@ target_include_directories(cpp-integration-test
 target_link_libraries(cpp-integration-test
   PUBLIC
     apache-geode
-    cryptoImpl
     integration-framework
     testobject
     ACE::ACE
@@ -69,6 +68,8 @@ target_link_libraries(cpp-integration-test
     _WarningsAsError
     internal
 )
+
+add_dependencies(cpp-integration-test cryptoImpl DHImpl)
 
 if(WIN32)
   target_compile_definitions(cpp-integration-test

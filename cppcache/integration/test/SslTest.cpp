@@ -30,30 +30,35 @@
 
 #include "framework/Cluster.h"
 
-namespace {
+namespace ssltest {
 
+using apache::geode::client::AuthenticationRequiredException;
 using apache::geode::client::CacheableString;
 using apache::geode::client::CacheFactory;
+using apache::geode::client::Exception;
 using apache::geode::client::RegionShortcut;
 
-TEST(SslTest, PutGet) {
-  const auto currentWorkingDirectory = boost::filesystem::current_path();
-  const auto clusterKeystore =
-      (currentWorkingDirectory /
-       boost::filesystem::path("ServerSslKeys/server_keystore_chained.p12"));
-  const auto clusterTruststore =
-      (currentWorkingDirectory /
-       boost::filesystem::path(
-           "ServerSslKeys/server_truststore_chained_root.jks"));
-  const auto certificatePassword = std::string("apachegeode");
-  const auto clientKeystore =
-      (currentWorkingDirectory /
-       boost::filesystem::path("ClientSslKeys/client_keystore_chained.pem"));
-  const auto clientTruststore =
-      (currentWorkingDirectory /
-       boost::filesystem::path(
-           "ClientSslKeys/client_truststore_chained_root.pem"));
+const auto currentWorkingDirectory = boost::filesystem::current_path();
+const auto clusterKeystore =
+    (currentWorkingDirectory /
+     boost::filesystem::path("ServerSslKeys/server_keystore_chained.p12"));
+const auto clusterTruststore =
+    (currentWorkingDirectory /
+     boost::filesystem::path(
+         "ServerSslKeys/server_truststore_chained_root.jks"));
+const auto certificatePassword = std::string("apachegeode");
+const auto clientKeystore =
+    (currentWorkingDirectory /
+     boost::filesystem::path("ClientSslKeys/client_keystore_chained.pem"));
+const auto clientTruststore =
+    (currentWorkingDirectory /
+     boost::filesystem::path(
+         "ClientSslKeys/client_truststore_chained_root.pem"));
+const auto badClientTruststore = boost::filesystem::path(
+    "/Users/pivotal/Workspace/geode-native-install/examples/build/cpp/"
+    "sslputget/ClientSslKeys/client_truststore.pem");
 
+TEST(SslTest, PutGetWithValidSslConfiguration) {
   Cluster cluster{LocatorCount{1}, ServerCount{1}};
   cluster.useSsl(clusterKeystore.string(), clusterTruststore.string(),
                  certificatePassword, certificatePassword);
@@ -67,10 +72,8 @@ TEST(SslTest, PutGet) {
       .withType("PARTITION")
       .execute();
 
-  std::cout << "started cluster and created region" << std::endl;
-
   auto cache = CacheFactory()
-                   .set("log-level", "none")
+                   .set("log-level", "DEBUG")
                    .set("ssl-enabled", "true")
                    .set("ssl-keystore", clientKeystore.string())
                    .set("ssl-keystore-password", certificatePassword)
@@ -92,4 +95,90 @@ TEST(SslTest, PutGet) {
   cache.close();
 }
 
-}  // namespace
+// TEST(SslTest, PutWithInvalidKeystorePassword) {
+//  Cluster cluster{LocatorCount{1}, ServerCount{1}};
+//  cluster.useSsl(clusterKeystore.string(), clusterTruststore.string(),
+//                 certificatePassword, certificatePassword);
+//
+//  cluster.start();
+//
+//  cluster.getGfsh()
+//      .create()
+//      .region()
+//      .withName("region")
+//      .withType("PARTITION")
+//      .execute();
+//
+//  auto cache = CacheFactory()
+//                   .set("log-level", "none")
+//                   .set("ssl-enabled", "true")
+//                   .set("ssl-keystore", clientKeystore.string())
+//                   .set("ssl-keystore-password", "bad_password")
+//                   .set("ssl-truststore", clientTruststore.string())
+//                   .create();
+//
+//  const auto pool = cache.getPoolManager()
+//                        .createFactory()
+//                        .addLocator("localhost", cluster.getLocatorPort())
+//                        .create("pool");
+//
+//  auto region = cache.createRegionFactory(RegionShortcut::PROXY)
+//                    .setPoolName("pool")
+//                    .create("region");
+//
+//  try {
+//    region->put("1", "one");
+//    region->put("2", "two");
+//    FAIL() << "Expected apache::geode::client::NotConnectedException";
+//  } catch (const Exception& exception) {
+//    EXPECT_EQ(exception.getName(),
+//              "apache::geode::client::NotConnectedException");
+//  }
+//
+//  cache.close();
+//}
+//
+// TEST(SslTest, PutWithInvalidKeystore) {
+//  Cluster cluster{LocatorCount{1}, ServerCount{1}};
+//  cluster.useSsl(clusterKeystore.string(), clusterTruststore.string(),
+//                 certificatePassword, certificatePassword);
+//
+//  cluster.start();
+//
+//  cluster.getGfsh()
+//      .create()
+//      .region()
+//      .withName("region")
+//      .withType("PARTITION")
+//      .execute();
+//
+//  auto cache = CacheFactory()
+//                   .set("log-level", "none")
+//                   .set("ssl-enabled", "true")
+//                   .set("ssl-keystore", clientKeystore.string())
+//                   .set("ssl-keystore-password", certificatePassword)
+//                   .set("ssl-truststore", clientTruststore.string())
+//                   .create();
+//
+//  const auto pool = cache.getPoolManager()
+//                        .createFactory()
+//                        .addLocator("localhost", cluster.getLocatorPort())
+//                        .create("pool");
+//
+//  auto region = cache.createRegionFactory(RegionShortcut::PROXY)
+//                    .setPoolName("pool")
+//                    .create("region");
+//
+//  try {
+//    region->put("1", "one");
+//    region->put("2", "two");
+//    FAIL() << "Expected apache::geode::client::NotConnectedException";
+//  } catch (const Exception& exception) {
+//    EXPECT_EQ(exception.getName(),
+//              "apache::geode::client::NotConnectedException");
+//  }
+//
+//  cache.close();
+//}
+
+}  // namespace ssltest
