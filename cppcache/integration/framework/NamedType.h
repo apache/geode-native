@@ -17,10 +17,22 @@
 
 #pragma once
 
-#ifndef INTEGRATION_TEST_FRAMEWORK_CONFIG_H
-#define INTEGRATION_TEST_FRAMEWORK_CONFIG_H
+#ifndef INTEGRATION_TEST_FRAMEWORK_NAMEDTYPE_H
+#define INTEGRATION_TEST_FRAMEWORK_NAMEDTYPE_H
 
-#define GFSH_EXECUTABLE "@Geode_gfsh_EXECUTABLE@"
-#define JAVAOBJECT_JAR_PATH "@JAVAOBJECT_JAR_PATH@"
+#include <cstdint>
+#include <string>
 
-#endif  // INTEGRATION_TEST_FRAMEWORK_CONFIG_H
+template <typename T, typename Parameter>
+class NamedType {
+ public:
+  explicit NamedType(T const &value) : value_(value) {}
+  explicit NamedType(T &&value) : value_(std::move(value)) {}
+  T &get() { return value_; }
+  T const &get() const { return value_; }
+
+ private:
+  T value_;
+};
+
+#endif  // INTEGRATION_TEST_FRAMEWORK_NAMEDTYPE_H

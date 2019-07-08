@@ -97,7 +97,7 @@ target_link_libraries(_apache-geode INTERFACE
   Boost::boost
   Boost::filesystem
   Boost::thread
-  LibXml2::LibXml2
+  XercesC::XercesC
 )
 
 if (USE_PCH)

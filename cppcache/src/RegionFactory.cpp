@@ -25,7 +25,6 @@
 #include <geode/RegionShortcut.hpp>
 #include <geode/SystemProperties.hpp>
 
-#include "CacheConfig.hpp"
 #include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
 #include "CppCacheLibrary.hpp"
