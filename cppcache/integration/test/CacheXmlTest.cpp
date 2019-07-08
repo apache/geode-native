@@ -37,14 +37,12 @@ namespace {
 
 using apache::geode::client::Cache;
 
-apache::geode::client::Cache createCacheUsingXmlConfig() {
+apache::geode::client::Cache createCacheUsingXmlConfig(
+    const std::string& xmlFile) {
   using apache::geode::client::CacheFactory;
 
   CacheFactory cacheFactory;
 
-  auto xmlFile =
-      std::string(getFrameworkString(FrameworkVariable::TestCacheXmlDir)) +
-      "/valid_cache_refid.xml";
   auto cache = cacheFactory.set("log-level", "debug")
                    .set("log-file", "geode_native.log")
                    .set("statistic-sampling-enabled", "false")
@@ -59,9 +57,23 @@ apache::geode::client::Cache createCacheUsingXmlConfig() {
  * furtures.
  */
 TEST(CacheXmlTest, loadCacheXml) {
-  Cluster cluster{LocatorCount{1}, ServerCount{1}};
+  Cluster cluster{LocatorCount{0}, ServerCount{0}};
+  auto cacheXml =
+      std::string(getFrameworkString(FrameworkVariable::TestCacheXmlDir)) +
+      "/valid_cache_refid.xml";
+  auto cache = createCacheUsingXmlConfig(cacheXml);
+}
 
-  auto cache = createCacheUsingXmlConfig();
+/**
+ * Example test using 2 servers and waiting for async tasks to synchronize using
+ * furtures.
+ */
+TEST(CacheXmlTest, loadCacheXmlWithBadSchema) {
+  Cluster cluster{LocatorCount{0}, ServerCount{0}};
+  auto cacheXml =
+      std::string(getFrameworkString(FrameworkVariable::TestCacheXmlDir)) +
+      "/bad_schema.xml";
+  EXPECT_NO_THROW(createCacheUsingXmlConfig(cacheXml));
 }
 
 }  // namespace
