@@ -99,8 +99,7 @@ namespace Apache
         // TODO shared_ptr this should be checking the return type for which tx mgr
         try
         {
-          auto nativeptr = std::dynamic_pointer_cast<InternalCacheTransactionManager2PC>(
-            m_nativeptr->get()->getCacheTransactionManager());
+          auto nativeptr = m_nativeptr->get()->getCacheTransactionManager();
           return Apache::Geode::Client::CacheTransactionManager::Create(nativeptr.get());
         }
         finally

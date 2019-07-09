@@ -1002,6 +1002,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, UpdateClient2Entries)
     LOG("StepSix complete.");
   }
 END_TASK_DEFINITION
+
 DUNIT_TASK_DEFINITION(CLIENT1, CreateClient1EntryTwice)
   { createEntryTwice(regionNames[0], CREATE_TWICE_KEY, CREATE_TWICE_VALUE); }
 END_TASK_DEFINITION

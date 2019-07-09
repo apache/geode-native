@@ -21,15 +21,13 @@
 #define GEODE_INTERNALCACHETRANSACTIONMANAGER2PCIMPL_H_
 
 #include "CacheTransactionManagerImpl.hpp"
-#include "InternalCacheTransactionManager2PC.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
 class InternalCacheTransactionManager2PCImpl
-    : public CacheTransactionManagerImpl,
-      public InternalCacheTransactionManager2PC {
+    : public CacheTransactionManagerImpl {
  public:
   explicit InternalCacheTransactionManager2PCImpl(CacheImpl* cache);
   virtual ~InternalCacheTransactionManager2PCImpl() override;

@@ -27,7 +27,7 @@
 
 #include <string>
 #include <geode/TransactionId.hpp>
-#include <InternalCacheTransactionManager2PC.hpp>
+#include <geode/CacheTransactionManager.hpp>
 
 #define ROOT_NAME "ThinClientTransactionsXA"
 #define ROOT_SCOPE DISTRIBUTED_ACK
@@ -43,7 +43,7 @@ using apache::geode::client::CacheServerException;
 using apache::geode::client::EntryExistsException;
 using apache::geode::client::EntryNotFoundException;
 using apache::geode::client::IllegalStateException;
-using apache::geode::client::InternalCacheTransactionManager2PC;
+using apache::geode::client::CacheTransactionManager;
 using apache::geode::client::Properties;
 using apache::geode::client::TransactionException;
 using apache::geode::client::TransactionId;
@@ -384,9 +384,7 @@ class SuspendTransactionThread : public ACE_Task_Base {
     sprintf(buf, " In SuspendTransactionThread");
     LOG(buf);
 
-    auto txManager =
-        std::dynamic_pointer_cast<InternalCacheTransactionManager2PC>(
-            getHelper()->getCache()->getCacheTransactionManager());
+    auto txManager = getHelper()->getCache()->getCacheTransactionManager();
 
     txManager->begin();
 
@@ -462,9 +460,7 @@ class ResumeTransactionThread : public ACE_Task_Base {
                      "In ResumeTransactionThread - Key should not have been "
                      "found in region.");
 
-    auto txManager =
-        std::dynamic_pointer_cast<InternalCacheTransactionManager2PC>(
-            getHelper()->getCache()->getCacheTransactionManager());
+    auto txManager = getHelper()->getCache()->getCacheTransactionManager();
     if (m_tryResumeWithSleep) {
       THREADERRORCHECK(!txManager->isSuspended(m_suspendedTransaction),
                        "In ResumeTransactionThread - the transaction should "
@@ -580,9 +576,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, SuspendResumeCommit)
   {
-    auto txManager =
-        std::dynamic_pointer_cast<InternalCacheTransactionManager2PC>(
-            getHelper()->getCache()->getCacheTransactionManager());
+    auto txManager = getHelper()->getCache()->getCacheTransactionManager();
     auto regPtr0 = getHelper()->getRegion(regionNames[0]);
     ASSERT(regPtr0 != nullptr, "In SuspendResumeCommit - Region not found.");
     auto regPtr1 = getHelper()->getRegion(regionNames[1]);
@@ -665,9 +659,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, SuspendTimeOut)
   {
-    auto txManager =
-        std::dynamic_pointer_cast<InternalCacheTransactionManager2PC>(
-            getHelper()->getCache()->getCacheTransactionManager());
+    auto txManager = getHelper()->getCache()->getCacheTransactionManager();
     auto keyPtr4 = CacheableKey::create(keys[4]);
     auto keyPtr5 = CacheableKey::create(keys[5]);
 
@@ -709,9 +701,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, SuspendResumeRollback)
   {
-    auto txManager =
-        std::dynamic_pointer_cast<InternalCacheTransactionManager2PC>(
-            getHelper()->getCache()->getCacheTransactionManager());
+    auto txManager = getHelper()->getCache()->getCacheTransactionManager();
     auto keyPtr4 = CacheableKey::create(keys[4]);
     auto keyPtr5 = CacheableKey::create(keys[5]);
     auto keyPtr6 = CacheableKey::create(keys[6]);
@@ -951,9 +941,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
   {
-    auto txManager =
-        std::dynamic_pointer_cast<InternalCacheTransactionManager2PC>(
-            getHelper()->getCache()->getCacheTransactionManager());
+    auto txManager = getHelper()->getCache()->getCacheTransactionManager();
     txManager->begin();
     createEntry(regionNames[0], keys[0], vals[0]);
     createEntry(regionNames[1], keys[2], vals[2]);
@@ -967,9 +955,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepFour)
   {
     doNetsearch(regionNames[0], keys[0], vals[0]);
     doNetsearch(regionNames[1], keys[2], vals[2]);
-    auto txManager =
-        std::dynamic_pointer_cast<InternalCacheTransactionManager2PC>(
-            getHelper()->getCache()->getCacheTransactionManager());
+    auto txManager = getHelper()->getCache()->getCacheTransactionManager();
     txManager->begin();
     createEntry(regionNames[0], keys[1], vals[1]);
     createEntry(regionNames[1], keys[3], vals[3]);
@@ -1016,9 +1002,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSix)
   {
     doNetsearch(regionNames[0], keys[0], vals[0]);
     doNetsearch(regionNames[1], keys[2], vals[2]);
-    auto txManager =
-        std::dynamic_pointer_cast<InternalCacheTransactionManager2PC>(
-            getHelper()->getCache()->getCacheTransactionManager());
+    auto txManager = getHelper()->getCache()->getCacheTransactionManager();
     txManager->begin();
     updateEntry(regionNames[0], keys[1], nvals[1]);
     updateEntry(regionNames[1], keys[3], nvals[3]);
