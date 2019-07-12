@@ -79,26 +79,17 @@ void GeodeLogCombo(benchmark::State& state) {
   }
 }
 
-void GeodeLogIntsToConsoleBM(benchmark::State& state) {
-  Log::setLogLevel(LogLevel::All);
-  GeodeLogInts(state);
-}
-
-void GeodeLogComboToConsoleBM(benchmark::State& state) {
-  Log::setLogLevel(LogLevel::All);
-  GeodeLogCombo(state);
-}
-
-typedef std::function<void(benchmark::State&)> benchmarkWorker;
-
-void GeodeLogStringsToConsoleBM(benchmark::State& state) {
-  int index = g_iteration++ % STRING_ARRAY_LENGTH;
+template <void T(benchmark::State&)>
+void GeodeLogToConsole(benchmark::State& state) {
   Log::setLogLevel(LogLevel::All);
 
-  GeodeLogStrings(state);
+  T(state);
+
+  Log::close();
 }
 
-void GeodeLogStringsToFileBM(benchmark::State& state) {
+template <void T(benchmark::State&)>
+void GeodeLogToFile(benchmark::State& state) {
   boost::filesystem::path sourcePath(__FILE__);
   auto filename = std::string("geode_native_") + sourcePath.stem().string() +
                   std::to_string(__LINE__) + ".log";
@@ -106,7 +97,7 @@ void GeodeLogStringsToFileBM(benchmark::State& state) {
 
   Log::init(LogLevel::All, filename.c_str());
 
-  GeodeLogStrings(state);
+  T(state);
 
   Log::close();
 
@@ -115,43 +106,17 @@ void GeodeLogStringsToFileBM(benchmark::State& state) {
   }
 }
 
-void GeodeLogIntsToFileBM(benchmark::State& state) {
-  boost::filesystem::path sourcePath(__FILE__);
-  auto filename = std::string("geode_native_") + sourcePath.stem().string() +
-                  std::to_string(__LINE__) + ".log";
-  boost::filesystem::path logPath(filename);
+auto LogStringsToConsole = GeodeLogToConsole<GeodeLogStrings>;
+auto LogIntsToConsole = GeodeLogToConsole<GeodeLogInts>;
+auto LogComboToConsole = GeodeLogToConsole<GeodeLogCombo>;
 
-  Log::init(LogLevel::All, filename.c_str());
+auto LogStringsToFile = GeodeLogToFile<GeodeLogStrings>;
+auto LogIntsToFile = GeodeLogToFile<GeodeLogInts>;
+auto LogComboToFile = GeodeLogToFile<GeodeLogCombo>;
 
-  GeodeLogInts(state);
-
-  Log::close();
-
-  if (boost::filesystem::exists(logPath)) {
-    boost::filesystem::remove(logPath);
-  }
-}
-
-void GeodeLogComboToFileBM(benchmark::State& state) {
-  boost::filesystem::path sourcePath(__FILE__);
-  auto filename = std::string("geode_native_") + sourcePath.stem().string() +
-                  std::to_string(__LINE__) + ".log";
-  boost::filesystem::path logPath(filename);
-
-  Log::init(LogLevel::All, filename.c_str());
-
-  GeodeLogCombo(state);
-
-  Log::close();
-
-  if (boost::filesystem::exists(logPath)) {
-    boost::filesystem::remove(logPath);
-  }
-}
-
-BENCHMARK(GeodeLogStringsToConsoleBM)->Range(8, 8 << 10);
-BENCHMARK(GeodeLogIntsToConsoleBM)->Range(8, 8 << 10);
-BENCHMARK(GeodeLogComboToConsoleBM)->Range(8, 8 << 10);
-BENCHMARK(GeodeLogStringsToFileBM)->Range(8, 8 << 10);
-BENCHMARK(GeodeLogIntsToFileBM)->Range(8, 8 << 10);
-BENCHMARK(GeodeLogComboToFileBM)->Range(8, 8 << 10);
+BENCHMARK(LogStringsToConsole)->Range(8, 8 << 10);
+BENCHMARK(LogIntsToConsole)->Range(8, 8 << 10);
+BENCHMARK(LogComboToConsole)->Range(8, 8 << 10);
+BENCHMARK(LogStringsToFile)->Range(8, 8 << 10);
+BENCHMARK(LogIntsToFile)->Range(8, 8 << 10);
+BENCHMARK(LogComboToFile)->Range(8, 8 << 10);
