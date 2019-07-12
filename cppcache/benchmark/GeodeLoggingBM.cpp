@@ -100,12 +100,14 @@ void GeodeLogStringsToFileBM(benchmark::State& state) {
 
   GeodeLogStrings(state);
 
+  Log::close();
+
   if (boost::filesystem::exists(logPath)) {
     boost::filesystem::remove(logPath);
   }
 }
 
-BENCHMARK(GeodeLogStringsToConsoleBM)->Range(8, 8 << 10);
+// BENCHMARK(GeodeLogStringsToConsoleBM)->Range(8, 8 << 10);
 // BENCHMARK(GeodeLogIntsToConsoleBM)->Range(8, 8 << 10);
 // BENCHMARK(GeodeLogComboToConsoleBM)->Range(8, 8 << 10);
 BENCHMARK(GeodeLogStringsToFileBM)->Range(8, 8 << 10);
