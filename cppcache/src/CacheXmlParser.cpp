@@ -361,12 +361,11 @@ void CacheXmlParser::endElement(const XMLCh *const,
 }
 
 void CacheXmlParser::fatalError(const xercesc::SAXParseException &exception) {
-  using namespace xercesc;
-  char *message = XMLString::transcode(exception.getMessage());
+  char *message = xercesc::XMLString::transcode(exception.getMessage());
   LOGDEBUG("Fatal Error: \"%s\" at line: %ulld", message,
            exception.getLineNumber());
   auto ex = CacheXmlException(message);
-  XMLString::release(&message);
+  xercesc::XMLString::release(&message);
   throw ex;
 }
 
