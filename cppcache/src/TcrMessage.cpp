@@ -1098,6 +1098,13 @@ void TcrMessage::processChunk(const std::vector<uint8_t>& chunk, int32_t len,
         auto errorString = readStringPart(input);
 
         if (!errorString.empty()) {
+          errorString.erase(
+              errorString.begin(),
+              std::find_if(errorString.begin(), errorString.end(),
+                           std::not1(std::ptr_fun<int, int>(std::isspace))));
+          LOGDEBUG(
+              "TcrMessage::%s: setting thread-local ex msg to \"%s\", %s, %d",
+              __FUNCTION__, errorString.c_str(), __FILE__, __LINE__);
           setThreadLocalExceptionMessage(errorString.c_str());
         }
       }
