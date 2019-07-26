@@ -20,7 +20,7 @@ $ cd cppcache/test/<Debug|Release|if needed>
 $ ./apache-geode_unittests
 ```
 
-### Running integration tests
+### Running old integration tests
 ```bash
 $ cd <clone>
 $ cd build
@@ -40,6 +40,16 @@ $ cd build/cppcache/integration-test
 $ ctest -R <test_name> -C <Debug|Release>
 ```
 .NET integration tests can be executed similarly from `build/clicache/integration-test`.
+
+### Running new integration tests
+```bash
+$ cd <clone>
+$ cd build
+$ cd cppcache/integration/test
+$ ./cpp-integration-test [<options>]
+```
+Note that <options> are gtest options that may be passed to the test executable, like for example the test cases to be run. Use --help to get all the available options.
+
 
 ## Style
 

@@ -35,6 +35,7 @@ add_executable(cpp-integration-test
   SimpleCqListener.hpp
   StructTest.cpp
   TransactionCleaningTest.cpp
+  CleanIdleConnections.cpp
 )
 
 target_compile_definitions(cpp-integration-test
