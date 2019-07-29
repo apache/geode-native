@@ -75,6 +75,7 @@ void Server::start() {
       .withSecurityManager(cluster_.getSecurityManager())
       .withUser(cluster_.getUser())
       .withPassword(cluster_.getPassword())
+      .withCacheXMLFile(cluster_.getCacheXMLFile())
       .execute();
 
 //  std::cout << "server: " << serverAddress_.port << ": started" << std::endl << std::flush;
@@ -89,7 +90,7 @@ void Server::stop() {
   started_ = false;
 }
 
-void Cluster::start() {
+void Cluster::start(std::function<void()> fn) {
   locators_.reserve(initialLocators_);
   for (size_t i = 0; i < initialLocators_; i++) {
     locators_.push_back({*this, locators_,
@@ -105,6 +106,8 @@ void Cluster::start() {
 
   startLocators();
 
+  fn();
+  
   startServers();
 
   //    std::cout << "cluster: " << jmxManagerPort_ << ": started" << std::endl;

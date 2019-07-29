@@ -132,7 +132,7 @@ TEST(FunctionExecutionTest, UnknownFunctionAsyncOnRegion) {
 
 TEST(FunctionExecutionTest,
      FunctionReturnsObjectWhichCantBeDeserializedOnServer) {
-  Cluster cluster{LocatorCount{1}, ServerCount{2}};
+  Cluster cluster{LocatorCount{1}, ServerCount{1}};
   cluster.getGfsh()
       .create()
       .region()
@@ -161,4 +161,83 @@ TEST(FunctionExecutionTest,
                NotConnectedException);
 
   cache.close();
+}
+
+TEST(FunctionExecutionTest, OnServersWithReplicatedRegionsInPool) {
+  Cluster cluster{LocatorCount{1}, ServerCount{1},
+                  CacheXMLFile{"func_cacheserver1_pool.xml"}};
+  Cluster cluster{LocatorCount{1}, ServerCount{1},
+                  CacheXMLFile{"func_cacheserver2_pool.xml"}};                  
+
+  cluster.start([&]() {
+    cluster.getGfsh()
+        .deploy()
+        .jar(getFrameworkString(FrameworkVariable::JavaObjectJarPath))
+        .execute();
+  });
+
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("region")
+      .withType("REPLICATE")
+      .execute();
+
+  auto cache = CacheFactory().set("log-level", "none").create();
+  auto poolFactory = cache.getPoolManager().createFactory();
+
+  cluster.applyLocators(poolFactory);
+
+  auto pool = poolFactory.create("pool");
+
+  auto region = cache.createRegionFactory(RegionShortcut::PROXY)
+                    .setPoolName("pool")
+                    .create("region");
+
+  const std::vector<std::string> keys = {
+      "KEY--1",
+      "KEY--2",
+      "KEY--3",
+  };
+
+  const std::vector<std::string> values = {"VALUE--1", "VALUE--2", "VALUE--3"};
+
+  for (size_t i = 0; i < keys.size(); i++) {
+    region->put(keys[i], values[i]);
+  }
+
+  auto arguments = CacheableVector::create();
+
+  for (size_t i = 0; i < keys.size(); i++) {
+    arguments->push_back(apache::geode::client::CacheableKey::create(keys[i]));
+  }
+
+  std::vector<std::string> resultList;
+  auto execution = FunctionService::onServers(pool);
+
+  if (auto executeFunctionResult = execution.withArgs(arguments)
+                                       .execute("security")
+                                       ->getResult()) {
+    for (auto &arrayList : *executeFunctionResult) {
+      for (auto &cachedString :
+           *std::dynamic_pointer_cast<
+               apache::geode::client::CacheableArrayList>(arrayList)) {
+        resultList.push_back(
+            std::dynamic_pointer_cast<apache::geode::client::CacheableString>(
+                cachedString)
+                ->value());
+      }
+    }
+
+    cache.close();
+  } else {
+    cache.close();
+    FAIL() << "Expected execution results to be non-null.";
+  }
+
+  ASSERT_EQ(values.size(), resultList.size());
+
+  for (size_t i = 0; i < values.size(); ++i) {
+    EXPECT_EQ(values[i], resultList[i]);
+  }
 }

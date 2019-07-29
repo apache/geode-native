@@ -156,6 +156,7 @@ using Classpath = NamedType<std::string, struct ClasspathParameter>;
 using SecurityManager = NamedType<std::string, struct SecurityManagerParameter>;
 using User = NamedType<std::string, struct UserParameter>;
 using Password = NamedType<std::string, struct PasswordParameter>;
+using CacheXMLFile = NamedType<std::string, struct CacheXMLFileParameter>;
 
 class Cluster {
  public:
@@ -167,7 +168,22 @@ class Cluster {
                      ::testing::UnitTest::GetInstance()
                          ->current_test_info()
                          ->name()),
-                initialLocators, initialServers){};
+                initialLocators, initialServers){}
+
+  Cluster(LocatorCount initialLocators, ServerCount initialServers, CacheXMLFile cacheXMLFile)
+      : name_(std::string(::testing::UnitTest::GetInstance()
+                                     ->current_test_info()
+                                     ->test_case_name()) +
+                     "/" +
+                     ::testing::UnitTest::GetInstance()
+                         ->current_test_info()
+                         ->name()),
+        cacheXMLFile_(cacheXMLFile.get()),
+        initialLocators_(initialLocators.get()),
+        initialServers_(initialServers.get()),
+        jmxManagerPort_(Framework::getAvailablePort()) {
+    removeServerDirectory();
+  }
 
   Cluster(Name name, LocatorCount initialLocators, ServerCount initialServers)
       : Cluster(Name(name.get()),
@@ -175,7 +191,8 @@ class Cluster {
                 SecurityManager(""),
                 User(""),
                 Password(""),
-                initialLocators, initialServers){};
+                initialLocators, initialServers,
+                CacheXMLFile("")){}
 
   Cluster(Name name,
       Classpath classpath,
@@ -183,8 +200,9 @@ class Cluster {
       User user,
       Password password,
       LocatorCount initialLocators,
-      ServerCount initialServers) :
-    name_(name.get()), classpath_(classpath.get()), securityManager_(securityManager.get()), user_(user.get()), password_(password.get()), initialLocators_(initialLocators.get()), initialServers_(initialServers.get()) {
+      ServerCount initialServers,
+      CacheXMLFile cacheXMLFile) :
+    name_(name.get()), classpath_(classpath.get()), securityManager_(securityManager.get()), user_(user.get()), password_(password.get()), cacheXMLFile_(cacheXMLFile.get()), initialLocators_(initialLocators.get()), initialServers_(initialServers.get()) {
 
     jmxManagerPort_ = Framework::getAvailablePort();
 
@@ -211,7 +229,7 @@ class Cluster {
            std::to_string(jmxManagerPort_) + "]";
   }
 
-  void start();
+  void start(std::function<void()> fn = [](){});
 
   void stop();
 
@@ -261,6 +279,10 @@ class Cluster {
     return servers_;
   }
 
+  std::vector<Locator>& getLocators() {
+    return locators_;
+  }
+
   std::string& getClasspath() {
     return classpath_;
   }
@@ -277,12 +299,17 @@ class Cluster {
     return password_;
   }
 
+  std::string& getCacheXMLFile() {
+    return cacheXMLFile_;
+  }
+
  private:
   std::string name_;
   std::string classpath_;
   std::string securityManager_;
   std::string user_;
   std::string password_;
+  std::string cacheXMLFile_;
 
   size_t initialLocators_;
   std::vector<Locator> locators_;
