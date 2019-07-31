@@ -107,7 +107,7 @@ class Server {
       : cluster_(cluster),
         locators_(locators),
         name_(std::move(name)),
-        xmlFile_(xmlFile) {
+        xmlFile_(std::move(xmlFile)) {
     auto hostname = "localhost";
     auto port = static_cast<uint16_t>(0);
     serverAddress_ = ServerAddress{hostname, port};
