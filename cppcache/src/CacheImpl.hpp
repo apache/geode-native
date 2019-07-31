@@ -253,7 +253,7 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
   void processMarker();
 
   // Pool helpers for unit tests
-  int getPoolSize(const char* poolName);
+  int getPoolSize(const std::string& poolName);
 
   bool getPdxIgnoreUnreadFields() {
     this->throwIfClosed();

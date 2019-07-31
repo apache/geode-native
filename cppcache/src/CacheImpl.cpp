@@ -699,7 +699,7 @@ void CacheImpl::processMarker() {
   }
 }
 
-int CacheImpl::getPoolSize(const char* poolName) {
+int CacheImpl::getPoolSize(const std::string& poolName) {
   if (const auto pool = getPoolManager().find(poolName)) {
     if (const auto dm = std::dynamic_pointer_cast<ThinClientPoolDM>(pool)) {
       return dm->m_poolSize;

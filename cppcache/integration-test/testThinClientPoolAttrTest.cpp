@@ -260,8 +260,8 @@ DUNIT_TASK(CLIENT1, ClientOp)
     // Check current # connections they should be == min
     std::string poolName =
         getHelper()->getRegion(poolRegNames[0])->getAttributes().getPoolName();
-    int level = TestUtils::getCacheImpl(getHelper()->cachePtr)
-                    ->getPoolSize(poolName.c_str());
+    int level =
+        TestUtils::getCacheImpl(getHelper()->cachePtr)->getPoolSize(poolName);
     int min = getHelper()
                   ->getCache()
                   ->getPoolManager()
@@ -281,8 +281,8 @@ DUNIT_TASK(CLIENT1, ClientOp)
     SLEEP(5000);  // wait for threads to become active
 
     // Check current # connections they should be == max
-    level = TestUtils::getCacheImpl(getHelper()->cachePtr)
-                ->getPoolSize(poolName.c_str());
+    level =
+        TestUtils::getCacheImpl(getHelper()->cachePtr)->getPoolSize(poolName);
     int max = getHelper()
                   ->getCache()
                   ->getPoolManager()
@@ -301,8 +301,8 @@ DUNIT_TASK(CLIENT1, ClientOp)
     LOG("Waiting 25 sec for idle timeout to kick in");
     SLEEP(25000);
 
-    level = TestUtils::getCacheImpl(getHelper()->cachePtr)
-                ->getPoolSize(poolName.c_str());
+    level =
+        TestUtils::getCacheImpl(getHelper()->cachePtr)->getPoolSize(poolName);
     min = getHelper()
               ->getCache()
               ->getPoolManager()
@@ -317,8 +317,8 @@ DUNIT_TASK(CLIENT1, ClientOp)
     LOG("Waiting 1 minute for load conditioning to kick in");
     SLEEP(60000);
 
-    level = TestUtils::getCacheImpl(getHelper()->cachePtr)
-                ->getPoolSize(poolName.c_str());
+    level =
+        TestUtils::getCacheImpl(getHelper()->cachePtr)->getPoolSize(poolName);
     sprintf(logmsg,
             "Pool level not equal to min level after load "
             "conditioning. Expected %d, actual %d",

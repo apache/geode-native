@@ -429,7 +429,7 @@ void ThinClientPoolDM::cleanStaleConnections(std::atomic<bool>& isRunning) {
       }
     }
 
-    int replaceCount =
+    auto replaceCount =
         m_attrs->getMinConnections() - static_cast<int>(savelist.size());
 
     LOGDEBUG("Preserving %d connections", savelist.size());

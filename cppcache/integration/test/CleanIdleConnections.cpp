@@ -56,7 +56,7 @@ Cache createCache() {
 
 std::shared_ptr<Pool> createPool(Cluster& cluster, Cache& cache,
                                  const int& minConns, const int& maxConns,
-                                 const char poolName[]) {
+                                 const std::string& poolName) {
   auto poolFactory = cache.getPoolManager().createFactory();
   cluster.applyLocators(poolFactory);
   poolFactory.setPRSingleHopEnabled(true);
@@ -92,7 +92,7 @@ TEST(CleanIdleConnectionsTest, cleanIdleConnectionsAfterOpsPaused) {
   auto cache = createCache();
   auto minConns = 1;
   auto maxConns = -1;
-  char poolName[] = "default";
+  std::string poolName = "default";
   auto pool = createPool(cluster, cache, minConns, maxConns, poolName);
   auto region = setupRegion(cache, pool);
 
