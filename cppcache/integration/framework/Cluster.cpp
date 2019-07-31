@@ -75,7 +75,7 @@ void Server::start() {
       .withSecurityManager(cluster_.getSecurityManager())
       .withUser(cluster_.getUser())
       .withPassword(cluster_.getPassword())
-      .withCacheXMLFile(cluster_.getCacheXMLFile())
+      .withCacheXMLFile(getCacheXMLFile())
       .execute();
 
 //  std::cout << "server: " << serverAddress_.port << ": started" << std::endl << std::flush;
@@ -100,8 +100,12 @@ void Cluster::start(std::function<void()> fn) {
 
   servers_.reserve(initialServers_);
   for (size_t i = 0; i < initialServers_; i++) {
+    std::string xmlFile = (cacheXMLFiles_.size() == 0) ? "" :
+                            cacheXMLFiles_.size() == 1 ? cacheXMLFiles_[1] :
+                              cacheXMLFiles_[i];
+
     servers_.push_back(
-        {*this, locators_, name_ + "/server/" + std::to_string(i)});
+      {*this, locators_, name_ + "/server/" + std::to_string(i), xmlFile});
   }
 
   startLocators();
