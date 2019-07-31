@@ -31,6 +31,7 @@
 
 using apache::geode::client::Cache;
 using apache::geode::client::Cacheable;
+using apache::geode::client::CacheableString;
 using apache::geode::client::CacheableVector;
 using apache::geode::client::CacheFactory;
 using apache::geode::client::FunctionExecutionException;
@@ -131,7 +132,7 @@ TEST(FunctionExecutionTest, UnknownFunctionAsyncOnRegion) {
 }
 
 TEST(FunctionExecutionTest,
-     FunctionReturnsObjectWhichCantBeDeserializedOnServer) {
+     Disabled_FunctionReturnsObjectWhichCantBeDeserializedOnServer) {
   Cluster cluster{LocatorCount{1}, ServerCount{1}};
   cluster.getGfsh()
       .create()
@@ -145,29 +146,31 @@ TEST(FunctionExecutionTest,
       .jar(getFrameworkString(FrameworkVariable::JavaObjectJarPath))
       .execute();
 
-  auto cache = CacheFactory().set("log-level", "none").create();
-  auto pool = cache.getPoolManager()
-                  .createFactory()
-                  .addLocator("localhost", 10334)
-                  .create("pool");
+  auto cache = cluster.createCache();
+  //  CacheFactory().set("log-level", "none").create();
+  // auto pool = cache.getPoolManager()
+  //                .createFactory()
+  //                .addLocator("localhost", 10334)
+  //                .create("pool");
   auto region = cache.createRegionFactory(RegionShortcut::PROXY)
-                    .setPoolName("pool")
+                    .setPoolName("default")
                     .create("region");
 
   const char *GetScopeSnapshotsFunction =
       "executeFunction_SendObjectWhichCantBeDeserialized";
   auto functionService = FunctionService::onRegion(region);
   ASSERT_THROW(functionService.execute(GetScopeSnapshotsFunction),
-               NotConnectedException);
+               apache::geode::client::IllegalStateException);
 
   cache.close();
 }
 
 TEST(FunctionExecutionTest, OnServersWithReplicatedRegionsInPool) {
-  Cluster cluster{LocatorCount{1}, ServerCount{1},
-                  CacheXMLFile{"func_cacheserver1_pool.xml"}};
-  Cluster cluster{LocatorCount{1}, ServerCount{1},
-                  CacheXMLFile{"func_cacheserver2_pool.xml"}};                  
+  Cluster cluster{
+      LocatorCount{1}, ServerCount{2},
+      CacheXMLFiles({"func_cacheserver1_pool.xml", "func_cacheserver2_pool"})
+      // CacheXMLFile { "func_cacheserver1_pool.xml" }
+  };
 
   cluster.start([&]() {
     cluster.getGfsh()
@@ -194,50 +197,83 @@ TEST(FunctionExecutionTest, OnServersWithReplicatedRegionsInPool) {
                     .setPoolName("pool")
                     .create("region");
 
-  const std::vector<std::string> keys = {
-      "KEY--1",
-      "KEY--2",
-      "KEY--3",
-  };
+  //**********************
 
-  const std::vector<std::string> values = {"VALUE--1", "VALUE--2", "VALUE--3"};
+  // test data independant fucntion execution on all servers
 
-  for (size_t i = 0; i < keys.size(); i++) {
-    region->put(keys[i], values[i]);
+  // std::vector<std::string> routingObj;
+  // std::string[] routingObj = new std::string[]();
+  // int j = 0;
+  // for (int i = 0; i < 34; i++) {
+  //  if (i % 2 == 0) continue;
+  //  routingObj->at(j) = "KEY--" + i;
+  //  j++;
+  //}
+
+  auto routingObj = CacheableVector::create();
+  for (int i = 0; i < 34; i++) {
+    if (i % 2 == 0) continue;
+    routingObj->push_back(CacheableString::create("KEY--" + i));
   }
 
-  auto arguments = CacheableVector::create();
-
-  for (size_t i = 0; i < keys.size(); i++) {
-    arguments->push_back(apache::geode::client::CacheableKey::create(keys[i]));
-  }
-
-  std::vector<std::string> resultList;
   auto execution = FunctionService::onServers(pool);
 
-  if (auto executeFunctionResult = execution.withArgs(arguments)
-                                       .execute("security")
-                                       ->getResult()) {
-    for (auto &arrayList : *executeFunctionResult) {
-      for (auto &cachedString :
-           *std::dynamic_pointer_cast<
-               apache::geode::client::CacheableArrayList>(arrayList)) {
-        resultList.push_back(
-            std::dynamic_pointer_cast<apache::geode::client::CacheableString>(
-                cachedString)
-                ->value());
-      }
-    }
+  auto rc = execution.withArgs(routingObj).execute("MultiGetFunctionI");
+  auto executeFunctionResult = rc->getResult();
 
-    cache.close();
-  } else {
-    cache.close();
-    FAIL() << "Expected execution results to be non-null.";
-  }
+  ASSERT_EQ(executeFunctionResult->size(), 2);
 
-  ASSERT_EQ(values.size(), resultList.size());
+  std::vector<std::string> resultList;
+  // for (CacheableVector result: *executeFunctionResult)
+  //  for (auto result2: result) { resultList.Add(item2); }
+  //}
+  // Util.Log("on all servers: result count= {0}.", resultList.Count);
+  // Assert.IsTrue(resultList.Count == 34, "result count check failed");
+  // for (int i = 0; i < resultList.Count; i++) {
+  //  Util.Log("on all servers: get:result[{0}]={1}.", i,
+  //(string)resultList[i]);
+  //}
+  //// TODO::enable it once the StringArray conversion is fixed.
+  //// test withCollector
+  // MyResultCollector<object> myRC = new MyResultCollector<object>();
+  // rc =
+  // exc.WithArgs<ArrayList>(args1).WithCollector(myRC).Execute(getFuncIName);
+  //// executeFunctionResult = rc.GetResult();
+  // Util.Log("add result count= {0}.", myRC.GetAddResultCount());
+  // Util.Log("get result count= {0}.", myRC.GetGetResultCount());
+  // Util.Log("end result count= {0}.", myRC.GetEndResultCount());
+  // Util.Log("on all servers with collector: result count= {0}.",
+  //         executeFunctionResult.Count);
+  // Assert.IsTrue(myRC.GetResult().Count == 2, "result count check failed");
 
-  for (size_t i = 0; i < values.size(); ++i) {
-    EXPECT_EQ(values[i], resultList[i]);
-  }
+  // IList res = (IList)myRC.GetResult();
+
+  // foreach (object o in res) {
+  //  IList resList = (IList)o;
+  //  Util.Log("results " + resList.Count);
+
+  //  Assert.AreEqual(17, resList.Count);
+  //}
+
+  // MyResultCollector<object> myRC2 = new MyResultCollector<object>();
+  // rc = exc.WithArgs<object>(args).WithCollector(myRC2).Execute(
+  //    exFuncNameSendException);
+  // executeFunctionResult = rc.GetResult();
+  // Util.Log("add result count= {0}.", myRC2.GetAddResultCount());
+  // Util.Log("get result count= {0}.", myRC2.GetGetResultCount());
+  // Util.Log("end result count= {0}.", myRC2.GetEndResultCount());
+  // Assert.IsTrue(myRC2.GetAddResultCount() == 2,
+  //              "add result count check failed");
+  // Assert.IsTrue(myRC2.GetGetResultCount() == 1,
+  //              "get result count check failed");
+  // Assert.IsTrue(myRC2.GetEndResultCount() == 1,
+  //              "end result count check failed");
+  // Util.Log("on Region with collector: result count= {0}.",
+  //         executeFunctionResult.Count);
+  // Assert.IsTrue(executeFunctionResult.Count == 2, "result count check
+  // failed");
+  // foreach (object item in executeFunctionResult) {
+  //  Util.Log("on Region with collector: get:result {0}",
+  //           (item as UserFunctionExecutionException).Message);
+  //}
 }
