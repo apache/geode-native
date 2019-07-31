@@ -168,9 +168,11 @@ TEST(FunctionExecutionTest,
 TEST(FunctionExecutionTest, OnServersWithReplicatedRegionsInPool) {
   Cluster cluster{
       LocatorCount{1}, ServerCount{2},
-      CacheXMLFiles({"func_cacheserver1_pool.xml", "func_cacheserver2_pool"})
-      // CacheXMLFile { "func_cacheserver1_pool.xml" }
-  };
+      CacheXMLFiles(
+          {std::string(getFrameworkString(FrameworkVariable::TestCacheXmlDir)) +
+               "/func_cacheserver1_pool.xml",
+           std::string(getFrameworkString(FrameworkVariable::TestCacheXmlDir)) +
+               "/func_cacheserver2_pool.xml"})};
 
   cluster.start([&]() {
     cluster.getGfsh()
@@ -179,12 +181,12 @@ TEST(FunctionExecutionTest, OnServersWithReplicatedRegionsInPool) {
         .execute();
   });
 
-  cluster.getGfsh()
-      .create()
-      .region()
-      .withName("region")
-      .withType("REPLICATE")
-      .execute();
+  //cluster.getGfsh()
+  //    .create()
+  //    .region()
+  //    .withName("partition_region")
+  //    .withType("PARTITION")
+  //    .execute();
 
   auto cache = CacheFactory().set("log-level", "none").create();
   auto poolFactory = cache.getPoolManager().createFactory();
@@ -197,19 +199,14 @@ TEST(FunctionExecutionTest, OnServersWithReplicatedRegionsInPool) {
                     .setPoolName("pool")
                     .create("region");
 
-  //**********************
+  // Populate the region
+  for (int i = 0; i < 230; i++) {
+    region->put("KEY--" + i, "VALUE--" + i);
+  }
 
   // test data independant fucntion execution on all servers
 
-  // std::vector<std::string> routingObj;
-  // std::string[] routingObj = new std::string[]();
-  // int j = 0;
-  // for (int i = 0; i < 34; i++) {
-  //  if (i % 2 == 0) continue;
-  //  routingObj->at(j) = "KEY--" + i;
-  //  j++;
-  //}
-
+  // Setup the routing object
   auto routingObj = CacheableVector::create();
   for (int i = 0; i < 34; i++) {
     if (i % 2 == 0) continue;
