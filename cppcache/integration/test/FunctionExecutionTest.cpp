@@ -31,6 +31,7 @@
 
 using apache::geode::client::Cache;
 using apache::geode::client::Cacheable;
+using apache::geode::client::CacheableArrayList;
 using apache::geode::client::CacheableString;
 using apache::geode::client::CacheableVector;
 using apache::geode::client::CacheFactory;
@@ -40,6 +41,7 @@ using apache::geode::client::NotConnectedException;
 using apache::geode::client::Region;
 using apache::geode::client::RegionShortcut;
 using apache::geode::client::ResultCollector;
+const int ON_SERVERS_TEST_REGION_ENTRIES_SIZE = 34;
 
 std::shared_ptr<Region> setupRegion(Cache &cache) {
   auto region = cache.createRegionFactory(RegionShortcut::PROXY)
@@ -165,6 +167,20 @@ TEST(FunctionExecutionTest,
   cache.close();
 }
 
+const std::vector<std::string> serverResultsToStrings(
+    std::shared_ptr<CacheableVector> serverResults) {
+  std::vector<std::string> resultList;
+  for (auto result : *serverResults) {
+    auto resultArray = std::dynamic_pointer_cast<CacheableArrayList>(result);
+    for (decltype(resultArray->size()) i = 0; i < resultArray->size(); i++) {
+      auto value =
+          std::dynamic_pointer_cast<CacheableString>(resultArray->at(i));
+      resultList.push_back(value->toString());
+    }
+  }
+
+  return resultList;
+}
 TEST(FunctionExecutionTest, OnServersWithReplicatedRegionsInPool) {
   Cluster cluster{
       LocatorCount{1}, ServerCount{2},
@@ -181,13 +197,6 @@ TEST(FunctionExecutionTest, OnServersWithReplicatedRegionsInPool) {
         .execute();
   });
 
-  //cluster.getGfsh()
-  //    .create()
-  //    .region()
-  //    .withName("partition_region")
-  //    .withType("PARTITION")
-  //    .execute();
-
   auto cache = CacheFactory().set("log-level", "none").create();
   auto poolFactory = cache.getPoolManager().createFactory();
 
@@ -197,20 +206,19 @@ TEST(FunctionExecutionTest, OnServersWithReplicatedRegionsInPool) {
 
   auto region = cache.createRegionFactory(RegionShortcut::PROXY)
                     .setPoolName("pool")
-                    .create("region");
+                    .create("partition_region");
 
-  // Populate the region
-  for (int i = 0; i < 230; i++) {
-    region->put("KEY--" + i, "VALUE--" + i);
+  for (int i = 0; i < ON_SERVERS_TEST_REGION_ENTRIES_SIZE; i++) {
+    region->put("KEY--" + std::to_string(i), "VALUE--" + std::to_string(i));
   }
 
-  // test data independant fucntion execution on all servers
-
-  // Setup the routing object
+  // Filter on odd keys
   auto routingObj = CacheableVector::create();
-  for (int i = 0; i < 34; i++) {
-    if (i % 2 == 0) continue;
-    routingObj->push_back(CacheableString::create("KEY--" + i));
+  for (int i = 0; i < ON_SERVERS_TEST_REGION_ENTRIES_SIZE; i++) {
+    if (i % 2 == 0) {
+      continue;
+    }
+    routingObj->push_back(CacheableString::create("KEY--" + std::to_string(i)));
   }
 
   auto execution = FunctionService::onServers(pool);
@@ -218,59 +226,20 @@ TEST(FunctionExecutionTest, OnServersWithReplicatedRegionsInPool) {
   auto rc = execution.withArgs(routingObj).execute("MultiGetFunctionI");
   auto executeFunctionResult = rc->getResult();
 
+  // Executed on 2 servers, we should have two sets of results
   ASSERT_EQ(executeFunctionResult->size(), 2);
 
-  std::vector<std::string> resultList;
-  // for (CacheableVector result: *executeFunctionResult)
-  //  for (auto result2: result) { resultList.Add(item2); }
-  //}
-  // Util.Log("on all servers: result count= {0}.", resultList.Count);
-  // Assert.IsTrue(resultList.Count == 34, "result count check failed");
-  // for (int i = 0; i < resultList.Count; i++) {
-  //  Util.Log("on all servers: get:result[{0}]={1}.", i,
-  //(string)resultList[i]);
-  //}
-  //// TODO::enable it once the StringArray conversion is fixed.
-  //// test withCollector
-  // MyResultCollector<object> myRC = new MyResultCollector<object>();
-  // rc =
-  // exc.WithArgs<ArrayList>(args1).WithCollector(myRC).Execute(getFuncIName);
-  //// executeFunctionResult = rc.GetResult();
-  // Util.Log("add result count= {0}.", myRC.GetAddResultCount());
-  // Util.Log("get result count= {0}.", myRC.GetGetResultCount());
-  // Util.Log("end result count= {0}.", myRC.GetEndResultCount());
-  // Util.Log("on all servers with collector: result count= {0}.",
-  //         executeFunctionResult.Count);
-  // Assert.IsTrue(myRC.GetResult().Count == 2, "result count check failed");
+  auto resultList = serverResultsToStrings(executeFunctionResult);
 
-  // IList res = (IList)myRC.GetResult();
+  // We filtered on odd keys, we should have 1/2 as many results in each set,
+  // for a total of ON_SERVERS_TEST_REGION_ENTRIES_SIZE results
+  ASSERT_EQ(resultList.size(), ON_SERVERS_TEST_REGION_ENTRIES_SIZE);
 
-  // foreach (object o in res) {
-  //  IList resList = (IList)o;
-  //  Util.Log("results " + resList.Count);
-
-  //  Assert.AreEqual(17, resList.Count);
-  //}
-
-  // MyResultCollector<object> myRC2 = new MyResultCollector<object>();
-  // rc = exc.WithArgs<object>(args).WithCollector(myRC2).Execute(
-  //    exFuncNameSendException);
-  // executeFunctionResult = rc.GetResult();
-  // Util.Log("add result count= {0}.", myRC2.GetAddResultCount());
-  // Util.Log("get result count= {0}.", myRC2.GetGetResultCount());
-  // Util.Log("end result count= {0}.", myRC2.GetEndResultCount());
-  // Assert.IsTrue(myRC2.GetAddResultCount() == 2,
-  //              "add result count check failed");
-  // Assert.IsTrue(myRC2.GetGetResultCount() == 1,
-  //              "get result count check failed");
-  // Assert.IsTrue(myRC2.GetEndResultCount() == 1,
-  //              "end result count check failed");
-  // Util.Log("on Region with collector: result count= {0}.",
-  //         executeFunctionResult.Count);
-  // Assert.IsTrue(executeFunctionResult.Count == 2, "result count check
-  // failed");
-  // foreach (object item in executeFunctionResult) {
-  //  Util.Log("on Region with collector: get:result {0}",
-  //           (item as UserFunctionExecutionException).Message);
-  //}
+  for (decltype(resultList.size()) i = 0;
+       i < ON_SERVERS_TEST_REGION_ENTRIES_SIZE / 2; i++) {
+    // Each entry in the first result set (first half of this vector) should be
+    // equal to its corresponding entry in the second set (2nd half of vector)
+    ASSERT_EQ(resultList[i],
+              resultList[i + ON_SERVERS_TEST_REGION_ENTRIES_SIZE / 2]);
+  }
 }
