@@ -107,7 +107,7 @@ class Server {
       : cluster_(cluster),
         locators_(locators),
         name_(std::move(name)),
-        xmlFile_(std::move(xmlFile)) {
+        xmlFile_(xmlFile) {
     auto hostname = "localhost";
     auto port = static_cast<uint16_t>(0);
     serverAddress_ = ServerAddress{hostname, port};
@@ -133,7 +133,8 @@ class Server {
         locators_(move.locators_),
         serverAddress_(move.serverAddress_),
         started_(move.started_),
-        name_(move.name_) {
+        name_(move.name_),
+        xmlFile_(move.xmlFile_) {
     move.started_ = false;
   };
   //  Server &operator=(Server &&other) = default;
