@@ -4,9 +4,9 @@ extraction:
       command:
         - mkdir _lgtm_build_dir
         - cd _lgtm_build_dir
-        - wget -O apache-geode.tgz http://mirror.transip.net/apache/geode/1.9.0/apache-geode-1.9.0.tgz
-        - tar xzf apache-geode.tgz
-        - cmake -DGEODE_ROOT="`pwd`/apache-geode-1.9.0" ..
+        - wget -O apache-geode.zip http://mirror.transip.net/apache/geode/1.7.0/apache-geode-1.7.0.zip
+        - unzip apache-geode.zip
+        - cmake -DGEODE_ROOT="`pwd`/apache-geode-1.7.0" ..
         - cd dependencies && cmake --build . -- -j2
     index:
       build_command:
