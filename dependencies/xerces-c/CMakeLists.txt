@@ -21,6 +21,10 @@ set( ${PROJECT_NAME}_EXTERN ${PROJECT_NAME}-extern )
 include(GNUInstallDirs)
 include(ExternalProject)
 
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+  set(Xerces_TRANSCODER "-Dtranscoder=iconv")
+endif()
+
 ExternalProject_Add( ${PROJECT_NAME}-extern
   URL "http://archive.apache.org/dist/xerces/c/3/sources/xerces-c-${PROJECT_VERSION}.tar.gz"
   URL_HASH SHA256=${SHA256}
@@ -34,7 +38,7 @@ ExternalProject_Add( ${PROJECT_NAME}-extern
     -DBUILD_SHARED_LIBS=OFF
     -DCMAKE_POSITION_INDEPENDENT_CODE=ON
     -Dnetwork:BOOL=OFF
-    -Dtranscode=iconv
+    ${Xerces_TRANSCODER}
 )
 
 ExternalProject_Get_Property( ${PROJECT_NAME}-extern INSTALL_DIR )
