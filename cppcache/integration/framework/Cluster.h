@@ -23,14 +23,13 @@
 #include <cstdint>
 #include <string>
 
-#include "gtest/gtest.h"
-
 #include <geode/Cache.hpp>
 #include <geode/PoolManager.hpp>
 
 #include "Framework.h"
 #include "GfshExecute.h"
 #include "NamedType.h"
+#include "gtest/gtest.h"
 
 class Cluster;
 
@@ -104,14 +103,19 @@ struct ServerAddress {
 
 class Server {
  public:
-  Server(Cluster &cluster, std::vector<Locator> &locators, std::string name)
-      : cluster_(cluster), locators_(locators), name_(std::move(name)) {
+  Server(Cluster &cluster, std::vector<Locator> &locators, std::string name, std::string xmlFile)
+      : cluster_(cluster),
+        locators_(locators),
+        name_(std::move(name)),
+        xmlFile_(xmlFile) {
     auto hostname = "localhost";
     auto port = static_cast<uint16_t>(0);
     serverAddress_ = ServerAddress{hostname, port};
 
     // start();
   }
+
+  std::string getCacheXMLFile() { return xmlFile_; }
 
   ~Server() noexcept {
     try {
@@ -129,7 +133,8 @@ class Server {
         locators_(move.locators_),
         serverAddress_(move.serverAddress_),
         started_(move.started_),
-        name_(move.name_) {
+        name_(move.name_),
+        xmlFile_(move.xmlFile_) {
     move.started_ = false;
   };
   //  Server &operator=(Server &&other) = default;
@@ -147,6 +152,7 @@ class Server {
   bool started_ = false;
 
   std::string name_;
+  std::string xmlFile_;
 };
 
 using LocatorCount = NamedType<size_t, struct LocatorCountParameter>;
@@ -156,6 +162,8 @@ using Classpath = NamedType<std::string, struct ClasspathParameter>;
 using SecurityManager = NamedType<std::string, struct SecurityManagerParameter>;
 using User = NamedType<std::string, struct UserParameter>;
 using Password = NamedType<std::string, struct PasswordParameter>;
+using CacheXMLFiles =
+    NamedType<std::vector<std::string>, struct CacheXMLFilesParameter>;
 
 class Cluster {
  public:
@@ -167,25 +175,54 @@ class Cluster {
                      ::testing::UnitTest::GetInstance()
                          ->current_test_info()
                          ->name()),
-                initialLocators, initialServers){};
+                initialLocators, initialServers) {}
+
+  Cluster(LocatorCount initialLocators, ServerCount initialServers,
+          CacheXMLFiles cacheXMLFiles)
+      : name_(std::string(::testing::UnitTest::GetInstance()
+                              ->current_test_info()
+                              ->test_case_name()) +
+              "/" +
+              ::testing::UnitTest::GetInstance()->current_test_info()->name()),
+        initialLocators_(initialLocators.get()),
+        initialServers_(initialServers.get()),
+        jmxManagerPort_(Framework::getAvailablePort()) {
+    removeServerDirectory();
+    cacheXMLFiles_ = cacheXMLFiles.get();
+  }
 
   Cluster(Name name, LocatorCount initialLocators, ServerCount initialServers)
-      : Cluster(Name(name.get()),
-                Classpath(""),
-                SecurityManager(""),
-                User(""),
-                Password(""),
-                initialLocators, initialServers){};
+      : Cluster(Name(name.get()), Classpath(""), SecurityManager(""), User(""),
+                Password(""), initialLocators, initialServers,
+                CacheXMLFiles({})) {}
 
-  Cluster(Name name,
-      Classpath classpath,
-      SecurityManager securityManager,
-      User user,
-      Password password,
-      LocatorCount initialLocators,
-      ServerCount initialServers) :
-    name_(name.get()), classpath_(classpath.get()), securityManager_(securityManager.get()), user_(user.get()), password_(password.get()), initialLocators_(initialLocators.get()), initialServers_(initialServers.get()) {
+  Cluster(Name name, Classpath classpath, SecurityManager securityManager,
+          User user, Password password, LocatorCount initialLocators,
+          ServerCount initialServers, CacheXMLFiles cacheXMLFiles)
+      : name_(name.get()),
+        classpath_(classpath.get()),
+        securityManager_(securityManager.get()),
+        user_(user.get()),
+        password_(password.get()),
+        initialLocators_(initialLocators.get()),
+        initialServers_(initialServers.get()) {
+    jmxManagerPort_ = Framework::getAvailablePort();
+    cacheXMLFiles_ = cacheXMLFiles.get();
 
+    removeServerDirectory();
+    start();
+  };
+
+  Cluster(Name name, Classpath classpath, SecurityManager securityManager,
+          User user, Password password, LocatorCount initialLocators,
+          ServerCount initialServers)
+      : name_(name.get()),
+        classpath_(classpath.get()),
+        securityManager_(securityManager.get()),
+        user_(user.get()),
+        password_(password.get()),
+        initialLocators_(initialLocators.get()),
+        initialServers_(initialServers.get()) {
     jmxManagerPort_ = Framework::getAvailablePort();
 
     removeServerDirectory();
@@ -211,7 +248,7 @@ class Cluster {
            std::to_string(jmxManagerPort_) + "]";
   }
 
-  void start();
+  void start(std::function<void()> fn = []() {});
 
   void stop();
 
@@ -228,7 +265,8 @@ class Cluster {
   }
 
   apache::geode::client::Cache createCache(
-      const std::unordered_map<std::string, std::string> &properties, bool subscriptionEnabled) {
+      const std::unordered_map<std::string, std::string> &properties,
+      bool subscriptionEnabled) {
     using apache::geode::client::CacheFactory;
 
     CacheFactory cacheFactory;
@@ -241,7 +279,9 @@ class Cluster {
                      .set("statistic-sampling-enabled", "false")
                      .create();
 
-    auto poolFactory = cache.getPoolManager().createFactory().setSubscriptionEnabled(subscriptionEnabled);
+    auto poolFactory =
+        cache.getPoolManager().createFactory().setSubscriptionEnabled(
+            subscriptionEnabled);
     applyLocators(poolFactory);
     poolFactory.create("default");
 
@@ -257,25 +297,19 @@ class Cluster {
 
   Gfsh &getGfsh() noexcept { return gfsh_; }
 
-  std::vector<Server>& getServers() {
-    return servers_;
-  }
+  std::vector<Server> &getServers() { return servers_; }
 
-  std::string& getClasspath() {
-    return classpath_;
-  }
+  std::vector<Locator> &getLocators() { return locators_; }
 
-  std::string& getSecurityManager() {
-    return securityManager_;
-  }
+  std::string &getClasspath() { return classpath_; }
 
-  std::string& getUser() {
-    return user_;
-  }
+  std::string &getSecurityManager() { return securityManager_; }
 
-  std::string& getPassword() {
-    return password_;
-  }
+  std::string &getUser() { return user_; }
+
+  std::string &getPassword() { return password_; }
+
+  std::vector<std::string> &getCacheXMLFiles() { return cacheXMLFiles_; }
 
  private:
   std::string name_;
@@ -283,6 +317,7 @@ class Cluster {
   std::string securityManager_;
   std::string user_;
   std::string password_;
+  std::vector<std::string> cacheXMLFiles_;
 
   size_t initialLocators_;
   std::vector<Locator> locators_;

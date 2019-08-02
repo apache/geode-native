@@ -150,51 +150,51 @@ class Gfsh {
       Server &withName(const std::string &name) {
         command_ += " --name=" + name;
         return *this;
-      };
+      }
 
       Server &withDir(const std::string &dir) {
         command_ += " --dir=" + dir;
         return *this;
-      };
+      }
 
       Server &withBindAddress(const std::string &bindAddress) {
         command_ += " --bind-address=" + bindAddress;
         return *this;
-      };
+      }
 
       Server &withPort(uint16_t serverPort) {
         command_ += " --server-port=" + std::to_string(serverPort);
         return *this;
-      };
+      }
 
       Server &withLocators(const std::string locators) {
         command_ += " --locators=" + locators;
         return *this;
-      };
+      }
 
       Server &withLogLevel(const std::string logLevel) {
         command_ += " --log-level=" + logLevel;
         return *this;
-      };
+      }
 
       Server &withMaxHeap(const std::string maxHeap) {
         command_ += " --max-heap=" + maxHeap;
         return *this;
-      };
+      }
 
       Server &withClasspath(const std::string classpath) {
         if (!classpath.empty()) {
           command_ += " --classpath=" + classpath;
         }
         return *this;
-      };
+      }
 
       Server &withSecurityManager(const std::string securityManager) {
         if (!securityManager.empty()) {
           command_ += " --J=-Dgemfire.security-manager=" + securityManager;
         }
         return *this;
-      };
+      }
 
       Server &withUser(const std::string user) {
         if (!user.empty()) {
@@ -202,14 +202,21 @@ class Gfsh {
         }
 
         return *this;
-      };
+      }
 
       Server &withPassword(const std::string password) {
         if (!password.empty()) {
           command_ += " --password=" + password;
         }
         return *this;
-      };
+      }
+
+      Server &withCacheXMLFile(const std::string file) {
+        if (!file.empty()) {
+          command_ += " --cache-xml-file=" + file;
+        }
+        return *this;
+      }
     };
 
    private:
