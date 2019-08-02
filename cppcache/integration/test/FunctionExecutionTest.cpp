@@ -134,7 +134,7 @@ TEST(FunctionExecutionTest, UnknownFunctionAsyncOnRegion) {
 }
 
 TEST(FunctionExecutionTest,
-     Disabled_FunctionReturnsObjectWhichCantBeDeserializedOnServer) {
+     FunctionReturnsObjectWhichCantBeDeserializedOnServer) {
   Cluster cluster{LocatorCount{1}, ServerCount{1}};
   cluster.getGfsh()
       .create()
@@ -142,23 +142,21 @@ TEST(FunctionExecutionTest,
       .withName("region")
       .withType("REPLICATE")
       .execute();
-
   cluster.getGfsh()
       .deploy()
       .jar(getFrameworkString(FrameworkVariable::JavaObjectJarPath))
       .execute();
-
   auto cache = cluster.createCache();
   auto region = cache.createRegionFactory(RegionShortcut::PROXY)
                     .setPoolName("default")
                     .create("region");
-
   const char *GetScopeSnapshotsFunction =
       "executeFunction_SendObjectWhichCantBeDeserialized";
-  auto functionService = FunctionService::onRegion(region);
-  ASSERT_THROW(functionService.execute(GetScopeSnapshotsFunction),
-               apache::geode::client::IllegalStateException);
 
+  auto functionService = FunctionService::onRegion(region);
+
+  ASSERT_THROW(functionService.execute(GetScopeSnapshotsFunction),
+               apache::geode::client::MessageException);
   cache.close();
 }
 
