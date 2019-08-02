@@ -309,8 +309,6 @@ class Cluster {
 
   std::string &getPassword() { return password_; }
 
-  //std::string &getCacheXMLFile() { return cacheXMLFiles_[0]; }
-
   std::vector<std::string> &getCacheXMLFiles() { return cacheXMLFiles_; }
 
  private:

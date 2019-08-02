@@ -90,7 +90,7 @@ void Server::stop() {
   started_ = false;
 }
 
-void Cluster::start(std::function<void()> fn) {
+void Cluster::start(std::function<void()> extraGfshCommands) {
   locators_.reserve(initialLocators_);
   for (size_t i = 0; i < initialLocators_; i++) {
     locators_.push_back({*this, locators_,
@@ -111,7 +111,7 @@ void Cluster::start(std::function<void()> fn) {
 
   startLocators();
 
-  fn();
+  extraGfshCommands();
   
   startServers();
 

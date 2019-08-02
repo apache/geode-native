@@ -149,11 +149,6 @@ TEST(FunctionExecutionTest,
       .execute();
 
   auto cache = cluster.createCache();
-  //  CacheFactory().set("log-level", "none").create();
-  // auto pool = cache.getPoolManager()
-  //                .createFactory()
-  //                .addLocator("localhost", 10334)
-  //                .create("pool");
   auto region = cache.createRegionFactory(RegionShortcut::PROXY)
                     .setPoolName("default")
                     .create("region");
