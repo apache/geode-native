@@ -160,7 +160,7 @@ TcrConnectionManager::~TcrConnectionManager() {
       }
       for (const auto &iter : m_endpoints) {
         auto ep = iter.second;
-        LOGFINE("TCCM: forcing endpoint delete for %d in destructor",
+        LOGFINE("TCCM: forcing endpoint delete for %s in destructor",
                 ep->name().c_str());
         _GEODE_SAFE_DELETE(ep);
       }
@@ -181,7 +181,7 @@ void TcrConnectionManager::connect(
       LOGFINE(
           "TcrConnectionManager::connect(): Empty endpointstr vector "
           "passed to TCCM, will initialize endpoints list with all available "
-          "endpoints (%d).",
+          "endpoints (%zu).",
           m_endpoints.size());
       for (const auto &currItr : m_endpoints) {
         auto ep = currItr.second;

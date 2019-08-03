@@ -295,12 +295,12 @@ class APACHE_GEODE_EXPORT TcrConnection {
   void updateCreationTime();
 
   int64_t getConnectionId() {
-    LOGDEBUG("TcrConnection::getConnectionId() = %d ", connectionId);
+    LOGDEBUG("TcrConnection::getConnectionId() = %" PRId64, connectionId);
     return connectionId;
   }
 
   void setConnectionId(int64_t id) {
-    LOGDEBUG("Tcrconnection:setConnectionId() = %d ", id);
+    LOGDEBUG("Tcrconnection:setConnectionId() = %" PRId64, id);
     connectionId = id;
   }
 

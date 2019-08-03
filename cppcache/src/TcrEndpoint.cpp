@@ -185,7 +185,7 @@ GfErrType TcrEndpoint::createNewConnection(
     std::chrono::microseconds connectTimeout, int32_t timeoutRetries,
     bool appThreadRequest) {
   LOGFINE(
-      "TcrEndpoint::createNewConnection: connectTimeout =%d "
+      "TcrEndpoint::createNewConnection: connectTimeout =%z "
       "m_needToConnectInLock=%d appThreadRequest =%d",
       connectTimeout.count(), m_needToConnectInLock, appThreadRequest);
   GfErrType err = GF_NOERR;
