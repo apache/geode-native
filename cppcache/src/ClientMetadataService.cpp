@@ -362,7 +362,7 @@ ClientMetadataService::getServerToFilterMap(
         keyList = itrRes->second;
       }
 
-      LOGDEBUG("new keylist buckets =%d res = %d", buckets.size(),
+      LOGDEBUG("new keylist buckets =%zu res = %zu", buckets.size(),
                serverToFilterMap->size());
     } else {
       keyList = (*serverToFilterMap)[bucketsIter->second];
@@ -499,7 +499,7 @@ ClientMetadataService::getServerToFilterMapFESHOP(
     bucketSet.insert(iter.first);
   }
   LOGDEBUG(
-      "ClientMetadataService::getServerToFilterMapFESHOP: bucketSet size = %d ",
+      "ClientMetadataService::getServerToFilterMapFESHOP: bucketSet size = %zu ",
       bucketSet.size());
 
   const auto serverToBuckets =
@@ -544,13 +544,13 @@ std::shared_ptr<BucketServerLocation> ClientMetadataService::findNextServer(
     BucketSet buckets(*(serverToBucketEntry.second));
 
     LOGDEBUG(
-        "ClientMetadataService::findNextServer currentBucketSet->size() = %d  "
-        "bucketSet->size() = %d ",
+        "ClientMetadataService::findNextServer currentBucketSet->size() = %zu  "
+        "bucketSet->size() = %zu ",
         currentBucketSet.size(), buckets.size());
 
     for (const auto& currentBucketSetIter : currentBucketSet) {
       buckets.erase(currentBucketSetIter);
-      LOGDEBUG("ClientMetadataService::findNextServer bucketSet->size() = %d ",
+      LOGDEBUG("ClientMetadataService::findNextServer bucketSet->size() = %zu ",
                buckets.size());
     }
 
@@ -619,7 +619,7 @@ ClientMetadataService::pruneNodes(
     size_t size = serverToBucketsMap.size();
     LOGDEBUG(
         "ClientMetadataService::pruneNodes Total size of serverToBucketsMap = "
-        "%d ",
+        "%zu ",
         size);
     for (size_t idx = 0; idx < RandGen{}(size); idx++) {
       itrRes++;
@@ -645,13 +645,13 @@ ClientMetadataService::pruneNodes(
 
     const auto& bucketSet2 = serverToBucketsMap.find(server)->second;
     LOGDEBUG(
-        "ClientMetadataService::pruneNodes currentBucketSet->size() = %d  "
-        "bucketSet2->size() = %d ",
+        "ClientMetadataService::pruneNodes currentBucketSet->size() = %zu  "
+        "bucketSet2->size() = %zu ",
         currentBucketSet.size(), bucketSet2->size());
 
     for (const auto& currentBucketSetIter : currentBucketSet) {
       bucketSet2->erase(currentBucketSetIter);
-      LOGDEBUG("ClientMetadataService::pruneNodes bucketSet2->size() = %d ",
+      LOGDEBUG("ClientMetadataService::pruneNodes bucketSet2->size() = %zu ",
                bucketSet2->size());
     }
 
@@ -781,9 +781,9 @@ void ClientMetadataService::markPrimaryBucketForTimeoutButLookSecondaryBucket(
   auto totalBuckets = cptr->getTotalNumBuckets();
 
   for (decltype(totalBuckets) i = 0; i < totalBuckets; i++) {
-    int8_t version;
+    int8_t serverVersion;
     std::shared_ptr<BucketServerLocation> bsl;
-    cptr->getServerLocation(i, false, bsl, version);
+    cptr->getServerLocation(i, false, bsl, serverVersion);
 
     if (bsl == serverLocation) {
       prBuckets->setBucketTimeout(i);
