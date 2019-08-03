@@ -182,8 +182,8 @@ void PdxType::initRemoteToLocal() {
 
     m_remoteToLocalFieldMap = new int32_t[m_pdxFieldTypes->size()];
     LOGDEBUG(
-        "PdxType::initRemoteToLocal m_pdxFieldTypes->size() =%d AND "
-        "localPdxFields->size()=%d",
+        "PdxType::initRemoteToLocal m_pdxFieldTypes->size() =%zu AND "
+        "localPdxFields->size()=%zu",
         m_pdxFieldTypes->size(), localPdxFields->size());
     for (std::vector<std::shared_ptr<PdxFieldType>>::iterator remotePdxField =
              m_pdxFieldTypes->begin();

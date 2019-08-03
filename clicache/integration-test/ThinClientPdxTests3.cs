@@ -1386,8 +1386,6 @@ namespace Apache.Geode.Client.UnitTests
     {
       var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
-      var filter = new List<object>();
-      filter.Add(1);
       var execution = FunctionService<object>.OnRegion<object, object>(region0);
 
       var resultCollector = execution.Execute("IterateRegion");

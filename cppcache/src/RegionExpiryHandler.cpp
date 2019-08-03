@@ -55,7 +55,7 @@ int RegionExpiryHandler::handle_timeout(const ACE_Time_Value& current_time,
     }
 
     auto elapsed = curr_time - lastTimeForExp;
-    LOGDEBUG("Entered region expiry task handler for region [%s]: %d,%d,%d,%d",
+    LOGDEBUG("Entered region expiry task handler for region [%s]: %z,%z,%z,%z",
              m_regionPtr->getFullPath().c_str(),
              curr_time.time_since_epoch().count(),
              lastTimeForExp.time_since_epoch().count(), m_duration.count(),

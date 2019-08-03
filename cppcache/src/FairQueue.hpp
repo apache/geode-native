@@ -92,7 +92,7 @@ class FairQueue {
     ACE_Guard<MUTEX> _guard(m_queueLock);
 
     m_closed = true;
-    LOGDEBUG("Internal fair queue size while closing is %d", m_queue.size());
+    LOGDEBUG("Internal fair queue size while closing is %zu", m_queue.size());
     while (m_queue.size() > 0) {
       T* mp = m_queue.back();
       m_queue.pop_back();

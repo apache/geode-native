@@ -46,7 +46,7 @@ int PreservedDataExpiryHandler::handle_timeout(const ACE_Time_Value&,
   auto map = m_pdxTypeRegistry->getPreserveDataMap();
   LOGDEBUG(
       "Entered PreservedDataExpiryHandler "
-      "PdxTypeRegistry::getPreserveDataMap().size() = %d",
+      "PdxTypeRegistry::getPreserveDataMap().size() = %zu",
       map.size());
 
   try {

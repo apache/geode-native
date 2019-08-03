@@ -639,7 +639,7 @@ void TcrMessage::readFailedNodePart(DataInput& input) {
   input.read();  // ignore typeId
   // input.readDirectObject(m_failedNode, typeId);
   m_failedNode->fromData(input);
-  LOGDEBUG("readFailedNodePart m_failedNode size = %d ", m_failedNode->size());
+  LOGDEBUG("readFailedNodePart m_failedNode size = %zu", m_failedNode->size());
 }
 
 void TcrMessage::readKeyPart(DataInput& input) {
@@ -1500,7 +1500,7 @@ void TcrMessage::handleByteArrayResponse(
           }
           m_metadata->push_back(bucketServerLocations);
         }
-        LOGFINER("Metadata size is %d", m_metadata->size());
+        LOGFINER("Metadata size is %", m_metadata->size());
       }
       break;
     }
@@ -2690,13 +2690,13 @@ TcrMessageExecuteRegionFunctionSingleHop::
   if (routingObj) {
     writeIntPart(static_cast<int32_t>(routingObj->size()));
     if (allBuckets) {
-      LOGDEBUG("All Buckets so putting IntPart for buckets = %d ",
+      LOGDEBUG("All Buckets so putting IntPart for buckets = %zu",
                routingObj->size());
       for (const auto& itr : *routingObj) {
         writeIntPart(std::dynamic_pointer_cast<CacheableInt32>(itr)->value());
       }
     } else {
-      LOGDEBUG("putting keys as withFilter called, routing Keys size = %d ",
+      LOGDEBUG("putting keys as withFilter called, routing Keys size = %zu",
                routingObj->size());
       for (const auto& itr : *routingObj) {
         writeObjectPart(itr);
