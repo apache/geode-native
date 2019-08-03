@@ -804,7 +804,8 @@ GfErrType ThinClientRedundancyManager::sendSyncRequestCq(
 
   if (m_redundantEndpoints.size() >= 1) {
     LOGDEBUG(
-        "ThinClientRedundancyManager::sendSyncRequestCq: to secondary size[%zu]",
+        "ThinClientRedundancyManager::sendSyncRequestCq: to secondary "
+        "size[%zu]",
         m_redundantEndpoints.size());
     std::vector<TcrEndpoint*>::iterator iter = m_redundantEndpoints.begin();
     LOGDEBUG("endpoint[%s]", (*iter)->name().c_str());
