@@ -1173,12 +1173,13 @@ void ThinClientRedundancyManager::doPeriodicAck() {
         };
 
         if (result == GF_NOERR && reply.getMessageType() == TcrMessage::REPLY) {
-          LOGFINE("Sent subscription ack message for %d sources to endpoint %s",
-                  count, (*endpoint)->name().c_str());
+          LOGFINE(
+              "Sent subscription ack message for %zu sources to endpoint %s",
+              count, (*endpoint)->name().c_str());
           acked = true;
         } else {
           LOGWARN(
-              "Failure sending subscription ack message for %d sources to "
+              "Failure sending subscription ack message for %zu sources to "
               "endpoint %s",
               count, (*endpoint)->name().c_str());
           LOGFINER("Ack result is %d and reply message type is %d", result,
@@ -1186,7 +1187,8 @@ void ThinClientRedundancyManager::doPeriodicAck() {
         }
       } else {
         LOGWARN(
-            "No subscription servers available for periodic ack for %d sources",
+            "No subscription servers available for periodic ack for %zu "
+            "sources",
             count);
       }
 

@@ -1387,7 +1387,7 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
     LOGDEBUG("worker->getPutAllMap()->size() = %zu ",
              worker->getPutAllMap()->size());
     LOGDEBUG(
-        "worker->getResultCollector()->getList()->getVersionedTagsize() = %zu ",
+        "worker->getResultCollector()->getList()->getVersionedTagsize() = %d ",
         worker->getResultCollector()->getList()->getVersionedTagsize());
 
     // TODO::CHECK, why do we need following code... ??
@@ -1655,8 +1655,9 @@ GfErrType ThinClientRegion::singleHopRemoveAllNoThrow_remote(
     const std::vector<std::shared_ptr<CacheableKey>>& keys,
     std::shared_ptr<VersionedCacheableObjectPartList>& versionedObjPartList,
     const std::shared_ptr<Serializable>& aCallbackArgument) {
-  LOGDEBUG(" ThinClientRegion::singleHopRemoveAllNoThrow_remote keys size = %zu",
-           keys.size());
+  LOGDEBUG(
+      " ThinClientRegion::singleHopRemoveAllNoThrow_remote keys size = %zu",
+      keys.size());
   auto region = shared_from_this();
   GfErrType error = GF_NOERR;
 
@@ -3015,16 +3016,17 @@ void ThinClientRegion::executeFunction(
         rc->clearResults();
         failedNodes->clear();
       } else if (err == GF_TIMEOUT) {
-        LOGINFO(
-            "function timeout. Name: %s, timeout: %z, params: %" PRIu8 ", "
-            "retryAttempts: %d ",
-            func.c_str(), timeout.count(), getResult, retryAttempts);
+        LOGINFO("function timeout. Name: %s, timeout: %z, params: %" PRIu8
+                ", "
+                "retryAttempts: %d ",
+                func.c_str(), timeout.count(), getResult, retryAttempts);
         throwExceptionIfError("ExecuteOnRegion", GF_TIMEOUT);
       } else if (err == GF_CLIENT_WAIT_TIMEOUT ||
                  err == GF_CLIENT_WAIT_TIMEOUT_REFRESH_PRMETADATA) {
         LOGINFO(
             "function timeout, possibly bucket is not available or bucket "
-            "blacklisted. Name: %s, timeout: %z, params: %" PRIu8 ", retryAttempts: "
+            "blacklisted. Name: %s, timeout: %z, params: %" PRIu8
+            ", retryAttempts: "
             "%d ",
             func.c_str(), timeout.count(), getResult, retryAttempts);
         throwExceptionIfError("ExecuteOnRegion", GF_CLIENT_WAIT_TIMEOUT);
