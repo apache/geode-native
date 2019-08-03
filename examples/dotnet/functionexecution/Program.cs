@@ -32,7 +32,7 @@ namespace Apache.Geode.Examples.FunctionExecution
 
       var poolFactory = cache.GetPoolFactory()
           .AddLocator("localhost", 10334);
-      var pool = poolFactory.Create("pool");
+      poolFactory.Create("pool");
 
       var regionFactory = cache.CreateRegionFactory(RegionShortcut.PROXY)
           .SetPoolName("pool");

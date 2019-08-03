@@ -211,7 +211,7 @@ void ClientMetadataService::getBucketServerLocation(
         m_regionMetadataLock);
     LOGDEBUG(
         "ClientMetadataService::getBucketServerLocation m_regionMetaDataMap "
-        "size is %d",
+        "size is %zu",
         m_regionMetaDataMap.size());
     std::string path(region->getFullPath());
     std::shared_ptr<ClientMetadata> cptr = nullptr;

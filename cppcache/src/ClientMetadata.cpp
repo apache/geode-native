@@ -46,7 +46,8 @@ ClientMetadata::ClientMetadata(
   }
   if (fpaSet != nullptr) {
     LOGDEBUG(
-        "ClientMetadata Creating metadata with %d buckets & fpaset size is %d ",
+        "ClientMetadata Creating metadata with %d buckets & fpaset size is "
+        "%zu ",
         totalNumBuckets, fpaSet->size());
     if (!fpaSet->empty()) {
       int totalFPABuckets = 0;
@@ -123,7 +124,7 @@ void ClientMetadata::getServerLocation(
   if (m_bucketServerLocationsList[bucketId].empty()) {
     return;
   } else if (tryPrimary) {
-    LOGFINER("returning primary & m_bucketServerLocationsList size is %d",
+    LOGFINER("returning primary & m_bucketServerLocationsList size is %zu",
              m_bucketServerLocationsList.size());
     serverLocation = m_bucketServerLocationsList[bucketId].at(0);
     if (serverLocation->isValid()) {
@@ -293,7 +294,7 @@ void ClientMetadata::updateBucketServerLocations(
 int ClientMetadata::assignFixedBucketId(
     const char* partitionName, std::shared_ptr<CacheableKey> resolvekey) {
   LOGDEBUG(
-      "FPR assignFixedBucketId partititonname = %s , m_fpaMap.size() = %d ",
+      "FPR assignFixedBucketId partititonname = %s , m_fpaMap.size() = %zu ",
       partitionName, m_fpaMap.size());
   FixedMapType::iterator iter = m_fpaMap.find(partitionName);
   if (iter != m_fpaMap.end()) {

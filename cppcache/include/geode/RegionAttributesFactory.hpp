@@ -439,6 +439,8 @@ class APACHE_GEODE_EXPORT RegionAttributesFactory {
   RegionAttributes create();
 
  private:
+  RegionAttributesFactory& operator=(const RegionAttributesFactory& other) =
+      default;
   RegionAttributes m_regionAttributes;
   static void validateAttributes(RegionAttributes& attrs);
 };  // namespace client

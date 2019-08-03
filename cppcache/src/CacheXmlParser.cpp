@@ -18,6 +18,7 @@
 #include "CacheXmlParser.hpp"
 
 #include <chrono>
+#include <cinttypes>
 
 #include <geode/PoolFactory.hpp>
 #include <geode/PoolManager.hpp>
@@ -362,7 +363,7 @@ void CacheXmlParser::endElement(const XMLCh *const,
 
 void CacheXmlParser::fatalError(const xercesc::SAXParseException &exception) {
   char *message = xercesc::XMLString::transcode(exception.getMessage());
-  LOGDEBUG("Fatal Error: \"%s\" at line: %ulld", message,
+  LOGDEBUG("Fatal Error: \"%s\" at line: %" PRIu64, message,
            exception.getLineNumber());
   auto ex = CacheXmlException(message);
   xercesc::XMLString::release(&message);

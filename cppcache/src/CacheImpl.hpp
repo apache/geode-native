@@ -169,7 +169,7 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
    * @throws NotConnectedException if the cache is not connected
    * @throws UnknownException otherwise
    */
-  void createRegion(std::string name, RegionAttributes aRegionAttributes,
+  void createRegion(std::string name, const RegionAttributes& aRegionAttributes,
                     std::shared_ptr<Region>& regionPtr);
 
   /**
@@ -349,7 +349,7 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
   void sendNotificationCloseMsgs();
 
   void validateRegionAttributes(const std::string& name,
-                                const RegionAttributes attrs) const;
+                                const RegionAttributes& attrs) const;
 
   inline void getSubRegions(
       std::unordered_map<std::string, std::shared_ptr<Region>>& srm) {
