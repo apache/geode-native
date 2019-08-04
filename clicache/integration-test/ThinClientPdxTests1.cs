@@ -1277,23 +1277,14 @@ namespace Apache.Geode.Client.UnitTests
 
         _addressList = new ArrayList();
         _hashTable = new Hashtable();
-        _addressListObj = new List<object>();
 
         for (var i = 0; i < 10; i++)
         {
           _addressList.Add(new Address(i));
           _hashTable.Add(i, new SerializePdx2(true));
-          _addressListObj.Add(new Address(i));
         }
 
         _address = new Address(nAddress);
-
-        //_arrayOfAddress = new Address[3];
-
-        //for (int i = 0; i < 3; i++)
-        //{
-        //  _arrayOfAddress[i] = new Address(i);
-        //}
       }
     }
 
