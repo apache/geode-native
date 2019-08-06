@@ -75,6 +75,7 @@ void Server::start() {
       .withSecurityManager(cluster_.getSecurityManager())
       .withUser(cluster_.getUser())
       .withPassword(cluster_.getPassword())
+      .withCacheXMLFile(getCacheXMLFile())
       .execute();
 
 //  std::cout << "server: " << serverAddress_.port << ": started" << std::endl << std::flush;
@@ -89,7 +90,7 @@ void Server::stop() {
   started_ = false;
 }
 
-void Cluster::start() {
+void Cluster::start(std::function<void()> extraGfshCommands) {
   locators_.reserve(initialLocators_);
   for (size_t i = 0; i < initialLocators_; i++) {
     locators_.push_back({*this, locators_,
@@ -98,13 +99,20 @@ void Cluster::start() {
   }
 
   servers_.reserve(initialServers_);
+  std::string xmlFile;
   for (size_t i = 0; i < initialServers_; i++) {
+    xmlFile = (cacheXMLFiles_.size() == 0) ? "" :
+               cacheXMLFiles_.size() == 1 ? cacheXMLFiles_[1] :
+               cacheXMLFiles_[i];
+
     servers_.push_back(
-        {*this, locators_, name_ + "/server/" + std::to_string(i)});
+      {*this, locators_, name_ + "/server/" + std::to_string(i), xmlFile});
   }
 
   startLocators();
 
+  extraGfshCommands();
+  
   startServers();
 
   //    std::cout << "cluster: " << jmxManagerPort_ << ": started" << std::endl;
