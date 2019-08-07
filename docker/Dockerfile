@@ -41,7 +41,7 @@ RUN apt-get update && \
         update-alternatives --install /usr/bin/clang-tidy    clang-tidy    /usr/bin/clang-tidy-${CLANG_VERSION} 999 && \
         update-alternatives --install /usr/bin/clang-format  clang-format  /usr/bin/clang-format-${CLANG_VERSION} 999
 
-ENV GEODE_VERSION 1.6.0
+ENV GEODE_VERSION 1.9.0
 RUN wget "https://www.apache.org/dyn/closer.cgi?action=download&filename=geode/${GEODE_VERSION}/apache-geode-${GEODE_VERSION}.tgz" --quiet -O - | \
         tar xzf -
 
