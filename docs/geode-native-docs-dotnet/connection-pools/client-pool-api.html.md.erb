@@ -1,0 +1,39 @@
+---
+title:  Native Client Pool API
+---
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+The native client API allows your clients to create and manage connection pools. The server side does not have an API.
+
+This section lists the primary native client API for pool management. For complete information on the classes and interfaces described here, see the API documentation.
+
+**Note:**
+Only C\# versions of Pool API interfaces, classes, and methods are shown throughout the text in this section (example: `Pool.GetQueryService()`) . The code examples demonstrate both C++ and C\# versions.
+
+**Apache.Geode.Client.Cache**
+
+-   `Pool` interface. API to retrieve pool attributes.
+-   `PoolFactory` interface. API to configure pool attributes.
+-   `PoolManager` interface. API to create a `PoolFactory` object and to find the pool objects.
+-   `AttributesFactory` class. Has a new method `setPoolname` which assigns a pool to a region. Operations performed on the configured region use connections from the pool.
+
+**Note:**
+A region can have a pool attached to it. A pool may have multiple regions attached to it.
+
+

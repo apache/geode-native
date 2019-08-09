@@ -1,0 +1,47 @@
+---
+title:  Data Serialization &ndash; C++
+---
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+All data moving out of the client cache must be serializable.
+
+-   **[Data Serialization Options](serialization-options.html)**
+
+    The C++ client API provides two serialization options:  <%=vars.product_name%> PDX serialization and the `apache::geode::client::DataSerializable` interface.
+
+-   **[Using PDX Serialization](pdx-serialization.html)**
+
+    PDX is a cross-language data format that can reduce the cost of distributing and serializing your
+objects. PDX stores data in named fields that you can access individually to avoid the cost of
+deserializing the entire data object. When you use PDX serialization with a C++ client, you can
+implement PDX serialization for each domain object or register a PdxSerializer for the entire cache.
+
+-   **[Serializing Data with the DataSerializable Interface](serialization-using-serializable.html)**
+
+    The C++ client API provides a `DataSerializable` interface that you can use for fast and compact data serialization. This section discusses the <%=vars.product_name%> DataSerializable interface and presents implementation examples.
+
+-   **[Serializing Object Graphs](object-graphs.html)**
+
+    If you have a graph of objects where each node can be serializable, the parent node can call `DataOutput::writeObject` to delegate the serialization responsibility to its child nodes. Similarly, your application can call `DataInput::readObject` to deserialize the object graph.
+
+-   **[Serializing and Accessing Data as a Blob](data-as-blob.html)**
+
+    If you have data that is best handled as a blob, such as structs that do not contain pointers, use the serializable type `CacheableBytes` . `CacheableBytes` is a blob class that implements the serialization for you.
+
+

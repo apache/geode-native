@@ -1,0 +1,129 @@
+---
+title: Getting Started with the Native Library
+---
+
+To use the <%=vars.product_name%> Native Library for developing <%=vars.product_name%> client applications:
+
+- Obtain a distribution of the Native library and install it on your development platform.
+- Set up your development environment with the tools you need, such as a compiler and an OpenSSL security library.
+- Establish access to a new or existing <%=vars.product_name%> cluster.
+- Write your client application using the <%=vars.product_name%> native library to interact with the <%=vars.product_name%> server.
+
+## <a id="set_up_dev_environment"></a>Set Up Your Development Environment
+
+You will need some essential tools, such as a compiler and a linker.
+Your compiler must have access to the Native Client header files, and the linker must have access to the Native Client libraries.
+The header files and libraries are located in the Native Client installation directory.
+
+## <a id="establish_cluster_access"></a>Establish Access to a <%=vars.product_name%> Cluster
+
+As you develop your application, you will need access to a <%=vars.product_name%> cluster.
+Your client application connects to a <%=vars.product_name%> cluster by specifying the address (host name
+or IP address) and port number of one or more locators, and the name of a region that also exists
+on the cluster.
+The client API establishes a pool of these network connections for your client application to use.
+
+You can choose whether to use a large, remote, production-quality cluster; a small, local,
+development cluster; or something in-between, such as a testing or experimental lab installation.
+
+In the _<%=vars.product_name%> User's Guide_,
+see [Configuring and Running a Cluster](serverman/configuring/chapter_overview.html) 
+and [Client/Server Configuration](serverman/topologies_and_comm/cs_configuration/chapter_overview.html) for instructions on setting up and starting the cluster for a client/server configuration.
+
+### <a id="connecting_to_server"></a>Connecting to the Server
+
+To connect to a server, your application must follow these steps:
+
+1. Instantiate a `CacheFactory`, setting characteristics of interest (for example, `log-level`).
+1. Create a cache and use it to instantiate a `PoolFactory`, specifying the hostname and port for the server locator.
+1. Create a named pool of network connections.
+1. Instantiate a region of the desired type (usually CACHING_PROXY or PROXY) and connect it by name to its counterpart on the server.
+
+Once the connection pool and the shared region are in place, your client application is ready to share data with the server.
+
+**Server Connection: .NET Example**
+
+This example of connecting to the server is taken from the .NET `PutGetRemove` example.
+
+Instantiate a `CacheFactory` and set its characteristics:
+
+``` csharp
+    var cacheFactory = new CacheFactory()     // instantiate cache factory
+        .Set("log-level", "none");            // set cache log-level characteristics
+```
+
+Create a cache and use it to instantiate a `PoolFactory`:
+
+``` csharp
+    var cache = cacheFactory.Create();        // create cache
+
+    var poolFactory = cache.GetPoolFactory()  // instantiate pool factory
+        .AddLocator("localhost", 10334);      // add locator to pool factory
+```
+
+Create a named pool of network connections, and instantiate a region of the desired type:
+
+``` csharp
+    poolFactory.Create("pool");               // create a pool called "pool" that knows where the server is
+
+    var regionFactory = cache.CreateRegionFactory(RegionShortcut.PROXY) // instantiate region factory with PROXY characteristics
+        .SetPoolName("pool");
+    var region = regionFactory.Create<string, string>("example_userinfo"); // create a connection to the region "example_userinfo" on the server
+```
+
+See the _<%=vars.product_name%> User Guide_ section [Configuring a Client/Server System](serverman/topologies_and_comm/cs_configuration/setting_up_a_client_server_system.html)
+for more details.
+
+
+### <a id="app_dev_walkthroughs"></a>Application Development Walkthrough
+
+The [.NET App Development Walkthrough](app-dev-walkthrough-dotnet.html) describes how to set up a native client development environment using CMake.
+
+## <a id="programming_examples"></a>Programming Examples
+
+The <%=vars.product_name%> Client build provides a set of programming examples to help you understand the client API.
+The `examples` directory contains CMake files and a `cpp` subdirectory containing C++ examples.
+The Windows build also includes a `dotnet` subdirectory containing C# examples.
+
+CMake files are located at each level of the directory structure to allow examples to be built individually or in groups.
+
+The directory structure resembles this hierarchy (some entries are omitted for clarity):
+
+```
+MyProject/
+  cmake/
+  CMakeLists.txt
+  examples/
+    BUILD-EXAMPLES.md
+    CMakeLists.txt
+    CMakeLists.txt.in
+    cmake/
+    cpp/
+      authinitialize/
+      continuousquery/
+      dataserializable/
+      functionexecution/
+      pdxserializable/
+      pdxserializer/
+      putgetremove/
+      remotequery/
+      sslputget/
+      transaction/
+    dotnet/
+      authinitialize/
+      continuousquery/
+      dataserializable/
+      functionexecution/
+      pdxautoserializer/
+      pdxserializable/
+      putgetremove/
+      remotequery/
+      sslputget/
+      transaction/
+```
+
+See the `BUILD-EXAMPLES.md` file for detailed instructions on building and executing the examples,
+and read the source code to understand how the examples are constructed.
+
+See [Put/Get/Remove Example](put-get-example.html) for sample code showing the basics of how a client application
+connects to a <%=vars.product_name%> cluster and performs basic operations on a remote server.

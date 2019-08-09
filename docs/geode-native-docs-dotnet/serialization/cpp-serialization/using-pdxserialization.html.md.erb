@@ -1,0 +1,70 @@
+---
+title:  Using PDX Serialization
+---
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<%=vars.product_name%> Portable Data eXchange (PDX) serialization provides portability for PDX serializable objects so that clients can share data with
+Java servers and other non-C++ clients. PDX stores data in named fields that you can access
+individually in order to avoid the cost of deserializing the entire data object. PDX also allows you
+to mix versions of objects where you have added or removed fields.
+
+When using PDX serialization, you can use either `PdxSerializable` (for a specific domain object) or `PdxSerializer` (for all your domain objects).
+
+**Use `PdxSerializable`** when the object is one whose definition you control. You can embed the serialization/deserialization capability within
+the object, so its conversion from one format to the other is self-contained. You do this by defining an object that inherits from the `PdxSerializable`
+interface, and you register the domain class using the `registerPdxType(domainClass)` API.
+
+**Use `PdxSerializer`** when you cannot or do not wish to modify the object definition, for example, when the object is provided by a third-party.
+You define the serialization/deserialization capability in a separate place, then register the domain class for serialization in the cache using 
+the `registerPdxSerializer` API.
+
+You can also set the object preference of the cache to the `PdxInstance` type, which allows you to access fields of a PDX object without deserializing the entire object.
+
+-   **[Serialize Using the PdxSerializable Class](pdxserializable-interface.html)**
+
+    Domain classes need to inherit the `PdxSerializable` abstract class to serialize and de-serialize the object. When you write objects using PDX serialization, they are distributed to the server tier in PDX serialized form.
+
+-   **[Performing put, get, and localDestroy Operations with a PDX Domain Object](performing-ops-with-pdx-object.html)**
+    This topic demonstrates how you can perform operations on a PDX domain object after you have implemented PDX serializable in your domain class.
+
+-   **[Serialize Your Domain Objects with PdxSerializer and PdxWrapper](using-pdxserializer.html)**
+
+    For domain objects that you cannot or do not want to modify, use the `PdxSerializer` and the `PdxWrapper` classes to serialize and deserialize the object's fields.
+
+-   **[Programming Your Application to Use PdxInstances](using-pdxinstance.html)**
+
+    A `PdxInstance` is a lightweight wrapper around the raw bytes of the PDX serialized objects kept in the cache. It provides applications with run-time access to files of a PDX serialized object. <%=vars.product_name%> provides the implementation of the `PdxInstance` class.
+
+-   **[Configuring PDX to Ignore Unread Fields During Deserialization](pdx-ignore-unread-fields.html)**
+
+    Use the `setPdxIgnoreUnreadFields` API to control whether PDX ignores fields that were unread during deserialization.
+
+-   **[Using PdxInstanceFactory to Create PdxInstances](using-pdxinstancefactory.html)**
+
+    You can use the `PdxInstanceFactory` API to create a `PdxInstance` from raw data when the domain class is not available on the server.
+
+-   **[Using C++ Enum Type with PDX Serialization](using-enum-type-with-pdx.html)**
+
+    Because there is no "object" base type in C++, enums cannot be directly passed as parameters to the `writeObject` and `readObject` API.
+
+-   **[Using PDX Serialization with Delta Propagation](pdx-with-delta-propagation.html)**
+
+    To use delta propagation with PDX serialization, you must implement the `Delta` interface methods.
+
+

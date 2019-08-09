@@ -1,0 +1,104 @@
+---
+title:  TLS/SSL Client-Server Communication Encryption
+---
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+This section describes how to implement TLS-based communication between your clients and servers using the OpenSSL encryption utility.
+When configuring TLS/SSL security for your client, you may find it helpful to refer to [The SSL section of the <%=vars.product_name%> User Guide](serverman/managing/security/ssl_overview.html).
+
+# Set Up OpenSSL
+
+The open-source OpenSSL toolkit provides a full-strength general purpose cryptography library for encrypting client-server communications.
+
+Download and install OpenSSL 1.1.1 for your specific operating system.
+
+**Notes for Windows users:**
+
+- For Windows platforms, you can use either the regular or the "Light" version of SSL.
+
+- Use a 64-bit implementation of OpenSSL.
+
+- If you use Cygwin, do not use the OpenSSL library that comes with Cygwin, which is built with
+`cygwin.dll` as a dependency. Instead, download a fresh copy from OpenSSL.
+
+- For many Windows applications, the most convenient way to install OpenSSL is to use `choco` (see [chocolatey.org] (https://chocolatey.org/packages/OpenSSL.Light)) to install the “Light” version of OpenSSL.
+
+
+## Step 1. Create keystores
+
+The <%=vars.product_name%> server requires keys and keystores in the Java Key Store (JKS) format while the native client requires them in the clear PEM format. Thus you need to be able to generate private/public keypairs in either format and convert between the two using the `keytool` utility and the `openssl` command.
+
+
+## Step 2. Enable SSL on the server and on the client
+
+1.  On the server, enable SSL for the `locator` and `server` components, as the SSL-enabled client
+must be able to communicate with both locator and server components.
+
+1.  On the client, set `ssl-enabled` to `true`. 
+
+1.  On the client, set `ssl-keystore` and `ssl-truststore` to point to your keystore files. Paths to the keystore and truststore are local to the client.
+See [Security-Related System Properties](security-systemprops.html#security) for a description of these properties.
+
+# Starting and stopping the client and server with SSL in place
+
+Before you start and stop the client and server, make sure you configure the native client with the
+SSL properties as described and with the servers or locators specified as usual.
+
+Specifically, ensure that:
+
+-   The OpenSSL and <%=vars.product_name%> DLLs are in the right environment variables for your system: `PATH` for Windows, and `LD_LIBRARY_PATH` for Unix.
+-   You have generated the keys and keystores.
+-   You have set the system properties.
+
+For details on stopping and starting locators and cache servers with SSL, see [Starting Up and Shutting Down Your System](geodeman/configuring/running/starting_up_shutting_down.html).
+
+The <%=vars.product_name%> Native’s libcryptoImpl found in /lib must be linked at compile time.  This binary is used to interact with OpenSSL.  Link libcryptoImpl, native client, and your application code.  We highly recommend using cmake.
+
+**Example locator start command**
+
+Ensure that all required SSL properties are configured in your server's `geode.properties` file. Then start your locator as follows:
+
+``` pre
+gfsh>start locator --name=my_locator --port=12345 --dir=. \
+--security-properties-file=/path/to/your/geode.properties
+```
+
+**Example locator stop command**
+
+``` pre
+gfsh>stop locator --port=12345 \
+--security-properties-file=/path/to/your/geode.properties
+```
+
+**Example server start command**
+
+Again, ensure that all required SSL properties are configured in `geode.properties`. Then start the server with:
+
+``` pre
+gfsh>start server --name=my_server --locators=hostname[12345] \
+--cache-xml-file=server.xml --log-level=fine \
+--security-properties-file=/path/to/your/geode.properties
+```
+
+**Example server stop command**
+
+``` pre
+gfsh>stop server --name=my_server
+```
+

@@ -1,0 +1,42 @@
+---
+title:  Configuring Pools
+---
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+A pool can be configured as locators or as a list of servers.
+
+You configure locator, server, and pool settings declaratively in the client's `cache.xml` file or programmatically through the `PoolFactory` method. You create an instance of `PoolFactory` through `PoolManager`.
+
+-   **[Native Client Pool API](client-pool-api.html)**
+
+    The native client API allows your clients to create and manage connection pools. The server side does not have an API.
+
+-   **[Pool Configuration Example and Settings](configuring-pools-attributes-example.html)**
+
+    Connection pools require standard client/server distributed system and cache configuration settings. You must also configure settings for the locator, server, and pool elements.
+
+-   **[Subscription Properties](subscription-properties.html)**
+
+    Each connection pool has a single subscription connection that can be to any server that matches the requirements of the connection pool.
+
+-   **[Running the Connection Pool Code](running-connection-pool-code.html)**
+
+    Examples demonstrate a simple procedure to create a pool factory and then create a pool instance in C++ and C\#. They also help you to execute a query.
+
+
