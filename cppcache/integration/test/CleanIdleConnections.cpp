@@ -99,7 +99,7 @@ TEST(CleanIdleConnectionsTest, cleanIdleConnectionsAfterOpsPaused) {
   int poolSize = getCacheImpl(&cache)->getPoolSize(poolName);
   ASSERT_EQ(poolSize, 0);
 
-  sleep(10);
+  std::this_thread::sleep_for(std::chrono::milliseconds(10000));
 
   poolSize = getCacheImpl(&cache)->getPoolSize(poolName);
   ASSERT_GE(poolSize, minConns);
@@ -127,7 +127,7 @@ TEST(CleanIdleConnectionsTest, cleanIdleConnectionsAfterOpsPaused) {
 
   // As the default clientIdleTimeout is 5 secs, after 10 seconds
   // all idle connections must have been closed.
-  sleep(10);
+  std::this_thread::sleep_for(std::chrono::milliseconds(10000));
 
   poolSize = getCacheImpl(&cache)->getPoolSize(poolName);
   ASSERT_EQ(poolSize, minConns);
