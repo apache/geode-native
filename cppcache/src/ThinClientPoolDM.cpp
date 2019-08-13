@@ -408,52 +408,73 @@ void ThinClientPoolDM::cleanStaleConnections(std::atomic<bool>& isRunning) {
 
   auto _idle = getIdleTimeout();
   auto _nextIdle = _idle;
-  {
-    TcrConnection* conn = nullptr;
 
-    std::vector<TcrConnection*> savelist;
-    std::vector<TcrConnection*> replacelist;
-    std::set<ServerLocation> excludeServers;
+  TcrConnection* conn = nullptr;
 
-    while ((conn = getNoWait()) != nullptr && isRunning) {
-      if (canItBeDeleted(conn)) {
-        replacelist.push_back(conn);
-      } else if (conn) {
+  std::vector<TcrConnection*> savelist;
+  std::vector<TcrConnection*> removelist;
+  std::set<ServerLocation> excludeServers;
+
+  while ((conn = getNoWait()) != nullptr && isRunning) {
+    if (canItBeDeleted(conn)) {
+      removelist.push_back(conn);
+    } else if (conn) {
+      auto nextIdle =
+          _idle - std::chrono::duration_cast<std::chrono::milliseconds>(
+                      TcrConnection::clock::now() - conn->getLastAccessed());
+      if (nextIdle > std::chrono::seconds::zero() && nextIdle < _nextIdle) {
+        _nextIdle = nextIdle;
+      }
+      savelist.push_back(conn);
+    }
+  }
+
+  auto replaceCount =
+      m_attrs->getMinConnections() - static_cast<int>(savelist.size());
+
+  LOGDEBUG("Preserving %d connections", savelist.size());
+
+  for (auto savedconn : savelist) {
+    put(savedconn, false);
+  }
+  savelist.clear();
+  int count = 0;
+
+  for (std::vector<TcrConnection*>::const_iterator iter = removelist.begin();
+       iter != removelist.end(); ++iter) {
+    TcrConnection* conn = *iter;
+    if (replaceCount <= 0) {
+      GF_SAFE_DELETE_CON(conn);
+      removeEPConnections(1, false);
+      getStats().incLoadCondDisconnects();
+      LOGDEBUG("Removed a connection");
+    } else {
+      TcrConnection* newConn = nullptr;
+      bool maxConnLimit = false;
+      createPoolConnection(newConn, excludeServers, maxConnLimit,
+                           /*hasExpired(conn) ? nullptr :*/ conn);
+      if (newConn) {
         auto nextIdle =
             _idle - std::chrono::duration_cast<std::chrono::milliseconds>(
                         TcrConnection::clock::now() - conn->getLastAccessed());
         if (nextIdle > std::chrono::seconds::zero() && nextIdle < _nextIdle) {
           _nextIdle = nextIdle;
         }
-        savelist.push_back(conn);
-      }
-    }
-
-    size_t replaceCount =
-        m_attrs->getMinConnections() - static_cast<int>(savelist.size());
-
-    LOGDEBUG("Preserving %d connections", savelist.size());
-
-    for (auto savedconn : savelist) {
-      put(savedconn, false);
-    }
-    savelist.clear();
-    int count = 0;
-
-    for (std::vector<TcrConnection*>::const_iterator iter = replacelist.begin();
-         iter != replacelist.end(); ++iter) {
-      TcrConnection* conn = *iter;
-      if (replaceCount <= 0) {
-        GF_SAFE_DELETE_CON(conn);
-        removeEPConnections(1, false);
-        getStats().incLoadCondDisconnects();
-        LOGDEBUG("Removed a connection");
+        put(newConn, false);
+        if (newConn != conn) {
+          GF_SAFE_DELETE_CON(conn);
+          removeEPConnections(1, false);
+          getStats().incLoadCondDisconnects();
+          LOGDEBUG("Removed a connection");
+        }
       } else {
-        TcrConnection* newConn = nullptr;
-        bool maxConnLimit = false;
-        createPoolConnection(newConn, excludeServers, maxConnLimit,
-                             /*hasExpired(conn) ? nullptr :*/ conn);
-        if (newConn) {
+        if (hasExpired(conn)) {
+          GF_SAFE_DELETE_CON(conn);
+          removeEPConnections(1, false);
+          getStats().incLoadCondDisconnects();
+          LOGDEBUG("Removed a connection");
+        } else {
+          conn->updateCreationTime();
           auto nextIdle =
               _idle -
               std::chrono::duration_cast<std::chrono::milliseconds>(
@@ -461,40 +482,16 @@ void ThinClientPoolDM::cleanStaleConnections(std::atomic<bool>& isRunning) {
           if (nextIdle > std::chrono::seconds::zero() && nextIdle < _nextIdle) {
             _nextIdle = nextIdle;
           }
-          put(newConn, false);
-          if (newConn != conn) {
-            GF_SAFE_DELETE_CON(conn);
-            removeEPConnections(1, false);
-            getStats().incLoadCondDisconnects();
-            LOGDEBUG("Removed a connection");
-          }
-        } else {
-          if (hasExpired(conn)) {
-            GF_SAFE_DELETE_CON(conn);
-            removeEPConnections(1, false);
-            getStats().incLoadCondDisconnects();
-            LOGDEBUG("Removed a connection");
-          } else {
-            conn->updateCreationTime();
-            auto nextIdle =
-                _idle -
-                std::chrono::duration_cast<std::chrono::milliseconds>(
-                    TcrConnection::clock::now() - conn->getLastAccessed());
-            if (nextIdle > std::chrono::seconds::zero() &&
-                nextIdle < _nextIdle) {
-              _nextIdle = nextIdle;
-            }
-            put(conn, false);
-          }
+          put(conn, false);
         }
       }
-      replaceCount--;
-      count++;
-      if (count % 10 == 0) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
-      }
     }
-    replacelist.clear();
+    replaceCount--;
+    count++;
+
+    if (count % 10 == 0) {
+      std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    }
   }
 
   if (m_connManageTaskId >= 0 && isRunning &&

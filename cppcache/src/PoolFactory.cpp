@@ -74,7 +74,7 @@ PoolFactory::PoolFactory(const Cache& cache)
 PoolFactory& PoolFactory::setFreeConnectionTimeout(
     std::chrono::milliseconds connectionTimeout) {
   if (connectionTimeout <= std::chrono::milliseconds::zero()) {
-    throw IllegalArgumentException("connectionTimeout must greater than 0.");
+    throw IllegalArgumentException("connectionTimeout must be greater than 0.");
   }
 
   m_attrs->setFreeConnectionTimeout(connectionTimeout);
@@ -85,7 +85,7 @@ PoolFactory& PoolFactory::setLoadConditioningInterval(
     std::chrono::milliseconds loadConditioningInterval) {
   if (loadConditioningInterval < std::chrono::milliseconds::zero()) {
     throw IllegalArgumentException(
-        "loadConditioningInterval must greater than or equlal to 0.");
+        "loadConditioningInterval must be greater than or equal to 0.");
   }
 
   m_attrs->setLoadConditioningInterval(loadConditioningInterval);
@@ -105,7 +105,7 @@ PoolFactory& PoolFactory::setThreadLocalConnections(
 
 PoolFactory& PoolFactory::setReadTimeout(std::chrono::milliseconds timeout) {
   if (timeout <= std::chrono::milliseconds::zero()) {
-    throw IllegalArgumentException("timeout must greater than 0.");
+    throw IllegalArgumentException("timeout must be greater than 0.");
   }
 
   m_attrs->setReadTimeout(timeout);
@@ -126,7 +126,7 @@ PoolFactory& PoolFactory::setIdleTimeout(
     std::chrono::milliseconds idleTimeout) {
   if (idleTimeout < std::chrono::milliseconds::zero()) {
     throw IllegalArgumentException(
-        "idleTimeout must greater than or equlal to 0.");
+        "idleTimeout must be greater than or equal to 0.");
   }
 
   m_attrs->setIdleTimeout(idleTimeout);
@@ -141,7 +141,7 @@ PoolFactory& PoolFactory::setRetryAttempts(int retryAttempts) {
 PoolFactory& PoolFactory::setPingInterval(
     std::chrono::milliseconds pingInterval) {
   if (pingInterval <= std::chrono::milliseconds::zero()) {
-    throw IllegalArgumentException("timeout must greater than 0.");
+    throw IllegalArgumentException("timeout must be greater than 0.");
   }
 
   m_attrs->setPingInterval(pingInterval);
@@ -161,7 +161,8 @@ PoolFactory& PoolFactory::setUpdateLocatorListInterval(
 PoolFactory& PoolFactory::setStatisticInterval(
     std::chrono::milliseconds statisticInterval) {
   if (statisticInterval < std::chrono::milliseconds::zero()) {
-    throw IllegalArgumentException("timeout must greater than or equal to 0.");
+    throw IllegalArgumentException(
+        "timeout must be greater than or equal to 0.");
   }
 
   m_attrs->setStatisticInterval(statisticInterval);
@@ -201,7 +202,7 @@ PoolFactory& PoolFactory::setSubscriptionRedundancy(int redundancy) {
 PoolFactory& PoolFactory::setSubscriptionMessageTrackingTimeout(
     std::chrono::milliseconds messageTrackingTimeout) {
   if (messageTrackingTimeout <= std::chrono::milliseconds::zero()) {
-    throw IllegalArgumentException("timeout must greater than 0.");
+    throw IllegalArgumentException("timeout must be greater than 0.");
   }
 
   m_attrs->setSubscriptionMessageTrackingTimeout(messageTrackingTimeout);
@@ -211,7 +212,7 @@ PoolFactory& PoolFactory::setSubscriptionMessageTrackingTimeout(
 PoolFactory& PoolFactory::setSubscriptionAckInterval(
     std::chrono::milliseconds ackInterval) {
   if (ackInterval <= std::chrono::milliseconds::zero()) {
-    throw IllegalArgumentException("timeout must greater than 0.");
+    throw IllegalArgumentException("timeout must be greater than 0.");
   }
 
   m_attrs->setSubscriptionAckInterval(ackInterval);
