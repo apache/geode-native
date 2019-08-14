@@ -30,7 +30,6 @@
 #include "DistributedSystem.hpp"
 #include "Version.hpp"
 
-#define ADDRSIZE 4
 #define DCPORT 12334
 #define VMKIND 13
 #define ROLEARRLENGTH 0
@@ -61,7 +60,7 @@ ClientProxyMembershipID::ClientProxyMembershipID(
     const std::chrono::seconds durableClntTimeOut) {
   auto vmPID = boost::this_process::get_id();
 
-  initObjectVars(hostname, (uint8_t*) hostAddr, len,
+  initObjectVars(hostname, reinterpret_cast<uint8_t*>(const_cast<char*>(hostAddr)), len,
                  false, hostPort, durableClientId, durableClntTimeOut, DCPORT,
                  vmPID, VMKIND, 0, dsName.c_str(), randString.c_str(), 0);
 }
@@ -101,9 +100,9 @@ void ClientProxyMembershipID::initObjectVars(
   m_vmViewId = vmViewId;
   m_memID.write(static_cast<int8_t>(DSCode::FixedIDByte));
   m_memID.write(static_cast<int8_t>(DSCode::InternalDistributedMember));
-  uint8_t * temp = new uint8_t [hostAddrLen];
-  memcpy(temp, hostAddr, hostAddrLen);
-  m_memID.writeBytes(temp, hostAddrLen);
+//  uint8_t * temp = new uint8_t [hostAddrLen];
+//  memcpy(temp, hostAddr, hostAddrLen);
+  m_memID.writeBytes(hostAddr, hostAddrLen);
   // m_memID.writeInt((int32_t)hostPort);
   m_memID.writeInt(static_cast<int32_t>(synch_counter));
   m_memID.writeString(hostname);

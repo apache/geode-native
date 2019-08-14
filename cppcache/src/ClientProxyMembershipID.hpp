@@ -116,7 +116,6 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
   uint8_t* m_hostAddr;
 
   uint32_t m_hostAddrLen;
-  uint32_t m_hostAddrAsUInt32;
   std::string m_uniqueTag;
   std::string m_hashKey;
   bool m_hostAddrLocalMem;
