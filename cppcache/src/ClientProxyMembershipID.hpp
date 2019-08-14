@@ -42,8 +42,8 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
   const char* getDSMemberIdForCS43(uint32_t& mesgLength) const;
 
   ClientProxyMembershipID(std::string dsName, std::string randString,
-                          const char* hostname, uint32_t hostAddr,
-                          uint32_t hostPort,
+                          const char* hostname, const char* hostAddr,
+						  int len, uint32_t hostPort,
                           const char* durableClientId = nullptr,
                           const std::chrono::seconds durableClntTimeOut =
                               std::chrono::seconds::zero());
@@ -114,6 +114,7 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
   std::string m_dsname;
   uint32_t m_hostPort;
   uint8_t* m_hostAddr;
+
   uint32_t m_hostAddrLen;
   uint32_t m_hostAddrAsUInt32;
   std::string m_uniqueTag;

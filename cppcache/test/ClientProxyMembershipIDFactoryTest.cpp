@@ -28,13 +28,15 @@ using apache::geode::client::ClientProxyMembershipIDFactory;
 TEST(ClientProxyMembershipIDFactoryTest, testCreate) {
   ClientProxyMembershipIDFactory factory("myDs");
 
-  auto hostAddr = boost::endian::native_to_big(1);
-  auto id = factory.create("myHost", hostAddr, 2, "myClientID",
+  uint32_t number = boost::endian::native_to_big(1);
+  const uint8_t* array = reinterpret_cast<uint8_t*>(&number);
+
+  auto id = factory.create("myHost", (const char*) array, 4, 2, "myClientID",
                            std::chrono::seconds(3));
   ASSERT_NE(nullptr, id);
 
   EXPECT_EQ("myDs", id->getDSName());
-  EXPECT_EQ(hostAddr, *reinterpret_cast<uint32_t*>(id->getHostAddr()));
+  EXPECT_EQ(array, id->getHostAddr());
   EXPECT_EQ(static_cast<uint32_t>(4), id->getHostAddrLen());
   EXPECT_EQ(static_cast<uint32_t>(2), id->getHostPort());
 

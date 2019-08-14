@@ -57,11 +57,11 @@ ClientProxyMembershipID::~ClientProxyMembershipID() noexcept {
 
 ClientProxyMembershipID::ClientProxyMembershipID(
     std::string dsName, std::string randString, const char* hostname,
-    uint32_t hostAddr, uint32_t hostPort, const char* durableClientId,
-    const std::chrono::seconds durableClntTimeOut)
-    : m_hostAddrAsUInt32(hostAddr) {
+	const char* hostAddr, int len, uint32_t hostPort, const char* durableClientId,
+    const std::chrono::seconds durableClntTimeOut) {
   auto vmPID = boost::this_process::get_id();
-  initObjectVars(hostname, reinterpret_cast<uint8_t*>(&m_hostAddrAsUInt32), 4,
+
+  initObjectVars(hostname, (uint8_t*) hostAddr, len,
                  false, hostPort, durableClientId, durableClntTimeOut, DCPORT,
                  vmPID, VMKIND, 0, dsName.c_str(), randString.c_str(), 0);
 }
@@ -101,12 +101,9 @@ void ClientProxyMembershipID::initObjectVars(
   m_vmViewId = vmViewId;
   m_memID.write(static_cast<int8_t>(DSCode::FixedIDByte));
   m_memID.write(static_cast<int8_t>(DSCode::InternalDistributedMember));
-  m_memID.writeArrayLen(ADDRSIZE);
-  // writing first 4 bytes of the address. This will be same until
-  // IPV6 support is added in the client
-  uint32_t temp;
-  memcpy(&temp, hostAddr, 4);
-  m_memID.writeInt(static_cast<int32_t>(temp));
+  uint8_t * temp = new uint8_t [hostAddrLen];
+  memcpy(temp, hostAddr, hostAddrLen);
+  m_memID.writeBytes(temp, hostAddrLen);
   // m_memID.writeInt((int32_t)hostPort);
   m_memID.writeInt(static_cast<int32_t>(synch_counter));
   m_memID.writeString(hostname);

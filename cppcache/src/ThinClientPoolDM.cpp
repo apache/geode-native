@@ -178,7 +178,26 @@ ThinClientPoolDM::ThinClientPoolDM(const char* name,
   ACE_TCHAR hostName[256];
   ACE_OS::hostname(hostName, sizeof(hostName) - 1);
   ACE_INET_Addr driver(hostName);
-  uint32_t hostAddr = driver.get_ip_address();
+
+  char * hostaddr = new char [16];
+  int len;
+  if (driver.get_type() == AF_INET6) {
+	    const struct sockaddr_in6 *sa6 = static_cast<const struct sockaddr_in6*> (driver.get_addr());
+      const char *saddr =
+        reinterpret_cast<const char*> (&sa6->sin6_addr);
+      len = sizeof(sa6->sin6_addr);
+      memcpy(hostaddr, saddr, len);
+
+  } else {
+	    const struct sockaddr_in *sa4 = static_cast<const struct sockaddr_in*> (driver.get_addr());
+      const char *ipaddr =
+        reinterpret_cast<const char*> (&sa4->sin_addr);
+      len = sizeof(sa4->sin_addr);
+      memcpy(hostaddr, ipaddr, len);
+
+  }
+
+
   uint16_t hostPort = 0;
   auto&& durableId = sysProp.durableClientId();
 
@@ -189,7 +208,7 @@ ThinClientPoolDM::ThinClientPoolDM(const char* name,
 
   const auto durableTimeOut = sysProp.durableTimeout();
   m_memId = cacheImpl->getClientProxyMembershipIDFactory().create(
-      hostName, hostAddr, hostPort, clientDurableId.c_str(), durableTimeOut);
+      hostName, hostaddr, len, hostPort, clientDurableId.c_str(), durableTimeOut);
 
   if (m_attrs->m_initLocList.size() == 0 &&
       m_attrs->m_initServList.size() == 0) {

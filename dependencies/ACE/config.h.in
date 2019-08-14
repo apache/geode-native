@@ -27,5 +27,7 @@
 
 #endif // __cplusplus >= 201103L
 
+#define ACE_HAS_IPV6 1
+
 #include "ace/config-@ACE_CONFIG@.h"
 
