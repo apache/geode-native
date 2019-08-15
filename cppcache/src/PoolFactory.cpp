@@ -312,9 +312,9 @@ PoolFactory& PoolFactory::addCheck(const std::string& host, int port) {
   // check unknown host
   const int maxlength = 256;
   char char_array[maxlength];
-  addr.get_host_name (char_array, maxlength);
+  addr.get_host_name(char_array, maxlength);
   if (host.compare(char_array) != 0) {
-      throw IllegalArgumentException("Unknown host " + host);
+    throw IllegalArgumentException("Unknown host " + host);
   }
 
   return *this;

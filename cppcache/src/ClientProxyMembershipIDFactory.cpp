@@ -54,11 +54,11 @@ ClientProxyMembershipIDFactory::ClientProxyMembershipIDFactory(
 
 std::unique_ptr<ClientProxyMembershipID> ClientProxyMembershipIDFactory::create(
     const char* hostname, const uint8_t* hostAddr, uint32_t hostAddrLen,
-	uint32_t hostPort, const char* durableClientId,
+    uint32_t hostPort, const char* durableClientId,
     const std::chrono::seconds durableClntTimeOut) {
   return std::unique_ptr<ClientProxyMembershipID>(new ClientProxyMembershipID(
       dsName, randString, hostname, hostAddr, hostAddrLen, hostPort,
-	  durableClientId, durableClntTimeOut));
+      durableClientId, durableClntTimeOut));
 }
 
 }  // namespace client

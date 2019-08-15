@@ -205,7 +205,8 @@ ThinClientPoolDM::ThinClientPoolDM(const char* name,
 
   const auto durableTimeOut = sysProp.durableTimeout();
   m_memId = cacheImpl->getClientProxyMembershipIDFactory().create(
-      hostName, hostaddr, len, hostPort, clientDurableId.c_str(), durableTimeOut);
+      hostName, hostaddr, len, hostPort, clientDurableId.c_str(),
+      durableTimeOut);
 
   if (m_attrs->m_initLocList.size() == 0 &&
       m_attrs->m_initServList.size() == 0) {

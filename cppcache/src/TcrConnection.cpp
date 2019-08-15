@@ -176,17 +176,17 @@ bool TcrConnection::initTcrConnection(
     uint8_t hostaddr[16];
     int len;
     if (driver.get_type() == AF_INET6) {
-        const struct sockaddr_in6* sa6 =
-            static_cast<const struct sockaddr_in6*>(driver.get_addr());
-        auto saddr = reinterpret_cast<const uint8_t*>(&sa6->sin6_addr);
-        len = sizeof(sa6->sin6_addr);
-        memcpy(hostaddr, saddr, len);
+      const struct sockaddr_in6* sa6 =
+          static_cast<const struct sockaddr_in6*>(driver.get_addr());
+      auto saddr = reinterpret_cast<const uint8_t*>(&sa6->sin6_addr);
+      len = sizeof(sa6->sin6_addr);
+      memcpy(hostaddr, saddr, len);
     } else {
-        const struct sockaddr_in* sa4 =
-            static_cast<const struct sockaddr_in*>(driver.get_addr());
-        auto ipaddr = reinterpret_cast<const uint8_t*>(&sa4->sin_addr);
-        len = sizeof(sa4->sin_addr);
-        memcpy(hostaddr, ipaddr, len);
+      const struct sockaddr_in* sa4 =
+          static_cast<const struct sockaddr_in*>(driver.get_addr());
+      auto ipaddr = reinterpret_cast<const uint8_t*>(&sa4->sin_addr);
+      len = sizeof(sa4->sin_addr);
+      memcpy(hostaddr, ipaddr, len);
     }
 
     uint16_t hostPort = 0;
@@ -199,8 +199,7 @@ bool TcrConnection::initTcrConnection(
     // Write ClientProxyMembershipID serialized object.
     uint32_t memIdBufferLength;
     auto memId = cacheImpl->getClientProxyMembershipIDFactory().create(
-        hostName, hostaddr, len, hostPort, durableId.c_str(),
-		durableTimeOut);
+        hostName, hostaddr, len, hostPort, durableId.c_str(), durableTimeOut);
     auto memIdBuffer = memId->getDSMemberId(memIdBufferLength);
     handShakeMsg.writeBytes(
         reinterpret_cast<int8_t*>(const_cast<char*>(memIdBuffer)),

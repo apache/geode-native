@@ -16,9 +16,9 @@
  */
 
 #include <regex>
+#include <vector>
 
 #include <boost/endian/conversion.hpp>
-#include <vector>
 
 #include <gtest/gtest.h>
 

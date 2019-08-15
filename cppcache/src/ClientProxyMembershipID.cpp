@@ -44,27 +44,26 @@ const int ClientProxyMembershipID::VERSION_MASK = 0x8;
 const int8_t ClientProxyMembershipID::TOKEN_ORDINAL = -1;
 
 ClientProxyMembershipID::ClientProxyMembershipID()
-    : m_hostPort(0),
-      m_vmViewId(0) {}
+    : m_hostPort(0), m_vmViewId(0) {}
 
-ClientProxyMembershipID::~ClientProxyMembershipID() noexcept {
-}
+ClientProxyMembershipID::~ClientProxyMembershipID() noexcept {}
 
 ClientProxyMembershipID::ClientProxyMembershipID(
     std::string dsName, std::string randString, const char* hostname,
-	const uint8_t* hostAddr, uint32_t hostAddrLen, uint32_t hostPort,
-	const char* durableClientId, const std::chrono::seconds durableClntTimeOut) {
+    const uint8_t* hostAddr, uint32_t hostAddrLen, uint32_t hostPort,
+    const char* durableClientId,
+    const std::chrono::seconds durableClntTimeOut) {
   auto vmPID = boost::this_process::get_id();
 
   initObjectVars(hostname, hostAddr, hostAddrLen, false, hostPort,
-		  durableClientId, durableClntTimeOut, DCPORT, vmPID, VMKIND, 0,
-		  dsName.c_str(), randString.c_str(), 0);
+                 durableClientId, durableClntTimeOut, DCPORT, vmPID, VMKIND, 0,
+                 dsName.c_str(), randString.c_str(), 0);
 }
 
 // This is only for unit tests and should not be used for any other purpose. See
 // testEntriesMapForVersioning.cpp for more details
 ClientProxyMembershipID::ClientProxyMembershipID(
-	const uint8_t* hostAddr, uint32_t hostAddrLen, uint32_t hostPort,
+    const uint8_t* hostAddr, uint32_t hostAddrLen, uint32_t hostPort,
     const char* dsname, const char* uniqueTag, uint32_t vmViewId) {
   auto vmPID = boost::this_process::get_id();
   initObjectVars("localhost", hostAddr, hostAddrLen, false, hostPort, "",
@@ -86,7 +85,7 @@ void ClientProxyMembershipID::initObjectVars(
   m_hostPort = hostPort;
   m_hostAddr.assign(hostAddr, hostAddr + hostAddrLen);
   if (hostAddrLocalMem) {
-	  delete [] hostAddr;
+    delete [] hostAddr;
   }
   if (uniqueTag == nullptr) {
     m_uniqueTag = std::string("");
@@ -228,7 +227,7 @@ Serializable* ClientProxyMembershipID::readEssentialData(DataInput& input) {
    */
   hostAddr = new uint8_t[len];
   input.readBytesOnly(hostAddr, len);  // inetaddress
-  hostPort = input.readInt32();  // port
+  hostPort = input.readInt32();        // port
   // TODO: RVV get the host name from
 
   // read and ignore flag
