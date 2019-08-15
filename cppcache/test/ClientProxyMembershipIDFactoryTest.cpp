@@ -18,6 +18,7 @@
 #include <regex>
 
 #include <boost/endian/conversion.hpp>
+#include <vector>
 
 #include <gtest/gtest.h>
 
@@ -31,12 +32,15 @@ TEST(ClientProxyMembershipIDFactoryTest, testCreate) {
   uint32_t number = boost::endian::native_to_big(1);
   const uint8_t* array = reinterpret_cast<uint8_t*>(&number);
 
-  auto id = factory.create("myHost", (const char*) array, 4, 2, "myClientID",
+  auto id = factory.create("myHost", array, 4, 2, "myClientID",
                            std::chrono::seconds(3));
   ASSERT_NE(nullptr, id);
 
+  std::vector<uint8_t> vector;
+  vector.assign(array, array + 4);
+
   EXPECT_EQ("myDs", id->getDSName());
-  EXPECT_EQ(array, id->getHostAddr());
+  EXPECT_EQ(vector, id->getHostAddr());
   EXPECT_EQ(static_cast<uint32_t>(4), id->getHostAddrLen());
   EXPECT_EQ(static_cast<uint32_t>(2), id->getHostPort());
 

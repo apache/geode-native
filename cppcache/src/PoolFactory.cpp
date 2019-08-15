@@ -307,24 +307,16 @@ PoolFactory& PoolFactory::addCheck(const std::string& host, int port) {
                                    std::to_string(port));
   }
 
-  auto cacheImpl = CacheRegionHelper::getCacheImpl(&m_cache);
-
-  int family = -1;
   ACE_INET_Addr addr(port, host.c_str());
 
-  if (addr.get_type() == AF_INET6) {
-	  const struct sockaddr_in6 *sa6 = static_cast<const struct sockaddr_in6*> (addr.get_addr());
-	  family = sa6->sin6_family;
-  } else if (addr.get_type() == AF_INET){
-	  const struct sockaddr_in *sa4 = static_cast<const struct sockaddr_in*> (addr.get_addr());
-	  family = sa4->sin_family;
+  // check unknown host
+  const int maxlength = 256;
+  char char_array[maxlength];
+  addr.get_host_name (char_array, maxlength);
+  if (host.compare(char_array) != 0) {
+      throw IllegalArgumentException("Unknown host " + host);
   }
 
-  if (family != addr.get_type()) {
-    throw IllegalArgumentException("Inconsistency between ACE_SOCK::addr_type" +
-    		std::to_string(addr.get_type()) + "and the sockaddr family" +
-			std::to_string(family));
-  }
   return *this;
 }
 

@@ -45,30 +45,26 @@ const int8_t ClientProxyMembershipID::TOKEN_ORDINAL = -1;
 
 ClientProxyMembershipID::ClientProxyMembershipID()
     : m_hostPort(0),
-      m_hostAddr(nullptr),
-      m_hostAddrLen(0),
-      m_hostAddrLocalMem(false),
       m_vmViewId(0) {}
 
 ClientProxyMembershipID::~ClientProxyMembershipID() noexcept {
-  if (m_hostAddrLocalMem) delete[] m_hostAddr;
 }
 
 ClientProxyMembershipID::ClientProxyMembershipID(
     std::string dsName, std::string randString, const char* hostname,
-	const char* hostAddr, int len, uint32_t hostPort, const char* durableClientId,
-    const std::chrono::seconds durableClntTimeOut) {
+	const uint8_t* hostAddr, uint32_t hostAddrLen, uint32_t hostPort,
+	const char* durableClientId, const std::chrono::seconds durableClntTimeOut) {
   auto vmPID = boost::this_process::get_id();
 
-  initObjectVars(hostname, reinterpret_cast<uint8_t*>(const_cast<char*>(hostAddr)), len,
-                 false, hostPort, durableClientId, durableClntTimeOut, DCPORT,
-                 vmPID, VMKIND, 0, dsName.c_str(), randString.c_str(), 0);
+  initObjectVars(hostname, hostAddr, hostAddrLen, false, hostPort,
+		  durableClientId, durableClntTimeOut, DCPORT, vmPID, VMKIND, 0,
+		  dsName.c_str(), randString.c_str(), 0);
 }
 
 // This is only for unit tests and should not be used for any other purpose. See
 // testEntriesMapForVersioning.cpp for more details
 ClientProxyMembershipID::ClientProxyMembershipID(
-    uint8_t* hostAddr, uint32_t hostAddrLen, uint32_t hostPort,
+	const uint8_t* hostAddr, uint32_t hostAddrLen, uint32_t hostPort,
     const char* dsname, const char* uniqueTag, uint32_t vmViewId) {
   auto vmPID = boost::this_process::get_id();
   initObjectVars("localhost", hostAddr, hostAddrLen, false, hostPort, "",
@@ -76,7 +72,7 @@ ClientProxyMembershipID::ClientProxyMembershipID(
                  uniqueTag, vmViewId);
 }
 void ClientProxyMembershipID::initObjectVars(
-    const char* hostname, uint8_t* hostAddr, uint32_t hostAddrLen,
+    const char* hostname, const uint8_t* hostAddr, uint32_t hostAddrLen,
     bool hostAddrLocalMem, uint32_t hostPort, const char* durableClientId,
     const std::chrono::seconds durableClntTimeOut, int32_t dcPort, int32_t vPID,
     int8_t vmkind, int8_t splitBrainFlag, const char* dsname,
@@ -88,9 +84,10 @@ void ClientProxyMembershipID::initObjectVars(
     m_dsname = std::string(dsname);
   }
   m_hostPort = hostPort;
-  m_hostAddr = hostAddr;
-  m_hostAddrLen = hostAddrLen;
-  m_hostAddrLocalMem = hostAddrLocalMem;
+  m_hostAddr.assign(hostAddr, hostAddr + hostAddrLen);
+  if (hostAddrLocalMem) {
+	  delete [] hostAddr;
+  }
   if (uniqueTag == nullptr) {
     m_uniqueTag = std::string("");
   } else {
@@ -100,9 +97,7 @@ void ClientProxyMembershipID::initObjectVars(
   m_vmViewId = vmViewId;
   m_memID.write(static_cast<int8_t>(DSCode::FixedIDByte));
   m_memID.write(static_cast<int8_t>(DSCode::InternalDistributedMember));
-//  uint8_t * temp = new uint8_t [hostAddrLen];
-//  memcpy(temp, hostAddr, hostAddrLen);
-  m_memID.writeBytes(hostAddr, hostAddrLen);
+  m_memID.writeBytes(m_hostAddr.data(), m_hostAddr.size());
   // m_memID.writeInt((int32_t)hostPort);
   m_memID.writeInt(static_cast<int32_t>(synch_counter));
   m_memID.writeString(hostname);
@@ -158,10 +153,12 @@ void ClientProxyMembershipID::initObjectVars(
   }
   LOGDEBUG("GethashKey %s client id: %s ", m_hashKey.c_str(), clientID.c_str());
 }
+
 const char* ClientProxyMembershipID::getDSMemberId(uint32_t& mesgLength) const {
   mesgLength = static_cast<int32_t>(m_memIDStr.size());
   return m_memIDStr.c_str();
 }
+
 const char* ClientProxyMembershipID::getDSMemberIdForCS43(
     uint32_t& mesgLength) const {
   mesgLength = static_cast<int32_t>(m_dsmemIDStr.size());
@@ -182,7 +179,6 @@ void ClientProxyMembershipID::fromData(DataInput& input) {
   // deserialization for PR FX HA
 
   auto len = input.readArrayLength();  // inetaddress len
-  m_hostAddrLocalMem = true;
   auto hostAddr = new uint8_t[len];
   input.readBytesOnly(hostAddr, len);  // inetaddress
   auto hostPort = input.readInt32();   // port
@@ -227,15 +223,11 @@ Serializable* ClientProxyMembershipID::readEssentialData(DataInput& input) {
   std::shared_ptr<CacheableString> hostname, dsName, uniqueTag, vmViewIdstr;
 
   len = input.readArrayLength();  // inetaddress len
-  m_hostAddrLocalMem = true;
   /* adongre - Coverity II
    * CID 29183: Out-of-bounds access (OVERRUN_DYNAMIC)
    */
-  // hostAddr = new uint8_t(len);
   hostAddr = new uint8_t[len];
-
   input.readBytesOnly(hostAddr, len);  // inetaddress
-
   hostPort = input.readInt32();  // port
   // TODO: RVV get the host name from
 
@@ -296,10 +288,11 @@ int16_t ClientProxyMembershipID::compareTo(
   if (myPort < otherPort) return -1;
   if (myPort > otherPort) return 1;
 
-  uint8_t* myAddr = getHostAddr();
-  uint8_t* otherAddr = otherMember.getHostAddr();
+  auto myAddr = getHostAddr();
+  auto otherAddr = otherMember.getHostAddr();
+
   // Discard null cases
-  if (myAddr == nullptr && otherAddr == nullptr) {
+  if (myAddr.size() == 0 && otherAddr.size() == 0) {
     if (myPort < otherPort) {
       return -1;
     } else if (myPort > otherPort) {
@@ -307,9 +300,9 @@ int16_t ClientProxyMembershipID::compareTo(
     } else {
       return 0;
     }
-  } else if (myAddr == nullptr) {
+  } else if (myAddr.size() == 0) {
     return -1;
-  } else if (otherAddr == nullptr) {
+  } else if (otherAddr.size() == 0) {
     return 1;
   }
   for (uint32_t i = 0; i < getHostAddrLen(); i++) {
