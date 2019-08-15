@@ -537,27 +537,11 @@ void HostStatSampler::putStatsInAdminRegion() {
           ACE_OS::hostname(hostName, sizeof(hostName) - 1);
           ACE_INET_Addr driver("", hostName, "tcp");
 
-          uint8_t hostaddr[16];
-          int len;
-          if (driver.get_type() == AF_INET6) {
-            const struct sockaddr_in6* sa6 =
-                static_cast<const struct sockaddr_in6*>(driver.get_addr());
-            auto saddr = reinterpret_cast<const uint8_t*>(&sa6->sin6_addr);
-            len = sizeof(sa6->sin6_addr);
-            memcpy(hostaddr, saddr, len);
-          } else {
-            const struct sockaddr_in* sa4 =
-                static_cast<const struct sockaddr_in*>(driver.get_addr());
-            auto ipaddr = reinterpret_cast<const uint8_t*>(&sa4->sin_addr);
-            len = sizeof(sa4->sin_addr);
-            memcpy(hostaddr, ipaddr, len);
-          }
-
           uint16_t hostPort = 0;
 
           auto memId = conn_man->getCacheImpl()
                            ->getClientProxyMembershipIDFactory()
-                           .create(hostName, hostaddr, len, hostPort,
+                           .create(hostName, driver, hostPort,
                                    m_durableClientId, m_durableTimeout);
           clientId = memId->getDSMemberIdForThinClientUse();
         }

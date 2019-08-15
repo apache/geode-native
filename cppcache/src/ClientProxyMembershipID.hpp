@@ -23,6 +23,8 @@
 #include <string>
 #include <vector>
 
+#include <ace/INET_Addr.h>
+
 #include <geode/DataOutput.hpp>
 #include <geode/internal/functional.hpp>
 #include <geode/internal/geode_globals.hpp>
@@ -43,8 +45,8 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
   const char* getDSMemberIdForCS43(uint32_t& mesgLength) const;
 
   ClientProxyMembershipID(std::string dsName, std::string randString,
-                          const char* hostname, const uint8_t* hostAddr,
-                          uint32_t hostAddrLen, uint32_t hostPort,
+                          const char* hostname, const ACE_INET_Addr& address,
+                          uint32_t hostPort,
                           const char* durableClientId = nullptr,
                           const std::chrono::seconds durableClntTimeOut =
                               std::chrono::seconds::zero());
@@ -71,9 +73,12 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
   DSFid getDSFID() const override { return DSFid::InternalDistributedMember; }
   size_t objectSize() const override { return 0; }
 
-  void initObjectVars(const char* hostname, const uint8_t* hostAddr,
-                      uint32_t hostAddrLen, bool hostAddrLocalMem,
-                      uint32_t hostPort, const char* durableClientId,
+  void initHostAddressVector(const ACE_INET_Addr& address);
+
+  void initHostAddressVector(const uint8_t* hostAddr, uint32_t hostAddrLen);
+
+  void initObjectVars(const char* hostname, uint32_t hostPort,
+                      const char* durableClientId,
                       const std::chrono::seconds durableClntTimeOut,
                       int32_t dcPort, int32_t vPID, int8_t vmkind,
                       int8_t splitBrainFlag, const char* dsname,
