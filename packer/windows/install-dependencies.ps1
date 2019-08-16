@@ -17,7 +17,6 @@ choco install adoptopenjdk8 -confirm
 choco install cmake.portable -confirm
 choco install git.install -confirm
 choco install activeperl -confirm
-choco install doxygen.install --allowEmptyChecksums -confirm
 choco install dogtail.dotnet3.5sp1 -confirm
 choco install nunit.install --version 2.6.4 -confirm
 choco install netfx-4.5.2-devpack --allowEmptyChecksums -confirm
