@@ -317,7 +317,8 @@ PoolFactory& PoolFactory::addCheck(const std::string& host, int port) {
   addr.get_host_name(char_array, maxlength);
   gethostname(char_localhost, maxhostlength);  // get local hostname
 
-  if ((strcmp(char_localhost, host.c_str()) != 0) && (strcmp(char_localhost, char_array) == 0)) {
+  if ((strcmp(char_localhost, host.c_str()) != 0) &&
+      (strcmp(char_localhost, char_array) == 0)) {
     throw IllegalArgumentException("Unknown host " + host);
   }
   return *this;
