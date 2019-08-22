@@ -310,9 +310,14 @@ PoolFactory& PoolFactory::addCheck(const std::string& host, int port) {
   ACE_INET_Addr addr(port, host.c_str());
   // check unknown host
   const int maxlength = 256;
+  const int maxhostlength = 256;
   char char_array[maxlength];
+  char char_localhost[maxhostlength];
+
   addr.get_host_name(char_array, maxlength);
-  if (strstr(char_array, host.c_str()) == nullptr) {
+  gethostname(char_localhost, maxhostlength);  // get local hostname
+
+  if ((strcmp(char_localhost, host.c_str()) != 0) && (strcmp(char_localhost, char_array) == 0)) {
     throw IllegalArgumentException("Unknown host " + host);
   }
   return *this;
