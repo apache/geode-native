@@ -45,7 +45,7 @@ void Locator::start() {
       .withHttpServicePort(0)
       .withClasspath(cluster_.getClasspath())
       .withSecurityManager(cluster_.getSecurityManager())
-	  .withPreferIPv6(cluster_.getUseIPv6())
+      .withPreferIPv6(cluster_.getUseIPv6())
       .execute(cluster_.getUser(), cluster_.getPassword());
 
   started_ = true;
@@ -77,7 +77,7 @@ void Server::start() {
       .withUser(cluster_.getUser())
       .withPassword(cluster_.getPassword())
       .withCacheXMLFile(getCacheXMLFile())
-	  .withPreferIPv6(cluster_.getUseIPv6())
+      .withPreferIPv6(cluster_.getUseIPv6())
       .execute();
 
 //  std::cout << "server: " << serverAddress_.port << ": started" << std::endl << std::flush;
