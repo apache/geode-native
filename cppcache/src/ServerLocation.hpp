@@ -56,7 +56,7 @@ class APACHE_GEODE_EXPORT ServerLocation
     /*
     name = Utils::convertHostToCanonicalForm(name.c_str());
     */
-    auto position = name.find_first_of(":");
+    auto position = name.find_last_of(":");
     m_serverName = name.substr(0, position);
     m_port = std::stoi(name.substr(position + 1));
     makeEpString();
