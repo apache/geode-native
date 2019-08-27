@@ -411,11 +411,17 @@ void ThinClientPoolDM::cleanStaleConnections(std::atomic<bool>& isRunning) {
 
   TcrConnection* conn = nullptr;
 
-  std::vector<TcrConnection*> savelist;
   std::vector<TcrConnection*> removelist;
   std::set<ServerLocation> excludeServers;
 
-  while ((conn = getNoWait()) != nullptr && isRunning) {
+  auto availableConns = size();
+  auto savedConns = 0;
+
+  for (unsigned int i = 0; (i < availableConns) && isRunning; i++) {
+    conn = getNoWait();
+    if (conn == nullptr) {
+      break;
+    }
     if (canItBeDeleted(conn)) {
       removelist.push_back(conn);
     } else if (conn) {
@@ -425,19 +431,15 @@ void ThinClientPoolDM::cleanStaleConnections(std::atomic<bool>& isRunning) {
       if (nextIdle > std::chrono::seconds::zero() && nextIdle < _nextIdle) {
         _nextIdle = nextIdle;
       }
-      savelist.push_back(conn);
+      put(conn, false);
+      savedConns++;
     }
   }
 
-  auto replaceCount =
-      m_attrs->getMinConnections() - static_cast<int>(savelist.size());
+  auto replaceCount = m_attrs->getMinConnections() - savedConns;
 
-  LOGDEBUG("Preserving %d connections", savelist.size());
+  LOGDEBUG("Preserving %d connections", savedConns);
 
-  for (auto savedconn : savelist) {
-    put(savedconn, false);
-  }
-  savelist.clear();
   int count = 0;
 
   for (std::vector<TcrConnection*>::const_iterator iter = removelist.begin();
