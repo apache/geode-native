@@ -40,7 +40,6 @@ class PoolFactory;
 class PoolManagerImpl {
  public:
   explicit PoolManagerImpl(CacheImpl* cache) : m_cache(cache) {}
-  PoolManagerImpl(const PoolManagerImpl& copy) = default;
   ~PoolManagerImpl() = default;
 
   void removePool(const std::string& name);
