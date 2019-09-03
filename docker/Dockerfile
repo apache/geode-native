@@ -45,7 +45,7 @@ ENV GEODE_VERSION 1.9.0
 RUN wget "https://www.apache.org/dyn/closer.cgi?action=download&filename=geode/${GEODE_VERSION}/apache-geode-${GEODE_VERSION}.tgz" --quiet -O - | \
         tar xzf -
 
-ENV RAT_VERSION 0.12
+ENV RAT_VERSION 0.13
 RUN wget "https://www.apache.org/dyn/closer.cgi?action=download&filename=creadur/apache-rat-${RAT_VERSION}/apache-rat-${RAT_VERSION}-bin.tar.gz" --quiet -O - | \
         tar xzf -
 
