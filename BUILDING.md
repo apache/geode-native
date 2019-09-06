@@ -49,12 +49,33 @@ The recommended generator for most unix platforms is 'Makefiles' (default):
 $ cmake ..
 ```
 
-#### Xcode
-The recommended generator for Xcode is `Xcode`:
+#### Mac OSX Xcode
+
+Install X Code from the App Store
+* You have to run XCode once to get it initialize properly (software agreement).
+* Install the command line tools for xcode - run `xcode-select --install` from terminal
+
+Install the required dependancies through homebbrew.   If you use another package manager for your mac feel free to use that.
 
 ```bash
-$ cmake .. -G "Xcode"
+$ brew install geode
+$ brew install openssl
+$ brew install doxygen
+$ brew install cmake
 ```
+
+Follow these steps to build the geode native client.   The recommended code generator is `Xcode`.
+
+```bash
+$ cd <clone>
+$ mkdir build
+$ cd build
+$ cmake .. -G "Xcode" -DOPENSSL_ROOT_DIR=/usr/local/opt/openssl -DCMAKE_INSTALL_PREFIX=`pwd`/install
+$ cmake --build . --target docs
+$ cmake --build . --target install -j8
+```
+
+At the end of the process the geode native client will be in the  `<clone>/build/install` directory.
 
 #### Windows / Visual Studio
 When running cmake commands on Windows, be sure to use [Visual Studio Native Tools Command Prompt](https://msdn.microsoft.com/en-us/library/f35ctcxw.aspx) so environment variables are set properly.
