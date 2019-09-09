@@ -119,7 +119,8 @@ void ClientProxyMembershipID::initObjectVars(
   m_vmViewId = vmViewId;
   m_memID.write(static_cast<int8_t>(DSCode::FixedIDByte));
   m_memID.write(static_cast<int8_t>(DSCode::InternalDistributedMember));
-  m_memID.writeBytes(m_hostAddr.data(), m_hostAddr.size());
+  m_memID.writeBytes(m_hostAddr.data(),
+                     static_cast<int32_t>(m_hostAddr.size()));
   // m_memID.writeInt((int32_t)hostPort);
   m_memID.writeInt(static_cast<int32_t>(synch_counter));
   m_memID.writeString(hostname);
