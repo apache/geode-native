@@ -36,6 +36,7 @@ add_executable(cpp-integration-test
   StructTest.cpp
   TransactionCleaningTest.cpp
   CleanIdleConnections.cpp
+  BasicIPv6Test.cpp
 )
 
 target_compile_definitions(cpp-integration-test

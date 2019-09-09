@@ -41,12 +41,16 @@ struct LocatorAddress {
 class Locator {
  public:
   Locator(Cluster &cluster, std::vector<Locator> &locators, std::string name,
-          uint16_t jmxManagerPort)
+          uint16_t jmxManagerPort, bool useIPv6)
       : cluster_(cluster),
         name_(std::move(name)),
         locators_(locators),
         jmxManagerPort_(jmxManagerPort) {
     auto hostname = "localhost";
+    if (useIPv6) {
+      hostname = "ip6-localhost";
+    }
+
     auto port = Framework::getAvailablePort();
 
     locatorAddress_ = LocatorAddress{hostname, port};
@@ -103,12 +107,18 @@ struct ServerAddress {
 
 class Server {
  public:
-  Server(Cluster &cluster, std::vector<Locator> &locators, std::string name, std::string xmlFile)
+  Server(Cluster &cluster, std::vector<Locator> &locators, std::string name,
+         std::string xmlFile, bool useIPv6)
       : cluster_(cluster),
         locators_(locators),
         name_(std::move(name)),
         xmlFile_(xmlFile) {
+
     auto hostname = "localhost";
+    if (useIPv6) {
+      hostname = "ip6-localhost";
+    }
+
     auto port = static_cast<uint16_t>(0);
     serverAddress_ = ServerAddress{hostname, port};
 
@@ -164,9 +174,21 @@ using User = NamedType<std::string, struct UserParameter>;
 using Password = NamedType<std::string, struct PasswordParameter>;
 using CacheXMLFiles =
     NamedType<std::vector<std::string>, struct CacheXMLFilesParameter>;
+using UseIpv6 = NamedType<bool, struct UseIpv6Parameter>;
 
 class Cluster {
  public:
+  Cluster(LocatorCount initialLocators, ServerCount initialServers,
+          UseIpv6 useIPv6)
+      : Cluster(Name(std::string(::testing::UnitTest::GetInstance()
+                                     ->current_test_info()
+                                     ->test_case_name()) +
+                     "/" +
+                     ::testing::UnitTest::GetInstance()
+                         ->current_test_info()
+                         ->name()),
+                initialLocators, initialServers, useIPv6) {}
+
   Cluster(LocatorCount initialLocators, ServerCount initialServers)
       : Cluster(Name(std::string(::testing::UnitTest::GetInstance()
                                      ->current_test_info()
@@ -176,6 +198,7 @@ class Cluster {
                          ->current_test_info()
                          ->name()),
                 initialLocators, initialServers) {}
+
 
   Cluster(LocatorCount initialLocators, ServerCount initialServers,
           CacheXMLFiles cacheXMLFiles)
@@ -191,14 +214,20 @@ class Cluster {
     cacheXMLFiles_ = cacheXMLFiles.get();
   }
 
+  Cluster(Name name, LocatorCount initialLocators, ServerCount initialServers,
+          UseIpv6 useIPv6)
+      : Cluster(Name(name.get()), Classpath(""), SecurityManager(""), User(""),
+                Password(""), initialLocators, initialServers,
+                CacheXMLFiles({}), useIPv6) {}
+
   Cluster(Name name, LocatorCount initialLocators, ServerCount initialServers)
       : Cluster(Name(name.get()), Classpath(""), SecurityManager(""), User(""),
                 Password(""), initialLocators, initialServers,
-                CacheXMLFiles({})) {}
+                CacheXMLFiles({}), UseIpv6(false)) {}
 
   Cluster(Name name, Classpath classpath, SecurityManager securityManager,
           User user, Password password, LocatorCount initialLocators,
-          ServerCount initialServers, CacheXMLFiles cacheXMLFiles)
+          ServerCount initialServers, CacheXMLFiles cacheXMLFiles, UseIpv6 useIPv6)
       : name_(name.get()),
         classpath_(classpath.get()),
         securityManager_(securityManager.get()),
@@ -208,6 +237,7 @@ class Cluster {
         initialServers_(initialServers.get()) {
     jmxManagerPort_ = Framework::getAvailablePort();
     cacheXMLFiles_ = cacheXMLFiles.get();
+    useIPv6_ = useIPv6.get();
 
     removeServerDirectory();
     start();
@@ -311,6 +341,8 @@ class Cluster {
 
   std::vector<std::string> &getCacheXMLFiles() { return cacheXMLFiles_; }
 
+  bool getUseIPv6() { return useIPv6_; }
+
  private:
   std::string name_;
   std::string classpath_;
@@ -327,6 +359,8 @@ class Cluster {
 
   bool started_ = false;
   uint16_t jmxManagerPort_;
+
+  bool useIPv6_ = false;
 
   GfshExecute gfsh_;
 

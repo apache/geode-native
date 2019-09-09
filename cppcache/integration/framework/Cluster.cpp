@@ -45,6 +45,7 @@ void Locator::start() {
       .withHttpServicePort(0)
       .withClasspath(cluster_.getClasspath())
       .withSecurityManager(cluster_.getSecurityManager())
+      .withPreferIPv6(cluster_.getUseIPv6())
       .execute(cluster_.getUser(), cluster_.getPassword());
 
   started_ = true;
@@ -76,6 +77,7 @@ void Server::start() {
       .withUser(cluster_.getUser())
       .withPassword(cluster_.getPassword())
       .withCacheXMLFile(getCacheXMLFile())
+      .withPreferIPv6(cluster_.getUseIPv6())
       .execute();
 
 //  std::cout << "server: " << serverAddress_.port << ": started" << std::endl << std::flush;
@@ -95,7 +97,7 @@ void Cluster::start(std::function<void()> extraGfshCommands) {
   for (size_t i = 0; i < initialLocators_; i++) {
     locators_.push_back({*this, locators_,
                          name_ + "/locator/" + std::to_string(i),
-                         jmxManagerPort_});
+                         jmxManagerPort_, getUseIPv6()});
   }
 
   servers_.reserve(initialServers_);
@@ -106,7 +108,7 @@ void Cluster::start(std::function<void()> extraGfshCommands) {
                cacheXMLFiles_[i];
 
     servers_.push_back(
-      {*this, locators_, name_ + "/server/" + std::to_string(i), xmlFile});
+      {*this, locators_, name_ + "/server/" + std::to_string(i), xmlFile, getUseIPv6()});
   }
 
   startLocators();

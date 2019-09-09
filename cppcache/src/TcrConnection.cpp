@@ -173,7 +173,7 @@ bool TcrConnection::initTcrConnection(
     ACE_OS::hostname(hostName, sizeof(hostName) - 1);
 
     ACE_INET_Addr driver(hostName);
-    uint32_t hostAddr = driver.get_ip_address();
+
     uint16_t hostPort = 0;
 
     // Add 3 durable Subcription properties to ClientProxyMembershipID
@@ -184,7 +184,7 @@ bool TcrConnection::initTcrConnection(
     // Write ClientProxyMembershipID serialized object.
     uint32_t memIdBufferLength;
     auto memId = cacheImpl->getClientProxyMembershipIDFactory().create(
-        hostName, hostAddr, hostPort, durableId.c_str(), durableTimeOut);
+        hostName, driver, hostPort, durableId.c_str(), durableTimeOut);
     auto memIdBuffer = memId->getDSMemberId(memIdBufferLength);
     handShakeMsg.writeBytes(
         reinterpret_cast<int8_t*>(const_cast<char*>(memIdBuffer)),

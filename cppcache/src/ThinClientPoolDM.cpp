@@ -178,7 +178,7 @@ ThinClientPoolDM::ThinClientPoolDM(const char* name,
   ACE_TCHAR hostName[256];
   ACE_OS::hostname(hostName, sizeof(hostName) - 1);
   ACE_INET_Addr driver(hostName);
-  uint32_t hostAddr = driver.get_ip_address();
+
   uint16_t hostPort = 0;
   auto&& durableId = sysProp.durableClientId();
 
@@ -189,7 +189,7 @@ ThinClientPoolDM::ThinClientPoolDM(const char* name,
 
   const auto durableTimeOut = sysProp.durableTimeout();
   m_memId = cacheImpl->getClientProxyMembershipIDFactory().create(
-      hostName, hostAddr, hostPort, clientDurableId.c_str(), durableTimeOut);
+      hostName, driver, hostPort, clientDurableId.c_str(), durableTimeOut);
 
   if (m_attrs->m_initLocList.size() == 0 &&
       m_attrs->m_initServList.size() == 0) {

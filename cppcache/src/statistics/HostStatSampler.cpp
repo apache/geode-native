@@ -536,12 +536,12 @@ void HostStatSampler::putStatsInAdminRegion() {
           ACE_TCHAR hostName[256];
           ACE_OS::hostname(hostName, sizeof(hostName) - 1);
           ACE_INET_Addr driver("", hostName, "tcp");
-          uint32_t hostAddr = driver.get_ip_address();
+
           uint16_t hostPort = 0;
 
           auto memId = conn_man->getCacheImpl()
                            ->getClientProxyMembershipIDFactory()
-                           .create(hostName, hostAddr, hostPort,
+                           .create(hostName, driver, hostPort,
                                    m_durableClientId, m_durableTimeout);
           clientId = memId->getDSMemberIdForThinClientUse();
         }

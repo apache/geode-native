@@ -141,6 +141,13 @@ class Gfsh {
         command_ += " --connect=" + connect;
         return *this;
       };
+
+      Locator &withPreferIPv6(bool useIPv6) {
+        if (useIPv6) {
+          command_ += " --J=-Djava.net.preferIPv6Addresses=true";
+        }
+        return *this;
+      };
     };
 
     class Server : public Command<void> {
@@ -217,6 +224,13 @@ class Gfsh {
         }
         return *this;
       }
+
+      Server &withPreferIPv6(bool useIPv6) {
+        if (useIPv6) {
+          command_ += " --J=-Djava.net.preferIPv6Addresses=true";
+        }
+        return *this;
+      };
     };
 
    private:

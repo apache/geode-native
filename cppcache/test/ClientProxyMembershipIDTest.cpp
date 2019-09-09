@@ -16,34 +16,36 @@
  */
 
 #include <regex>
+#include <vector>
 
 #include <boost/endian/conversion.hpp>
 
 #include <gtest/gtest.h>
 
-#include "ClientProxyMembershipIDFactory.hpp"
+#include "ClientProxyMembershipID.hpp"
 
-using apache::geode::client::ClientProxyMembershipIDFactory;
+using apache::geode::client::ClientProxyMembershipID;
 
-TEST(ClientProxyMembershipIDFactoryTest, testCreate) {
-  ClientProxyMembershipIDFactory factory("myDs");
+TEST(ClientProxyMembershipIDTest, testCreate) {
+  uint32_t number = boost::endian::native_to_big(1);
+  const uint8_t* array = reinterpret_cast<uint8_t*>(&number);
 
-  auto hostAddr = boost::endian::native_to_big(1);
-  auto id = factory.create("myHost", hostAddr, 2, "myClientID",
-                           std::chrono::seconds(3));
-  ASSERT_NE(nullptr, id);
+  ClientProxyMembershipID cpmID(array, 4, 2, "myDs", "uniqueTag", 0);
 
-  EXPECT_EQ("myDs", id->getDSName());
-  EXPECT_EQ(hostAddr, *reinterpret_cast<uint32_t*>(id->getHostAddr()));
-  EXPECT_EQ(static_cast<uint32_t>(4), id->getHostAddrLen());
-  EXPECT_EQ(static_cast<uint32_t>(2), id->getHostPort());
+  std::vector<uint8_t> vector;
+  vector.assign(array, array + 4);
 
-  auto uniqueTag = id->getUniqueTag();
+  EXPECT_EQ("myDs", cpmID.getDSName());
+  EXPECT_EQ(vector, cpmID.getHostAddr());
+  EXPECT_EQ(static_cast<uint32_t>(4), cpmID.getHostAddrLen());
+  EXPECT_EQ(static_cast<uint32_t>(2), cpmID.getHostPort());
+
+  auto uniqueTag = cpmID.getUniqueTag();
   ASSERT_NE("", uniqueTag);
   EXPECT_EQ(std::string(":0:0:0:1:2:myDs:").append(uniqueTag),
-            id->getHashKey());
+            cpmID.getHashKey());
   EXPECT_TRUE(std::regex_search(
-      id->getDSMemberIdForThinClientUse(),
+      cpmID.getDSMemberIdForThinClientUse(),
       std::regex(
-          std::string("myHost(.*):2:").append(uniqueTag).append(":myDs"))));
+          std::string("localhost(.*):2:").append(uniqueTag).append(":myDs"))));
 }

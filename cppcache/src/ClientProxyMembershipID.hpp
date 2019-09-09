@@ -21,6 +21,9 @@
 #define GEODE_CLIENTPROXYMEMBERSHIPID_H_
 
 #include <string>
+#include <vector>
+
+#include <ace/INET_Addr.h>
 
 #include <geode/DataOutput.hpp>
 #include <geode/internal/functional.hpp>
@@ -42,7 +45,7 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
   const char* getDSMemberIdForCS43(uint32_t& mesgLength) const;
 
   ClientProxyMembershipID(std::string dsName, std::string randString,
-                          const char* hostname, uint32_t hostAddr,
+                          const char* hostname, const ACE_INET_Addr& address,
                           uint32_t hostPort,
                           const char* durableClientId = nullptr,
                           const std::chrono::seconds durableClntTimeOut =
@@ -50,7 +53,7 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
 
   // This constructor is only for testing and should not be used for any
   // other purpose. See testEntriesMapForVersioning.cpp for more details
-  ClientProxyMembershipID(uint8_t* hostAddr, uint32_t hostAddrLen,
+  ClientProxyMembershipID(const uint8_t* hostAddr, uint32_t hostAddrLen,
                           uint32_t hostPort, const char* dsname,
                           const char* uniqueTag, uint32_t vmViewId);
   // ClientProxyMembershipID(const char *durableClientId = nullptr, const
@@ -70,9 +73,12 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
   DSFid getDSFID() const override { return DSFid::InternalDistributedMember; }
   size_t objectSize() const override { return 0; }
 
-  void initObjectVars(const char* hostname, uint8_t* hostAddr,
-                      uint32_t hostAddrLen, bool hostAddrLocalMem,
-                      uint32_t hostPort, const char* durableClientId,
+  void initHostAddressVector(const ACE_INET_Addr& address);
+
+  void initHostAddressVector(const uint8_t* hostAddr, uint32_t hostAddrLen);
+
+  void initObjectVars(const char* hostname, uint32_t hostPort,
+                      const char* durableClientId,
                       const std::chrono::seconds durableClntTimeOut,
                       int32_t dcPort, int32_t vPID, int8_t vmkind,
                       int8_t splitBrainFlag, const char* dsname,
@@ -80,8 +86,8 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
 
   std::string getDSName() const { return m_dsname; }
   std::string getUniqueTag() const { return m_uniqueTag; }
-  uint8_t* getHostAddr() const { return m_hostAddr; }
-  uint32_t getHostAddrLen() const { return m_hostAddrLen; }
+  const std::vector<uint8_t>& getHostAddr() const { return m_hostAddr; }
+  uint32_t getHostAddrLen() const { return m_hostAddr.size(); }
   uint32_t getHostPort() const { return m_hostPort; }
   std::string getHashKey() override;
   int16_t compareTo(const DSMemberForVersionStamp&) const override;
@@ -113,12 +119,10 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
 
   std::string m_dsname;
   uint32_t m_hostPort;
-  uint8_t* m_hostAddr;
-  uint32_t m_hostAddrLen;
-  uint32_t m_hostAddrAsUInt32;
+  std::vector<uint8_t> m_hostAddr;
+
   std::string m_uniqueTag;
   std::string m_hashKey;
-  bool m_hostAddrLocalMem;
   uint32_t m_vmViewId;
   static const uint8_t LONER_DM_TYPE = 13;
   static const int VERSION_MASK;
