@@ -87,7 +87,9 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
   std::string getDSName() const { return m_dsname; }
   std::string getUniqueTag() const { return m_uniqueTag; }
   const std::vector<uint8_t>& getHostAddr() const { return m_hostAddr; }
-  uint32_t getHostAddrLen() const { return m_hostAddr.size(); }
+  uint32_t getHostAddrLen() const {
+    return static_cast<uint32_t>(m_hostAddr.size());
+  }
   uint32_t getHostPort() const { return m_hostPort; }
   std::string getHashKey() override;
   int16_t compareTo(const DSMemberForVersionStamp&) const override;
