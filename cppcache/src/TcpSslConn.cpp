@@ -57,7 +57,7 @@ void TcpSslConn::createSocket(ACE_HANDLE sock) {
   LOGDEBUG("Creating SSL socket stream");
   try {
     m_ssl = getSSLImpl(sock, m_pubkeyfile, m_privkeyfile);
-  } catch (std::exception e) {
+  } catch (std::exception& e) {
     throw SslException(e.what());
   }
 }
