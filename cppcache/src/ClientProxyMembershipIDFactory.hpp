@@ -22,8 +22,6 @@
 
 #include <string>
 
-#include <ace/INET_Addr.h>
-
 #include "ClientProxyMembershipID.hpp"
 
 namespace apache {
@@ -35,7 +33,7 @@ class ClientProxyMembershipIDFactory {
   explicit ClientProxyMembershipIDFactory(std::string dsName);
 
   std::unique_ptr<ClientProxyMembershipID> create(
-      const char* hostname, const ACE_INET_Addr& address, uint32_t hostPort,
+      const char* hostname, uint32_t hostAddr, uint32_t hostPort,
       const char* durableClientId = nullptr,
       const std::chrono::seconds durableClntTimeOut =
           std::chrono::seconds::zero());
