@@ -3,7 +3,7 @@
 ## Prerequisites (All Platforms)
 * [CMake 3.12](https://cmake.org/) or newer
 * C++11 compiler *(see platform specific requirements)*
-* [Doxygen 8.11](http://www.stack.nl/~dimitri/doxygen/download.html) *(for building source documentation)*
+* [Doxygen 1.8.11 or greater](https://sourceforge.net/projects/doxygen/) *(for building source documentation)*
 * [OpenSSL](https://www.openssl.org) *(for building source documentation)*
 * [Apache Geode](http://geode.apache.org/releases/) binaries installed or available to link against
 
@@ -51,11 +51,11 @@ $ cmake ..
 
 #### Mac OSX Xcode
 
-Install X Code from the App Store
+Install XCode from the App Store
 * You have to run XCode once to get it initialize properly (software agreement).
 * Install the command line tools for xcode - run `xcode-select --install` from terminal
 
-Install the required dependancies through homebbrew.   If you use another package manager for your mac feel free to use that.
+Install the required dependencies through homebrew.   If you use another package manager for your mac feel free to use that.
 
 ```bash
 $ brew install geode
