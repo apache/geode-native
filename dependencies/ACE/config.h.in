@@ -27,7 +27,7 @@
 
 #endif // __cplusplus >= 201103L
 
-#ifdef SUPPORT_IPV6
+#ifdef WITH_IPV6
 #define ACE_HAS_IPV6 1
 #endif
 
