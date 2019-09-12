@@ -91,7 +91,7 @@ void TcpSslConn::connect() {
 
   std::chrono::microseconds waitMicroSeconds = m_waitMilliSeconds;
 
-  LOGDEBUG("Connecting SSL socket stream to %s:%d waiting %d micro sec",
+  LOGDEBUG("Connecting SSL socket stream to %s:%d waiting %z micro sec",
            m_addr.get_host_name(), m_addr.get_port_number(),
            waitMicroSeconds.count());
 

@@ -1265,7 +1265,7 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
     std::shared_ptr<VersionedCacheableObjectPartList>& versionedObjPartList,
     std::chrono::milliseconds timeout,
     const std::shared_ptr<Serializable>& aCallbackArgument) {
-  LOGDEBUG(" ThinClientRegion::singleHopPutAllNoThrow_remote map size = %d",
+  LOGDEBUG(" ThinClientRegion::singleHopPutAllNoThrow_remote map size = %zu",
            map.size());
   auto region = shared_from_this();
 
@@ -1384,7 +1384,7 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
                             CacheableInt32::create(error));
     }
 
-    LOGDEBUG("worker->getPutAllMap()->size() = %d ",
+    LOGDEBUG("worker->getPutAllMap()->size() = %zu ",
              worker->getPutAllMap()->size());
     LOGDEBUG(
         "worker->getResultCollector()->getList()->getVersionedTagsize() = %d ",
@@ -1461,7 +1461,7 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
    * failedServers->contains(locationIter.first()is false.
    */
 
-  LOGDEBUG("ThinClientRegion:: %s:%d failedServers->size() = %d", __FILE__,
+  LOGDEBUG("ThinClientRegion:: %s:%d failedServers->size() = %zu", __FILE__,
            __LINE__, failedServers.size());
 
   // if the partial result set doesn't already have keys (for tracking version
@@ -1655,8 +1655,9 @@ GfErrType ThinClientRegion::singleHopRemoveAllNoThrow_remote(
     const std::vector<std::shared_ptr<CacheableKey>>& keys,
     std::shared_ptr<VersionedCacheableObjectPartList>& versionedObjPartList,
     const std::shared_ptr<Serializable>& aCallbackArgument) {
-  LOGDEBUG(" ThinClientRegion::singleHopRemoveAllNoThrow_remote keys size = %d",
-           keys.size());
+  LOGDEBUG(
+      " ThinClientRegion::singleHopRemoveAllNoThrow_remote keys size = %zu",
+      keys.size());
   auto region = shared_from_this();
   GfErrType error = GF_NOERR;
 
@@ -1811,7 +1812,7 @@ GfErrType ThinClientRegion::singleHopRemoveAllNoThrow_remote(
    * failedServers->contains(locationIter.first()is false.
    */
 
-  LOGDEBUG("ThinClientRegion:: %s:%d failedServers->size() = %d", __FILE__,
+  LOGDEBUG("ThinClientRegion:: %s:%d failedServers->size() = %zu", __FILE__,
            __LINE__, failedServers.size());
 
   // if the partial result set doesn't already have keys (for tracking version
@@ -2998,7 +2999,7 @@ void ThinClientRegion::executeFunction(
         if (failedNodesIds) {
           LOGDEBUG(
               "ThinClientRegion::executeFunction with GF_FUNCTION_EXCEPTION "
-              "failedNodesIds size = %d ",
+              "failedNodesIds size = %zu ",
               failedNodesIds->size());
           failedNodes->insert(failedNodesIds->begin(), failedNodesIds->end());
         }
@@ -3015,16 +3016,17 @@ void ThinClientRegion::executeFunction(
         rc->clearResults();
         failedNodes->clear();
       } else if (err == GF_TIMEOUT) {
-        LOGINFO(
-            "function timeout. Name: %s, timeout: %d, params: %d, "
-            "retryAttempts: %d ",
-            func.c_str(), timeout.count(), getResult, retryAttempts);
+        LOGINFO("function timeout. Name: %s, timeout: %z, params: %" PRIu8
+                ", "
+                "retryAttempts: %d ",
+                func.c_str(), timeout.count(), getResult, retryAttempts);
         throwExceptionIfError("ExecuteOnRegion", GF_TIMEOUT);
       } else if (err == GF_CLIENT_WAIT_TIMEOUT ||
                  err == GF_CLIENT_WAIT_TIMEOUT_REFRESH_PRMETADATA) {
         LOGINFO(
             "function timeout, possibly bucket is not available or bucket "
-            "blacklisted. Name: %s, timeout: %d, params: %d, retryAttempts: "
+            "blacklisted. Name: %s, timeout: %z, params: %" PRIu8
+            ", retryAttempts: "
             "%d ",
             func.c_str(), timeout.count(), getResult, retryAttempts);
         throwExceptionIfError("ExecuteOnRegion", GF_CLIENT_WAIT_TIMEOUT);
@@ -3091,7 +3093,7 @@ std::shared_ptr<CacheableVector> ThinClientRegion::reExecuteFunction(
         if (failedNodesIds) {
           LOGDEBUG(
               "ThinClientRegion::reExecuteFunction with GF_FUNCTION_EXCEPTION "
-              "failedNodesIds size = %d ",
+              "failedNodesIds size = %zu ",
               failedNodesIds->size());
           failedNodes->insert(failedNodesIds->begin(), failedNodesIds->end());
         }
@@ -3180,7 +3182,7 @@ bool ThinClientRegion::executeFunctionSH(
         if (failedNodeIds) {
           LOGDEBUG(
               "ThinClientRegion::executeFunctionSH with GF_FUNCTION_EXCEPTION "
-              "failedNodeIds size = %d ",
+              "failedNodeIds size = %zu ",
               failedNodeIds->size());
           failedNodes->insert(failedNodeIds->begin(), failedNodeIds->end());
         }

@@ -151,7 +151,7 @@ void CqQueryImpl::close(bool sendRequestToServer) {
     if (!cqListeners.empty()) {
       LOGFINE(
           "Invoking CqListeners close() api for the CQ, CqName : %s  Number of "
-          "CqListeners : %d",
+          "CqListeners : %" PRIu64,
           m_cqName.c_str(), cqListeners.size());
 
       for (auto& l : cqListeners) {

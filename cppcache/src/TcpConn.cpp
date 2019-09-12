@@ -209,7 +209,7 @@ void TcpConn::connect() {
 
   ACE_OS::signal(SIGPIPE, SIG_IGN);  // Ignore broken pipe
 
-  LOGFINER("Connecting plain socket stream to %s:%d waiting %d micro sec",
+  LOGFINER("Connecting plain socket stream to %s:%d waiting %z micro sec",
            ipaddr.get_host_name(), ipaddr.get_port_number(),
            waitMicroSeconds.count());
 

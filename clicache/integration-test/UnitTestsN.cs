@@ -174,7 +174,7 @@ namespace Apache.Geode.Client.UnitTests
       TimeSpan elapsed = m_endTime - m_startTime;
       Util.Log("{0}Time taken for task [{1}]: {2}ms {3}ops/sec{4}",
         Util.MarkerString, taskName, elapsed.TotalMilliseconds,
-        (numOps * 1000) / elapsed.TotalMilliseconds, Util.MarkerString);
+        ((long)numOps * 1000) / elapsed.TotalMilliseconds, Util.MarkerString);
     }
   }
 }

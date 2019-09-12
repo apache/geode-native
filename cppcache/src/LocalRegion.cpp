@@ -110,11 +110,11 @@ void LocalRegion::updateAccessAndModifiedTime(bool modified) {
   // locking not required since setters use atomic operations
   if (regionExpiryEnabled()) {
     auto now = std::chrono::system_clock::now();
-    LOGDEBUG("Setting last accessed time for region %s to %d",
+    LOGDEBUG("Setting last accessed time for region %s to %z",
              getFullPath().c_str(), now.time_since_epoch().count());
     m_cacheStatistics->setLastAccessedTime(now);
     if (modified) {
-      LOGDEBUG("Setting last modified time for region %s to %d",
+      LOGDEBUG("Setting last modified time for region %s to %z",
                getFullPath().c_str(), now.time_since_epoch().count());
       m_cacheStatistics->setLastModifiedTime(now);
     }
@@ -695,7 +695,7 @@ void LocalRegion::setRegionExpiryTask() {
             handler, duration, std::chrono::seconds::zero());
     handler->setExpiryTaskId(expiryTaskId);
     LOGFINE(
-        "expiry for region [%s], expiry task id = %d, duration = %d, "
+        "expiry for region [%s], expiry task id = %z, duration = %z, "
         "action = %d",
         m_fullPath.c_str(), expiryTaskId, duration.count(),
         getRegionExpiryAction());
@@ -718,8 +718,8 @@ void LocalRegion::registerEntryExpiryTask(
     std::shared_ptr<CacheableKey> key;
     entry->getKeyI(key);
     LOGFINEST(
-        "entry expiry in region [%s], key [%s], task id = %d, "
-        "duration = %d, action = %d",
+        "entry expiry in region [%s], key [%s], task id = %z, "
+        "duration = %z, action = %d",
         m_fullPath.c_str(), Utils::nullSafeToString(key).c_str(), id,
         duration.count(), getEntryExpirationAction());
   }
@@ -2006,7 +2006,7 @@ GfErrType LocalRegion::putAllNoThrow(
         }
 
         if (versionedObjPartListPtr) {
-          LOGDEBUG("versionedObjPartListPtr->getVersionedTagptr().size() = %d ",
+          LOGDEBUG("versionedObjPartListPtr->getVersionedTagptr().size() = %zu",
                    versionedObjPartListPtr->getVersionedTagptr().size());
           if (versionedObjPartListPtr->getVersionedTagptr().size() > 0) {
             versionTag =
@@ -2044,8 +2044,9 @@ GfErrType LocalRegion::putAllNoThrow(
         auto& p = oldValueMap[key];
 
         if (versionedObjPartListPtr) {
-          LOGDEBUG("versionedObjPartListPtr->getVersionedTagptr().size() = %d ",
-                   versionedObjPartListPtr->getVersionedTagptr().size());
+          LOGDEBUG(
+              "versionedObjPartListPtr->getVersionedTagptr().size() = %zu ",
+              versionedObjPartListPtr->getVersionedTagptr().size());
           if (versionedObjPartListPtr->getVersionedTagptr().size() > 0) {
             versionTag = versionedObjPartListPtr->getVersionedTagptr()[index++];
           }
@@ -2117,7 +2118,7 @@ GfErrType LocalRegion::removeAllNoThrow(
     for (size_t keyIndex = 0; keyIndex < keysPtr->size(); keyIndex++) {
       auto key = keysPtr->at(keyIndex);
       if (versionedObjPartListPtr) {
-        LOGDEBUG("versionedObjPartListPtr->getVersionedTagptr().size() = %d ",
+        LOGDEBUG("versionedObjPartListPtr->getVersionedTagptr().size() = %zu ",
                  versionedObjPartListPtr->getVersionedTagptr().size());
         if (versionedObjPartListPtr->getVersionedTagptr().size() > 0) {
           versionTag = versionedObjPartListPtr->getVersionedTagptr()[keyIndex];
@@ -2795,12 +2796,12 @@ void LocalRegion::updateAccessAndModifiedTimeForEntry(
       ptr->getKeyI(key);
       keyStr = Utils::nullSafeToString(key);
     }
-    LOGDEBUG("Setting last accessed time for key [%s] in region %s to %d",
+    LOGDEBUG("Setting last accessed time for key [%s] in region %s to %z",
              keyStr.c_str(), getFullPath().c_str(),
              currTime.time_since_epoch().count());
     expProps.updateLastAccessTime(currTime);
     if (modified) {
-      LOGDEBUG("Setting last modified time for key [%s] in region %s to %d",
+      LOGDEBUG("Setting last modified time for key [%s] in region %s to %z",
                keyStr.c_str(), getFullPath().c_str(),
                currTime.time_since_epoch().count());
       expProps.updateLastModifiedTime(currTime);

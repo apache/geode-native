@@ -170,7 +170,7 @@ GfErrType ThinClientRedundancyManager::maintainRedundancyLevel(
 
   LOGDEBUG(
       "ThinClientRedundancyManager::maintainRedundancyLevel(): checking "
-      "redundant list, size = %d",
+      "redundant list, size = %zu",
       m_redundantEndpoints.size());
   while (!isRedundancySatisfied && itRedundant != m_redundantEndpoints.end()) {
     if (!isPrimaryConnected) {
@@ -243,7 +243,7 @@ GfErrType ThinClientRedundancyManager::maintainRedundancyLevel(
 
   LOGDEBUG(
       "ThinClientRedundancyManager::maintainRedundancyLevel(): finding "
-      "nonredundant endpoints, size = %d",
+      "nonredundant endpoints, size = %zu",
       m_nonredundantEndpoints.size());
   std::vector<TcrEndpoint*>::iterator itNonredundant =
       m_nonredundantEndpoints.begin();
@@ -446,15 +446,14 @@ GfErrType ThinClientRedundancyManager::maintainRedundancyLevel(
     }
     m_IsAllEpDisCon = false;
     if (m_redundancyLevel == -1) {
-      LOGINFO("Current subscription redundancy level is %d",
+      LOGINFO("Current subscription redundancy level is %zu",
               m_redundantEndpoints.size() - 1);
       return GF_NOERR;
     }
     if (!m_loggedRedundancyWarning) {
       LOGWARN(
           "Requested subscription redundancy level %d is not satisfiable with "
-          "%d "
-          "servers available",
+          "%zu servers available",
           m_redundancyLevel, m_redundantEndpoints.size());
       m_loggedRedundancyWarning = true;
     }
@@ -805,7 +804,8 @@ GfErrType ThinClientRedundancyManager::sendSyncRequestCq(
 
   if (m_redundantEndpoints.size() >= 1) {
     LOGDEBUG(
-        "ThinClientRedundancyManager::sendSyncRequestCq: to secondary size[%d]",
+        "ThinClientRedundancyManager::sendSyncRequestCq: to secondary "
+        "size[%zu]",
         m_redundantEndpoints.size());
     std::vector<TcrEndpoint*>::iterator iter = m_redundantEndpoints.begin();
     LOGDEBUG("endpoint[%s]", (*iter)->name().c_str());
@@ -1173,12 +1173,13 @@ void ThinClientRedundancyManager::doPeriodicAck() {
         };
 
         if (result == GF_NOERR && reply.getMessageType() == TcrMessage::REPLY) {
-          LOGFINE("Sent subscription ack message for %d sources to endpoint %s",
-                  count, (*endpoint)->name().c_str());
+          LOGFINE(
+              "Sent subscription ack message for %zu sources to endpoint %s",
+              count, (*endpoint)->name().c_str());
           acked = true;
         } else {
           LOGWARN(
-              "Failure sending subscription ack message for %d sources to "
+              "Failure sending subscription ack message for %zu sources to "
               "endpoint %s",
               count, (*endpoint)->name().c_str());
           LOGFINER("Ack result is %d and reply message type is %d", result,
@@ -1186,7 +1187,8 @@ void ThinClientRedundancyManager::doPeriodicAck() {
         }
       } else {
         LOGWARN(
-            "No subscription servers available for periodic ack for %d sources",
+            "No subscription servers available for periodic ack for %zu "
+            "sources",
             count);
       }
 

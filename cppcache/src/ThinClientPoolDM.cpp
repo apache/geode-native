@@ -502,7 +502,7 @@ void ThinClientPoolDM::cleanStaleConnections(std::atomic<bool>& isRunning) {
     LOGERROR("Failed to reschedule connection manager");
   } else {
     LOGFINEST(
-        "Rescheduled next connection manager run after %d seconds",
+        "Rescheduled next connection manager run after %z seconds",
         std::chrono::duration_cast<std::chrono::seconds>(_nextIdle).count());
   }
 
@@ -835,7 +835,7 @@ void ThinClientPoolDM::destroy(bool keepAlive) {
 
     for (const auto& iter : m_endpoints) {
       auto ep = iter.second;
-      LOGFINE("ThinClientPoolDM: forcing endpoint delete for %d in destructor",
+      LOGFINE("ThinClientPoolDM: forcing endpoint delete for %s in destructor",
               ep->name().c_str());
       _GEODE_SAFE_DELETE(ep);
     }

@@ -327,7 +327,7 @@ void CacheImpl::close(bool keepalive) {
 bool CacheImpl::isCacheDestroyPending() const { return m_destroyPending; }
 
 void CacheImpl::validateRegionAttributes(
-    const std::string& name, const RegionAttributes regionAttributes) const {
+    const std::string& name, const RegionAttributes& regionAttributes) const {
   auto&& kind = getRegionKind(regionAttributes);
   if (regionAttributes.m_clientNotificationEnabled && kind == CPP_REGION) {
     throw UnsupportedOperationException(
@@ -340,7 +340,7 @@ void CacheImpl::validateRegionAttributes(
 // do a load using a real C++ loader, instead of passing a member function
 // pointer here
 void CacheImpl::createRegion(std::string name,
-                             RegionAttributes regionAttributes,
+                             const RegionAttributes& regionAttributes,
                              std::shared_ptr<Region>& regionPtr) {
   {
     std::lock_guard<decltype(m_initDoneLock)> _guard(m_initDoneLock);

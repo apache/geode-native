@@ -180,7 +180,7 @@ std::shared_ptr<CacheableObjectArray> PdxLocalReader::readObjectArray(
     const std::string&) {
   auto coa = CacheableObjectArray::create();
   coa->fromData(*m_dataInput);
-  LOGDEBUG("PdxLocalReader::readObjectArray coa->size() = %d", coa->size());
+  LOGDEBUG("PdxLocalReader::readObjectArray coa->size() = %zu", coa->size());
   if (coa->size() <= 0) {
     coa = nullptr;
   }

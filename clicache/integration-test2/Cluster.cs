@@ -32,7 +32,6 @@ namespace Apache.Geode.Client.IntegrationTests
         private int serverCount_;
         private bool started_;
         private List<Locator> locators_;
-        private List<Server> servers_;
         private string name_;
         internal int jmxManagerPort = Framework.FreeTcpPort();
         internal string keyStore_ = Environment.CurrentDirectory + "/ServerSslKeys/server_keystore.jks";

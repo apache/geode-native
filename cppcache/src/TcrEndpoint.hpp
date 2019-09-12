@@ -110,13 +110,13 @@ class TcrEndpoint {
 
   // TODO: for single user mode only
   void setUniqueId(int64_t uniqueId) {
-    LOGDEBUG("tcrEndpoint:setUniqueId:: %d ", uniqueId);
+    LOGDEBUG("tcrEndpoint:setUniqueId:: %" PRId64, uniqueId);
     m_isAuthenticated = true;
     m_uniqueId = uniqueId;
   }
 
   int64_t getUniqueId() {
-    LOGDEBUG("tcrEndpoint:getUniqueId:: %d ", m_uniqueId);
+    LOGDEBUG("tcrEndpoint:getUniqueId:: %" PRId64, m_uniqueId);
     return m_uniqueId;
   }
 

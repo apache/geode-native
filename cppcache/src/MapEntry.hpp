@@ -96,7 +96,7 @@ class APACHE_GEODE_EXPORT ExpEntryProperties {
 
   inline void cancelExpiryTaskId(
       const std::shared_ptr<CacheableKey>& key) const {
-    LOGDEBUG("Cancelling expiration task for key [%s] with id [%d]",
+    LOGDEBUG("Cancelling expiration task for key [%s] with id [%z]",
              Utils::nullSafeToString(key).c_str(), m_expiryTaskId);
     m_expiryTaskManager->cancelTask(m_expiryTaskId);
   }

@@ -240,8 +240,8 @@ namespace Apache.Geode.Client.UnitTests
         catch (Exception ex)
         {
           Util.Log("Exception: Put caused networkhop ");
-          Util.Log("Got Exception (0} {1} {2} ", ex.Message, ex.StackTrace, ex.Source);
-          Assert.Fail("Got Exception (0} {1} {2} ", ex.Message, ex.StackTrace, ex.Source);
+          Util.Log("Got Exception {0} {1} {2} ", ex.Message, ex.StackTrace, ex.Source);
+          Assert.Fail("Got Exception {0} {1} {2} ", ex.Message, ex.StackTrace, ex.Source);
         }
       }
 

@@ -1258,10 +1258,6 @@ namespace Apache.Geode.Client.UnitTests
 
     private Hashtable _hashTable;
 
-    //private int arrayCountS3= 10;
-    private List<object> _addressListObj;
-    //private Address[] _arrayOfAddress;
-
     public SerializePdx3()
       : base()
     {
@@ -1281,23 +1277,14 @@ namespace Apache.Geode.Client.UnitTests
 
         _addressList = new ArrayList();
         _hashTable = new Hashtable();
-        _addressListObj = new List<object>();
 
         for (var i = 0; i < 10; i++)
         {
           _addressList.Add(new Address(i));
           _hashTable.Add(i, new SerializePdx2(true));
-          _addressListObj.Add(new Address(i));
         }
 
         _address = new Address(nAddress);
-
-        //_arrayOfAddress = new Address[3];
-
-        //for (int i = 0; i < 3; i++)
-        //{
-        //  _arrayOfAddress[i] = new Address(i);
-        //}
       }
     }
 
@@ -1885,7 +1872,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       Key = key.ToString();
       SecKey = key;
-      ShareQuantity = key * 9278;
+      ShareQuantity = (double)((long)key * 9278L);
       Cost = ShareQuantity * 100;
       Price = Cost * 10;
       SettleSecKey = SecKey + 100000;
