@@ -27,7 +27,8 @@
 
 #endif // __cplusplus >= 201103L
 
-#ifdef USE_IPV6
+#cmakedefine WITH_IPV6
+#ifdef WITH_IPV6
 #define ACE_HAS_IPV6 1
 #endif
 

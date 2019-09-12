@@ -55,6 +55,6 @@
 #define ACE_Thread_NULL 0
 #endif
 
-#cmakedefine USE_IPV6
+#cmakedefine WITH_IPV6
 
 #endif  // GEODE_CONFIG_H_
