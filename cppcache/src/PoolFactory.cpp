@@ -308,6 +308,7 @@ PoolFactory& PoolFactory::addCheck(const std::string& host, int port) {
   }
 
   ACE_INET_Addr addr(port, host.c_str());
+#ifdef WITH_IPV6
   // check unknown host
   const int maxlength = 256;
   const int maxhostlength = 256;
@@ -319,6 +320,9 @@ PoolFactory& PoolFactory::addCheck(const std::string& host, int port) {
 
   if ((strcmp(char_localhost, host.c_str()) != 0) &&
       (strcmp(char_localhost, char_array) == 0)) {
+#else
+  if (!(addr.get_ip_address())) {
+#endif
     throw IllegalArgumentException("Unknown host " + host);
   }
   return *this;

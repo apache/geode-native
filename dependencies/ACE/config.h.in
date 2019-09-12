@@ -27,7 +27,10 @@
 
 #endif // __cplusplus >= 201103L
 
+#cmakedefine WITH_IPV6
+#ifdef WITH_IPV6
 #define ACE_HAS_IPV6 1
+#endif
 
 #include "ace/config-@ACE_CONFIG@.h"
 

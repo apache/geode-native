@@ -94,7 +94,11 @@ void TcpConn::createSocket(ACE_HANDLE sock) {
 }
 
 void TcpConn::init() {
+#ifdef WITH_IPV6
   ACE_HANDLE sock = ACE_OS::socket(m_addr.get_type(), SOCK_STREAM, 0);
+#else
+  ACE_HANDLE sock = ACE_OS::socket(AF_INET, SOCK_STREAM, 0);
+#endif
   if (sock == ACE_INVALID_HANDLE) {
     int32_t lastError = ACE_OS::last_error();
     LOGERROR("Failed to create socket. Errno: %d: %s", lastError,
