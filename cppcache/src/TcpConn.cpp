@@ -94,7 +94,7 @@ void TcpConn::createSocket(ACE_HANDLE sock) {
 }
 
 void TcpConn::init() {
-#ifdef SUPPORT_IPV6
+#ifdef USE_IPV6
   ACE_HANDLE sock = ACE_OS::socket(m_addr.get_type(), SOCK_STREAM, 0);
 #else
   ACE_HANDLE sock = ACE_OS::socket(AF_INET, SOCK_STREAM, 0);
