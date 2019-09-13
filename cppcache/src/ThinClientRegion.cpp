@@ -1673,7 +1673,7 @@ GfErrType ThinClientRegion::singleHopRemoveAllNoThrow_remote(
   // set this flag that indicates putAll on PR is invoked with singlehop
   // enabled.
   m_isPRSingleHopEnabled = true;
-  LOGDEBUG("locationMap.size() = %d ", locationMap->size());
+  LOGDEBUG("locationMap.size() = %zu ", locationMap->size());
 
   /*Step-2
    *  a. create vector of RemoveAllWork

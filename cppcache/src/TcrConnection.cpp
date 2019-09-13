@@ -616,7 +616,7 @@ inline ConnErrType TcrConnection::receiveData(
       readHandshakeRawData, readHandShakeBytes, readHandShakeInt,
       readHandshakeString, all call TcrConnection::receiveData.
     */
-    LOGDEBUG("TcrConnection::receiveData length = %d defaultWaitSecs = %z",
+    LOGDEBUG("TcrConnection::receiveData length = %zu defaultWaitSecs = %z",
              length, defaultWaitSecs.count());
     if (m_poolDM != nullptr) {
       LOGDEBUG("TcrConnection::receiveData readBytes = %zu", readBytes);

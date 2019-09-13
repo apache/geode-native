@@ -148,7 +148,7 @@ namespace Apache.Geode.Client.IntegrationTests
             .execute());
 
         var cache = cluster.CreateCache();
-        var pool = cache.GetPoolFactory().AddLocator("localhost", 10334).Create("pool");
+        cache.GetPoolFactory().AddLocator("localhost", 10334).Create("pool");
         var region = cache.CreateRegionFactory(RegionShortcut.PROXY)
             .SetPoolName("pool")
             .Create<object, object>("region");
