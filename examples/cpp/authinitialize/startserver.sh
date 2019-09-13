@@ -28,10 +28,15 @@ else
     fi
 fi
 
+SAVED="`pwd`"
+cd "`dirname \"$PRG\"`/../.." >&-
+BUILD_HOME="`pwd -P`"
+cd "$SAVED" >&-
+
 # Set this variable to include your java object that implements the Authenticator class
-RESOLVEDPATH = "../../utilities/example.jar"
+RESOLVEDPATH="${BUILD_HOME}/utilities/example.jar"
 
 # Set this variable to the full name of your Authenticator.create function
-AUTHENTICATOR = 'javaobject.SimpleAuthenticator.create'
+AUTHENTICATOR='javaobject.SimpleAuthenticator.create'
 
 $GFSH_PATH  -e "start locator --name=locator" -e "start server --name=server --classpath=${RESOLVEDPATH} --J=-Dgemfire.security-client-authenticator=$AUTHENTICATOR"  -e "create region --name=region --type=PARTITION"
