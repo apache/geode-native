@@ -32,7 +32,6 @@ namespace Apache.Geode.Client.IntegrationTests
         private int serverCount_;
         private bool started_;
         private List<Locator> locators_;
-        private List<Server> servers_;
         private string name_;
         internal int jmxManagerPort = Framework.FreeTcpPort();
         internal string keyStore_ = Environment.CurrentDirectory + "/ServerSslKeys/server_keystore.jks";
@@ -63,7 +62,6 @@ namespace Apache.Geode.Client.IntegrationTests
             locatorCount_ = locatorCount;
             serverCount_ = serverCount;
             locators_ = new List<Locator>();
-            servers_ = new List<Server>();
         }
 
         private bool StartLocators()
@@ -88,7 +86,6 @@ namespace Apache.Geode.Client.IntegrationTests
             {
                 var server = new Server(this, locators_,
                     name_ + "/server/" + i.ToString());
-                servers_.Add(server);
                 var localResult = server.Start();
                 if (localResult != 0)
                 {
