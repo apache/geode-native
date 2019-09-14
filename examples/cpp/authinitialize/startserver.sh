@@ -33,10 +33,14 @@ cd "`dirname \"$PRG\"`/../.." >&-
 BUILD_HOME="`pwd -P`"
 cd "$SAVED" >&-
 
-# Set this variable to include your java object that implements the Authenticator class
-RESOLVEDPATH="${BUILD_HOME}/utilities/example.jar"
 
-# Set this variable to the full name of your Authenticator.create function
-AUTHENTICATOR='javaobject.SimpleAuthenticator.create'
+# These security items typically go into gfsecurity.properties file.    For 
+# simplicity we are including the security details on the commandline.
 
-$GFSH_PATH  -e "start locator --name=locator" -e "start server --name=server --classpath=${RESOLVEDPATH} --J=-Dgemfire.security-client-authenticator=$AUTHENTICATOR"  -e "create region --name=region --type=PARTITION"
+COMMON_OPTS="--J=-Dgemfire.security-username=server"
+COMMON_OPTS="${COMMON_OPTS} --J=-Dgemfire.security-password=server"
+COMMON_OPTS="${COMMON_OPTS} --classpath=${BUILD_HOME}/utilities/example.jar"
+
+LOCATOR_OPTS="${COMMON_OPTS} --J=-Dgemfire.security-manager=javaobject.SimpleSecurityManager" 
+
+$GFSH_PATH  -e "start locator --name=locator ${LOCATOR_OPTS}" -e "connect --locator=localhost[10334] --user=server --password=server" -e "start server --name=server ${COMMON_OPTS}"  -e "create region --name=region --type=PARTITION"
