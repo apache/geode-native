@@ -50,13 +50,13 @@ public class SimpleSecurityManager implements SecurityManager {
         String userName = props.getProperty(UserPasswordAuthInit.USER_NAME);
         if (userName == null) {
             throw new AuthenticationFailedException(
-                    "SimpleAuthenticator: user name property ["
+                    "SimpleSecurityManager: user name property ["
                             + UserPasswordAuthInit.USER_NAME + "] not provided");
         }
         String password = props.getProperty(UserPasswordAuthInit.PASSWORD);
         if (password == null) {
             throw new AuthenticationFailedException(
-                    "SimpleAuthenticator: password property ["
+                    "SimpleSecurityManager: password property ["
                             + UserPasswordAuthInit.PASSWORD + "] not provided");
         }
 
@@ -64,7 +64,7 @@ public class SimpleSecurityManager implements SecurityManager {
             return new UsernamePrincipal(userName);
         } else {
             throw new AuthenticationFailedException(
-                    "SimpleAuthenticator: Invalid user name [" + userName
+                    "SimpleSecurityManager: Invalid user name [" + userName
                             + "], password supplied.");
         }
     }

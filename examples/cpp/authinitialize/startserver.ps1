@@ -38,11 +38,11 @@ if ($GFSH_PATH -ne "")
     # Set this variable to include your java object that implements the Authenticator class
     $RESOLVEDPATH = Resolve-Path -Path "$PSScriptRoot/../../utilities/example.jar"
 
-    COMMON_OPTS="--J=-Dgemfire.security-username=server"
-    COMMON_OPTS="${COMMON_OPTS} --J=-Dgemfire.security-password=server"
-    COMMON_OPTS="${COMMON_OPTS} --classpath=$RESOLVEDPATH/utilities/example.jar"
+    $COMMON_OPTS = "--J=-Dgemfire.security-username=server"
+    $COMMON_OPTS = "$COMMON_OPTS --J=-Dgemfire.security-password=server"
+    $COMMON_OPTS = "$COMMON_OPTS --classpath=$RESOLVEDPATH"
 
-    LOCATOR_OPTS="${COMMON_OPTS} --J=-Dgemfire.security-manager=javaobject.SimpleSecurityManager" 
-
-    $GFSH_PATH  -e "start locator --name=locator $LOCATOR_OPTS" -e "connect --locator=localhost[10334] --user=server --password=server" -e "start server --name=server $COMMON_OPTS"  -e "create region --name=region --type=PARTITION"
+    $LOCATOR_OPTS = "$COMMON_OPTS --J=-Dgemfire.security-manager=javaobject.SimpleSecurityManager" 
+ 
+    Invoke-Expression "$GFSH_PATH  -e 'start locator --name=locator $LOCATOR_OPTS' -e 'connect --locator=localhost[10334] --user=server --password=server' -e 'start server --name=server $COMMON_OPTS'  -e 'create region --name=region --type=PARTITION'"
 }

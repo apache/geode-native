@@ -31,7 +31,7 @@
     $ cd workspace\examples\
     $ mkdir build
     $ cd build
-    $ cmake .. -G"Visual Studio 15 2017 Win64" -DGeodeNative_ROOT="<geode-native-install-dir>"
+    $ cmake .. -G"Visual Studio 15 2017 Win64" -DGeodeNative_ROOT="<geode-native-install-dir>"  -Thost=x64
     $ cmake --build . -- <optional parallelism parameter>
     ```
     
