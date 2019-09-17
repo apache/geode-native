@@ -78,12 +78,16 @@ $ cmake --build . --target install -j8
 At the end of the process the geode native client will be in the  `<clone>/build/install` directory.
 
 #### Windows / Visual Studio
+
+```
+choco install openssl
+```
 When running cmake commands on Windows, be sure to use [Visual Studio Native Tools Command Prompt](https://msdn.microsoft.com/en-us/library/f35ctcxw.aspx) so environment variables are set properly.
 
 The recommended generator on Windows is `Visual Studio 15 2017 Win64`:
 
 ```console
-$ cmake .. -G "Visual Studio 15 2017 Win64" -Thost=x64
+$ cmake .. -G "Visual Studio 15 2017 Win64" -Thost=x64 -DOPENSSL_ROOT_DIR='C:\Program Files\OpenSSL-Win64\' 
 ```
 
 ### Build Parallelism
