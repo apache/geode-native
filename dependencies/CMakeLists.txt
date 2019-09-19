@@ -18,13 +18,14 @@ project( dependencies LANGUAGES NONE )
 
 find_package(Patch REQUIRED)
 
-add_subdirectory(	ACE )
-add_subdirectory(	boost )
-add_subdirectory(	sqlite )
-add_subdirectory(	doxygen )
-add_subdirectory(	gtest )
-add_subdirectory(	benchmark )
-add_subdirectory(	xerces-c )
+add_subdirectory(ACE)
+add_subdirectory(boost)
+add_subdirectory(xerces-c)
+if (NOT ONLY_CPPCACHE_STATIC)
+add_subdirectory(sqlite)
+add_subdirectory(doxygen)
+add_subdirectory(gtest)
+add_subdirectory(benchmark)
 
 if (USE_RAT)
   add_subdirectory( rat )
@@ -32,4 +33,6 @@ endif()
 
 if (WIN32)
   add_subdirectory( sqlite-netFx )
+endif()
+
 endif()

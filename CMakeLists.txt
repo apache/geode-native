@@ -20,6 +20,7 @@ option(USE_PCH "Use precompiled headers (PCH)." OFF)
 option(USE_CPP_COVERAGE "Enable profiling and coverage report analysis for apache-geode cpp library." OFF)
 option(USE_RAT "Enable Apache Rat checking." OFF)
 option(WITH_IPV6 "Enable IPv6 support." OFF)
+option(ONLY_CPPCACHE_STATIC "Limit build to the static library of cppcache, and its dependencies." OFF)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
@@ -354,10 +355,11 @@ set_target_properties(run-integration-tests PROPERTIES
 
 find_package(OpenSSL REQUIRED)
 
-add_subdirectory(tests/javaobject)
-add_subdirectory(dependencies)
-add_subdirectory(openssl-compat)
 add_subdirectory(cppcache)
+add_subdirectory(dependencies)
+if (NOT ONLY_CPPCACHE_STATIC)
+add_subdirectory(tests/javaobject)
+add_subdirectory(openssl-compat)
 add_subdirectory(cryptoimpl)
 add_subdirectory(dhimpl)
 add_subdirectory(sqliteimpl)
@@ -368,6 +370,7 @@ if (${BUILD_CLI})
   add_subdirectory(clicache)
 endif()
 add_subdirectory(tests)
+endif()
 
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/xsds/ DESTINATION xsds)
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/defaultSystem/ DESTINATION defaultSystem)
