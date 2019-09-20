@@ -125,8 +125,8 @@ install(FILES
 
 add_subdirectory(static)
 add_subdirectory(internal)
-add_subdirectory(shared)
 if (NOT ONLY_CPPCACHE_STATIC)
+add_subdirectory(shared)
 add_subdirectory(test)
 add_subdirectory(integration)
 add_subdirectory(integration-test)
