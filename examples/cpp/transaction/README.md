@@ -37,7 +37,10 @@ existing key while showing how to handle exceptions.
     $ ./startserver.sh
     ```
 
-3. Execute `cpp-transaction`. The output will show the cache and region creation, up to five rolled back transactions, and finally the commit of the transaction if the maximum of five rollback were not executed. For example:
+3. Execute `cpp-transaction`. The output logs the cache and region creation, and the results of up to five attempts to commit the transaction.
+Example execution ends when the transaction is successfully committed, or when the maximum number of attempts is reached without a successful commit.
+
+  For example, this run ends in a successful commit:
 
     ```bash
     $ ./cpp-transaction
@@ -49,6 +52,8 @@ existing key while showing how to handle exceptions.
        Committed transaction - exiting
     ```
     
+  In contrast, this run ends without a successful commit, after five unsuccessful attempts:
+
     ```bash
     $ ./cpp-transaction
        Created cache
