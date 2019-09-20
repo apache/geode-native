@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#!/bin/env bash
+#!/usr/bin/env bash
 GFSH_PATH=""
 which gfsh 2> /dev/null
 
@@ -29,3 +29,5 @@ else
 fi
 
 $GFSH_PATH -e "connect" -e "destroy region --name=custom_orders" -e "stop server --name=server" -e "stop locator --name=locator"
+
+rm -rf locator server
