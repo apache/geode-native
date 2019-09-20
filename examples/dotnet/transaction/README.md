@@ -1,4 +1,4 @@
-# transaction example
+# Transaction example
 This is a very simple example showing how to use TransactionManager.  This example shows
 how to begin a transaction, commit a transaction, and rollback a transaction while showing
 exception handling.  We commit two keys and rollback adding a third key and destroying an
@@ -30,14 +30,17 @@ existing key while showing how to handle exceptions.
     $ startserver.ps1
     ```
 
-1. Execute `dotnet-transaction.exe`, expect the following output:
+1. Execute `dotnet-transaction.exe`, The output logs the cache and region creation, and the results of up to five attempts to commit the transaction.
+Example execution ends when the transaction is successfully committed, or when the maximum number of attempts is reached without a successful commit.
 
-       Created cache
-       Created region 'exampleRegion'
-       Rolled back transaction - retrying(4)
-       Rolled back transaction - retrying(3)
-       Rolled back transaction - retrying(2)
-       Committed transaction - exiting
+    ```console
+    Created cache
+    Created region 'exampleRegion'
+    Rolled back transaction - retrying(4)
+    Rolled back transaction - retrying(3)
+    Rolled back transaction - retrying(2)
+    Committed transaction - exiting
+    ```
 
 1. Run the `stopserver.ps1` script to gracefully shutdown the Geode cluster.
 

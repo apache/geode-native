@@ -28,6 +28,6 @@ else
     fi
 fi
 
-$GFSH_PATH  -e "start locator --name=locator" -e "deploy --jar=../../utilities/example.jar" -e "start server --name=the-server --server-port=50505"  -e "create region --name=partition_region --type=PARTITION"
+$GFSH_PATH  -e "start locator --name=locator" -e "deploy --jar=../../utilities/example.jar" -e "start server --name=server --server-port=50505"  -e "create region --name=partition_region --type=PARTITION"
 
 

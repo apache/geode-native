@@ -40,8 +40,8 @@ void Order::toData(PdxWriter& pdxWriter) const {
 }
 
 std::string Order::toString() const {
-  return "OrderID: " + std::to_string(order_id_) + " Product Name: " + name_ +
-         " Quantity: " + std::to_string(quantity_);
+  return "OrderID: " + std::to_string(order_id_) + "\n Product Name: " +
+          name_ + "\n Quantity: " + std::to_string(quantity_);
 }
 
 const std::string& Order::getClassName() const {

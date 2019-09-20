@@ -37,7 +37,10 @@ existing key while showing how to handle exceptions.
     $ ./startserver.sh
     ```
 
-3. Execute `cpp-transaction`. Expect the following output:
+3. Execute `cpp-transaction`. The output logs the cache and region creation, and the results of up to five attempts to commit the transaction.
+Example execution ends when the transaction is successfully committed, or when the maximum number of attempts is reached without a successful commit.
+
+  For example, this run ends in a successful commit:
 
     ```bash
     $ ./cpp-transaction
@@ -47,6 +50,19 @@ existing key while showing how to handle exceptions.
        Rolled back transaction - retrying(3)
        Rolled back transaction - retrying(2)
        Committed transaction - exiting
+    ```
+    
+  In contrast, this run ends without a successful commit, after five unsuccessful attempts:
+
+    ```bash
+    $ ./cpp-transaction
+       Created cache
+       Created region 'exampleRegion'
+       Rolled back transaction - retrying(4)
+       Rolled back transaction - retrying(3)
+       Rolled back transaction - retrying(2)
+       Rolled back transaction - retrying(1)
+       Rolled back transaction - retrying(0)       
     ```
 
 4. Run the `stopserver` script to gracefully shutdown the Geode cluster.
