@@ -37,3 +37,6 @@ if ($GFSH_PATH -ne "")
 {
    Invoke-Expression "$GFSH_PATH -e 'connect' -e 'shutdown --include-locators=true'"
 }
+
+Remove-Item -Path locator -Recurse -Force
+Remove-Item -Path server -Recurse -Force

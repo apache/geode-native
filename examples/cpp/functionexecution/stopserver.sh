@@ -30,3 +30,4 @@ fi
 
 $GFSH_PATH -e "connect" -e "shutdown --include-locators=true"
 
+rm -rf locator server

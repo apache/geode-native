@@ -29,3 +29,5 @@ else
 fi
 
 $GFSH_PATH -e "connect" -e "stop server --name=server" -e "stop locator --name=locator"
+
+rm -rf locator server
