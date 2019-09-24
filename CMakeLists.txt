@@ -265,6 +265,8 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     -Wno-global-constructors
     -Wno-exit-time-destructors
     -Wno-documentation-unknown-command
+    -Wno-defaulted-function-deleted
+    -Wno-c++2a-compat
     )
 
   if (USE_CPP_COVERAGE)
