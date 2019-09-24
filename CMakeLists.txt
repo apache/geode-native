@@ -190,6 +190,10 @@ if (NOT HAVE_STDC_FORMAT_MACROS)
   target_compile_definitions(c++11 INTERFACE __STDC_FORMAT_MACROS)
 endif()
 
+if ("Darwin" STREQUAL ${CMAKE_SYSTEM_NAME} )
+  set(DISABLED_MAC_WARNINGS  -Wno-defaulted-function-deleted -Wno-c++2a-compat)
+endif()
+
 if(CMAKE_CXX_COMPILER_ID MATCHES "SunPro")
   # Force linker to error on undefined symbols in shared libraries
   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -z defs")
@@ -265,8 +269,7 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     -Wno-global-constructors
     -Wno-exit-time-destructors
     -Wno-documentation-unknown-command
-    -Wno-defaulted-function-deleted
-    -Wno-c++2a-compat
+    ${DISABLED_MAC_WARNINGS}
     )
 
   if (USE_CPP_COVERAGE)
