@@ -1873,7 +1873,7 @@ namespace Apache.Geode.Client.UnitTests
       Key = key.ToString();
       SecKey = key;
       ShareQuantity = key * 9278L;
-      Cost = ShareQuantity * 100;
+      Cost = Convert.ToDouble(ShareQuantity) * 100;
       Price = Cost * 10;
       SettleSecKey = SecKey + 100000;
       SettleFxRate = Price * 1.5;
