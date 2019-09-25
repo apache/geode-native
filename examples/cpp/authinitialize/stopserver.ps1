@@ -32,10 +32,19 @@ else
         $GFSH_PATH = "$env:GEODE_HOME\bin\gfsh.bat"
     }
 }
+$locatorPid = Get-Content -Path locator/vf.gf.locator.pid
+$serverPid = Get-Content -Path server/vf.gf.server.pid
 
 if ($GFSH_PATH -ne "")
 {
    Invoke-Expression "$GFSH_PATH -e 'connect --locator=localhost[10334] --user=server --password=server' -e 'shutdown --include-locators=true'"
+}
+
+while(Get-Process -Id $locatorPid -ErrorAction SilentlyContinue) {
+	Start-Sleep -Seconds 0.5
+}
+while(Get-Process -Id $serverPid -ErrorAction SilentlyContinue) {
+	Start-Sleep -Seconds 0.5
 }
 
 Remove-Item -Path locator -Recurse -Force
