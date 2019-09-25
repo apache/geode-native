@@ -28,6 +28,6 @@ else
     fi
 fi
 
-$GFSH_PATH -e "connect --locator=localhost[10334] --user=server --password=server" -e "stop server --name=server" -e "stop locator --name=locator"
+$GFSH_PATH -e "connect --locator=localhost[10334] --user=server --password=server" -e "shutdown --include-locators=true"
 
 rm -rf locator server
