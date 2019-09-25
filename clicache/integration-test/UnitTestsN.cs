@@ -173,7 +173,7 @@ namespace Apache.Geode.Client.UnitTests
       StopTimer();
       var elapsed = m_endTime - m_startTime;
       var milliseconds = Math.Round(elapsed.TotalMilliseconds, 3);
-      milliseconds = ((long)numOps * 1000) / milliseconds;
+      milliseconds = (Convert.ToDouble(numOps) * 1000) / milliseconds;
       Util.Log("{0}Time taken for task [{1}]: {2}ms {3}ops/sec{4}",
         Util.MarkerString, taskName, elapsed.TotalMilliseconds,
         milliseconds, Util.MarkerString);
