@@ -123,16 +123,20 @@ install(FILES
  DESTINATION include/geode/internal
 )
 
-add_subdirectory(static)
-add_subdirectory(internal)
 if (NOT ONLY_CPPCACHE_STATIC)
-add_subdirectory(shared)
-add_subdirectory(test)
-add_subdirectory(integration)
-add_subdirectory(integration-test)
-
-if (BUILD_BENCHMARKS)
-  add_subdirectory(benchmark)
+  add_subdirectory(shared)
 endif()
+add_subdirectory(static)
+if (NOT ONLY_CPPCACHE_STATIC)
+  add_subdirectory(test)
+endif()
+  add_subdirectory(internal)
+if (NOT ONLY_CPPCACHE_STATIC)
+  add_subdirectory(integration)
+  add_subdirectory(integration-test)
+
+  if (BUILD_BENCHMARKS)
+    add_subdirectory(benchmark)
+  endif()
 
 endif()
