@@ -25,7 +25,7 @@ if (MSVC)
 #define APACHE_GEODE_EXTERN_TEMPLATE_EXPORT
 ")
 
-  target_compile_options(apache-geode
+  target_compile_options(apache-geode-static
           PRIVATE
           /bigobj # C1128 - large number of templates causes too many section.
           )
@@ -38,7 +38,8 @@ else()
 endif()
 
 include(GenerateExportHeader)
-generate_export_header(apache-geode
+generate_export_header(apache-geode-static
+        BASE_NAME APACHE_GEODE
         EXPORT_FILE_NAME ${EXPORT_FILE_NAME}
         CUSTOM_CONTENT_FROM_VARIABLE EXPORT_HEADER_CUSTOM_CONTENT)
 
