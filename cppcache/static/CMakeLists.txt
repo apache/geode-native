@@ -17,33 +17,7 @@ project(apache-geode-static LANGUAGES CXX)
 
 add_library(apache-geode-static STATIC ${SOURCES_ALL})
 
-if (ONLY_CPPCACHE_STATIC)
-if (MSVC)
-  set(EXPORT_HEADER_CUSTOM_CONTENT "
-#define APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT APACHE_GEODE_EXPORT
-
-#define APACHE_GEODE_EXTERN_TEMPLATE_EXPORT
-")
-
-  target_compile_options(apache-geode-static
-          PRIVATE
-          /bigobj # C1128 - large number of templates causes too many section.
-          )
-else()
-  set(EXPORT_HEADER_CUSTOM_CONTENT "
-#define APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT
-
-#define APACHE_GEODE_EXTERN_TEMPLATE_EXPORT APACHE_GEODE_EXPORT
-")
-endif()
-
-include(GenerateExportHeader)
-generate_export_header(apache-geode-static
-        BASE_NAME APACHE_GEODE
-        EXPORT_FILE_NAME ${EXPORT_FILE_NAME}
-        CUSTOM_CONTENT_FROM_VARIABLE EXPORT_HEADER_CUSTOM_CONTENT)
-
-endif()
+include(ApacheGeodeExportHeader)
 
 set_source_files_properties(${CONFIGURE_OUT_FILES} PROPERTIES GENERATED TRUE)
 
@@ -57,6 +31,9 @@ target_link_libraries(apache-geode-static
   PRIVATE
     _WarningsAsError
     _CppCodeCoverage)
+
+target_include_directories(apache-geode
+  PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
 add_dependencies(client-libraries apache-geode-static)
 

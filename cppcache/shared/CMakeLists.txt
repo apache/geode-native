@@ -17,29 +17,7 @@ project(apache-geode LANGUAGES CXX)
 
 add_library(apache-geode SHARED ${SOURCES_ALL} ${RESOURCES})
 
-if (MSVC)
-  set(EXPORT_HEADER_CUSTOM_CONTENT "
-#define APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT APACHE_GEODE_EXPORT
-
-#define APACHE_GEODE_EXTERN_TEMPLATE_EXPORT
-")
-
-  target_compile_options(apache-geode
-    PRIVATE
-      /bigobj # C1128 - large number of templates causes too many section.
-  )
-else()
-  set(EXPORT_HEADER_CUSTOM_CONTENT "
-#define APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT
-
-#define APACHE_GEODE_EXTERN_TEMPLATE_EXPORT APACHE_GEODE_EXPORT
-")
-endif()
-
-include(GenerateExportHeader)
-generate_export_header(apache-geode
-  EXPORT_FILE_NAME ${EXPORT_FILE_NAME}
-  CUSTOM_CONTENT_FROM_VARIABLE EXPORT_HEADER_CUSTOM_CONTENT)
+include(ApacheGeodeExportHeader)
 
 set_source_files_properties(${CONFIGURE_OUT_FILES} PROPERTIES GENERATED TRUE)
 
@@ -53,7 +31,9 @@ target_link_libraries(apache-geode
 
 target_include_directories(apache-geode
   PUBLIC
-    $<TARGET_PROPERTY:_apache-geode,INTERFACE_INCLUDE_DIRECTORIES>)
+    $<TARGET_PROPERTY:_apache-geode,INTERFACE_INCLUDE_DIRECTORIES>
+  PRIVATE
+    ${CMAKE_CURRENT_BINARY_DIR})
 
 set_target_properties(apache-geode PROPERTIES
   PUBLIC_HEADER "${PUBLIC_HEADERS}"
