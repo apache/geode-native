@@ -115,10 +115,6 @@ target_include_directories(_apache-geode INTERFACE
 add_dependencies(_apache-geode version-header)
 
 install(DIRECTORY ${COMMON_INCLUDE_DIR} DESTINATION .)
-install(FILES
- ${EXPORT_FILE_NAME}
- DESTINATION include/geode/internal
-)
 
 if (NOT ONLY_CPPCACHE_STATIC)
   add_subdirectory(shared)

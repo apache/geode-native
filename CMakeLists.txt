@@ -191,9 +191,6 @@ if (NOT HAVE_STDC_FORMAT_MACROS)
   target_compile_definitions(c++11 INTERFACE __STDC_FORMAT_MACROS)
 endif()
 
-if ("Darwin" STREQUAL ${CMAKE_SYSTEM_NAME} )
-  set(DISABLED_MAC_WARNINGS  -Wno-defaulted-function-deleted -Wno-c++2a-compat)
-endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "SunPro")
   # Force linker to error on undefined symbols in shared libraries

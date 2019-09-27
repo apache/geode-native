@@ -12,9 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-##
-# FindGeode CMake find module.
-##
 
 if (MSVC)
   set(EXPORT_HEADER_CUSTOM_CONTENT "
@@ -22,11 +19,6 @@ if (MSVC)
 
 #define APACHE_GEODE_EXTERN_TEMPLATE_EXPORT
 ")
-
-  target_compile_options(${PROJECT_NAME}
-    PRIVATE
-    /bigobj # C1128 - large number of templates causes too many section.
-  )
 else()
   set(EXPORT_HEADER_CUSTOM_CONTENT "
 #define APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT
@@ -36,7 +28,11 @@ else()
 endif()
 
 include(GenerateExportHeader)
+
 generate_export_header(${PROJECT_NAME}
-    BASE_NAME APACHE_GEODE
-    EXPORT_FILE_NAME apache-geode_export.h
-    CUSTOM_CONTENT_FROM_VARIABLE EXPORT_HEADER_CUSTOM_CONTENT)
+  BASE_NAME APACHE_GEODE
+  EXPORT_FILE_NAME apache-geode_export.h
+  CUSTOM_CONTENT_FROM_VARIABLE EXPORT_HEADER_CUSTOM_CONTENT
+)
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/apache-geode_export.h DESTINATION include/geode/internal)
