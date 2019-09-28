@@ -17,6 +17,7 @@ project(cppcache LANGUAGES CXX)
 
 include(CheckIncludeFile)
 include(CheckFunctionExists)
+include(ApacheGeodeExportHeader)
 
 find_package(Threads)
 if (CMAKE_USE_PTHREADS_INIT)

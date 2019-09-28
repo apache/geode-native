@@ -13,26 +13,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-if (MSVC)
-  set(EXPORT_HEADER_CUSTOM_CONTENT "
-#define APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT APACHE_GEODE_EXPORT
+function(generateExportFile LIB_NAME)
 
-#define APACHE_GEODE_EXTERN_TEMPLATE_EXPORT
-")
-else()
-  set(EXPORT_HEADER_CUSTOM_CONTENT "
-#define APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT
+  if (MSVC)
+    set(EXPORT_HEADER_CUSTOM_CONTENT "
+  #define APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT APACHE_GEODE_EXPORT
 
-#define APACHE_GEODE_EXTERN_TEMPLATE_EXPORT APACHE_GEODE_EXPORT
-")
-endif()
+  #define APACHE_GEODE_EXTERN_TEMPLATE_EXPORT
+  ")
+  else()
+    set(EXPORT_HEADER_CUSTOM_CONTENT "
+  #define APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT
 
-include(GenerateExportHeader)
+  #define APACHE_GEODE_EXTERN_TEMPLATE_EXPORT APACHE_GEODE_EXPORT
+  ")
+  endif()
 
-generate_export_header(${PROJECT_NAME}
-  BASE_NAME APACHE_GEODE
-  EXPORT_FILE_NAME apache-geode_export.h
-  CUSTOM_CONTENT_FROM_VARIABLE EXPORT_HEADER_CUSTOM_CONTENT
-)
+  include(GenerateExportHeader)
 
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/apache-geode_export.h DESTINATION include/geode/internal)
+  generate_export_header(${PROJECT_NAME}
+    BASE_NAME APACHE_GEODE
+    EXPORT_FILE_NAME apache-geode_export.h
+    CUSTOM_CONTENT_FROM_VARIABLE EXPORT_HEADER_CUSTOM_CONTENT
+  )
+
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/apache-geode_export.h DESTINATION include/geode/internal)
+  
+endfunction()
