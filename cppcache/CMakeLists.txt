@@ -115,21 +115,13 @@ target_include_directories(_apache-geode INTERFACE
 add_dependencies(_apache-geode version-header)
 
 install(DIRECTORY ${COMMON_INCLUDE_DIR} DESTINATION .)
-
-if (NOT ONLY_CPPCACHE_STATIC)
-  add_subdirectory(shared)
-endif()
+add_subdirectory(shared)
 add_subdirectory(static)
-if (NOT ONLY_CPPCACHE_STATIC)
-  add_subdirectory(test)
-endif()
-  add_subdirectory(internal)
-if (NOT ONLY_CPPCACHE_STATIC)
-  add_subdirectory(integration)
-  add_subdirectory(integration-test)
+add_subdirectory(test)
+add_subdirectory(internal)
+add_subdirectory(integration)
+add_subdirectory(integration-test)
 
-  if (BUILD_BENCHMARKS)
-    add_subdirectory(benchmark)
-  endif()
-
+if (BUILD_BENCHMARKS)
+  add_subdirectory(benchmark)
 endif()
