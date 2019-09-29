@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-function(generateExportFile LIB_NAME)
+function(generate_export_file LIB_NAME)
 
   if (MSVC)
     set(EXPORT_HEADER_CUSTOM_CONTENT "

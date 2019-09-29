@@ -24,7 +24,7 @@ if (MSVC)
    )
 endif()
 
-generateExportFile( "apache-geode" )
+generate_export_file( "apache-geode" )
 
 set_source_files_properties(${CONFIGURE_OUT_FILES} PROPERTIES GENERATED TRUE)
 

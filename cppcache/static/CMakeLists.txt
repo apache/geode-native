@@ -17,7 +17,7 @@ project(apache-geode-static LANGUAGES CXX)
 
 add_library(apache-geode-static STATIC ${SOURCES_ALL})
 
-generateExportFile( "apache-geode-static" )
+generate_export_file( "apache-geode-static" )
 
 
 set_source_files_properties(${CONFIGURE_OUT_FILES} PROPERTIES GENERATED TRUE)

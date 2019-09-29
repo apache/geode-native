@@ -192,7 +192,7 @@ if (NOT HAVE_STDC_FORMAT_MACROS)
 endif()
 
 if ("Darwin" STREQUAL ${CMAKE_SYSTEM_NAME} )
- set(DISABLED_MAC_WARNINGS  -Wno-defaulted-function-deleted -Wno-c++2a-compat)
+  set(DISABLED_MAC_WARNINGS  -Wno-defaulted-function-deleted -Wno-c++2a-compat)
 endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "SunPro")
