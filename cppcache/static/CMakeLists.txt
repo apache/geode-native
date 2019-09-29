@@ -17,6 +17,9 @@ project(apache-geode-static LANGUAGES CXX)
 
 add_library(apache-geode-static STATIC ${SOURCES_ALL})
 
+generate_export_file( "apache-geode-static" )
+
+
 set_source_files_properties(${CONFIGURE_OUT_FILES} PROPERTIES GENERATED TRUE)
 
 target_compile_definitions(apache-geode-static PUBLIC
@@ -29,6 +32,11 @@ target_link_libraries(apache-geode-static
   PRIVATE
     _WarningsAsError
     _CppCodeCoverage)
+
+target_include_directories(apache-geode-static
+  PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+)
 
 add_dependencies(client-libraries apache-geode-static)
 

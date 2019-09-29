@@ -28,6 +28,7 @@ if (USE_PCH)
 endif()
 
 include(ClangFormat)
+include(ApacheGeodeExportHeader)
 
 if(CMAKE_GENERATOR MATCHES Win64*)
 

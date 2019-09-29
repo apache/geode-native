@@ -13,23 +13,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cmake_minimum_required( VERSION 3.10 )
-project( dependencies LANGUAGES NONE )
+function(generate_export_file LIB_NAME)
 
-find_package(Patch REQUIRED)
+  if (MSVC)
+    set(EXPORT_HEADER_CUSTOM_CONTENT "
+  #define APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT APACHE_GEODE_EXPORT
 
-add_subdirectory(ACE)
-add_subdirectory(boost)
-add_subdirectory(sqlite)
-add_subdirectory(doxygen)
-add_subdirectory(gtest)
-add_subdirectory(benchmark)
-add_subdirectory(xerces-c)
+  #define APACHE_GEODE_EXTERN_TEMPLATE_EXPORT
+  ")
+  else()
+    set(EXPORT_HEADER_CUSTOM_CONTENT "
+  #define APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT
 
-if (USE_RAT)
-  add_subdirectory( rat )
-endif()
+  #define APACHE_GEODE_EXTERN_TEMPLATE_EXPORT APACHE_GEODE_EXPORT
+  ")
+  endif()
 
-if (WIN32)
-  add_subdirectory( sqlite-netFx )
-endif()
+  include(GenerateExportHeader)
+
+  generate_export_header(${PROJECT_NAME}
+    BASE_NAME APACHE_GEODE
+    EXPORT_FILE_NAME apache-geode_export.h
+    CUSTOM_CONTENT_FROM_VARIABLE EXPORT_HEADER_CUSTOM_CONTENT
+  )
+
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/apache-geode_export.h DESTINATION include/geode/internal)
+  
+endfunction()
