@@ -1,0 +1,70 @@
+---
+title:  Authentication
+---
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+A client is authenticated when it connects with valid credentials to a <%=vars.product_name%> cache server that is configured with the client authentication callback.
+For details on the server's role in authentication and what it expects from the client, see [Implementing Authentication](geodeman/managing/security/implementing_authentication.html) in the *<%=vars.product_name%> User Guide*.
+
+In your application, authentication credentials must be set when creating the cache. In practice,
+this means setting the authentication credentials when you create the CacheFactory.
+
+### .NET Authentication Example
+
+The following excerpt is taken from the .NET example provided with your Native Client distribution in the `../examples/dotnet/authinitialize` directory.
+
+In this C# authentication example, the `CacheFactory` creation process sets the authentication callback:
+
+```cs
+  var cacheFactory = new CacheFactory()
+    .Set("log-level", "none")
+    .SetAuthInitialize(new ExampleAuthInitialize());
+```
+
+Credentials are implemented in the `GetCredentials` member function of the `ExampleAuthInitialize` class, which implements the `IAuthInitialize` interface:
+
+```cs
+  class ExampleAuthInitialize : IAuthInitialize
+  {
+    public ExampleAuthInitialize()
+    {
+      // TODO initialize your resources here
+      Console.Out.WriteLine("ExampleAuthInitialize::ExampleAuthInitialize called");
+    }
+
+    public void Close()
+    {
+      // TODO close your resources here
+      Console.Out.WriteLine("ExampleAuthInitialize::Close called");
+    }
+
+    public Properties<string, object> GetCredentials(Properties<string, string> props, string server)
+    {
+      // TODO get your username and password
+      Console.Out.WriteLine("ExampleAuthInitialize::GetCredentials called");
+
+      var credentials = new Properties<string, object>();
+      credentials.Insert("security-username", "root");
+      credentials.Insert("security-password", "root");
+      return credentials;
+    }
+  }
+
+```
+

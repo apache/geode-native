@@ -1,6 +1,6 @@
-# Apache Geode Native Client User Guide
+# Apache Geode Native Client User Guides
 
-This document contains instructions for building and viewing the Apache Geode Native Client User Guide.
+This document contains instructions for building and viewing the Apache Geode Native Client User Guides.
 
 - [About](#about)
 - [Bookbinder Usage](#bookbinder-usage)
@@ -10,7 +10,27 @@ This document contains instructions for building and viewing the Apache Geode Na
 <a name="about"></a>
 ## About
 
-The Geode-Native repository provides the full source for the Apache Geode Native Client User Guide in markdown format (see _geode-project-dir_/geode-docs/CONTRIBUTE.md for more information on how to use markdown in this context). Users can build the markdown into an HTML user guide using [Bookbinder](https://github.com/pivotal-cf/bookbinder) and the instructions below.
+The Geode-Native repository provides the full source for the Apache Geode Native Client User Guides in markdown format (see _geode-project-dir_/geode-docs/CONTRIBUTE.md for more information on how to use markdown in this context). Users can build the markdown into an HTML user guide using [Bookbinder](https://github.com/pivotal-cf/bookbinder) and the instructions below.
+
+The User Guide can be produced in two versions: one for the .NET native client, the other for the C++ native client. You specify which version to build by copying two language-specific configuration files, each to its generically-named counterpart, then running the Bookbinder build.
+
+For example, to build the .NET version of the Native Client User Guide, first copy the DOTNET configuration files to their generically-named counterparts:
+
+```
+cd geode-native-book
+cp config.yml.DOTNET config.yml
+cp redirects.rb.DOTNET redirects.rb
+```
+Then run Bookbinder to create the guide.
+
+Similarly, to generate the C++ Native Client User Guide, first copy the CPP configuration files:
+
+```
+cd geode-native-book
+cp config.yml.CPP config.yml
+cp redirects.rb.CPP redirects.rb
+```
+Then run Bookbinder to create the guide.
 
 Bookbinder is a Ruby gem that binds  a unified documentation web application from markdown, html, and/or DITA source material. The source material for bookbinder must be stored either in local directories or in GitHub repositories. Bookbinder runs [Middleman](http://middlemanapp.com/) to produce a Rackup app that can be deployed locally or as a web application.
 
@@ -19,7 +39,7 @@ Bookbinder is a Ruby gem that binds  a unified documentation web application fro
 
 Bookbinder is meant to be used from within a project called a **book**. The book includes a configuration file that describes which documentation repositories to use as source materials. Bookbinder provides a set of scripts to aggregate those repositories and publish them to various locations.
 
-For Geode Native Client, a preconfigured **book** is provided in the directory _geode-native-project-dir_/docs/geode-native-book, which gathers content from the directory _geode-native-project-dir_/docs/geode-native-docs. You can use this configuration to build an HTML version of the Apache Geode Native Client User Guide on your local system.
+For Geode Native Client, a preconfigured **book** is provided in the directory _geode-native-project-dir_/docs/geode-native-book. The book gathers content from the language-specific directory _geode-native-project-dir_/docs/geode-native-docs-dotnet or geode-native-docs-cpp. You can use this configuration to build an HTML version of the Apache Geode Native Client User Guides on your local system.
 
 <a name="docker-setup"></a>
 ## Docker Setup
@@ -55,6 +75,22 @@ For ease of use, a Docker image is provided that contains a self-consistent Book
     ```bash
     $ bundle install
     ```
+
+1. Copy the language-specific configuration files to their generically-named counterparts. For the .NET book, copy the DOTNET configuration files to their generically-named conterparts:
+
+```
+cd geode-native-book
+cp config.yml.DOTNET config.yml
+cp redirects.rb.DOTNET redirects.rb
+```
+
+Similarly, to generate the C++ Native Client User Guide, first copy the CPP configuration files:
+
+```
+cd geode-native-book
+cp config.yml.CPP config.yml
+cp redirects.rb.CPP redirects.rb
+```
 
 1. Invoke bookbinder to build the user guide. Bookbinder converts the markdown source into HTML, which it puts in the `final_app` directory:
 

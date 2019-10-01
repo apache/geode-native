@@ -1,0 +1,36 @@
+---
+title:  Configuring the Client Cache
+---
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+Client caches provide the framework for clients to store, manage, and distribute application data.
+
+A cache is an entry point for access to <%=vars.product_name%>. Through the cache, clients gain
+access to the <%=vars.product_name%> caching framework for data loading, distribution, and
+maintenance.
+
+A `Cache` instance allows your client to set general parameters for communication between a cache
+and other caches in the distributed system, and to create and access any region in the cache.
+
+Regions are created from `Cache` instances. Regions provide the entry points to the interfaces for
+instances of `Region` and `RegionEntry`.
+
+For more information specific to your client programming language, see the
+[.NET Client API](dotnetdocs).
+

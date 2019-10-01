@@ -1,0 +1,51 @@
+---
+title: Configuring a Client Application
+---
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+You can configure your native client application:
+
+ - Programmatically in your app code
+ - Via XML files and properties files (see [Client Cache XML Reference](../client-cache-ref.html))
+ - Through a combination of programmatic and file-based approaches
+
+This section describes configuration on two levels, the system level and the cache level.
+System property settings describe your application's behavior, while cache configuration describes data.
+
+## <a id="config_programmatic_vs_xml"></a>Programmatic Configuration vs XML Configuration
+
+Programmatic configuration enables your client application to dynamically adapt to changing runtime conditions.
+
+In contrast, XML configuration externalizes properties, such as locator addresses and pool
+connection details, so they can be changed without requiring that you recompile your application.
+
+## Tables of properties
+
+See [System Properties](sysprops.html) for a list of system properties that can be configured
+programmatically or in the `geode.properties` file.
+
+## <a id="config_high_availability"></a>High Availability with Server Redundancy
+
+When redundancy is enabled, secondary servers maintain queue backups while the primary server pushes
+events to the client. If the primary server fails, one of the secondary servers steps in as primary
+to provide uninterrupted event messaging to the client. 
+To configure high availability, set the `subscription-redundancy` in the client’s pool configuration. This setting indicates the number of secondary servers to use.
+See the _<%=vars.product_name%> User Guide_ section [Configuring Highly Available Servers](serverman/developing/events/configuring_highly_available_servers.html)
+for more details.
+
