@@ -191,8 +191,15 @@ if (NOT HAVE_STDC_FORMAT_MACROS)
   target_compile_definitions(c++11 INTERFACE __STDC_FORMAT_MACROS)
 endif()
 
-if ("Darwin" STREQUAL ${CMAKE_SYSTEM_NAME} )
-  set(DISABLED_MAC_WARNINGS  -Wno-defaulted-function-deleted -Wno-c++2a-compat)
+if(${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang")
+  # This is a hack because the major-minor version variables (${CLANG_VERSION_MAJOR}.${CLANG_VERSION_MINOR}) from cmake seem unreliable
+  execute_process( COMMAND ${CMAKE_CXX_COMPILER} --version OUTPUT_VARIABLE clang_full_version_string )
+  string (REGEX REPLACE ".*clang version ([0-9]+\\.[0-9]+).*" "\\1" CLANG_VERSION_STRING ${clang_full_version_string})
+
+  message(STATUS "Detected Clang version: ${CLANG_VERSION_STRING}")
+  if( CLANG_VERSION_STRING VERSION_GREATER 10 )
+    set(DISABLED_MAC_WARNINGS  -Wno-defaulted-function-deleted -Wno-c++2a-compat)
+  endif()
 endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "SunPro")
