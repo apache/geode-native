@@ -192,12 +192,9 @@ if (NOT HAVE_STDC_FORMAT_MACROS)
 endif()
 
 if(${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang")
-  # This is a hack because the major-minor version variables (${CLANG_VERSION_MAJOR}.${CLANG_VERSION_MINOR}) from cmake seem unreliable
-  execute_process( COMMAND ${CMAKE_CXX_COMPILER} --version OUTPUT_VARIABLE clang_full_version_string )
-  string (REGEX REPLACE ".*clang version ([0-9]+\\.[0-9]+).*" "\\1" CLANG_VERSION_STRING ${clang_full_version_string})
-
-  message(STATUS "Detected Clang version: ${CLANG_VERSION_STRING}")
-  if( CLANG_VERSION_STRING VERSION_GREATER 10 )
+  check_cxx_compiler_flag(-Wno-defaulted-function-deleted CXXFLAGS_NO_DEFAULTED_FUNCTION_DELETED_ALLOWED)
+  check_cxx_compiler_flag(-Wno-c++2a-compat CXXFLAGS_NO_C++2a_COMPAT_ALLOWED)
+  if( CXXFLAGS_NO_DEFAULTED_FUNCTION_DELETED_ALLOWED AND CXXFLAGS_NO_C++2a_COMPAT_ALLOWED )
     set(DISABLED_MAC_WARNINGS  -Wno-defaulted-function-deleted -Wno-c++2a-compat)
   endif()
 endif()
