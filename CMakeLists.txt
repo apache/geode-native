@@ -191,14 +191,6 @@ if (NOT HAVE_STDC_FORMAT_MACROS)
   target_compile_definitions(c++11 INTERFACE __STDC_FORMAT_MACROS)
 endif()
 
-if(${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang")
-  check_cxx_compiler_flag(-Wno-defaulted-function-deleted CXXFLAGS_NO_DEFAULTED_FUNCTION_DELETED_ALLOWED)
-  check_cxx_compiler_flag(-Wno-c++2a-compat CXXFLAGS_NO_C++2a_COMPAT_ALLOWED)
-  if( CXXFLAGS_NO_DEFAULTED_FUNCTION_DELETED_ALLOWED AND CXXFLAGS_NO_C++2a_COMPAT_ALLOWED )
-    set(DISABLED_MAC_WARNINGS  -Wno-defaulted-function-deleted -Wno-c++2a-compat)
-  endif()
-endif()
-
 if(CMAKE_CXX_COMPILER_ID MATCHES "SunPro")
   # Force linker to error on undefined symbols in shared libraries
   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -z defs")
@@ -234,6 +226,15 @@ elseif (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
   endif()
 
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  check_cxx_compiler_flag(-Wno-defaulted-function-deleted CXXFLAGS_NO_DEFAULTED_FUNCTION_DELETED_ALLOWED)
+  if( CXXFLAGS_NO_DEFAULTED_FUNCTION_DELETED_ALLOWED )
+    set(DISABLED_NO_DEFAULTED_FUNCTION_DELETED_ALLOWED -Wno-defaulted-function-deleted)
+  endif()
+
+  check_cxx_compiler_flag(-Wno-c++2a-compat CXXFLAGS_NO_C++2a_COMPAT_ALLOWED)
+  if( CXXFLAGS_NO_C++2a_COMPAT_ALLOWED )
+    set(DISABLED_NO_C++2a_COMPAT_ALLOWED -Wno-c++2a-compat)
+  endif()
   target_compile_options(_WarningsAsError INTERFACE
     -Werror
     -Wall
@@ -274,7 +275,8 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     -Wno-global-constructors
     -Wno-exit-time-destructors
     -Wno-documentation-unknown-command
-    ${DISABLED_MAC_WARNINGS}
+    ${DISABLED_NO_DEFAULTED_FUNCTION_DELETED_ALLOWED}
+    ${DISABLED_NO_C++2a_COMPAT_ALLOWED}
     )
 
   if (USE_CPP_COVERAGE)
