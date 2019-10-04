@@ -1855,7 +1855,7 @@ namespace Apache.Geode.Client.UnitTests
   {
     [PdxIdentityField] public string Key;
     public int SecKey;
-    public double ShareQuantity;
+    public long ShareQuantity;
     public double Cost;
     public double Price;
     public int SettleSecKey;
@@ -1872,8 +1872,8 @@ namespace Apache.Geode.Client.UnitTests
     {
       Key = key.ToString();
       SecKey = key;
-      ShareQuantity = (double)((long)key * 9278L);
-      Cost = ShareQuantity * 100;
+      ShareQuantity = key * 9278L;
+      Cost = Convert.ToDouble(ShareQuantity) * 100;
       Price = Cost * 10;
       SettleSecKey = SecKey + 100000;
       SettleFxRate = Price * 1.5;
@@ -1893,7 +1893,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       Key = reader.ReadString("Key");
       SecKey = reader.ReadInt("SecKey");
-      ShareQuantity = reader.ReadDouble("ShareQuantity");
+      ShareQuantity = reader.ReadLong("ShareQuantity");
       Cost = reader.ReadDouble("Cost");
       Price = reader.ReadDouble("Price");
       SettleSecKey = reader.ReadInt("SettleSecKey");
@@ -1907,7 +1907,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       writer.WriteString("Key", Key);
       writer.WriteInt("SecKey", SecKey);
-      writer.WriteDouble("ShareQuantity", ShareQuantity);
+      writer.WriteLong("ShareQuantity", ShareQuantity);
       writer.WriteDouble("Cost", Cost);
       writer.WriteDouble("Price", Price);
       writer.WriteInt("SettleSecKey", SettleSecKey);

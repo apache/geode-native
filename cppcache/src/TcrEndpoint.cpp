@@ -265,7 +265,7 @@ GfErrType TcrEndpoint::createNewConnection(
 void TcrEndpoint::authenticateEndpoint(TcrConnection*& conn) {
   LOGDEBUG(
       "TcrEndpoint::authenticateEndpoint m_isAuthenticated  = %d "
-      "m_baseDM = %d, connection = %p",
+      "m_baseDM = %p, connection = %p",
       m_isAuthenticated, m_baseDM, conn);
   if (!m_isAuthenticated && m_baseDM) {
     setConnected();
@@ -275,7 +275,7 @@ void TcrEndpoint::authenticateEndpoint(TcrConnection*& conn) {
     auto creds = getCredentials();
 
     if (creds != nullptr) {
-      LOGDEBUG("TcrEndpoint::authenticateEndpoint got creds from app = %d",
+      LOGDEBUG("TcrEndpoint::authenticateEndpoint got creds from app = %zu",
                creds->getSize());
     } else {
       LOGDEBUG("TcrEndpoint::authenticateEndpoint no creds from app ");
@@ -755,7 +755,7 @@ GfErrType TcrEndpoint::sendRequestConn(const TcrMessage& request,
   LOGFINER("Sending request type %d to endpoint [%s] via connection [%p]", type,
            m_name.c_str(), conn);
   // TcrMessage * req = const_cast<TcrMessage *>(&request);
-  LOGDEBUG("TcrEndpoint::sendRequestConn  = %d", m_baseDM);
+  LOGDEBUG("TcrEndpoint::sendRequestConn  = %p", m_baseDM);
   if (m_baseDM != nullptr) m_baseDM->beforeSendingRequest(request, conn);
   if (((type == TcrMessage::EXECUTE_FUNCTION ||
         type == TcrMessage::EXECUTE_REGION_FUNCTION) &&
@@ -923,7 +923,7 @@ GfErrType TcrEndpoint::sendRequestWithRetry(
     } else if (conn == nullptr && useEPPool) {
       LOGFINER(
           "sendRequestWithRetry:: looking for connection in queue timeout = "
-          "%d ",
+          "%z ",
           timeout.count());
       // max wait time to get a connection
       conn = m_opConnections.getUntil(timeout);
@@ -1051,7 +1051,7 @@ GfErrType TcrEndpoint::sendRequestWithRetry(
         } else {
           error = GF_NOTCON;
           LOGFINE(
-              "Returning without connection with %d seconds remaining "
+              "Returning without connection with %z seconds remaining "
               "for endpoint %s.",
               timeout.count(), m_name.c_str());
         }
@@ -1241,7 +1241,7 @@ void TcrEndpoint::stopNotifyReceiverAndCleanup() {
   m_numRegionListener = 0;
 
   if (!m_notifyConnectionList.empty()) {
-    LOGFINER("TcrEndpoint::stopNotifyReceiverAndCleanup: notifylist size = %d",
+    LOGFINER("TcrEndpoint::stopNotifyReceiverAndCleanup: notifylist size = %zu",
              m_notifyConnectionList.size());
     for (auto& it : m_notifyConnectionList) {
       LOGFINER(

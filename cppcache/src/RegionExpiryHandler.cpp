@@ -66,7 +66,7 @@ int RegionExpiryHandler::handle_timeout(const ACE_Time_Value& current_time,
       auto remaining = m_duration - elapsed;
       // reset the task after
       // (lastAccessTime + entryExpiryDuration - curr_time) in seconds
-      LOGDEBUG("Resetting expiry task for region [%s] after %d sec",
+      LOGDEBUG("Resetting expiry task for region [%s] after %z sec",
                m_regionPtr->getFullPath().c_str(), remaining.count());
       m_regionPtr->getCacheImpl()->getExpiryTaskManager().resetTask(
           m_expiryTaskId, remaining);

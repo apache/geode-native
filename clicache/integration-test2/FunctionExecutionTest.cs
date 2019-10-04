@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
+using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -34,7 +33,7 @@ namespace Apache.Geode.Client.IntegrationTests
         [Fact]
         public void MultiGetFunctionExecutionWithFilter()
         {
-            int expectedFilteredCount = 34;
+            const int expectedFilteredCount = 34;
             using (var cluster = new Cluster(output, CreateTestCaseDirectoryName(), 1, 1))
             {
                 Assert.True(cluster.Start());
@@ -56,9 +55,9 @@ namespace Apache.Geode.Client.IntegrationTests
                   region["KEY--" + i] = "VALUE--" + i;
                 }
 
-                var args = true;
+                const bool args = true;
 
-                var oddKeyFilter = new Object[17];
+                var oddKeyFilter = new object[17];
                 var j = 0;
                 for (var i = 0; i < 34; i++)
                 {
@@ -67,18 +66,11 @@ namespace Apache.Geode.Client.IntegrationTests
                   j++;
                 }
 
-                var exc = Client.FunctionService<List<object>>.OnRegion<object, object>(region);
-                var rc = exc.WithArgs<bool>(args).WithFilter<object>(oddKeyFilter).Execute("MultiGetFunction");
+                var exc = FunctionService<List<object>>.OnRegion(region);
+                var rc = exc.WithArgs(args).WithFilter(oddKeyFilter).Execute("MultiGetFunction");
                 var executeFunctionResult = rc.GetResult();
-                var resultList = new List<object>();
+                var resultList = executeFunctionResult.SelectMany(item => item).ToList();
 
-                foreach (var item in executeFunctionResult)
-                {
-                  foreach (object item2 in item)
-                  {
-                    resultList.Add(item2);
-                  }
-                }
                 Assert.Equal(expectedFilteredCount, resultList.Count);
 
             }
@@ -87,7 +79,7 @@ namespace Apache.Geode.Client.IntegrationTests
         [Fact]
         public void MultiGetIFunctionExecutionWithArgs()
         {
-            int expectedResultCount = 17;
+            const int expectedResultCount = 17;
             using (var cluster = new Cluster(output, CreateTestCaseDirectoryName(), 1, 1))
             {
                 Assert.True(cluster.Start());
@@ -117,18 +109,11 @@ namespace Apache.Geode.Client.IntegrationTests
                     oddKeyArgs.Add("KEY--" + i);
                 }
 
-                var exc = Client.FunctionService<List<object>>.OnRegion<object, object>(region);
-                var rc = exc.WithArgs<ArrayList>(oddKeyArgs).Execute("MultiGetFunctionI");
+                var exc = FunctionService<List<object>>.OnRegion(region);
+                var rc = exc.WithArgs(oddKeyArgs).Execute("MultiGetFunctionI");
                 var executeFunctionResult = rc.GetResult();
-                var resultList = new List<object>();
+                var resultList = executeFunctionResult.SelectMany(item => item).ToList();
 
-                foreach (var item in executeFunctionResult)
-                {
-                    foreach (var item2 in item)
-                    {
-                        resultList.Add(item2);
-                    }
-                }
                 Assert.Equal(expectedResultCount, resultList.Count);
             }
         }
@@ -148,12 +133,12 @@ namespace Apache.Geode.Client.IntegrationTests
             .execute());
 
         var cache = cluster.CreateCache();
-        var pool = cache.GetPoolFactory().AddLocator("localhost", 10334).Create("pool");
+        cache.GetPoolFactory().AddLocator("localhost", 10334).Create("pool");
         var region = cache.CreateRegionFactory(RegionShortcut.PROXY)
             .SetPoolName("pool")
             .Create<object, object>("region");
 
-        var exc = Client.FunctionService<List<object>>.OnRegion<object, object>(region);
+        var exc = FunctionService<List<object>>.OnRegion(region);
         Assert.Throws<FunctionExecutionException>(() => exc.Execute("executeFunction_SendObjectWhichCantBeDeserialized"));
       }
     }

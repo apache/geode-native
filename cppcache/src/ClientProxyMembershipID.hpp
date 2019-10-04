@@ -20,6 +20,7 @@
 #ifndef GEODE_CLIENTPROXYMEMBERSHIPID_H_
 #define GEODE_CLIENTPROXYMEMBERSHIPID_H_
 
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -95,14 +96,12 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
   int16_t compareTo(const DSMemberForVersionStamp&) const override;
   int32_t hashcode() const override {
     uint32_t result = 0;
-    char hostInfo[255] = {0};
-    uint32_t offset = 0;
+    std::stringstream hostAddressString;
+    hostAddressString << std::hex;
     for (uint32_t i = 0; i < getHostAddrLen(); i++) {
-      offset +=
-          std::snprintf(hostInfo + offset, 255 - offset, ":%x", m_hostAddr[i]);
+      hostAddressString << ":" << static_cast<int>(m_hostAddr[i]);
     }
-    result +=
-        internal::geode_hash<std::string>{}(std::string(hostInfo, offset));
+    result += internal::geode_hash<std::string>{}(hostAddressString.str());
     result += m_hostPort;
     return result;
   }
