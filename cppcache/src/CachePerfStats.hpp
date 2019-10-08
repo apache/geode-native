@@ -201,6 +201,9 @@ class APACHE_GEODE_EXPORT CachePerfStats {
     m_cachePerfStats->setLong(m_pdxDeserializedBytesId, 0);
   }
 
+  CachePerfStats(const CachePerfStats& other) = default;
+  CachePerfStats(CachePerfStats&& other) = default;
+
   virtual ~CachePerfStats() { m_cachePerfStats = nullptr; }
 
   void close() {
