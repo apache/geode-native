@@ -1,0 +1,114 @@
+---
+title:  Serialize Using the PdxSerializable Class
+---
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+When you write objects using PDX serialization, they are distributed to the server tier in PDX serialized form.
+Domain classes need to inherit the `PdxSerializable` abstract class to serialize and de-serialize the object.
+
+When you run queries against the objects on the servers, only the fields you specify are deserialized.
+A domain class should serialize and de-serialize all its member fields in the same order in its `toData` and `fromData` methods.
+
+Use this procedure to program your domain object for PDX serialization using the `PdxSerializable` abstract class.
+
+1.  In your domain class, implement `PdxSerializable`. Example:
+
+    ``` pre
+    class PdxObject: public PdxSerializable
+    ```
+
+2.  Program the `toData` function to serialize your object as required by your application.
+    <br><br>
+    If you also use PDX serialization in Java or .NET for the object, serialize the object in the same way for each language. Serialize the same fields in the same order and mark the same identity fields.
+
+3.  Program the `fromData` method to read your data fields from the serialized form into the object's fields.
+    <br><br>
+    In your `fromData` implementation, use the same name as you did in `toData` and call the read operations in the same order as you called the write operations in your `toData` implementation.
+
+4.  Optionally, program your domain object's `hashCode` and equality methods.
+    <br><br>
+    Use the `markIdentityField` method to indicate that the given field name should be included in `hashCode` and equality checks of this object on a server.
+    <br><br>
+    The fields that are marked as identity fields are used to generate the `hashCode` and equality methods of PdxInstance. Because of this, the identity fields should themselves either be primitives, or implement `hashCode` and equals.
+    <br><br>
+    If no fields are set as identity fields, then all fields will be used in `hashCode` and equality checks. The identity fields should make marked after they are written using a `write*` method.
+
+## <a class="no-quick-link" id="pdx-serializable-example"></a>PdxSerializable Example
+
+``` pre
+class PdxObject: public PdxSerializable {
+
+private:
+    uint32_t m_id;
+    char* m_str;
+
+public:
+    PdxObject(){};
+    PdxObject(uint32_t id, char* str);
+    virtual ~PdxObject();
+
+    uint32_t getID() {
+        return m_id;
+    }
+
+    char* getStr(){
+        return m_str;
+    }
+
+    virtual void toData(PdxWriterPtr pw) const;
+    virtual void fromData(PdxReaderPtr pr);
+    CacheableStringPtr toString() const;
+    virtual char* getClassName() const;
+    static Cacheable* createDeserializable() {
+        return new PdxObject();
+    }
+};
+
+PdxObject::PdxObject(uint32_t i, char* str) {
+    m_id = i;
+    m_str = str;
+}
+
+PdxObject::~PdxObject() {
+}
+
+void PdxObject::toData( PdxWriterPtr pw ) const {
+    pw->writeInt("id", m_id);
+       pw->markIdentityField("id");
+    pw->writeString("str", m_str);
+}
+
+void  PdxObject::fromData( PdxReaderPtr pr )
+{
+    m_id = pr->readInt("id");
+    m_str = pr->readString("str");
+}
+
+char* getClassName() const{
+{
+    return "com.example.PdxType";
+}
+
+CacheableStringPtr PdxObject::toString() const {
+       char idbuf[1024];
+       sprintf(idbuf,"PdxObject: [ ID=%d ]",m_id);
+       return CacheableString::create( idbuf );
+}
+```
+

@@ -20,8 +20,8 @@ public_host: localhost
 
 sections:
 - repository:
-    name: geode-native-docs-dotnet
-  directory: docs/geode-native/dotnet/111
+    name: geode-native-docs-cpp
+  directory: docs/geode-native/cpp/111
   subnav_template: geode-nc-nav
 
 template_variables:
@@ -30,20 +30,20 @@ template_variables:
   product_name_lc: geode
   product_version: "1.11"
   product_version_nodot: 111
-  product_language: dotnet
-  client_name: Geode Native Client for .NET
+  product_language: cpp
+  client_name: Geode Native Client for C++
   min_java_update: 121
   support_url: http://geode.apache.org/community
   product_url: http://geode.apache.org
-  book_title: Apache Geode Native .NET Documentation
+  book_title: Apache Geode Native C++ Documentation
   book_header_img: /images/Apache_Geode_logo_symbol_white.png
   support_link: <a href="http://geode.apache.org/community" target="_blank">Community</a>
   support_call_to_action: <a href="http://geode.apache.org/community" target="_blank">Need Help?</a>
   changelog_href: https://cwiki.apache.org/confluence/display/GEODE/Release+Notes
   product_link: <div class="header-item"><a href="http://geode.apache.org">Back to Product Page</a></div>
   domain_name: apache.org
-  book_title_short: Geode Native .NET Docs
-  local_header_title: Apache Geode Native .NET
+  book_title_short: Geode Native C++ Docs
+  local_header_title: Apache Geode Native C++
   local_header_img: /images/Apache_Geode_logo_symbol.png
 
 broken_link_exclusions: iefix|using_custom_classes|arrowhead|cppdocs|dotnetdocs|#

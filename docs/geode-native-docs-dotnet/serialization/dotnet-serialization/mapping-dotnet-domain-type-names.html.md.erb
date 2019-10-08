@@ -1,0 +1,42 @@
+---
+title:  Map .NET Domain Type Names to PDX Type Names with IPdxTypeMapper
+---
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+PDX serialized instances in Java map to .NET types with the same name. If you need to adjust the .NET name, then you need to use the IPdxTypeMapper.
+
+See the [Java to .NET Type Mapping Table](../../dotnet-caching-api/java-to-dotnet-type-mapping.html#concept_24D0AAC71FF1483AB47A7772DA018966) for current mappings.
+
+## Using IPdxTypeMapper
+
+``` pre
+//This demonstrates, how to map .NET type to pdx type or java type
+public class PdxTypeMapper : IPdxTypeMapper {
+    
+    public string ToPdxTypeName(string localTypeName) {
+        return "pdx_" + localTypeName;
+    }
+
+    public string FromPdxTypeName(string pdxTypeName) {
+        return pdxTypeName.Substring(4);//need to extract "pdx_"
+    }
+}
+```
+
+

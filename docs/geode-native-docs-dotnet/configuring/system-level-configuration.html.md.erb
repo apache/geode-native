@@ -1,0 +1,131 @@
+---
+title:  System Level Configuration
+---
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+## <a id="native-client-config_attribute_def_priority"></a>Attribute Definition Priority
+
+You can specify attributes in different ways, which can cause conflicting definitions. Applications
+can be configured programmatically, and that has priority over other settings.
+
+In case an attribute is defined in more than one place, the first source in this list is used:
+
+-   Programmatic configuration
+-   Properties set at the command line
+-   <code>_current-working-directory_/geode.properties</code> file
+-   <code>_native-client-installation-directory_/defaultSystem/geode.properties</code> file
+-   defaults
+
+The `geode.properties` files and programmatic configuration are optional. If they are not present,
+no warnings or errors occur. For details on programmatic configuration through the `Properties`
+object, see [Defining Properties Programmatically](#native-client-config_defining_props_programmatically).
+
+## <a id="native-client-config_search_path_for_props"></a>Search Path for Multiple Properties Files
+
+The client and cache server processes first look for their properties file in the
+<code>_native-client-installation-directory_/defaultSystem</code> directory, then in the working directory.
+
+Any properties set in the working directory override settings in the <code>_native-client-installation-directory_/defaultSystem/geode.properties</code> file.
+
+The `geode.properties` file provides information to the client regarding the expected server
+configuration. Properties set in this file (in the client environment) do not have any effect on the
+server itself. Its main purpose is to inform the client application as to how to communicate with
+the server.
+
+## <a id="native-client-config_defining_props_programmatically"></a>Defining Properties Programmatically
+
+You can pass in specific properties programmatically by using a `Properties` object to define the non-default properties.
+
+Example:
+
+``` pre
+auto systemProps = Properties::create();
+systemProps->insert("statistic-archive-file", "stats.gfs");
+systemProps->insert("cache-xml-file", "./myapp-cache.xml");
+systemProps->insert("stacktrace-enabled", "true");
+auto cache = CacheFactory(systemProps).create();    
+```
+
+## <a id="native-client-config__section_67D24B8F8C6C46CDA3474E6E42963D04"></a>About the geode.properties Configuration File
+
+The `geode.properties` file provides local settings required to connect a client to a distributed system, along with settings for licensing, logging, and statistics. See [System Properties](sysprops.html).
+
+## <a id="native-client-config__section_88780874FD6C4BBD9B1B993758A985BB"></a>Configuration File Locations
+
+A client looks for a `geode.properties` file first in the working directory where the process runs, then in <code>_native-client-installation-directory_/defaultSystem</code>.
+Use the `defaultSystem` directory to group configuration files or to share them among processes for more convenient administration. If `geode.properties` is not found, the process starts up with the default settings.
+
+For the `cache.xml` cache configuration file, a client looks for the path specified by the `cache-xml-file` attribute in `geode.properties` (see [System Properties](sysprops.html#attributes-gfcpp)). If the `cache.xml` is not found, the process starts with an unconfigured cache.
+
+## <a id="native-client-config_using_default_sample_file"></a>Using the Default Sample File
+
+A sample `geode.properties` file is included with the <%=vars.product_name_long%> native client installation in the <code>_native-client-installation-directory_/defaultSystem</code> directory.
+
+To use this file:
+
+1.  Copy the file to the directory where you start the application.
+2.  Uncomment the lines you need and edit the settings as shown in this example:
+
+    ``` pre
+    cache-xml-file=test.xml
+    ```
+
+3.  Start the application.
+
+**Default geode.properties File**
+
+``` pre
+# Default C++ distributed system properties
+# Copy to current directory and uncomment to override defaults.
+#
+## Debugging support, enables stacktraces in  apache::geode::client::Exception.
+#
+# The default is false, uncomment to enable stacktraces in exceptions.
+#stacktrace-enabled=true
+#crash-dump-enabled=true
+#
+#
+## Cache region configuration
+#
+#cache-xml-file=cache.xml
+#
+## Log file config
+#
+#log-file=gemfire_cpp.log
+#log-level=config
+# zero indicates use no limit.
+#log-file-size-limit=0
+# zero indicates use no limit. 
+#log-disk-space-limit=0 
+...
+```
+
+## <a id="native-client-config__section_6EBE269F15A1497BB4ABBF659F978DA1"></a>Configuring System Properties for the Client
+
+The typical configuration procedure for a client includes the high-level steps listed below.
+
+1.  Place the `geode.properties` file for the application in the working directory or in <code>_native-client-installation-directory_/defaultSystem</code>.
+1.  Place the `cache.xml` file for the application in the desired location and specify its path using the `cache-xml-file` property in the `geode.properties` file.
+1.  Add other attributes to the `geode.properties` file as needed for the local system architecture.
+
+## <a id="native-client-config__section_7F09E85DD0144972AAA7028D81780129"></a>Running a Client Out of the Box
+
+If you start a client without any configuration, it uses any attributes set programmatically plus any hard-coded defaults (listed in [System Properties](sysprops.html#attributes-gfcpp)). Running with the defaults is a convenient way to learn the operation of the distributed system and to test which attributes need to be reconfigured for your environment.
+
+Running based on defaults is not recommended for production systems, as important components, such as security, might be overlooked.
