@@ -23,7 +23,7 @@ else
     $GFSH_PATH = "$env:GEODE_HOME\bin\gfsh.bat"
 }
 
-Invoke-Expression "$GFSH_PATH -e 'connect' -e 'destroy region --name=example_orderobject' -e 'stop server --name=server' -e 'stop locator --name=locator'"
+Invoke-Expression "$GFSH_PATH -e 'connect' -e 'destroy region --name=exampleRegion' -e 'stop server --name=server' -e 'stop locator --name=locator'"
 
 Remove-Item -Path locator -Recurse -Force
 Remove-Item -Path server -Recurse -Force
