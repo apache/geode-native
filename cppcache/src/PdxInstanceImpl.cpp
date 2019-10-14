@@ -709,6 +709,9 @@ int32_t PdxInstanceImpl::hashcode() const {
 }
 
 void PdxInstanceImpl::updatePdxStream(uint8_t* newPdxStream, int len) {
+  _GEODE_SAFE_DELETE_ARRAY(m_buffer);
+  m_buffer = nullptr;
+  m_bufferLength = 0;
   m_buffer = DataInput::getBufferCopy(newPdxStream, len);
   m_bufferLength = len;
 }
