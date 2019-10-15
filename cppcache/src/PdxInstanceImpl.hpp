@@ -217,7 +217,7 @@ class APACHE_GEODE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
 
  private:
   std::shared_ptr<const uint8_t> m_buffer;
-  size_t m_bufferLength;
+  int32_t m_bufferLength;
   int m_typeId;
   std::shared_ptr<PdxType> m_pdxType;
   FieldVsValues m_updatedFields;
