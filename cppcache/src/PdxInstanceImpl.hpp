@@ -199,7 +199,7 @@ class APACHE_GEODE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * @brief constructors
    */
 
-  PdxInstanceImpl(uint8_t* buffer, int length, int typeId,
+  PdxInstanceImpl(const uint8_t* buffer, int length, int typeId,
                   CachePerfStats& cacheStats, PdxTypeRegistry& pdxTypeRegistry,
                   const CacheImpl& cacheImpl, bool enableTimeStatistics);
 
@@ -216,8 +216,8 @@ class APACHE_GEODE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
   void updatePdxStream(uint8_t* newPdxStream, int len);
 
  private:
-  std::shared_ptr<uint8_t> m_buffer;
-  int m_bufferLength;
+  std::shared_ptr<const uint8_t> m_buffer;
+  size_t m_bufferLength;
   int m_typeId;
   std::shared_ptr<PdxType> m_pdxType;
   FieldVsValues m_updatedFields;

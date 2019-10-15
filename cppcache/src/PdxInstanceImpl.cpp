@@ -61,7 +61,7 @@ bool sortFunc(std::shared_ptr<PdxFieldType> field1,
 
 PdxInstanceImpl::~PdxInstanceImpl() noexcept {}
 
-PdxInstanceImpl::PdxInstanceImpl(uint8_t* buffer, int length, int typeId,
+PdxInstanceImpl::PdxInstanceImpl(const uint8_t* buffer, int length, int typeId,
                                  CachePerfStats& cacheStats,
                                  PdxTypeRegistry& pdxTypeRegistry,
                                  const CacheImpl& cacheImpl,
@@ -1334,9 +1334,8 @@ void PdxInstanceImpl::toDataMutable(PdxWriter& writer) {
   int position = 0;  // ignore typeid and length
   int nextFieldPosition = 0;
   if (m_buffer != nullptr) {
-    uint8_t* copy = apache::geode::client::DataInput::getBufferCopy(
-        m_buffer.get(), m_bufferLength);
-    auto dataInput = m_cacheImpl.createDataInput(copy, m_bufferLength);
+    auto dataInput =
+        m_cacheImpl.createDataInput(m_buffer.get(), m_bufferLength);
     for (size_t i = 0; i < pdxFieldList->size(); i++) {
       auto currPf = pdxFieldList->at(i);
       LOGDEBUG("toData filedname = %s , isVarLengthType = %d ",
@@ -1365,7 +1364,6 @@ void PdxInstanceImpl::toDataMutable(PdxWriter& writer) {
         position = nextFieldPosition;  // mark next field;
       }
     }
-    _GEODE_SAFE_DELETE_ARRAY(copy);
   } else {
     for (size_t i = 0; i < pdxFieldList->size(); i++) {
       auto currPf = pdxFieldList->at(i);
