@@ -55,13 +55,14 @@ TEST(PdxInstanceImplTest, updatePdxStream) {
   auto cache = cacheFactory.create();
   CacheImpl cacheImpl(&cache, properties, true, false, nullptr);
   auto buffer = std::vector<uint8_t>(__1M__, 0xcc);
+  auto len = static_cast<int32_t>(buffer.size());
   PdxInstanceImpl pdxInstanceImpl(
-      buffer.data(), buffer.size(), 0xdeadbeef, cacheImpl.getCachePerfStats(),
+      buffer.data(), len, 0xdeadbeef, cacheImpl.getCachePerfStats(),
       *(cacheImpl.getPdxTypeRegistry()), cacheImpl, false);
 
   for (auto i = 0; i < __100K__; i++) {
     try {
-      pdxInstanceImpl.updatePdxStream(buffer.data(), buffer.size());
+      pdxInstanceImpl.updatePdxStream(buffer.data(), len);
     } catch (const std::exception&) {
       GTEST_FAIL();
     }
