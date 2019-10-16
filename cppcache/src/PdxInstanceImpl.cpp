@@ -66,14 +66,14 @@ PdxInstanceImpl::PdxInstanceImpl(const uint8_t* buffer, int length, int typeId,
                                  PdxTypeRegistry& pdxTypeRegistry,
                                  const CacheImpl& cacheImpl,
                                  bool enableTimeStatistics)
-    : m_bufferLength(length),
+    : m_buffer(buffer, buffer + length),
+      m_bufferLength(length),
       m_typeId(typeId),
       m_pdxType(nullptr),
       m_cacheStats(cacheStats),
       m_pdxTypeRegistry(pdxTypeRegistry),
       m_cacheImpl(cacheImpl),
       m_enableTimeStatistics(enableTimeStatistics) {
-  m_buffer.reset(DataInput::getBufferCopy(buffer, length));
   LOGDEBUG("PdxInstanceImpl::m_bufferLength = %d ", m_bufferLength);
 }
 
@@ -83,8 +83,7 @@ PdxInstanceImpl::PdxInstanceImpl(FieldVsValues fieldVsValue,
                                  PdxTypeRegistry& pdxTypeRegistry,
                                  const CacheImpl& cacheImpl,
                                  bool enableTimeStatistics)
-    : m_buffer(nullptr),
-      m_bufferLength(0),
+    : m_bufferLength(0),
       m_typeId(0),
       m_pdxType(pdxType),
       m_updatedFields(fieldVsValue),
@@ -254,8 +253,8 @@ std::shared_ptr<WritablePdxInstance> PdxInstanceImpl::createWriter() {
   LOGDEBUG("PdxInstanceImpl::createWriter m_bufferLength = %d m_typeId = %d ",
            m_bufferLength, m_typeId);
   return std::make_shared<PdxInstanceImpl>(
-      m_buffer.get(), m_bufferLength, m_typeId, m_cacheStats, m_pdxTypeRegistry,
-      m_cacheImpl,
+      m_buffer.data(), m_bufferLength, m_typeId, m_cacheStats,
+      m_pdxTypeRegistry, m_cacheImpl,
       m_enableTimeStatistics);  // need to create duplicate byte stream);
 }
 
@@ -645,7 +644,7 @@ int32_t PdxInstanceImpl::hashcode() const {
 
   auto pdxIdentityFieldList = getIdentityPdxFields(pt);
 
-  auto dataInput = m_cacheImpl.createDataInput(m_buffer.get(), m_bufferLength);
+  auto dataInput = m_cacheImpl.createDataInput(m_buffer.data(), m_bufferLength);
 
   for (uint32_t i = 0; i < pdxIdentityFieldList.size(); i++) {
     auto pField = pdxIdentityFieldList.at(i);
@@ -707,9 +706,10 @@ int32_t PdxInstanceImpl::hashcode() const {
 }
 
 void PdxInstanceImpl::updatePdxStream(uint8_t* newPdxStream, int len) {
-  m_buffer.reset(DataInput::getBufferCopy(newPdxStream, len));
+  m_buffer = std::vector<const uint8_t>(newPdxStream, newPdxStream + len);
   m_bufferLength = len;
 }
+
 std::shared_ptr<PdxType> PdxInstanceImpl::getPdxType() const {
   if (m_typeId == 0) {
     if (m_pdxType == nullptr) {
@@ -1058,7 +1058,7 @@ std::string PdxInstanceImpl::toString() const {
 }
 
 std::shared_ptr<PdxSerializable> PdxInstanceImpl::getObject() {
-  auto dataInput = m_cacheImpl.createDataInput(m_buffer.get(), m_bufferLength);
+  auto dataInput = m_cacheImpl.createDataInput(m_buffer.data(), m_bufferLength);
   int64_t sampleStartNanos =
       m_enableTimeStatistics ? Utils::startStatOpTime() : 0;
   //[ToDo] do we have to call incPdxDeSerialization here?
@@ -1132,8 +1132,8 @@ bool PdxInstanceImpl::operator==(const CacheableKey& other) const {
   equatePdxFields(otherPdxIdentityFieldList, myPdxIdentityFieldList);
 
   auto myDataInput =
-      m_cacheImpl.createDataInput(m_buffer.get(), m_bufferLength);
-  auto otherDataInput = m_cacheImpl.createDataInput(otherPdx->m_buffer.get(),
+      m_cacheImpl.createDataInput(m_buffer.data(), m_bufferLength);
+  auto otherDataInput = m_cacheImpl.createDataInput(otherPdx->m_buffer.data(),
                                                     otherPdx->m_bufferLength);
 
   PdxFieldTypes fieldTypeId;
@@ -1333,9 +1333,9 @@ void PdxInstanceImpl::toDataMutable(PdxWriter& writer) {
       pt->getPdxFieldTypes();
   int position = 0;  // ignore typeid and length
   int nextFieldPosition = 0;
-  if (m_buffer != nullptr) {
+  if (m_buffer.size() != 0) {
     auto dataInput =
-        m_cacheImpl.createDataInput(m_buffer.get(), m_bufferLength);
+        m_cacheImpl.createDataInput(m_buffer.data(), m_bufferLength);
     for (size_t i = 0; i < pdxFieldList->size(); i++) {
       auto currPf = pdxFieldList->at(i);
       LOGDEBUG("toData filedname = %s , isVarLengthType = %d ",
@@ -1966,7 +1966,7 @@ DataInput PdxInstanceImpl::getDataInputForField(
     throw IllegalStateException("PdxInstance doesn't have field " + fieldname);
   }
 
-  auto dataInput = m_cacheImpl.createDataInput(m_buffer.get(), m_bufferLength);
+  auto dataInput = m_cacheImpl.createDataInput(m_buffer.data(), m_bufferLength);
   auto pos = getOffset(dataInput, pt, pft->getSequenceId());
 
   dataInput.reset();
