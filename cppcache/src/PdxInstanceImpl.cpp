@@ -706,7 +706,7 @@ int32_t PdxInstanceImpl::hashcode() const {
 }
 
 void PdxInstanceImpl::updatePdxStream(uint8_t* newPdxStream, int len) {
-  m_buffer = std::vector<const uint8_t>(newPdxStream, newPdxStream + len);
+  m_buffer = std::vector<uint8_t>(newPdxStream, newPdxStream + len);
   m_bufferLength = len;
 }
 
