@@ -61,8 +61,8 @@ bool sortFunc(std::shared_ptr<PdxFieldType> field1,
 
 PdxInstanceImpl::~PdxInstanceImpl() noexcept {}
 
-PdxInstanceImpl::PdxInstanceImpl(const uint8_t* buffer, int length, int typeId,
-                                 CachePerfStats& cacheStats,
+PdxInstanceImpl::PdxInstanceImpl(const uint8_t* buffer, size_t length,
+                                 int typeId, CachePerfStats& cacheStats,
                                  PdxTypeRegistry& pdxTypeRegistry,
                                  const CacheImpl& cacheImpl,
                                  bool enableTimeStatistics)
@@ -1062,7 +1062,8 @@ std::shared_ptr<PdxSerializable> PdxInstanceImpl::getObject() {
   int64_t sampleStartNanos =
       m_enableTimeStatistics ? Utils::startStatOpTime() : 0;
   //[ToDo] do we have to call incPdxDeSerialization here?
-  auto ret = PdxHelper::deserializePdx(dataInput, m_typeId, m_buffer.size());
+  auto ret = PdxHelper::deserializePdx(dataInput, m_typeId,
+                                       static_cast<int32_t>(m_buffer.size()));
 
   if (m_enableTimeStatistics) {
     Utils::updateStatOpTime(m_cacheStats.getStat(),

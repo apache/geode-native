@@ -199,7 +199,7 @@ class APACHE_GEODE_EXPORT PdxInstanceImpl : public WritablePdxInstance {
    * @brief constructors
    */
 
-  PdxInstanceImpl(const uint8_t* buffer, int length, int typeId,
+  PdxInstanceImpl(const uint8_t* buffer, size_t length, int typeId,
                   CachePerfStats& cacheStats, PdxTypeRegistry& pdxTypeRegistry,
                   const CacheImpl& cacheImpl, bool enableTimeStatistics);
 
