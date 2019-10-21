@@ -19,6 +19,8 @@
 
 #include <string>
 
+#include <ace/Guard_T.h>
+
 #include <geode/CacheStatistics.hpp>
 #include <geode/PersistenceManager.hpp>
 #include <geode/PoolManager.hpp>
@@ -162,7 +164,7 @@ CacheImpl::RegionKind CacheImpl::getRegionKind(
 }
 
 void CacheImpl::removeRegion(const std::string& name) {
-  TryReadGuard guardCacheDestroy(m_destroyCacheMutex, m_destroyPending);
+  ACE_Guard<ACE_Recursive_Thread_Mutex> lock(m_destroyCacheMutex, 1);
   if (!m_destroyPending) {
     m_regions.erase(name);
   }
@@ -240,15 +242,18 @@ void CacheImpl::close(bool keepalive) {
   TcrMessage::setKeepAlive(keepalive);
   // bug #247 fix for durable clients missing events when recycled
   sendNotificationCloseMsgs();
+
   {
-    TryWriteGuard guardCacheDestroy(m_destroyCacheMutex, m_destroyPending);
+    ACE_Guard<ACE_Recursive_Thread_Mutex> lock(m_destroyCacheMutex, 1);
     if (m_destroyPending) {
       return;
     }
     m_destroyPending = true;
   }
 
-  if (m_closed || (!m_initialized)) return;
+  if (m_closed || (!m_initialized)) {
+    return;
+  }
 
   // Close the distribution manager used for queries.
   if (m_remoteQueryServicePtr != nullptr) {
@@ -324,14 +329,21 @@ void CacheImpl::close(bool keepalive) {
   LOGFINE("Cache closed.");
 }
 
-bool CacheImpl::isCacheDestroyPending() const { return m_destroyPending; }
+bool CacheImpl::doIfDestroyNotPending(std::function<void()> f) {
+  ACE_Guard<ACE_Recursive_Thread_Mutex> lock(m_destroyCacheMutex, 1);
+  if (lock.locked() && !m_destroyPending) {
+    f();
+  }
+
+  return !m_destroyPending;
+}
 
 void CacheImpl::validateRegionAttributes(
     const std::string& name, const RegionAttributes& regionAttributes) const {
   auto&& kind = getRegionKind(regionAttributes);
   if (regionAttributes.m_clientNotificationEnabled && kind == CPP_REGION) {
     throw UnsupportedOperationException(
-        "Cache::createRegion: \"" + name +
+        "CacheImpl::createRegion: \"" + name +
         "\" Client notification can be enabled only for native client region");
   }
 }
@@ -370,7 +382,7 @@ void CacheImpl::createRegion(std::string name,
     auto&& lock = m_regions.make_lock();
 
     if (m_regions.find(name) != m_regions.end()) {
-      throw RegionExistsException("Cache::createRegion: \"" + name +
+      throw RegionExistsException("CacheImpl::createRegion: \"" + name +
                                   "\" region exists in local cache");
     }
 
@@ -385,17 +397,18 @@ void CacheImpl::createRegion(std::string name,
     } catch (const Exception&) {
       throw;
     } catch (std::exception& ex) {
-      throw UnknownException("Cache::createRegion: Failed to create Region \"" +
-                             name +
-                             "\" due to unknown exception: " + ex.what());
+      throw UnknownException(
+          "CacheImpl::createRegion: Failed to create Region \"" + name +
+          "\" due to unknown exception: " + ex.what());
     } catch (...) {
-      throw UnknownException("Cache::createRegion: Failed to create Region \"" +
-                             name + "\" due to unknown exception.");
+      throw UnknownException(
+          "CacheImpl::createRegion: Failed to create Region \"" + name +
+          "\" due to unknown exception.");
     }
 
     if (rpImpl == nullptr) {
       throw RegionCreationFailedException(
-          "Cache::createRegion: Failed to create Region \"" + name + "\"");
+          "CacheImpl::createRegion: Failed to create Region \"" + name + "\"");
     }
 
     regionPtr = rpImpl;
@@ -449,11 +462,10 @@ std::shared_ptr<Region> CacheImpl::findRegion(const std::string& name) {
 }
 
 std::shared_ptr<Region> CacheImpl::getRegion(const std::string& path) {
-  LOGDEBUG("Cache::getRegion " + path);
+  LOGDEBUG("CacheImpl::getRegion " + path);
 
   this->throwIfClosed();
-
-  TryReadGuard guardCacheDestroy(m_destroyCacheMutex, m_destroyPending);
+  ACE_Guard<ACE_Recursive_Thread_Mutex> lock(m_destroyCacheMutex, 1);
 
   if (m_destroyPending) {
     return nullptr;
@@ -461,7 +473,7 @@ std::shared_ptr<Region> CacheImpl::getRegion(const std::string& path) {
 
   static const std::string slash("/");
   if (path == slash || path.length() < 1) {
-    LOGERROR("Cache::getRegion: path [" + path + "] is not valid.");
+    LOGERROR("CacheImpl::getRegion: path [" + path + "] is not valid.");
     throw IllegalArgumentException("Cache::getRegion: path is empty or a /");
   }
 
@@ -597,14 +609,12 @@ void CacheImpl::readyForEvents() {
   bool isDurable = m_tcrConnectionManager->isDurable();
 
   if (!isDurable && autoReadyForEvents) {
-    LOGERROR(
+    std::string msg =
         "Only durable clients or clients with the "
         "auto-ready-for-events property set to false should call "
-        "readyForEvents()");
-    throw IllegalStateException(
-        "Only durable clients or clients with the "
-        "auto-ready-for-events property set to false should call "
-        "readyForEvents()");
+        "readyForEvents()";
+    LOGERROR("CacheImpl::%s(%p): %s", __FUNCTION__, this, msg.c_str());
+    throw IllegalStateException(msg.c_str());
   }
 
   // Send the CLIENT_READY message to the server
@@ -670,7 +680,7 @@ bool CacheImpl::getEndpointStatus(const std::string& endpoint) {
 }
 
 void CacheImpl::processMarker() {
-  TryReadGuard guardCacheDestroy(m_destroyCacheMutex, m_destroyPending);
+  ACE_Guard<ACE_Recursive_Thread_Mutex> destroy_lock(m_destroyCacheMutex, 1);
   if (m_destroyPending) {
     return;
   }

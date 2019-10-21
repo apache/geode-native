@@ -24,7 +24,7 @@
 #include <memory>
 #include <mutex>
 
-#include <ace/RW_Thread_Mutex.h>
+#include <ace/Recursive_Thread_Mutex.h>
 
 #include <geode/Cache.hpp>
 #include <geode/PoolManager.hpp>
@@ -272,8 +272,6 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
     return m_readPdxSerialized;
   }
 
-  bool isCacheDestroyPending() const;
-
   static std::map<std::string, RegionAttributes> getRegionShortcut();
 
   std::shared_ptr<PdxTypeRegistry> getPdxTypeRegistry() const;
@@ -321,6 +319,8 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
   AuthenticatedView createAuthenticatedView(
       std::shared_ptr<Properties> userSecurityProperties,
       const std::string& poolName);
+
+  bool doIfDestroyNotPending(std::function<void()>);
 
  private:
   std::atomic<bool> m_networkhop;
@@ -374,7 +374,7 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
   std::unique_ptr<EvictionController> m_evictionController;
   TcrConnectionManager* m_tcrConnectionManager;
   std::shared_ptr<RemoteQueryService> m_remoteQueryServicePtr;
-  ACE_RW_Thread_Mutex m_destroyCacheMutex;
+  ACE_Recursive_Thread_Mutex m_destroyCacheMutex;
   volatile bool m_destroyPending;
   volatile bool m_initDone;
   std::mutex m_initDoneLock;
@@ -397,6 +397,7 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
   friend class CacheFactory;
   friend class Cache;
   friend class DistributedSystemImpl;
+  friend class PdxInstanceFactory;
 };
 }  // namespace client
 }  // namespace geode

@@ -81,10 +81,12 @@ void ClientMetadataService::svc() {
     m_regionQueue.pop_front();
     queue::coalesce(m_regionQueue, regionFullPath);
 
-    if (!m_cache->isCacheDestroyPending()) {
-      lock.unlock();
-      getClientPRMetadata(regionFullPath.c_str());
-    } else {
+    if (!m_cache->doIfDestroyNotPending([&]() {
+          lock.unlock();
+          getClientPRMetadata(regionFullPath.c_str());
+        })) {
+      LOGINFO("ClientMetadataService::%s(%p): destroy is pending, bail out",
+              __FUNCTION__, this);
       break;
     }
   }
