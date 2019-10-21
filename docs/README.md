@@ -15,4 +15,4 @@ Documentation can be built and previewed using the utility scripts at [docs/dock
 
 ## Manual build
 
-Documentation can be built in a less-automated way, as described at [docs/manual-build](https://github.com/apache/geode-native/tree/develop/manual-build).
+Documentation can be built in a less-automated way, as described at [docs/manual-build](https://github.com/apache/geode-native/tree/develop/docs/manual-build).
