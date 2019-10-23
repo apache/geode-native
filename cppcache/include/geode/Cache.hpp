@@ -254,7 +254,7 @@ class APACHE_GEODE_EXPORT Cache : public GeodeCache {
         bool readPdxSerialized,
         const std::shared_ptr<AuthInitialize>& authInitialize);
 
-  std::shared_ptr<CacheImpl> m_cacheImpl;
+  std::unique_ptr<CacheImpl> m_cacheImpl;
 
  protected:
   static bool isPoolInMultiuserMode(std::shared_ptr<Region> regionPtr);

@@ -112,16 +112,19 @@ Cache::Cache(const std::shared_ptr<Properties>& dsProp,
           new CacheImpl(this, dsProp, ignorePdxUnreadFields, readPdxSerialized,
                         authInitialize))) {}
 
-Cache::Cache(Cache&& other) noexcept
-    : m_cacheImpl(std::move(other.m_cacheImpl)) {
-  m_cacheImpl->setCache(this);
+Cache::Cache(Cache&& other) noexcept {
+  other.m_cacheImpl->doIfDestroyNotPending([&]() {
+    m_cacheImpl = std::move(other.m_cacheImpl);
+    m_cacheImpl->setCache(this);
+  });
 }
 
 Cache& Cache::operator=(Cache&& other) noexcept {
-  if (this != &other) {
+  other.m_cacheImpl->doIfDestroyNotPending([&]() {
     m_cacheImpl = std::move(other.m_cacheImpl);
     m_cacheImpl->setCache(this);
-  }
+  });
+
   return *this;
 }
 
