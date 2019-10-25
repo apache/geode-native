@@ -899,21 +899,6 @@ void ThinClientPoolDM::sendUserCacheCloseMessage(bool keepAlive) {
   }
 }
 
-TcrConnection* ThinClientPoolDM::getConnectionInMultiuserMode(
-    std::shared_ptr<UserAttributes> userAttribute) {
-  LOGDEBUG("ThinClientPoolDM::getConnectionInMultiuserMode:");
-  UserConnectionAttributes* uca = userAttribute->getConnectionAttribute();
-  if (uca != nullptr) {
-    TcrEndpoint* ep = uca->getEndpoint();
-    LOGDEBUG(
-        "ThinClientPoolDM::getConnectionInMultiuserMode endpoint got = %s ",
-        ep->name().c_str());
-    return getFromEP(ep);
-  } else {
-    return nullptr;
-  }
-}
-
 int32_t ThinClientPoolDM::GetPDXIdForType(
     std::shared_ptr<Serializable> pdxType) {
   LOGDEBUG("ThinClientPoolDM::GetPDXIdForType:");
@@ -1371,10 +1356,6 @@ GfErrType ThinClientPoolDM::sendSyncRequest(
                                      request, version, singleHopConnFound,
                                      connFound, serverLocation);
 
-      LOGDEBUG(
-          "ThinClientPoolDM::sendSyncRequest: after "
-          "getConnectionInMultiuserMode %d",
-          isUserNeedToReAuthenticate);
       if (conn != nullptr) {  // need to chk whether user is already
                               // authenticated to this endpoint or not.
         isUserNeedToReAuthenticate =
