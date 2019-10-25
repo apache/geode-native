@@ -628,8 +628,6 @@ GfErrType ThinClientPoolDM::sendRequestToAllServers(
     const char* func, uint8_t getResult, std::chrono::milliseconds timeout,
     std::shared_ptr<Cacheable> args, std::shared_ptr<ResultCollector>& rs,
     std::shared_ptr<CacheableString>& exceptionPtr) {
-  GfErrType err = GF_NOERR;
-
   getStats().setCurClientOps(++m_clientOps);
 
   auto resultCollectorLock = std::make_shared<std::recursive_mutex>();
@@ -665,7 +663,7 @@ GfErrType ThinClientPoolDM::sendRequestToAllServers(
   GfErrType finalErrorReturn = GF_NOERR;
 
   for (auto& funcExe : fePtrList) {
-    err = funcExe->getResult();
+    auto err = funcExe->getResult();
     if (err != GF_NOERR) {
       if (funcExe->getException() == nullptr) {
         if (err == GF_TIMEOUT) {
@@ -926,7 +924,7 @@ int32_t ThinClientPoolDM::GetPDXIdForType(
 
   TcrMessageReply reply(true, this);
 
-  GfErrType err = sendSyncRequest(request, reply);
+  auto err = sendSyncRequest(request, reply);
 
   if (err != GF_NOERR) {
     throwExceptionIfError("Operation Failed", err)
@@ -964,7 +962,7 @@ void ThinClientPoolDM::AddPdxType(std::shared_ptr<Serializable> pdxType,
 
   TcrMessageReply reply(true, this);
 
-  GfErrType err = sendSyncRequest(request, reply);
+  auto err = sendSyncRequest(request, reply);
 
   if (err != GF_NOERR) {
     throwExceptionIfError("Operation Failed", err)
@@ -977,15 +975,13 @@ void ThinClientPoolDM::AddPdxType(std::shared_ptr<Serializable> pdxType,
 std::shared_ptr<Serializable> ThinClientPoolDM::GetPDXTypeById(int32_t typeId) {
   LOGDEBUG("ThinClientPoolDM::GetPDXTypeById:");
 
-  GfErrType err = GF_NOERR;
-
   TcrMessageGetPdxTypeById request(
       new DataOutput(m_connManager.getCacheImpl()->createDataOutput()), typeId,
       this);
 
   TcrMessageReply reply(true, this);
 
-  err = sendSyncRequest(request, reply);
+  auto err = sendSyncRequest(request, reply);
 
   if (err != GF_NOERR) {
     throwExceptionIfError("Operation Failed", err)
@@ -1007,7 +1003,7 @@ int32_t ThinClientPoolDM::GetEnumValue(std::shared_ptr<Serializable> enumInfo) {
 
   TcrMessageReply reply(true, this);
 
-  GfErrType err = sendSyncRequest(request, reply);
+  auto err = sendSyncRequest(request, reply);
 
   if (err != GF_NOERR) {
     throwExceptionIfError("Operation Failed", err)
@@ -1038,15 +1034,13 @@ int32_t ThinClientPoolDM::GetEnumValue(std::shared_ptr<Serializable> enumInfo) {
 std::shared_ptr<Serializable> ThinClientPoolDM::GetEnum(int32_t val) {
   LOGDEBUG("ThinClientPoolDM::GetEnum:");
 
-  GfErrType err = GF_NOERR;
-
   TcrMessageGetPdxEnumById request(
       new DataOutput(m_connManager.getCacheImpl()->createDataOutput()), val,
       this);
 
   TcrMessageReply reply(true, this);
 
-  err = sendSyncRequest(request, reply);
+  auto err = sendSyncRequest(request, reply);
 
   if (err != GF_NOERR) {
     throwExceptionIfError("Operation Failed", err)
@@ -1069,7 +1063,7 @@ void ThinClientPoolDM::AddEnum(std::shared_ptr<Serializable> enumInfo,
 
   TcrMessageReply reply(true, this);
 
-  GfErrType err = sendSyncRequest(request, reply);
+  auto err = sendSyncRequest(request, reply);
 
   if (err != GF_NOERR) {
     throwExceptionIfError("Operation Failed", err)
@@ -1085,15 +1079,13 @@ GfErrType ThinClientPoolDM::sendUserCredentials(
     bool isBGThread, bool& isServerException) {
   LOGDEBUG("ThinClientPoolDM::sendUserCredentials:");
 
-  auto err = GF_NOERR;
-
   TcrMessageUserCredential request(
       new DataOutput(m_connManager.getCacheImpl()->createDataOutput()),
       credentials, this);
 
   TcrMessageReply reply(true, this);
 
-  err =
+  auto err =
       conn->getEndpointObject()->sendRequestConnWithRetry(request, reply, conn);
 
   if (conn) {
@@ -1274,7 +1266,7 @@ GfErrType ThinClientPoolDM::sendSyncRequest(TcrMessage& request,
     reply.setMessageType(TcrMessage::RESPONSE);
 
     for (auto& worker : getAllWorkers) {
-      GfErrType err = worker->getResult();
+      auto err = worker->getResult();
 
       if (err != GF_NOERR) {
         error = err;
@@ -2305,7 +2297,7 @@ GfErrType ThinClientPoolDM::doFailover(TcrConnection* conn) {
       new DataOutput(m_connManager.getCacheImpl()->createDataOutput()));
   TcrMessageReply reply(true, nullptr);
 
-  GfErrType err = sendSyncRequest(request, reply);
+  auto err = sendSyncRequest(request, reply);
 
   if (err == GF_NOERR) {
     switch (reply.getMessageType()) {
