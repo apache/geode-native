@@ -2154,12 +2154,8 @@ bool ThinClientPoolDM::canItBeDeleted(TcrConnection* conn) {
 
 bool ThinClientPoolDM::excludeServer(std::string endpoint,
                                      std::set<ServerLocation>& excludeServers) {
-  if (excludeServers.empty() ||
-      excludeServers.find(ServerLocation(endpoint)) == excludeServers.end()) {
-    return false;
-  } else {
-    return true;
-  }
+  return !(excludeServers.empty() || excludeServers.find(ServerLocation(
+                                         endpoint)) == excludeServers.end());
 }
 
 bool ThinClientPoolDM::excludeConnection(
@@ -2229,11 +2225,6 @@ TcrConnection* ThinClientPoolDM::getNoGetLock(
   }
 
   return returnT;
-}
-
-bool ThinClientPoolDM::exclude(TcrConnection* conn,
-                               std::set<ServerLocation>& excludeServers) {
-  return excludeConnection(conn, excludeServers);
 }
 
 void ThinClientPoolDM::incRegionCount() {
