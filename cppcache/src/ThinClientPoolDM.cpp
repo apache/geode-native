@@ -412,8 +412,7 @@ void ThinClientPoolDM::cleanStaleConnections(std::atomic<bool>& isRunning) {
   auto savedConns = 0;
 
   for (unsigned int i = 0; (i < availableConns) && isRunning; i++) {
-    TcrConnection* conn = nullptr;
-    conn = getNoWait();
+    TcrConnection* conn = getNoWait();
     if (conn == nullptr) {
       break;
     }
