@@ -55,10 +55,10 @@
 
 /** Deletes x only if it exists */
 #define _GEODE_SAFE_DELETE(x) \
-  {                           \
+  do {                        \
     delete x;                 \
     x = nullptr;              \
-  }
+  } while (0)
 
 /** Deletes array x only if it exists */
 #define _GEODE_SAFE_DELETE_ARRAY(x) \
