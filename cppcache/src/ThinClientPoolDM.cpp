@@ -410,7 +410,7 @@ void ThinClientPoolDM::cleanStaleConnections(std::atomic<bool>& isRunning) {
   auto savedConns = 0;
 
   for (unsigned int i = 0; (i < availableConns) && isRunning; i++) {
-    TcrConnection* conn = getNoWait();
+    auto* conn = getNoWait();
     if (conn == nullptr) {
       break;
     }
@@ -585,8 +585,8 @@ std::string ThinClientPoolDM::selectEndpoint(
                   outEndpoint.getPort());
     LOGFINE("ThinClientPoolDM: Locator returned endpoint [%s]", epNameStr);
     return epNameStr;
-  } else if (!m_attrs->m_initServList
-                  .empty()) {  // use specified server endpoints
+  } else if (!m_attrs->m_initServList.empty()) {
+    // use specified server endpoints
     // highly complex round-robin algorithm
     std::lock_guard<decltype(m_endpointSelectionLock)> _guard(
         m_endpointSelectionLock);
