@@ -909,7 +909,7 @@ int32_t ThinClientPoolDM::GetPDXIdForType(
   auto err = sendSyncRequest(request, reply);
 
   if (err != GF_NOERR) {
-    throwExceptionIfError("Operation Failed", err)
+    throwExceptionIfError("Operation Failed", err);
   } else if (reply.getMessageType() == TcrMessage::EXCEPTION) {
     LOGDEBUG("ThinClientPoolDM::GetPDXTypeById: Exception = %s ",
              reply.getException());
@@ -947,7 +947,7 @@ void ThinClientPoolDM::AddPdxType(std::shared_ptr<Serializable> pdxType,
   auto err = sendSyncRequest(request, reply);
 
   if (err != GF_NOERR) {
-    throwExceptionIfError("Operation Failed", err)
+    throwExceptionIfError("Operation Failed", err);
   } else if (reply.getMessageType() == TcrMessage::EXCEPTION) {
     LOGDEBUG("ThinClientPoolDM::GetPDXTypeById: Exception = %s ",
              reply.getException());
@@ -966,7 +966,7 @@ std::shared_ptr<Serializable> ThinClientPoolDM::GetPDXTypeById(int32_t typeId) {
   auto err = sendSyncRequest(request, reply);
 
   if (err != GF_NOERR) {
-    throwExceptionIfError("Operation Failed", err)
+    throwExceptionIfError("Operation Failed", err);
   } else if (reply.getMessageType() == TcrMessage::EXCEPTION) {
     LOGDEBUG("ThinClientPoolDM::GetPDXTypeById: Exception = %s ",
              reply.getException());
@@ -988,7 +988,7 @@ int32_t ThinClientPoolDM::GetEnumValue(std::shared_ptr<Serializable> enumInfo) {
   auto err = sendSyncRequest(request, reply);
 
   if (err != GF_NOERR) {
-    throwExceptionIfError("Operation Failed", err)
+    throwExceptionIfError("Operation Failed", err);
   } else if (reply.getMessageType() == TcrMessage::EXCEPTION) {
     LOGDEBUG("ThinClientPoolDM::GetEnumValue: Exception = %s ",
              reply.getException());
@@ -1025,7 +1025,7 @@ std::shared_ptr<Serializable> ThinClientPoolDM::GetEnum(int32_t val) {
   auto err = sendSyncRequest(request, reply);
 
   if (err != GF_NOERR) {
-    throwExceptionIfError("Operation Failed", err)
+    throwExceptionIfError("Operation Failed", err);
   } else if (reply.getMessageType() == TcrMessage::EXCEPTION) {
     LOGDEBUG("ThinClientPoolDM::GetEnum: Exception = %s ",
              reply.getException());
@@ -1048,7 +1048,7 @@ void ThinClientPoolDM::AddEnum(std::shared_ptr<Serializable> enumInfo,
   auto err = sendSyncRequest(request, reply);
 
   if (err != GF_NOERR) {
-    throwExceptionIfError("Operation Failed", err)
+    throwExceptionIfError("Operation Failed", err);
   } else if (reply.getMessageType() == TcrMessage::EXCEPTION) {
     LOGDEBUG("ThinClientPoolDM::AddEnum: Exception = %s ",
              reply.getException());
