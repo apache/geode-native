@@ -387,9 +387,7 @@ void ThinClientPoolDM::manageConnections(std::atomic<bool>& isRunning) {
     m_connSema.acquire();
     if (isRunning) {
       manageConnectionsInternal(isRunning);
-      while (m_connSema.tryacquire() != -1) {
-        // ignored
-      }
+      m_connSema.acquire();
     }
   }
   LOGFINE("ThinClientPoolDM: ending manageConnections thread");
@@ -2059,9 +2057,7 @@ void ThinClientPoolDM::pingServer(std::atomic<bool>& isRunning) {
     m_pingSema.acquire();
     if (isRunning && !m_connManager.isNetDown()) {
       pingServerLocal();
-      while (m_pingSema.tryacquire() != -1) {
-        // ignored
-      }
+      m_pingSema.acquire();
     }
   }
   LOGFINE("Ending ping thread for pool %s", m_poolName.c_str());
@@ -2078,9 +2074,7 @@ void ThinClientPoolDM::cliCallback(std::atomic<bool>& isRunning) {
           *(m_connManager.getCacheImpl()->getCache()));
       // this call for cpp client
       m_connManager.getCacheImpl()->getPdxTypeRegistry()->clear();
-      while (m_cliCallbackSema.tryacquire() != -1) {
-        // ignored
-      }
+      m_cliCallbackSema.acquire();
     }
   }
   LOGFINE("Ending cliCallback thread for pool %s", m_poolName.c_str());
