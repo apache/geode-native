@@ -104,7 +104,7 @@ class GetAllWork : public PooledWork<GfErrType>,
     m_reply->setChunkedResultHandler(m_resultCollector);
   }
 
-  ~GetAllWork() {
+  ~GetAllWork() override {
     delete m_request;
     delete m_reply;
     delete m_resultCollector;
@@ -113,7 +113,7 @@ class GetAllWork : public PooledWork<GfErrType>,
   TcrMessage* getReply() { return m_reply; }
 
   void init() {}
-  GfErrType execute() {
+  GfErrType execute() override {
     GuardUserAttributes gua;
 
     if (m_userAttribute != nullptr) {
