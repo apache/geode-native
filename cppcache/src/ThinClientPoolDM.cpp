@@ -2423,9 +2423,10 @@ GfErrType FunctionExecution::execute() {
           m_poolDM->getConnectionManager().getCacheImpl()->createDataOutput()),
       funcName, m_args, m_getResult, m_poolDM, m_timeout);
   TcrMessageReply reply(true, m_poolDM);
-  auto* resultProcessor(new ChunkedFunctionExecutionResponse(
-      reply, (m_getResult & 2) == 2, *m_rc, m_resultCollectorLock));
-  reply.setChunkedResultHandler(resultProcessor);
+  auto resultProcessor = std::unique_ptr<ChunkedFunctionExecutionResponse>(
+      new ChunkedFunctionExecutionResponse(reply, (m_getResult & 2) == 2, *m_rc,
+                                           m_resultCollectorLock));
+  reply.setChunkedResultHandler(resultProcessor.get());
   reply.setTimeout(m_timeout);
   reply.setDM(m_poolDM);
 
@@ -2437,8 +2438,6 @@ GfErrType FunctionExecution::execute() {
   m_error = m_poolDM->handleEPError(m_ep, reply, m_error);
   if (m_error != GF_NOERR) {
     if (m_error == GF_NOTCON || m_error == GF_IOERR) {
-      delete resultProcessor;
-      resultProcessor = nullptr;
       return GF_NOERR;  // if server is unavailable its not an error for
       // functionexec OnServers() case
     }
@@ -2448,8 +2447,6 @@ GfErrType FunctionExecution::execute() {
       exceptionPtr = CacheableString::create(reply.getException());
     }
 
-    delete resultProcessor;
-    resultProcessor = nullptr;
     return m_error;
   } else if (reply.getMessageType() == TcrMessage::EXCEPTION ||
              reply.getMessageType() == TcrMessage::EXECUTE_FUNCTION_ERROR) {
@@ -2457,8 +2454,7 @@ GfErrType FunctionExecution::execute() {
                                                       reply.getException());
     exceptionPtr = CacheableString::create(reply.getException());
   }
-  delete resultProcessor;
-  resultProcessor = nullptr;
+
   return m_error;
 }
 
