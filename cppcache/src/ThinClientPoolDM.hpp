@@ -242,8 +242,6 @@ class ThinClientPoolDM
   GfErrType sendUserCredentials(std::shared_ptr<Properties> credentials,
                                 TcrConnection*& conn, bool isBGThread,
                                 bool& isServerException);
-  TcrConnection* getConnectionInMultiuserMode(
-      std::shared_ptr<UserAttributes> userAttribute);
 
   // get endpoint using the endpoint string
   TcrEndpoint* getEndpoint(const std::string& epNameStr);

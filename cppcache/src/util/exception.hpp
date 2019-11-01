@@ -34,11 +34,11 @@ extern void APACHE_GEODE_EXPORT GfErrTypeThrowException(const char* str,
                                                         GfErrType err);
 
 #define throwExceptionIfError(str, err)  \
-  {                                      \
+  do {                                   \
     if (err != GF_NOERR) {               \
       GfErrTypeThrowException(str, err); \
     }                                    \
-  }
+  } while (0)
 
 }  // namespace client
 }  // namespace geode
