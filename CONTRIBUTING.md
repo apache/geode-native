@@ -6,12 +6,13 @@ see [BUILDING.md](BUILDING.md)
 
 ## Next steps
 * Make your changes/add your feature/fix a bug.
-* Test your feature branch changes
-* Check your formatting
-* Submit a pull request
+* Test your feature branch changes.
+* Check your formatting.
+* Submit a pull request.
 
 ## Testing
-Before submitting a pull request the unit and integration tests must all pass. We are using CTest, (Please see [the CTest documentation](https://cmake.org/Wiki/CMake/Testing_With_CTest) for further information.)
+Before submitting a pull request the unit and integration tests must all pass. We are using CTest (please see [the CTest documentation](https://cmake.org/Wiki/CMake/Testing_With_CTest) for further information) for unit tests and old integration tests, and [Google Test](https://github.com/google/googletest) for new integration tests.
+
 ### Running unit tests
 ```bash
 $ cd <clone>
@@ -20,14 +21,19 @@ $ cd cppcache/test/<Debug|Release|if needed>
 $ ./apache-geode_unittests
 ```
 
-### Running old integration tests
+### Running integration tests
+There are two sets of integration tests based on different testing frameworks: CTest and [Google Test](https://github.com/google/googletest).
+
+CTest-based integration tests are deprecated. If your changes include the implementation of new integration test/s to be verified, they should be written using Google Test. If your change implies a significant change in one or more CTest-based test cases, you should create the equivalent test case/s using Google Test to substitute the old one/s instead of adapting the old ones.
+
+#### Running CTest integration tests (deprecated)
 ```bash
 $ cd <clone>
 $ cd build
 $ cmake --build . --target run-integration-tests
 ```
 
-Which is equivalent to running ctest directly:
+Which is equivalent to running `ctest` directly:
 
 ```bash
 $ cd build/cppcache/integration-test
@@ -41,14 +47,14 @@ $ ctest -R <test_name> -C <Debug|Release>
 ```
 .NET integration tests can be executed similarly from `build/clicache/integration-test`.
 
-### Running new integration tests
+#### Running Google Test integration tests
 ```bash
 $ cd <clone>
 $ cd build
 $ cd cppcache/integration/test
 $ ./cpp-integration-test [<options>]
 ```
-Note that <options> are gtest options that may be passed to the test executable, like for example the test cases to be run. Use --help to get all the available options.
+Note that <options> are `gtest` options that may be passed to the test executable, like for example the test cases to be run. Use `--help` to get all the available options.
 
 
 ## Style
