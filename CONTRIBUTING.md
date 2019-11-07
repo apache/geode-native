@@ -11,7 +11,7 @@ see [BUILDING.md](BUILDING.md)
 * Submit a pull request.
 
 ## Testing
-Before submitting a pull request the unit and integration tests must all pass. We are using CTest (please see [the CTest documentation](https://cmake.org/Wiki/CMake/Testing_With_CTest) for further information) for unit tests and old integration tests, and [Google Test](https://github.com/google/googletest) for new integration tests.
+Before submitting a pull request the unit and integration tests must all pass. We are using CTest for running tests (please see [the CTest documentation](https://cmake.org/Wiki/CMake/Testing_With_CTest) for further information) and [Google Test](https://github.com/google/googletest) as testing framework.
 
 ### Running unit tests
 ```bash
@@ -22,18 +22,20 @@ $ ./apache-geode_unittests
 ```
 
 ### Running integration tests
-There are two sets of integration tests based on different testing frameworks: CTest and [Google Test](https://github.com/google/googletest).
+There are two test suites of integration tests based on different testing frameworks. The old integration tests are based on a custom testing framework, and the newer ones are based on [Google Test](https://github.com/google/googletest).
 
-CTest-based integration tests are deprecated. If your changes include the implementation of new integration test/s to be verified, they should be written using Google Test. If your change implies a significant change in one or more CTest-based test cases, you should create the equivalent test case/s using Google Test to substitute the old one/s instead of adapting the old ones.
+Old integration tests are deprecated. If your changes include the implementation of new integration test/s to be verified, they should be written using Google Test. If your change implies a significant change in one or more old test cases, you should create the equivalent test case/s using Google Test to substitute the old one/s instead of adapting them.
 
-#### Running CTest integration tests (deprecated)
+Both sets of integration sets can be executed together using CTest.
+
 ```bash
 $ cd <clone>
 $ cd build
 $ cmake --build . --target run-integration-tests
 ```
 
-Which is equivalent to running `ctest` directly:
+#### Running only old integration test suite
+The old integration test suite can be executed independently from new test suite:
 
 ```bash
 $ cd build/cppcache/integration-test
@@ -47,15 +49,21 @@ $ ctest -R <test_name> -C <Debug|Release>
 ```
 .NET integration tests can be executed similarly from `build/clicache/integration-test`.
 
-#### Running Google Test integration tests
+#### Running only Google Test integration test suite
+Google Test integration test suite can be executed independently from old test suite:
+
 ```bash
 $ cd <clone>
-$ cd build
-$ cd cppcache/integration/test
-$ ./cpp-integration-test [<options>]
+$ cd build/cppcache/integration/test
+$ ctest --timeout 2000 -L STABLE -C <Debug|Release> -R . -j1
 ```
-Note that <options> are `gtest` options that may be passed to the test executable, like for example the test cases to be run. Use `--help` to get all the available options.
 
+Standalone tests can also be run as follows:
+```bash
+$ cd <clone>
+$ cd build/cppcache/integration/test
+$ ctest -R <test_name> -C <Debug|Release>
+```
 
 ## Style
 
