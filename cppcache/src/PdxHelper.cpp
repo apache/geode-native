@@ -19,6 +19,7 @@
 
 #include <geode/Cache.hpp>
 #include <geode/DataInput.hpp>
+#include <geode/PdxWrapper.hpp>
 #include <geode/PoolManager.hpp>
 
 #include "CacheRegionHelper.hpp"
@@ -146,12 +147,12 @@ std::shared_ptr<PdxSerializable> PdxHelper::deserializePdx(DataInput& dataInput,
   auto serializationRegistry = cacheImpl->getSerializationRegistry();
 
   auto pType = pdxTypeRegistry->getPdxType(typeId);
-  if (pType != nullptr) {  // this may happen with PdxInstanceFactory {
-    pdxLocalType = pdxTypeRegistry->getLocalPdxType(
-        pType->getPdxClassName());  // this should be fine for IPdxTypeMapper
+  if (pType) {
+    // this may happen with PdxInstanceFactory
+    pdxLocalType = pdxTypeRegistry->getLocalPdxType(pType->getPdxClassName());
   }
-  if (pType != nullptr && pdxLocalType != nullptr)  // type found
-  {
+  if (pType && pdxLocalType) {
+    // type found
     auto&& pdxClassname = pType->getPdxClassName();
     LOGDEBUG("deserializePdx ClassName = " + pdxClassname +
              ", isLocal = " + std::to_string(pType->isLocal()));
@@ -178,30 +179,30 @@ std::shared_ptr<PdxSerializable> PdxHelper::deserializePdx(DataInput& dataInput,
     }
   } else {
     // type not found; need to get from server
-    if (pType == nullptr) {
+    if (!pType) {
       pType = std::dynamic_pointer_cast<PdxType>(
           serializationRegistry->GetPDXTypeById(
               DataInputInternal::getPool(dataInput), typeId));
       pdxLocalType = pdxTypeRegistry->getLocalPdxType(pType->getPdxClassName());
     }
-    /* adongre  - Coverity II
-     * CID 29298: Unused pointer value (UNUSED_VALUE)
-     * Pointer "pdxClassname" returned by "pType->getPdxClassName()" is never
-     * used.
-     * Fix : Commented the line
-     */
-    // pdxClassname = pType->getPdxClassName();
     pdxObjectptr =
         serializationRegistry->getPdxSerializableType(pType->getPdxClassName());
-    auto pdxRealObject = pdxObjectptr;
-    if (pdxLocalType == nullptr)  // need to know local type
-    {
+    if (!pdxLocalType) {
+      // need to know local type
+      auto pdxRealObject = pdxObjectptr;
       auto prtc =
           PdxReaderWithTypeCollector(dataInput, pType, length, pdxTypeRegistry);
       pdxObjectptr->fromData(prtc);
+      if (auto pdxWrapper =
+              std::dynamic_pointer_cast<PdxWrapper>(pdxObjectptr)) {
+        if (!pdxWrapper->getObject()) {
+          // No serializer was registered to deserialize this type.
+          // Fall back to PdxInstance
+          return nullptr;
+        }
+      }
 
       // Check for the PdxWrapper
-
       pdxLocalType = prtc.getLocalType();
 
       if (pType->Equals(pdxLocalType)) {
@@ -259,52 +260,51 @@ std::shared_ptr<PdxSerializable> PdxHelper::deserializePdx(DataInput& dataInput,
   }
   return pdxObjectptr;
 }
+
 std::shared_ptr<PdxSerializable> PdxHelper::deserializePdx(
     DataInput& dataInput, bool forceDeserialize) {
   auto cacheImpl = CacheRegionHelper::getCacheImpl(dataInput.getCache());
   auto pdxTypeRegistry = cacheImpl->getPdxTypeRegistry();
   auto serializationRegistry = cacheImpl->getSerializationRegistry();
   auto& cachePerfStats = cacheImpl->getCachePerfStats();
-  if (pdxTypeRegistry->getPdxReadSerialized() == false || forceDeserialize) {
-    // Read Length
-    int32_t len = dataInput.readInt32();
 
-    int32_t typeId = dataInput.readInt32();
+  const auto len = dataInput.readInt32();
+  const auto typeId = dataInput.readInt32();
 
-    cachePerfStats.incPdxDeSerialization(len + 9);  // pdxLen + 1 + 2*4
-
-    return PdxHelper::deserializePdx(dataInput, typeId, len);
-
-  } else {
-    // Read Length
-    int32_t len = dataInput.readInt32();
-
-    int typeId = dataInput.readInt32();
-
-    auto pType = pdxTypeRegistry->getPdxType(typeId);
-
-    if (pType == nullptr) {
-      // TODO shared_ptr why redef?
-      auto pType = std::dynamic_pointer_cast<PdxType>(
-          serializationRegistry->GetPDXTypeById(
-              DataInputInternal::getPool(dataInput), typeId));
-      pdxTypeRegistry->addLocalPdxType(pType->getPdxClassName(), pType);
-      pdxTypeRegistry->addPdxType(pType->getTypeId(), pType);
+  if (!pdxTypeRegistry->getPdxReadSerialized() || forceDeserialize) {
+    const auto pos = dataInput.currentBufferPosition();
+    if (auto pdxObject = PdxHelper::deserializePdx(dataInput, typeId, len)) {
+      cachePerfStats.incPdxDeSerialization(len + 9);  // pdxLen + 1 + 2*4
+      return pdxObject;
     }
+    dataInput.rewindCursor(dataInput.currentBufferPosition() - pos);
+  }
 
-    cachePerfStats.incPdxInstanceCreations();
+  checkAndFetchPdxType(DataInputInternal::getPool(dataInput), pdxTypeRegistry,
+                       serializationRegistry, typeId);
 
-    // TODO::Enable it once the PdxInstanceImple is CheckedIn.
-    auto pdxObject = std::make_shared<PdxInstanceImpl>(
-        const_cast<uint8_t*>(dataInput.currentBufferPosition()), len, typeId,
-        cachePerfStats, *pdxTypeRegistry, *cacheImpl,
-        cacheImpl->getDistributedSystem()
-            .getSystemProperties()
-            .getEnableTimeStatistics());
+  cachePerfStats.incPdxInstanceCreations();
 
-    dataInput.advanceCursor(len);
+  auto pdxObject = std::make_shared<PdxInstanceImpl>(
+      const_cast<uint8_t*>(dataInput.currentBufferPosition()), len, typeId,
+      cachePerfStats, *pdxTypeRegistry, *cacheImpl,
+      cacheImpl->getDistributedSystem()
+          .getSystemProperties()
+          .getEnableTimeStatistics());
 
-    return std::move(pdxObject);
+  dataInput.advanceCursor(len);
+
+  return std::move(pdxObject);
+}
+void PdxHelper::checkAndFetchPdxType(
+    Pool* pool, std::shared_ptr<PdxTypeRegistry>& pdxTypeRegistry,
+    const std::shared_ptr<SerializationRegistry>& serializationRegistry,
+    int32_t typeId) {
+  if (!pdxTypeRegistry->getPdxType(typeId)) {
+    auto pType = std::dynamic_pointer_cast<PdxType>(
+        serializationRegistry->GetPDXTypeById(pool, typeId));
+    pdxTypeRegistry->addLocalPdxType(pType->getPdxClassName(), pType);
+    pdxTypeRegistry->addPdxType(pType->getTypeId(), pType);
   }
 }
 

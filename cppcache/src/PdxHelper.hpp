@@ -36,6 +36,11 @@ class PdxHelper {
                                std::shared_ptr<PdxType> remoteType,
                                DataInput& dataInput);
 
+  static void checkAndFetchPdxType(
+      Pool*, std::shared_ptr<PdxTypeRegistry>& pdxTypeRegistry,
+      const std::shared_ptr<SerializationRegistry>& serializationRegistry,
+      int32_t typeId);
+
  public:
   static uint8_t PdxHeader;
 
@@ -75,8 +80,6 @@ class PdxHelper {
 
   static std::shared_ptr<EnumInfo> getEnum(
       int enumId, std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry);
-
-  static CacheImpl* getCacheImpl();
 };
 }  // namespace client
 }  // namespace geode

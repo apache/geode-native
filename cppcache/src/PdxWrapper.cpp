@@ -57,7 +57,10 @@ void PdxWrapper::toData(PdxWriter& output) const {
 }
 
 void PdxWrapper::fromData(PdxReader& input) {
-  m_userObject = input.getPdxSerializer()->fromData(m_className, input);
+  auto pdxSerializer = input.getPdxSerializer();
+  if (pdxSerializer) {
+    m_userObject = pdxSerializer->fromData(m_className, input);
+  }
 }
 
 std::string PdxWrapper::toString() const {

@@ -118,8 +118,8 @@ class TheTypeMap : private NonCopyable {
 
   void bindPdxSerializable(TypeFactoryMethodPdx func);
 
-  void findPdxSerializable(const std::string& objFullName,
-                           TypeFactoryMethodPdx& func) const;
+  TypeFactoryMethodPdx findPdxSerializable(
+      const std::string& objFullName) const;
 
   void unbindPdxSerializable(const std::string& objFullName);
 
