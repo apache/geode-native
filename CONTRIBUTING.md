@@ -31,9 +31,9 @@ Both integration test suites can be executed together using CTest.
 #### Running old integration test suite
 ```bash
 $ cd build/cppcache/integration-test
-$ ctest --timeout 2000 -L STABLE -C <Debug|Release> -R . -j1
+$ ctest --timeout 2000 -L STABLE -C <Debug|Release> -j1
 ```
-This will take ~ 2 hours, YMMV... you can up the jobs to 4 and run in parallel, but you may end up with test failures that will need to be re-run sequentially.  Like so:
+Execution will take 2 hours approximately. It is possible to increase the number of jobs changing the value of `-j` parameter (up to `4`) for running tests in parallel, although it may end up with failed tests that will need to be re-run sequentially. Standalone tests can also be run as follows:
 
 ```bash
 $ cd build/cppcache/integration-test
@@ -47,10 +47,10 @@ For example: `$ ctest --timeout 2000 -L STABLE -C Release -R testCacheless -j1`
 ```bash
 $ cd <clone>
 $ cd build/cppcache/integration/test
-$ ctest -R . -j1
+$ ctest -j1
 ```
+It is possible to increase the number of jobs changing the value of `-j` parameter for running tests in parallel, although it may end up with failed tests that will need to be re-run sequentially. Standalone tests can also be run as follows:
 
-Standalone tests can also be run as follows:
 ```bash
 $ cd <clone>
 $ cd build/cppcache/integration/test
