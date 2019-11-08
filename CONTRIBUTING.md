@@ -22,21 +22,13 @@ $ ./apache-geode_unittests
 ```
 
 ### Running integration tests
-There are two test suites of integration tests based on different testing frameworks. The old integration tests are based on a custom testing framework, and the newer ones are based on [Google Test](https://github.com/google/googletest).
+There are two test suites of integration tests based on different testing frameworks. The old integration tests (stored in `geode-native/cppcache/integration-test`) are based on a custom testing framework, and the newer ones (stored in `geode-native/cppcache/integration/test`) are based on [Google Test](https://github.com/google/googletest).
 
 Old integration tests are deprecated. If your changes include the implementation of new integration test/s to be verified, they should be written using Google Test. If your change implies a significant change in one or more old test cases, you should create the equivalent test case/s using Google Test to substitute the old one/s instead of adapting them.
 
-Both sets of integration sets can be executed together using CTest.
+Both integration test suites can be executed together using CTest.
 
-```bash
-$ cd <clone>
-$ cd build
-$ cmake --build . --target run-integration-tests
-```
-
-#### Running only old integration test suite
-The old integration test suite can be executed independently from new test suite:
-
+#### Running old integration test suite
 ```bash
 $ cd build/cppcache/integration-test
 $ ctest --timeout 2000 -L STABLE -C <Debug|Release> -R . -j1
@@ -47,23 +39,25 @@ This will take ~ 2 hours, YMMV... you can up the jobs to 4 and run in parallel, 
 $ cd build/cppcache/integration-test
 $ ctest -R <test_name> -C <Debug|Release>
 ```
+For example: `$ ctest --timeout 2000 -L STABLE -C Release -R testCacheless -j1`
+
 .NET integration tests can be executed similarly from `build/clicache/integration-test`.
 
-#### Running only Google Test integration test suite
-Google Test integration test suite can be executed independently from old test suite:
-
+#### Running Google Test integration test suite
 ```bash
 $ cd <clone>
 $ cd build/cppcache/integration/test
-$ ctest --timeout 2000 -L STABLE -C <Debug|Release> -R . -j1
+$ ctest -R . -j1
 ```
 
 Standalone tests can also be run as follows:
 ```bash
 $ cd <clone>
 $ cd build/cppcache/integration/test
-$ ctest -R <test_name> -C <Debug|Release>
+$ ctest -R <test_name> -j1
 ```
+For example: `$ ctest -R AuthInitializeTest.putGetWithBasicAuth -j1`
+
 
 ## Style
 
