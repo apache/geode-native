@@ -494,8 +494,8 @@ void ThinClientPoolDM::cleanStaleConnections(std::atomic<bool>& isRunning) {
     LOGERROR("Failed to reschedule connection manager");
   } else {
     LOGFINEST(
-        "Rescheduled next connection manager run after %z seconds",
-        std::chrono::duration_cast<std::chrono::seconds>(_nextIdle).count());
+        "Rescheduled next connection manager run after %s",
+        to_string(_nextIdle).c_str());
   }
 
   LOGDEBUG("Pool size is %d, pool counter is %d", size(), m_poolSize.load());
