@@ -4,22 +4,16 @@
 # The ASF licenses this file to You under the Apache License, Version 2.0
 # (the "License"); you may not use this file except in compliance with
 # the License.  You may obtain a copy of the License at
-#
+# 
 #      http://www.apache.org/licenses/LICENSE-2.0
-#
+# 
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-choco install adoptopenjdk8 -confirm
-choco install cmake.portable -confirm
-choco install git.install -confirm
-choco install dogtail.dotnet3.5sp1 -confirm
-choco install nunit.install --version 2.6.4 -confirm
-choco install netfx-4.5.2-devpack --allowEmptyChecksums -confirm
-choco install nsis -confirm
-choco install patch -confirm
-choco install gnuwin32-coreutils.portable -confirm
-choco install nuget.commandline -confirm
+$ErrorActionPreference = "Stop"
+Import-Module Packer -Force
+
+Install-Package http://downloads.activestate.com/ActivePerl/releases/5.28.1.2801/ActivePerl-5.28.1.2801-MSWin32-x64-24563874.exe -ArgumentList "/exenoupdates /quiet"

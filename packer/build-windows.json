@@ -44,6 +44,12 @@
       ]
     },
     {
+      "type": "powershell",
+      "scripts": [
+        "windows/install-activeperl.ps1"
+      ]
+    },
+    {
       "type": "file",
       "source": "{{user `gemfire_archive`}}",
       "destination": "gemfire.tar.gz"
