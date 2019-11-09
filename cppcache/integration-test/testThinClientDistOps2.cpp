@@ -20,8 +20,8 @@
 DUNIT_MAIN
   {
     CALL_TASK(CreateLocator1);
-    CALL_TASK(CreateServer1_With_Locator)
-    CALL_TASK(CreateServer2And3_Locator)
+    CALL_TASK(CreateServer1_With_Locator);
+    CALL_TASK(CreateServer2And3_Locator);
 
     CALL_TASK(CreateClient1Regions_Pooled_Locator);
     CALL_TASK(CreateClient2Regions_Pooled_Locator);

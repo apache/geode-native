@@ -232,7 +232,7 @@ END_TASK_DEFINITION
 void runHeapLRU(bool poolConfig = true, bool isLocator = true) {
   if (poolConfig && isLocator) {
     CALL_TASK(CreateLocator1);
-    CALL_TASK(CreateServer1_With_Locator)
+    CALL_TASK(CreateServer1_With_Locator);
   } else {
     CALL_TASK(CreateServer1);
   }

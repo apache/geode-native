@@ -19,7 +19,7 @@
 DUNIT_MAIN
   {
     CALL_TASK(CreateLocator1);
-    CALL_TASK(CreateServer1_With_Locator)
+    CALL_TASK(CreateServer1_With_Locator);
 
     CALL_TASK(SetupClient1PooledLocator);
     CALL_TASK(SetupClient2PooledLocator);

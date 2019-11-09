@@ -260,7 +260,7 @@ void runCacheLoaderTest() {
   CALL_TASK(testInvalidateKey);
   CALL_TASK(testInvalidateRegion);
   CALL_TASK(CloseCache1);
-  CALL_TASK(StopServer)
+  CALL_TASK(StopServer);
 }
 
 }  // namespace
