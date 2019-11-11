@@ -57,8 +57,7 @@ void PdxWrapper::toData(PdxWriter& output) const {
 }
 
 void PdxWrapper::fromData(PdxReader& input) {
-  auto pdxSerializer = input.getPdxSerializer();
-  if (pdxSerializer) {
+  if (auto pdxSerializer = input.getPdxSerializer()) {
     m_userObject = pdxSerializer->fromData(m_className, input);
   }
 }
