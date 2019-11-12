@@ -62,6 +62,8 @@ void Locator::start() {
 
   auto connect = cluster_.getGfsh()
       .connect()
+      .withUser(cluster_.getUser())
+      .withPassword(cluster_.getPassword())
       .withJmxManager(cluster_.getJmxManager());
 
   if (cluster_.useSsl()) {
