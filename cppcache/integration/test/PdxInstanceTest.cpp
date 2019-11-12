@@ -41,6 +41,7 @@ namespace {
 
 using apache::geode::client::Cache;
 using apache::geode::client::CacheableKey;
+using apache::geode::client::CacheableString;
 using apache::geode::client::IllegalStateException;
 using apache::geode::client::LocalRegion;
 using apache::geode::client::PdxInstanceFactory;
@@ -53,6 +54,8 @@ using PdxTests::PdxType;
 
 using testobject::ChildPdx;
 using testobject::ParentPdx;
+
+const std::string gemfireJsonClassName = "__GEMFIRE_JSON";
 
 std::shared_ptr<Region> setupRegion(Cache& cache) {
   auto region = cache.createRegionFactory(RegionShortcut::PROXY)
@@ -276,6 +279,29 @@ TEST(PdxInstanceTest, testPdxInstance) {
   EXPECT_TRUE(
       pdxParentOriginal.equals(*pdxParentFromPdxParentInstnaceGet, false))
       << "ParentPdx objects should be equal.";
+}
+
+TEST(PdxInstanceTest, testCreateJsonInstance) {
+  Cluster cluster{LocatorCount{1}, ServerCount{1}};
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("region")
+      .withType("REPLICATE")
+      .execute();
+
+  auto cache = cluster.createCache();
+  auto region = setupRegion(cache);
+  auto pdxInstanceFactory =
+      cache.createPdxInstanceFactory(gemfireJsonClassName);
+
+  pdxInstanceFactory.writeObject("foo",
+                                 CacheableString::create(std::string("bar")));
+  auto pdxInstance = pdxInstanceFactory.create();
+
+  region->put("simpleObject", pdxInstance);
+
+  auto retrievedValue = region->get("simpleObject");
 }
 
 }  // namespace

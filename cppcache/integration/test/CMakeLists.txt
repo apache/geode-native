@@ -25,6 +25,7 @@ add_executable(cpp-integration-test
   ExpirationTest.cpp
   FunctionExecutionTest.cpp
   PdxInstanceTest.cpp
+  PdxSerializerTest.cpp
   RegionGetAllTest.cpp
   RegionPutAllTest.cpp
   RegionPutGetAllTest.cpp

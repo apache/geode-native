@@ -264,7 +264,7 @@ END_TASK_DEFINITION
 DUNIT_MAIN
   {
     CALL_TASK(Setup);
-    CALL_TASK(CreateRegionNoCache)
+    CALL_TASK(CreateRegionNoCache);
 
     CALL_TASK(CreateNoCacheWListener);
     CALL_TASK(CreateRegionCacheMirror);

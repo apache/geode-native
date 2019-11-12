@@ -807,7 +807,7 @@ END_TASK_DEFINITION
 
 void runDistOpsNotSticky() {
   CALL_TASK(CreateLocator1);
-  CALL_TASK(CreateServer1_With_Locator)
+  CALL_TASK(CreateServer1_With_Locator);
 
   CALL_TASK(CreateNonexistentServerRegion_Pooled_Locator);
   CALL_TASK(StepOne_Pooled_Locator);
@@ -831,7 +831,7 @@ void runDistOpsNotSticky() {
 
 void runDistOpsSticky() {
   CALL_TASK(CreateLocator1);
-  CALL_TASK(CreateServer1_With_Locator)
+  CALL_TASK(CreateServer1_With_Locator);
 
   CALL_TASK(CreateNonexistentServerRegion_Pooled_Locator_Sticky);
   CALL_TASK(StepOne_Pooled_Locator_Sticky);
@@ -855,7 +855,7 @@ void runDistOpsSticky() {
 
 void runDistOpsUpdateLocatorList() {
   CALL_TASK(CreateLocator1);
-  CALL_TASK(CreateServer1_With_Locator)
+  CALL_TASK(CreateServer1_With_Locator);
 
   CALL_TASK(CreatePoolForUpdateLocatorList);
 
@@ -868,7 +868,7 @@ void runDistOpsUpdateLocatorList() {
 
 void runDistOpsDontUpdateLocatorList() {
   CALL_TASK(CreateLocator1);
-  CALL_TASK(CreateServer1_With_Locator)
+  CALL_TASK(CreateServer1_With_Locator);
 
   CALL_TASK(CreatePoolForDontUpdateLocatorList);
 

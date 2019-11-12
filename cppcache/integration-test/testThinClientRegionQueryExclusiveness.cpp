@@ -169,6 +169,12 @@ DUNIT_TASK_DEFINITION(LOCATOR, CloseLocator)
 END_TASK_DEFINITION
 
 DUNIT_MAIN
-{CALL_TASK(StartLocator) CALL_TASK(CreateServerWithLocator)
-     CALL_TASK(ClientOpPoolLocator) CALL_TASK(CloseCache1)
-         CALL_TASK(CloseServer) CALL_TASK(CloseLocator)} END_MAIN
+  {
+    CALL_TASK(StartLocator);
+    CALL_TASK(CreateServerWithLocator);
+    CALL_TASK(ClientOpPoolLocator);
+    CALL_TASK(CloseCache1);
+    CALL_TASK(CloseServer);
+    CALL_TASK(CloseLocator);
+  }
+END_MAIN

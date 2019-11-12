@@ -627,8 +627,18 @@ DUNIT_TASK_DEFINITION(LOCATOR, CloseLocator)
 END_TASK_DEFINITION
 
 DUNIT_MAIN
-{CALL_TASK(StartLocator) CALL_TASK(CreateServerWithLocator)
-     CALL_TASK(StepOnePoolLoc) CALL_TASK(StepThree) CALL_TASK(StepFour)
-         CALL_TASK(StepFive) CALL_TASK(StepSix) CALL_TASK(GetAll)
-             CALL_TASK(DoQuerySSError) CALL_TASK(CloseCache1)
-                 CALL_TASK(CloseServer1) CALL_TASK(CloseLocator)} END_MAIN
+  {
+    CALL_TASK(StartLocator);
+    CALL_TASK(CreateServerWithLocator);
+    CALL_TASK(StepOnePoolLoc);
+    CALL_TASK(StepThree);
+    CALL_TASK(StepFour);
+    CALL_TASK(StepFive);
+    CALL_TASK(StepSix);
+    CALL_TASK(GetAll);
+    CALL_TASK(DoQuerySSError);
+    CALL_TASK(CloseCache1);
+    CALL_TASK(CloseServer1);
+    CALL_TASK(CloseLocator);
+  }
+END_MAIN
