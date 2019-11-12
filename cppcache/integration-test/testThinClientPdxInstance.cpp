@@ -2591,7 +2591,7 @@ END_TASK_DEFINITION
 
 void testPdxInstance() {
   CALL_TASK(CreateLocator1);
-  CALL_TASK(CreateServer1_With_Locator)
+  CALL_TASK(CreateServer1_With_Locator);
 
   CALL_TASK(StepOne_Pooled_Locator);
   CALL_TASK(StepTwo_Pooled_Locator);
@@ -2607,7 +2607,7 @@ void testPdxInstance() {
 
 void testPdxInstanceWithPdxReadSerializedAndCaching() {
   CALL_TASK(CreateLocator1);
-  CALL_TASK(CreateServer1_With_Locator)
+  CALL_TASK(CreateServer1_With_Locator);
 
   CALL_TASK(StepOne_Pooled_Locator_PdxReadSerialized);
   CALL_TASK(StepTwo_Pooled_Locator_CachingEnabled_PdxReadSerialized);
@@ -2625,7 +2625,7 @@ void testPdxInstanceWithPdxReadSerializedAndCaching() {
 
 void testPdxInstanceWithPdxReadSerialized() {
   CALL_TASK(CreateLocator1);
-  CALL_TASK(CreateServer1_With_Locator)
+  CALL_TASK(CreateServer1_With_Locator);
 
   CALL_TASK(StepOne_Pooled_Locator_PdxReadSerialized);
   CALL_TASK(StepTwo_Pooled_Locator_PdxReadSerialized);

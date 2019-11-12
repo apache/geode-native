@@ -299,7 +299,7 @@ DUNIT_MAIN
   {
     CALL_TASK(CreateLocator1);
 
-    CALL_TASK(CreateServer1_ForCqDelta)
+    CALL_TASK(CreateServer1_ForCqDelta);
 
     CALL_TASK(CreateClient1);
     CALL_TASK(CreateClient2);

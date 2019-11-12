@@ -410,7 +410,7 @@ END_TASK_DEFINITION
 
 void runThinClientFailover(bool isSticky = false) {
   CALL_TASK(CreateLocator1);
-  CALL_TASK(CreateServer1_With_Locator)
+  CALL_TASK(CreateServer1_With_Locator);
 
   if (isSticky) {
     CALL_TASK(StepOne_Pooled_Locator_Sticky);

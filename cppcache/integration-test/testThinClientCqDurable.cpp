@@ -1014,9 +1014,9 @@ void getDurableCQsFromServerWithCyclicClients() {
   CALL_TASK(CloseLocator);
 }
 
-void setPortfolioPdxType() { CALL_TASK(SetPortfolioTypeToPdx) }
+void setPortfolioPdxType() { CALL_TASK(SetPortfolioTypeToPdx); }
 
-void UnsetPortfolioType() { CALL_TASK(UnsetPortfolioTypeToPdx) }
+void UnsetPortfolioType() { CALL_TASK(UnsetPortfolioTypeToPdx); }
 
 void doThinClientCqDurable1() {
   CALL_TASK(CreateServer);

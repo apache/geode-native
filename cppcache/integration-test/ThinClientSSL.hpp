@@ -485,7 +485,7 @@ END_TASK_DEFINITION
 
 void doThinClientSSL() {
   CALL_TASK(CreateLocator1_With_SSL);
-  CALL_TASK(CreateServer1_With_Locator_And_SSL)
+  CALL_TASK(CreateServer1_With_Locator_And_SSL);
 
   CALL_TASK(CreateClient1);
   CALL_TASK(CreateClient2);

@@ -179,7 +179,7 @@ END_TASK_DEFINITION
 DUNIT_MAIN
   {
     CALL_TASK(CreateLocator1_With_SSL_untrustedCert);
-    CALL_TASK(CreateServer1_With_Locator_And_SSL_untrustedCert)
+    CALL_TASK(CreateServer1_With_Locator_And_SSL_untrustedCert);
 
     CALL_TASK(CreateClient1);
 

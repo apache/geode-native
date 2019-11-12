@@ -480,33 +480,34 @@ DUNIT_TASK_DEFINITION(CLIENT1, UnsetPortfolioTypeToPdx)
 END_TASK_DEFINITION
 
 void runRemoteRegionQueryTest() {
-  CALL_TASK(StartLocator)
-  CALL_TASK(CreateServerWithLocator)
-  CALL_TASK(StepOnePoolLocator)
+  CALL_TASK(StartLocator);
+  CALL_TASK(CreateServerWithLocator);
+  CALL_TASK(StepOnePoolLocator);
 
-  CALL_TASK(StepTwo)
-  CALL_TASK(StepThree)
-  CALL_TASK(StepFour)
-  CALL_TASK(StepFive)
-  CALL_TASK(QueryError)
-  CALL_TASK(CloseCache1)
-  CALL_TASK(CloseServer1)
+  CALL_TASK(StepTwo);
+  CALL_TASK(StepThree);
+  CALL_TASK(StepFour);
+  CALL_TASK(StepFive);
+  CALL_TASK(QueryError);
+  CALL_TASK(CloseCache1);
+  CALL_TASK(CloseServer1);
 
-  CALL_TASK(CloseLocator)
+  CALL_TASK(CloseLocator);
 }
 
-void setPortfolioPdxType() { CALL_TASK(SetPortfolioTypeToPdx) }
+void setPortfolioPdxType() { CALL_TASK(SetPortfolioTypeToPdx); }
 
-void UnsetPortfolioType(){CALL_TASK(UnsetPortfolioTypeToPdx)}
+void UnsetPortfolioType() { CALL_TASK(UnsetPortfolioTypeToPdx); }
 
-DUNIT_MAIN {
-  // Basic Old Test
-  // runRemoteRegionQueryTest();
+DUNIT_MAIN
+  {
+    // Basic Old Test
+    // runRemoteRegionQueryTest();
 
-  UnsetPortfolioType();
-  for (int runIdx = 1; runIdx <= 2; ++runIdx) {
-    runRemoteRegionQueryTest();
-    setPortfolioPdxType();
+    UnsetPortfolioType();
+    for (int runIdx = 1; runIdx <= 2; ++runIdx) {
+      runRemoteRegionQueryTest();
+      setPortfolioPdxType();
+    }
   }
-}
 END_MAIN

@@ -376,7 +376,7 @@ END_TASK_DEFINITION
 
 void doDeltaWithNotification() {
   CALL_TASK(CreateLocator1);
-  CALL_TASK(CreateServer1_ForDelta)
+  CALL_TASK(CreateServer1_ForDelta);
 
   CALL_TASK(CreateClient1);
   CALL_TASK(CreateClient2);

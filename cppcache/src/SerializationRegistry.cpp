@@ -302,23 +302,14 @@ void SerializationRegistry::setDataSerializablePrimitiveType(
 
 std::shared_ptr<PdxSerializable> SerializationRegistry::getPdxSerializableType(
     const std::string& className) const {
-  TypeFactoryMethodPdx objectType = nullptr;
-  theTypeMap.findPdxSerializable(className, objectType);
   std::shared_ptr<PdxSerializable> pdxSerializable;
 
-  if (nullptr == objectType) {
-    try {
-      pdxSerializable = std::make_shared<PdxWrapper>(nullptr, className);
-    } catch (const Exception&) {
-      LOGERROR("Unregistered class " + className +
-               " during PDX deserialization: Did the application register the "
-               "PDX type or serializer?");
-      throw IllegalStateException(
-          "Unregistered class or serializer in PDX deserialization");
-    }
+  if (auto typeFactoryMethodPdx = theTypeMap.findPdxSerializable(className)) {
+    pdxSerializable = typeFactoryMethodPdx();
   } else {
-    pdxSerializable = objectType();
+    pdxSerializable = std::make_shared<PdxWrapper>(nullptr, className);
   }
+
   return pdxSerializable;
 }
 
@@ -512,14 +503,17 @@ void TheTypeMap::bindPdxSerializable(TypeFactoryMethodPdx func) {
   }
 }
 
-void TheTypeMap::findPdxSerializable(const std::string& objFullName,
-                                     TypeFactoryMethodPdx& func) const {
+TypeFactoryMethodPdx TheTypeMap::findPdxSerializable(
+    const std::string& objFullName) const {
   std::lock_guard<util::concurrent::spinlock_mutex> guard(
       m_pdxSerializableMapLock);
+
   const auto& found = m_pdxSerializableMap.find(objFullName);
   if (found != m_pdxSerializableMap.end()) {
-    func = found->second;
+    return found->second;
   }
+
+  return nullptr;
 }
 
 void TheTypeMap::rebindPdxSerializable(std::string objFullName,

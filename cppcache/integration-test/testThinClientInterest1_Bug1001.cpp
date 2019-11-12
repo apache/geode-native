@@ -283,7 +283,7 @@ END_TASK_DEFINITION
 
 DUNIT_MAIN
   {
-    CALL_TASK(CreateLocator1)
+    CALL_TASK(CreateLocator1);
     CALL_TASK(CreateServer1_With_Locator);
     CALL_TASK(SetupClient1);
     CALL_TASK(populateServer);
