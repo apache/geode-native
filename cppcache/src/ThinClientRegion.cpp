@@ -3016,19 +3016,21 @@ void ThinClientRegion::executeFunction(
         rc->clearResults();
         failedNodes->clear();
       } else if (err == GF_TIMEOUT) {
-        LOGINFO("function timeout. Name: %s, timeout: %z, params: %" PRIu8
+        LOGINFO("function timeout. Name: %s, timeout: %s, params: %" PRIu8
                 ", "
                 "retryAttempts: %d ",
-                func.c_str(), timeout.count(), getResult, retryAttempts);
+                func.c_str(), std::to_string(timeout.count()).c_str(),
+                getResult, retryAttempts);
         throwExceptionIfError("ExecuteOnRegion", GF_TIMEOUT);
       } else if (err == GF_CLIENT_WAIT_TIMEOUT ||
                  err == GF_CLIENT_WAIT_TIMEOUT_REFRESH_PRMETADATA) {
         LOGINFO(
             "function timeout, possibly bucket is not available or bucket "
-            "blacklisted. Name: %s, timeout: %z, params: %" PRIu8
+            "blacklisted. Name: %s, timeout: %s, params: %" PRIu8
             ", retryAttempts: "
             "%d ",
-            func.c_str(), timeout.count(), getResult, retryAttempts);
+            func.c_str(), std::to_string(timeout.count()).c_str(), getResult,
+            retryAttempts);
         throwExceptionIfError("ExecuteOnRegion", GF_CLIENT_WAIT_TIMEOUT);
       } else {
         LOGDEBUG("executeFunction err = %d ", err);

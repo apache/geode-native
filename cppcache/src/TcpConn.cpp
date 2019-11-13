@@ -209,9 +209,9 @@ void TcpConn::connect() {
 
   ACE_OS::signal(SIGPIPE, SIG_IGN);  // Ignore broken pipe
 
-  LOGFINER("Connecting plain socket stream to %s:%d waiting %z micro sec",
+  LOGFINER("Connecting plain socket stream to %s:%d waiting %s micro sec",
            ipaddr.get_host_name(), ipaddr.get_port_number(),
-           waitMicroSeconds.count());
+           std::to_string(waitMicroSeconds.count()).c_str());
 
   ACE_SOCK_Connector conn;
   int32_t retVal = 0;

@@ -695,10 +695,10 @@ void LocalRegion::setRegionExpiryTask() {
             handler, duration, std::chrono::seconds::zero());
     handler->setExpiryTaskId(expiryTaskId);
     LOGFINE(
-        "expiry for region [%s], expiry task id = %z, duration = %z, "
+        "expiry for region [%s], expiry task id = %z, duration = %s, "
         "action = %d",
-        m_fullPath.c_str(), expiryTaskId, duration.count(),
-        getRegionExpiryAction());
+        m_fullPath.c_str(), expiryTaskId,
+        std::to_string(duration.count()).c_str(), getRegionExpiryAction());
   }
 }
 
@@ -719,9 +719,9 @@ void LocalRegion::registerEntryExpiryTask(
     entry->getKeyI(key);
     LOGFINEST(
         "entry expiry in region [%s], key [%s], task id = %z, "
-        "duration = %z, action = %d",
+        "duration = %s, action = %d",
         m_fullPath.c_str(), Utils::nullSafeToString(key).c_str(), id,
-        duration.count(), getEntryExpirationAction());
+        std::to_string(duration.count()).c_str(), getEntryExpirationAction());
   }
   expProps.setExpiryTaskId(id);
 }
@@ -2796,14 +2796,14 @@ void LocalRegion::updateAccessAndModifiedTimeForEntry(
       ptr->getKeyI(key);
       keyStr = Utils::nullSafeToString(key);
     }
-    LOGDEBUG("Setting last accessed time for key [%s] in region %s to %z",
+    LOGDEBUG("Setting last accessed time for key [%s] in region %s to %s",
              keyStr.c_str(), getFullPath().c_str(),
-             currTime.time_since_epoch().count());
+             std::to_string(currTime.time_since_epoch().count()).c_str());
     expProps.updateLastAccessTime(currTime);
     if (modified) {
-      LOGDEBUG("Setting last modified time for key [%s] in region %s to %z",
+      LOGDEBUG("Setting last modified time for key [%s] in region %s to %s",
                keyStr.c_str(), getFullPath().c_str(),
-               currTime.time_since_epoch().count());
+               std::to_string(currTime.time_since_epoch().count()).c_str());
       expProps.updateLastModifiedTime(currTime);
     }
   }
