@@ -694,11 +694,13 @@ void LocalRegion::setRegionExpiryTask() {
         rptr->getCacheImpl()->getExpiryTaskManager().scheduleExpiryTask(
             handler, duration, std::chrono::seconds::zero());
     handler->setExpiryTaskId(expiryTaskId);
+    auto durationStr = std::to_string(duration.count());
+    auto expiryTaskIdStr = std::to_string(expiryTaskId);
     LOGFINE(
-        "expiry for region [%s], expiry task id = %z, duration = %s, "
+        "expiry for region [%s], expiry task id = %s, duration = %s, "
         "action = %d",
-        m_fullPath.c_str(), expiryTaskId,
-        std::to_string(duration.count()).c_str(), getRegionExpiryAction());
+        m_fullPath.c_str(), expiryTaskIdStr.c_str(), durationStr.c_str(),
+        getRegionExpiryAction());
   }
 }
 
