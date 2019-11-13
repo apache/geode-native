@@ -63,7 +63,7 @@ int EntryExpiryHandler::handle_timeout(const ACE_Time_Value& current_time,
         m_regionPtr->getFullPath().c_str(),
         std::to_string(curr_time.time_since_epoch().count()).c_str(),
         std::to_string(lastTimeForExp.time_since_epoch().count()).c_str(),
-        std::to_string(m_duration.count()).c_str()),
+        std::to_string(m_duration.count()).c_str(),
         std::to_string(elapsed.count()).c_str());
     if (elapsed >= m_duration) {
       DoTheExpirationAction(key);
