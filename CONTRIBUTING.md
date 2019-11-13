@@ -58,6 +58,12 @@ $ ctest -R <test_name> -j1
 ```
 For example: `$ ctest -R AuthInitializeTest.putGetWithBasicAuth -j1`
 
+Notice that `BasicIPv6Test` test is expected to fail due to IPv6 support is disabled by default. It can be enabled building the client again after editing `geode-native/CMakeLists.txt` and changing `WITH_IPV6` option to `ON` on following line:
+
+```
+option(WITH_IPV6 "Enable IPv6 support." OFF)
+```
+
 
 ## Style
 
