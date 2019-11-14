@@ -103,6 +103,14 @@ $ cmake --build . -- /m
 
 ### Optional Configuration
 
+#### IPv6 support
+
+IPv6 support can be enabled by adding `-DWITH_IPV6=ON` to the CMake [Generator](#generator) command.
+
+```console
+$ cmake … -DWITH_IPV6=ON …
+```
+
 #### Code Coverage
 
 If building with GCC or Clang you can enable C++ code coverage by adding `-DUSE_CPP_COVERAGE=ON` to the CMake [Generator](#generator) command. 
