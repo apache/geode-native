@@ -63,8 +63,6 @@ TEST(SslTest, PutGetWithValidSslConfiguration) {
   cluster.useSsl(clusterKeystore.string(), clusterTruststore.string(),
                  certificatePassword, certificatePassword);
 
-  cluster.start();
-
   cluster.getGfsh()
       .create()
       .region()
@@ -100,7 +98,6 @@ TEST(SslTest, PutGetWithValidSslConfiguration) {
 //  cluster.useSsl(clusterKeystore.string(), clusterTruststore.string(),
 //                 certificatePassword, certificatePassword);
 //
-//  cluster.start();
 //
 //  cluster.getGfsh()
 //      .create()
@@ -143,7 +140,6 @@ TEST(SslTest, PutGetWithValidSslConfiguration) {
 //  cluster.useSsl(clusterKeystore.string(), clusterTruststore.string(),
 //                 certificatePassword, certificatePassword);
 //
-//  cluster.start();
 //
 //  cluster.getGfsh()
 //      .create()

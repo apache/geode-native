@@ -88,7 +88,6 @@ TEST(ExampleTest, DISABLED_putAndGetWith2Servers) {
  */
 TEST(ExampleTest, DISABLED_putGetAndUpdateWith1Server) {
   Cluster cluster{LocatorCount{1}, ServerCount{1}};
-  cluster.start();
   cluster.getGfsh()
       .create()
       .region()

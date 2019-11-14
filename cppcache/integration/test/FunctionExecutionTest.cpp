@@ -66,7 +66,6 @@ class TestResultCollector : public ResultCollector {
 
 TEST(FunctionExecutionTest, UnknownFunctionOnServer) {
   Cluster cluster{LocatorCount{1}, ServerCount{1}};
-  cluster.start();
   cluster.getGfsh()
       .create()
       .region()
@@ -84,7 +83,6 @@ TEST(FunctionExecutionTest, UnknownFunctionOnServer) {
 
 TEST(FunctionExecutionTest, UnknownFunctionOnRegion) {
   Cluster cluster{LocatorCount{1}, ServerCount{1}};
-  cluster.start();
   cluster.getGfsh()
       .create()
       .region()
@@ -101,7 +99,6 @@ TEST(FunctionExecutionTest, UnknownFunctionOnRegion) {
 
 TEST(FunctionExecutionTest, UnknownFunctionAsyncOnServer) {
   Cluster cluster{LocatorCount{1}, ServerCount{1}};
-  cluster.start();
   cluster.getGfsh()
       .create()
       .region()
@@ -120,7 +117,6 @@ TEST(FunctionExecutionTest, UnknownFunctionAsyncOnServer) {
 
 TEST(FunctionExecutionTest, UnknownFunctionAsyncOnRegion) {
   Cluster cluster{LocatorCount{1}, ServerCount{1}};
-  cluster.start();
   cluster.getGfsh()
       .create()
       .region()
@@ -140,7 +136,6 @@ TEST(FunctionExecutionTest, UnknownFunctionAsyncOnRegion) {
 TEST(FunctionExecutionTest,
      FunctionReturnsObjectWhichCantBeDeserializedOnServer) {
   Cluster cluster{LocatorCount{1}, ServerCount{1}};
-  cluster.start();
   cluster.getGfsh()
       .create()
       .region()

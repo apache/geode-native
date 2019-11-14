@@ -75,7 +75,6 @@ std::shared_ptr<Region> setupRegion(Cache& cache,
 
 TEST(RegionPutAllTest, putAllToPartitionedRegion) {
   Cluster cluster{LocatorCount{1}, ServerCount{2}};
-  cluster.start();
   cluster.getGfsh()
       .create()
       .region()

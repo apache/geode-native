@@ -62,9 +62,11 @@ void Locator::start() {
 
   auto connect = cluster_.getGfsh()
       .connect()
-      .withUser(cluster_.getUser())
-      .withPassword(cluster_.getPassword())
       .withJmxManager(cluster_.getJmxManager());
+
+  if (!cluster_.getUser().empty()) {
+    connect.withUser(cluster_.getUser()).withPassword(cluster_.getPassword());
+  }      
 
   if (cluster_.useSsl()) {
     connect.withUseSsl(true)
@@ -101,10 +103,12 @@ void Server::start() {
                     std::to_string(locators_.front().getAddress().port) + "]")
       .withClasspath(cluster_.getClasspath())
       .withSecurityManager(cluster_.getSecurityManager())
-      .withUser(cluster_.getUser())
-      .withPassword(cluster_.getPassword())
       .withCacheXMLFile(getCacheXMLFile())
       .withPreferIPv6(cluster_.getUseIPv6());
+
+  if (!cluster_.getUser().empty()) {
+    server.withUser(cluster_.getUser()).withPassword(cluster_.getPassword());
+  }
 
   if (cluster_.useSsl()) {
     server.withSslEnabledComponents("all")
