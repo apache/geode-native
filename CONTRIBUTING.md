@@ -58,6 +58,8 @@ $ ctest -R <test_name> -j1
 ```
 For example: `$ ctest -R AuthInitializeTest.putGetWithBasicAuth -j1`
 
+Notice that `BasicIPv6Test` test is expected to fail due to IPv6 support is disabled by default. [BUILDING.md](BUILDING.md) explains how to enable it.
+
 
 ## Style
 
