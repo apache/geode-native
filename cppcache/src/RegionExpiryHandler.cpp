@@ -57,10 +57,9 @@ int RegionExpiryHandler::handle_timeout(const ACE_Time_Value& current_time,
     auto elapsed = curr_time - lastTimeForExp;
     LOGDEBUG("Entered region expiry task handler for region [%s]: %s,%s,%s,%s",
              m_regionPtr->getFullPath().c_str(),
-             std::to_string(curr_time.time_since_epoch().count()).c_str(),
-             std::to_string(lastTimeForExp.time_since_epoch().count()).c_str(),
-             std::to_string(m_duration.count()).c_str(),
-             std::to_string(elapsed.count()).c_str());
+             to_string(curr_time.time_since_epoch()).c_str(),
+             to_string(lastTimeForExp.time_since_epoch()).c_str(),
+             to_string(m_duration).c_str(), to_string(elapsed).c_str());
     if (elapsed >= m_duration) {
       DoTheExpirationAction();
     } else {
@@ -69,7 +68,7 @@ int RegionExpiryHandler::handle_timeout(const ACE_Time_Value& current_time,
       // (lastAccessTime + entryExpiryDuration - curr_time) in seconds
       LOGDEBUG("Resetting expiry task for region [%s] after %s sec",
                m_regionPtr->getFullPath().c_str(),
-               std::to_string(remaining.count()).c_str());
+               to_string(remaining).c_str());
       m_regionPtr->getCacheImpl()->getExpiryTaskManager().resetTask(
           m_expiryTaskId, remaining);
       return 0;

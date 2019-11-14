@@ -3598,10 +3598,10 @@ void ChunkedFunctionExecutionResponse::handleChunk(
     return;
   }
 
-  auto startLen =
+  auto startLen = static_cast<size_t>(
       input.getBytesRead() -
-      1;  // from here need to look value part + memberid AND -1 for array type
-  // iread adn gnore array length
+      1);  // from here need to look value part + memberid AND -1 for array type
+  // read and ignore array length
   input.readArrayLength();
 
   // read a byte to determine whether to read exception part for sendException

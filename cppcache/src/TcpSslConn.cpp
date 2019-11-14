@@ -93,7 +93,7 @@ void TcpSslConn::connect() {
 
   LOGDEBUG("Connecting SSL socket stream to %s:%d waiting %s micro sec",
            m_addr.get_host_name(), m_addr.get_port_number(),
-           std::to_string(waitMicroSeconds.count()).c_str());
+           to_string(waitMicroSeconds).c_str());
 
   int32_t retVal = m_ssl->connect(m_addr, waitMicroSeconds);
 

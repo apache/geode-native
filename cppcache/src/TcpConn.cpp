@@ -211,7 +211,7 @@ void TcpConn::connect() {
 
   LOGFINER("Connecting plain socket stream to %s:%d waiting %s micro sec",
            ipaddr.get_host_name(), ipaddr.get_port_number(),
-           std::to_string(waitMicroSeconds.count()).c_str());
+           to_string(waitMicroSeconds).c_str());
 
   ACE_SOCK_Connector conn;
   int32_t retVal = 0;
