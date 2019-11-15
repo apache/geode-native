@@ -187,7 +187,7 @@ GfErrType TcrEndpoint::createNewConnection(
   LOGFINE(
       "TcrEndpoint::createNewConnection: connectTimeout =%s "
       "m_needToConnectInLock=%d appThreadRequest =%d",
-      std::to_string(connectTimeout.count()).c_str(), m_needToConnectInLock,
+      to_string(connectTimeout).c_str(), m_needToConnectInLock,
       appThreadRequest);
   GfErrType err = GF_NOERR;
   newConn = nullptr;
@@ -925,7 +925,7 @@ GfErrType TcrEndpoint::sendRequestWithRetry(
       LOGFINER(
           "sendRequestWithRetry:: looking for connection in queue timeout = "
           "%s",
-          std::to_string(timeout.count()).c_str());
+          to_string(timeout).c_str());
       // max wait time to get a connection
       conn = m_opConnections.getUntil(timeout);
     }

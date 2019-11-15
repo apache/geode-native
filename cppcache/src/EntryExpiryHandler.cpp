@@ -70,7 +70,7 @@ int EntryExpiryHandler::handle_timeout(const ACE_Time_Value& current_time,
       // reset the task after
       // (lastAccessTime + entryExpiryDuration - curr_time) in seconds
       auto remaining = m_duration - elapsed;
-      auto remainingStr = std::to_string(remaining.count());
+      auto remainingStr = to_string(remaining);
       LOGDEBUG(
           "Resetting expiry task %s secs later for key [%s] of region [%s]",
           remainingStr.c_str(), Utils::nullSafeToString(key).c_str(),

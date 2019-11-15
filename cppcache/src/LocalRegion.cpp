@@ -110,7 +110,7 @@ void LocalRegion::updateAccessAndModifiedTime(bool modified) {
   // locking not required since setters use atomic operations
   if (regionExpiryEnabled()) {
     auto now = std::chrono::system_clock::now();
-    auto timeStr = std::to_string(now.time_since_epoch().count());
+    auto timeStr = to_string(now.time_since_epoch());
     LOGDEBUG("Setting last accessed time for region %s to %s",
              getFullPath().c_str(), timeStr.c_str());
     m_cacheStatistics->setLastAccessedTime(now);
