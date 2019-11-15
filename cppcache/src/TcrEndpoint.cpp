@@ -185,9 +185,10 @@ GfErrType TcrEndpoint::createNewConnection(
     std::chrono::microseconds connectTimeout, int32_t timeoutRetries,
     bool appThreadRequest) {
   LOGFINE(
-      "TcrEndpoint::createNewConnection: connectTimeout =%z "
+      "TcrEndpoint::createNewConnection: connectTimeout =%s "
       "m_needToConnectInLock=%d appThreadRequest =%d",
-      connectTimeout.count(), m_needToConnectInLock, appThreadRequest);
+      to_string(connectTimeout).c_str(), m_needToConnectInLock,
+      appThreadRequest);
   GfErrType err = GF_NOERR;
   newConn = nullptr;
   while (timeoutRetries-- >= 0) {
@@ -923,8 +924,8 @@ GfErrType TcrEndpoint::sendRequestWithRetry(
     } else if (conn == nullptr && useEPPool) {
       LOGFINER(
           "sendRequestWithRetry:: looking for connection in queue timeout = "
-          "%z ",
-          timeout.count());
+          "%s",
+          to_string(timeout).c_str());
       // max wait time to get a connection
       conn = m_opConnections.getUntil(timeout);
     }
@@ -1051,9 +1052,9 @@ GfErrType TcrEndpoint::sendRequestWithRetry(
         } else {
           error = GF_NOTCON;
           LOGFINE(
-              "Returning without connection with %z seconds remaining "
+              "Returning without connection with %s seconds remaining "
               "for endpoint %s.",
-              timeout.count(), m_name.c_str());
+              std::to_string(timeout.count()).c_str(), m_name.c_str());
         }
       } else {
         LOGERROR("Unexpected failure while sending request to server.");

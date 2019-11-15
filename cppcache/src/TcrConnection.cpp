@@ -616,8 +616,8 @@ inline ConnErrType TcrConnection::receiveData(
       readHandshakeRawData, readHandShakeBytes, readHandShakeInt,
       readHandshakeString, all call TcrConnection::receiveData.
     */
-    LOGDEBUG("TcrConnection::receiveData length = %zu defaultWaitSecs = %z",
-             length, defaultWaitSecs.count());
+    LOGDEBUG("TcrConnection::receiveData length = %zu defaultWaitSecs = %s",
+             length, to_string(defaultWaitSecs).c_str());
     if (m_poolDM != nullptr) {
       LOGDEBUG("TcrConnection::receiveData readBytes = %zu", readBytes);
       m_poolDM->getStats().incReceivedBytes(static_cast<int64_t>(readBytes));
@@ -645,9 +645,9 @@ inline ConnErrType TcrConnection::sendData(
   std::chrono::microseconds defaultWaitSecs = std::chrono::seconds(2);
   if (defaultWaitSecs > sendTimeout) defaultWaitSecs = sendTimeout;
   LOGDEBUG(
-      "before send len %zu sendTimeoutSec = %z checkConnected = %d m_connected "
+      "before send len %zu sendTimeoutSec = %s checkConnected = %d m_connected "
       "%d",
-      length, sendTimeout.count(), checkConnected, m_connected);
+      length, to_string(sendTimeout).c_str(), checkConnected, m_connected);
   while (length > 0 && sendTimeout > std::chrono::microseconds::zero()) {
     if (checkConnected && !m_connected) {
       return CONN_IOERR;
