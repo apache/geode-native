@@ -34,6 +34,7 @@ add_executable(cpp-integration-test
   SimpleAuthInitialize.hpp
   SimpleCqListener.cpp
   SimpleCqListener.hpp
+  SslTest.cpp
   StructTest.cpp
   TransactionCleaningTest.cpp
   CleanIdleConnections.cpp
@@ -64,6 +65,7 @@ target_link_libraries(cpp-integration-test
     Boost::log
     Boost::filesystem
     Boost::chrono
+    cryptoImpl
   PRIVATE
     _WarningsAsError
     internal
@@ -91,7 +93,7 @@ configure_file(
   ${CMAKE_CURRENT_BINARY_DIR}/func_cacheserver1_pool.xml COPYONLY)
 configure_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/func_cacheserver2_pool.xml
-  ${CMAKE_CURRENT_BINARY_DIR}/func_cacheserver2_pool.xml COPYONLY)  
+  ${CMAKE_CURRENT_BINARY_DIR}/func_cacheserver2_pool.xml COPYONLY)
 
 set_target_properties(cpp-integration-test PROPERTIES
   CXX_VISIBILITY_PRESET hidden
