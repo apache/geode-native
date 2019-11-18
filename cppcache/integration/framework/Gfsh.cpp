@@ -386,12 +386,13 @@ Gfsh::Deploy &Gfsh::Deploy::jar(const std::string &jarFile) {
   return *this;
 }
 
-template<>
-void Gfsh::Command<void>::execute(const std::string &user, const std::string &password) {
+template <>
+void Gfsh::Command<void>::execute(const std::string &user,
+                                  const std::string &password) {
   gfsh_.execute(command_, user, password);
 }
 
-template<>
+template <>
 void Gfsh::Command<void>::execute() {
   gfsh_.execute(command_, "", "");
 }

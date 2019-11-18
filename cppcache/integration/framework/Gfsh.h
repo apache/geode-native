@@ -20,10 +20,7 @@
 #ifndef INTEGRATION_TEST_FRAMEWORK_GFSH_H
 #define INTEGRATION_TEST_FRAMEWORK_GFSH_H
 
-#include <iostream>
 #include <string>
-
-#include <boost/log/trivial.hpp>
 
 class Gfsh {
  public:
@@ -261,9 +258,11 @@ class Gfsh {
                        const std::string &password) = 0;
 };
 
-template<> void Gfsh::Command<void>::execute(const std::string &user,
-                                        const std::string &password);
+template <>
+void Gfsh::Command<void>::execute(const std::string &user,
+                                  const std::string &password);
 
-template<> void Gfsh::Command<void>::execute();
+template <>
+void Gfsh::Command<void>::execute();
 
 #endif  // INTEGRATION_TEST_FRAMEWORK_GFSH_H

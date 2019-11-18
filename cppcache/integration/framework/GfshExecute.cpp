@@ -25,14 +25,19 @@
 std::mutex g_child_mutex;
 #endif
 
-using boost::process::args;
-using boost::process::child;
-using boost::process::environment;
-using boost::process::ipstream;
-using boost::process::std_err;
-using boost::process::std_out;
+GfshExecuteException::GfshExecuteException(std::string message, int returnCode)
+    : apache::geode::client::Exception(message), returnCode_(returnCode) {}
 
-void GfshExecute::execute(const std::string &command, const std::string &user, const std::string &password) {
+GfshExecuteException::~GfshExecuteException() {}
+
+std::string GfshExecuteException::getName() const {
+  return "GfshExecuteException";
+}
+
+int GfshExecuteException::getGfshReturnCode() { return returnCode_; }
+
+void GfshExecute::execute(const std::string &command, const std::string &user,
+                          const std::string &password) {
   BOOST_LOG_TRIVIAL(info) << "Gfsh::execute: " << command;
 
   std::vector<std::string> commands;
@@ -80,11 +85,13 @@ child GfshExecute::executeChild(std::vector<std::string> &commands,
   // https://github.com/klemens-morgenstern/boost-process/issues/159
   std::lock_guard<std::mutex> guard(g_child_mutex);
 #endif
-  return child(getFrameworkString(FrameworkVariable::GfShExecutable), args = commands, env, std_out > outStream,
-               std_err > errStream);
+  return child(getFrameworkString(FrameworkVariable::GfShExecutable),
+               args = commands, env, std_out > outStream, std_err > errStream);
 }
 
-void GfshExecute::extractConnectionCommand(const std::string &command, const std::string &user, const std::string &password) {
+void GfshExecute::extractConnectionCommand(const std::string &command,
+                                           const std::string &user,
+                                           const std::string &password) {
   if (starts_with(command, std::string("connect"))) {
     connection_ = command;
   } else if (starts_with(command, std::string("start locator"))) {
@@ -93,24 +100,21 @@ void GfshExecute::extractConnectionCommand(const std::string &command, const std
 
     std::regex jmxManagerHostRegex("bind-address=([^\\s]+)");
     std::smatch jmxManagerHostMatch;
-    if (std::regex_search(command, jmxManagerHostMatch,
-                          jmxManagerHostRegex)) {
+    if (std::regex_search(command, jmxManagerHostMatch, jmxManagerHostRegex)) {
       jmxManagerHost = jmxManagerHostMatch[1];
     }
 
     std::regex jmxManagerPortRegex("jmx-manager-port=(\\d+)");
     std::smatch jmxManagerPortMatch;
-    if (std::regex_search(command, jmxManagerPortMatch,
-                          jmxManagerPortRegex)) {
+    if (std::regex_search(command, jmxManagerPortMatch, jmxManagerPortRegex)) {
       jmxManagerPort = jmxManagerPortMatch[1];
     }
 
-    connection_ = "connect --jmx-manager=" + jmxManagerHost + "[" +
-        jmxManagerPort + "]";
+    connection_ =
+        "connect --jmx-manager=" + jmxManagerHost + "[" + jmxManagerPort + "]";
 
     if (!(user.empty() || password.empty())) {
       connection_ += " --user=" + user + " --password=" + password;
     }
   }
 }
-
