@@ -55,7 +55,8 @@ int EntryExpiryHandler::handle_timeout(const ACE_Time_Value& current_time,
       lastTimeForExp = expProps.getLastModifiedTime();
     }
 
-    auto elapsed = curr_time - lastTimeForExp;
+    auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(
+        curr_time - lastTimeForExp);
     LOGDEBUG(
         "Entered entry expiry task handler for key [%s] of region [%s]: "
         "%s,%s,%s,%s",
@@ -69,7 +70,8 @@ int EntryExpiryHandler::handle_timeout(const ACE_Time_Value& current_time,
     } else {
       // reset the task after
       // (lastAccessTime + entryExpiryDuration - curr_time) in seconds
-      auto remaining = m_duration - elapsed;
+      auto remaining = std::chrono::duration_cast<std::chrono::seconds>(
+          m_duration - elapsed);
       auto remainingStr = to_string(remaining);
       LOGDEBUG(
           "Resetting expiry task %s secs later for key [%s] of region [%s]",

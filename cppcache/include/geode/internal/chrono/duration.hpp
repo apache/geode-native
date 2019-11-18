@@ -35,7 +35,7 @@ namespace duration {
 
 template <class Period>
 struct _suffix {
-  static constexpr char const* value = nullptr;
+  static constexpr char const* value = "<<unknown units>>";
 };
 template <>
 struct _suffix<std::ratio<3600>> {
@@ -57,6 +57,12 @@ template <>
 struct _suffix<std::micro> {
   static constexpr char const* value = "us";
 };
+#ifdef WIN32
+template <>
+struct _suffix<std::ratio<10000000>> {
+  static constexpr char const* value = "ticks";
+};
+#endif
 template <>
 struct _suffix<std::nano> {
   static constexpr char const* value = "ns";
