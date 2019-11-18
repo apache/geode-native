@@ -43,7 +43,7 @@ class Locator {
   Locator(Cluster &cluster, std::vector<Locator> &locators, std::string name,
           uint16_t jmxManagerPort, bool useIPv6);
 
-  ~Locator() noexcept;
+  ~Locator();
 
   Locator(const Locator &copy) = delete;
   Locator &operator=(const Locator &copy) = delete;
@@ -80,7 +80,7 @@ class Server {
 
   std::string getCacheXMLFile();
 
-  ~Server() noexcept;
+  ~Server();
 
   Server(const Server &copy) = delete;
   Server &operator=(const Server &other) = delete;
@@ -137,7 +137,7 @@ class Cluster {
           User user, Password password, LocatorCount initialLocators,
           ServerCount initialServers);
 
-  ~Cluster() noexcept;
+  ~Cluster();
 
   Cluster(const Cluster &copy) = delete;
   Cluster &operator=(const Cluster &other) = delete;
@@ -176,7 +176,7 @@ class Cluster {
   std::string keystorePassword();
   std::string truststorePassword();
 
-  Gfsh &getGfsh() noexcept;
+  Gfsh &getGfsh();
 
   std::vector<Server> &getServers();
 

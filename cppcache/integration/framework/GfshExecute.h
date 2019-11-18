@@ -47,7 +47,7 @@ class GfshExecuteException : public apache::geode::client::Exception {
 
  public:
   GfshExecuteException(std::string message, int returnCode);
-  ~GfshExecuteException() noexcept override;
+  ~GfshExecuteException() override;
   std::string getName() const override;
   int getGfshReturnCode();
 };

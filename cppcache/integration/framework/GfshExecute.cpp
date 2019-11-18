@@ -25,6 +25,13 @@
 std::mutex g_child_mutex;
 #endif
 
+using boost::process::args;
+using boost::process::child;
+using boost::process::environment;
+using boost::process::ipstream;
+using boost::process::std_err;
+using boost::process::std_out;
+
 GfshExecuteException::GfshExecuteException(std::string message, int returnCode)
     : apache::geode::client::Exception(message), returnCode_(returnCode) {}
 
