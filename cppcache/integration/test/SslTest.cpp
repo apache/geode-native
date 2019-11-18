@@ -95,88 +95,94 @@ TEST(SslTest, PutGetWithValidSslConfiguration) {
   cache.close();
 }
 
-// TEST(SslTest, PutWithInvalidKeystorePassword) {
-//  Cluster cluster{LocatorCount{1}, ServerCount{1}};
-//  cluster.useSsl(clusterKeystore.string(), clusterTruststore.string(),
-//                 certificatePassword, certificatePassword);
-//
-//
-//  cluster.getGfsh()
-//      .create()
-//      .region()
-//      .withName("region")
-//      .withType("PARTITION")
-//      .execute();
-//
-//  auto cache = CacheFactory()
-//                   .set("log-level", "none")
-//                   .set("ssl-enabled", "true")
-//                   .set("ssl-keystore", clientKeystore.string())
-//                   .set("ssl-keystore-password", "bad_password")
-//                   .set("ssl-truststore", clientTruststore.string())
-//                   .create();
-//
-//  const auto pool = cache.getPoolManager()
-//                        .createFactory()
-//                        .addLocator("localhost", cluster.getLocatorPort())
-//                        .create("pool");
-//
-//  auto region = cache.createRegionFactory(RegionShortcut::PROXY)
-//                    .setPoolName("pool")
-//                    .create("region");
-//
-//  try {
-//    region->put("1", "one");
-//    region->put("2", "two");
-//    FAIL() << "Expected apache::geode::client::NotConnectedException";
-//  } catch (const Exception& exception) {
-//    EXPECT_EQ(exception.getName(),
-//              "apache::geode::client::NotConnectedException");
-//  }
-//
-//  cache.close();
-//}
-//
-// TEST(SslTest, PutWithInvalidKeystore) {
-//  Cluster cluster{LocatorCount{1}, ServerCount{1}};
-//  cluster.useSsl(clusterKeystore.string(), clusterTruststore.string(),
-//                 certificatePassword, certificatePassword);
-//
-//
-//  cluster.getGfsh()
-//      .create()
-//      .region()
-//      .withName("region")
-//      .withType("PARTITION")
-//      .execute();
-//
-//  auto cache = CacheFactory()
-//                   .set("log-level", "none")
-//                   .set("ssl-enabled", "true")
-//                   .set("ssl-keystore", clientKeystore.string())
-//                   .set("ssl-keystore-password", certificatePassword)
-//                   .set("ssl-truststore", clientTruststore.string())
-//                   .create();
-//
-//  const auto pool = cache.getPoolManager()
-//                        .createFactory()
-//                        .addLocator("localhost", cluster.getLocatorPort())
-//                        .create("pool");
-//
-//  auto region = cache.createRegionFactory(RegionShortcut::PROXY)
-//                    .setPoolName("pool")
-//                    .create("region");
-//
-//  try {
-//    region->put("1", "one");
-//    region->put("2", "two");
-//    FAIL() << "Expected apache::geode::client::NotConnectedException";
-//  } catch (const Exception& exception) {
-//    EXPECT_EQ(exception.getName(),
-//              "apache::geode::client::NotConnectedException");
-//  }
-//
-//  cache.close();
-//}
+TEST(SslTest, PutWithInvalidKeystorePassword) {
+  Cluster cluster{LocatorCount{1}, ServerCount{1}};
+  cluster.useSsl(clusterKeystore.string(), clusterTruststore.string(),
+                 certificatePassword, certificatePassword);
+
+  cluster.start();
+
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("region")
+      .withType("PARTITION")
+      .execute();
+
+  auto cache = CacheFactory()
+                   .set("log-level", "none")
+                   .set("ssl-enabled", "true")
+                   .set("ssl-keystore", clientKeystore.string())
+                   .set("ssl-keystore-password", "bad_password")
+                   .set("ssl-truststore", clientTruststore.string())
+                   .create();
+
+  const auto pool = cache.getPoolManager()
+                        .createFactory()
+                        .addLocator("localhost", cluster.getLocatorPort())
+                        .create("pool");
+
+  auto region = cache.createRegionFactory(RegionShortcut::PROXY)
+                    .setPoolName("pool")
+                    .create("region");
+
+  try {
+    region->put("1", "one");
+    region->put("2", "two");
+    FAIL() << "Expected apache::geode::client::NotConnectedException";
+  } catch (const Exception& exception) {
+    EXPECT_EQ(exception.getName(),
+              "apache::geode::client::NotConnectedException");
+  }
+
+  cache.close();
+}
+
+TEST(SslTest, PutWithUntrustedKeystore) {
+  Cluster cluster{LocatorCount{1}, ServerCount{1}};
+  cluster.useSsl(clusterKeystore.string(), clusterTruststore.string(),
+                 certificatePassword, certificatePassword);
+
+  cluster.start();
+
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("region")
+      .withType("PARTITION")
+      .execute();
+
+  const auto clientUntrustedKeystore =
+      (currentWorkingDirectory /
+       boost::filesystem::path("ClientSslKeys/client_keystore_untrusted.pem"));
+
+  auto cache = CacheFactory()
+                   .set("log-level", "none")
+                   .set("ssl-enabled", "true")
+                   .set("ssl-keystore", clientUntrustedKeystore.string())
+                   .set("ssl-keystore-password", certificatePassword)
+                   .set("ssl-truststore", clientTruststore.string())
+                   .create();
+
+  const auto pool = cache.getPoolManager()
+                        .createFactory()
+                        .addLocator("localhost", cluster.getLocatorPort())
+                        .create("pool");
+
+  auto region = cache.createRegionFactory(RegionShortcut::PROXY)
+                    .setPoolName("pool")
+                    .create("region");
+
+  try {
+    region->put("1", "one");
+    region->put("2", "two");
+    FAIL() << "Expected apache::geode::client::NotConnectedException";
+  } catch (const Exception& exception) {
+    EXPECT_EQ(exception.getName(),
+              "apache::geode::client::NotConnectedException");
+  }
+
+  cache.close();
+}
 
 }  // namespace ssltest
