@@ -387,12 +387,13 @@ Gfsh::Deploy &Gfsh::Deploy::jar(const std::string &jarFile) {
 }
 
 template <>
-void Gfsh::Command<void>::execute(const std::string &user,
-                                  const std::string &password) {
-  gfsh_.execute(command_, user, password);
+void Gfsh::Command<void>::execute(const std::string &user, const std::string &password,
+                                  const std::string &keyStorePath, const std::string &trustStorePath,
+                                  const std::string &keyStorePassword, const std::string &trustStorePassword) {
+  gfsh_.execute(command_, user, password, keyStorePath, trustStorePath, keyStorePassword, trustStorePassword);
 }
 
 template <>
 void Gfsh::Command<void>::execute() {
-  gfsh_.execute(command_, "", "");
+  gfsh_.execute(command_, "", "", "", "", "", "");
 }

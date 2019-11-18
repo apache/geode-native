@@ -44,7 +44,10 @@ std::string GfshExecuteException::getName() const {
 int GfshExecuteException::getGfshReturnCode() { return returnCode_; }
 
 void GfshExecute::execute(const std::string &command, const std::string &user,
-                          const std::string &password) {
+                          const std::string &password, const std::string &keyStorePath,
+                          const std::string &trustStorePath,
+                          const std::string &keyStorePassword,
+                          const std::string &trustStorePassword) {
   BOOST_LOG_TRIVIAL(info) << "Gfsh::execute: " << command;
 
   std::vector<std::string> commands;
@@ -82,7 +85,7 @@ void GfshExecute::execute(const std::string &command, const std::string &user,
   if (exit_code) {
     throw new GfshExecuteException("gfsh error", exit_code);
   }
-  extractConnectionCommand(command, user, password);
+  extractConnectionCommand(command, user, password, keyStorePath, trustStorePath, keyStorePassword, trustStorePassword);
 }
 
 child GfshExecute::executeChild(std::vector<std::string> &commands,
@@ -96,9 +99,10 @@ child GfshExecute::executeChild(std::vector<std::string> &commands,
                args = commands, env, std_out > outStream, std_err > errStream);
 }
 
-void GfshExecute::extractConnectionCommand(const std::string &command,
-                                           const std::string &user,
-                                           const std::string &password) {
+void GfshExecute::extractConnectionCommand(const std::string &command, const std::string &user,
+                                           const std::string &password, const std::string &keyStorePath,
+                                           const std::string &trustStorePath, const std::string &keyStorePassword,
+                                           const std::string &trustStorePassword) {
   if (starts_with(command, std::string("connect"))) {
     connection_ = command;
   } else if (starts_with(command, std::string("start locator"))) {
@@ -117,11 +121,15 @@ void GfshExecute::extractConnectionCommand(const std::string &command,
       jmxManagerPort = jmxManagerPortMatch[1];
     }
 
-    connection_ =
-        "connect --jmx-manager=" + jmxManagerHost + "[" + jmxManagerPort + "]";
+    connection_ = "connect --jmx-manager=" + jmxManagerHost + "[" + jmxManagerPort + "]";
 
     if (!(user.empty() || password.empty())) {
       connection_ += " --user=" + user + " --password=" + password;
+    }
+
+    if(!(keyStorePath.empty() || trustStorePath.empty() || keyStorePassword.empty() || trustStorePassword.empty())) {
+        connection_ += " --use-ssl=true --key-store=" + keyStorePath + " --trust-store=" + trustStorePath +
+                " --key-store-password=" + keyStorePassword + " --trust-store-password=" + trustStorePassword;
     }
   }
 }

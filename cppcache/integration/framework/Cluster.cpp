@@ -95,7 +95,7 @@ void Locator::start() {
         .withSslTruststorePassword(cluster_.truststorePassword());
   }
 
-  locator.execute(cluster_.getUser(), cluster_.getPassword());
+  locator.execute(cluster_.getUser(), cluster_.getPassword(), cluster_.keystore(), cluster_.truststore(), cluster_.keystorePassword(), cluster_.truststorePassword());
 
   auto connect =
       cluster_.getGfsh().connect().withJmxManager(cluster_.getJmxManager());

@@ -55,9 +55,11 @@ class Gfsh {
   template <class Result>
   class Command {
    public:
-    virtual Result execute(const std::string &user,
-                           const std::string &password) {
-      Result{gfsh_}.parse(gfsh_.execute(command_, user, password));
+    virtual Result execute(const std::string &user, const std::string &password, const std::string &keyStorePath,
+                           const std::string &trustStorePath, const std::string &keyStorePassword,
+                           const std::string &trustStorePassword) {
+      Result{gfsh_}.parse(gfsh_.execute(command_, user, password, keyStorePath, trustStorePath,
+              keyStorePassword, trustStorePassword));
     }
     virtual Result execute() {
       Result{gfsh_}.parse(gfsh_.execute(command_, "", ""));
@@ -255,12 +257,15 @@ class Gfsh {
 
  protected:
   virtual void execute(const std::string &command, const std::string &user,
-                       const std::string &password) = 0;
+                       const std::string &password, const std::string &keyStorePath,
+                       const std::string &trustStorePath, const std::string &keyStorePassword,
+                       const std::string &trustStorePassword) = 0;
 };
 
 template <>
-void Gfsh::Command<void>::execute(const std::string &user,
-                                  const std::string &password);
+void Gfsh::Command<void>::execute(const std::string &user, const std::string &password,
+                                  const std::string &keyStorePath, const std::string &trustStorePath,
+                                  const std::string &keyStorePassword, const std::string &trustStorePassword);
 
 template <>
 void Gfsh::Command<void>::execute();

@@ -56,7 +56,10 @@ class GfshExecute : public Gfsh {
   std::string connection_;
 
   void execute(const std::string &command, const std::string &user,
-               const std::string &password) override;
+               const std::string &password, const std::string &keyStorePath,
+               const std::string &trustStorePath,
+               const std::string &keyStorePassword,
+               const std::string &trustStorePassword) override;
 
   boost::process::child executeChild(std::vector<std::string> &commands,
                                      boost::process::environment &env,
@@ -65,7 +68,11 @@ class GfshExecute : public Gfsh {
 
   void extractConnectionCommand(const std::string &command,
                                 const std::string &user,
-                                const std::string &password);
+                                const std::string &password,
+                                const std::string &keyStorePath,
+                                const std::string &trustStorePath,
+                                const std::string &keyStorePassword,
+                                const std::string &trustStorePassword);
 
  public:
   GfshExecute() = default;
