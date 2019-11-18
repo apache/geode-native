@@ -55,27 +55,21 @@ int EntryExpiryHandler::handle_timeout(const ACE_Time_Value& current_time,
       lastTimeForExp = expProps.getLastModifiedTime();
     }
 
-    auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(
-        curr_time - lastTimeForExp);
+    auto (curr_time - lastTimeForExp);
+
     LOGDEBUG(
-        "Entered entry expiry task handler for key [%s] of region [%s]: "
-        "%s,%s,%s,%s",
+        "Entered entry expiry task handler for key [%s] of region [%s]",
         Utils::nullSafeToString(key).c_str(),
-        m_regionPtr->getFullPath().c_str(),
-        to_string(curr_time.time_since_epoch()).c_str(),
-        to_string(lastTimeForExp.time_since_epoch()).c_str(),
-        to_string(m_duration).c_str(), to_string(elapsed).c_str());
+        m_regionPtr->getFullPath().c_str());
     if (elapsed >= m_duration) {
       DoTheExpirationAction(key);
     } else {
       // reset the task after
       // (lastAccessTime + entryExpiryDuration - curr_time) in seconds
-      auto remaining = std::chrono::duration_cast<std::chrono::seconds>(
-          m_duration - elapsed);
-      auto remainingStr = to_string(remaining);
+      auto remaining = m_duration - elapsed;
       LOGDEBUG(
-          "Resetting expiry task %s secs later for key [%s] of region [%s]",
-          remainingStr.c_str(), Utils::nullSafeToString(key).c_str(),
+          "Resetting expiry task for key [%s] of region [%s]",
+          Utils::nullSafeToString(key).c_str(),
           m_regionPtr->getFullPath().c_str());
       m_regionPtr->getCacheImpl()->getExpiryTaskManager().resetTask(
           expProps.getExpiryTaskId(), remaining);
