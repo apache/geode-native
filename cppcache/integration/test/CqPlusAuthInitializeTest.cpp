@@ -104,6 +104,9 @@ TEST(CqPlusAuthInitializeTest, putInALoopWhileSubscribedAndAuthenticated) {
       Classpath{getFrameworkString(FrameworkVariable::JavaObjectJarPath)},
       SecurityManager{"javaobject.SimpleSecurityManager"}, User{"root"},
       Password{"root-password"}, LocatorCount{1}, ServerCount{1});
+
+  cluster.start();
+
   cluster.getGfsh()
       .create()
       .region()

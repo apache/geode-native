@@ -107,6 +107,9 @@ TEST(AuthInitializeTest, putGetWithBasicAuth) {
       Classpath{getFrameworkString(FrameworkVariable::JavaObjectJarPath)},
       SecurityManager{"javaobject.SimpleSecurityManager"}, User{"root"},
       Password{"root-password"}, LocatorCount{1}, ServerCount{1});
+
+  cluster.start();
+
   cluster.getGfsh()
       .create()
       .region()
@@ -136,6 +139,9 @@ TEST(AuthInitializeTest, putWithBadUsername) {
       Classpath{getFrameworkString(FrameworkVariable::JavaObjectJarPath)},
       SecurityManager{"javaobject.SimpleSecurityManager"}, User{"root"},
       Password{"root-password"}, LocatorCount{1}, ServerCount{1});
+
+  cluster.start();
+
   cluster.getGfsh()
       .create()
       .region()
@@ -170,6 +176,8 @@ TEST(AuthInitializeTest, putWithBadPassword) {
       SecurityManager{"javaobject.SimpleSecurityManager"}, User{"root"},
       Password{"root-password"}, LocatorCount{1}, ServerCount{1});
 
+  cluster.start();
+
   auto authInitialize =
       std::make_shared<SimpleAuthInitialize>("root", "bad-password");
   auto cache = createCache(authInitialize);
@@ -197,6 +205,8 @@ TEST(AuthInitializeTest, badCredentialsWithSubscriptionEnabled) {
       Classpath{getFrameworkString(FrameworkVariable::JavaObjectJarPath)},
       SecurityManager{"javaobject.SimpleSecurityManager"}, User{"root"},
       Password{"root-password"}, LocatorCount{1}, ServerCount{1});
+
+  cluster.start();
 
   auto authInitialize =
       std::make_shared<SimpleAuthInitialize>("root", "bad-password");

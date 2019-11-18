@@ -264,7 +264,7 @@ Cluster::Cluster(Name name, Classpath classpath,
   useIPv6_ = useIPv6.get();
 
   removeServerDirectory();
-};
+}
 
 Cluster::Cluster(Name name, Classpath classpath,
                  SecurityManager securityManager, User user, Password password,
