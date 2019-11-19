@@ -57,20 +57,18 @@ int EntryExpiryHandler::handle_timeout(const ACE_Time_Value& current_time,
 
     auto elapsed = curr_time - lastTimeForExp;
 
-    LOGDEBUG(
-        "Entered entry expiry task handler for key [%s] of region [%s]",
-        Utils::nullSafeToString(key).c_str(),
-        m_regionPtr->getFullPath().c_str());
+    LOGDEBUG("Entered entry expiry task handler for key [%s] of region [%s]",
+             Utils::nullSafeToString(key).c_str(),
+             m_regionPtr->getFullPath().c_str());
     if (elapsed >= m_duration) {
       DoTheExpirationAction(key);
     } else {
       // reset the task after
       // (lastAccessTime + entryExpiryDuration - curr_time) in seconds
       auto remaining = m_duration - elapsed;
-      LOGDEBUG(
-          "Resetting expiry task for key [%s] of region [%s]",
-          Utils::nullSafeToString(key).c_str(),
-          m_regionPtr->getFullPath().c_str());
+      LOGDEBUG("Resetting expiry task for key [%s] of region [%s]",
+               Utils::nullSafeToString(key).c_str(),
+               m_regionPtr->getFullPath().c_str());
       m_regionPtr->getCacheImpl()->getExpiryTaskManager().resetTask(
           expProps.getExpiryTaskId(), remaining);
       return 0;
