@@ -80,7 +80,7 @@ if(WIN32)
       _WIN32_WINNT=0x06020000
   )
 
-  foreach (_target apache-geode testobject)
+  foreach (_target apache-geode testobject cryptoImpl)
     add_custom_command(TARGET cpp-integration-test POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "$<TARGET_FILE:${_target}>"
         "$<$<CONFIG:Debug>:$<TARGET_PDB_FILE:${_target}>>"
