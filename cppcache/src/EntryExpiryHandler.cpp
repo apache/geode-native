@@ -55,7 +55,7 @@ int EntryExpiryHandler::handle_timeout(const ACE_Time_Value& current_time,
       lastTimeForExp = expProps.getLastModifiedTime();
     }
 
-    auto (curr_time - lastTimeForExp);
+    auto elapsed = curr_time - lastTimeForExp;
 
     LOGDEBUG(
         "Entered entry expiry task handler for key [%s] of region [%s]",
