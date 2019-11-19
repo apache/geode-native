@@ -160,6 +160,52 @@ TEST(SslTest, PutWithUntrustedKeystore) {
                    .set("log-level", "none")
                    .set("ssl-enabled", "true")
                    .set("ssl-keystore", clientUntrustedKeystore.string())
+                   .set("ssl-keystore-password", "secret")
+                   .set("ssl-truststore", clientTruststore.string())
+                   .create();
+
+  const auto pool = cache.getPoolManager()
+                        .createFactory()
+                        .addLocator("localhost", cluster.getLocatorPort())
+                        .create("pool");
+
+  auto region = cache.createRegionFactory(RegionShortcut::PROXY)
+                    .setPoolName("pool")
+                    .create("region");
+
+  try {
+    region->put("1", "one");
+    FAIL() << "Expected apache::geode::client::NotConnectedException";
+  } catch (const Exception& exception) {
+    EXPECT_EQ(exception.getName(),
+              "apache::geode::client::NotConnectedException");
+  }
+
+  cache.close();
+}
+
+TEST(SslTest, PutWithCorruptKeystore) {
+  Cluster cluster{LocatorCount{1}, ServerCount{1}};
+  cluster.useSsl(clusterKeystore.string(), clusterTruststore.string(),
+                 certificatePassword, certificatePassword);
+
+  cluster.start();
+
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("region")
+      .withType("PARTITION")
+      .execute();
+
+  const auto clientCorruptKeystore =
+      (currentWorkingDirectory /
+       boost::filesystem::path("ClientSslKeys/client_keystore_corrupt.pem"));
+
+  auto cache = CacheFactory()
+                   .set("log-level", "DEBUG")
+                   .set("ssl-enabled", "true")
+                   .set("ssl-keystore", clientCorruptKeystore.string())
                    .set("ssl-keystore-password", certificatePassword)
                    .set("ssl-truststore", clientTruststore.string())
                    .create();
@@ -175,7 +221,6 @@ TEST(SslTest, PutWithUntrustedKeystore) {
 
   try {
     region->put("1", "one");
-    region->put("2", "two");
     FAIL() << "Expected apache::geode::client::NotConnectedException";
   } catch (const Exception& exception) {
     EXPECT_EQ(exception.getName(),
