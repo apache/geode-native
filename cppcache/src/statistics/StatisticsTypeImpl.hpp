@@ -22,6 +22,7 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
 #include <geode/ExceptionTypes.hpp>
 
@@ -46,10 +47,9 @@ typedef std::map<std::string, StatisticDescriptor*> StatisticsDescMap;
 
 class StatisticsTypeImpl : public StatisticsType {
  private:
-  int32_t statsLength;
   std::string name;
   std::string description;
-  StatisticDescriptor** stats;
+  std::vector<StatisticDescriptor*> stats;
   StatisticsDescMap statsDescMap;
   int32_t intStatCount;
   int32_t longStatCount;
@@ -57,7 +57,7 @@ class StatisticsTypeImpl : public StatisticsType {
 
  public:
   StatisticsTypeImpl(std::string name, std::string description,
-                     StatisticDescriptor** stats, int32_t statsLength);
+                     std::vector<StatisticDescriptor*> stats);
 
   ~StatisticsTypeImpl() override;
 
@@ -67,7 +67,7 @@ class StatisticsTypeImpl : public StatisticsType {
 
   const std::string& getDescription() const override;
 
-  StatisticDescriptor** getStatistics() const override;
+  const std::vector<StatisticDescriptor*>& getStatistics() const override;
 
   int32_t nameToId(const std::string& name) const override;
 

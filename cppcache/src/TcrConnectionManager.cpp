@@ -167,6 +167,7 @@ TcrConnectionManager::~TcrConnectionManager() {
     }
   }
   TcrConnectionManager::TEST_DURABLE_CLIENT_CRASH = false;
+  _GEODE_SAFE_DELETE(m_redundancyManager);
 }
 
 void TcrConnectionManager::connect(

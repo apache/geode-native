@@ -96,8 +96,7 @@ class GeodeStatisticsFactory : public StatisticsFactory {
 
   StatisticsType* createType(const std::string& name,
                              const std::string& description,
-                             StatisticDescriptor** stats,
-                             int32_t statsLength) override;
+                             std::vector<StatisticDescriptor*> stats) override;
 
   StatisticsType* findType(const std::string& name) const override;
 

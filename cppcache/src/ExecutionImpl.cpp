@@ -73,7 +73,7 @@ Execution ExecutionImpl::withCollector(std::shared_ptr<ResultCollector> rs) {
                         m_authenticatedView)));
 }
 
-std::vector<int8_t>* ExecutionImpl::getFunctionAttributes(
+std::shared_ptr<std::vector<int8_t>> ExecutionImpl::getFunctionAttributes(
     const std::string& func) {
   auto&& itr = m_func_attrs.find(func);
   if (itr != m_func_attrs.end()) {
@@ -360,8 +360,8 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
   return m_rc;
 }
 
-GfErrType ExecutionImpl::getFuncAttributes(const std::string& func,
-                                           std::vector<int8_t>** attr) {
+GfErrType ExecutionImpl::getFuncAttributes(
+    const std::string& func, std::shared_ptr<std::vector<int8_t>>* attr) {
   ThinClientPoolDM* tcrdm = dynamic_cast<ThinClientPoolDM*>(m_pool.get());
   if (tcrdm == nullptr) {
     throw IllegalArgumentException(

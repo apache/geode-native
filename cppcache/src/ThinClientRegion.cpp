@@ -994,8 +994,9 @@ GfErrType ThinClientRegion::putNoThrow_remote(
   TcrMessagePut request(new DataOutput(m_cacheImpl->createDataOutput()), this,
                         keyPtr, valuePtr, aCallbackArgument, delta,
                         m_tcrdm.get());
-  TcrMessageReply* reply = new TcrMessageReply(true, m_tcrdm.get());
-  err = m_tcrdm->sendSyncRequest(request, *reply);
+  std::unique_ptr<TcrMessageReply> reply = std::unique_ptr<TcrMessageReply>(
+      new TcrMessageReply(true, m_tcrdm.get()));
+  err = m_tcrdm->sendSyncRequest(request, *reply.get());
   if (delta) {
     // Does not check whether success of failure..
     m_cacheImpl->getCachePerfStats().incDeltaPut();
@@ -1004,8 +1005,8 @@ GfErrType ThinClientRegion::putNoThrow_remote(
       TcrMessagePut request(new DataOutput(m_cacheImpl->createDataOutput()),
                             this, keyPtr, valuePtr, aCallbackArgument, false,
                             m_tcrdm.get(), false, true);
-      delete reply;
-      reply = new TcrMessageReply(true, m_tcrdm.get());
+      reply = std::unique_ptr<TcrMessageReply>(
+          new TcrMessageReply(true, m_tcrdm.get()));
       err = m_tcrdm->sendSyncRequest(request, *reply);
     }
   }
@@ -1031,8 +1032,6 @@ GfErrType ThinClientRegion::putNoThrow_remote(
       err = GF_MSG;
     }
   }
-  delete reply;
-  reply = nullptr;
   return err;
 }
 
@@ -3226,8 +3225,8 @@ bool ThinClientRegion::executeFunctionSH(
   return reExecute;
 }
 
-GfErrType ThinClientRegion::getFuncAttributes(const std::string& func,
-                                              std::vector<int8_t>** attr) {
+GfErrType ThinClientRegion::getFuncAttributes(
+    const std::string& func, std::shared_ptr<std::vector<int8_t>>* attr) {
   GfErrType err = GF_NOERR;
 
   // do TCR GET_FUNCTION_ATTRIBUTES

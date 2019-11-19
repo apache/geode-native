@@ -116,17 +116,14 @@ class BucketServerLocation : public ServerLocation {
     m_isPrimary = input.readBoolean();
     m_version = input.read();
     m_numServerGroups = input.read();
-    std::shared_ptr<CacheableString>* serverGroups = nullptr;
+
     if (m_numServerGroups > 0) {
-      serverGroups = new std::shared_ptr<CacheableString>[m_numServerGroups];
+      std::vector<std::shared_ptr<CacheableString>> serverGroups(
+          m_numServerGroups);
       for (int i = 0; i < m_numServerGroups; i++) {
         serverGroups[i] = CacheableString::create(input.readString());
       }
-    }
-    if (m_numServerGroups > 0) {
-      m_serverGroups = CacheableStringArray::create(
-          std::vector<std::shared_ptr<CacheableString>>(
-              serverGroups, serverGroups + m_numServerGroups));
+      m_serverGroups = CacheableStringArray::create(std::move(serverGroups));
     }
   }
 

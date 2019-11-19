@@ -20,6 +20,8 @@
 #ifndef GEODE_STATISTICS_STATISTICSFACTORY_H_
 #define GEODE_STATISTICS_STATISTICSFACTORY_H_
 
+#include <vector>
+
 #include <geode/ExceptionTypes.hpp>
 #include <geode/internal/geode_globals.hpp>
 
@@ -131,10 +133,9 @@ class APACHE_GEODE_EXPORT StatisticsFactory {
    * @throws IllegalArgumentException
    * if a type with the given <code>name</code> already exists.
    */
-  virtual StatisticsType* createType(const std::string& name,
-                                     const std::string& description,
-                                     StatisticDescriptor** stats,
-                                     int32_t statsLength) = 0;
+  virtual StatisticsType* createType(
+      const std::string& name, const std::string& description,
+      std::vector<StatisticDescriptor*> stats) = 0;
 
   /**
    * Finds and returns an already created {@link StatisticsType}

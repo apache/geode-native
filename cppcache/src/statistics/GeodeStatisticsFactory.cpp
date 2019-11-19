@@ -171,8 +171,8 @@ StatisticsTypeImpl* GeodeStatisticsFactory::addType(StatisticsTypeImpl* st) {
  */
 StatisticsType* GeodeStatisticsFactory::createType(
     const std::string& name, const std::string& description,
-    StatisticDescriptor** stats, int32_t statsLength) {
-  auto st = new StatisticsTypeImpl(name, description, stats, statsLength);
+    std::vector<StatisticDescriptor*> stats) {
+  auto st = new StatisticsTypeImpl(name, description, std::move(stats));
 
   if (st != nullptr) {
     st = addType(st);

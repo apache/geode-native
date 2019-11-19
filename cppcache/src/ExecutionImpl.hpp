@@ -35,7 +35,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-typedef std::map<std::string, std::vector<int8_t>*>
+typedef std::map<std::string, std::shared_ptr<std::vector<int8_t>>>
     FunctionToFunctionAttributes;
 
 class ExecutionImpl {
@@ -119,9 +119,10 @@ class ExecutionImpl {
       const std::string& func, uint8_t getResult,
       std::chrono::milliseconds timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
 
-  std::vector<int8_t>* getFunctionAttributes(const std::string& func);
+  std::shared_ptr<std::vector<int8_t>> getFunctionAttributes(
+      const std::string& func);
   GfErrType getFuncAttributes(const std::string& func,
-                              std::vector<int8_t>** attr);
+                              std::shared_ptr<std::vector<int8_t>>* attr);
 };
 }  // namespace client
 }  // namespace geode

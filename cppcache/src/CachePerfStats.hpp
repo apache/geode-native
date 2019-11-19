@@ -42,7 +42,7 @@ class APACHE_GEODE_EXPORT CachePerfStats {
 
     if (statsType == nullptr) {
       const bool largerIsBetter = true;
-      StatisticDescriptor** statDescArr = new StatisticDescriptor*[24];
+      std::vector<StatisticDescriptor*> statDescArr(24);
 
       statDescArr[0] = factory->createIntCounter(
           "creates", "The total number of cache creates", "entries",
@@ -139,7 +139,7 @@ class APACHE_GEODE_EXPORT CachePerfStats {
 
       statsType = factory->createType("CachePerfStats",
                                       "Statistics about native client cache",
-                                      statDescArr, 24);
+                                      std::move(statDescArr));
     }
     // Create Statistics object
     m_cachePerfStats =

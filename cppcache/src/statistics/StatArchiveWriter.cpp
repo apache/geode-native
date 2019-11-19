@@ -155,20 +155,20 @@ void StatDataOutput::openFile(std::string filename, int64_t size) {
 
 // Constructor and Member functions of ResourceType class
 
-ResourceType::ResourceType(int32_t idArg, const StatisticsType *typeArg) {
+ResourceType::ResourceType(int32_t idArg, const StatisticsType *typeArg)
+    : type(typeArg) {
   this->id = idArg;
-  this->stats = typeArg->getStatistics();
-  int32_t desc = typeArg->getDescriptorsCount();
-  this->numOfDescriptors = desc;
 }
 
 int32_t ResourceType::getId() const { return this->id; }
 
 int32_t ResourceType::getNumOfDescriptors() const {
-  return this->numOfDescriptors;
+  return this->type->getDescriptorsCount();
 }
 
-StatisticDescriptor **ResourceType::getStats() const { return this->stats; }
+const std::vector<StatisticDescriptor *> &ResourceType::getStats() const {
+  return this->type->getStatistics();
+}
 
 // Constructor and Member functions of ResourceInst class
 
@@ -203,7 +203,7 @@ int64_t ResourceInst::getStatValue(StatisticDescriptor *f) {
 void ResourceInst::writeSample() {
   bool wroteInstId = false;
   bool checkForChange = true;
-  StatisticDescriptor **stats = type->getStats();
+  const std::vector<StatisticDescriptor *> &stats = type->getStats();
   if (resource->isClosed()) {
     return;
   }

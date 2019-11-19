@@ -29,32 +29,26 @@ namespace statistics {
 using client::IllegalArgumentException;
 using client::NullPointerException;
 
-StatisticsTypeImpl::StatisticsTypeImpl(std::string nameArg,
-                                       std::string descriptionArg,
-                                       StatisticDescriptor** statsArg,
-                                       int32_t statsLengthArg) {
+StatisticsTypeImpl::StatisticsTypeImpl(
+    std::string nameArg, std::string descriptionArg,
+    std::vector<StatisticDescriptor*> statsArg) {
   if (nameArg.empty()) {
     const char* s = "Cannot have an empty statistics type name";
     throw NullPointerException(s);
   }
-  if (statsArg == nullptr) {
-    const char* s = "Cannot have a null statistic descriptors";
-    throw NullPointerException(s);
-  }
-  if (statsLengthArg > MAX_DESCRIPTORS_PER_TYPE) {
+  if (stats.size() > MAX_DESCRIPTORS_PER_TYPE) {
     throw IllegalArgumentException(
-        "The requested descriptor count " + std::to_string(statsLengthArg) +
+        "The requested descriptor count " + std::to_string(stats.size()) +
         " exceeds the maximum which is " +
         std::to_string(MAX_DESCRIPTORS_PER_TYPE) + ".");
   }
   this->name = nameArg;
   this->description = descriptionArg;
-  this->stats = statsArg;
-  this->statsLength = statsLengthArg;
+  this->stats = std::move(statsArg);
   int32_t intCount = 0;
   int32_t longCount = 0;
   int32_t doubleCount = 0;
-  for (int32_t i = 0; i < this->statsLength; i++) {
+  for (uint32_t i = 0; i < stats.size(); i++) {
     // Concrete class required to set the ids only.
     StatisticDescriptorImpl* sd =
         dynamic_cast<StatisticDescriptorImpl*>(stats[i]);
@@ -89,7 +83,7 @@ StatisticsTypeImpl::StatisticsTypeImpl(std::string nameArg,
 StatisticsTypeImpl::~StatisticsTypeImpl() {
   try {
     // Delete the descriptor pointers from the array
-    for (int32_t i = 0; i < statsLength; i++) {
+    for (uint32_t i = 0; i < stats.size(); i++) {
       delete stats[i];
       stats[i] = nullptr;
     }
@@ -108,7 +102,8 @@ const std::string& StatisticsTypeImpl::getDescription() const {
   return description;
 }
 
-StatisticDescriptor** StatisticsTypeImpl::getStatistics() const {
+const std::vector<StatisticDescriptor*>& StatisticsTypeImpl::getStatistics()
+    const {
   return stats;
 }
 
@@ -137,7 +132,7 @@ int32_t StatisticsTypeImpl::getDoubleStatCount() const {
   return doubleStatCount;
 }
 
-int32_t StatisticsTypeImpl::getDescriptorsCount() const { return statsLength; }
+int32_t StatisticsTypeImpl::getDescriptorsCount() const { return stats.size(); }
 
 }  // namespace statistics
 }  // namespace geode

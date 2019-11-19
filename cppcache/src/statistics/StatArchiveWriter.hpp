@@ -23,6 +23,7 @@
 #include <chrono>
 #include <list>
 #include <map>
+#include <vector>
 
 #include <geode/Cache.hpp>
 #include <geode/DataOutput.hpp>
@@ -148,13 +149,12 @@ class APACHE_GEODE_EXPORT ResourceType : private NonCopyable,
  public:
   ResourceType(int32_t id, const StatisticsType *type);
   int32_t getId() const;
-  StatisticDescriptor **getStats() const;
+  const std::vector<StatisticDescriptor *> &getStats() const;
   int32_t getNumOfDescriptors() const;
 
  private:
   int32_t id;
-  StatisticDescriptor **stats;
-  int32_t numOfDescriptors;
+  const StatisticsType *type;
 };
 
 /* adongre
