@@ -62,7 +62,7 @@ class Gfsh {
               keyStorePassword, trustStorePassword));
     }
     virtual Result execute() {
-      Result{gfsh_}.parse(gfsh_.execute(command_, "", ""));
+      Result{gfsh_}.parse(gfsh_.execute(command_, "", "", "", "", "", ""));
     }
     virtual std::string toString() { return command_; }
 
