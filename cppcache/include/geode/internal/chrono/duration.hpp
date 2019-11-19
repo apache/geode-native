@@ -57,12 +57,6 @@ template <>
 struct _suffix<std::micro> {
   static constexpr char const* value = "us";
 };
-#ifdef WIN32
-template <>
-struct _suffix<std::ratio<10000000>> {
-  static constexpr char const* value = "ticks";
-};
-#endif
 template <>
 struct _suffix<std::nano> {
   static constexpr char const* value = "ns";
