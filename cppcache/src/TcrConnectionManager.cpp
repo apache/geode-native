@@ -67,7 +67,8 @@ TcrConnectionManager::TcrConnectionManager(CacheImpl *cache)
       m_redundancyTask(nullptr),
       m_isDurable(false),
       m_isNetDown(false) {
-  m_redundancyManager = new ThinClientRedundancyManager(this);
+  m_redundancyManager = std::unique_ptr<ThinClientRedundancyManager>(
+      new ThinClientRedundancyManager(this));
 }
 
 ExpiryTaskManager::id_type TcrConnectionManager::getPingTaskId() {
@@ -167,7 +168,6 @@ TcrConnectionManager::~TcrConnectionManager() {
     }
   }
   TcrConnectionManager::TEST_DURABLE_CLIENT_CRASH = false;
-  _GEODE_SAFE_DELETE(m_redundancyManager);
 }
 
 void TcrConnectionManager::connect(

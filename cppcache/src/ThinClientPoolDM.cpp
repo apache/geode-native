@@ -703,11 +703,10 @@ GfErrType ThinClientPoolDM::sendRequestToAllServers(
 
 const std::shared_ptr<CacheableStringArray> ThinClientPoolDM::getLocators()
     const {
-  std::vector<std::shared_ptr<CacheableString>> locators(
-      m_attrs->m_initLocList.size());
-  uint32_t i = 0;
+  std::vector<std::shared_ptr<CacheableString>> locators;
+  locators.reserve(m_attrs->m_initLocList.size());
   for (auto&& locator : m_attrs->m_initLocList) {
-    locators[i++] = CacheableString::create(locator);
+    locators.emplace_back(CacheableString::create(locator));
   }
   return CacheableStringArray::create(std::move(locators));
 }
@@ -718,7 +717,7 @@ const std::shared_ptr<CacheableStringArray> ThinClientPoolDM::getServers() {
     servers.reserve(m_attrs->m_initServList.size());
 
     for (auto&& server : m_attrs->m_initServList) {
-      servers.push_back(CacheableString::create(server));
+      servers.emplace_back(CacheableString::create(server));
     }
     return CacheableStringArray::create(std::move(servers));
   } else if (!m_attrs->m_initLocList.empty()) {
@@ -727,7 +726,7 @@ const std::shared_ptr<CacheableStringArray> ThinClientPoolDM::getServers() {
 
     servers.reserve(vec.size());
     for (auto&& serLoc : vec) {
-      servers.push_back(CacheableString::create(
+      servers.emplace_back(CacheableString::create(
           serLoc->getServerName() + ":" + std::to_string(serLoc->getPort())));
     }
     return CacheableStringArray::create(std::move(servers));

@@ -101,6 +101,11 @@ class StatisticDescriptorImpl : public StatisticDescriptor {
                           const std::string& statUnit, bool statIsCounter,
                           bool statIsLargerBetter);
 
+  static std::shared_ptr<StatisticDescriptor> createCounter(
+      const std::string& statName, FieldType fieldType,
+      const std::string& description, const std::string& units,
+      bool statIsCounter, bool isLargerBetter);
+
  public:
   /** GfFieldType defined in geode.h.
    * It describes the date type of an individual descriptor.
@@ -139,27 +144,25 @@ class StatisticDescriptorImpl : public StatisticDescriptor {
    * whose value behaves like a counter
    * @throws OutOfMemoryException
    */
-  static StatisticDescriptor* createIntCounter(const std::string& name,
-                                               const std::string& description,
-                                               const std::string& units,
-                                               bool isLargerBetter);
+  static std::shared_ptr<StatisticDescriptor> createIntCounter(
+      const std::string& name, const std::string& description,
+      const std::string& units, bool isLargerBetter);
   /**
    * Creates a descriptor of Long type
    * whose value behaves like a counter
    * @throws OutOfMemoryException
    */
 
-  static StatisticDescriptor* createLongCounter(const std::string& name,
-                                                const std::string& description,
-                                                const std::string& units,
-                                                bool isLargerBetter);
+  static std::shared_ptr<StatisticDescriptor> createLongCounter(
+      const std::string& name, const std::string& description,
+      const std::string& units, bool isLargerBetter);
 
   /**
    * Creates a descriptor of Double type
    * whose value behaves like a counter
    * @throws OutOfMemoryException
    */
-  static StatisticDescriptor* createDoubleCounter(
+  static std::shared_ptr<StatisticDescriptor> createDoubleCounter(
       const std::string& name, const std::string& description,
       const std::string& units, bool isLargerBetter);
 
@@ -168,30 +171,27 @@ class StatisticDescriptorImpl : public StatisticDescriptor {
    * whose value behaves like a gauge
    * @throws OutOfMemoryException
    */
-  static StatisticDescriptor* createIntGauge(const std::string& name,
-                                             const std::string& description,
-                                             const std::string& units,
-                                             bool isLargerBetter);
+  static std::shared_ptr<StatisticDescriptor> createIntGauge(
+      const std::string& name, const std::string& description,
+      const std::string& units, bool isLargerBetter);
 
   /**
    * Creates a descriptor of Long type
    * whose value behaves like a gauge
    * @throws OutOfMemoryException
    */
-  static StatisticDescriptor* createLongGauge(const std::string& name,
-                                              const std::string& description,
-                                              const std::string& units,
-                                              bool isLargerBetter);
+  static std::shared_ptr<StatisticDescriptor> createLongGauge(
+      const std::string& name, const std::string& description,
+      const std::string& units, bool isLargerBetter);
 
   /**
    * Creates a descriptor of Double type
    * whose value behaves like a gauge
    * @throws OutOfMemoryException
    */
-  static StatisticDescriptor* createDoubleGauge(const std::string& name,
-                                                const std::string& description,
-                                                const std::string& units,
-                                                bool isLargerBetter);
+  static std::shared_ptr<StatisticDescriptor> createDoubleGauge(
+      const std::string& name, const std::string& description,
+      const std::string& units, bool isLargerBetter);
 
   /////////////////  StatisticDescriptor(Base class) Methods
   ///////////////////////

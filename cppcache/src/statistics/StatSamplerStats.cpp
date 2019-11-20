@@ -24,7 +24,7 @@ namespace geode {
 namespace statistics {
 
 StatSamplerStats::StatSamplerStats(StatisticsFactory* statFactory) {
-  std::vector<StatisticDescriptor*> statDescriptorArr(2);
+  std::vector<std::shared_ptr<StatisticDescriptor>> statDescriptorArr(2);
   statDescriptorArr[0] = statFactory->createIntCounter(
       "sampleCount", "Total number of samples taken by this sampler.",
       "samples", false);

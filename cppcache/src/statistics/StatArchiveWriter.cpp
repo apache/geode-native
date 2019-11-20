@@ -166,7 +166,8 @@ int32_t ResourceType::getNumOfDescriptors() const {
   return this->type->getDescriptorsCount();
 }
 
-const std::vector<StatisticDescriptor *> &ResourceType::getStats() const {
+const std::vector<std::shared_ptr<StatisticDescriptor>>
+    &ResourceType::getStats() const {
   return this->type->getStatistics();
 }
 
@@ -196,14 +197,14 @@ Statistics *ResourceInst::getResource() { return this->resource; }
 
 const ResourceType *ResourceInst::getType() const { return this->type; }
 
-int64_t ResourceInst::getStatValue(StatisticDescriptor *f) {
+int64_t ResourceInst::getStatValue(std::shared_ptr<StatisticDescriptor> f) {
   return this->resource->getRawBits(f);
 }
 
 void ResourceInst::writeSample() {
   bool wroteInstId = false;
   bool checkForChange = true;
-  const std::vector<StatisticDescriptor *> &stats = type->getStats();
+  auto &stats = type->getStats();
   if (resource->isClosed()) {
     return;
   }
@@ -230,9 +231,10 @@ void ResourceInst::writeSample() {
   }
 }
 
-void ResourceInst::writeStatValue(StatisticDescriptor *sd, int64_t v) {
-  auto sdImpl = static_cast<StatisticDescriptorImpl *>(sd);
-  if (sdImpl == nullptr) {
+void ResourceInst::writeStatValue(std::shared_ptr<StatisticDescriptor> sd,
+                                  int64_t v) {
+  auto sdImpl = std::static_pointer_cast<StatisticDescriptorImpl>(sd);
+  if (!sdImpl) {
     throw NullPointerException("could not downcast to StatisticDescriptorImpl");
   }
   FieldType typeCode = sdImpl->getTypeCode();
@@ -586,7 +588,7 @@ const ResourceType *StatArchiveWriter::getResourceType(const Statistics *s) {
     for (int32_t i = 0; i < descCnt; i++) {
       std::string statsName = stats[i]->getName();
       this->dataBuffer->writeUTF(statsName);
-      auto sdImpl = static_cast<StatisticDescriptorImpl *>(stats[i]);
+      auto sdImpl = std::static_pointer_cast<StatisticDescriptorImpl>(stats[i]);
       if (sdImpl == nullptr) {
         throw NullPointerException(
             "could not down cast to StatisticDescriptorImpl");

@@ -234,10 +234,9 @@ double OsStatisticsImpl::_getDouble(int32_t offset) const {
 }
 
 int64_t OsStatisticsImpl::_getRawBits(
-    const StatisticDescriptor* statDscp) const {
-  const auto stat = dynamic_cast<const StatisticDescriptorImpl*>(statDscp);
-  // dynamic cast is giving problems , so a normal cast was used
-  // StatisticDescriptorImpl* stat  = (StatisticDescriptorImpl*)statDscp;
+    const std::shared_ptr<StatisticDescriptor> statDscp) const {
+  const std::shared_ptr<StatisticDescriptorImpl> stat =
+      std::dynamic_pointer_cast<StatisticDescriptorImpl>(statDscp);
   switch (stat->getTypeCode()) {
     case INT_TYPE:
       return _getInt(stat->getId());
@@ -302,7 +301,7 @@ int32_t OsStatisticsImpl::nameToId(const std::string& name) const {
   return statsType->nameToId(name);
 }
 
-StatisticDescriptor* OsStatisticsImpl::nameToDescriptor(
+std::shared_ptr<StatisticDescriptor> OsStatisticsImpl::nameToDescriptor(
     const std::string& name) const {
   return statsType->nameToDescriptor(name);
 }
@@ -329,8 +328,8 @@ void OsStatisticsImpl::setInt(const std::string& name, int32_t value) {
   setInt(nameToDescriptor(name), value);
 }
 
-void OsStatisticsImpl::setInt(const StatisticDescriptor* descriptor,
-                              int32_t value) {
+void OsStatisticsImpl::setInt(
+    const std::shared_ptr<StatisticDescriptor> descriptor, int32_t value) {
   setInt(getIntId(descriptor), value);
 }
 
@@ -345,8 +344,8 @@ void OsStatisticsImpl::setLong(const std::string& name, int64_t value) {
   setLong(nameToDescriptor(name), value);
 }
 
-void OsStatisticsImpl::setLong(const StatisticDescriptor* descriptor,
-                               int64_t value) {
+void OsStatisticsImpl::setLong(
+    const std::shared_ptr<StatisticDescriptor> descriptor, int64_t value) {
   setLong(getLongId(descriptor), value);
 }
 
@@ -361,8 +360,8 @@ void OsStatisticsImpl::setDouble(const std::string& name, double value) {
   setDouble(nameToDescriptor(name), value);
 }
 
-void OsStatisticsImpl::setDouble(const StatisticDescriptor* descriptor,
-                                 double value) {
+void OsStatisticsImpl::setDouble(
+    const std::shared_ptr<StatisticDescriptor> descriptor, double value) {
   setDouble(getDoubleId(descriptor), value);
 }
 
@@ -376,7 +375,8 @@ int32_t OsStatisticsImpl::getInt(const std::string& name) const {
   return getInt(nameToDescriptor(name));
 }
 
-int32_t OsStatisticsImpl::getInt(const StatisticDescriptor* descriptor) const {
+int32_t OsStatisticsImpl::getInt(
+    const std::shared_ptr<StatisticDescriptor> descriptor) const {
   return getInt(getIntId(descriptor));
 }
 
@@ -396,7 +396,8 @@ int64_t OsStatisticsImpl::getLong(const std::string& name) const {
   return getLong(nameToDescriptor(name));
 }
 
-int64_t OsStatisticsImpl::getLong(const StatisticDescriptor* descriptor) const {
+int64_t OsStatisticsImpl::getLong(
+    const std::shared_ptr<StatisticDescriptor> descriptor) const {
   return getLong(getLongId(descriptor));
 }
 
@@ -414,7 +415,7 @@ double OsStatisticsImpl::getDouble(const std::string& name) const {
 }
 
 double OsStatisticsImpl::getDouble(
-    const StatisticDescriptor* descriptor) const {
+    const std::shared_ptr<StatisticDescriptor> descriptor) const {
   return getDouble(getDoubleId(descriptor));
 }
 
@@ -429,7 +430,7 @@ double OsStatisticsImpl::getDouble(int32_t id) const {
 /// methods////////////////////////////////
 
 int64_t OsStatisticsImpl::getRawBits(
-    const StatisticDescriptor* descriptor) const {
+    const std::shared_ptr<StatisticDescriptor> descriptor) const {
   if (isOpen()) {
     return _getRawBits(descriptor);
   } else {
@@ -442,8 +443,8 @@ int32_t OsStatisticsImpl::incInt(const std::string& name, int32_t delta) {
   return incInt(nameToDescriptor(name), delta);
 }
 
-int32_t OsStatisticsImpl::incInt(const StatisticDescriptor* descriptor,
-                                 int32_t delta) {
+int32_t OsStatisticsImpl::incInt(
+    const std::shared_ptr<StatisticDescriptor> descriptor, int32_t delta) {
   return incInt(getIntId(descriptor), delta);
 }
 
@@ -461,8 +462,8 @@ int64_t OsStatisticsImpl::incLong(const std::string& name, int64_t delta) {
   return incLong(nameToDescriptor(name), delta);
 }
 
-int64_t OsStatisticsImpl::incLong(const StatisticDescriptor* descriptor,
-                                  int64_t delta) {
+int64_t OsStatisticsImpl::incLong(
+    const std::shared_ptr<StatisticDescriptor> descriptor, int64_t delta) {
   return incLong(getLongId(descriptor), delta);
 }
 
@@ -479,8 +480,8 @@ double OsStatisticsImpl::incDouble(const std::string& name, double delta) {
   return incDouble(nameToDescriptor(name), delta);
 }
 
-double OsStatisticsImpl::incDouble(const StatisticDescriptor* descriptor,
-                                   double delta) {
+double OsStatisticsImpl::incDouble(
+    const std::shared_ptr<StatisticDescriptor> descriptor, double delta) {
   return incDouble(getDoubleId(descriptor), delta);
 }
 
@@ -494,23 +495,23 @@ double OsStatisticsImpl::incDouble(int32_t id, double delta) {
 /////////////////////////// GET ID /////////////////////////////////////////
 
 int32_t OsStatisticsImpl::getIntId(
-    const StatisticDescriptor* descriptor) const {
+    const std::shared_ptr<StatisticDescriptor> descriptor) const {
   const auto realDescriptor =
-      dynamic_cast<const StatisticDescriptorImpl*>(descriptor);
+      std::dynamic_pointer_cast<StatisticDescriptorImpl>(descriptor);
   return realDescriptor->checkInt();
 }
 
 int32_t OsStatisticsImpl::getLongId(
-    const StatisticDescriptor* descriptor) const {
+    const std::shared_ptr<StatisticDescriptor> descriptor) const {
   const auto realDescriptor =
-      dynamic_cast<const StatisticDescriptorImpl*>(descriptor);
+      std::dynamic_pointer_cast<StatisticDescriptorImpl>(descriptor);
   return realDescriptor->checkLong();
 }
 
 int32_t OsStatisticsImpl::getDoubleId(
-    const StatisticDescriptor* descriptor) const {
+    const std::shared_ptr<StatisticDescriptor> descriptor) const {
   const auto realDescriptor =
-      dynamic_cast<const StatisticDescriptorImpl*>(descriptor);
+      std::dynamic_pointer_cast<StatisticDescriptorImpl>(descriptor);
   return realDescriptor->checkDouble();
 }
 

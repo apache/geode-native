@@ -43,7 +43,7 @@ PoolStats::PoolStats(StatisticsFactory* factory, const std::string& poolName) {
   auto statsType = factory->findType(STATS_NAME);
 
   if (statsType == nullptr) {
-    std::vector<StatisticDescriptor*> stats(27);
+    std::vector<std::shared_ptr<StatisticDescriptor>> stats(27);
 
     stats[0] = factory->createIntGauge(
         "locators", "Current number of locators discovered", "locators");

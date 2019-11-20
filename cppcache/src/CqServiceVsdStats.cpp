@@ -42,7 +42,7 @@ CqServiceVsdStats::CqServiceVsdStats(StatisticsFactory* factory,
   auto statsType = factory->findType(STATS_NAME);
   if (!statsType) {
     const bool largerIsBetter = true;
-    std::vector<StatisticDescriptor*> stats(5);
+    std::vector<std::shared_ptr<StatisticDescriptor>> stats(5);
     stats[0] = factory->createIntCounter(
         "CqsActive", "The total number of CqsActive this cq qurey", "entries",
         largerIsBetter);

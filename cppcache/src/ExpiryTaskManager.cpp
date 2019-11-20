@@ -38,7 +38,7 @@ namespace client {
 const char* ExpiryTaskManager::NC_ETM_Thread = "NC ETM Thread";
 
 ExpiryTaskManager::ExpiryTaskManager() : m_reactorEventLoopRunning(false) {
-  GF_Timer_Heap_ImmediateReset* timer = new GF_Timer_Heap_ImmediateReset();
+  auto timer = new GF_Timer_Heap_ImmediateReset();
 #if defined(_WIN32)
   m_reactor = new ACE_Reactor(new ACE_WFMO_Reactor(nullptr, timer), 1);
 #elif defined(WITH_ACE_Select_Reactor)

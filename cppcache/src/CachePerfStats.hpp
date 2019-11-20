@@ -42,7 +42,7 @@ class APACHE_GEODE_EXPORT CachePerfStats {
 
     if (statsType == nullptr) {
       const bool largerIsBetter = true;
-      std::vector<StatisticDescriptor*> statDescArr(24);
+      std::vector<std::shared_ptr<StatisticDescriptor>> statDescArr(24);
 
       statDescArr[0] = factory->createIntCounter(
           "creates", "The total number of cache creates", "entries",
@@ -206,15 +206,7 @@ class APACHE_GEODE_EXPORT CachePerfStats {
 
   virtual ~CachePerfStats() { m_cachePerfStats = nullptr; }
 
-  void close() {
-    /*StatisticDescriptor** statDescArr =
-    m_cachePerfStats->getType()->getStatistics();
-    for ( int i = 0; i < m_cachePerfStats->getType()->getDescriptorsCount();
-    i++) {
-        delete statDescArr[i];
-    }*/
-    m_cachePerfStats->close();
-  }
+  void close() { m_cachePerfStats->close(); }
 
   inline void incDestroys() { m_cachePerfStats->incInt(m_destroysId, 1); }
 

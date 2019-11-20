@@ -40,7 +40,7 @@ RegionStats::RegionStats(StatisticsFactory* factory,
 
   if (!statsType) {
     const bool largerIsBetter = true;
-    std::vector<StatisticDescriptor*> stats(25);
+    std::vector<std::shared_ptr<StatisticDescriptor>> stats(25);
     stats[0] = factory->createIntCounter(
         "creates", "The total number of cache creates for this region",
         "entries", largerIsBetter);

@@ -73,11 +73,13 @@ class AtomicStatisticsImpl : public Statistics, private client::NonCopyable {
   ///////////////////////Private Methods//////////////////////////
   bool isOpen() const;
 
-  int32_t getIntId(const StatisticDescriptor* descriptor) const;
+  int32_t getIntId(const std::shared_ptr<StatisticDescriptor> descriptor) const;
 
-  int32_t getLongId(const StatisticDescriptor* descriptor) const;
+  int32_t getLongId(
+      const std::shared_ptr<StatisticDescriptor> descriptor) const;
 
-  int32_t getDoubleId(const StatisticDescriptor* descriptor) const;
+  int32_t getDoubleId(
+      const std::shared_ptr<StatisticDescriptor> descriptor) const;
 
   //////////////////////  Static private Methods  //////////////////////
 
@@ -116,7 +118,8 @@ class AtomicStatisticsImpl : public Statistics, private client::NonCopyable {
 
   int32_t nameToId(const std::string& name) const override;
 
-  StatisticDescriptor* nameToDescriptor(const std::string& name) const override;
+  std::shared_ptr<StatisticDescriptor> nameToDescriptor(
+      const std::string& name) const override;
 
   bool isClosed() const override;
 
@@ -139,19 +142,22 @@ class AtomicStatisticsImpl : public Statistics, private client::NonCopyable {
 
   void setInt(const std::string& name, int32_t value) override;
 
-  void setInt(const StatisticDescriptor* descriptor, int32_t value) override;
+  void setInt(const std::shared_ptr<StatisticDescriptor> descriptor,
+              int32_t value) override;
 
   void setInt(int32_t offset, int32_t value) override;
 
   void setLong(const std::string& name, int64_t value) override;
 
-  void setLong(const StatisticDescriptor* descriptor, int64_t value) override;
+  void setLong(const std::shared_ptr<StatisticDescriptor> descriptor,
+               int64_t value) override;
 
   void setLong(int32_t id, int64_t value) override;
 
   void setDouble(const std::string& name, double value) override;
 
-  void setDouble(const StatisticDescriptor* descriptor, double value) override;
+  void setDouble(const std::shared_ptr<StatisticDescriptor> descriptor,
+                 double value) override;
 
   void setDouble(int32_t id, double value) override;
 
@@ -159,42 +165,47 @@ class AtomicStatisticsImpl : public Statistics, private client::NonCopyable {
 
   int32_t getInt(const std::string& name) const override;
 
-  int32_t getInt(const StatisticDescriptor* descriptor) const override;
+  int32_t getInt(
+      const std::shared_ptr<StatisticDescriptor> descriptor) const override;
 
   int32_t getInt(int32_t offset) const override;
 
   int64_t getLong(const std::string& name) const override;
 
-  int64_t getLong(const StatisticDescriptor* descriptor) const override;
+  int64_t getLong(
+      const std::shared_ptr<StatisticDescriptor> descriptor) const override;
 
   int64_t getLong(int32_t id) const override;
 
   double getDouble(const std::string& name) const override;
 
-  double getDouble(const StatisticDescriptor* descriptor) const override;
+  double getDouble(
+      const std::shared_ptr<StatisticDescriptor> descriptor) const override;
 
   double getDouble(int32_t id) const override;
 
-  int64_t getRawBits(const StatisticDescriptor* descriptor) const override;
+  int64_t getRawBits(
+      const std::shared_ptr<StatisticDescriptor> descriptor) const override;
 
   ////////////////////////  inc() Methods  ////////////////////////
 
   int32_t incInt(const std::string& name, int32_t delta) override;
 
-  int32_t incInt(const StatisticDescriptor* descriptor, int32_t delta) override;
+  int32_t incInt(const std::shared_ptr<StatisticDescriptor> descriptor,
+                 int32_t delta) override;
 
   int32_t incInt(int32_t offset, int32_t delta) override;
 
   int64_t incLong(const std::string& name, int64_t delta) override;
 
-  int64_t incLong(const StatisticDescriptor* descriptor,
+  int64_t incLong(const std::shared_ptr<StatisticDescriptor> descriptor,
                   int64_t delta) override;
 
   int64_t incLong(int32_t id, int64_t delta) override;
 
   double incDouble(const std::string& name, double delta) override;
 
-  double incDouble(const StatisticDescriptor* descriptor,
+  double incDouble(const std::shared_ptr<StatisticDescriptor> descriptor,
                    double delta) override;
 
   double incDouble(int32_t id, double delta) override;
@@ -216,7 +227,7 @@ class AtomicStatisticsImpl : public Statistics, private client::NonCopyable {
    * Returns the bits that represent the raw value of the
    * specified statistic descriptor.
    */
-  int64_t _getRawBits(const StatisticDescriptor* stat) const;
+  int64_t _getRawBits(const std::shared_ptr<StatisticDescriptor> stat) const;
 
   int32_t _incInt(int32_t offset, int32_t delta);
 

@@ -57,83 +57,63 @@ StatisticDescriptorImpl::~StatisticDescriptorImpl() {}
 
 /////////////////////// Create functions ///////////////////////////////////
 
-StatisticDescriptor* StatisticDescriptorImpl::createIntCounter(
+std::shared_ptr<StatisticDescriptor> StatisticDescriptorImpl::createCounter(
+    const std::string& statName, FieldType fieldType,
+    const std::string& description, const std::string& units,
+    bool statIsCounter, bool isLargerBetter) {
+  auto sdi = new StatisticDescriptorImpl(statName, fieldType, description,
+                                         units, statIsCounter, isLargerBetter);
+  return std::shared_ptr<StatisticDescriptorImpl>(sdi);
+}
+
+std::shared_ptr<StatisticDescriptor> StatisticDescriptorImpl::createIntCounter(
     const std::string& statName, const std::string& description,
     const std::string& units, bool isLargerBetter) {
   FieldType fieldType = INT_TYPE;
-  StatisticDescriptorImpl* sdi = new StatisticDescriptorImpl(
-      statName, fieldType, description, units, true, isLargerBetter);
-  if (sdi == nullptr) {
-    throw OutOfMemoryException(
-        "StatisticDescriptorImpl::createIntCounter: out of memory");
-  }
-  return sdi;
+  return createCounter(statName, fieldType, description, units, true,
+                       isLargerBetter);
 }
 
-StatisticDescriptor* StatisticDescriptorImpl::createLongCounter(
+std::shared_ptr<StatisticDescriptor> StatisticDescriptorImpl::createLongCounter(
     const std::string& name, const std::string& description,
     const std::string& units, bool isLargerBetter) {
   FieldType fieldType = LONG_TYPE;
-  StatisticDescriptorImpl* sdi = new StatisticDescriptorImpl(
-      name, fieldType, description, units, true, isLargerBetter);
-  if (sdi == nullptr) {
-    throw OutOfMemoryException(
-        "StatisticDescriptorImpl::createLongCounter: out of memory");
-  }
-  return sdi;
+  return createCounter(name, fieldType, description, units, true,
+                       isLargerBetter);
 }
 
-StatisticDescriptor* StatisticDescriptorImpl::createDoubleCounter(
-    const std::string& name, const std::string& description,
-    const std::string& units, bool isLargerBetter) {
+std::shared_ptr<StatisticDescriptor>
+StatisticDescriptorImpl::createDoubleCounter(const std::string& name,
+                                             const std::string& description,
+                                             const std::string& units,
+                                             bool isLargerBetter) {
   FieldType fieldType = DOUBLE_TYPE;
-  StatisticDescriptorImpl* sdi = new StatisticDescriptorImpl(
-      name, fieldType, description, units, true, isLargerBetter);
-  if (sdi == nullptr) {
-    throw OutOfMemoryException(
-        "StatisticDescriptorImpl::createDoubleCounter: out of memory");
-  }
-  return sdi;
+  return createCounter(name, fieldType, description, units, true,
+                       isLargerBetter);
 }
 
-StatisticDescriptor* StatisticDescriptorImpl::createIntGauge(
+std::shared_ptr<StatisticDescriptor> StatisticDescriptorImpl::createIntGauge(
     const std::string& name, const std::string& description,
     const std::string& units, bool isLargerBetter) {
   FieldType fieldType = INT_TYPE;
-  StatisticDescriptorImpl* sdi = new StatisticDescriptorImpl(
-      name, fieldType, description, units, false, isLargerBetter);
-  if (sdi == nullptr) {
-    throw OutOfMemoryException(
-        "StatisticDescriptorImpl::createIntGauge: out of memory");
-  }
-  return sdi;
+  return createCounter(name, fieldType, description, units, false,
+                       isLargerBetter);
 }
 
-StatisticDescriptor* StatisticDescriptorImpl::createLongGauge(
+std::shared_ptr<StatisticDescriptor> StatisticDescriptorImpl::createLongGauge(
     const std::string& name, const std::string& description,
     const std::string& units, bool isLargerBetter) {
   FieldType fieldType = LONG_TYPE;
-  StatisticDescriptorImpl* sdi = new StatisticDescriptorImpl(
-      name, fieldType, description, units, false, isLargerBetter);
-
-  if (sdi == nullptr) {
-    throw OutOfMemoryException(
-        "StatisticDescriptorImpl::createLongGauge: out of memory");
-  }
-  return sdi;
+  return createCounter(name, fieldType, description, units, false,
+                       isLargerBetter);
 }
 
-StatisticDescriptor* StatisticDescriptorImpl::createDoubleGauge(
+std::shared_ptr<StatisticDescriptor> StatisticDescriptorImpl::createDoubleGauge(
     const std::string& name, const std::string& description,
     const std::string& units, bool isLargerBetter) {
   FieldType fieldType = DOUBLE_TYPE;
-  StatisticDescriptorImpl* sdi = new StatisticDescriptorImpl(
-      name, fieldType, description, units, false, isLargerBetter);
-  if (sdi == nullptr) {
-    throw OutOfMemoryException(
-        "StatisticDescriptorImpl::createDoubleGauge: out of memory");
-  }
-  return sdi;
+  return createCounter(name, fieldType, description, units, false,
+                       isLargerBetter);
 }
 
 /////////////////////// StatisticDescriptor(Base class)
