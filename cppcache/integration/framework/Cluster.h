@@ -166,11 +166,12 @@ class Cluster {
 
   void applyLocators(apache::geode::client::PoolFactory &poolFactory);
 
-  void useSsl(const std::string keystore, const std::string truststore,
-              const std::string keystorePassword,
+  void useSsl(const bool requireSslAuthentication, const std::string keystore,
+              const std::string truststore, const std::string keystorePassword,
               const std::string truststorePassword);
 
   bool useSsl();
+  bool requireSslAuthentication();
   std::string keystore();
   std::string truststore();
   std::string keystorePassword();
@@ -212,6 +213,7 @@ class Cluster {
   uint16_t jmxManagerPort_;
 
   bool useSsl_ = false;
+  bool requireSslAuthentication_ = false;
   std::string keystore_;
   std::string keystorePassword_;
   std::string truststore_;

@@ -156,6 +156,13 @@ Gfsh::Start::Locator &Gfsh::Start::Locator::withJmxManagerStart(
   return *this;
 }
 
+Gfsh::Start::Locator &Gfsh::Start::Locator::withSslRquireAuthentication(
+    const bool require) {
+  command_ += " --J=-Dgemfire.ssl-require-authentication=" +
+              std::string(require ? "true" : "false");
+  return *this;
+}
+
 Gfsh::Start::Server::Server(Gfsh &gfsh) : Command(gfsh, "start server") {}
 
 Gfsh::Start::Server &Gfsh::Start::Server::withName(const std::string &name) {
@@ -274,6 +281,13 @@ Gfsh::Start::Server &Gfsh::Start::Server::withSslTruststorePassword(
   return *this;
 }
 
+Gfsh::Start::Server &Gfsh::Start::Server::withSslRquireAuthentication(
+    const bool require) {
+  command_ += " --J=-Dgemfire.ssl-require-authentication=" +
+              std::string(require ? "true" : "false");
+  return *this;
+}
+
 Gfsh::Stop::Stop(Gfsh &gfsh) : gfsh_(gfsh) {}
 
 Gfsh::Stop::Server Gfsh::Stop::server() { return Server{gfsh_}; }
@@ -387,10 +401,14 @@ Gfsh::Deploy &Gfsh::Deploy::jar(const std::string &jarFile) {
 }
 
 template <>
-void Gfsh::Command<void>::execute(const std::string &user, const std::string &password,
-                                  const std::string &keyStorePath, const std::string &trustStorePath,
-                                  const std::string &keyStorePassword, const std::string &trustStorePassword) {
-  gfsh_.execute(command_, user, password, keyStorePath, trustStorePath, keyStorePassword, trustStorePassword);
+void Gfsh::Command<void>::execute(const std::string &user,
+                                  const std::string &password,
+                                  const std::string &keyStorePath,
+                                  const std::string &trustStorePath,
+                                  const std::string &keyStorePassword,
+                                  const std::string &trustStorePassword) {
+  gfsh_.execute(command_, user, password, keyStorePath, trustStorePath,
+                keyStorePassword, trustStorePassword);
 }
 
 template <>

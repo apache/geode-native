@@ -38,18 +38,18 @@ const auto badClientTruststore = boost::filesystem::path(
     "/Users/pivotal/Workspace/geode-native-install/examples/build/cpp/"
     "sslputget/ClientSslKeys/client_truststore.pem");
 
-class SslTest : public ::testing::Test {
+class SslTwoWayTest : public ::testing::Test {
  protected:
   // You can remove any or all of the following functions if their bodies would
   // be empty.
 
-  SslTest() {
+  SslTwoWayTest() {
     // You can do set-up work for each test here.
     certificatePassword = std::string("apachegeode");
     currentWorkingDirectory = boost::filesystem::current_path();
   }
 
-  ~SslTest() override = default;
+  ~SslTwoWayTest() override = default;
   // You can do clean-up work that doesn't throw exceptions here.
 
   // If the constructor and destructor are not enough for setting up
@@ -65,7 +65,7 @@ class SslTest : public ::testing::Test {
          boost::filesystem::path(
              "ServerSslKeys/server_truststore_chained_root.jks"));
 
-    cluster.useSsl(clusterKeystore.string(), clusterTruststore.string(),
+    cluster.useSsl(true, clusterKeystore.string(), clusterTruststore.string(),
                    certificatePassword, certificatePassword);
 
     cluster.start();
@@ -90,7 +90,7 @@ class SslTest : public ::testing::Test {
   boost::filesystem::path currentWorkingDirectory;
 };
 
-TEST_F(SslTest, PutGetWithValidSslConfiguration) {
+TEST_F(SslTwoWayTest, PutGetWithValidSslConfiguration) {
   const auto clientKeystore =
       (currentWorkingDirectory /
        boost::filesystem::path("ClientSslKeys/client_keystore_chained.pem"));
@@ -120,7 +120,7 @@ TEST_F(SslTest, PutGetWithValidSslConfiguration) {
   cache.close();
 }
 
-TEST_F(SslTest, PutWithInvalidKeystorePassword) {
+TEST_F(SslTwoWayTest, PutWithInvalidKeystorePassword) {
   const auto clientKeystore =
       (currentWorkingDirectory /
        boost::filesystem::path("ClientSslKeys/client_keystore_chained.pem"));
@@ -156,7 +156,7 @@ TEST_F(SslTest, PutWithInvalidKeystorePassword) {
   cache.close();
 }
 
-TEST_F(SslTest, PutWithUntrustedKeystore) {
+TEST_F(SslTwoWayTest, PutWithUntrustedKeystore) {
   const auto clientUntrustedKeystore =
       (currentWorkingDirectory /
        boost::filesystem::path("ClientSslKeys/client_keystore_untrusted.pem"));
@@ -193,7 +193,7 @@ TEST_F(SslTest, PutWithUntrustedKeystore) {
   cache.close();
 }
 
-TEST_F(SslTest, PutWithCorruptKeystore) {
+TEST_F(SslTwoWayTest, PutWithCorruptKeystore) {
   const auto clientCorruptKeystore =
       (currentWorkingDirectory /
        boost::filesystem::path("ClientSslKeys/client_keystore_corrupt.pem"));
@@ -231,7 +231,7 @@ TEST_F(SslTest, PutWithCorruptKeystore) {
   cache.close();
 }
 
-TEST_F(SslTest, PutWithUntrustedTruststore) {
+TEST_F(SslTwoWayTest, PutWithUntrustedTruststore) {
   const auto clientKeystore =
       (currentWorkingDirectory /
        boost::filesystem::path("ClientSslKeys/client_keystore_chained.pem"));
@@ -268,7 +268,7 @@ TEST_F(SslTest, PutWithUntrustedTruststore) {
   cache.close();
 }
 
-TEST_F(SslTest, PutWithCorruptTruststore) {
+TEST_F(SslTwoWayTest, PutWithCorruptTruststore) {
   const auto clientKeystore =
       (currentWorkingDirectory /
        boost::filesystem::path("ClientSslKeys/client_keystore_chained.pem"));
@@ -304,7 +304,7 @@ TEST_F(SslTest, PutWithCorruptTruststore) {
   cache.close();
 }
 
-TEST_F(SslTest, PutWithMissingTruststore) {
+TEST_F(SslTwoWayTest, PutWithMissingTruststore) {
   const auto clientKeystore =
       (currentWorkingDirectory /
        boost::filesystem::path("ClientSslKeys/client_keystore_chained.pem"));

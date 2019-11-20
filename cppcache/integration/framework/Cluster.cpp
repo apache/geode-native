@@ -89,13 +89,16 @@ void Locator::start() {
   if (cluster_.useSsl()) {
     locator.withConnect(false)
         .withSslEnabledComponents("all")
+        .withSslRquireAuthentication(cluster_.requireSslAuthentication())
         .withSslKeystore(cluster_.keystore())
         .withSslTruststore(cluster_.truststore())
         .withSslKeystorePassword(cluster_.keystorePassword())
         .withSslTruststorePassword(cluster_.truststorePassword());
   }
 
-  locator.execute(cluster_.getUser(), cluster_.getPassword(), cluster_.keystore(), cluster_.truststore(), cluster_.keystorePassword(), cluster_.truststorePassword());
+  locator.execute(cluster_.getUser(), cluster_.getPassword(),
+                  cluster_.keystore(), cluster_.truststore(),
+                  cluster_.keystorePassword(), cluster_.truststorePassword());
 
   auto connect =
       cluster_.getGfsh().connect().withJmxManager(cluster_.getJmxManager());
@@ -186,6 +189,7 @@ void Server::start() {
 
   if (cluster_.useSsl()) {
     server.withSslEnabledComponents("all")
+        .withSslRquireAuthentication(cluster_.requireSslAuthentication())
         .withSslKeystore(cluster_.keystore())
         .withSslTruststore(cluster_.truststore())
         .withSslKeystorePassword(cluster_.keystorePassword())
@@ -437,10 +441,12 @@ void Cluster::stop() {
   started_ = false;
 }
 
-void Cluster::useSsl(const std::string keystore, const std::string truststore,
+void Cluster::useSsl(const bool requireSslAuthentication,
+                     const std::string keystore, const std::string truststore,
                      const std::string keystorePassword,
                      const std::string truststorePassword) {
   useSsl_ = true;
+  requireSslAuthentication_ = requireSslAuthentication;
   keystore_ = keystore;
   truststore_ = truststore;
   keystorePassword_ = keystorePassword;
@@ -448,6 +454,8 @@ void Cluster::useSsl(const std::string keystore, const std::string truststore,
 }
 
 bool Cluster::useSsl() { return useSsl_; }
+
+bool Cluster::requireSslAuthentication() { return requireSslAuthentication_; }
 
 std::string Cluster::keystore() { return keystore_; }
 

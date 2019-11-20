@@ -53,10 +53,11 @@ void initClient(const bool isthinClient) {
     auto props = Properties::create();
     props->insert("ssl-enabled", "true");
     std::string keystore = std::string(ACE_OS::getenv("TESTSRC")) + "/keystore";
-    std::string pubkey = keystore + "/client_truststore.pem";
-    std::string privkey = keystore + "/client_keystore.pem";
+    std::string pubkey = keystore + "/client_truststore_chained_root.pem";
+    std::string privkey = keystore + "/client_keystore_chained.pem";
     props->insert("ssl-keystore", privkey.c_str());
     props->insert("ssl-truststore", pubkey.c_str());
+    props->insert("ssl-keystore-password", "apachegeode");
     cacheHelper = new CacheHelper(isthinClient, props);
   }
   ASSERT(cacheHelper, "Failed to create a CacheHelper client instance.");

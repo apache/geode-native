@@ -1870,13 +1870,13 @@ std::string CacheHelper::generateGeodeProperties(
       serverTruststore += "untrusted_server_truststore.jks";
       password += "secret";
     } else {
-      serverKeystore += "server_keystore.jks";
-      serverTruststore += "server_truststore.jks";
-      password += "gemstone";
+      serverKeystore += "server_keystore_chained.jks";
+      serverTruststore += "server_truststore_chained_root.jks";
+      password += "apachegeode";
     }
     msg += "jmx-manager-ssl-enabled=false\n";
     msg += "cluster-ssl-enabled=true\n";
-    msg += "cluster-ssl-require-authentication=true\n";
+    msg += "cluster-ssl-require-authentication=false\n";
     msg += "cluster-ssl-ciphers=TLS_RSA_WITH_AES_128_CBC_SHA\n";
     msg += "cluster-ssl-keystore-type=jks\n";
     msg += "cluster-ssl-keystore=" + keystore + "/" + serverKeystore.c_str() +
