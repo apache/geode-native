@@ -286,6 +286,7 @@ TEST(PdxInstanceTest, testPdxInstance) {
 
 TEST(PdxInstanceTest, testCreateJsonInstance) {
   Cluster cluster{LocatorCount{1}, ServerCount{1}};
+  cluster.start();
   cluster.getGfsh()
       .create()
       .region()
