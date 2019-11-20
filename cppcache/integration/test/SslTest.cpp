@@ -231,4 +231,113 @@ TEST_F(SslTest, PutWithCorruptKeystore) {
   cache.close();
 }
 
+TEST_F(SslTest, PutWithUntrustedTruststore) {
+  const auto clientKeystore =
+      (currentWorkingDirectory /
+       boost::filesystem::path("ClientSslKeys/client_keystore_chained.pem"));
+  const auto clientUntrustedTruststore =
+      (currentWorkingDirectory /
+       boost::filesystem::path(
+           "ClientSslKeys/client_truststore_untrusting.pem"));
+
+  auto cache = CacheFactory()
+                   .set("log-level", "none")
+                   .set("ssl-enabled", "true")
+                   .set("ssl-keystore", clientKeystore.string())
+                   .set("ssl-keystore-password", certificatePassword)
+                   .set("ssl-truststore", clientUntrustedTruststore.string())
+                   .create();
+
+  cache.getPoolManager()
+      .createFactory()
+      .addLocator("localhost", cluster.getLocatorPort())
+      .create("pool");
+
+  auto region = cache.createRegionFactory(RegionShortcut::PROXY)
+                    .setPoolName("pool")
+                    .create("region");
+
+  try {
+    region->put("1", "one");
+    FAIL() << "Expected apache::geode::client::NotConnectedException";
+  } catch (const Exception& exception) {
+    EXPECT_EQ(exception.getName(),
+              "apache::geode::client::NotConnectedException");
+  }
+
+  cache.close();
+}
+
+TEST_F(SslTest, PutWithCorruptTruststore) {
+  const auto clientKeystore =
+      (currentWorkingDirectory /
+       boost::filesystem::path("ClientSslKeys/client_keystore_chained.pem"));
+  const auto clientUntrustedTruststore =
+      (currentWorkingDirectory /
+       boost::filesystem::path("ClientSslKeys/client_truststore_corrupt.pem"));
+
+  auto cache = CacheFactory()
+                   .set("log-level", "none")
+                   .set("ssl-enabled", "true")
+                   .set("ssl-keystore", clientKeystore.string())
+                   .set("ssl-keystore-password", certificatePassword)
+                   .set("ssl-truststore", clientUntrustedTruststore.string())
+                   .create();
+
+  cache.getPoolManager()
+      .createFactory()
+      .addLocator("localhost", cluster.getLocatorPort())
+      .create("pool");
+
+  auto region = cache.createRegionFactory(RegionShortcut::PROXY)
+                    .setPoolName("pool")
+                    .create("region");
+
+  try {
+    region->put("1", "one");
+    FAIL() << "Expected apache::geode::client::NotConnectedException";
+  } catch (const Exception& exception) {
+    EXPECT_EQ(exception.getName(),
+              "apache::geode::client::NotConnectedException");
+  }
+
+  cache.close();
+}
+
+TEST_F(SslTest, PutWithMissingTruststore) {
+  const auto clientKeystore =
+      (currentWorkingDirectory /
+       boost::filesystem::path("ClientSslKeys/client_keystore_chained.pem"));
+  const auto clientMissingTruststore =
+      (currentWorkingDirectory /
+       boost::filesystem::path("ClientSslKeys/client_truststore_missing.pem"));
+
+  auto cache = CacheFactory()
+                   .set("log-level", "none")
+                   .set("ssl-enabled", "true")
+                   .set("ssl-keystore", clientKeystore.string())
+                   .set("ssl-keystore-password", certificatePassword)
+                   .set("ssl-truststore", clientMissingTruststore.string())
+                   .create();
+
+  cache.getPoolManager()
+      .createFactory()
+      .addLocator("localhost", cluster.getLocatorPort())
+      .create("pool");
+
+  auto region = cache.createRegionFactory(RegionShortcut::PROXY)
+                    .setPoolName("pool")
+                    .create("region");
+
+  try {
+    region->put("1", "one");
+    FAIL() << "Expected apache::geode::client::NotConnectedException";
+  } catch (const Exception& exception) {
+    EXPECT_EQ(exception.getName(),
+              "apache::geode::client::NotConnectedException");
+  }
+
+  cache.close();
+}
+
 }  // namespace ssltest
