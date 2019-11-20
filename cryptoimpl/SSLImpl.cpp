@@ -68,14 +68,14 @@ SSLImpl::SSLImpl(ACE_HANDLE sock, const char *pubkeyfile,
                                              const_cast<char *>(password));
     }
 
-    if (sslctx->certificate(privkeyfile) != 0) {
+    if (sslContext->certificate(privkeyfile) != 0) {
       throw std::invalid_argument("Failed to read SSL certificate.");
     }
-    if (sslctx->private_key(privkeyfile) != 0) {
+    if (sslContext->private_key(privkeyfile) != 0) {
       throw std::invalid_argument("Invalid SSL keystore password.");
     }
-    if (::SSL_CTX_use_certificate_chain_file(sslctx->context(), privkeyfile) <=
-        0) {
+    if (::SSL_CTX_use_certificate_chain_file(sslContext->context(),
+                                             privkeyfile) <= 0) {
       throw std::invalid_argument("Failed to read SSL certificate chain.");
     }
     SSLImpl::s_initialized = true;
