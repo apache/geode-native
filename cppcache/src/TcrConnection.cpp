@@ -1112,29 +1112,25 @@ std::vector<int8_t> TcrConnection::readHandshakeData(
   if (msgLength < 0) {
     msgLength = 0;
   }
-  char* recvMessage;
-  _GEODE_NEW(recvMessage, char[msgLength + 1]);
-  recvMessage[msgLength] = '\0';
+  std::vector<int8_t> message(msgLength + 1);
+  message.data()[msgLength] = '\0';
   if (msgLength == 0) {
-    return std::vector<int8_t>(recvMessage, recvMessage + 1);
+    return message;
   }
-  if ((error = receiveData(recvMessage, msgLength, connectTimeout, false)) !=
-      CONN_NOERR) {
+  if ((error = receiveData(reinterpret_cast<char*>(message.data()), msgLength,
+                           connectTimeout, false)) != CONN_NOERR) {
+    GF_SAFE_DELETE_CON(m_conn);
     if (error & CONN_TIMEOUT) {
-      _GEODE_SAFE_DELETE_ARRAY(recvMessage);
-      GF_SAFE_DELETE_CON(m_conn);
       throwException(
           TimeoutException("TcrConnection::TcrConnection: "
                            "Timeout in handshake"));
     } else {
-      _GEODE_SAFE_DELETE_ARRAY(recvMessage);
-      GF_SAFE_DELETE_CON(m_conn);
       throwException(
           GeodeIOException("TcrConnection::TcrConnection: "
                            "Handshake failure"));
     }
   } else {
-    return std::vector<int8_t>(recvMessage, recvMessage + msgLength + 1);
+    return message;
   }
 }
 
@@ -1147,26 +1143,21 @@ std::shared_ptr<CacheableBytes> TcrConnection::readHandshakeRawData(
   if (msgLength == 0) {
     return nullptr;
   }
-  char* recvMessage;
-  _GEODE_NEW(recvMessage, char[msgLength]);
-  if ((error = receiveData(recvMessage, msgLength, connectTimeout, false)) !=
-      CONN_NOERR) {
+  std::vector<int8_t> message(msgLength);
+  if ((error = receiveData(reinterpret_cast<char*>(message.data()), msgLength,
+                           connectTimeout, false)) != CONN_NOERR) {
+    GF_SAFE_DELETE_CON(m_conn);
     if (error & CONN_TIMEOUT) {
-      _GEODE_SAFE_DELETE_ARRAY(recvMessage);
-      GF_SAFE_DELETE_CON(m_conn);
       throwException(
           TimeoutException("TcrConnection::TcrConnection: "
                            "Timeout in handshake"));
     } else {
-      _GEODE_SAFE_DELETE_ARRAY(recvMessage);
-      GF_SAFE_DELETE_CON(m_conn);
       throwException(
           GeodeIOException("TcrConnection::TcrConnection: "
                            "Handshake failure"));
     }
   } else {
-    return CacheableBytes::create(
-        std::vector<int8_t>(recvMessage, recvMessage + msgLength));
+    return CacheableBytes::create(std::move(message));
   }
 }
 

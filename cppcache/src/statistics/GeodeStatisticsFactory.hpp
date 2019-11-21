@@ -94,42 +94,35 @@ class GeodeStatisticsFactory : public StatisticsFactory {
                                      const std::string& textId,
                                      int64_t numericId) override;
 
-  StatisticsType* createType(const std::string& name,
-                             const std::string& description,
-                             StatisticDescriptor** stats,
-                             int32_t statsLength) override;
+  StatisticsType* createType(
+      const std::string& name, const std::string& description,
+      std::vector<std::shared_ptr<StatisticDescriptor>> stats) override;
 
   StatisticsType* findType(const std::string& name) const override;
 
-  StatisticDescriptor* createIntCounter(const std::string& name,
-                                        const std::string& description,
-                                        const std::string& units,
-                                        bool largerBetter) override;
+  std::shared_ptr<StatisticDescriptor> createIntCounter(
+      const std::string& name, const std::string& description,
+      const std::string& units, bool largerBetter) override;
 
-  StatisticDescriptor* createLongCounter(const std::string& name,
-                                         const std::string& description,
-                                         const std::string& units,
-                                         bool largerBetter) override;
+  std::shared_ptr<StatisticDescriptor> createLongCounter(
+      const std::string& name, const std::string& description,
+      const std::string& units, bool largerBetter) override;
 
-  StatisticDescriptor* createDoubleCounter(const std::string& name,
-                                           const std::string& description,
-                                           const std::string& units,
-                                           bool largerBetter) override;
+  std::shared_ptr<StatisticDescriptor> createDoubleCounter(
+      const std::string& name, const std::string& description,
+      const std::string& units, bool largerBetter) override;
 
-  StatisticDescriptor* createIntGauge(const std::string& name,
-                                      const std::string& description,
-                                      const std::string& units,
-                                      bool largerBetter) override;
+  std::shared_ptr<StatisticDescriptor> createIntGauge(
+      const std::string& name, const std::string& description,
+      const std::string& units, bool largerBetter) override;
 
-  StatisticDescriptor* createLongGauge(const std::string& name,
-                                       const std::string& description,
-                                       const std::string& units,
-                                       bool largerBetter) override;
+  std::shared_ptr<StatisticDescriptor> createLongGauge(
+      const std::string& name, const std::string& description,
+      const std::string& units, bool largerBetter) override;
 
-  StatisticDescriptor* createDoubleGauge(const std::string& name,
-                                         const std::string& description,
-                                         const std::string& units,
-                                         bool largerBetter) override;
+  std::shared_ptr<StatisticDescriptor> createDoubleGauge(
+      const std::string& name, const std::string& description,
+      const std::string& units, bool largerBetter) override;
 
   Statistics* findFirstStatisticsByType(
       const StatisticsType* type) const override;

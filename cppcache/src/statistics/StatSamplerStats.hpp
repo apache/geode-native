@@ -42,7 +42,6 @@ class APACHE_GEODE_EXPORT StatSamplerStats {
   Statistics* samplerStats;
   int32_t sampleCountId;
   int32_t sampleTimeId;
-  StatisticDescriptor** statDescriptorArr;
 
  public:
   explicit StatSamplerStats(StatisticsFactory* statFactory);

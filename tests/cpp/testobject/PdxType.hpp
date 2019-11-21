@@ -391,7 +391,7 @@ class TESTOBJECT_EXPORT PdxType : public PdxSerializable {
   int32_t strLenArray;
   int32_t byteByteArrayLen;
 
-  int* lengthArr;
+  int lengthArr[2];
 
  public:
   inline void init() {
@@ -470,9 +470,6 @@ class TESTOBJECT_EXPORT PdxType : public PdxSerializable {
     m_doubleArray[1] = 4324235435.00;
 
     m_byteByteArray = new int8_t*[2];
-    // for(int i=0; i<2; i++){
-    //  m_byteByteArray[i] = new int8_t[1];
-    //}
     m_byteByteArray[0] = new int8_t[1];
     m_byteByteArray[1] = new int8_t[2];
     m_byteByteArray[0][0] = 0x23;
@@ -606,8 +603,6 @@ class TESTOBJECT_EXPORT PdxType : public PdxSerializable {
     charArrayLen = 2;
     byteByteArrayLen = 2;
 
-    lengthArr = new int[2];
-
     lengthArr[0] = 1;
     lengthArr[1] = 2;
   }
@@ -619,7 +614,21 @@ class TESTOBJECT_EXPORT PdxType : public PdxSerializable {
     throw IllegalStateException("Not got expected value for bool type: ");
   }
 
-  ~PdxType() override = default;
+  void deleteByteByteArray() {
+    if (m_byteByteArray == nullptr) {
+      return;
+    }
+    _GEODE_SAFE_DELETE_ARRAY(m_byteByteArray[0]);
+    _GEODE_SAFE_DELETE_ARRAY(m_byteByteArray[1]);
+    _GEODE_SAFE_DELETE_ARRAY(m_byteByteArray);
+  }
+
+  ~PdxType() override {
+    deleteByteByteArray();
+    for (auto i = 0; i <= 9; i++) {
+      _GEODE_SAFE_DELETE(m_add[i]);
+    }
+  };
 
   virtual size_t objectSize() const override {
     auto objectSize = sizeof(PdxType);

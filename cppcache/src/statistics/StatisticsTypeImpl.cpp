@@ -29,36 +29,28 @@ namespace statistics {
 using client::IllegalArgumentException;
 using client::NullPointerException;
 
-StatisticsTypeImpl::StatisticsTypeImpl(std::string nameArg,
-                                       std::string descriptionArg,
-                                       StatisticDescriptor** statsArg,
-                                       int32_t statsLengthArg) {
+StatisticsTypeImpl::StatisticsTypeImpl(
+    std::string nameArg, std::string descriptionArg,
+    std::vector<std::shared_ptr<StatisticDescriptor>> statsArg) {
   if (nameArg.empty()) {
     const char* s = "Cannot have an empty statistics type name";
     throw NullPointerException(s);
   }
-  if (statsArg == nullptr) {
-    const char* s = "Cannot have a null statistic descriptors";
-    throw NullPointerException(s);
-  }
-  if (statsLengthArg > MAX_DESCRIPTORS_PER_TYPE) {
+  if (stats.size() > MAX_DESCRIPTORS_PER_TYPE) {
     throw IllegalArgumentException(
-        "The requested descriptor count " + std::to_string(statsLengthArg) +
+        "The requested descriptor count " + std::to_string(stats.size()) +
         " exceeds the maximum which is " +
         std::to_string(MAX_DESCRIPTORS_PER_TYPE) + ".");
   }
   this->name = nameArg;
   this->description = descriptionArg;
-  this->stats = statsArg;
-  this->statsLength = statsLengthArg;
+  this->stats = std::move(statsArg);
   int32_t intCount = 0;
   int32_t longCount = 0;
   int32_t doubleCount = 0;
-  for (int32_t i = 0; i < this->statsLength; i++) {
+  for (auto stat : stats) {
     // Concrete class required to set the ids only.
-    StatisticDescriptorImpl* sd =
-        dynamic_cast<StatisticDescriptorImpl*>(stats[i]);
-    if (sd != nullptr) {
+    if (auto sd = std::dynamic_pointer_cast<StatisticDescriptorImpl>(stat)) {
       if (sd->getTypeCode() == INT_TYPE) {
         sd->setId(intCount);
         intCount++;
@@ -69,7 +61,7 @@ StatisticsTypeImpl::StatisticsTypeImpl(std::string nameArg,
         sd->setId(doubleCount);
         doubleCount++;
       }
-      std::string str = stats[i]->getName();
+      std::string str = stat->getName();
       StatisticsDescMap::iterator iterFind = statsDescMap.find(str);
       if (iterFind != statsDescMap.end()) {
         throw IllegalArgumentException("Duplicate StatisticDescriptor named " +
@@ -77,7 +69,7 @@ StatisticsTypeImpl::StatisticsTypeImpl(std::string nameArg,
       } else {
         // statsDescMap.insert(make_pair(stats[i]->getName(), stats[i]));
         statsDescMap.insert(
-            StatisticsDescMap::value_type(stats[i]->getName(), stats[i]));
+            StatisticsDescMap::value_type(stat->getName(), stat));
       }
     }
   }  // for
@@ -86,21 +78,7 @@ StatisticsTypeImpl::StatisticsTypeImpl(std::string nameArg,
   this->doubleStatCount = doubleCount;
 }
 
-StatisticsTypeImpl::~StatisticsTypeImpl() {
-  try {
-    // Delete the descriptor pointers from the array
-    for (int32_t i = 0; i < statsLength; i++) {
-      delete stats[i];
-      stats[i] = nullptr;
-    }
-    // same pointers are also stored in this map.
-    // So, Set the pointers to null.
-    for (auto& it : statsDescMap) {
-      it.second = nullptr;
-    }
-  } catch (...) {
-  }
-}
+StatisticsTypeImpl::~StatisticsTypeImpl() {}
 
 const std::string& StatisticsTypeImpl::getName() const { return name; }
 
@@ -108,7 +86,8 @@ const std::string& StatisticsTypeImpl::getDescription() const {
   return description;
 }
 
-StatisticDescriptor** StatisticsTypeImpl::getStatistics() const {
+const std::vector<std::shared_ptr<StatisticDescriptor>>&
+StatisticsTypeImpl::getStatistics() const {
   return stats;
 }
 
@@ -116,7 +95,7 @@ int32_t StatisticsTypeImpl::nameToId(const std::string& nameArg) const {
   return nameToDescriptor(nameArg)->getId();
 }
 
-StatisticDescriptor* StatisticsTypeImpl::nameToDescriptor(
+std::shared_ptr<StatisticDescriptor> StatisticsTypeImpl::nameToDescriptor(
     const std::string& nameArg) const {
   const auto iterFind = statsDescMap.find(nameArg);
   if (iterFind == statsDescMap.end()) {
@@ -137,7 +116,7 @@ int32_t StatisticsTypeImpl::getDoubleStatCount() const {
   return doubleStatCount;
 }
 
-int32_t StatisticsTypeImpl::getDescriptorsCount() const { return statsLength; }
+size_t StatisticsTypeImpl::getDescriptorsCount() const { return stats.size(); }
 
 }  // namespace statistics
 }  // namespace geode

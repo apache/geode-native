@@ -20,6 +20,8 @@
 #ifndef GEODE_STATISTICS_STATISTICSFACTORY_H_
 #define GEODE_STATISTICS_STATISTICSFACTORY_H_
 
+#include <vector>
+
 #include <geode/ExceptionTypes.hpp>
 #include <geode/internal/geode_globals.hpp>
 
@@ -67,10 +69,9 @@ class APACHE_GEODE_EXPORT StatisticsFactory {
    * <code>units</code>,and with larger values indicating better performance.
    */
 
-  virtual StatisticDescriptor* createIntCounter(const std::string& name,
-                                                const std::string& description,
-                                                const std::string& units,
-                                                bool largerBetter = true) = 0;
+  virtual std::shared_ptr<StatisticDescriptor> createIntCounter(
+      const std::string& name, const std::string& description,
+      const std::string& units, bool largerBetter = true) = 0;
 
   /**
    * Creates and returns a double counter {@link StatisticDescriptor}
@@ -78,10 +79,9 @@ class APACHE_GEODE_EXPORT StatisticsFactory {
    *<code>units</code>, and with larger values indicating better performance.
    */
 
-  virtual StatisticDescriptor* createLongCounter(const std::string& name,
-                                                 const std::string& description,
-                                                 const std::string& units,
-                                                 bool largerBetter = true) = 0;
+  virtual std::shared_ptr<StatisticDescriptor> createLongCounter(
+      const std::string& name, const std::string& description,
+      const std::string& units, bool largerBetter = true) = 0;
 
   /**
    * Creates and returns an int gauge {@link StatisticDescriptor}
@@ -90,7 +90,7 @@ class APACHE_GEODE_EXPORT StatisticsFactory {
    * performance.
    */
 
-  virtual StatisticDescriptor* createDoubleCounter(
+  virtual std::shared_ptr<StatisticDescriptor> createDoubleCounter(
       const std::string& name, const std::string& description,
       const std::string& units, bool largerBetter = true) = 0;
 
@@ -99,30 +99,27 @@ class APACHE_GEODE_EXPORT StatisticsFactory {
    * with the given <code>name</code>, <code>description</code>,
    * <code>units</code>,  and with smaller values indicating better performance.
    */
-  virtual StatisticDescriptor* createIntGauge(const std::string& name,
-                                              const std::string& description,
-                                              const std::string& units,
-                                              bool largerBetter = false) = 0;
+  virtual std::shared_ptr<StatisticDescriptor> createIntGauge(
+      const std::string& name, const std::string& description,
+      const std::string& units, bool largerBetter = false) = 0;
 
   /**
    * Creates and returns an long gauge {@link StatisticDescriptor}
    * with the given <code>name</code>, <code>description</code>,
    * <code>units</code>,  and with smaller values indicating better performance.
    */
-  virtual StatisticDescriptor* createLongGauge(const std::string& name,
-                                               const std::string& description,
-                                               const std::string& units,
-                                               bool largerBetter = false) = 0;
+  virtual std::shared_ptr<StatisticDescriptor> createLongGauge(
+      const std::string& name, const std::string& description,
+      const std::string& units, bool largerBetter = false) = 0;
 
   /**
    * Creates and returns an double gauge {@link StatisticDescriptor}
    * with the given <code>name</code>, <code>description</code>,
    * <code>units</code>,  and with smaller values indicating better performance.
    */
-  virtual StatisticDescriptor* createDoubleGauge(const std::string& name,
-                                                 const std::string& description,
-                                                 const std::string& units,
-                                                 bool largerBetter = false) = 0;
+  virtual std::shared_ptr<StatisticDescriptor> createDoubleGauge(
+      const std::string& name, const std::string& description,
+      const std::string& units, bool largerBetter = false) = 0;
 
   /**
    * Creates  and returns a {@link StatisticsType}
@@ -131,10 +128,9 @@ class APACHE_GEODE_EXPORT StatisticsFactory {
    * @throws IllegalArgumentException
    * if a type with the given <code>name</code> already exists.
    */
-  virtual StatisticsType* createType(const std::string& name,
-                                     const std::string& description,
-                                     StatisticDescriptor** stats,
-                                     int32_t statsLength) = 0;
+  virtual StatisticsType* createType(
+      const std::string& name, const std::string& description,
+      std::vector<std::shared_ptr<StatisticDescriptor>> stats) = 0;
 
   /**
    * Finds and returns an already created {@link StatisticsType}

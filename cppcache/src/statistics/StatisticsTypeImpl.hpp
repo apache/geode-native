@@ -22,6 +22,7 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
 #include <geode/ExceptionTypes.hpp>
 
@@ -42,14 +43,14 @@ namespace statistics {
  *
  */
 
-typedef std::map<std::string, StatisticDescriptor*> StatisticsDescMap;
+typedef std::map<std::string, std::shared_ptr<StatisticDescriptor>>
+    StatisticsDescMap;
 
 class StatisticsTypeImpl : public StatisticsType {
  private:
-  int32_t statsLength;
   std::string name;
   std::string description;
-  StatisticDescriptor** stats;
+  std::vector<std::shared_ptr<StatisticDescriptor>> stats;
   StatisticsDescMap statsDescMap;
   int32_t intStatCount;
   int32_t longStatCount;
@@ -57,7 +58,7 @@ class StatisticsTypeImpl : public StatisticsType {
 
  public:
   StatisticsTypeImpl(std::string name, std::string description,
-                     StatisticDescriptor** stats, int32_t statsLength);
+                     std::vector<std::shared_ptr<StatisticDescriptor>> stats);
 
   ~StatisticsTypeImpl() override;
 
@@ -67,11 +68,13 @@ class StatisticsTypeImpl : public StatisticsType {
 
   const std::string& getDescription() const override;
 
-  StatisticDescriptor** getStatistics() const override;
+  const std::vector<std::shared_ptr<StatisticDescriptor>>& getStatistics()
+      const override;
 
   int32_t nameToId(const std::string& name) const override;
 
-  StatisticDescriptor* nameToDescriptor(const std::string& name) const override;
+  std::shared_ptr<StatisticDescriptor> nameToDescriptor(
+      const std::string& name) const override;
 
   //////////////////////  Instance Methods  //////////////////////
 
@@ -93,7 +96,7 @@ class StatisticsTypeImpl : public StatisticsType {
   /*
    * Gets the total number of statistic descriptors in the Type
    */
-  int32_t getDescriptorsCount() const override;
+  size_t getDescriptorsCount() const override;
 
   // static StatisticsType[] fromXml(Reader reader,
   //                                      StatisticsTypeFactory factory);

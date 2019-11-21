@@ -206,8 +206,9 @@ double AtomicStatisticsImpl::_getDouble(int32_t offset) const {
 }
 
 int64_t AtomicStatisticsImpl::_getRawBits(
-    const StatisticDescriptor* statDscp) const {
-  const auto stat = dynamic_cast<const StatisticDescriptorImpl*>(statDscp);
+    const std::shared_ptr<StatisticDescriptor> statDscp) const {
+  const auto stat =
+      std::dynamic_pointer_cast<StatisticDescriptorImpl>(statDscp);
   switch (stat->getTypeCode()) {
     case INT_TYPE:
       return getInt(stat->getId());
@@ -228,7 +229,7 @@ int64_t AtomicStatisticsImpl::_getRawBits(
 }
 
 int64_t AtomicStatisticsImpl::getRawBits(
-    const StatisticDescriptor* descriptor) const {
+    const std::shared_ptr<StatisticDescriptor> descriptor) const {
   if (isOpen()) {
     return _getRawBits(descriptor);
   } else {
@@ -278,7 +279,7 @@ int32_t AtomicStatisticsImpl::nameToId(const std::string& name) const {
   return statsType->nameToId(name);
 }
 
-StatisticDescriptor* AtomicStatisticsImpl::nameToDescriptor(
+std::shared_ptr<StatisticDescriptor> AtomicStatisticsImpl::nameToDescriptor(
     const std::string& name) const {
   return statsType->nameToDescriptor(name);
 }
@@ -300,8 +301,8 @@ void AtomicStatisticsImpl::setInt(const std::string& name, int32_t value) {
   setInt(id, value);
 }
 
-void AtomicStatisticsImpl::setInt(const StatisticDescriptor* descriptor,
-                                  int32_t value) {
+void AtomicStatisticsImpl::setInt(
+    const std::shared_ptr<StatisticDescriptor> descriptor, int32_t value) {
   int32_t id = getIntId(descriptor);
   setInt(id, value);
 }
@@ -316,8 +317,8 @@ void AtomicStatisticsImpl::setLong(const std::string& name, int64_t value) {
   setLong(nameToDescriptor(name), value);
 }
 
-void AtomicStatisticsImpl::setLong(const StatisticDescriptor* descriptor,
-                                   int64_t value) {
+void AtomicStatisticsImpl::setLong(
+    const std::shared_ptr<StatisticDescriptor> descriptor, int64_t value) {
   setLong(getLongId(descriptor), value);
 }
 
@@ -331,8 +332,8 @@ void AtomicStatisticsImpl::setDouble(const std::string& name, double value) {
   setDouble(nameToDescriptor(name), value);
 }
 
-void AtomicStatisticsImpl::setDouble(const StatisticDescriptor* descriptor,
-                                     double value) {
+void AtomicStatisticsImpl::setDouble(
+    const std::shared_ptr<StatisticDescriptor> descriptor, double value) {
   setDouble(getDoubleId(descriptor), value);
 }
 
@@ -348,7 +349,7 @@ int32_t AtomicStatisticsImpl::getInt(const std::string& name) const {
 }
 
 int32_t AtomicStatisticsImpl::getInt(
-    const StatisticDescriptor* descriptor) const {
+    const std::shared_ptr<StatisticDescriptor> descriptor) const {
   int32_t id = getIntId(descriptor);
   return getInt(id);
 }
@@ -366,7 +367,7 @@ int64_t AtomicStatisticsImpl::getLong(const std::string& name) const {
 }
 
 int64_t AtomicStatisticsImpl::getLong(
-    const StatisticDescriptor* descriptor) const {
+    const std::shared_ptr<StatisticDescriptor> descriptor) const {
   return getLong(getLongId(descriptor));
 }
 
@@ -383,7 +384,7 @@ double AtomicStatisticsImpl::getDouble(const std::string& name) const {
 }
 
 double AtomicStatisticsImpl::getDouble(
-    const StatisticDescriptor* descriptor) const {
+    const std::shared_ptr<StatisticDescriptor> descriptor) const {
   return getDouble(getDoubleId(descriptor));
 }
 
@@ -400,8 +401,8 @@ int32_t AtomicStatisticsImpl::incInt(const std::string& name, int32_t delta) {
   return incInt(id, delta);
 }
 
-int32_t AtomicStatisticsImpl::incInt(const StatisticDescriptor* descriptor,
-                                     int32_t delta) {
+int32_t AtomicStatisticsImpl::incInt(
+    const std::shared_ptr<StatisticDescriptor> descriptor, int32_t delta) {
   int32_t id = getIntId(descriptor);
   return incInt(id, delta);
 }
@@ -418,8 +419,8 @@ int64_t AtomicStatisticsImpl::incLong(const std::string& name, int64_t delta) {
   return incLong(nameToDescriptor(name), delta);
 }
 
-int64_t AtomicStatisticsImpl::incLong(const StatisticDescriptor* descriptor,
-                                      int64_t delta) {
+int64_t AtomicStatisticsImpl::incLong(
+    const std::shared_ptr<StatisticDescriptor> descriptor, int64_t delta) {
   return incLong(getLongId(descriptor), delta);
 }
 
@@ -435,8 +436,8 @@ double AtomicStatisticsImpl::incDouble(const std::string& name, double delta) {
   return incDouble(nameToDescriptor(name), delta);
 }
 
-double AtomicStatisticsImpl::incDouble(const StatisticDescriptor* descriptor,
-                                       double delta) {
+double AtomicStatisticsImpl::incDouble(
+    const std::shared_ptr<StatisticDescriptor> descriptor, double delta) {
   return incDouble(getDoubleId(descriptor), delta);
 }
 
@@ -449,23 +450,23 @@ double AtomicStatisticsImpl::incDouble(int32_t id, double delta) {
 }
 
 int32_t AtomicStatisticsImpl::getIntId(
-    const StatisticDescriptor* descriptor) const {
+    const std::shared_ptr<StatisticDescriptor> descriptor) const {
   const auto realDescriptor =
-      dynamic_cast<const StatisticDescriptorImpl*>(descriptor);
+      std::dynamic_pointer_cast<StatisticDescriptorImpl>(descriptor);
   return realDescriptor->checkInt();
 }
 
 int32_t AtomicStatisticsImpl::getLongId(
-    const StatisticDescriptor* descriptor) const {
+    const std::shared_ptr<StatisticDescriptor> descriptor) const {
   const auto realDescriptor =
-      dynamic_cast<const StatisticDescriptorImpl*>(descriptor);
+      std::dynamic_pointer_cast<StatisticDescriptorImpl>(descriptor);
   return realDescriptor->checkLong();
 }
 
 int32_t AtomicStatisticsImpl::getDoubleId(
-    const StatisticDescriptor* descriptor) const {
+    const std::shared_ptr<StatisticDescriptor> descriptor) const {
   const auto realDescriptor =
-      dynamic_cast<const StatisticDescriptorImpl*>(descriptor);
+      std::dynamic_pointer_cast<StatisticDescriptorImpl>(descriptor);
   return realDescriptor->checkDouble();
 }
 

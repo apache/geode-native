@@ -23,6 +23,7 @@
 #include <chrono>
 #include <list>
 #include <map>
+#include <vector>
 
 #include <geode/Cache.hpp>
 #include <geode/DataOutput.hpp>
@@ -148,13 +149,12 @@ class APACHE_GEODE_EXPORT ResourceType : private NonCopyable,
  public:
   ResourceType(int32_t id, const StatisticsType *type);
   int32_t getId() const;
-  StatisticDescriptor **getStats() const;
-  int32_t getNumOfDescriptors() const;
+  const std::vector<std::shared_ptr<StatisticDescriptor>> &getStats() const;
+  size_t getNumOfDescriptors() const;
 
  private:
   int32_t id;
-  StatisticDescriptor **stats;
-  int32_t numOfDescriptors;
+  const StatisticsType *type;
 };
 
 /* adongre
@@ -180,9 +180,9 @@ class APACHE_GEODE_EXPORT ResourceInst : private NonCopyable,
   int32_t getId();
   Statistics *getResource();
   const ResourceType *getType() const;
-  int64_t getStatValue(StatisticDescriptor *f);
+  int64_t getStatValue(std::shared_ptr<StatisticDescriptor> f);
   void writeSample();
-  void writeStatValue(StatisticDescriptor *s, int64_t v);
+  void writeStatValue(std::shared_ptr<StatisticDescriptor> s, int64_t v);
   void writeCompactValue(int64_t v);
   void writeResourceInst(StatDataOutput *, int32_t);
 
@@ -223,7 +223,8 @@ class APACHE_GEODE_EXPORT StatArchiveWriter {
   void resampleResources();
   void writeResourceInst(StatDataOutput *, int32_t);
   void writeTimeStamp(const steady_clock::time_point &timeStamp);
-  void writeStatValue(StatisticDescriptor *f, int64_t v, DataOutput dataOut);
+  void writeStatValue(std::shared_ptr<StatisticDescriptor> f, int64_t v,
+                      DataOutput dataOut);
   const ResourceType *getResourceType(const Statistics *);
   bool resourceInstMapHas(Statistics *sp);
 

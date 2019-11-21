@@ -76,7 +76,7 @@ class APACHE_GEODE_EXPORT Statistics {
    *
    * @see StatisticsType#nameToId
    */
-  virtual StatisticDescriptor* nameToDescriptor(
+  virtual std::shared_ptr<StatisticDescriptor> nameToDescriptor(
       const std::string& name) const = 0;
 
   /**
@@ -162,7 +162,8 @@ class APACHE_GEODE_EXPORT Statistics {
    *         if the described statistic is not of
    *         type <code>int</code>.
    */
-  virtual void setInt(const StatisticDescriptor* descriptor, int32_t value) = 0;
+  virtual void setInt(const std::shared_ptr<StatisticDescriptor> descriptor,
+                      int32_t value) = 0;
 
   /**
    * Sets the value of a statistic with the given <code>id</code>
@@ -188,7 +189,7 @@ class APACHE_GEODE_EXPORT Statistics {
    *         if the described statistic is not of
    *         type <code>long</code>.
    */
-  virtual void setLong(const StatisticDescriptor* descriptor,
+  virtual void setLong(const std::shared_ptr<StatisticDescriptor> descriptor,
                        int64_t value) = 0;
 
   /**
@@ -227,7 +228,7 @@ class APACHE_GEODE_EXPORT Statistics {
    *         if the described statistic is not of
    *         type <code>double</code>.
    */
-  virtual void setDouble(const StatisticDescriptor* descriptor,
+  virtual void setDouble(const std::shared_ptr<StatisticDescriptor> descriptor,
                          double value) = 0;
 
   /**
@@ -266,7 +267,8 @@ class APACHE_GEODE_EXPORT Statistics {
    *         if the described statistic is not of
    *         type <code>int</code>.
    */
-  virtual int32_t getInt(const StatisticDescriptor* descriptor) const = 0;
+  virtual int32_t getInt(
+      const std::shared_ptr<StatisticDescriptor> descriptor) const = 0;
 
   /**
    * Returns the value of the statistic of type <code>int</code> at
@@ -302,7 +304,8 @@ class APACHE_GEODE_EXPORT Statistics {
    *         if the described statistic is not of
    *         type <code>long</code>.
    */
-  virtual int64_t getLong(const StatisticDescriptor* descriptor) const = 0;
+  virtual int64_t getLong(
+      const std::shared_ptr<StatisticDescriptor> descriptor) const = 0;
 
   /**
    * Returns the value of the statistic of type <code>long</code> at
@@ -338,7 +341,8 @@ class APACHE_GEODE_EXPORT Statistics {
    *         if the described statistic is not of
    *         type <code>double</code>.
    */
-  virtual double getDouble(const StatisticDescriptor* descriptor) const = 0;
+  virtual double getDouble(
+      const std::shared_ptr<StatisticDescriptor> descriptor) const = 0;
 
   /**
    * Returns the value of the statistic of type <code>double</code> at
@@ -361,7 +365,8 @@ class APACHE_GEODE_EXPORT Statistics {
    * @throws IllegalArgumentException
    *         If the described statistic does not exist
    */
-  virtual int64_t getRawBits(const StatisticDescriptor* descriptor) const = 0;
+  virtual int64_t getRawBits(
+      const std::shared_ptr<StatisticDescriptor> descriptor) const = 0;
 
   ////////////////////////  inc() Methods  ////////////////////////
 
@@ -394,7 +399,7 @@ class APACHE_GEODE_EXPORT Statistics {
    *         if the described statistic is not of
    *         type <code>int</code>.
    */
-  virtual int32_t incInt(const StatisticDescriptor* descriptor,
+  virtual int32_t incInt(const std::shared_ptr<StatisticDescriptor> descriptor,
                          int32_t delta) = 0;
 
   /**
@@ -441,7 +446,7 @@ class APACHE_GEODE_EXPORT Statistics {
    *         if the described statistic is not of
    *         type <code>long</code>.
    */
-  virtual int64_t incLong(const StatisticDescriptor* descriptor,
+  virtual int64_t incLong(const std::shared_ptr<StatisticDescriptor> descriptor,
                           int64_t delta) = 0;
   /**
    * Increments the value of the statistic of type <code>long</code> with
@@ -489,8 +494,8 @@ class APACHE_GEODE_EXPORT Statistics {
    *         if the described statistic is not of
    *         type <code>double</code>.
    */
-  virtual double incDouble(const StatisticDescriptor* descriptor,
-                           double delta) = 0;
+  virtual double incDouble(
+      const std::shared_ptr<StatisticDescriptor> descriptor, double delta) = 0;
   /**
    * Increments the value of the statistic of type <code>double</code> with
    * the given name by a given amount.

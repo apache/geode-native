@@ -71,19 +71,16 @@ class BucketServerLocation : public ServerLocation {
         m_isPrimary(isPrimary),
         m_version(version) {
     int32_t size = static_cast<int32_t>(serverGroups.size());
-    std::shared_ptr<CacheableString>* ptrArr = nullptr;
     if (size > 0) {
-      ptrArr = new std::shared_ptr<CacheableString>[size];
-      for (int i = 0; i < size; i++) {
-        ptrArr[i] = CacheableString::create(serverGroups[i]);
+      std::vector<std::shared_ptr<CacheableString>> tmpServerGroups;
+      tmpServerGroups.reserve(size);
+      for (auto&& serverGroup : serverGroups) {
+        tmpServerGroups.emplace_back(CacheableString::create(serverGroup));
       }
-    }
-    if (size > 0) {
       if (size > 0x7f) {
         // TODO:  should fail here since m_numServerGroups is int8_t?
       }
-      m_serverGroups = CacheableStringArray::create(
-          std::vector<std::shared_ptr<CacheableString>>(ptrArr, ptrArr + size));
+      m_serverGroups = CacheableStringArray::create(std::move(tmpServerGroups));
       m_numServerGroups = static_cast<int8_t>(size);
     } else {
       m_serverGroups = nullptr;
@@ -104,8 +101,8 @@ class BucketServerLocation : public ServerLocation {
     output.write(m_version);
     output.write(static_cast<int8_t>(m_numServerGroups));
     if (m_numServerGroups > 0) {
-      for (int i = 0; i < m_numServerGroups; i++) {
-        output.writeObject(m_serverGroups->value()[i]);
+      for (auto&& serverGroup : m_serverGroups->value()) {
+        output.writeObject(serverGroup);
       }
     }
   }
@@ -116,17 +113,14 @@ class BucketServerLocation : public ServerLocation {
     m_isPrimary = input.readBoolean();
     m_version = input.read();
     m_numServerGroups = input.read();
-    std::shared_ptr<CacheableString>* serverGroups = nullptr;
+
     if (m_numServerGroups > 0) {
-      serverGroups = new std::shared_ptr<CacheableString>[m_numServerGroups];
+      std::vector<std::shared_ptr<CacheableString>> serverGroups;
+      serverGroups.reserve(m_numServerGroups);
       for (int i = 0; i < m_numServerGroups; i++) {
-        serverGroups[i] = CacheableString::create(input.readString());
+        serverGroups.emplace_back(CacheableString::create(input.readString()));
       }
-    }
-    if (m_numServerGroups > 0) {
-      m_serverGroups = CacheableStringArray::create(
-          std::vector<std::shared_ptr<CacheableString>>(
-              serverGroups, serverGroups + m_numServerGroups));
+      m_serverGroups = CacheableStringArray::create(std::move(serverGroups));
     }
   }
 

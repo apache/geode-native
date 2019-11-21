@@ -44,7 +44,7 @@ CqQueryVsdStats::CqQueryVsdStats(StatisticsFactory* factory,
   auto statsType = factory->findType(STATS_NAME);
   if (!statsType) {
     const bool largerIsBetter = true;
-    auto stats = new StatisticDescriptor*[4];
+    std::vector<std::shared_ptr<StatisticDescriptor>> stats(4);
     stats[0] = factory->createIntCounter(
         "inserts", "The total number of inserts this cq qurey", "entries",
         largerIsBetter);
@@ -58,7 +58,7 @@ CqQueryVsdStats::CqQueryVsdStats(StatisticsFactory* factory,
         "events", "The total number of events for this cq query", "entries",
         largerIsBetter);
 
-    statsType = factory->createType(STATS_NAME, STATS_DESC, stats, 4);
+    statsType = factory->createType(STATS_NAME, STATS_DESC, std::move(stats));
   }
 
   m_cqQueryVsdStats =

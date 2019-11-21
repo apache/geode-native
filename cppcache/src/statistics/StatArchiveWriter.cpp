@@ -155,20 +155,21 @@ void StatDataOutput::openFile(std::string filename, int64_t size) {
 
 // Constructor and Member functions of ResourceType class
 
-ResourceType::ResourceType(int32_t idArg, const StatisticsType *typeArg) {
+ResourceType::ResourceType(int32_t idArg, const StatisticsType *typeArg)
+    : type(typeArg) {
   this->id = idArg;
-  this->stats = typeArg->getStatistics();
-  int32_t desc = typeArg->getDescriptorsCount();
-  this->numOfDescriptors = desc;
 }
 
 int32_t ResourceType::getId() const { return this->id; }
 
-int32_t ResourceType::getNumOfDescriptors() const {
-  return this->numOfDescriptors;
+size_t ResourceType::getNumOfDescriptors() const {
+  return this->type->getDescriptorsCount();
 }
 
-StatisticDescriptor **ResourceType::getStats() const { return this->stats; }
+const std::vector<std::shared_ptr<StatisticDescriptor>>
+    &ResourceType::getStats() const {
+  return this->type->getStatistics();
+}
 
 // Constructor and Member functions of ResourceInst class
 
@@ -179,10 +180,10 @@ ResourceInst::ResourceInst(int32_t idArg, Statistics *resourceArg,
   id = idArg;
   resource = resourceArg;
   dataOut = dataOutArg;
-  int32_t cnt = type->getNumOfDescriptors();
+  auto cnt = type->getNumOfDescriptors();
   archivedStatValues = new int64_t[cnt];
   // initialize to zero
-  for (int32_t i = 0; i < cnt; i++) {
+  for (decltype(cnt) i = 0; i < cnt; i++) {
     archivedStatValues[i] = 0;
   }
   firstTime = true;
@@ -196,14 +197,14 @@ Statistics *ResourceInst::getResource() { return this->resource; }
 
 const ResourceType *ResourceInst::getType() const { return this->type; }
 
-int64_t ResourceInst::getStatValue(StatisticDescriptor *f) {
+int64_t ResourceInst::getStatValue(std::shared_ptr<StatisticDescriptor> f) {
   return this->resource->getRawBits(f);
 }
 
 void ResourceInst::writeSample() {
   bool wroteInstId = false;
   bool checkForChange = true;
-  StatisticDescriptor **stats = type->getStats();
+  auto &stats = type->getStats();
   if (resource->isClosed()) {
     return;
   }
@@ -212,7 +213,7 @@ void ResourceInst::writeSample() {
     checkForChange = false;
   }
   auto count = type->getNumOfDescriptors();
-  for (int32_t i = 0; i < count; i++) {
+  for (decltype(count) i = 0; i < count; i++) {
     int64_t value = getStatValue(stats[i]);
     if (!checkForChange || value != archivedStatValues[i]) {
       int64_t delta = value - archivedStatValues[i];
@@ -221,7 +222,7 @@ void ResourceInst::writeSample() {
         wroteInstId = true;
         writeResourceInst(dataOut, id);
       }
-      dataOut->writeByte(i);
+      dataOut->writeByte(static_cast<int8_t>(i));
       writeStatValue(stats[i], delta);
     }
   }
@@ -230,9 +231,10 @@ void ResourceInst::writeSample() {
   }
 }
 
-void ResourceInst::writeStatValue(StatisticDescriptor *sd, int64_t v) {
-  auto sdImpl = static_cast<StatisticDescriptorImpl *>(sd);
-  if (sdImpl == nullptr) {
+void ResourceInst::writeStatValue(std::shared_ptr<StatisticDescriptor> sd,
+                                  int64_t v) {
+  auto sdImpl = std::static_pointer_cast<StatisticDescriptorImpl>(sd);
+  if (!sdImpl) {
     throw NullPointerException("could not downcast to StatisticDescriptorImpl");
   }
   FieldType typeCode = sdImpl->getTypeCode();
@@ -583,10 +585,10 @@ const ResourceType *StatArchiveWriter::getResourceType(const Statistics *s) {
     auto stats = rt->getStats();
     auto descCnt = rt->getNumOfDescriptors();
     this->dataBuffer->writeShort(static_cast<int16_t>(descCnt));
-    for (int32_t i = 0; i < descCnt; i++) {
+    for (decltype(descCnt) i = 0; i < descCnt; i++) {
       std::string statsName = stats[i]->getName();
       this->dataBuffer->writeUTF(statsName);
-      auto sdImpl = static_cast<StatisticDescriptorImpl *>(stats[i]);
+      auto sdImpl = std::static_pointer_cast<StatisticDescriptorImpl>(stats[i]);
       if (sdImpl == nullptr) {
         throw NullPointerException(
             "could not down cast to StatisticDescriptorImpl");

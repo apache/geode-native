@@ -703,42 +703,35 @@ GfErrType ThinClientPoolDM::sendRequestToAllServers(
 
 const std::shared_ptr<CacheableStringArray> ThinClientPoolDM::getLocators()
     const {
-  auto ptrArr =
-      new std::shared_ptr<CacheableString>[m_attrs->m_initLocList.size()];
-  int32_t i = 0;
+  std::vector<std::shared_ptr<CacheableString>> locators;
+  locators.reserve(m_attrs->m_initLocList.size());
   for (auto&& locator : m_attrs->m_initLocList) {
-    ptrArr[i++] = CacheableString::create(locator);
+    locators.emplace_back(CacheableString::create(locator));
   }
-  return CacheableStringArray::create(
-      std::vector<std::shared_ptr<CacheableString>>(ptrArr, ptrArr + i));
+  return CacheableStringArray::create(std::move(locators));
 }
 
 const std::shared_ptr<CacheableStringArray> ThinClientPoolDM::getServers() {
+  std::vector<std::shared_ptr<CacheableString>> servers;
   if (!m_attrs->m_initServList.empty()) {
-    auto ptrArr =
-        new std::shared_ptr<CacheableString>[m_attrs->m_initServList.size()];
-    int32_t i = 0;
+    servers.reserve(m_attrs->m_initServList.size());
+
     for (auto&& server : m_attrs->m_initServList) {
-      ptrArr[i++] = CacheableString::create(server);
+      servers.emplace_back(CacheableString::create(server));
     }
-    return CacheableStringArray::create(
-        std::vector<std::shared_ptr<CacheableString>>(ptrArr, ptrArr + i));
+    return CacheableStringArray::create(std::move(servers));
   } else if (!m_attrs->m_initLocList.empty()) {
     std::vector<std::shared_ptr<ServerLocation>> vec;
     m_locHelper->getAllServers(vec, m_attrs->m_serverGrp);
 
-    auto ptrArr = new std::shared_ptr<CacheableString>[vec.size()];
-    int32_t i = 0;
+    servers.reserve(vec.size());
     for (auto&& serLoc : vec) {
-      ptrArr[i++] = CacheableString::create(serLoc->getServerName() + ":" +
-                                            std::to_string(serLoc->getPort()));
+      servers.emplace_back(CacheableString::create(
+          serLoc->getServerName() + ":" + std::to_string(serLoc->getPort())));
     }
-    return CacheableStringArray::create(
-        std::vector<std::shared_ptr<CacheableString>>(ptrArr, ptrArr + i));
-  } else {
-    return CacheableStringArray::create(
-        std::vector<std::shared_ptr<CacheableString>>{});
+    return CacheableStringArray::create(std::move(servers));
   }
+  return CacheableStringArray::create(std::move(servers));
 }
 
 void ThinClientPoolDM::stopPingThread() {

@@ -239,7 +239,7 @@ int8_t TcrMessage::getserverGroupVersion() const {
   return m_serverGroupVersion;
 }
 
-std::vector<int8_t>* TcrMessage::getFunctionAttributes() {
+std::shared_ptr<std::vector<int8_t>> TcrMessage::getFunctionAttributes() {
   return m_functionAttributes;
 }
 
@@ -1206,7 +1206,9 @@ void TcrMessage::handleByteArrayResponse(
         input.readInt32();
         input.advanceCursor(1);  // ignore byte
 
-        m_functionAttributes = new std::vector<int8_t>();
+        if (!m_functionAttributes) {
+          m_functionAttributes = std::make_shared<std::vector<int8_t>>();
+        }
         m_functionAttributes->push_back(input.read());
         m_functionAttributes->push_back(input.read());
         m_functionAttributes->push_back(input.read());

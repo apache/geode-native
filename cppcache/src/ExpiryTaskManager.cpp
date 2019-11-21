@@ -38,16 +38,14 @@ namespace client {
 const char* ExpiryTaskManager::NC_ETM_Thread = "NC ETM Thread";
 
 ExpiryTaskManager::ExpiryTaskManager() : m_reactorEventLoopRunning(false) {
-  auto timer = std::unique_ptr<GF_Timer_Heap_ImmediateReset>(
-      new GF_Timer_Heap_ImmediateReset());
+  auto timer = new GF_Timer_Heap_ImmediateReset();
 #if defined(_WIN32)
-  m_reactor = new ACE_Reactor(new ACE_WFMO_Reactor(nullptr, timer.get()), 1);
+  m_reactor = new ACE_Reactor(new ACE_WFMO_Reactor(nullptr, timer), 1);
 #elif defined(WITH_ACE_Select_Reactor)
-  m_reactor = new ACE_Reactor(new ACE_Select_Reactor(nullptr, timer.get()), 1);
+  m_reactor = new ACE_Reactor(new ACE_Select_Reactor(nullptr, timer), 1);
 #else
-  m_reactor = new ACE_Reactor(new ACE_Dev_Poll_Reactor(nullptr, timer.get()) 1);
+  m_reactor = new ACE_Reactor(new ACE_Dev_Poll_Reactor(nullptr, timer) 1);
 #endif
-  timer.release();
 }
 
 int ExpiryTaskManager::resetTask(ExpiryTaskManager::id_type id, uint32_t sec) {
@@ -92,6 +90,7 @@ void ExpiryTaskManager::begin() {
 
 ExpiryTaskManager::~ExpiryTaskManager() {
   stopExpiryTaskManager();
+
   delete m_reactor;
   m_reactor = nullptr;
 }

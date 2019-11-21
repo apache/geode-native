@@ -43,7 +43,7 @@ PoolStats::PoolStats(StatisticsFactory* factory, const std::string& poolName) {
   auto statsType = factory->findType(STATS_NAME);
 
   if (statsType == nullptr) {
-    auto stats = new StatisticDescriptor*[27];
+    std::vector<std::shared_ptr<StatisticDescriptor>> stats(27);
 
     stats[0] = factory->createIntGauge(
         "locators", "Current number of locators discovered", "locators");
@@ -133,7 +133,7 @@ PoolStats::PoolStats(StatisticsFactory* factory, const std::string& poolName) {
         "queryExecutionTime",
         "Total time spent while processing queryExecution", "nanoseconds");
 
-    statsType = factory->createType(STATS_NAME, STATS_DESC, stats, 27);
+    statsType = factory->createType(STATS_NAME, STATS_DESC, std::move(stats));
   }
   m_locatorsId = statsType->nameToId("locators");
   m_serversId = statsType->nameToId("servers");

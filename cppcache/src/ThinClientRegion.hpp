@@ -171,7 +171,7 @@ class APACHE_GEODE_EXPORT ThinClientRegion : public LocalRegion {
       std::chrono::milliseconds timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
 
   GfErrType getFuncAttributes(const std::string& func,
-                              std::vector<int8_t>** attr);
+                              std::shared_ptr<std::vector<int8_t>>* attr);
 
   ACE_RW_Thread_Mutex& getMataDataMutex() { return m_RegionMutex; }
 

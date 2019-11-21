@@ -275,7 +275,7 @@ class TcrMessage {
   int8_t getMetaDataVersion() const;
   uint32_t getEntryNotFound() const;
   int8_t getserverGroupVersion() const;
-  std::vector<int8_t>* getFunctionAttributes();
+  std::shared_ptr<std::vector<int8_t>> getFunctionAttributes();
 
   // set the DM for chunked response messages
   void setDM(ThinClientBaseDM* dm);
@@ -420,7 +420,7 @@ class TcrMessage {
   std::unique_ptr<DataInput> m_delta;
   int8_t* m_deltaBytes;
   std::vector<std::shared_ptr<FixedPartitionAttributesImpl>>* m_fpaSet;
-  std::vector<int8_t>* m_functionAttributes;
+  std::shared_ptr<std::vector<int8_t>> m_functionAttributes;
   std::shared_ptr<CacheableBytes> m_connectionIDBytes;
   std::shared_ptr<Properties> m_creds;
   std::shared_ptr<CacheableKey> m_key;

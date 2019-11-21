@@ -40,7 +40,7 @@ RegionStats::RegionStats(StatisticsFactory* factory,
 
   if (!statsType) {
     const bool largerIsBetter = true;
-    auto stats = new StatisticDescriptor*[25];
+    std::vector<std::shared_ptr<StatisticDescriptor>> stats(25);
     stats[0] = factory->createIntCounter(
         "creates", "The total number of cache creates for this region",
         "entries", largerIsBetter);
@@ -135,7 +135,7 @@ RegionStats::RegionStats(StatisticsFactory* factory,
         "removeAllTime",
         "Total time spent doing removeAlls operations for this region",
         "Nanoseconds", !largerIsBetter);
-    statsType = factory->createType(STATS_NAME, STATS_DESC, stats, 25);
+    statsType = factory->createType(STATS_NAME, STATS_DESC, std::move(stats));
   }
 
   m_destroysId = statsType->nameToId("destroys");

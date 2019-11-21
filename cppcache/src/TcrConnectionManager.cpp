@@ -67,7 +67,8 @@ TcrConnectionManager::TcrConnectionManager(CacheImpl *cache)
       m_redundancyTask(nullptr),
       m_isDurable(false),
       m_isNetDown(false) {
-  m_redundancyManager = new ThinClientRedundancyManager(this);
+  m_redundancyManager = std::unique_ptr<ThinClientRedundancyManager>(
+      new ThinClientRedundancyManager(this));
 }
 
 ExpiryTaskManager::id_type TcrConnectionManager::getPingTaskId() {

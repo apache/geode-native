@@ -173,13 +173,12 @@ void PdxTests::PdxType::toData(PdxWriter& pw) const {
 }
 
 void PdxTests::PdxType::fromData(PdxReader& pr) {
-  // TODO:temp added, delete later
-
   int32_t* Lengtharr;
-  _GEODE_NEW(Lengtharr, int32_t[2]);
   int32_t arrLen = 0;
+  deleteByteByteArray();
   m_byteByteArray =
       pr.readArrayOfByteArrays("m_byteByteArray", arrLen, &Lengtharr);
+  _GEODE_SAFE_DELETE_ARRAY(Lengtharr);
   // TODO::need to write compareByteByteArray() and check for m_byteByteArray
   // elements
 

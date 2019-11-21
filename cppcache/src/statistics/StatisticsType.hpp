@@ -20,6 +20,9 @@
 #ifndef GEODE_STATISTICS_STATISTICSTYPE_H_
 #define GEODE_STATISTICS_STATISTICSTYPE_H_
 
+#include <memory>
+#include <vector>
+
 #include <geode/internal/geode_globals.hpp>
 
 #include "StatisticDescriptor.hpp"
@@ -57,7 +60,8 @@ class APACHE_GEODE_EXPORT StatisticsType {
    * Returns descriptions of the statistics that this statistics type
    * gathers together.
    */
-  virtual StatisticDescriptor** getStatistics() const = 0;
+  virtual const std::vector<std::shared_ptr<StatisticDescriptor>>&
+  getStatistics() const = 0;
 
   /**
    * Returns the id of the statistic with the given name in this
@@ -76,13 +80,13 @@ class APACHE_GEODE_EXPORT StatisticsType {
    *         No statistic named <code>name</code> exists in this
    *         statistics instance.
    */
-  virtual StatisticDescriptor* nameToDescriptor(
+  virtual std::shared_ptr<StatisticDescriptor> nameToDescriptor(
       const std::string& name) const = 0;
 
   /**
    * Returns the total number of statistics descriptors in the type.
    */
-  virtual int32_t getDescriptorsCount() const = 0;
+  virtual size_t getDescriptorsCount() const = 0;
 
   // protected:
   /**

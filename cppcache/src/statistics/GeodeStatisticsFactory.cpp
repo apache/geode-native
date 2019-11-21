@@ -171,8 +171,8 @@ StatisticsTypeImpl* GeodeStatisticsFactory::addType(StatisticsTypeImpl* st) {
  */
 StatisticsType* GeodeStatisticsFactory::createType(
     const std::string& name, const std::string& description,
-    StatisticDescriptor** stats, int32_t statsLength) {
-  auto st = new StatisticsTypeImpl(name, description, stats, statsLength);
+    std::vector<std::shared_ptr<StatisticDescriptor>> stats) {
+  auto st = new StatisticsTypeImpl(name, description, std::move(stats));
 
   if (st != nullptr) {
     st = addType(st);
@@ -195,42 +195,44 @@ StatisticsType* GeodeStatisticsFactory::findType(
   }
 }
 
-StatisticDescriptor* GeodeStatisticsFactory::createIntCounter(
+std::shared_ptr<StatisticDescriptor> GeodeStatisticsFactory::createIntCounter(
     const std::string& name, const std::string& description,
     const std::string& units, bool largerBetter) {
   return StatisticDescriptorImpl::createIntCounter(name, description, units,
                                                    largerBetter);
 }
 
-StatisticDescriptor* GeodeStatisticsFactory::createLongCounter(
+std::shared_ptr<StatisticDescriptor> GeodeStatisticsFactory::createLongCounter(
     const std::string& name, const std::string& description,
     const std::string& units, bool largerBetter) {
   return StatisticDescriptorImpl::createLongCounter(name, description, units,
                                                     largerBetter);
 }
 
-StatisticDescriptor* GeodeStatisticsFactory::createDoubleCounter(
-    const std::string& name, const std::string& description,
-    const std::string& units, bool largerBetter) {
+std::shared_ptr<StatisticDescriptor>
+GeodeStatisticsFactory::createDoubleCounter(const std::string& name,
+                                            const std::string& description,
+                                            const std::string& units,
+                                            bool largerBetter) {
   return StatisticDescriptorImpl::createDoubleCounter(name, description, units,
                                                       largerBetter);
 }
 
-StatisticDescriptor* GeodeStatisticsFactory::createIntGauge(
+std::shared_ptr<StatisticDescriptor> GeodeStatisticsFactory::createIntGauge(
     const std::string& name, const std::string& description,
     const std::string& units, bool largerBetter) {
   return StatisticDescriptorImpl::createIntGauge(name, description, units,
                                                  largerBetter);
 }
 
-StatisticDescriptor* GeodeStatisticsFactory::createLongGauge(
+std::shared_ptr<StatisticDescriptor> GeodeStatisticsFactory::createLongGauge(
     const std::string& name, const std::string& description,
     const std::string& units, bool largerBetter) {
   return StatisticDescriptorImpl::createLongGauge(name, description, units,
                                                   largerBetter);
 }
 
-StatisticDescriptor* GeodeStatisticsFactory::createDoubleGauge(
+std::shared_ptr<StatisticDescriptor> GeodeStatisticsFactory::createDoubleGauge(
     const std::string& name, const std::string& description,
     const std::string& units, bool largerBetter) {
   return StatisticDescriptorImpl::createDoubleGauge(name, description, units,

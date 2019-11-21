@@ -179,7 +179,7 @@ class TcrConnectionManager {
 
   bool m_isNetDown;
 
-  ThinClientRedundancyManager* m_redundancyManager;
+  std::unique_ptr<ThinClientRedundancyManager> m_redundancyManager;
 
   void failover(std::atomic<bool>& isRunning);
   void redundancy(std::atomic<bool>& isRunning);
