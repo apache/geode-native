@@ -50,8 +50,7 @@ StatisticsTypeImpl::StatisticsTypeImpl(
   int32_t doubleCount = 0;
   for (auto stat : stats) {
     // Concrete class required to set the ids only.
-    std::shared_ptr<StatisticDescriptorImpl> sd =
-        std::dynamic_pointer_cast<StatisticDescriptorImpl>(stat);
+    auto sd = std::dynamic_pointer_cast<StatisticDescriptorImpl>(stat);
     if (sd != nullptr) {
       if (sd->getTypeCode() == INT_TYPE) {
         sd->setId(intCount);

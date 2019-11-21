@@ -994,9 +994,9 @@ GfErrType ThinClientRegion::putNoThrow_remote(
   TcrMessagePut request(new DataOutput(m_cacheImpl->createDataOutput()), this,
                         keyPtr, valuePtr, aCallbackArgument, delta,
                         m_tcrdm.get());
-  std::unique_ptr<TcrMessageReply> reply = std::unique_ptr<TcrMessageReply>(
+  auto reply = std::unique_ptr<TcrMessageReply>(
       new TcrMessageReply(true, m_tcrdm.get()));
-  err = m_tcrdm->sendSyncRequest(request, *reply.get());
+  err = m_tcrdm->sendSyncRequest(request, *reply);
   if (delta) {
     // Does not check whether success of failure..
     m_cacheImpl->getCachePerfStats().incDeltaPut();
