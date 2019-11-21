@@ -150,7 +150,7 @@ class APACHE_GEODE_EXPORT ResourceType : private NonCopyable,
   ResourceType(int32_t id, const StatisticsType *type);
   int32_t getId() const;
   const std::vector<std::shared_ptr<StatisticDescriptor>> &getStats() const;
-  int32_t getNumOfDescriptors() const;
+  size_t getNumOfDescriptors() const;
 
  private:
   int32_t id;

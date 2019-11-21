@@ -623,7 +623,7 @@ class TESTOBJECT_EXPORT PdxType : public PdxSerializable {
     _GEODE_SAFE_DELETE_ARRAY(m_byteByteArray);
   }
 
-  ~PdxType() {
+  ~PdxType() override {
     deleteByteByteArray();
     for (auto i = 0; i <= 9; i++) {
       _GEODE_SAFE_DELETE(m_add[i]);
