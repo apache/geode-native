@@ -119,8 +119,7 @@ void ThinClientStickyManager::cleanStaleStickyConnection() {
   LOGDEBUG("Cleaning sticky connections");
   std::set<ServerLocation> excludeServers;
   std::lock_guard<decltype(m_stickyLock)> keysGuard(m_stickyLock);
-  std::find_if(m_stickyConnList.begin(), m_stickyConnList.end(),
-               ThinClientStickyManager::isNULL);
+
   while (1) {
     std::set<TcrConnection**>::iterator it =
         std::find_if(m_stickyConnList.begin(), m_stickyConnList.end(),
