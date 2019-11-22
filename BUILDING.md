@@ -87,6 +87,12 @@ The recommended generator on Windows is `Visual Studio 15 2017 Win64`:
 $ cmake .. -G "Visual Studio 15 2017 Win64" -Thost=x64
 ```
 
+Visual Studio 2019 is also supported. For this generator you must leave off the Win64:
+
+```console
+$ cmake .. -G "Visual Studio 16 2019" -Thost=x64
+```
+
 ### Build Parallelism
 For faster builds, use optional parallelism parameters in the last build step:
 
