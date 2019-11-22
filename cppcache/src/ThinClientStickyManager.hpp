@@ -56,7 +56,6 @@ class ThinClientStickyManager {
   void getAnyConnection(TcrConnection*& conn);
 
  private:
-  static bool isNULL(TcrConnection** conn);
   ThinClientPoolDM* m_dm;
   std::set<TcrConnection**> m_stickyConnList;
   std::recursive_mutex m_stickyLock;

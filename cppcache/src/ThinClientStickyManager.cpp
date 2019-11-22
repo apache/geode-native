@@ -117,39 +117,35 @@ void ThinClientStickyManager::setSingleHopStickyConnection(
 
 void ThinClientStickyManager::cleanStaleStickyConnection() {
   LOGDEBUG("Cleaning sticky connections");
-  std::set<ServerLocation> excludeServers;
   std::lock_guard<decltype(m_stickyLock)> keysGuard(m_stickyLock);
 
-  while (1) {
-    std::set<TcrConnection**>::iterator it =
-        std::find_if(m_stickyConnList.begin(), m_stickyConnList.end(),
-                     ThinClientStickyManager::isNULL);
-    if (it == m_stickyConnList.end()) break;
-    m_stickyConnList.erase(it);
-  }
-  bool maxConnLimit = false;
-  for (std::set<TcrConnection**>::iterator it = m_stickyConnList.begin();
-       it != m_stickyConnList.end(); it++) {
-    TcrConnection** conn = (*it);
-    if ((*conn)->setAndGetBeingUsed(true, false) &&
-        canThisConnBeDeleted(*conn)) {
-      GfErrType err = GF_NOERR;
-      TcrConnection* temp = m_dm->getConnectionFromQueue(
-          false, &err, excludeServers, maxConnLimit);
-      if (temp) {
-        TcrConnection* temp1 = *conn;
-        //*conn = temp; instead of setting in thread local put in queue, thread
-        // will come and pick it from there
-        *conn = nullptr;
-        m_dm->put(temp, false);
-        temp1->close();
-        _GEODE_SAFE_DELETE(temp1);
-        m_dm->removeEPConnections(1, false);
-        LOGDEBUG("Replaced a sticky connection");
-      } else {
-        (*conn)->setAndGetBeingUsed(false, false);
+  auto maxConnLimit = false;
+  std::set<ServerLocation> excludeServers;
+  for (auto it = m_stickyConnList.begin(); it != m_stickyConnList.end();) {
+    auto conn = (*it);
+    if (*conn) {
+      if ((*conn)->setAndGetBeingUsed(true, false) &&
+          canThisConnBeDeleted(*conn)) {
+        auto err = GF_NOERR;
+        if (auto temp = m_dm->getConnectionFromQueue(
+                false, &err, excludeServers, maxConnLimit)) {
+          auto temp1 = *conn;
+          //*conn = temp; instead of setting in thread local put in queue,
+          // thread
+          // will come and pick it from there
+          *conn = nullptr;
+          m_dm->put(temp, false);
+          temp1->close();
+          _GEODE_SAFE_DELETE(temp1);
+          m_dm->removeEPConnections(1, false);
+          LOGDEBUG("Replaced a sticky connection");
+        } else {
+          (*conn)->setAndGetBeingUsed(false, false);
+        }
       }
-      temp = nullptr;
+      ++it;
+    } else {
+      it = m_stickyConnList.erase(it);
     }
   }
 }
@@ -206,10 +202,6 @@ void ThinClientStickyManager::releaseThreadLocalConnection() {
   }
   (*TssConnectionWrapper::s_geodeTSSConn)
       ->releaseSHConnections(m_dm->shared_from_this());
-}
-bool ThinClientStickyManager::isNULL(TcrConnection** conn) {
-  if (*conn == nullptr) return true;
-  return false;
 }
 
 void ThinClientStickyManager::getAnyConnection(TcrConnection*& conn) {
