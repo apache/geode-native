@@ -130,9 +130,8 @@ void ThinClientStickyManager::cleanStaleStickyConnection() {
         if (auto temp = m_dm->getConnectionFromQueue(
                 false, &err, excludeServers, maxConnLimit)) {
           auto temp1 = *conn;
-          //*conn = temp; instead of setting in thread local put in queue,
-          // thread
-          // will come and pick it from there
+          //*conn = temp; instead of setting in thread local,
+          // put in queue, thread will come and pick it from there
           *conn = nullptr;
           m_dm->put(temp, false);
           temp1->close();
