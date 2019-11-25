@@ -50,12 +50,13 @@ if (${WIN32})
   else()
     set( _PLATFORM win32 )
   endif()
-
   if (MSVC_VERSION EQUAL 1900)
     set(_TYPE "vc14")
   elseif((MSVC_VERSION GREATER_EQUAL 1910) AND (MSVC_VERSION LESS_EQUAL 1919))
     set(_TYPE "vs2017")
-  endIF()
+  else()
+    set(_TYPE "vs2019")
+  endif()
 
   set ( _COMMAND_PREFIX ${CMAKE_COMMAND} -E chdir ace )
 
