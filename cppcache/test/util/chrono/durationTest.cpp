@@ -47,6 +47,9 @@ TEST(util_chrono_durationTest, to_string) {
   EXPECT_EQ("42ns", to_string(std::chrono::nanoseconds(42)));
   EXPECT_EQ("0ns", to_string(std::chrono::nanoseconds(0)));
   EXPECT_EQ("-42ns", to_string(std::chrono::nanoseconds(-42)));
+
+  EXPECT_EQ("100<<unknown units>>",
+            to_string(std::chrono::duration<int, std::ratio<1, 100000>>(100)));
 }
 
 TEST(util_chrono_durationTest, from_string) {
