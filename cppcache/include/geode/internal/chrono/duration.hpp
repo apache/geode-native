@@ -35,7 +35,7 @@ namespace duration {
 
 template <class Period>
 struct _suffix {
-  static constexpr char const* value = nullptr;
+  static constexpr char const* value = "<<unknown units>>";
 };
 template <>
 struct _suffix<std::ratio<3600>> {
