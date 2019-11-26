@@ -217,7 +217,7 @@ DUNIT_TASK_DEFINITION(SERVER1, CreateServer1_DisableDelta)
 END_TASK_DEFINITION
 
 void doDeltaPut() {
-  CALL_TASK(CreateServer1_ForDelta);
+  CALL_TASK(CreateServer1_ForDelta)
 
   CALL_TASK(CreateClient1_UsePools);
 
@@ -226,7 +226,7 @@ void doDeltaPut() {
   CALL_TASK(CloseCache1);
   CALL_TASK(CloseServer1);
 
-  CALL_TASK(CreateServer1_DisableDelta);
+  CALL_TASK(CreateServer1_DisableDelta)
 
   CALL_TASK(CreateClient1_UsePools);
 

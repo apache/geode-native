@@ -481,7 +481,7 @@ END_TASK_DEFINITION
 
 void runThinClientFailOverRegex() {
   CALL_TASK(CreateLocator1);
-  CALL_TASK(CreateServer1_With_Locator_XML);
+  CALL_TASK(CreateServer1_With_Locator_XML)
 
   CALL_TASK(StepOne_Pool_Locator);
   CALL_TASK(StepTwo_Pool_Locator);

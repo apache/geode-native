@@ -349,7 +349,7 @@ END_TASK_DEFINITION
 DUNIT_MAIN
   {
     CALL_TASK(CreateLocator1);
-    CALL_TASK(CreateServer1_With_Locator_XML5);
+    CALL_TASK(CreateServer1_With_Locator_XML5)
 
     CALL_TASK(SetupClient1_Pool_Locator);
     CALL_TASK(SetupClient2_Pool_Locator);

@@ -542,39 +542,38 @@ DUNIT_TASK_DEFINITION(CLIENT1, UnsetPortfolioTypeToPdx)
 END_TASK_DEFINITION
 
 void runRemoteQueryTimeoutTest() {
-  CALL_TASK(StartLocator);
-  CALL_TASK(CreateServerWithLocator);
-  CALL_TASK(StepOnePoolLoc);
+  CALL_TASK(StartLocator)
+  CALL_TASK(CreateServerWithLocator)
+  CALL_TASK(StepOnePoolLoc)
 
-  CALL_TASK(StepTwo);
-  CALL_TASK(StepThree);
-  CALL_TASK(StepFour);
-  CALL_TASK(StepFive);
-  CALL_TASK(StepSix);
-  CALL_TASK(StepSeven);
-  CALL_TASK(StepEight);
+  CALL_TASK(StepTwo)
+  CALL_TASK(StepThree)
+  CALL_TASK(StepFour)
+  CALL_TASK(StepFive)
+  CALL_TASK(StepSix)
+  CALL_TASK(StepSeven)
+  CALL_TASK(StepEight)
   CALL_TASK(verifyNegativeValueTimeout);
   CALL_TASK(verifyLargeValueTimeout);
-  CALL_TASK(CloseCache1);
-  CALL_TASK(CloseServer1);
+  CALL_TASK(CloseCache1)
+  CALL_TASK(CloseServer1)
 
-  CALL_TASK(CloseLocator);
+  CALL_TASK(CloseLocator)
 }
 
-void setPortfolioPdxType() { CALL_TASK(SetPortfolioTypeToPdx); }
+void setPortfolioPdxType() { CALL_TASK(SetPortfolioTypeToPdx) }
 
-void UnsetPortfolioType() { CALL_TASK(UnsetPortfolioTypeToPdx); }
+void UnsetPortfolioType(){CALL_TASK(UnsetPortfolioTypeToPdx)}
 
-DUNIT_MAIN
-  {
-    // Basic Old Test
+DUNIT_MAIN {
+  // Basic Old Test
+  runRemoteQueryTimeoutTest();
+
+  UnsetPortfolioType();
+  for (int runIdx = 1; runIdx <= 2; ++runIdx) {
+    // New Test with Pool + EP
     runRemoteQueryTimeoutTest();
-
-    UnsetPortfolioType();
-    for (int runIdx = 1; runIdx <= 2; ++runIdx) {
-      // New Test with Pool + EP
-      runRemoteQueryTimeoutTest();
-      setPortfolioPdxType();
-    }
+    setPortfolioPdxType();
   }
+}
 END_MAIN

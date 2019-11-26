@@ -20,7 +20,7 @@
 DUNIT_MAIN
   {
     CALL_TASK(CreateLocator1);
-    CALL_TASK(CreateServer1_With_Locator);
+    CALL_TASK(CreateServer1_With_Locator)
 
     CALL_TASK(CreateNonexistentServerRegion_Pooled_Locator_Sticky);
     CALL_TASK(CreateClient1PooledRegionWithSticky);

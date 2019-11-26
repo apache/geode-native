@@ -544,7 +544,7 @@ DUNIT_TASK_DEFINITION(CLIENT3, CloseCache3)
 END_TASK_DEFINITION
 
 void runThinClientMixedRedundancy() {
-  CALL_TASK(CreateServers);
+  CALL_TASK(CreateServers)
   CALL_TASK(StepOne);
   CALL_TASK(StepTwo);
   CALL_TASK(StepThree);

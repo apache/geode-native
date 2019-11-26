@@ -549,30 +549,29 @@ DUNIT_TASK_DEFINITION(LOCATOR, CloseLocator)
 END_TASK_DEFINITION
 
 void runRemoteQueryRSTest() {
-  CALL_TASK(StartLocator);
-  CALL_TASK(CreateServerWithLocator);
-  CALL_TASK(StepOnePoolLoc);
+  CALL_TASK(StartLocator)
+  CALL_TASK(CreateServerWithLocator)
+  CALL_TASK(StepOnePoolLoc)
 
-  CALL_TASK(StepThree);
-  CALL_TASK(StepFour);
-  CALL_TASK(StepFive);
-  CALL_TASK(StepSix);
-  CALL_TASK(DoQueryRSError);
-  CALL_TASK(CloseCache1);
-  CALL_TASK(CloseServer);
+  CALL_TASK(StepThree)
+  CALL_TASK(StepFour)
+  CALL_TASK(StepFive)
+  CALL_TASK(StepSix)
+  CALL_TASK(DoQueryRSError)
+  CALL_TASK(CloseCache1)
+  CALL_TASK(CloseServer)
 
-  CALL_TASK(CloseLocator);
+  CALL_TASK(CloseLocator)
 }
 
-void setPortfolioPdxType() { CALL_TASK(SetPortfolioTypeToPdx); }
+void setPortfolioPdxType() { CALL_TASK(SetPortfolioTypeToPdx) }
 
-void UnsetPortfolioType() { CALL_TASK(UnsetPortfolioTypeToPdx); }
+void UnsetPortfolioType(){CALL_TASK(UnsetPortfolioTypeToPdx)}
 
-DUNIT_MAIN
-  {
-    for (int i = 0; i < 2; i++) {
-      runRemoteQueryRSTest();
-      setPortfolioPdxType();
-    }
+DUNIT_MAIN {
+  for (int i = 0; i < 2; i++) {
+    runRemoteQueryRSTest();
+    setPortfolioPdxType();
   }
+}
 END_MAIN

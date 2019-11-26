@@ -244,8 +244,7 @@ void runRemoteQueryFailoverTest() {
   CALL_TASK(RegisterTypesAndCreatePoolAndRegion);
   CALL_TASK(CreateServer2WithLocator);
   CALL_TASK(ValidateQueryExecutionAcrossServerFailure);
-  CALL_TASK(CloseCache1);
-  CALL_TASK(CloseServer2);
+  CALL_TASK(CloseCache1) CALL_TASK(CloseServer2);
   CALL_TASK(CloseLocator);
 }
 

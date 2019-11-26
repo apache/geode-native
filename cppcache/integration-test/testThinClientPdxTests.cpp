@@ -3976,495 +3976,494 @@ END_TASK_DEFINITION
 ///
 
 void runPdxLongRunningClientTest() {
-  CALL_TASK(StartLocator);
-  CALL_TASK(CreateServerWithLocator);
-  CALL_TASK(StepOnePoolLocSysConfig);
-  CALL_TASK(StepTwoPoolLocSysConfig);
+  CALL_TASK(StartLocator)
+  CALL_TASK(CreateServerWithLocator)
+  CALL_TASK(StepOnePoolLocSysConfig)
+  CALL_TASK(StepTwoPoolLocSysConfig)
 
   // StepThree: Put some portfolio/Position objects
-  CALL_TASK(Puts2);
+  CALL_TASK(Puts2)
 
   // now close server
-  CALL_TASK(CloseServer);
+  CALL_TASK(CloseServer)
 
-  CALL_TASK(forCleanup);
+  CALL_TASK(forCleanup)
   // now start server
-  CALL_TASK(CreateServerWithLocator);
+  CALL_TASK(CreateServerWithLocator)
 
   // do put again
-  CALL_TASK(Puts22);
+  CALL_TASK(Puts22)
 
-  CALL_TASK(Get2);
+  CALL_TASK(Get2)
 
-  CALL_TASK(CloseCache1);
-  CALL_TASK(CloseCache2);
-  CALL_TASK(CloseServer);
+  CALL_TASK(CloseCache1)
+  CALL_TASK(CloseCache2)
+  CALL_TASK(CloseServer)
 
-  CALL_TASK(CloseLocator);
+  CALL_TASK(CloseLocator)
 }
 
 void runPdxDistOps() {
-  CALL_TASK(StartLocator);
-  CALL_TASK(CreateServerWithLocator);
-  CALL_TASK(StepOnePoolLoc);
-  CALL_TASK(StepTwoPoolLoc);
+  CALL_TASK(StartLocator)
+  CALL_TASK(CreateServerWithLocator)
+  CALL_TASK(StepOnePoolLoc)
+  CALL_TASK(StepTwoPoolLoc)
 
   // StepThree: Put some portfolio/Position objects
-  CALL_TASK(PutAndVerifyPdxInGet);
-  CALL_TASK(VerifyGetOnly);
-  CALL_TASK(PutAndVerifyVariousPdxTypes);
-  CALL_TASK(VerifyVariousPdxGets);
-  CALL_TASK(CloseCache1);
-  CALL_TASK(CloseCache2);
-  CALL_TASK(CloseServer);
+  CALL_TASK(PutAndVerifyPdxInGet)
+  CALL_TASK(VerifyGetOnly)
+  CALL_TASK(PutAndVerifyVariousPdxTypes)
+  CALL_TASK(VerifyVariousPdxGets)
+  CALL_TASK(CloseCache1)
+  CALL_TASK(CloseCache2)
+  CALL_TASK(CloseServer)
 
-  CALL_TASK(CloseLocator);
+  CALL_TASK(CloseLocator)
 }
 
 void runPdxTestForCharTypes() {
-  CALL_TASK(StartLocator);
-  CALL_TASK(CreateServerWithLocator);
-  CALL_TASK(StepOnePoolLoc);
-  CALL_TASK(StepTwoPoolLoc);
+  CALL_TASK(StartLocator)
+  CALL_TASK(CreateServerWithLocator)
+  CALL_TASK(StepOnePoolLoc)
+  CALL_TASK(StepTwoPoolLoc)
 
   // StepThree: Put some portfolio/Position objects
-  CALL_TASK(putCharTypes);
-  CALL_TASK(getCharTypes);
-  CALL_TASK(CloseCache1);
-  CALL_TASK(CloseCache2);
-  CALL_TASK(CloseServer);
+  CALL_TASK(putCharTypes)
+  CALL_TASK(getCharTypes)
+  CALL_TASK(CloseCache1)
+  CALL_TASK(CloseCache2)
+  CALL_TASK(CloseServer)
 
-  CALL_TASK(CloseLocator);
+  CALL_TASK(CloseLocator)
 }
 
 void testBug866() {
-  CALL_TASK(StartLocator);
-  CALL_TASK(CreateServerWithLocator);
-  CALL_TASK(StepOnePoolLocBug866);
-  CALL_TASK(StepTwoPoolLocBug866);
+  CALL_TASK(StartLocator)
+  CALL_TASK(CreateServerWithLocator)
+  CALL_TASK(StepOnePoolLocBug866)
+  CALL_TASK(StepTwoPoolLocBug866)
 
   // StepThree: Put some portfolio/Position objects
-  CALL_TASK(putOperation);
-  CALL_TASK(getOperation);
-  CALL_TASK(CloseCache1);
-  CALL_TASK(CloseCache2);
-  CALL_TASK(CloseServer);
+  CALL_TASK(putOperation)
+  CALL_TASK(getOperation)
+  CALL_TASK(CloseCache1)
+  CALL_TASK(CloseCache2)
+  CALL_TASK(CloseServer)
 
-  CALL_TASK(CloseLocator);
+  CALL_TASK(CloseLocator)
 }
 
 void runPdxPutGetTest() {
-  CALL_TASK(StartLocator);
-  CALL_TASK(CreateServerWithLocator);
-  CALL_TASK(StepOnePoolLoc);
-  CALL_TASK(StepTwoPoolLoc);
+  CALL_TASK(StartLocator)
+  CALL_TASK(CreateServerWithLocator)
+  CALL_TASK(StepOnePoolLoc)
+  CALL_TASK(StepTwoPoolLoc)
 
   // StepThree: Put some portfolio/Position objects
-  CALL_TASK(StepThree);
-  CALL_TASK(StepFour);
-  CALL_TASK(CloseCache1);
-  CALL_TASK(CloseCache2);
-  CALL_TASK(CloseServer);
+  CALL_TASK(StepThree)
+  CALL_TASK(StepFour)
+  CALL_TASK(CloseCache1)
+  CALL_TASK(CloseCache2)
+  CALL_TASK(CloseServer)
 
-  CALL_TASK(CloseLocator);
+  CALL_TASK(CloseLocator)
 }
 
 void runBasicMergeOpsR2() {
-  CALL_TASK(StartLocator);
-  CALL_TASK(CreateServerWithLocator1);
-  CALL_TASK(StepOnePoolLoc);
-  CALL_TASK(StepTwoPoolLoc);
+  CALL_TASK(StartLocator)
+  CALL_TASK(CreateServerWithLocator1)
+  CALL_TASK(StepOnePoolLoc)
+  CALL_TASK(StepTwoPoolLoc)
 
-  CALL_TASK(putAtVersionTwoR21);
+  CALL_TASK(putAtVersionTwoR21)
 
-  CALL_TASK(getPutAtVersionOneR22);
+  CALL_TASK(getPutAtVersionOneR22)
 
   for (int i = 0; i < 10; i++) {
     CALL_TASK(getPutAtVersionTwoR23);
     CALL_TASK(getPutAtVersionOneR24);
   }
 
-  CALL_TASK(CloseCache1);
-  CALL_TASK(CloseCache2);
-  CALL_TASK(CloseServer);
+  CALL_TASK(CloseCache1)
+  CALL_TASK(CloseCache2)
+  CALL_TASK(CloseServer)
 
-  CALL_TASK(CloseLocator);
+  CALL_TASK(CloseLocator)
 }
 
 void runBasicMergeOpsR1() {
-  CALL_TASK(StartLocator);
-  CALL_TASK(CreateServerWithLocator1);
-  CALL_TASK(StepOnePoolLoc);
-  CALL_TASK(StepTwoPoolLoc);
+  CALL_TASK(StartLocator)
+  CALL_TASK(CreateServerWithLocator1)
+  CALL_TASK(StepOnePoolLoc)
+  CALL_TASK(StepTwoPoolLoc)
 
-  CALL_TASK(putAtVersionTwo1);
+  CALL_TASK(putAtVersionTwo1)
 
-  CALL_TASK(getPutAtVersionOne2);
+  CALL_TASK(getPutAtVersionOne2)
 
-  CALL_TASK(getPutAtVersionTwo3);
+  CALL_TASK(getPutAtVersionTwo3)
 
-  CALL_TASK(getPutAtVersionOne4);
+  CALL_TASK(getPutAtVersionOne4)
 
   for (int i = 0; i < 10; i++) {
     CALL_TASK(getPutAtVersionTwo5);
     CALL_TASK(getPutAtVersionOne6);
   }
 
-  CALL_TASK(CloseCache1);
-  CALL_TASK(CloseCache2);
-  CALL_TASK(CloseServer);
+  CALL_TASK(CloseCache1)
+  CALL_TASK(CloseCache2)
+  CALL_TASK(CloseServer)
 
-  CALL_TASK(CloseLocator);
+  CALL_TASK(CloseLocator)
 }
 
 void runBasicMergeOps() {
-  CALL_TASK(StartLocator);
-  CALL_TASK(CreateServerWithLocator1);
-  CALL_TASK(StepOnePoolLoc);
-  CALL_TASK(StepTwoPoolLoc);
+  CALL_TASK(StartLocator)
+  CALL_TASK(CreateServerWithLocator1)
+  CALL_TASK(StepOnePoolLoc)
+  CALL_TASK(StepTwoPoolLoc)
 
-  CALL_TASK(putAtVersionOne11);
+  CALL_TASK(putAtVersionOne11)
 
-  CALL_TASK(getPutAtVersionTwo12);
+  CALL_TASK(getPutAtVersionTwo12)
 
-  CALL_TASK(getPutAtVersionOne13);
+  CALL_TASK(getPutAtVersionOne13)
 
-  CALL_TASK(getPutAtVersionTwo14);
+  CALL_TASK(getPutAtVersionTwo14)
 
   for (int i = 0; i < 10; i++) {
     CALL_TASK(getPutAtVersionOne15);
     CALL_TASK(getPutAtVersionTwo16);
   }
-  CALL_TASK(CloseCache1);
-  CALL_TASK(CloseCache2);
-  CALL_TASK(CloseServer);
+  CALL_TASK(CloseCache1)
+  CALL_TASK(CloseCache2)
+  CALL_TASK(CloseServer)
 
-  CALL_TASK(CloseLocator);
+  CALL_TASK(CloseLocator)
 }
 
 void runBasicMergeOps2() {
-  CALL_TASK(StartLocator);
-  CALL_TASK(CreateServerWithLocator1);
-  CALL_TASK(StepOnePoolLoc);
-  CALL_TASK(StepTwoPoolLoc);
+  CALL_TASK(StartLocator)
+  CALL_TASK(CreateServerWithLocator1)
+  CALL_TASK(StepOnePoolLoc)
+  CALL_TASK(StepTwoPoolLoc)
 
-  CALL_TASK(putAtVersionOne21);
+  CALL_TASK(putAtVersionOne21)
 
-  CALL_TASK(getPutAtVersionTwo22);
+  CALL_TASK(getPutAtVersionTwo22)
 
   for (int i = 0; i < 10; i++) {
     CALL_TASK(getPutAtVersionOne23);
     CALL_TASK(getPutAtVersionTwo24);
   }
-  CALL_TASK(CloseCache1);
-  CALL_TASK(CloseCache2);
-  CALL_TASK(CloseServer);
+  CALL_TASK(CloseCache1)
+  CALL_TASK(CloseCache2)
+  CALL_TASK(CloseServer)
 
-  CALL_TASK(CloseLocator);
+  CALL_TASK(CloseLocator)
 }
 
 void runBasicMergeOps3() {
-  CALL_TASK(StartLocator);
-  CALL_TASK(CreateServerWithLocator1);
-  CALL_TASK(StepOnePoolLoc);
-  CALL_TASK(StepTwoPoolLoc);
+  CALL_TASK(StartLocator)
+  CALL_TASK(CreateServerWithLocator1)
+  CALL_TASK(StepOnePoolLoc)
+  CALL_TASK(StepTwoPoolLoc)
 
-  CALL_TASK(putAtVersionOne31);
+  CALL_TASK(putAtVersionOne31)
 
-  CALL_TASK(getPutAtVersionTwo32);
+  CALL_TASK(getPutAtVersionTwo32)
 
   for (int i = 0; i < 10; i++) {
     CALL_TASK(getPutAtVersionOne33);
     CALL_TASK(getPutAtVersionTwo34);
   }
-  CALL_TASK(CloseCache1);
-  CALL_TASK(CloseCache2);
-  CALL_TASK(CloseServer);
+  CALL_TASK(CloseCache1)
+  CALL_TASK(CloseCache2)
+  CALL_TASK(CloseServer)
 
-  CALL_TASK(CloseLocator);
+  CALL_TASK(CloseLocator)
 }
 
 void runJavaInteroperableOps() {
-  CALL_TASK(StartLocator);
-  CALL_TASK(CreateServerWithLocator2);
-  CALL_TASK(StepOnePoolLoc);
-  CALL_TASK(StepTwoPoolLoc);
+  CALL_TASK(StartLocator)
+  CALL_TASK(CreateServerWithLocator2)
+  CALL_TASK(StepOnePoolLoc)
+  CALL_TASK(StepTwoPoolLoc)
 
-  CALL_TASK(JavaPutGet);  // c1
-  CALL_TASK(JavaGet);     // c2
+  CALL_TASK(JavaPutGet)  // c1
+  CALL_TASK(JavaGet)     // c2
 
-  CALL_TASK(CloseCache1);
-  CALL_TASK(CloseCache2);
-  CALL_TASK(CloseServer);
+  CALL_TASK(CloseCache1)
+  CALL_TASK(CloseCache2)
+  CALL_TASK(CloseServer)
 
-  CALL_TASK(CloseLocator);
+  CALL_TASK(CloseLocator)
 }
 
 // runJavaInterOpsUsingLinkedList
 void runJavaInterOpsUsingLinkedList() {
-  CALL_TASK(StartLocator);
-  CALL_TASK(CreateServerWithLocator2);
-  CALL_TASK(StepOnePoolLoc1);
-  CALL_TASK(StepTwoPoolLoc1);
+  CALL_TASK(StartLocator)
+  CALL_TASK(CreateServerWithLocator2)
+  CALL_TASK(StepOnePoolLoc1)
+  CALL_TASK(StepTwoPoolLoc1)
 
-  CALL_TASK(JavaPutGet1);  // c1
+  CALL_TASK(JavaPutGet1)  // c1
 
-  CALL_TASK(CloseCache1);
-  CALL_TASK(CloseCache2);
-  CALL_TASK(CloseServer);
+  CALL_TASK(CloseCache1)
+  CALL_TASK(CloseCache2)
+  CALL_TASK(CloseServer)
 
-  CALL_TASK(CloseLocator);
+  CALL_TASK(CloseLocator)
 }
 
 // test case that checks for Invalid Usage and corr. IllegalStatException for
 // PDXReader And PDXWriter APIs.
 void _disable_see_bug_999_testReaderWriterInvalidUsage() {
-  CALL_TASK(StartLocator);
-  CALL_TASK(CreateServerWithLocator2);
-  CALL_TASK(StepOnePoolLoc);
-  CALL_TASK(StepTwoPoolLoc);
+  CALL_TASK(StartLocator)
+  CALL_TASK(CreateServerWithLocator2)
+  CALL_TASK(StepOnePoolLoc)
+  CALL_TASK(StepTwoPoolLoc)
 
-  CALL_TASK(testPdxWriterAPIsWithInvalidArgs);
-  CALL_TASK(testPdxReaderAPIsWithInvalidArgs);
+  CALL_TASK(testPdxWriterAPIsWithInvalidArgs)
+  CALL_TASK(testPdxReaderAPIsWithInvalidArgs)
 
-  CALL_TASK(CloseCache1);
-  CALL_TASK(CloseCache2);
-  CALL_TASK(CloseServer);
+  CALL_TASK(CloseCache1)
+  CALL_TASK(CloseCache2)
+  CALL_TASK(CloseServer)
 
-  CALL_TASK(CloseLocator);
+  CALL_TASK(CloseLocator)
 }
 
 //
 void testPolymorphicUseCase() {
-  CALL_TASK(StartLocator);
-  CALL_TASK(CreateServerWithLocator2);
-  CALL_TASK(StepOnePoolLoc);
-  CALL_TASK(StepTwoPoolLoc);
+  CALL_TASK(StartLocator)
+  CALL_TASK(CreateServerWithLocator2)
+  CALL_TASK(StepOnePoolLoc)
+  CALL_TASK(StepTwoPoolLoc)
 
-  CALL_TASK(testPutWithMultilevelInheritance);
-  CALL_TASK(testGetWithMultilevelInheritance);
+  CALL_TASK(testPutWithMultilevelInheritance)
+  CALL_TASK(testGetWithMultilevelInheritance)
 
-  CALL_TASK(CloseCache1);
-  CALL_TASK(CloseCache2);
-  CALL_TASK(CloseServer);
+  CALL_TASK(CloseCache1)
+  CALL_TASK(CloseCache2)
+  CALL_TASK(CloseServer)
 
-  CALL_TASK(CloseLocator);
+  CALL_TASK(CloseLocator)
 }
 
 void runNestedPdxOps() {
-  CALL_TASK(StartLocator);
-  CALL_TASK(CreateServerWithLocator1);
-  CALL_TASK(StepOnePoolLoc);
-  CALL_TASK(StepTwoPoolLoc);
+  CALL_TASK(StartLocator)
+  CALL_TASK(CreateServerWithLocator1)
+  CALL_TASK(StepOnePoolLoc)
+  CALL_TASK(StepTwoPoolLoc)
 
-  CALL_TASK(PutAndVerifyNestedPdxInGet);
+  CALL_TASK(PutAndVerifyNestedPdxInGet)
 
-  CALL_TASK(VerifyNestedGetOnly);
+  CALL_TASK(VerifyNestedGetOnly)
 
-  CALL_TASK(CloseCache1);
-  CALL_TASK(CloseCache2);
-  CALL_TASK(CloseServer);
+  CALL_TASK(CloseCache1)
+  CALL_TASK(CloseCache2)
+  CALL_TASK(CloseServer)
 
-  CALL_TASK(CloseLocator);
+  CALL_TASK(CloseLocator)
 }
 
 void runNestedPdxOpsWithVersioning() {
-  CALL_TASK(StartLocator);
-  CALL_TASK(CreateServerWithLocator1);
-  CALL_TASK(StepOnePoolLoc);
-  CALL_TASK(StepTwoPoolLoc);
+  CALL_TASK(StartLocator)
+  CALL_TASK(CreateServerWithLocator1)
+  CALL_TASK(StepOnePoolLoc)
+  CALL_TASK(StepTwoPoolLoc)
 
-  CALL_TASK(PutMixedVersionNestedPdx);
+  CALL_TASK(PutMixedVersionNestedPdx)
 
-  CALL_TASK(VerifyMixedVersionNestedGetOnly);
+  CALL_TASK(VerifyMixedVersionNestedGetOnly)
 
-  CALL_TASK(CloseCache1);
-  CALL_TASK(CloseCache2);
-  CALL_TASK(CloseServer);
+  CALL_TASK(CloseCache1)
+  CALL_TASK(CloseCache2)
+  CALL_TASK(CloseServer)
 
-  CALL_TASK(CloseLocator);
+  CALL_TASK(CloseLocator)
 }
 
 void runPdxInGFSOps() {
-  CALL_TASK(StartLocator);
-  CALL_TASK(CreateServerWithLocator1);
-  CALL_TASK(StepOnePoolLoc);
-  CALL_TASK(StepTwoPoolLoc);
+  CALL_TASK(StartLocator)
+  CALL_TASK(CreateServerWithLocator1)
+  CALL_TASK(StepOnePoolLoc)
+  CALL_TASK(StepTwoPoolLoc)
 
-  CALL_TASK(PutAndVerifyPdxInGFSInGet);
+  CALL_TASK(PutAndVerifyPdxInGFSInGet)
 
-  CALL_TASK(VerifyPdxInGFSGetOnly);
+  CALL_TASK(VerifyPdxInGFSGetOnly)
 
-  CALL_TASK(CloseCache1);
-  CALL_TASK(CloseCache2);
-  CALL_TASK(CloseServer);
+  CALL_TASK(CloseCache1)
+  CALL_TASK(CloseCache2)
+  CALL_TASK(CloseServer)
 
-  CALL_TASK(CloseLocator);
+  CALL_TASK(CloseLocator)
 }
 
 void runPdxIgnoreUnreadFieldTest() {
-  CALL_TASK(StartLocator);
-  CALL_TASK(CreateServerWithLocator1);
-  CALL_TASK(StepOnePoolLoc_PDX);
-  CALL_TASK(StepTwoPoolLoc_PDX);
+  CALL_TASK(StartLocator)
+  CALL_TASK(CreateServerWithLocator1)
+  CALL_TASK(StepOnePoolLoc_PDX)
+  CALL_TASK(StepTwoPoolLoc_PDX)
 
-  CALL_TASK(putV2PdxUI);
+  CALL_TASK(putV2PdxUI)
 
-  CALL_TASK(putV1PdxUI);
+  CALL_TASK(putV1PdxUI)
 
-  CALL_TASK(getV2PdxUI);
+  CALL_TASK(getV2PdxUI)
 
-  CALL_TASK(CloseCache1);
-  CALL_TASK(CloseCache2);
-  CALL_TASK(CloseServer);
+  CALL_TASK(CloseCache1)
+  CALL_TASK(CloseCache2)
+  CALL_TASK(CloseServer)
 
-  CALL_TASK(CloseLocator);
+  CALL_TASK(CloseLocator)
 }
 
 // runPdxBankTest
 void runPdxBankTest() {
-  CALL_TASK(StartLocator);
-  CALL_TASK(CreateServerWithLocator_PdxMetadataTest);
-  CALL_TASK(StepOnePoolLoc_PdxMetadataTest);
-  CALL_TASK(StepTwoPoolLoc_PdxMetadataTest);
-  CALL_TASK(StepThreePoolLoc_PdxMetadataTest);
+  CALL_TASK(StartLocator)
+  CALL_TASK(CreateServerWithLocator_PdxMetadataTest)
+  CALL_TASK(StepOnePoolLoc_PdxMetadataTest)
+  CALL_TASK(StepTwoPoolLoc_PdxMetadataTest)
+  CALL_TASK(StepThreePoolLoc_PdxMetadataTest)
 
-  CALL_TASK(client1PutsV1Object);  // c1
+  CALL_TASK(client1PutsV1Object)  // c1
 
-  CALL_TASK(client2GetsV1ObjectAndPutsV2Object);  // c2
+  CALL_TASK(client2GetsV1ObjectAndPutsV2Object)  // c2
 
-  CALL_TASK(client3GetsV2Object);  // c3
+  CALL_TASK(client3GetsV2Object)  // c3
 
-  CALL_TASK(CloseCache1);
-  CALL_TASK(CloseCache2);
-  CALL_TASK(CloseCache3);  //
+  CALL_TASK(CloseCache1)
+  CALL_TASK(CloseCache2)
+  CALL_TASK(CloseCache3)  //
 
-  CALL_TASK(CloseServer);
+  CALL_TASK(CloseServer)
 
-  CALL_TASK(CloseLocator);
+  CALL_TASK(CloseLocator)
 }
 
-void enableWeakHashMapC1() { CALL_TASK(SetWeakHashMapToTrueC1); }
-void enableWeakHashMapC2() { CALL_TASK(SetWeakHashMapToTrueC2); }
+void enableWeakHashMapC1() { CALL_TASK(SetWeakHashMapToTrueC1) }
+void enableWeakHashMapC2() { CALL_TASK(SetWeakHashMapToTrueC2) }
 
-void disableWeakHashMapC1() { CALL_TASK(setWeakHashMapToFlaseC1); }
-void disableWeakHashMapC2() { CALL_TASK(SetWeakHashMapToFalseC2); }
+void disableWeakHashMapC1() { CALL_TASK(setWeakHashMapToFlaseC1) }
+void disableWeakHashMapC2() { CALL_TASK(SetWeakHashMapToFalseC2) }
 /////
-void enableWeakHashMapC1BM() { CALL_TASK(SetWeakHashMapToTrueC1BM); }
-void enableWeakHashMapC2BM() { CALL_TASK(SetWeakHashMapToTrueC2BM); }
+void enableWeakHashMapC1BM() { CALL_TASK(SetWeakHashMapToTrueC1BM) }
+void enableWeakHashMapC2BM() { CALL_TASK(SetWeakHashMapToTrueC2BM) }
 
-void disableWeakHashMapC1BM() { CALL_TASK(setWeakHashMapToFlaseC1BM); }
-void disableWeakHashMapC2BM() { CALL_TASK(SetWeakHashMapToFalseC2BM); }
+void disableWeakHashMapC1BM() { CALL_TASK(setWeakHashMapToFlaseC1BM) }
+void disableWeakHashMapC2BM() { CALL_TASK(SetWeakHashMapToFalseC2BM) }
 ////
-void enableWeakHashMapC1BM2() { CALL_TASK(SetWeakHashMapToTrueC1BM2); }
-void enableWeakHashMapC2BM2() { CALL_TASK(SetWeakHashMapToTrueC2BM2); }
+void enableWeakHashMapC1BM2() { CALL_TASK(SetWeakHashMapToTrueC1BM2) }
+void enableWeakHashMapC2BM2() { CALL_TASK(SetWeakHashMapToTrueC2BM2) }
 
-void disableWeakHashMapC1BM2() { CALL_TASK(setWeakHashMapToFlaseC1BM2); }
-void disableWeakHashMapC2BM2() { CALL_TASK(SetWeakHashMapToFalseC2BM2); }
+void disableWeakHashMapC1BM2() { CALL_TASK(setWeakHashMapToFlaseC1BM2) }
+void disableWeakHashMapC2BM2() { CALL_TASK(SetWeakHashMapToFalseC2BM2) }
 ////
-void enableWeakHashMapC1BM3() { CALL_TASK(SetWeakHashMapToTrueC1BM3); }
-void enableWeakHashMapC2BM3() { CALL_TASK(SetWeakHashMapToTrueC2BM3); }
+void enableWeakHashMapC1BM3() { CALL_TASK(SetWeakHashMapToTrueC1BM3) }
+void enableWeakHashMapC2BM3() { CALL_TASK(SetWeakHashMapToTrueC2BM3) }
 
-void disableWeakHashMapC1BM3() { CALL_TASK(setWeakHashMapToFlaseC1BM3); }
-void disableWeakHashMapC2BM3() { CALL_TASK(SetWeakHashMapToFalseC2BM3); }
+void disableWeakHashMapC1BM3() { CALL_TASK(setWeakHashMapToFlaseC1BM3) }
+void disableWeakHashMapC2BM3() { CALL_TASK(SetWeakHashMapToFalseC2BM3) }
 /////
-void enableWeakHashMapC1BMR1() { CALL_TASK(SetWeakHashMapToTrueC1BMR1); }
-void enableWeakHashMapC2BMR1() { CALL_TASK(SetWeakHashMapToTrueC2BMR1); }
+void enableWeakHashMapC1BMR1() { CALL_TASK(SetWeakHashMapToTrueC1BMR1) }
+void enableWeakHashMapC2BMR1() { CALL_TASK(SetWeakHashMapToTrueC2BMR1) }
 
-void disableWeakHashMapC1BMR1() { CALL_TASK(setWeakHashMapToFlaseC1BMR1); }
-void disableWeakHashMapC2BMR1() { CALL_TASK(SetWeakHashMapToFalseC2BMR1); }
+void disableWeakHashMapC1BMR1() { CALL_TASK(setWeakHashMapToFlaseC1BMR1) }
+void disableWeakHashMapC2BMR1() { CALL_TASK(SetWeakHashMapToFalseC2BMR1) }
 ///////
-void enableWeakHashMapC1BMR2() { CALL_TASK(SetWeakHashMapToTrueC1BMR2); }
-void enableWeakHashMapC2BMR2() { CALL_TASK(SetWeakHashMapToTrueC2BMR2); }
+void enableWeakHashMapC1BMR2() { CALL_TASK(SetWeakHashMapToTrueC1BMR2) }
+void enableWeakHashMapC2BMR2() { CALL_TASK(SetWeakHashMapToTrueC2BMR2) }
 
-void disableWeakHashMapC1BMR2() { CALL_TASK(setWeakHashMapToFlaseC1BMR2); }
-void disableWeakHashMapC2BMR2() { CALL_TASK(SetWeakHashMapToFalseC2BMR2); }
+void disableWeakHashMapC1BMR2() { CALL_TASK(setWeakHashMapToFlaseC1BMR2) }
+void disableWeakHashMapC2BMR2(){CALL_TASK(SetWeakHashMapToFalseC2BMR2)}
 
-DUNIT_MAIN
+DUNIT_MAIN {
+  { runPdxLongRunningClientTest(); }
+  // NON PDX UnitTest for Ticket#866 on NC OR SR#13306117704. Set client name
+  // via native client API
+  testBug866();
+
+  runPdxTestForCharTypes();
+
+  // PUT-GET Test with values of type CacheableObjectArray and PdxType object
+  runPdxPutGetTest();
+
+  // PdxDistOps-PdxTests::PdxType PUT/GET Test across clients
+  { runPdxDistOps(); }
+
+  // BasicMergeOps
   {
-    { runPdxLongRunningClientTest(); }
-    // NON PDX UnitTest for Ticket#866 on NC OR SR#13306117704. Set client name
-    // via native client API
-    testBug866();
-
-    runPdxTestForCharTypes();
-
-    // PUT-GET Test with values of type CacheableObjectArray and PdxType object
-    runPdxPutGetTest();
-
-    // PdxDistOps-PdxTests::PdxType PUT/GET Test across clients
-    { runPdxDistOps(); }
-
-    // BasicMergeOps
-    {
-      enableWeakHashMapC1BM();
-      enableWeakHashMapC2BM();
-      runBasicMergeOps();
-    }
-
-    // BasicMergeOps2
-    {
-      enableWeakHashMapC1BM2();
-      enableWeakHashMapC2BM2();
-      runBasicMergeOps2();
-    }
-
-    // BasicMergeOps3
-    {
-      enableWeakHashMapC1BM3();
-      enableWeakHashMapC2BM3();
-      runBasicMergeOps3();
-    }
-
-    // BasicMergeOpsR1
-    {
-      enableWeakHashMapC1BMR1();
-      enableWeakHashMapC2BMR1();
-      runBasicMergeOpsR1();
-    }
-
-    // BasicMergeOpsR2
-    {
-      enableWeakHashMapC1BMR2();
-      enableWeakHashMapC2BMR2();
-      runBasicMergeOpsR2();
-    }
-
-    // JavaInteroperableOps
-    { runJavaInteroperableOps(); }
-
-    // PDXReaderWriterInvalidUsage
-    {
-        // disable see bug 999 for more details.
-        // testReaderWriterInvalidUsage();
-    }
-
-    // Test LinkedList
-    {
-      runJavaInterOpsUsingLinkedList();
-    }
-
-    // NestedPdxOps
-    { runNestedPdxOps(); }
-
-    // MixedVersionNestedPdxOps
-    { runNestedPdxOpsWithVersioning(); }
-
-    // Pdxobject In Geode Serializable Ops
-    //{
-    //  runPdxInGFSOps();
-    //}
-
-    {
-      enableWeakHashMapC1();
-      enableWeakHashMapC2();
-      runPdxIgnoreUnreadFieldTest();
-    }
-
-    // PdxBankTest
-    { runPdxBankTest(); }
-
-    // Polymorphic-multilevel inheritance
-    { testPolymorphicUseCase(); }
+    enableWeakHashMapC1BM();
+    enableWeakHashMapC2BM();
+    runBasicMergeOps();
   }
+
+  // BasicMergeOps2
+  {
+    enableWeakHashMapC1BM2();
+    enableWeakHashMapC2BM2();
+    runBasicMergeOps2();
+  }
+
+  // BasicMergeOps3
+  {
+    enableWeakHashMapC1BM3();
+    enableWeakHashMapC2BM3();
+    runBasicMergeOps3();
+  }
+
+  // BasicMergeOpsR1
+  {
+    enableWeakHashMapC1BMR1();
+    enableWeakHashMapC2BMR1();
+    runBasicMergeOpsR1();
+  }
+
+  // BasicMergeOpsR2
+  {
+    enableWeakHashMapC1BMR2();
+    enableWeakHashMapC2BMR2();
+    runBasicMergeOpsR2();
+  }
+
+  // JavaInteroperableOps
+  { runJavaInteroperableOps(); }
+
+  // PDXReaderWriterInvalidUsage
+  {
+      // disable see bug 999 for more details.
+      // testReaderWriterInvalidUsage();
+  }
+
+  // Test LinkedList
+  {
+    runJavaInterOpsUsingLinkedList();
+  }
+
+  // NestedPdxOps
+  { runNestedPdxOps(); }
+
+  // MixedVersionNestedPdxOps
+  { runNestedPdxOpsWithVersioning(); }
+
+  // Pdxobject In Geode Serializable Ops
+  //{
+  //  runPdxInGFSOps();
+  //}
+
+  {
+    enableWeakHashMapC1();
+    enableWeakHashMapC2();
+    runPdxIgnoreUnreadFieldTest();
+  }
+
+  // PdxBankTest
+  { runPdxBankTest(); }
+
+  // Polymorphic-multilevel inheritance
+  { testPolymorphicUseCase(); }
+}
 END_MAIN

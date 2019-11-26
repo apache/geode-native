@@ -416,22 +416,17 @@ DUNIT_TASK_DEFINITION(LOCATOR, CloseLocator)
 END_TASK_DEFINITION
 
 DUNIT_MAIN
-  {
-    CALL_TASK(StartLocator);
-    CALL_TASK(CreateServerWithLocator_PdxMetadataTest);
-    CALL_TASK(StepOnePoolLoc_PdxMetadataTest);
-    CALL_TASK(StepTwoPoolLoc_PdxMetadataTest);
+{CALL_TASK(StartLocator) CALL_TASK(CreateServerWithLocator_PdxMetadataTest)
+     CALL_TASK(StepOnePoolLoc_PdxMetadataTest)
+         CALL_TASK(StepTwoPoolLoc_PdxMetadataTest)
 
-    CALL_TASK(generateJavaPdxType);
+             CALL_TASK(generateJavaPdxType)
 
-    CALL_TASK(putAllPdxTypes);
+                 CALL_TASK(putAllPdxTypes)
 
-    CALL_TASK(verifyDotNetPdxTypes);
+                     CALL_TASK(verifyDotNetPdxTypes)
 
-    CALL_TASK(CloseCache1);
-    CALL_TASK(CloseCache2);
-    CALL_TASK(CloseServer);
+                         CALL_TASK(CloseCache1) CALL_TASK(CloseCache2)
+                             CALL_TASK(CloseServer)
 
-    CALL_TASK(CloseLocator);
-  }
-END_MAIN
+                                 CALL_TASK(CloseLocator)} END_MAIN

@@ -1243,29 +1243,28 @@ void doThinClientCqStatus3() {
   CALL_TASK(CloseLocator);
 }
 
-void setPortfolioPdxTypeC1() { CALL_TASK(SetPortfolioTypeToPdxC1); }
+void setPortfolioPdxTypeC1() { CALL_TASK(SetPortfolioTypeToPdxC1) }
 
-void UnsetPortfolioTypeC1() { CALL_TASK(UnsetPortfolioTypeToPdxC1); }
+void UnsetPortfolioTypeC1() { CALL_TASK(UnsetPortfolioTypeToPdxC1) }
 //
-void setPortfolioPdxTypeC2() { CALL_TASK(SetPortfolioTypeToPdxC2); }
+void setPortfolioPdxTypeC2() { CALL_TASK(SetPortfolioTypeToPdxC2) }
 
-void UnsetPortfolioTypeC2() { CALL_TASK(UnsetPortfolioTypeToPdxC2); }
+void UnsetPortfolioTypeC2(){CALL_TASK(UnsetPortfolioTypeToPdxC2)}
 
-DUNIT_MAIN
-  {
-    UnsetPortfolioTypeC1();
-    UnsetPortfolioTypeC2();
-    for (int runIdx = 1; runIdx <= 2; ++runIdx) {
-      doThinClientCq();
+DUNIT_MAIN {
+  UnsetPortfolioTypeC1();
+  UnsetPortfolioTypeC2();
+  for (int runIdx = 1; runIdx <= 2; ++runIdx) {
+    doThinClientCq();
 
-      setPortfolioPdxTypeC1();
-      setPortfolioPdxTypeC2();
-    }
-
-    { doThinClientCqStatus3(); }
-
-    { doThinClientCqStatus(); }
-
-    { doThinClientCqStatus2(); }
+    setPortfolioPdxTypeC1();
+    setPortfolioPdxTypeC2();
   }
+
+  { doThinClientCqStatus3(); }
+
+  { doThinClientCqStatus(); }
+
+  { doThinClientCqStatus2(); }
+}
 END_MAIN

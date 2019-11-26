@@ -121,11 +121,9 @@ END_TASK(validate)
 #include <signal.h>
 
 #define ASSERT(x, y)                                   \
-  do {                                                 \
   if (!(x)) {                                          \
     throw dunit::TestException(y, __LINE__, __FILE__); \
-  }                                                    \
-  } while(false)
+  }
 #define XASSERT(x)                                      \
   if (!(x)) {                                           \
     throw dunit::TestException(#x, __LINE__, __FILE__); \
@@ -222,7 +220,7 @@ END_TASK(validate)
   }                                               \
   }                                               \
   ;
-#define CALL_TASK(y); DCLASSDEF(y) * DVARNAME(y) = new DCLASSDEF(y)()
+#define CALL_TASK(y) DCLASSDEF(y) * DVARNAME(y) = new DCLASSDEF(y)();
 
 #define DUNIT_MAIN         \
   class DCLASSNAME(Main) { \

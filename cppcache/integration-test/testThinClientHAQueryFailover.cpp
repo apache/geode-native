@@ -297,7 +297,7 @@ void runQueryFailover() {
   CALL_TASK(CreateLocator1);
   CALL_TASK(CreateServer1_With_Locator_OQL);
 
-  CALL_TASK(StepOne);
+  CALL_TASK(StepOne)
 
   CALL_TASK(CreateServer2_With_Locator_OQL);
 

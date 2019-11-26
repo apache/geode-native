@@ -327,40 +327,40 @@ END_TASK_DEFINITION
 DUNIT_MAIN
   {
     for (int runIndex = 0; runIndex < 2; ++runIndex) {
-      CALL_TASK(StartLocator);
-      CALL_TASK(StartServers);
+      CALL_TASK(StartLocator)
+      CALL_TASK(StartServers)
       if (runIndex == 0) {
-        CALL_TASK(CreateClient1_1);
-        CALL_TASK(CreateClient2_1);
+        CALL_TASK(CreateClient1_1)
+        CALL_TASK(CreateClient2_1)
       } else {
-        CALL_TASK(CreateClient1_2);
-        CALL_TASK(CreateClient2_2);
+        CALL_TASK(CreateClient1_2)
+        CALL_TASK(CreateClient2_2)
       }
-      CALL_TASK(VerifyK1C1);
+      CALL_TASK(VerifyK1C1)
 
       // Failover
 
       if (runIndex == 0) {
-        CALL_TASK(CloseServer1);
-        CALL_TASK(CloseServer2);
+        CALL_TASK(CloseServer1)
+        CALL_TASK(CloseServer2)
       }
 
-      CALL_TASK(FeedC1);
-      CALL_TASK(VerifyK0C2New);
+      CALL_TASK(FeedC1)
+      CALL_TASK(VerifyK0C2New)
       if (runIndex == 1) {
-        CALL_TASK(CloseServer1);
+        CALL_TASK(CloseServer1)
       }
-      CALL_TASK(FeedC2);
+      CALL_TASK(FeedC2)
 
       if (runIndex == 0) {
-        CALL_TASK(VerifyK1C1New);
+        CALL_TASK(VerifyK1C1New)
       } else {
-        CALL_TASK(VerifyK1C1New2);
+        CALL_TASK(VerifyK1C1New2)
       }
-      CALL_TASK(CloseCache1);
-      CALL_TASK(CloseCache2);
-      CALL_TASK(CloseServers);
-      CALL_TASK(CloseLocator);
+      CALL_TASK(CloseCache1)
+      CALL_TASK(CloseCache2)
+      CALL_TASK(CloseServers)
+      CALL_TASK(CloseLocator)
     }
   }
 END_MAIN

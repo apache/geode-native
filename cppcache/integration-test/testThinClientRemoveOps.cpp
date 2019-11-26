@@ -1699,7 +1699,7 @@ END_TASK_DEFINITION
 
 void runRemoveOps() {
   CALL_TASK(CreateLocator1);
-  CALL_TASK(CreateServer1_With_Locator);
+  CALL_TASK(CreateServer1_With_Locator)
 
   CALL_TASK(StepOne_Pooled_Locator);
   CALL_TASK(StepTwo_Pooled_Locator);
