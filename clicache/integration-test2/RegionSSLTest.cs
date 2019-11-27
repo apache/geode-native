@@ -32,9 +32,9 @@ namespace Apache.Geode.Client.IntegrationTests
             var cacheFactory = new CacheFactory();
             cacheFactory.Set("log-level", "none");
             cacheFactory.Set("ssl-enabled", "true");
-            cacheFactory.Set("ssl-keystore", Environment.CurrentDirectory + @"\ClientSslKeys\client_keystore_chained.pem");
+            cacheFactory.Set("ssl-keystore", Config.SslClientKeyPath + @"/client_keystore_chained.pem");
             cacheFactory.Set("ssl-keystore-password", "apachegeode");
-            cacheFactory.Set("ssl-truststore", Environment.CurrentDirectory + @"\ClientSslKeys\client_truststore_chained_root.pem");
+            cacheFactory.Set("ssl-truststore", Config.SslClientKeyPath + @"/client_truststore_chained_root.pem");
 
             cache_ = cacheFactory.Create();
         }

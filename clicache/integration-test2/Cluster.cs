@@ -34,9 +34,9 @@ namespace Apache.Geode.Client.IntegrationTests
         private List<Locator> locators_;
         private string name_;
         internal int jmxManagerPort = Framework.FreeTcpPort();
-        internal string keyStore_ = Environment.CurrentDirectory + "/ServerSslKeys/server_keystore_chained.jks";
+        internal string keyStore_ = Config.SslServerKeyPath + "/server_keystore_chained.jks";
         internal string keyStorePassword_ = "apachegeode";
-        internal string trustStore_ = Environment.CurrentDirectory + "/ServerSslKeys/server_truststore_chained_root.jks";
+        internal string trustStore_ = Config.SslServerKeyPath + "/server_truststore_chained_root.jks";
         internal string trustStorePassword_ = "apachegeode";
 
         public Gfsh Gfsh { get; private set; }
