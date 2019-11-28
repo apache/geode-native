@@ -579,8 +579,8 @@ std::string ThinClientPoolDM::selectEndpoint(
     getStats().setLocators((m_locHelper)->getCurLocatorsNum());
     getStats().incLoctorResposes();
 
-    char epNameStr[128] = {0};
-    std::snprintf(epNameStr, 128, "%s:%d", outEndpoint.getServerName().c_str(),
+    char epNameStr[256] = {0};
+    std::snprintf(epNameStr, 256, "%s:%d", outEndpoint.getServerName().c_str(),
                   outEndpoint.getPort());
     LOGFINE("ThinClientPoolDM: Locator returned endpoint [%s]", epNameStr);
     return epNameStr;
