@@ -90,7 +90,7 @@ int EntryExpiryHandler::handle_timeout(const ACE_Time_Value& current_time,
 }
 
 int EntryExpiryHandler::handle_close(ACE_HANDLE, ACE_Reactor_Mask) {
-  //  we now delete the handler in GF_Timer_Heap_ImmediateReset_T
+  delete this;
   return 0;
 }
 

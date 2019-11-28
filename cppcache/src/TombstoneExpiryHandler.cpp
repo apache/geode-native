@@ -82,7 +82,6 @@ int TombstoneExpiryHandler::handle_timeout(const ACE_Time_Value&, const void*) {
 }
 
 int TombstoneExpiryHandler::handle_close(ACE_HANDLE, ACE_Reactor_Mask) {
-  // we now delete the handler in GF_Timer_Heap_ImmediateReset_T
   return 0;
 }
 

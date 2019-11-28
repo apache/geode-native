@@ -22,6 +22,7 @@
 
 #include <chrono>
 #include <condition_variable>
+#include <memory>
 #include <mutex>
 #include <type_traits>
 
@@ -303,6 +304,8 @@ class APACHE_GEODE_EXPORT ExpiryTaskManager : public ACE_Task_Base {
 
   std::mutex m_mutex;
   std::condition_variable m_condition;
+
+  std::unique_ptr<GF_Timer_Heap_ImmediateReset> m_timer;
 };
 }  // namespace client
 }  // namespace geode

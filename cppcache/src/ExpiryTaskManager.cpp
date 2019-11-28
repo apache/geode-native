@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include "ExpiryTaskManager.hpp"
 
 #include "DistributedSystem.hpp"
@@ -39,12 +38,15 @@ const char* ExpiryTaskManager::NC_ETM_Thread = "NC ETM Thread";
 
 ExpiryTaskManager::ExpiryTaskManager() : m_reactorEventLoopRunning(false) {
   auto timer = new GF_Timer_Heap_ImmediateReset();
+  m_timer = std::unique_ptr<GF_Timer_Heap_ImmediateReset>(timer);
 #if defined(_WIN32)
-  m_reactor = new ACE_Reactor(new ACE_WFMO_Reactor(nullptr, timer), 1);
+  m_reactor = new ACE_Reactor(new ACE_WFMO_Reactor(nullptr, m_timer.get()), 1);
 #elif defined(WITH_ACE_Select_Reactor)
-  m_reactor = new ACE_Reactor(new ACE_Select_Reactor(nullptr, timer), 1);
+  m_reactor =
+      new ACE_Reactor(new ACE_Select_Reactor(nullptr, m_timer.get()), 1);
 #else
-  m_reactor = new ACE_Reactor(new ACE_Dev_Poll_Reactor(nullptr, timer) 1);
+  m_reactor =
+      new ACE_Reactor(new ACE_Dev_Poll_Reactor(nullptr, m_timer.get()) 1);
 #endif
 }
 

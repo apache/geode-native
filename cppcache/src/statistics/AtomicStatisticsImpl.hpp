@@ -55,7 +55,7 @@ class AtomicStatisticsImpl : public Statistics, private client::NonCopyable {
   int64_t numericId;
 
   /** Are these statistics closed? */
-  bool closed;
+  bool closed = false;
 
   /** Uniquely identifies this instance */
   int64_t uniqueId;

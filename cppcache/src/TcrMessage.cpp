@@ -479,16 +479,15 @@ void TcrMessage::readLongPart(DataInput& input, uint64_t* intValue) {
 }
 
 const std::string TcrMessage::readStringPart(DataInput& input) {
-  char* stringBuffer;
   int32_t stringLength = input.readInt32();
-  stringBuffer = new char[stringLength + 1];
-  stringBuffer[stringLength] = '\0';
+  auto stringBuffer = std::unique_ptr<char[]>(new char[stringLength + 1]);
+  stringBuffer.get()[stringLength] = '\0';
   if (input.read()) {
     throw Exception("String is not an object");
   }
-  input.readBytesOnly(reinterpret_cast<int8_t*>(stringBuffer), stringLength);
-  std::string str = stringBuffer;
-  delete[] stringBuffer;
+  input.readBytesOnly(reinterpret_cast<int8_t*>(stringBuffer.get()),
+                      stringLength);
+  std::string str = stringBuffer.get();
   return str;
 }
 

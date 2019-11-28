@@ -160,7 +160,11 @@ class UDPMessageQueues : public SharedTaskObject {
   std::string m_label;
 
  public:
-  explicit UDPMessageQueues(std::string label) : m_label(label) {}
+  explicit UDPMessageQueues(std::string label) : m_label(label) {
+    m_cntInbound = 0;
+    m_cntOutbound = 0;
+    m_cntProcessed = 0;
+  }
   ~UDPMessageQueues() {
     FWKINFO(m_label << "MessageQueues::Inbound   count: " << m_cntInbound);
     FWKINFO(m_label << "MessageQueues::Processed count: " << m_cntProcessed);

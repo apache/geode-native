@@ -62,6 +62,7 @@ int PreservedDataExpiryHandler::handle_timeout(const ACE_Time_Value&,
 }
 
 int PreservedDataExpiryHandler::handle_close(ACE_HANDLE, ACE_Reactor_Mask) {
+  delete this;
   return 0;
 }
 
