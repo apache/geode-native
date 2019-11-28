@@ -579,10 +579,10 @@ std::string ThinClientPoolDM::selectEndpoint(
     getStats().setLocators((m_locHelper)->getCurLocatorsNum());
     getStats().incLoctorResposes();
 
-    char epNameStr[256] = {0};
-    std::snprintf(epNameStr, 256, "%s:%d", outEndpoint.getServerName().c_str(),
-                  outEndpoint.getPort());
-    LOGFINE("ThinClientPoolDM: Locator returned endpoint [%s]", epNameStr);
+    std::string epNameStr = outEndpoint.getServerName() + ":" +
+                            std::to_string(outEndpoint.getPort());
+    LOGFINE("ThinClientPoolDM: Locator returned endpoint [%s]",
+            epNameStr.c_str());
     return epNameStr;
   } else if (!m_attrs->m_initServList.empty()) {
     // use specified server endpoints
