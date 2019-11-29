@@ -1286,7 +1286,7 @@ std::shared_ptr<CacheableStringArray> PdxInstanceImpl::getFieldNames() {
   auto pt = getPdxType();
   std::vector<std::shared_ptr<PdxFieldType>>* vectorOfFieldTypes =
       pt->getPdxFieldTypes();
-  size_t size = vectorOfFieldTypes->size();
+  auto size = vectorOfFieldTypes->size();
   if (size == 0) {
     return nullptr;
   }
