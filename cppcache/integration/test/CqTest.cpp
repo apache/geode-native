@@ -100,8 +100,12 @@ TEST(CqTest, testCqCreateUpdateDestroy) {
   attributesFactory.addCqListener(testListener);
   auto cqAttributes = attributesFactory.create();
 
+  // Using a query name with a specific non-ASCII character (U+10400) in order
+  // to also verify that the message String part conversion from
+  // Java modified UTF-8 to UTF-8 is performed correctly.
+  std::string queryName = u8"SimpleCQ\xF0\x90\x90\x80";
   auto query =
-      queryService->newCq("SimpleCQ", "SELECT * FROM /region", cqAttributes);
+      queryService->newCq(queryName, "SELECT * FROM /region", cqAttributes);
 
   query->execute();
 

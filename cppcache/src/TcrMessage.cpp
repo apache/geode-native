@@ -479,7 +479,7 @@ void TcrMessage::readLongPart(DataInput& input, uint64_t* intValue) {
 }
 
 const std::string TcrMessage::readStringPart(DataInput& input) {
-  int32_t stringLength = input.readInt32();
+  auto stringLength = input.readInt32();
   if (input.read()) {
     throw Exception("String is not an object");
   }
