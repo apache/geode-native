@@ -22,19 +22,23 @@
 #include <geode/CqListener.hpp>
 #include <geode/CqOperation.hpp>
 
-SimpleCqListener::SimpleCqListener()
-    : creationCount_(0), updateCount_(0), destructionCount_(0) {}
+SimpleCqListener::SimpleCqListener(std::shared_ptr<boost::latch> createLatch,
+                                   std::shared_ptr<boost::latch> updateLatch,
+                                   std::shared_ptr<boost::latch> destroyLatch)
+    : createLatch_(createLatch),
+      updateLatch_(updateLatch),
+      destroyLatch_(destroyLatch) {}
 
 void SimpleCqListener::onEvent(const apache::geode::client::CqEvent& cqEvent) {
   switch (cqEvent.getQueryOperation()) {
     case apache::geode::client::CqOperation::OP_TYPE_CREATE:
-      creationCount_++;
+      createLatch_->count_down();
       break;
     case apache::geode::client::CqOperation::OP_TYPE_UPDATE:
-      updateCount_++;
+      updateLatch_->count_down();
       break;
     case apache::geode::client::CqOperation::OP_TYPE_DESTROY:
-      destructionCount_++;
+      destroyLatch_->count_down();
       break;
     default:
       break;
@@ -52,9 +56,3 @@ void SimpleCqListener::onError(const apache::geode::client::CqEvent& cqEvent) {
 void SimpleCqListener::close() {
   std::cout << __FUNCTION__ << " called" << std::endl;
 }
-
-int32_t SimpleCqListener::getCreationCount() { return creationCount_; }
-
-int32_t SimpleCqListener::getUpdateCount() { return updateCount_; }
-
-int32_t SimpleCqListener::getDestructionCount() { return destructionCount_; }

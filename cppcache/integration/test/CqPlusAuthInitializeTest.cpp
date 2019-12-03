@@ -16,19 +16,17 @@
  */
 
 #include <chrono>
-#include <future>
 #include <iostream>
-#include <random>
 #include <thread>
+
+#include <boost/thread/latch.hpp>
 
 #include <gtest/gtest.h>
 
 #include <geode/AuthInitialize.hpp>
 #include <geode/Cache.hpp>
-#include <geode/CqAttributes.hpp>
 #include <geode/CqAttributesFactory.hpp>
 #include <geode/CqEvent.hpp>
-#include <geode/CqListener.hpp>
 #include <geode/PoolManager.hpp>
 #include <geode/QueryService.hpp>
 #include <geode/RegionFactory.hpp>
@@ -38,8 +36,6 @@
 #include "SimpleAuthInitialize.hpp"
 #include "SimpleCqListener.hpp"
 #include "framework/Cluster.h"
-#include "framework/Framework.h"
-#include "framework/Gfsh.h"
 
 namespace {
 
@@ -131,8 +127,16 @@ TEST(CqPlusAuthInitializeTest, putInALoopWhileSubscribedAndAuthenticated) {
 
   auto queryService = cache.getQueryService();
 
+  auto createLatch =
+      std::make_shared<boost::latch>(CQ_PLUS_AUTH_TEST_REGION_ENTRY_COUNT);
+  auto updateLatch =
+      std::make_shared<boost::latch>(CQ_PLUS_AUTH_TEST_REGION_ENTRY_COUNT);
+  auto destroyLatch =
+      std::make_shared<boost::latch>(CQ_PLUS_AUTH_TEST_REGION_ENTRY_COUNT);
+  auto testListener = std::make_shared<SimpleCqListener>(
+      createLatch, updateLatch, destroyLatch);
+
   CqAttributesFactory attributesFactory;
-  auto testListener = std::make_shared<SimpleCqListener>();
   attributesFactory.addCqListener(testListener);
   auto cqAttributes = attributesFactory.create();
 
@@ -186,21 +190,14 @@ TEST(CqPlusAuthInitializeTest, putInALoopWhileSubscribedAndAuthenticated) {
     FAIL();
   }
 
-  for (i = 0; i < 1000; i++) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    if (testListener->getDestructionCount() ==
-        CQ_PLUS_AUTH_TEST_REGION_ENTRY_COUNT) {
-      break;
-    }
-  }
+  EXPECT_EQ(boost::cv_status::no_timeout,
+            createLatch->wait_for(boost::chrono::seconds(30)));
+  EXPECT_EQ(boost::cv_status::no_timeout,
+            updateLatch->wait_for(boost::chrono::seconds(30)));
+  EXPECT_EQ(boost::cv_status::no_timeout,
+            destroyLatch->wait_for(boost::chrono::seconds(30)));
 
-  ASSERT_EQ(testListener->getCreationCount(),
-            CQ_PLUS_AUTH_TEST_REGION_ENTRY_COUNT);
-  ASSERT_EQ(testListener->getUpdateCount(),
-            CQ_PLUS_AUTH_TEST_REGION_ENTRY_COUNT);
-  ASSERT_EQ(testListener->getDestructionCount(),
-            CQ_PLUS_AUTH_TEST_REGION_ENTRY_COUNT);
-  ASSERT_GT(authInitialize->getGetCredentialsCallCount(), 0);
+  EXPECT_GT(authInitialize->getGetCredentialsCallCount(), 0);
 }
 
 }  // namespace

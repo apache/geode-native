@@ -63,6 +63,7 @@ target_link_libraries(cpp-integration-test
     Boost::system
     Boost::log
     Boost::filesystem
+    Boost::chrono
   PRIVATE
     _WarningsAsError
     internal
