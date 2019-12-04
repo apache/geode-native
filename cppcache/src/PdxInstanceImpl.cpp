@@ -1286,21 +1286,17 @@ std::shared_ptr<CacheableStringArray> PdxInstanceImpl::getFieldNames() {
   auto pt = getPdxType();
   std::vector<std::shared_ptr<PdxFieldType>>* vectorOfFieldTypes =
       pt->getPdxFieldTypes();
-  int size = static_cast<int>(vectorOfFieldTypes->size());
-  std::shared_ptr<CacheableString>* ptrArr = nullptr;
-  if (size > 0) {
-    ptrArr = new std::shared_ptr<CacheableString>[size];
-    for (int i = 0; i < size; i++) {
-      ptrArr[i] =
-          CacheableString::create((vectorOfFieldTypes->at(i))->getFieldName());
-    }
+  auto size = vectorOfFieldTypes->size();
+  if (size == 0) {
+    return nullptr;
   }
-
-  if (size > 0) {
-    return CacheableStringArray::create(
-        std::vector<std::shared_ptr<CacheableString>>(ptrArr, ptrArr + size));
+  std::vector<std::shared_ptr<CacheableString>> tmpFieldNames;
+  tmpFieldNames.reserve(size);
+  for (auto&& fieldType : *vectorOfFieldTypes) {
+    tmpFieldNames.emplace_back(
+        CacheableString::create(fieldType->getFieldName()));
   }
-  return nullptr;
+  return CacheableStringArray::create(std::move(tmpFieldNames));
 }
 
 PdxFieldTypes PdxInstanceImpl::getFieldType(
@@ -1920,17 +1916,13 @@ void PdxInstanceImpl::setField(const std::string& fieldName, std::string* value,
                                 " or type of field not matched " +
                                 (pft != nullptr ? pft->toString() : ""));
   }
-  std::shared_ptr<CacheableString>* ptrArr = nullptr;
   if (length > 0) {
-    ptrArr = new std::shared_ptr<CacheableString>[length];
+    std::vector<std::shared_ptr<CacheableString>> tmpValues;
+    tmpValues.reserve(length);
     for (int32_t i = 0; i < length; ++i) {
-      ptrArr[i] = CacheableString::create(value[i]);
+      tmpValues.emplace_back(CacheableString::create(value[i]));
     }
-  }
-  if (length > 0) {
-    auto cacheableObject = CacheableStringArray::create(
-        std::vector<std::shared_ptr<CacheableString>>(ptrArr, ptrArr + length));
-    m_updatedFields[fieldName] = cacheableObject;
+    m_updatedFields[fieldName] = CacheableStringArray::create(tmpValues);
   }
 }
 

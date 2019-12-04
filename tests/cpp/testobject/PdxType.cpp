@@ -73,9 +73,10 @@ void PdxTests::PdxType::toData(PdxWriter& pw) const {
   // TODO:delete it later
 
   int* lengths = new int[2];
-
   lengths[0] = 1;
   lengths[1] = 2;
+  std::unique_ptr<int[]> lengthsSmartPtr(lengths);
+
   pw.writeArrayOfByteArrays("m_byteByteArray", m_byteByteArray, 2, lengths);
   pw.writeChar("m_char", m_char);
   pw.markIdentityField("m_char");

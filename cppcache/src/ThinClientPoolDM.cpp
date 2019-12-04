@@ -157,6 +157,7 @@ ThinClientPoolDM::ThinClientPoolDM(const char* name,
       m_pingTaskId(-1),
       m_updateLocatorListTaskId(-1),
       m_connManageTaskId(-1),
+      m_clientOps(0),
       m_PoolStatsSampler(nullptr),
       m_clientMetadataService(nullptr),
       m_primaryServerQueueSize(PRIMARY_QUEUE_NOT_AVAILABLE) {

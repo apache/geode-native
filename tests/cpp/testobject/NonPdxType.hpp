@@ -247,9 +247,6 @@ class TESTOBJECT_EXPORT NonPdxType {
     m_doubleArray[1] = 4324235435.00;
 
     m_byteByteArray = new int8_t*[2];
-    // for(int i=0; i<2; i++){
-    //  m_byteByteArray[i] = new int8_t[1];
-    //}
     m_byteByteArray[0] = new int8_t[1];
     m_byteByteArray[1] = new int8_t[2];
     m_byteByteArray[0][0] = 0x23;
@@ -374,7 +371,16 @@ class TESTOBJECT_EXPORT NonPdxType {
     throw IllegalStateException("Not got expected value for bool type: ");
   }
 
-  virtual ~NonPdxType() {}
+  void deleteByteByteArray() {
+    if (m_byteByteArray == nullptr) {
+      return;
+    }
+    _GEODE_SAFE_DELETE_ARRAY(m_byteByteArray[0]);
+    _GEODE_SAFE_DELETE_ARRAY(m_byteByteArray[1]);
+    _GEODE_SAFE_DELETE_ARRAY(m_byteByteArray);
+  }
+
+  virtual ~NonPdxType() { deleteByteByteArray(); }
 
   char16_t getChar() { return m_char; }
 

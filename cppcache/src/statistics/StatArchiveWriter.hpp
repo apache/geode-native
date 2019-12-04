@@ -194,7 +194,7 @@ class APACHE_GEODE_EXPORT ResourceInst : private NonCopyable,
   int64_t *archivedStatValues;
   StatDataOutput *dataOut;
   /* To know whether the instance has come for the first time */
-  bool firstTime;
+  bool firstTime = true;
 };
 
 class HostStatSampler;

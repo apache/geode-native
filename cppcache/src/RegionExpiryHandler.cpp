@@ -86,8 +86,7 @@ int RegionExpiryHandler::handle_timeout(const ACE_Time_Value& current_time,
 }
 
 int RegionExpiryHandler::handle_close(ACE_HANDLE, ACE_Reactor_Mask) {
-  //  we now delete the handler in GF_Timer_Heap_ImmediateReset_T
-  // delete this;
+  delete this;
   return 0;
 }
 
