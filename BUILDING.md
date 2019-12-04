@@ -151,6 +151,23 @@ To override `clang-tidy` options:
 ```console
 $ cmake … -DCMAKE_CXX_CLANG_TIDY=clang-tidy;<options> …
 ```
+#### Clang-format
+Individual targets in the build tree have their own dependency of the form `<<targetName>>_clangformat`, which uses the `clang-format` executable, wherever it is found, to format and modified files according to the rules specfied in the .clang-format file.  This is helpful when submitting changes to geode-native, because an improperly formatted file will fail Travis-CI and have to be fixed prior to merging any pull request.  If clang-format is not installed on your system, clangformat targets will not be added to your project files, and geode-native should build normally.  Under some circumstances, however, it may become necessary to disable `clang-format` on a system where it _is_ installed.
+
+To disable `clang-format` in the build:
+
+```
+$ cmake … -DClangFormat_EXECUTABLE='' …
+```
+
+On the other hand, it may also be desirable to run clang-format on the entire source tree.  This is also easily done via the `all-clangformat` _in a build with clang-format enabled_.  If clang-format has been disabled in the cmake configuration step, as above, the `all-clangformat` target will not exist, and the cmake configuration step will have to be re-run with clang-format enabled.
+
+To run clang-format on the entire source tree:
+
+```
+$ cmake --build . --target all-clangformat
+```
+
 
 ## Installing
 By default a system-specific location is used by CMake as the destination of the `install` target, e.g., `/usr/local` on UNIX system. To explicitly specify the location in which the Native Client will be installed, add `-DCMAKE_INSTALL_PREFIX=/path/to/installation/destination` to the _initial_ `cmake` execution command.
