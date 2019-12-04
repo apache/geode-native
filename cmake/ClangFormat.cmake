@@ -17,8 +17,8 @@ set(ClangFormat_FLAGS "-style=file;-fallback-style=Google" CACHE STRING "Flags s
 
 find_package(ClangFormat QUIET)
 
-add_custom_target(clangformat-all)
-set_target_properties(clangformat-all PROPERTIES
+add_custom_target(all-clangformat)
+set_target_properties(all-clangformat PROPERTIES
         EXCLUDE_FROM_ALL TRUE
         EXCLUDE_FROM_DEFAULT_BUILD TRUE
         )
@@ -65,12 +65,9 @@ function(add_clangformat _target)
           SOURCES ${_clangformat_SOURCES}
           COMMENT "Clang-Format for target ${_target}"
       )
-      set_target_properties(${_clangformat} PROPERTIES
-          FOLDER clangformat
-          EXCLUDE_FROM_ALL TRUE
-          EXCLUDE_FROM_DEFAULT_BUILD TRUE
-      )
-      add_dependencies(clangformat-all ${_clangformat})
+      set_target_properties(${_clangformat} PROPERTIES FOLDER clangformat)
+      add_dependencies(${_target} ${_clangformat})
+      add_dependencies(all-clangformat ${_clangformat})
     endif ()
 
   endif ()
