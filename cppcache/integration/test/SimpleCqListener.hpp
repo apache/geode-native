@@ -20,25 +20,27 @@
 #ifndef SIMPLE_CQ_LISTENER_H
 #define SIMPLE_CQ_LISTENER_H
 
+#include <memory>
+
+#include <boost/thread/latch.hpp>
+
 #include <geode/CacheableString.hpp>
 #include <geode/CqListener.hpp>
 #include <geode/CqOperation.hpp>
 
 class SimpleCqListener : public apache::geode::client::CqListener {
  public:
-  SimpleCqListener();
+  SimpleCqListener(std::shared_ptr<boost::latch> createLatch,
+                   std::shared_ptr<boost::latch> updateLatch,
+                   std::shared_ptr<boost::latch> destroyLatch);
   void onEvent(const apache::geode::client::CqEvent& cqEvent) override;
   void onError(const apache::geode::client::CqEvent& cqEvent) override;
   void close() override;
 
-  int32_t getCreationCount();
-  int32_t getUpdateCount();
-  int32_t getDestructionCount();
-
  private:
-  int32_t creationCount_;
-  int32_t updateCount_;
-  int32_t destructionCount_;
+  std::shared_ptr<boost::latch> createLatch_;
+  std::shared_ptr<boost::latch> updateLatch_;
+  std::shared_ptr<boost::latch> destroyLatch_;
 };
 
 #endif  // SIMPLE_CQ_LISTENER_H

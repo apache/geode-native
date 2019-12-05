@@ -16,10 +16,9 @@
  */
 
 #include <chrono>
-#include <future>
-#include <iostream>
-#include <random>
 #include <thread>
+
+#include <boost/thread/latch.hpp>
 
 #include <gtest/gtest.h>
 
@@ -31,8 +30,6 @@
 #include "CacheRegionHelper.hpp"
 #include "SimpleCqListener.hpp"
 #include "framework/Cluster.h"
-#include "framework/Framework.h"
-#include "framework/Gfsh.h"
 
 namespace {
 
@@ -95,8 +92,14 @@ TEST(CqTest, testCqCreateUpdateDestroy) {
   auto region = setupRegion(cache, pool);
   auto queryService = cache.getQueryService();
 
+  auto createLatch = std::make_shared<boost::latch>(CQ_TEST_REGION_ENTRY_COUNT);
+  auto updateLatch = std::make_shared<boost::latch>(CQ_TEST_REGION_ENTRY_COUNT);
+  auto destroyLatch =
+      std::make_shared<boost::latch>(CQ_TEST_REGION_ENTRY_COUNT);
+  auto testListener = std::make_shared<SimpleCqListener>(
+      createLatch, updateLatch, destroyLatch);
+
   CqAttributesFactory attributesFactory;
-  auto testListener = std::make_shared<SimpleCqListener>();
   attributesFactory.addCqListener(testListener);
   auto cqAttributes = attributesFactory.create();
 
@@ -121,16 +124,12 @@ TEST(CqTest, testCqCreateUpdateDestroy) {
     region->destroy("key" + std::to_string(i));
   }
 
-  for (int i = 0; i < 100; i++) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    if (testListener->getCreationCount() == CQ_TEST_REGION_ENTRY_COUNT) {
-      break;
-    }
-  }
-
-  ASSERT_EQ(testListener->getCreationCount(), CQ_TEST_REGION_ENTRY_COUNT);
-  ASSERT_EQ(testListener->getUpdateCount(), CQ_TEST_REGION_ENTRY_COUNT);
-  ASSERT_EQ(testListener->getDestructionCount(), CQ_TEST_REGION_ENTRY_COUNT);
+  EXPECT_EQ(boost::cv_status::no_timeout,
+            createLatch->wait_for(boost::chrono::seconds(30)));
+  EXPECT_EQ(boost::cv_status::no_timeout,
+            updateLatch->wait_for(boost::chrono::seconds(30)));
+  EXPECT_EQ(boost::cv_status::no_timeout,
+            destroyLatch->wait_for(boost::chrono::seconds(30)));
 }
 
 }  // namespace
