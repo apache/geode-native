@@ -152,7 +152,7 @@ To override `clang-tidy` options:
 $ cmake … -DCMAKE_CXX_CLANG_TIDY=clang-tidy;<options> …
 ```
 #### Clang-format
-Individual targets in the build tree have their own dependency of the form `<<targetName>>_clangformat`, which uses the `clang-format` executable, wherever it is found, to format and modified files according to the rules specfied in the .clang-format file.  This is helpful when submitting changes to geode-native, because an improperly formatted file will fail Travis-CI and have to be fixed prior to merging any pull request.  If clang-format is not installed on your system, clangformat targets will not be added to your project files, and geode-native should build normally.  Under some circumstances, however, it may become necessary to disable `clang-format` on a system where it _is_ installed.
+Individual targets in the build tree have their own dependency of the form `<<targetName>>-clangformat`, which uses the `clang-format` executable, wherever it is found, to format and modified files according to the rules specfied in the .clang-format file.  This is helpful when submitting changes to geode-native, because an improperly formatted file will fail Travis-CI and have to be fixed prior to merging any pull request.  If clang-format is not installed on your system, clangformat targets will not be added to your project files, and geode-native should build normally.  Under some circumstances, however, it may become necessary to disable `clang-format` on a system where it _is_ installed.
 
 To disable `clang-format` in the build:
 
