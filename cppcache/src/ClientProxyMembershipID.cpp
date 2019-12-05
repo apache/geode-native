@@ -234,20 +234,17 @@ void ClientProxyMembershipID::fromData(DataInput& input) {
 }
 
 Serializable* ClientProxyMembershipID::readEssentialData(DataInput& input) {
-  uint8_t* hostAddress;
-  int32_t length, hostPort, vmViewId = 0;
-  std::shared_ptr<CacheableString> hostname, dsName, uniqueTag, vmViewIdstr;
-
-  length = input.readArrayLength();
-  hostAddress = new uint8_t[length];
+  auto length = input.readArrayLength();
+  auto hostAddress = new uint8_t[length];
   input.readBytesOnly(hostAddress, length);
-  hostPort = input.readInt32();
+  auto hostPort = input.readInt32();
 
   // read and ignore flag
   input.read();
 
   const auto vmKind = input.read();
-
+  int32_t vmViewId = 0;
+  std::shared_ptr<CacheableString> uniqueTag, vmViewIdstr;
   if (vmKind == ClientProxyMembershipID::LONER_DM_TYPE) {
     uniqueTag = std::dynamic_pointer_cast<CacheableString>(input.readObject());
   } else {
@@ -256,7 +253,7 @@ Serializable* ClientProxyMembershipID::readEssentialData(DataInput& input) {
     vmViewId = std::stoi(vmViewIdstr->value());
   }
 
-  dsName = std::dynamic_pointer_cast<CacheableString>(input.readObject());
+  auto dsName = std::dynamic_pointer_cast<CacheableString>(input.readObject());
 
   initHostAddressVector(hostAddress, length);
 
@@ -294,8 +291,8 @@ int16_t ClientProxyMembershipID::compareTo(
   }
 
   const auto& otherMember = dynamic_cast<const ClientProxyMembershipID&>(other);
-  uint32_t myPort = getHostPort();
-  uint32_t otherPort = otherMember.getHostPort();
+  auto myPort = getHostPort();
+  auto otherPort = otherMember.getHostPort();
 
   if (myPort < otherPort) return -1;
   if (myPort > otherPort) return 1;
