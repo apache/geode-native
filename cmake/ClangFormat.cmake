@@ -17,6 +17,12 @@ set(ClangFormat_FLAGS "-style=file;-fallback-style=Google" CACHE STRING "Flags s
 
 find_package(ClangFormat QUIET)
 
+add_custom_target(all-clangformat)
+set_target_properties(all-clangformat PROPERTIES
+        EXCLUDE_FROM_ALL TRUE
+        EXCLUDE_FROM_DEFAULT_BUILD TRUE
+        )
+
 function(add_clangformat _target)
   if (ClangFormat_FOUND)
     if (NOT TARGET ${_target})
@@ -50,7 +56,6 @@ function(add_clangformat _target)
             COMMENT "Clang-Format ${_source}"
             COMMAND ${ClangFormat_EXECUTABLE} ${ClangFormat_FLAGS} -i ${_source_LOCATION}
             COMMAND ${CMAKE_COMMAND} -E touch ${_format_file})
-
         list(APPEND _clangformat_SOURCES ${_format_file})
       endif ()
     endforeach ()
@@ -62,6 +67,7 @@ function(add_clangformat _target)
       )
       set_target_properties(${_clangformat} PROPERTIES FOLDER clangformat)
       add_dependencies(${_target} ${_clangformat})
+      add_dependencies(all-clangformat ${_clangformat})
     endif ()
 
   endif ()
