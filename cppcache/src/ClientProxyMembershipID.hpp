@@ -43,13 +43,12 @@ class ClientProxyMembershipID;
 class ClientProxyMembershipID : public DSMemberForVersionStamp {
  public:
   const char* getDSMemberId(uint32_t& mesgLength) const;
-  const char* getDSMemberIdForCS43(uint32_t& mesgLength) const;
 
   ClientProxyMembershipID(std::string dsName, std::string randString,
                           const char* hostname, const ACE_INET_Addr& address,
                           uint32_t hostPort,
                           const char* durableClientId = nullptr,
-                          const std::chrono::seconds durableClntTimeOut =
+                          const std::chrono::seconds durableClientTimeOut =
                               std::chrono::seconds::zero());
 
   // This constructor is only for testing and should not be used for any

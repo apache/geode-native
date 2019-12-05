@@ -46,18 +46,18 @@ const int8_t ClientProxyMembershipID::TOKEN_ORDINAL = -1;
 ClientProxyMembershipID::ClientProxyMembershipID()
     : m_hostPort(0), m_vmViewId(0) {}
 
-ClientProxyMembershipID::~ClientProxyMembershipID() noexcept {}
+ClientProxyMembershipID::~ClientProxyMembershipID() noexcept = default;
 
 ClientProxyMembershipID::ClientProxyMembershipID(
     std::string dsName, std::string randString, const char* hostname,
     const ACE_INET_Addr& address, uint32_t hostPort,
     const char* durableClientId,
-    const std::chrono::seconds durableClntTimeOut) {
+    const std::chrono::seconds durableClientTimeOut) {
   auto vmPID = boost::this_process::get_id();
 
   initHostAddressVector(address);
 
-  initObjectVars(hostname, hostPort, durableClientId, durableClntTimeOut,
+  initObjectVars(hostname, hostPort, durableClientId, durableClientTimeOut,
                  DCPORT, vmPID, VMKIND, 0, dsName.c_str(), randString.c_str(),
                  0);
 }
@@ -77,19 +77,20 @@ ClientProxyMembershipID::ClientProxyMembershipID(
 
 void ClientProxyMembershipID::initHostAddressVector(
     const ACE_INET_Addr& address) {
-  int len;
   if (address.get_type() == AF_INET6) {
-    const struct sockaddr_in6* sa6 =
+    const auto socketAddress6 =
         static_cast<const struct sockaddr_in6*>(address.get_addr());
-    auto saddr = reinterpret_cast<const uint8_t*>(&sa6->sin6_addr);
-    len = sizeof(sa6->sin6_addr);
-    m_hostAddr.assign(saddr, saddr + len);
+    auto socketAddress =
+        reinterpret_cast<const uint8_t*>(&socketAddress6->sin6_addr);
+    auto length = sizeof(socketAddress6->sin6_addr);
+    m_hostAddr.assign(socketAddress, socketAddress + length);
   } else {
-    const struct sockaddr_in* sa4 =
+    const auto socketAddress4 =
         static_cast<const struct sockaddr_in*>(address.get_addr());
-    auto ipaddr = reinterpret_cast<const uint8_t*>(&sa4->sin_addr);
-    len = sizeof(sa4->sin_addr);
-    m_hostAddr.assign(ipaddr, ipaddr + len);
+    auto ipAddress =
+        reinterpret_cast<const uint8_t*>(&socketAddress4->sin_addr);
+    auto length = sizeof(socketAddress4->sin_addr);
+    m_hostAddr.assign(ipAddress, ipAddress + length);
   }
 }
 
@@ -121,10 +122,9 @@ void ClientProxyMembershipID::initObjectVars(
   m_memID.write(static_cast<int8_t>(DSCode::InternalDistributedMember));
   m_memID.writeBytes(m_hostAddr.data(),
                      static_cast<int32_t>(m_hostAddr.size()));
-  // m_memID.writeInt((int32_t)hostPort);
   m_memID.writeInt(static_cast<int32_t>(synch_counter));
   m_memID.writeString(hostname);
-  m_memID.write(splitBrainFlag);  // splitbrain flags
+  m_memID.write(splitBrainFlag);
 
   m_memID.writeInt(dcPort);
 
@@ -156,9 +156,7 @@ void ClientProxyMembershipID::initObjectVars(
   clientID.append(getUniqueTag());
   clientID.append(":");
   clientID.append(getDSName());
-  // Hash key.
 
-  // int offset = 0;
   for (uint32_t i = 0; i < getHostAddrLen(); i++) {
     m_hashKey.append(":");
     m_hashKey.append(std::to_string(m_hostAddr[i]));
@@ -168,7 +166,7 @@ void ClientProxyMembershipID::initObjectVars(
   m_hashKey.append(":");
   m_hashKey.append(getDSName());
   m_hashKey.append(":");
-  if (m_uniqueTag.size() != 0) {
+  if (!m_uniqueTag.empty()) {
     m_hashKey.append(getUniqueTag());
   } else {
     m_hashKey.append(":");
@@ -180,12 +178,6 @@ void ClientProxyMembershipID::initObjectVars(
 const char* ClientProxyMembershipID::getDSMemberId(uint32_t& mesgLength) const {
   mesgLength = static_cast<int32_t>(m_memIDStr.size());
   return m_memIDStr.c_str();
-}
-
-const char* ClientProxyMembershipID::getDSMemberIdForCS43(
-    uint32_t& mesgLength) const {
-  mesgLength = static_cast<int32_t>(m_dsmemIDStr.size());
-  return m_dsmemIDStr.c_str();
 }
 
 const std::string& ClientProxyMembershipID::getDSMemberIdForThinClientUse() {
@@ -201,16 +193,16 @@ void ClientProxyMembershipID::toData(DataOutput&) const {
 void ClientProxyMembershipID::fromData(DataInput& input) {
   // deserialization for PR FX HA
 
-  auto len = input.readArrayLength();  // inetaddress len
-  auto hostAddr = new uint8_t[len];
-  input.readBytesOnly(hostAddr, len);  // inetaddress
-  auto hostPort = input.readInt32();   // port
+  auto length = input.readArrayLength();
+  auto hostAddress = new uint8_t[length];
+  input.readBytesOnly(hostAddress, length);
+  auto hostPort = input.readInt32();
   auto hostname =
       std::dynamic_pointer_cast<CacheableString>(input.readObject());
-  auto splitbrain = input.read();   // splitbrain
-  auto dcport = input.readInt32();  // port
-  auto vPID = input.readInt32();    // pid
-  auto vmKind = input.read();       // vmkind
+  auto splitbrain = input.read();
+  auto dcport = input.readInt32();
+  auto vPID = input.readInt32();
+  auto vmKind = input.read();
   auto aStringArray = CacheableStringArray::create();
   aStringArray->fromData(input);
   auto dsName = std::dynamic_pointer_cast<CacheableString>(input.readObject());
@@ -218,49 +210,41 @@ void ClientProxyMembershipID::fromData(DataInput& input) {
       std::dynamic_pointer_cast<CacheableString>(input.readObject());
   auto durableClientId =
       std::dynamic_pointer_cast<CacheableString>(input.readObject());
-  auto durableClntTimeOut =
-      std::chrono::seconds(input.readInt32());  // durable client timeout
+  auto durableClientTimeOut = std::chrono::seconds(input.readInt32());
   int32_t vmViewId = 0;
   readVersion(splitbrain, input);
 
-  initHostAddressVector(hostAddr, len);
+  initHostAddressVector(hostAddress, length);
 
   if (vmKind != ClientProxyMembershipID::LONER_DM_TYPE) {
     vmViewId = std::stoi(uniqueTag->value());
     initObjectVars(hostname->value().c_str(), hostPort,
-                   durableClientId->value().c_str(), durableClntTimeOut, dcport,
-                   vPID, vmKind, splitbrain, dsName->value().c_str(), nullptr,
-                   vmViewId);
+                   durableClientId->value().c_str(), durableClientTimeOut,
+                   dcport, vPID, vmKind, splitbrain, dsName->value().c_str(),
+                   nullptr, vmViewId);
   } else {
     // initialize the object
     initObjectVars(hostname->value().c_str(), hostPort,
-                   durableClientId->value().c_str(), durableClntTimeOut, dcport,
-                   vPID, vmKind, splitbrain, dsName->value().c_str(),
+                   durableClientId->value().c_str(), durableClientTimeOut,
+                   dcport, vPID, vmKind, splitbrain, dsName->value().c_str(),
                    uniqueTag->value().c_str(), 0);
   }
-  delete[] hostAddr;
+  delete[] hostAddress;
   readAdditionalData(input);
 }
 
 Serializable* ClientProxyMembershipID::readEssentialData(DataInput& input) {
-  uint8_t* hostAddr;
-  int32_t len, hostPort, vmViewId = 0;
-  std::shared_ptr<CacheableString> hostname, dsName, uniqueTag, vmViewIdstr;
-
-  len = input.readArrayLength();  // inetaddress len
-  /* adongre - Coverity II
-   * CID 29183: Out-of-bounds access (OVERRUN_DYNAMIC)
-   */
-  hostAddr = new uint8_t[len];
-  input.readBytesOnly(hostAddr, len);  // inetaddress
-  hostPort = input.readInt32();        // port
-  // TODO: RVV get the host name from
+  auto length = input.readArrayLength();
+  auto hostAddress = new uint8_t[length];
+  input.readBytesOnly(hostAddress, length);
+  auto hostPort = input.readInt32();
 
   // read and ignore flag
   input.read();
 
-  const auto vmKind = input.read();  // vmkind
-
+  const auto vmKind = input.read();
+  int32_t vmViewId = 0;
+  std::shared_ptr<CacheableString> uniqueTag, vmViewIdstr;
   if (vmKind == ClientProxyMembershipID::LONER_DM_TYPE) {
     uniqueTag = std::dynamic_pointer_cast<CacheableString>(input.readObject());
   } else {
@@ -269,9 +253,9 @@ Serializable* ClientProxyMembershipID::readEssentialData(DataInput& input) {
     vmViewId = std::stoi(vmViewIdstr->value());
   }
 
-  dsName = std::dynamic_pointer_cast<CacheableString>(input.readObject());
+  auto dsName = std::dynamic_pointer_cast<CacheableString>(input.readObject());
 
-  initHostAddressVector(hostAddr, len);
+  initHostAddressVector(hostAddress, length);
 
   if (vmKind != ClientProxyMembershipID::LONER_DM_TYPE) {
     // initialize the object with the values read and some dummy values
@@ -284,7 +268,7 @@ Serializable* ClientProxyMembershipID::readEssentialData(DataInput& input) {
                    uniqueTag->value().c_str(), vmViewId);
   }
 
-  delete[] hostAddr;
+  delete[] hostAddress;
   readAdditionalData(input);
 
   return this;
@@ -306,10 +290,9 @@ int16_t ClientProxyMembershipID::compareTo(
     return 0;
   }
 
-  const ClientProxyMembershipID& otherMember =
-      static_cast<const ClientProxyMembershipID&>(other);
-  uint32_t myPort = getHostPort();
-  uint32_t otherPort = otherMember.getHostPort();
+  const auto& otherMember = dynamic_cast<const ClientProxyMembershipID&>(other);
+  auto myPort = getHostPort();
+  auto otherPort = otherMember.getHostPort();
 
   if (myPort < otherPort) return -1;
   if (myPort > otherPort) return 1;
@@ -317,7 +300,7 @@ int16_t ClientProxyMembershipID::compareTo(
   auto myAddr = getHostAddr();
   auto otherAddr = otherMember.getHostAddr();
 
-  if (myAddr.size() == 0 && otherAddr.size() == 0) {
+  if (myAddr.empty() && otherAddr.empty()) {
     if (myPort < otherPort) {
       return -1;
     } else if (myPort > otherPort) {
@@ -325,9 +308,9 @@ int16_t ClientProxyMembershipID::compareTo(
     } else {
       return 0;
     }
-  } else if (myAddr.size() == 0) {
+  } else if (myAddr.empty()) {
     return -1;
-  } else if (otherAddr.size() == 0) {
+  } else if (otherAddr.empty()) {
     return 1;
   }
   for (uint32_t i = 0; i < getHostAddrLen(); i++) {
@@ -360,8 +343,7 @@ void ClientProxyMembershipID::readVersion(int flags, DataInput& input) {
   if ((flags & ClientProxyMembershipID::VERSION_MASK) != 0) {
     int8_t ordinal = input.read();
     LOGDEBUG("ClientProxyMembershipID::readVersion ordinal = %d ", ordinal);
-    if (ordinal != ClientProxyMembershipID::TOKEN_ORDINAL) {
-    } else {
+    if (ordinal == ClientProxyMembershipID::TOKEN_ORDINAL) {
       LOGDEBUG("ClientProxyMembershipID::readVersion ordinal = %d ",
                input.readInt16());
     }
