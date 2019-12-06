@@ -32,7 +32,22 @@ using boost::process::ipstream;
 using boost::process::std_err;
 using boost::process::std_out;
 
-void GfshExecute::execute(const std::string &command, const std::string &user, const std::string &password) {
+GfshExecuteException::GfshExecuteException(std::string message, int returnCode)
+    : apache::geode::client::Exception(message), returnCode_(returnCode) {}
+
+GfshExecuteException::~GfshExecuteException() {}
+
+std::string GfshExecuteException::getName() const {
+  return "GfshExecuteException";
+}
+
+int GfshExecuteException::getGfshReturnCode() { return returnCode_; }
+
+void GfshExecute::execute(const std::string &command, const std::string &user,
+                          const std::string &password, const std::string &keyStorePath,
+                          const std::string &trustStorePath,
+                          const std::string &keyStorePassword,
+                          const std::string &trustStorePassword) {
   BOOST_LOG_TRIVIAL(info) << "Gfsh::execute: " << command;
 
   std::vector<std::string> commands;
@@ -70,7 +85,7 @@ void GfshExecute::execute(const std::string &command, const std::string &user, c
   if (exit_code) {
     throw new GfshExecuteException("gfsh error", exit_code);
   }
-  extractConnectionCommand(command, user, password);
+  extractConnectionCommand(command, user, password, keyStorePath, trustStorePath, keyStorePassword, trustStorePassword);
 }
 
 child GfshExecute::executeChild(std::vector<std::string> &commands,
@@ -80,11 +95,14 @@ child GfshExecute::executeChild(std::vector<std::string> &commands,
   // https://github.com/klemens-morgenstern/boost-process/issues/159
   std::lock_guard<std::mutex> guard(g_child_mutex);
 #endif
-  return child(getFrameworkString(FrameworkVariable::GfShExecutable), args = commands, env, std_out > outStream,
-               std_err > errStream);
+  return child(getFrameworkString(FrameworkVariable::GfShExecutable),
+               args = commands, env, std_out > outStream, std_err > errStream);
 }
 
-void GfshExecute::extractConnectionCommand(const std::string &command, const std::string &user, const std::string &password) {
+void GfshExecute::extractConnectionCommand(const std::string &command, const std::string &user,
+                                           const std::string &password, const std::string &keyStorePath,
+                                           const std::string &trustStorePath, const std::string &keyStorePassword,
+                                           const std::string &trustStorePassword) {
   if (starts_with(command, std::string("connect"))) {
     connection_ = command;
   } else if (starts_with(command, std::string("start locator"))) {
@@ -93,24 +111,25 @@ void GfshExecute::extractConnectionCommand(const std::string &command, const std
 
     std::regex jmxManagerHostRegex("bind-address=([^\\s]+)");
     std::smatch jmxManagerHostMatch;
-    if (std::regex_search(command, jmxManagerHostMatch,
-                          jmxManagerHostRegex)) {
+    if (std::regex_search(command, jmxManagerHostMatch, jmxManagerHostRegex)) {
       jmxManagerHost = jmxManagerHostMatch[1];
     }
 
     std::regex jmxManagerPortRegex("jmx-manager-port=(\\d+)");
     std::smatch jmxManagerPortMatch;
-    if (std::regex_search(command, jmxManagerPortMatch,
-                          jmxManagerPortRegex)) {
+    if (std::regex_search(command, jmxManagerPortMatch, jmxManagerPortRegex)) {
       jmxManagerPort = jmxManagerPortMatch[1];
     }
 
-    connection_ = "connect --jmx-manager=" + jmxManagerHost + "[" +
-        jmxManagerPort + "]";
+    connection_ = "connect --jmx-manager=" + jmxManagerHost + "[" + jmxManagerPort + "]";
 
     if (!(user.empty() || password.empty())) {
       connection_ += " --user=" + user + " --password=" + password;
     }
+
+    if(!(keyStorePath.empty() || trustStorePath.empty() || keyStorePassword.empty() || trustStorePassword.empty())) {
+        connection_ += " --use-ssl=true --key-store=" + keyStorePath + " --trust-store=" + trustStorePath +
+                " --key-store-password=" + keyStorePassword + " --trust-store-password=" + trustStorePassword;
+    }
   }
 }
-

@@ -41,6 +41,9 @@ std::shared_ptr<apache::geode::client::Region> setupRegion(
 
 TEST(TransactionCleaningTest, txWithStoppedServer) {
   Cluster cluster{LocatorCount{1}, ServerCount{1}};
+
+  cluster.start();
+
   cluster.getGfsh()
       .create()
       .region()

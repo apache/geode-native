@@ -34,6 +34,8 @@ add_executable(cpp-integration-test
   SimpleAuthInitialize.hpp
   SimpleCqListener.cpp
   SimpleCqListener.hpp
+  SslOneWayTest.cpp
+  SslTwoWayTest.cpp
   StructTest.cpp
   TransactionCleaningTest.cpp
   CleanIdleConnections.cpp
@@ -64,10 +66,13 @@ target_link_libraries(cpp-integration-test
     Boost::log
     Boost::filesystem
     Boost::chrono
+    cryptoImpl
   PRIVATE
     _WarningsAsError
     internal
 )
+
+add_dependencies(cpp-integration-test cryptoImpl DHImpl)
 
 if(WIN32)
   target_compile_definitions(cpp-integration-test
@@ -76,7 +81,7 @@ if(WIN32)
       _WIN32_WINNT=0x06020000
   )
 
-  foreach (_target apache-geode testobject)
+  foreach (_target apache-geode testobject cryptoImpl)
     add_custom_command(TARGET cpp-integration-test POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "$<TARGET_FILE:${_target}>"
         "$<$<CONFIG:Debug>:$<TARGET_PDB_FILE:${_target}>>"
@@ -89,7 +94,7 @@ configure_file(
   ${CMAKE_CURRENT_BINARY_DIR}/func_cacheserver1_pool.xml COPYONLY)
 configure_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/func_cacheserver2_pool.xml
-  ${CMAKE_CURRENT_BINARY_DIR}/func_cacheserver2_pool.xml COPYONLY)  
+  ${CMAKE_CURRENT_BINARY_DIR}/func_cacheserver2_pool.xml COPYONLY)
 
 set_target_properties(cpp-integration-test PROPERTIES
   CXX_VISIBILITY_PRESET hidden
@@ -102,3 +107,9 @@ add_clangformat(cpp-integration-test)
 enable_testing()
 include(GoogleTest)
 gtest_discover_tests(cpp-integration-test)
+
+file(GLOB SSL_CERTIFICATES
+        "${CMAKE_CURRENT_SOURCE_DIR}/*Keys"
+        )
+
+file(INSTALL ${SSL_CERTIFICATES} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

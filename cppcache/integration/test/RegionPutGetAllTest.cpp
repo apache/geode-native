@@ -171,6 +171,9 @@ void localDestroy(Region &region, const Container keys) {
  */
 TEST(RegionPutGetAllTest, variousPdxTypes) {
   Cluster cluster{LocatorCount{1}, ServerCount{2}};
+
+  cluster.start();
+
   cluster.getGfsh()
       .create()
       .region()
@@ -201,6 +204,9 @@ TEST(RegionPutGetAllTest, variousPdxTypes) {
 
 TEST(RegionPutGetAllTest, nullValue) {
   Cluster cluster{LocatorCount{1}, ServerCount{2}};
+
+  cluster.start();
+
   cluster.getGfsh()
       .create()
       .region()

@@ -28,4 +28,14 @@ public class Config
   {
     get { return @"@JAVAOBJECT_JAR_PATH@"; }
   }
+
+  public static string SslServerKeyPath
+  {
+	get { return @"@CMAKE_CURRENT_SOURCE_DIR@/../../cppcache/integration/test/ServerSslKeys"; }
+  }
+
+  public static string SslClientKeyPath
+  {
+	get { return @"@CMAKE_CURRENT_SOURCE_DIR@/../../cppcache/integration/test/ClientSslKeys"; }
+  }
 }

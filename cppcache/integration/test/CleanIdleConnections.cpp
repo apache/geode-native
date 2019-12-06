@@ -82,6 +82,9 @@ void doGets(std::shared_ptr<Region> region, int entries) {
 
 TEST(CleanIdleConnectionsTest, cleanIdleConnectionsAfterOpsPaused) {
   Cluster cluster{LocatorCount{1}, ServerCount{2}};
+
+  cluster.start();
+
   cluster.getGfsh()
       .create()
       .region()

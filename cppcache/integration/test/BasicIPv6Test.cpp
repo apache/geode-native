@@ -55,6 +55,7 @@ std::shared_ptr<Region> setupRegion(Cache& cache) {
  */
 TEST(BasicIPv6Test, queryResultForRange) {
   Cluster cluster{LocatorCount{1}, ServerCount{1}, UseIpv6(true)};
+  cluster.start();
   cluster.getGfsh()
       .create()
       .region()

@@ -43,44 +43,40 @@ bool starts_with(const _T &input, const _T &match) {
 }
 
 class GfshExecuteException : public apache::geode::client::Exception {
- public:
-  GfshExecuteException(std::string message, int returnCode)
-      : apache::geode::client::Exception(message), returnCode_(returnCode) {}
-  ~GfshExecuteException() noexcept override {}
-  std::string getName() const override { return "GfshExecuteException"; }
-  int getGfshReturnCode() { return returnCode_; }
-
- private:
   int returnCode_;
+
+ public:
+  GfshExecuteException(std::string message, int returnCode);
+  ~GfshExecuteException() override;
+  std::string getName() const override;
+  int getGfshReturnCode();
 };
 
 class GfshExecute : public Gfsh {
- public:
-  GfshExecute() = default;
-  virtual ~GfshExecute() override = default;
+  std::string connection_;
 
-  class Connect : public Command<void> {
-   public:
-    explicit Connect(Gfsh &gfsh) : Command{gfsh, "connect"} {}
-
-    Connect &withJmxManager(const std::string &jmxManager) {
-      command_ += " --jmx-manager=" + jmxManager;
-      return *this;
-    };
-  };
-
- protected:
-  void execute(const std::string &command, const std::string &user, const std::string &password) override;
+  void execute(const std::string &command, const std::string &user,
+               const std::string &password, const std::string &keyStorePath,
+               const std::string &trustStorePath,
+               const std::string &keyStorePassword,
+               const std::string &trustStorePassword) override;
 
   boost::process::child executeChild(std::vector<std::string> &commands,
                                      boost::process::environment &env,
                                      boost::process::ipstream &outStream,
                                      boost::process::ipstream &errStream);
 
-  void extractConnectionCommand(const std::string &command, const std::string &user = "", const std::string &password = "");
+  void extractConnectionCommand(const std::string &command,
+                                const std::string &user,
+                                const std::string &password,
+                                const std::string &keyStorePath,
+                                const std::string &trustStorePath,
+                                const std::string &keyStorePassword,
+                                const std::string &trustStorePassword);
 
- private:
-  std::string connection_;
+ public:
+  GfshExecute() = default;
+  virtual ~GfshExecute() override = default;
 };
 
 #endif  // INTEGRATION_TEST_FRAMEWORK_GFSHEXECUTE_H

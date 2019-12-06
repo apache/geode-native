@@ -20,10 +20,7 @@
 #ifndef INTEGRATION_TEST_FRAMEWORK_GFSH_H
 #define INTEGRATION_TEST_FRAMEWORK_GFSH_H
 
-#include <iostream>
 #include <string>
-
-#include <boost/log/trivial.hpp>
 
 class Gfsh {
  public:
@@ -31,35 +28,43 @@ class Gfsh {
   virtual ~Gfsh() = default;
 
   class Start;
-  Start start() { return Start{*this}; }
+  Start start();
 
   class Stop;
-  Stop stop() { return Stop{*this}; }
+  Stop stop();
 
   class Create;
-  Create create() { return Create{*this}; }
+  Create create();
 
   class Connect;
-  Connect connect() { return Connect{*this}; }
+  Connect connect();
 
   class Shutdown;
-  Shutdown shutdown() { return Shutdown{*this}; }
+  Shutdown shutdown();
 
   class Deploy;
-  Deploy deploy() { return Deploy(*this); }
+  Deploy deploy();
 
   class Verb {
    public:
    protected:
-    explicit Verb(Gfsh &gfsh) : gfsh_(gfsh) {}
+    explicit Verb(Gfsh &gfsh);
     Gfsh &gfsh_;
   };
 
   template <class Result>
   class Command {
    public:
-    virtual Result execute(const std::string &user, const std::string &password) { Result{gfsh_}.parse(gfsh_.execute(command_, user, password)); }
-    virtual Result execute() { Result{gfsh_}.parse(gfsh_.execute(command_, "", "")); }
+    virtual Result execute(const std::string &user, const std::string &password, const std::string &keyStorePath,
+                           const std::string &trustStorePath, const std::string &keyStorePassword,
+                           const std::string &trustStorePassword) {
+      Result{gfsh_}.parse(gfsh_.execute(command_, user, password, keyStorePath, trustStorePath,
+              keyStorePassword, trustStorePassword));
+    }
+    virtual Result execute() {
+      Result{gfsh_}.parse(gfsh_.execute(command_, "", "", "", "", "", ""));
+    }
+    virtual std::string toString() { return command_; }
 
    protected:
     Command(Gfsh &gfsh, std::string command)
@@ -70,167 +75,100 @@ class Gfsh {
 
   class Start {
    public:
-    explicit Start(Gfsh &gfsh) : gfsh_(gfsh) {}
+    explicit Start(Gfsh &gfsh);
 
     class Server;
-    Server server() { return Server{gfsh_}; };
+    Server server();
 
     class Locator;
-    Locator locator() { return Locator{gfsh_}; };
+    Locator locator();
 
     class Locator : public Command<void> {
      public:
-      explicit Locator(Gfsh &gfsh) : Command(gfsh, "start locator") {}
+      explicit Locator(Gfsh &gfsh);
 
-      Locator &withName(const std::string &name) {
-        command_ += " --name=" + name;
-        return *this;
-      };
+      Locator &withName(const std::string &name);
 
-      Locator &withDir(const std::string &dir) {
-        command_ += " --dir=" + dir;
-        return *this;
-      };
+      Locator &withDir(const std::string &dir);
 
-      Locator &withBindAddress(const std::string &bindAddress) {
-        command_ += " --bind-address=" + bindAddress;
-        return *this;
-      };
+      Locator &withBindAddress(const std::string &bindAddress);
 
-      Locator &withPort(uint16_t port) {
-        command_ += " --port=" + std::to_string(port);
-        return *this;
-      };
+      Locator &withPort(const uint16_t &port);
 
-      Locator &withJmxManagerPort(uint16_t jmxManagerPort) {
-        command_ +=
-            " --J=-Dgemfire.jmx-manager-port=" + std::to_string(jmxManagerPort);
-        return *this;
-      };
+      Locator &withJmxManagerPort(const uint16_t &jmxManagerPort);
 
-      Locator &withHttpServicePort(uint16_t httpServicePort) {
-        command_ += " --http-service-port=" + std::to_string(httpServicePort);
-        return *this;
-      };
+      Locator &withHttpServicePort(const uint16_t &httpServicePort);
 
-      Locator &withLogLevel(const std::string logLevel) {
-        command_ += " --log-level=" + logLevel;
-        return *this;
-      };
+      Locator &withLogLevel(const std::string &logLevel);
 
-      Locator &withMaxHeap(const std::string maxHeap) {
-        command_ += " --max-heap=" + maxHeap;
-        return *this;
-      };
+      Locator &withMaxHeap(const std::string &maxHeap);
 
-      Locator &withClasspath(const std::string classpath) {
-        if (!classpath.empty()) {
-          command_ += " --classpath=" + classpath;
-        }
-        return *this;
-      };
+      Locator &withClasspath(const std::string classpath);
 
-      Locator &withSecurityManager(const std::string securityManager) {
-        if (!securityManager.empty()) {
-          command_ += " --J=-Dgemfire.security-manager=" + securityManager;
-        }
-        return *this;
-      };
+      Locator &withSecurityManager(const std::string securityManager);
 
-      Locator &withConnect(const std::string connect) {
-        command_ += " --connect=" + connect;
-        return *this;
-      };
+      Locator &withConnect(const std::string connect);
 
-      Locator &withPreferIPv6(bool useIPv6) {
-        if (useIPv6) {
-          command_ += " --J=-Djava.net.preferIPv6Addresses=true";
-        }
-        return *this;
-      };
+      Locator &withPreferIPv6(bool useIPv6);
+
+      Locator &withSslEnabledComponents(const std::string &components);
+
+      Locator &withSslKeystore(const std::string &keystore);
+
+      Locator &withSslTruststore(const std::string &truststore);
+
+      Locator &withSslKeystorePassword(const std::string &keystorePassword);
+
+      Locator &withSslTruststorePassword(const std::string &truststorePassword);
+
+      Locator &withConnect(const bool connect);
+
+      Locator &withJmxManagerStart(const bool startJmxManager);
+
+      Locator &withSslRquireAuthentication(const bool require);
     };
 
     class Server : public Command<void> {
      public:
-      explicit Server(Gfsh &gfsh) : Command(gfsh, "start server") {}
+      explicit Server(Gfsh &gfsh);
 
-      Server &withName(const std::string &name) {
-        command_ += " --name=" + name;
-        return *this;
-      }
+      Server &withName(const std::string &name);
 
-      Server &withDir(const std::string &dir) {
-        command_ += " --dir=" + dir;
-        return *this;
-      }
+      Server &withDir(const std::string &dir);
 
-      Server &withBindAddress(const std::string &bindAddress) {
-        command_ += " --bind-address=" + bindAddress;
-        return *this;
-      }
+      Server &withBindAddress(const std::string &bindAddress);
 
-      Server &withPort(uint16_t serverPort) {
-        command_ += " --server-port=" + std::to_string(serverPort);
-        return *this;
-      }
+      Server &withPort(const uint16_t &serverPort);
 
-      Server &withLocators(const std::string locators) {
-        command_ += " --locators=" + locators;
-        return *this;
-      }
+      Server &withLocators(const std::string &locators);
 
-      Server &withLogLevel(const std::string logLevel) {
-        command_ += " --log-level=" + logLevel;
-        return *this;
-      }
+      Server &withLogLevel(const std::string &logLevel);
 
-      Server &withMaxHeap(const std::string maxHeap) {
-        command_ += " --max-heap=" + maxHeap;
-        return *this;
-      }
+      Server &withMaxHeap(const std::string &maxHeap);
 
-      Server &withClasspath(const std::string classpath) {
-        if (!classpath.empty()) {
-          command_ += " --classpath=" + classpath;
-        }
-        return *this;
-      }
+      Server &withClasspath(const std::string classpath);
 
-      Server &withSecurityManager(const std::string securityManager) {
-        if (!securityManager.empty()) {
-          command_ += " --J=-Dgemfire.security-manager=" + securityManager;
-        }
-        return *this;
-      }
+      Server &withSecurityManager(const std::string securityManager);
 
-      Server &withUser(const std::string user) {
-        if (!user.empty()) {
-          command_ += " --user=" + user;
-        }
+      Server &withUser(const std::string user);
 
-        return *this;
-      }
+      Server &withPassword(const std::string password);
 
-      Server &withPassword(const std::string password) {
-        if (!password.empty()) {
-          command_ += " --password=" + password;
-        }
-        return *this;
-      }
+      Server &withCacheXMLFile(const std::string file);
 
-      Server &withCacheXMLFile(const std::string file) {
-        if (!file.empty()) {
-          command_ += " --cache-xml-file=" + file;
-        }
-        return *this;
-      }
+      Server &withPreferIPv6(bool useIPv6);
 
-      Server &withPreferIPv6(bool useIPv6) {
-        if (useIPv6) {
-          command_ += " --J=-Djava.net.preferIPv6Addresses=true";
-        }
-        return *this;
-      };
+      Server &withSslEnabledComponents(const std::string &components);
+
+      Server &withSslKeystore(const std::string &keystore);
+
+      Server &withSslTruststore(const std::string &truststore);
+
+      Server &withSslKeystorePassword(const std::string &keystorePassword);
+
+      Server &withSslTruststorePassword(const std::string &truststorePassword);
+
+      Server &withSslRquireAuthentication(const bool require);
     };
 
    private:
@@ -239,42 +177,30 @@ class Gfsh {
 
   class Stop {
    public:
-    explicit Stop(Gfsh &gfsh) : gfsh_(gfsh) {}
+    explicit Stop(Gfsh &gfsh);
 
     class Server;
-    Server server() { return Server{gfsh_}; };
+    Server server();
 
     class Locator;
-    Locator locator() { return Locator{gfsh_}; };
+    Locator locator();
 
     class Locator : public Command<void> {
      public:
-      explicit Locator(Gfsh &gfsh) : Command(gfsh, "stop locator") {}
+      explicit Locator(Gfsh &gfsh);
 
-      Locator &withName(const std::string &name) {
-        command_ += " --name=" + name;
-        return *this;
-      };
+      Locator &withName(const std::string &name);
 
-      Locator &withDir(const std::string &dir) {
-        command_ += " --dir=" + dir;
-        return *this;
-      };
+      Locator &withDir(const std::string &dir);
     };
 
     class Server : public Command<void> {
      public:
-      explicit Server(Gfsh &gfsh) : Command(gfsh, "stop server") {}
+      explicit Server(Gfsh &gfsh);
 
-      Server &withName(const std::string &name) {
-        command_ += " --name=" + name;
-        return *this;
-      };
+      Server &withName(const std::string &name);
 
-      Server &withDir(const std::string &dir) {
-        command_ += " --dir=" + dir;
-        return *this;
-      };
+      Server &withDir(const std::string &dir);
     };
 
    private:
@@ -283,82 +209,69 @@ class Gfsh {
 
   class Create : public Verb {
    public:
-    explicit Create(Gfsh &gfsh) : Verb{gfsh} {}
+    explicit Create(Gfsh &gfsh);
 
     class Region;
-    Region region() { return Region{gfsh_}; };
+    Region region();
 
     class Region : public Command<void> {
      public:
-      explicit Region(Gfsh &gfsh) : Command(gfsh, "create region") {}
+      explicit Region(Gfsh &gfsh);
 
-      Region &withName(const std::string &name) {
-        command_ += " --name=" + name;
-        return *this;
-      };
+      Region &withName(const std::string &name);
 
-      Region &withType(const std::string &type) {
-        command_ += " --type=" + type;
-        return *this;
-      };
+      Region &withType(const std::string &type);
     };
   };
 
   class Connect : public Command<void> {
    public:
-    explicit Connect(Gfsh &gfsh) : Command{gfsh, "connect"} {}
+    explicit Connect(Gfsh &gfsh);
 
-    Connect &withJmxManager(const std::string &jmxManager) {
-      command_ += " --jmx-manager=" + jmxManager;
-      return *this;
-    };
+    Connect &withJmxManager(const std::string &jmxManager);
 
-    Connect &withUser(const std::string &user) {
-      command_ += " --user=" + user;
-      return *this;
-    };
+    Connect &withUser(const std::string &user);
 
-    Connect &withPassword(const std::string &password) {
-      command_ += " --password=" + password;
-      return *this;
-    };
+    Connect &withPassword(const std::string &password);
+
+    Connect &withUseSsl(const bool useSsl);
+
+    Connect &withKeystore(const std::string &keystore);
+
+    Connect &withTruststore(const std::string &truststore);
+
+    Connect &withKeystorePassword(const std::string &keystorePassword);
+
+    Connect &withTruststorePassword(const std::string &truststorePassword);
   };
 
   class Shutdown : public Command<void> {
    public:
-    explicit Shutdown(Gfsh &gfsh) : Command{gfsh, "shutdown"} {}
+    explicit Shutdown(Gfsh &gfsh);
 
-    Shutdown &withIncludeLocators(bool includeLocators) {
-      command_ += " --include-locators=" +
-                  std::string(includeLocators ? "true" : "false");
-      return *this;
-    };
+    Shutdown &withIncludeLocators(bool includeLocators);
   };
 
   class Deploy : public Command<void> {
    public:
-    explicit Deploy(Gfsh &gfsh) : Command{gfsh, "deploy"} {}
+    explicit Deploy(Gfsh &gfsh);
 
-    Deploy &jar(const std::string &jarFile) {
-      command_ += " --jars=" + jarFile;
-
-      return *this;
-    }
+    Deploy &jar(const std::string &jarFile);
   };
 
  protected:
-  virtual void execute(const std::string &command, const std::string &user, const std::string &password) = 0;
+  virtual void execute(const std::string &command, const std::string &user,
+                       const std::string &password, const std::string &keyStorePath,
+                       const std::string &trustStorePath, const std::string &keyStorePassword,
+                       const std::string &trustStorePassword) = 0;
 };
 
 template <>
-inline void Gfsh::Command<void>::execute(const std::string &user, const std::string &password) {
-  gfsh_.execute(command_, user, password);
-}
+void Gfsh::Command<void>::execute(const std::string &user, const std::string &password,
+                                  const std::string &keyStorePath, const std::string &trustStorePath,
+                                  const std::string &keyStorePassword, const std::string &trustStorePassword);
 
 template <>
-inline void Gfsh::Command<void>::execute() {
-  gfsh_.execute(command_, "", "");
-}
-
+void Gfsh::Command<void>::execute();
 
 #endif  // INTEGRATION_TEST_FRAMEWORK_GFSH_H

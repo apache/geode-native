@@ -41,47 +41,15 @@ struct LocatorAddress {
 class Locator {
  public:
   Locator(Cluster &cluster, std::vector<Locator> &locators, std::string name,
-          uint16_t jmxManagerPort, bool useIPv6)
-      : cluster_(cluster),
-        name_(std::move(name)),
-        locators_(locators),
-        jmxManagerPort_(jmxManagerPort) {
-    auto hostname = "localhost";
-    if (useIPv6) {
-      hostname = "ip6-localhost";
-    }
+          uint16_t jmxManagerPort, bool useIPv6);
 
-    auto port = Framework::getAvailablePort();
-
-    locatorAddress_ = LocatorAddress{hostname, port};
-
-    // start();
-  }
-
-  ~Locator() noexcept {
-    try {
-      if (started_) {
-        stop();
-      }
-    } catch (...) {
-    }
-  }
+  ~Locator();
 
   Locator(const Locator &copy) = delete;
   Locator &operator=(const Locator &copy) = delete;
-  Locator(Locator &&move)
-      : cluster_(move.cluster_),
-        name_(move.name_),
-        locators_(move.locators_),
-        locatorAddress_(move.locatorAddress_),
-        jmxManagerPort_(move.jmxManagerPort_),
-        started_(move.started_) {
-    move.started_ = false;
-  };
-  //  Locator &operator=(Locator &&move) = default;
+  Locator(Locator &&move);
 
-  const LocatorAddress &getAddress() const { return locatorAddress_; }
-
+  const LocatorAddress &getAddress() const;
   void start();
 
   void stop();
@@ -108,46 +76,15 @@ struct ServerAddress {
 class Server {
  public:
   Server(Cluster &cluster, std::vector<Locator> &locators, std::string name,
-         std::string xmlFile, bool useIPv6)
-      : cluster_(cluster),
-        locators_(locators),
-        name_(std::move(name)),
-        xmlFile_(xmlFile) {
+         std::string xmlFile, bool useIPv6);
 
-    auto hostname = "localhost";
-    if (useIPv6) {
-      hostname = "ip6-localhost";
-    }
+  std::string getCacheXMLFile();
 
-    auto port = static_cast<uint16_t>(0);
-    serverAddress_ = ServerAddress{hostname, port};
-
-    // start();
-  }
-
-  std::string getCacheXMLFile() { return xmlFile_; }
-
-  ~Server() noexcept {
-    try {
-      if (started_) {
-        stop();
-      }
-    } catch (...) {
-    }
-  }
+  ~Server();
 
   Server(const Server &copy) = delete;
   Server &operator=(const Server &other) = delete;
-  Server(Server &&move)
-      : cluster_(move.cluster_),
-        locators_(move.locators_),
-        serverAddress_(move.serverAddress_),
-        started_(move.started_),
-        name_(move.name_),
-        xmlFile_(move.xmlFile_) {
-    move.started_ = false;
-  };
-  //  Server &operator=(Server &&other) = default;
+  Server(Server &&move);
 
   void start();
 
@@ -179,169 +116,84 @@ using UseIpv6 = NamedType<bool, struct UseIpv6Parameter>;
 class Cluster {
  public:
   Cluster(LocatorCount initialLocators, ServerCount initialServers,
-          UseIpv6 useIPv6)
-      : Cluster(Name(std::string(::testing::UnitTest::GetInstance()
-                                     ->current_test_info()
-                                     ->test_case_name()) +
-                     "/" +
-                     ::testing::UnitTest::GetInstance()
-                         ->current_test_info()
-                         ->name()),
-                initialLocators, initialServers, useIPv6) {}
+          UseIpv6 useIPv6);
 
-  Cluster(LocatorCount initialLocators, ServerCount initialServers)
-      : Cluster(Name(std::string(::testing::UnitTest::GetInstance()
-                                     ->current_test_info()
-                                     ->test_case_name()) +
-                     "/" +
-                     ::testing::UnitTest::GetInstance()
-                         ->current_test_info()
-                         ->name()),
-                initialLocators, initialServers) {}
-
+  Cluster(LocatorCount initialLocators, ServerCount initialServers);
 
   Cluster(LocatorCount initialLocators, ServerCount initialServers,
-          CacheXMLFiles cacheXMLFiles)
-      : name_(std::string(::testing::UnitTest::GetInstance()
-                              ->current_test_info()
-                              ->test_case_name()) +
-              "/" +
-              ::testing::UnitTest::GetInstance()->current_test_info()->name()),
-        initialLocators_(initialLocators.get()),
-        initialServers_(initialServers.get()),
-        jmxManagerPort_(Framework::getAvailablePort()) {
-    removeServerDirectory();
-    cacheXMLFiles_ = cacheXMLFiles.get();
-  }
+          CacheXMLFiles cacheXMLFiles);
 
   Cluster(Name name, LocatorCount initialLocators, ServerCount initialServers,
-          UseIpv6 useIPv6)
-      : Cluster(Name(name.get()), Classpath(""), SecurityManager(""), User(""),
-                Password(""), initialLocators, initialServers,
-                CacheXMLFiles({}), useIPv6) {}
+          UseIpv6 useIPv6);
 
-  Cluster(Name name, LocatorCount initialLocators, ServerCount initialServers)
-      : Cluster(Name(name.get()), Classpath(""), SecurityManager(""), User(""),
-                Password(""), initialLocators, initialServers,
-                CacheXMLFiles({}), UseIpv6(false)) {}
+  Cluster(Name name, LocatorCount initialLocators, ServerCount initialServers);
 
   Cluster(Name name, Classpath classpath, SecurityManager securityManager,
           User user, Password password, LocatorCount initialLocators,
-          ServerCount initialServers, CacheXMLFiles cacheXMLFiles, UseIpv6 useIPv6)
-      : name_(name.get()),
-        classpath_(classpath.get()),
-        securityManager_(securityManager.get()),
-        user_(user.get()),
-        password_(password.get()),
-        initialLocators_(initialLocators.get()),
-        initialServers_(initialServers.get()) {
-    jmxManagerPort_ = Framework::getAvailablePort();
-    cacheXMLFiles_ = cacheXMLFiles.get();
-    useIPv6_ = useIPv6.get();
-
-    removeServerDirectory();
-    start();
-  };
+          ServerCount initialServers, CacheXMLFiles cacheXMLFiles,
+          UseIpv6 useIPv6);
 
   Cluster(Name name, Classpath classpath, SecurityManager securityManager,
           User user, Password password, LocatorCount initialLocators,
-          ServerCount initialServers)
-      : name_(name.get()),
-        classpath_(classpath.get()),
-        securityManager_(securityManager.get()),
-        user_(user.get()),
-        password_(password.get()),
-        initialLocators_(initialLocators.get()),
-        initialServers_(initialServers.get()) {
-    jmxManagerPort_ = Framework::getAvailablePort();
+          ServerCount initialServers);
 
-    removeServerDirectory();
-    start();
-  };
-
-  ~Cluster() noexcept {
-    try {
-      if (started_) {
-        stop();
-      }
-    } catch (...) {
-    }
-  }
+  ~Cluster();
 
   Cluster(const Cluster &copy) = delete;
   Cluster &operator=(const Cluster &other) = delete;
   Cluster(Cluster &&copy) = default;
   Cluster &operator=(Cluster &&other) = default;
 
-  std::string getJmxManager() {
-    return locators_.begin()->getAddress().address + "[" +
-           std::to_string(jmxManagerPort_) + "]";
-  }
+  std::string getJmxManager();
 
-  void start(std::function<void()> fn = []() {});
+  uint16_t getLocatorPort();
+
+  void start();
+  void start(std::function<void()> fn);
 
   void stop();
 
-  void removeServerDirectory() {
-    boost::filesystem::path serverDir = boost::filesystem::relative(name_);
-    boost::filesystem::remove_all(serverDir);
-  }
+  void removeServerDirectory();
 
-  apache::geode::client::Cache createCache() { return createCache({}); }
+  apache::geode::client::Cache createCache();
 
   apache::geode::client::Cache createCache(
-      const std::unordered_map<std::string, std::string> &properties) {
-    return createCache(properties, false);
-  }
+      const std::unordered_map<std::string, std::string> &properties);
 
   apache::geode::client::Cache createCache(
       const std::unordered_map<std::string, std::string> &properties,
-      bool subscriptionEnabled) {
-    using apache::geode::client::CacheFactory;
+      bool subscriptionEnabled);
 
-    CacheFactory cacheFactory;
+  void applyLocators(apache::geode::client::PoolFactory &poolFactory);
 
-    for (auto &&property : properties) {
-      cacheFactory.set(property.first, property.second);
-    }
+  void useSsl(const bool requireSslAuthentication, const std::string keystore,
+              const std::string truststore, const std::string keystorePassword,
+              const std::string truststorePassword);
 
-    auto cache = cacheFactory.set("log-level", "none")
-                     .set("statistic-sampling-enabled", "false")
-                     .create();
+  bool useSsl();
+  bool requireSslAuthentication();
+  std::string keystore();
+  std::string truststore();
+  std::string keystorePassword();
+  std::string truststorePassword();
 
-    auto poolFactory =
-        cache.getPoolManager().createFactory().setSubscriptionEnabled(
-            subscriptionEnabled);
-    applyLocators(poolFactory);
-    poolFactory.create("default");
+  Gfsh &getGfsh();
 
-    return cache;
-  }
+  std::vector<Server> &getServers();
 
-  void applyLocators(apache::geode::client::PoolFactory &poolFactory) {
-    for (const auto &locator : locators_) {
-      poolFactory.addLocator(locator.getAddress().address,
-                             locator.getAddress().port);
-    }
-  }
+  std::vector<Locator> &getLocators();
 
-  Gfsh &getGfsh() noexcept { return gfsh_; }
+  std::string &getClasspath();
 
-  std::vector<Server> &getServers() { return servers_; }
+  std::string &getSecurityManager();
 
-  std::vector<Locator> &getLocators() { return locators_; }
+  std::string &getUser();
 
-  std::string &getClasspath() { return classpath_; }
+  std::string &getPassword();
 
-  std::string &getSecurityManager() { return securityManager_; }
+  std::vector<std::string> &getCacheXMLFiles();
 
-  std::string &getUser() { return user_; }
-
-  std::string &getPassword() { return password_; }
-
-  std::vector<std::string> &getCacheXMLFiles() { return cacheXMLFiles_; }
-
-  bool getUseIPv6() { return useIPv6_; }
+  bool getUseIPv6();
 
  private:
   std::string name_;
@@ -359,6 +211,13 @@ class Cluster {
 
   bool started_ = false;
   uint16_t jmxManagerPort_;
+
+  bool useSsl_ = false;
+  bool requireSslAuthentication_ = false;
+  std::string keystore_;
+  std::string keystorePassword_;
+  std::string truststore_;
+  std::string truststorePassword_;
 
   bool useIPv6_ = false;
 

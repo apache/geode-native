@@ -135,10 +135,9 @@ namespace Apache.Geode.Client.IntegrationTests
             var testDir = CreateTestCaseDirectoryName();
             CleanTestCaseDirectory(testDir);
 
-            var sslPassword = "gemstone";
-            var currentDir = Environment.CurrentDirectory;
-            var keystore = currentDir + @"\ServerSslKeys\server_keystore.jks";
-            var truststore = currentDir + @"\ServerSslKeys\server_truststore.jks";
+            var sslPassword = "apachegeode";
+            var keystore = Config.SslServerKeyPath + @"/server_keystore_chained.jks";
+            var truststore = Config.SslServerKeyPath + @"/server_truststore_chained_root.jks";
             var jmxManagerPort = Framework.FreeTcpPort();
 
             try
@@ -185,10 +184,9 @@ namespace Apache.Geode.Client.IntegrationTests
             var testDir = CreateTestCaseDirectoryName();
             CleanTestCaseDirectory(testDir);
 
-            var sslPassword = "gemstone";
-            var currentDir = Environment.CurrentDirectory;
-            var keystore = currentDir + @"\ServerSslKeys\server_keystore.jks";
-            var truststore = currentDir + @"\ServerSslKeys\server_truststore.jks";
+            var sslPassword = "apachegeode";
+            var keystore = Config.SslServerKeyPath + @"/server_keystore_chained.jks";
+            var truststore = Config.SslServerKeyPath + @"/server_truststore_chained_root.jks";
             var jmxManagerPort = Framework.FreeTcpPort();
 
             try

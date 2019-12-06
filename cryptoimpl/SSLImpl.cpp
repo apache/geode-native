@@ -53,29 +53,32 @@ SSLImpl::SSLImpl(ACE_HANDLE sock, const char *pubkeyfile,
   ACE_Guard<ACE_Recursive_Thread_Mutex> guard(SSLImpl::s_mutex);
 
   if (SSLImpl::s_initialized == false) {
-    ACE_SSL_Context *sslctx = ACE_SSL_Context::instance();
+    ACE_SSL_Context *sslContext = ACE_SSL_Context::instance();
 
-    SSL_CTX_set_cipher_list(sslctx->context(), "DEFAULT");
-    sslctx->set_mode(ACE_SSL_Context::SSLv23_client);
-    if (sslctx->load_trusted_ca(pubkeyfile) != 0) {
+    SSL_CTX_set_cipher_list(sslContext->context(), "DEFAULT");
+    sslContext->set_mode(ACE_SSL_Context::SSLv23_client);
+    sslContext->set_verify_peer();
+    if (sslContext->load_trusted_ca(pubkeyfile) != 0) {
       throw std::invalid_argument("Failed to read SSL trust store.");
     }
 
     if (strlen(password) > 0) {
-      SSL_CTX_set_default_passwd_cb(sslctx->context(), pem_passwd_cb);
-      SSL_CTX_set_default_passwd_cb_userdata(sslctx->context(),
+      SSL_CTX_set_default_passwd_cb(sslContext->context(), pem_passwd_cb);
+      SSL_CTX_set_default_passwd_cb_userdata(sslContext->context(),
                                              const_cast<char *>(password));
     }
 
-    if (sslctx->certificate(privkeyfile) != 0) {
-      throw std::invalid_argument("Failed to read SSL certificate.");
-    }
-    if (sslctx->private_key(privkeyfile) != 0) {
-      throw std::invalid_argument("Invalid SSL keystore password.");
-    }
-    if (::SSL_CTX_use_certificate_chain_file(sslctx->context(), privkeyfile) <=
-        0) {
-      throw std::invalid_argument("Failed to read SSL certificate chain.");
+    if (privkeyfile && *privkeyfile) {
+      if (sslContext->certificate(privkeyfile) != 0) {
+        throw std::invalid_argument("Failed to read SSL certificate.");
+      }
+      if (sslContext->private_key(privkeyfile) != 0) {
+        throw std::invalid_argument("Invalid SSL keystore password.");
+      }
+      if (::SSL_CTX_use_certificate_chain_file(sslContext->context(),
+                                               privkeyfile) <= 0) {
+        throw std::invalid_argument("Failed to read SSL certificate chain.");
+      }
     }
     SSLImpl::s_initialized = true;
   }

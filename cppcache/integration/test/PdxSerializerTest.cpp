@@ -132,6 +132,7 @@ void assertNonPdxType(const std::shared_ptr<NonPdxType>& expected,
 
 TEST(PdxSerializerTest, canSerializeNonPdxSerializableType) {
   Cluster cluster{LocatorCount{1}, ServerCount{1}};
+  cluster.start();
   cluster.getGfsh()
       .create()
       .region()
