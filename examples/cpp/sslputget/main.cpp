@@ -44,15 +44,16 @@ int main(int argc, char** argv) {
 
   auto cache =
       CacheFactory()
-          .set("log-level", "none")
+          .set("log-level", "debug")
+          .set("log-file", "./log")
           .set("ssl-enabled", "true")
           .set("ssl-keystore",
 #ifdef WIN32
-               (sslKeyPath + "\\client_keystore.password.pem").c_str())
+               (sslKeyPath + "\\client_keystore.pem").c_str())
 #else
-               (sslKeyPath + "/client_keystore.password.pem").c_str())
+               (sslKeyPath + "/client_keystore.pem").c_str())
 #endif
-          .set("ssl-keystore-password", "gemstone")
+          .set("ssl-keystore-password", "apachegeode")
           .set("ssl-truststore",
 #ifdef WIN32
                (sslKeyPath + "\\client_truststore.pem").c_str())

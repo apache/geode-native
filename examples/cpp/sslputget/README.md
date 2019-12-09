@@ -14,8 +14,15 @@ This example illustrates how to use SSL encryption for all traffic between a cli
     ```console
     $ cd workspace/examples/build/cpp/sslputget
     ```
+    For Linux, extend your library path.
 
-1. Run the `startserver` script to start the Geode cluster with authentication and create a region.
+    For Bash:
+
+    ```console
+    $ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GeodeNative_ROOT/lib
+    ```
+
+2. Run the `startserver` script to start the Geode cluster with authentication and create a region.
 
    For Windows cmd:
 
@@ -35,14 +42,14 @@ This example illustrates how to use SSL encryption for all traffic between a cli
     $ ./startserver.sh
     ```
   
-1. Execute `cpp-sslputget`, expect the following output:
+3. Execute `cpp-sslputget ./ClientSslKeys/`, expect the following output:
 
        Storing id and username in the region
        Getting the user info from the region
        rtimmons = Robert Timmons
        scharles = Sylvia Charles
 
-1. Run the `stopserver` script to gracefully shutdown the Geode cluster.
+4. Run the `stopserver` script to gracefully shutdown the Geode cluster.
 
    For Windows cmd:
 

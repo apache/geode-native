@@ -30,6 +30,6 @@ fi
 
 BASEDIR="$( cd "$( dirname "$0" )" && pwd )"
 
-$GFSH_PATH  -e "connect --use-ssl=true --key-store=${BASEDIR}/ServerSslKeys/server_keystore.jks --trust-store=${BASEDIR}/ServerSslKeys/server_truststore.jks --trust-store-password=gemstone --key-store-password=gemstone" -e "shutdown --include-locators=true"
+$GFSH_PATH  -e "connect --use-ssl=true --key-store=${BASEDIR}/ServerSslKeys/server_keystore.p12 --trust-store=${BASEDIR}/ServerSslKeys/server_truststore.jks --trust-store-password=apachegeode --key-store-password=apachegeode" -e "shutdown --include-locators=true"
 
 rm -rf locator server
