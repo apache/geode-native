@@ -42,7 +42,13 @@ This example illustrates how to use SSL encryption for all traffic between a cli
     $ ./startserver.sh
     ```
   
-3. Execute `cpp-sslputget ./ClientSslKeys/`, expect the following output:
+3. Execute `cpp-sslputget ./ClientSslKeys/`
+
+   For Windows:
+
+     `<build-type>/cpp-sslputget ./ClientSslKeys (where <build-type> = Debug or Release)`
+
+   Expec the following output:
 
        Storing id and username in the region
        Getting the user info from the region
