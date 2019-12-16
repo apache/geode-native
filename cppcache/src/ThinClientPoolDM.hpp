@@ -153,6 +153,9 @@ class ThinClientPoolDM
 
   int32_t GetPDXIdForType(std::shared_ptr<Serializable> pdxType);
 
+  void BroadcastPdxTypeToOtherPools(std::shared_ptr<Serializable> pdxType,
+                                    int32_t pdxTypeId);
+
   std::shared_ptr<Serializable> GetPDXTypeById(int32_t typeId);
 
   void AddPdxType(std::shared_ptr<Serializable> pdxType, int32_t pdxTypeId);
