@@ -900,26 +900,24 @@ int32_t ThinClientPoolDM::GetPDXIdForType(
     throw IllegalStateException("Failed to register PdxSerializable Type");
   }
 
-  auto pdxTypeId =
-      std::dynamic_pointer_cast<CacheableInt32>(reply.getValue())->value();
+  return std::dynamic_pointer_cast<CacheableInt32>(reply.getValue())->value();
+}
 
+void ThinClientPoolDM::BroadcastPdxTypeToOtherPools(
+    std::shared_ptr<Serializable> pdxType, int32_t pdxTypeId) {
   // need to broadcast this id to all other pool
-  {
-    auto& poolManager = m_connManager.getCacheImpl()->getPoolManager();
-    for (const auto& iter : poolManager.getAll()) {
-      auto currPool = static_cast<ThinClientPoolDM*>(iter.second.get());
+  auto& poolManager = m_connManager.getCacheImpl()->getPoolManager();
+  for (const auto& iter : poolManager.getAll()) {
+    auto currPool = static_cast<ThinClientPoolDM*>(iter.second.get());
 
-      if (currPool != this) {
-        currPool->AddPdxType(pdxType, pdxTypeId);
-      }
+    if (currPool != this) {
+      currPool->AddPdxType(pdxType, pdxTypeId);
     }
   }
-
-  return pdxTypeId;
 }
 
 void ThinClientPoolDM::AddPdxType(std::shared_ptr<Serializable> pdxType,
-                                  int32_t pdxTypeId) {
+                                     int32_t pdxTypeId) {
   LOGDEBUG("ThinClientPoolDM::GetPDXIdForType:");
 
   TcrMessageAddPdxType request(
@@ -936,6 +934,7 @@ void ThinClientPoolDM::AddPdxType(std::shared_ptr<Serializable> pdxType,
     throw IllegalStateException("Failed to register PdxSerializable Type");
   }
 }
+
 std::shared_ptr<Serializable> ThinClientPoolDM::GetPDXTypeById(int32_t typeId) {
   LOGDEBUG("ThinClientPoolDM::GetPDXTypeById:");
 

@@ -404,11 +404,17 @@ std::shared_ptr<PdxSerializer> SerializationRegistry::getPdxSerializer() {
 
 int32_t SerializationRegistry::GetPDXIdForType(
     Pool* pool, std::shared_ptr<Serializable> pdxType) const {
+  int32_t typeId = -1;
+
   if (auto poolDM = dynamic_cast<ThinClientPoolDM*>(pool)) {
-    return poolDM->GetPDXIdForType(pdxType);
+    typeId = poolDM->GetPDXIdForType(pdxType);
+    poolDM->BroadcastPdxTypeToOtherPools(pdxType, typeId);
+  }
+  else {
+    throw IllegalStateException("Pool not found, Pdx operation failed");
   }
 
-  throw IllegalStateException("Pool not found, Pdx operation failed");
+  return typeId;
 }
 
 std::shared_ptr<Serializable> SerializationRegistry::GetPDXTypeById(
