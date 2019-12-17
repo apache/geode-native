@@ -42,7 +42,7 @@ namespace statistics {
  * in local memory and support atomic operations
  *
  */
-class AtomicStatisticsImpl : public Statistics, private client::NonCopyable {
+class AtomicStatisticsImpl : public Statistics {
  private:
   /**********varbs originally kept in statisticsimpl class*****************/
   /** The type of this statistics instance */
@@ -113,6 +113,9 @@ class AtomicStatisticsImpl : public Statistics, private client::NonCopyable {
 
   //////////////////////  Instance Methods  //////////////////////
   ~AtomicStatisticsImpl() noexcept override;
+
+  AtomicStatisticsImpl(const AtomicStatisticsImpl&) = delete;
+  AtomicStatisticsImpl& operator=(const AtomicStatisticsImpl&) = delete;
 
   bool usesSystemCalls();
 
