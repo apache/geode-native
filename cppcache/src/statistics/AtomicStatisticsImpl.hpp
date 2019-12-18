@@ -25,7 +25,6 @@
 
 #include <geode/internal/geode_globals.hpp>
 
-#include "../NonCopyable.hpp"
 #include "Statistics.hpp"
 #include "StatisticsFactory.hpp"
 #include "StatisticsTypeImpl.hpp"

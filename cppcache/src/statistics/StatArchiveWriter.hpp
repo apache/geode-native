@@ -30,7 +30,6 @@
 #include <geode/ExceptionTypes.hpp>
 #include <geode/internal/geode_globals.hpp>
 
-#include "../NonCopyable.hpp"
 #include "../SerializationRegistry.hpp"
 #include "../util/Log.hpp"
 #include "StatisticDescriptor.hpp"
@@ -130,7 +129,7 @@ class APACHE_GEODE_EXPORT StatDataOutput {
   /**
    * This method is for the unit tests only for this class.
    */
-  const uint8_t *getBuffer() { return dataBuffer->getBuffer(); }
+  const uint8_t *getBuffer();
   void close();
 
   void openFile(std::string, int64_t);
@@ -144,10 +143,11 @@ class APACHE_GEODE_EXPORT StatDataOutput {
   friend class StatArchiveWriter;
 };
 
-class APACHE_GEODE_EXPORT ResourceType : private NonCopyable,
-                                         private NonAssignable {
+class APACHE_GEODE_EXPORT ResourceType {
  public:
   ResourceType(int32_t id, const StatisticsType *type);
+  ResourceType(const ResourceType &) = delete;
+  ResourceType &operator=(const ResourceType &) = delete;
   int32_t getId() const;
   const std::vector<std::shared_ptr<StatisticDescriptor>> &getStats() const;
   size_t getNumOfDescriptors() const;
@@ -171,11 +171,12 @@ class APACHE_GEODE_EXPORT ResourceType : private NonCopyable,
  * FIX : Make the class NonCopyable
  */
 
-class APACHE_GEODE_EXPORT ResourceInst : private NonCopyable,
-                                         private NonAssignable {
+class APACHE_GEODE_EXPORT ResourceInst {
  public:
   ResourceInst(int32_t id, Statistics *, const ResourceType *,
                StatDataOutput *);
+  ResourceInst(const ResourceInst &) = delete;
+  ResourceInst &operator=(const ResourceInst &) = delete;
   ~ResourceInst();
   int32_t getId();
   Statistics *getResource();

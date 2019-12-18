@@ -20,7 +20,6 @@
 #ifndef GEODE_STATISTICS_OSSTATISTICSIMPL_H_
 #define GEODE_STATISTICS_OSSTATISTICSIMPL_H_
 
-#include "../NonCopyable.hpp"
 #include "Statistics.hpp"
 #include "StatisticsFactory.hpp"
 #include "StatisticsTypeImpl.hpp"
@@ -37,9 +36,7 @@ namespace statistics {
  * in local memory and does not support atomic operations.
  *
  */
-class OsStatisticsImpl : public Statistics,
-                         private client::NonCopyable,
-                         private client::NonAssignable {
+class OsStatisticsImpl : public Statistics {
  private:
   /** The type of this statistics instance */
   StatisticsTypeImpl* statsType;
@@ -108,6 +105,10 @@ class OsStatisticsImpl : public Statistics,
                    StatisticsFactory* system);
 
   ~OsStatisticsImpl() noexcept override;
+
+  OsStatisticsImpl(const OsStatisticsImpl&) = delete;
+
+  OsStatisticsImpl& operator=(const OsStatisticsImpl&) = delete;
 
   //////////////////////  Instance Methods  //////////////////////
 

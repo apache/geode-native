@@ -57,11 +57,11 @@ namespace statistics {
 
 class APACHE_GEODE_EXPORT StatisticsFactory {
  protected:
-  StatisticsFactory() {}
+  StatisticsFactory() = default;
   StatisticsFactory(const StatisticsFactory&) = delete;
 
  public:
-  virtual ~StatisticsFactory() {}
+  virtual ~StatisticsFactory() = default;
 
   /**
    * Creates and returns a long counter {@link StatisticDescriptor}
@@ -207,8 +207,7 @@ class APACHE_GEODE_EXPORT StatisticsFactory {
    */
   virtual int64_t getId() const = 0;
 
- private:
-  const StatisticsFactory& operator=(const StatisticsFactory&);
+  StatisticsFactory& operator=(const StatisticsFactory&) = delete;
 
 };  // class
 }  // namespace statistics

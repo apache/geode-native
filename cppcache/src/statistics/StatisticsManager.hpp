@@ -74,11 +74,9 @@ class StatisticsManager {
                     client::CacheImpl* cache, int64_t statFileLimit = 0,
                     int64_t statDiskSpaceLimit = 0);
 
-  void RegisterAdminRegion(std::shared_ptr<AdminRegion> adminRegPtr) {
-    m_adminRegion = adminRegPtr;
-  }
+  void RegisterAdminRegion(std::shared_ptr<AdminRegion> adminRegPtr);
 
-  std::shared_ptr<AdminRegion> getAdminRegion() { return m_adminRegion; }
+  std::shared_ptr<AdminRegion> getAdminRegion();
 
   void forceSample();
 
@@ -107,9 +105,7 @@ class StatisticsManager {
 
   static void deleteStatistics(Statistics*& stat);
 
-  GeodeStatisticsFactory* getStatisticsFactory() const {
-    return m_statisticsFactory.get();
-  }
+  GeodeStatisticsFactory* getStatisticsFactory() const;
 };  // class
 
 }  // namespace statistics
