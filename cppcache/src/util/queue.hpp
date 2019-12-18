@@ -35,7 +35,7 @@ namespace queue {
  * @param value to coalesce
  */
 template <class Queue, class Type>
-inline void coalesce(Queue& queue, const Type& value) {
+void coalesce(Queue& queue, const Type& value) {
   while (!queue.empty()) {
     const auto& next = queue.front();
     if (next == value) {
