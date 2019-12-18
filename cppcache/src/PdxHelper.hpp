@@ -60,7 +60,7 @@ class PdxHelper {
 
   static void registerPdxType(CacheImpl* cacheImpl,
                               const std::string& className,
-                              const std::shared_ptr<PdxSerializable>& pdxObject,
+                              const std::shared_ptr<PdxType>& nType,
                               DataOutput& output);
 
   static PdxRemoteWriter createPdxRemoteWriter(

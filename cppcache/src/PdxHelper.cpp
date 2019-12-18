@@ -98,8 +98,17 @@ void PdxHelper::serializePdxSerializable(
   auto&& className = pdxObject->getClassName();
 
   if (!pdxTypeRegistry->getLocalPdxType(className)) {
-    registerPdxType(cacheImpl, className, pdxObject, output);
+    // need to grab type info, as fromData is not called yet
+    PdxWriterWithTypeCollector writer(output, className, pdxTypeRegistry);
+    pdxObject->toData(writer);
 
+    auto nType = writer.getPdxLocalType();
+    registerPdxType(cacheImpl, className, nType, output);
+
+    writer.endObjectWriting();
+
+    cacheImpl->getCachePerfStats().incPdxSerialization(
+        writer.getBytesWritten() + 1 + 2 * 4);  // pdxLen  93 DSID  len  typeID
   } else {
     auto pdxRemoteWriter =
         createPdxRemoteWriter(pdxTypeRegistry, pdxObject, output, className);
@@ -112,27 +121,18 @@ void PdxHelper::serializePdxSerializable(
   }
 }
 
-void PdxHelper::registerPdxType(
-    CacheImpl* cacheImpl, const std::string& className,
-    const std::shared_ptr<PdxSerializable>& pdxObject, DataOutput& output) {
+void PdxHelper::registerPdxType(CacheImpl* cacheImpl,
+                                const std::string& className,
+                                const std::shared_ptr<PdxType>& nType,
+                                DataOutput& dataOutput) {
   auto pdxTypeRegistry = cacheImpl->getPdxTypeRegistry();
-  // need to grab type info, as fromData is not called yet
-  PdxWriterWithTypeCollector writer(output, className, pdxTypeRegistry);
-  pdxObject->toData(writer);
-
-  auto nType = writer.getPdxLocalType();
 
   nType->InitializeType();
   int32_t nTypeId = pdxTypeRegistry->getPDXIdForType(
-      className.c_str(), DataOutputInternal::getPool(output), nType, true);
+      className.c_str(), DataOutputInternal::getPool(dataOutput), nType, true);
   nType->setTypeId(nTypeId);
   pdxTypeRegistry->addLocalPdxType(className, nType);
   pdxTypeRegistry->addPdxType(nTypeId, nType);
-
-  writer.endObjectWriting();
-
-  cacheImpl->getCachePerfStats().incPdxSerialization(
-      writer.getBytesWritten() + 1 + 2 * 4);  // pdxLen  93 DSID  len  typeID
 }
 
 void PdxHelper::serializePdx(
