@@ -918,7 +918,7 @@ void ThinClientPoolDM::BroadcastPdxTypeToOtherPools(
 }
 
 void ThinClientPoolDM::AddPdxType(std::shared_ptr<Serializable> pdxType,
-                                     int32_t pdxTypeId) {
+                                  int32_t pdxTypeId) {
   LOGDEBUG("ThinClientPoolDM::GetPDXIdForType:");
 
   TcrMessageAddPdxType request(

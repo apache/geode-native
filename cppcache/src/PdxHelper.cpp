@@ -47,6 +47,16 @@ PdxHelper::PdxHelper() {}
 
 PdxHelper::~PdxHelper() {}
 
+std::shared_ptr<PdxInstanceImpl> PdxHelper::getPdxInstance(
+    const std::shared_ptr<PdxSerializable>& pdxObject) {
+  return std::dynamic_pointer_cast<PdxInstanceImpl>(pdxObject);
+}
+
+bool PdxHelper::isPdxInstance(
+    const std::shared_ptr<PdxSerializable>& pdxObject) {
+  return (getPdxInstance(pdxObject) != nullptr);
+}
+
 void PdxHelper::serializePdx(
     DataOutput& output, const std::shared_ptr<PdxSerializable>& pdxObject) {
   auto pdxII = std::dynamic_pointer_cast<PdxInstanceImpl>(pdxObject);
@@ -54,7 +64,7 @@ void PdxHelper::serializePdx(
   auto pdxTypeRegistry = cacheImpl->getPdxTypeRegistry();
   auto& cachePerfStats = cacheImpl->getCachePerfStats();
 
-  if (pdxII != nullptr) {
+  if (isPdxInstance(pdxObject)) {
     auto piPt = pdxII->getPdxType();
     if (piPt != nullptr &&
         piPt->getTypeId() ==
