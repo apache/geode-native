@@ -119,16 +119,17 @@ void PdxHelper::registerPdxType(
   // need to grab type info, as fromData is not called yet
   PdxWriterWithTypeCollector writer(output, className, pdxTypeRegistry);
   pdxObject->toData(writer);
+
   auto nType = writer.getPdxLocalType();
 
   nType->InitializeType();
   int32_t nTypeId = pdxTypeRegistry->getPDXIdForType(
       className.c_str(), DataOutputInternal::getPool(output), nType, true);
   nType->setTypeId(nTypeId);
-
-  writer.endObjectWriting();
   pdxTypeRegistry->addLocalPdxType(className, nType);
   pdxTypeRegistry->addPdxType(nTypeId, nType);
+
+  writer.endObjectWriting();
 
   cacheImpl->getCachePerfStats().incPdxSerialization(
       writer.getBytesWritten() + 1 + 2 * 4);  // pdxLen  93 DSID  len  typeID
