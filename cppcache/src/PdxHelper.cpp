@@ -81,6 +81,40 @@ void PdxHelper::serializePdxInstance(
   delete[] pdxStream;
 }
 
+PdxRemoteWriter PdxHelper::createPdxRemoteWriter(
+    const std::shared_ptr<PdxTypeRegistry>& pdxTypeRegistry,
+    const std::shared_ptr<PdxSerializable>& pdxObject, DataOutput& output,
+    const std::string& className) {
+  if (auto pd = pdxTypeRegistry->getPreserveData(pdxObject)) {
+    auto mergedPdxType = pdxTypeRegistry->getPdxType(pd->getMergedTypeId());
+    return PdxRemoteWriter(output, mergedPdxType, pd, pdxTypeRegistry);
+  } else {
+    return PdxRemoteWriter(output, className, pdxTypeRegistry);
+  }
+}
+
+// void PdxHelper::serializePdxSerializable(
+//    const std::shared_ptr<PdxSerializable>& pdxObject, CacheImpl* cacheImpl,
+//    std::shared_ptr<PdxTypeRegistry>& pdxTypeRegistry, DataOutput& output) {
+//  auto&& className = pdxObject->getClassName();
+//
+//  if (!pdxTypeRegistry->getLocalPdxType(className)) {
+//    registerPdxType(cacheImpl, className, pdxObject, output);
+//
+//  } else {
+//    auto pdxRemoteWriter =
+//        createPdxRemoteWriter(pdxTypeRegistry, pdxObject, output, className);
+//    pdxObject->toData(pdxRemoteWriter);
+//    pdxRemoteWriter.endObjectWriting();
+//    uint8_t* stPos = const_cast<uint8_t*>(output.getBuffer()) +
+//                     pdxRemoteWriter.getStartPositionOffset();
+//    int pdxLen = PdxHelper::readInt32(stPos);
+//
+//    cacheImpl->getCachePerfStats().incPdxSerialization(
+//        pdxLen + 1 + 2 * 4);  // pdxLen  93 DSID  len  typeID
+//  }
+//}
+
 void PdxHelper::registerPdxType(
     CacheImpl* cacheImpl, const std::string& className,
     const std::shared_ptr<PdxSerializable>& pdxObject, DataOutput& output) {
@@ -125,22 +159,8 @@ void PdxHelper::serializePdx(
     } else {
       // we know local type, need to see preserved data
 
-      // if object got from server than create instance of RemoteWriter
-      // otherwise local writer. now always remotewriter as we have API
-      // Read/WriteUnreadFields so we don't know whether user has used those or
-      // not;; Can we do some trick here?
-
-      auto createPdxRemoteWriter = [&]() -> PdxRemoteWriter {
-        if (auto pd = pdxTypeRegistry->getPreserveData(pdxObject)) {
-          auto mergedPdxType =
-              pdxTypeRegistry->getPdxType(pd->getMergedTypeId());
-          return PdxRemoteWriter(output, mergedPdxType, pd, pdxTypeRegistry);
-        } else {
-          return PdxRemoteWriter(output, className, pdxTypeRegistry);
-        }
-      };
-
-      PdxRemoteWriter prw = createPdxRemoteWriter();
+      PdxRemoteWriter prw =
+          createPdxRemoteWriter(pdxTypeRegistry, pdxObject, output, className);
 
       pdxObject->toData(prw);
       prw.endObjectWriting();
@@ -193,8 +213,8 @@ std::shared_ptr<PdxSerializable> PdxHelper::deserializePdx(DataInput& dataInput,
       if (preserveData != nullptr) {
         pdxTypeRegistry->setPreserveData(
             pdxObjectptr, preserveData,
-            cacheImpl
-                ->getExpiryTaskManager());  // it will set data in weakhashmap
+            cacheImpl->getExpiryTaskManager());  // it will set data in
+                                                 // weakhashmap
       }
       prr.moveStream();
 

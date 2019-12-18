@@ -31,6 +31,7 @@ namespace geode {
 namespace client {
 
 class PdxInstanceImpl;
+class PdxRemoteWriter;
 
 class PdxHelper {
  private:
@@ -61,6 +62,11 @@ class PdxHelper {
                               const std::string& className,
                               const std::shared_ptr<PdxSerializable>& pdxObject,
                               DataOutput& output);
+
+  static PdxRemoteWriter createPdxRemoteWriter(
+      const std::shared_ptr<PdxTypeRegistry>& pdxTypeRegistry,
+      const std::shared_ptr<PdxSerializable>& pdxObject, DataOutput& output,
+      const std::string& className);
 
   static void serializePdxInstance(
       const std::shared_ptr<PdxInstanceImpl>& pdxInstance,
