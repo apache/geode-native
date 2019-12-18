@@ -72,6 +72,10 @@ class PdxHelper {
       const std::shared_ptr<PdxInstanceImpl>& pdxInstance,
       std::shared_ptr<PdxTypeRegistry>& pdxTypeRegistry, DataOutput& output);
 
+  static void serializePdxSerializable(
+      const std::shared_ptr<PdxSerializable>& pdxObject, CacheImpl* cacheImpl,
+      std::shared_ptr<PdxTypeRegistry>& pdxTypeRegistry, DataOutput& output);
+
   static void serializePdx(DataOutput& output,
                            const std::shared_ptr<PdxSerializable>& pdxObject);
 
