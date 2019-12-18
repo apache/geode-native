@@ -57,6 +57,30 @@ bool PdxHelper::isPdxInstance(
   return (getPdxInstance(pdxObject) != nullptr);
 }
 
+bool PdxHelper::hasPdxTypeId(
+    const std::shared_ptr<PdxInstanceImpl>& pdxObject) {
+  auto objectType = pdxObject->getPdxType();
+  return (objectType && (objectType->getTypeId() != 0));
+}
+
+void PdxHelper::serializePdxInstance(
+    const std::shared_ptr<PdxInstanceImpl>& pdxInstance,
+    std::shared_ptr<PdxTypeRegistry>& pdxTypeRegistry, DataOutput& output) {
+  if (!hasPdxTypeId(pdxInstance)) {
+    int typeId = pdxTypeRegistry->getPDXIdForType(
+        pdxInstance->getPdxType(), DataOutputInternal::getPool(output));
+    pdxInstance->setPdxId(typeId);
+  }
+  auto pdxLocalWriter =
+      PdxLocalWriter(output, pdxInstance->getPdxType(), pdxTypeRegistry);
+  pdxInstance->toData(pdxLocalWriter);
+  pdxLocalWriter.endObjectWriting();  // now write typeid
+  auto len = 0;
+  uint8_t* pdxStream = pdxLocalWriter.getPdxStream(len);
+  pdxInstance->updatePdxStream(pdxStream, len);
+  delete[] pdxStream;
+}
+
 void PdxHelper::serializePdx(
     DataOutput& output, const std::shared_ptr<PdxSerializable>& pdxObject) {
   auto pdxII = std::dynamic_pointer_cast<PdxInstanceImpl>(pdxObject);
@@ -65,24 +89,7 @@ void PdxHelper::serializePdx(
   auto& cachePerfStats = cacheImpl->getCachePerfStats();
 
   if (isPdxInstance(pdxObject)) {
-    auto piPt = pdxII->getPdxType();
-    if (piPt != nullptr &&
-        piPt->getTypeId() ==
-            0)  // from pdxInstance factory need to get typeid from server
-    {
-      int typeId = pdxTypeRegistry->getPDXIdForType(
-          piPt, DataOutputInternal::getPool(output));
-      pdxII->setPdxId(typeId);
-    }
-    auto plw = PdxLocalWriter(output, piPt, pdxTypeRegistry);
-    pdxII->toData(plw);
-    plw.endObjectWriting();  // now write typeid
-    int len = 0;
-    uint8_t* pdxStream = plw.getPdxStream(len);
-    pdxII->updatePdxStream(pdxStream, len);
-
-    delete[] pdxStream;
-
+    serializePdxInstance(getPdxInstance(pdxObject), pdxTypeRegistry, output);
     return;
   }
 
