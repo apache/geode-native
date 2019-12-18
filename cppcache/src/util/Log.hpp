@@ -149,12 +149,12 @@ class APACHE_GEODE_EXPORT Log {
   /**
    * Returns the current log level.
    */
-  static LogLevel logLevel() { return s_logLevel; }
+  static LogLevel logLevel();
 
   /**
    * Set the current log level.
    */
-  static void setLogLevel(LogLevel level) { s_logLevel = level; }
+  static void setLogLevel(LogLevel level);
 
   /**
    * Initializes logging facility with given level and filenames.
@@ -208,308 +208,224 @@ class APACHE_GEODE_EXPORT Log {
   /**
    * Returns whether log messages at given level are enabled.
    */
-  static bool enabled(LogLevel level) {
-    return (((s_doingDebug && level == LogLevel::Debug) ||
-             GEODE_HIGHEST_LOG_LEVEL >= level) &&
-            s_logLevel >= level);
-  }
+  static bool enabled(LogLevel level);
 
   /**
    * Logs a message at given level.
    */
-  static void log(LogLevel level, const char* msg) {
-    if (enabled(level)) put(level, msg);
-  }
+  static void log(LogLevel level, const char* msg);
 
   /**
    * Logs both a message and thrown exception.
    */
-  static void logThrow(LogLevel level, const char* msg, const Exception& ex) {
-    if (enabled(level)) putThrow(level, msg, ex);
-  }
+  static void logThrow(LogLevel level, const char* msg, const Exception& ex);
 
   /**
    * Logs both a message and caught exception.
    */
-  static void logCatch(LogLevel level, const char* msg, const Exception& ex) {
-    if (enabled(level)) putCatch(level, msg, ex);
-  }
+  static void logCatch(LogLevel level, const char* msg, const Exception& ex);
 
   /******/
 
   /**
    * Returns whether "error" log messages are enabled.
    */
-  static bool errorEnabled() {
-    return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Error &&
-           s_logLevel >= LogLevel::Error;
-  }
+  static bool errorEnabled();
 
   /**
    * Logs a message.
    * The message level is "error".
    */
-  static void error(const char* msg) {
-    if (errorEnabled()) put(LogLevel::Error, msg);
-  }
+  static void error(const char* msg);
 
-  static void error(const std::string& msg) {
-    if (errorEnabled()) put(LogLevel::Error, msg.c_str());
-  }
+  static void error(const std::string& msg);
 
   /**
    * Logs both a message and thrown exception.
    * The message level is "error".
    */
-  static void errorThrow(const char* msg, const Exception& ex) {
-    if (errorEnabled()) putThrow(LogLevel::Error, msg, ex);
-  }
+  static void errorThrow(const char* msg, const Exception& ex);
 
   /**
    * Writes both a message and caught exception.
    * The message level is "error".
    */
-  static void errorCatch(const char* msg, const Exception& ex) {
-    if (errorEnabled()) putCatch(LogLevel::Error, msg, ex);
-  }
+  static void errorCatch(const char* msg, const Exception& ex);
 
   /******/
 
   /**
    * Returns whether "warning" log messages are enabled.
    */
-  static bool warningEnabled() {
-    return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Warning &&
-           s_logLevel >= LogLevel::Warning;
-  }
+  static bool warningEnabled();
 
   /**
    * Logs a message.
    * The message level is "warning".
    */
-  static void warning(const char* msg) {
-    if (warningEnabled()) put(LogLevel::Warning, msg);
-  }
+  static void warning(const char* msg);
 
   /**
    * Logs both a message and thrown exception.
    * The message level is "warning".
    */
-  static void warningThrow(const char* msg, const Exception& ex) {
-    if (warningEnabled()) putThrow(LogLevel::Warning, msg, ex);
-  }
+  static void warningThrow(const char* msg, const Exception& ex);
 
   /**
    * Writes both a message and caught exception.
    * The message level is "warning".
    */
-  static void warningCatch(const char* msg, const Exception& ex) {
-    if (warningEnabled()) putCatch(LogLevel::Warning, msg, ex);
-  }
+  static void warningCatch(const char* msg, const Exception& ex);
 
   /******/
 
   /**
    * Returns whether "info" log messages are enabled.
    */
-  static bool infoEnabled() {
-    return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Info &&
-           s_logLevel >= LogLevel::Info;
-  }
+  static bool infoEnabled();
 
   /**
    * Logs a message.
    * The message level is "info".
    */
-  static void info(const char* msg) {
-    if (infoEnabled()) put(LogLevel::Info, msg);
-  }
+  static void info(const char* msg);
 
   /**
    * Logs both a message and thrown exception.
    * The message level is "info".
    */
-  static void infoThrow(const char* msg, const Exception& ex) {
-    if (infoEnabled()) putThrow(LogLevel::Info, msg, ex);
-  }
+  static void infoThrow(const char* msg, const Exception& ex);
 
   /**
    * Writes both a message and caught exception.
    * The message level is "info".
    */
-  static void infoCatch(const char* msg, const Exception& ex) {
-    if (infoEnabled()) putCatch(LogLevel::Info, msg, ex);
-  }
+  static void infoCatch(const char* msg, const Exception& ex);
 
   /******/
 
   /**
    * Returns whether "config" log messages are enabled.
    */
-  static bool configEnabled() {
-    return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Config &&
-           s_logLevel >= LogLevel::Config;
-  }
+  static bool configEnabled();
 
   /**
    * Logs a message.
    * The message level is "config".
    */
-  static void config(const char* msg) {
-    if (configEnabled()) put(LogLevel::Config, msg);
-  }
+  static void config(const char* msg);
 
   /**
    * Logs both a message and thrown exception.
    * The message level is "config".
    */
-  static void configThrow(const char* msg, const Exception& ex) {
-    if (configEnabled()) putThrow(LogLevel::Config, msg, ex);
-  }
+  static void configThrow(const char* msg, const Exception& ex);
 
   /**
    * Writes both a message and caught exception.
    * The message level is "config".
    */
-  static void configCatch(const char* msg, const Exception& ex) {
-    if (configEnabled()) putCatch(LogLevel::Config, msg, ex);
-  }
+  static void configCatch(const char* msg, const Exception& ex);
 
   /******/
 
   /**
    * Returns whether "fine" log messages are enabled.
    */
-  static bool fineEnabled() {
-    return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Fine &&
-           s_logLevel >= LogLevel::Fine;
-  }
+  static bool fineEnabled();
 
   /**
    * Logs a message.
    * The message level is "fine".
    */
-  static void fine(const char* msg) {
-    if (fineEnabled()) put(LogLevel::Fine, msg);
-  }
+  static void fine(const char* msg);
 
   /**
    * Logs both a message and thrown exception.
    * The message level is "fine".
    */
-  static void fineThrow(const char* msg, const Exception& ex) {
-    if (fineEnabled()) putThrow(LogLevel::Fine, msg, ex);
-  }
+  static void fineThrow(const char* msg, const Exception& ex);
 
   /**
    * Writes both a message and caught exception.
    * The message level is "fine".
    */
-  static void fineCatch(const char* msg, const Exception& ex) {
-    if (fineEnabled()) putCatch(LogLevel::Fine, msg, ex);
-  }
+  static void fineCatch(const char* msg, const Exception& ex);
 
   /******/
 
   /**
    * Returns whether "finer" log messages are enabled.
    */
-  static bool finerEnabled() {
-    return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Finer &&
-           s_logLevel >= LogLevel::Finer;
-  }
+  static bool finerEnabled();
 
   /**
    * Logs a message.
    * The message level is "finer".
    */
-  static void finer(const char* msg) {
-    if (finerEnabled()) put(LogLevel::Finer, msg);
-  }
+  static void finer(const char* msg);
 
   /**
    * Logs both a message and thrown exception.
    * The message level is "finer".
    */
-  static void finerThrow(const char* msg, const Exception& ex) {
-    if (finerEnabled()) putThrow(LogLevel::Finer, msg, ex);
-  }
+  static void finerThrow(const char* msg, const Exception& ex);
 
   /**
    * Writes both a message and caught exception.
    * The message level is "finer".
    */
-  static void finerCatch(const char* msg, const Exception& ex) {
-    if (finerEnabled()) putCatch(LogLevel::Finer, msg, ex);
-  }
+  static void finerCatch(const char* msg, const Exception& ex);
 
   /******/
 
   /**
    * Returns whether "finest" log messages are enabled.
    */
-  static bool finestEnabled() {
-    return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Finest &&
-           s_logLevel >= LogLevel::Finest;
-  }
+  static bool finestEnabled();
 
   /**
    * Logs a message.
    * The message level is "finest".
    */
-  static void finest(const char* msg) {
-    if (finestEnabled()) put(LogLevel::Finest, msg);
-  }
+  static void finest(const char* msg);
 
   /**
    * Logs both a message and thrown exception.
    * The message level is "finest".
    */
-  static void finestThrow(const char* msg, const Exception& ex) {
-    if (finestEnabled()) putThrow(LogLevel::Finest, msg, ex);
-  }
+  static void finestThrow(const char* msg, const Exception& ex);
 
   /**
    * Writes both a message and caught exception.
    * The message level is "finest".
    */
-  static void finestCatch(const char* msg, const Exception& ex) {
-    if (finestEnabled()) putCatch(LogLevel::Finest, msg, ex);
-  }
+  static void finestCatch(const char* msg, const Exception& ex);
 
   /******/
 
   /**
    * Returns whether "debug" log messages are enabled.
    */
-  static bool debugEnabled() {
-    return (s_doingDebug || GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Debug) &&
-           s_logLevel >= LogLevel::Debug;
-  }
+  static bool debugEnabled();
 
   /**
    * Logs a message.
    * The message level is "debug".
    */
-  static void debug(const char* msg) {
-    if (debugEnabled()) put(LogLevel::Debug, msg);
-  }
+  static void debug(const char* msg);
 
   /**
    * Logs both a message and thrown exception.
    * The message level is "debug".
    */
-  static void debugThrow(const char* msg, const Exception& ex) {
-    if (debugEnabled()) putThrow(LogLevel::Debug, msg, ex);
-  }
+  static void debugThrow(const char* msg, const Exception& ex);
 
   /**
    * Writes both a message and caught exception.
    * The message level is "debug".
    */
-  static void debugCatch(const char* msg, const Exception& ex) {
-    if (debugEnabled()) putCatch(LogLevel::Debug, msg, ex);
-  }
+  static void debugCatch(const char* msg, const Exception& ex);
 
   /******/
 
@@ -521,14 +437,6 @@ class APACHE_GEODE_EXPORT Log {
 
  private:
   static LogLevel s_logLevel;
-
-  /******/
-
-#ifdef DEBUG
-  enum { s_doingDebug = 1 };
-#else
-  enum { s_doingDebug = 0 };
-#endif
 
   /******/
 
@@ -548,23 +456,17 @@ class APACHE_GEODE_EXPORT Log {
 /******************************************************************************/
 /******************************************************************************/
 
-class LogFn {
+class APACHE_GEODE_EXPORT LogFn {
   const char* m_functionName;
   LogLevel m_level;
 
  public:
-  explicit LogFn(const char* functionName, LogLevel level = LogLevel::Finest)
-      : m_functionName(functionName), m_level(level) {
-    if (Log::enabled(m_level)) Log::enterFn(m_level, m_functionName);
-  }
+  explicit LogFn(const char* functionName, LogLevel level = LogLevel::Finest);
 
-  ~LogFn() {
-    if (Log::enabled(m_level)) Log::exitFn(m_level, m_functionName);
-  }
+  ~LogFn();
 
- private:
-  LogFn(const LogFn& rhs);           // never defined
-  void operator=(const LogFn& rhs);  // never defined
+  LogFn(const LogFn& rhs) = delete;
+  LogFn& operator=(const LogFn& rhs) = delete;
 };
 
 /******************************************************************************/
@@ -585,37 +487,21 @@ class APACHE_GEODE_EXPORT LogVarargs {
   static void finer(const char* fmt, ...);
   static void finest(const char* fmt, ...);
 
-  inline static void debug(const std::string& message) {
-    Log::put(LogLevel::Debug, message.c_str());
-  }
+  static void debug(const std::string& message);
 
-  inline static void error(const std::string& message) {
-    Log::put(LogLevel::Error, message.c_str());
-  }
+  static void error(const std::string& message);
 
-  inline static void warn(const std::string& message) {
-    Log::put(LogLevel::Warning, message.c_str());
-  }
+  static void warn(const std::string& message);
 
-  inline static void info(const std::string& message) {
-    Log::put(LogLevel::Info, message.c_str());
-  }
+  static void info(const std::string& message);
 
-  inline static void config(const std::string& message) {
-    Log::put(LogLevel::Config, message.c_str());
-  }
+  static void config(const std::string& message);
 
-  inline static void fine(const std::string& message) {
-    Log::put(LogLevel::Fine, message.c_str());
-  }
+  static void fine(const std::string& message);
 
-  inline static void finer(const std::string& message) {
-    Log::put(LogLevel::Finer, message.c_str());
-  }
+  static void finer(const std::string& message);
 
-  inline static void finest(const std::string& message) {
-    Log::put(LogLevel::Finest, message.c_str());
-  }
+  static void finest(const std::string& message);
 };
 }  // namespace client
 }  // namespace geode

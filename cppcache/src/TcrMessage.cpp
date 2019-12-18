@@ -40,6 +40,7 @@
 #include "ThinClientPoolDM.hpp"
 #include "ThinClientRegion.hpp"
 #include "util/JavaModifiedUtf8.hpp"
+#include "util/string.hpp"
 
 #pragma error_messages(off, SEC_UNINITIALIZED_MEM_READ)
 

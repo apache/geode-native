@@ -20,11 +20,7 @@
 #ifndef GEODE_UTIL_JAVAMODIFIEDUTF8_H_
 #define GEODE_UTIL_JAVAMODIFIEDUTF8_H_
 
-#include <codecvt>
-#include <locale>
 #include <string>
-
-#include "string.hpp"
 
 namespace apache {
 namespace geode {
@@ -36,142 +32,34 @@ struct JavaModifiedUtf8 {
    * Calculate the length of the given UTF-8 string when encoded in Java
    * Modified UTF-8.
    */
-  inline static size_t encodedLength(const std::string& utf8) {
-    if (utf8.empty()) {
-      return 0;
-    }
-
-    // TODO string optimize for direct calculation
-    return encodedLength(to_utf16(utf8));
-  }
+  static size_t encodedLength(const std::string& utf8);
 
   /**
    * Calculate the length of the given UTF-16 string when encoded in Java
    * Modified UTF-8.
    */
-  inline static size_t encodedLength(const std::u16string& utf16) {
-    return encodedLength(utf16.data(), utf16.length());
-  }
+  static size_t encodedLength(const std::u16string& utf16);
 
-  inline static size_t encodedLength(const char16_t* data, size_t length) {
-    size_t encodedLen = 0;
-    while (length-- > 0) {
-      const char16_t c = *(data++);
-      if (c == 0) {
-        // NUL
-        encodedLen += 2;
-      } else if (c < 0x80) {
-        // ASCII
-        encodedLen++;
-      } else if (c < 0x800) {
-        encodedLen += 2;
-      } else {
-        encodedLen += 3;
-      }
-    }
-    return encodedLen;
-  }
+  static size_t encodedLength(const char16_t* data, size_t length);
 
   /**
    * Converts given UTF-8 string to Java Modified UTF-8 string.
    */
-  inline static std::string fromString(const std::string& utf8) {
-    return fromString(to_utf16(utf8));
-  }
+  static std::string fromString(const std::string& utf8);
 
   /**
    * Converts given UTF-16 string to Java Modified UTF-8 string.
    */
-  inline static std::string fromString(const std::u16string& utf16) {
-    std::string jmutf8;
-    jmutf8.reserve(utf16.length());
-
-    for (auto&& c : utf16) {
-      encode(c, jmutf8);
-    }
-
-    return jmutf8;
-  }
+  static std::string fromString(const std::u16string& utf16);
 
   /**
    * Converts a single UTF-16 code unit into Java Modified UTF-8 code units.
    */
-  inline static void encode(const char16_t c, std::string& jmutf8) {
-    if (c == 0) {
-      // NUL
-      jmutf8 += static_cast<uint8_t>(0xc0);
-      jmutf8 += static_cast<uint8_t>(0x80);
-    } else if (c < 0x80) {
-      // ASCII character
-      jmutf8 += static_cast<uint8_t>(c);
-    } else if (c < 0x800) {
-      jmutf8 += static_cast<uint8_t>(0xC0 | c >> 6);
-      jmutf8 += static_cast<uint8_t>(0x80 | (c & 0x3F));
-    } else {
-      jmutf8 += static_cast<uint8_t>(0xE0 | c >> 12);
-      jmutf8 += static_cast<uint8_t>(0x80 | ((c >> 6) & 0x3F));
-      jmutf8 += static_cast<uint8_t>(0x80 | (c & 0x3F));
-    }
-  }
+  static void encode(const char16_t c, std::string& jmutf8);
 
-  inline static std::u16string decode(const char* buf, uint16_t len) {
-    std::u16string value;
-    const auto end = buf + len;
-    while (buf < end) {
-      value += decodeJavaModifiedUtf8Char(&buf);
-    }
-    return value;
-  }
+  static std::u16string decode(const char* buf, uint16_t len);
 
-  inline static char16_t decodeJavaModifiedUtf8Char(const char** pbuf) {
-    char16_t c;
-
-    // get next byte unsigned
-    int32_t b = **pbuf & 0xff;
-    (*pbuf)++;
-    int32_t k = b >> 5;
-    // classify based on the high order 3 bits
-    switch (k) {
-      case 6: {
-        // two byte encoding
-        // 110yyyyy 10xxxxxx
-        // use low order 6 bits
-        int32_t y = b & 0x1f;
-        // use low order 6 bits of the next byte
-        // It should have high order bits 10, which we don't check.
-        int32_t x = **pbuf & 0x3f;
-        (*pbuf)++;
-        // 00000yyy yyxxxxxx
-        c = (y << 6 | x);
-        break;
-      }
-      case 7: {
-        // three byte encoding
-        // 1110zzzz 10yyyyyy 10xxxxxx
-        // use low order 4 bits
-        int32_t z = b & 0x0f;
-        // use low order 6 bits of the next byte
-        // It should have high order bits 10, which we don't check.
-        int32_t y = **pbuf & 0x3f;
-        (*pbuf)++;
-        // use low order 6 bits of the next byte
-        // It should have high order bits 10, which we don't check.
-        int32_t x = **pbuf & 0x3f;
-        (*pbuf)++;
-        // zzzzyyyy yyxxxxxx
-        c = static_cast<char16_t>(z << 12 | y << 6 | x);
-        break;
-      }
-      default:
-        // one byte encoding
-        // 0xxxxxxx
-        // use just low order 7 bits
-        // 00000000 0xxxxxxx
-        c = static_cast<char16_t>(b & 0x7f);
-        break;
-    }
-    return c;
-  }
+  static char16_t decodeJavaModifiedUtf8Char(const char** pbuf);
 };
 
 }  // namespace internal
