@@ -198,7 +198,7 @@ class PdxLocalWriter : public PdxWriter {
 
   // this is used to get pdx stream when WriteablePdxStream udpadates the field
   // It should be called after pdx stream has been written to output
-  uint8_t* getPdxStream(int& pdxLen);
+  uint8_t* getPdxStream();
 
   void writeByte(int8_t byte);
 

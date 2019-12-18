@@ -95,6 +95,7 @@ void PdxLocalWriter::writePdxHeader() {
   PdxHelper::writeInt32(const_cast<uint8_t*>(starpos + 4), typeId);
 
   writeOffsets(len);
+  m_bytesWritten = len;
 }
 
 void PdxLocalWriter::writeOffsets(int32_t len) {
@@ -330,11 +331,13 @@ PdxWriter& PdxLocalWriter::markIdentityField(const std::string&) {
   return *this;
 }
 
-uint8_t* PdxLocalWriter::getPdxStream(int& pdxLen) {
+uint8_t* PdxLocalWriter::getPdxStream() {
   uint8_t* stPos =
       const_cast<uint8_t*>(m_dataOutput->getBuffer()) + m_startPositionOffset;
   int len = PdxHelper::readInt32 /*readByte*/ (stPos);
-  pdxLen = len;
+  auto msg = std::string("len = ") + std::to_string(len) +
+             ", m_bytesWritten = " + std::to_string(m_bytesWritten);
+  LOGDEBUG("PdxLocalWriter::%s(%p): %s", __FUNCTION__, this, msg.c_str());
   // ignore len and typeid
   return m_dataOutput->getBufferCopyFrom(stPos + 8, len);
 }
