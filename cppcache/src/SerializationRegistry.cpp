@@ -409,8 +409,7 @@ int32_t SerializationRegistry::GetPDXIdForType(
   if (auto poolDM = dynamic_cast<ThinClientPoolDM*>(pool)) {
     typeId = poolDM->GetPDXIdForType(pdxType);
     poolDM->BroadcastPdxTypeToOtherPools(pdxType, typeId);
-  }
-  else {
+  } else {
     throw IllegalStateException("Pool not found, Pdx operation failed");
   }
 
