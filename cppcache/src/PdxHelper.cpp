@@ -75,9 +75,8 @@ void PdxHelper::serializePdxInstance(
       PdxLocalWriter(output, pdxInstance->getPdxType(), pdxTypeRegistry);
   pdxInstance->toData(pdxLocalWriter);
   pdxLocalWriter.endObjectWriting();  // now write typeid
-  auto len = 0;
-  uint8_t* pdxStream = pdxLocalWriter.getPdxStream(len);
-  pdxInstance->updatePdxStream(pdxStream, len);
+  auto pdxStream = pdxLocalWriter.getPdxStream();
+  pdxInstance->updatePdxStream(pdxStream, pdxLocalWriter.getBytesWritten());
   delete[] pdxStream;
 }
 
@@ -106,12 +105,10 @@ void PdxHelper::serializePdxSerializable(
         createPdxRemoteWriter(pdxTypeRegistry, pdxObject, output, className);
     pdxObject->toData(pdxRemoteWriter);
     pdxRemoteWriter.endObjectWriting();
-    uint8_t* stPos = const_cast<uint8_t*>(output.getBuffer()) +
-                     pdxRemoteWriter.getStartPositionOffset();
-    int pdxLen = PdxHelper::readInt32(stPos);
 
     cacheImpl->getCachePerfStats().incPdxSerialization(
-        pdxLen + 1 + 2 * 4);  // pdxLen  93 DSID  len  typeID
+        pdxRemoteWriter.getBytesWritten() + 1 +
+        2 * 4);  // pdxLen  93 DSID  len  typeID
   }
 }
 
@@ -133,11 +130,8 @@ void PdxHelper::registerPdxType(
   pdxTypeRegistry->addLocalPdxType(className, nType);
   pdxTypeRegistry->addPdxType(nTypeId, nType);
 
-  uint8_t* stPos = const_cast<uint8_t*>(output.getBuffer()) +
-                   writer.getStartPositionOffset();
-  int pdxLen = PdxHelper::readInt32(stPos);
   cacheImpl->getCachePerfStats().incPdxSerialization(
-      pdxLen + 1 + 2 * 4);  // pdxLen  93 DSID  len  typeID
+      writer.getBytesWritten() + 1 + 2 * 4);  // pdxLen  93 DSID  len  typeID
 }
 
 void PdxHelper::serializePdx(

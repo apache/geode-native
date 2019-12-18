@@ -43,7 +43,7 @@ class APACHE_GEODE_EXPORT PdxWriter {
   /**
    * @brief constructors
    */
-  PdxWriter() = default;
+  PdxWriter() : m_bytesWritten(0){};
 
   PdxWriter(PdxWriter&& move) = default;
 
@@ -400,6 +400,11 @@ class APACHE_GEODE_EXPORT PdxWriter {
       std::shared_ptr<PdxUnreadFields> unread) = 0;
 
   virtual std::shared_ptr<PdxSerializer> getPdxSerializer() const = 0;
+
+  virtual int32_t getBytesWritten() { return m_bytesWritten; }
+
+ protected:
+  int32_t m_bytesWritten;
 };
 }  // namespace client
 }  // namespace geode

@@ -317,8 +317,9 @@ apache::geode::client::Cache Cluster::createCache(
     cacheFactory.set(property.first, property.second);
   }
 
-  auto cache = cacheFactory.set("log-level", "none")
+  auto cache = cacheFactory.set("log-level", "debug")
                    .set("statistic-sampling-enabled", "false")
+                   .set("log-file", "geode_native.log")
                    .create();
 
   auto poolFactory =
