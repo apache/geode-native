@@ -81,6 +81,31 @@ void PdxHelper::serializePdxInstance(
   delete[] pdxStream;
 }
 
+void PdxHelper::registerPdxType(
+    CacheImpl* cacheImpl, const std::string& className,
+    const std::shared_ptr<PdxSerializable>& pdxObject, DataOutput& output) {
+  auto pdxTypeRegistry = cacheImpl->getPdxTypeRegistry();
+  // need to grab type info, as fromData is not called yet
+  PdxWriterWithTypeCollector writer(output, className, pdxTypeRegistry);
+  pdxObject->toData(writer);
+  auto nType = writer.getPdxLocalType();
+
+  nType->InitializeType();
+  int32_t nTypeId = pdxTypeRegistry->getPDXIdForType(
+      className.c_str(), DataOutputInternal::getPool(output), nType, true);
+  nType->setTypeId(nTypeId);
+
+  writer.endObjectWriting();
+  pdxTypeRegistry->addLocalPdxType(className, nType);
+  pdxTypeRegistry->addPdxType(nTypeId, nType);
+
+  uint8_t* stPos = const_cast<uint8_t*>(output.getBuffer()) +
+                   writer.getStartPositionOffset();
+  int pdxLen = PdxHelper::readInt32(stPos);
+  cacheImpl->getCachePerfStats().incPdxSerialization(
+      pdxLen + 1 + 2 * 4);  // pdxLen  93 DSID  len  typeID
+}
+
 void PdxHelper::serializePdx(
     DataOutput& output, const std::shared_ptr<PdxSerializable>& pdxObject) {
   auto pdxII = std::dynamic_pointer_cast<PdxInstanceImpl>(pdxObject);
@@ -91,64 +116,43 @@ void PdxHelper::serializePdx(
   if (isPdxInstance(pdxObject)) {
     serializePdxInstance(getPdxInstance(pdxObject), pdxTypeRegistry, output);
     return;
-  }
+  } else {
+    auto&& className = pdxObject->getClassName();
+    auto localPdxType = pdxTypeRegistry->getLocalPdxType(className);
 
-  auto&& className = pdxObject->getClassName();
-  auto localPdxType = pdxTypeRegistry->getLocalPdxType(className);
+    if (localPdxType == nullptr) {
+      registerPdxType(cacheImpl, className, pdxObject, output);
+    } else {
+      // we know local type, need to see preserved data
 
-  if (localPdxType == nullptr) {
-    // need to grab type info, as fromdata is not called yet
+      // if object got from server than create instance of RemoteWriter
+      // otherwise local writer. now always remotewriter as we have API
+      // Read/WriteUnreadFields so we don't know whether user has used those or
+      // not;; Can we do some trick here?
 
-    PdxWriterWithTypeCollector ptc(output, className, pdxTypeRegistry);
-    pdxObject->toData(ptc);
-    auto nType = ptc.getPdxLocalType();
+      auto createPdxRemoteWriter = [&]() -> PdxRemoteWriter {
+        if (auto pd = pdxTypeRegistry->getPreserveData(pdxObject)) {
+          auto mergedPdxType =
+              pdxTypeRegistry->getPdxType(pd->getMergedTypeId());
+          return PdxRemoteWriter(output, mergedPdxType, pd, pdxTypeRegistry);
+        } else {
+          return PdxRemoteWriter(output, className, pdxTypeRegistry);
+        }
+      };
 
-    nType->InitializeType();
-    int32_t nTypeId = pdxTypeRegistry->getPDXIdForType(
-        className.c_str(), DataOutputInternal::getPool(output), nType, true);
-    nType->setTypeId(nTypeId);
+      PdxRemoteWriter prw = createPdxRemoteWriter();
 
-    ptc.endObjectWriting();
-    pdxTypeRegistry->addLocalPdxType(className, nType);
-    pdxTypeRegistry->addPdxType(nTypeId, nType);
+      pdxObject->toData(prw);
+      prw.endObjectWriting();
 
-    if (cacheImpl != nullptr) {
-      uint8_t* stPos = const_cast<uint8_t*>(output.getBuffer()) +
-                       ptc.getStartPositionOffset();
-      int pdxLen = PdxHelper::readInt32(stPos);
-      cachePerfStats.incPdxSerialization(
-          pdxLen + 1 + 2 * 4);  // pdxLen + 93 DSID + len + typeID
-    }
-
-  } else  // we know locasl type, need to see preerved data
-  {
-    // if object got from server than create instance of RemoteWriter otherwise
-    // local writer.
-    // now always remotewriter as we have API Read/WriteUnreadFields
-    // so we don't know whether user has used those or not;; Can we do some
-    // trick here?
-
-    auto createPdxRemoteWriter = [&]() -> PdxRemoteWriter {
-      if (auto pd = pdxTypeRegistry->getPreserveData(pdxObject)) {
-        auto mergedPdxType = pdxTypeRegistry->getPdxType(pd->getMergedTypeId());
-        return PdxRemoteWriter(output, mergedPdxType, pd, pdxTypeRegistry);
-      } else {
-        return PdxRemoteWriter(output, className, pdxTypeRegistry);
+      //[ToDo] need to write bytes for stats
+      if (cacheImpl != nullptr) {
+        uint8_t* stPos = const_cast<uint8_t*>(output.getBuffer()) +
+                         prw.getStartPositionOffset();
+        int pdxLen = PdxHelper::readInt32(stPos);
+        cachePerfStats.incPdxSerialization(
+            pdxLen + 1 + 2 * 4);  // pdxLen + 93 DSID + len + typeID
       }
-    };
-
-    PdxRemoteWriter prw = createPdxRemoteWriter();
-
-    pdxObject->toData(prw);
-    prw.endObjectWriting();
-
-    //[ToDo] need to write bytes for stats
-    if (cacheImpl != nullptr) {
-      uint8_t* stPos = const_cast<uint8_t*>(output.getBuffer()) +
-                       prw.getStartPositionOffset();
-      int pdxLen = PdxHelper::readInt32(stPos);
-      cachePerfStats.incPdxSerialization(
-          pdxLen + 1 + 2 * 4);  // pdxLen + 93 DSID + len + typeID
     }
   }
 }

@@ -57,6 +57,11 @@ class PdxHelper {
 
   static bool hasPdxTypeId(const std::shared_ptr<PdxInstanceImpl>& pdxObject);
 
+  static void registerPdxType(CacheImpl* cacheImpl,
+                              const std::string& className,
+                              const std::shared_ptr<PdxSerializable>& pdxObject,
+                              DataOutput& output);
+
   static void serializePdxInstance(
       const std::shared_ptr<PdxInstanceImpl>& pdxInstance,
       std::shared_ptr<PdxTypeRegistry>& pdxTypeRegistry, DataOutput& output);
