@@ -13,9 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-project( boost VERSION 1.68.0 LANGUAGES NONE )
+project( boost VERSION 1.72.0 LANGUAGES NONE )
 
-set( SHA256 da3411ea45622579d419bfda66f45cd0f8c32a181d84adfa936f5688388995cf )
+set( SHA256 c66e88d5786f2ca4dbebb14e06b566fb642a1a6947ad8cc9091f9f445134143f )
 
 set(_B2_FLAGS
   -d0
@@ -76,19 +76,6 @@ ExternalProject_Add( ${EXTERN}
 ExternalProject_Get_Property( ${EXTERN} SOURCE_DIR )
 ExternalProject_Get_Property( ${EXTERN} INSTALL_DIR )
 set(INSTALL_DIR "${INSTALL_DIR}/$<CONFIG>")
-
-if (NOT WIN32)
-# https://github.com/boostorg/process/issues/51
-  set( PATCH_FILE ${CMAKE_CURRENT_SOURCE_DIR}/patches)
-  ExternalProject_Add_Step( ${EXTERN} patches
-      ALWAYS 0
-      DEPENDEES download
-      DEPENDERS patch
-      DEPENDS ${PATCH_FILE}
-      BYPRODUCTS ${SOURCE_DIR}/boost/process/detail/posix/is_running.hpp
-      COMMAND ${Patch_EXECUTABLE} -u -N -p1 < ${PATCH_FILE}
-  )
-endif()
 
 function(ADD_BOOST_LIBRARY)
   set(options)

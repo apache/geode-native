@@ -13,9 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-project( gtest VERSION 1.8.1 LANGUAGES NONE )
+project( gtest VERSION 1.10.0 LANGUAGES NONE )
 
-set( SHA256 927827c183d01734cc5cfef85e0ff3f5a92ffe6188e0d18e909c5efebf28a0c7 )
+set( SHA256 94c634d499558a76fa649edb13721dce6e98fb1e7018dfaeba3cd7a083945e91 )
 
 include(ExternalProject)
 ExternalProject_Add( ${PROJECT_NAME}-extern

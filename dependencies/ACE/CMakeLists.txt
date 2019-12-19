@@ -13,9 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-project( ACE VERSION 6.5.5 LANGUAGES NONE )
+project( ACE VERSION 6.5.7 LANGUAGES NONE )
 
-set( SHA256 dc70f1422e5d880b7d2cb59483873acfe6918bb1456c7e36e8b510d9e7769f3b )
+set( SHA256 b966eaa82281c17a9c869609e6a1cdc617aa13e1123a8fce5bde93cb266d1fea )
 
 if ("SunOS" STREQUAL ${CMAKE_SYSTEM_NAME})
   set( ACE_PLATFORM sunos5_sunc++ )
@@ -30,8 +30,8 @@ elseif ("Linux" STREQUAL ${CMAKE_SYSTEM_NAME} )
   ## TODO fix visibility problem with g++
   set( _MAKE_ARGS ${_MAKE_ARGS} no_hidden_visibility=1 )
 elseif ("Darwin" STREQUAL ${CMAKE_SYSTEM_NAME} )
-  set( ACE_PLATFORM macosx_sierra )
-  set( ACE_CONFIG macosx-sierra )
+  set( ACE_PLATFORM macosx )
+  set( ACE_CONFIG macosx )
 elseif ("Windows" STREQUAL ${CMAKE_SYSTEM_NAME} )
   set( ACE_PLATFORM win32-msvc )
   set( ACE_CONFIG win32 )
