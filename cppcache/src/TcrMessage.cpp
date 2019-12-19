@@ -278,7 +278,7 @@ std::shared_ptr<CacheableBytes> TcrMessage::getDeltaBytes() {
   }
   auto retVal = CacheableBytes::create(
       std::vector<int8_t>(m_deltaBytes, m_deltaBytes + m_deltaBytesLen));
-  m_deltaBytes = nullptr;
+  _GEODE_SAFE_DELETE_ARRAY(m_deltaBytes);
   return retVal;
 }
 

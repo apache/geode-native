@@ -54,7 +54,7 @@ using apache::geode::client::testing::CacheableWrapper;
 using apache::geode::client::testing::CacheableWrapperFactory;
 
 bool isLocalServer = false;
-const char *endPoints = CacheHelper::getTcrEndpoints(isLocalServer, 3);
+const std::string endPoints = CacheHelper::getTcrEndpoints(isLocalServer, 3);
 
 static bool isLocator = false;
 const char *locatorsG =
@@ -201,13 +201,13 @@ class putThread : public ACE_Task_Base {
 #endif
 #define KEYSIZE 256
 
-std::vector<char *> storeEndPoints(const char *points) {
-  std::vector<char *> endpointNames;
-  if (points != nullptr) {
-    char *ep = strdup(points);
+std::vector<std::string> storeEndPoints(const std::string points) {
+  std::vector<std::string> endpointNames;
+  if (!points.empty()) {
+    char *ep = strdup(points.c_str());
     char *token = strtok(ep, ",");
     while (token) {
-      endpointNames.push_back(token);
+      endpointNames.push_back(std::string(token));
       token = strtok(nullptr, ",");
     }
     free(ep);
@@ -216,7 +216,7 @@ std::vector<char *> storeEndPoints(const char *points) {
   return endpointNames;
 }
 
-std::vector<char *> endpointNames = storeEndPoints(endPoints);
+std::vector<std::string> endpointNames = storeEndPoints(endPoints);
 
 DUNIT_TASK_DEFINITION(SERVER1, CreateServer1)
   {

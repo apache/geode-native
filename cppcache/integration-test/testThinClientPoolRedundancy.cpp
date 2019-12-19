@@ -30,9 +30,6 @@
 
 bool isLocalServer = false;
 bool isLocator = false;
-const char *endPoints1 = CacheHelper::getTcrEndpoints(isLocalServer, 1);
-const char *endPoints2 = CacheHelper::getTcrEndpoints(isLocalServer, 2);
-const char *endPoints3 = CacheHelper::getTcrEndpoints(isLocalServer, 3);
 const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 const char *poolRegNames[] = {"PoolRegion1", "PoolRegion2", "PoolRegion3"};

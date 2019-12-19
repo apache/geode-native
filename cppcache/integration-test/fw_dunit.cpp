@@ -383,7 +383,10 @@ class TaskQueues {
 TaskQueues *TaskQueues::taskQueues = nullptr;
 
 /** register task with slave. */
-void Task::init(int sId) {
+void Task::init(int sId) { init(sId, false); }
+
+void Task::init(int sId, bool isHeapAllocated) {
+  m_isHeapAllocated = isHeapAllocated;
   m_id = sId;
   m_taskName = this->typeName();
   TaskQueues::addTask(SlaveId(sId), this);
@@ -753,13 +756,22 @@ class TestSlave {
           DUNIT->setSlaveState(m_sId, SLAVE_STATE_TASK_ACTIVE);
           try {
             task->doTask();
+            if (task->m_isHeapAllocated) {
+              delete task;
+            }
             fflush(stdout);
             DUNIT->setSlaveState(m_sId, SLAVE_STATE_TASK_COMPLETE);
           } catch (TestException te) {
+            if (task->m_isHeapAllocated) {
+              delete task;
+            }
             te.print();
             handleError();
             return;
           } catch (...) {
+            if (task->m_isHeapAllocated) {
+              delete task;
+            }
             LOG("Unhandled exception, terminating.");
             handleError();
             return;

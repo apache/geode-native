@@ -190,7 +190,7 @@ void SqLiteImpl::destroy(const std::shared_ptr<CacheableKey> &key,
   }
 }
 
-SqLiteImpl::SqLiteImpl() { m_sqliteHelper = new SqLiteHelper(); }
+SqLiteImpl::SqLiteImpl() { m_sqliteHelper = std::unique_ptr<SqLiteHelper>(new SqLiteHelper()); }
 
 void SqLiteImpl::close() {
   m_sqliteHelper->closeDB();

@@ -661,7 +661,7 @@ class RegionOperations {
       int keys = 1,
       const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) {
     char keybuf[100];
-    char valbuf[100];
+    char valbuf[100] = {0};
     for (int i = 1; i <= keys; i++) {
       sprintf(keybuf, "key%d", i);
       auto valPtr = CacheableString::create(valbuf);
@@ -672,7 +672,7 @@ class RegionOperations {
       int keys = 1,
       const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) {
     char keybuf[100];
-    char valbuf[100];
+    char valbuf[100] = {0};
     for (int i = 1; i <= keys; i++) {
       sprintf(keybuf, "key%d", i);
       auto valPtr = CacheableString::create(valbuf);
@@ -683,7 +683,7 @@ class RegionOperations {
       int keys = 1,
       const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) {
     char keybuf[100];
-    char valbuf[100];
+    char valbuf[100] = {0};
     for (int i = 1; i <= keys; i++) {
       sprintf(keybuf, "key%d", i);
       sprintf(valbuf, "value%d", i);

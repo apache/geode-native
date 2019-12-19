@@ -328,7 +328,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, getAtVersion2_PS)
     auto key = CacheableKey::create(1);
 
     // New object
-    auto testDiffTpePdxSV2 = new PdxTests::TestDiffTypePdxSV2(true);
+    auto testDiffTpePdxSV2 = std::unique_ptr<PdxTests::TestDiffTypePdxSV2>(new PdxTests::TestDiffTypePdxSV2(true));
 
     // GET
     auto pdxWrapper2 = std::dynamic_pointer_cast<PdxWrapper>(region0->get(key));
@@ -343,7 +343,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, getAtVersion2_PS)
         "be equal");
 
     auto key2 = CacheableKey::create(2);
-    testDiffTpePdxSV2 = new PdxTests::TestDiffTypePdxSV2(true);
+    testDiffTpePdxSV2.reset(new PdxTests::TestDiffTypePdxSV2(true));
 
     pdxWrapper2 = std::dynamic_pointer_cast<PdxWrapper>(region0->get(key2));
     pRet = std::static_pointer_cast<PdxTests::TestDiffTypePdxSV2>(

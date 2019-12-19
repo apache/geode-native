@@ -35,8 +35,9 @@ ThinClientPoolHADM::ThinClientPoolHADM(const char* name,
       m_redundancySema(0),
       m_redundancyTask(nullptr),
       m_servermonitorTaskId(-1) {
-  m_redundancyManager = new ThinClientRedundancyManager(
-      &connManager, poolAttr->getSubscriptionRedundancy(), this);
+  m_redundancyManager = std::unique_ptr<ThinClientRedundancyManager>(
+      new ThinClientRedundancyManager(
+          &connManager, poolAttr->getSubscriptionRedundancy(), this));
 }
 
 void ThinClientPoolHADM::init() {
@@ -178,8 +179,6 @@ void ThinClientPoolHADM::destroy(bool keepAlive) {
     sendNotificationCloseMsgs();
 
     m_redundancyManager->close();
-    delete m_redundancyManager;
-    m_redundancyManager = nullptr;
 
     m_destroyPendingHADM = true;
     ThinClientPoolDM::destroy(keepAlive);

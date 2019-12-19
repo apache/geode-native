@@ -407,9 +407,8 @@ void StatArchiveWriter::sample(const steady_clock::time_point &timeStamp) {
   sampleResources();
   this->dataBuffer->writeByte(SAMPLE_TOKEN);
   writeTimeStamp(timeStamp);
-  std::map<Statistics *, ResourceInst *>::iterator p;
-  for (p = resourceInstMap.begin(); p != resourceInstMap.end(); p++) {
-    ResourceInst *ri = (*p).second;
+  for (auto p = resourceInstMap.begin(); p != resourceInstMap.end(); p++) {
+    auto ri = (*p).second;
     if (!!ri && (*p).first != nullptr) {
       ri->writeSample();
     }
@@ -481,7 +480,7 @@ void StatArchiveWriter::sampleResources() {
 
   // for closed stats, write token and then delete from statlist and
   // resourceInstMap.
-  std::map<Statistics *, ResourceInst *>::iterator mapIter;
+  std::map<Statistics *, std::shared_ptr<ResourceInst>>::iterator mapIter;
   std::vector<Statistics *> &statsList = sampler->getStatistics();
   std::vector<Statistics *>::iterator statlistIter = statsList.begin();
   while (statlistIter != statsList.end()) {
@@ -489,12 +488,11 @@ void StatArchiveWriter::sampleResources() {
       mapIter = resourceInstMap.find(*statlistIter);
       if (mapIter != resourceInstMap.end()) {
         // Write delete token to file and delete from map
-        ResourceInst *rinst = (*mapIter).second;
+        auto rinst = (*mapIter).second;
         int32_t id = rinst->getId();
         this->dataBuffer->writeByte(RESOURCE_INSTANCE_DELETE_TOKEN);
         this->dataBuffer->writeInt(id);
         resourceInstMap.erase(mapIter);
-        delete rinst;
       }
       // Delete stats object stat list
       StatisticsManager::deleteStatistics(*statlistIter);
@@ -533,8 +531,7 @@ void StatArchiveWriter::writeTimeStamp(
 }
 
 bool StatArchiveWriter::resourceInstMapHas(Statistics *sp) {
-  std::map<Statistics *, ResourceInst *>::iterator p;
-  p = resourceInstMap.find(sp);
+  auto p = resourceInstMap.find(sp);
   if (p != resourceInstMap.end()) {
     return true;
   } else {
@@ -546,11 +543,10 @@ void StatArchiveWriter::allocateResourceInst(Statistics *s) {
   if (s->isClosed()) return;
   const auto type = getResourceType(s);
 
-  ResourceInst *ri = new ResourceInst(resourceInstId, s, type, dataBuffer);
-  if (ri == nullptr) {
-    throw NullPointerException("could not create new resource instance");
-  }
-  resourceInstMap.insert(std::pair<Statistics *, ResourceInst *>(s, ri));
+  auto ri = std::shared_ptr<ResourceInst>(
+      new ResourceInst(resourceInstId, s, type, dataBuffer));
+  resourceInstMap.insert(
+      std::pair<Statistics *, std::shared_ptr<ResourceInst>>(s, ri));
   this->dataBuffer->writeByte(RESOURCE_INSTANCE_CREATE_TOKEN);
   this->dataBuffer->writeInt(resourceInstId);
   this->dataBuffer->writeUTF(s->getTextId());

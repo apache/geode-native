@@ -135,7 +135,7 @@ class SqLiteImpl : public PersistenceManager {
    */
 
  private:
-  SqLiteHelper* m_sqliteHelper;
+  std::unique_ptr<SqLiteHelper> m_sqliteHelper;
 
   std::string m_regionDBFile;
   std::string m_regionDir;

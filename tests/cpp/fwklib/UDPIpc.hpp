@@ -201,7 +201,7 @@ class Receiver : public ServiceTask {
   ACE_TSS<ACE_SOCK_Dgram> m_io;
   uint16_t m_basePort;
   ACE_thread_t m_listener;
-  std::atomic<uint16_t> m_offset;
+  std::atomic<uint16_t> m_offset{0};
   std::list<std::string> m_addrs;
   UDPMessageQueues* m_queues;
   ACE_Thread_Mutex m_mutex;
@@ -275,7 +275,7 @@ class Responder : public ServiceTask {
  private:
   ACE_TSS<ACE_SOCK_Dgram> m_io;
   uint16_t m_basePort;
-  std::atomic<uint16_t> m_offset;
+  std::atomic<uint16_t> m_offset{0};
   UDPMessageQueues* m_queues;
 
  public:

@@ -78,9 +78,10 @@ std::shared_ptr<SelectResults> RemoteQuery::execute(
   int64_t sampleStartNanos =
       enableTimeStatistics ? Utils::startStatOpTime() : 0;
   TcrMessageReply reply(true, tcdm);
-  auto* resultCollector = (new ChunkedQueryResponse(reply));
+  auto resultCollector =
+      std::unique_ptr<ChunkedQueryResponse>(new ChunkedQueryResponse(reply));
   reply.setChunkedResultHandler(
-      static_cast<TcrChunkedResult*>(resultCollector));
+      static_cast<TcrChunkedResult*>(resultCollector.get()));
   GfErrType err = executeNoThrow(timeout, reply, func, tcdm, paramList);
   throwExceptionIfError(func, err);
 
@@ -115,7 +116,6 @@ std::shared_ptr<SelectResults> RemoteQuery::execute(
                             pool->getStats().getQueryExecutionTimeId(),
                             sampleStartNanos);
   }
-  delete resultCollector;
   return sr;
 }
 

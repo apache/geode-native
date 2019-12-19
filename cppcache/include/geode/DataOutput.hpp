@@ -497,8 +497,12 @@ class APACHE_GEODE_EXPORT DataOutput {
   static void acquireLock();
   static void releaseLock();
 
+  struct FreeDeleter {
+    void operator()(uint8_t* p) { free(p); }
+  };
+
   // memory m_buffer to encode to.
-  std::unique_ptr<uint8_t[]> m_bytes;
+  std::unique_ptr<uint8_t, FreeDeleter> m_bytes;
   // cursor.
   uint8_t* m_buf;
   // size of m_bytes.

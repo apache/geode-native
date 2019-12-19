@@ -1326,11 +1326,11 @@ std::shared_ptr<CacheableString> TcrConnection::readHandshakeString(
     return nullptr;
   }
 
-  auto recvMessage = std::unique_ptr<char>(new char[length + 1]);
-  recvMessage.get()[length] = '\0';
+  std::vector<char> recvMessage(length + 1);
+  recvMessage[length] = '\0';
 
-  if ((error = receiveData(recvMessage.get(), length, connectTimeout, false)) !=
-      CONN_NOERR) {
+  if ((error = receiveData(recvMessage.data(), length, connectTimeout,
+                           false)) != CONN_NOERR) {
     if (error & CONN_TIMEOUT) {
       GF_SAFE_DELETE_CON(m_conn);
       LOGFINE("Timeout receiving string data");
@@ -1345,9 +1345,9 @@ std::shared_ptr<CacheableString> TcrConnection::readHandshakeString(
                            "Handshake failure reading string bytes"));
     }
   } else {
-    LOGDEBUG(" Received string data [%s]", recvMessage.get());
+    LOGDEBUG(" Received string data [%s]", recvMessage.data());
     auto retval =
-        CacheableString::create(std::string(recvMessage.get(), length));
+        CacheableString::create(std::string(recvMessage.data(), length));
     return retval;
   }
 }

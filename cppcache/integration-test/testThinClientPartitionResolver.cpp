@@ -67,15 +67,15 @@ std::shared_ptr<PartitionResolver> cptr(cpr);
 #define SERVER2 s1p2
 
 bool isLocalServer = false;
-const char *endPoints = CacheHelper::getTcrEndpoints(isLocalServer, 3);
+const std::string endPoints = CacheHelper::getTcrEndpoints(isLocalServer, 3);
 
-std::vector<char *> storeEndPoints(const char *points) {
-  std::vector<char *> endpointNames;
-  if (points != nullptr) {
-    char *ep = strdup(points);
+std::vector<std::string> storeEndPoints(const std::string points) {
+  std::vector<std::string> endpointNames;
+  if (!points.empty()) {
+    char *ep = strdup(points.c_str());
     char *token = strtok(ep, ",");
     while (token) {
-      endpointNames.push_back(token);
+      endpointNames.push_back(std::string(token));
       token = strtok(nullptr, ",");
     }
     free(ep);
@@ -84,7 +84,7 @@ std::vector<char *> storeEndPoints(const char *points) {
   return endpointNames;
 }
 
-std::vector<char *> endpointNames = storeEndPoints(endPoints);
+std::vector<std::string> endpointNames = storeEndPoints(endPoints);
 
 DUNIT_TASK_DEFINITION(SERVER1, CreateServer1)
   {
@@ -105,8 +105,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreatePoolAndRegions)
     initClient(true);
 
     char endpoints[1024] = {0};
-    sprintf(endpoints, "%s,%s,%s", endpointNames.at(0), endpointNames.at(1),
-            endpointNames.at(2));
+    sprintf(endpoints, "%s,%s,%s", endpointNames.at(0).c_str(),
+            endpointNames.at(1).c_str(), endpointNames.at(2).c_str());
 
     getHelper()->createPoolWithLocators("__TEST_POOL1__", nullptr);
     getHelper()->createRegionAndAttachPool2(regionNames[0], USE_ACK,

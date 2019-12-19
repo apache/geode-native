@@ -35,7 +35,6 @@ using apache::geode::client::testing::TallyListener;
 using apache::geode::client::testing::TallyWriter;
 
 bool isLocalServer = true;
-const char* endPoint = CacheHelper::getTcrEndpoints(isLocalServer, 1);
 static bool isLocator = false;
 const char* locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);

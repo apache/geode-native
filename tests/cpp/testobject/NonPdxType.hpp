@@ -169,7 +169,7 @@ class TESTOBJECT_EXPORT NonPdxType {
   int32_t m_byte65536Len;
   int32_t byteByteArrayLen;
 
-  int* lengthArr;
+  int lengthArr[2];
 
  public:
   bool selfCheck();
@@ -357,8 +357,6 @@ class TESTOBJECT_EXPORT NonPdxType {
     strLenArray = 2;
     charArrayLen = 2;
     byteByteArrayLen = 2;
-
-    lengthArr = new int[2];
 
     lengthArr[0] = 1;
     lengthArr[1] = 2;
