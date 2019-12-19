@@ -20,9 +20,6 @@
  * limitations under the License.
  */
 
-/** @file
- */
-
 namespace apache {
 namespace geode {
 namespace statistics {

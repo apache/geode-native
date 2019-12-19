@@ -31,7 +31,6 @@ size_t JavaModifiedUtf8::encodedLength(const std::string& utf8) {
     return 0;
   }
 
-  // TODO string optimize for direct calculation
   return encodedLength(to_utf16(utf8));
 }
 

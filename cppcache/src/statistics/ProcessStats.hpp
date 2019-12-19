@@ -24,9 +24,6 @@
 
 #include "Statistics.hpp"
 
-/** @file
- */
-
 namespace apache {
 namespace geode {
 namespace statistics {
@@ -71,9 +68,6 @@ class APACHE_GEODE_EXPORT ProcessStats {
    */
   virtual int64_t getAllCpuTime() = 0;
 
-  /**
-   * Destructor
-   */
   virtual ~ProcessStats() = default;
 };
 }  // namespace statistics

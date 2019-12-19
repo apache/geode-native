@@ -42,8 +42,6 @@ namespace statistics {
  *
  */
 class AtomicStatisticsImpl : public Statistics {
- private:
-  /**********varbs originally kept in statisticsimpl class*****************/
   /** The type of this statistics instance */
   StatisticsTypeImpl* statsType;
 
@@ -59,7 +57,6 @@ class AtomicStatisticsImpl : public Statistics {
   /** Uniquely identifies this instance */
   int64_t uniqueId;
 
-  /****************************************************************************/
   /** An array containing the values of the int32_t statistics */
   std::atomic<int32_t>* intStorage;
 
@@ -69,7 +66,6 @@ class AtomicStatisticsImpl : public Statistics {
   /** An array containing the values of the double statistics */
   std::atomic<double>* doubleStorage;
 
-  ///////////////////////Private Methods//////////////////////////
   bool isOpen() const;
 
   int32_t getIntId(const std::shared_ptr<StatisticDescriptor> descriptor) const;
@@ -80,15 +76,12 @@ class AtomicStatisticsImpl : public Statistics {
   int32_t getDoubleId(
       const std::shared_ptr<StatisticDescriptor> descriptor) const;
 
-  //////////////////////  Static private Methods  //////////////////////
-
   int64_t calcNumericId(StatisticsFactory* system, int64_t userValue);
 
   std::string calcTextId(StatisticsFactory* system,
                          const std::string& userValue);
 
-  ///////////////////////  Constructors  ///////////////////////
-
+ public:
   /**
    * Creates a new statistics instance of the given type
    *
@@ -104,13 +97,10 @@ class AtomicStatisticsImpl : public Statistics {
    *        The distributed system that determines whether or not these
    *        statistics are stored (and collected) in local memory
    */
-
- public:
   AtomicStatisticsImpl(StatisticsType* type, const std::string& textId,
                        int64_t numericId, int64_t uniqueId,
                        StatisticsFactory* system);
 
-  //////////////////////  Instance Methods  //////////////////////
   ~AtomicStatisticsImpl() noexcept override;
 
   AtomicStatisticsImpl(const AtomicStatisticsImpl&) = delete;
@@ -130,7 +120,6 @@ class AtomicStatisticsImpl : public Statistics {
   bool isAtomic() const override;
 
   void close() override;
-  /////////////////////////Attribute methods//////////////////////////
 
   StatisticsType* getType() const override;
 
@@ -139,8 +128,6 @@ class AtomicStatisticsImpl : public Statistics {
   int64_t getNumericId() const override;
 
   int64_t getUniqueId() const override;
-
-  ////////////////////////  set() Methods  ///////////////////////
 
   void setInt(const std::string& name, int32_t value) override;
 
@@ -162,8 +149,6 @@ class AtomicStatisticsImpl : public Statistics {
                  double value) override;
 
   void setDouble(int32_t id, double value) override;
-
-  ///////////////////////  get() Methods  ///////////////////////
 
   int32_t getInt(const std::string& name) const override;
 
@@ -188,8 +173,6 @@ class AtomicStatisticsImpl : public Statistics {
 
   int64_t getRawBits(
       const std::shared_ptr<StatisticDescriptor> descriptor) const override;
-
-  ////////////////////////  inc() Methods  ////////////////////////
 
   int32_t incInt(const std::string& name, int32_t delta) override;
 

@@ -26,9 +26,6 @@
 
 #include "StatisticDescriptor.hpp"
 
-/** @file
- */
-
 namespace apache {
 namespace geode {
 namespace statistics {
@@ -49,7 +46,6 @@ typedef enum { INT_TYPE = 5, LONG_TYPE = 6, DOUBLE_TYPE = 8 } FieldType;
  */
 
 class StatisticDescriptorImpl : public StatisticDescriptor {
- private:
   /** The name of the statistic */
   std::string name;
 
@@ -113,12 +109,7 @@ class StatisticDescriptorImpl : public StatisticDescriptor {
    */
   FieldType descriptorType;
 
-  /**
-   * Destructor
-   */
   ~StatisticDescriptorImpl() override;
-
-  /////////////////////////// Static Methods////////////////////////////////////
 
   /**
    * Returns the name of the given type code
@@ -136,8 +127,6 @@ class StatisticDescriptorImpl : public StatisticDescriptor {
    *         <code>code</code> is an unknown type
    */
   static int32_t getTypeCodeBits(FieldType code);
-
-  ///////////////////////////Create methods ////////////////////////////////////
 
   /**
    * Creates a descriptor of Integer type
@@ -193,9 +182,6 @@ class StatisticDescriptorImpl : public StatisticDescriptor {
       const std::string& name, const std::string& description,
       const std::string& units, bool isLargerBetter);
 
-  /////////////////  StatisticDescriptor(Base class) Methods
-  ///////////////////////
-
   const std::string& getName() const override;
 
   const std::string& getDescription() const override;
@@ -209,8 +195,6 @@ class StatisticDescriptorImpl : public StatisticDescriptor {
   const std::string& getUnit() const override;
 
   int32_t getId() const override;
-
-  ///////////////////////////// Instance Methods  ////////////////////////////
 
   /**
    * Returns the type code of this statistic
@@ -226,7 +210,6 @@ class StatisticDescriptorImpl : public StatisticDescriptor {
    * An uninitialized id will be -1
    */
   void setId(int32_t statId);
-  ///////////////////////////// Check methods ///////////////////////////////
 
   /**
    *  Checks whether the descriptor is of type int and returns the id if it is

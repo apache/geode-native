@@ -43,26 +43,11 @@
 
 #define _GF_MSG_LIMIT 8192
 
-/******************************************************************************/
-
-/** @file
- */
-
 namespace apache {
 namespace geode {
 namespace client {
 
 class Exception;
-
-/******************************************************************************/
-/******************************************************************************/
-
-/* Logs the message if the given level is less than or equal to the current
- * logging level. */
-#define GF_LOG(level, expr)                             \
-  if (level > apache::geode::client::Log::logLevel()) { \
-  } else                                                \
-    apache::geode::client::Log::log(level, expr)
 
 /** Defines methods available to clients that want to write a log message
  * to their Geode system's shared log file.
@@ -142,10 +127,6 @@ class Exception;
 
 class APACHE_GEODE_EXPORT Log {
  public:
-  /******/
-
-  /******/
-
   /**
    * Returns the current log level.
    */
@@ -203,8 +184,6 @@ class APACHE_GEODE_EXPORT Log {
    */
   static char* formatLogLine(char* buf, LogLevel level);
 
-  /******/
-
   /**
    * Returns whether log messages at given level are enabled.
    */
@@ -224,8 +203,6 @@ class APACHE_GEODE_EXPORT Log {
    * Logs both a message and caught exception.
    */
   static void logCatch(LogLevel level, const char* msg, const Exception& ex);
-
-  /******/
 
   /**
    * Returns whether "error" log messages are enabled.
@@ -252,8 +229,6 @@ class APACHE_GEODE_EXPORT Log {
    */
   static void errorCatch(const char* msg, const Exception& ex);
 
-  /******/
-
   /**
    * Returns whether "warning" log messages are enabled.
    */
@@ -276,8 +251,6 @@ class APACHE_GEODE_EXPORT Log {
    * The message level is "warning".
    */
   static void warningCatch(const char* msg, const Exception& ex);
-
-  /******/
 
   /**
    * Returns whether "info" log messages are enabled.
@@ -302,8 +275,6 @@ class APACHE_GEODE_EXPORT Log {
    */
   static void infoCatch(const char* msg, const Exception& ex);
 
-  /******/
-
   /**
    * Returns whether "config" log messages are enabled.
    */
@@ -326,8 +297,6 @@ class APACHE_GEODE_EXPORT Log {
    * The message level is "config".
    */
   static void configCatch(const char* msg, const Exception& ex);
-
-  /******/
 
   /**
    * Returns whether "fine" log messages are enabled.
@@ -352,8 +321,6 @@ class APACHE_GEODE_EXPORT Log {
    */
   static void fineCatch(const char* msg, const Exception& ex);
 
-  /******/
-
   /**
    * Returns whether "finer" log messages are enabled.
    */
@@ -376,8 +343,6 @@ class APACHE_GEODE_EXPORT Log {
    * The message level is "finer".
    */
   static void finerCatch(const char* msg, const Exception& ex);
-
-  /******/
 
   /**
    * Returns whether "finest" log messages are enabled.
@@ -402,8 +367,6 @@ class APACHE_GEODE_EXPORT Log {
    */
   static void finestCatch(const char* msg, const Exception& ex);
 
-  /******/
-
   /**
    * Returns whether "debug" log messages are enabled.
    */
@@ -427,22 +390,15 @@ class APACHE_GEODE_EXPORT Log {
    */
   static void debugCatch(const char* msg, const Exception& ex);
 
-  /******/
-
   static void enterFn(LogLevel level, const char* functionName);
 
   static void exitFn(LogLevel level, const char* functionName);
 
-  /******/
-
  private:
   static LogLevel s_logLevel;
 
-  /******/
-
   static void writeBanner();
 
-  /******/
  public:
   static void put(LogLevel level, const std::string& msg);
 
@@ -452,9 +408,6 @@ class APACHE_GEODE_EXPORT Log {
 
   static void putCatch(LogLevel level, const char* msg, const Exception& ex);
 };
-
-/******************************************************************************/
-/******************************************************************************/
 
 class APACHE_GEODE_EXPORT LogFn {
   const char* m_functionName;
@@ -468,13 +421,6 @@ class APACHE_GEODE_EXPORT LogFn {
   LogFn(const LogFn& rhs) = delete;
   LogFn& operator=(const LogFn& rhs) = delete;
 };
-
-/******************************************************************************/
-/******************************************************************************/
-
-/**
- * These functions are added to facilitate logging in printf format.
- */
 
 class APACHE_GEODE_EXPORT LogVarargs {
  public:
@@ -507,64 +453,44 @@ class APACHE_GEODE_EXPORT LogVarargs {
 }  // namespace geode
 }  // namespace apache
 
-/************************ LOGDEBUG ***********************************/
-
 #define LOGDEBUG                                  \
   if (::apache::geode::client::LogLevel::Debug <= \
       ::apache::geode::client::Log::logLevel())   \
   ::apache::geode::client::LogVarargs::debug
-
-/************************ LOGERROR ***********************************/
 
 #define LOGERROR                                  \
   if (::apache::geode::client::LogLevel::Error <= \
       ::apache::geode::client::Log::logLevel())   \
   ::apache::geode::client::LogVarargs::error
 
-/************************ LOGWARN ***********************************/
-
 #define LOGWARN                                     \
   if (::apache::geode::client::LogLevel::Warning <= \
       ::apache::geode::client::Log::logLevel())     \
   ::apache::geode::client::LogVarargs::warn
-
-/************************ LOGINFO ***********************************/
 
 #define LOGINFO                                  \
   if (::apache::geode::client::LogLevel::Info <= \
       ::apache::geode::client::Log::logLevel())  \
   ::apache::geode::client::LogVarargs::info
 
-/************************ LOGCONFIG ***********************************/
-
 #define LOGCONFIG                                  \
   if (::apache::geode::client::LogLevel::Config <= \
       ::apache::geode::client::Log::logLevel())    \
   ::apache::geode::client::LogVarargs::config
-
-/************************ LOGFINE ***********************************/
 
 #define LOGFINE                                  \
   if (::apache::geode::client::LogLevel::Fine <= \
       ::apache::geode::client::Log::logLevel())  \
   ::apache::geode::client::LogVarargs::fine
 
-/************************ LOGFINER ***********************************/
-
 #define LOGFINER                                  \
   if (::apache::geode::client::LogLevel::Finer <= \
       ::apache::geode::client::Log::logLevel())   \
   ::apache::geode::client::LogVarargs::finer
 
-/************************ LOGFINEST ***********************************/
-
 #define LOGFINEST                                  \
   if (::apache::geode::client::LogLevel::Finest <= \
       ::apache::geode::client::Log::logLevel())    \
   ::apache::geode::client::LogVarargs::finest
-
-/******************************************************************************/
-
-/******************************************************************************/
 
 #endif  // GEODE_LOG_H_

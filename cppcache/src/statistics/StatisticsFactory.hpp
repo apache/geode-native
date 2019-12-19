@@ -29,9 +29,6 @@
 #include "Statistics.hpp"
 #include "StatisticsType.hpp"
 
-/** @file
- */
-
 namespace apache {
 namespace geode {
 namespace statistics {

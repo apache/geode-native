@@ -88,10 +88,6 @@ class APACHE_GEODE_EXPORT StatisticsType {
    */
   virtual size_t getDescriptorsCount() const = 0;
 
-  // protected:
-  /**
-   * Destructor
-   */
   virtual ~StatisticsType() = default;
 };
 

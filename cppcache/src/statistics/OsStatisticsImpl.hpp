@@ -24,9 +24,6 @@
 #include "StatisticsFactory.hpp"
 #include "StatisticsTypeImpl.hpp"
 
-/** @file
- */
-
 namespace apache {
 namespace geode {
 namespace statistics {
@@ -37,7 +34,6 @@ namespace statistics {
  *
  */
 class OsStatisticsImpl : public Statistics {
- private:
   /** The type of this statistics instance */
   StatisticsTypeImpl* statsType;
 
@@ -53,7 +49,6 @@ class OsStatisticsImpl : public Statistics {
   /** Uniquely identifies this instance */
   int64_t uniqueId;
 
-  /****************************************************************************/
   /** An array containing the values of the int32_t statistics */
   int32_t* intStorage;
 
@@ -63,7 +58,6 @@ class OsStatisticsImpl : public Statistics {
   /** An array containing the values of the double statistics */
   double* doubleStorage;
 
-  ///////////////////////Private Methods//////////////////////////
   bool isOpen() const;
 
   int32_t getIntId(const std::shared_ptr<StatisticDescriptor> descriptor) const;
@@ -74,15 +68,12 @@ class OsStatisticsImpl : public Statistics {
   int32_t getDoubleId(
       const std::shared_ptr<StatisticDescriptor> descriptor) const;
 
-  //////////////////////  Static private Methods  //////////////////////
-
   static int64_t calcNumericId(StatisticsFactory* system, int64_t userValue);
 
   static std::string calcTextId(StatisticsFactory* system,
                                 const std::string& userValue);
 
-  ///////////////////////  Constructors  ///////////////////////
-
+ public:
   /**
    * Creates a new statistics instance of the given type
    *
@@ -98,8 +89,6 @@ class OsStatisticsImpl : public Statistics {
    *        The distributed system that determines whether or not these
    *        statistics are stored (and collected) in local memory
    */
-
- public:
   OsStatisticsImpl(StatisticsType* type, const std::string& textId,
                    int64_t numericId, int64_t uniqueId,
                    StatisticsFactory* system);
@@ -109,8 +98,6 @@ class OsStatisticsImpl : public Statistics {
   OsStatisticsImpl(const OsStatisticsImpl&) = delete;
 
   OsStatisticsImpl& operator=(const OsStatisticsImpl&) = delete;
-
-  //////////////////////  Instance Methods  //////////////////////
 
   int32_t nameToId(const std::string& name) const override;
 
@@ -124,7 +111,6 @@ class OsStatisticsImpl : public Statistics {
   bool isAtomic() const override;
 
   void close() override;
-  /////////////////////////Attribute methods//////////////////////////
 
   StatisticsType* getType() const override;
 
@@ -133,8 +119,6 @@ class OsStatisticsImpl : public Statistics {
   int64_t getNumericId() const override;
 
   int64_t getUniqueId() const override;
-
-  ////////////////////////  set() Methods  ///////////////////////
 
   void setInt(const std::string& name, int32_t value) override;
 
@@ -156,8 +140,6 @@ class OsStatisticsImpl : public Statistics {
                  double value) override;
 
   void setDouble(int32_t id, double value) override;
-
-  ///////////////////////  get() Methods  ///////////////////////
 
   int32_t getInt(const std::string& name) const override;
 
@@ -183,8 +165,6 @@ class OsStatisticsImpl : public Statistics {
   int64_t getRawBits(
       const std::shared_ptr<StatisticDescriptor> descriptor) const override;
 
-  ////////////////////////  inc() Methods  ////////////////////////
-
   int32_t incInt(const std::string& name, int32_t delta) override;
 
   int32_t incInt(const std::shared_ptr<StatisticDescriptor> descriptor,
@@ -206,7 +186,6 @@ class OsStatisticsImpl : public Statistics {
 
   double incDouble(int32_t id, double delta) override;
 
-  ////////////////////////  store() Methods  ///////////////////////
  protected:
   /**
    * Sets the value of a statistic of type <code>int</code> at the
@@ -217,7 +196,7 @@ class OsStatisticsImpl : public Statistics {
   void _setLong(int32_t offset, int64_t value);
 
   void _setDouble(int32_t offset, double value);
-  ///////////////////////  get() Methods  ///////////////////////
+
   /**
    * Returns the value of the statistic of type <code>int</code> at
    * the given offset, but performs no type checking.
@@ -234,7 +213,6 @@ class OsStatisticsImpl : public Statistics {
    */
   int64_t _getRawBits(const std::shared_ptr<StatisticDescriptor> stat) const;
 
-  ////////////////////////  inc() Methods  ////////////////////////
   /**
    * Increments the value of the statistic of type <code>int</code> at
    * the given offset by a given amount, but performs no type checking.
@@ -246,9 +224,6 @@ class OsStatisticsImpl : public Statistics {
   int64_t _incLong(int32_t offset, int64_t delta);
 
   double _incDouble(int32_t offset, double delta);
-
-  /////////////////// internal package methods //////////////////
-
 };  // class
 
 }  // namespace statistics

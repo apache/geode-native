@@ -38,9 +38,6 @@
 #include "StatisticsType.hpp"
 #include "StatsDef.hpp"
 
-/**
- * some constants to be used while archiving
- */
 const int8_t ARCHIVE_VERSION = 4;
 const int8_t SAMPLE_TOKEN = 0;
 const int8_t RESOURCE_TYPE_TOKEN = 1;
@@ -56,9 +53,6 @@ const int16_t ILLEGAL_RESOURCE_INST_ID_TOKEN = -1;
 const int32_t MAX_SHORT_RESOURCE_INST_ID = 65535;
 const int32_t MAX_SHORT_TIMESTAMP = 65534;
 const int32_t INT_TIMESTAMP_TOKEN = 65535;
-
-/** @file
- */
 
 namespace apache {
 namespace geode {
@@ -82,7 +76,6 @@ using std::chrono::system_clock;
  *                 // of the Statistics object and the value of the
  *                 // descriptors in the previous sample run.
  */
-
 class APACHE_GEODE_EXPORT StatDataOutput {
  public:
   explicit StatDataOutput(CacheImpl *cache);
@@ -157,20 +150,6 @@ class APACHE_GEODE_EXPORT ResourceType {
   const StatisticsType *type;
 };
 
-/* adongre
- * CID 28735: Other violation (MISSING_COPY)
- * Class "apache::geode::statistics::ResourceInst" owns resources
- * that are managed in its constructor and destructor but has no user-written
- * copy constructor.
- * CID 28721: Other violation (MISSING_ASSIGN)
- * Class "apache::geode::statistics::ResourceInst" owns resources that are
- * managed
- * in its constructor and destructor but has no user-written assignment
- * operator.
- *
- * FIX : Make the class NonCopyable
- */
-
 class APACHE_GEODE_EXPORT ResourceInst {
  public:
   ResourceInst(int32_t id, Statistics *, const ResourceType *,
@@ -199,12 +178,8 @@ class APACHE_GEODE_EXPORT ResourceInst {
 };
 
 class HostStatSampler;
-/**
- * @class StatArchiveWriter
- */
 
 class APACHE_GEODE_EXPORT StatArchiveWriter {
- private:
   HostStatSampler *sampler;
   StatDataOutput *dataBuffer;
   CacheImpl *cache;
@@ -218,7 +193,6 @@ class APACHE_GEODE_EXPORT StatArchiveWriter {
   std::map<Statistics *, ResourceInst *> resourceInstMap;
   std::map<const StatisticsType *, const ResourceType *> resourceTypeMap;
 
-  /* private member functions */
   void allocateResourceInst(Statistics *r);
   void sampleResources();
   void resampleResources();

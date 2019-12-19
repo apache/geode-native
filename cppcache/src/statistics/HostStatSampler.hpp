@@ -66,9 +66,6 @@ class StatisticsManager;
  */
 class HostStatSampler {
  public:
-  /*
-   * Constructor:
-   */
   HostStatSampler(const char* filePath,
                   std::chrono::milliseconds sampleIntervalMs,
                   StatisticsManager* statMngr, CacheImpl* cache,

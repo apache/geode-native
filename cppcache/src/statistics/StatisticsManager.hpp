@@ -46,7 +46,6 @@ class HostStatSampler;
  *
  */
 class StatisticsManager {
- private:
   // interval at which the sampler will take a sample of Stats
   std::chrono::milliseconds m_sampleIntervalMs;
 

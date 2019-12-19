@@ -27,9 +27,6 @@
 #include "StatisticDescriptor.hpp"
 #include "StatisticsType.hpp"
 
-/** @file
- */
-
 namespace apache {
 namespace geode {
 namespace statistics {
@@ -49,8 +46,6 @@ class APACHE_GEODE_EXPORT Statistics {
    * A value modification on a closed statistics is ignored.
    */
   virtual void close() = 0;
-
-  ////////////////////////  accessor Methods  ///////////////////////
 
   /**
    * Returns the id of the statistic with the given name in this
@@ -123,8 +118,6 @@ class APACHE_GEODE_EXPORT Statistics {
    * Returns true if the instance has been {@link #close closed}.
    */
   virtual bool isClosed() const = 0;
-
-  ////////////////////////  set() Methods  ///////////////////////
 
   /**
    * Sets the value of a statistic with the given <code>id</code>
@@ -512,9 +505,6 @@ class APACHE_GEODE_EXPORT Statistics {
   virtual double incDouble(const std::string& name, double delta) = 0;
 
  protected:
-  /**
-   *  Destructor is protected to prevent direct deletion. Use close().
-   */
   virtual ~Statistics() = default;
 };  // class
 

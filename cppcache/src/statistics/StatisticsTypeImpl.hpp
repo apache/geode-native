@@ -30,9 +30,6 @@
 #include "StatisticsType.hpp"
 #include "StatsDef.hpp"
 
-/** @file
- */
-
 namespace apache {
 namespace geode {
 namespace statistics {
@@ -47,7 +44,6 @@ typedef std::map<std::string, std::shared_ptr<StatisticDescriptor>>
     StatisticsDescMap;
 
 class StatisticsTypeImpl : public StatisticsType {
- private:
   std::string name;
   std::string description;
   std::vector<std::shared_ptr<StatisticDescriptor>> stats;
@@ -62,8 +58,6 @@ class StatisticsTypeImpl : public StatisticsType {
 
   ~StatisticsTypeImpl() override;
 
-  ////////////////  StatisticsType(Base class) Methods ///////////////////
-
   const std::string& getName() const override;
 
   const std::string& getDescription() const override;
@@ -75,8 +69,6 @@ class StatisticsTypeImpl : public StatisticsType {
 
   std::shared_ptr<StatisticDescriptor> nameToDescriptor(
       const std::string& name) const override;
-
-  //////////////////////  Instance Methods  //////////////////////
 
   /**
    *  Gets the number of statistics in this type that are ints.
@@ -97,10 +89,6 @@ class StatisticsTypeImpl : public StatisticsType {
    * Gets the total number of statistic descriptors in the Type
    */
   size_t getDescriptorsCount() const override;
-
-  // static StatisticsType[] fromXml(Reader reader,
-  //                                      StatisticsTypeFactory factory);
-
 };  // class
 }  // namespace statistics
 }  // namespace geode
