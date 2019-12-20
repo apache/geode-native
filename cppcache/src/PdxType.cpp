@@ -180,6 +180,9 @@ void PdxType::initRemoteToLocal() {
         localPdxType->getPdxFieldTypes();
     int32_t fieldIdx = 0;
 
+    if (m_remoteToLocalFieldMap != nullptr) {
+      _GEODE_SAFE_DELETE_ARRAY(m_remoteToLocalFieldMap);
+    }
     m_remoteToLocalFieldMap = new int32_t[m_pdxFieldTypes->size()];
     LOGDEBUG(
         "PdxType::initRemoteToLocal m_pdxFieldTypes->size() =%zu AND "
@@ -242,6 +245,9 @@ void PdxType::initLocalToRemote() {
     // type which need to read/write should control local type
     int32_t localToRemoteFieldMapSize =
         static_cast<int32_t>(localPdxType->m_pdxFieldTypes->size());
+    if (m_localToRemoteFieldMap != nullptr) {
+      _GEODE_SAFE_DELETE_ARRAY(m_localToRemoteFieldMap);
+    }
     m_localToRemoteFieldMap = new int32_t[localToRemoteFieldMapSize];
 
     for (int32_t i = 0; i < localToRemoteFieldMapSize &&

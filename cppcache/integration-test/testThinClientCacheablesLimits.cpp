@@ -77,12 +77,12 @@ T randomValue(T maxValue) {
   return std::uniform_int_distribution<T>{0, maxValue}(generator);
 }
 
-uint8_t *createRandByteArray(int size) {
-  uint8_t *ptr = new uint8_t[size];
+std::vector<int8_t> createRandByteArray(int size) {
+  std::vector<int8_t> byteArray(size);
   for (int i = 0; i < size; i++) {
-    ptr[i] = randomValue(255);
+    byteArray[i] = randomValue(255);
   }
-  return ptr;
+  return byteArray;
 }
 
 char *createRandCharArray(int size) {
@@ -115,12 +115,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutsTask)
     int sizeArray = sizeof(keyArr) / sizeof(int);
     auto verifyReg = getHelper()->getRegion(_regionNames[1]);
     for (int count = 0; count < sizeArray; count++) {
-      uint8_t *ptr = createRandByteArray(keyArr[count]);
+      auto randByteArray = createRandByteArray(keyArr[count]);
       char *ptrChar = createRandCharArray(keyArr[count]);
 
       auto emptyBytesArr = CacheableBytes::create();
-      auto bytePtrSent =
-          CacheableBytes::create(std::vector<int8_t>(ptr, ptr + keyArr[count]));
+      auto bytePtrSent = CacheableBytes::create(randByteArray);
       auto stringPtrSent =
           CacheableString::create(std::string(ptrChar, keyArr[count]));
       std::free(ptrChar);

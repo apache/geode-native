@@ -498,10 +498,10 @@ std::shared_ptr<CacheableVector> ExecutionImpl::executeOnPool(
             tcrdm->getConnectionManager().getCacheImpl()->createDataOutput()),
         funcName, m_args, getResult, tcrdm, timeout);
     TcrMessageReply reply(true, tcrdm);
-    ChunkedFunctionExecutionResponse* resultCollector(
+    auto resultCollector = std::unique_ptr<ChunkedFunctionExecutionResponse>(
         new ChunkedFunctionExecutionResponse(reply, (getResult & 2) == 2,
                                              m_rc));
-    reply.setChunkedResultHandler(resultCollector);
+    reply.setChunkedResultHandler(resultCollector.get());
     reply.setTimeout(timeout);
 
     GfErrType err = GF_NOERR;
@@ -556,9 +556,6 @@ std::shared_ptr<CacheableVector> ExecutionImpl::executeOnPool(
     ==25848==    by 0x805F9EA: main (in
     /export/pnq-gst-dev01a/users/adongre/cedar_dev_Nov12/build-artifacts/linux/tests/cppcache/testThinClientPoolExecuteFunctionPrSHOP)
     */
-    delete resultCollector;
-    resultCollector = nullptr;
-
     return nullptr;
   }
   return nullptr;

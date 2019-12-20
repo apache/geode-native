@@ -46,7 +46,7 @@ timeout period and all the events are lost.
 #define SERVER1 s1p2
 
 bool isLocalServerList = false;
-const char* endPointsList = CacheHelper::getTcrEndpoints(isLocalServerList, 4);
+const std::string endPointsList = CacheHelper::getTcrEndpoints(isLocalServerList, 4);
 const char* durableId = "DurableId";
 
 #include "ThinClientDurableInit.hpp"

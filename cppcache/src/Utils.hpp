@@ -91,7 +91,9 @@ class APACHE_GEODE_EXPORT Utils {
     size_t len;
     char* demangledName = _gnuDemangledName(typeIdName, len);
     if (demangledName != nullptr) {
-      return std::string(demangledName, len);
+      auto str = std::string(demangledName, len);
+      free(demangledName);
+      return str;
     }
 #endif
     return std::string(typeIdName);

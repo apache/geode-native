@@ -17,6 +17,8 @@
 
 #include <iostream>
 
+#include <vector>
+
 #include "fw_helper.hpp"
 
 #ifdef WIN32
@@ -59,7 +61,7 @@ BEGIN_TEST(LRUListTest)
   {
     LRUList<MyNode, MyNode> lruList;
     // Create 10 Nodes to keep track of.
-    std::shared_ptr<MyNode> *tenNodes = new std::shared_ptr<MyNode>[10];
+    std::vector<std::shared_ptr<MyNode> > tenNodes(10);
 
     for (int i = 0; i < 10; i++) {
       tenNodes[i] = std::shared_ptr<MyNode>(MyNode::create());

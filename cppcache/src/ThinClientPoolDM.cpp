@@ -816,13 +816,6 @@ void ThinClientPoolDM::destroy(bool keepAlive) {
     close();
     LOGDEBUG("ThinClientPoolDM::destroy( ): after close ");
 
-    for (const auto& iter : m_endpoints) {
-      auto ep = iter.second;
-      LOGFINE("ThinClientPoolDM: forcing endpoint delete for %s in destructor",
-              ep->name().c_str());
-      _GEODE_SAFE_DELETE(ep);
-    }
-
     // Close Stats
     getStats().close();
     cacheImpl->getStatisticsManager().forceSample();
@@ -834,6 +827,13 @@ void ThinClientPoolDM::destroy(bool keepAlive) {
     m_isDestroyed = true;
     LOGDEBUG("ThinClientPoolDM::destroy( ): after close m_isDestroyed = %d ",
              m_isDestroyed);
+
+    for (const auto& iter : m_endpoints) {
+      auto ep = iter.second;
+      LOGFINE("ThinClientPoolDM: forcing endpoint delete for %s in destructor",
+              ep->name().c_str());
+      _GEODE_SAFE_DELETE(ep);
+    }
   }
   if (m_poolSize != 0) {
     LOGFINE("Pool connection size is not zero %d", m_poolSize.load());

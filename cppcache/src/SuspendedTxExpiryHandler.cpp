@@ -50,6 +50,7 @@ int SuspendedTxExpiryHandler::handle_timeout(const ACE_Time_Value&,
 }
 
 int SuspendedTxExpiryHandler::handle_close(ACE_HANDLE, ACE_Reactor_Mask) {
+  delete this;
   return 0;
 }
 

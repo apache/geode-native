@@ -1171,6 +1171,11 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
     ASSERT(generic2DCompare(byteByteArrayVal, bytArray, byteArrayLen,
                             elementLength) == true,
            "byteByteArray should be equal");
+    for (auto i = 0; i < byteArrayLen; i++) {
+      delete[] byteByteArrayVal[i];
+    }
+    delete[] byteByteArrayVal;
+    delete[] elementLength;
     ASSERT(pIPtr->getFieldType("m_byteByteArray") ==
                PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS,
            "Type Value ARRAY_OF_BYTE_ARRAYS Mismatch");
@@ -1823,7 +1828,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     setbyteByteArray[3][0] = 0x34;
     setbyteByteArray[3][1] = 0x55;
     wpiPtr = pIPtr->createWriter();
-    int *lengthArr = new int[4];
+    int lengthArr[4];
     lengthArr[0] = 1;
     lengthArr[1] = 2;
     lengthArr[2] = 1;
@@ -1847,7 +1852,13 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     ASSERT(generic2DCompare(getbyteByteArray, setbyteByteArray,
                             byteByteArrayLength, elementLength) == true,
            "byteByteArray should be equal");
-
+    for (auto i = 0; i < byteByteArrayLength; i++) {
+      delete[] getbyteByteArray[i];
+      delete[] setbyteByteArray[i];
+    }
+    delete[] getbyteByteArray;
+    delete[] setbyteByteArray;
+    delete[] elementLength;
     wpiPtr = pIPtr->createWriter();
     try {
       wpiPtr->setField("m_byteByteArray", linkedhashset);
@@ -1860,8 +1871,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
           "IllegalStateException");
     }
 
-    auto setStringArray = new std::string[3]{"test1", "test2", "test3"};
-    wpiPtr->setField("m_stringArray", setStringArray, 3);
+    std::vector<std::string> setStringArray = {"test1", "test2", "test3"};
+    wpiPtr->setField("m_stringArray", setStringArray.data(), 3);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
     auto getStringArray = newPiPtr->getStringArrayField("m_stringArray");

@@ -95,10 +95,13 @@ class TestPdxSerializer : public PdxSerializer {
     auto nonPdxType = std::make_shared<PdxTests::NonPdxType>();
 
     try {
-      auto Lengtharr = new int32_t[2];
+      int32_t *Lengtharr;
       int32_t arrLen = 0;
+      nonPdxType->deleteByteByteArray();
       nonPdxType->m_byteByteArray = pdxReader.readArrayOfByteArrays(
           "m_byteByteArray", arrLen, &Lengtharr);
+      _GEODE_SAFE_DELETE_ARRAY(Lengtharr);
+
       // TODO::need to write compareByteByteArray() and check for
       // m_byteByteArray elements
 
@@ -206,7 +209,7 @@ class TestPdxSerializer : public PdxSerializer {
         std::static_pointer_cast<const PdxTests::NonPdxType>(testObject);
 
     try {
-      int* lengthArr = new int[2];
+      int lengthArr[2];
 
       lengthArr[0] = 1;
       lengthArr[1] = 2;
@@ -265,10 +268,6 @@ class TestPdxSerializer : public PdxSerializer {
       pdxWriter.writeByteArray("m_sbyteArray", nonPdxType->m_sbyteArray);
       pdxWriter.markIdentityField("m_sbyteArray");
 
-      int* strlengthArr = new int[2];
-
-      strlengthArr[0] = 5;
-      strlengthArr[1] = 5;
       pdxWriter.writeStringArray("m_stringArray", nonPdxType->m_stringArray);
       pdxWriter.markIdentityField("m_stringArray");
       pdxWriter.writeShort("m_uint16", nonPdxType->m_uint16);

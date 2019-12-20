@@ -54,7 +54,7 @@ using apache::geode::client::testing::CacheableWrapper;
 using apache::geode::client::testing::CacheableWrapperFactory;
 
 bool isLocalServer = false;
-const char *endPoints = CacheHelper::getTcrEndpoints(isLocalServer, 3);
+const std::string endPoints = CacheHelper::getTcrEndpoints(isLocalServer, 3);
 
 static bool isLocator = false;
 const char *locatorsG =
@@ -201,22 +201,23 @@ class putThread : public ACE_Task_Base {
 #endif
 #define KEYSIZE 256
 
-std::vector<char *> storeEndPoints(const char *points) {
-  std::vector<char *> endpointNames;
-  if (points != nullptr) {
-    char *ep = strdup(points);
-    char *token = strtok(ep, ",");
-    while (token) {
-      endpointNames.push_back(token);
-      token = strtok(nullptr, ",");
+std::vector<std::string> storeEndPoints(const std::string points) {
+  std::vector<std::string> endpointNames;
+  size_t end = 0;
+  size_t start;
+  std::string delim = ",";
+  while ((start = points.find_first_not_of(delim, end)) != std::string::npos) {
+    end = points.find(delim, start);
+    if (end == std::string::npos) {
+      end = points.length();
     }
-    free(ep);
+    endpointNames.push_back(points.substr(start, end - start));
   }
   ASSERT(endpointNames.size() == 3, "There should be 3 end points");
   return endpointNames;
 }
 
-std::vector<char *> endpointNames = storeEndPoints(endPoints);
+std::vector<std::string> endpointNames = storeEndPoints(endPoints);
 
 DUNIT_TASK_DEFINITION(SERVER1, CreateServer1)
   {

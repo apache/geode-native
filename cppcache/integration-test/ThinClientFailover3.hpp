@@ -38,7 +38,7 @@ using apache::geode::client::CacheableString;
 using apache::geode::client::CacheHelper;
 
 bool isLocalServer = false;
-const char* endPoints = CacheHelper::getTcrEndpoints(isLocalServer, 3);
+const std::string endPoints = CacheHelper::getTcrEndpoints(isLocalServer, 3);
 CacheHelper* cacheHelper = nullptr;
 
 #define CLIENT1 s1p1
@@ -242,21 +242,23 @@ void doNetsearch(const char* name, const char* key, const char* value) {
   LOG("Netsearch complete.");
 }
 
-std::vector<char*> storeEndPoints(const char* points) {
-  std::vector<char*> endpointNames;
-  if (points != nullptr) {
-    char* ep = strdup(points);
-    char* token = strtok(ep, ",");
-    while (token) {
-      endpointNames.push_back(token);
-      token = strtok(nullptr, ",");
+std::vector<std::string> storeEndPoints(const std::string points) {
+  std::vector<std::string> endpointNames;
+  size_t end = 0;
+  size_t start;
+  std::string delim = ",";
+  while ((start = points.find_first_not_of(delim, end)) != std::string::npos)  {
+    end = points.find(delim, start);
+    if (end == std::string::npos) {
+      end = points.length();
     }
+    endpointNames.push_back(points.substr(start, end - start));
   }
   ASSERT(endpointNames.size() == 3, "There should be 3 end points");
   return endpointNames;
 }
 
-std::vector<char*> endpointNames = storeEndPoints(endPoints);
+std::vector<std::string> endpointNames = storeEndPoints(endPoints);
 const char* keys[] = {"Key-1", "Key-2", "Key-3", "Key-4"};
 const char* vals[] = {"Value-1", "Value-2", "Value-3", "Value-4"};
 const char* nvals[] = {"New Value-1", "New Value-2", "New Value-3",

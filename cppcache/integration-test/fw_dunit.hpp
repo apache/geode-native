@@ -198,7 +198,7 @@ END_TASK(validate)
 #define DUNIT_TASK_DEFINITION(x, y)                            \
   class DCLASSDEF(y) : virtual public dunit::Task {            \
    public:                                                     \
-    DCLASSDEF(y)() { init(x); }                                \
+    DCLASSDEF(y)() { init(x, true); }                                \
                                                                \
    public:                                                     \
     virtual void doTask() {                                    \
@@ -272,12 +272,15 @@ class Task {
  public:
   std::string m_taskName;
   int m_id;
+  bool m_isHeapAllocated;
 
   Task() {}
-  virtual ~Task() {}
+  virtual ~Task() { }
 
   /** register task with slave. */
   void init(int sId);
+
+  void init(int sId, bool isHeapAllocated);
 
   // defined by block of code in DUNIT_TASK macro usage.
   virtual void doTask() = 0;

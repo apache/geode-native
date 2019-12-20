@@ -80,6 +80,13 @@ CacheHelper &CacheHelper::getHelper() {
   return *singleton;
 }
 
+void CacheHelper::resetHelper() {
+  if (singleton != nullptr) {
+    delete singleton;
+    singleton = nullptr;
+  }
+}
+
 CacheHelper::CacheHelper(const char *,
                          const std::shared_ptr<Properties> &configPtr,
                          const bool noRootRegion) {
@@ -90,8 +97,6 @@ CacheHelper::CacheHelper(const char *,
 
   auto cacheFactory = CacheFactory(pp);
   cachePtr = std::make_shared<Cache>(cacheFactory.create());
-
-  m_doDisconnect = false;
 
   if (noRootRegion) return;
 
@@ -121,8 +126,6 @@ CacheHelper::CacheHelper(const char *, const char *cachexml,
   }
   auto cacheFactory = CacheFactory(pp);
   cachePtr = std::make_shared<Cache>(cacheFactory.create());
-
-  m_doDisconnect = false;
 }
 
 CacheHelper::CacheHelper(const std::shared_ptr<Properties> &configPtr,
@@ -138,8 +141,6 @@ CacheHelper::CacheHelper(const std::shared_ptr<Properties> &configPtr,
   auto poolFactory = cachePtr->getPoolManager().createFactory();
   addServerLocatorEPs("localhost:40404", poolFactory);
   poolFactory.create("__CACHE_HELPER_POOL__");
-
-  m_doDisconnect = false;
 
   if (noRootRegion) return;
 
@@ -165,7 +166,6 @@ CacheHelper::CacheHelper(const bool,
     LOG(" in cachehelper before createCacheFactory");
     auto cacheFactory = CacheFactory(pp).setAuthInitialize(authInitialize);
     cachePtr = std::make_shared<Cache>(cacheFactory.create());
-    m_doDisconnect = false;
   } catch (const Exception &excp) {
     LOG("Geode exception while creating cache, logged in following line");
     LOG(excp.what());
@@ -184,7 +184,6 @@ CacheHelper::CacheHelper(const bool,
   LOG(" in cachehelper before createCacheFactory");
   auto cacheFactory = CacheFactory(pp);
   cachePtr = std::make_shared<Cache>(cacheFactory.create());
-  m_doDisconnect = false;
 }
 
 CacheHelper::CacheHelper(const bool, bool pdxIgnoreUnreadFields,
@@ -202,7 +201,6 @@ CacheHelper::CacheHelper(const bool, bool pdxIgnoreUnreadFields,
     cfPtr.setPdxReadSerialized(pdxReadSerialized);
     cfPtr.setPdxIgnoreUnreadFields(pdxIgnoreUnreadFields);
     cachePtr = std::make_shared<Cache>(cfPtr.create());
-    m_doDisconnect = false;
   } catch (const Exception &excp) {
     LOG("Geode exception while creating cache, logged in following line");
     LOG(excp.what());
@@ -275,7 +273,6 @@ CacheHelper::CacheHelper(const int,
 
   auto cacheFac = CacheFactory(pp);
   cachePtr = std::make_shared<Cache>(cacheFac.create());
-  m_doDisconnect = false;
 }
 
 CacheHelper::~CacheHelper() {
@@ -881,8 +878,8 @@ std::shared_ptr<QueryService> CacheHelper::getQueryService() {
   return cachePtr->getQueryService();
 }
 
-const char *CacheHelper::getTcrEndpoints(bool &isLocalServer,
-                                         int numberOfServers) {
+const std::string CacheHelper::getTcrEndpoints(bool &isLocalServer,
+                                               int numberOfServers) {
   static char *gfjavaenv = ACE_OS::getenv("GFJAVA");
   std::string gfendpoints;
   static bool gflocalserver = false;
@@ -961,7 +958,7 @@ const char *CacheHelper::getTcrEndpoints(bool &isLocalServer,
   }
   isLocalServer = gflocalserver;
   printf("getHostPort :: %s \n", gfendpoints.c_str());
-  return (new std::string(gfendpoints.c_str()))->c_str();
+  return (gfendpoints);
 }
 
 const char *CacheHelper::getstaticLocatorHostPort1() {
@@ -982,8 +979,8 @@ const char *CacheHelper::getLocatorHostPort(int locPort) {
   ;
 }
 
-const char *CacheHelper::getTcrEndpoints2(bool &isLocalServer,
-                                          int numberOfServers) {
+const std::string CacheHelper::getTcrEndpoints2(bool &isLocalServer,
+                                                int numberOfServers) {
   static char *gfjavaenv = ACE_OS::getenv("GFJAVA");
   std::string gfendpoints;
   static bool gflocalserver = false;
@@ -1064,7 +1061,7 @@ const char *CacheHelper::getTcrEndpoints2(bool &isLocalServer,
   ASSERT(gfjavaenv != nullptr,
          "Environment variable GFJAVA for java build directory is not set.");
   isLocalServer = gflocalserver;
-  return (new std::string(gfendpoints.c_str()))->c_str();
+  return (gfendpoints);
 }
 
 const char *CacheHelper::getLocatorHostPort(bool &isLocator,

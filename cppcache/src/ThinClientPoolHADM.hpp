@@ -104,7 +104,7 @@ class ThinClientPoolHADM : public ThinClientPoolDM {
   void startBackgroundThreads() override;
 
  private:
-  ThinClientRedundancyManager* m_redundancyManager;
+  std::unique_ptr<ThinClientRedundancyManager> m_redundancyManager;
 
   TcrConnectionManager& m_theTcrConnManager;
   ACE_Semaphore m_redundancySema;

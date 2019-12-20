@@ -214,7 +214,7 @@ class APACHE_GEODE_EXPORT StatArchiveWriter {
   int64_t bytesWrittenToFile;
   int64_t m_samplesize;
   std::string archiveFile;
-  std::map<Statistics *, ResourceInst *> resourceInstMap;
+  std::map<Statistics *, std::shared_ptr<ResourceInst>> resourceInstMap;
   std::map<const StatisticsType *, const ResourceType *> resourceTypeMap;
 
   /* private member functions */

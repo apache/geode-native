@@ -94,7 +94,6 @@ BEGIN_TEST(TestRegionNoLRU)
     cacheHelper.showKeys(vecKeys);
     ASSERT(vecKeys.size() == (i + 1), "unexpected entries count");
   }
-
 #endif
 
 END_TEST(TestRegionNoLRU)
@@ -119,7 +118,6 @@ BEGIN_TEST(TestRegionLRULocal)
     auto&& vecKeys = regionPtr->keys();
     ASSERT(vecKeys.size() == (i < 10 ? i + 1 : 10), "expected more entries");
   }
-
 #endif
 END_TEST(TestRegionLRULocal)
 
@@ -168,7 +166,6 @@ BEGIN_TEST(TestRecentlyUsedBit)
     ASSERT(vecKeys.size() == 10, "expected more entries");
   }
   ASSERT(regionPtr->containsKey(key2) == false, "15 should have been evicted.");
-
 END_TEST(TestRecentlyUsedBit)
 
 BEGIN_TEST(TestEmptiedMap)
@@ -210,5 +207,7 @@ BEGIN_TEST(TestEmptiedMap)
   }
   vecKeys = regionPtr->keys();
   ASSERT(vecKeys.size() == 10, "expected more entries");
+
+  cacheHelper.resetHelper();
 
 END_TEST(TestEmptiedMap)

@@ -54,11 +54,12 @@ class CacheHelper {
   static std::list<std::string> staticConfigFileList;
   std::shared_ptr<Cache> cachePtr;
   std::shared_ptr<Region> rootRegionPtr;
-  bool m_doDisconnect;
 
   std::shared_ptr<Cache> getCache();
 
   static CacheHelper& getHelper();
+
+  static void resetHelper();
 
   static std::string unitTestOutputFile();
   static int getNumLocatorListUpdates(const char* s);
@@ -282,7 +283,7 @@ class CacheHelper {
   static int staticHostPort3;
   static int staticHostPort4;
 
-  static const char* getTcrEndpoints(bool& isLocalServer,
+  static const std::string getTcrEndpoints(bool& isLocalServer,
                                      int numberOfServers = 1);
 
   static int staticLocatorHostPort1;
@@ -300,7 +301,7 @@ class CacheHelper {
   static const char* getLocatorHostPort(bool& isLocator, bool& isLocalServer,
                                         int numberOfLocators = 0);
 
-  static const char* getTcrEndpoints2(bool& isLocalServer,
+  static const std::string getTcrEndpoints2(bool& isLocalServer,
                                       int numberOfServers = 1);
 
   static std::list<int> staticServerInstanceList;
