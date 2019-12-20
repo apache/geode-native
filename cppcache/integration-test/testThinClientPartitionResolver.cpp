@@ -71,14 +71,15 @@ const std::string endPoints = CacheHelper::getTcrEndpoints(isLocalServer, 3);
 
 std::vector<std::string> storeEndPoints(const std::string points) {
   std::vector<std::string> endpointNames;
-  if (!points.empty()) {
-    char *ep = strdup(points.c_str());
-    char *token = strtok(ep, ",");
-    while (token) {
-      endpointNames.push_back(std::string(token));
-      token = strtok(nullptr, ",");
+  size_t end = 0;
+  size_t start;
+  std::string delim = ",";
+  while ((start = points.find_first_not_of(delim, end)) != std::string::npos) {
+    end = points.find(delim, start);
+    if (end == std::string::npos) {
+      end = points.length();
     }
-    free(ep);
+    endpointNames.push_back(points.substr(start, end - start));
   }
   ASSERT(endpointNames.size() == 3, "There should be 3 end points");
   return endpointNames;
@@ -103,10 +104,6 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, CreatePoolAndRegions)
   {
     initClient(true);
-
-    char endpoints[1024] = {0};
-    sprintf(endpoints, "%s,%s,%s", endpointNames.at(0).c_str(),
-            endpointNames.at(1).c_str(), endpointNames.at(2).c_str());
 
     getHelper()->createPoolWithLocators("__TEST_POOL1__", nullptr);
     getHelper()->createRegionAndAttachPool2(regionNames[0], USE_ACK,

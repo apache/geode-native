@@ -244,14 +244,15 @@ void doNetsearch(const char* name, const char* key, const char* value) {
 
 std::vector<std::string> storeEndPoints(const std::string points) {
   std::vector<std::string> endpointNames;
-  if (!points.empty()) {
-    char* ep = strdup(points.c_str());
-    char* token = strtok(ep, ",");
-    while (token) {
-      endpointNames.push_back(token);
-      token = strtok(nullptr, ",");
+  size_t end = 0;
+  size_t start;
+  std::string delim = ",";
+  while ((start = points.find_first_not_of(delim, end)) != std::string::npos)  {
+    end = points.find(delim, start);
+    if (end == std::string::npos) {
+      end = points.length();
     }
-    free(ep);
+    endpointNames.push_back(points.substr(start, end - start));
   }
   ASSERT(endpointNames.size() == 3, "There should be 3 end points");
   return endpointNames;
