@@ -14,14 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "ProcessStats.hpp"
+
+#include "spinlock_mutex.hpp"
 
 namespace apache {
 namespace geode {
-namespace statistics {
+namespace util {
+namespace concurrent {
 
-int64_t ProcessStats::getProcessSize() { return 0; }
+void spinlock_mutex::lock() {
+  while (flag.test_and_set(std::memory_order_acquire)) continue;
+}
 
-}  // namespace statistics
-}  // namespace geode
-}  // namespace apache
+void spinlock_mutex::unlock() { flag.clear(std::memory_order_release); }
+
+} /* namespace concurrent */
+} /* namespace util */
+} /* namespace geode */
+} /* namespace apache */

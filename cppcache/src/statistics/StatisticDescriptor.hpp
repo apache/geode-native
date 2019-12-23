@@ -24,9 +24,6 @@
 
 #include <geode/internal/geode_globals.hpp>
 
-/** @file
- */
-
 namespace apache {
 namespace geode {
 namespace statistics {
@@ -43,7 +40,6 @@ namespace statistics {
  * StatisticDescriptors are naturally ordered by their name.
  *
  */
-
 class APACHE_GEODE_EXPORT StatisticDescriptor {
  public:
   /**
@@ -80,10 +76,7 @@ class APACHE_GEODE_EXPORT StatisticDescriptor {
    */
   virtual const std::string& getUnit() const = 0;
 
-  /*
-   * Destructor
-   */
-  virtual ~StatisticDescriptor() {}
+  virtual ~StatisticDescriptor() = default;
 
 };  // class
 }  // namespace statistics

@@ -25,7 +25,6 @@
 
 #include <geode/internal/geode_globals.hpp>
 
-#include "../NonCopyable.hpp"
 #include "Statistics.hpp"
 #include "StatisticsFactory.hpp"
 #include "StatisticsTypeImpl.hpp"
@@ -42,9 +41,7 @@ namespace statistics {
  * in local memory and support atomic operations
  *
  */
-class AtomicStatisticsImpl : public Statistics, private client::NonCopyable {
- private:
-  /**********varbs originally kept in statisticsimpl class*****************/
+class AtomicStatisticsImpl : public Statistics {
   /** The type of this statistics instance */
   StatisticsTypeImpl* statsType;
 
@@ -60,7 +57,6 @@ class AtomicStatisticsImpl : public Statistics, private client::NonCopyable {
   /** Uniquely identifies this instance */
   int64_t uniqueId;
 
-  /****************************************************************************/
   /** An array containing the values of the int32_t statistics */
   std::atomic<int32_t>* intStorage;
 
@@ -70,7 +66,6 @@ class AtomicStatisticsImpl : public Statistics, private client::NonCopyable {
   /** An array containing the values of the double statistics */
   std::atomic<double>* doubleStorage;
 
-  ///////////////////////Private Methods//////////////////////////
   bool isOpen() const;
 
   int32_t getIntId(const std::shared_ptr<StatisticDescriptor> descriptor) const;
@@ -81,15 +76,12 @@ class AtomicStatisticsImpl : public Statistics, private client::NonCopyable {
   int32_t getDoubleId(
       const std::shared_ptr<StatisticDescriptor> descriptor) const;
 
-  //////////////////////  Static private Methods  //////////////////////
-
   int64_t calcNumericId(StatisticsFactory* system, int64_t userValue);
 
   std::string calcTextId(StatisticsFactory* system,
                          const std::string& userValue);
 
-  ///////////////////////  Constructors  ///////////////////////
-
+ public:
   /**
    * Creates a new statistics instance of the given type
    *
@@ -105,14 +97,14 @@ class AtomicStatisticsImpl : public Statistics, private client::NonCopyable {
    *        The distributed system that determines whether or not these
    *        statistics are stored (and collected) in local memory
    */
-
- public:
   AtomicStatisticsImpl(StatisticsType* type, const std::string& textId,
                        int64_t numericId, int64_t uniqueId,
                        StatisticsFactory* system);
 
-  //////////////////////  Instance Methods  //////////////////////
   ~AtomicStatisticsImpl() noexcept override;
+
+  AtomicStatisticsImpl(const AtomicStatisticsImpl&) = delete;
+  AtomicStatisticsImpl& operator=(const AtomicStatisticsImpl&) = delete;
 
   bool usesSystemCalls();
 
@@ -128,7 +120,6 @@ class AtomicStatisticsImpl : public Statistics, private client::NonCopyable {
   bool isAtomic() const override;
 
   void close() override;
-  /////////////////////////Attribute methods//////////////////////////
 
   StatisticsType* getType() const override;
 
@@ -137,8 +128,6 @@ class AtomicStatisticsImpl : public Statistics, private client::NonCopyable {
   int64_t getNumericId() const override;
 
   int64_t getUniqueId() const override;
-
-  ////////////////////////  set() Methods  ///////////////////////
 
   void setInt(const std::string& name, int32_t value) override;
 
@@ -160,8 +149,6 @@ class AtomicStatisticsImpl : public Statistics, private client::NonCopyable {
                  double value) override;
 
   void setDouble(int32_t id, double value) override;
-
-  ///////////////////////  get() Methods  ///////////////////////
 
   int32_t getInt(const std::string& name) const override;
 
@@ -186,8 +173,6 @@ class AtomicStatisticsImpl : public Statistics, private client::NonCopyable {
 
   int64_t getRawBits(
       const std::shared_ptr<StatisticDescriptor> descriptor) const override;
-
-  ////////////////////////  inc() Methods  ////////////////////////
 
   int32_t incInt(const std::string& name, int32_t delta) override;
 

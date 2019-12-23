@@ -32,9 +32,6 @@
 #include "StatisticsManager.hpp"
 #include "StatisticsTypeImpl.hpp"
 
-/** @file
- */
-
 namespace apache {
 namespace geode {
 namespace statistics {
@@ -46,15 +43,13 @@ class StatisticsManager;
  *
  */
 class GeodeStatisticsFactory : public StatisticsFactory {
- private:
   std::string m_name;
 
   int64_t m_id;
 
   StatisticsManager* m_statMngr;
 
-  int64_t m_statsListUniqueId;  // Creates a unique id for each stats object in
-                                // the list
+  int64_t m_statsListUniqueId;
 
   std::recursive_mutex m_statsListUniqueIdLock;
 

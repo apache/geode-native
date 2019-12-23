@@ -55,7 +55,7 @@ class PoolStatsSampler {
                    ThinClientPoolDM* distMan);
   PoolStatsSampler& operator=(const PoolStatsSampler&) = delete;
   PoolStatsSampler(const PoolStatsSampler& PoolStatsSampler) = delete;
-  ~PoolStatsSampler() noexcept {}
+  ~PoolStatsSampler() noexcept = default;
 
   void start();
   void stop();

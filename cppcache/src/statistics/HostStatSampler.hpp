@@ -33,7 +33,6 @@
 #include <geode/ExceptionTypes.hpp>
 #include <geode/internal/geode_globals.hpp>
 
-#include "../NonCopyable.hpp"
 #include "StatArchiveWriter.hpp"
 #include "StatSamplerStats.hpp"
 #include "StatisticDescriptor.hpp"
@@ -65,15 +64,16 @@ class StatisticsManager;
  * HostStatSampler implements a thread which will monitor, sample and archive
  * statistics. It only has the common functionalities which any sampler needs.
  */
-class HostStatSampler : private NonCopyable, private NonAssignable {
+class HostStatSampler {
  public:
-  /*
-   * Constructor:
-   */
   HostStatSampler(const char* filePath,
                   std::chrono::milliseconds sampleIntervalMs,
                   StatisticsManager* statMngr, CacheImpl* cache,
                   int64_t statFileLimit = 0, int64_t statDiskSpaceLimit = 0);
+
+  HostStatSampler(const HostStatSampler&) = delete;
+
+  HostStatSampler& operator=(const HostStatSampler&) = delete;
 
   /**
    * Adds the pid to the archive file passed to it.

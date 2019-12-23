@@ -153,6 +153,8 @@ void StatDataOutput::openFile(std::string filename, int64_t size) {
   bytesWritten = size;
 }
 
+const uint8_t *StatDataOutput::getBuffer() { return dataBuffer->getBuffer(); }
+
 // Constructor and Member functions of ResourceType class
 
 ResourceType::ResourceType(int32_t idArg, const StatisticsType *typeArg)
@@ -615,6 +617,7 @@ void StatArchiveWriter::writeResourceInst(StatDataOutput *dataOut,
     dataOut->writeByte(static_cast<uint8_t>(instId));
   }
 }
+
 }  // namespace statistics
 }  // namespace geode
 }  // namespace apache
