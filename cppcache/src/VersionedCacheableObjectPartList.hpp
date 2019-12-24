@@ -101,7 +101,6 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
     m_endpointMemId = 0;
     m_versionTags.resize(totalMapSize);
     this->m_hasKeys = false;
-    ;
   }
 
   VersionedCacheableObjectPartList(ThinClientRegion* region, uint16_t dsmemId,
@@ -113,7 +112,6 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
     m_serializeValues = false;
     m_hasTags = false;
     this->m_hasKeys = false;
-    ;
   }
 
   VersionedCacheableObjectPartList(

@@ -234,11 +234,11 @@ class CredentialGenerator {
 
   virtual void getAllowedCredentialsForOps(opCodeList& opCodes,
                                            std::shared_ptr<Properties>& p,
-                                           stringList* regionNames = nullptr);
+                                           stringList* regionNames);
 
-  virtual void getDisallowedCredentialsForOps(
-      opCodeList& opCodes, std::shared_ptr<Properties>& p,
-      stringList* regionNames = nullptr);
+  virtual void getDisallowedCredentialsForOps(opCodeList& opCodes,
+                                              std::shared_ptr<Properties>& p,
+                                              stringList* regionNames);
 
   static registeredClassMap& getRegisterdSchemes() {
     if (generators().size() == 0) {

@@ -31,12 +31,9 @@ namespace security {
 
 class DummyCredentialGenerator2 : public CredentialGenerator {
  public:
-  DummyCredentialGenerator2() : CredentialGenerator(ID_DUMMY2, "DUMMY2") {
-    ;
-    ;
-  };
+  DummyCredentialGenerator2() : CredentialGenerator(ID_DUMMY2, "DUMMY2") {}
 
-  std::string getInitArgs(std::string workingDir, bool userMode) {
+  std::string getInitArgs(std::string workingDir, bool userMode) override {
     std::string additionalArgs;
     char* buildDir = ACE_OS::getenv("BUILDDIR");
     if (buildDir && workingDir.length() == 0) {
@@ -55,21 +52,24 @@ class DummyCredentialGenerator2 : public CredentialGenerator {
     return additionalArgs;
   }
 
-  std::string getClientAuthInitLoaderFactory() {
+  std::string getClientAuthInitLoaderFactory() override {
     return "createUserPasswordAuthInitInstance";
   }
-  std::string getClientAuthInitLoaderLibrary() { return "securityImpl"; }
-  std::string getClientAuthenticator() {
+  std::string getClientAuthInitLoaderLibrary() override {
+    return "securityImpl";
+  }
+
+  std::string getClientAuthenticator() override {
     return "javaobject.DummyAuthenticator.create";
   }
-  std::string getClientAuthorizer() {
+  std::string getClientAuthorizer() override {
     return "javaobject.DummyAuthorization2.create";
   }
-  std::string getClientDummyAuthorizer() {
+  std::string getClientDummyAuthorizer() override {
     return "javaobject.DummyAuthorization.create";
   }
 
-  void getValidCredentials(std::shared_ptr<Properties>& p) {
+  void getValidCredentials(std::shared_ptr<Properties>& p) override {
     p->insert("security-username", "user1");
     p->insert("security-password", "user1");
     FWKDEBUG("inserted valid security-username "
@@ -77,7 +77,7 @@ class DummyCredentialGenerator2 : public CredentialGenerator {
              << p->find("security-password")->value().c_str());
   }
 
-  void getInvalidCredentials(std::shared_ptr<Properties>& p) {
+  void getInvalidCredentials(std::shared_ptr<Properties>& p) override {
     p->insert("security-username", "1user");
     p->insert("security-password", "user1");
     FWKDEBUG("inserted invalid security-username "
@@ -87,14 +87,14 @@ class DummyCredentialGenerator2 : public CredentialGenerator {
 
   void getAllowedCredentialsForOps(opCodeList& opCodes,
                                    std::shared_ptr<Properties>& p,
-                                   stringList* regionNames = nullptr) {
+                                   stringList* regionNames) override {
     XmlAuthzCredentialGenerator authz(id());
     authz.getAllowedCredentials(opCodes, p, regionNames);
   }
 
   void getDisallowedCredentialsForOps(opCodeList& opCodes,
                                       std::shared_ptr<Properties>& p,
-                                      stringList* regionNames = nullptr) {
+                                      stringList* regionNames) override {
     XmlAuthzCredentialGenerator authz(id());
     authz.getDisallowedCredentials(opCodes, p, regionNames);
   }
