@@ -44,7 +44,6 @@ add_executable(cpp-integration-test
 
 target_compile_definitions(cpp-integration-test
   PUBLIC
-    BOOST_ASIO_HAS_MOVE
     GTEST_ELLIPSIS_NEEDS_POD_
 )
 
@@ -75,12 +74,6 @@ target_link_libraries(cpp-integration-test
 add_dependencies(cpp-integration-test cryptoImpl)
 
 if(WIN32)
-  target_compile_definitions(cpp-integration-test
-    PUBLIC
-      # Required for Boost.WinAPI
-      _WIN32_WINNT=0x06020000
-  )
-
   foreach (_target apache-geode testobject cryptoImpl)
     add_custom_command(TARGET cpp-integration-test POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "$<TARGET_FILE:${_target}>"

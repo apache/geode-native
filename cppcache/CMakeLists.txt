@@ -70,10 +70,6 @@ set(SOURCES_ALL ${SOURCES} ${PRIVATE_HEADERS} ${PUBLIC_HEADERS} ${CONFIGURE_IN_F
 
 add_library(_apache-geode INTERFACE)
 
-target_compile_definitions(_apache-geode INTERFACE
-  BOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED
-)
-
 if(CMAKE_SYSTEM_NAME STREQUAL "SunOS")
   target_link_libraries(_apache-geode INTERFACE
     demangle
@@ -83,10 +79,6 @@ elseif (WIN32)
   target_link_libraries(_apache-geode INTERFACE
     Dbghelp
   )
-  target_compile_definitions(_apache-geode INTERFACE
-    # Required for Boost.WinAPI
-    _WIN32_WINNT=0x06020000
-  )
 endif()
 
 target_link_libraries(_apache-geode INTERFACE
@@ -94,6 +86,7 @@ target_link_libraries(_apache-geode INTERFACE
   Boost::boost
   Boost::filesystem
   Boost::thread
+  Boost::stacktrace
   XercesC::XercesC
 )
 

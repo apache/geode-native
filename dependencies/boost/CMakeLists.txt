@@ -85,7 +85,7 @@ function(ADD_BOOST_LIBRARY)
 
   set(args_NAME ${ARGV0})
 
-  if (NOT DEFINED args_LIBRARIES OR args_LIBRARIES STREQUAL "")
+  if (NOT DEFINED args_LIBRARIES)
     set(args_LIBRARIES ${args_NAME})
   endif()
 
@@ -124,3 +124,28 @@ add_boost_library(filesystem DEPENDENCIES Boost::system Boost::boost)
 add_boost_library(log DEPENDENCIES Boost::thread Boost::filesystem Boost::boost)
 add_boost_library(log_setup DEPENDENCIES Boost::log)
 add_boost_library(chrono DEPENDENCIES Boost::chrono)
+add_boost_library(stacktrace LIBRARIES "" DEPENDENCIES Boost::boost)
+add_boost_library(asio LIBRARIES "" DEPENDENCIES Boost::boost)
+add_boost_library(process LIBRARIES "" DEPENDENCIES Boost::system)
+
+target_compile_definitions(boost_stacktrace INTERFACE
+  BOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED
+)
+
+target_compile_definitions(boost_asio INTERFACE
+    BOOST_ASIO_HAS_MOVE
+)
+
+if(WIN32)
+  target_compile_definitions(boost INTERFACE
+    # Required for Boost.WinAPI
+    _WIN32_WINNT=0x06020000
+  )
+endif()
+
+if(MSVC)
+  target_compile_options(boost_process INTERFACE
+  	/wd4267
+    /wd4244
+	)
+endif()

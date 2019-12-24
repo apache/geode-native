@@ -33,11 +33,6 @@ add_library(integration-framework STATIC
 
 add_dependencies(integration-framework javaobject)
 
-target_compile_definitions(integration-framework
-  PUBLIC
-    BOOST_ASIO_HAS_MOVE
-)
-
 target_include_directories(integration-framework
   PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/..
@@ -54,15 +49,9 @@ target_link_libraries(integration-framework
     Boost::system
     Boost::log
     Boost::filesystem
+    Boost::process
+    Boost::asio
   PRIVATE
     _WarningsAsError
     internal
 )
-
-if(WIN32)
-  target_compile_definitions(integration-framework
-    PUBLIC
-      # Required for Boost.WinAPI
-      _WIN32_WINNT=0x06020000
-  )
-endif()
