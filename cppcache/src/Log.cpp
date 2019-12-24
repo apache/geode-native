@@ -726,13 +726,7 @@ void Log::exitFn(LogLevel level, const char* functionName) {
 }
 
 bool Log::enabled(LogLevel level) {
-#ifdef DEBUG
-  return (((level == LogLevel::Debug) || GEODE_HIGHEST_LOG_LEVEL >= level) &&
-          s_logLevel >= level);
-#else
-  return (((level != LogLevel::Debug) && GEODE_HIGHEST_LOG_LEVEL >= level) &&
-          s_logLevel >= level);
-#endif
+  return GEODE_HIGHEST_LOG_LEVEL >= level && s_logLevel >= level;
 }
 
 void Log::log(LogLevel level, const char* msg) {
@@ -871,12 +865,8 @@ void Log::finestCatch(const char* msg, const Exception& ex) {
 }
 
 bool Log::debugEnabled() {
-#ifdef DEBUG
-  return s_logLevel >= LogLevel::Debug;
-#else
-  return (GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Debug) &&
+  return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Debug &&
          s_logLevel >= LogLevel::Debug;
-#endif
 }
 
 void Log::debug(const char* msg) {
