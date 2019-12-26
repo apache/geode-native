@@ -27,7 +27,6 @@
 
 #include <geode/internal/geode_globals.hpp>
 
-#include "DiffieHellman.hpp"
 #include "DistributedSystem.hpp"
 #include "statistics/StatisticsManager.hpp"
 
@@ -68,7 +67,6 @@ class APACHE_GEODE_EXPORT DistributedSystemImpl {
 
   std::string m_name;
   DistributedSystem* m_implementee;
-  DiffieHellman m_dh;
 
   /**
    * @brief constructors

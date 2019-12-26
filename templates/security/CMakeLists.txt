@@ -17,8 +17,6 @@ cmake_minimum_required(VERSION 3.10)
 project(templates.security LANGUAGES CXX)
 
 add_library(securityImpl SHARED
-  PkcsAuthInit.cpp
-  PkcsAuthInit.hpp
   UserPasswordAuthInit.cpp
   UserPasswordAuthInit.hpp
   CMakeLists.txt.forInstall

@@ -27,7 +27,6 @@
 
 #include "ClientProxyMembershipID.hpp"
 #include "Connector.hpp"
-#include "DiffieHellman.hpp"
 #include "DistributedSystemImpl.hpp"
 #include "TcpSslConn.hpp"
 #include "TcrConnectionManager.hpp"
@@ -47,10 +46,10 @@ const int8_t LAST_CHUNK_MASK = 0x1;
 const int64_t INITIAL_CONNECTION_ID = 26739;
 
 #define throwException(ex)                            \
-  {                                                   \
+  do {                                                \
     LOGFINEST(ex.getName() + ": " + ex.getMessage()); \
     throw ex;                                         \
-  }
+  } while (0)
 
 struct FinalizeProcessChunk {
  private:
@@ -79,7 +78,6 @@ bool TcrConnection::initTcrConnection(
   // m_connected = isConnected;
   m_hasServerQueue = NON_REDUNDANT_SERVER;
   m_queueSize = 0;
-  m_dh = nullptr;
   // m_chunksProcessSema = 0;
   m_creationTime = clock::now();
   connectionId = INITIAL_CONNECTION_ID;
@@ -192,7 +190,6 @@ bool TcrConnection::initTcrConnection(
   }
   handShakeMsg.writeInt(static_cast<int32_t>(1));
 
-  bool isDhOn = false;
   bool requireServerAuth = false;
   std::shared_ptr<Properties> credentials;
   std::shared_ptr<CacheableBytes> serverChallenge;
@@ -201,29 +198,18 @@ bool TcrConnection::initTcrConnection(
   handShakeMsg.write(getOverrides(&sysProp));
 
   bool tmpIsSecurityOn = nullptr != cacheImpl->getAuthInitialize();
-  isDhOn = sysProp.isDhOn();
 
   if (m_endpointObj) {
-    tmpIsSecurityOn = tmpIsSecurityOn || this->m_endpointObj->isMultiUserMode();
-    auto dhalgo =
-        sysProp.getSecurityProperties()->find("security-client-dhalgo");
-
-    LOGDEBUG("TcrConnection this->m_endpointObj->isMultiUserMode() = %d ",
-             this->m_endpointObj->isMultiUserMode());
-    if (this->m_endpointObj->isMultiUserMode()) {
-      if (dhalgo != nullptr && dhalgo->length() > 0) isDhOn = true;
-    }
+    tmpIsSecurityOn = tmpIsSecurityOn || m_endpointObj->isMultiUserMode();
   }
 
   LOGDEBUG(
-      "TcrConnection algo name %s tmpIsSecurityOn = %d isDhOn = %d "
-      "isNotificationChannel = %d ",
-      sysProp.securityClientDhAlgo().c_str(), tmpIsSecurityOn, isDhOn,
-      isNotificationChannel);
+      "TcrConnection tmpIsSecurityOn = %d isNotificationChannel = "
+      "%d ",
+      tmpIsSecurityOn, isNotificationChannel);
   bool doIneedToSendCreds = true;
   if (isNotificationChannel && m_endpointObj &&
       this->m_endpointObj->isMultiUserMode()) {
-    isDhOn = false;
     tmpIsSecurityOn = false;
     doIneedToSendCreds = false;
   }
@@ -231,10 +217,6 @@ bool TcrConnection::initTcrConnection(
   if (isNotificationChannel && !doIneedToSendCreds) {
     handShakeMsg.write(
         static_cast<uint8_t>(SECURITY_MULTIUSER_NOTIFICATIONCHANNEL));
-  } else if (isDhOn) {
-    m_dh = new DiffieHellman();
-    m_dh->initDhKeys(sysProp.getSecurityProperties());
-    handShakeMsg.write(static_cast<uint8_t>(SECURITY_CREDENTIALS_DHENCRYPT));
   } else if (tmpIsSecurityOn) {
     handShakeMsg.write(static_cast<uint8_t>(SECURITY_CREDENTIALS_NORMAL));
   } else {
@@ -261,38 +243,9 @@ bool TcrConnection::initTcrConnection(
           credentials = tmpAuthIniSecurityProperties;
         }
       }
-
-      if (isDhOn) {
-        auto ksPath = tmpSecurityProperties->find("security-client-kspath");
-        requireServerAuth = (ksPath != nullptr && ksPath->length() > 0);
-        handShakeMsg.writeBoolean(requireServerAuth);
-        LOGFINE(
-            "HandShake: Server authentication using RSA signature %s required",
-            requireServerAuth ? "is" : "not");
-
-        // Send the symmetric key algorithm name string
-        handShakeMsg.writeString(sysProp.securityClientDhAlgo());
-
-        // Send the client's DH public key to the server
-        auto dhPubKey = m_dh->getPublicKey();
-        LOGDEBUG("DH pubkey send len is %d", dhPubKey->length());
-        dhPubKey->toData(handShakeMsg);
-
-        if (requireServerAuth) {
-          char serverChallengeBytes[64] = {0};
-          RandGen getrand;
-          for (int pos = 0; pos < 64; pos++) {
-            serverChallengeBytes[pos] = getrand(255);
-          }
-          serverChallenge = CacheableBytes::create(std::vector<int8_t>(
-              serverChallengeBytes, serverChallengeBytes + 64));
-          serverChallenge->toData(handShakeMsg);
-        }
-      } else {                       // if isDhOn
-        if (isClientNotification) {  //:only for backward connection
-          credentials->toData(handShakeMsg);
-        }
-      }  // else isDhOn
+      if (isClientNotification) {
+        credentials->toData(handShakeMsg);
+      }
     } catch (const AuthenticationRequiredException&) {
       LOGDEBUG("AuthenticationRequiredException got");
       throw;
@@ -328,77 +281,6 @@ bool TcrConnection::initTcrConnection(
           "SSL is enabled on server, enable SSL in client as well");
       GF_SAFE_DELETE_CON(m_conn);
       throwException(ex);
-    }
-
-    // if diffie-hellman based credential encryption is enabled
-    if (isDhOn && acceptanceCode[0] == REPLY_OK) {
-      // read the server's DH public key
-      auto pubKeyBytes = readHandshakeByteArray(connectTimeout);
-      LOGDEBUG(" Handshake: Got pubKeySize %d", pubKeyBytes->length());
-
-      // set the server's public key on client's DH side
-      // DiffieHellman::setPublicKeyOther(pubKeyBytes);
-      m_dh->setPublicKeyOther(pubKeyBytes);
-
-      // Note: SK Algo is set in DistributedSystem::connect()
-      // DiffieHellman::computeSharedSecret();
-      m_dh->computeSharedSecret();
-
-      if (requireServerAuth) {
-        // Read Subject Name
-        auto subjectName = readHandshakeString(connectTimeout);
-        LOGDEBUG("Got subject %s", subjectName->value().c_str());
-        // read the server's signature bytes
-        auto responseBytes = readHandshakeByteArray(connectTimeout);
-        LOGDEBUG("Handshake: Got response size %d", responseBytes->length());
-        LOGDEBUG("Handshake: Got serverChallenge size %d",
-                 serverChallenge->length());
-        if (!m_dh->verify(subjectName, serverChallenge, responseBytes)) {
-          throwException(AuthenticationFailedException(
-              "Handshake: failed to verify server challenge response"));
-        }
-        LOGFINE("HandShake: Verified server challenge response");
-      }
-
-      // read the challenge bytes from the server
-      auto challengeBytes = readHandshakeByteArray(connectTimeout);
-      LOGDEBUG("Handshake: Got challengeSize %d", challengeBytes->length());
-
-      // encrypt the credentials and challenge bytes
-      auto cleartext = cacheImpl->createDataOutput();
-      if (isClientNotification) {  //:only for backward connection
-        credentials->toData(cleartext);
-      }
-      challengeBytes->toData(cleartext);
-      auto ciphertext = m_dh->encrypt(
-          cleartext.getBuffer(), static_cast<int>(cleartext.getBufferLength()));
-
-      auto sendCreds = cacheImpl->createDataOutput();
-      ciphertext->toData(sendCreds);
-      size_t credLength;
-      auto credData = reinterpret_cast<char*>(
-          const_cast<uint8_t*>(sendCreds.getBuffer(&credLength)));
-      // send the encrypted bytes and check the response
-      error = sendData(credData, credLength, connectTimeout, false);
-
-      if (error == CONN_NOERR) {
-        acceptanceCode = readHandshakeData(1, connectTimeout);
-        LOGDEBUG("Handshake: Got acceptanceCode Finally %d", acceptanceCode[0]);
-      } else {
-        int32_t lastError = ACE_OS::last_error();
-        LOGERROR("Handshake failed, errno: %d, server may not be running",
-                 lastError);
-        GF_SAFE_DELETE_CON(m_conn);
-        if (error & CONN_TIMEOUT) {
-          throwException(TimeoutException(
-              "TcrConnection::TcrConnection: "
-              "connection timed out during diffie-hellman handshake"));
-        } else {
-          throwException(
-              GeodeIOException("TcrConnection::TcrConnection: "
-                               "Handshake failure during diffie-hellman"));
-        }
-      }
     }
 
     auto serverQueueStatus = readHandshakeData(1, connectTimeout);
@@ -1399,11 +1281,6 @@ TcrConnection::~TcrConnection() {
     LOGDEBUG("closing the connection");
     m_conn->close();
     GF_SAFE_DELETE_CON(m_conn);
-  }
-
-  if (m_dh != nullptr) {
-    m_dh->clearDhKeys();
-    _GEODE_SAFE_DELETE(m_dh);
   }
 }
 

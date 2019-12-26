@@ -604,11 +604,11 @@ void TcrMessage::readUniqueIDObjectPart(DataInput& input) {
   }
 }
 
-int64_t TcrMessage::getConnectionId(TcrConnection* conn) {
-  if (m_connectionIDBytes != nullptr) {
-    auto tmp = conn->decryptBytes(m_connectionIDBytes);
+int64_t TcrMessage::getConnectionId() {
+  if (m_connectionIDBytes) {
     auto di = m_tcdm->getConnectionManager().getCacheImpl()->createDataInput(
-        reinterpret_cast<const uint8_t*>(tmp->value().data()), tmp->length());
+        reinterpret_cast<const uint8_t*>(m_connectionIDBytes->value().data()),
+        m_connectionIDBytes->length());
     return di.readInt64();
   } else {
     LOGWARN("Returning 0 as internal connection ID msgtype = %d ", m_msgType);
@@ -616,14 +616,12 @@ int64_t TcrMessage::getConnectionId(TcrConnection* conn) {
   }
 }
 
-int64_t TcrMessage::getUniqueId(TcrConnection* conn) {
-  if (m_value != nullptr) {
-    auto encryptBytes = std::dynamic_pointer_cast<CacheableBytes>(m_value);
-
-    auto tmp = conn->decryptBytes(encryptBytes);
-
+int64_t TcrMessage::getUniqueId() {
+  if (auto cacheableBytes =
+          std::dynamic_pointer_cast<CacheableBytes>(m_value)) {
     auto di = m_tcdm->getConnectionManager().getCacheImpl()->createDataInput(
-        reinterpret_cast<const uint8_t*>(tmp->value().data()), tmp->length());
+        reinterpret_cast<const uint8_t*>(cacheableBytes->value().data()),
+        cacheableBytes->length());
     return di.readInt64();
   }
   return 0;
@@ -2787,7 +2785,7 @@ TcrMessageRemoveUserAuth::TcrMessageRemoveUserAuth(
                .c_str());
 }
 
-void TcrMessage::createUserCredentialMessage(TcrConnection* conn) {
+void TcrMessage::createUserCredentialMessage(TcrConnection*) {
   m_request->reset();
   m_isSecurityHeaderAdded = false;
   writeHeader(m_msgType, 1);
@@ -2799,8 +2797,7 @@ void TcrMessage::createUserCredentialMessage(TcrConnection* conn) {
 
   auto credBytes = CacheableBytes::create(std::vector<int8_t>(
       dOut.getBuffer(), dOut.getBuffer() + dOut.getBufferLength()));
-  auto encryptBytes = conn->encryptBytes(credBytes);
-  writeObjectPart(encryptBytes);
+  writeObjectPart(credBytes);
 
   writeMessageLength();
   LOGDEBUG("TcrMessage::createUserCredentialMessage  msg = %s ",
@@ -2831,21 +2828,18 @@ void TcrMessage::addSecurityPart(int64_t connectionId, int64_t unique_id,
   auto bytes = CacheableBytes::create(std::vector<int8_t>(
       dOutput.getBuffer(), dOutput.getBuffer() + dOutput.getBufferLength()));
 
-  auto encryptBytes = conn->encryptBytes(bytes);
-
   LOGDEBUG("TcrMessage::addSecurityPart [%p] length = %" PRId32
            ", encrypted ID = %s ",
-           conn, encryptBytes->length(),
-           Utils::convertBytesToString(encryptBytes->value().data(),
-                                       encryptBytes->length())
+           conn, bytes->length(),
+           Utils::convertBytesToString(bytes->value().data(), bytes->length())
                .c_str());
 
-  writeObjectPart(encryptBytes);
+  writeObjectPart(bytes);
   writeMessageLength();
-  m_securityHeaderLength = 4 + 1 + encryptBytes->length();
+  m_securityHeaderLength = 4 + 1 + bytes->length();
 }
 
-void TcrMessage::addSecurityPart(int64_t connectionId, TcrConnection* conn) {
+void TcrMessage::addSecurityPart(int64_t connectionId, TcrConnection*) {
   LOGDEBUG("TcrMessage::addSecurityPart m_isSecurityHeaderAdded = %d ",
            m_isSecurityHeaderAdded);
   if (m_isSecurityHeaderAdded) {
@@ -2865,11 +2859,9 @@ void TcrMessage::addSecurityPart(int64_t connectionId, TcrConnection* conn) {
   auto bytes = CacheableBytes::create(std::vector<int8_t>(
       dOutput.getBuffer(), dOutput.getBuffer() + dOutput.getBufferLength()));
 
-  auto encryptBytes = conn->encryptBytes(bytes);
-
-  writeObjectPart(encryptBytes);
+  writeObjectPart(bytes);
   writeMessageLength();
-  m_securityHeaderLength = 4 + 1 + encryptBytes->length();
+  m_securityHeaderLength = 4 + 1 + bytes->length();
   LOGDEBUG("TcrMessage addspCC = %s ",
            Utils::convertBytesToString(m_request->getBuffer(),
                                        m_request->getBufferLength())
