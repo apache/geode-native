@@ -196,7 +196,7 @@ $ cmake --build . --target install
 ### Required Tools
 * [Visual Studio 2015](https://www.visualstudio.com) or newer
 * .NET 4.5.2 or later
-* Chocolately
+* Chocolatey
 * [Other dependencies installed via Powershell](packer/windows/install-dependencies.ps1)
 
 ## <a id="linux"></a>Linux
