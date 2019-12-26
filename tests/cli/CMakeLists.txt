@@ -16,7 +16,6 @@
 cmake_minimum_required(VERSION 3.10)
 project(nativeclient.tests LANGUAGES NONE)
 
-add_subdirectory(PkcsWrapper)
 add_subdirectory(QueryHelper)
 add_subdirectory(PdxClassLibrary)
 

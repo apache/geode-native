@@ -125,11 +125,6 @@
       <Project>{5055633B-6D1C-488D-B934-1AC482C915F7}</Project>
       <Name>PdxVersion2Lib</Name>
     </ProjectReference>
-    <ProjectReference Include="..\PkcsWrapper\PkcsWrapper.vcxproj">
-      <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
-      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-      <Name>PkcsWrapper</Name>
-    </ProjectReference>
     <ProjectReference Include="..\QueryHelper\QueryWrapper.vcxproj">
       <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
       <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
