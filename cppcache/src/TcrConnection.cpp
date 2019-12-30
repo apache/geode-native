@@ -567,9 +567,10 @@ char* TcrConnection::sendRequest(const char* buffer, size_t len,
 
   send(timeSpent, buffer, len, sendTimeoutSec);
 
-  if (timeSpent >= receiveTimeoutSec)
+  if (timeSpent >= receiveTimeoutSec) {
     throwException(
         TimeoutException("TcrConnection::send: connection timed out"));
+  }
 
   receiveTimeoutSec -= timeSpent;
   ConnErrType opErr = CONN_NOERR;
