@@ -14,13 +14,6 @@ This example illustrates how to use SSL encryption for all traffic between a cli
     ```console
     $ cd workspace/examples/build/cpp/sslputget
     ```
-    For Linux, extend your library path.
-
-    For Bash:
-
-    ```console
-    $ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GeodeNative_ROOT/lib
-    ```
 
 2. Run the `startserver` script to start the Geode cluster with authentication and create a region.
 
@@ -33,7 +26,7 @@ This example illustrates how to use SSL encryption for all traffic between a cli
    For Windows Powershell:
 
     ```console
-    $ startserver.ps1
+    PS> startserver.ps1
     ```
 
    For Bash:
