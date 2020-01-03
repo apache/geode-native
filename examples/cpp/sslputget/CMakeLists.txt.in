@@ -47,7 +47,8 @@ file(GLOB SSL_CERTIFICATES
 
 file(INSTALL ${SSL_CERTIFICATES} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
-# This is needed on Linux to force libcryptoImpl.so to be linked in
+# This is needed on Linux to force libcryptoImpl.so to be linked in.
+# Not currently supported in latest cmake, but ticket created: https://gitlab.kitware.com/cmake/cmake/issues/20174
 if ("Linux" STREQUAL ${CMAKE_SYSTEM_NAME} )
   set_target_properties(${PROJECT_NAME} PROPERTIES
     LINK_WHAT_YOU_USE TRUE)
