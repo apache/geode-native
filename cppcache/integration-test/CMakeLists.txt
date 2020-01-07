@@ -124,7 +124,7 @@ foreach(FILE ${SOURCES})
   endif()
 
   # Some tests depend on these library
-  add_dependencies(${TEST} securityImpl cryptoImpl DHImpl SqLiteImpl)
+  add_dependencies(${TEST} securityImpl cryptoImpl SqLiteImpl)
 
   add_clangformat(${TEST})
 
@@ -232,8 +232,6 @@ set_property(TEST testThinClientSecurityAuthentication PROPERTY LABELS OMITTED)
 set_property(TEST testThinClientSecurityAuthenticationMU PROPERTY LABELS OMITTED)
 set_property(TEST testThinClientSecurityAuthorization PROPERTY LABELS OMITTED)
 set_property(TEST testThinClientSecurityAuthorizationMU PROPERTY LABELS OMITTED)
-set_property(TEST testThinClientSecurityDH PROPERTY LABELS OMITTED)
-set_property(TEST testThinClientSecurityDH_MU PROPERTY LABELS OMITTED)
 set_property(TEST testThinClientSecurityDurableCQAuthorizationMU PROPERTY LABELS OMITTED)
 set_property(TEST testThinClientSecurityPostAuthorization PROPERTY LABELS OMITTED)
 set_property(TEST testThinClientTicket303 PROPERTY LABELS OMITTED)

@@ -30,7 +30,6 @@
 #include <geode/internal/geode_globals.hpp>
 
 #include "Connector.hpp"
-#include "DiffieHellman.hpp"
 #include "TcrMessage.hpp"
 #include "util/synchronized_set.hpp"
 
@@ -41,7 +40,6 @@
 #define UNSUCCESSFUL_SERVER_TO_CLIENT 106
 #define CLIENT_TO_SERVER 100
 #define REPLY_OK 59
-#define REPLY_OK_CS43 58
 #define REPLY_REFUSED 60
 #define REPLY_INVALID 61
 #define REPLY_SSL_ENABLED 21
@@ -51,7 +49,6 @@
 
 #define SECURITY_CREDENTIALS_NONE 0
 #define SECURITY_CREDENTIALS_NORMAL 1
-#define SECURITY_CREDENTIALS_DHENCRYPT 2
 #define SECURITY_MULTIUSER_NOTIFICATIONCHANNEL 3
 
 /** Closes and Deletes connection only if it exists */
@@ -135,7 +132,6 @@ class APACHE_GEODE_EXPORT TcrConnection {
                 volatile const bool& isConnected)
       : connectionId(0),
         m_connectionManager(&connectionManager),
-        m_dh(nullptr),
         m_endpoint(nullptr),
         m_endpointObj(nullptr),
         m_connected(isConnected),
@@ -308,28 +304,9 @@ class APACHE_GEODE_EXPORT TcrConnection {
     return *m_connectionManager;
   }
 
-  std::shared_ptr<CacheableBytes> encryptBytes(
-      std::shared_ptr<CacheableBytes> data) {
-    if (m_dh != nullptr) {
-      return m_dh->encrypt(data);
-    } else {
-      return data;
-    }
-  }
-
-  std::shared_ptr<CacheableBytes> decryptBytes(
-      std::shared_ptr<CacheableBytes> data) {
-    if (m_dh != nullptr) {
-      return m_dh->decrypt(data);
-    } else {
-      return data;
-    }
-  }
-
  private:
   int64_t connectionId;
   const TcrConnectionManager* m_connectionManager;
-  DiffieHellman* m_dh;
 
   std::chrono::microseconds calculateHeaderTimeout(
       std::chrono::microseconds receiveTimeout, bool retry);

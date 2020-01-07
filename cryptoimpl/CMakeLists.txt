@@ -17,8 +17,6 @@ project(cryptoImpl LANGUAGES CXX)
 
 add_library(cryptoImpl SHARED
   ${CMAKE_CURRENT_BINARY_DIR}/cryptoimpl_export.h
-  DHImpl.hpp
-  DHImpl.cpp
   Ssl.hpp
   SSLImpl.hpp
   SSLImpl.cpp
@@ -42,8 +40,6 @@ target_link_libraries(cryptoImpl
     ACE::ACE_SSL
     _WarningsAsError
   PUBLIC
-    OpenSSL::Crypto
-    OpenSSL::SSL
     c++11
 )
 
