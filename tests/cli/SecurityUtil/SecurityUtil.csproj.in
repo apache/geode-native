@@ -110,12 +110,17 @@
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\SecurityUtil\CredentialGeneratorN.cs" />
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\SecurityUtil\DummyAuthorization3N.cs" />
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\SecurityUtil\LdapCredentialGeneratorN.cs" />
+    <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\SecurityUtil\PKCSCredentialGeneratorN.cs" />
     <Compile Include="$(CMAKE_CURRENT_SOURCE_DIR)\SecurityUtil\XmlAuthzCredentialGeneratorN.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DUnitFramework\DUnitFramework.csproj">
       <Project>{796727E8-3A6A-46BE-A2DB-584A4774CD51}</Project>
       <Name>DUnitFramework</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PkcsWrapper\PkcsWrapper.vcxproj">
+      <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

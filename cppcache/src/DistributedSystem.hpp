@@ -48,6 +48,7 @@ namespace client {
 class SystemProperties;
 class DistributedSystemImpl;
 class CacheRegionHelper;
+class DiffieHellman;
 class TcrConnection;
 
 class APACHE_GEODE_EXPORT DistributedSystem {

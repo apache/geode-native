@@ -24,6 +24,8 @@ add_library(security STATIC
   DummyCredentialGenerator3.hpp
   LdapUserCredentialGenerator.hpp
   NoopCredentialGenerator.hpp
+  PkcsAuthInit.cpp
+  PkcsAuthInit.hpp
   PkcsCredentialGenerator.hpp
   typedefs.hpp
   XmlAuthzCredentialGenerator.hpp

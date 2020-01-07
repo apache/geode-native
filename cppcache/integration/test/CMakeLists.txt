@@ -72,7 +72,7 @@ target_link_libraries(cpp-integration-test
     internal
 )
 
-add_dependencies(cpp-integration-test cryptoImpl)
+add_dependencies(cpp-integration-test cryptoImpl DHImpl)
 
 if(WIN32)
   target_compile_definitions(cpp-integration-test

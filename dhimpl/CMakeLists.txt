@@ -13,36 +13,33 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cmake_minimum_required(VERSION 3.10)
-project(templates.security LANGUAGES CXX)
+project(DHImpl LANGUAGES CXX)
 
-add_library(securityImpl SHARED
-  PkcsAuthInit.cpp
-  PkcsAuthInit.hpp
-  UserPasswordAuthInit.cpp
-  UserPasswordAuthInit.hpp
-  CMakeLists.txt.forInstall
+add_library(DHImpl SHARED
+  DHImpl.cpp
+  DHImpl.hpp
 )
 
-set_target_properties(securityImpl PROPERTIES
+set_target_properties(DHImpl PROPERTIES
   FOLDER cpp/test/integration
 )
 
 include(GenerateExportHeader)
-generate_export_header(securityImpl)
+generate_export_header(DHImpl)
 
-target_include_directories(securityImpl
+target_include_directories(DHImpl
   PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
 )
 
-target_link_libraries(securityImpl
+target_link_libraries(DHImpl
   PUBLIC
     apache-geode
     OpenSSL::Crypto
+    c++11
   PRIVATE
     openssl-compat
     _WarningsAsError
 )
 
-add_clangformat(securityImpl)
+add_clangformat(DHImpl)

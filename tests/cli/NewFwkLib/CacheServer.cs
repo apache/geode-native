@@ -4351,6 +4351,59 @@ private void checkUpdatedValue(TKey key, TVal value)
           };
         }
       }
+     else
+      {
+        FwkInfo("Security Scheme is {0}", SecurityCode);
+        for (Int32 i = 0; i < userSize; i++)
+        {
+          Properties<string, string> userProp = new Properties<string, string>();
+          PkcsAuthInit pkcs = new PkcsAuthInit();
+          if (pkcs == null) {
+            FwkException("NULL PKCS Credential Generator");
+          }
+          userName = (String)userList[i];
+          string dataDir = Util.GetFwkLogDir(Util.SystemType) + "/data";
+          userProp.Insert(KeyStoreFileProp, GetKeyStoreDir(dataDir) +
+            userName + ".keystore");
+          userProp.Insert(KeyStoreAliasProp, userName);
+          userProp.Insert(KeyStorePasswordProp, "geode");
+          //mu_cache = pool.CreateSecureUserCache(userProp);
+          //IRegionService mu_cache = CacheHelper<TKey, TVal>.DCache.CreateAuthenticatedView(userProp, pool.Name);
+          IRegionService mu_cache = CacheHelper<TKey, TVal>.DCache.CreateAuthenticatedView(
+            CacheHelper<TKey, TVal>.GetPkcsCredentialsForMU(
+              pkcs.GetCredentials(userProp, "0:0")), pool.Name);
+          authCacheMap.Add(userName, mu_cache);
+          IRegion<TKey, TVal> m_region = mu_cache.GetRegion<TKey, TVal>(regionName);
+          proxyRegionMap.Add(userName, m_region);
+          Dictionary<string, int> opMAP = new Dictionary<string, int>();
+          Dictionary<string, int> expMAP = new Dictionary<string, int>();
+          operationMap[userName] =  opMAP;
+          exceptionMap[userName] = expMAP;
+          Utility.GetClientProperties(gen.AuthInit, null, ref userProp);
+          FwkInfo("Security properties entries: {0}", userProp);
+         switch (i)
+          {
+            case 0:
+            case 1:
+              setAdminRole(userName);
+              break;
+            case 2:
+            case 3:
+            case 4:
+              setReaderRole(userName);
+              break;
+            case 5:
+            case 6:
+            case 7:
+              setWriterRole(userName);
+              break;
+            case 8:
+            case 9:
+              setQueryRole(userName);
+              break;
+          };
+        }
+      }
     }
 
     public string GetKeyStoreDir(string dataDir)

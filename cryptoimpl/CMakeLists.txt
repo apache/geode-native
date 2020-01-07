@@ -17,6 +17,8 @@ project(cryptoImpl LANGUAGES CXX)
 
 add_library(cryptoImpl SHARED
   ${CMAKE_CURRENT_BINARY_DIR}/cryptoimpl_export.h
+  DHImpl.hpp
+  DHImpl.cpp
   Ssl.hpp
   SSLImpl.hpp
   SSLImpl.cpp

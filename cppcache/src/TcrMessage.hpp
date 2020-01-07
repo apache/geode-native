@@ -302,9 +302,9 @@ class TcrMessage {
 
   void addSecurityPart(int64_t connectionId, TcrConnection* conn);
 
-  int64_t getConnectionId();
+  int64_t getConnectionId(TcrConnection* conn);
 
-  int64_t getUniqueId();
+  int64_t getUniqueId(TcrConnection* conn);
 
   void createUserCredentialMessage(TcrConnection* conn);
 

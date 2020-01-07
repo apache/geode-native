@@ -143,6 +143,8 @@ namespace Apache.Geode.Client.Tests
           return GetDummyPrincipal(roleType, index);
         case CredentialGenerator.ClassCode.LDAP:
           return GetLdapPrincipal(roleType, index);
+        case CredentialGenerator.ClassCode.PKCS:
+          return GetPKCSPrincipal(roleType, index);
       }
       return null;
     }
@@ -174,6 +176,8 @@ namespace Apache.Geode.Client.Tests
           return GetDummyPrincipal(disallowedRoleType, index);
         case CredentialGenerator.ClassCode.LDAP:
           return GetLdapPrincipal(disallowedRoleType, index);
+        case CredentialGenerator.ClassCode.PKCS:
+          return GetPKCSPrincipal(disallowedRoleType, index);
       }
       return null;
     }
@@ -206,6 +210,14 @@ namespace Apache.Geode.Client.Tests
     private Properties<string, string> GetLdapPrincipal(Role roleType, int index)
     {
       return GetUserPrincipal(GetLdapUser(roleType, index));
+    }
+
+    private Properties<string, string> GetPKCSPrincipal(Role roleType, int index)
+    {
+      string userName = GetLdapUser(roleType, index);
+      Properties<string, string> props = new Properties<string, string>();
+      props.Insert(PKCSCredentialGenerator.KeyStoreAliasProp, userName);
+      return props;
     }
 
     private string GetLdapUser(Role roleType, int index)

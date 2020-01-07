@@ -112,6 +112,8 @@ namespace Apache.Geode.Client.Tests
           return null;
         case ClassCode.LDAP:
           return new LDAPCredentialGenerator();
+        case ClassCode.PKCS:
+          return new PKCSCredentialGenerator(isMultiUser);
         case ClassCode.SSL:
           // return new SSLCredentialGenerator();
           return null;

@@ -283,12 +283,7 @@ class APACHE_GEODE_EXPORT SystemProperties {
     m_onClientDisconnectClearPdxTypeIds = set;
   }
 
-  /**
-   * @return Empty string
-   * @deprecated Diffie-Hellman based credentials encryption is not supported.
-   */
-  _GEODE_DEPRECATED_(
-      "Diffie-Hellman based credentials encryption is not supported.")
+  /** Return the security Diffie-Hellman secret key algorithm */
   const std::string& securityClientDhAlgo() const {
     return m_securityClientDhAlgo;
   }
@@ -313,12 +308,10 @@ class APACHE_GEODE_EXPORT SystemProperties {
   }
 
   /**
-   * @deprecated Diffie-Hellman based credentials encryption is not supported.
-   * @return false.
+   * Check whether Diffie-Hellman based credentials encryption is on.
+   * @return bool flag to indicate whether DH for credentials is on.
    */
-  _GEODE_DEPRECATED_(
-      "Diffie-Hellman based credentials encryption is not supported.")
-  bool isDhOn() const { return false; }
+  bool isDhOn() const { return !m_securityClientDhAlgo.empty(); }
 
   /**
    * Whether a non durable client starts to receive and process

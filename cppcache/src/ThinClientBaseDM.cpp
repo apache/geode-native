@@ -300,17 +300,17 @@ void ThinClientBaseDM::afterSendingRequest(const TcrMessage& request,
       if (TcrMessage::RESPONSE == reply.getMessageType()) {
         if (this->isMultiUserMode()) {
           UserAttributes::threadLocalUserAttributes->setConnectionAttributes(
-              conn->getEndpointObject(), reply.getUniqueId());
+              conn->getEndpointObject(), reply.getUniqueId(conn));
         } else {
-          conn->getEndpointObject()->setUniqueId(reply.getUniqueId());
+          conn->getEndpointObject()->setUniqueId(reply.getUniqueId(conn));
         }
       }
-      conn->setConnectionId(reply.getConnectionId());
+      conn->setConnectionId(reply.getConnectionId(conn));
     } else if (TcrMessage::isUserInitiativeOps(request)) {
       // bugfix: if noack op then reuse previous security token.
       conn->setConnectionId(reply.getMessageType() == TcrMessage::INVALID
                                 ? conn->getConnectionId()
-                                : reply.getConnectionId());
+                                : reply.getConnectionId(conn));
     }
   }
 }
