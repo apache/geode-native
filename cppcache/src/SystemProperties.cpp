@@ -268,7 +268,8 @@ void SystemProperties::processProperty(const std::string& property,
     m_securityPropertiesPtr->insert(property, value);
 
     if (property == SecurityClientDhAlgo) {
-      m_securityClientDhAlgo = value;
+      throw IllegalArgumentException(
+          "Diffie-Hellman based credentials encryption is not supported.");
     } else if (property == SecurityClientKsPath) {
       m_securityClientKsPath = value;
     }
@@ -453,9 +454,6 @@ void SystemProperties::logSettings() {
 
   settings += "\n  redundancy-monitor-interval = ";
   settings += to_string(redundancyMonitorInterval());
-
-  settings += "\n  security-client-dhalgo = ";
-  settings += securityClientDhAlgo();
 
   settings += "\n  security-client-kspath = ";
   settings += securityClientKsPath();

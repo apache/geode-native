@@ -51,9 +51,6 @@ DistributedSystemImpl::DistributedSystemImpl(
       m_implementee(implementee),
       m_sysProps(std::move(sysProps)),
       m_connected(false) {
-  if (!m_sysProps->securityClientDhAlgo().empty()) {
-    DiffieHellman::initOpenSSLFuncPtrs();
-  }
   logSystemInformation();
 }
 
@@ -62,7 +59,7 @@ DistributedSystemImpl::~DistributedSystemImpl() {
 }
 
 void DistributedSystemImpl::connect() {
-  if (m_connected == true) {
+  if (m_connected) {
     throw AlreadyConnectedException(
         "DistributedSystem::connect: already connected, call getInstance to "
         "get it");
