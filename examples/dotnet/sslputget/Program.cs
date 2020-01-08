@@ -22,45 +22,45 @@ using Apache.Geode.Client;
 
 namespace Apache.Geode.Examples.FunctionExecution
 {
-  class Program
-  {
-    static void Main(string[] args)
+    class Program
     {
-      var cacheFactory = new CacheFactory();
-      cacheFactory.Set("log-level", "none");
-      cacheFactory.Set("ssl-enabled", "true");
-      cacheFactory.Set("ssl-keystore", Environment.CurrentDirectory + @"\..\ClientSslKeys\client_keystore.password.pem");
-      cacheFactory.Set("ssl-keystore-password", "gemstone");
-      cacheFactory.Set("ssl-truststore", Environment.CurrentDirectory + @"\..\ClientSslKeys\client_truststore.pem");
+        static void Main(string[] args)
+        {
+            var cacheFactory = new CacheFactory();
+            cacheFactory.Set("log-level", "none");
+            cacheFactory.Set("ssl-enabled", "true");
+            cacheFactory.Set("ssl-keystore", Environment.CurrentDirectory + @"\.\ClientSslKeys\client_keystore.pem");
+            cacheFactory.Set("ssl-keystore-password", "apachegeode");
+            cacheFactory.Set("ssl-truststore", Environment.CurrentDirectory + @"\.\ClientSslKeys\client_truststore.pem");
 
-      var cache = cacheFactory.Create();
+            var cache = cacheFactory.Create();
 
-      var poolFactory = cache.GetPoolFactory()
-          .AddLocator("localhost", 10334);
-      var pool = poolFactory.Create("pool");
+            var poolFactory = cache.GetPoolFactory()
+                .AddLocator("localhost", 10334);
+            var pool = poolFactory.Create("pool");
 
-      var regionFactory = cache.CreateRegionFactory(RegionShortcut.PROXY)
-          .SetPoolName("pool");
-      var region = regionFactory.Create<object, object>("testSSLRegion");
+            var regionFactory = cache.CreateRegionFactory(RegionShortcut.PROXY)
+                .SetPoolName("pool");
+            var region = regionFactory.Create<object, object>("testSSLRegion");
 
-      Console.WriteLine("Storing id and username in the region");
+            Console.WriteLine("Storing id and username in the region");
 
-      string rtimmonsKey = "rtimmons";
-      string rtimmonsValue = "Robert Timmons";
-      string scharlesKey = "scharles";
-      string scharlesValue = "Sylvia Charles";
+            string rtimmonsKey = "rtimmons";
+            string rtimmonsValue = "Robert Timmons";
+            string scharlesKey = "scharles";
+            string scharlesValue = "Sylvia Charles";
 
-      region.Put(rtimmonsKey, rtimmonsValue, null);
-      region.Put(scharlesKey, scharlesValue, null);
+            region.Put(rtimmonsKey, rtimmonsValue, null);
+            region.Put(scharlesKey, scharlesValue, null);
 
-      Console.WriteLine("Getting the user info from the region");
-      var user1 = region.Get(rtimmonsKey, null);
-      var user2 = region.Get(scharlesKey, null);
+            Console.WriteLine("Getting the user info from the region");
+            var user1 = region.Get(rtimmonsKey, null);
+            var user2 = region.Get(scharlesKey, null);
 
-      Console.WriteLine(rtimmonsKey + " = " + user1);
-      Console.WriteLine(scharlesKey + " = " + user2);
+            Console.WriteLine(rtimmonsKey + " = " + user1);
+            Console.WriteLine(scharlesKey + " = " + user2);
 
-      cache.Close();
+            cache.Close();
+        }
     }
-  }
 }
