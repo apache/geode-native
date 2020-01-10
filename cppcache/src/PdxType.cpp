@@ -557,7 +557,7 @@ bool PdxType::Equals(std::shared_ptr<PdxType> otherObj) {
 }
 
 bool PdxType::operator<(const PdxType& other) const {
-  return this->m_className < other.m_className;
+  return this->m_geodeTypeId < other.m_geodeTypeId;
 }
 
 }  // namespace client
