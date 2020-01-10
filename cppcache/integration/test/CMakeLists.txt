@@ -30,6 +30,7 @@ add_executable(cpp-integration-test
   PartitionRegionOpsTest.cpp
   PdxInstanceTest.cpp
   PdxJsonTypeTest.cpp
+  PdxJsonHandlerTest.cpp
   PdxSerializerTest.cpp
   Order.cpp
   Order.hpp
