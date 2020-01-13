@@ -25,7 +25,7 @@ add_executable(cpp-integration-test
   ExpirationTest.cpp
   FunctionExecutionTest.cpp
   PdxInstanceTest.cpp
-  PdxJsonHandlerTest.cpp
+  PdxJsonTypeTest.cpp
   PdxSerializerTest.cpp
   RegionGetAllTest.cpp
   RegionPutAllTest.cpp

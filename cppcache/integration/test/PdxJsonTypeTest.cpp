@@ -37,6 +37,7 @@
 #include "LocalRegion.hpp"
 #include "NestedPdxObject.hpp"
 #include "PdxType.hpp"
+
 namespace {
 using apache::geode::client::Cache;
 using apache::geode::client::CacheableKey;
@@ -67,7 +68,7 @@ std::shared_ptr<Region> setupRegion(Cache& cache) {
   return region;
 }
 
-TEST(PdxJsonHandlerTest, testCreateJsonInstance) {
+TEST(PdxJsonTypeTest, testCreateTwoJsonInstances) {
   Cluster cluster{LocatorCount{1}, ServerCount{1}};
   cluster.start();
   cluster.getGfsh()
