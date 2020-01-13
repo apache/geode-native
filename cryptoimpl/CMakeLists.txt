@@ -36,7 +36,6 @@ set_target_properties(cryptoImpl PROPERTIES
 
 target_link_libraries(cryptoImpl
   PRIVATE
-    openssl-compat
     ACE::ACE_SSL
     _WarningsAsError
   PUBLIC
