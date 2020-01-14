@@ -361,7 +361,7 @@ set_target_properties(run-integration-tests PROPERTIES
 	FOLDER test-common
 )
 
-find_package(OpenSSL 1.1.0 REQUIRED)
+find_package(OpenSSL 1.1.1 REQUIRED)
 
 add_subdirectory(tests/javaobject)
 add_subdirectory(dependencies)
