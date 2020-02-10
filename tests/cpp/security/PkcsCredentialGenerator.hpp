@@ -135,16 +135,16 @@ class PKCSCredentialGenerator : public CredentialGenerator {
 
   void getAllowedCredentialsForOps(opCodeList& opCodes,
                                    std::shared_ptr<Properties>& p,
-                                   stringList* regionNames = nullptr) override {
+                                   stringList* regionNames) override {
     XmlAuthzCredentialGenerator authz(id());
     authz.getAllowedCredentials(opCodes, p, regionNames);
     const char* username = p->find("security-alias")->value().c_str();
     insertKeyStorePath(p, username);
   }
 
-  void getDisallowedCredentialsForOps(
-      opCodeList& opCodes, std::shared_ptr<Properties>& p,
-      stringList* regionNames = nullptr) override {
+  void getDisallowedCredentialsForOps(opCodeList& opCodes,
+                                      std::shared_ptr<Properties>& p,
+                                      stringList* regionNames) override {
     XmlAuthzCredentialGenerator authz(id());
     authz.getDisallowedCredentials(opCodes, p, regionNames);
     const char* username = p->find("security-alias")->value().c_str();

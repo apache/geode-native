@@ -31,13 +31,15 @@ include(ClangFormat)
 include(ApacheGeodeExportHeader)
 
 if(CMAKE_GENERATOR MATCHES Win64*)
-
   if ((CMAKE_GENERATOR MATCHES "Visual Studio") AND (CMAKE_GENERATOR_TOOLSET STREQUAL ""))
     message(FATAL_ERROR "GEODE expects that a user must provide -Thost=x64 if you are using a"
             " 64-bit toolset, otherwise you may get a linker error when DLLs are larger"
             " than 2GB saying \"Unable to open file apache-geode-static.dll.\" This is due"
             " to Visual Studio using the 32-bit toolset by default.")
   endif()
+endif()
+if(APPLE AND NOT DEFINED ENV{MACOSX_DEPLOYMENT_TARGET} AND NOT DEFINED ENV{SDKROOT})
+  set(CMAKE_OSX_DEPLOYMENT_TARGET 10.14)
 endif()
 
 get_property(GENERATOR_IS_MULTI_CONFIG GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)

@@ -34,10 +34,7 @@ namespace security {
 
 class LdapUserCredentialGenerator : public CredentialGenerator {
  public:
-  LdapUserCredentialGenerator() : CredentialGenerator(ID_LDAP, "LDAP") {
-    ;
-    ;
-  };
+  LdapUserCredentialGenerator() : CredentialGenerator(ID_LDAP, "LDAP") {}
 
   std::string getInitArgs(std::string workingDir, bool) override {
     std::string additionalArgs;
@@ -102,14 +99,14 @@ class LdapUserCredentialGenerator : public CredentialGenerator {
 
   void getAllowedCredentialsForOps(opCodeList& opCodes,
                                    std::shared_ptr<Properties>& p,
-                                   stringList* regionNames = nullptr) override {
+                                   stringList* regionNames) override {
     XmlAuthzCredentialGenerator authz(id());
     authz.getAllowedCredentials(opCodes, p, regionNames);
   }
 
-  void getDisallowedCredentialsForOps(
-      opCodeList& opCodes, std::shared_ptr<Properties>& p,
-      stringList* regionNames = nullptr) override {
+  void getDisallowedCredentialsForOps(opCodeList& opCodes,
+                                      std::shared_ptr<Properties>& p,
+                                      stringList* regionNames) override {
     XmlAuthzCredentialGenerator authz(id());
     authz.getDisallowedCredentials(opCodes, p, regionNames);
   }

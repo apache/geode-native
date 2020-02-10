@@ -30,10 +30,7 @@ namespace security {
 
 class NoopCredentialGenerator : public CredentialGenerator {
  public:
-  NoopCredentialGenerator() : CredentialGenerator(ID_NOOP, "NOOP") {
-    ;
-    ;
-  };
+  NoopCredentialGenerator() : CredentialGenerator(ID_NOOP, "NOOP") {}
 
   std::string getInitArgs(std::string workingDir, bool) override {
     std::string additionalArgs;

@@ -1,5 +1,5 @@
 ---
-Checks:          '-*,clang-diagnostic-*,clang-analyzer-*,-clang-analyzer-alpha*,google-*,-google-readability-todo,-google-runtime-references,-google-default-arguments,-clang-analyzer-unix.cstring.NullArg'
+Checks:          '-*,clang-diagnostic-*,clang-analyzer-*,-clang-analyzer-alpha*,google-*,-google-readability-todo,-google-runtime-references,-google-default-arguments,-clang-analyzer-unix.cstring.NullArg,-clang-analyzer-optin.cplusplus.VirtualCall'
 WarningsAsErrors: '*'
 HeaderFilterRegex: '.*'
 FormatStyle:     file
@@ -12,3 +12,4 @@ FormatStyle:     file
 # TODO - Fix these checks
 # google-default-arguments
 # clang-analyzer-unix.cstring.NullArg - Generates errors in Boost, how do we ignore?
+# clang-analyzer-optin.cplusplus.VirtualCall - Boost.Process

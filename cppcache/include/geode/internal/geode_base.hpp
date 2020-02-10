@@ -44,14 +44,14 @@
 
 /** Allocates x and throws OutOfMemoryException if it fails */
 #define _GEODE_NEW(v, stmt)                                             \
-  {                                                                     \
+  do {                                                                  \
     try {                                                               \
       v = new stmt;                                                     \
     } catch (const std::bad_alloc &) {                                  \
       throw apache::geode::client::OutOfMemoryException(                \
           "Out of Memory while executing \"" #v " = new " #stmt ";\""); \
     }                                                                   \
-  }
+  } while (0)
 
 /** Deletes x only if it exists */
 #define _GEODE_SAFE_DELETE(x) \
