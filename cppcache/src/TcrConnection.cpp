@@ -1238,8 +1238,9 @@ bool TcrConnection::hasExpired(const std::chrono::milliseconds& expiryTime) {
   if (expiryTime <= std::chrono::milliseconds::zero()) {
     return false;
   }
-
-  return (clock::now() - m_creationTime) > expiryTime;
+  auto variadicExpiryTime =
+      expiryTime + (expiryTime * m_expiryTimeVariancePercentage) / 100;
+  return (clock::now() - m_creationTime) > variadicExpiryTime;
 }
 
 bool TcrConnection::isIdle(const std::chrono::milliseconds& idleTime) {
