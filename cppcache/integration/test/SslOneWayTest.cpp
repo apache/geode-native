@@ -34,10 +34,6 @@ using apache::geode::client::CacheFactory;
 using apache::geode::client::Exception;
 using apache::geode::client::RegionShortcut;
 
-const auto badClientTruststore = boost::filesystem::path(
-    "/Users/pivotal/Workspace/geode-native-install/examples/build/cpp/"
-    "sslputget/ClientSslKeys/client_truststore.pem");
-
 class SslOneWayTest : public ::testing::Test {
  protected:
   // You can remove any or all of the following functions if their bodies would
