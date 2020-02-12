@@ -176,6 +176,15 @@ std::shared_ptr<PdxSerializable> PdxHelper::deserializePdx(DataInput& dataInput,
                 ->getExpiryTaskManager());  // it will set data in weakhashmap
       }
       prr.moveStream();
+
+      if (auto pdxWrapper =
+              std::dynamic_pointer_cast<PdxWrapper>(pdxObjectptr)) {
+        if (!pdxWrapper->getObject()) {
+          // No serializer was registered to deserialize this type.
+          // Fall back to PdxInstance
+          return nullptr;
+        }
+      }
     }
   } else {
     // type not found; need to get from server
