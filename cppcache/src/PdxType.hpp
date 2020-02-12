@@ -43,7 +43,7 @@ typedef std::map<std::string, std::shared_ptr<PdxFieldType>> NameVsPdxType;
 class PdxType;
 class PdxTypeRegistry;
 
-class APACHE_GEODE_EXPORT PdxType
+class PdxType
     : public internal::DataSerializableInternal,
       public std::enable_shared_from_this<PdxType>,
       private NonCopyable,
