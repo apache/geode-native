@@ -41,6 +41,7 @@ add_executable(cpp-integration-test
   TransactionCleaningTest.cpp
   CleanIdleConnections.cpp
   BasicIPv6Test.cpp
+  Book.cpp
 )
 
 target_compile_definitions(cpp-integration-test

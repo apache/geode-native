@@ -113,4 +113,33 @@ TEST(PdxJsonTypeTest, testCreateTwoJsonInstances) {
   EXPECT_EQ(pdxInstance->getIntField("baz"), 42);
 }
 
+TEST(PdxJsonTypeTest, testTwoConsecutiveGets) {
+  Cluster cluster{LocatorCount{1}, ServerCount{1}};
+  cluster.start();
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("region")
+      .withType("REPLICATE")
+      .execute();
+
+  auto cache = cluster.createCache();
+  auto region = setupRegion(cache);
+  auto pdxInstanceFactory =
+      cache.createPdxInstanceFactory(gemfireJsonClassName);
+
+  pdxInstanceFactory.writeString("foo", "bar");
+  auto pdxInstance = pdxInstanceFactory.create();
+
+  region->put("simpleObject", pdxInstance);
+
+  auto cache2 = cluster.createCache();
+  auto region2 = setupRegion(cache2);
+
+  region2->get("simpleObject");  // Throw the first one away
+
+  EXPECT_TRUE(
+      std::dynamic_pointer_cast<PdxInstance>(region2->get("simpleObject")));
+}
+
 }  // namespace
