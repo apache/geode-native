@@ -43,11 +43,10 @@ typedef std::map<std::string, std::shared_ptr<PdxFieldType>> NameVsPdxType;
 class PdxType;
 class PdxTypeRegistry;
 
-class PdxType
-    : public internal::DataSerializableInternal,
-      public std::enable_shared_from_this<PdxType>,
-      private NonCopyable,
-      private NonAssignable {
+class PdxType : public internal::DataSerializableInternal,
+                public std::enable_shared_from_this<PdxType>,
+                private NonCopyable,
+                private NonAssignable {
  private:
   ACE_RW_Thread_Mutex m_lockObj;
 
