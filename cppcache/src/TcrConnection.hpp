@@ -144,8 +144,11 @@ class APACHE_GEODE_EXPORT TcrConnection {
         m_isUsed(0),
         m_poolDM(nullptr) {
     auto nowTimePoint = clock::now().time_since_epoch();
-    auto now_ms = std::chrono::duration_cast<std::chrono::milliseconds>(nowTimePoint).count();
-    auto now_s = std::chrono::duration_cast<std::chrono::seconds>(nowTimePoint).count();
+    auto now_ms =
+        std::chrono::duration_cast<std::chrono::milliseconds>(nowTimePoint)
+            .count();
+    auto now_s =
+        std::chrono::duration_cast<std::chrono::seconds>(nowTimePoint).count();
     srand((now_s * 1000) + (now_ms / 1000));
     int numbers = 21;
     int random = rand() % numbers + 1;
