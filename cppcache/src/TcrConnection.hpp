@@ -149,7 +149,8 @@ class APACHE_GEODE_EXPORT TcrConnection {
             .count();
     auto now_s =
         std::chrono::duration_cast<std::chrono::seconds>(nowTimePoint).count();
-    srand((now_s * 1000) + (now_ms / 1000));
+    auto seed = (now_s * 1000) + (now_ms / 1000);
+    srand(static_cast<unsigned int>(seed));
     int numbers = 21;
     int random = rand() % numbers + 1;
     if (random > 10) {
