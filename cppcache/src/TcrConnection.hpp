@@ -142,7 +142,24 @@ class APACHE_GEODE_EXPORT TcrConnection {
         m_chunksProcessSema(0),
         m_isBeingUsed(false),
         m_isUsed(0),
-        m_poolDM(nullptr) {}
+        m_poolDM(nullptr) {
+    auto nowTimePoint = clock::now().time_since_epoch();
+    auto now_ms =
+        std::chrono::duration_cast<std::chrono::milliseconds>(nowTimePoint)
+            .count();
+    auto now_s =
+        std::chrono::duration_cast<std::chrono::seconds>(nowTimePoint).count();
+    auto seed = (now_s * 1000) + (now_ms / 1000);
+    srand(static_cast<unsigned int>(seed));
+    int numbers = 21;
+    int random = rand() % numbers + 1;
+    if (random > 10) {
+      random = random - numbers;
+    }
+    m_expiryTimeVariancePercentage = random;
+    LOGDEBUG("m_expiryTimeVariancePercentage set to: %d",
+             m_expiryTimeVariancePercentage);
+  }
 
   /* destroy the connection */
   ~TcrConnection();
@@ -307,6 +324,7 @@ class APACHE_GEODE_EXPORT TcrConnection {
  private:
   int64_t connectionId;
   const TcrConnectionManager* m_connectionManager;
+  int m_expiryTimeVariancePercentage = 0;
 
   std::chrono::microseconds calculateHeaderTimeout(
       std::chrono::microseconds receiveTimeout, bool retry);
