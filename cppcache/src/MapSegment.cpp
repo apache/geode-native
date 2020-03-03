@@ -60,7 +60,7 @@ void MapSegment::open(RegionInternal* region, const EntryFactory* entryFactory,
 void MapSegment::close() {}
 
 void MapSegment::clear() {
-  std::lock_guard<spinlock_mutex> lk(m_spinlock);
+  std::lock_guard<decltype(m_spinlock)> lk(m_spinlock);
   m_map->clear();
 }
 
@@ -78,7 +78,7 @@ GfErrType MapSegment::create(const std::shared_ptr<CacheableKey>& key,
   TombstoneExpiryHandler* handler = nullptr;
   GfErrType err = GF_NOERR;
   {
-    std::lock_guard<spinlock_mutex> lk(m_spinlock);
+    std::lock_guard<decltype(m_spinlock)> lk(m_spinlock);
     // if size is greater than 75 percent of prime, rehash
     auto mapSize = TableOfPrimes::getPrime(m_primeIndex);
     if (((m_map->size() * 75) / 100) > mapSize) {
@@ -148,7 +148,7 @@ GfErrType MapSegment::put(const std::shared_ptr<CacheableKey>& key,
   TombstoneExpiryHandler* handler = nullptr;
   GfErrType err = GF_NOERR;
   {
-    std::lock_guard<spinlock_mutex> lk(m_spinlock);
+    std::lock_guard<decltype(m_spinlock)> lk(m_spinlock);
     // if size is greater than 75 percent of prime, rehash
     uint32_t mapSize = TableOfPrimes::getPrime(m_primeIndex);
     if (((m_map->size() * 75) / 100) > mapSize) {
@@ -213,7 +213,7 @@ GfErrType MapSegment::invalidate(const std::shared_ptr<CacheableKey>& key,
                                  std::shared_ptr<Cacheable>& oldValue,
                                  std::shared_ptr<VersionTag> versionTag,
                                  bool& isTokenAdded) {
-  std::lock_guard<spinlock_mutex> lk(m_spinlock);
+  std::lock_guard<decltype(m_spinlock)> lk(m_spinlock);
   isTokenAdded = false;
   GfErrType err = GF_NOERR;
 
@@ -339,7 +339,7 @@ GfErrType MapSegment::remove(const std::shared_ptr<CacheableKey>& key,
     bool expTaskSet = false;
     GfErrType err;
     {
-      std::lock_guard<spinlock_mutex> lk(m_spinlock);
+      std::lock_guard<decltype(m_spinlock)> lk(m_spinlock);
       err = removeWhenConcurrencyEnabled(key, oldValue, me, updateCount,
                                          versionTag, afterRemote, isEntryFound,
                                          id, handler, expTaskSet);
@@ -352,7 +352,7 @@ GfErrType MapSegment::remove(const std::shared_ptr<CacheableKey>& key,
     return err;
   }
 
-  std::lock_guard<spinlock_mutex> lk(m_spinlock);
+  std::lock_guard<decltype(m_spinlock)> lk(m_spinlock);
   if (m_map->erase(key) == 0) {
     // didn't unbind, probably no entry...
     oldValue = nullptr;
@@ -399,7 +399,7 @@ bool MapSegment::unguardedRemoveActualEntryWithoutCancelTask(
 
 bool MapSegment::removeActualEntry(const std::shared_ptr<CacheableKey>& key,
                                    bool cancelTask) {
-  std::lock_guard<spinlock_mutex> lk(m_spinlock);
+  std::lock_guard<decltype(m_spinlock)> lk(m_spinlock);
   return unguardedRemoveActualEntry(key, cancelTask);
 }
 /**
@@ -408,7 +408,7 @@ bool MapSegment::removeActualEntry(const std::shared_ptr<CacheableKey>& key,
 bool MapSegment::getEntry(const std::shared_ptr<CacheableKey>& key,
                           std::shared_ptr<MapEntryImpl>& result,
                           std::shared_ptr<Cacheable>& value) {
-  std::lock_guard<spinlock_mutex> lk(m_spinlock);
+  std::lock_guard<decltype(m_spinlock)> lk(m_spinlock);
 
   const auto& find = m_map->find(key);
   if (find == m_map->end()) {
@@ -434,7 +434,7 @@ bool MapSegment::getEntry(const std::shared_ptr<CacheableKey>& key,
  * @brief return true if there exists an entry for the key.
  */
 bool MapSegment::containsKey(const std::shared_ptr<CacheableKey>& key) {
-  std::lock_guard<spinlock_mutex> lk(m_spinlock);
+  std::lock_guard<decltype(m_spinlock)> lk(m_spinlock);
 
   const auto& find = m_map->find(key);
   if (find == m_map->end()) {
@@ -455,7 +455,7 @@ bool MapSegment::containsKey(const std::shared_ptr<CacheableKey>& key) {
  * @brief return the all the keys in the provided list.
  */
 void MapSegment::getKeys(std::vector<std::shared_ptr<CacheableKey>>& result) {
-  std::lock_guard<spinlock_mutex> lk(m_spinlock);
+  std::lock_guard<decltype(m_spinlock)> lk(m_spinlock);
 
   for (const auto& kv : *m_map) {
     std::shared_ptr<Cacheable> valuePtr;
@@ -470,7 +470,7 @@ void MapSegment::getKeys(std::vector<std::shared_ptr<CacheableKey>>& result) {
  * @brief return all the entries in the provided list.
  */
 void MapSegment::getEntries(std::vector<std::shared_ptr<RegionEntry>>& result) {
-  std::lock_guard<spinlock_mutex> lk(m_spinlock);
+  std::lock_guard<decltype(m_spinlock)> lk(m_spinlock);
 
   for (const auto& kv : *m_map) {
     std::shared_ptr<CacheableKey> keyPtr;
@@ -492,7 +492,7 @@ void MapSegment::getEntries(std::vector<std::shared_ptr<RegionEntry>>& result) {
  * @brief return all values in the provided list.
  */
 void MapSegment::getValues(std::vector<std::shared_ptr<Cacheable>>& result) {
-  std::lock_guard<spinlock_mutex> lk(m_spinlock);
+  std::lock_guard<decltype(m_spinlock)> lk(m_spinlock);
   for (const auto& kv : *m_map) {
     auto& entry = kv.second;
     std::shared_ptr<Cacheable> value;
@@ -520,7 +520,7 @@ int MapSegment::addTrackerForEntry(const std::shared_ptr<CacheableKey>& key,
                                    bool addIfAbsent, bool failIfPresent,
                                    bool incUpdateCount) {
   if (m_concurrencyChecksEnabled) return -1;
-  std::lock_guard<spinlock_mutex> lk(m_spinlock);
+  std::lock_guard<decltype(m_spinlock)> lk(m_spinlock);
   std::shared_ptr<MapEntry> entry;
   std::shared_ptr<MapEntry> newEntry;
   const auto& find = m_map->find(key);
@@ -569,7 +569,7 @@ int MapSegment::addTrackerForEntry(const std::shared_ptr<CacheableKey>& key,
 void MapSegment::removeTrackerForEntry(
     const std::shared_ptr<CacheableKey>& key) {
   if (m_concurrencyChecksEnabled) return;
-  std::lock_guard<spinlock_mutex> lk(m_spinlock);
+  std::lock_guard<decltype(m_spinlock)> lk(m_spinlock);
 
   const auto& find = m_map->find(key);
   if (find != m_map->end()) {
@@ -585,7 +585,7 @@ void MapSegment::removeTrackerForEntry(
 void MapSegment::addTrackerForAllEntries(
     MapOfUpdateCounters& updateCounterMap) {
   if (m_concurrencyChecksEnabled) return;
-  std::lock_guard<spinlock_mutex> lk(m_spinlock);
+  std::lock_guard<decltype(m_spinlock)> lk(m_spinlock);
 
   std::shared_ptr<MapEntry> newEntry;
   std::shared_ptr<CacheableKey> key;
@@ -604,7 +604,7 @@ void MapSegment::addTrackerForAllEntries(
 // changes takes care of the version and no need for tracking the entry
 void MapSegment::removeDestroyTracking() {
   if (m_concurrencyChecksEnabled) return;
-  std::lock_guard<spinlock_mutex> lk(m_spinlock);
+  std::lock_guard<decltype(m_spinlock)> lk(m_spinlock);
   m_destroyedKeys.clear();
 }
 
@@ -718,11 +718,11 @@ GfErrType MapSegment::putForTrackedEntry(
   }
 }
 void MapSegment::reapTombstones(std::map<uint16_t, int64_t>& gcVersions) {
-  std::lock_guard<spinlock_mutex> lk(m_spinlock);
+  std::lock_guard<decltype(m_spinlock)> lk(m_spinlock);
   m_tombstoneList->reapTombstones(gcVersions);
 }
 void MapSegment::reapTombstones(std::shared_ptr<CacheableHashSet> removedKeys) {
-  std::lock_guard<spinlock_mutex> lk(m_spinlock);
+  std::lock_guard<decltype(m_spinlock)> lk(m_spinlock);
   m_tombstoneList->reapTombstones(removedKeys);
 }
 

@@ -17,24 +17,10 @@
 
 #include "CppCacheLibrary.hpp"
 
-#include <string>
-
 #include <ace/ACE.h>
 #include <ace/Init_ACE.h>
-#include <ace/Log_Msg.h>
-#include <ace/Singleton.h>
 
-#include <geode/CacheFactory.hpp>
-#include <geode/DataOutput.hpp>
-
-#include "ExpMapEntry.hpp"
-#include "LRUExpMapEntry.hpp"
-#include "LRUMapEntry.hpp"
-#include "MapEntry.hpp"
-#include "SerializationRegistry.hpp"
-#include "TcrMessage.hpp"
 #include "Utils.hpp"
-#include "config.h"
 
 // called during DLL initialization
 void initLibDllEntry(void) {

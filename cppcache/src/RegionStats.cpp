@@ -17,19 +17,11 @@
 
 #include "RegionStats.hpp"
 
-#include <ace/Singleton.h>
-#include <ace/Thread_Mutex.h>
-
-#include <geode/internal/geode_globals.hpp>
-
-#include "util/concurrent/spinlock_mutex.hpp"
-
 namespace apache {
 namespace geode {
 namespace client {
 
 using statistics::StatisticsFactory;
-using util::concurrent::spinlock_mutex;
 
 constexpr const char* RegionStats::STATS_NAME;
 constexpr const char* RegionStats::STATS_DESC;
@@ -202,6 +194,7 @@ RegionStats::~RegionStats() {
     m_regionStats = nullptr;
   }
 }
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

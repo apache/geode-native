@@ -23,8 +23,7 @@
 #include <atomic>
 #include <memory>
 #include <mutex>
-
-#include <ace/Recursive_Thread_Mutex.h>
+#include <string>
 
 #include <geode/Cache.hpp>
 #include <geode/PoolManager.hpp>
@@ -374,7 +373,7 @@ class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
   std::unique_ptr<EvictionController> m_evictionController;
   TcrConnectionManager* m_tcrConnectionManager;
   std::shared_ptr<RemoteQueryService> m_remoteQueryServicePtr;
-  ACE_Recursive_Thread_Mutex m_destroyCacheMutex;
+  std::recursive_mutex m_destroyCacheMutex;
   volatile bool m_destroyPending;
   volatile bool m_initDone;
   std::mutex m_initDoneLock;

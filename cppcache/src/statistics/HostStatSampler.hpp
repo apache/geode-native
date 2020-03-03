@@ -28,8 +28,6 @@
 #include <thread>
 #include <vector>
 
-#include <ace/Task.h>
-
 #include <geode/ExceptionTypes.hpp>
 #include <geode/internal/geode_globals.hpp>
 

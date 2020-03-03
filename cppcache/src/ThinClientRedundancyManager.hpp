@@ -28,7 +28,8 @@
 #include <set>
 #include <string>
 
-#include <ace/ACE.h>
+#include <ace/Semaphore.h>
+#include <ace/Time_Value.h>
 
 #include "ErrType.hpp"
 #include "EventIdMap.hpp"

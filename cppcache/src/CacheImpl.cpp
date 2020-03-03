@@ -17,10 +17,6 @@
 
 #include "CacheImpl.hpp"
 
-#include <string>
-
-#include <ace/Guard_T.h>
-
 #include <geode/CacheStatistics.hpp>
 #include <geode/PersistenceManager.hpp>
 #include <geode/PoolManager.hpp>
@@ -164,7 +160,7 @@ CacheImpl::RegionKind CacheImpl::getRegionKind(
 }
 
 void CacheImpl::removeRegion(const std::string& name) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> lock(m_destroyCacheMutex, 1);
+  std::lock_guard<decltype(m_destroyCacheMutex)> lock(m_destroyCacheMutex);
   if (!m_destroyPending) {
     m_regions.erase(name);
   }
@@ -244,7 +240,7 @@ void CacheImpl::close(bool keepalive) {
   sendNotificationCloseMsgs();
 
   {
-    ACE_Guard<ACE_Recursive_Thread_Mutex> lock(m_destroyCacheMutex, 1);
+    std::lock_guard<decltype(m_destroyCacheMutex)> lock(m_destroyCacheMutex);
     if (m_destroyPending) {
       return;
     }
@@ -330,8 +326,8 @@ void CacheImpl::close(bool keepalive) {
 }
 
 bool CacheImpl::doIfDestroyNotPending(std::function<void()> f) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> lock(m_destroyCacheMutex, 1);
-  if (lock.locked() && !m_destroyPending) {
+  std::lock_guard<decltype(m_destroyCacheMutex)> lock(m_destroyCacheMutex);
+  if (!m_destroyPending) {
     f();
   }
 
@@ -465,7 +461,7 @@ std::shared_ptr<Region> CacheImpl::getRegion(const std::string& path) {
   LOGDEBUG("CacheImpl::getRegion " + path);
 
   this->throwIfClosed();
-  ACE_Guard<ACE_Recursive_Thread_Mutex> lock(m_destroyCacheMutex, 1);
+  std::lock_guard<decltype(m_destroyCacheMutex)> lock(m_destroyCacheMutex);
 
   if (m_destroyPending) {
     return nullptr;
@@ -680,7 +676,8 @@ bool CacheImpl::getEndpointStatus(const std::string& endpoint) {
 }
 
 void CacheImpl::processMarker() {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> destroy_lock(m_destroyCacheMutex, 1);
+  std::lock_guard<decltype(m_destroyCacheMutex)> destroy_lock(
+      m_destroyCacheMutex);
   if (m_destroyPending) {
     return;
   }

@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_CPPCACHELIBRARY_H_
-#define GEODE_CPPCACHELIBRARY_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,6 +15,11 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_CPPCACHELIBRARY_H_
+#define GEODE_CPPCACHELIBRARY_H_
+
 #include <string>
 
 #include <geode/internal/geode_globals.hpp>
@@ -33,19 +33,17 @@ class APACHE_GEODE_EXPORT CppCacheLibrary {
  public:
   // Call to this to trigger initialization.
   static void initLib(void);
+
   // Call to this to trigger cleanup.  initLib and closeLib calls must be in
   // pairs.
   static void closeLib(void);
-
-  // Returns pathname of product's lib directory, adds 'addon' to it if 'addon'
-  // is not null.
-  static std::string getProductLibDir(const char* addon);
 
   // Returns the directory where the library/DLL resides
   static std::string getProductLibDir();
 
   static std::string getProductDir();
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
