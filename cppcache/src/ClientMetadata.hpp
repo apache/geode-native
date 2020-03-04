@@ -27,7 +27,6 @@
 
 #include "BucketServerLocation.hpp"
 #include "FixedPartitionAttributesImpl.hpp"
-#include "NonCopyable.hpp"
 #include "ReadWriteLock.hpp"
 #include "ServerLocation.hpp"
 #include "util/Log.hpp"
@@ -48,7 +47,7 @@ typedef std::vector<std::shared_ptr<BucketServerLocation>>
 typedef std::vector<BucketServerLocationsType> BucketServerLocationsListType;
 typedef std::map<std::string, std::vector<int>> FixedMapType;
 
-class APACHE_GEODE_EXPORT ClientMetadata : public NonAssignable {
+class APACHE_GEODE_EXPORT ClientMetadata {
  private:
   void setPartitionNames();
   std::shared_ptr<CacheableHashSet> m_partitionNames;
@@ -102,6 +101,7 @@ class APACHE_GEODE_EXPORT ClientMetadata : public NonAssignable {
     return m_partitionNames;
   }
   ClientMetadata(ClientMetadata& other);
+  ClientMetadata& operator=(const ClientMetadata&) = delete;
   std::vector<std::shared_ptr<BucketServerLocation>> adviseServerLocations(
       int bucketId);
   std::shared_ptr<BucketServerLocation> advisePrimaryServerLocation(

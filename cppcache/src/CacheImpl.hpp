@@ -36,7 +36,6 @@
 #include "ClientProxyMembershipIDFactory.hpp"
 #include "DistributedSystem.hpp"
 #include "MemberListForVersionStamp.hpp"
-#include "NonCopyable.hpp"
 #include "PdxTypeRegistry.hpp"
 #include "RemoteQueryService.hpp"
 #include "ThreadPool.hpp"
@@ -84,12 +83,10 @@ class TcrConnectionManager;
  *
  */
 
-class APACHE_GEODE_EXPORT CacheImpl : private NonCopyable,
-                                      private NonAssignable {
-  /**
-   * @brief public methods
-   */
+class APACHE_GEODE_EXPORT CacheImpl {
  public:
+  CacheImpl(const CacheImpl&) = delete;
+  CacheImpl& operator=(const CacheImpl&) = delete;
   // added netDown and revive for tests to simulate client crash and network
   // drop
   void netDown();

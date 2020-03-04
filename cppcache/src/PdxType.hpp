@@ -31,7 +31,6 @@
 #include <geode/PdxFieldTypes.hpp>
 #include <geode/Serializable.hpp>
 
-#include "NonCopyable.hpp"
 #include "PdxFieldType.hpp"
 #include "ReadWriteLock.hpp"
 
@@ -44,10 +43,7 @@ class PdxType;
 class PdxTypeRegistry;
 
 class PdxType : public internal::DataSerializableInternal,
-                public std::enable_shared_from_this<PdxType>,
-                private NonCopyable,
-                private NonAssignable {
- private:
+                public std::enable_shared_from_this<PdxType> {
   ACE_RW_Thread_Mutex m_lockObj;
 
   static const char* m_javaPdxClass;
@@ -103,6 +99,8 @@ class PdxType : public internal::DataSerializableInternal,
       std::shared_ptr<PdxType> localType);
 
  public:
+  PdxType(const PdxType&) = delete;
+  PdxType& operator=(const PdxType&) = delete;
   PdxType(PdxTypeRegistry& pdxTypeRegistryPtr,
           const std::string& pdxDomainClassName, bool isLocal);
 

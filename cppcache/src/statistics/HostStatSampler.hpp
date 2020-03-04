@@ -53,8 +53,6 @@ namespace geode {
 namespace statistics {
 
 using apache::geode::client::CacheImpl;
-using apache::geode::client::NonAssignable;
-using apache::geode::client::NonCopyable;
 using std::chrono::system_clock;
 
 class StatArchiveWriter;

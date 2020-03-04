@@ -62,8 +62,6 @@ class HostStatSampler;
 
 using apache::geode::client::CacheImpl;
 using apache::geode::client::DataOutput;
-using apache::geode::client::NonAssignable;
-using apache::geode::client::NonCopyable;
 using std::chrono::steady_clock;
 using std::chrono::system_clock;
 

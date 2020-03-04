@@ -26,7 +26,6 @@
 #include <geode/Serializable.hpp>
 
 #include "ErrType.hpp"
-#include "NonCopyable.hpp"
 #include "ReadWriteLock.hpp"
 
 namespace apache {
@@ -45,10 +44,7 @@ class ThinClientBaseDM;
 class TcrConnectionManager;
 class CacheableKey;
 
-class AdminRegion : private NonCopyable,
-                    private NonAssignable,
-                    public std::enable_shared_from_this<AdminRegion> {
- private:
+class AdminRegion : public std::enable_shared_from_this<AdminRegion> {
   ThinClientBaseDM* m_distMngr;
   std::string m_fullPath;
   TcrConnectionManager* m_connectionMgr;
@@ -60,6 +56,9 @@ class AdminRegion : private NonCopyable,
   TcrConnectionManager* getConnectionManager();
 
  public:
+  AdminRegion(const AdminRegion&) = delete;
+  AdminRegion& operator=(const AdminRegion&) = delete;
+
   AdminRegion()
       : m_distMngr(nullptr),
         m_fullPath("/__ADMIN_CLIENT_HEALTH_MONITORING__"),

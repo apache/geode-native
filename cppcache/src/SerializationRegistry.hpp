@@ -40,7 +40,6 @@
 #include <geode/internal/geode_globals.hpp>
 
 #include "MemberListForVersionStamp.hpp"
-#include "NonCopyable.hpp"
 #include "config.h"
 #include "util/concurrent/spinlock_mutex.hpp"
 
@@ -73,8 +72,7 @@ namespace client {
 using internal::DataSerializableInternal;
 using internal::DataSerializablePrimitive;
 
-class TheTypeMap : private NonCopyable {
- private:
+class TheTypeMap {
   std::unordered_map<internal::DSCode, TypeFactoryMethod>
       m_dataSerializablePrimitiveMap;
   std::unordered_map<int32_t, TypeFactoryMethod> m_dataSerializableMap;
@@ -89,7 +87,7 @@ class TheTypeMap : private NonCopyable {
  public:
   std::unordered_map<std::type_index, int32_t> typeToClassId;
 
- public:
+  TheTypeMap(const TheTypeMap&) = delete;
   TheTypeMap() { setup(); }
 
   ~TheTypeMap() noexcept = default;
