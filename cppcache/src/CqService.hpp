@@ -34,7 +34,6 @@
 #include "CqServiceVsdStats.hpp"
 #include "DistributedSystem.hpp"
 #include "ErrType.hpp"
-#include "NonCopyable.hpp"
 #include "Queue.hpp"
 #include "TcrMessage.hpp"
 #include "util/synchronized_map.hpp"
@@ -53,10 +52,7 @@ class TcrEndpoint;
  *
  */
 class APACHE_GEODE_EXPORT CqService
-    : private NonCopyable,
-      private NonAssignable,
-      public std::enable_shared_from_this<CqService> {
- private:
+    : public std::enable_shared_from_this<CqService> {
   ThinClientBaseDM* m_tccdm;
   statistics::StatisticsFactory* m_statisticsFactory;
   ACE_Semaphore m_notificationSema;
@@ -73,9 +69,8 @@ class APACHE_GEODE_EXPORT CqService
  public:
   typedef std::vector<std::shared_ptr<CqQuery>> query_container_type;
 
-  /**
-   * Constructor.
-   */
+  CqService(const CqService&) = delete;
+  CqService& operator=(const CqService&) = delete;
   CqService(ThinClientBaseDM* tccdm,
             statistics::StatisticsFactory* statisticsFactory);
   ~CqService() noexcept;

@@ -43,15 +43,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-/* adongre
- * CID 28730: Other violation (MISSING_COPY)
- * Class "GetAllWork" owns resources that are managed in its constructor and
- * destructor but has no user-written copy constructor.
- * FIX : Make the class NonCopyable
- */
-class GetAllWork : public PooledWork<GfErrType>,
-                   private NonCopyable,
-                   private NonAssignable {
+class GetAllWork : public PooledWork<GfErrType> {
   ThinClientPoolDM* m_poolDM;
   std::shared_ptr<BucketServerLocation> m_serverLocation;
   TcrMessage* m_request;
@@ -68,6 +60,8 @@ class GetAllWork : public PooledWork<GfErrType>,
   const std::shared_ptr<Serializable>& m_aCallbackArgument;
 
  public:
+  GetAllWork(const GetAllWork&) = delete;
+  GetAllWork& operator=(const GetAllWork&) = delete;
   GetAllWork(
       ThinClientPoolDM* poolDM, const std::shared_ptr<Region>& region,
       const std::shared_ptr<BucketServerLocation>& serverLocation,

@@ -36,7 +36,6 @@
 
 #include "ExecutionImpl.hpp"
 #include "FairQueue.hpp"
-#include "NonCopyable.hpp"
 #include "PoolAttributes.hpp"
 #include "PoolStatistics.hpp"
 #include "RemoteQueryService.hpp"
@@ -68,10 +67,10 @@ class ClientMetadataService;
 class ThinClientPoolDM
     : public ThinClientBaseDM,
       public Pool,
-      public FairQueue<TcrConnection, ACE_Recursive_Thread_Mutex>,
-      private NonCopyable,
-      private NonAssignable {
+      public FairQueue<TcrConnection, ACE_Recursive_Thread_Mutex> {
  public:
+  ThinClientPoolDM(const ThinClientPoolDM&) = delete;
+  ThinClientPoolDM& operator=(const ThinClientPoolDM&) = delete;
   ThinClientPoolDM(const char* name, std::shared_ptr<PoolAttributes> poolAttrs,
                    TcrConnectionManager& connManager);
 

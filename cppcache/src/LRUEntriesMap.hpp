@@ -30,7 +30,6 @@
 #include "LRUList.hpp"
 #include "LRUMapEntry.hpp"
 #include "MapEntryT.hpp"
-#include "NonCopyable.hpp"
 #include "util/concurrent/spinlock_mutex.hpp"
 
 namespace apache {
@@ -57,9 +56,7 @@ class EvictionController;
  * its constructor and destructor but has no user-written assignment operator.
  * Fix : Make the class Non Assinable
  */
-class APACHE_GEODE_EXPORT LRUEntriesMap : public ConcurrentEntriesMap,
-                                          private NonCopyable,
-                                          private NonAssignable {
+class APACHE_GEODE_EXPORT LRUEntriesMap : public ConcurrentEntriesMap {
  protected:
   LRUAction* m_action;
   LRUList<MapEntryImpl, MapEntryT<LRUMapEntry, 0, 0> > m_lruList;
@@ -73,6 +70,8 @@ class APACHE_GEODE_EXPORT LRUEntriesMap : public ConcurrentEntriesMap,
   bool m_heapLRUEnabled;
 
  public:
+  LRUEntriesMap(const LRUEntriesMap&) = delete;
+  LRUEntriesMap& operator=(const LRUEntriesMap&) = delete;
   LRUEntriesMap(ExpiryTaskManager* expiryTaskManager,
                 std::unique_ptr<EntryFactory> entryFactory,
                 RegionInternal* region, const LRUAction::Action& lruAction,

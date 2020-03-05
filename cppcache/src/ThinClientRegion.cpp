@@ -54,9 +54,7 @@ static const std::regex PREDICATE_IS_FULL_QUERY_REGEX(
 
 void setThreadLocalExceptionMessage(const char* exMsg);
 
-class PutAllWork : public PooledWork<GfErrType>,
-                   private NonCopyable,
-                   private NonAssignable {
+class PutAllWork : public PooledWork<GfErrType> {
   ThinClientPoolDM* m_poolDM;
   std::shared_ptr<BucketServerLocation> m_serverLocation;
   TcrMessage* m_request;
@@ -76,6 +74,8 @@ class PutAllWork : public PooledWork<GfErrType>,
   // UNUSED const std::shared_ptr<Serializable>& m_aCallbackArgument;
 
  public:
+  PutAllWork(const PutAllWork&) = delete;
+  PutAllWork& operator=(const PutAllWork&) = delete;
   PutAllWork(
       ThinClientPoolDM* poolDM,
       const std::shared_ptr<BucketServerLocation>& serverLocation,
@@ -203,9 +203,7 @@ class PutAllWork : public PooledWork<GfErrType>,
   }
 };
 
-class RemoveAllWork : public PooledWork<GfErrType>,
-                      private NonCopyable,
-                      private NonAssignable {
+class RemoveAllWork : public PooledWork<GfErrType> {
   ThinClientPoolDM* m_poolDM;
   std::shared_ptr<BucketServerLocation> m_serverLocation;
   TcrMessage* m_request;
@@ -223,6 +221,8 @@ class RemoveAllWork : public PooledWork<GfErrType>,
   ChunkedRemoveAllResponse* m_resultCollector;
 
  public:
+  RemoveAllWork(const RemoveAllWork&) = delete;
+  RemoveAllWork& operator=(const RemoveAllWork&) = delete;
   RemoveAllWork(
       ThinClientPoolDM* poolDM,
       const std::shared_ptr<BucketServerLocation>& serverLocation,

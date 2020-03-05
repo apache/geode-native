@@ -39,7 +39,6 @@
 
 #include "AppDomainContext.hpp"
 #include "BucketServerLocation.hpp"
-#include "NonCopyable.hpp"
 #include "ServerLocation.hpp"
 
 namespace apache {
@@ -99,8 +98,10 @@ class PRbuckets {
   void setBucketTimeout(int32_t bucketId) { m_buckets[bucketId].setTimeout(); }
 };
 
-class ClientMetadataService : private NonCopyable, private NonAssignable {
+class ClientMetadataService {
  public:
+  ClientMetadataService(const ClientMetadataService&) = delete;
+  ClientMetadataService& operator=(const ClientMetadataService&) = delete;
   ClientMetadataService() = delete;
   explicit ClientMetadataService(ThinClientPoolDM* pool);
   inline ~ClientMetadataService() noexcept = default;
