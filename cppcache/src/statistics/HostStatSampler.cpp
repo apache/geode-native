@@ -18,20 +18,17 @@
 #include "HostStatSampler.hpp"
 
 #include <chrono>
-#include <exception>
 #include <thread>
 #include <utility>
 #include <vector>
 
 #include <ace/ACE.h>
-#include <ace/Dirent.h>
 #include <ace/Dirent_Selector.h>
 #include <ace/INET_Addr.h>
 #include <ace/OS_NS_sys_stat.h>
 #include <ace/OS_NS_sys_utsname.h>
 #include <boost/process/environment.hpp>
 
-#include <geode/SystemProperties.hpp>
 #include <geode/internal/geode_globals.hpp>
 
 #include "../CacheImpl.hpp"

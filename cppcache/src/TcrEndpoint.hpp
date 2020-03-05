@@ -27,7 +27,6 @@
 #include <string>
 #include <unordered_set>
 
-#include <ace/Condition_Recursive_Thread_Mutex.h>
 #include <ace/Semaphore.h>
 
 #include <geode/internal/geode_base.hpp>
@@ -59,21 +58,16 @@ class TcrEndpoint {
       ACE_Semaphore& redundancySema, ThinClientBaseDM* dm = nullptr,
       bool isMultiUserMode = false);  // TODO: need to look for endpoint case
 
-  /* adongre
-   * CID 29000: Non-virtual destructor (VIRTUAL_DTOR)
-   */
   virtual ~TcrEndpoint();
 
   virtual GfErrType registerDM(bool clientNotification,
                                bool isSecondary = false,
                                bool isActiveEndpoint = false,
                                ThinClientBaseDM* distMgr = nullptr);
-  // GfErrType registerPoolDM( bool isSecondary, ThinClientPoolHADM* poolDM );
 
   virtual void unregisterDM(bool clientNotification,
                             ThinClientBaseDM* distMgr = nullptr,
                             bool checkQueueHosted = false);
-  // void unregisterPoolDM(  );
 
   void pingServer(ThinClientPoolDM* poolDM = nullptr);
   void receiveNotification(std::atomic<bool>& isRunning);
@@ -127,12 +121,6 @@ class TcrEndpoint {
   }
 
   virtual bool isMultiUserMode();
-  /*{
-    if(m_baseDM != nullptr)
-      return this->m_baseDM->isMultiUserMode();
-    else
-      return false;
-  }*/
 
   void authenticateEndpoint(TcrConnection*& conn);
 

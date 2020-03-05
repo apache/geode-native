@@ -26,7 +26,6 @@
 #include "statistics/Statistics.hpp"
 #include "statistics/StatisticsFactory.hpp"
 #include "statistics/StatisticsManager.hpp"
-#include "util/concurrent/spinlock_mutex.hpp"
 
 namespace apache {
 namespace geode {
@@ -35,7 +34,6 @@ namespace client {
 using statistics::StatisticDescriptor;
 using statistics::Statistics;
 using statistics::StatisticsType;
-using util::concurrent::spinlock_mutex;
 
 class PoolStats {
  public:

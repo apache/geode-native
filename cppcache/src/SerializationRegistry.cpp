@@ -20,9 +20,6 @@
 #include <functional>
 #include <mutex>
 
-#include <ace/Singleton.h>
-#include <ace/Thread_Mutex.h>
-
 #include <geode/CacheableBuiltins.hpp>
 #include <geode/CacheableDate.hpp>
 #include <geode/CacheableEnum.hpp>

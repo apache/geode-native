@@ -60,7 +60,7 @@ class APACHE_GEODE_EXPORT MapSegment {
 
   // index of the current prime in the primes table
   uint32_t m_primeIndex;
-  spinlock_mutex m_spinlock;
+  util::concurrent::spinlock_mutex m_spinlock;
   std::recursive_mutex m_segmentMutex;
 
   bool m_concurrencyChecksEnabled;

@@ -17,24 +17,12 @@
 
 #include "PoolStatistics.hpp"
 
-#include <geode/internal/geode_globals.hpp>
-//#include "StatisticsFactory.hpp"
-
-#include <mutex>
-
-#include <ace/Singleton.h>
-
-#include "util/concurrent/spinlock_mutex.hpp"
-
-////////////////////////////////////////////////////////////////////////////////
-
 namespace apache {
 namespace geode {
 namespace client {
 
 using statistics::StatisticsFactory;
 using statistics::StatisticsManager;
-using util::concurrent::spinlock_mutex;
 
 constexpr const char* PoolStats::STATS_NAME;
 constexpr const char* PoolStats::STATS_DESC;
@@ -200,6 +188,7 @@ PoolStats::~PoolStats() {
     m_poolStats = nullptr;
   }
 }
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
