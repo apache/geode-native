@@ -20,9 +20,6 @@
 #ifndef GEODE_REGIONEXPIRYHANDLER_H_
 #define GEODE_REGIONEXPIRYHANDLER_H_
 
-#include <ace/Event_Handler.h>
-#include <ace/Time_Value_T.h>
-
 #include <geode/ExpirationAction.hpp>
 #include <geode/Region.hpp>
 #include <geode/internal/geode_globals.hpp>
