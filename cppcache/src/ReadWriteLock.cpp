@@ -17,8 +17,6 @@
 
 #include "ReadWriteLock.hpp"
 
-#include <ace/Guard_T.h>
-
 namespace apache {
 namespace geode {
 namespace client {

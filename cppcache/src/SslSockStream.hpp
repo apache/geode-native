@@ -20,7 +20,6 @@
  * limitations under the License.
  */
 
-#include <ace/ACE.h>
 #include <ace/DLL.h>
 #include <ace/INET_Addr.h>
 

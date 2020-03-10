@@ -17,7 +17,6 @@
 
 #include "CppCacheLibrary.hpp"
 
-#include <ace/ACE.h>
 #include <ace/Init_ACE.h>
 
 #include "Utils.hpp"
