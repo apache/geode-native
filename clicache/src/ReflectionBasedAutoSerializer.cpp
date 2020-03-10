@@ -536,20 +536,14 @@ namespace Apache
           {
             return FieldType::ARRAY_OF_BYTE_ARRAYS;
           }
-          /*else if(type->Equals(Internal::DotNetTypes::ObjectArrayType))
-          {
-            //Giving more preference to arraylist instead of Object[] in java side
-            //return this->WriteObjectArray(fieldName, safe_cast<System::Collections::Generic::List<Object^>^>(fieldValue));
-            return FieldType::OBJECT_ARRAY;
-          }*/
-          else
+          else if(type->Equals(Internal::DotNetTypes::ObjectType))
           {
             return FieldType::OBJECT;
-            //throw gcnew IllegalStateException("WriteField unable to serialize  " 
-							//																	+ fieldName + " of " + type); 
+          }
+          throw gcnew IllegalStateException("WriteField unable to serialize  " 
+																								+ type); 
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
 
-  }
 }
