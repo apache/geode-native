@@ -23,6 +23,9 @@
 #include <mutex>
 #include <unordered_map>
 
+#include <ace/RW_Thread_Mutex.h>
+#include <ace/Task.h>
+
 #include <geode/ResultCollector.hpp>
 #include <geode/internal/functional.hpp>
 

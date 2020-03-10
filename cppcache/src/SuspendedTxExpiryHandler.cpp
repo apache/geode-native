@@ -16,6 +16,13 @@
  */
 #include "SuspendedTxExpiryHandler.hpp"
 
+#include <ace/Reactor.h>
+#include <ace/Timer_Heap.h>
+#include <ace/Timer_Heap_T.h>
+#include <ace/Timer_Queue.h>
+#include <ace/Timer_Queue_Adapters.h>
+#include <ace/svc_export.h>
+
 #include "CacheImpl.hpp"
 #include "ExpiryTaskManager.hpp"
 

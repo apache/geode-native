@@ -23,6 +23,8 @@
 #include <memory>
 #include <string>
 
+#include <ace/RW_Thread_Mutex.h>
+
 #include <geode/QueryService.hpp>
 #include <geode/internal/geode_globals.hpp>
 

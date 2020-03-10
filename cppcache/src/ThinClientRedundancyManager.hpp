@@ -28,6 +28,9 @@
 #include <set>
 #include <string>
 
+#include <ace/Semaphore.h>
+#include <ace/Time_Value.h>
+
 #include "ErrType.hpp"
 #include "EventIdMap.hpp"
 #include "ExpiryTaskManager.hpp"

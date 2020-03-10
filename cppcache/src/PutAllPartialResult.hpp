@@ -22,6 +22,9 @@
 
 #include <mutex>
 
+#include <ace/RW_Thread_Mutex.h>
+#include <ace/Task.h>
+
 #include <geode/CacheableString.hpp>
 #include <geode/Serializable.hpp>
 

@@ -23,6 +23,8 @@
 #include <string>
 #include <unordered_map>
 
+#include <ace/RW_Thread_Mutex.h>
+
 #include <geode/AttributesMutator.hpp>
 #include <geode/Cache.hpp>
 #include <geode/CacheListener.hpp>

@@ -20,6 +20,8 @@
 #include <chrono>
 #include <thread>
 
+#include <ace/OS.h>
+
 #include <geode/AuthInitialize.hpp>
 #include <geode/SystemProperties.hpp>
 

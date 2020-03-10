@@ -15,8 +15,11 @@
  * limitations under the License.
  */
 
+#include <ace/INET_Addr.h>
+
 #include <geode/Pool.hpp>
 #include <geode/PoolFactory.hpp>
+#include <geode/PoolManager.hpp>
 #include <geode/SystemProperties.hpp>
 
 #include "CacheImpl.hpp"

@@ -20,6 +20,8 @@
 #include <algorithm>
 #include <thread>
 
+#include <ace/INET_Addr.h>
+
 #include <geode/AuthInitialize.hpp>
 #include <geode/PoolManager.hpp>
 #include <geode/ResultCollector.hpp>

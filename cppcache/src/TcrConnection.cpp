@@ -19,6 +19,9 @@
 
 #include <cinttypes>
 
+#include <ace/INET_Addr.h>
+#include <ace/OS.h>
+
 #include <geode/AuthInitialize.hpp>
 #include <geode/SystemProperties.hpp>
 
