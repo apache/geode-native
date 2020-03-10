@@ -21,8 +21,6 @@
 #include <set>
 #include <thread>
 
-#include <ace/INET_Addr.h>
-
 #include <geode/SystemProperties.hpp>
 
 #include "CacheImpl.hpp"

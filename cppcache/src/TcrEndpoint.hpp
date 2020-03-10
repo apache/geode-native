@@ -27,8 +27,6 @@
 #include <string>
 #include <unordered_set>
 
-#include <ace/Semaphore.h>
-
 #include <geode/internal/geode_base.hpp>
 #include <geode/internal/geode_globals.hpp>
 

@@ -23,8 +23,6 @@
 #include <map>
 #include <unordered_map>
 
-#include <ace/RW_Thread_Mutex.h>
-
 #include <geode/Cache.hpp>
 #include <geode/PdxSerializable.hpp>
 #include <geode/internal/functional.hpp>
