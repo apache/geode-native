@@ -24,8 +24,6 @@
 #include <mutex>
 #include <string>
 
-#include <ace/Semaphore.h>
-
 #include <geode/CacheableKey.hpp>
 #include <geode/CqOperation.hpp>
 #include <geode/CqQuery.hpp>

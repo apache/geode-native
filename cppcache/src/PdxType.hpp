@@ -25,8 +25,6 @@
 #include <string>
 #include <vector>
 
-#include <ace/RW_Thread_Mutex.h>
-
 #include <geode/CacheableBuiltins.hpp>
 #include <geode/PdxFieldTypes.hpp>
 #include <geode/Serializable.hpp>

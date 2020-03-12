@@ -23,8 +23,6 @@
 #include <atomic>
 #include <chrono>
 
-#include <ace/Semaphore.h>
-
 #include <geode/CacheableBuiltins.hpp>
 #include <geode/ExceptionTypes.hpp>
 #include <geode/internal/geode_globals.hpp>

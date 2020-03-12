@@ -26,9 +26,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include <ace/Semaphore.h>
-#include <ace/config-lite.h>
-
 #include <geode/internal/geode_globals.hpp>
 
 #include "ExpiryTaskManager.hpp"

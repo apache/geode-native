@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 
-#include <ace/ACE.h>
-
 #include "EventIdMap.hpp"
 
 namespace apache {
@@ -55,8 +53,10 @@ void EventSource::clear() {
 }
 
 char* EventSource::getSrcId() { return m_srcId; }
+const char* EventSource::getSrcId() const { return m_srcId; }
 
 int32_t EventSource::getSrcIdLen() { return m_srcIdLen; }
+int32_t EventSource::getSrcIdLen() const { return m_srcIdLen; }
 
 char* EventSource::getMemId() { return m_srcId; }
 
@@ -65,15 +65,7 @@ int32_t EventSource::getMemIdLen() { return m_srcIdLen - sizeof(m_thrId); }
 int64_t EventSource::getThrId() { return m_thrId; }
 
 int32_t EventSource::hashcode() const {
-  if (m_srcId == nullptr || m_srcIdLen <= 0) {
-    return 0;
-  }
-
-  if (m_hash == 0) {
-    m_hash = ACE::hash_pjw(m_srcId, m_srcIdLen);
-  }
-
-  return m_hash;
+  return static_cast<int32_t>(std::hash<EventSource>{}(*this));
 }
 
 bool EventSource::operator==(const EventSource& rhs) const {

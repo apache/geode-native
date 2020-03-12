@@ -22,8 +22,6 @@
 
 #include <string>
 
-#include <ace/INET_Addr.h>
-
 #include "ClientProxyMembershipID.hpp"
 
 namespace apache {

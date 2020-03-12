@@ -57,7 +57,9 @@ class APACHE_GEODE_EXPORT EventSource {
   // Accessors
 
   char *getSrcId();
+  const char *getSrcId() const;
   int32_t getSrcIdLen();
+  int32_t getSrcIdLen() const;
   char *getMemId();
   int32_t getMemIdLen();
   int64_t getThrId();
@@ -106,7 +108,8 @@ struct hash<apache::geode::client::EventSource> {
   typedef apache::geode::client::EventSource argument_type;
   typedef size_t result_type;
   size_t operator()(const apache::geode::client::EventSource &val) const {
-    return apache::geode::client::EventSource::hash{}(val);
+    return std::hash<std::string>{}(
+        std::string(val.getSrcId(), val.getSrcIdLen()));
   }
 };
 

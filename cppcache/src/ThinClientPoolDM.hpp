@@ -28,8 +28,6 @@
 #include <vector>
 
 #include <ace/Condition_Recursive_Thread_Mutex.h>
-#include <ace/Recursive_Thread_Mutex.h>
-#include <ace/Semaphore.h>
 
 #include <geode/Pool.hpp>
 #include <geode/ResultCollector.hpp>
