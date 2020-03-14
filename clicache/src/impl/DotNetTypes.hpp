@@ -31,26 +31,36 @@ namespace Apache
           {
           public:
               static Type^ IntType = Int32::typeid;
+              static Type^ UIntType = UInt32::typeid;
               static Type^ StringType = String::typeid;
               static Type^ BooleanType = Boolean::typeid;
               static Type^ FloatType = float::typeid;
               static Type^ DoubleType = Double::typeid;
               static Type^ CharType = Char::typeid;
               static Type^ SByteType = SByte::typeid;
+              static Type^ ByteType = Byte::typeid;
               static Type^ ShortType = Int16::typeid;
+              static Type^ UShortType = UInt16::typeid;
               static Type^ LongType = Int64::typeid;
+              static Type^ ULongType = UInt64::typeid;
+              static Type^ SByteArrayType = Type::GetType("System.SByte[]");
               static Type^ ByteArrayType = Type::GetType("System.Byte[]");
               static Type^ DoubleArrayType = Type::GetType("System.Double[]");
               static Type^ FloatArrayType = Type::GetType("System.Single[]");
               static Type^ ShortArrayType = Type::GetType("System.Int16[]");
+              static Type^ UShortArrayType = Type::GetType("System.UInt16[]");
               static Type^ IntArrayType = Type::GetType("System.Int32[]");
+              static Type^ UIntArrayType = Type::GetType("System.UInt32[]");
               static Type^ LongArrayType = Type::GetType("System.Int64[]");
+              static Type^ ULongArrayType = Type::GetType("System.UInt64[]");
               static Type^ BoolArrayType = Type::GetType("System.Boolean[]");
               static Type^ CharArrayType = Type::GetType("System.Char[]");
               static Type^ StringArrayType = Type::GetType("System.String[]");
               static Type^ DateType = Type::GetType("System.DateTime");
+              static Type^ SByteArrayOfArrayType = Type::GetType("System.SByte[][]");
               static Type^ ByteArrayOfArrayType = Type::GetType("System.Byte[][]");
               static Type^ ObjectArrayType = Type::GetType("System.Collections.Generic.List`1[System.Object]");
+              static Type^ ObjectMapType = Type::GetType("System.Collections.Generic.IDictionary`2[System.Object,System.Object]");
 
               static Type^ VoidType = Type::GetType("System.Void");
               static Type^ ObjectType = Type::GetType("System.Object");

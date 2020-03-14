@@ -87,7 +87,7 @@ namespace Apache
           /// </summary>
           /// <param name="fieldName">The name of the field associated with the value.</param>
           /// <param name="value">The byte to write.</param>
-          virtual IPdxWriter^ WriteByte(String^ fieldName, SByte value);
+          virtual IPdxWriter^ WriteByte(String^ fieldName, Byte value);
 
           /// <summary>
           /// Write a signed byte to the <c>IPdxWriter</c>.
@@ -115,21 +115,21 @@ namespace Apache
           /// </summary>
           /// <param name="fieldName">The name of the field associated with the value.</param>
           /// <param name="value">The unsigned 16-bit integer to write.</param>
-          virtual IPdxWriter^ WriteUInt16(String^ fieldName, System::UInt16 value);
+          virtual IPdxWriter^ WriteUShort(String^ fieldName, System::UInt16 value);
 
           /// <summary>
           /// Write an unsigned 32-bit integer to the <c>IPdxWriter</c>.
           /// </summary>
           /// <param name="fieldName">The name of the field associated with the value.</param>
           /// <param name="value">The unsigned 32-bit integer to write.</param>
-          virtual IPdxWriter^ WriteUInt32(String^ fieldName, System::UInt32 value);
+          virtual IPdxWriter^ WriteUInt(String^ fieldName, System::UInt32 value);
 
           /// <summary>
           /// Write an unsigned 64-bit integer to the <c>IPdxWriter</c>.
           /// </summary>
           /// <param name="fieldName">The name of the field associated with the value.</param>
           /// <param name="value">The unsigned 64-bit integer to write.</param>
-          virtual IPdxWriter^ WriteUInt64(String^ fieldName, System::UInt64 value);
+          virtual IPdxWriter^ WriteULong(String^ fieldName, System::UInt64 value);
 
           /// <summary>
           /// Write a 16-bit integer to the <c>IPdxWriter</c>.
@@ -263,7 +263,7 @@ namespace Apache
           /// </summary>
           /// <param name="fieldName">The name of the field associated with the value.</param>
           /// <param name="ushortArray">The ushortArray to write.</param>
-          virtual IPdxWriter^ WriteUnsignedShortArray(String^ fieldName, array<System::UInt16>^ ushortArray);
+          virtual IPdxWriter^ WriteUShortArray(String^ fieldName, array<System::UInt16>^ ushortArray);
 
           /// <summary>
           /// Write an collection to the <c>IPdxWriter</c>.
@@ -277,7 +277,7 @@ namespace Apache
           /// </summary>
           /// <param name="fieldName">The name of the field associated with the value.</param>
           /// <param name="uintArray">The uintArray to write.</param>
-          virtual IPdxWriter^ WriteUnsignedIntArray(String^ fieldName, array<System::UInt32>^ uintArray);
+          virtual IPdxWriter^ WriteUIntArray(String^ fieldName, array<System::UInt32>^ uintArray);
 
           /// <summary>
           /// Write an collection to the <c>IPdxWriter</c>.
@@ -291,7 +291,7 @@ namespace Apache
           /// </summary>
           /// <param name="fieldName">The name of the field associated with the value.</param>
           /// <param name="ulongArray">The ulongArray to write.</param>
-          virtual IPdxWriter^ WriteUnsignedLongArray(String^ fieldName, array<System::UInt64>^ ulongArray);
+          virtual IPdxWriter^ WriteULongArray(String^ fieldName, array<UInt64>^ ulongArray);
 
           /// <summary>
           /// Write an collection to the <c>IPdxWriter</c>.
@@ -328,6 +328,13 @@ namespace Apache
           /// <param name="byteArrays">The byteArrays to write.</param>
           virtual IPdxWriter^ WriteArrayOfByteArrays(String^ fieldName, array<array<Byte>^>^ byteArrays);
 
+          /// <summary>
+          /// Write an collection to the <c>IPdxWriter</c>.
+          /// </summary>
+          /// <param name="fieldName">The name of the field associated with the value.</param>
+          /// <param name="byteArrays">The byteArrays to write.</param>
+          virtual IPdxWriter^ WriteArrayOfSByteArrays(String^ fieldName, array<array<SByte>^>^ byteArrays);
+
           //TODO:
           //virtual IPdxWriter^ WriteEnum(String^ fieldName, Enum e) ;
           //virtual IPdxWriter^ WriteInetAddress(String^ fieldName, InetAddress address);
@@ -347,6 +354,7 @@ namespace Apache
           virtual IPdxWriter^ WriteField(String^ fieldName, Object^ fieldValue, Type^ type);
 
           virtual void WriteByte(Byte byte);//for internal purpose
+          virtual void WriteSByte(SByte byte);//for internal purpose
 
           property Apache::Geode::Client::Cache^ Cache
           {

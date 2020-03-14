@@ -38,11 +38,15 @@ namespace Apache
       public enum class FieldType
       {
         BOOLEAN,
+        SBYTE,
 				BYTE,
 				CHAR,
 				SHORT,
+        USHORT,
 				INT,
+        UINT,
 				LONG,
+        ULONG,
 				FLOAT,
 				DOUBLE,
 				DATE,
@@ -50,14 +54,19 @@ namespace Apache
 				OBJECT,
 				BOOLEAN_ARRAY,
 				CHAR_ARRAY,
+        SBYTE_ARRAY,
 				BYTE_ARRAY,
 				SHORT_ARRAY,
+        USHORT_ARRAY,
 				INT_ARRAY,
+        UINT_ARRAY,
 				LONG_ARRAY,
+        ULONG_ARRAY,
 				FLOAT_ARRAY,
 				DOUBLE_ARRAY,
 				STRING_ARRAY,
 				OBJECT_ARRAY,
+        ARRAY_OF_SBYTE_ARRAYS,
 				ARRAY_OF_BYTE_ARRAYS
       };
 

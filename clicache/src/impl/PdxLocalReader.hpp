@@ -81,7 +81,7 @@ namespace Apache
         /// Read a byte from the stream.
         /// </summary>
         /// <param name="fieldName">The name of a member field whose value to read.</param>
-			 virtual SByte ReadByte( String^ fieldName );
+			 virtual Byte ReadByte( String^ fieldName );
 
         /// <summary>
         /// Read a signed byte from the stream.
@@ -105,19 +105,19 @@ namespace Apache
         /// Read a 16-bit unsigned integer from the stream.
         /// </summary>
         /// <param name="fieldName">The name of a member field whose value to read.</param>
-        virtual System::UInt16 ReadUInt16( String^ fieldName );
+        virtual System::UInt16 ReadUShort( String^ fieldName );
 
         /// <summary>
         /// Read a 32-bit unsigned integer from the stream.
         /// </summary>
         /// <param name="fieldName">The name of a member field whose value to read.</param>
-        virtual System::UInt32 ReadUInt32( String^ fieldName );
+        virtual System::UInt32 ReadUInt( String^ fieldName );
         
         /// <summary>
         /// Read a 64-bit unsigned integer from the stream.
         /// </summary>
         /// <param name="fieldName">The name of a member field whose value to read.</param>
-        virtual System::UInt64 ReadUInt64( String^ fieldName );
+        virtual System::UInt64 ReadULong( String^ fieldName );
 
         /// <summary>
         /// Read a 16-bit integer from the stream.
@@ -225,7 +225,7 @@ namespace Apache
         /// Read a ushort array from the data.
         /// </summary>
         /// <param name="fieldName">The name of a member field whose value to read.</param>
-        virtual array<System::UInt16>^ ReadUnsignedShortArray(String^ fieldName);
+        virtual array<System::UInt16>^ ReadUShortArray(String^ fieldName);
 
         /// <summary>
         /// Read a int array from the data.
@@ -237,7 +237,7 @@ namespace Apache
         /// Read a uint from the data.
         /// </summary>
         /// <param name="fieldName">The name of a member field whose value to read.</param>
-        virtual array<System::UInt32>^ ReadUnsignedIntArray(String^ fieldName);
+        virtual array<System::UInt32>^ ReadUIntArray(String^ fieldName);
 
         /// <summary>
         /// Read a long array from the data.
@@ -249,7 +249,7 @@ namespace Apache
         /// Read a ulong array from the data.
         /// </summary>
         /// <param name="fieldName">The name of a member field whose value to read.</param>
-        virtual array<System::UInt64>^ ReadUnsignedLongArray(String^ fieldName );
+        virtual array<System::UInt64>^ ReadULongArray(String^ fieldName );
 
         /// <summary>
         /// Read a float from the data.
@@ -280,6 +280,12 @@ namespace Apache
         /// </summary>
         /// <param name="fieldName">The name of a member field whose value to read.</param>
         virtual array<array<Byte>^>^ ReadArrayOfByteArrays(String^ fieldName );
+
+        /// <summary>
+        /// Read a two-dimenesional sbyte array from the data.
+        /// </summary>
+        /// <param name="fieldName">The name of a member field whose value to read.</param>
+        virtual array<array<SByte>^>^ ReadArrayOfSByteArrays(String^ fieldName );
 
         //TODO:
         //virtual void WriteEnum(String^ fieldName, Enum e) ;

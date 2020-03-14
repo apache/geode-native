@@ -150,70 +150,97 @@ namespace Apache
               {
                 case FieldType::BOOLEAN:
                   w->WriteBoolean(m_fieldName, (bool)value);
-                break;
+                  break;
+			          case FieldType::SBYTE:
+                  w->WriteSByte(m_fieldName, (SByte)value);
+                  break;
 			          case FieldType::BYTE:
-                  w->WriteByte(m_fieldName, (SByte)value);
-                break;
+                  w->WriteByte(m_fieldName, (Byte)value);
+                  break;
 			          case FieldType::CHAR:
                   w->WriteChar(m_fieldName, (Char)value);
-                break;
+                  break;
 			          case FieldType::SHORT:
                   w->WriteShort(m_fieldName, (short)value);
-                break;
+                  break;
+                case FieldType::USHORT:
+                  w->WriteUShort(m_fieldName, (USHORT)value);
+                  break;
 			          case FieldType::INT:
                   w->WriteInt(m_fieldName, (int)value);
-                break;
+                  break;
+			          case FieldType::UINT:
+                  w->WriteUInt(m_fieldName, (UINT)value);
+                  break;
 			          case FieldType::LONG:
                   w->WriteLong(m_fieldName, (Int64)value);
-                break;
+                  break;
+			          case FieldType::ULONG:
+                  w->WriteULong(m_fieldName, (UInt64)value);
+                  break;
 			          case FieldType::FLOAT:
                   w->WriteFloat(m_fieldName, (float)value);
-                break;
+                  break;
 			          case FieldType::DOUBLE:
                   w->WriteDouble(m_fieldName, (double)value);
-                break;
+                  break;
 			          case FieldType::DATE:
                   w->WriteDate(m_fieldName, (DateTime)value);
-                break;
+                  break;
 			          case FieldType::STRING:
                   w->WriteString(m_fieldName, (String^)value);
-                break;
+                  break;
 			          case FieldType::OBJECT:
                   w->WriteObject(m_fieldName, value);
-                break;
+                  break;
 			          case FieldType::BOOLEAN_ARRAY:
                   w->WriteBooleanArray(m_fieldName, (array<bool>^)value);
-                break;
+                  break;
 			          case FieldType::CHAR_ARRAY:
                   w->WriteCharArray(m_fieldName, (array<Char>^)value);
-                break;
+                  break;
+			          case FieldType::SBYTE_ARRAY:
+                  w->WriteSByteArray(m_fieldName, (array<SByte>^)value);
+                  break;
 			          case FieldType::BYTE_ARRAY:
                   w->WriteByteArray(m_fieldName, (array<Byte>^)value);
-                break;
+                  break;
 			          case FieldType::SHORT_ARRAY:
-                  w->WriteShortArray(m_fieldName, (array<Int16>^)value);
-                break;
+                  w->WriteShortArray(m_fieldName, (array<SHORT>^)value);
+                  break;
+			          case FieldType::USHORT_ARRAY:
+                  w->WriteUShortArray(m_fieldName, (array<USHORT>^)value);
+                  break;
 			          case FieldType::INT_ARRAY:
-                  w->WriteIntArray(m_fieldName, (array<Int32>^)value);
-                break;
+                  w->WriteIntArray(m_fieldName, (array<int>^)value);
+                  break;
+			          case FieldType::UINT_ARRAY:
+                  w->WriteUIntArray(m_fieldName, (array<UINT>^)value);
+                  break;
 			          case FieldType::LONG_ARRAY:
-                  w->WriteLongArray(m_fieldName, (array<System::Int64>^)value);
-                break;
+                  w->WriteLongArray(m_fieldName, (array<Int64>^)value);
+                  break;
+			          case FieldType::ULONG_ARRAY:
+                  w->WriteULongArray(m_fieldName, (array<UInt64>^)value);
+                  break;
 			          case FieldType::FLOAT_ARRAY:
                   w->WriteFloatArray(m_fieldName, (array<float>^)value);
-                break;
+                  break;
 			          case FieldType::DOUBLE_ARRAY:
                   w->WriteDoubleArray(m_fieldName, (array<double>^)value);
-                break;
+                  break;
 			          case FieldType::STRING_ARRAY:
                   w->WriteStringArray(m_fieldName, (array<String^>^)value);
-                break;
+                  break;
 			          case FieldType::OBJECT_ARRAY:
                   w->WriteObjectArray(m_fieldName, safe_cast<System::Collections::Generic::List<Object^>^>(value));
-                break;
+                  break;
 			          case FieldType::ARRAY_OF_BYTE_ARRAYS:
                   w->WriteArrayOfByteArrays(m_fieldName, (array<array<Byte>^>^)value);
-                break;
+                  break;
+			          case FieldType::ARRAY_OF_SBYTE_ARRAYS:
+                  w->WriteArrayOfSByteArrays(m_fieldName, (array<array<SByte>^>^)value);
+                  break;
 			          default:
                   throw gcnew IllegalStateException("Not found FieldType: " + m_fieldType.ToString());
               }
@@ -225,70 +252,97 @@ namespace Apache
               {
                 case FieldType::BOOLEAN:
                   return r->ReadBoolean(m_fieldName);
-                break;
+                  break;
+			          case FieldType::SBYTE:
+                  return r->ReadSByte(m_fieldName);
+                  break;
 			          case FieldType::BYTE:
                   return r->ReadByte(m_fieldName);
-                break;
+                  break;
 			          case FieldType::CHAR:
                   return r->ReadChar(m_fieldName);
-                break;
+                  break;
 			          case FieldType::SHORT:
                   return r->ReadShort(m_fieldName);
-                break;
+                  break;
+			          case FieldType::USHORT:
+                  return r->ReadUShort(m_fieldName);
+                  break;
 			          case FieldType::INT:
                   return r->ReadInt(m_fieldName);
-                break;
+                  break;
+			          case FieldType::UINT:
+                  return r->ReadUInt(m_fieldName);
+                  break;
 			          case FieldType::LONG:
                   return r->ReadLong(m_fieldName);
-                break;
+                  break;
+			          case FieldType::ULONG:
+                  return r->ReadULong(m_fieldName);
+                  break;
 			          case FieldType::FLOAT:
                   return r->ReadFloat(m_fieldName);
-                break;
+                  break;
 			          case FieldType::DOUBLE:
                   return r->ReadDouble(m_fieldName);
-                break;
+                  break;
 			          case FieldType::DATE:
                   return r->ReadDate(m_fieldName);
-                break;
+                  break;
 			          case FieldType::STRING:
                   return r->ReadString(m_fieldName);
-                break;
+                  break;
 			          case FieldType::OBJECT:
                   return r->ReadObject(m_fieldName);
-                break;
+                  break;
 			          case FieldType::BOOLEAN_ARRAY:
                   return r->ReadBooleanArray(m_fieldName);
-                break;
+                  break;
 			          case FieldType::CHAR_ARRAY:
                   return r->ReadCharArray(m_fieldName);
-                break;
+                  break;
+			          case FieldType::SBYTE_ARRAY:
+                  return r->ReadSByteArray(m_fieldName);
+                  break;
 			          case FieldType::BYTE_ARRAY:
                   return r->ReadByteArray(m_fieldName);
-                break;
+                  break;
 			          case FieldType::SHORT_ARRAY:
                   return r->ReadShortArray(m_fieldName);
-                break;
+                  break;
+			          case FieldType::USHORT_ARRAY:
+                  return r->ReadUShortArray(m_fieldName);
+                  break;
 			          case FieldType::INT_ARRAY:
                   return r->ReadIntArray(m_fieldName);
-                break;
+                  break;
+			          case FieldType::UINT_ARRAY:
+                  return r->ReadUIntArray(m_fieldName);
+                  break;
 			          case FieldType::LONG_ARRAY:
                   return r->ReadLongArray(m_fieldName);
-                break;
+                  break;
+			          case FieldType::ULONG_ARRAY:
+                  return r->ReadULongArray(m_fieldName);
+                  break;
 			          case FieldType::FLOAT_ARRAY:
                   return r->ReadFloatArray(m_fieldName);
-                break;
+                  break;
 			          case FieldType::DOUBLE_ARRAY:
                   return r->ReadDoubleArray(m_fieldName);
-                break;
+                  break;
 			          case FieldType::STRING_ARRAY:
                   return r->ReadStringArray(m_fieldName);
-                break;
+                  break;
 			          case FieldType::OBJECT_ARRAY:
                   return r->ReadObjectArray(m_fieldName);
-                break;
+                  break;
 			          case FieldType::ARRAY_OF_BYTE_ARRAYS:
                   return r->ReadArrayOfByteArrays(m_fieldName);
-                break;
+                  break;
+			          case FieldType::ARRAY_OF_SBYTE_ARRAYS:
+                  return r->ReadArrayOfSByteArrays(m_fieldName);
+                  break;
 			          default:
                   throw gcnew IllegalStateException("Not found FieldType: " + m_fieldType.ToString());
               }
@@ -320,10 +374,10 @@ namespace Apache
         void ReflectionBasedAutoSerializer::serializeFields(Object^ o,IPdxWriter^ writer )
         {
           Type^ ty = o->GetType();
-         // Log::Debug("ReflectionBasedAutoSerializer::serializeFields classname {0}: objectType {1}", o->GetType()->FullName,o->GetType());
+          Log::Debug("ReflectionBasedAutoSerializer::serializeFields classname {0}: objectType {1}", o->GetType()->FullName,o->GetType());
           for each(FieldWrapper^ fi in GetFields(o->GetType()))
           {
-           // Log::Debug("ReflectionBasedAutoSerializer::serializeFields fieldName: {0}, fieldType: {1}", fi->FieldName, fi->FType);
+           Log::Debug("ReflectionBasedAutoSerializer::serializeFields fieldName: {0}, fieldType: {1}", fi->FieldName, fi->FType);
            // writer->WriteField(fi->Name, fi->GetValue(o), fi->FieldType);           
            // SerializeField(o, fi, writer);
             //Object^ originalValue = fi->FI->GetValue(o);
@@ -335,7 +389,7 @@ namespace Apache
 
             if(fi->isIdentityField)
             {
-             // Log::Debug("ReflectionBasedAutoSerializer::serializeFields fieldName: {0} is identity field.", fi->FieldName);
+              Log::Debug("ReflectionBasedAutoSerializer::serializeFields fieldName: {0} is identity field.", fi->FieldName);
               writer->MarkIdentityField(fi->FieldName);
             }
           }
@@ -460,6 +514,10 @@ namespace Apache
           {
             return FieldType::INT;
           }
+          if(type->Equals(Internal::DotNetTypes::UIntType))
+          {
+            return FieldType::UINT;
+          }
           else if(type->Equals(Internal::DotNetTypes::StringType))
           {
             return FieldType::STRING;
@@ -482,15 +540,31 @@ namespace Apache
           }
           else if(type->Equals(Internal::DotNetTypes::SByteType))
           {
+            return FieldType::SBYTE;
+          }
+          else if(type->Equals(Internal::DotNetTypes::ByteType))
+          {
             return FieldType::BYTE;
           }
           else if(type->Equals(Internal::DotNetTypes::ShortType))
           {
             return FieldType::SHORT;
           }
+          else if(type->Equals(Internal::DotNetTypes::UShortType))
+          {
+            return FieldType::USHORT;
+          }
           else if(type->Equals(Internal::DotNetTypes::LongType))
           {
             return FieldType::LONG;
+          }
+          else if(type->Equals(Internal::DotNetTypes::ULongType))
+          {
+            return FieldType::ULONG;
+          }
+          else if(type->Equals(Internal::DotNetTypes::SByteArrayType))
+          {
+            return FieldType::SBYTE_ARRAY;
           }
           else if(type->Equals(Internal::DotNetTypes::ByteArrayType))
           {
@@ -508,13 +582,25 @@ namespace Apache
           {
             return FieldType::SHORT_ARRAY;
           }
+          else if(type->Equals(Internal::DotNetTypes::UShortArrayType))
+          {
+            return FieldType::USHORT_ARRAY;
+          }
           else if(type->Equals(Internal::DotNetTypes::IntArrayType))
           {
             return FieldType::INT_ARRAY;
           }
+          else if(type->Equals(Internal::DotNetTypes::UIntArrayType))
+          {
+            return FieldType::UINT_ARRAY;
+          }
           else if(type->Equals(Internal::DotNetTypes::LongArrayType))
           {
             return FieldType::LONG_ARRAY;
+          }
+          else if(type->Equals(Internal::DotNetTypes::ULongArrayType))
+          {
+            return FieldType::ULONG_ARRAY;
           }
           else if(type->Equals(Internal::DotNetTypes::BoolArrayType))
           {
@@ -532,16 +618,44 @@ namespace Apache
           {
             return FieldType::DATE;
           }
+          else if(type->Equals(Internal::DotNetTypes::SByteArrayOfArrayType))
+          {
+            return FieldType::ARRAY_OF_SBYTE_ARRAYS;
+          }
           else if(type->Equals(Internal::DotNetTypes::ByteArrayOfArrayType))
           {
             return FieldType::ARRAY_OF_BYTE_ARRAYS;
           }
-          else if(type->Equals(Internal::DotNetTypes::ObjectType))
+
+          // Orig
+          //else
+          //{
+          //  Log::Debug("ReflectionBasedAutoSerializer::getPdxFieldType type = {0}", type);
+          //  return FieldType::OBJECT;
+          //}
+
+          // Mikes: Check for types with no default ctor
+          else if (type->Equals(Type::GetType("System.Guid")))
           {
+              throw gcnew IllegalStateException("WriteField unable to serialize  " 
+				  		  + type);
+          }
+          else
+          {
+            Log::Debug("ReflectionBasedAutoSerializer::getPdxFieldType type = {0}", type);
             return FieldType::OBJECT;
           }
-          throw gcnew IllegalStateException("WriteField unable to serialize  " 
-																								+ type); 
+
+          // Matt and Mike Fix
+          //else if (type->Equals(Internal::DotNetTypes::ObjectType) ||
+          //         type->Equals(Internal::DotNetTypes::ObjectArrayType) ||
+          //         type->Equals(Internal::DotNetTypes::ObjectMapType))
+          //{
+          //  return FieldType::OBJECT;
+          //}
+          //Log::Debug("ReflectionBasedAutoSerializer::getPdxFieldType type = {0}", type);
+          //throw gcnew IllegalStateException("WriteField unable to serialize  " 
+				  				//										+ type); 
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache

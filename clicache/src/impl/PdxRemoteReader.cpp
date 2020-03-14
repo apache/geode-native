@@ -36,7 +36,7 @@ namespace Apache
         
         
 
-        SByte PdxRemoteReader::ReadByte( String^ fieldName )
+        Byte PdxRemoteReader::ReadByte( String^ fieldName )
         {
           int choice = m_localToRemoteMap[m_currentIndex++];
 
@@ -132,14 +132,14 @@ namespace Apache
           }
         }
         
-        System::UInt16 PdxRemoteReader::ReadUInt16( String^ fieldName )
+        System::UInt16 PdxRemoteReader::ReadUShort( String^ fieldName )
         {
           int choice = m_localToRemoteMap[m_currentIndex++];
 
           switch(choice)
           {
           case -2:
-            return PdxLocalReader::ReadUInt16(fieldName);//in same order
+            return PdxLocalReader::ReadUShort(fieldName);//in same order
           case -1:
             {
               return 0;//null value
@@ -149,21 +149,21 @@ namespace Apache
               //sequence id read field and then update 
               int position = m_pdxType->GetFieldPosition(choice, m_offsetsBuffer, m_offsetSize, m_serializedLength);
               m_dataInput->ResetAndAdvanceCursorPdx(position);
-              UInt16 retVal = PdxLocalReader::ReadUInt16(fieldName);
+              UInt16 retVal = PdxLocalReader::ReadUShort(fieldName);
               m_dataInput->RewindCursorPdx(position);
               return retVal;
             }
           }
         }
 
-        System::UInt32 PdxRemoteReader::ReadUInt32( String^ fieldName )
+        System::UInt32 PdxRemoteReader::ReadUInt( String^ fieldName )
         {
           int choice = m_localToRemoteMap[m_currentIndex++];
 
           switch(choice)
           {
           case -2:
-            return PdxLocalReader::ReadUInt32(fieldName);//in same order
+            return PdxLocalReader::ReadUInt(fieldName);//in same order
           case -1:
             {
               return 0;//null value
@@ -173,21 +173,21 @@ namespace Apache
               //sequence id read field and then update 
               int position = m_pdxType->GetFieldPosition(choice, m_offsetsBuffer, m_offsetSize, m_serializedLength);
               m_dataInput->ResetAndAdvanceCursorPdx(position);
-              UInt32 retVal = PdxLocalReader::ReadUInt32(fieldName);
+              UInt32 retVal = PdxLocalReader::ReadUInt(fieldName);
               m_dataInput->RewindCursorPdx(position);
               return retVal;
             }
           }
         }
         
-        System::UInt64 PdxRemoteReader::ReadUInt64( String^ fieldName )
+        System::UInt64 PdxRemoteReader::ReadULong( String^ fieldName )
         {
           int choice = m_localToRemoteMap[m_currentIndex++];
 
           switch(choice)
           {
           case -2:
-            return PdxLocalReader::ReadUInt64(fieldName);//in same order
+            return PdxLocalReader::ReadULong(fieldName);//in same order
           case -1:
             {
               return 0;//null value
@@ -197,7 +197,7 @@ namespace Apache
               //sequence id read field and then update 
               int position = m_pdxType->GetFieldPosition(choice, m_offsetsBuffer, m_offsetSize, m_serializedLength);
               m_dataInput->ResetAndAdvanceCursorPdx(position);
-              UInt64 retVal = PdxLocalReader::ReadUInt64(fieldName);
+              UInt64 retVal = PdxLocalReader::ReadULong(fieldName);
               m_dataInput->RewindCursorPdx(position);
               return retVal;
             }
@@ -597,14 +597,14 @@ namespace Apache
           }
         }
 
-        array<System::UInt16>^ PdxRemoteReader::ReadUnsignedShortArray(String^ fieldName)
+        array<System::UInt16>^ PdxRemoteReader::ReadUShortArray(String^ fieldName)
         {
           int choice = m_localToRemoteMap[m_currentIndex++];
 
           switch(choice)
           {
           case -2:
-            return PdxLocalReader::ReadUnsignedShortArray(fieldName);//in same order
+            return PdxLocalReader::ReadUShortArray(fieldName);//in same order
           case -1:
             {
               return nullptr;//null value
@@ -614,7 +614,7 @@ namespace Apache
               //sequence id read field and then update 
               int position = m_pdxType->GetFieldPosition(choice, m_offsetsBuffer, m_offsetSize, m_serializedLength);
               m_dataInput->ResetAndAdvanceCursorPdx(position);
-              array<UInt16>^ retVal = PdxLocalReader::ReadUnsignedShortArray(fieldName);
+              array<UInt16>^ retVal = PdxLocalReader::ReadUShortArray(fieldName);
               m_dataInput->RewindCursorPdx(position);
               return retVal;
             }
@@ -645,14 +645,14 @@ namespace Apache
           }
         }
 
-        array<System::UInt32>^ PdxRemoteReader::ReadUnsignedIntArray(String^ fieldName)
+        array<System::UInt32>^ PdxRemoteReader::ReadUIntArray(String^ fieldName)
         {
           int choice = m_localToRemoteMap[m_currentIndex++];
 
           switch(choice)
           {
           case -2:
-            return PdxLocalReader::ReadUnsignedIntArray(fieldName);//in same order
+            return PdxLocalReader::ReadUIntArray(fieldName);//in same order
           case -1:
             {
               return nullptr;//null value
@@ -662,7 +662,7 @@ namespace Apache
               //sequence id read field and then update 
               int position = m_pdxType->GetFieldPosition(choice, m_offsetsBuffer, m_offsetSize, m_serializedLength);
               m_dataInput->ResetAndAdvanceCursorPdx(position);
-              array<UInt32>^ retVal = PdxLocalReader::ReadUnsignedIntArray(fieldName);
+              array<UInt32>^ retVal = PdxLocalReader::ReadUIntArray(fieldName);
               m_dataInput->RewindCursorPdx(position);
               return retVal;
             }
@@ -693,14 +693,14 @@ namespace Apache
           }
         }
 
-        array<System::UInt64>^ PdxRemoteReader::ReadUnsignedLongArray(String^ fieldName )
+        array<System::UInt64>^ PdxRemoteReader::ReadULongArray(String^ fieldName )
         {
           int choice = m_localToRemoteMap[m_currentIndex++];
 
           switch(choice)
           {
           case -2:
-            return PdxLocalReader::ReadUnsignedLongArray(fieldName);//in same order
+            return PdxLocalReader::ReadULongArray(fieldName);//in same order
           case -1:
             {
               return nullptr;//null value
@@ -710,7 +710,7 @@ namespace Apache
               //sequence id read field and then update 
               int position = m_pdxType->GetFieldPosition(choice, m_offsetsBuffer, m_offsetSize, m_serializedLength);
               m_dataInput->ResetAndAdvanceCursorPdx(position);
-              array<UInt64>^ retVal = PdxLocalReader::ReadUnsignedLongArray(fieldName);
+              array<UInt64>^ retVal = PdxLocalReader::ReadULongArray(fieldName);
               m_dataInput->RewindCursorPdx(position);
               return retVal;
             }

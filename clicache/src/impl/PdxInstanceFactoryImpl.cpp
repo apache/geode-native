@@ -240,7 +240,7 @@ namespace Apache
         IPdxInstanceFactory^ PdxInstanceFactoryImpl::WriteField(String^ fieldName, Object^ fieldValue, Type^ type)
         {
           isFieldAdded(fieldName);
-          if (type->Equals(DotNetTypes::IntType))
+          if (type->Equals(DotNetTypes::IntType) || type->Equals(DotNetTypes::UIntType))
           {
             return this->WriteInt(fieldName, (int)fieldValue);
           }
@@ -264,19 +264,19 @@ namespace Apache
           {
             return this->WriteChar(fieldName, (Char)fieldValue);
           }
-          else if (type->Equals(DotNetTypes::SByteType))
+          else if (type->Equals(DotNetTypes::SByteType) || type->Equals(DotNetTypes::ByteType))
           {
             return this->WriteByte(fieldName, (SByte)fieldValue);
           }
-          else if (type->Equals(DotNetTypes::ShortType))
+          else if (type->Equals(DotNetTypes::ShortType) || type->Equals(DotNetTypes::UShortType))
           {
             return this->WriteShort(fieldName, (short)fieldValue);
           }
-          else if (type->Equals(DotNetTypes::LongType))
+          else if (type->Equals(DotNetTypes::LongType) || type->Equals(DotNetTypes::ULongType))
           {
             return this->WriteLong(fieldName, (Int64)fieldValue);
           }
-          else if (type->Equals(DotNetTypes::ByteArrayType))
+          else if (type->Equals(DotNetTypes::ByteArrayType) || type->Equals(DotNetTypes::SByteArrayType))
           {
             return this->WriteByteArray(fieldName, (array<Byte>^)fieldValue);
           }
@@ -288,15 +288,15 @@ namespace Apache
           {
             return this->WriteFloatArray(fieldName, (array<float>^)fieldValue);
           }
-          else if (type->Equals(DotNetTypes::ShortArrayType))
+          else if (type->Equals(DotNetTypes::ShortArrayType) || type->Equals(DotNetTypes::UShortArrayType))
           {
             return this->WriteShortArray(fieldName, (array<Int16>^)fieldValue);
           }
-          else if (type->Equals(DotNetTypes::IntArrayType))
+          else if (type->Equals(DotNetTypes::IntArrayType) || type->Equals(DotNetTypes::UIntArrayType))
           {
             return this->WriteIntArray(fieldName, (array<System::Int32>^)fieldValue);
           }
-          else if (type->Equals(DotNetTypes::LongArrayType))
+          else if (type->Equals(DotNetTypes::LongArrayType) || type->Equals(DotNetTypes::ULongArrayType))
           {
             return this->WriteLongArray(fieldName, (array<Int64>^)fieldValue);
           }
@@ -316,7 +316,7 @@ namespace Apache
           {
             return this->WriteDate(fieldName, (DateTime)fieldValue);
           }
-          else if (type->Equals(DotNetTypes::ByteArrayOfArrayType))
+          else if (type->Equals(DotNetTypes::ByteArrayOfArrayType) || type->Equals(DotNetTypes::SByteArrayOfArrayType))
           {
             return this->WriteArrayOfByteArrays(fieldName, (array<array<Byte>^>^)fieldValue);
           }

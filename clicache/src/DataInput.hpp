@@ -102,7 +102,7 @@ namespace Apache
         Char ReadChar( );
 
         /// <summary>
-        /// Read an array of bytes from the stream reading the length
+        /// Read an array of unsigned bytes from the stream reading the length
         /// from the stream first.
         /// </summary>
         array<Byte>^ ReadBytes( );
@@ -246,14 +246,29 @@ namespace Apache
 				array<Int16>^ ReadShortArray( );
 
         /// <summary>
+        /// Read an unsigned short int array from the stream.
+        /// </summary>
+				array<UInt16>^ ReadUShortArray( );
+
+        /// <summary>
         /// Read a int array from the stream.
         /// </summary>
 				array<Int32>^ ReadIntArray();
 
         /// <summary>
+        /// Read an unsigned int array from the stream.
+        /// </summary>
+				array<UInt32>^ ReadUIntArray();
+
+        /// <summary>
         /// Read a long array from the stream.
         /// </summary>
-				array<Int64>^ ReadLongArray();
+				array<Int64>^ ReadInt64Array();
+
+        /// <summary>
+        /// Read an usigned long array from the stream.
+        /// </summary>
+				array<UInt64>^ ReadUInt64Array();
 
         /// <summary>
         /// Read a float array from the stream.
@@ -271,9 +286,14 @@ namespace Apache
         List<Object^>^ ReadObjectArray();
 
         /// <summary>
-        /// Read a array of signed byte array from the stream.
+        /// Read an array of unsigned byte arrays from the stream.
         /// </summary>
         array<array<Byte>^>^ ReadArrayOfByteArrays( );
+
+        /// <summary>
+        /// Read an array of signed byte arrays from the stream.
+        /// </summary>
+        array<array<SByte>^>^ ReadArrayOfSByteArrays( );
 
       internal:
 

@@ -46,7 +46,7 @@ namespace Apache
           }
         }
 
-        SByte PdxReaderWithTypeCollector::ReadByte(String^ fieldName)
+        Byte PdxReaderWithTypeCollector::ReadByte(String^ fieldName)
         {
           checkType(fieldName, PdxFieldTypes::BYTE, "byte");
           m_newPdxType->AddFixedLengthTypeField(fieldName, "byte", PdxFieldTypes::BYTE, native::PdxTypes::BYTE_SIZE);
@@ -64,8 +64,8 @@ namespace Apache
 
         SByte PdxReaderWithTypeCollector::ReadSByte(String^ fieldName)
         {
-          checkType(fieldName, PdxFieldTypes::BYTE, "byte");
-          m_newPdxType->AddFixedLengthTypeField(fieldName, "byte", PdxFieldTypes::BYTE, native::PdxTypes::BYTE_SIZE);
+          checkType(fieldName, PdxFieldTypes::BYTE, "sbyte");
+          m_newPdxType->AddFixedLengthTypeField(fieldName, "sbyte", PdxFieldTypes::BYTE, native::PdxTypes::BYTE_SIZE);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           if (position != -1)
           {
@@ -99,45 +99,45 @@ namespace Apache
           return retVal;
         }
 
-        System::UInt16 PdxReaderWithTypeCollector::ReadUInt16(String^ fieldName)
+        System::UInt16 PdxReaderWithTypeCollector::ReadUShort(String^ fieldName)
         {
-          checkType(fieldName, PdxFieldTypes::SHORT, "short");
-          m_newPdxType->AddFixedLengthTypeField(fieldName, "short", PdxFieldTypes::SHORT, native::PdxTypes::SHORT_SIZE);
+          checkType(fieldName, PdxFieldTypes::SHORT, "ushort");
+          m_newPdxType->AddFixedLengthTypeField(fieldName, "ushort", PdxFieldTypes::SHORT, native::PdxTypes::SHORT_SIZE);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           if (position != -1)
           {
             m_dataInput->AdvanceCursorPdx(position);
-            UInt16 retVal = PdxLocalReader::ReadUInt16(fieldName);
+            UInt16 retVal = PdxLocalReader::ReadUShort(fieldName);
             m_dataInput->RewindCursorPdx(position);
             return retVal;
           }
           return 0;
         }
 
-        System::UInt32 PdxReaderWithTypeCollector::ReadUInt32(String^ fieldName)
+        System::UInt32 PdxReaderWithTypeCollector::ReadUInt(String^ fieldName)
         {
-          checkType(fieldName, PdxFieldTypes::INT, "int");
-          m_newPdxType->AddFixedLengthTypeField(fieldName, "int", PdxFieldTypes::INT, native::PdxTypes::INTEGER_SIZE);
+          checkType(fieldName, PdxFieldTypes::INT, "uint");
+          m_newPdxType->AddFixedLengthTypeField(fieldName, "uint", PdxFieldTypes::INT, native::PdxTypes::INTEGER_SIZE);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           if (position != -1)
           {
             m_dataInput->AdvanceCursorPdx(position);
-            UInt32 retVal = PdxLocalReader::ReadUInt32(fieldName);
+            UInt32 retVal = PdxLocalReader::ReadUInt(fieldName);
             m_dataInput->RewindCursorPdx(position);
             return retVal;
           }
           return 0;
         }
 
-        System::UInt64 PdxReaderWithTypeCollector::ReadUInt64(String^ fieldName)
+        System::UInt64 PdxReaderWithTypeCollector::ReadULong(String^ fieldName)
         {
-          checkType(fieldName, PdxFieldTypes::LONG, "long");
-          m_newPdxType->AddFixedLengthTypeField(fieldName, "long", PdxFieldTypes::LONG, native::PdxTypes::LONG_SIZE);
+          checkType(fieldName, PdxFieldTypes::LONG, "ulong");
+          m_newPdxType->AddFixedLengthTypeField(fieldName, "ulong", PdxFieldTypes::LONG, native::PdxTypes::LONG_SIZE);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           if (position != -1)
           {
             m_dataInput->AdvanceCursorPdx(position);
-            UInt64 retVal = PdxLocalReader::ReadUInt64(fieldName);
+            UInt64 retVal = PdxLocalReader::ReadULong(fieldName);
             m_dataInput->RewindCursorPdx(position);
             return retVal;
           }
@@ -344,8 +344,8 @@ namespace Apache
 
         array<SByte>^ PdxReaderWithTypeCollector::ReadSByteArray(String^ fieldName)
         {
-          checkType(fieldName, PdxFieldTypes::BYTE_ARRAY, "byte[]");
-          m_newPdxType->AddVariableLengthTypeField(fieldName, "byte[]", PdxFieldTypes::BYTE_ARRAY);
+          checkType(fieldName, PdxFieldTypes::BYTE_ARRAY, "sbyte[]");
+          m_newPdxType->AddVariableLengthTypeField(fieldName, "sbyte[]", PdxFieldTypes::BYTE_ARRAY);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           if (position != -1)
           {
@@ -372,15 +372,15 @@ namespace Apache
           return nullptr;
         }
 
-        array<System::UInt16>^ PdxReaderWithTypeCollector::ReadUnsignedShortArray(String^ fieldName)
+        array<System::UInt16>^ PdxReaderWithTypeCollector::ReadUShortArray(String^ fieldName)
         {
-          checkType(fieldName, PdxFieldTypes::SHORT_ARRAY, "short[]");
-          m_newPdxType->AddVariableLengthTypeField(fieldName, "short[]", PdxFieldTypes::SHORT_ARRAY);
+          checkType(fieldName, PdxFieldTypes::SHORT_ARRAY, "ushort[]");
+          m_newPdxType->AddVariableLengthTypeField(fieldName, "ushort[]", PdxFieldTypes::SHORT_ARRAY);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           if (position != -1)
           {
             m_dataInput->AdvanceCursorPdx(position);
-            array<UInt16>^ retVal = PdxLocalReader::ReadUnsignedShortArray(fieldName);
+            array<UInt16>^ retVal = PdxLocalReader::ReadUShortArray(fieldName);
             m_dataInput->RewindCursorPdx(position);
             return retVal;
           }
@@ -402,15 +402,15 @@ namespace Apache
           return nullptr;
         }
 
-        array<System::UInt32>^ PdxReaderWithTypeCollector::ReadUnsignedIntArray(String^ fieldName)
+        array<System::UInt32>^ PdxReaderWithTypeCollector::ReadUIntArray(String^ fieldName)
         {
-          checkType(fieldName, PdxFieldTypes::INT_ARRAY, "int[]");
-          m_newPdxType->AddVariableLengthTypeField(fieldName, "int[]", PdxFieldTypes::INT_ARRAY);
+          checkType(fieldName, PdxFieldTypes::INT_ARRAY, "uint[]");
+          m_newPdxType->AddVariableLengthTypeField(fieldName, "uint[]", PdxFieldTypes::INT_ARRAY);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           if (position != -1)
           {
             m_dataInput->AdvanceCursorPdx(position);
-            array<UInt32>^ retVal = PdxLocalReader::ReadUnsignedIntArray(fieldName);
+            array<UInt32>^ retVal = PdxLocalReader::ReadUIntArray(fieldName);
             m_dataInput->RewindCursorPdx(position);
             return retVal;
           }
@@ -432,15 +432,15 @@ namespace Apache
           return nullptr;
         }
 
-        array<System::UInt64>^ PdxReaderWithTypeCollector::ReadUnsignedLongArray(String^ fieldName)
+        array<System::UInt64>^ PdxReaderWithTypeCollector::ReadULongArray(String^ fieldName)
         {
-          checkType(fieldName, PdxFieldTypes::LONG_ARRAY, "long[]");
-          m_newPdxType->AddVariableLengthTypeField(fieldName, "long[]", PdxFieldTypes::LONG_ARRAY);
+          checkType(fieldName, PdxFieldTypes::LONG_ARRAY, "ulong[]");
+          m_newPdxType->AddVariableLengthTypeField(fieldName, "ulong[]", PdxFieldTypes::LONG_ARRAY);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           if (position != -1)
           {
             m_dataInput->AdvanceCursorPdx(position);
-            array<UInt64>^ retVal = PdxLocalReader::ReadUnsignedLongArray(fieldName);
+            array<UInt64>^ retVal = PdxLocalReader::ReadULongArray(fieldName);
             m_dataInput->RewindCursorPdx(position);
             return retVal;
           }
@@ -517,6 +517,21 @@ namespace Apache
           {
             m_dataInput->AdvanceCursorPdx(position);
             array<array<Byte>^>^ retVal = PdxLocalReader::ReadArrayOfByteArrays(fieldName);
+            m_dataInput->RewindCursorPdx(position);
+            return retVal;
+          }
+          return nullptr;
+        }
+
+        array<array<SByte>^>^ PdxReaderWithTypeCollector::ReadArrayOfSByteArrays(String^ fieldName)
+        {
+          checkType(fieldName, PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS, "sbyte[][]");
+          m_newPdxType->AddVariableLengthTypeField(fieldName, "sbyte[][]", PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS);
+          int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
+          if (position != -1)
+          {
+            m_dataInput->AdvanceCursorPdx(position);
+            array<array<SByte>^>^ retVal = PdxLocalReader::ReadArrayOfSByteArrays(fieldName);
             m_dataInput->RewindCursorPdx(position);
             return retVal;
           }

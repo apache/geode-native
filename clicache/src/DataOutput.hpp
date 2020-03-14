@@ -301,16 +301,34 @@ namespace Apache
 				void WriteShortArray(array<Int16>^ value);
 
         /// <summary>
+        /// Write an unsigned short array to the DataOutput.
+        /// </summary>
+        /// <param name="value">The unsigned short array to write.</param>
+				void WriteUShortArray(array<UInt16>^ value);
+
+        /// <summary>
         /// Write a int array to the DataOutput.
         /// </summary>
         /// <param name="value">The int array to write.</param>
 				void WriteIntArray(array<Int32>^ value);
 
         /// <summary>
+        /// Write an unsigned int array to the DataOutput.
+        /// </summary>
+        /// <param name="value">The unsigned int array to write.</param>
+				void WriteUIntArray(array<UInt32>^ value);
+
+        /// <summary>
         /// Write a long array to the DataOutput.
         /// </summary>
         /// <param name="value">The long array to write.</param>
 				void WriteLongArray(array<Int64>^ value);
+
+        /// <summary>
+        /// Write an unsigned long array to the DataOutput.
+        /// </summary>
+        /// <param name="value">The unsigned long array to write.</param>
+				void WriteULongArray(array<UInt64>^ value);
 
         /// <summary>
         /// Write a float array to the DataOutput.
@@ -331,10 +349,16 @@ namespace Apache
         void WriteObjectArray(List<Object^>^ value);
 
         /// <summary>
-        /// Write a array of sign byte array to the DataOutput.
+        /// Write a array of unsigned byte arrays to the DataOutput.
         /// </summary>
-        /// <param name="value">The array of sign byte array to write.</param>
+        /// <param name="value">The array of unsigned byte arrays to write.</param>
         void WriteArrayOfByteArrays(array<array<Byte>^>^ value);
+
+        /// <summary>
+        /// Write a array of signed byte arrays to the DataOutput.
+        /// </summary>
+        /// <param name="value">The array of signed byte arrays to write.</param>
+        void WriteArrayOfSByteArrays(array<array<SByte>^>^ value);
                
       internal:
 

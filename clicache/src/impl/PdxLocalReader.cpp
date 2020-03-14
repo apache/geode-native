@@ -115,9 +115,9 @@ namespace Apache
           return m_pdxRemotePreserveData;
         }
 
-        SByte PdxLocalReader::ReadByte( String^ fieldName )
+        Byte PdxLocalReader::ReadByte( String^ fieldName )
         {
-					return m_dataInput->ReadSByte();
+					return m_dataInput->ReadByte();
         }
 
         SByte PdxLocalReader::ReadSByte( String^ fieldName )
@@ -135,17 +135,17 @@ namespace Apache
           return m_dataInput->ReadChar();
         }
         
-        System::UInt16 PdxLocalReader::ReadUInt16( String^ fieldName )
+        System::UInt16 PdxLocalReader::ReadUShort( String^ fieldName )
         {
           return m_dataInput->ReadUInt16();
         }
 
-        System::UInt32 PdxLocalReader::ReadUInt32( String^ fieldName )
+        System::UInt32 PdxLocalReader::ReadUInt( String^ fieldName )
         {
           return m_dataInput->ReadUInt32();
         }
         
-        System::UInt64 PdxLocalReader::ReadUInt64( String^ fieldName )
+        System::UInt64 PdxLocalReader::ReadULong( String^ fieldName )
         {
           return m_dataInput->ReadUInt64();
         }
@@ -244,39 +244,35 @@ namespace Apache
           return m_dataInput->ReadShortArray();
         }
 
-        array<System::UInt16>^ PdxLocalReader::ReadUnsignedShortArray(String^ fieldName)
+        array<System::UInt16>^ PdxLocalReader::ReadUShortArray(String^ fieldName)
         {
           array<UInt16>^ arr;
           m_dataInput->ReadObject(arr);
           return arr;
         }
 
-        array<System::Int32>^ PdxLocalReader::ReadIntArray(String^ fieldName)
+        array<Int32>^ PdxLocalReader::ReadIntArray(String^ fieldName)
         {
           //array<Int32>^ arr;
          /// m_dataInput->ReadObject(arr);
           return m_dataInput->ReadIntArray();
         }
 
-        array<System::UInt32>^ PdxLocalReader::ReadUnsignedIntArray(String^ fieldName)
+        array<UInt32>^ PdxLocalReader::ReadUIntArray(String^ fieldName)
         {
-          array<UInt32>^ arr;
-          m_dataInput->ReadObject(arr);
-          return arr;
+          return (array<UInt32>^)m_dataInput->ReadIntArray();
         }
 
         array<Int64>^ PdxLocalReader::ReadLongArray(String^ fieldName)
         {
          // array<Int64>^ arr;
          // m_dataInput->ReadObject(arr);
-          return m_dataInput->ReadLongArray();
+          return m_dataInput->ReadInt64Array();
         }
 
-        array<System::UInt64>^ PdxLocalReader::ReadUnsignedLongArray(String^ fieldName )
+        array<System::UInt64>^ PdxLocalReader::ReadULongArray(String^ fieldName )
         {
-          array<UInt64>^ arr;
-          m_dataInput->ReadObject(arr);
-          return arr;
+          return (array<UInt64>^)m_dataInput->ReadInt64Array();
         }
 
         array<float>^ PdxLocalReader::ReadFloatArray(String^ fieldName)
@@ -308,6 +304,11 @@ namespace Apache
           return m_dataInput->ReadArrayOfByteArrays();
         }
 
+				array<array<SByte>^>^ PdxLocalReader::ReadArrayOfSByteArrays(String^ fieldName )
+        {
+          return m_dataInput->ReadArrayOfSByteArrays();
+        }
+
         //TODO:
         //void WriteEnum(String^ fieldName, Enum e) ;
         //void WriteInetAddress(String^ fieldName, InetAddress address);
@@ -329,6 +330,10 @@ namespace Apache
             if(type->Equals(DotNetTypes::IntType))
             {
               return this->ReadInt(fieldName);
+            }
+            else if(type->Equals(DotNetTypes::UIntType))
+            {
+              return this->ReadUInt(fieldName);
             }
             else if(type->Equals(DotNetTypes::StringType))
             {
@@ -352,15 +357,31 @@ namespace Apache
             }
             else if(type->Equals(DotNetTypes::SByteType))
             {
+              return this->ReadSByte(fieldName);
+            }
+            else if(type->Equals(DotNetTypes::ByteType))
+            {
               return this->ReadByte(fieldName);
             }
             else if(type->Equals(DotNetTypes::ShortType))
             {
               return this->ReadShort(fieldName);
             }
+            else if(type->Equals(DotNetTypes::UShortType))
+            {
+              return this->ReadUShort(fieldName);
+            }
             else if(type->Equals(DotNetTypes::LongType))
             {
               return this->ReadLong(fieldName);
+            }
+            else if(type->Equals(DotNetTypes::ULongType))
+            {
+              return this->ReadULong(fieldName);
+            }
+            else if(type->Equals(DotNetTypes::SByteArrayType))
+            {
+              return this->ReadSByteArray(fieldName);
             }
             else if(type->Equals(DotNetTypes::ByteArrayType))
             {
@@ -378,13 +399,25 @@ namespace Apache
             {
               return this->ReadShortArray(fieldName);
             }
+            else if(type->Equals(DotNetTypes::UShortArrayType))
+            {
+              return this->ReadUShortArray(fieldName);
+            }
             else if(type->Equals(DotNetTypes::IntArrayType))
             {
               return this->ReadIntArray(fieldName);
             }
+            else if(type->Equals(DotNetTypes::UIntArrayType))
+            {
+              return this->ReadUIntArray(fieldName);
+            }
             else if(type->Equals(DotNetTypes::LongArrayType))
             {
               return this->ReadLongArray(fieldName);
+            }
+            else if(type->Equals(DotNetTypes::ULongArrayType))
+            {
+              return this->ReadULongArray(fieldName);
             }
             else if(type->Equals(DotNetTypes::BoolArrayType))
             {
@@ -405,6 +438,10 @@ namespace Apache
             else if(type->Equals(DotNetTypes::ByteArrayOfArrayType))
             {
               return this->ReadArrayOfByteArrays(fieldName);
+            }
+            else if(type->Equals(DotNetTypes::SByteArrayOfArrayType))
+            {
+              return this->ReadArrayOfSByteArrays(fieldName);
             }
             else if(type->Equals(DotNetTypes::ObjectArrayType))
             {

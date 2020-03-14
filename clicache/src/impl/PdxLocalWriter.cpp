@@ -179,9 +179,9 @@ namespace Apache
             return this;
           }
 
-          IPdxWriter^ PdxLocalWriter::WriteByte( String^ fieldName, SByte value )
+          IPdxWriter^ PdxLocalWriter::WriteByte( String^ fieldName, Byte value )
           {
-						m_dataOutput->WriteSByte(value);
+						m_dataOutput->WriteByte(value);
             return this;
           }
 
@@ -196,6 +196,11 @@ namespace Apache
             return this;
           }
 
+          void PdxLocalWriter::WriteSByte(SByte byte)
+          {
+            m_dataOutput->WriteSByte(byte);
+          }
+
           IPdxWriter^ PdxLocalWriter::WriteBoolean( String^ fieldName, bool value )
           {
             m_dataOutput->WriteBoolean(value);
@@ -208,19 +213,19 @@ namespace Apache
             return this;
           }
                        
-          IPdxWriter^ PdxLocalWriter::WriteUInt16( String^ fieldName, System::UInt16 value )
+          IPdxWriter^ PdxLocalWriter::WriteUShort( String^ fieldName, System::UInt16 value )
           {
             m_dataOutput->WriteUInt16(value);
             return this;
           }
 
-          IPdxWriter^ PdxLocalWriter::WriteUInt32( String^ fieldName, System::UInt32 value )
+          IPdxWriter^ PdxLocalWriter::WriteUInt( String^ fieldName, System::UInt32 value )
           {
             m_dataOutput->WriteUInt32(value);
             return this;
           }
 
-          IPdxWriter^ PdxLocalWriter::WriteUInt64( String^ fieldName, System::UInt64 value )
+          IPdxWriter^ PdxLocalWriter::WriteULong( String^ fieldName, System::UInt64 value )
           {
             m_dataOutput->WriteUInt64(value);
             return this;
@@ -335,10 +340,10 @@ namespace Apache
             return this;
           }
 
-          IPdxWriter^ PdxLocalWriter::WriteUnsignedShortArray(String^ fieldName, array<System::UInt16>^ ushortArray)
+          IPdxWriter^ PdxLocalWriter::WriteUShortArray(String^ fieldName, array<System::UInt16>^ ushortArray)
           {
             AddOffset();
-           // m_dataOutput->WriteObject(ushortArray);
+           m_dataOutput->WriteObject(ushortArray);
             return this;
           }
 
@@ -349,10 +354,10 @@ namespace Apache
             return this;
           }
 
-          IPdxWriter^ PdxLocalWriter::WriteUnsignedIntArray(String^ fieldName, array<System::UInt32>^ uintArray)
+          IPdxWriter^ PdxLocalWriter::WriteUIntArray(String^ fieldName, array<System::UInt32>^ uintArray)
           {
             AddOffset();
-           // m_dataOutput->WriteObject(uintArray);
+            m_dataOutput->WriteUIntArray(uintArray);
             return this;
           }
 					
@@ -363,10 +368,10 @@ namespace Apache
             return this;
           }
 
-          IPdxWriter^ PdxLocalWriter::WriteUnsignedLongArray(String^ fieldName, array<System::UInt64>^ ulongArray)
+          IPdxWriter^ PdxLocalWriter::WriteULongArray(String^ fieldName, array<System::UInt64>^ ulongArray)
           {
             AddOffset();
-            //m_dataOutput->WriteObject(ulongArray);
+            m_dataOutput->WriteULongArray(ulongArray);
             return this;
           }
 
@@ -404,6 +409,13 @@ namespace Apache
             m_dataOutput->WriteArrayOfByteArrays(byteArrays);
             return this;
           }
+
+          IPdxWriter^ PdxLocalWriter::WriteArrayOfSByteArrays(String^ fieldName, array<array<SByte>^>^ byteArrays)
+          {
+            AddOffset();
+            m_dataOutput->WriteArrayOfSByteArrays(byteArrays);
+            return this;
+          }
           
           //TODO:
           //IPdxWriter^ PdxLocalWriter::WriteEnum(String^ fieldName, Enum e) ;
@@ -420,6 +432,10 @@ namespace Apache
             if(type->Equals(DotNetTypes::IntType))
             {
               return this->WriteInt(fieldName, (int)fieldValue);
+            }
+            else if(type->Equals(DotNetTypes::UIntType))
+            {
+              return this->WriteUInt(fieldName, (UInt32)fieldValue);
             }
             else if(type->Equals(DotNetTypes::StringType))
             {
@@ -443,19 +459,35 @@ namespace Apache
             }
             else if(type->Equals(DotNetTypes::SByteType))
             {
-              return this->WriteByte(fieldName, (SByte)fieldValue);
+              return this->WriteSByte(fieldName, (SByte)fieldValue);
+            }
+            else if(type->Equals(DotNetTypes::ByteType))
+            {
+              return this->WriteByte(fieldName, (Byte)fieldValue);
             }
             else if(type->Equals(DotNetTypes::ShortType))
             {
               return this->WriteShort(fieldName, (short)fieldValue);
             }
+            else if(type->Equals(DotNetTypes::UShortType))
+            {
+              return this->WriteUShort(fieldName, (USHORT)fieldValue);
+            }
             else if(type->Equals(DotNetTypes::LongType))
             {
               return this->WriteLong(fieldName, (Int64)fieldValue);
             }
+            else if(type->Equals(DotNetTypes::ULongType))
+            {
+              return this->WriteULong(fieldName, (UInt64)fieldValue);
+            }
             else if(type->Equals(DotNetTypes::ByteArrayType))
             {
               return this->WriteByteArray(fieldName, (array<Byte>^)fieldValue);
+            }
+            else if(type->Equals(DotNetTypes::SByteArrayType))
+            {
+              return this->WriteSByteArray(fieldName, (array<SByte>^)fieldValue);
             }
             else if(type->Equals(DotNetTypes::DoubleArrayType))
             {
@@ -469,13 +501,25 @@ namespace Apache
             {
               return this->WriteShortArray(fieldName, (array<Int16>^)fieldValue);
             }
+            else if(type->Equals(DotNetTypes::UShortArrayType))
+            {
+              return this->WriteUShortArray(fieldName, (array<UInt16>^)fieldValue);
+            }
             else if(type->Equals(DotNetTypes::IntArrayType))
             {
               return this->WriteIntArray(fieldName, (array<System::Int32>^)fieldValue);
             }
+            else if(type->Equals(DotNetTypes::UIntArrayType))
+            {
+              return this->WriteUIntArray(fieldName, (array<System::UInt32>^)fieldValue);
+            }
             else if(type->Equals(DotNetTypes::LongArrayType))
             {
               return this->WriteLongArray(fieldName, (array<Int64>^)fieldValue);
+            }
+            else if(type->Equals(DotNetTypes::ULongArrayType))
+            {
+              return this->WriteULongArray(fieldName, (array<UInt64>^)fieldValue);
             }
             else if(type->Equals(DotNetTypes::BoolArrayType))
             {
@@ -496,6 +540,10 @@ namespace Apache
             else if(type->Equals(DotNetTypes::ByteArrayOfArrayType))
             {
               return this->WriteArrayOfByteArrays(fieldName, (array<array<Byte>^>^)fieldValue);
+            }
+            else if(type->Equals(DotNetTypes::SByteArrayOfArrayType))
+            {
+              return this->WriteArrayOfSByteArrays(fieldName, (array<array<SByte>^>^)fieldValue);
             }
             else if(type->Equals(DotNetTypes::ObjectArrayType))
             {

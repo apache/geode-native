@@ -85,7 +85,7 @@ namespace Apache
           return this;
         }
 
-        IPdxWriter^ PdxRemoteWriter::WriteByte(String^ fieldName, SByte value)
+        IPdxWriter^ PdxRemoteWriter::WriteByte(String^ fieldName, Byte value)
         {
           writePreserveData();
           PdxLocalWriter::WriteByte(fieldName, value);
@@ -115,26 +115,26 @@ namespace Apache
           return this;
         }
 
-        IPdxWriter^ PdxRemoteWriter::WriteUInt16(String^ fieldName, System::UInt16 value)
+        IPdxWriter^ PdxRemoteWriter::WriteUShort(String^ fieldName, System::UInt16 value)
         {
           writePreserveData();
-          PdxLocalWriter::WriteUInt16(fieldName, value);
+          PdxLocalWriter::WriteUShort(fieldName, value);
           return this;
 
         }
 
-        IPdxWriter^ PdxRemoteWriter::WriteUInt32(String^ fieldName, System::UInt32 value)
+        IPdxWriter^ PdxRemoteWriter::WriteUInt(String^ fieldName, System::UInt32 value)
         {
           writePreserveData();
-          PdxLocalWriter::WriteUInt32(fieldName, value);
+          PdxLocalWriter::WriteUInt(fieldName, value);
           return this;
 
         }
 
-        IPdxWriter^ PdxRemoteWriter::WriteUInt64(String^ fieldName, System::UInt64 value)
+        IPdxWriter^ PdxRemoteWriter::WriteULong(String^ fieldName, System::UInt64 value)
         {
           writePreserveData();
-          PdxLocalWriter::WriteUInt64(fieldName, value);
+          PdxLocalWriter::WriteULong(fieldName, value);
           return this;
 
         }
@@ -254,10 +254,10 @@ namespace Apache
           return this;
         }
 
-        IPdxWriter^ PdxRemoteWriter::WriteUnsignedShortArray(String^ fieldName, array<System::UInt16>^ ushortArray)
+        IPdxWriter^ PdxRemoteWriter::WriteUShortArray(String^ fieldName, array<System::UInt16>^ ushortArray)
         {
           writePreserveData();
-          PdxLocalWriter::WriteUnsignedShortArray(fieldName, ushortArray);
+          PdxLocalWriter::WriteUShortArray(fieldName, ushortArray);
           return this;
         }
 
@@ -268,10 +268,10 @@ namespace Apache
           return this;
         }
 
-        IPdxWriter^ PdxRemoteWriter::WriteUnsignedIntArray(String^ fieldName, array<System::UInt32>^ uintArray)
+        IPdxWriter^ PdxRemoteWriter::WriteUIntArray(String^ fieldName, array<System::UInt32>^ uintArray)
         {
           writePreserveData();
-          PdxLocalWriter::WriteUnsignedIntArray(fieldName, uintArray);
+          PdxLocalWriter::WriteUIntArray(fieldName, uintArray);
           return this;
         }
 
@@ -282,10 +282,10 @@ namespace Apache
           return this;
         }
 
-        IPdxWriter^ PdxRemoteWriter::WriteUnsignedLongArray(String^ fieldName, array<System::UInt64>^ ulongArray)
+        IPdxWriter^ PdxRemoteWriter::WriteULongArray(String^ fieldName, array<System::UInt64>^ ulongArray)
         {
           writePreserveData();
-          PdxLocalWriter::WriteUnsignedLongArray(fieldName, ulongArray);
+          PdxLocalWriter::WriteULongArray(fieldName, ulongArray);
           return this;
         }
 

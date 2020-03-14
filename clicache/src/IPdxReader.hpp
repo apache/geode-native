@@ -46,7 +46,13 @@ namespace Apache
 					/// Read a signed byte from the stream.
 					/// </summary>
 					/// <param name="fieldName">The name of a member field whose value to read.</param>
-					SByte ReadByte( String^ fieldName );
+					SByte ReadSByte( String^ fieldName );
+
+					/// <summary>
+					/// Read a byte from the stream.
+					/// </summary>
+					/// <param name="fieldName">The name of a member field whose value to read.</param>
+					Byte ReadByte( String^ fieldName );
 	        
 					/// <summary>
 					/// Read a boolean value from the stream.
@@ -67,16 +73,34 @@ namespace Apache
 					short ReadShort( String^ fieldName );
 
 					/// <summary>
+					/// Read an unsigned 16-bit integer from the stream.
+					/// </summary>
+					/// <param name="fieldName">The name of a member field whose value to read.</param>
+					UInt16 ReadUShort( String^ fieldName );
+
+					/// <summary>
 					/// Read a 32-bit integer from the stream.
 					/// </summary>
 					/// <param name="fieldName">The name of a member field whose value to read.</param>
 					Int32 ReadInt( String^ fieldName );
 
 					/// <summary>
+					/// Read an unsigned 32-bit integer from the stream.
+					/// </summary>
+					/// <param name="fieldName">The name of a member field whose value to read.</param>
+					UInt32 ReadUInt( String^ fieldName );
+
+					/// <summary>
 					/// Read a 64-bit integer from the stream.
 					/// </summary>
 					/// <param name="fieldName">The name of a member field whose value to read.</param>
 					Int64 ReadLong( String^ fieldName );
+
+					/// <summary>
+					/// Read an unsigned 64-bit integer from the stream.
+					/// </summary>
+					/// <param name="fieldName">The name of a member field whose value to read.</param>
+					UInt64 ReadULong( String^ fieldName );
 
 					/// <summary>
 					/// Read a floating point number from the stream.
@@ -128,25 +152,49 @@ namespace Apache
 					/// Read a signed byte array from the data.
 					/// </summary>
 					/// <param name="fieldName">The name of a member field whose value to read.</param>
+					array<SByte>^ ReadSByteArray(String^ fieldName);
+
+					/// <summary>
+					/// Read an unsigned byte array from the data.
+					/// </summary>
+					/// <param name="fieldName">The name of a member field whose value to read.</param>
 					array<Byte>^ ReadByteArray(String^ fieldName);
 	        
 					/// <summary>
-					/// Read a short from the data.
+					/// Read a short array from the data.
 					/// </summary>
 					/// <param name="fieldName">The name of a member field whose value to read.</param>
 					array<short>^ ReadShortArray(String^ fieldName);
+
+					/// <summary>
+					/// Read an unsigned short array from the data.
+					/// </summary>
+					/// <param name="fieldName">The name of a member field whose value to read.</param>
+					array<USHORT>^ ReadUShortArray(String^ fieldName);
 	        
 					/// <summary>
 					/// Read a int array from the data.
 					/// </summary>
 					/// <param name="fieldName">The name of a member field whose value to read.</param>
 					array<System::Int32>^ ReadIntArray(String^ fieldName);
+
+					/// <summary>
+					/// Read an unsigned int array from the data.
+					/// </summary>
+					/// <param name="fieldName">The name of a member field whose value to read.</param>
+					array<System::UInt32>^ ReadUIntArray(String^ fieldName);
 	        
 					/// <summary>
 					/// Read a long array from the data.
 					/// </summary>
 					/// <param name="fieldName">The name of a member field whose value to read.</param>
 					array<Int64>^ ReadLongArray(String^ fieldName);
+
+					/// <summary>
+					/// Read an unsigned long array from the data.
+					/// </summary>
+					/// <param name="fieldName">The name of a member field whose value to read.</param>
+					array<UInt64>^ ReadULongArray(String^ fieldName);
 	        
 					/// <summary>
 					/// Read a float from the data.
@@ -174,6 +222,12 @@ namespace Apache
 
 					/// <summary>
 					/// Read a two-dimenesional signed byte array from the data.
+					/// </summary>
+					/// <param name="fieldName">The name of a member field whose value to read.</param>
+					array<array<SByte>^>^ ReadArrayOfSByteArrays(String^ fieldName );
+
+					/// <summary>
+					/// Read a two-dimenesional unsigned byte array from the data.
 					/// </summary>
 					/// <param name="fieldName">The name of a member field whose value to read.</param>
 					array<array<Byte>^>^ ReadArrayOfByteArrays(String^ fieldName );

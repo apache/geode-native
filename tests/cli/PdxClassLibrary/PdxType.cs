@@ -90,14 +90,14 @@ namespace PdxTests
   {
     char m_char;
     bool m_bool;
-    sbyte m_byte;
+    byte m_byte;
     sbyte m_sbyte;
     short m_int16;
-    short m_uint16;
+    ushort m_uint16;
     Int32 m_int32;
-    Int32 m_uint32;
+    UInt32 m_uint32;
     long m_long;
-    Int64 m_ulong;
+    UInt64 m_ulong;
     float m_float;
     double m_double;
 
@@ -105,27 +105,28 @@ namespace PdxTests
 
     bool[] m_boolArray;
     byte[] m_byteArray;
-    byte[] m_sbyteArray;
+    sbyte[] m_sbyteArray;
 
     char[] m_charArray;
 
     DateTime m_dateTime;
 
     Int16[] m_int16Array;
-    Int16[] m_uint16Array;
+    UInt16[] m_uint16Array;
 
     Int32[] m_int32Array;
-    Int32[] m_uint32Array;
+    UInt32[] m_uint32Array;
 
     long[] m_longArray;
-    Int64[] m_ulongArray;
+    UInt64[] m_ulongArray;
 
     float[] m_floatArray;
     double[] m_doubleArray;
 
     byte[][] m_byteByteArray;
+    sbyte[][] m_sbyteByteArray;
 
-    string[] m_stringArray;
+        string[] m_stringArray;
 
     List<object> m_arraylist = new List<object>();
     IDictionary<object, object> m_map = new Dictionary<object, object>();
@@ -161,8 +162,8 @@ namespace PdxTests
       m_string = "gfestring";
 
       m_boolArray = new bool[] { true, false, true };
-      m_byteArray = new byte[] { 0x34, 0x64 };
-      m_sbyteArray = new byte[] { 0x34, 0x64 };
+      m_byteArray = new byte[] { 0x84, 0xa4 };
+      m_sbyteArray = new sbyte[] { 0x34, 0x64 };
 
       m_charArray = new char[] { 'c', 'v' };
 
@@ -172,22 +173,23 @@ namespace PdxTests
       Debug.WriteLine(m_dateTime.Ticks);
 
       m_int16Array = new short[] { 0x2332, 0x4545 };
-      m_uint16Array = new short[] { 0x3243, 0x3232 };
+      m_uint16Array = new ushort[] { 0x8243, 0x8232 };
 
       m_int32Array = new int[] { 23, 676868, 34343, 2323 };
-      m_uint32Array = new int[] { 435, 234324, 324324, 23432432 };
+      m_uint32Array = new uint[] { 435, 234324, 324324, 23432432 };
 
       m_longArray = new long[] { 324324L, 23434545L };
-      m_ulongArray = new Int64[] { 3245435, 3425435 };
+      m_ulongArray = new UInt64[] { 3245435, 3425435 };
 
       m_floatArray = new float[] { 232.565f, 2343254.67f };
       m_doubleArray = new double[] { 23423432d, 4324235435d };
 
       m_byteByteArray = new byte[][]{new byte[] {0x23},
-                                             new byte[]{0x34, 0x55}
-                                              };
+                                     new byte[]{0x34, 0x55}};
+      m_sbyteByteArray = new sbyte[][]{new sbyte[] {0x23},
+                                       new sbyte[]{0x34, 0x55}};
 
-      m_stringArray = new string[] { "one", "two" };
+            m_stringArray = new string[] { "one", "two" };
 
       m_arraylist = new List<object>();
       m_arraylist.Add(1);
@@ -829,15 +831,18 @@ namespace PdxTests
       m_int32Array = GenericCompare(reader.ReadIntArray("m_int32Array"), m_int32Array);
       m_longArray = GenericCompare(reader.ReadLongArray("m_longArray"), m_longArray);
       m_int16Array = GenericCompare(reader.ReadShortArray("m_int16Array"), m_int16Array);
-      m_sbyte = GenericValCompare(reader.ReadByte("m_sbyte"), m_sbyte);
-      m_sbyteArray = GenericCompare(reader.ReadByteArray("m_sbyteArray"), m_sbyteArray);
+      m_byte = GenericValCompare(reader.ReadByte("m_byte"), m_byte);
+      m_sbyte = GenericValCompare(reader.ReadSByte("m_sbyte"), m_sbyte);
+
+      m_byteArray = GenericCompare(reader.ReadByteArray("m_byteArray"), m_byteArray);
+      m_sbyteArray = GenericCompare(reader.ReadSByteArray("m_sbyteArray"), m_sbyteArray);
       m_stringArray = GenericCompare(reader.ReadStringArray("m_stringArray"), m_stringArray);
-      m_uint16 = GenericValCompare(reader.ReadShort("m_uint16"), m_uint16);
-      m_uint32 = GenericValCompare(reader.ReadInt("m_uint32"), m_uint32);
-      m_ulong = GenericValCompare(reader.ReadLong("m_ulong"), m_ulong);
-      m_uint32Array = GenericCompare(reader.ReadIntArray("m_uint32Array"), m_uint32Array);
-      m_ulongArray = GenericCompare(reader.ReadLongArray("m_ulongArray"), m_ulongArray);
-      m_uint16Array = GenericCompare(reader.ReadShortArray("m_uint16Array"), m_uint16Array);
+      m_uint16 = GenericValCompare(reader.ReadUShort("m_uint16"), m_uint16);
+      m_uint32 = GenericValCompare(reader.ReadUInt("m_uint32"), m_uint32);
+      m_ulong = GenericValCompare(reader.ReadULong("m_ulong"), m_ulong);
+      m_uint32Array = GenericCompare(reader.ReadUIntArray("m_uint32Array"), m_uint32Array);
+      m_ulongArray = GenericCompare(reader.ReadULongArray("m_ulongArray"), m_ulongArray);
+      m_uint16Array = GenericCompare(reader.ReadUShortArray("m_uint16Array"), m_uint16Array);
 
       byte[] ret = reader.ReadByteArray("m_byte252");
       if (ret.Length != 252)
@@ -919,15 +924,15 @@ namespace PdxTests
       writer.WriteIntArray("m_int32Array", m_int32Array);
       writer.WriteLongArray("m_longArray", m_longArray);
       writer.WriteShortArray("m_int16Array", m_int16Array);
-      writer.WriteByte("m_sbyte", m_sbyte);
-      writer.WriteByteArray("m_sbyteArray", m_sbyteArray);
+      writer.WriteSByte("m_sbyte", m_sbyte);
+      writer.WriteSByteArray("m_sbyteArray", m_sbyteArray);
       writer.WriteStringArray("m_stringArray", m_stringArray);
-      writer.WriteShort("m_uint16", m_uint16);
-      writer.WriteInt("m_uint32", m_uint32);
-      writer.WriteLong("m_ulong", m_ulong);
-      writer.WriteIntArray("m_uint32Array", m_uint32Array);
-      writer.WriteLongArray("m_ulongArray", m_ulongArray);
-      writer.WriteShortArray("m_uint16Array", m_uint16Array);
+      writer.WriteUShort("m_uint16", m_uint16);
+      writer.WriteUInt("m_uint32", m_uint32);
+      writer.WriteULong("m_ulong", m_ulong);
+      writer.WriteUIntArray("m_uint32Array", m_uint32Array);
+      writer.WriteULongArray("m_ulongArray", m_ulongArray);
+      writer.WriteUShortArray("m_uint16Array", m_uint16Array);
       writer.WriteByteArray("m_byte252", m_byte252);
       writer.WriteByteArray("m_byte253", m_byte253);
       writer.WriteByteArray("m_byte65535", m_byte65535);
@@ -935,10 +940,6 @@ namespace PdxTests
       writer.WriteObject("m_pdxEnum", m_pdxEnum);
       writer.WriteObject("m_address", m_address);
       writer.WriteObjectArray("m_objectArray", m_objectArray);
-      //byte[] m_byte252 = new byte[252];
-      //byte[] m_byte253 = new byte[253];
-      //byte[] m_byte65535 = new byte[65535];
-      //byte[] m_byte65536 = new byte[65536];
     }
 
     public char Char
@@ -949,7 +950,7 @@ namespace PdxTests
     {
       get { return m_bool; }
     }
-    public sbyte Byte
+    public byte Byte
     {
       get { return m_byte; }
     }
@@ -962,7 +963,7 @@ namespace PdxTests
       get { return m_int16; }
     }
 
-    public short Uint16
+    public ushort Uint16
     {
       get { return m_uint16; }
     }
@@ -970,7 +971,7 @@ namespace PdxTests
     {
       get { return m_int32; }
     }
-    public Int32 Uint32
+    public UInt32 Uint32
     {
       get { return m_uint32; }
     }
@@ -978,7 +979,7 @@ namespace PdxTests
     {
       get { return m_long; }
     }
-    public Int64 Ulong
+    public UInt64 Ulong
     {
       get { return m_ulong; }
     }
@@ -1004,7 +1005,7 @@ namespace PdxTests
     {
       get { return m_byteArray; }
     }
-    public byte[] SbyteArray
+    public sbyte[] SbyteArray
     {
       get { return m_sbyteArray; }
     }
@@ -1023,7 +1024,7 @@ namespace PdxTests
     {
       get { return m_int16Array; }
     }
-    public Int16[] Uint16Array
+    public UInt16[] Uint16Array
     {
       get { return m_uint16Array; }
     }
@@ -1032,7 +1033,7 @@ namespace PdxTests
     {
       get { return m_int32Array; }
     }
-    public Int32[] Uint32Array
+    public UInt32[] Uint32Array
     {
       get { return m_uint32Array; }
     }
@@ -1041,7 +1042,7 @@ namespace PdxTests
     {
       get { return m_longArray; }
     }
-    public Int64[] UlongArray
+    public UInt64[] UlongArray
     {
       get { return m_ulongArray; }
     }
@@ -1060,7 +1061,12 @@ namespace PdxTests
       get { return m_byteByteArray; }
     }
 
-    public string[] StringArray
+    public sbyte[][] SByteByteArray
+    {
+        get { return m_sbyteByteArray; }
+    }
+
+        public string[] StringArray
     {
       get { return m_stringArray; }
     }

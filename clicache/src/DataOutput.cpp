@@ -342,6 +342,20 @@ namespace Apache
           this->WriteByte((int8_t)-1);
       }
 
+      void DataOutput::WriteArrayOfSByteArrays(array<array<SByte>^>^ byteArrays)
+      {
+        if (byteArrays != nullptr)
+        {
+          int fdLen = byteArrays->Length;
+          this->WriteArrayLen(byteArrays->Length);
+          for (int i = 0; i < fdLen; i++) {
+            this->WriteSBytes(byteArrays[i]);
+          }
+        }
+        else
+          this->WriteSByte((int8_t)-1);
+      }
+
       void DataOutput::WriteUTF(String^ value)
       {
         if (value != nullptr) {
@@ -935,14 +949,29 @@ namespace Apache
         WriteObject<Int16>(shortArray);
       }
 
+      void DataOutput::WriteUShortArray(array<UInt16>^ shortArray)
+      {
+        WriteObject<UInt16>(shortArray);
+      }
+
       void DataOutput::WriteIntArray(array<Int32>^ intArray)
       {
         WriteObject<Int32>(intArray);
       }
 
+      void DataOutput::WriteUIntArray(array<UInt32>^ intArray)
+      {
+        WriteObject<UInt32>(intArray);
+      }
+
       void DataOutput::WriteLongArray(array<Int64>^ longArray)
       {
         WriteObject<Int64>(longArray);
+      }
+
+      void DataOutput::WriteULongArray(array<UInt64>^ longArray)
+      {
+        WriteObject<UInt64>(longArray);
       }
 
       void DataOutput::WriteFloatArray(array<float>^ floatArray)

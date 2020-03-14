@@ -965,6 +965,13 @@ namespace Apache
         return arr;
       }
 
+      array<UInt16>^ DataInput::ReadUShortArray()
+      {
+        array<UInt16>^ arr;
+        this->ReadObject(arr);
+        return arr;
+      }
+
       array<Int32>^ DataInput::ReadIntArray()
       {
         array<Int32>^ arr;
@@ -972,9 +979,22 @@ namespace Apache
         return arr;
       }
 
-      array<Int64>^ DataInput::ReadLongArray()
+      array<UInt32>^ DataInput::ReadUIntArray()
+      {
+        array<UInt32>^ arr;
+        this->ReadObject(arr);
+        return arr;
+      }
+      array<Int64>^ DataInput::ReadInt64Array()
       {
         array<Int64>^ arr;
+        this->ReadObject(arr);
+        return arr;
+      }
+
+        array<UInt64>^ DataInput::ReadUInt64Array()
+      {
+        array<UInt64>^ arr;
         this->ReadObject(arr);
         return arr;
       }
@@ -1022,6 +1042,22 @@ namespace Apache
           for (int i = 0; i < len; i++)
           {
             retVal[i] = this->ReadBytes();
+          }
+          return retVal;
+        }
+        else
+          return nullptr;
+      }
+
+      array<array<SByte>^>^ DataInput::ReadArrayOfSByteArrays()
+      {
+        int len = ReadArrayLen();
+        if (len >= 0)
+        {
+          array<array<SByte>^>^ retVal = gcnew array<array<SByte>^>(len);
+          for (int i = 0; i < len; i++)
+          {
+            retVal[i] = this->ReadSBytes();
           }
           return retVal;
         }

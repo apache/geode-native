@@ -101,7 +101,7 @@ namespace Apache
           return this;
         }
 
-        IPdxWriter^ PdxWriterWithTypeCollector::WriteByte(String^ fieldName, SByte value)
+        IPdxWriter^ PdxWriterWithTypeCollector::WriteByte(String^ fieldName, Byte value)
         {
           m_pdxType->AddFixedLengthTypeField(fieldName, "byte", PdxFieldTypes::BYTE,  native::PdxTypes::BYTE_SIZE);
           PdxLocalWriter::WriteByte(fieldName, value);
@@ -110,7 +110,7 @@ namespace Apache
 
         IPdxWriter^ PdxWriterWithTypeCollector::WriteSByte(String^ fieldName, SByte value)
         {
-          m_pdxType->AddFixedLengthTypeField(fieldName, "byte", PdxFieldTypes::BYTE,  native::PdxTypes::BYTE_SIZE);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "sbyte", PdxFieldTypes::BYTE,  native::PdxTypes::BYTE_SIZE);
           PdxLocalWriter::WriteSByte(fieldName, value);
           return this;
         }
@@ -129,24 +129,24 @@ namespace Apache
           return this;
         }
 
-        IPdxWriter^ PdxWriterWithTypeCollector::WriteUInt16(String^ fieldName, System::UInt16 value)
+        IPdxWriter^ PdxWriterWithTypeCollector::WriteUShort(String^ fieldName, System::UInt16 value)
         {
-          m_pdxType->AddFixedLengthTypeField(fieldName, "short", PdxFieldTypes::SHORT,  native::PdxTypes::SHORT_SIZE);
-          PdxLocalWriter::WriteUInt16(fieldName, value);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "ushort", PdxFieldTypes::SHORT,  native::PdxTypes::SHORT_SIZE);
+          PdxLocalWriter::WriteUShort(fieldName, value);
           return this;
         }
 
-        IPdxWriter^ PdxWriterWithTypeCollector::WriteUInt32(String^ fieldName, System::UInt32 value)
+        IPdxWriter^ PdxWriterWithTypeCollector::WriteUInt(String^ fieldName, System::UInt32 value)
         {
-          m_pdxType->AddFixedLengthTypeField(fieldName, "int", PdxFieldTypes::INT,  native::PdxTypes::INTEGER_SIZE);
-          PdxLocalWriter::WriteUInt32(fieldName, value);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "uint", PdxFieldTypes::INT,  native::PdxTypes::INTEGER_SIZE);
+          PdxLocalWriter::WriteUInt(fieldName, value);
           return this;
         }
 
-        IPdxWriter^ PdxWriterWithTypeCollector::WriteUInt64(String^ fieldName, System::UInt64 value)
+        IPdxWriter^ PdxWriterWithTypeCollector::WriteULong(String^ fieldName, System::UInt64 value)
         {
-          m_pdxType->AddFixedLengthTypeField(fieldName, "long", PdxFieldTypes::LONG,  native::PdxTypes::LONG_SIZE);
-          PdxLocalWriter::WriteUInt64(fieldName, value);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "ulong", PdxFieldTypes::LONG,  native::PdxTypes::LONG_SIZE);
+          PdxLocalWriter::WriteULong(fieldName, value);
           return this;
         }
 
@@ -243,7 +243,7 @@ namespace Apache
 
         IPdxWriter^ PdxWriterWithTypeCollector::WriteSByteArray(String^ fieldName, array<SByte>^ sbyteArray)
         {
-          m_pdxType->AddVariableLengthTypeField(fieldName, "byte[]", PdxFieldTypes::BYTE_ARRAY);
+          m_pdxType->AddVariableLengthTypeField(fieldName, "sbyte[]", PdxFieldTypes::BYTE_ARRAY);
           PdxLocalWriter::WriteSByteArray(fieldName, sbyteArray);
           return this;
         }
@@ -255,10 +255,10 @@ namespace Apache
           return this;
         }
 
-        IPdxWriter^ PdxWriterWithTypeCollector::WriteUnsignedShortArray(String^ fieldName, array<System::UInt16>^ ushortArray)
+        IPdxWriter^ PdxWriterWithTypeCollector::WriteUShortArray(String^ fieldName, array<System::UInt16>^ ushortArray)
         {
-          m_pdxType->AddVariableLengthTypeField(fieldName, "short[]", PdxFieldTypes::SHORT_ARRAY);
-          PdxLocalWriter::WriteUnsignedShortArray(fieldName, ushortArray);
+          m_pdxType->AddVariableLengthTypeField(fieldName, "ushort[]", PdxFieldTypes::SHORT_ARRAY);
+          PdxLocalWriter::WriteUShortArray(fieldName, ushortArray);
           return this;
         }
 
@@ -269,10 +269,10 @@ namespace Apache
           return this;
         }
 
-        IPdxWriter^ PdxWriterWithTypeCollector::WriteUnsignedIntArray(String^ fieldName, array<System::UInt32>^ uintArray)
+        IPdxWriter^ PdxWriterWithTypeCollector::WriteUIntArray(String^ fieldName, array<System::UInt32>^ uintArray)
         {
-          m_pdxType->AddVariableLengthTypeField(fieldName, "int[]", PdxFieldTypes::INT_ARRAY);
-          PdxLocalWriter::WriteUnsignedIntArray(fieldName, uintArray);
+          m_pdxType->AddVariableLengthTypeField(fieldName, "uint[]", PdxFieldTypes::INT_ARRAY);
+          PdxLocalWriter::WriteUIntArray(fieldName, uintArray);
           return this;
         }
 
@@ -283,10 +283,10 @@ namespace Apache
           return this;
         }
 
-        IPdxWriter^ PdxWriterWithTypeCollector::WriteUnsignedLongArray(String^ fieldName, array<System::UInt64>^ ulongArray)
+        IPdxWriter^ PdxWriterWithTypeCollector::WriteULongArray(String^ fieldName, array<System::UInt64>^ ulongArray)
         {
-          m_pdxType->AddVariableLengthTypeField(fieldName, "long[]", PdxFieldTypes::LONG_ARRAY);
-          PdxLocalWriter::WriteUnsignedLongArray(fieldName, ulongArray);
+          m_pdxType->AddVariableLengthTypeField(fieldName, "ulong[]", PdxFieldTypes::LONG_ARRAY);
+          PdxLocalWriter::WriteULongArray(fieldName, ulongArray);
           return this;
         }
 
@@ -323,7 +323,13 @@ namespace Apache
           m_pdxType->AddVariableLengthTypeField(fieldName, "byte[][]", PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS);
           PdxLocalWriter::WriteArrayOfByteArrays(fieldName, byteArrays);
           return this;
+        }
 
+        IPdxWriter^ PdxWriterWithTypeCollector::WriteArrayOfSByteArrays(String^ fieldName, array<array<SByte>^>^ byteArrays)
+        {
+          m_pdxType->AddVariableLengthTypeField(fieldName, "sbyte[][]", PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS);
+          PdxLocalWriter::WriteArrayOfSByteArrays(fieldName, byteArrays);
+          return this;
         }
 
         //TODO:
