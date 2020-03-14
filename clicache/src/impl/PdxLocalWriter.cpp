@@ -357,7 +357,7 @@ namespace Apache
           IPdxWriter^ PdxLocalWriter::WriteUIntArray(String^ fieldName, array<System::UInt32>^ uintArray)
           {
             AddOffset();
-            m_dataOutput->WriteUIntArray(uintArray);
+            m_dataOutput->WriteObject(uintArray);
             return this;
           }
 					
@@ -371,7 +371,7 @@ namespace Apache
           IPdxWriter^ PdxLocalWriter::WriteULongArray(String^ fieldName, array<System::UInt64>^ ulongArray)
           {
             AddOffset();
-            m_dataOutput->WriteULongArray(ulongArray);
+            m_dataOutput->WriteObject(ulongArray);
             return this;
           }
 

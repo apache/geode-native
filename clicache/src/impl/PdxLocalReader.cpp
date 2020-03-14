@@ -260,7 +260,9 @@ namespace Apache
 
         array<UInt32>^ PdxLocalReader::ReadUIntArray(String^ fieldName)
         {
-          return (array<UInt32>^)m_dataInput->ReadIntArray();
+          array<UInt32>^ arr;
+          m_dataInput->ReadObject(arr);
+          return arr;
         }
 
         array<Int64>^ PdxLocalReader::ReadLongArray(String^ fieldName)
@@ -272,7 +274,9 @@ namespace Apache
 
         array<System::UInt64>^ PdxLocalReader::ReadULongArray(String^ fieldName )
         {
-          return (array<UInt64>^)m_dataInput->ReadInt64Array();
+          array<UInt64>^ arr;
+          m_dataInput->ReadObject(arr);
+          return arr;
         }
 
         array<float>^ PdxLocalReader::ReadFloatArray(String^ fieldName)
