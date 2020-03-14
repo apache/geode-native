@@ -23,6 +23,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Xunit.Abstractions;
 using System.Reflection;
+using System.Linq;
 
 namespace Apache.Geode.Client.IntegrationTests
 {
@@ -1004,17 +1005,17 @@ namespace Apache.Geode.Client.IntegrationTests
                 shortVal = -2;
                 ushortVal = 2;
                 shortArray = new short[] { 1, 11, 111 };
-                ushortArray = new ushort[] {(ushort)(Math.Pow(2,16)-1), (ushort)(Math.Pow(2,16)-11), (ushort)(Math.Pow(2,16)-111) };
+                ushortArray = new ushort[] { (ushort)(UInt16.MaxValue - 1), (ushort)(UInt16.MaxValue - 11), (ushort)(UInt16.MaxValue - 111) };
 
                 intVal = -22;
                 uintVal = 22;
                 intArray = new int[] {10, 110, 1110 };
-                uintArray = new uint[] {(uint)(Math.Pow(2,32)-10), (uint)(Math.Pow(2,32)-110), (uint)(Math.Pow(2,32)-1110)};
+                uintArray = new uint[] {(uint)(UInt32.MaxValue-10), (uint)(UInt32.MaxValue-110), (uint)(UInt32.MaxValue-1110)};
 
                 longVal = -222;
                 ulongVal = 222;
                 longArray = new long[] { 100, 1100, 11100 };
-                ulongArray = new ulong[] { (ulong)(Math.Pow(2,64)-100), (ulong)(Math.Pow(2,64)-1100), (ulong)(Math.Pow(2, 64)-11100) };
+                ulongArray = new ulong[] { (ulong)(UInt64.MaxValue - 100), (ulong)(UInt64.MaxValue - 1100), (ulong)(Math.Pow(2, 64) - 11100) };
 
                 s1 = "s1";
                 s2 = "s2";
@@ -1050,18 +1051,18 @@ namespace Apache.Geode.Client.IntegrationTests
 
                 && shortVal == other.shortVal
                 && ushortVal == other.ushortVal
-                && shortArray == other.shortArray
-                && ushortArray == other.ushortArray
+                && shortArray.SequenceEqual(other.shortArray)
+                && ushortArray.SequenceEqual(other.ushortArray)
 
                 && intVal == other.intVal
                 && uintVal == other.uintVal
-                && intArray == other.intArray
-                && uintArray == other.uintArray
+                && intArray.SequenceEqual(other.intArray)
+                && uintArray.SequenceEqual(other.uintArray)
 
                 && longVal == other.longVal
                 && ulongVal == other.ulongVal
-                && longArray == other.longArray
-                && ulongArray == other.ulongArray
+                && longArray.SequenceEqual(other.longArray)
+                && ulongArray.SequenceEqual(other.ulongArray)
 
                 && s1 == other.s1
                 && s2 == other.s2)
@@ -1534,7 +1535,13 @@ namespace Apache.Geode.Client.IntegrationTests
                     .withType("REPLICATE")
                     .execute());
 
-                var cache = cluster.CreateCache();
+                var properties = new Dictionary<string, string>()
+                    {
+                        { "log-level", "debug" },
+                        { "log-file", "c:/temp/autoserializertest.log" }
+                    };
+
+                var cache = cluster.CreateCache(properties);
 
                 var region = cache.CreateRegionFactory(RegionShortcut.PROXY)
                     .SetPoolName("default")
@@ -1545,12 +1552,23 @@ namespace Apache.Geode.Client.IntegrationTests
                 //cache.TypeRegistry.PdxSerializer = new AutoSerializerEx();
                 cache.TypeRegistry.PdxSerializer = new ReflectionBasedAutoSerializer();
 
+                short[] shortArray = new short[] {1,2,3};
+                ushort[] ushortArray = new ushort[] {10,20,30};
+
+                //region.Put("shortArray", shortArray);
+                //var resultShortArray = region.Get("shortArray");
+                //Assert.Equal(shortArray, resultShortArray);
+
+                //region.Put("ushortArray", ushortArray);
+                //var resultUShortArray = region.Get("ushortArray");
+                //Assert.Equal(ushortArray, resultUShortArray);
+
                 int[] intArray = new int[] {1,11,111};
                 uint[] uintArray = new uint[] { 7,77,777 };
 
-                //region.Put("intArray", intArray);
-                //var resultIntArray = region.Get("intArray");
-                //Assert.Equal(intArray, resultIntArray);
+                region.Put("intArray", intArray);
+                var resultIntArray = region.Get("intArray");
+                Assert.Equal(intArray, resultIntArray);
 
                 region.Put("uintArray", uintArray);
                 var resultUIntArray = region.Get("uintArray");
