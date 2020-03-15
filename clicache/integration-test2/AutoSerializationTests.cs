@@ -1342,8 +1342,8 @@ namespace Apache.Geode.Client.IntegrationTests
 
         public override FieldType GetFieldType(FieldInfo fi, Type type)
         {
-            if (fi.FieldType.Equals(Type.GetType("System.Guid")))
-                return FieldType.STRING;
+            //if (fi.FieldType.Equals(Type.GetType("System.Guid")))
+            //    return FieldType.STRING;
             return base.GetFieldType(fi, type);
         }
 
@@ -1429,7 +1429,7 @@ namespace Apache.Geode.Client.IntegrationTests
                 Assert.NotNull(region);
 
                 // Register the reflectionbased serializer
-                cache.TypeRegistry.PdxSerializer = new AutoSerializerEx();
+                cache.TypeRegistry.PdxSerializer = new ReflectionBasedAutoSerializer();
 
                 for (var i = 0; i < 1; i++)
                 {
