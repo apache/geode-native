@@ -287,6 +287,12 @@ namespace Apache
         /// <param name="fieldName">The name of a member field whose value to read.</param>
         virtual array<array<SByte>^>^ ReadArrayOfSByteArrays(String^ fieldName );
 
+        /// <summary>
+        /// Read a stringified Guid from the data
+        /// </summary>
+        /// <param name="fieldName">The name of a member field whose value to read.</param>
+        virtual Guid ReadGuid(String^ fieldName );
+
         //TODO:
         //virtual void WriteEnum(String^ fieldName, Enum e) ;
         //virtual void WriteInetAddress(String^ fieldName, InetAddress address);

@@ -232,6 +232,12 @@ namespace Apache
 					/// <param name="fieldName">The name of a member field whose value to read.</param>
 					array<array<Byte>^>^ ReadArrayOfByteArrays(String^ fieldName );
 
+					/// <summary>
+					/// Read a Guid from the data.
+					/// </summary>
+					/// <param name="fieldName">The name of a member field whose value to read.</param>
+					Guid ReadGuid( String^ fieldName );
+
 					//TODO:
 					//void WriteEnum(String^ fieldName, Enum e) ;
 					//void WriteInetAddress(String^ fieldName, InetAddress address);

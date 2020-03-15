@@ -67,7 +67,8 @@ namespace Apache
 				STRING_ARRAY,
 				OBJECT_ARRAY,
         ARRAY_OF_SBYTE_ARRAYS,
-				ARRAY_OF_BYTE_ARRAYS
+				ARRAY_OF_BYTE_ARRAYS,
+        GUID
       };
 
         ref class FieldWrapper;

@@ -335,6 +335,13 @@ namespace Apache
           /// <param name="byteArrays">The byteArrays to write.</param>
           virtual IPdxWriter^ WriteArrayOfSByteArrays(String^ fieldName, array<array<SByte>^>^ byteArrays);
 
+          /// <summary>
+          /// Write a Guid to the <c>IPdxWriter</c>.
+          /// </summary>
+          /// <param name="fieldName">The name of the field associated with the value.</param>
+          /// <param name="byteArrays">The Guid to write.</param>
+          virtual IPdxWriter^ WriteGuid( String^ fieldName, System::Guid value );
+
           //TODO:
           //virtual IPdxWriter^ WriteEnum(String^ fieldName, Enum e) ;
           //virtual IPdxWriter^ WriteInetAddress(String^ fieldName, InetAddress address);

@@ -64,6 +64,8 @@ namespace Apache
 
               static Type^ VoidType = Type::GetType("System.Void");
               static Type^ ObjectType = Type::GetType("System.Object");
+              static Type^ GuidType = Guid::typeid;
+
           };
     }  // namespace Client
   }  // namespace Geode

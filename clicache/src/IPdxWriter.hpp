@@ -266,6 +266,13 @@ namespace Apache
 					/// <param name="fieldName">The name of the field associated with the value.</param>
 					/// <param name="byteArrays">The array of signedbyteArrays to write.</param>
 					IPdxWriter^ WriteArrayOfSByteArrays(String^ fieldName, array<array<SByte>^>^ byteArrays);
+
+					/// <summary>
+					/// Write a Guid to the <c>IPdxWriter</c>.
+					/// </summary>
+					/// <param name="fieldName">The name of the field associated with the value.</param>
+					/// <param name="byteArrays">The Guid to write.</param>
+					IPdxWriter^ WriteGuid(String^ fieldName, Guid guid);
 	        
 					//TODO:
 					//IPdxWriter^ WriteEnum(String^ fieldName, Enum e) ;

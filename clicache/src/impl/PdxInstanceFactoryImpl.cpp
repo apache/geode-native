@@ -324,6 +324,10 @@ namespace Apache
           {
             return this->WriteObjectArray(fieldName, safe_cast<System::Collections::Generic::List<Object^>^>(fieldValue));
           }
+          else if (type->Equals(DotNetTypes::GuidType))
+          {
+            return this->WriteString(fieldName, fieldValue->ToString());
+          }
           else
           {
             return this->WriteObject(fieldName, fieldValue);

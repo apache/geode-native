@@ -416,6 +416,12 @@ namespace Apache
             m_dataOutput->WriteArrayOfSByteArrays(byteArrays);
             return this;
           }
+
+          IPdxWriter^ PdxLocalWriter::WriteGuid( String^ fieldName, System::Guid value )
+          {
+            m_dataOutput->WriteString(value.ToString());
+            return this;
+          }
           
           //TODO:
           //IPdxWriter^ PdxLocalWriter::WriteEnum(String^ fieldName, Enum e) ;
@@ -548,6 +554,10 @@ namespace Apache
             else if(type->Equals(DotNetTypes::ObjectArrayType))
             {
               return this->WriteObjectArray(fieldName, safe_cast<System::Collections::Generic::List<Object^>^>(fieldValue));
+            }
+            else if(type->Equals(DotNetTypes::GuidType))
+            {
+              return this->WriteGuid(fieldName, (Guid)fieldValue);
             }
             else
             {

@@ -313,6 +313,11 @@ namespace Apache
           return m_dataInput->ReadArrayOfSByteArrays();
         }
 
+        System::Guid PdxLocalReader::ReadGuid( String^ fieldName )
+        {
+          return Guid(m_dataInput->ReadString());
+        }
+
         //TODO:
         //void WriteEnum(String^ fieldName, Enum e) ;
         //void WriteInetAddress(String^ fieldName, InetAddress address);
@@ -450,7 +455,11 @@ namespace Apache
             else if(type->Equals(DotNetTypes::ObjectArrayType))
             {
               return this->ReadObjectArray(fieldName);
-            }            
+            }
+            else if(type->Equals(DotNetTypes::GuidType))
+            {
+              return this->ReadGuid(fieldName);
+            }
             else
             {
               return this->ReadObject(fieldName);

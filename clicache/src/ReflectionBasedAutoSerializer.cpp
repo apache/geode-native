@@ -241,6 +241,9 @@ namespace Apache
 			          case FieldType::ARRAY_OF_SBYTE_ARRAYS:
                   w->WriteArrayOfSByteArrays(m_fieldName, (array<array<SByte>^>^)value);
                   break;
+			          case FieldType::GUID:
+                  w->WriteGuid(m_fieldName, (System::Guid)value);
+                  break;
 			          default:
                   throw gcnew IllegalStateException("Not found FieldType: " + m_fieldType.ToString());
               }
@@ -342,6 +345,9 @@ namespace Apache
                   break;
 			          case FieldType::ARRAY_OF_SBYTE_ARRAYS:
                   return r->ReadArrayOfSByteArrays(m_fieldName);
+                  break;
+			          case FieldType::GUID:
+                  return r->ReadGuid(m_fieldName);
                   break;
 			          default:
                   throw gcnew IllegalStateException("Not found FieldType: " + m_fieldType.ToString());
@@ -626,25 +632,27 @@ namespace Apache
           {
             return FieldType::ARRAY_OF_BYTE_ARRAYS;
           }
-
-          // Orig
-          //else
-          //{
-          //  Log::Debug("ReflectionBasedAutoSerializer::getPdxFieldType type = {0}", type);
-          //  return FieldType::OBJECT;
-          //}
-
-          // Mikes: Check for types with no default ctor
-          else if (type->Equals(Type::GetType("System.Guid")))
+          // Try guid support via strings
+          else if(type->Equals(Internal::DotNetTypes::GuidType))
           {
-              throw gcnew IllegalStateException("WriteField unable to serialize  " 
-				  		  + type);
+            return FieldType::GUID;
           }
+          // Orig
           else
           {
             Log::Debug("ReflectionBasedAutoSerializer::getPdxFieldType type = {0}", type);
             return FieldType::OBJECT;
           }
+
+          // Mikes: Check for types with no default ctor
+          //else if (type->Equals(Type::GetType("System.Guid")))
+          //{
+          //    throw gcnew IllegalStateException("WriteField unable to serialize  " 
+				  		  //+ type);
+          //}
+
+
+
 
           // Matt and Mike Fix
           //else if (type->Equals(Internal::DotNetTypes::ObjectType) ||
