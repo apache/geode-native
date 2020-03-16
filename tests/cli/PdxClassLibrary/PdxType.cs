@@ -148,7 +148,7 @@ namespace PdxTests
     {
       m_char = 'C';
       m_bool = true;
-      m_byte = 0x74;
+      m_byte = 0x84;
       m_sbyte = 0x67;
       m_int16 = 0xab;
       m_uint16 = 0x2dd5;
@@ -184,8 +184,8 @@ namespace PdxTests
       m_floatArray = new float[] { 232.565f, 2343254.67f };
       m_doubleArray = new double[] { 23423432d, 4324235435d };
 
-      m_byteByteArray = new byte[][]{new byte[] {0x23},
-                                     new byte[]{0x34, 0x55}};
+      m_byteByteArray = new byte[][]{new byte[] {0x83},
+                                     new byte[]{0x84, 0x85}};
       m_sbyteByteArray = new sbyte[][]{new sbyte[] {0x23},
                                        new sbyte[]{0x34, 0x55}};
 
@@ -502,7 +502,7 @@ namespace PdxTests
         return b;
       throw new IllegalStateException("Not got expected value for type: " + b2.GetType().ToString());
     }
-    sbyte[] compareSByteArray(sbyte[] a, sbyte[] a2)
+    public static sbyte[] compareSByteArray(sbyte[] a, sbyte[] a2)
     {
       if (a.Length == a2.Length)
       {
@@ -519,6 +519,23 @@ namespace PdxTests
       }
 
       throw new IllegalStateException("Not got expected value for type: " + a2.GetType().ToString());
+    }
+
+    public static sbyte[][] comparesSByteSByteArray(sbyte[][] sbaa, sbyte[][] sbaa2)
+    {
+      if (sbaa.Length == sbaa2.Length)
+      {
+        int i = 0;
+        while (i < sbaa.Length)
+        {
+          compareSByteArray(sbaa[i], sbaa2[i]);
+          i++;
+        }
+        if (i == sbaa2.Length)
+          return sbaa2;
+      }
+
+      throw new IllegalStateException("Not got expected value for type: " + sbaa2.GetType().ToString());
     }
     string[] compareStringArray(string[] a, string[] a2)
     {
@@ -738,43 +755,6 @@ namespace PdxTests
     }
     public void FromData(IPdxReader reader)
     {
-      //byte[][] baa = reader.ReadArrayOfByteArrays("m_byteByteArray");
-      //m_byteByteArray = compareByteByteArray(baa, m_byteByteArray);
-
-      //bool bl = reader.ReadBoolean("m_bool");
-      //m_bool = compareBool(bl, m_bool);
-      //m_boolArray =  compareBoolArray(reader.ReadBooleanArray("m_boolArray"), m_boolArray);
-
-      //m_byte = compareByte(reader.ReadByte("m_byte"), m_byte);
-      //m_byteArray = compareByteArray(reader.ReadByteArray("m_byteArray"), m_byteArray);
-      //m_charArray = compareCharArray(reader.ReadCharArray("m_charArray"), m_charArray);
-      //List<object> tmpl = new List<object>();
-      //reader.ReadCollection("m_list", tmpl);
-      //m_list = compareCompareCollection(tmpl, m_list);
-
-      //m_dateTime = compareData(reader.ReadDate("m_dateTime"), m_dateTime);
-
-      //m_double = compareDouble(reader.ReadDouble("m_double"), m_double);
-
-      //m_doubleArray = compareDoubleArray(reader.ReadDoubleArray("m_doubleArray"), m_doubleArray);
-      //m_float = compareFloat(reader.ReadFloat("m_float"), m_float);
-      //m_floatArray = compareFloatArray(reader.ReadFloatArray("m_floatArray"), m_floatArray);
-      //m_int16 = compareInt16(reader.ReadInt16("m_int16"), m_int16);
-      //m_int32 = compareInt32(reader.ReadInt32("m_int32"), m_int32);
-      //m_long = compareInt64(reader.ReadInt64("m_long"), m_long);
-      //m_int32Array = compareIntArray(reader.ReadIntArray("m_int32Array"), m_int32Array);
-      //m_longArray = compareLongArray(reader.ReadLongArray("m_longArray"), m_longArray);
-      //m_int16Array = compareSHortArray(reader.ReadShortArray("m_int16Array"), m_int16Array);
-      //m_sbyte = compareSByte(reader.ReadSByte("m_sbyte"), m_sbyte);
-      //m_sbyteArray = compareSByteArray(reader.ReadSByteArray("m_sbyteArray"), m_sbyteArray);
-      //m_stringArray = compareStringArray(reader.ReadStringArray("m_stringArray"), m_stringArray);
-      //m_uint16 = compareUInt16(reader.ReadUInt16("m_uint16"), m_uint16);
-      //m_uint32 = compareUInt32(reader.ReadUInt32("m_uint32") , m_uint32);
-      //m_ulong = compareUint64(reader.ReadUInt64("m_ulong"), m_ulong);
-      //m_uint32Array = compareUnsignedIntArray(reader.ReadUnsignedIntArray("m_uint32Array"), m_uint32Array);
-      //m_ulongArray = compareUnsignedLongArray(reader.ReadUnsignedLongArray("m_ulongArray"), m_ulongArray);
-      //m_uint16Array = compareUnsignedShortArray(reader.ReadUnsignedShortArray("m_uint16Array"), m_uint16Array);      
-
       byte[][] baa = reader.ReadArrayOfByteArrays("m_byteByteArray");
       m_byteByteArray = compareByteByteArray(baa, m_byteByteArray);
       m_char = GenericValCompare(reader.ReadChar("m_char"), m_char);
@@ -831,10 +811,8 @@ namespace PdxTests
       m_int32Array = GenericCompare(reader.ReadIntArray("m_int32Array"), m_int32Array);
       m_longArray = GenericCompare(reader.ReadLongArray("m_longArray"), m_longArray);
       m_int16Array = GenericCompare(reader.ReadShortArray("m_int16Array"), m_int16Array);
-      m_byte = GenericValCompare(reader.ReadByte("m_byte"), m_byte);
       m_sbyte = GenericValCompare(reader.ReadSByte("m_sbyte"), m_sbyte);
 
-      m_byteArray = GenericCompare(reader.ReadByteArray("m_byteArray"), m_byteArray);
       m_sbyteArray = GenericCompare(reader.ReadSByteArray("m_sbyteArray"), m_sbyteArray);
       m_stringArray = GenericCompare(reader.ReadStringArray("m_stringArray"), m_stringArray);
       m_uint16 = GenericValCompare(reader.ReadUShort("m_uint16"), m_uint16);
@@ -1063,10 +1041,10 @@ namespace PdxTests
 
     public sbyte[][] SByteByteArray
     {
-        get { return m_sbyteByteArray; }
+      get { return m_sbyteByteArray; }
     }
 
-        public string[] StringArray
+    public string[] StringArray
     {
       get { return m_stringArray; }
     }
