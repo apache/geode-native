@@ -1150,115 +1150,6 @@ namespace Apache.Geode.Client.IntegrationTests
         {
             return base.GetHashCode();
         }
-
-        public new void ToData(IPdxWriter w)
-        {
-            base.ToData(w);
-
-            w.WriteString("stringVal", stringVal);
-            w.WriteStringArray("stringArray", stringArray);
-
-            w.WriteInt("identity", identity);
-
-            w.WriteChar("charVal", charVal);
-            w.WriteCharArray("charArray", charArray);
-
-            w.WriteBoolean("boolVal", boolVal);
-            w.WriteBooleanArray("boolArray", boolArray);
-
-            w.WriteByte("byteVal", byteVal);
-            w.WriteByteArray("byteArray", byteArray);
-
-            w.WriteSByte("sbyteVal", sbyteVal);
-            w.WriteSByteArray("sbyteArray", sbyteArray);
-
-            w.WriteShort("shortVal", shortVal);
-            w.WriteUShort("ushortVal", ushortVal);
-            w.WriteShortArray("shortArray", shortArray);
-            w.WriteUShortArray("ushortArray", ushortArray);
-
-            w.WriteInt("intVal", intVal);
-            w.WriteUInt("uintVal", uintVal);
-            w.WriteIntArray("intArray", intArray);
-            w.WriteUIntArray("uintArray", uintArray);
-
-            w.WriteLong("longVal", longVal);
-            w.WriteULong("ulongVal", ulongVal);
-            w.WriteLongArray("longArray", longArray);
-            w.WriteULongArray("ulongArray", ulongArray);
-
-            w.WriteFloat("floatVal", floatVal);
-            w.WriteFloatArray("floatArray", floatArray);
-
-            w.WriteDouble("doubleVal", doubleVal);
-            w.WriteDoubleArray("doubleArray", doubleArray);
-
-            w.WriteDate("dateTimeVal", dateTimeVal);
-            w.WriteDateArray("dateTimeArray", dateTimeArray);
-
-            w.WriteFloat("floatVal", floatVal);
-            w.WriteFloatArray("floatArray", floatArray);
-            w.WriteString("s1", s1);
-            w.WriteString("s2", s2);
-
-            w.WriteObject("nestedObject", nestedObject);
-            w.WriteObject("_addressList", _addressList);
-            w.WriteObject("_address", _address);
-            w.WriteObject("_hashTable", _hashTable);
-        }
-
-        public new void FromData(IPdxReader r)
-        {
-            base.FromData(r);
-
-            stringVal = r.ReadString("stringVal");
-            stringArray = r.ReadStringArray("stringArray");
-
-            identity = r.ReadInt("identity");
-
-            charVal = r.ReadChar("charVal");
-            charArray = r.ReadCharArray("charArray");
-
-            boolVal = r.ReadBoolean("boolVal");
-            boolArray = r.ReadBooleanArray("boolArray");
-
-            byteVal = r.ReadByte("byteVal");
-            byteArray = r.ReadByteArray("byteArray");
-
-            sbyteVal = r.ReadSByte("sbyteVal");
-            sbyteArray = r.ReadSByteArray("sbyteArray");
-
-            shortVal = r.ReadShort("shortVal");
-            ushortVal = r.ReadUShort("ushortVal");
-            shortArray = r.ReadShortArray("shortArray");
-            ushortArray = r.ReadUShortArray("ushortArray");
-
-            intVal = r.ReadInt("intVal");
-            uintVal = r.ReadUInt("uintVal");
-            intArray = r.ReadIntArray("intArray");
-            uintArray = r.ReadUIntArray("uintArray");
-
-            longVal = r.ReadLong("longVal");
-            ulongVal = r.ReadULong("ulongVal");
-            longArray = r.ReadLongArray("longArray");
-            ulongArray = r.ReadULongArray("ulongArray");
-
-            floatVal = r.ReadFloat("floatVal");
-            floatArray = r.ReadFloatArray("floatArray");
-
-            doubleVal = r.ReadDouble("doubleVal");
-            doubleArray = r.ReadDoubleArray("doubleArray");
-
-            dateTimeVal = r.ReadDate("dateTimeVal");
-            dateTimeArray = r.ReadDateArray("dateTimeArray");
-
-            s1 = r.ReadString("s1");
-            s2 = r.ReadString("s2");
-            nestedObject = (SerializePdx2)r.ReadObject("nestedObject");
-            _addressList = (ArrayList)r.ReadObject("_addressList");
-            _address = (AddressWithGuid)r.ReadObject("_address");
-            _hashTable = (Hashtable)r.ReadObject("_hashTable");
-        }
     }
 
     public class SerializePdx4 : BaseClass
@@ -1596,11 +1487,11 @@ namespace Apache.Geode.Client.IntegrationTests
                 // Register the reflectionbased serializer
                 cache.TypeRegistry.PdxSerializer = new ReflectionBasedAutoSerializer();
 
-                IDictionary<object, object> putall = new Dictionary<object, object>();
-                putall.Add(100, new SerializeAllTypes(true, 0));
-                putall.Add(200, new SerializeAllTypes(true, 1));
-                putall.Add(300, new SerializePdx4(true));
-                region.PutAll(putall);
+                IDictionary<object, object> collection = new Dictionary<object, object>();
+                collection.Add(100, new SerializeAllTypes(true, 0));
+                collection.Add(200, new SerializeAllTypes(true, 1));
+                collection.Add(300, new SerializePdx4(true));
+                region.PutAll(collection);
             }
         }
 
