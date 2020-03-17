@@ -292,6 +292,11 @@ namespace Apache
           this->WriteInt64(-1L);
       }
 
+      void DataOutput::WriteDateArray(array<System::DateTime>^ dateArray)
+      {
+        WriteObject<DateTime>(dateArray);
+      }
+
       void DataOutput::WriteCharArray(array<Char>^ charArray)
       {
         if (charArray != nullptr)

@@ -207,6 +207,11 @@ namespace Apache
         {
           return m_dataInput->ReadDate();
         }
+
+        array<System::DateTime>^ PdxLocalReader::ReadDateArray( String^ fieldName)
+        {
+          return m_dataInput->ReadDateArray();
+        }
         //void writeFile(String fieldName, File file) ;
 
         array<bool>^ PdxLocalReader::ReadBooleanArray( String^ fieldName )
@@ -443,6 +448,10 @@ namespace Apache
             else if(type->Equals(DotNetTypes::DateType))
             {
               return this->ReadDate(fieldName);
+            }
+            else if(type->Equals(DotNetTypes::DateArrayType))
+            {
+              return this->ReadDateArray(fieldName);
             }
             else if(type->Equals(DotNetTypes::ByteArrayOfArrayType))
             {

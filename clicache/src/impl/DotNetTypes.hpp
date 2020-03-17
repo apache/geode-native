@@ -57,6 +57,7 @@ namespace Apache
               static Type^ CharArrayType = Type::GetType("System.Char[]");
               static Type^ StringArrayType = Type::GetType("System.String[]");
               static Type^ DateType = Type::GetType("System.DateTime");
+              static Type^ DateArrayType = Type::GetType("System.DateTime[]");
               static Type^ SByteArrayOfArrayType = Type::GetType("System.SByte[][]");
               static Type^ ByteArrayOfArrayType = Type::GetType("System.Byte[][]");
               static Type^ ObjectArrayType = Type::GetType("System.Collections.Generic.List`1[System.Object]");

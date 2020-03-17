@@ -277,6 +277,12 @@ namespace Apache
         void WriteDate(System::DateTime value);
 
         /// <summary>
+        /// Write a DateTime array to the DataOutput.
+        /// </summary>
+        /// <param name="value">The DateTime array to write.</param>
+        void WriteDateArray(array<DateTime>^ value);
+
+        /// <summary>
         /// Write a collection to the DataOutput.
         /// </summary>
         /// <param name="value">The object which implements IList to write.</param>

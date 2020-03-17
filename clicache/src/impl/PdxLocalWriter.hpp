@@ -220,6 +220,13 @@ namespace Apache
           /// <param name="date">The date to write.</param>
           virtual IPdxWriter^ WriteDate(String^ fieldName, System::DateTime date);
 
+          /// <summary>
+          /// Write an collection to the <c>IPdxWriter</c>.
+          /// </summary>
+          /// <param name="fieldName">The name of the field associated with the value.</param>
+          /// <param name="date">The date array to write.</param>
+          virtual IPdxWriter^ WriteDateArray(String^ fieldName, array<System::DateTime>^ dateTimeArray);
+
           //TODO:
           //virtual IPdxWriter^ writeFile(String fieldName, File file) ;
 

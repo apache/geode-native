@@ -304,6 +304,12 @@ namespace Apache
             m_dataOutput->WriteDate(date);
             return this;
           }
+
+          IPdxWriter^ PdxLocalWriter::WriteDateArray( String^ fieldName, array<System::DateTime>^ dateArray)
+          {
+            m_dataOutput->WriteDateArray(dateArray);
+            return this;
+          }
           
           IPdxWriter^ PdxLocalWriter::WriteBooleanArray( String^ fieldName, array<bool>^ boolArray)
           {
@@ -542,6 +548,10 @@ namespace Apache
             else if(type->Equals(DotNetTypes::DateType))
             {
               return this->WriteDate(fieldName, (DateTime)fieldValue);
+            }
+            else if(type->Equals(DotNetTypes::DateArrayType))
+            {
+              return this->WriteDateArray(fieldName, (array<DateTime>^)fieldValue);
             }
             else if(type->Equals(DotNetTypes::ByteArrayOfArrayType))
             {

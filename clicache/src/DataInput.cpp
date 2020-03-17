@@ -944,6 +944,13 @@ namespace Apache
         }
       }
 
+      array<DateTime>^ DataInput::ReadDateArray()
+      {
+        array<DateTime>^ arr;
+        this->ReadObject(arr);
+        return arr;
+      }
+
       array<Char>^ DataInput::ReadCharArray()
       {
         array<Char>^ arr;
@@ -1100,6 +1107,19 @@ namespace Apache
           for (int i = 0; i < len; i++)
           {
             obj[i] = this->ReadUInt64();
+          }
+        }
+      }
+
+      void DataInput::ReadObject(array<DateTime>^% obj)
+      {
+        int len = ReadArrayLen();
+        if (len >= 0)
+        {
+          obj = gcnew array<DateTime>(len);
+          for (int i = 0; i < len; i++)
+          {
+            obj[i] = this->ReadDate();
           }
         }
       }

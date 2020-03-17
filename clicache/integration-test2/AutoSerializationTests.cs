@@ -27,19 +27,19 @@ using System.Linq;
 
 namespace Apache.Geode.Client.IntegrationTests
 {
-    public class AddressR
+    public class ApartmentLocation
     {
         int _aptNumber;
         string _street;
         string _city;
 
-        public AddressR()
+        public ApartmentLocation()
         { }
         public override string ToString()
         {
             return _aptNumber + " :" + _street + " : " + _city;
         }
-        public AddressR(int aptN, string street, string city)
+        public ApartmentLocation(int aptN, string street, string city)
         {
             _aptNumber = aptN;
             _street = street;
@@ -50,7 +50,7 @@ namespace Apache.Geode.Client.IntegrationTests
         {
             if (obj == null)
                 return false;
-            AddressR other = obj as AddressR;
+            ApartmentLocation other = obj as ApartmentLocation;
             if (other == null)
                 return false;
             if (_aptNumber == other._aptNumber
@@ -120,7 +120,7 @@ namespace Apache.Geode.Client.IntegrationTests
         byte[] m_byte65536 = new byte[65536];
 
         pdxEnumTest m_pdxEnum = pdxEnumTest.pdx3;
-        AddressR[] m_address = new AddressR[10];
+        ApartmentLocation[] m_address = new ApartmentLocation[10];
 
         LinkedList<Object> m_LinkedList = new LinkedList<Object>();
 
@@ -163,8 +163,8 @@ namespace Apache.Geode.Client.IntegrationTests
             m_doubleArray = new double[] { 23423432d, 4324235435d };
 
             m_byteByteArray = new byte[][]{new byte[] {0x23},
-                                             new byte[]{0x34, 0x55}
-                                              };
+                                           new byte[]{0x34, 0x55}
+                                          };
 
             m_stringArray = new string[] { "one", "two" };
 
@@ -196,11 +196,11 @@ namespace Apache.Geode.Client.IntegrationTests
             m_clhs.Add(2);
             m_pdxEnum = pdxEnumTest.pdx3;
 
-            m_address = new AddressR[10];
+            m_address = new ApartmentLocation[10];
 
             for (int i = 0; i < m_address.Length; i++)
             {
-                m_address[i] = new AddressR(i, "street" + i, "city" + i);
+                m_address[i] = new ApartmentLocation(i, "street" + i, "city" + i);
             }
         }
 
@@ -706,15 +706,12 @@ namespace Apache.Geode.Client.IntegrationTests
                 throw new Exception("Array len 65536 not found");
             if (other.m_pdxEnum != m_pdxEnum)
                 throw new Exception("Pdx enum is not equal");
-            //byte[] m_byte252 = new byte[252];
-            //byte[] m_byte253 = new byte[253];
-            //byte[] m_byte65535 = new byte[65535];
-            //byte[] m_byte65536 = new byte[65536];
-            AddressR[] otherA = other.m_address;
+
+            ApartmentLocation[] otherA = other.m_address;
             for (int i = 0; i < m_address.Length; i++)
             {
                 if (!m_address[i].Equals(otherA[i]))
-                    throw new Exception("AddressR array is not equal " + i);
+                    throw new Exception("ApartmentLocation array is not equal " + i);
             }
         }
 
@@ -730,12 +727,12 @@ namespace Apache.Geode.Client.IntegrationTests
         public string s1;
         public string s2;
 
-        /*public static SerializePdx1 CreateDeserializable()
-        {
-          return new SerializePdx1(false);
-        }*/
+        //public static SerializePdx1 CreateDeserializable()
+        //{
+        //  return new SerializePdx1(false);
+        //}
 
-        public SerializePdx1()
+    public SerializePdx1()
         {
         }
 
@@ -750,7 +747,7 @@ namespace Apache.Geode.Client.IntegrationTests
             }
         }
 
-        public override bool Equals(object obj)
+    public override bool Equals(object obj)
         {
             if (obj == null)
                 return false;
@@ -836,10 +833,7 @@ namespace Apache.Geode.Client.IntegrationTests
 
     public class BaseClass
     {
-        //private readonly int _b1 = 1000;
         [NonSerialized]
-        //private int _nonserialized = 1001;
-        //private static int _static = 1002;
         private const int _const = 1003;
 
         private int _baseclassmember;
@@ -942,29 +936,26 @@ namespace Apache.Geode.Client.IntegrationTests
         {
             return base.GetHashCode();
         }
-
-        //public void ToData(IPdxWriter w)
-        //{
-        //    w.WriteString("_street", _street);
-        //    w.WriteString("_aptName", _aptName);
-        //    w.WriteInt("_flatNumber", _flatNumber);
-        //    w.WriteString("_guid", _guid.ToString());
-        //}
-
-        //public void FromData(IPdxReader r)
-        //{
-        //    _street = r.ReadString("_street");
-        //    _aptName = r.ReadString("_aptName");
-        //    _flatNumber = r.ReadInt("_flatNumber");
-        //    var s = r.ReadString("_guid");
-        //    _guid = new Guid(s);
-        //}
     }
 
-    public class SerializePdx3 : BaseClass
+    public class SerializeAllTypes : BaseClass
     {
-        private string s0;
         [PdxIdentityField] private int identity;
+
+        private string stringVal;
+        private string[] stringArray;
+
+        public char charVal;
+        public char[] charArray;
+
+        public bool boolVal;
+        public bool[] boolArray;
+
+        public byte byteVal;
+        public byte[] byteArray;
+
+        public sbyte sbyteVal;
+        public sbyte[] sbyteArray;
 
         public short shortVal;
         public ushort ushortVal;
@@ -981,6 +972,15 @@ namespace Apache.Geode.Client.IntegrationTests
         public long[] longArray;
         public ulong[] ulongArray;
 
+        public float floatVal;
+        public float[] floatArray;
+
+        public double doubleVal;
+        public double[] doubleArray;
+
+        public DateTime dateTimeVal;
+        public DateTime[] dateTimeArray;
+
         public string s1;
         public string s2;
         private SerializePdx2 nestedObject;
@@ -989,18 +989,32 @@ namespace Apache.Geode.Client.IntegrationTests
 
         private Hashtable _hashTable;
 
-        public SerializePdx3()
+        public SerializeAllTypes()
           : base()
         {
         }
 
-        public SerializePdx3(bool init, int nAddress)
+        public SerializeAllTypes(bool init, int nAddress)
           : base(init)
         {
             if (init)
             {
-                s0 = "s9999999999999999999999999999999999";
+                stringVal = "Harry Potter is a gryffindor";
+                stringArray = new string[] { "Ron", "Hermeine", "Hagrid" };
+
                 identity = 1;
+
+                charVal = 'z';
+                charArray = new char[] {'a', 'b', 'c'};
+
+                boolVal = true;
+                boolArray = new bool[] {true, false, true};
+
+                byteVal = 0xa0;
+                byteArray = new byte[] {0xaa, 0xab, 0xac};
+
+                sbyteVal = 0x10;
+                sbyteArray = new sbyte[] {-5, 2, 0x70 };
 
                 shortVal = -2;
                 ushortVal = 2;
@@ -1016,6 +1030,15 @@ namespace Apache.Geode.Client.IntegrationTests
                 ulongVal = 222;
                 longArray = new long[] { 100, 1100, 11100 };
                 ulongArray = new ulong[] { (ulong)(UInt64.MaxValue - 100), (ulong)(UInt64.MaxValue - 1100), (ulong)(Math.Pow(2, 64) - 11100) };
+
+                floatVal = 1.6f;
+                floatArray = new float[] { 1.6f, 1600.1f, 1.2e7f};
+        
+                doubleVal = 1.6;
+                doubleArray = new double[] { 2.6, 2600.1, 2.2e7 };
+
+                dateTimeVal = new DateTime(2009, 8, 1, 0, 0, 0);
+                dateTimeArray = new DateTime[] {dateTimeVal, dateTimeVal.AddDays(1), dateTimeVal.AddHours(1) };
 
                 s1 = "s1";
                 s2 = "s2";
@@ -1041,13 +1064,27 @@ namespace Apache.Geode.Client.IntegrationTests
             if (obj == this)
                 return true;
 
-            var other = obj as SerializePdx3;
+            var other = obj as SerializeAllTypes;
 
             if (other == null)
                 return false;
 
-            if (s0 == other.s0
+            if (stringVal == other.stringVal
+                && stringArray.SequenceEqual(other.stringArray)
+
                 && identity == other.identity
+
+                && charVal == other.charVal
+                && charArray.SequenceEqual(other.charArray)
+
+                && boolVal == other.boolVal
+                && boolArray.SequenceEqual(other.boolArray)
+
+                && byteVal == other.byteVal
+                && byteArray.SequenceEqual(other.byteArray)
+
+                && sbyteVal == other.sbyteVal
+                && sbyteArray.SequenceEqual(other.sbyteArray)
 
                 && shortVal == other.shortVal
                 && ushortVal == other.ushortVal
@@ -1064,6 +1101,15 @@ namespace Apache.Geode.Client.IntegrationTests
                 && longArray.SequenceEqual(other.longArray)
                 && ulongArray.SequenceEqual(other.ulongArray)
 
+                && floatVal == other.floatVal
+                && floatArray.SequenceEqual(other.floatArray)
+
+                && doubleVal == other.doubleVal
+                && doubleArray.SequenceEqual(other.doubleArray)
+
+                && dateTimeVal == other.dateTimeVal
+                && dateTimeArray.SequenceEqual(other.dateTimeArray)
+
                 && s1 == other.s1
                 && s2 == other.s2)
             {
@@ -1071,9 +1117,7 @@ namespace Apache.Geode.Client.IntegrationTests
                 if (ret)
                 {
                     if (_addressList.Count == 10 &&
-                        _addressList.Count == other._addressList.Count //&&
-                                                                       //_arrayOfAddress.Length == other._arrayOfAddress.Length &&
-                                                                       //_arrayOfAddress[0].Equals(other._arrayOfAddress[0])
+                        _addressList.Count == other._addressList.Count
                     )
                     {
                         for (var i = 0; i < _addressList.Count; i++)
@@ -1099,7 +1143,6 @@ namespace Apache.Geode.Client.IntegrationTests
                     }
                 }
             }
-
             return false;
         }
 
@@ -1111,8 +1154,23 @@ namespace Apache.Geode.Client.IntegrationTests
         public new void ToData(IPdxWriter w)
         {
             base.ToData(w);
-            w.WriteString("s0", s0);
+
+            w.WriteString("stringVal", stringVal);
+            w.WriteStringArray("stringArray", stringArray);
+
             w.WriteInt("identity", identity);
+
+            w.WriteChar("charVal", charVal);
+            w.WriteCharArray("charArray", charArray);
+
+            w.WriteBoolean("boolVal", boolVal);
+            w.WriteBooleanArray("boolArray", boolArray);
+
+            w.WriteByte("byteVal", byteVal);
+            w.WriteByteArray("byteArray", byteArray);
+
+            w.WriteSByte("sbyteVal", sbyteVal);
+            w.WriteSByteArray("sbyteArray", sbyteArray);
 
             w.WriteShort("shortVal", shortVal);
             w.WriteUShort("ushortVal", ushortVal);
@@ -1129,6 +1187,17 @@ namespace Apache.Geode.Client.IntegrationTests
             w.WriteLongArray("longArray", longArray);
             w.WriteULongArray("ulongArray", ulongArray);
 
+            w.WriteFloat("floatVal", floatVal);
+            w.WriteFloatArray("floatArray", floatArray);
+
+            w.WriteDouble("doubleVal", doubleVal);
+            w.WriteDoubleArray("doubleArray", doubleArray);
+
+            w.WriteDate("dateTimeVal", dateTimeVal);
+            w.WriteDateArray("dateTimeArray", dateTimeArray);
+
+            w.WriteFloat("floatVal", floatVal);
+            w.WriteFloatArray("floatArray", floatArray);
             w.WriteString("s1", s1);
             w.WriteString("s2", s2);
 
@@ -1141,8 +1210,23 @@ namespace Apache.Geode.Client.IntegrationTests
         public new void FromData(IPdxReader r)
         {
             base.FromData(r);
-            s0 = r.ReadString("s0");
+
+            stringVal = r.ReadString("stringVal");
+            stringArray = r.ReadStringArray("stringArray");
+
             identity = r.ReadInt("identity");
+
+            charVal = r.ReadChar("charVal");
+            charArray = r.ReadCharArray("charArray");
+
+            boolVal = r.ReadBoolean("boolVal");
+            boolArray = r.ReadBooleanArray("boolArray");
+
+            byteVal = r.ReadByte("byteVal");
+            byteArray = r.ReadByteArray("byteArray");
+
+            sbyteVal = r.ReadSByte("sbyteVal");
+            sbyteArray = r.ReadSByteArray("sbyteArray");
 
             shortVal = r.ReadShort("shortVal");
             ushortVal = r.ReadUShort("ushortVal");
@@ -1158,6 +1242,15 @@ namespace Apache.Geode.Client.IntegrationTests
             ulongVal = r.ReadULong("ulongVal");
             longArray = r.ReadLongArray("longArray");
             ulongArray = r.ReadULongArray("ulongArray");
+
+            floatVal = r.ReadFloat("floatVal");
+            floatArray = r.ReadFloatArray("floatArray");
+
+            doubleVal = r.ReadDouble("doubleVal");
+            doubleArray = r.ReadDoubleArray("doubleArray");
+
+            dateTimeVal = r.ReadDate("dateTimeVal");
+            dateTimeArray = r.ReadDateArray("dateTimeArray");
 
             s1 = r.ReadString("s1");
             s2 = r.ReadString("s2");
@@ -1316,7 +1409,7 @@ namespace Apache.Geode.Client.IntegrationTests
         }
     }
 
-    public class AutoSerializerEx : ReflectionBasedAutoSerializer
+    public class SpecialAutoSerializer : ReflectionBasedAutoSerializer
     {
         public override bool IsIdentityField(FieldInfo fi, Type type)
         {
@@ -1410,6 +1503,7 @@ namespace Apache.Geode.Client.IntegrationTests
             {
                 Assert.True(cluster.Start());
                 Assert.Equal(0, cluster.Gfsh.create()
+                    
                     .region()
                     .withName("testRegion")
                     .withType("REPLICATE")
@@ -1428,7 +1522,6 @@ namespace Apache.Geode.Client.IntegrationTests
                     .Create<object, object>("testRegion");
                 Assert.NotNull(region);
 
-                // Register the reflectionbased serializer
                 cache.TypeRegistry.PdxSerializer = new ReflectionBasedAutoSerializer();
 
                 for (var i = 0; i < 1; i++)
@@ -1457,7 +1550,7 @@ namespace Apache.Geode.Client.IntegrationTests
 
                     Assert.Equal(put, ret);
 
-                    put = new SerializePdx3(true, i % 2);
+                    put = new SerializeAllTypes(true, i % 2);
                     region[i + 30] = put;
 
 
@@ -1476,19 +1569,10 @@ namespace Apache.Geode.Client.IntegrationTests
                     var p1 = region[i + 30];
                     var p2 = region[i + 40];
 
-                    Assert.True(p1 != p2, "This should NOt be equals");
-
-                    var pft = new PdxFieldTest(true);
-                    region[i + 50] = pft;
-                    ret = region[i + 50];
-
-                    Assert.NotEqual(pft, ret);
-
-                    pft.NotInclude = "default_value";
-                    Assert.Equal(pft, ret);
+                    Assert.True(p1 != p2, "Should NOt be equal");
                 }
             }
-        }
+    }
 
         [Fact]
         public void AutoPutAll()
@@ -1510,73 +1594,55 @@ namespace Apache.Geode.Client.IntegrationTests
                 Assert.NotNull(region);
 
                 // Register the reflectionbased serializer
-                cache.TypeRegistry.PdxSerializer = new AutoSerializerEx();
+                cache.TypeRegistry.PdxSerializer = new ReflectionBasedAutoSerializer();
 
                 IDictionary<object, object> putall = new Dictionary<object, object>();
-                putall.Add(100, new SerializePdx3(true, 0));
-                putall.Add(200, new SerializePdx3(true, 1));
+                putall.Add(100, new SerializeAllTypes(true, 0));
+                putall.Add(200, new SerializeAllTypes(true, 1));
                 putall.Add(300, new SerializePdx4(true));
                 region.PutAll(putall);
-
-                //doGetWithPdxSerializerC2R();
-                //doQueryTest();
             }
         }
 
-        [Fact]
-        public void DataType()
+    [Fact]
+    public void DerivedAutoSerializer()
+    {
+        using (var cluster = new Cluster(output, CreateTestCaseDirectoryName(), 1, 1))
         {
-            using (var cluster = new Cluster(output, CreateTestCaseDirectoryName(), 1, 1))
+            Assert.True(cluster.Start());
+            Assert.Equal(0, cluster.Gfsh.create()
+              .region()
+              .withName("testRegion")
+              .withType("REPLICATE")
+              .execute());
+
+            var properties = new Dictionary<string, string>()
+                        {
+                            { "log-level", "debug" },
+                            { "log-file", "c:/temp/autoserializertest.log" }
+                        };
+
+            var cache = cluster.CreateCache(properties);
+
+            var region = cache.CreateRegionFactory(RegionShortcut.PROXY)
+                .SetPoolName("default")
+                .Create<object, object>("testRegion");
+            Assert.NotNull(region);
+
+            cache.TypeRegistry.PdxSerializer = new SpecialAutoSerializer();
+
+            for (var i = 0; i < 1; i++)
             {
-                Assert.True(cluster.Start());
-                Assert.Equal(0, cluster.Gfsh.create()
-                    .region()
-                    .withName("testRegion")
-                    .withType("REPLICATE")
-                    .execute());
+                var pft = new PdxFieldTest(true);
+                region[i + 50] = pft;
+                var ret = region[i + 50];
 
-                var properties = new Dictionary<string, string>()
-                    {
-                        { "log-level", "debug" },
-                        { "log-file", "c:/temp/autoserializertest.log" }
-                    };
+                Assert.NotEqual(pft, ret);
 
-                var cache = cluster.CreateCache(properties);
-
-                var region = cache.CreateRegionFactory(RegionShortcut.PROXY)
-                    .SetPoolName("default")
-                    .Create<object, object>("testRegion");
-                Assert.NotNull(region);
-
-                // Register the reflectionbased serializer
-                //cache.TypeRegistry.PdxSerializer = new AutoSerializerEx();
-                cache.TypeRegistry.PdxSerializer = new ReflectionBasedAutoSerializer();
-
-                short[] shortArray = new short[] {1,2,3};
-                ushort[] ushortArray = new ushort[] {10,20,30};
-
-                //region.Put("shortArray", shortArray);
-                //var resultShortArray = region.Get("shortArray");
-                //Assert.Equal(shortArray, resultShortArray);
-
-                //region.Put("ushortArray", ushortArray);
-                //var resultUShortArray = region.Get("ushortArray");
-                //Assert.Equal(ushortArray, resultUShortArray);
-
-                int[] intArray = new int[] {1,11,111};
-                uint[] uintArray = new uint[] { 7,77,777 };
-
-                region.Put("intArray", intArray);
-                var resultIntArray = region.Get("intArray");
-                Assert.Equal(intArray, resultIntArray);
-
-                region.Put("uintArray", uintArray);
-                var resultUIntArray = region.Get("uintArray");
-                Assert.Equal(uintArray, resultUIntArray);
-
-                //doGetWithPdxSerializerC2R();
-                //doQueryTest();
+                pft.NotInclude = "default_value";
+                Assert.Equal(pft, ret);
             }
         }
     }
+  }
 }

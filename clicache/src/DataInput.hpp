@@ -229,6 +229,11 @@ namespace Apache
         /// </summary>
         /// <param name="list">Object which implements System::Collections::IList interface.</param>
         void ReadCollection(System::Collections::IList^ list);
+
+        /// <summary>
+        /// Read a Date array from the stream.
+        /// </summary>
+				array<DateTime>^ ReadDateArray( );
         
         /// <summary>
         /// Read a char array from the stream.
@@ -475,6 +480,9 @@ namespace Apache
         void DataInput::ReadObject(array<UInt16>^% obj);
         void DataInput::ReadObject(array<UInt32>^% obj);
         void DataInput::ReadObject(array<UInt64>^% obj);
+
+        void DataInput::ReadObject(array<DateTime>^% obj);
+
 
         template <typename mType>
         void ReadObject(array<mType>^ %objArray)

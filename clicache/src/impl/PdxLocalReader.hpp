@@ -188,8 +188,13 @@ namespace Apache
         /// Read a Date from the data. 
         /// </summary>
         /// <param name="fieldName">The name of a member field whose value to read.</param>
-        virtual System::DateTime ReadDate( String^ fieldName) ;
-        //virtual void writeFile(String fieldName, File file) ;
+        virtual System::DateTime ReadDate( String^ fieldName);
+
+        /// <summary>
+        /// Read a Date array from the data. 
+        /// </summary>
+        /// <param name="fieldName">The name of a member field whose value to read.</param>
+        virtual array<System::DateTime>^ ReadDateArray( String^ fieldName) ;
 
         /// <summary>
         /// Read a boolean array from the data. 

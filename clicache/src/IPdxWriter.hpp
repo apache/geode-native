@@ -268,6 +268,13 @@ namespace Apache
 					IPdxWriter^ WriteArrayOfSByteArrays(String^ fieldName, array<array<SByte>^>^ byteArrays);
 
 					/// <summary>
+					/// Write an array of dates to the <c>IPdxWriter</c>.
+					/// </summary>
+					/// <param name="fieldName">The name of the field associated with the value.</param>
+					/// <param name="byteArrays">The array of dates to write.</param>
+					IPdxWriter^ WriteDateArray(String^ fieldName, array<DateTime>^ dateTime);
+
+					/// <summary>
 					/// Write a Guid to the <c>IPdxWriter</c>.
 					/// </summary>
 					/// <param name="fieldName">The name of the field associated with the value.</param>
