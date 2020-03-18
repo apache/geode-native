@@ -46,7 +46,7 @@ namespace Apache
           }
         }
 
-        Byte PdxReaderWithTypeCollector::ReadByte(String^ fieldName)
+        Byte PdxReaderWithTypeCollector::ReadUnsignedByte(String^ fieldName)
         {
           checkType(fieldName, PdxFieldTypes::BYTE, "byte");
           m_newPdxType->AddFixedLengthTypeField(fieldName, "byte", PdxFieldTypes::BYTE, native::PdxTypes::BYTE_SIZE);
@@ -62,7 +62,7 @@ namespace Apache
           return 0;
         }
 
-        SByte PdxReaderWithTypeCollector::ReadSByte(String^ fieldName)
+        SByte PdxReaderWithTypeCollector::ReadByte(String^ fieldName)
         {
           checkType(fieldName, PdxFieldTypes::BYTE, "sbyte");
           m_newPdxType->AddFixedLengthTypeField(fieldName, "sbyte", PdxFieldTypes::BYTE, native::PdxTypes::BYTE_SIZE);
@@ -70,7 +70,7 @@ namespace Apache
           if (position != -1)
           {
             m_dataInput->AdvanceCursorPdx(position);
-            SByte retVal = PdxLocalReader::ReadSByte(fieldName);
+            SByte retVal = PdxLocalReader::ReadByte(fieldName);
             m_dataInput->RewindCursorPdx(position);
             return retVal;
           }

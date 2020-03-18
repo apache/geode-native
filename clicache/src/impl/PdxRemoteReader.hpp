@@ -50,16 +50,16 @@ namespace Apache
         
           
         /// <summary>
-        /// Read a byte from the stream.
+        /// Read an unsigned byte from the stream.
         /// </summary>
         /// <param name="fieldName">The name of a member field whose value to read.</param>
-        virtual Byte ReadByte( String^ fieldName )override;
+        virtual Byte ReadUnsignedByte( String^ fieldName )override;
 
         /// <summary>
         /// Read a signed byte from the stream.
         /// </summary>
         /// <param name="fieldName">The name of a member field whose value to read.</param>
-        virtual SByte ReadSByte( String^ fieldName )override;
+        virtual SByte ReadByte( String^ fieldName )override;
 
         /// <summary>
         /// Read a boolean value from the stream.

@@ -36,14 +36,14 @@ namespace Apache
         
         
 
-        Byte PdxRemoteReader::ReadByte( String^ fieldName )
+        Byte PdxRemoteReader::ReadUnsignedByte( String^ fieldName )
         {
           int choice = m_localToRemoteMap[m_currentIndex++];
 
           switch(choice)
           {
           case -2:
-            return PdxLocalReader::ReadByte(fieldName);//in same order
+            return PdxLocalReader::ReadUnsignedByte(fieldName);//in same order
           case -1:
             {
               return 0;//null value
@@ -60,14 +60,14 @@ namespace Apache
           }
         }
 
-        SByte PdxRemoteReader::ReadSByte( String^ fieldName )
+        SByte PdxRemoteReader::ReadByte( String^ fieldName )
         {
           int choice = m_localToRemoteMap[m_currentIndex++];
 
           switch(choice)
           {
           case -2:
-            return PdxLocalReader::ReadSByte(fieldName);//in same order
+            return PdxLocalReader::ReadByte(fieldName);//in same order
           case -1:
             {
               return 0;//null value
@@ -77,7 +77,7 @@ namespace Apache
               //sequence id read field and then update
               int position = m_pdxType->GetFieldPosition(choice, m_offsetsBuffer, m_offsetSize, m_serializedLength);
               m_dataInput->ResetAndAdvanceCursorPdx(position);
-              SByte retVal = PdxLocalReader::ReadSByte(fieldName);
+              SByte retVal = PdxLocalReader::ReadByte(fieldName);
               m_dataInput->RewindCursorPdx(position);
               return retVal;
             }

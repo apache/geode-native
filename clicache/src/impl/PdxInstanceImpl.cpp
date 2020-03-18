@@ -1173,7 +1173,7 @@ namespace Apache
             }
             case PdxFieldTypes::LONG_ARRAY:
             {
-              return dataInput->ReadInt64Array();
+              return dataInput->ReadLongArray();
             }
             case PdxFieldTypes::BOOLEAN_ARRAY:
             {

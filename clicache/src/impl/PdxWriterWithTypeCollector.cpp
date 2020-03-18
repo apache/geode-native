@@ -101,17 +101,17 @@ namespace Apache
           return this;
         }
 
-        IPdxWriter^ PdxWriterWithTypeCollector::WriteByte(String^ fieldName, Byte value)
+        IPdxWriter^ PdxWriterWithTypeCollector::WriteByte(String^ fieldName, SByte value)
         {
           m_pdxType->AddFixedLengthTypeField(fieldName, "byte", PdxFieldTypes::BYTE,  native::PdxTypes::BYTE_SIZE);
           PdxLocalWriter::WriteByte(fieldName, value);
           return this;
         }
 
-        IPdxWriter^ PdxWriterWithTypeCollector::WriteSByte(String^ fieldName, SByte value)
+        IPdxWriter^ PdxWriterWithTypeCollector::WriteUnsignedByte(String^ fieldName, Byte value)
         {
-          m_pdxType->AddFixedLengthTypeField(fieldName, "sbyte", PdxFieldTypes::BYTE,  native::PdxTypes::BYTE_SIZE);
-          PdxLocalWriter::WriteSByte(fieldName, value);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "byte", PdxFieldTypes::BYTE,  native::PdxTypes::BYTE_SIZE);
+          PdxLocalWriter::WriteUnsignedByte(fieldName, value);
           return this;
         }
 

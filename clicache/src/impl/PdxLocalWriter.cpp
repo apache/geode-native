@@ -136,7 +136,7 @@ namespace Apache
             if(len <= 0xff)
             {
               for(int i = m_offsets->Length-1; i >0 ; i--)
-                m_dataOutput->WriteByte((Byte)m_offsets[i]);
+                m_dataOutput->WriteByte((SByte)m_offsets[i]);
 
             }
             else if(len <= 0xffff)
@@ -179,7 +179,7 @@ namespace Apache
             return this;
           }
 
-          IPdxWriter^ PdxLocalWriter::WriteByte( String^ fieldName, Byte value )
+          IPdxWriter^ PdxLocalWriter::WriteUnsignedByte( String^ fieldName, Byte value )
           {
 						m_dataOutput->WriteByte(value);
             return this;
@@ -190,7 +190,7 @@ namespace Apache
             m_dataOutput->WriteByte(byte);
           }
 
-          IPdxWriter^ PdxLocalWriter::WriteSByte( String^ fieldName, SByte value )
+          IPdxWriter^ PdxLocalWriter::WriteByte( String^ fieldName, SByte value )
           {
             m_dataOutput->WriteSByte(value);
             return this;
@@ -471,11 +471,11 @@ namespace Apache
             }
             else if(type->Equals(DotNetTypes::SByteType))
             {
-              return this->WriteSByte(fieldName, (SByte)fieldValue);
+              return this->WriteByte(fieldName, (SByte)fieldValue);
             }
             else if(type->Equals(DotNetTypes::ByteType))
             {
-              return this->WriteByte(fieldName, (Byte)fieldValue);
+              return this->WriteUnsignedByte(fieldName, (Byte)fieldValue);
             }
             else if(type->Equals(DotNetTypes::ShortType))
             {

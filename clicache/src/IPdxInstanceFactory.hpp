@@ -87,6 +87,18 @@ namespace Apache
         /// <exception cref="IllegalStateException"/> if the named field has already been written</exception>
           
         IPdxInstanceFactory^ WriteByte(String^ fieldName, SByte value);
+
+        /// <summary>
+        /// Writes the named field with the given value to the serialized form.
+        /// The fields type is <code>unsigned byte</code>.
+        /// <para>Note: Java doesn't have an unsigned types.</para>
+        /// </summary>
+        /// <param name="fieldName"> the name of the field to write</param>
+        /// <param name="value"> the value of the field to write</param>
+        /// <returns> this PdxInstanceFactory</returns>
+        /// <exception cref="IllegalStateException"/> if the named field has already been written</exception>
+          
+        IPdxInstanceFactory^ WriteUnsignedByte(String^ fieldName, Byte value);
   
         /// <summary>
         /// Writes the named field with the given value to the serialized form.
@@ -98,6 +110,17 @@ namespace Apache
         /// <returns> this PdxInstanceFactory</returns>
         /// <exception cref="IllegalStateException"/> if the named field has already been written</exception>
         IPdxInstanceFactory^ WriteShort(String^ fieldName, Int16 value);
+
+        /// <summary>
+        /// Writes the named field with the given value to the serialized form.
+        /// The fields type is <code>unsigned short</code>.
+        /// <para>Note: Java does not have unsigned types.</para>
+        /// </summary>
+        /// <param name="fieldName"> the name of the field to write</param>
+        /// <param name="value"> the value of the field to write</param>
+        /// <returns> this PdxInstanceFactory</returns>
+        /// <exception cref="IllegalStateException"/> if the named field has already been written</exception>
+        IPdxInstanceFactory^ WriteUShort(String^ fieldName, UInt16 value);
   
         /// <summary>
         /// Writes the named field with the given value to the serialized form.
@@ -109,6 +132,17 @@ namespace Apache
         /// <returns> this PdxInstanceFactory</returns>
         /// <exception cref="IllegalStateException"/> if the named field has already been written</exception>
         IPdxInstanceFactory^ WriteInt(String^ fieldName, Int32 value);
+
+        /// <summary>
+        /// Writes the named field with the given value to the serialized form.
+        /// The fields type is <code>int</code>.
+        /// <para>Note: Java doesn't have unsigned types</para>
+        /// </summary>
+        /// <param name="fieldName"> the name of the field to write</param>
+        /// <param name="value"> the value of the field to write</param>
+        /// <returns> this PdxInstanceFactory</returns>
+        /// <exception cref="IllegalStateException"/> if the named field has already been written</exception>
+        IPdxInstanceFactory^ WriteUInt(String^ fieldName, UInt32 value);
   
         /// <summary>
         /// Writes the named field with the given value to the serialized form.
@@ -120,6 +154,17 @@ namespace Apache
         /// <exception cref="IllegalStateException"/> if the named field has already been written</exception>
         /// </summary> 
         IPdxInstanceFactory^ WriteLong(String^ fieldName, Int64 value);
+
+        /// <summary>
+        /// Writes the named field with the given value to the serialized form.
+        /// The fields type is <code>unsigned long</code>.
+        /// <para>Note: Java doesn't have unsigned types.</para>
+        /// <param name="fieldName"> the name of the field to write</param>
+        /// <param name="value"> the value of the field to write</param>
+        /// <returns> this PdxInstanceFactory</returns>
+        /// <exception cref="IllegalStateException"/> if the named field has already been written</exception>
+        /// </summary> 
+        IPdxInstanceFactory^ WriteULong(String^ fieldName, UInt64 value);
   
         /// <summary>
         /// Writes the named field with the given value to the serialized form.
@@ -215,6 +260,17 @@ namespace Apache
         /// <returns> this PdxInstanceFactory</returns>
         /// <exception cref="IllegalStateException"/> if the named field has already been written</exception>
         IPdxInstanceFactory^ WriteByteArray(String^ fieldName, array<Byte>^ value);
+
+        /// <summary>
+        /// Writes the named field with the given value to the serialized form.
+        /// The fields type is <code>sbyte[]</code>.
+        /// <para>Java byte[] is mapped to .NET System.Byte[].</para>
+        /// </summary>
+        /// <param name="fieldName"> the name of the field to write</param>
+        /// <param name="value"> the value of the field to write</param>
+        /// <returns> this PdxInstanceFactory</returns>
+        /// <exception cref="IllegalStateException"/> if the named field has already been written</exception>
+        IPdxInstanceFactory^ WriteSByteArray(String^ fieldName, array<SByte>^ value);
         
         /// <summary>
         /// Writes the named field with the given value to the serialized form.
@@ -226,6 +282,17 @@ namespace Apache
         /// <returns> this PdxInstanceFactory</returns>
         /// <exception cref="IllegalStateException"/> if the named field has already been written</exception>
         IPdxInstanceFactory^ WriteShortArray(String^ fieldName, array<Int16>^ value);
+
+        /// <summary>
+        /// Writes the named field with the given value to the serialized form.
+        /// The fields type is <code>ushort[]</code>.
+        /// <para>Note: Java doesn't have unsigned types.</para>
+        /// </summary>
+        /// <param name="fieldName"> the name of the field to write</param>
+        /// <param name="value"> the value of the field to write</param>
+        /// <returns> this PdxInstanceFactory</returns>
+        /// <exception cref="IllegalStateException"/> if the named field has already been written</exception>
+        IPdxInstanceFactory^ WriteUShortArray(String^ fieldName, array<UInt16>^ value);
         
         /// <summary>
         /// Writes the named field with the given value to the serialized form.
@@ -237,6 +304,17 @@ namespace Apache
         /// <returns> this PdxInstanceFactory</returns>
         /// <exception cref="IllegalStateException"/> if the named field has already been written</exception>
         IPdxInstanceFactory^ WriteIntArray(String^ fieldName, array<Int32>^ value);
+
+        /// <summary>
+        /// Writes the named field with the given value to the serialized form.
+        /// The fields type is <code>uint[]</code>.
+        /// <para>Note: Java doesn't have unsigned types.</para>
+        /// </summary>
+        /// <param name="fieldName"> the name of the field to write</param>
+        /// <param name="value"> the value of the field to write</param>
+        /// <returns> this PdxInstanceFactory</returns>
+        /// <exception cref="IllegalStateException"/> if the named field has already been written</exception>
+        IPdxInstanceFactory^ WriteUIntArray(String^ fieldName, array<UInt32>^ value);
         
         /// <summary>
         /// Writes the named field with the given value to the serialized form.
@@ -248,6 +326,17 @@ namespace Apache
         /// <returns> this PdxInstanceFactory</returns>
         /// <exception cref="IllegalStateException"/> if the named field has already been written</exception>
         IPdxInstanceFactory^ WriteLongArray(String^ fieldName, array<Int64>^ value);
+
+        /// <summary>
+        /// Writes the named field with the given value to the serialized form.
+        /// The fields type is <code>ulong[]</code>.
+        /// <para>Note: Java doesn't have unsigned types.</para>
+        /// </summary>
+        /// <param name="fieldName"> the name of the field to write</param>
+        /// <param name="value"> the value of the field to write</param>
+        /// <returns> this PdxInstanceFactory</returns>
+        /// <exception cref="IllegalStateException"/> if the named field has already been written</exception>
+        IPdxInstanceFactory^ WriteULongArray(String^ fieldName, array<UInt64>^ value);
         
         /// <summary>
         /// Writes the named field with the given value to the serialized form.
@@ -304,6 +393,17 @@ namespace Apache
         /// <returns> this PdxInstanceFactory</returns>
         /// <exception cref="IllegalStateException"/> if the named field has already been written</exception>
         IPdxInstanceFactory^ WriteArrayOfByteArrays(String^ fieldName, array<array<Byte>^>^ value);
+        
+        /// <summary>
+        /// Writes the named field with the given value to the serialized form.
+        /// The fields type is <code>sbyte[][]</code>.
+        /// <para>Note: Java doesn't have unsigned types.</para>
+        /// </summary>
+        /// <param name="fieldName"> the name of the field to write</param>
+        /// <param name="value"> the value of the field to write</param>
+        /// <returns> this PdxInstanceFactory</returns>
+        /// <exception cref="IllegalStateException"/> if the named field has already been written</exception>
+        IPdxInstanceFactory^ WriteArrayOfSByteArrays(String^ fieldName, array<array<SByte>^>^ value);
         
         /// <summary>
         /// Writes the named field with the given value and type to the serialized form.

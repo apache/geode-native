@@ -847,7 +847,7 @@ namespace Apache.Geode.Client.UnitTests
       PdxType.GenericValCompare(bl, dPdxType.Bool);
       PdxType.GenericCompare((bool[]) ret.GetField("m_boolArray"), dPdxType.BoolArray);
 
-      PdxType.GenericValCompare((sbyte) ret.GetField("m_byte"), dPdxType.Byte);
+      PdxType.GenericValCompare((byte) ret.GetField("m_byte"), dPdxType.Byte);
       PdxType.GenericCompare((byte[]) ret.GetField("m_byteArray"), dPdxType.ByteArray);
 
 
@@ -889,12 +889,12 @@ namespace Apache.Geode.Client.UnitTests
       PdxType.GenericCompare((long[]) ret.GetField("m_longArray"), dPdxType.LongArray);
       PdxType.GenericCompare((short[]) ret.GetField("m_int16Array"), dPdxType.Int16Array);
       PdxType.GenericValCompare((sbyte) ret.GetField("m_sbyte"), dPdxType.Sbyte);
-      PdxType.GenericCompare((byte[]) ret.GetField("m_sbyteArray"), dPdxType.SbyteArray);
+      PdxType.GenericCompare((sbyte[]) ret.GetField("m_sbyteArray"), dPdxType.SbyteArray);
       PdxType.GenericCompare((string[]) ret.GetField("m_stringArray"), dPdxType.StringArray);
-      PdxType.GenericValCompare((short) ret.GetField("m_uint16"), dPdxType.Uint16);
-      PdxType.GenericValCompare((int) ret.GetField("m_uint32"), dPdxType.Uint32);
-      PdxType.GenericValCompare((long) ret.GetField("m_ulong"), dPdxType.Ulong);
-      PdxType.GenericCompare((int[]) ret.GetField("m_uint32Array"), dPdxType.Uint32Array);
+      PdxType.GenericValCompare((ushort) ret.GetField("m_uint16"), dPdxType.Uint16);
+      PdxType.GenericValCompare((uint) ret.GetField("m_uint32"), dPdxType.Uint32);
+      PdxType.GenericValCompare((ulong) ret.GetField("m_ulong"), dPdxType.Ulong);
+      PdxType.GenericCompare((uint[]) ret.GetField("m_uint32Array"), dPdxType.Uint32Array);
 
       PdxType.GenericCompare((double[]) ret.GetField("m_doubleArray"), dPdxType.DoubleArray);
       PdxType.GenericValCompare((float) ret.GetField("m_float"), dPdxType.Float);
@@ -904,8 +904,8 @@ namespace Apache.Geode.Client.UnitTests
       PdxType.GenericValCompare((long) ret.GetField("m_long"), dPdxType.Long);
       PdxType.GenericCompare((int[]) ret.GetField("m_int32Array"), dPdxType.Int32Array);
 
-      PdxType.GenericCompare((long[]) ret.GetField("m_ulongArray"), dPdxType.UlongArray);
-      PdxType.GenericCompare((short[]) ret.GetField("m_uint16Array"), dPdxType.Uint16Array);
+      PdxType.GenericCompare((ulong[]) ret.GetField("m_ulongArray"), dPdxType.UlongArray);
+      PdxType.GenericCompare((ushort[]) ret.GetField("m_uint16Array"), dPdxType.Uint16Array);
 
       var retbA = (byte[]) ret.GetField("m_byte252");
       if (retbA.Length != 252)

@@ -199,14 +199,14 @@ namespace Apache.Geode.Client.FwkLib
             pif.WriteChar("m_char", pt.Char);
             pif.WriteBoolean("m_bool", pt.Bool);
             pif.WriteByte("m_sbyte", pt.Sbyte);
-            pif.WriteByte("m_byte", pt.Byte);
+            pif.WriteUnsignedByte("m_byte", pt.Byte);
             pif.WriteShort("m_int16", pt.Int16);
             pif.WriteByteArray("m_byteArray", pt.ByteArray);
             pif.WriteLong("m_long", pt.Long);
             pif.WriteFloat("m_float", pt.Float);
             pif.WriteDouble("m_double", pt.Double);
             pif.WriteBooleanArray("m_boolArray", pt.BoolArray);
-            pif.WriteByteArray("m_sbyteArray", pt.SbyteArray);
+            pif.WriteSByteArray("m_sbyteArray", pt.SbyteArray);
             pif.WriteCharArray("m_charArray", pt.CharArray);
             pif.WriteDate("m_dateTime", pt.DateTime);
             pif.WriteShortArray("m_int16Array", pt.Int16Array);
@@ -221,12 +221,12 @@ namespace Apache.Geode.Client.FwkLib
             pif.WriteObject("m_vector", pt.Vector);
             pif.WriteObject("m_chs", pt.Chs);
             pif.WriteObject("m_clhs", pt.Clhs);
-            pif.WriteInt("m_uint32", pt.Uint32);
-            pif.WriteLong("m_ulong", pt.Ulong);
-            pif.WriteShort("m_uint16", pt.Uint16);
-            pif.WriteIntArray("m_uint32Array", pt.Uint32Array);
-            pif.WriteLongArray("m_ulongArray", pt.UlongArray);
-            pif.WriteShortArray("m_uint16Array", pt.Uint16Array);
+            pif.WriteUInt("m_uint32", pt.Uint32);
+            pif.WriteULong("m_ulong", pt.Ulong);
+            pif.WriteUShort("m_uint16", pt.Uint16);
+            pif.WriteUIntArray("m_uint32Array", pt.Uint32Array);
+            pif.WriteULongArray("m_ulongArray", pt.UlongArray);
+            pif.WriteUShortArray("m_uint16Array", pt.Uint16Array);
             pif.WriteByteArray("m_byte252", pt.Byte252);
             pif.WriteByteArray("m_byte253", pt.Byte253);
             pif.WriteByteArray("m_byte65535", pt.Byte65535);
@@ -2173,7 +2173,7 @@ namespace Apache.Geode.Client.FwkLib
                     PdxType.GenericValCompare(bl, dPdxType.Bool);
                     PdxType.GenericCompare((bool[])ret.GetField("m_boolArray"), dPdxType.BoolArray);
 
-                    PdxType.GenericValCompare((sbyte)ret.GetField("m_byte"), dPdxType.Byte);
+                    PdxType.GenericValCompare((sbyte)ret.GetField("m_sbyte"), dPdxType.Sbyte);
                     PdxType.GenericCompare((byte[])ret.GetField("m_byteArray"), dPdxType.ByteArray);
 
 
@@ -2215,12 +2215,12 @@ namespace Apache.Geode.Client.FwkLib
                     PdxType.GenericCompare((long[])ret.GetField("m_longArray"), dPdxType.LongArray);
                     PdxType.GenericCompare((Int16[])ret.GetField("m_int16Array"), dPdxType.Int16Array);
                     PdxType.GenericValCompare((sbyte)ret.GetField("m_sbyte"), dPdxType.Sbyte);
-                    PdxType.GenericCompare((byte[])ret.GetField("m_sbyteArray"), dPdxType.SbyteArray);
+                    PdxType.GenericCompare((sbyte[])ret.GetField("m_sbyteArray"), dPdxType.SbyteArray);
                     PdxType.GenericCompare((string[])ret.GetField("m_stringArray"), dPdxType.StringArray);
-                    PdxType.GenericValCompare((Int16)ret.GetField("m_uint16"), dPdxType.Uint16);
-                    PdxType.GenericValCompare((int)ret.GetField("m_uint32"), dPdxType.Uint32);
-                    PdxType.GenericValCompare((long)ret.GetField("m_ulong"), dPdxType.Ulong);
-                    PdxType.GenericCompare((int[])ret.GetField("m_uint32Array"), dPdxType.Uint32Array);
+                    PdxType.GenericValCompare((UInt16)ret.GetField("m_uint16"), dPdxType.Uint16);
+                    PdxType.GenericValCompare((uint)ret.GetField("m_uint32"), dPdxType.Uint32);
+                    PdxType.GenericValCompare((ulong)ret.GetField("m_ulong"), dPdxType.Ulong);
+                    PdxType.GenericCompare((uint[])ret.GetField("m_uint32Array"), dPdxType.Uint32Array);
 
                     PdxType.GenericCompare((double[])ret.GetField("m_doubleArray"), dPdxType.DoubleArray);
                     PdxType.GenericValCompare((float)ret.GetField("m_float"), dPdxType.Float);
@@ -2230,8 +2230,8 @@ namespace Apache.Geode.Client.FwkLib
                     PdxType.GenericValCompare((long)ret.GetField("m_long"), dPdxType.Long);
                     PdxType.GenericCompare((int[])ret.GetField("m_int32Array"), dPdxType.Int32Array);
 
-                    PdxType.GenericCompare((long[])ret.GetField("m_ulongArray"), dPdxType.UlongArray);
-                    PdxType.GenericCompare((Int16[])ret.GetField("m_uint16Array"), dPdxType.Uint16Array);
+                    PdxType.GenericCompare((ulong[])ret.GetField("m_ulongArray"), dPdxType.UlongArray);
+                    PdxType.GenericCompare((UInt16[])ret.GetField("m_uint16Array"), dPdxType.Uint16Array);
 
                     byte[] retbA = (byte[])ret.GetField("m_byte252");
                     if (retbA.Length != 252)

@@ -151,11 +151,11 @@ namespace Apache
                 case FieldType::BOOLEAN:
                   w->WriteBoolean(m_fieldName, (bool)value);
                   break;
-			          case FieldType::SBYTE:
-                  w->WriteSByte(m_fieldName, (SByte)value);
-                  break;
 			          case FieldType::BYTE:
-                  w->WriteByte(m_fieldName, (Byte)value);
+                  w->WriteUnsignedByte(m_fieldName, (Byte)value);
+                  break;
+			          case FieldType::SBYTE:
+                  w->WriteByte(m_fieldName, (SByte)value);
                   break;
 			          case FieldType::CHAR:
                   w->WriteChar(m_fieldName, (Char)value);
@@ -206,13 +206,13 @@ namespace Apache
                   w->WriteByteArray(m_fieldName, (array<Byte>^)value);
                   break;
 			          case FieldType::SHORT_ARRAY:
-                  w->WriteShortArray(m_fieldName, (array<SHORT>^)value);
+                  w->WriteShortArray(m_fieldName, (array<Int16>^)value);
                   break;
 			          case FieldType::USHORT_ARRAY:
-                  w->WriteUShortArray(m_fieldName, (array<USHORT>^)value);
+                  w->WriteUShortArray(m_fieldName, (array<UInt16>^)value);
                   break;
 			          case FieldType::INT_ARRAY:
-                  w->WriteIntArray(m_fieldName, (array<int>^)value);
+                  w->WriteIntArray(m_fieldName, (array<Int32>^)value);
                   break;
 			          case FieldType::UINT_ARRAY:
                   w->WriteUIntArray(m_fieldName, (array<UINT>^)value);
@@ -242,7 +242,7 @@ namespace Apache
                   w->WriteArrayOfSByteArrays(m_fieldName, (array<array<SByte>^>^)value);
                   break;
 			          case FieldType::GUID:
-                  w->WriteGuid(m_fieldName, (System::Guid)value);
+                  w->WriteGuid(m_fieldName, (Guid)value);
                   break;
 			          default:
                   throw gcnew IllegalStateException("Not found FieldType: " + m_fieldType.ToString());
@@ -257,10 +257,10 @@ namespace Apache
                   return r->ReadBoolean(m_fieldName);
                   break;
 			          case FieldType::SBYTE:
-                  return r->ReadSByte(m_fieldName);
+                  return r->ReadByte(m_fieldName);
                   break;
 			          case FieldType::BYTE:
-                  return r->ReadByte(m_fieldName);
+                  return r->ReadUnsignedByte(m_fieldName);
                   break;
 			          case FieldType::CHAR:
                   return r->ReadChar(m_fieldName);
@@ -643,27 +643,6 @@ namespace Apache
             Log::Debug("ReflectionBasedAutoSerializer::getPdxFieldType type = {0}", type);
             return FieldType::OBJECT;
           }
-
-          // Mikes: Check for types with no default ctor
-          //else if (type->Equals(Type::GetType("System.Guid")))
-          //{
-          //    throw gcnew IllegalStateException("WriteField unable to serialize  " 
-				  		  //+ type);
-          //}
-
-
-
-
-          // Matt and Mike Fix
-          //else if (type->Equals(Internal::DotNetTypes::ObjectType) ||
-          //         type->Equals(Internal::DotNetTypes::ObjectArrayType) ||
-          //         type->Equals(Internal::DotNetTypes::ObjectMapType))
-          //{
-          //  return FieldType::OBJECT;
-          //}
-          //Log::Debug("ReflectionBasedAutoSerializer::getPdxFieldType type = {0}", type);
-          //throw gcnew IllegalStateException("WriteField unable to serialize  " 
-				  				//										+ type); 
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache

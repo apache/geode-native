@@ -80,6 +80,14 @@ namespace Apache
         IPdxInstanceFactory^ PdxInstanceFactoryImpl::WriteByte(String^ fieldName, SByte value)
         {
           isFieldAdded(fieldName);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "sbyte", PdxFieldTypes::BYTE, native::PdxTypes::BYTE_SIZE);
+          m_FieldVsValues->Add(fieldName, value);
+          return this;
+        }
+
+        IPdxInstanceFactory^ PdxInstanceFactoryImpl::WriteUnsignedByte(String^ fieldName, Byte value)
+        {
+          isFieldAdded(fieldName);
           m_pdxType->AddFixedLengthTypeField(fieldName, "byte", PdxFieldTypes::BYTE, native::PdxTypes::BYTE_SIZE);
           m_FieldVsValues->Add(fieldName, value);
           return this;
@@ -93,6 +101,14 @@ namespace Apache
           return this;
         }
 
+        IPdxInstanceFactory^ PdxInstanceFactoryImpl::WriteUShort(String^ fieldName, UInt16 value)
+        {
+          isFieldAdded(fieldName);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "ushort", PdxFieldTypes::SHORT, native::PdxTypes::SHORT_SIZE);
+          m_FieldVsValues->Add(fieldName, value);
+          return this;
+        }
+
         IPdxInstanceFactory^ PdxInstanceFactoryImpl::WriteInt(String^ fieldName, Int32 value)
         {
           isFieldAdded(fieldName);
@@ -101,10 +117,26 @@ namespace Apache
           return this;
         }
 
+        IPdxInstanceFactory^ PdxInstanceFactoryImpl::WriteUInt(String^ fieldName, UInt32 value)
+        {
+          isFieldAdded(fieldName);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "uint", PdxFieldTypes::INT, native::PdxTypes::INTEGER_SIZE);
+          m_FieldVsValues->Add(fieldName, value);
+          return this;
+        }
+
         IPdxInstanceFactory^ PdxInstanceFactoryImpl::WriteLong(String^ fieldName, Int64 value)
         {
           isFieldAdded(fieldName);
           m_pdxType->AddFixedLengthTypeField(fieldName, "long", PdxFieldTypes::LONG, native::PdxTypes::LONG_SIZE);
+          m_FieldVsValues->Add(fieldName, value);
+          return this;
+        }
+
+        IPdxInstanceFactory^ PdxInstanceFactoryImpl::WriteULong(String^ fieldName, UInt64 value)
+        {
+          isFieldAdded(fieldName);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "ulong", PdxFieldTypes::LONG, native::PdxTypes::LONG_SIZE);
           m_FieldVsValues->Add(fieldName, value);
           return this;
         }
@@ -173,10 +205,26 @@ namespace Apache
           return this;
         }
 
+        IPdxInstanceFactory^ PdxInstanceFactoryImpl::WriteSByteArray(String^ fieldName, array<SByte>^ value)
+        {
+          isFieldAdded(fieldName);
+          m_pdxType->AddVariableLengthTypeField(fieldName, "sbyte[]", PdxFieldTypes::BYTE_ARRAY);
+          m_FieldVsValues->Add(fieldName, value);
+          return this;
+        }
+
         IPdxInstanceFactory^ PdxInstanceFactoryImpl::WriteShortArray(String^ fieldName, array<Int16>^ value)
         {
           isFieldAdded(fieldName);
           m_pdxType->AddVariableLengthTypeField(fieldName, "short[]", PdxFieldTypes::SHORT_ARRAY);
+          m_FieldVsValues->Add(fieldName, value);
+          return this;
+        }
+
+        IPdxInstanceFactory^ PdxInstanceFactoryImpl::WriteUShortArray(String^ fieldName, array<UInt16>^ value)
+        {
+          isFieldAdded(fieldName);
+          m_pdxType->AddVariableLengthTypeField(fieldName, "ushort[]", PdxFieldTypes::SHORT_ARRAY);
           m_FieldVsValues->Add(fieldName, value);
           return this;
         }
@@ -189,10 +237,26 @@ namespace Apache
           return this;
         }
 
+        IPdxInstanceFactory^ PdxInstanceFactoryImpl::WriteUIntArray(String^ fieldName, array<UInt32>^ value)
+        {
+          isFieldAdded(fieldName);
+          m_pdxType->AddVariableLengthTypeField(fieldName, "uint[]", PdxFieldTypes::INT_ARRAY);
+          m_FieldVsValues->Add(fieldName, value);
+          return this;
+        }
+
         IPdxInstanceFactory^ PdxInstanceFactoryImpl::WriteLongArray(String^ fieldName, array<Int64>^ value)
         {
           isFieldAdded(fieldName);
           m_pdxType->AddVariableLengthTypeField(fieldName, "long[]", PdxFieldTypes::LONG_ARRAY);
+          m_FieldVsValues->Add(fieldName, value);
+          return this;
+        }
+
+        IPdxInstanceFactory^ PdxInstanceFactoryImpl::WriteULongArray(String^ fieldName, array<UInt64>^ value)
+        {
+          isFieldAdded(fieldName);
+          m_pdxType->AddVariableLengthTypeField(fieldName, "ulong[]", PdxFieldTypes::LONG_ARRAY);
           m_FieldVsValues->Add(fieldName, value);
           return this;
         }
@@ -233,6 +297,14 @@ namespace Apache
         {
           isFieldAdded(fieldName);
           m_pdxType->AddVariableLengthTypeField(fieldName, "byte[][]", PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS);
+          m_FieldVsValues->Add(fieldName, value);
+          return this;
+        }
+
+        IPdxInstanceFactory^ PdxInstanceFactoryImpl::WriteArrayOfSByteArrays(String^ fieldName, array<array<SByte>^>^ value)
+        {
+          isFieldAdded(fieldName);
+          m_pdxType->AddVariableLengthTypeField(fieldName, "sbyte[][]", PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS);
           m_FieldVsValues->Add(fieldName, value);
           return this;
         }

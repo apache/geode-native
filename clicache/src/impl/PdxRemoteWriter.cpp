@@ -85,17 +85,17 @@ namespace Apache
           return this;
         }
 
-        IPdxWriter^ PdxRemoteWriter::WriteByte(String^ fieldName, Byte value)
+        IPdxWriter^ PdxRemoteWriter::WriteByte(String^ fieldName, SByte value)
         {
           writePreserveData();
           PdxLocalWriter::WriteByte(fieldName, value);
           return this;
         }
 
-        IPdxWriter^ PdxRemoteWriter::WriteSByte(String^ fieldName, SByte value)
+        IPdxWriter^ PdxRemoteWriter::WriteUnsignedByte(String^ fieldName, Byte value)
         {
           writePreserveData();
-          PdxLocalWriter::WriteSByte(fieldName, value);
+          PdxLocalWriter::WriteUnsignedByte(fieldName, value);
           return this;
 
         }

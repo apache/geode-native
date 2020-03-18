@@ -115,14 +115,14 @@ namespace Apache
           return m_pdxRemotePreserveData;
         }
 
-        Byte PdxLocalReader::ReadByte( String^ fieldName )
+        Byte PdxLocalReader::ReadUnsignedByte( String^ fieldName )
         {
 					return m_dataInput->ReadByte();
         }
 
-        SByte PdxLocalReader::ReadSByte( String^ fieldName )
+        SByte PdxLocalReader::ReadByte( String^ fieldName )
         {
-          return m_dataInput->ReadSByte();
+          return m_dataInput->ReadByte();
         }
 
 				Boolean PdxLocalReader::ReadBoolean( String^ fieldName )
@@ -274,7 +274,7 @@ namespace Apache
         {
          // array<Int64>^ arr;
          // m_dataInput->ReadObject(arr);
-          return m_dataInput->ReadInt64Array();
+          return m_dataInput->ReadLongArray();
         }
 
         array<System::UInt64>^ PdxLocalReader::ReadULongArray(String^ fieldName )
@@ -371,11 +371,11 @@ namespace Apache
             }
             else if(type->Equals(DotNetTypes::SByteType))
             {
-              return this->ReadSByte(fieldName);
+              return this->ReadByte(fieldName);
             }
             else if(type->Equals(DotNetTypes::ByteType))
             {
-              return this->ReadByte(fieldName);
+              return this->ReadUnsignedByte(fieldName);
             }
             else if(type->Equals(DotNetTypes::ShortType))
             {

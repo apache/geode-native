@@ -763,7 +763,7 @@ namespace PdxTests
       m_bool = GenericValCompare(bl, m_bool);
       m_boolArray = GenericCompare(reader.ReadBooleanArray("m_boolArray"), m_boolArray);
 
-      m_byte = GenericValCompare(reader.ReadByte("m_byte"), m_byte);
+      m_sbyte = GenericValCompare(reader.ReadByte("m_sbyte"), m_sbyte);
       m_byteArray = GenericCompare(reader.ReadByteArray("m_byteArray"), m_byteArray);
       m_charArray = GenericCompare(reader.ReadCharArray("m_charArray"), m_charArray);
 
@@ -811,7 +811,7 @@ namespace PdxTests
       m_int32Array = GenericCompare(reader.ReadIntArray("m_int32Array"), m_int32Array);
       m_longArray = GenericCompare(reader.ReadLongArray("m_longArray"), m_longArray);
       m_int16Array = GenericCompare(reader.ReadShortArray("m_int16Array"), m_int16Array);
-      m_sbyte = GenericValCompare(reader.ReadSByte("m_sbyte"), m_sbyte);
+      m_byte = GenericValCompare(reader.ReadUnsignedByte("m_byte"), m_byte);
 
       m_sbyteArray = GenericCompare(reader.ReadSByteArray("m_sbyteArray"), m_sbyteArray);
       m_stringArray = GenericCompare(reader.ReadStringArray("m_stringArray"), m_stringArray);
@@ -877,7 +877,7 @@ namespace PdxTests
       writer.WriteChar("m_char", m_char);
       writer.WriteBoolean("m_bool", m_bool);
       writer.WriteBooleanArray("m_boolArray", m_boolArray);
-      writer.WriteByte("m_byte", m_byte);
+      writer.WriteByte("m_sbyte", m_sbyte);
       writer.WriteByteArray("m_byteArray", m_byteArray);
       writer.WriteCharArray("m_charArray", m_charArray);
       //writer.WriteCollection("m_list", m_list);
@@ -902,7 +902,7 @@ namespace PdxTests
       writer.WriteIntArray("m_int32Array", m_int32Array);
       writer.WriteLongArray("m_longArray", m_longArray);
       writer.WriteShortArray("m_int16Array", m_int16Array);
-      writer.WriteSByte("m_sbyte", m_sbyte);
+      writer.WriteUnsignedByte("m_byte", m_byte);
       writer.WriteSByteArray("m_sbyteArray", m_sbyteArray);
       writer.WriteStringArray("m_stringArray", m_stringArray);
       writer.WriteUShort("m_uint16", m_uint16);

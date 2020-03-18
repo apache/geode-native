@@ -268,7 +268,7 @@ namespace Apache
         /// <summary>
         /// Read a long array from the stream.
         /// </summary>
-				array<Int64>^ ReadInt64Array();
+				array<Int64>^ ReadLongArray();
 
         /// <summary>
         /// Read an usigned long array from the stream.

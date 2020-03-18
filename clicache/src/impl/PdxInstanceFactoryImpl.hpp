@@ -84,7 +84,7 @@ namespace Apache
     
          /// </summary>
          /// Writes the named field with the given value to the serialized form.
-         /// The fields type is <code>byte</code>.
+         /// The fields type is <code>sbyte</code>.
          /// <p>Java byte is mapped to .NET System.SByte.
          /// @param fieldName the name of the field to write
          /// @param value the value of the field to write
@@ -93,6 +93,18 @@ namespace Apache
          /// @throws PdxSerializationException if serialization of the field fails.
          /// </summary> 
          virtual IPdxInstanceFactory^ WriteByte(String^ fieldName, SByte value);
+
+         /// </summary>
+         /// Writes the named field with the given value to the serialized form.
+         /// The fields type is <code>byte</code>.
+         /// <p>Note: Java doesn't have unsigned types.
+         /// @param fieldName the name of the field to write
+         /// @param value the value of the field to write
+         /// @return this PdxInstanceFactory
+         /// @throws PdxFieldAlreadyExistsException if the named field has already been written
+         /// @throws PdxSerializationException if serialization of the field fails.
+         /// </summary> 
+         virtual IPdxInstanceFactory^ WriteUnsignedByte(String^ fieldName, Byte value);
   
          /// <summary>
          /// Writes the named field with the given value to the serialized form.
@@ -105,6 +117,18 @@ namespace Apache
          /// @throws PdxSerializationException if serialization of the field fails.
          /// </summary>
          virtual IPdxInstanceFactory^ WriteShort(String^ fieldName, Int16 value);
+
+         /// <summary>
+         /// Writes the named field with the given value to the serialized form.
+         /// The fields type is <code>ushort</code>.
+         /// <p>Note: Java doesn't have unsigned types.
+         /// @param fieldName the name of the field to write
+         /// @param value the value of the field to write
+         /// @return this PdxInstanceFactory
+         /// @throws PdxFieldAlreadyExistsException if the named field has already been written
+         /// @throws PdxSerializationException if serialization of the field fails.
+         /// </summary>
+         virtual IPdxInstanceFactory^ WriteUShort(String^ fieldName, UInt16 value);
   
          /// <summary>
          /// Writes the named field with the given value to the serialized form.
@@ -117,6 +141,18 @@ namespace Apache
          /// @throws PdxSerializationException if serialization of the field fails.
          /// </summary>
          virtual IPdxInstanceFactory^ WriteInt(String^ fieldName, Int32 value);
+
+         /// <summary>
+         /// Writes the named field with the given value to the serialized form.
+         /// The fields type is <code>uint</code>.
+         /// <p>Note: Java doesn't have unsigned types.
+         /// @param fieldName the name of the field to write
+         /// @param value the value of the field to write
+         /// @return this PdxInstanceFactory
+         /// @throws PdxFieldAlreadyExistsException if the named field has already been written
+         /// @throws PdxSerializationException if serialization of the field fails.
+         /// </summary>
+         virtual IPdxInstanceFactory^ WriteUInt(String^ fieldName, UInt32 value);
   
          /// <summary>
          /// Writes the named field with the given value to the serialized form.
@@ -129,6 +165,18 @@ namespace Apache
          /// @throws PdxSerializationException if serialization of the field fails.
          /// </summary> 
          virtual IPdxInstanceFactory^ WriteLong(String^ fieldName, Int64 value);
+
+         /// <summary>
+         /// Writes the named field with the given value to the serialized form.
+         /// The fields type is <code>ulong</code>.
+         /// <p>Note: Java doesn't have unsigned types.
+         /// @param fieldName the name of the field to write
+         /// @param value the value of the field to write
+         /// @return this PdxInstanceFactory
+         /// @throws PdxFieldAlreadyExistsException if the named field has already been written
+         /// @throws PdxSerializationException if serialization of the field fails.
+         /// </summary> 
+         virtual IPdxInstanceFactory^ WriteULong(String^ fieldName, UInt64 value);
   
          /// <summary>
          /// Writes the named field with the given value to the serialized form.
@@ -225,7 +273,7 @@ namespace Apache
          /// <summary>
          /// Writes the named field with the given value to the serialized form.
          /// The fields type is <code>byte[]</code>.
-         /// <p>Java byte[] is mapped to .NET System.Byte[].
+         /// <p>Note: Java doesn't have unsigned types.
          /// @param fieldName the name of the field to write
          /// @param value the value of the field to write
          /// @return this PdxInstanceFactory
@@ -233,6 +281,18 @@ namespace Apache
          /// @throws PdxSerializationException if serialization of the field fails.
          /// </summary>
          virtual IPdxInstanceFactory^ WriteByteArray(String^ fieldName, array<Byte>^ value);
+
+         /// <summary>
+         /// Writes the named field with the given value to the serialized form.
+         /// The fields type is <code>sbyte[]</code>.
+         /// <p>Java byte[] is mapped to .NET System.SByte[].
+         /// @param fieldName the name of the field to write
+         /// @param value the value of the field to write
+         /// @return this PdxInstanceFactory
+         /// @throws PdxFieldAlreadyExistsException if the named field has already been written
+         /// @throws PdxSerializationException if serialization of the field fails.
+         /// </summary>
+         virtual IPdxInstanceFactory^ WriteSByteArray(String^ fieldName, array<SByte>^ value);
         
          /// <summary>
          /// Writes the named field with the given value to the serialized form.
@@ -245,6 +305,18 @@ namespace Apache
          /// @throws PdxSerializationException if serialization of the field fails.
          /// </summary>
          virtual IPdxInstanceFactory^ WriteShortArray(String^ fieldName, array<Int16>^ value);
+
+         /// <summary>
+         /// Writes the named field with the given value to the serialized form.
+         /// The fields type is <code>ushort[]</code>.
+         /// <p>Note: Java doesn't have unsigned types.
+         /// @param fieldName the name of the field to write
+         /// @param value the value of the field to write
+         /// @return this PdxInstanceFactory
+         /// @throws PdxFieldAlreadyExistsException if the named field has already been written
+         /// @throws PdxSerializationException if serialization of the field fails.
+         /// </summary>
+         virtual IPdxInstanceFactory^ WriteUShortArray(String^ fieldName, array<UInt16>^ value);
         
          /// <summary>
          /// Writes the named field with the given value to the serialized form.
@@ -257,6 +329,18 @@ namespace Apache
          /// @throws PdxSerializationException if serialization of the field fails.
          /// </summary>
          virtual IPdxInstanceFactory^ WriteIntArray(String^ fieldName, array<Int32>^ value);
+
+         /// <summary>
+         /// Writes the named field with the given value to the serialized form.
+         /// The fields type is <code>uint[]</code>.
+         /// <p>Note: Java doesn't have unsigned types.
+         /// @param fieldName the name of the field to write
+         /// @param value the value of the field to write
+         /// @return this PdxInstanceFactory
+         /// @throws PdxFieldAlreadyExistsException if the named field has already been written
+         /// @throws PdxSerializationException if serialization of the field fails.
+         /// </summary>
+         virtual IPdxInstanceFactory^ WriteUIntArray(String^ fieldName, array<UInt32>^ value);
         
          /// <summary>
          /// Writes the named field with the given value to the serialized form.
@@ -269,6 +353,18 @@ namespace Apache
          /// @throws PdxSerializationException if serialization of the field fails.
          /// </summary>
          virtual  IPdxInstanceFactory^ WriteLongArray(String^ fieldName, array<Int64>^ value);
+
+         /// <summary>
+         /// Writes the named field with the given value to the serialized form.
+         /// The fields type is <code>long[]</code>.
+         /// <p>Note: Java doesn't have unsigned types.
+         /// @param fieldName the name of the field to write
+         /// @param value the value of the field to write
+         /// @return this PdxInstanceFactory
+         /// @throws PdxFieldAlreadyExistsException if the named field has already been written
+         /// @throws PdxSerializationException if serialization of the field fails.
+         /// </summary>
+         virtual  IPdxInstanceFactory^ WriteULongArray(String^ fieldName, array<UInt64>^ value);
         
          /// <summary>
          /// Writes the named field with the given value to the serialized form.
@@ -320,10 +416,11 @@ namespace Apache
          /// @throws PdxSerializationException if serialization of the field fails.
          /// </summary>
          virtual IPdxInstanceFactory^ WriteObjectArray(String^ fieldName, System::Collections::Generic::List<Object^>^ value);              
+
          /// <summary>
          /// Writes the named field with the given value to the serialized form.
          /// The fields type is <code>byte[][]</code>.
-         /// <p>Java byte[][] is mapped to .NET System.Byte[][].
+         /// <p>Note: Java doesn't have unsigned types.
          /// @param fieldName the name of the field to write
          /// @param value the value of the field to write
          /// @return this PdxInstanceFactory
@@ -331,6 +428,18 @@ namespace Apache
          /// @throws PdxSerializationException if serialization of the field fails.
          /// </summary>
          virtual IPdxInstanceFactory^ WriteArrayOfByteArrays(String^ fieldName, array<array<Byte>^>^ value);
+
+         /// <summary>
+         /// Writes the named field with the given value to the serialized form.
+         /// The fields type is <code>sbyte[][]</code>.
+         /// <p>Java byte[][] is mapped to .NET System.Byte[][].
+         /// @param fieldName the name of the field to write
+         /// @param value the value of the field to write
+         /// @return this PdxInstanceFactory
+         /// @throws PdxFieldAlreadyExistsException if the named field has already been written
+         /// @throws PdxSerializationException if serialization of the field fails.
+         /// </summary>
+         virtual IPdxInstanceFactory^ WriteArrayOfSByteArrays(String^ fieldName, array<array<SByte>^>^ value);
         
          /// <summary>
          /// Writes the named field with the given value and type to the serialized form.

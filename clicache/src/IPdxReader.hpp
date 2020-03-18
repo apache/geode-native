@@ -46,13 +46,13 @@ namespace Apache
 					/// Read a signed byte from the stream.
 					/// </summary>
 					/// <param name="fieldName">The name of a member field whose value to read.</param>
-					SByte ReadSByte( String^ fieldName );
+					SByte ReadByte( String^ fieldName );
 
 					/// <summary>
-					/// Read a byte from the stream.
+					/// Read an unsigned byte from the stream.
 					/// </summary>
 					/// <param name="fieldName">The name of a member field whose value to read.</param>
-					Byte ReadByte( String^ fieldName );
+					Byte ReadUnsignedByte( String^ fieldName );
 	        
 					/// <summary>
 					/// Read a boolean value from the stream.

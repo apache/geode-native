@@ -83,18 +83,18 @@ namespace Apache
           }
 
           /// <summary>
-          /// Write a byte to the <c>IPdxWriter</c>.
-          /// </summary>
-          /// <param name="fieldName">The name of the field associated with the value.</param>
-          /// <param name="value">The byte to write.</param>
-          virtual IPdxWriter^ WriteByte(String^ fieldName, Byte value);
-
-          /// <summary>
-          /// Write a signed byte to the <c>IPdxWriter</c>.
+          /// Write an signed byte to the <c>IPdxWriter</c>.
           /// </summary>
           /// <param name="fieldName">The name of the field associated with the value.</param>
           /// <param name="value">The signed byte to write.</param>
-          virtual IPdxWriter^ WriteSByte(String^ fieldName, SByte value);
+          virtual IPdxWriter^ WriteByte(String^ fieldName, SByte value);
+
+          /// <summary>
+          /// Write an unsigned byte to the <c>IPdxWriter</c>.
+          /// </summary>
+          /// <param name="fieldName">The name of the field associated with the value.</param>
+          /// <param name="value">The unsigned byte to write.</param>
+          virtual IPdxWriter^ WriteUnsignedByte(String^ fieldName, Byte value);
 
           /// <summary>
           /// Write a boolean value to the <c>IPdxWriter</c>.
@@ -367,8 +367,8 @@ namespace Apache
           /// <returns>this PdxWriter</returns>
           virtual IPdxWriter^ WriteField(String^ fieldName, Object^ fieldValue, Type^ type);
 
-          virtual void WriteByte(Byte byte);//for internal purpose
           virtual void WriteSByte(SByte byte);//for internal purpose
+          virtual void WriteByte(Byte byte);//for internal purpose
 
           property Apache::Geode::Client::Cache^ Cache
           {

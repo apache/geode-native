@@ -992,7 +992,7 @@ namespace Apache
         this->ReadObject(arr);
         return arr;
       }
-      array<Int64>^ DataInput::ReadInt64Array()
+      array<Int64>^ DataInput::ReadLongArray()
       {
         array<Int64>^ arr;
         this->ReadObject(arr);

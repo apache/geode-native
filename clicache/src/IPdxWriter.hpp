@@ -42,18 +42,18 @@ namespace Apache
 				public:
 	        
 					/// <summary>
+					/// Write an unsigned byte to the <c>IPdxWriter</c>.
+					/// </summary>
+					/// <param name="fieldName">The name of the field associated with the value.</param>
+					/// <param name="value">The unsigned byte to write.</param>
+					IPdxWriter^ WriteUnsignedByte( String^ fieldName, Byte value );
+
+					/// <summary>
 					/// Write a signed byte to the <c>IPdxWriter</c>.
 					/// </summary>
 					/// <param name="fieldName">The name of the field associated with the value.</param>
 					/// <param name="value">The signed byte to write.</param>
-					IPdxWriter^ WriteSByte( String^ fieldName, SByte value );
-
-					/// <summary>
-					/// Write a byte to the <c>IPdxWriter</c>.
-					/// </summary>
-					/// <param name="fieldName">The name of the field associated with the value.</param>
-					/// <param name="value">The byte to write.</param>
-					IPdxWriter^ WriteByte( String^ fieldName, Byte value );
+					IPdxWriter^ WriteByte( String^ fieldName, SByte value );
 	        
 					/// <summary>
 					/// Write a boolean value to the <c>IPdxWriter</c>.
@@ -177,10 +177,10 @@ namespace Apache
 					IPdxWriter^ WriteSByteArray(String^ fieldName, array<SByte>^ byteArray) ;
 
 					/// <summary>
-					/// Write a byte array to the <c>IPdxWriter</c>.
+					/// Write an unsigned byte array to the <c>IPdxWriter</c>.
 					/// </summary>
 					/// <param name="fieldName">The name of the field associated with the value.</param>
-					/// <param name="byteArray">The byteArray to write.</param>
+					/// <param name="byteArray">The unsigned byte array to write.</param>
 					IPdxWriter^ WriteByteArray(String^ fieldName, array<Byte>^ byteArray) ;
 	        
 					/// <summary>
@@ -254,17 +254,17 @@ namespace Apache
 					IPdxWriter^ WriteObjectArray(String^ fieldName, List<Object^>^ objectArray);
 
 					/// <summary>
-					/// Write an array of byte arrays to the <c>IPdxWriter</c>.
+					/// Write an array of unsigned byte arrays to the <c>IPdxWriter</c>.
 					/// </summary>
 					/// <param name="fieldName">The name of the field associated with the value.</param>
-					/// <param name="byteArrays">The array of byteArrays to write.</param>
+					/// <param name="byteArrays">The array of unsigned byte Arrays to write.</param>
 					IPdxWriter^ WriteArrayOfByteArrays(String^ fieldName, array<array<Byte>^>^ byteArrays);
 
 					/// <summary>
 					/// Write an array of signed byte arrays to the <c>IPdxWriter</c>.
 					/// </summary>
 					/// <param name="fieldName">The name of the field associated with the value.</param>
-					/// <param name="byteArrays">The array of signedbyteArrays to write.</param>
+					/// <param name="byteArrays">The array of signed byte arrays to write.</param>
 					IPdxWriter^ WriteArrayOfSByteArrays(String^ fieldName, array<array<SByte>^>^ byteArrays);
 
 					/// <summary>

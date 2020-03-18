@@ -240,9 +240,9 @@ namespace Apache
           input->ReadObject(m_value);
         }
 
-        property UInt64 ObjectSize
+        property System::UInt64 ObjectSize
         {
-          virtual UInt64 get()
+          virtual System::UInt64 get()
           {
             return m_value->Length * sizeof(TManaged);
           }

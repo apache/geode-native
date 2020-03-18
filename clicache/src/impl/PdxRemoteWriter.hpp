@@ -79,18 +79,18 @@ namespace Apache
           virtual bool isFieldWritingStarted() override;
         
           /// <summary>
-          /// Write a byte to the <c>IPdxWriter</c>.
-          /// </summary>
-          /// <param name="fieldName">The name of the field associated with the value.</param>
-          /// <param name="value">The byte to write.</param>
-          virtual IPdxWriter^ WriteByte( String^ fieldName, Byte value ) override;
-
-          /// <summary>
           /// Write a signed byte to the <c>IPdxWriter</c>.
           /// </summary>
           /// <param name="fieldName">The name of the field associated with the value.</param>
           /// <param name="value">The signed byte to write.</param>
-          virtual IPdxWriter^ WriteSByte( String^ fieldName, SByte value ) override;
+          virtual IPdxWriter^ WriteByte( String^ fieldName, SByte value ) override;
+
+          /// <summary>
+          /// Write an unsigned byte to the <c>IPdxWriter</c>.
+          /// </summary>
+          /// <param name="fieldName">The name of the field associated with the value.</param>
+          /// <param name="value">The unsigned byte to write.</param>
+          virtual IPdxWriter^ WriteUnsignedByte( String^ fieldName, Byte value ) override;
 
           /// <summary>
           /// Write a boolean value to the <c>IPdxWriter</c>.
