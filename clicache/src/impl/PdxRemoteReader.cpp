@@ -53,7 +53,8 @@ namespace Apache
               //sequence id read field and then update 
               int position = m_pdxType->GetFieldPosition(choice, m_offsetsBuffer, m_offsetSize, m_serializedLength);
               m_dataInput->ResetAndAdvanceCursorPdx(position);
-              SByte retVal = PdxLocalReader::ReadByte(fieldName);
+              Byte retVal = PdxLocalReader::ReadUnsignedByte(fieldName); //TODO: Mike check
+              //SByte retVal = PdxLocalReader::ReadByte(fieldName);
               m_dataInput->RewindCursorPdx(position);
               return retVal;
             }

@@ -122,6 +122,7 @@ namespace Apache
 
         SByte PdxLocalReader::ReadByte( String^ fieldName )
         {
+          //return m_dataInput->ReadSByte(); // TODO: Mikce check
           return m_dataInput->ReadByte();
         }
 

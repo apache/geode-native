@@ -185,6 +185,7 @@ namespace Apache
             return this;
           }
 
+          //void PdxLocalWriter::WriteByte(SByte byte) TODO: Mike check
           void PdxLocalWriter::WriteByte(Byte byte)
           {
             m_dataOutput->WriteByte(byte);

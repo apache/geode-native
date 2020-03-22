@@ -369,6 +369,7 @@ namespace Apache
 
           virtual void WriteSByte(SByte byte);//for internal purpose
           virtual void WriteByte(Byte byte);//for internal purpose
+          //virtual void WriteByte(SByte byte);//for internal purpose TODO: Mike check
 
           property Apache::Geode::Client::Cache^ Cache
           {

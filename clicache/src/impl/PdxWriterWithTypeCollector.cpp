@@ -103,7 +103,7 @@ namespace Apache
 
         IPdxWriter^ PdxWriterWithTypeCollector::WriteByte(String^ fieldName, SByte value)
         {
-          m_pdxType->AddFixedLengthTypeField(fieldName, "byte", PdxFieldTypes::BYTE,  native::PdxTypes::BYTE_SIZE);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "sbyte", PdxFieldTypes::BYTE,  native::PdxTypes::BYTE_SIZE);
           PdxLocalWriter::WriteByte(fieldName, value);
           return this;
         }

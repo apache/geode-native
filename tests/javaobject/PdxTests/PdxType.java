@@ -66,7 +66,8 @@ public class PdxType implements PdxSerializable{
   float[] m_floatArray;
   double[] m_doubleArray;
 
-  byte[][] m_byteByteArray ;
+  byte[][] m_byteByteArray;
+  byte[][] m_sbyteByteArray;
 
   String[] m_stringArray ;
 
@@ -102,21 +103,21 @@ public class PdxType implements PdxSerializable{
   {
     m_char = 'C';
     m_bool = true;
-    m_byte = (byte)0x74;
+    m_byte = (byte)0xa4;
     m_sbyte = 0x67;
     m_int16 = 0xab;
-    m_uint16 = (short)0x2dd5;
+    m_uint16 = (short)0xadd5;
     m_int32 = 0x2345abdc;
-    m_uint32 = 0x2a65c434;
-    m_long = (long)324897980;
-    m_ulong = (long)238749898;
+    m_uint32 = 0xaa65c434;
+    m_long = (long)324897980L;
+    m_ulong = (long)5238749898L;
     m_float = 23324.324f;
     m_double = 3243298498d;
     
     m_string = "gfestring";
 
     m_boolArray = new boolean[] { true, false, true };
-    m_byteArray = new byte[] { 0x34, 0x64 };
+    m_byteArray = new byte[] {(byte)0xff, (byte)0x84 };
     m_sbyteArray = new byte[] { 0x34, 0x64 };
 
     m_charArray = new char[] { 'c', 'v' };
@@ -126,20 +127,21 @@ public class PdxType implements PdxSerializable{
     //m_dateTime = new Date( System.currentTimeMillis());
     
     m_int16Array = new short[] { 0x2332, 0x4545 };
-    m_uint16Array = new short[] { 0x3243, 0x3232 };
+    m_uint16Array = new short[] { (short)0xa243, (short)0xffff };
 
     m_int32Array = new int[] { 23, 676868, 34343, 2323 };
-    m_uint32Array = new int[] { 435, 234324, 324324, 23432432 };
+    m_uint32Array = new int[] { 435, 234324, 324324, 0xffffffff };
 
     m_longArray = new long[] { 324324L, 23434545L };
-    m_ulongArray = new long[] { 3245435, 3425435 };
+    m_ulongArray = new long[] { 3245435L, 0xffffffffffffffffL };
 
     m_floatArray = new float[] { 232.565f, 2343254.67f };
     m_doubleArray = new double[] { 23423432d, 4324235435d };
 
-    m_byteByteArray = new byte[][]{new byte[] {0x23},
-                                           new byte[]{0x34, 0x55}   
-                                            };
+    m_byteByteArray = new byte[][]{new byte[] {0x13},
+                                   new byte[]{0x14, (byte)0xff} };
+    m_sbyteByteArray = new byte[][]{new byte[] {0x23},
+                                    new byte[]{0x34, 0x55} };
 
     m_stringArray = new String[] { "one", "two" };
 
@@ -184,6 +186,9 @@ public class PdxType implements PdxSerializable{
     // TODO Auto-generated method stub
     byte[][] baa = reader.readArrayOfByteArrays("m_byteByteArray");
     m_byteByteArray = compareByteByteArray(baa, m_byteByteArray);
+
+    byte[][] sbaa = reader.readArrayOfByteArrays("m_sbyteByteArray");
+    m_sbyteByteArray = compareByteByteArray(sbaa, m_sbyteByteArray);
     
     m_char = GenericValCompare(reader.readChar("m_char"), m_char);
 
@@ -287,6 +292,7 @@ public class PdxType implements PdxSerializable{
   public void toData(PdxWriter writer) {
     // TODO Auto-generated method stub
     writer.writeArrayOfByteArrays("m_byteByteArray", m_byteByteArray);
+    writer.writeArrayOfByteArrays("m_sbyteByteArray", m_sbyteByteArray);
     writer.writeChar("m_char", m_char);
     writer.writeBoolean("m_bool", m_bool);
     writer.writeBooleanArray("m_boolArray", m_boolArray);

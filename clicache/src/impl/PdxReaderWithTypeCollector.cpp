@@ -54,7 +54,7 @@ namespace Apache
           if (position != -1)
           {
             m_dataInput->AdvanceCursorPdx(position);
-            SByte retVal = PdxLocalReader::ReadByte(fieldName);
+            Byte retVal = PdxLocalReader::ReadUnsignedByte(fieldName);
             m_dataInput->RewindCursorPdx(position);
 
             return retVal;

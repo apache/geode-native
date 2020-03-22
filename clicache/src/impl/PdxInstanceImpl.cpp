@@ -1309,11 +1309,15 @@ namespace Apache
 
           void PdxInstanceImpl::writeField(IPdxWriter^ writer, String^ fieldName, int typeId, Object^ value)
           {
+            Type^ type = value->GetType();
             switch (typeId)
             {
             case PdxFieldTypes::INT:
             {
-              writer->WriteInt(fieldName, (int)value);
+              if (type == Int32::typeid)
+                writer->WriteInt(fieldName, (Int32)value);
+              else
+                writer->WriteUInt(fieldName, (UInt32)value);
               break;
             }
             case PdxFieldTypes::STRING:
@@ -1343,22 +1347,34 @@ namespace Apache
             }
             case PdxFieldTypes::BYTE:
             {
-              writer->WriteByte(fieldName, (SByte)value);
+              if (type == Byte::typeid)
+                writer->WriteUnsignedByte(fieldName, (Byte)value);
+              else
+                writer->WriteByte(fieldName, (SByte)value);
               break;
             }
             case PdxFieldTypes::SHORT:
             {
-              writer->WriteShort(fieldName, (short)value);
+              if (type == Int16::typeid)
+                writer->WriteShort(fieldName, (Int16)value);
+              else
+                writer->WriteUShort(fieldName, (UInt16)value);
               break;
             }
             case PdxFieldTypes::LONG:
             {
-              writer->WriteLong(fieldName, (Int64)value);
+              if (type == Int64::typeid)
+                writer->WriteLong(fieldName, (Int64)value);
+              else
+                writer->WriteULong(fieldName, (UInt64)value);
               break;
             }
             case PdxFieldTypes::BYTE_ARRAY:
             {
-              writer->WriteByteArray(fieldName, (array<Byte>^)value);
+              if (type == array<SByte>::typeid)
+                writer->WriteSByteArray(fieldName, (array<SByte>^)value);
+              else
+                writer->WriteByteArray(fieldName, (array<Byte>^)value);
               break;
             }
             case PdxFieldTypes::DOUBLE_ARRAY:
@@ -1373,17 +1389,26 @@ namespace Apache
             }
             case PdxFieldTypes::SHORT_ARRAY:
             {
-              writer->WriteShortArray(fieldName, (array<short>^)value);
+              if (type == array<short>::typeid)
+                writer->WriteShortArray(fieldName, (array<short>^)value);
+              else
+                writer->WriteUShortArray(fieldName, (array<UInt16>^)value);
               break;
             }
             case PdxFieldTypes::INT_ARRAY:
             {
-              writer->WriteIntArray(fieldName, (array<int>^)value);
+              if (type == array<int>::typeid)
+                writer->WriteIntArray(fieldName, (array<int>^)value);
+              else
+                writer->WriteUIntArray(fieldName, (array<UInt32>^)value);
               break;
             }
             case PdxFieldTypes::LONG_ARRAY:
             {
-              writer->WriteLongArray(fieldName, (array<Int64>^)value);
+              if (type == array<long>::typeid)
+                writer->WriteLongArray(fieldName, (array<Int64>^)value);
+              else
+                writer->WriteULongArray(fieldName, (array<UInt64>^)value);
               break;
             }
             case PdxFieldTypes::BOOLEAN_ARRAY:
@@ -1409,6 +1434,12 @@ namespace Apache
             case PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS:
             {
               writer->WriteArrayOfByteArrays(fieldName, (array<array<Byte>^>^)value);
+              break;
+
+              if (type == array<array<SByte>^>::typeid)
+                writer->WriteArrayOfSByteArrays(fieldName, (array<array<SByte>^>^)value);
+              else
+                writer->WriteArrayOfByteArrays(fieldName, (array<array<Byte>^>^)value);
               break;
             }
             case PdxFieldTypes::OBJECT_ARRAY:

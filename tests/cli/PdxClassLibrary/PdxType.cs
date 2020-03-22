@@ -126,7 +126,9 @@ namespace PdxTests
     byte[][] m_byteByteArray;
     sbyte[][] m_sbyteByteArray;
 
-        string[] m_stringArray;
+    string[] m_stringArray;
+
+    Address[] m_address;
 
     List<object> m_arraylist = new List<object>();
     IDictionary<object, object> m_map = new Dictionary<object, object>();
@@ -142,27 +144,26 @@ namespace PdxTests
     byte[] m_byte65536 = new byte[65536];
     pdxEnumTest m_pdxEnum = pdxEnumTest.pdx2;
 
-    Address[] m_address;
     List<object> m_objectArray = new List<object>();
     public void Init()
     {
       m_char = 'C';
       m_bool = true;
-      m_byte = 0x84;
+      m_byte = 0xa4;
       m_sbyte = 0x67;
       m_int16 = 0xab;
-      m_uint16 = 0x2dd5;
+      m_uint16 = 0xadd5;
       m_int32 = 0x2345abdc;
-      m_uint32 = 0x2a65c434;
+      m_uint32 = 0xaa65c434;
       m_long = 324897980;
-      m_ulong = 238749898;
+      m_ulong = 5238749898;
       m_float = 23324.324f;
       m_double = 3243298498d;
 
       m_string = "gfestring";
 
       m_boolArray = new bool[] { true, false, true };
-      m_byteArray = new byte[] { 0x84, 0xa4 };
+      m_byteArray = new byte[] { byte.MaxValue, 0x84 };
       m_sbyteArray = new sbyte[] { 0x34, 0x64 };
 
       m_charArray = new char[] { 'c', 'v' };
@@ -173,23 +174,23 @@ namespace PdxTests
       Debug.WriteLine(m_dateTime.Ticks);
 
       m_int16Array = new short[] { 0x2332, 0x4545 };
-      m_uint16Array = new ushort[] { 0x8243, 0x8232 };
+      m_uint16Array = new ushort[] { 0xa243, ushort.MaxValue };
 
       m_int32Array = new int[] { 23, 676868, 34343, 2323 };
-      m_uint32Array = new uint[] { 435, 234324, 324324, 23432432 };
+      m_uint32Array = new uint[] { 435, 234324, 324324, uint.MaxValue };
 
       m_longArray = new long[] { 324324L, 23434545L };
-      m_ulongArray = new UInt64[] { 3245435, 3425435 };
+      m_ulongArray = new UInt64[] { 3245435, UInt64.MaxValue };
 
       m_floatArray = new float[] { 232.565f, 2343254.67f };
       m_doubleArray = new double[] { 23423432d, 4324235435d };
 
-      m_byteByteArray = new byte[][]{new byte[] {0x83},
-                                     new byte[]{0x84, 0x85}};
+      m_byteByteArray = new byte[][]{new byte[] {0x13},
+                                     new byte[]{0x14,byte.MaxValue}};
       m_sbyteByteArray = new sbyte[][]{new sbyte[] {0x23},
                                        new sbyte[]{0x34, 0x55}};
 
-            m_stringArray = new string[] { "one", "two" };
+      m_stringArray = new string[] { "one", "two" };
 
       m_arraylist = new List<object>();
       m_arraylist.Add(1);
@@ -259,6 +260,23 @@ namespace PdxTests
 
       throw new IllegalStateException("Not got expected value for type: " + baa2.GetType().ToString());
     }
+
+    public static sbyte[][] compareSByteSByteArray(sbyte[][] sbaa, sbyte[][] sbaa2)
+    {
+      if (sbaa.Length == sbaa2.Length)
+      {
+        int i = 0;
+        while (i < sbaa.Length)
+        {
+          compareSByteArray(sbaa[i], sbaa2[i]);
+          i++;
+        }
+        if (i == sbaa2.Length)
+          return sbaa2;
+      }
+
+      throw new IllegalStateException("Not got expected value for type: " + sbaa2.GetType().ToString());
+    }
     bool compareBool(bool b, bool b2)
     {
       if (b == b2)
@@ -283,7 +301,7 @@ namespace PdxTests
 
       throw new IllegalStateException("Not got expected value for type: " + a2.GetType().ToString());
     }
-    byte compareByte(byte b, byte b2)
+    public static byte compareByte(byte b, byte b2)
     {
       if (b == b2)
         return b;
@@ -298,7 +316,7 @@ namespace PdxTests
         while (i < a.Length)
         {
           Debug.WriteLine("Compare byte array " + a[i] + " : " + a2[i]);
-          if (a[i] != a2[i])
+          if ((byte)(sbyte)a[i] != a2[i])
             break;
           else
             i++;
@@ -309,6 +327,7 @@ namespace PdxTests
 
       throw new IllegalStateException("Not got expected value for type: " + a2.GetType().ToString());
     }
+
     char[] compareCharArray(char[] a, char[] a2)
     {
       if (a.Length == a2.Length)
@@ -521,22 +540,6 @@ namespace PdxTests
       throw new IllegalStateException("Not got expected value for type: " + a2.GetType().ToString());
     }
 
-    public static sbyte[][] comparesSByteSByteArray(sbyte[][] sbaa, sbyte[][] sbaa2)
-    {
-      if (sbaa.Length == sbaa2.Length)
-      {
-        int i = 0;
-        while (i < sbaa.Length)
-        {
-          compareSByteArray(sbaa[i], sbaa2[i]);
-          i++;
-        }
-        if (i == sbaa2.Length)
-          return sbaa2;
-      }
-
-      throw new IllegalStateException("Not got expected value for type: " + sbaa2.GetType().ToString());
-    }
     string[] compareStringArray(string[] a, string[] a2)
     {
       if (a.Length == a2.Length)
@@ -654,6 +657,7 @@ namespace PdxTests
         return b;
       throw new IllegalStateException("Not got expected value for type: " + b2.GetType().ToString() + " : values " + b.ToString() + ": " + b2.ToString());
     }
+
     public override bool Equals(object obj)
     {
       if (obj == null)
@@ -757,6 +761,10 @@ namespace PdxTests
     {
       byte[][] baa = reader.ReadArrayOfByteArrays("m_byteByteArray");
       m_byteByteArray = compareByteByteArray(baa, m_byteByteArray);
+
+      sbyte[][] sbaa = reader.ReadArrayOfSByteArrays("m_sbyteByteArray");
+      m_sbyteByteArray = compareSByteSByteArray(sbaa, m_sbyteByteArray);
+
       m_char = GenericValCompare(reader.ReadChar("m_char"), m_char);
 
       bool bl = reader.ReadBoolean("m_bool");
@@ -874,6 +882,7 @@ namespace PdxTests
     public void ToData(IPdxWriter writer)
     {
       writer.WriteArrayOfByteArrays("m_byteByteArray", m_byteByteArray);
+      writer.WriteArrayOfSByteArrays("m_sbyteByteArray", m_sbyteByteArray);
       writer.WriteChar("m_char", m_char);
       writer.WriteBoolean("m_bool", m_bool);
       writer.WriteBooleanArray("m_boolArray", m_boolArray);
