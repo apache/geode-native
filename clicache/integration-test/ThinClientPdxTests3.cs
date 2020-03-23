@@ -673,47 +673,37 @@ namespace Apache.Geode.Client.UnitTests
 
       var pif = CacheHelper.DCache.CreatePdxInstanceFactory("PdxTests.PdxType");
 
-      pif.WriteField("m_int32", pt.Int32, pt.Int32.GetType());
-      pif.WriteField("m_string", pt.PString, pt.PString.GetType());
       // pif.WriteField("m_arraylist", pt.Arraylist, pt.Arraylist.GetType());
       //we treat arraylist as ObjectArray as well, so here need to differentiate it
-      pif.WriteObject("m_arraylist", pt.Arraylist);
       pif.WriteField("m_char", pt.Char, pt.Char.GetType());
       pif.WriteField("m_bool", pt.Bool, pt.Bool.GetType());
       pif.WriteField("m_sbyte", pt.Sbyte, pt.Sbyte.GetType());
       pif.WriteField("m_byte", pt.Byte, pt.Byte.GetType());
       pif.WriteField("m_int16", pt.Int16, pt.Int16.GetType());
-      pif.WriteField("m_byteArray", pt.ByteArray, pt.ByteArray.GetType());
+      pif.WriteField("m_uint16", pt.Uint16, pt.Uint16.GetType());
+      pif.WriteField("m_int32", pt.Int32, pt.Int32.GetType());
+      pif.WriteField("m_uint32", pt.Uint32, pt.Uint32.GetType());
       pif.WriteField("m_long", pt.Long, pt.Long.GetType());
+      pif.WriteField("m_ulong", pt.Ulong, pt.Ulong.GetType());
       pif.WriteField("m_float", pt.Float, pt.Float.GetType());
       pif.WriteField("m_double", pt.Double, pt.Double.GetType());
+      pif.WriteField("m_string", pt.PString, pt.PString.GetType());
       pif.WriteField("m_boolArray", pt.BoolArray, pt.BoolArray.GetType());
+      pif.WriteField("m_byteArray", pt.ByteArray, pt.ByteArray.GetType());
       pif.WriteField("m_sbyteArray", pt.SbyteArray, pt.SbyteArray.GetType());
       pif.WriteField("m_charArray", pt.CharArray, pt.CharArray.GetType());
       pif.WriteField("m_dateTime", pt.DateTime, pt.DateTime.GetType());
       pif.WriteField("m_int16Array", pt.Int16Array, pt.Int16Array.GetType());
+      pif.WriteField("m_uint16Array", pt.Uint16Array, pt.Uint16Array.GetType());
       pif.WriteField("m_int32Array", pt.Int32Array, pt.Int32Array.GetType());
+      pif.WriteField("m_uint32Array", pt.Uint32Array, pt.Uint32Array.GetType());
       pif.WriteField("m_longArray", pt.LongArray, pt.LongArray.GetType());
+      pif.WriteField("m_ulongArray", pt.UlongArray, pt.UlongArray.GetType());
       pif.WriteField("m_floatArray", pt.FloatArray, pt.FloatArray.GetType());
       pif.WriteField("m_doubleArray", pt.DoubleArray, pt.DoubleArray.GetType());
       pif.WriteField("m_byteByteArray", pt.ByteByteArray, pt.ByteByteArray.GetType());
+      pif.WriteField("m_sbyteByteArray", pt.SByteByteArray, pt.SByteByteArray.GetType());
       pif.WriteField("m_stringArray", pt.StringArray, pt.StringArray.GetType());
-      pif.WriteField("m_map", pt.Map, pt.Map.GetType());
-      pif.WriteField("m_hashtable", pt.Hashtable, pt.Hashtable.GetType());
-      pif.WriteField("m_vector", pt.Vector, pt.Vector.GetType());
-      pif.WriteField("m_chs", pt.Chs, pt.Chs.GetType());
-      pif.WriteField("m_clhs", pt.Clhs, pt.Clhs.GetType());
-      pif.WriteField("m_uint32", pt.Uint32, pt.Uint32.GetType());
-      pif.WriteField("m_ulong", pt.Ulong, pt.Ulong.GetType());
-      pif.WriteField("m_uint16", pt.Uint16, pt.Uint16.GetType());
-      pif.WriteField("m_uint32Array", pt.Uint32Array, pt.Uint32Array.GetType());
-      pif.WriteField("m_ulongArray", pt.UlongArray, pt.UlongArray.GetType());
-      pif.WriteField("m_uint16Array", pt.Uint16Array, pt.Uint16Array.GetType());
-      pif.WriteField("m_byte252", pt.Byte252, pt.Byte252.GetType());
-      pif.WriteField("m_byte253", pt.Byte253, pt.Byte253.GetType());
-      pif.WriteField("m_byte65535", pt.Byte65535, pt.Byte65535.GetType());
-      pif.WriteField("m_byte65536", pt.Byte65536, pt.Byte65536.GetType());
-      pif.WriteField("m_pdxEnum", pt.PdxEnum, pt.PdxEnum.GetType());
 
       var aa = new PdxTests.Address[10];
 
@@ -723,6 +713,17 @@ namespace Apache.Geode.Client.UnitTests
       }
 
       pif.WriteField("m_address", pt.AddressArray, aa.GetType());
+      pif.WriteObject("m_arraylist", pt.Arraylist);
+      pif.WriteField("m_map", pt.Map, pt.Map.GetType());
+      pif.WriteField("m_hashtable", pt.Hashtable, pt.Hashtable.GetType());
+      pif.WriteField("m_vector", pt.Vector, pt.Vector.GetType());
+      pif.WriteField("m_chs", pt.Chs, pt.Chs.GetType());
+      pif.WriteField("m_clhs", pt.Clhs, pt.Clhs.GetType());
+      pif.WriteField("m_byte252", pt.Byte252, pt.Byte252.GetType());
+      pif.WriteField("m_byte253", pt.Byte253, pt.Byte253.GetType());
+      pif.WriteField("m_byte65535", pt.Byte65535, pt.Byte65535.GetType());
+      pif.WriteField("m_byte65536", pt.Byte65536, pt.Byte65536.GetType());
+      pif.WriteField("m_pdxEnum", pt.PdxEnum, pt.PdxEnum.GetType());
       pif.WriteField("m_objectArray", pt.ObjectArray, pt.ObjectArray.GetType());
 
       var pi = pif.Create();

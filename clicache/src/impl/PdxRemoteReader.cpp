@@ -839,6 +839,30 @@ namespace Apache
           }
         }
 
+        array<array<SByte>^>^ PdxRemoteReader::ReadArrayOfSByteArrays(String^ fieldName )
+        {
+          int choice = m_localToRemoteMap[m_currentIndex++];
+
+          switch(choice)
+          {
+          case -2:
+            return PdxLocalReader::ReadArrayOfSByteArrays(fieldName);//in same order
+          case -1:
+            {
+              return nullptr;//null value
+            }
+          default:
+            {
+              //sequence id read field and then update 
+              int position = m_pdxType->GetFieldPosition(choice, m_offsetsBuffer, m_offsetSize, m_serializedLength);
+              m_dataInput->ResetAndAdvanceCursorPdx(position);
+              array<array<SByte>^>^ retVal = PdxLocalReader::ReadArrayOfSByteArrays(fieldName);
+              m_dataInput->RewindCursorPdx(position);
+              return retVal;
+            }
+          }
+        }
+
         //TODO:
         //void WriteEnum(String^ fieldName, Enum e) ;
         //void WriteInetAddress(String^ fieldName, InetAddress address);

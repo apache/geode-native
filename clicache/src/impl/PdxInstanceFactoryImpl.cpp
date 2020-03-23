@@ -312,9 +312,13 @@ namespace Apache
         IPdxInstanceFactory^ PdxInstanceFactoryImpl::WriteField(String^ fieldName, Object^ fieldValue, Type^ type)
         {
           isFieldAdded(fieldName);
-          if (type->Equals(DotNetTypes::IntType) || type->Equals(DotNetTypes::UIntType))
+          if (type->Equals(DotNetTypes::IntType))
           {
             return this->WriteInt(fieldName, (int)fieldValue);
+          }
+          else if (type->Equals(DotNetTypes::UIntType))
+          {
+            return this->WriteUInt(fieldName, (UInt32)fieldValue);
           }
           else if (type->Equals(DotNetTypes::StringType))
           {
@@ -336,21 +340,37 @@ namespace Apache
           {
             return this->WriteChar(fieldName, (Char)fieldValue);
           }
-          else if (type->Equals(DotNetTypes::SByteType) || type->Equals(DotNetTypes::ByteType))
+          else if (type->Equals(DotNetTypes::ByteType))
+          {
+            return this->WriteUnsignedByte(fieldName, (Byte)fieldValue);
+          }
+          else if (type->Equals(DotNetTypes::SByteType))
           {
             return this->WriteByte(fieldName, (SByte)fieldValue);
           }
-          else if (type->Equals(DotNetTypes::ShortType) || type->Equals(DotNetTypes::UShortType))
+          else if (type->Equals(DotNetTypes::ShortType))
           {
             return this->WriteShort(fieldName, (short)fieldValue);
           }
-          else if (type->Equals(DotNetTypes::LongType) || type->Equals(DotNetTypes::ULongType))
+          else if (type->Equals(DotNetTypes::UShortType))
+          {
+            return this->WriteUShort(fieldName, (USHORT)fieldValue);
+          }
+          else if (type->Equals(DotNetTypes::LongType))
           {
             return this->WriteLong(fieldName, (Int64)fieldValue);
           }
-          else if (type->Equals(DotNetTypes::ByteArrayType) || type->Equals(DotNetTypes::SByteArrayType))
+          else if (type->Equals(DotNetTypes::ULongType))
+          {
+            return this->WriteLong(fieldName, (UInt64)fieldValue);
+          }
+          else if (type->Equals(DotNetTypes::ByteArrayType))
           {
             return this->WriteByteArray(fieldName, (array<Byte>^)fieldValue);
+          }
+          else if (type->Equals(DotNetTypes::SByteArrayType))
+          {
+            return this->WriteSByteArray(fieldName, (array<SByte>^)fieldValue);
           }
           else if (type->Equals(DotNetTypes::DoubleArrayType))
           {
@@ -360,17 +380,29 @@ namespace Apache
           {
             return this->WriteFloatArray(fieldName, (array<float>^)fieldValue);
           }
-          else if (type->Equals(DotNetTypes::ShortArrayType) || type->Equals(DotNetTypes::UShortArrayType))
+          else if (type->Equals(DotNetTypes::ShortArrayType))
           {
             return this->WriteShortArray(fieldName, (array<Int16>^)fieldValue);
           }
-          else if (type->Equals(DotNetTypes::IntArrayType) || type->Equals(DotNetTypes::UIntArrayType))
+          else if (type->Equals(DotNetTypes::UShortArrayType))
+          {
+            return this->WriteUShortArray(fieldName, (array<UInt16>^)fieldValue);
+          }
+          else if (type->Equals(DotNetTypes::IntArrayType))
           {
             return this->WriteIntArray(fieldName, (array<System::Int32>^)fieldValue);
           }
-          else if (type->Equals(DotNetTypes::LongArrayType) || type->Equals(DotNetTypes::ULongArrayType))
+          else if (type->Equals(DotNetTypes::UIntArrayType))
+          {
+            return this->WriteUIntArray(fieldName, (array<System::UInt32>^)fieldValue);
+          }
+          else if (type->Equals(DotNetTypes::LongArrayType))
           {
             return this->WriteLongArray(fieldName, (array<Int64>^)fieldValue);
+          }
+          else if (type->Equals(DotNetTypes::ULongArrayType))
+          {
+            return this->WriteULongArray(fieldName, (array<UInt64>^)fieldValue);
           }
           else if (type->Equals(DotNetTypes::BoolArrayType))
           {
@@ -388,9 +420,13 @@ namespace Apache
           {
             return this->WriteDate(fieldName, (DateTime)fieldValue);
           }
-          else if (type->Equals(DotNetTypes::ByteArrayOfArrayType) || type->Equals(DotNetTypes::SByteArrayOfArrayType))
+          else if (type->Equals(DotNetTypes::ByteArrayOfArrayType))
           {
             return this->WriteArrayOfByteArrays(fieldName, (array<array<Byte>^>^)fieldValue);
+          }
+          else if (type->Equals(DotNetTypes::SByteArrayOfArrayType))
+          {
+            return this->WriteArrayOfSByteArrays(fieldName, (array<array<SByte>^>^)fieldValue);
           }
           else if (type->Equals(DotNetTypes::ObjectArrayType))
           {

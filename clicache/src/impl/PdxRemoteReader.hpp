@@ -253,6 +253,12 @@ namespace Apache
         /// <param name="fieldName">The name of a member field whose value to read.</param>
         virtual array<array<Byte>^>^ ReadArrayOfByteArrays(String^ fieldName )override;
 
+        /// <summary>
+        /// Read a two-dimenesional sbyte array from the data.
+        /// </summary>
+        /// <param name="fieldName">The name of a member field whose value to read.</param>
+        virtual array<array<SByte>^>^ ReadArrayOfSByteArrays(String^ fieldName )override;
+
         //TODO:
         //virtual void WriteEnum(String^ fieldName, Enum e) ;
         //virtual void WriteInetAddress(String^ fieldName, InetAddress address);
