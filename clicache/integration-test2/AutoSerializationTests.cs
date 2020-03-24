@@ -634,7 +634,6 @@ namespace Apache.Geode.Client.IntegrationTests
             m_byteArray = GenericCompare(other.m_byteArray, m_byteArray);
             m_charArray = GenericCompare(other.m_charArray, m_charArray);
 
-            List<object> tmpl = new List<object>();
             m_arraylist = compareCompareCollection(other.m_arraylist, m_arraylist);
 
             m_LinkedList = compareCompareCollection(other.m_LinkedList, m_LinkedList);
@@ -1262,7 +1261,7 @@ namespace Apache.Geode.Client.IntegrationTests
 
         public string NotInclude
         {
-            set { _notInclude = "default_value"; }
+            set { _notInclude = value; }
         }
 
         public PdxFieldTest(bool init)

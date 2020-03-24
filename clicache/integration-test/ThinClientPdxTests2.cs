@@ -90,9 +90,11 @@ namespace Apache.Geode.Client.UnitTests
             }
             catch (System.Runtime.Remoting.RemotingException)
             {
+              Util.Log("Caught RemotingException during cache close");
             }
             catch (System.Net.Sockets.SocketException)
             {
+              Util.Log("Caught SocketException during cache close");
             }
           }
         }
@@ -122,7 +124,7 @@ namespace Apache.Geode.Client.UnitTests
 
       var pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypesIgnoreUnreadFields");
 
-      var ob = pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
+      pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
         new object[] {useWeakHashmap});
     }
 
@@ -162,7 +164,7 @@ namespace Apache.Geode.Client.UnitTests
 
       var pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypesIgnoreUnreadFields");
 
-      var ob = pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
+      pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
         new object[] {useWeakHashmap});
     }
 
@@ -261,8 +263,8 @@ namespace Apache.Geode.Client.UnitTests
 
       region0[1] = new PdxTypes1();
       region0[2] = new PdxType();
-      var ret = region0[1];
-      ret = region0[2];
+      //var ret = region0[1];
+      //ret = region0[2];
       Util.Log("Put from pool-2 completed");
 
       var pdxIds = CacheHelper.DCache.GetPdxTypeRegistry().testGetNumberOfPdxIds();
@@ -808,7 +810,6 @@ namespace Apache.Geode.Client.UnitTests
       var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
       var ret = (IPdxInstance) region0["pdxput"];
-      var dPdxType = new PdxType();
 
       var pdxInstHashcode = ret.GetHashCode();
       Util.Log("pdxinstance hash code " + pdxInstHashcode);
@@ -853,7 +854,8 @@ namespace Apache.Geode.Client.UnitTests
       PdxType.GenericCompare((bool[]) ret.GetField("m_boolArray"), dPdxType.BoolArray);
 
       PdxType.GenericValCompare((byte)(sbyte)(ret.GetField("m_byte")), dPdxType.Byte);
-      PdxType.GenericValCompare(ret.GetField("m_byteArray").ToString(), dPdxType.ByteArray.ToString());
+      //PdxType.GenericValCompare(ret.GetField("m_byteArray").ToString(), dPdxType.ByteArray.ToString());
+      PdxType.GenericValCompare(string.Join(",", (byte[])ret.GetField("m_byteArray")), string.Join(",", dPdxType.ByteArray));
 
       var tmpl = (List<object>) ret.GetField("m_arraylist");
 
