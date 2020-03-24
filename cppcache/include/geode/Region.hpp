@@ -1103,8 +1103,6 @@ class APACHE_GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
 
   /**
    * Registers an array of keys for getting updates from the server.
-   * Valid only for a Native Client region when client notification
-   * ( {@link RegionAttributesFactory::setClientNotification} ) is true.
    *
    * @param keys the array of keys
    * @param isDurable flag to indicate whether this is a durable registration
@@ -1121,8 +1119,7 @@ class APACHE_GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
    *   some other steps for the incomplete cache population then this is
    *   the exception that should be caught.
    * @throws UnsupportedOperationException If the region is not a Native Client
-   * region or
-   * {@link RegionAttributesFactory::setClientNotification} is false.
+   * region
    * @throws CacheServerException If an exception is received from the Java
    * cache server.
    * @throws NotConnectedException if it is not connected to the cache because
@@ -1143,16 +1140,13 @@ class APACHE_GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
 
   /**
    * Unregisters an array of keys to stop getting updates for them.
-   * Valid only for a Native Client region when client notification
-   * ( {@link RegionAttributesFactory::setClientNotification} ) is true.
    *
    * @param keys the array of keys
    *
    * @throws IllegalArgumentException If the array of keys is empty.
    * @throws IllegalStateException If no keys were previously registered.
    * @throws UnsupportedOperationException If the region is not a Native Client
-   * region or
-   * {@link RegionAttributesFactory::setClientNotification} is false.
+   * region
    * @throws CacheServerException If an exception is received from the Java
    * cache server.
    * @throws NotConnectedException if it is not connected to the cache because
@@ -1171,8 +1165,6 @@ class APACHE_GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
 
   /**
    * Registers to get updates for all keys from the server.
-   * Valid only for a Native Client region when client notification
-   * ( {@link RegionAttributesFactory::setClientNotification} ) is true.
    *
    * @param isDurable flag to indicate whether this is a durable registration
    * @param getInitialValues true to populate the cache with values of all keys
@@ -1186,8 +1178,7 @@ class APACHE_GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
    *   some other steps for the incomplete cache population then this is
    *   the exception that should be caught.
    * @throws UnsupportedOperationException If the region is not a Native Client
-   * region or
-   * {@link RegionAttributesFactory::setClientNotification} is false.
+   * region
    * @throws CacheServerException If an exception is received from the Java
    * cache server.
    * @throws NotConnectedException if it is not connected to the cache because
@@ -1207,13 +1198,10 @@ class APACHE_GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
 
   /**
    * Registers to get updates for all keys from the server.
-   * Valid only for a Native Client region when client notification
-   * ( {@link RegionAttributesFactory::setClientNotification} ) is true.
    *
    * @throws IllegalStateException If not previously registered all keys.
    * @throws UnsupportedOperationException If the region is not a Native Client
-   * region or
-   * {@link RegionAttributesFactory::setClientNotification} is false.
+   * region
    * @throws CacheServerException If an exception is received from the Java
    * cache server.
    * @throws NotConnectedException if it is not connected to the cache because
@@ -1232,8 +1220,6 @@ class APACHE_GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
   /**
    * Registers a regular expression to match with keys to get updates from the
    * server.
-   * Valid only for a Native Client region when client notification
-   * ( {@link RegionAttributesFactory::setClientNotification} ) is true.
    *
    * @param regex The regular expression string.
    * @param isDurable flag to indicate whether this is a durable registration
@@ -1253,8 +1239,7 @@ class APACHE_GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
    *   some other steps for the incomplete cache population then this is
    *   the exception that should be caught.
    * @throws UnsupportedOperationException If the region is not a Native Client
-   * region or
-   * {@link RegionAttributesFactory::setClientNotification} is false.
+   * region
    * @throws CacheServerException If an exception is received from the Java
    * cache server.
    * @throws NotConnectedException if it is not connected to the cache because
@@ -1279,8 +1264,6 @@ class APACHE_GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
   /**
    * Unregisters a regular expression to stop getting updates for keys from the
    * server.
-   * Valid only for a Native Client region when client notification
-   * ( {@link RegionAttributesFactory::setClientNotification} ) is true.
    *
    * @param regex The regular expression string.
    *
@@ -1288,8 +1271,7 @@ class APACHE_GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * @throws IllegalStateException If not previously registered this regular
    * expression string.
    * @throws UnsupportedOperationException If the region is not a Native Client
-   * region or
-   * {@link RegionAttributesFactory::setClientNotification} is false.
+   * region
    * @throws CacheServerException If an exception is received from the Java
    * cache server.
    * @throws NotConnectedException if it is not connected to the cache because
