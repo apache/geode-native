@@ -35,554 +35,557 @@ namespace Apache
       namespace Internal
       {
         
-          PdxLocalWriter::PdxLocalWriter(DataOutput^ dataOutput, PdxType^ pdxType)
+        PdxLocalWriter::PdxLocalWriter(DataOutput^ dataOutput, PdxType^ pdxType)
+        {
+          m_dataOutput = dataOutput;
+          m_pdxType = pdxType;
+          m_currentOffsetIndex = 0;
+          m_preserveData = nullptr;
+          if (pdxType != nullptr)
+            m_pdxClassName = pdxType->PdxClassName;
+          //m_pdxDomainType = nullptr;
+          initialize();
+        }
+
+        PdxLocalWriter::PdxLocalWriter(DataOutput^ dataOutput, PdxType^ pdxType, String^ pdxClassName)
+        {
+          m_dataOutput = dataOutput;
+          m_pdxType = pdxType;
+          m_currentOffsetIndex = 0;
+          m_preserveData = nullptr;
+          // m_pdxDomainType = pdxDomainType;
+          m_pdxClassName = pdxClassName;
+          initialize();
+        }
+        
+        void PdxLocalWriter::initialize()
+        {
+          if(m_pdxType != nullptr)
           {
-            m_dataOutput = dataOutput;
-            m_pdxType = pdxType;
             m_currentOffsetIndex = 0;
-            m_preserveData = nullptr;
-            if (pdxType != nullptr)
-              m_pdxClassName = pdxType->PdxClassName;
-            //m_pdxDomainType = nullptr;
-            initialize();
+            //TODO:: 1 offset below if you can avoid
+            m_offsets = gcnew array<int>(m_pdxType->NumberOfVarLenFields);
           }
 
-          PdxLocalWriter::PdxLocalWriter(DataOutput^ dataOutput, PdxType^ pdxType, String^ pdxClassName)
-          {
-            m_dataOutput = dataOutput;
-            m_pdxType = pdxType;
-            m_currentOffsetIndex = 0;
-            m_preserveData = nullptr;
-            // m_pdxDomainType = pdxDomainType;
-            m_pdxClassName = pdxClassName;
-            initialize();
-          }
+          //start position, this should start of c++ dataoutput buffer and then use bufferlen
+          m_startPosition = m_dataOutput->GetStartBufferPosition();
+          //TODO: need to use this carefully
+          m_startPositionOffset = static_cast<int>(m_dataOutput->BufferLength);//data has been write
+          m_dataOutput->AdvanceCursor(PdxHelper::PdxHeader);//to write pdx header
+        }
+
+        void PdxLocalWriter::AddOffset()
+        {
+          //bufferlength gives lenght which has been writeen to unmanged Dataoutput
+          //m_startPositionOffset: from where pdx header length starts
+          int bufferLen = static_cast<int>(m_dataOutput->BufferLength - m_startPositionOffset);
+          int offset = bufferLen - PdxHelper::PdxHeader/* this needs to subtract*/;
+
+          m_offsets[m_currentOffsetIndex++] = offset;
+        }
+
+        void PdxLocalWriter::EndObjectWriting()
+        {
+          //write header
+          WritePdxHeader();
+        }
+
+        System::Byte* PdxLocalWriter::GetPdxStream(int& pdxLen)
+        {
+          System::Byte* stPos = m_dataOutput->GetStartBufferPosition() + m_startPositionOffset;
+          int len = PdxHelper::ReadInt32(stPos);
+          pdxLen = len;
+          //ignore len and typeid
+          return m_dataOutput->GetBytes(stPos + 8, len );
+        }
+
+        void PdxLocalWriter::WritePdxHeader()
+        {
+          Int32 len = calculateLenWithOffsets();
+          Int32 typeId = m_pdxType->TypeId;
+
+          //GetStartBufferPosition ; if unmanaged dataoutput get change
+          System::Byte* starpos = m_dataOutput->GetStartBufferPosition() + m_startPositionOffset;
+          PdxHelper::WriteInt32(starpos , len);
+          PdxHelper::WriteInt32(starpos + 4, typeId);
+
+          WriteOffsets(len);
+        }
+
+        Int32 PdxLocalWriter::calculateLenWithOffsets()
+        {
+          //int bufferLen = m_dataOutput->GetCursorPdx();
+          int bufferLen = static_cast<int>(m_dataOutput->BufferLength - m_startPositionOffset);
+          Int32 totalOffsets = 0;
+          if(m_offsets->Length > 0)
+            totalOffsets = m_offsets->Length -1;//for first var len no need to append offset
+          Int32 totalLen = bufferLen - PdxHelper::PdxHeader + totalOffsets;
           
-          void PdxLocalWriter::initialize()
+
+          if(totalLen <= 0xff)//1 byte
+            return totalLen;
+          else if (totalLen + totalOffsets <= 0xffff)//2 byte
+            return totalLen + totalOffsets ;
+          else//4 byte
+            return totalLen + totalOffsets*3 ;                       
+        }
+
+        void PdxLocalWriter::WriteOffsets(Int32 len)
+        {
+          if(len <= 0xff)
           {
-            if(m_pdxType != nullptr)
+            for(int i = m_offsets->Length-1; i >0 ; i--)
             {
-              m_currentOffsetIndex = 0;
-              //TODO:: 1 offset below if you can avoid
-              m_offsets = gcnew array<int>(m_pdxType->NumberOfVarLenFields);
-            }
-
-            //start position, this should start of c++ dataoutput buffer and then use bufferlen
-            m_startPosition = m_dataOutput->GetStartBufferPosition();
-            //TODO: need to use this carefully
-            m_startPositionOffset = static_cast<int>(m_dataOutput->BufferLength);//data has been write
-            m_dataOutput->AdvanceCursor(PdxHelper::PdxHeader);//to write pdx header
-          }
-
-          void PdxLocalWriter::AddOffset()
-          {
-            //bufferlength gives lenght which has been writeen to unmanged Dataoutput
-            //m_startPositionOffset: from where pdx header length starts
-            int bufferLen = static_cast<int>(m_dataOutput->BufferLength - m_startPositionOffset);
-            int offset = bufferLen - PdxHelper::PdxHeader/* this needs to subtract*/;
-
-            m_offsets[m_currentOffsetIndex++] = offset;
-          }
-
-          void PdxLocalWriter::EndObjectWriting()
-          {
-            //write header
-            WritePdxHeader();
-          }
-
-          System::Byte* PdxLocalWriter::GetPdxStream(int& pdxLen)
-          {
-            System::Byte* stPos = m_dataOutput->GetStartBufferPosition() + m_startPositionOffset;
-            int len = PdxHelper::ReadInt32(stPos);
-            pdxLen = len;
-            //ignore len and typeid
-            return m_dataOutput->GetBytes(stPos + 8, len );
-          }
-
-
-          void PdxLocalWriter::WritePdxHeader()
-          {
-            Int32 len = calculateLenWithOffsets();
-            Int32 typeId = m_pdxType->TypeId;
-
-            //GetStartBufferPosition ; if unmanaged dataoutput get change
-            System::Byte* starpos = m_dataOutput->GetStartBufferPosition() + m_startPositionOffset;
-            PdxHelper::WriteInt32(starpos , len);
-            PdxHelper::WriteInt32(starpos + 4, typeId);
-
-            WriteOffsets(len);
-          }
-
-          Int32 PdxLocalWriter::calculateLenWithOffsets()
-          {
-            //int bufferLen = m_dataOutput->GetCursorPdx();
-            int bufferLen = static_cast<int>(m_dataOutput->BufferLength - m_startPositionOffset);
-            Int32 totalOffsets = 0;
-            if(m_offsets->Length > 0)
-              totalOffsets = m_offsets->Length -1;//for first var len no need to append offset
-            Int32 totalLen = bufferLen - PdxHelper::PdxHeader + totalOffsets;
-            
-
-            if(totalLen <= 0xff)//1 byte
-              return totalLen;
-            else if (totalLen + totalOffsets <= 0xffff)//2 byte
-              return totalLen + totalOffsets ;
-            else//4 byte
-              return totalLen + totalOffsets*3 ;                       
-          }
-
-          void PdxLocalWriter::WriteOffsets(Int32 len)
-          {
-            if(len <= 0xff)
-            {
-              for(int i = m_offsets->Length-1; i >0 ; i--)
-                m_dataOutput->WriteByte((SByte)m_offsets[i]);
-
-            }
-            else if(len <= 0xffff)
-            {
-              for(int i = m_offsets->Length-1; i >0 ; i--)
-								m_dataOutput->WriteUInt16((UInt16)m_offsets[i]);
-            }
-            else
-            {
-              for(int i = m_offsets->Length-1; i >0 ; i--)
-                m_dataOutput->WriteUInt32((UInt32)m_offsets[i]);
+              m_dataOutput->WriteByte((SByte)m_offsets[i]);
             }
           }
-
-          bool PdxLocalWriter::isFieldWritingStarted()
+          else if(len <= 0xffff)
           {
-            return true;
-          }
-
-          IPdxWriter^ PdxLocalWriter::WriteUnreadFields(IPdxUnreadFields^ unread)
-          {
-            if(isFieldWritingStarted())
+            for(int i = m_offsets->Length-1; i >0 ; i--)
             {
-              throw gcnew IllegalStateException("WriteUnreadFields must be called before "
-																									+ "any other fields are written.");
-            }
-           
-            if(unread != nullptr)
-            {
-              m_preserveData = (PdxRemotePreservedData^)unread;
-
-              m_pdxType = m_dataOutput->Cache->GetPdxTypeRegistry()->GetPdxType(m_preserveData->MergedTypeId);
-              if(m_pdxType == nullptr)
-              {//its local type
-                //this needs to fix for IPdxTypemapper
-                m_pdxType = GetLocalPdxType(m_pdxClassName);
-              }
-              m_offsets = gcnew array<int>(m_pdxType->NumberOfVarLenFields);
-            }
-            return this;
-          }
-
-          IPdxWriter^ PdxLocalWriter::WriteUnsignedByte( String^ fieldName, Byte value )
-          {
-						m_dataOutput->WriteByte(value);
-            return this;
-          }
-
-          //void PdxLocalWriter::WriteByte(SByte byte) TODO: Mike check
-          void PdxLocalWriter::WriteByte(Byte byte)
-          {
-            m_dataOutput->WriteByte(byte);
-          }
-
-          IPdxWriter^ PdxLocalWriter::WriteByte( String^ fieldName, SByte value )
-          {
-            m_dataOutput->WriteSByte(value);
-            return this;
-          }
-
-          void PdxLocalWriter::WriteSByte(SByte byte)
-          {
-            m_dataOutput->WriteSByte(byte);
-          }
-
-          IPdxWriter^ PdxLocalWriter::WriteBoolean( String^ fieldName, bool value )
-          {
-            m_dataOutput->WriteBoolean(value);
-            return this;
-          }
-
-          IPdxWriter^ PdxLocalWriter::WriteChar( String^ fieldName, Char value )
-          {
-            m_dataOutput->WriteChar(value);
-            return this;
-          }
-                       
-          IPdxWriter^ PdxLocalWriter::WriteUShort( String^ fieldName, System::UInt16 value )
-          {
-            m_dataOutput->WriteUInt16(value);
-            return this;
-          }
-
-          IPdxWriter^ PdxLocalWriter::WriteUInt( String^ fieldName, System::UInt32 value )
-          {
-            m_dataOutput->WriteUInt32(value);
-            return this;
-          }
-
-          IPdxWriter^ PdxLocalWriter::WriteULong( String^ fieldName, System::UInt64 value )
-          {
-            m_dataOutput->WriteUInt64(value);
-            return this;
-          }
-
-          IPdxWriter^ PdxLocalWriter::WriteShort( String^ fieldName, System::Int16 value )
-          {
-            m_dataOutput->WriteInt16(value);
-            return this;
-          }
-
-          IPdxWriter^ PdxLocalWriter::WriteInt( String^ fieldName, System::Int32 value )
-          {
-            m_dataOutput->WriteInt32(value);
-            return this;
-          }
-
-          IPdxWriter^ PdxLocalWriter::WriteLong( String^ fieldName, Int64 value )
-          {
-						m_dataOutput->WriteInt64(value);
-            return this;
-          }
-
-          IPdxWriter^ PdxLocalWriter::WriteFloat( String^ fieldName, float value )
-          {
-            m_dataOutput->WriteFloat(value);
-            return this;
-          }
-
-          IPdxWriter^ PdxLocalWriter::WriteDouble( String^ fieldName, double value )
-          {
-            m_dataOutput->WriteDouble(value);
-            return this;
-          }
-
-          IPdxWriter^ PdxLocalWriter::WriteString( String^ fieldName, String^ value )
-          {
-            AddOffset();
-            m_dataOutput->WriteString(value);
-            return this;
-          }
-
-          IPdxWriter^ PdxLocalWriter::WriteUTFHuge( String^ fieldName, String^ value )
-          {
-            AddOffset();
-            m_dataOutput->WriteUTFHuge(value);
-            return this;
-          }
-
-          IPdxWriter^ PdxLocalWriter::WriteASCIIHuge( String^ fieldName, String^ value )
-          {
-            AddOffset();
-            m_dataOutput->WriteASCIIHuge(value);
-            return this;
-          }
-
-          IPdxWriter^ PdxLocalWriter::WriteObject( String^ fieldName, Object^ obj )
-          {
-            AddOffset();
-            m_dataOutput->WriteObject(obj);
-            return this;
-          }
-
-          //TODO:
-          //IPdxWriter^ PdxLocalWriter::WriteMap( String^ fieldName, System::Collections::IDictionary^ map );
-
-          IPdxWriter^ PdxLocalWriter::WriteCollection( String^ fieldName, System::Collections::IList^ obj)
-          {
-            AddOffset();
-            m_dataOutput->WriteCollection(obj);
-            return this;
-          }
-
-          IPdxWriter^ PdxLocalWriter::WriteDate( String^ fieldName, System::DateTime date)
-          {
-            m_dataOutput->WriteDate(date);
-            return this;
-          }
-
-          IPdxWriter^ PdxLocalWriter::WriteDateArray( String^ fieldName, array<System::DateTime>^ dateArray)
-          {
-            m_dataOutput->WriteDateArray(dateArray);
-            return this;
-          }
-          
-          IPdxWriter^ PdxLocalWriter::WriteBooleanArray( String^ fieldName, array<bool>^ boolArray)
-          {
-            AddOffset();
-            m_dataOutput->WriteBooleanArray(boolArray);
-            return this;
-          }
-
-          IPdxWriter^ PdxLocalWriter::WriteCharArray(String^ fieldName, array<Char>^ charArray)
-          {
-            AddOffset();
-            m_dataOutput->WriteCharArray(charArray);
-            return this;
-          }
-
-          IPdxWriter^ PdxLocalWriter::WriteByteArray(String^ fieldName, array<Byte>^ byteArray)
-          {
-            AddOffset();
-						m_dataOutput->WriteBytes(byteArray);
-            return this;
-          }
-
-          IPdxWriter^ PdxLocalWriter::WriteSByteArray(String^ fieldName, array<SByte>^ sbyteArray)
-          {
-            AddOffset();
-            m_dataOutput->WriteSBytes(sbyteArray);
-            return this;
-          }
-
-          IPdxWriter^ PdxLocalWriter::WriteShortArray(String^ fieldName, array<System::Int16>^ shortArray)
-          {
-            AddOffset();
-            m_dataOutput->WriteShortArray(shortArray);//TODO::this don't write typeid looks confusing
-            return this;
-          }
-
-          IPdxWriter^ PdxLocalWriter::WriteUShortArray(String^ fieldName, array<System::UInt16>^ ushortArray)
-          {
-            AddOffset();
-           m_dataOutput->WriteObject(ushortArray);
-            return this;
-          }
-
-          IPdxWriter^ PdxLocalWriter::WriteIntArray(String^ fieldName, array<System::Int32>^ intArray)
-          {
-            AddOffset();
-            m_dataOutput->WriteIntArray(intArray);
-            return this;
-          }
-
-          IPdxWriter^ PdxLocalWriter::WriteUIntArray(String^ fieldName, array<System::UInt32>^ uintArray)
-          {
-            AddOffset();
-            m_dataOutput->WriteObject(uintArray);
-            return this;
-          }
-					
-          IPdxWriter^ PdxLocalWriter::WriteLongArray(String^ fieldName, array<Int64>^ longArray)
-          {
-            AddOffset();
-            m_dataOutput->WriteLongArray(longArray);
-            return this;
-          }
-
-          IPdxWriter^ PdxLocalWriter::WriteULongArray(String^ fieldName, array<System::UInt64>^ ulongArray)
-          {
-            AddOffset();
-            m_dataOutput->WriteObject(ulongArray);
-            return this;
-          }
-
-          IPdxWriter^ PdxLocalWriter::WriteFloatArray(String^ fieldName, array<float>^ floatArray)
-          {
-            AddOffset();
-            m_dataOutput->WriteFloatArray(floatArray);
-            return this;
-          }
-
-          IPdxWriter^ PdxLocalWriter::WriteDoubleArray(String^ fieldName, array<double>^ doubleArray)
-          {
-            AddOffset();
-            m_dataOutput->WriteDoubleArray(doubleArray);
-            return this;
-          }
-
-          IPdxWriter^ PdxLocalWriter::WriteStringArray(String^ fieldName, array<String^>^ stringArray)
-          {
-            AddOffset();
-            m_dataOutput->WriteStringArray(stringArray);
-            return this;
-          }
-
-          IPdxWriter^ PdxLocalWriter::WriteObjectArray(String^ fieldName, List<Object^>^ objectArray)
-          {
-            AddOffset();
-            m_dataOutput->WriteObjectArray(objectArray);
-            return this;
-          }
-
-          IPdxWriter^ PdxLocalWriter::WriteArrayOfByteArrays(String^ fieldName, array<array<Byte>^>^ byteArrays)
-          {
-            AddOffset();
-            m_dataOutput->WriteArrayOfByteArrays(byteArrays);
-            return this;
-          }
-
-          IPdxWriter^ PdxLocalWriter::WriteArrayOfSByteArrays(String^ fieldName, array<array<SByte>^>^ byteArrays)
-          {
-            AddOffset();
-            m_dataOutput->WriteArrayOfSByteArrays(byteArrays);
-            return this;
-          }
-
-          IPdxWriter^ PdxLocalWriter::WriteGuid( String^ fieldName, System::Guid value )
-          {
-            m_dataOutput->WriteString(value.ToString());
-            return this;
-          }
-          
-          //TODO:
-          //IPdxWriter^ PdxLocalWriter::WriteEnum(String^ fieldName, Enum e) ;
-          //IPdxWriter^ PdxLocalWriter::WriteInetAddress(String^ fieldName, InetAddress address);
-
-
-          IPdxWriter^ PdxLocalWriter::MarkIdentityField(String^ fieldName)
-          {
-            return this;
-          }
-
-          IPdxWriter^ PdxLocalWriter::WriteField(String^ fieldName, Object^ fieldValue, Type^ type)
-          {
-            if(type->Equals(DotNetTypes::IntType))
-            {
-              return this->WriteInt(fieldName, (int)fieldValue);
-            }
-            else if(type->Equals(DotNetTypes::UIntType))
-            {
-              return this->WriteUInt(fieldName, (UInt32)fieldValue);
-            }
-            else if(type->Equals(DotNetTypes::StringType))
-            {
-              return this->WriteString(fieldName, (String^)fieldValue);
-            }
-            else if(type->Equals(DotNetTypes::BooleanType))
-            {
-              return this->WriteBoolean(fieldName, (bool)fieldValue);
-            }
-            else if(type->Equals(DotNetTypes::FloatType))
-            {
-              return this->WriteFloat(fieldName, (float)fieldValue);
-            }
-            else if(type->Equals(DotNetTypes::DoubleType))
-            {
-              return this->WriteDouble(fieldName, (double)fieldValue);
-            }
-            else if(type->Equals(DotNetTypes::CharType))
-            {
-              return this->WriteChar(fieldName, (Char)fieldValue);
-            }
-            else if(type->Equals(DotNetTypes::SByteType))
-            {
-              return this->WriteByte(fieldName, (SByte)fieldValue);
-            }
-            else if(type->Equals(DotNetTypes::ByteType))
-            {
-              return this->WriteUnsignedByte(fieldName, (Byte)fieldValue);
-            }
-            else if(type->Equals(DotNetTypes::ShortType))
-            {
-              return this->WriteShort(fieldName, (short)fieldValue);
-            }
-            else if(type->Equals(DotNetTypes::UShortType))
-            {
-              return this->WriteUShort(fieldName, (USHORT)fieldValue);
-            }
-            else if(type->Equals(DotNetTypes::LongType))
-            {
-              return this->WriteLong(fieldName, (Int64)fieldValue);
-            }
-            else if(type->Equals(DotNetTypes::ULongType))
-            {
-              return this->WriteULong(fieldName, (UInt64)fieldValue);
-            }
-            else if(type->Equals(DotNetTypes::ByteArrayType))
-            {
-              return this->WriteByteArray(fieldName, (array<Byte>^)fieldValue);
-            }
-            else if(type->Equals(DotNetTypes::SByteArrayType))
-            {
-              return this->WriteSByteArray(fieldName, (array<SByte>^)fieldValue);
-            }
-            else if(type->Equals(DotNetTypes::DoubleArrayType))
-            {
-              return this->WriteDoubleArray(fieldName, (array<double>^)fieldValue);
-            }
-            else if(type->Equals(DotNetTypes::FloatArrayType))
-            {
-              return this->WriteFloatArray(fieldName, (array<float>^)fieldValue);
-            }
-            else if(type->Equals(DotNetTypes::ShortArrayType))
-            {
-              return this->WriteShortArray(fieldName, (array<Int16>^)fieldValue);
-            }
-            else if(type->Equals(DotNetTypes::UShortArrayType))
-            {
-              return this->WriteUShortArray(fieldName, (array<UInt16>^)fieldValue);
-            }
-            else if(type->Equals(DotNetTypes::IntArrayType))
-            {
-              return this->WriteIntArray(fieldName, (array<System::Int32>^)fieldValue);
-            }
-            else if(type->Equals(DotNetTypes::UIntArrayType))
-            {
-              return this->WriteUIntArray(fieldName, (array<System::UInt32>^)fieldValue);
-            }
-            else if(type->Equals(DotNetTypes::LongArrayType))
-            {
-              return this->WriteLongArray(fieldName, (array<Int64>^)fieldValue);
-            }
-            else if(type->Equals(DotNetTypes::ULongArrayType))
-            {
-              return this->WriteULongArray(fieldName, (array<UInt64>^)fieldValue);
-            }
-            else if(type->Equals(DotNetTypes::BoolArrayType))
-            {
-              return this->WriteBooleanArray(fieldName, (array<bool>^)fieldValue);
-            }
-            else if(type->Equals(DotNetTypes::CharArrayType))
-            {
-              return this->WriteCharArray(fieldName, (array<Char>^)fieldValue);
-            }
-            else if(type->Equals(DotNetTypes::StringArrayType))
-            {
-              return this->WriteStringArray(fieldName, (array<String^>^)fieldValue);
-            }
-            else if(type->Equals(DotNetTypes::DateType))
-            {
-              return this->WriteDate(fieldName, (DateTime)fieldValue);
-            }
-            else if(type->Equals(DotNetTypes::DateArrayType))
-            {
-              return this->WriteDateArray(fieldName, (array<DateTime>^)fieldValue);
-            }
-            else if(type->Equals(DotNetTypes::ByteArrayOfArrayType))
-            {
-              return this->WriteArrayOfByteArrays(fieldName, (array<array<Byte>^>^)fieldValue);
-            }
-            else if(type->Equals(DotNetTypes::SByteArrayOfArrayType))
-            {
-              return this->WriteArrayOfSByteArrays(fieldName, (array<array<SByte>^>^)fieldValue);
-            }
-            else if(type->Equals(DotNetTypes::ObjectArrayType))
-            {
-              return this->WriteObjectArray(fieldName, safe_cast<System::Collections::Generic::List<Object^>^>(fieldValue));
-            }
-            else if(type->Equals(DotNetTypes::GuidType))
-            {
-              return this->WriteGuid(fieldName, (Guid)fieldValue);
-            }
-            else
-            {
-              return this->WriteObject(fieldName, fieldValue);
+							m_dataOutput->WriteUInt16((UInt16)m_offsets[i]);
             }
           }
-          
-          PdxType^ PdxLocalWriter::GetLocalPdxType(String^ pdxClassName)
+          else
           {
-            return m_dataOutput->Cache->GetPdxTypeRegistry()->GetLocalPdxType(pdxClassName);
+            for(int i = m_offsets->Length-1; i >0 ; i--)
+            {
+              m_dataOutput->WriteUInt32((UInt32)m_offsets[i]);
+            }
+          }
+        }
+
+        bool PdxLocalWriter::isFieldWritingStarted()
+        {
+          return true;
+        }
+
+        IPdxWriter^ PdxLocalWriter::WriteUnreadFields(IPdxUnreadFields^ unread)
+        {
+          if(isFieldWritingStarted())
+          {
+            throw gcnew IllegalStateException("WriteUnreadFields must be called before "
+																								+ "any other fields are written.");
           }
          
-          Apache::Geode::Client::Cache^ PdxLocalWriter::Cache::get() { return m_dataOutput->Cache; }
- 
+          if(unread != nullptr)
+          {
+            m_preserveData = (PdxRemotePreservedData^)unread;
+
+            m_pdxType = m_dataOutput->Cache->GetPdxTypeRegistry()->GetPdxType(m_preserveData->MergedTypeId);
+            if(m_pdxType == nullptr)
+            {//its local type
+              //this needs to fix for IPdxTypemapper
+              m_pdxType = GetLocalPdxType(m_pdxClassName);
+            }
+            m_offsets = gcnew array<int>(m_pdxType->NumberOfVarLenFields);
+          }
+          return this;
+        }
+
+        IPdxWriter^ PdxLocalWriter::WriteUnsignedByte( String^ fieldName, Byte value )
+        {
+					m_dataOutput->WriteByte(value);
+          return this;
+        }
+
+        void PdxLocalWriter::WriteByte(Byte byte)
+        {
+          m_dataOutput->WriteByte(byte);
+        }
+
+        IPdxWriter^ PdxLocalWriter::WriteByte( String^ fieldName, SByte value )
+        {
+          m_dataOutput->WriteSByte(value);
+          return this;
+        }
+
+        void PdxLocalWriter::WriteSByte(SByte byte)
+        {
+          m_dataOutput->WriteSByte(byte);
+        }
+
+        IPdxWriter^ PdxLocalWriter::WriteBoolean( String^ fieldName, bool value )
+        {
+          m_dataOutput->WriteBoolean(value);
+          return this;
+        }
+
+        IPdxWriter^ PdxLocalWriter::WriteChar( String^ fieldName, Char value )
+        {
+          m_dataOutput->WriteChar(value);
+          return this;
+        }
+                     
+        IPdxWriter^ PdxLocalWriter::WriteUShort( String^ fieldName, System::UInt16 value )
+        {
+          m_dataOutput->WriteUInt16(value);
+          return this;
+        }
+
+        IPdxWriter^ PdxLocalWriter::WriteUInt( String^ fieldName, System::UInt32 value )
+        {
+          m_dataOutput->WriteUInt32(value);
+          return this;
+        }
+
+        IPdxWriter^ PdxLocalWriter::WriteULong( String^ fieldName, System::UInt64 value )
+        {
+          m_dataOutput->WriteUInt64(value);
+          return this;
+        }
+
+        IPdxWriter^ PdxLocalWriter::WriteShort( String^ fieldName, System::Int16 value )
+        {
+          m_dataOutput->WriteInt16(value);
+          return this;
+        }
+
+        IPdxWriter^ PdxLocalWriter::WriteInt( String^ fieldName, System::Int32 value )
+        {
+          m_dataOutput->WriteInt32(value);
+          return this;
+        }
+
+        IPdxWriter^ PdxLocalWriter::WriteLong( String^ fieldName, Int64 value )
+        {
+					m_dataOutput->WriteInt64(value);
+          return this;
+        }
+
+        IPdxWriter^ PdxLocalWriter::WriteFloat( String^ fieldName, float value )
+        {
+          m_dataOutput->WriteFloat(value);
+          return this;
+        }
+
+        IPdxWriter^ PdxLocalWriter::WriteDouble( String^ fieldName, double value )
+        {
+          m_dataOutput->WriteDouble(value);
+          return this;
+        }
+
+        IPdxWriter^ PdxLocalWriter::WriteString( String^ fieldName, String^ value )
+        {
+          AddOffset();
+          m_dataOutput->WriteString(value);
+          return this;
+        }
+
+        IPdxWriter^ PdxLocalWriter::WriteUTFHuge( String^ fieldName, String^ value )
+        {
+          AddOffset();
+          m_dataOutput->WriteUTFHuge(value);
+          return this;
+        }
+
+        IPdxWriter^ PdxLocalWriter::WriteASCIIHuge( String^ fieldName, String^ value )
+        {
+          AddOffset();
+          m_dataOutput->WriteASCIIHuge(value);
+          return this;
+        }
+
+        IPdxWriter^ PdxLocalWriter::WriteObject( String^ fieldName, Object^ obj )
+        {
+          AddOffset();
+          m_dataOutput->WriteObject(obj);
+          return this;
+        }
+
+        //TODO:
+        //IPdxWriter^ PdxLocalWriter::WriteMap( String^ fieldName, System::Collections::IDictionary^ map );
+
+        IPdxWriter^ PdxLocalWriter::WriteCollection( String^ fieldName, System::Collections::IList^ obj)
+        {
+          AddOffset();
+          m_dataOutput->WriteCollection(obj);
+          return this;
+        }
+
+        IPdxWriter^ PdxLocalWriter::WriteDate( String^ fieldName, System::DateTime date)
+        {
+          m_dataOutput->WriteDate(date);
+          return this;
+        }
+
+        IPdxWriter^ PdxLocalWriter::WriteDateArray( String^ fieldName, array<System::DateTime>^ dateArray)
+        {
+          m_dataOutput->WriteDateArray(dateArray);
+          return this;
+        }
+        
+        IPdxWriter^ PdxLocalWriter::WriteBooleanArray( String^ fieldName, array<bool>^ boolArray)
+        {
+          AddOffset();
+          m_dataOutput->WriteBooleanArray(boolArray);
+          return this;
+        }
+
+        IPdxWriter^ PdxLocalWriter::WriteCharArray(String^ fieldName, array<Char>^ charArray)
+        {
+          AddOffset();
+          m_dataOutput->WriteCharArray(charArray);
+          return this;
+        }
+
+        IPdxWriter^ PdxLocalWriter::WriteByteArray(String^ fieldName, array<Byte>^ byteArray)
+        {
+          AddOffset();
+					m_dataOutput->WriteBytes(byteArray);
+          return this;
+        }
+
+        IPdxWriter^ PdxLocalWriter::WriteSByteArray(String^ fieldName, array<SByte>^ sbyteArray)
+        {
+          AddOffset();
+          m_dataOutput->WriteSBytes(sbyteArray);
+          return this;
+        }
+
+        IPdxWriter^ PdxLocalWriter::WriteShortArray(String^ fieldName, array<System::Int16>^ shortArray)
+        {
+          AddOffset();
+          m_dataOutput->WriteShortArray(shortArray);//TODO::this don't write typeid looks confusing
+          return this;
+        }
+
+        IPdxWriter^ PdxLocalWriter::WriteUShortArray(String^ fieldName, array<System::UInt16>^ ushortArray)
+        {
+          AddOffset();
+         m_dataOutput->WriteObject(ushortArray);
+          return this;
+        }
+
+        IPdxWriter^ PdxLocalWriter::WriteIntArray(String^ fieldName, array<System::Int32>^ intArray)
+        {
+          AddOffset();
+          m_dataOutput->WriteIntArray(intArray);
+          return this;
+        }
+
+        IPdxWriter^ PdxLocalWriter::WriteUIntArray(String^ fieldName, array<System::UInt32>^ uintArray)
+        {
+          AddOffset();
+          m_dataOutput->WriteObject(uintArray);
+          return this;
+        }
+					
+        IPdxWriter^ PdxLocalWriter::WriteLongArray(String^ fieldName, array<Int64>^ longArray)
+        {
+          AddOffset();
+          m_dataOutput->WriteLongArray(longArray);
+          return this;
+        }
+
+        IPdxWriter^ PdxLocalWriter::WriteULongArray(String^ fieldName, array<System::UInt64>^ ulongArray)
+        {
+          AddOffset();
+          m_dataOutput->WriteObject(ulongArray);
+          return this;
+        }
+
+        IPdxWriter^ PdxLocalWriter::WriteFloatArray(String^ fieldName, array<float>^ floatArray)
+        {
+          AddOffset();
+          m_dataOutput->WriteFloatArray(floatArray);
+          return this;
+        }
+
+        IPdxWriter^ PdxLocalWriter::WriteDoubleArray(String^ fieldName, array<double>^ doubleArray)
+        {
+          AddOffset();
+          m_dataOutput->WriteDoubleArray(doubleArray);
+          return this;
+        }
+
+        IPdxWriter^ PdxLocalWriter::WriteStringArray(String^ fieldName, array<String^>^ stringArray)
+        {
+          AddOffset();
+          m_dataOutput->WriteStringArray(stringArray);
+          return this;
+        }
+
+        IPdxWriter^ PdxLocalWriter::WriteObjectArray(String^ fieldName, List<Object^>^ objectArray)
+        {
+          AddOffset();
+          m_dataOutput->WriteObjectArray(objectArray);
+          return this;
+        }
+
+        IPdxWriter^ PdxLocalWriter::WriteArrayOfByteArrays(String^ fieldName, array<array<Byte>^>^ byteArrays)
+        {
+          AddOffset();
+          m_dataOutput->WriteArrayOfByteArrays(byteArrays);
+          return this;
+        }
+
+        IPdxWriter^ PdxLocalWriter::WriteArrayOfSByteArrays(String^ fieldName, array<array<SByte>^>^ byteArrays)
+        {
+          AddOffset();
+          m_dataOutput->WriteArrayOfSByteArrays(byteArrays);
+          return this;
+        }
+
+        IPdxWriter^ PdxLocalWriter::WriteGuid( String^ fieldName, System::Guid value )
+        {
+          m_dataOutput->WriteString(value.ToString());
+          return this;
+        }
+        
+        //TODO:
+        //IPdxWriter^ PdxLocalWriter::WriteEnum(String^ fieldName, Enum e) ;
+        //IPdxWriter^ PdxLocalWriter::WriteInetAddress(String^ fieldName, InetAddress address);
+
+
+        IPdxWriter^ PdxLocalWriter::MarkIdentityField(String^ fieldName)
+        {
+          return this;
+        }
+
+        IPdxWriter^ PdxLocalWriter::WriteField(String^ fieldName, Object^ fieldValue, Type^ type)
+        {
+          if(type->Equals(DotNetTypes::IntType))
+          {
+            return this->WriteInt(fieldName, (int)fieldValue);
+          }
+          else if(type->Equals(DotNetTypes::UIntType))
+          {
+            return this->WriteUInt(fieldName, (UInt32)fieldValue);
+          }
+          else if(type->Equals(DotNetTypes::StringType))
+          {
+            return this->WriteString(fieldName, (String^)fieldValue);
+          }
+          else if(type->Equals(DotNetTypes::BooleanType))
+          {
+            return this->WriteBoolean(fieldName, (bool)fieldValue);
+          }
+          else if(type->Equals(DotNetTypes::FloatType))
+          {
+            return this->WriteFloat(fieldName, (float)fieldValue);
+          }
+          else if(type->Equals(DotNetTypes::DoubleType))
+          {
+            return this->WriteDouble(fieldName, (double)fieldValue);
+          }
+          else if(type->Equals(DotNetTypes::CharType))
+          {
+            return this->WriteChar(fieldName, (Char)fieldValue);
+          }
+          else if(type->Equals(DotNetTypes::SByteType))
+          {
+            return this->WriteByte(fieldName, (SByte)fieldValue);
+          }
+          else if(type->Equals(DotNetTypes::ByteType))
+          {
+            return this->WriteUnsignedByte(fieldName, (Byte)fieldValue);
+          }
+          else if(type->Equals(DotNetTypes::ShortType))
+          {
+            return this->WriteShort(fieldName, (short)fieldValue);
+          }
+          else if(type->Equals(DotNetTypes::UShortType))
+          {
+            return this->WriteUShort(fieldName, (USHORT)fieldValue);
+          }
+          else if(type->Equals(DotNetTypes::LongType))
+          {
+            return this->WriteLong(fieldName, (Int64)fieldValue);
+          }
+          else if(type->Equals(DotNetTypes::ULongType))
+          {
+            return this->WriteULong(fieldName, (UInt64)fieldValue);
+          }
+          else if(type->Equals(DotNetTypes::ByteArrayType))
+          {
+            return this->WriteByteArray(fieldName, (array<Byte>^)fieldValue);
+          }
+          else if(type->Equals(DotNetTypes::SByteArrayType))
+          {
+            return this->WriteSByteArray(fieldName, (array<SByte>^)fieldValue);
+          }
+          else if(type->Equals(DotNetTypes::DoubleArrayType))
+          {
+            return this->WriteDoubleArray(fieldName, (array<double>^)fieldValue);
+          }
+          else if(type->Equals(DotNetTypes::FloatArrayType))
+          {
+            return this->WriteFloatArray(fieldName, (array<float>^)fieldValue);
+          }
+          else if(type->Equals(DotNetTypes::ShortArrayType))
+          {
+            return this->WriteShortArray(fieldName, (array<Int16>^)fieldValue);
+          }
+          else if(type->Equals(DotNetTypes::UShortArrayType))
+          {
+            return this->WriteUShortArray(fieldName, (array<UInt16>^)fieldValue);
+          }
+          else if(type->Equals(DotNetTypes::IntArrayType))
+          {
+            return this->WriteIntArray(fieldName, (array<System::Int32>^)fieldValue);
+          }
+          else if(type->Equals(DotNetTypes::UIntArrayType))
+          {
+            return this->WriteUIntArray(fieldName, (array<System::UInt32>^)fieldValue);
+          }
+          else if(type->Equals(DotNetTypes::LongArrayType))
+          {
+            return this->WriteLongArray(fieldName, (array<Int64>^)fieldValue);
+          }
+          else if(type->Equals(DotNetTypes::ULongArrayType))
+          {
+            return this->WriteULongArray(fieldName, (array<UInt64>^)fieldValue);
+          }
+          else if(type->Equals(DotNetTypes::BoolArrayType))
+          {
+            return this->WriteBooleanArray(fieldName, (array<bool>^)fieldValue);
+          }
+          else if(type->Equals(DotNetTypes::CharArrayType))
+          {
+            return this->WriteCharArray(fieldName, (array<Char>^)fieldValue);
+          }
+          else if(type->Equals(DotNetTypes::StringArrayType))
+          {
+            return this->WriteStringArray(fieldName, (array<String^>^)fieldValue);
+          }
+          else if(type->Equals(DotNetTypes::DateType))
+          {
+            return this->WriteDate(fieldName, (DateTime)fieldValue);
+          }
+          else if(type->Equals(DotNetTypes::DateArrayType))
+          {
+            return this->WriteDateArray(fieldName, (array<DateTime>^)fieldValue);
+          }
+          else if(type->Equals(DotNetTypes::ByteArrayOfArrayType))
+          {
+            return this->WriteArrayOfByteArrays(fieldName, (array<array<Byte>^>^)fieldValue);
+          }
+          else if(type->Equals(DotNetTypes::SByteArrayOfArrayType))
+          {
+            return this->WriteArrayOfSByteArrays(fieldName, (array<array<SByte>^>^)fieldValue);
+          }
+          else if(type->Equals(DotNetTypes::ObjectArrayType))
+          {
+            return this->WriteObjectArray(fieldName, safe_cast<System::Collections::Generic::List<Object^>^>(fieldValue));
+          }
+          else if(type->Equals(DotNetTypes::GuidType))
+          {
+            return this->WriteGuid(fieldName, (Guid)fieldValue);
+          }
+          else
+          {
+            return this->WriteObject(fieldName, fieldValue);
+          }
+        }
+          
+        PdxType^ PdxLocalWriter::GetLocalPdxType(String^ pdxClassName)
+        {
+          return m_dataOutput->Cache->GetPdxTypeRegistry()->GetLocalPdxType(pdxClassName);
+        }
+        
+        Apache::Geode::Client::Cache^ PdxLocalWriter::Cache::get() { return m_dataOutput->Cache; }
+
       }  // namespace Internal
     }  // namespace Client
   }  // namespace Geode
