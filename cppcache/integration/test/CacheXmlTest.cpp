@@ -36,6 +36,7 @@
 namespace {
 
 using apache::geode::client::Cache;
+using apache::geode::client::CacheXmlException;
 
 apache::geode::client::Cache createCacheUsingXmlConfig(
     const std::string& xmlFile) {
@@ -74,4 +75,20 @@ TEST(CacheXmlTest, loadCacheXmlWithBadSchema) {
   EXPECT_NO_THROW(createCacheUsingXmlConfig(cacheXml));
 }
 
+TEST(CacheXmlTest, loadCacheWithUnnamedPool) {
+  Cluster cluster{LocatorCount{1}, ServerCount{2}};
+  auto cacheXml =
+      std::string(getFrameworkString(FrameworkVariable::TestCacheXmlDir)) +
+      "/unnamed_pool.xml";
+
+  cluster.start();
+
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("region")
+      .withType("PARTITION")
+      .execute();
+  EXPECT_THROW(createCacheUsingXmlConfig(cacheXml), CacheXmlException);
+}
 }  // namespace
