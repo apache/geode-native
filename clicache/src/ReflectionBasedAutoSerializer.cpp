@@ -25,6 +25,7 @@
 #include "impl/DotNetTypes.hpp"
 #include "TypeRegistry.hpp"
 
+
 namespace Apache
 {
   namespace Geode
@@ -446,36 +447,55 @@ namespace Apache
             return retVal;
            
           List<FieldWrapper^>^ collectFields = gcnew List<FieldWrapper^>();
-           while(domaimType != nullptr)
-           {
-             for each(FieldInfo^ fi in domaimType->GetFields(BindingFlags::Public| BindingFlags::NonPublic | BindingFlags::Instance
-               |BindingFlags::DeclaredOnly
-               ))
-             {
-               if(!fi->IsNotSerialized && !fi->IsStatic && !fi->IsLiteral && !fi->IsInitOnly)
-               {
-                 //to ignore the fild
-                 if(IsFieldIncluded(fi, domaimType))
-                 {                      
-                   //This are all hooks which app can implement
+          while(domaimType != nullptr)
+          {
+            for each(FieldInfo^ fi in domaimType->GetFields(BindingFlags::Public| BindingFlags::NonPublic | BindingFlags::Instance
+              |BindingFlags::DeclaredOnly
+              ))
+            {
+              if (!IsTypeSupported(fi->FieldType))
+              {
+                Log::Error("ReflectionBasedAutoSerializer doesn't support FieldInfo " + fi + "because it doesn't have a no arg constructor");
+                throw gcnew IllegalStateException("ReflectionBasedAutoSerializer doesn't support FieldInfo " + fi + "because it doesn't have a no arg constructor");
+              }
 
-                   String^ fieldName = GetFieldName(fi, domaimType);
-                   bool isIdentityField = IsIdentityField(fi, domaimType);
-                   FieldType ft = GetFieldType(fi, domaimType);
+              if(!fi->IsNotSerialized && !fi->IsStatic && !fi->IsLiteral && !fi->IsInitOnly)
+              {
+                //to ignore the fild
+                if(IsFieldIncluded(fi, domaimType))
+                {                      
+                  //This are all hooks which app can implement
+
+                  String^ fieldName = GetFieldName(fi, domaimType);
+                  bool isIdentityField = IsIdentityField(fi, domaimType);
+                  FieldType ft = GetFieldType(fi, domaimType);
   
-                   FieldWrapper^ fw = gcnew FieldWrapper(fi, fieldName, isIdentityField, ft);
+                  FieldWrapper^ fw = gcnew FieldWrapper(fi, fieldName, isIdentityField, ft);
 
-                   collectFields->Add(fw);
-                 }
-               }
-             }
-             domaimType = domaimType->BaseType;
-           }
-           tmp = gcnew System::Collections::Generic::Dictionary<String^, List<FieldWrapper^>^>(classNameVsFieldInfoWrapper); 
-           tmp->Add(className, collectFields);
-           classNameVsFieldInfoWrapper = tmp;
+                  collectFields->Add(fw);
+                }
+              }
+            }
+            domaimType = domaimType->BaseType;
+          }
+          tmp = gcnew System::Collections::Generic::Dictionary<String^, List<FieldWrapper^>^>(classNameVsFieldInfoWrapper); 
+          tmp->Add(className, collectFields);
+          classNameVsFieldInfoWrapper = tmp;
 
-           return collectFields;
+          return collectFields;
+        }
+      }
+
+      bool ReflectionBasedAutoSerializer::IsTypeSupported(Type^ type)
+      {
+        if ((type->IsValueType && !type->IsPrimitive && !type->IsEnum && type != DateTime::typeid && type != Guid::typeid) || // structs are not serializable
+          type == Decimal::typeid)
+        {
+          return false;
+        }
+        else
+        {
+          return true;
         }
       }
 

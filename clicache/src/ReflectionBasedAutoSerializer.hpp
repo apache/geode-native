@@ -225,6 +225,8 @@ namespace Apache
         
         bool IsPdxIdentityField(FieldInfo^ fi);
 
+        bool IsTypeSupported(Type^ type);
+
         System::Collections::Generic::Dictionary<String^, List<FieldWrapper^>^>^ classNameVsFieldInfoWrapper;
                               
         List<FieldWrapper^>^ GetFields(Type^ domaimType);
