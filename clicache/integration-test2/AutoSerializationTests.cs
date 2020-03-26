@@ -713,9 +713,6 @@ namespace Apache.Geode.Client.IntegrationTests
           throw new Exception("ApartmentLocation array is not equal " + i);
       }
     }
-
-
-
     #endregion
   }
 
@@ -725,11 +722,6 @@ namespace Apache.Geode.Client.IntegrationTests
     public int i2;
     public string s1;
     public string s2;
-
-    //public static SerializePdx1 CreateDeserializable()
-    //{
-    //  return new SerializePdx1(false);
-    //}
 
     public SerializePdx1()
     {
@@ -762,6 +754,81 @@ namespace Apache.Geode.Client.IntegrationTests
           && i2 == other.i2
           && s1 == other.s1
           && s2 == other.s2)
+        return true;
+
+      return false;
+    }
+
+    public override int GetHashCode()
+    {
+      return base.GetHashCode();
+    }
+  }
+  public class UnsupportedTypes
+  {
+    public struct Coords
+    {
+      public Coords(double x, double y)
+      {
+        X = x;
+        Y = y;
+      }
+
+      public double X { get; set; }
+      public double Y { get; set; }
+
+      public override bool Equals(object ob)
+      {
+        if (ob is Coords)
+        {
+          Coords c = (Coords)ob;
+          return X == c.X && Y == c.Y;
+        }
+        else
+        {
+          return false;
+        }
+      }
+
+      public override int GetHashCode()
+      {
+        return X.GetHashCode() ^ Y.GetHashCode();
+      }
+    }
+
+    [PdxIdentityField] public int i1;
+    public decimal decimalVal;
+    public Coords coordsVal;
+
+    public UnsupportedTypes()
+    {
+    }
+
+    public UnsupportedTypes(bool init)
+    {
+      if (init)
+      {
+        i1 = 1;
+        decimalVal = Decimal.MaxValue;
+        coordsVal = new Coords(1,2);
+      }
+    }
+
+    public override bool Equals(object obj)
+    {
+      if (obj == null)
+        return false;
+      if (obj == this)
+        return true;
+
+      var other = obj as UnsupportedTypes;
+
+      if (other == null)
+        return false;
+
+      if (i1 == other.i1
+          && decimalVal == other.decimalVal
+          && coordsVal.Equals(coordsVal))
         return true;
 
       return false;
@@ -939,6 +1006,8 @@ namespace Apache.Geode.Client.IntegrationTests
 
   public class SerializeAllTypes : BaseClass
   {
+    public enum COLORS { RED, WHITE, BLUE };
+
     [PdxIdentityField] private int identity;
 
     private string stringVal;
@@ -989,6 +1058,8 @@ namespace Apache.Geode.Client.IntegrationTests
     private Hashtable _hashTable;
     private Stack _stack;
     private Queue _queue;
+
+    public COLORS colorVal;
 
     public SerializeAllTypes()
           : base()
@@ -1059,6 +1130,7 @@ namespace Apache.Geode.Client.IntegrationTests
         }
 
         _address = new AddressWithGuid(nAddress);
+        colorVal = COLORS.RED;
       }
     }
 
@@ -1116,7 +1188,8 @@ namespace Apache.Geode.Client.IntegrationTests
           && dateTimeArray.SequenceEqual(other.dateTimeArray)
 
           && s1 == other.s1
-          && s2 == other.s2)
+          && s2 == other.s2
+          && colorVal == other.colorVal) 
       {
         var ret = nestedObject.Equals(other.nestedObject);
         if (ret)
@@ -1153,16 +1226,15 @@ namespace Apache.Geode.Client.IntegrationTests
                 return false;
             }
 
-
-            //if (_hashTable.Count != other._hashTable.Count)
-            //  return false;
-            //foreach (DictionaryEntry de in _hashTable)
-            //{
-            //  var otherHe = other._hashTable[de.Key];
-            //  ret = de.Value.Equals(otherHe);
-            //  if (!ret)
-            //    return false;
-            //}
+            if (_queue.Count != other._queue.Count)
+              return false;
+            foreach (Object o in _queue)
+            {
+              var otherO = other._queue.Dequeue();
+              ret = o.Equals(otherO);
+              if (!ret)
+                return false;
+            }
 
             if (!_address.Equals(other._address))
               return false;
@@ -1444,49 +1516,42 @@ namespace Apache.Geode.Client.IntegrationTests
 
         for (var i = 0; i < 10; i++)
         {
-          object put = new SerializePdx1(true);
+          object put;
+          object ret;
 
+          Exception ex = Assert.ThrowsAny<Exception>(() =>
+          {
+            put = new UnsupportedTypes(true);
+            region[i] = put;
+          });
+
+          put = new SerializePdx1(true);
           region[i] = put;
-
-          var ret = region[i];
-
+          ret = region[i];
           Assert.Equal(put, ret);
 
           put = new SerializePdx2(true);
           region[i + 10] = put;
-
-
           ret = region[i + 10];
-
           Assert.Equal(put, ret);
 
           put = new PdxTypesReflectionTest(true);
           region[i + 20] = put;
-
-
           ret = region[i + 20];
-
           Assert.Equal(put, ret);
 
           put = new SerializeAllTypes(true, i % 2);
           region[i + 30] = put;
-
-
           ret = region[i + 30];
-
           Assert.Equal(put, ret);
 
           put = new SerializePdx4(true);
           region[i + 40] = put;
-
-
           ret = region[i + 40];
-
           Assert.Equal(put, ret);
 
           var p1 = region[i + 30];
           var p2 = region[i + 40];
-
           Assert.True(p1 != p2, "Should NOt be equal");
         }
       }
