@@ -46,6 +46,7 @@ add_library( ${PROJECT_NAME} SHARED
   geode.properties
   xunit.runner.json
   packages.config
+  AutoSerializationTests.cs
   SerializationTests.cs
   ClientSslKeys/client_keystore.password.pem
   ClientSslKeys/client_truststore.pem
