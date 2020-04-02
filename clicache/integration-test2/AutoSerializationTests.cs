@@ -764,6 +764,7 @@ namespace Apache.Geode.Client.IntegrationTests
       return base.GetHashCode();
     }
   }
+
   public class UnsupportedTypes
   {
     public struct Coords
@@ -797,7 +798,6 @@ namespace Apache.Geode.Client.IntegrationTests
     }
 
     [PdxIdentityField] public int i1;
-    public decimal decimalVal;
     public Coords coordsVal;
 
     public UnsupportedTypes()
@@ -809,7 +809,6 @@ namespace Apache.Geode.Client.IntegrationTests
       if (init)
       {
         i1 = 1;
-        decimalVal = Decimal.MaxValue;
         coordsVal = new Coords(1,2);
       }
     }
@@ -827,7 +826,6 @@ namespace Apache.Geode.Client.IntegrationTests
         return false;
 
       if (i1 == other.i1
-          && decimalVal == other.decimalVal
           && coordsVal.Equals(coordsVal))
         return true;
 
@@ -1060,6 +1058,8 @@ namespace Apache.Geode.Client.IntegrationTests
     private Queue _queue;
 
     public COLORS colorVal;
+    public Guid guid;
+    public Decimal decimalVal;
 
     public SerializeAllTypes()
           : base()
@@ -1083,7 +1083,7 @@ namespace Apache.Geode.Client.IntegrationTests
         boolArray = new bool[] { true, false, true };
 
         byteVal = 0xa0;
-        byteArray = new byte[] { 0xaa, 0xab, 0xac };
+        byteArray = new byte[] { (byte)(Byte.MaxValue - 1), (byte)(Byte.MaxValue - 10), (byte)(Byte.MaxValue - 20) };
 
         sbyteVal = 0x10;
         sbyteArray = new sbyte[] { -5, 2, 0x70 };
@@ -1101,7 +1101,7 @@ namespace Apache.Geode.Client.IntegrationTests
         longVal = -222;
         ulongVal = 222;
         longArray = new long[] { 100, 1100, 11100 };
-        ulongArray = new ulong[] { (ulong)(UInt64.MaxValue - 100), (ulong)(UInt64.MaxValue - 1100), (ulong)(Math.Pow(2, 64) - 11100) };
+        ulongArray = new ulong[] { (ulong)(UInt64.MaxValue - 100), (ulong)(UInt64.MaxValue - 1100), (ulong)(UInt64.MaxValue - 11100) };
 
         floatVal = 1.6f;
         floatArray = new float[] { 1.6f, 1600.1f, 1.2e7f };
@@ -1131,6 +1131,8 @@ namespace Apache.Geode.Client.IntegrationTests
 
         _address = new AddressWithGuid(nAddress);
         colorVal = COLORS.RED;
+        guid = new Guid("924243B5-9C2A-41d7-86B1-E0B905C7EED3");
+        decimalVal = Decimal.MaxValue;
       }
     }
 
@@ -1189,7 +1191,9 @@ namespace Apache.Geode.Client.IntegrationTests
 
           && s1 == other.s1
           && s2 == other.s2
-          && colorVal == other.colorVal) 
+          && colorVal == other.colorVal
+          && guid == other.guid
+          && decimalVal == other.decimalVal)
       {
         var ret = nestedObject.Equals(other.nestedObject);
         if (ret)
@@ -1523,6 +1527,7 @@ namespace Apache.Geode.Client.IntegrationTests
           {
             put = new UnsupportedTypes(true);
             region[i] = put;
+            var val = region[i];
           });
 
           put = new SerializePdx1(true);
