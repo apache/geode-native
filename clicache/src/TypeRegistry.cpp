@@ -661,7 +661,7 @@ namespace Apache
 
         ConstructorInfo^ ctorInfo = type->GetConstructor(Type::EmptyTypes);
         if (ctorInfo == nullptr) {
-          Log::Error("Object missing public no arg constructor");
+          Log::Error("Can't deserialize {0} because this type has no public no arg constructor", type->Name);
           throw gcnew IllegalStateException("Object missing public no arg constructor");
         }
 

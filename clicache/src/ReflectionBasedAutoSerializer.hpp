@@ -58,7 +58,17 @@ namespace Apache
 				DOUBLE_ARRAY,
 				STRING_ARRAY,
 				OBJECT_ARRAY,
-				ARRAY_OF_BYTE_ARRAYS
+				ARRAY_OF_BYTE_ARRAYS,
+        SBYTE,
+        USHORT,
+        UINT,
+        ULONG,
+        SBYTE_ARRAY,
+        USHORT_ARRAY,
+        UINT_ARRAY,
+        ULONG_ARRAY,
+        GUID,
+        DECIMAL
       };
 
         ref class FieldWrapper;
