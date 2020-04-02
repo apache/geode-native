@@ -24,6 +24,7 @@ using System.Collections.Generic;
 using Xunit.Abstractions;
 using System.Reflection;
 using System.Linq;
+using System.Data;
 
 namespace Apache.Geode.Client.IntegrationTests
 {
@@ -799,6 +800,7 @@ namespace Apache.Geode.Client.IntegrationTests
 
     [PdxIdentityField] public int i1;
     public Coords coordsVal;
+    public DataTable dataTable;
 
     public UnsupportedTypes()
     {
@@ -810,6 +812,14 @@ namespace Apache.Geode.Client.IntegrationTests
       {
         i1 = 1;
         coordsVal = new Coords(1,2);
+
+        dataTable = new DataTable("Suppliers");
+        dataTable.Columns.Add("CompanyID");
+        dataTable.Columns.Add("CompanyName");
+        DataRow newRow = dataTable.NewRow();
+        newRow["CompanyID"] = "VMW";
+        newRow["CompanyName"] = "VMWare";
+        dataTable.Rows.Add(newRow);
       }
     }
 
@@ -826,7 +836,8 @@ namespace Apache.Geode.Client.IntegrationTests
         return false;
 
       if (i1 == other.i1
-          && coordsVal.Equals(coordsVal))
+          && coordsVal.Equals(coordsVal)
+          && dataTable == other.dataTable)
         return true;
 
       return false;
@@ -1196,6 +1207,7 @@ namespace Apache.Geode.Client.IntegrationTests
           && decimalVal == other.decimalVal)
       {
         var ret = nestedObject.Equals(other.nestedObject);
+
         if (ret)
         {
           if (_addressList.Count == 10 &&
@@ -1242,6 +1254,7 @@ namespace Apache.Geode.Client.IntegrationTests
 
             if (!_address.Equals(other._address))
               return false;
+
             return base.Equals(other);
           }
         }
