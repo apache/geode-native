@@ -1525,11 +1525,12 @@ namespace Apache.Geode.Client.IntegrationTests
           object put;
           object ret;
 
-          Exception ex = Assert.ThrowsAny<Exception>(() =>
+          Assert.ThrowsAny<Exception>(() =>
           {
             put = new UnsupportedTypes(true);
             region[i] = put;
             var val = region[i];
+            Console.WriteLine("Shouldn't be able to retrieve an unsupported type");
           });
 
           put = new SerializePdx1(true);
