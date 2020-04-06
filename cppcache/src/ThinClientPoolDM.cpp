@@ -1966,8 +1966,8 @@ GfErrType ThinClientPoolDM::sendRequestToEP(const TcrMessage& request,
 }
 
 TcrEndpoint* ThinClientPoolDM::addEP(ServerLocation& serverLoc) {
-  std::string endpointName = serverLoc.getServerName() + ":"
-                             + std::to_string(serverLoc.getPort());
+  const auto endpointName =
+      serverLoc.getServerName() + ":" + std::to_string(serverLoc.getPort());
   return addEP(endpointName);
 }
 
