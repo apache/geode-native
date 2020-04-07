@@ -1966,11 +1966,8 @@ GfErrType ThinClientPoolDM::sendRequestToEP(const TcrMessage& request,
 }
 
 TcrEndpoint* ThinClientPoolDM::addEP(ServerLocation& serverLoc) {
-  std::string serverName = serverLoc.getServerName();
-  int port = serverLoc.getPort();
-  char endpointName[100];
-  std::snprintf(endpointName, 100, "%s:%d", serverName.c_str(), port);
-
+  const auto endpointName =
+      serverLoc.getServerName() + ":" + std::to_string(serverLoc.getPort());
   return addEP(endpointName);
 }
 
@@ -1982,7 +1979,7 @@ TcrEndpoint* ThinClientPoolDM::addEP(const std::string& endpointName) {
     LOGFINE("Created new endpoint %s for pool %s", endpointName.c_str(),
             m_poolName.c_str());
     ep = createEP(endpointName.c_str());
-    if (m_endpoints.emplace(endpointName, ep).second) {
+    if (!m_endpoints.emplace(endpointName, ep).second) {
       LOGERROR("Failed to add endpoint %s to pool %s", endpointName.c_str(),
                m_poolName.c_str());
     }
