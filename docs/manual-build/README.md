@@ -34,11 +34,13 @@ For ease of use, a Docker image is provided that contains a self-consistent Book
 1. To build the documentation, `cd` to the book directory:
 
     For C++ guide:
+    
     ```bash
     $ cd docs/geode-native-book-cpp
     ```
 
     For .NET guide:
+    
     ```bash
     $ cd docs/geode-native-book-dotnet
     ```
