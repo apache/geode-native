@@ -167,14 +167,16 @@ class APACHE_GEODE_EXPORT Utils {
                                           size_t maxLength = _GF_MSG_LIMIT);
 
   /**
-   * lib should be in the form required by ACE_DLL, typically just like
-   * specifying
-   * a
-   * lib in java System.loadLibrary( "x" ); Where x is a component of the name
-   * lib<x>.so on unix, or <x>.dll on windows.
+   * lib should be in the form originally required by ACE_DLL, typically just
+   * like specifying a lib in java System.loadLibrary( "x" ); Where x is a
+   * component of the name lib<x>.so on unix, or <x>.dll on windows.
    */
-  static void* getFactoryFunction(const std::string& lib,
-                                  const std::string& funcName);
+  template <typename T>
+  static T* getFactoryFunction(const std::string& libraryName,
+                               const std::string& functionName) {
+    return reinterpret_cast<T*>(
+        getFactoryFunctionVoid(libraryName, functionName));
+  }
 
   /**
    * Convert the byte array to a string as "%d %d ...".
@@ -192,6 +194,10 @@ class APACHE_GEODE_EXPORT Utils {
     return convertBytesToString(reinterpret_cast<const uint8_t*>(bytes), length,
                                 maxLength);
   }
+
+ private:
+  static void* getFactoryFunctionVoid(const std::string& lib,
+                                      const std::string& funcName);
 };
 
 // Generate random numbers 0 to max-1

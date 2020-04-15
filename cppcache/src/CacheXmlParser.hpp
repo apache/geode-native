@@ -162,8 +162,8 @@ class CacheXmlParser : public xercesc::DefaultHandler {
         // this is a managed library
         (loader)(libraryName.c_str(), functionName.c_str());
       } else {
-        apache::geode::client::Utils::getFactoryFunction(libraryName,
-                                                         functionName);
+        apache::geode::client::Utils::getFactoryFunction<void*()>(libraryName,
+                                                                  functionName);
       }
     } catch (IllegalArgumentException& ex) {
       throw CacheXmlException(ex.what());
