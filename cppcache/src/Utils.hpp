@@ -58,7 +58,6 @@ class APACHE_GEODE_EXPORT Utils {
    * On windows the maximum length of value supported is 8191.
    */
   static std::string getEnv(const char* varName);
-  static int32_t getLastError();
 
 #ifdef __GNUC__
   inline static char* _gnuDemangledName(const char* typeIdName, size_t& len) {

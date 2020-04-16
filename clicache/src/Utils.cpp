@@ -67,11 +67,6 @@ namespace Apache
       return nullptr;
     }
 
-    System::Int32 Utils::LastError::get( )
-    {
-       return apache::geode::client::Utils::getLastError( );
-    }
-
     }  // namespace Client
   }  // namespace Geode
 }  // namespace Apache
