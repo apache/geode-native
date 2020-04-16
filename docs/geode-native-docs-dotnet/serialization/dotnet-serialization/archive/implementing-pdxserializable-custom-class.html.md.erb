@@ -1,0 +1,43 @@
+---
+title:  Implementing a PdxSerializable Custom Class
+---
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+Pdx serialization provides custom serialization to an individual class. Fields within an object can be serialized separately from the rest of the class.
+
+The type of serialization and its implementation can be specified entirely in the client
+application, with no need to create corresponding code on the <%=product_name%> server.
+
+<a id="setup_pdxsbl_class"></a>
+## Setup
+
+Pdx serialization provides custom serialization to an individual class. Fields within an object can be serialized separately from the rest of the class.
+
+Setting up a custom class for PdxSerializable treatment requires some preparatory steps:
+
+- The custom class must inherit from the .NET IPdxSerializable interface.
+
+- You must provide serialization instructions for objects of the custom class. Specifically:
+
+  -  You must implement the `ToData()` and `FromData()` methods.
+  -  You must provide a "factory method" that returns an instance of the custom object.
+
+- Your application must register your custom class with the cache, which takes care of informing the server of your
+  serialization scheme. With registration, you provide the name of the "factory method" you created for instantiating
+  objects of the custom class.

@@ -21,5 +21,5 @@ r302 %r{/dotnetdocs/(.*)}, 'https://geode.apache.org/releases/latest/dotnetdocs/
 # Links to User Guides #
 rewrite '/', '/docs/geode-native/dotnet/113/about-client-users-guide.html'
 rewrite '/index.html', '/docs/geode-native/dotnet/113/about-client-users-guide.html'
-r301 %r{/serverman/(.*)}, 'https://geode.apache.org/docs/guide/113/$1'
-r301 %r{/geodeman/(.*)}, 'https://geode.apache.org/docs/guide/113/$1'
+r301 %r{/serverman/(.*)}, 'https://geode.apache.org/docs/guide/112/$1'
+r301 %r{/geodeman/(.*)}, 'https://geode.apache.org/docs/guide/112/$1'

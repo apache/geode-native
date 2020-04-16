@@ -1,6 +1,4 @@
----
-title:  Serialize with the IDataSerializable Interface
----
+<% set_title("Using the", product_name, "IDataSerializable Interface") %>
 
 <!--
 Licensed to the Apache Software Foundation (ASF) under one or more
@@ -21,9 +19,8 @@ limitations under the License.
 
 The .NET `IDataSerializable` interface provides fast and compact data serialization.
 
--   **[Generic and Custom Serializable Types](serializable-types.html)**
-
-    All built-in generics are automatically registered at initialization. You have a couple of options for complex key types.
+<%=vars.product_name%> .NET Data serialization consumes fewer bytes in overhead than  <%=vars.product_name%> .NET PDX serialization,
+but incurs higher performance costs of deserialization when performing queries.
 
 -   **[How Serialization Works with IDataSerializable](how-igfserializable-works.html)**
 
@@ -36,5 +33,9 @@ The .NET `IDataSerializable` interface provides fast and compact data serializat
 -   **[Register the Type](registering-the-type.html)**
 
     To use the `BankAccount` type, you must register it with the type system. Then, when an incoming stream contains a `BankAccount`, it can be manufactured from the associated `TypeFactoryMethod.`
+
+-   **[Using a Custom Class With IDataSerializable](custom-class-igfserializable.html)**
+
+    An example shows how to use the BankAccount custom key type and the AccountHistory value type that were previously defined.
 
 

@@ -1,6 +1,4 @@
----
-title:  Serialize with PDX Serialization
----
+<% set_title(product_name, "PDX Serialization") %>
 
 <!--
 Licensed to the Apache Software Foundation (ASF) under one or more
@@ -19,17 +17,89 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-<%=vars.product_name%>'s Portable Data eXchange (PDX) is a cross-language data format that can reduce the cost of distributing and serializing your objects. PDX stores data in named fields that you can access individually, to avoid the cost of deserializing the entire data object. PDX also allows you to mix versions of objects where you have added or removed fields.
+<%=vars.product_name%>'s Portable Data eXchange (PDX) is a cross-language data format that can reduce the cost of distributing and serializing your objects.
 
-You have two options for <%=vars.product_name%> PDX serialization when using the .NET caching API. You can program your domain objects using the `IPdxSerializable` interface, or you can use <%=vars.product_name%>’s reflection-based autoserializer.
+<%=vars.product_name%> .NET PDX serialization:
 
-- [Geode PDX Serialization Features](dotnet-pdx-serialization-features.html)
-- [Serialize Using the Geode PDX Autoserializer](dotnet-pdx-autoserializer.html)
-- [Extend the PDX Autoserializer](extending-pdx-autoserializer.html)
-- [Serialize Your Domain Objects with IPdxSerializer](serializing-domain-objects.html)
-- [Serialize Using the IPdxSerializable Interface](serialize-using-ipdxserializable.html)
-- [Program Your Application to Use IPdxInstance](programming-ipdxinstance.html)
-- [Use the IPdxInstanceFactory to Create IPdxInstances](using-ipdxinstancefactory.html)
-- [Map .NET Domain Type Names to PDX Type Names with IPdxTypeMapper](mapping-dotnet-domain-type-names.html)
-- [Data Serialization Options](dotnet-data-serialization-options.html)
-- [Serialize with PDX Serialization](dotnet-pdx-serialization.html)
+- Handles <a href="#pdx-ser-app-versioning">multiple versions of
+  domain objects</a>. (You can mix domain object versions where the differences between versions are
+  the addition and removal of object fields.)
+
+- Is <a href="#pdx-ser-portability">automatically ported to other languages by <%=vars.product_name%></a> -- no need to program a Java-side implementation
+
+- <a href="#pdx-ser-reduced-deserialization">Reduces
+  deserialization overhead</a> by providing single field access on servers of serialized data,
+  without full deserialization. Stores data in named fields that you can access individually, to
+  avoid the cost of deserializing the entire data object
+
+- <a href="#pdx-ser-delta-prop">Works with <%=vars.product_name%> delta propagation</a>
+
+The simplest option is to use [automatic serialization](dotnet-pdx-autoserializer.html) by registering the <%=vars.product_name%> .NET
+PDX reflection-based autoserializer in your application. When you have an autoserializer,
+<%=vars.product_name%> uses it for all domain objects that are not custom serialized.
+
+For greater control, you can custom serialize some or all of your domain objects using the `IPdxSerializable` interface.
+Objects derived from the `IPdxSerializable` interface are not subject to autoserialization.
+
+## <a id="pdx-ser-app-versioning"></a>Application Versioning of PDX Domain Objects
+
+Domain objects evolve along with your application code. You may create an address object with two
+address lines, then realize later that a third line is required for some situations. Or you may
+realize that a particular field is not used and want to get rid of it.
+
+With PDX, you can use old and new versions of domain objects together in a distributed system if the
+versions differ by the addition or removal of fields. This compatibility lets you gradually
+introduce modified code and data into the system, without bringing the system down.
+
+<%=vars.product_name%> maintains a central registry of the PDX domain object metadata. Using the
+registry, <%=vars.product_name%> preserves fields in each member's cache regardless of whether the
+member has the field defined. When a member receives an object that has a field registered that the
+member is not aware of, the member does not access the field, but preserves it and passes it along
+with the rest of the object to other members. When a member receives an object that is missing one
+or more fields according to the member's version, <%=vars.product_name%> assigns the .NET default
+values for the field types to the missing fields.
+
+## <a id="pdx-ser-portability"></a>Portability of PDX Serializable Objects
+
+When you create an `IPdxSerializable` object, <%=vars.product_name%> stores the object's type
+information in a central registry. The information is passed between peers, between clients and
+servers, and between distributed systems.
+
+This offers a notable advantage to the .NET client, which shares data with Java cache
+servers. Clients automatically pass registry information to servers when they store an
+`IPdxSerializable` object. Clients can run queries and functions against the data in the servers
+without the servers needing to know anything about the stored objects. One client can store data on
+the server to be retrieved by another client, with the server never needing to know the object
+type. This means you can code your .NET clients to manage data using Java servers without having to
+create Java implementations of your .NET domain objects.
+
+## <a id="pdx-ser-reduced-deserialization"></a>Reduced Deserialization of Serialized Objects
+
+The access methods for `IPdxSerializable` objects allow you to examine specific fields of your
+domain object without deserializing the entire object. This can reduce serialization and
+deserialization costs significantly. Client .NET apps can run queries and execute functions against
+the objects in the server caches without deserializing the entire object on the server side. The
+query engine automatically recognizes PDX objects and uses only the fields it needs.
+
+Clients can execute Java functions on server data that only access parts of the domain objects by using `PdxInstance.`
+
+Likewise, peers can access just the fields needed from the serialized object, keeping the object
+stored in the cache in serialized form.
+
+## <a id="pdx-ser-delta-prop"></a>Delta Propagation with PDX Serialization
+
+By default, you can use <%=vars.product_name%> delta propagation with PDX serialization. However,
+delta propagation will not work if you have set the <%=vars.product_name%> property `read-serialized`
+to `true`. To apply a change, delta propagation requires a domain class
+instance and the `fromDelta` method. If you have set `read-serialized` to `true`, you will receive an
+`IPdxInstance` instead of a domain class instance, but `IPdxInstance` does not have the `fromDelta`
+method required for delta propagation. You will also require a Java domain class on the server
+similar to your .NET PDX Delta domain class.
+
+## <a id='pdx-ser-details'></a>PDX Serialization Details
+
+See the following sections for details on implementing PDX serialization and autoserialization:
+
+- [Using the Geode PDX Autoserializer](dotnet-pdx-autoserializer.html)
+- [Using the IPdxSerializable Interface](serialize-using-ipdxserializable.html)
+- [IPdxSerializable Examples](pdx-serializable-examples.html)

@@ -1,5 +1,5 @@
 ---
-title:  Serialize Using the IPdxSerializable Interface
+title:  Using the IPdxSerializable Interface
 ---
 
 <!--
@@ -19,9 +19,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-Use this procedure to program your domain object for PDX serialization using the `IPdxSerializable` Interface. When you write objects using PDX serialization, they are distributed to the server tier in PDX serialized form. When you run queries against the objects on the servers, only the fields you specify are deserialized.
+When you write objects using PDX serialization, they are distributed to the server tier in PDX
+serialized form. When you run queries against the objects on the servers, only the fields you
+specify are deserialized.
 
-**Procedure**
+Use this procedure to program your domain object for PDX serialization using the `IPdxSerializable` Interface. 
 
 1.  In your domain class, implement `Apache.Geode.Client.IPdxSerializable`. Example:
 
@@ -115,6 +117,24 @@ Use this procedure to program your domain object for PDX serialization using the
     }
     ```
 
-5.  Optionally, program your domain object's equals and hashcode methods.
+5.  Optionally, program your domain object's `equals` and `hashcode` methods.
 
+## <a id='pdx-ser-custom-class'></a>Implementing an IPdxSerializable Custom Class
 
+Pdx serialization provides custom serialization to an individual class. Fields within an object can be serialized separately from the rest of the class.
+
+The type of serialization and its implementation can be specified entirely in the client
+application, with no need to create corresponding code on the <%=product_name%> server.
+
+Setting up a custom class for Pdx Serializable treatment requires some preparatory steps:
+
+- The custom class must inherit from the .NET IPdxSerializable interface.
+
+- You must provide serialization instructions for objects of the custom class. Specifically:
+
+  -  You must implement the `ToData()` and `FromData()` methods.
+  -  You must provide a "factory method" that returns an instance of the custom object.
+
+- Your application must register your custom class with the cache, which takes care of informing the server of your
+  serialization scheme. With registration, you provide the name of the "factory method" you created for instantiating
+  objects of the custom class.

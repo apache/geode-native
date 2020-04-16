@@ -46,4 +46,4 @@ template_variables:
   local_header_title: Apache Geode Native .NET
   local_header_img: /images/Apache_Geode_logo_symbol.png
 
-broken_link_exclusions: iefix|using_custom_classes|arrowhead|cppdocs|dotnetdocs|#
+broken_link_exclusions: iefix|using_custom_classes|arrowhead|cppdocs|dotnetdocs|113|#
