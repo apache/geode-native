@@ -1,4 +1,4 @@
-[<img src="https://geode.apache.org/img/apache_geode_logo.png" align="center"/>](http://geode.apache.org)
+[<img src="https://geode.apache.org/img/Apache_Geode_logo.png" align="center"/>](http://geode.apache.org)
 
 [![Build Status](https://travis-ci.org/apache/geode-native.svg?branch=develop)](https://travis-ci.org/apache/geode-native) [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0) [![Total alerts](https://img.shields.io/lgtm/alerts/g/apache/geode-native.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/apache/geode-native/alerts/) [![Language grade: C/C++](https://img.shields.io/lgtm/grade/cpp/g/apache/geode-native.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/apache/geode-native/context:cpp) [![Language grade: C#](https://img.shields.io/lgtm/grade/csharp/g/apache/geode-native.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/apache/geode-native/context:csharp) [![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/apache/geode-native.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/apache/geode-native/context:javascript)
 
