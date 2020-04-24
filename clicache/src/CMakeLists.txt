@@ -352,6 +352,14 @@ install(TARGETS ${PROJECT_NAME}
   ARCHIVE DESTINATION lib
 )
 
+IF(MSVC)
+  INSTALL ( 
+    FILES $<TARGET_PDB_FILE:${PROJECT_NAME}> 
+    DESTINATION bin 
+    CONFIGURATIONS Debug RelWithDebInfo 
+  )
+ENDIF(MSVC)
+
 add_dependencies(client-libraries ${PROJECT_NAME})
 
 add_subdirectory(templates)

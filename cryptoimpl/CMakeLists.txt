@@ -43,6 +43,14 @@ target_link_libraries(cryptoImpl
     c++11
 )
 
+IF(MSVC)
+  INSTALL ( 
+    FILES $<TARGET_PDB_FILE:${PROJECT_NAME}> 
+    DESTINATION bin 
+    CONFIGURATIONS Debug RelWithDebInfo 
+  )
+ENDIF(MSVC)
+
 add_clangformat(cryptoImpl)
 
 if ("Windows" STREQUAL ${CMAKE_SYSTEM_NAME} )
