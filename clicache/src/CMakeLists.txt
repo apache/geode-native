@@ -352,6 +352,13 @@ install(TARGETS ${PROJECT_NAME}
   ARCHIVE DESTINATION lib
 )
 
+IF(MSVC)
+  INSTALL ( FILES ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/${PRODUCT_DLL_NAME}.pdb
+    DESTINATION bin 
+    CONFIGURATIONS Debug RelWithDebInfo 
+    )
+ENDIF(MSVC)
+
 add_dependencies(client-libraries ${PROJECT_NAME})
 
 add_subdirectory(templates)

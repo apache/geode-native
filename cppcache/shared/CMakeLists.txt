@@ -57,6 +57,13 @@ install(TARGETS apache-geode
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib)
 
+IF(MSVC)
+  INSTALL ( FILES ${PROJECT_BINARY_DIR}/$<CONFIG>/${PRODUCT_LIB_NAME}.pdb
+    DESTINATION bin 
+    CONFIGURATIONS Debug RelWithDebInfo 
+    )
+ENDIF(MSVC)
+
 # BEGIN Visual Studio organization
 source_group("Header Files" REGULAR_EXPRESSION "\.(hpp|inl)$")
 source_group("Configure In Files" FILES ${CONFIGURE_IN_FILES})
