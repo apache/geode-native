@@ -58,10 +58,11 @@ install(TARGETS apache-geode
   ARCHIVE DESTINATION lib)
 
 IF(MSVC)
-  INSTALL ( FILES ${PROJECT_BINARY_DIR}/$<CONFIG>/${PRODUCT_LIB_NAME}.pdb
+  INSTALL ( 
+    FILES $<TARGET_PDB_FILE:${PROJECT_NAME}> 
     DESTINATION bin 
     CONFIGURATIONS Debug RelWithDebInfo 
-    )
+  )
 ENDIF(MSVC)
 
 # BEGIN Visual Studio organization
