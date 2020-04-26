@@ -33,9 +33,11 @@ add_executable(apache-geode_unittests
   ChunkedHeaderTest.cpp
   ClientConnectionResponseTest.cpp
   ClientProxyMembershipIDTest.cpp
+  ConnectionQueueTest.cpp
   DataInputTest.cpp
   DataOutputTest.cpp
   ExceptionTypesTest.cpp
+  FairQueueTest.cpp
   geodeBannerTest.cpp
   gtest_extensions.h
   InterestResultPolicyTest.cpp
@@ -70,6 +72,7 @@ target_link_libraries(apache-geode_unittests
     apache-geode-static
     GTest::gtest
     GTest::gtest_main
+    GTest::gmock
     Boost::boost
     Boost::thread
     _WarningsAsError

@@ -30,8 +30,8 @@
 #include <geode/internal/geode_base.hpp>
 #include <geode/internal/geode_globals.hpp>
 
+#include "ConnectionQueue.hpp"
 #include "ErrType.hpp"
-#include "FairQueue.hpp"
 #include "Task.hpp"
 #include "TcrConnection.hpp"
 #include "util/synchronized_set.hpp"
@@ -182,7 +182,7 @@ class TcrEndpoint {
   std::list<TcrConnection*> m_notifyConnectionList;
   std::timed_mutex m_connectLock;
   std::recursive_mutex m_notifyReceiverLock;
-  FairQueue<TcrConnection> m_opConnections;
+  ConnectionQueue<TcrConnection> m_opConnections;
   volatile int m_maxConnections;
   int m_numRegionListener;
   volatile bool m_needToConnectInLock;

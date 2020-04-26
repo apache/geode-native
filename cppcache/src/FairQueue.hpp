@@ -50,7 +50,7 @@ class FairQueue {
   }
 
   /** wait sec time until notified */
-  T* getUntil(std::chrono::microseconds& sec) {
+  T* getUntil(const std::chrono::microseconds& sec) {
     bool isClosed;
     T* mp = getNoGetLock(isClosed);
 
@@ -78,13 +78,13 @@ class FairQueue {
     }
   }
 
-  uint32_t size() {
+  uint32_t size() const {
     ACE_Guard<MUTEX> _guard(m_queueLock);
 
     return static_cast<uint32_t>(m_queue.size());
   }
 
-  bool empty() { return (size() == 0); }
+  bool empty() const { return (size() == 0); }
 
   void close() {
     ACE_Guard<MUTEX> _guard(m_queueLock);
@@ -125,7 +125,7 @@ class FairQueue {
 
  protected:
   std::deque<T*> m_queue;
-  MUTEX m_queueLock;
+  mutable MUTEX m_queueLock;
 
   inline T* popFromQueue(bool& isClosed) {
     T* mp = nullptr;
@@ -139,7 +139,7 @@ class FairQueue {
   }
 
   template <typename U>
-  T* getUntilWithToken(std::chrono::microseconds& sec, bool& isClosed,
+  T* getUntilWithToken(const std::chrono::microseconds& _sec, bool& isClosed,
                        U* excludeList = nullptr) {
     T* mp = nullptr;
 
@@ -147,6 +147,7 @@ class FairQueue {
 
     ACE_Time_Value currTime(ACE_OS::gettimeofday());
     ACE_Time_Value stopAt(currTime);
+    auto sec = _sec;
     stopAt += sec;
 
     ACE_Guard<MUTEX> _guard1(m_queueLock);

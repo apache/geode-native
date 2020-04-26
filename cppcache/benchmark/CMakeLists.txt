@@ -15,8 +15,10 @@
 
 add_executable(cpp-benchmark
   main.cpp
+  ConnectionQueueBM.cpp
   GeodeHashBM.cpp
   GeodeLoggingBM.cpp
+  NoopBM.cpp
   )
 
 target_link_libraries(cpp-benchmark
