@@ -13,9 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-project( xerces-c VERSION 3.2.2 LANGUAGES NONE )
+project( xerces-c VERSION 3.2.3 LANGUAGES NONE )
 
-set( SHA256 dd6191f8aa256d3b4686b64b0544eea2b450d98b4254996ffdfe630e0c610413)
+set( SHA256 fb96fc49b1fb892d1e64e53a6ada8accf6f0e6d30ce0937956ec68d39bd72c7e)
 set( ${PROJECT_NAME}_EXTERN ${PROJECT_NAME}-extern )
 
 include(GNUInstallDirs)
@@ -46,7 +46,7 @@ ExternalProject_Get_Property( ${PROJECT_NAME}-extern INSTALL_DIR )
 if (${WIN32})
   set(LIBRARY_NAME xerces-c_3$<$<CONFIG:Debug>:D>)
 else()
-  set(LIBRARY_NAME xerces-c-3.2)
+  set(LIBRARY_NAME xerces-c)
 endif()
 
 add_library(${PROJECT_NAME} INTERFACE)
