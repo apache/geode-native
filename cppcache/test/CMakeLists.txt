@@ -37,7 +37,6 @@ add_executable(apache-geode_unittests
   DataInputTest.cpp
   DataOutputTest.cpp
   ExceptionTypesTest.cpp
-  FairQueueTest.cpp
   geodeBannerTest.cpp
   gtest_extensions.h
   InterestResultPolicyTest.cpp

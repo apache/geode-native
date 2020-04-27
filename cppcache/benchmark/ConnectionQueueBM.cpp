@@ -24,7 +24,6 @@
 #include <ace/Recursive_Thread_Mutex.h>
 
 #include "ConnectionQueue.hpp"
-#include "FairQueue.hpp"
 
 class TestObject {
  public:
@@ -45,19 +44,6 @@ void ConnectionQueueBM_getUntil(benchmark::State& state) {
 }
 
 const auto MAX_THREADS = std::thread::hardware_concurrency() * 8;
-
-BENCHMARK_TEMPLATE(ConnectionQueueBM_getUntil,
-                   apache::geode::client::FairQueue<TestObject>)
-    ->Range(1, MAX_THREADS * 2)
-    ->ThreadRange(1, MAX_THREADS)
-    ->UseRealTime();
-
-BENCHMARK_TEMPLATE(
-    ConnectionQueueBM_getUntil,
-    apache::geode::client::FairQueue<TestObject, ACE_Recursive_Thread_Mutex>)
-    ->Range(1, MAX_THREADS * 2)
-    ->ThreadRange(1, MAX_THREADS)
-    ->UseRealTime();
 
 BENCHMARK_TEMPLATE(ConnectionQueueBM_getUntil,
                    apache::geode::client::ConnectionQueue<TestObject>)
