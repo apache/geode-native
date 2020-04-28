@@ -35,7 +35,7 @@ class ConnectionQueue {
  public:
   ConnectionQueue() : closed_(false) {}
 
-  virtual ~ConnectionQueue() { close(); }
+  virtual ~ConnectionQueue() {}
 
   /** get without wait */
   T* getNoWait() {

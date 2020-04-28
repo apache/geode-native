@@ -493,7 +493,7 @@ void ThinClientPoolDM::cleanStaleConnections(std::atomic<bool>& isRunning) {
               to_string(_nextIdle).c_str());
   }
 
-  LOGDEBUG("Pool size is %d, pool counter is %d", size(), m_poolSize.load());
+  LOGDEBUG("Pool size is %zu, pool counter is %d", size(), m_poolSize.load());
 }
 
 void ThinClientPoolDM::cleanStickyConnections(std::atomic<bool>&) {}
@@ -527,14 +527,14 @@ void ThinClientPoolDM::restoreMinConnections(std::atomic<bool>& isRunning) {
   }
 
   LOGDEBUG("Restored %d connections", restored);
-  LOGDEBUG("Pool size is %d, pool counter is %d", size(), m_poolSize.load());
+  LOGDEBUG("Pool size is %zu, pool counter is %d", size(), m_poolSize.load());
 }
 
 void ThinClientPoolDM::manageConnectionsInternal(std::atomic<bool>& isRunning) {
   try {
     LOGFINE(
         "ThinClientPoolDM::manageConnections(): checking connections in pool "
-        "queue %d",
+        "queue %zu",
         size());
 
     cleanStaleConnections(isRunning);
