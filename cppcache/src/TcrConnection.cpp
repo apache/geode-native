@@ -158,11 +158,10 @@ bool TcrConnection::initTcrConnection(
   if (endpointObj->getPoolHADM()) {
     ClientProxyMembershipID* memId =
         endpointObj->getPoolHADM()->getMembershipId();
-    uint32_t memIdBufferLength;
-    auto memIdBuffer = memId->getDSMemberId(memIdBufferLength);
+    const auto& dsMemberId = memId->getDSMemberId();
     handShakeMsg.writeBytes(
-        reinterpret_cast<int8_t*>(const_cast<char*>(memIdBuffer)),
-        memIdBufferLength);
+        reinterpret_cast<const uint8_t*>(dsMemberId.c_str()),
+        dsMemberId.size());
   } else {
     ACE_TCHAR hostName[256];
     ACE_OS::hostname(hostName, sizeof(hostName) - 1);
@@ -177,13 +176,12 @@ bool TcrConnection::initTcrConnection(
     auto&& durableTimeOut = sysProp.durableTimeout();
 
     // Write ClientProxyMembershipID serialized object.
-    uint32_t memIdBufferLength;
     auto memId = cacheImpl->getClientProxyMembershipIDFactory().create(
         hostName, driver, hostPort, durableId.c_str(), durableTimeOut);
-    auto memIdBuffer = memId->getDSMemberId(memIdBufferLength);
+    const auto& dsMemberId = memId->getDSMemberId();
     handShakeMsg.writeBytes(
-        reinterpret_cast<int8_t*>(const_cast<char*>(memIdBuffer)),
-        memIdBufferLength);
+        reinterpret_cast<const uint8_t*>(dsMemberId.c_str()),
+        dsMemberId.size());
   }
   handShakeMsg.writeInt(static_cast<int32_t>(1));
 

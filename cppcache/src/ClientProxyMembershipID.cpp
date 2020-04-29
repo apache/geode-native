@@ -175,9 +175,8 @@ void ClientProxyMembershipID::initObjectVars(
   LOGDEBUG("GethashKey %s client id: %s ", m_hashKey.c_str(), clientID.c_str());
 }
 
-const char* ClientProxyMembershipID::getDSMemberId(uint32_t& mesgLength) const {
-  mesgLength = static_cast<int32_t>(m_memIDStr.size());
-  return m_memIDStr.c_str();
+const std::string& ClientProxyMembershipID::getDSMemberId() const {
+  return m_memIDStr;
 }
 
 const std::string& ClientProxyMembershipID::getDSMemberIdForThinClientUse() {
