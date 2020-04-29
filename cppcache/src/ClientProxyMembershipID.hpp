@@ -42,7 +42,7 @@ class ClientProxyMembershipID;
 
 class ClientProxyMembershipID : public DSMemberForVersionStamp {
  public:
-  const char* getDSMemberId(uint32_t& mesgLength) const;
+  const std::string& getDSMemberId() const;
 
   ClientProxyMembershipID(std::string dsName, std::string randString,
                           const char* hostname, const ACE_INET_Addr& address,
