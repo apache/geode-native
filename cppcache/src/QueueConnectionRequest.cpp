@@ -30,7 +30,7 @@ void QueueConnectionRequest::toData(DataOutput& output) const {
   output.write(static_cast<int8_t>(DSCode::ClientProxyMembershipId));
   const auto& dsMemberId = m_membershipID.getDSMemberId();
   output.writeBytes(reinterpret_cast<const uint8_t*>(dsMemberId.c_str()),
-                    dsMemberId.size());
+                    static_cast<int32_t>(dsMemberId.size()));
   output.writeInt(static_cast<int32_t>(1));
   output.writeInt(static_cast<int32_t>(m_redundantCopies));
   writeSetOfServerLocation(output);

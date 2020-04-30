@@ -161,7 +161,7 @@ bool TcrConnection::initTcrConnection(
     const auto& dsMemberId = memId->getDSMemberId();
     handShakeMsg.writeBytes(
         reinterpret_cast<const uint8_t*>(dsMemberId.c_str()),
-        dsMemberId.size());
+        static_cast<int32_t>(dsMemberId.size()));
   } else {
     ACE_TCHAR hostName[256];
     ACE_OS::hostname(hostName, sizeof(hostName) - 1);
@@ -181,7 +181,7 @@ bool TcrConnection::initTcrConnection(
     const auto& dsMemberId = memId->getDSMemberId();
     handShakeMsg.writeBytes(
         reinterpret_cast<const uint8_t*>(dsMemberId.c_str()),
-        dsMemberId.size());
+        static_cast<int32_t>(dsMemberId.size()));
   }
   handShakeMsg.writeInt(static_cast<int32_t>(1));
 
