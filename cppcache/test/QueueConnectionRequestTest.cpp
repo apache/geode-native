@@ -30,26 +30,10 @@ namespace apache {
 namespace geode {
 namespace client {
 
-inline std::string to_hex(const uint8_t* bytes, size_t len) {
-  std::stringstream ss;
-  ss << std::setfill('0') << std::hex;
-  for (size_t i(0); i < len; ++i) {
-    ss << std::setw(2) << static_cast<int>(bytes[i]);
-  }
-  return ss.str();
-}
+class QueueConnectionRequestTest : public ::testing::Test,
+                                   public ByteArrayFixture {};
 
-inline std::string to_hex(const DataOutput& out) {
-  return to_hex(out.getBuffer(), out.getBufferLength());
-}
-
-inline std::string int_to_hex_string(const int value) {
-  char hex[10];
-  sprintf(hex, "%x", value);
-  return std::string(hex);
-}
-
-TEST(QueueConnectionRequestTest, testToData) {
+TEST_F(QueueConnectionRequestTest, testToData) {
   DataOutputInternal dataOutput;
   ACE_INET_Addr addr(10, "localhost");
   ServerLocation srv("server", 10);
@@ -64,13 +48,11 @@ TEST(QueueConnectionRequestTest, testToData) {
   QueueConnectionRequest queueConnReq(qCR, servLoc, -1, false);
   queueConnReq.toData(dataOutput);
 
-  auto pid = int_to_hex_string(boost::this_process::get_id());
-  auto expectedQueueConnectionRequest =
-      "2a0000012631015c047f000001000000022a00046e616d65000000302e0000" + pid +
-      "0d002a000664734e616d652a000772616e644e756d2d00000001ffffffff000000012a00"
-      "067365727665720000000a00";
-
-  EXPECT_EQ(expectedQueueConnectionRequest, to_hex(dataOutput));
+  EXPECT_BYTEARRAY_EQ(
+      "2A0000012631015C047F000001000000022A00046E616D65000000302E\\h{8}"
+      "0D002A000664734E616D652A000772616E644E756D2D00000001FFFFFFFF000000012A00"
+      "067365727665720000000A00",
+      ByteArray(dataOutput.getBuffer(), dataOutput.getBufferLength()));
 }
 
 }  // namespace client
