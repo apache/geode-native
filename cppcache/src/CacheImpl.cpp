@@ -305,6 +305,10 @@ void CacheImpl::close(bool keepalive) {
     _GEODE_SAFE_DELETE(m_cacheStats);
   }
 
+  if (m_statisticsManager) {
+    m_statisticsManager = nullptr;
+  }
+
   m_regions.clear();
   LOGDEBUG("CacheImpl::close( ): destroyed regions.");
 
