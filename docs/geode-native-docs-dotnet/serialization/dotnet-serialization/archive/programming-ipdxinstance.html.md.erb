@@ -46,7 +46,7 @@ This option applies only to entry retrieval that you explicitly code using metho
 
 2.  Write the application code that fetches data from the cache to handle a `IPdxInstance`. If you are sure you will only retrieve `IPdxInstances` from the cache, you can code only for that. In many cases, a `IPdxInstance` or a domain object may be returned from your cache entry retrieval operation, so you should check the object type and handle each possible type.
 
-    See [Creating an IPdxInstance with IPdxInstanceFactory](using-ipdxinstancefactory.html#concept_8FA31D0D022146CE8DE2197006507AFF__example_89B7EDD2BE27423BA0CAB9B0270348B5) for an example of this.
+    See [Use the IPdxInstanceFactory to Create IPdxInstances](using-ipdxinstancefactory.html#concept_8FA31D0D022146CE8DE2197006507AFF__example_89B7EDD2BE27423BA0CAB9B0270348B5) for an example of this.
 
 If you configure your cache to allow PDX serialized reads, cache fetches return the data in the form it is found. If the object is not serialized, the fetch returns the domain object. If the object is serialized, the fetch returns the `PdxInstance` for the object.
 
@@ -59,4 +59,12 @@ In mixed situations, such as where a server cache is populated from client opera
 
 When fetching data in a cache with PDX serialized reads enabled, the safest approach is to code to handle both types, receiving an Object from the fetch operation, checking the type and casting as appropriate.
 
+## <a id="using-ipdxinstancefactory""></a> Using the IPdxInstanceFactory to Create IPdxInstances
 
+You can use the `IPdxInstanceFactory` to create an `IPdxInstance` from raw data when the domain class is not available on the server.
+
+This option can be useful when you need an instance of a domain class for plug-in code such as a
+function or a loader. If you have the raw data for the domain object (the class name and each
+field's type and data), then you can explicitly create a `IPdxInstance`. The `IPdxInstanceFactory`
+is very similar to the `IPdxWriter` except that after writing each field, you need to call the
+create method which returns the created `IPdxInstance.`

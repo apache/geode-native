@@ -1,5 +1,5 @@
 ---
-title:  Serialize Using the IPdxSerializable Interface
+title:  Using the IPdxSerializable Interface
 ---
 
 <!--
@@ -19,9 +19,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-Use this procedure to program your domain object for PDX serialization using the `IPdxSerializable` Interface. When you write objects using PDX serialization, they are distributed to the server tier in PDX serialized form. When you run queries against the objects on the servers, only the fields you specify are deserialized.
+When you write objects using PDX serialization, they are distributed to the server tier in PDX
+serialized form. When you run queries against the objects on the servers, only the fields you
+specify are deserialized.
 
-**Procedure**
+Use this procedure to program your domain object for PDX serialization using the `IPdxSerializable` Interface. 
 
 1.  In your domain class, implement `Apache.Geode.Client.IPdxSerializable`. Example:
 
@@ -115,6 +117,5 @@ Use this procedure to program your domain object for PDX serialization using the
     }
     ```
 
-5.  Optionally, program your domain object's equals and hashcode methods.
-
+5.  Optionally, program your domain object's `equals` and `hashcode` methods.
 
