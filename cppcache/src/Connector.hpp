@@ -22,7 +22,6 @@
 
 #include <chrono>
 
-#include <geode/ExceptionTypes.hpp>
 #include <geode/internal/geode_globals.hpp>
 
 namespace apache {
@@ -40,10 +39,10 @@ constexpr std::chrono::milliseconds DEFAULT_WRITE_TIMEOUT = DEFAULT_TIMEOUT;
 
 class Connector {
  public:
-  /* create one socket connection with settings */
   Connector() {}
-  /* destroy the connection */
   virtual ~Connector() {}
+  Connector(const Connector &) = delete;
+  Connector &operator=(const Connector &) = delete;
 
   /**
    * Reads <code>len</code> bytes of data and stores them into the buffer
@@ -102,11 +101,6 @@ class Connector {
    * Returns local port for this TCP connection
    */
   virtual uint16_t getPort() = 0;
-
- private:
-  // Disallow copy constructor and assignment operator.
-  Connector(const Connector &);
-  Connector &operator=(const Connector &);
 };
 }  // namespace client
 }  // namespace geode

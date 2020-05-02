@@ -31,13 +31,13 @@ namespace client {
 
 class TcpSslConn : public TcpConn {
  private:
-  Ssl* m_ssl;
-  ACE_DLL m_dll;
-  const char* m_pubkeyfile;
-  const char* m_privkeyfile;
-  const char* m_pemPassword;
-  // adongre: Added for Ticket #758
-  // Pass extra parameter for the password
+  static const std::string kLibraryName;
+  std::unique_ptr<Ssl> ssl_;
+  ACE_DLL dll_;
+  const std::string publicKeyFile_;
+  const std::string privateKeyFile_;
+  const std::string password_;
+
   typedef void* (*gf_create_SslImpl)(ACE_HANDLE, const char*, const char*,
                                      const char*);
   typedef void (*gf_destroy_SslImpl)(void*);
@@ -52,47 +52,28 @@ class TcpSslConn : public TcpConn {
   void createSocket(ACE_HANDLE sock) override;
 
  public:
-  TcpSslConn(const char* hostname, int32_t port,
+  TcpSslConn(const std::string& hostname, uint16_t port,
              std::chrono::microseconds waitSeconds, int32_t maxBuffSizePool,
-             const char* pubkeyfile, const char* privkeyfile,
-             const char* pemPassword)
+             std::string publicKeyFile, std::string privateKeyFile,
+             std::string password)
       : TcpConn(hostname, port, waitSeconds, maxBuffSizePool),
-        m_ssl(nullptr),
-        m_pubkeyfile(pubkeyfile),
-        m_privkeyfile(privkeyfile),
-        m_pemPassword(pemPassword) {}
+        publicKeyFile_(std::move(publicKeyFile)),
+        privateKeyFile_(std::move(privateKeyFile)),
+        password_(std::move(password)){};
 
-  TcpSslConn(const char* ipaddr, std::chrono::microseconds waitSeconds,
-             int32_t maxBuffSizePool, const char* pubkeyfile,
-             const char* privkeyfile, const char* pemPassword)
-      : TcpConn(ipaddr, waitSeconds, maxBuffSizePool),
-        m_ssl(nullptr),
-        m_pubkeyfile(pubkeyfile),
-        m_privkeyfile(privkeyfile),
-        m_pemPassword(pemPassword) {}
-
-  // TODO:  Watch out for virt dtor calling virt methods!
+  TcpSslConn(const std::string& address, std::chrono::microseconds waitSeconds,
+             int32_t maxBuffSizePool, std::string publicKeyFile,
+             std::string privateKeyFile, std::string password)
+      : TcpConn(address, waitSeconds, maxBuffSizePool),
+        publicKeyFile_(std::move(publicKeyFile)),
+        privateKeyFile_(std::move(privateKeyFile)),
+        password_(std::move(password)){};
 
   virtual ~TcpSslConn() override {}
 
-  // Close this tcp connection
   void close() override;
 
-  // Listen
-  void listen(ACE_INET_Addr addr, std::chrono::microseconds waitSeconds =
-                                      DEFAULT_READ_TIMEOUT) override;
-
-  // connect
   void connect() override;
-
-  void setOption(int32_t level, int32_t option, void* val,
-                 size_t len) override {
-    if (m_ssl->setOption(level, option, val, static_cast<int32_t>(len)) == -1) {
-      int32_t lastError = ACE_OS::last_error();
-      LOGERROR("Failed to set option, errno: %d: %s", lastError,
-               ACE_OS::strerror(lastError));
-    }
-  }
 
   uint16_t getPort() override;
 };

@@ -17,28 +17,27 @@
 
 #include "TcpConn.hpp"
 
-#include <chrono>
-#include <memory>
 #include <thread>
 
-#include <ace/SOCK_Acceptor.h>
 #include <ace/SOCK_Connector.h>
+#include <boost/interprocess/mapped_region.hpp>
 
+#include <geode/ExceptionTypes.hpp>
 #include <geode/internal/chrono/duration.hpp>
 
-#include "CacheImpl.hpp"
-#include "DistributedSystem.hpp"
 #include "util/Log.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
+const size_t TcpConn::kChunkSize = TcpConn::getDefaultChunkSize();
+
 void TcpConn::clearNagle(ACE_HANDLE sock) {
   int32_t val = 1;
 
   if (0 != ACE_OS::setsockopt(sock, IPPROTO_TCP, 1,
-                              reinterpret_cast<const char *>(&val),
+                              reinterpret_cast<const char*>(&val),
                               sizeof(val))) {
     int32_t lastError = ACE_OS::last_error();
     LOGERROR("Failed to set TCP_NODELAY on socket. Errno: %d: %s", lastError,
@@ -52,14 +51,14 @@ int32_t TcpConn::maxSize(ACE_HANDLE sock, int32_t flag, int32_t size) {
   int32_t inc = 32120;
   val = size - (3 * inc);
   if (val < 0) val = 0;
-  if (size == 0) size = m_maxBuffSizePool;
+  if (size == 0) size = maxBuffSizePool_;
   int32_t red = 0;
   int32_t lastRed = -1;
   while (lastRed != red) {
     lastRed = red;
     val += inc;
     if (0 != ACE_OS::setsockopt(sock, SOL_SOCKET, flag,
-                                reinterpret_cast<const char *>(&val),
+                                reinterpret_cast<const char*>(&val),
                                 sizeof(val))) {
       int32_t lastError = ACE_OS::last_error();
       LOGERROR("Failed to set socket options. Errno: %d : %s ", lastError,
@@ -67,7 +66,7 @@ int32_t TcpConn::maxSize(ACE_HANDLE sock, int32_t flag, int32_t size) {
     }
     int plen = sizeof(val);
     if (0 != ACE_OS::getsockopt(sock, SOL_SOCKET, flag,
-                                reinterpret_cast<char *>(&val), &plen)) {
+                                reinterpret_cast<char*>(&val), &plen)) {
       int32_t lastError = ACE_OS::last_error();
       LOGERROR(
           "Failed to get buffer size for flag %d on socket. Errno: %d : %s",
@@ -76,7 +75,7 @@ int32_t TcpConn::maxSize(ACE_HANDLE sock, int32_t flag, int32_t size) {
 #ifdef _LINUX
     val /= 2;
 #endif
-    if ((val >= m_maxBuffSizePool) || (val >= size)) continue;
+    if ((val >= maxBuffSizePool_) || (val >= size)) continue;
     red = val;
   }
   return val;
@@ -84,13 +83,12 @@ int32_t TcpConn::maxSize(ACE_HANDLE sock, int32_t flag, int32_t size) {
 
 void TcpConn::createSocket(ACE_HANDLE sock) {
   LOGDEBUG("Creating plain socket stream");
-  m_io = new ACE_SOCK_Stream(sock);
-  // m_io->enable(ACE_NONBLOCK);
+  stream_ = std::unique_ptr<ACE_SOCK_Stream>(new ACE_SOCK_Stream(sock));
 }
 
 void TcpConn::init() {
 #ifdef WITH_IPV6
-  ACE_HANDLE sock = ACE_OS::socket(m_addr.get_type(), SOCK_STREAM, 0);
+  ACE_HANDLE sock = ACE_OS::socket(inetAddress_.get_type(), SOCK_STREAM, 0);
 #else
   ACE_HANDLE sock = ACE_OS::socket(AF_INET, SOCK_STREAM, 0);
 #endif
@@ -126,142 +124,67 @@ void TcpConn::init() {
   connect();
 }
 
-TcpConn::TcpConn(const char *ipaddr, std::chrono::microseconds waitSeconds,
-                 int32_t maxBuffSizePool)
-    : m_io(nullptr),
-      m_addr(ipaddr),
-      m_waitMilliSeconds(waitSeconds),
-      m_maxBuffSizePool(maxBuffSizePool),
-      m_chunkSize(getDefaultChunkSize()) {}
-
-TcpConn::TcpConn(const char *hostname, int32_t port,
+TcpConn::TcpConn(const std::string& address,
                  std::chrono::microseconds waitSeconds, int32_t maxBuffSizePool)
-    : m_io(nullptr),
-      m_addr(port, hostname),
-      m_waitMilliSeconds(waitSeconds),
-      m_maxBuffSizePool(maxBuffSizePool),
-      m_chunkSize(getDefaultChunkSize()) {}
+    : stream_(nullptr),
+      maxBuffSizePool_(maxBuffSizePool),
+      inetAddress_(address.c_str()),
+      timeout_(waitSeconds) {}
 
-void TcpConn::listen(const char *hostname, int32_t port,
-                     std::chrono::microseconds waitSeconds) {
-  ACE_INET_Addr addr(port, hostname);
-  listen(addr, waitSeconds);
-}
-
-void TcpConn::listen(const char *ipaddr,
-                     std::chrono::microseconds waitSeconds) {
-  ACE_INET_Addr addr(ipaddr);
-  listen(addr, waitSeconds);
-}
-
-void TcpConn::listen(ACE_INET_Addr addr,
-                     std::chrono::microseconds waitSeconds) {
-  using apache::geode::internal::chrono::duration::to_string;
-
-  ACE_SOCK_Acceptor listener(addr, 1);
-  int32_t retVal = 0;
-  if (waitSeconds > std::chrono::microseconds::zero()) {
-    ACE_Time_Value wtime(waitSeconds);
-    retVal = listener.accept(*m_io, nullptr, &wtime);
-  } else {
-    retVal = listener.accept(*m_io, nullptr);
-  }
-  if (retVal == -1) {
-    char msg[256];
-    int32_t lastError = ACE_OS::last_error();
-    if (lastError == ETIME || lastError == ETIMEDOUT) {
-      throw TimeoutException(
-          "TcpConn::listen Attempt to listen timed out after " +
-          to_string(waitSeconds) + ".");
-    }
-    std::snprintf(msg, 256, "TcpConn::listen failed with errno: %d: %s",
-                  lastError, ACE_OS::strerror(lastError));
-    throw GeodeIOException(msg);
-  }
-}
-
-void TcpConn::connect(const char *hostname, int32_t port,
-                      std::chrono::microseconds waitSeconds) {
-  ACE_INET_Addr addr(port, hostname);
-  m_addr = addr;
-  m_waitMilliSeconds = waitSeconds;
-  connect();
-}
-
-void TcpConn::connect(const char *ipaddr,
-                      std::chrono::microseconds waitSeconds) {
-  ACE_INET_Addr addr(ipaddr);
-  m_addr = addr;
-  m_waitMilliSeconds = waitSeconds;
-  connect();
-}
+TcpConn::TcpConn(const std::string& hostname, uint16_t port,
+                 std::chrono::microseconds waitSeconds, int32_t maxBuffSizePool)
+    : stream_(nullptr),
+      maxBuffSizePool_(maxBuffSizePool),
+      inetAddress_(port, hostname.c_str()),
+      timeout_(waitSeconds) {}
 
 void TcpConn::connect() {
   using apache::geode::internal::chrono::duration::to_string;
 
-  ACE_INET_Addr ipaddr = m_addr;
-  std::chrono::microseconds waitMicroSeconds = m_waitMilliSeconds;
-
   ACE_OS::signal(SIGPIPE, SIG_IGN);  // Ignore broken pipe
 
-  LOGFINER("Connecting plain socket stream to %s:%d waiting %s micro sec",
-           ipaddr.get_host_name(), ipaddr.get_port_number(),
-           to_string(waitMicroSeconds).c_str());
+  LOGFINER(std::string("Connecting plain socket stream to ") +
+           inetAddress_.get_host_name() + ":" +
+           std::to_string(inetAddress_.get_port_number()) + " waiting " +
+           to_string(timeout_));
 
-  ACE_SOCK_Connector conn;
-  int32_t retVal = 0;
-  if (waitMicroSeconds > std::chrono::microseconds::zero()) {
-    // passing waittime as microseconds
-    ACE_Time_Value wtime(waitMicroSeconds);
-    retVal = conn.connect(*m_io, ipaddr, &wtime);
-  } else {
-    retVal = conn.connect(*m_io, ipaddr);
-  }
-  if (retVal == -1) {
-    char msg[256];
-    int32_t lastError = ACE_OS::last_error();
+  const ACE_Time_Value aceTimeout(timeout_);
+  const auto timeout =
+      (timeout_ > std::chrono::microseconds::zero()) ? &aceTimeout : nullptr;
+  if (ACE_SOCK_Connector{}.connect(*stream_, inetAddress_, timeout) == -1) {
+    const auto lastError = ACE_OS::last_error();
     if (lastError == ETIME || lastError == ETIMEDOUT) {
-      //  this is only called by constructor, so we must delete m_io
-      _GEODE_SAFE_DELETE(m_io);
       throw TimeoutException(
-          "TcpConn::connect Attempt to connect timed out after" +
-          to_string(waitMicroSeconds) + ".");
+          "TcpConn::connect Attempt to connect timed out after " +
+          to_string(timeout_) + ".");
     }
-    std::snprintf(msg, 256, "TcpConn::connect failed with errno: %d: %s",
-                  lastError, ACE_OS::strerror(lastError));
-    //  this is only called by constructor, so we must delete m_io
     close();
-    throw GeodeIOException(msg);
+    throw GeodeIOException("TcpConn::connect failed with errno: " +
+                           ACE_errno_to_string(lastError));
   }
-  int rc = this->m_io->enable(ACE_NONBLOCK);
-  if (-1 == rc) {
-    char msg[256];
-    int32_t lastError = ACE_OS::last_error();
-    std::snprintf(msg, 256, "TcpConn::NONBLOCK: %d: %s", lastError,
-                  ACE_OS::strerror(lastError));
 
-    LOGINFO(msg);
+  if (stream_->enable(ACE_NONBLOCK)) {
+    LOGINFO("TcpConn::NONBLOCK: " + ACE_errno_to_string(ACE_OS::last_error()));
   }
 }
 
 void TcpConn::close() {
-  if (m_io != nullptr) {
-    m_io->close();
-    _GEODE_SAFE_DELETE(m_io);
+  if (stream_) {
+    stream_.release()->close();
   }
 }
 
-size_t TcpConn::receive(char *buff, size_t len,
+size_t TcpConn::receive(char* buff, size_t len,
                         std::chrono::microseconds waitSeconds) {
   return socketOp(SOCK_READ, buff, len, waitSeconds);
 }
 
-size_t TcpConn::send(const char *buff, size_t len,
+size_t TcpConn::send(const char* buff, size_t len,
                      std::chrono::microseconds waitSeconds) {
-  return socketOp(SOCK_WRITE, const_cast<char *>(buff), len, waitSeconds);
+  return socketOp(SOCK_WRITE, const_cast<char*>(buff), len, waitSeconds);
 }
 
-size_t TcpConn::socketOp(TcpConn::SockOp op, char *buff, size_t len,
+size_t TcpConn::socketOp(TcpConn::SockOp op, char* buff, size_t len,
                          std::chrono::microseconds waitDuration) {
   {
     ACE_Time_Value waitTime(waitDuration);
@@ -270,22 +193,21 @@ size_t TcpConn::socketOp(TcpConn::SockOp op, char *buff, size_t len,
     ssize_t retVal;
     bool errnoSet = false;
 
-    auto sendlen = len;
     size_t totalsend = 0;
-
     while (len > 0 && waitTime > ACE_Time_Value::zero) {
-      if (len > m_chunkSize) {
-        sendlen = m_chunkSize;
-        len -= m_chunkSize;
+      size_t sendlen;
+      if (len > kChunkSize) {
+        sendlen = kChunkSize;
+        len -= kChunkSize;
       } else {
         sendlen = len;
         len = 0;
       }
       do {
         if (op == SOCK_READ) {
-          retVal = m_io->recv_n(buff, sendlen, &waitTime, &readLen);
+          retVal = stream_->recv_n(buff, sendlen, &waitTime, &readLen);
         } else {
-          retVal = m_io->send_n(buff, sendlen, &waitTime, &readLen);
+          retVal = stream_->send_n(buff, sendlen, &waitTime, &readLen);
         }
         sendlen -= readLen;
         totalsend += readLen;
@@ -322,8 +244,20 @@ size_t TcpConn::socketOp(TcpConn::SockOp op, char *buff, size_t len,
 //  Return the local port for this TCP connection.
 uint16_t TcpConn::getPort() {
   ACE_INET_Addr localAddr;
-  m_io->get_local_addr(localAddr);
+  stream_->get_local_addr(localAddr);
   return localAddr.get_port_number();
+}
+
+size_t TcpConn::getDefaultChunkSize() {
+  //
+  auto pageSize = boost::interprocess::mapped_region::get_page_size();
+  if (pageSize > 16000000) {
+    return 16000000;
+  } else if (pageSize > 0) {
+    return pageSize + (16000000 / pageSize) * pageSize;
+  }
+
+  return 16000000;
 }
 
 }  // namespace client

@@ -20,6 +20,8 @@
 #ifndef GEODE_CRYPTOIMPL_SSLIMPL_H_
 #define GEODE_CRYPTOIMPL_SSLIMPL_H_
 
+#include <atomic>
+
 #ifdef _WIN32
 #pragma warning(push)
 #pragma warning(disable : 4311)
@@ -55,17 +57,13 @@ namespace client {
 
 class SSLImpl : public apache::geode::client::Ssl {
  private:
-  ACE_SSL_SOCK_Stream* m_io;
-  static ACE_Recursive_Thread_Mutex s_mutex;
-  volatile static bool s_initialized;
+  static std::atomic_flag initialized_;
+  std::unique_ptr<ACE_SSL_SOCK_Stream> m_io;
 
  public:
   SSLImpl(ACE_HANDLE sock, const char* pubkeyfile, const char* privkeyfile,
           const char* password);
-  virtual ~SSLImpl() override;
-
-  int setOption(int, int, void*, int) override;
-  int listen(ACE_INET_Addr, std::chrono::microseconds) override;
+  ~SSLImpl() noexcept override = default;
   int connect(ACE_INET_Addr, std::chrono::microseconds) override;
   ssize_t recv(void*, size_t, const ACE_Time_Value*, size_t*) override;
   ssize_t send(const void*, size_t, const ACE_Time_Value*, size_t*) override;
