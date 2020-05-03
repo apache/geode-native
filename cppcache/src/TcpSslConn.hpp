@@ -20,9 +20,18 @@
 #ifndef GEODE_TCPSSLCONN_H_
 #define GEODE_TCPSSLCONN_H_
 
-#include <ace/DLL.h>
+#include <atomic>
+#include <chrono>
+#include <string>
 
-#include "../../cryptoimpl/Ssl.hpp"
+#pragma warning(push)
+#pragma warning(disable : 4311)
+#pragma warning(disable : 4302)
+#pragma pack(push)
+#include <ace/SSL/SSL_SOCK_Stream.h>
+#pragma pack(pop)
+#pragma warning(pop)
+
 #include "TcpConn.hpp"
 
 namespace apache {
@@ -31,25 +40,19 @@ namespace client {
 
 class TcpSslConn : public TcpConn {
  private:
-  static const std::string kLibraryName;
-  std::unique_ptr<Ssl> ssl_;
-  ACE_DLL dll_;
-  const std::string publicKeyFile_;
+  static std::atomic_flag initialized_;
+  const std::string trustStoreFile_;
   const std::string privateKeyFile_;
   const std::string password_;
-
-  typedef void* (*gf_create_SslImpl)(ACE_HANDLE, const char*, const char*,
-                                     const char*);
-  typedef void (*gf_destroy_SslImpl)(void*);
-
-  Ssl* getSSLImpl(ACE_HANDLE sock, const char* pubkeyfile,
-                  const char* privkeyfile);
+  std::unique_ptr<ACE_SSL_SOCK_Stream> stream_;
 
  protected:
-  size_t socketOp(SockOp op, char* buff, size_t len,
-                  std::chrono::microseconds waitDuration) override;
-
   void createSocket(ACE_HANDLE sock) override;
+
+  ssize_t doOperation(const SockOp& op, void* buff, size_t sendlen,
+                      ACE_Time_Value& waitTime, size_t& readLen) const override;
+
+  void initSsl();
 
  public:
   TcpSslConn(const std::string& hostname, uint16_t port,
@@ -57,19 +60,23 @@ class TcpSslConn : public TcpConn {
              std::string publicKeyFile, std::string privateKeyFile,
              std::string password)
       : TcpConn(hostname, port, waitSeconds, maxBuffSizePool),
-        publicKeyFile_(std::move(publicKeyFile)),
+        trustStoreFile_(std::move(publicKeyFile)),
         privateKeyFile_(std::move(privateKeyFile)),
-        password_(std::move(password)){};
+        password_(std::move(password)) {
+    initSsl();
+  };
 
   TcpSslConn(const std::string& address, std::chrono::microseconds waitSeconds,
              int32_t maxBuffSizePool, std::string publicKeyFile,
              std::string privateKeyFile, std::string password)
       : TcpConn(address, waitSeconds, maxBuffSizePool),
-        publicKeyFile_(std::move(publicKeyFile)),
+        trustStoreFile_(std::move(publicKeyFile)),
         privateKeyFile_(std::move(privateKeyFile)),
-        password_(std::move(password)){};
+        password_(std::move(password)) {
+    initSsl();
+  }
 
-  virtual ~TcpSslConn() override {}
+  virtual ~TcpSslConn() noexcept override = default;
 
   void close() override;
 

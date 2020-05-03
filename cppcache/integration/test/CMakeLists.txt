@@ -70,16 +70,13 @@ target_link_libraries(cpp-integration-test
     Boost::log
     Boost::filesystem
     Boost::chrono
-    cryptoImpl
   PRIVATE
     _WarningsAsError
     internal
 )
 
-add_dependencies(cpp-integration-test cryptoImpl)
-
 if(WIN32)
-  foreach (_target apache-geode testobject cryptoImpl)
+  foreach (_target apache-geode testobject)
     add_custom_command(TARGET cpp-integration-test POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "$<TARGET_FILE:${_target}>"
         "$<$<CONFIG:Debug>:$<TARGET_PDB_FILE:${_target}>>"

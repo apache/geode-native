@@ -68,8 +68,6 @@ Specifically, ensure that:
 
 For details on stopping and starting locators and cache servers with SSL, see [Starting Up and Shutting Down Your System](geodeman/configuring/running/starting_up_shutting_down.html).
 
-The <%=vars.product_name%> Native’s libcryptoImpl found in /lib must be linked at compile time.  This binary is used to interact with OpenSSL.  Link libcryptoImpl, native client, and your application code.  We highly recommend using cmake.
-
 **Example locator start command**
 
 Ensure that all required SSL properties are configured in your server's `geode.properties` file. Then start your locator as follows:

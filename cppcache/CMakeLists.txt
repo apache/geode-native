@@ -83,6 +83,7 @@ endif()
 
 target_link_libraries(_apache-geode INTERFACE
   ACE::ACE
+  ACE::ACE_SSL
   Boost::boost
   Boost::filesystem
   Boost::thread

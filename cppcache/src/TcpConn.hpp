@@ -62,6 +62,9 @@ class TcpConn : public Connector {
 
   virtual void createSocket(ACE_HANDLE sock);
 
+  virtual ssize_t doOperation(const SockOp& op, void* buff, size_t sendlen,
+                              ACE_Time_Value& waitTime, size_t& readLen) const;
+
  public:
   TcpConn(const std::string& hostname, uint16_t port,
           std::chrono::microseconds waitSeconds, int32_t maxBuffSizePool);

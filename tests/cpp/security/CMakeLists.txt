@@ -46,7 +46,6 @@ target_link_libraries(security
     OpenSSL::Crypto
     OpenSSL::SSL
   PRIVATE
-    openssl-compat
     ACE::ACE
     _WarningsAsError
 )

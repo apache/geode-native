@@ -204,11 +204,7 @@ size_t TcpConn::socketOp(TcpConn::SockOp op, char* buff, size_t len,
         len = 0;
       }
       do {
-        if (op == SOCK_READ) {
-          retVal = stream_->recv_n(buff, sendlen, &waitTime, &readLen);
-        } else {
-          retVal = stream_->send_n(buff, sendlen, &waitTime, &readLen);
-        }
+        retVal = doOperation(op, buff, sendlen, waitTime, readLen);
         sendlen -= readLen;
         totalsend += readLen;
         if (retVal < 0) {
@@ -238,6 +234,15 @@ size_t TcpConn::socketOp(TcpConn::SockOp op, char* buff, size_t len,
     }
 
     return totalsend;
+  }
+}
+ssize_t TcpConn::doOperation(const TcpConn::SockOp& op, void* buff,
+                             size_t sendlen, ACE_Time_Value& waitTime,
+                             size_t& readLen) const {
+  if (op == SOCK_READ) {
+    return stream_->recv_n(buff, sendlen, &waitTime, &readLen);
+  } else {
+    return stream_->send_n(buff, sendlen, &waitTime, &readLen);
   }
 }
 

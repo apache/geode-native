@@ -432,10 +432,10 @@ Connector* TcrConnection::createConnection(
                                ->getDistributedSystem()
                                .getSystemProperties();
   if (systemProperties.sslEnabled()) {
-    socket = new TcpSslConn(address.c_str(), connectTimeout, maxBuffSizePool,
-                            systemProperties.sslTrustStore().c_str(),
-                            systemProperties.sslKeyStore().c_str(),
-                            systemProperties.sslKeystorePassword().c_str());
+    socket = new TcpSslConn(address, connectTimeout, maxBuffSizePool,
+                            systemProperties.sslTrustStore(),
+                            systemProperties.sslKeyStore(),
+                            systemProperties.sslKeystorePassword());
   } else {
     socket = new TcpConn(address, connectTimeout, maxBuffSizePool);
   }
