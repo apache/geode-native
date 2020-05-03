@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-cmake_minimum_required(VERSION 3.4)
+
 project(nativeclient.tests.clicache)
 
 set (NUNIT "C:\\Program Files (x86)\\NUnit 2.6.4")
@@ -69,44 +69,53 @@ foreach(FILE ${SOURCES})
 
   LIST(LENGTH HasTests length)
   if (${length} GREATER 0)
-      file(STRINGS ${FILE} IsDeprecated REGEX "\\[Category.*deprecated.*\\]")
-	  if (NOT IsDeprecated)
+    # Get the namespace
+    file(STRINGS ${FILE} NameSpaceLine REGEX "namespace Apache.Geode.Client.UnitTests")
+    string(REGEX REPLACE "namespace.*Apache" "Apache" NAMESPACE ${NameSpaceLine})
 
-		  # Get the namespace
-		  file(STRINGS ${FILE} NameSpaceLine REGEX "namespace Apache.Geode.Client.UnitTests")
-		  string(REGEX REPLACE "namespace.*Apache" "Apache" NAMESPACE ${NameSpaceLine})
+    string(REGEX REPLACE "\\.cs" "" TEST ${FILE})
+    set(TESTS ${TESTS} ${TEST})
+    set(TEST_DIR ${CMAKE_CURRENT_BINARY_DIR}/.tests/${TEST})
 
-          string(REGEX REPLACE "\\.cs" "" TEST ${FILE})
-          set(TESTS ${TESTS} ${TEST})
-          set(TEST_DIR ${CMAKE_CURRENT_BINARY_DIR}/.tests/${TEST})
+    # Get the test class (NewAPI tests have N in the file name but not test class name)
+    string(REGEX REPLACE "N$" "" TESTCLASS ${TEST})
 
-		  # Get the test class (NewAPI tests have N in the file name but not test class name)
-		  string(REGEX REPLACE "N$" "" TESTCLASS ${TEST})
+    set(TEST_SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/${TEST}.bat)
+    generate_config(${CMAKE_CURRENT_SOURCE_DIR}/test.bat.in ${CMAKE_CURRENT_BINARY_DIR}/.${TEST}.bat.in ${TEST_SCRIPT})
 
-          set(TEST_SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/${TEST}.bat)
-          generate_config(${CMAKE_CURRENT_SOURCE_DIR}/test.bat.in ${CMAKE_CURRENT_BINARY_DIR}/.${TEST}.bat.in ${TEST_SCRIPT})
+    add_test(NAME ${TEST} COMMAND ${TEST_SCRIPT})
+    set_tests_properties(${TEST} PROPERTIES LABELS STABLE)
 
-          add_test(NAME ${TEST} COMMAND ${TEST_SCRIPT})
-          set_property(TEST ${TEST} PROPERTY LABELS STABLE)
+    file(STRINGS ${FILE} IsDeprecated REGEX "\\[Category.*deprecated.*\\]")
+    if (IsDeprecated)
+      set_tests_properties(${TEST} PROPERTIES DISABLED TRUE)
 	  endif()
   endif()
 endforeach()
 
 # Label any flaky tests here
-set_property(TEST ThinClientCqStatusTestTwoServers PROPERTY LABELS FLAKY)
-set_property(TEST ThinClientPoolTestsN PROPERTY LABELS FLAKY)
-set_property(TEST ThinClientQueryTestsN PROPERTY LABELS FLAKY)
+set_tests_properties(ThinClientCqStatusTestTwoServers
+    ThinClientPoolTestsN
+    ThinClientQueryTestsN
+  PROPERTIES
+    DISABLED TRUE
+    LABELS FLAKY
+)
 
 # Label any tests that always fail here
-set_property(TEST OverflowTestsN PROPERTY LABELS OMITTED)
-set_property(TEST ThinClientDeltaTestFailing PROPERTY LABELS OMITTED)
-set_property(TEST ThinClientDurableTestsN PROPERTY LABELS OMITTED)
-set_property(TEST ThinClientHARegionTestsN PROPERTY LABELS OMITTED)
-set_property(TEST ThinClientSecurityAuthTestsMUN PROPERTY LABELS OMITTED)
-set_property(TEST ThinClientSecurityAuthTestsN PROPERTY LABELS OMITTED)
-set_property(TEST RegionFailingTests PROPERTY LABELS OMITTED)
-set_property(TEST ThinClientSecurityAuthzTestsMUN PROPERTY LABELS OMITTED)
-set_property(TEST ThinClientSecurityAuthzTestsN PROPERTY LABELS OMITTED)
+set_tests_properties(OverflowTestsN
+    ThinClientDeltaTestFailing
+    ThinClientDurableTestsN
+    ThinClientHARegionTestsN
+    ThinClientSecurityAuthTestsMUN
+    ThinClientSecurityAuthTestsN
+    RegionFailingTests
+    ThinClientSecurityAuthzTestsMUN
+    ThinClientSecurityAuthzTestsN
+  PROPERTIES
+    DISABLED TRUE
+    LABELS OMITTED
+)
 
 add_custom_target(run-stable-clicache-integration-tests
   COMMAND ctest -C $<CONFIGURATION> -L STABLE
