@@ -241,7 +241,7 @@ class APACHE_GEODE_EXPORT CacheImpl {
    */
   void readyForEvents();
 
-  static bool isPoolInMultiuserMode(std::shared_ptr<Region> regionPtr);
+  bool isPoolInMultiuserMode(const Region& region) const;
 
   //  TESTING: Durable clients. Not thread safe.
   bool getEndpointStatus(const std::string& endpoint);

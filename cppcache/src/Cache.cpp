@@ -136,10 +136,6 @@ void Cache::initializeDeclarativeCache(const std::string& cacheXml) {
 
 void Cache::readyForEvents() { m_cacheImpl->readyForEvents(); }
 
-bool Cache::isPoolInMultiuserMode(std::shared_ptr<Region> regionPtr) {
-  return CacheImpl::isPoolInMultiuserMode(regionPtr);
-}
-
 bool Cache::getPdxIgnoreUnreadFields() const {
   return m_cacheImpl->getPdxIgnoreUnreadFields();
 }
