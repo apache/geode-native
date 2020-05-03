@@ -23,7 +23,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/impl/AssemblyInfo.cpp.in ${CMAKE_CURR
 list(APPEND CONFIGURE_IN_FILES ${CMAKE_CURRENT_SOURCE_DIR}/impl/AssemblyInfo.cpp.in)
 list(APPEND CONFIGURE_OUT_FILES ${CMAKE_CURRENT_BINARY_DIR}/impl/AssemblyInfo.cpp)
 
-add_library(${PROJECT_NAME} SHARED
+add_library(Apache.Geode SHARED
   Apache.Geode.rc
   AttributesMutator.cpp
   AttributesMutator.hpp
@@ -302,7 +302,7 @@ add_library(${PROJECT_NAME} SHARED
   ${CONFIGURE_OUT_FILES}
 )
 
-set_target_properties(${PROJECT_NAME} PROPERTIES
+set_target_properties(Apache.Geode PROPERTIES
   COMMON_LANGUAGE_RUNTIME "" 
   OUTPUT_NAME ${PRODUCT_DLL_NAME}
   VS_GLOBAL_CLRSupport "true"
@@ -313,7 +313,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
   FOLDER cli
 )
 
-target_compile_options(${PROJECT_NAME}
+target_compile_options(Apache.Geode
   PRIVATE
 	/bigobj # C1128 - large number of templates causes too many section.
 	/Zm32   # C3859 - internal heap limit reached
@@ -324,12 +324,12 @@ target_compile_options(${PROJECT_NAME}
 	/wd4947 /wd4251 /wd4635
 )
 
-target_include_directories(${PROJECT_NAME}
+target_include_directories(Apache.Geode
   PRIVATE
   	$<TARGET_PROPERTY:apache-geode,SOURCE_DIR>/../src
 )
 
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(Apache.Geode
   PUBLIC
     psapi
   PRIVATE
@@ -339,28 +339,32 @@ target_link_libraries(${PROJECT_NAME}
 	_WarningsAsError
 )
 
+target_link_options(Apache.Geode
+  PRIVATE
+    /DELAYLOAD:libssl-1_1-x64.dll
+    /DELAYLOAD:libcrypto-1_1-x64.dll
+)
+
 string(REPLACE "/RTC1" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
 
 set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${SHARED_LINKER_FLAGS_STRONG_KEY}")
 
 
 include(PrecompiledHeader)
-add_precompiled_header(${PROJECT_NAME} geode_includes.hpp FORCEINCLUDE)
+add_precompiled_header(Apache.Geode geode_includes.hpp FORCEINCLUDE)
 
-install(TARGETS ${PROJECT_NAME}
+install(TARGETS Apache.Geode
   RUNTIME DESTINATION bin
   ARCHIVE DESTINATION lib
 )
 
-IF(MSVC)
-  INSTALL ( 
-    FILES $<TARGET_PDB_FILE:${PROJECT_NAME}> 
-    DESTINATION bin 
-    CONFIGURATIONS Debug RelWithDebInfo 
-  )
-ENDIF(MSVC)
+install ( 
+  FILES $<TARGET_PDB_FILE:${PROJECT_NAME}> 
+  DESTINATION bin 
+  CONFIGURATIONS Debug RelWithDebInfo 
+)
 
-add_dependencies(client-libraries ${PROJECT_NAME})
+add_dependencies(client-libraries Apache.Geode)
 
 add_subdirectory(templates)
 

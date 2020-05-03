@@ -22,6 +22,11 @@ if (MSVC)
     PRIVATE
       /bigobj # C1128 - large number of templates causes too many section.
    )
+  target_link_options(apache-geode
+    PRIVATE
+      /DELAYLOAD:libssl-1_1-x64.dll
+      /DELAYLOAD:libcrypto-1_1-x64.dll
+  )
 endif()
 
 generate_export_file( "apache-geode" )
