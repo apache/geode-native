@@ -116,7 +116,7 @@ TEST(ConnectionQueueTest, put) {
 TEST(ConnectionQueueTest, getNoWaitWith1EntryEmptiesQueue) {
   ConnectionQueue<TestObject> queue;
   const auto expected = new TestObject();
-  queue.put(expected, false);
+  queue.put(expected, true);
   const auto actual = queue.getNoWait();
   EXPECT_THAT(queue, IsEmpty());
   EXPECT_THAT(queue, SizeIs(0));
@@ -149,7 +149,7 @@ TEST(ConnectionQueueTest, getUntilOnEmptyWaitsAndReturnsNullptr) {
 TEST(ConnectionQueueTest, getUntilWith1EntryDoesNotWait) {
   ConnectionQueue<TestObject> queue;
   const auto expected = new TestObject();
-  queue.put(expected, false);
+  queue.put(expected, true);
   const auto wait = std::chrono::seconds(5);
   const auto start = std::chrono::steady_clock::now();
   const auto actual = queue.getUntil(wait);
@@ -184,7 +184,7 @@ TEST(ConnectionQueueTest,
   });
 
   std::this_thread::sleep_for(pause);
-  queue.put(expected, false);
+  queue.put(expected, true);
   ASSERT_THAT(task1.wait_for(minutes(1)), Eq(std::future_status::ready));
 }
 
