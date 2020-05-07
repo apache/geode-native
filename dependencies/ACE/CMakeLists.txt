@@ -13,9 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-project( ACE VERSION 6.5.8 LANGUAGES NONE )
+project( ACE VERSION 6.5.9 LANGUAGES NONE )
 
-set( SHA256 7c77034deee027ebc91041fae3711fe141c034d768bfb13259c40441cc0b5197 )
+set( SHA256 85382427bf2c87eca215a6d963ad6b427a8d5b696ac96367e67bb952b3d2885c )
 
 if ("SunOS" STREQUAL ${CMAKE_SYSTEM_NAME})
   set( ACE_PLATFORM sunos5_sunc++ )
