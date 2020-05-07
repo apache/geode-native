@@ -13,9 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-project( boost VERSION 1.72.0 LANGUAGES NONE )
+project( boost VERSION 1.73.0 LANGUAGES NONE )
 
-set( SHA256 c66e88d5786f2ca4dbebb14e06b566fb642a1a6947ad8cc9091f9f445134143f )
+set( SHA256 9995e192e68528793755692917f9eb6422f3052a53c5e13ba278a228af6c7acf )
 
 set(_B2_FLAGS
   -d0
