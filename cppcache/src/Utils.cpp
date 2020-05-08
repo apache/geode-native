@@ -22,10 +22,10 @@
 #include <cstdlib>
 #include <iomanip>
 
-#include <boost/asio.hpp>
-#include <boost/dll/import.hpp>
 #include <ace/INET_Addr.h>
 #include <ace/OS.h>
+#include <boost/asio.hpp>
+#include <boost/dll/import.hpp>
 
 namespace apache {
 namespace geode {
