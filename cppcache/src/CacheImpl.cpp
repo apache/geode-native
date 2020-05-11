@@ -494,7 +494,7 @@ std::shared_ptr<Region> CacheImpl::getRegion(const std::string& path) {
     }
   }
 
-  if (region && isPoolInMultiuserMode(region)) {
+  if (region && isPoolInMultiuserMode(*region)) {
     LOGWARN("Pool " + region->getAttributes().getPoolName() +
             " attached with region " + region->getFullPath() +
             " is in multiuser authentication mode. Operations may fail as "
@@ -640,13 +640,13 @@ void CacheImpl::readyForEvents() {
   }
 }
 
-bool CacheImpl::isPoolInMultiuserMode(std::shared_ptr<Region> regionPtr) {
-  const auto& poolName = regionPtr->getAttributes().getPoolName();
+bool CacheImpl::isPoolInMultiuserMode(const Region& region) const {
+  const auto& poolName = region.getAttributes().getPoolName();
 
   if (!poolName.empty()) {
-    auto poolPtr = regionPtr->getCache().getPoolManager().find(poolName);
-    if (poolPtr != nullptr && !poolPtr->isDestroyed()) {
-      return poolPtr->getMultiuserAuthentication();
+    auto pool = m_poolManager->find(poolName);
+    if (pool && !pool->isDestroyed()) {
+      return pool->getMultiuserAuthentication();
     }
   }
 

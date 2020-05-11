@@ -257,8 +257,6 @@ class APACHE_GEODE_EXPORT Cache : public GeodeCache {
   std::unique_ptr<CacheImpl> m_cacheImpl;
 
  protected:
-  static bool isPoolInMultiuserMode(std::shared_ptr<Region> regionPtr);
-
   friend class CacheFactory;
   friend class CacheRegionHelper;
   friend class FunctionService;
