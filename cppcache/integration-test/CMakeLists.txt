@@ -151,7 +151,7 @@ foreach(FILE ${SOURCES})
       COMMAND ${TEST_COMMAND}
   )
 
-  set_property(TEST ${TEST} PROPERTY LABELS STABLE)
+  set_tests_properties(${TEST} PROPERTIES LABELS STABLE)
 endforeach()
 
 configure_file(CTestCustom.cmake.in CTestCustom.cmake)
@@ -159,85 +159,96 @@ configure_file(CTestCustom.cmake.in CTestCustom.cmake)
 #TODO this is really bad that we include the root of tests
 include_directories(${CMAKE_SOURCE_DIR}/tests/cpp)
 
-set_property(TEST testDataOutput PROPERTY LABELS STABLE QUICK)
-set_property(TEST testFWHelper PROPERTY LABELS STABLE QUICK)
-set_property(TEST testLRUList PROPERTY LABELS STABLE QUICK)
-set_property(TEST testSystemProperties PROPERTY LABELS STABLE QUICK)
-set_property(TEST testLogger PROPERTY LABELS STABLE QUICK)
-set_property(TEST testLinkage PROPERTY LABELS STABLE QUICK)
-set_property(TEST testRegionTemplateArgs PROPERTY LABELS STABLE QUICK)
-set_property(TEST testRegionMap PROPERTY LABELS STABLE QUICK)
-set_property(TEST testXmlCacheCreationWithRefid PROPERTY LABELS STABLE QUICK)
-set_property(TEST testRegionAttributesFactory PROPERTY LABELS STABLE QUICK)
-set_property(TEST testXmlCacheCreationWithOverFlow PROPERTY LABELS STABLE QUICK)
-set_property(TEST testThinClientRemoveAllLocal PROPERTY LABELS STABLE QUICK)
-set_property(TEST testDunit PROPERTY LABELS STABLE QUICK)
-set_property(TEST testSpinLock PROPERTY LABELS STABLE QUICK)
-set_property(TEST testSubRegions PROPERTY LABELS STABLE QUICK)
+set_tests_properties(testDataOutput
+    testFWHelper
+    testLRUList
+    testSystemProperties
+    testLogger
+    testLinkage
+    testRegionTemplateArgs
+    testRegionMap
+    testXmlCacheCreationWithRefid
+    testRegionAttributesFactory
+    testXmlCacheCreationWithOverFlow
+    testThinClientRemoveAllLocal
+    testDunit
+    testSpinLock
+    testSubRegions
+  PROPERTIES
+    LABELS "STABLE;QUICK"
+)
 
-set_property(TEST testOverflowPutGetSqLite PROPERTY LABELS FLAKY)
-set_property(TEST testThinClientAfterRegionLive PROPERTY LABELS FLAKY)
-set_property(TEST testThinClientCacheables PROPERTY LABELS FLAKY)
-set_property(TEST testThinClientCq PROPERTY LABELS FLAKY)
-set_property(TEST testThinClientCqFailover PROPERTY LABELS FLAKY)
-set_property(TEST testThinClientCqHAFailover PROPERTY LABELS FLAKY)
-set_property(TEST testThinClientDurableConnect PROPERTY LABELS FLAKY)
-set_property(TEST testThinClientDurableDisconnectNormal PROPERTY LABELS FLAKY)
-set_property(TEST testThinClientDurableDisconnectTimeout PROPERTY LABELS FLAKY)
-set_property(TEST testThinClientDurableFailoverClientClosedNoRedundancy PROPERTY LABELS FLAKY)
-set_property(TEST testThinClientDurableFailoverClientNotClosedRedundancy PROPERTY LABELS FLAKY)
-set_property(TEST testThinClientDurableKeepAliveFalseTimeout PROPERTY LABELS FLAKY)
-set_property(TEST testThinClientDurableKeepAliveTrueNormal PROPERTY LABELS FLAKY)
-set_property(TEST testThinClientDurableReconnect PROPERTY LABELS FLAKY)
-set_property(TEST testThinClientFailover PROPERTY LABELS FLAKY)
-set_property(TEST testThinClientFailover2 PROPERTY LABELS FLAKY)
-set_property(TEST testThinClientFailoverInterest PROPERTY LABELS FLAKY)
-set_property(TEST testThinClientFailoverInterest2 PROPERTY LABELS FLAKY)
-set_property(TEST testThinClientFailoverRegex PROPERTY LABELS FLAKY)
-set_property(TEST testThinClientFixedPartitionResolver PROPERTY LABELS FLAKY)
-set_property(TEST testThinClientHADistOps PROPERTY LABELS FLAKY)
-set_property(TEST testThinClientHAEventIDMap PROPERTY LABELS FLAKY)
-set_property(TEST testThinClientHAFailover PROPERTY LABELS FLAKY)
-set_property(TEST testThinClientHAMixedRedundancy PROPERTY LABELS FLAKY)
-set_property(TEST testThinClientHAQueryFailover PROPERTY LABELS FLAKY)
-set_property(TEST testThinClientLRUExpiration PROPERTY LABELS FLAKY)
-set_property(TEST testThinClientLargePutAllWithCallBackArg PROPERTY LABELS FLAKY)
-set_property(TEST testThinClientLocatorFailover PROPERTY LABELS FLAKY)
-set_property(TEST testThinClientMultiDS PROPERTY LABELS FLAKY)
-set_property(TEST testThinClientPRPutAllFailover PROPERTY LABELS FLAKY)
-set_property(TEST testThinClientPartitionResolver PROPERTY LABELS FLAKY)
-set_property(TEST testThinClientPdxDeltaWithNotification PROPERTY LABELS FLAKY)
-set_property(TEST testThinClientPdxTests PROPERTY LABELS FLAKY)
-set_property(TEST testThinClientPoolRedundancy PROPERTY LABELS FLAKY)
-set_property(TEST testThinClientPoolServer PROPERTY LABELS FLAKY)
-set_property(TEST testThinClientPutAll PROPERTY LABELS FLAKY)
-set_property(TEST testThinClientPutAllPRSingleHop PROPERTY LABELS FLAKY)
-set_property(TEST testThinClientPutAllWithCallBackArgWithoutConcurrency PROPERTY LABELS FLAKY)
-set_property(TEST testThinClientSecurityCQAuthorizationMU PROPERTY LABELS FLAKY)
-set_property(TEST testThinClientTXFailover PROPERTY LABELS FLAKY)
-set_property(TEST testThinClientTransactionsXA PROPERTY LABELS FLAKY)
-set_property(TEST testTimedSemaphore PROPERTY LABELS FLAKY)
+set_tests_properties(testOverflowPutGetSqLite 
+    testThinClientAfterRegionLive
+    testThinClientCacheables
+    testThinClientCq
+    testThinClientCqFailover
+    testThinClientCqHAFailover
+    testThinClientDurableConnect
+    testThinClientDurableDisconnectNormal
+    testThinClientDurableDisconnectTimeout
+    testThinClientDurableFailoverClientClosedNoRedundancy
+    testThinClientDurableFailoverClientNotClosedRedundancy
+    testThinClientDurableKeepAliveFalseTimeout
+    testThinClientDurableKeepAliveTrueNormal
+    testThinClientDurableReconnect
+    testThinClientFailover
+    testThinClientFailover2
+    testThinClientFailoverInterest
+    testThinClientFailoverInterest2
+    testThinClientFailoverRegex
+    testThinClientFixedPartitionResolver
+    testThinClientHADistOps
+    testThinClientHAEventIDMap
+    testThinClientHAFailover
+    testThinClientHAMixedRedundancy
+    testThinClientHAQueryFailover
+    testThinClientLRUExpiration
+    testThinClientLargePutAllWithCallBackArg
+    testThinClientLocatorFailover
+    testThinClientMultiDS
+    testThinClientPRPutAllFailover
+    testThinClientPartitionResolver
+    testThinClientPdxDeltaWithNotification
+    testThinClientPdxTests
+    testThinClientPoolRedundancy
+    testThinClientPoolServer
+    testThinClientPutAll
+    testThinClientPutAllPRSingleHop
+    testThinClientPutAllWithCallBackArgWithoutConcurrency
+    testThinClientSecurityCQAuthorizationMU
+    testThinClientTXFailover
+    testThinClientTransactionsXA
+    testTimedSemaphore
+  PROPERTIES
+    DISABLED TRUE
+    LABELS FLAKY
+)
 
-set_property(TEST testFwPerf PROPERTY LABELS OMITTED)
-set_property(TEST testThinClientCqDurable PROPERTY LABELS OMITTED)
-set_property(TEST testThinClientGatewayTest PROPERTY LABELS OMITTED)
-set_property(TEST testThinClientHAFailoverRegex PROPERTY LABELS OMITTED)
-set_property(TEST testThinClientPRSingleHop PROPERTY LABELS OMITTED)
-set_property(TEST testThinClientPoolAttrTest PROPERTY LABELS OMITTED)
-set_property(TEST testThinClientPoolLocator PROPERTY LABELS OMITTED)
-set_property(TEST testThinClientPutWithDelta PROPERTY LABELS OMITTED)
-set_property(TEST testThinClientRemoteQueryTimeout PROPERTY LABELS OMITTED)
-set_property(TEST testThinClientRemoveOps PROPERTY LABELS OMITTED)
-set_property(TEST testThinClientSecurityAuthentication PROPERTY LABELS OMITTED)
-set_property(TEST testThinClientSecurityAuthenticationMU PROPERTY LABELS OMITTED)
-set_property(TEST testThinClientSecurityAuthorization PROPERTY LABELS OMITTED)
-set_property(TEST testThinClientSecurityAuthorizationMU PROPERTY LABELS OMITTED)
-set_property(TEST testThinClientSecurityDurableCQAuthorizationMU PROPERTY LABELS OMITTED)
-set_property(TEST testThinClientSecurityPostAuthorization PROPERTY LABELS OMITTED)
-set_property(TEST testThinClientTicket303 PROPERTY LABELS OMITTED)
-set_property(TEST testThinClientTicket304 PROPERTY LABELS OMITTED)
-set_property(TEST testThinClientTracking PROPERTY LABELS OMITTED)
-set_property(TEST testThinClientWriterException PROPERTY LABELS OMITTED)
+set_tests_properties(testFwPerf
+    testThinClientCqDurable
+    testThinClientGatewayTest
+    testThinClientHAFailoverRegex
+    testThinClientPRSingleHop
+    testThinClientPoolAttrTest
+    testThinClientPoolLocator
+    testThinClientPutWithDelta
+    testThinClientRemoteQueryTimeout
+    testThinClientRemoveOps
+    testThinClientSecurityAuthentication
+    testThinClientSecurityAuthenticationMU
+    testThinClientSecurityAuthorization
+    testThinClientSecurityAuthorizationMU
+    testThinClientSecurityDurableCQAuthorizationMU
+    testThinClientSecurityPostAuthorization
+    testThinClientTicket303
+    testThinClientTicket304
+    testThinClientTracking
+    testThinClientWriterException
+  PROPERTIES
+    DISABLED TRUE
+   LABELS OMITTED
+)
 
 add_custom_target(run-stable-cppcache-integration-tests
   COMMAND ctest -C $<CONFIGURATION> -L STABLE
