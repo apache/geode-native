@@ -14,18 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "ThinClientStickyManager.hpp"
 
 #include "ThinClientPoolDM.hpp"
+
 namespace apache {
 namespace geode {
 namespace client {
+
 bool ThinClientStickyManager::getStickyConnection(
     TcrConnection*& conn, GfErrType* error,
     std::set<ServerLocation>& excludeServers, bool forTransaction) {
   bool maxConnLimit = false;
   bool connFound = false;
-  conn = (*TssConnectionWrapper::s_geodeTSSConn)->getConnection();
+  conn = TssConnectionWrapper::instance_.getConnection();
 
   if (!conn) {
     conn =
@@ -52,34 +55,31 @@ bool ThinClientStickyManager::getStickyConnection(
 
 void ThinClientStickyManager::getSingleHopStickyConnection(
     TcrEndpoint* theEP, TcrConnection*& conn) {
-  conn = (*TssConnectionWrapper::s_geodeTSSConn)
-             ->getSHConnection(theEP, m_dm->getName().c_str());
+  conn = TssConnectionWrapper::instance_.getSHConnection(
+      theEP, m_dm->getName().c_str());
 }
 
 void ThinClientStickyManager::addStickyConnection(TcrConnection* conn) {
   std::lock_guard<decltype(m_stickyLock)> keysGuard(m_stickyLock);
-  TcrConnection* oldConn =
-      (*TssConnectionWrapper::s_geodeTSSConn)->getConnection();
-  if (oldConn) {
-    std::set<TcrConnection**>::iterator it = m_stickyConnList.find(
-        (*TssConnectionWrapper::s_geodeTSSConn)->getConnDoublePtr());
+
+  if (auto oldConn = TssConnectionWrapper::instance_.getConnection()) {
+    const auto& it = m_stickyConnList.find(
+        TssConnectionWrapper::instance_.getConnDoublePtr());
     if (it != m_stickyConnList.end()) {
       oldConn->setAndGetBeingUsed(false, false);
       m_stickyConnList.erase(it);
-      std::shared_ptr<Pool> p = nullptr;
-      (*TssConnectionWrapper::s_geodeTSSConn)->setConnection(nullptr, p);
+      TssConnectionWrapper::instance_.setConnection(nullptr, nullptr);
       m_dm->put(oldConn, false);
     }
   }
 
   if (conn) {
-    (*TssConnectionWrapper::s_geodeTSSConn)
-        ->setConnection(conn, m_dm->shared_from_this());
+    TssConnectionWrapper::instance_.setConnection(conn,
+                                                  m_dm->shared_from_this());
     conn->setAndGetBeingUsed(true, true);  // this is done for transaction
                                            // thread when some one resume
                                            // transaction
-    m_stickyConnList.insert(
-        (*TssConnectionWrapper::s_geodeTSSConn)->getConnDoublePtr());
+    m_stickyConnList.insert(TssConnectionWrapper::instance_.getConnDoublePtr());
   }
 }
 
@@ -87,32 +87,29 @@ void ThinClientStickyManager::setStickyConnection(TcrConnection* conn,
                                                   bool forTransaction) {
   if (!conn) {
     std::lock_guard<decltype(m_stickyLock)> keysGuard(m_stickyLock);
-    (*TssConnectionWrapper::s_geodeTSSConn)
-        ->setConnection(nullptr, m_dm->shared_from_this());
+    TssConnectionWrapper::instance_.setConnection(nullptr,
+                                                  m_dm->shared_from_this());
   } else {
-    TcrConnection* currentConn =
-        (*TssConnectionWrapper::s_geodeTSSConn)->getConnection();
-    if (currentConn != conn)  // otherwsie no need to set it again
-    {
+    auto currentConn = TssConnectionWrapper::instance_.getConnection();
+    if (currentConn != conn) {
+      // otherwsie no need to set it again
       std::lock_guard<decltype(m_stickyLock)> keysGuard(m_stickyLock);
-      (*TssConnectionWrapper::s_geodeTSSConn)
-          ->setConnection(conn, m_dm->shared_from_this());
-      conn->setAndGetBeingUsed(
-          false,
-          forTransaction);  // if transaction then it will keep this as used
+      TssConnectionWrapper::instance_.setConnection(conn,
+                                                    m_dm->shared_from_this());
+      // if transaction then it will keep this as used
+      conn->setAndGetBeingUsed(false, forTransaction);
       m_stickyConnList.insert(
-          (*TssConnectionWrapper::s_geodeTSSConn)->getConnDoublePtr());
+          TssConnectionWrapper::instance_.getConnDoublePtr());
     } else {
-      currentConn->setAndGetBeingUsed(
-          false,
-          forTransaction);  // if transaction then it will keep this as used
+      // if transaction then it will keep this as used
+      currentConn->setAndGetBeingUsed(false, forTransaction);
     }
   }
 }
 
 void ThinClientStickyManager::setSingleHopStickyConnection(
     TcrEndpoint* ep, TcrConnection*& conn) {
-  (*TssConnectionWrapper::s_geodeTSSConn)->setSHConnection(ep, conn);
+  TssConnectionWrapper::instance_.setSHConnection(ep, conn);
 }
 
 void ThinClientStickyManager::cleanStaleStickyConnection() {
@@ -152,9 +149,7 @@ void ThinClientStickyManager::cleanStaleStickyConnection() {
 void ThinClientStickyManager::closeAllStickyConnections() {
   LOGDEBUG("ThinClientStickyManager::closeAllStickyConnections()");
   std::lock_guard<decltype(m_stickyLock)> keysGuard(m_stickyLock);
-  for (std::set<TcrConnection**>::iterator it = m_stickyConnList.begin();
-       it != m_stickyConnList.end(); it++) {
-    TcrConnection** tempConn = *it;
+  for (const auto& tempConn : m_stickyConnList) {
     if (*tempConn) {
       (*tempConn)->close();
       _GEODE_SAFE_DELETE(*tempConn);
@@ -162,19 +157,19 @@ void ThinClientStickyManager::closeAllStickyConnections() {
     }
   }
 }
+
 bool ThinClientStickyManager::canThisConnBeDeleted(TcrConnection* conn) {
   bool canBeDeleted = false;
   LOGDEBUG("ThinClientStickyManager::canThisConnBeDeleted()");
   std::lock_guard<decltype(m_stickyLock)> keysGuard(m_stickyLock);
   if (m_dm->canItBeDeletedNoImpl(conn)) return true;
-  TcrEndpoint* endPt = conn->getEndpointObject();
+  auto endPt = conn->getEndpointObject();
   std::lock_guard<decltype(endPt->getQueueHostedMutex())> guardQueue(
       endPt->getQueueHostedMutex());
   if (endPt->isQueueHosted()) {
-    for (std::set<TcrConnection**>::iterator it = m_stickyConnList.begin();
-         it != m_stickyConnList.end(); it++) {
-      TcrConnection* connTemp2 = *(*it);
-      if (connTemp2 && connTemp2->getEndpointObject() == endPt) {
+    for (const auto& it : m_stickyConnList) {
+      auto connTemp = *it;
+      if (connTemp && connTemp->getEndpointObject() == endPt) {
         canBeDeleted = true;
         break;
       }
@@ -182,30 +177,28 @@ bool ThinClientStickyManager::canThisConnBeDeleted(TcrConnection* conn) {
   }
   return canBeDeleted;
 }
+
 void ThinClientStickyManager::releaseThreadLocalConnection() {
-  TcrConnection* conn =
-      (*TssConnectionWrapper::s_geodeTSSConn)->getConnection();
-  if (conn) {
+  if (auto conn = TssConnectionWrapper::instance_.getConnection()) {
     std::lock_guard<decltype(m_stickyLock)> keysGuard(m_stickyLock);
-    std::set<TcrConnection**>::iterator it = m_stickyConnList.find(
-        (*TssConnectionWrapper::s_geodeTSSConn)->getConnDoublePtr());
+    const auto& it = m_stickyConnList.find(
+        TssConnectionWrapper::instance_.getConnDoublePtr());
     LOGDEBUG("ThinClientStickyManager::releaseThreadLocalConnection()");
     if (it != m_stickyConnList.end()) {
       m_stickyConnList.erase(it);
-      conn->setAndGetBeingUsed(false,
-                               false);  // now this can be used by next one
+      // now this can be used by next one
+      conn->setAndGetBeingUsed(false, false);
       m_dm->put(conn, false);
     }
-    (*TssConnectionWrapper::s_geodeTSSConn)
-        ->setConnection(nullptr, m_dm->shared_from_this());
+    TssConnectionWrapper::instance_.setConnection(nullptr,
+                                                  m_dm->shared_from_this());
   }
-  (*TssConnectionWrapper::s_geodeTSSConn)
-      ->releaseSHConnections(m_dm->shared_from_this());
+  TssConnectionWrapper::instance_.releaseSHConnections(
+      m_dm->shared_from_this());
 }
 
 void ThinClientStickyManager::getAnyConnection(TcrConnection*& conn) {
-  conn = (*TssConnectionWrapper::s_geodeTSSConn)
-             ->getAnyConnection(m_dm->getName().c_str());
+  conn = TssConnectionWrapper::instance_.getAnyConnection(m_dm->getName());
 }
 
 }  // namespace client

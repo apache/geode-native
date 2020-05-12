@@ -175,10 +175,8 @@ GfErrType CacheTransactionManagerImpl::rollback(TXState*, bool) {
 }
 
 ThinClientPoolDM* CacheTransactionManagerImpl::getDM() {
-  auto conn = (*TssConnectionWrapper::s_geodeTSSConn)->getConnection();
-  if (conn != nullptr) {
-    auto dm = conn->getEndpointObject()->getPoolHADM();
-    if (dm != nullptr) {
+  if (auto conn = TssConnectionWrapper::instance_.getConnection()) {
+    if (auto dm = conn->getEndpointObject()->getPoolHADM()) {
       return dm;
     }
   }
@@ -195,8 +193,8 @@ TransactionId& CacheTransactionManagerImpl::suspend() {
   }
 
   // get the current connection that this transaction is using
-  auto conn = (*TssConnectionWrapper::s_geodeTSSConn)->getConnection();
-  if (conn == nullptr) {
+  auto conn = TssConnectionWrapper::instance_.getConnection();
+  if (!conn) {
     LOGFINE(
         "Thread local connection is null. Returning nullptr transaction Id.");
     throw TransactionException("Thread local connection is null.");

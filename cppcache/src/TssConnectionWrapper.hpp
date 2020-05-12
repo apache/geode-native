@@ -21,62 +21,58 @@
 #define GEODE_TSSCONNECTIONWRAPPER_H_
 
 #include <map>
+#include <memory>
 #include <string>
-
-#include <ace/TSS_T.h>
-
-#include <geode/Pool.hpp>
 
 namespace apache {
 namespace geode {
 namespace client {
 
+class Pool;
 class TcrEndpoint;
 class TcrConnection;
 
-typedef std::map<std::string, TcrConnection*> EpNameVsConnection;
-
 class PoolWrapper {
  private:
-  std::shared_ptr<Pool> m_pool;
-  EpNameVsConnection m_EpnameVsConnection;
-  PoolWrapper& operator=(const PoolWrapper&);
-  PoolWrapper(const PoolWrapper&);
+  std::shared_ptr<Pool> pool_;
+  std::map<std::string, TcrConnection*> endpointsToConnectionMap_;
 
  public:
+  PoolWrapper() = default;
+  ~PoolWrapper() noexcept = default;
+  PoolWrapper(const PoolWrapper&) = delete;
+  PoolWrapper& operator=(const PoolWrapper&) = delete;
+
   TcrConnection* getSHConnection(TcrEndpoint* ep);
   void setSHConnection(TcrEndpoint* ep, TcrConnection* conn);
-  PoolWrapper();
-  ~PoolWrapper();
   void releaseSHConnections(std::shared_ptr<Pool> pool);
   TcrConnection* getAnyConnection();
 };
 
-typedef std::map<std::string, PoolWrapper*> poolVsEndpointConnMap;
-
 class TssConnectionWrapper {
  private:
-  TcrConnection* m_tcrConn;
-  std::shared_ptr<Pool> m_pool;
-  poolVsEndpointConnMap m_poolVsEndpointConnMap;
-  TssConnectionWrapper& operator=(const TssConnectionWrapper&);
-  TssConnectionWrapper(const TssConnectionWrapper&);
+  TcrConnection* tcrConnection_;
+  std::shared_ptr<Pool> pool_;
+  std::map<std::string, PoolWrapper*> poolNameToPoolWrapperMap_;
 
  public:
-  // TODO shared_ptr - remove or refactor with global work
-  static ACE_TSS<TssConnectionWrapper>* s_geodeTSSConn;
-  TcrConnection* getConnection() { return m_tcrConn; }
-  TcrConnection* getSHConnection(TcrEndpoint* ep, const char* poolname);
-  void setConnection(TcrConnection* conn, const std::shared_ptr<Pool>& pool) {
-    m_tcrConn = conn;
-    m_pool = pool;
-  }
-  void setSHConnection(TcrEndpoint* ep, TcrConnection* conn);
-  TcrConnection** getConnDoublePtr() { return &m_tcrConn; }
+  thread_local static TssConnectionWrapper instance_;
+
   TssConnectionWrapper();
   ~TssConnectionWrapper();
+  TssConnectionWrapper& operator=(const TssConnectionWrapper&) = delete;
+  TssConnectionWrapper(const TssConnectionWrapper&) = delete;
+
+  TcrConnection* getConnection() { return tcrConnection_; }
+  TcrConnection* getSHConnection(TcrEndpoint* ep, const std::string& poolname);
+  void setConnection(TcrConnection* conn, const std::shared_ptr<Pool>& pool) {
+    tcrConnection_ = conn;
+    pool_ = pool;
+  }
+  void setSHConnection(TcrEndpoint* ep, TcrConnection* conn);
+  TcrConnection** getConnDoublePtr() { return &tcrConnection_; }
   void releaseSHConnections(std::shared_ptr<Pool> p);
-  TcrConnection* getAnyConnection(const char* poolname);
+  TcrConnection* getAnyConnection(const std::string& poolname) const;
 };
 
 }  // namespace client
