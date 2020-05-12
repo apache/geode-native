@@ -170,7 +170,8 @@ void TcpConn::connect() {
 
 void TcpConn::close() {
   if (stream_) {
-    stream_.release()->close();
+    stream_->close();
+    stream_ = nullptr;
   }
 }
 

@@ -68,7 +68,8 @@ void TcpSslConn::connect() {
 
 void TcpSslConn::close() {
   if (stream_) {
-    stream_.release()->close();
+    stream_->close();
+    stream_ = nullptr;
   }
 }
 
