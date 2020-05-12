@@ -290,6 +290,8 @@ namespace Apache.Geode.Client.UnitTests
     public static int LOCATOR_PORT_3;
     public static int LOCATOR_PORT_4;
 
+    public static int JMX_MANAGER_PORT;
+
     #region Private static members and constants
 
     private static DistributedSystem m_dsys = null;
@@ -1775,6 +1777,12 @@ namespace Apache.Geode.Client.UnitTests
         LOCATOR_PORT_3 = Util.RandPort(10000, 64000);
         LOCATOR_PORT_4 = Util.RandPort(10000, 64000);
       }
+
+      if (JMX_MANAGER_PORT == 0)
+      {
+        JMX_MANAGER_PORT = Util.RandPort(10000, 64000);
+      }
+
     }
 
     public static void createDuplicateXMLFile(string orignalFilename, string duplicateFilename)
@@ -1858,6 +1866,8 @@ namespace Apache.Geode.Client.UnitTests
         {
           extraLocatorArgs = locatorPort;
         }
+
+        extraLocatorArgs += " --J=-Dgemfire.jmx-manager-port=" + JMX_MANAGER_PORT;
 
         if (ssl)
         {
