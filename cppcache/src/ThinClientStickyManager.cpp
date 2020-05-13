@@ -54,9 +54,9 @@ bool ThinClientStickyManager::getStickyConnection(
 }
 
 void ThinClientStickyManager::getSingleHopStickyConnection(
-    TcrEndpoint* theEP, TcrConnection*& conn) {
-  conn = TssConnectionWrapper::instance_.getSHConnection(
-      theEP, m_dm->getName().c_str());
+    const TcrEndpoint& theEP, TcrConnection*& conn) {
+  conn =
+      TssConnectionWrapper::instance_.getSHConnection(theEP, m_dm->getName());
 }
 
 void ThinClientStickyManager::addStickyConnection(TcrConnection* conn) {
@@ -108,7 +108,7 @@ void ThinClientStickyManager::setStickyConnection(TcrConnection* conn,
 }
 
 void ThinClientStickyManager::setSingleHopStickyConnection(
-    TcrEndpoint* ep, TcrConnection*& conn) {
+    const TcrEndpoint& ep, TcrConnection* conn) {
   TssConnectionWrapper::instance_.setSHConnection(ep, conn);
 }
 
@@ -193,8 +193,7 @@ void ThinClientStickyManager::releaseThreadLocalConnection() {
     TssConnectionWrapper::instance_.setConnection(nullptr,
                                                   m_dm->shared_from_this());
   }
-  TssConnectionWrapper::instance_.releaseSHConnections(
-      m_dm->shared_from_this());
+  TssConnectionWrapper::instance_.releaseSHConnections(*m_dm);
 }
 
 void ThinClientStickyManager::getAnyConnection(TcrConnection*& conn) {

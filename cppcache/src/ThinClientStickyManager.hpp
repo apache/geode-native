@@ -51,8 +51,9 @@ class ThinClientStickyManager {
   bool canThisConnBeDeleted(TcrConnection* conn);
 
   void releaseThreadLocalConnection();
-  void setSingleHopStickyConnection(TcrEndpoint* ep, TcrConnection*& conn);
-  void getSingleHopStickyConnection(TcrEndpoint* ep, TcrConnection*& conn);
+  void setSingleHopStickyConnection(const TcrEndpoint& ep, TcrConnection* conn);
+  void getSingleHopStickyConnection(const TcrEndpoint& ep,
+                                    TcrConnection*& conn);
   void getAnyConnection(TcrConnection*& conn);
 
  private:

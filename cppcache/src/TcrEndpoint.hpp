@@ -152,7 +152,7 @@ class TcrEndpoint {
                                   std::chrono::microseconds connectTimeout);
 
   void setConnected(volatile bool connected = true) { m_connected = connected; }
-  virtual ThinClientPoolDM* getPoolHADM() { return nullptr; }
+  virtual ThinClientPoolDM* getPoolHADM() const { return nullptr; }
   bool isQueueHosted();
   std::recursive_mutex& getQueueHostedMutex() { return m_notifyReceiverLock; }
   /*
