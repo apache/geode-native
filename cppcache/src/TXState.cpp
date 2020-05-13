@@ -104,7 +104,7 @@ void TXState::releaseStickyConnection() {
   // Since this is called during cleanup or through destructor, we should not
   // throw exception from here,
   // which can cause undefined cleanup.
-  if (auto conn = TssConnectionWrapper::instance_.getConnection()) {
+  if (auto conn = TssConnectionWrapper::get().getConnection()) {
     if (auto dm = conn->getEndpointObject()->getPoolHADM()) {
       if (!dm->isSticky()) {
         LOGFINE(

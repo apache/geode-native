@@ -42,36 +42,49 @@ class PoolWrapper {
   PoolWrapper(const PoolWrapper&) = delete;
   PoolWrapper& operator=(const PoolWrapper&) = delete;
 
-  TcrConnection* getSHConnection(const TcrEndpoint& ep);
-  void setSHConnection(const TcrEndpoint& ep, TcrConnection* conn);
+  TcrConnection* getSHConnection(const TcrEndpoint& endpoint);
+
+  void setSHConnection(const TcrEndpoint& ep, TcrConnection* connection);
+
   void releaseSHConnections(Pool& pool);
+
   TcrConnection* getAnyConnection();
 };
 
 class TssConnectionWrapper {
  private:
-  TcrConnection* tcrConnection_;
+  thread_local static TssConnectionWrapper instance_;
+
+  TcrConnection* connection_;
   std::shared_ptr<Pool> pool_;
   std::map<std::string, PoolWrapper*> poolNameToPoolWrapperMap_;
 
- public:
-  thread_local static TssConnectionWrapper instance_;
-
   TssConnectionWrapper();
   ~TssConnectionWrapper();
+
+ public:
+  inline static TssConnectionWrapper& get() { return instance_; }
+
   TssConnectionWrapper& operator=(const TssConnectionWrapper&) = delete;
   TssConnectionWrapper(const TssConnectionWrapper&) = delete;
 
-  TcrConnection* getConnection() const { return tcrConnection_; }
-  TcrConnection* getSHConnection(const TcrEndpoint& endpoint,
-                                 const std::string& poolName);
-  void setConnection(TcrConnection* conn, const std::shared_ptr<Pool>& pool) {
-    tcrConnection_ = conn;
+  inline void setConnection(TcrConnection* connection,
+                            const std::shared_ptr<Pool>& pool) {
+    connection_ = connection;
     pool_ = pool;
   }
+
+  inline TcrConnection* getConnection() const { return connection_; }
+
+  inline TcrConnection** getConnDoublePtr() { return &connection_; }
+
+  TcrConnection* getSHConnection(const TcrEndpoint& endpoint,
+                                 const std::string& poolName);
+
   void setSHConnection(const TcrEndpoint& endpoint, TcrConnection* connection);
-  TcrConnection** getConnDoublePtr() { return &tcrConnection_; }
+
   void releaseSHConnections(Pool& pool);
+
   TcrConnection* getAnyConnection(const std::string& poolName) const;
 };
 

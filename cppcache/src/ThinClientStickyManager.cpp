@@ -28,7 +28,7 @@ bool ThinClientStickyManager::getStickyConnection(
     std::set<ServerLocation>& excludeServers, bool forTransaction) {
   bool maxConnLimit = false;
   bool connFound = false;
-  conn = TssConnectionWrapper::instance_.getConnection();
+  conn = TssConnectionWrapper::get().getConnection();
 
   if (!conn) {
     conn =
@@ -55,31 +55,29 @@ bool ThinClientStickyManager::getStickyConnection(
 
 void ThinClientStickyManager::getSingleHopStickyConnection(
     const TcrEndpoint& theEP, TcrConnection*& conn) {
-  conn =
-      TssConnectionWrapper::instance_.getSHConnection(theEP, m_dm->getName());
+  conn = TssConnectionWrapper::get().getSHConnection(theEP, m_dm->getName());
 }
 
 void ThinClientStickyManager::addStickyConnection(TcrConnection* conn) {
   std::lock_guard<decltype(m_stickyLock)> keysGuard(m_stickyLock);
 
-  if (auto oldConn = TssConnectionWrapper::instance_.getConnection()) {
-    const auto& it = m_stickyConnList.find(
-        TssConnectionWrapper::instance_.getConnDoublePtr());
+  if (auto oldConn = TssConnectionWrapper::get().getConnection()) {
+    const auto& it =
+        m_stickyConnList.find(TssConnectionWrapper::get().getConnDoublePtr());
     if (it != m_stickyConnList.end()) {
       oldConn->setAndGetBeingUsed(false, false);
       m_stickyConnList.erase(it);
-      TssConnectionWrapper::instance_.setConnection(nullptr, nullptr);
+      TssConnectionWrapper::get().setConnection(nullptr, nullptr);
       m_dm->put(oldConn, false);
     }
   }
 
   if (conn) {
-    TssConnectionWrapper::instance_.setConnection(conn,
-                                                  m_dm->shared_from_this());
+    TssConnectionWrapper::get().setConnection(conn, m_dm->shared_from_this());
     conn->setAndGetBeingUsed(true, true);  // this is done for transaction
                                            // thread when some one resume
                                            // transaction
-    m_stickyConnList.insert(TssConnectionWrapper::instance_.getConnDoublePtr());
+    m_stickyConnList.insert(TssConnectionWrapper::get().getConnDoublePtr());
   }
 }
 
@@ -87,19 +85,17 @@ void ThinClientStickyManager::setStickyConnection(TcrConnection* conn,
                                                   bool forTransaction) {
   if (!conn) {
     std::lock_guard<decltype(m_stickyLock)> keysGuard(m_stickyLock);
-    TssConnectionWrapper::instance_.setConnection(nullptr,
-                                                  m_dm->shared_from_this());
+    TssConnectionWrapper::get().setConnection(nullptr,
+                                              m_dm->shared_from_this());
   } else {
-    auto currentConn = TssConnectionWrapper::instance_.getConnection();
+    auto currentConn = TssConnectionWrapper::get().getConnection();
     if (currentConn != conn) {
       // otherwsie no need to set it again
       std::lock_guard<decltype(m_stickyLock)> keysGuard(m_stickyLock);
-      TssConnectionWrapper::instance_.setConnection(conn,
-                                                    m_dm->shared_from_this());
+      TssConnectionWrapper::get().setConnection(conn, m_dm->shared_from_this());
       // if transaction then it will keep this as used
       conn->setAndGetBeingUsed(false, forTransaction);
-      m_stickyConnList.insert(
-          TssConnectionWrapper::instance_.getConnDoublePtr());
+      m_stickyConnList.insert(TssConnectionWrapper::get().getConnDoublePtr());
     } else {
       // if transaction then it will keep this as used
       currentConn->setAndGetBeingUsed(false, forTransaction);
@@ -109,7 +105,7 @@ void ThinClientStickyManager::setStickyConnection(TcrConnection* conn,
 
 void ThinClientStickyManager::setSingleHopStickyConnection(
     const TcrEndpoint& ep, TcrConnection* conn) {
-  TssConnectionWrapper::instance_.setSHConnection(ep, conn);
+  TssConnectionWrapper::get().setSHConnection(ep, conn);
 }
 
 void ThinClientStickyManager::cleanStaleStickyConnection() {
@@ -179,10 +175,10 @@ bool ThinClientStickyManager::canThisConnBeDeleted(TcrConnection* conn) {
 }
 
 void ThinClientStickyManager::releaseThreadLocalConnection() {
-  if (auto conn = TssConnectionWrapper::instance_.getConnection()) {
+  if (auto conn = TssConnectionWrapper::get().getConnection()) {
     std::lock_guard<decltype(m_stickyLock)> keysGuard(m_stickyLock);
-    const auto& it = m_stickyConnList.find(
-        TssConnectionWrapper::instance_.getConnDoublePtr());
+    const auto& it =
+        m_stickyConnList.find(TssConnectionWrapper::get().getConnDoublePtr());
     LOGDEBUG("ThinClientStickyManager::releaseThreadLocalConnection()");
     if (it != m_stickyConnList.end()) {
       m_stickyConnList.erase(it);
@@ -190,14 +186,14 @@ void ThinClientStickyManager::releaseThreadLocalConnection() {
       conn->setAndGetBeingUsed(false, false);
       m_dm->put(conn, false);
     }
-    TssConnectionWrapper::instance_.setConnection(nullptr,
-                                                  m_dm->shared_from_this());
+    TssConnectionWrapper::get().setConnection(nullptr,
+                                              m_dm->shared_from_this());
   }
-  TssConnectionWrapper::instance_.releaseSHConnections(*m_dm);
+  TssConnectionWrapper::get().releaseSHConnections(*m_dm);
 }
 
 void ThinClientStickyManager::getAnyConnection(TcrConnection*& conn) {
-  conn = TssConnectionWrapper::instance_.getAnyConnection(m_dm->getName());
+  conn = TssConnectionWrapper::get().getAnyConnection(m_dm->getName());
 }
 
 }  // namespace client

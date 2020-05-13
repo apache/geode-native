@@ -28,16 +28,16 @@ namespace client {
 
 thread_local TssConnectionWrapper TssConnectionWrapper::instance_;
 
-TssConnectionWrapper::TssConnectionWrapper() : tcrConnection_(nullptr) {}
+TssConnectionWrapper::TssConnectionWrapper() : connection_(nullptr) {}
 
 TssConnectionWrapper::~TssConnectionWrapper() {
   // if cache close happening during this then we should NOT call this..
-  if (tcrConnection_) {
+  if (connection_) {
     // this should be call in lock and release connection
     // but still race-condition is there if now cache-close starts happens
     // m_tcrConn->close();
     pool_->releaseThreadLocalConnection();
-    tcrConnection_ = nullptr;
+    connection_ = nullptr;
   }
 }
 
