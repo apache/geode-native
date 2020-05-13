@@ -20,8 +20,8 @@
 #include <chrono>
 #include <ctime>
 
-#include <ace/OS_NS_sys_utsname.h>
-#include <ace/OS_NS_time.h>
+#include <boost/asio/ip/host_name.hpp>
+#include <boost/date_time.hpp>
 
 #include <geode/internal/geode_globals.hpp>
 
@@ -29,6 +29,7 @@
 #include "../util/chrono/time_point.hpp"
 #include "GeodeStatisticsFactory.hpp"
 #include "HostStatSampler.hpp"
+#include "config.h"
 
 namespace apache {
 namespace geode {
@@ -323,9 +324,6 @@ StatArchiveWriter::StatArchiveWriter(std::string outfile,
   archiveFile = outfile;
   bytesWrittenToFile = 0;
 
-  /* adongre
-   * CID 28982: Uninitialized scalar field (UNINIT_CTOR)
-   */
   m_samplesize = 0;
 
   dataBuffer = new StatDataOutput(archiveFile, cache);
@@ -345,39 +343,25 @@ StatArchiveWriter::StatArchiveWriter(std::string outfile,
       duration_cast<milliseconds>(
           sampler->getSystemStartTime().time_since_epoch())
           .count());
-  int32_t tzOffset = ACE_OS::timezone();
-  // offset in milli seconds
-  tzOffset = tzOffset * -1 * 1000;
-  this->dataBuffer->writeInt(tzOffset);
 
+  // C++20: Use std::chrono::time_zone
+  boost::posix_time::time_duration timeZoneOffset(
+      boost::posix_time::second_clock::local_time() -
+      boost::posix_time::second_clock::universal_time());
+  this->dataBuffer->writeInt(timeZoneOffset.total_milliseconds());
+
+  // C++20: Use std::chrono::time_zone
   auto now = std::chrono::system_clock::now();
-  auto tm_val = apache::geode::util::chrono::localtime(now);
-  char buf[512] = {0};
-  std::strftime(buf, sizeof(buf), "%Z", &tm_val);
-  std::string tzId(buf);
-  this->dataBuffer->writeUTF(tzId);
+  auto localTime = apache::geode::util::chrono::localtime(now);
+  std::ostringstream timeZoneId;
+  timeZoneId << std::put_time(&localTime, "%Z");
+  this->dataBuffer->writeUTF(timeZoneId.str());
 
-  std::string sysDirPath = sampler->getSystemDirectoryPath();
-  this->dataBuffer->writeUTF(sysDirPath);
-  std::string prodDesc = sampler->getProductDescription();
-
-  this->dataBuffer->writeUTF(prodDesc);
-  ACE_utsname u;
-  ACE_OS::uname(&u);
-  std::string os(u.sysname);
-  os += " ";
-  /* This version name returns date of release of the version which
-   creates confusion about the creation time of the vsd file. Hence
-   removing it now. Later I'll change it to just show version without
-   date. For now only name of the OS will be displayed.
-   */
-  // os += u.version;
-
-  this->dataBuffer->writeUTF(os);
-  std::string machineInfo(u.machine);
-  machineInfo += " ";
-  machineInfo += u.nodename;
-  this->dataBuffer->writeUTF(machineInfo);
+  this->dataBuffer->writeUTF(sampler->getSystemDirectoryPath());
+  this->dataBuffer->writeUTF(sampler->getProductDescription());
+  this->dataBuffer->writeUTF(GEODE_SYSTEM_NAME);
+  this->dataBuffer->writeUTF(std::string(GEODE_SYSTEM_PROCESSOR) + " " +
+                             boost::asio::ip::host_name());
 
   resampleResources();
 }
