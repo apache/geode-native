@@ -39,6 +39,7 @@ add_executable(cpp-integration-test
   SimpleAuthInitialize.hpp
   SimpleCqListener.cpp
   SimpleCqListener.hpp
+  SNITest.cpp
   SslOneWayTest.cpp
   SslTwoWayTest.cpp
   StructTest.cpp
