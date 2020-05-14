@@ -171,60 +171,77 @@ class Cluster {
               const std::string truststorePassword);
 
   bool useSsl();
-  bool requireSslAuthentication();
-  std::string keystore();
-  std::string truststore();
-  std::string keystorePassword();
-  std::string truststorePassword();
 
-  Gfsh &getGfsh();
+  void usePropertiesFile(const std::string propertiesFile);
+  void useSecurityPropertiesFile(const std::string securityPropertiesFile);
+  void useHostNameForClients(const std::string hostNameForClients);
+  bool usePropertiesFile();
+  bool useSecurityPropertiesFile();
+  bool useHostNameForClients();
+bool requireSslAuthentication();
 
-  std::vector<Server> &getServers();
+std::string keystore();
+std::string truststore();
+std::string keystorePassword();
+std::string truststorePassword();
 
-  std::vector<Locator> &getLocators();
+Gfsh &getGfsh();
 
-  std::string &getClasspath();
+std::vector<Server> &getServers();
 
-  std::string &getSecurityManager();
+std::vector<Locator> &getLocators();
 
-  std::string &getUser();
+std::string &getClasspath();
 
-  std::string &getPassword();
+std::string &getSecurityManager();
 
-  std::vector<std::string> &getCacheXMLFiles();
+std::string &getUser();
 
-  bool getUseIPv6();
+std::string &getPassword();
 
- private:
-  std::string name_;
-  std::string classpath_;
-  std::string securityManager_;
-  std::string user_;
-  std::string password_;
-  std::vector<std::string> cacheXMLFiles_;
+std::vector<std::string> &getCacheXMLFiles();
 
-  size_t initialLocators_;
-  std::vector<Locator> locators_;
+bool getUseIPv6();
 
-  size_t initialServers_;
-  std::vector<Server> servers_;
+private:
+std::string name_;
+std::string classpath_;
+std::string securityManager_;
+std::string user_;
+std::string password_;
+std::vector<std::string> cacheXMLFiles_;
 
-  bool started_ = false;
-  uint16_t jmxManagerPort_;
+size_t initialLocators_;
+std::vector<Locator> locators_;
 
-  bool useSsl_ = false;
-  bool requireSslAuthentication_ = false;
-  std::string keystore_;
-  std::string keystorePassword_;
-  std::string truststore_;
-  std::string truststorePassword_;
+size_t initialServers_;
+std::vector<Server> servers_;
 
-  bool useIPv6_ = false;
+bool started_ = false;
+uint16_t jmxManagerPort_;
 
-  GfshExecute gfsh_;
+bool useSsl_ = false;
+bool requireSslAuthentication_ = false;
+bool usePropertiesFile_ = false;
+bool useSecurityPropertiesFile_ = false;
+bool useHostNameForClients_ = false;
 
-  void startLocators();
-  void startServers();
-};
+std::string keystore_;
+std::string keystorePassword_;
+std::string truststore_;
+std::string truststorePassword_;
+
+std::string propertiesFile_;
+std::string securityPropertiesFile_;
+std::string hostName_;
+
+bool useIPv6_ = false;
+
+GfshExecute gfsh_;
+
+void startLocators();
+void startServers();
+}
+;
 
 #endif  // INTEGRATION_TEST_FRAMEWORK_CLUSTER_H
