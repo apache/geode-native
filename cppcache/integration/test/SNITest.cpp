@@ -59,12 +59,13 @@ class SNITest : public ::testing::Test {
     auto rVal = chdir("./sni-test-config");
 #endif
 
-    std::system("docker-compose up geode");
+    std::system("docker-compose up -d");
   }
 
   void TearDown() override {
     // Code here will be called immediately after each test (right
     // before the destructor).
+    std::system("docker-compose stop");
   }
 
   // Class members declared here can be used by all tests in the test suite
