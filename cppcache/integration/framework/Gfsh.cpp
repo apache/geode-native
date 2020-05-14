@@ -156,10 +156,28 @@ Gfsh::Start::Locator &Gfsh::Start::Locator::withJmxManagerStart(
   return *this;
 }
 
-Gfsh::Start::Locator &Gfsh::Start::Locator::withSslRquireAuthentication(
+Gfsh::Start::Locator &Gfsh::Start::Locator::withSslRequireAuthentication(
     const bool require) {
   command_ += " --J=-Dgemfire.ssl-require-authentication=" +
               std::string(require ? "true" : "false");
+  return *this;
+}
+
+Gfsh::Start::Locator &Gfsh::Start::Locator::withPropertiesFile(
+    const std::string file) {
+  command_ += " --properties-file=" + file;
+  return *this;
+}
+
+Gfsh::Start::Locator &Gfsh::Start::Locator::withSecurityPropertiesFile(
+    const std::string file) {
+  command_ += " --security-properties-file=" + file;
+  return *this;
+}
+
+Gfsh::Start::Locator &Gfsh::Start::Locator::withHostNameForClients(
+    const std::string hostName) {
+  command_ += " --hostname-for-clients=" + hostName;
   return *this;
 }
 
@@ -285,6 +303,24 @@ Gfsh::Start::Server &Gfsh::Start::Server::withSslRquireAuthentication(
     const bool require) {
   command_ += " --J=-Dgemfire.ssl-require-authentication=" +
               std::string(require ? "true" : "false");
+  return *this;
+}
+
+Gfsh::Start::Server &Gfsh::Start::Server::withPropertiesFile(
+    const std::string file) {
+  command_ += " --properties-file=" + file;
+  return *this;
+}
+
+Gfsh::Start::Server &Gfsh::Start::Server::withSecurityPropertiesFile(
+    const std::string file) {
+  command_ += " --security-properties-file=" + file;
+  return *this;
+}
+
+Gfsh::Start::Server &Gfsh::Start::Server::withHostNameForClients(
+    const std::string hostName) {
+  command_ += " --hostname-for-clients=" + hostName;
   return *this;
 }
 
