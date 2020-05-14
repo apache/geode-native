@@ -56,7 +56,7 @@ class SNITest : public ::testing::Test {
 #if defined(_WINDOWS)
     auto rVal = SetCurrentDirectory("./sni-test-config");
 #else
-    auto rVal = chdir(./ "sni-test-config");
+    auto rVal = chdir("./sni-test-config");
 #endif
 
     std::system("docker-compose up geode");

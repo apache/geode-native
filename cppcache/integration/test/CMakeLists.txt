@@ -94,6 +94,8 @@ configure_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/func_cacheserver2_pool.xml
   ${CMAKE_CURRENT_BINARY_DIR}/func_cacheserver2_pool.xml COPYONLY)
 
+ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/sni-test-config DESTINATION ${CMAKE_CURRENT_BINARY_DIR}) 
+
 set_target_properties(cpp-integration-test PROPERTIES
   CXX_VISIBILITY_PRESET hidden
   VISIBILITY_INLINES_HIDDEN ON
