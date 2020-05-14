@@ -46,6 +46,8 @@
 #define GEMFIRE_MAX_STAT_DISK_LIMIT (1024LL * 1024LL * 1024LL * 1024LL)
 #endif
 
+class HostStatSamplerTest_test_Test;
+
 namespace apache {
 namespace geode {
 namespace statistics {
@@ -62,7 +64,7 @@ class StatisticsManager;
  */
 class HostStatSampler {
  public:
-  HostStatSampler(const char* filePath,
+  HostStatSampler(std::string filePath,
                   std::chrono::milliseconds sampleIntervalMs,
                   StatisticsManager* statMngr, CacheImpl* cache,
                   int64_t statFileLimit = 0, int64_t statDiskSpaceLimit = 0);
@@ -206,6 +208,11 @@ class HostStatSampler {
   int64_t m_pid;
   system_clock::time_point m_startTime;
 
+  /**
+   * For testing only.
+   */
+  HostStatSampler(std::string filePath);
+
   std::string initStatFileWithExt();
   /**
    * The archiveFile, after it exceeds archiveFileSizeLimit should be rolled
@@ -241,6 +248,8 @@ class HostStatSampler {
   void putStatsInAdminRegion();
 
   static const char* NC_HSS_Thread;
+
+  friend HostStatSamplerTest_test_Test;
 };
 
 }  // namespace statistics

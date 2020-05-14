@@ -130,7 +130,7 @@ using client::Exception;
 
 const char* HostStatSampler::NC_HSS_Thread = "NC HSS Thread";
 
-HostStatSampler::HostStatSampler(const char* filePath,
+HostStatSampler::HostStatSampler(std::string filePath,
                                  std::chrono::milliseconds sampleIntervalMs,
                                  StatisticsManager* statMngr, CacheImpl* cache,
                                  int64_t statFileLimit,
@@ -145,8 +145,8 @@ HostStatSampler::HostStatSampler(const char* filePath,
   m_startTime = system_clock::now();
   m_pid = boost::this_process::get_id();
   m_statMngr = statMngr;
-  m_archiveFileName = filePath;
-  globals::g_statFile = filePath;
+  m_archiveFileName = std::move(filePath);
+  globals::g_statFile = m_archiveFileName;
   m_sampleRate = sampleIntervalMs;
   rollIndex = 0;
   m_archiveDiskSpaceLimit = statDiskSpaceLimit;
@@ -224,6 +224,11 @@ HostStatSampler::HostStatSampler(const char* filePath,
       existingFile = nullptr;
     }
   }
+}
+
+HostStatSampler::HostStatSampler(std::string filePath)
+    : m_archiveFileName(std::move(filePath)) {
+  globals::g_statFile = m_archiveFileName;
 }
 
 std::string HostStatSampler::initStatFileWithExt() {
@@ -356,6 +361,9 @@ void HostStatSampler::changeArchive(std::string filename) {
 }
 
 std::string HostStatSampler::chkForGFSExt(std::string filename) {
+  //  boost::filesystem::path file(filename);
+  //  return file.parent_path().append(file.stem()).append(".gfs").string();
+
   if (!m_isStatDiskSpaceEnabled) {
     int32_t len = static_cast<int32_t>(filename.length());
     size_t posOfExt = filename.find_last_of('.', len);
