@@ -22,7 +22,7 @@ services:
     expose:
       - '10334'
       - '40404'
-    entrypoint: '/bin/bash/sh'
+    entrypoint: 'sh'
     command: '-c /geode/scripts/forever'
     networks:
       geode-sni-test:
