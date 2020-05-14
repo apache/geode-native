@@ -125,7 +125,13 @@ class Gfsh {
 
       Locator &withJmxManagerStart(const bool startJmxManager);
 
-      Locator &withSslRquireAuthentication(const bool require);
+      Locator &withSslRequireAuthentication(const bool require);
+
+      Locator &withPropertiesFile(const std::string file);
+
+      Locator &withSecurityPropertiesFile(const std::string file);
+
+      Locator &withHostNameForClients(const std::string hostName);
     };
 
     class Server : public Command<void> {
@@ -169,6 +175,12 @@ class Gfsh {
       Server &withSslTruststorePassword(const std::string &truststorePassword);
 
       Server &withSslRquireAuthentication(const bool require);
+
+      Server &withPropertiesFile(const std::string file);
+
+      Server &withSecurityPropertiesFile(const std::string file);
+
+      Server &withHostNameForClients(const std::string hostName);
     };
 
    private:
