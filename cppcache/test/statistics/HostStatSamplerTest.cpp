@@ -17,15 +17,77 @@
 
 #include <gmock/gmock.h>
 
+#include <boost/process/environment.hpp>
+
 #include <gtest/gtest.h>
 
 #include "statistics/HostStatSampler.hpp"
 
+using ::testing::Eq;
+using ::testing::StrEq;
+
 using apache::geode::statistics::HostStatSampler;
 
-TEST(HostStatSamplerTest, test) {
-  HostStatSampler hostStatSampler("stats.gfs");
+class TestableHostStatSampler : public HostStatSampler {
+ public:
+  explicit TestableHostStatSampler(std::string filePath, size_t statFileLimit,
+                                   size_t statDiskSpaceLimit)
+      : HostStatSampler(filePath, statFileLimit, statDiskSpaceLimit) {}
+  boost::filesystem::path chkForGFSExt(boost::filesystem::path filename) const {
+    return HostStatSampler::chkForGFSExt(filename);
+  }
+};
 
-  auto actual = hostStatSampler.chkForGFSExt("x.gfs");
-  ASSERT_THAT(actual, ::testing::StrEq("x.gfs"));
+TEST(HostStatSamplerTest, chkForGFSExtWithoutDiskSpaceLimit) {
+  const TestableHostStatSampler hostStatSampler("stats.gfs", 0, 0);
+
+  EXPECT_THAT(hostStatSampler.chkForGFSExt("x.gfs"), Eq("x.gfs"));
+  EXPECT_THAT(hostStatSampler.chkForGFSExt("/tmp/x.gfs"), Eq("/tmp/x.gfs"));
+  EXPECT_THAT(hostStatSampler.chkForGFSExt("x"), Eq("x.gfs"));
+  EXPECT_THAT(hostStatSampler.chkForGFSExt("/tmp/x"), Eq("/tmp/x.gfs"));
+  EXPECT_THAT(hostStatSampler.chkForGFSExt("x.ext"), Eq("x.gfs"));
+  EXPECT_THAT(hostStatSampler.chkForGFSExt("/tmp/x.ext"), Eq("/tmp/x.gfs"));
+}
+
+TEST(HostStatSamplerTest, chkForGFSExtWithDiskSpaceLimit) {
+  const TestableHostStatSampler hostStatSampler("stats.gfs", 0, 1);
+
+  EXPECT_THAT(hostStatSampler.chkForGFSExt("x.gfs"), Eq("x.gfs"));
+  EXPECT_THAT(hostStatSampler.chkForGFSExt("/tmp/x.gfs"), Eq("/tmp/x.gfs"));
+  EXPECT_THAT(hostStatSampler.chkForGFSExt("x"), Eq("x.gfs"));
+  EXPECT_THAT(hostStatSampler.chkForGFSExt("/tmp/x"), Eq("/tmp/x.gfs"));
+  EXPECT_THAT(hostStatSampler.chkForGFSExt("x.ext"), Eq("x.ext.gfs"));
+  EXPECT_THAT(hostStatSampler.chkForGFSExt("/tmp/x.ext"), Eq("/tmp/x.ext.gfs"));
+}
+
+TEST(HostStatSamplerTest, createArchiveFilenameWithoutDiskSpaceLimit) {
+  TestableHostStatSampler hostStatSampler("stats.gfs", 0, 0);
+
+  EXPECT_THAT(
+      hostStatSampler.createArchiveFilename(),
+      Eq("stats-" + std::to_string(boost::this_process::get_id()) + ".gfs"));
+}
+
+TEST(HostStatSamplerTest,
+     createArchiveFilenameWithAlternativeExtensionWithoutDiskSpaceLimit) {
+  TestableHostStatSampler hostStatSampler("stats.ext", 0, 0);
+
+  EXPECT_THAT(
+      hostStatSampler.createArchiveFilename(),
+      Eq("stats-" + std::to_string(boost::this_process::get_id()) + ".gfs"));
+}
+
+TEST(HostStatSamplerTest,
+     createArchiveFilenameWithoutExtensionOrDiskSpaceLimit) {
+  TestableHostStatSampler hostStatSampler("stats", 0, 0);
+
+  EXPECT_THAT(
+      hostStatSampler.createArchiveFilename(),
+      Eq("stats-" + std::to_string(boost::this_process::get_id()) + ".gfs"));
+}
+
+TEST(HostStatSamplerTest, createArchiveFilenameWithDiskSpaceLimit) {
+  TestableHostStatSampler hostStatSampler("stats.gfs", 0, 1);
+
+  EXPECT_THAT(hostStatSampler.createArchiveFilename(), Eq("stats.gfs"));
 }

@@ -185,8 +185,8 @@ class APACHE_GEODE_EXPORT StatArchiveWriter {
   int32_t resourceTypeId;
   int32_t resourceInstId;
   int32_t statResourcesModCount;
-  int64_t bytesWrittenToFile;
-  int64_t m_samplesize;
+  size_t bytesWrittenToFile;
+  size_t m_samplesize;
   std::string archiveFile;
   std::map<Statistics *, std::shared_ptr<ResourceInst>> resourceInstMap;
   std::map<const StatisticsType *, const ResourceType *> resourceTypeMap;
@@ -209,7 +209,7 @@ class APACHE_GEODE_EXPORT StatArchiveWriter {
    * Returns the number of bytes written so far to this archive.
    * This does not take compression into account.
    */
-  int64_t bytesWritten();
+  size_t bytesWritten();
   /**
    * Archives a sample snapshot at the given timeStamp.
    * @param timeStamp a value obtained using NanoTimer::now.
@@ -239,7 +239,7 @@ class APACHE_GEODE_EXPORT StatArchiveWriter {
   /**
    * Returns the size of number of bytes written so far to this archive.
    */
-  int64_t getSampleSize();
+  size_t getSampleSize();
 
   /**
    * Flushes the contents of the dataBuffer to the archiveFile

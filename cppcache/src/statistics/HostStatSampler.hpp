@@ -28,6 +28,8 @@
 #include <thread>
 #include <vector>
 
+#include <boost/filesystem/path.hpp>
+
 #include <geode/ExceptionTypes.hpp>
 #include <geode/internal/geode_globals.hpp>
 
@@ -38,15 +40,7 @@
 #include "StatisticsManager.hpp"
 #include "StatisticsType.hpp"
 
-#ifndef GEMFIRE_MAX_STATS_FILE_LIMIT
-#define GEMFIRE_MAX_STATS_FILE_LIMIT (1024 * 1024 * 1024)
-#endif
-
-#ifndef GEMFIRE_MAX_STAT_DISK_LIMIT
-#define GEMFIRE_MAX_STAT_DISK_LIMIT (1024LL * 1024LL * 1024LL * 1024LL)
-#endif
-
-class HostStatSamplerTest_test_Test;
+class TestableHostStatSampler;
 
 namespace apache {
 namespace geode {
@@ -67,7 +61,9 @@ class HostStatSampler {
   HostStatSampler(std::string filePath,
                   std::chrono::milliseconds sampleIntervalMs,
                   StatisticsManager* statMngr, CacheImpl* cache,
-                  int64_t statFileLimit = 0, int64_t statDiskSpaceLimit = 0);
+                  size_t statFileLimit = 0, size_t statDiskSpaceLimit = 0);
+
+  ~HostStatSampler() noexcept;
 
   HostStatSampler(const HostStatSampler&) = delete;
 
@@ -76,19 +72,19 @@ class HostStatSampler {
   /**
    * Adds the pid to the archive file passed to it.
    */
-  std::string createArchiveFileName();
+  const boost::filesystem::path& createArchiveFilename();
   /**
    * Returns the archiveFileName
    */
-  std::string getArchiveFileName();
+  boost::filesystem::path getArchiveFilename();
   /**
    * Gets the archive size limit in bytes.
    */
-  int64_t getArchiveFileSizeLimit();
+  size_t getArchiveFileSizeLimit();
   /**
    * Gets the archive disk space limit in bytes.
    */
-  int64_t getArchiveDiskSpaceLimit();
+  size_t getArchiveDiskSpaceLimit();
   /**
    * Gets the sample rate in milliseconds
    */
@@ -184,8 +180,6 @@ class HostStatSampler {
    */
   bool isRunning();
 
-  ~HostStatSampler();
-
  private:
   std::recursive_mutex m_samplingLock;
   bool m_adminError;
@@ -194,13 +188,13 @@ class HostStatSampler {
   std::atomic<bool> m_stopRequested;
   std::atomic<bool> m_isStatDiskSpaceEnabled;
   std::unique_ptr<StatArchiveWriter> m_archiver;
-  StatSamplerStats* m_samplerStats;
+  std::unique_ptr<StatSamplerStats> m_samplerStats;
   const char* m_durableClientId;
   std::chrono::seconds m_durableTimeout;
 
-  std::string m_archiveFileName;
-  int64_t m_archiveFileSizeLimit;
-  int64_t m_archiveDiskSpaceLimit;
+  boost::filesystem::path m_archiveFileName;
+  size_t m_archiveFileSizeLimit;
+  size_t m_archiveDiskSpaceLimit;
   std::chrono::milliseconds m_sampleRate;
   StatisticsManager* m_statMngr;
   CacheImpl* m_cache;
@@ -211,15 +205,16 @@ class HostStatSampler {
   /**
    * For testing only.
    */
-  HostStatSampler(std::string filePath);
+  explicit HostStatSampler(std::string filePath, size_t statFileLimit,
+                           size_t statDiskSpaceLimit);
 
-  std::string initStatFileWithExt();
+  boost::filesystem::path initStatFileWithExt();
   /**
    * The archiveFile, after it exceeds archiveFileSizeLimit should be rolled
    * to a new file name. This integer rollIndex will be used to format the
    * file name into which the current archiveFile will be renamed.
    */
-  int32_t rollIndex;
+  int32_t m_rollIndex;
   /**
    * This function rolls the existing archive file
    */
@@ -228,7 +223,8 @@ class HostStatSampler {
    * This function check whether the filename has gfs ext or not
    * If it is not there it adds and then returns the new filename.
    */
-  std::string chkForGFSExt(std::string filename);
+  boost::filesystem::path chkForGFSExt(
+      const boost::filesystem::path& filename) const;
 
   /**
    * Initialize any special sampler stats. Like ProcessStats, HostStats
@@ -249,7 +245,7 @@ class HostStatSampler {
 
   static const char* NC_HSS_Thread;
 
-  friend HostStatSamplerTest_test_Test;
+  friend TestableHostStatSampler;
 };
 
 }  // namespace statistics

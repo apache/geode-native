@@ -40,16 +40,18 @@
 #include "GeodeStatisticsFactory.hpp"
 #include "StatArchiveWriter.hpp"
 
+#define GEMFIRE_MAX_STATS_FILE_LIMIT (1024 * 1024 * 1024)
+
 namespace apache {
 namespace geode {
 namespace statistics {
 namespace globals {
 
-std::string g_statFile;
-std::string g_statFileWithExt;
-int64_t g_spaceUsed = 0;
-int64_t g_previoussamplesize = 0;
-int64_t g_previoussamplesizeLastFile = 0;
+boost::filesystem::path g_statFile;
+boost::filesystem::path g_statFileWithExt;
+size_t g_spaceUsed = 0;
+size_t g_previoussamplesize = 0;
+size_t g_previoussamplesizeLastFile = 0;
 // Make a pair for the filename & its size
 std::pair<std::string, size_t> g_fileInfoPair;
 // Vector to hold the fileInformation
@@ -130,59 +132,22 @@ using client::Exception;
 
 const char* HostStatSampler::NC_HSS_Thread = "NC HSS Thread";
 
+static const boost::filesystem::path GFS_EXTENSION(".gfs");
+
 HostStatSampler::HostStatSampler(std::string filePath,
                                  std::chrono::milliseconds sampleIntervalMs,
                                  StatisticsManager* statMngr, CacheImpl* cache,
-                                 int64_t statFileLimit,
-                                 int64_t statDiskSpaceLimit)
-    : m_cache(cache) {
-  m_isStatDiskSpaceEnabled = false;
-  m_adminError = false;
-  m_running = false;
-  m_stopRequested = false;
-  m_archiver = nullptr;
-  m_samplerStats = new StatSamplerStats(statMngr->getStatisticsFactory());
-  m_startTime = system_clock::now();
-  m_pid = boost::this_process::get_id();
+                                 size_t statFileLimit,
+                                 size_t statDiskSpaceLimit)
+
+    : HostStatSampler(std::move(filePath), statFileLimit, statDiskSpaceLimit) {
+  m_cache = cache;
+  m_samplerStats = std::unique_ptr<StatSamplerStats>(
+      new StatSamplerStats(statMngr->getStatisticsFactory()));
   m_statMngr = statMngr;
-  m_archiveFileName = std::move(filePath);
-  globals::g_statFile = m_archiveFileName;
   m_sampleRate = sampleIntervalMs;
-  rollIndex = 0;
-  m_archiveDiskSpaceLimit = statDiskSpaceLimit;
-  globals::g_spaceUsed = 0;
-
-  if (statDiskSpaceLimit != 0) {
-    m_isStatDiskSpaceEnabled = true;
-  }
-
-  m_archiveFileSizeLimit = statFileLimit * 1024 * 1024;  // 10000000;
-  if (m_archiveFileSizeLimit < 0 ||
-      m_archiveFileSizeLimit > GEMFIRE_MAX_STATS_FILE_LIMIT) {
-    m_archiveFileSizeLimit = GEMFIRE_MAX_STATS_FILE_LIMIT;
-  }
 
   if (m_isStatDiskSpaceEnabled) {
-    m_archiveDiskSpaceLimit = statDiskSpaceLimit * 1024 * 1024;  // 10000000;
-
-    if (m_archiveDiskSpaceLimit <
-        0 /*|| m_archiveDiskSpaceLimit > GEMFIRE_MAX_STAT_DISK_LIMIT*/) {
-      m_archiveDiskSpaceLimit = GEMFIRE_MAX_STAT_DISK_LIMIT;
-    }
-
-    // If FileSizelimit is greater than DiskSpaceLimit & diskspaceLimit is set,
-    // then set DiskSpaceLimit to FileSizelimit
-    if (m_archiveFileSizeLimit > m_archiveDiskSpaceLimit) {
-      m_archiveFileSizeLimit = m_archiveDiskSpaceLimit;
-    }
-
-    // If only DiskSpaceLimit is specified and no FileSizeLimit specified, then
-    // set DiskSpaceLimit to FileSizelimit.
-    // This helps in getting the file handle that is exceeded the limit.
-    if (m_archiveFileSizeLimit == 0) {
-      m_archiveFileSizeLimit = m_archiveDiskSpaceLimit;
-    }
-
     globals::g_statFileWithExt = initStatFileWithExt();
 
 #ifdef _WIN32
@@ -204,7 +169,7 @@ HostStatSampler::HostStatSampler(std::string filePath,
           if (fileHyphenPos != std::string::npos) {
             std::string buff =
                 tempname.substr(fileHyphenPos + 1, tempname.length());
-            rollIndex = std::stoi(buff) + 1;
+            m_rollIndex = std::stoi(buff) + 1;
           }
         }
       }
@@ -215,7 +180,7 @@ HostStatSampler::HostStatSampler(std::string filePath,
     if (existingFile != nullptr && statFileLimit > 0) {
       fclose(existingFile);
       existingFile = nullptr;
-      changeArchive(globals::g_statFileWithExt);
+      changeArchive(globals::g_statFileWithExt.string());
     } else {
       writeGfs();
     }
@@ -226,51 +191,75 @@ HostStatSampler::HostStatSampler(std::string filePath,
   }
 }
 
-HostStatSampler::HostStatSampler(std::string filePath)
-    : m_archiveFileName(std::move(filePath)) {
+HostStatSampler::HostStatSampler(std::string filePath, size_t statFileLimit,
+                                 size_t statDiskSpaceLimit)
+    : m_adminError(false),
+      m_running(false),
+      m_stopRequested(false),
+      m_isStatDiskSpaceEnabled(statDiskSpaceLimit != 0),
+      m_archiveFileName(std::move(filePath)),
+      m_archiveFileSizeLimit(statFileLimit * 1024 * 1024),
+      m_pid(boost::this_process::get_id()),
+      m_startTime(system_clock::now()),
+      m_rollIndex(0) {
   globals::g_statFile = m_archiveFileName;
-}
+  globals::g_spaceUsed = 0;
 
-std::string HostStatSampler::initStatFileWithExt() {
-  std::string archivefilename = createArchiveFileName();
-  archivefilename = chkForGFSExt(archivefilename);
-  return archivefilename;
-}
-
-HostStatSampler::~HostStatSampler() {
-  if (m_samplerStats != nullptr) {
-    delete m_samplerStats;
-    m_samplerStats = nullptr;
+  if (m_archiveFileSizeLimit > GEMFIRE_MAX_STATS_FILE_LIMIT) {
+    m_archiveFileSizeLimit = GEMFIRE_MAX_STATS_FILE_LIMIT;
   }
-}
 
-std::string HostStatSampler::createArchiveFileName() {
-  if (!m_isStatDiskSpaceEnabled) {
-    char buff[1024] = {0};
-    auto pid = boost::this_process::get_id();
-    auto len = m_archiveFileName.length();
-    auto fileExtPos = m_archiveFileName.find_last_of('.', len);
-    if (fileExtPos == std::string::npos) {
-      std::snprintf(buff, 1024, "%s-%d.gfs", m_archiveFileName.c_str(), pid);
-    } else {
-      std::string tmp;
-      tmp = m_archiveFileName.substr(0, fileExtPos);
-      std::snprintf(buff, 1024, "%s-%d.gfs", tmp.c_str(), pid);
+  if (m_isStatDiskSpaceEnabled) {
+    m_archiveDiskSpaceLimit = statDiskSpaceLimit * 1024 * 1024;
+
+    // If FileSizelimit is greater than DiskSpaceLimit & diskspaceLimit is set,
+    // then set DiskSpaceLimit to FileSizelimit
+    if (m_archiveFileSizeLimit > m_archiveDiskSpaceLimit) {
+      m_archiveFileSizeLimit = m_archiveDiskSpaceLimit;
     }
-    m_archiveFileName = buff;
-    return m_archiveFileName;
-  } else {
-    return m_archiveFileName;
+
+    // If only DiskSpaceLimit is specified and no FileSizeLimit specified, then
+    // set DiskSpaceLimit to FileSizelimit.
+    // This helps in getting the file handle that is exceeded the limit.
+    if (m_archiveFileSizeLimit == 0) {
+      m_archiveFileSizeLimit = m_archiveDiskSpaceLimit;
+    }
   }
 }
 
-std::string HostStatSampler::getArchiveFileName() { return m_archiveFileName; }
+boost::filesystem::path HostStatSampler::initStatFileWithExt() {
+  auto archiveFilename = boost::filesystem::path(createArchiveFilename());
+  archiveFilename = chkForGFSExt(archiveFilename);
+  return archiveFilename;
+}
 
-int64_t HostStatSampler::getArchiveFileSizeLimit() {
+HostStatSampler::~HostStatSampler() noexcept = default;
+
+const boost::filesystem::path& HostStatSampler::createArchiveFilename() {
+  if (!m_isStatDiskSpaceEnabled) {
+    const auto pid = std::to_string(boost::this_process::get_id());
+
+    if (!m_archiveFileName.has_extension()) {
+      m_archiveFileName += "-" + pid;
+    } else {
+      m_archiveFileName = m_archiveFileName.parent_path() /
+                          m_archiveFileName.stem() += "-" + pid;
+    }
+    m_archiveFileName += GFS_EXTENSION;
+  }
+
+  return m_archiveFileName;
+}
+
+boost::filesystem::path HostStatSampler::getArchiveFilename() {
+  return m_archiveFileName;
+}
+
+size_t HostStatSampler::getArchiveFileSizeLimit() {
   return m_archiveFileSizeLimit;
 }
 
-int64_t HostStatSampler::getArchiveDiskSpaceLimit() {
+size_t HostStatSampler::getArchiveDiskSpaceLimit() {
   return m_archiveDiskSpaceLimit;
 }
 
@@ -349,7 +338,7 @@ void HostStatSampler::changeArchive(std::string filename) {
     m_stopRequested = true;
     return;
   }
-  filename = chkForGFSExt(filename);
+  filename = chkForGFSExt(boost::filesystem::path(filename)).string();
   if (m_archiver != nullptr) {
     globals::g_previoussamplesize = m_archiver->getSampleSize();
     m_archiver->closeFile();
@@ -360,44 +349,17 @@ void HostStatSampler::changeArchive(std::string filename) {
   m_archiver.reset(new StatArchiveWriter(filename, this, m_cache));
 }
 
-std::string HostStatSampler::chkForGFSExt(std::string filename) {
-  //  boost::filesystem::path file(filename);
-  //  return file.parent_path().append(file.stem()).append(".gfs").string();
-
-  if (!m_isStatDiskSpaceEnabled) {
-    int32_t len = static_cast<int32_t>(filename.length());
-    size_t posOfExt = filename.find_last_of('.', len);
-    if (posOfExt == std::string::npos) {
-      std::string newFilename = filename + "." + "gfs";
-      return newFilename;
-    }
-    std::string extName = filename.substr(posOfExt + 1);
-    if (extName != "gfs") {
-      std::string newFilename = filename.substr(0, posOfExt) + "." + "gfs";
-      return newFilename;
-    }
+boost::filesystem::path HostStatSampler::chkForGFSExt(
+    const boost::filesystem::path& filename) const {
+  if (filename.extension() == GFS_EXTENSION) {
     return filename;
-  } else {
-    std::string filebasename = ACE::basename(filename.c_str());
-    int32_t len = static_cast<int32_t>(filebasename.length());
-    size_t fileExtPos = filebasename.find_last_of('.', len);
-    // if no extension then add .gfs extension
-    if (fileExtPos == std::string::npos) {
-      std::string newFilename = filename + "." + "gfs";
-      return newFilename;
-    } else {
-      std::string extName = filebasename.substr(fileExtPos + 1);
-      // if extension other than .gfs change it to ext + .log
-      if (extName != "gfs") {
-        std::string newFilename = filename + "." + "gfs";
-        return newFilename;
-      }
-      // .gfs Extension already provided, no need to append any extension.
-      else {
-        return filename;
-      }
-    }
   }
+
+  auto tmp = filename;
+  if (m_isStatDiskSpaceEnabled) {
+    return tmp += GFS_EXTENSION;
+  }
+  return tmp.replace_extension(GFS_EXTENSION);
 }
 
 int32_t HostStatSampler::rollArchive(std::string filename) {
@@ -437,7 +399,7 @@ int32_t HostStatSampler::rollArchive(std::string filename) {
     extName = statsbasename.substr(posOfExt + 1, baselen);
   }
 
-  int32_t i = this->rollIndex;
+  int32_t i = this->m_rollIndex;
   // 1000 is a good enough val to hold even a very int64_t filename.
   while (!gotNewFileName) {
     char newfilename[1000] = {0};
@@ -462,7 +424,7 @@ int32_t HostStatSampler::rollArchive(std::string filename) {
       if (rename(filename.c_str(), newfilestr.c_str()) < 0) {
         return -1;
       } else {
-        this->rollIndex = i + 1;
+        this->m_rollIndex = i + 1;
         return 0;
       }
     }
@@ -561,8 +523,8 @@ void HostStatSampler::putStatsInAdminRegion() {
 }
 
 void HostStatSampler::writeGfs() {
-  std::string archivefilename = createArchiveFileName();
-  changeArchive(archivefilename);
+  const auto& archiveFilename = createArchiveFilename();
+  changeArchive(archiveFilename.string());
 }
 
 void HostStatSampler::forceSample() {
@@ -590,9 +552,8 @@ void HostStatSampler::doSample(std::string& archivefilename) {
     m_archiver->sample();
 
     if (m_archiveFileSizeLimit != 0) {
-      int64_t size = m_archiver->getSampleSize();
-      int64_t bytesWritten =
-          m_archiver->bytesWritten();  // + g_previoussamplesize;
+      auto size = m_archiver->getSampleSize();
+      auto bytesWritten = m_archiver->bytesWritten();
       if (bytesWritten > (m_archiveFileSizeLimit - size)) {
         // roll the archive
         changeArchive(archivefilename);
@@ -654,9 +615,9 @@ void HostStatSampler::svc(void) {
     // createArchiveFileName instead of getArchiveFileName here because
     // for the first time the sampler needs to add the pid to the filename
     // passed to it.
-    auto archivefilename = createArchiveFileName();
+    auto archiveFilename = createArchiveFilename().string();
     if (!m_isStatDiskSpaceEnabled) {
-      changeArchive(archivefilename);
+      changeArchive(archiveFilename);
     }
     auto samplingRate = milliseconds(getSampleRate());
     bool gotexception = false;
@@ -672,12 +633,12 @@ void HostStatSampler::svc(void) {
           }
           waitTime = 0;
           gotexception = false;
-          changeArchive(archivefilename);
+          changeArchive(archiveFilename);
         }
 
         auto sampleStart = high_resolution_clock::now();
 
-        doSample(archivefilename);
+        doSample(archiveFilename);
 
         nanoseconds spentWorking = high_resolution_clock::now() - sampleStart;
         // updating the sampler statistics

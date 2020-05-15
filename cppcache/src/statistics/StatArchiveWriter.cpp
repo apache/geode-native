@@ -377,9 +377,9 @@ StatArchiveWriter::~StatArchiveWriter() {
   }
 }
 
-int64_t StatArchiveWriter::bytesWritten() { return bytesWrittenToFile; }
+size_t StatArchiveWriter::bytesWritten() { return bytesWrittenToFile; }
 
-int64_t StatArchiveWriter::getSampleSize() { return m_samplesize; }
+size_t StatArchiveWriter::getSampleSize() { return m_samplesize; }
 
 void StatArchiveWriter::sample(const steady_clock::time_point &timeStamp) {
   std::lock_guard<decltype(sampler->getStatListMutex())> guard(
