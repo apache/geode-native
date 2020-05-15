@@ -68,6 +68,26 @@ class SNITest : public ::testing::Test {
     std::system("docker-compose stop");
   }
 
+  std::string makeItSo(const char* command) {
+    std::string commandOutput;
+    std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(command, "r"), pclose);
+    std::array<char, 128> charBuff;
+    if (!pipe) {
+      throw std::runtime_error("Failed on the POPEN");
+    }
+    while (fgets(charBuff.data(), charBuff.size(), pipe.get()) != nullptr) {
+      commandOutput += charBuff.data();
+    }
+    return commandOutput;
+  }
+
+  int parseProxyPort(std::string proxyString) {
+    //15443/tcp -> 0.0.0.0:32787
+    std::size_t colonPosition = proxyString.find(":");
+    std::string portNumberString = proxyString.substr((colonPosition+1));
+    return stoi(portNumberString);
+  }
+
   // Class members declared here can be used by all tests in the test suite
   // for Ssl.
   Cluster cluster = Cluster{LocatorCount{1}, ServerCount{1}};
@@ -75,23 +95,77 @@ class SNITest : public ::testing::Test {
   boost::filesystem::path currentWorkingDirectory;
 };
 
-TEST_F(SNITest, basicTest) {
+TEST_F(SNITest, connectViaProxyTest) {
+  const auto clientTruststore =
+      (currentWorkingDirectory /
+       boost::filesystem::path(
+           "sni-test-config/geode-config/truststore.jks"));
+
   auto cache = CacheFactory()
                    .set("log-level", "DEBUG")
                    .set("ssl-enabled", "true")
-                   //.set("ssl-truststore", clientTruststore.string())
+                   .set("ssl-truststore", clientTruststore.string())
                    .create();
 
-  // cache.getPoolManager()
-  //    .createFactory()
-  //    .addLocator("localhost", cluster.getLocatorPort())
-  //    .create("pool");
+  auto portString = makeItSo("docker port haproxy");
+  auto portNumber = parseProxyPort(portString);
+  
+   cache.getPoolManager()
+      .createFactory()
+      .addLocator("localhost", portNumber)
+      .create("pool");
 
-  // auto region = cache.createRegionFactory(RegionShortcut::PROXY)
-  //                  .setPoolName("pool")
-  //                  .create("region");
+   auto region = cache.createRegionFactory(RegionShortcut::PROXY)
+                    .setPoolName("pool")
+                    .create("region");
 
-  // region->put("1", "one");
+   region->put("1", "one");
+
+  cache.close();
+}
+
+TEST_F(SNITest, connectionFailsTest) {
+  const auto clientTruststore =
+      (currentWorkingDirectory /
+       boost::filesystem::path(
+           "sni-test-config/geode-config/truststore.jks"));
+
+  auto cache = CacheFactory()
+                   .set("log-level", "DEBUG")
+                   .set("ssl-enabled", "true")
+                   .set("ssl-truststore", clientTruststore.string())
+                   .create();
+
+   cache.getPoolManager()
+      .createFactory()
+      .addLocator("localhost", 10334)
+      .create("pool");
+
+   auto region = cache.createRegionFactory(RegionShortcut::PROXY)
+                    .setPoolName("pool")
+                    .create("region");
+EXPECT_THROW(
+   region->put("1", "one"), apache::geode::client::NotConnectedException);
+
+  cache.close();
+}
+
+TEST_F(SNITest, doNothingTest) {
+  const auto clientTruststore =
+      (currentWorkingDirectory /
+       boost::filesystem::path(
+           "sni-test-config/geode-config/truststore.jks"));
+
+  auto cache = CacheFactory()
+                   .set("log-level", "DEBUG")
+                   .set("ssl-enabled", "true")
+                   .set("ssl-truststore", clientTruststore.string())
+                   .create();
+
+   cache.getPoolManager()
+      .createFactory()
+      .addLocator("localhost", 10334)
+      .create("pool");
 
   cache.close();
 }
