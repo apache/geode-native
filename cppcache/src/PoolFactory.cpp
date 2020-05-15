@@ -172,14 +172,14 @@ PoolFactory& PoolFactory::setServerGroup(std::string group) {
 }
 
 PoolFactory& PoolFactory::addLocator(const std::string& host, int port) {
-  addCheck(host, port);
+  //  addCheck(host, port);
   m_attrs->addLocator(host, port);
   m_addedServerOrLocator = true;
   return *this;
 }
 
 PoolFactory& PoolFactory::addServer(const std::string& host, int port) {
-  addCheck(host, port);
+  //  addCheck(host, port);
   m_attrs->addServer(host, port);
   m_addedServerOrLocator = true;
   return *this;
@@ -306,12 +306,12 @@ std::shared_ptr<Pool> PoolFactory::create(std::string name) {
 }
 
 PoolFactory& PoolFactory::addCheck(const std::string& host, int port) {
-  if (port <= 0) {
-    throw IllegalArgumentException("port must be greater than 0 but was " +
-                                   std::to_string(port));
-  }
-
   if (m_attrs->getSniProxyHost().empty()) {
+    if (port <= 0) {
+      throw IllegalArgumentException("port must be greater than 0 but was " +
+                                     std::to_string(port));
+    }
+
     ACE_INET_Addr addr(port, host.c_str());
 #ifdef WITH_IPV6
     // check unknown host

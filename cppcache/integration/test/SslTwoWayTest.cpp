@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+#include <iostream>
 #include <thread>
 
 #include <gtest/gtest.h>
@@ -83,7 +84,8 @@ TEST_F(SslTwoWayTest, PutGetWithValidSslConfiguration) {
       (clientSslKeysDir /
        boost::filesystem::path("client_truststore_chained_root.pem"));
   auto cache = CacheFactory()
-                   .set("log-level", "DEBUG")
+                   .set("log-level", "debug")
+                   .set("log-file", "./gemfire.log")
                    .set("ssl-enabled", "true")
                    .set("ssl-keystore", clientKeystore.string())
                    .set("ssl-keystore-password", certificatePassword)
@@ -99,8 +101,29 @@ TEST_F(SslTwoWayTest, PutGetWithValidSslConfiguration) {
                     .setPoolName("pool")
                     .create("region");
 
-  region->put("1", "one");
+  try {
+    region->put("1", "one");
+  } catch (Exception& ex) {
+    std::cout << ex.getStackTrace();
+  }
+  std::shared_ptr<apache::geode::client::Cacheable> value;
 
+  try {
+    value = region->get("1");
+  } catch (Exception& ex) {
+    std::cout << ex.getStackTrace();
+  }
+
+  EXPECT_TRUE(value);
+
+  auto string_value =
+      std::dynamic_pointer_cast<apache::geode::client::CacheableString>(value);
+
+  EXPECT_TRUE(string_value);
+
+  EXPECT_EQ(string_value->value(), "one");
+
+  std::cout << "Read " << string_value->value() << " from the server.";
   cache.close();
 }
 
@@ -185,7 +208,7 @@ TEST_F(SslTwoWayTest, PutWithCorruptKeystore) {
        boost::filesystem::path("client_truststore_chained_root.pem"));
 
   auto cache = CacheFactory()
-                   .set("log-level", "DEBUG")
+                   .set("log-level", "none")
                    .set("ssl-enabled", "true")
                    .set("ssl-keystore", clientCorruptKeystore.string())
                    .set("ssl-keystore-password", certificatePassword)
