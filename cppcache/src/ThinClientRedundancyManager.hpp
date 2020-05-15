@@ -118,8 +118,9 @@ class ThinClientRedundancyManager {
   void moveEndpointToLast(std::vector<TcrEndpoint*>& epVector,
                           TcrEndpoint* targetEp);
 
-  synchronized_map<std::unordered_map<std::string, TcrEndpoint*>,
-                   std::recursive_mutex>&
+  synchronized_map<
+      std::unordered_map<std::string, std::shared_ptr<TcrEndpoint>>,
+      std::recursive_mutex>&
   updateAndSelectEndpoints();
 
   void getAllEndpoints(std::vector<TcrEndpoint*>& endpoints);

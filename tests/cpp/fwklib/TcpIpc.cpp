@@ -106,21 +106,6 @@ void TcpIpc::init(int32_t sockBufferSize) {
   ACE_OS::signal(SIGPIPE, SIG_IGN);  // Ignore broken pipe
 }
 
-bool TcpIpc::listen(int32_t waitSecs) {
-  if (m_ipaddr.empty()) {
-    FWKSEVERE("Listen failed, address not set.");
-    return false;
-  }
-  ACE_INET_Addr addr(m_ipaddr.c_str());
-  ACE_SOCK_Acceptor listener(addr, 1);
-
-  if (listener.accept(*m_io, nullptr, new ACE_Time_Value(waitSecs)) != 0) {
-    FWKSEVERE("Accept failed with errno: " << errno);
-    return false;
-  }
-  return true;
-}
-
 bool TcpIpc::accept(ACE_SOCK_Acceptor *acceptor, int32_t waitSecs) {
   if (acceptor->accept(*m_io, nullptr, new ACE_Time_Value(waitSecs)) != 0) {
     FWKSEVERE("Accept failed with errno: " << errno);

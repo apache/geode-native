@@ -312,8 +312,9 @@ void ThinClientPoolHADM::sendNotConMesToAllregions() {
   }
 }
 
-TcrEndpoint* ThinClientPoolHADM::createEP(const char* endpointName) {
-  return new TcrPoolEndPoint(
+std::shared_ptr<TcrEndpoint> ThinClientPoolHADM::createEP(
+    const char* endpointName) {
+  return std::make_shared<TcrPoolEndPoint>(
       endpointName, m_connManager.getCacheImpl(), m_connManager.m_failoverSema,
       m_connManager.m_cleanupSema, m_redundancySema, this);
 }
