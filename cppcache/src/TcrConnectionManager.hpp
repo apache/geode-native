@@ -50,6 +50,10 @@ class ThinClientRegion;
  */
 class TcrConnectionManager {
  public:
+  using endpoint_map_type = synchronized_map<
+      std::unordered_map<std::string, std::shared_ptr<TcrEndpoint>>,
+      std::recursive_mutex>;
+
   explicit TcrConnectionManager(CacheImpl* cache);
   ~TcrConnectionManager();
   void init(bool isPool = false);
@@ -74,11 +78,7 @@ class TcrConnectionManager {
   void setClientCrashTEST() { TEST_DURABLE_CLIENT_CRASH = true; }
   volatile static bool TEST_DURABLE_CLIENT_CRASH;
 
-  inline synchronized_map<std::unordered_map<std::string, TcrEndpoint*>,
-                          std::recursive_mutex>&
-  getGlobalEndpoints() {
-    return m_endpoints;
-  }
+  inline endpoint_map_type& getGlobalEndpoints() { return m_endpoints; }
 
   void getAllEndpoints(std::vector<TcrEndpoint*>& endpoints);
   int getNumEndPoints();
@@ -95,10 +95,6 @@ class TcrConnectionManager {
   void processMarker();
 
   bool getEndpointStatus(const std::string& endpoint);
-
-  void addPoolEndpoints(TcrEndpoint* endpoint) {
-    m_poolEndpointList.push_back(endpoint);
-  }
 
   bool isDurable() { return m_isDurable; }
   bool haEnabled() { return m_redundancyManager->m_HAenabled; }
@@ -141,10 +137,7 @@ class TcrConnectionManager {
  private:
   CacheImpl* m_cache;
   volatile bool m_initGuard;
-  synchronized_map<std::unordered_map<std::string, TcrEndpoint*>,
-                   std::recursive_mutex>
-      m_endpoints;
-  std::list<TcrEndpoint*> m_poolEndpointList;
+  endpoint_map_type m_endpoints;
 
   // key is hostname:port
   std::list<ThinClientBaseDM*> m_distMngrs;

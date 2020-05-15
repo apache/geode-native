@@ -89,7 +89,7 @@ class APACHE_GEODE_EXPORT ServerLocation
   }
 
   void printInfo() {
-    LOGDEBUG(" Got Host %s, and port %d", getServerName().c_str(), m_port);
+    LOGDEBUG(" Got Host \"%s\", and port %d", getServerName().c_str(), m_port);
   }
 
   bool operator<(const ServerLocation rhs) const {
