@@ -72,7 +72,6 @@ TcrEndpoint::TcrEndpoint(const std::string& name, CacheImpl* cacheImpl,
       m_isActiveEndpoint(false),
       m_serverQueueStatus(NON_REDUNDANT_SERVER),
       m_queueSize(0),
-      m_noOfConnRefs(0),
       m_distributedMemId(0),
       m_isServerQueueStatusSet(false) {
   /*
@@ -144,9 +143,8 @@ GfErrType TcrEndpoint::createNewConnectionWL(
     if (locked) {
       try {
         LOGFINE("TcrEndpoint::createNewConnectionWL got lock");
-        newConn =
-            new TcrConnection(m_cacheImpl->tcrConnectionManager(), m_connected);
-        newConn->initTcrConnection(this, m_name.c_str(), m_ports,
+        newConn = new TcrConnection(m_cacheImpl->tcrConnectionManager());
+        newConn->initTcrConnection(shared_from_this(), m_ports,
                                    isClientNotification, isSecondary,
                                    connectTimeout);
 
@@ -193,10 +191,9 @@ GfErrType TcrEndpoint::createNewConnection(
     try {
       if (newConn == nullptr) {
         if (!needtoTakeConnectLock() || !appThreadRequest) {
-          newConn = new TcrConnection(m_cacheImpl->tcrConnectionManager(),
-                                      m_connected);
+          newConn = new TcrConnection(m_cacheImpl->tcrConnectionManager());
           bool authenticate = newConn->initTcrConnection(
-              this, m_name.c_str(), m_ports, isClientNotification, isSecondary,
+              shared_from_this(), m_ports, isClientNotification, isSecondary,
               connectTimeout);
           if (authenticate) {
             authenticateEndpoint(newConn);
@@ -499,7 +496,7 @@ void TcrEndpoint::unregisterDM(bool clientNotification,
 
 void TcrEndpoint::pingServer(ThinClientPoolDM* poolDM) {
   LOGDEBUG("Sending ping message to endpoint %s", m_name.c_str());
-  if (!m_connected || m_noOfConnRefs == 0) {
+  if (!m_connected) {
     LOGFINER("Skipping ping task for disconnected endpoint %s", m_name.c_str());
     return;
   }
@@ -806,7 +803,6 @@ GfErrType TcrEndpoint::sendRequestConn(const TcrMessage& request,
       }
     }
     size_t dataLen;
-    LOGDEBUG("sendRequestConn: calling sendRequest");
     auto data = conn->sendRequest(request.getMsgData(), request.getMsgLength(),
                                   &dataLen, request.getTimeout(),
                                   reply.getTimeout(), request.getMessageType());
@@ -1172,15 +1168,23 @@ void TcrEndpoint::triggerRedundancyThread() {
 void TcrEndpoint::closeConnection(TcrConnection*& conn) {
   conn->close();
   m_ports.erase(conn->getPort());
-  _GEODE_SAFE_DELETE(conn);
+  try {
+    _GEODE_SAFE_DELETE(conn);
+  } catch (...) {
+  }
 }
 
 void TcrEndpoint::closeConnections() {
   m_opConnections.close();
   m_ports.clear();
-  m_maxConnections = m_cacheImpl->getDistributedSystem()
-                         .getSystemProperties()
-                         .connectionPoolSize();
+
+  m_cacheImpl->doIfDestroyNotPending([&]() {
+    if (!m_cacheImpl->isClosed()) {
+      m_maxConnections = m_cacheImpl->getDistributedSystem()
+                             .getSystemProperties()
+                             .connectionPoolSize();
+    }
+  });
 }
 
 /*

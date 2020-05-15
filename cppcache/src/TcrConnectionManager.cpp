@@ -153,15 +153,8 @@ TcrConnectionManager::~TcrConnectionManager() {
     //  cleanup of endpoints, when regions are destroyed via notification
     {
       auto &&guard = m_endpoints.make_lock();
-      auto numEndPoints = m_endpoints.size();
-      if (numEndPoints > 0) {
+      if (m_endpoints.size() > 0) {
         LOGFINE("TCCM: endpoints remain in destructor");
-      }
-      for (const auto &iter : m_endpoints) {
-        auto ep = iter.second;
-        LOGFINE("TCCM: forcing endpoint delete for %s in destructor",
-                ep->name().c_str());
-        _GEODE_SAFE_DELETE(ep);
       }
     }
   }
@@ -189,7 +182,7 @@ void TcrConnectionManager::connect(
             "TCCM 2: incremented region reference count for endpoint %s "
             "to %d",
             ep->name().c_str(), ep->numRegions());
-        endpoints.push_back(ep);
+        endpoints.push_back(ep.get());
       }
     } else {
       for (const auto &iter : endpointStrs) {
@@ -216,14 +209,15 @@ void TcrConnectionManager::connect(
 
 TcrEndpoint *TcrConnectionManager::addRefToTcrEndpoint(std::string endpointName,
                                                        ThinClientBaseDM *dm) {
-  TcrEndpoint *ep = nullptr;
+  std::shared_ptr<TcrEndpoint> ep;
 
   auto &&guard = m_endpoints.make_lock();
   const auto &find = m_endpoints.find(endpointName);
   if (find == m_endpoints.end()) {
     // this endpoint does not exist
-    ep = new TcrEndpoint(endpointName, m_cache, m_failoverSema, m_cleanupSema,
-                         m_redundancySema, dm, false);
+    ep = std::make_shared<TcrEndpoint>(endpointName, m_cache, m_failoverSema,
+                                       m_cleanupSema, m_redundancySema, dm,
+                                       false);
     m_endpoints.emplace(endpointName, ep);
   } else {
     ep = find->second;
@@ -233,7 +227,7 @@ TcrEndpoint *TcrConnectionManager::addRefToTcrEndpoint(std::string endpointName,
   LOGFINER("TCCM: incremented region reference count for endpoint %s to %d",
            ep->name().c_str(), ep->numRegions());
 
-  return ep;
+  return ep.get();
 }
 
 void TcrConnectionManager::disconnect(ThinClientBaseDM *distMng,
@@ -325,7 +319,7 @@ void TcrConnectionManager::getAllEndpoints(
     std::vector<TcrEndpoint *> &endpoints) {
   auto &&guard = m_endpoints.make_lock();
   for (const auto &currItr : m_endpoints) {
-    endpoints.push_back(currItr.second);
+    endpoints.push_back(currItr.second.get());
   }
 }
 
@@ -394,7 +388,7 @@ void TcrConnectionManager::removeHAEndpoints() {
   auto &&guard = m_endpoints.make_lock();
   auto currItr = m_endpoints.begin();
   while (currItr != m_endpoints.end()) {
-    if (removeRefToEndpoint(currItr->second)) {
+    if (removeRefToEndpoint(currItr->second.get())) {
       currItr = m_endpoints.begin();
     } else {
       currItr++;

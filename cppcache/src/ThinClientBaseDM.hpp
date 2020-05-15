@@ -37,6 +37,7 @@ namespace client {
 class TcrMessage;
 class ThinClientRegion;
 class TcrEndpoint;
+class TcrConnection;
 class TcrConnectionManager;
 class TcrMessageReply;
 class TcrChunkedContext;

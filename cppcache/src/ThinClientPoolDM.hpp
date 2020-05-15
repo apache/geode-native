@@ -102,9 +102,9 @@ class ThinClientPoolDM
                             TcrEndpoint* currentEndpoint) override;
   void addConnection(TcrConnection* conn);
 
-  TcrEndpoint* addEP(ServerLocation& serverLoc);
+  std::shared_ptr<TcrEndpoint> addEP(ServerLocation& serverLoc);
 
-  TcrEndpoint* addEP(const std::string& endpointName);
+  std::shared_ptr<TcrEndpoint> addEP(const std::string& endpointName);
   virtual void pingServer(std::atomic<bool>& isRunning);
   virtual void updateLocatorList(std::atomic<bool>& isRunning);
   virtual void cliCallback(std::atomic<bool>& isRunning);
@@ -186,8 +186,9 @@ class ThinClientPoolDM
  protected:
   ThinClientStickyManager* m_manager;
   std::vector<std::string> m_canonicalHosts;
-  synchronized_map<std::unordered_map<std::string, TcrEndpoint*>,
-                   std::recursive_mutex>
+  synchronized_map<
+      std::unordered_map<std::string, std::shared_ptr<TcrEndpoint>>,
+      std::recursive_mutex>
       m_endpoints;
   std::recursive_mutex m_endpointsLock;
   std::recursive_mutex m_endpointSelectionLock;
@@ -245,7 +246,7 @@ class ThinClientPoolDM
                                 bool& isServerException);
 
   // get endpoint using the endpoint string
-  TcrEndpoint* getEndpoint(const std::string& epNameStr);
+  std::shared_ptr<TcrEndpoint> getEndpoint(const std::string& epNameStr);
 
   bool m_isSecurityOn;
   bool m_isMultiUserMode;
@@ -274,7 +275,7 @@ class ThinClientPoolDM
                              const TcrConnection* currentServer = nullptr);
   // TODO global - m_memId was volatile
   std::unique_ptr<ClientProxyMembershipID> m_memId;
-  virtual TcrEndpoint* createEP(const char* endpointName);
+  virtual std::shared_ptr<TcrEndpoint> createEP(const char* endpointName);
   virtual void removeCallbackConnection(TcrEndpoint*) {}
 
   bool excludeServer(std::string, std::set<ServerLocation>&);
