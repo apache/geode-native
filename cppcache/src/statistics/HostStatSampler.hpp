@@ -58,8 +58,8 @@ class StatisticsManager;
  */
 class HostStatSampler {
  public:
-  HostStatSampler(std::string filePath,
-                  std::chrono::milliseconds sampleIntervalMs,
+  HostStatSampler(boost::filesystem::path filePath,
+                  std::chrono::milliseconds sampleRate,
                   StatisticsManager* statMngr, CacheImpl* cache,
                   size_t statFileLimit = 0, size_t statDiskSpaceLimit = 0);
 
@@ -76,42 +76,24 @@ class HostStatSampler {
   /**
    * Returns the archiveFileName
    */
-  boost::filesystem::path getArchiveFilename();
+  const boost::filesystem::path& getArchiveFilename() const;
   /**
    * Gets the archive size limit in bytes.
    */
-  size_t getArchiveFileSizeLimit();
+  size_t getArchiveFileSizeLimit() const;
   /**
    * Gets the archive disk space limit in bytes.
    */
-  size_t getArchiveDiskSpaceLimit();
+  size_t getArchiveDiskSpaceLimit() const;
   /**
    * Gets the sample rate in milliseconds
    */
-  std::chrono::milliseconds getSampleRate();
-  /**
-   * Returns true if sampling is enabled.
-   */
-  bool isSamplingEnabled();
+  std::chrono::milliseconds getSampleRate() const;
   /**
    * Called when this sampler has spent some time working and wants
    * it to be accounted for.
    */
   void accountForTimeSpentWorking(int64_t nanosSpentWorking);
-
-  /**
-   * Returns true if the specified statistic resource still exists.
-   */
-  bool statisticsExists(int64_t id);
-  /**
-   * Returns the statistics resource instance given its id.
-   */
-  Statistics* findStatistics(int64_t id);
-
-  /**
-   * Returns the number of statistics object the manager has.
-   */
-  int32_t getStatisticsModCount();
   /**
    * Gets list mutex for synchronization
    */
@@ -136,29 +118,27 @@ class HostStatSampler {
   /**
    * Returns the path to this sampler's system directory; if it has one.
    */
-  std::string getSystemDirectoryPath();
+  const std::string& getSystemDirectoryPath();
   /**
    * Returns a description of the product that the stats are on
    */
-  std::string getProductDescription();
+  const std::string& getProductDescription() const;
   /**
    * If the size of the archive file exceeds the size limit then the sampler
    * starts writing in a new file. The path of the new file need to be
    * obtained from the manager.
    */
-  void changeArchive(std::string);
-
-  void checkListeners();
+  void changeArchive(boost::filesystem::path);
 
   void writeGfs();
 
   void forceSample();
 
-  void doSample(std::string& archivefilename);
+  void doSample(const boost::filesystem::path& archiveFilename);
+
   /**
    * If the total size of all the archive files exceeds the archive disk space
-   * limit then the older
-   * files are deleted.
+   * limit then the older files are deleted.
    */
   void checkDiskLimit();
 
@@ -178,7 +158,7 @@ class HostStatSampler {
   /**
    * Method to know whether the sampling thread is running or not.
    */
-  bool isRunning();
+  bool isRunning() const;
 
  private:
   std::recursive_mutex m_samplingLock;
@@ -195,6 +175,7 @@ class HostStatSampler {
   boost::filesystem::path m_archiveFileName;
   size_t m_archiveFileSizeLimit;
   size_t m_archiveDiskSpaceLimit;
+  size_t m_spaceUsed = 0;
   std::chrono::milliseconds m_sampleRate;
   StatisticsManager* m_statMngr;
   CacheImpl* m_cache;
@@ -205,20 +186,25 @@ class HostStatSampler {
   /**
    * For testing only.
    */
-  explicit HostStatSampler(std::string filePath, size_t statFileLimit,
-                           size_t statDiskSpaceLimit);
+  explicit HostStatSampler(boost::filesystem::path filePath,
+                           std::chrono::milliseconds sampleRate,
+                           size_t statFileLimit, size_t statDiskSpaceLimit);
 
   boost::filesystem::path initStatFileWithExt();
+
   /**
    * The archiveFile, after it exceeds archiveFileSizeLimit should be rolled
    * to a new file name. This integer rollIndex will be used to format the
    * file name into which the current archiveFile will be renamed.
    */
   int32_t m_rollIndex;
+
   /**
-   * This function rolls the existing archive file
+   * This function rolls the existing archive file.
+   * Create new file only if current file has some data, otherwise reuse it.
    */
-  int32_t rollArchive(std::string filename);
+  void rollArchive(const boost::filesystem::path& filename);
+
   /**
    * This function check whether the filename has gfs ext or not
    * If it is not there it adds and then returns the new filename.
@@ -227,25 +213,21 @@ class HostStatSampler {
       const boost::filesystem::path& filename) const;
 
   /**
-   * Initialize any special sampler stats. Like ProcessStats, HostStats
-   */
-  void initSpecialStats();
-  /**
-   * Collect samples of the special tests.
-   */
-  void sampleSpecialStats();
-  /**
-   * Closes down anything initialied by initSpecialStats.
-   */
-  void closeSpecialStats();
-  /**
    * Update New Stats in Admin Region.
    */
   void putStatsInAdminRegion();
 
+  void initStatDiskSpaceEnabled();
+
+  /**
+   * For testing only.
+   */
+  static const boost::filesystem::path& getStatFileWithExt();
+
   static const char* NC_HSS_Thread;
 
   friend TestableHostStatSampler;
+  void initRollIndex();
 };
 
 }  // namespace statistics

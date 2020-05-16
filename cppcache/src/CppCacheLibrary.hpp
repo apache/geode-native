@@ -31,17 +31,28 @@ namespace client {
 // initialize GEODE runtime if it has not already been initialized.
 class APACHE_GEODE_EXPORT CppCacheLibrary {
  public:
-  // Call to this to trigger initialization.
+  /**
+   * Call to this to trigger initialization.
+   */
   static void initLib(void);
 
-  // Call to this to trigger cleanup.  initLib and closeLib calls must be in
-  // pairs.
+  /**
+   * Call to this to trigger cleanup.  initLib and closeLib calls must be in
+   * pairs.
+   */
   static void closeLib(void);
 
-  // Returns the directory where the library/DLL resides
-  static std::string getProductLibDir();
+  /**
+   * Returns the directory where the library/DLL resides
+   */
+  static const std::string& getProductLibDir();
 
-  static std::string getProductDir();
+  static const std::string& getProductDir();
+
+ private:
+  static std::string initProductLibDir();
+
+  static std::string initProductDir();
 };
 
 }  // namespace client
