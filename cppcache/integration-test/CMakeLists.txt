@@ -85,6 +85,14 @@ endforeach()
 
 set (PORT 20000)
 
+add_custom_target(cppcache-integration-tests)
+set_target_properties(cppcache-integration-tests PROPERTIES
+  EXCLUDE_FROM_ALL TRUE
+  EXCLUDE_FROM_DEFAULT_BUILD TRUE
+  FOLDER cpp/test/integration
+)
+add_dependencies(integration-tests cppcache-integration-tests)
+
 file(GLOB SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "test*.cpp")
 foreach(FILE ${SOURCES})
   string(REGEX REPLACE "\\.cpp" "" TEST ${FILE})
@@ -152,6 +160,7 @@ foreach(FILE ${SOURCES})
   )
 
   set_tests_properties(${TEST} PROPERTIES LABELS STABLE)
+  add_dependencies(cppcache-integration-tests ${TEST})
 endforeach()
 
 configure_file(CTestCustom.cmake.in CTestCustom.cmake)
@@ -250,22 +259,14 @@ set_tests_properties(testFwPerf
    LABELS OMITTED
 )
 
-add_custom_target(run-stable-cppcache-integration-tests
-  COMMAND ctest -C $<CONFIGURATION> -L STABLE
+add_custom_target(run-cppcache-integration-tests
+  COMMAND ctest -C $<CONFIG>
   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-  USES_TERMINAL)
-add_dependencies(run-integration-tests run-stable-cppcache-integration-tests)
-set_target_properties(run-stable-cppcache-integration-tests PROPERTIES
-    EXCLUDE_FROM_ALL TRUE
-    EXCLUDE_FROM_DEFAULT_BUILD TRUE
-	FOLDER cpp/test/integration
+  USES_TERMINAL
 )
-
-add_custom_target(run-quick-cppcache-integration-tests
-  COMMAND ctest -C $<CONFIGURATION> -L QUICK -j 4
-  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-  USES_TERMINAL)
-set_target_properties(run-quick-cppcache-integration-tests PROPERTIES
+add_dependencies(run-cppcache-integration-tests cppcache-integration-tests)
+add_dependencies(run-integration-tests run-cppcache-integration-tests)
+set_target_properties(run-cppcache-integration-tests PROPERTIES
     EXCLUDE_FROM_ALL TRUE
     EXCLUDE_FROM_DEFAULT_BUILD TRUE
 	FOLDER cpp/test/integration
