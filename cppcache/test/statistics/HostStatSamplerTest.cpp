@@ -64,10 +64,6 @@ class TestableHostStatSampler : public HostStatSampler {
     HostStatSampler::initStatDiskSpaceEnabled();
   }
 
-  static const boost::filesystem::path& getStatFileWithExt() {
-    return HostStatSampler::getStatFileWithExt();
-  }
-
   void initRollIndex() { HostStatSampler::initRollIndex(); }
 
   int32_t getRollIndex() { return HostStatSampler::m_rollIndex; }
@@ -98,7 +94,7 @@ TEST(HostStatSamplerTest, constructWithDiskLimitLessThanFileLimit) {
   const TestableHostStatSampler hostStatSampler(
       "", std::chrono::milliseconds::zero(), 5, 4);
 
-  EXPECT_THAT(hostStatSampler.getArchiveDiskSpaceLimit(), Eq(4 * 1024 * 1024));
+  EXPECT_THAT(hostStatSampler.getArchiveDiskSpaceLimit(), Eq(4 * mebibyte));
 }
 
 TEST(HostStatSamplerTest, chkForGFSExtWithoutDiskLimit) {
@@ -367,7 +363,7 @@ TEST(HostStatSamplerTest, initStatDiskSpaceEnabledWithZeroDiskLimit) {
       "stats.gfs", std::chrono::milliseconds::zero(), 0, 0);
   hostStatSampler.initStatDiskSpaceEnabled();
 
-  EXPECT_THAT(TestableHostStatSampler::getStatFileWithExt(), IsEmpty());
+  EXPECT_THAT(hostStatSampler.getArchiveFilename(), Eq("stats.gfs"));
 }
 
 TEST(HostStatSamplerTest,
@@ -376,7 +372,27 @@ TEST(HostStatSamplerTest,
       "stats.gfs", std::chrono::milliseconds::zero(), 0, 1);
   hostStatSampler.initStatDiskSpaceEnabled();
 
-  EXPECT_THAT(TestableHostStatSampler::getStatFileWithExt(), Eq("stats.gfs"));
+  EXPECT_THAT(hostStatSampler.getArchiveFilename(), Eq("stats.gfs"));
+}
+
+TEST(
+    HostStatSamplerTest,
+    initStatDiskSpaceEnabledWithNonzeroFileLimitNonzeronDiskLimitAndExistingFile) {
+  boost::filesystem::path file{"stats.gfs"};
+  boost::filesystem::remove(file);
+  { boost::filesystem::ofstream ofs{file}; }
+  boost::filesystem::path file0{"stats-0.gfs"};
+  boost::filesystem::remove(file0);
+
+  TestableHostStatSampler hostStatSampler(
+      "stats.gfs", std::chrono::milliseconds::zero(), 1, 1);
+
+  ASSERT_THAT(boost::filesystem::exists(file), IsTrue());
+
+  hostStatSampler.initStatDiskSpaceEnabled();
+
+  EXPECT_THAT(boost::filesystem::exists(file), IsFalse());
+  EXPECT_THAT(boost::filesystem::exists(file0), IsTrue());
 }
 
 TEST(HostStatSamplerTest, initRollIndexNoFiles) {
@@ -425,6 +441,10 @@ TEST(HostStatSamplerTest, checkDiskLimitUnderLimit) {
     ofs0 << "original content";
   }
 
+  EXPECT_THAT(boost::filesystem::exists(file), IsTrue());
+  EXPECT_THAT(boost::filesystem::exists(file0), IsTrue());
+  EXPECT_THAT(boost::filesystem::file_size(file0), Eq(16));
+
   hostStatSampler.checkDiskLimit();
 
   EXPECT_THAT(hostStatSampler.getSpaceUsed(), Eq(16));
@@ -450,16 +470,23 @@ TEST(HostStatSamplerTest, checkDiskLimitOverLimit) {
     ofs << "more content";
     boost::filesystem::ofstream ofs0{file0};
     ofs0 << std::string(1 * mebibyte, 'a');
-    boost::filesystem::ofstream ofs1{file0};
+    boost::filesystem::ofstream ofs1{file1};
     ofs1 << std::string(1, 'a');
   }
 
-  hostStatSampler.checkDiskLimit();
-
-  EXPECT_THAT(hostStatSampler.getSpaceUsed(), Eq(1 * mebibyte));
   EXPECT_THAT(boost::filesystem::exists(file), IsTrue());
   EXPECT_THAT(boost::filesystem::exists(file0), IsTrue());
-  EXPECT_THAT(boost::filesystem::exists(file1), IsFalse());
+  EXPECT_THAT(boost::filesystem::file_size(file0), Eq(1 * mebibyte));
+  EXPECT_THAT(boost::filesystem::exists(file1), IsTrue());
+  EXPECT_THAT(boost::filesystem::file_size(file1), Eq(1));
+
+  hostStatSampler.checkDiskLimit();
+
+  EXPECT_THAT(hostStatSampler.getSpaceUsed(), Eq(1));
+  EXPECT_THAT(boost::filesystem::exists(file), IsTrue());
+  EXPECT_THAT(boost::filesystem::exists(file0), IsFalse());
+  EXPECT_THAT(boost::filesystem::exists(file1), IsTrue());
+  //  EXPECT_THAT(boost::filesystem::file_size(file1), Eq(1));
 
   boost::filesystem::remove(file);
   boost::filesystem::remove(file0);

@@ -24,8 +24,6 @@
 #include <utility>
 #include <vector>
 
-#include <ace/ACE.h>
-#include <ace/Dirent_Selector.h>
 #include <ace/INET_Addr.h>
 #include <ace/OS_NS_sys_stat.h>
 #include <ace/OS_NS_sys_utsname.h>
@@ -37,6 +35,7 @@
 #include <geode/ExceptionTypes.hpp>
 #include <geode/internal/geode_globals.hpp>
 
+#include "../AdminRegion.hpp"
 #include "../CacheImpl.hpp"
 #include "../ClientHealthStats.hpp"
 #include "../ClientProxyMembershipID.hpp"
@@ -46,79 +45,6 @@
 #include "../util/Log.hpp"
 #include "GeodeStatisticsFactory.hpp"
 #include "StatArchiveWriter.hpp"
-
-namespace apache {
-namespace geode {
-namespace statistics {
-namespace globals {
-
-boost::filesystem::path g_statFileWithExt;
-
-}  // namespace globals
-}  // namespace statistics
-}  // namespace geode
-}  // namespace apache
-
-namespace {
-
-// extern "C" {
-
-int selector(const dirent* d) {
-  std::string inputname(d->d_name);
-  std::string filebasename = ACE::basename(
-      apache::geode::statistics::globals::g_statFileWithExt.c_str());
-  size_t actualHyphenPos = filebasename.find_last_of('.');
-  if (strcmp(filebasename.c_str(), d->d_name) == 0) return 1;
-  size_t fileExtPos = inputname.find_last_of('.');
-  std::string extName = inputname.substr(fileExtPos + 1, inputname.length());
-  if (strcmp(extName.c_str(), "gfs") != 0) {
-    return 0;
-  }
-  if (fileExtPos != std::string::npos) {
-    std::string tempname = inputname.substr(0, fileExtPos);
-    size_t fileHyphenPos = tempname.find_last_of('-');
-    if (fileHyphenPos != std::string::npos) {
-      std::string buff1 = tempname.substr(0, fileHyphenPos);
-      if (filebasename.find(buff1) == std::string::npos) {
-        return 0;
-      }
-      if (fileHyphenPos != actualHyphenPos) {
-        return 0;
-      }
-      std::string buff = tempname.substr(fileHyphenPos + 1,
-                                         tempname.length() - fileHyphenPos - 1);
-      for (std::string::iterator iter = buff.begin(); iter != buff.end();
-           ++iter) {
-        if (*iter < '0' || *iter > '9') {
-          return 0;
-        }
-      }
-      return 1;
-    } else {
-      return 0;
-    }
-  } else {
-    return 0;
-  }
-}
-
-int comparator(const dirent** d1, const dirent** d2) {
-  if (strlen((*d1)->d_name) < strlen((*d2)->d_name)) {
-    return -1;
-  } else if (strlen((*d1)->d_name) > strlen((*d2)->d_name)) {
-    return 1;
-  }
-  int diff = std::strcmp((*d1)->d_name, (*d2)->d_name);
-  if (diff < 0) {
-    return -1;
-  } else if (diff > 0) {
-    return 1;
-  } else {
-    return 0;
-  }
-}
-
-}  // namespace
 
 namespace apache {
 namespace geode {
@@ -182,16 +108,15 @@ HostStatSampler::HostStatSampler(boost::filesystem::path filePath,
 
 void HostStatSampler::initStatDiskSpaceEnabled() {
   if (m_isStatDiskSpaceEnabled) {
-    // TODO does this need to be global?
-    globals::g_statFileWithExt = initStatFileWithExt();
+    initStatFileWithExt();
 
     initRollIndex();
 
-    FILE* existingFile = fopen(globals::g_statFileWithExt.c_str(), "r");
+    FILE* existingFile = fopen(m_archiveFileName.c_str(), "r");
     if (existingFile != nullptr && m_archiveFileSizeLimit > 0) {
       fclose(existingFile);
       existingFile = nullptr;
-      changeArchive(globals::g_statFileWithExt);
+      changeArchive(m_archiveFileName);
     } else {
       writeGfs();
     }
@@ -476,39 +401,55 @@ void HostStatSampler::doSample(const boost::filesystem::path& archiveFilename) {
 }
 
 void HostStatSampler::checkDiskLimit() {
-  // TODO remove
-  globals::g_statFileWithExt = initStatFileWithExt();
-
-  std::vector<std::pair<std::string, size_t> > fileInfo;
   m_spaceUsed = 0;
-  char fullpath[512] = {0};
-  std::string dirname = ACE::dirname(m_archiveFileName.c_str());
-  ACE_stat statBuf = {};
-  ACE_Dirent_Selector sds;
-  int status = sds.open(dirname.c_str(), selector, comparator);
-  if (status != -1) {
-    for (int i = 1; i < sds.length(); i++) {
-      std::snprintf(fullpath, 512, "%s%c%s", dirname.c_str(),
-                    ACE_DIRECTORY_SEPARATOR_CHAR, sds[i]->d_name);
-      ACE_OS::stat(fullpath, &statBuf);
-      fileInfo.emplace_back(fullpath, statBuf.st_size);
-      m_spaceUsed += fileInfo[i - 1].second;
-    }
-    if (m_archiver) {
-      m_spaceUsed += m_archiver->bytesWritten();
-    }
-    sds.close();
+
+  const std::regex statsFilter(m_archiveFileName.stem().string() +
+                               R"(-([\d]+))" +
+                               m_archiveFileName.extension().string());
+
+  auto dir = m_archiveFileName.parent_path();
+  if (dir.empty()) {
+    dir = ".";
   }
-  int fileIndex = 0;
-  while ((m_spaceUsed > m_archiveDiskSpaceLimit)) {
-    auto fileSize = fileInfo[fileIndex].second;
-    if (ACE_OS::unlink(fileInfo[fileIndex].first.c_str()) == 0) {
-      m_spaceUsed -= fileSize;
-    } else {
-      LOGWARN("%s\t%s\n", "Could not delete",
-              fileInfo[fileIndex].first.c_str());
+
+  std::vector<std::pair<boost::filesystem::path, size_t>> fileSizes;
+
+  for (auto& entry :
+       boost::make_iterator_range(boost::filesystem::directory_iterator(dir),
+                                  {}) |
+           boost::adaptors::filtered(
+               static_cast<bool (*)(const boost::filesystem::path&)>(
+                   &boost::filesystem::is_regular_file)) |
+           boost::adaptors::filtered([&](const boost::filesystem::path& path) {
+             std::smatch match;
+             return std::regex_match(path.filename().string(), match,
+                                     statsFilter);
+           })
+
+  ) {
+    const auto& path = entry.path();
+    const auto size = boost::filesystem::file_size(path);
+    m_spaceUsed += size;
+    fileSizes.emplace_back(path, size);
+  }
+
+  if (m_archiver) {
+    m_spaceUsed += m_archiver->bytesWritten();
+  }
+
+  for (const auto& i : fileSizes) {
+    if (m_spaceUsed <= m_archiveDiskSpaceLimit) {
+      break;
     }
-    fileIndex++;
+
+    const auto& file = i.first;
+    auto size = i.second;
+    try {
+      boost::filesystem::remove(file);
+      m_spaceUsed -= size;
+    } catch (boost::filesystem::filesystem_error& e) {
+      LOGWARN("Could not delete " + file.string() + ": " + e.what());
+    }
   }
 }
 
@@ -581,10 +522,6 @@ void HostStatSampler::svc(void) {
        closeSpecialStats();
    }*/
   m_running = false;
-}
-
-const boost::filesystem::path& HostStatSampler::getStatFileWithExt() {
-  return globals::g_statFileWithExt;
 }
 
 }  // namespace statistics

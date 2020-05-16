@@ -30,7 +30,6 @@
 #include <geode/TypeRegistry.hpp>
 #include <geode/internal/geode_globals.hpp>
 
-#include "AdminRegion.hpp"
 #include "CachePerfStats.hpp"
 #include "ClientProxyMembershipIDFactory.hpp"
 #include "DistributedSystem.hpp"

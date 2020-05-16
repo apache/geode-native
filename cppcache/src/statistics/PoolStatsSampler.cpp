@@ -19,6 +19,7 @@
 
 #include <string>
 
+#include "../AdminRegion.hpp"
 #include "../CacheImpl.hpp"
 #include "../ClientHealthStats.hpp"
 #include "../ReadWriteLock.hpp"

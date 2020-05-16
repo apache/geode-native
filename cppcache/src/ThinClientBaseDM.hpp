@@ -25,6 +25,7 @@
 
 #include <geode/internal/geode_globals.hpp>
 
+#include "ErrType.hpp"
 #include "Queue.hpp"
 #include "Task.hpp"
 #include "util/Log.hpp"

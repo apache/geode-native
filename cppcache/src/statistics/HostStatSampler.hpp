@@ -219,11 +219,6 @@ class HostStatSampler {
 
   void initStatDiskSpaceEnabled();
 
-  /**
-   * For testing only.
-   */
-  static const boost::filesystem::path& getStatFileWithExt();
-
   static const char* NC_HSS_Thread;
 
   friend TestableHostStatSampler;

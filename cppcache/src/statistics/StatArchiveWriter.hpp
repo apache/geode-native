@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_STATISTICS_STATARCHIVEWRITER_H_
-#define GEODE_STATISTICS_STATARCHIVEWRITER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,6 +15,11 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_STATISTICS_STATARCHIVEWRITER_H_
+#define GEODE_STATISTICS_STATARCHIVEWRITER_H_
+
 #include <chrono>
 #include <list>
 #include <map>
@@ -32,6 +32,7 @@
 
 #include "../SerializationRegistry.hpp"
 #include "../util/Log.hpp"
+#include "HostStatSampler.hpp"
 #include "StatisticDescriptor.hpp"
 #include "StatisticDescriptorImpl.hpp"
 #include "Statistics.hpp"

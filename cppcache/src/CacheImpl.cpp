@@ -24,6 +24,7 @@
 #include <geode/RegionFactory.hpp>
 #include <geode/SystemProperties.hpp>
 
+#include "AdminRegion.hpp"
 #include "AutoDelete.hpp"
 #include "CacheXmlParser.hpp"
 #include "ClientProxyMembershipID.hpp"
