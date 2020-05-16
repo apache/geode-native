@@ -377,7 +377,7 @@ TEST(HostStatSamplerTest,
 
 TEST(
     HostStatSamplerTest,
-    initStatDiskSpaceEnabledWithNonzeroFileLimitNonzeronDiskLimitAndExistingFile) {
+    DISABLED_initStatDiskSpaceEnabledWithNonzeroFileLimitNonzeronDiskLimitAndExistingFile) {
   boost::filesystem::path file{"stats.gfs"};
   boost::filesystem::remove(file);
   { boost::filesystem::ofstream ofs{file}; }

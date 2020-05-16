@@ -24,6 +24,7 @@
 #include <chrono>
 #include <memory>
 #include <mutex>
+#include <regex>
 #include <string>
 #include <thread>
 #include <vector>
@@ -223,6 +224,9 @@ class HostStatSampler {
 
   friend TestableHostStatSampler;
   void initRollIndex();
+
+  template <typename _Function>
+  void forEachIndexStatFile(_Function function) const;
 };
 
 }  // namespace statistics

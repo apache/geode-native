@@ -19,14 +19,12 @@
 
 #include <algorithm>
 #include <chrono>
+#include <map>
 #include <regex>
 #include <thread>
 #include <utility>
 #include <vector>
 
-#include <ace/INET_Addr.h>
-#include <ace/OS_NS_sys_stat.h>
-#include <ace/OS_NS_sys_utsname.h>
 #include <boost/filesystem.hpp>
 #include <boost/process/environment.hpp>
 #include <boost/range/adaptors.hpp>
@@ -128,27 +126,10 @@ void HostStatSampler::initStatDiskSpaceEnabled() {
 }
 
 void HostStatSampler::initRollIndex() {
-  const std::regex statsFilter(m_archiveFileName.stem().string() +
-                               R"(-([\d]+))" +
-                               m_archiveFileName.extension().string());
-
-  auto dir = m_archiveFileName.parent_path();
-  if (dir.empty()) {
-    dir = ".";
-  }
-
-  for (auto& entry :
-       boost::make_iterator_range(boost::filesystem::directory_iterator(dir),
-                                  {}) |
-           boost::adaptors::filtered(
-               static_cast<bool (*)(const boost::filesystem::path&)>(
-                   &boost::filesystem::is_regular_file))) {
-    std::smatch match;
-    if (std::regex_match(entry.path().filename().string(), match,
-                         statsFilter)) {
-      m_rollIndex = std::max(m_rollIndex, std::stoi(match[1].str()) + 1);
-    }
-  }
+  forEachIndexStatFile(
+      [&](const int32_t index, const boost::filesystem::path&) {
+        m_rollIndex = std::max(m_rollIndex, index + 1);
+      });
 }
 
 boost::filesystem::path HostStatSampler::initStatFileWithExt() {
@@ -331,16 +312,9 @@ void HostStatSampler::putStatsInAdminRegion() {
         auto obj = client::ClientHealthStats::create(
             gets, puts, misses, numListeners, numThreads, cpuTime, numCPU);
         if (clientId.empty()) {
-          ACE_TCHAR hostName[256];
-          ACE_OS::hostname(hostName, sizeof(hostName) - 1);
-          ACE_INET_Addr driver("", hostName, "tcp");
-
-          uint16_t hostPort = 0;
-
           auto memId = conn_man->getCacheImpl()
                            ->getClientProxyMembershipIDFactory()
-                           .create(hostName, driver, hostPort,
-                                   m_durableClientId, m_durableTimeout);
+                           .create(m_durableClientId, m_durableTimeout);
           clientId = memId->getDSMemberIdForThinClientUse();
         }
 
@@ -400,9 +374,8 @@ void HostStatSampler::doSample(const boost::filesystem::path& archiveFilename) {
   }
 }
 
-void HostStatSampler::checkDiskLimit() {
-  m_spaceUsed = 0;
-
+template <typename _Function>
+void HostStatSampler::forEachIndexStatFile(_Function function) const {
   const std::regex statsFilter(m_archiveFileName.stem().string() +
                                R"(-([\d]+))" +
                                m_archiveFileName.extension().string());
@@ -412,43 +385,47 @@ void HostStatSampler::checkDiskLimit() {
     dir = ".";
   }
 
-  std::vector<std::pair<boost::filesystem::path, size_t>> fileSizes;
-
-  for (auto& entry :
-       boost::make_iterator_range(boost::filesystem::directory_iterator(dir),
-                                  {}) |
+  auto x = boost::make_iterator_range(
+               boost::filesystem::directory_iterator(dir), {}) |
            boost::adaptors::filtered(
                static_cast<bool (*)(const boost::filesystem::path&)>(
-                   &boost::filesystem::is_regular_file)) |
-           boost::adaptors::filtered([&](const boost::filesystem::path& path) {
-             std::smatch match;
-             return std::regex_match(path.filename().string(), match,
-                                     statsFilter);
-           })
+                   &boost::filesystem::is_regular_file));
 
-  ) {
-    const auto& path = entry.path();
-    const auto size = boost::filesystem::file_size(path);
-    m_spaceUsed += size;
-    fileSizes.emplace_back(path, size);
+  for (const auto& entry : x) {
+    std::smatch match;
+    const auto& file = entry.path();
+    if (std::regex_match(file.filename().string(), match, statsFilter)) {
+      const auto index = std::stoi(match[1].str());
+      function(index, file);
+    }
   }
+}
+
+void HostStatSampler::checkDiskLimit() {
+  m_spaceUsed = 0;
+
+  std::map<int32_t, std::pair<boost::filesystem::path, size_t>> indexedFiles;
+  forEachIndexStatFile(
+      [&](const int32_t index, const boost::filesystem::path& file) {
+        const auto size = boost::filesystem::file_size(file);
+        indexedFiles.emplace(index, std::make_pair(file, size));
+        m_spaceUsed += size;
+      });
 
   if (m_archiver) {
     m_spaceUsed += m_archiver->bytesWritten();
   }
 
-  for (const auto& i : fileSizes) {
-    if (m_spaceUsed <= m_archiveDiskSpaceLimit) {
-      break;
-    }
-
-    const auto& file = i.first;
-    auto size = i.second;
-    try {
-      boost::filesystem::remove(file);
-      m_spaceUsed -= size;
-    } catch (boost::filesystem::filesystem_error& e) {
-      LOGWARN("Could not delete " + file.string() + ": " + e.what());
+  for (const auto& i : indexedFiles) {
+    if (m_spaceUsed > m_archiveDiskSpaceLimit) {
+      const auto& file = i.second.first;
+      const auto size = i.second.second;
+      try {
+        boost::filesystem::remove(file);
+        m_spaceUsed -= size;
+      } catch (boost::filesystem::filesystem_error& e) {
+        LOGWARN("Could not delete " + file.string() + ": " + e.what());
+      }
     }
   }
 }

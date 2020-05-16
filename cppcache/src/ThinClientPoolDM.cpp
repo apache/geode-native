@@ -169,12 +169,7 @@ ThinClientPoolDM::ThinClientPoolDM(const char* name,
   // to set security flag at pool level
   m_isSecurityOn = cacheImpl->getAuthInitialize() != nullptr;
 
-  ACE_TCHAR hostName[256];
-  ACE_OS::hostname(hostName, sizeof(hostName) - 1);
-  ACE_INET_Addr driver(hostName);
-
-  uint16_t hostPort = 0;
-  auto&& durableId = sysProp.durableClientId();
+  const auto& durableId = sysProp.durableClientId();
 
   std::string clientDurableId = durableId;
   if (!m_poolName.empty()) {
@@ -183,7 +178,7 @@ ThinClientPoolDM::ThinClientPoolDM(const char* name,
 
   const auto durableTimeOut = sysProp.durableTimeout();
   m_memId = cacheImpl->getClientProxyMembershipIDFactory().create(
-      hostName, driver, hostPort, clientDurableId.c_str(), durableTimeOut);
+      clientDurableId.c_str(), durableTimeOut);
 
   if (m_attrs->m_initLocList.empty() && m_attrs->m_initServList.empty()) {
     std::string msg = "No locators or servers provided for pool named ";

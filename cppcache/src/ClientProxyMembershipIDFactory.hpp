@@ -33,8 +33,7 @@ class ClientProxyMembershipIDFactory {
   explicit ClientProxyMembershipIDFactory(std::string dsName);
 
   std::unique_ptr<ClientProxyMembershipID> create(
-      const char* hostname, const ACE_INET_Addr& address, uint32_t hostPort,
-      const char* durableClientId = nullptr,
+      const std::string& durableClientId = nullptr,
       const std::chrono::seconds durableClntTimeOut =
           std::chrono::seconds::zero());
 
