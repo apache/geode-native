@@ -15,6 +15,9 @@
  * limitations under the License.
  */
 
+#include <cstdlib>
+#include <fstream>
+#include <iostream>
 #include <thread>
 
 #include <gtest/gtest.h>
@@ -54,12 +57,18 @@ class SNITest : public ::testing::Test {
     // Code here will be called immediately after the constructor (right
     // before each test).
 #if defined(_WINDOWS)
-    auto rVal = SetCurrentDirectory("./sni-test-config");
+    std::string sniDir(currentWorkingDirectory.string());
+    sniDir += "/../sni-test-config";
+    auto rVal = SetCurrentDirectory(sniDir.c_str());
 #else
     auto rVal = chdir("./sni-test-config");
 #endif
 
     std::system("docker-compose up -d");
+
+    std::system(
+        "docker exec -t geode gfsh run "
+        "--file=/geode/scripts/geode-starter.gfsh");
   }
 
   void TearDown() override {
@@ -70,7 +79,12 @@ class SNITest : public ::testing::Test {
 
   std::string makeItSo(const char* command) {
     std::string commandOutput;
+#if defined(_WINDOWS)
+    std::unique_ptr<FILE, decltype(&_pclose)> pipe(_popen(command, "r"),
+                                                   _pclose);
+#else
     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(command, "r"), pclose);
+#endif
     std::array<char, 128> charBuff;
     if (!pipe) {
       throw std::runtime_error("Failed on the POPEN");
@@ -82,9 +96,9 @@ class SNITest : public ::testing::Test {
   }
 
   int parseProxyPort(std::string proxyString) {
-    //15443/tcp -> 0.0.0.0:32787
+    // 15443/tcp -> 0.0.0.0:32787
     std::size_t colonPosition = proxyString.find(":");
-    std::string portNumberString = proxyString.substr((colonPosition+1));
+    std::string portNumberString = proxyString.substr((colonPosition + 1));
     return stoi(portNumberString);
   }
 
@@ -98,8 +112,7 @@ class SNITest : public ::testing::Test {
 TEST_F(SNITest, connectViaProxyTest) {
   const auto clientTruststore =
       (currentWorkingDirectory /
-       boost::filesystem::path(
-           "sni-test-config/geode-config/truststore.jks"));
+       boost::filesystem::path("sni-test-config/geode-config/truststore.jks"));
 
   auto cache = CacheFactory()
                    .set("log-level", "DEBUG")
@@ -109,17 +122,17 @@ TEST_F(SNITest, connectViaProxyTest) {
 
   auto portString = makeItSo("docker port haproxy");
   auto portNumber = parseProxyPort(portString);
-  
-   cache.getPoolManager()
+
+  cache.getPoolManager()
       .createFactory()
       .addLocator("localhost", portNumber)
       .create("pool");
 
-   auto region = cache.createRegionFactory(RegionShortcut::PROXY)
+  auto region = cache.createRegionFactory(RegionShortcut::PROXY)
                     .setPoolName("pool")
                     .create("region");
 
-   region->put("1", "one");
+  region->put("1", "one");
 
   cache.close();
 }
@@ -127,8 +140,7 @@ TEST_F(SNITest, connectViaProxyTest) {
 TEST_F(SNITest, connectionFailsTest) {
   const auto clientTruststore =
       (currentWorkingDirectory /
-       boost::filesystem::path(
-           "sni-test-config/geode-config/truststore.jks"));
+       boost::filesystem::path("sni-test-config/geode-config/truststore.jks"));
 
   auto cache = CacheFactory()
                    .set("log-level", "DEBUG")
@@ -136,16 +148,16 @@ TEST_F(SNITest, connectionFailsTest) {
                    .set("ssl-truststore", clientTruststore.string())
                    .create();
 
-   cache.getPoolManager()
+  cache.getPoolManager()
       .createFactory()
       .addLocator("localhost", 10334)
       .create("pool");
 
-   auto region = cache.createRegionFactory(RegionShortcut::PROXY)
+  auto region = cache.createRegionFactory(RegionShortcut::PROXY)
                     .setPoolName("pool")
                     .create("region");
-EXPECT_THROW(
-   region->put("1", "one"), apache::geode::client::NotConnectedException);
+  EXPECT_THROW(region->put("1", "one"),
+               apache::geode::client::NotConnectedException);
 
   cache.close();
 }
@@ -153,8 +165,7 @@ EXPECT_THROW(
 TEST_F(SNITest, doNothingTest) {
   const auto clientTruststore =
       (currentWorkingDirectory /
-       boost::filesystem::path(
-           "sni-test-config/geode-config/truststore.jks"));
+       boost::filesystem::path("sni-test-config/geode-config/truststore.jks"));
 
   auto cache = CacheFactory()
                    .set("log-level", "DEBUG")
@@ -162,7 +173,7 @@ TEST_F(SNITest, doNothingTest) {
                    .set("ssl-truststore", clientTruststore.string())
                    .create();
 
-   cache.getPoolManager()
+  cache.getPoolManager()
       .createFactory()
       .addLocator("localhost", 10334)
       .create("pool");
