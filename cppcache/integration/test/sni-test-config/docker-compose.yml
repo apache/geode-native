@@ -23,7 +23,7 @@ services:
       - '10334'
       - '40404'
     entrypoint: 'sh'
-    command: '-c /geode/scripts/forever'
+    command: ["-c", "while true; do sleep 600; done"]
     networks:
       geode-sni-test:
     volumes:
