@@ -34,7 +34,7 @@ class TcrPoolEndPoint : public TcrEndpoint {
   TcrPoolEndPoint(const std::string& name, CacheImpl* cache,
                   ACE_Semaphore& failoverSema, ACE_Semaphore& cleanupSema,
                   ACE_Semaphore& redundancySema, ThinClientPoolDM* dm);
-  ThinClientPoolDM* getPoolHADM() override;
+  ThinClientPoolDM* getPoolHADM() const override;
 
   bool checkDupAndAdd(std::shared_ptr<EventId> eventid) override;
   void processMarker() override;

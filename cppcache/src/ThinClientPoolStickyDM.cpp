@@ -45,7 +45,7 @@ TcrConnection* ThinClientPoolStickyDM::getConnectionFromQueueW(
     }
     if (ep != nullptr /*&& ep->connected()*/) {
       // LOGINFO(" getSingleHopServer returns ep");
-      m_manager->getSingleHopStickyConnection(ep, conn);
+      m_manager->getSingleHopStickyConnection(*ep, conn);
       if (!conn) {
         conn = getFromEP(ep);
         if (!conn) {
@@ -117,7 +117,7 @@ void ThinClientPoolStickyDM::putInQueue(TcrConnection* conn, bool isBGThread,
                                         bool isTransaction) {
   if (!isBGThread) {
     if (m_attrs->getPRSingleHopEnabled() && !isTransaction) {
-      m_manager->setSingleHopStickyConnection(conn->getEndpointObject(), conn);
+      m_manager->setSingleHopStickyConnection(*conn->getEndpointObject(), conn);
     } else {
       m_manager->setStickyConnection(conn, isTransaction);
     }

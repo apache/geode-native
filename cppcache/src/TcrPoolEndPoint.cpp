@@ -40,7 +40,7 @@ void TcrPoolEndPoint::processMarker() { m_dm->processMarker(); }
 std::shared_ptr<QueryService> TcrPoolEndPoint::getQueryService() {
   return m_dm->getQueryServiceWithoutCheck();
 }
-ThinClientPoolDM* TcrPoolEndPoint::getPoolHADM() { return m_dm; }
+ThinClientPoolDM* TcrPoolEndPoint::getPoolHADM() const { return m_dm; }
 void TcrPoolEndPoint::triggerRedundancyThread() {
   m_dm->triggerRedundancyThread();
 }

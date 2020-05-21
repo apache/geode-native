@@ -14,129 +14,114 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "TssConnectionWrapper.hpp"
+
+#include <geode/Pool.hpp>
 
 #include "TcrConnection.hpp"
 #include "ThinClientPoolDM.hpp"
+
 namespace apache {
 namespace geode {
 namespace client {
-ACE_TSS<TssConnectionWrapper>* TssConnectionWrapper::s_geodeTSSConn =
-    new ACE_TSS<TssConnectionWrapper>();
-TssConnectionWrapper::TssConnectionWrapper() {
-  std::shared_ptr<Pool> p = nullptr;
-  m_pool = p;
-  m_tcrConn = nullptr;
-}
+
+thread_local TssConnectionWrapper TssConnectionWrapper::instance_;
+
+TssConnectionWrapper::TssConnectionWrapper() : connection_(nullptr) {}
+
 TssConnectionWrapper::~TssConnectionWrapper() {
   // if cache close happening during this then we should NOT call this..
-  if (m_tcrConn) {
+  if (connection_) {
     // this should be call in lock and release connection
     // but still race-condition is there if now cache-close starts happens
     // m_tcrConn->close();
-    m_pool->releaseThreadLocalConnection();
-    // delete m_tcrConn; m_tcrConn = nullptr;
-    m_tcrConn = nullptr;
+    pool_->releaseThreadLocalConnection();
+    connection_ = nullptr;
   }
 }
 
-void TssConnectionWrapper::setSHConnection(TcrEndpoint* ep,
-                                           TcrConnection* conn) {
-  std::string pn(ep->getPoolHADM()->getName());
-  poolVsEndpointConnMap::iterator iter = m_poolVsEndpointConnMap.find(pn);
-  PoolWrapper* pw = nullptr;
-  if (iter == m_poolVsEndpointConnMap.end()) {
-    pw = new PoolWrapper();
-    m_poolVsEndpointConnMap[pn] = pw;
+void TssConnectionWrapper::setSHConnection(const TcrEndpoint& endpoint,
+                                           TcrConnection* connection) {
+  const auto& poolName = endpoint.getPoolHADM()->getName();
+  PoolWrapper* poolWrapper = nullptr;
+  const auto& iter = poolNameToPoolWrapperMap_.find(poolName);
+  if (iter == poolNameToPoolWrapperMap_.end()) {
+    poolWrapper = new PoolWrapper();
+    poolNameToPoolWrapperMap_.emplace(poolName, poolWrapper);
   } else {
-    pw = iter->second;
+    poolWrapper = iter->second;
   }
 
-  pw->setSHConnection(ep, conn);
+  poolWrapper->setSHConnection(endpoint, connection);
 }
 
-TcrConnection* TssConnectionWrapper::getSHConnection(TcrEndpoint* ep,
-                                                     const char* poolname) {
-  std::string pn(poolname);
-  poolVsEndpointConnMap::iterator iter = m_poolVsEndpointConnMap.find(pn);
-  PoolWrapper* pw = nullptr;
-  if (iter == m_poolVsEndpointConnMap.end()) {
+TcrConnection* TssConnectionWrapper::getSHConnection(
+    const TcrEndpoint& endpoint, const std::string& poolName) {
+  const auto& iter = poolNameToPoolWrapperMap_.find(poolName);
+  if (iter == poolNameToPoolWrapperMap_.end()) {
     return nullptr;
-  } else {
-    pw = iter->second;
   }
 
-  return pw->getSHConnection(ep);
+  return iter->second->getSHConnection(endpoint);
 }
 
-void TssConnectionWrapper::releaseSHConnections(std::shared_ptr<Pool> pool) {
-  std::string pn(pool->getName());
-  poolVsEndpointConnMap::iterator iter = m_poolVsEndpointConnMap.find(pn);
-  PoolWrapper* pw = nullptr;
-  if (iter == m_poolVsEndpointConnMap.end()) {
+void TssConnectionWrapper::releaseSHConnections(Pool& pool) {
+  const auto& poolName = pool.getName();
+  const auto& iter = poolNameToPoolWrapperMap_.find(poolName);
+  if (iter == poolNameToPoolWrapperMap_.end()) {
     return;
-  } else {
-    pw = iter->second;
   }
 
-  pw->releaseSHConnections(pool);
-  m_poolVsEndpointConnMap.erase(pn);
-  delete pw;
+  iter->second->releaseSHConnections(pool);
+  delete iter->second;
+  poolNameToPoolWrapperMap_.erase(iter);
 }
 
-TcrConnection* TssConnectionWrapper::getAnyConnection(const char* poolname) {
-  std::string pn(poolname);
-  poolVsEndpointConnMap::iterator iter = m_poolVsEndpointConnMap.find(pn);
-  PoolWrapper* pw = nullptr;
-  if (iter == m_poolVsEndpointConnMap.end()) {
+TcrConnection* TssConnectionWrapper::getAnyConnection(
+    const std::string& poolName) const {
+  const auto& iter = poolNameToPoolWrapperMap_.find(poolName);
+  if (iter == poolNameToPoolWrapperMap_.end()) {
     return nullptr;
-  } else {
-    pw = iter->second;
+  }
+  return iter->second->getAnyConnection();
+}
+
+TcrConnection* PoolWrapper::getSHConnection(const TcrEndpoint& ep) {
+  const auto& iter = endpointsToConnectionMap_.find(ep.name());
+  if (iter == endpointsToConnectionMap_.end()) {
+    return nullptr;
   }
 
-  return pw->getAnyConnection();
+  auto tmp = iter->second;
+  endpointsToConnectionMap_.erase(iter);
+  return tmp;
 }
 
-TcrConnection* PoolWrapper::getSHConnection(TcrEndpoint* ep) {
-  EpNameVsConnection::iterator iter = m_EpnameVsConnection.find(ep->name());
-  if (iter != m_EpnameVsConnection.end()) {
-    TcrConnection* tmp = iter->second;
-    m_EpnameVsConnection.erase(iter);
-    return tmp;
-  }
-  return nullptr;
+void PoolWrapper::setSHConnection(const TcrEndpoint& ep, TcrConnection* conn) {
+  endpointsToConnectionMap_.emplace(ep.name(), conn);
 }
 
-void PoolWrapper::setSHConnection(TcrEndpoint* ep, TcrConnection* conn) {
-  m_EpnameVsConnection.insert(
-      std::pair<std::string, TcrConnection*>(ep->name(), conn));
-}
-
-PoolWrapper::PoolWrapper() {}
-
-PoolWrapper::~PoolWrapper() {}
-
-void PoolWrapper::releaseSHConnections(std::shared_ptr<Pool> pool) {
-  for (EpNameVsConnection::iterator iter = m_EpnameVsConnection.begin();
-       iter != m_EpnameVsConnection.end(); iter++) {
-    TcrConnection* tmp = iter->second;
-    tmp->setAndGetBeingUsed(false, false);  // now this can be used by next one
-    ThinClientPoolDM* dm = dynamic_cast<ThinClientPoolDM*>(pool.get());
-    if (dm != nullptr) {
-      dm->put(tmp, false);
+void PoolWrapper::releaseSHConnections(Pool& pool) {
+  for (const auto& entry : endpointsToConnectionMap_) {
+    auto connection = entry.second;
+    connection->setAndGetBeingUsed(false, false);
+    if (auto dm = dynamic_cast<ThinClientPoolDM*>(&pool)) {
+      dm->put(connection, false);
     }
   }
-  m_EpnameVsConnection.clear();
+  endpointsToConnectionMap_.clear();
 }
 
 TcrConnection* PoolWrapper::getAnyConnection() {
-  EpNameVsConnection::iterator iter = m_EpnameVsConnection.begin();
-  if (iter != m_EpnameVsConnection.end()) {
-    TcrConnection* tmp = iter->second;
-    m_EpnameVsConnection.erase(iter);
-    return tmp;
+  const auto& iter = endpointsToConnectionMap_.begin();
+  if (iter == endpointsToConnectionMap_.end()) {
+    return nullptr;
   }
-  return nullptr;
+
+  auto connection = iter->second;
+  endpointsToConnectionMap_.erase(iter);
+  return connection;
 }
 
 }  // namespace client
