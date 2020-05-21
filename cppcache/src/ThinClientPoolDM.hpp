@@ -27,13 +27,14 @@
 #include <string>
 #include <vector>
 
-#include <ace/Condition_Recursive_Thread_Mutex.h>
+#include <ace/Semaphore.h>
+#include <ace/Time_Value.h>
 
 #include <geode/Pool.hpp>
 #include <geode/ResultCollector.hpp>
 
+#include "ConnectionQueue.hpp"
 #include "ExecutionImpl.hpp"
-#include "FairQueue.hpp"
 #include "PoolAttributes.hpp"
 #include "PoolStatistics.hpp"
 #include "RemoteQueryService.hpp"
@@ -65,7 +66,7 @@ class ClientMetadataService;
 class ThinClientPoolDM
     : public ThinClientBaseDM,
       public Pool,
-      public FairQueue<TcrConnection, ACE_Recursive_Thread_Mutex> {
+      public ConnectionQueue<TcrConnection, std::recursive_mutex> {
  public:
   ThinClientPoolDM(const ThinClientPoolDM&) = delete;
   ThinClientPoolDM& operator=(const ThinClientPoolDM&) = delete;
@@ -115,7 +116,7 @@ class ThinClientPoolDM
   ClientProxyMembershipID* getMembershipId() { return m_memId.get(); }
   virtual void processMarker(){};
   bool checkDupAndAdd(std::shared_ptr<EventId> eventid) override;
-  ACE_Recursive_Thread_Mutex& getPoolLock() { return getQueueLock(); }
+  std::recursive_mutex& getPoolLock() { return mutex_; }
   void reducePoolSize(int num);
   void removeEPConnections(int numConn, bool triggerManagerConn = true);
   void removeEPConnections(TcrEndpoint* ep);
@@ -255,7 +256,7 @@ class ThinClientPoolDM
         getNoGetLock(isClosed, error, excludeServers, maxConnLimit);
 
     if (mp == nullptr && !isClosed) {
-      mp = getUntilWithToken(sec, isClosed, &excludeServers);
+      mp = getLockedFor(sec, isClosed, &excludeServers);
     }
 
     return mp;

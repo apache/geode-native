@@ -80,8 +80,12 @@ class PoolStats {
     getStats()->incInt(m_loadCondDisconnectsId, 1);
   }
 
-  void setCurWaitingConnections(int32_t curVal) {
-    getStats()->setInt(m_waitingConnectionsId, curVal);
+  void incCurWaitingConnections() {
+    getStats()->incInt(m_waitingConnectionsId, 1);
+  }
+
+  void decCurWaitingConnections() {
+    getStats()->incInt(m_waitingConnectionsId, -1);
   }
 
   void incWaitingConnections() { getStats()->incInt(m_totalWaitingConnsId, 1); }

@@ -20,6 +20,9 @@
 #include <algorithm>
 #include <thread>
 
+#include <ace/INET_Addr.h>
+#include <ace/OS_NS_unistd.h>
+
 #include <geode/AuthInitialize.hpp>
 #include <geode/PoolManager.hpp>
 #include <geode/ResultCollector.hpp>
@@ -490,7 +493,7 @@ void ThinClientPoolDM::cleanStaleConnections(std::atomic<bool>& isRunning) {
               to_string(_nextIdle).c_str());
   }
 
-  LOGDEBUG("Pool size is %d, pool counter is %d", size(), m_poolSize.load());
+  LOGDEBUG("Pool size is %zu, pool counter is %d", size(), m_poolSize.load());
 }
 
 void ThinClientPoolDM::cleanStickyConnections(std::atomic<bool>&) {}
@@ -510,7 +513,7 @@ void ThinClientPoolDM::restoreMinConnections(std::atomic<bool>& isRunning) {
   int restored = 0;
 
   if (m_poolSize < min) {
-    ACE_Guard<ACE_Recursive_Thread_Mutex> poolguard(m_queueLock);
+    std::lock_guard<decltype(mutex_)> lock(mutex_);
     while (m_poolSize < min && limit-- && isRunning) {
       TcrConnection* conn = nullptr;
       bool maxConnLimit = false;
@@ -524,14 +527,14 @@ void ThinClientPoolDM::restoreMinConnections(std::atomic<bool>& isRunning) {
   }
 
   LOGDEBUG("Restored %d connections", restored);
-  LOGDEBUG("Pool size is %d, pool counter is %d", size(), m_poolSize.load());
+  LOGDEBUG("Pool size is %zu, pool counter is %d", size(), m_poolSize.load());
 }
 
 void ThinClientPoolDM::manageConnectionsInternal(std::atomic<bool>& isRunning) {
   try {
     LOGFINE(
         "ThinClientPoolDM::manageConnections(): checking connections in pool "
-        "queue %d",
+        "queue %zu",
         size());
 
     cleanStaleConnections(isRunning);
@@ -607,8 +610,7 @@ std::string ThinClientPoolDM::selectEndpoint(
 }
 
 void ThinClientPoolDM::addConnection(TcrConnection* conn) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(getPoolLock());
-
+  std::lock_guard<decltype(mutex_)> lock(mutex_);
   put(conn, false);
   ++m_poolSize;
 }
@@ -803,8 +805,10 @@ void ThinClientPoolDM::destroy(bool keepAlive) {
       // m_clientMetadataService = nullptr;
     }
     // closing all the thread local connections ( sticky).
-    LOGDEBUG("ThinClientPoolDM::destroy( ): closing FairQueue, pool size = %d",
-             m_poolSize.load());
+    LOGDEBUG(
+        "ThinClientPoolDM::destroy( ): closing ConnectionQueue, pool size = "
+        "%d",
+        m_poolSize.load());
     close();
     LOGDEBUG("ThinClientPoolDM::destroy( ): after close ");
 
@@ -1624,7 +1628,7 @@ GfErrType ThinClientPoolDM::getConnectionToAnEndPoint(std::string epNameStr,
 GfErrType ThinClientPoolDM::createPoolConnectionToAEndPoint(
     TcrConnection*& conn, TcrEndpoint* theEP, bool& maxConnLimit,
     bool appThreadrequest) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_queueLock);
+  std::lock_guard<decltype(mutex_)> lock(mutex_);
   GfErrType error = GF_NOERR;
   conn = nullptr;
   int min = 0;
@@ -1687,7 +1691,7 @@ void ThinClientPoolDM::reducePoolSize(int num) {
 GfErrType ThinClientPoolDM::createPoolConnection(
     TcrConnection*& conn, std::set<ServerLocation>& excludeServers,
     bool& maxConnLimit, const TcrConnection* currentserver) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_queueLock);
+  std::lock_guard<decltype(mutex_)> lock(mutex_);
   GfErrType error = GF_NOERR;
   int max = m_attrs->getMaxConnections();
   if (max == -1) {
@@ -1788,7 +1792,7 @@ TcrConnection* ThinClientPoolDM::getConnectionFromQueue(
     bool& maxConnLimit) {
   std::chrono::microseconds timeoutTime = m_attrs->getFreeConnectionTimeout();
 
-  getStats().setCurWaitingConnections(waiters());
+  getStats().incCurWaitingConnections();
   getStats().incWaitingConnections();
 
   /*get the start time for connectionWaitTime stat*/
@@ -1804,6 +1808,7 @@ TcrConnection* ThinClientPoolDM::getConnectionFromQueue(
                             getStats().getTotalWaitingConnTimeId(),
                             sampleStartNanos);
   }
+  getStats().decCurWaitingConnections();
   return mp;
 }
 
@@ -1852,7 +1857,7 @@ GfErrType ThinClientPoolDM::sendRequestToEP(const TcrMessage& request,
         _GEODE_SAFE_DELETE(conn);
       }
       if (putConnInPool) {
-        ACE_Guard<ACE_Recursive_Thread_Mutex> guard(getPoolLock());
+        std::lock_guard<decltype(mutex_)> lock(mutex_);
         reducePoolSize(1);
       }
       currentEndpoint->setConnectionStatus(false);
@@ -1935,7 +1940,7 @@ GfErrType ThinClientPoolDM::sendRequestToEP(const TcrMessage& request,
     } else if (error != GF_NOERR) {
       currentEndpoint->setConnectionStatus(false);
       if (putConnInPool) {
-        ACE_Guard<ACE_Recursive_Thread_Mutex> guard(getPoolLock());
+        std::lock_guard<decltype(mutex_)> lock(mutex_);
         removeEPConnections(1);
       }
     }
@@ -1990,13 +1995,13 @@ TcrEndpoint* ThinClientPoolDM::addEP(const std::string& endpointName) {
 }
 
 void ThinClientPoolDM::netDown() {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(getPoolLock());
+  std::lock_guard<decltype(mutex_)> lock(mutex_);
   close();
   reset();
 }
 
 void ThinClientPoolDM::pingServerLocal() {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(getPoolLock());
+  std::lock_guard<decltype(mutex_)> lock(mutex_);
   std::lock_guard<decltype(m_endpointsLock)> guard(m_endpointsLock);
   for (auto& it : m_endpoints) {
     auto endpoint = it.second;
@@ -2096,7 +2101,7 @@ bool ThinClientPoolDM::canItBeDeleted(TcrConnection* conn) {
   if (conn && candidateForDeletion) {
     TcrEndpoint* endPt = conn->getEndpointObject();
     {
-      ACE_Guard<ACE_Recursive_Thread_Mutex> poolguard(m_queueLock);  // PXR
+      std::lock_guard<decltype(mutex_)> lock(mutex_);
       std::lock_guard<decltype(endPt->getQueueHostedMutex())> guardQueue(
           endPt->getQueueHostedMutex());
       bool queue = endPt->isQueueHosted();
@@ -2127,12 +2132,12 @@ bool ThinClientPoolDM::excludeConnection(
 }
 
 TcrConnection* ThinClientPoolDM::getFromEP(TcrEndpoint* theEP) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_queueLock);
-  for (auto itr = m_queue.begin(); itr != m_queue.end(); itr++) {
+  std::lock_guard<decltype(mutex_)> lock(mutex_);
+  for (auto itr = queue_.begin(); itr != queue_.end(); itr++) {
     if ((*itr)->getEndpointObject() == theEP) {
       LOGDEBUG("ThinClientPoolDM::getFromEP got connection");
       TcrConnection* retVal = *itr;
-      m_queue.erase(itr);
+      queue_.erase(itr);
       return retVal;
     }
   }
@@ -2141,15 +2146,15 @@ TcrConnection* ThinClientPoolDM::getFromEP(TcrEndpoint* theEP) {
 }
 
 void ThinClientPoolDM::removeEPConnections(TcrEndpoint* theEP) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_queueLock);
-  auto size = static_cast<int32_t>(m_queue.size());
+  std::lock_guard<decltype(mutex_)> lock(mutex_);
+  auto size = static_cast<int32_t>(queue_.size());
   int numConn = 0;
 
   while (size--) {
-    TcrConnection* curConn = m_queue.back();
-    m_queue.pop_back();
+    TcrConnection* curConn = queue_.back();
+    queue_.pop_back();
     if (curConn->getEndpointObject() != theEP) {
-      m_queue.push_front(curConn);
+      queue_.push_front(curConn);
     } else {
       curConn->close();
       _GEODE_SAFE_DELETE(curConn);
@@ -2165,10 +2170,10 @@ TcrConnection* ThinClientPoolDM::getNoGetLock(
     bool& maxConnLimit) {
   TcrConnection* returnT = nullptr;
   {
-    ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_queueLock);
+    std::lock_guard<decltype(mutex_)> lock(mutex_);
 
     do {
-      returnT = popFromQueue(isClosed);
+      returnT = popNoLock(isClosed);
       if (returnT) {
         if (excludeConnection(returnT, excludeServers)) {
           returnT->close();
@@ -2191,7 +2196,7 @@ TcrConnection* ThinClientPoolDM::getNoGetLock(
 }
 
 void ThinClientPoolDM::incRegionCount() {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_queueLock);
+  std::lock_guard<decltype(mutex_)> lock(mutex_);
 
   if (!m_isDestroyed && !m_destroyPending) {
     m_numRegions++;
@@ -2201,13 +2206,13 @@ void ThinClientPoolDM::incRegionCount() {
 }
 
 void ThinClientPoolDM::decRegionCount() {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_queueLock);
+  std::lock_guard<decltype(mutex_)> lock(mutex_);
 
   m_numRegions--;
 }
 
 void ThinClientPoolDM::checkRegions() {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_queueLock);
+  std::lock_guard<decltype(mutex_)> lock(mutex_);
 
   if (m_numRegions > 0) {
     throw IllegalStateException(
