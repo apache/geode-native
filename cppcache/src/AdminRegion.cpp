@@ -100,7 +100,7 @@ GfErrType AdminRegion::putNoThrow(const std::shared_ptr<CacheableKey>& keyPtr,
       break;
     }
     case TcrMessage::EXCEPTION: {
-      const char* exceptionMsg = reply.getException();
+      const auto& exceptionMsg = reply.getException();
       err = ThinClientRegion::handleServerException("AdminRegion::put",
                                                     exceptionMsg);
       break;

@@ -243,7 +243,7 @@ class TcrMessage {
 
   const std::map<std::string, int>* getCqs() const;
   bool getBoolValue() const;
-  const char* getException();
+  const std::string& getException();
 
   const char* getMsgData() const;
   const char* getMsgHeader() const;
@@ -434,7 +434,7 @@ class TcrMessage {
   std::shared_ptr<CacheableHashMap> m_tombstoneVersions;
   std::shared_ptr<CacheableHashSet> m_tombstoneKeys;
   std::shared_ptr<VersionedCacheableObjectPartList> m_versionObjPartListptr;
-  std::string exceptionMessage;
+  std::string m_exceptionMessage;
   std::string m_regionName;
   std::string m_regex;
   std::vector<std::shared_ptr<BucketServerLocation>> m_bucketServerLocations;

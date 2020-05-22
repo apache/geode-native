@@ -135,8 +135,8 @@ class APACHE_GEODE_EXPORT ThinClientRegion : public LocalRegion {
 
   void receiveNotification(TcrMessage* msg);
 
-  static GfErrType handleServerException(const char* func,
-                                         const char* exceptionMsg);
+  static GfErrType handleServerException(const std::string& func,
+                                         const std::string& exceptionMsg);
 
   void acquireGlobals(bool failover) override;
   void releaseGlobals(bool failover) override;

@@ -893,7 +893,7 @@ int32_t ThinClientPoolDM::GetPDXIdForType(
   throwExceptionIfError("Operation Failed", sendSyncRequest(request, reply));
 
   if (reply.getMessageType() == TcrMessage::EXCEPTION) {
-    LOGDEBUG("ThinClientPoolDM::GetPDXTypeById: Exception = %s ",
+    LOGDEBUG("ThinClientPoolDM::GetPDXTypeById: Exception = " +
              reply.getException());
     throw IllegalStateException("Failed to register PdxSerializable Type");
   }
@@ -929,7 +929,7 @@ void ThinClientPoolDM::AddPdxType(std::shared_ptr<Serializable> pdxType,
   throwExceptionIfError("Operation Failed", sendSyncRequest(request, reply));
 
   if (reply.getMessageType() == TcrMessage::EXCEPTION) {
-    LOGDEBUG("ThinClientPoolDM::GetPDXTypeById: Exception = %s ",
+    LOGDEBUG("ThinClientPoolDM::GetPDXTypeById: Exception = " +
              reply.getException());
     throw IllegalStateException("Failed to register PdxSerializable Type");
   }
@@ -946,7 +946,7 @@ std::shared_ptr<Serializable> ThinClientPoolDM::GetPDXTypeById(int32_t typeId) {
   throwExceptionIfError("Operation Failed", sendSyncRequest(request, reply));
 
   if (reply.getMessageType() == TcrMessage::EXCEPTION) {
-    LOGDEBUG("ThinClientPoolDM::GetPDXTypeById: Exception = %s ",
+    LOGDEBUG("ThinClientPoolDM::GetPDXTypeById: Exception = " +
              reply.getException());
     throw IllegalStateException("Failed to understand PdxSerializable Type");
   }
@@ -966,7 +966,7 @@ int32_t ThinClientPoolDM::GetEnumValue(std::shared_ptr<Serializable> enumInfo) {
   throwExceptionIfError("Operation Failed", sendSyncRequest(request, reply));
 
   if (reply.getMessageType() == TcrMessage::EXCEPTION) {
-    LOGDEBUG("ThinClientPoolDM::GetEnumValue: Exception = %s ",
+    LOGDEBUG("ThinClientPoolDM::GetEnumValue: Exception = " +
              reply.getException());
     throw IllegalStateException("Failed to register Pdx enum Type");
   }
@@ -1001,8 +1001,7 @@ std::shared_ptr<Serializable> ThinClientPoolDM::GetEnum(int32_t val) {
   throwExceptionIfError("Operation Failed", sendSyncRequest(request, reply));
 
   if (reply.getMessageType() == TcrMessage::EXCEPTION) {
-    LOGDEBUG("ThinClientPoolDM::GetEnum: Exception = %s ",
-             reply.getException());
+    LOGDEBUG("ThinClientPoolDM::GetEnum: Exception = " + reply.getException());
     throw IllegalStateException("Failed to understand enum Type");
   }
 
@@ -1022,8 +1021,7 @@ void ThinClientPoolDM::AddEnum(std::shared_ptr<Serializable> enumInfo,
   throwExceptionIfError("Operation Failed", sendSyncRequest(request, reply));
 
   if (reply.getMessageType() == TcrMessage::EXCEPTION) {
-    LOGDEBUG("ThinClientPoolDM::AddEnum: Exception = %s ",
-             reply.getException());
+    LOGDEBUG("ThinClientPoolDM::AddEnum: Exception = " + reply.getException());
     throw IllegalStateException("Failed to register enum Type");
   }
 }
@@ -2240,7 +2238,7 @@ GfErrType ThinClientPoolDM::doFailover(TcrConnection* conn) {
         break;
       }
       case TcrMessage::EXCEPTION: {
-        const char* exceptionMsg = reply.getException();
+        const auto& exceptionMsg = reply.getException();
         err = ThinClientRegion::handleServerException(
             "CacheTransactionManager::failover", exceptionMsg);
         break;

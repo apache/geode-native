@@ -122,56 +122,18 @@ class ThinClientBaseDM {
 
   static bool isDeltaEnabledOnServer() { return s_isDeltaEnabledOnServer; }
 
-  inline static void setDeltaEnabledOnServer(bool isDeltaEnabledOnServer) {
-    s_isDeltaEnabledOnServer = isDeltaEnabledOnServer;
-    LOGFINE("Delta enabled on server: %s",
-            s_isDeltaEnabledOnServer ? "true" : "false");
-  }
+  static void setDeltaEnabledOnServer(bool isDeltaEnabledOnServer);
+
   TcrConnectionManager& getConnectionManager() const { return m_connManager; }
 
   virtual size_t getNumberOfEndPoints() const { return 0; }
 
-  bool isNotAuthorizedException(const char* exceptionMsg) {
-    if (exceptionMsg != nullptr &&
-        strstr(exceptionMsg,
-               "org.apache.geode.security.NotAuthorizedException") != nullptr) {
-      LOGDEBUG(
-          "isNotAuthorizedException() An exception (%s) happened at remote "
-          "server.",
-          exceptionMsg);
-      return true;
-    }
-    return false;
-  }
+  bool isNotAuthorizedException(const std::string& exceptionMsg);
 
-  bool isPutAllPartialResultException(const char* exceptionMsg) {
-    if (exceptionMsg != nullptr &&
-        strstr(
-            exceptionMsg,
-            "org.apache.geode.internal.cache.PutAllPartialResultException") !=
-            nullptr) {
-      LOGDEBUG(
-          "isNotAuthorizedException() An exception (%s) happened at remote "
-          "server.",
-          exceptionMsg);
-      return true;
-    }
-    return false;
-  }
+  bool isPutAllPartialResultException(const std::string& exceptionMsg);
 
  protected:
-  bool isAuthRequireException(const char* exceptionMsg) {
-    if (exceptionMsg != nullptr &&
-        strstr(exceptionMsg,
-               "org.apache.geode.security.AuthenticationRequiredException") !=
-            nullptr) {
-      LOGDEBUG(
-          "isAuthRequireExcep() An exception (%s) happened at remote server.",
-          exceptionMsg);
-      return true;
-    }
-    return false;
-  }
+  bool isAuthRequireException(const std::string& exceptionMsg);
 
   ThinClientRegion* m_region;
 
@@ -186,8 +148,8 @@ class ThinClientBaseDM {
   ThinClientBaseDM& operator=(const ThinClientBaseDM&);
 
  protected:
-  static bool unrecoverableServerError(const char* exceptStr);
-  static bool nonFatalServerError(const char* exceptStr);
+  static bool unrecoverableServerError(const std::string& exceptStr);
+  static bool nonFatalServerError(const std::string& exceptStr);
   static GfErrType handleEPError(TcrEndpoint* ep, TcrMessageReply& reply,
                                  GfErrType error);
 
