@@ -348,7 +348,8 @@ StatArchiveWriter::StatArchiveWriter(std::string outfile,
   boost::posix_time::time_duration timeZoneOffset(
       boost::posix_time::second_clock::local_time() -
       boost::posix_time::second_clock::universal_time());
-  this->dataBuffer->writeInt(timeZoneOffset.total_milliseconds());
+  this->dataBuffer->writeInt(
+      static_cast<int32_t>(timeZoneOffset.total_milliseconds()));
 
   // C++20: Use std::chrono::time_zone
   auto now = std::chrono::system_clock::now();

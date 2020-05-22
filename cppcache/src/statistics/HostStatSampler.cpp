@@ -110,17 +110,11 @@ void HostStatSampler::initStatDiskSpaceEnabled() {
 
     initRollIndex();
 
-    FILE* existingFile = fopen(m_archiveFileName.c_str(), "r");
-    if (existingFile != nullptr && m_archiveFileSizeLimit > 0) {
-      fclose(existingFile);
-      existingFile = nullptr;
+    auto exists = boost::filesystem::exists(m_archiveFileName);
+    if (exists && m_archiveFileSizeLimit > 0) {
       changeArchive(m_archiveFileName);
     } else {
       writeGfs();
-    }
-    if (existingFile != nullptr) {
-      fclose(existingFile);
-      existingFile = nullptr;
     }
   }
 }
@@ -394,7 +388,8 @@ void HostStatSampler::forEachIndexStatFile(_Function function) const {
   for (const auto& entry : x) {
     std::smatch match;
     const auto& file = entry.path();
-    if (std::regex_match(file.filename().string(), match, statsFilter)) {
+    const auto& fileStr = file.filename().string();
+    if (std::regex_match(fileStr, match, statsFilter)) {
       const auto index = std::stoi(match[1].str());
       function(index, file);
     }

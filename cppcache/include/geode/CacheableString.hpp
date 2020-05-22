@@ -25,8 +25,7 @@
 #include "internal/DataSerializablePrimitive.hpp"
 #include "internal/geode_globals.hpp"
 
-/** @file
- */
+#undef max
 
 namespace apache {
 namespace geode {
