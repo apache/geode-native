@@ -268,8 +268,8 @@ TEST(HostStatSamplerTest, rollArchiveFile) {
 }
 
 TEST(HostStatSamplerTest, rollArchiveFileWithDirectory) {
-  boost::filesystem::path file{"/tmp/stats.gfs"};
-  boost::filesystem::path file0{"/tmp/stats-0.gfs"};
+  auto file = boost::filesystem::temp_directory_path() / "stats.gfs";
+  auto file0 = boost::filesystem::temp_directory_path() / "stats-0.gfs";
   TestableHostStatSampler hostStatSampler(
       file.string(), std::chrono::milliseconds::zero(), 0, 0);
 
