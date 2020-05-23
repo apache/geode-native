@@ -388,7 +388,8 @@ void HostStatSampler::forEachIndexStatFile(_Function function) const {
     std::smatch match;
     const auto& file = entry.path();
     const auto filename = file.filename();
-    if (std::regex_match(filename.string(), match, statsFilter)) {
+    const auto& filenameStr = filename.string();
+    if (std::regex_match(filenameStr, match, statsFilter)) {
       const auto index = std::stoi(match[1].str());
       function(index, file);
     }

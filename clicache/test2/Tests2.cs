@@ -29,9 +29,7 @@ namespace Apache.Geode.Client.UnitTests
     public Tests2()
     {
       var cacheFactory = new CacheFactory();
-      cacheFactory.Set("statistic-archive-file", "cache1.gfs");
       _cacheOne = cacheFactory.Create();
-      cacheFactory.Set("statistic-archive-file", "cache2.gfs");
       _cacheTwo = cacheFactory.Create();
     }
 
