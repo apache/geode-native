@@ -88,7 +88,7 @@ constexpr auto DefaultConnectWaitTimeout = std::chrono::seconds::zero();
 constexpr auto DefaultBucketWaitTimeout = std::chrono::seconds::zero();
 
 constexpr auto DefaultSamplingInterval = std::chrono::seconds(1);
-const bool DefaultSamplingEnabled = true;
+constexpr bool DefaultSamplingEnabled = false;
 
 const char DefaultStatArchive[] = "statArchive.gfs";
 const char DefaultLogFilename[] = "";  // stdout...
