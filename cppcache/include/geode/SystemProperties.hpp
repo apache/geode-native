@@ -88,10 +88,7 @@ class APACHE_GEODE_EXPORT SystemProperties {
   /**
    * Whether time stats are enabled for the statistics.
    */
-  bool getEnableTimeStatistics() const /*timestatisticsEnabled()*/
-  {
-    return m_timestatisticsEnabled;
-  } /*m_timestatisticsEnabled*/
+  bool getEnableTimeStatistics() const { return m_timestatisticsEnabled; }
 
   /**
    * Returns the path of the private key file for SSL use.

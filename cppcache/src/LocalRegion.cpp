@@ -128,10 +128,10 @@ void LocalRegion::updateAccessAndModifiedTime(bool modified) {
 }
 std::shared_ptr<CacheStatistics> LocalRegion::getStatistics() const {
   CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::getStatistics);
-  bool m_statisticsEnabled = true;
-  auto& props = m_cacheImpl->getDistributedSystem().getSystemProperties();
-  m_statisticsEnabled = props.statisticsEnabled();
-  if (!m_statisticsEnabled) {
+
+  if (!m_cacheImpl->getDistributedSystem()
+           .getSystemProperties()
+           .statisticsEnabled()) {
     throw StatisticsDisabledException(
         "LocalRegion::getStatistics statistics disabled for this region");
   }
