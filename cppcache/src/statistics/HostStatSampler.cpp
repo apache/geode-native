@@ -376,20 +376,19 @@ void HostStatSampler::forEachIndexStatFile(_Function function) const {
 
   auto dir = m_archiveFileName.parent_path();
   if (dir.empty()) {
-    dir = ".";
+    dir = boost::filesystem::current_path();
   }
 
-  auto x = boost::make_iterator_range(
-               boost::filesystem::directory_iterator(dir), {}) |
+  for (const auto& entry :
+       boost::make_iterator_range(boost::filesystem::directory_iterator(dir),
+                                  {}) |
            boost::adaptors::filtered(
                static_cast<bool (*)(const boost::filesystem::path&)>(
-                   &boost::filesystem::is_regular_file));
-
-  for (const auto& entry : x) {
+                   &boost::filesystem::is_regular_file))) {
     std::smatch match;
     const auto& file = entry.path();
-    const auto& fileStr = file.filename().string();
-    if (std::regex_match(fileStr, match, statsFilter)) {
+    const auto filename = file.filename();
+    if (std::regex_match(filename.string(), match, statsFilter)) {
       const auto index = std::stoi(match[1].str());
       function(index, file);
     }
