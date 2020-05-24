@@ -60,7 +60,7 @@ class TcpSslConn : public TcpConn {
         m_ssl(nullptr),
         m_pubkeyfile(pubkeyfile),
         m_privkeyfile(privkeyfile),
-        m_pemPassword(pemPassword){};
+        m_pemPassword(pemPassword) {}
 
   TcpSslConn(const char* ipaddr, std::chrono::microseconds waitSeconds,
              int32_t maxBuffSizePool, const char* pubkeyfile,
@@ -69,7 +69,7 @@ class TcpSslConn : public TcpConn {
         m_ssl(nullptr),
         m_pubkeyfile(pubkeyfile),
         m_privkeyfile(privkeyfile),
-        m_pemPassword(pemPassword){};
+        m_pemPassword(pemPassword) {}
 
   // TODO:  Watch out for virt dtor calling virt methods!
 

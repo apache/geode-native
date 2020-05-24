@@ -32,7 +32,7 @@ struct SerializableHelper {
   inline void serialize(DataOutput& dataOutput,
                         const _Serializable& serializable) {
     serializable.toData(dataOutput);
-  };
+  }
 
   inline void deserialize(DataInput& dataInput, _Serializable& serializable) {
     serializable.fromData(dataInput);

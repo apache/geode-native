@@ -67,11 +67,11 @@ class ThinClientBaseDM {
 
   virtual void failover();
 
-  virtual void acquireFailoverLock(){};
-  virtual void releaseFailoverLock(){};
-  virtual void acquireRedundancyLock(){};
-  virtual void releaseRedundancyLock(){};
-  virtual void triggerRedundancyThread(){};
+  virtual void acquireFailoverLock() {}
+  virtual void releaseFailoverLock() {}
+  virtual void acquireRedundancyLock() {}
+  virtual void releaseRedundancyLock() {}
+  virtual void triggerRedundancyThread() {}
   virtual bool isSecurityOn();
 
   virtual bool isMultiUserMode() { return false; }

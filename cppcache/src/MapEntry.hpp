@@ -258,7 +258,7 @@ class MapEntryImpl : public MapEntry,
         "non-versioned MapEntry");
   }
 
-  void cleanup(const CacheEventFlags) override{};
+  void cleanup(const CacheEventFlags) override {}
 
  protected:
   inline explicit MapEntryImpl(bool) : MapEntry(true) {}

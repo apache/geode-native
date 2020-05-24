@@ -50,13 +50,13 @@ namespace testframework {
 class NameKeyPair {
  public:
   NameKeyPair(std::string sName, std::string sKey)
-      : m_name(sName), m_key(sKey){};
+      : m_name(sName), m_key(sKey) {}
 
   /** @brief get name */
-  const std::string& getName() const { return m_name; };
+  const std::string& getName() const { return m_name; }
 
   /** @brief get value */
-  const std::string& getKey() const { return m_key; };
+  const std::string& getKey() const { return m_key; }
 
  private:
   std::string m_name;

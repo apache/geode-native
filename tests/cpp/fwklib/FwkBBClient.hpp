@@ -165,11 +165,11 @@ class FwkBBClient {
  private:
   /** @brief get new message id
    */
-  uint32_t getNewMessageId() { return ++m_messageId; };
+  uint32_t getNewMessageId() { return ++m_messageId; }
 
   /** @brief get current message id
    */
-  uint32_t getCurrentMessageId() { return m_messageId; };
+  uint32_t getCurrentMessageId() { return m_messageId; }
 
   /** @brief send a message to server
    * @param message message to send

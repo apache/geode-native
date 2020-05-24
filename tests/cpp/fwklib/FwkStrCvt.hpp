@@ -74,11 +74,11 @@ class FwkStrCvt {
   static char* hexify(uint8_t* buff, int32_t len);
 
   /** @brief convert from string value */
-  explicit FwkStrCvt(const std::string& text) { m_sText = text; };
+  explicit FwkStrCvt(const std::string& text) { m_sText = text; }
   /** @brief convert from string value */
   explicit FwkStrCvt(const char* pszText) {
     if (pszText) m_sText = pszText;
-  };
+  }
   /** @brief convert from double value */
   explicit FwkStrCvt(const double dValue) {
     char szText[50];
@@ -87,7 +87,7 @@ class FwkStrCvt {
     } else {
       m_sText.clear();
     }
-  };
+  }
   /** @brief convert from float value */
   explicit FwkStrCvt(const float fValue) {
     char szText[50];
@@ -96,7 +96,7 @@ class FwkStrCvt {
     } else {
       m_sText.clear();
     }
-  };
+  }
   /** @brief convert from uint32_t value */
   explicit FwkStrCvt(const uint32_t uiValue) {
     char szText[50];
@@ -105,7 +105,7 @@ class FwkStrCvt {
     } else {
       m_sText.clear();
     }
-  };
+  }
   /** @brief convert from int32_t value */
   explicit FwkStrCvt(const int32_t iValue) {
     char szText[50];
@@ -114,11 +114,11 @@ class FwkStrCvt {
     } else {
       m_sText.clear();
     }
-  };
+  }
   /** @brief convert from bool value */
   explicit FwkStrCvt(const bool bValue) {
     m_sText = (bValue) ? "true" : "false";
-  };
+  }
 
   /** @brief convert from uint64_t value */
   explicit FwkStrCvt(const uint64_t uiValue) {
@@ -141,48 +141,48 @@ class FwkStrCvt {
   }
 
   /** @brief gets double value */
-  double toDouble() { return ACE_OS::strtod(m_sText.c_str(), nullptr); };
+  double toDouble() { return ACE_OS::strtod(m_sText.c_str(), nullptr); }
 
   /** @brief gets float value */
   float toFloat() {
     return static_cast<float>(ACE_OS::strtod(m_sText.c_str(), nullptr));
-  };
+  }
 
   /** @brief gets int32_t value */
-  int32_t toInt() { return ACE_OS::atoi(m_sText.c_str()); };
+  int32_t toInt() { return ACE_OS::atoi(m_sText.c_str()); }
 
   /** @brief gets uint32_t value */
   uint32_t toUint() {
     return static_cast<uint32_t>(ACE_OS::atoi(m_sText.c_str()));
-  };
+  }
 
   /** @brief gets int32_t value */
   // TODO: : why this returns in32_t? if so why different from toInt()
-  int32_t toLong() { return toInt(); };
+  int32_t toLong() { return toInt(); }
 
   /** @brief gets uint32_t value */
   // TODO: : why this returns uin32_t? if so why different from toUInt()
-  uint32_t toUlong() { return toUint(); };
+  uint32_t toUlong() { return toUint(); }
 
   /** @brief gets int32_t value */
-  int32_t toInt32() { return toInt(); };
+  int32_t toInt32() { return toInt(); }
 
   /** @brief gets uint32_t value */
-  uint32_t toUInt32() { return toUint(); };
+  uint32_t toUInt32() { return toUint(); }
 
   /** @brief gets uint64_t value */
   uint64_t toUInt64() {
     uint64_t uiValue = 0;
     sscanf(m_sText.c_str(), UInt64_FMT, &uiValue);
     return uiValue;
-  };
+  }
 
   /** @brief gets int64_t value */
   int64_t toInt64() {
     int64_t iValue = 0;
     sscanf(m_sText.c_str(), Int64_FMT, &iValue);
     return iValue;
-  };
+  }
 
   /** @brief gets bool value */
   bool toBool() {
@@ -199,7 +199,7 @@ class FwkStrCvt {
       return 0.0;
     }
     return static_cast<float>(ACE_OS::strtod(value, nullptr));
-  };
+  }
 
   /** @brief gets float value */
   static float toFloat(const std::string& value) {
@@ -207,7 +207,7 @@ class FwkStrCvt {
       return -1.0;
     }
     return FwkStrCvt::toFloat(value.c_str());
-  };
+  }
 
   /** @brief gets double value */
   static double toDouble(const char* value) {
@@ -215,7 +215,7 @@ class FwkStrCvt {
       return 0.0;
     }
     return ACE_OS::strtod(value, nullptr);
-  };
+  }
 
   /** @brief gets double value */
   static double toDouble(const std::string& value) {
@@ -223,7 +223,7 @@ class FwkStrCvt {
       return -1.0;
     }
     return FwkStrCvt::toDouble(value.c_str());
-  };
+  }
 
   /** @brief gets int32_t value */
   static int32_t toInt32(const char* value) {
@@ -231,7 +231,7 @@ class FwkStrCvt {
       return 0;
     }
     return ACE_OS::atoi(value);
-  };
+  }
 
   /** @brief gets int32_t value */
   static int32_t toInt32(const std::string& value) {
@@ -239,13 +239,13 @@ class FwkStrCvt {
       return -1;
     }
     return ACE_OS::atoi(value.c_str());
-  };
+  }
 
   /** @brief gets uint32_t value */
   static uint32_t toUInt32(const char* value) {
     if (!value) return 0;
     return static_cast<uint32_t>(ACE_OS::atoi(value));
-  };
+  }
 
   /** @brief gets uint32_t value */
   static uint32_t toUInt32(const std::string& value) {
@@ -253,7 +253,7 @@ class FwkStrCvt {
       return 0;
     }
     return static_cast<uint32_t>(ACE_OS::atoi(value.c_str()));
-  };
+  }
 
   /** @brief gets uint64_t value */
   static uint64_t toUInt64(const std::string& value) {
@@ -261,7 +261,7 @@ class FwkStrCvt {
       return 0;
     }
     return toUInt64(value.c_str());
-  };
+  }
 
   /** @brief gets uint64_t value */
   static uint64_t toUInt64(const char* value) {
@@ -269,7 +269,7 @@ class FwkStrCvt {
     if (!value) return uiValue;
     sscanf(value, UInt64_FMT, &uiValue);
     return uiValue;
-  };
+  }
 
   /** @brief gets int64_t value */
   static int64_t toInt64(const std::string& value) {
@@ -277,7 +277,7 @@ class FwkStrCvt {
       return 0;
     }
     return toInt64(value.c_str());
-  };
+  }
 
   /** @brief gets int64_t value */
   static int64_t toInt64(const char* value) {
@@ -287,7 +287,7 @@ class FwkStrCvt {
     }
     sscanf(value, Int64_FMT, &iValue);
     return iValue;
-  };
+  }
 
   /** @brief from int64_t value */
   static std::string toString(int64_t value) {
@@ -334,13 +334,13 @@ class FwkStrCvt {
   static int32_t toSeconds(const char* str);
 
   /** @brief gets string value */
-  std::string& toString() { return m_sText; };
+  std::string& toString() { return m_sText; }
 
   /** @brief gets string value */
-  const std::string& asString() { return m_sText; };
+  const std::string& asString() { return m_sText; }
 
   /** @brief gets char * value */
-  const char* asChar() { return m_sText.c_str(); };
+  const char* asChar() { return m_sText.c_str(); }
 
  private:
   static int32_t asSeconds(int32_t val, char typ);

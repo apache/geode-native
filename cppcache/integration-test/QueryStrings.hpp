@@ -65,15 +65,15 @@ class QueryStrings {
 
         haveLargeResultset(pisLargeResultset) {}
 
-  static int RSsize() { return RS_ARRAY_SIZE; };
-  static int RSPsize() { return RSP_ARRAY_SIZE; };
-  static int RSOPLsize() { return RSOPL_ARRAY_SIZE; };
-  static int SSsize() { return SS_ARRAY_SIZE; };
-  static int SSPsize() { return SSP_ARRAY_SIZE; };
-  static int SSOPLsize() { return SSOPL_ARRAY_SIZE; };
-  static int RQsize() { return RQ_ARRAY_SIZE; };
-  static int CQRSsize() { return CQRS_ARRAY_SIZE; };
-  const std::string& query() const { return _query; };
+  static int RSsize() { return RS_ARRAY_SIZE; }
+  static int RSPsize() { return RSP_ARRAY_SIZE; }
+  static int RSOPLsize() { return RSOPL_ARRAY_SIZE; }
+  static int SSsize() { return SS_ARRAY_SIZE; }
+  static int SSPsize() { return SSP_ARRAY_SIZE; }
+  static int SSOPLsize() { return SSOPL_ARRAY_SIZE; }
+  static int RQsize() { return RQ_ARRAY_SIZE; }
+  static int CQRSsize() { return CQRS_ARRAY_SIZE; }
+  const std::string& query() const { return _query; }
 
  public:
   std::string _query;

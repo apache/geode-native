@@ -34,7 +34,7 @@ class Version {
  private:
   static int8_t m_ordinal;
 
-  Version(){};
+  Version() {}
 };
 }  // namespace client
 }  // namespace geode

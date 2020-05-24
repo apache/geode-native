@@ -41,8 +41,8 @@ namespace client {
 class RegionCommit {
  public:
   explicit RegionCommit(MemberListForVersionStamp& memberListForVersionStamp)
-      : m_memberListForVersionStamp(memberListForVersionStamp){};
-  virtual ~RegionCommit(){};
+      : m_memberListForVersionStamp(memberListForVersionStamp) {}
+  virtual ~RegionCommit() {}
 
   void fromData(DataInput& input);
   void apply(Cache* cache);

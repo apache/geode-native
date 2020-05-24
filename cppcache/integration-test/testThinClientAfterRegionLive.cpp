@@ -39,7 +39,7 @@ class DisconnectCacheListioner : public CacheListener {
   int m_index;
 
  public:
-  explicit DisconnectCacheListioner(int index) { m_index = index; };
+  explicit DisconnectCacheListioner(int index) { m_index = index; }
 
   void afterRegionDisconnected(Region &) override {
     isRegionDead[m_index] = true;

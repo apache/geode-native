@@ -100,9 +100,9 @@ class TcrConnectionManager {
     m_poolEndpointList.push_back(endpoint);
   }
 
-  bool isDurable() { return m_isDurable; };
-  bool haEnabled() { return m_redundancyManager->m_HAenabled; };
-  CacheImpl* getCacheImpl() const { return m_cache; };
+  bool isDurable() { return m_isDurable; }
+  bool haEnabled() { return m_redundancyManager->m_HAenabled; }
+  CacheImpl* getCacheImpl() const { return m_cache; }
 
   GfErrType sendSyncRequestCq(TcrMessage& request, TcrMessageReply& reply,
                               TcrHADistributionManager* theHADM);

@@ -62,8 +62,8 @@ class TXState {
   }
 
  private:
-  void startReplay() { m_replay = true; };
-  void endReplay() { m_replay = false; };
+  void startReplay() { m_replay = true; }
+  void endReplay() { m_replay = false; }
 
  private:
   TXId m_txId;
@@ -89,8 +89,8 @@ class TXState {
    public:
     explicit ReplayControl(TXState* txState) : m_txState(txState) {
       m_txState->startReplay();
-    };
-    virtual ~ReplayControl() { m_txState->endReplay(); };
+    }
+    virtual ~ReplayControl() { m_txState->endReplay(); }
 
    private:
     TXState* m_txState;
