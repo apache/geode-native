@@ -55,7 +55,7 @@ using std::chrono::nanoseconds;
 
 using client::Exception;
 
-static const boost::filesystem::path GFS_EXTENSION(".gfs");
+constexpr auto GFS_EXTENSION = ".gfs";
 
 constexpr size_t kibibyte = 1024;
 constexpr size_t mebibyte = kibibyte * 1024;

@@ -73,8 +73,6 @@ target_link_libraries(apache-geode_unittests
     GTest::gtest
     GTest::gtest_main
     GTest::gmock
-    Boost::boost
-    Boost::thread
     _WarningsAsError
     _CppCodeCoverage
 )
