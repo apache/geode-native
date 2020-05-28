@@ -93,10 +93,10 @@ class CredentialGenerator {
   std::string m_name;
   static registeredClassMap* generatormap;
 
-  CredentialGenerator() : m_id(ID_NONE), m_name("NONE"){};
+  CredentialGenerator() : m_id(ID_NONE), m_name("NONE") {}
 
  protected:
-  CredentialGenerator(ID id, std::string name) : m_id(id), m_name(name){};
+  CredentialGenerator(ID id, std::string name) : m_id(id), m_name(name) {}
   CredentialGenerator(const CredentialGenerator& other)
       : m_id(other.m_id), m_name(other.m_name) {}
 
@@ -115,7 +115,7 @@ class CredentialGenerator {
       return false;
     }
     return (m_id == other->m_id && m_name == other->m_name);
-  };
+  }
 
  public:
   static std::shared_ptr<CredentialGenerator> create(std::string scheme);
@@ -153,7 +153,7 @@ class CredentialGenerator {
     }
   }
 
-  void hashCode(){};
+  void hashCode() {}
 
   void getAuthInit(std::shared_ptr<Properties>& prop) {
     std::string authinit = this->getClientAuthInitLoaderFactory();

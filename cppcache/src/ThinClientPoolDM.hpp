@@ -114,7 +114,7 @@ class ThinClientPoolDM
 
   // void updateQueue(const char* regionPath) ;
   ClientProxyMembershipID* getMembershipId() { return m_memId.get(); }
-  virtual void processMarker(){};
+  virtual void processMarker() {}
   bool checkDupAndAdd(std::shared_ptr<EventId> eventid) override;
   std::recursive_mutex& getPoolLock() { return mutex_; }
   void reducePoolSize(int num);
@@ -133,7 +133,7 @@ class ThinClientPoolDM
 
   virtual void setStickyNull(bool isBGThread) {
     if (!isBGThread) m_manager->setStickyConnection(nullptr, false);
-  };
+  }
 
   virtual bool canItBeDeletedNoImpl(TcrConnection* conn);
 

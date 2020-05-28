@@ -628,7 +628,7 @@ class TESTOBJECT_EXPORT PdxType : public PdxSerializable {
     for (auto i = 0; i <= 9; i++) {
       _GEODE_SAFE_DELETE(m_add[i]);
     }
-  };
+  }
 
   virtual size_t objectSize() const override {
     auto objectSize = sizeof(PdxType);

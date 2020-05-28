@@ -93,9 +93,7 @@ class APACHE_GEODE_EXPORT CacheImpl {
   void setClientCrashTEST();
 
   // For PrSingleHop C++unit testing.
-  void setNetworkHopFlag(bool networkhopflag) {
-    m_networkhop = networkhopflag;
-  };
+  void setNetworkHopFlag(bool networkhopflag) { m_networkhop = networkhopflag; }
 
   bool getAndResetNetworkHopFlag() { return m_networkhop.exchange(false); }
 

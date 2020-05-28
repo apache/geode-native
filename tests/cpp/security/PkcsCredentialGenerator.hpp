@@ -48,7 +48,7 @@ T randomValue(T minValue, T maxValue) {
 
 class PKCSCredentialGenerator : public CredentialGenerator {
  public:
-  PKCSCredentialGenerator() : CredentialGenerator(ID_PKI, "PKCS"){};
+  PKCSCredentialGenerator() : CredentialGenerator(ID_PKI, "PKCS") {}
 
   std::string getInitArgs(std::string workingDir, bool) override {
     FWKINFO("Inside PKCS credentials");

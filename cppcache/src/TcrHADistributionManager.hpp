@@ -63,11 +63,11 @@ class APACHE_GEODE_EXPORT TcrHADistributionManager
 
   void acquireRedundancyLock() override {
     m_connManager.acquireRedundancyLock();
-  };
+  }
 
   void releaseRedundancyLock() override {
     m_connManager.releaseRedundancyLock();
-  };
+  }
 
  protected:
   GfErrType sendSyncRequestRegisterInterest(

@@ -67,7 +67,7 @@ class APACHE_GEODE_EXPORT EventIdMap {
   EventIdMap &operator=(const EventIdMap &);
 
  public:
-  EventIdMap() : m_expiry(0){};
+  EventIdMap() : m_expiry(0) {}
 
   void clear();
 

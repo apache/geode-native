@@ -54,8 +54,8 @@ class TombstoneEntry {
   void setExpiryTaskId(ExpiryTaskManager::id_type expiryTaskId) {
     m_expiryTaskId = expiryTaskId;
   }
-  TombstoneExpiryHandler* getHandler() { return m_handler; };
-  void setHandler(TombstoneExpiryHandler* handler) { m_handler = handler; };
+  TombstoneExpiryHandler* getHandler() { return m_handler; }
+  void setHandler(TombstoneExpiryHandler* handler) { m_handler = handler; }
 
  private:
   std::shared_ptr<MapEntryImpl> m_entry;

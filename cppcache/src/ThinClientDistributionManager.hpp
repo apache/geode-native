@@ -43,8 +43,8 @@ class ThinClientDistributionManager : public ThinClientBaseDM {
 
   void failover() override;
 
-  void acquireFailoverLock() override { m_endpointsLock.lock(); };
-  void releaseFailoverLock() override { m_endpointsLock.unlock(); };
+  void acquireFailoverLock() override { m_endpointsLock.lock(); }
+  void releaseFailoverLock() override { m_endpointsLock.unlock(); }
 
   TcrEndpoint* getActiveEndpoint() override {
     return m_endpoints[m_activeEndpoint];

@@ -30,7 +30,7 @@ class TXState;
 
 class TSSTXStateWrapper {
  public:
-  inline TSSTXStateWrapper() : m_txState(nullptr){};
+  inline TSSTXStateWrapper() : m_txState(nullptr) {}
 
   ~TSSTXStateWrapper() noexcept;
 

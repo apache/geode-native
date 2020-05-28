@@ -40,7 +40,7 @@ class APACHE_GEODE_EXPORT ThinClientCacheDistributionManager
  public:
   explicit ThinClientCacheDistributionManager(
       TcrConnectionManager& connManager);
-  ~ThinClientCacheDistributionManager(){};
+  ~ThinClientCacheDistributionManager() {}
 
   void init();
   virtual GfErrType sendSyncRequest(TcrMessage& request, TcrMessageReply& reply,

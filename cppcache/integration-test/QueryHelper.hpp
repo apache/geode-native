@@ -110,10 +110,10 @@ class QueryHelper {
                         size_t rowCount, int32_t fieldCount);
 
   // utility methods
-  virtual size_t getPortfolioSetSize() { return portfolioSetSize; };
-  virtual size_t getPortfolioNumSets() { return portfolioNumSets; };
-  virtual size_t getPositionSetSize() { return positionSetSize; };
-  virtual size_t getPositionNumSets() { return positionNumSets; };
+  virtual size_t getPortfolioSetSize() { return portfolioSetSize; }
+  virtual size_t getPortfolioNumSets() { return portfolioNumSets; }
+  virtual size_t getPositionSetSize() { return positionSetSize; }
+  virtual size_t getPositionNumSets() { return positionNumSets; }
 
   bool isExpectedRowsConstantRS(int queryindex) {
     for (int i = (sizeof(constantExpectedRowsRS) / sizeof(int)) - 1; i > -1;
