@@ -101,7 +101,9 @@ add_clangformat(cpp-integration-test)
 
 enable_testing()
 include(GoogleTest)
-gtest_discover_tests(cpp-integration-test)
+gtest_discover_tests(cpp-integration-test
+  DISCOVERY_TIMEOUT 60
+)
 
 file(GLOB SSL_CERTIFICATES
         "${CMAKE_CURRENT_SOURCE_DIR}/*Keys"
