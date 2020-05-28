@@ -15,9 +15,6 @@
  * limitations under the License.
  */
 
-#include <gmock/gmock.h>
-
-#include <future>
 #include <thread>
 
 #include <gtest/gtest.h>
@@ -44,6 +41,9 @@ std::shared_ptr<apache::geode::client::Region> setupRegion(
 
 TEST(ClientTransactionXATest, interTxand2PCTx) {
   Cluster cluster{LocatorCount{1}, ServerCount{1}};
+
+  cluster.start();
+
   cluster.getGfsh()
       .create()
       .region()

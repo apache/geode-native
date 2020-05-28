@@ -15,7 +15,10 @@
 
 add_executable(cpp-integration-test
   AuthInitializeTest.cpp
+  BasicIPv6Test.cpp
   CacheXmlTest.cpp
+  CleanIdleConnections.cpp
+  ClientTransactionXATest.cpp
   CommitConflictExceptionTest.cpp
   CqPlusAuthInitializeTest.cpp
   CqTest.cpp
@@ -39,8 +42,6 @@ add_executable(cpp-integration-test
   SslTwoWayTest.cpp
   StructTest.cpp
   TransactionCleaningTest.cpp
-  CleanIdleConnections.cpp
-  BasicIPv6Test.cpp
 )
 
 target_compile_definitions(cpp-integration-test
