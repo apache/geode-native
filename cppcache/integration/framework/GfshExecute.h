@@ -26,12 +26,15 @@
 #include <string>
 
 #include <geode/Exception.hpp>
-
+#ifdef _SOLARIS
 #pragma error_messages(off, oklambdaretmulti, wvarhidemem, \
                        w_constexprnonlitret, explctspectypename)
+#endif
 #include <boost/process.hpp>
+#ifdef _SOLARIS
 #pragma error_messages(on, oklambdaretmulti, wvarhidemem, \
                        w_constexprnonlitret, explctspectypename)
+#endif
 
 #include "Gfsh.h"
 #include "TestConfig.h"

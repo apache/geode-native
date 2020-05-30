@@ -42,7 +42,9 @@
 #include "util/JavaModifiedUtf8.hpp"
 #include "util/string.hpp"
 
+#ifdef _SOLARIS
 #pragma error_messages(off, SEC_UNINITIALIZED_MEM_READ)
+#endif
 
 namespace apache {
 namespace geode {
@@ -3322,7 +3324,9 @@ TcrMessageHelper::ChunkObjectType TcrMessageHelper::readChunkPartHeader(
   return ChunkObjectType::OBJECT;
 }
 
+#ifdef _SOLARIS
 #pragma error_messages(default, SEC_UNINITIALIZED_MEM_READ)
+#endif
 
 }  // namespace client
 }  // namespace geode
