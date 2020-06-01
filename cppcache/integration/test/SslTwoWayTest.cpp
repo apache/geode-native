@@ -61,8 +61,7 @@ class SslTwoWayTest : public ::testing::Test {
          boost::filesystem::path("server_keystore_chained.p12"));
     const auto clusterTruststore =
         (serverSslKeysDir /
-         boost::filesystem::path(
-             "server_truststore_chained_root.jks"));
+         boost::filesystem::path("server_truststore_chained_root.jks"));
 
     cluster.useSsl(true, clusterKeystore.string(), clusterTruststore.string(),
                    certificatePassword, certificatePassword);

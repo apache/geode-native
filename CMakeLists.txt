@@ -386,6 +386,12 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/templates/ DESTINATION templates
   PATTERN "templates/security/CMakeLists.txt.forInstall" EXCLUDE)
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/templates/security/CMakeLists.txt.forInstall RENAME CMakeLists.txt DESTINATION templates/security)
 
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/ssl_keys/server_keys/server_keystore_chained.p12 RENAME server_keystore.p12 DESTINATION examples/utilities/ServerSslKeys)
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/ssl_keys/server_keys/server_truststore_chained_root.jks RENAME server_truststore.jks DESTINATION examples/utilities/ServerSslKeys)
+
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/ssl_keys/client_keys/client_keystore_chained.pem RENAME client_keystore.pem DESTINATION examples/utilities/ClientSslKeys)
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/ssl_keys/client_keys/client_truststore_chained_root.pem RENAME client_truststore.pem DESTINATION examples/utilities/ClientSslKeys)
+
 if (USE_RAT)
   add_custom_target( rat-check
     COMMAND ${CMAKE_COMMAND}
