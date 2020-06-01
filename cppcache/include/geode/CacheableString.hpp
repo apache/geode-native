@@ -25,8 +25,6 @@
 #include "internal/DataSerializablePrimitive.hpp"
 #include "internal/geode_globals.hpp"
 
-#undef max
-
 namespace apache {
 namespace geode {
 namespace client {

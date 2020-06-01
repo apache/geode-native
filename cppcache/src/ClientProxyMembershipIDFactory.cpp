@@ -56,7 +56,7 @@ ClientProxyMembershipIDFactory::ClientProxyMembershipIDFactory(
 std::unique_ptr<ClientProxyMembershipID> ClientProxyMembershipIDFactory::create(
     const std::string& durableClientId,
     const std::chrono::seconds durableClntTimeOut) {
-  auto hostname = boost::asio::ip::host_name();
+  const auto hostname = boost::asio::ip::host_name();
   const ACE_INET_Addr address("", hostname.c_str(), "tcp");
   return std::unique_ptr<ClientProxyMembershipID>(
       new ClientProxyMembershipID(dsName, randString, hostname, address, 0,
