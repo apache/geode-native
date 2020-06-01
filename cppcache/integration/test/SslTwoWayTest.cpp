@@ -42,7 +42,10 @@ class SslTwoWayTest : public ::testing::Test {
   SslTwoWayTest() {
     // You can do set-up work for each test here.
     certificatePassword = std::string("apachegeode");
-    currentWorkingDirectory = boost::filesystem::current_path();
+    serverSslKeysDir = boost::filesystem::path(
+        getFrameworkString(FrameworkVariable::TestServerSslKeysDir));
+    clientSslKeysDir = boost::filesystem::path(
+        getFrameworkString(FrameworkVariable::TestClientSslKeysDir));
   }
 
   ~SslTwoWayTest() override = default;
@@ -54,12 +57,12 @@ class SslTwoWayTest : public ::testing::Test {
     // Code here will be called immediately after the constructor (right
     // before each test).
     const auto clusterKeystore =
-        (currentWorkingDirectory /
-         boost::filesystem::path("ServerSslKeys/server_keystore_chained.p12"));
+        (serverSslKeysDir /
+         boost::filesystem::path("server_keystore_chained.p12"));
     const auto clusterTruststore =
-        (currentWorkingDirectory /
+        (serverSslKeysDir /
          boost::filesystem::path(
-             "ServerSslKeys/server_truststore_chained_root.jks"));
+             "server_truststore_chained_root.jks"));
 
     cluster.useSsl(true, clusterKeystore.string(), clusterTruststore.string(),
                    certificatePassword, certificatePassword);
@@ -83,17 +86,17 @@ class SslTwoWayTest : public ::testing::Test {
   // for Ssl.
   Cluster cluster = Cluster{LocatorCount{1}, ServerCount{1}};
   std::string certificatePassword;
-  boost::filesystem::path currentWorkingDirectory;
+  boost::filesystem::path serverSslKeysDir;
+  boost::filesystem::path clientSslKeysDir;
 };
 
 TEST_F(SslTwoWayTest, PutGetWithValidSslConfiguration) {
   const auto clientKeystore =
-      (currentWorkingDirectory /
-       boost::filesystem::path("ClientSslKeys/client_keystore_chained.pem"));
+      (clientSslKeysDir /
+       boost::filesystem::path("client_keystore_chained.pem"));
   const auto clientTruststore =
-      (currentWorkingDirectory /
-       boost::filesystem::path(
-           "ClientSslKeys/client_truststore_chained_root.pem"));
+      (clientSslKeysDir /
+       boost::filesystem::path("client_truststore_chained_root.pem"));
   auto cache = CacheFactory()
                    .set("log-level", "DEBUG")
                    .set("ssl-enabled", "true")
@@ -118,12 +121,11 @@ TEST_F(SslTwoWayTest, PutGetWithValidSslConfiguration) {
 
 TEST_F(SslTwoWayTest, PutWithInvalidKeystorePassword) {
   const auto clientKeystore =
-      (currentWorkingDirectory /
-       boost::filesystem::path("ClientSslKeys/client_keystore_chained.pem"));
+      (clientSslKeysDir /
+       boost::filesystem::path("client_keystore_chained.pem"));
   const auto clientTruststore =
-      (currentWorkingDirectory /
-       boost::filesystem::path(
-           "ClientSslKeys/client_truststore_chained_root.pem"));
+      (clientSslKeysDir /
+       boost::filesystem::path("client_truststore_chained_root.pem"));
   auto cache = CacheFactory()
                    .set("log-level", "none")
                    .set("ssl-enabled", "true")
@@ -154,12 +156,11 @@ TEST_F(SslTwoWayTest, PutWithInvalidKeystorePassword) {
 
 TEST_F(SslTwoWayTest, PutWithUntrustedKeystore) {
   const auto clientUntrustedKeystore =
-      (currentWorkingDirectory /
-       boost::filesystem::path("ClientSslKeys/client_keystore_untrusted.pem"));
+      (clientSslKeysDir /
+       boost::filesystem::path("client_keystore_untrusted.pem"));
   const auto clientTruststore =
-      (currentWorkingDirectory /
-       boost::filesystem::path(
-           "ClientSslKeys/client_truststore_chained_root.pem"));
+      (clientSslKeysDir /
+       boost::filesystem::path("client_truststore_chained_root.pem"));
 
   auto cache = CacheFactory()
                    .set("log-level", "none")
@@ -191,13 +192,12 @@ TEST_F(SslTwoWayTest, PutWithUntrustedKeystore) {
 
 TEST_F(SslTwoWayTest, PutWithCorruptKeystore) {
   const auto clientCorruptKeystore =
-      (currentWorkingDirectory /
-       boost::filesystem::path("ClientSslKeys/client_keystore_corrupt.pem"));
+      (clientSslKeysDir /
+       boost::filesystem::path("client_keystore_corrupt.pem"));
 
   const auto clientTruststore =
-      (currentWorkingDirectory /
-       boost::filesystem::path(
-           "ClientSslKeys/client_truststore_chained_root.pem"));
+      (clientSslKeysDir /
+       boost::filesystem::path("client_truststore_chained_root.pem"));
 
   auto cache = CacheFactory()
                    .set("log-level", "DEBUG")
@@ -229,12 +229,11 @@ TEST_F(SslTwoWayTest, PutWithCorruptKeystore) {
 
 TEST_F(SslTwoWayTest, PutWithUntrustedTruststore) {
   const auto clientKeystore =
-      (currentWorkingDirectory /
-       boost::filesystem::path("ClientSslKeys/client_keystore_chained.pem"));
+      (clientSslKeysDir /
+       boost::filesystem::path("client_keystore_chained.pem"));
   const auto clientUntrustedTruststore =
-      (currentWorkingDirectory /
-       boost::filesystem::path(
-           "ClientSslKeys/client_truststore_untrusting.pem"));
+      (clientSslKeysDir /
+       boost::filesystem::path("client_truststore_untrusting.pem"));
 
   auto cache = CacheFactory()
                    .set("log-level", "none")
@@ -266,11 +265,11 @@ TEST_F(SslTwoWayTest, PutWithUntrustedTruststore) {
 
 TEST_F(SslTwoWayTest, PutWithCorruptTruststore) {
   const auto clientKeystore =
-      (currentWorkingDirectory /
-       boost::filesystem::path("ClientSslKeys/client_keystore_chained.pem"));
+      (clientSslKeysDir /
+       boost::filesystem::path("client_keystore_chained.pem"));
   const auto clientUntrustedTruststore =
-      (currentWorkingDirectory /
-       boost::filesystem::path("ClientSslKeys/client_truststore_corrupt.pem"));
+      (clientSslKeysDir /
+       boost::filesystem::path("client_truststore_corrupt.pem"));
 
   auto cache = CacheFactory()
                    .set("log-level", "none")
@@ -302,11 +301,11 @@ TEST_F(SslTwoWayTest, PutWithCorruptTruststore) {
 
 TEST_F(SslTwoWayTest, PutWithMissingTruststore) {
   const auto clientKeystore =
-      (currentWorkingDirectory /
-       boost::filesystem::path("ClientSslKeys/client_keystore_chained.pem"));
+      (clientSslKeysDir /
+       boost::filesystem::path("client_keystore_chained.pem"));
   const auto clientMissingTruststore =
-      (currentWorkingDirectory /
-       boost::filesystem::path("ClientSslKeys/client_truststore_missing.pem"));
+      (clientSslKeysDir /
+       boost::filesystem::path("client_truststore_missing.pem"));
 
   auto cache = CacheFactory()
                    .set("log-level", "none")
