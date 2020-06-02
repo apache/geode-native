@@ -47,6 +47,7 @@ size_t getNumOfEntries(std::shared_ptr<Region> &R1) {
 void startDSandCreateCache(std::shared_ptr<Cache> &cache) {
   auto pp = Properties::create();
   auto cacheFactory = CacheFactory(pp);
+  cacheFactory.set("statistic-sampling-enabled", "true");
   cache = std::make_shared<Cache>(cacheFactory.create());
   ASSERT(cache != nullptr, "cache not equal to null expected");
 }
@@ -108,6 +109,9 @@ BEGIN_TEST(TEST_EXPIRATION)
     startDSandCreateCache(cache);
 
     ASSERT(cache != nullptr, "Expected cache to be NON-nullptr");
+
+    ASSERT(cache->getSystemProperties().statisticsEnabled(),
+           "Statistics must be enabled for expiration.");
 
     auto cacheImpl = CacheRegionHelper::getCacheImpl(cache.get());
 

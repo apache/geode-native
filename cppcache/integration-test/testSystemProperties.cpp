@@ -51,7 +51,7 @@ BEGIN_TEST(DEFAULT)
     ASSERT(
         systemProperties->statisticsSampleInterval() == std::chrono::seconds(1),
         "expected 1");
-    ASSERT(systemProperties->statisticsEnabled() == true, "expected true");
+    ASSERT(systemProperties->statisticsEnabled() == false, "expected false");
     LOG(systemProperties->statisticsArchiveFile());
     auto &&statisticsArchiveFileName =
         systemProperties->statisticsArchiveFile();
@@ -80,7 +80,7 @@ BEGIN_TEST(NEW_CONFIG)
                std::chrono::seconds(700),
            "expected 700");
 
-    ASSERT(systemProperties->statisticsEnabled() == false, "expected false");
+    ASSERT(systemProperties->statisticsEnabled() == true, "expected true");
 
     ASSERT(systemProperties->threadPoolSize() == 96,
            "max-fe-thread should be 96");
