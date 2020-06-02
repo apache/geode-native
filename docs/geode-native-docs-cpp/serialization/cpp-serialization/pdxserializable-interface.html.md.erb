@@ -1,5 +1,5 @@
 ---
-title:  Serialize Using the PdxSerializable Class
+title:  Using the PdxSerializable Abstract Class
 ---
 
 <!--
@@ -49,9 +49,9 @@ Use this procedure to program your domain object for PDX serialization using the
     <br><br>
     If no fields are set as identity fields, then all fields will be used in `hashCode` and equality checks. The identity fields should make marked after they are written using a `write*` method.
 
-## <a class="no-quick-link" id="pdx-serializable-example"></a>PdxSerializable Example
+For example:
 
-``` pre
+``` cpp
 class PdxObject: public PdxSerializable {
 
 private:

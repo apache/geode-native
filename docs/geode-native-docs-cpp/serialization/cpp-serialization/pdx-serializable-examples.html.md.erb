@@ -1,0 +1,165 @@
+---
+title:  PdxSerializable Examples
+---
+
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+The native client release contains examples showing how a client application
+can register for serialization of custom objects using the C++ PdxSerializable interface.
+
+The examples are located in `examples/cpp/pdxserializable`.
+
+The examples define the serializable class, `Orders`, including its serialization and deserialization methods and its factory method.
+Once these pieces are in place, execution is simple: the main routine of the example registers the serializable class then performs some put and get operations.
+
+<a id="pdxsbl_execution"></a>
+### Execution
+
+The example performs a sequence of operations, displaying simple log entries as they run.
+
+- To run an example, follow the instructions in the README.md file in the example directory.
+- Review the source code in the example directory to see exactly how it operates.
+
+- Begin by running a script that sets up the server-side environment by invoking `gfsh` commands to create a region, a locator, and a server.
+
+- Run the example client application, which performs the following steps:
+
+  - Connects to the server
+  - Registers the PdxSerializable class
+  - Creates orders
+  - Stores orders
+  - Retrieves orders
+
+<a id="pdxsbl_cpp_example"></a>
+### C++ Example
+
+This section contains code snippets showing highlights of the C++ PdxSerialiable example. They are not intended for cut-and-paste execution.
+For the complete source, see the example source directory.
+
+The C++ example defines a PdxSerializable class called `Order` that inherits from the `PdxSerializable` interface.
+An `Order` object contains three fields:
+
+- an integer `order_id`
+- a string `name`
+- a short-int `quantity`
+
+From Order.hpp:
+
+```cpp
+class Order : public PdxSerializable {
+ public:
+ ...
+
+ private:
+  int32_t order_id_;
+  std::string name_;
+  int16_t quantity_;
+};
+
+```
+
+Using the `PdxSerializable` read and write methods, the `Order` class defines `fromData()` and `toData()`
+methods that perform the deserialization and serialization operations, respectively, and the
+`createDeserializable()` factory method:
+
+From Order.cpp:
+
+```cpp
+void Order::fromData(PdxReader& pdxReader) {
+  order_id_ = pdxReader.readInt(ORDER_ID_KEY_);
+  name_ = pdxReader.readString(NAME_KEY_);
+  quantity_ = pdxReader.readShort(QUANTITY_KEY_);
+}
+
+void Order::toData(PdxWriter& pdxWriter) const {
+  pdxWriter.writeInt(ORDER_ID_KEY_, order_id_);
+  pdxWriter.markIdentityField(ORDER_ID_KEY_);
+
+  pdxWriter.writeString(NAME_KEY_, name_);
+  pdxWriter.markIdentityField(NAME_KEY_);
+
+  pdxWriter.writeShort(QUANTITY_KEY_, quantity_);
+  pdxWriter.markIdentityField(QUANTITY_KEY_);
+}
+
+...
+
+std::shared_ptr<PdxSerializable> Order::createDeserializable() {
+  return std::make_shared<Order>();
+}
+```
+
+The C++ example mainline creates a cache, then uses it to create a connection pool and a region object (of class `Region`).
+
+```cpp
+  auto cacheFactory = CacheFactory();
+  cacheFactory.set("log-level", "none");
+  auto cache = cacheFactory.create();
+  auto poolFactory = cache.getPoolManager().createFactory();
+
+  poolFactory.addLocator("localhost", 10334);
+  auto pool = poolFactory.create("pool");
+  auto regionFactory = cache.createRegionFactory(RegionShortcut::PROXY);
+  auto region = regionFactory.setPoolName("pool").create("custom_orders");
+```
+
+The client registers the PdxSerializable class that was created in Orders.cpp:
+
+```cpp
+  cache.getTypeRegistry().registerPdxType(Order::createDeserializable);
+```
+
+The client then instantiates and stores two `Order` objects:
+
+```cpp
+  auto order1 = std::make_shared<Order>(1, "product x", 23);
+  auto order2 = std::make_shared<Order>(2, "product y", 37);
+
+  region->put("Customer1", order1);
+  region->put("Customer2", order2);
+```
+
+Next, the application retrieves the stored values, in one case extracting the fields defined in
+the serialization code:
+
+```cpp
+  if (auto order1retrieved =
+          std::dynamic_pointer_cast<Order>(region->get("Customer1"))) {
+    std::cout << "OrderID: " << order1retrieved->getOrderId() << std::endl;
+    std::cout << "Product Name: " << order1retrieved->getName() << std::endl;
+    std::cout << "Quantity: " << order1retrieved->getQuantity() << std::endl;
+  } else {
+    std::cout << "Order 1 not found." << std::endl;
+  }
+```
+
+The application retrieves the second object and displays it without extracting the separate fields:
+
+```cpp
+  if (region->existsValue("rtimmons")) {
+    std::cout << "rtimmons's info not deleted" << std::endl;
+  } else {
+    std::cout << "rtimmons's info successfully deleted" << std::endl;
+  }
+```
+
+Finally, the application closes the cache:
+
+```cpp
+  cache.close();
+```
