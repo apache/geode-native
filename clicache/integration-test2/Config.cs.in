@@ -31,11 +31,11 @@ public class Config
 
   public static string SslServerKeyPath
   {
-	get { return @"@CMAKE_CURRENT_SOURCE_DIR@/../../cppcache/integration/test/ServerSslKeys"; }
+	get { return @"@CMAKE_CURRENT_SOURCE_DIR@/../../ssl_keys/server_keys"; }
   }
 
   public static string SslClientKeyPath
   {
-	get { return @"@CMAKE_CURRENT_SOURCE_DIR@/../../cppcache/integration/test/ClientSslKeys"; }
+	get { return @"@CMAKE_CURRENT_SOURCE_DIR@/../../ssl_keys/client_keys"; }
   }
 }

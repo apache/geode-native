@@ -48,10 +48,6 @@ add_library( ${PROJECT_NAME} SHARED
   packages.config
   AutoSerializationTests.cs
   SerializationTests.cs
-  ClientSslKeys/client_keystore.password.pem
-  ClientSslKeys/client_truststore.pem
-  ServerSslKeys/server_keystore.jks
-  ServerSslKeys/server_truststore.jks
 )
 
 set_source_files_properties(
@@ -59,10 +55,6 @@ set_source_files_properties(
   server.xml
   xunit.runner.json
   geode.properties
-  ClientSslKeys/client_keystore.password.pem
-  ClientSslKeys/client_truststore.pem
-  ServerSslKeys/server_keystore.jks
-  ServerSslKeys/server_truststore.jks
   PROPERTIES
     VS_COPY_TO_OUT_DIR Always
     VS_TOOL_OVERRIDE None
