@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-#include <iostream>
-#include <thread>
-
 #include <gtest/gtest.h>
 
 #include <geode/Cache.hpp>
