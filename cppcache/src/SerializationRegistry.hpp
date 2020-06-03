@@ -41,7 +41,6 @@
 
 #include "MemberListForVersionStamp.hpp"
 #include "config.h"
-#include "util/concurrent/spinlock_mutex.hpp"
 
 namespace std {
 
@@ -73,16 +72,14 @@ using internal::DataSerializableInternal;
 using internal::DataSerializablePrimitive;
 
 class TheTypeMap {
-  std::unordered_map<internal::DSCode, TypeFactoryMethod>
+  std::shared_ptr<std::unordered_map<internal::DSCode, TypeFactoryMethod>>
       m_dataSerializablePrimitiveMap;
-  std::unordered_map<int32_t, TypeFactoryMethod> m_dataSerializableMap;
-  std::unordered_map<internal::DSFid, TypeFactoryMethod>
+  std::shared_ptr<std::unordered_map<int32_t, TypeFactoryMethod>>
+      m_dataSerializableMap;
+  std::shared_ptr<std::unordered_map<internal::DSFid, TypeFactoryMethod>>
       m_dataSerializableFixedIdMap;
-  std::unordered_map<std::string, TypeFactoryMethodPdx> m_pdxSerializableMap;
-  mutable util::concurrent::spinlock_mutex m_dataSerializablePrimitiveMapLock;
-  mutable util::concurrent::spinlock_mutex m_dataSerializableMapLock;
-  mutable util::concurrent::spinlock_mutex m_dataSerializableFixedIdMapLock;
-  mutable util::concurrent::spinlock_mutex m_pdxSerializableMapLock;
+  std::shared_ptr<std::unordered_map<std::string, TypeFactoryMethodPdx>>
+      m_pdxSerializableMap;
 
  public:
   std::unordered_map<std::type_index, int32_t> typeToClassId;

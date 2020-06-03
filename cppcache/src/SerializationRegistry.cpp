@@ -18,7 +18,6 @@
 #include "SerializationRegistry.hpp"
 
 #include <functional>
-#include <mutex>
 
 #include <geode/CacheableBuiltins.hpp>
 #include <geode/CacheableDate.hpp>
@@ -31,31 +30,23 @@
 #include <geode/DataOutput.hpp>
 #include <geode/ExceptionTypes.hpp>
 #include <geode/PdxWrapper.hpp>
-#include <geode/PoolManager.hpp>
 #include <geode/Properties.hpp>
 #include <geode/Region.hpp>
-#include <geode/RegionAttributes.hpp>
 #include <geode/Struct.hpp>
 #include <geode/internal/geode_globals.hpp>
 
 #include "CacheRegionHelper.hpp"
-#include "CacheableObjectPartList.hpp"
 #include "CacheableToken.hpp"
 #include "ClientConnectionResponse.hpp"
 #include "ClientProxyMembershipID.hpp"
 #include "DiskStoreId.hpp"
-#include "DiskVersionTag.hpp"
 #include "EnumInfo.hpp"
 #include "EventId.hpp"
 #include "GetAllServersResponse.hpp"
 #include "LocatorListResponse.hpp"
 #include "PdxHelper.hpp"
-#include "PdxType.hpp"
 #include "QueueConnectionResponse.hpp"
-#include "TXCommitMessage.hpp"
 #include "ThinClientPoolDM.hpp"
-#include "VersionTag.hpp"
-#include "config.h"
 
 namespace apache {
 namespace geode {
@@ -64,6 +55,23 @@ namespace client {
 void TheTypeMap::setup() {
   // Register Geode builtins here!!
   // update type ids in DSCode.hpp
+  auto tempDataSerializablePrimitiveMap = std::make_shared<
+      std::unordered_map<internal::DSCode, TypeFactoryMethod>>();
+  std::atomic_store(&m_dataSerializablePrimitiveMap,
+                    tempDataSerializablePrimitiveMap);
+
+  auto tempDataSerializableMap =
+      std::make_shared<std::unordered_map<int32_t, TypeFactoryMethod>>();
+  std::atomic_store(&m_dataSerializableMap, tempDataSerializableMap);
+
+  auto tempDataSerializableFixedIdMap = std::make_shared<
+      std::unordered_map<internal::DSFid, TypeFactoryMethod>>();
+  std::atomic_store(&m_dataSerializableFixedIdMap,
+                    tempDataSerializableFixedIdMap);
+
+  auto tempPdxSerializableMap =
+      std::make_shared<std::unordered_map<std::string, TypeFactoryMethodPdx>>();
+  std::atomic_store(&m_pdxSerializableMap, tempPdxSerializableMap);
 
   bindDataSerializablePrimitive(CacheableByte::createDeserializable,
                                 DSCode::CacheableByte);
@@ -355,45 +363,39 @@ std::shared_ptr<Serializable> SerializationRegistry::GetEnum(
 }
 
 void TheTypeMap::clear() {
-  std::lock_guard<util::concurrent::spinlock_mutex> guard(
-      m_dataSerializableMapLock);
-  m_dataSerializableMap.clear();
+  auto tempDataSerializableMap =
+      std::make_shared<std::unordered_map<int32_t, TypeFactoryMethod>>();
+  std::atomic_store(&m_dataSerializableMap, tempDataSerializableMap);
 
-  std::lock_guard<util::concurrent::spinlock_mutex> guard2(
-      m_dataSerializableFixedIdMapLock);
-  m_dataSerializableFixedIdMap.clear();
+  auto tempDataSerializableFixedId = std::make_shared<
+      std::unordered_map<internal::DSFid, TypeFactoryMethod>>();
+  std::atomic_store(&m_dataSerializableFixedIdMap, tempDataSerializableFixedId);
 
-  std::lock_guard<util::concurrent::spinlock_mutex> guard3(
-      m_pdxSerializableMapLock);
-  m_pdxSerializableMap.clear();
+  auto tempPdxSerializableMap =
+      std::make_shared<std::unordered_map<std::string, TypeFactoryMethodPdx>>();
+  std::atomic_store(&m_pdxSerializableMap, tempPdxSerializableMap);
 }
 
 void TheTypeMap::findDataSerializable(int32_t id,
                                       TypeFactoryMethod& func) const {
-  std::lock_guard<util::concurrent::spinlock_mutex> guard(
-      m_dataSerializableMapLock);
-  const auto& found = m_dataSerializableMap.find(id);
-  if (found != m_dataSerializableMap.end()) {
+  const auto& found = m_dataSerializableMap->find(id);
+  if (found != m_dataSerializableMap->end()) {
     func = found->second;
   }
 }
 
 void TheTypeMap::findDataSerializableFixedId(DSFid dsfid,
                                              TypeFactoryMethod& func) const {
-  std::lock_guard<util::concurrent::spinlock_mutex> guard(
-      m_dataSerializableFixedIdMapLock);
-  const auto& found = m_dataSerializableFixedIdMap.find(dsfid);
-  if (found != m_dataSerializableFixedIdMap.end()) {
+  const auto& found = m_dataSerializableFixedIdMap->find(dsfid);
+  if (found != m_dataSerializableFixedIdMap->end()) {
     func = found->second;
   }
 }
 
 void TheTypeMap::findDataSerializablePrimitive(DSCode dsCode,
                                                TypeFactoryMethod& func) const {
-  std::lock_guard<util::concurrent::spinlock_mutex> guard(
-      m_dataSerializablePrimitiveMapLock);
-  const auto& found = m_dataSerializablePrimitiveMap.find(dsCode);
-  if (found != m_dataSerializablePrimitiveMap.end()) {
+  const auto& found = m_dataSerializablePrimitiveMap->find(dsCode);
+  if (found != m_dataSerializablePrimitiveMap->end()) {
     func = found->second;
   }
 }
@@ -409,44 +411,56 @@ void TheTypeMap::bindDataSerializable(TypeFactoryMethod func, int32_t id) {
         "TheTypeMap::bind: Serialization type not implemented.");
   }
 
-  std::lock_guard<util::concurrent::spinlock_mutex> guard(
-      m_dataSerializableMapLock);
-  const auto& result = m_dataSerializableMap.emplace(id, func);
+  auto tempDataSerializableMap =
+      std::make_shared<std::unordered_map<int32_t, TypeFactoryMethod>>(
+          *m_dataSerializableMap);
+  const auto& result = tempDataSerializableMap->emplace(id, func);
   if (!result.second) {
     LOGERROR("A class with ID %d is already registered.", id);
     throw IllegalStateException("A class with given ID is already registered.");
   }
+  std::atomic_store(&m_dataSerializableMap, tempDataSerializableMap);
 }
 
 void TheTypeMap::rebindDataSerializable(int32_t id, TypeFactoryMethod func) {
-  std::lock_guard<util::concurrent::spinlock_mutex> guard(
-      m_dataSerializableMapLock);
-  m_dataSerializableMap[id] = func;
+  auto tempDataSerializableMap =
+      std::make_shared<std::unordered_map<int32_t, TypeFactoryMethod>>(
+          *m_dataSerializableMap);
+  (*tempDataSerializableMap)[id] = func;
+  std::atomic_store(&m_dataSerializableMap, tempDataSerializableMap);
 }
 
 void TheTypeMap::unbindDataSerializable(int32_t id) {
-  std::lock_guard<util::concurrent::spinlock_mutex> guard(
-      m_dataSerializableMapLock);
-  m_dataSerializableMap.erase(id);
+  auto tempDataSerializableMap =
+      std::make_shared<std::unordered_map<int32_t, TypeFactoryMethod>>(
+          *m_dataSerializableMap);
+  tempDataSerializableMap->erase(id);
+  std::atomic_store(&m_dataSerializableMap, tempDataSerializableMap);
 }
 
 void TheTypeMap::bindDataSerializablePrimitive(TypeFactoryMethod func,
                                                DSCode dsCode) {
-  std::lock_guard<util::concurrent::spinlock_mutex> guard(
-      m_dataSerializablePrimitiveMapLock);
-  const auto& result = m_dataSerializablePrimitiveMap.emplace(dsCode, func);
+  auto tempDataSerializablePrimitiveMap =
+      std::make_shared<std::unordered_map<internal::DSCode, TypeFactoryMethod>>(
+          *m_dataSerializablePrimitiveMap);
+  const auto& result = tempDataSerializablePrimitiveMap->emplace(dsCode, func);
   if (!result.second) {
     LOGERROR("A class with DSCode %d is already registered.", dsCode);
     throw IllegalStateException(
         "A class with given DSCode is already registered.");
   }
+  std::atomic_store(&m_dataSerializablePrimitiveMap,
+                    tempDataSerializablePrimitiveMap);
 }
 
 void TheTypeMap::rebindDataSerializablePrimitive(DSCode dsCode,
                                                  TypeFactoryMethod func) {
-  std::lock_guard<util::concurrent::spinlock_mutex> guard(
-      m_dataSerializablePrimitiveMapLock);
-  m_dataSerializablePrimitiveMap[dsCode] = func;
+  auto tempDataSerializablePrimitiveMap =
+      std::make_shared<std::unordered_map<internal::DSCode, TypeFactoryMethod>>(
+          *m_dataSerializablePrimitiveMap);
+  (*tempDataSerializablePrimitiveMap)[dsCode] = func;
+  std::atomic_store(&m_dataSerializablePrimitiveMap,
+                    tempDataSerializablePrimitiveMap);
 }
 
 void TheTypeMap::bindDataSerializableFixedId(TypeFactoryMethod func) {
@@ -462,51 +476,56 @@ void TheTypeMap::bindDataSerializableFixedId(TypeFactoryMethod func) {
         "type.");
   }
 
-  std::lock_guard<util::concurrent::spinlock_mutex> guard(
-      m_dataSerializableFixedIdMapLock);
-  const auto& result = m_dataSerializableFixedIdMap.emplace(id, func);
+  auto tempDataSerializableFixedId =
+      std::make_shared<std::unordered_map<internal::DSFid, TypeFactoryMethod>>(
+          *m_dataSerializableFixedIdMap);
+  const auto& result = tempDataSerializableFixedId->emplace(id, func);
   if (!result.second) {
     LOGERROR("A fixed class with ID %d is already registered.", id);
     throw IllegalStateException(
         "A fixed class with given ID is already registered.");
   }
+  std::atomic_store(&m_dataSerializableFixedIdMap, tempDataSerializableFixedId);
 }
 
 void TheTypeMap::rebindDataSerializableFixedId(internal::DSFid id,
                                                TypeFactoryMethod func) {
-  std::lock_guard<util::concurrent::spinlock_mutex> guard(
-      m_dataSerializableFixedIdMapLock);
-  m_dataSerializableFixedIdMap[id] = func;
+  auto tempDataSerializableFixedId =
+      std::make_shared<std::unordered_map<internal::DSFid, TypeFactoryMethod>>(
+          *m_dataSerializableFixedIdMap);
+  (*tempDataSerializableFixedId)[id] = func;
+  std::atomic_store(&m_dataSerializableFixedIdMap, tempDataSerializableFixedId);
 }
 
 void TheTypeMap::unbindDataSerializableFixedId(internal::DSFid id) {
-  std::lock_guard<util::concurrent::spinlock_mutex> guard(
-      m_dataSerializableFixedIdMapLock);
-  m_dataSerializableFixedIdMap.erase(id);
+  auto tempDataSerializableFixedId =
+      std::make_shared<std::unordered_map<internal::DSFid, TypeFactoryMethod>>(
+          *m_dataSerializableFixedIdMap);
+  tempDataSerializableFixedId->erase(id);
+  std::atomic_store(&m_dataSerializableFixedIdMap, tempDataSerializableFixedId);
 }
 
 void TheTypeMap::bindPdxSerializable(TypeFactoryMethodPdx func) {
   auto obj = func();
-  std::lock_guard<util::concurrent::spinlock_mutex> guard(
-      m_pdxSerializableMapLock);
   auto&& objFullName = obj->getClassName();
 
-  const auto& result = m_pdxSerializableMap.emplace(objFullName, func);
+  auto tempPdxSerializableMap =
+      std::make_shared<std::unordered_map<std::string, TypeFactoryMethodPdx>>(
+          *m_pdxSerializableMap);
+  const auto& result = tempPdxSerializableMap->emplace(objFullName, func);
   if (!result.second) {
     LOGERROR("A object with FullName " + objFullName +
              " is already registered.");
     throw IllegalStateException(
         "A Object with given FullName is already registered.");
   }
+  std::atomic_store(&m_pdxSerializableMap, tempPdxSerializableMap);
 }
 
 TypeFactoryMethodPdx TheTypeMap::findPdxSerializable(
     const std::string& objFullName) const {
-  std::lock_guard<util::concurrent::spinlock_mutex> guard(
-      m_pdxSerializableMapLock);
-
-  const auto& found = m_pdxSerializableMap.find(objFullName);
-  if (found != m_pdxSerializableMap.end()) {
+  const auto& found = m_pdxSerializableMap->find(objFullName);
+  if (found != m_pdxSerializableMap->end()) {
     return found->second;
   }
 
@@ -515,15 +534,19 @@ TypeFactoryMethodPdx TheTypeMap::findPdxSerializable(
 
 void TheTypeMap::rebindPdxSerializable(std::string objFullName,
                                        TypeFactoryMethodPdx func) {
-  std::lock_guard<util::concurrent::spinlock_mutex> guard(
-      m_pdxSerializableMapLock);
-  m_pdxSerializableMap[objFullName] = func;
+  auto tempPdxSerializableMap =
+      std::make_shared<std::unordered_map<std::string, TypeFactoryMethodPdx>>(
+          *m_pdxSerializableMap);
+  (*m_pdxSerializableMap)[objFullName] = func;
+  std::atomic_store(&m_pdxSerializableMap, tempPdxSerializableMap);
 }
 
 void TheTypeMap::unbindPdxSerializable(const std::string& objFullName) {
-  std::lock_guard<util::concurrent::spinlock_mutex> guard(
-      m_pdxSerializableMapLock);
-  m_pdxSerializableMap.erase(objFullName);
+  auto tempPdxSerializableMap =
+      std::make_shared<std::unordered_map<std::string, TypeFactoryMethodPdx>>(
+          *m_pdxSerializableMap);
+  m_pdxSerializableMap->erase(objFullName);
+  std::atomic_store(&m_pdxSerializableMap, tempPdxSerializableMap);
 }
 
 void PdxTypeHandler::serialize(

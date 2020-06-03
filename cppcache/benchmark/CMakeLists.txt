@@ -19,6 +19,7 @@ add_executable(cpp-benchmark
   GeodeHashBM.cpp
   GeodeLoggingBM.cpp
   NoopBM.cpp
+  SerializationRegistryBM.cpp
   )
 
 target_link_libraries(cpp-benchmark
