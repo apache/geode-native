@@ -34,6 +34,7 @@ add_executable(cpp-integration-test
   RegionPutAllTest.cpp
   RegionPutGetAllTest.cpp
   RegisterKeysTest.cpp
+  ServerDisconnectWithListener.cpp
   SimpleAuthInitialize.cpp
   SimpleAuthInitialize.hpp
   SimpleCqListener.cpp
