@@ -25,9 +25,6 @@
 #include "internal/DataSerializablePrimitive.hpp"
 #include "internal/geode_globals.hpp"
 
-/** @file
- */
-
 namespace apache {
 namespace geode {
 namespace client {

@@ -52,7 +52,7 @@ namespace client {
 static const std::regex PREDICATE_IS_FULL_QUERY_REGEX(
     "^\\s*(?:select|import)\\b", std::regex::icase);
 
-void setThreadLocalExceptionMessage(const char* exMsg);
+void setThreadLocalExceptionMessage(std::string exMsg);
 
 class PutAllWork : public PooledWork<GfErrType> {
   ThinClientPoolDM* m_poolDM;
@@ -184,7 +184,7 @@ class PutAllWork : public PooledWork<GfErrType> {
           LOGDEBUG("received PutAllPartialResultException");
           err = GF_PUTALL_PARTIAL_RESULT_EXCEPTION;
         } else {
-          LOGDEBUG("received unknown exception:%s", m_reply->getException());
+          LOGDEBUG("received unknown exception:" + m_reply->getException());
           err = GF_PUTALL_PARTIAL_RESULT_EXCEPTION;
           // TODO should assign a new err code
         }
@@ -322,7 +322,7 @@ class RemoveAllWork : public PooledWork<GfErrType> {
           LOGDEBUG("received PutAllPartialResultException");
           err = GF_PUTALL_PARTIAL_RESULT_EXCEPTION;
         } else {
-          LOGDEBUG("received unknown exception:%s", m_reply->getException());
+          LOGDEBUG("received unknown exception:" + m_reply->getException());
           err = GF_PUTALL_PARTIAL_RESULT_EXCEPTION;
           // TODO should assign a new err code
         }
@@ -2727,53 +2727,50 @@ GfErrType ThinClientRegion::clientNotificationHandler(TcrMessage& msg) {
   return err;
 }
 
-GfErrType ThinClientRegion::handleServerException(const char* func,
-                                                  const char* exceptionMsg) {
+GfErrType ThinClientRegion::handleServerException(
+    const std::string& func, const std::string& exceptionMsg) {
   GfErrType error = GF_NOERR;
   setThreadLocalExceptionMessage(exceptionMsg);
-  if (strstr(exceptionMsg,
-             "org.apache.geode.security.NotAuthorizedException") != nullptr) {
+  if (exceptionMsg.find("org.apache.geode.security.NotAuthorizedException") !=
+      std::string::npos) {
     error = GF_NOT_AUTHORIZED_EXCEPTION;
-  } else if (strstr(exceptionMsg,
-                    "org.apache.geode.cache.CacheWriterException") != nullptr) {
+  } else if (exceptionMsg.find("org.apache.geode.cache.CacheWriterException") !=
+             std::string::npos) {
     error = GF_CACHE_WRITER_EXCEPTION;
-  } else if (strstr(
-                 exceptionMsg,
+  } else if (exceptionMsg.find(
                  "org.apache.geode.security.AuthenticationFailedException") !=
-             nullptr) {
+             std::string::npos) {
     error = GF_AUTHENTICATION_FAILED_EXCEPTION;
-  } else if (strstr(exceptionMsg,
-                    "org.apache.geode.internal.cache.execute."
-                    "InternalFunctionInvocationTargetException") != nullptr) {
+  } else if (exceptionMsg.find("org.apache.geode.internal.cache.execute."
+                               "InternalFunctionInvocationTargetException") !=
+             std::string::npos) {
     error = GF_FUNCTION_EXCEPTION;
-  } else if (strstr(exceptionMsg,
-                    "org.apache.geode.cache.CommitConflictException") !=
-             nullptr) {
+  } else if (exceptionMsg.find(
+                 "org.apache.geode.cache.CommitConflictException") !=
+             std::string::npos) {
     error = GF_COMMIT_CONFLICT_EXCEPTION;
-  } else if (strstr(exceptionMsg,
-                    "org.apache.geode.cache."
-                    "TransactionDataNodeHasDepartedException") != nullptr) {
+  } else if (exceptionMsg.find("org.apache.geode.cache."
+                               "TransactionDataNodeHasDepartedException") !=
+             std::string::npos) {
     error = GF_TRANSACTION_DATA_NODE_HAS_DEPARTED_EXCEPTION;
-  } else if (strstr(
-                 exceptionMsg,
+  } else if (exceptionMsg.find(
                  "org.apache.geode.cache.TransactionDataRebalancedException") !=
-             nullptr) {
+             std::string::npos) {
     error = GF_TRANSACTION_DATA_REBALANCED_EXCEPTION;
-  } else if (strstr(
-                 exceptionMsg,
+  } else if (exceptionMsg.find(
                  "org.apache.geode.security.AuthenticationRequiredException") !=
-             nullptr) {
+             std::string::npos) {
     error = GF_AUTHENTICATION_REQUIRED_EXCEPTION;
   } else {
     error = GF_CACHESERVER_EXCEPTION;
   }
 
   if (error != GF_AUTHENTICATION_REQUIRED_EXCEPTION) {
-    LOGERROR("%s: An exception (%s) happened at remote server.", func,
-             exceptionMsg);
+    LOGERROR(func + ": An exception (" + exceptionMsg +
+             ") happened at remote server.");
   } else {
-    LOGFINER("%s: An exception (%s) happened at remote server.", func,
-             exceptionMsg);
+    LOGFINER(func + ": An exception (" + exceptionMsg +
+             ") happened at remote server.");
   }
   return error;
 }

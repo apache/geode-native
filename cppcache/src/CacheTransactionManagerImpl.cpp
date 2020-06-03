@@ -87,7 +87,7 @@ void CacheTransactionManagerImpl::commit() {
       }
       case TcrMessage::EXCEPTION: {
         //			noteCommitFailure(txState, nullptr);
-        const char* exceptionMsg = reply.getException();
+        const auto& exceptionMsg = reply.getException();
         err = ThinClientRegion::handleServerException(
             "CacheTransactionManager::commit", exceptionMsg);
         GfErrTypeThrowException("Commit Failed", err);

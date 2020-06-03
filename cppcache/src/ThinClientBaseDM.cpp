@@ -127,15 +127,15 @@ GfErrType ThinClientBaseDM::handleEPError(TcrEndpoint* ep,
                                           GfErrType error) {
   if (error == GF_NOERR) {
     if (reply.getMessageType() == TcrMessage::EXCEPTION) {
-      const char* exceptStr = reply.getException();
-      if (exceptStr != nullptr) {
+      const auto& exceptStr = reply.getException();
+      if (!exceptStr.empty()) {
         bool markServerDead = unrecoverableServerError(exceptStr);
         bool doFailover = (markServerDead || nonFatalServerError(exceptStr));
         if (doFailover) {
           LOGFINE(
               "ThinClientDistributionManager::sendRequestToEP: retrying for "
-              "server [%s] exception: %s",
-              ep->name().c_str(), exceptStr);
+              "server [" +
+              ep->name() + "] exception: " + exceptStr);
           error = GF_NOTCON;
           if (markServerDead) {
             ep->setConnectionStatus(false);
@@ -168,13 +168,12 @@ GfErrType ThinClientBaseDM::sendRequestToEndPoint(const TcrMessage& request,
  * the server so that need not be marked as dead.
  * This method is for exceptions when server should be marked as dead.
  */
-bool ThinClientBaseDM::unrecoverableServerError(const char* exceptStr) {
-  return (
-      (strstr(exceptStr, "org.apache.geode.cache.CacheClosedException") !=
-       nullptr) ||
-      (strstr(exceptStr, "org.apache.geode.distributed.ShutdownException") !=
-       nullptr) ||
-      (strstr(exceptStr, "java.lang.OutOfMemoryError") != nullptr));
+bool ThinClientBaseDM::unrecoverableServerError(const std::string& exceptStr) {
+  return ((exceptStr.find("org.apache.geode.cache.CacheClosedException") !=
+           std::string::npos) ||
+          (exceptStr.find("org.apache.geode.distributed.ShutdownException") !=
+           std::string::npos) ||
+          (exceptStr.find("java.lang.OutOfMemoryError") != std::string::npos));
 }
 
 /**
@@ -184,12 +183,13 @@ bool ThinClientBaseDM::unrecoverableServerError(const char* exceptStr) {
  * the server so that need not be marked as dead.
  * This method is for exceptions when server should *not* be marked as dead.
  */
-bool ThinClientBaseDM::nonFatalServerError(const char* exceptStr) {
-  return ((strstr(exceptStr, "org.apache.geode.distributed.TimeoutException") !=
-           nullptr) ||
-          (strstr(exceptStr, "org.apache.geode.ThreadInterruptedException") !=
-           nullptr) ||
-          (strstr(exceptStr, "java.lang.IllegalStateException") != nullptr));
+bool ThinClientBaseDM::nonFatalServerError(const std::string& exceptStr) {
+  return (
+      (exceptStr.find("org.apache.geode.distributed.TimeoutException") !=
+       std::string::npos) ||
+      (exceptStr.find("org.apache.geode.ThreadInterruptedException") !=
+       std::string::npos) ||
+      (exceptStr.find("java.lang.IllegalStateException") != std::string::npos));
 }
 
 void ThinClientBaseDM::failover() {}
@@ -336,6 +336,46 @@ bool ThinClientBaseDM::checkDupAndAdd(std::shared_ptr<EventId> eventid) {
 
 std::recursive_mutex& ThinClientBaseDM::getRedundancyLock() {
   return m_connManager.getRedundancyLock();
+}
+
+bool ThinClientBaseDM::isNotAuthorizedException(
+    const std::string& exceptionMsg) {
+  if (exceptionMsg.find("org.apache.geode.security.NotAuthorizedException") !=
+      std::string::npos) {
+    LOGDEBUG("isNotAuthorizedException() An exception (" + exceptionMsg +
+             ") happened at remote server.");
+    return true;
+  }
+  return false;
+}
+
+bool ThinClientBaseDM::isPutAllPartialResultException(
+    const std::string& exceptionMsg) {
+  if (exceptionMsg.find(
+          "org.apache.geode.internal.cache.PutAllPartialResultException") !=
+      std::string::npos) {
+    LOGDEBUG("isNotAuthorizedException() An exception (" + exceptionMsg +
+             ") happened at remote server.");
+    return true;
+  }
+  return false;
+}
+
+bool ThinClientBaseDM::isAuthRequireException(const std::string& exceptionMsg) {
+  if (exceptionMsg.find(
+          "org.apache.geode.security.AuthenticationRequiredException") !=
+      std::string::npos) {
+    LOGDEBUG("isAuthRequireExcep() An exception (" + exceptionMsg +
+             ") happened at remote server.");
+    return true;
+  }
+  return false;
+}
+
+void ThinClientBaseDM::setDeltaEnabledOnServer(bool isDeltaEnabledOnServer) {
+  s_isDeltaEnabledOnServer = isDeltaEnabledOnServer;
+  LOGFINE("Delta enabled on server: %s",
+          s_isDeltaEnabledOnServer ? "true" : "false");
 }
 
 }  // namespace client

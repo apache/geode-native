@@ -27,16 +27,21 @@
 #include <geode/ExceptionTypes.hpp>
 #include <geode/internal/geode_globals.hpp>
 
-#include "../AdminRegion.hpp"
 #include "GeodeStatisticsFactory.hpp"
 #include "Statistics.hpp"
 #include "StatisticsTypeImpl.hpp"
 
 namespace apache {
 namespace geode {
-namespace statistics {
 
-using apache::geode::client::AdminRegion;
+namespace client {
+
+class AdminRegion;
+class CacheImpl;
+
+}  // namespace client
+
+namespace statistics {
 
 class GeodeStatisticsFactory;
 class HostStatSampler;
@@ -61,7 +66,7 @@ class StatisticsManager {
   // Mutex to lock the list of Stats
   std::recursive_mutex m_statsListLock;
 
-  std::shared_ptr<AdminRegion> m_adminRegion;
+  std::shared_ptr<client::AdminRegion> m_adminRegion;
 
   std::unique_ptr<GeodeStatisticsFactory> m_statisticsFactory;
 
@@ -73,9 +78,9 @@ class StatisticsManager {
                     client::CacheImpl* cache, int64_t statFileLimit = 0,
                     int64_t statDiskSpaceLimit = 0);
 
-  void RegisterAdminRegion(std::shared_ptr<AdminRegion> adminRegPtr);
+  void RegisterAdminRegion(std::shared_ptr<client::AdminRegion> adminRegPtr);
 
-  std::shared_ptr<AdminRegion> getAdminRegion();
+  std::shared_ptr<client::AdminRegion> getAdminRegion();
 
   void forceSample();
 

@@ -22,6 +22,7 @@
 #include <geode/Exception.hpp>
 #include <geode/internal/geode_globals.hpp>
 
+#include "../AdminRegion.hpp"
 #include "../util/Log.hpp"
 #include "AtomicStatisticsImpl.hpp"
 #include "GeodeStatisticsFactory.hpp"
@@ -230,11 +231,11 @@ void StatisticsManager::deleteStatistics(Statistics*& stat) {
 }
 
 void StatisticsManager::RegisterAdminRegion(
-    std::shared_ptr<AdminRegion> adminRegPtr) {
+    std::shared_ptr<client::AdminRegion> adminRegPtr) {
   m_adminRegion = adminRegPtr;
 }
 
-std::shared_ptr<AdminRegion> StatisticsManager::getAdminRegion() {
+std::shared_ptr<client::AdminRegion> StatisticsManager::getAdminRegion() {
   return m_adminRegion;
 }
 

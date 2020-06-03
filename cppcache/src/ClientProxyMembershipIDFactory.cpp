@@ -21,6 +21,7 @@
 #include <iterator>
 #include <random>
 
+#include <boost/asio/ip/host_name.hpp>
 #include <boost/process/environment.hpp>
 
 #include "util/Log.hpp"
@@ -31,7 +32,7 @@ namespace client {
 
 ClientProxyMembershipIDFactory::ClientProxyMembershipIDFactory(
     std::string dsName)
-    : dsName(dsName) {
+    : dsName(std::move(dsName)) {
   static const auto alphabet =
       "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_";
   static const auto numChars = (sizeof(alphabet) / sizeof(char)) - 2;
@@ -53,12 +54,13 @@ ClientProxyMembershipIDFactory::ClientProxyMembershipIDFactory(
 }
 
 std::unique_ptr<ClientProxyMembershipID> ClientProxyMembershipIDFactory::create(
-    const char* hostname, const ACE_INET_Addr& address, uint32_t hostPort,
-    const char* durableClientId,
+    const std::string& durableClientId,
     const std::chrono::seconds durableClntTimeOut) {
-  return std::unique_ptr<ClientProxyMembershipID>(new ClientProxyMembershipID(
-      dsName, randString, hostname, address, hostPort, durableClientId,
-      durableClntTimeOut));
+  const auto hostname = boost::asio::ip::host_name();
+  const ACE_INET_Addr address("", hostname.c_str(), "tcp");
+  return std::unique_ptr<ClientProxyMembershipID>(
+      new ClientProxyMembershipID(dsName, randString, hostname, address, 0,
+                                  durableClientId, durableClntTimeOut));
 }
 
 }  // namespace client

@@ -51,20 +51,16 @@ std::string Exception::getStackTrace() const {
   return stack_ ? stack_->getString() : "No stack available.";
 }
 
-// class to store/clear last server exception in TSS area
-
 thread_local std::string threadLocalExceptionMessage;
 
-void setThreadLocalExceptionMessage(const char* exMsg) {
-  threadLocalExceptionMessage.clear();
-  if (exMsg != nullptr) {
-    threadLocalExceptionMessage.assign(exMsg);
-  }
+void setThreadLocalExceptionMessage(std::string exMsg) {
+  threadLocalExceptionMessage = std::move(exMsg);
 }
 
 const std::string& getThreadLocalExceptionMessage() {
   return threadLocalExceptionMessage;
 }
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

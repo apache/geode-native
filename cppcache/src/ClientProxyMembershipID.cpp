@@ -49,9 +49,9 @@ ClientProxyMembershipID::ClientProxyMembershipID()
 ClientProxyMembershipID::~ClientProxyMembershipID() noexcept = default;
 
 ClientProxyMembershipID::ClientProxyMembershipID(
-    std::string dsName, std::string randString, const char* hostname,
+    std::string dsName, std::string randString, const std::string& hostname,
     const ACE_INET_Addr& address, uint32_t hostPort,
-    const char* durableClientId,
+    const std::string& durableClientId,
     const std::chrono::seconds durableClientTimeOut) {
   auto vmPID = boost::this_process::get_id();
 
@@ -100,7 +100,8 @@ void ClientProxyMembershipID::initHostAddressVector(const uint8_t* hostAddr,
 }
 
 void ClientProxyMembershipID::initObjectVars(
-    const char* hostname, uint32_t hostPort, const char* durableClientId,
+    const std::string& hostname, uint32_t hostPort,
+    const std::string& durableClientId,
     const std::chrono::seconds durableClntTimeOut, int32_t dcPort, int32_t vPID,
     int8_t vmkind, int8_t splitBrainFlag, const char* dsname,
     const char* uniqueTag, uint32_t vmViewId) {
@@ -134,8 +135,8 @@ void ClientProxyMembershipID::initObjectVars(
   m_memID.writeString(dsname);
   m_memID.writeString(uniqueTag);
 
-  if (durableClientId != nullptr &&
-      durableClntTimeOut != std::chrono::seconds::zero()) {
+  if (!(durableClientId.empty() ||
+        durableClntTimeOut == std::chrono::seconds::zero())) {
     m_memID.writeString(durableClientId);
     const auto int32ptr = CacheableInt32::create(
         static_cast<int32_t>(durableClntTimeOut.count()));

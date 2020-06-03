@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_STATISTICS_STATARCHIVEWRITER_H_
-#define GEODE_STATISTICS_STATARCHIVEWRITER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,6 +15,11 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_STATISTICS_STATARCHIVEWRITER_H_
+#define GEODE_STATISTICS_STATARCHIVEWRITER_H_
+
 #include <chrono>
 #include <list>
 #include <map>
@@ -32,27 +32,28 @@
 
 #include "../SerializationRegistry.hpp"
 #include "../util/Log.hpp"
+#include "HostStatSampler.hpp"
 #include "StatisticDescriptor.hpp"
 #include "StatisticDescriptorImpl.hpp"
 #include "Statistics.hpp"
 #include "StatisticsType.hpp"
 #include "StatsDef.hpp"
 
-const int8_t ARCHIVE_VERSION = 4;
-const int8_t SAMPLE_TOKEN = 0;
-const int8_t RESOURCE_TYPE_TOKEN = 1;
-const int8_t RESOURCE_INSTANCE_CREATE_TOKEN = 2;
-const int8_t RESOURCE_INSTANCE_DELETE_TOKEN = 3;
-const int8_t RESOURCE_INSTANCE_INITIALIZE_TOKEN = 4;
-const int8_t HEADER_TOKEN = 77;
-const int8_t ILLEGAL_RESOURCE_INST_ID = -1;
-const int16_t MAX_BYTE_RESOURCE_INST_ID = 252;
-const int16_t SHORT_RESOURCE_INST_ID_TOKEN = 253;
-const int32_t INT_RESOURCE_INST_ID_TOKEN = 254;
-const int16_t ILLEGAL_RESOURCE_INST_ID_TOKEN = -1;
-const int32_t MAX_SHORT_RESOURCE_INST_ID = 65535;
-const int32_t MAX_SHORT_TIMESTAMP = 65534;
-const int32_t INT_TIMESTAMP_TOKEN = 65535;
+constexpr int8_t ARCHIVE_VERSION = 4;
+constexpr int8_t SAMPLE_TOKEN = 0;
+constexpr int8_t RESOURCE_TYPE_TOKEN = 1;
+constexpr int8_t RESOURCE_INSTANCE_CREATE_TOKEN = 2;
+constexpr int8_t RESOURCE_INSTANCE_DELETE_TOKEN = 3;
+constexpr int8_t RESOURCE_INSTANCE_INITIALIZE_TOKEN = 4;
+constexpr int8_t HEADER_TOKEN = 77;
+constexpr int8_t ILLEGAL_RESOURCE_INST_ID = -1;
+constexpr int16_t MAX_BYTE_RESOURCE_INST_ID = 252;
+constexpr int16_t SHORT_RESOURCE_INST_ID_TOKEN = 253;
+constexpr int32_t INT_RESOURCE_INST_ID_TOKEN = 254;
+constexpr int16_t ILLEGAL_RESOURCE_INST_ID_TOKEN = -1;
+constexpr int32_t MAX_SHORT_RESOURCE_INST_ID = 65535;
+constexpr int32_t MAX_SHORT_TIMESTAMP = 65534;
+constexpr int32_t INT_TIMESTAMP_TOKEN = 65535;
 
 namespace apache {
 namespace geode {
@@ -185,8 +186,8 @@ class APACHE_GEODE_EXPORT StatArchiveWriter {
   int32_t resourceTypeId;
   int32_t resourceInstId;
   int32_t statResourcesModCount;
-  int64_t bytesWrittenToFile;
-  int64_t m_samplesize;
+  size_t bytesWrittenToFile;
+  size_t m_samplesize;
   std::string archiveFile;
   std::map<Statistics *, std::shared_ptr<ResourceInst>> resourceInstMap;
   std::map<const StatisticsType *, const ResourceType *> resourceTypeMap;
@@ -209,7 +210,7 @@ class APACHE_GEODE_EXPORT StatArchiveWriter {
    * Returns the number of bytes written so far to this archive.
    * This does not take compression into account.
    */
-  int64_t bytesWritten();
+  size_t bytesWritten();
   /**
    * Archives a sample snapshot at the given timeStamp.
    * @param timeStamp a value obtained using NanoTimer::now.
@@ -239,7 +240,7 @@ class APACHE_GEODE_EXPORT StatArchiveWriter {
   /**
    * Returns the size of number of bytes written so far to this archive.
    */
-  int64_t getSampleSize();
+  size_t getSampleSize();
 
   /**
    * Flushes the contents of the dataBuffer to the archiveFile

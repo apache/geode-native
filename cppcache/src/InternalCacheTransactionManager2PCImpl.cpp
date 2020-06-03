@@ -78,7 +78,7 @@ void InternalCacheTransactionManager2PCImpl::prepare() {
           break;
         case TcrMessage::EXCEPTION: {
           TXCleaner txCleaner(this);
-          const char* exceptionMsg = replyCommitBefore.getException();
+          const auto& exceptionMsg = replyCommitBefore.getException();
           err = ThinClientRegion::handleServerException(
               "CacheTransactionManager::prepare", exceptionMsg);
           GfErrTypeThrowException("Commit Failed in prepare", err);
@@ -182,7 +182,7 @@ void InternalCacheTransactionManager2PCImpl::afterCompletion(int32_t status) {
           break;
         }
         case TcrMessage::EXCEPTION: {
-          const char* exceptionMsg = replyCommitAfter.getException();
+          const auto& exceptionMsg = replyCommitAfter.getException();
           err = ThinClientRegion::handleServerException(
               "CacheTransactionManager::afterCompletion", exceptionMsg);
           GfErrTypeThrowException("2PC Commit Failed", err);

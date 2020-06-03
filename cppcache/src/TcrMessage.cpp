@@ -79,9 +79,8 @@ inline void writeInt(uint8_t* buffer, uint32_t value) {
 }
 }  // namespace
 
-extern void setThreadLocalExceptionMessage(const char*);
+extern void setThreadLocalExceptionMessage(std::string);
 
-// AtomicInc TcrMessage::m_transactionId = 0;
 uint8_t* TcrMessage::m_keepAlive = nullptr;
 const int TcrMessage::m_flag_empty = 0x01;
 const int TcrMessage::m_flag_concurrency_checks = 0x02;
@@ -144,7 +143,7 @@ TcrMessage::TcrMessage()
       m_tombstoneVersions(),
       m_tombstoneKeys(),
       m_versionObjPartListptr(),
-      exceptionMessage(),
+      m_exceptionMessage(),
       m_regionName("INVALID_REGION_NAME"),
       m_regex(),
       m_bucketServerLocations(),
@@ -215,9 +214,9 @@ bool TcrMessage::forTransaction() const { return m_txId != -1; }
 
 bool TcrMessage::getBoolValue() const { return m_boolValue; }
 
-const char* TcrMessage::getException() {
-  exceptionMessage = Utils::nullSafeToString(m_value);
-  return exceptionMessage.c_str();
+const std::string& TcrMessage::getException() {
+  m_exceptionMessage = Utils::nullSafeToString(m_value);
+  return m_exceptionMessage;
 }
 
 bool TcrMessage::isDurable() const { return m_isDurable; }

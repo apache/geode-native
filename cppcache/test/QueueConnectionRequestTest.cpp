@@ -39,11 +39,13 @@ TEST_F(QueueConnectionRequestTest, testToData) {
   ServerLocation srv("server", 10);
   std::set<ServerLocation> servLoc;
   servLoc.insert(srv);
-  std::string dsName = "dsName";
-  std::string randNum = "randNum";
+  const std::string dsName = "dsName";
+  const std::string randString = "randNum";
+  const std::string hostname = "name";
+  const std::string durableClientId = "id-1";
 
-  ClientProxyMembershipID qCR(dsName, randNum, "name", addr, 10, "id-1",
-                              std::chrono::seconds(0));
+  const ClientProxyMembershipID qCR(dsName, randString, hostname, addr, 10,
+                                    durableClientId);
 
   QueueConnectionRequest queueConnReq(qCR, servLoc, -1, false);
   queueConnReq.toData(dataOutput);

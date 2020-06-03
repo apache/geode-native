@@ -24,9 +24,12 @@
 #include <chrono>
 #include <memory>
 #include <mutex>
+#include <regex>
 #include <string>
 #include <thread>
 #include <vector>
+
+#include <boost/filesystem/path.hpp>
 
 #include <geode/ExceptionTypes.hpp>
 #include <geode/internal/geode_globals.hpp>
@@ -38,13 +41,7 @@
 #include "StatisticsManager.hpp"
 #include "StatisticsType.hpp"
 
-#ifndef GEMFIRE_MAX_STATS_FILE_LIMIT
-#define GEMFIRE_MAX_STATS_FILE_LIMIT (1024 * 1024 * 1024)
-#endif
-
-#ifndef GEMFIRE_MAX_STAT_DISK_LIMIT
-#define GEMFIRE_MAX_STAT_DISK_LIMIT (1024LL * 1024LL * 1024LL * 1024LL)
-#endif
+class TestableHostStatSampler;
 
 namespace apache {
 namespace geode {
@@ -62,10 +59,12 @@ class StatisticsManager;
  */
 class HostStatSampler {
  public:
-  HostStatSampler(const char* filePath,
-                  std::chrono::milliseconds sampleIntervalMs,
+  HostStatSampler(boost::filesystem::path filePath,
+                  std::chrono::milliseconds sampleRate,
                   StatisticsManager* statMngr, CacheImpl* cache,
-                  int64_t statFileLimit = 0, int64_t statDiskSpaceLimit = 0);
+                  size_t statFileLimit = 0, size_t statDiskSpaceLimit = 0);
+
+  ~HostStatSampler() noexcept;
 
   HostStatSampler(const HostStatSampler&) = delete;
 
@@ -74,46 +73,28 @@ class HostStatSampler {
   /**
    * Adds the pid to the archive file passed to it.
    */
-  std::string createArchiveFileName();
+  const boost::filesystem::path& createArchiveFilename();
   /**
    * Returns the archiveFileName
    */
-  std::string getArchiveFileName();
+  const boost::filesystem::path& getArchiveFilename() const;
   /**
    * Gets the archive size limit in bytes.
    */
-  int64_t getArchiveFileSizeLimit();
+  size_t getArchiveFileSizeLimit() const;
   /**
    * Gets the archive disk space limit in bytes.
    */
-  int64_t getArchiveDiskSpaceLimit();
+  size_t getArchiveDiskSpaceLimit() const;
   /**
    * Gets the sample rate in milliseconds
    */
-  std::chrono::milliseconds getSampleRate();
-  /**
-   * Returns true if sampling is enabled.
-   */
-  bool isSamplingEnabled();
+  std::chrono::milliseconds getSampleRate() const;
   /**
    * Called when this sampler has spent some time working and wants
    * it to be accounted for.
    */
   void accountForTimeSpentWorking(int64_t nanosSpentWorking);
-
-  /**
-   * Returns true if the specified statistic resource still exists.
-   */
-  bool statisticsExists(int64_t id);
-  /**
-   * Returns the statistics resource instance given its id.
-   */
-  Statistics* findStatistics(int64_t id);
-
-  /**
-   * Returns the number of statistics object the manager has.
-   */
-  int32_t getStatisticsModCount();
   /**
    * Gets list mutex for synchronization
    */
@@ -138,29 +119,27 @@ class HostStatSampler {
   /**
    * Returns the path to this sampler's system directory; if it has one.
    */
-  std::string getSystemDirectoryPath();
+  const std::string& getSystemDirectoryPath();
   /**
    * Returns a description of the product that the stats are on
    */
-  std::string getProductDescription();
+  const std::string& getProductDescription() const;
   /**
    * If the size of the archive file exceeds the size limit then the sampler
    * starts writing in a new file. The path of the new file need to be
    * obtained from the manager.
    */
-  void changeArchive(std::string);
-
-  void checkListeners();
+  void changeArchive(boost::filesystem::path);
 
   void writeGfs();
 
   void forceSample();
 
-  void doSample(std::string& archivefilename);
+  void doSample(const boost::filesystem::path& archiveFilename);
+
   /**
    * If the total size of all the archive files exceeds the archive disk space
-   * limit then the older
-   * files are deleted.
+   * limit then the older files are deleted.
    */
   void checkDiskLimit();
 
@@ -180,9 +159,7 @@ class HostStatSampler {
   /**
    * Method to know whether the sampling thread is running or not.
    */
-  bool isRunning();
-
-  ~HostStatSampler();
+  bool isRunning() const;
 
  private:
   std::recursive_mutex m_samplingLock;
@@ -192,13 +169,14 @@ class HostStatSampler {
   std::atomic<bool> m_stopRequested;
   std::atomic<bool> m_isStatDiskSpaceEnabled;
   std::unique_ptr<StatArchiveWriter> m_archiver;
-  StatSamplerStats* m_samplerStats;
+  std::unique_ptr<StatSamplerStats> m_samplerStats;
   const char* m_durableClientId;
   std::chrono::seconds m_durableTimeout;
 
-  std::string m_archiveFileName;
-  int64_t m_archiveFileSizeLimit;
-  int64_t m_archiveDiskSpaceLimit;
+  boost::filesystem::path m_archiveFileName;
+  size_t m_archiveFileSizeLimit;
+  size_t m_archiveDiskSpaceLimit;
+  size_t m_spaceUsed = 0;
   std::chrono::milliseconds m_sampleRate;
   StatisticsManager* m_statMngr;
   CacheImpl* m_cache;
@@ -206,41 +184,49 @@ class HostStatSampler {
   int64_t m_pid;
   system_clock::time_point m_startTime;
 
-  std::string initStatFileWithExt();
+  /**
+   * For testing only.
+   */
+  explicit HostStatSampler(boost::filesystem::path filePath,
+                           std::chrono::milliseconds sampleRate,
+                           size_t statFileLimit, size_t statDiskSpaceLimit);
+
+  boost::filesystem::path initStatFileWithExt();
+
   /**
    * The archiveFile, after it exceeds archiveFileSizeLimit should be rolled
    * to a new file name. This integer rollIndex will be used to format the
    * file name into which the current archiveFile will be renamed.
    */
-  int32_t rollIndex;
+  int32_t m_rollIndex;
+
   /**
-   * This function rolls the existing archive file
+   * This function rolls the existing archive file.
+   * Create new file only if current file has some data, otherwise reuse it.
    */
-  int32_t rollArchive(std::string filename);
+  void rollArchive(const boost::filesystem::path& filename);
+
   /**
    * This function check whether the filename has gfs ext or not
    * If it is not there it adds and then returns the new filename.
    */
-  std::string chkForGFSExt(std::string filename);
+  boost::filesystem::path chkForGFSExt(
+      const boost::filesystem::path& filename) const;
 
-  /**
-   * Initialize any special sampler stats. Like ProcessStats, HostStats
-   */
-  void initSpecialStats();
-  /**
-   * Collect samples of the special tests.
-   */
-  void sampleSpecialStats();
-  /**
-   * Closes down anything initialied by initSpecialStats.
-   */
-  void closeSpecialStats();
   /**
    * Update New Stats in Admin Region.
    */
   void putStatsInAdminRegion();
 
+  void initStatDiskSpaceEnabled();
+
   static const char* NC_HSS_Thread;
+
+  friend TestableHostStatSampler;
+  void initRollIndex();
+
+  template <typename _Function>
+  void forEachIndexStatFile(_Function function) const;
 };
 
 }  // namespace statistics

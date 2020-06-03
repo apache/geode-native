@@ -22,7 +22,6 @@
 
 #include "Utils.hpp"
 
-// called during DLL initialization
 void initLibDllEntry(void) {
   apache::geode::client::CppCacheLibrary::initLib();
 }
@@ -35,21 +34,14 @@ namespace apache {
 namespace geode {
 namespace client {
 
-// expect this to be called from key Library entry points, or automatically
-// if we can... Probably safest to call from DistributedSystem factory method.
-// impl type Unit tests may need to call this themselves to ensure the
-// internals are prepared. fw_helper framework will handle this.
 void CppCacheLibrary::initLib(void) { ACE::init(); }
 
-// this closes ace and triggers the cleanup of the singleton CppCacheLibrary.
 void CppCacheLibrary::closeLib(void) {
-  // ACE::fini(); This should not happen..... Things might be using ace beyond
-  // the life of
-  // using geode.
+  // DO NOT CALL ACE::fini() HERE!
+  // Things might be using ace beyond the life of Geode.
 }
 
-// return the directory where the library/DLL resides
-std::string CppCacheLibrary::getProductLibDir() {
+std::string CppCacheLibrary::initProductLibDir() {
   // otherwise... get the DLL path, and work backwards from it.
   char buffer[PATH_MAX + 1];
   buffer[0] = '\0';
@@ -69,7 +61,12 @@ std::string CppCacheLibrary::getProductLibDir() {
   return std::string();
 }
 
-std::string CppCacheLibrary::getProductDir() {
+const std::string& CppCacheLibrary::getProductLibDir() {
+  static const std::string productLibDir = initProductLibDir();
+  return productLibDir;
+}
+
+std::string CppCacheLibrary::initProductDir() {
   // If the environment variable is set, use it.
   auto geodeNativeEnvironment = Utils::getEnv("GEODE_NATIVE_HOME");
   if (geodeNativeEnvironment.length() > 0) {
@@ -101,6 +98,11 @@ std::string CppCacheLibrary::getProductDir() {
   } else {
     return productLibraryDirectoryName;
   }
+}
+
+const std::string& CppCacheLibrary::getProductDir() {
+  static const std::string productDir = initProductDir();
+  return productDir;
 }
 
 }  // namespace client
