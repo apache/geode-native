@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-#include <chrono>
-#include <exception>
 #include <iostream>
 #include <thread>
 
@@ -67,35 +65,33 @@ TEST(ServerDisconnect, WithRegionDisconnectedListener) {
       .withType("PARTITION")
       .execute();
 
-  {
-    auto cache = createTestCache();
+  auto cache = createTestCache();
 
-    auto poolFactory =
-        cache.getPoolManager().createFactory().setSubscriptionEnabled(true);
+  auto poolFactory =
+      cache.getPoolManager().createFactory().setSubscriptionEnabled(true);
 
-    cluster.applyLocators(poolFactory);
+  cluster.applyLocators(poolFactory);
 
-    auto pool = poolFactory.create("pool");
-    auto regionFactory =
-        cache.createRegionFactory(RegionShortcut::CACHING_PROXY);
+  auto pool = poolFactory.create("pool");
+  auto regionFactory =
+      cache.createRegionFactory(RegionShortcut::CACHING_PROXY);
 
-    auto regionDisconnectedListener =
-        std::make_shared<RegionDisconnectedListener>();
-    auto region = regionFactory.setPoolName("pool")
-                      .setCacheListener(regionDisconnectedListener)
-                      .create("region");
+  auto regionDisconnectedListener =
+      std::make_shared<RegionDisconnectedListener>();
+  auto region = regionFactory.setPoolName("pool")
+                    .setCacheListener(regionDisconnectedListener)
+                    .create("region");
 
-    region->put("one", std::make_shared<CacheableInt16>(1));
+  region->put("one", std::make_shared<CacheableInt16>(1));
 
-    std::vector<Server>& servers = cluster.getServers();
-    servers[0].stop();
+  auto& servers = cluster.getServers();
+  servers[0].stop();
 
-    try {
-      region->put("two", std::make_shared<CacheableInt16>(2));
-    } catch (const NotConnectedException&) {
-    }
-
-    ASSERT_EQ(isDisconnected, true);
+  try {
+    region->put("two", std::make_shared<CacheableInt16>(2));
+  } catch (const NotConnectedException&) {
   }
+
+  ASSERT_EQ(isDisconnected, true);
 }
 }  // namespace
