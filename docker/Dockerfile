@@ -50,7 +50,7 @@ ENV RAT_VERSION 0.13
 RUN wget "https://www.apache.org/dyn/closer.cgi?action=download&filename=creadur/apache-rat-${RAT_VERSION}/apache-rat-${RAT_VERSION}-bin.tar.gz" --quiet -O - | \
         tar xzf -
 
-ENV CMAKE_VERSION 3.12.4
+ENV CMAKE_VERSION 3.16.8
 RUN wget "https://cmake.org/files/v${CMAKE_VERSION%.*}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh" --quiet -O /tmp/cmake && \
         bash /tmp/cmake --skip-license --prefix=/usr/local && \
         rm -rf /tmp/cmake
