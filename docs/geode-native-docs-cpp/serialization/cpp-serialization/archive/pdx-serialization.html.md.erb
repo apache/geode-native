@@ -1,5 +1,5 @@
 ---
-title:  Using PDX Serialization
+title:  Serializing Data with PDX Serialization
 ---
 
 <!--
@@ -19,29 +19,18 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-<%=vars.product_name%> Portable Data eXchange (PDX) serialization provides portability for PDX serializable objects so that clients can share data with
-Java servers and other non-C++ clients. PDX stores data in named fields that you can access
-individually in order to avoid the cost of deserializing the entire data object. PDX also allows you
-to mix versions of objects where you have added or removed fields.
-
-When using PDX serialization, you can use either `PdxSerializable` (for a specific domain object) or `PdxSerializer` (for all your domain objects).
-
-**Use `PdxSerializable`** when the object is one whose definition you control. You can embed the serialization/deserialization capability within
-the object, so its conversion from one format to the other is self-contained. You do this by defining an object that inherits from the `PdxSerializable`
-interface, and you register the domain class using the `registerPdxType(domainClass)` API.
-
-**Use `PdxSerializer`** when you cannot or do not wish to modify the object definition, for example, when the object is provided by a third-party.
-You define the serialization/deserialization capability in a separate place, then register the domain class for serialization in the cache using 
-the `registerPdxSerializer` API.
+PDX is a cross-language data format that can reduce the cost of
+distributing and serializing your objects. PDX stores data in named
+fields that you can access individually to avoid the cost of
+deserializing the entire data object. When you use PDX serialization
+with the C++ client API, you can implement PDX serialization for each
+domain object or register a `PdxSerializer` for the entire cache.
 
 You can also set the object preference of the cache to the `PdxInstance` type, which allows you to access fields of a PDX object without deserializing the entire object.
 
--   **[Serialize Using the PdxSerializable Class](pdxserializable-interface.html)**
+<!--  -   **[Serialize Using the PdxSerializable Class](pdxserializable-interface.html)** -->
 
     Domain classes need to inherit the `PdxSerializable` abstract class to serialize and de-serialize the object. When you write objects using PDX serialization, they are distributed to the server tier in PDX serialized form.
-
--   **[Performing put, get, and localDestroy Operations with a PDX Domain Object](performing-ops-with-pdx-object.html)**
-    This topic demonstrates how you can perform operations on a PDX domain object after you have implemented PDX serializable in your domain class.
 
 -   **[Serialize Your Domain Objects with PdxSerializer and PdxWrapper](using-pdxserializer.html)**
 
