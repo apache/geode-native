@@ -1,5 +1,5 @@
 ---
-title:  PdxSerializable Examples
+title:  PdxSerializable Example
 ---
 
 <!--
@@ -19,12 +19,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-The native client release contains examples showing how a client application
+The native client release contains an example showing how a client application
 can register for serialization of custom objects using the C++ PdxSerializable interface.
 
-The examples are located in `examples/cpp/pdxserializable`.
+The example is located in `examples/cpp/pdxserializable`.
 
-The examples define the serializable class, `Orders`, including its serialization and deserialization methods and its factory method.
+The example defines the serializable class, `Orders`, including its serialization and deserialization methods and its factory method.
 Once these pieces are in place, execution is simple: the main routine of the example registers the serializable class then performs some put and get operations.
 
 <a id="pdxsbl_execution"></a>
@@ -32,7 +32,8 @@ Once these pieces are in place, execution is simple: the main routine of the exa
 
 The example performs a sequence of operations, displaying simple log entries as they run.
 
-- To run an example, follow the instructions in the README.md file in the example directory.
+- To run the example, follow the instructions in the README.md file in the example directory.
+
 - Review the source code in the example directory to see exactly how it operates.
 
 - Begin by running a script that sets up the server-side environment by invoking `gfsh` commands to create a region, a locator, and a server.
