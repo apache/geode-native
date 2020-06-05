@@ -70,8 +70,7 @@ TEST(ServerDisconnect, WithRegionDisconnectedListener) {
   cluster.applyLocators(poolFactory);
 
   auto pool = poolFactory.create("pool");
-  auto regionFactory =
-      cache.createRegionFactory(RegionShortcut::CACHING_PROXY);
+  auto regionFactory = cache.createRegionFactory(RegionShortcut::CACHING_PROXY);
 
   auto regionDisconnectedListener =
       std::make_shared<RegionDisconnectedListener>();
