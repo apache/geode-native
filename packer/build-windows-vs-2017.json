@@ -5,7 +5,7 @@
     "googlecompute_project": "",
     "source_image": "",
     "source_image_name": "",
-    "image_name": "windows-2016-vs-2017"
+    "image_name": "build-windows-vs-2017"
   },
   "builders": [
     {
@@ -48,7 +48,7 @@
         "version": "{{user `version`}}",
         "source_ami": "{{user `source_image`}}"
       },
-      "disk_size": "50",
+      "disk_size": "100",
       "communicator": "winrm",
       "winrm_username": "packer_user",
       "winrm_insecure": true,
@@ -58,14 +58,23 @@
   "provisioners": [
     {
       "type": "powershell",
-      "scripts": [
-        "windows/install-vs-2017-community.ps1"
+      "inline": [
+        "choco install liberica11jdk -confirm",
+        "choco install cmake.portable -confirm",
+        "choco install git.install -confirm",
+        "choco install dogtail.dotnet3.5sp1 -confirm",
+        "choco install nunit.install --version 2.6.4 -confirm",
+        "choco install netfx-4.5.2-devpack --allowEmptyChecksums -confirm",
+        "choco install nuget.commandline -confirm",
+        "choco install doxygen.install -confirm",
+        "choco install openssl -confirm",
+        "choco install strawberryperl -confirm"
       ]
     },
     {
       "type": "powershell",
-      "inline": [
-        "Install-WindowsFeature -name NET-Framework-Core"
+      "scripts": [
+        "windows/install-geode.ps1"
       ]
     },
     {
