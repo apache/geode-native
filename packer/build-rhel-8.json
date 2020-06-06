@@ -3,23 +3,31 @@
     "aws_region": "",
     "googlecompute_zone": "",
     "googlecompute_project": "",
-    "source_image": "",
-    "source_image_name": "",
     "image_name": "build-rhel-8"
   },
   "builders": [
     {
       "type": "amazon-ebs",
       "instance_type": "t2.micro",
+      "ami_virtualization_type": "hvm",
       "ami_name": "{{user `product_name`}}-{{user `version`}}-{{user `image_name`}}-{{timestamp}}",
       "region": "{{user `aws_region`}}",
-      "source_ami": "{{user `source_image`}}",
+      "source_ami_filter": {
+        "filters": {
+          "virtualization-type": "hvm",
+          "name": "RHEL-8.2.0_HVM-*-x86_64-*-Hourly2-GP2",
+          "root-device-type": "ebs"
+        },
+        "owners": [
+          "309956199498"
+        ],
+        "most_recent": true
+      },
       "subnet_id": "{{user `subnet_id`}}",
       "vpc_id": "{{user `vpc_id`}}",
       "tags": {
         "product": "{{user `product_name`}}",
-        "version": "{{user `version`}}",
-        "source_ami": "{{user `source_image`}}"
+        "version": "{{user `version`}}"
       },
       "ssh_username": "ec2-user",
       "ssh_pty": true
@@ -29,14 +37,14 @@
       "machine_type": "n1-standard-1",
       "project_id": "{{user `googlecompute_project`}}",
       "zone": "{{user `googlecompute_zone`}}",
-      "source_image": "{{user `source_image`}}",
+      "source_image_family": "rhel-8",
       "image_name": "{{user `product_name`}}-{{user `version`}}-{{user `image_name`}}-{{timestamp}}",
       "image_family": "{{user `product_name`}}-{{user `version`}}-{{user `image_name`}}",
       "image_labels": {
         "product": "{{user `product_name`}}",
-        "version": "{{user `version`}}",
-        "source_ami": "{{user `source_image`}}"
+        "version": "{{user `version`}}"
       },
+      "disk_size": "20",
       "ssh_username": "packer"
     }
   ],

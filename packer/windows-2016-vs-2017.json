@@ -3,23 +3,31 @@
     "aws_region": "",
     "googlecompute_zone": "",
     "googlecompute_project": "",
-    "source_image": "",
-    "source_image_name": "",
     "image_name": "windows-2016-vs-2017"
   },
   "builders": [
     {
       "type": "amazon-ebs",
       "instance_type": "c5d.2xlarge",
+      "ami_virtualization_type": "hvm",
       "ami_name": "{{user `product_name`}}-{{user `version`}}-{{user `image_name`}}-{{timestamp}}",
       "region": "{{user `aws_region`}}",
-      "source_ami": "{{user `source_image`}}",
+      "source_ami_filter": {
+        "filters": {
+          "virtualization-type": "hvm",
+          "name": "{{user `product_name`}}-{{user `version`}}-windows-2016-base-*",
+          "root-device-type": "ebs"
+        },
+        "owners": [
+          "self"
+        ],
+        "most_recent": true
+      },
       "subnet_id": "{{user `subnet_id`}}",
       "vpc_id": "{{user `vpc_id`}}",
       "tags": {
         "product": "{{user `product_name`}}",
-        "version": "{{user `version`}}",
-        "source_ami": "{{user `source_ami`}}"
+        "version": "{{user `version`}}"
       },
       "communicator": "ssh",
       "ssh_username": "Administrator",
@@ -35,16 +43,15 @@
     },
     {
       "type": "googlecompute",
-      "machine_type": "n1-standard-2",
+      "machine_type": "n1-standard-8",
       "project_id": "{{user `googlecompute_project`}}",
       "zone": "{{user `googlecompute_zone`}}",
-      "source_image": "{{user `source_image`}}",
+      "source_image_family": "{{user `product_name`}}-{{user `version`}}-windows-2016-base",
       "image_name": "{{user `product_name`}}-{{user `version`}}-{{user `image_name`}}-{{timestamp}}",
       "image_family": "{{user `product_name`}}-{{user `version`}}-{{user `image_name`}}",
       "image_labels": {
         "product": "{{user `product_name`}}",
-        "version": "{{user `version`}}",
-        "source_ami": "{{user `source_image`}}"
+        "version": "{{user `version`}}"
       },
       "disk_size": "50",
       "communicator": "winrm",
