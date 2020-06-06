@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -15,6 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set -x -e -o pipefail
+[Unit]
+Description=Ensure an A record exists for local hostname in /etc/hosts
+After=network.target
+After=network-online.target
+Wants=network-online.target
 
-apt-get autoclean
+[Service]
+ExecStart=/usr/local/bin/update-hosts.sh
+
+[Install]
+WantedBy=multi-user.target
