@@ -28,17 +28,18 @@
     },
     {
       "type": "googlecompute",
+      "machine_type": "n1-standard-1",
       "project_id": "{{user `googlecompute_project`}}",
-      "source_image": "{{user `source_image`}}",
-      "ssh_username": "packer",
       "zone": "{{user `googlecompute_zone`}}",
+      "source_image": "{{user `source_image`}}",
       "image_name": "{{user `product_name`}}-{{user `version`}}-{{user `image_name`}}-{{timestamp}}",
       "image_family": "{{user `product_name`}}-{{user `version`}}-{{user `image_name`}}",
       "image_labels": {
         "product": "{{user `product_name`}}",
         "version": "{{user `version`}}",
         "source_ami": "{{user `source_image`}}"
-      }
+      },
+      "ssh_username": "packer"
     }
   ],
   "provisioners": [
