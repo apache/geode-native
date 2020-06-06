@@ -70,15 +70,14 @@ class Semaphore {
   volatile int m_count;
 
  public:
+  Semaphore() = delete;
   explicit Semaphore(int count);
   ~Semaphore();
+  Semaphore(const Semaphore& other) = delete;
+  Semaphore& operator=(const Semaphore& other) = delete;
+
   void acquire(int t = 1);
   void release(int t = 1);
-
- private:
-  Semaphore();
-  Semaphore(const Semaphore& other);
-  Semaphore& operator=(const Semaphore& other);
 };
 
 class TimeStamp {
@@ -125,12 +124,9 @@ class Record {
   ~Record();
 };
 
-typedef std::map<std::string, Record> RecordMap;
-
 class PerfSuite {
  private:
   std::string m_suiteName;
-  RecordMap m_records;
 
  public:
   explicit PerfSuite(const char* suiteName);
@@ -193,7 +189,8 @@ class Thread : public ACE_Task_Base {
   bool m_used;
 
  public:
-  Thread();
+  Thread() : ACE_Task_Base(), m_launcher(nullptr), m_used(false) {}
+
   // Unhide function to prevent SunPro Warnings
   using ACE_Shared_Object::init;
   void init(ThreadLauncher* l) {
@@ -201,7 +198,7 @@ class Thread : public ACE_Task_Base {
     m_launcher = l;
   }
 
-  ~Thread();
+  ~Thread() noexcept override = default;
 
   /** called before measurement begins. override to do per thread setup. */
   virtual void setup() {}
@@ -213,36 +210,9 @@ class Thread : public ACE_Task_Base {
    */
   virtual void cleanup() {}
 
-  virtual int svc();
+  int svc() override;
 };
 
-// class NamingServiceThread
-//: public ACE_Task_Base
-//{
-//  private:
-//  uint32_t m_port;
-//
-//  void namingService()
-//  {
-//    char * argsv[2];
-//    char pbuf[32];
-//    sprintf( pbuf, "-p %d", 12321 );
-//
-//    argsv[0] = strdup( pbuf );
-//    argsv[1] = 0;
-//   auto svcObj = ACE_SVC_INVOKE( ACE_Name_Acceptor );
-//
-//    if ( svcObj->init( 1, argsv ) == -1 ) {
-//      fprintf( stdout, "Failed to construct the Naming Service." );
-//      fflush( stdout );
-//    }
-//      ACE_Reactor::run_event_loop();
-//  }
-//
-//  public:
-//  NamingServiceThread( uint32_t port ) : m_port( port ) {}
-// virtual int svc() { };//namingService(); }
-//};
 }  // namespace perf
 
 #endif  // GEODE_INTEGRATION_TEST_FW_PERF_H_

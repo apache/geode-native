@@ -26,7 +26,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class APACHE_GEODE_EXPORT RegionGlobalLocks {
+class RegionGlobalLocks {
  public:
   explicit RegionGlobalLocks(LocalRegion* region, bool isFailover = true)
       : m_region(region), m_isFailover(isFailover) {

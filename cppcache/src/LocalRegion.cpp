@@ -17,7 +17,6 @@
 
 #include "LocalRegion.hpp"
 
-#include <sstream>
 #include <vector>
 
 #include <geode/PoolManager.hpp>
@@ -26,6 +25,7 @@
 #include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
 #include "CacheableToken.hpp"
+#include "EntriesMapFactory.hpp"
 #include "EntryExpiryHandler.hpp"
 #include "ExpiryTaskManager.hpp"
 #include "LRUEntriesMap.hpp"
@@ -93,7 +93,7 @@ LocalRegion::LocalRegion(const std::string& name, CacheImpl* cacheImpl,
 
   m_regionStats = new RegionStats(
       cacheImpl->getStatisticsManager().getStatisticsFactory(), m_fullPath);
-  auto p = cacheImpl->getPoolManager().find(getAttributes().getPoolName());
+  auto p = cacheImpl->getPoolManager().find(m_regionAttributes.getPoolName());
   setPool(p);
 }
 
@@ -733,6 +733,8 @@ void LocalRegion::registerEntryExpiryTask(
 LocalRegion::~LocalRegion() noexcept {
   TryWriteGuard guard(m_rwLock, m_destroyPending);
   if (!m_destroyPending) {
+    // TODO suspect
+    // NOLINTNEXTLINE(clang-analyzer-optin.cplusplus.VirtualCall)
     release(false);
   }
   m_listener = nullptr;

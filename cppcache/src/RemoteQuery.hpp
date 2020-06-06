@@ -39,7 +39,7 @@ namespace client {
 
 class ThinClientBaseDM;
 
-class APACHE_GEODE_EXPORT RemoteQuery : public Query {
+class RemoteQuery : public Query {
   std::string m_queryString;
   std::shared_ptr<RemoteQueryService> m_queryService;
   ThinClientBaseDM* m_tccdm;

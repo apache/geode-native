@@ -15,11 +15,9 @@
 
 $ErrorActionPreference = "Stop"
 
-write-host "Installing Chocolatey"
+write-host "Installing Chocolatey..."
 
-# Avoid bug in 7zip when running via WinRM
-$Env:chocolateyUseWindowsCompression = $true
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
 
-iwr https://chocolatey.org/install.ps1 | iex
-
-write-host "Chocolatey Installed"
+write-host "Installed Chocolatey."

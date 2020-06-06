@@ -31,10 +31,11 @@
 namespace apache {
 namespace geode {
 namespace client {
+
 /**
  * @brief This class encapsulates Version Stamp for map entries.
  */
-class APACHE_GEODE_EXPORT VersionStamp {
+class VersionStamp {
  public:
   VersionStamp()
       : m_memberID(0),
@@ -50,7 +51,7 @@ class APACHE_GEODE_EXPORT VersionStamp {
         m_regionVersionHighBytes(rhs.m_regionVersionHighBytes),
         m_regionVersionLowBytes(rhs.m_regionVersionLowBytes) {}
 
-  virtual ~VersionStamp() {}
+  virtual ~VersionStamp() noexcept = default;
   void setVersions(std::shared_ptr<VersionTag> versionTag);
   void setVersions(VersionStamp& versionStamp);
   int32_t getEntryVersion() const;

@@ -118,8 +118,6 @@ class Gfsh {
 
       Locator &withSecurityManager(const std::string securityManager);
 
-      Locator &withConnect(const std::string connect);
-
       Locator &withPreferIPv6(bool useIPv6);
 
       Locator &withSslEnabledComponents(const std::string &components);
@@ -192,6 +190,9 @@ class Gfsh {
       Server &withSecurityPropertiesFile(const std::string file);
 
       Server &withHostNameForClients(const std::string hostName);
+
+      Server &withSystemProperty(const std::string &key,
+                                 const std::string &value);
     };
 
    private:

@@ -36,12 +36,13 @@ using apache::geode::client::internal::DSFid;
 
 class TestPdxClass : public PdxSerializable {
  public:
-  TestPdxClass() {}
-  void fromData(PdxReader&) {}
+  TestPdxClass() = default;
 
-  void toData(PdxWriter&) const {}
+  void fromData(PdxReader&) override {}
 
-  const std::string& getClassName() const { return className; }
+  void toData(PdxWriter&) const override {}
+
+  const std::string& getClassName() const override { return className; }
 
   static std::shared_ptr<PdxSerializable> createDeserializable() {
     return std::make_shared<TestPdxClass>();
@@ -53,19 +54,15 @@ class TestPdxClass : public PdxSerializable {
 
 class TestDataSerializableClass : public DataSerializable {
  public:
-  TestDataSerializableClass() {}
-  void fromData(DataInput&) {}
+  TestDataSerializableClass() = default;
 
-  void toData(DataOutput&) const {}
+  void fromData(DataInput&) override {}
 
-  const std::string& getClassName() const { return className; }
+  void toData(DataOutput&) const override {}
 
   static std::shared_ptr<DataSerializable> createInstance() {
     return std::make_shared<TestDataSerializableClass>();
   }
-
- private:
-  std::string className = "myserializableclass";
 };
 
 static void SerializationRegistryBM_findDataSerializablePrimitive(

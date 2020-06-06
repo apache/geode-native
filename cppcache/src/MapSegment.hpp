@@ -48,7 +48,7 @@ typedef std::unordered_map<std::shared_ptr<CacheableKey>,
     CacheableKeyHashMap;
 
 /** @brief type wrapper around the std::unordered_map implementation. */
-class APACHE_GEODE_EXPORT MapSegment {
+class MapSegment {
  private:
   // contain
   CacheableKeyHashMap* m_map;

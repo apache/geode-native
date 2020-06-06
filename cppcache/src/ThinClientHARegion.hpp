@@ -37,7 +37,7 @@ namespace client {
  * send and invalidate methods.
  *
  */
-class APACHE_GEODE_EXPORT ThinClientHARegion : public ThinClientRegion {
+class ThinClientHARegion : public ThinClientRegion {
  public:
   ThinClientHARegion(const std::string& name, CacheImpl* cache,
                      const std::shared_ptr<RegionInternal>& rPtr,

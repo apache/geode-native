@@ -28,7 +28,7 @@
 #define CLIENT1 s1p1
 #define SERVER1 s2p1
 
-namespace { // NOLINT(google-build-namespaces)
+namespace {  // NOLINT(google-build-namespaces)
 
 using apache::geode::client::Cacheable;
 using apache::geode::client::CacheFactory;
@@ -44,11 +44,11 @@ class ThinClientTallyLoader : public TallyLoader {
  public:
   ThinClientTallyLoader() : TallyLoader() {}
 
-  virtual ~ThinClientTallyLoader() = default;
+  ~ThinClientTallyLoader() noexcept override = default;
 
   std::shared_ptr<Cacheable> load(
       Region& rp, const std::shared_ptr<CacheableKey>& key,
-      const std::shared_ptr<Serializable>& aCallbackArgument) {
+      const std::shared_ptr<Serializable>& aCallbackArgument) override {
     int32_t loadValue = std::dynamic_pointer_cast<CacheableInt32>(
                             TallyLoader::load(rp, key, aCallbackArgument))
                             ->value();
@@ -64,7 +64,7 @@ class ThinClientTallyLoader : public TallyLoader {
     return std::move(lreturnValue);
   }
 
-  void close(Region& region) {
+  void close(Region& region) override {
     LOG(" ThinClientTallyLoader::close() called");
     LOGINFO(" Region %s is Destroyed = %d ", region.getName().c_str(),
             region.isDestroyed());

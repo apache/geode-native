@@ -62,7 +62,7 @@ class KillServerThread : public ACE_Task_Base {
  public:
   bool m_running;
   KillServerThread() : m_running(false) {}
-  int svc(void) {
+  int svc(void) override {
     while (m_running == true) {
       // CacheHelper::initServer( 2, "cacheserver_remoteoql2.xml");
       // LOG("THREAD STARTED SERVER 2");

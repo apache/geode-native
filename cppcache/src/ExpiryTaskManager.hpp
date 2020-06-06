@@ -46,7 +46,7 @@ namespace client {
  * This class starts a reactor's event loop for taking care of expiry
  * tasks. The scheduling of event also happens through this manager.
  */
-class APACHE_GEODE_EXPORT ExpiryTaskManager : public ACE_Task_Base {
+class ExpiryTaskManager : public ACE_Task_Base {
  public:
   typedef decltype(std::declval<ACE_Reactor>().schedule_timer(
       nullptr, nullptr, std::declval<ACE_Time_Value>())) id_type;
@@ -85,7 +85,7 @@ class APACHE_GEODE_EXPORT ExpiryTaskManager : public ACE_Task_Base {
   class GF_Timer_Heap_ImmediateReset_T
       : public ACE_Timer_Heap_T<TYPE, FUNCTOR, ACE_LOCK> {
    public:
-    virtual int expire_single(ACE_Command_Base& pre_dispatch_command) {
+    int expire_single(ACE_Command_Base& pre_dispatch_command) override {
       ACE_TRACE("GF_Timer_Heap_ImmediateReset_T::expire_single");
       ACE_Timer_Node_Dispatch_Info_T<TYPE> info;
       ACE_Time_Value cur_time;
@@ -93,7 +93,7 @@ class APACHE_GEODE_EXPORT ExpiryTaskManager : public ACE_Task_Base {
 
       // Create a scope for the lock ...
       {
-        ACE_MT(ACE_GUARD_RETURN(ACE_LOCK, ace_mon, this->mutex_, -1));
+        ACE_MT(ACE_GUARD_RETURN(ACE_LOCK, ace_mon, this->mutex_, -1))
 
         if (this->is_empty()) return 0;
 
@@ -121,7 +121,7 @@ class APACHE_GEODE_EXPORT ExpiryTaskManager : public ACE_Task_Base {
 
       // Create a scope for the lock ...
       {
-        ACE_MT(ACE_GUARD_RETURN(ACE_LOCK, ace_mon, this->mutex_, -1));
+        ACE_MT(ACE_GUARD_RETURN(ACE_LOCK, ace_mon, this->mutex_, -1))
 
         // Reschedule after doing the upcall in expire method
         // to let updated expiry interval, if any, take effect correctly
@@ -147,13 +147,13 @@ class APACHE_GEODE_EXPORT ExpiryTaskManager : public ACE_Task_Base {
       return 1;
     }
 
-    virtual int expire() {
+    int expire() override {
       return ACE_Timer_Queue_T<TYPE, FUNCTOR, ACE_LOCK>::expire();
     }
 
-    virtual int expire(const ACE_Time_Value& cur_time) {
+    int expire(const ACE_Time_Value& cur_time) override {
       ACE_TRACE("GF_Timer_Heap_ImmediateReset_T::expire");
-      ACE_MT(ACE_GUARD_RETURN(ACE_LOCK, ace_mon, this->mutex_, -1));
+      ACE_MT(ACE_GUARD_RETURN(ACE_LOCK, ace_mon, this->mutex_, -1))
 
       // Keep looping while there are timers remaining and the earliest
       // timer is <= the <cur_time> passed in to the method.
@@ -230,7 +230,7 @@ class APACHE_GEODE_EXPORT ExpiryTaskManager : public ACE_Task_Base {
    * Destructor. Stops the reactors event loop if it is not running
    * and then exits.
    */
-  ~ExpiryTaskManager();
+  ~ExpiryTaskManager() override;
 
   /**
    * For scheduling a task for expiration.
@@ -285,7 +285,7 @@ class APACHE_GEODE_EXPORT ExpiryTaskManager : public ACE_Task_Base {
    * is kept running unless explicitly stopped or when this object
    * goes out of scope.
    */
-  int svc();
+  int svc() override;
 
   /**
    * For explicitly stopping the reactor's event loop.

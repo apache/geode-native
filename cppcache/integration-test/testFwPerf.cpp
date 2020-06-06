@@ -24,18 +24,18 @@ class LocalPutTask : public perf::Thread {
  public:
   LocalPutTask() : Thread() {}
 
-  virtual void setup() {
+  void setup() override {
     fprintf(stdout, "performed my setup...\n");
     fflush(stdout);
   }
 
-  virtual void perftask() {
+  void perftask() override {
     ACE_OS::sleep(1);
     fprintf(stdout, "perffunc done.\n");
     fflush(stdout);
   }
 
-  virtual void cleanup() {
+  void cleanup() override {
     fprintf(stdout, "performed my cleanup...\n");
     fflush(stdout);
   }

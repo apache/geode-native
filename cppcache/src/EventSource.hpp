@@ -31,7 +31,7 @@ namespace client {
  *
  * EventSource is the combination of MembershipId and ThreadId from the EventId
  */
-class APACHE_GEODE_EXPORT EventSource {
+class EventSource {
   char *m_srcId;
   int32_t m_srcIdLen;
   int64_t m_thrId;

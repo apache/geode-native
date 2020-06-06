@@ -40,7 +40,7 @@ class TimeBomb : public ACE_Task_Base {
   int32_t m_exitCode;
   std::string m_msg;
 
-  int32_t svc();
+  int32_t svc() override;
 
  public:
   inline TimeBomb(uint32_t seconds, int32_t exitCode, const std::string& msg)
@@ -52,7 +52,7 @@ class TimeBomb : public ACE_Task_Base {
   inline TimeBomb()
       : m_stop(false), m_armed(false), m_seconds(0), m_exitCode(-1) {}
 
-  inline ~TimeBomb() {
+  ~TimeBomb() override {
     m_armed = false;
     m_stop = true;
     wait();

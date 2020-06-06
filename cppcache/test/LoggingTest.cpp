@@ -98,7 +98,7 @@ class LoggingTest : public testing::Test {
     // scrubTestLogFiles();
   }
 
-  virtual void TearDown() { scrubTestLogFiles(); }
+  void TearDown() override { scrubTestLogFiles(); }
 
  public:
   static void writeRolledLogFile(const boost::filesystem::path& logdir,
@@ -114,13 +114,12 @@ class LoggingTest : public testing::Test {
 
   static int numOfLinesInFile(const char* fname) {
     char line[2048];
-    char* read;
     int ln_cnt = 0;
     FILE* fp = fopen(fname, "r");
     if (fp == nullptr) {
       return 0;
     }
-    while (!!(read = fgets(line, sizeof line, fp))) {
+    while (!!(fgets(line, sizeof line, fp))) {
       ++ln_cnt;
     }
 

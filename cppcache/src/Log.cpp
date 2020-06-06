@@ -20,7 +20,7 @@
 #include <algorithm>
 #include <cctype>
 #include <chrono>
-#include <cinttypes>
+#include <cstdio>
 #include <ctime>
 #include <map>
 #include <mutex>
@@ -29,14 +29,12 @@
 #include <string>
 #include <thread>
 #include <utility>
-#include <vector>
 
 #include <boost/asio/ip/host_name.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/process/environment.hpp>
 
 #include <geode/ExceptionTypes.hpp>
-#include <geode/internal/geode_globals.hpp>
 #include <geode/util/LogLevel.hpp>
 
 #include "geodeBanner.hpp"
@@ -426,8 +424,7 @@ void Log::logInternal(LogLevel level, const std::string& msg) {
         removeOldestRolledLogFile();
       }
 
-      if ((numChars = fprintf(g_log, "%s%s\n", buf.c_str(), msg.c_str())) ==
-              0 ||
+      if (fprintf(g_log, "%s%s\n", buf.c_str(), msg.c_str()) == 0 ||
           ferror(g_log)) {
         // Let's continue without throwing the exception.  It should not cause
         // process to terminate
@@ -440,16 +437,12 @@ void Log::logInternal(LogLevel level, const std::string& msg) {
   }
 }
 
-#ifdef _WIN32
-#define vsnprintf _vsnprintf
-#endif
-
 void Log::log(LogLevel level, const char* fmt, ...) {
-  char msg[_GF_MSG_LIMIT] = {0};
+  char msg[_GEODE_LOG_MESSAGE_LIMIT] = {0};
   va_list argp;
   va_start(argp, fmt);
-  vsnprintf(msg, _GF_MSG_LIMIT, fmt, argp);
-  /* win doesn't guarantee termination */ msg[_GF_MSG_LIMIT - 1] = '\0';
+  // NOLINTNEXTLINE(clang-analyzer-valist.Uninitialized): clang-tidy bug
+  std::vsnprintf(msg, sizeof(msg), fmt, argp);
   Log::logInternal(level, std::string(msg));
   va_end(argp);
 }

@@ -16,13 +16,10 @@
  */
 #include "fw_dunit.hpp"
 #include <geode/CqAttributesFactory.hpp>
-#include <geode/CqAttributes.hpp>
 #include <geode/CqListener.hpp>
 #include <geode/CqStatusListener.hpp>
-#include <geode/CqQuery.hpp>
 #include <geode/CqServiceStatistics.hpp>
 #include <ace/OS.h>
-#include <ace/High_Res_Timer.h>
 #include <string>
 
 #define ROOT_NAME "TestThinClientCq"
@@ -30,7 +27,6 @@
 
 #include "CacheHelper.hpp"
 
-#include "QueryStrings.hpp"
 #include "QueryHelper.hpp"
 
 #include <geode/Query.hpp>
@@ -161,15 +157,15 @@ class MyCqListener : public CqListener {
     }
   }
 
-  void onEvent(const CqEvent &cqe) {
+  void onEvent(const CqEvent &cqe) override {
     //  LOG("MyCqListener::OnEvent called");
     updateCount(cqe);
   }
-  void onError(const CqEvent &cqe) {
+  void onError(const CqEvent &cqe) override {
     updateCount(cqe);
     //   LOG("MyCqListener::OnError called");
   }
-  void close() {
+  void close() override {
     //   LOG("MyCqListener::close called");
   }
 };
@@ -225,20 +221,22 @@ class MyCqStatusListener : public CqStatusListener {
     }
   }
 
-  void onEvent(const CqEvent &cqe) {
+  void onEvent(const CqEvent &cqe) override {
     LOGINFO("MyCqStatusListener::OnEvent %d called", m_id);
     updateCount(cqe);
   }
-  void onError(const CqEvent &cqe) {
+  void onError(const CqEvent &cqe) override {
     updateCount(cqe);
     LOGINFO("MyCqStatusListener::OnError %d called", m_id);
   }
-  void close() { LOGINFO("MyCqStatusListener::close %d called", m_id); }
-  void onCqDisconnected() {
+  void close() override {
+    LOGINFO("MyCqStatusListener::close %d called", m_id);
+  }
+  void onCqDisconnected() override {
     LOGINFO("MyCqStatusListener %d got onCqDisconnected", m_id);
     m_cqsDisconnectedCount++;
   }
-  void onCqConnected() {
+  void onCqConnected() override {
     LOGINFO("MyCqStatusListener %d got onCqConnected", m_id);
     m_cqsConnectedCount++;
   }

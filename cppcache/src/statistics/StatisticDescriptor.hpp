@@ -40,7 +40,7 @@ namespace statistics {
  * StatisticDescriptors are naturally ordered by their name.
  *
  */
-class APACHE_GEODE_EXPORT StatisticDescriptor {
+class StatisticDescriptor {
  public:
   /**
    * Returns the id of this statistic in a {@link StatisticsType

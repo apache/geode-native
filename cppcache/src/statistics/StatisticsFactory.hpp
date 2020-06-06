@@ -52,7 +52,7 @@ namespace statistics {
  *
  */
 
-class APACHE_GEODE_EXPORT StatisticsFactory {
+class StatisticsFactory {
  protected:
   StatisticsFactory() = default;
   StatisticsFactory(const StatisticsFactory&) = delete;

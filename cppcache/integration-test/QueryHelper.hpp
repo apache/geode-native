@@ -51,7 +51,7 @@
 #define ROOT_SCOPE LOCAL
 #endif
 
-namespace { // NOLINT(google-build-namespaces)
+namespace {  // NOLINT(google-build-namespaces)
 
 using apache::geode::client::CacheableKey;
 using apache::geode::client::CacheableStringArray;
@@ -88,7 +88,7 @@ class QueryHelper {
     positionNumSets = 1;
   }
 
-  virtual ~QueryHelper() { ; }
+  virtual ~QueryHelper() {}
 
   virtual void populatePortfolioData(
       std::shared_ptr<Region>& pregion, size_t setSize, size_t numSets,

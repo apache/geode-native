@@ -68,7 +68,7 @@ CqServiceVsdStats::CqServiceVsdStats(StatisticsFactory* factory,
   m_cqServiceVsdStats->setInt(m_numCqsStoppedId, 0);
 }
 
-CqServiceVsdStats::~CqServiceVsdStats() {
+CqServiceVsdStats::~CqServiceVsdStats() noexcept {
   if (m_cqServiceVsdStats != nullptr) {
     // Don't Delete, Already closed, Just set nullptr
     // delete m_CqServiceVsdStats;
