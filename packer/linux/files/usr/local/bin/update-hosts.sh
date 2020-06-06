@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
@@ -15,6 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set -x -e -o pipefail
-
-apt-get autoclean
+# add hostname to /etc/hosts if not set
+if (! getent hosts `hostname` >/dev/null); then
+  echo `hostname -I` `hostname` >> /etc/hosts
+fi

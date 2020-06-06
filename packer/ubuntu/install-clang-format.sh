@@ -17,6 +17,12 @@
 
 set -x -e -o pipefail
 
+. /etc/os-release
+
+wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
+apt-add-repository "deb http://apt.llvm.org/${VERSION_CODENAME}/ llvm-toolchain-${VERSION_CODENAME}-6.0 main"
+
+apt-get update
 apt-get -y install clang-format-6.0
 
 ln -s /usr/bin/clang-format-6.0 /usr/bin/clang-format

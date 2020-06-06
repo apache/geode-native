@@ -17,4 +17,12 @@
 
 set -x -e -o pipefail
 
-apt-get autoclean
+CMAKE_VERSION=3.16.8
+
+tmp=`mktemp`
+
+curl -o ${tmp} -L https://cmake.org/files/v${CMAKE_VERSION%.*}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh
+
+bash ${tmp} --skip-license --prefix=/usr/local
+
+rm -f ${tmp}

@@ -17,4 +17,7 @@
 
 set -x -e -o pipefail
 
-apt-get autoclean
+cp -rv /tmp/files/* /
+rm -rf /tmp/files
+
+chmod +x /usr/local/bin/init-user.sh
