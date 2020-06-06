@@ -15,7 +15,17 @@
 
 $ErrorActionPreference = "Stop"
 
-mkdir C:\gemfire
-cd C:\gemfire
-cmake -E tar zxf $Home\gemfire.tar.gz
-rm $Home\gemfire.tar.gz
+write-host "Installing Geode..."
+
+$GEODE_VERSION = "1.12.0"
+
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+Invoke-WebRequest -Uri "https://www.apache.org/dyn/closer.cgi?action=download&filename=geode/${GEODE_VERSION}/apache-geode-${GEODE_VERSION}.tgz" -OutFile "${env:TEMP}\geode.tgz"
+
+cd \
+cmake -E tar zxf "${env:TEMP}\geode.tgz"
+rm "${env:TEMP}\geode.tgz"
+
+[System.Environment]::SetEnvironmentVariable('GEODE_HOME', "C:\apache-geode-${GEODE_VERSION}", [System.EnvironmentVariableTarget]::Machine)
+
+write-host "Installed Geode."

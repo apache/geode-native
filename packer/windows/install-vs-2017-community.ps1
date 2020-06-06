@@ -15,13 +15,11 @@
 # TODO AdminDeploy.xml
 # vs_community.exe /AdminFile C:\Users\Administrator\AdminDeployment.xml /Log setup.log /Passive
 
-Set-PSDebug -Trace 0
+$ErrorActionPreference = "Stop"
 
-$vs_community_bootstrapper_uri = "https://download.visualstudio.microsoft.com/download/pr/5df30b3f-9db2-4195-bce3-c5518277da5d/18edc9dd7697111f993c5c06f18b51e5/vs_community.exe"
-$vs_community_bootstrapper = "C:\vs_community.exe"
+write-host "Installing Visual Studio 2017 Community..."
 
-$args = @('--installPath "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community"'
-          '--add microsoft.net.component.4.targetingpack'
+$args = @('--add microsoft.net.component.4.targetingpack'
 		  '--add microsoft.net.component.4.5.1.targetingpack'
 		  '--add microsoft.visualstudio.component.debugger.justintime'
 		  '--add microsoft.visualstudio.component.web'
@@ -43,8 +41,9 @@ $args = @('--installPath "C:\Program Files (x86)\Microsoft Visual Studio\2017\Co
 		  '--quiet'
 		  )
 
-Invoke-WebRequest -Uri $vs_community_bootstrapper_uri -OutFile $vs_community_bootstrapper
+choco install visualstudio2017community -confirm --package-parameters "$args"
 
-Start-Process -Filepath $vs_community_bootstrapper -ArgumentList $args -Wait
+write-host "Installed Visual Studio 2017 Community."
 
+# Avoids reboot error code
 Exit 0
