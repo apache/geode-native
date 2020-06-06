@@ -17,4 +17,10 @@
 
 set -x -e -o pipefail
 
-apt-get autoclean
+GEODE_VERSION=1.12.0
+
+cd /usr/local
+curl -L "https://www.apache.org/dyn/closer.cgi?action=download&filename=geode/${GEODE_VERSION}/apache-geode-${GEODE_VERSION}.tgz" | \
+        tar xzf -
+
+echo export GEODE_HOME=/usr/local/apache-geode-${GEODE_VERSION} > /etc/profile.d/geode.sh

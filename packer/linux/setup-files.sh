@@ -17,4 +17,11 @@
 
 set -x -e -o pipefail
 
-apt-get autoclean
+cp -rv /tmp/files/* /
+rm -rf /tmp/files
+
+chmod +x /usr/local/bin/update-hosts.sh
+
+systemctl daemon-reload
+systemctl enable update-hosts.service
+systemctl start update-hosts.service

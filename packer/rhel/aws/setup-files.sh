@@ -17,4 +17,5 @@
 
 set -x -e -o pipefail
 
-apt-get autoclean
+cp -rv /tmp/files/* /
+rm -rf /tmp/files
