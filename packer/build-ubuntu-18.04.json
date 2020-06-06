@@ -12,8 +12,6 @@
       "type": "amazon-ebs",
       "instance_type": "t2.micro",
       "ami_name": "{{user `product_name`}}-{{user `version`}}-{{user `image_name`}}-{{timestamp}}",
-      "access_key": "{{user `aws_access_key`}}",
-      "secret_key": "{{user `aws_secret_key`}}",
       "region": "{{user `aws_region`}}",
       "source_ami": "{{user `source_image`}}",
       "subnet_id": "{{user `subnet_id`}}",
