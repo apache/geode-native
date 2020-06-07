@@ -3,7 +3,7 @@
     "aws_region": "",
     "googlecompute_zone": "",
     "googlecompute_project": "",
-    "image_name": "windows-2016-vs-2017"
+    "image_name": "build-windows-2016-vs-2017"
   },
   "builders": [
     {
@@ -15,11 +15,11 @@
       "source_ami_filter": {
         "filters": {
           "virtualization-type": "hvm",
-          "name": "{{user `product_name`}}-{{user `version`}}-windows-2016-base-*",
+          "name": "Windows_Server-2016-English-Full-Base-*",
           "root-device-type": "ebs"
         },
         "owners": [
-          "self"
+          "amazon"
         ],
         "most_recent": true
       },
@@ -43,17 +43,20 @@
     },
     {
       "type": "googlecompute",
-      "machine_type": "n1-standard-8",
+      "machine_type": "n1-standard-2",
       "project_id": "{{user `googlecompute_project`}}",
       "zone": "{{user `googlecompute_zone`}}",
-      "source_image_family": "{{user `product_name`}}-{{user `version`}}-windows-2016-base",
+      "source_image_family": "windows-2016",
       "image_name": "{{user `product_name`}}-{{user `version`}}-{{user `image_name`}}-{{timestamp}}",
       "image_family": "{{user `product_name`}}-{{user `version`}}-{{user `image_name`}}",
       "image_labels": {
         "product": "{{user `product_name`}}",
         "version": "{{user `version`}}"
       },
-      "disk_size": "50",
+      "disk_size": "100",
+      "metadata": {
+        "windows-startup-script-cmd": "winrm quickconfig -quiet & net user /add packer_user & net localgroup administrators packer_user /add & winrm set winrm/config/service/auth @{Basic=\"true\"}"
+      },
       "communicator": "winrm",
       "winrm_username": "packer_user",
       "winrm_insecure": true,
@@ -64,13 +67,54 @@
     {
       "type": "powershell",
       "scripts": [
+        "windows/disable-uac.ps1",
+        "windows/install-chocolatey.ps1"
+      ]
+    },
+    {
+      "type": "file",
+      "source": "windows/init-ssh.ps1",
+      "destination": "$Env:ProgramData/Amazon/EC2-Windows/Launch/Scripts/init-ssh.ps1",
+      "only": [
+        "amazon-ebs"
+      ]
+    },
+    {
+      "type": "powershell",
+      "scripts": [
+        "windows/install-ssh.ps1"
+      ],
+      "only": [
+        "amazon-ebs"
+      ]
+    },
+    {
+      "type": "powershell",
+      "scripts": [
         "windows/install-vs-2017-community.ps1"
       ]
     },
     {
       "type": "powershell",
       "inline": [
-        "Install-WindowsFeature -name NET-Framework-Core"
+        "choco install git.install -confirm",
+        "choco install cmake.portable -confirm",
+        "# TODO Old CLI tests aren't compatible with Java 11",
+        "choco install liberica8jdk -confirm",
+        "choco install doxygen.install -confirm",
+        "choco install openssl -confirm",
+        "choco install strawberryperl -confirm",
+        "choco install nuget.commandline -confirm",
+        "# For NUnit 2.6",
+        "choco install dotnet3.5 -confirm",
+        "# TODO make this a nuget dependency",
+        "choco install nunit.install --version 2.6.4 -confirm"
+      ]
+    },
+    {
+      "type": "powershell",
+      "scripts": [
+        "windows/install-geode.ps1"
       ]
     },
     {
