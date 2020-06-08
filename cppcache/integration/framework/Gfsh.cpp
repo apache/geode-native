@@ -334,6 +334,16 @@ Gfsh::Create::Region &Gfsh::Create::Region::withType(const std::string &type) {
   return *this;
 }
 
+Gfsh::Create::Region &Gfsh::Create::Region::withRedundantCopies(const std::string &copies) {
+  command_ += " --redundant-copies=" + copies;
+  return *this;
+}
+
+Gfsh::Create::Region &Gfsh::Create::Region::withBuckets(const std::string &totalNumBuckets) {
+  command_ += " --total-num-buckets=" + totalNumBuckets;
+  return *this;
+}
+
 Gfsh::Connect::Connect(Gfsh &gfsh) : Command{gfsh, "connect"} {}
 
 Gfsh::Connect &Gfsh::Connect::withJmxManager(const std::string &jmxManager) {

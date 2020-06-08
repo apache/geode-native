@@ -221,6 +221,10 @@ class Gfsh {
       Region &withName(const std::string &name);
 
       Region &withType(const std::string &type);
+
+      Region &withRedundantCopies(const std::string &copies);
+
+      Region &withBuckets(const std::string &totalNumBuckets);
     };
   };
 
