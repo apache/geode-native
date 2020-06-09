@@ -20,12 +20,17 @@
 #ifndef GEODE_CRYPTOIMPL_SSLIMPL_H_
 #define GEODE_CRYPTOIMPL_SSLIMPL_H_
 
+#ifdef _WIN32
 #pragma warning(push)
 #pragma warning(disable : 4311)
 #pragma warning(disable : 4302)
+#endif
+
 #pragma pack(push)
 
+#ifdef _WIN32
 #pragma error_messages(off, macroredef)
+#endif
 
 #include <ace/INET_Addr.h>
 #include <ace/OS.h>
@@ -35,7 +40,9 @@
 #include <ace/SSL/SSL_SOCK_Connector.h>
 #include <ace/Time_Value.h>
 
+#ifdef _WIN32
 #pragma error_messages(on, macroredef)
+#endif
 
 #pragma pack(pop)
 

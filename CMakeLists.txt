@@ -215,7 +215,6 @@ elseif (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
   target_compile_options(_WarningsAsError INTERFACE
     -Werror
     -Wall
-    -Wno-unknown-pragmas #TODO fix
     -Wno-unused-variable #TODO fix
     -Wpedantic
     # -Wshadow TODO fix
@@ -241,7 +240,6 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     -Werror
     -Wall
     -Wextra
-    -Wno-unknown-pragmas #TODO fix
     -Wno-unused-variable #TODO fix
     -Wno-unused-function #TODO fix
     -Wno-used-but-marked-unused #TODO fix
