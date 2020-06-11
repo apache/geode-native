@@ -13,17 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-$ssh = "C:\Users\Administrator\.ssh"
-$authorized_keys = "$ssh\authorized_keys"
-if ( -not (Test-Path $authorized_keys -PathType Leaf) ) {
+write-host "Installing SSH authorized key..."
 
-  write-host "Installing SSH authorized key"
+$authorized_keys_file = "${ENV:PROGRAMDATA}\ssh\administrators_authorized_keys"
+Invoke-WebRequest -Uri "http://169.254.169.254/latest/meta-data/public-keys/0/openssh-key" -OutFile $authorized_keys_file
+icacls "${authorized_keys_file}" /inheritance:r /grant "SYSTEM:(F)" /grant "BUILTIN\Administrators:(F)"
 
-  mkdir -p $ssh -ErrorAction SilentlyContinue
-
-  Invoke-WebRequest -Uri "http://169.254.169.254/latest/meta-data/public-keys/0/openssh-key" -OutFile $authorized_keys
-
-  Import-Module "$Env:ProgramFiles\OpenSSH-Win64\OpenSSHUtils" -force
-
-  Repair-AuthorizedKeyPermission $authorized_keys -Confirm:$false
-}
+write-host "Installed SSH authorized key"

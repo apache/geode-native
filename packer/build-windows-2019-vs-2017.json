@@ -3,7 +3,7 @@
     "aws_region": "",
     "googlecompute_zone": "",
     "googlecompute_project": "",
-    "image_name": "build-windows-2016-vs-2017"
+    "image_name": "build-windows-2019-vs-2017"
   },
   "builders": [
     {
@@ -15,7 +15,7 @@
       "source_ami_filter": {
         "filters": {
           "virtualization-type": "hvm",
-          "name": "Windows_Server-2016-English-Full-Base-*",
+          "name": "Windows_Server-2019-English-Full-Base-*",
           "root-device-type": "ebs"
         },
         "owners": [
@@ -47,7 +47,7 @@
       "machine_type": "n1-standard-2",
       "project_id": "{{user `googlecompute_project`}}",
       "zone": "{{user `googlecompute_zone`}}",
-      "source_image_family": "windows-2016",
+      "source_image_family": "windows-2019",
       "image_name": "{{user `product_name`}}-{{user `version`}}-{{user `image_name`}}-{{timestamp}}",
       "image_family": "{{user `product_name`}}-{{user `version`}}-{{user `image_name`}}",
       "image_labels": {
@@ -56,7 +56,7 @@
       },
       "disk_size": "100",
       "metadata": {
-        "windows-startup-script-cmd": "net user Administrator /active:yes & winrm quickconfig -quiet & winrm set winrm/config/service/auth @{Basic=\"true\"}"
+        "windows-startup-script-cmd": "dism /Online /Add-Capability /CapabilityName:OpenSSH.Server~~~~0.0.1.0 & winrm quickconfig -quiet & winrm set winrm/config/service/auth @{Basic=\"true\"} & net user Administrator /active:yes"
       },
       "communicator": "winrm",
       "winrm_username": "Administrator",
@@ -69,6 +69,7 @@
       "type": "powershell",
       "scripts": [
         "windows/disable-uac.ps1",
+        "windows/2019/install-ssh.ps1",
         "windows/install-chocolatey.ps1"
       ]
     },
@@ -81,7 +82,6 @@
     {
       "type": "powershell",
       "inline": [
-        "choco install openssh -params '/SSHServerFeature' -confirm",
         "choco install git.install -confirm",
         "choco install cmake.portable -confirm",
         "# TODO Old CLI tests aren't compatible with Java 11",
