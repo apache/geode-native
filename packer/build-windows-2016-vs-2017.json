@@ -56,10 +56,10 @@
       },
       "disk_size": "100",
       "metadata": {
-        "windows-startup-script-cmd": "winrm quickconfig -quiet & net user /add packer_user & net localgroup administrators packer_user /add & winrm set winrm/config/service/auth @{Basic=\"true\"}"
+        "windows-startup-script-cmd": "net user Administrator /active:yes & winrm quickconfig -quiet & winrm set winrm/config/service/auth @{Basic=\"true\"}"
       },
       "communicator": "winrm",
-      "winrm_username": "packer_user",
+      "winrm_username": "Administrator",
       "winrm_insecure": true,
       "winrm_use_ssl": true
     }
