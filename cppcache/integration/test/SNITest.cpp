@@ -59,9 +59,9 @@ class SNITest : public ::testing::Test {
 #if defined(_WINDOWS)
     std::string sniDir(currentWorkingDirectory.string());
     sniDir += "/../sni-test-config";
-    auto rVal = SetCurrentDirectory(sniDir.c_str());
+    SetCurrentDirectory(sniDir.c_str());
 #else
-    auto rVal = chdir("./sni-test-config");
+    chdir("./sni-test-config");
 #endif
 
     std::system("docker-compose up -d");
