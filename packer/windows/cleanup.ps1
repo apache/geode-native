@@ -13,6 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Remove admin ssh keys
+$authorized_keys_file = "${ENV:PROGRAMDATA}\ssh\administrators_authorized_keys"
+Remove-Item "${authorized_keys_file}" -Force -ErrorAction SilentlyContinue
+
 # Cleanup temp
 Get-ChildItem $env:tmp -Recurse | Remove-Item -Recurse -force -ErrorAction SilentlyContinue
 Get-ChildItem ([environment]::GetEnvironmentVariable("temp","machine")) -Recurse| Remove-Item -Recurse -Force -ErrorAction SilentlyContinue

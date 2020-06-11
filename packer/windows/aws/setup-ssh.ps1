@@ -19,8 +19,6 @@ $ErrorActionPreference = "Stop"
 
 write-host "Installing OpenSSH..."
 
-(Get-Content -Path $Env:ProgramData\ssh\sshd_config -Raw) -replace '.*Match Group administrators.*','' -replace '.*administrators_authorized_keys.*','' | Set-Content -Path $Env:ProgramData\ssh\sshd_config
-
 schtasks.exe /Create /TN init-ssh /RU SYSTEM /SC ONSTART /TR "powershell.exe -File '${Env:ProgramData}\Amazon\EC2-Windows\Launch\Scripts\init-ssh.ps1'"
 
 write-host "Installed OpenSSH."
