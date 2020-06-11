@@ -112,8 +112,8 @@
     },
     {
       "type": "powershell",
-      "scripts": [
-        "windows/aws/setup-ssh.ps1"
+      "inline": [
+        "$Env:ProgramData\\Amazon\\EC2-Windows\\Launch\\Scripts\\init-ssh.ps1 -schedule"
       ],
       "only": [
         "amazon-ebs"

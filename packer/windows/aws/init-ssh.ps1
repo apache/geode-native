@@ -1,4 +1,4 @@
-# Licensed to the Apache Software Foundation (ASF) under one or more
+ # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
 # The ASF licenses this file to You under the Apache License, Version 2.0
@@ -13,10 +13,37 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-write-host "Installing SSH authorized key..."
+[CmdletBinding(DefaultParameterSetName = 'Default')]
+param (
+    # Schedules the script to run on the next boot.
+    # If this argument is not provided, script is executed immediately.
+    [parameter(Mandatory = $false, ParameterSetName = "Schedule")]
+    [switch] $Schedule = $false
+)
 
-$authorized_keys_file = "${ENV:PROGRAMDATA}\ssh\administrators_authorized_keys"
-Invoke-WebRequest -Uri "http://169.254.169.254/latest/meta-data/public-keys/0/openssh-key" -OutFile $authorized_keys_file
-icacls "${authorized_keys_file}" /inheritance:r /grant "SYSTEM:(F)" /grant "BUILTIN\Administrators:(F)"
+Set-Variable modulePath -Option Constant -Scope Local -Value (Join-Path $env:ProgramData -ChildPath "Amazon\EC2-Windows\Launch\Module\Ec2Launch.psd1")
+Set-Variable scriptPath -Option Constant -Scope Local -Value (Join-Path $PSScriptRoot -ChildPath $MyInvocation.MyCommand.Name)
+Set-Variable authorizedKeysPath -Option Constant -Scope Local -Value (Join-Path $env:ProgramData -ChildPath "ssh\administrators_authorized_keys")
 
-write-host "Installed SSH authorized key"
+Import-Module $modulePath
+
+Initialize-Log -Filename "Ec2Launch.log" -AllowLogToConsole
+
+if ($Schedule) {
+  Write-Log "Sheduling SSH Authorized Keys Initialization..."
+  Register-ScriptScheduler -ScriptPath $scriptPath -ScheduleName "SSH Authorized Keys Initialization"
+  Write-Log "Sheduled SSH Authorized Keys Initialization."
+
+  Complete-Log
+  Exit 0
+}
+
+Write-Log "Initializating SSH Authorized Keys..."
+
+Invoke-WebRequest -Uri "http://169.254.169.254/latest/meta-data/public-keys/0/openssh-key" -OutFile $authorizedKeysPath
+icacls $authorizedKeysPath /inheritance:r /grant "SYSTEM:(F)" /grant "BUILTIN\Administrators:(F)"
+
+Write-Log "Initializated SSH Authorized Keys."
+
+Complete-Log
+Exit 0
