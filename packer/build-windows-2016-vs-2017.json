@@ -36,7 +36,7 @@
           "volume_size": 100
         }
       ],
-      "user_data_file": "windows/aws/enable-winrm.ps1",
+      "user_data_file": "windows/2016/aws/startup.ps1",
       "communicator": "winrm",
       "winrm_username": "Administrator",
       "winrm_insecure": true,
@@ -56,7 +56,7 @@
       },
       "disk_size": "100",
       "metadata": {
-        "windows-startup-script-cmd": "net user Administrator /active:yes & winrm quickconfig -quiet & winrm set winrm/config/service/auth @{Basic=\"true\"}"
+        "windows-startup-script-cmd": "dism /Online /NoRestart /Enable-Feature /FeatureName:NetFx3 & winrm quickconfig -quiet & winrm set winrm/config/service/auth @{Basic=\"true\"} & net user Administrator /active:yes"
       },
       "communicator": "winrm",
       "winrm_username": "Administrator",
@@ -90,8 +90,6 @@
         "choco install openssl -confirm",
         "choco install strawberryperl -confirm",
         "choco install nuget.commandline -confirm",
-        "# For NUnit 2.6",
-        "choco install dogtail.dotnet3.5sp1 -confirm",
         "# TODO make this a nuget dependency",
         "choco install nunit.install --version 2.6.4 -confirm"
       ]
