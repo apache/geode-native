@@ -99,8 +99,7 @@ void getEntries(std::shared_ptr<Region> region, int numEntries) {
  * client metadata.
  */
 
-TEST(PartitionRegionOpsWithRedundancyAndServerGoesDown,
-     getPartitionedRegionWithRedundancyServerGoesDown) {
+TEST(PartitionRegionOpsTest, getPartitionedRegionWithRedundancyServerGoesDown) {
   Cluster cluster{LocatorCount{1}, ServerCount{2}};
   cluster.start();
   cluster.getGfsh()
@@ -139,8 +138,7 @@ TEST(PartitionRegionOpsWithRedundancyAndServerGoesDown,
  * When the server is brought back again, the meta data is refreshed
  * after putting again values.
  */
-TEST(PartitionRegionOpsWithRedundancyAndServerGoesDown,
-     putPartitionedRegionWithRedundancyServerGoesDown) {
+TEST(PartitionRegionOpsTest, putPartitionedRegionWithRedundancyServerGoesDown) {
   Cluster cluster{LocatorCount{1}, ServerCount{2}};
   cluster.start();
   cluster.getGfsh()
