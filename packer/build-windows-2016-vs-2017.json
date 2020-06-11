@@ -91,7 +91,7 @@
         "choco install strawberryperl -confirm",
         "choco install nuget.commandline -confirm",
         "# For NUnit 2.6",
-        "choco install dotnet3.5 -confirm",
+        "choco install dogtail.dotnet3.5sp1 -confirm",
         "# TODO make this a nuget dependency",
         "choco install nunit.install --version 2.6.4 -confirm"
       ]
