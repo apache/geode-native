@@ -8,8 +8,9 @@ Set-ExecutionPolicy Unrestricted -Scope LocalMachine -Force -ErrorAction Ignore
 # Don't set this before Set-ExecutionPolicy as it throws an error
 $ErrorActionPreference = "stop"
 
-# Install SSH
-Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0
+# Install .NET 3.5 for NUnit 2.6
+# Can't be installed over WinRM/SSH
+Add-WindowsFeature -Name NET-Framework-Core
 
 # Remove HTTP listener
 Remove-Item -Path WSMan:\Localhost\listener\listener* -Recurse
