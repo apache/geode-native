@@ -109,7 +109,7 @@ class SNITest : public ::testing::Test {
   boost::filesystem::path currentWorkingDirectory;
 };
 
-TEST_F(SNITest, connectViaProxyTest) {
+TEST_F(SNITest, DISABLED_connectViaProxyTest) {
   const auto clientTruststore =
       (currentWorkingDirectory /
        boost::filesystem::path("sni-test-config/geode-config/truststore.jks"));
