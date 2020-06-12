@@ -766,19 +766,19 @@ void ClientMetadataService::markPrimaryBucketForTimeoutButLookSecondaryBucket(
                           serverLocation, version);
 
   std::shared_ptr<ClientMetadata> cptr = nullptr;
+  {
+    boost::shared_lock<decltype(m_regionMetadataLock)> boostRegionMetadataLock(
+        m_regionMetadataLock);
 
-  boost::shared_lock<decltype(m_regionMetadataLock)> boostRegionMetadataLock(
-      m_regionMetadataLock);
+    const auto& cptrIter = m_regionMetaDataMap.find(region->getFullPath());
+    if (cptrIter != m_regionMetaDataMap.end()) {
+      cptr = cptrIter->second;
+    }
 
-  const auto& cptrIter = m_regionMetaDataMap.find(region->getFullPath());
-  if (cptrIter != m_regionMetaDataMap.end()) {
-    cptr = cptrIter->second;
+    if (cptr == nullptr) {
+      return;
+    }
   }
-
-  if (cptr == nullptr) {
-    return;
-  }
-
   LOGFINE("Setting in markPrimaryBucketForTimeoutButLookSecondaryBucket");
 
   auto totalBuckets = cptr->getTotalNumBuckets();

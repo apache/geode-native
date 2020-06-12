@@ -731,7 +731,7 @@ GfErrType MapSegment::isTombstone(std::shared_ptr<CacheableKey> key,
                                   bool& result) {
   std::shared_ptr<Cacheable> value;
   std::shared_ptr<MapEntryImpl> mePtr;
-  auto find = m_map->find(key);
+  const auto& find = m_map->find(key);
   if (find == m_map->end()) {
     result = false;
     return GF_NOERR;
@@ -752,9 +752,9 @@ GfErrType MapSegment::isTombstone(std::shared_ptr<CacheableKey> key,
 
   if (CacheableToken::isTombstone(value)) {
     if (m_tombstoneList->exists(key)) {
-      find = m_map->find(key);
-      if (find != m_map->end()) {
-        mePtr = find->second->getImplPtr();
+      const auto& findInTombstoneList = m_map->find(key);
+      if (findInTombstoneList != m_map->end()) {
+        mePtr = findInTombstoneList->second->getImplPtr();
         me = mePtr;
       }
       result = true;
