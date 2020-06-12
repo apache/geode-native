@@ -23,7 +23,7 @@ When you write objects using PDX serialization, they are distributed to the serv
 Domain classes need to inherit the `PdxSerializable` abstract class to serialize and de-serialize the object.
 
 When you run queries against the objects on the servers, only the fields you specify are deserialized.
-A domain class should serialize and de-serialize all its member fields in the same order in its `toData` and `fromData` methods.
+A domain class should serialize and de-serialize all its member fields in the same order in its `toData` and `fromData` functions.
 
 Use this procedure to program your domain object for PDX serialization using the `PdxSerializable` abstract class.
 
@@ -33,7 +33,7 @@ Use this procedure to program your domain object for PDX serialization using the
     class Order : public PdxSerializable {
     ```
 
-2.  Program the `toData` method to serialize your object as required by your application. (See `markIdentityField` in a later step for an optimization that you can apply to this code sample.)
+2.  Program the `toData` function to serialize your object as required by your application. (See `markIdentityField` in a later step for an optimization that you can apply to this code sample.)
 
     ``` cpp
     void Order::toData(PdxWriter& pdxWriter) const {
@@ -45,7 +45,7 @@ Use this procedure to program your domain object for PDX serialization using the
     
     If you also use PDX serialization in Java or .NET for the object, serialize the object in the same way for each language. Serialize the same fields in the same order and mark the same identity fields.
 
-3.  Program the `fromData` method to read your data fields from the serialized form into the object's fields.
+3.  Program the `fromData` function to read your data fields from the serialized form into the object's fields.
 
     ```cpp
     void Order::fromData(PdxReader& pdxReader) {
@@ -57,16 +57,22 @@ Use this procedure to program your domain object for PDX serialization using the
 
     In your `fromData` implementation, use the same name as you did in `toData` and call the read operations in the same order as you called the write operations in your `toData` implementation.
 
-4.  Optionally, program your domain object's `hashCode` and equality methods. When you do so, you can optimize those methods by specifying the _identity fields_
+4.  Optionally, program your domain object's `hashCode` and equality functions. When you do so, you can optimize those functions by specifying the _identity fields_
     to be used in comparisons. 
-    <br /><br />
-    If no fields are set as identity fields, then all fields will be used in `hashCode` and equality checks, so marking identity fields improves the efficiency
+    <br />
+    - Marked identity fields are used to generate the `hashCode` and equality functions of PdxInstance, so the identity fields should themselves either be primitives,
+    or implement `hashCode` and `equals`.
+    <br />
+    - The `markIdentityField` function indicates that the given field name should be included in `hashCode` and equality checks of this object on a server.
+    <br />
+    - Invoke the `markIdentityField` function directly after the identity field's `write*` function.
+    <br />
+    - If no fields are set as identity fields, then all fields will be used in `hashCode` and equality checks, so marking identity fields improves the efficiency
     of hashing and equality operations. 
-    <br /><br />
-    Use the `markIdentityField` method to indicate that the given field name should be included in `hashCode` and equality checks of this object on a server.
-    It is important that the fields used by your equality method and `hashCode` implementations are the same fields that you mark as identity fields.
-    <br /><br />
-    Expanding the code sample from the description of the `toData` method, above:
+    <br />
+    - It is important that the fields used by your equality function and `hashCode` implementations are the same fields that you mark as identity fields.
+
+    This code sample expands the sample from the description of the `toData` function, above, to illustrate the use of `markIdentityField`:
 
     ``` cpp
     void Order::toData(PdxWriter& pdxWriter) const {
@@ -80,7 +86,3 @@ Use this procedure to program your domain object for PDX serialization using the
       pdxWriter.markIdentityField(QUANTITY_KEY_);
     }
     ```
-    The fields that are marked as identity fields are used to generate the `hashCode` and equality
-    methods of PdxInstance. Because of this, the identity fields should themselves either be primitives,
-    or implement `hashCode` and equals.  The identity fields should be marked after they are written
-    using a `write*` method.
