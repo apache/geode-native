@@ -299,7 +299,7 @@ const std::string& getThreadLocalExceptionMessage();
     }
     default: {
       LOGINFO("error code: %d", err);
-      std::string message = func;
+      message = func;
       if (exMsg.empty()) {
         message.append("Unknown error code ").append(std::to_string(err));
       } else {

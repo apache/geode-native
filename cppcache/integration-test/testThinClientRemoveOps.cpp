@@ -136,10 +136,8 @@ void _verifyEntry(const char *name, const char *key, const char *val,
           std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr));
 
       ASSERT(checkPtr != nullptr, "Value Ptr should not be null.");
-      char buf[1024];
-      sprintf(buf, "In verify loop, get returned %s for key %s",
-              checkPtr->value().c_str(), key);
-      LOG(buf);
+      LOG("In verify loop, get returned " + checkPtr->value() + " for key " +
+          key);
       if (strcmp(checkPtr->value().c_str(), value) != 0) {
         testValueCnt++;
       } else {
@@ -1074,9 +1072,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight)
 
     ASSERT(reg->size() == 2, "region size should be equal to 2");
 
-    std::vector<std::shared_ptr<CacheableKey>> keys = reg->keys();
-    LOGINFO("Region keys = %d ", keys.size());
-    ASSERT(keys.size() == reg->size(),
+    std::vector<std::shared_ptr<CacheableKey>> keysVector = reg->keys();
+    LOGINFO("Region keys = %d ", keysVector.size());
+    ASSERT(keysVector.size() == reg->size(),
            "region size should be equal to keys size");
 
     auto values = reg->values();
@@ -1085,9 +1083,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight)
            "region size should be equal to values size");
 
     reg->destroy("Key100");
-    keys = reg->keys();
-    LOGINFO("Region keys = %d ", keys.size());
-    ASSERT(keys.size() == reg->size(),
+    keysVector = reg->keys();
+    LOGINFO("Region keys = %d ", keysVector.size());
+    ASSERT(keysVector.size() == reg->size(),
            "region size should be equal to keys size");
 
     values = reg->values();

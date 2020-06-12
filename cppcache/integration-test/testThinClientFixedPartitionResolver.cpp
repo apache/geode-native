@@ -342,13 +342,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_REGION)
     LOG("CheckPrSingleHopForIntKeysTask_REGION get completed.");
 
     for (int i = 1000; i < 2000; i++) {
-      std::vector<std::shared_ptr<CacheableKey>> keys;
+      std::vector<std::shared_ptr<CacheableKey>> keysVector;
       for (int j = i; j < i + 5; j++) {
-        keys.push_back(CacheableInt32::create(j));
+        keysVector.push_back(CacheableInt32::create(j));
       }
 
       try {
-        const auto values = dataReg->getAll(keys);
+        const auto values = dataReg->getAll(keysVector);
         bool networkhop = TestUtils::getCacheImpl(getHelper()->cachePtr)
                               ->getAndResetNetworkHopFlag();
         ASSERT(values.size() == 5, "number of value size should be 5");
@@ -380,7 +380,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_REGION)
       }
 
       try {
-        const auto values = dataReg->getAll(keys, CacheableInt32::create(1000));
+        const auto values =
+            dataReg->getAll(keysVector, CacheableInt32::create(1000));
         bool networkhop = TestUtils::getCacheImpl(getHelper()->cachePtr)
                               ->getAndResetNetworkHopFlag();
         ASSERT(values.size() == 5, "number of value size should be 5");

@@ -42,7 +42,7 @@ StructSetImpl::StructSetImpl(const std::shared_ptr<CacheableVector>& response,
   size_t valStoredCnt = 0;
   while (valStoredCnt < numOfValues) {
     std::vector<std::shared_ptr<Serializable>> tmpVec;
-    for (size_t i = 0; i < numOfFields; i++) {
+    for (size_t j = 0; j < numOfFields; j++) {
       tmpVec.push_back(response->operator[](valStoredCnt++));
     }
     m_structVector.push_back(std::make_shared<Struct>(this, tmpVec));

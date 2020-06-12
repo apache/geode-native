@@ -36,7 +36,7 @@ Execution FunctionService::onRegion(const std::shared_ptr<Region>& region) {
   }
 
   auto realRegion = region;
-  const auto& pool = realRegion->getPool();
+  auto pool = realRegion->getPool();
 
   if (pool == nullptr) {
     throw IllegalArgumentException("Pool attached with region is closed.");
@@ -51,7 +51,7 @@ Execution FunctionService::onRegion(const std::shared_ptr<Region>& region) {
       // it is in multiuser mode
       authenticatedView = pr->m_authenticatedView;
       auto userAttachedPool = authenticatedView->m_userAttributes->getPool();
-      auto pool = realRegion->getCache().getPoolManager().find(
+      pool = realRegion->getCache().getPoolManager().find(
           userAttachedPool->getName());
       if (!(pool != nullptr && pool.get() == userAttachedPool.get() &&
             !pool->isDestroyed())) {

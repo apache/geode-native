@@ -239,7 +239,7 @@ std::shared_ptr<PdxRemotePreservedData> PdxLocalReader::getPreservedData(
         resettoPdxHead();
         m_dataInput->advanceCursor(pos);
 
-        for (int i = 0; i < (nFieldPos - pos); i++) {
+        for (int j = 0; j < (nFieldPos - pos); j++) {
           pdVector.push_back(m_dataInput->read());
         }
         resettoPdxHead();

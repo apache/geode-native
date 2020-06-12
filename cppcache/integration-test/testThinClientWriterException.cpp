@@ -129,10 +129,10 @@ void initClientAuth() {
 }
 
 void setCacheWriter(const char *regName,
-                    std::shared_ptr<TallyWriter> regWriter) {
+                    std::shared_ptr<TallyWriter> tallyWriter) {
   auto reg = getHelper()->getRegion(regName);
   auto attrMutator = reg->getAttributesMutator();
-  attrMutator->setCacheWriter(regWriter);
+  attrMutator->setCacheWriter(tallyWriter);
 }
 
 DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StartServer1)

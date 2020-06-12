@@ -206,10 +206,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, registerKeysOnRegion)
     regPtr1->registerRegex(testregex[1]);*/
 
     // NIL
-    std::vector<std::shared_ptr<CacheableKey>> keys;
-    keys.push_back(CacheableString::create("Key-1"));
-    keys.push_back(CacheableString::create("Key-2"));
-    regPtr0->registerKeys(keys, false);
+    std::vector<std::shared_ptr<CacheableKey>> keysVector;
+    keysVector.push_back(CacheableString::create("Key-1"));
+    keysVector.push_back(CacheableString::create("Key-2"));
+    regPtr0->registerKeys(keysVector, false);
     LOGINFO("NIL CLIENT-1 registerAllKeys() done ");
 
     regPtr0->localDestroyRegion();

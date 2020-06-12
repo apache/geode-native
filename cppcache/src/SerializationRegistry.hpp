@@ -200,7 +200,7 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
 
   inline void serializeWithoutHeader(const std::shared_ptr<Serializable>& obj,
                                      DataOutput& output) const {
-    if (auto&& pdxSerializable =
+    if (const auto&& pdxSerializable =
             std::dynamic_pointer_cast<PdxSerializable>(obj)) {
       serializeWithoutHeader(pdxSerializable, output);
     } else if (const auto&& dataSerializableFixedId =
@@ -212,9 +212,6 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
     } else if (const auto&& dataSerializable =
                    std::dynamic_pointer_cast<DataSerializable>(obj)) {
       serializeWithoutHeader(dataSerializable, output);
-    } else if (const auto&& pdxSerializable =
-                   std::dynamic_pointer_cast<PdxSerializable>(obj)) {
-      serializeWithoutHeader(pdxSerializable, output);
     } else if (const auto&& dataSerializableInternal =
                    std::dynamic_pointer_cast<DataSerializableInternal>(obj)) {
       serializeWithoutHeader(dataSerializableInternal, output);

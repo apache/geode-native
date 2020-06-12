@@ -94,7 +94,7 @@ std::shared_ptr<Cacheable> TransactionalOperation::replay(
                               GF_NOTSUP);
       break;
     case GF_GET_ALL: {
-      const auto result =
+      const auto allInternal =
           std::static_pointer_cast<RegionInternal>(
               cacheImpl->getCache()->getRegion(m_regionName))
               ->getAll_internal(*std::dynamic_pointer_cast<
@@ -107,7 +107,7 @@ std::shared_ptr<Cacheable> TransactionalOperation::replay(
 
       auto values =
           std::dynamic_pointer_cast<HashMapOfCacheable>(m_arguments->at(1));
-      values->insert(result.begin(), result.end());
+      values->insert(allInternal.begin(), allInternal.end());
       break;
     }
     case GF_INVALIDATE:

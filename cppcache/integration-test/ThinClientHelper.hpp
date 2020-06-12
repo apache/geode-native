@@ -199,10 +199,8 @@ void _verifyEntry(const std::string& name, const char* key, const char* val,
           std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr));
 
       ASSERT(checkPtr != nullptr, "Value Ptr should not be null.");
-      char buf[1024];
-      sprintf(buf, "In verify loop, get returned %s for key %s",
-              checkPtr->value().c_str(), key);
-      LOG(buf);
+      LOG("In verify loop, get returned " + checkPtr->value() + " for key " + key);
+
       if (strcmp(checkPtr->value().c_str(), value) != 0) {
         testValueCnt++;
       } else {
@@ -319,10 +317,8 @@ void _verifyIntEntry(const char* name, const char* key, const int val,
             std::dynamic_pointer_cast<CacheableInt32>(regPtr->get(keyPtr));
 
         ASSERT(checkPtr != nullptr, "Value Ptr should not be null.");
-        char buf[1024];
-        sprintf(buf, "In verify loop, get returned %d for key %s",
-                checkPtr->value(), key);
-        LOG(buf);
+        LOG("In verify loop, get returned " + std::to_string(checkPtr->value()) + " for key " + key);
+
         if (checkPtr->value() != value) {
           testValueCnt++;
         } else {
@@ -646,11 +642,11 @@ class RegionOperations {
   explicit RegionOperations(const char* name)
       : m_regionPtr(getHelper()->getRegion(name)) {}
 
-  void putOp(int keys = 1,
+  void putOp(int keysMax = 1,
              const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) {
     char keybuf[100];
     char valbuf[100];
-    for (int i = 1; i <= keys; i++) {
+    for (int i = 1; i <= keysMax; i++) {
       sprintf(keybuf, "key%d", i);
       sprintf(valbuf, "value%d", i);
       auto valPtr = CacheableString::create(valbuf);
@@ -658,33 +654,33 @@ class RegionOperations {
     }
   }
   void invalidateOp(
-      int keys = 1,
+      int keysMax = 1,
       const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) {
     char keybuf[100];
     char valbuf[100] = {0};
-    for (int i = 1; i <= keys; i++) {
+    for (int i = 1; i <= keysMax; i++) {
       sprintf(keybuf, "key%d", i);
       auto valPtr = CacheableString::create(valbuf);
       m_regionPtr->localInvalidate(keybuf, aCallbackArgument);
     }
   }
   void destroyOp(
-      int keys = 1,
+      int keysMax = 1,
       const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) {
     char keybuf[100];
     char valbuf[100] = {0};
-    for (int i = 1; i <= keys; i++) {
+    for (int i = 1; i <= keysMax; i++) {
       sprintf(keybuf, "key%d", i);
       auto valPtr = CacheableString::create(valbuf);
       m_regionPtr->destroy(keybuf, aCallbackArgument);
     }
   }
   void removeOp(
-      int keys = 1,
+      int keysMax = 1,
       const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) {
     char keybuf[100];
     char valbuf[100] = {0};
-    for (int i = 1; i <= keys; i++) {
+    for (int i = 1; i <= keysMax; i++) {
       sprintf(keybuf, "key%d", i);
       sprintf(valbuf, "value%d", i);
       auto valPtr = CacheableString::create(valbuf);

@@ -1488,7 +1488,6 @@ class RemoveActions {
       std::shared_ptr<MapEntryImpl> entry;
       //  for notification invoke the listener even if the key does
       // not exist locally
-      GfErrType err;
       LOGDEBUG("Region::remove: region [%s] removing key [%s]",
                m_region.getFullPath().c_str(),
                Utils::nullSafeToString(key).c_str());

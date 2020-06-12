@@ -111,10 +111,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, testCreatesAndUpdates)
     auto regPtr = getHelper()->getRegion(regionNames[0]);
     auto keyPtr1 = CacheableKey::create(keys[1]);
     auto keyPtr2 = CacheableKey::create(keys[2]);
-    std::vector<std::shared_ptr<CacheableKey>> keys;
-    keys.push_back(keyPtr1);
-    keys.push_back(keyPtr2);
-    regPtr->registerKeys(keys);
+    std::vector<std::shared_ptr<CacheableKey>> keysVector;
+    keysVector.push_back(keyPtr1);
+    keysVector.push_back(keyPtr2);
+    regPtr->registerKeys(keysVector);
 
     // Do a create followed by a create on the same key
     /*NIL: Changed the asserion due to the change in invalidate.

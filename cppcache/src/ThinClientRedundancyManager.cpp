@@ -1102,14 +1102,14 @@ void ThinClientRedundancyManager::readyForEvents() {
 
   while (result != GF_NOERR && epCount <= m_redundantEndpoints.size() +
                                               m_nonredundantEndpoints.size()) {
-    TcrMessageReply reply(true, nullptr);
+    TcrMessageReply tcrMessageReply(true, nullptr);
     maintainRedundancyLevel();
     if (m_redundantEndpoints.size() > 0) {
       primary = m_redundantEndpoints[0];
       if (m_poolHADM) {
-        result = m_poolHADM->sendRequestToEP(request, reply, primary);
+        result = m_poolHADM->sendRequestToEP(request, tcrMessageReply, primary);
       } else {
-        result = primary->send(request, reply);
+        result = primary->send(request, tcrMessageReply);
       }
     }
     epCount++;

@@ -641,30 +641,31 @@ DUNIT_TASK_DEFINITION(CLIENT1, UnsetPortfolioTypeToPdx)
   { m_isPdx = false; }
 END_TASK_DEFINITION
 
-bool isDurableCQName(const char *cqName, int clientID, bool isRecycled) {
+bool isDurableCQName(const char *continuousQueryName, int clientID,
+                     bool isRecycled) {
   bool bRetVal = false;
   int i = 0;
   if (clientID == 1) {
     if (!isRecycled) {
       for (i = 0; i < 4; i++) {
-        if (strcmp(cqName, durableCQNamesClient1[i]) == 0) break;
+        if (strcmp(continuousQueryName, durableCQNamesClient1[i]) == 0) break;
       }
       if (i < 4) bRetVal = true;
     } else {
       for (i = 0; i < 8; i++) {
-        if (strcmp(cqName, durableCQNamesClient1[i]) == 0) break;
+        if (strcmp(continuousQueryName, durableCQNamesClient1[i]) == 0) break;
       }
       if (i < 8) bRetVal = true;
     }
   } else if (clientID == 2) {
     if (!isRecycled) {
       for (i = 0; i < 4; i++) {
-        if (strcmp(cqName, durableCQNamesClient2[i]) == 0) break;
+        if (strcmp(continuousQueryName, durableCQNamesClient2[i]) == 0) break;
       }
       if (i < 4) bRetVal = true;
     } else {
       for (i = 0; i < 8; i++) {
-        if (strcmp(cqName, durableCQNamesClient2[i]) == 0) break;
+        if (strcmp(continuousQueryName, durableCQNamesClient2[i]) == 0) break;
       }
       if (i < 8) bRetVal = true;
     }

@@ -196,10 +196,8 @@ void _verifyEntry(const char *name, const char *key, const char *val,
             std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr));
 
         ASSERT(checkPtr != nullptr, "Value Ptr should not be null.");
-        char buf[1024];
-        sprintf(buf, "In verify loop, get returned %s for key %s",
-                checkPtr->value().c_str(), key);
-        LOG(buf);
+        LOG("In verify loop, get returned " + checkPtr->value() + " for key " +
+            key);
         if (strcmp(checkPtr->value().c_str(), value) != 0) {
           testValueCnt++;
         } else {
@@ -287,10 +285,8 @@ void _verifyIntEntry(const char *name, const char *key, const int val,
             std::dynamic_pointer_cast<CacheableInt32>(regPtr->get(keyPtr));
 
         ASSERT(checkPtr != nullptr, "Value Ptr should not be null.");
-        char buf[1024];
-        sprintf(buf, "In verify loop, get returned %d for key %s",
-                checkPtr->value(), key);
-        LOG(buf);
+        LOG("In verify loop, get returned " +
+            std::to_string(checkPtr->value()) + " for key " + key);
         // if ( strcmp( checkPtr->value().c_str(), value ) != 0 ){
         if (checkPtr->value() != value) {
           testValueCnt++;

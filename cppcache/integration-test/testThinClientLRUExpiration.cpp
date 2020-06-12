@@ -111,17 +111,17 @@ void printAttribute(RegionAttributes attr) {
 }
 
 void setCacheListener(const char *regName,
-                      std::shared_ptr<TallyListener> regListener) {
+                      std::shared_ptr<TallyListener> regionTallyListener) {
   auto reg = getHelper()->getRegion(regName);
   auto attrMutator = reg->getAttributesMutator();
-  attrMutator->setCacheListener(regListener);
+  attrMutator->setCacheListener(regionTallyListener);
 }
 
 void setCacheWriter(const char *regName,
-                    std::shared_ptr<TallyWriter> regWriter) {
+                    std::shared_ptr<TallyWriter> regionTallyWriter) {
   auto reg = getHelper()->getRegion(regName);
   auto attrMutator = reg->getAttributesMutator();
-  attrMutator->setCacheWriter(regWriter);
+  attrMutator->setCacheWriter(regionTallyWriter);
 }
 
 void getRegionAttr(const char *name) {

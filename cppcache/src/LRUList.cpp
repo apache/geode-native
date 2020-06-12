@@ -102,27 +102,25 @@ void LRUList<TEntry, TCreateEntry>::getLRUEntry(
 template <typename TEntry, typename TCreateEntry>
 typename LRUList<TEntry, TCreateEntry>::LRUListNode*
 LRUList<TEntry, TCreateEntry>::getHeadNode(bool& isLast) {
-  std::lock_guard<spinlock_mutex> lk(m_headLock);
+  std::lock_guard<spinlock_mutex> headSpinlock(m_headLock);
 
   LRUListNode* result = m_headNode;
   LRUListNode* nextNode;
 
-  {
-    std::lock_guard<spinlock_mutex> lk(m_tailLock);
+  std::lock_guard<spinlock_mutex> tailSpinlock(m_tailLock);
 
-    nextNode = m_headNode->getNextLRUListNode();
-    if (nextNode == nullptr) {
-      // last one in the list...
-      isLast = true;
-      std::shared_ptr<TEntry> entry;
-      result->getEntry(entry);
-      if (entry->getLRUProperties().testEvicted()) {
-        // list is empty.
-        return nullptr;
-      } else {
-        entry->getLRUProperties().setEvicted();
-        return result;
-      }
+  nextNode = m_headNode->getNextLRUListNode();
+  if (nextNode == nullptr) {
+    // last one in the list...
+    isLast = true;
+    std::shared_ptr<TEntry> entry;
+    result->getEntry(entry);
+    if (entry->getLRUProperties().testEvicted()) {
+      // list is empty.
+      return nullptr;
+    } else {
+      entry->getLRUProperties().setEvicted();
+      return result;
     }
   }
 

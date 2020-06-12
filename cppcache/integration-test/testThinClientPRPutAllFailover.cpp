@@ -284,7 +284,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, RemoveAllOneTask)
     LOG("RemoveAllOneTask started.");
     auto dataReg = getHelper()->getRegion(regionNames[0]);
     HashMapOfCacheable entryMap;
-    std::vector<std::shared_ptr<CacheableKey>> keys;
+    std::vector<std::shared_ptr<CacheableKey>> keysVector;
     entryMap.clear();
     char key[256];
     char value[256];
@@ -293,7 +293,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, RemoveAllOneTask)
       sprintf(value, "%d", item);
       entryMap.emplace(CacheableKey::create(key),
                        CacheableString::create(value));
-      keys.push_back(CacheableKey::create(key));
+      keysVector.push_back(CacheableKey::create(key));
       LOGDEBUG(
           "CPPTEST:RemoveAllOneTask Doing PutAll on key using key: = %s: & "
           "value: = %s",
@@ -301,7 +301,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, RemoveAllOneTask)
     }
     try {
       dataReg->putAll(entryMap);
-      dataReg->removeAll(keys);
+      dataReg->removeAll(keysVector);
     } catch (Exception &ex) {
       LOGERROR("CPPTEST: Unexpected %s: %s", ex.getName().c_str(), ex.what());
       FAIL(ex.what());
@@ -319,7 +319,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, RemoveAllTwoTask)
     LOG("RemoveAllTwoTask started.");
     auto dataReg = getHelper()->getRegion(regionNames[0]);
     HashMapOfCacheable entryMap;
-    std::vector<std::shared_ptr<CacheableKey>> keys;
+    std::vector<std::shared_ptr<CacheableKey>> keysVector;
     entryMap.clear();
     char key[256];
     char value[256];
@@ -328,7 +328,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, RemoveAllTwoTask)
       sprintf(value, "%d", item);
       entryMap.emplace(CacheableKey::create(key),
                        CacheableString::create(value));
-      keys.push_back(CacheableKey::create(key));
+      keysVector.push_back(CacheableKey::create(key));
       LOGDEBUG(
           "CPPTEST:RemoveAllTwoTask Doing RemoveAll on key using key: = %s: & "
           "value: = %s",
@@ -336,7 +336,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, RemoveAllTwoTask)
     }
     try {
       dataReg->putAll(entryMap);
-      dataReg->removeAll(keys);
+      dataReg->removeAll(keysVector);
     } catch (Exception &ex) {
       LOGERROR("CPPTEST: Unexpected %s: %s", ex.getName().c_str(), ex.what());
       FAIL(ex.what());
@@ -354,7 +354,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, RemoveAllThreeTask)
     LOG("RemoveAllThreeTask started.");
     auto dataReg = getHelper()->getRegion(regionNames[0]);
     HashMapOfCacheable entryMap;
-    std::vector<std::shared_ptr<CacheableKey>> keys;
+    std::vector<std::shared_ptr<CacheableKey>> keysVector;
     entryMap.clear();
     char key[256];
     char value[256];
@@ -363,7 +363,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, RemoveAllThreeTask)
       sprintf(value, "%d", item);
       entryMap.emplace(CacheableKey::create(key),
                        CacheableString::create(value));
-      keys.push_back(CacheableKey::create(key));
+      keysVector.push_back(CacheableKey::create(key));
       LOGDEBUG(
           "CPPTEST:RemoveAllThreeTask Doing RemoveAll on key using key: = %s: "
           "& "
@@ -372,7 +372,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, RemoveAllThreeTask)
     }
     try {
       dataReg->putAll(entryMap);
-      dataReg->removeAll(keys);
+      dataReg->removeAll(keysVector);
     } catch (Exception &ex) {
       LOGERROR("CPPTEST: Unexpected %s: %s", ex.getName().c_str(), ex.what());
       FAIL(ex.what());
@@ -391,7 +391,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, RemoveAllFourTask)
     LOG("RemoveAllFourTask started.");
     auto dataReg = getHelper()->getRegion(regionNames[0]);
     HashMapOfCacheable entryMap;
-    std::vector<std::shared_ptr<CacheableKey>> keys;
+    std::vector<std::shared_ptr<CacheableKey>> keysVector;
     entryMap.clear();
     char key[256];
     char value[256];
@@ -400,7 +400,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, RemoveAllFourTask)
       sprintf(value, "%d", item);
       entryMap.emplace(CacheableKey::create(key),
                        CacheableString::create(value));
-      keys.push_back(CacheableKey::create(key));
+      keysVector.push_back(CacheableKey::create(key));
       LOGDEBUG(
           "CPPTEST:RemoveAllFourTask Doing RemoveAll on key using key: = %s: & "
           "value: = %s",
@@ -408,7 +408,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, RemoveAllFourTask)
     }
     try {
       dataReg->putAll(entryMap);
-      dataReg->removeAll(keys);
+      dataReg->removeAll(keysVector);
     } catch (Exception &ex) {
       LOGERROR("CPPTEST: Unexpected %s: %s", ex.getName().c_str(), ex.what());
       FAIL(ex.what());
