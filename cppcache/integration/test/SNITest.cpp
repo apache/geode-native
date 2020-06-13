@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 
-#include <cstdlib>
-#include <fstream>
 #include <iostream>
 #include <thread>
 
@@ -39,24 +37,16 @@ using apache::geode::client::RegionShortcut;
 
 class SNITest : public ::testing::Test {
  protected:
-  // You can remove any or all of the following functions if their bodies would
-  // be empty.
 
   SNITest() {
-    // You can do set-up work for each test here.
     certificatePassword = std::string("apachegeode");
     currentWorkingDirectory = boost::filesystem::current_path();
   }
 
   ~SNITest() override = default;
-  // You can do clean-up work that doesn't throw exceptions here.
 
-  // If the constructor and destructor are not enough for setting up
-  // and cleaning up each test, you can define the following methods:
   void SetUp() override {
-    // Code here will be called immediately after the constructor (right
-    // before each test).
-#if defined(_WINDOWS)
+#if defined(_WIN32)
     std::string sniDir(currentWorkingDirectory.string());
     sniDir += "/../sni-test-config";
     SetCurrentDirectory(sniDir.c_str());
@@ -72,14 +62,12 @@ class SNITest : public ::testing::Test {
   }
 
   void TearDown() override {
-    // Code here will be called immediately after each test (right
-    // before the destructor).
     std::system("docker-compose stop");
   }
 
   std::string makeItSo(const char* command) {
     std::string commandOutput;
-#if defined(_WINDOWS)
+#if defined(_WIN32)
     std::unique_ptr<FILE, decltype(&_pclose)> pipe(_popen(command, "r"),
                                                    _pclose);
 #else
@@ -102,9 +90,6 @@ class SNITest : public ::testing::Test {
     return stoi(portNumberString);
   }
 
-  // Class members declared here can be used by all tests in the test suite
-  // for Ssl.
-  Cluster cluster = Cluster{LocatorCount{1}, ServerCount{1}};
   std::string certificatePassword;
   boost::filesystem::path currentWorkingDirectory;
 };
