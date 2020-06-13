@@ -178,70 +178,69 @@ class Cluster {
   bool usePropertiesFile();
   bool useSecurityPropertiesFile();
   bool useHostNameForClients();
-bool requireSslAuthentication();
+  bool requireSslAuthentication();
 
-std::string keystore();
-std::string truststore();
-std::string keystorePassword();
-std::string truststorePassword();
+  std::string keystore();
+  std::string truststore();
+  std::string keystorePassword();
+  std::string truststorePassword();
 
-Gfsh &getGfsh();
+  Gfsh &getGfsh();
 
-std::vector<Server> &getServers();
+  std::vector<Server> &getServers();
 
-std::vector<Locator> &getLocators();
+  std::vector<Locator> &getLocators();
 
-std::string &getClasspath();
+  std::string &getClasspath();
 
-std::string &getSecurityManager();
+  std::string &getSecurityManager();
 
-std::string &getUser();
+  std::string &getUser();
 
-std::string &getPassword();
+  std::string &getPassword();
 
-std::vector<std::string> &getCacheXMLFiles();
+  std::vector<std::string> &getCacheXMLFiles();
 
-bool getUseIPv6();
+  bool getUseIPv6();
 
-private:
-std::string name_;
-std::string classpath_;
-std::string securityManager_;
-std::string user_;
-std::string password_;
-std::vector<std::string> cacheXMLFiles_;
+ private:
+  std::string name_;
+  std::string classpath_;
+  std::string securityManager_;
+  std::string user_;
+  std::string password_;
+  std::vector<std::string> cacheXMLFiles_;
 
-size_t initialLocators_;
-std::vector<Locator> locators_;
+  size_t initialLocators_;
+  std::vector<Locator> locators_;
 
-size_t initialServers_;
-std::vector<Server> servers_;
+  size_t initialServers_;
+  std::vector<Server> servers_;
 
-bool started_ = false;
-uint16_t jmxManagerPort_;
+  bool started_ = false;
+  uint16_t jmxManagerPort_;
 
-bool useSsl_ = false;
-bool requireSslAuthentication_ = false;
-bool usePropertiesFile_ = false;
-bool useSecurityPropertiesFile_ = false;
-bool useHostNameForClients_ = false;
+  bool useSsl_ = false;
+  bool requireSslAuthentication_ = false;
+  bool usePropertiesFile_ = false;
+  bool useSecurityPropertiesFile_ = false;
+  bool useHostNameForClients_ = false;
 
-std::string keystore_;
-std::string keystorePassword_;
-std::string truststore_;
-std::string truststorePassword_;
+  std::string keystore_;
+  std::string keystorePassword_;
+  std::string truststore_;
+  std::string truststorePassword_;
 
-std::string propertiesFile_;
-std::string securityPropertiesFile_;
-std::string hostName_;
+  std::string propertiesFile_;
+  std::string securityPropertiesFile_;
+  std::string hostName_;
 
-bool useIPv6_ = false;
+  bool useIPv6_ = false;
 
-GfshExecute gfsh_;
+  GfshExecute gfsh_;
 
-void startLocators();
-void startServers();
-}
-;
+  void startLocators();
+  void startServers();
+};
 
 #endif  // INTEGRATION_TEST_FRAMEWORK_CLUSTER_H
