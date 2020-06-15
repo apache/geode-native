@@ -20,7 +20,7 @@ limitations under the License.
 -->
 
 The native client release contains an example showing how a client application
-can register for serialization of custom objects using the C++ PdxSerializable interface.
+can register for serialization of custom objects using the C++ PdxSerializable abstract class.
 
 The example is located in `examples/cpp/pdxserializable`.
 
@@ -52,7 +52,7 @@ The example performs a sequence of operations, displaying simple log entries as 
 This section contains code snippets showing highlights of the C++ PdxSerialiable example. They are not intended for cut-and-paste execution.
 For the complete source, see the example source directory.
 
-The C++ example defines a PdxSerializable class called `Order` that inherits from the `PdxSerializable` interface.
+The C++ example defines a PdxSerializable class called `Order` that inherits from the `PdxSerializable` abstract class.
 An `Order` object contains three fields:
 
 - an integer `order_id`
