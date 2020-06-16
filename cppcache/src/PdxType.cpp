@@ -557,11 +557,30 @@ bool PdxType::Equals(std::shared_ptr<PdxType> otherObj) {
 }
 
 bool PdxType::operator<(const PdxType& other) const {
-  auto typeIdLessThan = this->m_geodeTypeId < other.m_geodeTypeId;
-  auto typeIdsBothZero =
-      (this->m_geodeTypeId == 0) && (other.m_geodeTypeId == 0);
-  auto classnameLessThan = this->m_className < other.m_className;
-  return (typeIdLessThan || (typeIdsBothZero && classnameLessThan));
+  if (m_geodeTypeId < other.m_geodeTypeId) {
+    return true;
+  }
+
+  if ((m_geodeTypeId == 0) && (other.m_geodeTypeId == 0)) {
+    return this->m_className < other.m_className;
+  }
+
+  return false;
+}
+
+int32_t PdxType::hashcode() const {
+    std::hash<std::string> strHash;
+    auto result=strHash(this->m_className);
+
+    for (std::vector<std::shared_ptr<PdxFieldType>>::iterator it =
+            m_pdxFieldTypes->begin();
+         it != m_pdxFieldTypes->end(); ++it) {
+        auto pdxPtr = *it;
+        result = result ^ ( strHash(pdxPtr->getClassName()) << 1 );
+        result = result ^ ( strHash(pdxPtr->getFieldName()) << 1 );
+    }
+
+    return result;
 }
 
 }  // namespace client
