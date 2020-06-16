@@ -37,7 +37,6 @@ using apache::geode::client::RegionShortcut;
 
 class SNITest : public ::testing::Test {
  protected:
-
   SNITest() {
     certificatePassword = std::string("apachegeode");
     currentWorkingDirectory = boost::filesystem::current_path();
@@ -61,9 +60,7 @@ class SNITest : public ::testing::Test {
         "--file=/geode/scripts/geode-starter.gfsh");
   }
 
-  void TearDown() override {
-    std::system("docker-compose stop");
-  }
+  void TearDown() override { std::system("docker-compose stop"); }
 
   std::string makeItSo(const char* command) {
     std::string commandOutput;
