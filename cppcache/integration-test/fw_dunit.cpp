@@ -284,8 +284,7 @@ class NamingContextImpl : virtual public NamingContext {
 
     int res2 = -1;
     int attempts2 = 10;
-    while ((res2 = m_context.rebind("SecondaryProcessId", "0")) == -1 &&
-           attempts2--) {
+    while ((res2 = m_context.rebind("SecondaryProcessId", "0")) == -1 && attempts2--) {
       millisleep(10);
     }
     checkResult(res2, "rebind2");
@@ -313,8 +312,7 @@ class SecondaryProcessId {
   int getProcOnSys() { return ((m_id % 2) == 0) ? 2 : 1; }
 };
 
-const char *SecondaryProcessId::m_idNames[] = {"none", "s1p1", "s1p2", "s2p1",
-                                               "s2p2"};
+const char *SecondaryProcessId::m_idNames[] = {"none", "s1p1", "s1p2", "s2p1", "s2p2"};
 
 /** method for letting Task discover its name through RTTI. */
 std::string Task::typeName() { return std::string(typeid(*this).name()); }
@@ -436,9 +434,7 @@ class Dunit {
   }
 
   /** set the next secondary id */
-  void setNextSecondary(SecondaryProcessId &sId) {
-    m_globals.rebind("SecondaryProcessId", sId.getId());
-  }
+  void setNextSecondary(SecondaryProcessId &sId) { m_globals.rebind("SecondaryProcessId", sId.getId()); }
 
   /** get the next secondary id */
   int getNextSecondary() { return m_globals.getIntValue("SecondaryProcessId"); }
@@ -566,8 +562,7 @@ class TestDriver {
     // kill off any children that have not yet terminated.
     for (uint32_t i = 1; i < 5; i++) {
       if (m_secondaries[i - 1]->running() == 1) {
-        delete m_secondaries[i - 1];  // secondary destructor should terminate
-                                      // process.
+        delete m_secondaries[i - 1];  // secondary destructor should terminate process.
       }
     }
     dunit::Dunit::close();
@@ -632,8 +627,7 @@ class TestDriver {
   }
 
   void handleTimeout() {
-    fprintf(stdout,
-            "Error: Timed out waiting for all secondaries to be ready.\n");
+    fprintf(stdout, "Error: Timed out waiting for all secondaries to be ready.\n");
     fflush(stdout);
     DUNIT->setMustQuit();
     DUNIT->setFailed();
