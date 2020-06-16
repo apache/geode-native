@@ -46,12 +46,6 @@ struct PdxTypeLessThan {
   }
 };
 
-struct PdxTypeHashLessThan {
-  bool operator()(size_t s1,size_t s2) const {
-            return s1 < s2;
-        }
-};
-
 typedef std::map<int32_t, std::shared_ptr<PdxType>> TypeIdVsPdxType;
 typedef std::map<std::string, std::shared_ptr<PdxType>> TypeNameVsPdxType;
 typedef std::unordered_map<std::shared_ptr<PdxSerializable>,
@@ -62,7 +56,7 @@ typedef std::unordered_map<std::shared_ptr<PdxSerializable>,
 typedef std::map<std::shared_ptr<PdxType>, int32_t, PdxTypeLessThan>
     PdxTypeToTypeIdMap;
 
-typedef std::map<size_t,int32_t,PdxTypeHashLessThan> PdxTypeHashToTypeId;
+typedef std::unordered_map<size_t, int32_t> PdxTypeHashToTypeId;
 
 class APACHE_GEODE_EXPORT PdxTypeRegistry
     : public std::enable_shared_from_this<PdxTypeRegistry> {

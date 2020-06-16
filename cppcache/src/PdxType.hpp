@@ -206,9 +206,9 @@ class PdxType : public internal::DataSerializableInternal,
   bool operator<(const PdxType& other) const;
 
   struct hash {
-      inline std::size_t operator()(const std::shared_ptr<PdxType> s) const {
-          return s->hashcode();
-      }
+    inline std::size_t operator()(const std::shared_ptr<PdxType> s) const {
+      return s->hashcode();
+    }
   };
 
   int32_t hashcode() const;
