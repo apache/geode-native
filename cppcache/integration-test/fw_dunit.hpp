@@ -266,7 +266,7 @@ void setupCRTOutput();
 
 /** base class for all tasks... define a virtual doTest method to be called
  * when task is to be executed. init method sets up the task in the right
- * process queue for the secondaries to execute.
+ * process queue for the slaves to execute.
  */
 class Task {
  public:
@@ -277,7 +277,7 @@ class Task {
   Task() {}
   virtual ~Task() { }
 
-  /** register task with secondary. */
+  /** register task with slave. */
   void init(int sId);
 
   void init(int sId, bool isHeapAllocated);
