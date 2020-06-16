@@ -132,7 +132,7 @@ END_TASK(validate)
   }
 #define FAIL(y) throw dunit::TestException(y, __LINE__, __FILE__)
 #define LOG(y) dunit::log(y, __LINE__, __FILE__)
-#define LOGMASTER(y) dunit::logMaster(y, __LINE__, __FILE__)
+#define LOGCOORDINATOR(y) dunit::logCoordinator(y, __LINE__, __FILE__)
 #define SLEEP(x) dunit::sleep(x)
 
 #define SYMJOIN(x, y) SYMJOIN2(x, y)
@@ -256,7 +256,7 @@ END_TASK(validate)
 
 namespace dunit {
 
-void logMaster(std::string s, int lineno, const char* filename);
+void logCoordinator(std::string s, int lineno, const char* filename);
 void log(std::string s, int lineno, const char* filename);
 void sleep(int millis);
 void HostWaitForDebugger();
@@ -266,7 +266,7 @@ void setupCRTOutput();
 
 /** base class for all tasks... define a virtual doTest method to be called
  * when task is to be executed. init method sets up the task in the right
- * process queue for the slaves to execute.
+ * process queue for the workers to execute.
  */
 class Task {
  public:
@@ -277,7 +277,7 @@ class Task {
   Task() {}
   virtual ~Task() { }
 
-  /** register task with slave. */
+  /** register task with worker. */
   void init(int sId);
 
   void init(int sId, bool isHeapAllocated);

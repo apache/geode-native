@@ -19,21 +19,21 @@
 
 #include "fw_dunit.hpp"
 
-int getSlaveTest() {
-  return dunit::globals()->getIntValue("test_alive_slaves");
+int getWorkerTest() {
+  return dunit::globals()->getIntValue("test_alive_workers");
 }
 
 // while this itself isn't thread/process safe, there shouldn't be concurrency
 // in a dunit test anyway.
-void incrementSlaveTest() {
-  dunit::globals()->rebind("test_alive_slaves", getSlaveTest() + 1);
+void incrementWorkerTest() {
+  dunit::globals()->rebind("test_alive_workers", getWorkerTest() + 1);
 }
 
 DUNIT_TASK(s1p1, One)
   {
     dunit::globals()->rebind("from1", 100);
     LOG("bound from1 = 100");
-    incrementSlaveTest();
+    incrementWorkerTest();
   }
 END_TASK(One)
 
@@ -41,42 +41,42 @@ DUNIT_TASK(s1p2, Two)
   {
     ASSERT(dunit::globals()->getIntValue("from1") == 100, "expected 100");
     LOG("looked up from1, found 100");
-    incrementSlaveTest();
+    incrementWorkerTest();
   }
 END_TASK(Two)
 
 DUNIT_TASK(s2p1, Three)
-  { incrementSlaveTest(); }
+  { incrementWorkerTest(); }
 END_TASK(Three)
 
 DUNIT_TASK(s2p2, Four)
-  { incrementSlaveTest(); }
+  { incrementWorkerTest(); }
 END_TASK(Four)
 
-// Now test that none of the slaves are dead after executing their first
+// Now test that none of the workers are dead after executing their first
 // task.
 
 DUNIT_TASK(s1p1, Test1)
-  { incrementSlaveTest(); }
+  { incrementWorkerTest(); }
 END_TASK(Test1)
 
 DUNIT_TASK(s1p2, Test2)
-  { incrementSlaveTest(); }
+  { incrementWorkerTest(); }
 END_TASK(Test2)
 
 DUNIT_TASK(s2p1, Test3)
-  { incrementSlaveTest(); }
+  { incrementWorkerTest(); }
 END_TASK(Test3)
 
 DUNIT_TASK(s2p2, Test4)
-  { incrementSlaveTest(); }
+  { incrementWorkerTest(); }
 END_TASK(Test4)
 
 DUNIT_TASK(s1p1, TestA)
   {
-    std::cout << "SlaveTest = " << getSlaveTest() << std::endl;
-    ASSERT(getSlaveTest() == 8,
-           "a previous slave must have failed undetected.");
+    std::cout << "WorkerTest = " << getWorkerTest() << std::endl;
+    ASSERT(getWorkerTest() == 8,
+           "a previous worker must have failed undetected.");
     dunit::globals()->dump();
   }
 END_TASK(TestA)

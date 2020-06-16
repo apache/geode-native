@@ -290,12 +290,12 @@ namespace Apache.Geode.Client.FwkLib
       return Util.RunClientShellTask(Util.ClientId, host, javaCmd, envVars);
     }
 
-    private string GetSlaveId(string serverNum)
+    private string GetWorkerId(string serverNum)
     {
-      return "slave." + serverNum;
+      return "worker." + serverNum;
     }
 
-    private string CreateSlaveTaskSpecification(string progName,
+    private string CreateWorkerTaskSpecification(string progName,
       string serverNum, string extraArgs)
     {
       extraArgs = (extraArgs == null ? string.Empty : ' ' + extraArgs);
@@ -304,7 +304,7 @@ namespace Apache.Geode.Client.FwkLib
         "{1}</data>{0}" + "<data name=\"arguments\">{2}{3}</data>{0}" +
         "<client-set name=\"{4}\">{0}<client name=\"{5}\"/>{0}" +
         "</client-set>{0}</task>", Environment.NewLine, progName, serverNum,
-        extraArgs, Util.ClientId, GetSlaveId(serverNum));
+        extraArgs, Util.ClientId, GetWorkerId(serverNum));
     }
     private string GetSslProperty(string hostType, bool forServer,string startDir)
     {
@@ -759,11 +759,11 @@ namespace Apache.Geode.Client.FwkLib
           }
           else
           {
-            string taskSpec = CreateSlaveTaskSpecification(
+            string taskSpec = CreateWorkerTaskSpecification(
               "startJavaServers", serverNum.ToString(), null);
             FwkInfo("StartJavaServers() starting '{0}' on host '{1}'",
               serverId, targetHost);
-            Util.BBSet(Util.ClientId + '.' + GetSlaveId(
+            Util.BBSet(Util.ClientId + '.' + GetWorkerId(
               serverNum.ToString()), FwkReadData.HostGroupKey,
               hostGroup);
             if (!Util.RunClientWinTask(Util.ClientId, targetHost, taskSpec))
@@ -871,7 +871,7 @@ namespace Apache.Geode.Client.FwkLib
           }
           else
           {
-            string taskSpec = CreateSlaveTaskSpecification(
+            string taskSpec = CreateWorkerTaskSpecification(
               "stopJavaServers", serverNum.ToString(), null);
             FwkInfo("StopJavaServers() stopping '{0}' on host '{1}'",
               serverId, targetHost);
@@ -960,7 +960,7 @@ namespace Apache.Geode.Client.FwkLib
           }
           else
           {
-            string taskSpec = CreateSlaveTaskSpecification(
+            string taskSpec = CreateWorkerTaskSpecification(
               "killJavaServers", serverNum.ToString(), signal);
             FwkInfo("KillJavaServers() killing '{0}' on host '{1}'",
               serverId, targetHost);
