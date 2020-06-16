@@ -290,9 +290,9 @@ namespace Apache.Geode.Client.FwkLib
       return Util.RunClientShellTask(Util.ClientId, host, javaCmd, envVars);
     }
 
-    private string GetSlaveId(string serverNum)
+    private string GetSecondaryId(string serverNum)
     {
-      return "slave." + serverNum;
+      return "secondary." + serverNum;
     }
 
     private string CreateSlaveTaskSpecification(string progName,
@@ -304,7 +304,7 @@ namespace Apache.Geode.Client.FwkLib
         "{1}</data>{0}" + "<data name=\"arguments\">{2}{3}</data>{0}" +
         "<client-set name=\"{4}\">{0}<client name=\"{5}\"/>{0}" +
         "</client-set>{0}</task>", Environment.NewLine, progName, serverNum,
-        extraArgs, Util.ClientId, GetSlaveId(serverNum));
+        extraArgs, Util.ClientId, GetSecondaryId(serverNum));
     }
     private string GetSslProperty(string hostType, bool forServer,string startDir)
     {
@@ -763,7 +763,7 @@ namespace Apache.Geode.Client.FwkLib
               "startJavaServers", serverNum.ToString(), null);
             FwkInfo("StartJavaServers() starting '{0}' on host '{1}'",
               serverId, targetHost);
-            Util.BBSet(Util.ClientId + '.' + GetSlaveId(
+            Util.BBSet(Util.ClientId + '.' + GetSecondaryId(
               serverNum.ToString()), FwkReadData.HostGroupKey,
               hostGroup);
             if (!Util.RunClientWinTask(Util.ClientId, targetHost, taskSpec))

@@ -72,7 +72,7 @@ using apache::geode::client::testframework::BBNamingContextServer;
 #include "fw_dunit.hpp"
 
 ACE_TCHAR *g_programName = nullptr;
-uint32_t g_masterPid = 0;
+uint32_t g_primaryPid = 0;
 
 ClientCleanup gClientCleanup;
 
@@ -110,11 +110,11 @@ void getTimeStr(char *bufPtr, size_t sizeOfBuf) {
 }
 
 // some common values..
-#define SLAVE_STATE_READY 1
-#define SLAVE_STATE_DONE 2
-#define SLAVE_STATE_TASK_ACTIVE 3
-#define SLAVE_STATE_TASK_COMPLETE 4
-#define SLAVE_STATE_SCHEDULED 5
+#define SECONDARY_STATE_READY 1
+#define SECONDARY_STATE_DONE 2
+#define SECONDARY_STATE_TASK_ACTIVE 3
+#define SECONDARY_STATE_TASK_COMPLETE 4
+#define SECONDARY_STATE_SCHEDULED 5
 
 void log(std::string s, int lineno, const char *filename);
 
@@ -234,7 +234,7 @@ class NamingContextImpl : virtual public NamingContext {
   std::string getContextName() {
     char buf[1024] = {0};
     ACE_OS::sprintf(buf, "dunit.context.%s%d", ACE::basename(g_programName),
-                    g_masterPid);
+                    g_primaryPid);
     std::string b_str(buf);
     return b_str;
   }
@@ -242,7 +242,7 @@ class NamingContextImpl : virtual public NamingContext {
   std::string getMutexName() {
     char buf[1024] = {0};
     ACE_OS::sprintf(buf, "dunit.mutex.%s%d", ACE::basename(g_programName),
-                    g_masterPid);
+                    g_primaryPid);
     std::string b_str(buf);
     return b_str;
   }
@@ -284,7 +284,7 @@ class NamingContextImpl : virtual public NamingContext {
 
     int res2 = -1;
     int attempts2 = 10;
-    while ((res2 = m_context.rebind("SlaveId", "0")) == -1 && attempts2--) {
+    while ((res2 = m_context.rebind("SecondaryProcessId", "0")) == -1 && attempts2--) {
       millisleep(10);
     }
     checkResult(res2, "rebind2");
@@ -293,14 +293,14 @@ class NamingContextImpl : virtual public NamingContext {
   }
 };
 
-/** uniquely represent each different slave. */
-class SlaveId {
+/** uniquely represent each different secondary process. */
+class SecondaryProcessId {
  private:
   uint32_t m_id;
   static const char *m_idNames[];
 
  public:
-  explicit SlaveId(uint32_t id) { m_id = id; }
+  explicit SecondaryProcessId(uint32_t id) { m_id = id; }
 
   int getId() { return m_id; }
 
@@ -312,14 +312,14 @@ class SlaveId {
   int getProcOnSys() { return ((m_id % 2) == 0) ? 2 : 1; }
 };
 
-const char *SlaveId::m_idNames[] = {"none", "s1p1", "s1p2", "s2p1", "s2p2"};
+const char *SecondaryProcessId::m_idNames[] = {"none", "s1p1", "s1p2", "s2p1", "s2p2"};
 
 /** method for letting Task discover its name through RTTI. */
 std::string Task::typeName() { return std::string(typeid(*this).name()); }
 
 typedef std::list<Task *> TaskList;
 
-/** contains a queue of Task* for each SlaveId. */
+/** contains a queue of Task* for each SecondaryProcessId. */
 class TaskQueues {
  private:
   std::map<int, TaskList> m_qmap;
@@ -327,12 +327,12 @@ class TaskQueues {
 
   TaskQueues() : m_qmap(), m_schedule() {}
 
-  void registerTask(SlaveId sId, Task *task) {
+  void registerTask(SecondaryProcessId sId, Task *task) {
     m_qmap[sId.getId()].push_back(task);
     m_schedule.push_back(sId.getId());
   }
 
-  Task *nextTask(SlaveId &sId) {
+  Task *nextTask(SecondaryProcessId &sId) {
     TaskList *tasks = &(m_qmap[sId.getId()]);
     if (tasks->empty()) {
       return nullptr;
@@ -347,13 +347,13 @@ class TaskQueues {
     return task;
   }
 
-  int nextSlaveId() {
+  int nextSecondaryProcessId() {
     if (m_schedule.empty()) {
       return 0;
     }
     int sId = m_schedule.front();
     char logmsg[1024] = {0};
-    sprintf(logmsg, "Next slave id is : %d", sId);
+    sprintf(logmsg, "Next secondary pid is : %d", sId);
     LOGMASTER(logmsg);
     m_schedule.pop_front();
     return sId;
@@ -362,7 +362,7 @@ class TaskQueues {
   static TaskQueues *taskQueues;
 
  public:
-  static void addTask(SlaveId sId, Task *task) {
+  static void addTask(SecondaryProcessId sId, Task *task) {
     if (taskQueues == nullptr) {
       taskQueues = new TaskQueues();
     }
@@ -371,10 +371,10 @@ class TaskQueues {
 
   static int getSlaveId() {
     ASSERT(taskQueues != nullptr, "failure to initialize fw_dunit module.");
-    return taskQueues->nextSlaveId();
+    return taskQueues->nextSecondaryProcessId();
   }
 
-  static Task *getTask(SlaveId sId) {
+  static Task *getTask(SecondaryProcessId sId) {
     ASSERT(taskQueues != nullptr, "failure to initialize fw_dunit module.");
     return taskQueues->nextTask(sId);
   }
@@ -382,14 +382,14 @@ class TaskQueues {
 
 TaskQueues *TaskQueues::taskQueues = nullptr;
 
-/** register task with slave. */
+/** register task with secondary. */
 void Task::init(int sId) { init(sId, false); }
 
 void Task::init(int sId, bool isHeapAllocated) {
   m_isHeapAllocated = isHeapAllocated;
   m_id = sId;
   m_taskName = this->typeName();
-  TaskQueues::addTask(SlaveId(sId), this);
+  TaskQueues::addTask(SecondaryProcessId(sId), this);
 }
 
 /** main framework entry */
@@ -433,44 +433,44 @@ class Dunit {
     delete tmp;
   }
 
-  /** set the next slave id */
-  void setNextSlave(SlaveId &sId) { m_globals.rebind("SlaveId", sId.getId()); }
+  /** set the next secondary id */
+  void setNextSecondary(SecondaryProcessId &sId) { m_globals.rebind("SecondaryProcessId", sId.getId()); }
 
-  /** get the next slave id */
-  int getNextSlave() { return m_globals.getIntValue("SlaveId"); }
+  /** get the next secondary id */
+  int getNextSecondary() { return m_globals.getIntValue("SecondaryProcessId"); }
 
-  /** return true if all slaves are to terminate. */
+  /** return true if all secondaries are to terminate. */
   bool mustQuit() {
-    return m_globals.getIntValue("TerminateAllSlaves") ? true : false;
+    return m_globals.getIntValue("TerminateAllSecondaries") ? true : false;
   }
 
-  /** signal all slaves to terminate. */
-  void setMustQuit() { m_globals.rebind("TerminateAllSlaves", 1); }
+  /** signal all secondaries to terminate. */
+  void setMustQuit() { m_globals.rebind("TerminateAllSecondaries", 1); }
 
   /** signal to test driver that an error occurred. */
   void setFailed() { m_globals.rebind("Failure", 1); }
 
   bool getFailed() { return m_globals.getIntValue("Failure") ? true : false; }
 
-  void setSlaveState(SlaveId sId, int state) {
+  void setSlaveState(SecondaryProcessId sId, int state) {
     char key[100] = {0};
     ACE_OS::sprintf(key, "ReadySlave%d", sId.getId());
     m_globals.rebind(key, state);
   }
 
-  int getSlaveState(SlaveId sId) {
+  int getSlaveState(SecondaryProcessId sId) {
     char key[100] = {0};
     ACE_OS::sprintf(key, "ReadySlave%d", sId.getId());
     return m_globals.getIntValue(key);
   }
 
-  void setSlaveTimeout(SlaveId sId, int seconds) {
+  void setSlaveTimeout(SecondaryProcessId sId, int seconds) {
     char key[100] = {0};
     ACE_OS::sprintf(key, "TimeoutSlave%d", sId.getId());
     m_globals.rebind(key, seconds);
   }
 
-  int getSlaveTimeout(SlaveId sId) {
+  int getSlaveTimeout(SecondaryProcessId sId) {
     char key[100] = {0};
     ACE_OS::sprintf(key, "TimeoutSlave%d", sId.getId());
     return m_globals.getIntValue(key);
@@ -488,21 +488,21 @@ Dunit *Dunit::singleton = nullptr;
 
 void Task::setTimeout(int seconds) {
   if (seconds > 0) {
-    DUNIT->setSlaveTimeout(SlaveId(m_id), seconds);
+    DUNIT->setSlaveTimeout(SecondaryProcessId(m_id), seconds);
   } else {
-    DUNIT->setSlaveTimeout(SlaveId(m_id), TASK_TIMEOUT);
+    DUNIT->setSlaveTimeout(SecondaryProcessId(m_id), TASK_TIMEOUT);
   }
 }
 
 class TestProcess : virtual public dunit::Manager {
  private:
-  SlaveId m_sId;
+  SecondaryProcessId m_sId;
 
  public:
   TestProcess(const ACE_TCHAR *cmdline, uint32_t id)
-      : Manager(cmdline), m_sId(id) {}
+      : Manager(cmdline), SecondaryProcessId(id) {}
 
-  SlaveId &getSlaveId() { return m_sId; }
+  SecondaryProcessId &getSlaveId() { return m_sId; }
 
  protected:
  public:
@@ -515,7 +515,7 @@ class TestProcess : virtual public dunit::Manager {
  */
 class TestDriver {
  private:
-  TestProcess *m_slaves[4];
+  TestProcess *m_secondaries[4];
 #ifdef SOLARIS_USE_BB
   BBNamingContextServer *m_bbNamingContextServer;
 #endif
@@ -530,28 +530,29 @@ class TestDriver {
 #endif
 
     dunit::Dunit::init(true);
-    fprintf(stdout, "Master starting slaves.\n");
+    fprintf(stdout, "Primary starting secondaries.\n");
     for (uint32_t i = 1; i < 5; i++) {
       ACE_TCHAR cmdline[2048] = {0};
       char *profilerCmd = ACE_OS::getenv("PROFILERCMD");
       if (profilerCmd != nullptr && profilerCmd[0] != '$' &&
           profilerCmd[0] != '\0') {
-        // replace %d's in profilerCmd with PID and slave ID
+        // replace %d's in profilerCmd with PID and secondary ID
         char cmdbuf[2048] = {0};
         ACE_OS::sprintf(cmdbuf, profilerCmd, ACE_OS::gettimeofday().msec(),
-                        g_masterPid, i);
+                        g_primaryPid, i);
         ACE_OS::sprintf(cmdline, "%s %s -s%d -m%d", cmdbuf, g_programName, i,
-                        g_masterPid);
+                        g_primaryPid);
       } else {
-        ACE_OS::sprintf(cmdline, "%s -s%d -m%d", g_programName, i, g_masterPid);
+        ACE_OS::sprintf(cmdline, "%s -s%d -m%d", g_programName, i,
+                        g_primaryPid);
       }
       fprintf(stdout, "%s\n", cmdline);
-      m_slaves[i - 1] = new TestProcess(cmdline, i);
+      m_secondaries[i - 1] = new TestProcess(cmdline, i);
     }
     fflush(stdout);
-    // start each of the slaves...
+    // start each of the secondaries...
     for (uint32_t j = 1; j < 5; j++) {
-      m_slaves[j - 1]->doWork();
+      m_secondaries[j - 1]->doWork();
       ACE_OS::sleep(2);  // do not increase this to avoid precheckin runs taking
                          // much longer.
     }
@@ -560,8 +561,8 @@ class TestDriver {
   ~TestDriver() {
     // kill off any children that have not yet terminated.
     for (uint32_t i = 1; i < 5; i++) {
-      if (m_slaves[i - 1]->running() == 1) {
-        delete m_slaves[i - 1];  // slave destructor should terminate process.
+      if (m_secondaries[i - 1]->running() == 1) {
+        delete m_secondaries[i - 1];  // secondary destructor should terminate process.
       }
     }
     dunit::Dunit::close();
@@ -579,11 +580,11 @@ class TestDriver {
 
     int nextSlave;
     while ((nextSlave = TaskQueues::getSlaveId()) != 0) {
-      SlaveId sId(nextSlave);
-      DUNIT->setSlaveState(sId, SLAVE_STATE_SCHEDULED);
+      SecondaryProcessId sId(nextSlave);
+      DUNIT->setSlaveState(sId, SECONDARY_STATE_SCHEDULED);
       fprintf(stdout, "Set next process to %s\n", sId.getIdName());
       fflush(stdout);
-      DUNIT->setNextSlave(sId);
+      DUNIT->setNextSecondary(sId);
       waitForCompletion(sId);
       // check special conditions.
       if (DUNIT->getFailed()) {
@@ -599,8 +600,8 @@ class TestDriver {
     return 0;
   }
 
-  /** wait for an individual slave to finish a task. */
-  void waitForCompletion(SlaveId &sId) {
+  /** wait for an individual secondary to finish a task. */
+  void waitForCompletion(SecondaryProcessId &sId) {
     int secs = DUNIT->getSlaveTimeout(sId);
     DUNIT->setSlaveTimeout(sId, TASK_TIMEOUT);
     if (secs <= 0) secs = TASK_TIMEOUT;
@@ -610,7 +611,7 @@ class TestDriver {
     ACE_Time_Value end = ACE_OS::gettimeofday();
     ACE_Time_Value offset(secs, 0);
     end += offset;
-    while (DUNIT->getSlaveState(sId) != SLAVE_STATE_TASK_COMPLETE) {
+    while (DUNIT->getSlaveState(sId) != SECONDARY_STATE_TASK_COMPLETE) {
       // sleep a bit..
       if (DUNIT->getFailed()) return;
       ACE_Time_Value sleepTime;
@@ -626,13 +627,13 @@ class TestDriver {
   }
 
   void handleTimeout() {
-    fprintf(stdout, "Error: Timed out waiting for all slaves to be ready.\n");
+    fprintf(stdout, "Error: Timed out waiting for all secondaries to be ready.\n");
     fflush(stdout);
     DUNIT->setMustQuit();
     DUNIT->setFailed();
   }
 
-  void handleTimeout(SlaveId &sId) {
+  void handleTimeout(SecondaryProcessId &sId) {
     fprintf(stdout, "Error: Timed out waiting for %s to finish task.\n",
             sId.getIdName());
     fflush(stdout);
@@ -640,11 +641,11 @@ class TestDriver {
     DUNIT->setFailed();
   }
 
-  /** wait for all slaves to be done initializing. */
+  /** wait for all secondaries to be done initializing. */
   void waitForReady() {
-    fprintf(stdout, "Waiting %d seconds for all slaves to be ready.\n",
+    fprintf(stdout, "Waiting %d seconds for all secondaries to be ready.\n",
             TASK_TIMEOUT);
-    fflush(stdout);
+
     ACE_Time_Value end = ACE_OS::gettimeofday();
     ACE_Time_Value offset(TASK_TIMEOUT, 0);
     end += offset;
@@ -659,8 +660,8 @@ class TestDriver {
       ACE_OS::sleep(sleepTime);
       readyCount = 0;
       for (uint32_t i = 1; i < 5; i++) {
-        int state = DUNIT->getSlaveState(SlaveId(i));
-        if (state == SLAVE_STATE_READY) {
+        int state = DUNIT->getSlaveState(SecondaryProcessId(i));
+        if (state == SECONDARY_STATE_READY) {
           readyCount++;
         }
       }
@@ -673,9 +674,9 @@ class TestDriver {
     }
   }
 
-  /** wait for all slaves to be destroyed. */
+  /** wait for all secondaries to be destroyed. */
   void waitForDone() {
-    fprintf(stdout, "Waiting %d seconds for all slaves to complete.\n",
+    fprintf(stdout, "Waiting %d seconds for all secondaries to complete.\n",
             TASK_TIMEOUT);
     fflush(stdout);
     ACE_Time_Value end = ACE_OS::gettimeofday();
@@ -690,8 +691,8 @@ class TestDriver {
       ACE_OS::sleep(sleepTime);
       doneCount = 0;
       for (uint32_t i = 1; i < 5; i++) {
-        int state = DUNIT->getSlaveState(SlaveId(i));
-        if (state == SLAVE_STATE_DONE) {
+        int state = DUNIT->getSlaveState(SecondaryProcessId(i));
+        if (state == SECONDARY_STATE_DONE) {
           doneCount++;
         }
       }
@@ -703,14 +704,14 @@ class TestDriver {
     }
   }
 
-  /** test to see that all the slave processes are still around, or throw
+  /** test to see that all the secondary processes are still around, or throw
       a TestException so the driver doesn't get hung. */
   void checkSlaveDeath() {
     for (uint32_t i = 0; i < 4; i++) {
-      if (!m_slaves[i]->running()) {
+      if (!m_secondaries[i]->running()) {
         char msg[1000] = {0};
         sprintf(msg, "Error: Slave %s terminated prematurely.",
-                m_slaves[i]->getSlaveId().getIdName());
+                m_secondaries[i]->getSlaveId().getIdName());
         LOG(msg);
         DUNIT->setFailed();
         DUNIT->setMustQuit();
@@ -722,19 +723,19 @@ class TestDriver {
 
 class TestSlave {
  private:
-  SlaveId m_sId;
+  SecondaryProcessId m_sId;
 
  public:
-  static SlaveId *procSlaveId;
+  static SecondaryProcessId *procSlaveId;
 
-  explicit TestSlave(int id) : m_sId(id) {
-    procSlaveId = new SlaveId(id);
+  explicit TestSlave(int id) : SecondaryProcessId(id) {
+    procSlaveId = new SecondaryProcessId(id);
     dunit::Dunit::init();
-    DUNIT->setSlaveState(m_sId, SLAVE_STATE_READY);
+    DUNIT->setSlaveState(m_sId, SECONDARY_STATE_READY);
   }
 
   ~TestSlave() {
-    DUNIT->setSlaveState(m_sId, SLAVE_STATE_DONE);
+    DUNIT->setSlaveState(m_sId, SECONDARY_STATE_DONE);
     dunit::Dunit::close();
   }
 
@@ -742,25 +743,25 @@ class TestSlave {
     fprintf(stdout, "Slave %s started with pid %d\n", m_sId.getIdName(),
             ACE_OS::getpid());
     fflush(stdout);
-    SlaveId slaveZero(0);
+    SecondaryProcessId secondaryZero(0);
 
-    // consume tasks of this slaves queue, only when it is his turn..
+    // consume tasks of this secondary's queue, only when it is his turn..
     while (!DUNIT->mustQuit()) {
-      if (DUNIT->getNextSlave() == m_sId.getId()) {
-        // set next slave to zero so I don't accidently run twice.
-        DUNIT->setNextSlave(slaveZero);
+      if (DUNIT->getNextSecondary() == m_sId.getId()) {
+        // set next secondary to zero so I don't accidently run twice.
+        DUNIT->setNextSecondary(secondaryZero);
         // do next task...
         Task *task = TaskQueues::getTask(m_sId);
         // perform task.
         if (task != nullptr) {
-          DUNIT->setSlaveState(m_sId, SLAVE_STATE_TASK_ACTIVE);
+          DUNIT->setSlaveState(m_sId, SECONDARY_STATE_TASK_ACTIVE);
           try {
             task->doTask();
             if (task->m_isHeapAllocated) {
               delete task;
             }
             fflush(stdout);
-            DUNIT->setSlaveState(m_sId, SLAVE_STATE_TASK_COMPLETE);
+            DUNIT->setSlaveState(m_sId, SECONDARY_STATE_TASK_COMPLETE);
           } catch (TestException te) {
             if (task->m_isHeapAllocated) {
               delete task;
@@ -787,11 +788,11 @@ class TestSlave {
   void handleError() {
     DUNIT->setFailed();
     DUNIT->setMustQuit();
-    DUNIT->setSlaveState(m_sId, SLAVE_STATE_TASK_COMPLETE);
+    DUNIT->setSlaveState(m_sId, SECONDARY_STATE_TASK_COMPLETE);
   }
 };
 
-SlaveId *TestSlave::procSlaveId = nullptr;
+SecondaryProcessId *TestSlave::procSlaveId = nullptr;
 
 void sleep(int millis) {
   if (millis == 0) {
@@ -807,13 +808,13 @@ void logMaster(std::string s, int lineno, const char * /*filename*/) {
   char buf[128] = {0};
   dunit::getTimeStr(buf, sizeof(buf));
 
-  fprintf(stdout, "[TEST master:pid(%d)] %s at line: %d\n", ACE_OS::getpid(),
+  fprintf(stdout, "[TEST primary:pid(%d)] %s at line: %d\n", ACE_OS::getpid(),
           s.c_str(), lineno);
   fflush(stdout);
 }
 
-// log a message and print the slave id as well.. used by fw_helper with no
-// slave id.
+// log a message and print the secondary id as well.. used by fw_helper with no
+// secondary id.
 void log(std::string s, int lineno, const char * /*filename*/, int /*id*/) {
   char buf[128] = {0};
   dunit::getTimeStr(buf, sizeof(buf));
@@ -823,7 +824,7 @@ void log(std::string s, int lineno, const char * /*filename*/, int /*id*/) {
   fflush(stdout);
 }
 
-// log a message and print the slave id as well..
+// log a message and print the secondary id as well..
 void log(std::string s, int lineno, const char * /*filename*/) {
   char buf[128] = {0};
   dunit::getTimeStr(buf, sizeof(buf));
@@ -831,7 +832,7 @@ void log(std::string s, int lineno, const char * /*filename*/) {
   fprintf(stdout, "[TEST %s %s:pid(%d)] %s at line: %d\n", buf,
           (dunit::TestSlave::procSlaveId
                ? dunit::TestSlave::procSlaveId->getIdName()
-               : "master"),
+               : "primary"),
           ACE_OS::getpid(), s.c_str(), lineno);
   fflush(stdout);
 }
@@ -854,18 +855,18 @@ int dmain(int argc, ACE_TCHAR *argv[]) {
 
     int result = 0;
 
-    int slaveId = 0;
+    int secondaryId = 0;
     int option = 0;
     while ((option = cmd_opts()) != EOF) {
       switch (option) {
         case 's':
-          slaveId = ACE_OS::atoi(cmd_opts.opt_arg());
-          fprintf(stdout, "Using process id: %d\n", slaveId);
+          secondaryId = ACE_OS::atoi(cmd_opts.opt_arg());
+          fprintf(stdout, "Using process id: %d\n", secondaryId);
           fflush(stdout);
           break;
         case 'm':
-          g_masterPid = ACE_OS::atoi(cmd_opts.opt_arg());
-          fprintf(stdout, "Using master id: %d\n", g_masterPid);
+          g_primaryPid = ACE_OS::atoi(cmd_opts.opt_arg());
+          fprintf(stdout, "Using primary id: %d\n", g_primaryPid);
           fflush(stdout);
           break;
         default:
@@ -892,17 +893,17 @@ int dmain(int argc, ACE_TCHAR *argv[]) {
     //    }
     //  }
 
-    // record the master pid if it wasn't passed to us on the command line.
+    // record the primary pid if it wasn't passed to us on the command line.
     // the TestDriver will pass this to the child processes.
     // currently this is used for giving a unique per run id to shared
     // resources.
-    if (g_masterPid == 0) {
-      g_masterPid = ACE_OS::getpid();
+    if (g_primaryPid == 0) {
+      g_primaryPid = ACE_OS::getpid();
     }
 
-    if (slaveId > 0) {
-      dunit::TestSlave slave(slaveId);
-      slave.begin();
+    if (secondaryId > 0) {
+      dunit::TestSlave secondary(secondaryId);
+      secondary.begin();
     } else {
       dunit::TestDriver tdriver;
       result = tdriver.begin();
@@ -914,8 +915,8 @@ int dmain(int argc, ACE_TCHAR *argv[]) {
 
       fflush(stdout);
     }
-    printf("final slave id %d, result %d\n", slaveId, result);
-    printf("before calling cleanup %d \n", slaveId);
+    printf("final secondary id %d, result %d\n", secondaryId, result);
+    printf("before calling cleanup %d \n", secondaryId);
     gClientCleanup.callClientCleanup();
     printf("after calling cleanup\n");
     return result;
