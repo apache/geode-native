@@ -530,32 +530,6 @@ std::shared_ptr<CacheableVector> ExecutionImpl::executeOnPool(
         throwExceptionIfError("ExecuteOnPool:", err);
       }
     }
-    // auto values =
-    // resultCollector->getFunctionExecutionResults();
-    /*
-    ==25848== 1,610 (72 direct, 1,538 indirect) bytes in 2 blocks are definitely
-    lost in loss record 193 of 218
-    ==25848==    at 0x4007D75: operator new(unsigned int)
-    (vg_replace_malloc.c:313)
-    ==25848==    by 0x42B575A:
-    apache::geode::client::ExecutionImpl::executeOnPool(stlp_std::basic_string<char,
-    stlp_std::char_traits<char>, stlp_std::allocator<char> >&, unsigned char,
-    int, unsigned int) (ExecutionImpl.cpp:426)
-    ==25848==    by 0x42B65E6:
-    apache::geode::client::ExecutionImpl::execute(char const*,
-    bool, unsigned int, bool, bool, bool) (ExecutionImpl.cpp:292)
-    ==25848==    by 0x42B7897:
-    apache::geode::client::ExecutionImpl::execute(char const*,
-    bool, unsigned int, bool, bool) (ExecutionImpl.cpp:76)
-    ==25848==    by 0x8081320: Task_Client1OpTest::doTask() (in
-    /export/pnq-gst-dev01a/users/adongre/cedar_dev_Nov12/build-artifacts/linux/tests/cppcache/testThinClientPoolExecuteFunctionPrSHOP)
-    ==25848==    by 0x808D5CA: dunit::TestSlave::begin() (in
-    /export/pnq-gst-dev01a/users/adongre/cedar_dev_Nov12/build-artifacts/linux/tests/cppcache/testThinClientPoolExecuteFunctionPrSHOP)
-    ==25848==    by 0x8089807: dunit::dmain(int, char**) (in
-    /export/pnq-gst-dev01a/users/adongre/cedar_dev_Nov12/build-artifacts/linux/tests/cppcache/testThinClientPoolExecuteFunctionPrSHOP)
-    ==25848==    by 0x805F9EA: main (in
-    /export/pnq-gst-dev01a/users/adongre/cedar_dev_Nov12/build-artifacts/linux/tests/cppcache/testThinClientPoolExecuteFunctionPrSHOP)
-    */
     return nullptr;
   }
   return nullptr;

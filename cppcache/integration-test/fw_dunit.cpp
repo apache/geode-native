@@ -72,7 +72,7 @@ using apache::geode::client::testframework::BBNamingContextServer;
 #include "fw_dunit.hpp"
 
 ACE_TCHAR *g_programName = nullptr;
-uint32_t g_masterPid = 0;
+uint32_t g_coordinatorPid = 0;
 
 ClientCleanup gClientCleanup;
 
@@ -110,11 +110,11 @@ void getTimeStr(char *bufPtr, size_t sizeOfBuf) {
 }
 
 // some common values..
-#define SLAVE_STATE_READY 1
-#define SLAVE_STATE_DONE 2
-#define SLAVE_STATE_TASK_ACTIVE 3
-#define SLAVE_STATE_TASK_COMPLETE 4
-#define SLAVE_STATE_SCHEDULED 5
+#define WORKER_STATE_READY 1
+#define WORKER_STATE_DONE 2
+#define WORKER_STATE_TASK_ACTIVE 3
+#define WORKER_STATE_TASK_COMPLETE 4
+#define WORKER_STATE_SCHEDULED 5
 
 void log(std::string s, int lineno, const char *filename);
 
@@ -136,9 +136,9 @@ class NamingContextImpl : virtual public NamingContext {
 
   int checkResult(int result, const char *func) {
     if (result == -1) {
-      LOGMASTER("NamingCtx operation failed for:");
-      LOGMASTER(func);
-      LOGMASTER("Dump follows:");
+      LOGCOORDINATOR("NamingCtx operation failed for:");
+      LOGCOORDINATOR(func);
+      LOGCOORDINATOR("Dump follows:");
       dump();
       throw - 1;
     }
@@ -148,7 +148,7 @@ class NamingContextImpl : virtual public NamingContext {
  public:
   NamingContextImpl() : m_context() {
     open();
-    LOGMASTER("Naming context ready.");
+    LOGCOORDINATOR("Naming context ready.");
   }
 
   ~NamingContextImpl() noexcept override {
@@ -228,13 +228,13 @@ class NamingContextImpl : virtual public NamingContext {
     name_options->database(ACE_OS::getenv("TESTNAME"));
     checkResult(m_context.open(name_options->context(), 0), "open");
 #endif
-    LOGMASTER("Naming context opened.");
+    LOGCOORDINATOR("Naming context opened.");
   }
 
   std::string getContextName() {
     char buf[1024] = {0};
     ACE_OS::sprintf(buf, "dunit.context.%s%d", ACE::basename(g_programName),
-                    g_masterPid);
+                    g_coordinatorPid);
     std::string b_str(buf);
     return b_str;
   }
@@ -242,7 +242,7 @@ class NamingContextImpl : virtual public NamingContext {
   std::string getMutexName() {
     char buf[1024] = {0};
     ACE_OS::sprintf(buf, "dunit.mutex.%s%d", ACE::basename(g_programName),
-                    g_masterPid);
+                    g_coordinatorPid);
     std::string b_str(buf);
     return b_str;
   }
@@ -256,7 +256,7 @@ class NamingContextImpl : virtual public NamingContext {
     if (this->m_context.list_name_entries(set, "") != 0) {
       char buf[1000] = {0};
       ACE_OS::sprintf(buf, "There is nothing in the naming context.");
-      LOGMASTER(buf);
+      LOGCOORDINATOR(buf);
     } else {
       ACE_BINDING_ITERATOR set_iterator(set);
       for (ACE_Name_Binding *entry = 0; set_iterator.next(entry) != 0;
@@ -265,7 +265,7 @@ class NamingContextImpl : virtual public NamingContext {
         char buf[1000] = {0};
         ACE_OS::sprintf(buf, "%s => %s", binding.name_.char_rep(),
                         binding.value_.char_rep());
-        LOGMASTER(buf);
+        LOGCOORDINATOR(buf);
       }
     }
 #endif
@@ -284,23 +284,23 @@ class NamingContextImpl : virtual public NamingContext {
 
     int res2 = -1;
     int attempts2 = 10;
-    while ((res2 = m_context.rebind("SlaveId", "0")) == -1 && attempts2--) {
+    while ((res2 = m_context.rebind("WorkerId", "0")) == -1 && attempts2--) {
       millisleep(10);
     }
     checkResult(res2, "rebind2");
 
-    LOGMASTER("Naming context reset.");
+    LOGCOORDINATOR("Naming context reset.");
   }
 };
 
-/** uniquely represent each different slave. */
-class SlaveId {
+/** uniquely represent each different worker. */
+class WorkerId {
  private:
   uint32_t m_id;
   static const char *m_idNames[];
 
  public:
-  explicit SlaveId(uint32_t id) { m_id = id; }
+  explicit WorkerId(uint32_t id) { m_id = id; }
 
   int getId() { return m_id; }
 
@@ -312,14 +312,14 @@ class SlaveId {
   int getProcOnSys() { return ((m_id % 2) == 0) ? 2 : 1; }
 };
 
-const char *SlaveId::m_idNames[] = {"none", "s1p1", "s1p2", "s2p1", "s2p2"};
+const char *WorkerId::m_idNames[] = {"none", "s1p1", "s1p2", "s2p1", "s2p2"};
 
 /** method for letting Task discover its name through RTTI. */
 std::string Task::typeName() { return std::string(typeid(*this).name()); }
 
 typedef std::list<Task *> TaskList;
 
-/** contains a queue of Task* for each SlaveId. */
+/** contains a queue of Task* for each WorkerId. */
 class TaskQueues {
  private:
   std::map<int, TaskList> m_qmap;
@@ -327,12 +327,12 @@ class TaskQueues {
 
   TaskQueues() : m_qmap(), m_schedule() {}
 
-  void registerTask(SlaveId sId, Task *task) {
+  void registerTask(WorkerId sId, Task *task) {
     m_qmap[sId.getId()].push_back(task);
     m_schedule.push_back(sId.getId());
   }
 
-  Task *nextTask(SlaveId &sId) {
+  Task *nextTask(WorkerId &sId) {
     TaskList *tasks = &(m_qmap[sId.getId()]);
     if (tasks->empty()) {
       return nullptr;
@@ -347,14 +347,14 @@ class TaskQueues {
     return task;
   }
 
-  int nextSlaveId() {
+  int nextWorkerId() {
     if (m_schedule.empty()) {
       return 0;
     }
     int sId = m_schedule.front();
     char logmsg[1024] = {0};
-    sprintf(logmsg, "Next slave id is : %d", sId);
-    LOGMASTER(logmsg);
+    sprintf(logmsg, "Next worker id is : %d", sId);
+    LOGCOORDINATOR(logmsg);
     m_schedule.pop_front();
     return sId;
   }
@@ -362,19 +362,19 @@ class TaskQueues {
   static TaskQueues *taskQueues;
 
  public:
-  static void addTask(SlaveId sId, Task *task) {
+  static void addTask(WorkerId sId, Task *task) {
     if (taskQueues == nullptr) {
       taskQueues = new TaskQueues();
     }
     taskQueues->registerTask(sId, task);
   }
 
-  static int getSlaveId() {
+  static int getWorkerId() {
     ASSERT(taskQueues != nullptr, "failure to initialize fw_dunit module.");
-    return taskQueues->nextSlaveId();
+    return taskQueues->nextWorkerId();
   }
 
-  static Task *getTask(SlaveId sId) {
+  static Task *getTask(WorkerId sId) {
     ASSERT(taskQueues != nullptr, "failure to initialize fw_dunit module.");
     return taskQueues->nextTask(sId);
   }
@@ -382,14 +382,14 @@ class TaskQueues {
 
 TaskQueues *TaskQueues::taskQueues = nullptr;
 
-/** register task with slave. */
+/** register task with worker. */
 void Task::init(int sId) { init(sId, false); }
 
 void Task::init(int sId, bool isHeapAllocated) {
   m_isHeapAllocated = isHeapAllocated;
   m_id = sId;
   m_taskName = this->typeName();
-  TaskQueues::addTask(SlaveId(sId), this);
+  TaskQueues::addTask(WorkerId(sId), this);
 }
 
 /** main framework entry */
@@ -433,46 +433,48 @@ class Dunit {
     delete tmp;
   }
 
-  /** set the next slave id */
-  void setNextSlave(SlaveId &sId) { m_globals.rebind("SlaveId", sId.getId()); }
-
-  /** get the next slave id */
-  int getNextSlave() { return m_globals.getIntValue("SlaveId"); }
-
-  /** return true if all slaves are to terminate. */
-  bool mustQuit() {
-    return m_globals.getIntValue("TerminateAllSlaves") ? true : false;
+  /** set the next worker id */
+  void setNextWorker(WorkerId &sId) {
+    m_globals.rebind("WorkerId", sId.getId());
   }
 
-  /** signal all slaves to terminate. */
-  void setMustQuit() { m_globals.rebind("TerminateAllSlaves", 1); }
+  /** get the next worker id */
+  int getNextWorker() { return m_globals.getIntValue("WorkerId"); }
+
+  /** return true if all workers are to terminate. */
+  bool mustQuit() {
+    return m_globals.getIntValue("TerminateAllWorkers") ? true : false;
+  }
+
+  /** signal all workers to terminate. */
+  void setMustQuit() { m_globals.rebind("TerminateAllWorkers", 1); }
 
   /** signal to test driver that an error occurred. */
   void setFailed() { m_globals.rebind("Failure", 1); }
 
   bool getFailed() { return m_globals.getIntValue("Failure") ? true : false; }
 
-  void setSlaveState(SlaveId sId, int state) {
+  void setWorkerState(WorkerId sId, int state) {
     char key[100] = {0};
-    ACE_OS::sprintf(key, "ReadySlave%d", sId.getId());
+    ACE_OS::sprintf(key, "ReadyWorker%d", sId.getId());
     m_globals.rebind(key, state);
   }
 
-  int getSlaveState(SlaveId sId) {
+  int getWorkerState(WorkerId sId) {
     char key[100] = {0};
-    ACE_OS::sprintf(key, "ReadySlave%d", sId.getId());
+    ACE_OS::sprintf(key, "ReadyWorker%d", sId.getId());
     return m_globals.getIntValue(key);
   }
 
-  void setSlaveTimeout(SlaveId sId, int seconds) {
+  void setWorkerTimeout(WorkerId sId, int seconds) {
     char key[100] = {0};
-    ACE_OS::sprintf(key, "TimeoutSlave%d", sId.getId());
+    ACE_OS::sprintf(key, "TimeoutWorker%d", sId.getId());
     m_globals.rebind(key, seconds);
   }
 
-  int getSlaveTimeout(SlaveId sId) {
+  int getWorkerTimeout(WorkerId sId) {
     char key[100] = {0};
-    ACE_OS::sprintf(key, "TimeoutSlave%d", sId.getId());
+    ACE_OS::sprintf(key, "TimeoutWorker%d", sId.getId());
     return m_globals.getIntValue(key);
   }
 
@@ -488,21 +490,21 @@ Dunit *Dunit::singleton = nullptr;
 
 void Task::setTimeout(int seconds) {
   if (seconds > 0) {
-    DUNIT->setSlaveTimeout(SlaveId(m_id), seconds);
+    DUNIT->setWorkerTimeout(WorkerId(m_id), seconds);
   } else {
-    DUNIT->setSlaveTimeout(SlaveId(m_id), TASK_TIMEOUT);
+    DUNIT->setWorkerTimeout(WorkerId(m_id), TASK_TIMEOUT);
   }
 }
 
 class TestProcess : virtual public dunit::Manager {
  private:
-  SlaveId m_sId;
+  WorkerId m_sId;
 
  public:
   TestProcess(const ACE_TCHAR *cmdline, uint32_t id)
       : Manager(cmdline), m_sId(id) {}
 
-  SlaveId &getSlaveId() { return m_sId; }
+  WorkerId &getWorkerId() { return m_sId; }
 
  protected:
  public:
@@ -511,11 +513,11 @@ class TestProcess : virtual public dunit::Manager {
 
 /**
  * Container of TestProcess(es) held in driver. each represents one of the
- * legal SlaveIds spawned when TestDriver is created.
+ * legal WorkerIds spawned when TestDriver is created.
  */
 class TestDriver {
  private:
-  TestProcess *m_slaves[4];
+  TestProcess *m_workers[4];
 #ifdef SOLARIS_USE_BB
   BBNamingContextServer *m_bbNamingContextServer;
 #endif
@@ -530,28 +532,29 @@ class TestDriver {
 #endif
 
     dunit::Dunit::init(true);
-    fprintf(stdout, "Master starting slaves.\n");
+    fprintf(stdout, "Coordinator starting workers.\n");
     for (uint32_t i = 1; i < 5; i++) {
       ACE_TCHAR cmdline[2048] = {0};
       char *profilerCmd = ACE_OS::getenv("PROFILERCMD");
       if (profilerCmd != nullptr && profilerCmd[0] != '$' &&
           profilerCmd[0] != '\0') {
-        // replace %d's in profilerCmd with PID and slave ID
+        // replace %d's in profilerCmd with PID and worker ID
         char cmdbuf[2048] = {0};
         ACE_OS::sprintf(cmdbuf, profilerCmd, ACE_OS::gettimeofday().msec(),
-                        g_masterPid, i);
+                        g_coordinatorPid, i);
         ACE_OS::sprintf(cmdline, "%s %s -s%d -m%d", cmdbuf, g_programName, i,
-                        g_masterPid);
+                        g_coordinatorPid);
       } else {
-        ACE_OS::sprintf(cmdline, "%s -s%d -m%d", g_programName, i, g_masterPid);
+        ACE_OS::sprintf(cmdline, "%s -s%d -m%d", g_programName, i,
+                        g_coordinatorPid);
       }
       fprintf(stdout, "%s\n", cmdline);
-      m_slaves[i - 1] = new TestProcess(cmdline, i);
+      m_workers[i - 1] = new TestProcess(cmdline, i);
     }
     fflush(stdout);
-    // start each of the slaves...
+    // start each of the workers...
     for (uint32_t j = 1; j < 5; j++) {
-      m_slaves[j - 1]->doWork();
+      m_workers[j - 1]->doWork();
       ACE_OS::sleep(2);  // do not increase this to avoid precheckin runs taking
                          // much longer.
     }
@@ -560,8 +563,8 @@ class TestDriver {
   ~TestDriver() {
     // kill off any children that have not yet terminated.
     for (uint32_t i = 1; i < 5; i++) {
-      if (m_slaves[i - 1]->running() == 1) {
-        delete m_slaves[i - 1];  // slave destructor should terminate process.
+      if (m_workers[i - 1]->running() == 1) {
+        delete m_workers[i - 1];  // worker destructor should terminate process.
       }
     }
     dunit::Dunit::close();
@@ -572,18 +575,18 @@ class TestDriver {
   }
 
   int begin() {
-    fprintf(stdout, "Master started with pid %d\n", ACE_OS::getpid());
+    fprintf(stdout, "Coordinator started with pid %d\n", ACE_OS::getpid());
     fflush(stdout);
     waitForReady();
     // dispatch task...
 
-    int nextSlave;
-    while ((nextSlave = TaskQueues::getSlaveId()) != 0) {
-      SlaveId sId(nextSlave);
-      DUNIT->setSlaveState(sId, SLAVE_STATE_SCHEDULED);
+    int nextWorker;
+    while ((nextWorker = TaskQueues::getWorkerId()) != 0) {
+      WorkerId sId(nextWorker);
+      DUNIT->setWorkerState(sId, WORKER_STATE_SCHEDULED);
       fprintf(stdout, "Set next process to %s\n", sId.getIdName());
       fflush(stdout);
-      DUNIT->setNextSlave(sId);
+      DUNIT->setNextWorker(sId);
       waitForCompletion(sId);
       // check special conditions.
       if (DUNIT->getFailed()) {
@@ -599,10 +602,10 @@ class TestDriver {
     return 0;
   }
 
-  /** wait for an individual slave to finish a task. */
-  void waitForCompletion(SlaveId &sId) {
-    int secs = DUNIT->getSlaveTimeout(sId);
-    DUNIT->setSlaveTimeout(sId, TASK_TIMEOUT);
+  /** wait for an individual worker to finish a task. */
+  void waitForCompletion(WorkerId &sId) {
+    int secs = DUNIT->getWorkerTimeout(sId);
+    DUNIT->setWorkerTimeout(sId, TASK_TIMEOUT);
     if (secs <= 0) secs = TASK_TIMEOUT;
     fprintf(stdout, "Waiting %d seconds for %s to finish task.\n", secs,
             sId.getIdName());
@@ -610,13 +613,13 @@ class TestDriver {
     ACE_Time_Value end = ACE_OS::gettimeofday();
     ACE_Time_Value offset(secs, 0);
     end += offset;
-    while (DUNIT->getSlaveState(sId) != SLAVE_STATE_TASK_COMPLETE) {
+    while (DUNIT->getWorkerState(sId) != WORKER_STATE_TASK_COMPLETE) {
       // sleep a bit..
       if (DUNIT->getFailed()) return;
       ACE_Time_Value sleepTime;
       sleepTime.msec(100);
       ACE_OS::sleep(sleepTime);
-      checkSlaveDeath();
+      checkWorkerDeath();
       ACE_Time_Value now = ACE_OS::gettimeofday();
       if (now >= end) {
         handleTimeout(sId);
@@ -626,13 +629,13 @@ class TestDriver {
   }
 
   void handleTimeout() {
-    fprintf(stdout, "Error: Timed out waiting for all slaves to be ready.\n");
+    fprintf(stdout, "Error: Timed out waiting for all workers to be ready.\n");
     fflush(stdout);
     DUNIT->setMustQuit();
     DUNIT->setFailed();
   }
 
-  void handleTimeout(SlaveId &sId) {
+  void handleTimeout(WorkerId &sId) {
     fprintf(stdout, "Error: Timed out waiting for %s to finish task.\n",
             sId.getIdName());
     fflush(stdout);
@@ -640,9 +643,9 @@ class TestDriver {
     DUNIT->setFailed();
   }
 
-  /** wait for all slaves to be done initializing. */
+  /** wait for all workers to be done initializing. */
   void waitForReady() {
-    fprintf(stdout, "Waiting %d seconds for all slaves to be ready.\n",
+    fprintf(stdout, "Waiting %d seconds for all workers to be ready.\n",
             TASK_TIMEOUT);
     fflush(stdout);
     ACE_Time_Value end = ACE_OS::gettimeofday();
@@ -659,12 +662,12 @@ class TestDriver {
       ACE_OS::sleep(sleepTime);
       readyCount = 0;
       for (uint32_t i = 1; i < 5; i++) {
-        int state = DUNIT->getSlaveState(SlaveId(i));
-        if (state == SLAVE_STATE_READY) {
+        int state = DUNIT->getWorkerState(WorkerId(i));
+        if (state == WORKER_STATE_READY) {
           readyCount++;
         }
       }
-      checkSlaveDeath();
+      checkWorkerDeath();
       ACE_Time_Value now = ACE_OS::gettimeofday();
       if (now >= end) {
         handleTimeout();
@@ -673,9 +676,9 @@ class TestDriver {
     }
   }
 
-  /** wait for all slaves to be destroyed. */
+  /** wait for all workers to be destroyed. */
   void waitForDone() {
-    fprintf(stdout, "Waiting %d seconds for all slaves to complete.\n",
+    fprintf(stdout, "Waiting %d seconds for all workers to complete.\n",
             TASK_TIMEOUT);
     fflush(stdout);
     ACE_Time_Value end = ACE_OS::gettimeofday();
@@ -690,8 +693,8 @@ class TestDriver {
       ACE_OS::sleep(sleepTime);
       doneCount = 0;
       for (uint32_t i = 1; i < 5; i++) {
-        int state = DUNIT->getSlaveState(SlaveId(i));
-        if (state == SLAVE_STATE_DONE) {
+        int state = DUNIT->getWorkerState(WorkerId(i));
+        if (state == WORKER_STATE_DONE) {
           doneCount++;
         }
       }
@@ -703,14 +706,14 @@ class TestDriver {
     }
   }
 
-  /** test to see that all the slave processes are still around, or throw
+  /** test to see that all the worker processes are still around, or throw
       a TestException so the driver doesn't get hung. */
-  void checkSlaveDeath() {
+  void checkWorkerDeath() {
     for (uint32_t i = 0; i < 4; i++) {
-      if (!m_slaves[i]->running()) {
+      if (!m_workers[i]->running()) {
         char msg[1000] = {0};
-        sprintf(msg, "Error: Slave %s terminated prematurely.",
-                m_slaves[i]->getSlaveId().getIdName());
+        sprintf(msg, "Error: Worker %s terminated prematurely.",
+                m_workers[i]->getWorkerId().getIdName());
         LOG(msg);
         DUNIT->setFailed();
         DUNIT->setMustQuit();
@@ -720,47 +723,47 @@ class TestDriver {
   }
 };
 
-class TestSlave {
+class TestWorker {
  private:
-  SlaveId m_sId;
+  WorkerId m_sId;
 
  public:
-  static SlaveId *procSlaveId;
+  static WorkerId *procWorkerId;
 
-  explicit TestSlave(int id) : m_sId(id) {
-    procSlaveId = new SlaveId(id);
+  explicit TestWorker(int id) : m_sId(id) {
+    procWorkerId = new WorkerId(id);
     dunit::Dunit::init();
-    DUNIT->setSlaveState(m_sId, SLAVE_STATE_READY);
+    DUNIT->setWorkerState(m_sId, WORKER_STATE_READY);
   }
 
-  ~TestSlave() {
-    DUNIT->setSlaveState(m_sId, SLAVE_STATE_DONE);
+  ~TestWorker() {
+    DUNIT->setWorkerState(m_sId, WORKER_STATE_DONE);
     dunit::Dunit::close();
   }
 
   void begin() {
-    fprintf(stdout, "Slave %s started with pid %d\n", m_sId.getIdName(),
+    fprintf(stdout, "Worker %s started with pid %d\n", m_sId.getIdName(),
             ACE_OS::getpid());
     fflush(stdout);
-    SlaveId slaveZero(0);
+    WorkerId workerZero(0);
 
-    // consume tasks of this slaves queue, only when it is his turn..
+    // consume tasks of this workers queue, only when it is his turn..
     while (!DUNIT->mustQuit()) {
-      if (DUNIT->getNextSlave() == m_sId.getId()) {
-        // set next slave to zero so I don't accidently run twice.
-        DUNIT->setNextSlave(slaveZero);
+      if (DUNIT->getNextWorker() == m_sId.getId()) {
+        // set next worker to zero so I don't accidently run twice.
+        DUNIT->setNextWorker(workerZero);
         // do next task...
         Task *task = TaskQueues::getTask(m_sId);
         // perform task.
         if (task != nullptr) {
-          DUNIT->setSlaveState(m_sId, SLAVE_STATE_TASK_ACTIVE);
+          DUNIT->setWorkerState(m_sId, WORKER_STATE_TASK_ACTIVE);
           try {
             task->doTask();
             if (task->m_isHeapAllocated) {
               delete task;
             }
             fflush(stdout);
-            DUNIT->setSlaveState(m_sId, SLAVE_STATE_TASK_COMPLETE);
+            DUNIT->setWorkerState(m_sId, WORKER_STATE_TASK_COMPLETE);
           } catch (TestException te) {
             if (task->m_isHeapAllocated) {
               delete task;
@@ -787,11 +790,11 @@ class TestSlave {
   void handleError() {
     DUNIT->setFailed();
     DUNIT->setMustQuit();
-    DUNIT->setSlaveState(m_sId, SLAVE_STATE_TASK_COMPLETE);
+    DUNIT->setWorkerState(m_sId, WORKER_STATE_TASK_COMPLETE);
   }
 };
 
-SlaveId *TestSlave::procSlaveId = nullptr;
+WorkerId *TestWorker::procWorkerId = nullptr;
 
 void sleep(int millis) {
   if (millis == 0) {
@@ -803,17 +806,17 @@ void sleep(int millis) {
   }
 }
 
-void logMaster(std::string s, int lineno, const char * /*filename*/) {
+void logCoordinator(std::string s, int lineno, const char * /*filename*/) {
   char buf[128] = {0};
   dunit::getTimeStr(buf, sizeof(buf));
 
-  fprintf(stdout, "[TEST master:pid(%d)] %s at line: %d\n", ACE_OS::getpid(),
-          s.c_str(), lineno);
+  fprintf(stdout, "[TEST coordinator:pid(%d)] %s at line: %d\n",
+          ACE_OS::getpid(), s.c_str(), lineno);
   fflush(stdout);
 }
 
-// log a message and print the slave id as well.. used by fw_helper with no
-// slave id.
+// log a message and print the worker id as well.. used by fw_helper with no
+// worker id.
 void log(std::string s, int lineno, const char * /*filename*/, int /*id*/) {
   char buf[128] = {0};
   dunit::getTimeStr(buf, sizeof(buf));
@@ -823,15 +826,15 @@ void log(std::string s, int lineno, const char * /*filename*/, int /*id*/) {
   fflush(stdout);
 }
 
-// log a message and print the slave id as well..
+// log a message and print the worker id as well..
 void log(std::string s, int lineno, const char * /*filename*/) {
   char buf[128] = {0};
   dunit::getTimeStr(buf, sizeof(buf));
 
   fprintf(stdout, "[TEST %s %s:pid(%d)] %s at line: %d\n", buf,
-          (dunit::TestSlave::procSlaveId
-               ? dunit::TestSlave::procSlaveId->getIdName()
-               : "master"),
+          (dunit::TestWorker::procWorkerId
+               ? dunit::TestWorker::procWorkerId->getIdName()
+               : "coordinator"),
           ACE_OS::getpid(), s.c_str(), lineno);
   fflush(stdout);
 }
@@ -854,18 +857,18 @@ int dmain(int argc, ACE_TCHAR *argv[]) {
 
     int result = 0;
 
-    int slaveId = 0;
+    int workerId = 0;
     int option = 0;
     while ((option = cmd_opts()) != EOF) {
       switch (option) {
         case 's':
-          slaveId = ACE_OS::atoi(cmd_opts.opt_arg());
-          fprintf(stdout, "Using process id: %d\n", slaveId);
+          workerId = ACE_OS::atoi(cmd_opts.opt_arg());
+          fprintf(stdout, "Using process id: %d\n", workerId);
           fflush(stdout);
           break;
         case 'm':
-          g_masterPid = ACE_OS::atoi(cmd_opts.opt_arg());
-          fprintf(stdout, "Using master id: %d\n", g_masterPid);
+          g_coordinatorPid = ACE_OS::atoi(cmd_opts.opt_arg());
+          fprintf(stdout, "Using coordinator id: %d\n", g_coordinatorPid);
           fflush(stdout);
           break;
         default:
@@ -892,17 +895,17 @@ int dmain(int argc, ACE_TCHAR *argv[]) {
     //    }
     //  }
 
-    // record the master pid if it wasn't passed to us on the command line.
+    // record the coordinator pid if it wasn't passed to us on the command line.
     // the TestDriver will pass this to the child processes.
     // currently this is used for giving a unique per run id to shared
     // resources.
-    if (g_masterPid == 0) {
-      g_masterPid = ACE_OS::getpid();
+    if (g_coordinatorPid == 0) {
+      g_coordinatorPid = ACE_OS::getpid();
     }
 
-    if (slaveId > 0) {
-      dunit::TestSlave slave(slaveId);
-      slave.begin();
+    if (workerId > 0) {
+      dunit::TestWorker worker(workerId);
+      worker.begin();
     } else {
       dunit::TestDriver tdriver;
       result = tdriver.begin();
@@ -914,8 +917,8 @@ int dmain(int argc, ACE_TCHAR *argv[]) {
 
       fflush(stdout);
     }
-    printf("final slave id %d, result %d\n", slaveId, result);
-    printf("before calling cleanup %d \n", slaveId);
+    printf("final worker id %d, result %d\n", workerId, result);
+    printf("before calling cleanup %d \n", workerId);
     gClientCleanup.callClientCleanup();
     printf("after calling cleanup\n");
     return result;
