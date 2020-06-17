@@ -746,15 +746,15 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask2)
     LOG("CheckPrSingleHopForIntKeysTask2 get completed.");
 
     for (int i = 1000; i < 2000; i++) {
-      std::vector<std::shared_ptr<CacheableKey>> keys;
+      std::vector<std::shared_ptr<CacheableKey>> keysVector;
       for (int j = i; j < i + 5; j++) {
-        keys.push_back(CacheableInt32::create(j));
+        keysVector.push_back(CacheableInt32::create(j));
       }
 
       try {
         // LOGINFO("CPPTEST: getting key %d with hashcode %d", i,
         // (int32_t)keyPtr->hashcode());
-        dataReg->getAll(keys);
+        dataReg->getAll(keysVector);
         bool networkhop = TestUtils::getCacheImpl(getHelper()->cachePtr)
                               ->getAndResetNetworkHopFlag();
         LOGINFO("CheckPrSingleHopForIntKeysTask2: networkhop %d ", networkhop);
@@ -799,18 +799,18 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForGetAllTask)
   {
     auto dataReg = getHelper()->getRegion(regionNames[0]);
-    std::vector<std::shared_ptr<CacheableKey>> keys;
+    std::vector<std::shared_ptr<CacheableKey>> keysVector;
     for (int i = 0; i < 100; i++) {
       auto keyPtr =
           std::dynamic_pointer_cast<CacheableKey>(CacheableInt32::create(i));
       dataReg->put(keyPtr, keyPtr->hashcode());
-      keys.push_back(keyPtr);
+      keysVector.push_back(keyPtr);
     }
 
-    auto valuesMap = dataReg->getAll(keys);
+    auto valuesMap = dataReg->getAll(keysVector);
     ASSERT(valuesMap.size() == 100, "GetAll returns wrong number of values");
 
-    valuesMap = dataReg->getAll(keys, CacheableInt32::create(1000));
+    valuesMap = dataReg->getAll(keysVector, CacheableInt32::create(1000));
     ASSERT(valuesMap.size() == 100,
            "GetAllWithCallBack returns wrong number of values");
 
@@ -942,15 +942,15 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask)
     LOG("CheckPrSingleHopForIntKeysTask get completed.");
 
     for (int i = 1000; i < 2000; i++) {
-      std::vector<std::shared_ptr<CacheableKey>> keys;
+      std::vector<std::shared_ptr<CacheableKey>> keysVector;
       for (int j = i; j < i + 5; j++) {
-        keys.push_back(CacheableInt32::create(j));
+        keysVector.push_back(CacheableInt32::create(j));
       }
 
       try {
         // LOGINFO("CPPTEST: getting key %d with hashcode %d", i,
         // (int32_t)keyPtr->hashcode());
-        dataReg->getAll(keys);
+        dataReg->getAll(keysVector);
         bool networkhop = TestUtils::getCacheImpl(getHelper()->cachePtr)
                               ->getAndResetNetworkHopFlag();
         LOGINFO("CheckPrSingleHopForIntKeysTask: networkhop %d ", networkhop);
@@ -990,7 +990,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask)
       try {
         // LOGINFO("CPPTEST: getting key %d with hashcode %d", i,
         // (int32_t)keyPtr->hashcode());
-        dataReg->getAll(keys, CacheableInt32::create(1000));
+        dataReg->getAll(keysVector, CacheableInt32::create(1000));
         bool networkhop = TestUtils::getCacheImpl(getHelper()->cachePtr)
                               ->getAndResetNetworkHopFlag();
         LOGINFO("CheckPrSingleHopForIntKeysTask: networkhop %d ", networkhop);
@@ -1122,22 +1122,22 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, CheckGetAllTask)
   {
     auto dataReg = getHelper()->getRegion(regionNames[0]);
-    std::vector<std::shared_ptr<CacheableKey>> keys;
+    std::vector<std::shared_ptr<CacheableKey>> keysVector;
     for (int i = 0; i < 100000; i++) {
       auto keyPtr =
           std::dynamic_pointer_cast<CacheableKey>(CacheableInt32::create(i));
       dataReg->put(keyPtr, keyPtr->hashcode());
-      keys.push_back(keyPtr);
+      keysVector.push_back(keyPtr);
     }
 
     ACE_Time_Value startTime = ACE_OS::gettimeofday();
-    auto valuesMap = dataReg->getAll(keys);
+    auto valuesMap = dataReg->getAll(keysVector);
     ACE_Time_Value interval = ACE_OS::gettimeofday() - startTime;
     LOGDEBUG("NILKANTH: Time taken to execute getALL sec = %d and MSec = %d ",
              interval.sec(), interval.usec());
     ASSERT(valuesMap.size() == 100000, "GetAll returns wrong number of values");
 
-    valuesMap = dataReg->getAll(keys, CacheableInt32::create(10000));
+    valuesMap = dataReg->getAll(keysVector, CacheableInt32::create(10000));
     ASSERT(valuesMap.size() == 100000,
            "GetAllWithCallBack returns wrong number of values");
 

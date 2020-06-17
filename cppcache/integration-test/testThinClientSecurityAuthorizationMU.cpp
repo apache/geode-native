@@ -797,7 +797,7 @@ DUNIT_TASK_DEFINITION(READER_CLIENT, StepThree)
     initCredentialGenerator();
     initClientAuth('R');
     char buf[100];
-    int i = 102;
+    int value = 102;
 
     createRegionForSecurity(regionNamesAuth[0], USE_ACK, false, nullptr, false,
                             -1, true, 0);
@@ -813,9 +813,9 @@ DUNIT_TASK_DEFINITION(READER_CLIENT, StepThree)
     rptr = virtualCache.getRegion(regionNamesAuth[0]);
     LOG("Operation allowed, something is wrong.");
 
-    sprintf(buf, "%s: %d", rptr->getName().c_str(), i);
+    sprintf(buf, "%s: %d", rptr->getName().c_str(), value);
     auto key = CacheableKey::create(buf);
-    sprintf(buf, "testUpdate::%s: value of %d", rptr->getName().c_str(), i);
+    sprintf(buf, "testUpdate::%s: value of %d", rptr->getName().c_str(), value);
     auto valuePtr = buf;
     try {
       LOG("Trying put Operation");
@@ -852,10 +852,8 @@ DUNIT_TASK_DEFINITION(READER_CLIENT, StepThree)
       auto checkPtr =
           std::dynamic_pointer_cast<CacheableString>(rptr->get(keyPtr));
       if (checkPtr != nullptr) {
-        char buf[1024];
-        sprintf(buf, "In net search, get returned %s for key %s",
-                checkPtr->value().c_str(), keys[2]);
-        LOG(buf);
+        LOG("In net search, get returned " + checkPtr->value() + " for key " +
+            keys[2]);
       } else {
         LOG("checkPtr is nullptr");
       }

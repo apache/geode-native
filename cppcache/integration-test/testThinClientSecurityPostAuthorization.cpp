@@ -288,10 +288,10 @@ DUNIT_TASK_DEFINITION(READER_CLIENT, StepThree)
     initClientAuth('R', 2);
     createRegionForSecurity(regionNamesAuth[0], USE_ACK, true);
 
-    std::vector<std::shared_ptr<CacheableKey>> keys;
-    getKeysVector(keys, 6);
+    std::vector<std::shared_ptr<CacheableKey>> keysVector;
+    getKeysVector(keysVector, 6);
     auto rptr = getHelper()->getRegion(regionNamesAuth[0]);
-    auto values = rptr->getAll(keys);
+    auto values = rptr->getAll(keysVector);
 
     checkValuesMap(values, 2, 6);
 
@@ -304,10 +304,10 @@ DUNIT_TASK_DEFINITION(READER2_CLIENT, StepFour)
     initClientAuth('R', 3);
     createRegionForSecurity(regionNamesAuth[0], USE_ACK, true);
 
-    std::vector<std::shared_ptr<CacheableKey>> keys;
-    getKeysVector(keys, 6);
+    std::vector<std::shared_ptr<CacheableKey>> keysVector;
+    getKeysVector(keysVector, 6);
     auto rptr = getHelper()->getRegion(regionNamesAuth[0]);
-    auto values = rptr->getAll(keys);
+    auto values = rptr->getAll(keysVector);
 
     checkValuesMap(values, 3, 6);
 

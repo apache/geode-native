@@ -213,8 +213,8 @@ void Log::init(LogLevel level, const char* logFileName, int32_t logFileLimit,
     // Appending a ".log" at the end if it does not exist or file has some other
     // extension.
     std::string filebasename = ACE::basename(g_logFile->c_str());
-    int32_t len = static_cast<int32_t>(filebasename.length());
-    size_t fileExtPos = filebasename.find_last_of('.', len);
+    auto len = static_cast<int32_t>(filebasename.length());
+    auto fileExtPos = filebasename.find_last_of('.', len);
     // if no extension then add .log extension
     if (fileExtPos == std::string::npos) {
       g_logFileWithExt = new std::string(*g_logFile + ".log");
@@ -257,7 +257,7 @@ void Log::init(LogLevel level, const char* logFileName, int32_t logFileLimit,
     if (status != -1) {
       for (int index = 0; index < sds.length(); ++index) {
         std::string strname = ACE::basename(sds[index]->d_name);
-        size_t fileExtPos = strname.find_last_of('.', strname.length());
+        fileExtPos = strname.find_last_of('.', strname.length());
         if (fileExtPos != std::string::npos) {
           std::string tempname = strname.substr(0, fileExtPos);
           size_t fileHyphenPos = tempname.find_last_of('-', tempname.length());
@@ -280,7 +280,7 @@ void Log::init(LogLevel level, const char* logFileName, int32_t logFileLimit,
       std::string extName;
       std::string newfilestr;
 
-      int32_t len = static_cast<int32_t>(g_logFileWithExt->length());
+      len = static_cast<int32_t>(g_logFileWithExt->length());
       int32_t lastPosOfSep = static_cast<int32_t>(
           g_logFileWithExt->find_last_of(ACE_DIRECTORY_SEPARATOR_CHAR, len));
       if (lastPosOfSep == -1) {
@@ -567,7 +567,7 @@ void Log::put(LogLevel level, const char* msg) {
     }
 
     formatLogLine(buf, level);
-    size_t numChars = static_cast<int>(std::strlen(buf) + std::strlen(msg));
+    auto numChars = static_cast<int>(std::strlen(buf) + std::strlen(msg));
     g_bytesWritten +=
         numChars + 2;  // bcoz we have to count trailing new line (\n)
 
@@ -657,7 +657,7 @@ void Log::put(LogLevel level, const char* msg) {
           char printmsg[256];
           std::snprintf(printmsg, 256, "%s\t%s\n", "Could not delete",
                         fileInfo[fileIndex].first.c_str());
-          int numChars =
+          numChars =
               fprintf(g_log, "%s%s\n", formatLogLine(buf, level), printmsg);
           g_bytesWritten +=
               numChars + 2;  // bcoz we have to count trailing new line (\n)

@@ -71,7 +71,7 @@ class putThread : public ACE_Task_Base {
   void stop() { wait(); }
 };
 
-void doAttrTestingAndCreatePool(const char *poolName) {
+void doAttrTestingAndCreatePool(const char *poolNameToUse) {
   auto poolFac = getHelper()->getCache()->getPoolManager().createFactory();
   poolFac.setFreeConnectionTimeout(std::chrono::milliseconds(10000));
   poolFac.setLoadConditioningInterval(std::chrono::milliseconds(60000));
@@ -94,7 +94,7 @@ void doAttrTestingAndCreatePool(const char *poolName) {
   // poolFacPtr->setMultiuserSecurityMode(true);
   poolFac.setPRSingleHopEnabled(false);
 
-  auto pptr = poolFac.create(poolName);
+  auto pptr = poolFac.create(poolNameToUse);
 
   // Validate the attributes
   ASSERT(pptr->getFreeConnectionTimeout() == std::chrono::milliseconds(10000),
@@ -136,10 +136,10 @@ void doAttrTestingAndCreatePool(const char *poolName) {
          "PRSingleHopEnabled should have been false");
 }
 
-void doAttrTesting(const char *poolName1) {
+void doAttrTesting(const char *poolNameToUse) {
   // auto poolFacPtr = cachePtr->getPoolFactory();
-  auto pptr = getHelper()->getCache()->getPoolManager().find(poolName1);
-  // auto pptr = poolFacPtr->find(poolName1);
+  auto pptr = getHelper()->getCache()->getPoolManager().find(poolNameToUse);
+  // auto pptr = poolFacPtr->find(poolNameToUse);
 
   ASSERT(pptr->getName() == "clientPool",
          "Pool name should have been clientPool");
@@ -258,14 +258,14 @@ DUNIT_TASK(CLIENT1, ClientOp)
     // min.
     SLEEP(5000);
     // Check current # connections they should be == min
-    std::string poolName =
+    std::string poolNameString =
         getHelper()->getRegion(poolRegNames[0])->getAttributes().getPoolName();
-    int level =
-        TestUtils::getCacheImpl(getHelper()->cachePtr)->getPoolSize(poolName);
+    int level = TestUtils::getCacheImpl(getHelper()->cachePtr)
+                    ->getPoolSize(poolNameString);
     int min = getHelper()
                   ->getCache()
                   ->getPoolManager()
-                  .find(poolName.c_str())
+                  .find(poolNameString.c_str())
                   ->getMinConnections();
     char logmsg[100] = {0};
     sprintf(logmsg, "Pool level not equal to min level. Expected %d, actual %d",
@@ -281,12 +281,12 @@ DUNIT_TASK(CLIENT1, ClientOp)
     SLEEP(5000);  // wait for threads to become active
 
     // Check current # connections they should be == max
-    level =
-        TestUtils::getCacheImpl(getHelper()->cachePtr)->getPoolSize(poolName);
+    level = TestUtils::getCacheImpl(getHelper()->cachePtr)
+                ->getPoolSize(poolNameString);
     int max = getHelper()
                   ->getCache()
                   ->getPoolManager()
-                  .find(poolName.c_str())
+                  .find(poolNameString.c_str())
                   ->getMaxConnections();
     sprintf(logmsg, "Pool level not equal to max level. Expected %d, actual %d",
             max, level);
@@ -301,12 +301,12 @@ DUNIT_TASK(CLIENT1, ClientOp)
     LOG("Waiting 25 sec for idle timeout to kick in");
     SLEEP(25000);
 
-    level =
-        TestUtils::getCacheImpl(getHelper()->cachePtr)->getPoolSize(poolName);
+    level = TestUtils::getCacheImpl(getHelper()->cachePtr)
+                ->getPoolSize(poolNameString);
     min = getHelper()
               ->getCache()
               ->getPoolManager()
-              .find(poolName.c_str())
+              .find(poolNameString.c_str())
               ->getMinConnections();
     sprintf(logmsg,
             "Pool level not equal to min level after idle timeout. "
@@ -317,8 +317,8 @@ DUNIT_TASK(CLIENT1, ClientOp)
     LOG("Waiting 1 minute for load conditioning to kick in");
     SLEEP(60000);
 
-    level =
-        TestUtils::getCacheImpl(getHelper()->cachePtr)->getPoolSize(poolName);
+    level = TestUtils::getCacheImpl(getHelper()->cachePtr)
+                ->getPoolSize(poolNameString);
     sprintf(logmsg,
             "Pool level not equal to min level after load "
             "conditioning. Expected %d, actual %d",

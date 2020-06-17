@@ -149,10 +149,7 @@ void _verifyEntry(const char* name, const char* key, const char* val,
           std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr));
 
       ASSERT(checkPtr != nullptr, "Value Ptr should not be null.");
-      char buf[1024];
-      sprintf(buf, "In verify loop, get returned %s for key %s",
-              checkPtr->value().c_str(), key);
-      LOG(buf);
+      LOG("In verify loop, get returned " + checkPtr->value() + " for key " + key);
       if (strcmp(checkPtr->value().c_str(), value) != 0) {
         testValueCnt++;
       } else {
@@ -255,7 +252,7 @@ void createAndVerifyEntry(const char* name) {
   int64_t int64Key1 = 9223372036854775807LL;
   try {
     regPtr->create(int64Key1, in64Value);
-    auto longRetValue =
+    longRetValue =
         std::dynamic_pointer_cast<CacheableInt64>(regPtr->get(int64Key));
     FAIL("Expected EntryExistException here");
   } catch (EntryExistsException&) {

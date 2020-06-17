@@ -968,14 +968,15 @@ DUNIT_TASK_DEFINITION(CLIENT1, checkCQStatusOnConnect_Pool)
   }
 END_TASK_DEFINITION
 
-void checkCQStatusOnDisConnect(const char *poolName, const char *cqName,
+void checkCQStatusOnDisConnect(const char *poolName,
+                               const char *continuousQueryName,
                                uint32_t disconnect) {
   auto pool = getHelper()->getCache()->getPoolManager().find(poolName);
   std::shared_ptr<QueryService> qs;
   if (pool != nullptr) {
     qs = pool->getQueryService();
   }
-  auto cq = qs->getCq(const_cast<char *>(cqName));
+  auto cq = qs->getCq(const_cast<char *>(continuousQueryName));
   auto cqAttr = cq->getCqAttributes();
   auto vl = cqAttr->getCqListeners();
   auto myStatusCq = std::dynamic_pointer_cast<MyCqStatusListener>(vl[0]);
@@ -1038,14 +1039,14 @@ DUNIT_TASK_DEFINITION(CLIENT1, putEntries)
   }
 END_TASK_DEFINITION
 
-void checkCQStatusOnPutEvent(const char *poolName, const char *cqName,
-                             uint32_t count) {
+void checkCQStatusOnPutEvent(const char *poolName,
+                             const char *continuousQueryName, uint32_t count) {
   auto pool = getHelper()->getCache()->getPoolManager().find(poolName);
   std::shared_ptr<QueryService> qs;
   if (pool != nullptr) {
     qs = pool->getQueryService();
   }
-  auto cq = qs->getCq(const_cast<char *>(cqName));
+  auto cq = qs->getCq(const_cast<char *>(continuousQueryName));
   auto cqAttr = cq->getCqAttributes();
   auto vl = cqAttr->getCqListeners();
   MyCqStatusListener *myStatusCq =

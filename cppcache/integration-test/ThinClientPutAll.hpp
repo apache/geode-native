@@ -156,10 +156,7 @@ void _verifyEntry(const char* name, const char* key, const char* val,
             std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr));
 
         ASSERT(checkPtr != nullptr, "Value Ptr should not be null.");
-        char buf[1024];
-        sprintf(buf, "In verify loop, get returned %s for key %s",
-                checkPtr->value().c_str(), key);
-        LOG(buf);
+        LOG("In verify loop, get returned " + checkPtr->value() + " for key " + key);
         if (strcmp(checkPtr->value().c_str(), value) != 0) {
           testValueCnt++;
         } else {
@@ -650,17 +647,17 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThirteen)
              "putAll entry with long key and long value Mismatch.");
     }
     map0.clear();
-    const char* vals[] = {"Value-100", "Value-200"};
+    const char* testValues[] = {"Value-100", "Value-200"};
 
     for (int i = 80; i < 82; i++) {
       map0.emplace(CacheableInt64::create(i),
-                   CacheableString::create(vals[i - 80]));
+                   CacheableString::create(testValues[i - 80]));
     }
     regPtr0->putAll(map0);
     for (int i = 80; i < 82; i++) {
       auto checkPtr = std::dynamic_pointer_cast<CacheableString>(
           regPtr0->get(CacheableInt64::create(i)));
-      ASSERT(strcmp(checkPtr->value().c_str(), vals[i - 80]) == 0,
+      ASSERT(strcmp(checkPtr->value().c_str(), testValues[i - 80]) == 0,
              "putAll entry with long key and string value  Mismatch");
     }
     map0.clear();
@@ -705,9 +702,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThirteen)
       map0.emplace(CacheableInt64::create(345),
                    CacheableInt64::create(3465987));
       regPtr0->putAll(map0, std::chrono::seconds(-1));
-      auto checkPtr = std::dynamic_pointer_cast<CacheableInt64>(
+      auto check = std::dynamic_pointer_cast<CacheableInt64>(
           regPtr0->get(CacheableInt64::create(345)));
-      ASSERT(checkPtr->value() == 3465987,
+      ASSERT(check->value() == 3465987,
              "putAll entry with long key and long value Mismatch.");
     } catch (Exception& excp) {
       std::string logmsg = "";
@@ -723,9 +720,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThirteen)
       map0.emplace(CacheableInt64::create(3451),
                    CacheableInt64::create(3465987));
       regPtr0->putAll(map0, std::chrono::seconds(2147500));
-      auto checkPtr = std::dynamic_pointer_cast<CacheableInt64>(
+      auto check = std::dynamic_pointer_cast<CacheableInt64>(
           regPtr0->get(CacheableInt64::create(3451)));
-      ASSERT(checkPtr->value() == 3465987,
+      ASSERT(check->value() == 3465987,
              "putAll entry with long key and long value Mismatch.");
     } catch (Exception& excp) {
       std::string logmsg = "";

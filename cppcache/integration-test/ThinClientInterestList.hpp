@@ -140,10 +140,7 @@ void _verifyEntry(const char* name, const char* key, const char* val,
             std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr));
 
         ASSERT(checkPtr != nullptr, "Value Ptr should not be null.");
-        char buf[1024];
-        sprintf(buf, "In verify loop, get returned %s for key %s",
-                checkPtr->value().c_str(), key);
-        LOG(buf);
+        LOG("In verify loop, get returned " + checkPtr->value() + " for key " + key);
         if (strcmp(checkPtr->value().c_str(), value) != 0) {
           testValueCnt++;
         } else {
@@ -187,7 +184,7 @@ void _verifyCreated(const char* name, const char* key, int line) {
   LOG("Entry created.");
 }
 
-void createPooledRegion(const char* name, bool ackMode, const char* locatorsG,
+void createPooledRegion(const char* name, bool ackMode, const char* locators,
                         const char* poolname,
                         bool clientNotificationEnabled = false,
                         bool cachingEnable = true) {
@@ -195,7 +192,7 @@ void createPooledRegion(const char* name, bool ackMode, const char* locatorsG,
   fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
   fflush(stdout);
   auto regPtr =
-      getHelper()->createPooledRegion(name, ackMode, locatorsG, poolname,
+      getHelper()->createPooledRegion(name, ackMode, locators, poolname,
                                       cachingEnable, clientNotificationEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Pooled Region created.");

@@ -751,7 +751,8 @@ void ClientMetadataService::markPrimaryBucketForTimeoutButLookSecondaryBucket(
     std::shared_ptr<BucketServerLocation>& serverLocation, int8_t& version) {
   if (m_bucketWaitTimeout == std::chrono::milliseconds::zero()) return;
 
-  boost::unique_lock<decltype(m_PRbucketStatusLock)> lock(m_PRbucketStatusLock);
+  boost::unique_lock<decltype(m_PRbucketStatusLock)> boostPRbucketStatusLock(
+      m_PRbucketStatusLock);
 
   PRbuckets* prBuckets = nullptr;
   const auto& bs = m_bucketStatus.find(region->getFullPath());
@@ -766,7 +767,7 @@ void ClientMetadataService::markPrimaryBucketForTimeoutButLookSecondaryBucket(
 
   std::shared_ptr<ClientMetadata> cptr = nullptr;
   {
-    boost::shared_lock<decltype(m_regionMetadataLock)> lock(
+    boost::shared_lock<decltype(m_regionMetadataLock)> boostRegionMetadataLock(
         m_regionMetadataLock);
 
     const auto& cptrIter = m_regionMetaDataMap.find(region->getFullPath());
@@ -778,7 +779,6 @@ void ClientMetadataService::markPrimaryBucketForTimeoutButLookSecondaryBucket(
       return;
     }
   }
-
   LOGFINE("Setting in markPrimaryBucketForTimeoutButLookSecondaryBucket");
 
   auto totalBuckets = cptr->getTotalNumBuckets();

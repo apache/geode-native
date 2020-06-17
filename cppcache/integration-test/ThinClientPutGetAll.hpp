@@ -71,7 +71,7 @@ const char* _regionNames[] = {"DistRegionAck"};
 
 #include "LocatorHelper.hpp"
 
-void verifyGetAll(std::shared_ptr<Region> region, const char** _vals,
+void verifyGetAll(std::shared_ptr<Region> region, const char** _values,
                   int startIndex,
                   std::shared_ptr<Cacheable> callBack = nullptr) {
   auto keyPtr0 = CacheableKey::create(_keys[0]);
@@ -84,8 +84,8 @@ void verifyGetAll(std::shared_ptr<Region> region, const char** _vals,
   keys1.push_back(keyPtr2);
 
   std::unordered_map<std::string, std::string> expected;
-  expected[_keys[0]] = _vals[startIndex + 0];
-  expected[_keys[1]] = _vals[startIndex + 1];
+  expected[_keys[0]] = _values[startIndex + 0];
+  expected[_keys[1]] = _values[startIndex + 1];
 
   auto valuesMap = region->getAll(keys1, callBack);
   if (valuesMap.size() == keys1.size()) {
@@ -110,9 +110,9 @@ void verifyGetAll(std::shared_ptr<Region> region, const char** _vals,
 }
 
 void verifyGetAllWithCallBackArg(std::shared_ptr<Region> region,
-                                 const char** vals, int startIndex,
+                                 const char** values, int startIndex,
                                  std::shared_ptr<Cacheable> callBack) {
-  verifyGetAll(region, vals, startIndex, callBack);
+  verifyGetAll(region, values, startIndex, callBack);
 }
 
 void createPooledRegion(const char* name, bool ackMode, const char* locators,

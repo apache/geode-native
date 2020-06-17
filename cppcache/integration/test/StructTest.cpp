@@ -89,13 +89,13 @@ TEST(StructTest, queryResultForRange) {
     auto key = -1;
     for (auto&& column : *rowStruct) {
       // Expect to read: key:int, value:string
-      if (auto columnValue =
+      if (auto cacheableInt32ColumnValue =
               std::dynamic_pointer_cast<CacheableInt32>(column)) {
-        key = columnValue->value();
+        key = cacheableInt32ColumnValue->value();
         EXPECT_NE(values.end(), values.find(key));
-      } else if (auto columnValue =
+      } else if (auto cacheableStringColumnValue =
                      std::dynamic_pointer_cast<CacheableString>(column)) {
-        auto value = columnValue->value();
+        auto value = cacheableStringColumnValue->value();
         EXPECT_EQ(values.find(key)->second, value);
       } else {
         FAIL() << "Column is not int or string.";

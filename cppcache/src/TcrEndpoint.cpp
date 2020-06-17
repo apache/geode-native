@@ -376,7 +376,8 @@ GfErrType TcrEndpoint::registerDM(bool clientNotification, bool isSecondary,
   bool connected = false;
   GfErrType err = GF_NOERR;
 
-  std::lock_guard<decltype(m_connectionLock)> guard(m_connectionLock);
+  std::lock_guard<decltype(m_connectionLock)> connectionLockGuard(
+      m_connectionLock);
   // Three cases here:
   // 1. m_connected is false, m_isActiveEndpoint is false and then
   //    if isActiveEndpoint is true, then create 'max' connections
@@ -439,7 +440,7 @@ GfErrType TcrEndpoint::registerDM(bool clientNotification, bool isSecondary,
           "channel for endpoint %s",
           m_name.c_str());
       // setup notification channel for the first region
-      std::lock_guard<decltype(m_notifyReceiverLock)> guard(
+      std::lock_guard<decltype(m_notifyReceiverLock)> notifyReceiverLockGuard(
           m_notifyReceiverLock);
       if (m_numRegionListener == 0) {
         if ((err = createNewConnection(m_notifyConnection, true, isSecondary,

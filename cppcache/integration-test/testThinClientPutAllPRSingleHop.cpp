@@ -240,14 +240,14 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopRemoveAllForIntKeysTask)
       LOGINFO("Iteration removeAll Start ");
       try {
         HashMapOfCacheable valMap;
-        std::vector<std::shared_ptr<CacheableKey>> keys;
+        std::vector<std::shared_ptr<CacheableKey>> keysVector;
         for (int j = 1000; j < 25000; j++) {
           auto keyPtr = CacheableInt32::create(j);
           auto valPtr = CacheableInt32::create(keyPtr->hashcode());
           LOGINFO("CPPTEST: removeall CASE:: getting key %d with hashcode %d",
                   j, keyPtr->hashcode());
           valMap.emplace(keyPtr, valPtr);
-          keys.push_back(keyPtr);
+          keysVector.push_back(keyPtr);
         }
         LOGINFO("TEST-1");
         ACE_Time_Value startTime = ACE_OS::gettimeofday();
@@ -264,7 +264,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopRemoveAllForIntKeysTask)
 
         LOGINFO("RemoveALL test");
         startTime = ACE_OS::gettimeofday();
-        dataReg->removeAll(keys);
+        dataReg->removeAll(keysVector);
         interval = ACE_OS::gettimeofday() - startTime;
 
         LOGINFO("Time taken to execute removeAll SH sec = %d and MSec = %d ",

@@ -171,15 +171,15 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_CLIENT1)
     LOG("CheckPrSingleHopForIntKeysTask_CLIENT1 get completed.");
 
     for (int i = 1000; i < 2000; i++) {
-      std::vector<std::shared_ptr<CacheableKey>> keys;
+      std::vector<std::shared_ptr<CacheableKey>> keysVector;
       for (int j = i; j < i + 5; j++) {
-        keys.push_back(CacheableInt32::create(j));
+        keysVector.push_back(CacheableInt32::create(j));
       }
 
       auto exceptions = std::make_shared<HashMapOfException>();
 
       try {
-        auto values = dataReg->getAll(keys);
+        auto values = dataReg->getAll(keysVector);
         bool networkhop = TestUtils::getCacheImpl(getHelper()->cachePtr)
                               ->getAndResetNetworkHopFlag();
         ASSERT(!networkhop, "It is networkhop operation.");
@@ -313,13 +313,13 @@ DUNIT_TASK_DEFINITION(CLIENT2, CheckPrSingleHopForIntKeysTask_CLIENT2)
     LOG("CheckPrSingleHopForIntKeysTask_CLIENT2 get completed.");
 
     for (int i = 1000; i < 2000; i++) {
-      std::vector<std::shared_ptr<CacheableKey>> keys;
+      std::vector<std::shared_ptr<CacheableKey>> keysVector;
       for (int j = i; j < i + 5; j++) {
-        keys.push_back(CacheableInt32::create(j));
+        keysVector.push_back(CacheableInt32::create(j));
       }
 
       try {
-        const auto values = dataReg->getAll(keys);
+        const auto values = dataReg->getAll(keysVector);
         int8_t serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
                                      ->getAndResetServerGroupFlag();
         ASSERT(values.size() == 5, "getall size should be 5 ");
@@ -448,13 +448,13 @@ DUNIT_TASK_DEFINITION(CLIENT3, CheckPrSingleHopForIntKeysTask_CLIENT3)
     LOG("CheckPrSingleHopForIntKeysTask_CLIENT3 get completed.");
 
     for (int i = 1000; i < 2000; i++) {
-      std::vector<std::shared_ptr<CacheableKey>> keys;
+      std::vector<std::shared_ptr<CacheableKey>> keysVector;
       for (int j = i; j < i + 5; j++) {
-        keys.push_back(CacheableInt32::create(j));
+        keysVector.push_back(CacheableInt32::create(j));
       }
 
       try {
-        dataReg->getAll(keys);
+        dataReg->getAll(keysVector);
         int8_t serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
                                      ->getAndResetServerGroupFlag();
         ASSERT(serverGroupFlag != 2,

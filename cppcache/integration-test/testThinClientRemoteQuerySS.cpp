@@ -141,14 +141,14 @@ void _printFields(std::shared_ptr<Cacheable> field, Struct *ssptr,
           printf("   structImpl %s {\n", ssptr->getFieldName(fields).c_str());
           for (int32_t inner_fields = 0; inner_fields < structimpl->size();
                inner_fields++) {
-            auto field = (*structimpl)[inner_fields];
-            if (field == nullptr) {
+            auto innerField = (*structimpl)[inner_fields];
+            if (innerField == nullptr) {
               printf(
                   "we got null fields here, probably we have nullptr data\n");
               continue;
             }
 
-            _printFields(field, structimpl.get(), inner_fields);
+            _printFields(innerField, structimpl.get(), inner_fields);
 
           }  // end of field iterations
           printf("   } //end of %s\n", ssptr->getFieldName(fields).c_str());

@@ -1002,12 +1002,12 @@ GfErrType ThinClientRegion::putNoThrow_remote(
     m_cacheImpl->getCachePerfStats().incDeltaPut();
     if (reply->getMessageType() == TcrMessage::PUT_DELTA_ERROR) {
       // Try without delta
-      TcrMessagePut request(new DataOutput(m_cacheImpl->createDataOutput()),
-                            this, keyPtr, valuePtr, aCallbackArgument, false,
-                            m_tcrdm.get(), false, true);
+      TcrMessagePut putRequest(new DataOutput(m_cacheImpl->createDataOutput()),
+                               this, keyPtr, valuePtr, aCallbackArgument, false,
+                               m_tcrdm.get(), false, true);
       reply = std::unique_ptr<TcrMessageReply>(
           new TcrMessageReply(true, m_tcrdm.get()));
-      err = m_tcrdm->sendSyncRequest(request, *reply);
+      err = m_tcrdm->sendSyncRequest(putRequest, *reply);
     }
   }
   if (err != GF_NOERR) return err;
