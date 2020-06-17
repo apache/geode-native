@@ -53,10 +53,21 @@ typedef std::unordered_map<std::shared_ptr<PdxSerializable>,
                            dereference_hash<std::shared_ptr<CacheableKey>>,
                            dereference_equal_to<std::shared_ptr<CacheableKey>>>
     PreservedHashMap;
-typedef std::map<std::shared_ptr<PdxType>, int32_t, PdxTypeLessThan>
-    PdxTypeToTypeIdMap;
 
-typedef std::unordered_map<size_t, int32_t> PdxTypeHashToTypeId;
+struct PdxTypeHashCode {
+  std::size_t operator()(std::shared_ptr<PdxType> const& pdx) const {
+    return pdx ? pdx->hashcode() : 0;
+  }
+};
+
+struct PdxTypeEqualCmp {
+  bool operator()(std::shared_ptr<PdxType> const& first, std::shared_ptr<PdxType> const& second) const{
+    return first->hashcode() == second->hashcode();
+  }
+};
+
+typedef std::unordered_map<std::shared_ptr<PdxType>, int32_t, PdxTypeHashCode, PdxTypeEqualCmp>
+    PdxTypeToTypeIdMap;
 
 class APACHE_GEODE_EXPORT PdxTypeRegistry
     : public std::enable_shared_from_this<PdxTypeRegistry> {
@@ -70,8 +81,6 @@ class APACHE_GEODE_EXPORT PdxTypeRegistry
   TypeNameVsPdxType localTypeToPdxType;
 
   PdxTypeToTypeIdMap pdxTypeToTypeIdMap;
-
-  PdxTypeHashToTypeId pdxTypeHashToTypeId;
 
   // TODO:: preserveData need to be of type WeakHashMap
   PreservedHashMap preserveData;

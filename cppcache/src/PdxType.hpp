@@ -205,12 +205,6 @@ class PdxType : public internal::DataSerializableInternal,
   // This is for PdxType as key in std map.
   bool operator<(const PdxType& other) const;
 
-  struct hash {
-    inline std::size_t operator()(const std::shared_ptr<PdxType> s) const {
-      return s->hashcode();
-    }
-  };
-
   int32_t hashcode() const;
 };
 }  // namespace client
