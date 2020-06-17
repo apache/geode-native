@@ -61,12 +61,14 @@ struct PdxTypeHashCode {
 };
 
 struct PdxTypeEqualCmp {
-  bool operator()(std::shared_ptr<PdxType> const& first, std::shared_ptr<PdxType> const& second) const{
+  bool operator()(std::shared_ptr<PdxType> const& first,
+                  std::shared_ptr<PdxType> const& second) const{
     return first->hashcode() == second->hashcode();
   }
 };
 
-typedef std::unordered_map<std::shared_ptr<PdxType>, int32_t, PdxTypeHashCode, PdxTypeEqualCmp>
+typedef std::unordered_map<std::shared_ptr<PdxType>, int32_t, PdxTypeHashCode,
+                           PdxTypeEqualCmp>
     PdxTypeToTypeIdMap;
 
 class APACHE_GEODE_EXPORT PdxTypeRegistry
