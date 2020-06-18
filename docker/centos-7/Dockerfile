@@ -14,35 +14,40 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM registry.access.redhat.com/rhscl/devtoolset-4-toolchain-rhel7:latest
+FROM centos/devtoolset-4-toolchain-centos7:latest
 LABEL maintainer Apache Geode <dev@geode.apache.org>
 
 USER root
 WORKDIR /
 
-COPY --from=registry.access.redhat.com/rhscl/s2i-core-rhel7:latest /etc/yum.repos.d/ubi.repo /etc/yum.repos.d/ubi.repo
+RUN yum update -y && \
+    yum -y clean all
 
-RUN yum-config-manager --enable ubi-server-rhscl-7-rpms && \
-    yum install -y --setopt=tsflags=nodocs \
-        java-1.8.0-openjdk-devel \
-        python27-python-pip \
+COPY bellsoft.repo /etc/yum.repos.d/
+
+RUN yum update -y && \
+    yum install -y \
+        git \
         make \
-        doxygen \
         zlib-devel \
         patch \
         openssl-devel \
-        git \
-        http://mirror.centos.org/centos/7/os/x86_64/Packages/doxygen-1.8.5-3.el7.x86_64.rpm && \
-    yum -y clean all --enablerepo='*'
+        bellsoft-java11 \
+        doxygen \
+        python3-pip \
+        which && \
+    yum -y clean all
 
-ENV CMAKE_VERSION 3.15.0
+RUN pip3 install --upgrade pip && \
+    pip3 install cpp-coveralls
+
+ARG CMAKE_VERSION=3.16.0
 RUN curl -o /tmp/cmake -s "https://cmake.org/files/v${CMAKE_VERSION%.*}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh" && \
     bash /tmp/cmake --skip-license --prefix=/usr/local && \
     rm /tmp/cmake
 
-ENV GEODE_VERSION 1.12.0
-RUN curl -L -s "https://www.apache.org/dyn/closer.cgi?action=download&filename=geode/${GEODE_VERSION}/apache-geode-${GEODE_VERSION}.tgz" | tar xvz
+ARG GEODE_VERSION=1.12.0
 ENV GEODE_HOME /apache-geode-${GEODE_VERSION}
-ENV PATH $PATH:$GEODE_HOME/bin
+RUN curl -L -s "https://www.apache.org/dyn/closer.cgi?action=download&filename=geode/${GEODE_VERSION}/apache-geode-${GEODE_VERSION}.tgz" | tar -zxvf - --exclude javadoc
 
 CMD ["bash"]
