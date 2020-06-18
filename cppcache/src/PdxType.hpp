@@ -205,10 +205,25 @@ class PdxType : public internal::DataSerializableInternal,
   // This is for PdxType as key in std map.
   bool operator<(const PdxType& other) const;
 
-  int32_t hashcode() const;
+  bool operator==(const PdxType& other) const;
+
+  size_t hashcode() const;
 };
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
+
+namespace std {
+
+template <>
+struct hash<apache::geode::client::PdxType> {
+  typedef apache::geode::client::PdxType argument_type;
+  typedef size_t result_type;
+  result_type operator()(const argument_type& val) const {
+    return val.hashcode();
+  }
+};
+
+}  // namespace std
 
 #endif  // GEODE_PDXTYPE_H_

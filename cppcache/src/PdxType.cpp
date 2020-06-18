@@ -568,12 +568,28 @@ bool PdxType::operator<(const PdxType& other) const {
   return false;
 }
 
-int32_t PdxType::hashcode() const {
+bool PdxType::operator==(const PdxType& other) const {
+  if (this->m_className != other.m_className){
+    return false;
+  }
+
+  if(this->m_noJavaClass != other.m_noJavaClass){
+    return false;
+  }
+
+  if(this->getTotalFields() != other.getTotalFields()){
+    return false;
+  }
+
+  //TODO: Compare m_pdxFieldTypes & other.m_pdxFieldTypes;
+  return true;
+}
+
+size_t PdxType::hashcode() const {
   std::hash<std::string> strHash;
   auto result = strHash(this->m_className);
 
-  for (std::vector<std::shared_ptr<PdxFieldType>>::iterator it =
-           m_pdxFieldTypes->begin();
+  for (auto it = m_pdxFieldTypes->begin();
        it != m_pdxFieldTypes->end(); ++it) {
     auto pdxPtr = *it;
     result = result ^ (strHash(pdxPtr->getClassName()) << 1);
