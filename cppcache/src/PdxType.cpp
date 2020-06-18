@@ -581,7 +581,9 @@ bool PdxType::operator==(const PdxType& other) const {
     return false;
   }
 
-  //TODO: Compare m_pdxFieldTypes & other.m_pdxFieldTypes;
+  if(this->m_fieldNameVsPdxType != other.m_fieldNameVsPdxType){
+    return false;
+  }
   return true;
 }
 
@@ -589,9 +591,9 @@ size_t PdxType::hashcode() const {
   std::hash<std::string> strHash;
   auto result = strHash(this->m_className);
 
-  for (auto it = m_pdxFieldTypes->begin();
-       it != m_pdxFieldTypes->end(); ++it) {
-    auto pdxPtr = *it;
+  for (auto it = m_fieldNameVsPdxType.begin();
+       it != m_fieldNameVsPdxType.end(); ++it) {
+    auto pdxPtr = it->second;
     result = result ^ (strHash(pdxPtr->getClassName()) << 1);
     result = result ^ (strHash(pdxPtr->getFieldName()) << 1);
   }
