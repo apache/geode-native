@@ -37,9 +37,11 @@
 #include "LocalRegion.hpp"
 #include "NestedPdxObject.hpp"
 #include "PdxType.hpp"
+#include "PdxTypeRegistry.hpp"
 
 namespace {
 using apache::geode::client::Cache;
+using apache::geode::client::CacheImpl;
 using apache::geode::client::CacheableKey;
 using apache::geode::client::CacheableString;
 using apache::geode::client::CacheRegionHelper;
@@ -49,6 +51,8 @@ using apache::geode::client::PdxFieldTypes;
 using apache::geode::client::PdxInstance;
 using apache::geode::client::PdxInstanceFactory;
 using apache::geode::client::PdxSerializable;
+using apache::geode::client::PdxTypeRegistry;
+using apache::geode::client::Properties;
 using apache::geode::client::Region;
 using apache::geode::client::RegionShortcut;
 
@@ -140,6 +144,93 @@ TEST(PdxJsonTypeTest, testTwoConsecutiveGets) {
 
   EXPECT_TRUE(
       std::dynamic_pointer_cast<PdxInstance>(region2->get("simpleObject")));
+}
+
+TEST(PdxJsonTypeTest, testTwoObjectsWithSameFieldsHaveTheSameHash) {
+  Cluster cluster{LocatorCount{1}, ServerCount{1}};
+  cluster.start();
+  cluster.getGfsh()
+    .create()
+    .region()
+    .withName("region")
+    .withType("REPLICATE")
+    .execute();
+
+  auto cache = cluster.createCache();
+
+  auto properties = std::make_shared<Properties>();
+  CacheImpl cacheImpl(&cache, properties, false, false, nullptr);
+
+  PdxTypeRegistry pdxTypeRegistry(&cacheImpl);
+
+  apache::geode::client::PdxType m_pdxType1(pdxTypeRegistry, gemfireJsonClassName,false);
+  apache::geode::client::PdxType m_pdxType2(pdxTypeRegistry, gemfireJsonClassName,false);
+
+  m_pdxType1.addVariableLengthTypeField("bar0", "string", PdxFieldTypes::STRING);
+  m_pdxType1.addVariableLengthTypeField("bar1", "string", PdxFieldTypes::STRING);
+
+  m_pdxType2.addVariableLengthTypeField("bar0", "string", PdxFieldTypes::STRING);
+  m_pdxType2.addVariableLengthTypeField("bar1", "string", PdxFieldTypes::STRING);
+
+  EXPECT_EQ(std::hash<PdxType>(m_pdxType1),std::hash<PdxType>(m_pdxType2));
+}
+
+TEST(PdxJsonTypeTest, testTwoObjectsWithDifferentFieldsHaveDifferentHash) {
+  Cluster cluster{LocatorCount{1}, ServerCount{1}};
+  cluster.start();
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("region")
+      .withType("REPLICATE")
+      .execute();
+
+  auto cache = cluster.createCache();
+
+  auto properties = std::make_shared<Properties>();
+  CacheImpl cacheImpl(&cache, properties, false, false, nullptr);
+
+  PdxTypeRegistry pdxTypeRegistry(&cacheImpl);
+
+  apache::geode::client::PdxType m_pdxType1(pdxTypeRegistry, gemfireJsonClassName,false);
+  apache::geode::client::PdxType m_pdxType2(pdxTypeRegistry, gemfireJsonClassName,false);
+
+  m_pdxType1.addVariableLengthTypeField("bar0", "string", PdxFieldTypes::STRING);
+  m_pdxType1.addVariableLengthTypeField("bar1", "string", PdxFieldTypes::STRING);
+
+  m_pdxType2.addVariableLengthTypeField("bar2", "string", PdxFieldTypes::STRING);
+  m_pdxType2.addVariableLengthTypeField("bar3", "string", PdxFieldTypes::STRING);
+
+  EXPECT_NE(std::hash<PdxType>(m_pdxType1),std::hash<PdxType>(m_pdxType2));
+}
+
+TEST(PdxJsonTypeTest, testTwoObjectsWithSameFieldsInDifferentOrderHaveTheSameHash) {
+  Cluster cluster{LocatorCount{1}, ServerCount{1}};
+  cluster.start();
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("region")
+      .withType("REPLICATE")
+      .execute();
+
+  auto cache = cluster.createCache();
+
+  auto properties = std::make_shared<Properties>();
+  CacheImpl cacheImpl(&cache, properties, false, false, nullptr);
+
+  PdxTypeRegistry pdxTypeRegistry(&cacheImpl);
+
+  apache::geode::client::PdxType m_pdxType1(pdxTypeRegistry, gemfireJsonClassName,false);
+  apache::geode::client::PdxType m_pdxType2(pdxTypeRegistry, gemfireJsonClassName,false);
+
+  m_pdxType1.addVariableLengthTypeField("bar0", "string", PdxFieldTypes::STRING);
+  m_pdxType1.addVariableLengthTypeField("bar1", "string", PdxFieldTypes::STRING);
+
+  m_pdxType2.addVariableLengthTypeField("bar1", "string", PdxFieldTypes::STRING);
+  m_pdxType2.addVariableLengthTypeField("bar0", "string", PdxFieldTypes::STRING);
+
+  EXPECT_EQ(std::hash<PdxType>(m_pdxType1),std::hash<PdxType>(m_pdxType2));
 }
 
 }  // namespace
