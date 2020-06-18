@@ -172,7 +172,10 @@ TEST(PdxJsonTypeTest, testTwoObjectsWithSameFieldsHaveTheSameHash) {
   m_pdxType2.addVariableLengthTypeField("bar0", "string", PdxFieldTypes::STRING);
   m_pdxType2.addVariableLengthTypeField("bar1", "string", PdxFieldTypes::STRING);
 
-  EXPECT_EQ(std::hash<PdxType>(m_pdxType1),std::hash<PdxType>(m_pdxType2));
+  std::hash<apache::geode::client::PdxType> type1Hash;
+  std::hash<apache::geode::client::PdxType> type2Hash;
+
+  EXPECT_EQ(type1Hash(m_pdxType1),type2Hash(m_pdxType2));
 }
 
 TEST(PdxJsonTypeTest, testTwoObjectsWithDifferentFieldsHaveDifferentHash) {
@@ -201,7 +204,10 @@ TEST(PdxJsonTypeTest, testTwoObjectsWithDifferentFieldsHaveDifferentHash) {
   m_pdxType2.addVariableLengthTypeField("bar2", "string", PdxFieldTypes::STRING);
   m_pdxType2.addVariableLengthTypeField("bar3", "string", PdxFieldTypes::STRING);
 
-  EXPECT_NE(std::hash<PdxType>(m_pdxType1),std::hash<PdxType>(m_pdxType2));
+  std::hash<apache::geode::client::PdxType> type1Hash;
+  std::hash<apache::geode::client::PdxType> type2Hash;
+
+  EXPECT_NE(type1Hash(m_pdxType1),type2Hash(m_pdxType2));
 }
 
 TEST(PdxJsonTypeTest, testTwoObjectsWithSameFieldsInDifferentOrderHaveTheSameHash) {
@@ -230,7 +236,10 @@ TEST(PdxJsonTypeTest, testTwoObjectsWithSameFieldsInDifferentOrderHaveTheSameHas
   m_pdxType2.addVariableLengthTypeField("bar1", "string", PdxFieldTypes::STRING);
   m_pdxType2.addVariableLengthTypeField("bar0", "string", PdxFieldTypes::STRING);
 
-  EXPECT_EQ(std::hash<PdxType>(m_pdxType1),std::hash<PdxType>(m_pdxType2));
+  std::hash<apache::geode::client::PdxType> type1Hash;
+  std::hash<apache::geode::client::PdxType> type2Hash;
+
+  EXPECT_EQ(type1Hash(m_pdxType1),type2Hash(m_pdxType2));
 }
 
 }  // namespace
