@@ -42,6 +42,7 @@ add_executable(apache-geode_unittests
   InterestResultPolicyTest.cpp
   LocalRegionTest.cpp
   PdxInstanceImplTest.cpp
+  PdxTypeTest.cpp
   QueueConnectionRequestTest.cpp
   RegionAttributesFactoryTest.cpp
   SerializableCreateTests.cpp
@@ -55,7 +56,7 @@ add_executable(apache-geode_unittests
   util/synchronized_setTest.cpp
   util/TestableRecursiveMutex.hpp
   util/chrono/durationTest.cpp
-)
+        PdxTypeTest.cpp)
 
 target_compile_definitions(apache-geode_unittests
   PUBLIC
