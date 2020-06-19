@@ -200,11 +200,7 @@ class PdxType : public internal::DataSerializableInternal,
 
   int32_t* getRemoteToLocalMap();
 
-  bool Equals(std::shared_ptr<PdxType> otherObj);
-
   bool operator==(const PdxType& other) const;
-
-  size_t hashcode() const;
 
   NameVsPdxType getFieldNameVsPdxType() const {
     return m_fieldNameVsPdxType;

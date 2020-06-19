@@ -537,25 +537,6 @@ void PdxType::generatePositionMap() {
   }
 }
 
-bool PdxType::Equals(std::shared_ptr<PdxType> otherObj) {
-  if (otherObj == nullptr) return false;
-
-  PdxType* ot = dynamic_cast<PdxType*>(otherObj.get());
-
-  if (ot == nullptr) return false;
-
-  if (ot == this) return true;
-
-  if (ot->m_pdxFieldTypes->size() != m_pdxFieldTypes->size()) return false;
-
-  for (uint32_t i = 0; i < m_pdxFieldTypes->size(); i++) {
-    if (!ot->m_pdxFieldTypes->at(i)->equals(m_pdxFieldTypes->at(i))) {
-      return false;
-    }
-  }
-  return true;
-}
-
 bool PdxType::operator==(const PdxType& other) const {
   if (this->m_className != other.m_className){
     return false;
