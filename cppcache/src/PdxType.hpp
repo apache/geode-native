@@ -202,12 +202,13 @@ class PdxType : public internal::DataSerializableInternal,
 
   bool Equals(std::shared_ptr<PdxType> otherObj);
 
-  // This is for PdxType as key in std map.
-  bool operator<(const PdxType& other) const;
-
   bool operator==(const PdxType& other) const;
 
   size_t hashcode() const;
+
+  NameVsPdxType getFieldNameVsPdxType() const {
+    return m_fieldNameVsPdxType;
+  }
 };
 }  // namespace client
 }  // namespace geode
@@ -220,7 +221,16 @@ struct hash<apache::geode::client::PdxType> {
   typedef apache::geode::client::PdxType argument_type;
   typedef size_t result_type;
   result_type operator()(const argument_type& val) const {
-    return val.hashcode();
+    std::hash<std::string> strHash;
+    auto result = strHash(val.getPdxClassName());
+
+    for ( auto entry : val.getFieldNameVsPdxType()) {
+      auto pdxPtr = entry.second;
+      result = result ^ (strHash(pdxPtr->getClassName()) << 1);
+      result = result ^ (strHash(pdxPtr->getFieldName()) << 1);
+    }
+
+    return result;
   }
 };
 

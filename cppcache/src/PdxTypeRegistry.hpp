@@ -38,14 +38,6 @@ namespace apache {
 namespace geode {
 namespace client {
 
-struct PdxTypeLessThan {
-  bool operator()(std::shared_ptr<PdxType> const& n1,
-                  std::shared_ptr<PdxType> const& n2) const {
-    // call to PdxType::operator <()
-    return *n1 < *n2;
-  }
-};
-
 typedef std::map<int32_t, std::shared_ptr<PdxType>> TypeIdVsPdxType;
 typedef std::map<std::string, std::shared_ptr<PdxType>> TypeNameVsPdxType;
 typedef std::unordered_map<std::shared_ptr<PdxSerializable>,
