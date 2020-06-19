@@ -31,8 +31,10 @@ TEST(PdxJsonTypeTest, testTwoObjectsWithSameFieldsHaveTheSameHash) {
 
   PdxTypeRegistry pdxTypeRegistry(nullptr);
 
-  apache::geode::client::PdxType m_pdxType1(pdxTypeRegistry, gemfireJsonClassName,false);
-  apache::geode::client::PdxType m_pdxType2(pdxTypeRegistry, gemfireJsonClassName,false);
+  apache::geode::client::PdxType m_pdxType1(pdxTypeRegistry,
+                                            gemfireJsonClassName, false);
+  apache::geode::client::PdxType m_pdxType2(pdxTypeRegistry,
+                                            gemfireJsonClassName, false);
 
   m_pdxType1.addVariableLengthTypeField("bar0", "string",
                                         PdxFieldTypes::STRING);
@@ -51,16 +53,16 @@ TEST(PdxJsonTypeTest, testTwoObjectsWithSameFieldsHaveTheSameHash) {
   std::hash<apache::geode::client::PdxType> type1Hash;
   std::hash<apache::geode::client::PdxType> type2Hash;
 
-  EXPECT_EQ(type1Hash(m_pdxType1),type2Hash(m_pdxType2));
+  EXPECT_EQ(type1Hash(m_pdxType1), type2Hash(m_pdxType2));
 }
 
 TEST(PdxJsonTypeTest, testTwoObjectsWithDifferentFieldsHaveDifferentHash) {
   PdxTypeRegistry pdxTypeRegistry(nullptr);
 
   apache::geode::client::PdxType m_pdxType1(pdxTypeRegistry,
-                                            gemfireJsonClassName,false);
+                                            gemfireJsonClassName, false);
   apache::geode::client::PdxType m_pdxType2(pdxTypeRegistry,
-                                            gemfireJsonClassName,false);
+                                            gemfireJsonClassName, false);
 
   m_pdxType1.addVariableLengthTypeField("bar0", "string",
                                         PdxFieldTypes::STRING);
@@ -82,9 +84,9 @@ TEST(PdxJsonTypeTest, testTwoObjectsWithSameFieldsInDifferentOrderHaveTheSameHas
   PdxTypeRegistry pdxTypeRegistry(nullptr);
 
   apache::geode::client::PdxType m_pdxType1(pdxTypeRegistry,
-                                            gemfireJsonClassName,false);
+                                            gemfireJsonClassName, false);
   apache::geode::client::PdxType m_pdxType2(pdxTypeRegistry,
-                                            gemfireJsonClassName,false);
+                                            gemfireJsonClassName, false);
 
   m_pdxType1.addVariableLengthTypeField("bar0", "string",
                                         PdxFieldTypes::STRING);
@@ -110,9 +112,9 @@ TEST(PdxJsonTypeTest, testTwoObjectsWithSameFieldsNamesButDifferentTypesHaveDiff
   PdxTypeRegistry pdxTypeRegistry(nullptr);
 
   apache::geode::client::PdxType m_pdxType1(pdxTypeRegistry,
-                                            gemfireJsonClassName,false);
+                                            gemfireJsonClassName, false);
   apache::geode::client::PdxType m_pdxType2(pdxTypeRegistry,
-                                            gemfireJsonClassName,false);
+                                            gemfireJsonClassName, false);
 
   m_pdxType1.addVariableLengthTypeField("bar0", "string",
                                         PdxFieldTypes::STRING);

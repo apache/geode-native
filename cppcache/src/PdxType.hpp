@@ -202,9 +202,7 @@ class PdxType : public internal::DataSerializableInternal,
 
   bool operator==(const PdxType& other) const;
 
-  NameVsPdxType getFieldNameVsPdxType() const {
-    return m_fieldNameVsPdxType;
-  }
+  NameVsPdxType getFieldNameVsPdxType() const { return m_fieldNameVsPdxType; }
 };
 }  // namespace client
 }  // namespace geode
@@ -220,7 +218,7 @@ struct hash<apache::geode::client::PdxType> {
     std::hash<std::string> strHash;
     auto result = strHash(val.getPdxClassName());
 
-    for ( auto entry : val.getFieldNameVsPdxType()) {
+    for (auto entry : val.getFieldNameVsPdxType()) {
       auto pdxPtr = entry.second;
       result = result ^ (strHash(pdxPtr->getClassName()) << 1);
       result = result ^ (strHash(pdxPtr->getFieldName()) << 1);

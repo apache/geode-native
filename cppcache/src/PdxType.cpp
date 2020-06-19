@@ -538,19 +538,19 @@ void PdxType::generatePositionMap() {
 }
 
 bool PdxType::operator==(const PdxType& other) const {
-  if (this->m_className != other.m_className){
+  if (this->m_className != other.m_className) {
     return false;
   }
 
-  if(this->m_noJavaClass != other.m_noJavaClass){
+  if (this->m_noJavaClass != other.m_noJavaClass) {
     return false;
   }
 
-  if(this->getTotalFields() != other.getTotalFields()){
+  if (this->getTotalFields() != other.getTotalFields()) {
     return false;
   }
 
-  if(this->m_fieldNameVsPdxType != other.m_fieldNameVsPdxType){
+  if (this->m_fieldNameVsPdxType != other.m_fieldNameVsPdxType) {
     return false;
   }
   return true;

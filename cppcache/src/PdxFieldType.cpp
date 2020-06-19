@@ -139,12 +139,12 @@ std::string PdxFieldType::toString() const {
   return std::string(stringBuf);
 }
 
-bool PdxFieldType::operator==(const PdxFieldType& other) const{
-  if( m_className != other.m_className ){
+bool PdxFieldType::operator==(const PdxFieldType& other) const {
+  if (m_className != other.m_className) {
     return false;
   }
 
-  if ( m_fieldName != other.m_fieldName ){
+  if (m_fieldName != other.m_fieldName) {
     return false;
   }
 
