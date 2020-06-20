@@ -27,7 +27,66 @@ using apache::geode::client::PdxTypes;
 
 const std::string gemfireJsonClassName = "__GEMFIRE_JSON";
 
-TEST(PdxJsonTypeTest, testTwoObjectsWithSameFieldsHaveTheSameHash) {
+TEST(PdxTypeTest, testTwoObjectsWithSameClassnameAndSameFieldsAreEquals) {
+  PdxTypeRegistry pdxTypeRegistry(nullptr);
+
+  apache::geode::client::PdxType m_pdxType1(pdxTypeRegistry,
+                                            gemfireJsonClassName, false);
+  apache::geode::client::PdxType m_pdxType2(pdxTypeRegistry,
+                                            gemfireJsonClassName, false);
+
+  m_pdxType1.addVariableLengthTypeField("bar0", "string",
+                                        PdxFieldTypes::STRING);
+  m_pdxType1.addVariableLengthTypeField("bar1", "string",
+                                        PdxFieldTypes::STRING);
+  m_pdxType2.addVariableLengthTypeField("bar0", "string",
+                                        PdxFieldTypes::STRING);
+  m_pdxType2.addVariableLengthTypeField("bar1", "string",
+                                        PdxFieldTypes::STRING);
+
+  EXPECT_TRUE(m_pdxType1 == m_pdxType2);
+}
+
+TEST(PdxTypeTest, testTwoObjectsWithSameClassnameAndSameFieldsInDifferentOrderAreEquals) {
+  PdxTypeRegistry pdxTypeRegistry(nullptr);
+
+  apache::geode::client::PdxType m_pdxType1(pdxTypeRegistry,
+                                            gemfireJsonClassName, false);
+  apache::geode::client::PdxType m_pdxType2(pdxTypeRegistry,
+                                            gemfireJsonClassName, false);
+  m_pdxType1.addVariableLengthTypeField("bar1", "string",
+                                        PdxFieldTypes::STRING);
+  m_pdxType1.addVariableLengthTypeField("bar0", "string",
+                                        PdxFieldTypes::STRING);
+  m_pdxType2.addVariableLengthTypeField("bar0", "string",
+                                        PdxFieldTypes::STRING);
+  m_pdxType2.addVariableLengthTypeField("bar1", "string",
+                                        PdxFieldTypes::STRING);
+
+  EXPECT_TRUE(m_pdxType1 == m_pdxType2);
+}
+
+TEST(PdxTypeTest, testTwoObjectsWithDifferentClassnameButSameFieldsAreNotEquals) {
+  PdxTypeRegistry pdxTypeRegistry(nullptr);
+
+  apache::geode::client::PdxType m_pdxType1(pdxTypeRegistry,
+                                            gemfireJsonClassName, false);
+  apache::geode::client::PdxType m_pdxType2(pdxTypeRegistry,
+                                            "otherClassName", false);
+
+  m_pdxType1.addVariableLengthTypeField("bar0", "string",
+                                        PdxFieldTypes::STRING);
+  m_pdxType1.addVariableLengthTypeField("bar1", "string",
+                                        PdxFieldTypes::STRING);
+  m_pdxType2.addVariableLengthTypeField("bar0", "string",
+                                        PdxFieldTypes::STRING);
+  m_pdxType2.addVariableLengthTypeField("bar1", "string",
+                                        PdxFieldTypes::STRING);
+
+  EXPECT_FALSE(m_pdxType1 == m_pdxType2);
+}
+
+TEST(PdxTypeTest, testTwoObjectsWithSameFieldsHaveTheSameHash) {
 
   PdxTypeRegistry pdxTypeRegistry(nullptr);
 
@@ -56,7 +115,7 @@ TEST(PdxJsonTypeTest, testTwoObjectsWithSameFieldsHaveTheSameHash) {
   EXPECT_EQ(type1Hash(m_pdxType1), type2Hash(m_pdxType2));
 }
 
-TEST(PdxJsonTypeTest, testTwoObjectsWithDifferentFieldsHaveDifferentHash) {
+TEST(PdxTypeTest, testTwoObjectsWithDifferentFieldsHaveDifferentHash) {
   PdxTypeRegistry pdxTypeRegistry(nullptr);
 
   apache::geode::client::PdxType m_pdxType1(pdxTypeRegistry,
@@ -80,7 +139,7 @@ TEST(PdxJsonTypeTest, testTwoObjectsWithDifferentFieldsHaveDifferentHash) {
   EXPECT_NE(type1Hash(m_pdxType1), type2Hash(m_pdxType2));
 }
 
-TEST(PdxJsonTypeTest, testTwoObjectsWithSameFieldsInDifferentOrderHaveTheSameHash) {
+TEST(PdxTypeTest, testTwoObjectsWithSameFieldsInDifferentOrderHaveTheSameHash) {
   PdxTypeRegistry pdxTypeRegistry(nullptr);
 
   apache::geode::client::PdxType m_pdxType1(pdxTypeRegistry,
@@ -108,7 +167,7 @@ TEST(PdxJsonTypeTest, testTwoObjectsWithSameFieldsInDifferentOrderHaveTheSameHas
   EXPECT_EQ(type1Hash(m_pdxType1), type2Hash(m_pdxType2));
 }
 
-TEST(PdxJsonTypeTest, testTwoObjectsWithSameFieldsNamesButDifferentTypesHaveDifferentHash) {
+TEST(PdxTypeTest, testTwoObjectsWithSameFieldsNamesButDifferentTypesHaveDifferentHash) {
   PdxTypeRegistry pdxTypeRegistry(nullptr);
 
   apache::geode::client::PdxType m_pdxType1(pdxTypeRegistry,

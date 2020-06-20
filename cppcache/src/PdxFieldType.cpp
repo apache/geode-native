@@ -151,6 +151,10 @@ bool PdxFieldType::operator==(const PdxFieldType& other) const {
   return true;
 }
 
+bool PdxFieldType::operator!=(const PdxFieldType& other) const {
+  return !(*this == other);
+}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

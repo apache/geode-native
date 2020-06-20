@@ -550,8 +550,15 @@ bool PdxType::operator==(const PdxType& other) const {
     return false;
   }
 
-  if (this->m_fieldNameVsPdxType != other.m_fieldNameVsPdxType) {
-    return false;
+  auto thisIt = this->m_fieldNameVsPdxType.begin();
+  auto otherIt = other.m_fieldNameVsPdxType.begin();
+  for (;thisIt != this->m_fieldNameVsPdxType.end() ; thisIt++,otherIt++) {
+    auto thisEntry = *thisIt;
+    auto otherEntry = *otherIt;
+    if (thisEntry.first != otherEntry.first ||
+        *(thisEntry.second) != *(otherEntry.second)) {
+      return false;
+    }
   }
   return true;
 }
