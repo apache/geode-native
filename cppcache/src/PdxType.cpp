@@ -552,7 +552,7 @@ bool PdxType::operator==(const PdxType& other) const {
 
   auto thisIt = this->m_fieldNameVsPdxType.begin();
   auto otherIt = other.m_fieldNameVsPdxType.begin();
-  for (;thisIt != this->m_fieldNameVsPdxType.end() ; thisIt++,otherIt++) {
+  for (; thisIt != this->m_fieldNameVsPdxType.end(); thisIt++, otherIt++) {
     auto thisEntry = *thisIt;
     auto otherEntry = *otherIt;
     if (thisEntry.first != otherEntry.first ||

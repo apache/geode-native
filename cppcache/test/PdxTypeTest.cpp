@@ -16,6 +16,7 @@
  */
 
 #include <gtest/gtest.h>
+
 #include "PdxType.hpp"
 #include "PdxTypeRegistry.hpp"
 #include "PdxTypes.hpp"
@@ -47,7 +48,8 @@ TEST(PdxTypeTest, testTwoObjectsWithSameClassnameAndSameFieldsAreEquals) {
   EXPECT_TRUE(m_pdxType1 == m_pdxType2);
 }
 
-TEST(PdxTypeTest, testTwoObjectsWithSameClassnameAndSameFieldsInDifferentOrderAreEquals) {
+TEST(PdxTypeTest,
+     testTwoObjectsWithSameClassnameAndSameFieldsInDifferentOrderAreEquals) {
   PdxTypeRegistry pdxTypeRegistry(nullptr);
 
   apache::geode::client::PdxType m_pdxType1(pdxTypeRegistry,
@@ -66,13 +68,14 @@ TEST(PdxTypeTest, testTwoObjectsWithSameClassnameAndSameFieldsInDifferentOrderAr
   EXPECT_TRUE(m_pdxType1 == m_pdxType2);
 }
 
-TEST(PdxTypeTest, testTwoObjectsWithDifferentClassnameButSameFieldsAreNotEquals) {
+TEST(PdxTypeTest,
+     testTwoObjectsWithDifferentClassnameButSameFieldsAreNotEquals) {
   PdxTypeRegistry pdxTypeRegistry(nullptr);
 
   apache::geode::client::PdxType m_pdxType1(pdxTypeRegistry,
                                             gemfireJsonClassName, false);
-  apache::geode::client::PdxType m_pdxType2(pdxTypeRegistry,
-                                            "otherClassName", false);
+  apache::geode::client::PdxType m_pdxType2(pdxTypeRegistry, "otherClassName",
+                                            false);
 
   m_pdxType1.addVariableLengthTypeField("bar0", "string",
                                         PdxFieldTypes::STRING);
@@ -87,7 +90,6 @@ TEST(PdxTypeTest, testTwoObjectsWithDifferentClassnameButSameFieldsAreNotEquals)
 }
 
 TEST(PdxTypeTest, testTwoObjectsWithSameFieldsHaveTheSameHash) {
-
   PdxTypeRegistry pdxTypeRegistry(nullptr);
 
   apache::geode::client::PdxType m_pdxType1(pdxTypeRegistry,
@@ -167,7 +169,8 @@ TEST(PdxTypeTest, testTwoObjectsWithSameFieldsInDifferentOrderHaveTheSameHash) {
   EXPECT_EQ(type1Hash(m_pdxType1), type2Hash(m_pdxType2));
 }
 
-TEST(PdxTypeTest, testTwoObjectsWithSameFieldsNamesButDifferentTypesHaveDifferentHash) {
+TEST(PdxTypeTest,
+     testTwoObjectsWithSameFieldsNamesButDifferentTypesHaveDifferentHash) {
   PdxTypeRegistry pdxTypeRegistry(nullptr);
 
   apache::geode::client::PdxType m_pdxType1(pdxTypeRegistry,
@@ -184,10 +187,10 @@ TEST(PdxTypeTest, testTwoObjectsWithSameFieldsNamesButDifferentTypesHaveDifferen
 
   m_pdxType2.addVariableLengthTypeField("bar0", "string",
                                         PdxFieldTypes::STRING);
-  m_pdxType2.addFixedLengthTypeField("bar1", "bool",
-                                     PdxFieldTypes::BOOLEAN, PdxTypes::BOOLEAN_SIZE);
-  m_pdxType2.addFixedLengthTypeField("bar2", "int",
-                                     PdxFieldTypes::INT, PdxTypes::INTEGER_SIZE);
+  m_pdxType2.addFixedLengthTypeField("bar1", "bool", PdxFieldTypes::BOOLEAN,
+                                     PdxTypes::BOOLEAN_SIZE);
+  m_pdxType2.addFixedLengthTypeField("bar2", "int", PdxFieldTypes::INT,
+                                     PdxTypes::INTEGER_SIZE);
 
   std::hash<apache::geode::client::PdxType> type1Hash;
   std::hash<apache::geode::client::PdxType> type2Hash;
