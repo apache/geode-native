@@ -78,8 +78,6 @@ void putEntries(std::shared_ptr<Region> region, int numEntries,
   for (int i = 0; i < numEntries; i++) {
     auto key = CacheableKey::create(i);
     region->put(key, Cacheable::create(std::to_string(i + offsetForValue)));
-    auto value = region->get(key);
-    ASSERT_NE(nullptr, value);
   }
 }
 
@@ -98,7 +96,6 @@ void getEntries(std::shared_ptr<Region> region, int numEntries) {
  * the bucketServerLocations for that server are removed from the
  * client metadata.
  */
-
 TEST(PartitionRegionOpsTest, getPartitionedRegionWithRedundancyServerGoesDown) {
   Cluster cluster{LocatorCount{1}, ServerCount{2}};
   cluster.start();
