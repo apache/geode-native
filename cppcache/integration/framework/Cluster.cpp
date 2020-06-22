@@ -89,7 +89,7 @@ void Locator::start() {
   if (cluster_.useSsl()) {
     locator.withConnect(false)
         .withSslEnabledComponents("all")
-        .withSslRequireAuthentication(cluster_.requireSslAuthentication())
+        .withSslRquireAuthentication(cluster_.requireSslAuthentication())
         .withSslKeystore(cluster_.keystore())
         .withSslTruststore(cluster_.truststore())
         .withSslKeystorePassword(cluster_.keystorePassword())
@@ -454,26 +454,6 @@ void Cluster::useSsl(const bool requireSslAuthentication,
 }
 
 bool Cluster::useSsl() { return useSsl_; }
-
-void Cluster::usePropertiesFile(const std::string propertiesFile) {
-  usePropertiesFile_ = true;
-  propertiesFile_ = propertiesFile;
-}
-
-void Cluster::useSecurityPropertiesFile(const std::string securityPropertiesFile) {
-  useSecurityPropertiesFile_ = true;
-  securityPropertiesFile_ = securityPropertiesFile;
-}
-
-void Cluster::useHostNameForClients(
-    const std::string hostName) {
-  usePropertiesFile_ = true;
-  hostName_ = hostName;
-}
-
-bool Cluster::usePropertiesFile() { return usePropertiesFile_; }
-bool Cluster::useSecurityPropertiesFile() { return useSecurityPropertiesFile_; }
-bool Cluster::useHostNameForClients() { return useHostNameForClients_; }
 
 bool Cluster::requireSslAuthentication() { return requireSslAuthentication_; }
 
