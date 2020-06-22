@@ -107,6 +107,11 @@ class APACHE_GEODE_EXPORT ClientMetadata {
   std::shared_ptr<BucketServerLocation> advisePrimaryServerLocation(
       int bucketId);
   std::shared_ptr<BucketServerLocation> adviseRandomServerLocation();
+
+  void removeBucketServerLocation(
+      const std::shared_ptr<BucketServerLocation>& serverLocation);
+
+  std::string toString();
 };
 }  // namespace client
 }  // namespace geode
