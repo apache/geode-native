@@ -16,7 +16,7 @@
 add_executable(cpp-integration-benchmark
   main.cpp
   RegionBM.cpp
-  )
+  PdxTypeBM.cpp)
 
 target_link_libraries(cpp-integration-benchmark
   PUBLIC

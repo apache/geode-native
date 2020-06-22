@@ -79,7 +79,6 @@ int32_t PdxTypeRegistry::getPDXIdForType(std::shared_ptr<PdxType> nType,
 
   {
     WriteGuard write(g_readerWriterLock);
-
     auto&& iter = pdxTypeToTypeIdMap.find(nType);
     if (iter != pdxTypeToTypeIdMap.end()) {
       typeId = iter->second;
@@ -92,7 +91,6 @@ int32_t PdxTypeRegistry::getPDXIdForType(std::shared_ptr<PdxType> nType,
     nType->setTypeId(typeId);
     pdxTypeToTypeIdMap.insert(std::make_pair(nType, typeId));
   }
-
   addPdxType(typeId, nType);
   return typeId;
 }

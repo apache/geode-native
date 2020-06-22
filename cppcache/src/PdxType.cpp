@@ -537,31 +537,30 @@ void PdxType::generatePositionMap() {
   }
 }
 
-bool PdxType::Equals(std::shared_ptr<PdxType> otherObj) {
-  if (otherObj == nullptr) return false;
+bool PdxType::operator==(const PdxType& other) const {
+  if (this->m_className != other.m_className) {
+    return false;
+  }
 
-  PdxType* ot = dynamic_cast<PdxType*>(otherObj.get());
+  if (this->m_noJavaClass != other.m_noJavaClass) {
+    return false;
+  }
 
-  if (ot == nullptr) return false;
+  if (this->getTotalFields() != other.getTotalFields()) {
+    return false;
+  }
 
-  if (ot == this) return true;
-
-  if (ot->m_pdxFieldTypes->size() != m_pdxFieldTypes->size()) return false;
-
-  for (uint32_t i = 0; i < m_pdxFieldTypes->size(); i++) {
-    if (!ot->m_pdxFieldTypes->at(i)->equals(m_pdxFieldTypes->at(i))) {
+  auto thisIt = this->m_fieldNameVsPdxType.begin();
+  auto otherIt = other.m_fieldNameVsPdxType.begin();
+  for (; thisIt != this->m_fieldNameVsPdxType.end(); thisIt++, otherIt++) {
+    auto thisEntry = *thisIt;
+    auto otherEntry = *otherIt;
+    if (thisEntry.first != otherEntry.first ||
+        *(thisEntry.second) != *(otherEntry.second)) {
       return false;
     }
   }
   return true;
-}
-
-bool PdxType::operator<(const PdxType& other) const {
-  auto typeIdLessThan = this->m_geodeTypeId < other.m_geodeTypeId;
-  auto typeIdsBothZero =
-      (this->m_geodeTypeId == 0) && (other.m_geodeTypeId == 0);
-  auto classnameLessThan = this->m_className < other.m_className;
-  return (typeIdLessThan || (typeIdsBothZero && classnameLessThan));
 }
 
 }  // namespace client
