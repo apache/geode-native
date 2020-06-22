@@ -16,8 +16,7 @@
  */
 
 #include <benchmark/benchmark.h>
-
-#include "../integration/framework/Cluster.h"
+#include <framework/Cluster.h>
 
 static void PdxTypeBM_createInstance(benchmark::State& state) {
   const std::string gemfireJsonClassName = "__GEMFIRE_JSON";
