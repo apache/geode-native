@@ -214,7 +214,7 @@ std::shared_ptr<PdxSerializable> PdxHelper::deserializePdx(DataInput& dataInput,
       // Check for the PdxWrapper
       pdxLocalType = prtc.getLocalType();
 
-      if (pType->Equals(pdxLocalType)) {
+      if (*pType == *pdxLocalType) {
         pdxTypeRegistry->addLocalPdxType(pdxRealObject->getClassName(), pType);
         pdxTypeRegistry->addPdxType(pType->getTypeId(), pType);
         pType->setLocal(true);
@@ -325,9 +325,9 @@ void PdxHelper::createMergedType(std::shared_ptr<PdxType> localType,
   auto pdxTypeRegistry = cacheImpl->getPdxTypeRegistry();
   auto serializaionRegistry = cacheImpl->getSerializationRegistry();
 
-  if (mergedVersion->Equals(localType)) {
+  if (*mergedVersion == *localType) {
     pdxTypeRegistry->setMergedType(remoteType->getTypeId(), localType);
-  } else if (mergedVersion->Equals(remoteType)) {
+  } else if (*mergedVersion == *remoteType) {
     pdxTypeRegistry->setMergedType(remoteType->getTypeId(), remoteType);
   } else {  // need to create new version
     mergedVersion->InitializeType();

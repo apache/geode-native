@@ -25,6 +25,7 @@ target_link_libraries(cpp-benchmark
   PUBLIC
     apache-geode-static
     benchmark::benchmark
+    integration-framework
   PRIVATE
     _WarningsAsError
   )

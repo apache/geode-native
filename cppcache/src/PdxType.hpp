@@ -200,13 +200,34 @@ class PdxType : public internal::DataSerializableInternal,
 
   int32_t* getRemoteToLocalMap();
 
-  bool Equals(std::shared_ptr<PdxType> otherObj);
+  bool operator==(const PdxType& other) const;
 
-  // This is for PdxType as key in std map.
-  bool operator<(const PdxType& other) const;
+  NameVsPdxType getFieldNameVsPdxType() const { return m_fieldNameVsPdxType; }
 };
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
+
+namespace std {
+
+template <>
+struct hash<apache::geode::client::PdxType> {
+  typedef apache::geode::client::PdxType argument_type;
+  typedef size_t result_type;
+  result_type operator()(const argument_type& val) const {
+    std::hash<std::string> strHash;
+    auto result = strHash(val.getPdxClassName());
+
+    for (auto entry : val.getFieldNameVsPdxType()) {
+      auto pdxPtr = entry.second;
+      result = result ^ (strHash(pdxPtr->getClassName()) << 1);
+      result = result ^ (strHash(pdxPtr->getFieldName()) << 1);
+    }
+
+    return result;
+  }
+};
+
+}  // namespace std
 
 #endif  // GEODE_PDXTYPE_H_

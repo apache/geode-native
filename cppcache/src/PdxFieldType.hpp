@@ -105,6 +105,10 @@ class APACHE_GEODE_EXPORT PdxFieldType
   int32_t getVarLenOffsetIndex() const { return m_vlOffsetIndex; }
 
   int32_t getRelativeOffset() const { return m_relativeOffset; }
+
+  bool operator==(const PdxFieldType& other) const;
+
+  bool operator!=(const PdxFieldType& other) const;
 };
 
 }  // namespace client

@@ -38,14 +38,6 @@ namespace apache {
 namespace geode {
 namespace client {
 
-struct PdxTypeLessThan {
-  bool operator()(std::shared_ptr<PdxType> const& n1,
-                  std::shared_ptr<PdxType> const& n2) const {
-    // call to PdxType::operator <()
-    return *n1 < *n2;
-  }
-};
-
 typedef std::map<int32_t, std::shared_ptr<PdxType>> TypeIdVsPdxType;
 typedef std::map<std::string, std::shared_ptr<PdxType>> TypeNameVsPdxType;
 typedef std::unordered_map<std::shared_ptr<PdxSerializable>,
@@ -53,7 +45,10 @@ typedef std::unordered_map<std::shared_ptr<PdxSerializable>,
                            dereference_hash<std::shared_ptr<CacheableKey>>,
                            dereference_equal_to<std::shared_ptr<CacheableKey>>>
     PreservedHashMap;
-typedef std::map<std::shared_ptr<PdxType>, int32_t, PdxTypeLessThan>
+
+typedef std::unordered_map<std::shared_ptr<PdxType>, int32_t,
+                           dereference_hash<std::shared_ptr<PdxType>>,
+                           dereference_equal_to<std::shared_ptr<PdxType>>>
     PdxTypeToTypeIdMap;
 
 class APACHE_GEODE_EXPORT PdxTypeRegistry
