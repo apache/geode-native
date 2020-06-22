@@ -25,14 +25,8 @@ static void PdxTypeBM_createInstance(benchmark::State& state) {
   Cluster cluster{Name("PdxTypeBM"), LocatorCount{1}, ServerCount{1}};
   cluster.start();
   cluster.getGfsh().create();
-  /*.region()
-  .withName("region")
-  .withType("REPLICATE")
-  .execute();*/
 
   auto cache = cluster.createCache();
-  // auto region = setupRegion(cache);
-
   auto repetitions = 1000;
 
   for (auto _ : state) {
