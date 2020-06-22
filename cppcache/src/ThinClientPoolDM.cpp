@@ -1128,7 +1128,7 @@ TcrEndpoint* ThinClientPoolDM::getEndPoint(
 
     ep = getEndpoint(serverLocation->getEpString());
     if (ep) {
-      LOGDEBUG("Endpoint for single hop is %p", ep);
+      LOGDEBUG("Endpoint for single hop is %s", ep->name().c_str());
       return ep;
     }
 
@@ -1428,6 +1428,12 @@ GfErrType ThinClientPoolDM::sendSyncRequest(
             GF_SAFE_DELETE_CON(conn);
           }
           excludeServers.insert(ServerLocation(ep->name()));
+          if (error == GF_IOERR) {
+            auto sl = std::make_shared<BucketServerLocation>(ep->name());
+            LOGINFO("Removing bucketServerLocation %s due to GF_IOERR",
+                    sl->toString().c_str());
+            m_clientMetadataService->removeBucketServerLocation(sl);
+          }
         }
       } else {
         return error;  // server exception while sending credentail message to
@@ -2343,6 +2349,11 @@ TcrConnection* ThinClientPoolDM::getConnectionFromQueueW(
                   version);
         }
         return nullptr;
+      } else if (*error == GF_IOERR) {
+        auto sl = std::make_shared<BucketServerLocation>(theEP->name());
+        LOGINFO("Removing bucketServerLocation %s due to GF_IOERR",
+                sl->toString().c_str());
+        m_clientMetadataService->removeBucketServerLocation(sl);
       }
     }
   }
