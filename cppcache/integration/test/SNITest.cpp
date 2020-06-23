@@ -18,13 +18,14 @@
 #include <iostream>
 #include <thread>
 
+#include <boost/log/trivial.hpp>
+
 #include <gtest/gtest.h>
 
 #include <geode/Cache.hpp>
 #include <geode/CacheFactory.hpp>
 #include <geode/RegionFactory.hpp>
 #include <geode/RegionShortcut.hpp>
-#include <boost/log/trivial.hpp>
 
 #include "framework/Cluster.h"
 
@@ -53,29 +54,32 @@ class SNITest : public ::testing::Test {
     SetCurrentDirectory(sniDir.c_str());
 #else
     systemRVal = chdir("./sni-test-config");
-    if(systemRVal == -1) {
+    if (systemRVal == -1) {
       BOOST_LOG_TRIVIAL(error) << "chdir returned: " << systemRVal;
     }
 #endif
 
     systemRVal = std::system("docker-compose up -d");
-    if(systemRVal == -1) {
-      BOOST_LOG_TRIVIAL(error) << "std::system(\"docker-compose up -d\") returned: " << systemRVal;
-    }    
+    if (systemRVal == -1) {
+      BOOST_LOG_TRIVIAL(error)
+          << "std::system(\"docker-compose up -d\") returned: " << systemRVal;
+    }
 
     systemRVal = std::system(
         "docker exec -t geode gfsh run "
         "--file=/geode/scripts/geode-starter.gfsh");
-    if(systemRVal == -1) {
-      BOOST_LOG_TRIVIAL(error) << "std::system(\"docker exec -t geode gfsh run\") returned: " << systemRVal;
-    }           
+    if (systemRVal == -1) {
+      BOOST_LOG_TRIVIAL(error)
+          << "std::system(\"docker exec -t geode gfsh run\") returned: "
+          << systemRVal;
+    }
   }
 
   void TearDown() override {
     auto systemRVal = std::system("docker-compose stop");
-    if(systemRVal == -1) {
+    if (systemRVal == -1) {
       BOOST_LOG_TRIVIAL(error) << "std::system returned: " << systemRVal;
-    }   
+    }
   }
 
   std::string makeItSo(const char* command) {
