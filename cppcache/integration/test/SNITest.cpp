@@ -24,10 +24,11 @@
 #include <geode/CacheFactory.hpp>
 #include <geode/RegionFactory.hpp>
 #include <geode/RegionShortcut.hpp>
+#include <boost/log/trivial.hpp>
 
 #include "framework/Cluster.h"
 
-namespace ssltest {
+namespace snitest {
 
 using apache::geode::client::AuthenticationRequiredException;
 using apache::geode::client::CacheableString;
@@ -45,22 +46,37 @@ class SNITest : public ::testing::Test {
   ~SNITest() override = default;
 
   void SetUp() override {
+    auto systemRVal = 0;
 #if defined(_WIN32)
     std::string sniDir(currentWorkingDirectory.string());
     sniDir += "/../sni-test-config";
     SetCurrentDirectory(sniDir.c_str());
 #else
-    chdir("./sni-test-config");
+    systemRVal = chdir("./sni-test-config");
+    if(systemRVal == -1) {
+      BOOST_LOG_TRIVIAL(error) << "chdir returned: " << systemRVal;
+    }
 #endif
 
-    std::system("docker-compose up -d");
+    systemRVal = std::system("docker-compose up -d");
+    if(systemRVal == -1) {
+      BOOST_LOG_TRIVIAL(error) << "std::system(\"docker-compose up -d\") returned: " << systemRVal;
+    }    
 
-    std::system(
+    systemRVal = std::system(
         "docker exec -t geode gfsh run "
         "--file=/geode/scripts/geode-starter.gfsh");
+    if(systemRVal == -1) {
+      BOOST_LOG_TRIVIAL(error) << "std::system(\"docker exec -t geode gfsh run\") returned: " << systemRVal;
+    }           
   }
 
-  void TearDown() override { std::system("docker-compose stop"); }
+  void TearDown() override {
+    auto systemRVal = std::system("docker-compose stop");
+    if(systemRVal == -1) {
+      BOOST_LOG_TRIVIAL(error) << "std::system returned: " << systemRVal;
+    }   
+  }
 
   std::string makeItSo(const char* command) {
     std::string commandOutput;
@@ -163,4 +179,4 @@ TEST_F(SNITest, doNothingTest) {
   cache.close();
 }
 
-}  // namespace ssltest
+}  // namespace snitest
