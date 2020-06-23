@@ -355,23 +355,19 @@ std::shared_ptr<Serializable> SerializationRegistry::GetEnum(
 }
 
 void TheTypeMap::clear() {
-  std::lock_guard<util::concurrent::spinlock_mutex> guard(
-      m_dataSerializableMapLock);
+  const std::lock_guard<std::mutex> guard(m_dataSerializableMapLock);
   m_dataSerializableMap.clear();
 
-  std::lock_guard<util::concurrent::spinlock_mutex> guard2(
-      m_dataSerializableFixedIdMapLock);
+  const std::lock_guard<std::mutex> guard2(m_dataSerializableFixedIdMapLock);
   m_dataSerializableFixedIdMap.clear();
 
-  std::lock_guard<util::concurrent::spinlock_mutex> guard3(
-      m_pdxSerializableMapLock);
+  const std::lock_guard<std::mutex> guard3(m_pdxSerializableMapLock);
   m_pdxSerializableMap.clear();
 }
 
 void TheTypeMap::findDataSerializable(int32_t id,
                                       TypeFactoryMethod& func) const {
-  std::lock_guard<util::concurrent::spinlock_mutex> guard(
-      m_dataSerializableMapLock);
+  const std::lock_guard<std::mutex> guard(m_dataSerializableMapLock);
   const auto& found = m_dataSerializableMap.find(id);
   if (found != m_dataSerializableMap.end()) {
     func = found->second;
@@ -380,8 +376,7 @@ void TheTypeMap::findDataSerializable(int32_t id,
 
 void TheTypeMap::findDataSerializableFixedId(DSFid dsfid,
                                              TypeFactoryMethod& func) const {
-  std::lock_guard<util::concurrent::spinlock_mutex> guard(
-      m_dataSerializableFixedIdMapLock);
+  const std::lock_guard<std::mutex> guard(m_dataSerializableFixedIdMapLock);
   const auto& found = m_dataSerializableFixedIdMap.find(dsfid);
   if (found != m_dataSerializableFixedIdMap.end()) {
     func = found->second;
@@ -390,8 +385,7 @@ void TheTypeMap::findDataSerializableFixedId(DSFid dsfid,
 
 void TheTypeMap::findDataSerializablePrimitive(DSCode dsCode,
                                                TypeFactoryMethod& func) const {
-  std::lock_guard<util::concurrent::spinlock_mutex> guard(
-      m_dataSerializablePrimitiveMapLock);
+  const std::lock_guard<std::mutex> guard(m_dataSerializablePrimitiveMapLock);
   const auto& found = m_dataSerializablePrimitiveMap.find(dsCode);
   if (found != m_dataSerializablePrimitiveMap.end()) {
     func = found->second;
@@ -409,8 +403,7 @@ void TheTypeMap::bindDataSerializable(TypeFactoryMethod func, int32_t id) {
         "TheTypeMap::bind: Serialization type not implemented.");
   }
 
-  std::lock_guard<util::concurrent::spinlock_mutex> guard(
-      m_dataSerializableMapLock);
+  const std::lock_guard<std::mutex> guard(m_dataSerializableMapLock);
   const auto& result = m_dataSerializableMap.emplace(id, func);
   if (!result.second) {
     LOGERROR("A class with ID %d is already registered.", id);
@@ -419,21 +412,18 @@ void TheTypeMap::bindDataSerializable(TypeFactoryMethod func, int32_t id) {
 }
 
 void TheTypeMap::rebindDataSerializable(int32_t id, TypeFactoryMethod func) {
-  std::lock_guard<util::concurrent::spinlock_mutex> guard(
-      m_dataSerializableMapLock);
+  const std::lock_guard<std::mutex> guard(m_dataSerializableMapLock);
   m_dataSerializableMap[id] = func;
 }
 
 void TheTypeMap::unbindDataSerializable(int32_t id) {
-  std::lock_guard<util::concurrent::spinlock_mutex> guard(
-      m_dataSerializableMapLock);
+  const std::lock_guard<std::mutex> guard(m_dataSerializableMapLock);
   m_dataSerializableMap.erase(id);
 }
 
 void TheTypeMap::bindDataSerializablePrimitive(TypeFactoryMethod func,
                                                DSCode dsCode) {
-  std::lock_guard<util::concurrent::spinlock_mutex> guard(
-      m_dataSerializablePrimitiveMapLock);
+  const std::lock_guard<std::mutex> guard(m_dataSerializablePrimitiveMapLock);
   const auto& result = m_dataSerializablePrimitiveMap.emplace(dsCode, func);
   if (!result.second) {
     LOGERROR("A class with DSCode %d is already registered.", dsCode);
@@ -444,8 +434,7 @@ void TheTypeMap::bindDataSerializablePrimitive(TypeFactoryMethod func,
 
 void TheTypeMap::rebindDataSerializablePrimitive(DSCode dsCode,
                                                  TypeFactoryMethod func) {
-  std::lock_guard<util::concurrent::spinlock_mutex> guard(
-      m_dataSerializablePrimitiveMapLock);
+  const std::lock_guard<std::mutex> guard(m_dataSerializablePrimitiveMapLock);
   m_dataSerializablePrimitiveMap[dsCode] = func;
 }
 
@@ -462,8 +451,7 @@ void TheTypeMap::bindDataSerializableFixedId(TypeFactoryMethod func) {
         "type.");
   }
 
-  std::lock_guard<util::concurrent::spinlock_mutex> guard(
-      m_dataSerializableFixedIdMapLock);
+  const std::lock_guard<std::mutex> guard(m_dataSerializableFixedIdMapLock);
   const auto& result = m_dataSerializableFixedIdMap.emplace(id, func);
   if (!result.second) {
     LOGERROR("A fixed class with ID %d is already registered.", id);
@@ -474,21 +462,18 @@ void TheTypeMap::bindDataSerializableFixedId(TypeFactoryMethod func) {
 
 void TheTypeMap::rebindDataSerializableFixedId(internal::DSFid id,
                                                TypeFactoryMethod func) {
-  std::lock_guard<util::concurrent::spinlock_mutex> guard(
-      m_dataSerializableFixedIdMapLock);
+  const std::lock_guard<std::mutex> guard(m_dataSerializableFixedIdMapLock);
   m_dataSerializableFixedIdMap[id] = func;
 }
 
 void TheTypeMap::unbindDataSerializableFixedId(internal::DSFid id) {
-  std::lock_guard<util::concurrent::spinlock_mutex> guard(
-      m_dataSerializableFixedIdMapLock);
+  const std::lock_guard<std::mutex> guard(m_dataSerializableFixedIdMapLock);
   m_dataSerializableFixedIdMap.erase(id);
 }
 
 void TheTypeMap::bindPdxSerializable(TypeFactoryMethodPdx func) {
   auto obj = func();
-  std::lock_guard<util::concurrent::spinlock_mutex> guard(
-      m_pdxSerializableMapLock);
+  const std::lock_guard<std::mutex> guard(m_pdxSerializableMapLock);
   auto&& objFullName = obj->getClassName();
 
   const auto& result = m_pdxSerializableMap.emplace(objFullName, func);
@@ -502,8 +487,7 @@ void TheTypeMap::bindPdxSerializable(TypeFactoryMethodPdx func) {
 
 TypeFactoryMethodPdx TheTypeMap::findPdxSerializable(
     const std::string& objFullName) const {
-  std::lock_guard<util::concurrent::spinlock_mutex> guard(
-      m_pdxSerializableMapLock);
+  const std::lock_guard<std::mutex> guard(m_pdxSerializableMapLock);
 
   const auto& found = m_pdxSerializableMap.find(objFullName);
   if (found != m_pdxSerializableMap.end()) {
@@ -515,14 +499,12 @@ TypeFactoryMethodPdx TheTypeMap::findPdxSerializable(
 
 void TheTypeMap::rebindPdxSerializable(std::string objFullName,
                                        TypeFactoryMethodPdx func) {
-  std::lock_guard<util::concurrent::spinlock_mutex> guard(
-      m_pdxSerializableMapLock);
+  const std::lock_guard<std::mutex> guard(m_pdxSerializableMapLock);
   m_pdxSerializableMap[objFullName] = func;
 }
 
 void TheTypeMap::unbindPdxSerializable(const std::string& objFullName) {
-  std::lock_guard<util::concurrent::spinlock_mutex> guard(
-      m_pdxSerializableMapLock);
+  const std::lock_guard<std::mutex> guard(m_pdxSerializableMapLock);
   m_pdxSerializableMap.erase(objFullName);
 }
 

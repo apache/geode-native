@@ -23,6 +23,7 @@
 #include <functional>
 #include <iostream>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <typeindex>
 #include <typeinfo>
@@ -79,10 +80,10 @@ class TheTypeMap {
   std::unordered_map<internal::DSFid, TypeFactoryMethod>
       m_dataSerializableFixedIdMap;
   std::unordered_map<std::string, TypeFactoryMethodPdx> m_pdxSerializableMap;
-  mutable util::concurrent::spinlock_mutex m_dataSerializablePrimitiveMapLock;
-  mutable util::concurrent::spinlock_mutex m_dataSerializableMapLock;
-  mutable util::concurrent::spinlock_mutex m_dataSerializableFixedIdMapLock;
-  mutable util::concurrent::spinlock_mutex m_pdxSerializableMapLock;
+  mutable std::mutex m_dataSerializablePrimitiveMapLock;
+  mutable std::mutex m_dataSerializableMapLock;
+  mutable std::mutex m_dataSerializableFixedIdMapLock;
+  mutable std::mutex m_pdxSerializableMapLock;
 
  public:
   std::unordered_map<std::type_index, int32_t> typeToClassId;
