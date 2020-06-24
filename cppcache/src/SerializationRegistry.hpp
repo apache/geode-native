@@ -42,7 +42,6 @@
 
 #include "MemberListForVersionStamp.hpp"
 #include "config.h"
-#include "util/concurrent/spinlock_mutex.hpp"
 
 namespace std {
 
@@ -75,18 +74,18 @@ using internal::DataSerializablePrimitive;
 
 class TheTypeMap {
   std::unordered_map<internal::DSCode, TypeFactoryMethod>
-      m_dataSerializablePrimitiveMap;
-  std::unordered_map<int32_t, TypeFactoryMethod> m_dataSerializableMap;
+      dataSerializablePrimitiveMap_;
+  std::unordered_map<int32_t, TypeFactoryMethod> dataSerializableMap_;
   std::unordered_map<internal::DSFid, TypeFactoryMethod>
-      m_dataSerializableFixedIdMap;
-  std::unordered_map<std::string, TypeFactoryMethodPdx> m_pdxSerializableMap;
-  mutable std::mutex m_dataSerializablePrimitiveMapLock;
-  mutable std::mutex m_dataSerializableMapLock;
-  mutable std::mutex m_dataSerializableFixedIdMapLock;
-  mutable std::mutex m_pdxSerializableMapLock;
+      dataSerializableFixedIdMap_;
+  std::unordered_map<std::string, TypeFactoryMethodPdx> pdxSerializableMap_;
+  mutable std::mutex dataSerializablePrimitiveMapMutex_;
+  mutable std::mutex dataSerializableMapMutex_;
+  mutable std::mutex dataSerializableFixedIdMapMutex_;
+  mutable std::mutex pdxSerializableMapMutex_;
 
  public:
-  std::unordered_map<std::type_index, int32_t> typeToClassId;
+  std::unordered_map<std::type_index, int32_t> typeToClassId_;
 
   TheTypeMap(const TheTypeMap&) = delete;
   TheTypeMap() { setup(); }
@@ -167,7 +166,7 @@ class DataSerializableHandler {
 
 class APACHE_GEODE_EXPORT SerializationRegistry {
  public:
-  SerializationRegistry() : theTypeMap() {}
+  SerializationRegistry() : theTypeMap_() {}
 
   /** write the length of the serialization, write the typeId of the object,
    * then write whatever the object's toData requires. The length at the
@@ -188,7 +187,7 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
       serialize(dataSerializablePrimitive, output);
     } else if (const auto&& dataSerializable =
                    std::dynamic_pointer_cast<DataSerializable>(obj)) {
-      dataSerializeableHandler->serialize(dataSerializable, output, isDelta);
+      dataSerializableHandler_->serialize(dataSerializable, output, isDelta);
     } else if (const auto&& dataSerializableInternal =
                    std::dynamic_pointer_cast<DataSerializableInternal>(obj)) {
       serialize(dataSerializableInternal, output);
@@ -265,30 +264,30 @@ class APACHE_GEODE_EXPORT SerializationRegistry {
       const std::string& className) const;
 
   void setPdxTypeHandler(PdxTypeHandler* handler) {
-    this->pdxTypeHandler = std::unique_ptr<PdxTypeHandler>(handler);
+    this->pdxTypeHandler_ = std::unique_ptr<PdxTypeHandler>(handler);
   }
   void setDataSerializableHandler(DataSerializableHandler* handler) {
-    this->dataSerializeableHandler =
+    this->dataSerializableHandler_ =
         std::unique_ptr<DataSerializableHandler>(handler);
   }
 
   TypeFactoryMethod getDataSerializableCreationMethod(int32_t objectId) {
     TypeFactoryMethod createType;
-    theTypeMap.findDataSerializable(objectId, createType);
+    theTypeMap_.findDataSerializable(objectId, createType);
     return createType;
   }
 
   int32_t getIdForDataSerializableType(std::type_index objectType) const {
-    auto&& typeIterator = theTypeMap.typeToClassId.find(objectType);
+    auto&& typeIterator = theTypeMap_.typeToClassId_.find(objectType);
     auto&& id = typeIterator->second;
     return id;
   }
 
  private:
-  std::unique_ptr<PdxTypeHandler> pdxTypeHandler;
-  std::shared_ptr<PdxSerializer> pdxSerializer;
-  std::unique_ptr<DataSerializableHandler> dataSerializeableHandler;
-  TheTypeMap theTypeMap;
+  std::unique_ptr<PdxTypeHandler> pdxTypeHandler_;
+  std::shared_ptr<PdxSerializer> pdxSerializer_;
+  std::unique_ptr<DataSerializableHandler> dataSerializableHandler_;
+  TheTypeMap theTypeMap_;
 
   std::shared_ptr<Serializable> deserializeDataSerializableFixedId(
       DataInput& input, DSCode dsCode) const;
