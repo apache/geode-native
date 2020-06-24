@@ -171,7 +171,15 @@ class Cluster {
               const std::string truststorePassword);
 
   bool useSsl();
+
+  void usePropertiesFile(const std::string propertiesFile);
+  void useSecurityPropertiesFile(const std::string securityPropertiesFile);
+  void useHostNameForClients(const std::string hostNameForClients);
+  bool usePropertiesFile();
+  bool useSecurityPropertiesFile();
+  bool useHostNameForClients();
   bool requireSslAuthentication();
+
   std::string keystore();
   std::string truststore();
   std::string keystorePassword();
@@ -214,10 +222,18 @@ class Cluster {
 
   bool useSsl_ = false;
   bool requireSslAuthentication_ = false;
+  bool usePropertiesFile_ = false;
+  bool useSecurityPropertiesFile_ = false;
+  bool useHostNameForClients_ = false;
+
   std::string keystore_;
   std::string keystorePassword_;
   std::string truststore_;
   std::string truststorePassword_;
+
+  std::string propertiesFile_;
+  std::string securityPropertiesFile_;
+  std::string hostName_;
 
   bool useIPv6_ = false;
 
