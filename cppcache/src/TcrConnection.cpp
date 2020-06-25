@@ -680,9 +680,8 @@ char* TcrConnection::readMessage(size_t* recvLen,
   ConnErrType error;
 
   std::chrono::microseconds headerTimeout = receiveTimeoutSec;
-  if (doHeaderTimeoutRetries &&
-      receiveTimeoutSec == DEFAULT_READ_TIMEOUT_SECS) {
-    headerTimeout = DEFAULT_READ_TIMEOUT_SECS * DEFAULT_TIMEOUT_RETRIES;
+  if (doHeaderTimeoutRetries && receiveTimeoutSec == DEFAULT_READ_TIMEOUT) {
+    headerTimeout = DEFAULT_READ_TIMEOUT * DEFAULT_TIMEOUT_RETRIES;
   }
 
   LOGDEBUG("TcrConnection::readMessage: receiving reply from endpoint %s",
@@ -831,7 +830,7 @@ void TcrConnection::readMessageChunked(TcrMessageReply& reply,
 std::chrono::microseconds TcrConnection::calculateHeaderTimeout(
     std::chrono::microseconds receiveTimeout, bool retry) {
   auto headerTimeout = receiveTimeout;
-  if (retry && receiveTimeout == DEFAULT_READ_TIMEOUT_SECS) {
+  if (retry && receiveTimeout == DEFAULT_READ_TIMEOUT) {
     headerTimeout *= DEFAULT_TIMEOUT_RETRIES;
   }
   return headerTimeout;

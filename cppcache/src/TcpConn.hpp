@@ -94,15 +94,14 @@ class APACHE_GEODE_EXPORT TcpConn : public Connector {
   void init() override;
 
   // Listen
-  void listen(
-      const char* hostname, int32_t port,
-      std::chrono::microseconds waitSeconds = DEFAULT_READ_TIMEOUT_SECS);
-  void listen(const char* ipaddr, std::chrono::microseconds waitSeconds =
-                                      DEFAULT_READ_TIMEOUT_SECS);
+  void listen(const char* hostname, int32_t port,
+              std::chrono::microseconds waitSeconds = DEFAULT_READ_TIMEOUT);
+  void listen(const char* ipaddr,
+              std::chrono::microseconds waitSeconds = DEFAULT_READ_TIMEOUT);
 
   virtual void listen(
       ACE_INET_Addr addr,
-      std::chrono::microseconds waitSeconds = DEFAULT_READ_TIMEOUT_SECS);
+      std::chrono::microseconds waitSeconds = DEFAULT_READ_TIMEOUT);
 
   // connect
   void connect(const char* hostname, int32_t port,

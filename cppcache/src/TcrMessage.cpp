@@ -124,7 +124,7 @@ TcrMessage::TcrMessage()
       m_chunkedResult(nullptr),
       m_keyList(nullptr),
       m_region(nullptr),
-      m_timeout(DEFAULT_TIMEOUT_SECONDS),
+      m_timeout(DEFAULT_TIMEOUT),
       m_metadata(),
       m_cqs(nullptr),
       m_messageResponseTimeout(-1),
@@ -1632,7 +1632,7 @@ TcrMessageDestroyRegion::TcrMessageDestroyRegion(
   m_regionName =
       region == nullptr ? "INVALID_REGION_NAME" : region->getFullPath();
   m_region = region;
-  m_timeout = DEFAULT_TIMEOUT_SECONDS;
+  m_timeout = DEFAULT_TIMEOUT;
   m_messageResponseTimeout = messageResponsetimeout;
 
   uint32_t numOfParts = 1;
@@ -1669,7 +1669,7 @@ TcrMessageClearRegion::TcrMessageClearRegion(
   m_regionName =
       region == nullptr ? "INVALID_REGION_NAME" : region->getFullPath();
   m_region = region;
-  m_timeout = DEFAULT_TIMEOUT_SECONDS;
+  m_timeout = DEFAULT_TIMEOUT;
   m_messageResponseTimeout = messageResponsetimeout;
 
   isSecurityOn = false;
@@ -1706,7 +1706,7 @@ TcrMessageQuery::TcrMessageQuery(
   m_msgType = TcrMessage::QUERY;
   m_tcdm = connectionDM;
   m_regionName = regionName;  // this is querystri;
-  m_timeout = DEFAULT_TIMEOUT_SECONDS;
+  m_timeout = DEFAULT_TIMEOUT;
   m_messageResponseTimeout = messageResponsetimeout;
   m_region = nullptr;
   uint32_t numOfParts = 1;
@@ -1733,7 +1733,7 @@ TcrMessageStopCQ::TcrMessageStopCQ(
   m_msgType = TcrMessage::STOPCQ_MSG_TYPE;
   m_tcdm = connectionDM;
   m_regionName = regionName;  // this is querystring
-  m_timeout = DEFAULT_TIMEOUT_SECONDS;
+  m_timeout = DEFAULT_TIMEOUT;
   m_messageResponseTimeout = messageResponsetimeout;
   m_region = nullptr;
   m_isSecurityHeaderAdded = false;
@@ -1764,7 +1764,7 @@ TcrMessageCloseCQ::TcrMessageCloseCQ(
   m_msgType = TcrMessage::CLOSECQ_MSG_TYPE;
   m_tcdm = connectionDM;
   m_regionName = regionName;  // this is querystring
-  m_timeout = DEFAULT_TIMEOUT_SECONDS;
+  m_timeout = DEFAULT_TIMEOUT;
   m_messageResponseTimeout = messageResponsetimeout;
   m_region = nullptr;
   uint32_t numOfParts = 1;
@@ -1793,7 +1793,7 @@ TcrMessageQueryWithParameters::TcrMessageQueryWithParameters(
   m_msgType = TcrMessage::QUERY_WITH_PARAMETERS;
   m_tcdm = connectionDM;
   m_regionName = regionName;
-  m_timeout = DEFAULT_TIMEOUT_SECONDS;
+  m_timeout = DEFAULT_TIMEOUT;
   m_messageResponseTimeout = messageResponsetimeout;
   m_region = nullptr;
 
@@ -1833,7 +1833,7 @@ TcrMessageContainsKey::TcrMessageContainsKey(
   m_regionName =
       region == nullptr ? "INVALID_REGION_NAME" : region->getFullPath();
   m_region = region;
-  m_timeout = DEFAULT_TIMEOUT_SECONDS;
+  m_timeout = DEFAULT_TIMEOUT;
 
   uint32_t numOfParts = 2;
   if (aCallbackArgument != nullptr) {
@@ -1863,7 +1863,7 @@ TcrMessageGetDurableCqs::TcrMessageGetDurableCqs(
   m_request.reset(dataOutput);
   m_msgType = TcrMessage::GETDURABLECQS_MSG_TYPE;
   m_tcdm = connectionDM;
-  m_timeout = DEFAULT_TIMEOUT_SECONDS;
+  m_timeout = DEFAULT_TIMEOUT;
   m_region = nullptr;
   // wrirting msgtype with part length =1
   writeHeader(m_msgType, 1);
@@ -1884,7 +1884,7 @@ TcrMessageRequest::TcrMessageRequest(
   m_regionName =
       (region == nullptr ? "INVALID_REGION_NAME" : region->getFullPath());
   m_region = region;
-  m_timeout = DEFAULT_TIMEOUT_SECONDS;
+  m_timeout = DEFAULT_TIMEOUT;
 
   uint32_t numOfParts = 2;
   if (aCallbackArgument != nullptr) {
@@ -1922,7 +1922,7 @@ TcrMessageInvalidate::TcrMessageInvalidate(
   m_regionName =
       (region == nullptr ? "INVALID_REGION_NAME" : region->getFullPath());
   m_region = region;
-  m_timeout = DEFAULT_TIMEOUT_SECONDS;
+  m_timeout = DEFAULT_TIMEOUT;
 
   uint32_t numOfParts = 2;
   if (aCallbackArgument != nullptr) {
@@ -1961,7 +1961,7 @@ TcrMessageDestroy::TcrMessageDestroy(
   m_regionName =
       (region == nullptr ? "INVALID_REGION_NAME" : region->getFullPath());
   m_region = region;
-  m_timeout = DEFAULT_TIMEOUT_SECONDS;
+  m_timeout = DEFAULT_TIMEOUT;
   uint32_t numOfParts = 2;
   if (aCallbackArgument != nullptr) {
     ++numOfParts;
@@ -2018,7 +2018,7 @@ TcrMessagePut::TcrMessagePut(
   m_key = key;
   m_regionName = region != nullptr ? region->getFullPath() : regionName;
   m_region = region;
-  m_timeout = DEFAULT_TIMEOUT_SECONDS;
+  m_timeout = DEFAULT_TIMEOUT;
 
   // TODO check the number of parts in this constructor. doubt because in PUT
   // value can be nullptr also.
@@ -2114,7 +2114,7 @@ TcrMessageRegisterInterestList::TcrMessageRegisterInterestList(
   m_regionName =
       region == nullptr ? "INVALID_REGION_NAME" : region->getFullPath();
   m_region = region;
-  m_timeout = DEFAULT_TIMEOUT_SECONDS;
+  m_timeout = DEFAULT_TIMEOUT;
   m_isDurable = isDurable;
   m_receiveValues = receiveValues;
 
@@ -2169,7 +2169,7 @@ TcrMessageUnregisterInterestList::TcrMessageUnregisterInterestList(
   m_regionName =
       region == nullptr ? "INVALID_REGION_NAME" : region->getFullPath();
   m_region = region;
-  m_timeout = DEFAULT_TIMEOUT_SECONDS;
+  m_timeout = DEFAULT_TIMEOUT;
   m_isDurable = isDurable;
   m_receiveValues = receiveValues;
 
