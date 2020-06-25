@@ -124,7 +124,7 @@ TcrMessage::TcrMessage()
       m_chunkedResult(nullptr),
       m_keyList(nullptr),
       m_region(nullptr),
-      m_timeout(15 /*DEFAULT_TIMEOUT_SECONDS*/),
+      m_timeout(apache::geode::client::DEFAULT_TIMEOUT_SECONDS),
       m_metadata(),
       m_cqs(nullptr),
       m_messageResponseTimeout(-1),
