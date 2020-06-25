@@ -3095,13 +3095,6 @@ void TcrMessage::setTransId(int32_t txId) { m_txId = txId; }
 std::chrono::milliseconds TcrMessage::getTimeout() const { return m_timeout; }
 
 void TcrMessage::setTimeout(std::chrono::milliseconds timeout) {
-  LOGDEBUG(
-      "TcrMessage::%s(%p): wait timeout == %s", __FUNCTION__, this,
-      apache::geode::internal::chrono::duration::to_string(timeout).c_str());
-  Exception e("TcrMessage::setTimeout timeout-tracking callstack");
-  LOGDEBUG("TcpConn::%s(%p): callstack == %s", __FUNCTION__, this,
-           e.getStackTrace().c_str());
-
   m_timeout = timeout;
 }
 
