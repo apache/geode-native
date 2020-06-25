@@ -80,7 +80,7 @@ class TcpSslConn : public TcpConn {
 
   // Listen
   void listen(ACE_INET_Addr addr, std::chrono::microseconds waitSeconds =
-                                      DEFAULT_READ_TIMEOUT_SECS) override;
+                                      DEFAULT_READ_TIMEOUT) override;
 
   // connect
   void connect() override;

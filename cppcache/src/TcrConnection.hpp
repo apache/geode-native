@@ -193,7 +193,7 @@ class TcrConnection {
   char* sendRequest(
       const char* buffer, size_t len, size_t* recvLen,
       std::chrono::microseconds sendTimeoutSec = DEFAULT_WRITE_TIMEOUT,
-      std::chrono::microseconds receiveTimeoutSec = DEFAULT_READ_TIMEOUT_SECS,
+      std::chrono::microseconds receiveTimeoutSec = DEFAULT_READ_TIMEOUT,
       int32_t request = -1);
 
   /**
@@ -211,7 +211,7 @@ class TcrConnection {
   void sendRequestForChunkedResponse(
       const TcrMessage& request, size_t len, TcrMessageReply& message,
       std::chrono::microseconds sendTimeoutSec = DEFAULT_WRITE_TIMEOUT,
-      std::chrono::microseconds receiveTimeoutSec = DEFAULT_READ_TIMEOUT_SECS);
+      std::chrono::microseconds receiveTimeoutSec = DEFAULT_READ_TIMEOUT);
 
   /**
    * send an asynchronized request to server. No response is expected.
@@ -247,7 +247,7 @@ class TcrConnection {
    */
   char* receive(
       size_t* recvLen, ConnErrType* opErr,
-      std::chrono::microseconds receiveTimeoutSec = DEFAULT_READ_TIMEOUT_SECS);
+      std::chrono::microseconds receiveTimeoutSec = DEFAULT_READ_TIMEOUT);
 
   //  readMessage is now public
   /**

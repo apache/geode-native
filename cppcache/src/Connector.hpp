@@ -32,14 +32,11 @@ namespace client {
 constexpr std::chrono::microseconds DEFAULT_CONNECT_TIMEOUT =
     std::chrono::seconds(10);
 
-constexpr std::chrono::milliseconds DEFAULT_TIMEOUT_SECONDS =
-    std::chrono::seconds(15);
+constexpr std::chrono::milliseconds DEFAULT_TIMEOUT = std::chrono::seconds(15);
 
-constexpr std::chrono::milliseconds DEFAULT_READ_TIMEOUT_SECS =
-    DEFAULT_TIMEOUT_SECONDS;
+constexpr std::chrono::milliseconds DEFAULT_READ_TIMEOUT = DEFAULT_TIMEOUT;
 
-constexpr std::chrono::milliseconds DEFAULT_WRITE_TIMEOUT =
-    DEFAULT_TIMEOUT_SECONDS;
+constexpr std::chrono::milliseconds DEFAULT_WRITE_TIMEOUT = DEFAULT_TIMEOUT;
 
 class Connector {
  public:
