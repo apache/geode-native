@@ -260,7 +260,6 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     -Wno-reserved-id-macro #TODO fix
     -Wno-documentation # TODO fix
     -Wno-implicit-fallthrough #TODO fix
-    -Wno-covered-switch-default #TODO fix
     -Wno-range-loop-analysis
     -Wno-weak-vtables
     -Wno-weak-template-vtables

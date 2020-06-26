@@ -182,7 +182,6 @@ IpcMsg IpcHandler::getIpcMsg(int32_t waitSeconds, std::string &str) {
       break;
     case IPC_ERROR:
     case IPC_EXIT:
-    default:
       sendIpcMsg(IPC_ACK);
       break;
   }
@@ -202,7 +201,6 @@ IpcMsg IpcHandler::getIpcMsg(int32_t waitSeconds) {
       break;
     case IPC_ERROR:
     case IPC_EXIT:
-    default:
       sendIpcMsg(IPC_ACK);
       break;
   }
