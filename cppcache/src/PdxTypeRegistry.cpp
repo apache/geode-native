@@ -28,24 +28,23 @@ namespace geode {
 namespace client {
 
 PdxTypeRegistry::PdxTypeRegistry(CacheImpl* cache)
-    : cache(cache),
-      typeIdToPdxType(),
-      remoteTypeIdToMergedPdxType(),
-      localTypeToPdxType(),
-      pdxTypeToTypeIdMap(),
-      enumToInt(CacheableHashMap::create()),
-      intToEnum(CacheableHashMap::create()) {}
+    : cache_(cache),
+      typeIdToPdxType_(),
+      remoteTypeIdToMergedPdxType_(),
+      localTypeToPdxType_(),
+      pdxTypeToTypeIdMap_(),
+      enumToInt_(CacheableHashMap::create()),
+      intToEnum_(CacheableHashMap::create()) {}
 
 PdxTypeRegistry::~PdxTypeRegistry() {}
 
 size_t PdxTypeRegistry::testNumberOfPreservedData() const {
-  return preserveData.size();
+  return preserveData_.size();
 }
 
 int32_t PdxTypeRegistry::getPDXIdForType(const std::string& type, Pool* pool,
                                          std::shared_ptr<PdxType> nType,
                                          bool checkIfThere) {
-  // WriteGuard guard(g_readerWriterLock);
   if (checkIfThere) {
     auto lpdx = getLocalPdxType(type);
     if (lpdx != nullptr) {
@@ -56,7 +55,7 @@ int32_t PdxTypeRegistry::getPDXIdForType(const std::string& type, Pool* pool,
     }
   }
 
-  int typeId = cache->getSerializationRegistry()->GetPDXIdForType(pool, nType);
+  int typeId = cache_->getSerializationRegistry()->GetPDXIdForType(pool, nType);
   nType->setTypeId(typeId);
 
   addPdxType(typeId, nType);
@@ -67,9 +66,9 @@ int32_t PdxTypeRegistry::getPDXIdForType(std::shared_ptr<PdxType> nType,
                                          Pool* pool) {
   int32_t typeId = 0;
   {
-    ReadGuard read(g_readerWriterLock);
-    auto&& iter = pdxTypeToTypeIdMap.find(nType);
-    if (iter != pdxTypeToTypeIdMap.end()) {
+    ReadGuard read(g_readerWriterLock_);
+    auto&& iter = pdxTypeToTypeIdMap_.find(nType);
+    if (iter != pdxTypeToTypeIdMap_.end()) {
       typeId = iter->second;
       if (typeId != 0) {
         return typeId;
@@ -78,18 +77,18 @@ int32_t PdxTypeRegistry::getPDXIdForType(std::shared_ptr<PdxType> nType,
   }
 
   {
-    WriteGuard write(g_readerWriterLock);
-    auto&& iter = pdxTypeToTypeIdMap.find(nType);
-    if (iter != pdxTypeToTypeIdMap.end()) {
+    WriteGuard write(g_readerWriterLock_);
+    auto&& iter = pdxTypeToTypeIdMap_.find(nType);
+    if (iter != pdxTypeToTypeIdMap_.end()) {
       typeId = iter->second;
       if (typeId != 0) {
         return typeId;
       }
     }
 
-    typeId = cache->getSerializationRegistry()->GetPDXIdForType(pool, nType);
+    typeId = cache_->getSerializationRegistry()->GetPDXIdForType(pool, nType);
     nType->setTypeId(typeId);
-    pdxTypeToTypeIdMap.insert(std::make_pair(nType, typeId));
+    pdxTypeToTypeIdMap_.insert(std::make_pair(nType, typeId));
   }
   addPdxType(typeId, nType);
   return typeId;
@@ -97,36 +96,36 @@ int32_t PdxTypeRegistry::getPDXIdForType(std::shared_ptr<PdxType> nType,
 
 void PdxTypeRegistry::clear() {
   {
-    WriteGuard guard(g_readerWriterLock);
-    typeIdToPdxType.clear();
+    WriteGuard guard(g_readerWriterLock_);
+    typeIdToPdxType_.clear();
 
-    remoteTypeIdToMergedPdxType.clear();
+    remoteTypeIdToMergedPdxType_.clear();
 
-    localTypeToPdxType.clear();
+    localTypeToPdxType_.clear();
 
-    if (intToEnum) intToEnum->clear();
+    if (intToEnum_) intToEnum_->clear();
 
-    if (enumToInt) enumToInt->clear();
+    if (enumToInt_) enumToInt_->clear();
 
-    pdxTypeToTypeIdMap.clear();
+    pdxTypeToTypeIdMap_.clear();
   }
   {
     WriteGuard guard(getPreservedDataLock());
-    preserveData.clear();
+    preserveData_.clear();
   }
 }
 
 void PdxTypeRegistry::addPdxType(int32_t typeId,
                                  std::shared_ptr<PdxType> pdxType) {
-  WriteGuard guard(g_readerWriterLock);
+  WriteGuard guard(g_readerWriterLock_);
   std::pair<int32_t, std::shared_ptr<PdxType>> pc(typeId, pdxType);
-  typeIdToPdxType.insert(pc);
+  typeIdToPdxType_.insert(pc);
 }
 
 std::shared_ptr<PdxType> PdxTypeRegistry::getPdxType(int32_t typeId) const {
-  ReadGuard guard(g_readerWriterLock);
-  auto&& iter = typeIdToPdxType.find(typeId);
-  if (iter != typeIdToPdxType.end()) {
+  ReadGuard guard(g_readerWriterLock_);
+  auto&& iter = typeIdToPdxType_.find(typeId);
+  if (iter != typeIdToPdxType_.end()) {
     return iter->second;
   }
   return nullptr;
@@ -134,15 +133,15 @@ std::shared_ptr<PdxType> PdxTypeRegistry::getPdxType(int32_t typeId) const {
 
 void PdxTypeRegistry::addLocalPdxType(const std::string& localType,
                                       std::shared_ptr<PdxType> pdxType) {
-  WriteGuard guard(g_readerWriterLock);
-  localTypeToPdxType.emplace(localType, pdxType);
+  WriteGuard guard(g_readerWriterLock_);
+  localTypeToPdxType_.emplace(localType, pdxType);
 }
 
 std::shared_ptr<PdxType> PdxTypeRegistry::getLocalPdxType(
     const std::string& localType) const {
-  ReadGuard guard(g_readerWriterLock);
-  auto&& it = localTypeToPdxType.find(localType);
-  if (it != localTypeToPdxType.end()) {
+  ReadGuard guard(g_readerWriterLock_);
+  auto&& it = localTypeToPdxType_.find(localType);
+  if (it != localTypeToPdxType_.end()) {
     return it->second;
   }
   return nullptr;
@@ -150,14 +149,14 @@ std::shared_ptr<PdxType> PdxTypeRegistry::getLocalPdxType(
 
 void PdxTypeRegistry::setMergedType(int32_t remoteTypeId,
                                     std::shared_ptr<PdxType> mergedType) {
-  WriteGuard guard(g_readerWriterLock);
-  remoteTypeIdToMergedPdxType.emplace(remoteTypeId, mergedType);
+  WriteGuard guard(g_readerWriterLock_);
+  remoteTypeIdToMergedPdxType_.emplace(remoteTypeId, mergedType);
 }
 
 std::shared_ptr<PdxType> PdxTypeRegistry::getMergedType(
     int32_t remoteTypeId) const {
-  auto&& it = remoteTypeIdToMergedPdxType.find(remoteTypeId);
-  if (it != remoteTypeIdToMergedPdxType.end()) {
+  auto&& it = remoteTypeIdToMergedPdxType_.find(remoteTypeId);
+  if (it != remoteTypeIdToMergedPdxType_.end()) {
     return it->second;
   }
   return nullptr;
@@ -169,14 +168,14 @@ void PdxTypeRegistry::setPreserveData(
     ExpiryTaskManager& expiryTaskManager) {
   WriteGuard guard(getPreservedDataLock());
   pData->setOwner(obj);
-  if (preserveData.find(obj) != preserveData.end()) {
+  if (preserveData_.find(obj) != preserveData_.end()) {
     // reset expiry task
     // TODO: check value for nullptr
-    auto expTaskId = preserveData[obj]->getPreservedDataExpiryTaskId();
+    auto expTaskId = preserveData_[obj]->getPreservedDataExpiryTaskId();
     expiryTaskManager.resetTask(expTaskId, 5);
     LOGDEBUG("PdxTypeRegistry::setPreserveData Reset expiry task Done");
     pData->setPreservedDataExpiryTaskId(expTaskId);
-    preserveData[obj] = pData;
+    preserveData_[obj] = pData;
   } else {
     // schedule new expiry task
     auto handler = new PreservedDataExpiryHandler(shared_from_this(), obj);
@@ -186,7 +185,7 @@ void PdxTypeRegistry::setPreserveData(
     LOGDEBUG(
         "PdxTypeRegistry::setPreserveData Schedule new expirt task with id=%ld",
         id);
-    preserveData.emplace(obj, pData);
+    preserveData_.emplace(obj, pData);
   }
 
   LOGDEBUG(
@@ -196,8 +195,8 @@ void PdxTypeRegistry::setPreserveData(
 std::shared_ptr<PdxRemotePreservedData> PdxTypeRegistry::getPreserveData(
     std::shared_ptr<PdxSerializable> pdxobj) const {
   ReadGuard guard(getPreservedDataLock());
-  const auto& iter = preserveData.find((pdxobj));
-  if (iter != preserveData.end()) {
+  const auto& iter = preserveData_.find((pdxobj));
+  if (iter != preserveData_.end()) {
     return iter->second;
   }
   return nullptr;
@@ -206,15 +205,15 @@ std::shared_ptr<PdxRemotePreservedData> PdxTypeRegistry::getPreserveData(
 int32_t PdxTypeRegistry::getEnumValue(std::shared_ptr<EnumInfo> ei) {
   // TODO locking - naive concurrent optimization?
   std::shared_ptr<CacheableHashMap> tmp;
-  tmp = enumToInt;
+  tmp = enumToInt_;
   const auto& entry = tmp->find(ei);
   if (entry != tmp->end()) {
     const auto val = std::dynamic_pointer_cast<CacheableInt32>(entry->second);
     return val->value();
   }
 
-  WriteGuard guard(g_readerWriterLock);
-  tmp = enumToInt;
+  WriteGuard guard(g_readerWriterLock_);
+  tmp = enumToInt_;
   const auto& entry2 = tmp->find(ei);
   if (entry2 != tmp->end()) {
     const auto val2 = std::dynamic_pointer_cast<CacheableInt32>(entry2->second);
@@ -222,12 +221,12 @@ int32_t PdxTypeRegistry::getEnumValue(std::shared_ptr<EnumInfo> ei) {
   }
 
   int val = static_cast<ThinClientPoolDM*>(
-                cache->getPoolManager().getAll().begin()->second.get())
+                cache_->getPoolManager().getAll().begin()->second.get())
                 ->GetEnumValue(ei);
 
-  tmp = enumToInt;
+  tmp = enumToInt_;
   tmp->emplace(ei, CacheableInt32::create(val));
-  enumToInt = tmp;
+  enumToInt_ = tmp;
   return val;
 }
 
@@ -235,7 +234,7 @@ std::shared_ptr<EnumInfo> PdxTypeRegistry::getEnum(int32_t enumVal) {
   // TODO locking - naive concurrent optimization?
   auto enumValPtr = CacheableInt32::create(enumVal);
 
-  auto&& tmp = intToEnum;
+  auto&& tmp = intToEnum_;
   {
     auto&& entry = tmp->find(enumValPtr);
     if (entry != tmp->end()) {
@@ -246,8 +245,8 @@ std::shared_ptr<EnumInfo> PdxTypeRegistry::getEnum(int32_t enumVal) {
     }
   }
 
-  WriteGuard guard(g_readerWriterLock);
-  tmp = intToEnum;
+  WriteGuard guard(g_readerWriterLock_);
+  tmp = intToEnum_;
   {
     auto&& entry = tmp->find(enumValPtr);
     if (entry != tmp->end()) {
@@ -260,11 +259,11 @@ std::shared_ptr<EnumInfo> PdxTypeRegistry::getEnum(int32_t enumVal) {
 
   auto&& ret = std::dynamic_pointer_cast<EnumInfo>(
       std::static_pointer_cast<ThinClientPoolDM>(
-          cache->getPoolManager().getAll().begin()->second)
+          cache_->getPoolManager().getAll().begin()->second)
           ->GetEnum(enumVal));
-  tmp = intToEnum;
+  tmp = intToEnum_;
   (*tmp)[enumValPtr] = ret;
-  intToEnum = tmp;
+  intToEnum_ = tmp;
   return std::move(ret);
 }
 }  // namespace client

@@ -317,38 +317,37 @@ void ResourceInst::writeResourceInst(StatDataOutput *dataOutArg,
 StatArchiveWriter::StatArchiveWriter(std::string outfile,
                                      HostStatSampler *samplerArg,
                                      CacheImpl *cache)
-    : cache(cache) {
-  resourceTypeId = 0;
-  resourceInstId = 0;
-  statResourcesModCount = 0;
-  archiveFile = outfile;
-  bytesWrittenToFile = 0;
+    : cache_(cache) {
+  resourceTypeId_ = 0;
+  resourceInstId_ = 0;
+  archiveFile_ = outfile;
+  bytesWrittenToFile_ = 0;
 
-  m_samplesize = 0;
+  sampleSize_ = 0;
 
-  dataBuffer = new StatDataOutput(archiveFile, cache);
-  this->sampler = samplerArg;
+  dataBuffer_ = new StatDataOutput(archiveFile_, cache);
+  this->sampler_ = samplerArg;
 
   // write the time, system property etc.
-  this->previousTimeStamp = steady_clock::now();
+  this->previousTimeStamp_ = steady_clock::now();
 
-  this->dataBuffer->writeByte(HEADER_TOKEN);
-  this->dataBuffer->writeByte(ARCHIVE_VERSION);
-  this->dataBuffer->writeLong(
+  this->dataBuffer_->writeByte(HEADER_TOKEN);
+  this->dataBuffer_->writeByte(ARCHIVE_VERSION);
+  this->dataBuffer_->writeLong(
       duration_cast<milliseconds>(system_clock::now().time_since_epoch())
           .count());
-  int64_t sysId = sampler->getSystemId();
-  this->dataBuffer->writeLong(sysId);
-  this->dataBuffer->writeLong(
+  int64_t sysId = sampler_->getSystemId();
+  this->dataBuffer_->writeLong(sysId);
+  this->dataBuffer_->writeLong(
       duration_cast<milliseconds>(
-          sampler->getSystemStartTime().time_since_epoch())
+          sampler_->getSystemStartTime().time_since_epoch())
           .count());
 
   // C++20: Use std::chrono::time_zone
   boost::posix_time::time_duration timeZoneOffset(
       boost::posix_time::second_clock::local_time() -
       boost::posix_time::second_clock::universal_time());
-  this->dataBuffer->writeInt(
+  this->dataBuffer_->writeInt(
       static_cast<int32_t>(timeZoneOffset.total_milliseconds()));
 
   // C++20: Use std::chrono::time_zone
@@ -356,71 +355,69 @@ StatArchiveWriter::StatArchiveWriter(std::string outfile,
   auto localTime = apache::geode::util::chrono::localtime(now);
   std::ostringstream timeZoneId;
   timeZoneId << std::put_time(&localTime, "%Z");
-  this->dataBuffer->writeUTF(timeZoneId.str());
+  this->dataBuffer_->writeUTF(timeZoneId.str());
 
-  this->dataBuffer->writeUTF(sampler->getSystemDirectoryPath());
-  this->dataBuffer->writeUTF(sampler->getProductDescription());
-  this->dataBuffer->writeUTF(GEODE_SYSTEM_NAME);
-  this->dataBuffer->writeUTF(std::string(GEODE_SYSTEM_PROCESSOR) + " " +
-                             boost::asio::ip::host_name());
+  this->dataBuffer_->writeUTF(sampler_->getSystemDirectoryPath());
+  this->dataBuffer_->writeUTF(sampler_->getProductDescription());
+  this->dataBuffer_->writeUTF(GEODE_SYSTEM_NAME);
+  this->dataBuffer_->writeUTF(std::string(GEODE_SYSTEM_PROCESSOR) + " " +
+                              boost::asio::ip::host_name());
 
   resampleResources();
 }
 
 StatArchiveWriter::~StatArchiveWriter() {
-  if (dataBuffer != nullptr) {
-    delete dataBuffer;
-    dataBuffer = nullptr;
+  if (dataBuffer_ != nullptr) {
+    delete dataBuffer_;
+    dataBuffer_ = nullptr;
   }
-  for (const auto &p : resourceTypeMap) {
+  for (const auto &p : resourceTypeMap_) {
     auto rt = p.second;
     _GEODE_SAFE_DELETE(rt);
   }
 }
 
-size_t StatArchiveWriter::bytesWritten() { return bytesWrittenToFile; }
+size_t StatArchiveWriter::bytesWritten() { return bytesWrittenToFile_; }
 
-size_t StatArchiveWriter::getSampleSize() { return m_samplesize; }
+size_t StatArchiveWriter::getSampleSize() { return sampleSize_; }
 
 void StatArchiveWriter::sample(const steady_clock::time_point &timeStamp) {
-  std::lock_guard<decltype(sampler->getStatListMutex())> guard(
-      sampler->getStatListMutex());
-  m_samplesize = dataBuffer->getBytesWritten();
+  std::lock_guard<decltype(sampler_->getStatListMutex())> guard(
+      sampler_->getStatListMutex());
+  sampleSize_ = dataBuffer_->getBytesWritten();
 
   sampleResources();
-  this->dataBuffer->writeByte(SAMPLE_TOKEN);
+  this->dataBuffer_->writeByte(SAMPLE_TOKEN);
   writeTimeStamp(timeStamp);
-  for (auto p = resourceInstMap.begin(); p != resourceInstMap.end(); p++) {
+  for (auto p = resourceInstMap_.begin(); p != resourceInstMap_.end(); p++) {
     auto ri = (*p).second;
     if (!!ri && (*p).first != nullptr) {
       ri->writeSample();
     }
   }
-  writeResourceInst(this->dataBuffer,
+  writeResourceInst(this->dataBuffer_,
                     static_cast<int32_t>(ILLEGAL_RESOURCE_INST_ID));
-  m_samplesize = dataBuffer->getBytesWritten() - m_samplesize;
+  sampleSize_ = dataBuffer_->getBytesWritten() - sampleSize_;
 }
 
 void StatArchiveWriter::sample() { sample(steady_clock::now()); }
 
 void StatArchiveWriter::close() {
   sample();
-  this->dataBuffer->flush();
-  this->dataBuffer->close();
+  this->dataBuffer_->flush();
+  this->dataBuffer_->close();
 }
 
-void StatArchiveWriter::closeFile() { this->dataBuffer->close(); }
+void StatArchiveWriter::closeFile() { this->dataBuffer_->close(); }
 
 void StatArchiveWriter::openFile(std::string filename) {
-  // this->dataBuffer->openFile(filename, m_samplesize);
+  StatDataOutput *p_dataBuffer = new StatDataOutput(filename, cache_);
 
-  StatDataOutput *p_dataBuffer = new StatDataOutput(filename, cache);
-
-  const uint8_t *buffBegin = dataBuffer->dataBuffer->getBuffer();
+  const uint8_t *buffBegin = dataBuffer_->dataBuffer->getBuffer();
   if (buffBegin == nullptr) {
     throw NullPointerException("undefined stat data buffer beginning");
   }
-  const uint8_t *buffEnd = dataBuffer->dataBuffer->getCursor();
+  const uint8_t *buffEnd = dataBuffer_->dataBuffer->getCursor();
   if (buffEnd == nullptr) {
     throw NullPointerException("undefined stat data buffer end");
   }
@@ -430,16 +427,14 @@ void StatArchiveWriter::openFile(std::string filename) {
     p_dataBuffer->writeByte(buffBegin[pos]);
   }
 
-  delete dataBuffer;
-  dataBuffer = p_dataBuffer;
-
-  // sample();
+  delete dataBuffer_;
+  dataBuffer_ = p_dataBuffer;
 }
 
 void StatArchiveWriter::flush() {
-  this->dataBuffer->flush();
-  bytesWrittenToFile += dataBuffer->getBytesWritten();
-  this->dataBuffer->resetBuffer();
+  this->dataBuffer_->flush();
+  bytesWrittenToFile_ += dataBuffer_->getBytesWritten();
+  this->dataBuffer_->resetBuffer();
   /*
     // have to figure out the problem with this code.
     delete dataBuffer;
@@ -451,7 +446,7 @@ void StatArchiveWriter::flush() {
 
 void StatArchiveWriter::sampleResources() {
   // Allocate ResourceInst for newly added stats ( Locked lists already )
-  std::vector<Statistics *> &newStatsList = sampler->getNewStatistics();
+  std::vector<Statistics *> &newStatsList = sampler_->getNewStatistics();
   std::vector<Statistics *>::iterator newlistIter;
   for (newlistIter = newStatsList.begin(); newlistIter != newStatsList.end();
        ++newlistIter) {
@@ -464,18 +459,18 @@ void StatArchiveWriter::sampleResources() {
   // for closed stats, write token and then delete from statlist and
   // resourceInstMap.
   std::map<Statistics *, std::shared_ptr<ResourceInst>>::iterator mapIter;
-  std::vector<Statistics *> &statsList = sampler->getStatistics();
+  std::vector<Statistics *> &statsList = sampler_->getStatistics();
   std::vector<Statistics *>::iterator statlistIter = statsList.begin();
   while (statlistIter != statsList.end()) {
     if ((*statlistIter)->isClosed()) {
-      mapIter = resourceInstMap.find(*statlistIter);
-      if (mapIter != resourceInstMap.end()) {
+      mapIter = resourceInstMap_.find(*statlistIter);
+      if (mapIter != resourceInstMap_.end()) {
         // Write delete token to file and delete from map
         auto rinst = (*mapIter).second;
         int32_t id = rinst->getId();
-        this->dataBuffer->writeByte(RESOURCE_INSTANCE_DELETE_TOKEN);
-        this->dataBuffer->writeInt(id);
-        resourceInstMap.erase(mapIter);
+        this->dataBuffer_->writeByte(RESOURCE_INSTANCE_DELETE_TOKEN);
+        this->dataBuffer_->writeInt(id);
+        resourceInstMap_.erase(mapIter);
       }
       // Delete stats object stat list
       StatisticsManager::deleteStatistics(*statlistIter);
@@ -488,9 +483,9 @@ void StatArchiveWriter::sampleResources() {
 }
 
 void StatArchiveWriter::resampleResources() {
-  std::lock_guard<decltype(sampler->getStatListMutex())> guard(
-      sampler->getStatListMutex());
-  std::vector<Statistics *> &statsList = sampler->getStatistics();
+  std::lock_guard<decltype(sampler_->getStatListMutex())> guard(
+      sampler_->getStatListMutex());
+  std::vector<Statistics *> &statsList = sampler_->getStatistics();
   std::vector<Statistics *>::iterator statlistIter = statsList.begin();
   while (statlistIter != statsList.end()) {
     if (!(*statlistIter)->isClosed()) {
@@ -503,19 +498,20 @@ void StatArchiveWriter::resampleResources() {
 void StatArchiveWriter::writeTimeStamp(
     const steady_clock::time_point &timeStamp) {
   auto delta = static_cast<int32_t>(
-      duration_cast<milliseconds>(timeStamp - this->previousTimeStamp).count());
+      duration_cast<milliseconds>(timeStamp - this->previousTimeStamp_)
+          .count());
   if (delta > MAX_SHORT_TIMESTAMP) {
-    dataBuffer->writeShort(static_cast<uint16_t>(INT_TIMESTAMP_TOKEN));
-    dataBuffer->writeInt(delta);
+    dataBuffer_->writeShort(static_cast<uint16_t>(INT_TIMESTAMP_TOKEN));
+    dataBuffer_->writeInt(delta);
   } else {
-    dataBuffer->writeShort(static_cast<uint16_t>(delta));
+    dataBuffer_->writeShort(static_cast<uint16_t>(delta));
   }
-  this->previousTimeStamp = timeStamp;
+  this->previousTimeStamp_ = timeStamp;
 }
 
 bool StatArchiveWriter::resourceInstMapHas(Statistics *sp) {
-  auto p = resourceInstMap.find(sp);
-  if (p != resourceInstMap.end()) {
+  auto p = resourceInstMap_.find(sp);
+  if (p != resourceInstMap_.end()) {
     return true;
   } else {
     return false;
@@ -527,16 +523,16 @@ void StatArchiveWriter::allocateResourceInst(Statistics *s) {
   const auto type = getResourceType(s);
 
   auto ri = std::shared_ptr<ResourceInst>(
-      new ResourceInst(resourceInstId, s, type, dataBuffer));
-  resourceInstMap.insert(
+      new ResourceInst(resourceInstId_, s, type, dataBuffer_));
+  resourceInstMap_.insert(
       std::pair<Statistics *, std::shared_ptr<ResourceInst>>(s, ri));
-  this->dataBuffer->writeByte(RESOURCE_INSTANCE_CREATE_TOKEN);
-  this->dataBuffer->writeInt(resourceInstId);
-  this->dataBuffer->writeUTF(s->getTextId());
-  this->dataBuffer->writeLong(s->getNumericId());
-  this->dataBuffer->writeInt(type->getId());
+  this->dataBuffer_->writeByte(RESOURCE_INSTANCE_CREATE_TOKEN);
+  this->dataBuffer_->writeInt(resourceInstId_);
+  this->dataBuffer_->writeUTF(s->getTextId());
+  this->dataBuffer_->writeLong(s->getNumericId());
+  this->dataBuffer_->writeInt(type->getId());
 
-  resourceInstId++;
+  resourceInstId_++;
 }
 
 const ResourceType *StatArchiveWriter::getResourceType(const Statistics *s) {
@@ -546,40 +542,40 @@ const ResourceType *StatArchiveWriter::getResourceType(const Statistics *s) {
         "could not know the type of the statistics object");
   }
   const ResourceType *rt = nullptr;
-  const auto p = resourceTypeMap.find(type);
-  if (p != resourceTypeMap.end()) {
+  const auto p = resourceTypeMap_.find(type);
+  if (p != resourceTypeMap_.end()) {
     rt = p->second;
   } else {
-    rt = new ResourceType(resourceTypeId, type);
+    rt = new ResourceType(resourceTypeId_, type);
     if (type == nullptr) {
       throw NullPointerException(
           "could not allocate memory for a new resourcetype");
     }
-    resourceTypeMap.emplace(type, rt);
+    resourceTypeMap_.emplace(type, rt);
     // write the type to the archive
-    this->dataBuffer->writeByte(RESOURCE_TYPE_TOKEN);
-    this->dataBuffer->writeInt(resourceTypeId);
-    this->dataBuffer->writeUTF(type->getName());
-    this->dataBuffer->writeUTF(type->getDescription());
+    this->dataBuffer_->writeByte(RESOURCE_TYPE_TOKEN);
+    this->dataBuffer_->writeInt(resourceTypeId_);
+    this->dataBuffer_->writeUTF(type->getName());
+    this->dataBuffer_->writeUTF(type->getDescription());
     auto stats = rt->getStats();
     auto descCnt = rt->getNumOfDescriptors();
-    this->dataBuffer->writeShort(static_cast<int16_t>(descCnt));
+    this->dataBuffer_->writeShort(static_cast<int16_t>(descCnt));
     for (decltype(descCnt) i = 0; i < descCnt; i++) {
       std::string statsName = stats[i]->getName();
-      this->dataBuffer->writeUTF(statsName);
+      this->dataBuffer_->writeUTF(statsName);
       auto sdImpl = std::static_pointer_cast<StatisticDescriptorImpl>(stats[i]);
       if (sdImpl == nullptr) {
         throw NullPointerException(
             "could not down cast to StatisticDescriptorImpl");
       }
-      this->dataBuffer->writeByte(static_cast<int8_t>(sdImpl->getTypeCode()));
-      this->dataBuffer->writeBoolean(stats[i]->isCounter());
-      this->dataBuffer->writeBoolean(stats[i]->isLargerBetter());
-      this->dataBuffer->writeUTF(stats[i]->getUnit());
-      this->dataBuffer->writeUTF(stats[i]->getDescription());
+      this->dataBuffer_->writeByte(static_cast<int8_t>(sdImpl->getTypeCode()));
+      this->dataBuffer_->writeBoolean(stats[i]->isCounter());
+      this->dataBuffer_->writeBoolean(stats[i]->isLargerBetter());
+      this->dataBuffer_->writeUTF(stats[i]->getUnit());
+      this->dataBuffer_->writeUTF(stats[i]->getDescription());
     }
     // increment resourceTypeId
-    resourceTypeId++;
+    resourceTypeId_++;
   }
   return rt;
 }

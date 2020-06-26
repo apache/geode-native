@@ -44,16 +44,16 @@ struct TestObjectState {
 
 class TestObject {
  private:
-  TestObjectState* const state;
+  TestObjectState* const state_;
 
  public:
-  TestObject() : state(nullptr) {}
-  explicit TestObject(TestObjectState* state) : state(state) {}
+  TestObject() : state_(nullptr) {}
+  explicit TestObject(TestObjectState* state) : state_(state) {}
   ~TestObject() {
-    if (state) state->destructed = true;
+    if (state_) state_->destructed = true;
   }
   void close() {
-    if (state) state->closed = true;
+    if (state_) state_->closed = true;
   }
 };
 

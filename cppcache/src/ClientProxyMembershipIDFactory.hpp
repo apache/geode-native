@@ -38,8 +38,8 @@ class ClientProxyMembershipIDFactory {
           std::chrono::seconds::zero());
 
  private:
-  std::string dsName;
-  std::string randString;
+  std::string dsName_;
+  std::string randString_;
 };
 
 }  // namespace client

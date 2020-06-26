@@ -54,30 +54,30 @@ typedef std::unordered_map<std::shared_ptr<PdxType>, int32_t,
 class APACHE_GEODE_EXPORT PdxTypeRegistry
     : public std::enable_shared_from_this<PdxTypeRegistry> {
  private:
-  CacheImpl* cache;
+  CacheImpl* cache_;
 
-  TypeIdVsPdxType typeIdToPdxType;
+  TypeIdVsPdxType typeIdToPdxType_;
 
-  TypeIdVsPdxType remoteTypeIdToMergedPdxType;
+  TypeIdVsPdxType remoteTypeIdToMergedPdxType_;
 
-  TypeNameVsPdxType localTypeToPdxType;
+  TypeNameVsPdxType localTypeToPdxType_;
 
-  PdxTypeToTypeIdMap pdxTypeToTypeIdMap;
+  PdxTypeToTypeIdMap pdxTypeToTypeIdMap_;
 
   // TODO:: preserveData need to be of type WeakHashMap
-  PreservedHashMap preserveData;
+  PreservedHashMap preserveData_;
 
-  mutable ACE_RW_Thread_Mutex g_readerWriterLock;
+  mutable ACE_RW_Thread_Mutex g_readerWriterLock_;
 
-  mutable ACE_RW_Thread_Mutex g_preservedDataLock;
+  mutable ACE_RW_Thread_Mutex g_preservedDataLock_;
 
-  bool pdxIgnoreUnreadFields;
+  bool pdxIgnoreUnreadFields_;
 
-  bool pdxReadSerialized;
+  bool pdxReadSerialized_;
 
-  std::shared_ptr<CacheableHashMap> enumToInt;
+  std::shared_ptr<CacheableHashMap> enumToInt_;
 
-  std::shared_ptr<CacheableHashMap> intToEnum;
+  std::shared_ptr<CacheableHashMap> intToEnum_;
 
  public:
   explicit PdxTypeRegistry(CacheImpl* cache);
@@ -114,16 +114,16 @@ class APACHE_GEODE_EXPORT PdxTypeRegistry
   int32_t getPDXIdForType(const std::string& type, Pool* pool,
                           std::shared_ptr<PdxType> nType, bool checkIfThere);
 
-  bool getPdxIgnoreUnreadFields() const { return pdxIgnoreUnreadFields; }
+  bool getPdxIgnoreUnreadFields() const { return pdxIgnoreUnreadFields_; }
 
-  void setPdxIgnoreUnreadFields(bool value) { pdxIgnoreUnreadFields = value; }
+  void setPdxIgnoreUnreadFields(bool value) { pdxIgnoreUnreadFields_ = value; }
 
-  void setPdxReadSerialized(bool value) { pdxReadSerialized = value; }
+  void setPdxReadSerialized(bool value) { pdxReadSerialized_ = value; }
 
-  bool getPdxReadSerialized() const { return pdxReadSerialized; }
+  bool getPdxReadSerialized() const { return pdxReadSerialized_; }
 
   inline const PreservedHashMap& getPreserveDataMap() const {
-    return preserveData;
+    return preserveData_;
   }
 
   int32_t getEnumValue(std::shared_ptr<EnumInfo> ei);
@@ -133,7 +133,7 @@ class APACHE_GEODE_EXPORT PdxTypeRegistry
   int32_t getPDXIdForType(std::shared_ptr<PdxType> nType, Pool* pool);
 
   ACE_RW_Thread_Mutex& getPreservedDataLock() const {
-    return g_preservedDataLock;
+    return g_preservedDataLock_;
   }
 };
 
