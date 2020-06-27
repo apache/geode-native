@@ -222,6 +222,7 @@ int64_t AtomicStatisticsImpl::_getRawBits(
       return *temp;
     }
   }
+  return 0;
 }
 
 int64_t AtomicStatisticsImpl::getRawBits(

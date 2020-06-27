@@ -327,6 +327,15 @@ const std::string& getThreadLocalExceptionMessage();
       throw ex;
     }
   }
+  LOGINFO("error code: %d", err);
+  message = func;
+  if (exMsg.empty()) {
+    message.append("Unknown error code ").append(std::to_string(err));
+  } else {
+    message.append(exMsg);
+  }
+  UnknownException ex(message);
+  throw ex;
 }
 }  // namespace client
 }  // namespace geode

@@ -1687,6 +1687,7 @@ bool PdxInstanceImpl::hasDefaultBytes(std::shared_ptr<PdxFieldType> pField,
       throw IllegalStateException("hasDefaultBytes unable to find typeID ");
     }
   }
+  throw IllegalStateException("hasDefaultBytes unable to find typeID ");
 }
 
 void PdxInstanceImpl::setField(const std::string& fieldName, bool value) {

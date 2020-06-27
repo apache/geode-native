@@ -141,6 +141,7 @@ int32_t PdxFieldType::getFixedTypeSize() const {
     case PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS:
       return -1;
   }
+  return -1;
 }
 
 std::string PdxFieldType::toString() const {

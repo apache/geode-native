@@ -249,6 +249,7 @@ int64_t OsStatisticsImpl::_getRawBits(
       return *temp;
     }
   }
+  return 0;
 }
 ////////////////////////  inc() Methods  ////////////////////////
 

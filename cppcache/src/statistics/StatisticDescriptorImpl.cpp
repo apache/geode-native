@@ -138,6 +138,8 @@ const std::string& StatisticDescriptorImpl::getTypeCodeName(FieldType code) {
     case DOUBLE_TYPE:
       return DoubleTypeName;
   }
+  std::string s = "Unknown type code:" + std::to_string(code);
+  throw IllegalArgumentException(s.c_str());
 }
 
 /**
@@ -154,6 +156,9 @@ int32_t StatisticDescriptorImpl::getTypeCodeBits(FieldType code) {
     case DOUBLE_TYPE:
       return 64;
   }
+  std::string temp(getTypeCodeName(code));
+  std::string s = "Unknown type code: " + temp;
+  throw IllegalArgumentException(s.c_str());
 }
 
 bool StatisticDescriptorImpl::isCounter() const { return isStatCounter; }
