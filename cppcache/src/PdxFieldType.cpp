@@ -125,7 +125,20 @@ int32_t PdxFieldType::getFixedTypeSize() const {
     case PdxFieldTypes::DATE: {
       return PdxTypes::DATE_SIZE;
     }
-    default:
+    case PdxFieldTypes::UNKNOWN:
+    case PdxFieldTypes::STRING:
+    case PdxFieldTypes::OBJECT:
+    case PdxFieldTypes::BOOLEAN_ARRAY:
+    case PdxFieldTypes::CHAR_ARRAY:
+    case PdxFieldTypes::BYTE_ARRAY:
+    case PdxFieldTypes::SHORT_ARRAY:
+    case PdxFieldTypes::INT_ARRAY:
+    case PdxFieldTypes::LONG_ARRAY:
+    case PdxFieldTypes::FLOAT_ARRAY:
+    case PdxFieldTypes::DOUBLE_ARRAY:
+    case PdxFieldTypes::STRING_ARRAY:
+    case PdxFieldTypes::OBJECT_ARRAY:
+    case PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS:
       return -1;
   }
 }

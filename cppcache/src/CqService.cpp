@@ -68,7 +68,9 @@ void CqService::updateStats() {
       case CqState::STOPPED:
         stats->incNumCqsStopped();
         break;
-      default:
+      case CqState::CLOSED:
+      case CqState::CLOSING:
+      case CqState::INVALID:
         break;
     }
   }

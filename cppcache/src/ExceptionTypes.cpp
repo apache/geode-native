@@ -297,7 +297,25 @@ const std::string& getThreadLocalExceptionMessage();
       PutAllPartialResultException ex(message);
       throw ex;
     }
-    default: {
+    case GF_NOERR:
+    case GF_DEADLK:
+    case GF_EACCES:
+    case GF_ECONFL:
+    case GF_EINVAL:
+    case GF_ETYPE:
+    case GF_NOTOBJ:
+    case GF_NOTSUP:
+    case GF_SCPGBL:
+    case GF_SCPEXC:
+    case GF_OVRFLW:
+    case GF_EINTR:
+    case GF_NOSERVER_FOUND:
+    case GF_SERVER_FAILED:
+    case GF_CLIENT_WAIT_TIMEOUT_REFRESH_PRMETADATA:
+    case GF_CANNOT_PROCESS_GII_REQUEST:
+    case GF_CACHE_ENTRY_UPDATED:
+    case GF_INVALID_DELTA:
+    case GF_EUNDEF: {
       LOGINFO("error code: %d", err);
       message = func;
       if (exMsg.empty()) {

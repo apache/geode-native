@@ -104,7 +104,10 @@ class XmlAuthzCredentialGenerator {
         case ID_PKI:
           getAllowedPkcsAuthz(NO_ROLE);
           break;
-        default:
+        case ID_NONE:
+        case ID_NOOP:
+        case ID_DUMMY2:
+        case ID_DUMMY3:
           break;
       };
 
@@ -142,7 +145,7 @@ class XmlAuthzCredentialGenerator {
         case ADMIN_ROLE:
           role = QUERY_ROLE;
           break;
-        default:
+        case NO_ROLE:
           /* UNNECESSARY role = role*/ break;
       };
 
@@ -156,7 +159,10 @@ class XmlAuthzCredentialGenerator {
         case ID_PKI:
           getAllowedPkcsAuthz(role);
           break;
-        default:
+        case ID_NONE:
+        case ID_NOOP:
+        case ID_DUMMY2:
+        case ID_DUMMY3:
           break;
       };
 
@@ -191,7 +197,7 @@ class XmlAuthzCredentialGenerator {
       case ADMIN_ROLE:
         sprintf(userName, "%s", adminUsers[randomValue(adminUsrSz)]);
         break;
-      default:
+      case NO_ROLE:
         sprintf(userName, PRiUsnm, "user", randomValue(2));
         break;
     };
@@ -240,7 +246,7 @@ class XmlAuthzCredentialGenerator {
                 queryIndices[randomValue(queryIndSz)]);
         break;
       case ADMIN_ROLE:
-      default:
+      case NO_ROLE:
         sprintf(userName, PRiUsnm, userPrefix.c_str(),
                 adminIndices[randomValue(adminIndSz)]);
         break;

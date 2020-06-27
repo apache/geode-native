@@ -44,7 +44,8 @@ LRUAction* LRUAction::newLRUAction(const LRUAction::Action& actionType,
     case LRUAction::DESTROY:
       result = new LRULocalDestroyAction(regionPtr, entriesMapPtr);
       break;
-    default:
+    case LRUAction::LOCAL_INVALIDATE:
+    case LRUAction::INVALID_ACTION:
       /** @TODO throw IllegalArgumentException; */
       break;
   }

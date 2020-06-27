@@ -545,7 +545,10 @@ void CqQueryImpl::updateStats(CqEvent& cqEvent) {
     case CqOperation::OP_TYPE_DESTROY:
       stats->incNumDeletes();
       break;
-    default:
+    case CqOperation::OP_TYPE_INVALID:
+    case CqOperation::OP_TYPE_INVALIDATE:
+    case CqOperation::OP_TYPE_REGION_CLEAR:
+    case CqOperation::OP_TYPE_MARKER:
       break;
   }
 }

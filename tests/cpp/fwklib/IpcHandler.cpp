@@ -228,7 +228,9 @@ bool IpcHandler::sendIpcMsg(IpcMsg msg, int32_t waitSeconds) {
       case IPC_RUN:
       case IPC_DONE:
         return true;
-      default:
+      case IPC_EXITING:
+      case IPC_PING:
+      case IPC_EXIT:
         msg = getIpcMsg(60);
         if (msg == IPC_ACK) return true;
         break;

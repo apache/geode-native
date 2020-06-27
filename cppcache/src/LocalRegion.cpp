@@ -2580,7 +2580,11 @@ bool LocalRegion::invokeCacheWriterForEntryEvent(
           bCacheWriterReturn = m_writer->beforeDestroy(event);
           break;
         }
-        default: {
+        case BEFORE_INVALIDATE:
+        case AFTER_CREATE:
+        case AFTER_UPDATE:
+        case AFTER_INVALIDATE:
+        case AFTER_DESTROY: {
           updateStats = false;
           break;
         }
@@ -2629,7 +2633,10 @@ bool LocalRegion::invokeCacheWriterForRegionEvent(
           bCacheWriterReturn = m_writer->beforeRegionClear(event);
           break;
         }
-        default: {
+        case BEFORE_REGION_INVALIDATE:
+        case AFTER_REGION_INVALIDATE:
+        case AFTER_REGION_DESTROY:
+        case AFTER_REGION_CLEAR: {
           updateStats = false;
           break;
         }
@@ -2699,7 +2706,10 @@ GfErrType LocalRegion::invokeCacheListenerForEntryEvent(
           m_listener->afterInvalidate(event);
           break;
         }
-        default: {
+        case BEFORE_CREATE:
+        case BEFORE_UPDATE:
+        case BEFORE_INVALIDATE:
+        case BEFORE_DESTROY: {
           updateStats = false;
           break;
         }
@@ -2762,7 +2772,9 @@ GfErrType LocalRegion::invokeCacheListenerForRegionEvent(
           m_listener->afterRegionClear(event);
           break;
         }
-        default: {
+        case BEFORE_REGION_INVALIDATE:
+        case BEFORE_REGION_DESTROY:
+        case BEFORE_REGION_CLEAR: {
           updateStats = false;
           break;
         }
