@@ -2569,6 +2569,9 @@ bool LocalRegion::invokeCacheWriterForEntryEvent(
             break;
           }
           // if oldValue is nullptr then fall to BEFORE_CREATE case
+          eventStr = "beforeCreate";
+          bCacheWriterReturn = m_writer->beforeCreate(event);
+          break;
         }
         case BEFORE_CREATE: {
           eventStr = "beforeCreate";
@@ -2690,6 +2693,9 @@ GfErrType LocalRegion::invokeCacheListenerForEntryEvent(
             break;
           }
           // if oldValue is nullptr then fall to AFTER_CREATE case
+          eventStr = "afterCreate";
+          m_listener->afterCreate(event);
+          break;
         }
         case AFTER_CREATE: {
           eventStr = "afterCreate";
