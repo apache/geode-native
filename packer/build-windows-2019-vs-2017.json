@@ -56,7 +56,7 @@
       },
       "disk_size": "100",
       "metadata": {
-        "windows-startup-script-cmd": "dism /Online /NoRestart /Add-Capability /CapabilityName:OpenSSH.Server~~~~0.0.1.0 & dism /Online /NoRestart /Enable-Feature /FeatureName:NetFx3 & winrm quickconfig -quiet & winrm set winrm/config/service/auth @{Basic=\"true\"} & net user Administrator /active:yes"
+        "windows-startup-script-cmd": "dism /Online /NoRestart /Add-Capability /CapabilityName:OpenSSH.Server~~~~0.0.1.0 & dism /Online /NoRestart /Enable-Feature /All /FeatureName:NetFx3 & winrm quickconfig -quiet & winrm set winrm/config/service/auth @{Basic=\"true\"} & net user Administrator /active:yes"
       },
       "communicator": "winrm",
       "winrm_username": "Administrator",
@@ -103,18 +103,23 @@
     {
       "type": "file",
       "source": "windows/aws/init-ssh.ps1",
-      "destination": "$Env:ProgramData/Amazon/EC2-Windows/Launch/Scripts/init-ssh.ps1",
+      "destination": "$Env:ProgramData/ssh/init-ssh.ps1",
       "only": [
         "amazon-ebs"
       ]
     },
     {
+      "type": "file",
+      "source": "windows/google/init-ssh.ps1",
+      "destination": "$Env:ProgramData/ssh/init-ssh.ps1",
+      "only": [
+        "googlecompute"
+      ]
+    },
+    {
       "type": "powershell",
       "inline": [
-        "$Env:ProgramData\\Amazon\\EC2-Windows\\Launch\\Scripts\\init-ssh.ps1 -schedule"
-      ],
-      "only": [
-        "amazon-ebs"
+        ". $Env:ProgramData\\ssh\\init-ssh.ps1 -schedule"
       ]
     },
     {
