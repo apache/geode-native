@@ -1,0 +1,355 @@
+#! helm upgrade concourse concourse/concourse --set web.service.api.type=LoadBalancer,concourse.web.externalUrl=http://35.222.132.46:8080
+#! ~/Downloads/fly -t test set-pipeline -p test -c ../../ci/pipeline.yml
+#! kubectl create secret generic gcr-json-key --from-literal "value=$(cat ~/Downloads/gemfire-dev-6e8864f0768c.json)" --namespace=concourse-main
+
+#@ def resource(name, type, source):
+name: #@ name
+type: #@ type
+source: #@ source
+#@ end
+
+#@ def docker_image_resource(name, repository, tag="latest", username=None, password=None):
+#@ return resource(name, "docker-image", {
+#@   "repository": repository,
+#@   "tag": tag,
+#@   "username": username,
+#@   "password": password
+#@  })
+#@ end
+
+#@ def gcr_image_resource(name, repository, tag="latest"):
+#@ return docker_image_resource(name, repository, tag, "_json_key", "((gcr-json-key))")
+#@ end
+
+#@ def git_resource(name, uri, branch, paths=[], depth=1):
+#@ return resource(name, "git", {
+#@   "branch": branch,
+#@   "depth": depth,
+#@   "paths": paths,
+#@   "uri": uri
+#@  })
+#@ end
+
+#@ def create_instance(image_family):
+task: create
+image: task-image
+config:
+  platform: linux
+  outputs:
+    - name: identity
+    - name: instance
+  params:
+    BUILD_IMAGE_FAMILY: #@ image_family
+  run:
+    path: bash
+    args:
+      - -c
+      - |
+        set -ueo pipefail
+
+        BUILD_PREFIX=${BUILD_PREFIX:-build}
+        BUILD_USER=${BUILD_USER:-build}
+        BUILD_INSTANCE=${BUILD_INSTANCE:-"${BUILD_PREFIX}-$(uuidgen|tr '[:upper:]' '[:lower:]')"}
+        BUILD_PROJECT=${BUILD_PROJECT:-gemfire-dev}
+        BUILD_ZONE=${BUILD_ZONE:-us-central1-f}
+        BUILD_SUBNET=${BUILD_SUBNET:-default}
+        BUILD_IMAGE_PROJECT=${BUILD_IMAGE_PROJECT:-${BUILD_PROJECT}}
+        BUILD_IMAGE_FAMILY=${BUILD_IMAGE_FAMILY:-jbarrett-10-2-build-rhel-7}
+        BUILD_IDENTITY_DIR=${BUILD_IDENTITY_DIR:-$(pwd)/identity}
+        BUILD_INSTANCE_DIR=${BUILD_INSTANCE_DIR:-$(pwd)/instance}
+
+        if [ ! -d "${BUILD_IDENTITY_DIR}" ]; then
+        echo "${BUILD_IDENTITY_DIR} not found."
+        exit 1
+        fi
+
+        if [ ! -d "${BUILD_INSTANCE_DIR}" ]; then
+        echo "${BUILD_INSTANCE_DIR} not found."
+        exit 1
+        fi
+
+        ssh_key_file=${BUILD_IDENTITY_DIR}/${BUILD_USER}
+        ssh_pubkey_file=${ssh_key_file}.pub
+        ssh-keygen -m pem  -t rsa -f ${ssh_key_file} -C ${BUILD_USER} -N '' <<< y
+        ssh_pubkey=$(cat ${ssh_pubkey_file})
+
+        ssh_keys_file=${BUILD_IDENTITY_DIR}/ssh_keys_file
+        echo "${BUILD_USER}:${ssh_pubkey}" > ${ssh_keys_file}
+
+        instance_file=${BUILD_INSTANCE_DIR}/instance.json
+        gcloud compute instances create ${BUILD_INSTANCE} \
+        --format json \
+        --project=${BUILD_PROJECT} \
+        --zone=${BUILD_ZONE} \
+        --subnet=${BUILD_SUBNET} \
+        --machine-type=n1-standard-8 \
+        --boot-disk-size=200GB \
+        --boot-disk-type=pd-standard \
+        --boot-disk-device-name=${BUILD_INSTANCE} \
+        --image-project=${BUILD_IMAGE_PROJECT} \
+        --image-family=${BUILD_IMAGE_FAMILY} \
+        --metadata-from-file ssh-keys=${ssh_keys_file} \
+        | tee ${instance_file}
+
+        instance_file=${BUILD_INSTANCE_DIR}/instance.json
+        if [ ! -r "${instance_file}" ]; then
+        echo "${instance_file} not readable."
+        exit 1
+        fi
+
+        instance_name=$(jq -r '.[0].name' ${instance_file})
+        external_ip=$(jq -r '.[0].networkInterfaces[0].accessConfigs[0].natIP' ${instance_file})
+
+        echo "ssh -o StrictHostKeyChecking=no -o PasswordAuthentication=no -i ${ssh_key_file} ${BUILD_USER}@${external_ip}"
+#@ end
+
+#@ def await_instance():
+task: await
+image: task-image
+config:
+  platform: linux
+  inputs:
+    - name: identity
+    - name: instance
+  params:
+  run:
+    path: bash
+    args:
+      - -c
+      - |
+        set -ueo pipefail
+
+        BUILD_USER=${BUILD_USER:-build}
+        BUILD_PROJECT=${BUILD_PROJECT:-gemfire-dev}
+        BUILD_ZONE=${BUILD_ZONE:-us-central1-f}
+        BUILD_IDENTITY_DIR=${BUILD_IDENTITY_DIR:-$(pwd)/identity}
+        BUILD_INSTANCE_DIR=${BUILD_INSTANCE_DIR:-$(pwd)/instance}
+
+
+        if [ ! -d "${BUILD_IDENTITY_DIR}" ]; then
+          echo "${BUILD_IDENTITY_DIR} not found."
+          exit 1
+        fi
+
+        if [ ! -d "${BUILD_INSTANCE_DIR}" ]; then
+          echo "${BUILD_INSTANCE_DIR} not found."
+          exit 1
+        fi
+
+        ssh_key_file=${BUILD_IDENTITY_DIR}/${BUILD_USER}
+        if [ ! -r "${ssh_key_file}" ]; then
+          echo "${ssh_key_file} not readable."
+          exit 1
+        fi
+
+        instance_file=${BUILD_INSTANCE_DIR}/instance.json
+        if [ ! -r "${instance_file}" ]; then
+          echo "${instance_file} not readable."
+          exit 1
+        fi
+
+        instance_name=$(jq -r '.[0].name' ${instance_file})
+        external_ip=$(jq -r '.[0].networkInterfaces[0].accessConfigs[0].natIP' ${instance_file})
+
+        echo "Waiting for ssh on ${instance_name} to be ready."
+        console_file=$(mktemp)
+        console_next=0
+        while ! ssh -o ConnectTimeout=10 -o StrictHostKeyChecking=no -o PasswordAuthentication=no -i ${ssh_key_file} ${BUILD_USER}@${external_ip} echo ready 2>/dev/null ; do
+          gcloud compute instances get-serial-port-output ${instance_name} \
+              --start ${console_next} \
+              --project=${BUILD_PROJECT} \
+              --zone=${BUILD_ZONE} \
+              --format json \
+              > ${console_file}
+
+          console_next=$(jq -r '.next' ${console_file})
+          console_contents=$(jq -r '.contents' ${console_file})
+          if [ ! -z "${console_contents}" ]; then
+            echo -n "${console_contents}"
+          fi
+        done
+
+        rm -f ${console_file}
+#@ end
+
+#@ def build(params={}):
+task: build
+image: task-image
+config:
+  platform: linux
+  inputs:
+    - name: identity
+    - name: instance
+    - name: source
+  outputs:
+    - name: package
+  params: #@ params
+  run:
+    path: bash
+    args:
+      - -c
+      - |
+        set -ueo pipefail
+
+        BUILD_USER=${BUILD_USER:-build}
+        BUILD_PROJECT=${BUILD_PROJECT:-gemfire-dev}
+        BUILD_ZONE=${BUILD_ZONE:-us-central1-f}
+        BUILD_IDENTITY_DIR=${BUILD_IDENTITY_DIR:-$(pwd)/identity}
+        BUILD_INSTANCE_DIR=${BUILD_INSTANCE_DIR:-$(pwd)/instance}
+
+        SSH_OPTIONS=${SSH_OPTIONS:-"-o StrictHostKeyChecking=no -o PasswordAuthentication=no"}
+
+        if [ ! -d "${BUILD_IDENTITY_DIR}" ]; then
+          echo "${BUILD_IDENTITY_DIR} not found."
+          exit 1
+        fi
+
+        if [ ! -d "${BUILD_INSTANCE_DIR}" ]; then
+          echo "${BUILD_INSTANCE_DIR} not found."
+          exit 1
+        fi
+
+        ssh_key_file=${BUILD_IDENTITY_DIR}/${BUILD_USER}
+        if [ ! -r "${ssh_key_file}" ]; then
+          echo "${ssh_key_file} not readable."
+          exit 1
+        fi
+
+        instance_file=${BUILD_INSTANCE_DIR}/instance.json
+        if [ ! -r "${instance_file}" ]; then
+          echo "${instance_file} not readable."
+          exit 1
+        fi
+
+        external_ip=$(jq -r '.[0].networkInterfaces[0].accessConfigs[0].natIP' ${instance_file})
+
+        function remote_shell {
+          ssh ${SSH_OPTIONS} -i ${ssh_key_file} ${BUILD_USER}@${external_ip} "$@"
+        }
+
+        pushd source
+        git_url=$(git remote get-url origin)
+        git_rev=$(git rev-parse HEAD)
+        popd
+
+        remote_shell git clone ${git_url}
+        remote_shell cmake -E chdir geode-native git checkout ${git_rev}
+        remote_shell cmake -E make_directory build
+        remote_shell cmake -E chdir build cmake ../geode-native ${CMAKE_CONFIGURE_FLAGS} -DCMAKE_BUILD_TYPE=${CMAKE_CONFIG}
+        remote_shell cmake --build build --config ${CMAKE_CONFIG} -- ${CMAKE_BUILD_FLAGS}
+        remote_shell cmake --build build --config ${CMAKE_CONFIG} --target docs -- ${CMAKE_BUILD_FLAGS}
+        remote_shell cmake -E chdir build cpack -C ${CMAKE_CONFIG} -G "${CPACK_GENERATORS}"
+
+        #scp -o StrictHostKeyChecking=no -o PasswordAuthentication=no -i ${ssh_key_file} ${BUILD_USER}@${external_ip}:build/*.zip package/
+#@ end
+
+#@ def delete_instance():
+task: delete
+image: task-image
+config:
+  platform: linux
+  inputs:
+    - name: identity
+    - name: instance
+  params:
+  run:
+    path: bash
+    args:
+      - -c
+      - |
+        set -ueo pipefail
+
+        BUILD_PROJECT=${BUILD_PROJECT:-gemfire-dev}
+        BUILD_ZONE=${BUILD_ZONE:-us-central1-f}
+        BUILD_INSTANCE_DIR=${BUILD_INSTANCE_DIR:-$(pwd)/instance}
+
+
+        if [ ! -d "${BUILD_INSTANCE_DIR}" ]; then
+          echo "${BUILD_INSTANCE_DIR} not found."
+          exit 1
+        fi
+
+        instance_file=${BUILD_INSTANCE_DIR}/instance.json
+        if [ ! -r "${instance_file}" ]; then
+          echo "${instance_file} not readable."
+          exit 1
+        fi
+
+        instance_name=$(jq -r '.[0].name' ${instance_file})
+
+        gcloud compute instances delete ${instance_name} \
+            --project=${BUILD_PROJECT} \
+            --zone=${BUILD_ZONE} \
+            --delete-disks=all \
+            --quiet
+
+#@ end
+
+
+#! TODO data
+#@ geode_native_uri = "http://github.com/pivotal-jbarrett/geode-native.git"
+#@ geode_native_branch = "wip/images-gcp"
+#@ windows_build_params = {
+#@   "CMAKE_CONFIGURE_FLAGS": "-A x64 -Thost=x64",
+#@   "CMAKE_CONFIG": "Debug",
+#@   "CMAKE_BUILD_FLAGS": "/m",
+#@   "CPACK_GENERATORS": "ZIP"
+#@ }
+#@ linux_build_params = {
+#@   "CMAKE_CONFIGURE_FLAGS": "",
+#@   "CMAKE_CONFIG": "Debug",
+#@   "CMAKE_BUILD_FLAGS": "-j8",
+#@   "CPACK_GENERATORS": "TGZ"
+#@ }
+
+resources:
+  - #@ gcr_image_resource("task-image", "gcr.io/gemfire-dev/gemfire-develop-alpine-tools")
+  - #@ git_resource("source", geode_native_uri, geode_native_branch)
+    #!  - #@ git_resource("ci", geode_native_uri, geode_native_branch, ["ci/*"])
+
+jobs:
+  - name: build-windows
+    plan:
+      - get: task-image
+      - get: source
+      - do:
+          - #@ create_instance("jbarrett-10-2-build-windows-2019-vs-2017")
+          - #@ await_instance()
+          - #@ build(windows_build_params)
+        ensure: #@ delete_instance()
+  - name: build-rhel-7
+    plan:
+      - get: task-image
+      - get: source
+      - do:
+          - #@ create_instance("jbarrett-10-2-build-rhel-7")
+          - #@ await_instance()
+          - #@ build(linux_build_params)
+        ensure: #@ delete_instance()
+  - name: build-rhel-8
+    plan:
+      - get: task-image
+      - get: source
+      - do:
+          - #@ create_instance("jbarrett-10-2-build-rhel-8")
+          - #@ await_instance()
+          - #@ build(linux_build_params)
+        ensure: #@ delete_instance()
+  - name: build-ubuntu-16-04
+    plan:
+      - get: task-image
+      - get: source
+      - do:
+          - #@ create_instance("jbarrett-10-2-build-ubuntu-16-04")
+          - #@ await_instance()
+          - #@ build(linux_build_params)
+        ensure: #@ delete_instance()
+  - name: build-ubuntu-18-04
+    plan:
+      - get: task-image
+      - get: source
+      - do:
+          - #@ create_instance("jbarrett-10-2-build-ubuntu-18-04")
+          - #@ await_instance()
+          - #@ build(linux_build_params)
+        ensure: #@ delete_instance()
