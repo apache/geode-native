@@ -245,7 +245,9 @@ void PdxInstanceImpl::writeField(PdxWriter& writer,
       break;
     }
     case PdxFieldTypes::UNKNOWN:
-    case PdxFieldTypes::OBJECT: { writer.writeObject(fieldName, value); }
+    case PdxFieldTypes::OBJECT: {
+      writer.writeObject(fieldName, value);
+    }
   }
 }
 std::shared_ptr<WritablePdxInstance> PdxInstanceImpl::createWriter() {
