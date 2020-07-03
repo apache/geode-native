@@ -172,7 +172,9 @@ config:
         rm -f ${console_file}
 #@ end
 
-#@ def build(params={}):
+#@ load("@ytt:template", "template")
+
+#@ def build(config, params={}):
 task: build
 image: task-image
 config:
@@ -183,7 +185,9 @@ config:
     - name: source
   outputs:
     - name: package
-  params: #@ params
+  params:
+    _: #@ template.replace(params)
+    _: #@ template.replace({"CMAKE_CONFIG": config})
   run:
     path: bash
     args:
@@ -235,7 +239,7 @@ config:
         remote_shell git clone ${git_url}
         remote_shell cmake -E chdir geode-native git checkout ${git_rev}
         remote_shell cmake -E make_directory build
-        remote_shell cmake -E chdir build cmake ../geode-native ${CMAKE_CONFIGURE_FLAGS} -DCMAKE_BUILD_TYPE=${CMAKE_CONFIG}
+        remote_shell cmake -E chdir build cmake ../geode-native ${CMAKE_CONFIGURE_FLAGS} -DCMAKE_config=${CMAKE_CONFIG}
         remote_shell cmake --build build --config ${CMAKE_CONFIG} -- ${CMAKE_BUILD_FLAGS}
         remote_shell cmake --build build --config ${CMAKE_CONFIG} --target docs -- ${CMAKE_BUILD_FLAGS}
         remote_shell cmake -E chdir build cpack -C ${CMAKE_CONFIG} -G "${CPACK_GENERATORS}"
@@ -285,19 +289,28 @@ config:
 
 #@ end
 
+#@ def build_job(name, config, image_family, params):
+name: #@ "build-" + name + "-" + config
+plan:
+  - get: task-image
+  - get: source
+  - do:
+      - #@ create_instance(image_family)
+      - #@ await_instance()
+      - #@ build(config, params)
+    ensure: #@ delete_instance()
+#@ end
 
 #! TODO data
 #@ geode_native_uri = "http://github.com/pivotal-jbarrett/geode-native.git"
 #@ geode_native_branch = "wip/images-gcp"
 #@ windows_build_params = {
 #@   "CMAKE_CONFIGURE_FLAGS": "-A x64 -Thost=x64",
-#@   "CMAKE_CONFIG": "Debug",
 #@   "CMAKE_BUILD_FLAGS": "/m",
 #@   "CPACK_GENERATORS": "ZIP"
 #@ }
 #@ linux_build_params = {
 #@   "CMAKE_CONFIGURE_FLAGS": "",
-#@   "CMAKE_CONFIG": "Debug",
 #@   "CMAKE_BUILD_FLAGS": "-j8",
 #@   "CPACK_GENERATORS": "TGZ"
 #@ }
@@ -308,48 +321,10 @@ resources:
     #!  - #@ git_resource("ci", geode_native_uri, geode_native_branch, ["ci/*"])
 
 jobs:
-  - name: build-windows
-    plan:
-      - get: task-image
-      - get: source
-      - do:
-          - #@ create_instance("jbarrett-10-2-build-windows-2019-vs-2017")
-          - #@ await_instance()
-          - #@ build(windows_build_params)
-        ensure: #@ delete_instance()
-  - name: build-rhel-7
-    plan:
-      - get: task-image
-      - get: source
-      - do:
-          - #@ create_instance("jbarrett-10-2-build-rhel-7")
-          - #@ await_instance()
-          - #@ build(linux_build_params)
-        ensure: #@ delete_instance()
-  - name: build-rhel-8
-    plan:
-      - get: task-image
-      - get: source
-      - do:
-          - #@ create_instance("jbarrett-10-2-build-rhel-8")
-          - #@ await_instance()
-          - #@ build(linux_build_params)
-        ensure: #@ delete_instance()
-  - name: build-ubuntu-16-04
-    plan:
-      - get: task-image
-      - get: source
-      - do:
-          - #@ create_instance("jbarrett-10-2-build-ubuntu-16-04")
-          - #@ await_instance()
-          - #@ build(linux_build_params)
-        ensure: #@ delete_instance()
-  - name: build-ubuntu-18-04
-    plan:
-      - get: task-image
-      - get: source
-      - do:
-          - #@ create_instance("jbarrett-10-2-build-ubuntu-18-04")
-          - #@ await_instance()
-          - #@ build(linux_build_params)
-        ensure: #@ delete_instance()
+  #@ for config in ["Debug", "RelWithDebInfo"]:
+  - #@ build_job("windows", config, "jbarrett-10-2-build-windows-2019-vs-2017", windows_build_params)
+  - #@ build_job("rhel-7", config, "jbarrett-10-2-build-rhel-7", linux_build_params)
+  - #@ build_job("rhel-8", config, "jbarrett-10-2-build-rhel-8", linux_build_params)
+  - #@ build_job("ubuntu-16-04", config, "jbarrett-10-2-build-ubuntu-16-04", linux_build_params)
+  - #@ build_job("ubuntu-18-04", config, "jbarrett-10-2-build-ubuntu-18-04", linux_build_params)
+  #@ end
