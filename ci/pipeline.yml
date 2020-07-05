@@ -2,10 +2,14 @@
 #! ~/Downloads/fly -t test set-pipeline -p test -c ../../ci/pipeline.yml
 #! kubectl create secret generic gcr-json-key --from-literal "value=$(cat ~/Downloads/gemfire-dev-6e8864f0768c.json)" --namespace=concourse-main
 
-#@ def resource(name, type, source):
+#@ load("remote.lib.txt", "remote_shell", "remote_build_variables", "run_unit_tests", "run_integration_tests", "run_legacy_integration_tests")
+#@ load("@ytt:data", "data")
+
+#@ def resource(name, type, source, icon=None):
 name: #@ name
 type: #@ type
 source: #@ source
+icon: #@ icon
 #@ end
 
 #@ def docker_image_resource(name, repository, tag="latest", username=None, password=None):
@@ -14,7 +18,7 @@ source: #@ source
 #@   "tag": tag,
 #@   "username": username,
 #@   "password": password
-#@  })
+#@  }, "docker")
 #@ end
 
 #@ def gcr_image_resource(name, repository, tag="latest"):
@@ -27,7 +31,7 @@ source: #@ source
 #@   "depth": depth,
 #@   "paths": paths,
 #@   "uri": uri
-#@  })
+#@  }, "github")
 #@ end
 
 #@ def create_instance(image_family):
@@ -44,29 +48,16 @@ config:
     path: bash
     args:
       - -c
+      #@yaml/text-templated-strings
       - |
         set -ueo pipefail
+        (@= remote_build_variables() @)
 
         BUILD_PREFIX=${BUILD_PREFIX:-build}
-        BUILD_USER=${BUILD_USER:-build}
         BUILD_INSTANCE=${BUILD_INSTANCE:-"${BUILD_PREFIX}-$(uuidgen|tr '[:upper:]' '[:lower:]')"}
-        BUILD_PROJECT=${BUILD_PROJECT:-gemfire-dev}
-        BUILD_ZONE=${BUILD_ZONE:-us-central1-f}
         BUILD_SUBNET=${BUILD_SUBNET:-default}
         BUILD_IMAGE_PROJECT=${BUILD_IMAGE_PROJECT:-${BUILD_PROJECT}}
         BUILD_IMAGE_FAMILY=${BUILD_IMAGE_FAMILY:-jbarrett-10-2-build-rhel-7}
-        BUILD_IDENTITY_DIR=${BUILD_IDENTITY_DIR:-$(pwd)/identity}
-        BUILD_INSTANCE_DIR=${BUILD_INSTANCE_DIR:-$(pwd)/instance}
-
-        if [ ! -d "${BUILD_IDENTITY_DIR}" ]; then
-        echo "${BUILD_IDENTITY_DIR} not found."
-        exit 1
-        fi
-
-        if [ ! -d "${BUILD_INSTANCE_DIR}" ]; then
-        echo "${BUILD_INSTANCE_DIR} not found."
-        exit 1
-        fi
 
         ssh_key_file=${BUILD_IDENTITY_DIR}/${BUILD_USER}
         ssh_pubkey_file=${ssh_key_file}.pub
@@ -78,29 +69,22 @@ config:
 
         instance_file=${BUILD_INSTANCE_DIR}/instance.json
         gcloud compute instances create ${BUILD_INSTANCE} \
-        --format json \
-        --project=${BUILD_PROJECT} \
-        --zone=${BUILD_ZONE} \
-        --subnet=${BUILD_SUBNET} \
-        --machine-type=n1-standard-8 \
-        --boot-disk-size=200GB \
-        --boot-disk-type=pd-standard \
-        --boot-disk-device-name=${BUILD_INSTANCE} \
-        --image-project=${BUILD_IMAGE_PROJECT} \
-        --image-family=${BUILD_IMAGE_FAMILY} \
-        --metadata-from-file ssh-keys=${ssh_keys_file} \
-        | tee ${instance_file}
+            --format json \
+            --project=${BUILD_PROJECT} \
+            --zone=${BUILD_ZONE} \
+            --subnet=${BUILD_SUBNET} \
+            --machine-type=n1-standard-8 \
+            --boot-disk-size=200GB \
+            --boot-disk-type=pd-standard \
+            --boot-disk-device-name=${BUILD_INSTANCE} \
+            --image-project=${BUILD_IMAGE_PROJECT} \
+            --image-family=${BUILD_IMAGE_FAMILY} \
+            --metadata-from-file ssh-keys=${ssh_keys_file} \
+            | tee ${instance_file}
 
-        instance_file=${BUILD_INSTANCE_DIR}/instance.json
-        if [ ! -r "${instance_file}" ]; then
-        echo "${instance_file} not readable."
-        exit 1
-        fi
+        (@=remote_shell() @)
 
-        instance_name=$(jq -r '.[0].name' ${instance_file})
-        external_ip=$(jq -r '.[0].networkInterfaces[0].accessConfigs[0].natIP' ${instance_file})
-
-        echo "ssh -o StrictHostKeyChecking=no -o PasswordAuthentication=no -i ${ssh_key_file} ${BUILD_USER}@${external_ip}"
+        echo "ssh ${SSH_OPTIONS} -i ${ssh_key_file} ${BUILD_USER}@${external_ip}"
 #@ end
 
 #@ def await_instance():
@@ -116,45 +100,18 @@ config:
     path: bash
     args:
       - -c
+      #@yaml/text-templated-strings
       - |
         set -ueo pipefail
-
-        BUILD_USER=${BUILD_USER:-build}
-        BUILD_PROJECT=${BUILD_PROJECT:-gemfire-dev}
-        BUILD_ZONE=${BUILD_ZONE:-us-central1-f}
-        BUILD_IDENTITY_DIR=${BUILD_IDENTITY_DIR:-$(pwd)/identity}
-        BUILD_INSTANCE_DIR=${BUILD_INSTANCE_DIR:-$(pwd)/instance}
-
-
-        if [ ! -d "${BUILD_IDENTITY_DIR}" ]; then
-          echo "${BUILD_IDENTITY_DIR} not found."
-          exit 1
-        fi
-
-        if [ ! -d "${BUILD_INSTANCE_DIR}" ]; then
-          echo "${BUILD_INSTANCE_DIR} not found."
-          exit 1
-        fi
-
-        ssh_key_file=${BUILD_IDENTITY_DIR}/${BUILD_USER}
-        if [ ! -r "${ssh_key_file}" ]; then
-          echo "${ssh_key_file} not readable."
-          exit 1
-        fi
-
-        instance_file=${BUILD_INSTANCE_DIR}/instance.json
-        if [ ! -r "${instance_file}" ]; then
-          echo "${instance_file} not readable."
-          exit 1
-        fi
+        (@=remote_shell() @)
+        SSH_OPTIONS="${SSH_OPTIONS} -o ConnectTimeout=10"
 
         instance_name=$(jq -r '.[0].name' ${instance_file})
-        external_ip=$(jq -r '.[0].networkInterfaces[0].accessConfigs[0].natIP' ${instance_file})
 
         echo "Waiting for ssh on ${instance_name} to be ready."
         console_file=$(mktemp)
         console_next=0
-        while ! ssh -o ConnectTimeout=10 -o StrictHostKeyChecking=no -o PasswordAuthentication=no -i ${ssh_key_file} ${BUILD_USER}@${external_ip} echo ready 2>/dev/null ; do
+        while ! remote_shell echo ready 2>/dev/null ; do
           gcloud compute instances get-serial-port-output ${instance_name} \
               --start ${console_next} \
               --project=${BUILD_PROJECT} \
@@ -192,44 +149,11 @@ config:
     path: bash
     args:
       - -c
+      #@yaml/text-templated-strings
       - |
         set -ueo pipefail
 
-        BUILD_USER=${BUILD_USER:-build}
-        BUILD_PROJECT=${BUILD_PROJECT:-gemfire-dev}
-        BUILD_ZONE=${BUILD_ZONE:-us-central1-f}
-        BUILD_IDENTITY_DIR=${BUILD_IDENTITY_DIR:-$(pwd)/identity}
-        BUILD_INSTANCE_DIR=${BUILD_INSTANCE_DIR:-$(pwd)/instance}
-
-        SSH_OPTIONS=${SSH_OPTIONS:-"-o StrictHostKeyChecking=no -o PasswordAuthentication=no"}
-
-        if [ ! -d "${BUILD_IDENTITY_DIR}" ]; then
-          echo "${BUILD_IDENTITY_DIR} not found."
-          exit 1
-        fi
-
-        if [ ! -d "${BUILD_INSTANCE_DIR}" ]; then
-          echo "${BUILD_INSTANCE_DIR} not found."
-          exit 1
-        fi
-
-        ssh_key_file=${BUILD_IDENTITY_DIR}/${BUILD_USER}
-        if [ ! -r "${ssh_key_file}" ]; then
-          echo "${ssh_key_file} not readable."
-          exit 1
-        fi
-
-        instance_file=${BUILD_INSTANCE_DIR}/instance.json
-        if [ ! -r "${instance_file}" ]; then
-          echo "${instance_file} not readable."
-          exit 1
-        fi
-
-        external_ip=$(jq -r '.[0].networkInterfaces[0].accessConfigs[0].natIP' ${instance_file})
-
-        function remote_shell {
-          ssh ${SSH_OPTIONS} -i ${ssh_key_file} ${BUILD_USER}@${external_ip} "$@"
-        }
+        (@= remote_shell() @)
 
         pushd source
         git_url=$(git remote get-url origin)
@@ -247,6 +171,31 @@ config:
         #scp -o StrictHostKeyChecking=no -o PasswordAuthentication=no -i ${ssh_key_file} ${BUILD_USER}@${external_ip}:build/*.zip package/
 #@ end
 
+#@ def remote_task(name, config, commands, timeout, params={}):
+task: #@ name
+timeout: #@ timeout
+image: task-image
+attempts: 5
+config:
+  platform: linux
+  inputs:
+    - name: identity
+    - name: instance
+  outputs:
+  params:
+    _: #@ template.replace(params)
+    _: #@ template.replace({"CMAKE_CONFIG": config})
+  run:
+    path: bash
+    args:
+      - -c
+      #@yaml/text-templated-strings
+      - |
+        set -ueo pipefail
+        (@= remote_shell() @)
+        (@= commands @)
+#@ end
+
 #@ def delete_instance():
 task: delete
 image: task-image
@@ -260,24 +209,10 @@ config:
     path: bash
     args:
       - -c
+      #@yaml/text-templated-strings
       - |
         set -ueo pipefail
-
-        BUILD_PROJECT=${BUILD_PROJECT:-gemfire-dev}
-        BUILD_ZONE=${BUILD_ZONE:-us-central1-f}
-        BUILD_INSTANCE_DIR=${BUILD_INSTANCE_DIR:-$(pwd)/instance}
-
-
-        if [ ! -d "${BUILD_INSTANCE_DIR}" ]; then
-          echo "${BUILD_INSTANCE_DIR} not found."
-          exit 1
-        fi
-
-        instance_file=${BUILD_INSTANCE_DIR}/instance.json
-        if [ ! -r "${instance_file}" ]; then
-          echo "${instance_file} not readable."
-          exit 1
-        fi
+        (@= remote_build_variables() @)
 
         instance_name=$(jq -r '.[0].name' ${instance_file})
 
@@ -286,7 +221,6 @@ config:
             --zone=${BUILD_ZONE} \
             --delete-disks=all \
             --quiet
-
 #@ end
 
 #@ def build_job(name, config, image_family, params):
@@ -298,6 +232,9 @@ plan:
       - #@ create_instance(image_family)
       - #@ await_instance()
       - #@ build(config, params)
+      - #@ remote_task("unit-tests", config, run_unit_tests(), "5m", params)
+      - #@ remote_task("integration-tests", config, run_integration_tests(), "30m", params)
+      - #@ remote_task("legacy-integration-tests", config, run_legacy_integration_tests(), "2h", params)
     ensure: #@ delete_instance()
 #@ end
 
