@@ -62,11 +62,10 @@ config:
     - name: identity
     - name: instance
   params:
-    BUILD_IMAGE_FILE: image/name
   run:
     path: bash
     args:
-      - -xc
+      - -c
       #@yaml/text-templated-strings
       - |
         set -ueo pipefail
@@ -76,22 +75,9 @@ config:
         BUILD_INSTANCE=${BUILD_INSTANCE:-"${BUILD_PREFIX}-$(uuidgen|tr '[:upper:]' '[:lower:]')"}
         BUILD_SUBNET=${BUILD_SUBNET:-default}
         BUILD_IMAGE_PROJECT=${BUILD_IMAGE_PROJECT:-${BUILD_PROJECT}}
-        BUILD_IMAGE=${BUILD_IMAGE:-''}
-        BUILD_IMAGE_FILE=${BUILD_IMAGE_FILE:-''}
-        BUILD_IMAGE_FAMILY=${BUILD_IMAGE_FAMILY:-''}
+        BUILD_IMAGE_FILE=${BUILD_IMAGE_FILE:-'image/name'}
 
-        if [ -z "${BUILD_IMAGE}" ]; then
-          if [ -n "${BUILD_IMAGE_FILE}" ]; then
-            BUILD_IMAGE=$(cat ${BUILD_IMAGE_FILE})
-          elif [ -n "${BUILD_IMAGE_FAMILY}" ]; then
-            BUILD_IMAGE=$(gcloud compute images describe-from-family ${BUILD_IMAGE_FAMILY} --project=${BUILD_IMAGE_PROJECT} --format 'value(name)')
-          fi
-        fi
-
-        if [ -z "${BUILD_IMAGE}" ]; then
-          echo "No build image."
-          exit 1;
-        fi
+        build_image=$(cat ${BUILD_IMAGE_FILE})
 
         ssh_key_file=${BUILD_IDENTITY_DIR}/${BUILD_USER}
         ssh_pubkey_file=${ssh_key_file}.pub
@@ -112,7 +98,7 @@ config:
             --boot-disk-type=pd-standard \
             --boot-disk-device-name=${BUILD_INSTANCE} \
             --image-project=${BUILD_IMAGE_PROJECT} \
-            --image=${BUILD_IMAGE} \
+            --image=${build_image} \
             --metadata-from-file ssh-keys=${ssh_keys_file} \
             | tee ${instance_file}
 

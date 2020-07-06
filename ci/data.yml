@@ -11,25 +11,25 @@ builds:
     image_family: build-rhel-7
     params:
       CMAKE_CONFIGURE_FLAGS:
-      CMAKE_BUILD_FLAGS: "-j8"
+      CMAKE_BUILD_FLAGS: "-j16"
       CPACK_GENERATORS: "TGZ"
   - name: rhel-8
     image_family: build-rhel-8
     params:
       CMAKE_CONFIGURE_FLAGS:
-      CMAKE_BUILD_FLAGS: "-j8"
+      CMAKE_BUILD_FLAGS: "-j16"
       CPACK_GENERATORS: "TGZ"
   - name: ubuntu-16.04
     image_family: build-ubuntu-16-04
     params:
       CMAKE_CONFIGURE_FLAGS:
-      CMAKE_BUILD_FLAGS: "-j8"
+      CMAKE_BUILD_FLAGS: "-j16"
       CPACK_GENERATORS: "TGZ"
   - name: ubuntu-18.04
     image_family: build-ubuntu-18-04
     params:
       CMAKE_CONFIGURE_FLAGS:
-      CMAKE_BUILD_FLAGS: "-j8"
+      CMAKE_BUILD_FLAGS: "-j16"
       CPACK_GENERATORS: "TGZ"
 
 configs:
