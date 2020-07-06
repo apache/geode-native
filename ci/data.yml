@@ -1,2 +1,39 @@
 #@data/values
 ---
+builds:
+  - name: windows
+    image_family: build-windows-2019-vs-2017
+    params:
+      CMAKE_CONFIGURE_FLAGS: "-A x64 -Thost=x64"
+      CMAKE_BUILD_FLAGS: "/m"
+      CPACK_GENERATORS: "ZIP"
+  - name: rhel-7
+    image_family: build-rhel-7
+    params:
+      CMAKE_CONFIGURE_FLAGS:
+      CMAKE_BUILD_FLAGS: "-j8"
+      CPACK_GENERATORS: "TGZ"
+  - name: rhel-8
+    image_family: build-rhel-8
+    params:
+      CMAKE_CONFIGURE_FLAGS:
+      CMAKE_BUILD_FLAGS: "-j8"
+      CPACK_GENERATORS: "TGZ"
+  - name: ubuntu-16.04
+    image_family: build-ubuntu-16-04
+    params:
+      CMAKE_CONFIGURE_FLAGS:
+      CMAKE_BUILD_FLAGS: "-j8"
+      CPACK_GENERATORS: "TGZ"
+  - name: ubuntu-18.04
+    image_family: build-ubuntu-18-04
+    params:
+      CMAKE_CONFIGURE_FLAGS:
+      CMAKE_BUILD_FLAGS: "-j8"
+      CPACK_GENERATORS: "TGZ"
+
+configs:
+  - name: debug
+    config: Debug
+  - name: release
+    config: RelWithDebInfo
