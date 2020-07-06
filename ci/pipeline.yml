@@ -34,36 +34,39 @@ icon: #@ icon
 #@  }, "github")
 #@ end
 
+#@ def image_family_name(family):
+#@ return "jbarrett-10-2-" + family
+#@ end
+
 #@ def gci_resource_name(family):
-#@ return family + "-gci"
+#@ return image_family_name(family) + "-gci"
 #@ end
 
 #@ def gci_resource(family):
 #@ return resource(gci_resource_name(family), "gci", {
 #@   "key": "((gcr-json-key))",
 #@   "family_project": "gemfire-dev",
-#@   "family": family,
+#@   "family": image_family_name(family),
 #@  }, "google-cloud")
 #@ end
 
-#@ def create_instance(image_family):
+#@ def create_instance(image_resource):
 task: create
 image: task-image
 config:
   platform: linux
   inputs:
-    - name: #@ gci_resource_name(image_family)
+    - name: #@ image_resource
       path: image
   outputs:
     - name: identity
     - name: instance
   params:
     BUILD_IMAGE_FILE: image/name
-    BUILD_IMAGE_FAMILY: #@ image_family
   run:
     path: bash
     args:
-      - -c
+      - -xc
       #@yaml/text-templated-strings
       - |
         set -ueo pipefail
@@ -109,7 +112,7 @@ config:
             --boot-disk-type=pd-standard \
             --boot-disk-device-name=${BUILD_INSTANCE} \
             --image-project=${BUILD_IMAGE_PROJECT} \
-            --image-family=${BUILD_IMAGE_FAMILY} \
+            --image=${BUILD_IMAGE} \
             --metadata-from-file ssh-keys=${ssh_keys_file} \
             | tee ${instance_file}
 
@@ -162,7 +165,7 @@ config:
 
 #@ load("@ytt:template", "template")
 
-#@ def build(config, params={}):
+#@ def build_task(config, params={}):
 task: build
 image: task-image
 config:
@@ -254,35 +257,31 @@ config:
             --quiet
 #@ end
 
-#@ def build_job(name, config, image_family, params):
-name: #@ "build-" + name + "-" + config
+#@ def build_job(build, config):
+name: #@ "build-" + build.name + "-" + config.name
 plan:
-  - get: task-image
-  - get: source
-  - get: #@ gci_resource_name(image_family)
+  - in_parallel:
+      fail_fast: true
+      steps:
+        - get: task-image
+          trigger: true
+        - get: source
+          trigger: true
+        - get: #@ gci_resource_name(build.image_family)
+          trigger: true
   - do:
-      - #@ create_instance(image_family)
+      - #@ create_instance(gci_resource_name(build.image_family))
       - #@ await_instance()
-      - #@ build(config, params)
-      - #@ remote_task("unit-tests", config, run_unit_tests(), "5m", params)
-      - #@ remote_task("integration-tests", config, run_integration_tests(), "30m", params)
-      - #@ remote_task("legacy-integration-tests", config, run_legacy_integration_tests(), "2h", params)
+      - #@ build_task(config.config, build.params)
+      - #@ remote_task("unit-tests", config.config, run_unit_tests(), "5m", build.params)
+      - #@ remote_task("integration-tests", config.config, run_integration_tests(), "30m", build.params)
+      - #@ remote_task("legacy-integration-tests", config.config, run_legacy_integration_tests(), "1h", build.params)
     ensure: #@ delete_instance()
 #@ end
 
 #! TODO data
 #@ geode_native_uri = "http://github.com/pivotal-jbarrett/geode-native.git"
 #@ geode_native_branch = "wip/images-gcp"
-#@ windows_build_params = {
-#@   "CMAKE_CONFIGURE_FLAGS": "-A x64 -Thost=x64",
-#@   "CMAKE_BUILD_FLAGS": "/m",
-#@   "CPACK_GENERATORS": "ZIP"
-#@ }
-#@ linux_build_params = {
-#@   "CMAKE_CONFIGURE_FLAGS": "",
-#@   "CMAKE_BUILD_FLAGS": "-j8",
-#@   "CPACK_GENERATORS": "TGZ"
-#@ }
 
 resource_types:
   - name: gci
@@ -293,18 +292,13 @@ resource_types:
 resources:
   - #@ gcr_image_resource("task-image", "gcr.io/gemfire-dev/gemfire-develop-alpine-tools")
   - #@ git_resource("source", geode_native_uri, geode_native_branch)
-  #!  - #@ git_resource("ci", geode_native_uri, geode_native_branch, ["ci/*"])
-  - #@ gci_resource("jbarrett-10-2-build-windows-2019-vs-2017")
-  - #@ gci_resource("jbarrett-10-2-build-rhel-7")
-  - #@ gci_resource("jbarrett-10-2-build-rhel-8")
-  - #@ gci_resource("jbarrett-10-2-build-ubuntu-16-04")
-  - #@ gci_resource("jbarrett-10-2-build-ubuntu-18-04")
+  #@ for build in data.values.builds:
+  - #@ gci_resource(build.image_family)
+    #@ end
 
 jobs:
-  #@ for config in ["Debug", "RelWithDebInfo"]:
-  - #@ build_job("windows", config, "jbarrett-10-2-build-windows-2019-vs-2017", windows_build_params)
-  - #@ build_job("rhel-7", config, "jbarrett-10-2-build-rhel-7", linux_build_params)
-  - #@ build_job("rhel-8", config, "jbarrett-10-2-build-rhel-8", linux_build_params)
-  - #@ build_job("ubuntu-16-04", config, "jbarrett-10-2-build-ubuntu-16-04", linux_build_params)
-  - #@ build_job("ubuntu-18-04", config, "jbarrett-10-2-build-ubuntu-18-04", linux_build_params)
+  #@ for build in data.values.builds:
+  #@ for config in data.values.configs:
+  - #@ build_job(build, config)
+    #@ end
   #@ end
