@@ -23,4 +23,4 @@ cd /usr/local
 curl -L "https://www.apache.org/dyn/closer.cgi?action=download&filename=geode/${GEODE_VERSION}/apache-geode-${GEODE_VERSION}.tgz" | \
         tar xzf -
 
-echo export GEODE_HOME=/usr/local/apache-geode-${GEODE_VERSION} > /etc/profile.d/geode.sh
+echo GEODE_HOME=/usr/local/apache-geode-${GEODE_VERSION} >> /etc/environment
