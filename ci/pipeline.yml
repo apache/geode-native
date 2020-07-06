@@ -73,7 +73,7 @@ config:
             --project=${BUILD_PROJECT} \
             --zone=${BUILD_ZONE} \
             --subnet=${BUILD_SUBNET} \
-            --machine-type=n1-standard-8 \
+            --machine-type=e2-standard-16 \
             --boot-disk-size=200GB \
             --boot-disk-type=pd-standard \
             --boot-disk-device-name=${BUILD_INSTANCE} \
@@ -212,7 +212,7 @@ config:
       #@yaml/text-templated-strings
       - |
         set -ueo pipefail
-        (@= remote_build_variables() @)
+        (@= remote_shell() @)
 
         instance_name=$(jq -r '.[0].name' ${instance_file})
 
