@@ -1,5 +1,9 @@
 #@data/values
 ---
+source:
+  repository: "http://github.com/pivotal-jbarrett/geode-native.git"
+  branch: "wip/images-gcp"
+
 default:
   build:
     name: #@ None

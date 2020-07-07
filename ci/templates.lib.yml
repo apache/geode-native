@@ -1,0 +1,303 @@
+#! helm upgrade concourse concourse/concourse --set web.service.api.type=LoadBalancer,concourse.web.externalUrl=http://35.222.132.46:8080
+#! ~/Downloads/fly -t test set-pipeline -p test -c ../../ci/pipeline.yml
+#! kubectl create secret generic gcr-json-key --from-literal "value=$(cat ~/Downloads/gemfire-dev-6e8864f0768c.json)" --namespace=concourse-main
+
+#@ load("remote.lib.txt",
+#@      "remote_shell",
+#@      "remote_build_variables",
+#@      "run_cpp_unit_tests",
+#@      "run_cpp_integration_tests",
+#@      "run_cpp_legacy_integration_tests",
+#@      "run_net_unit_tests",
+#@      "run_net_integration_tests",
+#@      "run_net_legacy_integration_tests")
+
+#@ def resource(name, type, source, icon=None):
+name: #@ name
+type: #@ type
+source: #@ source
+icon: #@ icon
+#@ end
+
+#@ def docker_image_resource(name, repository, tag="latest", username=None, password=None):
+#@ return resource(name, "docker-image", {
+#@   "repository": repository,
+#@   "tag": tag,
+#@   "username": username,
+#@   "password": password
+#@  }, "docker")
+#@ end
+
+#@ def gcr_image_resource(name, repository, tag="latest"):
+#@ return docker_image_resource(name, repository, tag, "_json_key", "((gcr-json-key))")
+#@ end
+
+#@ def git_resource(name, uri, branch, paths=[], depth=1):
+#@ return resource(name, "git", {
+#@   "branch": branch,
+#@   "depth": depth,
+#@   "paths": paths,
+#@   "uri": uri
+#@  }, "github")
+#@ end
+
+#@ def image_family_name(family):
+#@ return "jbarrett-10-2-" + family
+#@ end
+
+#@ def gci_resource_name(family):
+#@ return image_family_name(family) + "-gci"
+#@ end
+
+#@ def gci_resource(family):
+#@ return resource(gci_resource_name(family), "gci", {
+#@   "key": "((gcr-json-key))",
+#@   "family_project": "gemfire-dev",
+#@   "family": image_family_name(family),
+#@  }, "google-cloud")
+#@ end
+
+#@ def create_instance(image_resource):
+task: create
+image: task-image
+config:
+  platform: linux
+  inputs:
+    - name: #@ image_resource
+      path: image
+  outputs:
+    - name: identity
+    - name: instance
+  params:
+  run:
+    path: bash
+    args:
+      - -c
+      #@yaml/text-templated-strings
+      - |
+        set -ueo pipefail
+        (@= remote_build_variables() @)
+
+        BUILD_PREFIX=${BUILD_PREFIX:-build}
+        BUILD_INSTANCE=${BUILD_INSTANCE:-"${BUILD_PREFIX}-$(uuidgen|tr '[:upper:]' '[:lower:]')"}
+        BUILD_SUBNET=${BUILD_SUBNET:-default}
+        BUILD_IMAGE_PROJECT=${BUILD_IMAGE_PROJECT:-${BUILD_PROJECT}}
+        BUILD_IMAGE_FILE=${BUILD_IMAGE_FILE:-'image/name'}
+
+        build_image=$(cat ${BUILD_IMAGE_FILE})
+
+        ssh_key_file=${BUILD_IDENTITY_DIR}/${BUILD_USER}
+        ssh_pubkey_file=${ssh_key_file}.pub
+        ssh-keygen -m pem  -t rsa -f ${ssh_key_file} -C ${BUILD_USER} -N '' <<< y
+        ssh_pubkey=$(cat ${ssh_pubkey_file})
+
+        ssh_keys_file=${BUILD_IDENTITY_DIR}/ssh_keys_file
+        echo "${BUILD_USER}:${ssh_pubkey}" > ${ssh_keys_file}
+
+        instance_file=${BUILD_INSTANCE_DIR}/instance.json
+        gcloud compute instances create ${BUILD_INSTANCE} \
+            --format json \
+            --project=${BUILD_PROJECT} \
+            --zone=${BUILD_ZONE} \
+            --subnet=${BUILD_SUBNET} \
+            --machine-type=e2-standard-16 \
+            --boot-disk-size=200GB \
+            --boot-disk-type=pd-standard \
+            --boot-disk-device-name=${BUILD_INSTANCE} \
+            --image-project=${BUILD_IMAGE_PROJECT} \
+            --image=${build_image} \
+            --metadata-from-file ssh-keys=${ssh_keys_file} \
+            | tee ${instance_file}
+
+        (@=remote_shell() @)
+
+        echo "ssh ${SSH_OPTIONS} -i ${ssh_key_file} ${BUILD_USER}@${external_ip}"
+#@ end
+
+#@ def await_instance():
+task: await
+image: task-image
+config:
+  platform: linux
+  inputs:
+    - name: identity
+    - name: instance
+  params:
+  run:
+    path: bash
+    args:
+      - -c
+      #@yaml/text-templated-strings
+      - |
+        set -ueo pipefail
+        (@=remote_shell() @)
+        SSH_OPTIONS="${SSH_OPTIONS} -o ConnectTimeout=10"
+
+        instance_name=$(jq -r '.[0].name' ${instance_file})
+
+        echo "Waiting for ssh on ${instance_name} to be ready."
+        console_file=$(mktemp)
+        console_next=0
+        while ! remote_shell echo ready 2>/dev/null ; do
+          gcloud compute instances get-serial-port-output ${instance_name} \
+              --start ${console_next} \
+              --project=${BUILD_PROJECT} \
+              --zone=${BUILD_ZONE} \
+              --format json \
+              > ${console_file}
+
+          console_next=$(jq -r '.next' ${console_file})
+          console_contents=$(jq -r '.contents' ${console_file})
+          if [ ! -z "${console_contents}" ]; then
+            echo -n "${console_contents}"
+          fi
+        done
+
+        rm -f ${console_file}
+#@ end
+
+#@ load("@ytt:template", "template")
+
+#@ def build_task(config, params={}):
+task: build
+image: task-image
+config:
+  platform: linux
+  inputs:
+    - name: identity
+    - name: instance
+    - name: source
+  outputs:
+    - name: package
+  params:
+    _: #@ template.replace(params)
+    _: #@ template.replace({"CMAKE_CONFIG": config})
+  run:
+    path: bash
+    args:
+      - -c
+      #@yaml/text-templated-strings
+      - |
+        set -ueo pipefail
+
+        (@= remote_shell() @)
+
+        pushd source
+        git_url=$(git remote get-url origin)
+        git_rev=$(git rev-parse HEAD)
+        popd
+
+        remote_shell git clone ${git_url} source
+        remote_shell cmake -E chdir source git checkout ${git_rev}
+        remote_shell cmake -E make_directory build
+        remote_shell cmake -E chdir build cmake ../source ${CMAKE_CONFIGURE_FLAGS} -DCMAKE_config=${CMAKE_CONFIG}
+        remote_shell cmake --build build --config ${CMAKE_CONFIG} -- ${CMAKE_BUILD_FLAGS}
+        remote_shell cmake --build build --config ${CMAKE_CONFIG} --target docs -- ${CMAKE_BUILD_FLAGS}
+        remote_shell cmake -E chdir build cpack -C ${CMAKE_CONFIG} -G "${CPACK_GENERATORS}"
+
+        #scp -o StrictHostKeyChecking=no -o PasswordAuthentication=no -i ${ssh_key_file} ${BUILD_USER}@${external_ip}:build/*.zip package/
+#@ end
+
+#@ def remote_task(name, config, commands, timeout, params={}, attempts=1):
+task: #@ name
+timeout: #@ timeout
+image: task-image
+attempts: #@ attempts
+config:
+  platform: linux
+  inputs:
+    - name: identity
+    - name: instance
+  outputs:
+  params:
+    _: #@ template.replace(params)
+    _: #@ template.replace({"CMAKE_CONFIG": config})
+  run:
+    path: bash
+    args:
+      - -c
+      #@yaml/text-templated-strings
+      - |
+        set -ueo pipefail
+        (@= remote_shell() @)
+        (@= commands @)
+#@ end
+
+#@ def cpp_unit_test_task(build, config):
+#@ return remote_task("cpp-unit-tests", config.config, run_cpp_unit_tests(), "5m", build.params, 5)
+#@ end
+
+#@ def cpp_integration_test_task(build, config):
+#@ return remote_task("cpp-integration-tests", config.config, run_cpp_integration_tests(), "30m", build.params, 5)
+#@ end
+
+#@ def cpp_legacy_integration_test_task(build, config):
+#@ return remote_task("cpp-legacy-integration-tests", config.config, run_cpp_legacy_integration_tests(), "1h", build.params, 5)
+#@ end
+
+#@ def net_unit_test_task(build, config):
+#@ return remote_task(".net-unit-tests", config.config, run_net_unit_tests(), "5m", build.params)
+#@ end
+
+#@ def net_integration_test_task(build, config):
+#@ return remote_task(".net-integration-tests", config.config, run_net_integration_tests(), "30m", build.params)
+#@ end
+
+#@ def net_legacy_integration_test_task(build, config):
+#@ return remote_task(".net-legacy-integration-tests", config.config, run_net_legacy_integration_tests(), "1h", build.params, 5)
+#@ end
+
+#@ def delete_instance():
+task: delete
+image: task-image
+config:
+  platform: linux
+  inputs:
+    - name: identity
+    - name: instance
+  params:
+  run:
+    path: bash
+    args:
+      - -c
+      #@yaml/text-templated-strings
+      - |
+        set -ueo pipefail
+        (@= remote_shell() @)
+
+        instance_name=$(jq -r '.[0].name' ${instance_file})
+
+        gcloud compute instances delete ${instance_name} \
+            --project=${BUILD_PROJECT} \
+            --zone=${BUILD_ZONE} \
+            --delete-disks=all \
+            --quiet
+#@ end
+
+#@ def build_job(build, config):
+name: #@ "build-" + build.name + "-" + config.name
+plan:
+  - in_parallel:
+      fail_fast: true
+      steps:
+        - get: task-image
+          trigger: true
+        - get: source
+          trigger: true
+        - get: #@ gci_resource_name(build.image_family)
+          trigger: true
+  - do:
+      - #@ create_instance(gci_resource_name(build.image_family))
+      - #@ await_instance()
+      - #@ build_task(config.config, build.params)
+      - #@ cpp_unit_test_task(build, config)
+      - #@ cpp_integration_test_task(build, config)
+      - #@ cpp_legacy_integration_test_task(build, config)
+      #@ if build.with_dot_net:
+      - #@ net_unit_test_task(build, config)
+      - #@ net_integration_test_task(build, config)
+      - #@ net_legacy_integration_test_task(build, config)
+      #@ end
+    ensure: #@ delete_instance()
+#@ end
+
