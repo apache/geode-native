@@ -2,8 +2,18 @@
 #! ~/Downloads/fly -t test set-pipeline -p test -c ../../ci/pipeline.yml
 #! kubectl create secret generic gcr-json-key --from-literal "value=$(cat ~/Downloads/gemfire-dev-6e8864f0768c.json)" --namespace=concourse-main
 
-#@ load("remote.lib.txt", "remote_shell", "remote_build_variables", "run_unit_tests", "run_integration_tests", "run_legacy_integration_tests")
+#@ load("remote.lib.txt",
+#@      "remote_shell",
+#@      "remote_build_variables",
+#@      "run_cpp_unit_tests",
+#@      "run_cpp_integration_tests",
+#@      "run_cpp_legacy_integration_tests",
+#@      "run_net_unit_tests",
+#@      "run_net_integration_tests",
+#@      "run_net_legacy_integration_tests")
 #@ load("@ytt:data", "data")
+#@ load("@ytt:overlay", "overlay")
+#@ load("@ytt:struct", "struct")
 
 #@ def resource(name, type, source, icon=None):
 name: #@ name
@@ -180,10 +190,10 @@ config:
         git_rev=$(git rev-parse HEAD)
         popd
 
-        remote_shell git clone ${git_url}
-        remote_shell cmake -E chdir geode-native git checkout ${git_rev}
+        remote_shell git clone ${git_url} source
+        remote_shell cmake -E chdir source git checkout ${git_rev}
         remote_shell cmake -E make_directory build
-        remote_shell cmake -E chdir build cmake ../geode-native ${CMAKE_CONFIGURE_FLAGS} -DCMAKE_config=${CMAKE_CONFIG}
+        remote_shell cmake -E chdir build cmake ../source ${CMAKE_CONFIGURE_FLAGS} -DCMAKE_config=${CMAKE_CONFIG}
         remote_shell cmake --build build --config ${CMAKE_CONFIG} -- ${CMAKE_BUILD_FLAGS}
         remote_shell cmake --build build --config ${CMAKE_CONFIG} --target docs -- ${CMAKE_BUILD_FLAGS}
         remote_shell cmake -E chdir build cpack -C ${CMAKE_CONFIG} -G "${CPACK_GENERATORS}"
@@ -191,11 +201,11 @@ config:
         #scp -o StrictHostKeyChecking=no -o PasswordAuthentication=no -i ${ssh_key_file} ${BUILD_USER}@${external_ip}:build/*.zip package/
 #@ end
 
-#@ def remote_task(name, config, commands, timeout, params={}):
+#@ def remote_task(name, config, commands, timeout, params={}, attempts=1):
 task: #@ name
 timeout: #@ timeout
 image: task-image
-attempts: 5
+attempts: #@ attempts
 config:
   platform: linux
   inputs:
@@ -214,6 +224,30 @@ config:
         set -ueo pipefail
         (@= remote_shell() @)
         (@= commands @)
+#@ end
+
+#@ def cpp_unit_test_task(build, config):
+#@ return remote_task("cpp-unit-tests", config.config, run_cpp_unit_tests(), "5m", build.params, 5)
+#@ end
+
+#@ def cpp_integration_test_task(build, config):
+#@ return remote_task("cpp-integration-tests", config.config, run_cpp_integration_tests(), "30m", build.params, 5)
+#@ end
+
+#@ def cpp_legacy_integration_test_task(build, config):
+#@ return remote_task("cpp-legacy-integration-tests", config.config, run_cpp_legacy_integration_tests(), "1h", build.params, 5)
+#@ end
+
+#@ def net_unit_test_task(build, config):
+#@ return remote_task(".net-unit-tests", config.config, run_net_unit_tests(), "5m", build.params)
+#@ end
+
+#@ def net_integration_test_task(build, config):
+#@ return remote_task(".net-integration-tests", config.config, run_net_integration_tests(), "30m", build.params)
+#@ end
+
+#@ def net_legacy_integration_test_task(build, config):
+#@ return remote_task(".net-legacy-integration-tests", config.config, run_net_legacy_integration_tests(), "1h", build.params, 5)
 #@ end
 
 #@ def delete_instance():
@@ -259,11 +293,21 @@ plan:
       - #@ create_instance(gci_resource_name(build.image_family))
       - #@ await_instance()
       - #@ build_task(config.config, build.params)
-      - #@ remote_task("unit-tests", config.config, run_unit_tests(), "5m", build.params)
-      - #@ remote_task("integration-tests", config.config, run_integration_tests(), "30m", build.params)
-      - #@ remote_task("legacy-integration-tests", config.config, run_legacy_integration_tests(), "1h", build.params)
+      - #@ cpp_unit_test_task(build, config)
+      - #@ cpp_integration_test_task(build, config)
+      - #@ cpp_legacy_integration_test_task(build, config)
+      #@ if build.with_dot_net:
+      - #@ net_unit_test_task(build, config)
+      - #@ net_integration_test_task(build, config)
+      - #@ net_legacy_integration_test_task(build, config)
+      #@ end
     ensure: #@ delete_instance()
 #@ end
+
+#@ def extends_build(build):
+#@ return struct.make(**overlay.apply(data.values.default.build, build))
+#@ end
+
 
 #! TODO data
 #@ geode_native_uri = "http://github.com/pivotal-jbarrett/geode-native.git"
@@ -278,13 +322,11 @@ resource_types:
 resources:
   - #@ gcr_image_resource("task-image", "gcr.io/gemfire-dev/gemfire-develop-alpine-tools")
   - #@ git_resource("source", geode_native_uri, geode_native_branch)
-  #@ for build in data.values.builds:
-  - #@ gci_resource(build.image_family)
-    #@ end
+  #@ for/end build in data.values.builds:
+  - #@ gci_resource(extends_build(build).image_family)
 
 jobs:
   #@ for build in data.values.builds:
-  #@ for config in data.values.configs:
-  - #@ build_job(build, config)
-    #@ end
+  #@ for/end config in data.values.configs:
+  - #@ build_job(extends_build(build), config)
   #@ end
