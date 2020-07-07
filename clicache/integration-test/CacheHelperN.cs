@@ -321,7 +321,6 @@ namespace Apache.Geode.Client.UnitTests
     private const string JavaServerStopArgs = "stop server";
     private const string LocatorStartArgs = "start locator";
     private const string LocatorStopArgs = "stop locator";
-    private const int LocatorPort = 34755;
     private const int MaxWaitMillis = 60000;
     private static char PathSep = Path.DirectorySeparatorChar;
 
@@ -1764,23 +1763,23 @@ namespace Apache.Geode.Client.UnitTests
     {
       if (HOST_PORT_1 == 0)
       {
-        HOST_PORT_1 = Util.RandPort(10000, 64000);
-        HOST_PORT_2 = Util.RandPort(10000, 64000);
-        HOST_PORT_3 = Util.RandPort(10000, 64000);
-        HOST_PORT_4 = Util.RandPort(10000, 64000);
+        HOST_PORT_1 = Util.GetAvailablePort();
+        HOST_PORT_2 = Util.GetAvailablePort();
+        HOST_PORT_3 = Util.GetAvailablePort();
+        HOST_PORT_4 = Util.GetAvailablePort();
       }
 
       if (LOCATOR_PORT_1 == 0)
       {
-        LOCATOR_PORT_1 = Util.RandPort(10000, 64000);
-        LOCATOR_PORT_2 = Util.RandPort(10000, 64000);
-        LOCATOR_PORT_3 = Util.RandPort(10000, 64000);
-        LOCATOR_PORT_4 = Util.RandPort(10000, 64000);
+        LOCATOR_PORT_1 = Util.GetAvailablePort();
+        LOCATOR_PORT_2 = Util.GetAvailablePort();
+        LOCATOR_PORT_3 = Util.GetAvailablePort();
+        LOCATOR_PORT_4 = Util.GetAvailablePort();
       }
 
       if (JMX_MANAGER_PORT == 0)
       {
-        JMX_MANAGER_PORT = Util.RandPort(10000, 64000);
+        JMX_MANAGER_PORT = Util.GetAvailablePort();
       }
 
     }
@@ -1805,10 +1804,6 @@ namespace Apache.Geode.Client.UnitTests
     public static void StartJavaLocator(int locatorNum, string startDir)
     {
       StartJavaLocator(locatorNum, startDir, null);
-    }
-    public static int getBaseLocatorPort()
-    {
-      return LocatorPort;
     }
 
     public static void StartJavaLocator(int locatorNum, string startDir,
