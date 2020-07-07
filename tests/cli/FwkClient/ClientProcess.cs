@@ -32,7 +32,7 @@ namespace Apache.Geode.Client.FwkClient
     public static IChannel clientChannel = null;
     public static string bbUrl;
     public static string logFile = null;
-    static int Main(string[] args)
+    static void Main(string[] args)
     {
       string myId = "0";
       try
@@ -78,9 +78,7 @@ namespace Apache.Geode.Client.FwkClient
       {
         Util.Log("FATAL: Client {0}, Exception caught: {1}", myId, ex);
       }
-      System.Threading.Thread.Sleep(TimeSpan.FromMinutes(10));
-      Util.Log("FATAL: Client {0}, Terminating after timeout.", myId);
-      return -1;
+      System.Threading.Thread.Sleep(System.Threading.Timeout.Infinite);
     }
 
     private static void ShowUsage(string[] args)
