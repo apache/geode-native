@@ -49,13 +49,14 @@ remote_shell cmake -E chdir build/cppcache/test ctest -C ${CMAKE_CONFIG} -j8 --t
 (@ def run_cpp_integration_tests(): -@)
 remote_shell taskkill /t /f /im ctest.exe /im cpp-integration-test.exe /im java.exe || true
 remote_shell 'pkill ^ctest$; pkill ^cpp-integration-test$; pkill ^java$' || true
-remote_shell cmake -E chdir build/cppcache/integration/test ctest -C ${CMAKE_CONFIG} -j8 --timeout=500 --stop-time=1200 --output-on-failure --rerun-failed -E ^BasicIPv6Test
+remote_shell cmake -E chdir build/cppcache/integration/test ctest -C ${CMAKE_CONFIG} -j8 --timeout=500 --output-on-failure --rerun-failed -E ^BasicIPv6Test
 (@- end @)
 
 (@ def run_cpp_legacy_integration_tests(): -@)
+set -x
 remote_shell taskkill /t /f /im ctest.exe /im test* /im java.exe || true
 remote_shell 'pkill ^ctest$; pkill ^test; pkill ^java$' || true
-remote_shell cmake -E chdir build/cppcache/integration-test ctest -C ${CMAKE_CONFIG} -j8 --timeout=500 --stop-time=2700 --output-on-failure --rerun-failed
+remote_shell cmake -E chdir build/cppcache/integration-test ctest -C ${CMAKE_CONFIG} -j6 --timeout=500 --output-on-failure --rerun-failed
 (@- end @)
 
 (@ def run_net_unit_tests(): -@)
@@ -70,5 +71,5 @@ remote_shell cmake -E chdir build/clicache/integration-test2 ../packages/xunit.r
 
 (@ def run_net_legacy_integration_tests(): -@)
 remote_shell taskkill /t /f /im ctest.exe /im nunit-console.exe /im nunit-agent.exe /im fwkclient.exe /im java.exe || true
-remote_shell cmake -E chdir build/clicache/integration-test ctest -C ${CMAKE_CONFIG} -j8 --timeout=1000 --stop-time=2700 --output-on-failure --rerun-failed
+remote_shell cmake -E chdir build/clicache/integration-test ctest -C ${CMAKE_CONFIG} -j6 --timeout=1000 --output-on-failure --rerun-failed
 (@- end @)
