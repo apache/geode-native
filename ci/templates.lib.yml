@@ -277,27 +277,31 @@ config:
 #@ def build_job(build, config):
 name: #@ "build-" + build.name + "-" + config.name
 plan:
-  - in_parallel:
-      fail_fast: true
-      steps:
-        - get: task-image
-          trigger: true
-        - get: source
-          trigger: true
-        - get: #@ gci_resource_name(build.image_family)
-          trigger: true
   - do:
-      - #@ create_instance(gci_resource_name(build.image_family))
-      - #@ await_instance()
-      - #@ build_task(config.config, build.params)
-      - #@ cpp_unit_test_task(build, config)
-      - #@ cpp_integration_test_task(build, config)
-      - #@ cpp_legacy_integration_test_task(build, config)
-      #@ if build.with_dot_net:
-      - #@ net_unit_test_task(build, config)
-      - #@ net_integration_test_task(build, config)
-      - #@ net_legacy_integration_test_task(build, config)
-      #@ end
+      - in_parallel:
+          fail_fast: true
+          steps:
+            - get: source
+              trigger: true
+            - do:
+                - in_parallel:
+                    fail_fast: true
+                    steps:
+                      - get: task-image
+                        trigger: true
+                      - get: #@ gci_resource_name(build.image_family)
+                        trigger: true
+                - #@ create_instance(gci_resource_name(build.image_family))
+                - #@ await_instance()
+      - do:
+          - #@ build_task(config.config, build.params)
+          - #@ cpp_unit_test_task(build, config)
+          - #@ cpp_integration_test_task(build, config)
+          - #@ cpp_legacy_integration_test_task(build, config)
+          #@ if build.with_dot_net:
+          - #@ net_unit_test_task(build, config)
+          - #@ net_integration_test_task(build, config)
+          - #@ net_legacy_integration_test_task(build, config)
+          #@ end
     ensure: #@ delete_instance()
 #@ end
-
