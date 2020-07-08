@@ -62,7 +62,7 @@ class APACHE_GEODE_EXPORT CqQuery {
 
   /**
    * Get teh query object generated for this CQs query.
-   * @return Query object fort he query string
+   * @return Query object for the query string
    */
   virtual std::shared_ptr<Query> getQuery() const = 0;
 
