@@ -198,7 +198,7 @@ config:
         #scp -o StrictHostKeyChecking=no -o PasswordAuthentication=no -i ${ssh_key_file} ${BUILD_USER}@${external_ip}:build/*.zip package/
 #@ end
 
-#@ def remote_task(name, config, commands, timeout, params={}, attempts=1):
+#@ def remote_task(name, config, commands, timeout, params={}, attempts=None):
 task: #@ name
 timeout: #@ timeout
 image: task-image
