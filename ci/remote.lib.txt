@@ -38,6 +38,11 @@ external_ip=$(jq -r '.[0].networkInterfaces[0].accessConfigs[0].natIP' ${instanc
 function remote_shell {
   ssh ${SSH_OPTIONS} -i ${ssh_key_file} ${BUILD_USER}@${external_ip} "$@"
 }
+
+function remote_copy_recursive {
+  scp ${SSH_OPTIONS} -i ${ssh_key_file} -q -r "${BUILD_USER}@${external_ip}:${1}" "$2"
+}
+
 (@- end @)
 
 (@ def run_cpp_unit_tests(): -@)
