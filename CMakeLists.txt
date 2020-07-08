@@ -256,7 +256,6 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     -Wno-header-hygiene #TODO fix
     -Wno-shorten-64-to-32 #TODO fix
     -Wno-conversion #TODO fix
-    -Wno-shadow-field-in-constructor #TODO fix
     -Wno-missing-variable-declarations #TODO fix
     -Wno-switch-enum #TODO fix
     -Wno-reserved-id-macro #TODO fix

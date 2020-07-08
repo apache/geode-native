@@ -32,7 +32,7 @@ namespace client {
 
 ClientProxyMembershipIDFactory::ClientProxyMembershipIDFactory(
     std::string dsName)
-    : dsName(std::move(dsName)) {
+    : dsName_(std::move(dsName)) {
   static const auto alphabet =
       "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_";
   static const auto numChars = (sizeof(alphabet) / sizeof(char)) - 2;
@@ -41,16 +41,16 @@ ClientProxyMembershipIDFactory::ClientProxyMembershipIDFactory(
   std::default_random_engine rng(rd());
   std::uniform_int_distribution<> dist(0, numChars);
 
-  randString.reserve(7 + 10 + 15);
-  randString.append("Native_");
-  std::generate_n(std::back_inserter(randString), 10,
+  randString_.reserve(7 + 10 + 15);
+  randString_.append("Native_");
+  std::generate_n(std::back_inserter(randString_), 10,
                   [&]() { return alphabet[dist(rng)]; });
 
   auto pid = boost::this_process::get_id();
-  randString.append(std::to_string(pid));
+  randString_.append(std::to_string(pid));
 
   LOGINFO("Using %s as random data for ClientProxyMembershipID",
-          randString.c_str());
+          randString_.c_str());
 }
 
 std::unique_ptr<ClientProxyMembershipID> ClientProxyMembershipIDFactory::create(
@@ -59,7 +59,7 @@ std::unique_ptr<ClientProxyMembershipID> ClientProxyMembershipIDFactory::create(
   const auto hostname = boost::asio::ip::host_name();
   const ACE_INET_Addr address("", hostname.c_str(), "tcp");
   return std::unique_ptr<ClientProxyMembershipID>(
-      new ClientProxyMembershipID(dsName, randString, hostname, address, 0,
+      new ClientProxyMembershipID(dsName_, randString_, hostname, address, 0,
                                   durableClientId, durableClntTimeOut));
 }
 

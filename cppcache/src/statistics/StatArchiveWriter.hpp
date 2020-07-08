@@ -179,18 +179,17 @@ class APACHE_GEODE_EXPORT ResourceInst {
 class HostStatSampler;
 
 class APACHE_GEODE_EXPORT StatArchiveWriter {
-  HostStatSampler *sampler;
-  StatDataOutput *dataBuffer;
-  CacheImpl *cache;
-  steady_clock::time_point previousTimeStamp;
-  int32_t resourceTypeId;
-  int32_t resourceInstId;
-  int32_t statResourcesModCount;
-  size_t bytesWrittenToFile;
-  size_t m_samplesize;
-  std::string archiveFile;
-  std::map<Statistics *, std::shared_ptr<ResourceInst>> resourceInstMap;
-  std::map<const StatisticsType *, const ResourceType *> resourceTypeMap;
+  HostStatSampler *sampler_;
+  StatDataOutput *dataBuffer_;
+  CacheImpl *cache_;
+  steady_clock::time_point previousTimeStamp_;
+  int32_t resourceTypeId_;
+  int32_t resourceInstId_;
+  size_t bytesWrittenToFile_;
+  size_t sampleSize_;
+  std::string archiveFile_;
+  std::map<Statistics *, std::shared_ptr<ResourceInst>> resourceInstMap_;
+  std::map<const StatisticsType *, const ResourceType *> resourceTypeMap_;
 
   void allocateResourceInst(Statistics *r);
   void sampleResources();
