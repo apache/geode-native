@@ -228,7 +228,7 @@ config:
 #@ end
 
 #@ def cpp_integration_test_task(build, config):
-#@ return remote_task("cpp-integration-tests", config.config, run_cpp_integration_tests(), "30m", build.params)
+#@ return remote_task("cpp-integration-tests", config.config, run_cpp_integration_tests(), "30m", build.params, 5)
 #@ end
 
 #@ def cpp_legacy_integration_test_task(build, config):
