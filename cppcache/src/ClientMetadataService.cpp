@@ -786,12 +786,8 @@ bool ClientMetadataService::isBucketMarkedForTimeout(const char* regionFullPath,
   const auto& bs = m_bucketStatus.find(regionFullPath);
   if (bs != m_bucketStatus.end()) {
     bool m = bs->second->isBucketTimedOut(bucketid, m_bucketWaitTimeout);
-    if (m) {
-      m_cache->incBlackListBucketTimeouts();
-    }
     LOGFINE("isBucketMarkedForTimeout:: for bucket %d returning = %d", bucketid,
             m);
-
     return m;
   }
 
