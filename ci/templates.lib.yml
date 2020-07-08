@@ -224,11 +224,11 @@ config:
 #@ end
 
 #@ def cpp_unit_test_task(build, config):
-#@ return remote_task("cpp-unit-tests", config.config, run_cpp_unit_tests(), "5m", build.params, 5)
+#@ return remote_task("cpp-unit-tests", config.config, run_cpp_unit_tests(), "5m", build.params)
 #@ end
 
 #@ def cpp_integration_test_task(build, config):
-#@ return remote_task("cpp-integration-tests", config.config, run_cpp_integration_tests(), "30m", build.params, 5)
+#@ return remote_task("cpp-integration-tests", config.config, run_cpp_integration_tests(), "30m", build.params)
 #@ end
 
 #@ def cpp_legacy_integration_test_task(build, config):
@@ -245,6 +245,29 @@ config:
 
 #@ def net_legacy_integration_test_task(build, config):
 #@ return remote_task(".net-legacy-integration-tests", config.config, run_net_legacy_integration_tests(), "1h", build.params, 5)
+#@ end
+
+#@ def download_build_task():
+task: download-build
+image: task-image
+config:
+  platform: linux
+  inputs:
+    - name: identity
+    - name: instance
+  outputs:
+    - name: build
+  params:
+  run:
+    path: bash
+    args:
+      - -xc
+      #@yaml/text-templated-strings
+      - |
+        set -ueo pipefail
+        (@= remote_shell() @)
+
+        remote_copy_recursive build .
 #@ end
 
 #@ def delete_instance():
@@ -277,31 +300,31 @@ config:
 #@ def build_job(build, config):
 name: #@ "build-" + build.name + "-" + config.name
 plan:
+  - in_parallel:
+      fail_fast: true
+      steps:
+        - get: source
+          trigger: true
+        - do:
+            - in_parallel:
+                fail_fast: true
+                steps:
+                  - get: task-image
+                    trigger: true
+                  - get: #@ gci_resource_name(build.image_family)
+                    trigger: true
+            - #@ create_instance(gci_resource_name(build.image_family))
+            - #@ await_instance()
   - do:
-      - in_parallel:
-          fail_fast: true
-          steps:
-            - get: source
-              trigger: true
-            - do:
-                - in_parallel:
-                    fail_fast: true
-                    steps:
-                      - get: task-image
-                        trigger: true
-                      - get: #@ gci_resource_name(build.image_family)
-                        trigger: true
-                - #@ create_instance(gci_resource_name(build.image_family))
-                - #@ await_instance()
-      - do:
-          - #@ build_task(config.config, build.params)
-          - #@ cpp_unit_test_task(build, config)
-          - #@ cpp_integration_test_task(build, config)
-          - #@ cpp_legacy_integration_test_task(build, config)
-          #@ if build.with_dot_net:
-          - #@ net_unit_test_task(build, config)
-          - #@ net_integration_test_task(build, config)
-          - #@ net_legacy_integration_test_task(build, config)
-          #@ end
-    ensure: #@ delete_instance()
+      - #@ build_task(config.config, build.params)
+      - #@ cpp_unit_test_task(build, config)
+      - #@ cpp_integration_test_task(build, config)
+      - #@ cpp_legacy_integration_test_task(build, config)
+      #@ if build.with_dot_net:
+      - #@ net_unit_test_task(build, config)
+      - #@ net_integration_test_task(build, config)
+      - #@ net_legacy_integration_test_task(build, config)
+      #@ end
+on_failure: #@ download_build_task()
+ensure: #@ delete_instance()
 #@ end
