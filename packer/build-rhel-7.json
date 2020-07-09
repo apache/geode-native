@@ -3,14 +3,15 @@
     "aws_region": "",
     "googlecompute_zone": "",
     "googlecompute_project": "",
-    "image_name": "build-rhel-7"
+    "image_family": "build-rhel-7",
+    "image_name_prefix": "{{user `image_family`}}"
   },
   "builders": [
     {
       "type": "amazon-ebs",
       "instance_type": "t2.micro",
       "ami_virtualization_type": "hvm",
-      "ami_name": "{{user `product_name`}}-{{user `version`}}-{{user `image_name`}}-{{timestamp}}",
+      "ami_name": "{{user `image_family`}}-{{timestamp}}",
       "region": "{{user `aws_region`}}",
       "source_ami_filter": {
         "filters": {
@@ -26,8 +27,9 @@
       "subnet_id": "{{user `subnet_id`}}",
       "vpc_id": "{{user `vpc_id`}}",
       "tags": {
-        "product": "{{user `product_name`}}",
-        "version": "{{user `version`}}"
+        "owner": "{{user `owner`}}",
+        "project": "{{user `project`}}",
+        "branch": "{{user `branch`}}"
       },
       "ssh_username": "ec2-user",
       "ssh_pty": true
@@ -38,11 +40,12 @@
       "project_id": "{{user `googlecompute_project`}}",
       "zone": "{{user `googlecompute_zone`}}",
       "source_image_family": "rhel-7",
-      "image_name": "{{user `product_name`}}-{{user `version`}}-{{user `image_name`}}-{{timestamp}}",
-      "image_family": "{{user `product_name`}}-{{user `version`}}-{{user `image_name`}}",
+      "image_name": "{{user `image_name_prefix`}}-{{timestamp}}",
+      "image_family": "{{user `image_family`}}",
       "image_labels": {
-        "product": "{{user `product_name`}}",
-        "version": "{{user `version`}}"
+        "owner": "{{user `owner`}}",
+        "project": "{{user `project`}}",
+        "branch": "{{user `branch`}}"
       },
       "disk_size": "20",
       "ssh_username": "packer"

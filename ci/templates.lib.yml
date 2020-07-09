@@ -1,6 +1,4 @@
-#! helm upgrade concourse concourse/concourse --set web.service.api.type=LoadBalancer,concourse.web.externalUrl=http://35.222.132.46:8080
-#! ~/Downloads/fly -t test set-pipeline -p test -c ../../ci/pipeline.yml
-#! kubectl create secret generic gcr-json-key --from-literal "value=$(cat ~/Downloads/gemfire-dev-6e8864f0768c.json)" --namespace=concourse-main
+#@ load("@ytt:data", "data")
 
 #@ load("remote.lib.txt",
 #@      "remote_shell",
@@ -12,7 +10,11 @@
 #@      "run_net_integration_tests",
 #@      "run_net_legacy_integration_tests")
 
-#@ def resource(name, type, source, icon=None):
+#@ def repository_url(repository):
+#@ return repository.base + repository.owner + "/" + repository.project + ".git"
+#@ end
+
+#@ def resource(name, type, source=None, icon=None):
 name: #@ name
 type: #@ type
 source: #@ source
@@ -41,8 +43,12 @@ icon: #@ icon
 #@  }, "github")
 #@ end
 
+#@ def hyphenated(value):
+#@ return value.replace(".", "-").replace("/", "-")
+#@ end
+
 #@ def image_family_name(family):
-#@ return "jbarrett-10-2-" + family
+#@ return data.values.repository.owner + "-" + hyphenated(data.values.repository.branch) + "-" + family
 #@ end
 
 #@ def gci_resource_name(family):
@@ -223,6 +229,10 @@ config:
         (@= commands @)
 #@ end
 
+#@ def packer_build_task(build):
+#@ end
+
+
 #@ def cpp_unit_test_task(build, config):
 #@ return remote_task("cpp-unit-tests", config.config, run_cpp_unit_tests(), "5m", build.params)
 #@ end
@@ -327,4 +337,40 @@ plan:
       #@ end
 on_failure: #@ download_build_task()
 ensure: #@ delete_instance()
+#@ end
+
+#@ def packer_job(build):
+name: #@ "packer-" + build.image_family
+plan:
+  - in_parallel:
+      fail_fast: true
+      steps:
+        - get: packer-image
+        - get: packer-source
+  - task: build
+    image: packer-image
+    config:
+      platform: linux
+      inputs:
+        - name: packer-source
+          path: source
+      params:
+      run:
+        path: bash
+        args:
+          - -xc
+          #@yaml/text-templated-strings
+          - |
+            set -ueo pipefail
+            env
+            cd source/packer
+            packer build -only=googlecompute \
+                -var-file=default.json \
+                -var owner=(@= data.values.repository.owner @) \
+                -var product_name=(@= data.values.repository.project @) \
+                -var version=(@= data.values.repository.branch @) \
+                -var image_name_prefix=(@= image_family_name(build.image_family)[0:51] @) \
+                -var image_family=(@= image_family_name(build.image_family)[0:62] @)
+                (@= build.image_family @).json
+
 #@ end
