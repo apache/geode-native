@@ -6,7 +6,10 @@
 #@      "gcr_image_resource",
 #@      "git_resource",
 #@      "gci_resource",
-#@      "build_job")
+#@      "docker_image_resource",
+#@      "build_job",
+#@      "packer_job",
+#@      "repository_url")
 #@ load("@ytt:data", "data")
 #@ load("@ytt:overlay", "overlay")
 #@ load("@ytt:struct", "struct")
@@ -22,13 +25,16 @@ resource_types:
       repository: smgoller/gci-resource
 
 resources:
-  - #@ gcr_image_resource("task-image", "gcr.io/gemfire-dev/gemfire-develop-alpine-tools")
-  - #@ git_resource("source", data.values.source.repository, data.values.source.branch)
-  #@ for/end build in data.values.builds:
-  - #@ gci_resource(extends_build(build).image_family)
+  #! - #@ gcr_image_resource("task-image", "gcr.io/gemfire-dev/gemfire-develop-alpine-tools")
+  - #@ docker_image_resource("packer-image", "hashicorp/packer")
+  #! - #@ git_resource("source", repository_url(data.values.repository), data.values.repository.branch)
+  - #@ git_resource("packer-source", repository_url(data.values.repository), data.values.repository.branch, ["packer/*"])
+    #! #@ for/end build in data.values.builds:
+    #! - #@ gci_resource(extends_build(build).image_family)
 
 jobs:
   #@ for build in data.values.builds:
-  #@ for/end config in data.values.configs:
-  - #@ build_job(extends_build(build), config)
+  #!  #@ for/end config in data.values.configs:
+  #!  - #@ build_job(extends_build(build), config)
+  - #@ packer_job(extends_build(build))
   #@ end
