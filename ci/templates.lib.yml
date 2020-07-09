@@ -34,21 +34,23 @@ icon: #@ icon
 #@ return docker_image_resource(name, repository, tag, "_json_key", "((gcr-json-key))")
 #@ end
 
-#@ def git_resource(name, uri, branch, paths=[], depth=1):
+#@ def git_resource(name, uri, branch, paths=[], ignore_paths=[], depth=1):
 #@ return resource(name, "git", {
 #@   "branch": branch,
 #@   "depth": depth,
 #@   "paths": paths,
+#@   "ignore_paths": ignore_paths,
 #@   "uri": uri
 #@  }, "github")
 #@ end
 
 #@ def hyphenated(value):
+#! TODO [a-z0-9-]
 #@ return value.replace(".", "-").replace("/", "-")
 #@ end
 
 #@ def image_family_name(family):
-#@ return data.values.repository.owner + "-" + hyphenated(data.values.repository.branch) + "-" + family
+#@ return (data.values.repository.owner + "-" + hyphenated(data.values.repository.branch) + "-" + family)[0:62]
 #@ end
 
 #@ def gci_resource_name(family):
@@ -339,6 +341,11 @@ on_failure: #@ download_build_task()
 ensure: #@ delete_instance()
 #@ end
 
+#@ def gci_label_value(value):
+#! TODO [a-z0-9_-]
+#@ return hyphenated(value[0:62])
+#@ end
+
 #@ def packer_job(build):
 name: #@ "packer-" + build.image_family
 plan:
@@ -347,6 +354,7 @@ plan:
       steps:
         - get: packer-image
         - get: packer-source
+          trigger: false
   - task: build
     image: packer-image
     config:
@@ -358,19 +366,18 @@ plan:
       run:
         path: bash
         args:
-          - -xc
+          - -c
           #@yaml/text-templated-strings
           - |
             set -ueo pipefail
-            env
             cd source/packer
             packer build -only=googlecompute \
                 -var-file=default.json \
-                -var owner=(@= data.values.repository.owner @) \
-                -var product_name=(@= data.values.repository.project @) \
-                -var version=(@= data.values.repository.branch @) \
+                -var owner=(@= gci_label_value(data.values.repository.owner) @) \
+                -var project=(@= gci_label_value(data.values.repository.project) @) \
+                -var branch=(@= gci_label_value(data.values.repository.branch) @) \
                 -var image_name_prefix=(@= image_family_name(build.image_family)[0:51] @) \
-                -var image_family=(@= image_family_name(build.image_family)[0:62] @)
+                -var image_family=(@= image_family_name(build.image_family) @) \
                 (@= build.image_family @).json
 
 #@ end

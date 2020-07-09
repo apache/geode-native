@@ -1,5 +1,4 @@
 {
-  "product_name": "native",
   "region": "us-west-2",
   "aws_region": "us-west-2",
   "googlecompute_project": "gemfire-dev",
