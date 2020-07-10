@@ -10,6 +10,7 @@
 #@      "image_family_name",
 #@      "build_job",
 #@      "packer_job",
+#@      "update_pipeline_job",
 #@      "repository_url")
 #@ load("@ytt:data", "data")
 #@ load("@ytt:overlay", "overlay")
@@ -43,31 +44,31 @@ jobs:
   - #@ build_job(extends_build(build), config)
   - #@ packer_job(extends_build(build))
   #@ end
-  - name: set-pipeline
-    serial: true
-    plan:
-      - in_parallel:
-          fail_fast: true
-          steps:
-            - get: ytt-image
-            - get: ci-source
-              trigger: true
-      - task: ytt
-        image: ytt-image
-        config:
-          platform: linux
-          inputs:
-            - name: ci-source
-              path: source
-          outputs:
-            - name: pipeline
-          params:
-          run:
-            path: /usr/bin/ytt
-            args:
-              - --file
-              - source/ci/.
-              - --output-files
-              - pipeline/
-      - set_pipeline: test
-        file: pipeline/pipeline.yml
+  - #@ update_pipeline_job()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
