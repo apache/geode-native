@@ -125,7 +125,6 @@ config:
             | tee ${instance_file}
 
         (@=remote_functions() @)
-
         SSH_OPTIONS="${SSH_OPTIONS} -o ConnectTimeout=10"
 
         instance_name=$(jq -r '.[0].name' ${instance_file})
@@ -141,7 +140,7 @@ config:
               > ${console_file}
 
           console_next=$(jq -r '.next' ${console_file})
-          console_contents=$(jq -r '.contents' ${console_file})
+          console_contents=$(jq -r '.contents' ${console_file} | sed 's/\x1b\[[0-9;]*[a-zA-Z]//g')
           if [ ! -z "${console_contents}" ]; then
             echo -n "${console_contents}"
           fi
