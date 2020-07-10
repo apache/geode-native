@@ -1,5 +1,9 @@
 #@data/values
 ---
+google:
+  project: gemfire-dev
+  zone: us-central1-f
+
 repository:
   base: http://github.com/
   owner: pivotal-jbarrett
