@@ -183,9 +183,16 @@ config:
         remote_shell cmake -E chdir build cmake ../source ${CMAKE_CONFIGURE_FLAGS} -DCMAKE_config=${CMAKE_CONFIG}
         remote_shell cmake --build build --config ${CMAKE_CONFIG} -- ${CMAKE_BUILD_FLAGS}
         remote_shell cmake --build build --config ${CMAKE_CONFIG} --target docs -- ${CMAKE_BUILD_FLAGS}
-        remote_shell cmake -E chdir build cpack -C ${CMAKE_CONFIG} -G "${CPACK_GENERATORS}"
+        remote_shell cmake -E chdir build cpack -C ${CMAKE_CONFIG} -G "${CPACK_GENERATORS}" | tee cpack.out
 
-        #scp -o StrictHostKeyChecking=no -o PasswordAuthentication=no -i ${ssh_key_file} ${INSTANCE_USER}@${external_ip}:build/*.zip package/
+        packages=$(awk '/^CPack: - package: / {print $4}' cpack.out)
+        for package in ${packages}; do
+          remote_copy ${package} package/
+        done
+        checksums=$(awk '/^CPack: - checksum file: / {print $5}' cpack.out)
+        for checksum in ${checksums}; do
+          remote_copy ${checksum} package/
+        done
 #@ end
 
 #@ def remote_task(name, config, commands, timeout, params={}, attempts=None):
