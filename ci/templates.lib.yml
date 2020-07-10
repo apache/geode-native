@@ -1,8 +1,9 @@
 #@ load("@ytt:data", "data")
 
 #@ load("templates.lib.txt",
-#@      "remote_shell",
-#@      "remote_build_variables",
+#@      "remote_functions",
+#@      "instance_variables",
+#@      "google_variables",
 #@      "run_cpp_unit_tests",
 #@      "run_cpp_integration_tests",
 #@      "run_cpp_legacy_integration_tests",
@@ -57,7 +58,7 @@ icon: #@ icon
 #@ return family + "-gci"
 #@ end
 
-#@ def gci_resource(family, project=None):
+#@ def gci_resource(family, project=data.values.google.project):
 #@ return resource(gci_resource_name(family), "gci", {
 #@   "key": "((gcr-json-key))",
 #@   "family_project": project,
@@ -74,7 +75,6 @@ config:
     - name: #@ gci_resource_name(image_family_name(build.image_family))
       path: image
   outputs:
-    - name: identity
     - name: instance
   params:
     LABEL_REPOSITORY_OWNER: #@ gci_label_value(data.values.repository.owner)
@@ -88,45 +88,45 @@ config:
       #@yaml/text-templated-strings
       - |
         set -ueo pipefail
-        (@= remote_build_variables() @)
+        (@= google_variables() @)
+        (@= instance_variables() @)
 
         BUILD_PREFIX=${BUILD_PREFIX:-build}
         BUILD_INSTANCE=${BUILD_INSTANCE:-"${BUILD_PREFIX}-$(uuidgen|tr '[:upper:]' '[:lower:]')"}
         BUILD_SUBNET=${BUILD_SUBNET:-default}
-        BUILD_IMAGE_PROJECT=${BUILD_IMAGE_PROJECT:-${BUILD_PROJECT}}
         BUILD_IMAGE_FILE=${BUILD_IMAGE_FILE:-'image/name'}
 
         build_image=$(cat ${BUILD_IMAGE_FILE})
 
-        ssh_key_file=${BUILD_IDENTITY_DIR}/${BUILD_USER}
+        ssh_key_file=${INSTANCE_DIR}/identity
         ssh_pubkey_file=${ssh_key_file}.pub
-        ssh-keygen -m pem  -t rsa -f ${ssh_key_file} -C ${BUILD_USER} -N '' <<< y
+        ssh-keygen -m pem  -t rsa -f ${ssh_key_file} -C "${INSTANCE_USER}" -N '' <<< y
         ssh_pubkey=$(cat ${ssh_pubkey_file})
 
-        ssh_keys_file=${BUILD_IDENTITY_DIR}/ssh_keys_file
-        echo "${BUILD_USER}:${ssh_pubkey}" > ${ssh_keys_file}
+        ssh_keys_file=${INSTANCE_DIR}/ssh_keys_file
+        echo "${INSTANCE_USER}:${ssh_pubkey}" > ${ssh_keys_file}
 
         time_to_live=$(( $(date +%s) + ( 4 * 60 * 60 ) ))
 
-        instance_file=${BUILD_INSTANCE_DIR}/instance.json
+        instance_file=${INSTANCE_DIR}/instance.json
         gcloud compute instances create ${BUILD_INSTANCE} \
             --format json \
-            --project=${BUILD_PROJECT} \
-            --zone=${BUILD_ZONE} \
+            --project=${GOOGLE_PROJECT} \
+            --zone=${GOOGLE_ZONE} \
             --subnet=${BUILD_SUBNET} \
             --machine-type=e2-standard-16 \
             --boot-disk-size=200GB \
             --boot-disk-type=pd-standard \
             --boot-disk-device-name=${BUILD_INSTANCE} \
-            --image-project=${BUILD_IMAGE_PROJECT} \
+            --image-project=${GOOGLE_PROJECT} \
             --image=${build_image} \
             --metadata-from-file ssh-keys=${ssh_keys_file} \
             --labels=time-to-live=${time_to_live},repository-owner=${LABEL_REPOSITORY_OWNER},repository-project=${LABEL_REPOSITORY_PROJECT},repository-branch=${LABEL_REPOSITORY_BRANCH},build-config=${LABEL_BUILD_CONFIG} \
             | tee ${instance_file}
 
-        (@=remote_shell() @)
+        (@=remote_functions() @)
 
-        echo "ssh ${SSH_OPTIONS} -i ${ssh_key_file} ${BUILD_USER}@${external_ip}"
+        echo "ssh ${SSH_OPTIONS} -i ${ssh_key_file} ${INSTANCE_USER}@${external_ip}"
 #@ end
 
 #@ def await_instance():
@@ -135,7 +135,6 @@ image: task-image
 config:
   platform: linux
   inputs:
-    - name: identity
     - name: instance
   params:
   run:
@@ -145,7 +144,8 @@ config:
       #@yaml/text-templated-strings
       - |
         set -ueo pipefail
-        (@=remote_shell() @)
+        (@=google_variables() @)
+        (@=remote_functions() @)
         SSH_OPTIONS="${SSH_OPTIONS} -o ConnectTimeout=10"
 
         instance_name=$(jq -r '.[0].name' ${instance_file})
@@ -156,8 +156,8 @@ config:
         while ! remote_shell echo ready 2>/dev/null ; do
           gcloud compute instances get-serial-port-output ${instance_name} \
               --start ${console_next} \
-              --project=${BUILD_PROJECT} \
-              --zone=${BUILD_ZONE} \
+              --project=${GOOGLE_PROJECT} \
+              --zone=${GOOGLE_ZONE} \
               --format json \
               > ${console_file}
 
@@ -179,7 +179,6 @@ image: task-image
 config:
   platform: linux
   inputs:
-    - name: identity
     - name: instance
     - name: source
   outputs:
@@ -195,7 +194,7 @@ config:
       - |
         set -ueo pipefail
 
-        (@= remote_shell() @)
+        (@= remote_functions() @)
 
         pushd source
         git_url=$(git remote get-url origin)
@@ -210,7 +209,7 @@ config:
         remote_shell cmake --build build --config ${CMAKE_CONFIG} --target docs -- ${CMAKE_BUILD_FLAGS}
         remote_shell cmake -E chdir build cpack -C ${CMAKE_CONFIG} -G "${CPACK_GENERATORS}"
 
-        #scp -o StrictHostKeyChecking=no -o PasswordAuthentication=no -i ${ssh_key_file} ${BUILD_USER}@${external_ip}:build/*.zip package/
+        #scp -o StrictHostKeyChecking=no -o PasswordAuthentication=no -i ${ssh_key_file} ${INSTANCE_USER}@${external_ip}:build/*.zip package/
 #@ end
 
 #@ def remote_task(name, config, commands, timeout, params={}, attempts=None):
@@ -221,7 +220,6 @@ attempts: #@ attempts
 config:
   platform: linux
   inputs:
-    - name: identity
     - name: instance
   outputs:
   params:
@@ -234,7 +232,7 @@ config:
       #@yaml/text-templated-strings
       - |
         set -ueo pipefail
-        (@= remote_shell() @)
+        (@= remote_functions() @)
         (@= commands @)
 #@ end
 
@@ -272,7 +270,6 @@ image: task-image
 config:
   platform: linux
   inputs:
-    - name: identity
     - name: instance
   outputs:
     - name: build
@@ -284,7 +281,7 @@ config:
       #@yaml/text-templated-strings
       - |
         set -ueo pipefail
-        (@= remote_shell() @)
+        (@= remote_functions() @)
 
         remote_copy_recursive build .
 #@ end
@@ -295,7 +292,6 @@ image: task-image
 config:
   platform: linux
   inputs:
-    - name: identity
     - name: instance
   params:
   run:
@@ -305,13 +301,14 @@ config:
       #@yaml/text-templated-strings
       - |
         set -ueo pipefail
-        (@= remote_shell() @)
+        (@= google_variables() @)
+        (@= remote_functions() @)
 
         instance_name=$(jq -r '.[0].name' ${instance_file})
 
         gcloud compute instances delete ${instance_name} \
-            --project=${BUILD_PROJECT} \
-            --zone=${BUILD_ZONE} \
+            --project=${GOOGLE_PROJECT} \
+            --zone=${GOOGLE_ZONE} \
             --delete-disks=all \
             --quiet
 #@ end

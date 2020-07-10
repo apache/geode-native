@@ -1,7 +1,3 @@
-#! helm upgrade concourse concourse/concourse --set web.service.api.type=LoadBalancer,concourse.web.externalUrl=http://35.222.132.46:8080
-#! ~/Downloads/fly -t test set-pipeline -p test -c ../../ci/pipeline.yml
-#! kubectl create secret generic gcr-json-key --from-literal "value=$(cat ~/Downloads/gemfire-dev-6e8864f0768c.json)" --namespace=concourse-main
-
 #@ load("templates.lib.yml",
 #@      "gcr_image_resource",
 #@      "git_resource",
@@ -34,8 +30,8 @@ resources:
   - #@ git_resource("ci-source", repository_url(data.values.repository), data.values.repository.branch, ["ci/*"])
   - #@ git_resource("packer-source", repository_url(data.values.repository), data.values.repository.branch, ["packer/*"])
   #@ for build in data.values.builds:
-  - #@ gci_resource(image_family_name(extends_build(build).image_family), "gemfire-dev")
-  - #@ gci_resource(extends_build(build).source_image_family, "gemfire-dev")
+  - #@ gci_resource(image_family_name(extends_build(build).image_family))
+  - #@ gci_resource(extends_build(build).source_image_family)
     #@ end
 
 jobs:
@@ -45,30 +41,3 @@ jobs:
   - #@ packer_job(extends_build(build))
   #@ end
   - #@ update_pipeline_job()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
