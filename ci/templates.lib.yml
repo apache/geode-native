@@ -329,7 +329,6 @@ plan:
                 fail_fast: true
                 steps:
                   - get: task-image
-                    trigger: true
                   - get: #@ gci_resource_name(image_family_name(build.image_family))
                     trigger: true
             - #@ create_instance(build, config)
@@ -389,4 +388,35 @@ plan:
                 -var image_family=(@= image_family_name(build.image_family) @) \
                 (@= build.image_family @).json
 
+#@ end
+
+#@ def update_pipeline_job():
+name: update-pipeline
+serial: true
+plan:
+  - in_parallel:
+      fail_fast: true
+      steps:
+        - get: ytt-image
+        - get: ci-source
+          trigger: true
+  - task: ytt
+    image: ytt-image
+    config:
+      platform: linux
+      inputs:
+        - name: ci-source
+          path: source
+      outputs:
+        - name: pipeline
+      params:
+      run:
+        path: /usr/bin/ytt
+        args:
+          - --file
+          - source/ci/.
+          - --output-files
+          - pipeline/
+  - set_pipeline: test
+    file: pipeline/pipeline.yml
 #@ end
