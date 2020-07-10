@@ -1,33 +1,34 @@
-(@ def remote_build_variables(): -@)
-BUILD_USER=${BUILD_USER:-build}
-BUILD_PROJECT=${BUILD_PROJECT:-gemfire-dev}
-BUILD_ZONE=${BUILD_ZONE:-us-central1-f}
-BUILD_IDENTITY_DIR=${BUILD_IDENTITY_DIR:-$(pwd)/identity}
-BUILD_INSTANCE_DIR=${BUILD_INSTANCE_DIR:-$(pwd)/instance}
+(@ load("@ytt:data", "data") -@)
 
-if [ ! -d "${BUILD_IDENTITY_DIR}" ]; then
-  echo "${BUILD_IDENTITY_DIR} not found."
-  exit 1
-fi
 
-if [ ! -d "${BUILD_INSTANCE_DIR}" ]; then
-  echo "${BUILD_INSTANCE_DIR} not found."
+(@ def google_variables(): -@)
+GOOGLE_PROJECT=(@=data.values.google.project @)
+GOOGLE_ZONE=(@=data.values.google.zone @)
+(@- end @)
+
+
+(@ def instance_variables(): -@)
+INSTANCE_USER=build
+INSTANCE_DIR=$(pwd)/instance
+
+if [ ! -d "${INSTANCE_DIR}" ]; then
+  echo "${INSTANCE_DIR} not found."
   exit 1
 fi
 (@- end @)
 
-(@ def remote_shell(): -@)
-(@=remote_build_variables() @)
+(@ def remote_functions(): -@)
+(@=instance_variables() @)
 
 SSH_OPTIONS=${SSH_OPTIONS:-"-o StrictHostKeyChecking=no -o PasswordAuthentication=no"}
 
-ssh_key_file=${BUILD_IDENTITY_DIR}/${BUILD_USER}
+ssh_key_file=${INSTANCE_DIR}/identity
 if [ ! -r "${ssh_key_file}" ]; then
   echo "${ssh_key_file} not readable."
   exit 1
 fi
 
-instance_file=${BUILD_INSTANCE_DIR}/instance.json
+instance_file=${INSTANCE_DIR}/instance.json
 if [ ! -r "${instance_file}" ]; then
   echo "${instance_file} not readable."
   exit 1
@@ -36,11 +37,11 @@ fi
 external_ip=$(jq -r '.[0].networkInterfaces[0].accessConfigs[0].natIP' ${instance_file})
 
 function remote_shell {
-  ssh ${SSH_OPTIONS} -i ${ssh_key_file} ${BUILD_USER}@${external_ip} "$@"
+  ssh ${SSH_OPTIONS} -i ${ssh_key_file} ${INSTANCE_USER}@${external_ip} "$@"
 }
 
 function remote_copy_recursive {
-  scp ${SSH_OPTIONS} -i ${ssh_key_file} -q -r "${BUILD_USER}@${external_ip}:${1}" "$2"
+  scp ${SSH_OPTIONS} -i ${ssh_key_file} -q -r "${INSTANCE_USER}@${external_ip}:${1}" "$2"
 }
 
 (@- end @)
