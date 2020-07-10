@@ -1,6 +1,6 @@
 #@ load("@ytt:data", "data")
 
-#@ load("remote.lib.txt",
+#@ load("templates.lib.txt",
 #@      "remote_shell",
 #@      "remote_build_variables",
 #@      "run_cpp_unit_tests",
@@ -54,14 +54,14 @@ icon: #@ icon
 #@ end
 
 #@ def gci_resource_name(family):
-#@ return image_family_name(family) + "-gci"
+#@ return family + "-gci"
 #@ end
 
-#@ def gci_resource(family):
+#@ def gci_resource(family, project=None):
 #@ return resource(gci_resource_name(family), "gci", {
 #@   "key": "((gcr-json-key))",
-#@   "family_project": "gemfire-dev",
-#@   "family": image_family_name(family),
+#@   "family_project": project,
+#@   "family": family,
 #@  }, "google-cloud")
 #@ end
 
@@ -102,6 +102,8 @@ config:
         ssh_keys_file=${BUILD_IDENTITY_DIR}/ssh_keys_file
         echo "${BUILD_USER}:${ssh_pubkey}" > ${ssh_keys_file}
 
+        time_to_live=$(( $(date +%s) + ( 4 * 60 * 60 ) ))
+
         instance_file=${BUILD_INSTANCE_DIR}/instance.json
         gcloud compute instances create ${BUILD_INSTANCE} \
             --format json \
@@ -115,6 +117,7 @@ config:
             --image-project=${BUILD_IMAGE_PROJECT} \
             --image=${build_image} \
             --metadata-from-file ssh-keys=${ssh_keys_file} \
+            --labels=time-to-live=${time_to_live}
             | tee ${instance_file}
 
         (@=remote_shell() @)
@@ -323,9 +326,9 @@ plan:
                 steps:
                   - get: task-image
                     trigger: true
-                  - get: #@ gci_resource_name(build.image_family)
+                  - get: #@ gci_resource_name(image_family_name(build.image_family))
                     trigger: true
-            - #@ create_instance(gci_resource_name(build.image_family))
+            - #@ create_instance(gci_resource_name(image_family_name(build.image_family)))
             - #@ await_instance()
   - do:
       - #@ build_task(config.config, build.params)
@@ -353,8 +356,10 @@ plan:
       fail_fast: true
       steps:
         - get: packer-image
+        - get: #@ gci_resource_name(build.source_image_family)
+          trigger: true
         - get: packer-source
-          trigger: false
+          trigger: true
   - task: build
     image: packer-image
     config:
