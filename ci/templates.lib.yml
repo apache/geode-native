@@ -126,30 +126,9 @@ config:
 
         (@=remote_functions() @)
 
-        echo "ssh ${SSH_OPTIONS} -i ${ssh_key_file} ${INSTANCE_USER}@${external_ip}"
-#@ end
-
-#@ def await_instance():
-task: await
-image: task-image
-config:
-  platform: linux
-  inputs:
-    - name: instance
-  params:
-  run:
-    path: bash
-    args:
-      - -c
-      #@yaml/text-templated-strings
-      - |
-        set -ueo pipefail
-        (@=google_variables() @)
-        (@=remote_functions() @)
         SSH_OPTIONS="${SSH_OPTIONS} -o ConnectTimeout=10"
 
         instance_name=$(jq -r '.[0].name' ${instance_file})
-
         echo "Waiting for ssh on ${instance_name} to be ready."
         console_file=$(mktemp)
         console_next=0
@@ -167,8 +146,6 @@ config:
             echo -n "${console_contents}"
           fi
         done
-
-        rm -f ${console_file}
 #@ end
 
 #@ load("@ytt:template", "template")
@@ -329,7 +306,6 @@ plan:
                   - get: #@ gci_resource_name(image_family_name(build.image_family))
                     trigger: true
             - #@ create_instance(build, config)
-            - #@ await_instance()
   - do:
       - #@ build_task(config.config, build.params)
       - #@ cpp_unit_test_task(build, config)
