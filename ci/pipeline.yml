@@ -7,6 +7,7 @@
 #@      "git_resource",
 #@      "gci_resource",
 #@      "docker_image_resource",
+#@      "image_family_name",
 #@      "build_job",
 #@      "packer_job",
 #@      "repository_url")
@@ -29,8 +30,10 @@ resources:
   - #@ docker_image_resource("packer-image", "hashicorp/packer")
   - #@ git_resource("source", repository_url(data.values.repository), data.values.repository.branch, ignore_paths=["ci/*", "packer/*"])
   - #@ git_resource("packer-source", repository_url(data.values.repository), data.values.repository.branch, ["packer/*"])
-  #@ for/end build in data.values.builds:
-  - #@ gci_resource(extends_build(build).image_family)
+  #@ for build in data.values.builds:
+  - #@ gci_resource(image_family_name(extends_build(build).image_family), "gemfire-dev")
+  - #@ gci_resource(extends_build(build).source_image_family, "gemfire-dev")
+    #@ end
 
 jobs:
   #@ for build in data.values.builds:
