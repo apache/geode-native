@@ -10,6 +10,7 @@ default:
   build:
     name: #@ None
     image_family: #@ None
+    source_image_family: #@ None
     with_dot_net: #@ False
     params:
       CMAKE_CONFIGURE_FLAGS:
@@ -19,6 +20,7 @@ default:
 builds:
   - name: windows
     image_family: build-windows-2019-vs-2017
+    source_image_family: windows-2019
     with_dot_net: #@ True
     params:
       CMAKE_CONFIGURE_FLAGS: "-A x64 -Thost=x64"
@@ -26,12 +28,16 @@ builds:
       CPACK_GENERATORS: "ZIP"
   - name: rhel-7
     image_family: build-rhel-7
+    source_image_family: rhel-7
   - name: rhel-8
     image_family: build-rhel-8
+    source_image_family: rhel-8
   - name: ubuntu-16.04
     image_family: build-ubuntu-16-04
+    source_image_family: ubuntu-1604-lts
   - name: ubuntu-18.04
     image_family: build-ubuntu-18-04
+    source_image_family: ubuntu-1804-lts
 
 configs:
   - name: debug
