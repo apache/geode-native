@@ -1,7 +1,10 @@
-# Pipeline
+# Publish Pipeline
 ```console
-ytt -f pipeline.yml -f templates.lib.yml -f remote.lib.txt -f data.yml> output.yml && fly -t test set-pipeline -p test -c output.yml
+./set-pipeline.sh
 ```
+Produces output.yml side effect.
+Set `FLY=/path/to/fly` to select version of fly.
+
 
 # Steps
 1. Creates instances

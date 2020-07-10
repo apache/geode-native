@@ -58,7 +58,7 @@ remote_shell cmake -E chdir build/cppcache/integration/test ctest -C ${CMAKE_CON
 (@- end @)
 
 (@ def run_cpp_legacy_integration_tests(): -@)
-set -x
+
 remote_shell taskkill /t /f /im ctest.exe /im test* /im java.exe || true
 remote_shell 'pkill ^ctest$; pkill ^test; pkill ^java$' || true
 remote_shell cmake -E chdir build/cppcache/integration-test ctest -C ${CMAKE_CONFIG} -j6 --timeout=500 --output-on-failure --rerun-failed
