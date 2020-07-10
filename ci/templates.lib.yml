@@ -46,7 +46,7 @@ icon: #@ icon
 
 #@ def hyphenated(value):
 #! TODO [a-z0-9-]
-#@ return value.replace(".", "-").replace("/", "-")
+#@ return value.lower().replace(".", "-").replace("/", "-")
 #@ end
 
 #@ def image_family_name(family):
@@ -65,18 +65,22 @@ icon: #@ icon
 #@  }, "google-cloud")
 #@ end
 
-#@ def create_instance(image_resource):
+#@ def create_instance(build, config):
 task: create
 image: task-image
 config:
   platform: linux
   inputs:
-    - name: #@ image_resource
+    - name: #@ gci_resource_name(image_family_name(build.image_family))
       path: image
   outputs:
     - name: identity
     - name: instance
   params:
+    LABEL_REPOSITORY_OWNER: #@ gci_label_value(data.values.repository.owner)
+    LABEL_REPOSITORY_PROJECT: #@ gci_label_value(data.values.repository.project)
+    LABEL_REPOSITORY_BRANCH: #@ gci_label_value(data.values.repository.branch)
+    LABEL_BUILD_CONFIG: #@ config.name
   run:
     path: bash
     args:
@@ -117,7 +121,7 @@ config:
             --image-project=${BUILD_IMAGE_PROJECT} \
             --image=${build_image} \
             --metadata-from-file ssh-keys=${ssh_keys_file} \
-            --labels=time-to-live=${time_to_live}
+            --labels=time-to-live=${time_to_live},repository-owner=${LABEL_REPOSITORY_OWNER},repository-project=${LABEL_REPOSITORY_PROJECT},repository-branch=${LABEL_REPOSITORY_BRANCH},build-config=${LABEL_BUILD_CONFIG} \
             | tee ${instance_file}
 
         (@=remote_shell() @)
@@ -276,7 +280,7 @@ config:
   run:
     path: bash
     args:
-      - -xc
+      - -c
       #@yaml/text-templated-strings
       - |
         set -ueo pipefail
@@ -328,7 +332,7 @@ plan:
                     trigger: true
                   - get: #@ gci_resource_name(image_family_name(build.image_family))
                     trigger: true
-            - #@ create_instance(gci_resource_name(image_family_name(build.image_family)))
+            - #@ create_instance(build, config)
             - #@ await_instance()
   - do:
       - #@ build_task(config.config, build.params)
@@ -359,7 +363,7 @@ plan:
         - get: #@ gci_resource_name(build.source_image_family)
           trigger: true
         - get: packer-source
-          trigger: true
+          trigger: false
   - task: build
     image: packer-image
     config:
