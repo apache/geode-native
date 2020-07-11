@@ -91,13 +91,6 @@ config:
         (@= google_variables() @)
         (@= instance_variables() @)
 
-        BUILD_PREFIX=${BUILD_PREFIX:-build}
-        BUILD_INSTANCE=${BUILD_INSTANCE:-"${BUILD_PREFIX}-$(uuidgen|tr '[:upper:]' '[:lower:]')"}
-        BUILD_SUBNET=${BUILD_SUBNET:-default}
-        BUILD_IMAGE_FILE=${BUILD_IMAGE_FILE:-'image/name'}
-
-        build_image=$(cat ${BUILD_IMAGE_FILE})
-
         ssh_key_file=${INSTANCE_DIR}/identity
         ssh_pubkey_file=${ssh_key_file}.pub
         ssh-keygen -m pem  -t rsa -f ${ssh_key_file} -C "${INSTANCE_USER}" -N '' <<< y
@@ -106,20 +99,22 @@ config:
         ssh_keys_file=${INSTANCE_DIR}/ssh_keys_file
         echo "${INSTANCE_USER}:${ssh_pubkey}" > ${ssh_keys_file}
 
+        instance_name=build-$(uuidgen|tr '[:upper:]' '[:lower:]')
+        image_name=$(cat image/name)
         time_to_live=$(( $(date +%s) + ( 4 * 60 * 60 ) ))
 
         instance_file=${INSTANCE_DIR}/instance.json
-        gcloud compute instances create ${BUILD_INSTANCE} \
+        gcloud compute instances create ${instance_name} \
             --format json \
             --project=${GOOGLE_PROJECT} \
             --zone=${GOOGLE_ZONE} \
-            --subnet=${BUILD_SUBNET} \
+            --subnet=default \
             --machine-type=e2-standard-16 \
             --boot-disk-size=200GB \
             --boot-disk-type=pd-standard \
-            --boot-disk-device-name=${BUILD_INSTANCE} \
+            --boot-disk-device-name=${instance_name} \
             --image-project=${GOOGLE_PROJECT} \
-            --image=${build_image} \
+            --image=${image_name} \
             --metadata-from-file ssh-keys=${ssh_keys_file} \
             --labels=time-to-live=${time_to_live},repository-owner=${LABEL_REPOSITORY_OWNER},repository-project=${LABEL_REPOSITORY_PROJECT},repository-branch=${LABEL_REPOSITORY_BRANCH},build-config=${LABEL_BUILD_CONFIG} \
             | tee ${instance_file}
@@ -127,7 +122,6 @@ config:
         (@=remote_functions() @)
         SSH_OPTIONS="${SSH_OPTIONS} -o ConnectTimeout=10"
 
-        instance_name=$(jq -r '.[0].name' ${instance_file})
         echo "Waiting for ssh on ${instance_name} to be ready."
         console_file=$(mktemp)
         console_next=0
