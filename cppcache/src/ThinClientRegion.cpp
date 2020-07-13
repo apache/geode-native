@@ -3021,10 +3021,8 @@ void ThinClientRegion::executeFunction(
       } else if (err == GF_CLIENT_WAIT_TIMEOUT ||
                  err == GF_CLIENT_WAIT_TIMEOUT_REFRESH_PRMETADATA) {
         LOGINFO(
-            "function timeout, possibly bucket is not available or bucket "
-            "blacklisted. Name: %s, timeout: %s, params: %" PRIu8
-            ", retryAttempts: "
-            "%d ",
+            "function timeout, possibly bucket is not available. Name: %s, "
+            "timeout: %s, params: %" PRIu8 ", retryAttempts: %d ",
             func.c_str(), to_string(timeout).c_str(), getResult, retryAttempts);
         throwExceptionIfError("ExecuteOnRegion", GF_CLIENT_WAIT_TIMEOUT);
       } else {
