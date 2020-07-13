@@ -15,43 +15,38 @@
  * limitations under the License.
  */
 
-#ifndef NATIVECLIENT_DSFIXEDID_HPP
-#define NATIVECLIENT_DSFIXEDID_HPP
+#ifndef GEODE_GATEWAYSENDEREVENTCALLBACKARGUMENT_H_
+#define GEODE_GATEWAYSENDEREVENTCALLBACKARGUMENT_H_
+
+#include <geode/DataInput.hpp>
+#include <geode/internal/DSFixedId.hpp>
+#include <geode/internal/DataSerializableFixedId.hpp>
 
 namespace apache {
 namespace geode {
 namespace client {
-namespace internal {
 
-enum class DSFid : int32_t {
-  GatewaySenderEventCallbackArgument = -135,
-  ClientHealthStats = -126,
-  VersionTag = -120,
-  CollectionTypeImpl = -59,
-  LocatorListRequest = -54,
-  ClientConnectionRequest = -53,
-  QueueConnectionRequest = -52,
-  LocatorListResponse = -51,
-  ClientConnectionResponse = -50,
-  QueueConnectionResponse = -49,
-  ClientReplacementRequest = -48,
-  GetAllServersRequest = -43,
-  GetAllServersResponse = -42,
-  VersionedObjectPartList = 7,
-  EnumInfo = 9,
-  CacheableObjectPartList = 25,
-  CacheableUndefined = 31,
-  Struct = 32,
-  EventId = 36,
-  InternalDistributedMember = 92,
-  TXCommitMessage = 110,
-  DiskVersionTag = 2131,
-  DiskStoreId = 2133
+using internal::DSFid;
+
+class GatewaySenderEventCallbackArgument
+    : public internal::DataSerializableFixedId {
+ public:
+  GatewaySenderEventCallbackArgument() {}
+  void fromData(DataInput& input) override;
+  void toData(DataOutput&) const final {}
+  DSFid getDSFID() const override;
+  static std::shared_ptr<Serializable> create() {
+    return std::make_shared<GatewaySenderEventCallbackArgument>();
+  }
+  ~GatewaySenderEventCallbackArgument() override = default;
+
+ private:
+  int originatingDSId;
+  std::vector<int> recipientDSIds;
 };
 
-}  // namespace internal
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
 
-#endif  // NATIVECLIENT_DSFIXEDID_HPP
+#endif  // GEODE_GATEWAYSENDEREVENTCALLBACKARGUMENT_H_
