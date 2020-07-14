@@ -295,24 +295,25 @@ class APACHE_GEODE_EXPORT DataInput {
 
   template <class CharT = char, class... Tail>
   inline std::basic_string<CharT, Tail...> readString() {
-    std::basic_string<CharT, Tail...> value;
-    std::map<internal::DSCode, std::function<void(std::string&)> > readers;
+    using string_type = std::basic_string<CharT, Tail...>;
+    string_type value;
+    std::map<internal::DSCode, std::function<void(string_type&)> > readers;
 
     readers.insert(std::make_pair(
         internal::DSCode::CacheableString,
-        [=](std::string& val) { this->readJavaModifiedUtf8(val); }));
+        [=](string_type& val) { this->readJavaModifiedUtf8(val); }));
 
     readers.insert(
         std::make_pair(internal::DSCode::CacheableStringHuge,
-                       [=](std::string& val) { this->readUtf16Huge(val); }));
+                       [=](string_type& val) { this->readUtf16Huge(val); }));
 
     readers.insert(
         std::make_pair(internal::DSCode::CacheableASCIIString,
-                       [=](std::string& val) { this->readAscii(val); }));
+                       [=](string_type& val) { this->readAscii(val); }));
 
     readers.insert(
         std::make_pair(internal::DSCode::CacheableASCIIStringHuge,
-                       [=](std::string& val) { this->readAsciiHuge(val); }));
+                       [=](string_type& val) { this->readAsciiHuge(val); }));
 
     auto type = static_cast<internal::DSCode>(read());
     auto it = readers.find(static_cast<internal::DSCode>(read()));
