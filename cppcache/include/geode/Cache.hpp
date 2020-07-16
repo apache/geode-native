@@ -22,6 +22,8 @@
 
 #include <string>
 
+#include <geode/util/LogLevel.hpp>
+
 #include "GeodeCache.hpp"
 #include "internal/geode_globals.hpp"
 
@@ -238,6 +240,10 @@ class APACHE_GEODE_EXPORT Cache : public GeodeCache {
   virtual PoolManager& getPoolManager() const;
 
   SystemProperties& getSystemProperties() const override;
+
+  void setLogLevel(LogLevel newLevel);
+
+  LogLevel getLogLevel();
 
   Cache() = delete;
   virtual ~Cache();
