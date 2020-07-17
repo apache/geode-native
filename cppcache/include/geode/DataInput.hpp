@@ -296,71 +296,14 @@ class APACHE_GEODE_EXPORT DataInput {
   inline std::basic_string<CharT, Tail...> readString() {
     std::basic_string<CharT, Tail...> value;
     auto type = static_cast<internal::DSCode>(read());
-    switch (type) {
-      case internal::DSCode::CacheableString:
-        readJavaModifiedUtf8(value);
-        break;
-      case internal::DSCode::CacheableStringHuge:
-        readUtf16Huge(value);
-        break;
-      case internal::DSCode::CacheableASCIIString:
-        readAscii(value);
-        break;
-      case internal::DSCode::CacheableASCIIStringHuge:
-        readAsciiHuge(value);
-        break;
-      case internal::DSCode::CacheableNullString:
-        // empty string
-        break;
-      // TODO: What's the right response here?
-      case internal::DSCode::FixedIDDefault:
-      case internal::DSCode::FixedIDByte:
-      case internal::DSCode::FixedIDShort:
-      case internal::DSCode::FixedIDInt:
-      case internal::DSCode::FixedIDNone:
-      case internal::DSCode::CacheableLinkedList:
-      case internal::DSCode::Properties:
-      case internal::DSCode::PdxType:
-      case internal::DSCode::BooleanArray:
-      case internal::DSCode::CharArray:
-      case internal::DSCode::CacheableUserData4:
-      case internal::DSCode::ClientProxyMembershipId:
-      case internal::DSCode::CacheableUserData:
-      case internal::DSCode::NullObj:
-      case internal::DSCode::Class:
-      case internal::DSCode::JavaSerializable:
-      case internal::DSCode::DataSerializable:
-      case internal::DSCode::CacheableBytes:
-      case internal::DSCode::CacheableInt16Array:
-      case internal::DSCode::CacheableInt32Array:
-      case internal::DSCode::CacheableInt64Array:
-      case internal::DSCode::CacheableFloatArray:
-      case internal::DSCode::CacheableDoubleArray:
-      case internal::DSCode::CacheableObjectArray:
-      case internal::DSCode::CacheableBoolean:
-      case internal::DSCode::CacheableCharacter:
-      case internal::DSCode::CacheableByte:
-      case internal::DSCode::CacheableInt16:
-      case internal::DSCode::CacheableInt32:
-      case internal::DSCode::CacheableInt64:
-      case internal::DSCode::CacheableFloat:
-      case internal::DSCode::CacheableDouble:
-      case internal::DSCode::CacheableDate:
-      case internal::DSCode::CacheableFileName:
-      case internal::DSCode::CacheableStringArray:
-      case internal::DSCode::CacheableArrayList:
-      case internal::DSCode::CacheableHashSet:
-      case internal::DSCode::CacheableHashMap:
-      case internal::DSCode::CacheableTimeUnit:
-      case internal::DSCode::CacheableHashTable:
-      case internal::DSCode::CacheableVector:
-      case internal::DSCode::CacheableIdentityHashMap:
-      case internal::DSCode::CacheableLinkedHashSet:
-      case internal::DSCode::CacheableStack:
-      case internal::DSCode::InternalDistributedMember:
-      case internal::DSCode::PDX:
-      case internal::DSCode::CacheableEnum:
-        break;
+    if (type == internal::DSCode::CacheableString) {
+      readJavaModifiedUtf8(value);
+    } else if (type == internal::DSCode::CacheableStringHuge) {
+      readUtf16Huge(value);
+    } else if (type == internal::DSCode::CacheableASCIIString) {
+      readAscii(value);
+    } else if (type == internal::DSCode::CacheableASCIIStringHuge) {
+      readAsciiHuge(value);
     }
     return value;
   }
