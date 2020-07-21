@@ -144,7 +144,10 @@ bool Cache::getPdxReadSerialized() const {
   return m_cacheImpl->getPdxReadSerialized();
 }
 
-void Cache::setLogLevel(LogLevel newLevel) { Log::setLogLevel(newLevel); }
+void Cache::setLogLevel(LogLevel newLevel) {
+  Log::setLogLevel(newLevel);
+  this->getSystemProperties().setLogLevel(newLevel);
+}
 
 LogLevel Cache::getLogLevel() { return Log::logLevel(); }
 

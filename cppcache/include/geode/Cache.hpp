@@ -241,8 +241,15 @@ class APACHE_GEODE_EXPORT Cache : public GeodeCache {
 
   SystemProperties& getSystemProperties() const override;
 
+  /**
+   * Changes the current log level to newLogLevel.
+   */
   void setLogLevel(LogLevel newLevel);
 
+  /**
+   * Returns the current log level.
+   * @return the current log level.
+   */
   LogLevel getLogLevel();
 
   Cache() = delete;
