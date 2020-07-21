@@ -31,6 +31,31 @@ namespace apache {
 namespace geode {
 namespace client {
 
+int32_t fixedTypeSizes[] = {
+    PdxTypes::BOOLEAN_SIZE,  // BOOLEAN
+    PdxTypes::BOOLEAN_SIZE,  // BYTE
+    PdxTypes::CHAR_SIZE,     // CHAR
+    PdxTypes::CHAR_SIZE,     // SHORT
+    PdxTypes::INTEGER_SIZE,  // INT
+    PdxTypes::LONG_SIZE,     // LONG
+    PdxTypes::INTEGER_SIZE,  // FLOAT
+    PdxTypes::LONG_SIZE,     // DOUBLE
+    PdxTypes::DATE_SIZE,     // DATE
+    -1,                      // STRING
+    -1,                      // OBJECT
+    -1,                      // BOOLEAN_ARRAY
+    -1,                      // CHAR_ARRAY
+    -1,                      // BYTE_ARRAY
+    -1,                      // SHORT_ARRAY
+    -1,                      // INT_ARRAY
+    -1,                      // LONG_ARRAY
+    -1,                      // FLOAT_ARRAY
+    -1,                      // DOUBLE_ARRAY
+    -1,                      // STRING_ARRAY
+    -1,                      // OBJECT_ARRAY
+    -1,                      // ARRAY_OF_BYTE_ARRAYS
+};
+
 PdxFieldType::PdxFieldType()
     : Serializable(),
       m_fieldName(),
@@ -105,43 +130,13 @@ bool PdxFieldType::equals(std::shared_ptr<PdxFieldType> otherObj) {
 }
 
 int32_t PdxFieldType::getFixedTypeSize() const {
-  switch (m_typeId) {
-    case PdxFieldTypes::BYTE:
-    case PdxFieldTypes::BOOLEAN: {
-      return PdxTypes::BOOLEAN_SIZE;
-    }
-    case PdxFieldTypes::SHORT:
-    case PdxFieldTypes::CHAR:
-      // case apache::geode::client::GeodeTypeIds::CacheableChar: //TODO
-      { return PdxTypes::CHAR_SIZE; }
-    case PdxFieldTypes::INT:
-    case PdxFieldTypes::FLOAT:
-      // case DSCODE.ENUM:
-      { return PdxTypes::INTEGER_SIZE; }
-    case PdxFieldTypes::LONG:
-    case PdxFieldTypes::DOUBLE: {
-      return PdxTypes::LONG_SIZE;
-    }
-    case PdxFieldTypes::DATE: {
-      return PdxTypes::DATE_SIZE;
-    }
-    case PdxFieldTypes::UNKNOWN:
-    case PdxFieldTypes::STRING:
-    case PdxFieldTypes::OBJECT:
-    case PdxFieldTypes::BOOLEAN_ARRAY:
-    case PdxFieldTypes::CHAR_ARRAY:
-    case PdxFieldTypes::BYTE_ARRAY:
-    case PdxFieldTypes::SHORT_ARRAY:
-    case PdxFieldTypes::INT_ARRAY:
-    case PdxFieldTypes::LONG_ARRAY:
-    case PdxFieldTypes::FLOAT_ARRAY:
-    case PdxFieldTypes::DOUBLE_ARRAY:
-    case PdxFieldTypes::STRING_ARRAY:
-    case PdxFieldTypes::OBJECT_ARRAY:
-    case PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS:
-      return -1;
+  int32_t result = -1;
+
+  if (m_typeId != PdxFieldTypes::UNKNOWN) {
+    result = fixedTypeSizes[static_cast<int32_t>(m_typeId)];
   }
-  return -1;
+
+  return result;
 }
 
 std::string PdxFieldType::toString() const {
