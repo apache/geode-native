@@ -41,8 +41,8 @@ std::map<GfErrType,
   throw ex;
 }
 
-[[noreturn]] void messageException(std::string message, std::string& exMsg,
-                                   GfErrType, std::string) {
+    [[noreturn]] void messageException(std::string message, std::string& exMsg,
+                                       GfErrType, std::string) {
   message.append(!exMsg.empty() ? exMsg
                                 : ": message from server could not be handled");
   MessageException ex(message);
@@ -62,8 +62,8 @@ std::map<GfErrType,
   throw ex;
 }
 
-[[noreturn]] void notOwnerException(std::string message, std::string& exMsg,
-                                    GfErrType, std::string) {
+    [[noreturn]] void notOwnerException(std::string message, std::string& exMsg,
+                                        GfErrType, std::string) {
   message.append(!exMsg.empty() ? exMsg : ": not own the lock");
   NotOwnerException ex(message);
   throw ex;
@@ -81,9 +81,9 @@ std::map<GfErrType,
   throw ex;
 }
 
-[[noreturn]] void illegalArgumentException(std::string message,
-                                           std::string& exMsg, GfErrType err,
-                                           std::string) {
+    [[noreturn]] void illegalArgumentException(std::string message,
+                                               std::string& exMsg,
+                                               GfErrType err, std::string) {
   if (err == GF_CACHE_ILLEGAL_ARGUMENT_EXCEPTION) {
     message.append(!exMsg.empty() ? exMsg : ": illegal argument");
   }
@@ -113,8 +113,9 @@ std::map<GfErrType,
   throw ex;
 }
 
-[[noreturn]] void cacheLoaderException(std::string message, std::string& exMsg,
-                                       GfErrType, std::string) {
+    [[noreturn]] void cacheLoaderException(std::string message,
+                                           std::string& exMsg, GfErrType,
+                                           std::string) {
   message.append(!exMsg.empty() ? exMsg : ": exception in CacheLoader");
   CacheLoaderException ex(message);
   throw ex;
@@ -128,9 +129,9 @@ std::map<GfErrType,
   throw ex;
 }
 
-[[noreturn]] void regionDestroyedException(std::string message,
-                                           std::string& exMsg, GfErrType err,
-                                           std::string) {
+    [[noreturn]] void regionDestroyedException(std::string message,
+                                               std::string& exMsg,
+                                               GfErrType err, std::string) {
   if (err == GF_CACHE_REGION_INVALID) {
     message.append(!exMsg.empty() ? exMsg : ": region not valid");
   }
@@ -148,8 +149,8 @@ std::map<GfErrType,
   throw ex;
 }
 
-[[noreturn]] void geodeIOException(std::string message, std::string& exMsg,
-                                   GfErrType, std::string) {
+    [[noreturn]] void geodeIOException(std::string message, std::string& exMsg,
+                                       GfErrType, std::string) {
   message.append(!exMsg.empty() ? exMsg : ": Input/Output error in operation");
   GeodeIOException ex(message);
   throw ex;
@@ -162,8 +163,8 @@ std::map<GfErrType,
   throw ex;
 }
 
-[[noreturn]] void timeoutException(std::string message, std::string& exMsg,
-                                   GfErrType err, std::string) {
+    [[noreturn]] void timeoutException(std::string message, std::string& exMsg,
+                                       GfErrType err, std::string) {
   if (err == GF_CLIENT_WAIT_TIMEOUT) {
     message.append(!exMsg.empty()
                        ? exMsg
@@ -182,9 +183,9 @@ std::map<GfErrType,
   throw ex;
 }
 
-[[noreturn]] void bufferSizeExceededException(std::string message,
-                                              std::string& exMsg, GfErrType,
-                                              std::string) {
+    [[noreturn]] void bufferSizeExceededException(std::string message,
+                                                  std::string& exMsg, GfErrType,
+                                                  std::string) {
   message.append(!exMsg.empty() ? exMsg : ": Buffer Size Exceeded");
   BufferSizeExceededException ex(message);
   throw ex;
@@ -197,8 +198,9 @@ std::map<GfErrType,
   throw ex;
 }
 
-[[noreturn]] void regionExistsException(std::string message, std::string& exMsg,
-                                        GfErrType, std::string) {
+    [[noreturn]] void regionExistsException(std::string message,
+                                            std::string& exMsg, GfErrType,
+                                            std::string) {
   message.append(!exMsg.empty() ? exMsg : ": Named Region Exists");
   RegionExistsException ex(message);
   throw ex;
@@ -212,8 +214,9 @@ std::map<GfErrType,
   throw ex;
 }
 
-[[noreturn]] void entryExistsException(std::string message, std::string& exMsg,
-                                       GfErrType, std::string) {
+    [[noreturn]] void entryExistsException(std::string message,
+                                           std::string& exMsg, GfErrType,
+                                           std::string) {
   message.append(!exMsg.empty() ? exMsg
                                 : ": Entry already exists in the region");
   EntryExistsException ex(message);
@@ -228,8 +231,9 @@ std::map<GfErrType,
   throw ex;
 }
 
-[[noreturn]] void cacheClosedException(std::string message, std::string& exMsg,
-                                       GfErrType, std::string) {
+    [[noreturn]] void cacheClosedException(std::string message,
+                                           std::string& exMsg, GfErrType,
+                                           std::string) {
   message.append(!exMsg.empty() ? exMsg : ": Cache has been closed");
   CacheClosedException ex(message);
   throw ex;
@@ -245,9 +249,9 @@ std::map<GfErrType,
   throw ex;
 }
 
-[[noreturn]] void concurrentModificationException(std::string message,
-                                                  std::string& exMsg, GfErrType,
-                                                  std::string) {
+    [[noreturn]] void concurrentModificationException(std::string message,
+                                                      std::string& exMsg,
+                                                      GfErrType, std::string) {
   message.append(!exMsg.empty() ? exMsg
                                 : ": Concurrent modification in the cache");
   ConcurrentModificationException ex(message);
@@ -262,9 +266,9 @@ std::map<GfErrType,
   throw ex;
 }
 
-[[noreturn]] void authenticationFailedException(std::string message,
-                                                std::string& exMsg, GfErrType,
-                                                std::string) {
+    [[noreturn]] void authenticationFailedException(std::string message,
+                                                    std::string& exMsg,
+                                                    GfErrType, std::string) {
   message.append(!exMsg.empty() ? exMsg : ": authentication failed");
   AuthenticationFailedException ex(message);
   throw ex;
@@ -278,9 +282,9 @@ std::map<GfErrType,
   throw ex;
 }
 
-[[noreturn]] void duplicateDurableClientException(std::string message,
-                                                  std::string& exMsg, GfErrType,
-                                                  std::string) {
+    [[noreturn]] void duplicateDurableClientException(std::string message,
+                                                      std::string& exMsg,
+                                                      GfErrType, std::string) {
   message.append(!exMsg.empty() ? exMsg : ": Duplicate Durable Client Id");
   DuplicateDurableClientException ex(message);
   throw ex;
@@ -293,8 +297,10 @@ std::map<GfErrType,
   throw ex;
 }
 
-[[noreturn]] void noAvailableLocatorsException(std::string, std::string& exMsg,
-                                               GfErrType, std::string func) {
+    [[noreturn]] void noAvailableLocatorsException(std::string,
+                                                   std::string& exMsg,
+                                                   GfErrType,
+                                                   std::string func) {
   NoAvailableLocatorsException cause(
       func + (!exMsg.empty() ? exMsg : ": No locators available"));
   try {
@@ -314,9 +320,9 @@ std::map<GfErrType,
   throw ex;
 }
 
-[[noreturn]] void functionExecutionException(std::string message,
-                                             std::string& exMsg, GfErrType,
-                                             std::string) {
+    [[noreturn]] void functionExecutionException(std::string message,
+                                                 std::string& exMsg, GfErrType,
+                                                 std::string) {
   message.append(!exMsg.empty() ? exMsg : ": Function execution failed");
   FunctionExecutionException ex(message);
   throw ex;
@@ -329,8 +335,8 @@ std::map<GfErrType,
   throw ex;
 }
 
-[[noreturn]] void rollbackException(std::string message, std::string& exMsg,
-                                    GfErrType, std::string) {
+    [[noreturn]] void rollbackException(std::string message, std::string& exMsg,
+                                        GfErrType, std::string) {
   message.append(!exMsg.empty() ? exMsg : ": Transaction rolled back");
   RollbackException ex(message);
   throw ex;
@@ -344,9 +350,10 @@ std::map<GfErrType,
   throw ex;
 }
 
-[[noreturn]] void transactionDataRebalancedException(std::string message,
-                                                     std::string& exMsg,
-                                                     GfErrType, std::string) {
+    [[noreturn]] void transactionDataRebalancedException(std::string message,
+                                                         std::string& exMsg,
+                                                         GfErrType,
+                                                         std::string) {
   message.append(!exMsg.empty() ? exMsg
                                 : ": Transaction data rebalanced exception");
   TransactionDataRebalancedException ex(message);
@@ -364,9 +371,9 @@ std::map<GfErrType,
   throw ex;
 }
 
-[[noreturn]] void putAllPartialResultException(std::string message,
-                                               std::string& exMsg, GfErrType,
-                                               std::string) {
+    [[noreturn]] void putAllPartialResultException(std::string message,
+                                                   std::string& exMsg,
+                                                   GfErrType, std::string) {
   message.append(!exMsg.empty() ? exMsg : ": PutAll Partial exception");
   PutAllPartialResultException ex(message);
   throw ex;
