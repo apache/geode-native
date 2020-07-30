@@ -50,8 +50,12 @@ icon: #@ icon
 #@ return value.lower().replace(".", "-").replace("/", "-")
 #@ end
 
+#@ def pipeline_prefix():
+#@ return data.values.repository.owner + "-" + hyphenated(data.values.repository.branch)
+#@ end
+
 #@ def image_family_name(family):
-#@ return (data.values.repository.owner + "-" + hyphenated(data.values.repository.branch) + "-" + family)[0:62]
+#@ return (pipeline_prefix() + "-" + family)[0:62]
 #@ end
 
 #@ def gci_resource_name(family):
@@ -390,6 +394,6 @@ plan:
           - source/ci/.
           - --output-files
           - pipeline/
-  - set_pipeline: test
+  - set_pipeline: #@ pipeline_prefix()
     file: pipeline/pipeline.yml
 #@ end
