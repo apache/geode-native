@@ -24,13 +24,19 @@
 #include <chrono>
 #include <string>
 
+#if defined(_WIN32)
 #pragma warning(push)
 #pragma warning(disable : 4311)
 #pragma warning(disable : 4302)
+#endif
+
 #pragma pack(push)
 #include <ace/SSL/SSL_SOCK_Stream.h>
 #pragma pack(pop)
+
+#if defined(_WIN32)
 #pragma warning(pop)
+#endif
 
 #include "TcpConn.hpp"
 
@@ -64,7 +70,7 @@ class TcpSslConn : public TcpConn {
         privateKeyFile_(std::move(privateKeyFile)),
         password_(std::move(password)) {
     initSsl();
-  };
+  }
 
   TcpSslConn(const std::string& address, std::chrono::microseconds waitSeconds,
              int32_t maxBuffSizePool, std::string publicKeyFile,
