@@ -280,6 +280,20 @@ namespace Apache
         PoolFactory^ AddServer(String^ host, Int32 port);
 
         /// <summary>
+        /// Set proxy info for SNI connection.
+        /// </summary>
+        /// <remarks>
+        /// Used for connecting via SNI proxy.
+        /// </remarks>
+        /// <param>
+        /// host the host name or ip address that the server is listening on.
+        /// </param>
+        /// <param>
+        /// port the port that the server is listening on.
+        /// </param>
+        PoolFactory^ SetSniProxy(String^ hostname, Int32 port);
+
+        /// <summary>
         /// Enable subscriptions.
         /// </summary>
         /// <remarks>

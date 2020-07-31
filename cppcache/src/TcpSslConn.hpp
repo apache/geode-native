@@ -50,6 +50,7 @@ class TcpSslConn : public TcpConn {
   const std::string trustStoreFile_;
   const std::string privateKeyFile_;
   const std::string password_;
+  std::string sniHostname_;
   std::unique_ptr<ACE_SSL_SOCK_Stream> stream_;
 
  protected:
@@ -61,24 +62,38 @@ class TcpSslConn : public TcpConn {
   void initSsl();
 
  public:
-  TcpSslConn(const std::string& hostname, uint16_t port,
-             std::chrono::microseconds waitSeconds, int32_t maxBuffSizePool,
-             std::string publicKeyFile, std::string privateKeyFile,
-             std::string password)
-      : TcpConn(hostname, port, waitSeconds, maxBuffSizePool),
+  TcpSslConn(const std::string& hostname, std::chrono::microseconds waitSeconds,
+             int32_t maxBuffSizePool, const std::string& sniProxyHostname,
+             uint16_t sniProxyPort, std::string publicKeyFile,
+             std::string privateKeyFile, std::string password)
+      : TcpConn(sniProxyHostname, sniProxyPort, waitSeconds, maxBuffSizePool),
         trustStoreFile_(std::move(publicKeyFile)),
         privateKeyFile_(std::move(privateKeyFile)),
-        password_(std::move(password)) {
+        password_(std::move(password)),
+        sniHostname_(hostname) {
+    initSsl();
+  }
+
+  TcpSslConn(const std::string& hostname, uint16_t port,
+             std::chrono::microseconds connect_timeout, int32_t maxBuffSizePool,
+             const std::string& publicKeyFile, const std::string& privateKeyFile,
+             const std::string& password)
+      : TcpConn(hostname.c_str(), port, connect_timeout, maxBuffSizePool),
+        trustStoreFile_(std::move(publicKeyFile)),
+        privateKeyFile_(std::move(privateKeyFile)),
+        password_(std::move(password)),
+        sniHostname_("") {
     initSsl();
   }
 
   TcpSslConn(const std::string& address, std::chrono::microseconds waitSeconds,
-             int32_t maxBuffSizePool, std::string publicKeyFile,
-             std::string privateKeyFile, std::string password)
+           int32_t maxBuffSizePool, std::string publicKeyFile,
+           std::string privateKeyFile, std::string password)
       : TcpConn(address, waitSeconds, maxBuffSizePool),
         trustStoreFile_(std::move(publicKeyFile)),
         privateKeyFile_(std::move(privateKeyFile)),
-        password_(std::move(password)) {
+        password_(std::move(password)),
+        sniHostname_("") {
     initSsl();
   }
 

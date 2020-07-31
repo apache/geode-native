@@ -28,6 +28,7 @@
 #include <geode/RegionShortcut.hpp>
 
 #include "framework/Cluster.h"
+#include "framework/TestConfig.h"
 
 namespace snitest {
 
@@ -41,28 +42,26 @@ class SNITest : public ::testing::Test {
  protected:
   SNITest() {
     certificatePassword = std::string("apachegeode");
+    clientSslKeysDir = boost::filesystem::path(
+        getFrameworkString(FrameworkVariable::TestClientSslKeysDir));
     currentWorkingDirectory = boost::filesystem::current_path();
+    sniConfigPath = boost::filesystem::path(
+        getFrameworkString(FrameworkVariable::TestSniConfigPath));
   }
 
   ~SNITest() override = default;
 
   void SetUp() override {
     auto systemRVal = 0;
-#if defined(_WIN32)
-    std::string sniDir(currentWorkingDirectory.string());
-    sniDir += "/../sni-test-config";
-    SetCurrentDirectory(sniDir.c_str());
-#else
-    systemRVal = chdir("./sni-test-config");
-    if (systemRVal == -1) {
-      BOOST_LOG_TRIVIAL(error) << "chdir returned: " << systemRVal;
-    }
-#endif
+    std::string dockerComposeCmd = "docker-compose -f " +
+                                   sniConfigPath.string() +
+                                   "/docker-compose.yml" + " up -d";
+    const char* dcc = dockerComposeCmd.c_str();
 
-    systemRVal = std::system("docker-compose up -d");
+    systemRVal = std::system(dcc);
     if (systemRVal == -1) {
       BOOST_LOG_TRIVIAL(error)
-          << "std::system(\"docker-compose up -d\") returned: " << systemRVal;
+          << "std::system(\"docker-compose\") returned: " << systemRVal;
     }
 
     systemRVal = std::system(
@@ -80,9 +79,14 @@ class SNITest : public ::testing::Test {
     if (systemRVal == -1) {
       BOOST_LOG_TRIVIAL(error) << "std::system returned: " << systemRVal;
     }
+
+    systemRVal = std::system("docker container prune -f");
+    if (systemRVal == -1) {
+      BOOST_LOG_TRIVIAL(error) << "std::system returned: " << systemRVal;
+    }
   }
 
-  std::string makeItSo(const char* command) {
+  std::string runDockerCommand(const char* command) {
     std::string commandOutput;
 #if defined(_WIN32)
     std::unique_ptr<FILE, decltype(&_pclose)> pipe(_popen(command, "r"),
@@ -108,41 +112,51 @@ class SNITest : public ::testing::Test {
   }
 
   std::string certificatePassword;
+  boost::filesystem::path clientSslKeysDir;
   boost::filesystem::path currentWorkingDirectory;
+  boost::filesystem::path sniConfigPath;
 };
 
-TEST_F(SNITest, DISABLED_connectViaProxyTest) {
+#if defined(_WIN32)
+TEST_F(SNITest, DISABLE_connectViaProxyTest) {
+#else
+TEST_F(SNITest, connectViaProxyTest) {
+#endif
   const auto clientTruststore =
-      (currentWorkingDirectory /
-       boost::filesystem::path("sni-test-config/geode-config/truststore.jks"));
+      (clientSslKeysDir / boost::filesystem::path("/truststore_sni.pem"));
 
   auto cache = CacheFactory()
-                   .set("log-level", "DEBUG")
+                   .set("log-level", "debug")
+                   .set("log-file", "SNITest.log")
                    .set("ssl-enabled", "true")
                    .set("ssl-truststore", clientTruststore.string())
                    .create();
 
-  auto portString = makeItSo("docker port haproxy");
+  auto portString = runDockerCommand("docker port haproxy");
   auto portNumber = parseProxyPort(portString);
 
   cache.getPoolManager()
       .createFactory()
-      .addLocator("localhost", portNumber)
+      .setSniProxy("localhost", portNumber)
+      .addLocator("locator-maeve", 10334)
       .create("pool");
 
   auto region = cache.createRegionFactory(RegionShortcut::PROXY)
                     .setPoolName("pool")
-                    .create("region");
+                    .create("jellyfish");
 
   region->put("1", "one");
 
   cache.close();
 }
 
-TEST_F(SNITest, connectionFailsTest) {
+#if defined(_WIN32)
+TEST_F(SNITest, DISABLE_connectWithoutProxyFails) {
+#else
+TEST_F(SNITest, connectWithoutProxyFails) {
+#endif
   const auto clientTruststore =
-      (currentWorkingDirectory /
-       boost::filesystem::path("sni-test-config/geode-config/truststore.jks"));
+      (clientSslKeysDir / boost::filesystem::path("/truststore_sni.pem"));
 
   auto cache = CacheFactory()
                    .set("log-level", "DEBUG")
@@ -152,7 +166,8 @@ TEST_F(SNITest, connectionFailsTest) {
 
   cache.getPoolManager()
       .createFactory()
-      .addLocator("localhost", 10334)
+      .setSniProxy("badProxyName", 40000)
+      .addLocator("locator-maeve", 10334)
       .create("pool");
 
   auto region = cache.createRegionFactory(RegionShortcut::PROXY)
@@ -160,25 +175,6 @@ TEST_F(SNITest, connectionFailsTest) {
                     .create("region");
   EXPECT_THROW(region->put("1", "one"),
                apache::geode::client::NotConnectedException);
-
-  cache.close();
-}
-
-TEST_F(SNITest, doNothingTest) {
-  const auto clientTruststore =
-      (currentWorkingDirectory /
-       boost::filesystem::path("sni-test-config/geode-config/truststore.jks"));
-
-  auto cache = CacheFactory()
-                   .set("log-level", "DEBUG")
-                   .set("ssl-enabled", "true")
-                   .set("ssl-truststore", clientTruststore.string())
-                   .create();
-
-  cache.getPoolManager()
-      .createFactory()
-      .addLocator("localhost", 10334)
-      .create("pool");
 
   cache.close();
 }

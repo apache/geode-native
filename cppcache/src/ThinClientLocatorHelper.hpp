@@ -44,6 +44,9 @@ class ThinClientLocatorHelper {
  public:
   ThinClientLocatorHelper(const std::vector<std::string>& locatorAddresses,
                           const ThinClientPoolDM* poolDM);
+  ThinClientLocatorHelper(const std::vector<std::string>& locatorAddresses,
+                          const std::string& sniProxyHost, int sniProxyPort,
+                          const ThinClientPoolDM* poolDM);
   GfErrType getEndpointForNewFwdConn(
       ServerLocation& outEndpoint, std::string& additionalLoc,
       const std::set<ServerLocation>& exclEndPts,
@@ -71,6 +74,8 @@ class ThinClientLocatorHelper {
   const ThinClientPoolDM* m_poolDM;
   ThinClientLocatorHelper(const ThinClientLocatorHelper&);
   ThinClientLocatorHelper& operator=(const ThinClientLocatorHelper&);
+  std::string m_sniProxyHost;
+  int m_sniProxyPort;
 };
 }  // namespace client
 }  // namespace geode

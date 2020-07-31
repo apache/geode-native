@@ -185,6 +185,13 @@ PoolFactory& PoolFactory::addServer(const std::string& host, int port) {
   return *this;
 }
 
+PoolFactory& PoolFactory::setSniProxy(const std::string& hostname,
+                                      const int port) {
+  m_attrs->setSniProxyHost(hostname);
+  m_attrs->setSniProxyPort(port);
+  return *this;
+}
+
 PoolFactory& PoolFactory::setSubscriptionEnabled(bool enabled) {
   m_attrs->setSubscriptionEnabled(enabled);
   return *this;
@@ -304,15 +311,17 @@ PoolFactory& PoolFactory::addCheck(const std::string& host, int port) {
                                    std::to_string(port));
   }
 
-  ACE_INET_Addr addr(port, host.c_str());
+  if (m_attrs->getSniProxyHost().empty()) {
+    ACE_INET_Addr addr(port, host.c_str());
 #ifdef WITH_IPV6
-  // check unknown host
-  // ACE will not initialize port if hostname is not resolved.
-  if (port != addr.get_port_number()) {
+    // check unknown host
+    // ACE will not initialize port if hostname is not resolved.
+    if (port != addr.get_port_number()) {
 #else
-  if (!(addr.get_ip_address())) {
+    if (!(addr.get_ip_address())) {
 #endif
-    throw IllegalArgumentException("Unknown host " + host);
+      throw IllegalArgumentException("Unknown host " + host);
+    }
   }
   return *this;
 }

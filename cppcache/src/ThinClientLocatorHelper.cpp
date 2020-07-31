@@ -66,6 +66,18 @@ ThinClientLocatorHelper::ThinClientLocatorHelper(
   }
 }
 
+ThinClientLocatorHelper::ThinClientLocatorHelper(
+    const std::vector<std::string>& locatorAddresses,
+    const std::string& sniProxyHost, int sniProxyPort,
+    const ThinClientPoolDM* poolDM)
+    : m_poolDM(poolDM),
+      m_sniProxyHost(sniProxyHost),
+      m_sniProxyPort(sniProxyPort) {
+  for (auto&& locatorAddress : locatorAddresses) {
+    m_locHostPort.emplace_back(locatorAddress);
+  }
+}
+
 Connector* ThinClientLocatorHelper::createConnection(
     Connector*& conn, const char* hostname, int32_t port,
     std::chrono::microseconds waitSeconds, int32_t maxBuffSizePool) {
@@ -75,10 +87,18 @@ Connector* ThinClientLocatorHelper::createConnection(
                                ->getDistributedSystem()
                                .getSystemProperties();
   if (systemProperties.sslEnabled()) {
-    socket = new TcpSslConn(hostname, port, waitSeconds, maxBuffSizePool,
-                            systemProperties.sslTrustStore().c_str(),
-                            systemProperties.sslKeyStore().c_str(),
-                            systemProperties.sslKeystorePassword().c_str());
+    if (m_sniProxyHost.empty()) {
+      socket = new TcpSslConn(
+          hostname, static_cast<uint16_t>(port), waitSeconds, maxBuffSizePool,
+          systemProperties.sslTrustStore(), systemProperties.sslKeyStore(),
+          systemProperties.sslKeystorePassword());
+    } else {
+      socket =
+          new TcpSslConn(hostname, waitSeconds, maxBuffSizePool, m_sniProxyHost,
+                         m_sniProxyPort, systemProperties.sslTrustStore(),
+                         systemProperties.sslKeyStore(),
+                         systemProperties.sslKeystorePassword());
+    }
   } else {
     socket = new TcpConn(hostname, port, waitSeconds, maxBuffSizePool);
   }
