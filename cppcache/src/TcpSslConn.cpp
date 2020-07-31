@@ -80,7 +80,7 @@ uint16_t TcpSslConn::getPort() {
 }
 
 static int pem_passwd_cb(char* buf, int size, int /*rwflag*/, void* passwd) {
-  strncpy(buf, (char*)passwd, size);
+  strncpy(buf, reinterpret_cast<char*>(passwd), size);
   buf[size - 1] = '\0';
   return static_cast<int>(strlen(buf));
 }
