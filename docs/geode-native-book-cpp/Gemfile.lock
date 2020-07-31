@@ -202,6 +202,3 @@ PLATFORMS
 DEPENDENCIES
   bookbindery
   libv8
-
-BUNDLED WITH
-   1.17.3
