@@ -31,16 +31,20 @@ using internal::DSFid;
 class GatewaySenderEventCallbackArgument
     : public internal::DataSerializableFixedId {
  public:
-  GatewaySenderEventCallbackArgument() {}
+  GatewaySenderEventCallbackArgument()
+      : originatingDSId(GwSenderDefaultDistributedSystemId) {}
   void fromData(DataInput& input) override;
   void toData(DataOutput&) const final {}
   DSFid getDSFID() const override;
+  int getOriginatingDSId() { return originatingDSId; }
+  std::vector<int> getRecipientDSIds() { return recipientDSIds; }
   static std::shared_ptr<Serializable> create() {
     return std::make_shared<GatewaySenderEventCallbackArgument>();
   }
   ~GatewaySenderEventCallbackArgument() override = default;
 
  private:
+  const int GwSenderDefaultDistributedSystemId = -1;
   int originatingDSId;
   std::vector<int> recipientDSIds;
 };
