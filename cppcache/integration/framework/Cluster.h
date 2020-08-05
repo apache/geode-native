@@ -131,6 +131,12 @@ class Cluster {
           std::vector<uint16_t> &locatorPorts, std::vector<uint16_t> &remoteLocatorPort,
           uint16_t distributedSystemId);
 
+  Cluster(Name name, Classpath classpath, SecurityManager securityManager,
+          User user, Password password, LocatorCount initialLocators,
+          ServerCount initialServers, CacheXMLFiles cacheXMLFiles,
+          std::vector<uint16_t> &locatorPorts, std::vector<uint16_t> &remoteLocatorPort,
+          uint16_t distributedSystemId);
+
   Cluster(LocatorCount initialLocators, ServerCount initialServers);
 
   Cluster(LocatorCount initialLocators, ServerCount initialServers,
@@ -139,22 +145,12 @@ class Cluster {
   Cluster(Name name, LocatorCount initialLocators, ServerCount initialServers,
           UseIpv6 useIPv6);
 
-  Cluster(Name name, LocatorCount initialLocators, ServerCount initialServers,
-          std::vector<uint16_t> &locatorPorts, std::vector<uint16_t> &remoteLocatorPort,
-          uint16_t distributedSystemId);
-
   Cluster(Name name, LocatorCount initialLocators, ServerCount initialServers);
 
   Cluster(Name name, Classpath classpath, SecurityManager securityManager,
           User user, Password password, LocatorCount initialLocators,
           ServerCount initialServers, CacheXMLFiles cacheXMLFiles,
           UseIpv6 useIPv6);
-
-  Cluster(Name name, Classpath classpath, SecurityManager securityManager,
-          User user, Password password, LocatorCount initialLocators,
-          ServerCount initialServers, CacheXMLFiles cacheXMLFiles,
-          std::vector<uint16_t> &locatorPorts, std::vector<uint16_t> &remoteLocatorPort,
-          uint16_t distributedSystemId);
 
   Cluster(Name name, Classpath classpath, SecurityManager securityManager,
           User user, Password password, LocatorCount initialLocators,
@@ -227,6 +223,7 @@ class Cluster {
   bool getUseIPv6();
 
  private:
+
   std::string name_;
   std::string classpath_;
   std::string securityManager_;
