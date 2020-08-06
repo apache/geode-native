@@ -36,6 +36,8 @@ using apache::geode::client::Cache;
 using apache::geode::client::Cacheable;
 using apache::geode::client::CacheableKey;
 using apache::geode::client::CacheableString;
+using apache::geode::client::CacheListener;
+using apache::geode::client::EntryEvent;
 using apache::geode::client::Pool;
 using apache::geode::client::Region;
 using apache::geode::client::RegionShortcut;

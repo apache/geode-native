@@ -26,7 +26,9 @@
 
 namespace testGeode8344 {
 
-using namespace apache::geode::client;
+using apache::geode::client::PdxReader;
+using apache::geode::client::PdxSerializable;
+using apache::geode::client::PdxWriter;
 
 class Order : public PdxSerializable {
  public:
