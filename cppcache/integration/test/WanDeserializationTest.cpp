@@ -28,8 +28,6 @@
 
 #include "Order.hpp"
 
-using namespace testGeode8344;
-
 namespace {
 
 using apache::geode::client::Cache;
@@ -42,6 +40,7 @@ using apache::geode::client::Pool;
 using apache::geode::client::Region;
 using apache::geode::client::RegionShortcut;
 using std::chrono::minutes;
+using testGeode8344::Order;
 
 class GeodeCacheListener : public CacheListener {
  public:
