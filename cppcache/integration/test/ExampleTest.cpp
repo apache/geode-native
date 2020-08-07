@@ -49,7 +49,7 @@ std::shared_ptr<Region> setupRegion(Cache& cache) {
 
 /**
  * Example test using 2 servers and waiting for async tasks to synchronize using
- * furtures.
+ * futures.
  */
 TEST(ExampleTest, DISABLED_putAndGetWith2Servers) {
   Cluster cluster{LocatorCount{1}, ServerCount{2}};
