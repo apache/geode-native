@@ -40,7 +40,7 @@ using apache::geode::client::Pool;
 using apache::geode::client::Region;
 using apache::geode::client::RegionShortcut;
 using std::chrono::minutes;
-using testGeode8344::Order;
+using WanDeserialization::Order;
 
 class GeodeCacheListener : public CacheListener {
  public:
@@ -93,7 +93,7 @@ std::shared_ptr<Region> setupRegion(
   return region;
 }
 
-TEST(WanDeserializationTest, testGeode8344) {
+TEST(WanDeserializationTest, testEventsAreDeserializedCorrectly) {
   uint16_t portSiteA = Framework::getAvailablePort();
   uint16_t portSiteB = Framework::getAvailablePort();
 
