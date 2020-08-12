@@ -254,7 +254,6 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     -Wno-undefined-func-template #TODO fix
     -Wno-float-equal #TODO fix
     -Wno-header-hygiene #TODO fix
-    -Wno-shorten-64-to-32 #TODO fix
     -Wno-conversion #TODO fix
     -Wno-missing-variable-declarations #TODO fix
     -Wno-switch-enum #TODO fix
