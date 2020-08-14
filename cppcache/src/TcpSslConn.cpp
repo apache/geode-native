@@ -17,69 +17,25 @@
 
 #include "TcpSslConn.hpp"
 
-#include <chrono>
-#include <thread>
+#include <memory>
 
+#include <ace/SSL/SSL_SOCK_Connector.h>
+
+#include <geode/ExceptionTypes.hpp>
 #include <geode/SystemProperties.hpp>
 
-#include "CacheImpl.hpp"
-#include "DistributedSystem.hpp"
+#include "util/Log.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
-Ssl* TcpSslConn::getSSLImpl(ACE_HANDLE sock, const char* pubkeyfile,
-                            const char* privkeyfile) {
-  const char* libName = "cryptoImpl";
-  if (m_dll.open(libName, RTLD_NOW | RTLD_GLOBAL, 0) == -1) {
-    char msg[1000] = {0};
-    std::snprintf(msg, 1000, "cannot open library: %s", libName);
-    LOGERROR(msg);
-    throw FileNotFoundException(msg);
-  }
-
-  gf_create_SslImpl func =
-      reinterpret_cast<gf_create_SslImpl>(m_dll.symbol("gf_create_SslImpl"));
-  if (func == nullptr) {
-    char msg[1000];
-    std::snprintf(msg, 1000,
-                  "cannot find function %s in library gf_create_SslImpl",
-                  "cryptoImpl");
-    LOGERROR(msg);
-    throw IllegalStateException(msg);
-  }
-  return reinterpret_cast<Ssl*>(
-      func(sock, pubkeyfile, privkeyfile, m_pemPassword));
-}
+std::atomic_flag TcpSslConn::initialized_ = ATOMIC_FLAG_INIT;
 
 void TcpSslConn::createSocket(ACE_HANDLE sock) {
   LOGDEBUG("Creating SSL socket stream");
-  try {
-    m_ssl = getSSLImpl(sock, m_pubkeyfile, m_privkeyfile);
-  } catch (std::exception& e) {
-    throw SslException(e.what());
-  }
-}
-
-void TcpSslConn::listen(ACE_INET_Addr addr,
-                        std::chrono::microseconds waitSeconds) {
-  using apache::geode::internal::chrono::duration::to_string;
-
-  int32_t retVal = m_ssl->listen(addr, waitSeconds);
-
-  if (retVal == -1) {
-    char msg[256];
-    int32_t lastError = ACE_OS::last_error();
-    if (lastError == ETIME || lastError == ETIMEDOUT) {
-      throw TimeoutException(
-          "TcpSslConn::listen Attempt to listen timed out after" +
-          to_string(waitSeconds) + ".");
-    }
-    std::snprintf(msg, 255, "TcpSslConn::listen failed with errno: %d: %s",
-                  lastError, ACE_OS::strerror(lastError));
-    throw GeodeIOException(msg);
-  }
+  stream_ = std::unique_ptr<ACE_SSL_SOCK_Stream>(new ACE_SSL_SOCK_Stream());
+  stream_->set_handle(sock);
 }
 
 void TcpSslConn::connect() {
@@ -87,107 +43,88 @@ void TcpSslConn::connect() {
 
   ACE_OS::signal(SIGPIPE, SIG_IGN);  // Ignore broken pipe
 
-  // m_ssl->init();
+  LOGFINER(std::string("Connecting SSL socket stream to ") +
+           inetAddress_.get_host_name() + ":" +
+           std::to_string(inetAddress_.get_port_number()) + " waiting " +
+           to_string(timeout_));
 
-  std::chrono::microseconds waitMicroSeconds = m_waitMilliSeconds;
-
-  LOGDEBUG("Connecting SSL socket stream to %s:%d waiting %s micro sec",
-           m_addr.get_host_name(), m_addr.get_port_number(),
-           to_string(waitMicroSeconds).c_str());
-
-  int32_t retVal = m_ssl->connect(m_addr, waitMicroSeconds);
-
-  if (retVal == -1) {
-    char msg[256];
-    int32_t lastError = ACE_OS::last_error();
+  ACE_SSL_SOCK_Connector conn;
+  ACE_Time_Value actTimeout(timeout_);
+  if (ACE_SSL_SOCK_Connector{}.connect(
+          *stream_, inetAddress_,
+          timeout_ > std::chrono::microseconds::zero() ? &actTimeout
+                                                       : nullptr) == -1) {
+    const auto lastError = ACE_OS::last_error();
     if (lastError == ETIME || lastError == ETIMEDOUT) {
-      // this is only called by constructor, so we must delete m_ssl
-      _GEODE_SAFE_DELETE(m_ssl);
       throw TimeoutException(
           "TcpSslConn::connect Attempt to connect timed out after " +
-          to_string(waitMicroSeconds) + ".");
+          to_string(timeout_) + ".");
     }
-    std::snprintf(msg, 256, "TcpSslConn::connect failed with errno: %d: %s",
-                  lastError, ACE_OS::strerror(lastError));
-    // this is only called by constructor, so we must delete m_ssl
-    _GEODE_SAFE_DELETE(m_ssl);
-    throw GeodeIOException(msg);
+    close();
+    throw GeodeIOException("TcpSslConn::connect failed with errno: " +
+                           ACE_errno_to_string(lastError));
   }
 }
 
 void TcpSslConn::close() {
-  if (m_ssl != nullptr) {
-    m_ssl->close();
-    gf_destroy_SslImpl func = reinterpret_cast<gf_destroy_SslImpl>(
-        m_dll.symbol("gf_destroy_SslImpl"));
-    func(m_ssl);
-    m_ssl = nullptr;
-  }
-}
-
-size_t TcpSslConn::socketOp(TcpConn::SockOp op, char* buff, size_t len,
-                            std::chrono::microseconds waitDuration) {
-  {
-    // passing wait time as micro seconds
-    ACE_Time_Value waitTime(waitDuration);
-    auto endTime = std::chrono::steady_clock::now() + waitDuration;
-    size_t readLen = 0;
-    bool errnoSet = false;
-
-    auto sendlen = len;
-    size_t totalsend = 0;
-
-    while (len > 0 && waitTime > ACE_Time_Value::zero) {
-      if (len > m_chunkSize) {
-        sendlen = m_chunkSize;
-        len -= m_chunkSize;
-      } else {
-        sendlen = len;
-        len = 0;
-      }
-      do {
-        ssize_t retVal;
-        if (op == SOCK_READ) {
-          retVal = m_ssl->recv(buff, sendlen, &waitTime, &readLen);
-        } else {
-          retVal = m_ssl->send(buff, sendlen, &waitTime, &readLen);
-        }
-        sendlen -= readLen;
-        totalsend += readLen;
-        if (retVal < 0) {
-          int32_t lastError = ACE_OS::last_error();
-          if (lastError == EAGAIN) {
-            std::this_thread::sleep_for(std::chrono::microseconds(100));
-          } else {
-            errnoSet = true;
-            break;
-          }
-        } else if (retVal == 0 && readLen == 0) {
-          ACE_OS::last_error(EPIPE);
-          errnoSet = true;
-          break;
-        }
-
-        buff += readLen;
-
-        waitTime = endTime - std::chrono::steady_clock::now();
-        if (waitTime <= ACE_Time_Value::zero) break;
-      } while (sendlen > 0);
-      if (errnoSet) break;
-    }
-
-    if (len > 0 && !errnoSet) {
-      ACE_OS::last_error(ETIME);
-    }
-
-    return totalsend;
+  if (stream_) {
+    stream_->close();
+    stream_ = nullptr;
   }
 }
 
 uint16_t TcpSslConn::getPort() {
   ACE_INET_Addr localAddr;
-  m_ssl->getLocalAddr(localAddr);
+  stream_->get_local_addr(localAddr);
   return localAddr.get_port_number();
+}
+
+static int pem_passwd_cb(char* buf, int size, int /*rwflag*/, void* passwd) {
+  strncpy(buf, reinterpret_cast<char*>(passwd), size);
+  buf[size - 1] = '\0';
+  return static_cast<int>(strlen(buf));
+}
+
+void TcpSslConn::initSsl() {
+  if (!TcpSslConn::initialized_.test_and_set()) {
+    auto sslContext = ACE_SSL_Context::instance();
+
+    SSL_CTX_set_cipher_list(sslContext->context(), "DEFAULT");
+    sslContext->set_mode(ACE_SSL_Context::SSLv23_client);
+    sslContext->set_verify_peer();
+    if (sslContext->load_trusted_ca(trustStoreFile_.c_str()) != 0) {
+      throw SslException("Failed to read SSL trust store.");
+    }
+
+    if (!password_.empty()) {
+      SSL_CTX_set_default_passwd_cb(sslContext->context(), pem_passwd_cb);
+      SSL_CTX_set_default_passwd_cb_userdata(
+          sslContext->context(), const_cast<char*>(password_.c_str()));
+    }
+
+    if (!privateKeyFile_.empty()) {
+      if (sslContext->certificate(privateKeyFile_.c_str()) != 0) {
+        throw SslException("Failed to read SSL certificate.");
+      }
+      if (sslContext->private_key(privateKeyFile_.c_str()) != 0) {
+        throw SslException("Invalid SSL keystore password.");
+      }
+      if (SSL_CTX_use_certificate_chain_file(sslContext->context(),
+                                             privateKeyFile_.c_str()) <= 0) {
+        throw SslException("Failed to read SSL certificate chain.");
+      }
+    }
+  }
+}
+
+ssize_t TcpSslConn::doOperation(const TcpConn::SockOp& op, void* buff,
+                                size_t sendlen, ACE_Time_Value& waitTime,
+                                size_t& readLen) const {
+  if (op == SOCK_READ) {
+    return stream_->recv_n(buff, sendlen, &waitTime, &readLen);
+  } else {
+    return stream_->send_n(buff, sendlen, &waitTime, &readLen);
+  }
 }
 
 }  // namespace client

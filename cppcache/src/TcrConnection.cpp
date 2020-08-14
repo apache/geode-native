@@ -425,19 +425,19 @@ bool TcrConnection::initTcrConnection(
 }
 
 Connector* TcrConnection::createConnection(
-    const char* endpoint, std::chrono::microseconds connectTimeout,
+    const std::string& address, std::chrono::microseconds connectTimeout,
     int32_t maxBuffSizePool) {
   Connector* socket = nullptr;
   auto& systemProperties = m_connectionManager->getCacheImpl()
                                ->getDistributedSystem()
                                .getSystemProperties();
   if (systemProperties.sslEnabled()) {
-    socket = new TcpSslConn(endpoint, connectTimeout, maxBuffSizePool,
-                            systemProperties.sslTrustStore().c_str(),
-                            systemProperties.sslKeyStore().c_str(),
-                            systemProperties.sslKeystorePassword().c_str());
+    socket = new TcpSslConn(address, connectTimeout, maxBuffSizePool,
+                            systemProperties.sslTrustStore(),
+                            systemProperties.sslKeyStore(),
+                            systemProperties.sslKeystorePassword());
   } else {
-    socket = new TcpConn(endpoint, connectTimeout, maxBuffSizePool);
+    socket = new TcpConn(address, connectTimeout, maxBuffSizePool);
   }
   // as socket.init() calls throws exception...
   m_conn = socket;

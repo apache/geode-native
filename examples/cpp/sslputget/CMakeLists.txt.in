@@ -47,33 +47,15 @@ file(GLOB SSL_CERTIFICATES
 
 file(INSTALL ${SSL_CERTIFICATES} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
-# This is needed on Linux to force libcryptoImpl.so to be linked in.
-# Not currently supported in latest cmake, but ticket created: https://gitlab.kitware.com/cmake/cmake/issues/20174
-if ("Linux" STREQUAL ${CMAKE_SYSTEM_NAME} )
-  set_target_properties(${PROJECT_NAME} PROPERTIES
-    LINK_WHAT_YOU_USE TRUE)
-endif()
-  
-if (NOT WIN32)
-  target_link_libraries(${PROJECT_NAME}
-    PUBLIC
-      @PRODUCT_NAME_NOSPACE@::cpp
-      @PRODUCT_NAME_NOSPACE@::crypto
-  )
-else()
-  target_link_libraries(${PROJECT_NAME}
-    PUBLIC
-      @PRODUCT_NAME_NOSPACE@::cpp
-  )
-endif()
+target_link_libraries(${PROJECT_NAME}
+  PUBLIC
+    @PRODUCT_NAME_NOSPACE@::cpp
+)
 
 if(WIN32)
   add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy
       $<SHELL_PATH:$<TARGET_FILE_DIR:@PRODUCT_NAME_NOSPACE@::cpp>/../bin/@PRODUCT_LIB_NAME@.dll>
-      $<SHELL_PATH:$<TARGET_FILE_DIR:${PROJECT_NAME}>>
-    COMMAND ${CMAKE_COMMAND} -E copy
-      $<SHELL_PATH:$<TARGET_FILE_DIR:@PRODUCT_NAME_NOSPACE@::crypto>/../bin/cryptoImpl.dll>
       $<SHELL_PATH:$<TARGET_FILE_DIR:${PROJECT_NAME}>>
   )
 endif()

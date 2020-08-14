@@ -20,9 +20,24 @@
 #ifndef GEODE_TCPSSLCONN_H_
 #define GEODE_TCPSSLCONN_H_
 
-#include <ace/DLL.h>
+#include <atomic>
+#include <chrono>
+#include <string>
 
-#include "../../cryptoimpl/Ssl.hpp"
+#if defined(_WIN32)
+#pragma warning(push)
+#pragma warning(disable : 4311)
+#pragma warning(disable : 4302)
+#endif
+
+#pragma pack(push)
+#include <ace/SSL/SSL_SOCK_Stream.h>
+#pragma pack(pop)
+
+#if defined(_WIN32)
+#pragma warning(pop)
+#endif
+
 #include "TcpConn.hpp"
 
 namespace apache {
@@ -31,68 +46,47 @@ namespace client {
 
 class TcpSslConn : public TcpConn {
  private:
-  Ssl* m_ssl;
-  ACE_DLL m_dll;
-  const char* m_pubkeyfile;
-  const char* m_privkeyfile;
-  const char* m_pemPassword;
-  // adongre: Added for Ticket #758
-  // Pass extra parameter for the password
-  typedef void* (*gf_create_SslImpl)(ACE_HANDLE, const char*, const char*,
-                                     const char*);
-  typedef void (*gf_destroy_SslImpl)(void*);
-
-  Ssl* getSSLImpl(ACE_HANDLE sock, const char* pubkeyfile,
-                  const char* privkeyfile);
+  static std::atomic_flag initialized_;
+  const std::string trustStoreFile_;
+  const std::string privateKeyFile_;
+  const std::string password_;
+  std::unique_ptr<ACE_SSL_SOCK_Stream> stream_;
 
  protected:
-  size_t socketOp(SockOp op, char* buff, size_t len,
-                  std::chrono::microseconds waitDuration) override;
-
   void createSocket(ACE_HANDLE sock) override;
 
+  ssize_t doOperation(const SockOp& op, void* buff, size_t sendlen,
+                      ACE_Time_Value& waitTime, size_t& readLen) const override;
+
+  void initSsl();
+
  public:
-  TcpSslConn(const char* hostname, int32_t port,
+  TcpSslConn(const std::string& hostname, uint16_t port,
              std::chrono::microseconds waitSeconds, int32_t maxBuffSizePool,
-             const char* pubkeyfile, const char* privkeyfile,
-             const char* pemPassword)
+             std::string publicKeyFile, std::string privateKeyFile,
+             std::string password)
       : TcpConn(hostname, port, waitSeconds, maxBuffSizePool),
-        m_ssl(nullptr),
-        m_pubkeyfile(pubkeyfile),
-        m_privkeyfile(privkeyfile),
-        m_pemPassword(pemPassword) {}
+        trustStoreFile_(std::move(publicKeyFile)),
+        privateKeyFile_(std::move(privateKeyFile)),
+        password_(std::move(password)) {
+    initSsl();
+  }
 
-  TcpSslConn(const char* ipaddr, std::chrono::microseconds waitSeconds,
-             int32_t maxBuffSizePool, const char* pubkeyfile,
-             const char* privkeyfile, const char* pemPassword)
-      : TcpConn(ipaddr, waitSeconds, maxBuffSizePool),
-        m_ssl(nullptr),
-        m_pubkeyfile(pubkeyfile),
-        m_privkeyfile(privkeyfile),
-        m_pemPassword(pemPassword) {}
+  TcpSslConn(const std::string& address, std::chrono::microseconds waitSeconds,
+             int32_t maxBuffSizePool, std::string publicKeyFile,
+             std::string privateKeyFile, std::string password)
+      : TcpConn(address, waitSeconds, maxBuffSizePool),
+        trustStoreFile_(std::move(publicKeyFile)),
+        privateKeyFile_(std::move(privateKeyFile)),
+        password_(std::move(password)) {
+    initSsl();
+  }
 
-  // TODO:  Watch out for virt dtor calling virt methods!
+  virtual ~TcpSslConn() noexcept override = default;
 
-  virtual ~TcpSslConn() override {}
-
-  // Close this tcp connection
   void close() override;
 
-  // Listen
-  void listen(ACE_INET_Addr addr, std::chrono::microseconds waitSeconds =
-                                      DEFAULT_READ_TIMEOUT) override;
-
-  // connect
   void connect() override;
-
-  void setOption(int32_t level, int32_t option, void* val,
-                 size_t len) override {
-    if (m_ssl->setOption(level, option, val, static_cast<int32_t>(len)) == -1) {
-      int32_t lastError = ACE_OS::last_error();
-      LOGERROR("Failed to set option, errno: %d: %s", lastError,
-               ACE_OS::strerror(lastError));
-    }
-  }
 
   uint16_t getPort() override;
 };
