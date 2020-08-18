@@ -25,6 +25,7 @@
 
 using apache::geode::client::CacheClosedException;
 using apache::geode::client::CacheFactory;
+using apache::geode::client::LogLevel;
 using apache::geode::client::RegionShortcut;
 
 /**
@@ -60,4 +61,11 @@ TEST(CacheTest, close) {
   EXPECT_THROW(cache.initializeDeclarativeCache(""), CacheClosedException);
   EXPECT_THROW(cache.readyForEvents(), CacheClosedException);
   EXPECT_THROW(cache.rootRegions(), CacheClosedException);
+}
+
+TEST(CacheTest, changeLogLevel) {
+  auto cache = CacheFactory{}.set("log-level", "info").create();
+  ASSERT_EQ(cache.getLogLevel(), LogLevel::Info);
+  cache.setLogLevel(LogLevel::Debug);
+  ASSERT_EQ(cache.getLogLevel(), LogLevel::Debug);
 }

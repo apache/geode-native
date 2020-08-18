@@ -130,6 +130,11 @@ class APACHE_GEODE_EXPORT SystemProperties {
   LogLevel logLevel() const { return m_logLevel; }
 
   /**
+   * Changes the current log level to newLogLevel.
+   */
+  void setLogLevel(LogLevel newLogLevel) { m_logLevel = newLogLevel; }
+
+  /**
    * Returns a boolean that specifies if heapLRULimit has been enabled for the
    * process. If enabled, the HeapLRULimit specifies the maximum amount of
    * memory
