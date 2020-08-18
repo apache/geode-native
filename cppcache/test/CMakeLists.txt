@@ -41,6 +41,7 @@ add_executable(apache-geode_unittests
   geodeBannerTest.cpp
   gtest_extensions.h
   gmock_extensions.h
+  GatewaySenderEventCallbackArgumentTest.cpp
   InterestResultPolicyTest.cpp
   LocalRegionTest.cpp
   LRUQueueTest.cpp

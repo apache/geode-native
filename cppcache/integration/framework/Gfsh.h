@@ -21,6 +21,7 @@
 #define INTEGRATION_TEST_FRAMEWORK_GFSH_H
 
 #include <string>
+#include <vector>
 
 class Gfsh {
  public:
@@ -94,6 +95,10 @@ class Gfsh {
       Locator &withBindAddress(const std::string &bindAddress);
 
       Locator &withPort(const uint16_t &port);
+
+      Locator &withRemoteLocators(const std::vector<uint16_t> &locatorPorts);
+
+      Locator &withDistributedSystemId(const uint16_t &dsId);
 
       Locator &withJmxManagerPort(const uint16_t &jmxManagerPort);
 
@@ -214,6 +219,12 @@ class Gfsh {
     class Region;
     Region region();
 
+    class GatewaySender;
+    GatewaySender gatewaySender();
+
+    class GatewayReceiver;
+    GatewayReceiver gatewayReceiver();
+
     class Region : public Command<void> {
      public:
       explicit Region(Gfsh &gfsh);
@@ -227,6 +238,21 @@ class Gfsh {
       Region &withBuckets(const std::string &totalNumBuckets);
 
       Region &withPartitionResolver(const std::string &partitionResolver);
+      Region &withGatewaySenderId(const std::string &gatewaySenderId);
+    };
+
+    class GatewaySender : public Command<void> {
+     public:
+      explicit GatewaySender(Gfsh &gfsh);
+
+      GatewaySender &withId(const std::string &id);
+
+      GatewaySender &withRemoteDSId(const std::string &remoteDSId);
+    };
+
+    class GatewayReceiver : public Command<void> {
+     public:
+      explicit GatewayReceiver(Gfsh &gfsh);
     };
   };
 
