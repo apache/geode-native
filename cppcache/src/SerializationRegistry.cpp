@@ -43,6 +43,7 @@
 #include "DiskStoreId.hpp"
 #include "EnumInfo.hpp"
 #include "EventId.hpp"
+#include "GatewaySenderEventCallbackArgument.hpp"
 #include "GetAllServersResponse.hpp"
 #include "LocatorListResponse.hpp"
 #include "PdxHelper.hpp"
@@ -136,6 +137,7 @@ void TheTypeMap::setup() {
   bindDataSerializableFixedId(GetAllServersResponse::create);
   bindDataSerializableFixedId(EnumInfo::createDeserializable);
   bindDataSerializableFixedId(DiskStoreId::createDeserializable);
+  bindDataSerializableFixedId(GatewaySenderEventCallbackArgument::create);
 }
 
 /** This starts at reading the typeid.. assumes the length has been read. */

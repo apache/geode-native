@@ -1335,7 +1335,7 @@ void PdxInstanceImpl::toDataMutable(PdxWriter& writer) {
         m_cacheImpl.createDataInput(m_buffer.data(), m_buffer.size());
     for (size_t i = 0; i < pdxFieldList->size(); i++) {
       auto currPf = pdxFieldList->at(i);
-      LOGDEBUG("toData filedname = %s , isVarLengthType = %d ",
+      LOGDEBUG("toData fieldName = %s , isVarLengthType = %d ",
                currPf->getFieldName().c_str(), currPf->IsVariableLengthType());
       std::shared_ptr<Cacheable> value = nullptr;
 
@@ -1364,7 +1364,7 @@ void PdxInstanceImpl::toDataMutable(PdxWriter& writer) {
   } else {
     for (size_t i = 0; i < pdxFieldList->size(); i++) {
       auto currPf = pdxFieldList->at(i);
-      LOGDEBUG("toData1 filedname = %s , isVarLengthType = %d ",
+      LOGDEBUG("toData1 fieldName = %s , isVarLengthType = %d ",
                currPf->getFieldName().c_str(), currPf->IsVariableLengthType());
       auto value = m_updatedFields[currPf->getFieldName()];
       writeField(writer, currPf->getFieldName(), currPf->getTypeId(), value);
