@@ -48,20 +48,20 @@ namespace Apache.Geode.Client.IntegrationTests
 
             cache_ = cacheFactory.Create();
 
-            var dc = Process.Start(@"C:\Program Files\docker\docker\resources\bin\docker-compose.exe", "-f " + Config.SniConfigPath + "/docker-compose.yml" + " up -d");
+            var dc = Process.Start(@"docker-compose.exe", "-f " + Config.SniConfigPath + "/docker-compose.yml" + " up -d");
             dc.WaitForExit();
 
-            var d = Process.Start(@"C:\Program Files\docker\docker\resources\bin\docker.exe", "exec -t geode gfsh run --file=/geode/scripts/geode-starter.gfsh");
+            var d = Process.Start(@"docker.exe", "exec -t geode gfsh run --file=/geode/scripts/geode-starter.gfsh");
             d.WaitForExit();
         }
 
         public void Dispose()
         {
 
-            var dockerComposeProc = Process.Start(@"C:\Program Files\docker\docker\resources\bin\docker-compose.exe", "stop");
+            var dockerComposeProc = Process.Start(@"docker-compose.exe", "stop");
             dockerComposeProc.WaitForExit();
 
-            var dockerProc = Process.Start(@"C:\Program Files\docker\docker\resources\bin\docker.exe", "container prune -f");
+            var dockerProc = Process.Start(@"docker.exe", "container prune -f");
             dockerProc.WaitForExit();
 
         }
@@ -71,7 +71,7 @@ namespace Apache.Geode.Client.IntegrationTests
             ProcessStartInfo startInfo = new ProcessStartInfo();
             startInfo.RedirectStandardOutput = true;
             startInfo.UseShellExecute = false;
-            startInfo.FileName = @"C:\Program Files\Docker\Docker\resources\bin\docker.exe";
+            startInfo.FileName = @"docker.exe";
             startInfo.Arguments = dockerCommand;
             dockerProcess = Process.Start(startInfo);
             String rVal = dockerProcess.StandardOutput.ReadToEnd();
@@ -86,7 +86,7 @@ namespace Apache.Geode.Client.IntegrationTests
             return Int32.Parse(portNumberString);
         }
 
-        [Fact (Skip = "Docker nut supported in Windows CI")]
+        [Fact (Skip = "Disabled until we iron out our Docker issues on Windows")]
         public void ConnectViaProxy()
         {
             var portString = RunDockerCommand("port haproxy");
@@ -109,7 +109,7 @@ namespace Apache.Geode.Client.IntegrationTests
             cache_.Close();
         }
 
-        [Fact (Skip = "Docker nut supported in Windows CI")]
+        [Fact (Skip = "Disabled until we iron out our Docker issues on Windows")]
         public void ConnectionWithoutProxyFails()
         {
             cache_.GetPoolManager()
