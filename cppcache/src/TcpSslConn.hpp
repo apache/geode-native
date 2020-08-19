@@ -62,7 +62,7 @@ class TcpSslConn : public TcpConn {
   void initSsl();
 
  public:
-  TcpSslConn(const std::string& hostname, std::chrono::microseconds waitSeconds,
+  TcpSslConn(const std::string& ipaddr, std::chrono::microseconds waitSeconds,
              int32_t maxBuffSizePool, const std::string& sniProxyHostname,
              uint16_t sniProxyPort, std::string publicKeyFile,
              std::string privateKeyFile, std::string password)
@@ -70,7 +70,7 @@ class TcpSslConn : public TcpConn {
         trustStoreFile_(std::move(publicKeyFile)),
         privateKeyFile_(std::move(privateKeyFile)),
         password_(std::move(password)),
-        sniHostname_(hostname) {
+        sniHostname_(ipaddr.substr(0, ipaddr.find(':'))) {
     initSsl();
   }
 
