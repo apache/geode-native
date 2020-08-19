@@ -432,10 +432,19 @@ Connector* TcrConnection::createConnection(
                                ->getDistributedSystem()
                                .getSystemProperties();
   if (systemProperties.sslEnabled()) {
-    socket = new TcpSslConn(address, connectTimeout, maxBuffSizePool,
-                            systemProperties.sslTrustStore(),
-                            systemProperties.sslKeyStore(),
-                            systemProperties.sslKeystorePassword());
+    auto sniHostname = m_poolDM->getSNIProxyHostname();
+    auto sniPort = m_poolDM->getSNIPort();
+    if (sniHostname.empty()) {
+      socket = new TcpSslConn(address, connectTimeout, maxBuffSizePool,
+                              systemProperties.sslTrustStore(),
+                              systemProperties.sslKeyStore(),
+                              systemProperties.sslKeystorePassword());
+    } else {
+      socket = new TcpSslConn(
+          address, connectTimeout, maxBuffSizePool, sniHostname, sniPort,
+          systemProperties.sslTrustStore(), systemProperties.sslKeyStore(),
+          systemProperties.sslKeystorePassword());
+    }
   } else {
     socket = new TcpConn(address, connectTimeout, maxBuffSizePool);
   }
@@ -514,7 +523,8 @@ inline ConnErrType TcrConnection::sendData(
   std::chrono::microseconds defaultWaitSecs = std::chrono::seconds(2);
   if (defaultWaitSecs > sendTimeout) defaultWaitSecs = sendTimeout;
   LOGDEBUG(
-      "before send len %zu sendTimeoutSec = %s checkConnected = %d m_connected "
+      "before send len %zu sendTimeoutSec = %s checkConnected = %d "
+      "m_connected "
       "%d",
       length, to_string(sendTimeout).c_str(), checkConnected, m_connected);
   while (length > 0 && sendTimeout > std::chrono::microseconds::zero()) {

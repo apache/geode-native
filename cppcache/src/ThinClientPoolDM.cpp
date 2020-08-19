@@ -186,7 +186,9 @@ ThinClientPoolDM::ThinClientPoolDM(const char* name,
     throw IllegalStateException(msg);
   }
   reset();
-  m_locHelper = new ThinClientLocatorHelper(m_attrs->m_initLocList, this);
+  m_locHelper = new ThinClientLocatorHelper(m_attrs->m_initLocList,
+                                            m_attrs->m_sniProxyHost,
+                                            m_attrs->m_sniProxyPort, this);
 
   m_stats = new PoolStats(
       cacheImpl->getStatisticsManager().getStatisticsFactory(), m_poolName);

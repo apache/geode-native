@@ -427,6 +427,11 @@ class APACHE_GEODE_EXPORT PoolFactory {
   PoolFactory& addServer(const std::string& host, int port);
 
   /**
+   * Set proxy info for SNI connection.  Used for connecting via SNI proxy.
+   */
+  PoolFactory& setSniProxy(const std::string& hostname, const int port);
+
+  /**
    * If set to <code>true</code> then the created pool will have
    * server-to-client
    * subscriptions enabled.

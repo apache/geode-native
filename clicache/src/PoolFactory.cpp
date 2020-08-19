@@ -285,6 +285,22 @@ namespace Apache
           return this;
 		  }
 
+		  PoolFactory^ PoolFactory::SetSniProxy(String^ hostname, Int32 port)
+      {
+			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+
+			  try
+			  {
+			    m_nativeptr->get()->setSniProxy( marshal_as<std::string>(hostname), port );
+			  }
+			  finally
+			  {
+			    GC::KeepAlive(m_nativeptr);
+			  }
+
+			  _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+          return this;
+		  }
 
 		  PoolFactory^ PoolFactory::SetSubscriptionEnabled( Boolean enabled )
       {

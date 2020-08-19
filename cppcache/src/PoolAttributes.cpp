@@ -44,44 +44,11 @@ PoolAttributes::PoolAttributes()
       m_subsEnabled(PoolFactory::DEFAULT_SUBSCRIPTION_ENABLED),
       m_multiuserSecurityMode(PoolFactory::DEFAULT_MULTIUSER_SECURE_MODE),
       m_isPRSingleHopEnabled(PoolFactory::DEFAULT_PR_SINGLE_HOP_ENABLED),
-      m_serverGrp(PoolFactory::DEFAULT_SERVER_GROUP) {}
+      m_serverGrp(PoolFactory::DEFAULT_SERVER_GROUP),
+      m_sniProxyPort(0) {}
+
 std::shared_ptr<PoolAttributes> PoolAttributes::clone() {
   return std::make_shared<PoolAttributes>(*this);
-}
-
-/** Return true if all the attributes are equal to those of other. */
-bool PoolAttributes::operator==(const PoolAttributes& other) const {
-  if (m_isThreadLocalConn != other.m_isThreadLocalConn) return false;
-  if (m_freeConnTimeout != other.m_freeConnTimeout) return false;
-  if (m_loadCondInterval != other.m_loadCondInterval) return false;
-  if (m_sockBufferSize != other.m_sockBufferSize) return false;
-  if (m_readTimeout != other.m_readTimeout) return false;
-  if (m_minConns != other.m_minConns) return false;
-  if (m_maxConns != other.m_maxConns) return false;
-  if (m_retryAttempts != other.m_retryAttempts) return false;
-  if (m_statsInterval != other.m_statsInterval) return false;
-  if (m_redundancy != other.m_redundancy) return false;
-  if (m_msgTrackTimeout != other.m_msgTrackTimeout) return false;
-  if (m_subsAckInterval != other.m_subsAckInterval) return false;
-  if (m_idleTimeout != other.m_idleTimeout) return false;
-  if (m_pingInterval != other.m_pingInterval) return false;
-  if (m_updateLocatorListInterval != other.m_updateLocatorListInterval) {
-    return false;
-  }
-  if (m_subsEnabled != other.m_subsEnabled) return false;
-  if (m_multiuserSecurityMode != other.m_multiuserSecurityMode) return false;
-  if (m_isPRSingleHopEnabled != other.m_isPRSingleHopEnabled) return false;
-  if (m_serverGrp != other.m_serverGrp) return false;
-
-  if (m_initLocList.size() != other.m_initLocList.size()) return false;
-  if (m_initServList.size() != other.m_initServList.size()) return false;
-
-  if (!compareVectorOfStrings(m_initLocList, other.m_initLocList)) return false;
-  if (!compareVectorOfStrings(m_initServList, other.m_initServList)) {
-    return false;
-  }
-
-  return true;
 }
 
 bool PoolAttributes::compareVectorOfStrings(

@@ -29,7 +29,6 @@
 namespace apache {
 namespace geode {
 namespace client {
-
 std::atomic_flag TcpSslConn::initialized_ = ATOMIC_FLAG_INIT;
 
 void TcpSslConn::createSocket(ACE_HANDLE sock) {
@@ -48,12 +47,16 @@ void TcpSslConn::connect() {
            std::to_string(inetAddress_.get_port_number()) + " waiting " +
            to_string(timeout_));
 
+  if (!sniHostname_.empty()) {
+    SSL_set_tlsext_host_name(stream_->ssl(), sniHostname_.c_str());
+  }
+
   ACE_SSL_SOCK_Connector conn;
   ACE_Time_Value actTimeout(timeout_);
-  if (ACE_SSL_SOCK_Connector{}.connect(
-          *stream_, inetAddress_,
-          timeout_ > std::chrono::microseconds::zero() ? &actTimeout
-                                                       : nullptr) == -1) {
+  if (conn.connect(*stream_, inetAddress_,
+                   timeout_ > std::chrono::microseconds::zero()
+                       ? &actTimeout
+                       : nullptr) == -1) {
     const auto lastError = ACE_OS::last_error();
     if (lastError == ETIME || lastError == ETIMEDOUT) {
       throw TimeoutException(

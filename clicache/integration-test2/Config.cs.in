@@ -38,4 +38,9 @@ public class Config
   {
 	get { return @"@CMAKE_CURRENT_SOURCE_DIR@/../../ssl_keys/client_keys"; }
   }
+
+  public static string SniConfigPath
+  {
+	get { return @"@CMAKE_CURRENT_SOURCE_DIR@/../../sni-test-config"; }
+  }
 }

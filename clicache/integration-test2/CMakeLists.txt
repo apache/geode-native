@@ -48,6 +48,7 @@ add_library( ${PROJECT_NAME} SHARED
   packages.config
   AutoSerializationTests.cs
   SerializationTests.cs
+  SNITests.cs
 )
 
 set_source_files_properties(

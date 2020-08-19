@@ -168,6 +168,8 @@ class ThinClientPoolDM
   GfErrType getConnectionToAnEndPoint(std::string epNameStr,
                                       TcrConnection*& conn);
 
+  const std::string getSNIProxyHostname() { return m_attrs->getSniProxyHost(); }
+  uint16_t getSNIPort() { return m_attrs->getSniProxyPort(); }
   virtual inline bool isSticky() { return m_sticky; }
   virtual TcrEndpoint* getEndPoint(
       const std::shared_ptr<BucketServerLocation>& serverLocation,
