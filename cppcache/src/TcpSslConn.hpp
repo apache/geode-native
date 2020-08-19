@@ -76,24 +76,22 @@ class TcpSslConn : public TcpConn {
 
   TcpSslConn(const std::string& hostname, uint16_t port,
              std::chrono::microseconds connect_timeout, int32_t maxBuffSizePool,
-             const std::string& publicKeyFile, const std::string& privateKeyFile,
-             const std::string& password)
+             const std::string& publicKeyFile,
+             const std::string& privateKeyFile, const std::string& password)
       : TcpConn(hostname.c_str(), port, connect_timeout, maxBuffSizePool),
         trustStoreFile_(std::move(publicKeyFile)),
         privateKeyFile_(std::move(privateKeyFile)),
-        password_(std::move(password)),
-        sniHostname_("") {
+        password_(std::move(password)) {
     initSsl();
   }
 
   TcpSslConn(const std::string& address, std::chrono::microseconds waitSeconds,
-           int32_t maxBuffSizePool, std::string publicKeyFile,
-           std::string privateKeyFile, std::string password)
+             int32_t maxBuffSizePool, std::string publicKeyFile,
+             std::string privateKeyFile, std::string password)
       : TcpConn(address, waitSeconds, maxBuffSizePool),
         trustStoreFile_(std::move(publicKeyFile)),
         privateKeyFile_(std::move(privateKeyFile)),
-        password_(std::move(password)),
-        sniHostname_("") {
+        password_(std::move(password)) {
     initSsl();
   }
 
