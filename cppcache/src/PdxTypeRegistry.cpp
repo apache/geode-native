@@ -88,9 +88,9 @@ int32_t PdxTypeRegistry::getPDXIdForType(std::shared_ptr<PdxType> nType,
 
     typeId = cache_->getSerializationRegistry()->GetPDXIdForType(pool, nType);
     nType->setTypeId(typeId);
-    pdxTypeToTypeIdMap_.emplace(nType, typeId);
-    typeIdToPdxType_.emplace(typeId, nType);
+    pdxTypeToTypeIdMap_.insert(std::make_pair(nType, typeId));
   }
+  addPdxType(typeId, nType);
   return typeId;
 }
 
@@ -118,7 +118,8 @@ void PdxTypeRegistry::clear() {
 void PdxTypeRegistry::addPdxType(int32_t typeId,
                                  std::shared_ptr<PdxType> pdxType) {
   WriteGuard guard(g_readerWriterLock_);
-  typeIdToPdxType_.emplace(typeId, pdxType);
+  std::pair<int32_t, std::shared_ptr<PdxType>> pc(typeId, pdxType);
+  typeIdToPdxType_.insert(pc);
 }
 
 std::shared_ptr<PdxType> PdxTypeRegistry::getPdxType(int32_t typeId) const {
