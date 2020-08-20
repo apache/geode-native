@@ -43,6 +43,7 @@ add_executable(cpp-integration-test
   CleanIdleConnections.cpp
   BasicIPv6Test.cpp
   CacheWriterTest.cpp
+  PdxInstanceFactoryTest.cpp
 )
 
 target_compile_definitions(cpp-integration-test
