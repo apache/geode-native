@@ -52,7 +52,7 @@ std::shared_ptr<Region> createRegion(Cluster& cluster,
   auto poolFactory = cache->getPoolManager().createFactory();
   cluster.applyLocators(poolFactory);
   poolFactory.setPRSingleHopEnabled(true);
-  
+
   auto pool = poolFactory.create("pool");
   auto regionFactory = cache->createRegionFactory(RegionShortcut::PROXY);
   auto region = regionFactory.setPoolName("pool").create(regionName);

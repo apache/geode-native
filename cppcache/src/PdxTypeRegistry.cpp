@@ -88,7 +88,7 @@ int32_t PdxTypeRegistry::getPDXIdForType(std::shared_ptr<PdxType> nType,
 
     typeId = cache_->getSerializationRegistry()->GetPDXIdForType(pool, nType);
     nType->setTypeId(typeId);
-    pdxTypeToTypeIdMap_.emplace(nType,typeId);
+    pdxTypeToTypeIdMap_.emplace(nType, typeId);
     typeIdToPdxType_.emplace(typeId, nType);
   }
   return typeId;
