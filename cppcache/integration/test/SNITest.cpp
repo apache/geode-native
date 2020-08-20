@@ -118,7 +118,7 @@ class SNITest : public ::testing::Test {
 };
 
 #if defined(_WIN32)
-TEST_F(SNITest, DISABLE_connectViaProxyTest) {
+TEST_F(SNITest, DISABLED_connectViaProxyTest) {
 #else
 TEST_F(SNITest, connectViaProxyTest) {
 #endif
