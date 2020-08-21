@@ -44,6 +44,7 @@ For example: `$ ctest --timeout 2000 -L STABLE -C Release -R testCacheless -j1`
 .NET integration tests can be executed similarly from `build/clicache/integration-test`.
 
 #### Running Google Test integration test suite
+Make sure Docker is installed as it is required for SNI Tests
 ```bash
 $ cd <clone>
 $ cd build/cppcache/integration/test

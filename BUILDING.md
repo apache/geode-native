@@ -7,6 +7,7 @@
 * [OpenSSL](https://www.openssl.org) *(for building source documentation)*
 * Java 8 JDK *(for building server side java functions used in some of the integration tests)*
 * [Apache Geode](http://geode.apache.org/releases/) binaries installed or available to link against
+* [Docker](https://www.docker.com/ (for running SNI Test)
 
 ### Platform-Specific Prerequisites
 
