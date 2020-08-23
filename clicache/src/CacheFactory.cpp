@@ -55,6 +55,7 @@ namespace Apache
 
       Cache^ CacheFactory::Create()
       {
+        native::createAppDomainContext = &Apache::Geode::Client::createAppDomainContext;
 				bool pdxIgnoreUnreadFields = false;
         bool pdxReadSerialized = false;
         _GF_MG_EXCEPTION_TRY2
@@ -70,14 +71,12 @@ namespace Apache
           pdxReadSerialized = nativeCache->getPdxReadSerialized();
 
           Log::SetLogLevel(static_cast<LogLevel>(native::Log::logLevel( )));
-          native::createAppDomainContext = &Apache::Geode::Client::createAppDomainContext;
-
 
           DistributedSystem::ManagedPostConnect(cache);
           DistributedSystem::registerCliCallback();
           auto&& cacheImpl = CacheRegionHelper::getCacheImpl(nativeCache.get());
           cacheImpl->getSerializationRegistry()->setPdxTypeHandler(new ManagedPdxTypeHandler());
-		  cacheImpl->getSerializationRegistry()->setDataSerializableHandler(new ManagedDataSerializableHandler());
+		      cacheImpl->getSerializationRegistry()->setDataSerializableHandler(new ManagedDataSerializableHandler());
 
           return cache;
         _GF_MG_EXCEPTION_CATCH_ALL2
