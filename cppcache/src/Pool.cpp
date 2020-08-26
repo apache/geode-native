@@ -45,6 +45,9 @@ std::chrono::milliseconds Pool::getReadTimeout() const {
   return m_attrs->getReadTimeout();
 }
 
+std::string Pool::getSniProxyHost() const { return m_attrs->getSniProxyHost(); }
+int Pool::getSniProxyPort() const { return m_attrs->getSniProxyPort(); }
+
 int Pool::getMinConnections() const { return m_attrs->getMinConnections(); }
 
 int Pool::getMaxConnections() const { return m_attrs->getMaxConnections(); }

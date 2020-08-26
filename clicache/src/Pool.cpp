@@ -105,6 +105,32 @@ namespace Apache
       }
 
 
+      String^ Pool::SniProxyHost::get()
+      {
+        try
+        {
+          return marshal_as<String^>( m_nativeptr->get()->getSniProxyHost() );
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
+
+      }
+
+      Int32 Pool::SniProxyPort::get()
+      {
+        try
+        {
+          return m_nativeptr->get()->getSniProxyPort();
+        }
+        finally
+        {
+          GC::KeepAlive(m_nativeptr);
+        }
+
+      }
+
       Int32 Pool::MinConnections::get()
       {
         try
