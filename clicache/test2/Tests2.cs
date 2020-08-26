@@ -127,9 +127,8 @@ namespace Apache.Geode.Client.UnitTests
     public void SetSniProxy()
     {
         PoolFactory poolFactory = _cacheOne.GetPoolFactory()
-                .AddLocator("localhost", 10334);
-
-        poolFactory.SetSniProxy("haproxy", 7777);
+                .AddLocator("localhost", 10334)
+                .SetSniProxy("haproxy", 7777);
 
         Pool pool = poolFactory.Create("testPool");
 
@@ -140,7 +139,7 @@ namespace Apache.Geode.Client.UnitTests
         Assert.Equal(sniProxyPort, 7777);
     }
 
-        private class DummyPdxSerializer : IPdxSerializer
+    private class DummyPdxSerializer : IPdxSerializer
     {
       public object FromData(string classname, IPdxReader reader)
       {
