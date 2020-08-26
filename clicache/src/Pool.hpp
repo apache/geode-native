@@ -91,6 +91,22 @@ namespace Apache
         }
 
         /// <summary>
+        /// Get the host name for the pool's SniProxy.
+        /// </summary>
+        property String^ SniProxyHost
+        {
+          String^ get();
+        }
+
+        /// <summary>
+        /// Get the host port for the pool's SniProxy.
+        /// </summary>
+        property Int32 SniProxyPort
+        {
+          Int32 get();
+        }
+
+        /// <summary>
         /// Get the minimum connections for this pool.
         /// </summary>
         property Int32 MinConnections

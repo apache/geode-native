@@ -95,6 +95,18 @@ class APACHE_GEODE_EXPORT Pool : public std::enable_shared_from_this<Pool> {
   std::chrono::milliseconds getReadTimeout() const;
 
   /**
+   * Gets the host name of the SniProxy.
+   * @see PoolFactory#setSniProxy(string, int)
+   */
+  std::string getSniProxyHost() const;
+
+  /**
+   * Gets the port of the SniProxy.
+   * @see PoolFactory#setSniProxy(string, int)
+   */
+  int getSniProxyPort() const;
+
+  /**
    * Gets the minimum connections for this pool.
    * @see PoolFactory#setMinConnections(int)
    */
