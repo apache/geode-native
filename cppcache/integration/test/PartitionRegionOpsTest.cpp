@@ -57,10 +57,11 @@ Cache createCache() {
   return cache;
 }
 
-std::shared_ptr<Pool> createPool(Cluster& cluster, Cache& cache) {
+std::shared_ptr<Pool> createPool(Cluster& cluster, Cache& cache,
+                                 bool singleHop) {
   auto poolFactory = cache.getPoolManager().createFactory();
   cluster.applyLocators(poolFactory);
-  poolFactory.setPRSingleHopEnabled(true);
+  poolFactory.setPRSingleHopEnabled(singleHop);
   return poolFactory.create("default");
 }
 
@@ -89,14 +90,7 @@ void getEntries(std::shared_ptr<Region> region, int numEntries) {
   }
 }
 
-/**
- * In this test case we verify that in a partition region with redundancy
- * when one server goes down, all gets are still served.
- * It can be observed in the logs that when one of the server goes down
- * the bucketServerLocations for that server are removed from the
- * client metadata.
- */
-TEST(PartitionRegionOpsTest, getPartitionedRegionWithRedundancyServerGoesDown) {
+void putPartitionedRegionWithRedundancyServerGoesDown(bool singleHop) {
   Cluster cluster{LocatorCount{1}, ServerCount{2}};
   cluster.start();
   cluster.getGfsh()
@@ -108,7 +102,35 @@ TEST(PartitionRegionOpsTest, getPartitionedRegionWithRedundancyServerGoesDown) {
       .execute();
 
   auto cache = createCache();
-  auto pool = createPool(cluster, cache);
+  auto pool = createPool(cluster, cache, singleHop);
+  auto region = setupRegion(cache, pool);
+
+  int ENTRIES = 30;
+
+  putEntries(region, ENTRIES, 0);
+
+  cluster.getServers()[1].stop();
+
+  putEntries(region, ENTRIES, 1);
+
+  cluster.getServers()[1].start();
+
+  putEntries(region, ENTRIES, 2);
+}
+
+void getPartitionedRegionWithRedundancyServerGoesDown(bool singleHop) {
+  Cluster cluster{LocatorCount{1}, ServerCount{2}};
+  cluster.start();
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("region")
+      .withType("PARTITION")
+      .withRedundantCopies("1")
+      .execute();
+
+  auto cache = createCache();
+  auto pool = createPool(cluster, cache, singleHop);
   auto region = setupRegion(cache, pool);
 
   int ENTRIES = 30;
@@ -128,39 +150,50 @@ TEST(PartitionRegionOpsTest, getPartitionedRegionWithRedundancyServerGoesDown) {
 
 /**
  * In this test case we verify that in a partition region with redundancy
+ * when one server goes down, all gets are still served.
+ * Single-hop is enabled in the client.
+ * It can be observed in the logs that when one of the server goes down
+ * the bucketServerLocations for that server are removed from the
+ * client metadata.
+ */
+TEST(PartitionRegionOpsTest,
+     getPartitionedRegionWithRedundancyServerGoesDownSingleHop) {
+  getPartitionedRegionWithRedundancyServerGoesDown(true);
+}
+
+/**
+ * In this test case we verify that in a partition region with redundancy
  * when one server goes down, all puts are still served.
+ * Single-hop is enabled in the client.
  * It can be observed in the logs that when one of the server goes down
  * the bucketServerLocations for that server are removed from the
  * client metadata.
  * When the server is brought back again, the meta data is refreshed
  * after putting again values.
  */
-TEST(PartitionRegionOpsTest, putPartitionedRegionWithRedundancyServerGoesDown) {
-  Cluster cluster{LocatorCount{1}, ServerCount{2}};
-  cluster.start();
-  cluster.getGfsh()
-      .create()
-      .region()
-      .withName("region")
-      .withType("PARTITION")
-      .withRedundantCopies("1")
-      .execute();
+TEST(PartitionRegionOpsTest,
+     putPartitionedRegionWithRedundancyServerGoesDownSingleHop) {
+  putPartitionedRegionWithRedundancyServerGoesDown(true);
+}
 
-  auto cache = createCache();
-  auto pool = createPool(cluster, cache);
-  auto region = setupRegion(cache, pool);
+/**
+ * In this test case we verify that in a partition region with redundancy
+ * when one server goes down, all gets are still served.
+ * Single hop is not enabled in the client.
+ */
+TEST(PartitionRegionOpsTest,
+     getPartitionedRegionWithRedundancyServerGoesDownNoSingleHop) {
+  getPartitionedRegionWithRedundancyServerGoesDown(false);
+}
 
-  int ENTRIES = 30;
-
-  putEntries(region, ENTRIES, 0);
-
-  cluster.getServers()[1].stop();
-
-  putEntries(region, ENTRIES, 1);
-
-  cluster.getServers()[1].start();
-
-  putEntries(region, ENTRIES, 2);
+/**
+ * In this test case we verify that in a partition region with redundancy
+ * when one server goes down, all puts are still served.
+ * Single-hop is not enabled in the client.
+ */
+TEST(PartitionRegionOpsTest,
+     putPartitionedRegionWithRedundancyServerGoesDownNoSingleHop) {
+  putPartitionedRegionWithRedundancyServerGoesDown(false);
 }
 
 }  // namespace
