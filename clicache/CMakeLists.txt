@@ -27,5 +27,9 @@ add_subdirectory(test)
 add_subdirectory(test2)
 add_subdirectory(integration-test)
 add_subdirectory(integration-test2)
+if ((NOT ${DOCKER_PGM} MATCHES "DOCKER_NOTFOUND") AND
+    (NOT ${DOCKERCOMPOSE_PGM} MATCHES "DOCKERCOMPOSE_NOTFOUND"))
+  add_subdirectory(acceptance-test)
+endif()
 add_subdirectory(plugins/SQLiteCLI)
 

@@ -120,11 +120,7 @@ class SNITest : public ::testing::Test {
   boost::filesystem::path sniConfigPath;
 };
 
-#if defined(_WIN32)
-TEST_F(SNITest, DISABLED_connectViaProxyTest) {
-#else
 TEST_F(SNITest, connectViaProxyTest) {
-#endif
   const auto clientTruststore =
       (clientSslKeysDir / boost::filesystem::path("/truststore_sni.pem"));
 
@@ -153,11 +149,7 @@ TEST_F(SNITest, connectViaProxyTest) {
   cache.close();
 }
 
-#if defined(_WIN32)
-TEST_F(SNITest, DISABLE_connectWithoutProxyFails) {
-#else
 TEST_F(SNITest, connectWithoutProxyFails) {
-#endif
   const auto clientTruststore =
       (clientSslKeysDir / boost::filesystem::path("/truststore_sni.pem"));
 
