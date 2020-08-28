@@ -19,7 +19,6 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using Xunit;
-using PdxTests;
 using System.Collections;
 using System.Collections.Generic;
 using Xunit.Abstractions;

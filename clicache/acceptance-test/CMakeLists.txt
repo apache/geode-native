@@ -14,7 +14,7 @@
 # limitations under the License.
 
 cmake_minimum_required( VERSION 3.9 )
-project( Apache.Geode.IntegrationTests2 CSharp )
+project( Apache.Geode.DockerAcceptanceTests CSharp )
 
 set(CMAKE_CSharp_FLAGS "/langversion:5")
 
@@ -24,30 +24,14 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/packages.config ${CMAKE_CURRENT_BINAR
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Config.cs.in ${CMAKE_CURRENT_BINARY_DIR}/Config.cs)
 
 add_library( ${PROJECT_NAME} SHARED
-  Framework.cs
-  Cluster.cs
-  ClusterTest.cs
   Config.cs.in
   ${CMAKE_CURRENT_BINARY_DIR}/Config.cs
-  GfshTest.cs
-  GfshExecuteTest.cs
-  Gfsh.cs
-  GfshExecute.cs
-  CacheXml.cs
-  CacheXmlTests.cs
-  CqOperationTest.cs
-  FunctionExecutionTest.cs
-  QueryTest.cs
-  RegionTest.cs
-  RegionSSLTest.cs
-  Position.cs
   TestBase.cs
   cache.xml
   geode.properties
   xunit.runner.json
   packages.config
-  AutoSerializationTests.cs
-  SerializationTests.cs
+  SNITests.cs
 )
 
 set_source_files_properties(
@@ -63,7 +47,6 @@ set_source_files_properties(
 target_link_libraries(${PROJECT_NAME}
   PUBLIC
     Apache.Geode
-    PdxClassLibrary
 )
 
 set_target_properties( ${PROJECT_NAME} PROPERTIES
@@ -80,7 +63,7 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
   VS_DOTNET_REFERENCE_xunit.abstractions "${CMAKE_BINARY_DIR}/clicache/packages/xunit.abstractions.2.0.2/lib/net35/xunit.abstractions.dll"
   VS_DOTNET_REFERENCE_xunit.execution.desktop "${CMAKE_BINARY_DIR}/clicache/packages/xunit.extensibility.execution.2.4.0/lib/net452/xunit.execution.desktop.dll"
   VS_DOTNET_REFERENCE_xunit.runner.visualstudio.testadapter "${CMAKE_BINARY_DIR}/clicache/packages/xunit.runner.visualstudio.2.4.0/build/_common/xunit.runner.visualstudio.testadapter.dll"
-  FOLDER cli/test/integration
+  FOLDER cli/test/acceptance
 )
 
 if(NOT "${STRONG_NAME_KEY}" STREQUAL "")

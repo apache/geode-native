@@ -42,7 +42,6 @@ add_executable(cpp-integration-test
   SimpleAuthInitialize.hpp
   SimpleCqListener.cpp
   SimpleCqListener.hpp
-  SNITest.cpp
   SslOneWayTest.cpp
   SslTwoWayTest.cpp
   StructTest.cpp
@@ -97,7 +96,7 @@ configure_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/func_cacheserver2_pool.xml
   ${CMAKE_CURRENT_BINARY_DIR}/func_cacheserver2_pool.xml COPYONLY)
 
- file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/sni-test-config DESTINATION ${CMAKE_CURRENT_BINARY_DIR}) 
+#file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/sni-test-config DESTINATION ${CMAKE_CURRENT_BINARY_DIR}) 
 
 set_target_properties(cpp-integration-test PROPERTIES
   CXX_VISIBILITY_PRESET hidden
@@ -117,7 +116,7 @@ file(GLOB SSL_CERTIFICATES
         "${CMAKE_CURRENT_SOURCE_DIR}/*Keys"
         )
 
-file(INSTALL ${SSL_CERTIFICATES} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+#file(INSTALL ${SSL_CERTIFICATES} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 add_custom_target(run-cpp-integration-test
   DEPENDS $<TARGET_FILE:cpp-integration-test>
