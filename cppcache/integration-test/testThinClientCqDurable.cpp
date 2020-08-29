@@ -122,7 +122,10 @@ class MyCqListener1 : public CqListener {
         opStr = "UPDATE";
         break;
       }
-      default:
+      case CqOperation::OP_TYPE_INVALID:
+      case CqOperation::OP_TYPE_INVALIDATE:
+      case CqOperation::OP_TYPE_REGION_CLEAR:
+      case CqOperation::OP_TYPE_MARKER:
         break;
     }
     LOGINFO("MyCqListener1::OnEvent called with %s, key[%s], value=(%s)", opStr,

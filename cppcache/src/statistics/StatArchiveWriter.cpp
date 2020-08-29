@@ -245,8 +245,6 @@ void ResourceInst::writeStatValue(std::shared_ptr<StatisticDescriptor> sd,
     case DOUBLE_TYPE:
       writeCompactValue(v);
       break;
-    default:
-      throw IllegalArgumentException("Unexpected type code");
   }
 }
 

@@ -121,7 +121,7 @@ void RegionExpiryHandler::DoTheExpirationAction() {
           nullptr, true, CacheEventFlags::EXPIRATION | CacheEventFlags::LOCAL);
       break;
     }
-    default: {
+    case ExpirationAction::INVALID_ACTION: {
       LOGERROR(
           "Unknown expiration action "
           "%d for region [%s]",

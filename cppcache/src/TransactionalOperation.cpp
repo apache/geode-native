@@ -148,9 +148,6 @@ std::shared_ptr<Cacheable> TransactionalOperation::replay(
                   std::dynamic_pointer_cast<CacheableInt32>(m_arguments->at(1))
                       ->value()));
       break;
-    default:
-      throw UnsupportedOperationException(
-          "unknown operation encountered during transaction replay");
   }
 
   return result;

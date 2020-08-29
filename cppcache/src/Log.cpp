@@ -464,14 +464,10 @@ const char* Log::levelToChars(LogLevel level) {
 
     case LogLevel::All:
       return "all";
-
-    default: {
-      char buf[64] = {0};
-      std::snprintf(buf, 64, "Unexpected log level: %d",
-                    static_cast<int>(level));
-      throw IllegalArgumentException(buf);
-    }
   }
+  char buf[64] = {0};
+  std::snprintf(buf, 64, "Unexpected log level: %d", static_cast<int>(level));
+  throw IllegalArgumentException(buf);
 }
 
 LogLevel Log::charsToLevel(const std::string& chars) {

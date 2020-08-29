@@ -40,7 +40,10 @@ void SimpleCqListener::onEvent(const apache::geode::client::CqEvent& cqEvent) {
     case apache::geode::client::CqOperation::OP_TYPE_DESTROY:
       destroyLatch_->count_down();
       break;
-    default:
+    case apache::geode::client::CqOperation::OP_TYPE_INVALID:
+    case apache::geode::client::CqOperation::OP_TYPE_INVALIDATE:
+    case apache::geode::client::CqOperation::OP_TYPE_REGION_CLEAR:
+    case apache::geode::client::CqOperation::OP_TYPE_MARKER:
       break;
   }
 }

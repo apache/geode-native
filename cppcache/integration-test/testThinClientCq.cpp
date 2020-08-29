@@ -153,7 +153,10 @@ class MyCqListener : public CqListener {
       case CqOperation::OP_TYPE_DESTROY:
         m_numDeletes++;
         break;
-      default:
+      case CqOperation::OP_TYPE_INVALID:
+      case CqOperation::OP_TYPE_INVALIDATE:
+      case CqOperation::OP_TYPE_REGION_CLEAR:
+      case CqOperation::OP_TYPE_MARKER:
         break;
     }
   }
@@ -214,7 +217,10 @@ class MyCqStatusListener : public CqStatusListener {
         m_numDeletes++;
         break;
       }
-      default:
+      case CqOperation::OP_TYPE_INVALID:
+      case CqOperation::OP_TYPE_INVALIDATE:
+      case CqOperation::OP_TYPE_REGION_CLEAR:
+      case CqOperation::OP_TYPE_MARKER:
         break;
     }
   }

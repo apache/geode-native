@@ -25,6 +25,6 @@ const char *getFrameworkString(FrameworkVariable name) {
     case FrameworkVariable::TestClientSslKeysDir: return "@CMAKE_CURRENT_SOURCE_DIR@/../../../ssl_keys/client_keys";
     case FrameworkVariable::TestServerSslKeysDir: return "@CMAKE_CURRENT_SOURCE_DIR@/../../../ssl_keys/server_keys";
     case FrameworkVariable::TestSniConfigPath: return "@CMAKE_CURRENT_SOURCE_DIR@/../../../sni-test-config";
-    default: return "";
   }
+  return "";
 }

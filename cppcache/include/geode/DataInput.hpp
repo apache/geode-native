@@ -296,25 +296,14 @@ class APACHE_GEODE_EXPORT DataInput {
   inline std::basic_string<CharT, Tail...> readString() {
     std::basic_string<CharT, Tail...> value;
     auto type = static_cast<internal::DSCode>(read());
-    switch (type) {
-      case internal::DSCode::CacheableString:
-        readJavaModifiedUtf8(value);
-        break;
-      case internal::DSCode::CacheableStringHuge:
-        readUtf16Huge(value);
-        break;
-      case internal::DSCode::CacheableASCIIString:
-        readAscii(value);
-        break;
-      case internal::DSCode::CacheableASCIIStringHuge:
-        readAsciiHuge(value);
-        break;
-      case internal::DSCode::CacheableNullString:
-        // empty string
-        break;
-      // TODO: What's the right response here?
-      default:
-        break;
+    if (type == internal::DSCode::CacheableString) {
+      readJavaModifiedUtf8(value);
+    } else if (type == internal::DSCode::CacheableStringHuge) {
+      readUtf16Huge(value);
+    } else if (type == internal::DSCode::CacheableASCIIString) {
+      readAscii(value);
+    } else if (type == internal::DSCode::CacheableASCIIStringHuge) {
+      readAsciiHuge(value);
     }
     return value;
   }

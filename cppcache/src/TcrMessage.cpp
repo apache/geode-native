@@ -1015,6 +1015,36 @@ void TcrMessage::processChunk(const std::vector<uint8_t>& chunk, int32_t len,
         break;
       }
       // fall-through for other cases
+      if (m_chunkedResult != nullptr) {
+        LOGDEBUG("tcrmessage in case22 ");
+        TcrChunkedContext* chunkedContext = new TcrChunkedContext(
+            chunk, len, m_chunkedResult, isLastChunkAndisSecurityHeader,
+            m_tcdm->getConnectionManager().getCacheImpl());
+        m_chunkedResult->setEndpointMemId(endpointmemId);
+        m_tcdm->queueChunk(chunkedContext);
+        if (chunk.empty()) {
+          // last chunk -- wait for processing of all the chunks to complete
+          m_chunkedResult->waitFinalize();
+          //  Throw any exception during processing here.
+          // Do not throw it immediately since we want to read the
+          // full data from socket in any case.
+          // Notice that TcrChunkedContext::handleChunk stops any
+          // further processing as soon as an exception is encountered.
+          // This can cause behaviour like partially filled cache in case
+          // of populating cache with registerAllKeys(), so that should be
+          // documented since rolling that back may not be a good idea either.
+          if (const auto& ex = m_chunkedResult->getException()) {
+            throw Exception(*ex);
+          }
+        }
+      } else if (TcrMessage::CQ_EXCEPTION_TYPE == m_msgType ||
+                 TcrMessage::CQDATAERROR_MSG_TYPE == m_msgType ||
+                 TcrMessage::GET_ALL_DATA_ERROR == m_msgType) {
+        if (!chunk.empty()) {
+          chunkSecurityHeader(1, chunk, len, isLastChunkAndisSecurityHeader);
+        }
+      }
+      break;
     }
     case TcrMessage::EXECUTE_REGION_FUNCTION_RESULT:
     case TcrMessage::EXECUTE_FUNCTION_RESULT:

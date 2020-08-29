@@ -134,7 +134,7 @@ inline void EntryExpiryHandler::DoTheExpirationAction(
           CacheEventFlags::EXPIRATION | CacheEventFlags::LOCAL, versionTag);
       break;
     }
-    default: {
+    case ExpirationAction::INVALID_ACTION: {
       LOGERROR(
           "Unknown expiration action "
           "%d for region %s for key %s",

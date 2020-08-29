@@ -2569,6 +2569,9 @@ bool LocalRegion::invokeCacheWriterForEntryEvent(
             break;
           }
           // if oldValue is nullptr then fall to BEFORE_CREATE case
+          eventStr = "beforeCreate";
+          bCacheWriterReturn = m_writer->beforeCreate(event);
+          break;
         }
         case BEFORE_CREATE: {
           eventStr = "beforeCreate";
@@ -2580,7 +2583,11 @@ bool LocalRegion::invokeCacheWriterForEntryEvent(
           bCacheWriterReturn = m_writer->beforeDestroy(event);
           break;
         }
-        default: {
+        case BEFORE_INVALIDATE:
+        case AFTER_CREATE:
+        case AFTER_UPDATE:
+        case AFTER_INVALIDATE:
+        case AFTER_DESTROY: {
           updateStats = false;
           break;
         }
@@ -2629,7 +2636,10 @@ bool LocalRegion::invokeCacheWriterForRegionEvent(
           bCacheWriterReturn = m_writer->beforeRegionClear(event);
           break;
         }
-        default: {
+        case BEFORE_REGION_INVALIDATE:
+        case AFTER_REGION_INVALIDATE:
+        case AFTER_REGION_DESTROY:
+        case AFTER_REGION_CLEAR: {
           updateStats = false;
           break;
         }
@@ -2683,6 +2693,9 @@ GfErrType LocalRegion::invokeCacheListenerForEntryEvent(
             break;
           }
           // if oldValue is nullptr then fall to AFTER_CREATE case
+          eventStr = "afterCreate";
+          m_listener->afterCreate(event);
+          break;
         }
         case AFTER_CREATE: {
           eventStr = "afterCreate";
@@ -2699,7 +2712,10 @@ GfErrType LocalRegion::invokeCacheListenerForEntryEvent(
           m_listener->afterInvalidate(event);
           break;
         }
-        default: {
+        case BEFORE_CREATE:
+        case BEFORE_UPDATE:
+        case BEFORE_INVALIDATE:
+        case BEFORE_DESTROY: {
           updateStats = false;
           break;
         }
@@ -2762,7 +2778,9 @@ GfErrType LocalRegion::invokeCacheListenerForRegionEvent(
           m_listener->afterRegionClear(event);
           break;
         }
-        default: {
+        case BEFORE_REGION_INVALIDATE:
+        case BEFORE_REGION_DESTROY:
+        case BEFORE_REGION_CLEAR: {
           updateStats = false;
           break;
         }

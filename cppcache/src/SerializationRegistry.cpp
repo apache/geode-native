@@ -179,7 +179,48 @@ std::shared_ptr<Serializable> SerializationRegistry::deserialize(
     case DSCode::NullObj: {
       return nullptr;
     }
-    default:
+    case DSCode::FixedIDDefault:
+    case DSCode::FixedIDNone:
+    case DSCode::CacheableLinkedList:
+    case DSCode::Properties:
+    case DSCode::PdxType:
+    case DSCode::BooleanArray:
+    case DSCode::CharArray:
+    case DSCode::CacheableString:
+    case DSCode::Class:
+    case DSCode::JavaSerializable:
+    case DSCode::DataSerializable:
+    case DSCode::CacheableBytes:
+    case DSCode::CacheableInt16Array:
+    case DSCode::CacheableInt32Array:
+    case DSCode::CacheableInt64Array:
+    case DSCode::CacheableFloatArray:
+    case DSCode::CacheableDoubleArray:
+    case DSCode::CacheableObjectArray:
+    case DSCode::CacheableBoolean:
+    case DSCode::CacheableCharacter:
+    case DSCode::CacheableByte:
+    case DSCode::CacheableInt16:
+    case DSCode::CacheableInt32:
+    case DSCode::CacheableInt64:
+    case DSCode::CacheableFloat:
+    case DSCode::CacheableDouble:
+    case DSCode::CacheableDate:
+    case DSCode::CacheableFileName:
+    case DSCode::CacheableStringArray:
+    case DSCode::CacheableArrayList:
+    case DSCode::CacheableHashSet:
+    case DSCode::CacheableHashMap:
+    case DSCode::CacheableTimeUnit:
+    case DSCode::CacheableHashTable:
+    case DSCode::CacheableVector:
+    case DSCode::CacheableIdentityHashMap:
+    case DSCode::CacheableLinkedHashSet:
+    case DSCode::CacheableStack:
+    case DSCode::CacheableASCIIString:
+    case DSCode::CacheableASCIIStringHuge:
+    case DSCode::CacheableStringHuge:
+    case DSCode::InternalDistributedMember:
       break;
   }
 
@@ -215,7 +256,55 @@ SerializationRegistry::deserializeDataSerializableFixedId(DataInput& input,
       fixedId = input.readInt32();
       break;
     }
-    default:
+    case DSCode::FixedIDDefault:
+    case DSCode::FixedIDNone:
+    case DSCode::CacheableLinkedList:
+    case DSCode::Properties:
+    case DSCode::PdxType:
+    case DSCode::BooleanArray:
+    case DSCode::CharArray:
+    case DSCode::NullObj:
+    case DSCode::CacheableString:
+    case DSCode::Class:
+    case DSCode::JavaSerializable:
+    case DSCode::DataSerializable:
+    case DSCode::CacheableBytes:
+    case DSCode::CacheableInt16Array:
+    case DSCode::CacheableInt32Array:
+    case DSCode::CacheableInt64Array:
+    case DSCode::CacheableFloatArray:
+    case DSCode::CacheableDoubleArray:
+    case DSCode::CacheableObjectArray:
+    case DSCode::CacheableBoolean:
+    case DSCode::CacheableCharacter:
+    case DSCode::CacheableByte:
+    case DSCode::CacheableInt16:
+    case DSCode::CacheableInt32:
+    case DSCode::CacheableInt64:
+    case DSCode::CacheableFloat:
+    case DSCode::CacheableDouble:
+    case DSCode::CacheableDate:
+    case DSCode::CacheableFileName:
+    case DSCode::CacheableStringArray:
+    case DSCode::CacheableArrayList:
+    case DSCode::CacheableHashSet:
+    case DSCode::CacheableHashMap:
+    case DSCode::CacheableTimeUnit:
+    case DSCode::CacheableNullString:
+    case DSCode::CacheableHashTable:
+    case DSCode::CacheableVector:
+    case DSCode::CacheableIdentityHashMap:
+    case DSCode::CacheableLinkedHashSet:
+    case DSCode::CacheableStack:
+    case DSCode::CacheableASCIIString:
+    case DSCode::CacheableASCIIStringHuge:
+    case DSCode::CacheableStringHuge:
+    case DSCode::InternalDistributedMember:
+    case DSCode::CacheableEnum:
+    case DSCode::ClientProxyMembershipId:
+    case DSCode::CacheableUserData:
+    case DSCode::CacheableUserData4:
+    case DSCode::PDX:
       throw IllegalStateException("Invalid fixed ID");
   }
 
@@ -534,7 +623,55 @@ void DataSerializableHandler::serialize(
     case DSCode::CacheableUserData4:
       dataOutput.writeInt(static_cast<int32_t>(objectId));
       break;
-    default:
+    case DSCode::FixedIDDefault:
+    case DSCode::FixedIDByte:
+    case DSCode::FixedIDInt:
+    case DSCode::FixedIDNone:
+    case DSCode::FixedIDShort:
+    case DSCode::CacheableLinkedList:
+    case DSCode::Properties:
+    case DSCode::PdxType:
+    case DSCode::BooleanArray:
+    case DSCode::CharArray:
+    case DSCode::NullObj:
+    case DSCode::CacheableString:
+    case DSCode::Class:
+    case DSCode::JavaSerializable:
+    case DSCode::DataSerializable:
+    case DSCode::CacheableBytes:
+    case DSCode::CacheableInt16Array:
+    case DSCode::CacheableInt32Array:
+    case DSCode::CacheableInt64Array:
+    case DSCode::CacheableFloatArray:
+    case DSCode::CacheableDoubleArray:
+    case DSCode::CacheableObjectArray:
+    case DSCode::CacheableBoolean:
+    case DSCode::CacheableCharacter:
+    case DSCode::CacheableByte:
+    case DSCode::CacheableInt16:
+    case DSCode::CacheableInt32:
+    case DSCode::CacheableInt64:
+    case DSCode::CacheableFloat:
+    case DSCode::CacheableDouble:
+    case DSCode::CacheableDate:
+    case DSCode::CacheableFileName:
+    case DSCode::CacheableStringArray:
+    case DSCode::CacheableArrayList:
+    case DSCode::CacheableHashSet:
+    case DSCode::CacheableHashMap:
+    case DSCode::CacheableTimeUnit:
+    case DSCode::CacheableNullString:
+    case DSCode::CacheableHashTable:
+    case DSCode::CacheableVector:
+    case DSCode::CacheableIdentityHashMap:
+    case DSCode::CacheableLinkedHashSet:
+    case DSCode::CacheableStack:
+    case DSCode::CacheableASCIIString:
+    case DSCode::CacheableASCIIStringHuge:
+    case DSCode::CacheableStringHuge:
+    case DSCode::InternalDistributedMember:
+    case DSCode::CacheableEnum:
+    case DSCode::PDX:
       IllegalStateException("Invalid DS Code.");
   }
 
@@ -563,7 +700,55 @@ std::shared_ptr<DataSerializable> DataSerializableHandler::deserialize(
       classId = input.readInt32();
       break;
     }
-    default:
+    case DSCode::FixedIDDefault:
+    case DSCode::FixedIDByte:
+    case DSCode::FixedIDInt:
+    case DSCode::FixedIDNone:
+    case DSCode::FixedIDShort:
+    case DSCode::CacheableLinkedList:
+    case DSCode::Properties:
+    case DSCode::PdxType:
+    case DSCode::BooleanArray:
+    case DSCode::CharArray:
+    case DSCode::NullObj:
+    case DSCode::CacheableString:
+    case DSCode::Class:
+    case DSCode::JavaSerializable:
+    case DSCode::DataSerializable:
+    case DSCode::CacheableBytes:
+    case DSCode::CacheableInt16Array:
+    case DSCode::CacheableInt32Array:
+    case DSCode::CacheableInt64Array:
+    case DSCode::CacheableFloatArray:
+    case DSCode::CacheableDoubleArray:
+    case DSCode::CacheableObjectArray:
+    case DSCode::CacheableBoolean:
+    case DSCode::CacheableCharacter:
+    case DSCode::CacheableByte:
+    case DSCode::CacheableInt16:
+    case DSCode::CacheableInt32:
+    case DSCode::CacheableInt64:
+    case DSCode::CacheableFloat:
+    case DSCode::CacheableDouble:
+    case DSCode::CacheableDate:
+    case DSCode::CacheableFileName:
+    case DSCode::CacheableStringArray:
+    case DSCode::CacheableArrayList:
+    case DSCode::CacheableHashSet:
+    case DSCode::CacheableHashMap:
+    case DSCode::CacheableTimeUnit:
+    case DSCode::CacheableNullString:
+    case DSCode::CacheableHashTable:
+    case DSCode::CacheableVector:
+    case DSCode::CacheableIdentityHashMap:
+    case DSCode::CacheableLinkedHashSet:
+    case DSCode::CacheableStack:
+    case DSCode::CacheableASCIIString:
+    case DSCode::CacheableASCIIStringHuge:
+    case DSCode::CacheableStringHuge:
+    case DSCode::InternalDistributedMember:
+    case DSCode::CacheableEnum:
+    case DSCode::PDX:
       break;
   }
   TypeFactoryMethod createType =

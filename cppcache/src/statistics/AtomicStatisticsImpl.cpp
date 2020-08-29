@@ -221,11 +221,8 @@ int64_t AtomicStatisticsImpl::_getRawBits(
       int64_t* temp = reinterpret_cast<int64_t*>(&value);
       return *temp;
     }
-    default:
-      return 0;
-      /*throw RuntimeException("unexpected stat descriptor type code: " +
-                                stat->getTypeCode());*/
   }
+  return 0;
 }
 
 int64_t AtomicStatisticsImpl::getRawBits(

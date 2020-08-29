@@ -160,6 +160,7 @@ void initClientAuth(char UserType) {
     case 'A':
       credentialGeneratorHandler->getAllowedCredentialsForOps(ad, userCreds,
                                                               nullptr);
+      break;
     default:
       break;
   }

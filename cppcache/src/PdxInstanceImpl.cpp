@@ -244,7 +244,10 @@ void PdxInstanceImpl::writeField(PdxWriter& writer,
       }
       break;
     }
-    default: { writer.writeObject(fieldName, value); }
+    case PdxFieldTypes::UNKNOWN:
+    case PdxFieldTypes::OBJECT: {
+      writer.writeObject(fieldName, value);
+    }
   }
 }
 std::shared_ptr<WritablePdxInstance> PdxInstanceImpl::createWriter() {
@@ -479,7 +482,51 @@ bool PdxInstanceImpl::deepArrayEquals(std::shared_ptr<Cacheable> obj,
             std::dynamic_pointer_cast<CacheableHashTable>(otherObj);
         return enumerateHashTableEquals(hashTable, otherhashTable);
       }
-      default:
+      case DSCode::FixedIDDefault:
+      case DSCode::FixedIDByte:
+      case DSCode::FixedIDShort:
+      case DSCode::FixedIDInt:
+      case DSCode::FixedIDNone:
+      case DSCode::CacheableLinkedList:
+      case DSCode::Properties:
+      case DSCode::PdxType:
+      case DSCode::BooleanArray:
+      case DSCode::CharArray:
+      case DSCode::CacheableUserData4:
+      case DSCode::ClientProxyMembershipId:
+      case DSCode::CacheableUserData:
+      case DSCode::NullObj:
+      case DSCode::Class:
+      case DSCode::JavaSerializable:
+      case DSCode::DataSerializable:
+      case DSCode::CacheableBytes:
+      case DSCode::CacheableInt16Array:
+      case DSCode::CacheableInt32Array:
+      case DSCode::CacheableInt64Array:
+      case DSCode::CacheableFloatArray:
+      case DSCode::CacheableDoubleArray:
+      case DSCode::CacheableBoolean:
+      case DSCode::CacheableCharacter:
+      case DSCode::CacheableByte:
+      case DSCode::CacheableInt16:
+      case DSCode::CacheableInt32:
+      case DSCode::CacheableInt64:
+      case DSCode::CacheableFloat:
+      case DSCode::CacheableDouble:
+      case DSCode::CacheableDate:
+      case DSCode::CacheableFileName:
+      case DSCode::CacheableStringArray:
+      case DSCode::CacheableTimeUnit:
+      case DSCode::CacheableIdentityHashMap:
+      case DSCode::CacheableStack:
+      case DSCode::InternalDistributedMember:
+      case DSCode::PDX:
+      case DSCode::CacheableEnum:
+      case DSCode::CacheableString:
+      case DSCode::CacheableNullString:
+      case DSCode::CacheableASCIIString:
+      case DSCode::CacheableASCIIStringHuge:
+      case DSCode::CacheableStringHuge:
         break;
     }
   }
@@ -617,7 +664,50 @@ int PdxInstanceImpl::deepArrayHashCode(std::shared_ptr<Cacheable> obj) {
         return enumerateHashTableCode(
             std::dynamic_pointer_cast<CacheableHashTable>(obj));
       }
-      default:
+      case DSCode::FixedIDDefault:
+      case DSCode::FixedIDByte:
+      case DSCode::FixedIDInt:
+      case DSCode::FixedIDNone:
+      case DSCode::FixedIDShort:
+      case DSCode::Properties:
+      case DSCode::PdxType:
+      case DSCode::BooleanArray:
+      case DSCode::CharArray:
+      case DSCode::NullObj:
+      case DSCode::CacheableString:
+      case DSCode::Class:
+      case DSCode::JavaSerializable:
+      case DSCode::DataSerializable:
+      case DSCode::CacheableBytes:
+      case DSCode::CacheableInt16Array:
+      case DSCode::CacheableInt32Array:
+      case DSCode::CacheableInt64Array:
+      case DSCode::CacheableFloatArray:
+      case DSCode::CacheableDoubleArray:
+      case DSCode::CacheableBoolean:
+      case DSCode::CacheableCharacter:
+      case DSCode::CacheableByte:
+      case DSCode::CacheableInt16:
+      case DSCode::CacheableInt32:
+      case DSCode::CacheableInt64:
+      case DSCode::CacheableFloat:
+      case DSCode::CacheableDouble:
+      case DSCode::CacheableDate:
+      case DSCode::CacheableFileName:
+      case DSCode::CacheableStringArray:
+      case DSCode::CacheableTimeUnit:
+      case DSCode::CacheableNullString:
+      case DSCode::CacheableIdentityHashMap:
+      case DSCode::CacheableStack:
+      case DSCode::CacheableASCIIString:
+      case DSCode::CacheableASCIIStringHuge:
+      case DSCode::CacheableStringHuge:
+      case DSCode::InternalDistributedMember:
+      case DSCode::CacheableEnum:
+      case DSCode::ClientProxyMembershipId:
+      case DSCode::CacheableUserData:
+      case DSCode::CacheableUserData4:
+      case DSCode::PDX:
         break;
     }
   }
@@ -693,7 +783,7 @@ int32_t PdxInstanceImpl::hashcode() const {
             ((objectArray != nullptr) ? deepArrayHashCode(objectArray) : 0);
         break;
       }
-      default: {
+      case PdxFieldTypes::UNKNOWN: {
         char excpStr[256] = {0};
         std::snprintf(excpStr, 256, "PdxInstance not found typeid %d ",
                       static_cast<int>(pField->getTypeId()));
@@ -1043,7 +1133,8 @@ std::string PdxInstanceImpl::toString() const {
         }
         break;
       }
-      default: {
+      case PdxFieldTypes::OBJECT:
+      case PdxFieldTypes::UNKNOWN: {
         auto value = getCacheableField(identityFields.at(i)->getFieldName());
         if (value != nullptr) {
           toString += value->toString().c_str();
@@ -1223,7 +1314,7 @@ bool PdxInstanceImpl::operator==(const CacheableKey& other) const {
         }
         break;
       }
-      default: {
+      case PdxFieldTypes::UNKNOWN: {
         char excpStr[256] = {0};
         std::snprintf(excpStr, 256, "PdxInstance not found typeid  %d ",
                       static_cast<int>(myPFT->getTypeId()));
@@ -1594,10 +1685,11 @@ bool PdxInstanceImpl::hasDefaultBytes(std::shared_ptr<PdxFieldType> pField,
       return compareDefaultBytes(dataInput, start, end, m_ObjectDefaultBytes,
                                  1);
     }
-    default: {
+    case PdxFieldTypes::UNKNOWN: {
       throw IllegalStateException("hasDefaultBytes unable to find typeID ");
     }
   }
+  throw IllegalStateException("hasDefaultBytes unable to find typeID ");
 }
 
 void PdxInstanceImpl::setField(const std::string& fieldName, bool value) {
