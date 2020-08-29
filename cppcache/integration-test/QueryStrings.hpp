@@ -36,7 +36,6 @@ const int SSOPL_ARRAY_SIZE =
 const int RQ_ARRAY_SIZE = 21;  // for region.query() API queries
 const int CQRS_ARRAY_SIZE = 24;
 
-const int MAX_QRY_LENGTH = 512;
 enum queryCategory {
   singleRegion = 0,
   multiRegion,
@@ -54,7 +53,7 @@ enum queryCategory {
   misc,
   regionQuery,
   qcEnd /*to mark the end of enum*/
-} qcType;
+};
 
 class QueryStrings {
  public:

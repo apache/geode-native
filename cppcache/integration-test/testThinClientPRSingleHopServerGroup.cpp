@@ -48,15 +48,15 @@ using apache::geode::client::CacheWriterException;
 using apache::geode::client::Exception;
 using apache::geode::client::HashMapOfException;
 
-bool isLocalServer = false;
+static bool isLocalServer = false;
 
 static bool isLocator = false;
-const char *locatorsG =
+static const char *locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
-const char *group1 = "ABC";
-const char *group2 = "BC";
-const char *group3 = "C";
+static const char *group1 = "ABC";
+static const char *group2 = "BC";
+static const char *group3 = "C";
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepOne_Pooled_Locator1)
   {

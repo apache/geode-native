@@ -42,14 +42,14 @@ using apache::geode::client::testframework::security::opCodeList;
 using apache::geode::client::testing::TallyListener;
 using apache::geode::client::testing::TallyWriter;
 
-std::shared_ptr<TallyListener> regListener;
-std::shared_ptr<TallyWriter> regWriter;
+static std::shared_ptr<TallyListener> regListener;
+static std::shared_ptr<TallyWriter> regWriter;
 
-const char *locHostPort =
+static const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
-const char *regionNamesAuth[] = {"DistRegionAck"};
-std::shared_ptr<CredentialGenerator> credentialGeneratorHandler;
+static const char *regionNamesAuth[] = {"DistRegionAck"};
+static std::shared_ptr<CredentialGenerator> credentialGeneratorHandler;
 
 std::string getXmlPath() {
   char xmlPath[1000] = {'\0'};
@@ -88,9 +88,9 @@ void initCredentialGenerator() {
   if (loopNum > 2) loopNum = 1;
 }
 
-opCodeList::value_type tmpRArr[] = {OP_GET, OP_REGISTER_INTEREST,
-                                    OP_UNREGISTER_INTEREST, OP_KEY_SET,
-                                    OP_CONTAINS_KEY};
+static opCodeList::value_type tmpRArr[] = {OP_GET, OP_REGISTER_INTEREST,
+                                           OP_UNREGISTER_INTEREST, OP_KEY_SET,
+                                           OP_CONTAINS_KEY};
 
 #define HANDLE_NOT_AUTHORIZED_EXCEPTION                           \
   catch (const apache::geode::client::NotAuthorizedException &) { \

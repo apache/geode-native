@@ -30,9 +30,9 @@ using apache::geode::client::CacheableString;
 using apache::geode::client::CacheHelper;
 using apache::geode::client::Properties;
 
-bool isLocalServer = false;
+static bool isLocalServer = false;
 
-CacheHelper *cacheHelper = nullptr;
+static CacheHelper *cacheHelper = nullptr;
 
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
@@ -40,10 +40,10 @@ CacheHelper *cacheHelper = nullptr;
 #define SERVERS s2p2
 #define SERVER1 s2p2
 static bool isLocator = false;
-const char *locatorsG =
+static const char *locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
-bool g_poolConfig = false;
-bool g_poolLocators = false;
+static bool g_poolConfig = false;
+static bool g_poolLocators = false;
 void initClient(int redundancyLevel) {
   if (cacheHelper == nullptr) {
     cacheHelper = new CacheHelper(redundancyLevel);
@@ -275,12 +275,12 @@ void doNetsearch(const char *name, const char *key, const char *value) {
   LOG("Netsearch complete.");
 }
 
-const char *keys[] = {"Key-1", "Key-2", "Key-3", "Key-4"};
-const char *vals[] = {"Value-1", "Value-2", "Value-3", "Value-4"};
-const char *nvals[] = {"New Value-1", "New Value-2", "New Value-3",
-                       "New Value-4"};
+static const char *keys[] = {"Key-1", "Key-2", "Key-3", "Key-4"};
+static const char *vals[] = {"Value-1", "Value-2", "Value-3", "Value-4"};
+static const char *nvals[] = {"New Value-1", "New Value-2", "New Value-3",
+                              "New Value-4"};
 
-const char *regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
+static const char *regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
 
 const bool USE_ACK = true;
 #include "ThinClientTasks_C2S2.hpp"

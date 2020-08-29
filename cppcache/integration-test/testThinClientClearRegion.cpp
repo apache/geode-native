@@ -51,9 +51,9 @@ class MyCacheListener : public CacheListener {
 };
 
 static int numberOfLocators = 1;
-bool isLocalServer = true;
-bool isLocator = true;
-const char *locHostPort =
+static bool isLocalServer = true;
+static bool isLocator = true;
+static const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 
 DUNIT_TASK(SERVER1, StartServer)

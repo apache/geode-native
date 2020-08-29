@@ -53,7 +53,7 @@ using apache::geode::client::Exception;
 using apache::geode::client::IllegalStateException;
 using apache::geode::client::QueryService;
 
-const char *cqName = "MyCq";
+static const char *cqName = "MyCq";
 
 class MyCqListener : public CqListener {
   bool m_failedOver;
@@ -132,9 +132,9 @@ void initClientCq(const bool isthinClient) {
   }
 }
 
-const char *regionNamesCq[] = {"Portfolios", "Positions"};
+static const char *regionNamesCq[] = {"Portfolios", "Positions"};
 
-KillServerThread *kst = nullptr;
+static KillServerThread *kst = nullptr;
 
 DUNIT_TASK_DEFINITION(SERVER1, CreateLocator)
   {

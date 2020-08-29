@@ -66,9 +66,9 @@ using apache::geode::client::PdxSerializable;
 using apache::geode::client::Properties;
 using apache::geode::client::WritablePdxInstance;
 
-bool isLocalServer = false;
+static bool isLocalServer = false;
 
-CacheHelper *cacheHelper = nullptr;
+static CacheHelper *cacheHelper = nullptr;
 
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
@@ -77,10 +77,10 @@ static bool isLocator = false;
 const bool USE_ACK = true;
 const bool NO_ACK = false;
 
-const char *locatorsG =
+static const char *locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
-const char *regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
+static const char *regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
 
 template <typename T1, typename T2>
 bool genericValCompare(T1 value1, T2 value2) /*const*/

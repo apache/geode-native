@@ -28,9 +28,9 @@
 #define SERVER1 s2p1
 
 
-bool isLocalServer = true;
+static bool isLocalServer = true;
 static bool isLocator = false;
-const char* locatorsG =
+static const char* locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 #include "LocatorHelper.hpp"
 

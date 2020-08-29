@@ -55,7 +55,7 @@ const opCodeList::value_type QArr[] = {OP_QUERY, OP_REGISTER_CQ};
 
 const stringList::value_type QRArr[] = {"Portfolios", "Positions"};
 
-const char* PRiUsnm = "%s%d";
+static const char* PRiUsnm = "%s%d";
 
 class XmlAuthzCredentialGenerator;
 

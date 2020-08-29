@@ -39,7 +39,7 @@ using apache::geode::client::OutOfMemoryException;
 static bool isLocator = false;
 static bool isLocalServer = true;
 static int numberOfLocators = 1;
-const char *locatorsG =
+static const char *locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 #include "LocatorHelper.hpp"
 
@@ -98,7 +98,7 @@ char *createRandCharArray(int size) {
   }
   return ch;
 }
-const char *_regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
+static const char *_regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepOne)
   {

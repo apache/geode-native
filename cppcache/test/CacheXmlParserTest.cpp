@@ -21,7 +21,7 @@
 
 using apache::geode::client::CacheXmlParser;
 
-std::string xsd_prefix = R"(<?xml version='1.0' encoding='UTF-8'?>
+static std::string xsd_prefix = R"(<?xml version='1.0' encoding='UTF-8'?>
 <client-cache
   xmlns="http://geode.apache.org/schema/cpp-cache"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -30,7 +30,7 @@ std::string xsd_prefix = R"(<?xml version='1.0' encoding='UTF-8'?>
   version='1.0'
 >)";
 
-std::string valid_cache_config_body = R"(<region name = 'Root1' >
+static std::string valid_cache_config_body = R"(<region name = 'Root1' >
         <region-attributes scope='local'
                            caching-enabled='true'
                            initial-capacity='25'
@@ -99,7 +99,7 @@ std::string valid_cache_config_body = R"(<region name = 'Root1' >
     </region>
 </client-cache>)";
 
-std::string invalid_cache_config_body = R"(<region >
+static std::string invalid_cache_config_body = R"(<region >
         <region-attributes scope='local'
                            caching-enabled='true'
                            initial-capacity='25'

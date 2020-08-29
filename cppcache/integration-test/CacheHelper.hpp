@@ -50,6 +50,7 @@ namespace client {
 
 class CacheHelper {
  public:
+  static ClientCleanup gClientCleanup;
   static CacheHelper* singleton;
   static std::list<std::string> staticConfigFileList;
   std::shared_ptr<Cache> cachePtr;
@@ -379,6 +380,7 @@ class CacheHelper {
 };
 
 #ifndef test_cppcache_utils_static
+ClientCleanup CacheHelper::gClientCleanup = ClientCleanup();
 CacheHelper* CacheHelper::singleton = nullptr;
 std::list<int> CacheHelper::staticServerInstanceList;
 std::list<int> CacheHelper::staticLocatorInstanceList;

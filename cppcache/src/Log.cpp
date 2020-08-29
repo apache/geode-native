@@ -63,29 +63,27 @@ namespace geode {
 namespace log {
 namespace globals {
 
-std::string* g_logFile = nullptr;
-std::string* g_logFileWithExt = nullptr;
+static std::string* g_logFile = nullptr;
+static std::string* g_logFileWithExt = nullptr;
 
-size_t g_bytesWritten = 0;
-bool g_isLogFileOpened = false;
+static size_t g_bytesWritten = 0;
+static bool g_isLogFileOpened = false;
 
-size_t g_fileSizeLimit = GEODE_MAX_LOG_FILE_LIMIT;
-size_t g_diskSpaceLimit = GEODE_MAX_LOG_DISK_LIMIT;
+static size_t g_fileSizeLimit = GEODE_MAX_LOG_FILE_LIMIT;
+static size_t g_diskSpaceLimit = GEODE_MAX_LOG_DISK_LIMIT;
 
-char g_logFileNameBuffer[2048] = {0};
+static std::mutex g_logMutex;
 
-std::mutex g_logMutex;
-
-int g_rollIndex = 0;
-size_t g_spaceUsed = 0;
+static int g_rollIndex = 0;
+static size_t g_spaceUsed = 0;
 // Make a pair for the filename & its size
-std::pair<std::string, int64_t> g_fileInfoPair;
+static std::pair<std::string, int64_t> g_fileInfoPair;
 // Vector to hold the fileInformation
 typedef std::vector<std::pair<std::string, int64_t> > g_fileInfo;
 
-FILE* g_log = nullptr;
-ACE_utsname g_uname;
-pid_t g_pid = 0;
+static FILE* g_log = nullptr;
+static ACE_utsname g_uname;
+static pid_t g_pid = 0;
 
 }  // namespace globals
 }  // namespace log

@@ -31,7 +31,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-int32_t fixedTypeSizes[] = {
+static int32_t fixedTypeSizes[] = {
     PdxTypes::BOOLEAN_SIZE,  // BOOLEAN
     PdxTypes::BOOLEAN_SIZE,  // BYTE
     PdxTypes::CHAR_SIZE,     // CHAR

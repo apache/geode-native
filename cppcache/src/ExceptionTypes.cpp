@@ -30,8 +30,8 @@ namespace client {
 void setThreadLocalExceptionMessage(std::string exMsg);
 const std::string& getThreadLocalExceptionMessage();
 
-std::map<GfErrType,
-         std::function<void(std::string, std::string&, GfErrType, std::string)>>
+static std::map<GfErrType, std::function<void(std::string, std::string&,
+                                              GfErrType, std::string)>>
     error_map_;
 
 [[noreturn]] void notConnectedException(std::string message, std::string& exMsg,

@@ -36,7 +36,7 @@ using apache::geode::client::HashMapOfCacheable;
 using apache::geode::client::HashMapOfException;
 using apache::geode::client::NotAuthorizedException;
 
-const char *locHostPort =
+static const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
 #define HANDLE_NO_NOT_AUTHORIZED_EXCEPTION                 \
@@ -65,7 +65,7 @@ const char *locHostPort =
 #define READER_CLIENT s2p1
 #define READER2_CLIENT s2p2
 
-const char *regionNamesAuth[] = {"DistRegionAck"};
+static const char *regionNamesAuth[] = {"DistRegionAck"};
 
 void initClientAuth(char userType, int clientNum = 1) {
   auto config = Properties::create();

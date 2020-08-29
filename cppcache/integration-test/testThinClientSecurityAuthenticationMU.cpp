@@ -31,10 +31,10 @@
 
 using apache::geode::client::testframework::security::CredentialGenerator;
 
-const char *locHostPort =
+static const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
-const char *regionNamesAuth[] = {"DistRegionAck", "DistRegionNoAck"};
-std::shared_ptr<CredentialGenerator> credentialGeneratorHandler;
+static const char *regionNamesAuth[] = {"DistRegionAck", "DistRegionNoAck"};
+static std::shared_ptr<CredentialGenerator> credentialGeneratorHandler;
 
 std::string getXmlPath() {
   char xmlPath[1000] = {'\0'};
@@ -72,7 +72,7 @@ void initCredentialGenerator() {
   loopNum++;
   if (loopNum > 2) loopNum = 1;
 }
-std::shared_ptr<Properties> userCreds;
+static std::shared_ptr<Properties> userCreds;
 void initClientAuth(char credentialsType) {
   printf(" in initclientAuth 0 = %c ", credentialsType);
   userCreds = Properties::create();

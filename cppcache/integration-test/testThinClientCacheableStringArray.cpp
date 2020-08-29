@@ -44,12 +44,12 @@ using apache::geode::client::Exception;
 using apache::geode::client::IllegalStateException;
 
 static int numberOfLocators = 1;
-bool isLocalServer = true;
-bool isLocator = true;
-const char *locHostPort =
+static bool isLocalServer = true;
+static bool isLocator = true;
+static const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 
-const char *_regionNames[] = {"Portfolios", "Positions"};
+static const char *_regionNames[] = {"Portfolios", "Positions"};
 
 DUNIT_TASK(SERVER1, CreateServer1)
   {
