@@ -24,7 +24,6 @@ import org.apache.geode.internal.*;
 
 public class LatestProp {
   public static void main(String[] args){
-    System.out.println("build.date=" + GemFireVersion.getBuildDate());
     System.out.println("build.jdk=" + GemFireVersion.getBuildJavaVersion());
     System.out.println("build.version=" + GemFireVersion.getBuildJavaVersion());
     try{
