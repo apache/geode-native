@@ -75,12 +75,15 @@ class SNITest : public ::testing::Test {
   }
 
   void TearDown() override {
-    auto systemRVal = std::system("docker-compose stop");
+    auto dockerComposeStopCommand = "docker-compose -f " +
+                                    sniConfigPath.string() +
+                                    "/docker-compose.yml" + " stop";
+    auto systemRVal = std::system(dockerComposeStopCommand.c_str());
     if (systemRVal == -1) {
       BOOST_LOG_TRIVIAL(error) << "std::system returned: " << systemRVal;
     }
 
-    systemRVal = std::system("docker container prune -f");
+    systemRVal = std::system("docker system prune -f");
     if (systemRVal == -1) {
       BOOST_LOG_TRIVIAL(error) << "std::system returned: " << systemRVal;
     }

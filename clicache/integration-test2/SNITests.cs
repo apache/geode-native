@@ -58,10 +58,10 @@ namespace Apache.Geode.Client.IntegrationTests
         public void Dispose()
         {
 
-            var dockerComposeProc = Process.Start(@"docker-compose.exe", "stop");
+            var dockerComposeProc = Process.Start(@"docker-compose.exe", "-f " + Config.SniConfigPath + "/docker-compose.yml" + " stop");
             dockerComposeProc.WaitForExit();
 
-            var dockerProc = Process.Start(@"docker.exe", "container prune -f");
+            var dockerProc = Process.Start(@"docker.exe", "system prune -f");
             dockerProc.WaitForExit();
 
         }
