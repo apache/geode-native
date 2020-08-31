@@ -174,4 +174,51 @@ TEST_F(SNITest, connectWithoutProxyFails) {
   cache.close();
 }
 
+#if defined(_WIN32)
+TEST_F(SNITest, DISABLED_dropSNIProxyTest) {
+#else
+TEST_F(SNITest, dropSNIProxyTest) {
+#endif
+  const auto clientTruststore =
+      (clientSslKeysDir / boost::filesystem::path("/truststore_sni.pem"));
+
+  auto cache = CacheFactory()
+                   .set("log-level", "debug")
+                   .set("log-file", "SNITest.log")
+                   .set("ssl-enabled", "true")
+                   .set("ssl-truststore", clientTruststore.string())
+                   .create();
+
+  auto portString = runDockerCommand("docker port haproxy");
+  auto portNumber = parseProxyPort(portString);
+
+  cache.getPoolManager()
+      .createFactory()
+      .setSniProxy("localhost", portNumber)
+      .addLocator("locator-maeve", 10334)
+      .create("pool");
+
+  auto region = cache.createRegionFactory(RegionShortcut::PROXY)
+                    .setPoolName("pool")
+                    .create("jellyfish");
+
+  auto systemRVal = std::system("docker-compose pause");
+  if (systemRVal == -1) {
+    BOOST_LOG_TRIVIAL(error) << "std::system returned: " << systemRVal;
+  }
+
+  region->put("1", "one");
+
+  std::this_thread::sleep_for(std::chrono::seconds(17));
+
+  systemRVal = std::system("docker-compose unpause");
+  if (systemRVal == -1) {
+    BOOST_LOG_TRIVIAL(error) << "std::system returned: " << systemRVal;
+  }
+
+  region->put("1", "one");
+
+  cache.close();
+}
+
 }  // namespace snitest
