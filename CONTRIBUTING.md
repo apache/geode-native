@@ -11,7 +11,7 @@ see [BUILDING.md](BUILDING.md)
 * Submit a pull request.
 
 ## Testing
-Before submitting a pull request the unit and integration tests must all pass. We are using CTest for running tests (please see [the CTest documentation](https://cmake.org/Wiki/CMake/Testing_With_CTest) for further information) and [Google Test](https://github.com/google/googletest) as testing framework.
+Before submitting a pull request all tests must pass. This includes all unit tests, integration tests, and acceptance tests. We are using CTest for running tests (please see [the CTest documentation](https://cmake.org/Wiki/CMake/Testing_With_CTest) for further information) and [Google Test](https://github.com/google/googletest) as testing framework.
 
 ### Running unit tests
 ```bash
@@ -61,6 +61,25 @@ For example: `$ ctest -R AuthInitializeTest.putGetWithBasicAuth -j1`
 
 Notice that `BasicIPv6Test` test is expected to fail due to IPv6 support is disabled by default. [BUILDING.md](BUILDING.md) explains how to enable it.
 
+### Running acceptance tests
+Acceptance tests is a new category of tests that are designed to test end to end connectivity of a geode-native client with a cloud based geode cluster that sits behind a proxy server.
+
+These tests are stored in `geode-native/cppcache/acceptance-test` and `geode-native/clicache/acceptance-test` for C++ and .NET clients respectively. They utilize docker containers for the proxy server and geode servers. They are enabled during cmake configuration only if docker and docker-compose are found. 
+
+The acceptance tests can be run using ctest as follows. Note: Currently, the tests can only be run sequentially, hence the -j1 flag below.
+
+For C++ clients:
+```bash
+$ cd <clone>
+$ cd build/cppcache/acceptance-test
+$ ctest -R <test_name> -j1
+```
+For .NET clients:
+```bash
+$ cd <clone>
+$ cd build/clicache/acceptance-test
+$ ctest -R <test_name> -j1
+```
 
 ## Style
 
