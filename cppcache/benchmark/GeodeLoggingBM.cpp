@@ -106,17 +106,17 @@ void GeodeLogToFile(benchmark::State& state) {
   }
 }
 
-static auto LogStringsToConsole = GeodeLogToConsole<GeodeLogStrings>;
-static auto LogIntsToConsole = GeodeLogToConsole<GeodeLogInts>;
-static auto LogComboToConsole = GeodeLogToConsole<GeodeLogCombo>;
+static const auto kLogStringsToConsole = GeodeLogToConsole<GeodeLogStrings>;
+static const auto kLogIntsToConsole = GeodeLogToConsole<GeodeLogInts>;
+static const auto kLogComboToConsole = GeodeLogToConsole<GeodeLogCombo>;
 
-static auto LogStringsToFile = GeodeLogToFile<GeodeLogStrings>;
-static auto LogIntsToFile = GeodeLogToFile<GeodeLogInts>;
-static auto LogComboToFile = GeodeLogToFile<GeodeLogCombo>;
+static const auto kLogStringsToFile = GeodeLogToFile<GeodeLogStrings>;
+static const auto kLogIntsToFile = GeodeLogToFile<GeodeLogInts>;
+static const auto kLogComboToFile = GeodeLogToFile<GeodeLogCombo>;
 
-BENCHMARK(LogStringsToConsole)->Range(8, 8 << 10);
-BENCHMARK(LogIntsToConsole)->Range(8, 8 << 10);
-BENCHMARK(LogComboToConsole)->Range(8, 8 << 10);
-BENCHMARK(LogStringsToFile)->Range(8, 8 << 10);
-BENCHMARK(LogIntsToFile)->Range(8, 8 << 10);
-BENCHMARK(LogComboToFile)->Range(8, 8 << 10);
+BENCHMARK(kLogStringsToConsole)->Range(8, 8 << 10);
+BENCHMARK(kLogIntsToConsole)->Range(8, 8 << 10);
+BENCHMARK(kLogComboToConsole)->Range(8, 8 << 10);
+BENCHMARK(kLogStringsToFile)->Range(8, 8 << 10);
+BENCHMARK(kLogIntsToFile)->Range(8, 8 << 10);
+BENCHMARK(kLogComboToFile)->Range(8, 8 << 10);
