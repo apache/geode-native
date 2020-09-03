@@ -28,7 +28,6 @@ add_library( ${PROJECT_NAME} SHARED
   ${CMAKE_CURRENT_BINARY_DIR}/Config.cs
   TestBase.cs
   cache.xml
-  geode.properties
   xunit.runner.json
   packages.config
   SNITests.cs
