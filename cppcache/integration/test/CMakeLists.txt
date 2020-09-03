@@ -114,8 +114,6 @@ file(GLOB SSL_CERTIFICATES
         "${CMAKE_CURRENT_SOURCE_DIR}/*Keys"
         )
 
-#file(INSTALL ${SSL_CERTIFICATES} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-
 add_custom_target(run-cpp-integration-test
   DEPENDS $<TARGET_FILE:cpp-integration-test>
   COMMAND ctest -C $<CONFIG>
