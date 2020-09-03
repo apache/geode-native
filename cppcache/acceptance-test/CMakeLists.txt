@@ -72,12 +72,6 @@ gtest_discover_tests(cpp-acceptance-test
   DISCOVERY_TIMEOUT 60
 )
 
-file(GLOB SSL_CERTIFICATES
-        "${CMAKE_CURRENT_SOURCE_DIR}/*Keys"
-        )
-
-file(INSTALL ${SSL_CERTIFICATES} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-
 add_custom_target(run-cpp-acceptance-test
   DEPENDS $<TARGET_FILE:cpp-acceptance-test>
   COMMAND ctest -C $<CONFIG>
