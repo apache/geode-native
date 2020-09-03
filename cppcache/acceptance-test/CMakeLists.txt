@@ -56,8 +56,6 @@ if(WIN32)
   endforeach()
 endif()
 
-# file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/sni-test-config DESTINATION ${CMAKE_CURRENT_BINARY_DIR}) 
-
 set_target_properties(cpp-acceptance-test PROPERTIES
   CXX_VISIBILITY_PRESET hidden
   VISIBILITY_INLINES_HIDDEN ON
