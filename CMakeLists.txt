@@ -335,8 +335,8 @@ set_target_properties(unit-tests PROPERTIES
 add_custom_target(run-unit-tests)
 add_dependencies(run-unit-tests unit-tests)
 set_target_properties(run-unit-tests PROPERTIES
-    EXCLUDE_FROM_ALL TRUE
-    EXCLUDE_FROM_DEFAULT_BUILD TRUE
+  EXCLUDE_FROM_ALL TRUE
+  EXCLUDE_FROM_DEFAULT_BUILD TRUE
 	FOLDER cpp/test/unit
 )
 
@@ -346,12 +346,29 @@ set_target_properties(integration-tests PROPERTIES FOLDER cpp/test/integration)
 add_custom_target(run-integration-tests)
 add_dependencies(run-integration-tests integration-tests)
 set_target_properties(run-integration-tests PROPERTIES
-    EXCLUDE_FROM_ALL TRUE
-    EXCLUDE_FROM_DEFAULT_BUILD TRUE
+  EXCLUDE_FROM_ALL TRUE
+  EXCLUDE_FROM_DEFAULT_BUILD TRUE
+	FOLDER test-common
+)
+
+add_custom_target(acceptance-tests)
+set_target_properties(acceptance-tests PROPERTIES FOLDER cpp/test/acceptance)
+
+add_custom_target(run-acceptance-tests)
+add_dependencies(run-acceptance-tests acceptance-tests)
+set_target_properties(run-acceptance-tests PROPERTIES
+  EXCLUDE_FROM_ALL TRUE
+  EXCLUDE_FROM_DEFAULT_BUILD TRUE
 	FOLDER test-common
 )
 
 find_package(OpenSSL REQUIRED)
+
+find_program(DOCKER docker)
+set(DOCKER_PGM ${DOCKER} CACHE INTERNAL "")
+
+find_program(DOCKERCOMPOSE docker-compose)
+set(DOCKERCOMPOSE_PGM ${DOCKERCOMPOSE} CACHE INTERNAL "")
 
 add_subdirectory(tests/javaobject)
 add_subdirectory(dependencies)

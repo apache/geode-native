@@ -19,7 +19,6 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using Xunit;
-using PdxTests;
 using System.Collections;
 using System.Collections.Generic;
 using Xunit.Abstractions;
@@ -86,7 +85,7 @@ namespace Apache.Geode.Client.IntegrationTests
             return Int32.Parse(portNumberString);
         }
 
-        [Fact (Skip = "Disabled until we iron out our Docker issues on Windows")]
+        [Fact]
         public void ConnectViaProxy()
         {
             var portString = RunDockerCommand("port haproxy");
@@ -109,7 +108,7 @@ namespace Apache.Geode.Client.IntegrationTests
             cache_.Close();
         }
 
-        [Fact (Skip = "Disabled until we iron out our Docker issues on Windows")]
+        [Fact]
         public void ConnectionWithoutProxyFails()
         {
             cache_.GetPoolManager()

@@ -116,6 +116,11 @@ add_subdirectory(internal)
 add_subdirectory(integration)
 add_subdirectory(integration-test)
 
+if ((NOT ${DOCKER_PGM} MATCHES "DOCKER_NOTFOUND") AND
+    (NOT ${DOCKERCOMPOSE_PGM} MATCHES "DOCKERCOMPOSE_NOTFOUND"))
+  add_subdirectory(acceptance-test)
+endif()
+
 if (BUILD_BENCHMARKS)
   add_subdirectory(benchmark)
 endif()
