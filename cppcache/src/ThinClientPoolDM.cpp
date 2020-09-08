@@ -1427,17 +1427,18 @@ GfErrType ThinClientPoolDM::sendSyncRequest(
             GF_SAFE_DELETE_CON(conn);
           }
           excludeServers.insert(ServerLocation(ep->name()));
-          if (error == GF_IOERR) {
+          if (error == GF_IOERR || error == GF_TIMEOUT) {
             if (m_clientMetadataService) {
               auto sl = std::make_shared<BucketServerLocation>(ep->name());
-              LOGINFO("Removing bucketServerLocation %s due to GF_IOERR",
-                      sl->toString().c_str());
+              LOGINFO("Removing bucketServerLocation %s due to %s",
+                      sl->toString().c_str(),
+                      (error == GF_IOERR ? "GF_IOERR" : "GF_TIMEOUT"));
               m_clientMetadataService->removeBucketServerLocation(sl);
             }
           }
         }
       } else {
-        return error;  // server exception while sending credentail message to
+        return error;  // server exception while sending credential message to
       }
       // server...
     }
@@ -2351,11 +2352,12 @@ TcrConnection* ThinClientPoolDM::getConnectionFromQueueW(
                   version);
         }
         return nullptr;
-      } else if (*error == GF_IOERR) {
+      } else if (*error == GF_IOERR || *error == GF_TIMEOUT) {
         if (m_clientMetadataService) {
           auto sl = std::make_shared<BucketServerLocation>(theEP->name());
-          LOGINFO("Removing bucketServerLocation %s due to GF_IOERR",
-                  sl->toString().c_str());
+          LOGINFO("Removing bucketServerLocation %s due to %s",
+                  sl->toString().c_str(),
+                  (*error == GF_IOERR ? "GF_IOERR" : "GF_TIMEOUT"));
           m_clientMetadataService->removeBucketServerLocation(sl);
         }
       }
