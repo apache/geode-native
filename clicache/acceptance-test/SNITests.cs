@@ -34,6 +34,8 @@ namespace Apache.Geode.Client.IntegrationTests
 
         public SNITests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
+			Dispose();
+
             currentWorkingDirectory = Directory.GetCurrentDirectory();
             var clientTruststore = Config.SslClientKeyPath + @"/truststore_sni.pem";
 
@@ -57,13 +59,13 @@ namespace Apache.Geode.Client.IntegrationTests
         public void Dispose()
         {
 
-            var dockerComposeProc = Process.Start(@"docker-compose.exe", "-f " + Config.SniConfigPath + "/docker-compose.yml" + " stop");
-            dockerComposeProc.WaitForExit();
+			var dockerComposeProc = Process.Start(@"docker-compose.exe", "-f " + Config.SniConfigPath + "/docker-compose.yml" + " stop");
+			dockerComposeProc.WaitForExit();
 
-            var dockerProc = Process.Start(@"docker.exe", "system prune -f");
-            dockerProc.WaitForExit();
+			var dockerProc = Process.Start(@"docker.exe", "system prune -f");
+			dockerProc.WaitForExit();
 
-        }
+		}
 
         private string RunDockerCommand(string dockerCommand)
         {

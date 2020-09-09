@@ -52,6 +52,8 @@ class SNITest : public ::testing::Test {
   ~SNITest() override = default;
 
   void SetUp() override {
+    TearDown();
+
     auto systemRVal = 0;
     std::string dockerComposeCmd = "docker-compose -f " +
                                    sniConfigPath.string() +
