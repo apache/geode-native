@@ -41,12 +41,12 @@ RUN apt-get update && \
         update-alternatives --install /usr/bin/clang-tidy    clang-tidy    /usr/bin/clang-tidy-${CLANG_VERSION} 999 && \
         update-alternatives --install /usr/bin/clang-format  clang-format  /usr/bin/clang-format-${CLANG_VERSION} 999
 
-ENV GEODE_VERSION 1.9.0
-RUN wget "https://www.apache.org/dyn/closer.cgi?action=download&filename=geode/${GEODE_VERSION}/apache-geode-${GEODE_VERSION}.tgz" --quiet -O - | \
+ENV GEODE_VERSION 1.13.0
+RUN wget "https://downloads.apache.org/geode/${GEODE_VERSION}/apache-geode-${GEODE_VERSION}.tgz" --quiet -O - | \
         tar xzf -
 
 ENV RAT_VERSION 0.13
-RUN wget "https://www.apache.org/dyn/closer.cgi?action=download&filename=creadur/apache-rat-${RAT_VERSION}/apache-rat-${RAT_VERSION}-bin.tar.gz" --quiet -O - | \
+RUN wget "https://archive.apache.org/dist/creadur/apache-rat-${RAT_VERSION}/apache-rat-${RAT_VERSION}-bin.tar.gz" --quiet -O - | \
         tar xzf -
 
 ENV CMAKE_VERSION 3.12.2
