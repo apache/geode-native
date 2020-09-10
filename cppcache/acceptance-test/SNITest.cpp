@@ -76,7 +76,9 @@ class SNITest : public ::testing::Test {
     }
   }
 
-  void TearDown() override {
+  void TearDown() override { cleanupDocker(); }
+
+  void cleanupDocker() {
     auto dockerComposeStopCommand = "docker-compose -f " +
                                     sniConfigPath.string() +
                                     "/docker-compose.yml" + " stop";
