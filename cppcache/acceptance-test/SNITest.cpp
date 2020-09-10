@@ -52,6 +52,8 @@ class SNITest : public ::testing::Test {
   ~SNITest() override = default;
 
   void SetUp() override {
+    TearDown();
+
     auto systemRVal = 0;
     std::string dockerComposeCmd = "docker-compose -f " +
                                    sniConfigPath.string() +
@@ -74,7 +76,9 @@ class SNITest : public ::testing::Test {
     }
   }
 
-  void TearDown() override {
+  void TearDown() override { cleanupDocker(); }
+
+  void cleanupDocker() {
     auto dockerComposeStopCommand = "docker-compose -f " +
                                     sniConfigPath.string() +
                                     "/docker-compose.yml" + " stop";
