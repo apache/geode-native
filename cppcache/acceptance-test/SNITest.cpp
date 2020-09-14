@@ -174,11 +174,7 @@ TEST_F(SNITest, connectWithoutProxyFails) {
   cache.close();
 }
 
-#if defined(_WIN32)
-TEST_F(SNITest, DISABLED_dropSNIProxyTest) {
-#else
 TEST_F(SNITest, dropSNIProxyTest) {
-#endif
   const auto clientTruststore =
       (clientSslKeysDir / boost::filesystem::path("/truststore_sni.pem"));
 
