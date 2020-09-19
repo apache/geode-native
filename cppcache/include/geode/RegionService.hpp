@@ -112,12 +112,23 @@ class APACHE_GEODE_EXPORT RegionService {
   /**
    * Returns a factory that can create a {@link PdxInstance}.
    * @param className the fully qualified class name that the PdxInstance will
-   * become
-   * when it is fully deserialized.
+   * become when it is fully deserialized.
    * @return the factory
    */
   virtual PdxInstanceFactory createPdxInstanceFactory(
       const std::string& className) const = 0;
+
+  /**
+   * Returns a factory that can create a {@link PdxInstance}.
+   * @param className the fully qualified class name that the PdxInstance will
+   * become when it is fully deserialized.
+   * @param expectDomainClass Whether or not created PdxType represents a
+   * Java domain class.
+   * @throws IllegalStateException if the className is nullptr or invalid.
+   * @return the factory
+   */
+  virtual PdxInstanceFactory createPdxInstanceFactory(
+      const std::string& className, bool expectDomainClass) const = 0;
 };
 }  // namespace client
 }  // namespace geode

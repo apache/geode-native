@@ -101,6 +101,9 @@ class PdxType : public internal::DataSerializableInternal,
   PdxType& operator=(const PdxType&) = delete;
   PdxType(PdxTypeRegistry& pdxTypeRegistryPtr,
           const std::string& pdxDomainClassName, bool isLocal);
+  PdxType(PdxTypeRegistry& pdxTypeRegistryPtr,
+          const std::string& pdxDomainClassName, bool isLocal,
+          bool expectDomainClass);
 
   ~PdxType() noexcept override;
 

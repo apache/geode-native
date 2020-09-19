@@ -68,6 +68,32 @@ std::shared_ptr<Region> setupRegion(Cache& cache) {
   return region;
 }
 
+TEST(PdxJsonTypeTest, testGfshQueryJsonInstances) {
+  Cluster cluster{LocatorCount{1}, ServerCount{1}};
+  cluster.start();
+
+  auto& gfsh = cluster.getGfsh();
+  gfsh.create().region().withName("region").withType("REPLICATE").execute();
+
+  auto cache = cluster.createCache();
+  auto region = setupRegion(cache);
+  const std::string query_stmt{"SELECT * FROM /region"};
+
+  region->put("non-java-domain-class-entry",
+              cache.createPdxInstanceFactory(gemfireJsonClassName, false)
+                  .writeString("foo", "bar")
+                  .create());
+
+  EXPECT_NO_THROW(gfsh.query(query_stmt).execute());
+
+  region->put("java-domain-class-entry",
+              cache.createPdxInstanceFactory(gemfireJsonClassName)
+                  .writeString("foo", "bar")
+                  .create());
+
+  EXPECT_THROW(gfsh.query(query_stmt).execute(), GfshExecuteException);
+}
+
 TEST(PdxJsonTypeTest, testCreateTwoJsonInstances) {
   Cluster cluster{LocatorCount{1}, ServerCount{1}};
   cluster.start();

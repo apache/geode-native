@@ -41,7 +41,8 @@ PdxType::~PdxType() noexcept {
 }
 
 PdxType::PdxType(PdxTypeRegistry& pdxTypeRegistry,
-                 const std::string& pdxDomainClassName, bool isLocal)
+                 const std::string& pdxDomainClassName, bool isLocal,
+                 bool expectDomainClass)
     : Serializable(),
       m_pdxFieldTypes(new std::vector<std::shared_ptr<PdxFieldType>>()),
       m_className(pdxDomainClassName),
@@ -53,8 +54,12 @@ PdxType::PdxType(PdxTypeRegistry& pdxTypeRegistry,
       m_isVarLenFieldAdded(false),
       m_remoteToLocalFieldMap(nullptr),
       m_localToRemoteFieldMap(nullptr),
-      m_noJavaClass(false),
+      m_noJavaClass(!expectDomainClass),
       m_pdxTypeRegistry(pdxTypeRegistry) {}
+
+PdxType::PdxType(PdxTypeRegistry& pdxTypeRegistry,
+                 const std::string& pdxDomainClassName, bool isLocal)
+    : PdxType(pdxTypeRegistry, pdxDomainClassName, isLocal, true) {}
 
 void PdxType::toData(DataOutput& output) const {
   output.write(static_cast<int8_t>(DSCode::DataSerializable));  // 45
