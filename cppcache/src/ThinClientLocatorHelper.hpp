@@ -42,6 +42,9 @@ class Connector;
 
 class ThinClientLocatorHelper {
  public:
+  ThinClientLocatorHelper(const ThinClientLocatorHelper&) = delete;
+  ThinClientLocatorHelper& operator=(const ThinClientLocatorHelper&) = delete;
+
   ThinClientLocatorHelper(const std::vector<std::string>& locatorAddresses,
                           const ThinClientPoolDM* poolDM);
   ThinClientLocatorHelper(const std::vector<std::string>& locatorAddresses,
@@ -60,20 +63,23 @@ class ThinClientLocatorHelper {
       std::vector<std::shared_ptr<ServerLocation> >& servers,
       const std::string& serverGrp);
   int32_t getCurLocatorsNum() {
-    return static_cast<int32_t>(m_locHostPort.size());
+    return static_cast<int32_t>(m_Locators.size());
   }
   GfErrType updateLocators(const std::string& serverGrp = "");
 
  private:
+  std::vector<ServerLocation> getLocators() const;
   Connector* createConnection(Connector*& conn, const char* hostname,
                               int32_t port,
                               std::chrono::microseconds waitSeconds,
                               int32_t maxBuffSizePool = 0);
-  std::mutex m_locatorLock;
-  std::vector<ServerLocation> m_locHostPort;
+
+  /**
+   * Data members
+   */
+  mutable std::mutex m_locatorLock;
+  std::vector<ServerLocation> m_Locators;
   const ThinClientPoolDM* m_poolDM;
-  ThinClientLocatorHelper(const ThinClientLocatorHelper&);
-  ThinClientLocatorHelper& operator=(const ThinClientLocatorHelper&);
   std::string m_sniProxyHost;
   int m_sniProxyPort;
 };

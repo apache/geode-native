@@ -62,7 +62,7 @@ ThinClientLocatorHelper::ThinClientLocatorHelper(
     const ThinClientPoolDM* poolDM)
     : m_poolDM(poolDM) {
   for (auto&& locatorAddress : locatorAddresses) {
-    m_locHostPort.emplace_back(locatorAddress);
+    m_Locators.emplace_back(locatorAddress);
   }
 }
 
@@ -74,8 +74,13 @@ ThinClientLocatorHelper::ThinClientLocatorHelper(
       m_sniProxyHost(sniProxyHost),
       m_sniProxyPort(sniProxyPort) {
   for (auto&& locatorAddress : locatorAddresses) {
-    m_locHostPort.emplace_back(locatorAddress);
+    m_Locators.emplace_back(locatorAddress);
   }
+}
+
+std::vector<ServerLocation> ThinClientLocatorHelper::getLocators() const {
+  std::lock_guard<decltype(m_locatorLock)> guard{m_locatorLock};
+  return std::vector<ServerLocation>{m_Locators.begin(), m_Locators.end()};
 }
 
 Connector* ThinClientLocatorHelper::createConnection(
@@ -110,14 +115,11 @@ Connector* ThinClientLocatorHelper::createConnection(
 GfErrType ThinClientLocatorHelper::getAllServers(
     std::vector<std::shared_ptr<ServerLocation> >& servers,
     const std::string& serverGrp) {
-  std::lock_guard<decltype(m_locatorLock)> guard(m_locatorLock);
-
   auto& sysProps = m_poolDM->getConnectionManager()
                        .getCacheImpl()
                        ->getDistributedSystem()
                        .getSystemProperties();
-  for (size_t i = 0; i < m_locHostPort.size(); i++) {
-    auto& loc = m_locHostPort[i];
+  for (const auto& loc : getLocators()) {
     try {
       LOGDEBUG("getAllServers getting servers from server = %s ",
                loc.getServerName().c_str());
@@ -174,30 +176,25 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewCallBackConn(
     ClientProxyMembershipID& memId, std::list<ServerLocation>& outEndpoint,
     std::string&, int redundancy, const std::set<ServerLocation>& exclEndPts,
     const std::string& serverGrp) {
-  std::lock_guard<decltype(m_locatorLock)> guard(m_locatorLock);
   auto& sysProps = m_poolDM->getConnectionManager()
                        .getCacheImpl()
                        ->getDistributedSystem()
                        .getSystemProperties();
-  int locatorsRetry = 3;
-  if (m_poolDM) {
-    int poolRetry = m_poolDM->getRetryAttempts();
-    locatorsRetry = poolRetry <= 0 ? locatorsRetry : poolRetry;
-  }
+
+  auto poolRetry = m_poolDM->getRetryAttempts();
+  auto locatorsRetry = poolRetry <= 0 ? 3 : poolRetry;
+
   LOGFINER(
       "ThinClientLocatorHelper::getEndpointForNewCallBackConn locatorsRetry = "
       "%d ",
       locatorsRetry);
-  for (unsigned attempts = 0;
-       attempts <
-       (m_locHostPort.size() == 1 ? locatorsRetry : m_locHostPort.size());
-       attempts++) {
-    ServerLocation loc;
-    if (m_locHostPort.size() == 1) {
-      loc = m_locHostPort[0];
-    } else {
-      loc = m_locHostPort[attempts];
-    }
+
+  auto locators = getLocators();
+  auto locatorsSize = locators.size();
+  auto maxAttempts = locatorsSize == 1 ? locatorsRetry : locatorsSize;
+
+  for (auto attempts = 0ULL; attempts < maxAttempts; ++attempts) {
+    const auto& loc = locatorsSize == 1 ? locators[0] : locators[attempts];
 
     try {
       LOGFINER("Querying locator at [%s:%d] for queue server from group [%s]",
@@ -256,7 +253,6 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewFwdConn(
     const std::set<ServerLocation>& exclEndPts, const std::string& serverGrp,
     const TcrConnection* currentServer) {
   bool locatorFound = false;
-  std::lock_guard<decltype(m_locatorLock)> guard(m_locatorLock);
   auto& sysProps = m_poolDM->getConnectionManager()
                        .getCacheImpl()
                        ->getDistributedSystem()
@@ -267,24 +263,20 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewFwdConn(
   LOGFINER(
       "ThinClientLocatorHelper::getEndpointForNewFwdConn locatorsRetry = %d ",
       locatorsRetry);
-  for (unsigned attempts = 0;
-       attempts <
-       (m_locHostPort.size() == 1 ? locatorsRetry : m_locHostPort.size());
-       attempts++) {
-    ServerLocation serLoc;
-    if (m_locHostPort.size() == 1) {
-      serLoc = m_locHostPort[0];
-    } else {
-      serLoc = m_locHostPort[attempts];
-    }
+
+  auto locators = getLocators();
+  auto locatorsSize = locators.size();
+  auto maxAttempts = locatorsSize == 1 ? locatorsRetry : locatorsSize;
+
+  for (auto attempts = 0ULL; attempts < maxAttempts; ++attempts) {
+    const auto& loc = locatorsSize == 1 ? locators[0] : locators[attempts];
     try {
       LOGFINE("Querying locator at [%s:%d] for server from group [%s]",
-              serLoc.getServerName().c_str(), serLoc.getPort(),
-              serverGrp.c_str());
+              loc.getServerName().c_str(), loc.getPort(), serverGrp.c_str());
       auto buffSize = m_poolDM->getSocketBufferSize();
       Connector* conn = nullptr;
       ConnectionWrapper cw(conn);
-      createConnection(conn, serLoc.getServerName().c_str(), serLoc.getPort(),
+      createConnection(conn, loc.getServerName().c_str(), loc.getPort(),
                        sysProps.connectTimeout(), buffSize);
       auto data =
           m_poolDM->getConnectionManager().getCacheImpl()->createDataOutput();
@@ -357,22 +349,20 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewFwdConn(
 
 GfErrType ThinClientLocatorHelper::updateLocators(
     const std::string& serverGrp) {
-  std::lock_guard<decltype(m_locatorLock)> guard(m_locatorLock);
   auto& sysProps = m_poolDM->getConnectionManager()
                        .getCacheImpl()
                        ->getDistributedSystem()
                        .getSystemProperties();
 
-  for (size_t attempts = 0; attempts < m_locHostPort.size(); attempts++) {
-    auto&& serLoc = m_locHostPort[attempts];
+  auto locators = getLocators();
+  for (const auto& loc : locators) {
     Connector* conn = nullptr;
     try {
       auto buffSize = m_poolDM->getSocketBufferSize();
       LOGFINER("Querying locator list at: [%s:%d] for update from group [%s]",
-               serLoc.getServerName().c_str(), serLoc.getPort(),
-               serverGrp.c_str());
+               loc.getServerName().c_str(), loc.getPort(), serverGrp.c_str());
       ConnectionWrapper cw(conn);
-      createConnection(conn, serLoc.getServerName().c_str(), serLoc.getPort(),
+      createConnection(conn, loc.getServerName().c_str(), loc.getPort(),
                        sysProps.connectTimeout(), buffSize);
       auto request = std::make_shared<LocatorListRequest>(serverGrp);
       auto data =
@@ -406,24 +396,24 @@ GfErrType ThinClientLocatorHelper::updateLocators(
 
       auto response =
           std::dynamic_pointer_cast<LocatorListResponse>(di.readObject());
-      auto locators = response->getLocators();
-      if (locators.size() > 0) {
+      auto newLocators = response->getLocators();
+      if (!newLocators.empty()) {
         RandGen randGen;
-        std::random_shuffle(locators.begin(), locators.end(), randGen);
+        std::random_shuffle(newLocators.begin(), newLocators.end(), randGen);
       }
-      std::vector<ServerLocation> temp(m_locHostPort.begin(),
-                                       m_locHostPort.end());
-      m_locHostPort.clear();
-      m_locHostPort.insert(m_locHostPort.end(), locators.begin(),
-                           locators.end());
-      for (std::vector<ServerLocation>::iterator it = temp.begin();
-           it != temp.end(); it++) {
-        std::vector<ServerLocation>::iterator it1 =
-            std::find(m_locHostPort.begin(), m_locHostPort.end(), *it);
-        if (it1 == m_locHostPort.end()) {
-          m_locHostPort.push_back(*it);
+
+      for (const auto& oldLoc : locators) {
+        auto iter = std::find(newLocators.begin(), newLocators.end(), oldLoc);
+        if (iter == newLocators.end()) {
+          newLocators.push_back(oldLoc);
         }
       }
+
+      {
+        std::lock_guard<decltype(m_locatorLock)> guard{m_locatorLock};
+        m_Locators.swap(newLocators);
+      }
+
       return GF_NOERR;
     } catch (const AuthenticationRequiredException& excp) {
       throw excp;
