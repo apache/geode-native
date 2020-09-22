@@ -1,4 +1,4 @@
-##Message parsing tool for geode-native (gnmsg)
+## Message parsing tool for geode-native (gnmsg)
 Given a debug-level log file from a geode-native application, this script will decode all of the Geode protocol messages it can between client and server, and print them out as a list of JSON objects.
 
 ```
