@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+#include <future>
 #include <iostream>
 #include <thread>
 
@@ -198,21 +199,27 @@ TEST_F(SNITest, dropSNIProxyTest) {
                     .setPoolName("pool")
                     .create("jellyfish");
 
-  auto systemRVal = std::system("docker-compose pause");
+  auto systemRVal = std::system("docker pause haproxy");
   if (systemRVal == -1) {
     BOOST_LOG_TRIVIAL(error) << "std::system returned: " << systemRVal;
   }
 
-  region->put("1", "one");
+  auto f =
+      std::async(std::launch::async, [&region] { region->put("1", "one"); });
 
-  std::this_thread::sleep_for(std::chrono::seconds(17));
+  // Insure the put times out (default is 15 seconds).
+  std::this_thread::sleep_for(std::chrono::seconds(16));
 
-  systemRVal = std::system("docker-compose unpause");
+  systemRVal = std::system("docker unpause haproxy");
   if (systemRVal == -1) {
     BOOST_LOG_TRIVIAL(error) << "std::system returned: " << systemRVal;
   }
 
-  region->put("1", "one");
+  f.wait();
+
+  EXPECT_EQ(
+      std::dynamic_pointer_cast<CacheableString>(region->get("1"))->value(),
+      "one");
 
   cache.close();
 }
