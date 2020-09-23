@@ -372,6 +372,19 @@ def read_execute_function_message(properties, message_bytes, offset):
     (properties["FunctionName"], offset) = parse_region_part(message_bytes, offset)
     (properties["Arguments"], offset) = parse_object_part(message_bytes, offset)
 
+def parse_getall_optional_callback_arguments(message_bytes, offset):
+    (local_object, local_offset) = parse_object_part(message_bytes, offset)
+    if (local_object["IsObject"] == 0):
+        (local_object, local_offset) = parse_raw_int_part(message_bytes, offset)
+    return (local_object, local_offset)
+
+def read_get_all_70_message(properties, message_bytes, offset):
+    (properties["Region"], offset) = parse_region_part(message_bytes, offset)
+    (properties["KeyList"], offset) = parse_key_or_value(message_bytes, offset)
+    (properties["CallbackArguments"], offset) = parse_getall_optional_callback_arguments(message_bytes, offset)
+
+def read_key_set(properties, message_bytes, offset):
+    (properties["Region"], offset) = parse_region_part(message_bytes, offset)
 
 client_message_parsers = {
     "PUT": read_put_message,
@@ -386,6 +399,8 @@ client_message_parsers = {
     "EXECUTECQ_WITH_IR_MSG_TYPE": read_executecq_with_ir_msg_type_message,
     "STOPCQ_MSG_TYPE": read_stopcq_or_closecq_msg_type_message,
     "CLOSECQ_MSG_TYPE": read_stopcq_or_closecq_msg_type_message,
+    "GET_ALL_70": read_get_all_70_message,
+    "KEY_SET": read_key_set,
     "GET_PDX_ID_FOR_TYPE": read_get_pdx_id_for_type_message,
     "GET_FUNCTION_ATTRIBUTES": read_get_function_attributes_message,
     "EXECUTE_FUNCTION": read_execute_function_message,
