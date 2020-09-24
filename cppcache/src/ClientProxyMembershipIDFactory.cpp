@@ -35,7 +35,7 @@ ClientProxyMembershipIDFactory::ClientProxyMembershipIDFactory(
     : dsName_(std::move(dsName)) {
   static const auto alphabet = std::string(
       "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_");
-  static const auto numChars = alphabet.size() - 2;
+  static const auto numChars = static_cast<int>(alphabet.size()) - 2;
 
   std::random_device rd;
   std::default_random_engine rng(rd());
