@@ -89,7 +89,6 @@ void verifyGetAll(std::shared_ptr<Region> region, const char** _values,
 
   auto valuesMap = region->getAll(keys1, callBack);
   if (valuesMap.size() == keys1.size()) {
-    char buf[2048];
     for (const auto& iter : valuesMap) {
       const auto key = std::dynamic_pointer_cast<CacheableKey>(iter.first);
       const auto& mVal = iter.second;
