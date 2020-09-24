@@ -62,7 +62,9 @@ void runClientOperations(std::shared_ptr<Cache> cache,
       region->put(theKey, theValue);
       transactionManager->commit();
     } catch (...) {
-      transactionManager->rollback();
+      if (transactionManager->exists()) {
+        transactionManager->rollback();
+      }
     }
   }
 }
