@@ -89,20 +89,14 @@ void verifyGetAll(std::shared_ptr<Region> region, const char** _values,
 
   auto valuesMap = region->getAll(keys1, callBack);
   if (valuesMap.size() == keys1.size()) {
-    char buf[2048];
     for (const auto& iter : valuesMap) {
       const auto key = std::dynamic_pointer_cast<CacheableKey>(iter.first);
-      const auto actualKey = key->toString().c_str();
       const auto& mVal = iter.second;
       if (mVal != nullptr) {
-        const auto expectedVal = expected[actualKey].c_str();
-        const auto actualVal = mVal->toString().c_str();
-        sprintf(buf, "value from map %s , expected value %s ", actualVal,
-                expectedVal);
-        LOG(buf);
-        ASSERT(strcmp(actualVal, expectedVal) == 0, "value not matched");
+        LOG(std::string("Value from map ") + mVal->toString() + ", expected value " + expected[key->toString()]);
+        ASSERT(mVal->toString() == expected[key->toString()], "value not matched");
       } else {
-        ASSERT(strcmp(actualKey, "keyNotThere") == 0,
+        ASSERT(key->toString() == "keyNotThere",
                "keyNotThere value is not null");
       }
     }
