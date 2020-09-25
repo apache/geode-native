@@ -47,8 +47,8 @@ using apache::geode::client::RegionAttributes;
 using apache::geode::client::RegionAttributesFactory;
 using apache::geode::client::RegionShortcut;
 
-uint32_t numOfEnt;
-std::string sqlite_dir = "SqLiteRegionData";
+static uint32_t numOfEnt;
+static std::string sqlite_dir = "SqLiteRegionData";
 
 static constexpr char const *MAX_PAGE_COUNT = "MaxPageCount";
 static constexpr char const *PAGE_SIZE = "PageSize";

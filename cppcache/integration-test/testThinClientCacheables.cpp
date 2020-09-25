@@ -45,8 +45,8 @@ using apache::geode::client::internal::DSCode;
 using apache::geode::client::testing::CacheableWrapper;
 using apache::geode::client::testing::CacheableWrapperFactory;
 
-CacheHelper *cacheHelper = nullptr;
-bool isLocalServer = false;
+static CacheHelper *cacheHelper = nullptr;
+static bool isLocalServer = false;
 
 #if defined(WIN32)
 // because we run out of memory on our pune windows desktops
@@ -122,7 +122,7 @@ void checkGets(int maxKeys, DSCode keyTypeId, DSCode valTypeId,
   }
 }
 
-const char *regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
+static const char *regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
 
 const bool USE_ACK = true;
 const bool NO_ACK = false;

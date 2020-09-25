@@ -35,11 +35,11 @@ using apache::geode::client::CacheableString;
 using apache::geode::client::CacheHelper;
 using apache::geode::client::Properties;
 
-CacheHelper *cacheHelper = nullptr;
-bool isLocalServer = false;
+static CacheHelper *cacheHelper = nullptr;
+static bool isLocalServer = false;
 
 static bool isLocator = false;
-const char *locatorsG =
+static const char *locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 #include "LocatorHelper.hpp"
 static int clientWithRedundancy = 0;
@@ -353,12 +353,12 @@ void doNetsearch(const char *name, const char *key, const char *value) {
   LOG("Netsearch complete.");
 }
 
-const char *keys[] = {"Key-1", "Key-2", "Key-3", "Key-4"};
-const char *vals[] = {"Value-1", "Value-2", "Value-3", "Value-4"};
-const char *nvals[] = {"New Value-1", "New Value-2", "New Value-3",
-                       "New Value-4"};
+static const char *keys[] = {"Key-1", "Key-2", "Key-3", "Key-4"};
+static const char *vals[] = {"Value-1", "Value-2", "Value-3", "Value-4"};
+static const char *nvals[] = {"New Value-1", "New Value-2", "New Value-3",
+                              "New Value-4"};
 
-const char *regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
+static const char *regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
 
 const bool USE_ACK = true;
 const bool NO_ACK = false;

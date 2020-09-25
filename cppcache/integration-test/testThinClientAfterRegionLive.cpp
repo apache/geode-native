@@ -32,7 +32,7 @@ static bool isLocalServer = true;
 static int numberOfLocators = 1;
 static bool isRegionLive[4] = {false, false, false, false};
 static bool isRegionDead[4] = {false, false, false, false};
-const char *locatorsG =
+static const char *locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 
 class DisconnectCacheListioner : public CacheListener {
@@ -52,10 +52,10 @@ class DisconnectCacheListioner : public CacheListener {
   }
 };
 
-auto cptr1 = std::make_shared<DisconnectCacheListioner>(0);
-auto cptr2 = std::make_shared<DisconnectCacheListioner>(1);
-auto cptr3 = std::make_shared<DisconnectCacheListioner>(2);
-auto cptr4 = std::make_shared<DisconnectCacheListioner>(3);
+static auto cptr1 = std::make_shared<DisconnectCacheListioner>(0);
+static auto cptr2 = std::make_shared<DisconnectCacheListioner>(1);
+static auto cptr3 = std::make_shared<DisconnectCacheListioner>(2);
+static auto cptr4 = std::make_shared<DisconnectCacheListioner>(3);
 
 #include "LocatorHelper.hpp"
 

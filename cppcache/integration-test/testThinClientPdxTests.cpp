@@ -103,13 +103,13 @@ using apache::geode::client::LocalRegion;
 using apache::geode::client::PdxInstance;
 using apache::geode::client::UserFunctionExecutionException;
 
-bool isLocator = false;
-bool isLocalServer = false;
+static bool isLocator = false;
+static bool isLocalServer = false;
 
-const char *poolNames[] = {"Pool1", "Pool2", "Pool3"};
-const char *locHostPort =
+static const char *poolNames[] = {"Pool1", "Pool2", "Pool3"};
+static const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
-bool isPoolConfig = false;  // To track if pool case is running
+static bool isPoolConfig = false;  // To track if pool case is running
 // const char * qRegionNames[] = { "Portfolios", "Positions", "Portfolios2",
 // "Portfolios3" };
 static bool m_useWeakHashMap = false;

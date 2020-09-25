@@ -143,7 +143,7 @@ class TestException {
 };
 
 // std::list holding names of all tests that failed.
-std::list<std::string> failed;
+static std::list<std::string> failed;
 
 class TestOp {
  public:
@@ -178,7 +178,7 @@ class SuiteMember {
 };
 
 // std::list holding all registered TestOp instances.
-std::list<SuiteMember> tests;
+static std::list<SuiteMember> tests;
 
 void TestOp::init() {
   m_name = this->typeName();
@@ -241,7 +241,7 @@ int main(int /*argc*/, char** /*argv*/)
 #define END_TEST(x) \
   }                 \
   }                 \
-  a_##x;
+  static a_##x;
 
 template <class _Expected, class _Actual>
 void _ASSERT_EQ(const _Expected& expected, const _Actual& actual, int line,

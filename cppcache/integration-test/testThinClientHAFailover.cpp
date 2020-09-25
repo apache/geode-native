@@ -30,10 +30,10 @@ using apache::geode::client::CacheableString;
 using apache::geode::client::CacheHelper;
 using apache::geode::client::Properties;
 
-bool isLocalServer = false;
+static bool isLocalServer = false;
 
-CacheHelper *cacheHelper = nullptr;
-int g_redundancyLevel = 0;
+static CacheHelper *cacheHelper = nullptr;
+static int g_redundancyLevel = 0;
 
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
@@ -42,7 +42,7 @@ int g_redundancyLevel = 0;
 
 static bool isLocator = false;
 static int numberOfLocators = 1;
-const char *locatorsG =
+static const char *locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 
 void initClient(int redundancyLevel) {
@@ -293,12 +293,12 @@ void doNetsearch(const char *name, const char *key, const char *value) {
   LOG("Netsearch complete.");
 }
 
-const char *keys[] = {"Key-1", "Key-2", "Key-3", "Key-4"};
-const char *vals[] = {"Value-1", "Value-2", "Value-3", "Value-4"};
-const char *nvals[] = {"New Value-1", "New Value-2", "New Value-3",
-                       "New Value-4"};
+static const char *keys[] = {"Key-1", "Key-2", "Key-3", "Key-4"};
+static const char *vals[] = {"Value-1", "Value-2", "Value-3", "Value-4"};
+static const char *nvals[] = {"New Value-1", "New Value-2", "New Value-3",
+                              "New Value-4"};
 
-const char *regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
+static const char *regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
 
 const bool USE_ACK = true;
 void initClientAndRegion(int redundancy) {

@@ -65,15 +65,13 @@ using PdxTests::PdxTypes7;
 using PdxTests::PdxTypes8;
 using PdxTests::PdxTypes9;
 
-bool isLocator = false;
-bool isLocalServer = false;
+static bool isLocator = false;
+static bool isLocalServer = false;
 
-const char *poolNames[] = {"Pool1", "Pool2", "Pool3"};
-const char *locHostPort =
+static const char *poolNames[] = {"Pool1", "Pool2", "Pool3"};
+static const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
-bool isPoolConfig = false;  // To track if pool case is running
-// const char * qRegionNames[] = { "Portfolios", "Positions", "Portfolios2",
-// "Portfolios3" };
+static bool isPoolConfig = false;  // To track if pool case is running
 
 void initClient(const bool isthinClient, bool isPdxIgnoreUnreadFields,
                 const std::shared_ptr<Properties> &configPtr = nullptr) {

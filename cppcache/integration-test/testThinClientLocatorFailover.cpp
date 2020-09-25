@@ -19,10 +19,10 @@
 
 using apache::geode::client::NoAvailableLocatorsException;
 
-bool isLocalServer = false;
-bool isLocator = false;
+static bool isLocalServer = false;
+static bool isLocator = false;
 
-const char *locatorsG =
+static const char *locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 3);
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2

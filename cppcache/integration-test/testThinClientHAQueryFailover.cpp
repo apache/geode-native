@@ -50,12 +50,12 @@ using apache::geode::client::SelectResults;
 using testobject::Portfolio;
 using testobject::Position;
 
-CacheHelper *cacheHelper = nullptr;
+static CacheHelper *cacheHelper = nullptr;
 static bool isLocalServer = false;
 static bool isLocator = false;
 static int numberOfLocators = 1;
 
-const char *locatorsG =
+static const char *locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 
 class KillServerThread : public ACE_Task_Base {
@@ -138,12 +138,12 @@ void createRegion(const char *name, bool ackMode,
   LOG("Region created.");
 }
 
-const char *regionNames[] = {"Portfolios", "Positions"};
+static const char *regionNames[] = {"Portfolios", "Positions"};
 
 const bool USE_ACK = true;
 const bool NO_ACK = false;
 
-KillServerThread *kst = nullptr;
+static KillServerThread *kst = nullptr;
 
 void initClientAndRegion(int redundancy) {
   // std::shared_ptr<Properties> pp  = Properties::create();

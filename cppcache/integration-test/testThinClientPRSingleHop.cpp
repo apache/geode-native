@@ -53,11 +53,11 @@ using apache::geode::client::internal::DSCode;
 using apache::geode::client::testing::CacheableWrapper;
 using apache::geode::client::testing::CacheableWrapperFactory;
 
-bool isLocalServer = false;
+static bool isLocalServer = false;
 const std::string endPoints = CacheHelper::getTcrEndpoints(isLocalServer, 3);
 
 static bool isLocator = false;
-const char *locatorsG =
+static const char *locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
 std::string convertHostToCanonicalForm(const char *endpoints) {
@@ -217,7 +217,7 @@ std::vector<std::string> storeEndPoints(const std::string points) {
   return endpointNames;
 }
 
-std::vector<std::string> endpointNames = storeEndPoints(endPoints);
+static std::vector<std::string> endpointNames = storeEndPoints(endPoints);
 
 DUNIT_TASK_DEFINITION(SERVER1, CreateServer1)
   {

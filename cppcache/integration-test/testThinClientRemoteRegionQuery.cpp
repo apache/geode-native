@@ -45,15 +45,15 @@ using testData::unsupported;
 using apache::geode::client::IllegalStateException;
 using apache::geode::client::QueryException;
 
-bool isLocalServer = false;
-bool isLocator = false;
+static bool isLocalServer = false;
+static bool isLocator = false;
 
-const char* poolNames[] = {"Pool1", "Pool2", "Pool3"};
-const char* locHostPort =
+static const char* poolNames[] = {"Pool1", "Pool2", "Pool3"};
+static const char* locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 static bool m_isPdx = false;
-const char* qRegionNames[] = {"Portfolios", "Positions", "Portfolios2",
-                              "Portfolios3"};
+static const char* qRegionNames[] = {"Portfolios", "Positions", "Portfolios2",
+                                     "Portfolios3"};
 
 DUNIT_TASK_DEFINITION(LOCATOR, StartLocator)
   {

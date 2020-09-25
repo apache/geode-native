@@ -37,8 +37,8 @@ using apache::geode::client::EntryEvent;
 using apache::geode::client::Exception;
 using apache::geode::client::FixedPartitionResolver;
 
-const char *partitionRegionNames[] = {"R1", "R2", "R3"};
-const char *partitionRegionName;
+static const char *partitionRegionNames[] = {"R1", "R2", "R3"};
+static const char *partitionRegionName;
 
 class CustomFixedPartitionResolver1 : public FixedPartitionResolver {
  public:
@@ -86,7 +86,7 @@ class CustomFixedPartitionResolver1 : public FixedPartitionResolver {
     }
   }
 };
-auto cptr1 = std::make_shared<CustomFixedPartitionResolver1>();
+static auto cptr1 = std::make_shared<CustomFixedPartitionResolver1>();
 
 class CustomFixedPartitionResolver2 : public FixedPartitionResolver {
  public:
@@ -134,7 +134,7 @@ class CustomFixedPartitionResolver2 : public FixedPartitionResolver {
     }
   }
 };
-auto cptr2 = std::make_shared<CustomFixedPartitionResolver2>();
+static auto cptr2 = std::make_shared<CustomFixedPartitionResolver2>();
 
 class CustomFixedPartitionResolver3 : public FixedPartitionResolver {
  public:
@@ -173,17 +173,17 @@ class CustomFixedPartitionResolver3 : public FixedPartitionResolver {
     }
   }
 };
-auto cptr3 = std::make_shared<CustomFixedPartitionResolver3>();
+static auto cptr3 = std::make_shared<CustomFixedPartitionResolver3>();
 
 #define CLIENT1 s1p1
 #define SERVER1 s2p1
 #define SERVER2 s1p2
 #define SERVER3 s2p2
 
-bool isLocalServer = false;
+static bool isLocalServer = false;
 
 static bool isLocator = false;
-const char *locatorsG =
+static const char *locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
 std::vector<char *> storeEndPoints(const char *points) {

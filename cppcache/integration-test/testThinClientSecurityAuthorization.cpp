@@ -49,9 +49,9 @@ using apache::geode::client::testframework::security::OP_UNREGISTER_INTEREST;
 using apache::geode::client::testframework::security::OP_UPDATE;
 using apache::geode::client::testframework::security::opCodeList;
 
-const char *locHostPort =
+static const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
-std::shared_ptr<CredentialGenerator> credentialGeneratorHandler;
+static std::shared_ptr<CredentialGenerator> credentialGeneratorHandler;
 
 std::string getXmlPath() {
   char xmlPath[1000] = {'\0'};
@@ -90,18 +90,20 @@ void initCredentialGenerator() {
   if (loopNum > 3) loopNum = 1;
 }
 
-opCodeList::value_type tmpRArr[] = {
+static opCodeList::value_type tmpRArr[] = {
     OP_GET,     OP_GETALL,      OP_REGISTER_INTEREST, OP_UNREGISTER_INTEREST,
     OP_KEY_SET, OP_CONTAINS_KEY};
 
-opCodeList::value_type tmpWArr[] = {OP_CREATE,  OP_UPDATE,     OP_PUTALL,
-                                    OP_DESTROY, OP_INVALIDATE, OP_REGION_CLEAR};
+static opCodeList::value_type tmpWArr[] = {OP_CREATE,     OP_UPDATE,
+                                           OP_PUTALL,     OP_DESTROY,
+                                           OP_INVALIDATE, OP_REGION_CLEAR};
 
-opCodeList::value_type tmpAArr[] = {OP_CREATE,       OP_UPDATE,
-                                    OP_DESTROY,      OP_INVALIDATE,
-                                    OP_REGION_CLEAR, OP_REGISTER_INTEREST,
-                                    OP_GET,          OP_QUERY,
-                                    OP_REGISTER_CQ,  OP_EXECUTE_FUNCTION};
+static opCodeList::value_type tmpAArr[] = {
+    OP_CREATE,       OP_UPDATE,
+    OP_DESTROY,      OP_INVALIDATE,
+    OP_REGION_CLEAR, OP_REGISTER_INTEREST,
+    OP_GET,          OP_QUERY,
+    OP_REGISTER_CQ,  OP_EXECUTE_FUNCTION};
 
 #define HANDLE_NO_NOT_AUTHORIZED_EXCEPTION                        \
   catch (const apache::geode::client::NotAuthorizedException &) { \
@@ -128,7 +130,7 @@ opCodeList::value_type tmpAArr[] = {OP_CREATE,       OP_UPDATE,
 #define WRITER_CLIENT s1p2
 #define READER_CLIENT s2p1
 
-const char *regionNamesAuth[] = {"DistRegionAck"};
+static const char *regionNamesAuth[] = {"DistRegionAck"};
 
 void initClientAuth(char UserType) {
   auto config = Properties::create();
@@ -148,6 +150,7 @@ void initClientAuth(char UserType) {
     case 'A':
       credentialGeneratorHandler->getAllowedCredentialsForOps(ad, config,
                                                               nullptr);
+      break;
     default:
       break;
   }

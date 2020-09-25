@@ -32,7 +32,7 @@ using apache::geode::client::CacheableKey;
 using apache::geode::client::CacheableString;
 using apache::geode::client::CacheHelper;
 
-CacheHelper *cacheHelper = nullptr;
+static CacheHelper *cacheHelper = nullptr;
 
 #include "locator_globals.hpp"
 #include "LocatorHelper.hpp"
@@ -280,13 +280,13 @@ void doNetsearch(const char *name, const char *key, const char *value) {
   LOG("Netsearch complete.");
 }
 
-const char *regex23 = "Key-[2-3]";
-const char *regexWildcard = "Key-.*";
-const char *keys[] = {"Key-1", "Key-2", "Key-3", "Key-4"};
-const char *regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
-const char *vals[] = {"Value-1", "Value-2", "Value-3", "Value-4"};
-const char *nvals[] = {"New Value-1", "New Value-2", "New Value-3",
-                       "New Value-4"};
+static const char *regex23 = "Key-[2-3]";
+static const char *regexWildcard = "Key-.*";
+static const char *keys[] = {"Key-1", "Key-2", "Key-3", "Key-4"};
+static const char *regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
+static const char *vals[] = {"Value-1", "Value-2", "Value-3", "Value-4"};
+static const char *nvals[] = {"New Value-1", "New Value-2", "New Value-3",
+                              "New Value-4"};
 
 const bool USE_ACK = true;
 const bool NO_ACK = false;

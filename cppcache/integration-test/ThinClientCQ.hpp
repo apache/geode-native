@@ -28,7 +28,7 @@
 static bool isLocator = false;
 static bool isLocalServer = false;
 static int numberOfLocators = 1;
-const char* locatorsG =
+static const char* locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 
 void createRegionForCQ(const char* name, bool ackMode,

@@ -56,15 +56,15 @@ using apache::geode::client::IllegalStateException;
 using apache::geode::client::QueryService;
 using apache::geode::client::RegionShortcut;
 
-const char *durableIds[] = {"DurableId1", "DurableId2"};
+static const char *durableIds[] = {"DurableId1", "DurableId2"};
 
-const char *cqName = "MyCq";
-const char *durableCQNamesClient1[] = {
+static const char *cqName = "MyCq";
+static const char *durableCQNamesClient1[] = {
     "durableCQ1Client1", "durableCQ2Client1", "durableCQ3Client1",
     "durableCQ4Client1", "durableCQ5Client1", "durableCQ6Client1",
     "durableCQ7Client1", "durableCQ8Client1"};
 
-const char *durableCQNamesClient2[] = {
+static const char *durableCQNamesClient2[] = {
     "durableCQ1Client2", "durableCQ2Client2", "durableCQ3Client2",
     "durableCQ4Client2", "durableCQ5Client2", "durableCQ6Client2",
     "durableCQ7Client2", "durableCQ8Client2"};
@@ -122,7 +122,10 @@ class MyCqListener1 : public CqListener {
         opStr = "UPDATE";
         break;
       }
-      default:
+      case CqOperation::OP_TYPE_INVALID:
+      case CqOperation::OP_TYPE_INVALIDATE:
+      case CqOperation::OP_TYPE_REGION_CLEAR:
+      case CqOperation::OP_TYPE_MARKER:
         break;
     }
     LOGINFO("MyCqListener1::OnEvent called with %s, key[%s], value=(%s)", opStr,
@@ -137,12 +140,12 @@ class MyCqListener1 : public CqListener {
 };
 int MyCqListener1::m_cntEvents = 0;
 
-const char *regionNamesCq[] = {"Portfolios", "Positions", "Portfolios2",
-                               "Portfolios3"};
+static const char *regionNamesCq[] = {"Portfolios", "Positions", "Portfolios2",
+                                      "Portfolios3"};
 
-int onEventCount = 0;
-int onErrorCount = 0;
-int onEventCountBefore = 0;
+static int onEventCount = 0;
+static int onErrorCount = 0;
+static int onEventCountBefore = 0;
 class MyCqListener : public CqListener {
   void onEvent(const CqEvent &) override {
     //    LOG("MyCqListener::OnEvent called");

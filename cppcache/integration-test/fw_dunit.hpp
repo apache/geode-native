@@ -175,7 +175,7 @@ END_TASK(validate)
   }                                               \
   }                                               \
   }                                               \
-  SYMJOIN(a_, __LINE__);
+  static SYMJOIN(a_, __LINE__);
 #define ENDTASK                                   \
   }                                               \
   catch (apache::geode::client::Exception & ex) { \
@@ -193,7 +193,7 @@ END_TASK(validate)
   }                                               \
   }                                               \
   }                                               \
-  SYMJOIN(a_, __LINE__);
+  static SYMJOIN(a_, __LINE__);
 
 #define DUNIT_TASK_DEFINITION(x, y)                            \
   class DCLASSDEF(y) : virtual public dunit::Task {            \
@@ -246,7 +246,7 @@ END_TASK(validate)
   }                                               \
   }                                               \
   }                                               \
-  SYMJOIN(a_, __LINE__);
+  static SYMJOIN(a_, __LINE__);
 
 // identifiers for the different processes.
 #define s1p1 1

@@ -90,12 +90,12 @@ void setCacheListener(const char *regName,
   auto attrMutator = reg->getAttributesMutator();
   attrMutator->setCacheListener(monitor);
 }
-std::shared_ptr<OperMonitor> mon1C1 = nullptr;
-std::shared_ptr<OperMonitor> mon2C1 = nullptr;
-std::shared_ptr<OperMonitor> mon1C2 = nullptr;
-std::shared_ptr<OperMonitor> mon2C2 = nullptr;
+static std::shared_ptr<OperMonitor> mon1C1 = nullptr;
+static std::shared_ptr<OperMonitor> mon2C1 = nullptr;
+static std::shared_ptr<OperMonitor> mon1C2 = nullptr;
+static std::shared_ptr<OperMonitor> mon2C2 = nullptr;
 
-const char *regions[] = {"ConflatedRegion", "NonConflatedRegion"};
+static const char *regions[] = {"ConflatedRegion", "NonConflatedRegion"};
 
 #include "ThinClientDurableInit.hpp"
 #include "ThinClientTasks_C2S2.hpp"

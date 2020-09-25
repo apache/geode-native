@@ -53,16 +53,16 @@ using apache::geode::client::IllegalStateException;
 using apache::geode::client::QueryService;
 using apache::geode::client::TimeoutException;
 
-bool isLocalServer = false;
-bool isLocator = false;
-const char *poolNames[] = {"Pool1", "Pool2", "Pool3"};
-const char *locHostPort =
+static bool isLocalServer = false;
+static bool isLocator = false;
+static const char *poolNames[] = {"Pool1", "Pool2", "Pool3"};
+static const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
-const char *qRegionNames[] = {"Portfolios", "Positions", "Portfolios2",
-                              "Portfolios3"};
+static const char *qRegionNames[] = {"Portfolios", "Positions", "Portfolios2",
+                                     "Portfolios3"};
 
-bool isPoolConfig = false;  // To track if pool case is running
+static bool isPoolConfig = false;  // To track if pool case is running
 static bool m_isPdx = false;
 void stepOne() {
   initClient(true);

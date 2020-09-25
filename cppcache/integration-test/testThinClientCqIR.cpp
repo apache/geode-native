@@ -48,7 +48,7 @@ using apache::geode::client::Exception;
 using apache::geode::client::IllegalStateException;
 using apache::geode::client::QueryService;
 
-const char *cqName = "MyCq";
+static const char *cqName = "MyCq";
 
 void initClientCq(const bool isthinClient) {
   if (cacheHelper == nullptr) {
@@ -73,8 +73,8 @@ void initClientCq(const bool isthinClient) {
     // ignore exception
   }
 }
-const char *regionNamesCq[] = {"Portfolios", "Positions", "Portfolios2",
-                               "Portfolios3"};
+static const char *regionNamesCq[] = {"Portfolios", "Positions", "Portfolios2",
+                                      "Portfolios3"};
 
 DUNIT_TASK_DEFINITION(SERVER1, CreateLocator)
   {
