@@ -48,6 +48,7 @@ add_executable(cpp-integration-test
   TransactionCleaningTest.cpp
   WanDeserializationTest.cpp
   PdxInstanceFactoryTest.cpp
+  CacheWriterTest.cpp
 )
 
 target_compile_definitions(cpp-integration-test
