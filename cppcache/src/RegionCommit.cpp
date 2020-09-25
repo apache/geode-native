@@ -51,7 +51,7 @@ void RegionCommit::apply(Cache* cache) {
   for (auto& entryOp : m_farSideEntryOps) {
     auto region = cache->getRegion(m_regionPath->value().c_str());
     if (region == nullptr && m_parentRegionPath != nullptr) {
-      std::string parentRegionPath = m_parentRegionPath->value().c_str();
+      const auto parentRegionPath = m_parentRegionPath->value();
       if (!parentRegionPath.empty()) {
         region = cache->getRegion(parentRegionPath);
       }
