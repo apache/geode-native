@@ -44,10 +44,10 @@ using apache::geode::client::HashMapOfCacheable;
 
 using apache::geode::client::testing::TallyListener;
 
-static std::shared_ptr<TallyListener> reg1Listener1;
-static bool isLocalServer = false;
+std::shared_ptr<TallyListener> reg1Listener1;
+bool isLocalServer = false;
 static bool isLocator = false;
-static const char *locatorsG =
+const char *locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
 void setCacheListener(const char *regName,

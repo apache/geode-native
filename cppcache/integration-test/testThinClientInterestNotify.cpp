@@ -138,13 +138,12 @@ void setCacheListener(const char *regName,
 // RegisterInterest API calls,
 // RegionOther means no interest registered so no events should arrive except
 // invalidates when NBS == false.
-static std::shared_ptr<EventListener> clientTrueRegionTrue = nullptr;
-static std::shared_ptr<EventListener> clientTrueRegionFalse = nullptr;
-static std::shared_ptr<EventListener> clientTrueRegionOther = nullptr;
+std::shared_ptr<EventListener> clientTrueRegionTrue = nullptr;
+std::shared_ptr<EventListener> clientTrueRegionFalse = nullptr;
+std::shared_ptr<EventListener> clientTrueRegionOther = nullptr;
 
-static const char *regions[] = {"RegionTrue", "RegionFalse", "RegionOther"};
-static const char *keysForRegex[] = {"key-regex-1", "key-regex-2",
-                                     "key-regex-3"};
+const char *regions[] = {"RegionTrue", "RegionFalse", "RegionOther"};
+const char *keysForRegex[] = {"key-regex-1", "key-regex-2", "key-regex-3"};
 
 #include "ThinClientDurableInit.hpp"
 #include "ThinClientTasks_C2S2.hpp"

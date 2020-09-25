@@ -28,6 +28,8 @@ using apache::geode::client::CacheListener;
 
 using apache::geode::client::testing::TallyListener;
 
+std::shared_ptr<CacheListener> nullListenerPtr;
+
 class RegionWrapper {
  public:
   explicit RegionWrapper(const char *name)
@@ -103,11 +105,11 @@ class RegionWrapper {
 };
 
 static int numberOfLocators = 1;
-static bool isLocalServer = true;
-static bool isLocator = true;
-static const char *locHostPort =
+bool isLocalServer = true;
+bool isLocator = true;
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
-static std::shared_ptr<TallyListener> listener;
+std::shared_ptr<TallyListener> listener;
 
 #define REGIONNAME "DistRegionAck"
 DUNIT_TASK_DEFINITION(s1p1, Setup)

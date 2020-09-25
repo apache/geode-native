@@ -42,16 +42,17 @@ timeout period and all the events are lost.
 #define CLIENT s1p1
 #define SERVER_SET1 s1p2
 #define SERVER_SET2 s2p1
+#define SERVER_SET3 s2p2
 #define SERVER1 s1p2
 
-static bool isLocalServerList = false;
+bool isLocalServerList = false;
 const std::string endPointsList = CacheHelper::getTcrEndpoints(isLocalServerList, 4);
-static const char* durableId = "DurableId";
+const char* durableId = "DurableId";
 
 #include "ThinClientDurableInit.hpp"
 #include "ThinClientTasks_C2S2.hpp"
 
-static const char* g_Locators = locatorsG;
+const char* g_Locators = locatorsG;
 
 std::string getServerEndPoint(int instance) {
   char instanceStr[16];

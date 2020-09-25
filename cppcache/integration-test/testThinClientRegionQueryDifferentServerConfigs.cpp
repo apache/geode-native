@@ -41,14 +41,14 @@ using apache::geode::client::Query;
 using apache::geode::client::QueryException;
 using apache::geode::client::QueryService;
 
-static bool isLocalServer = false;
-static bool isLocator = false;
-static const char *poolNames[] = {"Pool1", "Pool2", "Pool3"};
-static const char *locHostPort =
+bool isLocalServer = false;
+bool isLocator = false;
+const char *poolNames[] = {"Pool1", "Pool2", "Pool3"};
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
-static const char *qRegionNames[] = {"Portfolios", "Positions"};
-static const char *sGNames[] = {"ServerGroup1", "ServerGroup2"};
+const char *qRegionNames[] = {"Portfolios", "Positions"};
+const char *sGNames[] = {"ServerGroup1", "ServerGroup2"};
 
 void initClient() {
   initClient(true);

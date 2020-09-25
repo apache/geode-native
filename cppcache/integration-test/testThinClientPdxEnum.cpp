@@ -26,13 +26,13 @@
 
 using testobject::PdxEnumTestClass;
 
-static bool isLocalServer = false;
+bool isLocalServer = false;
 
 #define CLIENT1 s1p1
 #define SERVER1 s2p1
 static bool isLocator = false;
 
-static const char *locatorsG =
+const char *locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
 DUNIT_TASK_DEFINITION(CLIENT1, SetupClientPoolLoc)

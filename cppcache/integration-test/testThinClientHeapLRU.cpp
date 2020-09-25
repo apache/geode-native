@@ -38,7 +38,7 @@ using apache::geode::client::internal::DSCode;
 using apache::geode::client::testing::CacheableWrapper;
 using apache::geode::client::testing::CacheableWrapperFactory;
 
-static const char *_regionNames[] = {"DistRegionAck"};
+const char *_regionNames[] = {"DistRegionAck"};
 
 void createOnekEntries() {
   CacheableHelper::registerBuiltins();

@@ -54,15 +54,15 @@ using apache::geode::client::CacheableVector;
 using apache::geode::client::IllegalStateException;
 using apache::geode::client::QueryService;
 
-static bool isLocator = false;
-static bool isLocalServer = false;
+bool isLocator = false;
+bool isLocalServer = false;
 
-static const char *poolNames[] = {"Pool1", "Pool2", "Pool3"};
-static const char *locHostPort =
+const char *poolNames[] = {"Pool1", "Pool2", "Pool3"};
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
-static bool isPoolConfig = false;  // To track if pool case is running
-static const char *qRegionNames[] = {"Portfolios", "Positions", "Portfolios2",
-                                     "Portfolios3"};
+bool isPoolConfig = false;  // To track if pool case is running
+const char *qRegionNames[] = {"Portfolios", "Positions", "Portfolios2",
+                              "Portfolios3"};
 static bool m_isPdx = false;
 void stepOne() {
   // Create just one pool and attach all regions to that.

@@ -25,15 +25,15 @@
 #define LOCATOR1 s2p1
 #define SERVER s2p2
 
-static bool isLocalServer = false;
-static bool isLocator = false;
+bool isLocalServer = false;
+bool isLocator = false;
 
-static const char *locHostPort =
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
-static const char *poolRegNames[] = {"PoolRegion1", "PoolRegion2"};
-static const char *poolName = "__TEST_POOL1__";
+const char *poolRegNames[] = {"PoolRegion1", "PoolRegion2"};
+const char *poolName = "__TEST_POOL1__";
 
-static const char *serverGroup = "ServerGroup1";
+const char *serverGroup = "ServerGroup1";
 
 DUNIT_TASK(LOCATOR1, StartLocator1)
   {

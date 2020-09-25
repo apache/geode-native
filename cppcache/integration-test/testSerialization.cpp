@@ -38,9 +38,9 @@ using apache::geode::client::DataInput;
 using apache::geode::client::DataOutput;
 using apache::geode::client::DataSerializable;
 
-static int32_t g_classIdToReturn = 0x04;
-static int32_t g_classIdToReturn2 = 0x1234;
-static int32_t g_classIdToReturn4 = 0x123456;
+int32_t g_classIdToReturn = 0x04;
+int32_t g_classIdToReturn2 = 0x1234;
+int32_t g_classIdToReturn4 = 0x123456;
 
 template <class T>
 std::shared_ptr<T> duplicate(const std::shared_ptr<T> &orig) {
@@ -134,7 +134,7 @@ class OtherType : public DataSerializable {
 
 #define Sender s1p1
 #define Receiver s1p2
-static std::shared_ptr<Region> regionPtr;
+std::shared_ptr<Region> regionPtr;
 
 DUNIT_TASK(Receiver, SetupR)
   {

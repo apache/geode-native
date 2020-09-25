@@ -28,14 +28,13 @@
 #define LOCATOR s2p1
 #define SERVERS s2p2
 
-static bool isLocalServer = false;
-static bool isLocator = false;
-static const char *locHostPort =
+bool isLocalServer = false;
+bool isLocator = false;
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
-static const char *poolRegNames[] = {"PoolRegion1", "PoolRegion2",
-                                     "PoolRegion3"};
-static const char *poolNames[] = {"Pool1", "Pool2", "Pool3"};
-static const char *sGNames[] = {"ServerGroup1", "ServerGroup2", "ServerGroup3"};
+const char *poolRegNames[] = {"PoolRegion1", "PoolRegion2", "PoolRegion3"};
+const char *poolNames[] = {"Pool1", "Pool2", "Pool3"};
+const char *sGNames[] = {"ServerGroup1", "ServerGroup2", "ServerGroup3"};
 
 void feedEntries(int keyIndex, bool newValue = false, bool update = false) {
   if (!update) {

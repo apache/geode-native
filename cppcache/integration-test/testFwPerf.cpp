@@ -17,7 +17,7 @@
 
 #include "fw_dunit.hpp"
 
-static perf::PerfSuite perfSuite("FwPerf");
+perf::PerfSuite perfSuite("FwPerf");
 
 class LocalPutTask : public perf::Thread {
  private:

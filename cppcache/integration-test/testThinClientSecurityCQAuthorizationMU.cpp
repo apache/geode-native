@@ -53,20 +53,19 @@ using apache::geode::client::Exception;
 using apache::geode::client::IllegalStateException;
 using apache::geode::client::QueryService;
 
-static const char *locHostPort =
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
-static std::shared_ptr<CredentialGenerator> credentialGeneratorHandler;
+std::shared_ptr<CredentialGenerator> credentialGeneratorHandler;
 #define CLIENT1 s1p1
 #define SERVER1 s2p1
 #define CLIENT2 s1p2
 
 #define MAX_LISTNER 8
 
-static const char *cqNames[MAX_LISTNER] = {"MyCq_0", "MyCq_1", "MyCq_2",
-                                           "MyCq_3", "MyCq_4", "MyCq_5",
-                                           "MyCq_6", "MyCq_7"};
+const char *cqNames[MAX_LISTNER] = {"MyCq_0", "MyCq_1", "MyCq_2", "MyCq_3",
+                                    "MyCq_4", "MyCq_5", "MyCq_6", "MyCq_7"};
 
-static const char *queryStrings[MAX_LISTNER] = {
+const char *queryStrings[MAX_LISTNER] = {
     "select * from /Portfolios p where p.ID < 1",
     "select * from /Portfolios p where p.ID < 2",
     "select * from /Portfolios p where p.ID = 2",
@@ -76,8 +75,8 @@ static const char *queryStrings[MAX_LISTNER] = {
     "select * from /Portfolios p where p.ID = 6",
     "select * from /Portfolios p where p.ID = 7"};
 
-static const char *regionNamesCq[] = {"Portfolios", "Positions", "Portfolios2",
-                                      "Portfolios3"};
+const char *regionNamesCq[] = {"Portfolios", "Positions", "Portfolios2",
+                               "Portfolios3"};
 
 class MyCqListener : public CqListener {
   uint8_t m_id;
@@ -117,10 +116,7 @@ class MyCqListener : public CqListener {
       case CqOperation::OP_TYPE_DESTROY:
         m_numDeletes++;
         break;
-      case CqOperation::OP_TYPE_INVALID:
-      case CqOperation::OP_TYPE_INVALIDATE:
-      case CqOperation::OP_TYPE_REGION_CLEAR:
-      case CqOperation::OP_TYPE_MARKER:
+      default:
         break;
     }
     printf(" in create = %d, update = %d , delete = %d ", m_numInserts,
@@ -155,7 +151,7 @@ void initCredentialGenerator() {
     FAIL("credentialGeneratorHandler is nullptr");
   }
 }
-static std::shared_ptr<Properties> userCreds;
+std::shared_ptr<Properties> userCreds;
 void initClientCq(const bool isthinClient) {
   userCreds = Properties::create();
   auto config = Properties::create();

@@ -71,10 +71,10 @@ using apache::geode::client::testframework::BBNamingContextServer;
 #define __DUNIT_NO_MAIN__
 #include "fw_dunit.hpp"
 
-static ACE_TCHAR *g_programName = nullptr;
-static uint32_t g_coordinatorPid = 0;
+ACE_TCHAR *g_programName = nullptr;
+uint32_t g_coordinatorPid = 0;
 
-static ClientCleanup gClientCleanup;
+ClientCleanup gClientCleanup;
 
 namespace dunit {
 

@@ -32,17 +32,17 @@
 using apache::geode::client::Exception;
 using apache::geode::client::IllegalStateException;
 
-static bool isLocalServer = false;
-static bool isLocator = false;
+bool isLocalServer = false;
+bool isLocator = false;
 
-static const char *locHostPort =
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
-static const char *poolRegNames[] = {"PoolRegion1"};
-static const char *poolName = "__TEST_POOL1__";
-static const char *poolName1 = "clientPool";
+const char *poolRegNames[] = {"PoolRegion1"};
+const char *poolName = "__TEST_POOL1__";
+const char *poolName1 = "clientPool";
 
-static const char *serverGroup = "ServerGroup1";
-static std::shared_ptr<Cache> cachePtr;
+const char *serverGroup = "ServerGroup1";
+std::shared_ptr<Cache> cachePtr;
 
 class putThread : public ACE_Task_Base {
  private:

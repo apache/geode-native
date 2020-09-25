@@ -59,14 +59,14 @@ class CustomPartitionResolver : public PartitionResolver {
     return CacheableKey::create(newKey);
   }
 };
-static CustomPartitionResolver *cpr = new CustomPartitionResolver();
-static std::shared_ptr<PartitionResolver> cptr(cpr);
+CustomPartitionResolver *cpr = new CustomPartitionResolver();
+std::shared_ptr<PartitionResolver> cptr(cpr);
 
 #define CLIENT1 s1p1
 #define SERVER1 s2p1
 #define SERVER2 s1p2
 
-static bool isLocalServer = false;
+bool isLocalServer = false;
 const std::string endPoints = CacheHelper::getTcrEndpoints(isLocalServer, 3);
 
 std::vector<std::string> storeEndPoints(const std::string points) {
@@ -85,7 +85,7 @@ std::vector<std::string> storeEndPoints(const std::string points) {
   return endpointNames;
 }
 
-static std::vector<std::string> endpointNames = storeEndPoints(endPoints);
+std::vector<std::string> endpointNames = storeEndPoints(endPoints);
 
 DUNIT_TASK_DEFINITION(SERVER1, CreateServer1)
   {

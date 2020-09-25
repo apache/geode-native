@@ -21,12 +21,12 @@ using apache::geode::client::Exception;
 using apache::geode::client::NoAvailableLocatorsException;
 using apache::geode::client::NotConnectedException;
 
-static bool isLocalServer = false;
-static bool isLocator = false;
+bool isLocalServer = false;
+bool isLocator = false;
 
-static const char *locHostPort1 =
+const char *locHostPort1 =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
-static const char *locHostPort2 =
+const char *locHostPort2 =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 2);
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2

@@ -29,11 +29,11 @@ using apache::geode::client::CacheHelper;
 using apache::geode::client::CacheRegionHelper;
 using apache::geode::client::IllegalStateException;
 
-static CacheHelper *cacheHelper = nullptr;
-static bool isLocalServer = false;
+CacheHelper *cacheHelper = nullptr;
+bool isLocalServer = false;
 
 static bool isLocator = false;
-static const char *locatorsG =
+const char *locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
@@ -102,9 +102,9 @@ void createRegion(const char *name, bool ackMode, const char *endpoints,
   LOG("Region created.");
 }
 
-static const char *keys[] = {"Key-1", "Key-2", "Key-3", "Key-4"};
+const char *keys[] = {"Key-1", "Key-2", "Key-3", "Key-4"};
 
-static const char *regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
+const char *regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
 
 const bool USE_ACK = true;
 const bool NO_ACK = false;

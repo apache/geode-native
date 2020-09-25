@@ -164,7 +164,6 @@ void initClientAuth(char UserType) {
              (config->find("security-password") != nullptr
                   ? config->find("security-password")->value().c_str()
                   : " not set"));
-      break;
     default:
       break;
   }
