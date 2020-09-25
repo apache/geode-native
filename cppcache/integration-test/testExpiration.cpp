@@ -33,7 +33,7 @@ using apache::geode::client::Region;
 using apache::geode::client::RegionAttributes;
 using apache::geode::client::RegionAttributesFactory;
 
-static ExpirationAction action = ExpirationAction::DESTROY;
+ExpirationAction action = ExpirationAction::DESTROY;
 
 // This test is for serially running the tests.
 

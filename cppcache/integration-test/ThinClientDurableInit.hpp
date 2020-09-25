@@ -20,13 +20,13 @@
 #ifndef GEODE_INTEGRATION_TEST_THINCLIENTDURABLEINIT_H_
 #define GEODE_INTEGRATION_TEST_THINCLIENTDURABLEINIT_H_
 
-static bool isLocalServer = false;
+bool isLocalServer = false;
 
-static const char* durableIds[] = {"DurableId1", "DurableId2"};
+const char* durableIds[] = {"DurableId1", "DurableId2"};
 
 static bool isLocator = false;
 static int numberOfLocators = 1;
-static const char* locatorsG =
+const char* locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 
 void initClientAndRegion(

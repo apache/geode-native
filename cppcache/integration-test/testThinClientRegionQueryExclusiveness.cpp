@@ -47,13 +47,13 @@ using apache::geode::client::QueryService;
 using testobject::Portfolio;
 using testobject::Position;
 
-static bool isLocator = false;
-static bool isLocalServer = false;
-static const char *poolNames[] = {"Pool1", "Pool2", "Pool3"};
-static const char *locHostPort =
+bool isLocator = false;
+bool isLocalServer = false;
+const char *poolNames[] = {"Pool1", "Pool2", "Pool3"};
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
-static const char *qRegionNames[] = {"Portfolios", "Positions"};
+const char *qRegionNames[] = {"Portfolios", "Positions"};
 
 void clientOperations() {
   initClient(true);

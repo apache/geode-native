@@ -32,21 +32,21 @@ using apache::geode::client::DefaultResultCollector;
 using apache::geode::client::Exception;
 using apache::geode::client::FunctionService;
 
-static bool isLocalServer = false;
-static bool isLocator = false;
-static bool isPoolWithEndpoint = false;
+bool isLocalServer = false;
+bool isLocator = false;
+bool isPoolWithEndpoint = false;
 
-static const char *locHostPort =
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
-static const char *poolRegNames[] = {"partition_region", "PoolRegion2"};
-static const char *poolName = "__TEST_POOL1__";
+const char *poolRegNames[] = {"partition_region", "PoolRegion2"};
+const char *poolName = "__TEST_POOL1__";
 
-static const char *serverGroup = "ServerGroup1";
+const char *serverGroup = "ServerGroup1";
 
-static const char *OnServerHAExceptionFunction = "OnServerHAExceptionFunction";
-static const char *OnServerHAShutdownFunction = "OnServerHAShutdownFunction";
+const char *OnServerHAExceptionFunction = "OnServerHAExceptionFunction";
+const char *OnServerHAShutdownFunction = "OnServerHAShutdownFunction";
 
-static const char *RegionOperationsHAFunction = "RegionOperationsHAFunction";
+const char *RegionOperationsHAFunction = "RegionOperationsHAFunction";
 #define verifyGetResults()                                      \
   bool found = false;                                           \
   for (int j = 0; j < 34; j++) {                                \

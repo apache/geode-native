@@ -17,10 +17,10 @@
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
 
-static bool isLocalServer = false;
-static bool isLocator = false;
+bool isLocalServer = false;
+bool isLocator = false;
 
-static const char *locHostPort =
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
 #define CLIENT1 s1p1

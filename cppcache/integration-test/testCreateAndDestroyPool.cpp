@@ -32,7 +32,7 @@
 #include "locator_globals.hpp"
 #include "LocatorHelper.hpp"
 
-static const char *poolNames[] = {"Pool1"};
+const char *poolNames[] = {"Pool1"};
 
 void stepOne() {
   initClient(true);

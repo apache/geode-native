@@ -91,12 +91,12 @@ class GetRegionThread : public ACE_Task_Base {
 };
 
 static int numberOfLocators = 1;
-static bool isLocalServer = true;
-static bool isLocator = true;
-static const char *locHostPort =
+bool isLocalServer = true;
+bool isLocator = true;
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
-static GetRegionThread *getThread = nullptr;
-static std::shared_ptr<Region> regionPtr;
+GetRegionThread *getThread = nullptr;
+std::shared_ptr<Region> regionPtr;
 DUNIT_TASK(s1p1, Setup)
   {
     CacheHelper::initLocator(1);

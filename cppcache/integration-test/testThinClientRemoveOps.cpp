@@ -46,12 +46,12 @@ using apache::geode::client::IllegalArgumentException;
 using apache::geode::client::Properties;
 using apache::geode::client::RegionDestroyedException;
 
-static CacheHelper *cacheHelper = nullptr;
+CacheHelper *cacheHelper = nullptr;
 static bool isLocalServer = false;
 static bool isLocator = false;
 static int numberOfLocators = 0;
 
-static const char *locatorsG =
+const char *locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 
 void initClient(const bool isthinClient) {
@@ -359,15 +359,14 @@ void doNetsearch(const char *name, const char *key, const char *value) {
   LOG("Netsearch complete.");
 }
 
-static const char *keys[] = {"Key-1", "Key-2", "Key-3", "Key-4",
-                             "Non-Existent-Key"};
-static const char *vals[] = {"Value-1", "Value-2", "Value-3", "Value-4",
-                             "Non-Existent-Value"};
-static const char *nvals[] = {"New Value-1", "New Value-2", "New Value-3",
-                              "New Value-4"};
+const char *keys[] = {"Key-1", "Key-2", "Key-3", "Key-4", "Non-Existent-Key"};
+const char *vals[] = {"Value-1", "Value-2", "Value-3", "Value-4",
+                      "Non-Existent-Value"};
+const char *nvals[] = {"New Value-1", "New Value-2", "New Value-3",
+                       "New Value-4"};
 
-static const char *regionNames[] = {"DistRegionAck", "DistRegionNoAck",
-                                    "exampleRegion"};
+const char *regionNames[] = {"DistRegionAck", "DistRegionNoAck",
+                             "exampleRegion"};
 
 const bool USE_ACK = true;
 const bool NO_ACK = false;

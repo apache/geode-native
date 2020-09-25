@@ -43,23 +43,69 @@ using apache::geode::client::DefaultResultCollector;
 using apache::geode::client::FunctionService;
 using apache::geode::client::UserFunctionExecutionException;
 
-static bool isLocalServer = false;
-static bool isLocator = false;
-static bool isPoolWithEndpoint = false;
+bool isLocalServer = false;
+bool isLocator = false;
+bool isPoolWithEndpoint = false;
 
-static const char *locHostPort =
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
-static const char *poolRegNames[] = {"partition_region", "PoolRegion2"};
+const char *poolRegNames[] = {"partition_region", "PoolRegion2"};
 
-static const char *serverGroup = "ServerGroup1";
+const char *serverGroup = "ServerGroup1";
 
-static const char *getFuncIName = "MultiGetFunctionI";
-static const char *putFuncIName = "MultiPutFunctionI";
-static const char *getFuncName = "MultiGetFunction";
-static const char *putFuncName = "MultiPutFunction";
-static const char *rjFuncName = "RegionOperationsFunction";
-static const char *exFuncName = "ExceptionHandlingFunction";
-static const char *exFuncNameSendException = "executeFunction_SendException";
+const char *getFuncIName = "MultiGetFunctionI";
+const char *putFuncIName = "MultiPutFunctionI";
+const char *getFuncName = "MultiGetFunction";
+const char *putFuncName = "MultiPutFunction";
+const char *rjFuncName = "RegionOperationsFunction";
+const char *exFuncName = "ExceptionHandlingFunction";
+const char *exFuncNameSendException = "executeFunction_SendException";
+const char *exFuncNamePdxType = "PdxFunctionTest";
+const char *FEOnRegionPrSHOP = "FEOnRegionPrSHOP";
+const char *FEOnRegionPrSHOP_OptimizeForWrite =
+    "FEOnRegionPrSHOP_OptimizeForWrite";
+
+class MyResultCollector : public DefaultResultCollector {
+ public:
+  MyResultCollector()
+      : m_endResultCount(0), m_addResultCount(0), m_getResultCount(0) {}
+  ~MyResultCollector() override = default;
+
+  std::shared_ptr<CacheableVector> getResult(
+      std::chrono::milliseconds timeout) override {
+    m_getResultCount++;
+    return DefaultResultCollector::getResult(timeout);
+  }
+
+  void addResult(const std::shared_ptr<Cacheable> &resultItem) override {
+    m_addResultCount++;
+    if (resultItem == nullptr) {
+      return;
+    }
+    if (auto results =
+            std::dynamic_pointer_cast<CacheableArrayList>(resultItem)) {
+      for (auto &result : *results) {
+        DefaultResultCollector::addResult(result);
+      }
+    } else {
+      DefaultResultCollector::addResult(resultItem);
+    }
+  }
+
+  void endResults() override {
+    m_endResultCount++;
+    DefaultResultCollector::endResults();
+  }
+
+  uint32_t getEndResultCount() { return m_endResultCount; }
+  uint32_t getAddResultCount() { return m_addResultCount; }
+  uint32_t getGetResultCount() { return m_getResultCount; }
+
+ private:
+  uint32_t m_endResultCount;
+  uint32_t m_addResultCount;
+  uint32_t m_getResultCount;
+};
 
 DUNIT_TASK_DEFINITION(LOCATOR1, StartLocator1)
   {

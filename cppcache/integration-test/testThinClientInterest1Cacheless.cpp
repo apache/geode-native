@@ -55,7 +55,7 @@ class MyListener : public CacheListener {
     return true;
   }
 };
-static std::shared_ptr<MyListener> mylistner = nullptr;
+std::shared_ptr<MyListener> mylistner = nullptr;
 
 void setCacheListener(const char *regName,
                       std::shared_ptr<MyListener> regListener) {

@@ -49,10 +49,10 @@ using apache::geode::client::CacheWriterException;
 using apache::geode::client::Exception;
 using apache::geode::client::HashMapOfCacheable;
 
-static bool isLocalServer = false;
+bool isLocalServer = false;
 
 static bool isLocator = false;
-static const char *locatorsG =
+const char *locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
 DUNIT_TASK_DEFINITION(SERVER1, CreateServer1)

@@ -40,7 +40,7 @@ using apache::geode::client::CqListener;
 using apache::geode::client::IllegalStateException;
 using apache::geode::client::QueryService;
 
-static CacheHelper *cacheHelper = nullptr;
+CacheHelper *cacheHelper = nullptr;
 
 #include "locator_globals.hpp"
 
@@ -85,7 +85,7 @@ class CqDeltaListener : public CqListener {
   int m_valueCount;
 };
 
-static std::shared_ptr<CqDeltaListener> g_CqListener;
+std::shared_ptr<CqDeltaListener> g_CqListener;
 
 void initClient(const bool isthinClient) {
   if (cacheHelper == nullptr) {
@@ -144,9 +144,9 @@ void createRegion(const char *name, bool ackMode,
   ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
-static const char *keys[] = {"Key-1", "Key-2", "Key-3", "Key-4"};
+const char *keys[] = {"Key-1", "Key-2", "Key-3", "Key-4"};
 
-static const char *regionNames[] = {"DistRegionAck", "DistRegionAck1"};
+const char *regionNames[] = {"DistRegionAck", "DistRegionAck1"};
 
 const bool USE_ACK = true;
 const bool NO_ACK = false;

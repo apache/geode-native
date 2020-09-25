@@ -72,15 +72,15 @@ class KillServerThread : public ACE_Task_Base {
   }
 };
 
-static bool isLocator = false;
-static bool isLocalServer = false;
+bool isLocator = false;
+bool isLocalServer = false;
 
-static const char *qRegionNames[] = {"Portfolios", "Positions"};
-static KillServerThread *kst = nullptr;
-static const char *poolNames[] = {"Pool1", "Pool2", "Pool3"};
-static const char *locHostPort =
+const char *qRegionNames[] = {"Portfolios", "Positions"};
+KillServerThread *kst = nullptr;
+const char *poolNames[] = {"Pool1", "Pool2", "Pool3"};
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
-static bool isPoolConfig = false;  // To track if pool case is running
+bool isPoolConfig = false;  // To track if pool case is running
 
 DUNIT_TASK_DEFINITION(LOCATOR, StartLocator)
   {

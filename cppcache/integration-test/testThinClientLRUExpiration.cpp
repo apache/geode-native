@@ -47,21 +47,21 @@ using apache::geode::client::RegionDestroyedException;
 using apache::geode::client::testing::TallyListener;
 using apache::geode::client::testing::TallyWriter;
 
-static CacheHelper *cacheHelper = nullptr;
-static bool isLocalServer = false;
+CacheHelper *cacheHelper = nullptr;
+bool isLocalServer = false;
 
 static bool isLocator = false;
-static const char *locatorsG =
+const char *locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
-static const char *regionNames[] = {"DistRegionAck1", "DistRegionAck2",
-                                    "DistRegionAck3", "DistRegionAck4",
-                                    "DistRegionAck5", "DistRegionAck"};
+const char *regionNames[] = {"DistRegionAck1", "DistRegionAck2",
+                             "DistRegionAck3", "DistRegionAck4",
+                             "DistRegionAck5", "DistRegionAck"};
 const bool USE_ACK = true;
 const bool NO_ACK = false;
-static std::shared_ptr<TallyListener> regListener;
-static std::shared_ptr<TallyWriter> regWriter;
-static bool registerKey = true;
+std::shared_ptr<TallyListener> regListener;
+std::shared_ptr<TallyWriter> regWriter;
+bool registerKey = true;
 void initClient(const bool isthinClient) {
   if (cacheHelper == nullptr) {
     cacheHelper = new CacheHelper(isthinClient);

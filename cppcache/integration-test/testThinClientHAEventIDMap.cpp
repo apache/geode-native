@@ -88,14 +88,14 @@ class DupChecker : public CacheListener {
 #define SERVER1 s2p1
 #define SERVER2 s2p2
 
-static CacheHelper *cacheHelper = nullptr;
+CacheHelper *cacheHelper = nullptr;
 static bool isLocalServer = false;
 static bool isLocator = false;
 static int numberOfLocators = 1;
 
-static const char *locatorsG =
+const char *locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
-static int g_redundancyLevel = 0;
+int g_redundancyLevel = 0;
 
 void initClient() {
   auto props = Properties::create();
@@ -400,17 +400,17 @@ void setCacheListener(const char *regName,
   attrMutator->setCacheListener(checker);
 }
 
-static const char *keys[] = {"Key-1", "Key-2", "Key-3", "Key-4"};
-static const char *vals[] = {"Value-1", "Value-2", "Value-3", "Value-4"};
-static const char *nvals[] = {"New Value-1", "New Value-2", "New Value-3",
-                              "New Value-4"};
+const char *keys[] = {"Key-1", "Key-2", "Key-3", "Key-4"};
+const char *vals[] = {"Value-1", "Value-2", "Value-3", "Value-4"};
+const char *nvals[] = {"New Value-1", "New Value-2", "New Value-3",
+                       "New Value-4"};
 
-static const char *regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
+const char *regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
 
 const bool USE_ACK = true;
 const bool NO_ACK = false;
-static std::shared_ptr<DupChecker> checker1;
-static std::shared_ptr<DupChecker> checker2;
+std::shared_ptr<DupChecker> checker1;
+std::shared_ptr<DupChecker> checker2;
 
 void initClientAndRegion(int redundancy,
                          bool clientNotificationEnabled = true) {

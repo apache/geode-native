@@ -28,7 +28,7 @@ static bool isLocator = false;
 static bool isLocalServer = true;
 static int numberOfLocators = 1;
 static int isDisconnected = false;
-static const char *locatorsG =
+const char *locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 
 class DisconnectCacheListioner : public CacheListener {
@@ -37,7 +37,7 @@ class DisconnectCacheListioner : public CacheListener {
     isDisconnected = true;
   }
 };
-static auto cptr = std::make_shared<DisconnectCacheListioner>();
+auto cptr = std::make_shared<DisconnectCacheListioner>();
 #include "LocatorHelper.hpp"
 DUNIT_TASK_DEFINITION(CLIENT1, SetupClient1_Pool_Locator)
   {

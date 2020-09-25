@@ -37,37 +37,38 @@ putThread *thread2 = nullptr;
 putThread *thread3 = nullptr;
 putThread *thread4 = nullptr;
 
-static const char *regNames[] = {"DistRegionAck", "DistRegionNoAck"};
-static const char *group1 = "A";
-static const char *group2 = "B";
+const char *regNames[] = {"DistRegionAck", "DistRegionNoAck"};
+const char *group1 = "A";
+const char *group2 = "B";
 // const char * endPoints1 = CacheHelper::getTcrEndpoints( isLocalServer1, 3 );
-static std::string gfendpoints2 = "localhost:";
+std::string gfendpoints1 = "localhost:";
+std::string gfendpoints2 = "localhost:";
 
-static bool isLocalServer1 = false;
+bool isLocalServer1 = false;
 
 static bool isLocator1 = false;
-static const char *locatorsG =
+const char *locatorsG =
     CacheHelper::getLocatorHostPort(isLocator1, isLocalServer1, 1);
-static std::shared_ptr<CacheableString> c1v11;
-static std::shared_ptr<CacheableString> c1v12;
-static std::shared_ptr<CacheableString> c1v13;
-static std::shared_ptr<CacheableString> c1v14;
-static std::shared_ptr<CacheableString> c1v15;
-static std::shared_ptr<CacheableString> s1v11;
-static std::shared_ptr<CacheableString> s1v12;
-static std::shared_ptr<CacheableString> s1v13;
-static std::shared_ptr<CacheableString> s1v14;
-static std::shared_ptr<CacheableString> s1v15;
-static std::shared_ptr<CacheableString> c2v11;
-static std::shared_ptr<CacheableString> c2v12;
-static std::shared_ptr<CacheableString> c2v13;
-static std::shared_ptr<CacheableString> c2v14;
-static std::shared_ptr<CacheableString> c2v15;
-static std::shared_ptr<CacheableString> s2v11;
-static std::shared_ptr<CacheableString> s2v12;
-static std::shared_ptr<CacheableString> s2v13;
-static std::shared_ptr<CacheableString> s2v14;
-static std::shared_ptr<CacheableString> s2v15;
+std::shared_ptr<CacheableString> c1v11;
+std::shared_ptr<CacheableString> c1v12;
+std::shared_ptr<CacheableString> c1v13;
+std::shared_ptr<CacheableString> c1v14;
+std::shared_ptr<CacheableString> c1v15;
+std::shared_ptr<CacheableString> s1v11;
+std::shared_ptr<CacheableString> s1v12;
+std::shared_ptr<CacheableString> s1v13;
+std::shared_ptr<CacheableString> s1v14;
+std::shared_ptr<CacheableString> s1v15;
+std::shared_ptr<CacheableString> c2v11;
+std::shared_ptr<CacheableString> c2v12;
+std::shared_ptr<CacheableString> c2v13;
+std::shared_ptr<CacheableString> c2v14;
+std::shared_ptr<CacheableString> c2v15;
+std::shared_ptr<CacheableString> s2v11;
+std::shared_ptr<CacheableString> s2v12;
+std::shared_ptr<CacheableString> s2v13;
+std::shared_ptr<CacheableString> s2v14;
+std::shared_ptr<CacheableString> s2v15;
 
 void verifyAllValues() {
   LOGINFO("verifyAllValues TEST-1");

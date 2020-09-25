@@ -59,20 +59,19 @@ using apache::geode::client::QueryService;
 
 static bool m_isPdx = false;
 
-static const char *locHostPort =
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
-static const char *cqNames[MAX_LISTNER] = {"MyCq_0", "MyCq_1", "MyCq_2",
-                                           "MyCq_3", "MyCq_4", "MyCq_5",
-                                           "MyCq_6", "MyCq_7"};
+const char *cqNames[MAX_LISTNER] = {"MyCq_0", "MyCq_1", "MyCq_2", "MyCq_3",
+                                    "MyCq_4", "MyCq_5", "MyCq_6", "MyCq_7"};
 
-static const char *regionName = "DistRegionAck";
-static const char *regionName1 = "DistRegionAck1";
-static const char *cqName = "testCQAllServersLeave";
-static const char *cqName1 = "testCQAllServersLeave1";
-static const char *cqQueryStatusString = "select * from /DistRegionAck";
-static const char *cqQueryStatusString1 = "select * from /DistRegionAck1";
+const char *regionName = "DistRegionAck";
+const char *regionName1 = "DistRegionAck1";
+const char *cqName = "testCQAllServersLeave";
+const char *cqName1 = "testCQAllServersLeave1";
+const char *cqQueryStatusString = "select * from /DistRegionAck";
+const char *cqQueryStatusString1 = "select * from /DistRegionAck1";
 
-static const char *queryStrings[MAX_LISTNER] = {
+const char *queryStrings[MAX_LISTNER] = {
     "select * from /Portfolios p where p.ID < 4",
     "select * from /Portfolios p where p.ID < 2",
     "select * from /Portfolios p where p.ID != 2",
@@ -107,8 +106,8 @@ void initClientCq(const bool isthinClient) {
   }
 }
 
-static const char *regionNamesCq[] = {"Portfolios", "Positions", "Portfolios2",
-                                      "Portfolios3"};
+const char *regionNamesCq[] = {"Portfolios", "Positions", "Portfolios2",
+                               "Portfolios3"};
 
 class MyCqListener1026 : public CqListener {
  public:

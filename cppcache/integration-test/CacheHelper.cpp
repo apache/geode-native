@@ -63,6 +63,8 @@
 #define PATH_SEP "/"
 #endif
 
+extern ClientCleanup gClientCleanup;
+
 namespace apache {
 namespace geode {
 namespace client {

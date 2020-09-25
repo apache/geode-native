@@ -57,12 +57,12 @@ using apache::geode::client::testframework::security::OP_UNREGISTER_INTEREST;
 using apache::geode::client::testframework::security::OP_UPDATE;
 using apache::geode::client::testframework::security::opCodeList;
 
-static const char *locHostPort =
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
-static std::shared_ptr<CredentialGenerator> credentialGeneratorHandler;
+std::shared_ptr<CredentialGenerator> credentialGeneratorHandler;
 
-static const char *exFuncNameSendException = "executeFunction_SendException";
+const char *exFuncNameSendException = "executeFunction_SendException";
 
 std::string getXmlPath() {
   char xmlPath[1000] = {'\0'};
@@ -101,20 +101,18 @@ void initCredentialGenerator() {
   if (loopNum > 2) loopNum = 1;
 }
 
-static opCodeList::value_type tmpRArr[] = {
+opCodeList::value_type tmpRArr[] = {
     OP_GET,     OP_GETALL,      OP_REGISTER_INTEREST, OP_UNREGISTER_INTEREST,
     OP_KEY_SET, OP_CONTAINS_KEY};
 
-static opCodeList::value_type tmpWArr[] = {OP_CREATE,     OP_UPDATE,
-                                           OP_PUTALL,     OP_DESTROY,
-                                           OP_INVALIDATE, OP_REGION_CLEAR};
+opCodeList::value_type tmpWArr[] = {OP_CREATE,  OP_UPDATE,     OP_PUTALL,
+                                    OP_DESTROY, OP_INVALIDATE, OP_REGION_CLEAR};
 
-static opCodeList::value_type tmpAArr[] = {
-    OP_CREATE,       OP_UPDATE,
-    OP_DESTROY,      OP_INVALIDATE,
-    OP_REGION_CLEAR, OP_REGISTER_INTEREST,
-    OP_GET,          OP_QUERY,
-    OP_REGISTER_CQ,  OP_EXECUTE_FUNCTION};
+opCodeList::value_type tmpAArr[] = {OP_CREATE,       OP_UPDATE,
+                                    OP_DESTROY,      OP_INVALIDATE,
+                                    OP_REGION_CLEAR, OP_REGISTER_INTEREST,
+                                    OP_GET,          OP_QUERY,
+                                    OP_REGISTER_CQ,  OP_EXECUTE_FUNCTION};
 
 #define HANDLE_NO_NOT_AUTHORIZED_EXCEPTION                        \
   catch (const apache::geode::client::NotAuthorizedException &) { \
@@ -142,7 +140,7 @@ static opCodeList::value_type tmpAArr[] = {
 #define READER_CLIENT s2p1
 
 const std::string regionNamesAuth[] = {"DistRegionAck"};
-static std::shared_ptr<Properties> userCreds;
+std::shared_ptr<Properties> userCreds;
 void initClientAuth(char UserType) {
   userCreds = Properties::create();
   auto config = Properties::create();

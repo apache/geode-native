@@ -42,9 +42,9 @@ using apache::geode::client::RegionEvent;
 using apache::geode::client::testing::TallyListener;
 using apache::geode::client::testing::TallyWriter;
 
-static bool isLocalServer = true;
+bool isLocalServer = true;
 static bool isLocator = false;
-static const char *locatorsG =
+const char *locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 #include "LocatorHelper.hpp"
 
@@ -170,9 +170,9 @@ class CallbackListener : public CacheListener {
   }
 };
 //---------------------------------------------------------------------------------
-static std::shared_ptr<CallbackListener> reg1Listener1 = nullptr;
-static std::shared_ptr<CacheableString> callBackStrPtr;
-static std::shared_ptr<Cacheable> callBackPortFolioPtr;
+std::shared_ptr<CallbackListener> reg1Listener1 = nullptr;
+std::shared_ptr<CacheableString> callBackStrPtr;
+std::shared_ptr<Cacheable> callBackPortFolioPtr;
 
 void setCacheListener(const char *regName,
                       std::shared_ptr<CallbackListener> regListener) {
