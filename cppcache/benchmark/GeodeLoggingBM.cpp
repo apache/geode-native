@@ -35,9 +35,9 @@ using apache::geode::client::internal::geode_hash;
 
 const int STRING_ARRAY_LENGTH = 3;
 
-int g_iteration = 0;
+static int g_iteration = 0;
 
-std::array<const char*, STRING_ARRAY_LENGTH> logStrings{
+static std::array<const char*, STRING_ARRAY_LENGTH> logStrings{
     "Short test string", "Slightly longer test string",
     "Very long string: "
     "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
@@ -106,17 +106,17 @@ void GeodeLogToFile(benchmark::State& state) {
   }
 }
 
-auto LogStringsToConsole = GeodeLogToConsole<GeodeLogStrings>;
-auto LogIntsToConsole = GeodeLogToConsole<GeodeLogInts>;
-auto LogComboToConsole = GeodeLogToConsole<GeodeLogCombo>;
+static const auto kLogStringsToConsole = GeodeLogToConsole<GeodeLogStrings>;
+static const auto kLogIntsToConsole = GeodeLogToConsole<GeodeLogInts>;
+static const auto kLogComboToConsole = GeodeLogToConsole<GeodeLogCombo>;
 
-auto LogStringsToFile = GeodeLogToFile<GeodeLogStrings>;
-auto LogIntsToFile = GeodeLogToFile<GeodeLogInts>;
-auto LogComboToFile = GeodeLogToFile<GeodeLogCombo>;
+static const auto kLogStringsToFile = GeodeLogToFile<GeodeLogStrings>;
+static const auto kLogIntsToFile = GeodeLogToFile<GeodeLogInts>;
+static const auto kLogComboToFile = GeodeLogToFile<GeodeLogCombo>;
 
-BENCHMARK(LogStringsToConsole)->Range(8, 8 << 10);
-BENCHMARK(LogIntsToConsole)->Range(8, 8 << 10);
-BENCHMARK(LogComboToConsole)->Range(8, 8 << 10);
-BENCHMARK(LogStringsToFile)->Range(8, 8 << 10);
-BENCHMARK(LogIntsToFile)->Range(8, 8 << 10);
-BENCHMARK(LogComboToFile)->Range(8, 8 << 10);
+BENCHMARK(kLogStringsToConsole)->Range(8, 8 << 10);
+BENCHMARK(kLogIntsToConsole)->Range(8, 8 << 10);
+BENCHMARK(kLogComboToConsole)->Range(8, 8 << 10);
+BENCHMARK(kLogStringsToFile)->Range(8, 8 << 10);
+BENCHMARK(kLogIntsToFile)->Range(8, 8 << 10);
+BENCHMARK(kLogComboToFile)->Range(8, 8 << 10);
