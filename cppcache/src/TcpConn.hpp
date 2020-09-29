@@ -49,6 +49,7 @@ class TcpConn : public Connector {
 
  protected:
   ACE_INET_Addr inetAddress_;
+  std::string endpoint_;
   std::chrono::microseconds timeout_;
   static const size_t kChunkSize;
 
