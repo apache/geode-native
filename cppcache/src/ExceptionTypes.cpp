@@ -30,9 +30,9 @@ namespace client {
 void setThreadLocalExceptionMessage(std::string exMsg);
 const std::string& getThreadLocalExceptionMessage();
 
-std::map<GfErrType,
-         std::function<void(std::string, std::string&, GfErrType, std::string)>>
-    error_map_;
+static std::map<GfErrType, std::function<void(std::string, std::string&,
+                                              GfErrType, std::string)>>
+    error_map;
 
 [[noreturn]] void notConnectedException(std::string message, std::string& exMsg,
                                         GfErrType, std::string) {
@@ -393,107 +393,106 @@ std::map<GfErrType,
 }
 
 void setErrorMap() {
-  error_map_.emplace(std::make_pair(GF_NOTCON, notConnectedException));
-  error_map_.emplace(std::make_pair(GF_MSG, messageException));
-  error_map_.emplace(
+  error_map.emplace(std::make_pair(GF_NOTCON, notConnectedException));
+  error_map.emplace(std::make_pair(GF_MSG, messageException));
+  error_map.emplace(
       std::make_pair(GF_CACHESERVER_EXCEPTION, cacheServerException));
-  error_map_.emplace(std::make_pair(GF_NOTOWN, notOwnerException));
-  error_map_.emplace(
+  error_map.emplace(std::make_pair(GF_NOTOWN, notOwnerException));
+  error_map.emplace(
       std::make_pair(GF_CACHE_REGION_NOT_FOUND, cacheServerException));
-  error_map_.emplace(
+  error_map.emplace(
       std::make_pair(GF_CACHE_REGION_NOT_GLOBAL, illegalStateException));
-  error_map_.emplace(std::make_pair(GF_CACHE_ILLEGAL_ARGUMENT_EXCEPTION,
-                                    illegalArgumentException));
-  error_map_.emplace(
+  error_map.emplace(std::make_pair(GF_CACHE_ILLEGAL_ARGUMENT_EXCEPTION,
+                                   illegalArgumentException));
+  error_map.emplace(
       std::make_pair(GF_CACHE_ILLEGAL_STATE_EXCEPTION, illegalStateException));
-  error_map_.emplace(
+  error_map.emplace(
       std::make_pair(GF_CACHE_WRITER_EXCEPTION, cacheWriterException));
-  error_map_.emplace(
-      std::make_pair(GF_CACHEWRITER_ERROR, cacheWriterException));
-  error_map_.emplace(
+  error_map.emplace(std::make_pair(GF_CACHEWRITER_ERROR, cacheWriterException));
+  error_map.emplace(
       std::make_pair(GF_CACHE_LOADER_EXCEPTION, cacheLoaderException));
-  error_map_.emplace(
+  error_map.emplace(
       std::make_pair(GF_CACHE_LISTENER_EXCEPTION, cacheListenerException));
-  error_map_.emplace(
+  error_map.emplace(
       std::make_pair(GF_CACHE_REGION_INVALID, regionDestroyedException));
-  error_map_.emplace(std::make_pair(GF_CACHE_PROXY, cacheProxyException));
-  error_map_.emplace(std::make_pair(GF_IOERR, geodeIOException));
-  error_map_.emplace(std::make_pair(GF_ENOENT, noSystemException));
-  error_map_.emplace(std::make_pair(GF_CACHE_REGION_KEYS_NOT_STRINGS,
-                                    illegalArgumentException));
-  error_map_.emplace(std::make_pair(GF_CACHE_REGION_ENTRY_NOT_BYTES,
-                                    illegalArgumentException));
-  error_map_.emplace(
+  error_map.emplace(std::make_pair(GF_CACHE_PROXY, cacheProxyException));
+  error_map.emplace(std::make_pair(GF_IOERR, geodeIOException));
+  error_map.emplace(std::make_pair(GF_ENOENT, noSystemException));
+  error_map.emplace(std::make_pair(GF_CACHE_REGION_KEYS_NOT_STRINGS,
+                                   illegalArgumentException));
+  error_map.emplace(std::make_pair(GF_CACHE_REGION_ENTRY_NOT_BYTES,
+                                   illegalArgumentException));
+  error_map.emplace(
       std::make_pair(GF_CACHE_TIMEOUT_EXCEPTION, timeoutException));
-  error_map_.emplace(std::make_pair(GF_TIMEOUT, timeoutException));
-  error_map_.emplace(std::make_pair(GF_CLIENT_WAIT_TIMEOUT, timeoutException));
-  error_map_.emplace(std::make_pair(GF_ENOMEM, outOfMemoryException));
-  error_map_.emplace(std::make_pair(GF_ERANGE, bufferSizeExceededException));
-  error_map_.emplace(
+  error_map.emplace(std::make_pair(GF_TIMEOUT, timeoutException));
+  error_map.emplace(std::make_pair(GF_CLIENT_WAIT_TIMEOUT, timeoutException));
+  error_map.emplace(std::make_pair(GF_ENOMEM, outOfMemoryException));
+  error_map.emplace(std::make_pair(GF_ERANGE, bufferSizeExceededException));
+  error_map.emplace(
       std::make_pair(GF_CACHE_LEASE_EXPIRED_EXCEPTION, leaseExpiredException));
-  error_map_.emplace(
+  error_map.emplace(
       std::make_pair(GF_CACHE_REGION_EXISTS_EXCEPTION, regionExistsException));
-  error_map_.emplace(
+  error_map.emplace(
       std::make_pair(GF_CACHE_ENTRY_NOT_FOUND, entryNotFoundException));
-  error_map_.emplace(
+  error_map.emplace(
       std::make_pair(GF_CACHE_ENTRY_EXISTS, entryExistsException));
-  error_map_.emplace(std::make_pair(GF_CACHE_ENTRY_DESTROYED_EXCEPTION,
-                                    entryDestroyedException));
-  error_map_.emplace(std::make_pair(GF_CACHE_REGION_DESTROYED_EXCEPTION,
-                                    regionDestroyedException));
-  error_map_.emplace(
+  error_map.emplace(std::make_pair(GF_CACHE_ENTRY_DESTROYED_EXCEPTION,
+                                   entryDestroyedException));
+  error_map.emplace(std::make_pair(GF_CACHE_REGION_DESTROYED_EXCEPTION,
+                                   regionDestroyedException));
+  error_map.emplace(
       std::make_pair(GF_CACHE_CLOSED_EXCEPTION, cacheClosedException));
-  error_map_.emplace(std::make_pair(GF_CACHE_STATISTICS_DISABLED_EXCEPTION,
-                                    statisticsDisabledException));
-  error_map_.emplace(std::make_pair(GF_CACHE_CONCURRENT_MODIFICATION_EXCEPTION,
-                                    concurrentModificationException));
-  error_map_.emplace(
+  error_map.emplace(std::make_pair(GF_CACHE_STATISTICS_DISABLED_EXCEPTION,
+                                   statisticsDisabledException));
+  error_map.emplace(std::make_pair(GF_CACHE_CONCURRENT_MODIFICATION_EXCEPTION,
+                                   concurrentModificationException));
+  error_map.emplace(
       std::make_pair(GF_NOT_AUTHORIZED_EXCEPTION, notAuthorizedException));
-  error_map_.emplace(std::make_pair(GF_AUTHENTICATION_FAILED_EXCEPTION,
-                                    authenticationFailedException));
-  error_map_.emplace(std::make_pair(GF_AUTHENTICATION_REQUIRED_EXCEPTION,
-                                    authenticationRequiredException));
-  error_map_.emplace(std::make_pair(GF_DUPLICATE_DURABLE_CLIENT,
-                                    duplicateDurableClientException));
-  error_map_.emplace(std::make_pair(GF_REMOTE_QUERY_EXCEPTION, queryException));
-  error_map_.emplace(
+  error_map.emplace(std::make_pair(GF_AUTHENTICATION_FAILED_EXCEPTION,
+                                   authenticationFailedException));
+  error_map.emplace(std::make_pair(GF_AUTHENTICATION_REQUIRED_EXCEPTION,
+                                   authenticationRequiredException));
+  error_map.emplace(std::make_pair(GF_DUPLICATE_DURABLE_CLIENT,
+                                   duplicateDurableClientException));
+  error_map.emplace(std::make_pair(GF_REMOTE_QUERY_EXCEPTION, queryException));
+  error_map.emplace(
       std::make_pair(GF_CACHE_LOCATOR_EXCEPTION, noAvailableLocatorsException));
-  error_map_.emplace(std::make_pair(GF_ALL_CONNECTIONS_IN_USE_EXCEPTION,
-                                    allConnectionsInUseException));
-  error_map_.emplace(
+  error_map.emplace(std::make_pair(GF_ALL_CONNECTIONS_IN_USE_EXCEPTION,
+                                   allConnectionsInUseException));
+  error_map.emplace(
       std::make_pair(GF_FUNCTION_EXCEPTION, functionExecutionException));
-  error_map_.emplace(std::make_pair(GF_DISKFULL, diskFailureException));
-  error_map_.emplace(std::make_pair(GF_ROLLBACK_EXCEPTION, rollbackException));
-  error_map_.emplace(
+  error_map.emplace(std::make_pair(GF_DISKFULL, diskFailureException));
+  error_map.emplace(std::make_pair(GF_ROLLBACK_EXCEPTION, rollbackException));
+  error_map.emplace(
       std::make_pair(GF_COMMIT_CONFLICT_EXCEPTION, commitConflictException));
-  error_map_.emplace(std::make_pair(GF_TRANSACTION_DATA_REBALANCED_EXCEPTION,
-                                    transactionDataRebalancedException));
-  error_map_.emplace(
+  error_map.emplace(std::make_pair(GF_TRANSACTION_DATA_REBALANCED_EXCEPTION,
+                                   transactionDataRebalancedException));
+  error_map.emplace(
       std::make_pair(GF_TRANSACTION_DATA_NODE_HAS_DEPARTED_EXCEPTION,
                      transactionDataNodeHasDepartedException));
-  error_map_.emplace(std::make_pair(GF_PUTALL_PARTIAL_RESULT_EXCEPTION,
-                                    putAllPartialResultException));
-  error_map_.emplace(std::make_pair(GF_NOERR, unknownException));
-  error_map_.emplace(std::make_pair(GF_DEADLK, unknownException));
-  error_map_.emplace(std::make_pair(GF_EACCES, unknownException));
-  error_map_.emplace(std::make_pair(GF_ECONFL, unknownException));
-  error_map_.emplace(std::make_pair(GF_EINVAL, unknownException));
-  error_map_.emplace(std::make_pair(GF_ETYPE, unknownException));
-  error_map_.emplace(std::make_pair(GF_NOTOBJ, unknownException));
-  error_map_.emplace(std::make_pair(GF_NOTSUP, unknownException));
-  error_map_.emplace(std::make_pair(GF_SCPGBL, unknownException));
-  error_map_.emplace(std::make_pair(GF_SCPEXC, unknownException));
-  error_map_.emplace(std::make_pair(GF_OVRFLW, unknownException));
-  error_map_.emplace(std::make_pair(GF_EINTR, unknownException));
-  error_map_.emplace(std::make_pair(GF_NOSERVER_FOUND, unknownException));
-  error_map_.emplace(std::make_pair(GF_SERVER_FAILED, unknownException));
-  error_map_.emplace(std::make_pair(GF_CLIENT_WAIT_TIMEOUT_REFRESH_PRMETADATA,
-                                    unknownException));
-  error_map_.emplace(
+  error_map.emplace(std::make_pair(GF_PUTALL_PARTIAL_RESULT_EXCEPTION,
+                                   putAllPartialResultException));
+  error_map.emplace(std::make_pair(GF_NOERR, unknownException));
+  error_map.emplace(std::make_pair(GF_DEADLK, unknownException));
+  error_map.emplace(std::make_pair(GF_EACCES, unknownException));
+  error_map.emplace(std::make_pair(GF_ECONFL, unknownException));
+  error_map.emplace(std::make_pair(GF_EINVAL, unknownException));
+  error_map.emplace(std::make_pair(GF_ETYPE, unknownException));
+  error_map.emplace(std::make_pair(GF_NOTOBJ, unknownException));
+  error_map.emplace(std::make_pair(GF_NOTSUP, unknownException));
+  error_map.emplace(std::make_pair(GF_SCPGBL, unknownException));
+  error_map.emplace(std::make_pair(GF_SCPEXC, unknownException));
+  error_map.emplace(std::make_pair(GF_OVRFLW, unknownException));
+  error_map.emplace(std::make_pair(GF_EINTR, unknownException));
+  error_map.emplace(std::make_pair(GF_NOSERVER_FOUND, unknownException));
+  error_map.emplace(std::make_pair(GF_SERVER_FAILED, unknownException));
+  error_map.emplace(std::make_pair(GF_CLIENT_WAIT_TIMEOUT_REFRESH_PRMETADATA,
+                                   unknownException));
+  error_map.emplace(
       std::make_pair(GF_CANNOT_PROCESS_GII_REQUEST, unknownException));
-  error_map_.emplace(std::make_pair(GF_CACHE_ENTRY_UPDATED, unknownException));
-  error_map_.emplace(std::make_pair(GF_INVALID_DELTA, unknownException));
-  error_map_.emplace(std::make_pair(GF_EUNDEF, unknownException));
+  error_map.emplace(std::make_pair(GF_CACHE_ENTRY_UPDATED, unknownException));
+  error_map.emplace(std::make_pair(GF_INVALID_DELTA, unknownException));
+  error_map.emplace(std::make_pair(GF_EUNDEF, unknownException));
 }
 
 [[noreturn]] void GfErrTypeThrowException(const char* str, GfErrType err) {
@@ -507,8 +506,8 @@ void setErrorMap() {
   }
 
   setErrorMap();
-  auto iter = error_map_.find(err);
-  if (iter != std::end(error_map_)) {
+  auto iter = error_map.find(err);
+  if (iter != std::end(error_map)) {
     iter->second(message, exMsg, err, func);
   }
   unknownException(message, exMsg, err, func);

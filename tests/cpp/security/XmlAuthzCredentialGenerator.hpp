@@ -55,7 +55,7 @@ const opCodeList::value_type QArr[] = {OP_QUERY, OP_REGISTER_CQ};
 
 const stringList::value_type QRArr[] = {"Portfolios", "Positions"};
 
-const char* PRiUsnm = "%s%d";
+static const char* kPRiUsername = "%s%d";
 
 class XmlAuthzCredentialGenerator;
 
@@ -186,19 +186,19 @@ class XmlAuthzCredentialGenerator {
     char userName[100];
     switch (role) {
       case READER_ROLE:
-        sprintf(userName, PRiUsnm, "reader", randomValue(2));
+        sprintf(userName, kPRiUsername, "reader", randomValue(2));
         break;
       case WRITER_ROLE:
-        sprintf(userName, PRiUsnm, "writer", randomValue(2));
+        sprintf(userName, kPRiUsername, "writer", randomValue(2));
         break;
       case QUERY_ROLE:
-        sprintf(userName, PRiUsnm, "reader", randomValue(1) + 3);
+        sprintf(userName, kPRiUsername, "reader", randomValue(1) + 3);
         break;
       case ADMIN_ROLE:
         sprintf(userName, "%s", adminUsers[randomValue(adminUsrSz)]);
         break;
       case NO_ROLE:
-        sprintf(userName, PRiUsnm, "user", randomValue(2));
+        sprintf(userName, kPRiUsername, "user", randomValue(2));
         break;
     };
 
@@ -234,20 +234,20 @@ class XmlAuthzCredentialGenerator {
     char userName[256];
     switch (role) {
       case READER_ROLE:
-        sprintf(userName, PRiUsnm, userPrefix.c_str(),
+        sprintf(userName, kPRiUsername, userPrefix.c_str(),
                 readerIndices[randomValue(readerIndSz)]);
         break;
       case WRITER_ROLE:
-        sprintf(userName, PRiUsnm, userPrefix.c_str(),
+        sprintf(userName, kPRiUsername, userPrefix.c_str(),
                 writerIndices[randomValue(writerIndSz)]);
         break;
       case QUERY_ROLE:
-        sprintf(userName, PRiUsnm, userPrefix.c_str(),
+        sprintf(userName, kPRiUsername, userPrefix.c_str(),
                 queryIndices[randomValue(queryIndSz)]);
         break;
       case ADMIN_ROLE:
       case NO_ROLE:
-        sprintf(userName, PRiUsnm, userPrefix.c_str(),
+        sprintf(userName, kPRiUsername, userPrefix.c_str(),
                 adminIndices[randomValue(adminIndSz)]);
         break;
     };

@@ -31,7 +31,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-int32_t fixedTypeSizes[] = {
+static const int32_t kFixedTypeSizes[] = {
     PdxTypes::BOOLEAN_SIZE,  // BOOLEAN
     PdxTypes::BOOLEAN_SIZE,  // BYTE
     PdxTypes::CHAR_SIZE,     // CHAR
@@ -133,7 +133,7 @@ int32_t PdxFieldType::getFixedTypeSize() const {
   int32_t result = -1;
 
   if (m_typeId != PdxFieldTypes::UNKNOWN) {
-    result = fixedTypeSizes[static_cast<int32_t>(m_typeId)];
+    result = kFixedTypeSizes[static_cast<int32_t>(m_typeId)];
   }
 
   return result;
