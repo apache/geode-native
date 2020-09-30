@@ -52,7 +52,7 @@ class APACHE_GEODE_EXPORT AuthInitialize {
 
   /**@brief initialize with the given set of security properties
    * and return the credentials for the client as properties.
-   * @param props the set of security properties provided to the
+   * @param securityprops the set of security properties provided to the
    * <code>DistributedSystem.connect</code> method
    * @param server it is the ID of the current endpoint.
    * The format expected is "host:port".

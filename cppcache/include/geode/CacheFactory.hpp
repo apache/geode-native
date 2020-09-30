@@ -102,7 +102,7 @@ class APACHE_GEODE_EXPORT CacheFactory {
   /**
    * Sets the AuthInitializer defined by the user.
    * The AuthInitializer will be used to obtain credentials for a client.
-   * @param authInitialize
+   * @param authInitialize the authInitialize to set
    * @return this ClientCacheFactory
    */
   CacheFactory& setAuthInitialize(

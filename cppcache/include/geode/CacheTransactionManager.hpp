@@ -149,7 +149,7 @@ class APACHE_GEODE_EXPORT CacheTransactionManager {
    * transaction identifier is currently suspended locally. This method does not
    * check other members for transaction status.
    *
-   * @param transactionId
+   * @param transactionId transaction to check if is suspended
    * @return true if the transaction is in suspended state, false otherwise
    * @since 3.6.2
    * @see #exists(TransactionId)

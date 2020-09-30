@@ -80,8 +80,6 @@ class APACHE_GEODE_EXPORT PdxInstance : public PdxSerializable {
    * out param. std::shared_ptr<Cacheable> type corresponds to the Java object
    * type.
    * @param fieldname name of the field to read
-   * @param value value of the field to be set with std::shared_ptr<Cacheable>
-   * type.
    * @throws IllegalStateException if PdxInstance doesn't have the named field.
    * For deserialization C++ Native Client requires the domain class to be
    * registered.
@@ -96,7 +94,6 @@ class APACHE_GEODE_EXPORT PdxInstance : public PdxSerializable {
    * Reads the named field and sets its value in bool type out param.
    * bool type corresponds to the Java boolean type.
    * @param fieldname name of the field to read
-   * @param value value of the field to be set with bool type.
    * @throws IllegalStateException if PdxInstance doesn't have the named field.
    *
    * @see PdxInstance#hasField
@@ -107,7 +104,6 @@ class APACHE_GEODE_EXPORT PdxInstance : public PdxSerializable {
    * Reads the named field and sets its value in signed char type out param.
    * signed char type corresponds to the Java byte type.
    * @param fieldname name of the field to read
-   * @param value value of the field to be set with signed char type.
    * @throws IllegalStateException if PdxInstance doesn't have the named field.
    *
    * @see PdxInstance#hasField
@@ -118,7 +114,6 @@ class APACHE_GEODE_EXPORT PdxInstance : public PdxSerializable {
    * Reads the named field and sets its value in int16_t type out param.
    * int16_t type corresponds to the Java short type.
    * @param fieldname name of the field to read
-   * @param value value of the field to be set with int16_t type.
    * @throws IllegalStateException if PdxInstance doesn't have the named field.
    *
    * @see PdxInstance#hasField
@@ -129,7 +124,6 @@ class APACHE_GEODE_EXPORT PdxInstance : public PdxSerializable {
    * Reads the named field and sets its value in int32_t type out param.
    * int32_t type corresponds to the Java int type.
    * @param fieldname name of the field to read
-   * @param value value of the field to be set with int32_t type.
    * @throws IllegalStateException if PdxInstance doesn't have the named field.
    */
   virtual int32_t getIntField(const std::string& fieldname) const = 0;
@@ -138,7 +132,6 @@ class APACHE_GEODE_EXPORT PdxInstance : public PdxSerializable {
    * Reads the named field and sets its value in int64_t type out param.
    * int64_t type corresponds to the Java long type.
    * @param fieldname name of the field to read
-   * @param value value of the field to be set with int64_t type.
    * @throws IllegalStateException if PdxInstance doesn't have the named field.
    *
    * @see PdxInstance#hasField
@@ -149,7 +142,6 @@ class APACHE_GEODE_EXPORT PdxInstance : public PdxSerializable {
    * Reads the named field and sets its value in float type out param.
    * float type corresponds to the Java float type.
    * @param fieldname name of the field to read
-   * @param value value of the field to be set with float type.
    * @throws IllegalStateException if PdxInstance doesn't have the named field.
    *
    * @see PdxInstance#hasField
@@ -160,7 +152,6 @@ class APACHE_GEODE_EXPORT PdxInstance : public PdxSerializable {
    * Reads the named field and sets its value in double type out param.
    * double type corresponds to the Java double type.
    * @param fieldname name of the field to read
-   * @param value value of the field to be set with double type.
    * @throws IllegalStateException if PdxInstance doesn't have the named field.
    *
    * @see PdxInstance#hasField
@@ -170,8 +161,6 @@ class APACHE_GEODE_EXPORT PdxInstance : public PdxSerializable {
   /**
    * Reads the named field and sets its value in char type out param.
    * char type corresponds to the Java char type.
-   * @param fieldname name of the field to read
-   * @param value value of the field to be set with char type.
    * @throws IllegalStateException if PdxInstance doesn't have the named field.
    *
    * @see PdxInstance#hasField
@@ -193,8 +182,6 @@ class APACHE_GEODE_EXPORT PdxInstance : public PdxSerializable {
    * Reads the named field and sets its value in bool array type out param.
    * bool* type corresponds to the Java boolean[] type.
    * @param fieldname name of the field to read
-   * @param value value of the field to be set with bool array type.
-   * @param length length is set with number of bool elements.
    * @throws IllegalStateException if PdxInstance doesn't have the named field.
    *
    * @see PdxInstance#hasField
@@ -206,8 +193,6 @@ class APACHE_GEODE_EXPORT PdxInstance : public PdxSerializable {
    * Reads the named field and sets its value in signed char array type out
    * param. int8_t* type corresponds to the Java byte[] type.
    * @param fieldname name of the field to read
-   * @param value value of the field to be set with int8_t array type.
-   * @param length length is set with number of int8_t elements.
    * @throws IllegalStateException if PdxInstance doesn't have the named field.
    *
    * @see PdxInstance#hasField
@@ -219,8 +204,6 @@ class APACHE_GEODE_EXPORT PdxInstance : public PdxSerializable {
    * Reads the named field and sets its value in int16_t array type out param.
    * int16_t* type corresponds to the Java short[] type.
    * @param fieldname name of the field to read
-   * @param value value of the field to be set with int16_t array type.
-   * @param length length is set with number of int16_t elements.
    * @throws IllegalStateException if PdxInstance doesn't have the named field.
    *
    * @see PdxInstance#hasField
@@ -232,8 +215,6 @@ class APACHE_GEODE_EXPORT PdxInstance : public PdxSerializable {
    * Reads the named field and sets its value in int32_t array type out param.
    * int32_t* type corresponds to the Java int[] type.
    * @param fieldname name of the field to read
-   * @param value value of the field to be set with int32_t array type.
-   * @param length length is set with number of int32_t elements.
    * @throws IllegalStateException if PdxInstance doesn't have the named field.
    *
    * @see PdxInstance#hasField
@@ -245,8 +226,6 @@ class APACHE_GEODE_EXPORT PdxInstance : public PdxSerializable {
    * Reads the named field and sets its value in int64_t array type out param.
    * int64_t* type corresponds to the Java long[] type.
    * @param fieldname name of the field to read
-   * @param value value of the field to be set with int64_t array type.
-   * @param length length is set with number of int64_t elements.
    * @throws IllegalStateException if PdxInstance doesn't have the named field.
    *
    * @see PdxInstance#hasField
@@ -258,8 +237,6 @@ class APACHE_GEODE_EXPORT PdxInstance : public PdxSerializable {
    * Reads the named field and sets its value in float array type out param.
    * float* type corresponds to the Java float[] type.
    * @param fieldname name of the field to read
-   * @param value value of the field to be set with float array type.
-   * @param length length is set with number of float elements.
    * @throws IllegalStateException if PdxInstance doesn't have the named field.
    *
    * @see PdxInstance#hasField
@@ -271,8 +248,6 @@ class APACHE_GEODE_EXPORT PdxInstance : public PdxSerializable {
    * Reads the named field and sets its value in double array type out param.
    * double* type corresponds to the Java double[] type.
    * @param fieldname name of the field to read
-   * @param value value of the field to be set with double array type.
-   * @param length length is set with number of double elements.
    * @throws IllegalStateException if PdxInstance doesn't have the named field.
    *
    * @see PdxInstance#hasField
@@ -284,9 +259,7 @@ class APACHE_GEODE_EXPORT PdxInstance : public PdxSerializable {
   /**
    * Reads the named field and sets its value in char array type out param.
    * char16_t* type corresponds to the Java char[] type.
-   * @param fieldname name of the field to read
-   * @param value value of the field to be set with char array type.
-   * @param length length is set with number of char16_t* elements.
+   * @param fieldName name of the field to read
    * @throws IllegalStateException if PdxInstance doesn't have the named field.
    *
    * @see PdxInstance#hasField
@@ -310,7 +283,6 @@ class APACHE_GEODE_EXPORT PdxInstance : public PdxSerializable {
    * type out param. std::shared_ptr<CacheableDate> type is corresponding to
    * java Java.util.date type.
    * @param fieldname name of the field to read
-   * @param value value of the field to be set with
    * std::shared_ptr<CacheableDate> type.
    * @throws IllegalStateException if PdxInstance doesn't have the named field.
    *
@@ -323,7 +295,7 @@ class APACHE_GEODE_EXPORT PdxInstance : public PdxSerializable {
    * Reads the named field and sets its value in array of byte arrays type out
    * param.
    * int8_t** type corresponds to the Java byte[][] type.
-   * @param fieldname name of the field to read.
+   * @param fieldName name of the field to read.
    * @param value value of the field to be set with array of byte arrays type.
    * @param arrayLength arrayLength is set to the number of byte arrays.
    * @param elementLength elementLength is set to individual byte array lengths.
@@ -342,7 +314,6 @@ class APACHE_GEODE_EXPORT PdxInstance : public PdxSerializable {
    * std::shared_ptr<CacheableObjectArray> type corresponds to the Java
    * Object[] type.
    * @param fieldname name of the field to read.
-   * @param value value of the field to be set with
    * std::shared_ptr<CacheableObjectArray> type.
    * @throws IllegalStateException if PdxInstance doesn't have the named field.
    *
@@ -467,13 +438,13 @@ class APACHE_GEODE_EXPORT PdxInstance : public PdxSerializable {
   /**
    * @brief serialize this object in geode PDX format. This is an internal
    * method.
-   * @param PdxWriter to serialize the PDX object
+   * @param output to serialize the PDX object
    */
   virtual void toData(PdxWriter& output) const override = 0;
 
   /**
    * @brief Deserialize this object. This is an internal method.
-   * @param PdxReader to deserialize the PDX object
+   * @param input to deserialize the PDX object
    */
   virtual void fromData(PdxReader& input) override = 0;
 

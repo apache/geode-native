@@ -118,7 +118,6 @@ class TcrConnection {
    *    read one byte from server, it should be CLIENT_TO_SERVER
    *    Otherwise, construction fails.
    * @param     ports     List of local ports for connections to endpoint
-   * @param     numPorts  Size of ports list
    */
   bool initTcrConnection(
       TcrEndpoint* endpointObj, const char* endpoint,
@@ -199,11 +198,11 @@ class TcrConnection {
   /**
    * send a synchronized request to server for REGISTER_INTEREST_LIST.
    *
-   * @param      buffer the buffer to send
-   *             len length of the data to send
-   *             message vector, which will return chunked TcrMessage.
-   *             sendTimeoutSec write timeout in sec
-   *             receiveTimeoutSec read timeout in sec
+   * @param      request the buffer to send
+   * @param      len length of the data to send
+   * @param      message vector, which will return chunked TcrMessage.
+   * @param      sendTimeoutSec write timeout in sec
+   * @param      receiveTimeoutSec read timeout in sec
    * @exception  GeodeIOException  if an I/O error occurs (socket failure).
    * @exception  TimeoutException  if timeout happens at any of the 3 socket
    * operation: 1 write, 2 read
@@ -218,9 +217,8 @@ class TcrConnection {
    * we need to use it to send CLOSE_CONNECTION msg
    *
    * @param      buffer the buffer to send
-   *             len length of the data to send
-   *             sendTimeoutSec write timeout in sec
-   * @return     no return. Because it either succeeds, or throw exception.
+   * @param      len length of the data to send
+   * @param      sendTimeoutSec write timeout in sec
    * @exception  GeodeIOException  if an I/O error occurs (socket failure).
    * @exception  TimeoutException  if timeout happens at any of the 3 socket
    * operation: 1 write, 2 read

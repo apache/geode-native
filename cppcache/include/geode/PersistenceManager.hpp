@@ -63,7 +63,7 @@ class APACHE_GEODE_EXPORT PersistenceManager {
    * in this method by the class implementing this method.
    * @param key the key to write.
    * @param value the value to write
-   * @param PersistenceInfo related persistence information.
+   * @param persistenceInfo related persistence information.
    * @throws RegionDestroyedException is the region is already destroyed.
    * @throws OutofMemoryException if the disk is full
    * @throws DiskFailureException if the write fails due to disk fail.

@@ -256,7 +256,6 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     -Wno-header-hygiene #TODO fix
     -Wno-conversion #TODO fix
     -Wno-reserved-id-macro #TODO fix
-    -Wno-documentation # TODO fix
     -Wno-range-loop-analysis
     -Wno-weak-vtables
     -Wno-weak-template-vtables

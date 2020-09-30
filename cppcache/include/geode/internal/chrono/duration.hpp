@@ -145,8 +145,8 @@ inline
 /**
  * Converts std::chrono::duration to std::string.
  *
- * @tparam Rep
- * @tparam Period
+ * @tparam Rep the something that reps
+ * @tparam Period the something else that periods
  * @param duration to convert to std::string
  * @return std::string representing the given duration.
  */

@@ -69,25 +69,25 @@ class StatisticDescriptorImpl : public StatisticDescriptor {
   /**
    * Creates a new description of a statistic.
    *
-   * @param name
+   * @param statName
    *        The name of the statistic (for example,
    *        <code>"numDatabaseLookups"</code>)
-   * @param descriptorType
+   * @param statDescriptorType
    *        The type of the statistic.  This must be either
    *        <code>FieldType::INT_TYPE</code>, <code>FieldType::LONG_TYPE</code>,
    * or
    *        <code>FieldType::DOUBLE_TYPE</code>.
-   * @param description
+   * @param statDescription
    *        A description of the statistic (for example, <code>"The
    *        number of database lookups"</code>
-   * @param unit
+   * @param statUnit
    *        The units that this statistic is measured in (for example,
    *        <code>"milliseconds"</code>)
-   * @param isCounter
+   * @param statIsCounter
    *        Is this statistic a counter?  That is, does its value
    *        change monotonically (always increases or always
    *        decreases)?
-   * @param isLargerBetter
+   * @param statIsLargerBetter
    *        True if larger values indicate better performance.
    *
    */
