@@ -51,6 +51,7 @@ class APACHE_GEODE_EXPORT TcpConn : public Connector {
 
  protected:
   ACE_INET_Addr m_addr;
+  std::string endpoint_;
   std::chrono::microseconds m_waitMilliSeconds;
 
   int32_t m_maxBuffSizePool;

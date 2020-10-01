@@ -130,6 +130,7 @@ TcpConn::TcpConn(const char *ipaddr, std::chrono::microseconds waitSeconds,
                  int32_t maxBuffSizePool)
     : m_io(nullptr),
       m_addr(ipaddr),
+      endpoint_(ipaddr),
       m_waitMilliSeconds(waitSeconds),
       m_maxBuffSizePool(maxBuffSizePool),
       m_chunkSize(getDefaultChunkSize()) {}
@@ -138,6 +139,7 @@ TcpConn::TcpConn(const char *hostname, int32_t port,
                  std::chrono::microseconds waitSeconds, int32_t maxBuffSizePool)
     : m_io(nullptr),
       m_addr(port, hostname),
+      endpoint_(std::string{hostname} + ":" + std::to_string(port)),
       m_waitMilliSeconds(waitSeconds),
       m_maxBuffSizePool(maxBuffSizePool),
       m_chunkSize(getDefaultChunkSize()) {}
@@ -204,9 +206,8 @@ void TcpConn::connect() {
 
   ACE_OS::signal(SIGPIPE, SIG_IGN);  // Ignore broken pipe
 
-  LOGFINER("Connecting plain socket stream to %s:%d waiting %s micro sec",
-           ipaddr.get_host_name(), ipaddr.get_port_number(),
-           to_string(waitMicroSeconds).c_str());
+  LOGFINER("Connecting plain socket stream to " + endpoint_ + " waiting " +
+           to_string(waitMicroSeconds));
 
   ACE_SOCK_Connector conn;
   int32_t retVal = 0;
