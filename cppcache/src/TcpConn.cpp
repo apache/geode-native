@@ -129,6 +129,7 @@ TcpConn::TcpConn(const std::string& address,
     : stream_(nullptr),
       maxBuffSizePool_(maxBuffSizePool),
       inetAddress_(address.c_str()),
+      endpoint_(address),
       timeout_(waitSeconds) {}
 
 TcpConn::TcpConn(const std::string& hostname, uint16_t port,
@@ -136,6 +137,7 @@ TcpConn::TcpConn(const std::string& hostname, uint16_t port,
     : stream_(nullptr),
       maxBuffSizePool_(maxBuffSizePool),
       inetAddress_(port, hostname.c_str()),
+      endpoint_(hostname + ":" + std::to_string(port)),
       timeout_(waitSeconds) {}
 
 void TcpConn::connect() {
@@ -143,9 +145,7 @@ void TcpConn::connect() {
 
   ACE_OS::signal(SIGPIPE, SIG_IGN);  // Ignore broken pipe
 
-  LOGFINER(std::string("Connecting plain socket stream to ") +
-           inetAddress_.get_host_name() + ":" +
-           std::to_string(inetAddress_.get_port_number()) + " waiting " +
+  LOGFINER("Connecting plain socket stream to " + endpoint_ + " waiting " +
            to_string(timeout_));
 
   const ACE_Time_Value aceTimeout(timeout_);
