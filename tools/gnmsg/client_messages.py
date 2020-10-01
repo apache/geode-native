@@ -410,4 +410,8 @@ client_message_parsers = {
 def parse_client_message(properties, message_bytes):
     offset = CHARS_IN_MESSAGE_HEADER
     if properties["Type"] in client_message_parsers.keys():
-        client_message_parsers[properties["Type"]](properties, message_bytes, offset)
+        try:
+            client_message_parsers[properties["Type"]](properties, message_bytes, offset)
+        except:
+            properties["ERROR"] = "Exception reading message - probably incomplete"
+            return
