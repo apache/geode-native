@@ -74,7 +74,7 @@ class APACHE_GEODE_EXPORT DataOutput {
   /**
    * Write an array of unsigned bytes to the <code>DataOutput</code>.
    *
-   * @param value the array of unsigned bytes to be written
+   * @param bytes the array of unsigned bytes to be written
    * @param len the number of bytes from the start of array to be written
    */
   inline void writeBytes(const uint8_t* bytes, int32_t len) {
@@ -93,7 +93,7 @@ class APACHE_GEODE_EXPORT DataOutput {
   /**
    * Write an array of signed bytes to the <code>DataOutput</code>.
    *
-   * @param value the array of signed bytes to be written
+   * @param bytes the array of signed bytes to be written
    * @param len the number of bytes from the start of array to be written
    */
   inline void writeBytes(const int8_t* bytes, int32_t len) {
@@ -108,7 +108,7 @@ class APACHE_GEODE_EXPORT DataOutput {
    *   <code>DataInput::readBytesOnly</code> (unlike
    *   <code>DataInput::readBytes</code>) needs the length argument explicitly.
    *
-   * @param value the array of unsigned bytes to be written
+   * @param bytes the array of unsigned bytes to be written
    * @param len the number of bytes from the start of array to be written
    */
   inline void writeBytesOnly(const uint8_t* bytes, size_t len) {
@@ -125,7 +125,7 @@ class APACHE_GEODE_EXPORT DataOutput {
    *   <code>DataInput::readBytesOnly</code> (unlike
    *   <code>DataInput::readBytes</code>) needs the length argument explicitly.
    *
-   * @param value the array of signed bytes to be written
+   * @param bytes the array of signed bytes to be written
    * @param len the number of bytes from the start of array to be written
    */
   inline void writeBytesOnly(const int8_t* bytes, size_t len) {
@@ -216,7 +216,7 @@ class APACHE_GEODE_EXPORT DataOutput {
    * <code>DataOutput</code> in a manner compatible with java server's
    * <code>DataSerializer.writeArrayLength</code>.
    *
-   * @param value the 32-bit signed integer array length to be written
+   * @param len the 32-bit signed integer array length to be written
    */
   inline void writeArrayLen(int32_t len) {
     if (len == -1) {
