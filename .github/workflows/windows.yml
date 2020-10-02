@@ -1,0 +1,269 @@
+name: Windows CI
+
+on: [push, pull_request]
+
+jobs:
+  build-and-unit-test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-2016, windows-latest]
+    steps:
+    - uses: actions/checkout@v2
+    - name: cache geode
+      uses: actions/cache@v2
+      id: cache-geode-1120-windows
+      with:
+        path: C:\apache-geode
+        key: apache-geode-1120-windows
+    - name: install geode
+      env:
+        CACHE_HIT: ${{steps.cache-geode-1120-windows.outputs.cache-hit}}
+        GEODE_VERSION: 1.12.0
+      run: |
+        If ($env:CACHE_HIT -ne "true") {
+          iwr "https://downloads.apache.org/geode/$env:GEODE_VERSION/apache-geode-$env:GEODE_VERSION.tgz" -OutFile apache-geode.tgz
+          7z x apache-geode.tgz
+          7z x apache-geode.tar
+          mv apache-geode-$env:GEODE_VERSION C:\apache-geode
+          rm apache*.t*
+        }
+    - name: install doxygen
+      run: choco install doxygen.install -confirm
+    - name: install nunit
+      run: choco install nunit.install --version 2.6.4 -confirm
+    - name: install openssl
+      run: choco install openssl -confirm
+    - name: mkdir build
+      run: mkdir C:\build
+    - name: cmake configure visual studio 2017
+      if: ${{matrix.os == 'windows-2016'}}
+      run: |
+        $env:GEODE_HOME="C:\apache-geode"
+        cmake -BC:\build -G "Visual Studio 15 2017 Win64" -Thost=x64
+    - name: cmake configure visual studio 2019
+      if: ${{matrix.os != 'windows-2016'}}
+      run: |
+        $env:GEODE_HOME="C:\apache-geode"
+        cmake -BC:\build -G "Visual Studio 16 2019" -Thost=x64
+    - name: cmake build
+      run: cmake --build C:\build --target apache-geode_unittests -- /m
+    - name: unit tests
+      run: C:\build\cppcache\test\Debug\apache-geode_unittests.exe
+
+  old-integration-test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-2016]
+    steps:
+    - uses: actions/checkout@v2
+    - name: cache geode
+      uses: actions/cache@v2
+      id: cache-geode-1120-windows
+      with:
+        path: C:\apache-geode
+        key: apache-geode-1120-windows
+    - name: install geode
+      env:
+        CACHE_HIT: ${{steps.cache-geode-1120-windows.outputs.cache-hit}}
+        GEODE_VERSION: 1.12.0
+      run: |
+        If ($env:CACHE_HIT -ne "true") {
+          iwr "https://downloads.apache.org/geode/$env:GEODE_VERSION/apache-geode-$env:GEODE_VERSION.tgz" -OutFile apache-geode.tgz
+          7z x apache-geode.tgz
+          7z x apache-geode.tar
+          mv apache-geode-$env:GEODE_VERSION C:\apache-geode
+          rm apache*.t*
+        }
+    - name: install doxygen
+      run: choco install doxygen.install -confirm
+    - name: install nunit
+      run: choco install nunit.install --version 2.6.4 -confirm
+    - name: install openssl
+      run: choco install openssl -confirm
+    - name: mkdir build
+      run: mkdir C:\build
+    - name: cmake configure visual studio 2017
+      if: ${{matrix.os == 'windows-2016'}}
+      run: |
+        $env:GEODE_HOME="C:\apache-geode"
+        cmake -BC:\build -G "Visual Studio 15 2017 Win64" -Thost=x64
+    - name: cmake configure visual studio 2019
+      if: ${{matrix.os != 'windows-2016'}}
+      run: |
+        $env:GEODE_HOME="C:\apache-geode"
+        cmake -BC:\build -G "Visual Studio 16 2019" -Thost=x64
+    - name: cmake build
+      run: |
+        cmake --build C:\build --target javaobject -- /m
+        cmake --build C:\build --target unit_test_callbacks -- /m
+        cmake --build C:\build --target cppcache-integration-tests -- /m
+    - name: old integration tests
+      run: |
+        cd C:\build\cppcache\integration-test\
+        ctest --timeout 1000 -L STABLE -C Debug -j1
+
+  new-integration-test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-2016]
+    steps:
+    - uses: actions/checkout@v2
+    - name: cache geode
+      uses: actions/cache@v2
+      id: cache-geode-1120-windows
+      with:
+        path: C:\apache-geode
+        key: apache-geode-1120-windows
+    - name: install geode
+      env:
+        CACHE_HIT: ${{steps.cache-geode-1120-windows.outputs.cache-hit}}
+        GEODE_VERSION: 1.12.0
+      run: |
+        If ($env:CACHE_HIT -ne "true") {
+          iwr "https://downloads.apache.org/geode/$env:GEODE_VERSION/apache-geode-$env:GEODE_VERSION.tgz" -OutFile apache-geode.tgz
+          7z x apache-geode.tgz
+          7z x apache-geode.tar
+          mv apache-geode-$env:GEODE_VERSION C:\apache-geode
+          rm apache*.t*
+        }
+    - name: install doxygen
+      run: choco install doxygen.install -confirm
+    - name: install nunit
+      run: choco install nunit.install --version 2.6.4 -confirm
+    - name: install openssl
+      run: choco install openssl -confirm
+    - name: mkdir build
+      run: mkdir C:\build
+    - name: cmake configure visual studio 2017
+      if: ${{matrix.os == 'windows-2016'}}
+      run: |
+        mkdir C:\geode-native
+        mv * C:\geode-native\
+        cd C:\geode-native
+        $env:GEODE_HOME="C:\apache-geode"
+        cmake -BC:\build -G "Visual Studio 15 2017 Win64" -Thost=x64
+    - name: cmake configure visual studio 2019
+      if: ${{matrix.os != 'windows-2016'}}
+      run: |
+        mkdir C:\geode-native
+        mv * C:\geode-native\
+        cd C:\geode-native
+        $env:GEODE_HOME="C:\apache-geode"
+        cmake -BC:\build -G "Visual Studio 16 2019" -Thost=x64
+    - name: cmake build
+      run: cmake --build C:\build --target cpp-integration-test -- /m
+    - name: new integration tests
+      run: |
+        cd C:\build\cppcache\integration\test\
+        ctest -E BasicIPv6Test -j2
+
+  old-cli-integration-test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-2016, windows-latest]
+    steps:
+    - uses: actions/checkout@v2
+    - name: cache geode
+      uses: actions/cache@v2
+      id: cache-geode-1120-windows
+      with:
+        path: C:\apache-geode
+        key: apache-geode-1120-windows
+    - name: install geode
+      env:
+        CACHE_HIT: ${{steps.cache-geode-1120-windows.outputs.cache-hit}}
+        GEODE_VERSION: 1.12.0
+      run: |
+        If ($env:CACHE_HIT -ne "true") {
+          iwr "https://downloads.apache.org/geode/$env:GEODE_VERSION/apache-geode-$env:GEODE_VERSION.tgz" -OutFile apache-geode.tgz
+          7z x apache-geode.tgz
+          7z x apache-geode.tar
+          mv apache-geode-$env:GEODE_VERSION C:\apache-geode
+          rm apache*.t*
+        }
+    - name: install doxygen
+      run: choco install doxygen.install -confirm
+    - name: install nunit
+      run: choco install nunit.install --version 2.6.4 -confirm
+    - name: install openssl
+      run: choco install openssl -confirm
+    - name: mkdir build
+      run: mkdir C:\build
+    - name: cmake configure visual studio 2017
+      if: ${{matrix.os == 'windows-2016'}}
+      run: |
+        $env:GEODE_HOME="C:\apache-geode"
+        cmake -BC:\build -G "Visual Studio 15 2017 Win64" -Thost=x64
+    - name: cmake configure visual studio 2019
+      if: ${{matrix.os != 'windows-2016'}}
+      run: |
+        $env:GEODE_HOME="C:\apache-geode"
+        cmake -BC:\build -G "Visual Studio 16 2019" -Thost=x64
+    - name: cmake build
+      run: |
+        cmake --build C:\build --target javaobject -- /m
+        cmake --build C:\build --target UnitTests -- /m
+    - name: old cli integration tests
+      run: |
+        cd C:\build\clicache\integration-test\
+        ctest --timeout 2000 -L STABLE -C Debug -j1
+
+  new-cli-integration-test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-2016, windows-latest]
+    steps:
+    - uses: actions/checkout@v2
+    - name: cache geode
+      uses: actions/cache@v2
+      id: cache-geode-1120-windows
+      with:
+        path: C:\apache-geode
+        key: apache-geode-1120-windows
+    - name: install geode
+      env:
+        CACHE_HIT: ${{steps.cache-geode-1120-windows.outputs.cache-hit}}
+        GEODE_VERSION: 1.12.0
+      run: |
+        If ($env:CACHE_HIT -ne "true") {
+          iwr "https://downloads.apache.org/geode/$env:GEODE_VERSION/apache-geode-$env:GEODE_VERSION.tgz" -OutFile apache-geode.tgz
+          7z x apache-geode.tgz
+          7z x apache-geode.tar
+          mv apache-geode-$env:GEODE_VERSION C:\apache-geode
+          rm apache*.t*
+        }
+    - name: install doxygen
+      run: choco install doxygen.install -confirm
+    - name: install nunit
+      run: choco install nunit.install --version 2.6.4 -confirm
+    - name: install openssl
+      run: choco install openssl -confirm
+    - name: mkdir build
+      run: mkdir C:\build
+    - name: cmake configure visual studio 2017
+      if: ${{matrix.os == 'windows-2016'}}
+      run: |
+        mkdir C:\geode-native
+        mv * C:\geode-native\
+        cd C:\geode-native
+        $env:GEODE_HOME="C:\apache-geode"
+        cmake -BC:\build -G "Visual Studio 15 2017 Win64" -Thost=x64
+    - name: cmake configure visual studio 2019
+      if: ${{matrix.os != 'windows-2016'}}
+      run: |
+        mkdir C:\geode-native
+        mv * C:\geode-native\
+        cd C:\geode-native
+        $env:GEODE_HOME="C:\apache-geode"
+        cmake -BC:\build -G "Visual Studio 16 2019" -Thost=x64
+    - name: cmake build
+      run: |
+        cmake --build C:\build --target javaobject -- /m
+        cmake --build C:\build --target Apache.Geode.IntegrationTests2 -- /m
+    - name: new cli integration tests
+      run: C:\build\clicache\packages\xunit.runner.console.2.4.0\tools\net47\xunit.console.exe C:\build\clicache\integration-test2\Debug\Apache.Geode.IntegrationTests2.dll -parallel all -verbose
