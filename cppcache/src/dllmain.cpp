@@ -93,7 +93,7 @@ void DllMainGetPath(char *result, int) {
     return;
   }
   Dl_info dlInfo;
-  dladdr((void *)DllMainGetPath, &dlInfo);
+  dladdr(reinterpret_cast<void *>(DllMainGetPath), &dlInfo);
   if (realpath(dlInfo.dli_fname, result) == nullptr) {
     result[0] = '\0';
   }

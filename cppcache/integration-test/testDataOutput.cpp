@@ -57,11 +57,11 @@ BEGIN_TEST(Byte)
     dataOutput.write(static_cast<uint8_t>(0x11));
     const uint8_t *buffer = dataOutput.getBuffer();
 
-    ASSERT(buffer[0] == (uint8_t)0x11, "expected 0x11.");
+    ASSERT(buffer[0] == static_cast<uint8_t>(0x11), "expected 0x11.");
 
     DataInputInternal dataInput(buffer, dataOutput.getBufferLength(), nullptr);
     const auto result = dataInput.read();
-    ASSERT(result == (uint8_t)0x11, "expected 0x11");
+    ASSERT(result == static_cast<uint8_t>(0x11), "expected 0x11");
   }
 END_TEST(Byte)
 
@@ -73,8 +73,8 @@ BEGIN_TEST(Boolean)
     dataOutput.writeBoolean(false);
     const uint8_t *buffer = dataOutput.getBuffer();
 
-    ASSERT(buffer[0] == (uint8_t)0x1, "expected 0x1.");
-    ASSERT(buffer[1] == (uint8_t)0x0, "expected 0x0.");
+    ASSERT(buffer[0] == static_cast<uint8_t>(0x1), "expected 0x1.");
+    ASSERT(buffer[1] == static_cast<uint8_t>(0x0), "expected 0x0.");
 
     DataInputInternal dataInput(buffer, dataOutput.getBufferLength(), nullptr);
     auto result = dataInput.readBoolean();
@@ -90,8 +90,8 @@ BEGIN_TEST(Short)
 
     dataOutput.writeInt(static_cast<int16_t>(0x1122));
     const uint8_t *buffer = dataOutput.getBuffer();
-    ASSERT(buffer[0] == (uint8_t)0x11, "expected 0x11.");
-    ASSERT(buffer[1] == (uint8_t)0x22, "expected 0x11.");
+    ASSERT(buffer[0] == static_cast<uint8_t>(0x11), "expected 0x11.");
+    ASSERT(buffer[1] == static_cast<uint8_t>(0x22), "expected 0x22.");
 
     DataInputInternal dataInput(buffer, dataOutput.getBufferLength(), nullptr);
     int16_t result = dataInput.readInt16();
@@ -106,10 +106,10 @@ BEGIN_TEST(int_t)
     dataOutput.writeInt(static_cast<int32_t>(0x11223344));
     const uint8_t *buffer = dataOutput.getBuffer();
     dumpnbytes(buffer, 4);
-    ASSERT(buffer[0] == (uint8_t)0x11, "expected 0x11.");
-    ASSERT(buffer[1] == (uint8_t)0x22, "expected 0x22.");
-    ASSERT(buffer[2] == (uint8_t)0x33, "expected 0x33.");
-    ASSERT(buffer[3] == (uint8_t)0x44, "expected 0x44.");
+    ASSERT(buffer[0] == static_cast<uint8_t>(0x11), "expected 0x11.");
+    ASSERT(buffer[1] == static_cast<uint8_t>(0x22), "expected 0x22.");
+    ASSERT(buffer[2] == static_cast<uint8_t>(0x33), "expected 0x33.");
+    ASSERT(buffer[3] == static_cast<uint8_t>(0x44), "expected 0x44.");
 
     DataInputInternal dataInput(buffer, dataOutput.getBufferLength(), nullptr);
     int32_t result = dataInput.readInt32();
@@ -124,14 +124,14 @@ BEGIN_TEST(Long)
     int64_t value = ((static_cast<int64_t>(0x11223344)) << 32) | 0x55667788;
     dataOutput.writeInt(value);
     const uint8_t *buffer = dataOutput.getBuffer();
-    ASSERT(buffer[0] == (uint8_t)0x11, "expected 0x11.");
-    ASSERT(buffer[1] == (uint8_t)0x22, "expected 0x22.");
-    ASSERT(buffer[2] == (uint8_t)0x33, "expected 0x33.");
-    ASSERT(buffer[3] == (uint8_t)0x44, "expected 0x44.");
-    ASSERT(buffer[4] == (uint8_t)0x55, "expected 0x55.");
-    ASSERT(buffer[5] == (uint8_t)0x66, "expected 0x66.");
-    ASSERT(buffer[6] == (uint8_t)0x77, "expected 0x77.");
-    ASSERT(buffer[7] == (uint8_t)0x88, "expected 0x88.");
+    ASSERT(buffer[0] == static_cast<uint8_t>(0x11), "expected 0x11.");
+    ASSERT(buffer[1] == static_cast<uint8_t>(0x22), "expected 0x22.");
+    ASSERT(buffer[2] == static_cast<uint8_t>(0x33), "expected 0x33.");
+    ASSERT(buffer[3] == static_cast<uint8_t>(0x44), "expected 0x44.");
+    ASSERT(buffer[4] == static_cast<uint8_t>(0x55), "expected 0x55.");
+    ASSERT(buffer[5] == static_cast<uint8_t>(0x66), "expected 0x66.");
+    ASSERT(buffer[6] == static_cast<uint8_t>(0x77), "expected 0x77.");
+    ASSERT(buffer[7] == static_cast<uint8_t>(0x88), "expected 0x88.");
 
     DataInputInternal dataInput(buffer, dataOutput.getBufferLength(), nullptr);
     int64_t result = dataInput.readInt64();
@@ -145,10 +145,10 @@ BEGIN_TEST(Float)
 
     dataOutput.writeFloat(1.2f);
     const uint8_t *buffer = dataOutput.getBuffer();
-    ASSERT(buffer[0] == (uint8_t)0x3f, "expected 0x3f.");
-    ASSERT(buffer[1] == (uint8_t)0x99, "expected 0x99.");
-    ASSERT(buffer[2] == (uint8_t)0x99, "expected 0x99.");
-    ASSERT(buffer[3] == (uint8_t)0x9a, "expected 0x9a.");
+    ASSERT(buffer[0] == static_cast<uint8_t>(0x3f), "expected 0x3f.");
+    ASSERT(buffer[1] == static_cast<uint8_t>(0x99), "expected 0x99.");
+    ASSERT(buffer[2] == static_cast<uint8_t>(0x99), "expected 0x99.");
+    ASSERT(buffer[3] == static_cast<uint8_t>(0x9a), "expected 0x9a.");
 
     DataInputInternal dataInput(buffer, dataOutput.getBufferLength(), nullptr);
     float result = dataInput.readFloat();
@@ -162,14 +162,14 @@ BEGIN_TEST(Double)
 
     dataOutput.writeDouble(1.2);
     const uint8_t *buffer = dataOutput.getBuffer();
-    ASSERT(buffer[0] == (uint8_t)0x3f, "expected 0x3f.");
-    ASSERT(buffer[1] == (uint8_t)0xf3, "expected 0xf3.");
-    ASSERT(buffer[2] == (uint8_t)0x33, "expected 0x33.");
-    ASSERT(buffer[3] == (uint8_t)0x33, "expected 0x33.");
-    ASSERT(buffer[4] == (uint8_t)0x33, "expected 0x33.");
-    ASSERT(buffer[5] == (uint8_t)0x33, "expected 0x33.");
-    ASSERT(buffer[6] == (uint8_t)0x33, "expected 0x33.");
-    ASSERT(buffer[7] == (uint8_t)0x33, "expected 0x33.");
+    ASSERT(buffer[0] == static_cast<uint8_t>(0x3f), "expected 0x3f.");
+    ASSERT(buffer[1] == static_cast<uint8_t>(0xf3), "expected 0xf3.");
+    ASSERT(buffer[2] == static_cast<uint8_t>(0x33), "expected 0x33.");
+    ASSERT(buffer[3] == static_cast<uint8_t>(0x33), "expected 0x33.");
+    ASSERT(buffer[4] == static_cast<uint8_t>(0x33), "expected 0x33.");
+    ASSERT(buffer[5] == static_cast<uint8_t>(0x33), "expected 0x33.");
+    ASSERT(buffer[6] == static_cast<uint8_t>(0x33), "expected 0x33.");
+    ASSERT(buffer[7] == static_cast<uint8_t>(0x33), "expected 0x33.");
 
     DataInputInternal dataInput(buffer, dataOutput.getBufferLength(), nullptr);
     double result = dataInput.readDouble();

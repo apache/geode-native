@@ -127,9 +127,11 @@ END_TASK(validate)
   }                                                    \
   } while(false)
 #define XASSERT(x)                                      \
+  do {                                                  \
   if (!(x)) {                                           \
     throw dunit::TestException(#x, __LINE__, __FILE__); \
-  }
+  }                                                     \
+  } while(false)
 #define FAIL(y) throw dunit::TestException(y, __LINE__, __FILE__)
 #define LOG(y) dunit::log(y, __LINE__, __FILE__)
 #define LOGCOORDINATOR(y) dunit::logCoordinator(y, __LINE__, __FILE__)

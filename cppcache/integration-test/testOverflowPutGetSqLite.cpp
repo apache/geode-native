@@ -161,7 +161,7 @@ void checkOverflowToken(std::shared_ptr<Region> &regionPtr, uint32_t lruLimit) {
   printf("Destoyed entries count is %d\n", destoyedCount);
   printf("Tombstone entries count is %d\n", tombstoneCount);
   printf("LRU entries limit is %d\n", lruLimit);
-  ASSERT(normalCount <= (int)lruLimit,
+  ASSERT(normalCount <= static_cast<int>(lruLimit),
          "Normal entries count should not exceed LRU entries limit.");
 }
 

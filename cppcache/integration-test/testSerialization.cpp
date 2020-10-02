@@ -125,10 +125,11 @@ class OtherType : public DataSerializable {
 
     printf("double hex 0x%016" PRIX64 "\n", ot->m_struct.e);
 
-    XASSERT(ot->m_struct.a == (int)i);
+    XASSERT(ot->m_struct.a == static_cast<int>(i));
     XASSERT(ot->m_struct.b == ((i % 2 == 0) ? true : false));
-    XASSERT(ot->m_struct.c == (char)65 + i);
-    XASSERT((ot->m_struct.d == (((double)2.0) * (double)i)));
+    XASSERT(ot->m_struct.c == static_cast<char>(65) + i);
+    XASSERT((ot->m_struct.d ==
+             ((static_cast<double>(2.0)) * static_cast<double>(i))));
   }
 };
 
