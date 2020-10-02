@@ -20,6 +20,8 @@
 #include <algorithm>
 #include <set>
 
+#include <boost/thread/lock_types.hpp>
+
 #include <geode/DataInput.hpp>
 #include <geode/DataOutput.hpp>
 #include <geode/SystemProperties.hpp>
