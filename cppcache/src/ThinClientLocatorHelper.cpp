@@ -40,304 +40,234 @@ namespace geode {
 namespace client {
 
 const int BUFF_SIZE = 3000;
+const int DEFAULT_CONNECTION_RETRIES = 3;
 
-class ConnectionWrapper {
- private:
-  Connector*& m_conn;
-
- public:
-  explicit ConnectionWrapper(Connector*& conn) : m_conn(conn) {}
-  ~ConnectionWrapper() {
-    LOGDEBUG("closing the connection locator1");
-    if (m_conn != nullptr) {
-      LOGDEBUG("closing the connection locator");
-      m_conn->close();
-      delete m_conn;
-    }
-  }
-};
-
-ThinClientLocatorHelper::ThinClientLocatorHelper(
-    const std::vector<std::string>& locatorAddresses,
-    const ThinClientPoolDM* poolDM)
-    : m_poolDM(poolDM) {
-  for (auto&& locatorAddress : locatorAddresses) {
-    m_Locators.emplace_back(locatorAddress);
+ThinClientLocatorHelper::ConnectionWrapper::~ConnectionWrapper() {
+  if (conn_ != nullptr) {
+    LOGDEBUG("Closing the locator connection");
+    conn_->close();
+    delete conn_;
   }
 }
 
 ThinClientLocatorHelper::ThinClientLocatorHelper(
-    const std::vector<std::string>& locatorAddresses,
-    const std::string& sniProxyHost, int sniProxyPort,
-    const ThinClientPoolDM* poolDM)
-    : m_poolDM(poolDM),
+    const std::vector<std::string>& locators, const ThinClientPoolDM* poolDM)
+    : locators_(locators.begin(), locators.end()), m_poolDM(poolDM) {}
+
+ThinClientLocatorHelper::ThinClientLocatorHelper(
+    const std::vector<std::string>& locators, const std::string& sniProxyHost,
+    int sniProxyPort, const ThinClientPoolDM* poolDM)
+    : locators_(locators.begin(), locators.end()),
+      m_poolDM(poolDM),
       m_sniProxyHost(sniProxyHost),
-      m_sniProxyPort(sniProxyPort) {
-  for (auto&& locatorAddress : locatorAddresses) {
-    m_Locators.emplace_back(locatorAddress);
-  }
+      m_sniProxyPort(sniProxyPort) {}
+
+int ThinClientLocatorHelper::getConnRetries() const {
+  auto retries = m_poolDM->getRetryAttempts();
+  return retries <= 0 ? DEFAULT_CONNECTION_RETRIES : retries;
 }
 
 std::vector<ServerLocation> ThinClientLocatorHelper::getLocators() const {
-  std::lock_guard<decltype(m_locatorLock)> guard{m_locatorLock};
-  return std::vector<ServerLocation>{m_Locators.begin(), m_Locators.end()};
+  decltype(locators_) locators;
+  {
+    boost::shared_lock<decltype(mutex_)> guard{mutex_};
+    if (locators_.empty()) {
+      return {};
+    }
+
+    locators = locators_;
+  }
+
+  RandGen randGen;
+  std::random_shuffle(locators.begin(), locators.end(), randGen);
+  return locators;
 }
 
-Connector* ThinClientLocatorHelper::createConnection(
-    Connector*& conn, const char* hostname, int32_t port,
-    std::chrono::microseconds waitSeconds, int32_t maxBuffSizePool) {
-  Connector* socket = nullptr;
-  auto& systemProperties = m_poolDM->getConnectionManager()
-                               .getCacheImpl()
-                               ->getDistributedSystem()
-                               .getSystemProperties();
-  if (systemProperties.sslEnabled()) {
+ThinClientLocatorHelper::ConnectionWrapper
+ThinClientLocatorHelper::createConnection(
+    const ServerLocation& location) const {
+  auto& sys_prop = m_poolDM->getConnectionManager()
+                       .getCacheImpl()
+                       ->getDistributedSystem()
+                       .getSystemProperties();
+
+  Connector* conn;
+  const auto port = location.getPort();
+  auto timeout = sys_prop.connectTimeout();
+  const auto& hostname = location.getServerName();
+  auto buffer_size = m_poolDM->getSocketBufferSize();
+
+  if (sys_prop.sslEnabled()) {
     if (m_sniProxyHost.empty()) {
-      socket = new TcpSslConn(
-          hostname, static_cast<uint16_t>(port), waitSeconds, maxBuffSizePool,
-          systemProperties.sslTrustStore(), systemProperties.sslKeyStore(),
-          systemProperties.sslKeystorePassword());
+      conn = new TcpSslConn(hostname, static_cast<uint16_t>(port), timeout,
+                            buffer_size, sys_prop.sslTrustStore(),
+                            sys_prop.sslKeyStore(),
+                            sys_prop.sslKeystorePassword());
     } else {
-      socket =
-          new TcpSslConn(hostname, waitSeconds, maxBuffSizePool, m_sniProxyHost,
-                         m_sniProxyPort, systemProperties.sslTrustStore(),
-                         systemProperties.sslKeyStore(),
-                         systemProperties.sslKeystorePassword());
+      conn = new TcpSslConn(hostname, timeout, buffer_size, m_sniProxyHost,
+                            m_sniProxyPort, sys_prop.sslTrustStore(),
+                            sys_prop.sslKeyStore(),
+                            sys_prop.sslKeystorePassword());
     }
   } else {
-    socket = new TcpConn(hostname, port, waitSeconds, maxBuffSizePool);
+    conn = new TcpConn(hostname, port, timeout, buffer_size);
   }
-  conn = socket;
-  socket->init();
-  return socket;
+
+  ConnectionWrapper cw{conn};
+  cw->init();
+  return cw;
+}
+
+std::shared_ptr<Serializable> ThinClientLocatorHelper::sendRequest(
+    const ServerLocation& location,
+    const std::shared_ptr<Serializable>& request) const {
+  auto& sys_prop = m_poolDM->getConnectionManager()
+                       .getCacheImpl()
+                       ->getDistributedSystem()
+                       .getSystemProperties();
+
+  try {
+    auto conn = createConnection(location);
+    auto data =
+        m_poolDM->getConnectionManager().getCacheImpl()->createDataOutput();
+    data.writeInt(static_cast<int32_t>(1001));  // GOSSIPVERSION
+    data.writeObject(request);
+    auto sentLength = conn->send(
+        reinterpret_cast<char*>(const_cast<uint8_t*>(data.getBuffer())),
+        data.getBufferLength(), m_poolDM->getReadTimeout());
+    if (sentLength <= 0) {
+      return nullptr;
+    }
+    char buff[BUFF_SIZE];
+    auto receivedLength =
+        conn->receive(buff, BUFF_SIZE, m_poolDM->getReadTimeout());
+    if (receivedLength <= 0) {
+      return nullptr;
+    }
+
+    auto di = m_poolDM->getConnectionManager().getCacheImpl()->createDataInput(
+        reinterpret_cast<uint8_t*>(buff), receivedLength);
+
+    if (di.read() == REPLY_SSL_ENABLED && !sys_prop.sslEnabled()) {
+      LOGERROR("SSL is enabled on locator, enable SSL in client as well");
+      throw AuthenticationRequiredException(
+          "SSL is enabled on locator, enable SSL in client as well");
+    }
+
+    di.rewindCursor(1);
+    return di.readObject();
+  } catch (const AuthenticationRequiredException& excp) {
+    throw excp;
+  } catch (const Exception& excp) {
+    LOGFINE("Exception while querying locator: %s: %s", excp.getName().c_str(),
+            excp.what());
+  }
+
+  return nullptr;
 }
 
 GfErrType ThinClientLocatorHelper::getAllServers(
     std::vector<std::shared_ptr<ServerLocation> >& servers,
-    const std::string& serverGrp) {
-  auto& sysProps = m_poolDM->getConnectionManager()
-                       .getCacheImpl()
-                       ->getDistributedSystem()
-                       .getSystemProperties();
+    const std::string& serverGrp) const {
   for (const auto& loc : getLocators()) {
-    try {
-      LOGDEBUG("getAllServers getting servers from server = %s ",
-               loc.getServerName().c_str());
-      auto buffSize = m_poolDM->getSocketBufferSize();
-      Connector* conn = nullptr;
-      ConnectionWrapper cw(conn);
-      createConnection(conn, loc.getServerName().c_str(), loc.getPort(),
-                       sysProps.connectTimeout(), buffSize);
-      auto request = std::make_shared<GetAllServersRequest>(serverGrp);
-      auto data =
-          m_poolDM->getConnectionManager().getCacheImpl()->createDataOutput();
-      data.writeInt(static_cast<int32_t>(1001));  // GOSSIPVERSION
-      data.writeObject(request);
-      auto sentLength = conn->send(
-          reinterpret_cast<char*>(const_cast<uint8_t*>(data.getBuffer())),
-          data.getBufferLength(), m_poolDM->getReadTimeout());
-      if (sentLength <= 0) {
-        continue;
-      }
-      char buff[BUFF_SIZE];
-      auto receivedLength =
-          conn->receive(buff, BUFF_SIZE, m_poolDM->getReadTimeout());
-      if (receivedLength <= 0) {
-        continue;
-      }
+    LOGDEBUG("getAllServers getting servers from server = %s ",
+             loc.getServerName().c_str());
 
-      auto di =
-          m_poolDM->getConnectionManager().getCacheImpl()->createDataInput(
-              reinterpret_cast<uint8_t*>(buff), receivedLength);
-
-      if (di.read() == REPLY_SSL_ENABLED && !sysProps.sslEnabled()) {
-        LOGERROR("SSL is enabled on locator, enable SSL in client as well");
-        throw AuthenticationRequiredException(
-            "SSL is enabled on locator, enable SSL in client as well");
-      }
-      di.rewindCursor(1);
-
-      auto response =
-          std::dynamic_pointer_cast<GetAllServersResponse>(di.readObject());
-      servers = response->getServers();
-      return GF_NOERR;
-    } catch (const AuthenticationRequiredException&) {
-      continue;
-    } catch (const Exception& excp) {
-      LOGFINE("Exception while querying locator: %s: %s",
-              excp.getName().c_str(), excp.what());
+    auto request = std::make_shared<GetAllServersRequest>(serverGrp);
+    auto response = std::dynamic_pointer_cast<GetAllServersResponse>(
+        sendRequest(loc, request));
+    if (response == nullptr) {
       continue;
     }
+
+    servers = response->getServers();
+    return GF_NOERR;
   }
+
   return GF_NOERR;
 }
 
 GfErrType ThinClientLocatorHelper::getEndpointForNewCallBackConn(
     ClientProxyMembershipID& memId, std::list<ServerLocation>& outEndpoint,
     std::string&, int redundancy, const std::set<ServerLocation>& exclEndPts,
-    const std::string& serverGrp) {
-  auto& sysProps = m_poolDM->getConnectionManager()
-                       .getCacheImpl()
-                       ->getDistributedSystem()
-                       .getSystemProperties();
-
-  auto poolRetry = m_poolDM->getRetryAttempts();
-  auto locatorsRetry = poolRetry <= 0 ? 3 : poolRetry;
-
-  LOGFINER(
-      "ThinClientLocatorHelper::getEndpointForNewCallBackConn locatorsRetry = "
-      "%d ",
-      locatorsRetry);
-
+    const std::string& serverGrp) const {
   auto locators = getLocators();
   auto locatorsSize = locators.size();
-  auto maxAttempts = locatorsSize == 1 ? locatorsRetry : locatorsSize;
+  auto maxAttempts = getConnRetries();
 
-  for (auto attempts = 0ULL; attempts < maxAttempts; ++attempts) {
-    const auto& loc = locatorsSize == 1 ? locators[0] : locators[attempts];
+  LOGFINER(
+      "ThinClientLocatorHelper::getEndpointForNewCallBackConn maxAttempts = "
+      "%d ",
+      maxAttempts);
 
-    try {
-      LOGFINER("Querying locator at [%s:%d] for queue server from group [%s]",
-               loc.getServerName().c_str(), loc.getPort(), serverGrp.c_str());
-      auto buffSize = m_poolDM->getSocketBufferSize();
-      Connector* conn = nullptr;
-      ConnectionWrapper cw(conn);
-      createConnection(conn, loc.getServerName().c_str(), loc.getPort(),
-                       sysProps.connectTimeout(), buffSize);
-      auto request = std::make_shared<QueueConnectionRequest>(
-          memId, exclEndPts, redundancy, false, serverGrp);
-      auto data =
-          m_poolDM->getConnectionManager().getCacheImpl()->createDataOutput();
-      data.writeInt(static_cast<int32_t>(1001));  // GOSSIPVERSION
-      data.writeObject(request);
-      auto sentLength = conn->send(
-          reinterpret_cast<char*>(const_cast<uint8_t*>(data.getBuffer())),
-          data.getBufferLength(), m_poolDM->getReadTimeout());
-      if (sentLength <= 0) {
-        continue;
-      }
-      char buff[BUFF_SIZE];
-      auto receivedLength =
-          conn->receive(buff, BUFF_SIZE, m_poolDM->getReadTimeout());
-      if (receivedLength <= 0) {
-        continue;
-      }
-      auto di =
-          m_poolDM->getConnectionManager().getCacheImpl()->createDataInput(
-              reinterpret_cast<uint8_t*>(buff), receivedLength);
+  for (auto attempt = 0; attempt < maxAttempts;) {
+    const auto& loc = locators[attempt++ % locatorsSize];
+    LOGFINER("Querying locator at [%s:%d] for queue server from group [%s]",
+             loc.getServerName().c_str(), loc.getPort(), serverGrp.c_str());
 
-      const auto acceptanceCode = di.read();
-      if (acceptanceCode == REPLY_SSL_ENABLED && !sysProps.sslEnabled()) {
-        LOGERROR("SSL is enabled on locator, enable SSL in client as well");
-        throw AuthenticationRequiredException(
-            "SSL is enabled on locator, enable SSL in client as well");
-      }
-      di.rewindCursor(1);
-      auto response =
-          std::dynamic_pointer_cast<QueueConnectionResponse>(di.readObject());
-      outEndpoint = response->getServers();
-      return GF_NOERR;
-    } catch (const AuthenticationRequiredException& excp) {
-      throw excp;
-    } catch (const Exception& excp) {
-      LOGFINE("Exception while querying locator: %s: %s",
-              excp.getName().c_str(), excp.what());
+    auto request = std::make_shared<QueueConnectionRequest>(
+        memId, exclEndPts, redundancy, false, serverGrp);
+    auto response = std::dynamic_pointer_cast<QueueConnectionResponse>(
+        sendRequest(loc, request));
+    if (response == nullptr) {
       continue;
     }
+
+    outEndpoint = response->getServers();
+    return GF_NOERR;
   }
+
   throw NoAvailableLocatorsException("Unable to query any locators");
 }
 
 GfErrType ThinClientLocatorHelper::getEndpointForNewFwdConn(
     ServerLocation& outEndpoint, std::string&,
     const std::set<ServerLocation>& exclEndPts, const std::string& serverGrp,
-    const TcrConnection* currentServer) {
+    const TcrConnection* currentServer) const {
   bool locatorFound = false;
-  auto& sysProps = m_poolDM->getConnectionManager()
-                       .getCacheImpl()
-                       ->getDistributedSystem()
-                       .getSystemProperties();
-
-  auto poolRetry = m_poolDM->getRetryAttempts();
-  auto locatorsRetry = poolRetry <= 0 ? 3 : poolRetry;
-  LOGFINER(
-      "ThinClientLocatorHelper::getEndpointForNewFwdConn locatorsRetry = %d ",
-      locatorsRetry);
-
   auto locators = getLocators();
   auto locatorsSize = locators.size();
-  auto maxAttempts = locatorsSize == 1 ? locatorsRetry : locatorsSize;
+  auto maxAttempts = getConnRetries();
 
-  for (auto attempts = 0ULL; attempts < maxAttempts; ++attempts) {
-    const auto& loc = locatorsSize == 1 ? locators[0] : locators[attempts];
-    try {
-      LOGFINE("Querying locator at [%s:%d] for server from group [%s]",
-              loc.getServerName().c_str(), loc.getPort(), serverGrp.c_str());
-      auto buffSize = m_poolDM->getSocketBufferSize();
-      Connector* conn = nullptr;
-      ConnectionWrapper cw(conn);
-      createConnection(conn, loc.getServerName().c_str(), loc.getPort(),
-                       sysProps.connectTimeout(), buffSize);
-      auto data =
-          m_poolDM->getConnectionManager().getCacheImpl()->createDataOutput();
-      data.writeInt(1001);  // GOSSIPVERSION
-      if (currentServer == nullptr) {
-        LOGDEBUG("Creating ClientConnectionRequest");
-        std::shared_ptr<ClientConnectionRequest> request =
-            std::make_shared<ClientConnectionRequest>(exclEndPts, serverGrp);
-        data.writeObject(request);
-      } else {
-        LOGDEBUG("Creating ClientReplacementRequest for connection: ",
-                 currentServer->getEndpointObject()->name().c_str());
-        std::shared_ptr<ClientReplacementRequest> request =
-            std::make_shared<ClientReplacementRequest>(
-                currentServer->getEndpointObject()->name(), exclEndPts,
-                serverGrp);
-        data.writeObject(request);
-      }
-      auto sentLength = conn->send(
-          reinterpret_cast<char*>(const_cast<uint8_t*>(data.getBuffer())),
-          data.getBufferLength(), m_poolDM->getReadTimeout());
-      if (sentLength <= 0) {
-        continue;
-      }
-      char buff[BUFF_SIZE];
-      auto receivedLength =
-          conn->receive(buff, BUFF_SIZE, m_poolDM->getReadTimeout());
-      if (receivedLength <= 0) {
-        continue;  // return GF_EUNDEF;
-      }
-      auto di =
-          m_poolDM->getConnectionManager().getCacheImpl()->createDataInput(
-              reinterpret_cast<uint8_t*>(buff), receivedLength);
+  LOGFINER(
+      "ThinClientLocatorHelper::getEndpointForNewFwdConn maxAttempts = %d ",
+      maxAttempts);
 
-      const auto acceptanceCode = di.read();
-      if (acceptanceCode == REPLY_SSL_ENABLED && !sysProps.sslEnabled()) {
-        LOGERROR("SSL is enabled on locator, enable SSL in client as well");
-        throw AuthenticationRequiredException(
-            "SSL is enabled on locator, enable SSL in client as well");
-      }
-      di.rewindCursor(1);
+  for (auto attempt = 0; attempt < maxAttempts;) {
+    const auto& loc = locators[attempt++ % locatorsSize];
+    LOGFINE("Querying locator at [%s:%d] for server from group [%s]",
+            loc.getServerName().c_str(), loc.getPort(), serverGrp.c_str());
 
-      auto response =
-          std::dynamic_pointer_cast<ClientConnectionResponse>(di.readObject());
-      response->printInfo();
-      if (!response->serverFound()) {
-        LOGFINE("Server not found");
-        locatorFound = true;
-        continue;
-      }
-      outEndpoint = response->getServerLocation();
-      LOGFINE("Server found at [%s:%d]", outEndpoint.getServerName().c_str(),
-              outEndpoint.getPort());
-      return GF_NOERR;
-    } catch (const AuthenticationRequiredException& excp) {
-      throw excp;
-    } catch (const Exception& excp) {
-      LOGFINE("Exception while querying locator: %s: %s",
-              excp.getName().c_str(), excp.what());
+    std::shared_ptr<Serializable> request;
+    if (currentServer == nullptr) {
+      LOGDEBUG("Creating ClientConnectionRequest");
+      request =
+          std::make_shared<ClientConnectionRequest>(exclEndPts, serverGrp);
+    } else {
+      LOGDEBUG("Creating ClientReplacementRequest for connection: %s",
+               currentServer->getEndpointObject()->name().c_str());
+      request = std::make_shared<ClientReplacementRequest>(
+          currentServer->getEndpointObject()->name(), exclEndPts, serverGrp);
+    }
+
+    auto response = std::dynamic_pointer_cast<ClientConnectionResponse>(
+        sendRequest(loc, request));
+    if (response == nullptr) {
       continue;
     }
+
+    response->printInfo();
+    if (!response->serverFound()) {
+      LOGFINE("Server not found");
+      locatorFound = true;
+      continue;
+    }
+
+    outEndpoint = response->getServerLocation();
+    LOGFINE("Server found at [%s:%d]", outEndpoint.getServerName().c_str(),
+            outEndpoint.getPort());
+
+    return GF_NOERR;
   }
 
   if (locatorFound) {
@@ -349,79 +279,32 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewFwdConn(
 
 GfErrType ThinClientLocatorHelper::updateLocators(
     const std::string& serverGrp) {
-  auto& sysProps = m_poolDM->getConnectionManager()
-                       .getCacheImpl()
-                       ->getDistributedSystem()
-                       .getSystemProperties();
-
   auto locators = getLocators();
   for (const auto& loc : locators) {
-    Connector* conn = nullptr;
-    try {
-      auto buffSize = m_poolDM->getSocketBufferSize();
-      LOGFINER("Querying locator list at: [%s:%d] for update from group [%s]",
-               loc.getServerName().c_str(), loc.getPort(), serverGrp.c_str());
-      ConnectionWrapper cw(conn);
-      createConnection(conn, loc.getServerName().c_str(), loc.getPort(),
-                       sysProps.connectTimeout(), buffSize);
-      auto request = std::make_shared<LocatorListRequest>(serverGrp);
-      auto data =
-          m_poolDM->getConnectionManager().getCacheImpl()->createDataOutput();
-      data.writeInt(static_cast<int32_t>(1001));  // GOSSIPVERSION
-      data.writeObject(request);
-      auto sentLength = conn->send(
-          reinterpret_cast<char*>(const_cast<uint8_t*>(data.getBuffer())),
-          data.getBufferLength(), m_poolDM->getReadTimeout());
-      if (sentLength <= 0) {
-        conn = nullptr;
-        continue;
-      }
-      char buff[BUFF_SIZE];
-      auto receivedLength =
-          conn->receive(buff, BUFF_SIZE, m_poolDM->getReadTimeout());
-      if (receivedLength <= 0) {
-        continue;
-      }
-      auto di =
-          m_poolDM->getConnectionManager().getCacheImpl()->createDataInput(
-              reinterpret_cast<uint8_t*>(buff), receivedLength);
+    LOGFINER("Querying locator list at: [%s:%d] for update from group [%s]",
+             loc.getServerName().c_str(), loc.getPort(), serverGrp.c_str());
 
-      const auto acceptanceCode = di.read();
-      if (acceptanceCode == REPLY_SSL_ENABLED && !sysProps.sslEnabled()) {
-        LOGERROR("SSL is enabled on locator, enable SSL in client as well");
-        throw AuthenticationRequiredException(
-            "SSL is enabled on locator, enable SSL in client as well");
-      }
-      di.rewindCursor(1);
-
-      auto response =
-          std::dynamic_pointer_cast<LocatorListResponse>(di.readObject());
-      auto newLocators = response->getLocators();
-      if (!newLocators.empty()) {
-        RandGen randGen;
-        std::random_shuffle(newLocators.begin(), newLocators.end(), randGen);
-      }
-
-      for (const auto& oldLoc : locators) {
-        auto iter = std::find(newLocators.begin(), newLocators.end(), oldLoc);
-        if (iter == newLocators.end()) {
-          newLocators.push_back(oldLoc);
-        }
-      }
-
-      {
-        std::lock_guard<decltype(m_locatorLock)> guard{m_locatorLock};
-        m_Locators.swap(newLocators);
-      }
-
-      return GF_NOERR;
-    } catch (const AuthenticationRequiredException& excp) {
-      throw excp;
-    } catch (const Exception& excp) {
-      LOGFINE("Exception while querying locator: %s: %s",
-              excp.getName().c_str(), excp.what());
+    auto request = std::make_shared<LocatorListRequest>(serverGrp);
+    auto response = std::dynamic_pointer_cast<LocatorListResponse>(
+        sendRequest(loc, request));
+    if (response == nullptr) {
       continue;
     }
+
+    auto new_locators = response->getLocators();
+    for (const auto& old_loc : locators) {
+      auto iter = std::find(new_locators.begin(), new_locators.end(), old_loc);
+      if (iter == new_locators.end()) {
+        new_locators.push_back(old_loc);
+      }
+    }
+
+    {
+      boost::unique_lock<decltype(mutex_)> lock(mutex_);
+      locators_.swap(new_locators);
+    }
+
+    return GF_NOERR;
   }
   return GF_NOTCON;
 }

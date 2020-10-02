@@ -21,9 +21,10 @@
 #define GEODE_THINCLIENTLOCATORHELPER_H_
 
 #include <list>
-#include <mutex>
 #include <set>
 #include <string>
+
+#include <boost/thread/shared_mutex.hpp>
 
 #include <geode/internal/geode_globals.hpp>
 
@@ -45,40 +46,91 @@ class ThinClientLocatorHelper {
   ThinClientLocatorHelper(const ThinClientLocatorHelper&) = delete;
   ThinClientLocatorHelper& operator=(const ThinClientLocatorHelper&) = delete;
 
-  ThinClientLocatorHelper(const std::vector<std::string>& locatorAddresses,
+  ThinClientLocatorHelper(const std::vector<std::string>& locators,
                           const ThinClientPoolDM* poolDM);
-  ThinClientLocatorHelper(const std::vector<std::string>& locatorAddresses,
+  ThinClientLocatorHelper(const std::vector<std::string>& locators,
                           const std::string& sniProxyHost, int sniProxyPort,
                           const ThinClientPoolDM* poolDM);
   GfErrType getEndpointForNewFwdConn(
       ServerLocation& outEndpoint, std::string& additionalLoc,
       const std::set<ServerLocation>& exclEndPts,
       const std::string& serverGrp = "",
-      const TcrConnection* currentServer = nullptr);
+      const TcrConnection* currentServer = nullptr) const;
   GfErrType getEndpointForNewCallBackConn(
       ClientProxyMembershipID& memId, std::list<ServerLocation>& outEndpoint,
       std::string& additionalLoc, int redundancy,
-      const std::set<ServerLocation>& exclEndPts, const std::string& serverGrp);
+      const std::set<ServerLocation>& exclEndPts,
+      const std::string& serverGrp) const;
   GfErrType getAllServers(
       std::vector<std::shared_ptr<ServerLocation> >& servers,
-      const std::string& serverGrp);
-  int32_t getCurLocatorsNum() {
-    return static_cast<int32_t>(m_Locators.size());
+      const std::string& serverGrp) const;
+  int32_t getCurLocatorsNum() const {
+    return static_cast<int32_t>(locators_.size());
   }
   GfErrType updateLocators(const std::string& serverGrp = "");
 
  private:
+  /**
+   * Auxiliary types
+   */
+
+  class ConnectionWrapper {
+   private:
+    Connector* conn_;
+
+   public:
+    ConnectionWrapper(const ConnectionWrapper&) = delete;
+    ConnectionWrapper& operator=(const ConnectionWrapper&) = delete;
+
+    explicit ConnectionWrapper(Connector* conn) : conn_(conn) {}
+    ConnectionWrapper(ConnectionWrapper&& other)
+        : conn_(std::move(other.conn_)) {}
+
+    ~ConnectionWrapper();
+
+    Connector* operator->() { return conn_; }
+  };
+
+  /**
+   * Returns the number of connections retries per request
+   * @return Number of connection retries towards locators
+   */
+  int getConnRetries() const;
+
+  /**
+   * Returns a shuffled copy of the current locators list
+   * @return Locators list
+   * @note The original list of locators is copied under the mutex scope
+   * @note This method is used instead of directly using the original locators
+   *       list in order to avoid having to lock the mutex while establishing
+   *       the connection to any of the locators, which is a bad practice in
+   *       general.
+   */
   std::vector<ServerLocation> getLocators() const;
-  Connector* createConnection(Connector*& conn, const char* hostname,
-                              int32_t port,
-                              std::chrono::microseconds waitSeconds,
-                              int32_t maxBuffSizePool = 0);
+
+  /**
+   * Creates a connection to the given locator
+   * @param location Locator ServerLocation
+   * @return A connection wrapper for the locator
+   */
+  ConnectionWrapper createConnection(const ServerLocation& location) const;
+
+  /**
+   * Sends a request to the given locator
+   * @param location Locator ServerLocation
+   * @param request Serializable object of the request
+   * @return Serializable object of the response if no error happened,
+   *         otherwise it returns a nullptr
+   */
+  std::shared_ptr<Serializable> sendRequest(
+      const ServerLocation& location,
+      const std::shared_ptr<Serializable>& request) const;
 
   /**
    * Data members
    */
-  mutable std::mutex m_locatorLock;
-  std::vector<ServerLocation> m_Locators;
+  mutable boost::shared_mutex mutex_;
+  std::vector<ServerLocation> locators_;
   const ThinClientPoolDM* m_poolDM;
   std::string m_sniProxyHost;
   int m_sniProxyPort;
