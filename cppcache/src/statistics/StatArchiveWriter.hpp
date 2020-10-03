@@ -232,7 +232,7 @@ class APACHE_GEODE_EXPORT StatArchiveWriter {
 
   /**
    * Opens the statArchiver by opening the file provided as a parameter.
-   * @param filename string representation of the file
+   * @param filename string representation of the file name
    */
   void openFile(std::string filename);
 
