@@ -148,7 +148,7 @@ class GsRandom {
    * Like randomString(), but returns only only alphanumeric,
    *   underscore, or space characters.
    *
-   * @param uSize the length of the random string to generate.
+   * @param size the length of the random string to generate.
    * @retval a bounded random string
    */
   static std::string getAlphanumericString(uint32_t size) {
@@ -168,7 +168,7 @@ class GsRandom {
    * Like randomString(), but returns only only alphanumeric,
    *   underscore, or space characters.
    *
-   * @param uSize the length of the random string to generate.
+   * @param size the length of the random string to generate.
    * @retval a bounded random string
    */
   static void getAlphanumericString(uint32_t size, char* buffer) {
