@@ -199,7 +199,7 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewCallBackConn(
 
   LOGFINER(
       "ThinClientLocatorHelper::getEndpointForNewCallBackConn maxAttempts = "
-      "%d ",
+      "%zu",
       maxAttempts);
 
   for (auto attempt = 0ULL; attempt < maxAttempts;) {
@@ -232,7 +232,7 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewFwdConn(
   auto maxAttempts = getConnRetries();
 
   LOGFINER(
-      "ThinClientLocatorHelper::getEndpointForNewFwdConn maxAttempts = %d ",
+      "ThinClientLocatorHelper::getEndpointForNewFwdConn maxAttempts = %zu",
       maxAttempts);
 
   for (auto attempt = 0ULL; attempt < maxAttempts;) {
