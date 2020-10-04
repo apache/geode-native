@@ -41,8 +41,8 @@ namespace apache {
 namespace geode {
 namespace client {
 
-const int BUFF_SIZE = 3000;
-const int DEFAULT_CONNECTION_RETRIES = 3;
+const size_t BUFF_SIZE = 3000;
+const size_t DEFAULT_CONNECTION_RETRIES = 3;
 
 ThinClientLocatorHelper::ConnectionWrapper::~ConnectionWrapper() {
   if (conn_ != nullptr) {
@@ -64,7 +64,7 @@ ThinClientLocatorHelper::ThinClientLocatorHelper(
       m_sniProxyHost(sniProxyHost),
       m_sniProxyPort(sniProxyPort) {}
 
-int ThinClientLocatorHelper::getConnRetries() const {
+size_t ThinClientLocatorHelper::getConnRetries() const {
   auto retries = m_poolDM->getRetryAttempts();
   return retries <= 0 ? DEFAULT_CONNECTION_RETRIES : retries;
 }
@@ -202,7 +202,7 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewCallBackConn(
       "%d ",
       maxAttempts);
 
-  for (auto attempt = 0; attempt < maxAttempts;) {
+  for (auto attempt = 0ULL; attempt < maxAttempts;) {
     const auto& loc = locators[attempt++ % locatorsSize];
     LOGFINER("Querying locator at [%s:%d] for queue server from group [%s]",
              loc.getServerName().c_str(), loc.getPort(), serverGrp.c_str());
@@ -235,7 +235,7 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewFwdConn(
       "ThinClientLocatorHelper::getEndpointForNewFwdConn maxAttempts = %d ",
       maxAttempts);
 
-  for (auto attempt = 0; attempt < maxAttempts;) {
+  for (auto attempt = 0ULL; attempt < maxAttempts;) {
     const auto& loc = locators[attempt++ % locatorsSize];
     LOGFINE("Querying locator at [%s:%d] for server from group [%s]",
             loc.getServerName().c_str(), loc.getPort(), serverGrp.c_str());

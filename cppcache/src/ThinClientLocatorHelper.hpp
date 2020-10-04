@@ -64,8 +64,8 @@ class ThinClientLocatorHelper {
   GfErrType getAllServers(
       std::vector<std::shared_ptr<ServerLocation> >& servers,
       const std::string& serverGrp) const;
-  int32_t getCurLocatorsNum() const {
-    return static_cast<int32_t>(locators_.size());
+  size_t getCurLocatorsNum() const {
+    return locators_.size();
   }
   GfErrType updateLocators(const std::string& serverGrp = "");
 
@@ -84,7 +84,9 @@ class ThinClientLocatorHelper {
 
     explicit ConnectionWrapper(Connector* conn) : conn_(conn) {}
     ConnectionWrapper(ConnectionWrapper&& other)
-        : conn_(std::move(other.conn_)) {}
+        : conn_(other.conn_) {
+      other.conn_ = nullptr;
+    }
 
     ~ConnectionWrapper();
 
@@ -95,7 +97,7 @@ class ThinClientLocatorHelper {
    * Returns the number of connections retries per request
    * @return Number of connection retries towards locators
    */
-  int getConnRetries() const;
+  size_t getConnRetries() const;
 
   /**
    * Returns a shuffled copy of the current locators list
