@@ -64,9 +64,7 @@ class ThinClientLocatorHelper {
   GfErrType getAllServers(
       std::vector<std::shared_ptr<ServerLocation> >& servers,
       const std::string& serverGrp) const;
-  size_t getCurLocatorsNum() const {
-    return locators_.size();
-  }
+  size_t getCurLocatorsNum() const { return locators_.size(); }
   GfErrType updateLocators(const std::string& serverGrp = "");
 
  private:
@@ -83,8 +81,7 @@ class ThinClientLocatorHelper {
     ConnectionWrapper& operator=(const ConnectionWrapper&) = delete;
 
     explicit ConnectionWrapper(Connector* conn) : conn_(conn) {}
-    ConnectionWrapper(ConnectionWrapper&& other)
-        : conn_(other.conn_) {
+    ConnectionWrapper(ConnectionWrapper&& other) : conn_(other.conn_) {
       other.conn_ = nullptr;
     }
 
