@@ -46,9 +46,11 @@ Cache createTestCache() {
       .create();
 }
 
-std::shared_ptr<Region> setupCachingProxyRegion(Cache& cache) {
+std::shared_ptr<Region> setupCachingProxyRegion(Cache& cache,
+                                                bool consistency = true) {
   auto region = cache.createRegionFactory(RegionShortcut::CACHING_PROXY)
                     .setPoolName("default")
+                    .setConcurrencyChecksEnabled(consistency)
                     .create("region");
 
   return region;
@@ -110,6 +112,51 @@ TEST(RegisterKeysTest, RegisterAllWithCachingRegion) {
     ASSERT_NE(entryAfter, nullptr);
     ASSERT_EQ(entryAfter->value(), 1);
   }
+}
+
+TEST(RegisterKeysTest, RegisterAllWithConsistencyDisabled) {
+  Cluster cluster{LocatorCount{1}, ServerCount{1}};
+
+  cluster.start();
+
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("region")
+      .withType("PARTITION")
+      .execute();
+
+  auto producer_cache = createTestCache();
+  auto listener_cache = createTestCache();
+
+  auto producer_region = [&cluster](Cache& cache) {
+    auto poolFactory = cache.getPoolManager().createFactory();
+    cluster.applyLocators(poolFactory);
+    poolFactory.create("default");
+    return setupProxyRegion(cache);
+  }(producer_cache);
+
+  auto listener_region = [&cluster](Cache& cache) {
+    auto poolFactory =
+        cache.getPoolManager().createFactory().setSubscriptionEnabled(true);
+    cluster.applyLocators(poolFactory);
+    poolFactory.create("default");
+    auto region = setupCachingProxyRegion(cache, false);
+    region->registerAllKeys();
+    return region;
+  }(listener_cache);
+
+  ASSERT_FALSE(listener_region->containsValueForKey("one"));
+
+  producer_region->put("one", std::make_shared<CacheableInt16>(1));
+  std::this_thread::sleep_for(std::chrono::seconds(5));
+
+  ASSERT_TRUE(listener_region->containsValueForKey("one"));
+
+  producer_region->destroy("one");
+  std::this_thread::sleep_for(std::chrono::seconds(5));
+
+  ASSERT_FALSE(listener_region->containsValueForKey("one"));
 }
 
 TEST(RegisterKeysTest, RegisterAnyWithCachingRegion) {
