@@ -474,7 +474,7 @@ class APACHE_GEODE_EXPORT DiskFailureException : public Exception {
 
 /**
  *@brief Thrown by the persistence manager when the data
- *@brief to be read from disk is corrupt.
+ * to be read from disk is corrupt.
  **/
 class APACHE_GEODE_EXPORT DiskCorruptException : public Exception {
  public:

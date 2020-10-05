@@ -63,7 +63,6 @@ class APACHE_GEODE_EXPORT AuthenticatedView : public RegionService {
    * After this cache is closed, any further
    * method call on this cache or any region object will throw
    * <code>CacheClosedException</code>, unless otherwise noted.
-   * @param keepalive whether to keep a durable client's queue alive
    * @throws CacheClosedException,  if the cache is already closed.
    */
   void close() override;
@@ -85,9 +84,6 @@ class APACHE_GEODE_EXPORT AuthenticatedView : public RegionService {
    * Returns a set of root regions in the cache. This set is a snapshot and
    * is not backed by the Cache. The vector passed in is cleared and the
    * regions are added to it.
-   *
-   * @param regions the returned set of
-   * regions
    */
   std::vector<std::shared_ptr<Region>> rootRegions() const override;
 

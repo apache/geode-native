@@ -156,7 +156,6 @@ class APACHE_GEODE_EXPORT PdxWriter {
    * The fields type is <code>CacheableDatePtr</code>.
    * <p>C++ std::shared_ptr<CacheableDate> is mapped to Java Date</p>
    * @param fieldName the name of the field to write
-   * @param value the value of the field to write
    * @return this PdxWriter
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty
@@ -203,7 +202,6 @@ class APACHE_GEODE_EXPORT PdxWriter {
    * <p>C++ bool* is mapped to Java boolean[]</p>
    * @param fieldName the name of the field to write
    * @param array the value of the field to write
-   * @param length the length of the array field to write
    * @return this PdxWriter
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
@@ -217,7 +215,6 @@ class APACHE_GEODE_EXPORT PdxWriter {
    * <p>C++ char16_t* is mapped to Java char[].</p>
    * @param fieldName the name of the field to write
    * @param array the value of the field to write
-   * @param length the length of the array field to write
    * @return this PdxWriter
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
@@ -231,7 +228,6 @@ class APACHE_GEODE_EXPORT PdxWriter {
    * <p>C++ int8_t* is mapped to Java byte[].</p>
    * @param fieldName the name of the field to write
    * @param array the value of the field to write
-   * @param length the length of the array field to write
    * @return this PdxWriter
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
@@ -245,7 +241,6 @@ class APACHE_GEODE_EXPORT PdxWriter {
    * <p>C++ int16_t* is mapped to Java short[].</p>
    * @param fieldName the name of the field to write
    * @param array the value of the field to write
-   * @param length the length of the array field to write
    * @return this PdxWriter
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
@@ -259,7 +254,6 @@ class APACHE_GEODE_EXPORT PdxWriter {
    * <p>C++ int32_t* is mapped to Java int[].</p>
    * @param fieldName the name of the field to write
    * @param array the value of the field to write
-   * @param length the length of the array field to write
    * @return this PdxWriter
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
@@ -273,7 +267,6 @@ class APACHE_GEODE_EXPORT PdxWriter {
    * <p>C++ int64_t* is mapped to Java long[].</p>
    * @param fieldName the name of the field to write
    * @param array the value of the field to write
-   * @param length the length of the array field to write
    * @return this PdxWriter
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
@@ -287,7 +280,6 @@ class APACHE_GEODE_EXPORT PdxWriter {
    * <p>C++ float* is mapped to Java float[].</p>
    * @param fieldName the name of the field to write
    * @param array the value of the field to write
-   * @param length the length of the array field to write
    * @return this PdxWriter
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
@@ -301,7 +293,6 @@ class APACHE_GEODE_EXPORT PdxWriter {
    * <p>C++ double* is mapped to Java double[].</p>
    * @param fieldName the name of the field to write
    * @param array the value of the field to write
-   * @param length the length of the array field to write
    * @return this PdxWriter
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
@@ -315,7 +306,6 @@ class APACHE_GEODE_EXPORT PdxWriter {
    * <p>C++ std::vector<std::string> is mapped to Java String[].</p>
    * @param fieldName the name of the field to write
    * @param array the value of the field to write
-   * @param length the length of the array field to write
    * @return this PdxWriter
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.

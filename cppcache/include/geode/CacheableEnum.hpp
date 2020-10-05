@@ -102,7 +102,7 @@ class APACHE_GEODE_EXPORT CacheableEnum
 
   /**
    * Factory method for creating an instance of CacheableEnum.
-   * @param className the name of the enum class that maps to the java enum
+   * @param enumClassName the name of the enum class that maps to the java enum
    * type.
    * @param enumName the name of the enum constant that maps to the java enum
    * type.

@@ -183,7 +183,6 @@ class APACHE_GEODE_EXPORT PdxReader {
    * Read a char16_t* value from the <code>PdxReader</code> and sets array
    * length. <p>C++ char16_t* is mapped to Java char[].</p>
    * @param fieldName name of the field to read
-   * @param length length is set with number of char16_t elements.
    * @return value of type char16_t*.
    * @throws IllegalStateException if PdxReader doesn't have the named field.
    *
@@ -195,7 +194,6 @@ class APACHE_GEODE_EXPORT PdxReader {
    * Read a bool* value from the <code>PdxReader</code> and sets array length.
    * <p>C++ bool* is mapped to Java boolean[]</p>
    * @param fieldName name of the field to read
-   * @param length length is set with number of bool elements.
    * @throws IllegalStateException if PdxReader doesn't have the named field.
    *
    * @see PdxReader#hasField
@@ -206,7 +204,6 @@ class APACHE_GEODE_EXPORT PdxReader {
    * Read a int8_t* value from the <code>PdxReader</code> and sets array length.
    * <p>C++ int8_t* is mapped to Java byte[].</p>
    * @param fieldName name of the field to read
-   * @param length length is set with number of int8_t elements
    * @return value of type int8_t*.
    * @throws IllegalStateException if PdxReader doesn't have the named field.
    *
@@ -219,7 +216,6 @@ class APACHE_GEODE_EXPORT PdxReader {
    * length.
    * <p>C++ int16_t* is mapped to Java short[].</p>
    * @param fieldName name of the field to read
-   * @param length length is set with number of int16_t elements
    * @return value of type int16_t*.
    * @throws IllegalStateException if PdxReader doesn't have the named field.
    *
@@ -232,7 +228,6 @@ class APACHE_GEODE_EXPORT PdxReader {
    * length.
    * <p>C++ int32_t* is mapped to Java int[].</p>
    * @param fieldName name of the field to read
-   * @param length length is set with number of int32_t elements
    * @return value of type int32_t*.
    * @throws IllegalStateException if PdxReader doesn't have the named field.
    *
@@ -245,7 +240,6 @@ class APACHE_GEODE_EXPORT PdxReader {
    * length.
    * <p>C++ int64_t* is mapped to Java long[].</p>
    * @param fieldName name of the field to read
-   * @param length length is set with number of int64_t elements
    * @return value of type int64_t*.
    * @throws IllegalStateException if PdxReader doesn't have the named field.
    *
@@ -257,7 +251,6 @@ class APACHE_GEODE_EXPORT PdxReader {
    * Read a float* value from the <code>PdxReader</code> and sets array length.
    * <p>C++ float* is mapped to Java float[].</p>
    * @param fieldName name of the field to read
-   * @param length length is set with number of float elements
    * @return value of type float*.
    * @throws IllegalStateException if PdxReader doesn't have the named field.
    *
@@ -269,7 +262,6 @@ class APACHE_GEODE_EXPORT PdxReader {
    * Read a double* value from the <code>PdxReader</code> and sets array length.
    * <p>C++ double* is mapped to Java double[].</p>
    * @param fieldName name of the field to read
-   * @param length length is set with number of double elements
    * @return value of type double*.
    * @throws IllegalStateException if PdxReader doesn't have the named field.
    *
@@ -337,7 +329,7 @@ class APACHE_GEODE_EXPORT PdxReader {
    * Checks if the named field exists and returns the result.
    * This can be useful when writing code that handles more than one version of
    * a PDX class.
-   * @param fieldname the name of the field to check
+   * @param fieldName the name of the field to check
    * @return <code>true</code> if the named field exists; otherwise
    * <code>false</code>
    */

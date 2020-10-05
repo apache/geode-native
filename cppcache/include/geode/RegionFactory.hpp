@@ -256,7 +256,7 @@ class APACHE_GEODE_EXPORT RegionFactory {
   /**
    * Enables or disables concurrent modification checks
    * @since 7.0
-   * @param concurrencyChecksEnabled whether to perform concurrency checks on
+   * @param enable whether to perform concurrency checks on
    * operations
    * @return a reference to <code>this</code>
    */

@@ -232,9 +232,9 @@ class APACHE_GEODE_EXPORT StatArchiveWriter {
 
   /**
    * Opens the statArchiver by opening the file provided as a parameter.
-   * @param std::string filename.
+   * @param filename string representation of the file name
    */
-  void openFile(std::string);
+  void openFile(std::string filename);
 
   /**
    * Returns the size of number of bytes written so far to this archive.

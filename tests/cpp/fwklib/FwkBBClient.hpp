@@ -147,7 +147,6 @@ class FwkBBClient {
    * @param BBName name of BB
    * @param Key name of counter
    * @param Value value to set
-   * @param piResult
    * @retval value after setIfGreater
    */
   int64_t setIfGreater(const std::string& BBName, const std::string& Key,

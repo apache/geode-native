@@ -29,7 +29,7 @@ namespace geode {
 namespace client {
 
 /**
- * @class CqState CqState.hpp
+ * @enum CqState CqState.hpp
  *
  * This interface gives information on the state of a CqQuery.
  * It is provided by the getState method of the CqQuery instance.

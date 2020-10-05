@@ -25,7 +25,7 @@ namespace geode {
 namespace client {
 
 /**
- * @class RegionShortcut RegionShortcut.hpp
+ * @enum RegionShortcut RegionShortcut.hpp
  *
  * Each enum represents a predefined {@link RegionAttributes} in a {@link
  * Cache}.

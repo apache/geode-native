@@ -50,13 +50,13 @@ class APACHE_GEODE_EXPORT PdxSerializable : public virtual Serializable,
 
   /**
    *@brief Serialize this object in Geode PDX format
-   *@param PdxWriter to serialize the PDX object
+   *@param output to serialize the PDX object
    **/
   virtual void toData(PdxWriter& output) const = 0;
 
   /**
    *@brief Deserialize this object
-   *@param PdxReader to deserialize the PDX object
+   *@param input to deserialize the PDX object
    **/
   virtual void fromData(PdxReader& input) = 0;
 

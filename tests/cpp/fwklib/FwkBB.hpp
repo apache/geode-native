@@ -96,8 +96,7 @@ class FwkBBMessage {
   }
 
   /** @brief pass to data to parse onReceive message
-   * @param psData data pointer, not null terminated
-   * @param dataSize data size of message
+   * @param data string of data
    * @retval true = Success, false = Failed
    */
   void fromMessageStream(std::string data) {
@@ -140,7 +139,6 @@ class FwkBBMessage {
   }
 
   /** @brief get data stream to send
-   * @param sStream data stream
    * @retval true = Success, false = Failed
    */
   std::string& toMessageStream() {
@@ -168,22 +166,22 @@ class FwkBBMessage {
   }
 
   /** @brief set Id of message
-   * @param sId id of message
+   * @param id id of message
    */
   void setId(std::string id) { m_id = id; }
 
   /** @brief set command of message
-   * @param sCommand command of message
+   * @param cmd command of message
    */
   void setCommand(std::string cmd) { m_cmd = cmd; }
 
   /** @brief set result of message
-   * @param sResult result of message
+   * @param result result of message
    */
   void setResult(std::string result) { m_result = result; }
 
   /** @brief add parameter value to message
-   * @param sParameter parameter of message
+   * @param parameter parameter of message
    */
   void addParameter(std::string parameter) {
     m_parameterVector.push_back(parameter);
