@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+#include <stdio.h>
+
 #include <chrono>
 #include <future>
 #include <iostream>
@@ -46,11 +48,21 @@ using apache::geode::client::RegionShortcut;
 
 using std::chrono::minutes;
 
+std::string getClientLogName() {
+  std::string testSuiteName(
+      ::testing::UnitTest::GetInstance()->current_test_suite()->name());
+  std::string testCaseName(
+      ::testing::UnitTest::GetInstance()->current_test_case()->name());
+  std::string logFileName(testSuiteName + "/" + testCaseName + "/client.log");
+  return logFileName;
+}
+
 Cache createCache() {
   using apache::geode::client::CacheFactory;
 
   auto cache = CacheFactory()
                    .set("log-level", "debug")
+                   .set("log-file", getClientLogName())
                    .set("statistic-sampling-enabled", "false")
                    .create();
 
@@ -88,6 +100,53 @@ void getEntries(std::shared_ptr<Region> region, int numEntries) {
     auto value = region->get(key);
     ASSERT_NE(nullptr, value);
   }
+}
+
+void removeLogFromPreviousExecution() {
+  std::string logFileName(getClientLogName());
+  std::ifstream previousTestLog(logFileName);
+  if (previousTestLog.good()) {
+    std::cout << "Removing log from previous execution: " << logFileName
+              << std::endl;
+    remove(logFileName.c_str());
+  }
+}
+
+void verifyMetadataWasRemovedAtFirstError() {
+  std::ifstream testLog(getClientLogName());
+  std::string fileLine;
+  bool ioErrors = false;
+  bool timeoutErrors = false;
+  bool metadataRemovedDueToIoErr = false;
+  bool metadataRemovedDueToTimeout = false;
+  std::regex timeoutRegex(
+      "sendRequestConnWithRetry: Giving up for endpoint(.*)reason: timed out "
+      "waiting for endpoint.");
+  std::regex ioErrRegex(
+      "sendRequestConnWithRetry: Giving up for endpoint(.*)reason: IO error "
+      "for endpoint.");
+  std::regex removingMetadataDueToIoErrRegex(
+      "Removing bucketServerLocation(.*)due to GF_IOERR");
+  std::regex removingMetadataDueToTimeoutRegex(
+      "Removing bucketServerLocation(.*)due to GF_TIMEOUT");
+
+  if (testLog.is_open()) {
+    while (getline(testLog, fileLine)) {
+      if (std::regex_search(fileLine, timeoutRegex)) {
+        timeoutErrors = true;
+      } else if (std::regex_search(fileLine, ioErrRegex)) {
+        ioErrors = true;
+      } else if (std::regex_search(fileLine, removingMetadataDueToIoErrRegex)) {
+        metadataRemovedDueToIoErr = true;
+      } else if (std::regex_search(fileLine,
+                                   removingMetadataDueToTimeoutRegex)) {
+        metadataRemovedDueToTimeout = true;
+      }
+    }
+  }
+  ASSERT_TRUE((timeoutErrors == metadataRemovedDueToTimeout) &&
+              (ioErrors == metadataRemovedDueToIoErr) &&
+              (metadataRemovedDueToTimeout != metadataRemovedDueToIoErr));
 }
 
 void putPartitionedRegionWithRedundancyServerGoesDown(bool singleHop) {
@@ -158,7 +217,9 @@ void getPartitionedRegionWithRedundancyServerGoesDown(bool singleHop) {
  */
 TEST(PartitionRegionOpsTest,
      getPartitionedRegionWithRedundancyServerGoesDownSingleHop) {
+  removeLogFromPreviousExecution();
   getPartitionedRegionWithRedundancyServerGoesDown(true);
+  verifyMetadataWasRemovedAtFirstError();
 }
 
 /**
@@ -173,7 +234,9 @@ TEST(PartitionRegionOpsTest,
  */
 TEST(PartitionRegionOpsTest,
      putPartitionedRegionWithRedundancyServerGoesDownSingleHop) {
+  removeLogFromPreviousExecution();
   putPartitionedRegionWithRedundancyServerGoesDown(true);
+  verifyMetadataWasRemovedAtFirstError();
 }
 
 /**

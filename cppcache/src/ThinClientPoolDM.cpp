@@ -2333,7 +2333,7 @@ TcrConnection* ThinClientPoolDM::getConnectionFromQueueW(
   if (theEP != nullptr) {
     conn = getFromEP(theEP);
     if (!conn) {
-      LOGFINER("Creating connection to endpint as not found in pool ");
+      LOGFINER("Creating connection to endpoint as not found in pool ");
       *error = createPoolConnectionToAEndPoint(conn, theEP, maxConnLimit, true);
       if (*error == GF_CLIENT_WAIT_TIMEOUT ||
           *error == GF_CLIENT_WAIT_TIMEOUT_REFRESH_PRMETADATA) {
