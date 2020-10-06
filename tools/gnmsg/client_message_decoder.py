@@ -36,6 +36,7 @@ class ClientMessageDecoder(DecoderBase):
         self.send_trace_parts_retriever_ = None
         self.get_send_trace_parts_functions = {
             "0.0.42": self.get_send_trace_parts_base,
+            "10.0.3": self.get_send_trace_parts_base,
             "10.1.1": self.get_send_trace_parts_base,
             "10.1.2": self.get_send_trace_parts_base,
             "10.1.3": self.get_send_trace_parts_base,
@@ -43,12 +44,46 @@ class ClientMessageDecoder(DecoderBase):
         }
         self.send_trace_parsers = {
             "0.0.42": self.parse_request_fields_base,
+            "10.0.3": self.parse_request_fields_base,
             "10.1.1": self.parse_request_fields_base,
             "10.1.2": self.parse_request_fields_base,
             "10.1.3": self.parse_request_fields_base,
             "9.1.1": self.parse_request_fields_v911,
         }
-
+        #
+        # Native client code believes this is the list of messages that require a security footer.
+        # We will use this list to verify and report if a message is sent that needs one but doesn't
+        # have it, since this has been the source of at least one difficult-to-diagnose bug in the
+        # past.  To see the decision-making code that filters on this message list, look at
+        # ThinClientBaseDM::beforeSendingRequest and TcrMessage::isUserInitiativeOps in geode-native
+        # C++ code base.
+        self.message_requires_security_part = [
+            "ADD_PDX_ENUM",
+            "ADD_PDX_TYPE",
+            "CLIENT_READY",
+            "CLOSE_CONNECTION",
+            "COMMIT",
+            "GETCQSTATS_MSG_TYPE",
+            "GET_CLIENT_PARTITION_ATTRIBUTES",
+            "GET_CLIENT_PR_METADATA",
+            "GET_ENTRY",
+            "GET_FUNCTION_ATTRIBUTES",
+            "GET_PDX_ENUM_BY_ID",
+            "GET_PDX_ID_FOR_ENUM",
+            "GET_PDX_ID_FOR_TYPE",
+            "GET_PDX_TYPE_BY_ID",
+            "INVALID",
+            "MAKE_PRIMARY",
+            "MONITORCQ_MSG_TYPE",
+            "PERIODIC_ACK",
+            "PING",
+            "REQUEST_EVENT_VALUE",
+            "ROLLBACK"
+            "SIZE",
+            "TX_FAILOVER",
+            "TX_SYNCHRONIZATION",
+            "USER_CREDENTIAL_MESSAGE",
+        ]
     def search_for_version(self, line):
         if self.nc_version_ == None:
             expression = re.compile(r"Product version:.*Native (\d+)\.(\d+)\.(\d+)-")
@@ -160,6 +195,9 @@ class ClientMessageDecoder(DecoderBase):
         if self.send_trace_parser_ is not None:
             return self.send_trace_parser_(message_bytes)
 
+    def request_requires_security_footer(self, message_type):
+        return message_type in self.message_requires_security_part
+
     def process_line(self, line):
         connection = None
         is_send_trace = False
@@ -194,7 +232,7 @@ class ClientMessageDecoder(DecoderBase):
                     send_trace["SecurityFlag"],
                 ) = self.parse_request_fields(message_bytes)
                 if (send_trace["SecurityFlag"] == 1) and (
-                    self.request_requires_security_footer(send_trace["Type"])
+                    self.request_requires_security_footer(str(send_trace["Type"]))
                 ):
                     print(
                         "ERROR: Security flag is set, but no footer was added for this message!"

@@ -36,6 +36,7 @@ class ServerMessageDecoder(DecoderBase):
         self.nc_version_ = None
         self.get_receive_trace_parts_functions_ = {
             "0.0.42": self.get_receive_trace_header_base,
+            "10.0.3": self.get_receive_trace_header_base,
             "10.1.1": self.get_receive_trace_header_base,
             "10.1.2": self.get_receive_trace_header_base,
             "10.1.3": self.get_receive_trace_header_base,
@@ -43,6 +44,7 @@ class ServerMessageDecoder(DecoderBase):
         }
         self.receive_trace_parsers_ = {
             "0.0.42": self.parse_response_fields_base,
+            "10.0.3": self.parse_response_fields_base,
             "10.1.1": self.parse_response_fields_base,
             "10.1.2": self.parse_response_fields_base,
             "10.1.3": self.parse_response_fields_base,
