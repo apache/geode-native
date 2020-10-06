@@ -45,6 +45,9 @@
 #define GF_FILEEXISTS(x) _access_s(x, 00)
 #else
 #include <unistd.h>
+
+#include <iostream>
+
 #define GF_FILEEXISTS(x) access(x, F_OK)
 #endif
 
@@ -406,8 +409,7 @@ void Log::writeBanner() {
   std::string bannertext = geodeBanner::getBanner();
 
   if (g_logFile == nullptr) {
-    fprintf(stdout, "%s", bannertext.c_str());
-    fflush(stdout);
+    std::cerr << bannertext.c_str() << std::endl;
     return;
   }  // else
 
@@ -540,8 +542,7 @@ void Log::put(LogLevel level, const char* msg) {
   char fullpath[512] = {0};
 
   if (!g_logFile) {
-    fprintf(stdout, "%s%s\n", formatLogLine(buf, level), msg);
-    fflush(stdout);
+    std::cerr << formatLogLine(buf, level) << msg << std::endl;
     // TODO: ignoring for now; probably store the log-lines for possible
     // future logging if log-file gets initialized properly
 
