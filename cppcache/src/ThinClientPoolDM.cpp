@@ -1427,14 +1427,13 @@ GfErrType ThinClientPoolDM::sendSyncRequest(
             GF_SAFE_DELETE_CON(conn);
           }
           excludeServers.insert(ServerLocation(ep->name()));
-          if (error == GF_IOERR || error == GF_TIMEOUT) {
-            if (m_clientMetadataService) {
-              auto sl = std::make_shared<BucketServerLocation>(ep->name());
-              LOGINFO("Removing bucketServerLocation %s due to %s",
-                      sl->toString().c_str(),
-                      (error == GF_IOERR ? "GF_IOERR" : "GF_TIMEOUT"));
-              m_clientMetadataService->removeBucketServerLocation(sl);
-            }
+          if ((error == GF_IOERR || error == GF_TIMEOUT) &&
+              m_clientMetadataService) {
+            auto sl = std::make_shared<BucketServerLocation>(ep->name());
+            LOGINFO("Removing bucketServerLocation %s due to %s",
+                    sl->toString().c_str(),
+                    (error == GF_IOERR ? "GF_IOERR" : "GF_TIMEOUT"));
+            m_clientMetadataService->removeBucketServerLocation(sl);
           }
         }
       } else {
@@ -2352,14 +2351,13 @@ TcrConnection* ThinClientPoolDM::getConnectionFromQueueW(
                   version);
         }
         return nullptr;
-      } else if (*error == GF_IOERR || *error == GF_TIMEOUT) {
-        if (m_clientMetadataService) {
-          auto sl = std::make_shared<BucketServerLocation>(theEP->name());
-          LOGINFO("Removing bucketServerLocation %s due to %s",
-                  sl->toString().c_str(),
-                  (*error == GF_IOERR ? "GF_IOERR" : "GF_TIMEOUT"));
-          m_clientMetadataService->removeBucketServerLocation(sl);
-        }
+      } else if ((*error == GF_IOERR || *error == GF_TIMEOUT) &&
+                 m_clientMetadataService) {
+        auto sl = std::make_shared<BucketServerLocation>(theEP->name());
+        LOGINFO("Removing bucketServerLocation %s due to %s",
+                sl->toString().c_str(),
+                (*error == GF_IOERR ? "GF_IOERR" : "GF_TIMEOUT"));
+        m_clientMetadataService->removeBucketServerLocation(sl);
       }
     }
   }
