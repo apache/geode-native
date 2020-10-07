@@ -83,7 +83,7 @@ void GfshExecute::execute(const std::string &command, const std::string &user,
   BOOST_LOG_TRIVIAL(debug) << "Gfsh::execute: exit:" << exit_code;
 
   if (exit_code) {
-    throw new GfshExecuteException("gfsh error", exit_code);
+    throw GfshExecuteException("gfsh error", exit_code);
   }
   extractConnectionCommand(command, user, password, keyStorePath, trustStorePath, keyStorePassword, trustStorePassword);
 }
