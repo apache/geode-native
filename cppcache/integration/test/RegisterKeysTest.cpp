@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-#include <iostream>
+#include <gmock/gmock.h>
+
+#include <condition_variable>
+#include <mutex>
 
 #include <gtest/gtest.h>
 
 #include <geode/Cache.hpp>
 #include <geode/CacheFactory.hpp>
-#include <geode/PoolManager.hpp>
+#include <geode/EntryEvent.hpp>
 #include <geode/RegionFactory.hpp>
 #include <geode/RegionShortcut.hpp>
 
@@ -35,9 +38,19 @@ using apache::geode::client::CacheableInt16;
 using apache::geode::client::CacheableKey;
 using apache::geode::client::CacheableString;
 using apache::geode::client::CacheFactory;
+using apache::geode::client::CacheListener;
+using apache::geode::client::EntryEvent;
 using apache::geode::client::IllegalStateException;
 using apache::geode::client::Region;
 using apache::geode::client::RegionShortcut;
+using ::testing::_;
+
+class CacheListenerMock : public CacheListener {
+ public:
+  MOCK_METHOD1(afterDestroy, void(const EntryEvent& event));
+};
+
+ACTION_P(CvNotifyOne, cv) { cv->notify_one(); }
 
 Cache createTestCache() {
   CacheFactory cacheFactory;
@@ -128,35 +141,44 @@ TEST(RegisterKeysTest, RegisterAllWithConsistencyDisabled) {
 
   auto producer_cache = createTestCache();
   auto listener_cache = createTestCache();
+  std::shared_ptr<Region> producer_region;
+  std::shared_ptr<Region> listener_region;
 
-  auto producer_region = [&cluster](Cache& cache) {
-    auto poolFactory = cache.getPoolManager().createFactory();
+  {
+    auto poolFactory = producer_cache.getPoolManager().createFactory();
     cluster.applyLocators(poolFactory);
     poolFactory.create("default");
-    return setupProxyRegion(cache);
-  }(producer_cache);
+    producer_region = setupProxyRegion(producer_cache);
+  }
 
-  auto listener_region = [&cluster](Cache& cache) {
+  auto listener = std::make_shared<CacheListenerMock>();
+  {
     auto poolFactory =
-        cache.getPoolManager().createFactory().setSubscriptionEnabled(true);
+        listener_cache.getPoolManager().createFactory().setSubscriptionEnabled(
+            true);
     cluster.applyLocators(poolFactory);
     poolFactory.create("default");
-    auto region = setupCachingProxyRegion(cache, false);
-    region->registerAllKeys();
-    return region;
-  }(listener_cache);
-
-  ASSERT_FALSE(listener_region->containsValueForKey("one"));
+    listener_region =
+        listener_cache.createRegionFactory(RegionShortcut::CACHING_PROXY)
+            .setPoolName("default")
+            .setCacheListener(listener)
+            .setConcurrencyChecksEnabled(false)
+            .create("region");
+    listener_region->registerAllKeys();
+  }
 
   producer_region->put("one", std::make_shared<CacheableInt16>(1));
-  std::this_thread::sleep_for(std::chrono::seconds(5));
-
-  ASSERT_TRUE(listener_region->containsValueForKey("one"));
-
   producer_region->destroy("one");
-  std::this_thread::sleep_for(std::chrono::seconds(5));
 
-  ASSERT_FALSE(listener_region->containsValueForKey("one"));
+  std::mutex cv_mutex;
+  std::condition_variable cv;
+  EXPECT_CALL(*listener, afterDestroy(_)).Times(1).WillOnce(CvNotifyOne(&cv));
+
+  {
+    std::unique_lock<std::mutex> lock(cv_mutex);
+    EXPECT_EQ(cv.wait_for(lock, std::chrono::seconds(5)),
+              std::cv_status::no_timeout);
+  }
 }
 
 TEST(RegisterKeysTest, RegisterAnyWithCachingRegion) {
