@@ -20,6 +20,7 @@
 #include <iostream>
 #include <random>
 #include <thread>
+#include <fstream>
 
 #include <gtest/gtest.h>
 
@@ -130,7 +131,7 @@ void verifyMetadataWasRemovedAtFirstError() {
       "Removing bucketServerLocation(.*)due to GF_TIMEOUT");
 
   if (testLog.is_open()) {
-    while (getline(testLog, fileLine)) {
+    while (std::getline(testLog, fileLine)) {
       if (std::regex_search(fileLine, timeoutRegex)) {
         timeoutErrors = true;
       } else if (std::regex_search(fileLine, ioErrRegex)) {
