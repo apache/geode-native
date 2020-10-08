@@ -103,7 +103,7 @@ void getEntries(std::shared_ptr<Region> region, int numEntries) {
 
 void removeLogFromPreviousExecution() {
   std::string logFileName(getClientLogName());
-  std::ifstream previousTestLog(logFileName);
+  std::ifstream previousTestLog(logFileName.c_str());
   if (previousTestLog.good()) {
     std::cout << "Removing log from previous execution: " << logFileName
               << std::endl;
@@ -112,7 +112,7 @@ void removeLogFromPreviousExecution() {
 }
 
 void verifyMetadataWasRemovedAtFirstError() {
-  std::ifstream testLog(getClientLogName());
+  std::ifstream testLog(getClientLogName().c_str());
   std::string fileLine;
   bool ioErrors = false;
   bool timeoutErrors = false;
