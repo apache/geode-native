@@ -16,11 +16,11 @@
  */
 
 #include <chrono>
+#include <fstream>
 #include <future>
 #include <iostream>
 #include <random>
 #include <thread>
-#include <fstream>
 
 #include <gtest/gtest.h>
 
