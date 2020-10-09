@@ -94,7 +94,7 @@ class CqQueryImpl : public CqQuery,
       statistics::StatisticsFactory* factory, const bool isDurable = false,
       const std::shared_ptr<UserAttributes>& userAttributesPtr = nullptr);
 
-  virtual ~CqQueryImpl();
+  virtual ~CqQueryImpl() override;
 
   /**
    * returns CQ name

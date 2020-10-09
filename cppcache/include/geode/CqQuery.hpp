@@ -53,6 +53,8 @@ class Query;
  */
 class APACHE_GEODE_EXPORT CqQuery {
  public:
+  virtual ~CqQuery() = default;
+
   /**
    * Get the query string provided when a new Query was created from a
    * QueryService.

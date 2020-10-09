@@ -48,6 +48,8 @@ class APACHE_GEODE_EXPORT QueryService {
  public:
   typedef std::vector<std::shared_ptr<CqQuery>> query_container_type;
 
+  virtual ~QueryService() = default;
+
   /**
    * Get a new Query with the specified query string.
    *

@@ -90,7 +90,7 @@ class APACHE_GEODE_EXPORT AuthenticatedView : public RegionService {
   /**
    * @brief destructor
    */
-  virtual ~AuthenticatedView();
+  virtual ~AuthenticatedView() override;
 
   /**
    * @brief constructors

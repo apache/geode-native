@@ -56,6 +56,7 @@ class Gfsh {
   template <class Result>
   class Command {
    public:
+    virtual ~Command() = default;
     virtual Result execute(const std::string &user, const std::string &password, const std::string &keyStorePath,
                            const std::string &trustStorePath, const std::string &keyStorePassword,
                            const std::string &trustStorePassword) {
