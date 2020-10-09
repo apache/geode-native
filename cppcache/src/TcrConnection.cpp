@@ -484,6 +484,8 @@ void TcrConnection::createConnection(const std::string& address,
           systemProperties.sslTrustStore(), systemProperties.sslKeyStore(),
           systemProperties.sslKeystorePassword()));
     }
+  } else {
+    m_conn.reset(new TcpConn(address, connectTimeout, maxBuffSizePool));
   }
 }
 
@@ -494,7 +496,6 @@ ConnErrType TcrConnection::receiveData(
     const auto readBytes = m_conn->receive(
         buffer, length,
         std::chrono::duration_cast<std::chrono::milliseconds>(timeout));
-
     m_poolDM->getStats().incReceivedBytes(static_cast<int64_t>(readBytes));
   } catch (boost::system::system_error& ex) {
     switch (ex.code().value()) {
