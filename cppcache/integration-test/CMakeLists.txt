@@ -105,12 +105,6 @@ foreach(FILE ${SOURCES})
     FOLDER cpp/test/integration/legacy
   )
 
-if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  target_compile_options(_WarningsAsError INTERFACE
-          -Wno-missing-variable-declarations
-          )
-endif()
-
   target_link_libraries(${TEST}
     PRIVATE
       ACE::ACE

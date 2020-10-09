@@ -822,11 +822,6 @@ PdxInstanceFactory CacheImpl::createPdxInstanceFactory(
       m_distributedSystem.getSystemProperties().getEnableTimeStatistics());
 }
 
-PdxInstanceFactory CacheImpl::createPdxInstanceFactory(
-    const std::string& className) const {
-  return createPdxInstanceFactory(className, true);
-}
-
 AuthenticatedView CacheImpl::createAuthenticatedView(
     std::shared_ptr<Properties> userSecurityProperties,
     const std::string& poolName) {

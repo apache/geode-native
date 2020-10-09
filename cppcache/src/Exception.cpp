@@ -51,7 +51,7 @@ std::string Exception::getStackTrace() const {
   return stack_ ? stack_->getString() : "No stack available.";
 }
 
-static thread_local std::string threadLocalExceptionMessage;
+thread_local std::string threadLocalExceptionMessage;
 
 void setThreadLocalExceptionMessage(std::string exMsg) {
   threadLocalExceptionMessage = std::move(exMsg);

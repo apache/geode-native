@@ -18,6 +18,7 @@
 #include <vector>
 
 #include <geode/DataOutput.hpp>
+#include <geode/SystemProperties.hpp>
 
 #include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
@@ -30,7 +31,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-static std::recursive_mutex globalBigBufferMutex;
+std::recursive_mutex globalBigBufferMutex;
 size_t DataOutput::m_highWaterMark = 50 * 1024 * 1024;
 size_t DataOutput::m_lowWaterMark = 8192;
 

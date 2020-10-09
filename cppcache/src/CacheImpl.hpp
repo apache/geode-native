@@ -305,9 +305,6 @@ class APACHE_GEODE_EXPORT CacheImpl {
   PdxInstanceFactory createPdxInstanceFactory(const std::string& className,
                                               bool expectDomainClass) const;
 
-  PdxInstanceFactory createPdxInstanceFactory(
-      const std::string& className) const;
-
   AuthenticatedView createAuthenticatedView(
       std::shared_ptr<Properties> userSecurityProperties,
       const std::string& poolName);

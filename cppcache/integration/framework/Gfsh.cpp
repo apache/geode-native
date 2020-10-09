@@ -29,8 +29,6 @@ Gfsh::Shutdown Gfsh::shutdown() { return Shutdown{*this}; }
 
 Gfsh::Deploy Gfsh::deploy() { return Deploy(*this); }
 
-Gfsh::Query Gfsh::query(const std::string &stmt) { return Query(*this, stmt); }
-
 Gfsh::Verb::Verb(Gfsh &gfsh) : gfsh_(gfsh) {}
 
 Gfsh::Start::Start(Gfsh &gfsh) : gfsh_(gfsh) {}
@@ -495,9 +493,6 @@ Gfsh::Deploy &Gfsh::Deploy::jar(const std::string &jarFile) {
 
   return *this;
 }
-
-Gfsh::Query::Query(Gfsh &gfsh, const std::string &stmt)
-    : Command{gfsh, "query --query=\"" + stmt + "\""} {}
 
 template <>
 void Gfsh::Command<void>::execute(const std::string &user,

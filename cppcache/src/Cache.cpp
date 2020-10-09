@@ -153,7 +153,7 @@ LogLevel Cache::getLogLevel() { return Log::logLevel(); }
 
 PdxInstanceFactory Cache::createPdxInstanceFactory(
     const std::string& className) const {
-  return createPdxInstanceFactory(className, true);
+  return m_cacheImpl->createPdxInstanceFactory(className, true);
 }
 
 PdxInstanceFactory Cache::createPdxInstanceFactory(

@@ -70,7 +70,7 @@ class PdxType : public internal::DataSerializableInternal,
 
   NameVsPdxType m_fieldNameVsPdxType;
 
-  bool m_noJavaClass;
+  bool is_java_class_;
 
   PdxTypeRegistry& m_pdxTypeRegistry;
 

@@ -20,8 +20,16 @@
 #ifndef INTEGRATION_TEST_FRAMEWORK_CONFIG_H
 #define INTEGRATION_TEST_FRAMEWORK_CONFIG_H
 
-enum class FrameworkVariable {JavaObjectJarPath, GfShExecutable, TestCacheXmlDir, TestClientSslKeysDir, TestServerSslKeysDir, TestSniConfigPath};
+enum class FrameworkVariable {
+  JavaObjectJarPath,
+  GfShExecutable,
+  TestCacheXmlDir,
+  NewTestResourcesDir,
+  TestClientSslKeysDir,
+  TestServerSslKeysDir,
+  TestSniConfigPath
+};
 
 const char *getFrameworkString(FrameworkVariable name);
 
-#endif // INTEGRATION_TEST_FRAMEWORK_CONFIG_H
+#endif  // INTEGRATION_TEST_FRAMEWORK_CONFIG_H

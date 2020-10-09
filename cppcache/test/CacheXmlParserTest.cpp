@@ -21,7 +21,7 @@
 
 using apache::geode::client::CacheXmlParser;
 
-static const std::string kXsdPrefix = R"(<?xml version='1.0' encoding='UTF-8'?>
+std::string xsd_prefix = R"(<?xml version='1.0' encoding='UTF-8'?>
 <client-cache
   xmlns="http://geode.apache.org/schema/cpp-cache"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -30,7 +30,7 @@ static const std::string kXsdPrefix = R"(<?xml version='1.0' encoding='UTF-8'?>
   version='1.0'
 >)";
 
-static const std::string kValidCacheConfigBody = R"(<region name = 'Root1' >
+std::string valid_cache_config_body = R"(<region name = 'Root1' >
         <region-attributes scope='local'
                            caching-enabled='true'
                            initial-capacity='25'
@@ -99,7 +99,7 @@ static const std::string kValidCacheConfigBody = R"(<region name = 'Root1' >
     </region>
 </client-cache>)";
 
-static const std::string kInvalidCacheConfigBody = R"(<region >
+std::string invalid_cache_config_body = R"(<region >
         <region-attributes scope='local'
                            caching-enabled='true'
                            initial-capacity='25'
@@ -170,13 +170,13 @@ static const std::string kInvalidCacheConfigBody = R"(<region >
 
 TEST(CacheXmlParser, CanParseRegionConfigFromAValidXsdCacheConfig) {
   CacheXmlParser parser(nullptr);
-  std::string xml = kXsdPrefix + kValidCacheConfigBody;
+  std::string xml = xsd_prefix + valid_cache_config_body;
   parser.parseMemory(xml.c_str(), static_cast<int>(xml.length()));
 }
 
 TEST(CacheXmlParser, ParseRegionConfigFromInvalidCacheConfigThrowsException) {
   CacheXmlParser parser(nullptr);
-  std::string xml = kXsdPrefix + kInvalidCacheConfigBody;
+  std::string xml = xsd_prefix + invalid_cache_config_body;
   ASSERT_THROW(parser.parseMemory(xml.c_str(), static_cast<int>(xml.length())),
                apache::geode::client::CacheXmlException);
 }

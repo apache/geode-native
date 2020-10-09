@@ -46,9 +46,6 @@ class Gfsh {
   class Deploy;
   Deploy deploy();
 
-  class Query;
-  Query query(const std::string &stmt);
-
   class Verb {
    public:
    protected:
@@ -303,11 +300,6 @@ class Gfsh {
     explicit Deploy(Gfsh &gfsh);
 
     Deploy &jar(const std::string &jarFile);
-  };
-
-  class Query : public Command<void> {
-   public:
-    explicit Query(Gfsh &gfsh, const std::string &stmt);
   };
 
  protected:
