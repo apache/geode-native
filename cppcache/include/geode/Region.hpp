@@ -256,7 +256,6 @@ class APACHE_GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * subregions of the current region
    * @param recursive determines whether the method recursively fills in
    * subregions
-   * @param[out] sr subregions
    * @throws RegionDestroyedException
    */
   virtual std::vector<std::shared_ptr<Region>> subregions(
@@ -1223,9 +1222,6 @@ class APACHE_GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
    *
    * @param regex The regular expression string.
    * @param isDurable flag to indicate whether this is a durable registration
-   * @param resultKeys If non-nullptr then the keys that match the regular
-   *   expression on the server are returned. The vector is cleared at the
-   *   start to discard any existing keys in the vector.
    * @param getInitialValues true to populate the cache with values of the keys
    *   that were registered on the server
    * @param receiveValues whether to act like notify-by-subscription is set

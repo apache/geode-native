@@ -70,8 +70,6 @@ class APACHE_GEODE_EXPORT DataInput {
 
   /**
    * Read a boolean value from the <code>DataInput</code>.
-   *
-   * @param value output parameter to hold the boolean read from stream
    */
   inline bool readBoolean() {
     _GEODE_CHECK_BUFFER_SIZE(1);
@@ -172,9 +170,6 @@ class APACHE_GEODE_EXPORT DataInput {
 
   /**
    * Read a 32-bit signed integer from the <code>DataInput</code>.g
-   *
-   * @param value output parameter to hold the 32-bit signed integer
-   *   read from stream
    */
   inline int32_t readInt32() {
     _GEODE_CHECK_BUFFER_SIZE(4);
@@ -187,9 +182,6 @@ class APACHE_GEODE_EXPORT DataInput {
 
   /**
    * Read a 64-bit signed integer from the <code>DataInput</code>.
-   *
-   * @param value output parameter to hold the 64-bit signed integer
-   *   read from stream
    */
   inline int64_t readInt64() {
     _GEODE_CHECK_BUFFER_SIZE(8);
@@ -209,9 +201,6 @@ class APACHE_GEODE_EXPORT DataInput {
    * Read a 32-bit signed integer array length value from the
    * <code>DataInput</code> in a manner compatible with java server's
    * <code>DataSerializer.readArrayLength</code>.
-   *
-   * @param len output parameter to hold the 32-bit signed length
-   *   read from stream
    */
   inline int32_t readArrayLength() {
     const uint8_t code = read();
@@ -256,8 +245,6 @@ class APACHE_GEODE_EXPORT DataInput {
 
   /**
    * Read a float from the <code>DataInput</code>.
-   *
-   * @param value output parameter to hold the float read from stream
    */
   inline float readFloat() {
     _GEODE_CHECK_BUFFER_SIZE(4);
@@ -271,9 +258,6 @@ class APACHE_GEODE_EXPORT DataInput {
 
   /**
    * Read a double precision number from the <code>DataInput</code>.
-   *
-   * @param value output parameter to hold the double precision number
-   *   read from stream
    */
   inline double readDouble() {
     _GEODE_CHECK_BUFFER_SIZE(8);

@@ -234,7 +234,7 @@ class APACHE_GEODE_EXPORT Statistics {
    *         if the statistic with name <code>name</code> is not of
    *         type <code>double</code>.
    */
-  virtual void setDouble(const std::string&, double value) = 0;
+  virtual void setDouble(const std::string& name, double value) = 0;
 
   ///////////////////////  get() Methods  ///////////////////////
 

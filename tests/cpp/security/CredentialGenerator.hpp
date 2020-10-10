@@ -67,13 +67,6 @@ class CredentialGenerator;
  * Different implementations are there for different kinds of authentication/
  * authorization schemes.
  * <p>
- * Usage:
- *   auto cg = CredentialGenerator::create( schemeStr );
- *   @param schemeStr can be one of the following
- *    DUMMY - simple username/password authentication
- *    LDAP  - LDAP server based authentication.
- *    PKCS  - Digital signature based authentication
- *    NONE  - Disable security altogether.
  *
  * for client connection credentials
  *   cg->getAuthInit(prop);
@@ -118,6 +111,14 @@ class CredentialGenerator {
   }
 
  public:
+  /**
+   * @brief create new Credential Generator
+   * @param scheme can be one of the following
+   *    DUMMY - simple username/password authentication
+   *    LDAP  - LDAP server based authentication.
+   *    PKCS  - Digital signature based authentication
+   *    NONE  - Disable security altogether.
+   * **/
   static std::shared_ptr<CredentialGenerator> create(std::string scheme);
   static bool registerScheme(std::shared_ptr<CredentialGenerator> scheme) {
     // if not already registered...

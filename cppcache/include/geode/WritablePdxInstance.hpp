@@ -232,8 +232,6 @@ class APACHE_GEODE_EXPORT WritablePdxInstance : public PdxInstance {
    *          name of the field whose value will be set
    * @param value
    *          value that will be set to the field of type bool array
-   * @param length
-   *          The number of elements in bool array type.
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
@@ -250,8 +248,6 @@ class APACHE_GEODE_EXPORT WritablePdxInstance : public PdxInstance {
    *          name of the field whose value will be set
    * @param value
    *          value that will be set to the field of type int8_t array
-   * @param length
-   *          The number of elements in int8_t array type.
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
@@ -268,8 +264,6 @@ class APACHE_GEODE_EXPORT WritablePdxInstance : public PdxInstance {
    *          name of the field whose value will be set
    * @param value
    *          value that will be set to the field of type int16_t array
-   * @param length
-   *          The number of elements in int16_t array type.
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
@@ -286,8 +280,6 @@ class APACHE_GEODE_EXPORT WritablePdxInstance : public PdxInstance {
    *          name of the field whose value will be set
    * @param value
    *          value that will be set to the field of type int32_t array
-   * @param length
-   *          The number of elements in int32_t array type.
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
@@ -304,8 +296,6 @@ class APACHE_GEODE_EXPORT WritablePdxInstance : public PdxInstance {
    *          name of the field whose value will be set
    * @param value
    *          value that will be set to the field of type int64_t array
-   * @param length
-   *          The number of elements in int64_t array type.
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
@@ -322,8 +312,6 @@ class APACHE_GEODE_EXPORT WritablePdxInstance : public PdxInstance {
    *          name of the field whose value will be set
    * @param value
    *          value that will be set to the field of type float array
-   * @param length
-   *          The number of elements in float array type.
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
@@ -340,8 +328,6 @@ class APACHE_GEODE_EXPORT WritablePdxInstance : public PdxInstance {
    *          name of the field whose value will be set
    * @param value
    *          value that will be set to the field of type double array
-   * @param length
-   *          The number of elements in double array type.
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */
@@ -374,8 +360,6 @@ class APACHE_GEODE_EXPORT WritablePdxInstance : public PdxInstance {
    *          name of the field whose value will be set
    * @param value
    *          value that will be set to the field of type char16_t array
-   * @param length
-   *          The number of elements in char16_t array type.
    * @throws IllegalStateException if the named field does not exist
    * or if the type of the value is not compatible with the field.
    */

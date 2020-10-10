@@ -411,7 +411,7 @@ class APACHE_GEODE_EXPORT RegionAttributesFactory {
 
   /**
    * Sets cloning on region
-   * @param isClonable
+   * @param isClonable whether region is clonable or not
    * @return a reference to <code>this</code>
    * @see RegionAttributes#getCloningEnabled()
    */

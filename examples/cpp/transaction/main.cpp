@@ -81,7 +81,9 @@ int main(int argc, char** argv) {
       std::cout << "Committed transaction - exiting" << std::endl;
       break;
     } catch ( ... ) {
-      transactionManager->rollback();
+      if (transactionManager->exists()){
+        transactionManager->rollback();
+      }
       std::cout << "Rolled back transaction - retrying(" << retries << ")" << std::endl;
     }
   }

@@ -142,14 +142,6 @@ inline
   throw std::invalid_argument("Not a valid duration parsing '" + string + "'.");
 }
 
-/**
- * Converts std::chrono::duration to std::string.
- *
- * @tparam Rep
- * @tparam Period
- * @param duration to convert to std::string
- * @return std::string representing the given duration.
- */
 template <class Rep, class Period>
 inline std::string to_string(
     const std::chrono::duration<Rep, Period>& duration) {
