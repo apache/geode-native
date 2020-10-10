@@ -231,7 +231,6 @@ class APACHE_GEODE_EXPORT PdxInstanceFactory {
    * <p>Java boolean[] is mapped to C++ bool*.</p>
    * @param fieldName the name of the field to write
    * @param value the value of the field to write
-   * @param length the length of the array field to write
    * @return this PdxInstanceFactory
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
@@ -245,7 +244,6 @@ class APACHE_GEODE_EXPORT PdxInstanceFactory {
    * <p>Java char[] is mapped to C++ char16_t*.</p>
    * @param fieldName the name of the field to write
    * @param value the value of the field to write
-   * @param length the length of the array field to write
    * @return this PdxInstanceFactory
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
@@ -259,7 +257,6 @@ class APACHE_GEODE_EXPORT PdxInstanceFactory {
    * <p>Java byte[] is mapped to C++ int8_t*.</p>
    * @param fieldName the name of the field to write
    * @param value the value of the field to write
-   * @param length the length of the array field to write
    * @return this PdxInstanceFactory
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
@@ -273,7 +270,6 @@ class APACHE_GEODE_EXPORT PdxInstanceFactory {
    * <p>Java short[] is mapped to C++ int16_t*.</p>
    * @param fieldName the name of the field to write
    * @param value the value of the field to write
-   * @param length the length of the array field to write
    * @return this PdxInstanceFactory
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
@@ -287,7 +283,6 @@ class APACHE_GEODE_EXPORT PdxInstanceFactory {
    * <p>Java int[] is mapped to C++ int32_t*.</p>
    * @param fieldName the name of the field to write
    * @param value the value of the field to write
-   * @param length the length of the array field to write
    * @return this PdxInstanceFactory
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
@@ -301,7 +296,6 @@ class APACHE_GEODE_EXPORT PdxInstanceFactory {
    * <p>Java long[] is mapped to C++ int64_t*.</p>
    * @param fieldName the name of the field to write
    * @param value the value of the field to write
-   * @param length the length of the array field to write
    * @return this PdxInstanceFactory
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
@@ -315,7 +309,6 @@ class APACHE_GEODE_EXPORT PdxInstanceFactory {
    * <p>Java float[] is mapped to C++ float*.</p>
    * @param fieldName the name of the field to write
    * @param value the value of the field to write
-   * @param length the length of the array field to write
    * @return this PdxInstanceFactory
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
@@ -329,7 +322,6 @@ class APACHE_GEODE_EXPORT PdxInstanceFactory {
    * <p>Java double[] is mapped to C++ double*.</p>
    * @param fieldName the name of the field to write
    * @param value the value of the field to write
-   * @param length the length of the array field to write
    * @return this PdxInstanceFactory
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.
@@ -343,7 +335,6 @@ class APACHE_GEODE_EXPORT PdxInstanceFactory {
    * <p>Java String[] is mapped to C++ char**.</p>
    * @param fieldName the name of the field to write
    * @param value the value of the field to write
-   * @param length the length of the array field to write
    * @return this PdxInstanceFactory
    * @throws IllegalStateException if the named field has already been written
    * or fieldName is nullptr or empty.

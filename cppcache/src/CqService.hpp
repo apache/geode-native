@@ -211,8 +211,10 @@ class APACHE_GEODE_EXPORT CqService
    * Invokes the CqListeners for the given CQs.
    * @param cqs list of cqs with the cq operation from the Server.
    * @param messageType base operation
-   * @param key
-   * @param value
+   * @param key to invoke listeners with
+   * @param value to invoke listeners with
+   * @param deltaValue to invoke listeners with
+   * @param eventId to invoke listeners with
    */
   void invokeCqListeners(const std::map<std::string, int>* cqs,
                          uint32_t messageType,
@@ -222,7 +224,7 @@ class APACHE_GEODE_EXPORT CqService
                          std::shared_ptr<EventId> eventId);
   /**
    * Returns the Operation for the given EnumListenerEvent type.
-   * @param eventType
+   * @param eventType to find the operation
    * @return Operation
    */
   CqOperation getOperation(int eventType);

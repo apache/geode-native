@@ -53,7 +53,7 @@ class APACHE_GEODE_EXPORT PdxSerializer {
    * Deserialize this object.
    *
    * @param className the class name whose object needs to be de-serialized
-   * @param pr the PdxReader stream to use for reading the object data
+   * @param pdxReader the PdxReader stream to use for reading the object data
    */
   virtual std::shared_ptr<void> fromData(const std::string& className,
                                          PdxReader& pdxReader) = 0;
@@ -61,7 +61,7 @@ class APACHE_GEODE_EXPORT PdxSerializer {
   /**
    * Serializes this object in Geode PDX format.
    * @param userObject the object which needs to be serialized
-   * @param pw the PdxWriter object to use for serializing the object
+   * @param pdxWriter the PdxWriter object to use for serializing the object
    */
   virtual bool toData(const std::shared_ptr<const void>& userObject,
                       const std::string& className, PdxWriter& pdxWriter) = 0;

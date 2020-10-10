@@ -149,9 +149,6 @@ class APACHE_GEODE_EXPORT Cache : public GeodeCache {
    * Returns a set of root regions in the cache. This set is a snapshot and
    * is not backed by the Cache. The vector passed in is cleared and the
    * regions are added to it.
-   *
-   * @param regions the returned set of
-   * regions
    */
   std::vector<std::shared_ptr<Region>> rootRegions() const override;
 

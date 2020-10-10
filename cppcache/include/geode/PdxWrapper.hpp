@@ -60,8 +60,6 @@ class APACHE_GEODE_EXPORT PdxWrapper : public PdxSerializable {
    * PdxSerializer.
    * User code (such as in PdxSerializer) should cast it to a pointer of the
    * known user class.
-   * @param detach if set to true will release ownership of the object and
-   * future calls to getObject() return nullptr.
    */
   std::shared_ptr<void> getObject();
 

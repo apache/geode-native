@@ -39,7 +39,7 @@ std::tm localtime(const time_t& time);
 
 /**
  * Wrapper around platform specific thread safe localtime functions.
- * @param time to get local time for
+ * @param time_point to get local time for
  * @return local time
  */
 std::tm localtime(const std::chrono::system_clock::time_point& time_point);

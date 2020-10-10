@@ -34,7 +34,7 @@ namespace geode {
 namespace client {
 
 /**
- * @class ExpirationAction ExpirationAction.hpp
+ * @enum ExpirationAction ExpirationAction.hpp
  * Enumerated type for expiration actions.
  *
  * @see ExpirationAttributes

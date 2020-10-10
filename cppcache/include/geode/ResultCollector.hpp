@@ -88,7 +88,7 @@ class APACHE_GEODE_EXPORT ResultCollector {
   /**
    * Adds a single function execution result to the ResultCollector
    *
-   * @param resultOfSingleExecution
+   * @param resultOfSingleExecution single function execution result to add
    * @since 5.8LA
    */
   virtual void addResult(

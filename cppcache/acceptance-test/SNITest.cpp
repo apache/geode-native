@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+#include <future>
 #include <iostream>
 #include <thread>
 
@@ -174,6 +175,55 @@ TEST_F(SNITest, connectWithoutProxyFails) {
                     .create("region");
   EXPECT_THROW(region->put("1", "one"),
                apache::geode::client::NotConnectedException);
+
+  cache.close();
+}
+
+TEST_F(SNITest, dropSNIProxyTest) {
+  const auto clientTruststore =
+      (clientSslKeysDir / boost::filesystem::path("/truststore_sni.pem"));
+
+  auto cache = CacheFactory()
+                   .set("log-level", "debug")
+                   .set("log-file", "SNITest.log")
+                   .set("ssl-enabled", "true")
+                   .set("ssl-truststore", clientTruststore.string())
+                   .create();
+
+  auto portString = runDockerCommand("docker port haproxy");
+  auto portNumber = parseProxyPort(portString);
+
+  cache.getPoolManager()
+      .createFactory()
+      .setSniProxy("localhost", portNumber)
+      .addLocator("locator-maeve", 10334)
+      .create("pool");
+
+  auto region = cache.createRegionFactory(RegionShortcut::PROXY)
+                    .setPoolName("pool")
+                    .create("jellyfish");
+
+  auto systemRVal = std::system("docker pause haproxy");
+  if (systemRVal == -1) {
+    BOOST_LOG_TRIVIAL(error) << "std::system returned: " << systemRVal;
+  }
+
+  auto f =
+      std::async(std::launch::async, [&region] { region->put("1", "one"); });
+
+  // Insure the put times out (default is 15 seconds).
+  std::this_thread::sleep_for(std::chrono::seconds(16));
+
+  systemRVal = std::system("docker unpause haproxy");
+  if (systemRVal == -1) {
+    BOOST_LOG_TRIVIAL(error) << "std::system returned: " << systemRVal;
+  }
+
+  f.wait();
+
+  EXPECT_EQ(
+      std::dynamic_pointer_cast<CacheableString>(region->get("1"))->value(),
+      "one");
 
   cache.close();
 }
