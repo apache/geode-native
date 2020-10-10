@@ -172,7 +172,7 @@ class CqQueryImpl : public CqQuery,
   void cleanup();
 
   /**
-   * @return Returns the cqListeners.
+   * Returns the cqListeners.
    */
   void getCqListeners(std::vector<std::shared_ptr<CqListener>>& cqListener);
 
@@ -198,7 +198,7 @@ class CqQueryImpl : public CqQuery,
   /**
    * This is called when the new server comes-up.
    * Executes the CQ on the given endpoint.
-   * @param endpoint
+   * @param requestType Tcr Message Type to request
    */
   bool executeCq(TcrMessage::MsgType requestType);
 

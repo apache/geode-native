@@ -36,16 +36,20 @@ def read_bucket_count(message_bytes, offset):
 
 
 def read_partition_attributes(properties, message_bytes, offset):
-    if properties["Parts"] != 2 and properties["Parts"] != 4:
-        raise Exception(
-            "Don't know how to parse a RESPONSE_CLIENT_PARTITION_ATTRIBUTES message with "
-            + properties["Parts"]
-            + " parts (should have 2 or 4 only)."
-        )
-
     (properties["BucketCount"], offset) = read_bucket_count(message_bytes, offset)
     (properties["ColocatedWith"], offset) = parse_key_or_value(message_bytes, offset)
-    # TODO: parse parts 3 and 4 (partition resolver and list of partition attributes), if they exist
+    if properties["Parts"] == 4:
+        (properties["PartitionResolverName"], offset) = parse_key_or_value(message_bytes, offset)
+        # TODO: parse part 4 (list of partition attributes)
+    elif properties["Parts"] == 3:
+        try:
+            (properties["PartitionResolverName"], offset) = parse_key_or_value(message_bytes, offset)
+        except:
+            raise Exception(
+                "Don't know how to parse a RESPONSE_CLIENT_PARTITION_ATTRIBUTES message with "
+                + "3 parts and fpa attribute."
+            )
+        # TODO: parse part 3 if it is not partition resolver but list of partition attributes
 
 
 server_message_parsers = {

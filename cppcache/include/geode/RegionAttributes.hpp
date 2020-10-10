@@ -135,7 +135,6 @@ class APACHE_GEODE_EXPORT RegionAttributes
   /** Gets the <code>idleTimeout</code> expiration attributes for entries in
    * this region.
    * @return the idleTimeout expiration attributes for entries in this region
-   * @tparam Duration std::chrono::duration type to return
    */
   std::chrono::seconds getEntryIdleTimeout() const;
 

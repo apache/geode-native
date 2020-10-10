@@ -34,7 +34,7 @@ namespace geode {
 namespace client {
 
 /**
- * @class DiskPolicyType DiskPolicyType.hpp
+ * @enum DiskPolicyType DiskPolicyType.hpp
  * Enumerated type for disk policy.
  * @see RegionAttributes::getDiskPolicy
  * @see RegionAttributesFactory::setDiskPolicy

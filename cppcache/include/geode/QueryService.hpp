@@ -62,9 +62,9 @@ class APACHE_GEODE_EXPORT QueryService {
    * is invoked on the CqQuery. The name of the query will be used
    * to identify this query in statistics archival.
    *
-   * @param cqName the String name for this query
-   * @param queryString the OQL query
-   * @param cqAttributes the CqAttributes
+   * @param name the String name for this query
+   * @param querystr the OQL query
+   * @param cqAttr the CqAttributes
    * @param isDurable true if the CQ is durable
    * @return the newly created CqQuery object
    * @throws CqExistsException if a CQ by this name already exists on this
@@ -97,8 +97,8 @@ class APACHE_GEODE_EXPORT QueryService {
    * is invoked on the CqQuery. The name of the query will be used
    * to identify this query in statistics archival.
    *
-   * @param queryString the OQL query
-   * @param cqAttributes the CqAttributes
+   * @param querystr the OQL query
+   * @param cqAttr the CqAttributes
    * @param isDurable true if the CQ is durable
    * @return the newly created CqQuery object
    * @throws CqExistsException if a CQ by this name already exists on this
