@@ -31,6 +31,12 @@
 #include "framework/Framework.h"
 #include "framework/Gfsh.h"
 
+class CacheListenerMock : public apache::geode::client::CacheListener {
+ public:
+  MOCK_METHOD1(afterDestroy,
+               void(const apache::geode::client::EntryEvent& event));
+};
+
 namespace {
 
 using apache::geode::client::Cache;
@@ -38,17 +44,10 @@ using apache::geode::client::CacheableInt16;
 using apache::geode::client::CacheableKey;
 using apache::geode::client::CacheableString;
 using apache::geode::client::CacheFactory;
-using apache::geode::client::CacheListener;
-using apache::geode::client::EntryEvent;
 using apache::geode::client::IllegalStateException;
 using apache::geode::client::Region;
 using apache::geode::client::RegionShortcut;
 using ::testing::_;
-
-class CacheListenerMock : public CacheListener {
- public:
-  MOCK_METHOD1(afterDestroy, void(const EntryEvent& event));
-};
 
 ACTION_P(CvNotifyOne, cv) { cv->notify_one(); }
 
