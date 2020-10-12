@@ -14,49 +14,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include "SuspendedTxExpiryTask.hpp"
 
-#pragma once
-
-#ifndef GEODE_SUSPENDEDTXEXPIRYHANDLER_H_
-#define GEODE_SUSPENDEDTXEXPIRYHANDLER_H_
-
-#include <ace/Event_Handler.h>
-
-#include <geode/Cache.hpp>
-#include <geode/internal/geode_globals.hpp>
-
+#include "CacheImpl.hpp"
 #include "CacheTransactionManagerImpl.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
-class CacheTransactionManagerImpl;
+SuspendedTxExpiryTask::SuspendedTxExpiryTask(
+    ExpiryTaskManager& expiry_manager, CacheTransactionManagerImpl& tx_manager,
+    TransactionId& tx_id)
+    : ExpiryTask(expiry_manager), tx_manager_(tx_manager), tx_id_(tx_id) {}
 
-/**
- * @class SuspendedTxExpiryHandler
- *
- * The task object which contains the handler which gets triggered
- * when a suspended transaction expires.
- *
- */
-class APACHE_GEODE_EXPORT SuspendedTxExpiryHandler : public ACE_Event_Handler {
- public:
-  SuspendedTxExpiryHandler(CacheTransactionManagerImpl* cacheTxMgr,
-                           TransactionId& txid);
-
-  int handle_timeout(const ACE_Time_Value& current_time,
-                     const void* arg) override;
-
-  int handle_close(ACE_HANDLE, ACE_Reactor_Mask) override;
-
- private:
-  CacheTransactionManagerImpl* m_cacheTxMgr;
-  TransactionId& m_txid;
-};
+bool SuspendedTxExpiryTask::on_expire() {
+  LOGDEBUG("Entered SuspendedTxExpiryTask");
+  try {
+    // resume the transaction and rollback it
+    if (tx_manager_.tryResume(tx_id_, false)) {
+      tx_manager_.rollback();
+    }
+  } catch (...) {
+    // Ignore whatever exception comes
+    LOGFINE(
+        "Error while rollbacking expired suspended transaction. Ignoring the "
+        "error");
+  }
+  return 0;
+}
 
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
-
-#endif  // GEODE_SUSPENDEDTXEXPIRYHANDLER_H_

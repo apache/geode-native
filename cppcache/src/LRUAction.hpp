@@ -25,7 +25,7 @@
 #include <geode/internal/geode_globals.hpp>
 
 #include "CacheableToken.hpp"
-#include "MapEntry.hpp"
+#include "MapEntryImpl.hpp"
 #include "RegionInternal.hpp"
 #include "Utils.hpp"
 

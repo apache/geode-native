@@ -14,39 +14,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "SuspendedTxExpiryHandler.hpp"
 
-#include "CacheImpl.hpp"
-#include "ExpiryTaskManager.hpp"
+#pragma once
+
+#ifndef GEODE_TOMBSTONEENTRY_H_
+#define GEODE_TOMBSTONEENTRY_H_
+
+#include <chrono>
+#include <memory>
+
+#include "ExpiryTask.hpp"
+#include "MapEntry.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
-SuspendedTxExpiryHandler::SuspendedTxExpiryHandler(
-    CacheTransactionManagerImpl* cacheTxMgr, TransactionId& tid)
-    : m_cacheTxMgr(cacheTxMgr), m_txid(tid) {}
+class TombstoneEntry {
+ public:
+  explicit TombstoneEntry(std::shared_ptr<MapEntryImpl> entry)
+      : entry_(std::move(entry)), task_id_(ExpiryTask::invalid()) {}
 
-int SuspendedTxExpiryHandler::handle_timeout(const ACE_Time_Value&,
-                                             const void*) {
-  LOGDEBUG("Entered SuspendedTxExpiryHandler");
-  try {
-    // resume the transaction and rollback it
-    if (m_cacheTxMgr->tryResume(m_txid, false)) m_cacheTxMgr->rollback();
-  } catch (...) {
-    // Ignore whatever exception comes
-    LOGFINE(
-        "Error while rollbacking expired suspended transaction. Ignoring the "
-        "error");
-  }
-  return 0;
-}
+  std::shared_ptr<MapEntryImpl> entry() { return entry_; }
+  ExpiryTask::id_t task_id() { return task_id_; }
+  void task_id(ExpiryTask::id_t task_id) { task_id_ = task_id; }
 
-int SuspendedTxExpiryHandler::handle_close(ACE_HANDLE, ACE_Reactor_Mask) {
-  delete this;
-  return 0;
-}
+  void invalidate() { valid_ = false; }
+  bool valid() const { return valid_; }
+
+ protected:
+  std::shared_ptr<MapEntryImpl> entry_;
+  ExpiryTask::id_t task_id_;
+  bool valid_{true};
+};
 
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
+
+#endif  // GEODE_TOMBSTONEENTRY_H_

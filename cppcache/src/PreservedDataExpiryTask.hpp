@@ -15,41 +15,44 @@
  * limitations under the License.
  */
 
-#include "TrackedMapEntry.hpp"
+#pragma once
 
-#include "MapEntryImpl.hpp"
+#ifndef GEODE_PRESERVEDDATAEXPIRYTASK_H_
+#define GEODE_PRESERVEDDATAEXPIRYTASK_H_
+
+#include <geode/Cache.hpp>
+#include <geode/PdxSerializable.hpp>
+#include <geode/internal/geode_globals.hpp>
+
+#include "CacheImpl.hpp"
+#include "ExpiryTask.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
-void TrackedMapEntry::getKey(std::shared_ptr<CacheableKey>& result) const {
-  m_entry->getKeyI(result);
-}
+/**
+ * @class PreservedDataExpiryTask
+ *
+ * The expiry task which gets triggered when a preserved data expires.
+ */
+class PreservedDataExpiryTask : public ExpiryTask {
+ public:
+  /**
+   * Constructor
+   */
+  PreservedDataExpiryTask(ExpiryTaskManager& manager,
+                          std::shared_ptr<PdxTypeRegistry> type_registry,
+                          std::shared_ptr<PdxSerializable> object);
 
-void TrackedMapEntry::getValue(std::shared_ptr<Cacheable>& result) const {
-  m_entry->getValueI(result);
-}
+  bool on_expire() override;
 
-void TrackedMapEntry::setValue(const std::shared_ptr<Cacheable>& value) {
-  m_entry->setValueI(value);
-}
-
-LRUEntryProperties& TrackedMapEntry::getLRUProperties() {
-  return m_entry->getLRUProperties();
-}
-
-ExpEntryProperties& TrackedMapEntry::getExpProperties() {
-  return m_entry->getExpProperties();
-}
-VersionStamp& TrackedMapEntry::getVersionStamp() {
-  throw FatalInternalException(
-      "MapEntry::getVersionStamp for TrackedMapEntry is not applicable");
-}
-void TrackedMapEntry::cleanup(const CacheEventFlags eventFlags) {
-  m_entry->cleanup(eventFlags);
-}
-
+ private:
+  std::shared_ptr<PdxTypeRegistry> type_registry_;
+  std::shared_ptr<PdxSerializable> object_;
+};
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
+
+#endif  // GEODE_PRESERVEDDATAEXPIRYTASK_H_

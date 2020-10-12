@@ -28,7 +28,7 @@
 
 #include <geode/internal/geode_globals.hpp>
 
-#include "ExpiryTaskManager.hpp"
+#include "ExpiryTask.hpp"
 #include "Queue.hpp"
 #include "Task.hpp"
 #include "ThinClientRedundancyManager.hpp"
@@ -59,10 +59,8 @@ class TcrConnectionManager {
   void disconnect(ThinClientBaseDM* distMng,
                   std::vector<TcrEndpoint*>& endpoints,
                   bool keepEndpoints = false);
-  int checkConnection(const ACE_Time_Value&, const void*);
-  int checkRedundancy(const ACE_Time_Value&, const void*);
-  int processEventIdMap(const ACE_Time_Value&, const void*);
-  ExpiryTaskManager::id_type getPingTaskId();
+
+  void ping_endpoints();
   void close();
 
   void readyForEvents();
@@ -163,8 +161,7 @@ class TcrConnectionManager {
   ACE_Semaphore m_cleanupSema;
   std::unique_ptr<Task<TcrConnectionManager>> m_cleanupTask;
 
-  ExpiryTaskManager::id_type m_pingTaskId;
-  ExpiryTaskManager::id_type m_servermonitorTaskId;
+  ExpiryTask::id_t ping_task_id_;
   Queue<Task<TcrEndpoint>*> m_receiverReleaseList;
   Queue<TcrConnection*> m_connectionReleaseList;
   Queue<ACE_Semaphore*> m_notifyCleanupSemaList;

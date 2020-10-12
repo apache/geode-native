@@ -36,8 +36,11 @@ add_executable(apache-geode_unittests
   DataInputTest.cpp
   DataOutputTest.cpp
   ExceptionTypesTest.cpp
+  ExpiryTaskTest.cpp
+  ExpiryTaskManagerTest.cpp
   geodeBannerTest.cpp
   gtest_extensions.h
+  gmock_extensions.h
   InterestResultPolicyTest.cpp
   LocalRegionTest.cpp
   PdxInstanceImplTest.cpp
@@ -48,13 +51,14 @@ add_executable(apache-geode_unittests
   StructSetTest.cpp
   TcrMessageTest.cpp
   ThreadPoolTest.cpp
+  mock/MockExpiryTask.hpp
+  util/chrono/durationTest.cpp
   util/functionalTests.cpp
   util/JavaModifiedUtf8Tests.cpp
   util/queueTest.cpp
   util/synchronized_mapTest.cpp
   util/synchronized_setTest.cpp
-  util/TestableRecursiveMutex.hpp
-  util/chrono/durationTest.cpp)
+  util/TestableRecursiveMutex.hpp)
 
 target_compile_definitions(apache-geode_unittests
   PUBLIC

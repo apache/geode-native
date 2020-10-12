@@ -19,7 +19,7 @@
 
 #include <geode/SystemProperties.hpp>
 
-#include "ExpiryHandler_T.hpp"
+#include "FunctionExpiryTask.hpp"
 #include "TcrConnectionManager.hpp"
 #include "util/exception.hpp"
 
@@ -34,7 +34,7 @@ ThinClientPoolHADM::ThinClientPoolHADM(const char* name,
       m_theTcrConnManager(connManager),
       m_redundancySema(0),
       m_redundancyTask(nullptr),
-      m_servermonitorTaskId(-1) {
+      server_monitor_task_id_(ExpiryTask::invalid()) {
   m_redundancyManager = std::unique_ptr<ThinClientRedundancyManager>(
       new ThinClientRedundancyManager(
           &connManager, poolAttr->getSubscriptionRedundancy(), this));
@@ -57,19 +57,18 @@ void ThinClientPoolHADM::startBackgroundThreads() {
   //  operations.
   GfErrType err = m_redundancyManager->maintainRedundancyLevel(true);
 
-  ACE_Event_Handler* redundancyChecker =
-      new ExpiryHandler_T<ThinClientPoolHADM>(
-          this, &ThinClientPoolHADM::checkRedundancy);
-  const auto redundancyMonitorInterval = props.redundancyMonitorInterval();
+  const auto interval = props.redundancyMonitorInterval();
+  auto& manager = m_connManager.getCacheImpl()->getExpiryTaskManager();
+  auto task = std::make_shared<FunctionExpiryTask>(
+      manager, [this]() { m_redundancySema.release(); });
 
-  m_servermonitorTaskId =
-      m_connManager.getCacheImpl()->getExpiryTaskManager().scheduleExpiryTask(
-          redundancyChecker, std::chrono::seconds(1), redundancyMonitorInterval,
-          false);
+  server_monitor_task_id_ =
+      manager.schedule(std::move(task), std::chrono::seconds(1), interval);
+
   LOGFINE(
       "ThinClientPoolHADM::ThinClientPoolHADM Registered server "
       "monitor task with id = %ld, interval = %ld",
-      m_servermonitorTaskId, redundancyMonitorInterval.count());
+      server_monitor_task_id_, interval.count());
 
   if (ThinClientBaseDM::isFatalClientError(err)) {
     if (err == GF_CACHE_LOCATOR_EXCEPTION) {
@@ -159,11 +158,6 @@ void ThinClientPoolHADM::redundancy(std::atomic<bool>& isRunning) {
   LOGFINE("ThinClientPoolHADM: Ending maintain redundancy thread.");
 }
 
-int ThinClientPoolHADM::checkRedundancy(const ACE_Time_Value&, const void*) {
-  m_redundancySema.release();
-  return 0;
-}
-
 void ThinClientPoolHADM::destroy(bool keepAlive) {
   LOGDEBUG("ThinClientPoolHADM::destroy");
   if (!m_isDestroyed && !m_destroyPending) {
@@ -187,10 +181,8 @@ void ThinClientPoolHADM::destroy(bool keepAlive) {
 
 void ThinClientPoolHADM::sendNotificationCloseMsgs() {
   if (m_redundancyTask) {
-    if (m_servermonitorTaskId >= 0) {
-      m_connManager.getCacheImpl()->getExpiryTaskManager().cancelTask(
-          m_servermonitorTaskId);
-    }
+    auto& manager = m_connManager.getCacheImpl()->getExpiryTaskManager();
+    manager.cancel(server_monitor_task_id_);
     m_redundancyTask->stopNoblock();
     m_redundancySema.release();
     m_redundancyTask->wait();

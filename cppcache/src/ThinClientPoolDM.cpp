@@ -27,8 +27,7 @@
 
 #include "DistributedSystemImpl.hpp"
 #include "ExecutionImpl.hpp"
-#include "ExpiryHandler_T.hpp"
-#include "ExpiryTaskManager.hpp"
+#include "FunctionExpiryTask.hpp"
 #include "TcrConnectionManager.hpp"
 #include "TcrEndpoint.hpp"
 #include "ThinClientRegion.hpp"
@@ -130,8 +129,8 @@ ThinClientPoolDM::ThinClientPoolDM(const char* name,
       m_poolName(name),
       m_stats(nullptr),
       m_sticky(false),
-      m_updateLocatorListSema(0),
-      m_pingSema(0),
+      update_locators_semaphore_(0),
+      ping_semaphore_(0),
       m_cliCallbackSema(0),
       m_isDestroyed(false),
       m_destroyPending(false),
@@ -141,14 +140,11 @@ ThinClientPoolDM::ThinClientPoolDM(const char* name,
       m_poolSize(0),
       m_numRegions(0),
       m_server(0),
-      m_connSema(0),
+      connections_semaphore_(0),
       m_connManageTask(nullptr),
       m_pingTask(nullptr),
       m_updateLocatorListTask(nullptr),
       m_cliCallbackTask(nullptr),
-      m_pingTaskId(-1),
-      m_updateLocatorListTaskId(-1),
-      m_connManageTaskId(-1),
       m_clientOps(0),
       m_PoolStatsSampler(nullptr),
       m_clientMetadataService(nullptr),
@@ -273,26 +269,25 @@ void ThinClientPoolDM::startBackgroundThreads() {
     m_cliCallbackTask->start();
   }
 
-  const auto& pingInterval = getPingInterval() / 2;
-  if (pingInterval > std::chrono::seconds::zero()) {
+  auto interval = getPingInterval() / 2;
+  if (interval > std::chrono::seconds::zero()) {
     LOGDEBUG(
-        "ThinClientPoolDM::startBackgroundThreads: Scheduling ping task at %ld",
-        pingInterval.count());
-    auto pingHandler =
-        new ExpiryHandler_T<ThinClientPoolDM>(this, &ThinClientPoolDM::doPing);
-    m_pingTaskId =
-        m_connManager.getCacheImpl()->getExpiryTaskManager().scheduleExpiryTask(
-            pingHandler, std::chrono::seconds(1), pingInterval, false);
+        "ThinClientPoolDM::startBackgroundThreads: Scheduling ping task at %zu",
+        interval.count());
+    auto& manager = m_connManager.getCacheImpl()->getExpiryTaskManager();
+    auto task = std::make_shared<FunctionExpiryTask>(
+        manager, [this] { ping_semaphore_.release(); });
+    ping_task_id_ =
+        manager.schedule(std::move(task), std::chrono::seconds(1), interval);
   } else {
     LOGDEBUG(
         "ThinClientPoolDM::startBackgroundThreads: Not Scheduling ping task as "
         "ping interval %ld",
-        getPingInterval().count());
+        interval.count());
   }
 
-  auto updateLocatorListInterval = getUpdateLocatorListInterval();
-
-  if (updateLocatorListInterval > std::chrono::seconds::zero()) {
+  interval = getUpdateLocatorListInterval();
+  if (interval > std::chrono::seconds::zero()) {
     m_updateLocatorListTask =
         std::unique_ptr<Task<ThinClientPoolDM>>(new Task<ThinClientPoolDM>(
             this, &ThinClientPoolDM::updateLocatorList, "NC_LocatorList"));
@@ -301,17 +296,16 @@ void ThinClientPoolDM::startBackgroundThreads() {
     LOGDEBUG(
         "ThinClientPoolDM::startBackgroundThreads: Creating updateLocatorList "
         "task");
-    auto updateLocatorListHandler = new ExpiryHandler_T<ThinClientPoolDM>(
-        this, &ThinClientPoolDM::doUpdateLocatorList);
+    auto& manager = m_connManager.getCacheImpl()->getExpiryTaskManager();
+    auto task = std::make_shared<FunctionExpiryTask>(
+        manager, [this] { update_locators_semaphore_.release(); });
 
     LOGDEBUG(
         "ThinClientPoolDM::startBackgroundThreads: Scheduling updater Locator "
         "task at %ld",
-        updateLocatorListInterval.count());
-    m_updateLocatorListTaskId =
-        m_connManager.getCacheImpl()->getExpiryTaskManager().scheduleExpiryTask(
-            updateLocatorListHandler, std::chrono::seconds(1),
-            updateLocatorListInterval, false);
+        interval.count());
+    update_locators_task_id_ =
+        manager.schedule(std::move(task), std::chrono::seconds(1), interval);
   }
 
   LOGDEBUG(
@@ -326,25 +320,24 @@ void ThinClientPoolDM::startBackgroundThreads() {
   auto idle = getIdleTimeout();
   auto load = getLoadConditioningInterval();
 
-  if (load > std::chrono::milliseconds::zero()) {
-    if (load < idle || idle <= std::chrono::milliseconds::zero()) {
-      idle = load;
-    }
+  if (load > std::chrono::milliseconds::zero() &&
+      (load < idle || idle <= std::chrono::milliseconds::zero())) {
+    idle = load;
   }
 
   if (idle > std::chrono::milliseconds::zero()) {
     LOGDEBUG(
         "ThinClientPoolDM::startBackgroundThreads: Starting manageConnections "
         "task");
-    ACE_Event_Handler* connHandler = new ExpiryHandler_T<ThinClientPoolDM>(
-        this, &ThinClientPoolDM::doManageConnections);
+    auto& manager = m_connManager.getCacheImpl()->getExpiryTaskManager();
+    auto task = std::make_shared<FunctionExpiryTask>(
+        manager, [this] { connections_semaphore_.release(); });
 
     LOGDEBUG(
         "ThinClientPoolDM::startBackgroundThreads: Scheduling "
         "manageConnections task");
-    m_connManageTaskId =
-        m_connManager.getCacheImpl()->getExpiryTaskManager().scheduleExpiryTask(
-            connHandler, std::chrono::seconds(1), idle, false);
+    conns_mgmt_task_id_ =
+        manager.schedule(std::move(task), std::chrono::seconds(1), idle);
   }
 
   LOGDEBUG(
@@ -377,10 +370,10 @@ void ThinClientPoolDM::manageConnections(std::atomic<bool>& isRunning) {
   LOGFINE("ThinClientPoolDM: starting manageConnections thread");
 
   while (isRunning) {
-    m_connSema.acquire();
+    connections_semaphore_.acquire();
     if (isRunning) {
       manageConnectionsInternal(isRunning);
-      m_connSema.acquire();
+      connections_semaphore_.acquire();
     }
   }
   LOGFINE("ThinClientPoolDM: ending manageConnections thread");
@@ -477,17 +470,18 @@ void ThinClientPoolDM::cleanStaleConnections(std::atomic<bool>& isRunning) {
     count++;
 
     if (count % 10 == 0) {
-      std::this_thread::sleep_for(std::chrono::milliseconds(1));
+      std::this_thread::yield();
     }
   }
 
-  if (m_connManageTaskId >= 0 && isRunning &&
-      m_connManager.getCacheImpl()->getExpiryTaskManager().resetTask(
-          m_connManageTaskId, _nextIdle)) {
-    LOGERROR("Failed to reschedule connection manager");
-  } else {
-    LOGFINEST("Rescheduled next connection manager run after %s",
-              to_string(_nextIdle).c_str());
+  if (isRunning) {
+    auto& manager = m_connManager.getCacheImpl()->getExpiryTaskManager();
+    if (manager.reset(conns_mgmt_task_id_, _nextIdle) < 0) {
+      LOGERROR("Failed to reschedule connection manager");
+    } else {
+      LOGFINEST("Rescheduled next connection manager run after %s",
+                to_string(_nextIdle).c_str());
+    }
   }
 
   LOGDEBUG("Pool size is %d, pool counter is %d", size(), m_poolSize.load());
@@ -730,12 +724,12 @@ void ThinClientPoolDM::stopPingThread() {
   if (m_pingTask) {
     LOGFINE("ThinClientPoolDM::destroy(): Closing ping thread.");
     m_pingTask->stopNoblock();
-    m_pingSema.release();
+    ping_semaphore_.release();
     m_pingTask->wait();
     m_pingTask = nullptr;
-    if (m_pingTaskId >= 0) {
-      m_connManager.getCacheImpl()->getExpiryTaskManager().cancelTask(
-          m_pingTaskId);
+    if (ping_task_id_ != ExpiryTask::invalid()) {
+      auto& manager = m_connManager.getCacheImpl()->getExpiryTaskManager();
+      manager.cancel(ping_task_id_);
     }
   }
 }
@@ -744,12 +738,12 @@ void ThinClientPoolDM::stopUpdateLocatorListThread() {
   if (m_updateLocatorListTask) {
     LOGFINE("ThinClientPoolDM::destroy(): Closing updateLocatorList thread.");
     m_updateLocatorListTask->stopNoblock();
-    m_updateLocatorListSema.release();
+    update_locators_semaphore_.release();
     m_updateLocatorListTask->wait();
     m_updateLocatorListTask = nullptr;
-    if (m_updateLocatorListTaskId >= 0) {
-      m_connManager.getCacheImpl()->getExpiryTaskManager().cancelTask(
-          m_updateLocatorListTaskId);
+    if (update_locators_task_id_ != ExpiryTask::invalid()) {
+      auto& manager = m_connManager.getCacheImpl()->getExpiryTaskManager();
+      manager.cancel(update_locators_task_id_);
     }
   }
 }
@@ -785,12 +779,10 @@ void ThinClientPoolDM::destroy(bool keepAlive) {
     auto cacheImpl = m_connManager.getCacheImpl();
     if (m_connManageTask) {
       m_connManageTask->stopNoblock();
-      m_connSema.release();
+      connections_semaphore_.release();
       m_connManageTask->wait();
       m_connManageTask = nullptr;
-      if (m_connManageTaskId >= 0) {
-        cacheImpl->getExpiryTaskManager().cancelTask(m_connManageTaskId);
-      }
+      cacheImpl->getExpiryTaskManager().cancel(conns_mgmt_task_id_);
     }
 
     LOGDEBUG("Closing PoolStatsSampler thread.");
@@ -1546,7 +1538,7 @@ void ThinClientPoolDM::removeEPConnections(int numConn,
 
   // Raise Semaphore for manage thread
   if (triggerManageConn) {
-    m_connSema.release();
+    connections_semaphore_.release();
   }
 }
 
@@ -1682,7 +1674,7 @@ GfErrType ThinClientPoolDM::createPoolConnectionToAEndPoint(
     getStats().incPoolConnects();
     getStats().setCurPoolConnections(m_poolSize);
   }
-  m_connSema.release();
+  connections_semaphore_.release();
 
   return error;
 }
@@ -1782,7 +1774,7 @@ GfErrType ThinClientPoolDM::createPoolConnection(
       break;
     }
   }
-  m_connSema.release();
+  connections_semaphore_.release();
   // if a fatal error occurred earlier and we don't have
   // a connection then return this saved error
   if (fatal && !conn && error != GF_NOERR) {
@@ -2019,7 +2011,7 @@ void ThinClientPoolDM::pingServerLocal() {
 void ThinClientPoolDM::updateLocatorList(std::atomic<bool>& isRunning) {
   LOGFINE("Starting updateLocatorList thread for pool %s", m_poolName.c_str());
   while (isRunning) {
-    m_updateLocatorListSema.acquire();
+    update_locators_semaphore_.acquire();
     if (isRunning && !m_connManager.isNetDown()) {
       (m_locHelper)->updateLocators(getServerGroup());
     }
@@ -2030,10 +2022,10 @@ void ThinClientPoolDM::updateLocatorList(std::atomic<bool>& isRunning) {
 void ThinClientPoolDM::pingServer(std::atomic<bool>& isRunning) {
   LOGFINE("Starting ping thread for pool %s", m_poolName.c_str());
   while (isRunning) {
-    m_pingSema.acquire();
+    ping_semaphore_.acquire();
     if (isRunning && !m_connManager.isNetDown()) {
       pingServerLocal();
-      m_pingSema.acquire();
+      ping_semaphore_.acquire();
     }
   }
   LOGFINE("Ending ping thread for pool %s", m_poolName.c_str());
@@ -2054,21 +2046,6 @@ void ThinClientPoolDM::cliCallback(std::atomic<bool>& isRunning) {
     }
   }
   LOGFINE("Ending cliCallback thread for pool %s", m_poolName.c_str());
-}
-
-int ThinClientPoolDM::doPing(const ACE_Time_Value&, const void*) {
-  m_pingSema.release();
-  return 0;
-}
-
-int ThinClientPoolDM::doUpdateLocatorList(const ACE_Time_Value&, const void*) {
-  m_updateLocatorListSema.release();
-  return 0;
-}
-
-int ThinClientPoolDM::doManageConnections(const ACE_Time_Value&, const void*) {
-  m_connSema.release();
-  return 0;
 }
 
 void ThinClientPoolDM::releaseThreadLocalConnection() {

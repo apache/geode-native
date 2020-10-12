@@ -17,29 +17,11 @@
 
 #pragma once
 
+#ifndef GEODE_GMOCK_EXTENSIONS_H_
+#define GEODE_GMOCK_EXTENSIONS_H_
 
-#include "../begin_native.hpp"
-#include <geode/internal/geode_globals.hpp>
-#include <ExpiryTaskManager.hpp>
-#include "../end_native.hpp"
+#include <gmock/gmock.h>
 
-namespace Apache
-{
-  namespace Geode
-  {
-    namespace Client
-    {
+ACTION_P(CvNotifyOne, cv) { cv->notify_one(); }
 
-      class MemoryPressureHandler
-        : public ACE_Event_Handler
-      {
-        public:
-          int handle_timeout( const ACE_Time_Value& current_time,
-              const void* arg );
-
-          int handle_close( ACE_HANDLE handle, ACE_Reactor_Mask close_mask );
-      };
-    }  // namespace Client
-  }  // namespace Geode
-}  // namespace Apache
-
+#endif  // GEODE_GMOCK_EXTENSIONS_H_

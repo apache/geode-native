@@ -32,7 +32,9 @@ namespace Apache
       {
         try
         {
-          return TimeUtils::TimePointToDateTime(m_nativeptr->get()->getLastModifiedTime());
+          auto epoch = m_nativeptr->get()->getLastModifiedTime().time_since_epoch();
+          auto duration = std::chrono::duration_cast<std::chrono::system_clock::duration>(epoch);
+          return TimeUtils::TimePointToDateTime(std::chrono::system_clock::time_point(duration));
         }
         finally
         {
@@ -44,7 +46,9 @@ namespace Apache
       {
         try
         {
-          return TimeUtils::TimePointToDateTime(m_nativeptr->get()->getLastAccessedTime());
+          auto epoch = m_nativeptr->get()->getLastAccessedTime().time_since_epoch();
+          auto duration = std::chrono::duration_cast<std::chrono::system_clock::duration>(epoch);
+          return TimeUtils::TimePointToDateTime(std::chrono::system_clock::time_point(duration));
         }
         finally
         {

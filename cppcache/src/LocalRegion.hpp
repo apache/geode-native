@@ -78,6 +78,7 @@ class CreateActions;
 class DestroyActions;
 class RemoveActions;
 class InvalidateActions;
+class VersionedCacheableObjectPartList;
 
 typedef std::unordered_map<std::shared_ptr<CacheableKey>,
                            std::pair<std::shared_ptr<Cacheable>, int>>
@@ -509,6 +510,7 @@ class APACHE_GEODE_EXPORT LocalRegion : public RegionInternal {
       m_subRegions;
   std::string m_fullPath;
   volatile bool m_destroyPending;
+  ExpiryTask::id_t expiry_task_id_;
   std::shared_ptr<CacheListener> m_listener;
   std::shared_ptr<CacheWriter> m_writer;
   std::shared_ptr<CacheLoader> m_loader;

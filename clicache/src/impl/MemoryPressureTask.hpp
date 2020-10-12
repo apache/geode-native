@@ -15,24 +15,31 @@
  * limitations under the License.
  */
 
-#include "MapEntry.hpp"
+#pragma once
 
-#include "MapEntryT.hpp"
 
-namespace apache {
-namespace geode {
-namespace client {
+#include "../begin_native.hpp"
+#include <geode/internal/geode_globals.hpp>
+#include "ExpiryTask.hpp"
+#include "../end_native.hpp"
 
-void EntryFactory::newMapEntry(ExpiryTaskManager*,
-                               const std::shared_ptr<CacheableKey>& key,
-                               std::shared_ptr<MapEntryImpl>& result) const {
-  if (m_concurrencyChecksEnabled) {
-    result = MapEntryT<VersionedMapEntryImpl, 0, 0>::create(key);
-  } else {
-    result = MapEntryT<MapEntryImpl, 0, 0>::create(key);
-  }
-}
+namespace Apache
+{
+  namespace Geode
+  {
+    namespace Client
+    {
 
-}  // namespace client
-}  // namespace geode
-}  // namespace apache
+      class MemoryPressureTask
+        : public apache::geode::client::ExpiryTask
+      {
+        public:
+          MemoryPressureTask(apache::geode::client::ExpiryTaskManager& manager) :
+          ExpiryTask(manager) {}
+
+          bool on_expire() override;
+      };
+    }  // namespace Client
+  }  // namespace Geode
+}  // namespace Apache
+

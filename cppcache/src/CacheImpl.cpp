@@ -32,7 +32,6 @@
 #include "InternalCacheTransactionManager2PCImpl.hpp"
 #include "LocalRegion.hpp"
 #include "PdxTypeRegistry.hpp"
-#include "RegionExpiryHandler.hpp"
 #include "SerializationRegistry.hpp"
 #include "TcrConnectionManager.hpp"
 #include "TcrMessage.hpp"
@@ -88,7 +87,7 @@ CacheImpl::CacheImpl(Cache* c, const std::shared_ptr<Properties>& dsProps,
     LOGINFO("Heap LRU eviction controller thread started");
   }
 
-  m_expiryTaskManager->begin();
+  m_expiryTaskManager->start();
 
   m_initialized = true;
   m_pdxTypeRegistry = std::make_shared<PdxTypeRegistry>(this);
@@ -315,7 +314,7 @@ void CacheImpl::close(bool keepalive) {
   _GEODE_SAFE_DELETE(m_tcrConnectionManager);
   m_cacheTXManager = nullptr;
 
-  m_expiryTaskManager->stopExpiryTaskManager();
+  m_expiryTaskManager->stop();
 
   try {
     getDistributedSystem().disconnect();

@@ -15,39 +15,34 @@
  * limitations under the License.
  */
 
-#include "TrackedMapEntry.hpp"
+#include "TombstoneExpiryTask.hpp"
 
-#include "MapEntryImpl.hpp"
+#include "CacheImpl.hpp"
+#include "MapSegment.hpp"
+#include "RegionInternal.hpp"
+#include "TombstoneEntry.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
-void TrackedMapEntry::getKey(std::shared_ptr<CacheableKey>& result) const {
-  m_entry->getKeyI(result);
-}
+TombstoneExpiryTask::TombstoneExpiryTask(
+    ExpiryTaskManager& manager, MapSegment& segment,
+    std::shared_ptr<TombstoneEntry> tombstone)
+    : ExpiryTask(manager),
+      segment_(segment),
+      tombstone_(std::move(tombstone)) {}
 
-void TrackedMapEntry::getValue(std::shared_ptr<Cacheable>& result) const {
-  m_entry->getValueI(result);
-}
+bool TombstoneExpiryTask::on_expire() {
+  std::shared_ptr<CacheableKey> key;
+  tombstone_->entry()->getKeyI(key);
 
-void TrackedMapEntry::setValue(const std::shared_ptr<Cacheable>& value) {
-  m_entry->setValueI(value);
-}
-
-LRUEntryProperties& TrackedMapEntry::getLRUProperties() {
-  return m_entry->getLRUProperties();
-}
-
-ExpEntryProperties& TrackedMapEntry::getExpProperties() {
-  return m_entry->getExpProperties();
-}
-VersionStamp& TrackedMapEntry::getVersionStamp() {
-  throw FatalInternalException(
-      "MapEntry::getVersionStamp for TrackedMapEntry is not applicable");
-}
-void TrackedMapEntry::cleanup(const CacheEventFlags eventFlags) {
-  m_entry->cleanup(eventFlags);
+  LOGDEBUG(
+      "TombstoneExpiryTask::on_expire LOCAL_DESTROY "
+      "for region entry with key %s",
+      Utils::nullSafeToString(key).c_str());
+  segment_.remove_tomb_entry(tombstone_);
+  return true;
 }
 
 }  // namespace client
