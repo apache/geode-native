@@ -240,7 +240,7 @@ std::shared_ptr<CqAttributes> CqQueryImpl::getCqAttributes() const {
 void CqQueryImpl::cleanup() { removeFromCqMap(); }
 
 /**
- * @return Returns the cqListeners.
+ * @param cqListener - on success, refers to the current listener
  */
 void CqQueryImpl::getCqListeners(
     CqAttributes::listener_container_type& cqListener) {

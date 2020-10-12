@@ -392,8 +392,10 @@ void CqService::receiveNotification(TcrMessage* msg) {
  * Invokes the CqListeners for the given CQs.
  * @param cqs list of cqs with the cq operation from the Server.
  * @param messageType base operation
- * @param key
- * @param value
+ * @param key key to notify for
+ * @param value associated value
+ * @param deltaValue if delta, contains delta bytes
+ * @param eventId event to send
  */
 void CqService::invokeCqListeners(const std::map<std::string, int>* cqs,
                                   uint32_t messageType,
@@ -504,7 +506,7 @@ void CqService::invokeCqConnectedListeners(const std::string& poolName,
 
 /**
  * Returns the Operation for the given EnumListenerEvent type.
- * @param eventType
+ * @param eventType event type to translate to opType
  * @return Operation
  */
 CqOperation CqService::getOperation(int eventType) {
