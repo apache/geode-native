@@ -53,7 +53,6 @@ bool AuthenticatedView::isClosed() const { return m_isAuthenticatedViewClosed; }
  * After this cache is closed, any further
  * method call on this cache or any region object will throw
  * <code>CacheClosedException</code>, unless otherwise noted.
- * @param keepalive whether to keep the durable client's queue
  * @throws CacheClosedException,  if the cache is already closed.
  */
 void AuthenticatedView::close() {
@@ -119,8 +118,6 @@ std::shared_ptr<Region> AuthenticatedView::getRegion(
  * shared regions to be mapped into the cache. This set is a snapshot and
  * is not backed by the Cache. The regions passed in are cleared.
  *
- * @param regions the region collection object containing the returned set of
- * regions when the function returns
  */
 std::shared_ptr<QueryService> AuthenticatedView::getQueryService() {
   if (!m_isAuthenticatedViewClosed) {

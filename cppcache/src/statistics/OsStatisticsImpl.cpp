@@ -64,13 +64,13 @@ std::string OsStatisticsImpl::calcTextId(StatisticsFactory* system,
 /**
  * Creates a new statistics instance of the given type
  *
- * @param type
+ * @param typeArg
  *        A description of the statistics
- * @param textId
+ * @param textIdArg
  *        Text that identifies this statistic when it is monitored
- * @param numericId
+ * @param numericIdArg
  *        A number that displayed when this statistic is monitored
- * @param uniqueId
+ * @param uniqueIdArg
  *        A number that uniquely identifies this instance
  * @param system
  *        The distributed system that determines whether or not these
