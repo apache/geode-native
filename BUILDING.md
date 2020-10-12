@@ -218,6 +218,7 @@ $ cmake --build . --target install
 ### Required Tools
 * [Xcode](https://developer.apple.com/xcode/download/)
 * Xcode command line developer tools
+
 ```console
 $ xcode-select --install
 ```
