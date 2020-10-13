@@ -27,12 +27,14 @@ namespace geode {
 namespace client {
 
 PdxInstanceFactory::PdxInstanceFactory(const std::string& className,
+                                       bool expectDomainClass,
                                        CachePerfStats& cachePerfStats,
                                        PdxTypeRegistry& pdxTypeRegistry,
                                        const CacheImpl& cache,
                                        bool enableTimeStatistics)
     : m_created(false),
-      m_pdxType(std::make_shared<PdxType>(pdxTypeRegistry, className, false)),
+      m_pdxType(std::make_shared<PdxType>(pdxTypeRegistry, className, false,
+                                          expectDomainClass)),
       m_cachePerfStats(cachePerfStats),
       m_pdxTypeRegistry(pdxTypeRegistry),
       m_cacheImpl(cache),

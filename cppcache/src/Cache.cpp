@@ -150,7 +150,12 @@ LogLevel Cache::getLogLevel() { return Log::logLevel(); }
 
 PdxInstanceFactory Cache::createPdxInstanceFactory(
     const std::string& className) const {
-  return m_cacheImpl->createPdxInstanceFactory(className);
+  return m_cacheImpl->createPdxInstanceFactory(className, true);
+}
+
+PdxInstanceFactory Cache::createPdxInstanceFactory(
+    const std::string& className, bool expectDomainClass) const {
+  return m_cacheImpl->createPdxInstanceFactory(className, expectDomainClass);
 }
 
 AuthenticatedView Cache::createAuthenticatedView(

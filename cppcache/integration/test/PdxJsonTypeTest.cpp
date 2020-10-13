@@ -27,6 +27,7 @@
 #include <gtest/gtest.h>
 
 #include <geode/Cache.hpp>
+#include <geode/FunctionService.hpp>
 #include <geode/PdxInstanceFactory.hpp>
 #include <geode/PoolManager.hpp>
 #include <geode/RegionFactory.hpp>
@@ -40,9 +41,12 @@
 
 namespace {
 using apache::geode::client::Cache;
+using apache::geode::client::CacheableArrayList;
 using apache::geode::client::CacheableKey;
 using apache::geode::client::CacheableString;
 using apache::geode::client::CacheRegionHelper;
+using apache::geode::client::CacheServerException;
+using apache::geode::client::FunctionService;
 using apache::geode::client::IllegalStateException;
 using apache::geode::client::LocalRegion;
 using apache::geode::client::PdxFieldTypes;
@@ -66,6 +70,39 @@ std::shared_ptr<Region> setupRegion(Cache& cache) {
                     .create("region");
 
   return region;
+}
+
+TEST(PdxJsonTypeTest, testGfshQueryJsonInstances) {
+  Cluster cluster{LocatorCount{1}, ServerCount{1},
+                  CacheXMLFiles{std::vector<std::string>{
+                      std::string(getFrameworkString(
+                          FrameworkVariable::NewTestResourcesDir)) +
+                      "/pdxjson_cacheserver.xml"}}};
+
+  cluster.start([&cluster]() {
+    cluster.getGfsh()
+        .deploy()
+        .jar(getFrameworkString(FrameworkVariable::JavaObjectJarPath))
+        .execute();
+  });
+
+  auto cache = cluster.createCache();
+  auto region = setupRegion(cache);
+  auto execution = FunctionService::onRegion(region);
+  auto query = CacheableString::create("SELECT * FROM /region");
+
+  region->put("non-java-domain-class-entry",
+              cache.createPdxInstanceFactory(gemfireJsonClassName, false)
+                  .writeString("entryName", "non-java-domain-class-entry")
+                  .create());
+  ASSERT_NO_THROW(execution.withArgs(query).execute("QueryFunction"));
+
+  region->put("java-domain-class-entry",
+              cache.createPdxInstanceFactory(gemfireJsonClassName)
+                  .writeString("entryName", "java-domain-class-entry")
+                  .create());
+  ASSERT_THROW(execution.withArgs(query).execute("QueryFunction"),
+               CacheServerException);
 }
 
 TEST(PdxJsonTypeTest, testCreateTwoJsonInstances) {

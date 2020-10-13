@@ -166,12 +166,18 @@ AuthenticatedView::AuthenticatedView(std::shared_ptr<Properties> credentials,
 AuthenticatedView::~AuthenticatedView() {}
 
 PdxInstanceFactory AuthenticatedView::createPdxInstanceFactory(
-    const std::string& className) const {
-  return PdxInstanceFactory(className, m_cacheImpl->getCachePerfStats(),
+    const std::string& className, bool expectDomainClass) const {
+  return PdxInstanceFactory(className, expectDomainClass,
+                            m_cacheImpl->getCachePerfStats(),
                             *m_cacheImpl->getPdxTypeRegistry(), *m_cacheImpl,
                             m_cacheImpl->getDistributedSystem()
                                 .getSystemProperties()
                                 .getEnableTimeStatistics());
+}
+
+PdxInstanceFactory AuthenticatedView::createPdxInstanceFactory(
+    const std::string& className) const {
+  return createPdxInstanceFactory(className, true);
 }
 }  // namespace client
 }  // namespace geode

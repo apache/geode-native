@@ -103,8 +103,18 @@ class APACHE_GEODE_EXPORT AuthenticatedView : public RegionService {
   /**
    * Returns a factory that can create a {@link PdxInstance}.
    * @param className the fully qualified class name that the PdxInstance will
-   * become
-   * when it is fully deserialized.
+   * become when it is fully deserialized.
+   * @param expectDomainClass Whether or not created PdxType represents a
+   * Java domain class.
+   * @return the factory
+   */
+  PdxInstanceFactory createPdxInstanceFactory(
+      const std::string& className, bool expectDomainClass) const override;
+
+  /**
+   * Returns a factory that can create a {@link PdxInstance}.
+   * @param className the fully qualified class name that the PdxInstance will
+   * become when it is fully deserialized.
    * @return the factory
    */
   PdxInstanceFactory createPdxInstanceFactory(

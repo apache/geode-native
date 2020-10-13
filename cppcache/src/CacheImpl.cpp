@@ -814,11 +814,11 @@ DataInput CacheImpl::createDataInput(const uint8_t* buffer, size_t len,
 }
 
 PdxInstanceFactory CacheImpl::createPdxInstanceFactory(
-    const std::string& className) const {
+    const std::string& className, bool expectDomainClass) const {
   this->throwIfClosed();
 
   return PdxInstanceFactory(
-      className, *m_cacheStats, *m_pdxTypeRegistry, *this,
+      className, expectDomainClass, *m_cacheStats, *m_pdxTypeRegistry, *this,
       m_distributedSystem.getSystemProperties().getEnableTimeStatistics());
 }
 
