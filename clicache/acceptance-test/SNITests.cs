@@ -22,6 +22,7 @@ using Xunit;
 using System.Collections;
 using System.Collections.Generic;
 using Xunit.Abstractions;
+using System.Threading.Tasks;
 
 namespace Apache.Geode.Client.IntegrationTests
 {
@@ -90,7 +91,18 @@ namespace Apache.Geode.Client.IntegrationTests
             return Int32.Parse(portNumberString);
         }
 
-        [Fact]
+
+		//private Task PutAsync(IRegion<string, string> region)
+		//{
+		//	await region.Put("1", "one");
+		//}
+
+		private Task PutAsync(IRegion<string, string> region, string key, string value)
+		{
+			return Task.Run(() => region.Put(key, value));
+		}
+
+		[Fact]
         public void ConnectViaProxy()
         {
             var portString = RunDockerCommand("port haproxy");
@@ -127,5 +139,38 @@ namespace Apache.Geode.Client.IntegrationTests
 
             Assert.Throws<NotConnectedException>(() => region.Put("1", "one"));
         }
-    }
+
+		[Fact]
+		public void DropProxy()
+		{
+			var portString = RunDockerCommand("port haproxy");
+			var portNumber = ParseProxyPort(portString);
+
+			cache_.GetPoolManager()
+				.CreateFactory()
+				.SetSniProxy("localhost", portNumber)
+				.AddLocator("locator-maeve", 10334)
+				.Create("pool");
+
+			var region = cache_.CreateRegionFactory(RegionShortcut.PROXY)
+							  .SetPoolName("pool")
+							  .Create<string, string>("jellyfish");
+
+			var rVal = RunDockerCommand("pause haproxy");
+
+			Task putTask = PutAsync(region, "1", "one");
+
+			// Insure the put times out (default is 15 seconds).
+			System.Threading.Thread.Sleep(16*1000);
+
+			rVal = RunDockerCommand("unpause haproxy");
+
+			putTask.Wait();
+
+			var value = region.Get("1");
+
+			Assert.Equal("one", value);
+			cache_.Close();
+		}
+	}
 }
