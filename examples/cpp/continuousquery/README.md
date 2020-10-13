@@ -36,16 +36,18 @@ This is a simple example showing how to create a continuous query.
   
 1. Execute `cpp-continuousquery`, expect the following output:
 
-       Executing continuous query
-       Create orders
-       Putting and changing Order objects in the region
-       MyCqListener::OnEvent called with CREATE, key[Order2], value(2, product y, 37)
-       MyCqListener::OnEvent called with CREATE, key[Order4], value(4, product z, 102)
-       MyCqListener::OnEvent called with CREATE, key[Order6], value(6, product z, 42)
-       MyCqListener::OnEvent called with UPDATE, key[Order2], value(2, product y, 45)
-       MyCqListener::OnEvent called with DESTROY, key[Order2], value(2, product y, 29)
-       MyCqListener::OnEvent called with DESTROY, key[Order6], value is nullptr
-       close called
+    ```
+    Executing continuous query
+    Create orders
+    Putting and changing Order objects in the region
+    MyCqListener::OnEvent called with CREATE, key[Order2], value(2, product y, 37)
+    MyCqListener::OnEvent called with CREATE, key[Order4], value(4, product z, 102)
+    MyCqListener::OnEvent called with CREATE, key[Order6], value(6, product z, 42)
+    MyCqListener::OnEvent called with UPDATE, key[Order2], value(2, product y, 45)
+    MyCqListener::OnEvent called with DESTROY, key[Order2], value(2, product y, 29)
+    MyCqListener::OnEvent called with DESTROY, key[Order6], value is nullptr
+    close called
+    ```
 
 1. Run the `stopserver` script to gracefully shutdown the Geode cluster.
 

@@ -76,14 +76,16 @@ public:
 };
 
 int main(int argc, char** argv) {
-  auto cacheFactory = CacheFactory();
-  cacheFactory.set("log-level", "none");
-  auto cache = cacheFactory.create();
-  auto poolFactory = cache.getPoolManager().createFactory();
-  auto pool = poolFactory.addLocator("localhost", 10334)
-                  .setSubscriptionEnabled(true)
-                  .create("pool");
+  auto cache = CacheFactory()
+      .set("log-level", "none")
+      .create();
 
+  auto pool = cache.getPoolManager()
+      .createFactory()
+      .addLocator("localhost", 10334)
+      .setSubscriptionEnabled(true)
+      .create("pool");
+  
   auto regionFactory = cache.createRegionFactory(RegionShortcut::PROXY);
 
   auto region = regionFactory.setPoolName("pool").create("custom_orders");

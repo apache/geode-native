@@ -35,18 +35,22 @@ This example illustrates how to use SSL encryption for all traffic between a cli
     $ ./startserver.sh
     ```
   
-3. Execute `cpp-sslputget ./ClientSslKeys/`
+3. Execute (for Bash)
 
-   For Windows:
+     `./cpp-sslputget ./ClientSslKeys/`
+
+   Or, for Windows:
 
      `<build-type>/cpp-sslputget ./ClientSslKeys (where <build-type> = Debug or Release)`
 
-   Expec the following output:
+   Expect the following output:
 
-       Storing id and username in the region
-       Getting the user info from the region
-       rtimmons = Robert Timmons
-       scharles = Sylvia Charles
+    ```
+    Storing id and username in the region
+    Getting the user info from the region
+    rtimmons = Robert Timmons
+    scharles = Sylvia Charles
+    ```
 
 4. Run the `stopserver` script to gracefully shutdown the Geode cluster.
 

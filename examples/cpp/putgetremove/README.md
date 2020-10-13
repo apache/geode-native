@@ -38,12 +38,14 @@ We then put, get, and remove some primitive data in the region.
   
 1. Execute `cpp-putgetremove`, expect the following output:
 
-       Storing id and username in the region
-       Getting the user info from the region
-         rtimmons = Robert Timmons
-         scharles = Sylvia Charles
-       Removing rtimmons info from the region
-       rtimmons's info successfully deleted3
+    ```
+    Storing id and username in the region
+    Getting the user info from the region
+       rtimmons = Robert Timmons
+       scharles = Sylvia Charles
+    Removing rtimmons info from the region
+    rtimmons's info successfully deleted
+    ```
 
 1. Run the `stopserver` script to gracefully shutdown the Geode cluster.
 
