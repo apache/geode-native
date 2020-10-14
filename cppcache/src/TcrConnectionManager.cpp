@@ -25,7 +25,7 @@
 
 #include "CacheImpl.hpp"
 #include "ExpiryHandler_T.hpp"
-#include "ExpiryTaskManager.hpp"
+#include "FunctionExpiryTask.hpp"
 #include "RemoteQueryService.hpp"
 #include "ServerLocation.hpp"
 #include "TcrConnection.hpp"
@@ -57,8 +57,7 @@ TcrConnectionManager::TcrConnectionManager(CacheImpl *cache)
       m_failoverTask(nullptr),
       m_cleanupSema(0),
       m_cleanupTask(nullptr),
-      m_pingTaskId(-1),
-      m_servermonitorTaskId(-1),
+      ping_task_id_(ExpiryTask::invalid()),
       // Create the queues with flag to not delete the objects
       m_notifyCleanupSemaList(false),
       m_redundancySema(0),
@@ -69,9 +68,6 @@ TcrConnectionManager::TcrConnectionManager(CacheImpl *cache)
       new ThinClientRedundancyManager(this));
 }
 
-ExpiryTaskManager::id_type TcrConnectionManager::getPingTaskId() {
-  return m_pingTaskId;
-}
 void TcrConnectionManager::init(bool isPool) {
   if (!m_initGuard) {
     m_initGuard = true;
@@ -80,17 +76,18 @@ void TcrConnectionManager::init(bool isPool) {
   }
   auto &props = m_cache->getDistributedSystem().getSystemProperties();
   m_isDurable = !props.durableClientId().empty();
-  auto pingInterval = (props.pingInterval() / 2);
+  auto interval = (props.pingInterval() / 2);
   if (!isPool) {
-    ACE_Event_Handler *connectionChecker =
-        new ExpiryHandler_T<TcrConnectionManager>(
-            this, &TcrConnectionManager::checkConnection);
-    m_pingTaskId = m_cache->getExpiryTaskManager().scheduleExpiryTask(
-        connectionChecker, std::chrono::seconds(10), pingInterval, false);
+    auto &expiry_manager = m_cache->getExpiryTaskManager();
+    auto task = std::make_shared<FunctionExpiryTask>(
+        expiry_manager, [this]() { ping_endpoints(); });
+
+    ping_task_id_ = expiry_manager.schedule(std::move(task),
+                                            std::chrono::seconds(10), interval);
     LOGFINE(
         "TcrConnectionManager::TcrConnectionManager Registered ping "
         "task with id = %ld, interval = %ld",
-        m_pingTaskId, pingInterval.count());
+        ping_task_id_, interval.count());
   }
 
   m_redundancyManager->m_HAenabled = false;
@@ -122,9 +119,7 @@ void TcrConnectionManager::startFailoverAndCleanupThreads(bool isPool) {
 void TcrConnectionManager::close() {
   LOGFINE("TcrConnectionManager is closing");
 
-  if (m_pingTaskId > 0) {
-    m_cache->getExpiryTaskManager().cancelTask(m_pingTaskId);
-  }
+  m_cache->getExpiryTaskManager().cancel(ping_task_id_);
 
   if (m_failoverTask != nullptr) {
     m_failoverTask->stopNoblock();
@@ -272,26 +267,13 @@ bool TcrConnectionManager::removeRefToEndpoint(TcrEndpoint *ep,
   return hasRemovedEndpoint;
 }
 
-int TcrConnectionManager::processEventIdMap(const ACE_Time_Value &currTime,
-                                            const void *) {
-  return m_redundancyManager->processEventIdMap(currTime, nullptr);
-}
-
-int TcrConnectionManager::checkConnection(const ACE_Time_Value &,
-                                          const void *) {
+void TcrConnectionManager::ping_endpoints() {
   auto &&guard = m_endpoints.make_lock();
   for (const auto &currItr : m_endpoints) {
     if (currItr.second->connected() && !m_isNetDown) {
       currItr.second->pingServer();
     }
   }
-  return 0;
-}
-
-int TcrConnectionManager::checkRedundancy(const ACE_Time_Value &,
-                                          const void *) {
-  m_redundancySema.release();
-  return 0;
 }
 
 void TcrConnectionManager::failover(std::atomic<bool> &isRunning) {
