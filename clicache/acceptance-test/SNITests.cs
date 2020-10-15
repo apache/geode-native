@@ -35,7 +35,7 @@ namespace Apache.Geode.Client.IntegrationTests
 
         public SNITests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
-			CleanupDocker();
+            CleanupDocker();
 
             currentWorkingDirectory = Directory.GetCurrentDirectory();
             var clientTruststore = Config.SslClientKeyPath + @"/truststore_sni.pem";
@@ -59,17 +59,17 @@ namespace Apache.Geode.Client.IntegrationTests
 
         public void Dispose()
         {
-			CleanupDocker();
-		}
+            CleanupDocker();
+        }
 
-		private void CleanupDocker()
-		{
-			var dockerComposeProc = Process.Start(@"docker-compose.exe", "-f " + Config.SniConfigPath + "/docker-compose.yml" + " stop");
-			dockerComposeProc.WaitForExit();
+        private void CleanupDocker()
+        {
+            var dockerComposeProc = Process.Start(@"docker-compose.exe", "-f " + Config.SniConfigPath + "/docker-compose.yml" + " stop");
+            dockerComposeProc.WaitForExit();
 
-			var dockerProc = Process.Start(@"docker.exe", "system prune -f");
-			dockerProc.WaitForExit();
-		}
+            var dockerProc = Process.Start(@"docker.exe", "system prune -f");
+            dockerProc.WaitForExit();
+        }
 
         private string RunDockerCommand(string dockerCommand)
         {
@@ -91,18 +91,12 @@ namespace Apache.Geode.Client.IntegrationTests
             return Int32.Parse(portNumberString);
         }
 
+        private Task PutAsync(IRegion<string, string> region, string key, string value)
+        {
+            return Task.Run(() => region.Put(key, value));
+        }
 
-		//private Task PutAsync(IRegion<string, string> region)
-		//{
-		//	await region.Put("1", "one");
-		//}
-
-		private Task PutAsync(IRegion<string, string> region, string key, string value)
-		{
-			return Task.Run(() => region.Put(key, value));
-		}
-
-		[Fact]
+        [Fact]
         public void ConnectViaProxy()
         {
             var portString = RunDockerCommand("port haproxy");
@@ -140,37 +134,37 @@ namespace Apache.Geode.Client.IntegrationTests
             Assert.Throws<NotConnectedException>(() => region.Put("1", "one"));
         }
 
-		[Fact]
-		public void DropProxy()
-		{
-			var portString = RunDockerCommand("port haproxy");
-			var portNumber = ParseProxyPort(portString);
+        [Fact]
+        public void DropProxy()
+        {
+            var portString = RunDockerCommand("port haproxy");
+            var portNumber = ParseProxyPort(portString);
 
-			cache_.GetPoolManager()
-				.CreateFactory()
-				.SetSniProxy("localhost", portNumber)
-				.AddLocator("locator-maeve", 10334)
-				.Create("pool");
+            cache_.GetPoolManager()
+                .CreateFactory()
+                .SetSniProxy("localhost", portNumber)
+                .AddLocator("locator-maeve", 10334)
+                .Create("pool");
 
-			var region = cache_.CreateRegionFactory(RegionShortcut.PROXY)
-							  .SetPoolName("pool")
-							  .Create<string, string>("jellyfish");
+            var region = cache_.CreateRegionFactory(RegionShortcut.PROXY)
+                              .SetPoolName("pool")
+                              .Create<string, string>("jellyfish");
 
-			var rVal = RunDockerCommand("pause haproxy");
+            var rVal = RunDockerCommand("pause haproxy");
 
-			Task putTask = PutAsync(region, "1", "one");
+            Task putTask = PutAsync(region, "1", "one");
 
-			// Insure the put times out (default is 15 seconds).
-			System.Threading.Thread.Sleep(16*1000);
+            // Insure the put times out (default is 15 seconds).
+            System.Threading.Thread.Sleep(16 * 1000);
 
-			rVal = RunDockerCommand("unpause haproxy");
+            rVal = RunDockerCommand("unpause haproxy");
 
-			putTask.Wait();
+            putTask.Wait();
 
-			var value = region.Get("1");
+            var value = region.Get("1");
 
-			Assert.Equal("one", value);
-			cache_.Close();
-		}
-	}
+            Assert.Equal("one", value);
+            cache_.Close();
+        }
+    }
 }
