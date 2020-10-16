@@ -88,46 +88,37 @@ For the complete source, see the example source directory.
 The C++ example creates a cache, then uses it to create a connection pool.
 
 ```cpp
-  auto cache = CacheFactory().set("log-level", "none").create();
-  auto poolFactory = cache.getPoolManager().createFactory();
+  auto cache = CacheFactory()
+      .set("log-level", "none")
+      .create();
 
-  poolFactory.addLocator("localhost", 10334);
-  auto pool = poolFactory.create("pool");
+  cache.getPoolManager()
+      .createFactory()
+      .addLocator("localhost", 10334)
+      .create("pool");
+
   auto regionFactory = cache.createRegionFactory(RegionShortcut::PROXY);
   auto region = regionFactory.setPoolName("pool").create("exampleRegion");
 ```
 
-The example application gets a transaction manager from the cache and begins a transaction.
-
-```cpp
-  auto transactionManager = cache.getCacheTransactionManager();
-
-  transactionManager->begin();
-```
-
-Within the transaction, the client populates data store with 10 values associated with Key1 - Key10.
-
-```cpp
-      for (auto& key : keys) {
-        auto value = getValueFromExternalSystem();
-        region->put(key, value);
-      }
-```
-
+The example application gets a transaction manager from the cache and a five-attempt retry loop.
 If all `put` operations succeed, the application commits the transaction. Otherwise, it retries up to 5 times if necessary.
 
 ```cpp
+  auto transactionManager = cache.getCacheTransactionManager();
   auto retries = 5;
   while (retries--) {
     try {
       transactionManager->begin();
-       ... // PUT OPERATIONS ...
-      transactionManager->commit();
-      std::cout << "Committed transaction - exiting" << std::endl;
-      break;
-    } catch ( ... ) {
-      transactionManager->rollback();
-      std::cout << "Rolled back transaction - retrying(" << retries << ")" << std::endl;
-    }
-  }
+      for (auto& key : keys) {
+        auto value = getValueFromExternalSystem();
+        region->put(key, value);
+        }
+        transactionManager->commit();
+        std::cout << "Committed transaction - exiting" << std::endl;
+        break;
+      } catch ( ... ) {
+      if (transactionManager->exists()){
+        transactionManager->rollback();
+      }
 ```

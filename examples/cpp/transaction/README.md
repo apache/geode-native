@@ -64,6 +64,8 @@ Example execution ends when the transaction is successfully committed, or when t
        Rolled back transaction - retrying(1)
        Rolled back transaction - retrying(0)       
     ```
+    
+    You can execute `cpp-transaction` more than once, if you wish to see a variety of results.
 
 4. Run the `stopserver` script to gracefully shutdown the Geode cluster.
 

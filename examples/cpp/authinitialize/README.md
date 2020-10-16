@@ -37,11 +37,13 @@ handler on the client that authenticates against a server that was started with 
   
 1. Execute `cpp-authinitialize`, expect the following output:
 
-       ExampleAuthInitialize::ExampleAuthInitialize called
-       ExampleAuthInitialize::getCredentials called
-       a = 1
-       b = 2
-
+    ```
+    ExampleAuthInitialize::ExampleAuthInitialize called
+    ExampleAuthInitialize::getCredentials called
+    a = 1
+    b = 2
+    ```
+    
 1. Run the `stopserver` script to gracefully shutdown the Geode cluster.
 
    For Windows cmd:

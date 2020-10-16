@@ -36,11 +36,13 @@ This is a simple example showing how to register for serialization of custom obj
   
 1. Execute `cpp-pdxserializer`, expect the following output:
 
-       Storing orders in the region
-       Getting the orders from the region
-       OrderID: 1
-       Product Name: product x
-       Quantity: 42
+    ```
+    Storing orders in the region
+    Getting the orders from the region
+    OrderID: 1
+    Product Name: product x
+    Quantity: 42
+    ```
 
 1. Run the `stopserver` script to gracefully shutdown the Geode cluster.
 
