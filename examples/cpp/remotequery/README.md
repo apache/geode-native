@@ -34,15 +34,17 @@ This is a simple example showing how to create and execute a remote query.
     $ ./startserver.sh
     ```
   
-1. Execute `cpp-remotequery`, expect the following output:
+1. Execute `cpp-remotequery`, expect the following output (quantities and order of presentation may differ):
 
-       Create orders
-       Storing orders in the region
-       Getting the orders from the region
-       The following orders have a quantity greater than 30:
-       OrderID: 2 Product Name: product y Quantity: 37
-       OrderID: 4 Product Name: product z Quantity: 102
-       OrderID: 6 Product Name: product z Quantity: 4
+    ```
+    Create orders
+    Storing orders in the region
+    Getting the orders from the region
+    The following orders have a quantity greater than 30:
+    OrderID: 2 Product Name: product y Quantity: 37
+    OrderID: 4 Product Name: product z Quantity: 102
+    OrderID: 6 Product Name: product z Quantity: 4
+    ```
 
 1. Run the `stopserver` script to gracefully shutdown the Geode cluster.
 
