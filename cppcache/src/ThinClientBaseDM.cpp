@@ -130,7 +130,11 @@ GfErrType ThinClientBaseDM::handleEPError(TcrEndpoint* ep,
       const char* exceptStr = reply.getException();
       if (exceptStr != nullptr) {
         bool markServerDead = unrecoverableServerError(exceptStr);
-        bool doFailover = (markServerDead || nonFatalServerError(exceptStr));
+        bool cacheClosedEx =
+            (strstr(exceptStr, "org.apache.geode.cache.CacheClosedException") !=
+             nullptr);
+        bool doFailover =
+            (markServerDead || cacheClosedEx || nonFatalServerError(exceptStr));
         if (doFailover) {
           LOGFINE(
               "ThinClientDistributionManager::sendRequestToEP: retrying for "
@@ -170,8 +174,6 @@ GfErrType ThinClientBaseDM::sendRequestToEndPoint(const TcrMessage& request,
  */
 bool ThinClientBaseDM::unrecoverableServerError(const char* exceptStr) {
   return (
-      (strstr(exceptStr, "org.apache.geode.cache.CacheClosedException") !=
-       nullptr) ||
       (strstr(exceptStr, "org.apache.geode.distributed.ShutdownException") !=
        nullptr) ||
       (strstr(exceptStr, "java.lang.OutOfMemoryError") != nullptr));

@@ -46,6 +46,7 @@ add_executable(cpp-integration-test
   BasicIPv6Test.cpp
   CacheWriterTest.cpp
   PdxInstanceFactoryTest.cpp
+  DisconnectEndPointAtException.cpp
 )
 
 target_compile_definitions(cpp-integration-test

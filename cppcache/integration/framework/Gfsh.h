@@ -225,6 +225,8 @@ class Gfsh {
       Region &withRedundantCopies(const std::string &copies);
 
       Region &withBuckets(const std::string &totalNumBuckets);
+
+      Region &withPartitionResolver(const std::string &partitionResolver);
     };
   };
 

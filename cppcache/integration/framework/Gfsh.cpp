@@ -344,6 +344,12 @@ Gfsh::Create::Region &Gfsh::Create::Region::withBuckets(const std::string &total
   return *this;
 }
 
+Gfsh::Create::Region &Gfsh::Create::Region::withPartitionResolver(
+    const std::string &partitionResolver) {
+  command_ += " --partition-resolver=" + partitionResolver;
+  return *this;
+}
+
 Gfsh::Connect::Connect(Gfsh &gfsh) : Command{gfsh, "connect"} {}
 
 Gfsh::Connect &Gfsh::Connect::withJmxManager(const std::string &jmxManager) {
