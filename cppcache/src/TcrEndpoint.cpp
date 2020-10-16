@@ -551,8 +551,18 @@ void TcrEndpoint::receiveNotification(std::atomic<bool>& isRunning) {
     try {
       size_t dataLen;
       ConnErrType opErr = CONN_NOERR;
-      auto data = m_notifyConnection->receive(&dataLen, &opErr,
-                                              std::chrono::seconds(5));
+      char* data;
+
+      // If mutex is locked it is because we are closing the channel.
+      // So we do not read any more data.
+      if (m_notifyReceiverLock.try_lock()) {
+        std::lock_guard<decltype(m_notifyReceiverLock)> guard(
+            m_notifyReceiverLock, std::adopt_lock);
+        data = m_notifyConnection->receive(&dataLen, &opErr,
+                                           std::chrono::seconds(5));
+      } else {
+        break;
+      }
 
       if (opErr == CONN_IOERR) {
         // Endpoint is disconnected, this exception is expected
@@ -562,11 +572,13 @@ void TcrEndpoint::receiveNotification(std::atomic<bool>& isRunning) {
         if (isRunning) {
           setConnectionStatus(false);
           // close notification channel
-          std::lock_guard<decltype(m_notifyReceiverLock)> guard(
-              m_notifyReceiverLock);
-          if (m_numRegionListener > 0) {
-            m_numRegionListener = 0;
-            closeNotification();
+          if (m_notifyReceiverLock.try_lock()) {
+            std::lock_guard<decltype(m_notifyReceiverLock)> guard(
+                m_notifyReceiverLock, std::adopt_lock);
+            if (m_numRegionListener > 0) {
+              m_numRegionListener = 0;
+              closeNotification();
+            }
           }
         }
         break;
@@ -1215,6 +1227,7 @@ void TcrEndpoint::closeNotification() {
 
 void TcrEndpoint::stopNoBlock() {
   if (m_notifyReceiver != nullptr) {
+    std::lock_guard<decltype(m_notifyReceiverLock)> guard(m_notifyReceiverLock);
     m_notifyConnection->close();
     m_notifyReceiver->stopNoblock();
   }
