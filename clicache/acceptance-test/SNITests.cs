@@ -166,5 +166,52 @@ namespace Apache.Geode.Client.IntegrationTests
             Assert.Equal("one", value);
             cache_.Close();
         }
+
+        [Fact]
+        public void NewDropProxy()
+        {
+            var portString = RunDockerCommand("port haproxy");
+            var portNumber = ParseProxyPort(portString);
+
+            cache_.GetPoolManager()
+                .CreateFactory()
+                .SetReadTimeout(new TimeSpan(0,0,5))
+                .SetRetryAttempts(2)
+                .SetSniProxy("localhost", portNumber)
+                .AddLocator("locator-maeve", 10334)
+                .Create("pool");
+
+            var region = cache_.CreateRegionFactory(RegionShortcut.PROXY)
+                              .SetPoolName("pool")
+                              .Create<string, string>("jellyfish");
+
+            region.Put("1", "one");
+            var value = region.Get("1");
+
+            var rVal = RunDockerCommand("pause haproxy");
+
+
+            Assert.ThrowsAny<Exception>(() =>
+            {
+                value = region.Get("1");
+                Console.WriteLine("Shouldn't be able to retrieve any data while proxy is paused");
+            });
+
+            rVal = RunDockerCommand("unpause haproxy");
+            value = region.Get("1");
+
+            Assert.Equal("one", value);
+            cache_.Close();
+        }
     }
 }
+
+
+//It would be great to have this test:
+
+    //bring up the system/cluster
+    //do a cache ops (put/get)
+    //drop the proxy
+    //attempt cache ops - wait for exception (EXPECTEXCEPTION in gtest or similar...)
+//bring proxy back up
+//then do verify cache ops (put/get)
