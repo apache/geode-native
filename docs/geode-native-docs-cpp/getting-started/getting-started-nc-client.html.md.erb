@@ -34,16 +34,15 @@ and [Client/Server Configuration](serverman/topologies_and_comm/cs_configuration
 
 To connect to a server, your application must follow these steps:
 
-1. Instantiate a `CacheFactory`, setting characteristics of interest (for example, `log-level`).
-1. Create a cache and use it to instantiate a `PoolFactory`, specifying the hostname and port for the server locator.
-1. Create a named pool of network connections.
+1. Create a cache, setting characteristics of interest (for example, `log-level`).
+1. Use the cache to create a named pool of network connections, specifying the hostname and port for at least one server locator.
 1. Instantiate a region of the desired type (usually PROXY, sometimes CACHING_PROXY) and connect it by name to its counterpart on the server.
 
 Once the connection pool and the shared region are in place, your client application is ready to share data with the server.
 
 **Server Connection: C++ Example**
 
-Create a cache and use it to instantiate a `CacheFactory` and set its characteristics:
+Create a cache and set its characteristics:
 
 ``` cpp
 auto cache = CacheFactory()
@@ -53,7 +52,7 @@ auto cache = CacheFactory()
     .create();
 ```
 
-Create a pool of network connections:
+Use the cache to create a named pool of network connections, specifying the hostname and port for the server locator:
 
 
 ``` cpp
