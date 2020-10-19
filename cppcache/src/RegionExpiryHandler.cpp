@@ -18,117 +18,76 @@
 #include "RegionExpiryHandler.hpp"
 
 #include "CacheImpl.hpp"
-#include "ExpiryTaskManager.hpp"
 #include "RegionInternal.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
-RegionExpiryHandler::RegionExpiryHandler(std::shared_ptr<RegionInternal>& rptr,
-                                         ExpirationAction action,
-                                         std::chrono::seconds duration)
-    : m_regionPtr(rptr),
-      m_action(action),
-      m_duration(duration),
-      /* adongre
-       * CID 28941: Uninitialized scalar field (UNINIT_CTOR)
-       */
-      m_expiryTaskId(0) {}
+RegionExpiryTask::RegionExpiryTask(ExpiryTaskManager& manager,
+                                   std::shared_ptr<RegionInternal> region,
+                                   ExpirationAction action,
+                                   const duration_t& duration)
+    : ExpiryTask(manager),
+      region_(region),
+      duration_(duration),
+      action_(action) {}
 
-int RegionExpiryHandler::handle_timeout(const ACE_Time_Value& current_time,
-                                        const void*) {
-  auto curr_time = std::chrono::system_clock::from_time_t(current_time.sec());
-  try {
-    auto statistics = m_regionPtr->getStatistics();
-    auto lastTimeForExp = statistics->getLastAccessedTime();
-    if (m_regionPtr->getAttributes().getRegionTimeToLive() >
-        std::chrono::seconds::zero()) {
-      lastTimeForExp = statistics->getLastModifiedTime();
-    }
-
-    auto elapsed = curr_time - lastTimeForExp;
-    LOGDEBUG("Entered region expiry task handler for region [%s]: %s,%s,%s,%s",
-             m_regionPtr->getFullPath().c_str(),
-             to_string(curr_time.time_since_epoch()).c_str(),
-             to_string(lastTimeForExp.time_since_epoch()).c_str(),
-             to_string(m_duration).c_str(), to_string(elapsed).c_str());
-    if (elapsed >= m_duration) {
-      DoTheExpirationAction();
-    } else {
-      auto remaining = m_duration - elapsed;
-      // reset the task after
-      // (lastAccessTime + entryExpiryDuration - curr_time) in seconds
-      LOGDEBUG("Resetting expiry task for region [%s] after %s sec",
-               m_regionPtr->getFullPath().c_str(),
-               to_string(remaining).c_str());
-      m_regionPtr->getCacheImpl()->getExpiryTaskManager().resetTask(
-          m_expiryTaskId, remaining);
-      return 0;
-    }
-    LOGDEBUG("Removing expiry task for region [%s]",
-             m_regionPtr->getFullPath().c_str());
-    m_regionPtr->getCacheImpl()->getExpiryTaskManager().resetTask(
-        m_expiryTaskId, std::chrono::seconds::zero());
-  } catch (...) {
-    // Ignore whatever exception comes
+ExpiryTask::time_point_t RegionExpiryTask::expire_at() const {
+  auto statistics = region_->getStatistics();
+  auto last_time = statistics->getLastAccessedTime();
+  if (region_->getAttributes().getRegionTimeToLive() >
+      std::chrono::seconds::zero()) {
+    last_time = statistics->getLastModifiedTime();
   }
-  //  we now delete the handler in GF_Timer_Heap_ImmediateReset_T
-  // and always return success.
-  return 0;
+
+  return last_time + duration_;
 }
 
-int RegionExpiryHandler::handle_close(ACE_HANDLE, ACE_Reactor_Mask) {
-  delete this;
-  return 0;
-}
+bool RegionExpiryTask::on_expire() {
+  auto tp = expire_at();
+  if (tp > ExpiryTask::clock_t::now()) {
+    // Region expiration needs to be re-scheduled as it was accessed/modified
+    // since the last time the expiration task was (re-)scheduled.
+    // This is the best approach, rather than re-scheduling the task each time
+    // the region is accessed/modified, as access/modify is a more frequent
+    // event than expiration.
+    reset(tp);
+    return false;
+  }
 
-void RegionExpiryHandler::DoTheExpirationAction() {
-  switch (m_action) {
+  const auto full_path = region_->getFullPath().c_str();
+  switch (action_) {
     case ExpirationAction::INVALIDATE: {
-      LOGDEBUG(
-          "RegionExpiryHandler::DoTheExpirationAction INVALIDATE "
-          "region [%s]",
-          m_regionPtr->getFullPath().c_str());
-      m_regionPtr->invalidateRegionNoThrow(nullptr,
-                                           CacheEventFlags::EXPIRATION);
+      LOGDEBUG("RegionExpiryTask INVALIDATE region [%s]", full_path);
+      region_->invalidateRegionNoThrow(nullptr, CacheEventFlags::EXPIRATION);
       break;
     }
     case ExpirationAction::LOCAL_INVALIDATE: {
-      LOGDEBUG(
-          "RegionExpiryHandler::DoTheExpirationAction LOCAL_INVALIDATE "
-          "region [%s]",
-          m_regionPtr->getFullPath().c_str());
-      m_regionPtr->invalidateRegionNoThrow(
+      LOGDEBUG("RegionExpiryTask LOCAL_INVALIDATE region [%s]", full_path);
+      region_->invalidateRegionNoThrow(
           nullptr, CacheEventFlags::EXPIRATION | CacheEventFlags::LOCAL);
       break;
     }
     case ExpirationAction::DESTROY: {
-      LOGDEBUG(
-          "RegionExpiryHandler::DoTheExpirationAction DESTROY "
-          "region [%s]",
-          m_regionPtr->getFullPath().c_str());
-      m_regionPtr->destroyRegionNoThrow(nullptr, true,
-                                        CacheEventFlags::EXPIRATION);
+      LOGDEBUG("RegionExpiryTask DESTROY region [%s]", full_path);
+      region_->destroyRegionNoThrow(nullptr, true, CacheEventFlags::EXPIRATION);
       break;
     }
     case ExpirationAction::LOCAL_DESTROY: {
-      LOGDEBUG(
-          "RegionExpiryHandler::DoTheExpirationAction LOCAL_DESTROY "
-          "region [%s]",
-          m_regionPtr->getFullPath().c_str());
-      m_regionPtr->destroyRegionNoThrow(
+      LOGDEBUG("RegionExpiryTask LOCAL_DESTROY region [%s]", full_path);
+      region_->destroyRegionNoThrow(
           nullptr, true, CacheEventFlags::EXPIRATION | CacheEventFlags::LOCAL);
       break;
     }
     case ExpirationAction::INVALID_ACTION: {
-      LOGERROR(
-          "Unknown expiration action "
-          "%d for region [%s]",
-          m_action, m_regionPtr->getFullPath().c_str());
+      LOGERROR("Unknown expiration action %d for region [%s]", action_,
+               full_path);
       break;
     }
   }
+
+  return true;
 }
 
 }  // namespace client
