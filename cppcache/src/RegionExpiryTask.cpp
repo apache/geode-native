@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#include "RegionExpiryHandler.hpp"
+#include "RegionExpiryTask.hpp"
 
 #include "CacheImpl.hpp"
 #include "RegionInternal.hpp"
