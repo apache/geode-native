@@ -19,17 +19,44 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-Connection pools require standard client/server distributed system and cache configuration settings. You must also configure settings for the locator, server, and pool elements.
+Connection pools require a standard client/server distributed system and cache configuration settings. You must also configure settings for the locator, server, and pool elements.
 
 -   Locator. Host and port where a server locator is listening.
 -   Server. Host and port where a server is listening.
 -   Pool. Client/server connection pool.
 
-The example shows a declarative pool configuration. Following the example is a table that describes the attributes that can be configured.
+This page shows examples of creating a pool configuration programmatically using C++ code, and declaratively using XML.
 
-## Example—Declarative Pool Configuration
+## Programmatic Pool Configuration
 
-This example shows a declarative pool configuration.
+This example shows a programmatic pool configuration. For a list of the attributes you can configure, see `PoolFactory` in the API docs.
+
+```cpp
+cache.getPoolManager()
+      .createFactory()
+      .addLocator("localhost", 34756)
+      .setFreeConnectionTimeout(std::chrono::milliseconds(12345))
+      .setLoadConditioningInterval(std::chrono::milliseconds(23456))
+      .setMaxConnections(7)
+      .setMinConnections(3)
+      .setPingInterval(std::chrono::milliseconds(12345))
+      .setReadTimeout(std::chrono::milliseconds(23456))
+      .setRetryAttempts(3)
+      .setServerGroup("ServerGroup1")
+      .setSocketBufferSize(32768)
+      .setStatisticInterval(std::chrono::milliseconds(10123))
+      .setSubscriptionAckInterval(std::chrono::milliseconds(567))
+      .setSubscriptionEnabled(true)
+      .setSubscriptionMessageTrackingTimeout(std::chrono::milliseconds(900123))
+      .setSubscriptionRedundancy(0)
+      .setThreadLocalConnections(true)
+      .create("test_pool_1");
+```
+
+
+## Declarative Pool Configuration
+
+This example shows a declarative pool configuration. Following the example is a table that describes the XML pool attributes you can configure.
 
 **Note:**
 You create an instance of `PoolFactory` through `PoolManager`.
