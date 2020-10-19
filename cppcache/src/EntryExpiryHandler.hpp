@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef GEODE_ENTRYEXPIRYHANDLER_H_
-#define GEODE_ENTRYEXPIRYHANDLER_H_
+#ifndef GEODE_ENTRYEXPIRYTASK_H_
+#define GEODE_ENTRYEXPIRYTASK_H_
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
@@ -26,6 +26,7 @@
 #include <geode/internal/geode_globals.hpp>
 
 #include "ExpMapEntry.hpp"
+#include "ExpiryTask.hpp"
 #include "RegionInternal.hpp"
 
 /**
@@ -40,43 +41,29 @@ namespace client {
  *
  * The task object which contains the handler which gets triggered
  * when an entry expires.
- *
- * TODO: TODO: cleanup region entry nodes and handlers from expiry task
- * manager when region is destroyed
  */
-class APACHE_GEODE_EXPORT EntryExpiryHandler : public ACE_Event_Handler {
+class APACHE_GEODE_EXPORT EntryExpiryTask : public ExpiryTask {
  public:
   /**
    * Constructor
    */
-  EntryExpiryHandler(std::shared_ptr<RegionInternal>& rptr,
-                     std::shared_ptr<MapEntryImpl>& entryPtr,
-                     ExpirationAction action, std::chrono::seconds duration);
+  EntryExpiryTask(ExpiryTaskManager& manager,
+                  std::shared_ptr<RegionInternal> region,
+                  std::shared_ptr<MapEntryImpl> entry, ExpirationAction action,
+                  const duration_t& duration);
 
-  /** This task object will be registered with the Timer Queue.
-   *  When the timer expires the handle_timeout is invoked.
-   */
-  int handle_timeout(const ACE_Time_Value& current_time, const void* arg);
-  /**
-   * This is called when the task object needs to be cleaned up..
-   */
-  int handle_close(ACE_HANDLE handle, ACE_Reactor_Mask close_mask);
+ protected:
+  bool on_expire() override;
+  time_point_t expire_at() const;
 
  private:
-  // The region which contains the entry
-  std::shared_ptr<RegionInternal> m_regionPtr;
-  // The ExpMapEntry contained in the ConcurrentMap against the key.
-  std::shared_ptr<MapEntryImpl> m_entryPtr;
-  // Action to be taken on expiry
-  ExpirationAction m_action;
-  // Duration after which the task should be reset in case of
-  // modification.
-  std::chrono::seconds m_duration;
-  // perform the actual expiration action
-  void DoTheExpirationAction(const std::shared_ptr<CacheableKey>& key);
+  duration_t duration_;
+  ExpirationAction action_;
+  std::shared_ptr<MapEntryImpl> entry_;
+  std::shared_ptr<RegionInternal> region_;
 };
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
 
-#endif  // GEODE_ENTRYEXPIRYHANDLER_H_
+#endif  // GEODE_ENTRYEXPIRYTASK_H_
