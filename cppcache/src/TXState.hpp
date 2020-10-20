@@ -53,11 +53,10 @@ class TXState {
 
   ThinClientPoolDM* getPoolDM() { return m_pooldm; }
   void setPoolDM(ThinClientPoolDM* dm) { m_pooldm = dm; }
-  void setSuspendedExpiryTaskId(
-      ExpiryTaskManager::id_type suspendedExpiryTaskId) {
+  void setSuspendedExpiryTaskId(ExpiryTask::id_t suspendedExpiryTaskId) {
     m_suspendedExpiryTaskId = suspendedExpiryTaskId;
   }
-  ExpiryTaskManager::id_type getSuspendedExpiryTaskId() {
+  ExpiryTask::id_t getSuspendedExpiryTaskId() {
     return m_suspendedExpiryTaskId;
   }
 
@@ -84,7 +83,7 @@ class TXState {
   std::vector<std::shared_ptr<TransactionalOperation>> m_operations;
   CacheImpl* m_cache;
   ThinClientPoolDM* m_pooldm;
-  ExpiryTaskManager::id_type m_suspendedExpiryTaskId;
+  ExpiryTask::id_t m_suspendedExpiryTaskId;
   class ReplayControl {
    public:
     explicit ReplayControl(TXState* txState) : m_txState(txState) {
