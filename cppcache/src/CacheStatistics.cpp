@@ -21,20 +21,20 @@ namespace apache {
 namespace geode {
 namespace client {
 
-void CacheStatistics::setLastModifiedTime(time_point lmt) {
-  m_lastModifiedTime = lmt.time_since_epoch().count();
+void CacheStatistics::setLastModifiedTime(const time_point& tp) {
+  last_modified_ = tp.time_since_epoch().count();
 }
 
-void CacheStatistics::setLastAccessedTime(time_point lat) {
-  m_lastAccessTime = lat.time_since_epoch().count();
+void CacheStatistics::setLastAccessedTime(const time_point& tp) {
+  last_accessed_ = tp.time_since_epoch().count();
 }
 
 CacheStatistics::time_point CacheStatistics::getLastModifiedTime() const {
-  return time_point(std::chrono::system_clock::duration(m_lastModifiedTime));
+  return time_point{time_point::duration{last_modified_}};
 }
 
 CacheStatistics::time_point CacheStatistics::getLastAccessedTime() const {
-  return time_point(std::chrono::system_clock::duration(m_lastAccessTime));
+  return time_point{time_point::duration{last_accessed_}};
 }
 
 }  // namespace client
