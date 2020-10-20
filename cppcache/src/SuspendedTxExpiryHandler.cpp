@@ -17,33 +17,30 @@
 #include "SuspendedTxExpiryHandler.hpp"
 
 #include "CacheImpl.hpp"
-#include "ExpiryTaskManager.hpp"
+#include "CacheTransactionManagerImpl.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
-SuspendedTxExpiryHandler::SuspendedTxExpiryHandler(
-    CacheTransactionManagerImpl* cacheTxMgr, TransactionId& tid)
-    : m_cacheTxMgr(cacheTxMgr), m_txid(tid) {}
+SuspendedTxExpiryTask::SuspendedTxExpiryTask(
+    ExpiryTaskManager& expiry_manager, CacheTransactionManagerImpl& tx_manager,
+    TransactionId& tx_id)
+    : ExpiryTask(expiry_manager), tx_manager_(tx_manager), tx_id_(tx_id) {}
 
-int SuspendedTxExpiryHandler::handle_timeout(const ACE_Time_Value&,
-                                             const void*) {
+bool SuspendedTxExpiryTask::on_expire() {
   LOGDEBUG("Entered SuspendedTxExpiryHandler");
   try {
     // resume the transaction and rollback it
-    if (m_cacheTxMgr->tryResume(m_txid, false)) m_cacheTxMgr->rollback();
+    if (tx_manager_.tryResume(tx_id_, false)) {
+      tx_manager_.rollback();
+    }
   } catch (...) {
     // Ignore whatever exception comes
     LOGFINE(
         "Error while rollbacking expired suspended transaction. Ignoring the "
         "error");
   }
-  return 0;
-}
-
-int SuspendedTxExpiryHandler::handle_close(ACE_HANDLE, ACE_Reactor_Mask) {
-  delete this;
   return 0;
 }
 

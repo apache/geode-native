@@ -17,46 +17,43 @@
 
 #pragma once
 
-#ifndef GEODE_SUSPENDEDTXEXPIRYHANDLER_H_
-#define GEODE_SUSPENDEDTXEXPIRYHANDLER_H_
-
-#include <ace/Event_Handler.h>
+#ifndef GEODE_SUSPENDEDTXEXPIRYTASK_H_
+#define GEODE_SUSPENDEDTXEXPIRYTASK_H_
 
 #include <geode/Cache.hpp>
 #include <geode/internal/geode_globals.hpp>
 
-#include "CacheTransactionManagerImpl.hpp"
+#include "ExpiryTask.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
+class TransactionId;
 class CacheTransactionManagerImpl;
 
 /**
- * @class SuspendedTxExpiryHandler
+ * @class SuspendedTxExpiryTask
  *
- * The task object which contains the handler which gets triggered
- * when a suspended transaction expires.
+ * The task gets triggered whenever a suspended transaction expires.
  *
  */
-class APACHE_GEODE_EXPORT SuspendedTxExpiryHandler : public ACE_Event_Handler {
+class APACHE_GEODE_EXPORT SuspendedTxExpiryTask : public ExpiryTask {
  public:
-  SuspendedTxExpiryHandler(CacheTransactionManagerImpl* cacheTxMgr,
-                           TransactionId& txid);
+  SuspendedTxExpiryTask(ExpiryTaskManager& expiry_manager,
+                        CacheTransactionManagerImpl& tx_manager,
+                        TransactionId& tx_id);
 
-  int handle_timeout(const ACE_Time_Value& current_time,
-                     const void* arg) override;
+ protected:
+  bool on_expire() override;
 
-  int handle_close(ACE_HANDLE, ACE_Reactor_Mask) override;
-
- private:
-  CacheTransactionManagerImpl* m_cacheTxMgr;
-  TransactionId& m_txid;
+ protected:
+  CacheTransactionManagerImpl& tx_manager_;
+  TransactionId& tx_id_;
 };
 
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
 
-#endif  // GEODE_SUSPENDEDTXEXPIRYHANDLER_H_
+#endif  // GEODE_SUSPENDEDTXEXPIRYTASK_H_
