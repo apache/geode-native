@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#include "TombstoneExpiryHandler.hpp"
+#include "TombstoneExpiryTask.hpp"
 
 #include "CacheImpl.hpp"
 #include "MapSegment.hpp"
