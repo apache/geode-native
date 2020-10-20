@@ -17,57 +17,57 @@
 
 #pragma once
 
-#ifndef GEODE_TOMBSTONEEXPIRYHANDLER_H_
-#define GEODE_TOMBSTONEEXPIRYHANDLER_H_
+#ifndef GEODE_TOMBSTONEEXPIRYTASK_H_
+#define GEODE_TOMBSTONEEXPIRYTASK_H_
 
 #include <geode/ExpirationAction.hpp>
 #include <geode/Region.hpp>
 #include <geode/internal/geode_globals.hpp>
 
+#include "ExpiryTask.hpp"
 #include "RegionInternal.hpp"
-#include "TombstoneList.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
+class MapSegment;
+class TombstoneEntry;
+
 /**
- * @class TombstoneExpiryHandler TombstoneExpiryHandler.hpp
+ * @class TombstoneExpiryTask TombstoneExpiryTask.hpp
  *
- * The task object which contains the handler which gets triggered
- * when a tombstone expires.
- *
+ * The task which gets triggered when a tombstone expires.
  */
-class APACHE_GEODE_EXPORT TombstoneExpiryHandler : public ACE_Event_Handler {
+class TombstoneExpiryTask : public ExpiryTask {
  public:
-  TombstoneExpiryHandler(std::shared_ptr<TombstoneEntry> entryPtr,
-                         TombstoneList* tombstoneList,
-                         std::chrono::milliseconds duration,
-                         CacheImpl* cacheImpl);
+  /**
+   * Class constructor
+   * @param manager A reference to the expiry manager
+   * @param segment A reference to the MapSegment the entry sits in
+   * @param tombstone Tombstone entry
+   */
+  TombstoneExpiryTask(ExpiryTaskManager& manager, MapSegment& segment,
+                      std::shared_ptr<TombstoneEntry> tombstone);
 
-  int handle_timeout(const ACE_Time_Value& current_time,
-                     const void* arg) override;
-
-  int handle_close(ACE_HANDLE handle, ACE_Reactor_Mask close_mask) override;
-
-  void setTombstoneEntry(std::shared_ptr<TombstoneEntry> entryPtr) {
-    m_entryPtr = entryPtr;
-  }
+ protected:
+  bool on_expire() override;
 
  private:
-  // The entry contained in the tombstone list
-  std::shared_ptr<TombstoneEntry> m_entryPtr;
-  // Duration after which the task should be reset in case of
-  // modification.
-  std::chrono::milliseconds m_duration;
-  CacheImpl* m_cacheImpl;
-  // perform the actual expiration action
-  void DoTheExpirationAction(const std::shared_ptr<CacheableKey>& key);
+  /// Member attributes
 
-  TombstoneList* m_tombstoneList;
+  /**
+   * Reference to the map segment in which the entry is
+   */
+  MapSegment& segment_;
+
+  /**
+   * Tombstone entry
+   */
+  std::shared_ptr<TombstoneEntry> tombstone_;
 };
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
 
-#endif  // GEODE_TOMBSTONEEXPIRYHANDLER_H_
+#endif  // GEODE_TOMBSTONEEXPIRYTASK_H_
