@@ -15,13 +15,33 @@
  * limitations under the License.
  */
 
-#include "MapEntry.hpp"
+#include "MapEntryImpl.hpp"
+
+#include <geode/ExceptionTypes.hpp>
 
 #include "MapEntryT.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
+
+LRUEntryProperties& MapEntryImpl::getLRUProperties() {
+  throw FatalInternalException(
+      "MapEntry::getLRUProperties called for "
+      "non-LRU MapEntry");
+}
+
+ExpEntryProperties& MapEntryImpl::getExpProperties() {
+  throw FatalInternalException(
+      "MapEntry::getExpProperties called for "
+      "non-expiration MapEntry");
+}
+
+VersionStamp& MapEntryImpl::getVersionStamp() {
+  throw FatalInternalException(
+      "MapEntry::getVersionStamp called for "
+      "non-versioned MapEntry");
+}
 
 void EntryFactory::newMapEntry(ExpiryTaskManager*,
                                const std::shared_ptr<CacheableKey>& key,

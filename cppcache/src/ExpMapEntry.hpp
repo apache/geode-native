@@ -22,7 +22,8 @@
 
 #include <geode/internal/geode_globals.hpp>
 
-#include "MapEntry.hpp"
+#include "ExpEntryProperties.hpp"
+#include "MapEntryImpl.hpp"
 #include "VersionStamp.hpp"
 
 namespace apache {
@@ -41,7 +42,7 @@ class APACHE_GEODE_EXPORT ExpMapEntry : public MapEntryImpl,
 
   virtual void cleanup(const CacheEventFlags eventFlags) {
     if (!eventFlags.isExpiration()) {
-      cancelExpiryTaskId(m_key);
+      cancel_task();
     }
   }
 
