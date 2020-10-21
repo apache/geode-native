@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "SuspendedTxExpiryHandler.hpp"
+#include "SuspendedTxExpiryTask.hpp"
 
 #include "CacheImpl.hpp"
 #include "CacheTransactionManagerImpl.hpp"
@@ -29,7 +29,7 @@ SuspendedTxExpiryTask::SuspendedTxExpiryTask(
     : ExpiryTask(expiry_manager), tx_manager_(tx_manager), tx_id_(tx_id) {}
 
 bool SuspendedTxExpiryTask::on_expire() {
-  LOGDEBUG("Entered SuspendedTxExpiryHandler");
+  LOGDEBUG("Entered SuspendedTxExpiryTask");
   try {
     // resume the transaction and rollback it
     if (tx_manager_.tryResume(tx_id_, false)) {
