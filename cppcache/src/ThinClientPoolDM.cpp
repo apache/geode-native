@@ -510,7 +510,6 @@ void ThinClientPoolDM::restoreMinConnections(std::atomic<bool>& isRunning) {
   int restored = 0;
 
   if (m_poolSize < min) {
-    ACE_Guard<ACE_Recursive_Thread_Mutex> poolguard(m_queueLock);
     while (m_poolSize < min && limit-- && isRunning) {
       TcrConnection* conn = nullptr;
       bool maxConnLimit = false;
@@ -1632,7 +1631,6 @@ GfErrType ThinClientPoolDM::getConnectionToAnEndPoint(std::string epNameStr,
 GfErrType ThinClientPoolDM::createPoolConnectionToAEndPoint(
     TcrConnection*& conn, TcrEndpoint* theEP, bool& maxConnLimit,
     bool appThreadrequest) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_queueLock);
   GfErrType error = GF_NOERR;
   conn = nullptr;
   int min = 0;
@@ -1695,7 +1693,6 @@ void ThinClientPoolDM::reducePoolSize(int num) {
 GfErrType ThinClientPoolDM::createPoolConnection(
     TcrConnection*& conn, std::set<ServerLocation>& excludeServers,
     bool& maxConnLimit, const TcrConnection* currentserver) {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_queueLock);
   GfErrType error = GF_NOERR;
   int max = m_attrs->getMaxConnections();
   if (max == -1) {
@@ -1860,7 +1857,6 @@ GfErrType ThinClientPoolDM::sendRequestToEP(const TcrMessage& request,
         _GEODE_SAFE_DELETE(conn);
       }
       if (putConnInPool) {
-        ACE_Guard<ACE_Recursive_Thread_Mutex> guard(getPoolLock());
         reducePoolSize(1);
       }
       currentEndpoint->setConnectionStatus(false);
@@ -1943,7 +1939,6 @@ GfErrType ThinClientPoolDM::sendRequestToEP(const TcrMessage& request,
     } else if (error != GF_NOERR) {
       currentEndpoint->setConnectionStatus(false);
       if (putConnInPool) {
-        ACE_Guard<ACE_Recursive_Thread_Mutex> guard(getPoolLock());
         removeEPConnections(1);
       }
     }
@@ -1998,13 +1993,11 @@ TcrEndpoint* ThinClientPoolDM::addEP(const std::string& endpointName) {
 }
 
 void ThinClientPoolDM::netDown() {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> guard(getPoolLock());
   close();
   reset();
 }
 
 void ThinClientPoolDM::pingServerLocal() {
-  ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(getPoolLock());
   std::lock_guard<decltype(m_endpointsLock)> guard(m_endpointsLock);
   for (auto& it : m_endpoints) {
     auto endpoint = it.second;
@@ -2104,7 +2097,6 @@ bool ThinClientPoolDM::canItBeDeleted(TcrConnection* conn) {
   if (conn && candidateForDeletion) {
     TcrEndpoint* endPt = conn->getEndpointObject();
     {
-      ACE_Guard<ACE_Recursive_Thread_Mutex> poolguard(m_queueLock);  // PXR
       std::lock_guard<decltype(endPt->getQueueHostedMutex())> guardQueue(
           endPt->getQueueHostedMutex());
       bool queue = endPt->isQueueHosted();
