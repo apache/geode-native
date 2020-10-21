@@ -27,22 +27,26 @@ TEST(CacheableKeysTest, boolDifferentHashCodes) {
 }
 
 TEST(CacheableKeysTest, int8_tDifferentHashCodes) {
-  EXPECT_NE(hashcode((int8_t)37), hashcode((int8_t)42))
+  EXPECT_NE(hashcode(static_cast<int8_t>(37)),
+            hashcode(static_cast<int8_t>(42)))
       << "Two different int8_t values have different hashcodes";
 }
 
 TEST(CacheableKeysTest, int16_tDifferentHashCodes) {
-  EXPECT_NE(hashcode((int16_t)37), hashcode((int16_t)42))
+  EXPECT_NE(hashcode(static_cast<int8_t>(37)),
+            hashcode(static_cast<int8_t>(42)))
       << "Two different int16_t values have different hashcodes";
 }
 
 TEST(CacheableKeysTest, int32_tDifferentHashCodes) {
-  EXPECT_NE(hashcode((int32_t)37), hashcode((int32_t)42))
+  EXPECT_NE(hashcode(static_cast<int8_t>(37)),
+            hashcode(static_cast<int8_t>(42)))
       << "Two different int32_t values have different hashcodes";
 }
 
 TEST(CacheableKeysTest, int64_tDifferentHashCodes) {
-  EXPECT_NE(hashcode((int64_t)37), hashcode((int64_t)42))
+  EXPECT_NE(hashcode(static_cast<int8_t>(37)),
+            hashcode(static_cast<int8_t>(42)))
       << "Two different int64_t values have different hashcodes";
 }
 
