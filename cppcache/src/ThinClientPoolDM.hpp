@@ -195,8 +195,8 @@ class ThinClientPoolDM
   PoolStats* m_stats;
   bool m_sticky;
   void netDown();
-  ACE_Semaphore m_updateLocatorListSema;
-  ACE_Semaphore m_pingSema;
+  ACE_Semaphore update_locators_semaphore_;
+  ACE_Semaphore ping_semaphore_;
   ACE_Semaphore m_cliCallbackSema;
   volatile bool m_isDestroyed;
   volatile bool m_destroyPending;
@@ -288,18 +288,16 @@ class ThinClientPoolDM
   unsigned m_server;
 
   // Manage Connection thread
-  ACE_Semaphore m_connSema;
+  ACE_Semaphore connections_semaphore_;
   std::unique_ptr<Task<ThinClientPoolDM>> m_connManageTask;
   std::unique_ptr<Task<ThinClientPoolDM>> m_pingTask;
   std::unique_ptr<Task<ThinClientPoolDM>> m_updateLocatorListTask;
   std::unique_ptr<Task<ThinClientPoolDM>> m_cliCallbackTask;
-  ExpiryTaskManager::id_type m_pingTaskId;
-  ExpiryTaskManager::id_type m_updateLocatorListTaskId;
-  ExpiryTaskManager::id_type m_connManageTaskId;
+  ExpiryTask::id_t ping_task_id_{ExpiryTask::invalid()};
+  ExpiryTask::id_t update_locators_task_id_{ExpiryTask::invalid()};
+  ExpiryTask::id_t conns_mgmt_task_id_{ExpiryTask::invalid()};
+
   void manageConnections(std::atomic<bool>& isRunning);
-  int doPing(const ACE_Time_Value&, const void*);
-  int doUpdateLocatorList(const ACE_Time_Value&, const void*);
-  int doManageConnections(const ACE_Time_Value&, const void*);
   void manageConnectionsInternal(std::atomic<bool>& isRunning);
   void cleanStaleConnections(std::atomic<bool>& isRunning);
   void restoreMinConnections(std::atomic<bool>& isRunning);
