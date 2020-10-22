@@ -31,7 +31,7 @@
 
 #include "CacheImpl.hpp"
 #include "ClientProxyMembershipID.hpp"
-#include "ExpiryHandler_T.hpp"
+#include "FunctionExpiryTask.hpp"
 #include "RemoteQueryService.hpp"
 #include "ServerLocation.hpp"
 #include "TcrHADistributionManager.hpp"
@@ -63,8 +63,7 @@ ThinClientRedundancyManager::ThinClientRedundancyManager(
       m_locators(nullptr),
       m_servers(nullptr),
       m_periodicAckTask(nullptr),
-      m_processEventIdMapTaskId(-1),
-      m_nextAckInc(0),
+      process_event_id_map_task_id_(ExpiryTask::invalid()),
       m_HAenabled(false) {}
 
 std::list<ServerLocation> ThinClientRedundancyManager::selectServers(
@@ -635,7 +634,7 @@ void ThinClientRedundancyManager::initialize(int redundancyLevel) {
     if (interval < std::chrono::milliseconds(100)) {
       interval = std::chrono::milliseconds(100);
     }
-    m_nextAckInc = interval;
+    next_ack_inc_ = interval;
     m_nextAck = clock::now() + interval;
   }
 
@@ -684,10 +683,9 @@ void ThinClientRedundancyManager::close() {
   LOGDEBUG("ThinClientRedundancyManager::close(): closing redundancy manager.");
 
   if (m_periodicAckTask) {
-    if (m_processEventIdMapTaskId >= 0) {
-      m_theTcrConnManager->getCacheImpl()->getExpiryTaskManager().cancelTask(
-          m_processEventIdMapTaskId);
-    }
+    auto& manager = m_theTcrConnManager->getCacheImpl()->getExpiryTaskManager();
+    manager.cancel(process_event_id_map_task_id_);
+
     m_periodicAckTask->stopNoblock();
     m_periodicAckSema.release();
     m_periodicAckTask->wait();
@@ -1122,12 +1120,6 @@ void ThinClientRedundancyManager::readyForEvents() {
   m_sentReadyForEvents = true;
 }
 
-int ThinClientRedundancyManager::processEventIdMap(const ACE_Time_Value&,
-                                                   const void*) {
-  m_periodicAckSema.release();
-  return 0;
-}
-
 void ThinClientRedundancyManager::periodicAck(std::atomic<bool>& isRunning) {
   while (isRunning) {
     m_periodicAckSema.acquire();
@@ -1147,7 +1139,7 @@ void ThinClientRedundancyManager::doPeriodicAck() {
   // do periodic ack if HA is enabled and the time has come
   if (m_HAenabled && (m_nextAck < clock::now())) {
     LOGFINER("Doing periodic ack");
-    m_nextAck += m_nextAckInc;
+    m_nextAck += next_ack_inc_;
 
     auto entries = m_eventidmap.getUnAcked();
     auto count = entries.size();
@@ -1170,7 +1162,7 @@ void ThinClientRedundancyManager::doPeriodicAck() {
           result = m_poolHADM->sendRequestToEP(request, reply, *endpoint);
         } else {
           result = (*endpoint)->send(request, reply);
-        };
+        }
 
         if (result == GF_NOERR && reply.getMessageType() == TcrMessage::REPLY) {
           LOGFINE(
@@ -1216,18 +1208,16 @@ void ThinClientRedundancyManager::startPeriodicAck() {
                           ->getDistributedSystem()
                           .getSystemProperties();
   // start the periodic ACK task handler
-  auto periodicAckTask = new ExpiryHandler_T<ThinClientRedundancyManager>(
-      this, &ThinClientRedundancyManager::processEventIdMap);
-  m_processEventIdMapTaskId =
-      m_theTcrConnManager->getCacheImpl()
-          ->getExpiryTaskManager()
-          .scheduleExpiryTask(periodicAckTask, m_nextAckInc, m_nextAckInc,
-                              false);
+  auto& manager = m_theTcrConnManager->getCacheImpl()->getExpiryTaskManager();
+  auto task = std::make_shared<FunctionExpiryTask>(
+      manager, [this] { m_periodicAckSema.release(); });
+  process_event_id_map_task_id_ =
+      manager.schedule(std::move(task), next_ack_inc_, next_ack_inc_);
   LOGFINE(
       "Registered subscription event "
       "periodic ack task with id = %ld, notify-ack-interval = %ld, "
       "notify-dupcheck-life = %ld, periodic ack is %sabled",
-      m_processEventIdMapTaskId,
+      process_event_id_map_task_id_,
       (m_poolHADM ? m_poolHADM->getSubscriptionAckInterval()
                   : props.notifyAckInterval())
           .count(),
