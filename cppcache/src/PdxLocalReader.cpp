@@ -22,7 +22,10 @@
 
 #include "PdxLocalReader.hpp"
 
+#include <geode/TypeRegistry.hpp>
+
 #include "PdxTypeRegistry.hpp"
+#include "util/Log.hpp"
 
 namespace apache {
 namespace geode {
