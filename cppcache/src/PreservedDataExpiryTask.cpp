@@ -20,7 +20,7 @@
  *  Created on: Apr 5, 2012
  *      Author: npatel
  */
-#include "PreservedDataExpiryHandler.hpp"
+#include "PreservedDataExpiryTask.hpp"
 
 #include "ExpiryTaskManager.hpp"
 #include "PdxTypeRegistry.hpp"
