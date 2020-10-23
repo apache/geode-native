@@ -37,6 +37,8 @@ add_executable(apache-geode_unittests
   DataInputTest.cpp
   DataOutputTest.cpp
   ExceptionTypesTest.cpp
+  ExpiryTaskManagerTest.cpp
+  GatewaySenderEventCallbackArgumentTest.cpp
   geodeBannerTest.cpp
   gtest_extensions.h
   InterestResultPolicyTest.cpp
@@ -49,6 +51,7 @@ add_executable(apache-geode_unittests
   StructSetTest.cpp
   TcrMessageTest.cpp
   ThreadPoolTest.cpp
+  mock/MockExpiryTask.hpp
   statistics/HostStatSamplerTest.cpp
   util/functionalTests.cpp
   util/JavaModifiedUtf8Tests.cpp
@@ -56,8 +59,7 @@ add_executable(apache-geode_unittests
   util/synchronized_mapTest.cpp
   util/synchronized_setTest.cpp
   util/TestableRecursiveMutex.hpp
-  util/chrono/durationTest.cpp
-  GatewaySenderEventCallbackArgumentTest.cpp)
+  util/chrono/durationTest.cpp)
 
 target_compile_definitions(apache-geode_unittests
   PUBLIC
