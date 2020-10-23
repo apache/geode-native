@@ -37,10 +37,12 @@ add_executable(apache-geode_unittests
   DataInputTest.cpp
   DataOutputTest.cpp
   ExceptionTypesTest.cpp
+  ExpiryTaskTest.cpp
   ExpiryTaskManagerTest.cpp
   GatewaySenderEventCallbackArgumentTest.cpp
   geodeBannerTest.cpp
   gtest_extensions.h
+  gmock_extensions.h
   InterestResultPolicyTest.cpp
   LocalRegionTest.cpp
   PdxInstanceImplTest.cpp

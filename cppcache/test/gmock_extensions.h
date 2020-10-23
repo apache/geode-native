@@ -15,26 +15,13 @@
  * limitations under the License.
  */
 
-#ifndef GEODE_MOCKEXPIRYTASK_H_
-#define GEODE_MOCKEXPIRYTASK_H_
+#pragma once
+
+#ifndef GEODE_GMOCK_EXTENSIONS_H_
+#define GEODE_GMOCK_EXTENSIONS_H_
 
 #include <gmock/gmock.h>
 
-#include "ExpiryTask.hpp"
+ACTION_P(CvNotifyOne, cv) { cv->notify_one(); }
 
-namespace apache {
-namespace geode {
-namespace client {
-class MockExpiryTask : public ExpiryTask {
- public:
-  explicit MockExpiryTask(ExpiryTaskManager& manager) : ExpiryTask(manager) {}
-
-  using ExpiryTask::reset;
-
-  MOCK_METHOD0(on_expire, bool());
-};
-}  // namespace client
-}  // namespace geode
-}  // namespace apache
-
-#endif  // GEODE_MOCKEXPIRYTASK_H_
+#endif  // GEODE_GMOCK_EXTENSIONS_H_
