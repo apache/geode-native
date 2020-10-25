@@ -404,9 +404,9 @@ namespace Apache
       void DistributedSystem::HandleMemoryPressure(System::Object^ state)
       {
         // TODO global - Need single memory pressue event running?
-        ACE_Time_Value dummy(1);
-        MemoryPressureHandler handler;
-        handler.handle_timeout(dummy, nullptr);
+        ExpiryTaskManager *manager = nullptr;
+        MemoryPressureTask task {*manager};
+        task.on_expire();
       }
 
       DistributedSystem^ DistributedSystem::Create(native::DistributedSystem* nativeptr)

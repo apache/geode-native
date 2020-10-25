@@ -20,7 +20,7 @@
 
 #include "../begin_native.hpp"
 #include <geode/internal/geode_globals.hpp>
-#include <ExpiryTaskManager.hpp>
+#include "ExpiryTask.hpp"
 #include "../end_native.hpp"
 
 namespace Apache
@@ -30,14 +30,14 @@ namespace Apache
     namespace Client
     {
 
-      class MemoryPressureHandler
-        : public ACE_Event_Handler
+      class MemoryPressureTask
+        : public apache::geode::client::ExpiryTask
       {
         public:
-          int handle_timeout( const ACE_Time_Value& current_time,
-              const void* arg );
+          MemoryPressureTask(apache::geode::client::ExpiryTaskManager& manager) :
+          ExpiryTask(manager) {}
 
-          int handle_close( ACE_HANDLE handle, ACE_Reactor_Mask close_mask );
+          bool on_expire() override;
       };
     }  // namespace Client
   }  // namespace Geode
