@@ -37,7 +37,7 @@ namespace client {
  * The task object which contains the handler which gets triggered
  * when a region expires.
  */
-class APACHE_GEODE_EXPORT RegionExpiryTask : public ExpiryTask {
+class RegionExpiryTask : public ExpiryTask {
  public:
   RegionExpiryTask(ExpiryTaskManager& manager,
                    std::shared_ptr<RegionInternal> region,

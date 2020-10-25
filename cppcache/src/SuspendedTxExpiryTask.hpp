@@ -38,7 +38,7 @@ class CacheTransactionManagerImpl;
  * The task gets triggered whenever a suspended transaction expires.
  *
  */
-class APACHE_GEODE_EXPORT SuspendedTxExpiryTask : public ExpiryTask {
+class SuspendedTxExpiryTask : public ExpiryTask {
  public:
   SuspendedTxExpiryTask(ExpiryTaskManager& expiry_manager,
                         CacheTransactionManagerImpl& tx_manager,

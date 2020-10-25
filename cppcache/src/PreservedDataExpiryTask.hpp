@@ -36,7 +36,7 @@ namespace client {
  *
  * The expiry task which gets triggered when a preserved data expires.
  */
-class APACHE_GEODE_EXPORT PreservedDataExpiryTask : public ExpiryTask {
+class PreservedDataExpiryTask : public ExpiryTask {
  public:
   /**
    * Constructor

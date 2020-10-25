@@ -42,7 +42,7 @@ namespace client {
  * The task object which contains the handler which gets triggered
  * when an entry expires.
  */
-class APACHE_GEODE_EXPORT EntryExpiryTask : public ExpiryTask {
+class EntryExpiryTask : public ExpiryTask {
  public:
   /**
    * Constructor
