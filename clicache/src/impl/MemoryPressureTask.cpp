@@ -17,9 +17,9 @@
 
 
 
-#include "MemoryPressureHandler.hpp"
-#include "windows.h"
-#include "psapi.h"
+#include "MemoryPressureTask.hpp"
+#include <windows.h>
+#include <psapi.h>
 #include "../Log.hpp"
 
 namespace Apache
@@ -31,8 +31,7 @@ namespace Apache
 
       System::Int64 g_prevUnmanagedSize = 0;
 
-      int MemoryPressureHandler::handle_timeout( const ACE_Time_Value&
-          current_time, const void* arg )
+      bool MemoryPressureTask::on_expire()
       {
         HANDLE hProcess = GetCurrentProcess( );
 
@@ -61,15 +60,10 @@ namespace Apache
           }
         }
         else {
-          return -1;
+          Log::Error( "Error {0} while obtaining process memory info", GetLastError());
         }
-        return 0;
-      }
 
-      int MemoryPressureHandler::handle_close(ACE_HANDLE handle,
-        ACE_Reactor_Mask close_mask)
-      {
-        return 0;
+        return true;
       }
     }  // namespace Client
   }  // namespace Geode

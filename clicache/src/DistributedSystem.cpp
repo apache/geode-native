@@ -52,7 +52,7 @@
 #include "CacheableBuiltins.hpp"
 #include "Log.hpp"
 #include "Struct.hpp"
-#include "impl/MemoryPressureHandler.hpp"
+#include "impl/MemoryPressureTask.hpp"
 #include "impl/SafeConvert.hpp"
 #include "impl/PdxType.hpp"
 #include "impl/EnumInfo.hpp"
