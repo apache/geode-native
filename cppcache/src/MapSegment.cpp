@@ -332,7 +332,6 @@ GfErrType MapSegment::remove(const std::shared_ptr<CacheableKey>& key,
                              std::shared_ptr<MapEntryImpl>& me, int updateCount,
                              std::shared_ptr<VersionTag> versionTag,
                              bool afterRemote, bool& isEntryFound) {
-  std::shared_ptr<MapEntry> entry;
   if (m_concurrencyChecksEnabled) {
     TombstoneExpiryHandler* handler;
     auto id = m_tombstoneList->getExpiryTask(&handler);
@@ -353,7 +352,9 @@ GfErrType MapSegment::remove(const std::shared_ptr<CacheableKey>& key,
   }
 
   std::lock_guard<decltype(m_spinlock)> lk(m_spinlock);
-  if (m_map->erase(key) == 0) {
+  auto&& iter = m_map->find(key);
+
+  if (iter == m_map->end()) {
     // didn't unbind, probably no entry...
     oldValue = nullptr;
     volatile int destroyTrackers = *m_numDestroyTrackers;
@@ -363,16 +364,21 @@ GfErrType MapSegment::remove(const std::shared_ptr<CacheableKey>& key,
     return GF_CACHE_ENTRY_NOT_FOUND;
   }
 
+  auto entry = iter->second;
+  m_map->erase(iter);
+
   if (updateCount >= 0 && updateCount != entry->getUpdateCount()) {
     // this is the case when entry has been updated while being tracked
     return GF_CACHE_ENTRY_UPDATED;
   }
+
   auto entryImpl = entry->getImplPtr();
   entryImpl->getValueI(oldValue);
   if (CacheableToken::isTombstone(oldValue)) oldValue = nullptr;
   if (oldValue) {
     me = entryImpl;
   }
+
   return GF_NOERR;
 }
 
