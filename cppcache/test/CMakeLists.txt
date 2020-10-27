@@ -43,6 +43,7 @@ add_executable(apache-geode_unittests
   gmock_extensions.h
   InterestResultPolicyTest.cpp
   LocalRegionTest.cpp
+  LRUQueueTest.cpp
   PdxInstanceImplTest.cpp
   PdxTypeTest.cpp
   QueueConnectionRequestTest.cpp
@@ -51,6 +52,7 @@ add_executable(apache-geode_unittests
   StructSetTest.cpp
   TcrMessageTest.cpp
   ThreadPoolTest.cpp
+  mock/MapEntryImplMock.hpp
   mock/MockExpiryTask.hpp
   util/chrono/durationTest.cpp
   util/functionalTests.cpp
@@ -74,6 +76,7 @@ target_link_libraries(apache-geode_unittests
     apache-geode-static
     GTest::gtest
     GTest::gtest_main
+    GTest::gmock
     Boost::boost
     Boost::thread
     _WarningsAsError

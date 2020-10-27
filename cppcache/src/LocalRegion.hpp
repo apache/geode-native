@@ -394,7 +394,7 @@ class APACHE_GEODE_EXPORT LocalRegion : public RegionInternal {
                          const std::string& factoryFuncName) override;
   CacheImpl* getCacheImpl() const override;
 
-  void evict(int32_t percentage) override;
+  void evict(float percentage) override;
 
   virtual void acquireGlobals(bool isFailover);
 

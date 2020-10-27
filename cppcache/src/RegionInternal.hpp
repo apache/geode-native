@@ -260,7 +260,7 @@ class RegionInternal : public Region {
   virtual RegionStats* getRegionStats() = 0;
   virtual bool cacheEnabled() = 0;
   bool isDestroyed() const override = 0;
-  virtual void evict(int32_t percentage) = 0;
+  virtual void evict(float percentage) = 0;
   virtual CacheImpl* getCacheImpl() const = 0;
   virtual std::shared_ptr<TombstoneList> getTombstoneList();
 

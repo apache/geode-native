@@ -163,7 +163,6 @@ include_directories(${CMAKE_SOURCE_DIR}/tests/cpp)
 
 set_property(TEST testDataOutput PROPERTY LABELS STABLE QUICK)
 set_property(TEST testFWHelper PROPERTY LABELS STABLE QUICK)
-set_property(TEST testLRUList PROPERTY LABELS STABLE QUICK)
 set_property(TEST testSystemProperties PROPERTY LABELS STABLE QUICK)
 set_property(TEST testLogger PROPERTY LABELS STABLE QUICK)
 set_property(TEST testLinkage PROPERTY LABELS STABLE QUICK)

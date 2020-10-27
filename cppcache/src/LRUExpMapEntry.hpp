@@ -23,7 +23,8 @@
 #include <geode/internal/geode_globals.hpp>
 
 #include "ExpEntryProperties.hpp"
-#include "LRUList.hpp"
+#include "LRUEntryProperties.hpp"
+#include "MapEntry.hpp"
 #include "MapEntryImpl.hpp"
 #include "VersionStamp.hpp"
 

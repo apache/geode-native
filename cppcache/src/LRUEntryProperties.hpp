@@ -17,45 +17,51 @@
 
 #pragma once
 
-#ifndef GEODE_EVICTIONTHREAD_H_
-#define GEODE_EVICTIONTHREAD_H_
+#ifndef GEODE_LRUENTRYPROPERTIES_H_
+#define GEODE_LRUENTRYPROPERTIES_H_
 
-#include <atomic>
-#include <condition_variable>
-#include <deque>
-#include <mutex>
-#include <thread>
+#include <list>
+#include <memory>
 
 namespace apache {
 namespace geode {
 namespace client {
 
-class EvictionController;
+class MapEntryImpl;
 
 /**
- * This class does the actual evictions
+ * @brief This class encapsulates LRU specific properties for a LRUList node.
  */
-class EvictionThread {
+class LRUEntryProperties {
  public:
-  explicit EvictionThread(EvictionController* parent);
-  void start();
-  void stop();
-  void svc();
-  void putEvictionInfo(int32_t info);
+  using list_iterator = std::list<std::shared_ptr<MapEntryImpl>>::iterator;
+
+ public:
+  inline LRUEntryProperties() : persistence_info_(nullptr) {}
+
+  inline const std::shared_ptr<void>& persistence_info() const {
+    return persistence_info_;
+  }
+
+  inline void persistence_info(const std::shared_ptr<void>& persistenceInfo) {
+    persistence_info_ = persistenceInfo;
+  }
+
+  void iterator(list_iterator iter) { iter_ = iter; }
+
+  list_iterator iterator() const { return iter_; }
+
+ protected:
+  // this constructor deliberately skips initializing any fields
+  inline explicit LRUEntryProperties(bool) {}
 
  private:
-  std::thread m_thread;
-  std::atomic<bool> m_run;
-  EvictionController* m_pParent;
-  std::deque<int32_t> m_queue;
-  std::mutex m_queueMutex;
-  std::condition_variable m_queueCondition;
-
-  static const char* NC_Evic_Thread;
+  std::shared_ptr<void> persistence_info_;
+  list_iterator iter_;
 };
 
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
 
-#endif  // GEODE_EVICTIONTHREAD_H_
+#endif  // GEODE_LRUENTRYPROPERTIES_H_
