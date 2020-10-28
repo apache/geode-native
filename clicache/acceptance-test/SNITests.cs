@@ -49,10 +49,10 @@ namespace Apache.Geode.Client.IntegrationTests
 
             cache_ = cacheFactory.Create();
 
-            var rVal = RunProcess("docker-compose",
+            RunProcess("docker-compose",
                 "-f " + Config.SniConfigPath + "/docker-compose.yml" +
                 " up -d");
-            rVal = RunProcess("docker",
+            RunProcess("docker",
                 "exec -t geode " +
                 "gfsh run --file=/geode/scripts/geode-starter.gfsh");
         }
@@ -64,18 +64,18 @@ namespace Apache.Geode.Client.IntegrationTests
 
         private void CleanupDocker()
         {
-            var rVal = RunProcess("docker", "stop geode");
-            rVal = RunProcess("docker", "stop haproxy");
-            rVal = RunProcess("docker", "container prune -f");
+            RunProcess("docker", "stop geode");
+            RunProcess("docker", "stop haproxy");
+            RunProcess("docker", "container prune -f");
         }
 
-        private string RunProcess(string processFile, string dockerCommand)
+        private string RunProcess(string processFile, string processArgs)
         {
             ProcessStartInfo startInfo = new ProcessStartInfo();
             startInfo.RedirectStandardOutput = true;
             startInfo.UseShellExecute = false;
             startInfo.FileName = processFile;
-            startInfo.Arguments = dockerCommand;
+            startInfo.Arguments = processArgs;
             Process process = Process.Start(startInfo);
             String rVal = process.StandardOutput.ReadToEnd();
             process.WaitForExit();
@@ -148,8 +148,8 @@ namespace Apache.Geode.Client.IntegrationTests
 
             Assert.Equal("one", value);
 
-            var rVal = RunProcess("docker", "stop haproxy");
-            rVal = RunProcess("docker", "container prune -f");
+            RunProcess("docker", "stop haproxy");
+            RunProcess("docker", "container prune -f");
 
             Assert.Throws<NotConnectedException>(() =>
             {
@@ -161,7 +161,7 @@ namespace Apache.Geode.Client.IntegrationTests
                 "-f " + Config.SniConfigPath + "/docker-compose.yml " +
                 "run -d --name haproxy " +
                 "--publish " + proxyPort.ToString() + ":15443 haproxy";
-            rVal = RunProcess("docker-compose", startProxyArgs);
+            RunProcess("docker-compose", startProxyArgs);
 
             region.Put("3", "three");
             value = region.Get("3");

@@ -55,52 +55,34 @@ class SNITest : public ::testing::Test {
   void SetUp() override {
     TearDown();
 
-    auto systemRVal = 0;
     std::string dockerComposeCmd = "docker-compose -f " +
                                    sniConfigPath.string() +
                                    "/docker-compose.yml" + " up -d";
-    const char* dcc = dockerComposeCmd.c_str();
 
-    systemRVal = std::system(dcc);
-    if (systemRVal == -1) {
-      BOOST_LOG_TRIVIAL(error)
-          << "std::system(\"docker-compose\") returned: " << systemRVal;
-    }
+    runProcess(dockerComposeCmd);
 
-    systemRVal = std::system(
+    runProcess(
         "docker exec -t geode gfsh run "
         "--file=/geode/scripts/geode-starter.gfsh");
-    if (systemRVal == -1) {
-      BOOST_LOG_TRIVIAL(error)
-          << "std::system(\"docker exec -t geode gfsh run\") returned: "
-          << systemRVal;
-    }
   }
 
   void TearDown() override { cleanupDocker(); }
 
   void cleanupDocker() {
-    auto dockerComposeStopCommand = "docker-compose -f " +
-                                    sniConfigPath.string() +
-                                    "/docker-compose.yml" + " stop";
-    auto systemRVal = std::system(dockerComposeStopCommand.c_str());
-    if (systemRVal == -1) {
-      BOOST_LOG_TRIVIAL(error) << "std::system returned: " << systemRVal;
-    }
-
-    systemRVal = std::system("docker system prune -f");
-    if (systemRVal == -1) {
-      BOOST_LOG_TRIVIAL(error) << "std::system returned: " << systemRVal;
-    }
+    runProcess("docker stop geode");
+    runProcess("docker stop haproxy");
+    runProcess("docker container prune -f");
   }
 
-  std::string runDockerCommand(const char* command) {
+  std::string runProcess(std::string command) {
+    const char* cstrCommand = command.c_str();
     std::string commandOutput;
 #if defined(_WIN32)
-    std::unique_ptr<FILE, decltype(&_pclose)> pipe(_popen(command, "r"),
+    std::unique_ptr<FILE, decltype(&_pclose)> pipe(_popen(cstrCommand, "r"),
                                                    _pclose);
 #else
-    std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(command, "r"), pclose);
+    std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cStrCommand, "r"),
+                                                  pclose);
 #endif
     std::array<char, 128> charBuff;
     if (!pipe) {
@@ -125,7 +107,7 @@ class SNITest : public ::testing::Test {
   boost::filesystem::path sniConfigPath;
 };
 
-TEST_F(SNITest, connectViaProxyTest) {
+TEST_F(SNITest, connectViaProxy) {
   const auto clientTruststore =
       (clientSslKeysDir / boost::filesystem::path("/truststore_sni.pem"));
 
@@ -136,7 +118,7 @@ TEST_F(SNITest, connectViaProxyTest) {
                    .set("ssl-truststore", clientTruststore.string())
                    .create();
 
-  auto portString = runDockerCommand("docker port haproxy");
+  auto portString = runProcess("docker port haproxy");
   auto portNumber = parseProxyPort(portString);
 
   cache.getPoolManager()
@@ -150,6 +132,8 @@ TEST_F(SNITest, connectViaProxyTest) {
                     .create("jellyfish");
 
   region->put("1", "one");
+  auto val = std::dynamic_pointer_cast<CacheableString>(region->get("1"));
+  EXPECT_EQ("one", val->value());
 
   cache.close();
 }
@@ -179,7 +163,7 @@ TEST_F(SNITest, connectWithoutProxyFails) {
   cache.close();
 }
 
-TEST_F(SNITest, dropSNIProxyTest) {
+TEST_F(SNITest, dropSNIProxy) {
   const auto clientTruststore =
       (clientSslKeysDir / boost::filesystem::path("/truststore_sni.pem"));
 
@@ -190,12 +174,12 @@ TEST_F(SNITest, dropSNIProxyTest) {
                    .set("ssl-truststore", clientTruststore.string())
                    .create();
 
-  auto portString = runDockerCommand("docker port haproxy");
-  auto portNumber = parseProxyPort(portString);
+  auto portString = runProcess("docker port haproxy");
+  auto proxyPort = parseProxyPort(portString);
 
   cache.getPoolManager()
       .createFactory()
-      .setSniProxy("localhost", portNumber)
+      .setSniProxy("localhost", proxyPort)
       .addLocator("locator-maeve", 10334)
       .create("pool");
 
@@ -203,27 +187,26 @@ TEST_F(SNITest, dropSNIProxyTest) {
                     .setPoolName("pool")
                     .create("jellyfish");
 
-  auto systemRVal = std::system("docker pause haproxy");
-  if (systemRVal == -1) {
-    BOOST_LOG_TRIVIAL(error) << "std::system returned: " << systemRVal;
-  }
+  region->put("1", "one");
+  auto val = std::dynamic_pointer_cast<CacheableString>(region->get("1"));
+  EXPECT_EQ("one", val->value());
 
-  auto f =
-      std::async(std::launch::async, [&region] { region->put("1", "one"); });
+  runProcess("docker stop haproxy");
+  runProcess("docker container prune -f");
 
-  // Insure the put times out (default is 15 seconds).
-  std::this_thread::sleep_for(std::chrono::seconds(16));
+  EXPECT_THROW(region->put("1", "one"),
+               apache::geode::client::NotConnectedException);
 
-  systemRVal = std::system("docker unpause haproxy");
-  if (systemRVal == -1) {
-    BOOST_LOG_TRIVIAL(error) << "std::system returned: " << systemRVal;
-  }
+  std::string startProxyArgs = "-f " + sniConfigPath.string() +
+                               "/docker-compose.yml "
+                               "run -d --name haproxy "
+                               "--publish " +
+                               std::to_string(proxyPort) + ":15443 haproxy";
 
-  f.wait();
+  runProcess("docker-compose " + startProxyArgs);
 
-  EXPECT_EQ(
-      std::dynamic_pointer_cast<CacheableString>(region->get("1"))->value(),
-      "one");
+  val = std::dynamic_pointer_cast<CacheableString>(region->get("1"));
+  EXPECT_EQ("one", val->value());
 
   cache.close();
 }
