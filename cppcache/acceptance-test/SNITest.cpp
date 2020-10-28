@@ -81,7 +81,7 @@ class SNITest : public ::testing::Test {
     std::unique_ptr<FILE, decltype(&_pclose)> pipe(_popen(cstrCommand, "r"),
                                                    _pclose);
 #else
-    std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cStrCommand, "r"),
+    std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cstrCommand, "r"),
                                                   pclose);
 #endif
     std::array<char, 128> charBuff;
