@@ -176,7 +176,6 @@ include_directories(${CMAKE_SOURCE_DIR}/tests/cpp)
 
 set_tests_properties(testDataOutput
     testFWHelper
-    testLRUList
     testSystemProperties
     testLogger
     testLinkage
