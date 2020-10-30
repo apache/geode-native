@@ -271,12 +271,15 @@ namespace Apache
         /// <summary>
         /// Returns a PoolFactory that can be used to create a Pool and that provides
         /// access to all Pool attributes.
-        /// @return the factory
+        /// @return the PoolFactory
         /// </summary>
         virtual PoolFactory^ GetPoolFactory();
 
+        /// <summary>
         /// Returns a PoolManager that provides for the configuration and creation
         /// of instances of PoolFactory.
+        /// @return the PoolManager
+        /// </summary>
         virtual PoolManager^ GetPoolManager();
 
         property Apache::Geode::Client::TypeRegistry^ TypeRegistry
