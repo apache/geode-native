@@ -268,8 +268,15 @@ namespace Apache
         
         virtual DataOutput^ Cache::CreateDataOutput();
 
+        /// <summary>
+        /// Returns a PoolFactory that can be used to create a Pool and that provides
+        /// access to all Pool attributes.
+        /// @return the factory
+        /// </summary>
         virtual PoolFactory^ GetPoolFactory();
 
+        /// Returns a PoolManager that provides for the configuration and creation
+        /// of instances of PoolFactory.
         virtual PoolManager^ GetPoolManager();
 
         property Apache::Geode::Client::TypeRegistry^ TypeRegistry
