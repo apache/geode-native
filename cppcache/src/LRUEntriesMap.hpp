@@ -66,8 +66,7 @@ class APACHE_GEODE_EXPORT LRUEntriesMap : public ConcurrentEntriesMap {
   uint32_t m_limit;
   std::shared_ptr<PersistenceManager> m_pmPtr;
   EvictionController* m_evictionControllerPtr;
-  int64_t m_currentMapSize;
-  spinlock_mutex m_mapInfoLock;
+  std::atomic<int64_t> m_currentMapSize;
   std::string m_name;
   std::atomic<uint32_t> m_validEntries;
   bool m_heapLRUEnabled;

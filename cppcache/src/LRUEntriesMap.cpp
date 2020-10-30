@@ -81,7 +81,7 @@ LRUEntriesMap::LRUEntriesMap(ExpiryTaskManager* expiryTaskManager,
     if (cImpl != nullptr) {
       m_evictionControllerPtr = cImpl->getEvictionController();
       if (m_evictionControllerPtr != nullptr) {
-        m_evictionControllerPtr->registerRegion(m_name);
+        m_evictionControllerPtr->register_region(m_name);
         LOGINFO("Heap LRU eviction controller registered region %s",
                 m_name.c_str());
       }
@@ -93,14 +93,14 @@ LRUEntriesMap::LRUEntriesMap(ExpiryTaskManager* expiryTaskManager,
 
 void LRUEntriesMap::close() {
   if (m_evictionControllerPtr != nullptr) {
-    m_evictionControllerPtr->updateRegionHeapInfo((-1 * (m_currentMapSize)));
-    m_evictionControllerPtr->deregisterRegion(m_name);
+    m_evictionControllerPtr->inc_heap_size(-m_currentMapSize);
+    m_evictionControllerPtr->unregister_region(m_name);
   }
   ConcurrentEntriesMap::close();
 }
 
 void LRUEntriesMap::clear() {
-  updateMapSize((-1 * (m_currentMapSize)));
+  updateMapSize(-m_currentMapSize);
   ConcurrentEntriesMap::clear();
 }
 
@@ -467,10 +467,13 @@ GfErrType LRUEntriesMap::remove(const std::shared_ptr<CacheableKey>& key,
       if (m_evictionControllerPtr != nullptr) {
         int64_t sizeToRemove = static_cast<int64_t>(key->objectSize());
         sizeToRemove += static_cast<int64_t>(result->objectSize());
-        updateMapSize((-1 * sizeToRemove));
+        updateMapSize(-sizeToRemove);
       }
     }
   }
+
+  LOGFINE("Remove key: %s | Count: %u | MapSize: %lld", key->toString().c_str(),
+          m_size.load(), m_currentMapSize.load());
   return err;
 }
 
@@ -478,11 +481,8 @@ void LRUEntriesMap::updateMapSize(int64_t size) {
   // TODO: check and remove null check since this has already been done
   // by all the callers
   if (m_evictionControllerPtr != nullptr) {
-    {
-      std::lock_guard<spinlock_mutex> __guard(m_mapInfoLock);
-      m_currentMapSize += size;
-    }
-    m_evictionControllerPtr->updateRegionHeapInfo(size);
+    m_currentMapSize += size;
+    m_evictionControllerPtr->inc_heap_size(size);
   }
 }
 std::shared_ptr<Cacheable> LRUEntriesMap::getFromDisk(
