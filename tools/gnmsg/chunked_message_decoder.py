@@ -44,12 +44,7 @@ class ChunkedResponseDecoder:
             (chunk_size, offset) = call_reader_function(header, offset, read_int_value)
             (flags, offset) = call_reader_function(header, offset, read_byte_value)
             self.chunked_message["ChunkInfo"] = []
-            key = "Chunk" + str(self.chunk_index)
-            inner_item = dict(ChunkLength=chunk_size, Flags=flags)
-            outer_item = {}
-            outer_item[key] = inner_item
-            self.chunked_message["ChunkInfo"].append(outer_item)
-            self.chunk_flags = flags
+            self.add_chunk_header(chunk_size, flags)
         else:
             raise IndexError("Chunked message header should be " + str(CHUNKED_MESSAGE_HEADER_LENGTH) + " bytes")
 
@@ -83,4 +78,4 @@ class ChunkedResponseDecoder:
         self.chunked_message = {}
         self.complete = False
         self.chunk_flags = 0xff
-        self.chunk_index = 0
+        self.chunk_index = -1

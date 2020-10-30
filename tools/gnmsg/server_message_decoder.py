@@ -150,11 +150,13 @@ class ServerMessageDecoder(DecoderBase):
 
         return result
 
+
     def get_response_header(self, line, parts):
         # Check if this is a header for a chunked message
         result = False
+
         expression = re.compile(
-            r"(\d\d:\d\d:\d\d\.\d+).*TcrConnection::readResponseHeader:\s*received header from endpoint\s*([\w|:|\d|\.]+);\s*bytes:\s*([\d|a-f|A-F]+)"
+            r"(\d\d:\d\d:\d\d\.\d+).*TcrConnection::readResponseHeader:\s*received header from endpoint\s*([\w|:|\d|\.|-]+);\s*bytes:\s*([\d|a-f|A-F]+)"
         )
         match = expression.search(line)
         if match:
@@ -185,7 +187,7 @@ class ServerMessageDecoder(DecoderBase):
         # If it is, add it to the chunked decoder
         result = False
         expression = re.compile(
-            r"(\d\d:\d\d:\d\d\.\d+).*TcrConnection::readChunkBody: \s*received chunk body from endpoint\s*([\w|:|\d|\.]+);\s*bytes:\s*([\d|a-f|A-F]+)"
+            r"(\d\d:\d\d:\d\d\.\d+).*TcrConnection::readChunkBody: \s*received chunk body from endpoint\s*([\w|:|\d|\.|-]+);\s*bytes:\s*([\d|a-f|A-F]+)"
         )
         match = expression.search(line)
         if match:
@@ -267,14 +269,12 @@ class ServerMessageDecoder(DecoderBase):
             connection = parts[1]
         elif self.get_response_header(line, parts):
             self.chunk_decoder.add_header(parts[2])
-            print("Got chunk header: time = " + str(parts[0]) + ", endpoint = " + parts[1] + ", bytes = " + parts[2])
         elif self.get_chunk_header(line, parts):
             flags = 0xff
             size = 0
             (flags, size) = read_number_from_hex_string(parts[2], 2, len(parts[2]) - 2)
             self.chunk_decoder.add_chunk_header(parts[1], flags)
         elif self.get_chunk_bytes(line, parts):
-            print("Got chunk bytes: time = " + str(parts[0]) + ", endpoint = " + parts[1] + ", bytes = " + parts[2])
             self.chunk_decoder.add_chunk(parts[2])
             if self.chunk_decoder.is_complete_message():
                 self.output_queue_.put({"message": self.chunk_decoder.get_decoded_message()})
