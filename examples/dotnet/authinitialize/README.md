@@ -29,12 +29,14 @@ handler on the client that authenticates against a server that was started with 
     $ startserver.ps1
     ```
 
-1. Execute `dotnet-authinitialize.exe`, expect the following output:
+1. Execute `Debug\dotnet-authinitialize.exe`. Expect the following output:
 
-       ExampleAuthInitialize::ExampleAuthInitialize called
-       ExampleAuthInitialize::GetCredentials called
-       a = 1
-       b = 
+    ```console
+    ExampleAuthInitialize::ExampleAuthInitialize called
+    ExampleAuthInitialize::GetCredentials called
+    a = 1
+    b = 2
+	```
 
 1. Run the `stopserver.ps1` script to gracefully shutdown the Geode cluster.
 

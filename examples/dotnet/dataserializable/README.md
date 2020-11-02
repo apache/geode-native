@@ -28,16 +28,16 @@ This is a simple example showing how to register for serialization of custom obj
     $ startserver.ps1
     ```
 
-1. Execute `dotnet-dataserializable.exe`, expect the following output:
+1. Execute `Debug\dotnet-dataserializable.exe`. Expect the following output:
 
-       Create orders
-       Storing orders in the region
-       Getting the orders from the region
-       OrderID: 1
-       Product Name: product x
-       Quantity: 23
-       OrderID: 2 Product Name: product y Quantity: 3s
-
+    ```console
+    Registering for data serialization
+    Storing order object in the region
+    order to put is Order: [65, Donuts, 12]
+    Successfully put order, getting now...
+    Order key: 65 = Order: [65, Donuts, 12]
+    ```
+    
 1. Run the `stopserver.ps1` script to gracefully shutdown the Geode cluster.
 
    For Windows cmd:

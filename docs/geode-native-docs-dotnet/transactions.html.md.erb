@@ -88,13 +88,14 @@ For the complete source, see the example source directory.
 The .NET example creates a cache, then uses it to create a connection pool.
 
 ```csharp
-   var cache = new CacheFactory()
-       .Set("log-level", "none").Create();
+  var cache = new CacheFactory()
+      .Set("log-level", "none")
+      .Create();
 
-   var poolFactory = cache.GetPoolFactory()
-       .AddLocator("localhost", 10334);
-      
-   poolFactory.Create("pool");
+  cache.GetPoolManager()
+      .CreateFactory()
+      .AddLocator("localhost", 10334)
+      .Create("pool");
 
    var regionFactory = cache.CreateRegionFactory(RegionShortcut.PROXY)
        .SetPoolName("pool");

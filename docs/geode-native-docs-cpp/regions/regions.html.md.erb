@@ -53,20 +53,20 @@ auto cache = CacheFactory()
 
 cache.getPoolManager()
     .createFactory()
-    .addLocator("localhost", 10334)
-    .create("pool");
+    .addLocator("localhost", 40404)
+    .create("examplePool");
 
 auto regionFactory = cache.createRegionFactory(RegionShortcut::PROXY);
 auto regionFactory2 = cache.createRegionFactory(RegionShortcut::CACHING_PROXY);
 
 auto region = regionFactory
-    .setPoolName("pool")
-    .create("example_userinfo");
+    .setPoolName("examplePool")
+    .create("clientRegion1");
 
 auto region2 = regionFactory2
-    .setPoolName("pool")
+    .setPoolName("examplePool")
     .setEntryTimeToLive(ExpirationAction::INVALIDATE, std::chrono::seconds(120))
-    .create("example_userinfo2");
+    .create("clientRegion2");
 ```
 
 ## <a id="declarative-region-creation"></a>Declarative Region Creation

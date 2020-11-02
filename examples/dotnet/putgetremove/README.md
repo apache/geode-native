@@ -30,14 +30,16 @@ We then put, get, and remove some primitive data in the region.
     $ startserver.ps1
     ```
 
-1. Execute `dotnet-putgetremove.exe`, expect the following output:
+1. Execute `Debug\dotnet-putgetremove.exe`. Expect the following output:
 
-       Storing id and username in the region
-       Getting the user info from the region
-       rtimmons = Robert Timmons
-       scharles = Sylvia Charles
-       Removing rtimmons info from the region
-       Info for rtimmons has been deleted
+    ```console
+    Storing id and username in the region
+    Getting the user info from the region
+    rtimmons = Robert Timmons
+    scharles = Sylvia Charles
+    Removing rtimmons info from the region
+    Info for rtimmons has been deleted
+	```
 
 1. Run the `stopserver.ps1` script to gracefully shutdown the Geode cluster.
 
