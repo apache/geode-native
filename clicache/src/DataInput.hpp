@@ -24,7 +24,6 @@
 #include "end_native.hpp"
 
 #include "native_conditional_unique_ptr.hpp"
-#include "native_unique_ptr.hpp"
 #include "Log.hpp"
 #include "ExceptionTypes.hpp"
 
@@ -664,7 +663,7 @@ namespace Apache
           m_buffer = const_cast<System::Byte*>(nativeptr->currentBufferPosition());
           if ( m_buffer != NULL) {
             m_bufferLength = static_cast<decltype(m_bufferLength)>(nativeptr->getBytesRemaining());
-          }
+					}
           else {
             m_bufferLength = 0;
           }
@@ -692,7 +691,6 @@ namespace Apache
         bool m_isRootObjectPdx;
         Apache::Geode::Client::Cache^ m_cache;
         System::Byte* m_buffer;
-        native_unique_ptr<System::Byte[]>^ m_ownedBuffer;
         size_t m_bufferLength;
         size_t m_cursor;
         bool m_isManagedObject;
