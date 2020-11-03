@@ -413,7 +413,7 @@ class APACHE_GEODE_EXPORT PdxInstanceFactory {
   bool m_enableTimeStatistics;
   void isFieldAdded(const std::string& fieldName);
 
-  PdxInstanceFactory(const std::string& className,
+  PdxInstanceFactory(const std::string& className, bool expectDomainClass,
                      CachePerfStats& cachePerfStats,
                      PdxTypeRegistry& m_pdxTypeRegistry, const CacheImpl& cache,
                      bool enableTimeStatistics);

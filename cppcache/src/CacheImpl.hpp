@@ -298,8 +298,8 @@ class APACHE_GEODE_EXPORT CacheImpl {
   virtual DataInput createDataInput(const uint8_t* buffer, size_t len,
                                     Pool* pool) const;
 
-  PdxInstanceFactory createPdxInstanceFactory(
-      const std::string& className) const;
+  PdxInstanceFactory createPdxInstanceFactory(const std::string& className,
+                                              bool expectDomainClass) const;
 
   AuthenticatedView createAuthenticatedView(
       std::shared_ptr<Properties> userSecurityProperties,

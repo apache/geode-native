@@ -34,39 +34,39 @@ and [Client/Server Configuration](serverman/topologies_and_comm/cs_configuration
 
 To connect to a server, your application must follow these steps:
 
-1. Instantiate a `CacheFactory`, setting characteristics of interest (for example, `log-level`).
-1. Create a cache and use it to instantiate a `PoolFactory`, specifying the hostname and port for the server locator.
-1. Create a named pool of network connections.
-1. Instantiate a region of the desired type (usually CACHING_PROXY or PROXY) and connect it by name to its counterpart on the server.
+1. Create a cache, setting characteristics of interest (for example, `log-level`).
+1. Use the cache to create a named pool of network connections, specifying the hostname and port for at least one server locator.
+1. Instantiate a region of the desired type (usually PROXY, sometimes CACHING_PROXY) and connect it by name to its counterpart on the server.
 
 Once the connection pool and the shared region are in place, your client application is ready to share data with the server.
 
 **Server Connection: C++ Example**
 
-This example of connecting to the server is taken from the C++ `put-get-remove` example.
-
-Instantiate a `CacheFactory` and set its characteristics:
+Create a cache and set its characteristics:
 
 ``` cpp
-  auto cacheFactory = CacheFactory();             // instantiate cache factory
-  cacheFactory.set("log-level", "none");          // set cache log-level characteristics
+auto cache = CacheFactory()
+    .set("log-level", "debug")
+    .set("ssl-enabled", "true")
+    .set("ssl-truststore", clientTruststore.string())
+    .create();
 ```
 
-Create a cache and use it to instantiate a `PoolFactory`:
+Use the cache to create a named pool of network connections, specifying the hostname and port for the server locator:
+
 
 ``` cpp
-  auto cache = cacheFactory.create();                         // create cache
-  auto poolFactory = cache.getPoolManager().createFactory();  // instantiate pool factory
-
-  poolFactory.addLocator("localhost", 10334);                 // add locator to pool factory
+cache.getPoolManager()
+      .createFactory()
+      .addLocator("localhost", 10334)
+      .create("pool");
 ```
 
-Create a named pool of network connections, and instantiate a region of the desired type:
+Instantiate a region of the desired type and connect to the pool by name::
 
 ``` cpp
-  auto pool = poolFactory.create("pool");                     // create a pool called "pool" that knows where the server is
-  auto regionFactory = cache.createRegionFactory(RegionShortcut::PROXY); // instantiate region factory with PROXY characteristics
-  auto region = regionFactory.setPoolName("pool").create("example_userinfo"); // create a connection to the region "example_userinfo" on the server
+auto regionFactory = cache.createRegionFactory(RegionShortcut::PROXY);
+auto region = regionFactory.setPoolName("pool").create("exampleRegion");
 ```
 
 See the _<%=vars.product_name%> User Guide_ section [Configuring a Client/Server System](serverman/topologies_and_comm/cs_configuration/setting_up_a_client_server_system.html)

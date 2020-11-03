@@ -37,27 +37,36 @@ Region creation is subject to attribute consistency checks.
 
 To create a region:
 
-1. Instantiate a `CacheFactory` and use it to create a cache.
+1. Create a cache using `CacheFactory` to set its characteristics.
 1. The cache includes an instance of `PoolManager`&mdash;use it to create a connection pool.
-1. Use cache to instantiate a `RegionFactory` and use it to create a region, specifying any desired attributes
+1. Use the cache to instantiate a `RegionFactory` and use it to create a region, specifying any desired attributes
 and an association with the connection pool.
 
 ### C++ Region Creation Example
 
-The following example illustrates how to create two regions using C++.
+The following example illustrates how to create two regions with different characteristics using C++.
 
 ``` cpp
-auto cache = CacheFactory().create();
+auto cache = CacheFactory()
+    .set("log-level", "none")
+    .create();
 
-auto examplePool = cache.getPoolManager()
+cache.getPoolManager()
     .createFactory()
-    .addLocator("localhost", 40404)
-    .setSubscriptionEnabled(true)
-    .create("examplePool");
+    .addLocator("localhost", 10334)
+    .create("pool");
 
-auto clientRegion1 = cache.createRegionFactory(RegionShortcut::PROXY)
-  .setPoolName("examplePool")
-  .create("clientRegion1");
+auto regionFactory = cache.createRegionFactory(RegionShortcut::PROXY);
+auto regionFactory2 = cache.createRegionFactory(RegionShortcut::CACHING_PROXY);
+
+auto region = regionFactory
+    .setPoolName("pool")
+    .create("example_userinfo");
+
+auto region2 = regionFactory2
+    .setPoolName("pool")
+    .setEntryTimeToLive(ExpirationAction::INVALIDATE, std::chrono::seconds(120))
+    .create("example_userinfo2");
 ```
 
 ## <a id="declarative-region-creation"></a>Declarative Region Creation

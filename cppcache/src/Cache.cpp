@@ -79,9 +79,6 @@ std::shared_ptr<Region> Cache::getRegion(const std::string& path) const {
  * Returns a set of root regions in the cache. Does not cause any
  * shared regions to be mapped into the cache. This set is a snapshot and
  * is not backed by the Cache. The regions passed in are cleared.
- *
- * @param regions the region collection object containing the returned set of
- * regions when the function returns
  */
 std::vector<std::shared_ptr<Region>> Cache::rootRegions() const {
   return m_cacheImpl->rootRegions();
@@ -153,7 +150,12 @@ LogLevel Cache::getLogLevel() { return Log::logLevel(); }
 
 PdxInstanceFactory Cache::createPdxInstanceFactory(
     const std::string& className) const {
-  return m_cacheImpl->createPdxInstanceFactory(className);
+  return m_cacheImpl->createPdxInstanceFactory(className, true);
+}
+
+PdxInstanceFactory Cache::createPdxInstanceFactory(
+    const std::string& className, bool expectDomainClass) const {
+  return m_cacheImpl->createPdxInstanceFactory(className, expectDomainClass);
 }
 
 AuthenticatedView Cache::createAuthenticatedView(

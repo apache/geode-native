@@ -41,7 +41,8 @@ PdxType::~PdxType() noexcept {
 }
 
 PdxType::PdxType(PdxTypeRegistry& pdxTypeRegistry,
-                 const std::string& pdxDomainClassName, bool isLocal)
+                 const std::string& pdxDomainClassName, bool isLocal,
+                 bool expectDomainClass)
     : Serializable(),
       m_pdxFieldTypes(new std::vector<std::shared_ptr<PdxFieldType>>()),
       m_className(pdxDomainClassName),
@@ -53,8 +54,12 @@ PdxType::PdxType(PdxTypeRegistry& pdxTypeRegistry,
       m_isVarLenFieldAdded(false),
       m_remoteToLocalFieldMap(nullptr),
       m_localToRemoteFieldMap(nullptr),
-      m_noJavaClass(false),
+      is_java_class_(expectDomainClass),
       m_pdxTypeRegistry(pdxTypeRegistry) {}
+
+PdxType::PdxType(PdxTypeRegistry& pdxTypeRegistry,
+                 const std::string& pdxDomainClassName, bool isLocal)
+    : PdxType(pdxTypeRegistry, pdxDomainClassName, isLocal, true) {}
 
 void PdxType::toData(DataOutput& output) const {
   output.write(static_cast<int8_t>(DSCode::DataSerializable));  // 45
@@ -65,7 +70,7 @@ void PdxType::toData(DataOutput& output) const {
   output.writeString(m_className);
 
   // m_noJavaClass
-  output.writeBoolean(m_noJavaClass);
+  output.writeBoolean(!is_java_class_);
 
   // m_geodeTypeId
   output.writeInt(m_geodeTypeId);
@@ -90,7 +95,7 @@ void PdxType::fromData(DataInput& input) {
 
   m_className = input.readString();
 
-  m_noJavaClass = input.readBoolean();
+  is_java_class_ = !input.readBoolean();
 
   m_geodeTypeId = input.readInt32();
 
@@ -542,7 +547,7 @@ bool PdxType::operator==(const PdxType& other) const {
     return false;
   }
 
-  if (this->m_noJavaClass != other.m_noJavaClass) {
+  if (this->is_java_class_ != other.is_java_class_) {
     return false;
   }
 

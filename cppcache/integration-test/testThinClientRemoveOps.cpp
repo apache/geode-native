@@ -625,10 +625,12 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSix)
     putEntry(regionNames[1], keys[3], vals[3]);
     reg0->localInvalidate(keys[1]);
     reg1->localInvalidate(keys[3]);
-    ASSERT(reg0->remove(keys[1], (std::shared_ptr<Cacheable>)nullptr) == false,
+    ASSERT(reg0->remove(keys[1], static_cast<std::shared_ptr<Cacheable>>(
+                                     nullptr)) == false,
            "Result of remove should be false, as this value is not present "
            "locally, but present only on server.");
-    ASSERT(reg1->remove(keys[3], (std::shared_ptr<Cacheable>)nullptr) == false,
+    ASSERT(reg1->remove(keys[3], static_cast<std::shared_ptr<Cacheable>>(
+                                     nullptr)) == false,
            "Result of remove should be false, as this value is not present "
            "locally, but present only on server.");
     ASSERT(reg0->containsKey(keys[1]) == true, "containsKey should be true");
@@ -661,14 +663,14 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSix)
 
     // Try removing a entry with a null value, which is not present on client as
     // well as server, result should be false.
-    ASSERT(
-        reg0->remove("NewKey1", (std::shared_ptr<Cacheable>)nullptr) == false,
-        "Result of remove should be false, as this value is not present "
-        "locally, and not present on server.");
-    ASSERT(
-        reg1->remove("NewKey3", (std::shared_ptr<Cacheable>)nullptr) == false,
-        "Result of remove should be false, as this value is not present "
-        "locally, and not present on server.");
+    ASSERT(reg0->remove("NewKey1", static_cast<std::shared_ptr<Cacheable>>(
+                                       nullptr)) == false,
+           "Result of remove should be false, as this value is not present "
+           "locally, and not present on server.");
+    ASSERT(reg1->remove("NewKey3", static_cast<std::shared_ptr<Cacheable>>(
+                                       nullptr)) == false,
+           "Result of remove should be false, as this value is not present "
+           "locally, and not present on server.");
     ASSERT(reg0->containsKey("NewKey1") == false,
            "containsKey should be false");
     ASSERT(reg0->containsKeyOnServer(keyPtr2) == false,
@@ -705,10 +707,12 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSix)
     putEntry(regionNames[1], keys[3], nvals[3]);
     reg0->destroy(keys[1]);
     reg1->destroy(keys[3]);
-    ASSERT(reg0->remove(keys[1], (std::shared_ptr<Cacheable>)nullptr) == false,
+    ASSERT(reg0->remove(keys[1], static_cast<std::shared_ptr<Cacheable>>(
+                                     nullptr)) == false,
            "Result of remove should be false, as this value does not exist "
            "locally, but exists on server.");
-    ASSERT(reg1->remove(keys[3], (std::shared_ptr<Cacheable>)nullptr) == false,
+    ASSERT(reg1->remove(keys[3], static_cast<std::shared_ptr<Cacheable>>(
+                                     nullptr)) == false,
            "Result of remove should be false, as this value does not exist "
            "locally, but exists on server.");
     ASSERT(reg0->containsKey(keys[1]) == false, "containsKey should be false");
@@ -831,14 +835,14 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSix)
     reg1->localPut(keys[3], vals[3]);
     reg0->invalidate(keys[1]);
     reg1->invalidate(keys[3]);
-    ASSERT(
-        reg0->localRemove(keys[1], (std::shared_ptr<Cacheable>)nullptr) == true,
-        "Result of remove should be true, as this value does not exists "
-        "locally.");
-    ASSERT(
-        reg1->localRemove(keys[3], (std::shared_ptr<Cacheable>)nullptr) == true,
-        "Result of remove should be true, as this value does not exists "
-        "locally.");
+    ASSERT(reg0->localRemove(keys[1], static_cast<std::shared_ptr<Cacheable>>(
+                                          nullptr)) == true,
+           "Result of remove should be true, as this value does not exists "
+           "locally.");
+    ASSERT(reg1->localRemove(keys[3], static_cast<std::shared_ptr<Cacheable>>(
+                                          nullptr)) == true,
+           "Result of remove should be true, as this value does not exists "
+           "locally.");
     ASSERT(reg0->containsKey(keys[1]) == false, "containsKey should be false");
     ASSERT(reg1->containsKey(keys[3]) == false, "containsKey should be false");
     LOG("Step6.13 complete.");
@@ -846,12 +850,12 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSix)
     // Try locally removing an entry (value) with a nullptr.
     reg0->localPut(keys[1], vals[1]);
     reg1->localPut(keys[3], vals[3]);
-    ASSERT(reg0->localRemove(keys[1], (std::shared_ptr<Cacheable>)nullptr) ==
-               false,
+    ASSERT(reg0->localRemove(keys[1], static_cast<std::shared_ptr<Cacheable>>(
+                                          nullptr)) == false,
            "Result of remove should be false, as this value does not exists "
            "locally.");
-    ASSERT(reg1->localRemove(keys[3], (std::shared_ptr<Cacheable>)nullptr) ==
-               false,
+    ASSERT(reg1->localRemove(keys[3], static_cast<std::shared_ptr<Cacheable>>(
+                                          nullptr)) == false,
            "Result of remove should be false, as this value does not exists "
            "locally.");
     ASSERT(reg0->containsKey(keys[1]) == true, "containsKey should be true");
@@ -878,12 +882,12 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSix)
     reg1->localPut(keys[3], vals[3]);
     reg0->localDestroy(keys[1]);
     reg1->localDestroy(keys[3]);
-    ASSERT(reg0->localRemove(keys[1], (std::shared_ptr<Cacheable>)nullptr) ==
-               false,
+    ASSERT(reg0->localRemove(keys[1], static_cast<std::shared_ptr<Cacheable>>(
+                                          nullptr)) == false,
            "Result of remove should be false, as this value does not exists "
            "locally.");
-    ASSERT(reg1->localRemove(keys[3], (std::shared_ptr<Cacheable>)nullptr) ==
-               false,
+    ASSERT(reg1->localRemove(keys[3], static_cast<std::shared_ptr<Cacheable>>(
+                                          nullptr)) == false,
            "Result of remove should be false, as this value does not exists "
            "locally.");
     ASSERT(reg0->containsKey(keys[1]) == false, "containsKey should be false");
@@ -970,10 +974,12 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight)
     reg->localDestroy(keys[0]);
     reg->localDestroy(keys[1]);
     SLEEP(10000);  // This is for expiration on server to execute.
-    ASSERT(reg->remove(keys[0], (std::shared_ptr<Cacheable>)nullptr) == true,
+    ASSERT(reg->remove(keys[0], static_cast<std::shared_ptr<Cacheable>>(
+                                    nullptr)) == true,
            "Result of remove should be true, as this value is not present "
            "locally, & not present on server.");
-    ASSERT(reg->remove(keys[1], (std::shared_ptr<Cacheable>)nullptr) == true,
+    ASSERT(reg->remove(keys[1], static_cast<std::shared_ptr<Cacheable>>(
+                                    nullptr)) == true,
            "Result of remove should be true, as this value is not present "
            "locally, & not present on server.");
     ASSERT(reg->containsKeyOnServer(keyPtr) == false,
@@ -1009,11 +1015,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight)
     putEntry(regionNames[2], keys[1], nvals[1]);
     SLEEP(10000);  // This is for expiration on server to execute.
     ASSERT(
-        reg->remove(keys[0], (std::shared_ptr<Cacheable>)nullptr) == false,
+        reg->remove(keys[0],
+                    static_cast<std::shared_ptr<Cacheable>>(nullptr)) == false,
         "Result of remove should be false, as this value is present locally, "
         "& not present on server.");
     ASSERT(
-        reg->remove(keys[1], (std::shared_ptr<Cacheable>)nullptr) == false,
+        reg->remove(keys[1],
+                    static_cast<std::shared_ptr<Cacheable>>(nullptr)) == false,
         "Result of remove should be false, as this value is present locally, "
         "& not present on server.");
     ASSERT(reg->containsKey(keys[0]) == true, "containsKey should be true");
@@ -1034,10 +1042,12 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight)
     reg->invalidate(keys[0]);
     reg->invalidate(keys[1]);
     SLEEP(10000);  // This is for expiration on server to execute.
-    ASSERT(reg->remove(keys[0], (std::shared_ptr<Cacheable>)nullptr) == true,
+    ASSERT(reg->remove(keys[0], static_cast<std::shared_ptr<Cacheable>>(
+                                    nullptr)) == true,
            "Result of remove should be true, as this value is not present "
            "locally, & not present on server.");
-    ASSERT(reg->remove(keys[1], (std::shared_ptr<Cacheable>)nullptr) == true,
+    ASSERT(reg->remove(keys[1], static_cast<std::shared_ptr<Cacheable>>(
+                                    nullptr)) == true,
            "Result of remove should be true, as this value is not present "
            "locally, & not present on server.");
     ASSERT(reg->containsKey(keys[0]) == false, "containsKey should be false");

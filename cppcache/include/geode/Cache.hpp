@@ -222,13 +222,24 @@ class APACHE_GEODE_EXPORT Cache : public GeodeCache {
   /**
    * Returns a factory that can create a {@link PdxInstance}.
    * @param className the fully qualified class name that the PdxInstance will
-   * become
-   * when it is fully deserialized.
+   * become when it is fully deserialized.
    * @throws IllegalStateException if the className is nullptr or invalid.
    * @return the factory
    */
   PdxInstanceFactory createPdxInstanceFactory(
       const std::string& className) const override;
+
+  /**
+   * Returns a factory that can create a {@link PdxInstance}.
+   * @param className the fully qualified class name that the PdxInstance will
+   * become when it is fully deserialized.
+   * @param expectDomainClass Whether or not created PdxType represents a
+   * Java domain class.
+   * @throws IllegalStateException if the className is nullptr or invalid.
+   * @return the factory
+   */
+  PdxInstanceFactory createPdxInstanceFactory(
+      const std::string& className, bool expectDomainClass) const override;
 
   virtual DataInput createDataInput(const uint8_t* m_buffer, size_t len) const;
 

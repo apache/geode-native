@@ -40,11 +40,13 @@ the example app executes those functions and prints out the result set(s).
   
 1. Execute `cpp-functionexecution`, expect the following output:
 
-       Result count = 3
+    ```
+    Result count = 3
 
-       Result[0]=VALUE--1
-       Result[1]=VALUE--2
-       Result[2]=VALUE--3
+    Result[0]=VALUE--1
+    Result[1]=VALUE--2
+    Result[2]=VALUE--3
+    ```
 
 1. Run the `stopserver` script to gracefully shutdown the Geode cluster.
 

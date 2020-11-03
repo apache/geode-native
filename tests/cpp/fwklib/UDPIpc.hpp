@@ -54,7 +54,7 @@ namespace client {
 namespace testframework {
 
 #define UDP_HEADER_SIZE 8
-#define UDP_MSG_TAG (uint8_t)189
+#define UDP_MSG_TAG static_cast<uint8_t>(189)
 
 enum UdpCmds { Null, ACK, ACK_REQUEST, ADDR_REQUEST, ADDR_RESPONSE };
 

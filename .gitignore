@@ -15,3 +15,6 @@
 
 .DS_Store
 .history/
+
+/tools/gnmsg/.idea/
+/tools/gnmsg/__pycache__/

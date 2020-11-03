@@ -30,43 +30,22 @@ this means setting the authentication credentials when you create the CacheFacto
 In this C++ authentication example, the `CacheFactory` creation process sets the authentication callback:
 
 ```cpp
-  auto cacheFactory = CacheFactory(config);
-  auto authInitialize = std::make_shared<UserPasswordAuthInit>();
-  cacheFactory.set("log-level", "none");
-  cacheFactory.setAuthInitialize(authInitialize);
+  auto cache = CacheFactory()
+      .set("log-level", "none")
+      .setAuthInitialize(std::unique_ptr<ExampleAuthInitialize>(new ExampleAuthInitialize()))
+      .create();
 ```
 
-Credentials are implemented in the `getCredentials` member function of the `AuthInitialize` abstract class.
+Credentials are implemented in the `getCredentials` member function of the `ExampleAuthInitialize`, which is derived from the `AuthInitialize` abstract class.
 
 ```cpp
-class UserPasswordAuthInit : public AuthInitialize {
-public:
-  UserPasswordAuthInit() = default;
-  
-  ~UserPasswordAuthInit() noexcept override = default;
-  
-  std::shared_ptr<Properties> getCredentials(
-    const std::shared_ptr<Properties> &securityprops,
-    const std::string &) override {
-    std::shared_ptr<Cacheable> userName;
-    if (securityprops == nullptr ||
-      (userName = securityprops->find(SECURITY_USERNAME)) == nullptr) {
-      throw AuthenticationFailedException(
-      "UserPasswordAuthInit: user name "
-      "property [SECURITY_USERNAME] not set.");
-    }
-  
-    auto credentials = Properties::create();
-    credentials->insert(SECURITY_USERNAME, userName->toString().c_str());
-    auto passwd = securityprops->find(SECURITY_PASSWORD);
-    if (passwd == nullptr) {
-      passwd = CacheableString::create("");
-    }
-    credentials->insert(SECURITY_PASSWORD, passwd->value().c_str());
-    return credentials;
-  }
+std::shared_ptr<Properties> ExampleAuthInitialize::getCredentials(
+    const std::shared_ptr<Properties>& securityprops,
+    const std::string& /*server*/) {
 
-  void close() override { return; }
-};
+  securityprops->insert("security-username", "root");
+  securityprops->insert("security-password", "root");
 
+  return securityprops;
+}
 ```

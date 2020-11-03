@@ -510,7 +510,6 @@ void ThinClientPoolDM::restoreMinConnections(std::atomic<bool>& isRunning) {
   int restored = 0;
 
   if (m_poolSize < min) {
-    std::lock_guard<decltype(mutex_)> lock(mutex_);
     while (m_poolSize < min && limit-- && isRunning) {
       TcrConnection* conn = nullptr;
       bool maxConnLimit = false;
@@ -1632,7 +1631,6 @@ GfErrType ThinClientPoolDM::getConnectionToAnEndPoint(std::string epNameStr,
 GfErrType ThinClientPoolDM::createPoolConnectionToAEndPoint(
     TcrConnection*& conn, TcrEndpoint* theEP, bool& maxConnLimit,
     bool appThreadrequest) {
-  std::lock_guard<decltype(mutex_)> lock(mutex_);
   GfErrType error = GF_NOERR;
   conn = nullptr;
   int min = 0;
@@ -1695,7 +1693,6 @@ void ThinClientPoolDM::reducePoolSize(int num) {
 GfErrType ThinClientPoolDM::createPoolConnection(
     TcrConnection*& conn, std::set<ServerLocation>& excludeServers,
     bool& maxConnLimit, const TcrConnection* currentserver) {
-  std::lock_guard<decltype(mutex_)> lock(mutex_);
   GfErrType error = GF_NOERR;
   int max = m_attrs->getMaxConnections();
   if (max == -1) {
@@ -1861,7 +1858,6 @@ GfErrType ThinClientPoolDM::sendRequestToEP(const TcrMessage& request,
         _GEODE_SAFE_DELETE(conn);
       }
       if (putConnInPool) {
-        std::lock_guard<decltype(mutex_)> lock(mutex_);
         reducePoolSize(1);
       }
       currentEndpoint->setConnectionStatus(false);
@@ -1944,7 +1940,6 @@ GfErrType ThinClientPoolDM::sendRequestToEP(const TcrMessage& request,
     } else if (error != GF_NOERR) {
       currentEndpoint->setConnectionStatus(false);
       if (putConnInPool) {
-        std::lock_guard<decltype(mutex_)> lock(mutex_);
         removeEPConnections(1);
       }
     }
@@ -1999,13 +1994,11 @@ TcrEndpoint* ThinClientPoolDM::addEP(const std::string& endpointName) {
 }
 
 void ThinClientPoolDM::netDown() {
-  std::lock_guard<decltype(mutex_)> lock(mutex_);
   close();
   reset();
 }
 
 void ThinClientPoolDM::pingServerLocal() {
-  std::lock_guard<decltype(mutex_)> lock(mutex_);
   std::lock_guard<decltype(m_endpointsLock)> guard(m_endpointsLock);
   for (auto& it : m_endpoints) {
     auto endpoint = it.second;
@@ -2105,7 +2098,6 @@ bool ThinClientPoolDM::canItBeDeleted(TcrConnection* conn) {
   if (conn && candidateForDeletion) {
     TcrEndpoint* endPt = conn->getEndpointObject();
     {
-      std::lock_guard<decltype(mutex_)> lock(mutex_);
       std::lock_guard<decltype(endPt->getQueueHostedMutex())> guardQueue(
           endPt->getQueueHostedMutex());
       bool queue = endPt->isQueueHosted();

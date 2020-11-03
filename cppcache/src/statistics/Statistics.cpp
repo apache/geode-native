@@ -102,9 +102,6 @@ double Statistics::getDouble(const std::string&) const { return 0; }
  * Increments the value of the identified statistic of type <code>int</code>
  * by the given amount.
  *
- * @param id a statistic id obtained with {@link #nameToId}
- * or {@link StatisticsType#nameToId}.
- *
  * @return The value of the statistic after it has been incremented
  *
  * @throws IllegalArgumentException

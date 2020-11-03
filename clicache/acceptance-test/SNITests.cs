@@ -18,9 +18,11 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using Xunit;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+
+using Xunit;
 using Xunit.Abstractions;
 
 namespace Apache.Geode.Client.IntegrationTests
@@ -29,17 +31,15 @@ namespace Apache.Geode.Client.IntegrationTests
     public class SNITests : TestBase, IDisposable
     {
         string currentWorkingDirectory;
-        Process dockerProcess;
         private readonly Cache cache_;
+        private int proxyPort = -1;
 
         public SNITests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
-			CleanupDocker();
+            CleanupDocker();
 
             currentWorkingDirectory = Directory.GetCurrentDirectory();
             var clientTruststore = Config.SslClientKeyPath + @"/truststore_sni.pem";
-
-
 
             var cacheFactory = new CacheFactory();
             cacheFactory.Set("log-level", "none");
@@ -49,37 +49,36 @@ namespace Apache.Geode.Client.IntegrationTests
 
             cache_ = cacheFactory.Create();
 
-            var dc = Process.Start(@"docker-compose.exe", "-f " + Config.SniConfigPath + "/docker-compose.yml" + " up -d");
-            dc.WaitForExit();
-
-            var d = Process.Start(@"docker.exe", "exec -t geode gfsh run --file=/geode/scripts/geode-starter.gfsh");
-            d.WaitForExit();
+            RunProcess("docker-compose",
+                "-f " + Config.SniConfigPath + "/docker-compose.yml" +
+                " up -d");
+            RunProcess("docker",
+                "exec -t geode " +
+                "gfsh run --file=/geode/scripts/geode-starter.gfsh");
         }
 
         public void Dispose()
         {
-			CleanupDocker();
-		}
+            CleanupDocker();
+        }
 
-		private void CleanupDocker()
-		{
-			var dockerComposeProc = Process.Start(@"docker-compose.exe", "-f " + Config.SniConfigPath + "/docker-compose.yml" + " stop");
-			dockerComposeProc.WaitForExit();
+        private void CleanupDocker()
+        {
+            RunProcess("docker", "stop geode");
+            RunProcess("docker", "stop haproxy");
+            RunProcess("docker", "container prune -f");
+        }
 
-			var dockerProc = Process.Start(@"docker.exe", "system prune -f");
-			dockerProc.WaitForExit();
-		}
-
-        private string RunDockerCommand(string dockerCommand)
+        private string RunProcess(string processFile, string processArgs)
         {
             ProcessStartInfo startInfo = new ProcessStartInfo();
             startInfo.RedirectStandardOutput = true;
             startInfo.UseShellExecute = false;
-            startInfo.FileName = @"docker.exe";
-            startInfo.Arguments = dockerCommand;
-            dockerProcess = Process.Start(startInfo);
-            String rVal = dockerProcess.StandardOutput.ReadToEnd();
-            dockerProcess.WaitForExit();
+            startInfo.FileName = processFile;
+            startInfo.Arguments = processArgs;
+            Process process = Process.Start(startInfo);
+            String rVal = process.StandardOutput.ReadToEnd();
+            process.WaitForExit();
             return rVal;
         }
 
@@ -93,12 +92,12 @@ namespace Apache.Geode.Client.IntegrationTests
         [Fact]
         public void ConnectViaProxy()
         {
-            var portString = RunDockerCommand("port haproxy");
-            var portNumber = ParseProxyPort(portString);
+            var portString = RunProcess("docker", "port haproxy");
+            proxyPort = ParseProxyPort(portString);
 
             cache_.GetPoolManager()
                 .CreateFactory()
-                .SetSniProxy("localhost", portNumber)
+                .SetSniProxy("localhost", proxyPort)
                 .AddLocator("locator-maeve", 10334)
                 .Create("pool");
 
@@ -126,6 +125,49 @@ namespace Apache.Geode.Client.IntegrationTests
                               .Create<string, string>("region");
 
             Assert.Throws<NotConnectedException>(() => region.Put("1", "one"));
+        }
+
+        [Fact]
+        public void DropProxy()
+        {
+            var portString = RunProcess("docker", "port haproxy");
+            proxyPort = ParseProxyPort(portString);
+
+            cache_.GetPoolManager()
+                .CreateFactory()
+                .SetSniProxy("localhost", proxyPort)
+                .AddLocator("locator-maeve", 10334)
+                .Create("pool");
+
+            var region = cache_.CreateRegionFactory(RegionShortcut.PROXY)
+                              .SetPoolName("pool")
+                              .Create<string, string>("jellyfish");
+
+            region.Put("1", "one");
+            var value = region.Get("1");
+
+            Assert.Equal("one", value);
+
+            RunProcess("docker", "stop haproxy");
+            RunProcess("docker", "container prune -f");
+
+            Assert.Throws<NotConnectedException>(() =>
+            {
+                region.Put("2", "two");
+                value = region.Get("2");
+            });
+
+            string startProxyArgs =
+                "-f " + Config.SniConfigPath + "/docker-compose.yml " +
+                "run -d --name haproxy " +
+                "--publish " + proxyPort.ToString() + ":15443 haproxy";
+            RunProcess("docker-compose", startProxyArgs);
+
+            region.Put("3", "three");
+            value = region.Get("3");
+            Assert.Equal("three", value);
+
+            cache_.Close();
         }
     }
 }

@@ -298,14 +298,14 @@ TEST_F(DataInputTest, TestReadUint8) {
   TestDataInput dataInput("37");
   uint8_t value = 0U;
   dataInput.read(&value);
-  EXPECT_EQ((uint8_t)55U, value) << "Correct uint8_t";
+  EXPECT_EQ(static_cast<int8_t>(55U), value) << "Correct uint8_t";
 }
 
 TEST_F(DataInputTest, TestReadInt8) {
   TestDataInput dataInput("37");
   int8_t value = 0;
   dataInput.read(&value);
-  EXPECT_EQ((int8_t)55, value) << "Correct int8_t";
+  EXPECT_EQ(static_cast<int8_t>(55), value) << "Correct int8_t";
 }
 
 TEST_F(DataInputTest, TestReadBoolean) {
@@ -320,10 +320,10 @@ TEST_F(DataInputTest, TestReadUint8_tBytesOnly) {
   uint8_t buffer[4];
   ::memset(buffer, 0U, 4 * sizeof(uint8_t));
   dataInput.readBytesOnly(buffer, 4);
-  EXPECT_EQ((uint8_t)186U, buffer[0]) << "Correct zeroth uint8_t";
-  EXPECT_EQ((uint8_t)190U, buffer[1]) << "Correct first uint8_t";
-  EXPECT_EQ((uint8_t)250U, buffer[2]) << "Correct second uint8_t";
-  EXPECT_EQ((uint8_t)206U, buffer[3]) << "Correct third uint8_t";
+  EXPECT_EQ(static_cast<uint8_t>(186U), buffer[0]) << "Correct zeroth uint8_t";
+  EXPECT_EQ(static_cast<uint8_t>(190U), buffer[1]) << "Correct first uint8_t";
+  EXPECT_EQ(static_cast<uint8_t>(250U), buffer[2]) << "Correct second uint8_t";
+  EXPECT_EQ(static_cast<uint8_t>(206U), buffer[3]) << "Correct third uint8_t";
 }
 
 TEST_F(DataInputTest, TestReadInt8_tBytesOnly) {
@@ -331,10 +331,10 @@ TEST_F(DataInputTest, TestReadInt8_tBytesOnly) {
   int8_t buffer[4];
   ::memset(buffer, 0, 4 * sizeof(int8_t));
   dataInput.readBytesOnly(buffer, 4);
-  EXPECT_EQ((int8_t)-34, buffer[0]) << "Correct zeroth int8_t";
-  EXPECT_EQ((int8_t)-83, buffer[1]) << "Correct first int8_t";
-  EXPECT_EQ((int8_t)-66, buffer[2]) << "Correct second int8_t";
-  EXPECT_EQ((int8_t)-17, buffer[3]) << "Correct third int8_t";
+  EXPECT_EQ(static_cast<int8_t>(-34), buffer[0]) << "Correct zeroth int8_t";
+  EXPECT_EQ(static_cast<int8_t>(-83), buffer[1]) << "Correct first int8_t";
+  EXPECT_EQ(static_cast<int8_t>(-66), buffer[2]) << "Correct second int8_t";
+  EXPECT_EQ(static_cast<int8_t>(-17), buffer[3]) << "Correct third int8_t";
 }
 
 TEST_F(DataInputTest, TestReadUint8_tBytes) {
@@ -342,12 +342,12 @@ TEST_F(DataInputTest, TestReadUint8_tBytes) {
   uint8_t *buffer = nullptr;
   int32_t len = 0;
   dataInput.readBytes(&buffer, &len);
-  EXPECT_NE((uint8_t *)nullptr, buffer) << "Non-null buffer";
+  EXPECT_NE(static_cast<uint8_t *>(nullptr), buffer) << "Non-null buffer";
   ASSERT_EQ(4, len) << "Correct length";
-  EXPECT_EQ((uint8_t)186U, buffer[0]) << "Correct zeroth uint8_t";
-  EXPECT_EQ((uint8_t)190U, buffer[1]) << "Correct first uint8_t";
-  EXPECT_EQ((uint8_t)250U, buffer[2]) << "Correct second uint8_t";
-  EXPECT_EQ((uint8_t)206U, buffer[3]) << "Correct third uint8_t";
+  EXPECT_EQ(static_cast<uint8_t>(186U), buffer[0]) << "Correct zeroth uint8_t";
+  EXPECT_EQ(static_cast<uint8_t>(190U), buffer[1]) << "Correct first uint8_t";
+  EXPECT_EQ(static_cast<uint8_t>(250U), buffer[2]) << "Correct second uint8_t";
+  EXPECT_EQ(static_cast<uint8_t>(206U), buffer[3]) << "Correct third uint8_t";
   _GEODE_SAFE_DELETE_ARRAY(buffer);
 }
 
@@ -356,50 +356,52 @@ TEST_F(DataInputTest, TestReadInt8_tBytes) {
   int8_t *buffer = nullptr;
   int32_t len = 0;
   dataInput.readBytes(&buffer, &len);
-  EXPECT_NE((int8_t *)nullptr, buffer) << "Non-null buffer";
+  EXPECT_NE(static_cast<int8_t *>(nullptr), buffer) << "Non-null buffer";
   ASSERT_EQ(4, len) << "Correct length";
-  EXPECT_EQ((int8_t)-34, buffer[0]) << "Correct zeroth int8_t";
-  EXPECT_EQ((int8_t)-83, buffer[1]) << "Correct first int8_t";
-  EXPECT_EQ((int8_t)-66, buffer[2]) << "Correct second int8_t";
-  EXPECT_EQ((int8_t)-17, buffer[3]) << "Correct third int8_t";
+  EXPECT_EQ(static_cast<int8_t>(-34), buffer[0]) << "Correct zeroth int8_t";
+  EXPECT_EQ(static_cast<int8_t>(-83), buffer[1]) << "Correct first int8_t";
+  EXPECT_EQ(static_cast<int8_t>(-66), buffer[2]) << "Correct second int8_t";
+  EXPECT_EQ(static_cast<int8_t>(-17), buffer[3]) << "Correct third int8_t";
   _GEODE_SAFE_DELETE_ARRAY(buffer);
 }
 
 TEST_F(DataInputTest, TestReadIntUint16) {
   TestDataInput dataInput("123456789ABCDEF0");
   uint16_t value = dataInput.readInt16();
-  EXPECT_EQ((uint16_t)4660U, value) << "Correct uint16_t";
+  EXPECT_EQ(static_cast<uint16_t>(4660U), value) << "Correct uint16_t";
 }
 
 TEST_F(DataInputTest, TestReadIntInt16) {
   TestDataInput dataInput("123456789ABCDEF0");
   int16_t value = dataInput.readInt16();
-  EXPECT_EQ((int16_t)4660, value) << "Correct int16_t";
+  EXPECT_EQ(static_cast<int16_t>(4660), value) << "Correct int16_t";
 }
 
 TEST_F(DataInputTest, TestReadIntUint32) {
   TestDataInput dataInput("123456789ABCDEF0");
   uint32_t value = dataInput.readInt32();
-  EXPECT_EQ((uint32_t)305419896U, value) << "Correct uint32_t";
+  EXPECT_EQ(static_cast<uint32_t>(305419896U), value) << "Correct uint32_t";
 }
 
 TEST_F(DataInputTest, TestReadIntInt32) {
   TestDataInput dataInput("123456789ABCDEF0");
   int32_t value = dataInput.readInt32();
-  EXPECT_EQ((int32_t)305419896, value) << "Correct int32_t";
+  EXPECT_EQ(static_cast<int32_t>(305419896), value) << "Correct int32_t";
 }
 
 TEST_F(DataInputTest, TestReadIntUint64) {
   TestDataInput dataInput("123456789ABCDEF0");
   uint64_t value = 0U;
   dataInput.readInt(&value);
-  EXPECT_EQ((uint64_t)1311768467463790320U, value) << "Correct uint64_t";
+  EXPECT_EQ(static_cast<uint64_t>(1311768467463790320U), value)
+      << "Correct uint64_t";
 }
 
 TEST_F(DataInputTest, TestReadIntInt64) {
   TestDataInput dataInput("123456789ABCDEF0");
   int64_t value = dataInput.readInt64();
-  EXPECT_EQ((int64_t)1311768467463790320, value) << "Correct int64_t";
+  EXPECT_EQ(static_cast<int64_t>(1311768467463790320), value)
+      << "Correct int64_t";
 }
 
 TEST_F(DataInputTest, TestReadArrayLen) {
@@ -438,7 +440,8 @@ TEST_F(DataInputTest, TestReadUnsignedVL) {
 
   TestDataInput dataInput("F0BDF3D589CF959A9200");
   int64_t value = dataInput.readUnsignedVL();
-  EXPECT_EQ((int64_t)1311768467463790320, value) << "Correct int64_t";
+  EXPECT_EQ(static_cast<int64_t>(1311768467463790320), value)
+      << "Correct int64_t";
 }
 
 TEST_F(DataInputTest, TestReadFloat) {
@@ -480,7 +483,7 @@ TEST_F(DataInputTest, TestReadNativeBool) {
 TEST_F(DataInputTest, TestReadNativeInt32) {
   TestDataInput dataInput("0012345678");
   const int32_t value = dataInput.readNativeInt32();
-  EXPECT_EQ((int32_t)305419896, value) << "Correct int32_t";
+  EXPECT_EQ(static_cast<int32_t>(305419896), value) << "Correct int32_t";
 }
 
 TEST_F(DataInputTest, TestReadDirectObject) {
@@ -587,16 +590,20 @@ TEST_F(DataInputTest, TestReadArrayOfByteArrays) {
   int32_t *elementLength = nullptr;
   dataInput.readArrayOfByteArrays(&arrayOfByteArrays, arrayLength,
                                   &elementLength);
-  EXPECT_NE((int8_t **)nullptr, arrayOfByteArrays)
+  EXPECT_NE(static_cast<int8_t **>(nullptr), arrayOfByteArrays)
       << "Non-null array of byte arrays";
   ASSERT_EQ(1, arrayLength) << "Correct array length";
-  EXPECT_NE((int8_t *)nullptr, arrayOfByteArrays[0])
+  EXPECT_NE(static_cast<int8_t *>(nullptr), arrayOfByteArrays[0])
       << "Non-null first byte array";
   ASSERT_EQ(4, elementLength[0]) << "Correct length";
-  EXPECT_EQ((int8_t)-34, arrayOfByteArrays[0][0]) << "Correct zeroth int8_t";
-  EXPECT_EQ((int8_t)-83, arrayOfByteArrays[0][1]) << "Correct first int8_t";
-  EXPECT_EQ((int8_t)-66, arrayOfByteArrays[0][2]) << "Correct second int8_t";
-  EXPECT_EQ((int8_t)-17, arrayOfByteArrays[0][3]) << "Correct third int8_t";
+  EXPECT_EQ(static_cast<int8_t>(-34), arrayOfByteArrays[0][0])
+      << "Correct zeroth int8_t";
+  EXPECT_EQ(static_cast<int8_t>(-83), arrayOfByteArrays[0][1])
+      << "Correct first int8_t";
+  EXPECT_EQ(static_cast<int8_t>(-66), arrayOfByteArrays[0][2])
+      << "Correct second int8_t";
+  EXPECT_EQ(static_cast<int8_t>(-17), arrayOfByteArrays[0][3])
+      << "Correct third int8_t";
   _GEODE_SAFE_DELETE_ARRAY(elementLength);
   _GEODE_SAFE_DELETE_ARRAY(arrayOfByteArrays);
 }

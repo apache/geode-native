@@ -246,9 +246,7 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     -Weverything
     -Wno-non-virtual-dtor #TODO fix
     -Wno-missing-prototypes #TODO fix
-    -Wno-sign-conversion #TODO fix
     -Wno-deprecated #TODO fix
-    -Wno-old-style-cast #TODO fix
     -Wno-format-nonliteral #TODO fix
     -Wno-double-promotion #TODO fix
     -Wno-undefined-func-template #TODO fix

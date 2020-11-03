@@ -53,7 +53,6 @@ bool AuthenticatedView::isClosed() const { return m_isAuthenticatedViewClosed; }
  * After this cache is closed, any further
  * method call on this cache or any region object will throw
  * <code>CacheClosedException</code>, unless otherwise noted.
- * @param keepalive whether to keep the durable client's queue
  * @throws CacheClosedException,  if the cache is already closed.
  */
 void AuthenticatedView::close() {
@@ -119,8 +118,6 @@ std::shared_ptr<Region> AuthenticatedView::getRegion(
  * shared regions to be mapped into the cache. This set is a snapshot and
  * is not backed by the Cache. The regions passed in are cleared.
  *
- * @param regions the region collection object containing the returned set of
- * regions when the function returns
  */
 std::shared_ptr<QueryService> AuthenticatedView::getQueryService() {
   if (!m_isAuthenticatedViewClosed) {
@@ -169,12 +166,18 @@ AuthenticatedView::AuthenticatedView(std::shared_ptr<Properties> credentials,
 AuthenticatedView::~AuthenticatedView() {}
 
 PdxInstanceFactory AuthenticatedView::createPdxInstanceFactory(
-    const std::string& className) const {
-  return PdxInstanceFactory(className, m_cacheImpl->getCachePerfStats(),
+    const std::string& className, bool expectDomainClass) const {
+  return PdxInstanceFactory(className, expectDomainClass,
+                            m_cacheImpl->getCachePerfStats(),
                             *m_cacheImpl->getPdxTypeRegistry(), *m_cacheImpl,
                             m_cacheImpl->getDistributedSystem()
                                 .getSystemProperties()
                                 .getEnableTimeStatistics());
+}
+
+PdxInstanceFactory AuthenticatedView::createPdxInstanceFactory(
+    const std::string& className) const {
+  return createPdxInstanceFactory(className, true);
 }
 }  // namespace client
 }  // namespace geode
