@@ -27,6 +27,7 @@ add_executable(cpp-integration-test
   ExampleTest.cpp
   ExpirationTest.cpp
   FunctionExecutionTest.cpp
+  LocatorRequestsTest.cpp
   PartitionRegionOpsTest.cpp
   PdxInstanceTest.cpp
   PdxJsonTypeTest.cpp
