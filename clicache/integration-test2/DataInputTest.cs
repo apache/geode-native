@@ -55,24 +55,47 @@ namespace Apache.Geode.Client.IntegrationTests
                     cluster.ApplyLocators(cache.GetPoolFactory()).Create("default");
                     var buffer = new Byte[__1M__];
 
-                    Process currentProc = Process.GetCurrentProcess();
-                    var startingSize = currentProc.PrivateMemorySize64;
+                    var startingSize = Process.GetCurrentProcess().PrivateMemorySize64;
+
+                    for (var i = 0; i < 1000; i++)
+                    {
+                        using (var di = new DataInput(buffer, __1M__, cache))
+                        {
+                        }
+                    }
+
+                    System.GC.Collect();
+                    System.GC.WaitForPendingFinalizers();
+                    var endingSize = Process.GetCurrentProcess().PrivateMemorySize64;
+
+                    //
+                    // DataInput CLI object once had a leak of the internal buffer.  
+                    // 1000 iterations each leaking 1MB should be a humongous leak, 
+                    // so test for a < 10MB heap usage diff here, to allow some 
+                    // wiggle room due to GC etc. and we're still certain we're not 
+                    // leaking the buffer any more.
+                    //
+                    Assert.True(System.Math.Abs(endingSize - startingSize) < 10 * __1M__);
+
+                    startingSize = Process.GetCurrentProcess().PrivateMemorySize64;
 
                     for (var i = 0; i < 1000; i++)
                     {
                         using (var di = new DataInput(buffer, cache))
                         {
-
                         }
                     }
 
-                    var endingSize = currentProc.PrivateMemorySize64;
+                    System.GC.Collect();
+                    System.GC.WaitForPendingFinalizers();
+                    endingSize = Process.GetCurrentProcess().PrivateMemorySize64;
+
                     //
-                    // DataInput CLI object once had a leak of the internal buffer if you
-                    // used the 2-parameter ctor we used above.  1000 iterations each leaking
-                    // 1MB should be a humongous leak, so test for a < 10MB heap usage diff
-                    // here, to allow some wiggle room due to GC etc. and we're still certain
-                    // we're not leaking the buffer any more.
+                    // DataInput CLI object once had a leak of the internal buffer.  
+                    // 1000 iterations each leaking 1MB should be a humongous leak, 
+                    // so test for a < 10MB heap usage diff here, to allow some 
+                    // wiggle room due to GC etc. and we're still certain we're not 
+                    // leaking the buffer any more.
                     //
                     Assert.True(System.Math.Abs(endingSize - startingSize) < 10 * __1M__);
                 }
