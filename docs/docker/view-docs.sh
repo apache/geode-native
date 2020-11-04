@@ -53,7 +53,7 @@ docker run -i -t \
   -v "$PWD:${DOCS_DIR}" \
   -p 127.0.0.1:${PORT}:${PORT} \
   ${IMAGE_NAME}-${USER_NAME} \
-  /bin/bash -c "bundle install; rackup --host 0.0.0.0 -p ${PORT}"
+  /bin/bash -c "bundle install; bundle exec rackup --host 0.0.0.0 -p ${PORT}"
 
 popd 1> /dev/null
 
