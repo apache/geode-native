@@ -29,6 +29,7 @@ add_library( ${PROJECT_NAME} SHARED
   ClusterTest.cs
   Config.cs.in
   ${CMAKE_CURRENT_BINARY_DIR}/Config.cs
+  DataInputTest.cs
   GfshTest.cs
   GfshExecuteTest.cs
   Gfsh.cs

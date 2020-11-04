@@ -93,8 +93,9 @@ namespace Apache
         if (buffer != nullptr && buffer->Length > 0) {
           _GF_MG_EXCEPTION_TRY2
 
-            System::Int32 len = buffer->Length;
-          _GEODE_NEW(m_buffer, System::Byte[len]);
+          auto len = buffer->Length;
+          m_ownedBuffer = make_native_unique<System::Byte[]>(len);
+          m_buffer = m_ownedBuffer->get();
           pin_ptr<const Byte> pin_buffer = &buffer[0];
           memcpy(m_buffer, (void*)pin_buffer, len);
           m_nativeptr = gcnew native_conditional_unique_ptr<native::DataInput>(
@@ -132,11 +133,10 @@ namespace Apache
               "DataInput.ctor(): given length {0} is zero or greater than "
               "size of buffer {1}", len, buffer->Length));
           }
-          //m_bytes = gcnew array<Byte>(len);
-          //System::Array::Copy(buffer, 0, m_bytes, 0, len);
           _GF_MG_EXCEPTION_TRY2
 
-            _GEODE_NEW(m_buffer, System::Byte[len]);
+          m_ownedBuffer = make_native_unique<System::Byte[]>(len);
+          m_buffer = m_ownedBuffer->get();
           pin_ptr<const Byte> pin_buffer = &buffer[0];
           memcpy(m_buffer, (void*)pin_buffer, len);
           m_nativeptr = gcnew native_conditional_unique_ptr<native::DataInput>(
@@ -874,12 +874,6 @@ namespace Apache
           GC::KeepAlive(m_nativeptr);
         }
         SetBuffer();
-      }
-
-      void DataInput::Cleanup()
-      {
-        //TODO:
-        //GF_SAFE_DELETE_ARRAY(m_buffer);
       }
 
       void DataInput::ReadDictionary(System::Collections::IDictionary^ dict)
