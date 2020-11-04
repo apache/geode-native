@@ -876,10 +876,6 @@ namespace Apache
         SetBuffer();
       }
 
-      void DataInput::Cleanup()
-      {
-      }
-
       void DataInput::ReadDictionary(System::Collections::IDictionary^ dict)
       {
         int len = this->ReadArrayLen();

@@ -80,12 +80,12 @@ namespace Apache
         /// <summary>
         /// Dispose: frees the internal buffer.
         /// </summary>
-        ~DataInput( ) { Cleanup( ); }
+        ~DataInput( ) { }
 
         /// <summary>
         /// Finalizer: frees the internal buffer.
         /// </summary>
-        !DataInput( ) { Cleanup( ); }      
+        !DataInput( ) { }
 
         /// <summary>
         /// Read a signed byte from the stream.
@@ -699,8 +699,6 @@ namespace Apache
         array<Char>^ m_forStringDecode;
 
         native_conditional_unique_ptr<native::DataInput>^ m_nativeptr;
-      
-        void Cleanup( );
       };
     }  // namespace Client
   }  // namespace Geode
