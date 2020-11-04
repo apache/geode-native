@@ -93,7 +93,7 @@ namespace Apache
         if (buffer != nullptr && buffer->Length > 0) {
           _GF_MG_EXCEPTION_TRY2
 
-          System::Int32 len = buffer->Length;
+          auto len = buffer->Length;
           m_ownedBuffer = make_native_unique<System::Byte[]>(len);
           m_buffer = m_ownedBuffer->get();
           pin_ptr<const Byte> pin_buffer = &buffer[0];
