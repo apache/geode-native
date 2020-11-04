@@ -2761,6 +2761,9 @@ GfErrType ThinClientRegion::handleServerException(
                  "org.apache.geode.security.AuthenticationRequiredException") !=
              std::string::npos) {
     error = GF_AUTHENTICATION_REQUIRED_EXCEPTION;
+  } else if (exceptionMsg.find("org.apache.geode.cache.LowMemoryException") !=
+             std::string::npos) {
+    error = GF_LOW_MEMORY_EXCEPTION;
   } else {
     error = GF_CACHESERVER_EXCEPTION;
   }

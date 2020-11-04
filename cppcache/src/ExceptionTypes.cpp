@@ -47,6 +47,7 @@ using apache::geode::client::GeodeIOException;
 using apache::geode::client::IllegalArgumentException;
 using apache::geode::client::IllegalStateException;
 using apache::geode::client::LeaseExpiredException;
+using apache::geode::client::LowMemoryException;
 using apache::geode::client::MessageException;
 using apache::geode::client::NoAvailableLocatorsException;
 using apache::geode::client::NoSystemException;
@@ -372,6 +373,12 @@ using apache::geode::client::UnknownException;
   throw PutAllPartialResultException{message};
 }
 
+[[noreturn]] void lowMemoryException(std::string message, std::string& exMsg,
+                                     GfErrType, std::string) {
+  message.append(!exMsg.empty() ? exMsg : ": Low memory exception");
+  throw LowMemoryException{message};
+}
+
 [[noreturn]] void unknownException(std::string message, std::string& exMsg,
                                    GfErrType err, std::string func) {
   LOGINFO("error code: %d", err);
@@ -440,6 +447,7 @@ std::map<GfErrType, error_function_t>& get_error_map() {
       {GF_TRANSACTION_DATA_NODE_HAS_DEPARTED_EXCEPTION,
        transactionDataNodeHasDepartedException},
       {GF_PUTALL_PARTIAL_RESULT_EXCEPTION, putAllPartialResultException},
+      {GF_LOW_MEMORY_EXCEPTION, lowMemoryException},
       {GF_NOERR, unknownException},
       {GF_DEADLK, unknownException},
       {GF_EACCES, unknownException},

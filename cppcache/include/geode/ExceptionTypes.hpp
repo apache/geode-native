@@ -813,6 +813,19 @@ class APACHE_GEODE_EXPORT PutAllPartialResultException : public Exception {
 };
 
 /**
+ * @brief Thrown if an operation causes fails due to critical memory threshold
+ *        reached.
+ **/
+class APACHE_GEODE_EXPORT LowMemoryException : public Exception {
+ public:
+  using Exception::Exception;
+  ~LowMemoryException() noexcept override {}
+  std::string getName() const override {
+    return "apache::geode::client::LowMemoryException";
+  }
+};
+
+/**
  *@brief Thrown when an error is encountered during an SSL operation.
  **/
 class APACHE_GEODE_EXPORT SslException : public Exception {
