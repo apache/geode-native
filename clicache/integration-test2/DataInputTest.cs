@@ -59,11 +59,20 @@ namespace Apache.Geode.Client.IntegrationTests
 
                     for (var i = 0; i < 1000; i++)
                     {
+                        // Disable warning for 'useless assignment to local variable'.
+                        // Declaring this variable in a using block will ensure the
+                        // Dispose method is called when it goes out of scope, which
+                        // is the whole point here, since that used to leak memory.
+                        // lgtm
                         using (var di = new DataInput(buffer, __1M__, cache))
                         {
                         }
                     }
 
+                    // Disable warning for 'call to GC.Collect()'.  This test will fail
+                    // with some regularity if we don't collect garbage prior to
+                    // re-checking memory usage.
+                    // lgtm
                     System.GC.Collect();
                     System.GC.WaitForPendingFinalizers();
                     var endingSize = Process.GetCurrentProcess().PrivateMemorySize64;
@@ -81,11 +90,20 @@ namespace Apache.Geode.Client.IntegrationTests
 
                     for (var i = 0; i < 1000; i++)
                     {
+                        // Disable warning for 'useless assignment to local variable'.
+                        // Declaring this variable in a using block will ensure the
+                        // Dispose method is called when it goes out of scope, which
+                        // is the whole point here, since that used to leak memory.
+                        // lgtm
                         using (var di = new DataInput(buffer, cache))
                         {
                         }
                     }
 
+                    // Disable warning for 'call to GC.Collect()'.  This test will fail
+                    // with some regularity if we don't collect garbage prior to
+                    // re-checking memory usage.
+                    // lgtm
                     System.GC.Collect();
                     System.GC.WaitForPendingFinalizers();
                     endingSize = Process.GetCurrentProcess().PrivateMemorySize64;
