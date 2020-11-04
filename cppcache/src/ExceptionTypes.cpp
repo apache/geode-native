@@ -23,30 +23,59 @@
 #include "ErrType.hpp"
 #include "util/Log.hpp"
 
-namespace apache {
-namespace geode {
-namespace client {
+namespace {
 
-void setThreadLocalExceptionMessage(std::string exMsg);
-const std::string& getThreadLocalExceptionMessage();
-
-static std::map<GfErrType, std::function<void(std::string, std::string&,
-                                              GfErrType, std::string)>>
-    error_map;
+using apache::geode::client::AllConnectionsInUseException;
+using apache::geode::client::AuthenticationFailedException;
+using apache::geode::client::AuthenticationRequiredException;
+using apache::geode::client::BufferSizeExceededException;
+using apache::geode::client::CacheClosedException;
+using apache::geode::client::CacheListenerException;
+using apache::geode::client::CacheLoaderException;
+using apache::geode::client::CacheProxyException;
+using apache::geode::client::CacheServerException;
+using apache::geode::client::CacheWriterException;
+using apache::geode::client::CommitConflictException;
+using apache::geode::client::ConcurrentModificationException;
+using apache::geode::client::DiskFailureException;
+using apache::geode::client::DuplicateDurableClientException;
+using apache::geode::client::EntryDestroyedException;
+using apache::geode::client::EntryExistsException;
+using apache::geode::client::EntryNotFoundException;
+using apache::geode::client::FunctionExecutionException;
+using apache::geode::client::GeodeIOException;
+using apache::geode::client::IllegalArgumentException;
+using apache::geode::client::IllegalStateException;
+using apache::geode::client::LeaseExpiredException;
+using apache::geode::client::MessageException;
+using apache::geode::client::NoAvailableLocatorsException;
+using apache::geode::client::NoSystemException;
+using apache::geode::client::NotAuthorizedException;
+using apache::geode::client::NotConnectedException;
+using apache::geode::client::NotOwnerException;
+using apache::geode::client::OutOfMemoryException;
+using apache::geode::client::PutAllPartialResultException;
+using apache::geode::client::QueryException;
+using apache::geode::client::RegionDestroyedException;
+using apache::geode::client::RegionExistsException;
+using apache::geode::client::RollbackException;
+using apache::geode::client::StatisticsDisabledException;
+using apache::geode::client::TimeoutException;
+using apache::geode::client::TransactionDataNodeHasDepartedException;
+using apache::geode::client::TransactionDataRebalancedException;
+using apache::geode::client::UnknownException;
 
 [[noreturn]] void notConnectedException(std::string message, std::string& exMsg,
                                         GfErrType, std::string) {
   message.append(!exMsg.empty() ? exMsg : ": not connected to Geode");
-  NotConnectedException ex(message);
-  throw ex;
+  throw NotConnectedException{message};
 }
 
     [[noreturn]] void messageException(std::string message, std::string& exMsg,
                                        GfErrType, std::string) {
   message.append(!exMsg.empty() ? exMsg
                                 : ": message from server could not be handled");
-  MessageException ex(message);
-  throw ex;
+  throw MessageException{message};
 }
 
 [[noreturn]] void cacheServerException(std::string message, std::string& exMsg,
@@ -58,15 +87,14 @@ static std::map<GfErrType, std::function<void(std::string, std::string&,
   if (err == GF_CACHE_REGION_NOT_FOUND) {
     message.append(!exMsg.empty() ? exMsg : ": region not found on server");
   }
-  CacheServerException ex(message);
-  throw ex;
+
+  throw CacheServerException{message};
 }
 
     [[noreturn]] void notOwnerException(std::string message, std::string& exMsg,
                                         GfErrType, std::string) {
   message.append(!exMsg.empty() ? exMsg : ": not own the lock");
-  NotOwnerException ex(message);
-  throw ex;
+  throw NotOwnerException{message};
 }
 
 [[noreturn]] void illegalStateException(std::string message, std::string& exMsg,
@@ -77,8 +105,7 @@ static std::map<GfErrType, std::function<void(std::string, std::string&,
   if (err == GF_CACHE_ILLEGAL_STATE_EXCEPTION) {
     message.append(!exMsg.empty() ? exMsg : ": illegal State");
   }
-  IllegalStateException ex(message);
-  throw ex;
+  throw IllegalStateException{message};
 }
 
     [[noreturn]] void illegalArgumentException(std::string message,
@@ -96,8 +123,7 @@ static std::map<GfErrType, std::function<void(std::string, std::string&,
                        ? exMsg
                        : ": existing non-null values was not a byte array");
   }
-  IllegalArgumentException ex(message);
-  throw ex;
+  throw IllegalArgumentException{message};
 }
 
 [[noreturn]] void cacheWriterException(std::string message, std::string& exMsg,
@@ -109,24 +135,21 @@ static std::map<GfErrType, std::function<void(std::string, std::string&,
   if (err == GF_CACHEWRITER_ERROR) {
     message.append(!exMsg.empty() ? exMsg : ": exception in CacheWriter");
   }
-  CacheWriterException ex(message);
-  throw ex;
+  throw CacheWriterException{message};
 }
 
     [[noreturn]] void cacheLoaderException(std::string message,
                                            std::string& exMsg, GfErrType,
                                            std::string) {
   message.append(!exMsg.empty() ? exMsg : ": exception in CacheLoader");
-  CacheLoaderException ex(message);
-  throw ex;
+  throw CacheLoaderException{message};
 }
 
 [[noreturn]] void cacheListenerException(std::string message,
                                          std::string& exMsg, GfErrType,
                                          std::string) {
   message.append(!exMsg.empty() ? exMsg : ": exception in CacheListener");
-  CacheListenerException ex(message);
-  throw ex;
+  throw CacheListenerException{message};
 }
 
     [[noreturn]] void regionDestroyedException(std::string message,
@@ -138,29 +161,25 @@ static std::map<GfErrType, std::function<void(std::string, std::string&,
   if (err == GF_CACHE_REGION_DESTROYED_EXCEPTION) {
     message.append(!exMsg.empty() ? exMsg : ": Named Region Destroyed");
   }
-  RegionDestroyedException ex(message);
-  throw ex;
+  throw RegionDestroyedException{message};
 }
 
 [[noreturn]] void cacheProxyException(std::string message, std::string& exMsg,
                                       GfErrType, std::string) {
   message.append(!exMsg.empty() ? exMsg : ": error in Cache proxy");
-  CacheProxyException ex(message);
-  throw ex;
+  throw CacheProxyException{message};
 }
 
     [[noreturn]] void geodeIOException(std::string message, std::string& exMsg,
                                        GfErrType, std::string) {
   message.append(!exMsg.empty() ? exMsg : ": Input/Output error in operation");
-  GeodeIOException ex(message);
-  throw ex;
+  throw GeodeIOException{message};
 }
 
 [[noreturn]] void noSystemException(std::string message, std::string& exMsg,
                                     GfErrType, std::string) {
   message.append(!exMsg.empty() ? exMsg : ": entity does not exist");
-  NoSystemException ex(message);
-  throw ex;
+  throw NoSystemException{message};
 }
 
     [[noreturn]] void timeoutException(std::string message, std::string& exMsg,
@@ -172,46 +191,40 @@ static std::map<GfErrType, std::function<void(std::string, std::string&,
   } else {
     message.append(!exMsg.empty() ? exMsg : ": timed out");
   }
-  TimeoutException ex(message);
-  throw ex;
+  throw TimeoutException{message};
 }
 
 [[noreturn]] void outOfMemoryException(std::string message, std::string& exMsg,
                                        GfErrType, std::string) {
   message.append(!exMsg.empty() ? exMsg : ": Out of memory");
-  OutOfMemoryException ex(message);
-  throw ex;
+  throw OutOfMemoryException{message};
 }
 
     [[noreturn]] void bufferSizeExceededException(std::string message,
                                                   std::string& exMsg, GfErrType,
                                                   std::string) {
   message.append(!exMsg.empty() ? exMsg : ": Buffer Size Exceeded");
-  BufferSizeExceededException ex(message);
-  throw ex;
+  throw BufferSizeExceededException{message};
 }
 
 [[noreturn]] void leaseExpiredException(std::string message, std::string& exMsg,
                                         GfErrType, std::string) {
   message.append(!exMsg.empty() ? exMsg : ": lock Lease Expired On you");
-  LeaseExpiredException ex(message);
-  throw ex;
+  throw LeaseExpiredException{message};
 }
 
     [[noreturn]] void regionExistsException(std::string message,
                                             std::string& exMsg, GfErrType,
                                             std::string) {
   message.append(!exMsg.empty() ? exMsg : ": Named Region Exists");
-  RegionExistsException ex(message);
-  throw ex;
+  throw RegionExistsException{message};
 }
 
 [[noreturn]] void entryNotFoundException(std::string message,
                                          std::string& exMsg, GfErrType,
                                          std::string) {
   message.append(!exMsg.empty() ? exMsg : ": Entry not found");
-  EntryNotFoundException ex(message);
-  throw ex;
+  throw EntryNotFoundException{message};
 }
 
     [[noreturn]] void entryExistsException(std::string message,
@@ -219,24 +232,21 @@ static std::map<GfErrType, std::function<void(std::string, std::string&,
                                            std::string) {
   message.append(!exMsg.empty() ? exMsg
                                 : ": Entry already exists in the region");
-  EntryExistsException ex(message);
-  throw ex;
+  throw EntryExistsException{message};
 }
 
 [[noreturn]] void entryDestroyedException(std::string message,
                                           std::string& exMsg, GfErrType,
                                           std::string) {
   message.append(!exMsg.empty() ? exMsg : ": Entry has been destroyed");
-  EntryDestroyedException ex(message);
-  throw ex;
+  throw EntryDestroyedException{message};
 }
 
     [[noreturn]] void cacheClosedException(std::string message,
                                            std::string& exMsg, GfErrType,
                                            std::string) {
   message.append(!exMsg.empty() ? exMsg : ": Cache has been closed");
-  CacheClosedException ex(message);
-  throw ex;
+  throw CacheClosedException{message};
 }
 
 [[noreturn]] void statisticsDisabledException(std::string message,
@@ -245,8 +255,7 @@ static std::map<GfErrType, std::function<void(std::string, std::string&,
   message.append(!exMsg.empty()
                      ? exMsg
                      : ": Statistics have been disabled for the region");
-  StatisticsDisabledException ex(message);
-  throw ex;
+  throw StatisticsDisabledException{message};
 }
 
     [[noreturn]] void concurrentModificationException(std::string message,
@@ -254,61 +263,53 @@ static std::map<GfErrType, std::function<void(std::string, std::string&,
                                                       GfErrType, std::string) {
   message.append(!exMsg.empty() ? exMsg
                                 : ": Concurrent modification in the cache");
-  ConcurrentModificationException ex(message);
-  throw ex;
+  throw ConcurrentModificationException{message};
 }
 
 [[noreturn]] void notAuthorizedException(std::string message,
                                          std::string& exMsg, GfErrType,
                                          std::string) {
   message.append(!exMsg.empty() ? exMsg : ": unauthorized operation");
-  NotAuthorizedException ex(message);
-  throw ex;
+  throw NotAuthorizedException{message};
 }
 
     [[noreturn]] void authenticationFailedException(std::string message,
                                                     std::string& exMsg,
                                                     GfErrType, std::string) {
   message.append(!exMsg.empty() ? exMsg : ": authentication failed");
-  AuthenticationFailedException ex(message);
-  throw ex;
+  throw AuthenticationFailedException{message};
 }
 
 [[noreturn]] void authenticationRequiredException(std::string message,
                                                   std::string& exMsg, GfErrType,
                                                   std::string) {
   message.append(!exMsg.empty() ? exMsg : ": no authentication provided");
-  AuthenticationRequiredException ex(message);
-  throw ex;
+  throw AuthenticationRequiredException{message};
 }
 
     [[noreturn]] void duplicateDurableClientException(std::string message,
                                                       std::string& exMsg,
                                                       GfErrType, std::string) {
   message.append(!exMsg.empty() ? exMsg : ": Duplicate Durable Client Id");
-  DuplicateDurableClientException ex(message);
-  throw ex;
+  throw DuplicateDurableClientException{message};
 }
 
 [[noreturn]] void queryException(std::string message, std::string& exMsg,
                                  GfErrType, std::string) {
   message.append(!exMsg.empty() ? exMsg : ": Query failed");
-  QueryException ex(message);
-  throw ex;
+  throw QueryException{message};
 }
 
     [[noreturn]] void noAvailableLocatorsException(std::string,
                                                    std::string& exMsg,
                                                    GfErrType,
                                                    std::string func) {
-  NoAvailableLocatorsException cause(
-      func + (!exMsg.empty() ? exMsg : ": No locators available"));
   try {
-    throw cause;
+    throw NoAvailableLocatorsException{
+        func + (!exMsg.empty() ? exMsg : ": No locators available")};
   } catch (...) {
-    NotConnectedException ex(
-        func + (!exMsg.empty() ? exMsg : ": No locators available"));
-    std::throw_with_nested(ex);
+    std::throw_with_nested(NotConnectedException{
+        func + (!exMsg.empty() ? exMsg : ": No locators available")});
   }
 }
 
@@ -316,38 +317,33 @@ static std::map<GfErrType, std::function<void(std::string, std::string&,
                                                std::string& exMsg, GfErrType,
                                                std::string) {
   message.append(!exMsg.empty() ? exMsg : ": All connections are in use");
-  AllConnectionsInUseException ex(message);
-  throw ex;
+  throw AllConnectionsInUseException{message};
 }
 
     [[noreturn]] void functionExecutionException(std::string message,
                                                  std::string& exMsg, GfErrType,
                                                  std::string) {
   message.append(!exMsg.empty() ? exMsg : ": Function execution failed");
-  FunctionExecutionException ex(message);
-  throw ex;
+  throw FunctionExecutionException{message};
 }
 
 [[noreturn]] void diskFailureException(std::string message, std::string& exMsg,
                                        GfErrType, std::string) {
   message.append(!exMsg.empty() ? exMsg : ": Disk full");
-  DiskFailureException ex(message);
-  throw ex;
+  throw DiskFailureException{message};
 }
 
     [[noreturn]] void rollbackException(std::string message, std::string& exMsg,
                                         GfErrType, std::string) {
   message.append(!exMsg.empty() ? exMsg : ": Transaction rolled back");
-  RollbackException ex(message);
-  throw ex;
+  throw RollbackException{message};
 }
 
 [[noreturn]] void commitConflictException(std::string message,
                                           std::string& exMsg, GfErrType,
                                           std::string) {
   message.append(!exMsg.empty() ? exMsg : ": Commit conflict exception");
-  CommitConflictException ex(message);
-  throw ex;
+  throw CommitConflictException{message};
 }
 
     [[noreturn]] void transactionDataRebalancedException(std::string message,
@@ -356,8 +352,7 @@ static std::map<GfErrType, std::function<void(std::string, std::string&,
                                                          std::string) {
   message.append(!exMsg.empty() ? exMsg
                                 : ": Transaction data rebalanced exception");
-  TransactionDataRebalancedException ex(message);
-  throw ex;
+  throw TransactionDataRebalancedException{message};
 }
 
 [[noreturn]] void transactionDataNodeHasDepartedException(std::string message,
@@ -367,16 +362,14 @@ static std::map<GfErrType, std::function<void(std::string, std::string&,
   message.append(!exMsg.empty()
                      ? exMsg
                      : ": Transaction data node has departed exception");
-  TransactionDataNodeHasDepartedException ex(message);
-  throw ex;
+  throw TransactionDataNodeHasDepartedException{message};
 }
 
     [[noreturn]] void putAllPartialResultException(std::string message,
                                                    std::string& exMsg,
                                                    GfErrType, std::string) {
   message.append(!exMsg.empty() ? exMsg : ": PutAll Partial exception");
-  PutAllPartialResultException ex(message);
-  throw ex;
+  throw PutAllPartialResultException{message};
 }
 
 [[noreturn]] void unknownException(std::string message, std::string& exMsg,
@@ -388,112 +381,94 @@ static std::map<GfErrType, std::function<void(std::string, std::string&,
   } else {
     message.append(exMsg);
   }
-  UnknownException ex(message);
-  throw ex;
+  throw UnknownException{message};
 }
 
-void setErrorMap() {
-  error_map.emplace(std::make_pair(GF_NOTCON, notConnectedException));
-  error_map.emplace(std::make_pair(GF_MSG, messageException));
-  error_map.emplace(
-      std::make_pair(GF_CACHESERVER_EXCEPTION, cacheServerException));
-  error_map.emplace(std::make_pair(GF_NOTOWN, notOwnerException));
-  error_map.emplace(
-      std::make_pair(GF_CACHE_REGION_NOT_FOUND, cacheServerException));
-  error_map.emplace(
-      std::make_pair(GF_CACHE_REGION_NOT_GLOBAL, illegalStateException));
-  error_map.emplace(std::make_pair(GF_CACHE_ILLEGAL_ARGUMENT_EXCEPTION,
-                                   illegalArgumentException));
-  error_map.emplace(
-      std::make_pair(GF_CACHE_ILLEGAL_STATE_EXCEPTION, illegalStateException));
-  error_map.emplace(
-      std::make_pair(GF_CACHE_WRITER_EXCEPTION, cacheWriterException));
-  error_map.emplace(std::make_pair(GF_CACHEWRITER_ERROR, cacheWriterException));
-  error_map.emplace(
-      std::make_pair(GF_CACHE_LOADER_EXCEPTION, cacheLoaderException));
-  error_map.emplace(
-      std::make_pair(GF_CACHE_LISTENER_EXCEPTION, cacheListenerException));
-  error_map.emplace(
-      std::make_pair(GF_CACHE_REGION_INVALID, regionDestroyedException));
-  error_map.emplace(std::make_pair(GF_CACHE_PROXY, cacheProxyException));
-  error_map.emplace(std::make_pair(GF_IOERR, geodeIOException));
-  error_map.emplace(std::make_pair(GF_ENOENT, noSystemException));
-  error_map.emplace(std::make_pair(GF_CACHE_REGION_KEYS_NOT_STRINGS,
-                                   illegalArgumentException));
-  error_map.emplace(std::make_pair(GF_CACHE_REGION_ENTRY_NOT_BYTES,
-                                   illegalArgumentException));
-  error_map.emplace(
-      std::make_pair(GF_CACHE_TIMEOUT_EXCEPTION, timeoutException));
-  error_map.emplace(std::make_pair(GF_TIMEOUT, timeoutException));
-  error_map.emplace(std::make_pair(GF_CLIENT_WAIT_TIMEOUT, timeoutException));
-  error_map.emplace(std::make_pair(GF_ENOMEM, outOfMemoryException));
-  error_map.emplace(std::make_pair(GF_ERANGE, bufferSizeExceededException));
-  error_map.emplace(
-      std::make_pair(GF_CACHE_LEASE_EXPIRED_EXCEPTION, leaseExpiredException));
-  error_map.emplace(
-      std::make_pair(GF_CACHE_REGION_EXISTS_EXCEPTION, regionExistsException));
-  error_map.emplace(
-      std::make_pair(GF_CACHE_ENTRY_NOT_FOUND, entryNotFoundException));
-  error_map.emplace(
-      std::make_pair(GF_CACHE_ENTRY_EXISTS, entryExistsException));
-  error_map.emplace(std::make_pair(GF_CACHE_ENTRY_DESTROYED_EXCEPTION,
-                                   entryDestroyedException));
-  error_map.emplace(std::make_pair(GF_CACHE_REGION_DESTROYED_EXCEPTION,
-                                   regionDestroyedException));
-  error_map.emplace(
-      std::make_pair(GF_CACHE_CLOSED_EXCEPTION, cacheClosedException));
-  error_map.emplace(std::make_pair(GF_CACHE_STATISTICS_DISABLED_EXCEPTION,
-                                   statisticsDisabledException));
-  error_map.emplace(std::make_pair(GF_CACHE_CONCURRENT_MODIFICATION_EXCEPTION,
-                                   concurrentModificationException));
-  error_map.emplace(
-      std::make_pair(GF_NOT_AUTHORIZED_EXCEPTION, notAuthorizedException));
-  error_map.emplace(std::make_pair(GF_AUTHENTICATION_FAILED_EXCEPTION,
-                                   authenticationFailedException));
-  error_map.emplace(std::make_pair(GF_AUTHENTICATION_REQUIRED_EXCEPTION,
-                                   authenticationRequiredException));
-  error_map.emplace(std::make_pair(GF_DUPLICATE_DURABLE_CLIENT,
-                                   duplicateDurableClientException));
-  error_map.emplace(std::make_pair(GF_REMOTE_QUERY_EXCEPTION, queryException));
-  error_map.emplace(
-      std::make_pair(GF_CACHE_LOCATOR_EXCEPTION, noAvailableLocatorsException));
-  error_map.emplace(std::make_pair(GF_ALL_CONNECTIONS_IN_USE_EXCEPTION,
-                                   allConnectionsInUseException));
-  error_map.emplace(
-      std::make_pair(GF_FUNCTION_EXCEPTION, functionExecutionException));
-  error_map.emplace(std::make_pair(GF_DISKFULL, diskFailureException));
-  error_map.emplace(std::make_pair(GF_ROLLBACK_EXCEPTION, rollbackException));
-  error_map.emplace(
-      std::make_pair(GF_COMMIT_CONFLICT_EXCEPTION, commitConflictException));
-  error_map.emplace(std::make_pair(GF_TRANSACTION_DATA_REBALANCED_EXCEPTION,
-                                   transactionDataRebalancedException));
-  error_map.emplace(
-      std::make_pair(GF_TRANSACTION_DATA_NODE_HAS_DEPARTED_EXCEPTION,
-                     transactionDataNodeHasDepartedException));
-  error_map.emplace(std::make_pair(GF_PUTALL_PARTIAL_RESULT_EXCEPTION,
-                                   putAllPartialResultException));
-  error_map.emplace(std::make_pair(GF_NOERR, unknownException));
-  error_map.emplace(std::make_pair(GF_DEADLK, unknownException));
-  error_map.emplace(std::make_pair(GF_EACCES, unknownException));
-  error_map.emplace(std::make_pair(GF_ECONFL, unknownException));
-  error_map.emplace(std::make_pair(GF_EINVAL, unknownException));
-  error_map.emplace(std::make_pair(GF_ETYPE, unknownException));
-  error_map.emplace(std::make_pair(GF_NOTOBJ, unknownException));
-  error_map.emplace(std::make_pair(GF_NOTSUP, unknownException));
-  error_map.emplace(std::make_pair(GF_SCPGBL, unknownException));
-  error_map.emplace(std::make_pair(GF_SCPEXC, unknownException));
-  error_map.emplace(std::make_pair(GF_OVRFLW, unknownException));
-  error_map.emplace(std::make_pair(GF_EINTR, unknownException));
-  error_map.emplace(std::make_pair(GF_NOSERVER_FOUND, unknownException));
-  error_map.emplace(std::make_pair(GF_SERVER_FAILED, unknownException));
-  error_map.emplace(std::make_pair(GF_CLIENT_WAIT_TIMEOUT_REFRESH_PRMETADATA,
-                                   unknownException));
-  error_map.emplace(
-      std::make_pair(GF_CANNOT_PROCESS_GII_REQUEST, unknownException));
-  error_map.emplace(std::make_pair(GF_CACHE_ENTRY_UPDATED, unknownException));
-  error_map.emplace(std::make_pair(GF_INVALID_DELTA, unknownException));
-  error_map.emplace(std::make_pair(GF_EUNDEF, unknownException));
+}  // namespace
+
+using error_function_t =
+    std::function<void(std::string, std::string&, GfErrType, std::string)>;
+
+std::map<GfErrType, error_function_t>& get_error_map() {
+  static std::map<GfErrType, error_function_t> error_map{
+      {GF_NOTCON, notConnectedException},
+      {GF_MSG, messageException},
+      {GF_CACHESERVER_EXCEPTION, cacheServerException},
+      {GF_NOTOWN, notOwnerException},
+      {GF_CACHE_REGION_NOT_FOUND, cacheServerException},
+      {GF_CACHE_REGION_NOT_GLOBAL, illegalStateException},
+      {GF_CACHE_ILLEGAL_ARGUMENT_EXCEPTION, illegalArgumentException},
+      {GF_CACHE_ILLEGAL_STATE_EXCEPTION, illegalStateException},
+      {GF_CACHE_WRITER_EXCEPTION, cacheWriterException},
+      {GF_CACHEWRITER_ERROR, cacheWriterException},
+      {GF_CACHE_LOADER_EXCEPTION, cacheLoaderException},
+      {GF_CACHE_LISTENER_EXCEPTION, cacheListenerException},
+      {GF_CACHE_REGION_INVALID, regionDestroyedException},
+      {GF_CACHE_PROXY, cacheProxyException},
+      {GF_IOERR, geodeIOException},
+      {GF_ENOENT, noSystemException},
+      {GF_CACHE_REGION_KEYS_NOT_STRINGS, illegalArgumentException},
+      {GF_CACHE_REGION_ENTRY_NOT_BYTES, illegalArgumentException},
+      {GF_CACHE_TIMEOUT_EXCEPTION, timeoutException},
+      {GF_TIMEOUT, timeoutException},
+      {GF_CLIENT_WAIT_TIMEOUT, timeoutException},
+      {GF_ENOMEM, outOfMemoryException},
+      {GF_ERANGE, bufferSizeExceededException},
+      {GF_CACHE_LEASE_EXPIRED_EXCEPTION, leaseExpiredException},
+      {GF_CACHE_REGION_EXISTS_EXCEPTION, regionExistsException},
+      {GF_CACHE_ENTRY_NOT_FOUND, entryNotFoundException},
+      {GF_CACHE_ENTRY_EXISTS, entryExistsException},
+      {GF_CACHE_ENTRY_DESTROYED_EXCEPTION, entryDestroyedException},
+      {GF_CACHE_REGION_DESTROYED_EXCEPTION, regionDestroyedException},
+      {GF_CACHE_CLOSED_EXCEPTION, cacheClosedException},
+      {GF_CACHE_STATISTICS_DISABLED_EXCEPTION, statisticsDisabledException},
+      {GF_CACHE_CONCURRENT_MODIFICATION_EXCEPTION,
+       concurrentModificationException},
+      {GF_NOT_AUTHORIZED_EXCEPTION, notAuthorizedException},
+      {GF_AUTHENTICATION_FAILED_EXCEPTION, authenticationFailedException},
+      {GF_AUTHENTICATION_REQUIRED_EXCEPTION, authenticationRequiredException},
+      {GF_DUPLICATE_DURABLE_CLIENT, duplicateDurableClientException},
+      {GF_REMOTE_QUERY_EXCEPTION, queryException},
+      {GF_CACHE_LOCATOR_EXCEPTION, noAvailableLocatorsException},
+      {GF_ALL_CONNECTIONS_IN_USE_EXCEPTION, allConnectionsInUseException},
+      {GF_FUNCTION_EXCEPTION, functionExecutionException},
+      {GF_DISKFULL, diskFailureException},
+      {GF_ROLLBACK_EXCEPTION, rollbackException},
+      {GF_COMMIT_CONFLICT_EXCEPTION, commitConflictException},
+      {GF_TRANSACTION_DATA_REBALANCED_EXCEPTION,
+       transactionDataRebalancedException},
+      {GF_TRANSACTION_DATA_NODE_HAS_DEPARTED_EXCEPTION,
+       transactionDataNodeHasDepartedException},
+      {GF_PUTALL_PARTIAL_RESULT_EXCEPTION, putAllPartialResultException},
+      {GF_NOERR, unknownException},
+      {GF_DEADLK, unknownException},
+      {GF_EACCES, unknownException},
+      {GF_ECONFL, unknownException},
+      {GF_EINVAL, unknownException},
+      {GF_ETYPE, unknownException},
+      {GF_NOTOBJ, unknownException},
+      {GF_NOTSUP, unknownException},
+      {GF_SCPGBL, unknownException},
+      {GF_SCPEXC, unknownException},
+      {GF_OVRFLW, unknownException},
+      {GF_EINTR, unknownException},
+      {GF_NOSERVER_FOUND, unknownException},
+      {GF_SERVER_FAILED, unknownException},
+      {GF_CLIENT_WAIT_TIMEOUT_REFRESH_PRMETADATA, unknownException},
+      {GF_CANNOT_PROCESS_GII_REQUEST, unknownException},
+      {GF_CACHE_ENTRY_UPDATED, unknownException},
+      {GF_INVALID_DELTA, unknownException},
+      {GF_EUNDEF, unknownException}};
+
+  return error_map;
 }
+
+namespace apache {
+namespace geode {
+namespace client {
+
+void setThreadLocalExceptionMessage(std::string exMsg);
+const std::string& getThreadLocalExceptionMessage();
 
 [[noreturn]] void GfErrTypeThrowException(const char* str, GfErrType err) {
   std::string func;
@@ -505,7 +480,7 @@ void setErrorMap() {
     func.append(": ");
   }
 
-  setErrorMap();
+  auto& error_map = get_error_map();
   auto iter = error_map.find(err);
   if (iter != std::end(error_map)) {
     iter->second(message, exMsg, err, func);
