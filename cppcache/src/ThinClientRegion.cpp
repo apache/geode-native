@@ -2764,6 +2764,10 @@ GfErrType ThinClientRegion::handleServerException(
   } else if (exceptionMsg.find("org.apache.geode.cache.LowMemoryException") !=
              std::string::npos) {
     error = GF_LOW_MEMORY_EXCEPTION;
+  } else if (exceptionMsg.find("org.apache.geode.cache.query."
+                               "QueryExecutionLowMemoryException") !=
+             std::string::npos) {
+    error = GF_QUERY_EXECUTION_LOW_MEMORY_EXCEPTION;
   } else {
     error = GF_CACHESERVER_EXCEPTION;
   }

@@ -826,6 +826,19 @@ class APACHE_GEODE_EXPORT LowMemoryException : public Exception {
 };
 
 /**
+ * @brief Thrown if the query monitoring featuring detects the server is running
+ *        low on memory
+ **/
+class APACHE_GEODE_EXPORT QueryExecutionLowMemoryException : public Exception {
+ public:
+  using Exception::Exception;
+  ~QueryExecutionLowMemoryException() noexcept override {}
+  std::string getName() const override {
+    return "apache::geode::client::QueryExecutionLowMemoryException";
+  }
+};
+
+/**
  *@brief Thrown when an error is encountered during an SSL operation.
  **/
 class APACHE_GEODE_EXPORT SslException : public Exception {

@@ -57,6 +57,7 @@ using apache::geode::client::NotOwnerException;
 using apache::geode::client::OutOfMemoryException;
 using apache::geode::client::PutAllPartialResultException;
 using apache::geode::client::QueryException;
+using apache::geode::client::QueryExecutionLowMemoryException;
 using apache::geode::client::RegionDestroyedException;
 using apache::geode::client::RegionExistsException;
 using apache::geode::client::RollbackException;
@@ -379,6 +380,14 @@ using apache::geode::client::UnknownException;
   throw LowMemoryException{message};
 }
 
+    [[noreturn]] void queryLowMemoryException(std::string message,
+                                              std::string& exMsg, GfErrType,
+                                              std::string) {
+  message.append(!exMsg.empty() ? exMsg
+                                : ": Query execution low memory exception");
+  throw QueryExecutionLowMemoryException{message};
+}
+
 [[noreturn]] void unknownException(std::string message, std::string& exMsg,
                                    GfErrType err, std::string func) {
   LOGINFO("error code: %d", err);
@@ -448,6 +457,7 @@ std::map<GfErrType, error_function_t>& get_error_map() {
        transactionDataNodeHasDepartedException},
       {GF_PUTALL_PARTIAL_RESULT_EXCEPTION, putAllPartialResultException},
       {GF_LOW_MEMORY_EXCEPTION, lowMemoryException},
+      {GF_QUERY_EXECUTION_LOW_MEMORY_EXCEPTION, queryLowMemoryException},
       {GF_NOERR, unknownException},
       {GF_DEADLK, unknownException},
       {GF_EACCES, unknownException},
