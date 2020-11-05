@@ -24,6 +24,7 @@
 using apache::geode::client::AssertionException;
 using apache::geode::client::GfErrTypeThrowException;
 using apache::geode::client::LowMemoryException;
+using apache::geode::client::QueryExecutionLowMemoryException;
 
 TEST(ExceptionTypesTest, getName) {
   AssertionException e("an exception message");
@@ -40,4 +41,10 @@ TEST(ExceptionTypesTest, getStackTrace) {
 TEST(ExceptionTypesTest, lowMemory) {
   EXPECT_THROW(GfErrTypeThrowException("", GF_LOW_MEMORY_EXCEPTION),
                LowMemoryException);
+}
+
+TEST(ExceptionTypesTest, queryLowMemory) {
+  EXPECT_THROW(
+      GfErrTypeThrowException("", GF_QUERY_EXECUTION_LOW_MEMORY_EXCEPTION),
+      QueryExecutionLowMemoryException);
 }
