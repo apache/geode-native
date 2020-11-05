@@ -19,6 +19,7 @@
 
 #include <gtest/gtest.h>
 
+#include <geode/QueryService.hpp>
 #include <geode/RegionFactory.hpp>
 #include <geode/RegionShortcut.hpp>
 
@@ -29,6 +30,7 @@ using apache::geode::client::CacheableKey;
 using apache::geode::client::CacheableString;
 using apache::geode::client::LowMemoryException;
 using apache::geode::client::Pool;
+using apache::geode::client::QueryExecutionLowMemoryException;
 using apache::geode::client::Region;
 using apache::geode::client::RegionShortcut;
 
@@ -99,4 +101,25 @@ TEST(ExceptionTranslationTest, testLowMemoryException) {
   auto region = setupRegion(cache, pool);
 
   EXPECT_THROW(createEntries(region, ENTRIES, ENTRY_SIZE), LowMemoryException);
+}
+
+TEST(ExceptionTranslationTest, testQueryLowMemoryException) {
+  const auto ENTRY_SIZE = 1024U;
+  const auto ENTRIES = 1U << 20U;
+
+  Cluster cluster{LocatorCount{1}, ServerCount{1},
+                  CacheXMLFiles{std::vector<std::string>{
+                      std::string(getFrameworkString(
+                          FrameworkVariable::NewTestResourcesDir)) +
+                      "/lowmemory_cacheserver.xml"}}};
+
+  cluster.start();
+
+  auto cache = createCache();
+  auto pool = createPool(cluster, cache);
+  auto region = setupRegion(cache, pool);
+
+  EXPECT_THROW(createEntries(region, ENTRIES, ENTRY_SIZE), LowMemoryException);
+  auto query = pool->getQueryService()->newQuery("SELECT * FROM /region");
+  EXPECT_THROW(query->execute(), QueryExecutionLowMemoryException);
 }
