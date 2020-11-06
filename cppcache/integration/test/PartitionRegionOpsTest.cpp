@@ -146,9 +146,9 @@ void verifyMetadataWasRemovedAtFirstError() {
       }
     }
   }
-  ASSERT_EQ(timeoutErrors, metadataRemovedDueToTimeout);
-  ASSERT_EQ(ioErrors, metadataRemovedDueToIoErr);
-  ASSERT_NE(metadataRemovedDueToTimeout, metadataRemovedDueToIoErr);
+  EXPECT_EQ(timeoutErrors, metadataRemovedDueToTimeout);
+  EXPECT_EQ(ioErrors, metadataRemovedDueToIoErr);
+  EXPECT_NE(metadataRemovedDueToTimeout, metadataRemovedDueToIoErr);
 }
 
 void putPartitionedRegionWithRedundancyServerGoesDown(bool singleHop) {
