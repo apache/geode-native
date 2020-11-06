@@ -146,13 +146,9 @@ void verifyMetadataWasRemovedAtFirstError() {
       }
     }
   }
-  std::cout << "timeoutErrors: " << timeoutErrors << ", ioErrors: " << ioErrors
-            << ", metadataRemovedDueToTimeout: " << metadataRemovedDueToTimeout
-            << ", metadataRemovedDueToIoErr: " << metadataRemovedDueToIoErr
-            << std::endl;
-  ASSERT_TRUE((timeoutErrors == metadataRemovedDueToTimeout) &&
-              (ioErrors == metadataRemovedDueToIoErr) &&
-              (metadataRemovedDueToTimeout != metadataRemovedDueToIoErr));
+  ASSERT_EQ(timeoutErrors, metadataRemovedDueToTimeout);
+  ASSERT_EQ(ioErrors, metadataRemovedDueToIoErr);
+  ASSERT_NE(metadataRemovedDueToTimeout, metadataRemovedDueToIoErr);
 }
 
 void putPartitionedRegionWithRedundancyServerGoesDown(bool singleHop) {
