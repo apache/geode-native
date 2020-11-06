@@ -74,6 +74,8 @@ std::shared_ptr<Pool> createPool(Cluster& cluster, Cache& cache,
   auto poolFactory = cache.getPoolManager().createFactory();
   cluster.applyLocators(poolFactory);
   poolFactory.setPRSingleHopEnabled(singleHop);
+  poolFactory.setLoadConditioningInterval(std::chrono::milliseconds::zero());
+  poolFactory.setIdleTimeout(std::chrono::milliseconds::zero());
   return poolFactory.create("default");
 }
 
@@ -144,9 +146,9 @@ void verifyMetadataWasRemovedAtFirstError() {
       }
     }
   }
-  ASSERT_TRUE((timeoutErrors == metadataRemovedDueToTimeout) &&
-              (ioErrors == metadataRemovedDueToIoErr) &&
-              (metadataRemovedDueToTimeout != metadataRemovedDueToIoErr));
+  EXPECT_EQ(timeoutErrors, metadataRemovedDueToTimeout);
+  EXPECT_EQ(ioErrors, metadataRemovedDueToIoErr);
+  EXPECT_NE(metadataRemovedDueToTimeout, metadataRemovedDueToIoErr);
 }
 
 void putPartitionedRegionWithRedundancyServerGoesDown(bool singleHop) {
