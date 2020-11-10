@@ -670,11 +670,12 @@ GfErrType ThinClientPoolDM::sendRequestToAllServers(
         err == GF_NOT_AUTHORIZED_EXCEPTION ||
         err == GF_AUTHENTICATION_REQUIRED_EXCEPTION) {
       finalErrorReturn = err;
-    } else if (!(finalErrorReturn == GF_AUTHENTICATION_FAILED_EXCEPTION ||
-                 finalErrorReturn == GF_NOT_AUTHORIZED_EXCEPTION ||
-                 finalErrorReturn ==
-                     GF_AUTHENTICATION_REQUIRED_EXCEPTION))  // returning auth
-                                                             // errors
+    } else if ((err != GF_NOERR) &&
+               (!(finalErrorReturn == GF_AUTHENTICATION_FAILED_EXCEPTION ||
+                  finalErrorReturn == GF_NOT_AUTHORIZED_EXCEPTION ||
+                  finalErrorReturn ==
+                      GF_AUTHENTICATION_REQUIRED_EXCEPTION)))  // returning auth
+                                                               // errors
     // to client..preference
     // over other errors..
     {
@@ -2414,7 +2415,7 @@ GfErrType FunctionExecution::execute() {
   m_error = m_poolDM->sendRequestToEP(request, reply, m_ep);
   m_error = m_poolDM->handleEPError(m_ep, reply, m_error);
   if (m_error != GF_NOERR) {
-    if (m_error == GF_NOTCON || m_error == GF_IOERR) {
+    if (m_error == GF_NOTCON) {
       return GF_NOERR;  // if server is unavailable its not an error for
       // functionexec OnServers() case
     }

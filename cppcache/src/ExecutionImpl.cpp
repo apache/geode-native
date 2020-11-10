@@ -429,33 +429,20 @@ void ExecutionImpl::executeOnAllServers(const std::string& func,
   std::shared_ptr<CacheableString> exceptionPtr = nullptr;
   GfErrType err = tcrdm->sendRequestToAllServers(
       func.c_str(), getResult, timeout, m_args, m_rc, exceptionPtr);
-  if (exceptionPtr != nullptr && err != GF_NOERR) {
-    LOGDEBUG("Execute errorred: %d", err);
-    // throw FunctionExecutionException( "Execute: failed to execute function
-    // with server." );
-    if (err == GF_CACHESERVER_EXCEPTION) {
-      throw FunctionExecutionException(
-          "Execute: failed to execute function with server.");
-    } else {
-      throwExceptionIfError("Execute", err);
-    }
-  }
-
-  if (err == GF_AUTHENTICATION_FAILED_EXCEPTION ||
-      err == GF_NOT_AUTHORIZED_EXCEPTION ||
-      err == GF_AUTHENTICATION_REQUIRED_EXCEPTION) {
-    throwExceptionIfError("Execute", err);
-  }
 
   if (err != GF_NOERR) {
+    LOGDEBUG("Execute errorred: %d", err);
     if (err == GF_CACHESERVER_EXCEPTION) {
-      auto message = std::string("Execute: exception at the server side: ") +
-                     exceptionPtr->value().c_str();
+      std::string message;
+      if (exceptionPtr) {
+        message = std::string("Execute: exception at the server side: ") +
+                  exceptionPtr->value().c_str();
+      } else {
+        message = "Execute: failed to execute function with server.";
+      }
       throw FunctionExecutionException(message);
     } else {
-      LOGDEBUG("Execute errorred with server exception: %d", err);
-      throw FunctionExecutionException(
-          "Execute: failed to execute function on servers.");
+      throwExceptionIfError("Execute", err);
     }
   }
 }
