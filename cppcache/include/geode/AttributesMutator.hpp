@@ -40,6 +40,7 @@ class CacheListener;
 class CacheLoader;
 class CacheWriter;
 class Region;
+class PartitionResolver;
 
 /**
  * @class AttributesMutator AttributesMutator.hpp
@@ -190,6 +191,22 @@ class APACHE_GEODE_EXPORT AttributesMutator {
    */
   void setCacheWriter(const std::string& libpath,
                       const std::string& factoryFuncName);
+
+  /** Sets partition resolver writer for region. The previous partition resolver
+   * will be replaced with <code>resolver</code>.
+   * @param resolver PartitionResolver
+   */
+  void setPartitionResolver(std::shared_ptr<PartitionResolver> resolver);
+
+  /** Sets cache writer for region. The previous partition resolver will be
+   * replaced with the one created using the factory function provided in
+   * the given library.
+   * @param library_path path of the library containing partition resolver
+   * factory function.
+   * @param function factory function for creating a partition resolver.
+   */
+  void setPartitionResolver(const std::string& library_path,
+                            const std::string& function);
 };
 
 }  // namespace client

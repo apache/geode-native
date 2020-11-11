@@ -391,6 +391,12 @@ class APACHE_GEODE_EXPORT LocalRegion : public RegionInternal {
 
   void adjustCacheWriter(const std::string& libpath,
                          const std::string& factoryFuncName) override;
+
+  void adjustPartitionResolver(
+      std::shared_ptr<PartitionResolver> resolver) override;
+  void adjustPartitionResolver(const std::string& library_path,
+                               const std::string& function) override;
+
   CacheImpl* getCacheImpl() const override;
 
   void evict(int32_t percentage) override;

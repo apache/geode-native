@@ -256,6 +256,10 @@ class RegionInternal : public Region {
       const std::shared_ptr<CacheWriter>& aWriter) = 0;
   virtual void adjustCacheWriter(const std::string& libpath,
                                  const std::string& factoryFuncName) = 0;
+  virtual void adjustPartitionResolver(
+      std::shared_ptr<PartitionResolver> resolver) = 0;
+  virtual void adjustPartitionResolver(const std::string& library_path,
+                                       const std::string& function) = 0;
 
   virtual RegionStats* getRegionStats() = 0;
   virtual bool cacheEnabled() = 0;

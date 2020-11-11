@@ -116,6 +116,18 @@ void AttributesMutator::setCacheWriter(const std::string& libpath,
   auto rImpl = std::static_pointer_cast<RegionInternal>(m_region);
   rImpl->adjustCacheWriter(libpath.c_str(), factoryFuncName.c_str());
 }
+
+void AttributesMutator::setPartitionResolver(
+    std::shared_ptr<PartitionResolver> resolver) {
+  auto impl = std::static_pointer_cast<RegionInternal>(m_region);
+  impl->adjustPartitionResolver(std::move(resolver));
+}
+
+void AttributesMutator::setPartitionResolver(
+    const std::string& libpath, const std::string& factoryFuncName) {
+  auto impl = std::static_pointer_cast<RegionInternal>(m_region);
+  impl->adjustPartitionResolver(libpath, factoryFuncName);
+}
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

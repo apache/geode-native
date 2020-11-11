@@ -19,14 +19,26 @@
 
 #include <geode/AuthenticatedView.hpp>
 #include <geode/Cache.hpp>
+#include <geode/EntryEvent.hpp>
 #include <geode/PoolManager.hpp>
 #include <geode/RegionFactory.hpp>
 #include <geode/RegionShortcut.hpp>
 
+using apache::geode::client::CacheableKey;
 using apache::geode::client::CacheClosedException;
 using apache::geode::client::CacheFactory;
+using apache::geode::client::EntryEvent;
+using apache::geode::client::PartitionResolver;
 using apache::geode::client::RegionAttributesFactory;
 using apache::geode::client::RegionShortcut;
+
+class TestPartitionResolver : public PartitionResolver {
+ public:
+  virtual std::shared_ptr<CacheableKey> getRoutingObject(
+      const EntryEvent &e) override {
+    return e.getKey();
+  }
+};
 
 /**
  * Cache should close and throw exceptions on methods called after close.
@@ -76,4 +88,17 @@ TEST(LocalRegionTest, subRegions) {
 
   auto subRegions3 = rootRegion3->subregions(true);
   EXPECT_EQ(0, subRegions3.size());
+}
+
+TEST(LocalRegionTest, changePartitionResolver) {
+  auto cache = CacheFactory{}.set("log-level", "none").create();
+  auto region =
+      cache.createRegionFactory(RegionShortcut::LOCAL).create("region");
+
+  EXPECT_FALSE(region->getAttributes().getPartitionResolver());
+
+  auto pr = std::make_shared<TestPartitionResolver>();
+  region->getAttributesMutator()->setPartitionResolver(pr);
+
+  EXPECT_EQ(region->getAttributes().getPartitionResolver(), pr);
 }
