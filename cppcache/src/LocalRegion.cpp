@@ -3129,11 +3129,6 @@ void LocalRegion::adjustPartitionResolver(
   setPartitionResolver(resolver);
 }
 
-void LocalRegion::adjustPartitionResolver(const std::string& lib,
-                                          const std::string& func) {
-  setPartitionResolver(lib, func);
-}
-
 void LocalRegion::evict(int32_t percentage) {
   TryReadGuard guard(m_rwLock, m_destroyPending);
   if (m_released || m_destroyPending) return;

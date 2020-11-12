@@ -122,12 +122,6 @@ void AttributesMutator::setPartitionResolver(
   auto impl = std::static_pointer_cast<RegionInternal>(m_region);
   impl->adjustPartitionResolver(std::move(resolver));
 }
-
-void AttributesMutator::setPartitionResolver(
-    const std::string& libpath, const std::string& factoryFuncName) {
-  auto impl = std::static_pointer_cast<RegionInternal>(m_region);
-  impl->adjustPartitionResolver(libpath, factoryFuncName);
-}
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
