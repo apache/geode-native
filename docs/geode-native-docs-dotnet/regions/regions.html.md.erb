@@ -53,7 +53,7 @@ var cache = new CacheFactory()
 
 var examplePool = cache.GetPoolManager()
     .CreateFactory()
-    .AddLocator("localhost", 40404)
+    .AddLocator("localhost", 10334)
     .SetSubscriptionEnabled(true)
     .Create("examplePool");
 
@@ -83,7 +83,7 @@ Like the programmatic examples above, the following example creates two regions 
       http://geode.apache.org/schema/cpp-cache/cpp-cache-1.0.xsd"
     version="1.0">
     <pool name="examplePool" subscription-enabled="true">
-        <server host="localhost" port="40404" />
+        <server host="localhost" port="10334" />
     </pool>
     <region name="clientRegion1" refid="PROXY">
         <region-attributes pool-name="examplePool"/>
