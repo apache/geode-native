@@ -24,17 +24,18 @@ namespace Apache.Geode.Examples.Serializer
   {
     public static void Main(string[] args)
     {
-      var cacheFactory = new CacheFactory()
-          .Set("log-level", "none");
-      var cache = cacheFactory.Create();
+      var cache = new CacheFactory()
+          .Set("log-level", "none")
+          .Create();
 
       Console.WriteLine("Registering for data serialization");
 
       cache.TypeRegistry.RegisterType(Order.CreateDeserializable, 7);
 
-      var poolFactory = cache.GetPoolFactory()
-          .AddLocator("localhost", 10334);
-      poolFactory.Create("pool");
+      cache.GetPoolManager()
+          .CreateFactory()
+          .AddLocator("localhost", 10334)
+          .Create("pool");
 
       var regionFactory = cache.CreateRegionFactory(RegionShortcut.PROXY)
           .SetPoolName("pool");

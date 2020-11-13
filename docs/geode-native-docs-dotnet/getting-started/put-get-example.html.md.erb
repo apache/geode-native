@@ -26,6 +26,7 @@ The example is located in `../examples/dotnet/putgetremove`.
 The example performs a sequence of operations, displaying simple log entries as they run.
 
 - To run the example, follow the instructions in the `README.md` file in the example directory.
+
 - Review the source code in the example directory to see exactly how it operates.
 
 - Begin by running a script that sets up the server-side environment by invoking `gfsh` commands to create a region, simply called "example_userinfo."
@@ -45,42 +46,43 @@ For the complete source, see the example source directory.
 The .NET example creates a cache, then uses it to create a connection pool and a region object (of class `IRegion`).
 
 ```csharp
-   var cacheFactory = new CacheFactory()
-       .Set("log-level", "none");
-   var cache = cacheFactory.Create();
+  var cache = new CacheFactory()
+      .Set("log-level", "none")
+      .Create();
 
-   var poolFactory = cache.GetPoolFactory()
-       .AddLocator("localhost", 10334);
-   poolFactory.Create("pool");
+  cache.GetPoolManager()
+      .CreateFactory()
+      .AddLocator("localhost", 10334)
+      .Create("pool");
 
-   var regionFactory = cache.CreateRegionFactory(RegionShortcut.PROXY)
-       .SetPoolName("pool");
-   var region = regionFactory.Create<string, string("example_userinfo");
+  var regionFactory = cache.CreateRegionFactory(RegionShortcut.PROXY)
+      .SetPoolName("pool");
+  var region = regionFactory.Create<string, string>("example_userinfo");
 ```
 
 After declaring some keys and values, the client then populates the data store with two key/value pairs. 
 
 ```csharp
-      region.Put(rtimmonsKey, rtimmonsValue);
-      region.Put(scharlesKey, scharlesValue);
+  region.Put(rtimmonsKey, rtimmonsValue);
+  region.Put(scharlesKey, scharlesValue);
 ```
 
 Next, the application retrieves the stored values using `Get` operations.
 
 ```csharp
-      var user1 = region.Get(rtimmonsKey, null);
-      var user2 = region.Get(scharlesKey, null);
+  var user1 = region.Get(rtimmonsKey, null);
+  var user2 = region.Get(scharlesKey, null);
 ```
 
 Finally, the application deletes one of the stored values using the `Remove` method.
 
 ```csharp
-      if (region.Remove(rtimmonsKey))
-      {
-        Console.WriteLine("Info for " + rtimmonsKey + " has been deleted");
-      }
-      else
-      {
-        Console.WriteLine("Info for " + rtimmonsKey + " has not been deleted");
-      }
+  if (region.Remove(rtimmonsKey))
+  {
+    Console.WriteLine("Info for " + rtimmonsKey + " has been deleted");
+  }
+  else
+  {
+    Console.WriteLine("Info for " + rtimmonsKey + " has not been deleted");
+  }
 ```

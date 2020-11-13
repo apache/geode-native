@@ -30,7 +30,7 @@ existing key while showing how to handle exceptions.
     $ startserver.ps1
     ```
 
-1. Execute `dotnet-transaction.exe`, The output logs the cache and region creation, and the results of up to five attempts to commit the transaction.
+1. Execute `Debug\dotnet-transaction.exe`. The output logs the cache and region creation, and the results of up to five attempts to commit the transaction.
 Example execution ends when the transaction is successfully committed, or when the maximum number of attempts is reached without a successful commit.
 
     ```console

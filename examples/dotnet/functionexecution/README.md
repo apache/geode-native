@@ -28,17 +28,19 @@ This example illustrates how to execute server side java functions.
     $ startserver.ps1
     ```
 
-1. Execute `dotnet-functionexecution.exe`, expect the following output:
+1. Execute `Debug\dotnet-functionexecution.exe`. Expect the following output:
 
-       Storing id and username in the region
-       Getting the user info from the region
-       rtimmons = Robert Timmons
-       scharles = Sylvia Charles
-       Function Execution Results:
-          Count = 1
-          value = Robert Timmons
-          value = Sylvia Charles
-
+    ```console
+    Storing id and username in the region
+    Getting the user info from the region
+    rtimmons = Robert Timmons
+    scharles = Sylvia Charles
+    Function Execution Results:
+       Count = 1
+       value = Robert Timmons
+       value = Sylvia Charles
+    ```
+    
 1. Run the `stopserver.ps1` script to gracefully shutdown the Geode cluster.
 
    For Windows cmd:

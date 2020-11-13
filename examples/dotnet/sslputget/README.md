@@ -27,12 +27,14 @@ This example illustrates how to use SSL encryption for all traffic between a .NE
     $ startserver.ps1
     ```
 
-1. Execute `dotnet-sslputget.exe`, expect the following output:
+1. Execute `Debug\dotnet-sslputget.exe`. Expect the following output:
 
-       Storing id and username in the region
-       Getting the user info from the region
-       rtimmons = Robert Timmons
-       scharles = Sylvia Charles 
+    ```console
+    Storing id and username in the region
+    Getting the user info from the region
+    rtimmons = Robert Timmons
+    scharles = Sylvia Charles 
+    ```
 
 1. Run the `stopserver.ps1` script to gracefully shutdown the Geode cluster.
 

@@ -36,6 +36,7 @@ cache.getPoolManager()
       .createFactory()
       .addLocator("localhost", 34756)
       .setFreeConnectionTimeout(std::chrono::milliseconds(12345))
+      .setIdleTimeout(std::chrono::milliseconds(5555))
       .setLoadConditioningInterval(std::chrono::milliseconds(23456))
       .setMaxConnections(7)
       .setMinConnections(3)
@@ -54,9 +55,9 @@ cache.getPoolManager()
 ```
 
 
-## Declarative Pool Configuration
+## Declarative (File-based) Pool Configuration
 
-This example shows a declarative pool configuration. Following the example is a table that describes the XML pool attributes you can configure.
+This example shows a file-based pool configuration using an XML configuration file. Following the example is a table that describes the XML pool attributes you can configure.
 
 **Note:**
 You create an instance of `PoolFactory` through `PoolManager`.

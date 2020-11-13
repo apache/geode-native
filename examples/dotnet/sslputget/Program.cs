@@ -26,18 +26,18 @@ namespace Apache.Geode.Examples.FunctionExecution
     {
         static void Main(string[] args)
         {
-            var cacheFactory = new CacheFactory();
-            cacheFactory.Set("log-level", "none");
-            cacheFactory.Set("ssl-enabled", "true");
-            cacheFactory.Set("ssl-keystore", Environment.CurrentDirectory + @"\.\ClientSslKeys\client_keystore.pem");
-            cacheFactory.Set("ssl-keystore-password", "apachegeode");
-            cacheFactory.Set("ssl-truststore", Environment.CurrentDirectory + @"\.\ClientSslKeys\client_truststore.pem");
+            var cache = new CacheFactory()
+              .Set("log-level", "none")
+              .Set("ssl-enabled", "true")
+              .Set("ssl-keystore", Environment.CurrentDirectory + @"\.\ClientSslKeys\client_keystore.pem")
+              .Set("ssl-keystore-password", "apachegeode")
+              .Set("ssl-truststore", Environment.CurrentDirectory + @"\.\ClientSslKeys\client_truststore.pem")
+              .Create();
 
-            var cache = cacheFactory.Create();
-
-            var poolFactory = cache.GetPoolFactory()
-                .AddLocator("localhost", 10334);
-            var pool = poolFactory.Create("pool");
+            cache.GetPoolManager()
+                .CreateFactory()
+                .AddLocator("localhost", 10334)
+                .Create("pool");
 
             var regionFactory = cache.CreateRegionFactory(RegionShortcut.PROXY)
                 .SetPoolName("pool");

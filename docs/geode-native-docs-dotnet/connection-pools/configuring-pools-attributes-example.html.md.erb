@@ -25,11 +25,38 @@ Connection pools require standard client/server distributed system and cache con
 -   Server. Host and port where a server is listening.
 -   Pool. Client/server connection pool.
 
-The example shows a declarative pool configuration. Following the example is a table that describes the attributes that can be configured.
+This page shows examples of creating a pool configuration programmatically using C# code, and declaratively using XML.
 
-## Example—Declarative Pool Configuration
+## Programmatic Pool Configuration
 
-This example shows a declarative pool configuration.
+This example shows a programmatic pool configuration. For a list of the attributes you can configure, see `PoolFactory` in the API docs.
+
+```csharp
+cache.GetPoolManager()
+      .CreateFactory()
+      .AddLocator("localhost", 34756)
+      .SetFreeConnectionTimeout(new TimeSpan.FromMilliseconds(12345))
+      .SetIdleTimeout(new TimeSpan.FromMilliseconds(5555))
+      .SetLoadConditioningInterval(new TimeSpan.FromMilliseconds(23456))
+      .SetMaxConnections(7)
+      .SetMinConnections(3)
+      .SetPingInterval(new TimeSpan.FromMilliseconds(12345))
+      .SetReadTimeout(new TimeSpan.FromMilliseconds(23456))
+      .SetRetryAttempts(3)
+      .SetServerGroup("ServerGroup1")
+      .SetSocketBufferSize(32768)
+      .SetStatisticInterval(new TimeSpan.FromMilliseconds(10123))
+      .SetSubscriptionAckInterval(new TimeSpan.FromMilliseconds(567))
+      .SetSubscriptionEnabled(true)
+      .SetSubscriptionMessageTrackingTimeout(new TimeSpan.FromMilliseconds(900123))
+      .SetSubscriptionRedundancy(0)
+      .SetThreadLocalConnections(true)
+      .Create("test_pool_1");
+```
+
+## Declarative (File-based) Pool Configuration
+
+This example shows a file-based pool configuration using an XML configuration file. Following the example is a table that describes the XML pool attributes you can configure.
 
 **Note:**
 You create an instance of `PoolFactory` through `PoolManager`.
