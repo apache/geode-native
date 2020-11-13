@@ -106,7 +106,7 @@ void getTimeStr(char *bufPtr, size_t sizeOfBuf) {
   ACE::timestamp(timestamp, sizeof timestamp);
   // timestamp is like "Tue May 17 2005 12:54:22.546780"
   // for our purpose we just want "12:54:22.546780"
-  strncpy(bufPtr, &timestamp[16], sizeOfBuf);
+  strncpy(bufPtr, &timestamp[0], sizeOfBuf);
 }
 
 // some common values..
