@@ -88,11 +88,10 @@ TEST(ExceptionTranslationTest, testLowMemoryException) {
   const auto ENTRY_SIZE = 1024U;
   const auto ENTRIES = 1U << 20U;
 
-  Cluster cluster{LocatorCount{1}, ServerCount{1},
-                  CacheXMLFiles{std::vector<std::string>{
-                      std::string(getFrameworkString(
-                          FrameworkVariable::NewTestResourcesDir)) +
-                      "/lowmemory_cacheserver.xml"}}};
+  const auto xml_files = CacheXMLFiles{
+      {getFrameworkString(FrameworkVariable::NewTestResourcesDir) +
+       std::string{"/lowmemory_cacheserver.xml"}}};
+  Cluster cluster{LocatorCount{1}, ServerCount{1}, xml_files};
 
   cluster.start();
 
@@ -107,11 +106,10 @@ TEST(ExceptionTranslationTest, testQueryLowMemoryException) {
   const auto ENTRY_SIZE = 1024U;
   const auto ENTRIES = 1U << 20U;
 
-  Cluster cluster{LocatorCount{1}, ServerCount{1},
-                  CacheXMLFiles{std::vector<std::string>{
-                      std::string(getFrameworkString(
-                          FrameworkVariable::NewTestResourcesDir)) +
-                      "/lowmemory_cacheserver.xml"}}};
+  const auto xml_files = CacheXMLFiles{
+      {getFrameworkString(FrameworkVariable::NewTestResourcesDir) +
+       std::string{"/lowmemory_cacheserver.xml"}}};
+  Cluster cluster{LocatorCount{1}, ServerCount{1}, xml_files};
 
   cluster.start();
 
