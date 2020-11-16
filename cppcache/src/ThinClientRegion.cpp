@@ -799,7 +799,8 @@ bool ThinClientRegion::containsKeyOnServer(
 
   auto rptr = CacheableBoolean::create(ret);
 
-  rptr = std::dynamic_pointer_cast<CacheableBoolean>(handleReplay(err, rptr));
+  // rptr = std::dynamic_pointer_cast<CacheableBoolean>(handleReplay(err,
+  // rptr));
   throwExceptionIfError("Region::containsKeyOnServer ", err);
   return rptr->value();
 }
@@ -846,7 +847,8 @@ bool ThinClientRegion::containsValueForKey_remote(
 
   auto rptr = CacheableBoolean::create(ret);
 
-  rptr = std::dynamic_pointer_cast<CacheableBoolean>(handleReplay(err, rptr));
+  // rptr = std::dynamic_pointer_cast<CacheableBoolean>(handleReplay(err,
+  // rptr));
 
   throwExceptionIfError("Region::containsValueForKey ", err);
   return rptr->value();
