@@ -15,8 +15,9 @@
 
 # Links to API Documentation #
 r301 %r{/releases/latest/javadoc/(.*)}, 'https://geode.apache.org/releases/latest/javadoc/$1'
-r302 %r{/cppdocs/(.*)}, 'https://geode.apache.org/releases/latest/cppdocs/$1'
+r302 %r{/apidocs/(.*)}, 'https://geode.apache.org/releases/latest/dotnetdocs/$1'
 r302 %r{/dotnetdocs/(.*)}, 'https://geode.apache.org/releases/latest/dotnetdocs/$1'
+r302 %r{/cppdocs/(.*)}, 'https://geode.apache.org/releases/latest/cppdocs/$1'
 
 # Links to User Guides #
 rewrite '/', '/docs/geode-native/dotnet/113/about-client-users-guide.html'
