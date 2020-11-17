@@ -568,7 +568,8 @@ std::string ThinClientPoolDM::selectEndpoint(
       throw IllegalStateException("Locator query failed");
     }
     // Update Locator stats
-    getStats().setLocators((m_locHelper)->getCurLocatorsNum());
+    getStats().setLocators(
+        static_cast<int32_t>(m_locHelper->getCurLocatorsNum()));
     getStats().incLoctorResposes();
 
     std::string epNameStr = outEndpoint.getServerName() + ":" +
