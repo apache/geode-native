@@ -81,7 +81,7 @@ LRUEntriesMap::LRUEntriesMap(ExpiryTaskManager* expiryTaskManager,
     if (cImpl != nullptr) {
       m_evictionControllerPtr = cImpl->getEvictionController();
       if (m_evictionControllerPtr != nullptr) {
-        m_evictionControllerPtr->register_region(m_name);
+        m_evictionControllerPtr->registerRegion(m_name);
         LOGINFO("Heap LRU eviction controller registered region %s",
                 m_name.c_str());
       }
@@ -93,8 +93,8 @@ LRUEntriesMap::LRUEntriesMap(ExpiryTaskManager* expiryTaskManager,
 
 void LRUEntriesMap::close() {
   if (m_evictionControllerPtr != nullptr) {
-    m_evictionControllerPtr->inc_heap_size(-m_currentMapSize);
-    m_evictionControllerPtr->unregister_region(m_name);
+    m_evictionControllerPtr->incrementHeapSize(-m_currentMapSize);
+    m_evictionControllerPtr->unregisterRegion(m_name);
   }
   ConcurrentEntriesMap::close();
 }
@@ -472,8 +472,6 @@ GfErrType LRUEntriesMap::remove(const std::shared_ptr<CacheableKey>& key,
     }
   }
 
-  LOGFINE("Remove key: %s | Count: %u | MapSize: %lld", key->toString().c_str(),
-          m_size.load(), m_currentMapSize.load());
   return err;
 }
 
@@ -482,7 +480,7 @@ void LRUEntriesMap::updateMapSize(int64_t size) {
   // by all the callers
   if (m_evictionControllerPtr != nullptr) {
     m_currentMapSize += size;
-    m_evictionControllerPtr->inc_heap_size(size);
+    m_evictionControllerPtr->incrementHeapSize(size);
   }
 }
 std::shared_ptr<Cacheable> LRUEntriesMap::getFromDisk(

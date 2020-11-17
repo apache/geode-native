@@ -74,12 +74,12 @@ class EvictionController {
   void svc(void);
 
   void evict(float percentage);
-  void inc_heap_size(int64_t delta);
-  void register_region(const std::string& name);
-  void unregister_region(const std::string& name);
+  void incrementHeapSize(int64_t delta);
+  void registerRegion(const std::string& name);
+  void unregisterRegion(const std::string& name);
 
  private:
-  void check_heap_size();
+  void checkHeapSize();
 
  private:
   CacheImpl* cache_;
