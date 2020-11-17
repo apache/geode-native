@@ -431,7 +431,7 @@ void ExecutionImpl::executeOnAllServers(const std::string& func,
       func.c_str(), getResult, timeout, m_args, m_rc, exceptionPtr);
 
   if (err != GF_NOERR) {
-    LOGDEBUG("Execute errorred: %d", err);
+    LOGDEBUG("Execute failed: %d", err);
     if (err == GF_CACHESERVER_EXCEPTION) {
       std::string message;
       if (exceptionPtr) {

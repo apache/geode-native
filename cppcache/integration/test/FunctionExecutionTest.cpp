@@ -323,7 +323,7 @@ TEST(FunctionExecutionTest, OnServersOneServerGoesDown) {
       executeTestFunctionOnLoopAndExpectNotConnectedException, pool);
 
   // Sleep a bit to allow for some successful responses before the exception
-  sleep(5);
+  std::this_thread::sleep_for(std::chrono::seconds(5));
 
   cluster.getServers()[1].stop();
 
