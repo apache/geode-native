@@ -29,14 +29,22 @@ namespace geode {
 namespace client {
 
 class TcpSslConn : public TcpConn {
-  size_t receive(char*, size_t, std::chrono::milliseconds) override final;
-  size_t send(const char*, size_t, std::chrono::milliseconds) override final;
-
+ protected:
   using ssl_stream_type =
       boost::asio::ssl::stream<boost::asio::ip::tcp::socket&>;
 
   boost::asio::ssl::context ssl_context_;
   std::unique_ptr<ssl_stream_type> socket_stream_;
+  boost::asio::io_context::strand strand_;
+
+  void prepareAsyncRead(char* buff, size_t len,
+                        boost::optional<boost::system::error_code>& read_result,
+                        std::size_t& bytes_read) override;
+
+  void prepareAsyncWrite(
+      const char* buff, size_t len,
+      boost::optional<boost::system::error_code>& write_result,
+      std::size_t& bytes_written) override;
 
  public:
   TcpSslConn(const std::string& hostname, uint16_t port,

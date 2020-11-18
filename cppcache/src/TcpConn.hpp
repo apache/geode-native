@@ -21,6 +21,7 @@
 #define GEODE_TCPCONN_H_
 
 #include <boost/asio.hpp>
+#include <boost/optional.hpp>
 
 #include <geode/internal/geode_globals.hpp>
 
@@ -31,6 +32,8 @@ namespace geode {
 namespace client {
 class APACHE_GEODE_EXPORT TcpConn : public Connector {
   size_t receive(char*, size_t, std::chrono::milliseconds) override;
+  size_t receive_nothrowiftimeout(char*, size_t,
+                                  std::chrono::milliseconds) override;
   size_t send(const char*, size_t, std::chrono::milliseconds) override;
 
   uint16_t getPort() override final;
@@ -38,6 +41,26 @@ class APACHE_GEODE_EXPORT TcpConn : public Connector {
  protected:
   boost::asio::io_context io_context_;
   boost::asio::ip::tcp::socket socket_;
+
+  boost::asio::ip::tcp::resolver::results_type resolve(
+      const std::string hostname, uint16_t port,
+      std::chrono::microseconds timeout);
+
+  void connect(boost::asio::ip::tcp::resolver::results_type r,
+               std::chrono::microseconds connect_timeout);
+
+  size_t receive(char*, size_t, std::chrono::milliseconds,
+                 bool throwTimeoutException);
+
+  virtual void prepareAsyncRead(
+      char* buff, size_t len,
+      boost::optional<boost::system::error_code>& read_result,
+      std::size_t& bytes_read);
+
+  virtual void prepareAsyncWrite(
+      const char* buff, size_t len,
+      boost::optional<boost::system::error_code>& write_result,
+      std::size_t& bytes_written);
 
  public:
   TcpConn(const std::string ipaddr, std::chrono::microseconds connect_timeout,

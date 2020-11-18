@@ -21,10 +21,13 @@
 #include <openssl/x509.h>
 
 #include <chrono>
+#include <iostream>
 #include <thread>
 
 #include <boost/exception/diagnostic_information.hpp>
+#include <boost/optional.hpp>
 
+#include <geode/ExceptionTypes.hpp>
 #include <geode/SystemProperties.hpp>
 
 #include "util/Log.hpp"
@@ -41,7 +44,8 @@ TcpSslConn::TcpSslConn(const std::string& hostname, uint16_t,
                        const std::string& privkeyfile,
                        const std::string& pemPassword)
     : TcpConn{sniProxyHostname, sniProxyPort, connect_timeout, maxBuffSizePool},
-      ssl_context_{boost::asio::ssl::context::sslv23_client} {
+      ssl_context_{boost::asio::ssl::context::sslv23_client},
+      strand_(io_context_) {
   init(pubkeyfile, privkeyfile, pemPassword, hostname);
 }
 
@@ -51,7 +55,8 @@ TcpSslConn::TcpSslConn(const std::string& hostname, uint16_t port,
                        const std::string& privkeyfile,
                        const std::string& pemPassword)
     : TcpConn{hostname, port, connect_timeout, maxBuffSizePool},
-      ssl_context_{boost::asio::ssl::context::sslv23_client} {
+      ssl_context_{boost::asio::ssl::context::sslv23_client},
+      strand_(io_context_) {
   init(pubkeyfile, privkeyfile, pemPassword);
 }
 
@@ -137,6 +142,7 @@ void TcpSslConn::init(const std::string& pubkeyfile,
     // error handling
     std::string info = boost::diagnostic_information(ex);
     LOGDEBUG("caught boost exception: %s", info.c_str());
+    throw apache::geode::client::SslException(info.c_str());
   }
 }
 
@@ -147,47 +153,46 @@ TcpSslConn::~TcpSslConn() {
   LOGFINE(ss.str());
 }
 
-size_t TcpSslConn::receive(char* buff, const size_t len,
-                           std::chrono::milliseconds) {
-  auto start = std::chrono::system_clock::now();
+void TcpSslConn::prepareAsyncRead(
+    char* buff, size_t len,
+    boost::optional<boost::system::error_code>& read_result,
+    std::size_t& bytes_read) {
+  boost::asio::async_read(
+      *socket_stream_, boost::asio::buffer(buff, len),
+      boost::asio::bind_executor(
+          strand_, [&read_result, &bytes_read](
+                       const boost::system::error_code& ec, const size_t n) {
+            bytes_read = n;
 
-  return boost::asio::read(*socket_stream_, boost::asio::buffer(buff, len),
-                           [len, start](boost::system::error_code& ec,
-                                        const std::size_t n) -> std::size_t {
-                             if (ec && ec != boost::asio::error::eof) {
-                               // Quit if we encounter an error.
-                               // Defer EOF to timeout.
-                               return 0;
-                             } else if (start + std::chrono::milliseconds(25) <=
-                                        std::chrono::system_clock::now()) {
-                               // Sometimes we don't know how much data to
-                               // expect, so we're reading into an oversized
-                               // buffer without knowing when to quit other than
-                               // by timeout. Typically, if we timeout, we also
-                               // have an EOF, meaning the connection is likely
-                               // broken and will have to be closed. But if we
-                               // have bytes, we may have just done a
-                               // dumb/blind/hail mary receive, so defer broken
-                               // connection handling until the next IO
-                               // operation.
-                               if (n) {
-                                 // This prevents the timeout from being an
-                                 // error condition.
-                                 ec = boost::system::error_code{};
-                               }
-                               // But if n == 0 when we timeout, it's just a
-                               // broken connection.
-
-                               return 0;
-                             }
-
-                             return len - n;
-                           });
+            // EOF itself occurs when there is no data available on the socket
+            // at the time of the read. It may simply imply data has yet to
+            // arrive. Do nothing. Defer to timeout rather than assume a broken
+            // connection.
+            if (ec != boost::asio::error::eof &&
+                ec != boost::asio::error::try_again) {
+              read_result = ec;
+              return;
+            }
+          }));
 }
 
-size_t TcpSslConn::send(const char* buff, const size_t len,
-                        std::chrono::milliseconds) {
-  return boost::asio::write(*socket_stream_, boost::asio::buffer(buff, len));
+void TcpSslConn::prepareAsyncWrite(
+    const char* buff, size_t len,
+    boost::optional<boost::system::error_code>& write_result,
+    std::size_t& bytes_written) {
+  boost::asio::async_write(
+      *socket_stream_, boost::asio::buffer(buff, len),
+      boost::asio::bind_executor(
+          strand_, [&write_result, &bytes_written](
+                       const boost::system::error_code& ec, const size_t n) {
+            bytes_written = n;
+
+            if (ec != boost::asio::error::eof &&
+                ec != boost::asio::error::try_again) {
+              write_result = ec;
+              return;
+            }
+          }));
 }
 
 }  // namespace client
