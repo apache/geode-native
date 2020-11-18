@@ -50,14 +50,15 @@ namespace Apache.Geode.Examples.Transaction
     static void Main(string[] args)
     {
       var cache = new CacheFactory()
-          .Set("log-level", "none").Create();
+          .Set("log-level", "none")
+          .Create();
 
-      var poolFactory = cache.GetPoolFactory()
-          .AddLocator("localhost", 10334);
-      
+      cache.GetPoolManager()
+          .CreateFactory()
+          .AddLocator("localhost", 10334)
+          .Create("pool");
+
       Console.WriteLine("Created cache");
-
-      poolFactory.Create("pool");
 
       var regionFactory = cache.CreateRegionFactory(RegionShortcut.PROXY)
           .SetPoolName("pool");

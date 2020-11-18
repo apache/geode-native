@@ -54,19 +54,19 @@ auto cache = CacheFactory()
 cache.getPoolManager()
     .createFactory()
     .addLocator("localhost", 10334)
-    .create("pool");
+    .create("examplePool");
 
 auto regionFactory = cache.createRegionFactory(RegionShortcut::PROXY);
 auto regionFactory2 = cache.createRegionFactory(RegionShortcut::CACHING_PROXY);
 
 auto region = regionFactory
-    .setPoolName("pool")
-    .create("example_userinfo");
+    .setPoolName("examplePool")
+    .create("clientRegion1");
 
 auto region2 = regionFactory2
-    .setPoolName("pool")
+    .setPoolName("examplePool")
     .setEntryTimeToLive(ExpirationAction::INVALIDATE, std::chrono::seconds(120))
-    .create("example_userinfo2");
+    .create("clientRegion2");
 ```
 
 ## <a id="declarative-region-creation"></a>Declarative Region Creation
@@ -85,7 +85,7 @@ Like the programmatic examples above, the following example creates two regions 
       http://geode.apache.org/schema/cpp-cache/cpp-cache-1.0.xsd"
     version="1.0">
     <pool name="examplePool" subscription-enabled="true">
-        <server host="localhost" port="40404" />
+        <server host="localhost" port="10334" />
     </pool>
     <region name="clientRegion1" refid="PROXY">
         <region-attributes pool-name="examplePool"/>

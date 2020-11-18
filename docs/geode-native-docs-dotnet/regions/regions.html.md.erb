@@ -37,27 +37,34 @@ Region creation is subject to attribute consistency checks.
 
 To create a region:
 
-1. Instantiate a `CacheFactory` and use it to create a cache.
+1. Create a cache using `CacheFactory` to set its characteristics.
 1. The cache includes an instance of `PoolManager`&mdash;use it to create a connection pool.
-1. Use cache to instantiate a `RegionFactory` and use it to create a region, specifying any desired attributes
+1. Use the cache to instantiate a `RegionFactory` and use it to create a region, specifying any desired attributes
 and an association with the connection pool.
 
 ### .NET C# Region Creation Example
 
-This example illustrates how to create a pair of regions using C#:
+This example illustrates how to create two regions with different characteristics using C#:
 
 ``` csharp
-var cache = new CacheFactory().Create();
+var cache = new CacheFactory()
+    .Set("log-level", "none")
+    .Create();
 
 var examplePool = cache.GetPoolManager()
     .CreateFactory()
-    .AddLocator("localhost", 40404)
+    .AddLocator("localhost", 10334)
     .SetSubscriptionEnabled(true)
     .Create("examplePool");
 
 var clientRegion1 = cache.CreateRegionFactory(RegionShortcut.PROXY)
   .SetPoolName("examplePool")
   .Create("clientRegion1");
+
+var clientRegion2 = cache.CreateRegionFactory(RegionShortcut.CACHING_PROXY)
+  .SetPoolName("examplePool")
+  .SetEntryTimeToLive(ExpirationAction.Invalidate, new TimeSpan(0, 0, 120))
+  .Create("clientRegion2");
 ```
 
 ## <a id="declarative-region-creation"></a>Declarative Region Creation
@@ -76,7 +83,7 @@ Like the programmatic examples above, the following example creates two regions 
       http://geode.apache.org/schema/cpp-cache/cpp-cache-1.0.xsd"
     version="1.0">
     <pool name="examplePool" subscription-enabled="true">
-        <server host="localhost" port="40404" />
+        <server host="localhost" port="10334" />
     </pool>
     <region name="clientRegion1" refid="PROXY">
         <region-attributes pool-name="examplePool"/>

@@ -24,19 +24,19 @@ namespace Apache.Geode.Examples.ContinuousQuery
   {
     public static void Main(string[] args)
     {
-      var cacheFactory = new CacheFactory()
-          .Set("log-level", "none");
-      var cache = cacheFactory.Create();
+      var cache = new CacheFactory()
+          .Set("log-level", "none")
+          .Create();
 
       Console.WriteLine("Registering for data serialization");
 
       cache.TypeRegistry.RegisterPdxType(Order.CreateDeserializable);
 
-      var poolFactory = cache.GetPoolFactory()
-          .AddLocator("localhost", 10334);
-      var pool = poolFactory
-        .SetSubscriptionEnabled(true)
-        .Create("pool");
+      var pool = cache.GetPoolManager()
+          .CreateFactory()
+          .AddLocator("localhost", 10334)
+          .SetSubscriptionEnabled(true)
+          .Create("pool");
 
       var regionFactory = cache.CreateRegionFactory(RegionShortcut.PROXY)
           .SetPoolName("pool");

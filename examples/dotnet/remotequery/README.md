@@ -28,16 +28,18 @@ This is a simple example showing how to execute a query on a remote region.
     $ startserver.ps1
     ```
 
-1. Execute `dotnet-remotequery.exe`, expect the following output:
+1. Execute `Debug\dotnet-remotequery.exe`. Expect the following output:
 
-       Registering for data serialization
-       Create orders
-       Storing orders in the region
-       Getting the orders from the region
-       The following orders have a quantity greater than 30:
-       Order: [6, product z, 42]
-       Order: [4, product z, 102]
-       Order: [2, product y, 37
+    ```console
+    Registering for data serialization
+    Create orders
+    Storing orders in the region
+    Getting the orders from the region
+    The following orders have a quantity greater than 30:
+    Order: [6, product z, 42]
+    Order: [4, product z, 102]
+    Order: [2, product y, 37
+    ```
 
 1. Run the `stopserver.ps1` script to gracefully shutdown the Geode cluster.
 

@@ -28,19 +28,21 @@ This is a simple example showing how to execute a continuous query on a Goede re
     $ startserver.ps1
     ```
 
-1. Execute `dotnet-continuousquery.exe`, expect the following output:
+1. Execute `Debug\dotnet-continuousquery.exe`. Expect the following output:
 
-       Registering for data serialization
-       Executing continuous query
-       Create orders
-       Putting and changing Order objects in the region
-       MyCqListener::OnEvent(CREATE) called with key Order2, value Order: [2, product y, 37]
-       MyCqListener::OnEvent(CREATE) called with key Order4, value Order: [4, product z, 102]
-       MyCqListener::OnEvent(CREATE) called with key Order6, value Order: [6, product z, 42]
-       MyCqListener::OnEvent(UPDATE) called with key Order2, value Order: [2, product y, 45]
-       MyCqListener::OnEvent(DESTROY) called with key Order2, value Order: [2, product y, 29]
-       MyCqListener::OnEvent(DESTROY) called with key Order6, value null
-       MyCqListener::close called
+    ```console
+    Registering for data serialization
+    Executing continuous query
+    Create orders
+    Putting and changing Order objects in the region
+    MyCqListener::OnEvent(CREATE) called with key Order2, value Order: [2, product y, 37]
+    MyCqListener::OnEvent(CREATE) called with key Order4, value Order: [4, product z, 102]
+    MyCqListener::OnEvent(CREATE) called with key Order6, value Order: [6, product z, 42]
+    MyCqListener::OnEvent(UPDATE) called with key Order2, value Order: [2, product y, 45]
+    MyCqListener::OnEvent(DESTROY) called with key Order2, value Order: [2, product y, 29]
+    MyCqListener::OnEvent(DESTROY) called with key Order6, value null
+    MyCqListener::close called
+    ```
 
 1. Run the `stopserver.ps1` script to gracefully shutdown the Geode cluster.
 

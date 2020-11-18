@@ -105,9 +105,9 @@ From Order.cs:
 The .NET example mainline creates a cache, then uses it to register the PdxSerializable class that was created in Orders.cs:
 
 ```csharp
-   var cacheFactory = new CacheFactory()
-       .Set("log-level", "none");
-   var cache = cacheFactory.Create();
+var cache = new CacheFactory()
+    .Set("log-level", "none")
+    .Create();
 
    cache.TypeRegistry.RegisterPdxType(Order.CreateDeserializable);
 ```
@@ -115,9 +115,10 @@ The .NET example mainline creates a cache, then uses it to register the PdxSeria
 The client creates a connection pool and a region named "example_orderobject":
 
 ```csharp
-   var poolFactory = cache.GetPoolFactory()
-       .AddLocator("localhost", 10334);
-   poolFactory.Create("pool");
+cache.GetPoolManager()
+    .CreateFactory()
+    .AddLocator("localhost", 10334)
+    .Create("pool");
 
    var regionFactory = cache.CreateRegionFactory(RegionShortcut.PROXY)
         .SetPoolName("pool");

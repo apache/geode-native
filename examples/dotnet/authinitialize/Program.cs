@@ -24,14 +24,16 @@ namespace Apache.Geode.Examples.AuthInitialize
   {
     static void Main(string[] args)
     {
-      var cacheFactory = new CacheFactory()
+      var cache = new CacheFactory()
           .Set("log-level", "none")
-          .SetAuthInitialize(new ExampleAuthInitialize());
-
-      var cache = cacheFactory.Create();
-      var poolFactory = cache.GetPoolFactory()
-          .AddLocator("localhost", 10334);
-      poolFactory.Create("pool");
+          .SetAuthInitialize(new ExampleAuthInitialize())
+          .Create();
+		  
+      cache.GetPoolManager()
+	      .CreateFactory()
+          .AddLocator("localhost", 10334)
+          .Create("pool");
+		  
       var regionFactory = cache.CreateRegionFactory(RegionShortcut.PROXY)
           .SetPoolName("pool");
       var region = regionFactory.Create<string, string>("region");

@@ -34,41 +34,38 @@ and [Client/Server Configuration](serverman/topologies_and_comm/cs_configuration
 
 To connect to a server, your application must follow these steps:
 
-1. Instantiate a `CacheFactory`, setting characteristics of interest (for example, `log-level`).
-1. Create a cache and use it to instantiate a `PoolFactory`, specifying the hostname and port for the server locator.
-1. Create a named pool of network connections.
-1. Instantiate a region of the desired type (usually CACHING_PROXY or PROXY) and connect it by name to its counterpart on the server.
+1. Create a cache, setting characteristics of interest (for example, `log-level`).
+1. Use the cache to create a named pool of network connections, specifying the hostname and port for at least one server locator.
+1. Instantiate a region of the desired type (usually PROXY, sometimes CACHING_PROXY) and connect it by name to its counterpart on the server.
 
 Once the connection pool and the shared region are in place, your client application is ready to share data with the server.
 
 **Server Connection: .NET Example**
 
-This example of connecting to the server is taken from the .NET `PutGetRemove` example.
-
-Instantiate a `CacheFactory` and set its characteristics:
+Create a cache and set its characteristics:
 
 ``` csharp
-    var cacheFactory = new CacheFactory()     // instantiate cache factory
-        .Set("log-level", "none");            // set cache log-level characteristics
+var cache = new CacheFactory()
+    .Set("log-level", "none")
+    .SetAuthInitialize(new ExampleAuthInitialize())
+    .Create();
 ```
 
-Create a cache and use it to instantiate a `PoolFactory`:
+Use the cache to create a named pool of network connections, specifying the hostname and port for the server locator:
 
 ``` csharp
-    var cache = cacheFactory.Create();        // create cache
-
-    var poolFactory = cache.GetPoolFactory()  // instantiate pool factory
-        .AddLocator("localhost", 10334);      // add locator to pool factory
+cache.GetPoolManager()
+    .CreateFactory()
+    .AddLocator("localhost", 10334)
+    .Create("pool");
 ```
 
-Create a named pool of network connections, and instantiate a region of the desired type:
+Instantiate a region of the desired type and connect to the pool by name:
 
 ``` csharp
-    poolFactory.Create("pool");               // create a pool called "pool" that knows where the server is
-
-    var regionFactory = cache.CreateRegionFactory(RegionShortcut.PROXY) // instantiate region factory with PROXY characteristics
-        .SetPoolName("pool");
-    var region = regionFactory.Create<string, string>("example_userinfo"); // create a connection to the region "example_userinfo" on the server
+var regionFactory = cache.CreateRegionFactory(RegionShortcut.PROXY)
+    .SetPoolName("pool");
+var region = regionFactory.Create<string, string>("example_userinfo");
 ```
 
 See the _<%=vars.product_name%> User Guide_ section [Configuring a Client/Server System](serverman/topologies_and_comm/cs_configuration/setting_up_a_client_server_system.html)

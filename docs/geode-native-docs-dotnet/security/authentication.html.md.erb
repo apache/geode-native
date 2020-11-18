@@ -27,14 +27,13 @@ this means setting the authentication credentials when you create the CacheFacto
 
 ### .NET Authentication Example
 
-The following excerpt is taken from the .NET example provided with your Native Client distribution in the `../examples/dotnet/authinitialize` directory.
-
 In this C# authentication example, the `CacheFactory` creation process sets the authentication callback:
 
 ```cs
-  var cacheFactory = new CacheFactory()
-    .Set("log-level", "none")
-    .SetAuthInitialize(new ExampleAuthInitialize());
+  var cache = new CacheFactory()
+      .Set("log-level", "none")
+      .SetAuthInitialize(new ExampleAuthInitialize())
+      .Create();
 ```
 
 Credentials are implemented in the `GetCredentials` member function of the `ExampleAuthInitialize` class, which implements the `IAuthInitialize` interface:

@@ -28,14 +28,16 @@ This is a simple example showing how to register for auto-serialization of custo
     $ startserver.ps1
     ```
 
-1. Execute `dotnet-pdxautoserializer.exe`, expect the following output:
+1. Execute `Debug\dotnet-pdxautoserializer.exe`. Expect the following output:
 
-       Registering for reflection-based auto serialization
-       Storing order object in the region
-       order to put is Order: [65, Vox AC30, 11]
-       Successfully put order, getting now...
-       Order key: 65 = Order: [65, Vox AC30, 11
-
+    ```console
+    Registering for reflection-based auto serialization
+    Storing order object in the region
+    order to put is Order: [65, Vox AC30, 11]
+    Successfully put order, getting now...
+    Order key: 65 = Order: [65, Vox AC30, 11
+    ```
+    
 1. Run the `stopserver.ps1` script to gracefully shutdown the Geode cluster.
 
    For Windows cmd:
