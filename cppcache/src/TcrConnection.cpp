@@ -484,6 +484,8 @@ void TcrConnection::createConnection(const std::string& address,
           systemProperties.sslTrustStore(), systemProperties.sslKeyStore(),
           systemProperties.sslKeystorePassword()));
     }
+  } else {
+    m_conn.reset(new TcpConn(address, connectTimeout, maxBuffSizePool));
   }
 }
 
