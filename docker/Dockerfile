@@ -17,6 +17,9 @@
 FROM ubuntu
 LABEL maintainer="Apache Geode <dev@geode.apache.org>"
 
+ENV TZ=US/Pacific
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
 ENV CLANG_VERSION 6.0
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
