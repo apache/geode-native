@@ -38,6 +38,7 @@ RUN apt-get update && \
             openjdk-8-jdk \
             wget && \
         rm -rf /var/lib/apt/lists/* && \
+        ln -s /usr/lib/llvm-*/include/c++/v1/ /usr/include/c++/v1 && \
         update-alternatives --install /usr/bin/clang         clang         /usr/bin/clang-${CLANG_VERSION} 999 && \
         update-alternatives --install /usr/bin/clang++       clang++       /usr/bin/clang++-${CLANG_VERSION} 999 && \
         update-alternatives --install /usr/bin/cc            cc            /usr/bin/clang-${CLANG_VERSION} 999 && \
