@@ -22,10 +22,9 @@
 
 #include <list>
 #include <memory>
+#include <mutex>
 
 #include <geode/internal/geode_globals.hpp>
-
-#include "util/concurrent/spinlock_mutex.hpp"
 
 namespace apache {
 namespace geode {
@@ -83,7 +82,7 @@ class LRUQueue {
   std::size_t size() const { return container_.size(); }
 
  protected:
-  using mutex = ::apache::geode::util::concurrent::spinlock_mutex;
+  using mutex = std::mutex;
   template <class _Entry>
   using container_impl = std::list<_Entry>;
   using container = container_impl<type>;
