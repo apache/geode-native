@@ -132,9 +132,8 @@ std::shared_ptr<Serializable> ThinClientLocatorHelper::sendRequest(
       return nullptr;
     }
     char buff[BUFF_SIZE];
-    auto receivedLength =
-        conn->receive(buff, BUFF_SIZE, m_poolDM->getReadTimeout());
-    if (receivedLength <= 0) {
+    const auto receivedLength = conn->receive(buff, m_poolDM->getReadTimeout());
+    if (!receivedLength) {
       return nullptr;
     }
 

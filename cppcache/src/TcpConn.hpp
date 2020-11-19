@@ -21,6 +21,7 @@
 #define GEODE_TCPCONN_H_
 
 #include <boost/asio.hpp>
+#include <boost/optional.hpp>
 
 #include <geode/internal/geode_globals.hpp>
 
@@ -50,6 +51,16 @@ class APACHE_GEODE_EXPORT TcpConn : public Connector {
 
   size_t receive(char*, size_t, std::chrono::milliseconds,
                  bool throwTimeoutException);
+
+  virtual void prepareAsyncRead(
+      char* buff, size_t len,
+      boost::optional<boost::system::error_code>& read_result,
+      std::size_t& bytes_read);
+
+  virtual void prepareAsyncWrite(
+      const char* buff, size_t len,
+      boost::optional<boost::system::error_code>& write_result,
+      std::size_t& bytes_written);
 
  public:
   TcpConn(const std::string ipaddr, std::chrono::microseconds connect_timeout,

@@ -209,38 +209,19 @@ size_t TcpConn::receive(char *buff, const size_t len,
   auto beforeResolvePoint = std::chrono::system_clock::now();
 
   try {
-    boost::asio::async_read(
-        socket_, boost::asio::buffer(buff, len),
-        [&read_result, &bytes_read](const boost::system::error_code &ec,
-                                    const size_t n) {
-          bytes_read = n;
-
-          // EOF itself occurs when there is no data available on the socket at
-          // the time of the read. It may simply imply data has yet to arrive.
-          // Do nothing. Defer to timeout rather than assume a broken
-          // connection.
-          if (ec != boost::asio::error::eof &&
-              ec != boost::asio::error::try_again) {
-            read_result = ec;
-            return;
-          }
-        });
-
-    io_context_.reset();
+    prepareAsyncRead(buff, len, read_result, bytes_read);
+    io_context_.restart();
     io_context_.run_for(timeout);
   } catch (...) {
-    std::cout << "Throwing an unexpected read exception\n";
     LOGDEBUG("Throwing an unexpected read exception");
     throw;
   }
 
   if (read_result && *read_result) {
-    std::cout << "Throwing a read exception: " << read_result->message()
-              << std::endl;
     LOGDEBUG("Throwing a read exception: %s", read_result->message().c_str());
     socket_.cancel();
     // Get the abort
-    io_context_.reset();
+    io_context_.restart();
     io_context_.run();
     throw boost::system::system_error{*read_result};
   }
@@ -252,24 +233,24 @@ size_t TcpConn::receive(char *buff, const size_t len,
       LOGDEBUG("Throwing an IO exception");
       socket_.cancel();
       // Get the abort
-      io_context_.run_one();
+      io_context_.restart();
+      io_context_.run();
       throw boost::system::system_error{boost::asio::error::broken_pipe};
     } else {
-      std::cout << "Throwing an eof exception\n";
       LOGDEBUG("Throwing an eof exception");
       socket_.cancel();
       // Get the abort
-      io_context_.run_one();
+      io_context_.restart();
+      io_context_.run();
       throw boost::system::system_error{boost::asio::error::eof};
     }
   }
 
   if (bytes_read != len && throwTimeoutException) {
-    std::cout << "Throwing a read timeout exception\n";
     LOGDEBUG("Throwing a read timeout exception");
     socket_.cancel();
     // Get the abort
-    io_context_.reset();
+    io_context_.restart();
     io_context_.run();
     throw boost::system::system_error{boost::asio::error::operation_aborted};
   }
@@ -288,40 +269,24 @@ size_t TcpConn::send(const char *buff, const size_t len,
   std::size_t bytes_written = 0;
 
   try {
-    boost::asio::async_write(
-        socket_, boost::asio::buffer(buff, len),
-        [&write_result, &bytes_written](const boost::system::error_code &ec,
-                                        const size_t n) {
-          bytes_written = n;
-
-          if (ec != boost::asio::error::eof &&
-              ec != boost::asio::error::try_again) {
-            write_result = ec;
-            return;
-          }
-        });
-
-    io_context_.reset();
+    prepareAsyncWrite(buff, len, write_result, bytes_written);
+    io_context_.restart();
     io_context_.run_for(timeout);
   } catch (...) {
-    std::cout << "Throwing an unexpected write exception\n";
     LOGDEBUG("Throwing an unexpected write exception");
     throw;
   }
 
   if (write_result && *write_result) {
-    std::cout << "Throwing a write exception: %s " << write_result->message()
-              << std::endl;
     LOGDEBUG("Throwing a write exception. %s", write_result->message().c_str());
     throw boost::system::system_error{*write_result};
   }
 
   if (bytes_written != len) {
-    std::cout << "Throwing a write timeout exception\n";
     LOGDEBUG("Throwing a write timeout exception");
     socket_.cancel();
     // Get the abort
-    io_context_.reset();
+    io_context_.restart();
     io_context_.run();
     throw boost::system::system_error{boost::asio::error::operation_aborted};
   }
@@ -346,17 +311,14 @@ void TcpConn::connect(boost::asio::ip::tcp::resolver::results_type r,
           connect_result = ec;
         });
 
-    io_context_.reset();
+    io_context_.restart();
     io_context_.run_for(timeout);
   } catch (...) {
     LOGDEBUG("Throwing an unexpected connect exception");
-    std::cout << "Throwing an unexpected connect exception\n";
     throw;
   }
 
   if (connect_result && *connect_result) {
-    std::cout << "Throwing a connect exception: " << connect_result->message()
-              << std::endl;
     LOGDEBUG("Throwing a connect exception: %s",
              connect_result->message().c_str());
     throw boost::system::system_error{*connect_result};
@@ -364,7 +326,6 @@ void TcpConn::connect(boost::asio::ip::tcp::resolver::results_type r,
 
   if (!connect_result) {
     LOGDEBUG("Throwing a connect timeout exception");
-    std::cout << "Throwing a connect timeout exception\n";
     throw boost::system::system_error{boost::asio::error::operation_aborted};
   }
 
@@ -396,17 +357,14 @@ boost::asio::ip::tcp::resolver::results_type TcpConn::resolve(
                              }
                            });
 
-    io_context_.reset();
+    io_context_.restart();
     io_context_.run_for(timeout);
   } catch (...) {
-    std::cout << "Throwing an unexpected resolve exception\n";
     LOGDEBUG("Throwing an unexpected resolve exception");
     throw;
   }
 
   if (resolve_result && *resolve_result) {
-    std::cout << "Throwing a resolve exception: " << resolve_result->message()
-              << std::endl;
     LOGDEBUG("Throwing a resolve exception: %s",
              resolve_result->message().c_str());
     throw boost::system::system_error{*resolve_result};
@@ -414,15 +372,54 @@ boost::asio::ip::tcp::resolver::results_type TcpConn::resolve(
 
   if (!resolve_result) {
     LOGDEBUG("Throwing a resolve timeout exception");
-    std::cout << "Throwing a resolve timeout exception\n";
     socket_.cancel();
     // Get the abort
-    io_context_.reset();
+    io_context_.restart();
     io_context_.run();
     throw boost::system::system_error{boost::asio::error::operation_aborted};
   }
 
   return results;
+}
+
+void TcpConn::prepareAsyncRead(
+    char *buff, size_t len,
+    boost::optional<boost::system::error_code> &read_result,
+    std::size_t &bytes_read) {
+  boost::asio::async_read(
+      socket_, boost::asio::buffer(buff, len),
+      [&read_result, &bytes_read](const boost::system::error_code &ec,
+                                  const size_t n) {
+        bytes_read = n;
+
+        // EOF itself occurs when there is no data available on the socket at
+        // the time of the read. It may simply imply data has yet to arrive.
+        // Do nothing. Defer to timeout rather than assume a broken
+        // connection.
+        if (ec != boost::asio::error::eof &&
+            ec != boost::asio::error::try_again) {
+          read_result = ec;
+          return;
+        }
+      });
+}
+
+void TcpConn::prepareAsyncWrite(
+    const char *buff, size_t len,
+    boost::optional<boost::system::error_code> &write_result,
+    std::size_t &bytes_written) {
+  boost::asio::async_write(
+      socket_, boost::asio::buffer(buff, len),
+      [&write_result, &bytes_written](const boost::system::error_code &ec,
+                                      const size_t n) {
+        bytes_written = n;
+
+        if (ec != boost::asio::error::eof &&
+            ec != boost::asio::error::try_again) {
+          write_result = ec;
+          return;
+        }
+      });
 }
 
 }  // namespace client
