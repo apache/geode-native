@@ -21,17 +21,15 @@
 #include <cstdio>
 #include <cstdlib>
 #include <iomanip>
-#include <sstream>
 
-#include <ace/DLL.h>
 #include <ace/INET_Addr.h>
 #include <ace/OS.h>
+#include <boost/asio.hpp>
+#include <boost/dll/import.hpp>
 
 namespace apache {
 namespace geode {
 namespace client {
-
-int32_t Utils::getLastError() { return ACE_OS::last_error(); }
 
 std::string Utils::getEnv(const char* varName) {
   std::string env;
@@ -151,18 +149,59 @@ char* Utils::copyString(const char* str) {
   return resStr;
 }
 
-void* Utils::getFactoryFunction(const std::string& lib,
-                                const std::string& funcName) {
-  ACE_DLL dll;
-  if (dll.open(lib.c_str(), ACE_DEFAULT_SHLIB_MODE, 0) == -1) {
-    throw IllegalArgumentException("cannot open library: " + lib);
+/**
+ * Finds, loads and keeps a copy of requested shared library. Future
+ * improvements should use the boost::dll::import to maintain references to
+ * shared libraries rather than a synchronized global structure.
+ *
+ * Uses similar options ans search patterns to the original ACE_DLL
+ * implementation.
+ *
+ * @param libraryName to find or load
+ * @return found or loaded shared library
+ * @throws IllegalArgumentException if library is not found or otherwise
+ * unloadable.
+ */
+const boost::dll::shared_library& getSharedLibrary(
+    const std::string& libraryName) {
+  static std::mutex sharedLibrariesMutex;
+  static std::unordered_map<std::string,
+                            std::shared_ptr<boost::dll::shared_library>>
+      sharedLibraries;
+
+  std::lock_guard<decltype(sharedLibrariesMutex)> lock(sharedLibrariesMutex);
+
+  const auto& find = sharedLibraries.find(libraryName);
+  if (find == sharedLibraries.end()) {
+    try {
+      return *sharedLibraries
+                  .emplace(
+                      libraryName,
+                      std::make_shared<boost::dll::shared_library>(
+                          libraryName,
+                          boost::dll::load_mode::rtld_global |
+                              boost::dll::load_mode::rtld_lazy |
+                              boost::dll::load_mode::append_decorations |
+                              boost::dll::load_mode::search_system_folders))
+                  .first->second;
+    } catch (const boost::dll::fs::system_error& e) {
+      throw IllegalArgumentException("cannot open library: " + libraryName +
+                                     ": reason: " + e.what());
+    }
   }
-  void* func = dll.symbol(funcName.c_str());
-  if (func == nullptr) {
+
+  return *find->second;
+}
+
+void* Utils::getFactoryFunctionVoid(const std::string& lib,
+                                    const std::string& funcName) {
+  try {
+    const auto& sharedLibrary = getSharedLibrary(lib);
+    return reinterpret_cast<void*>(sharedLibrary.get<void*()>(funcName));
+  } catch (const boost::dll::fs::system_error&) {
     throw IllegalArgumentException("cannot find factory function " + funcName +
                                    " in library " + lib);
   }
-  return func;
 }
 
 std::string Utils::convertBytesToString(const uint8_t* bytes, size_t length,
