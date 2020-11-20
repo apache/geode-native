@@ -114,7 +114,7 @@ class TcrConnection {
       bool isClientNotification = false, bool isSecondary = false,
       std::chrono::microseconds connectTimeout = DEFAULT_CONNECT_TIMEOUT);
 
-  TcrConnection(const TcrConnectionManager& connectionManager);
+  explicit TcrConnection(const TcrConnectionManager& connectionManager);
 
   /* destroy the connection */
   ~TcrConnection();
