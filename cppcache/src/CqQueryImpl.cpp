@@ -385,7 +385,7 @@ std::shared_ptr<CqResults> CqQueryImpl::executeWithInitialResults(
   GfErrType err = GF_NOERR;
   err = m_tccdm->sendSyncRequest(msg, reply);
   if (err != GF_NOERR) {
-    LOGDEBUG("CqQueryImpl::executeCqWithInitialResults errorred!!!!");
+    LOGDEBUG("CqQueryImpl::executeCqWithInitialResults failed!!!!");
     throwExceptionIfError("CqQuery::executeCqWithInitialResults:", err);
   }
   if (reply.getMessageType() == TcrMessage::EXCEPTION ||
