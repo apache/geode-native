@@ -26,6 +26,7 @@
 #include <ace/OS.h>
 #include <boost/asio.hpp>
 #include <boost/dll/import.hpp>
+#include <boost/dll/runtime_symbol_info.hpp>
 
 namespace apache {
 namespace geode {
@@ -173,20 +174,22 @@ const boost::dll::shared_library& getSharedLibrary(
 
   const auto& find = sharedLibraries.find(libraryName);
   if (find == sharedLibraries.end()) {
+    auto path = libraryName.empty() ? boost::dll::program_location()
+                                    : boost::dll::fs::path{libraryName};
     try {
       return *sharedLibraries
                   .emplace(
                       libraryName,
                       std::make_shared<boost::dll::shared_library>(
-                          libraryName,
+                          path,
                           boost::dll::load_mode::rtld_global |
                               boost::dll::load_mode::rtld_lazy |
                               boost::dll::load_mode::append_decorations |
                               boost::dll::load_mode::search_system_folders))
                   .first->second;
     } catch (const boost::dll::fs::system_error& e) {
-      throw IllegalArgumentException("cannot open library: " + libraryName +
-                                     ": reason: " + e.what());
+      throw IllegalArgumentException("cannot open library: \"" + libraryName +
+                                     "\": reason: " + e.what());
     }
   }
 
