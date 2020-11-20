@@ -21,6 +21,7 @@ ENV TZ=US/Pacific
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 ENV CLANG_VERSION 6.0
+ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
         apt-get install -y \
             libc++-dev \
