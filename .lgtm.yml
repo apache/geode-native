@@ -2,11 +2,12 @@ extraction:
   cpp:
     configure:
       command:
+        - GEODE_VERSION=1.13.1
         - mkdir _lgtm_build_dir
         - cd _lgtm_build_dir
-        - wget -O apache-geode.tgz http://mirror.transip.net/apache/geode/1.13.1/apache-geode-1.13.1.tgz
+        - wget -O apache-geode.tgz https://downloads.apache.org/geode/${GEODE_VERSION}/apache-geode-${GEODE_VERSION}.tgz
         - tar xzf apache-geode.tgz
-        - cmake -DGEODE_ROOT="`pwd`/apache-geode-1.13.1" ..
+        - cmake -DGEODE_ROOT="`pwd`/apache-geode-${GEODE_VERSION}" ..
         - cd dependencies && cmake --build . -- -j2
     index:
       build_command:
