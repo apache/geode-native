@@ -21,6 +21,7 @@ ENV TZ=US/Pacific
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 ENV CLANG_VERSION 6.0
+ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
         apt-get install -y \
             libc++-dev \
@@ -46,7 +47,7 @@ RUN apt-get update && \
         update-alternatives --install /usr/bin/clang-format  clang-format  /usr/bin/clang-format-${CLANG_VERSION} 999
 
 ENV GEODE_VERSION 1.12.0
-RUN wget "https://www.apache.org/dist/geode/${GEODE_VERSION}/apache-geode-${GEODE_VERSION}.tgz" --quiet -O - | \
+RUN wget "https://downloads.apache.org/geode/${GEODE_VERSION}/apache-geode-${GEODE_VERSION}.tgz" --quiet -O - | \
         tar xzf -
 
 ENV RAT_VERSION 0.13
