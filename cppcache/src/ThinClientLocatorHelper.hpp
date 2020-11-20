@@ -95,7 +95,7 @@ class ThinClientLocatorHelper {
 
   /**
    * Returns a shuffled copy of the current locators list
-   * @return Locators list
+   * @return Locators  list
    * @note The original list of locators is copied under the mutex scope
    * @note This method is used instead of directly using the original locators
    *       list in order to avoid having to lock the mutex while establishing
