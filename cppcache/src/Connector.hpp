@@ -67,7 +67,7 @@ class APACHE_GEODE_EXPORT Connector {
    *
    * @param      b   the buffer into which the data is read.
    * @param      len   the number of bytes to read.
-   * @param      wait   time to allow the read to complete.
+   * @param      timeout time to allow the read to complete.
    * @return     the total number of bytes read into the buffer, or
    *             <code>-1</code> if an error was encountered.
    * @exception  GeodeIOException, TimeoutException, IllegalArgumentException,
@@ -90,7 +90,7 @@ class APACHE_GEODE_EXPORT Connector {
    * has the same effect as: <pre><code> read(b, 0, b.length) </code></pre>
    *
    * @param      b   the buffer into which the data is read.
-   * @param      wait   time to allow the read to complete.
+   * @param      timeout time to allow the read to complete.
    * @return     the total number of bytes read into the buffer, or
    *             <code>-1</code> if an error was encountered.
    * @exception  GeodeIOException, IllegalArgumentException,
@@ -104,7 +104,7 @@ class APACHE_GEODE_EXPORT Connector {
    *
    * @param      b     the data.
    * @param      len   the number of bytes to write.
-   * @param      wait   time to allow the write to complete.
+   * @param      timeout time to allow the write to complete.
    * @return     the actual number of bytes written.
    * @exception  GeodeIOException, TimeoutException, IllegalArgumentException.
    */
