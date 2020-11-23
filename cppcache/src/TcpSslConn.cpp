@@ -148,8 +148,11 @@ void TcpSslConn::init(const std::string& pubkeyfile,
 
 TcpSslConn::~TcpSslConn() {
   std::stringstream ss;
-  ss << "Teardown SSL " << socket_.local_endpoint() << " -> "
-     << socket_.remote_endpoint();
+  ss << "Teardown SSL " << socket_.local_endpoint() << " -> ";
+  try {
+    ss << socket_.remote_endpoint();
+  } catch (...) {
+  }
   LOGFINE(ss.str());
 }
 
