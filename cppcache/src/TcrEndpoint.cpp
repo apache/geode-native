@@ -719,7 +719,7 @@ inline bool TcrEndpoint::compareTransactionIds(int32_t reqTransId,
 inline bool TcrEndpoint::handleIOException(const std::string& message,
                                            TcrConnection*& conn, bool) {
   int32_t lastError = ACE_OS::last_error();
-  if (lastError == ECONNRESET || lastError == EPIPE) {
+  if (lastError == ECONNRESET || lastError == EPIPE || lastError == ENOTCONN) {
     _GEODE_SAFE_DELETE(conn);
   } else {
     closeConnection(conn);
