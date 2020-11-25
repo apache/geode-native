@@ -53,6 +53,10 @@ add_executable(cpp-integration-test
   TransactionsTest.cpp
 )
 
+include(ExecutableExportHeader)
+
+generate_exec_export_header(cpp-integration-test)
+
 target_compile_definitions(cpp-integration-test
   PUBLIC
     GTEST_ELLIPSIS_NEEDS_POD_
@@ -103,6 +107,7 @@ configure_file(
 set_target_properties(cpp-integration-test PROPERTIES
   CXX_VISIBILITY_PRESET hidden
   VISIBILITY_INLINES_HIDDEN ON
+  ENABLE_EXPORTS 1
   FOLDER cpp/test/integration
 )
 

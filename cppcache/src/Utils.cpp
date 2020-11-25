@@ -188,7 +188,7 @@ const boost::dll::shared_library& getSharedLibrary(
                               boost::dll::load_mode::search_system_folders))
                   .first->second;
     } catch (const boost::dll::fs::system_error& e) {
-      throw IllegalArgumentException("cannot open library: \"" + libraryName +
+      throw IllegalArgumentException("cannot open library: \"" + path.string() +
                                      "\": reason: " + e.what());
     }
   }
@@ -202,8 +202,10 @@ void* Utils::getFactoryFunctionVoid(const std::string& lib,
     const auto& sharedLibrary = getSharedLibrary(lib);
     return reinterpret_cast<void*>(sharedLibrary.get<void*()>(funcName));
   } catch (const boost::dll::fs::system_error&) {
+    std::string location =
+        lib.empty() ? "the application" : "library \"" + lib + "\"";
     throw IllegalArgumentException("cannot find factory function " + funcName +
-                                   " in library " + lib);
+                                   " in " + location);
   }
 }
 

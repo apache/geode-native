@@ -109,7 +109,8 @@ std::shared_ptr<CacheListener> RegionAttributes::getCacheListener() const {
 
 std::shared_ptr<PartitionResolver> RegionAttributes::getPartitionResolver()
     const {
-  if (!m_partitionResolver && !m_partitionResolverLibrary.empty()) {
+  if (!m_partitionResolver && (!m_partitionResolverLibrary.empty() ||
+                               !m_partitionResolverFactory.empty())) {
     if (CacheXmlParser::managedPartitionResolverFn_ &&
         m_partitionResolverFactory.find('.') != std::string::npos) {
       // this is a managed library
