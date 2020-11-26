@@ -193,7 +193,7 @@ config:
         done
 #@ end
 
-#@ def remote_task(name, config, commands, timeout, params={}, attempts=None):
+#@ def remote_task(name, config, commands, timeout, params={}, attempts=1):
 task: #@ name
 timeout: #@ timeout
 image: task-image
