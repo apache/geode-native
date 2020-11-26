@@ -5,7 +5,7 @@ google:
   zone: us-central1-f
 
 repository:
-  base: http://github.com/
+  base: https://github.com/
   owner: pivotal-jbarrett
   project: geode-native
   branch: wip/images-gcp
