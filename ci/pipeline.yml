@@ -55,4 +55,4 @@ jobs:
   - #@ build_job(extends_build(build), config)
   - #@ packer_job(extends_build(build))
   #@ end
-  - #@ update_pipeline_job()
+  - #@ update_pipeline_job(data.values.repository)

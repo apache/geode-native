@@ -382,7 +382,7 @@ plan:
 
 #@ end
 
-#@ def update_pipeline_job():
+#@ def update_pipeline_job(repository):
 name: update-pipeline
 serial: true
 plan:
@@ -408,6 +408,10 @@ plan:
           - --file
           - source/ci/.
           - --output-files
+          - #@ "--data-value repository.base=" + repository.base
+          - #@ "--data-value repository.owner=" + repository.owner
+          - #@ "--data-value repository.project=" + repository.project
+          - #@ "--data-value repository.branch=" + repository.branch
           - pipeline/
   - set_pipeline: self
     file: pipeline/pipeline.yml
