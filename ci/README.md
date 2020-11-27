@@ -1,20 +1,53 @@
 # Publish Pipeline
 ```console
-./set-pipeline.sh
+./set-pipeline.sh --help
 ```
-Produces output.yml side effect.
-Set `FLY=/path/to/fly` to select version of fly.
 
+## Example
+Given the local repository looks like the following.
+```console
+$ git remote get-url origin
+git@github.com:some-user/geode-native.git
 
-# Steps
-1. Creates instances
-2. Waits for instance to be accessible
+$ git branch --show-current
+wip/some-branch
+```
+
+### Typical
+The most typical usage should require nothing more than the Concourse target, unless that happens to be named "default".
+Everything else has reasonable defaults based on the currently checked out branch. 
+```console
+$ ./set-pipeline.sh --target=test
+```
+Executes `fly` from the path setting pipeline to target `test` for remote repository `git@github.com:some-user/geode-native.git`.
+Pipeline name will be `some-user-wip-something` 
+
+### Alternative repository URL and fly version
+Sometimes you will have to support multiple versions of Concourse `fly` or need to fetch sources via https.
+```console
+$ ./set-pipeline.sh \
+  --fly=/path/to/fly \
+  --target=test \
+  --repository=https://github.com/some-user/geode-native.git
+```
+Executes fly at `/path/to/fly` setting pipeline to target `test` for remote repository `https://github.com/some-user/geode-native.git`.
+Pipeline name will be `some-user-wip-something` 
+
+# Pipeline Steps
+1. Creates VM instances
+2. Waits for VM instance to be accessible
 3. Builds and packages
 4. Runs all tests
 5. If anything fails it downloads the build directory for later analysis
-6. Deletes the instance
+6. Deletes the VM instances
+
+# Details
+This Coucourse pipeline is rendered using [`ytt`](https://get-ytt.io).
+## Dependencies
+* [Concourse](https://concourse-ci.org) v6.5.0+
+* [`ytt`](https://get-ytt.io) v0.28.0+
 
 #TODO
+## Concourse Installation
 * helm upgrade concourse concourse/concourse --set web.service.api.type=LoadBalancer,concourse.web.externalUrl=http://35.222.132.46:8080
-* ~/Downloads/fly -t test set-pipeline -p test -c ../../ci/pipeline.yml
 * kubectl create secret generic gcr-json-key --from-literal "value=$(cat ~/Downloads/gemfire-dev-6e8864f0768c.json)" --namespace=concourse-main
