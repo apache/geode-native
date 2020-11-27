@@ -408,10 +408,14 @@ plan:
           - --file
           - source/ci/.
           - --output-files
-          - #@ "--data-value repository.base=" + repository.base
-          - #@ "--data-value repository.owner=" + repository.owner
-          - #@ "--data-value repository.project=" + repository.project
-          - #@ "--data-value repository.branch=" + repository.branch
+          - --data-value
+          - #@ "repository.base=" + repository.base
+          - --data-value
+          - #@ "repository.owner=" + repository.owner
+          - --data-value
+          - #@ "repository.project=" + repository.project
+          - --data-value
+          - #@ "repository.branch=" + repository.branch
           - pipeline/
   - set_pipeline: self
     file: pipeline/pipeline.yml
