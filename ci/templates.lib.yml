@@ -407,7 +407,6 @@ plan:
         args:
           - --file
           - source/ci/.
-          - --output-files
           - --data-value
           - #@ "repository.base=" + repository.base
           - --data-value
@@ -416,6 +415,7 @@ plan:
           - #@ "repository.project=" + repository.project
           - --data-value
           - #@ "repository.branch=" + repository.branch
+          - --output-files
           - pipeline/
   - set_pipeline: self
     file: pipeline/pipeline.yml
