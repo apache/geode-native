@@ -239,15 +239,15 @@ config:
 #@ end
 
 #@ def net_unit_test_task(build, config):
-#@ return remote_task(".net-unit-tests", config.config, run_net_unit_tests(), "5m", build.params)
+#@ return remote_task("net-unit-tests", config.config, run_net_unit_tests(), "5m", build.params)
 #@ end
 
 #@ def net_integration_test_task(build, config):
-#@ return remote_task(".net-integration-tests", config.config, run_net_integration_tests(), "30m", build.params)
+#@ return remote_task("net-integration-tests", config.config, run_net_integration_tests(), "30m", build.params)
 #@ end
 
 #@ def net_legacy_integration_test_task(build, config):
-#@ return remote_task(".net-legacy-integration-tests", config.config, run_net_legacy_integration_tests(), "1h", build.params, 5)
+#@ return remote_task("net-legacy-integration-tests", config.config, run_net_legacy_integration_tests(), "1h", build.params, 5)
 #@ end
 
 #@ def download_build_task():
