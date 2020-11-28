@@ -89,8 +89,6 @@ config:
     - name: instance
   params:
     LABEL_PIPELINE_NAME: #@ gci_label_value(data.values.pipeline.name)
-    LABEL_REPOSITORY_URL: #@ gci_label_value(data.values.repository.url)
-    LABEL_REPOSITORY_BRANCH: #@ gci_label_value(data.values.repository.branch)
     LABEL_BUILD_CONFIG: #@ config.name
   run:
     path: bash
@@ -127,7 +125,7 @@ config:
             --image-project=${GOOGLE_PROJECT} \
             --image=${image_name} \
             --metadata-from-file ssh-keys=${ssh_keys_file} \
-            --labels=time-to-live=${time_to_live},pipeline-name=${LABEL_PIPELINE_NAME},repository-branch=${LABEL_REPOSITORY_URL},repository-branch=${LABEL_REPOSITORY_BRANCH},build-config=${LABEL_BUILD_CONFIG} \
+            --labels=time-to-live=${time_to_live},pipeline-name=${LABEL_PIPELINE_NAME},build-config=${LABEL_BUILD_CONFIG} \
             | tee ${instance_file}
 
         (@=remote_functions() @)
