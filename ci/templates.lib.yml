@@ -299,8 +299,12 @@ config:
             --quiet
 #@ end
 
+#@ def build_job_name(build, config):
+#@ return "build-" + build.name + "-" + config.name
+#@ end
+
 #@ def build_job(build, config):
-name: #@ "build-" + build.name + "-" + config.name
+name: #@ build_job_name(build, config)
 plan:
   - in_parallel:
       fail_fast: true
@@ -334,8 +338,12 @@ ensure: #@ delete_instance()
 #@ return hyphenated(value[0:62])
 #@ end
 
+#@ def packer_job_name(build):
+#@ return "packer-" + build.image_family
+#@ end
+
 #@ def packer_job(build):
-name: #@ "packer-" + build.image_family
+name: #@ packer_job_name(build)
 plan:
   - in_parallel:
       fail_fast: true
