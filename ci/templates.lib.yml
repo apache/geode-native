@@ -26,10 +26,6 @@
 #@      "run_net_integration_tests",
 #@      "run_net_legacy_integration_tests")
 
-#@ def repository_url(repository):
-#@ return repository.base + repository.owner + "/" + repository.project + ".git"
-#@ end
-
 #@ def resource(name, type, source=None, icon=None):
 name: #@ name
 type: #@ type
@@ -65,12 +61,8 @@ icon: #@ icon
 #@ return value.lower().replace(".", "-").replace("/", "-")
 #@ end
 
-#@ def pipeline_prefix():
-#@ return data.values.repository.owner + "-" + hyphenated(data.values.repository.branch)
-#@ end
-
 #@ def image_family_name(family):
-#@ return (pipeline_prefix() + "-" + family)[0:62]
+#@ return (data.values.pipeline.name + "-" + family)[0:62]
 #@ end
 
 #@ def gci_resource_name(family):
@@ -96,8 +88,8 @@ config:
   outputs:
     - name: instance
   params:
-    LABEL_REPOSITORY_OWNER: #@ gci_label_value(data.values.repository.owner)
-    LABEL_REPOSITORY_PROJECT: #@ gci_label_value(data.values.repository.project)
+    LABEL_PIPELINE_NAME: #@ gci_label_value(data.values.pipeline.name)
+    LABEL_REPOSITORY_URL: #@ gci_label_value(data.values.repository.url)
     LABEL_REPOSITORY_BRANCH: #@ gci_label_value(data.values.repository.branch)
     LABEL_BUILD_CONFIG: #@ config.name
   run:
@@ -135,7 +127,7 @@ config:
             --image-project=${GOOGLE_PROJECT} \
             --image=${image_name} \
             --metadata-from-file ssh-keys=${ssh_keys_file} \
-            --labels=time-to-live=${time_to_live},repository-owner=${LABEL_REPOSITORY_OWNER},repository-project=${LABEL_REPOSITORY_PROJECT},repository-branch=${LABEL_REPOSITORY_BRANCH},build-config=${LABEL_BUILD_CONFIG} \
+            --labels=time-to-live=${time_to_live},pipeline-name=${LABEL_PIPELINE_NAME},repository-branch=${LABEL_REPOSITORY_URL},repository-branch=${LABEL_REPOSITORY_BRANCH},build-config=${LABEL_BUILD_CONFIG} \
             | tee ${instance_file}
 
         (@=remote_functions() @)
@@ -373,8 +365,8 @@ plan:
             cd source/packer
             packer build -only=googlecompute \
                 -var-file=default.json \
-                -var owner=(@= gci_label_value(data.values.repository.owner) @) \
-                -var project=(@= gci_label_value(data.values.repository.project) @) \
+                -var pipeline=(@= gci_label_value(data.values.pipeline.name) @) \
+                -var repository=(@= gci_label_value(data.values.repository.url) @) \
                 -var branch=(@= gci_label_value(data.values.repository.branch) @) \
                 -var image_name_prefix=(@= image_family_name(build.image_family)[0:51] @) \
                 -var image_family=(@= image_family_name(build.image_family) @) \
@@ -382,7 +374,7 @@ plan:
 
 #@ end
 
-#@ def update_pipeline_job(repository):
+#@ def update_pipeline_job():
 name: update-pipeline
 serial: true
 plan:
@@ -408,13 +400,11 @@ plan:
           - --file
           - source/ci/.
           - --data-value
-          - #@ "repository.base=" + repository.base
+          - #@ "pipeline.name=" + data.values.pipeline.name
           - --data-value
-          - #@ "repository.owner=" + repository.owner
+          - #@ "repository.url=" + data.values.repository.url
           - --data-value
-          - #@ "repository.project=" + repository.project
-          - --data-value
-          - #@ "repository.branch=" + repository.branch
+          - #@ "repository.branch=" + data.values.repository.branch
           - --output-files
           - pipeline/
   - set_pipeline: self
