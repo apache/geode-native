@@ -66,15 +66,14 @@ if [[ ${repository} =~ ^((https|git)(:\/\/|@)([^\/:]+)[\/:])([^\/:]+)\/(.+).git$
   git_project=${BASH_REMATCH[6]}
 fi
 
-bash -c "${ytt} \$@" ytt -f pipeline.yml -f templates.lib.yml -f templates.lib.txt -f data.yml \
-  --data-value repository.base=${git_base} \
-  --data-value repository.owner=${git_owner} \
-  --data-value repository.project=${git_project} \
-  --data-value repository.branch=${branch} \
-  > ${output}
-
 pipeline=${pipeline:-${git_owner}-${branch}}
 pipeline=${pipeline//[^[:word:]-]/-}
+
+bash -c "${ytt} \$@" ytt -f pipeline.yml -f templates.lib.yml -f templates.lib.txt -f data.yml \
+  --data-value pipeline.name=${pipeline} \
+  --data-value repository.url=${repository} \
+  --data-value repository.branch=${branch} \
+  > ${output}
 
 bash -c "${fly} \$@" fly --target=${target} \
   set-pipeline --pipeline=${pipeline} --config=${output}
