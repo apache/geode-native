@@ -22,14 +22,16 @@ $0 Usage:
 Sets Concourse pipeline for Geode Native builds.
 
 Options:
-Environment Variable  Parameter     Description                 Default
-target                --target      Fly target.                 "default"
-branch                --branch      Branch to build.            Current checked out branch.
-repository            --repository  Remote URL for repository.  Current tracking branch repository.
-pipeline              --pipeline    Name of pipeline to set.    Based on repository owner name and branch.
-fly                   --fly         Path to fly executable.     "fly"
-ytt                   --ytt         Path to ytt executable.     "ytt"
-output                --output      Rendered pipeline file.     Temporary file.
+Environment Var  Parameter         Description                 Default
+target           --target          Fly target.                 "default"
+branch           --branch          Branch to build.            Current checked out branch.
+repository       --repository      Remote URL for repository.  Current tracking branch repository.
+pipeline         --pipeline        Name of pipeline to set.    Based on repository owner name and branch.
+google_zone      --google-zone     Google Compute project.     Current default project.
+google_project   --google-project  Google Compute zone.        Current default zone.
+fly              --fly             Path to fly executable.     "fly"
+ytt              --ytt             Path to ytt executable.     "ytt"
+output           --output          Rendered pipeline file.     Temporary file.
 EOF
 }
 
@@ -69,10 +71,15 @@ fi
 pipeline=${pipeline:-${git_owner}-${branch}}
 pipeline=${pipeline//[^[:word:]-]/-}
 
+google_project=${google_project:-$(gcloud config get-value project)}
+google_zone=${google_zone:-$(gcloud config get-value compute/zone)}
+
 bash -c "${ytt} \$@" ytt -f pipeline.yml -f templates.lib.yml -f templates.lib.txt -f data.yml \
   --data-value pipeline.name=${pipeline} \
   --data-value repository.url=${repository} \
   --data-value repository.branch=${branch} \
+  --data-value google.project=${google_project} \
+  --data-value google.zone=${google_zone} \
   > ${output}
 
 bash -c "${fly} \$@" fly --target=${target} \
