@@ -21,9 +21,6 @@ pipeline:
 repository:
   url: https://github.com/apache/geode-native
   branch: develop
-  base: https://github.com/
-  owner: apache
-  project: geode-native
 
 google:
   project: gemfire-dev
