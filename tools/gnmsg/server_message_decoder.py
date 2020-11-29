@@ -156,14 +156,27 @@ class ServerMessageDecoder(DecoderBase):
         result = False
 
         expression = re.compile(
-            r"(\d\d:\d\d:\d\d\.\d+).*TcrConnection::readResponseHeader:\s*received header from endpoint\s*([\w|:|\d|\.|-]+);\s*bytes:\s*([\d|a-f|A-F]+)"
+            r"(\d\d:\d\d:\d\d\.\d+).*TcrConnection::readResponseHeader\(([0-9|a-f|A-F|x]+)\):\s*received header from endpoint\s*([\w|:|\d|\.|-]+);\s*bytes:\s*([\d|a-f|A-F]+)"
         )
         match = expression.search(line)
         if match:
             parts.append(parser.parse(match.group(1)))
             parts.append(match.group(2))
             parts.append(match.group(3))
+            parts.append(match.group(4))
             result = True
+
+        if not result:
+            expression = re.compile(
+                r"(\d\d:\d\d:\d\d\.\d+).*TcrConnection::readResponseHeader:\s*received header from endpoint\s*([\w|:|\d|\.|-]+);\s*bytes:\s*([\d|a-f|A-F]+)"
+            )
+            match = expression.search(line)
+            if match:
+                parts.append(parser.parse(match.group(1)))
+                parts.append("")
+                parts.append(match.group(2))
+                parts.append(match.group(3))
+                result = True
 
         return result
 
@@ -171,14 +184,27 @@ class ServerMessageDecoder(DecoderBase):
         # Check if this is a header for a chunked message
         result = False
         expression = re.compile(
-            r"(\d\d:\d\d:\d\d\.\d+).*TcrConnection::readChunkHeader:\s*.*, chunkLen=(\d+), lastChunkAndSecurityFlags=([0-9|a-f|A-F|x]+)"
+            r"(\d\d:\d\d:\d\d\.\d+).*TcrConnection::readChunkHeader\(([0-9|a-f|A-F|x]+)\):\s*.*, chunkLen=(\d+), lastChunkAndSecurityFlags=([0-9|a-f|A-F|x]+)"
         )
         match = expression.search(line)
         if match:
             parts.append(parser.parse(match.group(1)))
             parts.append(match.group(2))
             parts.append(match.group(3))
+            parts.append(match.group(4))
             result = True
+
+        if not result:
+            expression = re.compile(
+                r"(\d\d:\d\d:\d\d\.\d+).*TcrConnection::readChunkHeader:\s*.*, chunkLen=(\d+), lastChunkAndSecurityFlags=([0-9|a-f|A-F|x]+)"
+            )
+            match = expression.search(line)
+            if match:
+                parts.append(parser.parse(match.group(1)))
+                parts.append("")
+                parts.append(match.group(2))
+                parts.append(match.group(3))
+                result = True
 
         return result
 
@@ -187,14 +213,27 @@ class ServerMessageDecoder(DecoderBase):
         # If it is, add it to the chunked decoder
         result = False
         expression = re.compile(
-            r"(\d\d:\d\d:\d\d\.\d+).*TcrConnection::readChunkBody: \s*received chunk body from endpoint\s*([\w|:|\d|\.|-]+);\s*bytes:\s*([\d|a-f|A-F]+)"
+            r"(\d\d:\d\d:\d\d\.\d+).*TcrConnection::readChunkBody\(([0-9|a-f|A-F|x]+)\): \s*received chunk body from endpoint\s*([\w|:|\d|\.|-]+);\s*bytes:\s*([\d|a-f|A-F]+)"
         )
         match = expression.search(line)
         if match:
             parts.append(parser.parse(match.group(1)))
             parts.append(match.group(2))
             parts.append(match.group(3))
+            parts.append(match.group(4))
             result = True
+
+        if not result:
+            expression = re.compile(
+                r"(\d\d:\d\d:\d\d\.\d+).*TcrConnection::readChunkBody: \s*received chunk body from endpoint\s*([\w|:|\d|\.|-]+);\s*bytes:\s*([\d|a-f|A-F]+)"
+            )
+            match = expression.search(line)
+            if match:
+                parts.append(parser.parse(match.group(1)))
+                parts.append("")
+                parts.append(match.group(2))
+                parts.append(match.group(3))
+                result = True
 
         return result
 
@@ -268,14 +307,14 @@ class ServerMessageDecoder(DecoderBase):
         elif self.get_add_security_trace_parts(line, parts):
             connection = parts[1]
         elif self.get_response_header(line, parts):
-            self.chunk_decoder.add_header(parts[2])
+            self.chunk_decoder.add_header(parts[3])
         elif self.get_chunk_header(line, parts):
             flags = 0xff
             size = 0
-            (flags, size) = read_number_from_hex_string(parts[2], 2, len(parts[2]) - 2)
+            (flags, size) = read_number_from_hex_string(parts[3], 2, len(parts[3]) - 2)
             self.chunk_decoder.add_chunk_header(parts[1], flags)
         elif self.get_chunk_bytes(line, parts):
-            self.chunk_decoder.add_chunk(parts[2])
+            self.chunk_decoder.add_chunk(parts[3])
             if self.chunk_decoder.is_complete_message():
                 self.output_queue_.put({"message": self.chunk_decoder.get_decoded_message()})
                 self.chunk_decoder.reset()

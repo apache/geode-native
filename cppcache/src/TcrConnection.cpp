@@ -678,7 +678,7 @@ char* TcrConnection::readMessage(size_t* recvLen,
   }
 
   LOGDEBUG(
-      "TcrConnection::readMessage: [%p] received header from endpoint %s; "
+      "TcrConnection::readMessage(%p): received header from endpoint %s; "
       "bytes: %s",
       this, m_endpointObj->name().c_str(),
       Utils::convertBytesToString(msg_header, HEADER_LENGTH).c_str());
@@ -815,9 +815,13 @@ chunkedResponseHeader TcrConnection::readResponseHeader(
   }
 
   LOGDEBUG(
-      "TcrConnection::readResponseHeader: received header from "
+      "TcrConnection::readResponseHeader(%p): received header from "
       "endpoint %s; bytes: %s",
+<<<<<<< HEAD
       m_endpointObj->name().c_str(),
+=======
+      this, m_endpoint,
+>>>>>>> GEODE-8532: Add connection to chunked message logging
       Utils::convertBytesToString(receiveBuffer, HEADER_LENGTH).c_str());
 
   auto input = m_connectionManager.getCacheImpl()->createDataInput(
@@ -828,7 +832,7 @@ chunkedResponseHeader TcrConnection::readResponseHeader(
   header.header.chunkLength = input.readInt32();
   header.header.flags = input.read();
   LOGDEBUG(
-      "TcrConnection::readResponseHeader: "
+      "TcrConnection::readResponseHeader(%p): "
       "messageType=%" PRId32 ", numberOfParts=%" PRId32
       ", transactionId=%" PRId32 ", chunkLength=%" PRId32
       ", lastChunkAndSecurityFlags=0x%" PRIx8,
@@ -867,9 +871,9 @@ chunkHeader TcrConnection::readChunkHeader(std::chrono::microseconds timeout) {
   header.chunkLength = input.readInt32();
   header.flags = input.read();
   LOGDEBUG(
-      "TcrConnection::readChunkHeader: "
+      "TcrConnection::readChunkHeader(%p): "
       ", chunkLen=%" PRId32 ", lastChunkAndSecurityFlags=0x%" PRIx8,
-      header.chunkLength, header.flags);
+      this, header.chunkLength, header.flags);
 
   return header;
 }
@@ -892,9 +896,13 @@ std::vector<uint8_t> TcrConnection::readChunkBody(
   }
 
   LOGDEBUG(
-      "TcrConnection::readChunkBody: received chunk body from endpoint "
+      "TcrConnection::readChunkBody(%p): received chunk body from endpoint "
       "%s; bytes: %s",
+<<<<<<< HEAD
       m_endpointObj->name().c_str(),
+=======
+      this, m_endpoint,
+>>>>>>> GEODE-8532: Add connection to chunked message logging
       Utils::convertBytesToString(chunkBody.data(), chunkLength).c_str());
   return chunkBody;
 }
