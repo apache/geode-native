@@ -411,6 +411,10 @@ plan:
           - #@ "repository.url=" + data.values.repository.url
           - --data-value
           - #@ "repository.branch=" + data.values.repository.branch
+          - --data-value
+          - #@ "google.project=" + data.values.google.project
+          - --data-value
+          - #@ "google.zone=" + data.values.google.zone
           - --output-files
           - pipeline/
   - set_pipeline: self

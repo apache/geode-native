@@ -23,7 +23,7 @@ repository:
   branch: develop
 
 google:
-  project: gemfire-dev
+  project: apachegeode-ci
   zone: us-central1-f
 
 default:

@@ -42,10 +42,12 @@ Pipeline name will be `some-user-wip-something`
 6. Deletes the VM instances
 
 # Details
-This Coucourse pipeline is rendered using [`ytt`](https://get-ytt.io).
+This Concourse pipeline YAML is rendered using `ytt`. Depends on output from `git` and `gcloud`.
 ## Dependencies
 * [Concourse](https://concourse-ci.org) v6.5.0+
 * [`ytt`](https://get-ytt.io) v0.28.0+
+* [`git`](https://git-scm.com) v2.25.2+
+* [`gcloud`](https://cloud.google.com/sdk/docs/install) SDK
 
 #TODO
 ## Concourse Installation
