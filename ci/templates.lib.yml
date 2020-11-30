@@ -79,7 +79,7 @@ icon: #@ icon
 
 #@ def create_instance(build, config):
 task: create
-image: task-image
+image: gcloud-image
 config:
   platform: linux
   inputs:
@@ -108,13 +108,13 @@ config:
         ssh_keys_file=${INSTANCE_DIR}/ssh_keys_file
         echo "${INSTANCE_USER}:${ssh_pubkey}" > ${ssh_keys_file}
 
-        instance_name=build-$(uuidgen|tr '[:upper:]' '[:lower:]')
+        instance_name=build-$(cat /proc/sys/kernel/random/uuid)
         image_name=$(cat image/name)
         time_to_live=$(( $(date +%s) + ( 4 * 60 * 60 ) ))
 
-        instance_file=${INSTANCE_DIR}/instance.json
+        instance_file=${INSTANCE_DIR}/instance.sh
         gcloud compute instances create ${instance_name} \
-            --format json \
+            --format='config[export](name,networkInterfaces[0].accessConfigs[0].natIP)' \
             --project=${GOOGLE_PROJECT} \
             --zone=${GOOGLE_ZONE} \
             --subnet=default \
@@ -126,9 +126,9 @@ config:
             --image=${image_name} \
             --metadata-from-file ssh-keys=${ssh_keys_file} \
             --labels=time-to-live=${time_to_live},pipeline-name=${LABEL_PIPELINE_NAME},build-config=${LABEL_BUILD_CONFIG} \
-            | tee ${instance_file}
+            > ${instance_file}
 
-        (@=remote_functions() @)
+        (@= remote_functions() @)
         SSH_OPTIONS="${SSH_OPTIONS} -o ConnectTimeout=10"
 
         echo "Waiting for ssh on ${instance_name} to be ready."
@@ -139,13 +139,14 @@ config:
               --start ${console_next} \
               --project=${GOOGLE_PROJECT} \
               --zone=${GOOGLE_ZONE} \
-              --format json \
+              --format='value[separator="
+        "](next,contents)' \
               > ${console_file}
 
-          console_next=$(jq -r '.next' ${console_file})
-          console_contents=$(jq -r '.contents' ${console_file} | sed 's/\x1b\[[0-9;]*[a-zA-Z]//g')
-          if [ ! -z "${console_contents}" ]; then
-            echo -n "${console_contents}"
+          tmp_next=$(head -n 1 ${console_file})
+          if (( tmp_next != console_next )); then
+            console_next=${tmp_next}
+            sed '1d;s/\x1b\[[0-9;]*J//g'
           fi
         done
 #@ end
@@ -274,7 +275,7 @@ config:
 
 #@ def delete_instance():
 task: delete
-image: task-image
+image: gcloud-image
 config:
   platform: linux
   inputs:
@@ -290,7 +291,7 @@ config:
         (@= google_variables() @)
         (@= remote_functions() @)
 
-        instance_name=$(jq -r '.[0].name' ${instance_file})
+        instance_name=$(source ${instance_file} && echo -n ${name})
 
         gcloud compute instances delete ${instance_name} \
             --project=${GOOGLE_PROJECT} \
@@ -315,6 +316,7 @@ plan:
             - in_parallel:
                 fail_fast: true
                 steps:
+                  - get: gcloud-image
                   - get: task-image
                   - get: #@ gci_resource_name(image_family_name(build.image_family))
                     trigger: true
