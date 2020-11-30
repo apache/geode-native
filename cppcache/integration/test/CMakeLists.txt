@@ -25,6 +25,7 @@ add_executable(cpp-integration-test
   DataSerializableTest.cpp
   EnableChunkHandlerThreadTest.cpp
   ExampleTest.cpp
+  ExceptionTranslationTest.cpp
   ExpirationTest.cpp
   FunctionExecutionTest.cpp
   LRUEvictionTest.cpp
