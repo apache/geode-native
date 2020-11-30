@@ -836,7 +836,7 @@ chunkedResponseHeader TcrConnection::readResponseHeader(
       "messageType=%" PRId32 ", numberOfParts=%" PRId32
       ", transactionId=%" PRId32 ", chunkLength=%" PRId32
       ", lastChunkAndSecurityFlags=0x%" PRIx8,
-      header.messageType, header.numberOfParts, header.transactionId,
+      this, header.messageType, header.numberOfParts, header.transactionId,
       header.header.chunkLength, header.header.flags);
 
   return header;
