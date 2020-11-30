@@ -27,18 +27,21 @@
 #@      "run_net_legacy_integration_tests")
 
 #@ def resource(name, type, source=None, icon=None):
-name: #@ name
-type: #@ type
-source: #@ source
-icon: #@ icon
+#@ return {
+#@   "name": name,
+#@   "type": type,
+#@   "source": source,
+#@   "icon": icon
+#@ }
 #@ end
 
-#@ def docker_image_resource(name, repository, tag="latest", username=None, password=None):
+#@ def docker_image_resource(name, repository, tag="latest", username=None, password=None, mirror="https://mirror.gcr.io"):
 #@ return resource(name, "docker-image", {
 #@   "repository": repository,
 #@   "tag": tag,
 #@   "username": username,
-#@   "password": password
+#@   "password": password,
+#@   "registry_mirror": mirror
 #@  }, "docker")
 #@ end
 
