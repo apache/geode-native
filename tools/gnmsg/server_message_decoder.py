@@ -307,12 +307,12 @@ class ServerMessageDecoder(DecoderBase):
         elif self.get_add_security_trace_parts(line, parts):
             connection = parts[1]
         elif self.get_response_header(line, parts):
-            self.chunk_decoder.add_header(parts[3])
+            self.chunk_decoder.add_header(parts[1], parts[3])
         elif self.get_chunk_header(line, parts):
             flags = 0xff
             size = 0
             (flags, size) = read_number_from_hex_string(parts[3], 2, len(parts[3]) - 2)
-            self.chunk_decoder.add_chunk_header(parts[1], flags)
+            self.chunk_decoder.add_chunk_header(parts[2], flags)
         elif self.get_chunk_bytes(line, parts):
             self.chunk_decoder.add_chunk(parts[3])
             if self.chunk_decoder.is_complete_message():

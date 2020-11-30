@@ -25,7 +25,7 @@ class ChunkedResponseDecoder:
     def __init__(self):
         self.reset()
 
-    def add_header(self, header):
+    def add_header(self, connection, header):
         if len(self.chunked_message) > 0:
             raise Exception("Previous chunked message is not completed, can't process another header")
 
@@ -35,7 +35,7 @@ class ChunkedResponseDecoder:
             (message_type, offset) = call_reader_function(header, offset, read_int_value)
             self.chunked_message["Type"] = message_types[message_type]
             # TODO: pass connection value in as a parameter
-            self.chunked_message["Connection"] = ""
+            self.chunked_message["Connection"] = connection
             self.chunked_message["Direction"] = "<---"
             (self.chunked_message["Parts"], offset) = call_reader_function(header, offset, read_int_value)
             (self.chunked_message["TransactionId"], offset) = call_reader_function(header, offset, read_int_value)
@@ -54,7 +54,7 @@ class ChunkedResponseDecoder:
             raise Exception("Can't add chunk header before message header")
 
         key = "Chunk" + str(self.chunk_index)
-        inner_item = dict(ChunkLength=chunk_size, Flags=flags)
+        inner_item = dict(ChunkLength=int(chunk_size), Flags=flags)
         outer_item = {}
         outer_item[key] = inner_item
         self.chunked_message["ChunkInfo"].append(outer_item)
