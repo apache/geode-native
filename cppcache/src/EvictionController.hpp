@@ -23,13 +23,11 @@
 #include <atomic>
 #include <condition_variable>
 #include <mutex>
+#include <set>
 #include <string>
 #include <thread>
-#include <vector>
 
 #include <boost/thread/shared_mutex.hpp>
-
-#include "EvictionThread.hpp"
 
 namespace apache {
 namespace geode {
@@ -64,7 +62,7 @@ class CacheImpl;
  */
 class EvictionController {
  public:
-  EvictionController(size_t maxHeapSize, int32_t heapSizeDelta,
+  EvictionController(int64_t max_heap_size, int64_t heap_size_delta,
                      CacheImpl* cache);
 
   inline ~EvictionController() noexcept = default;
@@ -75,29 +73,27 @@ class EvictionController {
 
   void svc(void);
 
-  void updateRegionHeapInfo(int64_t info);
+  void evict(float percentage);
+  void incrementHeapSize(int64_t delta);
   void registerRegion(const std::string& name);
-  void deregisterRegion(const std::string& name);
-  void evict(int32_t percentage);
+  void unregisterRegion(const std::string& name);
 
  private:
-  void orderEvictions(int32_t percentage);
-  void processHeapInfo(int64_t& readInfo, int64_t& pendingEvictions);
+  void checkHeapSize();
 
  private:
-  std::thread m_thread;
-  std::atomic<bool> m_run;
-  int64_t m_maxHeapSize;
-  int64_t m_heapSizeDelta;
-  CacheImpl* m_cacheImpl;
-  int64_t m_currentHeapSize;
-  std::deque<int64_t> m_queue;
-  std::mutex m_queueMutex;
-  std::condition_variable m_queueCondition;
-  std::vector<std::string> m_regions;
-  boost::shared_mutex m_regionLock;
-  EvictionThread m_evictionThread;
-  static const char* NC_EC_Thread;
+  CacheImpl* cache_;
+
+  std::thread thread_;
+  std::atomic<bool> running_;
+
+  int64_t max_heap_size_;
+  float heap_size_delta_;
+  std::atomic<int64_t> heap_size_;
+  std::condition_variable cv_;
+
+  std::set<std::string> regions_;
+  boost::shared_mutex regions_mutex_;
 };
 
 }  // namespace client

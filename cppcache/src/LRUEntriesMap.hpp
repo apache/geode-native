@@ -27,8 +27,8 @@
 
 #include "ConcurrentEntriesMap.hpp"
 #include "LRUAction.hpp"
-#include "LRUList.hpp"
 #include "LRUMapEntry.hpp"
+#include "LRUQueue.hpp"
 #include "MapEntryT.hpp"
 #include "util/concurrent/spinlock_mutex.hpp"
 
@@ -58,13 +58,15 @@ class EvictionController;
  */
 class APACHE_GEODE_EXPORT LRUEntriesMap : public ConcurrentEntriesMap {
  protected:
+  using spinlock_mutex = ::apache::geode::util::concurrent::spinlock_mutex;
+
+ protected:
   LRUAction* m_action;
-  LRUList<MapEntryImpl, MapEntryT<LRUMapEntry, 0, 0> > m_lruList;
+  LRUQueue lru_queue_;
   uint32_t m_limit;
   std::shared_ptr<PersistenceManager> m_pmPtr;
   EvictionController* m_evictionControllerPtr;
-  int64_t m_currentMapSize;
-  spinlock_mutex m_mapInfoLock;
+  std::atomic<int64_t> m_currentMapSize;
   std::string m_name;
   std::atomic<uint32_t> m_validEntries;
   bool m_heapLRUEnabled;
@@ -99,7 +101,7 @@ class APACHE_GEODE_EXPORT LRUEntriesMap : public ConcurrentEntriesMap {
                            int updateCount, int destroyTracker,
                            std::shared_ptr<VersionTag> versionTag);
   virtual bool get(const std::shared_ptr<CacheableKey>& key,
-                   std::shared_ptr<Cacheable>& returnPtr,
+                   std::shared_ptr<Cacheable>& value,
                    std::shared_ptr<MapEntryImpl>& me);
   virtual std::shared_ptr<Cacheable> getFromDisk(
       const std::shared_ptr<CacheableKey>& key,
