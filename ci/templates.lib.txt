@@ -43,13 +43,13 @@ if [ ! -r "${ssh_key_file}" ]; then
   exit 1
 fi
 
-instance_file=${INSTANCE_DIR}/instance.json
+instance_file=${INSTANCE_DIR}/instance.sh
 if [ ! -r "${instance_file}" ]; then
   echo "${instance_file} not readable."
   exit 1
 fi
 
-external_ip=$(jq -r '.[0].networkInterfaces[0].accessConfigs[0].natIP' ${instance_file})
+external_ip=$(source ${instance_file} && echo -n ${networkInterfaces_accessConfigs_natIP})
 
 function remote_shell {
   ssh ${SSH_OPTIONS} -i ${ssh_key_file} ${INSTANCE_USER}@${external_ip} "$@"
