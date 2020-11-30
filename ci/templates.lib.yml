@@ -146,7 +146,7 @@ config:
           tmp_next=$(head -n 1 ${console_file})
           if (( tmp_next != console_next )); then
             console_next=${tmp_next}
-            sed '1d;s/\x1b\[[0-9;]*J//g'
+            sed '1d;s/\x1b\[[0-9;]*[JH]//g' ${console_file}
           fi
         done
 #@ end
