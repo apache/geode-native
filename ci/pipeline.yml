@@ -28,7 +28,9 @@
 #@      "docker_job",
 #@      "docker_job_name",
 #@      "update_pipeline_job",
-#@      "update_pipeline_job_name")
+#@      "update_pipeline_job_name",
+#@      "version_source_job",
+#@      "version_source_job_name")
 #@ load("@ytt:data", "data")
 #@ load("@ytt:overlay", "overlay")
 #@ load("@ytt:struct", "struct")
@@ -63,6 +65,7 @@ jobs:
   - #@ build_job(extends_build(build), config)
   - #@ packer_job(extends_build(build))
   #@ end
+  - #@ version_source_job()
   - #@ update_pipeline_job()
   - #@ docker_job("task-image", "ci-source", "ci/docker/task")
 
@@ -90,3 +93,4 @@ groups:
       #@ end
       - #@ update_pipeline_job_name()
       - #@ docker_job_name("task-image")
+      - #@ version_source_job_name()
