@@ -18,7 +18,7 @@
 #@      "project_gcr_image_resource",
 #@      "git_resource",
 #@      "gci_resource",
-#@      "docker_image_resource",
+#@      "registry_image_resource",
 #@      "image_family_name",
 #@      "build_job",
 #@      "build_job_name",
@@ -42,8 +42,8 @@ resource_types:
 resources:
   - #@ gcr_image_resource("gcloud-image", "google.com/cloudsdktool/cloud-sdk", "alpine")
   - #@ project_gcr_image_resource("task-image", "geode-native-task")
-  - #@ docker_image_resource("packer-image", "hashicorp/packer")
-  - #@ docker_image_resource("ytt-image", "gerritk/ytt")
+  - #@ registry_image_resource("packer-image", "hashicorp/packer")
+  - #@ registry_image_resource("ytt-image", "gerritk/ytt")
   - #@ git_resource("source", data.values.repository.url, data.values.repository.branch, ignore_paths=["ci/*", "packer/*"])
   - #@ git_resource("ci-source", data.values.repository.url, data.values.repository.branch, ["ci/*"])
   - #@ git_resource("packer-source", data.values.repository.url, data.values.repository.branch, ["packer/*"])
