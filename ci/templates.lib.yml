@@ -329,8 +329,11 @@ plan:
       fail_fast: true
       steps:
         - get: version
+          trigger: false
+          passed: [ version-source ]
         - get: source
-          trigger: true
+          trigger: false
+          passed: [ version-source ]
         - do:
             - in_parallel:
                 fail_fast: true
@@ -473,4 +476,24 @@ plan:
 #@     "json_key": "((gcr-json-key))"
 #@   },
 #@   "numeric-1-box-multiple")
+#@ end
+
+#@ def version_source_job_name():
+#@   return "version-source"
+#@ end
+
+#@ def version_source_job():
+name: #@ version_source_job_name()
+plan:
+  - in_parallel:
+      fail_fast: true
+      steps:
+        - get: version
+          params:
+            pre: build
+        - get: source
+          trigger: true
+  - put: version
+    params:
+      file: version/number
 #@ end
