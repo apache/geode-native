@@ -46,7 +46,11 @@
 #@ end
 
 #@ def gcr_image_resource(name, repository, tag="latest"):
-#@ return docker_image_resource(name, repository, tag, "_json_key", "((gcr-json-key))")
+#@ return docker_image_resource(name, "gcr.io/" + repository, tag, "_json_key", "((gcr-json-key))", None)
+#@ end
+
+#@ def project_gcr_image_resource(name, repository, tag="latest"):
+#@ return gcr_image_resource(name, data.values.google.project + "/" + repository, tag)
 #@ end
 
 #@ def git_resource(name, uri, branch, paths=[], ignore_paths=[], depth=1):
