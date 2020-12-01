@@ -65,7 +65,8 @@ jobs:
         trigger: true
       - put: task-image
         params:
-          build: ci/docker/task
+          build: ci-source/ci/docker/task
+          cache: true
 
 groups:
   - name: builds
