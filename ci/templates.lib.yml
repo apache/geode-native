@@ -328,6 +328,7 @@ plan:
   - in_parallel:
       fail_fast: true
       steps:
+        - get: version
         - get: source
           trigger: true
         - do:
@@ -458,4 +459,18 @@ plan:
     params:
       build: #@ source + "/" + path
       cache: true
+#@ end
+
+#@ def semver_resource(name):
+#@ return resource(
+#@   name,
+#@   "semver",
+#@   {
+#@     "initial_version": "1.14.0-build.0",
+#@     "driver": "gcs",
+#@     "bucket": data.values.google.project + "-semver",
+#@     "key": "geode-native/" + data.values.pipeline.name + "/" + name,
+#@     "json_key": "((gcr-json-key))"
+#@   },
+#@   "numeric-1-box-multiple")
 #@ end
