@@ -400,8 +400,12 @@ plan:
 
 #@ end
 
+#@ def update_pipeline_job_name():
+#@ return "update-pipeline"
+#@ end
+
 #@ def update_pipeline_job():
-name: update-pipeline
+name: #@ update_pipeline_job_name()
 serial: true
 plan:
   - in_parallel:
@@ -439,4 +443,19 @@ plan:
           - pipeline/
   - set_pipeline: self
     file: pipeline/pipeline.yml
+#@ end
+
+#@ def docker_job_name(name):
+#@ return "docker-" + name
+#@ end
+
+#@ def docker_job(name, source, path):
+name: #@ docker_job_name(name)
+plan:
+  - get: #@ source
+    trigger: true
+  - put: #@ name
+    params:
+      build: #@ source + "/" + path
+      cache: true
 #@ end
