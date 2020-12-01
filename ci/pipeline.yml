@@ -24,7 +24,10 @@
 #@      "build_job_name",
 #@      "packer_job",
 #@      "packer_job_name",
-#@      "update_pipeline_job")
+#@      "docker_job",
+#@      "docker_job_name",
+#@      "update_pipeline_job",
+#@      "update_pipeline_job_name")
 #@ load("@ytt:data", "data")
 #@ load("@ytt:overlay", "overlay")
 #@ load("@ytt:struct", "struct")
@@ -59,14 +62,7 @@ jobs:
   - #@ packer_job(extends_build(build))
   #@ end
   - #@ update_pipeline_job()
-  - name: docker-ci
-    plan:
-      - get: ci-source
-        trigger: true
-      - put: task-image
-        params:
-          build: ci-source/ci/docker/task
-          cache: true
+  - #@ docker_job("task-image", "ci-source", "ci/docker/task")
 
 groups:
   - name: builds
@@ -79,10 +75,10 @@ groups:
     jobs:
       #@ for/end build in data.values.builds:
       - #@ packer_job_name(extends_build(build))
-      - docker-ci
+      - #@ docker_job_name("task-image")
   - name: meta
     jobs:
-      - update-pipeline
+      - #@ update_pipeline_job_name()
   - name: all
     jobs:
       #@ for build in data.values.builds:
@@ -90,5 +86,5 @@ groups:
       - #@ build_job_name(extends_build(build), config)
       - #@ packer_job_name(extends_build(build))
       #@ end
-      - update-pipeline
-      - docker-ci
+      - #@ update_pipeline_job_name()
+      - #@ docker_job_name("task-image")
