@@ -35,22 +35,33 @@
 #@ }
 #@ end
 
-#@ def docker_image_resource(name, repository, tag="latest", username=None, password=None, mirror="https://mirror.gcr.io"):
+#@ def registry_image_resource(name, repository, tag="latest", username=None, password=None, mirror="mirror.gcr.io"):
+#@ return resource(name, "registry-image", {
+#@   "repository": repository,
+#@   "tag": tag,
+#@   "username": username,
+#@   "password": password,
+#@   "registry_mirror": {
+#@     "host": mirror
+#@   }
+#@ }, "docker")
+#@ end
+
+#@ def gcr_image_resource(name, repository, tag="latest"):
+#@ return registry_image_resource(name, "gcr.io/" + repository, tag, "_json_key", "((gcr-json-key))", None)
+#@ end
+
+#@ def docker_image_resource(name, repository, tag="latest", username=None, password=None):
 #@ return resource(name, "docker-image", {
 #@   "repository": repository,
 #@   "tag": tag,
 #@   "username": username,
 #@   "password": password,
-#!@   "registry_mirror": mirror
 #@  }, "docker")
 #@ end
 
-#@ def gcr_image_resource(name, repository, tag="latest"):
-#@ return docker_image_resource(name, "gcr.io/" + repository, tag, "_json_key", "((gcr-json-key))", None)
-#@ end
-
 #@ def project_gcr_image_resource(name, repository, tag="latest"):
-#@ return gcr_image_resource(name, data.values.google.project + "/" + repository, tag)
+#@ return docker_image_resource(name, "gcr.io/" + data.values.google.project + "/" + repository, tag, "_json_key", "((gcr-json-key))")
 #@ end
 
 #@ def git_resource(name, uri, branch, paths=[], ignore_paths=[], depth=1):
