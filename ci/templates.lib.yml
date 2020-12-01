@@ -202,7 +202,7 @@ config:
         remote_shell git clone ${git_url} source
         remote_shell cmake -E chdir source git checkout ${git_rev}
         remote_shell cmake -E make_directory build
-        remote_shell cmake -E chdir build cmake ../source ${CMAKE_CONFIGURE_FLAGS} -DCMAKE_config=${CMAKE_CONFIG}
+        remote_shell cmake -E chdir build cmake ../source ${CMAKE_CONFIGURE_FLAGS} -DCMAKE_BUILD_TYPE=${CMAKE_CONFIG}
         remote_shell cmake --build build --config ${CMAKE_CONFIG} -- ${CMAKE_BUILD_FLAGS}
         remote_shell cmake --build build --config ${CMAKE_CONFIG} --target docs -- ${CMAKE_BUILD_FLAGS}
         remote_shell cmake -E chdir build cpack -C ${CMAKE_CONFIG} -G "${CPACK_GENERATORS}" | tee cpack.out
