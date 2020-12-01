@@ -461,12 +461,12 @@ plan:
       cache: true
 #@ end
 
-#@ def semver_resource(name):
+#@ def semver_resource(name, initialVersion="0.1.0-build.0"):
 #@ return resource(
 #@   name,
 #@   "semver",
 #@   {
-#@     "initial_version": "1.14.0-build.0",
+#@     "initial_version": initialVersion,
 #@     "driver": "gcs",
 #@     "bucket": data.values.google.project + "-semver",
 #@     "key": "geode-native/" + data.values.pipeline.name + "/" + name,
