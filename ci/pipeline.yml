@@ -15,6 +15,7 @@
 
 #@ load("templates.lib.yml",
 #@      "gcr_image_resource",
+#@      "project_gcr_image_resource",
 #@      "git_resource",
 #@      "gci_resource",
 #@      "docker_image_resource",
@@ -39,8 +40,8 @@ resource_types:
       repository: smgoller/gci-resource
 
 resources:
-  - #@ gcr_image_resource("gcloud-image", "gcr.io/google.com/cloudsdktool/cloud-sdk", "alpine")
-  - #@ gcr_image_resource("task-image", "gcr.io/gemfire-dev/gemfire-develop-alpine-tools")
+  - #@ gcr_image_resource("gcloud-image", "google.com/cloudsdktool/cloud-sdk", "alpine")
+  - #@ project_gcr_image_resource("task-image", "geode-native-task")
   - #@ docker_image_resource("packer-image", "hashicorp/packer")
   - #@ docker_image_resource("ytt-image", "gerritk/ytt")
   - #@ git_resource("source", data.values.repository.url, data.values.repository.branch, ignore_paths=["ci/*", "packer/*"])
@@ -58,6 +59,13 @@ jobs:
   - #@ packer_job(extends_build(build))
   #@ end
   - #@ update_pipeline_job()
+  - name: docker-ci
+    plan:
+      - get: ci-source
+        trigger: true
+      - put: task-image
+        params:
+          build: ci/docker/task
 
 groups:
   - name: builds
@@ -70,6 +78,7 @@ groups:
     jobs:
       #@ for/end build in data.values.builds:
       - #@ packer_job_name(extends_build(build))
+      - docker-ci
   - name: meta
     jobs:
       - update-pipeline
@@ -81,3 +90,4 @@ groups:
       - #@ packer_job_name(extends_build(build))
       #@ end
       - update-pipeline
+      - docker-ci
