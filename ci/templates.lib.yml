@@ -41,7 +41,7 @@
 #@   "tag": tag,
 #@   "username": username,
 #@   "password": password,
-#@   "registry_mirror": mirror
+#!@   "registry_mirror": mirror
 #@  }, "docker")
 #@ end
 
