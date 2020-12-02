@@ -224,4 +224,28 @@ TEST_F(CacheableStringTests, TestFromDataNonAsciiHuge) {
   EXPECT_EQ(utf8, str->value());
 }
 
+class CacheableStringSizeTests : public ::testing::TestWithParam<std::size_t> {
+};
+
+INSTANTIATE_TEST_SUITE_P(CacheableStringTests, CacheableStringSizeTests,
+                         ::testing::Values(0UL, 1UL, 3UL, 7UL, 15UL, 23UL, 31UL,
+                                           47UL, 63UL, 1025UL, 4097UL));
+
+TEST_P(CacheableStringSizeTests, TestObjectSize) {
+  auto size = GetParam();
+  std::string str(size, '_');
+  auto cacheable = CacheableString::create(str);
+  EXPECT_TRUE(cacheable);
+
+  auto expected_size = sizeof(CacheableString);
+  auto delta = reinterpret_cast<const uint8_t*>(str.data()) -
+               reinterpret_cast<const uint8_t*>(&str);
+  if (delta >= static_cast<decltype(delta)>(sizeof(std::string)) || delta < 0) {
+    // Add an extra character for the null-terminator
+    expected_size += str.capacity() + 1UL;
+  }
+
+  EXPECT_EQ(expected_size, cacheable->objectSize());
+}
+
 }  // namespace
