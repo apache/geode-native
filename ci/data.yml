@@ -25,6 +25,9 @@ repository:
 google:
   project: apachegeode-ci
   zone: us-central1-f
+  storage:
+    bucket: apachegeode-ci-concourse
+    key: geode-native/develop
 
 default:
   build:
