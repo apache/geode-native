@@ -286,28 +286,9 @@ namespace Apache.Geode.Client.IntegrationTests
 			output.WriteObject(testclassCs);
 		}
 
-		//private unsafe void fillstack(Int64[] val)
-		//{
-  //          return;
-		//}
 		public void FromData(DataInput input)
 		{
 			testclassA.FromData(input);
-
-			// Fill the stack with Order typeid: 66
-			//Int64[] val = {66,
-   //             66, 66, 66, 66, 66, 66,
-   //             66, 66, 66, 66, 66, 66,
-   //             66, 66, 66, 66, 66, 66,
-   //             66, 66, 66, 66, 66, 66,
-   //             66, 66, 66, 66, 66, 66,
-   //             66, 66, 66, 66, 66, 66,
-   //             66, 66, 66, 66, 66, 66,
-   //             66, 66, 66, 66, 66, 66,
-   //             66, 66, 66, 66, 66, 66,
-   //             66, 66, 66, 66, 66, 66,
-   //             };
-			//fillstack(val);
 
 			List<object> bs = (List<object>)input.ReadObject();
 			foreach (var obj in bs)
@@ -353,8 +334,9 @@ namespace Apache.Geode.Client.IntegrationTests
 		{
 			return base.GetHashCode();
 		}
+    }
 
-		public class Order : IDataSerializable
+	public class Order : IDataSerializable
     {
         public int OrderId { get; set; }
         public string Name { get; set; }
@@ -469,6 +451,7 @@ namespace Apache.Geode.Client.IntegrationTests
             return m_first.GetHashCode() ^ m_second.GetHashCode();
         }
     };
+
     public class OtherType : IDataSerializable
     {
         private CData m_struct;
@@ -884,9 +867,9 @@ namespace Apache.Geode.Client.IntegrationTests
 				keys.Add(key2);
 				keys.Add(key3);
 
-                    // First CompositeClass
+                // First CompositeClass
 
-                    var cc1 = new CompositeClass();
+                var cc1 = new CompositeClass();
 
 				cc1.A = new TestClassA(1, "Square", 4);
 
@@ -954,6 +937,5 @@ namespace Apache.Geode.Client.IntegrationTests
                 cache.Close();
 			}
 		}
-	}
 	}
 }
