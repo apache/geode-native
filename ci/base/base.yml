@@ -13,7 +13,24 @@
 #! See the License for the specific language governing permissions and
 #! limitations under the License.
 
-#@ load("@ytt:overlay", "overlay")
+#@ load("@ytt:template", "template")
+
+---
+#@ def new_build(name, package="Linux-64bit.tar.gz"):
+name: #@ name
+with_dot_net: #@ False
+params:
+  CMAKE_CONFIGURE_FLAGS:
+  CMAKE_BUILD_FLAGS: "-j16"
+  CPACK_GENERATORS: "TGZ"
+packages:
+  - name: archive
+    regexp: #@ "apache-geode-native-(?P<version>.*)-" + package
+    glob: #@ "*-" + package
+  - name: archive.sha512
+    regexp: #@ "apache-geode-native-(?P<version>.*)-" + package + ".sha512"
+    glob: #@ "*-" + package + ".sha512"
+#@ end
 
 #@data/values
 ---
@@ -32,80 +49,31 @@ google:
     key: geode-native/develop
 
 builds:
-  - name: windows
+  - _: #@ template.replace(new_build("windows", "Windows-64bit.zip"))
     image_family: build-windows-2019-vs-2017
     source_image_family: windows-2019
+    #@yaml/map-key-override
     with_dot_net: #@ True
+    #@yaml/map-key-override
     params:
       CMAKE_CONFIGURE_FLAGS: "-A x64 -Thost=x64"
       CMAKE_BUILD_FLAGS: "/m"
       CPACK_GENERATORS: "ZIP"
-    packages:
-      - name: archive
-        regexp: apache-geode-native-(?P<version>.*)-Windows-64bit.zip
-        glob: "*-Windows-64bit.zip"
-      - name: archive.sha512
-        regexp: apache-geode-native-(?P<version>.*)-Windows-64bit.zip.sha512
-        glob: "*-Windows-64bit.zip.sha512"
-  - name: rhel-7
+
+  - _: #@ template.replace(new_build("rhel-7"))
     image_family: build-rhel-7
     source_image_family: rhel-7
-    with_dot_net: #@ False
-    params:
-      CMAKE_CONFIGURE_FLAGS:
-      CMAKE_BUILD_FLAGS: "-j16"
-      CPACK_GENERATORS: "TGZ"
-    packages:
-      - name: archive
-        regexp: apache-geode-native-(?P<version>.*)-Linux-64bit.tar.gz
-        glob: "*-Linux-64bit.tar.gz"
-      - name: archive.sha512
-        regexp: apache-geode-native-(?P<version>.*)-Linux-64bit.tar.gz.sha512
-        glob: "*-Linux-64bit.tar.gz.sha512"
-  - name: rhel-8
+
+  - _: #@ template.replace(new_build("rhel-8"))
     image_family: build-rhel-8
     source_image_family: rhel-8
-    with_dot_net: #@ False
-    params:
-      CMAKE_CONFIGURE_FLAGS:
-      CMAKE_BUILD_FLAGS: "-j16"
-      CPACK_GENERATORS: "TGZ"
-    packages:
-      - name: archive
-        regexp: apache-geode-native-(?P<version>.*)-Linux-64bit.tar.gz
-        glob: "*-Linux-64bit.tar.gz"
-      - name: archive.sha512
-        regexp: apache-geode-native-(?P<version>.*)-Linux-64bit.tar.gz.sha512
-        glob: "*-Linux-64bit.tar.gz.sha512"
-  - name: ubuntu-16.04
+
+  - _: #@ template.replace(new_build("ubuntu-16.04"))
     image_family: build-ubuntu-16-04
     source_image_family: ubuntu-1604-lts
-    with_dot_net: #@ False
-    params:
-      CMAKE_CONFIGURE_FLAGS:
-      CMAKE_BUILD_FLAGS: "-j16"
-      CPACK_GENERATORS: "TGZ"
-    packages:
-      - name: archive
-        regexp: apache-geode-native-(?P<version>.*)-Linux-64bit.tar.gz
-        glob: "*-Linux-64bit.tar.gz"
-      - name: archive.sha512
-        regexp: apache-geode-native-(?P<version>.*)-Linux-64bit.tar.gz.sha512
-        glob: "*-Linux-64bit.tar.gz.sha512"
-  - name: ubuntu-18.04
+
+  - _: #@ template.replace(new_build("ubuntu-18.04"))
     image_family: build-ubuntu-18-04
     source_image_family: ubuntu-1804-lts
-    with_dot_net: #@ False
-    params:
-      CMAKE_CONFIGURE_FLAGS:
-      CMAKE_BUILD_FLAGS: "-j16"
-      CPACK_GENERATORS: "TGZ"
-    packages:
-      - name: archive
-        regexp: apache-geode-native-(?P<version>.*)-Linux-64bit.tar.gz
-        glob: "*-Linux-64bit.tar.gz"
-      - name: archive.sha512
-        regexp: apache-geode-native-(?P<version>.*)-Linux-64bit.tar.gz.sha512
-        glob: "*-Linux-64bit.tar.gz.sha512"
 
 configs: [ ]
