@@ -231,6 +231,7 @@ class TcrEndpoint : public std::enable_shared_from_this<TcrEndpoint> {
   int32_t m_queueSize;
   uint16_t m_distributedMemId;
   bool m_isServerQueueStatusSet;
+  volatile bool m_connCreatedWhenMaxConnsIsZero;
 
   bool compareTransactionIds(int32_t reqTransId, int32_t replyTransId,
                              std::string& failReason, TcrConnection* conn);

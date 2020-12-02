@@ -73,7 +73,8 @@ TcrEndpoint::TcrEndpoint(const std::string& name, CacheImpl* cacheImpl,
       m_serverQueueStatus(NON_REDUNDANT_SERVER),
       m_queueSize(0),
       m_distributedMemId(0),
-      m_isServerQueueStatusSet(false) {
+      m_isServerQueueStatusSet(false),
+      m_connCreatedWhenMaxConnsIsZero(false) {
   /*
   m_name = Utils::convertHostToCanonicalForm(m_name.c_str() );
   */
@@ -883,9 +884,9 @@ GfErrType TcrEndpoint::sendRequestWithRetry(
     auto timeout = requestedTimeout;
     epFailure = false;
     if (useEPPool) {
-      if (m_maxConnections == 0) {
+      if (m_maxConnections == 0 && !m_connCreatedWhenMaxConnsIsZero) {
         std::lock_guard<decltype(m_connectionLock)> guard(m_connectionLock);
-        if (m_maxConnections == 0) {
+        if (m_maxConnections == 0 && !m_connCreatedWhenMaxConnsIsZero) {
           LOGFINE(
               "Creating a new connection when connection-pool-size system "
               "property set to 0");
@@ -897,7 +898,7 @@ GfErrType TcrEndpoint::sendRequestWithRetry(
             epFailure = true;
             continue;
           }
-          m_maxConnections = 1;
+          m_connCreatedWhenMaxConnsIsZero = true;
         }
       }
     }
@@ -1177,14 +1178,7 @@ void TcrEndpoint::closeConnection(TcrConnection*& conn) {
 void TcrEndpoint::closeConnections() {
   m_opConnections.close();
   m_ports.clear();
-
-  m_cacheImpl->doIfDestroyNotPending([&]() {
-    if (!m_cacheImpl->isClosed()) {
-      m_maxConnections = m_cacheImpl->getDistributedSystem()
-                             .getSystemProperties()
-                             .connectionPoolSize();
-    }
-  });
+  m_connCreatedWhenMaxConnsIsZero = false;
 }
 
 /*
