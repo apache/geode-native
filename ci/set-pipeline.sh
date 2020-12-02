@@ -22,16 +22,18 @@ $0 Usage:
 Sets Concourse pipeline for Geode Native builds.
 
 Options:
-Environment Var  Parameter         Description                 Default
-target           --target          Fly target.                 "default"
-branch           --branch          Branch to build.            Current checked out branch.
-repository       --repository      Remote URL for repository.  Current tracking branch repository.
-pipeline         --pipeline        Name of pipeline to set.    Based on repository owner name and branch.
-google_zone      --google-zone     Google Compute project.     Current default project.
-google_project   --google-project  Google Compute zone.        Current default zone.
-fly              --fly             Path to fly executable.     "fly"
-ytt              --ytt             Path to ytt executable.     "ytt"
-output           --output          Rendered pipeline file.     Temporary file.
+Parameter                Description                         Default
+--target                 Fly target.                         "default"
+--branch                 Branch to build.                    Current checked out branch.
+--repository             Remote URL for repository.          Current tracking branch repository.
+--pipeline               Name of pipeline to set.            Based on repository owner name and branch.
+--google-zone            Google Compute project.             Current default project.
+--google-project         Google Compute zone.                Current default zone.
+--google-storage-bucket  Google Compute Storage bucket.      Based on google-project value.
+--google-storage-key     Google Compute Storage key prefix.  Based on pipeline value.
+--fly                    Path to fly executable.             "fly"
+--ytt                    Path to ytt executable.             "ytt"
+--output                 Rendered pipeline file.             Temporary file.
 EOF
 }
 
@@ -73,6 +75,8 @@ pipeline=${pipeline//[^[:word:]-]/-}
 
 google_project=${google_project:-$(gcloud config get-value project)}
 google_zone=${google_zone:-$(gcloud config get-value compute/zone)}
+google_storage_bucket=${google_storage_bucket:-${google_project}-concourse}
+google_storage_key=${google_storage_key:-geode-native/${pipeline}}
 
 bash -c "${ytt} \$@" ytt -f pipeline.yml -f templates.lib.yml -f templates.lib.txt -f data.yml \
   --data-value pipeline.name=${pipeline} \
@@ -80,6 +84,8 @@ bash -c "${ytt} \$@" ytt -f pipeline.yml -f templates.lib.yml -f templates.lib.t
   --data-value repository.branch=${branch} \
   --data-value google.project=${google_project} \
   --data-value google.zone=${google_zone} \
+  --data-value google.storage.bucket=${google_storage_bucket} \
+  --data-value google.storage.key=${google_storage_key} \
   > ${output}
 
 bash -c "${fly} \$@" fly --target=${target} \

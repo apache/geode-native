@@ -452,6 +452,10 @@ plan:
           - #@ "google.project=" + data.values.google.project
           - --data-value
           - #@ "google.zone=" + data.values.google.zone
+          - --data-value
+          - #@ "google.storage.bucket=" + data.values.google.storage.bucket
+          - --data-value
+          - #@ "google.storage.key=" + data.values.google.storage.key
           - --output-files
           - pipeline/
   - set_pipeline: self
@@ -480,8 +484,8 @@ plan:
 #@   {
 #@     "initial_version": initialVersion,
 #@     "driver": "gcs",
-#@     "bucket": data.values.google.project + "-semver",
-#@     "key": "geode-native/" + data.values.pipeline.name + "/" + name,
+#@     "bucket": data.values.google.storage.bucket,
+#@     "key": data.values.google.storage.key + "/" + name,
 #@     "json_key": "((gcr-json-key))"
 #@   },
 #@   "numeric-1-box-multiple")
