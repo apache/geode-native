@@ -26,6 +26,13 @@
 #@      "run_net_integration_tests",
 #@      "run_net_legacy_integration_tests")
 
+#@ load("@ytt:overlay", "overlay")
+#@ load("@ytt:struct", "struct")
+
+#@ def extends_build(build):
+#@ return struct.make(**overlay.apply(data.values.default.build, build))
+#@ end
+
 #@ def resource(name, type, source=None, icon=None):
 #@ return {
 #@   "name": name,
@@ -354,6 +361,7 @@ plan:
             - #@ create_instance(build, config)
   - do:
       - #@ build_task(config.config, build.params)
+      - #@ template.replace(put_package(build, config))
       - #@ cpp_unit_test_task(build, config)
       - #@ cpp_integration_test_task(build, config)
       - #@ cpp_legacy_integration_test_task(build, config)
@@ -509,4 +517,50 @@ plan:
   - put: version
     params:
       file: version/number
+#@ end
+
+
+#@ def package_resource_name(build, config):
+#@   return "package-" + build.name + "-" + config.name
+#@ end
+
+#@ def package_resource(build, config):
+  - name: #@ package_resource_name(build, config)
+    type: gcs-resource
+    source:
+      bucket: #@ data.values.google.storage.bucket
+      json_key: ((gcr-json-key))
+      regexp: #@ data.values.google.storage.key + "/packages/" + build.name + "/" + config.name + "/apache-geode-native-(?P<version>.*)-" + build.package_suffix
+  - name: #@ package_resource_name(build, config) + "-hash"
+    type: gcs-resource
+    source:
+      bucket: #@ data.values.google.storage.bucket
+      json_key: ((gcr-json-key))
+      regexp: #@ data.values.google.storage.key + "/packages/" + build.name + "/" + config.name + "/apache-geode-native-(?P<version>.*)-" + build.package_suffix + ".sha512"
+#@ end
+
+#@ def put_package(build, config):
+  - put: #@ package_resource_name(build, config)
+    params:
+      file: #@ "package/*" + build.package_suffix
+  - put: #@ package_resource_name(build, config) + "-hash"
+    params:
+      file: #@ "package/*" + build.package_suffix + ".sha512"
+#@ end
+
+#@ def build_resources(builds, configs):
+#@ for build in builds:
+  #@ for/end config in configs:
+  - #@ template.replace(package_resource(extends_build(build), config))
+  - #@ gci_resource(image_family_name(extends_build(build).image_family))
+  - #@ gci_resource(extends_build(build).source_image_family)
+#@ end
+#@ end
+
+#@ def build_jobs(builds, configs):
+#@ for build in builds:
+  #@ for/end config in configs:
+  - #@ build_job(extends_build(build), config)
+  - #@ packer_job(extends_build(build))
+#@ end
 #@ end
