@@ -345,10 +345,10 @@ plan:
       fail_fast: true
       steps:
         - get: version
-          trigger: false
+          trigger: true
           passed: [ version-source ]
         - get: source
-          trigger: false
+          trigger: true
           passed: [ version-source ]
         - do:
             - in_parallel:
@@ -361,7 +361,6 @@ plan:
             - #@ create_instance(build, config)
   - do:
       - #@ build_task(config.config, build.params)
-      - #@ template.replace(put_package(build, config))
       - #@ cpp_unit_test_task(build, config)
       - #@ cpp_integration_test_task(build, config)
       - #@ cpp_legacy_integration_test_task(build, config)
@@ -370,6 +369,7 @@ plan:
       - #@ net_integration_test_task(build, config)
       - #@ net_legacy_integration_test_task(build, config)
       #@ end
+      - #@ template.replace(put_package(build, config))
 on_failure: #@ download_build_task()
 ensure: #@ delete_instance()
 #@ end
@@ -540,12 +540,15 @@ plan:
 #@ end
 
 #@ def put_package(build, config):
-  - put: #@ package_resource_name(build, config)
-    params:
-      file: #@ "package/*" + build.package_suffix
-  - put: #@ package_resource_name(build, config) + "-hash"
-    params:
-      file: #@ "package/*" + build.package_suffix + ".sha512"
+  - in_parallel:
+      fail_fast: true
+      steps:
+        - put: #@ package_resource_name(build, config)
+          params:
+            file: #@ "package/*" + build.package_suffix
+        - put: #@ package_resource_name(build, config) + "-hash"
+          params:
+            file: #@ "package/*" + build.package_suffix + ".sha512"
 #@ end
 
 #@ def build_resources(builds, configs):
