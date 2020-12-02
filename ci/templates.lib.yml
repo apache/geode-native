@@ -201,7 +201,7 @@ config:
         popd
 
         version=$(cat version/number)
-        builddate=$(date)
+        builddate=$(date "+%Y-%m-%d")
 
         remote_shell git clone ${git_url} source
         remote_shell cmake -E chdir source git checkout ${git_rev}
@@ -209,7 +209,7 @@ config:
         remote_shell cmake -E chdir build cmake ../source ${CMAKE_CONFIGURE_FLAGS} \
             -DCMAKE_BUILD_TYPE=${CMAKE_CONFIG} \
             -DPRODUCT_VERSION=${version} \
-            -DPRODUCT_BUILDDATE="${builddate}" \
+            -DPRODUCT_BUILDDATE=${builddate} \
             -DPRODUCT_SOURCE_REVISION=${git_rev} \
             -DPRODUCT_SOURCE_REPOSITORY=${git_url}
         remote_shell cmake --build build --config ${CMAKE_CONFIG} -- ${CMAKE_BUILD_FLAGS}
