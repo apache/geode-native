@@ -35,6 +35,25 @@
 
 #@overlay/match by=overlay.all
 ---
+resource_types:
+  #@overlay/append
+  - name: pull-request
+    type: docker-image
+    source:
+      repository: teliaoss/github-pr-resource
+
+resources:
+  #@overlay/match by="name"
+  #@overlay/replace
+  - name: source
+    type: pull-request
+    check_every: 1m
+    icon: github
+    source:
+      #@ parts = data.values.repository.url.rstrip(".git").rsplit("/", 2)
+      repository: #@ parts[1] + "/" + parts[2]
+      access_token: ((github-access-token))
+      base_branch: #@ data.values.repository.branch
 
 jobs:
   #@overlay/append
