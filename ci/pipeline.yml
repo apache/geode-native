@@ -17,13 +17,12 @@
 #@      "gcr_image_resource",
 #@      "project_gcr_image_resource",
 #@      "git_resource",
-#@      "gci_resource",
+#@      "extends_build",
 #@      "registry_image_resource",
 #@      "semver_resource",
-#@      "image_family_name",
-#@      "build_job",
+#@      "build_resources",
+#@      "build_jobs",
 #@      "build_job_name",
-#@      "packer_job",
 #@      "packer_job_name",
 #@      "docker_job",
 #@      "docker_job_name",
@@ -34,16 +33,17 @@
 #@ load("@ytt:data", "data")
 #@ load("@ytt:overlay", "overlay")
 #@ load("@ytt:struct", "struct")
-
-#@ def extends_build(build):
-#@ return struct.make(**overlay.apply(data.values.default.build, build))
-#@ end
+#@ load("@ytt:template", "template")
 
 resource_types:
   - name: gci
     type: docker-image
     source:
       repository: smgoller/gci-resource
+  - name: gcs-resource
+    type: docker-image
+    source:
+      repository: frodenas/gcs-resource
 
 resources:
   - #@ semver_resource("version", "1.14.0-build.0")
@@ -54,20 +54,13 @@ resources:
   - #@ git_resource("source", data.values.repository.url, data.values.repository.branch, ignore_paths=["ci/*", "packer/*"])
   - #@ git_resource("ci-source", data.values.repository.url, data.values.repository.branch, ["ci/*"])
   - #@ git_resource("packer-source", data.values.repository.url, data.values.repository.branch, ["packer/*"])
-  #@ for build in data.values.builds:
-  - #@ gci_resource(image_family_name(extends_build(build).image_family))
-  - #@ gci_resource(extends_build(build).source_image_family)
-    #@ end
+  - #@ template.replace(build_resources(data.values.builds, data.values.configs))
 
 jobs:
-  #@ for build in data.values.builds:
-  #@ for/end config in data.values.configs:
-  - #@ build_job(extends_build(build), config)
-  - #@ packer_job(extends_build(build))
-  #@ end
   - #@ version_source_job()
   - #@ update_pipeline_job()
   - #@ docker_job("task-image", "ci-source", "ci/docker/task")
+  - #@ template.replace(build_jobs(data.values.builds, data.values.configs))
 
 groups:
   - name: builds

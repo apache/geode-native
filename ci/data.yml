@@ -35,6 +35,7 @@ default:
     image_family: #@ None
     source_image_family: #@ None
     with_dot_net: #@ False
+    package_suffix: #@ None
     params:
       CMAKE_CONFIGURE_FLAGS:
       CMAKE_BUILD_FLAGS: "-j16"
@@ -49,18 +50,23 @@ builds:
       CMAKE_CONFIGURE_FLAGS: "-A x64 -Thost=x64"
       CMAKE_BUILD_FLAGS: "/m"
       CPACK_GENERATORS: "ZIP"
+    package_suffix: Windows-64bit.zip
   - name: rhel-7
     image_family: build-rhel-7
     source_image_family: rhel-7
+    package_suffix: Linux-64bit.tar.gz
   - name: rhel-8
     image_family: build-rhel-8
     source_image_family: rhel-8
+    package_suffix: Linux-64bit.tar.gz
   - name: ubuntu-16.04
     image_family: build-ubuntu-16-04
     source_image_family: ubuntu-1604-lts
+    package_suffix: Linux-64bit.tar.gz
   - name: ubuntu-18.04
     image_family: build-ubuntu-18-04
     source_image_family: ubuntu-1804-lts
+    package_suffix: Linux-64bit.tar.gz
 
 configs:
   - name: debug
