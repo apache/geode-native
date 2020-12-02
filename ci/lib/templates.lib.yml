@@ -29,10 +29,12 @@
 #@ load("@ytt:overlay", "overlay")
 #@ load("@ytt:struct", "struct")
 
+---
 #@ def extends_build(build):
-#@ return struct.make(**overlay.apply(data.values.default.build, build))
+#@ return build
 #@ end
 
+---
 #@ def resource(name, type, source=None, icon=None):
 #@ return {
 #@   "name": name,
@@ -42,6 +44,7 @@
 #@ }
 #@ end
 
+---
 #@ def registry_image_resource(name, repository, tag="latest", username=None, password=None, mirror="mirror.gcr.io"):
 #@ return resource(name, "registry-image", {
 #@   "repository": repository,
@@ -54,10 +57,12 @@
 #@ }, "docker")
 #@ end
 
+---
 #@ def gcr_image_resource(name, repository, tag="latest"):
 #@ return registry_image_resource(name, "gcr.io/" + repository, tag, "_json_key", "((gcr-json-key))", None)
 #@ end
 
+---
 #@ def docker_image_resource(name, repository, tag="latest", username=None, password=None):
 #@ return resource(name, "docker-image", {
 #@   "repository": repository,
@@ -67,10 +72,12 @@
 #@  }, "docker")
 #@ end
 
+---
 #@ def project_gcr_image_resource(name, repository, tag="latest"):
 #@ return docker_image_resource(name, "gcr.io/" + data.values.google.project + "/" + repository, tag, "_json_key", "((gcr-json-key))")
 #@ end
 
+---
 #@ def git_resource(name, uri, branch, paths=[], ignore_paths=[], depth=1):
 #@ return resource(name, "git", {
 #@   "branch": branch,
@@ -81,19 +88,23 @@
 #@  }, "github")
 #@ end
 
+---
 #@ def hyphenated(value):
 #! TODO [a-z0-9-]
 #@ return value.lower().replace(".", "-").replace("/", "-")
 #@ end
 
+---
 #@ def image_family_name(family):
 #@ return (data.values.pipeline.name + "-" + family)[0:62]
 #@ end
 
+---
 #@ def gci_resource_name(family):
 #@ return family + "-gci"
 #@ end
 
+---
 #@ def gci_resource(family, project=data.values.google.project):
 #@ return resource(gci_resource_name(family), "gci", {
 #@   "key": "((gcr-json-key))",
@@ -102,6 +113,7 @@
 #@  }, "google-cloud")
 #@ end
 
+---
 #@ def create_instance(build, config):
 task: create
 image: gcloud-image
@@ -176,8 +188,10 @@ config:
         done
 #@ end
 
+---
 #@ load("@ytt:template", "template")
 
+---
 #@ def build_task(config, params={}):
 task: build
 image: task-image
@@ -233,6 +247,7 @@ config:
         done
 #@ end
 
+---
 #@ def remote_task(name, config, commands, timeout, params={}, attempts=1):
 task: #@ name
 timeout: #@ timeout
@@ -257,34 +272,41 @@ config:
         (@= commands @)
 #@ end
 
+---
 #@ def packer_build_task(build):
 #@ end
 
-
+---
 #@ def cpp_unit_test_task(build, config):
 #@ return remote_task("cpp-unit-tests", config.config, run_cpp_unit_tests(), "5m", build.params)
 #@ end
 
+---
 #@ def cpp_integration_test_task(build, config):
 #@ return remote_task("cpp-integration-tests", config.config, run_cpp_integration_tests(), "30m", build.params, 5)
 #@ end
 
+---
 #@ def cpp_legacy_integration_test_task(build, config):
 #@ return remote_task("cpp-legacy-integration-tests", config.config, run_cpp_legacy_integration_tests(), "1h", build.params, 5)
 #@ end
 
+---
 #@ def net_unit_test_task(build, config):
 #@ return remote_task("net-unit-tests", config.config, run_net_unit_tests(), "5m", build.params)
 #@ end
 
+---
 #@ def net_integration_test_task(build, config):
 #@ return remote_task("net-integration-tests", config.config, run_net_integration_tests(), "30m", build.params)
 #@ end
 
+---
 #@ def net_legacy_integration_test_task(build, config):
 #@ return remote_task("net-legacy-integration-tests", config.config, run_net_legacy_integration_tests(), "1h", build.params, 5)
 #@ end
 
+---
 #@ def download_build_task():
 task: download-build
 image: task-image
@@ -307,6 +329,7 @@ config:
         remote_copy_recursive build .
 #@ end
 
+---
 #@ def delete_instance():
 task: delete
 image: gcloud-image
@@ -334,10 +357,12 @@ config:
             --quiet
 #@ end
 
+---
 #@ def build_job_name(build, config):
 #@ return "build-" + build.name + "-" + config.name
 #@ end
 
+---
 #@ def build_job(build, config):
 name: #@ build_job_name(build, config)
 plan:
@@ -346,10 +371,8 @@ plan:
       steps:
         - get: version
           trigger: true
-          passed: [ version-source ]
         - get: source
           trigger: true
-          passed: [ version-source ]
         - do:
             - in_parallel:
                 fail_fast: true
@@ -369,20 +392,22 @@ plan:
       - #@ net_integration_test_task(build, config)
       - #@ net_legacy_integration_test_task(build, config)
       #@ end
-      - #@ template.replace(put_package(build, config))
 on_failure: #@ download_build_task()
 ensure: #@ delete_instance()
 #@ end
 
+---
 #@ def gci_label_value(value):
 #! TODO [a-z0-9_-]
 #@ return hyphenated(value[0:62])
 #@ end
 
+---
 #@ def packer_job_name(build):
 #@ return "packer-" + build.image_family
 #@ end
 
+---
 #@ def packer_job(build):
 name: #@ packer_job_name(build)
 plan:
@@ -421,11 +446,13 @@ plan:
 
 #@ end
 
+---
 #@ def update_pipeline_job_name():
 #@ return "update-pipeline"
 #@ end
 
-#@ def update_pipeline_job():
+---
+#@ def update_pipeline_job(variant):
 name: #@ update_pipeline_job_name()
 serial: true
 plan:
@@ -449,7 +476,11 @@ plan:
         path: /usr/bin/ytt
         args:
           - --file
-          - source/ci/.
+          - source/ci/lib
+          - --file
+          - source/ci/base
+          - --file
+          - #@ "source/ci/" + variant
           - --data-value
           - #@ "pipeline.name=" + data.values.pipeline.name
           - --data-value
@@ -470,10 +501,12 @@ plan:
     file: pipeline/pipeline.yml
 #@ end
 
+---
 #@ def docker_job_name(name):
 #@ return "docker-" + name
 #@ end
 
+---
 #@ def docker_job(name, source, path):
 name: #@ docker_job_name(name)
 plan:
@@ -485,6 +518,7 @@ plan:
       cache: true
 #@ end
 
+---
 #@ def semver_resource(name, initialVersion="0.1.0-build.0"):
 #@ return resource(
 #@   name,
@@ -499,10 +533,12 @@ plan:
 #@   "numeric-1-box-multiple")
 #@ end
 
+---
 #@ def version_source_job_name():
 #@   return "version-source"
 #@ end
 
+---
 #@ def version_source_job():
 name: #@ version_source_job_name()
 plan:
@@ -519,51 +555,44 @@ plan:
       file: version/number
 #@ end
 
-
-#@ def package_resource_name(build, config):
-#@   return "package-" + build.name + "-" + config.name
+---
+#@ def package_resource_name(build, config, package):
+#@   return "package-" + build.name + "-" + config.name + "-" + package.name
 #@ end
 
-#@ def package_resource(build, config):
-  - name: #@ package_resource_name(build, config)
-    type: gcs-resource
-    source:
-      bucket: #@ data.values.google.storage.bucket
-      json_key: ((gcr-json-key))
-      regexp: #@ data.values.google.storage.key + "/packages/" + build.name + "/" + config.name + "/apache-geode-native-(?P<version>.*)-" + build.package_suffix
-  - name: #@ package_resource_name(build, config) + "-hash"
-    type: gcs-resource
-    source:
-      bucket: #@ data.values.google.storage.bucket
-      json_key: ((gcr-json-key))
-      regexp: #@ data.values.google.storage.key + "/packages/" + build.name + "/" + config.name + "/apache-geode-native-(?P<version>.*)-" + build.package_suffix + ".sha512"
+---
+#@ def package_resource(build, config, package):
+name: #@ package_resource_name(build, config, package)
+type: gcs-resource
+source:
+  bucket: #@ data.values.google.storage.bucket
+  json_key: ((gcr-json-key))
+  regexp: #@ data.values.google.storage.key + "/packages/" + build.name + "/" + config.name + "/" + package.regexp
 #@ end
 
+---
 #@ def put_package(build, config):
-  - in_parallel:
-      fail_fast: true
-      steps:
-        - put: #@ package_resource_name(build, config)
-          params:
-            file: #@ "package/*" + build.package_suffix
-        - put: #@ package_resource_name(build, config) + "-hash"
-          params:
-            file: #@ "package/*" + build.package_suffix + ".sha512"
+in_parallel:
+  fail_fast: true
+  steps:
+    #@ for package in build.packages:
+    - put: #@ package_resource_name(build, config, package)
+      params:
+        file: #@ "package/" + package.glob
+    #@ end
 #@ end
 
+---
 #@ def build_resources(builds, configs):
 #@ for build in builds:
-  #@ for/end config in configs:
-  - #@ template.replace(package_resource(extends_build(build), config))
   - #@ gci_resource(image_family_name(extends_build(build).image_family))
-  - #@ gci_resource(extends_build(build).source_image_family)
 #@ end
 #@ end
 
+---
 #@ def build_jobs(builds, configs):
 #@ for build in builds:
   #@ for/end config in configs:
   - #@ build_job(extends_build(build), config)
-  - #@ packer_job(extends_build(build))
 #@ end
 #@ end

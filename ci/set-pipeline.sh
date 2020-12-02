@@ -33,7 +33,7 @@ Parameter                Description                         Default
 --google-storage-key     Google Compute Storage key prefix.  Based on pipeline value.
 --fly                    Path to fly executable.             "fly"
 --ytt                    Path to ytt executable.             "ytt"
---output                 Rendered pipeline file.             Temporary file.
+--output                 Rendered pipeline files directory.  Temporary directory.
 EOF
 }
 
@@ -57,7 +57,7 @@ ytt=${ytt:-ytt}
 fly=${fly:-fly}
 
 target=${target:-default}
-output=${output:-$(mktemp)}
+output=${output:-$(mktemp -d)}
 
 branch=${branch:-$(git rev-parse --abbrev-ref HEAD)}
 git_tracking_branch=${git_tracking_branch:-$(git for-each-ref --format='%(upstream:short)' $(git symbolic-ref -q HEAD))}
@@ -78,15 +78,27 @@ google_zone=${google_zone:-$(gcloud config get-value compute/zone)}
 google_storage_bucket=${google_storage_bucket:-${google_project}-concourse}
 google_storage_key=${google_storage_key:-geode-native/${pipeline}}
 
-bash -c "${ytt} \$@" ytt -f pipeline.yml -f templates.lib.yml -f templates.lib.txt -f data.yml \
-  --data-value pipeline.name=${pipeline} \
-  --data-value repository.url=${repository} \
-  --data-value repository.branch=${branch} \
-  --data-value google.project=${google_project} \
-  --data-value google.zone=${google_zone} \
-  --data-value google.storage.bucket=${google_storage_bucket} \
-  --data-value google.storage.key=${google_storage_key} \
-  > ${output}
+variants=${variants:-"release pr"}
+variants_release=${variant_release:-""}
 
-bash -c "${fly} \$@" fly --target=${target} \
-  set-pipeline --pipeline=${pipeline} --config=${output}
+for variant in ${variants}; do
+  eval pipeline_suffix=\${variants_${variant}-"-${variant}"}
+
+  bash -c "${ytt} \$@" ytt \
+    --file lib \
+    --file base \
+    --file ${variant} \
+    --data-value pipeline.name=${pipeline} \
+    --data-value repository.url=${repository} \
+    --data-value repository.branch=${branch} \
+    --data-value google.project=${google_project} \
+    --data-value google.zone=${google_zone} \
+    --data-value google.storage.bucket=${google_storage_bucket} \
+    --data-value google.storage.key=${google_storage_key} \
+    > ${output}/${variant}.yml
+
+
+  bash -c "${fly} \$@" fly --target=${target} \
+    set-pipeline --pipeline="${pipeline}${pipeline_suffix}" --config=${output}/${variant}.yml
+
+done

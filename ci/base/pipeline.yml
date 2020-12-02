@@ -1,0 +1,59 @@
+#! Licensed to the Apache Software Foundation (ASF) under one or more
+#! contributor license agreements.  See the NOTICE file distributed with
+#! this work for additional information regarding copyright ownership.
+#! The ASF licenses this file to You under the Apache License, Version 2.0
+#! (the "License"); you may not use this file except in compliance with
+#! the License.  You may obtain a copy of the License at
+#!
+#!      http://www.apache.org/licenses/LICENSE-2.0
+#!
+#! Unless required by applicable law or agreed to in writing, software
+#! distributed under the License is distributed on an "AS IS" BASIS,
+#! WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#! See the License for the specific language governing permissions and
+#! limitations under the License.
+
+#@ load("templates.lib.yml",
+#@      "gcr_image_resource",
+#@      "project_gcr_image_resource",
+#@      "git_resource",
+#@      "extends_build",
+#@      "registry_image_resource",
+#@      "semver_resource",
+#@      "build_resources",
+#@      "build_jobs",
+#@      "build_job_name",
+#@      "packer_job_name",
+#@      "docker_job",
+#@      "docker_job_name",
+#@      "update_pipeline_job",
+#@      "update_pipeline_job_name",
+#@      "version_source_job",
+#@      "version_source_job_name")
+#@ load("@ytt:data", "data")
+#@ load("@ytt:overlay", "overlay")
+#@ load("@ytt:struct", "struct")
+#@ load("@ytt:template", "template")
+
+resource_types:
+  - name: gci
+    type: docker-image
+    source:
+      repository: smgoller/gci-resource
+  - name: gcs-resource
+    type: docker-image
+    source:
+      repository: frodenas/gcs-resource
+
+resources:
+  - #@ semver_resource("version", "1.14.0-build.0")
+  - #@ gcr_image_resource("gcloud-image", "google.com/cloudsdktool/cloud-sdk", "alpine")
+  - #@ project_gcr_image_resource("task-image", "geode-native-task")
+  - #@ git_resource("source", data.values.repository.url, data.values.repository.branch, ignore_paths=["ci/*", "packer/*"])
+  - #@ template.replace(build_resources(data.values.builds, data.values.configs))
+  - #@ registry_image_resource("ytt-image", "gerritk/ytt")
+  - #@ git_resource("ci-source", data.values.repository.url, data.values.repository.branch, ["ci/*"])
+
+jobs:
+  - #@ template.replace(build_jobs(data.values.builds, data.values.configs))
+
