@@ -52,4 +52,5 @@ This Concourse pipeline YAML is rendered using `ytt`. Depends on output from `gi
 #TODO
 ## Concourse Installation
 * helm upgrade concourse concourse/concourse --set web.service.api.type=LoadBalancer,concourse.web.externalUrl=http://35.222.132.46:8080
-* kubectl create secret generic gcr-json-key --from-literal "value=$(cat ~/Downloads/gemfire-dev-6e8864f0768c.json)" --namespace=concourse-main
+* kubectl create secret generic gcr-json-key --from-literal "value=$(cat XXX.json)" --namespace=concourse-main
+* kubectl create secret generic github-access-token --from-literal "value=XXX" --namespace=concourse-main
