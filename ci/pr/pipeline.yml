@@ -66,9 +66,10 @@ jobs:
           fail_fast: true
           steps:
             #@overlay/match by=overlay.subset({"get": "source"})
-            - get: source
-              version: every
+            - version: every
               on_success: #@ pr_status(name, "pending")
+            #@overlay/match by=overlay.subset({"get": "version"})
+            - trigger: false
     on_error:
       in_parallel:
         steps:
