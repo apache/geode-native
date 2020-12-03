@@ -89,6 +89,7 @@ for variant in ${variants}; do
     --file base \
     --file ${variant} \
     --data-value pipeline.name=${pipeline} \
+    --data-value pipeline.variant=${variant} \
     --data-value repository.url=${repository} \
     --data-value repository.branch=${branch} \
     --data-value google.project=${google_project} \
