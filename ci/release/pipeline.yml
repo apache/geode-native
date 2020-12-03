@@ -16,7 +16,6 @@
 #@ load("templates.lib.yml",
 #@      "git_resource",
 #@      "gci_resource",
-#@      "extends_build",
 #@      "image_family_name",
 #@      "registry_image_resource",
 #@      "build_job_name",
@@ -46,11 +45,11 @@ resources:
   - #@ git_resource("packer-source", data.values.repository.url, data.values.repository.branch, ["packer/*"])
     #@ for build in data.values.builds:
   #@overlay/append
-  - #@ gci_resource(extends_build(build).source_image_family)
+  - #@ gci_resource(build.source_image_family)
     #@ for config in data.values.configs:
     #@ for package in build.packages:
   #@overlay/append
-  - #@ package_resource(extends_build(build), config , package)
+  - #@ package_resource(build, config , package)
     #@ end
     #@ end
     #@ end
@@ -62,10 +61,10 @@ jobs:
   - #@ docker_job("task-image", "ci-source", "ci/docker/task")
     #@ for build in data.values.builds:
   #@overlay/append
-  - #@ packer_job(extends_build(build))
+  - #@ packer_job(build)
     #@ for config in data.values.configs:
   #@overlay/match by="name", missing_ok=True
-  - name: #@ build_job_name(extends_build(build), config)
+  - name: #@ build_job_name(build, config)
     plan:
       #@overlay/match by=overlay.index(0)
       - in_parallel:
@@ -89,14 +88,14 @@ groups:
   - name: images
     jobs:
       #@ for/end build in data.values.builds:
-      - #@ packer_job_name(extends_build(build))
+      - #@ packer_job_name(build)
       - #@ docker_job_name("task-image")
       #@overlay/match by="name"
   - name: all
     jobs:
       #@ for build in data.values.builds:
       #@overlay/append
-      - #@ packer_job_name(extends_build(build))
+      - #@ packer_job_name(build)
         #@ end
       #@overlay/append
       - #@ docker_job_name("task-image")

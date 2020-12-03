@@ -16,7 +16,6 @@
 #@ load("templates.lib.yml",
 #@      "git_resource",
 #@      "gci_resource",
-#@      "extends_build",
 #@      "image_family_name",
 #@      "registry_image_resource",
 #@      "build_job_name",
@@ -74,7 +73,7 @@ resources:
 jobs:
   #@ for build in data.values.builds:
   #@ for config in data.values.configs:
-  #@ name = build_job_name(extends_build(build), config)
+  #@ name = build_job_name(build, config)
   #@overlay/match by="name", missing_ok=True
   - name: #@ name
     plan:

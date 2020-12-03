@@ -30,11 +30,6 @@
 #@ load("@ytt:struct", "struct")
 
 ---
-#@ def extends_build(build):
-#@ return build
-#@ end
-
----
 #@ def resource_type(name, repository):
 name: #@ name
 type: docker-image
@@ -601,7 +596,7 @@ in_parallel:
 ---
 #@ def build_resources(builds, configs):
 #@ for build in builds:
-  - #@ gci_resource(image_family_name(extends_build(build).image_family))
+  - #@ gci_resource(image_family_name(build.image_family))
 #@ end
 #@ end
 
@@ -609,6 +604,6 @@ in_parallel:
 #@ def build_jobs(builds, configs):
 #@ for build in builds:
   #@ for/end config in configs:
-  - #@ build_job(extends_build(build), config)
+  - #@ build_job(build, config)
 #@ end
 #@ end
