@@ -4,7 +4,10 @@ The primary release pipeline builds the release artifacts for a given branch, li
 The secondary pull request (pr) pipeline builds the same artifacts as the release pipeline but for pull requests and without actually releasing or publishing anything.   
 
 The pipeline is fully self updating and can easily be bootstrapped into a properly configured Concourse deployment.
-Concourse configuration requires TBD.
+Concourse configuration requires TBD. Changes to the `ci` source directory will results in auto updates to the pipelines.
+
+Because Concourse workers aren't available on all platforms and have issues with resource sharing this pipeline utilizes external builders.
+These builders are currently Google Compute VMs that are launched on demand for each build. 
 
 # Pipeline Setup
 The pipeline can be installed or reconfigured via the `set-pipelin.sh` shell script.
@@ -52,7 +55,9 @@ Pipelines name will be `some-user-wip-something` and `some-user-wip-something-pr
     * Runs all tests
     * If anything fails it downloads the build directory for later analysis
     * Deletes the VM instances
-* Publishes to GitHub release
+    * Uploads artifacts to GCS
+* Publishes to GitHub release (TODO)
+* Detects changes to pipeline sources and auto updates
 ## Pull Release (PR)
 * Detects new PR
 * Build for each platform and configuration
@@ -63,14 +68,23 @@ Pipelines name will be `some-user-wip-something` and `some-user-wip-something-pr
     * If anything fails it downloads the build directory for later analysis
     * Deletes the VM instances
     * Updates PR status
+* Detects changes to pipeline sources and auto updates
 
 # Details
 This Concourse pipeline YAML is rendered using `ytt`. Depends on output from `git` and `gcloud`.
 ## Dependencies
+* [Google Cloud](https://console.cloud.google.com)
 * [Concourse](https://concourse-ci.org) v6.5.0+
 * [`ytt`](https://get-ytt.io) v0.28.0+
 * [`git`](https://git-scm.com) v2.25.2+
 * [`gcloud`](https://cloud.google.com/sdk/docs/install) SDK
+
+## Layout
+* base - Defines all common tasks across both pipelines.
+* release - Defines tasks tasks for release pipeline only.
+* pr - Defines tasks for pr pipeline only.
+* lib - ytt functions used by all templates.
+* docker/task - Minimal image required to communicate with builders.
 
 #TODO
 ## Concourse Installation
