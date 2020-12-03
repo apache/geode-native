@@ -428,7 +428,7 @@ plan:
         - get: packer-source
           trigger: false
   - task: build
-    attemps: 5
+    attempts: 5
     image: packer-image
     config:
       platform: linux
