@@ -33,6 +33,20 @@
 #@ load("@ytt:struct", "struct")
 #@ load("@ytt:template", "template")
 
+---
+#@ def pr_status(status, context):
+try:
+  put: #@ "pr-status-" + status
+  resource: source
+  params:
+    path: source
+    status: #@ status
+    context: #@ context
+  get_params:
+    skip_download: true
+  attempts: 5
+#@ end
+
 #@overlay/match by=overlay.all
 ---
 resource_types:
@@ -55,11 +69,43 @@ resources:
       access_token: ((github-access-token))
       base_branch: #@ data.values.repository.branch
 
+#@overlay/match-child-defaults missing_ok=True
 jobs:
   #@overlay/append
   - #@ update_pipeline_job("pr")
+    #@ for build in data.values.builds:
+    #@ for config in data.values.configs:
+    #@ name = build_job_name(extends_build(build), config)
+  #@overlay/match by="name", missing_ok=True
+  - name: #@ name
+    plan:
+      #@overlay/match by=overlay.index(0)
+      - in_parallel:
+          fail_fast: true
+          steps:
+            #@overlay/match by=overlay.subset({"get": "source"})
+            - get: source
+              on_success: #@ pr_status("pending", name)
+              #@ end
+            #@ end
+    on_error:
+      in_parallel:
+        steps:
+          #@overlay/append
+          - #@ pr_status("error", name)
+    on_failure:
+      in_parallel:
+        steps:
+          #@overlay/append
+          - #@ pr_status("failure", name)
+    on_success:
+      in_parallel:
+        steps:
+          #@overlay/append
+          - #@ pr_status("success", name)
 
-  #@overlay/match missing_ok=True
+
+          #@overlay/match missing_ok=True
 groups:
   - name: builds
     jobs:
