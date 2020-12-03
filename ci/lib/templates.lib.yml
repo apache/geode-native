@@ -35,6 +35,14 @@
 #@ end
 
 ---
+#@ def resource_type(name, repository):
+name: #@ name
+type: docker-image
+source:
+  repository: #@ repository
+#@ end
+
+---
 #@ def resource(name, type, source=None, icon=None):
 #@ return {
 #@   "name": name,
@@ -106,7 +114,7 @@
 
 ---
 #@ def gci_resource(family, project=data.values.google.project):
-#@ return resource(gci_resource_name(family), "gci", {
+#@ return resource(gci_resource_name(family), "gci-resource", {
 #@   "key": "((gcr-json-key))",
 #@   "family_project": project,
 #@   "family": family,
