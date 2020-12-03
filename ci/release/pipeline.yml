@@ -81,7 +81,6 @@ jobs:
             - get: source
               #@overlay/match missing_ok=True
               passed: [ version-source ]
-      #@overlay/match by=overlay.all
       #@overlay/append
       - #@ put_package(build, config)
         #@ end
