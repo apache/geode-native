@@ -14,23 +14,10 @@
 #! limitations under the License.
 
 #@ load("templates.lib.yml",
-#@      "git_resource",
-#@      "gci_resource",
-#@      "image_family_name",
-#@      "registry_image_resource",
 #@      "build_job_name",
-#@      "packer_job",
-#@      "packer_job_name",
-#@      "docker_job",
-#@      "docker_job_name",
-#@      "update_pipeline_job",
-#@      "update_pipeline_job_name",
-#@      "version_source_job",
-#@      "version_source_job_name")
+#@      "resource_type")
 #@ load("@ytt:data", "data")
 #@ load("@ytt:overlay", "overlay")
-#@ load("@ytt:struct", "struct")
-#@ load("@ytt:template", "template")
 
 ---
 #@ def pr_status(context, status, description = None):
@@ -51,16 +38,13 @@ try:
 ---
 resource_types:
   #@overlay/append
-  - name: pull-request
-    type: docker-image
-    source:
-      repository: teliaoss/github-pr-resource
+  - #@ resource_type("github-pr-resource", "teliaoss/github-pr-resource")
 
 resources:
   #@overlay/match by="name"
   #@overlay/replace
   - name: source
-    type: pull-request
+    type: github-pr-resource
     check_every: 1m
     icon: github
     source:
