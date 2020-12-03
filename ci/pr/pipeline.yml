@@ -72,11 +72,9 @@ resources:
 
 #@overlay/match-child-defaults missing_ok=True
 jobs:
-  #@overlay/append
-  - #@ update_pipeline_job("pr")
-    #@ for build in data.values.builds:
-    #@ for config in data.values.configs:
-    #@ name = build_job_name(extends_build(build), config)
+  #@ for build in data.values.builds:
+  #@ for config in data.values.configs:
+  #@ name = build_job_name(extends_build(build), config)
   #@overlay/match by="name", missing_ok=True
   - name: #@ name
     plan:
@@ -110,23 +108,4 @@ jobs:
           - #@ pr_status(name, "success")
 
             #@ end
-            #@ end
-
-          #@overlay/match missing_ok=True
-groups:
-  - name: builds
-    jobs:
-      #@ for build in data.values.builds:
-      #@ for/end config in data.values.configs:
-      - #@ build_job_name(extends_build(build), config)
-      #@ end
-  - name: meta
-    jobs:
-      - #@ update_pipeline_job_name()
-  - name: all
-    jobs:
-      #@ for build in data.values.builds:
-      #@ for/end config in data.values.configs:
-      - #@ build_job_name(extends_build(build), config)
-      #@ end
-      - #@ update_pipeline_job_name()
+          #@ end

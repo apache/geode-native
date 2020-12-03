@@ -16,8 +16,11 @@
 #@ load("@ytt:overlay", "overlay")
 
 #@data/values
+#@overlay/match-child-defaults missing_ok=True
 ---
-#@overlay/match missing_ok=True
+pipeline:
+  variant: pr
+
 configs:
   #@overlay/append
   - name: debug
