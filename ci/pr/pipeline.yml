@@ -34,7 +34,7 @@
 #@ load("@ytt:template", "template")
 
 ---
-#@ def pr_status(status, context):
+#@ def pr_status(context, status, description = None):
 try:
   put: #@ "pr-status-" + status
   resource: source
@@ -42,6 +42,7 @@ try:
     path: source
     status: #@ status
     context: #@ context
+    description: #@ description
   get_params:
     skip_download: true
   attempts: 5
@@ -86,25 +87,25 @@ jobs:
             #@overlay/match by=overlay.subset({"get": "source"})
             - get: source
               version: every
-              on_success: #@ pr_status("pending", name)
-              #@ end
-            #@ end
+              on_success: #@ pr_status(name, "pending")
     on_error:
       in_parallel:
         steps:
           #@overlay/append
-          - #@ pr_status("error", name)
+          - #@ pr_status(name, "error")
     on_failure:
       in_parallel:
         steps:
           #@overlay/append
-          - #@ pr_status("failure", name)
+          - #@ pr_status(name, "failure")
     on_success:
       in_parallel:
         steps:
           #@overlay/append
-          - #@ pr_status("success", name)
+          - #@ pr_status(name, "success")
 
+            #@ end
+            #@ end
 
           #@overlay/match missing_ok=True
 groups:
