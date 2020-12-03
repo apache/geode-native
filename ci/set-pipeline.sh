@@ -14,12 +14,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set -xeuo pipefail
+set -euo pipefail
 
 function printHelp() {
   cat << EOF
 $0 Usage:
-Sets Concourse pipeline for Geode Native builds.
+Sets Concourse pipelines for Geode Native builds.
 
 Options:
 Parameter                Description                         Default
@@ -33,7 +33,18 @@ Parameter                Description                         Default
 --google-storage-key     Google Compute Storage key prefix.  Based on pipeline value.
 --fly                    Path to fly executable.             "fly"
 --ytt                    Path to ytt executable.             "ytt"
+--variants               Pipeline variants of publish.       Both release and pr.
 --output                 Rendered pipeline files directory.  Temporary directory.
+
+Example:
+\$ $0 --target=my-target --google-zone=my-zone
+
+Environment Variables:
+All options can be specified via environment variables where hyphens (-) are replaced with underscore (_).
+
+Example:
+\$ target=my-target google_zone=my-zone $0
+
 EOF
 }
 
