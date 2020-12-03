@@ -85,6 +85,7 @@ jobs:
           steps:
             #@overlay/match by=overlay.subset({"get": "source"})
             - get: source
+              version: every
               on_success: #@ pr_status("pending", name)
               #@ end
             #@ end
