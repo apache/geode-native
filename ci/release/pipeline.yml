@@ -39,7 +39,6 @@
 
 #@overlay/match by=overlay.all
 ---
-
 resources:
   #@overlay/append
   - #@ registry_image_resource("packer-image", "hashicorp/packer")
@@ -59,8 +58,6 @@ resources:
 jobs:
   #@overlay/append
   - #@ version_source_job()
-  #@overlay/append
-  - #@ update_pipeline_job("release")
   #@overlay/append
   - #@ docker_job("task-image", "ci-source", "ci/docker/task")
     #@ for build in data.values.builds:
@@ -86,29 +83,22 @@ jobs:
         #@ end
         #@ end
 
-      #@overlay/match missing_ok=True
+      #@overlay/match-child-defaults missing_ok=True
 groups:
-  - name: builds
-    jobs:
-      #@ for build in data.values.builds:
-      #@ for/end config in data.values.configs:
-      - #@ build_job_name(extends_build(build), config)
-      #@ end
+  #@overlay/match by="name"
   - name: images
     jobs:
       #@ for/end build in data.values.builds:
       - #@ packer_job_name(extends_build(build))
       - #@ docker_job_name("task-image")
-  - name: meta
-    jobs:
-      - #@ update_pipeline_job_name()
+      #@overlay/match by="name"
   - name: all
     jobs:
       #@ for build in data.values.builds:
-      #@ for/end config in data.values.configs:
-      - #@ build_job_name(extends_build(build), config)
+      #@overlay/append
       - #@ packer_job_name(extends_build(build))
-      #@ end
-      - #@ update_pipeline_job_name()
+        #@ end
+      #@overlay/append
       - #@ docker_job_name("task-image")
+      #@overlay/append
       - #@ version_source_job_name()

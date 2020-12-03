@@ -35,6 +35,7 @@
 #@ load("@ytt:struct", "struct")
 #@ load("@ytt:template", "template")
 
+---
 resource_types:
   - name: gci
     type: docker-image
@@ -56,4 +57,22 @@ resources:
 
 jobs:
   - #@ template.replace(build_jobs(data.values.builds, data.values.configs))
+  - #@ update_pipeline_job()
 
+groups:
+  - name: builds
+    jobs:
+      #@ for build in data.values.builds:
+      #@ for/end config in data.values.configs:
+      - #@ build_job_name(extends_build(build), config)
+      #@ end
+  - name: meta
+    jobs:
+      - #@ update_pipeline_job_name()
+  - name: all
+    jobs:
+      - #@ update_pipeline_job_name()
+        #@ for build in data.values.builds:
+      #@ for/end config in data.values.configs:
+      - #@ build_job_name(extends_build(build), config)
+      #@ end

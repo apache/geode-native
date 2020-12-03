@@ -458,7 +458,7 @@ plan:
 #@ end
 
 ---
-#@ def update_pipeline_job(variant):
+#@ def update_pipeline_job():
 name: #@ update_pipeline_job_name()
 serial: true
 plan:
@@ -486,9 +486,11 @@ plan:
           - --file
           - source/ci/base
           - --file
-          - #@ "source/ci/" + variant
+          - #@ "source/ci/" + data.values.pipeline.variant
           - --data-value
           - #@ "pipeline.name=" + data.values.pipeline.name
+          - --data-value
+          - #@ "pipeline.variant=" + data.values.pipeline.variant
           - --data-value
           - #@ "repository.url=" + data.values.repository.url
           - --data-value
