@@ -93,6 +93,11 @@ jobs:
         steps:
           #@overlay/append
           - #@ pr_status(name, "error")
+    on_abort:
+      in_parallel:
+        steps:
+          #@overlay/append
+          - #@ pr_status(name, "error", "Build canceled")
     on_failure:
       in_parallel:
         steps:
