@@ -224,7 +224,7 @@ config:
         version=$(cat version/number)
         builddate=$(date "+%Y-%m-%d")
 
-        remote_shell git clone ${git_url} source
+        remote_upload source .
         remote_shell cmake -E chdir source git checkout ${git_rev}
         remote_shell cmake -E make_directory build
         remote_shell cmake -E chdir build cmake ../source ${CMAKE_CONFIGURE_FLAGS} \
@@ -239,11 +239,11 @@ config:
 
         packages=$(awk '/^CPack: - package: / {print $4}' cpack.out)
         for package in ${packages}; do
-          remote_copy ${package} package/
+          remote_download ${package} package/
         done
         checksums=$(awk '/^CPack: - checksum file: / {print $5}' cpack.out)
         for checksum in ${checksums}; do
-          remote_copy ${checksum} package/
+          remote_download ${checksum} package/
         done
 #@ end
 
@@ -326,7 +326,7 @@ config:
         set -ueo pipefail
         (@= remote_functions() @)
 
-        remote_copy_recursive build .
+        remote_download build .
 #@ end
 
 ---
