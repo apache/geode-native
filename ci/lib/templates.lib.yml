@@ -373,12 +373,12 @@ plan:
           trigger: true
         - get: source
           trigger: true
+        - get: task-image
         - do:
             - in_parallel:
                 fail_fast: true
                 steps:
                   - get: gcloud-image
-                  - get: task-image
                   - get: #@ gci_resource_name(image_family_name(build.image_family))
                     trigger: true
             - #@ create_instance(build, config)
@@ -392,8 +392,14 @@ plan:
       - #@ net_integration_test_task(build, config)
       - #@ net_legacy_integration_test_task(build, config)
       #@ end
-on_failure: #@ download_build_task()
-ensure: #@ delete_instance()
+on_failure:
+  in_parallel:
+    steps:
+      - #@ download_build_task()
+ensure:
+  in_parallel:
+    steps:
+      - #@ delete_instance()
 #@ end
 
 ---
