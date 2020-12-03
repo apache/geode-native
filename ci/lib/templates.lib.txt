@@ -55,12 +55,12 @@ function remote_shell {
   ssh ${SSH_OPTIONS} -i ${ssh_key_file} ${INSTANCE_USER}@${external_ip} "$@"
 }
 
-function remote_copy {
-  scp ${SSH_OPTIONS} -i ${ssh_key_file} "${INSTANCE_USER}@${external_ip}:${1}" "$2"
+function remote_download {
+  scp ${SSH_OPTIONS} -i ${ssh_key_file} -q -r -p "${INSTANCE_USER}@${external_ip}:${1}" "$2"
 }
 
-function remote_copy_recursive {
-  scp ${SSH_OPTIONS} -i ${ssh_key_file} -q -r "${INSTANCE_USER}@${external_ip}:${1}" "$2"
+function remote_upload {
+  scp ${SSH_OPTIONS} -i ${ssh_key_file} -q -r -p "$1" "${INSTANCE_USER}@${external_ip}:${2}"
 }
 
 (@- end @)
