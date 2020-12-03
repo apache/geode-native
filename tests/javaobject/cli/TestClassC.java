@@ -34,26 +34,6 @@ public class TestClassC implements Declarable, Serializable, DataSerializable {
    });
   }
 
-
-
-/*
-  public void init(Properties props) {
-    this.secId = props.getProperty("secId");
-
-    if(props.getProperty("qty") != null) { 
-      this.qty = Double.parseDouble( props.getProperty("qty") );
-    }
-
-    if(props.getProperty("mktValue") != null) { 
-      this.mktValue = Double.parseDouble( props.getProperty("mktValue") );
-    }
-
-    this.sharesOutstanding = Integer.parseInt(props.getProperty("sharesOutstanding"));
-    this.secType = props.getProperty("secType");
-    this.pid = Integer.parseInt(props.getProperty("pid"));
-  }
-*/
-
   /* public no-arg constructor required for DataSerializable */  
   public TestClassC() {}
 

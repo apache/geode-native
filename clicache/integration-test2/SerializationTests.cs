@@ -73,17 +73,16 @@ namespace Apache.Geode.Client.IntegrationTests
 
 		public override bool Equals(object obj)
 		{
-			if (obj == null)
-				return false;
-			if (obj == this)
-				return true;
+            TestClassA other = (TestClassA)obj;
 
-			var other = obj as TestClassA;
-
-			if (Id == other.Id &&
-				Name == other.Name &&
-				NumSides == other.NumSides)
-				return true;
+            if (other != null) {
+			    if (Id == other.Id &&
+				    Name == other.Name &&
+				    NumSides == other.NumSides)
+				    return true;
+                else
+                    return false;
+            }
 			else
 				return false;
 		}
@@ -141,17 +140,16 @@ namespace Apache.Geode.Client.IntegrationTests
 
 		public override bool Equals(object obj)
 		{
-			if (obj == null)
-				return false;
-			if (obj == this)
-				return true;
+			var other = (TestClassB)obj;
 
-			var other = obj as TestClassB;
-
-			if (Width == other.Width &&
-				Name == other.Name &&
-				Height == other.Height)
-				return true;
+            if (other != null) {
+			    if (Width == other.Width &&
+				    Name == other.Name &&
+				    Height == other.Height)
+				    return true;
+                else
+                    return false;
+            }
 			else
 				return false;
 		}
@@ -209,12 +207,7 @@ namespace Apache.Geode.Client.IntegrationTests
 
 		public override bool Equals(object obj)
 		{
-			if (obj == null)
-				return false;
-			if (obj == this)
-				return true;
-
-			var other = obj as TestClassC;
+			var other = (TestClassC)obj;
 
 			if (Color == other.Color &&
 				Make == other.Make &&
@@ -315,12 +308,7 @@ namespace Apache.Geode.Client.IntegrationTests
 
 		public override bool Equals(object obj)
 		{
-			if (obj == null)
-				return false;
-			if (obj == this)
-				return true;
-
-			var other = obj as CompositeClass;
+			var other = (CompositeClass)obj;
 
 			if (testclassA.Equals(other.testclassA)
 				&& testclassBs.Equals(other.testclassBs)
@@ -824,7 +812,68 @@ namespace Apache.Geode.Client.IntegrationTests
             }
         }
 
-		[Fact]
+        [Fact]
+        public void ClassAsKey()
+        {
+            using (var cluster = new Cluster(output, CreateTestCaseDirectoryName(), 1, 1))
+            {
+                Assert.Equal(cluster.Start(), true);
+                Assert.Equal(0, cluster.Gfsh.deploy()
+                    .withJar(Config.JavaobjectJarPath)
+                    .execute());
+
+                Assert.Equal(0, cluster.Gfsh.create()
+                    .region()
+                    .withName("testRegion")
+                    .withType("REPLICATE")
+                    .execute());
+
+                Assert.Equal(0, cluster.Gfsh.executeFunction()
+                    .withId("InstantiateDataSerializable")
+                    .withMember("ClassAsKey_server_0")
+                    .execute());
+
+                var cache = cluster.CreateCache();
+
+                cache.TypeRegistry.RegisterType(PositionKey.CreateDeserializable, 77);
+                cache.TypeRegistry.RegisterType(Position.CreateDeserializable, 22);
+
+                var region = cache.CreateRegionFactory(RegionShortcut.PROXY)
+                  .SetPoolName("default")
+                  .Create<PositionKey, Position>("testRegion");
+                Assert.NotNull(region);
+
+                var key1 = new PositionKey(1000);
+                var key2 = new PositionKey(1000000);
+                var key3 = new PositionKey(1000000000);
+
+                var pos1 = new Position("GOOG", 23);
+                var pos2 = new Position("IBM", 37);
+                var pos3 = new Position("PVTL", 101);
+
+                region.Put(key1, pos1);
+                region.Put(key2, pos2);
+                region.Put(key3, pos3);
+
+                var res1 = region.Get(key1);
+                var res2 = region.Get(key2);
+                var res3 = region.Get(key3);
+
+                Assert.True(
+                    res1.SecId == pos1.SecId &&
+                    res1.SharesOutstanding == pos1.SharesOutstanding);
+                Assert.True(
+                    res2.SecId == pos2.SecId &&
+                    res2.SharesOutstanding == pos2.SharesOutstanding);
+                Assert.True(
+                    res3.SecId == pos3.SecId &&
+                    res3.SharesOutstanding == pos3.SharesOutstanding);
+
+                cache.Close();
+            }
+        }
+
+        [Fact]
 		public void CompositeClassWithClassAsKey()
 		{
 			using (var cluster = new Cluster(output, CreateTestCaseDirectoryName(), 1, 1))
