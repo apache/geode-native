@@ -18,7 +18,6 @@
 #@      "gcr_image_resource",
 #@      "project_gcr_image_resource",
 #@      "git_resource",
-#@      "extends_build",
 #@      "registry_image_resource",
 #@      "semver_resource",
 #@      "build_resources",
@@ -59,7 +58,7 @@ groups:
     jobs:
       #@ for build in data.values.builds:
       #@ for/end config in data.values.configs:
-      - #@ build_job_name(extends_build(build), config)
+      - #@ build_job_name(build, config)
       #@ end
   - name: meta
     jobs:
@@ -69,5 +68,5 @@ groups:
       - #@ update_pipeline_job_name()
         #@ for build in data.values.builds:
       #@ for/end config in data.values.configs:
-      - #@ build_job_name(extends_build(build), config)
+      - #@ build_job_name(build, config)
       #@ end
