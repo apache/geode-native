@@ -16,25 +16,18 @@
 #@ load("templates.lib.yml",
 #@      "git_resource",
 #@      "gci_resource",
-#@      "image_family_name",
 #@      "registry_image_resource",
 #@      "build_job_name",
 #@      "packer_job",
 #@      "packer_job_name",
 #@      "docker_job",
 #@      "docker_job_name",
-#@      "update_pipeline_job",
-#@      "update_pipeline_job_name",
-#@      "build_resources",
 #@      "package_resource",
-#@      "package_resource_name",
 #@      "put_package",
 #@      "version_source_job",
 #@      "version_source_job_name")
 #@ load("@ytt:data", "data")
 #@ load("@ytt:overlay", "overlay")
-#@ load("@ytt:struct", "struct")
-#@ load("@ytt:template", "template")
 
 #@overlay/match by=overlay.all
 ---
