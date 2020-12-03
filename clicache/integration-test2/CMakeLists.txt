@@ -42,6 +42,7 @@ add_library( ${PROJECT_NAME} SHARED
   RegionTest.cs
   RegionSSLTest.cs
   Position.cs
+  PositionKey.cs
   TestBase.cs
   cache.xml
   geode.properties
