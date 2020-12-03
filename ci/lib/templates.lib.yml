@@ -383,7 +383,6 @@ plan:
                 steps:
                   - get: gcloud-image
                   - get: #@ gci_resource_name(image_family_name(build.image_family))
-                    trigger: true
             - #@ create_instance(build, config)
   - do:
       - #@ build_task(config.config, build.params)
