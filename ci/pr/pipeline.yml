@@ -52,6 +52,12 @@ resources:
       repository: #@ parts[1] + "/" + parts[2]
       access_token: ((github-access-token))
       base_branch: #@ data.values.repository.branch
+      ignore_paths:
+        - ci/
+        - packer/
+        - docker/
+        - tools/
+        - '*/*.md'
 
 #@overlay/match-child-defaults missing_ok=True
 jobs:
