@@ -121,6 +121,7 @@ using Password = NamedType<std::string, struct PasswordParameter>;
 using CacheXMLFiles =
     NamedType<std::vector<std::string>, struct CacheXMLFilesParameter>;
 using UseIpv6 = NamedType<bool, struct UseIpv6Parameter>;
+using LogLevel = NamedType<::std::string, struct LogLevelParameter>;
 
 class Cluster {
  public:
@@ -138,6 +139,8 @@ class Cluster {
           uint16_t distributedSystemId);
 
   Cluster(LocatorCount initialLocators, ServerCount initialServers);
+
+  Cluster(LocatorCount initialLocators, ServerCount initialServers, LogLevel);
 
   Cluster(LocatorCount initialLocators, ServerCount initialServers,
           CacheXMLFiles cacheXMLFiles);
@@ -222,6 +225,8 @@ class Cluster {
 
   bool getUseIPv6();
 
+  std::string &getLogLevel();
+  
  private:
 
   std::string name_;
@@ -262,6 +267,8 @@ class Cluster {
   uint16_t distributedSystemId_ = 0;
 
   GfshExecute gfsh_;
+
+  std::string logLevel_;
 
   void startLocators();
   void startServers();
