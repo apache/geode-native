@@ -26,7 +26,7 @@ public class PositionKey implements DataSerializable {
   private long positionId;
 
   static {
-     Instantiator.register(new Instantiator(javaobject.cli.PositionKey.class, (byte) 77) {
+     Instantiator.register(new Instantiator(javaobject.cli.PositionKey.class, (byte) 21) {
      public DataSerializable newInstance() {
         return new PositionKey();
      }
