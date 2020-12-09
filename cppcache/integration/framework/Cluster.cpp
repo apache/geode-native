@@ -95,6 +95,7 @@ void Locator::start() {
   auto locator = cluster_.getGfsh()
                      .start()
                      .locator()
+                     .withLogLevel("INFO")
                      .withDir(name_)
                      .withName(safeName)
                      .withBindAddress(locatorAddress_.address)
@@ -108,12 +109,6 @@ void Locator::start() {
                      .withSecurityManager(cluster_.getSecurityManager())
                      .withPreferIPv6(cluster_.getUseIPv6())
                      .withJmxManagerStart(true);
-
-  if(cluster_.getLogLevel().empty()) {
-    locator.withLogLevel("INFO");
-  } else {
-    locator.withLogLevel(cluster_.getLogLevel());
-  }
 
   if (cluster_.useSsl()) {
     locator.withConnect(false)
@@ -212,12 +207,6 @@ void Server::start() {
           .withCacheXMLFile(getCacheXMLFile())
           .withPreferIPv6(cluster_.getUseIPv6());
 
-  if(cluster_.getLogLevel().empty()) {
-    server.withLogLevel("INFO");
-  } else {
-    server.withLogLevel(cluster_.getLogLevel());
-  }
-
   if (!cluster_.getUser().empty()) {
     server.withUser(cluster_.getUser()).withPassword(cluster_.getPassword());
   }
@@ -292,11 +281,6 @@ Cluster::Cluster(LocatorCount initialLocators, ServerCount initialServers,
 
 Cluster::Cluster(LocatorCount initialLocators, ServerCount initialServers)
     : Cluster(initialLocators, initialServers, UseIpv6(false)) {}
-
-Cluster::Cluster(LocatorCount initialLocators, ServerCount initialServers, LogLevel logLevel)
-    : Cluster(initialLocators, initialServers, UseIpv6(false)) {
-      logLevel_ = logLevel.get();
-    }
 
 Cluster::Cluster(LocatorCount initialLocators, ServerCount initialServers,
                  CacheXMLFiles cacheXMLFiles)
@@ -426,8 +410,6 @@ std::string &Cluster::getPassword() { return password_; }
 std::vector<std::string> &Cluster::getCacheXMLFiles() { return cacheXMLFiles_; }
 
 bool Cluster::getUseIPv6() { return useIPv6_; }
-
-std::string &Cluster::getLogLevel() { return logLevel_; }
 
 void Cluster::start() { start(std::function<void()>()); }
 

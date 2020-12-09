@@ -18,10 +18,6 @@
 #include <framework/Cluster.h>
 #include <framework/Gfsh.h>
 
-#include <cstdio>
-#include <fstream>
-#include <iterator>
-#include <regex>
 #include <thread>
 
 #include <geode/Cache.hpp>
@@ -39,30 +35,6 @@ using apache::geode::client::CacheTransactionManager;
 using apache::geode::client::Pool;
 using apache::geode::client::Region;
 using apache::geode::client::RegionShortcut;
-
-std::string getServerLogName() {
-  std::string testSuiteName(::testing::UnitTest::GetInstance()
-                                ->current_test_info()
-                                ->test_case_name());
-  std::string testCaseName(
-      ::testing::UnitTest::GetInstance()->current_test_info()->name());
-  std::string logFileName(
-      testSuiteName + "/" + testCaseName +
-      "/server/0/"
-      "TransactionsTest_CacheCloseAndPingNotInherentlyTransactional_server_0."
-      "log");
-  return logFileName;
-}
-
-void removeLogFromPreviousExecution() {
-  std::string logFileName(getServerLogName());
-  std::ifstream previousTestLog(logFileName);
-  if (previousTestLog.good()) {
-    std::cout << "Removing log from previous execution: " << logFileName
-              << std::endl;
-    remove(logFileName.c_str());
-  }
-}
 
 std::shared_ptr<Cache> createCache() {
   auto cache = CacheFactory().set("log-level", "debug").create();
@@ -136,49 +108,5 @@ TEST(TransactionsTest, ExceptionWhenRollingBackTx) {
   }
 
 }  // TEST
-
-TEST(TransactionsTest, CacheCloseAndPingNotInherentlyTransactional) {
-  removeLogFromPreviousExecution();
-
-  Cluster cluster{LocatorCount{1}, ServerCount{1}, LogLevel("debug")};
-  cluster.start();
-  cluster.getGfsh()
-      .create()
-      .region()
-      .withName("region")
-      .withType("PARTITION")
-      .execute();
-
-  auto cache = CacheFactory().create();
-
-  auto poolFactory = cache.getPoolManager().createFactory();
-  cluster.applyLocators(poolFactory);
-  poolFactory.setPRSingleHopEnabled(true).setPingInterval(
-      ::std::chrono::milliseconds{100});
-  auto pool = poolFactory.create("default");
-
-  auto region = cache.createRegionFactory(RegionShortcut::PROXY)
-                    .setPoolName("default")
-                    .create("region");
-
-  ::std::this_thread::sleep_for(::std::chrono::seconds(10));
-
-  cache.close();
-
-  ::std::ifstream serverLog(getServerLogName());
-
-  if (serverLog) {
-    std::string line;
-    while (getline(serverLog, line)) {
-      ASSERT_FALSE(std::regex_search(
-          line, std::regex("masqueradeAs tx .* for client message PING")));
-      ASSERT_FALSE(std::regex_search(
-          line, std::regex(
-                    "masqueradeAs tx .* for client message CLOSE_CONNECTION")));
-    }
-  } else {
-    FAIL() << "No server log";
-  }
-}
 
 }  // namespace

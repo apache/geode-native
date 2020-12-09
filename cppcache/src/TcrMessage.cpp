@@ -2096,9 +2096,14 @@ TcrMessagePing::TcrMessagePing(DataOutput* dataOutput, bool decodeAll) {
   m_request->writeInt(static_cast<int32_t>(
       0));  // 17 is fixed message len ...  PING only has a header.
   m_request->writeInt(static_cast<int32_t>(0));  // Number of parts.
-  m_request->writeInt(m_txId);
+  // int32_t txId = TcrMessage::m_transactionId++;
+  // Setting the txId to 0 for all ping message as it is not being used on the
+  // SERVER side or the
+  // client side.
+  m_request->writeInt(static_cast<int32_t>(0));
   m_request->write(static_cast<int8_t>(0));  // Early ack is '0'.
   m_msgLength = g_headerLen;
+  m_txId = 0;
 }
 
 TcrMessageCloseConnection::TcrMessageCloseConnection(DataOutput* dataOutput,
@@ -2109,7 +2114,8 @@ TcrMessageCloseConnection::TcrMessageCloseConnection(DataOutput* dataOutput,
   m_request->writeInt(m_msgType);
   m_request->writeInt(static_cast<int32_t>(6));
   m_request->writeInt(static_cast<int32_t>(1));  // Number of parts.
-  m_request->writeInt(m_txId);
+  // int32_t txId = TcrMessage::m_transactionId++;
+  m_request->writeInt(static_cast<int32_t>(0));
   m_request->write(static_cast<int8_t>(0));  // Early ack is '0'.
   // last two parts are not used ... setting zero in both the parts.
   m_request->writeInt(static_cast<int32_t>(1));  // len is 1
