@@ -798,4 +798,31 @@ TEST_F(TcrMessageTest, testConstructorEXECUTECQ_WITH_IR_MSG_TYPE) {
       testMessage);
 }
 
+TEST_F(TcrMessageTest, testConstructorPING) {
+  using apache::geode::client::TcrMessagePing;
+
+  std::shared_ptr<Cacheable> myCacheablePtr(
+      CacheableString::createDeserializable());
+
+  TcrMessagePing testMessage(new DataOutputUnderTest(), false);
+
+  EXPECT_EQ(TcrMessage::PING, testMessage.getMessageType());
+
+  EXPECT_MESSAGE_EQ("000000050000000000000000FFFFFFFF00", testMessage);
+}
+
+TEST_F(TcrMessageTest, testConstructorCLOSE_CONNECTION) {
+  using apache::geode::client::TcrMessageCloseConnection;
+
+  std::shared_ptr<Cacheable> myCacheablePtr(
+      CacheableString::createDeserializable());
+
+  TcrMessageCloseConnection testMessage(new DataOutputUnderTest(), false);
+
+  EXPECT_EQ(TcrMessage::CLOSE_CONNECTION, testMessage.getMessageType());
+
+  EXPECT_MESSAGE_EQ("000000120000000600000001FFFFFFFF00000000010000",
+                    testMessage);
+}
+
 }  // namespace
