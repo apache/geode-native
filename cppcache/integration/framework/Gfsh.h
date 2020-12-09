@@ -46,6 +46,9 @@ class Gfsh {
   class Deploy;
   Deploy deploy();
 
+  class ExecuteFunction;
+  ExecuteFunction executeFunction();
+
   class Verb {
    public:
    protected:
@@ -300,6 +303,14 @@ class Gfsh {
     explicit Deploy(Gfsh &gfsh);
 
     Deploy &jar(const std::string &jarFile);
+  };
+
+  class ExecuteFunction : public Command<void> {
+   public:
+    explicit ExecuteFunction(Gfsh &gfsh);
+
+    ExecuteFunction &withId(const std::string &functionName);
+    ExecuteFunction &withMember(const std::string &withMember);
   };
 
  protected:

@@ -29,6 +29,8 @@ Gfsh::Shutdown Gfsh::shutdown() { return Shutdown{*this}; }
 
 Gfsh::Deploy Gfsh::deploy() { return Deploy(*this); }
 
+Gfsh::ExecuteFunction Gfsh::executeFunction() { return ExecuteFunction(*this); }
+
 Gfsh::Verb::Verb(Gfsh &gfsh) : gfsh_(gfsh) {}
 
 Gfsh::Start::Start(Gfsh &gfsh) : gfsh_(gfsh) {}
@@ -508,4 +510,19 @@ void Gfsh::Command<void>::execute(const std::string &user,
 template <>
 void Gfsh::Command<void>::execute() {
   gfsh_.execute(command_, "", "", "", "", "", "");
+}
+
+Gfsh::ExecuteFunction::ExecuteFunction(Gfsh &gfsh) : Command{gfsh, "execute function"} {}
+
+Gfsh::ExecuteFunction &Gfsh::ExecuteFunction::withId(const std::string &functionId) {
+  command_ += " --id=" + functionId;
+
+  return *this;
+}
+
+Gfsh::ExecuteFunction &Gfsh::ExecuteFunction::withMember(
+    const std::string &memberName) {
+  command_ += " --member=" + memberName;
+
+  return *this;
 }
