@@ -2090,6 +2090,9 @@ TcrMessageReply::TcrMessageReply(bool decodeAll,
 
 TcrMessagePing::TcrMessagePing(DataOutput* dataOutput, bool decodeAll) {
   m_msgType = TcrMessage::PING;
+  // -1 is NOTX constant server-side, PING should *never* be part of a
+  // transaction
+  m_txId = -1;
   m_decodeAll = decodeAll;
   m_request.reset(dataOutput);
   m_request->writeInt(m_msgType);
@@ -2099,12 +2102,14 @@ TcrMessagePing::TcrMessagePing(DataOutput* dataOutput, bool decodeAll) {
   m_request->writeInt(m_txId);
   m_request->write(static_cast<int8_t>(0));  // Early ack is '0'.
   m_msgLength = g_headerLen;
-  m_txId = 0;
 }
 
 TcrMessageCloseConnection::TcrMessageCloseConnection(DataOutput* dataOutput,
                                                      bool decodeAll) {
   m_msgType = TcrMessage::CLOSE_CONNECTION;
+  // -1 is NOTX constant server-side, CLOSE_CONNECTION should *never* be part
+  // of a transaction
+  m_txId = -1;
   m_decodeAll = decodeAll;
   m_request.reset(dataOutput);
   m_request->writeInt(m_msgType);
