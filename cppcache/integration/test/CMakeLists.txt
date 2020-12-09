@@ -53,7 +53,7 @@ add_executable(cpp-integration-test
   PdxInstanceFactoryTest.cpp
   CacheWriterTest.cpp
   TransactionsTest.cpp
-  DisconnectEndPointAtException.cpp
+  ContainsKeyOnServerExceptionTest.cpp
 )
 
 target_compile_definitions(cpp-integration-test

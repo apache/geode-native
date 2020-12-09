@@ -34,7 +34,7 @@ using apache::geode::client::Pool;
 using apache::geode::client::Region;
 using apache::geode::client::RegionShortcut;
 
-std::string disconnectingStr("Disconnecting from endpoint");
+std::string disconnectingStr("Disconnecting from the endpoint");
 
 std::string getClientLogName() {
   std::string testSuiteName(::testing::UnitTest::GetInstance()
@@ -104,7 +104,7 @@ void executeTestCaseHandleException() {
 
 }  // executeTestCaseHandleException
 
-TEST(DisconnectEndPointAtException, handleException) {
+TEST(ContainsKeyOnServerExceptionTest, handleException) {
   executeTestCaseHandleException();
 }
 
