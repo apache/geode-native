@@ -2090,40 +2090,25 @@ TcrMessageReply::TcrMessageReply(bool decodeAll,
 
 TcrMessagePing::TcrMessagePing(DataOutput* dataOutput, bool decodeAll) {
   m_msgType = TcrMessage::PING;
-  // -1 is NOTX constant server-side, PING should *never* be part of a
-  // transaction
-  m_txId = -1;
   m_decodeAll = decodeAll;
   m_request.reset(dataOutput);
-  m_request->writeInt(m_msgType);
-  m_request->writeInt(static_cast<int32_t>(
-      0));  // 17 is fixed message len ...  PING only has a header.
-  m_request->writeInt(static_cast<int32_t>(0));  // Number of parts.
-  m_request->writeInt(m_txId);
-  m_request->write(static_cast<int8_t>(0));  // Early ack is '0'.
-  m_msgLength = g_headerLen;
+  writeHeader(m_msgType, 0);
+  writeMessageLength();
 }
 
 TcrMessageCloseConnection::TcrMessageCloseConnection(DataOutput* dataOutput,
                                                      bool decodeAll) {
   m_msgType = TcrMessage::CLOSE_CONNECTION;
-  // -1 is NOTX constant server-side, CLOSE_CONNECTION should *never* be part
-  // of a transaction
-  m_txId = -1;
   m_decodeAll = decodeAll;
   m_request.reset(dataOutput);
-  m_request->writeInt(m_msgType);
-  m_request->writeInt(static_cast<int32_t>(6));
-  m_request->writeInt(static_cast<int32_t>(1));  // Number of parts.
-  // int32_t txId = TcrMessage::m_transactionId++;
-  m_request->writeInt(m_txId);
-  m_request->write(static_cast<int8_t>(0));  // Early ack is '0'.
+  writeHeader(m_msgType, 1);
   // last two parts are not used ... setting zero in both the parts.
   m_request->writeInt(static_cast<int32_t>(1));  // len is 1
   m_request->write(static_cast<int8_t>(0));      // is obj is '0'.
   // cast away constness here since we want to modify this
   TcrMessage::m_keepAlive = const_cast<uint8_t*>(m_request->getCursor());
   m_request->write(static_cast<int8_t>(0));  // keepalive is '0'.
+  writeMessageLength();
 }
 
 TcrMessageClientMarker::TcrMessageClientMarker(DataOutput* dataOutput,
