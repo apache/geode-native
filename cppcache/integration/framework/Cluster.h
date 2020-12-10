@@ -187,7 +187,8 @@ class Cluster {
 
   void applyLocators(apache::geode::client::PoolFactory &poolFactory);
 
-  void applyServer(apache::geode::client::PoolFactory &poolFactory, ServerAddress server);
+  void applyServer(apache::geode::client::PoolFactory &poolFactory, 
+            ServerAddress server);
 
   void useSsl(const bool requireSslAuthentication, const std::string keystore,
               const std::string truststore, const std::string keystorePassword,
