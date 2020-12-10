@@ -17,7 +17,6 @@
   limitations under the License.
 -->
 
-
 <cache xmlns="http://geode.apache.org/schema/cache"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://geode.apache.org/schema/cache http://geode.apache.org/schema/cache/cache-1.0.xsd"
@@ -38,5 +37,4 @@
       </cache-writer>
     </region-attributes>
   </region>
-
 </cache>
