@@ -40,6 +40,7 @@ namespace client {
 
 class ThinClientPoolDM;
 class Connector;
+class TcrConnection;
 
 class ThinClientLocatorHelper {
  public:
@@ -69,28 +70,6 @@ class ThinClientLocatorHelper {
 
  private:
   /**
-   * Auxiliary types
-   */
-
-  class ConnectionWrapper {
-   private:
-    Connector* conn_;
-
-   public:
-    ConnectionWrapper(const ConnectionWrapper&) = delete;
-    ConnectionWrapper& operator=(const ConnectionWrapper&) = delete;
-
-    explicit ConnectionWrapper(Connector* conn) : conn_(conn) {}
-    ConnectionWrapper(ConnectionWrapper&& other) : conn_(other.conn_) {
-      other.conn_ = nullptr;
-    }
-
-    ~ConnectionWrapper();
-
-    Connector* operator->() { return conn_; }
-  };
-
-  /**
    * Returns the number of connections retries per request
    * @return Number of connection retries towards locators
    */
@@ -110,9 +89,10 @@ class ThinClientLocatorHelper {
   /**
    * Creates a connection to the given locator
    * @param location Locator ServerLocation
-   * @return A connection wrapper for the locator
+   * @return A connection for the locator
    */
-  ConnectionWrapper createConnection(const ServerLocation& location) const;
+  std::unique_ptr<Connector> createConnection(
+      const ServerLocation& location) const;
 
   /**
    * Sends a request to the given locator
