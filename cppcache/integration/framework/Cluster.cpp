@@ -186,6 +186,8 @@ Server::Server(Server &&move)
   move.started_ = false;
 }
 
+const ServerAddress &Server::getAddress() const { return serverAddress_; }
+
 void Server::start() {
   auto safeName = name_;
   std::replace(safeName.begin(), safeName.end(), '/', '_');
@@ -411,6 +413,11 @@ void Cluster::applyLocators(apache::geode::client::PoolFactory &poolFactory) {
     poolFactory.addLocator(locator.getAddress().address,
                            locator.getAddress().port);
   }
+}
+
+void Cluster::applyServer(apache::geode::client::PoolFactory &poolFactory, 
+                   ServerAddress oneServer) {
+  poolFactory.addServer(oneServer.address, oneServer.port);
 }
 
 Gfsh &Cluster::getGfsh() { return gfsh_; }

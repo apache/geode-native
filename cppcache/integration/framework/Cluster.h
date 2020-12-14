@@ -95,6 +95,8 @@ class Server {
   Server &operator=(const Server &other) = delete;
   Server(Server &&move);
 
+  const ServerAddress &getAddress() const;
+
   void start();
 
   void stop();
@@ -191,6 +193,9 @@ class Cluster {
       bool subscriptionEnabled);
 
   void applyLocators(apache::geode::client::PoolFactory &poolFactory);
+
+  void applyServer(apache::geode::client::PoolFactory &poolFactory, 
+            ServerAddress server);
 
   void useSsl(const bool requireSslAuthentication, const std::string keystore,
               const std::string truststore, const std::string keystorePassword,
