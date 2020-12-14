@@ -95,6 +95,8 @@ class Server {
   Server &operator=(const Server &other) = delete;
   Server(Server &&move);
 
+  const ServerAddress &getAddress() const;
+
   void start();
 
   void stop();
@@ -168,8 +170,6 @@ class Cluster {
   std::string getJmxManager();
 
   uint16_t getLocatorPort();
-
-  const ServerAddress &getAddress() const;
 
   void start();
   void start(std::function<void()> fn);
