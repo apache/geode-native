@@ -37,7 +37,7 @@ constexpr std::chrono::milliseconds DEFAULT_READ_TIMEOUT = DEFAULT_TIMEOUT;
 
 constexpr std::chrono::milliseconds DEFAULT_WRITE_TIMEOUT = DEFAULT_TIMEOUT;
 
-class APACHE_GEODE_EXPORT Connector {
+class Connector {
  public:
   Connector() = default;
   virtual ~Connector() = default;

@@ -340,9 +340,6 @@ boost::asio::ip::tcp::resolver::results_type TcpConn::resolve(
   boost::optional<boost::system::error_code> resolve_result;
   boost::asio::ip::tcp::resolver::results_type results;
 
-  //  Synchronous way
-  //  results = boost::asio::ip::tcp::resolver(io_context_)
-  //                .resolve(host, std::to_string(port));
   try {
     boost::asio::ip::tcp::resolver resolver(io_context_);
     resolver.async_resolve(host, std::to_string(port),

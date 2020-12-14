@@ -172,14 +172,12 @@ PoolFactory& PoolFactory::setServerGroup(std::string group) {
 }
 
 PoolFactory& PoolFactory::addLocator(const std::string& host, int port) {
-  //  addCheck(host, port);
   m_attrs->addLocator(host, port);
   m_addedServerOrLocator = true;
   return *this;
 }
 
 PoolFactory& PoolFactory::addServer(const std::string& host, int port) {
-  //  addCheck(host, port);
   m_attrs->addServer(host, port);
   m_addedServerOrLocator = true;
   return *this;
