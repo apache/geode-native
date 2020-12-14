@@ -30,7 +30,7 @@
 namespace apache {
 namespace geode {
 namespace client {
-class APACHE_GEODE_EXPORT TcpConn : public Connector {
+class TcpConn : public Connector {
   size_t receive(char*, size_t, std::chrono::milliseconds) override;
   size_t receive_nothrowiftimeout(char*, size_t,
                                   std::chrono::milliseconds) override;
