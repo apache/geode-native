@@ -50,6 +50,7 @@ add_executable(apache-geode_unittests
   SerializableCreateTests.cpp
   StructSetTest.cpp
   TcrMessageTest.cpp
+  ThinClientPoolDMTest.cpp
   ThreadPoolTest.cpp
   mock/MapEntryImplMock.hpp
   statistics/HostStatSamplerTest.cpp

@@ -59,9 +59,11 @@ void ClientMetadataService::start() {
 }
 
 void ClientMetadataService::stop() {
-  m_run = false;
-  m_regionQueueCondition.notify_one();
-  m_thread.join();
+  if (m_run) {
+    m_run = false;
+    m_regionQueueCondition.notify_one();
+    m_thread.join();
+  }
 }
 
 void ClientMetadataService::svc() {

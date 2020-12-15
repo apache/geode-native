@@ -48,6 +48,11 @@
     x = nullptr;              \
   } while (0)
 
+namespace {
+const char* const NC_ClearPdxTypeRegistry_Thread =
+    "NC_clearPdxTypeRegistryCallback";
+}
+
 namespace apache {
 namespace geode {
 namespace client {
@@ -143,7 +148,6 @@ ThinClientPoolDM::ThinClientPoolDM(const char* name,
       m_sticky(false),
       m_updateLocatorListSema(0),
       m_pingSema(0),
-      m_cliCallbackSema(0),
       m_isDestroyed(false),
       m_destroyPending(false),
       m_destroyPendingHADM(false),
@@ -156,7 +160,7 @@ ThinClientPoolDM::ThinClientPoolDM(const char* name,
       m_connManageTask(nullptr),
       m_pingTask(nullptr),
       m_updateLocatorListTask(nullptr),
-      m_cliCallbackTask(nullptr),
+      clear_pdx_type_registry_task_(nullptr),
       m_pingTaskId(-1),
       m_updateLocatorListTaskId(-1),
       m_connManageTaskId(-1),
@@ -264,22 +268,19 @@ std::shared_ptr<Properties> ThinClientPoolDM::getCredentials(TcrEndpoint* ep) {
 }
 
 void ThinClientPoolDM::startBackgroundThreads() {
-  LOGDEBUG("ThinClientPoolDM::startBackgroundThreads: Starting ping thread");
-  m_pingTask =
-      std::unique_ptr<Task<ThinClientPoolDM>>(new Task<ThinClientPoolDM>(
-          this, &ThinClientPoolDM::pingServer, NC_Ping_Thread));
-  m_pingTask->start();
-
   auto& props = m_connManager.getCacheImpl()
                     ->getDistributedSystem()
                     .getSystemProperties();
 
   if (props.onClientDisconnectClearPdxTypeIds()) {
-    m_cliCallbackTask =
-        std::unique_ptr<Task<ThinClientPoolDM>>(new Task<ThinClientPoolDM>(
-            this, &ThinClientPoolDM::cliCallback, "NC_cliCallback"));
-    m_cliCallbackTask->start();
+    startClearPdxTypeRegistryThread();
   }
+
+  LOGDEBUG("ThinClientPoolDM::startBackgroundThreads: Starting ping thread");
+  m_pingTask =
+      std::unique_ptr<Task<ThinClientPoolDM>>(new Task<ThinClientPoolDM>(
+          this, &ThinClientPoolDM::pingServer, NC_Ping_Thread));
+  m_pingTask->start();
 
   const auto& pingInterval = getPingInterval() / 2;
   if (pingInterval > std::chrono::seconds::zero()) {
@@ -791,13 +792,22 @@ void ThinClientPoolDM::stopUpdateLocatorListThread() {
   }
 }
 
-void ThinClientPoolDM::stopCliCallbackThread() {
-  if (m_cliCallbackTask) {
-    LOGFINE("ThinClientPoolDM::destroy(): Closing cliCallback thread.");
-    m_cliCallbackTask->stopNoblock();
-    m_cliCallbackSema.release();
-    m_cliCallbackTask->wait();
-    m_cliCallbackTask = nullptr;
+void ThinClientPoolDM::startClearPdxTypeRegistryThread() {
+  LOGFINE("Starting PdxTypeRegistry cleanup thread");
+  clear_pdx_type_registry_task_ =
+      std::unique_ptr<Task<ThinClientPoolDM>>(new Task<ThinClientPoolDM>(
+          this, &ThinClientPoolDM::clearPdxTypeRegistryRunner,
+          NC_ClearPdxTypeRegistry_Thread));
+  clear_pdx_type_registry_task_->start();
+}
+
+void ThinClientPoolDM::stopClearPdxTypeRegistryThread() {
+  if (clear_pdx_type_registry_task_) {
+    LOGFINE("Stopping PdxTypeRegistry cleanup thread");
+    clear_pdx_type_registry_task_->stopNoblock();
+    clear_pdx_type_registry_semaphore_.release();
+    clear_pdx_type_registry_task_->wait();
+    clear_pdx_type_registry_task_.reset();
   }
 }
 
@@ -817,7 +827,7 @@ void ThinClientPoolDM::destroy(bool keepAlive) {
       m_PoolStatsSampler = nullptr;
     }
     LOGDEBUG("PoolStatsSampler thread closed .");
-    stopCliCallbackThread();
+    stopClearPdxTypeRegistryThread();
     LOGDEBUG("ThinClientPoolDM::destroy( ): Closing connection manager.");
     auto cacheImpl = m_connManager.getCacheImpl();
     if (m_connManageTask) {
@@ -1731,10 +1741,10 @@ GfErrType ThinClientPoolDM::createPoolConnectionToAEndPoint(
 }
 
 void ThinClientPoolDM::reducePoolSize(int num) {
-  LOGFINE("removing connection %d ,  pool-size =%d", num, m_poolSize.load());
+  LOGFINE("Removing %d connections, pool-size=%d", num, m_poolSize.load());
   m_poolSize -= num;
   if (m_poolSize <= 0) {
-    if (m_cliCallbackTask != nullptr) m_cliCallbackSema.release();
+    triggerPdxTypeRegistryCleanup();
   }
 }
 
@@ -2081,21 +2091,34 @@ void ThinClientPoolDM::pingServer(std::atomic<bool>& isRunning) {
   LOGFINE("Ending ping thread for pool %s", m_poolName.c_str());
 }
 
-void ThinClientPoolDM::cliCallback(std::atomic<bool>& isRunning) {
-  LOGFINE("Starting cliCallback thread for pool %s", m_poolName.c_str());
-  while (isRunning) {
-    m_cliCallbackSema.acquire();
-    if (isRunning) {
-      LOGFINE("Clearing Pdx Type Registry");
-      // this call for csharp client
-      DistributedSystemImpl::CallCliCallBack(
-          *(m_connManager.getCacheImpl()->getCache()));
-      // this call for cpp client
-      m_connManager.getCacheImpl()->getPdxTypeRegistry()->clear();
-      m_cliCallbackSema.acquire();
+void ThinClientPoolDM::clearPdxTypeRegistry() {
+  LOGFINE("Clearing PdxTypeRegistry");
+  // this call for csharp client
+  DistributedSystemImpl::CallCliCallBack(
+      *(m_connManager.getCacheImpl()->getCache()));
+  // this call for cpp client
+  m_connManager.getCacheImpl()->getPdxTypeRegistry()->clear();
+}
+
+void ThinClientPoolDM::triggerPdxTypeRegistryCleanup() {
+  if (clear_pdx_type_registry_task_ != nullptr) {
+    clear_pdx_type_registry_semaphore_.release();
+  }
+}
+
+void ThinClientPoolDM::clearPdxTypeRegistryRunner(std::atomic<bool>& running) {
+  LOGFINE("Starting callback thread to clear PdxTypeRegistry for pool %s",
+          m_poolName.c_str());
+
+  while (running) {
+    clear_pdx_type_registry_semaphore_.acquire();
+    if (running) {
+      clearPdxTypeRegistry();
     }
   }
-  LOGFINE("Ending cliCallback thread for pool %s", m_poolName.c_str());
+
+  LOGFINE("Ending callback thread to clear PdxTypeRegistry for pool %s",
+          m_poolName.c_str());
 }
 
 int ThinClientPoolDM::doPing(const ACE_Time_Value&, const void*) {

@@ -47,6 +47,7 @@
 #include "ThinClientStickyManager.hpp"
 #include "ThreadPool.hpp"
 #include "UserAttributes.hpp"
+#include "util/concurrent/binary_semaphore.hpp"
 
 namespace apache {
 namespace geode {
@@ -103,11 +104,14 @@ class ThinClientPoolDM
   void addConnection(TcrConnection* conn);
 
   std::shared_ptr<TcrEndpoint> addEP(ServerLocation& serverLoc);
-
   std::shared_ptr<TcrEndpoint> addEP(const std::string& endpointName);
+
+  virtual void clearPdxTypeRegistry();
+  void triggerPdxTypeRegistryCleanup();
+  void clearPdxTypeRegistryRunner(std::atomic<bool>& running);
+
   virtual void pingServer(std::atomic<bool>& isRunning);
   virtual void updateLocatorList(std::atomic<bool>& isRunning);
-  virtual void cliCallback(std::atomic<bool>& isRunning);
   virtual void pingServerLocal();
 
   ~ThinClientPoolDM() override;
@@ -198,16 +202,18 @@ class ThinClientPoolDM
   void netDown();
   ACE_Semaphore m_updateLocatorListSema;
   ACE_Semaphore m_pingSema;
-  ACE_Semaphore m_cliCallbackSema;
   volatile bool m_isDestroyed;
   volatile bool m_destroyPending;
   volatile bool m_destroyPendingHADM;
-  void checkRegions();
   std::shared_ptr<RemoteQueryService> m_remoteQueryServicePtr;
+  util::concurrent::binary_semaphore clear_pdx_type_registry_semaphore_;
+
+  void checkRegions();
   virtual void startBackgroundThreads();
   virtual void stopPingThread();
   virtual void stopUpdateLocatorListThread();
-  virtual void stopCliCallbackThread();
+  void startClearPdxTypeRegistryThread();
+  void stopClearPdxTypeRegistryThread();
   virtual void cleanStickyConnections(std::atomic<bool>& isRunning);
   virtual TcrConnection* getConnectionFromQueue(bool timeout, GfErrType* error,
                                                 std::set<ServerLocation>&,
@@ -293,7 +299,7 @@ class ThinClientPoolDM
   std::unique_ptr<Task<ThinClientPoolDM>> m_connManageTask;
   std::unique_ptr<Task<ThinClientPoolDM>> m_pingTask;
   std::unique_ptr<Task<ThinClientPoolDM>> m_updateLocatorListTask;
-  std::unique_ptr<Task<ThinClientPoolDM>> m_cliCallbackTask;
+  std::unique_ptr<Task<ThinClientPoolDM>> clear_pdx_type_registry_task_;
   ExpiryTaskManager::id_type m_pingTaskId;
   ExpiryTaskManager::id_type m_updateLocatorListTaskId;
   ExpiryTaskManager::id_type m_connManageTaskId;
