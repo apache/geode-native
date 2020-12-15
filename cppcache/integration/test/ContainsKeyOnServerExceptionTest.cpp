@@ -109,4 +109,3 @@ TEST(ContainsKeyOnServerExceptionTest, handleException) {
 }
 
 }  // namespace
-
