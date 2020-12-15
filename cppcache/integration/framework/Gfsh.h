@@ -46,6 +46,9 @@ class Gfsh {
   class Deploy;
   Deploy deploy();
 
+  class ExecuteFunction;
+  ExecuteFunction executeFunction();
+
   class Verb {
    public:
    protected:
@@ -56,11 +59,14 @@ class Gfsh {
   template <class Result>
   class Command {
    public:
-    virtual Result execute(const std::string &user, const std::string &password, const std::string &keyStorePath,
-                           const std::string &trustStorePath, const std::string &keyStorePassword,
+    virtual Result execute(const std::string &user, const std::string &password,
+                           const std::string &keyStorePath,
+                           const std::string &trustStorePath,
+                           const std::string &keyStorePassword,
                            const std::string &trustStorePassword) {
-      Result{gfsh_}.parse(gfsh_.execute(command_, user, password, keyStorePath, trustStorePath,
-              keyStorePassword, trustStorePassword));
+      Result{gfsh_}.parse(gfsh_.execute(command_, user, password, keyStorePath,
+                                        trustStorePath, keyStorePassword,
+                                        trustStorePassword));
     }
     virtual Result execute() {
       Result{gfsh_}.parse(gfsh_.execute(command_, "", "", "", "", "", ""));
@@ -302,17 +308,30 @@ class Gfsh {
     Deploy &jar(const std::string &jarFile);
   };
 
+  class ExecuteFunction : public Command<void> {
+   public:
+    explicit ExecuteFunction(Gfsh &gfsh);
+
+    ExecuteFunction &withId(const std::string &functionName);
+    ExecuteFunction &withMember(const std::string &withMember);
+  };
+
  protected:
   virtual void execute(const std::string &command, const std::string &user,
-                       const std::string &password, const std::string &keyStorePath,
-                       const std::string &trustStorePath, const std::string &keyStorePassword,
+                       const std::string &password,
+                       const std::string &keyStorePath,
+                       const std::string &trustStorePath,
+                       const std::string &keyStorePassword,
                        const std::string &trustStorePassword) = 0;
 };
 
 template <>
-void Gfsh::Command<void>::execute(const std::string &user, const std::string &password,
-                                  const std::string &keyStorePath, const std::string &trustStorePath,
-                                  const std::string &keyStorePassword, const std::string &trustStorePassword);
+void Gfsh::Command<void>::execute(const std::string &user,
+                                  const std::string &password,
+                                  const std::string &keyStorePath,
+                                  const std::string &trustStorePath,
+                                  const std::string &keyStorePassword,
+                                  const std::string &trustStorePassword);
 
 template <>
 void Gfsh::Command<void>::execute();
