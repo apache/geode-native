@@ -151,7 +151,7 @@ class TcrEndpoint {
                                   bool isClientNotification, bool isSecondary,
                                   std::chrono::microseconds connectTimeout);
 
-  void setConnected(volatile bool connected = true) { m_connected = connected; }
+  void setConnected(volatile bool connected = true);
   virtual ThinClientPoolDM* getPoolHADM() { return nullptr; }
   bool isQueueHosted();
   std::recursive_mutex& getQueueHostedMutex() { return m_notifyReceiverLock; }
