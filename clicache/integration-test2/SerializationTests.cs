@@ -896,7 +896,7 @@ namespace Apache.Geode.Client.IntegrationTests
 
 				var cache = cluster.CreateCache();
 
-				cache.TypeRegistry.RegisterType(PositionKey.CreateDeserializable, 77);
+				cache.TypeRegistry.RegisterType(PositionKey.CreateDeserializable, 21);
 				cache.TypeRegistry.RegisterType(TestClassA.CreateDeserializable, 100);
 				cache.TypeRegistry.RegisterType(TestClassB.CreateDeserializable, 101);
 				cache.TypeRegistry.RegisterType(TestClassC.CreateDeserializable, 102);
