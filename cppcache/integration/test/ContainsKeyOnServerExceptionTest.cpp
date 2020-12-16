@@ -54,7 +54,7 @@ std::shared_ptr<Cache> createCache() {
   return std::make_shared<Cache>(std::move(cache));
 }
 
-void executeTestCaseHandleException() {
+TEST(ContainsKeyOnServerExceptionTest, handleException) {
   Cluster cluster{
       LocatorCount{1}, ServerCount{3},
       CacheXMLFiles({
@@ -101,11 +101,6 @@ void executeTestCaseHandleException() {
   }
 
   EXPECT_FALSE(region->containsKey(7));
-
-}  // executeTestCaseHandleException
-
-TEST(ContainsKeyOnServerExceptionTest, handleException) {
-  executeTestCaseHandleException();
 }
 
 }  // namespace
