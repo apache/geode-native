@@ -38,9 +38,9 @@ bool PositionKey::operator==(const CacheableKey& other) const {
 }
 
 int PositionKey::hashcode() const {
-  int hash = 11;
-  hash = 31 * hash + (int)m_positionId;
-  return hash;
+  int prime = 31;
+  int result = prime * static_cast<int32_t>(m_positionId);
+  return result;
 }
 
 }  // namespace DataSerializableTest

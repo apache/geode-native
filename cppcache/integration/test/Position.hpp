@@ -39,52 +39,33 @@ using apache::geode::client::DataSerializable;
 class Position : public DataSerializable {
  private:
   int64_t avg20DaysVol;
-  std::shared_ptr<CacheableString> bondRating;
+  std::string bondRating;
   double convRatio;
-  std::shared_ptr<CacheableString> country;
-  double delta;
+  std::string country;
+  double valueGain;
   int64_t industry;
   int64_t issuer;
   double mktValue;
   double qty;
-  std::shared_ptr<CacheableString> secId;
-  std::shared_ptr<CacheableString> secLinks;
-  // wchar_t* secType;
+  std::string secId;
+  std::string secLinks;
   std::wstring secType;
   int32_t sharesOutstanding;
-  std::shared_ptr<CacheableString> underlyer;
+  std::string underlyer;
   int64_t volatility;
   int32_t pid;
-
-  inline size_t getObjectSize(const std::shared_ptr<Serializable>& obj) const {
-    return (obj == nullptr ? 0 : obj->objectSize());
-  }
 
  public:
   static int32_t cnt;
 
   Position();
-  Position(const char* id, int32_t out);
-  // This constructor is just for some internal data validation test
-  explicit Position(int32_t iForExactVal);
+  Position(std::string id, int32_t out);
   ~Position() override = default;
   void toData(DataOutput& output) const override;
   void fromData(DataInput& input) override;
-  std::string toString() const override;
-
-  size_t objectSize() const override {
-    auto objectSize = sizeof(Position);
-    objectSize += getObjectSize(bondRating);
-    objectSize += getObjectSize(country);
-    objectSize += getObjectSize(secId);
-    objectSize += getObjectSize(secLinks);
-    objectSize += secType.size() * sizeof(decltype(secType)::value_type);
-    objectSize += getObjectSize(underlyer);
-    return objectSize;
-  }
 
   static void resetCounter() { cnt = 0; }
-  std::shared_ptr<CacheableString> getSecId() { return secId; }
+  std::string getSecId() { return secId; }
   int32_t getId() { return pid; }
   int32_t getSharesOutstanding() { return sharesOutstanding; }
   static std::shared_ptr<Serializable> createDeserializable() {

@@ -29,31 +29,14 @@ int32_t Position::cnt = 0;
 
 Position::Position() { init(); }
 
-Position::Position(const char* id, int32_t out) {
+Position::Position(std::string id, int32_t outstandingShares) {
   init();
-  secId = CacheableString::create(id);
-  qty = out - (cnt % 2 == 0 ? 1000 : 100);
+  secId = id;
+  qty = outstandingShares - (cnt % 2 == 0 ? 1000 : 100);
   mktValue = qty * 1.2345998;
-  sharesOutstanding = out;
+  sharesOutstanding = outstandingShares;
   secType = L"a";
   pid = cnt++;
-}
-
-// This constructor is just for some internal data validation test
-Position::Position(int32_t iForExactVal) {
-  init();
-  char* id = new char[iForExactVal + 2];
-  for (int i = 0; i <= iForExactVal; i++) {
-    id[i] = 'a';
-  }
-  id[iForExactVal + 1] = '\0';
-  secId = CacheableString::create(id);
-  delete[] id;
-  qty = (iForExactVal % 2 == 0 ? 1000 : 100);
-  mktValue = qty * 2;
-  sharesOutstanding = iForExactVal;
-  secType = L"a";
-  pid = iForExactVal;
 }
 
 void Position::init() {
@@ -61,7 +44,7 @@ void Position::init() {
   bondRating = nullptr;
   convRatio = 0.0;
   country = nullptr;
-  delta = 0.0;
+  valueGain = 0.0;
   industry = 0;
   issuer = 0;
   mktValue = 0.0;
@@ -77,48 +60,40 @@ void Position::init() {
 
 void Position::toData(apache::geode::client::DataOutput& output) const {
   output.writeInt(avg20DaysVol);
-  output.writeObject(bondRating);
+  output.writeString(bondRating);
   output.writeDouble(convRatio);
-  output.writeObject(country);
-  output.writeDouble(delta);
+  output.writeString(country);
+  output.writeDouble(valueGain);
   output.writeInt(industry);
   output.writeInt(issuer);
   output.writeDouble(mktValue);
   output.writeDouble(qty);
-  output.writeObject(secId);
-  output.writeObject(secLinks);
+  output.writeString(secId);
+  output.writeString(secLinks);
   output.writeUTF(secType);
   output.writeInt(sharesOutstanding);
-  output.writeObject(underlyer);
+  output.writeString(underlyer);
   output.writeInt(volatility);
   output.writeInt(pid);
 }
 
 void Position::fromData(apache::geode::client::DataInput& input) {
   avg20DaysVol = input.readInt64();
-  bondRating = std::dynamic_pointer_cast<CacheableString>(input.readObject());
+  bondRating = std::string(input.readString());
   convRatio = input.readDouble();
-  country = std::dynamic_pointer_cast<CacheableString>(input.readObject());
-  delta = input.readDouble();
+  country = std::string(input.readString());
+  valueGain = input.readDouble();
   industry = input.readInt64();
   issuer = input.readInt64();
   mktValue = input.readDouble();
   qty = input.readDouble();
-  secId = std::dynamic_pointer_cast<CacheableString>(input.readObject());
-  secLinks = std::dynamic_pointer_cast<CacheableString>(input.readObject());
+  secId = std::string(input.readString());
+  secLinks = std::string(input.readString());
   secType = input.readUTF<wchar_t>();
   sharesOutstanding = input.readInt32();
-  underlyer = std::dynamic_pointer_cast<CacheableString>(input.readObject());
+  underlyer = std::string(input.readString());
   volatility = input.readInt64();
   pid = input.readInt32();
-}
-std::string Position::toString() const {
-  char buf[2048];
-  sprintf(buf,
-          "Position Object:[ secId=%s type=%ls sharesOutstanding=%d id=%d ]",
-          secId->toString().c_str(), this->secType.c_str(),
-          this->sharesOutstanding, this->pid);
-  return buf;
 }
 
 }  // namespace DataSerializableTest

@@ -215,13 +215,13 @@ TEST(DataSerializableTest, ClassAsKey) {
   auto res2 = std::dynamic_pointer_cast<Position>(region->get(key2));
   auto res3 = std::dynamic_pointer_cast<Position>(region->get(key3));
 
-  EXPECT_EQ(res1->getSecId()->value(), pos1->getSecId()->value());
+  EXPECT_EQ(res1->getSecId(), pos1->getSecId());
   EXPECT_EQ(res1->getSharesOutstanding(), pos1->getSharesOutstanding());
 
-  EXPECT_EQ(res2->getSecId()->value(), pos2->getSecId()->value());
+  EXPECT_EQ(res2->getSecId(), pos2->getSecId());
   EXPECT_EQ(res2->getSharesOutstanding(), pos2->getSharesOutstanding());
 
-  EXPECT_EQ(res3->getSecId()->value(), pos3->getSecId()->value());
+  EXPECT_EQ(res3->getSecId(), pos3->getSecId());
   EXPECT_EQ(res3->getSharesOutstanding(), pos3->getSharesOutstanding());
 }
 
