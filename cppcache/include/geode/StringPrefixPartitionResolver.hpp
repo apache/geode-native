@@ -30,44 +30,16 @@ class CacheableKey;
 class EntryEvent;
 
 /**
- * Implement the <code>PartitionResolver</code> interface to enable custom
- * partitioning on the <code>PartitionedRegion</code>.
+ * This class implements a partition resolver which routing object is
+ * the prefix of a given key.
+ * Delimiter is set by default to '|', still can be changed.
+ * @note If prefix is not found in the key an IllegalArgumentException is thrown
  *
- * The Key class or callback arg can implement the PartitionResolver interface
- * to enable custom partitioning, or you can configure your own
- * PartitionResolver class in partition attributes (for instance when the Key is
- * a primitive type or String):
- * - Implement the appropriate equals. For all implementations, you need to be
- * sure to code the class equals method so it properly verifies equality for the
- * PartitionResolver implementation. This might mean verifying that class names
- * are the same or that the returned routing objects are the same etc. When you
- * initiate the partitioned region on multiple nodes, Geode uses the equals
- * method to ensure you are using the same PartitionResolver implementation for
- * all of the nodes for the region.
- * - Geode uses the routing object's hashCode to determine where the data is
- * being managed. Say, for example, you want to colocate all Trades by month and
- * year. The key is implemented by a TradeKey class which also implements the
- * PartitionResolver interface:
- *
- * @code
- * public class TradeKey implements PartitionResolver {
- *   private String tradeID;
- *   private Month month;
- *   private Year year;
- *
- *   public TradingKey() { }
- *   public TradingKey(Month month, Year year) {
- *     this.month = month;
- *     this.year = year;
- *   }
- *   public Serializable getRoutingObject(EntryOperation opDetails) {
- *     return this.month + this.year;
- *   }
- * }
- * @endcode
- *
- * In the example above, all trade entries with the same month and year are
- * guaranteed to be colocated.
+ * Examples:
+ *  - Given key "key-1|timestamp", with delimiter '|', the routing object would
+ *    be "key-1"
+ *  - Given "key-1#DELIM#timestamp", with delimiter '|', then an exception is
+ *    thrown.
  */
 class APACHE_GEODE_EXPORT StringPrefixPartitionResolver
     : public PartitionResolver {
@@ -77,26 +49,12 @@ class APACHE_GEODE_EXPORT StringPrefixPartitionResolver
 
   StringPrefixPartitionResolver(const StringPrefixPartitionResolver&) = delete;
 
-  /**
-   * @brief destructor
-   */
   ~StringPrefixPartitionResolver() override = default;
 
   void operator=(const StringPrefixPartitionResolver&) = delete;
 
-  /**
-   * Returns the name of the PartitionResolver
-   * @return String name
-   */
   const std::string& getName() override;
 
-  /**
-   * @param opDetails the detail of the entry event
-   * @throws RuntimeException - any exception thrown will terminate the
-   * operation and the exception will be passed to the calling thread.
-   * @return object associated with entry event which allows the Partitioned
-   * Region to store associated data together
-   */
   std::shared_ptr<CacheableKey> getRoutingObject(
       const EntryEvent& opDetails) override;
 
