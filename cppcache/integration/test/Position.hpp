@@ -49,7 +49,7 @@ class Position : public DataSerializable {
   double qty;
   std::string secId;
   std::string secLinks;
-  std::wstring secType;
+  std::string secType;
   int32_t sharesOutstanding;
   std::string underlyer;
   int64_t volatility;

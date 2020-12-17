@@ -27,25 +27,24 @@ namespace DataSerializableTest {
 
 int32_t Position::cnt = 0;
 
-Position::Position() {
-  avg20DaysVol = 0;
-  convRatio = 0.0;
-  valueGain = 0.0;
-  industry = 0;
-  issuer = 0;
-  mktValue = 0.0;
-  qty = 0.0;
-  sharesOutstanding = 0;
-  volatility = 0;
-  pid = 0;
-}
+Position::Position() :
+  avg20DaysVol(0),
+  convRatio(0.0),
+  valueGain(0.0),
+  industry(0),
+  issuer(0),
+  mktValue(0.0),
+  qty(0.0),
+  sharesOutstanding(0),
+  volatility(0),
+  pid(0) {}
 
 Position::Position(std::string id, int32_t outstandingShares) : Position() {
-  secId = id;
+  secId = std::move(id);
+  secType = "a";
+  sharesOutstanding = outstandingShares;
   qty = outstandingShares - (cnt % 2 == 0 ? 1000 : 100);
   mktValue = qty * 1.2345998;
-  sharesOutstanding = outstandingShares;
-  secType = L"a";
   pid = cnt++;
 }
 
@@ -61,7 +60,7 @@ void Position::toData(apache::geode::client::DataOutput& output) const {
   output.writeDouble(qty);
   output.writeString(secId);
   output.writeString(secLinks);
-  output.writeUTF(secType);
+  output.writeString(secType);
   output.writeInt(sharesOutstanding);
   output.writeString(underlyer);
   output.writeInt(volatility);
@@ -80,7 +79,7 @@ void Position::fromData(apache::geode::client::DataInput& input) {
   qty = input.readDouble();
   secId = std::string(input.readString());
   secLinks = std::string(input.readString());
-  secType = input.readUTF<wchar_t>();
+  secType = input.readString();
   sharesOutstanding = input.readInt32();
   underlyer = std::string(input.readString());
   volatility = input.readInt64();
