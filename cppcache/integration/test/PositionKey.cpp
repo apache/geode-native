@@ -16,10 +16,6 @@
  */
 #include "PositionKey.hpp"
 
-#include <wchar.h>
-
-#include <cwchar>
-
 #include <geode/DataInput.hpp>
 #include <geode/DataOutput.hpp>
 

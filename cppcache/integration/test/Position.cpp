@@ -27,17 +27,17 @@ namespace DataSerializableTest {
 
 int32_t Position::cnt = 0;
 
-Position::Position() :
-  avg20DaysVol(0),
-  convRatio(0.0),
-  valueGain(0.0),
-  industry(0),
-  issuer(0),
-  mktValue(0.0),
-  qty(0.0),
-  sharesOutstanding(0),
-  volatility(0),
-  pid(0) {}
+Position::Position()
+    : avg20DaysVol(0),
+      convRatio(0.0),
+      valueGain(0.0),
+      industry(0),
+      issuer(0),
+      mktValue(0.0),
+      qty(0.0),
+      sharesOutstanding(0),
+      volatility(0),
+      pid(0) {}
 
 Position::Position(std::string id, int32_t outstandingShares) : Position() {
   secId = std::move(id);
@@ -60,7 +60,7 @@ void Position::toData(apache::geode::client::DataOutput& output) const {
   output.writeDouble(qty);
   output.writeString(secId);
   output.writeString(secLinks);
-  output.writeString(secType);
+  output.writeUTF(secType);
   output.writeInt(sharesOutstanding);
   output.writeString(underlyer);
   output.writeInt(volatility);
@@ -69,19 +69,19 @@ void Position::toData(apache::geode::client::DataOutput& output) const {
 
 void Position::fromData(apache::geode::client::DataInput& input) {
   avg20DaysVol = input.readInt64();
-  bondRating = std::string(input.readString());
+  bondRating = input.readString();
   convRatio = input.readDouble();
-  country = std::string(input.readString());
+  country = input.readString();
   valueGain = input.readDouble();
   industry = input.readInt64();
   issuer = input.readInt64();
   mktValue = input.readDouble();
   qty = input.readDouble();
-  secId = std::string(input.readString());
-  secLinks = std::string(input.readString());
-  secType = input.readString();
+  secId = input.readString();
+  secLinks = input.readString();
+  secType = input.readUTF();
   sharesOutstanding = input.readInt32();
-  underlyer = std::string(input.readString());
+  underlyer = input.readString();
   volatility = input.readInt64();
   pid = input.readInt32();
 }
