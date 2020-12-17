@@ -41,19 +41,19 @@ Position::Position(std::string id, int32_t outstandingShares) {
 
 void Position::init() {
   avg20DaysVol = 0;
-  bondRating = nullptr;
+  bondRating = "";
   convRatio = 0.0;
-  country = nullptr;
+  country = "";
   valueGain = 0.0;
   industry = 0;
   issuer = 0;
   mktValue = 0.0;
   qty = 0.0;
-  secId = nullptr;
-  secLinks = nullptr;
+  secId = "";
+  secLinks = "";
   secType = L"";
   sharesOutstanding = 0;
-  underlyer = nullptr;
+  underlyer = "";
   volatility = 0;
   pid = 0;
 }
