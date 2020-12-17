@@ -71,9 +71,6 @@ class Position : public DataSerializable {
   static std::shared_ptr<Serializable> createDeserializable() {
     return std::make_shared<Position>();
   }
-
- private:
-  void init();
 };
 
 }  // namespace DataSerializableTest
