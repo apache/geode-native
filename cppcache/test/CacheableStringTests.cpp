@@ -30,6 +30,7 @@
 #include "DataOutputInternal.hpp"
 #include "SerializationRegistry.hpp"
 #include "gtest_extensions.h"
+#include "util/size_tracking_allocator.hpp"
 
 namespace {
 
@@ -39,6 +40,8 @@ using apache::geode::client::DataInputInternal;
 using apache::geode::client::DataOutput;
 using apache::geode::client::DataOutputInternal;
 using apache::geode::client::SerializationRegistry;
+
+using apache::geode::client::size_tracking_allocator;
 
 class TestDataOutput : public DataOutputInternal {
  public:
@@ -232,18 +235,15 @@ INSTANTIATE_TEST_SUITE_P(CacheableStringTests, CacheableStringSizeTests,
                                            47UL, 63UL, 1025UL, 4097UL));
 
 TEST_P(CacheableStringSizeTests, TestObjectSize) {
-  auto size = GetParam();
-  std::string str(size, '_');
-  auto cacheable = CacheableString::create(str);
-  EXPECT_TRUE(cacheable);
-
+  auto str_size = GetParam();
   auto expected_size = sizeof(CacheableString);
-  auto delta = reinterpret_cast<const uint8_t*>(str.data()) -
-               reinterpret_cast<const uint8_t*>(&str);
-  if (delta >= static_cast<decltype(delta)>(sizeof(std::string)) || delta < 0) {
-    // Add an extra character for the null-terminator
-    expected_size += str.capacity() + 1UL;
-  }
+  size_tracking_allocator<char> allocator{
+      [&expected_size](std::ptrdiff_t size) { expected_size += size; }};
+  std::basic_string<char, std::char_traits<char>, size_tracking_allocator<char>>
+      str(str_size, '_', allocator);
+
+  auto cacheable = CacheableString::create(std::string(str_size, '_'));
+  EXPECT_TRUE(cacheable);
 
   EXPECT_EQ(expected_size, cacheable->objectSize());
 }
