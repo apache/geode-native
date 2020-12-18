@@ -817,11 +817,7 @@ chunkedResponseHeader TcrConnection::readResponseHeader(
   LOGDEBUG(
       "TcrConnection::readResponseHeader(%p): received header from "
       "endpoint %s; bytes: %s",
-<<<<<<< HEAD
-      m_endpointObj->name().c_str(),
-=======
-      this, m_endpoint,
->>>>>>> GEODE-8532: Add connection to chunked message logging
+      this, m_endpointObj->name().c_str(),
       Utils::convertBytesToString(receiveBuffer, HEADER_LENGTH).c_str());
 
   auto input = m_connectionManager.getCacheImpl()->createDataInput(
@@ -898,11 +894,7 @@ std::vector<uint8_t> TcrConnection::readChunkBody(
   LOGDEBUG(
       "TcrConnection::readChunkBody(%p): received chunk body from endpoint "
       "%s; bytes: %s",
-<<<<<<< HEAD
-      m_endpointObj->name().c_str(),
-=======
-      this, m_endpoint,
->>>>>>> GEODE-8532: Add connection to chunked message logging
+      this, m_endpointObj->name().c_str(),
       Utils::convertBytesToString(chunkBody.data(), chunkLength).c_str());
   return chunkBody;
 }
