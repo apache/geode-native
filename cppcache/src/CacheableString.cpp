@@ -119,18 +119,8 @@ bool CacheableString::isAscii(const std::string& str) {
 }
 
 size_t CacheableString::objectSize() const {
-  auto size = sizeof(CacheableString);
-
-  // This is calculated in order not to count more bytes than necessary
-  // whenever SSO applies.
-  auto delta = reinterpret_cast<const uint8_t*>(m_str.data()) -
-               reinterpret_cast<const uint8_t*>(&m_str);
-  if (delta >= static_cast<decltype(delta)>(sizeof(decltype(m_str))) ||
-      delta < 0) {
-    // Add an extra character for the null-terminator
-    size += sizeof(decltype(m_str)::value_type) * (m_str.capacity() + 1UL);
-  }
-
+  auto size = sizeof(CacheableString) +
+              sizeof(std::string::value_type) * m_str.capacity();
   return size;
 }
 
