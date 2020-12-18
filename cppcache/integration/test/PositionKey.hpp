@@ -38,7 +38,7 @@ class PositionKey : public DataSerializable, public CacheableKey {
 
  public:
   PositionKey() = default;
-  PositionKey(int64_t positionId) : m_positionId(positionId) {}
+  explicit PositionKey(int64_t positionId) : m_positionId(positionId) {}
   ~PositionKey() override = default;
 
   bool operator==(const CacheableKey& other) const override;
