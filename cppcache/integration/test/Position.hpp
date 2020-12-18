@@ -59,7 +59,7 @@ class Position : public DataSerializable {
   static int32_t cnt;
 
   Position();
-  Position(std::string id, int32_t out);
+  explicit Position(std::string id, int32_t out);
   ~Position() override = default;
   void toData(DataOutput& output) const override;
   void fromData(DataInput& input) override;
