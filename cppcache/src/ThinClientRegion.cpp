@@ -790,7 +790,7 @@ bool ThinClientRegion::containsValueForKey_remote(
   TcrMessageReply reply(true, m_tcrdm.get());
   reply.setMessageTypeRequest(TcrMessage::CONTAINS_KEY);
   err = m_tcrdm->sendSyncRequest(request, reply);
-  if ( err != GF_NOERR ) return ret;
+  if (err != GF_NOERR) return ret;
 
   switch (reply.getMessageType()) {
     case TcrMessage::RESPONSE:
