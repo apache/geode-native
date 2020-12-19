@@ -60,6 +60,17 @@ builds:
       CMAKE_BUILD_FLAGS: "/m"
       CPACK_GENERATORS: "ZIP"
 
+  - _: #@ template.replace(new_build("windows-vs-2019", "Windows-64bit.zip"))
+    image_family: build-windows-2019-vs-2019
+    source_image_family: windows-2019
+    #@yaml/map-key-override
+    with_dot_net: #@ True
+    #@yaml/map-key-override
+    params:
+      CMAKE_CONFIGURE_FLAGS: "-A x64 -Tv141,version=14.16,host=x64 -DCMAKE_SYSTEM_VERSION=10.0.16299.0"
+      CMAKE_BUILD_FLAGS: "/m"
+      CPACK_GENERATORS: "ZIP"
+
   - _: #@ template.replace(new_build("rhel-7"))
     image_family: build-rhel-7
     source_image_family: rhel-7
