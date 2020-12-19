@@ -215,7 +215,7 @@ config:
       - -c
       #@yaml/text-templated-strings
       - |
-        set -ueo pipefail
+        set -xueo pipefail
 
         (@= remote_functions() @)
 
