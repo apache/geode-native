@@ -47,8 +47,7 @@ if (NOT DEFINED ACE_PLATFORM)
   message( FATAL_ERROR "ACE_PLATFORM unset for ${CMAKE_SYSTEM_NAME}" )
 endif()
 
-find_package(OpenSSL REQUIRED)
-set( OPENSSL_ROOT ${OPENSSL_INCLUDE_DIR}/.. )
+set(ENV_COMMAND ${CMAKE_COMMAND} -E env ACE_ROOT=<SOURCE_DIR>)
 
 if (${WIN32})
   if (64 EQUAL ${BUILD_BITS})
@@ -56,52 +55,49 @@ if (${WIN32})
   else()
     set( _PLATFORM win32 )
   endif()
-  if (MSVC_VERSION EQUAL 1900)
-    set(_TYPE "vc14")
-  elseif((MSVC_VERSION GREATER_EQUAL 1910) AND (MSVC_VERSION LESS_EQUAL 1919))
-    set(_TYPE "vs2017")
-  else()
-    set(_TYPE "vs2019")
+  if (MSVC_TOOLSET_VERSION EQUAL 140)
+    set(MPC_TYPE "vc14")
+  elseif(MSVC_TOOLSET_VERSION EQUAL 141)
+    set(MPC_TYPE "vs2017")
+  elseif(MSVC_TOOLSET_VERSION GREATER_EQUAL 142)
+    set(MPC_TYPE "vs2019")
   endif()
 
   set ( _COMMAND_PREFIX ${CMAKE_COMMAND} -E chdir ace )
 
   set ( _MSBUILD_FLAGS /m /p:Platform=${_PLATFORM} /p:Configuration=$<$<CONFIG:Debug>:Debug>$<$<NOT:$<CONFIG:Debug>>:Release>)
-  set ( _MSBUILD_FLAGS_STATIC ${_MSBUILD_FLAGS} /t:ace_${_TYPE}_static /t:SSL_${_TYPE}_static )
+  set ( _MSBUILD_FLAGS_STATIC ${_MSBUILD_FLAGS} /t:ace_${MPC_TYPE}_static )
 
   include(ProcessorCount)
   ProcessorCount(_NPROCS)
 
   find_package(Perl REQUIRED)
 
-  set ( MPC ${PERL_EXECUTABLE} ..\\bin\\mwc.pl )
-  set ( MPC_FLAGS -type ${_TYPE} -expand_vars -features ssl=1 -recurse -hierarchy -workers ${_NPROCS} -value_template MultiProcessorCompilation=true -apply_project )
+  set ( MPC ${PERL_EXECUTABLE} ../bin/mwc.pl )
+  set ( MPC_FLAGS -type ${MPC_TYPE} -recurse -hierarchy -workers ${_NPROCS} -apply_project )
 
   #TODO add custom targets to build in parallel?
   #TODO MPC has flag to replace variables with absolute paths, think we need that for devstudio builds
-  set ( _CONFIGURE_COMMAND ${_COMMAND_PREFIX}
-                             ${CMAKE_COMMAND} -E env ACE_ROOT=<SOURCE_DIR> SSL_ROOT=${OPENSSL_ROOT}
-							 ${MPC} ${MPC_FLAGS} -name_modifier "*_${_TYPE}_static" -static
-							 -value_template WindowsTargetPlatformVersion=${CMAKE_SYSTEM_VERSION}
-							 -value_template staticflags+=__ACE_INLINE__ 
-							 -value_template staticflags+=ACE_BUILD_DLL 
-							 -value_template staticflags+=ACE_AS_STATIC_LIBS 
-							 -value_template runtime_library=Multithreaded$<$<CONFIG:Debug>:Debug>Dll 
+  set ( _CONFIGURE_COMMAND ${MPC} -static ${MPC_FLAGS}
+                           -name_modifier "*_${MPC_TYPE}_static"
+                           -value_template MultiProcessorCompilation=true
+                           -value_template WindowsTargetPlatformVersion=${CMAKE_SYSTEM_VERSION}
+                           -value_template staticflags+=__ACE_INLINE__
+                           -value_template staticflags+=ACE_BUILD_DLL
+                           -value_template staticflags+=ACE_AS_STATIC_LIBS
+                           -value_template runtime_library=Multithreaded$<$<CONFIG:Debug>:Debug>Dll
   )
-  set ( _BUILD_COMMAND ${_COMMAND_PREFIX} ${CMAKE_VS_MSBUILD_COMMAND} ACE_${_TYPE}_static.sln ${_MSBUILD_FLAGS} ${_MSBUILD_FLAGS_STATIC}
+  set ( _BUILD_COMMAND ${CMAKE_VS_MSBUILD_COMMAND} ACE_${MPC_TYPE}_static.sln ${_MSBUILD_FLAGS} ${_MSBUILD_FLAGS_STATIC}
   )
-  set ( _INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory lib <INSTALL_DIR>/lib 
-                 COMMAND ${CMAKE_COMMAND} -E copy_directory ace <INSTALL_DIR>/include/ace
+  set ( _INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_if_different ../lib <INSTALL_DIR>/lib
+                 COMMAND ${CMAKE_COMMAND} -E copy_if_different ../ace <INSTALL_DIR>/include/ace
   )
 
   set(CMAKE_STATIC_LIBRARY_SUFFIX s$<${MSVC}:$<$<CONFIG:Debug>:d>>.lib)
 
 else()
   # TODO Configure trips up without MAKE
-  # TODO look into using cmake -E chdir
-  # TODO use cmake -E env
-
-  set( _MAKE cd ace && ACE_ROOT=<SOURCE_DIR> SSL_ROOT=${OPENSSL_ROOT} $(MAKE) SHELL=/bin/bash debug=$<CONFIG:Debug> optimize=$<NOT:$<CONFIG:Debug>> buildbits=${BUILD_BITS} c++11=1 static_libs_only=1 ssl=1 ${_MAKE_ARGS})
+  set( _MAKE $(MAKE) SHELL=/bin/bash debug=$<CONFIG:Debug> optimize=$<NOT:$<CONFIG:Debug>> buildbits=${BUILD_BITS} c++11=1 static_libs_only=1 ${_MAKE_ARGS})
   set ( _CONFIGURE_COMMAND "" )
   set ( _BUILD_COMMAND ${_MAKE} all )
   set ( _INSTALL_COMMAND ${_MAKE} install )
@@ -115,10 +111,11 @@ ExternalProject_Add( ${EXTERN}
    URL "https://github.com/DOCGroup/ACE_TAO/releases/download/ACE%2BTAO-${_VERSION_UNDERSCORE}/ACE-${PROJECT_VERSION}.tar.gz"
    URL_HASH SHA256=${SHA256}
    UPDATE_COMMAND ""
+   SOURCE_SUBDIR "ace"
    BUILD_IN_SOURCE 1
    CONFIGURE_COMMAND "${_CONFIGURE_COMMAND}"
-   BUILD_COMMAND "${_BUILD_COMMAND}"
-   INSTALL_COMMAND "${_INSTALL_COMMAND}"
+   BUILD_COMMAND ${ENV_COMMAND} ${_BUILD_COMMAND}
+   INSTALL_COMMAND ${ENV_COMMAND} ${_INSTALL_COMMAND}
    DEPENDS ${DEPENDS}
 )
 
@@ -202,21 +199,4 @@ endif()
 
 add_dependencies(ACE_ACE ${EXTERN})
 
-add_library(ACE_ACE_SSL INTERFACE)
-target_link_libraries(ACE_ACE_SSL INTERFACE
-  ${INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}ACE_SSL${CMAKE_STATIC_LIBRARY_SUFFIX}
-  ACE_ACE
-  OpenSSL::SSL
-  OpenSSL::Crypto
-)
-
-list(LENGTH CMAKE_OSX_ARCHITECTURES len)
-if (len GREATER 1)
-  target_link_options(ACE_ACE_SSL INTERFACE
-    -undefined dynamic_lookup # remove after OpenSSL goes universal
-  )
-endif()
-unset(len)
-
 add_library(ACE::ACE ALIAS ACE_ACE)
-add_library(ACE::ACE_SSL ALIAS ACE_ACE_SSL)
