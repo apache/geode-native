@@ -228,7 +228,6 @@ config:
         builddate=$(date "+%Y-%m-%d")
 
         remote_upload source .
-        remote_shell cmake -E chdir source git checkout ${git_rev}
         remote_shell cmake -E make_directory build
         remote_shell cmake -E chdir build cmake ../source ${CMAKE_CONFIGURE_FLAGS} \
             -DCMAKE_BUILD_TYPE=${CMAKE_CONFIG} \
