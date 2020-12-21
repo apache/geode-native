@@ -573,12 +573,15 @@ plan:
 
 ---
 #@ def package_resource(build, config, package):
-name: #@ package_resource_name(build, config, package)
-type: gcs-resource
-source:
-  bucket: #@ data.values.google.storage.bucket
-  json_key: ((gcr-json-key))
-  regexp: #@ data.values.google.storage.key + "/packages/" + build.name + "/" + config.name + "/" + package.regexp
+#@ return resource(
+#@   package_resource_name(build, config, package),
+#@   "gcs-resource",
+#@   {
+#@     "bucket": data.values.google.storage.bucket,
+#@     "json_key": "((gcr-json-key))",
+#@     "regexp": data.values.google.storage.key + "/packages/" + build.name + "/" + config.name + "/" + package.regexp
+#@   },
+#@   "content-save")
 #@ end
 
 ---
