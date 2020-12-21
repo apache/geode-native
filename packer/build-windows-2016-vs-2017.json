@@ -135,18 +135,22 @@
       ]
     },
     {
+      "type": "windows-restart",
+      "restart_timeout": "30m"
+    },
+    {
+      "type": "powershell",
+      "scripts": [
+        "windows/cleanup.ps1"
+      ]
+    },
+    {
       "type": "powershell",
       "inline": [
         "GCESysprep -NoShutdown"
       ],
       "only": [
         "googlecompute"
-      ]
-    },
-    {
-      "type": "powershell",
-      "scripts": [
-        "windows/cleanup.ps1"
       ]
     }
   ]
