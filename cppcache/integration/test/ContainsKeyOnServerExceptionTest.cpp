@@ -45,7 +45,7 @@ std::string getClientLogName() {
 
 std::shared_ptr<Cache> createCache() {
   auto cache = CacheFactory()
-                   .set("log-level", "debug")
+                   .set("log-level", "none")
                    .set("log-file", getClientLogName())
                    .create();
   return std::make_shared<Cache>(std::move(cache));
@@ -93,18 +93,6 @@ TEST(ContainsKeyOnServerExceptionTest, handleException) {
         region->containsKeyOnServer(CacheableKey::create(7)),
         apache::geode::client::TransactionDataNodeHasDepartedException);
   }
-  // try {
-  //   transactionManager->begin();
-  //   region->put(theKey, theValue);
-  //   transactionManager->commit();
-  // } catch (...) {
-  //   try {
-  //     region->containsKeyOnServer(CacheableKey::create(7));
-  //   } catch (
-  //       apache::geode::client::TransactionDataNodeHasDepartedException& ex) {
-  //     std::cerr << "Caught exception: " << ex.what() << std::endl;
-  //   }
-  // }
 
   EXPECT_FALSE(region->containsKey(7));
 }
