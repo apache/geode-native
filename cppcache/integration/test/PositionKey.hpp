@@ -47,7 +47,7 @@ class PositionKey : public DataSerializable, public CacheableKey {
   void toData(DataOutput& output) const override;
   void fromData(DataInput& input) override;
 
-  int64_t getPositionId() { return m_positionId; }
+  int64_t getPositionId() const { return m_positionId; }
   static std::shared_ptr<Serializable> createDeserializable() {
     return std::make_shared<PositionKey>();
   }

@@ -30,7 +30,7 @@ void PositionKey::fromData(apache::geode::client::DataInput& input) {
 }
 
 bool PositionKey::operator==(const CacheableKey& other) const {
-  return m_positionId == ((PositionKey&)other).getPositionId();
+  return m_positionId == (reinterpret_cast<const PositionKey&>(other)).getPositionId();
 }
 
 int PositionKey::hashcode() const {
