@@ -13,17 +13,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-project( boost VERSION 1.75.0 LANGUAGES NONE )
+project(boost VERSION 1.75.0 LANGUAGES NONE)
 
-set( SHA256 aeb26f80e80945e82ee93e5939baebdca47b9dee80a07d3144be1e1a6a66dd6a )
+set(SHA256 aeb26f80e80945e82ee93e5939baebdca47b9dee80a07d3144be1e1a6a66dd6a)
 
 if (WIN32)
-  set(BOOTSTRAP_COMMAND .\\bootstrap.bat)
-  set(B2_COMMAND .\\b2)
+  set(BOOTSTRAP_COMMAND ./bootstrap.bat)
 else()
   set(BOOTSTRAP_COMMAND ./bootstrap.sh)
-  set(B2_COMMAND ./b2)
 endif()
+set(B2_COMMAND ./b2)
 set(B2_FLAGS
   -d0
   --prefix=<INSTALL_DIR>/$<CONFIG>
@@ -59,7 +58,7 @@ if ("SunOS" STREQUAL ${CMAKE_SYSTEM_NAME})
   list(APPEND B2_FLAGS define=BOOST_OPTIONAL_DETAIL_NO_RVALUE_REFERENCES)
 elseif(MSVC)
   list(APPEND BOOTSTRAP_FLAGS vc${MSVC_TOOLSET_VERSION})
-  list(APPEND B2_FLAGS toolset=msvc-${MSVC_TOOLSET_VERSION})
+  list(APPEND B2_FLAGS toolset=msvc-${CMAKE_VS_PLATFORM_TOOLSET_VERSION})
   set(CMAKE_STATIC_LIBRARY_PREFIX lib)
 elseif ("Clang" STREQUAL ${CMAKE_CXX_COMPILER_ID})
   list(APPEND BOOTSTRAP_FLAGS --with-toolset=clang)
@@ -68,10 +67,10 @@ endif()
 list(APPEND B2_FLAGS "cxxflags=${CMAKE_CXX_FLAGS} ${CMAKE_CXX11_STANDARD_COMPILE_OPTION} ${CMAKE_CXX_COMPILE_OPTIONS_PIC}")
 
 string(REPLACE "." "_" _VERSION_UNDERSCORE ${PROJECT_VERSION})
-set( EXTERN ${PROJECT_NAME}-extern )
 
+set(EXTERN ${PROJECT_NAME}-extern)
 include(ExternalProject)
-ExternalProject_Add( ${EXTERN}
+ExternalProject_Add(${EXTERN}
    URL "https://dl.bintray.com/boostorg/release/${PROJECT_VERSION}/source/boost_${_VERSION_UNDERSCORE}.tar.gz"
        "https://sourceforge.net/projects/boost/files/boost/${PROJECT_VERSION}/boost_${_VERSION_UNDERSCORE}.tar.gz/download"
    URL_HASH SHA256=${SHA256}
@@ -86,8 +85,8 @@ ExternalProject_Add( ${EXTERN}
    STAMP_DIR ./stamp
 )
 
-ExternalProject_Get_Property( ${EXTERN} SOURCE_DIR )
-ExternalProject_Get_Property( ${EXTERN} INSTALL_DIR )
+ExternalProject_Get_Property(${EXTERN} SOURCE_DIR)
+ExternalProject_Get_Property(${EXTERN} INSTALL_DIR)
 set(INSTALL_DIR "${INSTALL_DIR}/$<CONFIG>")
 
 function(ADD_BOOST_LIBRARY)
