@@ -49,18 +49,18 @@ google:
     key: geode-native/develop
 
 builds:
-#!  - _: #@ template.replace(new_build("windows", "Windows-64bit.zip"))
-#!    image_family: build-windows-2019-vs-2017
-#!    source_image_family: windows-2019
-#!    #@yaml/map-key-override
-#!    with_dot_net: #@ True
-#!    #@yaml/map-key-override
-#!    params:
-#!      CMAKE_CONFIGURE_FLAGS: "-A x64 -Tv141,version=14.15,host=x64 -DCMAKE_SYSTEM_VERSION=10.0.16299.0"
-#!      CMAKE_BUILD_FLAGS: "/m"
-#!      CPACK_GENERATORS: "ZIP"
+  - _: #@ template.replace(new_build("windows-2016-vs-2017", "Windows-64bit.zip"))
+    image_family: build-windows-2016-vs-2017
+    source_image_family: windows-2016
+    #@yaml/map-key-override
+    with_dot_net: #@ True
+    #@yaml/map-key-override
+    params:
+      CMAKE_CONFIGURE_FLAGS: "-A x64 -Tv141,version=14.16,host=x64 -DCMAKE_SYSTEM_VERSION=10.0.16299.0"
+      CMAKE_BUILD_FLAGS: "/m"
+      CPACK_GENERATORS: "ZIP"
 
-  - _: #@ template.replace(new_build("windows", "Windows-64bit.zip"))
+  - _: #@ template.replace(new_build("windows-2019-vs-2019", "Windows-64bit.zip"))
     image_family: build-windows-2019-vs-2019
     source_image_family: windows-2019
     #@yaml/map-key-override
