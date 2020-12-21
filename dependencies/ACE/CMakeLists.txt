@@ -13,9 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-project( ACE VERSION 6.5.9 LANGUAGES NONE )
+project( ACE VERSION 6.5.12 LANGUAGES NONE )
 
-set( SHA256 85382427bf2c87eca215a6d963ad6b427a8d5b696ac96367e67bb952b3d2885c )
+set( SHA256 de96c68a6262d6b9ba76b5057c02c7e6964c070b1328a63bf70259e9530a7996 )
 
 if ("SunOS" STREQUAL ${CMAKE_SYSTEM_NAME})
   set( ACE_PLATFORM sunos5_sunc++ )
@@ -29,9 +29,15 @@ elseif ("Linux" STREQUAL ${CMAKE_SYSTEM_NAME} )
   set( ACE_CONFIG linux )
   ## TODO fix visibility problem with g++
   set( _MAKE_ARGS ${_MAKE_ARGS} no_hidden_visibility=1 )
-elseif ("Darwin" STREQUAL ${CMAKE_SYSTEM_NAME} )
-  set( ACE_PLATFORM macosx )
-  set( ACE_CONFIG macosx )
+elseif ("Darwin" STREQUAL ${CMAKE_SYSTEM_NAME})
+  set(ACE_PLATFORM macosx)
+  set(ACE_CONFIG macosx)
+  foreach(arch ${CMAKE_OSX_ARCHITECTURES})
+    string(APPEND CMAKE_CXX_FLAGS " -arch ${arch}")
+    string(APPEND CMAKE_STATIC_LINKER_FLAGS " -arch ${arch}")
+  endforeach()
+  string(APPEND CMAKE_CXX_FLAGS " ${CMAKE_CXX_SYSROOT_FLAG} ${CMAKE_OSX_SYSROOT}")
+  string(APPEND CMAKE_CXX_FLAGS " ${CMAKE_CXX_OSX_DEPLOYMENT_TARGET_FLAG}${CMAKE_OSX_DEPLOYMENT_TARGET}")
 elseif ("Windows" STREQUAL ${CMAKE_SYSTEM_NAME} )
   set( ACE_PLATFORM win32-msvc )
   set( ACE_CONFIG win32 )
@@ -152,6 +158,7 @@ ExternalProject_Add_Step( ${EXTERN} platform
   COMMAND echo "CC = ${CMAKE_C_COMPILER}" >> ${SOURCE_DIR}/include/makeinclude/platform_macros.GNU
   COMMAND echo "CXX = ${CMAKE_CXX_COMPILER}" >> ${SOURCE_DIR}/include/makeinclude/platform_macros.GNU
   COMMAND echo "CCFLAGS += ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_COMPILE_OPTIONS_PIC}" >> ${SOURCE_DIR}/include/makeinclude/platform_macros.GNU
+  COMMAND echo "LDFLAGS += ${CMAKE_STATIC_LINKER_FLAGS}" >> ${SOURCE_DIR}/include/makeinclude/platform_macros.GNU
   COMMAND echo "include ${SOURCE_DIR}/include/makeinclude/platform_${ACE_PLATFORM}.GNU" >> ${SOURCE_DIR}/include/makeinclude/platform_macros.GNU
 )
 endif()
@@ -201,6 +208,14 @@ target_link_libraries(ACE_ACE_SSL INTERFACE
   OpenSSL::SSL
   OpenSSL::Crypto
 )
+
+list(LENGTH CMAKE_OSX_ARCHITECTURES len)
+if (len GREATER 1)
+  target_link_options(ACE_ACE_SSL INTERFACE
+    -undefined dynamic_lookup # remove after OpenSSL goes universal
+  )
+endif()
+unset(len)
 
 add_library(ACE::ACE ALIAS ACE_ACE)
 add_library(ACE::ACE_SSL ALIAS ACE_ACE_SSL)

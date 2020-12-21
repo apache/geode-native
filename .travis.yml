@@ -36,6 +36,7 @@ install:
   - docker pull "${DOCKER_IMAGE}"
 
 script:
+  - sudo apt-get update && sudo apt-get install -y libseccomp2
   - docker run ${DOCKER_ARGS} "${DOCKER_IMAGE}" bash -c "${DOCKER_COMMAND}"
 
 notifications:
