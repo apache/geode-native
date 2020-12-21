@@ -20,7 +20,6 @@
 #include <geode/Cache.hpp>
 #include <geode/CacheFactory.hpp>
 #include <geode/CacheTransactionManager.hpp>
-#include <geode/Region.hpp>
 #include <geode/RegionFactory.hpp>
 #include <geode/RegionShortcut.hpp>
 
@@ -34,8 +33,6 @@ using apache::geode::client::Pool;
 using apache::geode::client::Region;
 using apache::geode::client::RegionShortcut;
 
-std::string disconnectingStr("Disconnecting from the endpoint");
-
 std::string getClientLogName() {
   std::string testSuiteName(::testing::UnitTest::GetInstance()
                                 ->current_test_info()
@@ -48,7 +45,7 @@ std::string getClientLogName() {
 
 std::shared_ptr<Cache> createCache() {
   auto cache = CacheFactory()
-                   .set("log-level", "none")
+                   .set("log-level", "debug")
                    .set("log-file", getClientLogName())
                    .create();
   return std::make_shared<Cache>(std::move(cache));
@@ -92,13 +89,22 @@ TEST(ContainsKeyOnServerExceptionTest, handleException) {
     region->put(theKey, theValue);
     transactionManager->commit();
   } catch (...) {
-    try {
-      region->containsKeyOnServer(CacheableKey::create(7));
-    } catch (
-        apache::geode::client::TransactionDataNodeHasDepartedException& ex) {
-      std::cerr << "Caught exception: " << ex.what() << std::endl;
-    }
+    EXPECT_THROW(
+        region->containsKeyOnServer(CacheableKey::create(7)),
+        apache::geode::client::TransactionDataNodeHasDepartedException);
   }
+  // try {
+  //   transactionManager->begin();
+  //   region->put(theKey, theValue);
+  //   transactionManager->commit();
+  // } catch (...) {
+  //   try {
+  //     region->containsKeyOnServer(CacheableKey::create(7));
+  //   } catch (
+  //       apache::geode::client::TransactionDataNodeHasDepartedException& ex) {
+  //     std::cerr << "Caught exception: " << ex.what() << std::endl;
+  //   }
+  // }
 
   EXPECT_FALSE(region->containsKey(7));
 }
