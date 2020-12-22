@@ -89,8 +89,8 @@ if (${WIN32})
   )
   set ( _BUILD_COMMAND ${CMAKE_VS_MSBUILD_COMMAND} ACE_${MPC_TYPE}_static.sln ${_MSBUILD_FLAGS} ${_MSBUILD_FLAGS_STATIC}
   )
-  set ( _INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_if_different ../lib <INSTALL_DIR>/lib
-                 COMMAND ${CMAKE_COMMAND} -E copy_if_different ../ace <INSTALL_DIR>/include/ace
+  set ( _INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory <SOURCE_DIR>/lib <INSTALL_DIR>/lib
+                 COMMAND ${CMAKE_COMMAND} -E copy_directory <SOURCE_DIR>/ace <INSTALL_DIR>/include/ace
   )
 
   set(CMAKE_STATIC_LIBRARY_SUFFIX s$<${MSVC}:$<$<CONFIG:Debug>:d>>.lib)
