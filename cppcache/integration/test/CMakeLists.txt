@@ -36,6 +36,10 @@ add_executable(cpp-integration-test
   PdxSerializerTest.cpp
   Order.cpp
   Order.hpp
+  Position.cpp
+  Position.hpp
+  PositionKey.cpp
+  PositionKey.hpp
   RegionGetAllTest.cpp
   RegionPutAllTest.cpp
   RegionPutGetAllTest.cpp
