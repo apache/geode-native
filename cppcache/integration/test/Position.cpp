@@ -16,74 +16,70 @@
  */
 #include "Position.hpp"
 
-#include <wchar.h>
-
-#include <cwchar>
-
 #include <geode/DataInput.hpp>
 #include <geode/DataOutput.hpp>
 
 namespace DataSerializableTest {
 
-int32_t Position::cnt = 0;
+int32_t Position::count = 0;
 
 Position::Position()
-    : avg20DaysVol(0),
-      convRatio(0.0),
-      valueGain(0.0),
-      industry(0),
-      issuer(0),
-      mktValue(0.0),
-      qty(0.0),
-      sharesOutstanding(0),
-      volatility(0),
-      pid(0) {}
+    : volumeAverageOver20Days_(0),
+      conversionRatio_(0.0),
+      valueGain_(0.0),
+      industry_(0),
+      issuer_(0),
+      marketValue_(0.0),
+      quantity_(0.0),
+      sharesOutstanding_(0),
+      volatility_(0),
+      positionId_(0) {}
 
 Position::Position(std::string id, int32_t outstandingShares) : Position() {
-  secId = std::move(id);
-  secType = "a";
-  sharesOutstanding = outstandingShares;
-  qty = outstandingShares - (cnt % 2 == 0 ? 1000 : 100);
-  mktValue = qty * 1.2345998;
-  pid = cnt++;
+  securityId_ = std::move(id);
+  securityType_ = "a";
+  sharesOutstanding_ = outstandingShares;
+  quantity_ = outstandingShares - (count % 2 == 0 ? 1000 : 100);
+  marketValue_ = quantity_ * 1.2345998;
+  positionId_ = count++;
 }
 
 void Position::toData(apache::geode::client::DataOutput& output) const {
-  output.writeInt(avg20DaysVol);
-  output.writeString(bondRating);
-  output.writeDouble(convRatio);
-  output.writeString(country);
-  output.writeDouble(valueGain);
-  output.writeInt(industry);
-  output.writeInt(issuer);
-  output.writeDouble(mktValue);
-  output.writeDouble(qty);
-  output.writeString(secId);
-  output.writeString(secLinks);
-  output.writeUTF(secType);
-  output.writeInt(sharesOutstanding);
-  output.writeString(underlyer);
-  output.writeInt(volatility);
-  output.writeInt(pid);
+  output.writeInt(volumeAverageOver20Days_);
+  output.writeString(bondRating_);
+  output.writeDouble(conversionRatio_);
+  output.writeString(country_);
+  output.writeDouble(valueGain_);
+  output.writeInt(industry_);
+  output.writeInt(issuer_);
+  output.writeDouble(marketValue_);
+  output.writeDouble(quantity_);
+  output.writeString(securityId_);
+  output.writeString(securityLinks_);
+  output.writeUTF(securityType_);
+  output.writeInt(sharesOutstanding_);
+  output.writeString(underlyingSecurity_);
+  output.writeInt(volatility_);
+  output.writeInt(positionId_);
 }
 
 void Position::fromData(apache::geode::client::DataInput& input) {
-  avg20DaysVol = input.readInt64();
-  bondRating = input.readString();
-  convRatio = input.readDouble();
-  country = input.readString();
-  valueGain = input.readDouble();
-  industry = input.readInt64();
-  issuer = input.readInt64();
-  mktValue = input.readDouble();
-  qty = input.readDouble();
-  secId = input.readString();
-  secLinks = input.readString();
-  secType = input.readUTF();
-  sharesOutstanding = input.readInt32();
-  underlyer = input.readString();
-  volatility = input.readInt64();
-  pid = input.readInt32();
+  volumeAverageOver20Days_ = input.readInt64();
+  bondRating_ = input.readString();
+  conversionRatio_ = input.readDouble();
+  country_ = input.readString();
+  valueGain_ = input.readDouble();
+  industry_ = input.readInt64();
+  issuer_ = input.readInt64();
+  marketValue_ = input.readDouble();
+  quantity_ = input.readDouble();
+  securityId_ = input.readString();
+  securityLinks_ = input.readString();
+  securityType_ = input.readUTF();
+  sharesOutstanding_ = input.readInt32();
+  underlyingSecurity_ = input.readString();
+  volatility_ = input.readInt64();
+  positionId_ = input.readInt32();
 }
 
 }  // namespace DataSerializableTest

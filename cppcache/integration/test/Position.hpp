@@ -38,25 +38,25 @@ using apache::geode::client::DataSerializable;
 
 class Position : public DataSerializable {
  private:
-  int64_t avg20DaysVol;
-  std::string bondRating;
-  double convRatio;
-  std::string country;
-  double valueGain;
-  int64_t industry;
-  int64_t issuer;
-  double mktValue;
-  double qty;
-  std::string secId;
-  std::string secLinks;
-  std::string secType;
-  int32_t sharesOutstanding;
-  std::string underlyer;
-  int64_t volatility;
-  int32_t pid;
+  int64_t volumeAverageOver20Days_;
+  std::string bondRating_;
+  double conversionRatio_;
+  std::string country_;
+  double valueGain_;
+  int64_t industry_;
+  int64_t issuer_;
+  double marketValue_;
+  double quantity_;
+  std::string securityId_;
+  std::string securityLinks_;
+  std::string securityType_;
+  int32_t sharesOutstanding_;
+  std::string underlyingSecurity_;
+  int64_t volatility_;
+  int32_t positionId_;
 
  public:
-  static int32_t cnt;
+  static int32_t count;
 
   Position();
   explicit Position(std::string id, int32_t out);
@@ -64,10 +64,10 @@ class Position : public DataSerializable {
   void toData(DataOutput& output) const override;
   void fromData(DataInput& input) override;
 
-  static void resetCounter() { cnt = 0; }
-  std::string getSecId() { return secId; }
-  int32_t getId() { return pid; }
-  int32_t getSharesOutstanding() { return sharesOutstanding; }
+  static void resetCounter() { count = 0; }
+  std::string getSecurityId() { return securityId_; }
+  int32_t getPOsitionId() { return positionId_; }
+  int32_t getSharesOutstanding() { return sharesOutstanding_; }
   static std::shared_ptr<Serializable> createDeserializable() {
     return std::make_shared<Position>();
   }

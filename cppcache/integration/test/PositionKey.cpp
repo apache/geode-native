@@ -22,20 +22,21 @@
 namespace DataSerializableTest {
 
 void PositionKey::toData(DataOutput& output) const {
-  output.writeInt(m_positionId);
+  output.writeInt(positionId_);
 }
 
 void PositionKey::fromData(apache::geode::client::DataInput& input) {
-  m_positionId = input.readInt64();
+  positionId_ = input.readInt64();
 }
 
 bool PositionKey::operator==(const CacheableKey& other) const {
-  return m_positionId == (reinterpret_cast<const PositionKey&>(other)).getPositionId();
+  return positionId_ ==
+         (static_cast<const PositionKey&>(other)).getPositionId();
 }
 
 int PositionKey::hashcode() const {
   int prime = 31;
-  int result = prime * static_cast<int32_t>(m_positionId);
+  int result = prime * static_cast<int32_t>(positionId_);
   return result;
 }
 

@@ -34,11 +34,11 @@ using apache::geode::client::DataSerializable;
 
 class PositionKey : public DataSerializable, public CacheableKey {
  private:
-  int64_t m_positionId;
+  int64_t positionId_;
 
  public:
   PositionKey() = default;
-  explicit PositionKey(int64_t positionId) : m_positionId(positionId) {}
+  explicit PositionKey(int64_t positionId) : positionId_(positionId) {}
   ~PositionKey() override = default;
 
   bool operator==(const CacheableKey& other) const override;
@@ -47,7 +47,7 @@ class PositionKey : public DataSerializable, public CacheableKey {
   void toData(DataOutput& output) const override;
   void fromData(DataInput& input) override;
 
-  int64_t getPositionId() const { return m_positionId; }
+  int64_t getPositionId() const { return positionId_; }
   static std::shared_ptr<Serializable> createDeserializable() {
     return std::make_shared<PositionKey>();
   }
