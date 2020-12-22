@@ -59,7 +59,7 @@
       },
       "disk_size": "100",
       "metadata": {
-        "windows-startup-script-cmd": "dism /Online /NoRestart /Enable-Feature /FeatureName:NetFx3 & winrm quickconfig -quiet & winrm set winrm/config/service/auth @{Basic=\"true\"} & net user Administrator /active:yes"
+        "windows-startup-script-cmd": "dism /Online /NoRestart /Enable-Feature /All /FeatureName:NetFx3 & winrm quickconfig -quiet & winrm set winrm/config/service/auth @{Basic=\"true\"} & net user Administrator /active:yes"
       },
       "communicator": "winrm",
       "winrm_username": "Administrator",
