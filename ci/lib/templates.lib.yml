@@ -328,7 +328,7 @@ config:
         set -ueo pipefail
         (@= remote_functions() @)
 
-        remote_download build .
+        remote_download_directory build .
 #@ end
 
 ---
