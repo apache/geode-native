@@ -59,6 +59,10 @@ function remote_download {
   scp ${SSH_OPTIONS} -i ${ssh_key_file} -q -r "${INSTANCE_USER}@${external_ip}:${1}" "$2"
 }
 
+function remote_download_directory {
+  ssh ${SSH_OPTIONS} -i ${ssh_key_file} ${INSTANCE_USER}@${external_ip} tar -C $(dirname ${1}) -czf - $(basename ${1}) | tar -C ${2} -zxvf -
+}
+
 function remote_upload {
   scp ${SSH_OPTIONS} -i ${ssh_key_file} -q -r "$1" "${INSTANCE_USER}@${external_ip}:${2}"
 }
