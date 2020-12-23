@@ -70,35 +70,34 @@ function remote_upload {
 (@- end @)
 
 (@ def run_cpp_unit_tests(): -@)
-remote_shell taskkill /t /f /im ctest.exe /im apache-geode_unittests.exe || true
-remote_shell 'pkill ^ctest$; pkill ^apache-geode_unittests$' || true
+remote_shell taskkill /t /f /fi "username eq ${INSTANCE_USER}" || true
+remote_shell pkill -u ${INSTANCE_USER} || true
 remote_shell cmake -E chdir build/cppcache/test ctest -C ${CMAKE_CONFIG} -j8 --timeout=500 --output-on-failure --rerun-failed
 (@- end @)
 
 (@ def run_cpp_integration_tests(): -@)
-remote_shell taskkill /t /f /im ctest.exe /im cpp-integration-test.exe /im java.exe || true
-remote_shell 'pkill ^ctest$; pkill ^cpp-integration-test$; pkill ^java$' || true
+remote_shell taskkill /t /f /fi "username eq ${INSTANCE_USER}" || true
+remote_shell pkill -u ${INSTANCE_USER} || true
 remote_shell cmake -E chdir build/cppcache/integration/test ctest -C ${CMAKE_CONFIG} -j8 --timeout=500 --output-on-failure --rerun-failed -E ^BasicIPv6Test
 (@- end @)
 
 (@ def run_cpp_legacy_integration_tests(): -@)
-
-remote_shell taskkill /t /f /im ctest.exe /im test* /im java.exe || true
-remote_shell 'pkill ^ctest$; pkill ^test; pkill ^java$' || true
+remote_shell taskkill /t /f /fi "username eq ${INSTANCE_USER}" || true
+remote_shell pkill -u ${INSTANCE_USER} || true
 remote_shell cmake -E chdir build/cppcache/integration-test ctest -C ${CMAKE_CONFIG} -j6 --timeout=500 --output-on-failure --rerun-failed
 (@- end @)
 
 (@ def run_net_unit_tests(): -@)
-remote_shell taskkill /t /f /im xunit.console.exe || true
+remote_shell taskkill /t /f /fi "username eq ${INSTANCE_USER}" || true
 remote_shell cmake -E chdir build/clicache/test2 ../packages/xunit.runner.console.2.4.0/tools/net452/xunit.console.exe ${CMAKE_CONFIG}/Apache.Geode.Tests2.dll -parallel all
 (@- end @)
 
 (@ def run_net_integration_tests(): -@)
-remote_shell taskkill /t /f /im xunit.console.exe /im java.exe || true
+remote_shell taskkill /t /f /fi "username eq ${INSTANCE_USER}" || true
 remote_shell cmake -E chdir build/clicache/integration-test2 ../packages/xunit.runner.console.2.4.0/tools/net452/xunit.console.exe ${CMAKE_CONFIG}/Apache.Geode.IntegrationTests2.dll -verbose -maxthreads 6
 (@- end @)
 
 (@ def run_net_legacy_integration_tests(): -@)
-remote_shell taskkill /t /f /im ctest.exe /im nunit-console.exe /im nunit-agent.exe /im fwkclient.exe /im java.exe || true
+remote_shell taskkill /t /f /fi "username eq ${INSTANCE_USER}" || true
 remote_shell cmake -E chdir build/clicache/integration-test ctest -C ${CMAKE_CONFIG} -j6 --timeout=1000 --output-on-failure --rerun-failed
 (@- end @)
