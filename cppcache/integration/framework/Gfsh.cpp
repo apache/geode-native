@@ -353,6 +353,12 @@ Gfsh::Start::Server &Gfsh::Start::Server::withHostNameForClients(
   return *this;
 }
 
+Gfsh::Start::Server &Gfsh::Start::Server::withSystemProperty(
+    const std::string &key, const std::string &value) {
+  command_ += " --J=-D" + key + "=" + value;
+  return *this;
+}
+
 Gfsh::Stop::Stop(Gfsh &gfsh) : gfsh_(gfsh) {}
 
 Gfsh::Stop::Server Gfsh::Stop::server() { return Server{gfsh_}; }
