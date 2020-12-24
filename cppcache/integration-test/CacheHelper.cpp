@@ -1583,7 +1583,8 @@ void CacheHelper::initLocator(int instance, bool ssl, bool, int dsId,
                      .withDir(currDir)
                      .withClasspath(classpath)
                      .withHttpServicePort(0)
-                     .withJmxManagerPort(jmxManagerPort);
+                     .withJmxManagerPort(jmxManagerPort)
+                     .withMaxHeap("256m");
   if (useSecurityManager) {
     locator.withSecurityPropertiesFile(geodeFile);
   } else {
