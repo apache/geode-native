@@ -192,6 +192,9 @@ class Gfsh {
       Server &withSecurityPropertiesFile(const std::string file);
 
       Server &withHostNameForClients(const std::string hostName);
+
+      Server &withSystemProperty(const std::string &key,
+                                 const std::string &value);
     };
 
    private:
