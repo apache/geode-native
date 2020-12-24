@@ -60,13 +60,13 @@
 #define PATH_SEP "/"
 #endif
 
-#include "framework/GfshExecute.h"
-
 extern ClientCleanup gClientCleanup;
 
 namespace apache {
 namespace geode {
 namespace client {
+
+GfshExecute CacheHelper::gfsh;
 
 #define RANDOM_NUMBER_OFFSET 14000
 #define RANDOM_NUMBER_DIVIDER 15000
@@ -1180,9 +1180,8 @@ void CacheHelper::initServer(int instance, const char *xml,
     ACE_OS::mkdir("backupDirectory4");
   }
 
-  auto gfsh =
-      GfshExecute()
-          .start()
+  auto server =
+      gfsh.start()
           .server()
           .withClasspath(classpath)
           .withName(sname)
@@ -1202,19 +1201,19 @@ void CacheHelper::initServer(int instance, const char *xml,
           .withSystemProperty("gemfire.security-log-level", gfSecLogLevel);
 
   if (useSecurityManager) {
-    gfsh.withUser("root").withPassword("root-password");
+    server.withUser("root").withPassword("root-password");
   }
 
   if (locHostport != nullptr) {
-    gfsh.withPropertiesFile(generateGeodeProperties(
+    server.withPropertiesFile(generateGeodeProperties(
         currDir, ssl, -1, 0, untrustedCert, useSecurityManager));
   }
 
   if (!enableDelta) {
-    gfsh.withSystemProperty("gemfire.delta-propagation", "false");
+    server.withSystemProperty("gemfire.delta-propagation", "false");
   }
 
-  gfsh.execute();
+  server.execute();
 
   staticServerInstanceList.push_back(instance);
   printf("added server instance %d\n", instance);
@@ -1378,7 +1377,7 @@ void CacheHelper::closeServer(int instance) {
   }
 
   try {
-    GfshExecute().stop().server().withDir(currDir).execute();
+    gfsh.stop().server().withDir(currDir).execute();
   } catch (const GfshExecuteException &) {
   }
 
@@ -1433,7 +1432,7 @@ void CacheHelper::closeLocator(int instance, bool) {
   }
 
   try {
-    GfshExecute().stop().locator().withDir(currDir).execute();
+    gfsh.stop().locator().withDir(currDir).execute();
   } catch (const GfshExecuteException &) {
   }
 
@@ -1576,21 +1575,21 @@ void CacheHelper::initLocator(int instance, bool ssl, bool, int dsId,
 
   std::string classpath = ACE_OS::getenv("GF_CLASSPATH");
 
-  auto gfsh = GfshExecute()
-                  .start()
-                  .locator()
-                  .withName(locDirname)
-                  .withPort(portnum)
-                  .withDir(currDir)
-                  .withClasspath(classpath)
-                  .withHttpServicePort(0)
-                  .withJmxManagerPort(jmxManagerPort);
+  auto locator = gfsh.start()
+                     .locator()
+                     .withConnect(false)
+                     .withName(locDirname)
+                     .withPort(portnum)
+                     .withDir(currDir)
+                     .withClasspath(classpath)
+                     .withHttpServicePort(0)
+                     .withJmxManagerPort(jmxManagerPort);
   if (useSecurityManager) {
-    gfsh.withSecurityPropertiesFile(geodeFile);
+    locator.withSecurityPropertiesFile(geodeFile);
   } else {
-    gfsh.withPropertiesFile(geodeFile);
+    locator.withPropertiesFile(geodeFile);
   }
-  gfsh.execute();
+  locator.execute();
 
   staticLocatorInstanceList.push_back(instance);
 }
