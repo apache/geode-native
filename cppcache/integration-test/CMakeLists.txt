@@ -24,12 +24,12 @@ add_library(test-cppcache-utils STATIC
 )
 target_link_libraries(test-cppcache-utils
   PRIVATE
+    integration-framework
     ACE::ACE
     _WarningsAsError
   PUBLIC
     apache-geode
     framework
-    integration-framework
 )
 set_target_properties(test-cppcache-utils PROPERTIES
   CXX_VISIBILITY_PRESET hidden

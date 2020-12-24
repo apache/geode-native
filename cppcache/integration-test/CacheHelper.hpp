@@ -31,8 +31,6 @@
 #include <geode/SystemProperties.hpp>
 #include <geode/PoolManager.hpp>
 
-#include "framework/GfshExecute.h"
-
 #include "TimeBomb.hpp"
 #include "DistributedSystemImpl.hpp"
 #include "Utils.hpp"
@@ -54,7 +52,6 @@ class CacheHelper {
  public:
   static CacheHelper* singleton;
   static std::list<std::string> staticConfigFileList;
-  static GfshExecute gfsh;
   std::shared_ptr<Cache> cachePtr;
   std::shared_ptr<Region> rootRegionPtr;
 
