@@ -130,12 +130,6 @@ Gfsh::Start::Locator &Gfsh::Start::Locator::withSecurityManager(
   return *this;
 }
 
-Gfsh::Start::Locator &Gfsh::Start::Locator::withConnect(
-    const std::string connect) {
-  command_ += " --connect=" + connect;
-  return *this;
-}
-
 Gfsh::Start::Locator &Gfsh::Start::Locator::withPreferIPv6(bool useIPv6) {
   if (useIPv6) {
     command_ += " --J=-Djava.net.preferIPv6Addresses=true";
