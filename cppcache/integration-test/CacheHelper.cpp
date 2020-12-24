@@ -29,6 +29,8 @@
 #include <geode/RegionShortcut.hpp>
 #include <geode/RegionFactory.hpp>
 
+#include "framework/GfshExecute.h"
+
 #include "CacheRegionHelper.hpp"
 #include "DistributedSystemImpl.hpp"
 #include "TimeBomb.hpp"
@@ -65,8 +67,6 @@ extern ClientCleanup gClientCleanup;
 namespace apache {
 namespace geode {
 namespace client {
-
-GfshExecute CacheHelper::gfsh;
 
 #define RANDOM_NUMBER_OFFSET 14000
 #define RANDOM_NUMBER_DIVIDER 15000
@@ -1180,6 +1180,7 @@ void CacheHelper::initServer(int instance, const char *xml,
     ACE_OS::mkdir("backupDirectory4");
   }
 
+  GfshExecute gfsh;
   auto server =
       gfsh.start()
           .server()
@@ -1377,6 +1378,7 @@ void CacheHelper::closeServer(int instance) {
   }
 
   try {
+    GfshExecute gfsh;
     gfsh.stop().server().withDir(currDir).execute();
   } catch (const GfshExecuteException &) {
   }
@@ -1432,6 +1434,7 @@ void CacheHelper::closeLocator(int instance, bool) {
   }
 
   try {
+    GfshExecute gfsh;
     gfsh.stop().locator().withDir(currDir).execute();
   } catch (const GfshExecuteException &) {
   }
@@ -1575,9 +1578,9 @@ void CacheHelper::initLocator(int instance, bool ssl, bool, int dsId,
 
   std::string classpath = ACE_OS::getenv("GF_CLASSPATH");
 
+  GfshExecute gfsh;
   auto locator = gfsh.start()
                      .locator()
-                     .withConnect(false)
                      .withName(locDirname)
                      .withPort(portnum)
                      .withDir(currDir)
