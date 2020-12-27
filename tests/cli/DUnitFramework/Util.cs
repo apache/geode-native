@@ -811,15 +811,28 @@ namespace Apache.Geode.DUnitFramework
       return StartProcess(procPath, procArgs, useShell, startDir, redirectStdOut,
       redirectStdIn, redirectStdErr, false, out proc);
     }
-    
+
     public static bool StartProcess(string procPath, string procArgs,
       bool useShell, string startDir, bool redirectStdOut,
       bool redirectStdIn, bool redirectStdErr, bool createNoWindow, out Process proc)
+    {
+      return StartProcess(procPath, procArgs, useShell, startDir, redirectStdOut,
+        redirectStdIn, redirectStdErr, createNoWindow, new Dictionary<string, string>(), out proc);
+    }
+
+    public static bool StartProcess(string procPath, string procArgs,
+      bool useShell, string startDir, bool redirectStdOut,
+      bool redirectStdIn, bool redirectStdErr, bool createNoWindow, IDictionary<string, string> environment, out Process proc)
     {
       ProcessStartInfo pInfo = new ProcessStartInfo(procPath, procArgs);
 
       // Force launch without a shell. This allows launching FwkClient.exe without a window so tests can run in CI.
       useShell = false;
+
+      foreach(var e in environment)
+      {
+        pInfo.EnvironmentVariables[e.Key] = e.Value;
+      }
 
       if (!useShell)
       {
