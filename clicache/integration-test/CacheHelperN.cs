@@ -1843,7 +1843,6 @@ namespace Apache.Geode.Client.UnitTests
           {
             Assert.Fail("Locator property file creation failed: {0}: {1}", ex.GetType().Name, ex.Message);
           }
-          startDir = " --dir=" + startDir;
         }
         else
         {
@@ -1873,9 +1872,14 @@ namespace Apache.Geode.Client.UnitTests
           extraLocatorArgs += sslArgs;
         }
 
-        string locatorArgs = LocatorStartArgs + " --name=" + serverName + startDir + extraLocatorArgs + " --http-service-port=0";
+        string locatorArgs = LocatorStartArgs + " --name=" + serverName + " --dir=" + startDir + extraLocatorArgs + " --http-service-port=0";
 
-        Assert.AreEqual(0, ExecuteGfsh(locatorArgs), "Failed to start locator.");
+        var exitCode = ExecuteGfsh(locatorArgs);
+        if (0 != exitCode)
+        {
+          KillPidFile(Path.Combine(startDir, "vf.gf.locator.pid"));
+        }
+        Assert.AreEqual(0, exitCode, "Failed to start locator.");
 
         m_runningLocators[locatorNum] = startDir;
         if (m_locators == null)
@@ -1934,7 +1938,6 @@ namespace Apache.Geode.Client.UnitTests
           {
             Assert.Fail("Locator property file creation failed: {0}: {1}", ex.GetType().Name, ex.Message);
           }
-          startDir = " --dir=" + startDir;
         }
         else
         {
@@ -1955,9 +1958,14 @@ namespace Apache.Geode.Client.UnitTests
         {
           extraLocatorArgs = locatorPort;
         }
-        string locatorArgs = LocatorStartArgs + " --name=" + serverName + startDir + extraLocatorArgs + " --http-service-port=0";
+        string locatorArgs = LocatorStartArgs + " --name=" + serverName + " --dir=" + startDir + extraLocatorArgs + " --http-service-port=0";
         
-        Assert.AreEqual(0, ExecuteGfsh(locatorArgs), "Failed to start locator MDS.");
+         var exitCode = ExecuteGfsh(locatorArgs);
+        if (0 != exitCode)
+        {
+          KillPidFile(Path.Combine(startDir, "vf.gf.locator.pid"));
+        }
+        Assert.AreEqual(0, exitCode, "Failed to start locator MDS.");
 
         m_runningLocators[locatorNum] = startDir;
         if (m_locators == null)
@@ -2060,7 +2068,6 @@ namespace Apache.Geode.Client.UnitTests
             "could not find cache.xml for server number {0}", serverNum);
         }
         string cacheXml = m_cacheXmls[serverNum - 1];
-        Util.Log("XXXX Cache XML: {0}", cacheXml);
         string serverName = "Server" + Util.Rand(372468723).ToString();
         startDir += serverName;
         int port = 0;
@@ -2088,7 +2095,6 @@ namespace Apache.Geode.Client.UnitTests
           {
             Directory.CreateDirectory(startDir);
           }
-          startDir = " --dir=" + startDir;
         }
         else
         {
@@ -2103,10 +2109,15 @@ namespace Apache.Geode.Client.UnitTests
 
         string serverArgs = JavaServerStartArgs + cacheXml + " --name=" + serverName +
           " --server-port=" + port + " --classpath=" + classpath +
-          " --log-level=" + m_gfeLogLevel + startDir +
+          " --log-level=" + m_gfeLogLevel + " --dir=" + startDir +
           " --J=-Dsecurity-log-level=" + m_gfeSecLogLevel + extraServerArgs;
 
-        Assert.AreEqual(0, ExecuteGfsh(serverArgs), "Failed to start server.");
+        var exitCode = ExecuteGfsh(serverArgs);
+        if (0 != exitCode)
+        {
+          KillPidFile(Path.Combine(startDir, "vf.gf.server.pid"));
+        }
+        Assert.AreEqual(0, exitCode, "Failed to start server.");
 
         m_runningJavaServers[serverNum] = startDir;
       }
@@ -2116,42 +2127,43 @@ namespace Apache.Geode.Client.UnitTests
     {
       Util.Log("ExecuteGfsh: {0}", command);
 
-      string javaServerPath = m_gfeDir + PathSep + "bin" + PathSep + gfsh;
-      //Process process;
-      //Util.StartProcess(javaServerPath, command, false, null, true, true, true, true, environment, out process);
-      using(Process process = new Process())
+      using(var process = new Process())
       {
+        var javaServerPath = m_gfeDir + PathSep + "bin" + PathSep + gfsh;
         process.StartInfo.FileName = javaServerPath;
         process.StartInfo.Arguments = command;
         process.StartInfo.UseShellExecute = false;
-        process.StartInfo.RedirectStandardOutput = false;
-        process.StartInfo.RedirectStandardError = false;
+        process.StartInfo.RedirectStandardOutput = true;
+        process.StartInfo.RedirectStandardError = true;
+        process.StartInfo.CreateNoWindow = true;
         process.StartInfo.EnvironmentVariables["JAVA_ARGS"] = "-Xmx256m";
 
-        //process.OutputDataReceived += (sender, e) =>
-        //{
-        //  if (!string.IsNullOrEmpty(e.Data))
-        //  {
-        //    Util.Log("Execute Gfsh stdout: {0}", e.Data);
-        //  }
-        //};
-        //process.ErrorDataReceived += (sender, e) =>
-        //{
-        //  if (!string.IsNullOrEmpty(e.Data))
-        //  {
-        //    Util.Log("Execute Gfsh stderr: {0}", e.Data);
-        //  }
-        //};
+        process.OutputDataReceived += (sender, e) =>
+        {
+          if (!string.IsNullOrEmpty(e.Data))
+          {
+            Util.Log("Execute Gfsh stdout: {0}", e.Data);
+          }
+        };
+        process.ErrorDataReceived += (sender, e) =>
+        {
+          if (!string.IsNullOrEmpty(e.Data))
+          {
+            Util.Log("Execute Gfsh stderr: {0}", e.Data);
+          }
+        };
 
         process.Start();
 
-        //process.BeginOutputReadLine();
-        //process.BeginErrorReadLine();
+        process.BeginOutputReadLine();
+        process.BeginErrorReadLine();
 
+        Util.Log("ExecuteGfsh: Waiting for exit {0}", process.Id);
         if (!process.WaitForExit(MaxWaitMillis))
         {
           try
           {
+            Util.Log("ExecuteGfsh: Timeout, killing {0}", process.Id);
             process.Kill();
           } catch (Exception)
           {
@@ -2161,6 +2173,7 @@ namespace Apache.Geode.Client.UnitTests
         //process.CancelOutputRead();
         //process.CancelOutputRead();
 
+        Util.Log("ExecuteGfsh: Exited {0}", process.Id);
         return process.ExitCode;
       }
     }
@@ -2192,20 +2205,21 @@ namespace Apache.Geode.Client.UnitTests
             sslArgs += " --J=-Djavax.net.ssl.keyStorePassword=gemstone ";
             sslArgs += " --J=-Djavax.net.ssl.trustStore=" + keystore + "/server_truststore.jks  ";
             sslArgs += " --J=-Djavax.net.ssl.trustStorePassword=gemstone ";
-            string propdir = startDir.Replace("--dir=", string.Empty).Trim();
-            File.Copy(propdir + "/geode.properties", Directory.GetCurrentDirectory() + "/geode.properties", true);
+            File.Copy(startDir + "/geode.properties", Directory.GetCurrentDirectory() + "/geode.properties", true);
           }
 
-          var exitCode = ExecuteGfsh(LocatorStopArgs + startDir + sslArgs);
-          //Assert.AreEqual(0, exitCode, "Failed to stop locator.");
+          var exitCode = ExecuteGfsh(LocatorStopArgs + " --dir=" + startDir + sslArgs);
+          if (0 != exitCode)
+          {
+            KillPidFile(Path.Combine(startDir, "vf.gf.locator.pid"));
+          }
 
           if (ssl)
           {
             File.Delete(Directory.GetCurrentDirectory() + "/geode.properties");
           }
           m_runningLocators.Remove(locatorNum);
-          Util.Log("Locator {0} in directory {1} stopped.", locatorNum,
-            startDir.Replace("--dir=", string.Empty).Trim());
+          Util.Log("Locator {0} in directory {1} stopped.", locatorNum, startDir);
         }
         else
         {
@@ -2233,12 +2247,14 @@ namespace Apache.Geode.Client.UnitTests
         {
           Util.Log("Stopping server {0} in directory {1}.", serverNum, startDir);
 
-          var exitCode = ExecuteGfsh(JavaServerStopArgs + startDir);
-          //Assert.AreEqual(0, exitCode, "Failed to stop server.");
+          var exitCode = ExecuteGfsh(JavaServerStopArgs + " --dir=" + startDir);
+          if (0 != exitCode)
+          {
+            KillPidFile(Path.Combine(startDir, "vf.gf.server.pid"));
+          }
 
           m_runningJavaServers.Remove(serverNum);
-          Util.Log("Server {0} in directory {1} stopped.", serverNum,
-            startDir.Replace("--dir=", string.Empty).Trim());
+          Util.Log("Server {0} in directory {1} stopped.", serverNum, startDir);
         }
         else
         {
@@ -2247,6 +2263,31 @@ namespace Apache.Geode.Client.UnitTests
             Assert.Fail("StopJavaServer() invoked for a non-existing server {0}",
               serverNum);
           }
+        }
+      }
+    }
+
+    private static void KillPidFile(string pidFile)
+    {
+      if (File.Exists(pidFile))
+      {
+        Util.Log(Util.LogLevel.Info, "PID file {0} found.", pidFile);
+        var pid = int.Parse(File.ReadAllText(pidFile));
+        try 
+        {
+          using (var process = Process.GetProcessById(pid))
+          {
+            Util.Log(Util.LogLevel.Warning, "Killing process {0}.", pid);
+            process.Kill();
+            if (!process.WaitForExit(MaxWaitMillis))
+            {
+              Util.Log(Util.LogLevel.Error, "Failed to kill {0}.", pid);
+            }
+          }
+        }
+        catch (ArgumentException)
+        {
+          Util.Log(Util.LogLevel.Info, "Process {0} does not exist.", pid);
         }
       }
     }
@@ -2336,7 +2377,7 @@ namespace Apache.Geode.Client.UnitTests
       StopJavaLocators();
       ClearEndpoints();
       ClearLocators();
-      KillJavaProcesses();
+      //KillJavaProcesses();
       Util.Log("Cache Helper EndTest completed.");
     }
 
