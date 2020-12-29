@@ -17,11 +17,9 @@
 
 set -x -e -o pipefail
 
-CMAKE_VERSION=3.16.8
-
 tmp=`mktemp`
 
-curl -o ${tmp} -L https://cmake.org/files/v${CMAKE_VERSION%.*}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh
+curl -o ${tmp} -L $(curl -s https://api.github.com/repos/Kitware/CMake/releases/latest | grep 'browser_download_url.*Linux-x86_64\.sh' | cut -d : -f 2,3 | tr -d \")
 
 bash ${tmp} --skip-license --prefix=/usr/local
 
