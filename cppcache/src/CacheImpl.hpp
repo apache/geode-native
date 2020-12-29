@@ -180,20 +180,14 @@ class APACHE_GEODE_EXPORT CacheImpl {
    */
   std::vector<std::shared_ptr<Region>> rootRegions();
 
-  virtual RegionFactory createRegionFactory(RegionShortcut preDefinedRegion);
+  RegionFactory createRegionFactory(RegionShortcut preDefinedRegion);
 
   void initializeDeclarativeCache(const std::string& cacheXml);
 
   std::shared_ptr<CacheTransactionManager> getCacheTransactionManager();
 
-  /**
-   * @brief destructor
-   */
-  virtual ~CacheImpl();
+  ~CacheImpl();
 
-  /**
-   * @brief constructors
-   */
   CacheImpl(Cache* c, const std::shared_ptr<Properties>& dsProps,
             bool ignorePdxUnreadFields, bool readPdxSerialized,
             const std::shared_ptr<AuthInitialize>& authInitialize);
@@ -289,14 +283,14 @@ class APACHE_GEODE_EXPORT CacheImpl {
     return *(m_statisticsManager.get());
   }
 
-  virtual DataOutput createDataOutput() const;
+  DataOutput createDataOutput() const;
 
-  virtual DataOutput createDataOutput(Pool* pool) const;
+  DataOutput createDataOutput(Pool* pool) const;
 
-  virtual DataInput createDataInput(const uint8_t* buffer, size_t len) const;
+  DataInput createDataInput(const uint8_t* buffer, size_t len) const;
 
-  virtual DataInput createDataInput(const uint8_t* buffer, size_t len,
-                                    Pool* pool) const;
+  DataInput createDataInput(const uint8_t* buffer, size_t len,
+                            Pool* pool) const;
 
   PdxInstanceFactory createPdxInstanceFactory(const std::string& className,
                                               bool expectDomainClass) const;
