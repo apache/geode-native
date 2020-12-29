@@ -17,7 +17,7 @@
 
 set -x -e -o pipefail
 
-GEODE_VERSION=1.12.0
+GEODE_VERSION=1.13.1
 
 cd /usr/local
 curl -L "https://www.apache.org/dyn/closer.cgi?action=download&filename=geode/${GEODE_VERSION}/apache-geode-${GEODE_VERSION}.tgz" | \
