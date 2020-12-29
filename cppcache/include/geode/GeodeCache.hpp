@@ -46,10 +46,9 @@ class SystemProperties;
  */
 
 class APACHE_GEODE_EXPORT GeodeCache : public RegionService {
-  /**
-   * @brief public methods
-   */
  public:
+  ~GeodeCache() override = default;
+
   /** Returns the name of this cache.
    * @return the string name of this cache
    */

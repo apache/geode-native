@@ -64,6 +64,8 @@ class APACHE_GEODE_EXPORT RegionService {
    * @brief public methods
    */
  public:
+  virtual ~RegionService() = default;
+
   /**
    * Indicates if this cache has been closed.
    * After a new cache object is created, this method returns false;
