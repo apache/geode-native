@@ -60,7 +60,7 @@ function remote_download {
 }
 
 function remote_download_directory {
-  ssh ${SSH_OPTIONS} -i ${ssh_key_file} ${INSTANCE_USER}@${external_ip} tar -C $(dirname ${1}) -czf - $(basename ${1}) | tar -C ${2} -zxvf -
+  ssh ${SSH_OPTIONS} -i ${ssh_key_file} ${INSTANCE_USER}@${external_ip} tar -C $(dirname ${1}) -czf - $(basename ${1}) | tar -C ${2} -zxf -
 }
 
 function remote_upload {
