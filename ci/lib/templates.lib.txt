@@ -70,34 +70,25 @@ function remote_upload {
 (@- end @)
 
 (@ def run_cpp_unit_tests(): -@)
-remote_shell taskkill /t /f /fi "username eq ${INSTANCE_USER}" || true
-remote_shell pkill -u ${INSTANCE_USER} || true
-remote_shell cmake -E chdir build/cppcache/test ctest -C ${CMAKE_CONFIG} -j8 --timeout=500 --output-on-failure --rerun-failed
+remote_shell cmake -E chdir build/cppcache/test ctest -C ${CMAKE_CONFIG} -j8 --timeout=500 --output-on-failure
 (@- end @)
 
 (@ def run_cpp_integration_tests(): -@)
-remote_shell taskkill /t /f /fi "username eq ${INSTANCE_USER}" || true
-remote_shell pkill -u ${INSTANCE_USER} || true
-remote_shell cmake -E chdir build/cppcache/integration/test ctest -C ${CMAKE_CONFIG} -j8 --timeout=500 --output-on-failure --rerun-failed -E ^BasicIPv6Test
+remote_shell cmake -E chdir build/cppcache/integration/test ctest -C ${CMAKE_CONFIG} -j8 --timeout=500 --output-on-failure --repeat until-pass:4
 (@- end @)
 
 (@ def run_cpp_legacy_integration_tests(): -@)
-remote_shell taskkill /t /f /fi "username eq ${INSTANCE_USER}" || true
-remote_shell pkill -u ${INSTANCE_USER} || true
-remote_shell cmake -E chdir build/cppcache/integration-test ctest -C ${CMAKE_CONFIG} -j6 --timeout=500 --output-on-failure --rerun-failed
+remote_shell cmake -E chdir build/cppcache/integration-test ctest -C ${CMAKE_CONFIG} -j6 --timeout=500 --output-on-failure --repeat until-pass:4
 (@- end @)
 
 (@ def run_net_unit_tests(): -@)
-remote_shell taskkill /t /f /fi "username eq ${INSTANCE_USER}" || true
 remote_shell cmake -E chdir build/clicache/test2 ../packages/xunit.runner.console.2.4.0/tools/net452/xunit.console.exe ${CMAKE_CONFIG}/Apache.Geode.Tests2.dll -parallel all
 (@- end @)
 
 (@ def run_net_integration_tests(): -@)
-remote_shell taskkill /t /f /fi "username eq ${INSTANCE_USER}" || true
 remote_shell cmake -E chdir build/clicache/integration-test2 ../packages/xunit.runner.console.2.4.0/tools/net452/xunit.console.exe ${CMAKE_CONFIG}/Apache.Geode.IntegrationTests2.dll -verbose -maxthreads 6
 (@- end @)
 
 (@ def run_net_legacy_integration_tests(): -@)
-remote_shell taskkill /t /f /fi "username eq ${INSTANCE_USER}" || true
-remote_shell cmake -E chdir build/clicache/integration-test ctest -C ${CMAKE_CONFIG} -j6 --timeout=1000 --output-on-failure --rerun-failed
+remote_shell cmake -E chdir build/clicache/integration-test ctest -C ${CMAKE_CONFIG} -j6 --timeout=1000 --output-on-failure --repeat until-pass:4
 (@- end @)
