@@ -215,7 +215,7 @@ config:
       - -c
       #@yaml/text-templated-strings
       - |
-        set -xueo pipefail
+        set -ueo pipefail
 
         (@= remote_functions() @)
 
@@ -285,12 +285,12 @@ config:
 
 ---
 #@ def cpp_integration_test_task(build, config):
-#@ return remote_task("cpp-integration-tests", config.config, run_cpp_integration_tests(), "30m", build.params, 5)
+#@ return remote_task("cpp-integration-tests", config.config, run_cpp_integration_tests(), "30m", build.params)
 #@ end
 
 ---
 #@ def cpp_legacy_integration_test_task(build, config):
-#@ return remote_task("cpp-legacy-integration-tests", config.config, run_cpp_legacy_integration_tests(), "1h", build.params, 5)
+#@ return remote_task("cpp-legacy-integration-tests", config.config, run_cpp_legacy_integration_tests(), "1h", build.params)
 #@ end
 
 ---
@@ -305,7 +305,7 @@ config:
 
 ---
 #@ def net_legacy_integration_test_task(build, config):
-#@ return remote_task("net-legacy-integration-tests", config.config, run_net_legacy_integration_tests(), "1h", build.params, 5)
+#@ return remote_task("net-legacy-integration-tests", config.config, run_net_legacy_integration_tests(), "1h", build.params)
 #@ end
 
 ---
