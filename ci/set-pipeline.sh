@@ -28,7 +28,7 @@ Parameter                Description                         Default
 --repository             Remote URL for repository.          Current tracking branch repository.
 --pipeline               Name of pipeline to set.            Based on repository owner name and branch.
 --google-zone            Google Compute project.             Current default project.
---google-project         Google Compute zone.                Current default zone.
+--google-project         Google Compute zone.                Concourse worker's zone.
 --google-storage-bucket  Google Compute Storage bucket.      Based on google-project value.
 --google-storage-key     Google Compute Storage key prefix.  Based on pipeline value.
 --fly                    Path to fly executable.             "fly"
@@ -85,7 +85,7 @@ pipeline=${pipeline:-${git_owner}-${branch}}
 pipeline=${pipeline//[^[:word:]-]/-}
 
 google_project=${google_project:-$(gcloud config get-value project)}
-google_zone=${google_zone:-$(gcloud config get-value compute/zone)}
+google_zone=${google_zone:-'$(curl "http://metadata.google.internal/computeMetadata/v1/instance/zone" -H "Metadata-Flavor: Google" -s | cut -d / -f 4)'}
 google_storage_bucket=${google_storage_bucket:-${google_project}-concourse}
 google_storage_key=${google_storage_key:-geode-native/${pipeline}}
 
@@ -95,22 +95,24 @@ variants_release=${variant_release:-""}
 for variant in ${variants}; do
   eval pipeline_suffix=\${variants_${variant}-"-${variant}"}
 
-  bash -c "${ytt} \$@" ytt \
+  bash -c "${ytt} \"\$@\"" ytt \
     --file lib \
     --file base \
     --file ${variant} \
-    --data-value pipeline.name=${pipeline} \
-    --data-value pipeline.variant=${variant} \
-    --data-value repository.url=${repository} \
-    --data-value repository.branch=${branch} \
-    --data-value google.project=${google_project} \
-    --data-value google.zone=${google_zone} \
-    --data-value google.storage.bucket=${google_storage_bucket} \
-    --data-value google.storage.key=${google_storage_key} \
-    > ${output}/${variant}.yml
+    --data-value "pipeline.name=${pipeline}" \
+    --data-value "pipeline.variant=${variant}" \
+    --data-value "repository.url=${repository}" \
+    --data-value "repository.branch=${branch}" \
+    --data-value "google.project=${google_project}" \
+    --data-value "google.zone=${google_zone}" \
+    --data-value "google.storage.bucket=${google_storage_bucket}" \
+    --data-value "google.storage.key=${google_storage_key}" \
+    > "${output}/${variant}.yml"
 
 
-  bash -c "${fly} \$@" fly --target=${target} \
-    set-pipeline --pipeline="${pipeline}${pipeline_suffix}" --config=${output}/${variant}.yml
+  bash -c "${fly} \"\$@\"" fly --target=${target} \
+    set-pipeline \
+      "--pipeline=${pipeline}${pipeline_suffix}" \
+      "--config=${output}/${variant}.yml"
 
 done
