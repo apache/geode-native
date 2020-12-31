@@ -57,7 +57,7 @@ class KillServerThread : public ACE_Task_Base {
  public:
   bool m_running;
   KillServerThread() : m_running(false) {}
-  int svc(void) {
+  int svc(void) override {
     while (m_running == true) {
       CacheHelper::closeServer(1);
       LOG("THREAD CLOSED SERVER 1");

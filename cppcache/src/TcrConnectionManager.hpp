@@ -66,7 +66,6 @@ class TcrConnectionManager {
   int checkConnection(const ACE_Time_Value&, const void*);
   int checkRedundancy(const ACE_Time_Value&, const void*);
   int processEventIdMap(const ACE_Time_Value&, const void*);
-  ExpiryTaskManager::id_type getPingTaskId();
   void close();
 
   void readyForEvents();
@@ -185,7 +184,6 @@ class TcrConnectionManager {
   friend class DistManagersLockGuard;
   friend class ThinClientPoolDM;
   friend class ThinClientPoolHADM;
-  static const char* NC_Redundancy;
   static const char* NC_Failover;
   static const char* NC_CleanUp;
 };

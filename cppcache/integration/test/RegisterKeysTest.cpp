@@ -175,7 +175,7 @@ TEST(RegisterKeysTest, RegisterAllWithConsistencyDisabled) {
 
   {
     std::unique_lock<std::mutex> lock(cv_mutex);
-    EXPECT_EQ(cv.wait_for(lock, std::chrono::seconds(5)),
+    EXPECT_EQ(cv.wait_for(lock, std::chrono::minutes(1)),
               std::cv_status::no_timeout);
   }
 }

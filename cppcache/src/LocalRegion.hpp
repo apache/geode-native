@@ -33,19 +33,15 @@
 #include <geode/EntryEvent.hpp>
 #include <geode/ExceptionTypes.hpp>
 #include <geode/PersistenceManager.hpp>
-#include <geode/RegionAttributesFactory.hpp>
 #include <geode/RegionEntry.hpp>
 #include <geode/RegionEvent.hpp>
 #include <geode/Serializable.hpp>
 #include <geode/internal/geode_globals.hpp>
 
-#include "CacheableToken.hpp"
-#include "EntriesMapFactory.hpp"
+#include "EntriesMap.hpp"
 #include "EventType.hpp"
-#include "ExpMapEntry.hpp"
 #include "RegionInternal.hpp"
 #include "RegionStats.hpp"
-#include "SerializationRegistry.hpp"
 #include "TSSTXStateWrapper.hpp"
 #include "TombstoneList.hpp"
 #include "util/synchronized_map.hpp"
@@ -55,21 +51,25 @@ namespace geode {
 namespace client {
 
 #ifndef CHECK_DESTROY_PENDING
-#define CHECK_DESTROY_PENDING(lock, function)           \
-  lock checkGuard(m_rwLock, m_destroyPending);          \
-  if (m_destroyPending) {                               \
-    std::string err_msg = #function;                    \
-    err_msg += ": region " + m_fullPath + " destroyed"; \
-    throw RegionDestroyedException(err_msg.c_str());    \
-  }
+#define CHECK_DESTROY_PENDING(lock, function)             \
+  lock checkGuard(m_rwLock, m_destroyPending);            \
+  do {                                                    \
+    if (m_destroyPending) {                               \
+      std::string err_msg = #function;                    \
+      err_msg += ": region " + m_fullPath + " destroyed"; \
+      throw RegionDestroyedException(err_msg.c_str());    \
+    }                                                     \
+  } while (0)
 #endif
 
 #ifndef CHECK_DESTROY_PENDING_NOTHROW
-#define CHECK_DESTROY_PENDING_NOTHROW(lock)     \
-  lock checkGuard(m_rwLock, m_destroyPending);  \
-  if (m_destroyPending) {                       \
-    return GF_CACHE_REGION_DESTROYED_EXCEPTION; \
-  }
+#define CHECK_DESTROY_PENDING_NOTHROW(lock)       \
+  lock checkGuard(m_rwLock, m_destroyPending);    \
+  do {                                            \
+    if (m_destroyPending) {                       \
+      return GF_CACHE_REGION_DESTROYED_EXCEPTION; \
+    }                                             \
+  } while (0)
 #endif
 
 class PutActions;

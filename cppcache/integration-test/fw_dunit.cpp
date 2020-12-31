@@ -506,7 +506,7 @@ class TestProcess : virtual public dunit::Manager {
 
  protected:
  public:
-  virtual ~TestProcess() {}
+  ~TestProcess() noexcept override = default;
 };
 
 /**
@@ -1029,7 +1029,6 @@ PerfSuite::PerfSuite(const char *suiteName) : m_suiteName(suiteName) {}
 void PerfSuite::addRecord(std::string testName, int64_t ops,
                           const TimeStamp &start, const TimeStamp &stop) {
   Record tmp(testName, ops, start, stop);
-  m_records[testName] = tmp;
   fprintf(stdout, "[PerfSuite] %s\n", tmp.asString().c_str());
   fflush(stdout);
 }
@@ -1126,10 +1125,6 @@ ThreadLauncher::~ThreadLauncher() {
     delete m_stopTime;
   }
 }
-
-Thread::Thread() : ACE_Task_Base(), m_launcher(nullptr), m_used(false) {}
-
-Thread::~Thread() {}
 
 int Thread::svc() {
   m_used = true;

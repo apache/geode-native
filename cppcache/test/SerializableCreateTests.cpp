@@ -36,7 +36,7 @@ using apache::geode::client::CacheableInt64;
 using apache::geode::client::CacheableString;
 using apache::geode::client::Serializable;
 
-TEST(SerializableCreateTests, forArrayOf_constchar) {
+TEST(SerializableCreateTests, forArrayOfConstChar) {
   const auto serializable = Serializable::create("test");
   ASSERT_TRUE(nullptr != serializable);
   auto&& cacheableString =
@@ -45,7 +45,7 @@ TEST(SerializableCreateTests, forArrayOf_constchar) {
   ASSERT_EQ(cacheableString->value(), "test");
 }
 
-TEST(SerializableCreateTests, forArrayOf_char) {
+TEST(SerializableCreateTests, forArrayOfChar) {
   char* test = new char[5]{'t', 'e', 's', 't', '\0'};
   const auto serializable = Serializable::create(test);
   ASSERT_TRUE(nullptr != serializable);
@@ -55,7 +55,7 @@ TEST(SerializableCreateTests, forArrayOf_char) {
   ASSERT_EQ(cacheableString->value(), "test");
 }
 
-TEST(SerializableCreateTests, forArrayOf_char16_t) {
+TEST(SerializableCreateTests, forArrayOfChar16) {
   const auto serializable = Serializable::create(u"test");
   ASSERT_TRUE(nullptr != serializable);
   auto&& cacheableString =
@@ -64,7 +64,7 @@ TEST(SerializableCreateTests, forArrayOf_char16_t) {
   ASSERT_EQ(cacheableString->value(), "test");
 }
 
-TEST(SerializableCreateTests, forArrayOf_char32_t) {
+TEST(SerializableCreateTests, forArrayOfChar32) {
   const auto serializable = Serializable::create(U"test");
   ASSERT_TRUE(nullptr != serializable);
   auto&& cacheableString =
@@ -73,7 +73,7 @@ TEST(SerializableCreateTests, forArrayOf_char32_t) {
   ASSERT_EQ(cacheableString->value(), "test");
 }
 
-TEST(SerializableCreateTests, forArrayOf_wchar_t) {
+TEST(SerializableCreateTests, forArrayOfWchar) {
   const auto serializable = Serializable::create(L"test");
   ASSERT_TRUE(nullptr != serializable);
   auto&& cacheableString =
@@ -82,7 +82,7 @@ TEST(SerializableCreateTests, forArrayOf_wchar_t) {
   ASSERT_EQ(cacheableString->value(), "test");
 }
 
-TEST(SerializableCreateTests, for_int8_t) {
+TEST(SerializableCreateTests, forInt8) {
   const auto serializable = Serializable::create(static_cast<int8_t>(1));
   ASSERT_TRUE(nullptr != serializable);
   auto&& cacheableByte = std::dynamic_pointer_cast<CacheableByte>(serializable);
@@ -90,7 +90,7 @@ TEST(SerializableCreateTests, for_int8_t) {
   ASSERT_EQ(cacheableByte->value(), 1);
 }
 
-TEST(SerializableCreateTests, for_int16_t) {
+TEST(SerializableCreateTests, forInt16) {
   const auto serializable = Serializable::create(static_cast<int16_t>(1));
   ASSERT_TRUE(nullptr != serializable);
   auto&& cacheableInt16 =
@@ -99,7 +99,7 @@ TEST(SerializableCreateTests, for_int16_t) {
   ASSERT_EQ(cacheableInt16->value(), 1);
 }
 
-TEST(SerializableCreateTests, for_int32_t) {
+TEST(SerializableCreateTests, forInt32) {
   const auto serializable = Serializable::create(static_cast<int32_t>(1));
   ASSERT_TRUE(nullptr != serializable);
   auto&& cacheableInt32 =
@@ -108,7 +108,7 @@ TEST(SerializableCreateTests, for_int32_t) {
   ASSERT_EQ(cacheableInt32->value(), 1);
 }
 
-TEST(SerializableCreateTests, for_int64_t) {
+TEST(SerializableCreateTests, forInt64) {
   const auto serializable = Serializable::create(static_cast<int64_t>(1));
   ASSERT_TRUE(nullptr != serializable);
   auto&& cacheableInt64 =
@@ -117,7 +117,7 @@ TEST(SerializableCreateTests, for_int64_t) {
   ASSERT_EQ(cacheableInt64->value(), 1);
 }
 
-TEST(SerializableCreateTests, for_char16_t) {
+TEST(SerializableCreateTests, forCr16) {
   const auto serializable = Serializable::create(u'a');
   ASSERT_TRUE(nullptr != serializable);
   auto&& cacheableCharacter =
@@ -126,7 +126,7 @@ TEST(SerializableCreateTests, for_char16_t) {
   ASSERT_EQ(cacheableCharacter->value(), u'a');
 }
 
-TEST(SerializableCreateTests, for_float) {
+TEST(SerializableCreateTests, forFloat) {
   const auto serializable = Serializable::create(1.1f);
   ASSERT_TRUE(nullptr != serializable);
   auto&& cacheableFloat =
@@ -135,7 +135,7 @@ TEST(SerializableCreateTests, for_float) {
   ASSERT_EQ(cacheableFloat->value(), 1.1f);
 }
 
-TEST(SerializableCreateTests, for_double) {
+TEST(SerializableCreateTests, forDouble) {
   const auto serializable = Serializable::create(1.1);
   ASSERT_TRUE(nullptr != serializable);
   auto&& cacheableDouble =
@@ -144,7 +144,7 @@ TEST(SerializableCreateTests, for_double) {
   ASSERT_EQ(cacheableDouble->value(), 1.1);
 }
 
-TEST(SerializableCreateTests, for_bool) {
+TEST(SerializableCreateTests, forBool) {
   const auto serializable = Serializable::create(true);
   ASSERT_TRUE(nullptr != serializable);
   auto&& cacheableBoolean =
@@ -153,7 +153,7 @@ TEST(SerializableCreateTests, for_bool) {
   ASSERT_EQ(cacheableBoolean->value(), true);
 }
 
-TEST(SerializableCreateTests, for_timepoint) {
+TEST(SerializableCreateTests, forTimepoint) {
   auto time = std::chrono::system_clock::now();
   const auto serializable = Serializable::create(time);
   ASSERT_TRUE(nullptr != serializable);

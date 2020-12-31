@@ -93,7 +93,7 @@ class KillServerThread : public ACE_Task_Base {
   MyCqListener *m_listener;
   explicit KillServerThread(MyCqListener *listener)
       : m_running(false), m_listener(listener) {}
-  int svc(void) {
+  int svc(void) override {
     while (m_running == true) {
       CacheHelper::closeServer(1);
       LOG("THREAD CLOSED SERVER 1");

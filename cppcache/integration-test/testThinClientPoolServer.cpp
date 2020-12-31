@@ -187,7 +187,6 @@ DUNIT_MAIN
   {
     CALL_TASK(StartLocator1);
     CALL_TASK(StartServers);
-    ;
     CALL_TASK(StartClient1);
     CALL_TASK(StartClient2);
     CALL_TASK(CreateClient1Entries);

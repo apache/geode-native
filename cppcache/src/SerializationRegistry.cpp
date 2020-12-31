@@ -680,7 +680,6 @@ void DataSerializableHandler::serialize(
     ptr->toDelta(dataOutput);
   } else {
     dataSerializable->toData(dataOutput);
-    ;
   }
 }
 

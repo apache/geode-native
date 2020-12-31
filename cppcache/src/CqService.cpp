@@ -26,8 +26,6 @@
 
 #include "CqEventImpl.hpp"
 #include "CqQueryImpl.hpp"
-#include "DistributedSystem.hpp"
-#include "ReadWriteLock.hpp"
 #include "TcrConnectionManager.hpp"
 #include "ThinClientPoolDM.hpp"
 #include "util/exception.hpp"
@@ -42,6 +40,8 @@ CqService::CqService(ThinClientBaseDM* tccdm,
       m_statisticsFactory(statisticsFactory),
       m_notificationSema(1),
       m_stats(std::make_shared<CqServiceVsdStats>(m_statisticsFactory)) {
+  assert(nullptr != m_tccdm);
+
   m_running = true;
   LOGDEBUG("CqService Started");
 }
@@ -99,7 +99,7 @@ std::shared_ptr<CqQuery> CqService::newCq(
 
   // Check if the subscription is enabled on the pool
   auto pool = dynamic_cast<ThinClientPoolDM*>(m_tccdm);
-  if (pool != nullptr && !pool->getSubscriptionEnabled()) {
+  if (pool && !pool->getSubscriptionEnabled()) {
     LOGERROR(
         "Cannot create CQ because subscription is not enabled on the pool.");
     throw IllegalStateException(
@@ -107,7 +107,7 @@ std::shared_ptr<CqQuery> CqService::newCq(
   }
 
   // check for durable client
-  if (isDurable) {
+  if (isDurable && m_tccdm) {
     auto&& durableID = m_tccdm->getConnectionManager()
                            .getCacheImpl()
                            ->getDistributedSystem()

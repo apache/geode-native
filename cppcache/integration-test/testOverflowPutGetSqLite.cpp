@@ -288,7 +288,7 @@ class PutThread : public ACE_Task_Base {
   PutThread(std::shared_ptr<Region> &regPtr, int min, int max)
       : m_regPtr(regPtr), m_min(min), m_max(max) {}
 
-  int svc(void) {
+  int svc(void) override {
     /** put some values into the cache. */
     doNput(m_regPtr, m_max, m_min);
     /** do some gets... printing what we find in the cache. */

@@ -334,7 +334,6 @@ PdxTypes6::PdxTypes6() {
   m_s2 = "two";
   bytes128 = std::vector<int8_t>(2);
   bytes128[0] = 0x34;
-  ;
   bytes128[1] = 0x64;
   m_i1 = 34324;
   m_i2 = 2144;
