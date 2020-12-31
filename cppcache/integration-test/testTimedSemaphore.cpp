@@ -26,7 +26,7 @@ class ThreadAcquire : public ACE_Task_Base {
         m_acquireSecs(acquireSecs),
         m_status(0) {}
 
-  int svc() {
+  int svc() override {
     ACE_Time_Value start = ACE_OS::gettimeofday();
     ACE_Time_Value interval(m_acquireSecs, 0);  // 10 seconds
     ACE_Time_Value expireAt = start + interval;
@@ -122,7 +122,6 @@ BEGIN_TEST(CheckResetAndTimedAcquire)
     sema.release();
     sema.release();
     while (sema.tryacquire() != -1) {
-      ;
     }
     thread->activate();
 

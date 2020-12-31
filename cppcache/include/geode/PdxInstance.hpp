@@ -53,7 +53,7 @@ class APACHE_GEODE_EXPORT PdxInstance : public PdxSerializable {
   /**
    * @brief destructor
    */
-  ~PdxInstance() override = default;
+  ~PdxInstance() noexcept override = default;
 
   /**
    * Deserializes and returns the domain object that this instance represents.

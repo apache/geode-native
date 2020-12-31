@@ -300,11 +300,6 @@ class TcrConnection {
    */
   uint8_t getOverrides(const SystemProperties* props);
 
-  /**
-   * To read the from stream
-   */
-  int32_t readHandShakeInt(std::chrono::microseconds connectTimeout);
-
   /*
    * To read the arraysize
    */
@@ -339,13 +334,6 @@ class TcrConnection {
    * Handshake.
    */
   std::shared_ptr<CacheableString> readHandshakeString(
-      std::chrono::microseconds connectTimeout);
-
-  /**
-   * Reads a byte array (using initial length) from socket and handles error
-   * conditions in case of Handshake.
-   */
-  std::shared_ptr<CacheableBytes> readHandshakeByteArray(
       std::chrono::microseconds connectTimeout);
 
   /**

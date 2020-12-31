@@ -36,7 +36,7 @@ class GetRegionThread : public ACE_Task_Base {
         m_regionCreateDone(false),
         m_subRegionCreateDone(false),
         m_mutex() {}
-  int svc(void) {
+  int svc(void) override {
     while (m_running == true) {
       SLEEP(40);
       try {

@@ -36,7 +36,7 @@ using apache::geode::client::CacheableInt64;
 using apache::geode::client::CacheableKey;
 using apache::geode::client::CacheableString;
 
-TEST(CacheableKeyCreateTests, forArrayOf_constchar) {
+TEST(CacheableKeyCreateTests, forArrayOfConstChar) {
   const auto cacheableKey = CacheableKey::create("test");
   ASSERT_TRUE(nullptr != cacheableKey);
   auto&& cacheableString =
@@ -45,7 +45,7 @@ TEST(CacheableKeyCreateTests, forArrayOf_constchar) {
   EXPECT_EQ(cacheableString->value(), "test");
 }
 
-TEST(CacheableKeyCreateTests, forArrayOf_char) {
+TEST(CacheableKeyCreateTests, forArrayOfChar) {
   char* test = new char[5]{'t', 'e', 's', 't', '\0'};
   const auto cacheableKey = CacheableKey::create(test);
   ASSERT_TRUE(nullptr != cacheableKey);
@@ -55,7 +55,7 @@ TEST(CacheableKeyCreateTests, forArrayOf_char) {
   EXPECT_EQ(cacheableString->value(), "test");
 }
 
-TEST(CacheableKeyCreateTests, forArrayOf_char16_t) {
+TEST(CacheableKeyCreateTests, forArrayOfChar16) {
   const auto cacheableKey = CacheableKey::create(u"test");
   ASSERT_TRUE(nullptr != cacheableKey);
   auto&& cacheableString =
@@ -64,7 +64,7 @@ TEST(CacheableKeyCreateTests, forArrayOf_char16_t) {
   EXPECT_EQ(cacheableString->value(), "test");
 }
 
-TEST(CacheableKeyCreateTests, forArrayOf_char32_t) {
+TEST(CacheableKeyCreateTests, forArrayOfChar32) {
   const auto cacheableKey = CacheableKey::create(U"test");
   ASSERT_TRUE(nullptr != cacheableKey);
   auto&& cacheableString =
@@ -73,7 +73,7 @@ TEST(CacheableKeyCreateTests, forArrayOf_char32_t) {
   ASSERT_EQ(cacheableString->value(), "test");
 }
 
-TEST(CacheableKeyCreateTests, forArrayOf_wchar_t) {
+TEST(CacheableKeyCreateTests, forArrayOfWchar) {
   const auto cacheableKey = CacheableKey::create(L"test");
   ASSERT_TRUE(nullptr != cacheableKey);
   auto&& cacheableString =
@@ -82,7 +82,7 @@ TEST(CacheableKeyCreateTests, forArrayOf_wchar_t) {
   EXPECT_EQ(cacheableString->value(), "test");
 }
 
-TEST(CacheableKeyCreateTests, for_string) {
+TEST(CacheableKeyCreateTests, forString) {
   const auto cacheableKey = CacheableKey::create(std::string("test"));
   ASSERT_TRUE(nullptr != cacheableKey);
   auto&& cacheableString =
@@ -91,7 +91,7 @@ TEST(CacheableKeyCreateTests, for_string) {
   EXPECT_EQ(cacheableString->value(), "test");
 }
 
-TEST(CacheableKeyCreateTests, for_u16string) {
+TEST(CacheableKeyCreateTests, forU16string) {
   const auto cacheableKey = CacheableKey::create(std::u16string(u"test"));
   ASSERT_TRUE(nullptr != cacheableKey);
   auto&& cacheableString =
@@ -100,7 +100,7 @@ TEST(CacheableKeyCreateTests, for_u16string) {
   EXPECT_EQ(cacheableString->value(), "test");
 }
 
-TEST(CacheableKeyCreateTests, for_u32string) {
+TEST(CacheableKeyCreateTests, forU32string) {
   const auto cacheableKey = CacheableKey::create(std::u32string(U"test"));
   ASSERT_TRUE(nullptr != cacheableKey);
   auto&& cacheableString =
@@ -109,7 +109,7 @@ TEST(CacheableKeyCreateTests, for_u32string) {
   EXPECT_EQ(cacheableString->value(), "test");
 }
 
-TEST(CacheableKeyCreateTests, for_wstring) {
+TEST(CacheableKeyCreateTests, forWstring) {
   const auto cacheableKey = CacheableKey::create(std::wstring(L"test"));
   ASSERT_TRUE(nullptr != cacheableKey);
   auto&& cacheableString =
@@ -118,7 +118,7 @@ TEST(CacheableKeyCreateTests, for_wstring) {
   EXPECT_EQ(cacheableString->value(), "test");
 }
 
-TEST(CacheableKeyCreateTests, for_int8_t) {
+TEST(CacheableKeyCreateTests, forInt8) {
   const auto cacheableKey = CacheableKey::create(static_cast<int8_t>(1));
   ASSERT_TRUE(nullptr != cacheableKey);
   auto&& cacheableByte = std::dynamic_pointer_cast<CacheableByte>(cacheableKey);
@@ -126,7 +126,7 @@ TEST(CacheableKeyCreateTests, for_int8_t) {
   EXPECT_EQ(cacheableByte->value(), 1);
 }
 
-TEST(CacheableKeyCreateTests, for_int16_t) {
+TEST(CacheableKeyCreateTests, forInt16) {
   const auto cacheableKey = CacheableKey::create(static_cast<int16_t>(1));
   ASSERT_TRUE(nullptr != cacheableKey);
   auto&& cacheableInt16 =
@@ -135,7 +135,7 @@ TEST(CacheableKeyCreateTests, for_int16_t) {
   ASSERT_EQ(cacheableInt16->value(), 1);
 }
 
-TEST(CacheableKeyCreateTests, for_int32_t) {
+TEST(CacheableKeyCreateTests, forInt32) {
   const auto cacheableKey = CacheableKey::create(static_cast<int32_t>(1));
   ASSERT_TRUE(nullptr != cacheableKey);
   auto&& cacheableInt32 =
@@ -144,7 +144,7 @@ TEST(CacheableKeyCreateTests, for_int32_t) {
   ASSERT_EQ(cacheableInt32->value(), 1);
 }
 
-TEST(CacheableKeyCreateTests, for_int64_t) {
+TEST(CacheableKeyCreateTests, forInt64) {
   const auto cacheableKey = CacheableKey::create(static_cast<int64_t>(1));
   ASSERT_TRUE(nullptr != cacheableKey);
   auto&& cacheableInt64 =
@@ -153,7 +153,7 @@ TEST(CacheableKeyCreateTests, for_int64_t) {
   EXPECT_EQ(cacheableInt64->value(), 1);
 }
 
-TEST(CacheableKeyCreateTests, for_char16_t) {
+TEST(CacheableKeyCreateTests, forChar16) {
   const auto cacheableKey = CacheableKey::create(u'a');
   ASSERT_TRUE(nullptr != cacheableKey);
   auto&& cacheableCharacter =
@@ -162,7 +162,7 @@ TEST(CacheableKeyCreateTests, for_char16_t) {
   EXPECT_EQ(cacheableCharacter->value(), u'a');
 }
 
-TEST(CacheableKeyCreateTests, for_float) {
+TEST(CacheableKeyCreateTests, forFloat) {
   const auto cacheableKey = CacheableKey::create(1.1f);
   ASSERT_TRUE(nullptr != cacheableKey);
   auto&& cacheableFloat =
@@ -171,7 +171,7 @@ TEST(CacheableKeyCreateTests, for_float) {
   EXPECT_EQ(cacheableFloat->value(), 1.1f);
 }
 
-TEST(CacheableKeyCreateTests, for_double) {
+TEST(CacheableKeyCreateTests, forDouble) {
   const auto cacheableKey = CacheableKey::create(1.1);
   ASSERT_TRUE(nullptr != cacheableKey);
   auto&& cacheableDouble =
@@ -180,7 +180,7 @@ TEST(CacheableKeyCreateTests, for_double) {
   EXPECT_EQ(cacheableDouble->value(), 1.1);
 }
 
-TEST(CacheableKeyCreateTests, for_bool) {
+TEST(CacheableKeyCreateTests, forBool) {
   const auto cacheableKey = CacheableKey::create(true);
   ASSERT_TRUE(nullptr != cacheableKey);
   auto&& cacheableBoolean =
@@ -189,7 +189,7 @@ TEST(CacheableKeyCreateTests, for_bool) {
   EXPECT_EQ(cacheableBoolean->value(), true);
 }
 
-TEST(CacheableKeyCreateTests, for_timepoint) {
+TEST(CacheableKeyCreateTests, forTimepoint) {
   auto time = std::chrono::system_clock::now();
   const auto cacheableKey = CacheableKey::create(time);
   ASSERT_TRUE(nullptr != cacheableKey);

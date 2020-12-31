@@ -94,6 +94,8 @@ TcrEndpoint::~TcrEndpoint() {
           m_name.c_str());
       // fail in dev build to track #295 better in regressions
       m_numRegionListener = 0;
+      // TODO suspect
+      // NOLINTNEXTLINE(clang-analyzer-optin.cplusplus.VirtualCall)
       closeNotification();
     }
   }

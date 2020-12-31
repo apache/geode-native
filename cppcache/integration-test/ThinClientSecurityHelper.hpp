@@ -26,7 +26,7 @@
 #include "ThinClientHelper.hpp"
 #include "hacks/AceThreadId.h"
 
-namespace { // NOLINT(google-build-namespaces)
+namespace {  // NOLINT(google-build-namespaces)
 
 using apache::geode::client::CacheableBoolean;
 using apache::geode::client::Exception;
@@ -215,7 +215,7 @@ class putThread : public ACE_Task_Base {
     }
   }
 
-  int svc(void) {
+  int svc(void) override {
     int ops = 0;
     auto pid = ACE_OS::getpid();
     std::shared_ptr<CacheableKey> key;

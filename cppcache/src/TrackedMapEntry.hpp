@@ -36,7 +36,7 @@ class TrackedMapEntry final : public MapEntry {
         m_trackingNumber(trackingNumber),
         m_updateCount(updateCount) {}
 
-  virtual ~TrackedMapEntry() {}
+  ~TrackedMapEntry() noexcept override = default;
 
   std::shared_ptr<MapEntryImpl> getImplPtr() final { return m_entry; }
 

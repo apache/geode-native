@@ -27,10 +27,6 @@
 #include "GeodeCache.hpp"
 #include "internal/geode_globals.hpp"
 
-/**
- * @file
- */
-
 namespace apache {
 namespace geode {
 namespace client {
@@ -67,9 +63,6 @@ enum class RegionShortcut;
  *
  */
 class APACHE_GEODE_EXPORT Cache : public GeodeCache {
-  /**
-   * @brief public methods
-   */
  public:
   /**
    * Returns the {@link RegionFactory} to create the region.
@@ -268,9 +261,6 @@ class APACHE_GEODE_EXPORT Cache : public GeodeCache {
   Cache& operator=(Cache&& other) noexcept;
 
  private:
-  /**
-   * @brief constructors
-   */
   Cache(const std::shared_ptr<Properties>& dsProp, bool ignorePdxUnreadFields,
         bool readPdxSerialized,
         const std::shared_ptr<AuthInitialize>& authInitialize);
@@ -284,6 +274,7 @@ class APACHE_GEODE_EXPORT Cache : public GeodeCache {
   friend class CacheXmlCreation;
   friend class RegionXmlCreation;
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

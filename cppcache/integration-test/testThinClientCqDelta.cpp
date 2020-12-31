@@ -60,7 +60,7 @@ class CqDeltaListener : public CqListener {
  public:
   CqDeltaListener() : m_deltaCount(0), m_valueCount(0) {}
 
-  virtual void onEvent(const CqEvent &aCqEvent) {
+  void onEvent(const CqEvent &aCqEvent) override {
     auto deltaValue = aCqEvent.getDeltaValue();
     DeltaTestImpl newValue;
     auto input = getHelper()->getCache()->createDataInput(

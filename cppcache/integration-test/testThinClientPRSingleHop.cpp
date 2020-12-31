@@ -125,7 +125,7 @@ class putThread : public ACE_Task_Base {
 
   int getFailureCount() { return m_failureCount; }
 
-  int svc(void) {
+  int svc(void) override {
     std::shared_ptr<CacheableKey> keyPtr;
     for (int i = m_min; i < m_max; i++) {
       if (!m_isWarmUpTask) {

@@ -233,7 +233,7 @@ int main(int /*argc*/, char** /*argv*/)
     Test_##x() { init(); }                 \
                                            \
    public:                                 \
-    virtual void doTest() {                \
+    void doTest() override {               \
       static const char* fwtest_Name = #x;
 #define END_TEST(x) \
   }                 \

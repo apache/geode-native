@@ -18,7 +18,6 @@
 #include "ThinClientRegion.hpp"
 
 #include <algorithm>
-#include <limits>
 #include <regex>
 
 #include <geode/PoolManager.hpp>
@@ -59,19 +58,15 @@ class PutAllWork : public PooledWork<GfErrType> {
   std::shared_ptr<BucketServerLocation> m_serverLocation;
   TcrMessage* m_request;
   TcrMessageReply* m_reply;
-  MapOfUpdateCounters m_mapOfUpdateCounters;
   bool m_attemptFailover;
   bool m_isBGThread;
   std::shared_ptr<UserAttributes> m_userAttribute;
   const std::shared_ptr<Region> m_region;
-  std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>> m_keys;
   std::shared_ptr<HashMapOfCacheable> m_map;
   std::shared_ptr<VersionedCacheableObjectPartList> m_verObjPartListPtr;
   std::chrono::milliseconds m_timeout;
   std::shared_ptr<PutAllPartialResultServerException> m_papException;
-  bool m_isPapeReceived;
   ChunkedPutAllResponse* m_resultCollector;
-  // UNUSED const std::shared_ptr<Serializable>& m_aCallbackArgument;
 
  public:
   PutAllWork(const PutAllWork&) = delete;
@@ -90,13 +85,9 @@ class PutAllWork : public PooledWork<GfErrType> {
         m_isBGThread(isBGThread),
         m_userAttribute(nullptr),
         m_region(region),
-        m_keys(keys),
         m_map(map),
         m_timeout(timeout),
-        m_papException(nullptr),
-        m_isPapeReceived(false)
-  // UNUSED , m_aCallbackArgument(aCallbackArgument)
-  {
+        m_papException(nullptr) {
     m_request = new TcrMessagePutAll(
         new DataOutput(m_region->getCache().createDataOutput()), m_region.get(),
         *m_map, m_timeout, m_poolDM, aCallbackArgument);
@@ -118,19 +109,13 @@ class PutAllWork : public PooledWork<GfErrType> {
     m_reply->setChunkedResultHandler(m_resultCollector);
   }
 
-  ~PutAllWork() {
+  ~PutAllWork() noexcept override {
     delete m_request;
     delete m_reply;
     delete m_resultCollector;
   }
 
-  TcrMessage* getReply() { return m_reply; }
-
   std::shared_ptr<HashMapOfCacheable> getPutAllMap() { return m_map; }
-
-  std::shared_ptr<VersionedCacheableObjectPartList> getVerObjPartList() {
-    return m_verObjPartListPtr;
-  }
 
   ChunkedPutAllResponse* getResultCollector() { return m_resultCollector; }
 
@@ -143,7 +128,7 @@ class PutAllWork : public PooledWork<GfErrType> {
   }
 
   void init() {}
-  GfErrType execute(void) {
+  GfErrType execute(void) override {
     GuardUserAttributes gua;
 
     if (m_userAttribute != nullptr) {
@@ -175,7 +160,6 @@ class PutAllWork : public PooledWork<GfErrType> {
         // TODO::Check for the PAPException and READ
         // PutAllPartialResultServerException and set its member for later use.
         // set m_papException and m_isPapeReceived
-        m_isPapeReceived = true;
         if (m_poolDM->isNotAuthorizedException(m_reply->getException())) {
           LOGDEBUG("received NotAuthorizedException");
           err = GF_AUTHENTICATION_FAILED_EXCEPTION;
@@ -208,16 +192,13 @@ class RemoveAllWork : public PooledWork<GfErrType> {
   std::shared_ptr<BucketServerLocation> m_serverLocation;
   TcrMessage* m_request;
   TcrMessageReply* m_reply;
-  MapOfUpdateCounters m_mapOfUpdateCounters;
   bool m_attemptFailover;
   bool m_isBGThread;
   std::shared_ptr<UserAttributes> m_userAttribute;
   const std::shared_ptr<Region> m_region;
   const std::shared_ptr<Serializable>& m_aCallbackArgument;
-  std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>> m_keys;
   std::shared_ptr<VersionedCacheableObjectPartList> m_verObjPartListPtr;
   std::shared_ptr<PutAllPartialResultServerException> m_papException;
-  bool m_isPapeReceived;
   ChunkedRemoveAllResponse* m_resultCollector;
 
  public:
@@ -237,9 +218,7 @@ class RemoveAllWork : public PooledWork<GfErrType> {
         m_userAttribute(nullptr),
         m_region(region),
         m_aCallbackArgument(aCallbackArgument),
-        m_keys(keys),
-        m_papException(nullptr),
-        m_isPapeReceived(false) {
+        m_papException(nullptr) {
     m_request = new TcrMessageRemoveAll(
         new DataOutput(m_region->getCache().createDataOutput()), m_region.get(),
         *keys, m_aCallbackArgument, m_poolDM);
@@ -253,21 +232,15 @@ class RemoveAllWork : public PooledWork<GfErrType> {
       m_userAttribute = UserAttributes::threadLocalUserAttributes;
     }
 
-    m_resultCollector = new ChunkedRemoveAllResponse(
-        m_region, *m_reply, responseLock, m_verObjPartListPtr);
+    m_resultCollector =
+        new ChunkedRemoveAllResponse(m_region, *m_reply, m_verObjPartListPtr);
     m_reply->setChunkedResultHandler(m_resultCollector);
   }
 
-  ~RemoveAllWork() {
+  ~RemoveAllWork() noexcept override {
     delete m_request;
     delete m_reply;
     delete m_resultCollector;
-  }
-
-  TcrMessage* getReply() { return m_reply; }
-
-  std::shared_ptr<VersionedCacheableObjectPartList> getVerObjPartList() {
-    return m_verObjPartListPtr;
   }
 
   ChunkedRemoveAllResponse* getResultCollector() { return m_resultCollector; }
@@ -281,7 +254,7 @@ class RemoveAllWork : public PooledWork<GfErrType> {
   }
 
   void init() {}
-  GfErrType execute(void) {
+  GfErrType execute(void) override {
     GuardUserAttributes gua;
 
     if (m_userAttribute != nullptr) {
@@ -313,7 +286,6 @@ class RemoveAllWork : public PooledWork<GfErrType> {
         // TODO::Check for the PAPException and READ
         // PutAllPartialResultServerException and set its member for later use.
         // set m_papException and m_isPapeReceived
-        m_isPapeReceived = true;
         if (m_poolDM->isNotAuthorizedException(m_reply->getException())) {
           LOGDEBUG("received NotAuthorizedException");
           err = GF_AUTHENTICATION_FAILED_EXCEPTION;
@@ -1913,7 +1885,7 @@ GfErrType ThinClientRegion::multiHopRemoveAllNoThrow_remote(
       std::make_shared<VersionedCacheableObjectPartList>(this, responseLock);
   // need to check
   ChunkedRemoveAllResponse* resultCollector(new ChunkedRemoveAllResponse(
-      shared_from_this(), reply, responseLock, versionedObjPartList));
+      shared_from_this(), reply, versionedObjPartList));
   reply.setChunkedResultHandler(resultCollector);
 
   err = m_tcrdm->sendSyncRequest(request, reply);
@@ -2878,22 +2850,6 @@ InterestResultPolicy ThinClientRegion::copyInterestList(
   return interestPolicy;
 }
 
-void ThinClientRegion::registerInterestGetValues(
-    const char* method, const std::vector<std::shared_ptr<CacheableKey>>* keys,
-    const std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>>&
-        resultKeys) {
-  auto exceptions = std::make_shared<HashMapOfException>();
-  auto err = getAllNoThrow_remote(keys, nullptr, exceptions, resultKeys, true,
-                                  nullptr);
-  throwExceptionIfError(method, err);
-  // log any exceptions here
-  for (const auto& iter : *exceptions) {
-    LOGWARN("%s Exception for key %s:: %s: %s", method,
-            Utils::nullSafeToString(iter.first).c_str(),
-            iter.second->getName().c_str(), iter.second->what());
-  }
-}
-
 void ThinClientRegion::destroyDM(bool keepEndpoints) {
   if (m_tcrdm != nullptr) {
     m_tcrdm->destroy(keepEndpoints);
@@ -2910,6 +2866,8 @@ void ThinClientRegion::release(bool invokeCallbacks) {
     lock.lock();
   }
 
+  // TODO suspect
+  // NOLINTNEXTLINE(clang-analyzer-optin.cplusplus.VirtualCall)
   destroyDM(invokeCallbacks);
 
   m_interestList.clear();
@@ -2928,6 +2886,8 @@ void ThinClientRegion::release(bool invokeCallbacks) {
 ThinClientRegion::~ThinClientRegion() noexcept {
   TryWriteGuard guard(m_rwLock, m_destroyPending);
   if (!m_destroyPending) {
+    // TODO suspect
+    // NOLINTNEXTLINE(clang-analyzer-optin.cplusplus.VirtualCall)
     release(false);
   }
 }
