@@ -62,10 +62,10 @@
 
 /** Deletes array x only if it exists */
 #define _GEODE_SAFE_DELETE_ARRAY(x) \
-  {                                 \
+  do {                              \
     delete[] x;                     \
     x = nullptr;                    \
-  }
+  } while (0)
 
 #include <chrono>
 #include <string>

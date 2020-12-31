@@ -69,6 +69,7 @@ int expiryTimeVariancePercentage() {
   srand(static_cast<unsigned int>((now_s * 1000) + (now_ms / 1000)));
 
   const int numbers = 21;
+  // NOLINTNEXTLINE(clang-analyzer-security.insecureAPI.rand): TODO replace
   int random = rand() % numbers + 1;
 
   if (random > 10) {
@@ -986,12 +987,6 @@ std::shared_ptr<CacheableBytes> TcrConnection::readHandshakeRawData(
   }
 }
 
-std::shared_ptr<CacheableBytes> TcrConnection::readHandshakeByteArray(
-    std::chrono::microseconds connectTimeout) {
-  uint32_t arraySize = readHandshakeArraySize(connectTimeout);
-  return readHandshakeRawData(arraySize, connectTimeout);
-}
-
 // read a byte array
 int32_t TcrConnection::readHandshakeArraySize(
     std::chrono::microseconds connectTimeout) {
@@ -1068,37 +1063,6 @@ void TcrConnection::readHandShakeBytes(
   }
 
   _GEODE_SAFE_DELETE_ARRAY(recvMessage);
-}
-
-int32_t TcrConnection::readHandShakeInt(
-    std::chrono::microseconds connectTimeout) {
-  ConnErrType error = CONN_NOERR;
-  uint8_t* recvMessage;
-  _GEODE_NEW(recvMessage, uint8_t[4]);
-
-  if ((error = receiveData(reinterpret_cast<char*>(recvMessage), 4,
-                           connectTimeout)) != CONN_NOERR) {
-    if (error & CONN_TIMEOUT) {
-      _GEODE_SAFE_DELETE_ARRAY(recvMessage);
-      m_conn.reset();
-      throwException(
-          TimeoutException("TcrConnection::TcrConnection: "
-                           "Timeout in handshake"));
-    } else {
-      _GEODE_SAFE_DELETE_ARRAY(recvMessage);
-      m_conn.reset();
-      throwException(
-          GeodeIOException("TcrConnection::TcrConnection: "
-                           "Handshake failure"));
-    }
-  }
-
-  auto di = m_connectionManager.getCacheImpl()->createDataInput(recvMessage, 4);
-  int32_t val = di.readInt32();
-
-  _GEODE_SAFE_DELETE_ARRAY(recvMessage);
-
-  return val;
 }
 
 std::shared_ptr<CacheableString> TcrConnection::readHandshakeString(

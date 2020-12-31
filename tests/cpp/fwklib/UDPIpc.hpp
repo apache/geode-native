@@ -89,7 +89,7 @@ class UDPMessage : public IPCMessage {
     setCmd(msg.getCmd());
   }
 
-  virtual ~UDPMessage() {}
+  ~UDPMessage() noexcept override = default;
 
   void setCmd(UdpCmds cmd) { m_hdr.cmd = cmd; }
 
@@ -127,7 +127,7 @@ class UDPMessage : public IPCMessage {
     m_hdr.length = 0;
   }
 
-  virtual void clear() {
+  virtual void clear() override {
     clearHdr();
     m_msg.clear();
   }
@@ -162,7 +162,7 @@ class UDPMessageQueues : public SharedTaskObject {
  public:
   explicit UDPMessageQueues(std::string label)
       : m_cntInbound(), m_cntOutbound(0), m_cntProcessed(0), m_label(label) {}
-  ~UDPMessageQueues() {
+  ~UDPMessageQueues() noexcept override {
     FWKINFO(m_label << "MessageQueues::Inbound   count: " << m_cntInbound);
     FWKINFO(m_label << "MessageQueues::Processed count: " << m_cntProcessed);
     FWKINFO(m_label << "MessageQueues::Outbound  count: " << m_cntOutbound);
@@ -192,8 +192,8 @@ class UDPMessageQueues : public SharedTaskObject {
     return msg;
   }
 
-  virtual void initialize() {}
-  virtual void finalize() {}
+  void initialize() override {}
+  void finalize() override {}
 };
 
 class Receiver : public ServiceTask {
@@ -213,15 +213,15 @@ class Receiver : public ServiceTask {
     m_queues = dynamic_cast<UDPMessageQueues*>(m_shared);
   }
 
-  virtual ~Receiver() {}
+  virtual ~Receiver() noexcept override = default;
 
   bool isListener() { return (m_listener == ACE_Thread::self()); }
 
-  int32_t doTask();
+  int32_t doTask() override;
 
-  void initialize();
+  void initialize() override;
 
-  void finalize() { m_io->close(); }
+  void finalize() override { m_io->close(); }
 };
 
 class STReceiver : public ServiceTask {
@@ -237,13 +237,13 @@ class STReceiver : public ServiceTask {
     m_queues = dynamic_cast<UDPMessageQueues*>(m_shared);
   }
 
-  virtual ~STReceiver() {}
+  ~STReceiver() noexcept override = default;
 
-  int32_t doTask();
+  int32_t doTask() override;
 
-  void initialize();
+  void initialize() override;
 
-  void finalize() { m_io.close(); }
+  void finalize() override { m_io.close(); }
 };
 
 class Processor : public ServiceTask {
@@ -256,9 +256,9 @@ class Processor : public ServiceTask {
     m_queues = dynamic_cast<UDPMessageQueues*>(m_shared);
   }
 
-  virtual ~Processor() {}
+  ~Processor() noexcept override = default;
 
-  int32_t doTask() {
+  int32_t doTask() override {
     while (*m_run) {
       UDPMessage* msg = m_queues->getInbound();
       if (msg) {
@@ -267,8 +267,8 @@ class Processor : public ServiceTask {
     }
     return 0;
   }
-  void initialize() {}
-  void finalize() {}
+  void initialize() override {}
+  void finalize() override {}
 };
 
 class Responder : public ServiceTask {
@@ -284,14 +284,15 @@ class Responder : public ServiceTask {
     m_queues = dynamic_cast<UDPMessageQueues*>(m_shared);
   }
 
-  virtual ~Responder() {}
+  ~Responder() noexcept override = default;
 
-  int32_t doTask();
+  int32_t doTask() override;
 
-  void initialize();
+  void initialize() override;
 
-  void finalize() { m_io->close(); }
+  void finalize() override { m_io->close(); }
 };
+
 }  // namespace testframework
 }  // namespace client
 }  // namespace geode

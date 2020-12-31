@@ -56,7 +56,7 @@ class TcrChunkedResult {
         m_ex(nullptr),
         m_inSameThread(false),
         m_dsmemId(0) {}
-  virtual ~TcrChunkedResult() {}
+  virtual ~TcrChunkedResult() noexcept {}
   void setFinalizeSemaphore(ACE_Semaphore* finalizeSema) {
     m_finalizeSema = finalizeSema;
   }

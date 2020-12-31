@@ -23,15 +23,12 @@
 #include <geode/ExceptionTypes.hpp>
 #include <geode/SystemProperties.hpp>
 #include <geode/internal/chrono/duration.hpp>
-#include <geode/internal/geode_globals.hpp>
 
 #include "CppCacheLibrary.hpp"
 #include "util/Log.hpp"
 
 #if defined(_WIN32)
 #include <windows.h>
-#else
-#include <dlfcn.h>
 #endif
 
 namespace {
@@ -134,12 +131,6 @@ namespace apache {
 namespace geode {
 namespace client {
 
-namespace impl {
-
-void* getFactoryFunc(const char* lib, const char* funcName);
-
-}  // namespace impl
-
 SystemProperties::SystemProperties(
     const std::shared_ptr<Properties>& propertiesPtr,
     const std::string& configFile)
@@ -191,8 +182,10 @@ SystemProperties::SystemProperties(
    public:
     explicit ProcessPropsVisitor(SystemProperties* sysProps)
         : m_sysProps(sysProps) {}
+    ~ProcessPropsVisitor() noexcept override = default;
+
     void visit(const std::shared_ptr<CacheableKey>& key,
-               const std::shared_ptr<Cacheable>& value) {
+               const std::shared_ptr<Cacheable>& value) override {
       auto property = key->toString();
       std::string val;
       if (value != nullptr) {

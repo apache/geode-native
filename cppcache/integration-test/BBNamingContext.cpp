@@ -283,6 +283,7 @@ BBNamingContextServer::BBNamingContextServer() {
   m_impl = new BBNamingContextServerImpl();
 }
 BBNamingContextServer::~BBNamingContextServer() {
+  // NOLINTNEXTLINE(clang-analyzer-unix.Malloc): ACE
   if (m_impl != nullptr) {
     delete m_impl;
     m_impl = nullptr;

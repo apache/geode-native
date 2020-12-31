@@ -41,7 +41,7 @@ ThinClientBaseDM::ThinClientBaseDM(TcrConnectionManager& connManager,
       m_chunks(true),
       m_chunkProcessor(nullptr) {}
 
-ThinClientBaseDM::~ThinClientBaseDM() = default;
+ThinClientBaseDM::~ThinClientBaseDM() noexcept = default;
 
 void ThinClientBaseDM::init() {
   const auto& systemProperties = m_connManager.getCacheImpl()
@@ -72,8 +72,7 @@ void ThinClientBaseDM::destroy(bool) {
 GfErrType ThinClientBaseDM::sendSyncRequestRegisterInterest(
     TcrMessage& request, TcrMessageReply& reply, bool attemptFailover,
     ThinClientRegion*, TcrEndpoint* endpoint) {
-  GfErrType err = GF_NOERR;
-
+  GfErrType err;
   if (endpoint == nullptr) {
     err = sendSyncRequest(request, reply, attemptFailover);
   } else {
@@ -150,10 +149,9 @@ GfErrType ThinClientBaseDM::handleEPError(TcrEndpoint* ep,
 GfErrType ThinClientBaseDM::sendRequestToEndPoint(const TcrMessage& request,
                                                   TcrMessageReply& reply,
                                                   TcrEndpoint* ep) {
-  GfErrType error = GF_NOERR;
   LOGDEBUG("ThinClientBaseDM::sendRequestToEP: invoking endpoint send for: %s",
            ep->name().c_str());
-  error = ep->send(request, reply);
+  auto error = ep->send(request, reply);
   LOGDEBUG(
       "ThinClientBaseDM::sendRequestToEP: completed endpoint send for: %s "
       "[error:%d]",
@@ -262,9 +260,8 @@ void ThinClientBaseDM::beforeSendingRequest(const TcrMessage& request,
       this->isSecurityOn(), this->isMultiUserMode(), request.getMessageType());
   if (!(request.isMetaRegion()) && TcrMessage::isUserInitiativeOps(request) &&
       (this->isSecurityOn() || this->isMultiUserMode())) {
-    int64_t connId = 0;
+    int64_t connId;
     int64_t uniqueId = 0;
-
     if (!this->isMultiUserMode()) {
       connId = conn->getConnectionId();
       uniqueId = conn->getEndpointObject()->getUniqueId();

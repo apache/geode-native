@@ -29,7 +29,7 @@ using apache::geode::internal::chrono::duration::from_string;
 using apache::geode::internal::chrono::duration::to_string;
 using apache::geode::util::chrono::duration::assert_bounds;
 
-TEST(util_chrono_durationTest, ceil) {
+TEST(durationTest, ceil) {
   EXPECT_EQ(std::chrono::seconds(1),
             _ceil<std::chrono::seconds>(std::chrono::milliseconds(1)));
   EXPECT_EQ(std::chrono::milliseconds(1),
@@ -38,7 +38,7 @@ TEST(util_chrono_durationTest, ceil) {
             _ceil<std::chrono::milliseconds>(std::chrono::milliseconds(1)));
 }
 
-TEST(util_chrono_durationTest, to_string) {
+TEST(durationTest, toString) {
   EXPECT_EQ("42h", to_string(std::chrono::hours(42)));
   EXPECT_EQ("42min", to_string(std::chrono::minutes(42)));
   EXPECT_EQ("42s", to_string(std::chrono::seconds(42)));
@@ -52,7 +52,7 @@ TEST(util_chrono_durationTest, to_string) {
             to_string(std::chrono::duration<int, std::ratio<1, 100000>>(100)));
 }
 
-TEST(util_chrono_durationTest, from_string) {
+TEST(durationTest, fromString) {
   EXPECT_EQ(std::chrono::hours(42), from_string("42h"));
   EXPECT_EQ(std::chrono::minutes(42), from_string("42min"));
   EXPECT_EQ(std::chrono::seconds(42), from_string("42s"));
@@ -63,7 +63,7 @@ TEST(util_chrono_durationTest, from_string) {
   EXPECT_EQ(std::chrono::nanoseconds(-42), from_string("-42ns"));
 }
 
-TEST(util_chrono_durationTest, from_stringWithCeil) {
+TEST(durationTest, fromStringWithCeil) {
   EXPECT_EQ(std::chrono::hours(42), from_string<std::chrono::hours>("42h"));
   EXPECT_EQ(std::chrono::hours(1), from_string<std::chrono::hours>("42min"));
   EXPECT_EQ(std::chrono::minutes(1), from_string<std::chrono::minutes>("42s"));
@@ -76,11 +76,11 @@ TEST(util_chrono_durationTest, from_stringWithCeil) {
             from_string<std::chrono::seconds>("2000ms"));
 }
 
-TEST(util_chrono_durationTest, from_stringException) {
+TEST(durationTest, fromStringException) {
   ASSERT_THROW(from_string("42"), std::invalid_argument);
 }
 
-TEST(util_chrono_durationTest, assert_bounds) {
+TEST(durationTest, assertBounds) {
   auto protocolTimeoutLimit = assert_bounds<int32_t, std::milli, 0>{};
 
   ASSERT_NO_THROW(protocolTimeoutLimit(std::chrono::milliseconds(2147483647)));

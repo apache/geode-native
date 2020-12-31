@@ -51,8 +51,8 @@ using apache::geode::statistics::StatisticsFactory;
 //
 TEST(PdxInstanceImplTest, updatePdxStream) {
   auto properties = std::make_shared<Properties>();
-  CacheFactory cacheFactory;
-  auto cache = cacheFactory.create();
+  properties->insert("log-level", "none");
+  auto cache = CacheFactory{}.set("log-level", "none").create();
   CacheImpl cacheImpl(&cache, properties, true, false, nullptr);
   auto buffer = std::vector<uint8_t>(__1M__, 0xcc);
   auto len = static_cast<int32_t>(buffer.size());
