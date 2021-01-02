@@ -242,7 +242,7 @@ extern "C" void warningDebug(void *, const char *msg, ...) {
   char logmsg[2048];
   va_list args;
   va_start(args, msg);
-  vsprintf(logmsg, msg, args);
+  std::vsnprintf(logmsg, sizeof(logmsg), msg, args);
   va_end(args);
   LOGWARN("SAX.warning during XML declarative client initialization: %s",
           logmsg);

@@ -163,7 +163,7 @@ class APACHE_GEODE_EXPORT Utils {
    * <code>maxLength</code> as zero implies no limit.
    */
   static std::string convertBytesToString(const uint8_t* bytes, size_t length,
-                                          size_t maxLength = _GF_MSG_LIMIT);
+                                          size_t maxLength = _GEODE_LOG_MESSAGE_LIMIT);
 
   /**
    * lib should be in the form originally required by ACE_DLL, typically just
@@ -182,14 +182,14 @@ class APACHE_GEODE_EXPORT Utils {
    * <code>maxLength</code> as zero implies no limit.
    */
   static std::string convertBytesToString(const int8_t* bytes, size_t length,
-                                          size_t maxLength = _GF_MSG_LIMIT);
+                                          size_t maxLength = _GEODE_LOG_MESSAGE_LIMIT);
 
   /**
    * Convert the byte array to a string as "%d %d ...".
    * <code>maxLength</code> as zero implies no limit.
    */
   inline static std::string convertBytesToString(
-      const char* bytes, size_t length, size_t maxLength = _GF_MSG_LIMIT) {
+      const char* bytes, size_t length, size_t maxLength = _GEODE_LOG_MESSAGE_LIMIT) {
     return convertBytesToString(reinterpret_cast<const uint8_t*>(bytes), length,
                                 maxLength);
   }
