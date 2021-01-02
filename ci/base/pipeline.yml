@@ -128,7 +128,7 @@ jobs:
                     export GEODE_HOME=$(pwd)/geode
                     cd build
                     cmake ../source -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-                    jq -r '.[].file' compile_commands.json | sort | uniq | xargs clang-format --dry-run -Werror
+                    jq -r '.[].file' compile_commands.json | sort | uniq | grep -v $(pwd) | xargs clang-format --dry-run -Werror
 
   - #@ update_pipeline_job()
 
