@@ -138,7 +138,7 @@ class NamingContextImpl : virtual public NamingContext {
       LOGCOORDINATOR(func);
       LOGCOORDINATOR("Dump follows:");
       dump();
-      throw - 1;
+      throw -1;
     }
     return result;
   }
