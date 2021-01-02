@@ -55,6 +55,8 @@ jobs:
   - #@ version_source_job()
   #@overlay/append
   - #@ docker_job("task-image", "ci-source", "ci/docker/task")
+  #@overlay/append
+  - #@ docker_job("clang-tools-image", "ci-source", "ci/docker/clang-tools")
 
   #@ for build in data.values.builds:
   #@overlay/append
@@ -117,6 +119,7 @@ groups:
       #@ for/end build in data.values.builds:
       - #@ packer_job_name(build)
       - #@ docker_job_name("task-image")
+      - #@ docker_job_name("clang-tools-image")
       #@overlay/match by="name"
   - name: all
     jobs:
@@ -126,6 +129,8 @@ groups:
       #@ end
       #@overlay/append
       - #@ docker_job_name("task-image")
+      #@overlay/append
+      - #@ docker_job_name("clang-tools-image")
       #@overlay/append
       - #@ version_source_job_name()
       #@overlay/append
