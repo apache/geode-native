@@ -76,6 +76,14 @@ jobs:
       - #@ put_package(build, config)
   #@ end
   #@ end
+  #@overlay/match by="name"
+  - name: check-source
+    plan:
+      #@overlay/match by=overlay.index(0)
+      - in_parallel:
+          steps:
+            - #@overlay/match by=overlay.subset({"get": "source"})
+              passed: [ version-source ]
 
   #@overlay/append
   - name: github-release
@@ -98,6 +106,7 @@ jobs:
                 - #@ build_job_name(build, config)
                 #@ end
                 #@ end
+                - check-source
               trigger: true
             #@ for build in data.values.builds:
             #@ for config in data.values.configs:

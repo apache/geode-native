@@ -105,9 +105,10 @@ jobs:
                   - |
                     set -ueo pipefail
                     export GEODE_HOME=$(pwd)/geode
+                    log=$(mktemp)
                     cd build
-                    cmake ../source -DCMAKE_EXPORT_COMPILE_COMMANDS=ON > /dev/null
-                    cmake --build dependencies --parallel $(nproc) > /dev/null
+                    cmake ../source -DCMAKE_EXPORT_COMPILE_COMMANDS=ON >>${log} 2>&1 || (cat ${log}; exit 1)
+                    cmake --build dependencies --parallel $(nproc) >>${log} 2>&1 || (cat ${log}; exit 1)
                     run-clang-tidy -j $(nproc) -quiet
           - task: clang-format
             image: clang-tools-image
@@ -126,8 +127,9 @@ jobs:
                   - |
                     set -ueo pipefail
                     export GEODE_HOME=$(pwd)/geode
+                    log=$(mktemp)
                     cd build
-                    cmake ../source -DCMAKE_EXPORT_COMPILE_COMMANDS=ON > /dev/null
+                    cmake ../source -DCMAKE_EXPORT_COMPILE_COMMANDS=ON >>${log} 2>&1 || (cat ${log}; exit 1)
                     jq -r '.[].file' compile_commands.json | sort | uniq | grep -v $(pwd) | xargs clang-format --dry-run -Werror
 
   - #@ update_pipeline_job()

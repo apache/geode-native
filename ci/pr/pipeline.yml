@@ -98,3 +98,62 @@ jobs:
 
   #@ end
   #@ end
+  #@overlay/match by="name"
+  - name: check-source
+    plan:
+      #@overlay/match by=overlay.index(0)
+      - in_parallel:
+          steps:
+            - #@overlay/match by=overlay.subset({"get": "source"})
+              version: every
+              on_success:
+                in_parallel:
+                  steps:
+                    #@overlay/append
+                    - #@ pr_status("clang-format", "pending")
+                    - #@ pr_status("clang-tidy", "pending")
+                    #@overlay/match by=overlay.index(1)
+      - in_parallel:
+          steps:
+            - #@overlay/match by=overlay.subset({"task": "clang-tidy"})
+              on_error:
+                in_parallel:
+                  steps:
+                    #@overlay/append
+                    - #@ pr_status("clang-tidy", "error")
+              on_abort:
+                in_parallel:
+                  steps:
+                    #@overlay/appendxs
+                    - #@ pr_status("clang-tidy", "error", "Build canceled")
+              on_failure:
+                in_parallel:
+                  steps:
+                    #@overlay/append
+                    - #@ pr_status("clang-tidy", "failure")
+              on_success:
+                in_parallel:
+                  steps:
+                    #@overlay/append
+                    - #@ pr_status("clang-tidy", "success")
+            - #@overlay/match by=overlay.subset({"task": "clang-format"})
+              on_error:
+                in_parallel:
+                  steps:
+                    #@overlay/append
+                    - #@ pr_status("clang-format", "error")
+              on_abort:
+                in_parallel:
+                  steps:
+                    #@overlay/appendxs
+                    - #@ pr_status("clang-format", "error", "Build canceled")
+              on_failure:
+                in_parallel:
+                  steps:
+                    #@overlay/append
+                    - #@ pr_status("clang-format", "failure")
+              on_success:
+                in_parallel:
+                  steps:
+                    #@overlay/append
+                    - #@ pr_status("clang-format", "success")
