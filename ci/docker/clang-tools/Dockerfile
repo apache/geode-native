@@ -18,6 +18,7 @@ FROM ubuntu:groovy
 LABEL maintainer="Apache Geode <dev@geode.apache.org>"
 LABEL description="Minimal image for building with clang toolset."
 
+ARG CLANG_VERSION=11
 RUN apt-get update \
     && apt-get install -y \
         bash \
@@ -28,11 +29,6 @@ RUN apt-get update \
         doxygen \
         openjdk-8-jdk-headless \
         jq \
-    && rm -rf /var/lib/apt/lists/*
-
-ARG CLANG_VERSION=11
-RUN apt-get update \
-    && apt-get install -y \
         clang-${CLANG_VERSION} \
         lld-${CLANG_VERSION} \
         clang-format-${CLANG_VERSION} \
@@ -46,4 +42,6 @@ RUN apt-get update \
     && update-alternatives --install /usr/bin/cc              cc              /usr/bin/clang 10 \
     && update-alternatives --install /usr/bin/c++             c++             /usr/bin/clang++ 10 \
     && update-alternatives --install /usr/bin/ld              ld              /usr/bin/lld 10 \
+    && apt-get -y autoremove \
+    && apt-get -y autoclean \
     && rm -rf /var/lib/apt/lists/*
