@@ -103,11 +103,11 @@ jobs:
                   - -c
                   #@yaml/text-templated-strings
                   - |
-                    set -xueo pipefail
+                    set -ueo pipefail
                     export GEODE_HOME=$(pwd)/geode
                     cd build
-                    cmake ../source -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-                    cmake --build dependencies --parallel $(nproc)
+                    cmake ../source -DCMAKE_EXPORT_COMPILE_COMMANDS=ON > /dev/null
+                    cmake --build dependencies --parallel $(nproc) > /dev/null
                     run-clang-tidy -j $(nproc) -quiet
           - task: clang-format
             image: clang-tools-image
