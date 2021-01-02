@@ -124,10 +124,10 @@ jobs:
                   - -c
                   #@yaml/text-templated-strings
                   - |
-                    set -xueo pipefail
+                    set -ueo pipefail
                     export GEODE_HOME=$(pwd)/geode
                     cd build
-                    cmake ../source -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+                    cmake ../source -DCMAKE_EXPORT_COMPILE_COMMANDS=ON > /dev/null
                     jq -r '.[].file' compile_commands.json | sort | uniq | grep -v $(pwd) | xargs clang-format --dry-run -Werror
 
   - #@ update_pipeline_job()
