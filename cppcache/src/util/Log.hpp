@@ -41,7 +41,7 @@
 #define GEODE_MAX_LOG_DISK_LIMIT (1024ll * 1024ll * 1024ll * 1024ll)
 #endif
 
-#define _GF_MSG_LIMIT 8192
+#define _GEODE_LOG_MESSAGE_LIMIT 8192
 
 namespace apache {
 namespace geode {
