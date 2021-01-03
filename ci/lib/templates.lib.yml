@@ -116,6 +116,15 @@ source:
 #@  }, "google-cloud")
 #@ end
 
+#@ def apache_directory_index_resource(name, directory, folder_pattern, file_pattern, expand=True):
+#@ return resource(name, "apache-directory-index-resource", {
+#@   "directory": directory,
+#@   "folder_pattern": folder_pattern,
+#@   "file_pattern": file_pattern,
+#@   "expand": expand
+#@  }, "file-multiple")
+#@ end
+
 ---
 #@ def create_instance(build, config):
 task: create
