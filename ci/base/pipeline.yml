@@ -20,6 +20,7 @@
 #@      "git_resource",
 #@      "registry_image_resource",
 #@      "semver_resource",
+#@      "apache_directory_index_resource",
 #@      "build_resources",
 #@      "build_jobs",
 #@      "build_job_name",
@@ -32,10 +33,7 @@
 resource_types:
   - #@ resource_type("gci-resource", "smgoller/gci-resource")
   - #@ resource_type("gcs-resource", "frodenas/gcs-resource")
-  - name: apache-directory-index
-    type: docker-image
-    source:
-      repository: jakepivotal/apache-directory-index-resource
+  - #@ resource_type("apache-directory-index-resource", "jakepivotal/apache-directory-index-resource")
 
 resources:
   - #@ semver_resource("version", "1.14.0-build.0")
@@ -46,13 +44,7 @@ resources:
   - #@ template.replace(build_resources(data.values.builds, data.values.configs))
   - #@ registry_image_resource("ytt-image", "gerritk/ytt")
   - #@ git_resource("ci-source", data.values.repository.url, data.values.repository.branch, ["ci/*"])
-  - name: geode
-    type: apache-directory-index
-    source:
-      directory: https://archive.apache.org/dist/geode/
-      folder_pattern: $VERSION
-      file_pattern: apache-geode-$VERSION.tgz
-      expand: true
+  - #@ apache_directory_index_resource("geode", "https://archive.apache.org/dist/geode/", "$VERSION", "apache-geode-$VERSION.tgz")
 
 jobs:
   - #@ template.replace(build_jobs(data.values.builds, data.values.configs))
