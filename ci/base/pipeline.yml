@@ -35,7 +35,7 @@ resource_types:
   - name: apache-directory-index
     type: docker-image
     source:
-      repository: mastertinner/apache-directory-index-resource
+      repository: jakepivotal/apache-directory-index-resource
 
 resources:
   - #@ semver_resource("version", "1.14.0-build.0")
@@ -46,12 +46,13 @@ resources:
   - #@ template.replace(build_resources(data.values.builds, data.values.configs))
   - #@ registry_image_resource("ytt-image", "gerritk/ytt")
   - #@ git_resource("ci-source", data.values.repository.url, data.values.repository.branch, ["ci/*"])
-  - name: geode-archive
+  - name: geode
     type: apache-directory-index
     source:
       directory: https://archive.apache.org/dist/geode/
       folder_pattern: $VERSION
       file_pattern: apache-geode-$VERSION.tgz
+      expand: true
 
 jobs:
   - #@ template.replace(build_jobs(data.values.builds, data.values.configs))
@@ -63,29 +64,7 @@ jobs:
           - get: clang-tools-image
           - get: source
             trigger: true
-          - do:
-            - in_parallel:
-                fail_fast: true
-                steps:
-                  - get: geode-archive
-                  - get: task-image
-            - task: extract-geode
-              image: task-image
-              config:
-                platform: linux
-                inputs:
-                  - name: geode-archive
-                outputs:
-                  - name: geode
-                params:
-                run:
-                  path: bash
-                  args:
-                    - -c
-                    #@yaml/text-templated-strings
-                    - |
-                      set -xueo pipefail
-                      tar -zxf geode-archive/apache-geode-*.tgz -C geode --strip-components=1
+          - get: geode
     - in_parallel:
         steps:
           - task: clang-tidy
@@ -104,7 +83,7 @@ jobs:
                   #@yaml/text-templated-strings
                   - |
                     set -ueo pipefail
-                    export GEODE_HOME=$(pwd)/geode
+                    export GEODE_HOME=$(pwd)/geode/expanded/apache-geode-$(cat geode/version)
                     log=$(mktemp)
                     cd build
                     cmake ../source -DCMAKE_EXPORT_COMPILE_COMMANDS=ON >>${log} 2>&1 || (cat ${log}; exit 1)
@@ -126,7 +105,7 @@ jobs:
                   #@yaml/text-templated-strings
                   - |
                     set -ueo pipefail
-                    export GEODE_HOME=$(pwd)/geode
+                    export GEODE_HOME=$(pwd)/geode/expanded/apache-geode-$(cat geode/version)
                     log=$(mktemp)
                     cd build
                     cmake ../source -DCMAKE_EXPORT_COMPILE_COMMANDS=ON >>${log} 2>&1 || (cat ${log}; exit 1)
