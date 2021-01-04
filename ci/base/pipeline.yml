@@ -24,6 +24,8 @@
 #@      "build_resources",
 #@      "build_jobs",
 #@      "build_job_name",
+#@      "check_source_job",
+#@      "check_source_job_name",
 #@      "update_pipeline_job",
 #@      "update_pipeline_job_name")
 #@ load("@ytt:data", "data")
@@ -48,61 +50,7 @@ resources:
 
 jobs:
   - #@ template.replace(build_jobs(data.values.builds, data.values.configs))
-  - name: check-source
-    plan:
-    - in_parallel:
-        fail_fast: true
-        steps:
-          - get: clang-tools-image
-          - get: source
-            trigger: true
-          - get: geode
-    - in_parallel:
-        steps:
-          - task: clang-tidy
-            image: clang-tools-image
-            config:
-              platform: linux
-              inputs:
-                - name: source
-                - name: geode
-              outputs:
-                - name: build
-              run:
-                path: bash
-                args:
-                  - -c
-                  #@yaml/text-templated-strings
-                  - |
-                    set -ueo pipefail
-                    export GEODE_HOME=$(pwd)/geode/expanded/apache-geode-$(cat geode/version)
-                    log=$(mktemp)
-                    cd build
-                    cmake ../source -DCMAKE_EXPORT_COMPILE_COMMANDS=ON >>${log} 2>&1 || (cat ${log}; exit 1)
-                    cmake --build dependencies --parallel $(nproc) >>${log} 2>&1 || (cat ${log}; exit 1)
-                    run-clang-tidy -j $(nproc) -quiet
-          - task: clang-format
-            image: clang-tools-image
-            config:
-              platform: linux
-              inputs:
-                - name: source
-                - name: geode
-              outputs:
-                - name: build
-              run:
-                path: bash
-                args:
-                  - -c
-                  #@yaml/text-templated-strings
-                  - |
-                    set -ueo pipefail
-                    export GEODE_HOME=$(pwd)/geode/expanded/apache-geode-$(cat geode/version)
-                    log=$(mktemp)
-                    cd build
-                    cmake ../source -DCMAKE_EXPORT_COMPILE_COMMANDS=ON >>${log} 2>&1 || (cat ${log}; exit 1)
-                    jq -r '.[].file' compile_commands.json | sort | uniq | grep -v $(pwd) | xargs clang-format --dry-run -Werror
-
+  - #@ check_source_job()
   - #@ update_pipeline_job()
 
 groups:
@@ -112,7 +60,7 @@ groups:
       #@ for/end config in data.values.configs:
       - #@ build_job_name(build, config)
       #@ end
-      - check-source
+      - #@ check_source_job_name()
   - name: meta
     jobs:
       - #@ update_pipeline_job_name()
@@ -123,4 +71,4 @@ groups:
       #@ for/end config in data.values.configs:
       - #@ build_job_name(build, config)
       #@ end
-      - check-source
+      - #@ check_source_job_name()

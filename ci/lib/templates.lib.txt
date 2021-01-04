@@ -92,3 +92,24 @@ remote_shell cmake -E chdir build/clicache/integration-test2 ../packages/xunit.r
 (@ def run_net_legacy_integration_tests(): -@)
 remote_shell cmake -E chdir build/clicache/integration-test ctest -C ${CMAKE_CONFIG} -j6 --timeout=1000 --output-on-failure --repeat until-pass:4
 (@- end @)
+
+
+(@ def clang_tidy_bash_task(): -@)
+set -ueo pipefail
+export GEODE_HOME=$(pwd)/geode/expanded/apache-geode-$(cat geode/version)
+log=$(mktemp)
+cd build
+cmake ../source -DCMAKE_EXPORT_COMPILE_COMMANDS=ON >>${log} 2>&1 || (cat ${log}; exit 1)
+cmake --build dependencies --parallel $(nproc) >>${log} 2>&1 || (cat ${log}; exit 1)
+run-clang-tidy -j $(nproc) -quiet
+(@- end @)
+
+(@ def clang_format_bash_task(): -@)
+set -ueo pipefail
+export GEODE_HOME=$(pwd)/geode/expanded/apache-geode-$(cat geode/version)
+log=$(mktemp)
+cd build
+cmake ../source -DCMAKE_EXPORT_COMPILE_COMMANDS=ON >>${log} 2>&1 || (cat ${log}; exit 1)
+jq -r '.[].file' compile_commands.json | sort | uniq | grep -v $(pwd) | xargs clang-format --dry-run -Werror
+(@- end @)
+
