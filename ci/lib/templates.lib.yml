@@ -15,6 +15,11 @@
 
 #@ load("@ytt:data", "data")
 
+#@ load("functions.lib.yml",
+#@      "gci_label_value",
+#@      "image_family_name",
+#@ )
+
 #@ load("templates.lib.txt",
 #@      "remote_functions",
 #@      "instance_variables",
@@ -27,9 +32,16 @@
 #@      "run_net_legacy_integration_tests",
 #@      "clang_tidy_bash_task",
 #@      "clang_format_bash_task",
+#@      "packer_build_bash_task",
+#@      "instance_create_bash_task",
+#@      "instance_delete_bash_task",
+#@      "download_build_bash_task",
+#@      "build_bash_task",
 #@ )
 
 #@ load("@ytt:overlay", "overlay")
+#@ load("@ytt:struct", "struct")
+#@ load("@ytt:template", "template")
 #@ load("@ytt:struct", "struct")
 
 ---
@@ -95,17 +107,6 @@ source:
 #@ end
 
 ---
-#@ def hyphenated(value):
-#! TODO [a-z0-9-]
-#@ return value.lower().replace(".", "-").replace("/", "-")
-#@ end
-
----
-#@ def image_family_name(family):
-#@ return (data.values.pipeline.name + "-" + family)[0:62]
-#@ end
-
----
 #@ def gci_resource_name(family):
 #@ return family + "-gci"
 #@ end
@@ -129,161 +130,36 @@ source:
 #@ end
 
 ---
-#@ def create_instance(build, config):
-task: create
-image: gcloud-image
-config:
-  platform: linux
-  inputs:
-    - name: #@ gci_resource_name(image_family_name(build.image_family))
-      path: image
-  outputs:
-    - name: instance
-  params:
-    LABEL_PIPELINE_NAME: #@ gci_label_value(data.values.pipeline.name)
-    LABEL_BUILD_CONFIG: #@ config.name
-  run:
-    path: bash
-    args:
-      - -c
-      #@yaml/text-templated-strings
-      - |
-        set -ueo pipefail
-        (@= google_variables() @)
-        (@= instance_variables() @)
-
-        ssh_key_file=${INSTANCE_DIR}/identity
-        ssh_pubkey_file=${ssh_key_file}.pub
-        ssh-keygen -m pem  -t rsa -f ${ssh_key_file} -C "${INSTANCE_USER}" -N '' <<< y
-        ssh_pubkey=$(cat ${ssh_pubkey_file})
-
-        ssh_keys_file=${INSTANCE_DIR}/ssh_keys_file
-        echo "${INSTANCE_USER}:${ssh_pubkey}" > ${ssh_keys_file}
-
-        instance_name=build-$(cat /proc/sys/kernel/random/uuid)
-        image_name=$(cat image/name)
-        time_to_live=$(( $(date +%s) + ( 4 * 60 * 60 ) ))
-
-        instance_file=${INSTANCE_DIR}/instance.sh
-        gcloud compute instances create ${instance_name} \
-            --format='config[export](name,networkInterfaces[0].accessConfigs[0].natIP)' \
-            --project=${GOOGLE_PROJECT} \
-            --zone=${GOOGLE_ZONE} \
-            --subnet=default \
-            --machine-type=e2-standard-16 \
-            --boot-disk-size=200GB \
-            --boot-disk-type=pd-standard \
-            --boot-disk-device-name=${instance_name} \
-            --image-project=${GOOGLE_PROJECT} \
-            --image=${image_name} \
-            --metadata-from-file ssh-keys=${ssh_keys_file} \
-            --labels=time-to-live=${time_to_live},pipeline-name=${LABEL_PIPELINE_NAME},build-config=${LABEL_BUILD_CONFIG} \
-            > ${instance_file}
-
-        (@= remote_functions() @)
-        SSH_OPTIONS="${SSH_OPTIONS} -o ConnectTimeout=10"
-
-        echo "Waiting for ssh on ${instance_name} to be ready."
-        console_file=$(mktemp)
-        console_next=0
-        while ! remote_shell echo ready 2>/dev/null ; do
-          gcloud compute instances get-serial-port-output ${instance_name} \
-              --start ${console_next} \
-              --project=${GOOGLE_PROJECT} \
-              --zone=${GOOGLE_ZONE} \
-              --format='value[separator="
-        "](next,contents)' \
-              > ${console_file}
-
-          tmp_next=$(head -n 1 ${console_file})
-          if (( tmp_next != console_next )); then
-            console_next=${tmp_next}
-            sed '1d;s/\x1b\[[0-9;]*[JH]//g' ${console_file}
-          fi
-        done
+#@ def create_instance_task(build, config):
+#@ return bash_task(
+#@   "instance-create",
+#@   [{"name":gci_resource_name(image_family_name(build.image_family)), "path":"image"}],
+#@   [{"name":"instance"}],
+#@   instance_create_bash_task(gci_label_value(data.values.pipeline.name), config.name),
+#@   "gcloud-image")
 #@ end
-
----
-#@ load("@ytt:template", "template")
 
 ---
 #@ def build_task(config, params={}):
-task: build
-image: task-image
-config:
-  platform: linux
-  inputs:
-    - name: instance
-    - name: version
-    - name: source
-  outputs:
-    - name: package
-  params:
-    _: #@ template.replace(params)
-    _: #@ template.replace({"CMAKE_CONFIG": config})
-  run:
-    path: bash
-    args:
-      - -c
-      #@yaml/text-templated-strings
-      - |
-        set -ueo pipefail
-
-        (@= remote_functions() @)
-
-        pushd source
-        git_url=$(git remote get-url origin)
-        git_rev=$(git rev-parse HEAD)
-        popd
-
-        version=$(cat version/number)
-        builddate=$(date "+%Y-%m-%d")
-
-        remote_upload source .
-        remote_shell cmake -E make_directory build
-        remote_shell cmake -E chdir build cmake ../source ${CMAKE_CONFIGURE_FLAGS} \
-            -DCMAKE_BUILD_TYPE=${CMAKE_CONFIG} \
-            -DPRODUCT_VERSION=${version} \
-            -DPRODUCT_BUILDDATE=${builddate} \
-            -DPRODUCT_SOURCE_REVISION=${git_rev} \
-            -DPRODUCT_SOURCE_REPOSITORY=${git_url}
-        remote_shell cmake --build build --config ${CMAKE_CONFIG} -- ${CMAKE_BUILD_FLAGS}
-        remote_shell cmake --build build --config ${CMAKE_CONFIG} --target docs -- ${CMAKE_BUILD_FLAGS}
-        remote_shell cmake -E chdir build cpack -C ${CMAKE_CONFIG} -G "${CPACK_GENERATORS}" | tee cpack.out
-
-        packages=$(awk '/^CPack: - package: / {print $4}' cpack.out)
-        for package in ${packages}; do
-          remote_download ${package} package/
-        done
-        checksums=$(awk '/^CPack: - checksum file: / {print $5}' cpack.out)
-        for checksum in ${checksums}; do
-          remote_download ${checksum} package/
-        done
+#@ params = struct.decode(params)
+#@ params.update({"CMAKE_CONFIG": config})
+#@ return bash_task("build",
+#@   [{"name":"instance"},{"name":"version"},{"name":"source"}],
+#@   [{"name":"package"}],
+#@   build_bash_task(),
+#@   params=params)
 #@ end
 
 ---
-#@ def remote_task(name, config, commands, timeout, params={}, attempts=1):
-task: #@ name
-timeout: #@ timeout
-image: task-image
-attempts: #@ attempts
-config:
-  platform: linux
-  inputs:
-    - name: instance
-  outputs:
-  params:
-    _: #@ template.replace(params)
-    _: #@ template.replace({"CMAKE_CONFIG": config})
-  run:
-    path: bash
-    args:
-      - -c
-      #@yaml/text-templated-strings
-      - |
-        set -ueo pipefail
-        (@= remote_functions() @)
-        (@= commands @)
+#@ def remote_task(name, config, source, timeout, params={}):
+#@ params = struct.decode(params)
+#@ params.update({"CMAKE_CONFIG": config})
+#@ return bash_task(name,
+#@   [{"name":"instance"}],
+#@   [],
+#@   source,
+#@   params=params,
+#@   timeout=timeout)
 #@ end
 
 ---
@@ -322,53 +198,7 @@ config:
 
 ---
 #@ def download_build_task():
-task: download-build
-image: task-image
-config:
-  platform: linux
-  inputs:
-    - name: instance
-  outputs:
-    - name: build
-  params:
-  run:
-    path: bash
-    args:
-      - -c
-      #@yaml/text-templated-strings
-      - |
-        set -ueo pipefail
-        (@= remote_functions() @)
-
-        remote_download_directory build .
-#@ end
-
----
-#@ def delete_instance():
-task: delete
-image: gcloud-image
-config:
-  platform: linux
-  inputs:
-    - name: instance
-  params:
-  run:
-    path: bash
-    args:
-      - -c
-      #@yaml/text-templated-strings
-      - |
-        set -ueo pipefail
-        (@= google_variables() @)
-        (@= remote_functions() @)
-
-        instance_name=$(source ${instance_file} && echo -n ${name})
-
-        gcloud compute instances delete ${instance_name} \
-            --project=${GOOGLE_PROJECT} \
-            --zone=${GOOGLE_ZONE} \
-            --delete-disks=all \
-            --quiet
+#@ return bash_task("download-build", [{"name":"instance"}], [{"name":"build"}], download_build_bash_task())
 #@ end
 
 ---
@@ -394,7 +224,7 @@ plan:
                 steps:
                   - get: gcloud-image
                   - get: #@ gci_resource_name(image_family_name(build.image_family))
-            - #@ create_instance(build, config)
+            - #@ create_instance_task(build, config)
   - do:
       - #@ build_task(config.config, build.params)
       - #@ cpp_unit_test_task(build, config)
@@ -412,13 +242,7 @@ on_failure:
 ensure:
   in_parallel:
     steps:
-      - #@ delete_instance()
-#@ end
-
----
-#@ def gci_label_value(value):
-#! TODO [a-z0-9_-]
-#@ return hyphenated(value[0:62])
+      - #@ bash_task("instance-delete", [{"name":"instance"}], [], instance_delete_bash_task(), "gcloud-image")
 #@ end
 
 ---
@@ -438,32 +262,7 @@ plan:
           trigger: true
         - get: packer-source
           trigger: false
-  - task: build
-    attempts: 5
-    image: packer-image
-    config:
-      platform: linux
-      inputs:
-        - name: packer-source
-          path: source
-      params:
-      run:
-        path: bash
-        args:
-          - -c
-          #@yaml/text-templated-strings
-          - |
-            set -ueo pipefail
-            cd source/packer
-            packer build -only=googlecompute \
-                -var-file=default.json \
-                -var pipeline=(@= gci_label_value(data.values.pipeline.name) @) \
-                -var repository=(@= gci_label_value(data.values.repository.url) @) \
-                -var branch=(@= gci_label_value(data.values.repository.branch) @) \
-                -var image_name_prefix=(@= image_family_name(build.image_family)[0:51] @) \
-                -var image_family=(@= image_family_name(build.image_family) @) \
-                (@= build.image_family @).json
-
+  - #@ bash_task("packer-build", [{"name":"packer-source", "path":"source"}], [], packer_build_bash_task(build), "packer-image", attempts=5)
 #@ end
 
 ---
@@ -645,13 +444,21 @@ plan:
 #@ end
 
 ---
-#@ def bash_task(name, inputs, outputs, source, image="task-image", platform="linux"):
+#@ def bash_task(name, inputs, outputs, source, image="task-image", params={}, platform="linux", timeout=None, attempts=None):
 task: #@ name
+#@ if timeout != None:
+timeout: #@ timeout
+#@ end
+#@ if attempts != None:
+attempts: #@ attempts
+#@ end
 image: #@ image
 config:
   platform: #@ platform
   inputs: #@ inputs
   outputs: #@ outputs
+  params:
+    _: #@ template.replace(params)
   run:
     path: bash
     args:
