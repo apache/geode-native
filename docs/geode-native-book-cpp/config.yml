@@ -30,6 +30,10 @@ template_variables:
   product_name_lc: geode
   product_version: "1.13"
   product_version_nodot: 113
+  # Un-versioned API names (cppapiref, dotnetapiref) always point to the latest release. Be sure redirects.rb provides entries for the (right-hand) values.
+  cppapiref_version: cppapiref
+  dotnetapiref_version: dotnetapiref
+  #
   product_language: cpp
   client_name: Geode Native Client for C++
   min_java_update: 121
