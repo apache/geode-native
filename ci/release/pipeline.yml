@@ -48,6 +48,15 @@ resources:
   #@ end
   #@ end
   #@ end
+  #@overlay/append
+  - name: github-pre-release
+    type: github-release
+    source:
+      owner: pivotal-jbarrett
+      repository: geode-native
+      access_token: ((github-access-token))
+      release: false
+      pre_release: true
 
 #@overlay/match-child-defaults missing_ok=True
 jobs:
@@ -86,7 +95,7 @@ jobs:
               passed: [ version-source ]
 
   #@overlay/append
-  - name: github-release
+  - name: github-pre-release
     plan:
       - in_parallel:
           fail_fast: true
@@ -118,7 +127,14 @@ jobs:
             #@ end
             #@ end
             #@ end
-
+      - put: github-pre-release
+        params:
+          commitish: source/.git/ref
+          name: version/version
+          tag: version/version
+          tag_prefix: pre-release/v
+          globs:
+            - "package-*-release-*/apache-geode-native-*"
 
 #@overlay/match-child-defaults missing_ok=True
 groups:
@@ -143,4 +159,4 @@ groups:
       #@overlay/append
       - #@ version_source_job_name()
       #@overlay/append
-      - github-release
+      - github-pre-release
