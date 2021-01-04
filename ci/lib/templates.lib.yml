@@ -24,7 +24,10 @@
 #@      "run_cpp_legacy_integration_tests",
 #@      "run_net_unit_tests",
 #@      "run_net_integration_tests",
-#@      "run_net_legacy_integration_tests")
+#@      "run_net_legacy_integration_tests",
+#@      "clang_tidy_bash_task",
+#@      "clang_format_bash_task",
+#@ )
 
 #@ load("@ytt:overlay", "overlay")
 #@ load("@ytt:struct", "struct")
@@ -617,4 +620,41 @@ in_parallel:
   #@ for/end config in configs:
   - #@ build_job(build, config)
 #@ end
+#@ end
+
+---
+#@ def check_source_job_name():
+#@ return "check-source"
+#@ end
+
+---
+#@ def check_source_job():
+name: #@ check_source_job_name()
+plan:
+  - in_parallel:
+      fail_fast: true
+      steps:
+        - get: clang-tools-image
+        - get: source
+          trigger: true
+        - get: geode
+  - in_parallel:
+      steps:
+        - #@ bash_task("clang-tidy", [{"name":"source"}, {"name":"geode"}], [{"name":"build"}], clang_tidy_bash_task(), "clang-tools-image")
+        - #@ bash_task("clang-format", [{"name":"source"}, {"name":"geode"}], [{"name":"build"}], clang_format_bash_task(), "clang-tools-image")
+#@ end
+
+---
+#@ def bash_task(name, inputs, outputs, source, image="task-image", platform="linux"):
+task: #@ name
+image: #@ image
+config:
+  platform: #@ platform
+  inputs: #@ inputs
+  outputs: #@ outputs
+  run:
+    path: bash
+    args:
+      - -c
+      - #@ source
 #@ end
