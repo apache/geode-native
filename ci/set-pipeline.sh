@@ -25,8 +25,9 @@ Options:
 Parameter                Description                         Default
 --target                 Fly target.                         "default"
 --branch                 Branch to build.                    Current checked out branch.
---repository             Remote URL for repository.          Current tracking branch repository.
 --pipeline               Name of pipeline to set.            Based on repository owner name and branch.
+--github-owner           GitHub owner for repository.        Current tracking branch repository owner.
+--github-repository      GitHub repository name.             Current tracking branch repository name.
 --google-zone            Google Compute project.             Current default project.
 --google-project         Google Compute zone.                Concourse worker's zone.
 --google-storage-bucket  Google Compute Storage bucket.      Based on google-project value.
@@ -73,15 +74,14 @@ output=${output:-$(mktemp -d)}
 branch=${branch:-$(git rev-parse --abbrev-ref HEAD)}
 git_tracking_branch=${git_tracking_branch:-$(git for-each-ref --format='%(upstream:short)' $(git symbolic-ref -q HEAD))}
 git_remote=${git_remote:-$(echo ${git_tracking_branch} | cut -d/ -f1)}
-repository=${repository:-$(git remote get-url ${git_remote})}
+git_repository_url=${git_repository_url:-$(git remote get-url ${git_remote})}
 
-if [[ ${repository} =~ ^((https|git)(:\/\/|@)([^\/:]+)[\/:])([^\/:]+)\/(.+).git$ ]]; then
-  git_base=${BASH_REMATCH[1]}
-  git_owner=${BASH_REMATCH[5]}
-  git_project=${BASH_REMATCH[6]}
+if [[ ${git_repository_url} =~ ^((https|git)(:\/\/|@)github\.com[\/:])([^\/:]+)\/(.+).git$ ]]; then
+  github_owner=${github_owner:-${BASH_REMATCH[4]}}
+  github_repository=${github_repository:-${BASH_REMATCH[5]}}
 fi
 
-pipeline=${pipeline:-${git_owner}-${branch}}
+pipeline=${pipeline:-${github_owner}-${branch}}
 pipeline=${pipeline//[^[:word:]-]/-}
 
 google_project=${google_project:-$(gcloud config get-value project)}
@@ -101,8 +101,9 @@ for variant in ${variants}; do
     --file ${variant} \
     --data-value "pipeline.name=${pipeline}" \
     --data-value "pipeline.variant=${variant}" \
-    --data-value "repository.url=${repository}" \
     --data-value "repository.branch=${branch}" \
+    --data-value "github.owner=${github_owner}" \
+    --data-value "github.repository=${github_repository}" \
     --data-value "google.project=${google_project}" \
     --data-value "google.zone=${google_zone}" \
     --data-value "google.storage.bucket=${google_storage_bucket}" \

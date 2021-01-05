@@ -14,7 +14,7 @@
 #! limitations under the License.
 
 #@ load("templates.lib.yml",
-#@      "git_resource",
+#@      "github_resource",
 #@      "gci_resource",
 #@      "registry_image_resource",
 #@      "build_job_name",
@@ -36,7 +36,7 @@ resources:
   #@overlay/append
   - #@ registry_image_resource("packer-image", "hashicorp/packer")
   #@overlay/append
-  - #@ git_resource("packer-source", data.values.repository.url, data.values.repository.branch, ["packer/*"])
+  - #@ github_resource("packer-source", data.values.github.owner, data.values.github.repository, data.values.repository.branch, ["packer/*"])
 
   #@ for build in data.values.builds:
   #@overlay/append
@@ -52,8 +52,8 @@ resources:
   - name: github-pre-release
     type: github-release
     source:
-      owner: pivotal-jbarrett
-      repository: geode-native
+      owner: #@ data.values.github.owner
+      repository: #@ data.values.github.repository
       access_token: ((github-access-token))
       release: false
       pre_release: true

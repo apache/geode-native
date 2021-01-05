@@ -48,8 +48,7 @@ resources:
     check_every: 1m
     icon: github
     source:
-      #@ parts = data.values.repository.url.rstrip(".git").rsplit("/", 2)
-      repository: #@ parts[1] + "/" + parts[2]
+      repository: #@ data.values.github.owner + "/" + data.values.github.repository
       access_token: ((github-access-token))
       base_branch: #@ data.values.repository.branch
       ignore_paths:

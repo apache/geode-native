@@ -134,7 +134,8 @@ cd source/packer
 packer build -only=googlecompute \
     -var-file=default.json \
     -var pipeline=(@= gci_label_value(data.values.pipeline.name) @) \
-    -var repository=(@= gci_label_value(data.values.repository.url) @) \
+    -var owner=(@= gci_label_value(data.values.github.owner) @) \
+    -var repository=(@= gci_label_value(data.values.github.repository) @) \
     -var branch=(@= gci_label_value(data.values.repository.branch) @) \
     -var image_name_prefix=(@= image_family_name(build.image_family)[0:51] @) \
     -var image_family=(@= image_family_name(build.image_family) @) \

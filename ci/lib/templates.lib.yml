@@ -96,13 +96,13 @@ source:
 #@ end
 
 ---
-#@ def git_resource(name, uri, branch, paths=[], ignore_paths=[], depth=1):
+#@ def github_resource(name, owner, repository, branch, paths=[], ignore_paths=[], depth=1):
 #@ return resource(name, "git", {
 #@   "branch": branch,
 #@   "depth": depth,
 #@   "paths": paths,
 #@   "ignore_paths": ignore_paths,
-#@   "uri": uri
+#@   "uri": "https://github.com/" + owner + "/" + repository + ".git"
 #@  }, "github")
 #@ end
 
@@ -305,7 +305,9 @@ plan:
           - --data-value
           - #@ "pipeline.variant=" + data.values.pipeline.variant
           - --data-value
-          - #@ "repository.url=" + data.values.repository.url
+          - #@ "github.owner=" + data.values.github.owner
+          - --data-value
+          - #@ "github.repository=" + data.values.github.repository
           - --data-value
           - #@ "repository.branch=" + data.values.repository.branch
           - --data-value
