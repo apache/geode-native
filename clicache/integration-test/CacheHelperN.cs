@@ -2136,8 +2136,10 @@ namespace Apache.Geode.Client.UnitTests
           {
             Util.Log("ExecuteGfsh: Timeout, killing {0}", process.Id);
             process.Kill();
-          } catch (Exception)
+          }
+          catch (Exception)
           {
+            //ignore
           }
         }
 
