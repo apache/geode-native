@@ -37,8 +37,11 @@ packages:
 pipeline:
   name: develop
 
+github:
+  owner: apache
+  repository: geode-native
+
 repository:
-  url: https://github.com/apache/geode-native
   branch: develop
 
 google:
