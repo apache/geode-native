@@ -221,8 +221,8 @@ class putThread : public ACE_Task_Base {
     std::shared_ptr<CacheableKey> key;
     std::shared_ptr<CacheableString> value;
     std::vector<std::shared_ptr<CacheableKey>> keys0;
-    char buf[20];
-    char valbuf[20];
+    char buf[32];
+    char valbuf[32];
     if (m_regInt) {
       m_reg->registerAllKeys(false, true);
     }
@@ -239,11 +239,11 @@ class putThread : public ACE_Task_Base {
       if (m_opcode == 0) {
         if (m_isCallBack) {
           auto boolptr = CacheableBoolean::create("true");
-          sprintf(valbuf, "client1-value%d", ops);
+          snprintf(valbuf, sizeof(valbuf), "client1-value%d", ops);
           value = CacheableString::create(valbuf);
           m_reg->put(key, value, boolptr);
         } else {
-          sprintf(valbuf, "client2-value%d", ops);
+          snprintf(valbuf, sizeof(valbuf), "client2-value%d", ops);
           value = CacheableString::create(valbuf);
           m_reg->put(key, value);
         }
