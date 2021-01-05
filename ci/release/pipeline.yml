@@ -57,6 +57,7 @@ resources:
       access_token: ((github-access-token))
       release: false
       pre_release: true
+    icon: github
 
 #@overlay/match-child-defaults missing_ok=True
 jobs:
