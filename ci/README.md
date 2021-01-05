@@ -40,8 +40,8 @@ Everything else has reasonable defaults based on the currently checked out branc
 $ ./set-pipeline.sh --target=some-concourse
 ```
 
-Executes `fly` from the path setting pipeline to target `some-concourse` for remote
-repository `git@github.com:some-user/geode-native.git`. Pipeline names will be `some-user-wip-something`
+Executes `fly` from the path setting pipeline to target `some-concourse` for GitHub owner `some-user`
+repository `geode-native.git`. Pipeline names will be `some-user-wip-something`
 and `some-user-wip-something-pr`.
 
 ### Alternative repository URL and fly version
@@ -52,11 +52,11 @@ Sometimes you will have to support multiple versions of Concourse `fly` or need 
 $ ./set-pipeline.sh \
   --fly=/path/to/fly \
   --target=some-concourse \
-  --repository=https://github.com/some-user/geode-native.git
+  --github-owner=other-user
 ```
 
-Executes fly at `/path/to/fly` setting pipeline to target `some-concourse` for remote
-repository `https://github.com/some-user/geode-native.git`. Pipelines name will be `some-user-wip-something`
+Executes fly at `/path/to/fly` setting pipeline to target `some-concourse` for GitHub owner `other-user`
+repository `geode-native.git`. Pipelines name will be `some-user-wip-something`
 and `some-user-wip-something-pr`.
 
 # Pipeline Steps

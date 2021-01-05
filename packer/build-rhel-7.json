@@ -28,7 +28,7 @@
       "vpc_id": "{{user `vpc_id`}}",
       "tags": {
         "owner": "{{user `owner`}}",
-        "project": "{{user `project`}}",
+        "repository": "{{user `repository`}}",
         "branch": "{{user `branch`}}"
       },
       "ssh_username": "ec2-user",
@@ -44,7 +44,7 @@
       "image_family": "{{user `image_family`}}",
       "image_labels": {
         "owner": "{{user `owner`}}",
-        "project": "{{user `project`}}",
+        "repository": "{{user `repository`}}",
         "branch": "{{user `branch`}}"
       },
       "disk_size": "20",
