@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.18)
 project(nativeclient LANGUAGES C CXX)
 
 option(USE_PCH "Use precompiled headers (PCH)." OFF)
@@ -186,6 +186,9 @@ if(ipo_supported)
   set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE)
   set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELWITHDEBINFO TRUE)
 endif()
+
+include(CheckLinkerFlag)
+check_linker_flag(CXX -Wl,--exclude-libs,ALL has_linker_exclude_libs)
 
 include(CheckCXXSymbolExists)
 check_cxx_symbol_exists("PRId8" "cinttypes" HAVE_STDC_FORMAT_MACROS)
