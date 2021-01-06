@@ -27,8 +27,6 @@ elseif ("Linux" STREQUAL ${CMAKE_SYSTEM_NAME} )
     set( ACE_PLATFORM linux )
   endif()
   set( ACE_CONFIG linux )
-  ## TODO fix visibility problem with g++
-  set( _MAKE_ARGS ${_MAKE_ARGS} no_hidden_visibility=1 )
 elseif ("Darwin" STREQUAL ${CMAKE_SYSTEM_NAME})
   set(ACE_PLATFORM macosx)
   set(ACE_CONFIG macosx)
