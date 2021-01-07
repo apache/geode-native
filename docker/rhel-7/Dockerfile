@@ -44,10 +44,13 @@ RUN yum-config-manager --enable ubi-server-rhscl-7-rpms && \
 RUN scl enable rh-python36 "pip3 install --upgrade pip && \
     pip3 install cpp-coveralls"
 
-ARG CMAKE_VERSION=3.16.0
-RUN curl -o /tmp/cmake -s "https://cmake.org/files/v${CMAKE_VERSION%.*}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh" && \
-    bash /tmp/cmake --skip-license --prefix=/usr/local && \
-    rm /tmp/cmake
+RUN installer=$(mktemp) \
+    && curl -o ${installer} -L $(curl -s https://api.github.com/repos/Kitware/CMake/releases/latest \
+        | grep 'browser_download_url.*Linux-x86_64\.sh' \
+        | cut -d : -f 2,3 \
+        | tr -d '"') \
+    && bash ${installer} --skip-license --prefix=/usr/local \
+    && rm ${installer}
 
 ARG GEODE_VERSION=1.12.0
 ENV GEODE_HOME /apache-geode-${GEODE_VERSION}
