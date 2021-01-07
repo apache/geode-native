@@ -175,6 +175,11 @@ LogLevel Log::logLevel() { return s_logLevel; }
  */
 void Log::setLogLevel(LogLevel level) { s_logLevel = level; }
 
+void Log::init(LogLevel level, const std::string& logFileName,
+               int32_t logFileLimit, int64_t logDiskSpaceLimit) {
+  init(level, logFileName.c_str(), logFileLimit, logDiskSpaceLimit);
+}
+
 void Log::init(LogLevel level, const char* logFileName, int32_t logFileLimit,
                int64_t logDiskSpaceLimit) {
   if (g_log != nullptr) {

@@ -144,9 +144,12 @@ class APACHE_GEODE_EXPORT Log {
    * arguments
    */
   static void init
-      // 0 => use maximum value (currently 1G)
+      // 0 => use default value (currently 1GB for file, 1TB for disk)
       (LogLevel level, const char* logFileName, int32_t logFileLimit = 0,
        int64_t logDiskSpaceLimit = 0);
+
+  static void init(LogLevel level, const std::string& logFileName,
+                   int32_t logFileLimit = 0, int64_t logDiskSpaceLimit = 0);
 
   /**
    * closes logging facility (until next init).
@@ -398,6 +401,12 @@ class APACHE_GEODE_EXPORT Log {
   static LogLevel s_logLevel;
 
   static void writeBanner();
+
+  static void validateSizeLimits(int64_t fileSizeLimit, int64_t diskSpaceLimit);
+
+  static void validateLogFileName(const std::string& filename);
+
+  static int32_t getNextRollIndex(const std::string& filename);
 
  public:
   static void put(LogLevel level, const std::string& msg);
