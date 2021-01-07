@@ -24,11 +24,11 @@ RUN apt-get update \
         bash \
         libssl-dev \
         patch \
-        cmake \
         git \
         doxygen \
         openjdk-8-jdk-headless \
         jq \
+        curl \
         clang-${CLANG_VERSION} \
         lld-${CLANG_VERSION} \
         clang-format-${CLANG_VERSION} \
@@ -45,3 +45,8 @@ RUN apt-get update \
     && apt-get -y autoremove \
     && apt-get -y autoclean \
     && rm -rf /var/lib/apt/lists/*
+
+RUN installer=$(mktemp) \
+    && curl -o ${installer} -L $(curl -s https://api.github.com/repos/Kitware/CMake/releases/latest | jq -r '.assets[].browser_download_url | select(test("Linux-x86_64.sh"))') \
+    && bash ${installer} --skip-license --prefix=/usr \
+    && rm ${installer}
