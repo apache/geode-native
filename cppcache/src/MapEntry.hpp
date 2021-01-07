@@ -122,7 +122,7 @@ class ExpEntryProperties {
 /**
  * @brief Interface class for region mapped entry value.
  */
-class APACHE_GEODE_EXPORT MapEntry {
+class MapEntry {
  public:
   virtual ~MapEntry() noexcept = default;
 

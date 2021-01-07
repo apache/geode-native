@@ -38,7 +38,7 @@ namespace client {
  * when a tombstone expires.
  *
  */
-class APACHE_GEODE_EXPORT TombstoneExpiryHandler : public ACE_Event_Handler {
+class TombstoneExpiryHandler : public ACE_Event_Handler {
  public:
   TombstoneExpiryHandler(std::shared_ptr<TombstoneEntry> entryPtr,
                          TombstoneList* tombstoneList,

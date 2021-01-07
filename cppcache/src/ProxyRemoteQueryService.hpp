@@ -38,7 +38,7 @@ namespace client {
 class CacheImpl;
 class ThinClientPoolDM;
 
-class APACHE_GEODE_EXPORT ProxyRemoteQueryService : public QueryService {
+class ProxyRemoteQueryService : public QueryService {
  public:
   explicit ProxyRemoteQueryService(AuthenticatedView* cptr);
   virtual ~ProxyRemoteQueryService() = default;

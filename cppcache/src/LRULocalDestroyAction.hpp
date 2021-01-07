@@ -35,7 +35,7 @@ namespace client {
 /**
  * @brief LRUAction for localDestroy.
  */
-class APACHE_GEODE_EXPORT LRULocalDestroyAction : public virtual LRUAction {
+class LRULocalDestroyAction : public virtual LRUAction {
  private:
   RegionInternal* m_regionPtr;
   LRUEntriesMap* m_entriesMapPtr;

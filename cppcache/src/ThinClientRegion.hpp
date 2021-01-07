@@ -48,7 +48,7 @@ class TcrEndpoint;
  * region. It will inherit from DistributedRegion and overload some methods
  *
  */
-class APACHE_GEODE_EXPORT ThinClientRegion : public LocalRegion {
+class ThinClientRegion : public LocalRegion {
  public:
   /**
    * @brief constructor/initializer/destructor

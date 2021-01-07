@@ -39,7 +39,7 @@ class Cache;
  * @since 1.0
  */
 
-class APACHE_GEODE_EXPORT CacheXmlCreation {
+class CacheXmlCreation {
  public:
   /**
    * Creates a new <code>CacheXmlCreation</code> with no root region
