@@ -29,6 +29,7 @@ RUN apt-get update \
         openjdk-8-jdk-headless \
         jq \
         curl \
+        make \
         clang-${CLANG_VERSION} \
         lld-${CLANG_VERSION} \
         clang-format-${CLANG_VERSION} \
