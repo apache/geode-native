@@ -42,7 +42,7 @@ class EvictionController;
  * @brief Concurrent entries map with LRU behavior.
  * Not designed for subclassing...
  */
-class APACHE_GEODE_EXPORT LRUEntriesMap : public ConcurrentEntriesMap {
+class LRUEntriesMap : public ConcurrentEntriesMap {
  protected:
   using spinlock_mutex = ::apache::geode::util::concurrent::spinlock_mutex;
 

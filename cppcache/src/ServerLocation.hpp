@@ -35,8 +35,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class APACHE_GEODE_EXPORT ServerLocation
-    : public internal::DataSerializableInternal {
+class ServerLocation : public internal::DataSerializableInternal {
  public:
   ServerLocation(std::string serverName, int port)
       : Serializable(), m_serverName(std::move(serverName)), m_port(port) {
