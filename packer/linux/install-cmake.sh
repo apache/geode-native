@@ -17,9 +17,12 @@
 
 set -x -e -o pipefail
 
-tmp=`mktemp`
+tmp=$(mktemp)
 
-curl -o ${tmp} -L $(curl -s https://api.github.com/repos/Kitware/CMake/releases/latest | grep 'browser_download_url.*Linux-x86_64\.sh' | cut -d : -f 2,3 | tr -d \")
+curl -o ${tmp} -L $(curl -s https://api.github.com/repos/Kitware/CMake/releases/latest \
+    | grep 'browser_download_url.*Linux-x86_64\.sh' \
+    | cut -d : -f 2,3 \
+    | tr -d \")
 
 bash ${tmp} --skip-license --prefix=/usr/local
 
