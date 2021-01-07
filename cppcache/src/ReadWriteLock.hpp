@@ -28,7 +28,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class APACHE_GEODE_EXPORT ReadGuard {
+class ReadGuard {
  public:
   explicit ReadGuard(ACE_RW_Thread_Mutex& lock) : lock_(lock) {
     lock_.acquire_read();

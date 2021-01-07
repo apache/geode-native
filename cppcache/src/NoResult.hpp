@@ -37,7 +37,7 @@ namespace client {
  *
  *
  */
-class APACHE_GEODE_EXPORT NoResult final : public ResultCollector {
+class NoResult final : public ResultCollector {
  public:
   NoResult() = default;
   ~NoResult() final = default;

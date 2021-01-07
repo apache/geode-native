@@ -49,8 +49,7 @@ class TcrEndpoint;
  * Implements the CqService functionality.
  *
  */
-class APACHE_GEODE_EXPORT CqService
-    : public std::enable_shared_from_this<CqService> {
+class CqService : public std::enable_shared_from_this<CqService> {
   ThinClientBaseDM* m_tccdm;
   statistics::StatisticsFactory* m_statisticsFactory;
   ACE_Semaphore m_notificationSema;
