@@ -82,7 +82,7 @@ if (${WIN32})
   set ( _CONFIGURE_COMMAND ${_COMMAND_PREFIX}
                              ${CMAKE_COMMAND} -E env ACE_ROOT=<SOURCE_DIR> SSL_ROOT=${OPENSSL_ROOT}
 							 ${MPC} ${MPC_FLAGS} -name_modifier "*_${_TYPE}_static" -static
-							-value_template WindowsTargetPlatformVersion=${CMAKE_SYSTEM_VERSION}
+							 -value_template WindowsTargetPlatformVersion=${CMAKE_SYSTEM_VERSION}
 							 -value_template staticflags+=__ACE_INLINE__ 
 							 -value_template staticflags+=ACE_BUILD_DLL 
 							 -value_template staticflags+=ACE_AS_STATIC_LIBS 
