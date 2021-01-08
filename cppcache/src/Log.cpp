@@ -83,6 +83,8 @@ static std::pair<std::string, int64_t> g_fileInfoPair;
 // Vector to hold the fileInformation
 typedef std::vector<std::pair<std::string, int64_t> > g_fileInfo;
 
+static boost::filesystem::path g_fullpath;
+
 static FILE* g_log = nullptr;
 static ACE_utsname g_uname;
 static pid_t g_pid = 0;
@@ -163,6 +165,7 @@ using apache::geode::log::globals::g_diskSpaceLimit;
 using apache::geode::log::globals::g_fileInfo;
 using apache::geode::log::globals::g_fileInfoPair;
 using apache::geode::log::globals::g_fileSizeLimit;
+using apache::geode::log::globals::g_fullpath;
 using apache::geode::log::globals::g_isLogFileOpened;
 using apache::geode::log::globals::g_log;
 using apache::geode::log::globals::g_logFile;
@@ -243,13 +246,13 @@ void Log::init(LogLevel level, const std::string& logFileName,
       g_logFile = new std::string(filename);
     }
 
-    auto fullpath =
+    g_fullpath =
         boost::filesystem::absolute(boost::filesystem::path(*g_logFile));
 
     // if no extension then add .log extension
-    if (fullpath.extension().empty()) {
+    if (g_fullpath.extension().empty()) {
       g_logFileWithExt = new std::string(*g_logFile + ".log");
-    } else if (fullpath.extension() != ".log") {
+    } else if (g_fullpath.extension() != ".log") {
       g_logFileWithExt = new std::string(*g_logFile + ".log");
     } else {
       g_logFileWithExt = new std::string(*g_logFile);
@@ -277,8 +280,8 @@ void Log::init(LogLevel level, const std::string& logFileName,
     g_spaceUsed = 0;
     g_rollIndex = 0;
 
-    const auto target_path = fullpath.parent_path().string();
-    const auto filterstring = fullpath.stem().string() + "-(\\d+)\\.log$";
+    const auto target_path = g_fullpath.parent_path().string();
+    const auto filterstring = g_fullpath.stem().string() + "-(\\d+)\\.log$";
 
     const boost::regex my_filter(filterstring);
 
@@ -304,14 +307,14 @@ void Log::init(LogLevel level, const std::string& logFileName,
       }
     }
 
-    if (boost::filesystem::exists(fullpath) && logFileLimit > 0) {
+    if (boost::filesystem::exists(g_fullpath) && logFileLimit > 0) {
       auto rollFileName =
-          (fullpath.parent_path() /
-           (fullpath.stem().string() + "-" + std::to_string(g_rollIndex) +
-            fullpath.extension().string()))
+          (g_fullpath.parent_path() /
+           (g_fullpath.stem().string() + "-" + std::to_string(g_rollIndex) +
+            g_fullpath.extension().string()))
               .string();
       try {
-        boost::filesystem::rename(fullpath,
+        boost::filesystem::rename(g_fullpath,
                                   boost::filesystem::path(rollFileName));
       } catch (const boost::filesystem::filesystem_error&) {
         throw IllegalStateException("Failed to roll log file");
