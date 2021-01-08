@@ -78,13 +78,11 @@ class LoggingTest : public testing::Test {
 
     auto base = boost::filesystem::path(testLogFileName).stem();
     auto ext = boost::filesystem::path(testLogFileName).extension();
-    for (auto i = 0;; i++) {
+    for (auto i = 0; i < 10000; i++) {
       auto rolledLogFileName =
           base.string() + "-" + std::to_string(i) + ext.string();
       if (boost::filesystem::exists(rolledLogFileName)) {
         boost::filesystem::remove(rolledLogFileName);
-      } else {
-        break;
       }
     }
   }
@@ -245,7 +243,7 @@ TEST_F(LoggingTest, logToFileAtEachLevel) {
 
 TEST_F(LoggingTest, verifyFileSizeLimit) {
   ASSERT_NO_THROW(apache::geode::client::Log::init(
-      apache::geode::client::LogLevel::Debug, testLogFileName, 1));
+      apache::geode::client::LogLevel::Debug, testLogFileName, 1, 5));
   for (auto i = 0; i < 4 * __1K__; i++) {
     apache::geode::client::Log::debug(__1KStringLiteral);
   }
@@ -257,7 +255,7 @@ TEST_F(LoggingTest, verifyFileSizeLimit) {
   // Check for 'rolled' log files.  With a 1MB file size limit and each logged
   // string having a length of 1K chars, we should have at least one less
   // rolled log file than the number of strings logged, i.e. 3 rolled files
-  // for 4 strings in this case.  spdlog rolled files look like
+  // for 4K strings in this case.  spdlog rolled files look like
   // <<basename>>.<<#>>.<<extension>>, so for LoggingTest.log we should find
   // LoggingTest.1.log, LoggingTest.2.log, etc.
   auto base = boost::filesystem::path(testLogFileName).stem();
@@ -295,15 +293,13 @@ TEST_F(LoggingTest, verifyDiskSpaceLimit) {
   ASSERT_TRUE(boost::filesystem::exists(testLogFileName));
 
   auto size = boost::filesystem::file_size(testLogFileName);
+  auto numRolledFilesFound = 0;
   auto base = boost::filesystem::path(testLogFileName).stem();
   auto ext = boost::filesystem::path(testLogFileName).extension();
 
   // We wrote 4x the log file limit, and 2x the disk space limit, so
-  // there should be one 'rolled' file, and it should be named <test log
-  // basename>-0.log.
-  auto rolledLogFileName =
-      base.string() + "-" + std::to_string(0) + ext.string();
-  ASSERT_TRUE(boost::filesystem::exists(rolledLogFileName));
+  // there should be one 'rolled' file.  Its name should be of the form
+  // <base>-n.log, where n is some reasonable number.
 
   // Scan through a ton of file names to make sure we catch any strays
   // (logger has had bugs with filename weirdness here, like deleting
@@ -313,11 +309,11 @@ TEST_F(LoggingTest, verifyDiskSpaceLimit) {
         base.string() + "-" + std::to_string(i) + ext.string();
     if (boost::filesystem::exists(rolledLogFileName)) {
       size += boost::filesystem::file_size(rolledLogFileName);
-    } else {
-      break;
+      numRolledFilesFound++;
     }
   }
 
   ASSERT_TRUE(size <= DISK_SPACE_LIMIT);
+  ASSERT_TRUE(numRolledFilesFound == 1);
 }
 }  // namespace

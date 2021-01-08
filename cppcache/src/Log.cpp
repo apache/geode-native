@@ -195,7 +195,7 @@ void Log::validateSizeLimits(int64_t fileSizeLimit, int64_t diskSpaceLimit) {
     throw IllegalArgumentException("Specified disk space limit must be >= 0");
   }
 
-  if (fileSizeLimit > diskSpaceLimit && diskSpaceLimit > 0) {
+  if (fileSizeLimit > diskSpaceLimit && diskSpaceLimit != 0) {
     throw IllegalArgumentException(
         "Disk space limit must be larger than file size limit");
   }
@@ -235,45 +235,34 @@ void Log::init(LogLevel level, const char* logFileName, int32_t logFileLimit,
       g_logFile = new std::string(filename);
     }
 
-#ifdef _WIN32
-    // replace all '\' with '/' to make everything easier..
-    std::replace(g_logFile->begin(), g_logFile->end(), '\\', '/');
-#endif
+    auto base = boost::filesystem::path(*g_logFile).stem();
+    auto ext = boost::filesystem::path(*g_logFile).extension();
 
-    // Appending a ".log" at the end if it does not exist or file has some other
-    // extension.
-    std::string filebasename = ACE::basename(g_logFile->c_str());
-    auto len = static_cast<int32_t>(filebasename.length());
-    auto fileExtPos = filebasename.find_last_of('.', len);
     // if no extension then add .log extension
-    if (fileExtPos == std::string::npos) {
+    if (ext.empty()) {
+      g_logFileWithExt = new std::string(*g_logFile + ".log");
+    } else if (ext != ".log") {
       g_logFileWithExt = new std::string(*g_logFile + ".log");
     } else {
-      std::string extName = filebasename.substr(fileExtPos + 1);
-      // if extension other than .log change it to ext + .log
-      if (extName != "log") {
-        g_logFileWithExt = new std::string(*g_logFile + ".log");
-      }
-      // .log Extension already provided, no need to append any extension.
-      else {
-        g_logFileWithExt = new std::string(*g_logFile);
-      }
+      g_logFileWithExt = new std::string(*g_logFile);
     }
 
-    g_fileSizeLimit = logFileLimit * 1024 * 1024;
-    g_diskSpaceLimit = logDiskSpaceLimit * 1024ll * 1024ll;
-
-    // If FileSizelimit is greater than DiskSpaceLimit & diskspaceLimit is set,
-    // then set DiskSpaceLimit to FileSizelimit
-    if (g_fileSizeLimit > g_diskSpaceLimit && g_diskSpaceLimit != 0) {
-      g_fileSizeLimit = g_diskSpaceLimit;
+    // Default to 10MB file limit and 1GB disk limit
+    if (logFileLimit == 0 && logDiskSpaceLimit == 0) {
+      g_fileSizeLimit = 10 * __1M__;
+      g_diskSpaceLimit = 1000 * __1M__;
     }
-
-    // If only DiskSpaceLimit is specified and no FileSizeLimit specified, then
-    // set DiskSpaceLimit to FileSizelimit.
-    // This helps in getting the file handle that is exceeded the limit.
-    if (g_fileSizeLimit == 0 && g_diskSpaceLimit != 0) {
+    // disk space specified but file size is defaulted.  Just use a single
+    // log file, i.e. set file limit == disk limit
+    else if (logFileLimit == 0) {
+      g_diskSpaceLimit = logDiskSpaceLimit * __1M__;
       g_fileSizeLimit = g_diskSpaceLimit;
+    } else if (logDiskSpaceLimit == 0) {
+      g_fileSizeLimit = logFileLimit * __1M__;
+      g_diskSpaceLimit = g_fileSizeLimit;
+    } else {
+      g_fileSizeLimit = logFileLimit * __1M__;
+      g_diskSpaceLimit = logDiskSpaceLimit * __1M__;
     }
 
     g_bytesWritten = 0;
@@ -287,7 +276,7 @@ void Log::init(LogLevel level, const char* logFileName, int32_t logFileLimit,
     if (status != -1) {
       for (int index = 0; index < sds.length(); ++index) {
         std::string strname = ACE::basename(sds[index]->d_name);
-        fileExtPos = strname.find_last_of('.', strname.length());
+        auto fileExtPos = strname.find_last_of('.', strname.length());
         if (fileExtPos != std::string::npos) {
           std::string tempname = strname.substr(0, fileExtPos);
           size_t fileHyphenPos = tempname.find_last_of('-', tempname.length());
@@ -310,7 +299,7 @@ void Log::init(LogLevel level, const char* logFileName, int32_t logFileLimit,
       std::string extName;
       std::string newfilestr;
 
-      len = static_cast<int32_t>(g_logFileWithExt->length());
+      auto len = static_cast<int32_t>(g_logFileWithExt->length());
       int32_t lastPosOfSep = static_cast<int32_t>(
           g_logFileWithExt->find_last_of(ACE_DIRECTORY_SEPARATOR_CHAR, len));
       if (lastPosOfSep == -1) {
