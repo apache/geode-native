@@ -75,6 +75,10 @@ set(SOURCES_ALL ${SOURCES} ${PRIVATE_HEADERS} ${PUBLIC_HEADERS} ${CONFIGURE_IN_F
 
 add_library(_apache-geode INTERFACE)
 
+target_compile_definitions(_apache-geode INTERFACE
+  APACHE_GEODE_ABI_COMPATIBILITY=$<BOOL:${WITH_ABI_COMPATIBILITY}>
+)
+
 if(CMAKE_SYSTEM_NAME STREQUAL "SunOS")
   target_link_libraries(_apache-geode INTERFACE
     demangle
