@@ -30,7 +30,9 @@
 
 #include <ace/ACE.h>
 #include <ace/Dirent_Selector.h>
+#include <boost/filesystem.hpp>
 #include <boost/process/environment.hpp>
+#include <boost/regex.hpp>
 
 #include <geode/ExceptionTypes.hpp>
 #include <geode/internal/geode_globals.hpp>
@@ -208,13 +210,13 @@ void Log::validateLogFileName(const std::string& filename) {
   }
 }
 
-void Log::init(LogLevel level, const std::string& logFileName,
-               int32_t logFileLimit, int64_t logDiskSpaceLimit) {
-  init(level, logFileName.c_str(), logFileLimit, logDiskSpaceLimit);
-}
-
 void Log::init(LogLevel level, const char* logFileName, int32_t logFileLimit,
                int64_t logDiskSpaceLimit) {
+  init(level, std::string(logFileName), logFileLimit, logDiskSpaceLimit);
+}
+
+void Log::init(LogLevel level, const std::string& logFileName,
+               int32_t logFileLimit, int64_t logDiskSpaceLimit) {
   if (g_log != nullptr) {
     throw IllegalStateException(
         "The Log has already been initialized. "
@@ -227,7 +229,13 @@ void Log::init(LogLevel level, const char* logFileName, int32_t logFileLimit,
 
   std::lock_guard<decltype(g_logMutex)> guard(g_logMutex);
 
-  if (logFileName && logFileName[0]) {
+  if (logFileName.empty()) {
+    if (g_logFile) {
+      delete g_logFile;
+      g_logFile = nullptr;
+      g_logFileWithExt = nullptr;
+    }
+  } else {
     std::string filename = logFileName;
     if (g_logFile) {
       *g_logFile = filename;
@@ -235,13 +243,13 @@ void Log::init(LogLevel level, const char* logFileName, int32_t logFileLimit,
       g_logFile = new std::string(filename);
     }
 
-    auto base = boost::filesystem::path(*g_logFile).stem();
-    auto ext = boost::filesystem::path(*g_logFile).extension();
+    auto fullpath =
+        boost::filesystem::absolute(boost::filesystem::path(*g_logFile));
 
     // if no extension then add .log extension
-    if (ext.empty()) {
+    if (fullpath.extension().empty()) {
       g_logFileWithExt = new std::string(*g_logFile + ".log");
-    } else if (ext != ".log") {
+    } else if (fullpath.extension() != ".log") {
       g_logFileWithExt = new std::string(*g_logFile + ".log");
     } else {
       g_logFileWithExt = new std::string(*g_logFile);
@@ -269,104 +277,48 @@ void Log::init(LogLevel level, const char* logFileName, int32_t logFileLimit,
     g_spaceUsed = 0;
     g_rollIndex = 0;
 
-    std::string dirname = ACE::dirname(g_logFile->c_str());
+    const auto target_path = fullpath.parent_path().string();
+    const auto filterstring = fullpath.stem().string() + "-(\\d+)\\.log$";
 
-    ACE_Dirent_Selector sds;
-    int status = sds.open(dirname.c_str(), selector, comparator);
-    if (status != -1) {
-      for (int index = 0; index < sds.length(); ++index) {
-        std::string strname = ACE::basename(sds[index]->d_name);
-        auto fileExtPos = strname.find_last_of('.', strname.length());
-        if (fileExtPos != std::string::npos) {
-          std::string tempname = strname.substr(0, fileExtPos);
-          size_t fileHyphenPos = tempname.find_last_of('-', tempname.length());
-          if (fileHyphenPos != std::string::npos) {
-            std::string buff =
-                tempname.substr(fileHyphenPos + 1, tempname.length());
-            g_rollIndex = std::stoi(buff) + 1;
+    const boost::regex my_filter(filterstring);
+
+    std::vector<std::string> all_matching_files;
+
+    // Find the next roll index - will be highest present roll number + 1
+    g_rollIndex = 0;
+    boost::filesystem::directory_iterator end_itr;
+    for (boost::filesystem::directory_iterator i(target_path); i != end_itr;
+         ++i) {
+      if (boost::filesystem::is_regular_file(i->status())) {
+        std::string filename = i->path().filename().string();
+        boost::regex testPattern(filterstring);
+        boost::match_results<std::string::const_iterator> testMatches;
+        if (boost::regex_search(std::string::const_iterator(filename.begin()),
+                                filename.cend(), testMatches, testPattern)) {
+          auto index = std::atoi(
+              std::string(testMatches[1].first, testMatches[1].second).c_str());
+          if (index > g_rollIndex) {
+            g_rollIndex = index + 1;
           }
-        }  // if loop
-      }    // for loop
-    }
-    sds.close();
-
-    FILE* existingFile = fopen(g_logFileWithExt->c_str(), "r");
-    if (existingFile != nullptr && logFileLimit > 0) {
-      char rollFile[1024] = {0};
-      std::string logsdirname;
-      std::string logsbasename;
-      std::string fnameBeforeExt;
-      std::string extName;
-      std::string newfilestr;
-
-      auto len = static_cast<int32_t>(g_logFileWithExt->length());
-      int32_t lastPosOfSep = static_cast<int32_t>(
-          g_logFileWithExt->find_last_of(ACE_DIRECTORY_SEPARATOR_CHAR, len));
-      if (lastPosOfSep == -1) {
-        logsdirname = ".";
-      } else {
-        logsdirname = g_logFileWithExt->substr(0, lastPosOfSep);
-      }
-      logsbasename = g_logFileWithExt->substr(lastPosOfSep + 1, len);
-      char logFileExtAfter = '.';
-      int32_t baselen = static_cast<int32_t>(logsbasename.length());
-      int32_t posOfExt = static_cast<int32_t>(
-          logsbasename.find_last_of(logFileExtAfter, baselen));
-      if (posOfExt == -1) {
-        // throw IllegalArgument;
-      } else {
-        fnameBeforeExt = logsbasename.substr(0, posOfExt);
-        extName = logsbasename.substr(posOfExt + 1, baselen);
-      }
-      std::snprintf(rollFile, 1024, "%s%c%s-%d.%s", logsdirname.c_str(),
-                    ACE_DIRECTORY_SEPARATOR_CHAR, fnameBeforeExt.c_str(),
-                    g_rollIndex++, extName.c_str());
-      bool rollFileNameGot = false;
-      while (!rollFileNameGot) {
-        FILE* checkFile = fopen(rollFile, "r");
-        if (checkFile != nullptr) {
-          fclose(checkFile);
-          checkFile = nullptr;
-          std::snprintf(rollFile, 1024, "%s%c%s-%d.%s", logsdirname.c_str(),
-                        ACE_DIRECTORY_SEPARATOR_CHAR, fnameBeforeExt.c_str(),
-                        g_rollIndex++, extName.c_str());
-        } else {
-          rollFileNameGot = true;
         }
-        /* adongre
-         * CID 28999: Use after free (USE_AFTER_FREE)
-         */
-        if (checkFile != nullptr) fclose(existingFile);
       }
-      // retry some number of times before giving up when file is busy etc.
-      int renameResult = -1;
-      int maxTries = 10;
-      while (maxTries-- > 0) {
-        renameResult = ACE_OS::rename(g_logFileWithExt->c_str(), rollFile);
-        if (renameResult >= 0) {
-          break;
-        }
-        // continue after some sleep
-        std::this_thread::sleep_for(std::chrono::milliseconds(200));
-      }
-      /* (don't throw exception; try appending to existing file instead)
-      if (renameResult < 0) {
-        std::string msg = "Could not rename: " +
-          *g_logFileWithExt + " to: " + rollFile;
-        throw GeodeIOException(msg.c_str());
-      }
-      */
     }
-    if (existingFile != nullptr) {
-      fclose(existingFile);
-      existingFile = nullptr;
+
+    if (boost::filesystem::exists(fullpath) && logFileLimit > 0) {
+      auto rollFileName =
+          (fullpath.parent_path() /
+           (fullpath.stem().string() + "-" + std::to_string(g_rollIndex) +
+            fullpath.extension().string()))
+              .string();
+      try {
+        boost::filesystem::rename(fullpath,
+                                  boost::filesystem::path(rollFileName));
+      } catch (const boost::filesystem::filesystem_error&) {
+        throw IllegalStateException("Failed to roll log file");
+      }
     }
-  } else if (g_logFile) {
-    delete g_logFile;
-    g_logFile = nullptr;
-    g_logFileWithExt = nullptr;
+    writeBanner();
   }
-  writeBanner();
 }
 
 void Log::close() {
