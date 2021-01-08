@@ -20,6 +20,7 @@ option(USE_PCH "Use precompiled headers (PCH)." OFF)
 option(USE_CPP_COVERAGE "Enable profiling and coverage report analysis for apache-geode cpp library." OFF)
 option(USE_RAT "Enable Apache Rat checking." OFF)
 option(WITH_IPV6 "Enable IPv6 support." OFF)
+option(WITH_ABI_COMPATIBILITY "Enforce ABI compatibility." ON)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
