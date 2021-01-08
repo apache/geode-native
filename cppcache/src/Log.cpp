@@ -30,6 +30,7 @@
 
 #include <ace/ACE.h>
 #include <ace/Dirent_Selector.h>
+#include <boost/asio/ip/host_name.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/process/environment.hpp>
 #include <boost/regex.hpp>
@@ -86,7 +87,6 @@ typedef std::vector<std::pair<std::string, int64_t> > g_fileInfo;
 static boost::filesystem::path g_fullpath;
 
 static FILE* g_log = nullptr;
-static ACE_utsname g_uname;
 static pid_t g_pid = 0;
 
 const int __1K__ = 1024;
@@ -174,7 +174,6 @@ using apache::geode::log::globals::g_logMutex;
 using apache::geode::log::globals::g_pid;
 using apache::geode::log::globals::g_rollIndex;
 using apache::geode::log::globals::g_spaceUsed;
-using apache::geode::log::globals::g_uname;
 
 /*****************************************************************************/
 
@@ -346,62 +345,33 @@ void Log::close() {
 }
 
 void Log::writeBanner() {
-  if (g_logFileWithExt == nullptr) {
-    return;
-  }
-  const char* dirname = ACE::dirname(g_logFileWithExt->c_str());
-  if (GF_FILEEXISTS(dirname) != 0 && ACE_OS::mkdir(dirname) != 0) {
-    std::string msg =
-        "Error in creating directories for: " + std::string(dirname);
-    throw GeodeIOException(msg.c_str());
-  }
-  // retry some number of times before giving up when file is busy etc.
-  int maxTries = 10;
-  while (maxTries-- > 0) {
-    g_log = fopen(g_logFileWithExt->c_str(), "a");
-    if (g_log != nullptr) {
-      break;
+  if (s_logLevel != LogLevel::None) {
+    std::string bannertext = geodeBanner::getBanner();
+
+    // fullpath not empty --> we're logging to file
+    if (!g_fullpath.string().empty()) {
+      if (boost::filesystem::exists(
+              g_fullpath.parent_path().string().c_str()) ||
+          boost::filesystem::create_directories(g_fullpath.parent_path())) {
+        g_log = fopen(g_logFileWithExt->c_str(), "a");
+        if (g_log) {
+          g_isLogFileOpened = true;
+
+          if (g_logFile == nullptr) {
+            return;
+          }  // else
+
+          if (fprintf(g_log, "%s", bannertext.c_str())) {
+            g_bytesWritten += static_cast<int32_t>(bannertext.length());
+            fflush(g_log);
+          }
+        }
+      }
+    } else {
+      fprintf(stdout, "%s", bannertext.c_str());
+      fflush(stdout);
     }
-    int lastError = ACE_OS::last_error();
-    if (lastError != EACCES && lastError != EINTR && lastError != EWOULDBLOCK) {
-      break;
-    }
-    // continue after some sleep
-    std::this_thread::sleep_for(std::chrono::milliseconds(200));
   }
-  if (!g_log) {
-    g_isLogFileOpened = false;
-    return;
-  } else {
-    g_isLogFileOpened = true;
-  }
-
-  if (s_logLevel == LogLevel::None) {
-    return;
-  }
-  std::string bannertext = geodeBanner::getBanner();
-
-  if (g_logFile == nullptr) {
-    fprintf(stdout, "%s", bannertext.c_str());
-    fflush(stdout);
-    return;
-  }  // else
-
-  if (fprintf(g_log, "%s", bannertext.c_str()) == 0 || ferror(g_log)) {
-    // we should be continue,
-    return;
-  }
-
-  int numchars = 0;
-  const char* pch = nullptr;
-  pch = strchr(bannertext.c_str(), '\n');
-  while (pch != nullptr) {
-    pch = strchr(pch + 1, '\n');
-    numchars += 2;
-  }
-
-  g_bytesWritten += static_cast<int32_t>(bannertext.length() + numchars);
-  fflush(g_log);
 }
 
 const char* Log::levelToChars(LogLevel level) {
@@ -439,9 +409,8 @@ const char* Log::levelToChars(LogLevel level) {
     case LogLevel::All:
       return "all";
   }
-  char buf[64] = {0};
-  std::snprintf(buf, 64, "Unexpected log level: %d", static_cast<int>(level));
-  throw IllegalArgumentException(buf);
+  throw IllegalArgumentException(std::string("Unexpected log level: ") +
+                                 std::to_string(static_cast<int>(level)));
 }
 
 LogLevel Log::charsToLevel(const std::string& chars) {
@@ -481,7 +450,6 @@ LogLevel Log::charsToLevel(const std::string& chars) {
 char* Log::formatLogLine(char* buf, LogLevel level) {
   if (g_pid == 0) {
     g_pid = boost::this_process::get_id();
-    ACE_OS::uname(&g_uname);
   }
   const size_t MINBUFSIZE = 128;
   auto now = std::chrono::system_clock::now();
@@ -496,7 +464,8 @@ char* Log::formatLogLine(char* buf, LogLevel level) {
                         static_cast<int64_t>(microseconds.count()));
   pbuf += std::strftime(pbuf, MINBUFSIZE, "%Z ", &tm_val);
 
-  std::snprintf(pbuf, 300, "%s:%d %" PRIu64 "] ", g_uname.nodename, g_pid,
+  std::snprintf(pbuf, 300, "%s:%d %" PRIu64 "] ",
+                boost::asio::ip::host_name().c_str(), g_pid,
                 hacks::aceThreadId(ACE_OS::thr_self()));
 
   return buf;
