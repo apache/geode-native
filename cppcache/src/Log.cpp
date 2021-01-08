@@ -85,6 +85,9 @@ static FILE* g_log = nullptr;
 static ACE_utsname g_uname;
 static pid_t g_pid = 0;
 
+const int __1K__ = 1024;
+const int __1M__ = (__1K__ * __1K__);
+
 }  // namespace globals
 }  // namespace log
 }  // namespace geode
@@ -151,6 +154,8 @@ namespace client {
 
 LogLevel Log::s_logLevel = LogLevel::Default;
 
+using apache::geode::log::globals::__1K__;
+using apache::geode::log::globals::__1M__;
 using apache::geode::log::globals::g_bytesWritten;
 using apache::geode::log::globals::g_diskSpaceLimit;
 using apache::geode::log::globals::g_fileInfo;
@@ -175,6 +180,34 @@ LogLevel Log::logLevel() { return s_logLevel; }
  */
 void Log::setLogLevel(LogLevel level) { s_logLevel = level; }
 
+void Log::validateSizeLimits(int64_t fileSizeLimit, int64_t diskSpaceLimit) {
+  if (fileSizeLimit * __1M__ > GEODE_MAX_LOG_FILE_LIMIT) {
+    throw IllegalArgumentException(
+        "Specified file size limit larger than max allowed (1GB)");
+  } else if (fileSizeLimit < 0) {
+    throw IllegalArgumentException("Specified file size limit must be >= 0");
+  }
+
+  if (diskSpaceLimit * __1M__ > GEODE_MAX_LOG_DISK_LIMIT) {
+    throw IllegalArgumentException(
+        "Specified disk space limit larger than max allowed (1TB)");
+  } else if (diskSpaceLimit < 0) {
+    throw IllegalArgumentException("Specified disk space limit must be >= 0");
+  }
+
+  if (fileSizeLimit > diskSpaceLimit && diskSpaceLimit > 0) {
+    throw IllegalArgumentException(
+        "Disk space limit must be larger than file size limit");
+  }
+}
+
+void Log::validateLogFileName(const std::string& filename) {
+  if (!boost::filesystem::portable_file_name(filename)) {
+    throw IllegalArgumentException("Specified log file (" + filename +
+                                   ") is not a valid portable name.");
+  }
+}
+
 void Log::init(LogLevel level, const std::string& logFileName,
                int32_t logFileLimit, int64_t logDiskSpaceLimit) {
   init(level, logFileName.c_str(), logFileLimit, logDiskSpaceLimit);
@@ -189,14 +222,8 @@ void Log::init(LogLevel level, const char* logFileName, int32_t logFileLimit,
   }
   s_logLevel = level;
 
-  if (logDiskSpaceLimit <
-      0 /*|| logDiskSpaceLimit > GEODE_MAX_LOG_DISK_LIMIT*/) {
-    logDiskSpaceLimit = GEODE_MAX_LOG_DISK_LIMIT;
-  }
-
-  if (logFileLimit < 0 || logFileLimit > GEODE_MAX_LOG_FILE_LIMIT) {
-    logFileLimit = GEODE_MAX_LOG_FILE_LIMIT;
-  }
+  validateSizeLimits(logFileLimit, logDiskSpaceLimit);
+  validateLogFileName(logFileName);
 
   std::lock_guard<decltype(g_logMutex)> guard(g_logMutex);
 
