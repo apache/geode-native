@@ -99,9 +99,9 @@
       "type": "shell",
       "execute_command": "{{.Vars}} sudo -E -S bash '{{.Path}}'",
       "scripts": [
+        "ubuntu/install-clang-format.sh",
         "linux/install-cmake.sh",
         "linux/install-geode.sh",
-        "ubuntu/install-clang-format.sh",
         "ubuntu/install-jdk-11.sh"
       ]
     },
@@ -119,9 +119,7 @@
       "type": "shell",
       "execute_command": "{{.Vars}} sudo -E -S bash '{{.Path}}'",
       "inline": [
-        "apt-get -y install build-essential libc++-dev libc++abi-dev zlib1g-dev libssl-dev wget doxygen graphviz python python-pip",
-        "pip install --upgrade pip",
-        "pip install cpp-coveralls"
+        "apt-get -y install build-essential libc++-dev libc++abi-dev zlib1g-dev libssl-dev wget doxygen graphviz"
       ]
     },
     {
