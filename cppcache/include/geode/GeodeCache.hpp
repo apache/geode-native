@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_GEMFIRECACHE_H_
-#define GEODE_GEMFIRECACHE_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,12 +15,13 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_GEMFIRECACHE_H_
+#define GEODE_GEMFIRECACHE_H_
+
 #include "RegionService.hpp"
 #include "internal/geode_globals.hpp"
-
-/**
- * @file
- */
 
 namespace apache {
 namespace geode {
@@ -47,7 +43,9 @@ class SystemProperties;
 
 class APACHE_GEODE_EXPORT GeodeCache : public RegionService {
  public:
-  ~GeodeCache() override = default;
+#if (!APACHE_GEODE_ABI_COMPATIBILITY)
+  ~GeodeCache() override = 0;
+#endif
 
   /** Returns the name of this cache.
    * @return the string name of this cache

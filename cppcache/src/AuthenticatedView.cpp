@@ -161,7 +161,7 @@ AuthenticatedView::AuthenticatedView(std::shared_ptr<Properties> credentials,
       m_remoteQueryService(nullptr),
       m_cacheImpl(cacheImpl) {}
 
-AuthenticatedView::~AuthenticatedView() {}
+AuthenticatedView::~AuthenticatedView() = default;
 
 PdxInstanceFactory AuthenticatedView::createPdxInstanceFactory(
     const std::string& className, bool expectDomainClass) const {
