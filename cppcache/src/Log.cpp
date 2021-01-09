@@ -237,6 +237,32 @@ void rollLogFile() {
   }
 }
 
+void setRollFileIndex() {
+  const auto filterstring = g_fullpath.stem().string() + "-(\\d+)\\.log$";
+  const boost::regex my_filter(filterstring);
+
+  // Find the next roll index - will be highest present roll number + 1
+  g_rollIndex = 0;
+  boost::filesystem::directory_iterator end_itr;
+  for (boost::filesystem::directory_iterator i(
+           g_fullpath.parent_path().string());
+       i != end_itr; ++i) {
+    if (boost::filesystem::is_regular_file(i->status())) {
+      std::string filename = i->path().filename().string();
+      boost::regex testPattern(filterstring);
+      boost::match_results<std::string::const_iterator> testMatches;
+      if (boost::regex_search(std::string::const_iterator(filename.begin()),
+                              filename.cend(), testMatches, testPattern)) {
+        auto index = std::atoi(
+            std::string(testMatches[1].first, testMatches[1].second).c_str());
+        if (index > g_rollIndex) {
+          g_rollIndex = index + 1;
+        }
+      }
+    }
+  }
+}
+
 void Log::init(LogLevel level, const std::string& logFileName,
                int32_t logFileLimit, int64_t logDiskSpaceLimit) {
   if (g_log != nullptr) {
@@ -297,38 +323,16 @@ void Log::init(LogLevel level, const std::string& logFileName,
 
     g_bytesWritten = 0;
     g_spaceUsed = 0;
-    g_rollIndex = 0;
 
+    // Ensure that directory exists for log files.  We're going to attempt
+    // to iterate through files in that folder, and if it doesn't exist boost
+    // will throw an exception.
     const auto target_path = g_fullpath.parent_path().string();
     if (!boost::filesystem::exists(target_path)) {
       boost::filesystem::create_directories(target_path);
     }
 
-    const auto filterstring = g_fullpath.stem().string() + "-(\\d+)\\.log$";
-
-    const boost::regex my_filter(filterstring);
-
-    std::vector<std::string> all_matching_files;
-
-    // Find the next roll index - will be highest present roll number + 1
-    g_rollIndex = 0;
-    boost::filesystem::directory_iterator end_itr;
-    for (boost::filesystem::directory_iterator i(target_path); i != end_itr;
-         ++i) {
-      if (boost::filesystem::is_regular_file(i->status())) {
-        std::string filename = i->path().filename().string();
-        boost::regex testPattern(filterstring);
-        boost::match_results<std::string::const_iterator> testMatches;
-        if (boost::regex_search(std::string::const_iterator(filename.begin()),
-                                filename.cend(), testMatches, testPattern)) {
-          auto index = std::atoi(
-              std::string(testMatches[1].first, testMatches[1].second).c_str());
-          if (index > g_rollIndex) {
-            g_rollIndex = index + 1;
-          }
-        }
-      }
-    }
+    setRollFileIndex();
 
     if (boost::filesystem::exists(g_fullpath) && logFileLimit > 0) {
       rollLogFile();
