@@ -23,6 +23,7 @@
 #include <cinttypes>
 #include <ctime>
 #include <mutex>
+#include <sstream>
 #include <string>
 #include <thread>
 #include <utility>
@@ -348,8 +349,11 @@ void Log::writeBanner() {
   if (s_logLevel != LogLevel::None) {
     std::string bannertext = geodeBanner::getBanner();
 
-    // fullpath not empty --> we're logging to file
-    if (!g_fullpath.string().empty()) {
+    // fullpath empty --> we're logging to stdout
+    if (g_fullpath.string().empty()) {
+      fprintf(stdout, "%s", bannertext.c_str());
+      fflush(stdout);
+    } else {
       if (boost::filesystem::exists(
               g_fullpath.parent_path().string().c_str()) ||
           boost::filesystem::create_directories(g_fullpath.parent_path())) {
@@ -367,9 +371,6 @@ void Log::writeBanner() {
           }
         }
       }
-    } else {
-      fprintf(stdout, "%s", bannertext.c_str());
-      fflush(stdout);
     }
   }
 }
@@ -447,7 +448,8 @@ LogLevel Log::charsToLevel(const std::string& chars) {
   }
 }
 
-char* Log::formatLogLine(char* buf, LogLevel level) {
+std::string Log::formatLogLine(LogLevel level) {
+  std::stringstream msg;
   if (g_pid == 0) {
     g_pid = boost::this_process::get_id();
   }
@@ -457,168 +459,161 @@ char* Log::formatLogLine(char* buf, LogLevel level) {
   auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(
       now - std::chrono::system_clock::from_time_t(secs));
   auto tm_val = apache::geode::util::chrono::localtime(secs);
-  auto pbuf = buf;
-  pbuf += std::snprintf(pbuf, 15, "[%s ", Log::levelToChars(level));
-  pbuf += std::strftime(pbuf, MINBUFSIZE, "%Y/%m/%d %H:%M:%S", &tm_val);
-  pbuf += std::snprintf(pbuf, 15, ".%06" PRId64 " ",
-                        static_cast<int64_t>(microseconds.count()));
-  pbuf += std::strftime(pbuf, MINBUFSIZE, "%Z ", &tm_val);
+  msg << "[" << Log::levelToChars(level) << " ";
+  char timebuf[MINBUFSIZE];
 
-  std::snprintf(pbuf, 300, "%s:%d %" PRIu64 "] ",
-                boost::asio::ip::host_name().c_str(), g_pid,
-                hacks::aceThreadId(ACE_OS::thr_self()));
+  std::strftime(timebuf, MINBUFSIZE, "%Y/%m/%d %H:%M:%S", &tm_val);
+  msg << timebuf;
 
-  return buf;
+  std::snprintf(timebuf, 15, ".%06" PRId64 " ",
+                static_cast<int64_t>(microseconds.count()));
+  msg << timebuf << " ";
+
+  std::strftime(timebuf, MINBUFSIZE, "%Z ", &tm_val);
+  msg << timebuf << " " << boost::asio::ip::host_name() << ":"
+      << boost::this_process::get_id() << " " << std::this_thread::get_id()
+      << "] ";
+
+  return msg.str();
 }
 
-void Log::put(LogLevel level, const std::string& msg) {
-  put(level, msg.c_str());
-}
+void Log::put(LogLevel level, const char* msg) { put(level, std::string(msg)); }
 
 // int g_count = 0;
-void Log::put(LogLevel level, const char* msg) {
+void Log::put(LogLevel level, const std::string& msg) {
   std::lock_guard<decltype(g_logMutex)> guard(g_logMutex);
 
   g_fileInfo fileInfo;
 
-  char buf[256] = {0};
+  std::string buf;
   char fullpath[512] = {0};
 
-  if (!g_logFile) {
-    fprintf(stdout, "%s%s\n", formatLogLine(buf, level), msg);
+  if (g_fullpath.string().empty()) {
+    fprintf(stdout, "%s%s\n", formatLogLine(level).c_str(), msg.c_str());
     fflush(stdout);
-    // TODO: ignoring for now; probably store the log-lines for possible
-    // future logging if log-file gets initialized properly
-
   } else {
-    if (!g_isLogFileOpened) {
-      g_log = fopen(g_logFileWithExt->c_str(), "a");
-      if (!g_log) {
-        g_isLogFileOpened = false;
-        return;
-      }
-      g_isLogFileOpened = true;
-    } else if (!g_log) {
-      g_log = fopen(g_logFileWithExt->c_str(), "a");
-      if (!g_log) {
-        return;
-      }
+    if (!g_log) {
+      g_log = fopen(g_fullpath.string().c_str(), "a");
     }
 
-    formatLogLine(buf, level);
-    auto numChars = static_cast<int>(std::strlen(buf) + std::strlen(msg));
-    g_bytesWritten +=
-        numChars + 2;  // bcoz we have to count trailing new line (\n)
-
-    if ((g_fileSizeLimit != 0) && (g_bytesWritten >= g_fileSizeLimit)) {
-      char rollFile[1024] = {0};
-      std::string logsdirname;
-      std::string logsbasename;
-      std::string fnameBeforeExt;
-      std::string extName;
-      std::string newfilestr;
-
-      int32_t len = static_cast<int32_t>(g_logFileWithExt->length());
-      int32_t lastPosOfSep = static_cast<int32_t>(
-          g_logFileWithExt->find_last_of(ACE_DIRECTORY_SEPARATOR_CHAR, len));
-      if (lastPosOfSep == -1) {
-        logsdirname = ".";
-      } else {
-        logsdirname = g_logFileWithExt->substr(0, lastPosOfSep);
-      }
-      logsbasename = g_logFileWithExt->substr(lastPosOfSep + 1, len);
-      char logFileExtAfter = '.';
-      int32_t baselen = static_cast<int32_t>(logsbasename.length());
-      int32_t posOfExt = static_cast<int32_t>(
-          logsbasename.find_last_of(logFileExtAfter, baselen));
-      if (posOfExt == -1) {
-        // throw IllegalArgument;
-      } else {
-        fnameBeforeExt = logsbasename.substr(0, posOfExt);
-        extName = logsbasename.substr(posOfExt + 1, baselen);
-      }
-      std::snprintf(rollFile, 1024, "%s%c%s-%d.%s", logsdirname.c_str(),
-                    ACE_DIRECTORY_SEPARATOR_CHAR, fnameBeforeExt.c_str(),
-                    g_rollIndex++, extName.c_str());
-      bool rollFileNameGot = false;
-      while (!rollFileNameGot) {
-        FILE* fp1 = fopen(rollFile, "r");
-        if (fp1 != nullptr) {
-          fclose(fp1);
-          std::snprintf(rollFile, 1024, "%s%c%s-%d.%s", logsdirname.c_str(),
-                        ACE_DIRECTORY_SEPARATOR_CHAR, fnameBeforeExt.c_str(),
-                        g_rollIndex++, extName.c_str());
-        } else {
-          rollFileNameGot = true;
-        }
-      }
-
-      fclose(g_log);
-      g_log = nullptr;
-
-      if (ACE_OS::rename(g_logFileWithExt->c_str(), rollFile) < 0) {
-        return;  // no need to throw exception try next time
-      }
-
-      g_bytesWritten =
+    if (g_log) {
+      buf = formatLogLine(level);
+      auto numChars = static_cast<int>(buf.length() + msg.length());
+      g_bytesWritten +=
           numChars + 2;  // bcoz we have to count trailing new line (\n)
-      writeBanner();
-    }
 
-    g_spaceUsed += g_bytesWritten;
+      if ((g_fileSizeLimit != 0) && (g_bytesWritten >= g_fileSizeLimit)) {
+        char rollFile[1024] = {0};
+        std::string logsdirname;
+        std::string logsbasename;
+        std::string fnameBeforeExt;
+        std::string extName;
+        std::string newfilestr;
 
-    if ((g_diskSpaceLimit > 0) && (g_spaceUsed >= g_diskSpaceLimit)) {
-      std::string dirname = ACE::dirname(g_logFile->c_str());
-      g_spaceUsed = 0;
-      ACE_stat statBuf = {};
-
-      ACE_Dirent_Selector sds;
-      int status = sds.open(dirname.c_str(), selector, comparator);
-      if (status != -1) {
-        for (int index = 1; index < sds.length(); ++index) {
-          std::snprintf(fullpath, 512, "%s%c%s", dirname.c_str(),
-                        ACE_DIRECTORY_SEPARATOR_CHAR, sds[index]->d_name);
-          ACE_OS::stat(fullpath, &statBuf);
-          g_fileInfoPair = std::make_pair(fullpath, statBuf.st_size);
-          fileInfo.push_back(g_fileInfoPair);
-          g_spaceUsed += fileInfo[index - 1].second;
-        }  // for loop
-        g_spaceUsed += g_bytesWritten;
-        sds.close();
-      }
-      int fileIndex = 0;
-
-      while ((g_spaceUsed > (g_diskSpaceLimit /*- g_fileSizeLimit*/))) {
-        int64_t fileSize = fileInfo[fileIndex].second;
-        if (ACE_OS::unlink(fileInfo[fileIndex].first.c_str()) == 0) {
-          g_spaceUsed -= fileSize;
+        int32_t len = static_cast<int32_t>(g_logFileWithExt->length());
+        int32_t lastPosOfSep = static_cast<int32_t>(
+            g_logFileWithExt->find_last_of(ACE_DIRECTORY_SEPARATOR_CHAR, len));
+        if (lastPosOfSep == -1) {
+          logsdirname = ".";
         } else {
-          char printmsg[256];
-          std::snprintf(printmsg, 256, "%s\t%s\n", "Could not delete",
-                        fileInfo[fileIndex].first.c_str());
-          numChars =
-              fprintf(g_log, "%s%s\n", formatLogLine(buf, level), printmsg);
-          g_bytesWritten +=
-              numChars + 2;  // bcoz we have to count trailing new line (\n)
+          logsdirname = g_logFileWithExt->substr(0, lastPosOfSep);
         }
-        fileIndex++;
-      }
-    }
+        logsbasename = g_logFileWithExt->substr(lastPosOfSep + 1, len);
+        char logFileExtAfter = '.';
+        int32_t baselen = static_cast<int32_t>(logsbasename.length());
+        int32_t posOfExt = static_cast<int32_t>(
+            logsbasename.find_last_of(logFileExtAfter, baselen));
+        if (posOfExt == -1) {
+          // throw IllegalArgument;
+        } else {
+          fnameBeforeExt = logsbasename.substr(0, posOfExt);
+          extName = logsbasename.substr(posOfExt + 1, baselen);
+        }
+        std::snprintf(rollFile, 1024, "%s%c%s-%d.%s", logsdirname.c_str(),
+                      ACE_DIRECTORY_SEPARATOR_CHAR, fnameBeforeExt.c_str(),
+                      g_rollIndex++, extName.c_str());
+        bool rollFileNameGot = false;
+        while (!rollFileNameGot) {
+          FILE* fp1 = fopen(rollFile, "r");
+          if (fp1 != nullptr) {
+            fclose(fp1);
+            std::snprintf(rollFile, 1024, "%s%c%s-%d.%s", logsdirname.c_str(),
+                          ACE_DIRECTORY_SEPARATOR_CHAR, fnameBeforeExt.c_str(),
+                          g_rollIndex++, extName.c_str());
+          } else {
+            rollFileNameGot = true;
+          }
+        }
 
-    if ((numChars = fprintf(g_log, "%s%s\n", buf, msg)) == 0 || ferror(g_log)) {
-      if ((g_diskSpaceLimit > 0)) {
-        g_spaceUsed = g_spaceUsed - (numChars + 2);
-      }
-      if (g_fileSizeLimit > 0) {
-        g_bytesWritten = g_bytesWritten - (numChars + 2);
+        fclose(g_log);
+        g_log = nullptr;
+
+        if (ACE_OS::rename(g_logFileWithExt->c_str(), rollFile) < 0) {
+          return;  // no need to throw exception try next time
+        }
+
+        g_bytesWritten =
+            numChars + 2;  // bcoz we have to count trailing new line (\n)
+        writeBanner();
       }
 
-      // lets continue wothout throwing the exception; it should not cause
-      // process to terminate
-      fclose(g_log);
-      g_log = nullptr;
-    } else {
-      fflush(g_log);
+      g_spaceUsed += g_bytesWritten;
+
+      if ((g_diskSpaceLimit > 0) && (g_spaceUsed >= g_diskSpaceLimit)) {
+        std::string dirname = g_fullpath.parent_path().string();
+        g_spaceUsed = 0;
+        ACE_stat statBuf = {};
+
+        ACE_Dirent_Selector sds;
+        int status = sds.open(dirname.c_str(), selector, comparator);
+        if (status != -1) {
+          for (int index = 1; index < sds.length(); ++index) {
+            std::snprintf(fullpath, 512, "%s%c%s", dirname.c_str(),
+                          ACE_DIRECTORY_SEPARATOR_CHAR, sds[index]->d_name);
+            ACE_OS::stat(fullpath, &statBuf);
+            g_fileInfoPair = std::make_pair(fullpath, statBuf.st_size);
+            fileInfo.push_back(g_fileInfoPair);
+            g_spaceUsed += fileInfo[index - 1].second;
+          }  // for loop
+          g_spaceUsed += g_bytesWritten;
+          sds.close();
+        }
+        int fileIndex = 0;
+
+        while ((g_spaceUsed > (g_diskSpaceLimit /*- g_fileSizeLimit*/))) {
+          int64_t fileSize = fileInfo[fileIndex].second;
+          if (ACE_OS::unlink(fileInfo[fileIndex].first.c_str()) == 0) {
+            g_spaceUsed -= fileSize;
+          } else {
+            char printmsg[256];
+            std::snprintf(printmsg, 256, "%s\t%s\n", "Could not delete",
+                          fileInfo[fileIndex].first.c_str());
+            numChars = fprintf(g_log, "%s%s\n", formatLogLine(level).c_str(),
+                               printmsg);
+            g_bytesWritten +=
+                numChars + 2;  // bcoz we have to count trailing new line (\n)
+          }
+          fileIndex++;
+        }
+      }
+
+      if ((numChars = fprintf(g_log, "%s%s\n", buf.c_str(), msg.c_str())) ==
+              0 ||
+          ferror(g_log)) {
+        if ((g_diskSpaceLimit > 0)) {
+          g_spaceUsed = g_spaceUsed - (numChars + 2);
+        }
+        if (g_fileSizeLimit > 0) {
+          g_bytesWritten = g_bytesWritten - (numChars + 2);
+        }
+
+        // lets continue wothout throwing the exception; it should not cause
+        // process to terminate
+        fclose(g_log);
+        g_log = nullptr;
+      } else {
+        fflush(g_log);
+      }
     }
   }
 }

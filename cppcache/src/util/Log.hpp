@@ -172,9 +172,7 @@ class APACHE_GEODE_EXPORT Log {
   static LogLevel charsToLevel(const std::string& chars);
 
   /**
-   * Fills the provided buffer with formatted log-line given the level
-   * and returns the buffer. This assumes that the buffer has large
-   * enough space left to hold the formatted log-line (around 70 chars).
+   * formats and returns a line for logging.
    *
    * This is provided so that applications wishing to use the same format
    * as Geode log-lines can do so easily. A log-line starts with the prefix
@@ -185,7 +183,7 @@ class APACHE_GEODE_EXPORT Log {
    * When invoking from outside either <init> should have been invoked,
    * or at least the first invocation should be single-threaded.
    */
-  static char* formatLogLine(char* buf, LogLevel level);
+  static std::string formatLogLine(LogLevel level);
 
   /**
    * Returns whether log messages at given level are enabled.
