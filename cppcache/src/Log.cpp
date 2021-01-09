@@ -67,8 +67,6 @@ namespace geode {
 namespace log {
 namespace globals {
 
-static std::string* g_logFile = nullptr;
-
 static size_t g_bytesWritten = 0;
 
 static size_t g_fileSizeLimit = GEODE_MAX_LOG_FILE_LIMIT;
@@ -166,7 +164,6 @@ using apache::geode::log::globals::g_fileInfoPair;
 using apache::geode::log::globals::g_fileSizeLimit;
 using apache::geode::log::globals::g_fullpath;
 using apache::geode::log::globals::g_log;
-using apache::geode::log::globals::g_logFile;
 using apache::geode::log::globals::g_logMutex;
 using apache::geode::log::globals::g_pid;
 using apache::geode::log::globals::g_rollIndex;
@@ -276,20 +273,11 @@ void Log::init(LogLevel level, const std::string& logFileName,
   std::lock_guard<decltype(g_logMutex)> guard(g_logMutex);
 
   if (logFileName.empty()) {
-    if (g_logFile) {
-      delete g_logFile;
-      g_logFile = nullptr;
-    }
+    // TODO: What is supposed to happen when you specify an empty log file
+    // name????
   } else {
-    std::string filename = logFileName;
-    if (g_logFile) {
-      *g_logFile = filename;
-    } else {
-      g_logFile = new std::string(filename);
-    }
-
     g_fullpath =
-        boost::filesystem::absolute(boost::filesystem::path(*g_logFile));
+        boost::filesystem::absolute(boost::filesystem::path(logFileName));
 
     // if no extension then add .log extension
     if (g_fullpath.extension().empty()) {
@@ -340,14 +328,6 @@ void Log::init(LogLevel level, const std::string& logFileName,
 void Log::close() {
   std::lock_guard<decltype(g_logMutex)> guard(g_logMutex);
 
-  std::string oldfile;
-
-  if (g_logFile) {
-    oldfile = *g_logFile;
-    delete g_logFile;
-    g_logFile = nullptr;
-  }
-
   if (g_log) {
     fclose(g_log);
     g_log = nullptr;
@@ -369,10 +349,6 @@ void Log::writeBanner() {
           boost::filesystem::create_directories(g_fullpath.parent_path())) {
         g_log = fopen(g_fullpath.string().c_str(), "a");
         if (g_log) {
-          if (g_logFile == nullptr) {
-            return;
-          }  // else
-
           if (fprintf(g_log, "%s", bannertext.c_str())) {
             g_bytesWritten += static_cast<int32_t>(bannertext.length());
             fflush(g_log);
