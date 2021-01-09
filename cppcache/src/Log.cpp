@@ -84,7 +84,6 @@ typedef std::vector<std::pair<std::string, int64_t> > g_fileInfo;
 static boost::filesystem::path g_fullpath;
 
 static FILE* g_log = nullptr;
-static pid_t g_pid = 0;
 
 const int __1K__ = 1024;
 const int __1M__ = (__1K__ * __1K__);
@@ -165,7 +164,6 @@ using apache::geode::log::globals::g_fileSizeLimit;
 using apache::geode::log::globals::g_fullpath;
 using apache::geode::log::globals::g_log;
 using apache::geode::log::globals::g_logMutex;
-using apache::geode::log::globals::g_pid;
 using apache::geode::log::globals::g_rollIndex;
 using apache::geode::log::globals::g_spaceUsed;
 
@@ -434,9 +432,6 @@ LogLevel Log::charsToLevel(const std::string& chars) {
 
 std::string Log::formatLogLine(LogLevel level) {
   std::stringstream msg;
-  if (g_pid == 0) {
-    g_pid = boost::this_process::get_id();
-  }
   const size_t MINBUFSIZE = 128;
   auto now = std::chrono::system_clock::now();
   auto secs = std::chrono::system_clock::to_time_t(now);
