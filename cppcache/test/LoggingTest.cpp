@@ -34,10 +34,12 @@ using apache::geode::client::RegionShortcut;
 
 namespace {
 
-const int __1K__ = 1024;
-const int __4K__ = 4 * __1K__;
-const int __1M__ = (__1K__ * __1K__);
-const int __1G__ = (__1K__ * __1K__ * __1K__);
+const auto __1K__ = 1024;
+const auto __4K__ = 4 * __1K__;
+const auto __1M__ = (__1K__ * __1K__);
+const auto __1G__ = (__1K__ * __1K__ * __1K__);
+
+const auto LENGTH_OF_BANNER = 16;
 
 auto testLogFileName = std::string("LoggingTest.log");
 
@@ -72,6 +74,9 @@ const char* __1KStringLiteral =
 
 class LoggingTest : public testing::Test {
   void scrubTestLogFiles() {
+    // Close logger, just in case
+    apache::geode::client::Log::close();
+
     if (boost::filesystem::exists(testLogFileName)) {
       boost::filesystem::remove(testLogFileName);
     }
@@ -100,6 +105,142 @@ class LoggingTest : public testing::Test {
     auto rolledFile = fopen(rolledPath.string().c_str(), "w");
     fwrite("Test", 1, 4, rolledFile);
     fclose(rolledFile);
+  }
+
+  static int numOfLinesInFile(const char* fname) {
+    char line[2048];
+    char* read;
+    int ln_cnt = 0;
+    FILE* fp = fopen(fname, "r");
+    if (fp == nullptr) {
+      return 0;
+    }
+    while (!!(read = fgets(line, sizeof line, fp))) {
+      ++ln_cnt;
+    }
+
+    if (!feof(fp)) {
+      fclose(fp);
+      return -2;
+    }
+    fclose(fp);
+    return ln_cnt;
+  }
+
+  static int expected(LogLevel level) {
+    int expected = static_cast<int>(level);
+    if (level >= LogLevel::Default) {
+      expected--;
+    }
+    return expected;
+  }
+
+  static int expectedWithBanner(LogLevel level) {
+    int expected = LoggingTest::expected(level);
+    if (level != LogLevel::None) {
+      expected += LENGTH_OF_BANNER;
+    }
+    return expected;
+  }
+
+  static void verifyLineCountAtLevel(LogLevel level) {
+    apache::geode::client::Log::init(level, testLogFileName);
+
+    apache::geode::client::Log::error("Error Message");
+    apache::geode::client::Log::warning("Warning Message");
+    apache::geode::client::Log::info("Info Message");
+    apache::geode::client::Log::config("Config Message");
+    apache::geode::client::Log::fine("Fine Message");
+    apache::geode::client::Log::finer("Finer Message");
+    apache::geode::client::Log::finest("Finest Message");
+    apache::geode::client::Log::debug("Debug Message");
+
+    int lines = LoggingTest::numOfLinesInFile(testLogFileName.c_str());
+
+    ASSERT_TRUE(lines == LoggingTest::expectedWithBanner(level));
+
+    apache::geode::client::Log::close();
+    boost::filesystem::remove(testLogFileName.c_str());
+  }
+
+  void testLogFnError() {
+#ifdef WIN32
+    auto name = std::string(__FUNCTION__);
+#else
+    auto name = std::string("TestLogger::") + __FUNCTION__;
+#endif
+    apache::geode::client::LogFn logFn(name.c_str(), LogLevel::Error);
+    apache::geode::client::Log::error("...");
+  }
+
+  void testLogFnWarning() {
+#ifdef WIN32
+    auto name = std::string(__FUNCTION__);
+#else
+    auto name = std::string("TestLogger::") + __FUNCTION__;
+#endif
+    apache::geode::client::LogFn logFn(name.c_str(), LogLevel::Warning);
+    apache::geode::client::Log::warning("...");
+  }
+
+  void testLogFnInfo() {
+#ifdef WIN32
+    auto name = std::string(__FUNCTION__);
+#else
+    auto name = std::string("TestLogger::") + __FUNCTION__;
+#endif
+    apache::geode::client::LogFn logFn(name.c_str(), LogLevel::Info);
+    apache::geode::client::Log::info("...");
+  }
+
+  void testLogFnConfig() {
+#ifdef WIN32
+    auto name = std::string(__FUNCTION__);
+#else
+    auto name = std::string("TestLogger::") + __FUNCTION__;
+#endif
+    apache::geode::client::LogFn logFn(name.c_str(), LogLevel::Config);
+    apache::geode::client::Log::config("...");
+  }
+
+  void testLogFnFine() {
+#ifdef WIN32
+    auto name = std::string(__FUNCTION__);
+#else
+    auto name = std::string("TestLogger::") + __FUNCTION__;
+#endif
+    apache::geode::client::LogFn logFn(name.c_str(), LogLevel::Fine);
+    apache::geode::client::Log::fine("...");
+  }
+
+  void testLogFnFiner() {
+#ifdef WIN32
+    auto name = std::string(__FUNCTION__);
+#else
+    auto name = std::string("TestLogger::") + __FUNCTION__;
+#endif
+    apache::geode::client::LogFn logFn(name.c_str(), LogLevel::Finer);
+    apache::geode::client::Log::finer("...");
+  }
+
+  void testLogFnFinest() {
+#ifdef WIN32
+    auto name = std::string(__FUNCTION__);
+#else
+    auto name = std::string("TestLogger::") + __FUNCTION__;
+#endif
+    apache::geode::client::LogFn logFn(name.c_str(), LogLevel::Finest);
+    apache::geode::client::Log::finest("...");
+  }
+
+  void testLogFnDebug() {
+#ifdef WIN32
+    auto name = std::string(__FUNCTION__);
+#else
+    auto name = std::string("TestLogger::") + __FUNCTION__;
+#endif
+    apache::geode::client::LogFn logFn(name.c_str(), LogLevel::Debug);
+    apache::geode::client::Log::debug("...");
   }
 };
 
@@ -175,6 +316,15 @@ TEST_F(LoggingTest, logInit) {
   ASSERT_THROW(apache::geode::client::Log::init(
                    apache::geode::client::LogLevel::Config, "", 1, __1G__),
                apache::geode::client::IllegalArgumentException);
+
+  // Init twice without closing
+  ASSERT_NO_THROW(apache::geode::client::Log::init(
+      apache::geode::client::LogLevel::All, testLogFileName.c_str(), 1, 4));
+  ASSERT_THROW(
+      apache::geode::client::Log::init(apache::geode::client::LogLevel::All,
+                                       testLogFileName.c_str(), 1, 4),
+      apache::geode::client::IllegalStateException);
+  apache::geode::client::Log::close();
 }
 
 TEST_F(LoggingTest, logToFileAtEachLevel) {
@@ -418,5 +568,146 @@ TEST_F(LoggingTest, verifyWithAbsolutePath) {
   verifyWithPath(absolutePath);
 
   boost::filesystem::remove_all(boost::filesystem::path("foo"));
+}
+
+// Logger is supposed to tack the '.log' extension on any file that doesn't
+// already have it.
+TEST_F(LoggingTest, verifyExtension) {
+  apache::geode::client::Log::init(LogLevel::All, "foo");
+  apache::geode::client::Log::info("...");
+  apache::geode::client::Log::close();
+  ASSERT_TRUE(LoggingTest::numOfLinesInFile("foo.log") > 0);
+  boost::filesystem::remove("foo.log");
+
+  apache::geode::client::Log::init(LogLevel::All, "foo.txt");
+  apache::geode::client::Log::info("...");
+  apache::geode::client::Log::close();
+  ASSERT_TRUE(LoggingTest::numOfLinesInFile("foo.txt.log") > 0);
+  boost::filesystem::remove("foo.txt.log");
+}
+
+// Old version of logger didn't distinguish between rolled log file and
+// filename containing '-', so would crash in an atoi() call if you used
+// '-' in your log file name.
+TEST_F(LoggingTest, verifyFilenameWithDash) {
+  apache::geode::client::Log::init(LogLevel::All, "foo-bar.log");
+  apache::geode::client::Log::info("...");
+  apache::geode::client::Log::close();
+  ASSERT_TRUE(LoggingTest::numOfLinesInFile("foo-bar.log") > 0);
+  boost::filesystem::remove("foo-bar.log");
+}
+
+TEST_F(LoggingTest, countLinesAllLevels) {
+  for (LogLevel level : {
+           LogLevel::Error,
+           LogLevel::Warning,
+           LogLevel::Info,
+           LogLevel::Default,
+           LogLevel::Config,
+           LogLevel::Fine,
+           LogLevel::Finer,
+           LogLevel::Finest,
+           LogLevel::Debug,
+       }) {
+    apache::geode::client::Log::init(level, testLogFileName);
+
+    apache::geode::client::Log::error("Error Message");
+    apache::geode::client::Log::warning("Warning Message");
+    apache::geode::client::Log::info("Info Message");
+    apache::geode::client::Log::config("Config Message");
+    apache::geode::client::Log::fine("Fine Message");
+    apache::geode::client::Log::finer("Finer Message");
+    apache::geode::client::Log::finest("Finest Message");
+    apache::geode::client::Log::debug("Debug Message");
+
+    int lines = LoggingTest::numOfLinesInFile(testLogFileName.c_str());
+
+    ASSERT_TRUE(lines == LoggingTest::expectedWithBanner(level));
+
+    apache::geode::client::Log::close();
+    boost::filesystem::remove(testLogFileName);
+  }
+}
+
+TEST_F(LoggingTest, countLinesAllLevelsUsingMacros) {
+  for (LogLevel level : {
+           LogLevel::Error,
+           LogLevel::Warning,
+           LogLevel::Info,
+           LogLevel::Default,
+           LogLevel::Config,
+           LogLevel::Fine,
+           LogLevel::Finer,
+           LogLevel::Finest,
+           LogLevel::Debug,
+       }) {
+    apache::geode::client::Log::init(level, testLogFileName);
+
+    LOGERROR("Error Message");
+    LOGWARN("Warning Message");
+    LOGINFO("Info Message");
+    LOGCONFIG("Config Message");
+    LOGFINE("Fine Message");
+    LOGFINER("Finer Message");
+    LOGFINEST("Finest Message");
+    LOGDEBUG("Debug Message");
+
+    int lines = LoggingTest::numOfLinesInFile(testLogFileName.c_str());
+
+    ASSERT_TRUE(lines == LoggingTest::expectedWithBanner(level));
+
+    apache::geode::client::Log::close();
+    boost::filesystem::remove(testLogFileName);
+  }
+}
+
+TEST_F(LoggingTest, countLinesConfigOnwards) {
+  verifyLineCountAtLevel(LogLevel::Config);
+}
+
+TEST_F(LoggingTest, countLinesInfoOnwards) {
+  verifyLineCountAtLevel(LogLevel::Info);
+}
+
+TEST_F(LoggingTest, countLinesWarningOnwards) {
+  verifyLineCountAtLevel(LogLevel::Warning);
+}
+
+TEST_F(LoggingTest, countLinesErrorOnly) {
+  verifyLineCountAtLevel(LogLevel::Error);
+}
+
+TEST_F(LoggingTest, countLinesNone) { verifyLineCountAtLevel(LogLevel::None); }
+
+TEST_F(LoggingTest, testFunctionScopeObjects) {
+  for (LogLevel level : {
+           LogLevel::Error,
+           LogLevel::Warning,
+           LogLevel::Info,
+           LogLevel::Default,
+           LogLevel::Config,
+           LogLevel::Fine,
+           LogLevel::Finer,
+           LogLevel::Finest,
+           LogLevel::Debug,
+       }) {
+    apache::geode::client::Log::init(level, testLogFileName);
+
+    testLogFnError();
+    testLogFnWarning();
+    testLogFnInfo();
+    testLogFnConfig();
+    testLogFnFine();
+    testLogFnFiner();
+    testLogFnFinest();
+    testLogFnDebug();
+
+    int lines = LoggingTest::numOfLinesInFile(testLogFileName.c_str());
+
+    ASSERT_TRUE(lines == 3 * expected(level) + LENGTH_OF_BANNER);
+
+    apache::geode::client::Log::close();
+    boost::filesystem::remove(testLogFileName.c_str());
+  }
 }
 }  // namespace

@@ -296,8 +296,10 @@ void Log::init(LogLevel level, const std::string& logFileName,
 
     // if no extension then add .log extension
     if (g_fullpath.extension().empty()) {
+      g_fullpath = g_fullpath.string() + ".log";
       g_logFileWithExt = new std::string(*g_logFile + ".log");
     } else if (g_fullpath.extension() != ".log") {
+      g_fullpath = g_fullpath.string() + ".log";
       g_logFileWithExt = new std::string(*g_logFile + ".log");
     } else {
       g_logFileWithExt = new std::string(*g_logFile);
