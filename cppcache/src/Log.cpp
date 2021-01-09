@@ -68,7 +68,6 @@ namespace log {
 namespace globals {
 
 static std::string* g_logFile = nullptr;
-static std::string* g_logFileWithExt = nullptr;
 
 static size_t g_bytesWritten = 0;
 
@@ -102,7 +101,7 @@ extern "C" {
 static int selector(const dirent* d) {
   std::string inputname(d->d_name);
   std::string filebasename =
-      ACE::basename(apache::geode::log::globals::g_logFileWithExt->c_str());
+      apache::geode::log::globals::g_fullpath.filename().string();
   size_t actualHyphenPos = filebasename.find_last_of('.');
   if (strcmp(filebasename.c_str(), d->d_name) == 0) return 1;
   size_t fileExtPos = inputname.find_last_of('.');
@@ -168,7 +167,6 @@ using apache::geode::log::globals::g_fileSizeLimit;
 using apache::geode::log::globals::g_fullpath;
 using apache::geode::log::globals::g_log;
 using apache::geode::log::globals::g_logFile;
-using apache::geode::log::globals::g_logFileWithExt;
 using apache::geode::log::globals::g_logMutex;
 using apache::geode::log::globals::g_pid;
 using apache::geode::log::globals::g_rollIndex;
@@ -281,7 +279,6 @@ void Log::init(LogLevel level, const std::string& logFileName,
     if (g_logFile) {
       delete g_logFile;
       g_logFile = nullptr;
-      g_logFileWithExt = nullptr;
     }
   } else {
     std::string filename = logFileName;
@@ -297,12 +294,9 @@ void Log::init(LogLevel level, const std::string& logFileName,
     // if no extension then add .log extension
     if (g_fullpath.extension().empty()) {
       g_fullpath = g_fullpath.string() + ".log";
-      g_logFileWithExt = new std::string(*g_logFile + ".log");
     } else if (g_fullpath.extension() != ".log") {
       g_fullpath = g_fullpath.string() + ".log";
-      g_logFileWithExt = new std::string(*g_logFile + ".log");
     } else {
-      g_logFileWithExt = new std::string(*g_logFile);
     }
 
     // Default to 10MB file limit and 1GB disk limit
@@ -352,10 +346,6 @@ void Log::close() {
     oldfile = *g_logFile;
     delete g_logFile;
     g_logFile = nullptr;
-  }
-  if (g_logFileWithExt) {
-    delete g_logFileWithExt;
-    g_logFileWithExt = nullptr;
   }
 
   if (g_log) {
@@ -522,9 +512,7 @@ void Log::put(LogLevel level, const std::string& msg) {
 
       if ((g_fileSizeLimit != 0) && (g_bytesWritten >= g_fileSizeLimit)) {
         rollLogFile();
-
-        g_bytesWritten =
-            numChars + 2;  // bcoz we have to count trailing new line (\n)
+        g_bytesWritten = numChars + 2;  // Account for trailing newline
         writeBanner();
       }
 
