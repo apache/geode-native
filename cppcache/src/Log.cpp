@@ -71,7 +71,6 @@ static std::string* g_logFile = nullptr;
 static std::string* g_logFileWithExt = nullptr;
 
 static size_t g_bytesWritten = 0;
-static bool g_isLogFileOpened = false;
 
 static size_t g_fileSizeLimit = GEODE_MAX_LOG_FILE_LIMIT;
 static size_t g_diskSpaceLimit = GEODE_MAX_LOG_DISK_LIMIT;
@@ -167,7 +166,6 @@ using apache::geode::log::globals::g_fileInfo;
 using apache::geode::log::globals::g_fileInfoPair;
 using apache::geode::log::globals::g_fileSizeLimit;
 using apache::geode::log::globals::g_fullpath;
-using apache::geode::log::globals::g_isLogFileOpened;
 using apache::geode::log::globals::g_log;
 using apache::geode::log::globals::g_logFile;
 using apache::geode::log::globals::g_logFileWithExt;
@@ -343,6 +341,7 @@ void Log::close() {
     fclose(g_log);
     g_log = nullptr;
   }
+  g_fullpath = "";
 }
 
 void Log::writeBanner() {
@@ -357,10 +356,8 @@ void Log::writeBanner() {
       if (boost::filesystem::exists(
               g_fullpath.parent_path().string().c_str()) ||
           boost::filesystem::create_directories(g_fullpath.parent_path())) {
-        g_log = fopen(g_logFileWithExt->c_str(), "a");
+        g_log = fopen(g_fullpath.string().c_str(), "a");
         if (g_log) {
-          g_isLogFileOpened = true;
-
           if (g_logFile == nullptr) {
             return;
           }  // else
