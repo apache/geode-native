@@ -44,14 +44,6 @@
 #include "geodeBanner.hpp"
 #include "util/chrono/time_point.hpp"
 
-#if defined(_WIN32)
-#include <io.h>
-#define GF_FILEEXISTS(x) _access_s(x, 00)
-#else
-#include <unistd.h>
-#define GF_FILEEXISTS(x) access(x, F_OK)
-#endif
-
 /*****************************************************************************/
 
 /**
@@ -207,7 +199,9 @@ void Log::validateLogFileName(const std::string& filename) {
 
 void Log::init(LogLevel level, const char* logFileName, int32_t logFileLimit,
                int64_t logDiskSpaceLimit) {
-  init(level, std::string(logFileName), logFileLimit, logDiskSpaceLimit);
+  auto logFileNameString =
+      logFileName ? std::string(logFileName) : std::string();
+  init(level, std::string(logFileNameString), logFileLimit, logDiskSpaceLimit);
 }
 
 void rollLogFile() {
@@ -266,11 +260,11 @@ void Log::init(LogLevel level, const std::string& logFileName,
   s_logLevel = level;
 
   validateSizeLimits(logFileLimit, logDiskSpaceLimit);
-  validateLogFileName(logFileName);
 
   std::lock_guard<decltype(g_logMutex)> guard(g_logMutex);
 
   if (logFileName.length()) {
+    validateLogFileName(logFileName);
     g_fullpath =
         boost::filesystem::absolute(boost::filesystem::path(logFileName));
 
