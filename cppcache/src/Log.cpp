@@ -270,19 +270,13 @@ void Log::init(LogLevel level, const std::string& logFileName,
 
   std::lock_guard<decltype(g_logMutex)> guard(g_logMutex);
 
-  if (logFileName.empty()) {
-    // TODO: What is supposed to happen when you specify an empty log file
-    // name????
-  } else {
+  if (logFileName.length()) {
     g_fullpath =
         boost::filesystem::absolute(boost::filesystem::path(logFileName));
 
     // if no extension then add .log extension
-    if (g_fullpath.extension().empty()) {
+    if (g_fullpath.extension().empty() || (g_fullpath.extension() != ".log")) {
       g_fullpath = g_fullpath.string() + ".log";
-    } else if (g_fullpath.extension() != ".log") {
-      g_fullpath = g_fullpath.string() + ".log";
-    } else {
     }
 
     // Default to 10MB file limit and 1GB disk limit
