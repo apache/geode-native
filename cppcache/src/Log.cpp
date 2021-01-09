@@ -205,8 +205,9 @@ void Log::validateSizeLimits(int64_t fileSizeLimit, int64_t diskSpaceLimit) {
 }
 
 void Log::validateLogFileName(const std::string& filename) {
-  if (!boost::filesystem::portable_file_name(filename)) {
-    throw IllegalArgumentException("Specified log file (" + filename +
+  auto nameToCheck = boost::filesystem::path(filename).filename().string();
+  if (!boost::filesystem::portable_file_name(nameToCheck)) {
+    throw IllegalArgumentException("Specified log file (" + nameToCheck +
                                    ") is not a valid portable name.");
   }
 }
@@ -299,6 +300,10 @@ void Log::init(LogLevel level, const std::string& logFileName,
     g_rollIndex = 0;
 
     const auto target_path = g_fullpath.parent_path().string();
+    if (!boost::filesystem::exists(target_path)) {
+      boost::filesystem::create_directories(target_path);
+    }
+
     const auto filterstring = g_fullpath.stem().string() + "-(\\d+)\\.log$";
 
     const boost::regex my_filter(filterstring);
