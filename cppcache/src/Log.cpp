@@ -216,6 +216,26 @@ void Log::init(LogLevel level, const char* logFileName, int32_t logFileLimit,
   init(level, std::string(logFileName), logFileLimit, logDiskSpaceLimit);
 }
 
+void rollLogFile() {
+  if (g_log) {
+    fclose(g_log);
+    g_log = nullptr;
+  }
+
+  auto rollFileName =
+      (g_fullpath.parent_path() /
+       (g_fullpath.stem().string() + "-" + std::to_string(g_rollIndex) +
+        g_fullpath.extension().string()))
+          .string();
+  try {
+    boost::filesystem::rename(g_fullpath,
+                              boost::filesystem::path(rollFileName));
+    g_rollIndex++;
+  } catch (const boost::filesystem::filesystem_error&) {
+    throw IllegalStateException("Failed to roll log file");
+  }
+}
+
 void Log::init(LogLevel level, const std::string& logFileName,
                int32_t logFileLimit, int64_t logDiskSpaceLimit) {
   if (g_log != nullptr) {
@@ -306,17 +326,7 @@ void Log::init(LogLevel level, const std::string& logFileName,
     }
 
     if (boost::filesystem::exists(g_fullpath) && logFileLimit > 0) {
-      auto rollFileName =
-          (g_fullpath.parent_path() /
-           (g_fullpath.stem().string() + "-" + std::to_string(g_rollIndex) +
-            g_fullpath.extension().string()))
-              .string();
-      try {
-        boost::filesystem::rename(g_fullpath,
-                                  boost::filesystem::path(rollFileName));
-      } catch (const boost::filesystem::filesystem_error&) {
-        throw IllegalStateException("Failed to roll log file");
-      }
+      rollLogFile();
     }
     writeBanner();
   }
@@ -500,54 +510,7 @@ void Log::put(LogLevel level, const std::string& msg) {
           numChars + 2;  // bcoz we have to count trailing new line (\n)
 
       if ((g_fileSizeLimit != 0) && (g_bytesWritten >= g_fileSizeLimit)) {
-        char rollFile[1024] = {0};
-        std::string logsdirname;
-        std::string logsbasename;
-        std::string fnameBeforeExt;
-        std::string extName;
-        std::string newfilestr;
-
-        int32_t len = static_cast<int32_t>(g_logFileWithExt->length());
-        int32_t lastPosOfSep = static_cast<int32_t>(
-            g_logFileWithExt->find_last_of(ACE_DIRECTORY_SEPARATOR_CHAR, len));
-        if (lastPosOfSep == -1) {
-          logsdirname = ".";
-        } else {
-          logsdirname = g_logFileWithExt->substr(0, lastPosOfSep);
-        }
-        logsbasename = g_logFileWithExt->substr(lastPosOfSep + 1, len);
-        char logFileExtAfter = '.';
-        int32_t baselen = static_cast<int32_t>(logsbasename.length());
-        int32_t posOfExt = static_cast<int32_t>(
-            logsbasename.find_last_of(logFileExtAfter, baselen));
-        if (posOfExt == -1) {
-          // throw IllegalArgument;
-        } else {
-          fnameBeforeExt = logsbasename.substr(0, posOfExt);
-          extName = logsbasename.substr(posOfExt + 1, baselen);
-        }
-        std::snprintf(rollFile, 1024, "%s%c%s-%d.%s", logsdirname.c_str(),
-                      ACE_DIRECTORY_SEPARATOR_CHAR, fnameBeforeExt.c_str(),
-                      g_rollIndex++, extName.c_str());
-        bool rollFileNameGot = false;
-        while (!rollFileNameGot) {
-          FILE* fp1 = fopen(rollFile, "r");
-          if (fp1 != nullptr) {
-            fclose(fp1);
-            std::snprintf(rollFile, 1024, "%s%c%s-%d.%s", logsdirname.c_str(),
-                          ACE_DIRECTORY_SEPARATOR_CHAR, fnameBeforeExt.c_str(),
-                          g_rollIndex++, extName.c_str());
-          } else {
-            rollFileNameGot = true;
-          }
-        }
-
-        fclose(g_log);
-        g_log = nullptr;
-
-        if (ACE_OS::rename(g_logFileWithExt->c_str(), rollFile) < 0) {
-          return;  // no need to throw exception try next time
-        }
+        rollLogFile();
 
         g_bytesWritten =
             numChars + 2;  // bcoz we have to count trailing new line (\n)
