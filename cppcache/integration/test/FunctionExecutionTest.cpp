@@ -301,7 +301,7 @@ TEST(FunctionExecutionTest, OnServersOneServerGoesDown) {
         .execute();
   });
 
-  auto cache = CacheFactory().set("log-level", "debug").create();
+  auto cache = CacheFactory().set("log-level", "none").create();
   auto poolFactory = cache.getPoolManager().createFactory();
 
   cluster.applyLocators(poolFactory);

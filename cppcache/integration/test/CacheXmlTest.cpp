@@ -44,7 +44,7 @@ apache::geode::client::Cache createCacheUsingXmlConfig(
 
   CacheFactory cacheFactory;
 
-  auto cache = cacheFactory.set("log-level", "debug")
+  auto cache = cacheFactory.set("log-level", "none")
                    .set("log-file", "geode_native.log")
                    .set("statistic-sampling-enabled", "false")
                    .set("cache-xml-file", xmlFile.c_str())

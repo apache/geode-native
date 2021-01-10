@@ -303,19 +303,22 @@ TEST_F(LoggingTest, logInit) {
   apache::geode::client::Log::close();
 
   // Specify a disk space limit smaller than the file size limit
-  ASSERT_THROW(apache::geode::client::Log::init(
-                   apache::geode::client::LogLevel::Config, "", __1K__, 4),
-               apache::geode::client::IllegalArgumentException);
+  ASSERT_THROW(
+      apache::geode::client::Log::init(apache::geode::client::LogLevel::Config,
+                                       testLogFileName, __1K__, 4),
+      apache::geode::client::IllegalArgumentException);
 
   // Specify a file size limit above max allowed
-  ASSERT_THROW(apache::geode::client::Log::init(
-                   apache::geode::client::LogLevel::Config, "", __1G__),
-               apache::geode::client::IllegalArgumentException);
+  ASSERT_THROW(
+      apache::geode::client::Log::init(apache::geode::client::LogLevel::Config,
+                                       testLogFileName, __1G__),
+      apache::geode::client::IllegalArgumentException);
 
   // Specify a disk space limit above max allowed
-  ASSERT_THROW(apache::geode::client::Log::init(
-                   apache::geode::client::LogLevel::Config, "", 1, __1G__),
-               apache::geode::client::IllegalArgumentException);
+  ASSERT_THROW(
+      apache::geode::client::Log::init(apache::geode::client::LogLevel::Config,
+                                       testLogFileName, 1, __1G__),
+      apache::geode::client::IllegalArgumentException);
 
   // Init twice without closing
   ASSERT_NO_THROW(apache::geode::client::Log::init(

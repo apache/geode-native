@@ -404,7 +404,11 @@ class APACHE_GEODE_EXPORT Log {
 
   static void validateLogFileName(const std::string& filename);
 
-  static int32_t getNextRollIndex(const std::string& filename);
+  static void rollLogFile();
+
+  static void setRollFileIndex();
+
+  static void setSizeLimits(int32_t logFileLimit, int64_t logDiskSpaceLimit);
 
  public:
   static void put(LogLevel level, const std::string& msg);

@@ -204,7 +204,7 @@ void Log::init(LogLevel level, const char* logFileName, int32_t logFileLimit,
   init(level, std::string(logFileNameString), logFileLimit, logDiskSpaceLimit);
 }
 
-void rollLogFile() {
+void Log::rollLogFile() {
   if (g_log) {
     fclose(g_log);
     g_log = nullptr;
@@ -224,7 +224,7 @@ void rollLogFile() {
   }
 }
 
-void setRollFileIndex() {
+void Log::setRollFileIndex() {
   const auto filterstring = g_fullpath.stem().string() + "-(\\d+)\\.log$";
   const boost::regex my_filter(filterstring);
 
@@ -250,6 +250,28 @@ void setRollFileIndex() {
   }
 }
 
+void Log::setSizeLimits(int32_t logFileLimit, int64_t logDiskSpaceLimit) {
+  validateSizeLimits(logFileLimit, logDiskSpaceLimit);
+
+  // Default to 10MB file limit and 1GB disk limit
+  if (logFileLimit == 0 && logDiskSpaceLimit == 0) {
+    g_fileSizeLimit = 10 * __1M__;
+    g_diskSpaceLimit = 1000 * __1M__;
+  }
+  // disk space specified but file size is defaulted.  Just use a single
+  // log file, i.e. set file limit == disk limit
+  else if (logFileLimit == 0) {
+    g_diskSpaceLimit = logDiskSpaceLimit * __1M__;
+    g_fileSizeLimit = g_diskSpaceLimit;
+  } else if (logDiskSpaceLimit == 0) {
+    g_fileSizeLimit = logFileLimit * __1M__;
+    g_diskSpaceLimit = g_fileSizeLimit;
+  } else {
+    g_fileSizeLimit = logFileLimit * __1M__;
+    g_diskSpaceLimit = logDiskSpaceLimit * __1M__;
+  }
+}
+
 void Log::init(LogLevel level, const std::string& logFileName,
                int32_t logFileLimit, int64_t logDiskSpaceLimit) {
   if (g_log != nullptr) {
@@ -258,8 +280,6 @@ void Log::init(LogLevel level, const std::string& logFileName,
         "Call Log::close() before calling Log::init again.");
   }
   s_logLevel = level;
-
-  validateSizeLimits(logFileLimit, logDiskSpaceLimit);
 
   std::lock_guard<decltype(g_logMutex)> guard(g_logMutex);
 
@@ -273,23 +293,7 @@ void Log::init(LogLevel level, const std::string& logFileName,
       g_fullpath = g_fullpath.string() + ".log";
     }
 
-    // Default to 10MB file limit and 1GB disk limit
-    if (logFileLimit == 0 && logDiskSpaceLimit == 0) {
-      g_fileSizeLimit = 10 * __1M__;
-      g_diskSpaceLimit = 1000 * __1M__;
-    }
-    // disk space specified but file size is defaulted.  Just use a single
-    // log file, i.e. set file limit == disk limit
-    else if (logFileLimit == 0) {
-      g_diskSpaceLimit = logDiskSpaceLimit * __1M__;
-      g_fileSizeLimit = g_diskSpaceLimit;
-    } else if (logDiskSpaceLimit == 0) {
-      g_fileSizeLimit = logFileLimit * __1M__;
-      g_diskSpaceLimit = g_fileSizeLimit;
-    } else {
-      g_fileSizeLimit = logFileLimit * __1M__;
-      g_diskSpaceLimit = logDiskSpaceLimit * __1M__;
-    }
+    setSizeLimits(logFileLimit, logDiskSpaceLimit);
 
     g_bytesWritten = 0;
     g_spaceUsed = 0;
