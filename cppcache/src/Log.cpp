@@ -22,6 +22,7 @@
 #include <chrono>
 #include <cinttypes>
 #include <ctime>
+#include <map>
 #include <mutex>
 #include <sstream>
 #include <string>
@@ -29,8 +30,6 @@
 #include <utility>
 #include <vector>
 
-#include <ace/ACE.h>
-#include <ace/Dirent_Selector.h>
 #include <boost/asio/ip/host_name.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/process/environment.hpp>
@@ -40,24 +39,10 @@
 #include <geode/internal/geode_globals.hpp>
 #include <geode/util/LogLevel.hpp>
 
-#include "../internal/hacks/AceThreadId.h"
 #include "geodeBanner.hpp"
 #include "util/chrono/time_point.hpp"
 
-/*****************************************************************************/
-
-/**
- * The implementation of the Log class
- *
- *
- */
-
-/*****************************************************************************/
-
-namespace apache {
-namespace geode {
-namespace log {
-namespace globals {
+namespace {
 
 static size_t g_bytesWritten = 0;
 
@@ -68,96 +53,22 @@ static std::mutex g_logMutex;
 
 static int g_rollIndex = 0;
 static size_t g_spaceUsed = 0;
-// Make a pair for the filename & its size
-static std::pair<std::string, int64_t> g_fileInfoPair;
-// Vector to hold the fileInformation
-typedef std::vector<std::pair<std::string, int64_t> > g_fileInfo;
 
 static boost::filesystem::path g_fullpath;
+static std::map<int32_t, boost::filesystem::path> g_rollFiles;
 
 static FILE* g_log = nullptr;
 
 const int __1K__ = 1024;
 const int __1M__ = (__1K__ * __1K__);
 
-}  // namespace globals
-}  // namespace log
-}  // namespace geode
-}  // namespace apache
-
-extern "C" {
-
-static int selector(const dirent* d) {
-  std::string inputname(d->d_name);
-  std::string filebasename =
-      apache::geode::log::globals::g_fullpath.filename().string();
-  size_t actualHyphenPos = filebasename.find_last_of('.');
-  if (strcmp(filebasename.c_str(), d->d_name) == 0) return 1;
-  size_t fileExtPos = inputname.find_last_of('.');
-  std::string extName = inputname.substr(fileExtPos + 1, inputname.length());
-  if (strcmp(extName.c_str(), "log") != 0) return 0;
-  if (fileExtPos != std::string::npos) {
-    std::string tempname = inputname.substr(0, fileExtPos);
-    size_t fileHyphenPos = tempname.find_last_of('-');
-    if (fileHyphenPos != std::string::npos) {
-      std::string buff1 = tempname.substr(0, fileHyphenPos);
-      if (strstr(filebasename.c_str(), buff1.c_str()) == nullptr) {
-        return 0;
-      }
-      if (fileHyphenPos != actualHyphenPos) return 0;
-      std::string buff = tempname.substr(fileHyphenPos + 1,
-                                         tempname.length() - fileHyphenPos - 1);
-      for (std::string::iterator iter = buff.begin(); iter != buff.end();
-           ++iter) {
-        if (*iter < '0' || *iter > '9') {
-          return 0;
-        }
-      }
-      return 1;
-    } else {
-      return 0;
-    }
-  } else {
-    return 0;
-  }
-}
-
-static int comparator(const dirent** d1, const dirent** d2) {
-  if (strlen((*d1)->d_name) < strlen((*d2)->d_name)) {
-    return -1;
-  } else if (strlen((*d1)->d_name) > strlen((*d2)->d_name)) {
-    return 1;
-  }
-
-  int diff = std::strcmp((*d1)->d_name, (*d2)->d_name);
-  if (diff < 0) {
-    return -1;
-  } else if (diff > 0) {
-    return 1;
-  } else {
-    return 0;
-  }
-}
-}
+}  // namespace
 
 namespace apache {
 namespace geode {
 namespace client {
 
 LogLevel Log::s_logLevel = LogLevel::Default;
-
-using apache::geode::log::globals::__1K__;
-using apache::geode::log::globals::__1M__;
-using apache::geode::log::globals::g_bytesWritten;
-using apache::geode::log::globals::g_diskSpaceLimit;
-using apache::geode::log::globals::g_fileInfo;
-using apache::geode::log::globals::g_fileInfoPair;
-using apache::geode::log::globals::g_fileSizeLimit;
-using apache::geode::log::globals::g_fullpath;
-using apache::geode::log::globals::g_log;
-using apache::geode::log::globals::g_logMutex;
-using apache::geode::log::globals::g_rollIndex;
-using apache::geode::log::globals::g_spaceUsed;
 
 /*****************************************************************************/
 
@@ -216,20 +127,32 @@ void Log::rollLogFile() {
         g_fullpath.extension().string()))
           .string();
   try {
-    boost::filesystem::rename(g_fullpath,
-                              boost::filesystem::path(rollFileName));
+    auto rollFile = boost::filesystem::path(rollFileName);
+    boost::filesystem::rename(g_fullpath, rollFile);
+    g_rollFiles[g_rollIndex] = rollFile;
     g_rollIndex++;
   } catch (const boost::filesystem::filesystem_error&) {
     throw IllegalStateException("Failed to roll log file");
   }
 }
 
-void Log::setRollFileIndex() {
+void Log::removeOldestRolledLogFile() {
+  if (g_rollFiles.size()) {
+    auto index = g_rollFiles.begin()->first;
+    auto fileToRemove = g_rollFiles.begin()->second;
+    auto fileSize = boost::filesystem::file_size(fileToRemove);
+    boost::filesystem::remove(fileToRemove);
+    g_rollFiles.erase(index);
+    g_spaceUsed -= fileSize;
+  }
+}
+
+void Log::buildRollFileMapping() {
   const auto filterstring = g_fullpath.stem().string() + "-(\\d+)\\.log$";
   const boost::regex my_filter(filterstring);
 
-  // Find the next roll index - will be highest present roll number + 1
-  g_rollIndex = 0;
+  g_rollFiles.clear();
+
   boost::filesystem::directory_iterator end_itr;
   for (boost::filesystem::directory_iterator i(
            g_fullpath.parent_path().string());
@@ -242,11 +165,16 @@ void Log::setRollFileIndex() {
                               filename.cend(), testMatches, testPattern)) {
         auto index = std::atoi(
             std::string(testMatches[1].first, testMatches[1].second).c_str());
-        if (index > g_rollIndex) {
-          g_rollIndex = index + 1;
-        }
+        g_rollFiles[index] = i->path();
       }
     }
+  }
+}
+
+void Log::setRollFileIndex() {
+  g_rollIndex = 0;
+  if (g_rollFiles.size()) {
+    g_rollIndex = g_rollFiles.rbegin()->first + 1;
   }
 }
 
@@ -306,6 +234,7 @@ void Log::init(LogLevel level, const std::string& logFileName,
       boost::filesystem::create_directories(target_path);
     }
 
+    buildRollFileMapping();
     setRollFileIndex();
 
     if (boost::filesystem::exists(g_fullpath) && logFileLimit > 0) {
@@ -450,11 +379,8 @@ std::string Log::formatLogLine(LogLevel level) {
 
 void Log::put(LogLevel level, const char* msg) { put(level, std::string(msg)); }
 
-// int g_count = 0;
 void Log::put(LogLevel level, const std::string& msg) {
   std::lock_guard<decltype(g_logMutex)> guard(g_logMutex);
-
-  g_fileInfo fileInfo;
 
   std::string buf;
   char fullpath[512] = {0};
@@ -479,57 +405,17 @@ void Log::put(LogLevel level, const std::string& msg) {
         writeBanner();
       }
 
-      g_spaceUsed += g_bytesWritten;
+      g_spaceUsed += numChars + 2;
 
-      if ((g_diskSpaceLimit > 0) && (g_spaceUsed >= g_diskSpaceLimit)) {
-        std::string dirname = g_fullpath.parent_path().string();
-        g_spaceUsed = 0;
-        ACE_stat statBuf = {};
-
-        ACE_Dirent_Selector sds;
-        int status = sds.open(dirname.c_str(), selector, comparator);
-        if (status != -1) {
-          for (int index = 1; index < sds.length(); ++index) {
-            std::snprintf(fullpath, 512, "%s%c%s", dirname.c_str(),
-                          ACE_DIRECTORY_SEPARATOR_CHAR, sds[index]->d_name);
-            ACE_OS::stat(fullpath, &statBuf);
-            g_fileInfoPair = std::make_pair(fullpath, statBuf.st_size);
-            fileInfo.push_back(g_fileInfoPair);
-            g_spaceUsed += fileInfo[index - 1].second;
-          }  // for loop
-          g_spaceUsed += g_bytesWritten;
-          sds.close();
-        }
-        int fileIndex = 0;
-
-        while ((g_spaceUsed > (g_diskSpaceLimit /*- g_fileSizeLimit*/))) {
-          int64_t fileSize = fileInfo[fileIndex].second;
-          if (ACE_OS::unlink(fileInfo[fileIndex].first.c_str()) == 0) {
-            g_spaceUsed -= fileSize;
-          } else {
-            char printmsg[256];
-            std::snprintf(printmsg, 256, "%s\t%s\n", "Could not delete",
-                          fileInfo[fileIndex].first.c_str());
-            numChars = fprintf(g_log, "%s%s\n", formatLogLine(level).c_str(),
-                               printmsg);
-            g_bytesWritten +=
-                numChars + 2;  // bcoz we have to count trailing new line (\n)
-          }
-          fileIndex++;
-        }
+      // Remove existing rolled log files until we're below the limit
+      while (g_spaceUsed >= g_diskSpaceLimit) {
+        removeOldestRolledLogFile();
       }
 
       if ((numChars = fprintf(g_log, "%s%s\n", buf.c_str(), msg.c_str())) ==
               0 ||
           ferror(g_log)) {
-        if ((g_diskSpaceLimit > 0)) {
-          g_spaceUsed = g_spaceUsed - (numChars + 2);
-        }
-        if (g_fileSizeLimit > 0) {
-          g_bytesWritten = g_bytesWritten - (numChars + 2);
-        }
-
-        // lets continue wothout throwing the exception; it should not cause
+        // Let's continue without throwing the exception.  It should not cause
         // process to terminate
         fclose(g_log);
         g_log = nullptr;

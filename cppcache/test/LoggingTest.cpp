@@ -15,7 +15,12 @@
  * limitations under the License.
  */
 
+#include <map>
+#include <string>
 #include <util/Log.hpp>
+
+#include <boost/filesystem.hpp>
+#include <boost/regex.hpp>
 
 #include <gtest/gtest.h>
 
@@ -24,8 +29,6 @@
 #include <geode/PoolManager.hpp>
 #include <geode/RegionFactory.hpp>
 #include <geode/RegionShortcut.hpp>
-
-#include "boost/filesystem.hpp"
 
 using apache::geode::client::CacheClosedException;
 using apache::geode::client::CacheFactory;
@@ -81,14 +84,11 @@ class LoggingTest : public testing::Test {
       boost::filesystem::remove(testLogFileName);
     }
 
-    auto base = boost::filesystem::path(testLogFileName).stem();
-    auto ext = boost::filesystem::path(testLogFileName).extension();
-    for (auto i = 0; i < 10000; i++) {
-      auto rolledLogFileName =
-          base.string() + "-" + std::to_string(i) + ext.string();
-      if (boost::filesystem::exists(rolledLogFileName)) {
-        boost::filesystem::remove(rolledLogFileName);
-      }
+    std::map<int32_t, boost::filesystem::path> rolledFiles;
+    LoggingTest::findRolledFiles(boost::filesystem::current_path().string(),
+                                 rolledFiles);
+    for (auto& item : rolledFiles) {
+      boost::filesystem::remove(item.second);
     }
   }
 
@@ -161,6 +161,35 @@ class LoggingTest : public testing::Test {
 
     apache::geode::client::Log::close();
     boost::filesystem::remove(testLogFileName.c_str());
+  }
+
+  static void findRolledFiles(
+      const std::string& logFilePath,
+      std::map<int32_t, boost::filesystem::path>& rolledFiles) {
+    const auto basePath =
+        boost::filesystem::absolute(boost::filesystem::path(logFilePath)) /
+        testLogFileName;
+    const auto filterstring = basePath.stem().string() + "-(\\d+)\\.log$";
+    const boost::regex my_filter(filterstring);
+
+    rolledFiles.clear();
+
+    boost::filesystem::directory_iterator end_itr;
+    for (boost::filesystem::directory_iterator i(
+             basePath.parent_path().string());
+         i != end_itr; ++i) {
+      if (boost::filesystem::is_regular_file(i->status())) {
+        std::string filename = i->path().filename().string();
+        boost::regex testPattern(filterstring);
+        boost::match_results<std::string::const_iterator> testMatches;
+        if (boost::regex_search(std::string::const_iterator(filename.begin()),
+                                filename.cend(), testMatches, testPattern)) {
+          auto index = std::atoi(
+              std::string(testMatches[1].first, testMatches[1].second).c_str());
+          rolledFiles[index] = i->path();
+        }
+      }
+    }
   }
 
   void testLogFnError() {
@@ -517,12 +546,14 @@ TEST_F(LoggingTest, verifyWithExistingRolledFile) {
               boost::filesystem::file_size(rolledLogFileName));
 }
 
-void verifyWithPath(const boost::filesystem::path& path) {
+void verifyWithPath(const boost::filesystem::path& path, int32_t fileSizeLimit,
+                    int64_t diskSpaceLimit) {
   auto relativePath = path / boost::filesystem::path(testLogFileName);
 
   ASSERT_NO_THROW(apache::geode::client::Log::init(
-      apache::geode::client::LogLevel::Debug, relativePath.string(), 1, 5));
-  for (auto i = 0; i < 2 * __1K__; i++) {
+      apache::geode::client::LogLevel::Debug, relativePath.string(),
+      fileSizeLimit, diskSpaceLimit));
+  for (auto i = 0; i < ((3 * fileSizeLimit) / 2) * __1K__; i++) {
     apache::geode::client::Log::debug(__1KStringLiteral);
   }
   apache::geode::client::Log::close();
@@ -543,23 +574,31 @@ void verifyWithPath(const boost::filesystem::path& path) {
   // log puts the file size over the limit, the file is rolled and the message
   // is preserved intact, rather than truncated or split across files.  We'll
   // assume the file size never exceeds 110% of the specified limit.
-  auto adjustedFileSizeLimit =
-      static_cast<uint32_t>(static_cast<uint64_t>(__1M__) * 11 / 10);
+  auto adjustedFileSizeLimit = static_cast<uint32_t>(
+      static_cast<uint64_t>(__1M__ * fileSizeLimit) * 11 / 10);
 
   auto rolledLogFileName =
       relativePath.parent_path() /
       boost::filesystem::path(base.string() + "-" + std::to_string(0) +
                               ext.string());
 
-  ASSERT_TRUE(boost::filesystem::exists(rolledLogFileName));
+  if (fileSizeLimit == diskSpaceLimit) {
+    // If the limits are equal, we should *never* roll logs, just delete the
+    // current file and start over
+    ASSERT_FALSE(boost::filesystem::exists(rolledLogFileName));
+  } else {
+    ASSERT_TRUE(boost::filesystem::exists(rolledLogFileName));
+    ASSERT_TRUE(adjustedFileSizeLimit >
+                boost::filesystem::file_size(rolledLogFileName));
+  }
   ASSERT_TRUE(adjustedFileSizeLimit >
-              boost::filesystem::file_size(rolledLogFileName));
+              boost::filesystem::file_size(relativePath));
 }
 
 TEST_F(LoggingTest, verifyWithRelativePathFromCWD) {
   auto relativePath = boost::filesystem::path("foo/bar");
 
-  verifyWithPath(relativePath);
+  verifyWithPath(relativePath, 1, 5);
 
   boost::filesystem::remove_all(boost::filesystem::path("foo"));
 }
@@ -568,9 +607,13 @@ TEST_F(LoggingTest, verifyWithAbsolutePath) {
   auto absolutePath =
       boost::filesystem::absolute(boost::filesystem::path("foo/bar"));
 
-  verifyWithPath(absolutePath);
+  verifyWithPath(absolutePath, 1, 5);
 
   boost::filesystem::remove_all(boost::filesystem::path("foo"));
+}
+
+TEST_F(LoggingTest, setLimitsEqualAndRoll) {
+  verifyWithPath(boost::filesystem::path(), 1, 1);
 }
 
 // Logger is supposed to tack the '.log' extension on any file that doesn't

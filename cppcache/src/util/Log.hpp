@@ -406,6 +406,10 @@ class APACHE_GEODE_EXPORT Log {
 
   static void rollLogFile();
 
+  static void removeOldestRolledLogFile();
+
+  static void buildRollFileMapping();
+
   static void setRollFileIndex();
 
   static void setSizeLimits(int32_t logFileLimit, int64_t logDiskSpaceLimit);
