@@ -61,7 +61,7 @@ Cache createCache() {
   using apache::geode::client::CacheFactory;
 
   auto cache = CacheFactory()
-                   .set("log-level", "none")
+                   .set("log-level", "debug")
                    .set("log-file", getClientLogName())
                    .set("statistic-sampling-enabled", "false")
                    .create();
