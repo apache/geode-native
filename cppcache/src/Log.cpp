@@ -375,9 +375,7 @@ std::string Log::formatLogLine(LogLevel level) {
 }
 
 void Log::log(LogLevel level, const std::string& msg) {
-  if (level <= LogLevel()) {
-    Log::logInternal(level, msg);
-  }
+  Log::logInternal(level, msg);
 }
 
 void Log::logInternal(LogLevel level, const std::string& msg) {
@@ -432,15 +430,25 @@ void Log::logInternal(LogLevel level, const std::string& msg) {
 #endif
 
 void Log::log(LogLevel level, const char* fmt, ...) {
-  if (level <= logLevel()) {
-    char msg[_GF_MSG_LIMIT] = {0};
-    va_list argp;
-    va_start(argp, fmt);
-    vsnprintf(msg, _GF_MSG_LIMIT, fmt, argp);
-    /* win doesn't guarantee termination */ msg[_GF_MSG_LIMIT - 1] = '\0';
-    Log::logInternal(level, std::string(msg));
-    va_end(argp);
+  char msg[_GF_MSG_LIMIT] = {0};
+  va_list argp;
+  va_start(argp, fmt);
+  vsnprintf(msg, _GF_MSG_LIMIT, fmt, argp);
+  /* win doesn't guarantee termination */ msg[_GF_MSG_LIMIT - 1] = '\0';
+  Log::logInternal(level, std::string(msg));
+  va_end(argp);
+}
+
+void Log::logCatch(LogLevel level, const char* msg, const Exception& ex) {
+  if (enabled(level)) {
+    std::string message = "Geode exception " + ex.getName() +
+                          " caught: " + ex.getMessage() + "\n" + msg;
+    log(level, message);
   }
+}
+
+bool Log::enabled(LogLevel level) {
+  return (level != LogLevel::None && level <= logLevel());
 }
 
 }  // namespace client
