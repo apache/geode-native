@@ -59,6 +59,8 @@ static std::map<int32_t, boost::filesystem::path> g_rollFiles;
 
 static FILE* g_log = nullptr;
 
+static std::string g_hostName;
+
 const int __1K__ = 1024;
 const int __1M__ = (__1K__ * __1K__);
 
@@ -211,6 +213,8 @@ void Log::init(LogLevel level, const std::string& logFileName,
 
   std::lock_guard<decltype(g_logMutex)> guard(g_logMutex);
 
+  g_hostName = boost::asio::ip::host_name();
+
   if (logFileName.length()) {
     validateLogFileName(logFileName);
     g_fullpath =
@@ -359,18 +363,13 @@ std::string Log::formatLogLine(LogLevel level) {
   auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(
       now - std::chrono::system_clock::from_time_t(secs));
   auto tm_val = apache::geode::util::chrono::localtime(secs);
-  msg << "[" << Log::levelToChars(level) << " ";
-  char timebuf[MINBUFSIZE];
 
-  std::strftime(timebuf, MINBUFSIZE, "%Y/%m/%d %H:%M:%S", &tm_val);
-  msg << timebuf;
-
-  std::snprintf(timebuf, 15, ".%06" PRId64 " ",
-                static_cast<int64_t>(microseconds.count()));
-  msg << timebuf << " ";
-
-  std::strftime(timebuf, MINBUFSIZE, "%Z ", &tm_val);
-  msg << timebuf << " " << boost::asio::ip::host_name() << ":"
+  msg << "[" << Log::levelToChars(level) << " "
+      << std::put_time(&tm_val, "%Y/%m/%d %H:%M:%S") << '.' << std::setfill('0')
+      << std::setw(6) << microseconds.count()
+      << ' '
+      // msg << timebuf << " ";
+      << std::put_time(&tm_val, "%Z  ") << g_hostName << ":"
       << boost::this_process::get_id() << " " << std::this_thread::get_id()
       << "] ";
 
