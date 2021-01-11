@@ -93,7 +93,6 @@ target_link_libraries(_apache-geode INTERFACE
   Boost::filesystem
   Boost::thread
   Boost::stacktrace
-  Boost::regex
   XercesC::XercesC
   OpenSSL::SSL
   OpenSSL::Crypto

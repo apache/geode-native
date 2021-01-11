@@ -24,6 +24,7 @@
 #include <ctime>
 #include <map>
 #include <mutex>
+#include <regex>
 #include <sstream>
 #include <string>
 #include <thread>
@@ -33,7 +34,6 @@
 #include <boost/asio/ip/host_name.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/process/environment.hpp>
-#include <boost/regex.hpp>
 
 #include <geode/ExceptionTypes.hpp>
 #include <geode/internal/geode_globals.hpp>
@@ -149,7 +149,7 @@ void Log::removeOldestRolledLogFile() {
 
 void Log::buildRollFileMapping() {
   const auto filterstring = g_fullpath.stem().string() + "-(\\d+)\\.log$";
-  const boost::regex my_filter(filterstring);
+  const std::regex my_filter(filterstring);
 
   g_rollFiles.clear();
 
@@ -159,10 +159,10 @@ void Log::buildRollFileMapping() {
        i != end_itr; ++i) {
     if (boost::filesystem::is_regular_file(i->status())) {
       std::string filename = i->path().filename().string();
-      boost::regex testPattern(filterstring);
-      boost::match_results<std::string::const_iterator> testMatches;
-      if (boost::regex_search(std::string::const_iterator(filename.begin()),
-                              filename.cend(), testMatches, testPattern)) {
+      std::regex testPattern(filterstring);
+      std::match_results<std::string::const_iterator> testMatches;
+      if (std::regex_search(std::string::const_iterator(filename.begin()),
+                            filename.cend(), testMatches, testPattern)) {
         auto index = std::atoi(
             std::string(testMatches[1].first, testMatches[1].second).c_str());
         g_rollFiles[index] = i->path();
