@@ -185,105 +185,23 @@ class APACHE_GEODE_EXPORT Log {
    */
   static std::string formatLogLine(LogLevel level);
 
-  /**
-   * Returns whether log messages at given level are enabled.
-   */
-  static bool enabled(LogLevel level);
+  static void error(const char* fmt, ...);
+  static void warn(const char* fmt, ...);
+  static void info(const char* fmt, ...);
+  static void config(const char* fmt, ...);
+  static void fine(const char* fmt, ...);
+  static void finer(const char* fmt, ...);
+  static void finest(const char* fmt, ...);
+  static void debug(const char* fmt, ...);
 
-  /**
-   * Logs a message at given level.
-   */
-  static void log(LogLevel level, const char* msg);
-
-  /**
-   * Returns whether "error" log messages are enabled.
-   */
-  static bool errorEnabled();
-
-  /**
-   * Logs a message.
-   * The message level is "error".
-   */
-  static void error(const char* msg);
-
-  static void error(const std::string& msg);
-
-  /**
-   * Returns whether "warning" log messages are enabled.
-   */
-  static bool warningEnabled();
-
-  /**
-   * Logs a message.
-   * The message level is "warning".
-   */
-  static void warning(const char* msg);
-
-  /**
-   * Returns whether "info" log messages are enabled.
-   */
-  static bool infoEnabled();
-
-  /**
-   * Logs a message.
-   * The message level is "info".
-   */
-  static void info(const char* msg);
-
-  /**
-   * Returns whether "config" log messages are enabled.
-   */
-  static bool configEnabled();
-
-  /**
-   * Logs a message.
-   * The message level is "config".
-   */
-  static void config(const char* msg);
-
-  /**
-   * Returns whether "fine" log messages are enabled.
-   */
-  static bool fineEnabled();
-
-  /**
-   * Logs a message.
-   * The message level is "fine".
-   */
-  static void fine(const char* msg);
-
-  /**
-   * Returns whether "finer" log messages are enabled.
-   */
-  static bool finerEnabled();
-
-  /**
-   * Logs a message.
-   * The message level is "finer".
-   */
-  static void finer(const char* msg);
-
-  /**
-   * Returns whether "finest" log messages are enabled.
-   */
-  static bool finestEnabled();
-
-  /**
-   * Logs a message.
-   * The message level is "finest".
-   */
-  static void finest(const char* msg);
-
-  /**
-   * Returns whether "debug" log messages are enabled.
-   */
-  static bool debugEnabled();
-
-  /**
-   * Logs a message.
-   * The message level is "debug".
-   */
-  static void debug(const char* msg);
+  static void error(const std::string& message);
+  static void warn(const std::string& message);
+  static void info(const std::string& message);
+  static void config(const std::string& message);
+  static void fine(const std::string& message);
+  static void finer(const std::string& message);
+  static void finest(const std::string& message);
+  static void debug(const std::string& message);
 
  private:
   static LogLevel s_logLevel;
@@ -305,38 +223,10 @@ class APACHE_GEODE_EXPORT Log {
   static void setSizeLimits(int32_t logFileLimit, int64_t logDiskSpaceLimit);
 
  public:
-  static void put(LogLevel level, const std::string& msg);
-
-  static void put(LogLevel level, const char* msg);
+  static void log(LogLevel level, const std::string& msg);
+  static void log(LogLevel level, const char* msg);
 };
 
-class APACHE_GEODE_EXPORT LogVarargs {
- public:
-  static void debug(const char* fmt, ...);
-  static void error(const char* fmt, ...);
-  static void warn(const char* fmt, ...);
-  static void info(const char* fmt, ...);
-  static void config(const char* fmt, ...);
-  static void fine(const char* fmt, ...);
-  static void finer(const char* fmt, ...);
-  static void finest(const char* fmt, ...);
-
-  static void debug(const std::string& message);
-
-  static void error(const std::string& message);
-
-  static void warn(const std::string& message);
-
-  static void info(const std::string& message);
-
-  static void config(const std::string& message);
-
-  static void fine(const std::string& message);
-
-  static void finer(const std::string& message);
-
-  static void finest(const std::string& message);
-};
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
@@ -344,41 +234,41 @@ class APACHE_GEODE_EXPORT LogVarargs {
 #define LOGDEBUG                                  \
   if (::apache::geode::client::LogLevel::Debug <= \
       ::apache::geode::client::Log::logLevel())   \
-  ::apache::geode::client::LogVarargs::debug
+  ::apache::geode::client::Log::debug
 
 #define LOGERROR                                  \
   if (::apache::geode::client::LogLevel::Error <= \
       ::apache::geode::client::Log::logLevel())   \
-  ::apache::geode::client::LogVarargs::error
+  ::apache::geode::client::Log::error
 
 #define LOGWARN                                     \
   if (::apache::geode::client::LogLevel::Warning <= \
       ::apache::geode::client::Log::logLevel())     \
-  ::apache::geode::client::LogVarargs::warn
+  ::apache::geode::client::Log::warn
 
 #define LOGINFO                                  \
   if (::apache::geode::client::LogLevel::Info <= \
       ::apache::geode::client::Log::logLevel())  \
-  ::apache::geode::client::LogVarargs::info
+  ::apache::geode::client::Log::info
 
 #define LOGCONFIG                                  \
   if (::apache::geode::client::LogLevel::Config <= \
       ::apache::geode::client::Log::logLevel())    \
-  ::apache::geode::client::LogVarargs::config
+  ::apache::geode::client::Log::config
 
 #define LOGFINE                                  \
   if (::apache::geode::client::LogLevel::Fine <= \
       ::apache::geode::client::Log::logLevel())  \
-  ::apache::geode::client::LogVarargs::fine
+  ::apache::geode::client::Log::fine
 
 #define LOGFINER                                  \
   if (::apache::geode::client::LogLevel::Finer <= \
       ::apache::geode::client::Log::logLevel())   \
-  ::apache::geode::client::LogVarargs::finer
+  ::apache::geode::client::Log::finer
 
 #define LOGFINEST                                  \
   if (::apache::geode::client::LogLevel::Finest <= \
       ::apache::geode::client::Log::logLevel())    \
-  ::apache::geode::client::LogVarargs::finest
+  ::apache::geode::client::Log::finest
 
 #endif  // GEODE_LOG_H_

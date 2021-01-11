@@ -101,7 +101,7 @@ StatisticsManager::~StatisticsManager() {
   } catch (const std::exception& ex) {
     std::string what = "~StatisticsManager swallowing std::exception: ";
     what += ex.what();
-    Log::warning(what.c_str());
+    Log::warn(what.c_str());
 
   } catch (...) {
     Log::error("~StatisticsManager swallowing unknown exception");

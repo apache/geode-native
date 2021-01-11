@@ -377,255 +377,171 @@ std::string Log::formatLogLine(LogLevel level) {
   return msg.str();
 }
 
-void Log::put(LogLevel level, const char* msg) { put(level, std::string(msg)); }
+void Log::log(LogLevel level, const char* msg) { log(level, std::string(msg)); }
 
-void Log::put(LogLevel level, const std::string& msg) {
+void Log::log(LogLevel level, const std::string& msg) {
   std::lock_guard<decltype(g_logMutex)> guard(g_logMutex);
 
-  std::string buf;
-  char fullpath[512] = {0};
+  if (level <= logLevel()) {
+    std::string buf;
+    char fullpath[512] = {0};
 
-  if (g_fullpath.string().empty()) {
-    fprintf(stdout, "%s%s\n", formatLogLine(level).c_str(), msg.c_str());
-    fflush(stdout);
-  } else {
-    if (!g_log) {
-      g_log = fopen(g_fullpath.string().c_str(), "a");
-    }
-
-    if (g_log) {
-      buf = formatLogLine(level);
-      auto numChars = static_cast<int>(buf.length() + msg.length());
-      g_bytesWritten +=
-          numChars + 2;  // bcoz we have to count trailing new line (\n)
-
-      if ((g_fileSizeLimit != 0) && (g_bytesWritten >= g_fileSizeLimit)) {
-        rollLogFile();
-        g_bytesWritten = numChars + 2;  // Account for trailing newline
-        writeBanner();
+    if (g_fullpath.string().empty()) {
+      fprintf(stdout, "%s%s\n", formatLogLine(level).c_str(), msg.c_str());
+      fflush(stdout);
+    } else {
+      if (!g_log) {
+        g_log = fopen(g_fullpath.string().c_str(), "a");
       }
 
-      g_spaceUsed += numChars + 2;
+      if (g_log) {
+        buf = formatLogLine(level);
+        auto numChars = static_cast<int>(buf.length() + msg.length());
+        g_bytesWritten +=
+            numChars + 2;  // bcoz we have to count trailing new line (\n)
 
-      // Remove existing rolled log files until we're below the limit
-      while (g_spaceUsed >= g_diskSpaceLimit) {
-        removeOldestRolledLogFile();
-      }
+        if ((g_fileSizeLimit != 0) && (g_bytesWritten >= g_fileSizeLimit)) {
+          rollLogFile();
+          g_bytesWritten = numChars + 2;  // Account for trailing newline
+          writeBanner();
+        }
 
-      if ((numChars = fprintf(g_log, "%s%s\n", buf.c_str(), msg.c_str())) ==
-              0 ||
-          ferror(g_log)) {
-        // Let's continue without throwing the exception.  It should not cause
-        // process to terminate
-        fclose(g_log);
-        g_log = nullptr;
-      } else {
-        fflush(g_log);
+        g_spaceUsed += numChars + 2;
+
+        // Remove existing rolled log files until we're below the limit
+        while (g_spaceUsed >= g_diskSpaceLimit) {
+          removeOldestRolledLogFile();
+        }
+
+        if ((numChars = fprintf(g_log, "%s%s\n", buf.c_str(), msg.c_str())) ==
+                0 ||
+            ferror(g_log)) {
+          // Let's continue without throwing the exception.  It should not cause
+          // process to terminate
+          fclose(g_log);
+          g_log = nullptr;
+        } else {
+          fflush(g_log);
+        }
       }
     }
   }
 }
 
-bool Log::enabled(LogLevel level) {
-  return GEODE_HIGHEST_LOG_LEVEL >= level && s_logLevel >= level;
-}
-
-void Log::log(LogLevel level, const char* msg) {
-  if (enabled(level)) put(level, msg);
-}
-
-bool Log::errorEnabled() {
-  return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Error &&
-         s_logLevel >= LogLevel::Error;
-}
-
-void Log::error(const char* msg) {
-  if (errorEnabled()) put(LogLevel::Error, msg);
-}
-
-void Log::error(const std::string& msg) {
-  if (errorEnabled()) put(LogLevel::Error, msg.c_str());
-}
-
-bool Log::warningEnabled() {
-  return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Warning &&
-         s_logLevel >= LogLevel::Warning;
-}
-
-void Log::warning(const char* msg) {
-  if (warningEnabled()) put(LogLevel::Warning, msg);
-}
-
-bool Log::infoEnabled() {
-  return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Info &&
-         s_logLevel >= LogLevel::Info;
-}
-
-void Log::info(const char* msg) {
-  if (infoEnabled()) put(LogLevel::Info, msg);
-}
-
-bool Log::configEnabled() {
-  return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Config &&
-         s_logLevel >= LogLevel::Config;
-}
-
-void Log::config(const char* msg) {
-  if (configEnabled()) put(LogLevel::Config, msg);
-}
-
-bool Log::fineEnabled() {
-  return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Fine &&
-         s_logLevel >= LogLevel::Fine;
-}
-
-void Log::fine(const char* msg) {
-  if (fineEnabled()) put(LogLevel::Fine, msg);
-}
-
-bool Log::finerEnabled() {
-  return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Finer &&
-         s_logLevel >= LogLevel::Finer;
-}
-
-void Log::finer(const char* msg) {
-  if (finerEnabled()) put(LogLevel::Finer, msg);
-}
-
-bool Log::finestEnabled() {
-  return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Finest &&
-         s_logLevel >= LogLevel::Finest;
-}
-
-void Log::finest(const char* msg) {
-  if (finestEnabled()) put(LogLevel::Finest, msg);
-}
-
-bool Log::debugEnabled() {
-  return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Debug &&
-         s_logLevel >= LogLevel::Debug;
-}
-
-void Log::debug(const char* msg) {
-  if (debugEnabled()) put(LogLevel::Debug, msg);
-}
-
-// var arg logging routines.
-
 #ifdef _WIN32
 #define vsnprintf _vsnprintf
 #endif
 
-void LogVarargs::debug(const char* fmt, ...) {
+void Log::error(const char* fmt, ...) {
   char msg[_GF_MSG_LIMIT] = {0};
   va_list argp;
   va_start(argp, fmt);
   vsnprintf(msg, _GF_MSG_LIMIT, fmt, argp);
   /* win doesn't guarantee termination */ msg[_GF_MSG_LIMIT - 1] = '\0';
-  Log::put(LogLevel::Debug, msg);
+  Log::log(LogLevel::Error, msg);
   va_end(argp);
 }
 
-void LogVarargs::error(const char* fmt, ...) {
+void Log::warn(const char* fmt, ...) {
   char msg[_GF_MSG_LIMIT] = {0};
   va_list argp;
   va_start(argp, fmt);
   vsnprintf(msg, _GF_MSG_LIMIT, fmt, argp);
   /* win doesn't guarantee termination */ msg[_GF_MSG_LIMIT - 1] = '\0';
-  Log::put(LogLevel::Error, msg);
+  Log::log(LogLevel::Warning, msg);
   va_end(argp);
 }
 
-void LogVarargs::warn(const char* fmt, ...) {
+void Log::info(const char* fmt, ...) {
   char msg[_GF_MSG_LIMIT] = {0};
   va_list argp;
   va_start(argp, fmt);
   vsnprintf(msg, _GF_MSG_LIMIT, fmt, argp);
   /* win doesn't guarantee termination */ msg[_GF_MSG_LIMIT - 1] = '\0';
-  Log::put(LogLevel::Warning, msg);
+  Log::log(LogLevel::Info, msg);
   va_end(argp);
 }
 
-void LogVarargs::info(const char* fmt, ...) {
+void Log::config(const char* fmt, ...) {
   char msg[_GF_MSG_LIMIT] = {0};
   va_list argp;
   va_start(argp, fmt);
   vsnprintf(msg, _GF_MSG_LIMIT, fmt, argp);
   /* win doesn't guarantee termination */ msg[_GF_MSG_LIMIT - 1] = '\0';
-  Log::put(LogLevel::Info, msg);
+  Log::log(LogLevel::Config, msg);
   va_end(argp);
 }
 
-void LogVarargs::config(const char* fmt, ...) {
+void Log::fine(const char* fmt, ...) {
   char msg[_GF_MSG_LIMIT] = {0};
   va_list argp;
   va_start(argp, fmt);
   vsnprintf(msg, _GF_MSG_LIMIT, fmt, argp);
   /* win doesn't guarantee termination */ msg[_GF_MSG_LIMIT - 1] = '\0';
-  Log::put(LogLevel::Config, msg);
+  Log::log(LogLevel::Fine, msg);
   va_end(argp);
 }
 
-void LogVarargs::fine(const char* fmt, ...) {
+void Log::finer(const char* fmt, ...) {
   char msg[_GF_MSG_LIMIT] = {0};
   va_list argp;
   va_start(argp, fmt);
   vsnprintf(msg, _GF_MSG_LIMIT, fmt, argp);
   /* win doesn't guarantee termination */ msg[_GF_MSG_LIMIT - 1] = '\0';
-  Log::put(LogLevel::Fine, msg);
+  Log::log(LogLevel::Finer, msg);
   va_end(argp);
 }
 
-void LogVarargs::finer(const char* fmt, ...) {
+void Log::finest(const char* fmt, ...) {
   char msg[_GF_MSG_LIMIT] = {0};
   va_list argp;
   va_start(argp, fmt);
   vsnprintf(msg, _GF_MSG_LIMIT, fmt, argp);
   /* win doesn't guarantee termination */ msg[_GF_MSG_LIMIT - 1] = '\0';
-  Log::put(LogLevel::Finer, msg);
+  Log::log(LogLevel::Finest, msg);
   va_end(argp);
 }
 
-void LogVarargs::finest(const char* fmt, ...) {
+void Log::debug(const char* fmt, ...) {
   char msg[_GF_MSG_LIMIT] = {0};
   va_list argp;
   va_start(argp, fmt);
   vsnprintf(msg, _GF_MSG_LIMIT, fmt, argp);
   /* win doesn't guarantee termination */ msg[_GF_MSG_LIMIT - 1] = '\0';
-  Log::put(LogLevel::Finest, msg);
+  Log::log(LogLevel::Debug, msg);
   va_end(argp);
 }
 
-void LogVarargs::debug(const std::string& message) {
-  Log::put(LogLevel::Debug, message.c_str());
+void Log::error(const std::string& message) {
+  Log::log(LogLevel::Error, message.c_str());
 }
 
-void LogVarargs::error(const std::string& message) {
-  Log::put(LogLevel::Error, message.c_str());
+void Log::warn(const std::string& message) {
+  Log::log(LogLevel::Warning, message.c_str());
 }
 
-void LogVarargs::warn(const std::string& message) {
-  Log::put(LogLevel::Warning, message.c_str());
+void Log::info(const std::string& message) {
+  Log::log(LogLevel::Info, message.c_str());
 }
 
-void LogVarargs::info(const std::string& message) {
-  Log::put(LogLevel::Info, message.c_str());
+void Log::config(const std::string& message) {
+  Log::log(LogLevel::Config, message.c_str());
 }
 
-void LogVarargs::config(const std::string& message) {
-  Log::put(LogLevel::Config, message.c_str());
+void Log::fine(const std::string& message) {
+  Log::log(LogLevel::Fine, message.c_str());
 }
 
-void LogVarargs::fine(const std::string& message) {
-  Log::put(LogLevel::Fine, message.c_str());
+void Log::finer(const std::string& message) {
+  Log::log(LogLevel::Finer, message.c_str());
 }
 
-void LogVarargs::finer(const std::string& message) {
-  Log::put(LogLevel::Finer, message.c_str());
+void Log::finest(const std::string& message) {
+  Log::log(LogLevel::Finest, message.c_str());
 }
 
-void LogVarargs::finest(const std::string& message) {
-  Log::put(LogLevel::Finest, message.c_str());
+void Log::debug(const std::string& message) {
+  Log::log(LogLevel::Debug, message.c_str());
 }
 
 }  // namespace client

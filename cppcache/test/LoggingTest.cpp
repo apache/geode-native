@@ -147,7 +147,7 @@ class LoggingTest : public testing::Test {
     apache::geode::client::Log::init(level, testLogFileName);
 
     apache::geode::client::Log::error("Error Message");
-    apache::geode::client::Log::warning("Warning Message");
+    apache::geode::client::Log::warn("Warning Message");
     apache::geode::client::Log::info("Info Message");
     apache::geode::client::Log::config("Config Message");
     apache::geode::client::Log::fine("Fine Message");
@@ -337,7 +337,7 @@ TEST_F(LoggingTest, logToFileAtEachLevel) {
 
   ASSERT_NO_THROW(apache::geode::client::Log::init(
       apache::geode::client::LogLevel::Warning, testLogFileName));
-  apache::geode::client::Log::warning("This is a 'warning' string");
+  apache::geode::client::Log::warn("This is a 'warning' string");
   LOGWARN("This is a formatted 'warning' string (%d)", __1K__);
   apache::geode::client::Log::close();
   ASSERT_TRUE(boost::filesystem::exists(testLogFileName));
@@ -572,7 +572,7 @@ TEST_F(LoggingTest, countLinesAllLevels) {
     apache::geode::client::Log::init(level, testLogFileName);
 
     apache::geode::client::Log::error("Error Message");
-    apache::geode::client::Log::warning("Warning Message");
+    apache::geode::client::Log::warn("Warning Message");
     apache::geode::client::Log::info("Info Message");
     apache::geode::client::Log::config("Config Message");
     apache::geode::client::Log::fine("Fine Message");

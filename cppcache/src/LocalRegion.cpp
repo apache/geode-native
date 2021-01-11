@@ -717,7 +717,7 @@ void LocalRegion::registerEntryExpiryTask(
       new EntryExpiryHandler(rptr, entry, getEntryExpirationAction(), duration);
   auto id = rptr->getCacheImpl()->getExpiryTaskManager().scheduleExpiryTask(
       handler, duration, std::chrono::seconds::zero());
-  if (Log::finestEnabled()) {
+  if (Log::logLevel() >= LogLevel::Finest) {
     std::shared_ptr<CacheableKey> key;
     entry->getKeyI(key);
     LOGFINEST(
@@ -2812,7 +2812,7 @@ void LocalRegion::updateAccessAndModifiedTimeForEntry(
     ExpEntryProperties& expProps = ptr->getExpProperties();
     auto currTime = std::chrono::system_clock::now();
     std::string keyStr;
-    if (Log::debugEnabled()) {
+    if (Log::logLevel() >= LogLevel::Debug) {
       std::shared_ptr<CacheableKey> key;
       ptr->getKeyI(key);
       keyStr = Utils::nullSafeToString(key);

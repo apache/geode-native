@@ -993,7 +993,7 @@ GfErrType TcrEndpoint::sendRequestWithRetry(
                 failReason.c_str());
         if (compareTransactionIds(reqTransId, reply.getTransId(), failReason,
                                   conn)) {
-          if (Log::warningEnabled()) {
+          if (Log::logLevel() >= LogLevel::Warning) {
             LOGWARN("Stack trace: %s", ex.getStackTrace().c_str());
           }
           error = GF_MSG;

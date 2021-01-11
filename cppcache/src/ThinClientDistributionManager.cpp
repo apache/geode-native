@@ -79,7 +79,7 @@ void ThinClientDistributionManager::destroy(bool keepAlive) {
   destroyAction();
   // stop the chunk processing thread
   stopChunkProcessor();
-  if (Log::finestEnabled()) {
+  if (Log::logLevel() >= LogLevel::Finest) {
     std::string endpointStr;
     for (size_t index = 0; index < m_endpoints.size(); ++index) {
       if (index != 0) {

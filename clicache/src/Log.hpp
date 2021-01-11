@@ -199,11 +199,6 @@ namespace Apache
         static void SetLevel(LogLevel level);
 
         /// <summary>
-        /// True if log messages at the given level are enabled.
-        /// </summary>
-        static bool Enabled(LogLevel level);
-
-        /// <summary>
         /// Logs a message at the given level.
         /// </summary>
         static void Write(LogLevel level, String^ msg);
