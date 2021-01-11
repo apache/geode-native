@@ -438,28 +438,6 @@ void Log::putCatch(LogLevel level, const char* msg, const Exception& ex) {
   put(level, message);
 }
 
-void Log::enterFn(LogLevel level, const char* functionName) {
-  enum { MAX_NAME_LENGTH = 1024 };
-  std::string fn = functionName;
-  if (fn.size() > MAX_NAME_LENGTH) {
-    fn = fn.substr(fn.size() - MAX_NAME_LENGTH, MAX_NAME_LENGTH);
-  }
-  char buf[MAX_NAME_LENGTH + 512] = {0};
-  std::snprintf(buf, 1536, "{{{===>>> Entering function %s", fn.c_str());
-  put(level, buf);
-}
-
-void Log::exitFn(LogLevel level, const char* functionName) {
-  enum { MAX_NAME_LENGTH = 1024 };
-  std::string fn = functionName;
-  if (fn.size() > MAX_NAME_LENGTH) {
-    fn = fn.substr(fn.size() - MAX_NAME_LENGTH, MAX_NAME_LENGTH);
-  }
-  char buf[MAX_NAME_LENGTH + 512] = {0};
-  std::snprintf(buf, 1536, "<<<===}}} Exiting function %s", fn.c_str());
-  put(level, buf);
-}
-
 bool Log::enabled(LogLevel level) {
   return GEODE_HIGHEST_LOG_LEVEL >= level && s_logLevel >= level;
 }
@@ -614,15 +592,6 @@ void Log::debugThrow(const char* msg, const Exception& ex) {
 
 void Log::debugCatch(const char* msg, const Exception& ex) {
   if (debugEnabled()) putCatch(LogLevel::Debug, msg, ex);
-}
-
-LogFn::LogFn(const char* functionName, LogLevel level)
-    : m_functionName(functionName), m_level(level) {
-  if (Log::enabled(m_level)) Log::enterFn(m_level, m_functionName);
-}
-
-LogFn::~LogFn() {
-  if (Log::enabled(m_level)) Log::exitFn(m_level, m_functionName);
 }
 
 // var arg logging routines.

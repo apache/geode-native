@@ -391,10 +391,6 @@ class APACHE_GEODE_EXPORT Log {
    */
   static void debugCatch(const char* msg, const Exception& ex);
 
-  static void enterFn(LogLevel level, const char* functionName);
-
-  static void exitFn(LogLevel level, const char* functionName);
-
  private:
   static LogLevel s_logLevel;
 
@@ -422,19 +418,6 @@ class APACHE_GEODE_EXPORT Log {
   static void putThrow(LogLevel level, const char* msg, const Exception& ex);
 
   static void putCatch(LogLevel level, const char* msg, const Exception& ex);
-};
-
-class APACHE_GEODE_EXPORT LogFn {
-  const char* m_functionName;
-  LogLevel m_level;
-
- public:
-  explicit LogFn(const char* functionName, LogLevel level = LogLevel::Finest);
-
-  ~LogFn();
-
-  LogFn(const LogFn& rhs) = delete;
-  LogFn& operator=(const LogFn& rhs) = delete;
 };
 
 class APACHE_GEODE_EXPORT LogVarargs {
