@@ -146,14 +146,14 @@ class LoggingTest : public testing::Test {
   static void verifyLineCountAtLevel(LogLevel level) {
     apache::geode::client::Log::init(level, testLogFileName);
 
-    apache::geode::client::Log::error("Error Message");
-    apache::geode::client::Log::warn("Warning Message");
-    apache::geode::client::Log::info("Info Message");
-    apache::geode::client::Log::config("Config Message");
-    apache::geode::client::Log::fine("Fine Message");
-    apache::geode::client::Log::finer("Finer Message");
-    apache::geode::client::Log::finest("Finest Message");
-    apache::geode::client::Log::debug("Debug Message");
+    LOGERROR("Error Message");
+    LOGWARN("Warning Message");
+    LOGINFO("Info Message");
+    LOGCONFIG("Config Message");
+    LOGFINE("Fine Message");
+    LOGFINER("Finer Message");
+    LOGFINEST("Finest Message");
+    LOGDEBUG("Debug Message");
 
     int lines = LoggingTest::numOfLinesInFile(testLogFileName.c_str());
 
@@ -282,7 +282,7 @@ TEST_F(LoggingTest, logInit) {
 TEST_F(LoggingTest, logToFileAtEachLevel) {
   ASSERT_NO_THROW(apache::geode::client::Log::init(
       apache::geode::client::LogLevel::Debug, testLogFileName));
-  apache::geode::client::Log::debug("This is a debug string");
+  LOGDEBUG("This is a debug string");
   LOGDEBUG("This is a formatted debug string (%d)", __1K__);
   apache::geode::client::Log::close();
   ASSERT_TRUE(boost::filesystem::exists(testLogFileName));
@@ -292,7 +292,7 @@ TEST_F(LoggingTest, logToFileAtEachLevel) {
 
   ASSERT_NO_THROW(apache::geode::client::Log::init(
       apache::geode::client::LogLevel::Finest, testLogFileName));
-  apache::geode::client::Log::finest("This is a 'finest' string");
+  LOGFINEST("This is a 'finest' string");
   LOGFINEST("This is a formatted 'finest' string (%d)", __1K__);
   apache::geode::client::Log::close();
   ASSERT_TRUE(boost::filesystem::exists(testLogFileName));
@@ -301,7 +301,7 @@ TEST_F(LoggingTest, logToFileAtEachLevel) {
 
   ASSERT_NO_THROW(apache::geode::client::Log::init(
       apache::geode::client::LogLevel::Finer, testLogFileName));
-  apache::geode::client::Log::finer("This is a 'finer' string");
+  LOGFINER("This is a 'finer' string");
   LOGFINER("This is a formatted 'finer' string (%d)", __1K__);
   apache::geode::client::Log::close();
   ASSERT_TRUE(boost::filesystem::exists(testLogFileName));
@@ -310,7 +310,7 @@ TEST_F(LoggingTest, logToFileAtEachLevel) {
 
   ASSERT_NO_THROW(apache::geode::client::Log::init(
       apache::geode::client::LogLevel::Fine, testLogFileName));
-  apache::geode::client::Log::fine("This is a 'fine' string");
+  LOGFINE("This is a 'fine' string");
   LOGFINE("This is a formatted 'fine' string (%d)", __1K__);
   apache::geode::client::Log::close();
   ASSERT_TRUE(boost::filesystem::exists(testLogFileName));
@@ -319,7 +319,7 @@ TEST_F(LoggingTest, logToFileAtEachLevel) {
 
   ASSERT_NO_THROW(apache::geode::client::Log::init(
       apache::geode::client::LogLevel::Config, testLogFileName));
-  apache::geode::client::Log::config("This is a 'config' string");
+  LOGCONFIG("This is a 'config' string");
   LOGCONFIG("This is a formatted 'config' string (%d)", __1K__);
   apache::geode::client::Log::close();
   ASSERT_TRUE(boost::filesystem::exists(testLogFileName));
@@ -328,7 +328,7 @@ TEST_F(LoggingTest, logToFileAtEachLevel) {
 
   ASSERT_NO_THROW(apache::geode::client::Log::init(
       apache::geode::client::LogLevel::Info, testLogFileName));
-  apache::geode::client::Log::info("This is a 'finer' string");
+  LOGINFO("This is a 'finer' string");
   LOGINFO("This is a formatted 'finer' string (%d)", __1K__);
   apache::geode::client::Log::close();
   ASSERT_TRUE(boost::filesystem::exists(testLogFileName));
@@ -337,7 +337,7 @@ TEST_F(LoggingTest, logToFileAtEachLevel) {
 
   ASSERT_NO_THROW(apache::geode::client::Log::init(
       apache::geode::client::LogLevel::Warning, testLogFileName));
-  apache::geode::client::Log::warn("This is a 'warning' string");
+  LOGWARN("This is a 'warning' string");
   LOGWARN("This is a formatted 'warning' string (%d)", __1K__);
   apache::geode::client::Log::close();
   ASSERT_TRUE(boost::filesystem::exists(testLogFileName));
@@ -346,7 +346,7 @@ TEST_F(LoggingTest, logToFileAtEachLevel) {
 
   ASSERT_NO_THROW(apache::geode::client::Log::init(
       apache::geode::client::LogLevel::Error, testLogFileName));
-  apache::geode::client::Log::error("This is a 'error' string");
+  LOGERROR("This is a 'error' string");
   LOGERROR("This is a formatted 'error' string (%d)", __1K__);
   apache::geode::client::Log::close();
   ASSERT_TRUE(boost::filesystem::exists(testLogFileName));
@@ -358,7 +358,7 @@ TEST_F(LoggingTest, verifyFileSizeLimit) {
   ASSERT_NO_THROW(apache::geode::client::Log::init(
       apache::geode::client::LogLevel::Debug, testLogFileName, 1, 5));
   for (auto i = 0; i < 4 * __1K__; i++) {
-    apache::geode::client::Log::debug(__1KStringLiteral);
+    LOGDEBUG(__1KStringLiteral);
   }
   apache::geode::client::Log::close();
 
@@ -398,7 +398,7 @@ TEST_F(LoggingTest, verifyDiskSpaceLimit) {
   ASSERT_NO_THROW(apache::geode::client::Log::init(
       apache::geode::client::LogLevel::Debug, testLogFileName, 1, 2));
   for (auto i = 0; i < NUMBER_OF_ITERATIONS; i++) {
-    apache::geode::client::Log::debug(__1KStringLiteral);
+    LOGDEBUG(__1KStringLiteral);
   }
   apache::geode::client::Log::close();
 
@@ -429,7 +429,7 @@ TEST_F(LoggingTest, verifyWithExistingRolledFile) {
   ASSERT_NO_THROW(apache::geode::client::Log::init(
       apache::geode::client::LogLevel::Debug, testLogFileName, 1, 5));
   for (auto i = 0; i < 2 * __1K__; i++) {
-    apache::geode::client::Log::debug(__1KStringLiteral);
+    LOGDEBUG(__1KStringLiteral);
   }
   apache::geode::client::Log::close();
 
@@ -468,7 +468,7 @@ void verifyWithPath(const boost::filesystem::path& path, int32_t fileSizeLimit,
       apache::geode::client::LogLevel::Debug, relativePath.string(),
       fileSizeLimit, diskSpaceLimit));
   for (auto i = 0; i < ((3 * fileSizeLimit) / 2) * __1K__; i++) {
-    apache::geode::client::Log::debug(__1KStringLiteral);
+    LOGDEBUG(__1KStringLiteral);
   }
   apache::geode::client::Log::close();
 
@@ -534,13 +534,13 @@ TEST_F(LoggingTest, setLimitsEqualAndRoll) {
 // already have it.
 TEST_F(LoggingTest, verifyExtension) {
   apache::geode::client::Log::init(LogLevel::All, "foo");
-  apache::geode::client::Log::info("...");
+  LOGINFO("...");
   apache::geode::client::Log::close();
   ASSERT_TRUE(LoggingTest::numOfLinesInFile("foo.log") > 0);
   boost::filesystem::remove("foo.log");
 
   apache::geode::client::Log::init(LogLevel::All, "foo.txt");
-  apache::geode::client::Log::info("...");
+  LOGINFO("...");
   apache::geode::client::Log::close();
   ASSERT_TRUE(LoggingTest::numOfLinesInFile("foo.txt.log") > 0);
   boost::filesystem::remove("foo.txt.log");
@@ -551,45 +551,13 @@ TEST_F(LoggingTest, verifyExtension) {
 // '-' in your log file name.
 TEST_F(LoggingTest, verifyFilenameWithDash) {
   apache::geode::client::Log::init(LogLevel::All, "foo-bar.log");
-  apache::geode::client::Log::info("...");
+  LOGINFO("...");
   apache::geode::client::Log::close();
   ASSERT_TRUE(LoggingTest::numOfLinesInFile("foo-bar.log") > 0);
   boost::filesystem::remove("foo-bar.log");
 }
 
 TEST_F(LoggingTest, countLinesAllLevels) {
-  for (LogLevel level : {
-           LogLevel::Error,
-           LogLevel::Warning,
-           LogLevel::Info,
-           LogLevel::Default,
-           LogLevel::Config,
-           LogLevel::Fine,
-           LogLevel::Finer,
-           LogLevel::Finest,
-           LogLevel::Debug,
-       }) {
-    apache::geode::client::Log::init(level, testLogFileName);
-
-    apache::geode::client::Log::error("Error Message");
-    apache::geode::client::Log::warn("Warning Message");
-    apache::geode::client::Log::info("Info Message");
-    apache::geode::client::Log::config("Config Message");
-    apache::geode::client::Log::fine("Fine Message");
-    apache::geode::client::Log::finer("Finer Message");
-    apache::geode::client::Log::finest("Finest Message");
-    apache::geode::client::Log::debug("Debug Message");
-
-    int lines = LoggingTest::numOfLinesInFile(testLogFileName.c_str());
-
-    ASSERT_TRUE(lines == LoggingTest::expectedWithBanner(level));
-
-    apache::geode::client::Log::close();
-    boost::filesystem::remove(testLogFileName);
-  }
-}
-
-TEST_F(LoggingTest, countLinesAllLevelsUsingMacros) {
   for (LogLevel level : {
            LogLevel::Error,
            LogLevel::Warning,

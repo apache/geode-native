@@ -185,24 +185,6 @@ class APACHE_GEODE_EXPORT Log {
    */
   static std::string formatLogLine(LogLevel level);
 
-  static void error(const char* fmt, ...);
-  static void warn(const char* fmt, ...);
-  static void info(const char* fmt, ...);
-  static void config(const char* fmt, ...);
-  static void fine(const char* fmt, ...);
-  static void finer(const char* fmt, ...);
-  static void finest(const char* fmt, ...);
-  static void debug(const char* fmt, ...);
-
-  static void error(const std::string& message);
-  static void warn(const std::string& message);
-  static void info(const std::string& message);
-  static void config(const std::string& message);
-  static void fine(const std::string& message);
-  static void finer(const std::string& message);
-  static void finest(const std::string& message);
-  static void debug(const std::string& message);
-
  private:
   static LogLevel s_logLevel;
 
@@ -224,51 +206,46 @@ class APACHE_GEODE_EXPORT Log {
 
  public:
   static void log(LogLevel level, const std::string& msg);
-  static void log(LogLevel level, const char* msg);
+  static void log(LogLevel level, const char* fmt, ...);
+
+ private:
+  static void logInternal(LogLevel level, const std::string& msg);
 };
 
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
 
-#define LOGDEBUG                                  \
-  if (::apache::geode::client::LogLevel::Debug <= \
-      ::apache::geode::client::Log::logLevel())   \
-  ::apache::geode::client::Log::debug
+#define LOGERROR(...)                                                         \
+  ::apache::geode::client::Log::log(::apache::geode::client::LogLevel::Error, \
+                                    __VA_ARGS__)
 
-#define LOGERROR                                  \
-  if (::apache::geode::client::LogLevel::Error <= \
-      ::apache::geode::client::Log::logLevel())   \
-  ::apache::geode::client::Log::error
+#define LOGWARN(...)                 \
+  ::apache::geode::client::Log::log( \
+      ::apache::geode::client::LogLevel::Warning, __VA_ARGS__)
 
-#define LOGWARN                                     \
-  if (::apache::geode::client::LogLevel::Warning <= \
-      ::apache::geode::client::Log::logLevel())     \
-  ::apache::geode::client::Log::warn
+#define LOGINFO(...)                                                         \
+  ::apache::geode::client::Log::log(::apache::geode::client::LogLevel::Info, \
+                                    __VA_ARGS__)
 
-#define LOGINFO                                  \
-  if (::apache::geode::client::LogLevel::Info <= \
-      ::apache::geode::client::Log::logLevel())  \
-  ::apache::geode::client::Log::info
+#define LOGCONFIG(...)                                                         \
+  ::apache::geode::client::Log::log(::apache::geode::client::LogLevel::Config, \
+                                    __VA_ARGS__)
 
-#define LOGCONFIG                                  \
-  if (::apache::geode::client::LogLevel::Config <= \
-      ::apache::geode::client::Log::logLevel())    \
-  ::apache::geode::client::Log::config
+#define LOGFINE(...)                                                         \
+  ::apache::geode::client::Log::log(::apache::geode::client::LogLevel::Fine, \
+                                    __VA_ARGS__)
 
-#define LOGFINE                                  \
-  if (::apache::geode::client::LogLevel::Fine <= \
-      ::apache::geode::client::Log::logLevel())  \
-  ::apache::geode::client::Log::fine
+#define LOGFINER(...)                                                         \
+  ::apache::geode::client::Log::log(::apache::geode::client::LogLevel::Finer, \
+                                    __VA_ARGS__)
 
-#define LOGFINER                                  \
-  if (::apache::geode::client::LogLevel::Finer <= \
-      ::apache::geode::client::Log::logLevel())   \
-  ::apache::geode::client::Log::finer
+#define LOGFINEST(...)                                                         \
+  ::apache::geode::client::Log::log(::apache::geode::client::LogLevel::Finest, \
+                                    __VA_ARGS__)
 
-#define LOGFINEST                                  \
-  if (::apache::geode::client::LogLevel::Finest <= \
-      ::apache::geode::client::Log::logLevel())    \
-  ::apache::geode::client::Log::finest
+#define LOGDEBUG(...)                                                         \
+  ::apache::geode::client::Log::log(::apache::geode::client::LogLevel::Debug, \
+                                    __VA_ARGS__)
 
 #endif  // GEODE_LOG_H_
