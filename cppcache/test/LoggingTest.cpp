@@ -413,21 +413,15 @@ TEST_F(LoggingTest, verifyDiskSpaceLimit) {
   // We wrote 4x the log file limit, and 2x the disk space limit, so
   // there should be one 'rolled' file.  Its name should be of the form
   // <base>-n.log, where n is some reasonable number.
+  std::map<int32_t, boost::filesystem::path> rolledFiles;
+  LoggingTest::findRolledFiles(boost::filesystem::current_path().string(),
+                               rolledFiles);
+  ASSERT_TRUE(rolledFiles.size() == 1);
 
-  // Scan through a ton of file names to make sure we catch any strays
-  // (logger has had bugs with filename weirdness here, like deleting
-  // whatever-0.log and writing to whatever-5.log).
-  for (auto i = 0; i < NUMBER_OF_ITERATIONS; i++) {
-    auto rolledLogFileName =
-        base.string() + "-" + std::to_string(i) + ext.string();
-    if (boost::filesystem::exists(rolledLogFileName)) {
-      size += boost::filesystem::file_size(rolledLogFileName);
-      numRolledFilesFound++;
-    }
-  }
+  auto rolledFile = rolledFiles.begin()->second;
+  size += boost::filesystem::file_size(rolledFile);
 
   ASSERT_TRUE(size <= DISK_SPACE_LIMIT);
-  ASSERT_TRUE(numRolledFilesFound == 1);
 }
 
 TEST_F(LoggingTest, verifyWithExistingRolledFile) {
