@@ -196,16 +196,6 @@ class APACHE_GEODE_EXPORT Log {
   static void log(LogLevel level, const char* msg);
 
   /**
-   * Logs both a message and thrown exception.
-   */
-  static void logThrow(LogLevel level, const char* msg, const Exception& ex);
-
-  /**
-   * Logs both a message and caught exception.
-   */
-  static void logCatch(LogLevel level, const char* msg, const Exception& ex);
-
-  /**
    * Returns whether "error" log messages are enabled.
    */
   static bool errorEnabled();
@@ -318,10 +308,6 @@ class APACHE_GEODE_EXPORT Log {
   static void put(LogLevel level, const std::string& msg);
 
   static void put(LogLevel level, const char* msg);
-
-  static void putThrow(LogLevel level, const char* msg, const Exception& ex);
-
-  static void putCatch(LogLevel level, const char* msg, const Exception& ex);
 };
 
 class APACHE_GEODE_EXPORT LogVarargs {

@@ -426,32 +426,12 @@ void Log::put(LogLevel level, const std::string& msg) {
   }
 }
 
-void Log::putThrow(LogLevel level, const char* msg, const Exception& ex) {
-  std::string message = "Geode exception " + ex.getName() +
-                        " thrown: " + ex.getMessage() + "\n" + msg;
-  put(level, message);
-}
-
-void Log::putCatch(LogLevel level, const char* msg, const Exception& ex) {
-  std::string message = "Geode exception " + ex.getName() +
-                        " caught: " + ex.getMessage() + "\n" + msg;
-  put(level, message);
-}
-
 bool Log::enabled(LogLevel level) {
   return GEODE_HIGHEST_LOG_LEVEL >= level && s_logLevel >= level;
 }
 
 void Log::log(LogLevel level, const char* msg) {
   if (enabled(level)) put(level, msg);
-}
-
-void Log::logThrow(LogLevel level, const char* msg, const Exception& ex) {
-  if (enabled(level)) putThrow(level, msg, ex);
-}
-
-void Log::logCatch(LogLevel level, const char* msg, const Exception& ex) {
-  if (enabled(level)) putCatch(level, msg, ex);
 }
 
 bool Log::errorEnabled() {
