@@ -95,8 +95,9 @@ StatisticsManager::~StatisticsManager() {
       m_statsList.erase(m_statsList.begin(), m_statsList.end());
     }
   } catch (const Exception& ex) {
-    Log::warningCatch("~StatisticsManager swallowing Geode exception", ex);
-
+    LOGWARN(std::string("Geode exception " + ex.getName() +
+                        " caught: " + ex.getMessage() +
+                        "\n~StatisticsManager swallowing Geode exception"));
   } catch (const std::exception& ex) {
     std::string what = "~StatisticsManager swallowing std::exception: ";
     what += ex.what();

@@ -219,18 +219,6 @@ class APACHE_GEODE_EXPORT Log {
   static void error(const std::string& msg);
 
   /**
-   * Logs both a message and thrown exception.
-   * The message level is "error".
-   */
-  static void errorThrow(const char* msg, const Exception& ex);
-
-  /**
-   * Writes both a message and caught exception.
-   * The message level is "error".
-   */
-  static void errorCatch(const char* msg, const Exception& ex);
-
-  /**
    * Returns whether "warning" log messages are enabled.
    */
   static bool warningEnabled();
@@ -240,18 +228,6 @@ class APACHE_GEODE_EXPORT Log {
    * The message level is "warning".
    */
   static void warning(const char* msg);
-
-  /**
-   * Logs both a message and thrown exception.
-   * The message level is "warning".
-   */
-  static void warningThrow(const char* msg, const Exception& ex);
-
-  /**
-   * Writes both a message and caught exception.
-   * The message level is "warning".
-   */
-  static void warningCatch(const char* msg, const Exception& ex);
 
   /**
    * Returns whether "info" log messages are enabled.
@@ -265,18 +241,6 @@ class APACHE_GEODE_EXPORT Log {
   static void info(const char* msg);
 
   /**
-   * Logs both a message and thrown exception.
-   * The message level is "info".
-   */
-  static void infoThrow(const char* msg, const Exception& ex);
-
-  /**
-   * Writes both a message and caught exception.
-   * The message level is "info".
-   */
-  static void infoCatch(const char* msg, const Exception& ex);
-
-  /**
    * Returns whether "config" log messages are enabled.
    */
   static bool configEnabled();
@@ -286,18 +250,6 @@ class APACHE_GEODE_EXPORT Log {
    * The message level is "config".
    */
   static void config(const char* msg);
-
-  /**
-   * Logs both a message and thrown exception.
-   * The message level is "config".
-   */
-  static void configThrow(const char* msg, const Exception& ex);
-
-  /**
-   * Writes both a message and caught exception.
-   * The message level is "config".
-   */
-  static void configCatch(const char* msg, const Exception& ex);
 
   /**
    * Returns whether "fine" log messages are enabled.
@@ -311,18 +263,6 @@ class APACHE_GEODE_EXPORT Log {
   static void fine(const char* msg);
 
   /**
-   * Logs both a message and thrown exception.
-   * The message level is "fine".
-   */
-  static void fineThrow(const char* msg, const Exception& ex);
-
-  /**
-   * Writes both a message and caught exception.
-   * The message level is "fine".
-   */
-  static void fineCatch(const char* msg, const Exception& ex);
-
-  /**
    * Returns whether "finer" log messages are enabled.
    */
   static bool finerEnabled();
@@ -332,18 +272,6 @@ class APACHE_GEODE_EXPORT Log {
    * The message level is "finer".
    */
   static void finer(const char* msg);
-
-  /**
-   * Logs both a message and thrown exception.
-   * The message level is "finer".
-   */
-  static void finerThrow(const char* msg, const Exception& ex);
-
-  /**
-   * Writes both a message and caught exception.
-   * The message level is "finer".
-   */
-  static void finerCatch(const char* msg, const Exception& ex);
 
   /**
    * Returns whether "finest" log messages are enabled.
@@ -357,18 +285,6 @@ class APACHE_GEODE_EXPORT Log {
   static void finest(const char* msg);
 
   /**
-   * Logs both a message and thrown exception.
-   * The message level is "finest".
-   */
-  static void finestThrow(const char* msg, const Exception& ex);
-
-  /**
-   * Writes both a message and caught exception.
-   * The message level is "finest".
-   */
-  static void finestCatch(const char* msg, const Exception& ex);
-
-  /**
    * Returns whether "debug" log messages are enabled.
    */
   static bool debugEnabled();
@@ -378,18 +294,6 @@ class APACHE_GEODE_EXPORT Log {
    * The message level is "debug".
    */
   static void debug(const char* msg);
-
-  /**
-   * Logs both a message and thrown exception.
-   * The message level is "debug".
-   */
-  static void debugThrow(const char* msg, const Exception& ex);
-
-  /**
-   * Writes both a message and caught exception.
-   * The message level is "debug".
-   */
-  static void debugCatch(const char* msg, const Exception& ex);
 
  private:
   static LogLevel s_logLevel;

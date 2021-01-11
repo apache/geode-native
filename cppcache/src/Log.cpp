@@ -467,14 +467,6 @@ void Log::error(const std::string& msg) {
   if (errorEnabled()) put(LogLevel::Error, msg.c_str());
 }
 
-void Log::errorThrow(const char* msg, const Exception& ex) {
-  if (errorEnabled()) putThrow(LogLevel::Error, msg, ex);
-}
-
-void Log::errorCatch(const char* msg, const Exception& ex) {
-  if (errorEnabled()) putCatch(LogLevel::Error, msg, ex);
-}
-
 bool Log::warningEnabled() {
   return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Warning &&
          s_logLevel >= LogLevel::Warning;
@@ -482,14 +474,6 @@ bool Log::warningEnabled() {
 
 void Log::warning(const char* msg) {
   if (warningEnabled()) put(LogLevel::Warning, msg);
-}
-
-void Log::warningThrow(const char* msg, const Exception& ex) {
-  if (warningEnabled()) putThrow(LogLevel::Warning, msg, ex);
-}
-
-void Log::warningCatch(const char* msg, const Exception& ex) {
-  if (warningEnabled()) putCatch(LogLevel::Warning, msg, ex);
 }
 
 bool Log::infoEnabled() {
@@ -501,14 +485,6 @@ void Log::info(const char* msg) {
   if (infoEnabled()) put(LogLevel::Info, msg);
 }
 
-void Log::infoThrow(const char* msg, const Exception& ex) {
-  if (infoEnabled()) putThrow(LogLevel::Info, msg, ex);
-}
-
-void Log::infoCatch(const char* msg, const Exception& ex) {
-  if (infoEnabled()) putCatch(LogLevel::Info, msg, ex);
-}
-
 bool Log::configEnabled() {
   return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Config &&
          s_logLevel >= LogLevel::Config;
@@ -516,14 +492,6 @@ bool Log::configEnabled() {
 
 void Log::config(const char* msg) {
   if (configEnabled()) put(LogLevel::Config, msg);
-}
-
-void Log::configThrow(const char* msg, const Exception& ex) {
-  if (configEnabled()) putThrow(LogLevel::Config, msg, ex);
-}
-
-void Log::configCatch(const char* msg, const Exception& ex) {
-  if (configEnabled()) putCatch(LogLevel::Config, msg, ex);
 }
 
 bool Log::fineEnabled() {
@@ -535,14 +503,6 @@ void Log::fine(const char* msg) {
   if (fineEnabled()) put(LogLevel::Fine, msg);
 }
 
-void Log::fineThrow(const char* msg, const Exception& ex) {
-  if (fineEnabled()) putThrow(LogLevel::Fine, msg, ex);
-}
-
-void Log::fineCatch(const char* msg, const Exception& ex) {
-  if (fineEnabled()) putCatch(LogLevel::Fine, msg, ex);
-}
-
 bool Log::finerEnabled() {
   return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Finer &&
          s_logLevel >= LogLevel::Finer;
@@ -550,14 +510,6 @@ bool Log::finerEnabled() {
 
 void Log::finer(const char* msg) {
   if (finerEnabled()) put(LogLevel::Finer, msg);
-}
-
-void Log::finerThrow(const char* msg, const Exception& ex) {
-  if (finerEnabled()) putThrow(LogLevel::Finer, msg, ex);
-}
-
-void Log::finerCatch(const char* msg, const Exception& ex) {
-  if (finerEnabled()) putCatch(LogLevel::Finer, msg, ex);
 }
 
 bool Log::finestEnabled() {
@@ -569,14 +521,6 @@ void Log::finest(const char* msg) {
   if (finestEnabled()) put(LogLevel::Finest, msg);
 }
 
-void Log::finestThrow(const char* msg, const Exception& ex) {
-  if (finestEnabled()) putThrow(LogLevel::Finest, msg, ex);
-}
-
-void Log::finestCatch(const char* msg, const Exception& ex) {
-  if (finestEnabled()) putCatch(LogLevel::Finest, msg, ex);
-}
-
 bool Log::debugEnabled() {
   return GEODE_HIGHEST_LOG_LEVEL >= LogLevel::Debug &&
          s_logLevel >= LogLevel::Debug;
@@ -584,14 +528,6 @@ bool Log::debugEnabled() {
 
 void Log::debug(const char* msg) {
   if (debugEnabled()) put(LogLevel::Debug, msg);
-}
-
-void Log::debugThrow(const char* msg, const Exception& ex) {
-  if (debugEnabled()) putThrow(LogLevel::Debug, msg, ex);
-}
-
-void Log::debugCatch(const char* msg, const Exception& ex) {
-  if (debugEnabled()) putCatch(LogLevel::Debug, msg, ex);
 }
 
 // var arg logging routines.

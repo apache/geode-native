@@ -61,8 +61,9 @@ GeodeStatisticsFactory::~GeodeStatisticsFactory() {
     statsTypeMap.clear();
 
   } catch (const Exception& ex) {
-    Log::warningCatch("~GeodeStatisticsFactory swallowing Geode exception", ex);
-
+    LOGWARN(std::string(
+        "Geode exception " + ex.getName() + " caught: " + ex.getMessage() +
+        "\n~GeodeStatisticsFactory swallowing Geode exception"));
   } catch (const std::exception& ex) {
     std::string what = "~GeodeStatisticsFactory swallowing std::exception: ";
     what += ex.what();
