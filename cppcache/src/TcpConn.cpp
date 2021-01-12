@@ -163,40 +163,40 @@ TcpConn::TcpConn(const std::string ipaddr,
 }
 
 TcpConn::~TcpConn() {
-  std::stringstream ss;
-
   try {
-    ss << "Disconnected " << socket_.local_endpoint() << " -> "
-       << socket_.remote_endpoint();
-
+    LOGFINE("Disconnected %s:%u -> %s:%u",
+            socket_.local_endpoint().address().to_string().c_str(),
+            socket_.local_endpoint().port(),
+            socket_.remote_endpoint().address().to_string().c_str(),
+            socket_.remote_endpoint().port());
     socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_both);
 
   } catch (...) {
-    ss = std::stringstream{};
-
-    ss << "Closed socket " << socket_.local_endpoint();
+    LOGFINE("Closed socket %s:%u ",
+            socket_.local_endpoint().address().to_string().c_str(),
+            socket_.local_endpoint().port());
   }
 
   socket_.close();
-
-  LOGFINE(ss.str());
 }
 
 size_t TcpConn::receive(char *buff, const size_t len,
                         std::chrono::milliseconds timeout) {
-  std::stringstream ss;
-  ss << "Receiving " << len << " bytes from " << socket_.remote_endpoint()
-     << " -> " << socket_.local_endpoint();
-  LOGDEBUG(ss.str());
+  LOGDEBUG("Receiving %d bytes from %s:%u -> %s:%u", len,
+           socket_.remote_endpoint().address().to_string().c_str(),
+           socket_.remote_endpoint().port(),
+           socket_.local_endpoint().address().to_string().c_str(),
+           socket_.local_endpoint().port());
   return receive(buff, len, timeout, true);
 }
 
 size_t TcpConn::receive_nothrowiftimeout(char *buff, const size_t len,
                                          std::chrono::milliseconds timeout) {
-  std::stringstream ss;
-  ss << "Receiving an unknown number of bytes from "
-     << socket_.remote_endpoint() << " -> " << socket_.local_endpoint();
-  LOGDEBUG(ss.str());
+  LOGDEBUG("Receiving an unknown number of bytes from %s:%d -> %s:%d",
+           socket_.remote_endpoint().address().to_string().c_str(),
+           socket_.remote_endpoint().port(),
+           socket_.local_endpoint().address().to_string().c_str(),
+           socket_.local_endpoint().port());
   return receive(buff, len, timeout, false);
 }
 
@@ -260,10 +260,11 @@ size_t TcpConn::receive(char *buff, const size_t len,
 
 size_t TcpConn::send(const char *buff, const size_t len,
                      std::chrono::milliseconds timeout) {
-  std::stringstream ss;
-  ss << "Sending " << len << " bytes from " << socket_.local_endpoint()
-     << " -> " << socket_.remote_endpoint();
-  LOGDEBUG(ss.str());
+  LOGDEBUG("Sending %d bytes from %s:%u -> %s:%u", len,
+           socket_.local_endpoint().address().to_string().c_str(),
+           socket_.local_endpoint().port(),
+           socket_.remote_endpoint().address().to_string().c_str(),
+           socket_.remote_endpoint().port());
 
   boost::optional<boost::system::error_code> write_result;
   std::size_t bytes_written = 0;
@@ -329,10 +330,11 @@ void TcpConn::connect(boost::asio::ip::tcp::resolver::results_type r,
     throw boost::system::system_error{boost::asio::error::operation_aborted};
   }
 
-  std::stringstream ss;
-  ss << "Connected " << socket_.local_endpoint() << " -> "
-     << socket_.remote_endpoint();
-  LOGDEBUG(ss.str());
+  LOGDEBUG("Connected %s:%u -> %s:%u",
+           socket_.local_endpoint().address().to_string().c_str(),
+           socket_.local_endpoint().port(),
+           socket_.remote_endpoint().address().to_string().c_str(),
+           socket_.remote_endpoint().port());
 }
 
 boost::asio::ip::tcp::resolver::results_type TcpConn::resolve(
