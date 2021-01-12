@@ -406,8 +406,7 @@ void Log::logInternal(LogLevel level, const std::string& msg) {
         removeOldestRolledLogFile();
       }
 
-      if ((numChars = fprintf(g_log, "%s%s\n", buf.c_str(), msg.c_str())) ==
-              0 ||
+      if (fprintf(g_log, "%s%s\n", buf.c_str(), msg.c_str()) == 0 ||
           ferror(g_log)) {
         // Let's continue without throwing the exception.  It should not cause
         // process to terminate
