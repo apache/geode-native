@@ -84,8 +84,7 @@ TEST_F(SslTwoWayTest, PutGetWithValidSslConfiguration) {
       (clientSslKeysDir /
        boost::filesystem::path("client_truststore_chained_root.pem"));
   auto cache = CacheFactory()
-                   .set("log-level", "debug")
-                   .set("log-file", "./gemfire.log")
+                   .set("log-level", "none")
                    .set("ssl-enabled", "true")
                    .set("ssl-keystore", clientKeystore.string())
                    .set("ssl-keystore-password", certificatePassword)
