@@ -94,8 +94,4 @@ builds:
     image_family: build-ubuntu-20-04
     source_image_family: ubuntu-2004-lts
 
-  - _: #@ template.replace(new_build("ubuntu-20.10"))
-    image_family: build-ubuntu-20-10
-    source_image_family: ubuntu-2010
-
 configs: [ ]
