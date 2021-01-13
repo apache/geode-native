@@ -43,6 +43,7 @@ add_executable(cpp-integration-test
   SslOneWayTest.cpp
   SslTwoWayTest.cpp
   StructTest.cpp
+  TransactionsTest.cpp
   TransactionCleaningTest.cpp
   CleanIdleConnections.cpp
   BasicIPv6Test.cpp
