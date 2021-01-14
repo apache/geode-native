@@ -111,6 +111,7 @@ jobs:
                     #@overlay/append
                     - #@ pr_status("clang-format", "pending")
                     - #@ pr_status("clang-tidy", "pending")
+                    - #@ pr_status("rat-check", "pending")
                     #@overlay/match by=overlay.index(1)
       - in_parallel:
           steps:
@@ -156,3 +157,24 @@ jobs:
                   steps:
                     #@overlay/append
                     - #@ pr_status("clang-format", "success")
+            - #@overlay/match by=overlay.subset({"task": "rat-check"})
+              on_error:
+                in_parallel:
+                  steps:
+                    #@overlay/append
+                    - #@ pr_status("rat-check", "error")
+              on_abort:
+                in_parallel:
+                  steps:
+                    #@overlay/appendxs
+                    - #@ pr_status("rat-check", "error", "Build canceled")
+              on_failure:
+                in_parallel:
+                  steps:
+                    #@overlay/append
+                    - #@ pr_status("rat-check", "failure")
+              on_success:
+                in_parallel:
+                  steps:
+                    #@overlay/append
+                    - #@ pr_status("rat-check", "success")
