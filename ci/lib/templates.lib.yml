@@ -32,6 +32,7 @@
 #@      "run_net_legacy_integration_tests",
 #@      "clang_tidy_bash_task",
 #@      "clang_format_bash_task",
+#@      "rat_check_bash_task",
 #@      "packer_build_bash_task",
 #@      "instance_create_bash_task",
 #@      "instance_delete_bash_task",
@@ -442,6 +443,7 @@ plan:
       steps:
         - #@ bash_task("clang-tidy", [{"name":"source"}, {"name":"geode"}], [{"name":"build"}], clang_tidy_bash_task(), "clang-tools-image")
         - #@ bash_task("clang-format", [{"name":"source"}, {"name":"geode"}], [{"name":"build"}], clang_format_bash_task(), "clang-tools-image")
+        - #@ bash_task("rat-check", [{"name":"source"}, {"name":"geode"}], [{"name":"build"}], rat_check_bash_task(), "clang-tools-image")
 #@ end
 
 ---

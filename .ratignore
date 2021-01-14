@@ -23,6 +23,9 @@ package-list
 .*\.md
 .*\.md.erb
 
+# docker/
+bellsoft.repo
+
 # contrib/pdxautoserializer
 # public domain sources
 CPPDictionary.hpp
