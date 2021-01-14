@@ -128,6 +128,15 @@ cmake ../source -DCMAKE_EXPORT_COMPILE_COMMANDS=ON >>${log} 2>&1 || (cat ${log};
 jq -r '.[].file' compile_commands.json | sort | uniq | grep -v $(pwd) | xargs clang-format --dry-run -Werror
 (@- end @)
 
+(@ def rat_check_bash_task(): -@)
+set -ueo pipefail
+export GEODE_HOME=$(pwd)/geode/expanded/apache-geode-$(cat geode/version)
+log=$(mktemp)
+cd build
+cmake ../source -DUSE_RAT=ON >>${log} 2>&1 || (cat ${log}; exit 1)
+cmake --build . --target rat-check
+(@- end @)
+
 (@ def packer_build_bash_task(build): -@)
 set -ueo pipefail
 cd source/packer
