@@ -62,7 +62,7 @@ static int getRandomNum() {
   return (ACE_OS::rand() % 49999) + 14000;
 }
 
-int G_BBPORT = getRandomNum();
+static int G_BBPORT = getRandomNum();
 
 class BBNamingContextClientImpl {
   FwkBBClient *m_bbc;

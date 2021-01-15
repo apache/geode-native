@@ -99,17 +99,16 @@ foreach(FILE ${SOURCES})
   set(TESTS ${TESTS} ${TEST})
   add_dependencies(integration-tests ${TEST})
   add_executable(${TEST} ${FILE})
+  if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    target_compile_options(${TEST} PUBLIC
+      -Wno-missing-variable-declarations
+    )
+  endif()
   set_target_properties(${TEST} PROPERTIES
     CXX_VISIBILITY_PRESET hidden
     VISIBILITY_INLINES_HIDDEN ON
     FOLDER cpp/test/integration/legacy
   )
-
-if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  target_compile_options(_WarningsAsError INTERFACE
-          -Wno-missing-variable-declarations
-          )
-endif()
 
   target_link_libraries(${TEST}
     PRIVATE
