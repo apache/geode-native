@@ -241,7 +241,6 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     -Wextra
     -Wno-unused-variable #TODO fix
     -Wno-unused-function #TODO fix
-    -Wno-used-but-marked-unused #TODO fix
     -Wpedantic
     -Weverything
     -Wno-non-virtual-dtor #TODO fix
