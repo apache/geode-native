@@ -29,8 +29,8 @@ namespace Apache.Geode.Examples.ClassAsKey
 
     public static void Main(string[] args)
     {
-      const int MAXPHOTOKEYS = 100;
-      const int MAXPHOTOSPERKEY = 10;
+      const int MAXPHOTOKEYS = 10;
+      const int MAXPHOTOSPERKEY = 5;
 
       IRegion<PhotosKey, PhotosValue> photosMetaData = CreateRegion();
 
