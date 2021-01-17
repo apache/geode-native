@@ -23,16 +23,13 @@ namespace Apache.Geode.Examples.ClassAsKey
   public class PhotosKey : IDataSerializable, ICacheableKey
   {
     public List<CacheableString> people;
-    //public DateTime rangeStart;
-    //public DateTime rangeEnd;
-    public int rangeStart;
-    public int rangeEnd;
+    public DateTime rangeStart;
+    public DateTime rangeEnd;
 
     // A default constructor is required for deserialization
     public PhotosKey() { }
 
-   // public PhotosKey(List<CacheableString> names, DateTime start, DateTime end)
-    public PhotosKey(List<CacheableString> names, int start, int end)
+    public PhotosKey(List<CacheableString> names, DateTime start, DateTime end)
     {
       people = names;
       rangeStart = start;
@@ -56,20 +53,15 @@ namespace Apache.Geode.Examples.ClassAsKey
     public void ToData(DataOutput output)
     {
       output.WriteObject(people);
-      //output.WriteDate(rangeStart);
-      //output.WriteDate(rangeEnd);
-      output.WriteInt32(rangeStart);
-      output.WriteInt32(rangeEnd);
-
+      output.WriteDate(rangeStart);
+      output.WriteDate(rangeEnd);
     }
 
     public void FromData(DataInput input)
     {
       people = (List<CacheableString>)input.ReadObject();
-      //rangeStart = (DateTime)input.ReadDate();
-      //rangeEnd = (DateTime)input.ReadDate();
-      rangeStart = input.ReadInt32();
-      rangeEnd = input.ReadInt32();
+      rangeStart = (DateTime)input.ReadDate();
+      rangeEnd = (DateTime)input.ReadDate();
     }
 
     public ulong ObjectSize
@@ -109,10 +101,9 @@ namespace Apache.Geode.Examples.ClassAsKey
         result = result * prime + cs.GetHashCode();
       }
 
-      //result = result * prime + rangeStart.GetHashCode();
-      //result = result * prime + rangeEnd.GetHashCode();
-      result = result * prime + rangeStart;
-      result = result * prime + rangeEnd;
+      result = result * prime + rangeStart.GetHashCode();
+      result = result * prime + rangeEnd.GetHashCode();
+
       return result;
     }
 

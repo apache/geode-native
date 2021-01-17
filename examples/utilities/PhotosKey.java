@@ -20,14 +20,13 @@ import java.util.*;
 import java.io.*;
 import org.apache.geode.*;
 import org.apache.geode.cache.Declarable;
+import org.apache.geode.DataSerializer;
 
 
 public class PhotosKey implements DataSerializable {
   public List<String> people;
-  //public Date rangeStart;
-  //public Date rangeEnd;
-  public int rangeStart;
-  public int rangeEnd;
+  public Date rangeStart;
+  public Date rangeEnd;
 
   static {
      Instantiator.register(new Instantiator(javaobject.PhotosKey.class, 500) {
@@ -40,8 +39,7 @@ public class PhotosKey implements DataSerializable {
   /* public no-arg constructor required for DataSerializable */  
   public PhotosKey() {}
 
-  //public PhotosKey(List<String> names, Date start, Date end){
-  public PhotosKey(List<String> names, int start, int end){
+  public PhotosKey(List<String> names, Date start, Date end){
     people = names;
 	rangeStart = start;
 	rangeEnd = end;
@@ -49,18 +47,14 @@ public class PhotosKey implements DataSerializable {
   
   public void fromData(DataInput in) throws IOException, ClassNotFoundException {
     this.people = DataSerializer.readObject(in);
-	//this.rangeStart = (Date)DataSerializer.readDate(in);
-	//this.rangeEnd = (Date)DataSerializer.readDate(in);
-	this.rangeStart = in.readInt();
-	this.rangeEnd = in.readInt();
+	this.rangeStart = DataSerializer.readDate(in);
+	this.rangeEnd = DataSerializer.readDate(in);
   }
   
   public void toData(DataOutput out) throws IOException {
     DataSerializer.writeObject(this.people, out);
-    //DataSerializer.writeDate(this.rangeStart, out);
-    //DataSerializer.writeDate(this.rangeEnd, out);
-    out.writeInt(this.rangeStart);
-    out.writeInt(this.rangeEnd);
+    DataSerializer.writeDate(this.rangeStart, out);
+    DataSerializer.writeDate(this.rangeEnd, out);
   } 
   
 
@@ -72,10 +66,8 @@ public class PhotosKey implements DataSerializable {
 		result = result * prime + s.hashCode();
 	}
 
-	//result = result * prime + rangeStart.hashCode();
-	//result = result * prime + rangeEnd.hashCode();
-	result = result * prime + rangeStart;
-	result = result * prime + rangeEnd;
+	result = result * prime + rangeStart.hashCode();
+	result = result * prime + rangeEnd.hashCode();
 	return result;
   }
 
@@ -92,13 +84,8 @@ public class PhotosKey implements DataSerializable {
 
     if (!people.equals(other.people))
       return false;
-	//for (int i=0; i<people.size(); i++)
-	//{
-	//  if (people.get(i).equals(other.people.get(i)))
-	//	return false;
-	//}
 
-	if (rangeStart != other.rangeStart || rangeEnd != other.rangeEnd)
+	if (!rangeStart.equals(other.rangeStart) || !rangeEnd.equals(other.rangeEnd))
 	  return false;
 
     return true;

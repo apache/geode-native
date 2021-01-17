@@ -22,15 +22,6 @@ using Apache.Geode.Client;
 
 namespace Apache.Geode.Examples.ClassAsKey
 {
-  public class CacheableStringComparer : IComparer<CacheableString>
-  {
-    public int Compare(CacheableString a, CacheableString b)
-    {
-      // TODO: Handle x or y being null, or them not having names
-      return a.Value.CompareTo(b.Value);
-    }
-  }
-
   public class Program
   {
     static Cache cache;
@@ -38,8 +29,8 @@ namespace Apache.Geode.Examples.ClassAsKey
 
     public static void Main(string[] args)
     {
-      const int MAXPHOTOKEYS = 10;
-      const int MAXPHOTOSPERKEY = 4;
+      const int MAXPHOTOKEYS = 100;
+      const int MAXPHOTOSPERKEY = 10;
 
       IRegion<PhotosKey, PhotosValue> photosMetaData = CreateRegion();
 
@@ -48,10 +39,8 @@ namespace Apache.Geode.Examples.ClassAsKey
       PhotosKey[] keys = new PhotosKey[MAXPHOTOKEYS];
       PhotosValue[] values = new PhotosValue[MAXPHOTOKEYS];
 
-      //DateTime start;
-      //DateTime end;
-      int start;
-      int end;
+      DateTime start;
+      DateTime end;
 
       rand = new Random();
       int numPhotos;
@@ -61,7 +50,6 @@ namespace Apache.Geode.Examples.ClassAsKey
       {
         ChooseDateRange(out start, out end);
         keys[i] = new PhotosKey(ChoosePeople(), start, end);
-        //PhotosKey key = new PhotosKey(ChoosePeople(), start, end);
 
         numPhotos = rand.Next(0, MAXPHOTOSPERKEY+1);
         List<PhotoMetaData> metaData = new List<PhotoMetaData>();
@@ -73,13 +61,10 @@ namespace Apache.Geode.Examples.ClassAsKey
           metaData.Add(meta);
         }
         values[i] = new PhotosValue(metaData);
-        //PhotosValue value = new PhotosValue(metaData);
 
         Console.WriteLine("Inserting " + numPhotos + " photos for key: " + keys[i].ToString());
-        //Console.WriteLine("Inserting " + numPhotos + " photos for key: " + key.ToString());
 
         photosMetaData.Put(keys[i], values[i]);
-        //photosMetaData.Put(key, value);
       }
 
       // Verify the region was populated properly
@@ -176,28 +161,23 @@ namespace Apache.Geode.Examples.ClassAsKey
         numAvailable--;
       }
 
-      // Sort the chosen
+      // Sort the chosen. We only care who is chosen, not the order they're chosen.
       IComparer<CacheableString> comparer = new CacheableStringComparer();
       chosenPeople.Sort(comparer);
       return chosenPeople;
     }
 
-    //public static void ChooseDateRange(out DateTime start, out DateTime end)
-    public static void ChooseDateRange(out int start, out int end)
+    public static void ChooseDateRange(out DateTime start, out DateTime end)
     {
-      // Chose start and end dates between Jan 1, 1970 and now
-      //var earliestStart = new DateTime(1970, 1, 1);
-      //int numAvailableDays = (int)(DateTime.Now - earliestStart).TotalDays;
+      //Chose start and end dates between Jan 1, 1970 and now
+      var earliestStart = new DateTime(1970, 1, 1);
+      int numAvailableDays = (int)(DateTime.Now - earliestStart).TotalDays;
 
-      //var startIndex = rand.Next(numAvailableDays);
-      //start = earliestStart.AddDays(startIndex);
+      var startIndex = rand.Next(numAvailableDays);
+      start = earliestStart.AddDays(startIndex);
 
-      //int numRemainingDays = (int)(DateTime.Now - start).TotalDays;
-      //end = start.AddDays(rand.Next(numRemainingDays));
-
-      start = rand.Next(1000);
-
-      end = start + rand.Next(1000);
+      int numRemainingDays = (int)(DateTime.Now - start).TotalDays;
+      end = start.AddDays(rand.Next(numRemainingDays));
     }
 
     public static Bitmap ChooseThumb()
@@ -217,6 +197,15 @@ namespace Apache.Geode.Examples.ClassAsKey
       return thumb;
     }
   }
+
+  public class CacheableStringComparer : IComparer<CacheableString>
+  {
+    public int Compare(CacheableString a, CacheableString b)
+    {
+      return a.Value.CompareTo(b.Value);
+    }
+  }
+
 }
 
 
