@@ -37,7 +37,7 @@ namespace Apache
       /// a distributable object for caching. This class extends .NET generic
       /// <c>List</c> class.
       /// </summary>
-      ref class CacheableLinkedList
+      public ref class CacheableLinkedList
         : public IDataSerializablePrimitive
       {
         System::Collections::Generic::LinkedList<Object^>^ m_linkedList;

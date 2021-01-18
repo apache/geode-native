@@ -36,7 +36,7 @@ namespace Apache
       /// A mutable <c>ISerializable</c> vector wrapper that can serve as
       /// a distributable object for caching.
       /// </summary>
-      ref class CacheableStack
+      public ref class CacheableStack
         : public IDataSerializablePrimitive
       {
       public:

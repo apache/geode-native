@@ -40,7 +40,7 @@ namespace Apache
       /// <c>IdentityHashMap</c> class objects but is intentionally not
       /// intended to provide <c>java.util.IdentityHashMap</c> semantics.
       /// </summary>
-      ref class CacheableIdentityHashMap
+      public ref class CacheableIdentityHashMap
         : public CacheableHashMap
       {
       public:

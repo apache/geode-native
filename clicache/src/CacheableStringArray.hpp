@@ -43,7 +43,7 @@ namespace Apache
       /// An immutable wrapper for array of strings that can serve as
       /// a distributable object for caching.
       /// </summary>
-      ref class CacheableStringArray
+      public ref class CacheableStringArray
         :  public IDataSerializablePrimitive
       {
       public:

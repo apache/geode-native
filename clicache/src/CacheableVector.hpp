@@ -42,7 +42,7 @@ namespace Apache
       /// a distributable object for caching. This class extends .NET generic
       /// <c>List</c> class.
       /// </summary>
-      ref class CacheableVector
+      public ref class CacheableVector
         : public IDataSerializablePrimitive
       {
       public:

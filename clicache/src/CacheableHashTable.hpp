@@ -38,7 +38,7 @@ namespace Apache
       /// that can serve as a distributable object for caching. This class
       /// extends .NET generic <c>Dictionary</c> class.
       /// </summary>
-      ref class CacheableHashTable
+      public ref class CacheableHashTable
         : public CacheableHashMap
       {
       public:
