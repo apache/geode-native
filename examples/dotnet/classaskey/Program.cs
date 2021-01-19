@@ -39,8 +39,8 @@ namespace Apache.Geode.Examples.ClassAsKey
       PhotosKey[] keys = new PhotosKey[MAXPHOTOKEYS];
       PhotosValue[] values = new PhotosValue[MAXPHOTOKEYS];
 
-      DateTime start;
-      DateTime end;
+      CacheableDate start;
+      CacheableDate end;
 
       rand = new Random();
       int numPhotos;
@@ -167,17 +167,18 @@ namespace Apache.Geode.Examples.ClassAsKey
       return chosenPeople;
     }
 
-    public static void ChooseDateRange(out DateTime start, out DateTime end)
+    public static void ChooseDateRange(out CacheableDate start, out CacheableDate end)
     {
       //Chose start and end dates between Jan 1, 1970 and now
       var earliestStart = new DateTime(1970, 1, 1);
       int numAvailableDays = (int)(DateTime.Now - earliestStart).TotalDays;
 
       var startIndex = rand.Next(numAvailableDays);
-      start = earliestStart.AddDays(startIndex);
+      var startDate = earliestStart.AddDays(startIndex);
+      start = new CacheableDate(startDate);
 
-      int numRemainingDays = (int)(DateTime.Now - start).TotalDays;
-      end = start.AddDays(rand.Next(numRemainingDays));
+      int numRemainingDays = (int)(DateTime.Now - startDate).TotalDays;
+      end = new CacheableDate(startDate.AddDays(rand.Next(numRemainingDays)));
     }
 
     public static Bitmap ChooseThumb()

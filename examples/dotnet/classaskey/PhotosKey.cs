@@ -23,13 +23,13 @@ namespace Apache.Geode.Examples.ClassAsKey
   public class PhotosKey : IDataSerializable, ICacheableKey
   {
     public List<CacheableString> people;
-    public DateTime rangeStart;
-    public DateTime rangeEnd;
+    public CacheableDate rangeStart;
+    public CacheableDate rangeEnd;
 
     // A default constructor is required for deserialization
     public PhotosKey() { }
 
-    public PhotosKey(List<CacheableString> names, DateTime start, DateTime end)
+    public PhotosKey(List<CacheableString> names, CacheableDate start, CacheableDate end)
     {
       people = names;
       rangeStart = start;
@@ -53,15 +53,15 @@ namespace Apache.Geode.Examples.ClassAsKey
     public void ToData(DataOutput output)
     {
       output.WriteObject(people);
-      output.WriteDate(rangeStart);
-      output.WriteDate(rangeEnd);
+      output.WriteObject(rangeStart);
+      output.WriteObject(rangeEnd);
     }
 
     public void FromData(DataInput input)
     {
       people = (List<CacheableString>)input.ReadObject();
-      rangeStart = (DateTime)input.ReadDate();
-      rangeEnd = (DateTime)input.ReadDate();
+      rangeStart = (CacheableDate)input.ReadObject();
+      rangeEnd = (CacheableDate)input.ReadObject();
     }
 
     public ulong ObjectSize

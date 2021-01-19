@@ -97,9 +97,12 @@ namespace Apache.Geode.Examples.ClassAsKey
     {
       photosMeta = new List<PhotoMetaData>();
       var pmd = input.ReadObject() as IList<object>;
-      foreach (var item in pmd)
+      if (pmd != null)
       {
-        photosMeta.Add((PhotoMetaData)item);
+        foreach (var item in pmd)
+        {
+          photosMeta.Add((PhotoMetaData)item);
+        }
       }
     }
 
