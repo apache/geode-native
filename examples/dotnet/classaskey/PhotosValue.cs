@@ -29,7 +29,7 @@ namespace Apache.Geode.Examples.ClassAsKey
     public const int THUMB_WIDTH = 32;
     public const int THUMB_HEIGHT = 32;
 
-    // A default constructor is required for deserializationw
+    // A default constructor is required for deserialization
     public PhotoMetaData() { }
 
     public PhotoMetaData(int id, Bitmap thumb)

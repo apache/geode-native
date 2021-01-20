@@ -169,7 +169,7 @@ namespace Apache.Geode.Examples.ClassAsKey
 
     public static void ChooseDateRange(out CacheableDate start, out CacheableDate end)
     {
-      //Chose start and end dates between Jan 1, 1970 and now
+      //Choose start and end dates between Jan 1, 1970 and now
       var earliestStart = new DateTime(1970, 1, 1);
       int numAvailableDays = (int)(DateTime.Now - earliestStart).TotalDays;
 

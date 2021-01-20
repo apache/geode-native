@@ -1,15 +1,18 @@
 # classaskey example
-Many applications are best served by using compound keys to store and retrieve data. Geode Native fills this need by allowing user's to define their own custom class to be used as a key. By leveraging the Geode Native Cacheable data types, it is very easy to implement the ICacheableKey interface and design classes that can be used as keys.
+
+Many applications are best served by using compound keys to store and retrieve data. Geode Native fills this need by allowing users to define their own custom class to be used as a key. By leveraging the Geode Native Cacheable data types, it is very easy to implement the ICacheableKey interface and design classes that can be used as keys.
 
 This example shows how to design a photo filter as the key for storing metadata for a photo library. The photo filter class (called PhotoKeys in the code) provides for storing and retrieving all photos containing a group of people and that were taken during a date range. The photo metadata class (called PhotoValues in the code) contains the full resolution photoId and thumbnail image for the photo key. In this example, the photoId is an integer representing an index into a photo library. The thumbnail is a small two diminsional array of pixels.
 
 ## Prerequisites
+
 * Install [Apache Geode](https://geode.apache.org)
 * Build and install [Apache Geode Native](https://github.com/apache/geode-native)
 * Apache Geode Native examples, built and installed
 * Set `GEODE_HOME` to the install directory of Apache Geode
 
 ## Running
+
 1. From a command shell, set the current directory to the `classaskey` directory in your example workspace.
 
     ```console
