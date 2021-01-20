@@ -15,17 +15,20 @@
 
 cmake_minimum_required(VERSION 3.10)
 
-project(@PRODUCT_DLL_NAME@.DotNet.Examples LANGUAGES NONE)
+project(dotnet-classaskey LANGUAGES CSharp)
 
-add_subdirectory(authinitialize)
-add_subdirectory(classaskey)
-add_subdirectory(continuousquery)
-add_subdirectory(dataserializable)
-add_subdirectory(functionexecution)
-add_subdirectory(pdxautoserializer)
-add_subdirectory(pdxserializable)
-add_subdirectory(putgetremove)
-add_subdirectory(remotequery)
-add_subdirectory(transaction)
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../../cmake)
 
-add_subdirectory(sslputget)
+find_package(GeodeNative REQUIRED COMPONENTS dotnet)
+
+add_executable(${PROJECT_NAME} PhotosKey.cs;PhotosValue.cs;Program.cs)
+
+configure_file("startserver.ps1" ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
+configure_file("stopserver.ps1" ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
+
+target_link_libraries(${PROJECT_NAME}
+    GeodeNative::dotnet)
+
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    VS_DOTNET_TARGET_FRAMEWORK_VERSION "v4.5.2"
+    VS_DOTNET_REFERENCES "System;System.Drawing;${GeodeNative_DOTNET_LIBRARY}")
