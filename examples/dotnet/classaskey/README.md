@@ -33,7 +33,7 @@ This example shows how to design a photo filter as the key for storing metadata 
     $ startserver.ps1
     ```
 
-1. Execute `Debug\dotnet-classaskey.exe`. Expect the following output:
+1. Execute `Debug\dotnet-classaskey.exe`. Expect output similar to below. Since the keys are generated using random numbers, your output will differ.
 
     ```console
     Registering for data serialization
