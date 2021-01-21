@@ -35,10 +35,10 @@ RegionExpiryTask::RegionExpiryTask(ExpiryTaskManager& manager,
 
 ExpiryTask::time_point_t RegionExpiryTask::expire_at() const {
   auto statistics = region_->getStatistics();
-  auto last_time = statistics->getLastAccessedTime();
+  auto last_time = statistics->getLastAccessedSteadyTime();
   if (region_->getAttributes().getRegionTimeToLive() >
       std::chrono::seconds::zero()) {
-    last_time = statistics->getLastModifiedTime();
+    last_time = statistics->getLastModifiedSteadyTime();
   }
 
   return last_time + duration_;

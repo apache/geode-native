@@ -26,7 +26,6 @@ target_link_libraries(test-cppcache-utils
   PRIVATE
     integration-framework
     ACE::ACE
-    Boost::boost
     _WarningsAsError
   PUBLIC
     apache-geode

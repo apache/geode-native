@@ -261,8 +261,6 @@ add_library(Apache.Geode SHARED
   impl/ManagedTransactionWriter.hpp
   impl/ManagedVisitor.cpp
   impl/ManagedVisitor.hpp
-  impl/MemoryPressureTask.cpp
-  impl/MemoryPressureTask.hpp
   impl/PartitionResolver.hpp
   impl/PdxFieldType.cpp
   impl/PdxFieldType.hpp

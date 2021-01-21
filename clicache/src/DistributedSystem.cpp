@@ -52,7 +52,6 @@
 #include "CacheableBuiltins.hpp"
 #include "Log.hpp"
 #include "Struct.hpp"
-#include "impl/MemoryPressureTask.hpp"
 #include "impl/SafeConvert.hpp"
 #include "impl/PdxType.hpp"
 #include "impl/EnumInfo.hpp"
@@ -401,14 +400,6 @@ namespace Apache
         }
       }
 
-      void DistributedSystem::HandleMemoryPressure(System::Object^ state)
-      {
-        // TODO global - Need single memory pressue event running?
-        ExpiryTaskManager *manager = nullptr;
-        MemoryPressureTask task {*manager};
-        task.on_expire();
-      }
-
       DistributedSystem^ DistributedSystem::Create(native::DistributedSystem* nativeptr)
       {
         auto instance = gcnew DistributedSystem(nativeptr);
@@ -427,7 +418,6 @@ namespace Apache
 
       DistributedSystem::~DistributedSystem()
       {
-        m_memoryPressureHandler->Dispose(nullptr);
       }
 
       void DistributedSystem::registerCliCallback()

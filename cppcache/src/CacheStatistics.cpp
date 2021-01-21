@@ -17,26 +17,48 @@
 
 #include <geode/CacheStatistics.hpp>
 
+namespace {
+std::chrono::system_clock::time_point convert_steady_to_system_tp(
+    std::chrono::steady_clock::time_point tp) {
+  return std::chrono::system_clock::now() +
+         std::chrono::duration_cast<std::chrono::system_clock::duration>(
+             std::chrono::steady_clock::now() - tp);
+}
+}  // namespace
+
 namespace apache {
 namespace geode {
 namespace client {
 
-void CacheStatistics::setLastModifiedTime(const time_point& tp) {
+CacheStatistics::CacheStatistics() : last_accessed_{0}, last_modified_{0} {}
+
+CacheStatistics::~CacheStatistics() = default;
+
+void CacheStatistics::setLastModifiedTime(time_point tp) {
   last_modified_ = tp.time_since_epoch().count();
 }
 
-void CacheStatistics::setLastAccessedTime(const time_point& tp) {
+void CacheStatistics::setLastAccessedTime(time_point tp) {
   last_accessed_ = tp.time_since_epoch().count();
 }
 
-CacheStatistics::time_point CacheStatistics::getLastModifiedTime() const {
+std::chrono::system_clock::time_point CacheStatistics::getLastModifiedTime()
+    const {
+  return convert_steady_to_system_tp(getLastModifiedSteadyTime());
+}
+
+std::chrono::system_clock::time_point CacheStatistics::getLastAccessedTime()
+    const {
+  return convert_steady_to_system_tp(getLastAccessedSteadyTime());
+}
+
+CacheStatistics::time_point CacheStatistics::getLastModifiedSteadyTime() const {
   return time_point{time_point::duration{last_modified_}};
 }
 
-CacheStatistics::time_point CacheStatistics::getLastAccessedTime() const {
+CacheStatistics::time_point CacheStatistics::getLastAccessedSteadyTime() const {
   return time_point{time_point::duration{last_accessed_}};
 }
-
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

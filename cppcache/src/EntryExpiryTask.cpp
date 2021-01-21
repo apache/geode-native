@@ -64,15 +64,15 @@ bool EntryExpiryTask::on_expire() {
 
   entry_->getKeyI(key);
 
-  const auto full_path = region_->getFullPath().c_str();
+  const auto& full_path = region_->getFullPath();
   auto key_str = Utils::nullSafeToString(key);
 
   switch (action_) {
     case ExpirationAction::INVALIDATE: {
       LOGDEBUG(
           "EntryExpiryTask::DoTheExpirationAction INVALIDATE "
-          "for region %s entry with key %s",
-          full_path, key_str.c_str());
+          "for region " +
+          full_path + " entry with key " + key_str);
       region_->invalidateNoThrow(key, nullptr, -1, CacheEventFlags::EXPIRATION,
                                  versionTag);
       break;
@@ -80,8 +80,8 @@ bool EntryExpiryTask::on_expire() {
     case ExpirationAction::LOCAL_INVALIDATE: {
       LOGDEBUG(
           "EntryExpiryTask::DoTheExpirationAction LOCAL_INVALIDATE "
-          "for region %s entry with key %s",
-          full_path, key_str.c_str());
+          "for region " +
+          full_path + " entry with key " + key_str);
       region_->invalidateNoThrow(
           key, nullptr, -1,
           CacheEventFlags::EXPIRATION | CacheEventFlags::LOCAL, versionTag);
@@ -90,8 +90,8 @@ bool EntryExpiryTask::on_expire() {
     case ExpirationAction::DESTROY: {
       LOGDEBUG(
           "EntryExpiryTask::DoTheExpirationAction DESTROY "
-          "for region %s entry with key %s",
-          full_path, key_str.c_str());
+          "for region " +
+          full_path + " entry with key " + key_str);
       region_->destroyNoThrow(key, nullptr, -1, CacheEventFlags::EXPIRATION,
                               versionTag);
       break;
@@ -99,8 +99,8 @@ bool EntryExpiryTask::on_expire() {
     case ExpirationAction::LOCAL_DESTROY: {
       LOGDEBUG(
           "EntryExpiryTask::DoTheExpirationAction LOCAL_DESTROY "
-          "for region %s entry with key %s",
-          full_path, key_str.c_str());
+          "for region " +
+          full_path + " entry with key " + key_str);
       region_->destroyNoThrow(
           key, nullptr, -1,
           CacheEventFlags::EXPIRATION | CacheEventFlags::LOCAL, versionTag);
@@ -110,7 +110,7 @@ bool EntryExpiryTask::on_expire() {
       LOGERROR(
           "Unknown expiration action "
           "%d for region %s for key %s",
-          action_, full_path, key_str.c_str());
+          action_, full_path.c_str(), key_str.c_str());
       break;
     }
   }
