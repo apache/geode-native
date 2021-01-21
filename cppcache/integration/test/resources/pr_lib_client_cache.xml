@@ -16,9 +16,9 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<client-cache xmlns="http://geode.apache.org/schema/cache"
+<client-cache xmlns="http://geode.apache.org/schema/cpp-cache"
 			  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-			  xsi:schemaLocation="http://geode.apache.org/schema/cache http://geode.apache.org/schema/cache/cache-1.0.xsd"
+			  xsi:schemaLocation="http://geode.apache.org/schema/cpp-cache http://geode.apache.org/schema/cpp-cache/cpp-cache-1.0.xsd"
 			  version="1.0"
 			  copy-on-read="true">
 	<region name="region">
