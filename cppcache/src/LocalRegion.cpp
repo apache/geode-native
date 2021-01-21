@@ -717,7 +717,7 @@ void LocalRegion::registerEntryExpiryTask(
       new EntryExpiryHandler(rptr, entry, getEntryExpirationAction(), duration);
   auto id = rptr->getCacheImpl()->getExpiryTaskManager().scheduleExpiryTask(
       handler, duration, std::chrono::seconds::zero());
-  if (Log::finestEnabled()) {
+  if (Log::enabled(LogLevel::Finest)) {
     std::shared_ptr<CacheableKey> key;
     entry->getKeyI(key);
     LOGFINEST(
@@ -2812,7 +2812,7 @@ void LocalRegion::updateAccessAndModifiedTimeForEntry(
     ExpEntryProperties& expProps = ptr->getExpProperties();
     auto currTime = std::chrono::system_clock::now();
     std::string keyStr;
-    if (Log::debugEnabled()) {
+    if (Log::enabled(LogLevel::Debug)) {
       std::shared_ptr<CacheableKey> key;
       ptr->getKeyI(key);
       keyStr = Utils::nullSafeToString(key);
@@ -3124,12 +3124,12 @@ void LocalRegion::adjustCacheWriter(const std::string& lib,
   m_writer = m_regionAttributes.getCacheWriter();
 }
 
-void LocalRegion::evict(int32_t percentage) {
+void LocalRegion::evict(float percentage) {
   TryReadGuard guard(m_rwLock, m_destroyPending);
   if (m_released || m_destroyPending) return;
   if (m_entries != nullptr) {
     int32_t size = m_entries->size();
-    int32_t entriesToEvict = (percentage * size) / 100;
+    int32_t entriesToEvict = static_cast<int32_t>(percentage * size);
     // only invoked from EvictionController so static_cast is always safe
     LRUEntriesMap* lruMap = static_cast<LRUEntriesMap*>(m_entries);
     LOGINFO("Evicting %d entries. Current entry count is %d", entriesToEvict,

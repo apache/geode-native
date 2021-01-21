@@ -22,7 +22,8 @@ from server_messages import parse_server_message
 from decoder_base import DecoderBase
 from message_types import message_types
 from numeric_conversion import to_hex_digit
-
+from chunked_message_decoder import ChunkedResponseDecoder
+from read_values import read_number_from_hex_string
 
 class ServerMessageDecoder(DecoderBase):
     def __init__(self, output_queue):
@@ -50,6 +51,7 @@ class ServerMessageDecoder(DecoderBase):
             "10.1.3": self.parse_response_fields_base,
             "9.1.1": self.parse_response_fields_v911,
         }
+        self.chunk_decoder = ChunkedResponseDecoder()
 
     def search_for_version(self, line):
         if self.nc_version_ == None:
@@ -148,6 +150,93 @@ class ServerMessageDecoder(DecoderBase):
 
         return result
 
+
+    def get_response_header(self, line, parts):
+        # Check if this is a header for a chunked message
+        result = False
+
+        expression = re.compile(
+            r"(\d\d:\d\d:\d\d\.\d+).*TcrConnection::readResponseHeader\(([0-9|a-f|A-F|x]+)\):\s*received header from endpoint\s*([\w|:|\d|\.|-]+);\s*bytes:\s*([\d|a-f|A-F]+)"
+        )
+        match = expression.search(line)
+        if match:
+            parts.append(parser.parse(match.group(1)))
+            parts.append(match.group(2))
+            parts.append(match.group(3))
+            parts.append(match.group(4))
+            result = True
+
+        if not result:
+            expression = re.compile(
+                r"(\d\d:\d\d:\d\d\.\d+).*TcrConnection::readResponseHeader:\s*received header from endpoint\s*([\w|:|\d|\.|-]+);\s*bytes:\s*([\d|a-f|A-F]+)"
+            )
+            match = expression.search(line)
+            if match:
+                parts.append(parser.parse(match.group(1)))
+                parts.append("")
+                parts.append(match.group(2))
+                parts.append(match.group(3))
+                result = True
+
+        return result
+
+    def get_chunk_header(self, line, parts):
+        # Check if this is a header for a chunked message
+        result = False
+        expression = re.compile(
+            r"(\d\d:\d\d:\d\d\.\d+).*TcrConnection::readChunkHeader\(([0-9|a-f|A-F|x]+)\):\s*.*, chunkLen=(\d+), lastChunkAndSecurityFlags=([0-9|a-f|A-F|x]+)"
+        )
+        match = expression.search(line)
+        if match:
+            parts.append(parser.parse(match.group(1)))
+            parts.append(match.group(2))
+            parts.append(match.group(3))
+            parts.append(match.group(4))
+            result = True
+
+        if not result:
+            expression = re.compile(
+                r"(\d\d:\d\d:\d\d\.\d+).*TcrConnection::readChunkHeader:\s*.*, chunkLen=(\d+), lastChunkAndSecurityFlags=([0-9|a-f|A-F|x]+)"
+            )
+            match = expression.search(line)
+            if match:
+                parts.append(parser.parse(match.group(1)))
+                parts.append("")
+                parts.append(match.group(2))
+                parts.append(match.group(3))
+                result = True
+
+        return result
+
+    def get_chunk_bytes(self, line, parts):
+        # Check if this is a message chunk.
+        # If it is, add it to the chunked decoder
+        result = False
+        expression = re.compile(
+            r"(\d\d:\d\d:\d\d\.\d+).*TcrConnection::readChunkBody\(([0-9|a-f|A-F|x]+)\): \s*received chunk body from endpoint\s*([\w|:|\d|\.|-]+);\s*bytes:\s*([\d|a-f|A-F]+)"
+        )
+        match = expression.search(line)
+        if match:
+            parts.append(parser.parse(match.group(1)))
+            parts.append(match.group(2))
+            parts.append(match.group(3))
+            parts.append(match.group(4))
+            result = True
+
+        if not result:
+            expression = re.compile(
+                r"(\d\d:\d\d:\d\d\.\d+).*TcrConnection::readChunkBody: \s*received chunk body from endpoint\s*([\w|:|\d|\.|-]+);\s*bytes:\s*([\d|a-f|A-F]+)"
+            )
+            match = expression.search(line)
+            if match:
+                parts.append(parser.parse(match.group(1)))
+                parts.append("")
+                parts.append(match.group(2))
+                parts.append(match.group(3))
+                result = True
+
+        return result
+
     def decimal_string_to_hex_string(self, byte):
         high_nibble = int(int(byte) / 16)
         low_nibble = int(byte) % 16
@@ -202,6 +291,7 @@ class ServerMessageDecoder(DecoderBase):
         connection = None
         message_bytes = None
         message_body = None
+        chunk_bytes = None
 
         self.search_for_version(line)
 
@@ -216,6 +306,18 @@ class ServerMessageDecoder(DecoderBase):
             message_body = parts[0]
         elif self.get_add_security_trace_parts(line, parts):
             connection = parts[1]
+        elif self.get_response_header(line, parts):
+            self.chunk_decoder.add_header(parts[1], parts[3])
+        elif self.get_chunk_header(line, parts):
+            flags = 0xff
+            size = 0
+            (flags, size) = read_number_from_hex_string(parts[3], 2, len(parts[3]) - 2)
+            self.chunk_decoder.add_chunk_header(parts[2], flags)
+        elif self.get_chunk_bytes(line, parts):
+            self.chunk_decoder.add_chunk(parts[3])
+            if self.chunk_decoder.is_complete_message():
+                self.output_queue_.put({"message": self.chunk_decoder.get_decoded_message()})
+                self.chunk_decoder.reset()
         else:
             return
 

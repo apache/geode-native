@@ -25,8 +25,10 @@ add_executable(cpp-integration-test
   DataSerializableTest.cpp
   EnableChunkHandlerThreadTest.cpp
   ExampleTest.cpp
+  ExceptionTranslationTest.cpp
   ExpirationTest.cpp
   FunctionExecutionTest.cpp
+  LRUEvictionTest.cpp
   LocatorRequestsTest.cpp
   PartitionRegionOpsTest.cpp
   PdxInstanceTest.cpp
@@ -34,6 +36,10 @@ add_executable(cpp-integration-test
   PdxSerializerTest.cpp
   Order.cpp
   Order.hpp
+  Position.cpp
+  Position.hpp
+  PositionKey.cpp
+  PositionKey.hpp
   RegionGetAllTest.cpp
   RegionPutAllTest.cpp
   RegionPutGetAllTest.cpp

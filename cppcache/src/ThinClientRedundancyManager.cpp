@@ -232,12 +232,12 @@ GfErrType ThinClientRedundancyManager::maintainRedundancyLevel(
     outEndpoints = selectServers(howMany, exclEndPts);
     for (std::list<ServerLocation>::iterator it = outEndpoints.begin();
          it != outEndpoints.end(); it++) {
-      TcrEndpoint* ep = m_poolHADM->addEP(*it);
+      auto ep = m_poolHADM->addEP(*it);
       LOGDEBUG(
           "ThinClientRedundancyManager::maintainRedundancyLevel(): Adding "
           "endpoint %s to nonredundant list.",
           ep->name().c_str());
-      m_nonredundantEndpoints.push_back(ep);
+      m_nonredundantEndpoints.push_back(ep.get());
     }
   }
 
@@ -949,7 +949,7 @@ GfErrType ThinClientRedundancyManager::sendSyncRequestRegisterInterest(
   }
 }
 
-synchronized_map<std::unordered_map<std::string, TcrEndpoint*>,
+synchronized_map<std::unordered_map<std::string, std::shared_ptr<TcrEndpoint>>,
                  std::recursive_mutex>&
 ThinClientRedundancyManager::updateAndSelectEndpoints() {
   // 38196 Fix: For durable clients reconnect
@@ -983,8 +983,7 @@ ThinClientRedundancyManager::updateAndSelectEndpoints() {
 
 void ThinClientRedundancyManager::getAllEndpoints(
     std::vector<TcrEndpoint*>& endpoints) {
-  TcrEndpoint* maxQEp = nullptr;
-  TcrEndpoint* primaryEp = nullptr;
+  std::shared_ptr<TcrEndpoint> maxQEp, primaryEp;
 
   auto& selectedEndpoints = updateAndSelectEndpoints();
   for (const auto& currItr : selectedEndpoints) {
@@ -998,13 +997,13 @@ void ThinClientRedundancyManager::getAllEndpoints(
         m_poolHADM->addConnection(statusConn);
       }
       if (status == REDUNDANT_SERVER) {
-        if (maxQEp == nullptr) {
+        if (!maxQEp) {
           maxQEp = ep;
         } else if (ep->getServerQueueSize() > maxQEp->getServerQueueSize()) {
-          insertEPInQueueSizeOrder(maxQEp, endpoints);
+          insertEPInQueueSizeOrder(maxQEp.get(), endpoints);
           maxQEp = ep;
         } else {
-          insertEPInQueueSizeOrder(ep, endpoints);
+          insertEPInQueueSizeOrder(ep.get(), endpoints);
         }
         LOGDEBUG(
             "ThinClientRedundancyManager::getAllEndpoints(): sorting "
@@ -1016,33 +1015,33 @@ void ThinClientRedundancyManager::getAllEndpoints(
             "ThinClientRedundancyManager::getAllEndpoints(): sorting "
             "endpoints, found primary endpoint.");
       } else {
-        endpoints.push_back(currItr.second);
+        endpoints.push_back(currItr.second.get());
         LOGDEBUG(
             "ThinClientRedundancyManager::getAllEndpoints(): sorting "
             "endpoints, found nonredundant endpoint.");
       }
     } else {
-      endpoints.push_back(currItr.second);
+      endpoints.push_back(currItr.second.get());
     }
     //(*currItr)++;
   }
 
   // Add Endpoint with Max Queuesize at the last and Primary at first position
   if (isDurable()) {
-    if (maxQEp != nullptr) {
-      endpoints.push_back(maxQEp);
+    if (maxQEp) {
+      endpoints.push_back(maxQEp.get());
       LOGDEBUG(
           "ThinClientRedundancyManager::getAllEndpoints(): sorting endpoints, "
           "pushing max-q endpoint at back.");
     }
-    if (primaryEp != nullptr) {
-      if (m_redundancyLevel == 0 || maxQEp == nullptr) {
-        endpoints.push_back(primaryEp);
+    if (primaryEp) {
+      if (m_redundancyLevel == 0 || !maxQEp) {
+        endpoints.push_back(primaryEp.get());
         LOGDEBUG(
             "ThinClientRedundancyManager::getAllEndpoints(): sorting "
             "endpoints, pushing primary at back.");
       } else {
-        endpoints.insert(endpoints.begin(), primaryEp);
+        endpoints.insert(endpoints.begin(), primaryEp.get());
         LOGDEBUG(
             "ThinClientRedundancyManager::getAllEndpoints(): sorting "
             "endpoints, inserting primary at head.");

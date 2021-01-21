@@ -49,14 +49,6 @@
 #define SECURITY_CREDENTIALS_NORMAL 1
 #define SECURITY_MULTIUSER_NOTIFICATIONCHANNEL 3
 
-/** Closes and Deletes connection only if it exists */
-#define GF_SAFE_DELETE_CON(x) \
-  do {                        \
-    x->close();               \
-    delete x;                 \
-    x = nullptr;              \
-  } while (0)
-
 namespace apache {
 namespace geode {
 namespace client {
@@ -93,9 +85,6 @@ class ThinClientPoolDM;
 class TcrConnectionManager;
 class TcrConnection {
  public:
-  using clock = std::chrono::steady_clock;
-  using time_point = clock::time_point;
-
   /** Create one connection, endpoint is in format of hostname:portno
    * It will do handshake with j-server. There're 2 types of handshakes:
    * 1) handshake for request
@@ -120,43 +109,12 @@ class TcrConnection {
    * @param     ports     List of local ports for connections to endpoint
    */
   bool initTcrConnection(
-      TcrEndpoint* endpointObj, const char* endpoint,
+      std::shared_ptr<TcrEndpoint> endpointObj,
       synchronized_set<std::unordered_set<uint16_t>>& ports,
       bool isClientNotification = false, bool isSecondary = false,
       std::chrono::microseconds connectTimeout = DEFAULT_CONNECT_TIMEOUT);
 
-  TcrConnection(const TcrConnectionManager& connectionManager,
-                volatile const bool& isConnected)
-      : connectionId(0),
-        m_connectionManager(&connectionManager),
-        m_endpoint(nullptr),
-        m_endpointObj(nullptr),
-        m_connected(isConnected),
-        m_conn(nullptr),
-        m_hasServerQueue(NON_REDUNDANT_SERVER),
-        m_queueSize(0),
-        m_port(0),
-        m_chunksProcessSema(0),
-        m_isBeingUsed(false),
-        m_isUsed(0),
-        m_poolDM(nullptr) {
-    auto nowTimePoint = clock::now().time_since_epoch();
-    auto now_ms =
-        std::chrono::duration_cast<std::chrono::milliseconds>(nowTimePoint)
-            .count();
-    auto now_s =
-        std::chrono::duration_cast<std::chrono::seconds>(nowTimePoint).count();
-    auto seed = (now_s * 1000) + (now_ms / 1000);
-    srand(static_cast<unsigned int>(seed));
-    int numbers = 21;
-    int random = rand() % numbers + 1;
-    if (random > 10) {
-      random = random - numbers;
-    }
-    m_expiryTimeVariancePercentage = random;
-    LOGDEBUG("m_expiryTimeVariancePercentage set to: %d",
-             m_expiryTimeVariancePercentage);
-  }
+  explicit TcrConnection(const TcrConnectionManager& connectionManager);
 
   /* destroy the connection */
   ~TcrConnection();
@@ -227,11 +185,6 @@ class TcrConnection {
             std::chrono::microseconds sendTimeoutSec = DEFAULT_WRITE_TIMEOUT,
             bool checkConnected = true);
 
-  void send(std::chrono::microseconds& timeSpent, const char* buffer,
-            size_t len,
-            std::chrono::microseconds sendTimeoutSec = DEFAULT_WRITE_TIMEOUT,
-            bool checkConnected = true);
-
   /**
    * This method is for receiving client notification. It will read 2 times as
    * reading reply in sendRequest()
@@ -290,7 +243,7 @@ class TcrConnection {
 
   uint16_t inline getPort() { return m_port; }
 
-  TcrEndpoint* getEndpointObject() const { return m_endpointObj; }
+  TcrEndpoint* getEndpointObject() const { return m_endpointObj.get(); }
   bool isBeingUsed() { return m_isBeingUsed; }
   bool setAndGetBeingUsed(
       volatile bool isBeingUsed,
@@ -300,7 +253,7 @@ class TcrConnection {
   void touch();
   bool hasExpired(const std::chrono::milliseconds& expiryTime);
   bool isIdle(const std::chrono::milliseconds& idleTime);
-  time_point getLastAccessed();
+  std::chrono::steady_clock::time_point getLastAccessed();
   void updateCreationTime();
 
   int64_t getConnectionId() {
@@ -314,12 +267,12 @@ class TcrConnection {
   }
 
   const TcrConnectionManager& getConnectionManager() {
-    return *m_connectionManager;
+    return m_connectionManager;
   }
 
  private:
   int64_t connectionId;
-  const TcrConnectionManager* m_connectionManager;
+  const TcrConnectionManager& m_connectionManager;
   int m_expiryTimeVariancePercentage = 0;
 
   std::chrono::microseconds calculateHeaderTimeout(
@@ -364,9 +317,9 @@ class TcrConnection {
                           std::chrono::microseconds connectTimeout);
 
   /** Create a normal or SSL connection */
-  Connector* createConnection(
+  void createConnection(
       const std::string& address,
-      std::chrono::microseconds waitSeconds = DEFAULT_CONNECT_TIMEOUT,
+      std::chrono::microseconds wait = DEFAULT_CONNECT_TIMEOUT,
       int32_t maxBuffSizePool = 0);
 
   /**
@@ -399,25 +352,16 @@ class TcrConnection {
    * Send data to the connection till sendTimeout
    */
   ConnErrType sendData(const char* buffer, size_t length,
-                       std::chrono::microseconds sendTimeout,
-                       bool checkConnected = true);
-
-  ConnErrType sendData(std::chrono::microseconds& timeSpent, const char* buffer,
-                       size_t length, std::chrono::microseconds sendTimeout,
-                       bool checkConnected = true);
+                       std::chrono::microseconds sendTimeout);
 
   /**
    * Read data from the connection till receiveTimeoutSec
    */
   ConnErrType receiveData(char* buffer, size_t length,
-                          std::chrono::microseconds receiveTimeoutSec,
-                          bool checkConnected = true,
-                          bool isNotificationMessage = false);
+                          std::chrono::microseconds receiveTimeoutSec);
 
-  const char* m_endpoint;
-  TcrEndpoint* m_endpointObj;
-  volatile const bool& m_connected;
-  Connector* m_conn;
+  std::shared_ptr<TcrEndpoint> m_endpointObj;
+  std::unique_ptr<Connector> m_conn;
   ServerQueueStatus m_hasServerQueue;
   int32_t m_queueSize;
   uint16_t m_port;
@@ -425,8 +369,8 @@ class TcrConnection {
   // semaphore to synchronize with the chunked response processing thread
   ACE_Semaphore m_chunksProcessSema;
 
-  time_point m_creationTime;
-  time_point m_lastAccessed;
+  std::chrono::steady_clock::time_point m_creationTime;
+  std::chrono::steady_clock::time_point m_lastAccessed;
 
   // Disallow copy constructor and assignment operator.
   TcrConnection(const TcrConnection&);
@@ -434,7 +378,6 @@ class TcrConnection {
   volatile bool m_isBeingUsed;
   std::atomic<uint32_t> m_isUsed;
   ThinClientPoolDM* m_poolDM;
-  bool useReplyTimeout(const TcrMessage& request) const;
   std::chrono::microseconds sendWithTimeouts(
       const char* data, size_t len, std::chrono::microseconds sendTimeout,
       std::chrono::microseconds receiveTimeout);

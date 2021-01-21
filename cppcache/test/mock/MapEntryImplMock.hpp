@@ -17,45 +17,30 @@
 
 #pragma once
 
-#ifndef GEODE_EVICTIONTHREAD_H_
-#define GEODE_EVICTIONTHREAD_H_
+#ifndef GEODE_MAPENTRYIMPLMOCK_H_
+#define GEODE_MAPENTRYIMPLMOCK_H_
 
-#include <atomic>
-#include <condition_variable>
-#include <deque>
-#include <mutex>
-#include <thread>
+#include <gmock/gmock.h>
+
+#include "MapEntry.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
-
-class EvictionController;
-
-/**
- * This class does the actual evictions
- */
-class EvictionThread {
+class MapEntryImplMock : public MapEntryImpl {
  public:
-  explicit EvictionThread(EvictionController* parent);
-  void start();
-  void stop();
-  void svc();
-  void putEvictionInfo(int32_t info);
+  explicit MapEntryImplMock(const std::shared_ptr<CacheableKey>& key)
+      : MapEntryImpl(key) {}
 
- private:
-  std::thread m_thread;
-  std::atomic<bool> m_run;
-  EvictionController* m_pParent;
-  std::deque<int32_t> m_queue;
-  std::mutex m_queueMutex;
-  std::condition_variable m_queueCondition;
-
-  static const char* NC_Evic_Thread;
+  MOCK_METHOD0(getLRUProperties, LRUEntryProperties&());
+  MOCK_METHOD1(addTracker, int(std::shared_ptr<MapEntry>&));
+  MOCK_METHOD0(removeTracker, std::pair<bool, int>());
+  MOCK_CONST_METHOD0(getTrackingNumber, int());
+  MOCK_CONST_METHOD0(getUpdateCount, int());
+  MOCK_METHOD1(incrementUpdateCount, int(std::shared_ptr<MapEntry>&));
 };
-
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
 
-#endif  // GEODE_EVICTIONTHREAD_H_
+#endif  // GEODE_MAPENTRYIMPLMOCK_H_

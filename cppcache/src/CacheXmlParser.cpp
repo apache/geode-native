@@ -505,7 +505,7 @@ void CacheXmlParser::create(Cache *cache) {
   }
   cacheCreation_->create(cache);
   delCacheCreation.noDelete();
-  Log::info("Declarative configuration of cache completed successfully");
+  LOGINFO("Declarative configuration of cache completed successfully");
 }
 
 std::string CacheXmlParser::getOptionalAttribute(

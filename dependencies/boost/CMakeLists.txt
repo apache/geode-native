@@ -13,11 +13,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-project( boost VERSION 1.73.0 LANGUAGES NONE )
+project( boost VERSION 1.75.0 LANGUAGES NONE )
 
-set( SHA256 9995e192e68528793755692917f9eb6422f3052a53c5e13ba278a228af6c7acf )
+set( SHA256 aeb26f80e80945e82ee93e5939baebdca47b9dee80a07d3144be1e1a6a66dd6a )
 
-set(_B2_FLAGS
+if (WIN32)
+  set(BOOTSTRAP_COMMAND .\\bootstrap.bat)
+  set(B2_COMMAND .\\b2)
+else()
+  set(BOOTSTRAP_COMMAND ./bootstrap.sh)
+  set(B2_COMMAND ./b2)
+endif()
+set(B2_FLAGS
   -d0
   --prefix=<INSTALL_DIR>/$<CONFIG>
   --with-system
@@ -31,29 +38,33 @@ set(_B2_FLAGS
 )
 
 include(ProcessorCount)
-ProcessorCount(_NPROCS)
-if (${_NPROCS})
-  set ( _B2_FLAGS ${_B2_FLAGS} -j${_NPROCS} )
+ProcessorCount(NPROCS)
+if (${NPROCS})
+  list(APPEND B2_FLAGS -j${NPROCS})
 endif()
 
-if (${WIN32})
-  set ( _BOOTSTRAP_COMMAND .\\bootstrap.bat )
-  set ( _B2_COMMAND .\\b2 )
-  set ( _B2_FLAGS ${_B2_FLAGS} toolset=msvc-14.1 )
-else()
-  set ( _BOOTSTRAP_COMMAND ./bootstrap.sh )
-  set ( _B2_COMMAND ./b2 )
-  set ( _B2_FLAGS ${_B2_FLAGS} "cxxflags=${CMAKE_CXX_FLAGS} ${CMAKE_CXX11_STANDARD_COMPILE_OPTION} ${CMAKE_CXX_COMPILE_OPTIONS_PIC}" )
+if ("Darwin" STREQUAL ${CMAKE_SYSTEM_NAME})
+  # disabled until combined supports arm list(APPEND B2_FLAGS architecture=combined)
+  # manually set arch until combine supports arm
+  foreach(arch ${CMAKE_OSX_ARCHITECTURES})
+    string(APPEND CMAKE_CXX_FLAGS " -arch ${arch}")
+    string(APPEND CMAKE_STATIC_LINKER_FLAGS " -arch ${arch}")
+  endforeach()
+  string(APPEND CMAKE_CXX_FLAGS " ${CMAKE_CXX_SYSROOT_FLAG} ${CMAKE_OSX_SYSROOT}")
+  string(APPEND CMAKE_CXX_FLAGS " ${CMAKE_CXX_OSX_DEPLOYMENT_TARGET_FLAG}${CMAKE_OSX_DEPLOYMENT_TARGET}")
 endif()
 
 if ("SunOS" STREQUAL ${CMAKE_SYSTEM_NAME})
-  set ( _BOOTSTRAP_COMMAND ${_BOOTSTRAP_COMMAND} --with-toolset=sun )
-  set ( _B2_FLAGS ${_B2_FLAGS} define=BOOST_OPTIONAL_DETAIL_NO_RVALUE_REFERENCES)
+  list(APPEND BOOTSTRAP_FLAGS --with-toolset=sun)
+  list(APPEND B2_FLAGS define=BOOST_OPTIONAL_DETAIL_NO_RVALUE_REFERENCES)
 elseif ("Windows" STREQUAL ${CMAKE_SYSTEM_NAME})
-  set ( CMAKE_STATIC_LIBRARY_PREFIX lib )
+  set(CMAKE_STATIC_LIBRARY_PREFIX lib)
+  list(APPEND B2_FLAGS toolset=msvc-14.1)
 elseif ("Clang" STREQUAL ${CMAKE_CXX_COMPILER_ID})
-  set ( _BOOTSTRAP_COMMAND ${_BOOTSTRAP_COMMAND} --with-toolset=clang )
+  list(APPEND BOOTSTRAP_FLAGS --with-toolset=clang)
 endif()
+
+list(APPEND B2_FLAGS "cxxflags=${CMAKE_CXX_FLAGS} ${CMAKE_CXX11_STANDARD_COMPILE_OPTION} ${CMAKE_CXX_COMPILE_OPTIONS_PIC}")
 
 string(REPLACE "." "_" _VERSION_UNDERSCORE ${PROJECT_VERSION})
 set( EXTERN ${PROJECT_NAME}-extern )
@@ -65,9 +76,9 @@ ExternalProject_Add( ${EXTERN}
    URL_HASH SHA256=${SHA256}
    UPDATE_COMMAND ""
    BUILD_IN_SOURCE 1
-   CONFIGURE_COMMAND ${_BOOTSTRAP_COMMAND}
-   BUILD_COMMAND ${_B2_COMMAND} ${_B2_FLAGS}
-   INSTALL_COMMAND ${_B2_COMMAND} ${_B2_FLAGS} install
+   CONFIGURE_COMMAND ${BOOTSTRAP_COMMAND} ${BOOTSTRAP_FLAGS}
+   BUILD_COMMAND ${B2_COMMAND} ${B2_FLAGS}
+   INSTALL_COMMAND ${B2_COMMAND} ${B2_FLAGS} install
    PREFIX .
    DOWNLOAD_DIR .
    SOURCE_DIR ./src

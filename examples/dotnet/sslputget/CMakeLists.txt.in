@@ -19,7 +19,7 @@ project(dotnet-sslputget LANGUAGES CSharp)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/../../cmake)
 
-find_package(@PRODUCT_NAME_NOSPACE@ REQUIRED COMPONENTS dotnet crypto)
+find_package(@PRODUCT_NAME_NOSPACE@ REQUIRED COMPONENTS dotnet)
 
 add_executable(${PROJECT_NAME} Program.cs)
 

@@ -58,7 +58,6 @@ class TcpIpc {
 
   void close();
 
-  bool listen(int32_t waitSecs = 0);
   bool accept(ACE_SOCK_Acceptor* acceptor, int32_t waitSecs = 0);
   bool connect(int32_t waitSecs = 0);
 

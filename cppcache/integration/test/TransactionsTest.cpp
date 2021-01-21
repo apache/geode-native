@@ -37,7 +37,7 @@ using apache::geode::client::Region;
 using apache::geode::client::RegionShortcut;
 
 std::shared_ptr<Cache> createCache() {
-  auto cache = CacheFactory().set("log-level", "debug").create();
+  auto cache = CacheFactory().set("log-level", "none").create();
   return std::make_shared<Cache>(std::move(cache));
 }
 

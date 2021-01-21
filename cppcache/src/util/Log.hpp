@@ -144,9 +144,12 @@ class APACHE_GEODE_EXPORT Log {
    * arguments
    */
   static void init
-      // 0 => use maximum value (currently 1G)
+      // 0 => use default value (currently 1GB for file, 1TB for disk)
       (LogLevel level, const char* logFileName, int32_t logFileLimit = 0,
        int64_t logDiskSpaceLimit = 0);
+
+  static void init(LogLevel level, const std::string& logFileName,
+                   int32_t logFileLimit = 0, int64_t logDiskSpaceLimit = 0);
 
   /**
    * closes logging facility (until next init).
@@ -169,9 +172,7 @@ class APACHE_GEODE_EXPORT Log {
   static LogLevel charsToLevel(const std::string& chars);
 
   /**
-   * Fills the provided buffer with formatted log-line given the level
-   * and returns the buffer. This assumes that the buffer has large
-   * enough space left to hold the formatted log-line (around 70 chars).
+   * formats and returns a line for logging.
    *
    * This is provided so that applications wishing to use the same format
    * as Geode log-lines can do so easily. A log-line starts with the prefix
@@ -182,315 +183,96 @@ class APACHE_GEODE_EXPORT Log {
    * When invoking from outside either <init> should have been invoked,
    * or at least the first invocation should be single-threaded.
    */
-  static char* formatLogLine(char* buf, LogLevel level);
+  static std::string formatLogLine(LogLevel level);
 
-  /**
-   * Returns whether log messages at given level are enabled.
-   */
-  static bool enabled(LogLevel level);
+  static void log(LogLevel level, const std::string& msg);
 
-  /**
-   * Logs a message at given level.
-   */
-  static void log(LogLevel level, const char* msg);
+  static void log(LogLevel level, const char* fmt, ...);
 
-  /**
-   * Logs both a message and thrown exception.
-   */
-  static void logThrow(LogLevel level, const char* msg, const Exception& ex);
-
-  /**
-   * Logs both a message and caught exception.
-   */
   static void logCatch(LogLevel level, const char* msg, const Exception& ex);
 
-  /**
-   * Returns whether "error" log messages are enabled.
-   */
-  static bool errorEnabled();
-
-  /**
-   * Logs a message.
-   * The message level is "error".
-   */
-  static void error(const char* msg);
-
-  static void error(const std::string& msg);
-
-  /**
-   * Logs both a message and thrown exception.
-   * The message level is "error".
-   */
-  static void errorThrow(const char* msg, const Exception& ex);
-
-  /**
-   * Writes both a message and caught exception.
-   * The message level is "error".
-   */
-  static void errorCatch(const char* msg, const Exception& ex);
-
-  /**
-   * Returns whether "warning" log messages are enabled.
-   */
-  static bool warningEnabled();
-
-  /**
-   * Logs a message.
-   * The message level is "warning".
-   */
-  static void warning(const char* msg);
-
-  /**
-   * Logs both a message and thrown exception.
-   * The message level is "warning".
-   */
-  static void warningThrow(const char* msg, const Exception& ex);
-
-  /**
-   * Writes both a message and caught exception.
-   * The message level is "warning".
-   */
-  static void warningCatch(const char* msg, const Exception& ex);
-
-  /**
-   * Returns whether "info" log messages are enabled.
-   */
-  static bool infoEnabled();
-
-  /**
-   * Logs a message.
-   * The message level is "info".
-   */
-  static void info(const char* msg);
-
-  /**
-   * Logs both a message and thrown exception.
-   * The message level is "info".
-   */
-  static void infoThrow(const char* msg, const Exception& ex);
-
-  /**
-   * Writes both a message and caught exception.
-   * The message level is "info".
-   */
-  static void infoCatch(const char* msg, const Exception& ex);
-
-  /**
-   * Returns whether "config" log messages are enabled.
-   */
-  static bool configEnabled();
-
-  /**
-   * Logs a message.
-   * The message level is "config".
-   */
-  static void config(const char* msg);
-
-  /**
-   * Logs both a message and thrown exception.
-   * The message level is "config".
-   */
-  static void configThrow(const char* msg, const Exception& ex);
-
-  /**
-   * Writes both a message and caught exception.
-   * The message level is "config".
-   */
-  static void configCatch(const char* msg, const Exception& ex);
-
-  /**
-   * Returns whether "fine" log messages are enabled.
-   */
-  static bool fineEnabled();
-
-  /**
-   * Logs a message.
-   * The message level is "fine".
-   */
-  static void fine(const char* msg);
-
-  /**
-   * Logs both a message and thrown exception.
-   * The message level is "fine".
-   */
-  static void fineThrow(const char* msg, const Exception& ex);
-
-  /**
-   * Writes both a message and caught exception.
-   * The message level is "fine".
-   */
-  static void fineCatch(const char* msg, const Exception& ex);
-
-  /**
-   * Returns whether "finer" log messages are enabled.
-   */
-  static bool finerEnabled();
-
-  /**
-   * Logs a message.
-   * The message level is "finer".
-   */
-  static void finer(const char* msg);
-
-  /**
-   * Logs both a message and thrown exception.
-   * The message level is "finer".
-   */
-  static void finerThrow(const char* msg, const Exception& ex);
-
-  /**
-   * Writes both a message and caught exception.
-   * The message level is "finer".
-   */
-  static void finerCatch(const char* msg, const Exception& ex);
-
-  /**
-   * Returns whether "finest" log messages are enabled.
-   */
-  static bool finestEnabled();
-
-  /**
-   * Logs a message.
-   * The message level is "finest".
-   */
-  static void finest(const char* msg);
-
-  /**
-   * Logs both a message and thrown exception.
-   * The message level is "finest".
-   */
-  static void finestThrow(const char* msg, const Exception& ex);
-
-  /**
-   * Writes both a message and caught exception.
-   * The message level is "finest".
-   */
-  static void finestCatch(const char* msg, const Exception& ex);
-
-  /**
-   * Returns whether "debug" log messages are enabled.
-   */
-  static bool debugEnabled();
-
-  /**
-   * Logs a message.
-   * The message level is "debug".
-   */
-  static void debug(const char* msg);
-
-  /**
-   * Logs both a message and thrown exception.
-   * The message level is "debug".
-   */
-  static void debugThrow(const char* msg, const Exception& ex);
-
-  /**
-   * Writes both a message and caught exception.
-   * The message level is "debug".
-   */
-  static void debugCatch(const char* msg, const Exception& ex);
-
-  static void enterFn(LogLevel level, const char* functionName);
-
-  static void exitFn(LogLevel level, const char* functionName);
+  static bool enabled(LogLevel level);
 
  private:
   static LogLevel s_logLevel;
 
   static void writeBanner();
 
- public:
-  static void put(LogLevel level, const std::string& msg);
+  static void validateSizeLimits(int64_t fileSizeLimit, int64_t diskSpaceLimit);
 
-  static void put(LogLevel level, const char* msg);
+  static void validateLogFileName(const std::string& filename);
 
-  static void putThrow(LogLevel level, const char* msg, const Exception& ex);
+  static void rollLogFile();
 
-  static void putCatch(LogLevel level, const char* msg, const Exception& ex);
+  static void removeOldestRolledLogFile();
+
+  static void buildRollFileMapping();
+
+  static void setRollFileIndex();
+
+  static void setSizeLimits(int32_t logFileLimit, int64_t logDiskSpaceLimit);
+
+  static void logInternal(LogLevel level, const std::string& msg);
 };
 
-class APACHE_GEODE_EXPORT LogFn {
-  const char* m_functionName;
-  LogLevel m_level;
-
- public:
-  explicit LogFn(const char* functionName, LogLevel level = LogLevel::Finest);
-
-  ~LogFn();
-
-  LogFn(const LogFn& rhs) = delete;
-  LogFn& operator=(const LogFn& rhs) = delete;
-};
-
-class APACHE_GEODE_EXPORT LogVarargs {
- public:
-  static void debug(const char* fmt, ...);
-  static void error(const char* fmt, ...);
-  static void warn(const char* fmt, ...);
-  static void info(const char* fmt, ...);
-  static void config(const char* fmt, ...);
-  static void fine(const char* fmt, ...);
-  static void finer(const char* fmt, ...);
-  static void finest(const char* fmt, ...);
-
-  static void debug(const std::string& message);
-
-  static void error(const std::string& message);
-
-  static void warn(const std::string& message);
-
-  static void info(const std::string& message);
-
-  static void config(const std::string& message);
-
-  static void fine(const std::string& message);
-
-  static void finer(const std::string& message);
-
-  static void finest(const std::string& message);
-};
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
 
-#define LOGDEBUG                                  \
-  if (::apache::geode::client::LogLevel::Debug <= \
-      ::apache::geode::client::Log::logLevel())   \
-  ::apache::geode::client::LogVarargs::debug
+#define LOGERROR(...)                                           \
+  if (::apache::geode::client::Log::enabled(                    \
+          apache::geode::client::LogLevel::Error)) {            \
+    ::apache::geode::client::Log::log(                          \
+        ::apache::geode::client::LogLevel::Error, __VA_ARGS__); \
+  }
 
-#define LOGERROR                                  \
-  if (::apache::geode::client::LogLevel::Error <= \
-      ::apache::geode::client::Log::logLevel())   \
-  ::apache::geode::client::LogVarargs::error
+#define LOGWARN(...)                                              \
+  if (::apache::geode::client::Log::enabled(                      \
+          apache::geode::client::LogLevel::Warning)) {            \
+    ::apache::geode::client::Log::log(                            \
+        ::apache::geode::client::LogLevel::Warning, __VA_ARGS__); \
+  }
 
-#define LOGWARN                                     \
-  if (::apache::geode::client::LogLevel::Warning <= \
-      ::apache::geode::client::Log::logLevel())     \
-  ::apache::geode::client::LogVarargs::warn
+#define LOGINFO(...)                                                           \
+  if (::apache::geode::client::Log::enabled(                                   \
+          apache::geode::client::LogLevel::Info)) {                            \
+    ::apache::geode::client::Log::log(::apache::geode::client::LogLevel::Info, \
+                                      __VA_ARGS__);                            \
+  }
 
-#define LOGINFO                                  \
-  if (::apache::geode::client::LogLevel::Info <= \
-      ::apache::geode::client::Log::logLevel())  \
-  ::apache::geode::client::LogVarargs::info
+#define LOGCONFIG(...)                                           \
+  if (::apache::geode::client::Log::enabled(                     \
+          apache::geode::client::LogLevel::Config)) {            \
+    ::apache::geode::client::Log::log(                           \
+        ::apache::geode::client::LogLevel::Config, __VA_ARGS__); \
+  }
 
-#define LOGCONFIG                                  \
-  if (::apache::geode::client::LogLevel::Config <= \
-      ::apache::geode::client::Log::logLevel())    \
-  ::apache::geode::client::LogVarargs::config
+#define LOGFINE(...)                                                           \
+  if (::apache::geode::client::Log::enabled(                                   \
+          apache::geode::client::LogLevel::Fine)) {                            \
+    ::apache::geode::client::Log::log(::apache::geode::client::LogLevel::Fine, \
+                                      __VA_ARGS__);                            \
+  }
 
-#define LOGFINE                                  \
-  if (::apache::geode::client::LogLevel::Fine <= \
-      ::apache::geode::client::Log::logLevel())  \
-  ::apache::geode::client::LogVarargs::fine
+#define LOGFINER(...)                                           \
+  if (::apache::geode::client::Log::enabled(                    \
+          apache::geode::client::LogLevel::Finer)) {            \
+    ::apache::geode::client::Log::log(                          \
+        ::apache::geode::client::LogLevel::Finer, __VA_ARGS__); \
+  }
 
-#define LOGFINER                                  \
-  if (::apache::geode::client::LogLevel::Finer <= \
-      ::apache::geode::client::Log::logLevel())   \
-  ::apache::geode::client::LogVarargs::finer
+#define LOGFINEST(...)                                           \
+  if (::apache::geode::client::Log::enabled(                     \
+          apache::geode::client::LogLevel::Finest)) {            \
+    ::apache::geode::client::Log::log(                           \
+        ::apache::geode::client::LogLevel::Finest, __VA_ARGS__); \
+  }
 
-#define LOGFINEST                                  \
-  if (::apache::geode::client::LogLevel::Finest <= \
-      ::apache::geode::client::Log::logLevel())    \
-  ::apache::geode::client::LogVarargs::finest
+#define LOGDEBUG(...)                                           \
+  if (::apache::geode::client::Log::enabled(                    \
+          apache::geode::client::LogLevel::Debug)) {            \
+    ::apache::geode::client::Log::log(                          \
+        ::apache::geode::client::LogLevel::Debug, __VA_ARGS__); \
+  }
 
 #endif  // GEODE_LOG_H_

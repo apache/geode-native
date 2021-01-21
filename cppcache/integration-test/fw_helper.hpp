@@ -131,10 +131,7 @@ class TestException {
         m_filename(const_cast<char*>(filename)) {}
 
   void print() {
-    char buf[256];
-    apache::geode::client::Log::formatLogLine(
-        buf, apache::geode::client::LogLevel::Error);
-    fprintf(stdout, "--->%sTestException: %s in %s at line %d<---\n", buf,
+    fprintf(stdout, "--->%sTestException: %s in %s at line %d<---\n", apache::geode::client::Log::formatLogLine(apache::geode::client::LogLevel::Error).c_str(),
             m_message.c_str(), m_filename, m_lineno);
   }
   std::string m_message;
