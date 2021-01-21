@@ -265,6 +265,16 @@ def read_close_connection_message(properties, message_bytes, offset):
     properties["ObjectPart"] = object_part
 
 
+def read_contains_key_message(properties, message_bytes, offset):
+    (properties["RegionPart"], offset) = parse_region_part(message_bytes, offset)
+    (properties["Key"], offset) = parse_key_or_value(message_bytes, offset)
+    (request_type, offset) = parse_raw_int_part(message_bytes, offset)
+    if request_type["Value"] == 1:
+        properties["RequestType"] == "ContainsValueForKey"
+    else:
+        properties["RequestType"] = "ContainsKey"
+
+
 def read_destroy_message(properties, message_bytes, offset):
     if properties["Parts"] > 5:
         raise Exception(
@@ -390,6 +400,7 @@ client_message_parsers = {
     "PUT": read_put_message,
     "REQUEST": read_request_message,
     "CLOSE_CONNECTION": read_close_connection_message,
+    "CONTAINS_KEY": read_contains_key_message,
     "DESTROY": read_destroy_message,
     "GET_CLIENT_PARTITION_ATTRIBUTES": read_get_client_partition_attributes_message,
     "GET_CLIENT_PR_METADATA": read_get_client_pr_metadata_message,
