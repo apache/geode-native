@@ -219,7 +219,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       bool ErrorOccurred = false;
 
-      QueryHelper<object, object> qh = QueryHelper<object, object>.GetHelper(CacheHelper.DCache);
+      QueryHelper<object, object>.GetHelper(CacheHelper.DCache);
 
       var qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService();
 
@@ -239,7 +239,7 @@ namespace Apache.Geode.Client.UnitTests
 
         try
         {
-          ISelectResults<object> results = query.Execute();
+          query.Execute();
 
           Util.Log("Query exception did not occur for index {0}.", qryIdx);
           ErrorOccurred = true;

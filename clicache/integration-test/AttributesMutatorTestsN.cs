@@ -144,7 +144,7 @@ namespace Apache.Geode.Client.UnitTests
       m_reg3Writer1 = new TallyWriter<string, string>();
       var regionAttributesFactory = new RegionAttributesFactory<string, string>();
 
-      GIRegion region = CacheHelper.CreateRegion<string, string>(PeerRegionName,
+      CacheHelper.CreateRegion<string, string>(PeerRegionName,
         regionAttributesFactory.Create());
 
       SetCacheListener(PeerRegionName, m_reg3Listener1);
@@ -166,7 +166,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       var regionAttributesFactory = new RegionAttributesFactory<string, string>();
 
-      GIRegion region = CacheHelper.CreateRegion<string, string>(PeerRegionName,
+      CacheHelper.CreateRegion<string, string>(PeerRegionName,
         regionAttributesFactory.Create());
 
       CreateEntry(RegionNames[0], m_keys[1], m_vals[1]);

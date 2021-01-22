@@ -62,7 +62,7 @@ namespace Apache.Geode.Client.UnitTests
 
             CacheHelper.InitConfig("client_pdx.xml");
 
-            var region = CacheHelper.GetRegion<object, object>("DistRegionAck");
+            CacheHelper.GetRegion<object, object>("DistRegionAck");
 
             Close();
         }

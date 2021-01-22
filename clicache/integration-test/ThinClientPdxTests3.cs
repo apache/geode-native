@@ -114,7 +114,7 @@ namespace Apache.Geode.Client.UnitTests
 
       var pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypes3");
 
-      var ob = pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
+      pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
         new object[] {useWeakHashmap});
     }
 
@@ -135,7 +135,7 @@ namespace Apache.Geode.Client.UnitTests
       CacheHelper.DCache.TypeRegistry.RegisterPdxType(registerPdxTypeTwo3);
       var pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypes3");
 
-      var ob = pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
+      pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
         new object[] {useWeakHashmap});
     }
 
@@ -970,7 +970,7 @@ namespace Apache.Geode.Client.UnitTests
       var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
       for (var i = 0; i < nPdxPuts; i++)
       {
-        var ret = region0[i];
+        region0.Get(i);
       }
 
       checkLocalCache();
@@ -1046,7 +1046,7 @@ namespace Apache.Geode.Client.UnitTests
       Assert.Greater(entryFound, 8, "enteries should be in local cache");
       Assert.Greater(nBAPuts, entryFound + 10, "pdx object should have evicted");
 
-      var mem = (int) GC.GetTotalMemory(true);
+      GC.GetTotalMemory(true);
       // if(checkmem)
       //Assert.Less(mem, 200000000, "Memory should be less then 200 mb");
     }
@@ -1068,7 +1068,7 @@ namespace Apache.Geode.Client.UnitTests
       var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
       for (var i = 0; i < nBAPuts; i++)
       {
-        var ret = region0[i];
+        region0.Get(i);
       }
 
       checkLocalCacheBA(true);
@@ -1361,7 +1361,7 @@ namespace Apache.Geode.Client.UnitTests
       var np = pt.InvokeMember("PdxTypes3", BindingFlags.CreateInstance, null, null, null);
       region0[1] = np;
 
-      var pRet = region0[1];
+      region0.Get(1);
     }
 
     //this has v2 object
@@ -1375,7 +1375,7 @@ namespace Apache.Geode.Client.UnitTests
       var np = pt.InvokeMember("PdxTypes3", BindingFlags.CreateInstance, null, null, null);
 
       //get v1 ojbject ..
-      var pRet = (object) region0[1];
+      region0.Get(1);
 
       //now put v2 object
       region0[2] = np;
@@ -1460,7 +1460,7 @@ namespace Apache.Geode.Client.UnitTests
       var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
       try
       {
-        var ret = region0[2];
+        region0.Get(2);
         Assert.Fail("Expected exception.");
       }
       catch (Exception)

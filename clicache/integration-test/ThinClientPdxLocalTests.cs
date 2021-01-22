@@ -118,10 +118,10 @@ namespace Apache.Geode.Client.UnitTests
       var p1 = new PdxTypes1();
       var x = "";
       localregion.Add(p1, x);
-      var val = localregion[p1];
+      localregion.Get(p1);
       //object val = region0[p1];
-      val = localregion[p1];
-      val = localregion[p1];
+      localregion.Get(p1);
+      var val = localregion[p1];
       Assert.IsTrue(val.Equals(x), "value should be equal");
       Assert.IsTrue(localregion.Remove(new KeyValuePair<object, object>(p1, x)),
         "Result of remove should be true, as this value null exists locally.");
@@ -140,7 +140,7 @@ namespace Apache.Geode.Client.UnitTests
       localregion.Invalidate(p1);
       try
       {
-        var retVal = localregion[p1];
+        localregion.Get(p1);
       }
       catch (Client.KeyNotFoundException)
       {
@@ -191,8 +191,6 @@ namespace Apache.Geode.Client.UnitTests
       localregion[p4] = p1;
       Assert.IsTrue(localregion.Remove(p4), "Result of remove should be true, as this value exists locally.");
       Assert.IsFalse(localregion.ContainsKey(p4), "containsKey should be false");
-
-      var p5 = new PdxTypes5();
 
       //object cval = region0[p1]; //this will only work when caching is enable else throws KeyNotFoundException
 

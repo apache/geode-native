@@ -1529,7 +1529,7 @@ namespace Apache.Geode.Client.IntegrationTests
           {
             put = new UnsupportedTypes(true);
             region[i] = put;
-            var val = region[i];
+            region.Get(i);
             Console.WriteLine("Shouldn't be able to retrieve an unsupported type");
           });
 

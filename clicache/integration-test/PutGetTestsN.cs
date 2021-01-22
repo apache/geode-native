@@ -319,7 +319,7 @@ namespace Apache.Geode.Client.UnitTests
         // not really interested in results but loop through them neverthless
         Util.Log("DoRunQuery: obtained {0} results", results.Size);
         int numResults = 0;
-        foreach (object res in results)
+        foreach (object useless in results)
         {
           ++numResults;
         }
@@ -503,8 +503,8 @@ namespace Apache.Geode.Client.UnitTests
     {
       ICollection<UInt32> registeredKeyTypeIds =
         CacheableWrapperFactory.GetRegisteredKeyTypeIds();
-      ICollection<UInt32> registeredValueTypeIds =
-        CacheableWrapperFactory.GetRegisteredValueTypeIds();
+
+      CacheableWrapperFactory.GetRegisteredValueTypeIds();
 
       client1.Call(CacheableHelper.RegisterBuiltinsJavaHashCode, dtTime);
       client2.Call(CacheableHelper.RegisterBuiltinsJavaHashCode, dtTime);
@@ -514,7 +514,7 @@ namespace Apache.Geode.Client.UnitTests
         int numKeys;
         client1.Call(InitKeys, out numKeys, keyTypeId, NumKeys, KeySize);
         client2.Call(InitKeys, out numKeys, keyTypeId, NumKeys, KeySize);
-        Type keyType = CacheableWrapperFactory.GetTypeForId(keyTypeId);
+        CacheableWrapperFactory.GetTypeForId(keyTypeId);
         StartTimer();
         Util.Log("Running warmup task which verifies the puts.");
         DoHashCodePuts(client1, client2, regionName);

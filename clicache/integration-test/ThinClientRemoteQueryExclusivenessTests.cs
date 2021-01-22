@@ -92,7 +92,7 @@ namespace Apache.Geode.Client.UnitTests
 				var poolFail = CacheHelper.DCache.GetPoolManager().CreateFactory().Create("_TESTFAILPOOL_");
 				var qsFail = poolFail.GetQueryService();
         var qryFail = qsFail.NewQuery<object>("select distinct * from /" + QERegionName);
-        var resultsFail = qryFail.Execute();
+        qryFail.Execute();
         Assert.Fail("Since no endpoints defined, so exception expected");
       }
       catch (IllegalStateException ex)

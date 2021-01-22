@@ -121,7 +121,7 @@ namespace Apache.Geode.Client.UnitTests
 
       var pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypesIgnoreUnreadFields");
 
-      var ob = pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
+      pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
         new object[] {useWeakHashmap});
     }
 
@@ -161,7 +161,7 @@ namespace Apache.Geode.Client.UnitTests
 
       var pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypesIgnoreUnreadFields");
 
-      var ob = pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
+      pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
         new object[] {useWeakHashmap});
     }
 
@@ -260,8 +260,8 @@ namespace Apache.Geode.Client.UnitTests
 
       region0[1] = new PdxTypes1();
       region0[2] = new PdxType();
-      var ret = region0[1];
-      ret = region0[2];
+      region0.Get(1);
+      region0.Get(2);
       Util.Log("Put from pool-2 completed");
 
       var pdxIds = CacheHelper.DCache.GetPdxTypeRegistry().testGetNumberOfPdxIds();
@@ -807,7 +807,6 @@ namespace Apache.Geode.Client.UnitTests
       var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
       var ret = (IPdxInstance) region0["pdxput"];
-      var dPdxType = new PdxType();
 
       var pdxInstHashcode = ret.GetHashCode();
       Util.Log("pdxinstance hash code " + pdxInstHashcode);

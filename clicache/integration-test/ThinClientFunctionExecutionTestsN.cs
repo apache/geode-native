@@ -383,7 +383,7 @@ namespace Apache.Geode.Client.UnitTests
       //TODO::enable it once the StringArray conversion is fixed.
       //test withCollector
       MyResultCollector<object> myRC = new MyResultCollector<object>();
-      rc = exc.WithArgs<ArrayList>(args1).WithCollector(myRC).Execute(getFuncIName);
+      exc.WithArgs<ArrayList>(args1).WithCollector(myRC).Execute(getFuncIName);
       //executeFunctionResult = rc.GetResult();
       Util.Log("add result count= {0}.", myRC.GetAddResultCount());
       Util.Log("get result count= {0}.", myRC.GetGetResultCount());
@@ -443,7 +443,7 @@ namespace Apache.Geode.Client.UnitTests
      
       MyResultCollector<int> myRC = new MyResultCollector<int>();
       Apache.Geode.Client.Execution<int> exc = Client.FunctionService<int>.OnServers/*OnRegion<string, string>*/(pl/*region*/);
-      Client.IResultCollector<int> rc = exc.WithArgs<int>(args1).WithCollector(myRC).Execute("SingleStrGetFunction");
+      exc.WithArgs<int>(args1).WithCollector(myRC).Execute("SingleStrGetFunction");
       
       Util.Log("add result count= {0}.", myRC.GetAddResultCount());
       Util.Log("get result count= {0}.", myRC.GetGetResultCount());
@@ -494,7 +494,7 @@ namespace Apache.Geode.Client.UnitTests
 
       MyResultCollector<string> myRC = new MyResultCollector<string>();
       Apache.Geode.Client.Execution<string> exc = Client.FunctionService<string>.OnServers/*OnRegion<string, string>*/(pl/*region*/);
-      Client.IResultCollector<string> rc = exc.WithArgs<ArrayList>(args1).WithCollector(myRC).Execute("SingleStrGetFunction");
+      exc.WithArgs<ArrayList>(args1).WithCollector(myRC).Execute("SingleStrGetFunction");
       
       Util.Log("add result count= {0}.", myRC.GetAddResultCount());
       Util.Log("get result count= {0}.", myRC.GetGetResultCount());
@@ -864,7 +864,7 @@ namespace Apache.Geode.Client.UnitTests
 
       Execution<object> exc = Client.FunctionService<object>.OnRegion<object, object>(region);
 
-      IResultCollector<object> rc = exc.WithFilter<object>(filter).Execute(putFuncName);
+      exc.WithFilter<object>(filter).Execute(putFuncName);
 
       Util.Log("Executing ExecuteFunctionOnRegion on region for execKeys for arrList arguement done.");
 
@@ -896,7 +896,7 @@ namespace Apache.Geode.Client.UnitTests
         }
         Util.Log("filter count= {0}.", filter.Length);
 
-        object args = true;
+
 
         Execution<object> exc = Client.FunctionService<object>.OnRegion<object, object>(region);
 
@@ -973,7 +973,7 @@ namespace Apache.Geode.Client.UnitTests
         }
         Util.Log("filter count= {0}.", filter.Length);
 
-        object args = true;
+
 
         Execution<object> exc = Client.FunctionService<object>.OnRegion<object, object>(region);
 
@@ -1050,7 +1050,7 @@ namespace Apache.Geode.Client.UnitTests
         }
         Util.Log("filter count= {0}.", filter.Length);
 
-        object args = true;
+
 
         Execution<object> exc = Client.FunctionService<object>.OnRegion<object, object>(region);
 
@@ -1078,7 +1078,7 @@ namespace Apache.Geode.Client.UnitTests
 
         MyResultCollector<object> myRC1 = new MyResultCollector<object>();
         rc = exc.WithFilter<object>(filter).WithCollector(myRC1).Execute(FEOnRegionPrSHOP);
-        executeFunctionResult = rc.GetResult();
+        rc.GetResult();
         Util.Log("add result count= {0}.", myRC1.GetAddResultCount());
         Util.Log("get result count= {0}.", myRC1.GetGetResultCount());
         Util.Log("end result count= {0}.", myRC1.GetEndResultCount());
@@ -1097,7 +1097,7 @@ namespace Apache.Geode.Client.UnitTests
 
         MyResultCollector<object> myRC2 = new MyResultCollector<object>();
         rc = exc.WithFilter<object>(filter).WithCollector(myRC2).Execute(FEOnRegionPrSHOP_OptimizeForWrite);
-        executeFunctionResult = rc.GetResult();
+        rc.GetResult();
         Util.Log("add result count= {0}.", myRC2.GetAddResultCount());
         Util.Log("get result count= {0}.", myRC2.GetGetResultCount());
         Util.Log("end result count= {0}.", myRC2.GetEndResultCount());
@@ -1133,7 +1133,7 @@ namespace Apache.Geode.Client.UnitTests
       // w/o filter
       MyResultCollector<object> rC = new MyResultCollector<object>();
       IResultCollector<Object> Rcollector = exe.WithCollector(rC).Execute(FEOnRegionPrSHOP);
-      FunctionResult = Rcollector.GetResult();
+      Rcollector.GetResult();
       Util.Log("add result count= {0}.", rC.GetAddResultCount());
       Util.Log("get result count= {0}.", rC.GetGetResultCount());
       Util.Log("end result count= {0}.", rC.GetEndResultCount());

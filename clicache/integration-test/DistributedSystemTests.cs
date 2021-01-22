@@ -87,8 +87,8 @@ namespace Apache.Geode.Client.UnitTests
 
           try
           {
-            Region region1 = CacheHelper.CreatePlainRegion("R1");
-            Region region2 = CacheHelper.CreatePlainRegion("R2");
+            CacheHelper.CreatePlainRegion("R1");
+            CacheHelper.CreatePlainRegion("R2");
           }
           finally
           {

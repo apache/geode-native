@@ -91,7 +91,7 @@ namespace Apache.Geode.Client.IntegrationTests
         {
             var Gfsh = new GfshExecute(output);
 
-            var currentDir = Environment.CurrentDirectory;
+            var unused = Environment.CurrentDirectory;
 
             var server = Gfsh
                 .start()

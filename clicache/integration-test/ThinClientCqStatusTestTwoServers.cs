@@ -76,9 +76,9 @@ namespace Apache.Geode.Client.UnitTests
       /*ICacheableKey*/
       TKey key = ev.getKey();
 
-      CqOperation opType = ev.getQueryOperation();
+      ev.getQueryOperation();
       //CacheableString keyS = key as CacheableString;
-      string keyS = key.ToString(); //as string;
+      key.ToString();
       Portfolio pval = val as Portfolio;
       PortfolioPdx pPdxVal = val as PortfolioPdx;
       Assert.IsTrue((pPdxVal != null) || (pval != null));
@@ -204,11 +204,11 @@ namespace Apache.Geode.Client.UnitTests
       else
         m_eventCountBefore++;
 
-      TResult val = (TResult)ev.getNewValue();
+      ev.getNewValue();
       TKey key = ev.getKey();
 
-      CqOperation opType = ev.getQueryOperation();
-      string keyS = key.ToString(); //as string;      
+      ev.getQueryOperation();
+      key.ToString();
     }
     public virtual void OnError(CqEvent<TKey, TResult> ev)
     {

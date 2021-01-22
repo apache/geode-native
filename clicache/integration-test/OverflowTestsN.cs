@@ -536,7 +536,7 @@ namespace Apache.Geode.Client.UnitTests
         Properties<string, string> pconfig2 = attrs2.PersistenceProperties;
         Assert.IsNotNull(pconfig2, "Persistence properties should not be null for root2.");
         persistenceDir = (string)pconfig2.Find("PersistenceDirectory");
-        maxPageCount = (string)pconfig2.Find("MaxPageCount");
+        pconfig2.Find("MaxPageCount");
         maxPageCount = (string)pconfig2.Find("PageSize");
         Assert.IsNotNull(persistenceDir, "Persistence directory should not be null.");
         Assert.AreNotEqual(0, persistenceDir.Length, "Persistence directory should not be empty.");

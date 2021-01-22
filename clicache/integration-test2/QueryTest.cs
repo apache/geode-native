@@ -164,7 +164,7 @@ namespace Apache.Geode.Client.IntegrationTests
                 var order3 = new Position("PVTL", 101);
 
                 region.Put("order1", order1);
-                var Value = region["order1"];
+                region.Get("order1");
 
                 region.Put("order2", order2);
 

@@ -111,7 +111,7 @@ namespace Apache.Geode.Client.UnitTests
 
       var pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypes1");
 
-      var ob = pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
+      pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
         new object[] {useWeakHashmap});
       m_useWeakHashMap = useWeakHashmap;
     }
@@ -133,7 +133,7 @@ namespace Apache.Geode.Client.UnitTests
       CacheHelper.DCache.TypeRegistry.RegisterPdxType(registerPdxTypeTwo);
       var pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypes1");
 
-      var ob = pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
+      pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
         new object[] {useWeakHashmap});
       m_useWeakHashMap = useWeakHashmap;
     }
@@ -287,7 +287,7 @@ namespace Apache.Geode.Client.UnitTests
 
       var pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypes2");
 
-      var ob = pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
+      pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
         new object[] {useWeakHashmap});
     }
 
@@ -308,7 +308,7 @@ namespace Apache.Geode.Client.UnitTests
       CacheHelper.DCache.TypeRegistry.RegisterPdxType(registerPdxTypeTwo2);
       var pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypes2");
 
-      var ob = pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
+      pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
         new object[] {useWeakHashmap});
     }
 
@@ -334,7 +334,7 @@ namespace Apache.Geode.Client.UnitTests
 
       var pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypes3");
 
-      var ob = pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
+      pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
         new object[] {useWeakHashmap});
     }
 
@@ -355,7 +355,7 @@ namespace Apache.Geode.Client.UnitTests
       CacheHelper.DCache.TypeRegistry.RegisterPdxType(registerPdxTypeTwo3);
       var pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypes3");
 
-      var ob = pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
+      pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
         new object[] {useWeakHashmap});
     }
 
@@ -381,7 +381,7 @@ namespace Apache.Geode.Client.UnitTests
 
       var pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypesR2");
 
-      var ob = pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
+      pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
         new object[] {useWeakHashmap});
     }
 
@@ -403,7 +403,7 @@ namespace Apache.Geode.Client.UnitTests
 
       var pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypesR2");
 
-      var ob = pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
+      pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
         new object[] {useWeakHashmap});
     }
 
@@ -476,7 +476,7 @@ namespace Apache.Geode.Client.UnitTests
       m_pdxVesionOneAsm = Assembly.LoadFrom("PdxVersion1Lib.dll");
 
 
-      var pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.TestDiffTypePdxS");
+      m_pdxVesionOneAsm.GetType("PdxVersionTests.TestDiffTypePdxS");
 
       //object ob = pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null, new object[] { useWeakHashmap });
       m_useWeakHashMap = useWeakHashmap;
@@ -519,7 +519,7 @@ namespace Apache.Geode.Client.UnitTests
       var isKNFE = false;
       try
       {
-        pRet = region0.GetLocalView()[key];
+        region0.GetLocalView().Get(key);
       }
       catch (Client.KeyNotFoundException)
       {
@@ -541,7 +541,7 @@ namespace Apache.Geode.Client.UnitTests
       m_pdxVesionTwoAsm = Assembly.LoadFrom("PdxVersion2Lib.dll");
 
 
-      var pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.TestDiffTypePdxS");
+      m_pdxVesionTwoAsm.GetType("PdxVersionTests.TestDiffTypePdxS");
 
       //object ob = pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null, new object[] { useWeakHashmap });
       m_useWeakHashMap = useWeakHashmap;
@@ -621,7 +621,7 @@ namespace Apache.Geode.Client.UnitTests
       var gotexcep = false;
       try
       {
-        var r = region0.GetLocalView()[key];
+        region0.GetLocalView().Get(key);
       }
       catch (Exception)
       {
@@ -722,7 +722,7 @@ namespace Apache.Geode.Client.UnitTests
 
       var pt = m_pdxVesionOneAsm.GetType("PdxVersionTests.PdxTypesR1");
 
-      var ob = pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
+      pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
         new object[] {useWeakHashmap});
     }
 
@@ -744,7 +744,7 @@ namespace Apache.Geode.Client.UnitTests
 
       var pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.PdxTypesR1");
 
-      var ob = pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
+      pt.InvokeMember("Reset", BindingFlags.Default | BindingFlags.InvokeMethod, null, null,
         new object[] {useWeakHashmap});
     }
 
@@ -1067,11 +1067,11 @@ namespace Apache.Geode.Client.UnitTests
       region0[1] = pRet;
 
       pt = m_pdxVesionTwoAsm.GetType("PdxVersionTests.Pdx1");
-      var pdx1 = pt.InvokeMember("Pdx1", BindingFlags.CreateInstance, null, null, null);
+      pt.InvokeMember("Pdx1", BindingFlags.CreateInstance, null, null, null);
 
       for (var i = 1000; i < 1010; i++)
       {
-        var ret = region0[i];
+        region0.Get(i);
       }
     }
 

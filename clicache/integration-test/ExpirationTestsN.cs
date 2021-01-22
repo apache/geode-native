@@ -133,7 +133,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       Do1Put();
       Thread.Sleep(sleepSecs * 1000);
-      object val = m_region[m_key];
+      m_region.Get(m_key);
     }
 
     private void PutNKeysNoExpire(int numKeys, int sleepSecs)
@@ -332,7 +332,7 @@ namespace Apache.Geode.Client.UnitTests
       m_regionName = "RK4";
       SetupRegion(0, 4, 0, 7);
       PutNKeysNoExpire(1, 3);
-      object val = m_region[m_key];
+      m_region.Get(m_key);
       CheckRegion(false, 5);
       CheckRegion(true, 5);
     }

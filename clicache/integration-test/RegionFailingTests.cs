@@ -119,8 +119,6 @@ namespace Apache.Geode.Client.UnitTests
       CacheHelper.StartJavaServerWithLocators(1, "GFECS1", 1);
       Util.Log("Cacheserver 1 started.");
 
-      var putGetTest = new PutGetTests();
-
       _client1.Call(InitializeAppDomain);
       var dtTime = DateTime.Now.Ticks;
       _client1.Call(CreateTCRegions_Pool_AD, RegionNames,

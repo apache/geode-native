@@ -103,7 +103,7 @@ namespace Apache.Geode.Client.IntegrationTests
         {
             Debug.WriteLine("PdxCqListener::OnEvent called");
             var val = ev.getNewValue() as MyOrder;
-            TKey key = ev.getKey();
+            ev.getKey();
 
             switch (ev.getQueryOperation())
             {
@@ -142,7 +142,7 @@ namespace Apache.Geode.Client.IntegrationTests
         {
             Debug.WriteLine("CqListener::OnEvent called");
             var val = ev.getNewValue() as Position;
-            TKey key = ev.getKey();
+            ev.getKey();
 
             switch (ev.getQueryOperation())
             {
@@ -304,7 +304,7 @@ namespace Apache.Geode.Client.IntegrationTests
                 var order3 = new Position("PVTL", 101);
 
                 region.Put("order1", order1);
-                var Value = region["order1"];
+                region.Get("order1");
 
                 region.Put("order2", order2);
                 Assert.True(cqListener.CreatedEvent.WaitOne(waitInterval_), "Didn't receive expected CREATE event");

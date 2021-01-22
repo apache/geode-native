@@ -146,7 +146,7 @@ namespace Apache.Geode.Client.UnitTests
       Util.Log("GetOp started");
       o_region = new RegionOperation(RegionName);
       Region r = o_region.Region;
-      Object val  = r[key];
+      r.Get(key);
       Thread.Sleep(1000); // let the events reach at other end.
       Util.Log("GetOp finished");
     }

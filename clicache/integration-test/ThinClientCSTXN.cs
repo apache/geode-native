@@ -165,8 +165,7 @@ namespace Apache.Geode.Client.UnitTests
       else
         m_listener = null;
 
-      Region region = null;
-      region = CacheHelper.CreateTCRegion_Pool<object, object>(regionName, false, false,
+      CacheHelper.CreateTCRegion_Pool<object, object>(regionName, false, false,
         m_listener, locators, "__TESTPOOL1_", false);
 
     }
@@ -787,11 +786,11 @@ namespace Apache.Geode.Client.UnitTests
       for (int i = 0; i < 10; i++)
       {
         o_region1.Region[i] = i + 1;
-        object ret = o_region1.Region[i];
+        o_region1.Region.Get(i);
         o_region1.Region[i + 10] = i + 10;
-        ret = o_region1.Region[i + 10];
+        o_region1.Region.Get(i + 10);
         o_region1.Region[i + 20] = i + 20;
-        ret = o_region1.Region[i + 20];
+        o_region1.Region.Get(i + 20);
       }
       CacheHelper.CSTXManager.Commit();
       Util.Log("Region keys count after commit for non-pdx keys = {0} ", o_region1.Region.Keys.Count);

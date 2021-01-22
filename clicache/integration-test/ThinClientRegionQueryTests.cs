@@ -197,7 +197,7 @@ namespace Apache.Geode.Client.UnitTests
 
       try
       {
-        ISelectResults<object> results = region.Query<object>("");
+        region.Query<object>("");
         Assert.Fail("Expected IllegalArgumentException exception for empty predicate");
       }
       catch (IllegalArgumentException ex)
@@ -209,7 +209,7 @@ namespace Apache.Geode.Client.UnitTests
 
       try
       {
-        ISelectResults<object> results = region.Query<object>(QueryStatics.RegionQueries[0].Query, TimeSpan.FromSeconds(2200000));
+        region.Query<object>(QueryStatics.RegionQueries[0].Query, TimeSpan.FromSeconds(2200000));
         Assert.Fail("Expected IllegalArgumentException exception for invalid timeout");
       }
       catch (IllegalArgumentException ex)
@@ -221,7 +221,7 @@ namespace Apache.Geode.Client.UnitTests
 
       try
       {
-        ISelectResults<object> results = region.Query<object>("bad predicate");
+        region.Query<object>("bad predicate");
         Assert.Fail("Expected QueryException exception for wrong predicate");
       }
       catch (QueryException ex)
@@ -268,7 +268,7 @@ namespace Apache.Geode.Client.UnitTests
       Assert.IsFalse(ErrorOccurred, "One or more query validation errors occurred.");
       try
       {
-        bool existsValue = region.ExistsValue("");
+        region.ExistsValue("");
         Assert.Fail("Expected IllegalArgumentException exception for empty predicate");
       }
       catch (IllegalArgumentException ex)
@@ -280,7 +280,7 @@ namespace Apache.Geode.Client.UnitTests
 
       try
       {
-        bool existsValue = region.ExistsValue(QueryStatics.RegionQueries[0].Query, TimeSpan.FromSeconds(2200000));
+        region.ExistsValue(QueryStatics.RegionQueries[0].Query, TimeSpan.FromSeconds(2200000));
         Assert.Fail("Expected IllegalArgumentException exception for invalid timeout");
       }
       catch (IllegalArgumentException ex)
@@ -292,7 +292,7 @@ namespace Apache.Geode.Client.UnitTests
 
       try
       {
-        bool existsValue = region.ExistsValue("bad predicate");
+        region.ExistsValue("bad predicate");
         Assert.Fail("Expected QueryException exception for wrong predicate");
       }
       catch (QueryException ex)
@@ -323,7 +323,7 @@ namespace Apache.Geode.Client.UnitTests
 
         try
         {
-          Object result = region.SelectValue(qrystr.Query);
+          region.SelectValue(qrystr.Query);
 
           if (!(QueryStatics.RegionQueryRowCounts[qryIdx] == 0 ||
             QueryStatics.RegionQueryRowCounts[qryIdx] == 1))
@@ -360,7 +360,7 @@ namespace Apache.Geode.Client.UnitTests
 
       try
       {
-        Object result = region.SelectValue("");
+        region.SelectValue("");
         Assert.Fail("Expected IllegalArgumentException exception for empty predicate");
       }
       catch (IllegalArgumentException ex)
@@ -372,7 +372,7 @@ namespace Apache.Geode.Client.UnitTests
 
       try
       {
-        Object result = region.SelectValue(QueryStatics.RegionQueries[0].Query, TimeSpan.FromSeconds(2200000));
+        region.SelectValue(QueryStatics.RegionQueries[0].Query, TimeSpan.FromSeconds(2200000));
         Assert.Fail("Expected IllegalArgumentException exception for invalid timeout");
       }
       catch (IllegalArgumentException ex)
@@ -383,7 +383,7 @@ namespace Apache.Geode.Client.UnitTests
 
       try
       {
-        Object result = region.SelectValue("bad predicate");
+        region.SelectValue("bad predicate");
         Assert.Fail("Expected QueryException exception for wrong predicate");
       }
       catch (QueryException ex)
@@ -413,7 +413,7 @@ namespace Apache.Geode.Client.UnitTests
 
         try
         {
-          ISelectResults<object> results = region.Query<object>(qrystr.Query);
+          region.Query<object>(qrystr.Query);
 
           Util.Log("Query # {0} expected exception did not occur", qryIdx);
           ErrorOccurred = true;

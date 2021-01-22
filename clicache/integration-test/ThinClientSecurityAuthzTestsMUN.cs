@@ -568,7 +568,7 @@ namespace Apache.Geode.Client.UnitTests
         Properties<string, string> createCredentials = authzGen.GetAllowedCredentials(
           new OperationCode[] { OperationCode.Put },
           new string[] { RegionName }, 1);
-        javaProps = cGen.JavaProperties;
+        var unused = cGen.JavaProperties;
         Util.Log("AllowPutsGets: For first client PUT credentials: " +
           createCredentials);
         m_client1.Call(SecurityTestUtil.CreateClientMU, RegionName,
@@ -578,7 +578,7 @@ namespace Apache.Geode.Client.UnitTests
         Properties<string, string> getCredentials = authzGen.GetAllowedCredentials(
           new OperationCode[] { OperationCode.Get },
           new string[] { RegionName }, 2);
-        javaProps = cGen.JavaProperties;
+        unused = cGen.JavaProperties;
         Util.Log("AllowPutsGets: For second client GET credentials: " +
           getCredentials);
         m_client2.Call(SecurityTestUtil.CreateClientMU, RegionName,
@@ -630,14 +630,14 @@ namespace Apache.Geode.Client.UnitTests
 
         // Check that we indeed can obtain valid credentials not allowed to do
         // gets
-        Properties<string, string> createCredentials = authzGen.GetAllowedCredentials(
+        authzGen.GetAllowedCredentials(
           new OperationCode[] { OperationCode.Put },
           new string[] { RegionName }, 1);
-        Properties<string, string> createJavaProps = cGen.JavaProperties;
-        Properties<string, string> getCredentials = authzGen.GetDisallowedCredentials(
+        var unused = cGen.JavaProperties;
+        var getCredentials = authzGen.GetDisallowedCredentials(
           new OperationCode[] { OperationCode.Get },
           new string[] { RegionName }, 2);
-        Properties<string, string> getJavaProps = cGen.JavaProperties;
+        unused = cGen.JavaProperties;
         if (getCredentials == null || getCredentials.Size == 0)
         {
           Util.Log("DisallowPutsGets: Unable to obtain valid credentials " +
@@ -657,10 +657,10 @@ namespace Apache.Geode.Client.UnitTests
         Util.Log("Cacheserver 2 started.");
 
         // Start client1 with valid CREATE credentials
-        createCredentials = authzGen.GetAllowedCredentials(
+        var createCredentials = authzGen.GetAllowedCredentials(
             new OperationCode[] { OperationCode.Put },
             new string[] { RegionName }, 1);
-        javaProps = cGen.JavaProperties;
+        unused = cGen.JavaProperties;
         Util.Log("DisallowPutsGets: For first client PUT credentials: " +
           createCredentials);
         m_client1.Call(SecurityTestUtil.CreateClientMU, RegionName,
@@ -670,7 +670,7 @@ namespace Apache.Geode.Client.UnitTests
         getCredentials = authzGen.GetDisallowedCredentials(
             new OperationCode[] { OperationCode.Get },
             new string[] { RegionName }, 2);
-        javaProps = cGen.JavaProperties;
+        unused = cGen.JavaProperties;
         Util.Log("DisallowPutsGets: For second client invalid GET " +
           "credentials: " + getCredentials);
         m_client2.Call(SecurityTestUtil.CreateClientMU, RegionName,
@@ -686,7 +686,7 @@ namespace Apache.Geode.Client.UnitTests
         getCredentials = authzGen.GetAllowedCredentials(
             new OperationCode[] { OperationCode.Get },
             new string[] { RegionName }, 5);
-        javaProps = cGen.JavaProperties;
+         unused = cGen.JavaProperties;
         Util.Log("DisallowPutsGets: For second client valid GET " +
           "credentials: " + getCredentials);
         m_client2.Call(SecurityTestUtil.CreateClientMU, RegionName,
@@ -746,7 +746,7 @@ namespace Apache.Geode.Client.UnitTests
         Properties<string, string> createCredentials = authzGen.GetAllowedCredentials(
             new OperationCode[] { OperationCode.Put },
             new string[] { RegionName }, 3);
-        javaProps = cGen.JavaProperties;
+        var unused = cGen.JavaProperties;
         Util.Log("InvalidAccessor: For first client PUT credentials: " +
           createCredentials);
         m_client1.Call(SecurityTestUtil.CreateClientMU, RegionName,
@@ -960,7 +960,7 @@ namespace Apache.Geode.Client.UnitTests
           Properties<string, string> createCredentials = authzGen.GetDisallowedCredentials(
             new OperationCode[] { OperationCode.Put },
             new string[] { RegionName }, 1);
-          javaProps = cGen.JavaProperties;
+          var unused = cGen.JavaProperties;
           Util.Log("DisallowPuts: For first client PUT credentials: " +
             createCredentials);
           m_client1.Call(SecurityTestUtil.CreateClientR0, RegionName,

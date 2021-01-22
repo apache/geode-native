@@ -219,7 +219,7 @@ namespace Apache.Geode.Client.UnitTests
         {
           try
           {
-            int pendingEventCount = pool.PendingEventCount;
+            var unused = pool.PendingEventCount;
             Util.Log("PendingEventCount Should have got exception ");
             Assert.Fail("PendingEventCount Should have got exception");
           }

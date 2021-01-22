@@ -94,7 +94,7 @@ namespace Apache.Geode.Client.UnitTests
 				var poolFail = CacheHelper.DCache.GetPoolManager().CreateFactory().Create("_TESTFAILPOOL_");
 				var qsFail = poolFail.GetQueryService();
         var qryFail = qsFail.NewQuery<object>("select distinct * from /" + QERegionName);
-        var resultsFail = qryFail.Execute();
+        qryFail.Execute();
         Assert.Fail("Since no endpoints defined, so exception expected");
       }
       catch (IllegalStateException ex)
@@ -476,7 +476,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       bool ErrorOccurred = false;
 
-      QueryHelper<object, object> qh = QueryHelper<object, object>.GetHelper(CacheHelper.DCache);
+      QueryHelper<object, object>.GetHelper(CacheHelper.DCache);
 
       var qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService();
 
@@ -496,7 +496,7 @@ namespace Apache.Geode.Client.UnitTests
 
         try
         {
-          ISelectResults<object> results = query.Execute();
+          query.Execute();
 
           Util.Log("Query exception did not occur for index {0}.", qryIdx);
           ErrorOccurred = true;
@@ -522,7 +522,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       bool ErrorOccurred = false;
 
-      QueryHelper<object, object> qh = QueryHelper<object, object>.GetHelper(CacheHelper.DCache);
+      QueryHelper<object, object>.GetHelper(CacheHelper.DCache);
 
       var qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService();
 
@@ -563,7 +563,7 @@ namespace Apache.Geode.Client.UnitTests
 
         try
         {
-          ISelectResults<object> results = query.Execute(paramList);
+          query.Execute(paramList);
 
           Util.Log("Query exception did not occur for index {0}.", qryIdx);
           ErrorOccurred = true;
@@ -751,7 +751,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       bool ErrorOccurred = false;
 
-      QueryHelper<object, object> qh = QueryHelper<object, object>.GetHelper(CacheHelper.DCache);
+      QueryHelper<object, object>.GetHelper(CacheHelper.DCache);
 
       var qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService();
 
@@ -771,7 +771,7 @@ namespace Apache.Geode.Client.UnitTests
 
         try
         {
-          ISelectResults<object> results = query.Execute();
+          query.Execute();
 
           Util.Log("Query exception did not occur for index {0}.", qryIdx);
           ErrorOccurred = true;
@@ -797,7 +797,7 @@ namespace Apache.Geode.Client.UnitTests
     {
       bool ErrorOccurred = false;
 
-      QueryHelper<object, object> qh = QueryHelper<object, object>.GetHelper(CacheHelper.DCache);
+      QueryHelper<object, object>.GetHelper(CacheHelper.DCache);
 
       var qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService();
 
@@ -839,7 +839,7 @@ namespace Apache.Geode.Client.UnitTests
 
         try
         {
-          ISelectResults<object> results = query.Execute(paramList);
+          query.Execute(paramList);
 
           Util.Log("Query exception did not occur for index {0}.", qryIdx);
           ErrorOccurred = true;
@@ -988,7 +988,7 @@ namespace Apache.Geode.Client.UnitTests
 
     public void StepThreeQT()
     {
-      QueryHelper<object, object> qh = QueryHelper<object, object>.GetHelper(CacheHelper.DCache);
+      QueryHelper<object, object>.GetHelper(CacheHelper.DCache);
       var qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService();
       Util.Log("query " + QueryStatics.ResultSetQueries[34].Query);
       Query<object> query = qs.NewQuery<object>(QueryStatics.ResultSetQueries[34].Query);
@@ -1009,7 +1009,7 @@ namespace Apache.Geode.Client.UnitTests
 
     public void StepFourQT()
     {
-      QueryHelper<object, object> qh = QueryHelper<object, object>.GetHelper(CacheHelper.DCache);
+      QueryHelper<object, object>.GetHelper(CacheHelper.DCache);
       var qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService();
 
       Query<object> query = qs.NewQuery<object>(QueryStatics.ResultSetQueries[35].Query);
@@ -1029,7 +1029,7 @@ namespace Apache.Geode.Client.UnitTests
 
     public void StepFiveQT()
     {
-      QueryHelper<object, object> qh = QueryHelper<object, object>.GetHelper(CacheHelper.DCache);
+      QueryHelper<object, object>.GetHelper(CacheHelper.DCache);
       var qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService();
 
       Query<object> query = qs.NewQuery<object>(QueryStatics.StructSetQueries[17].Query);
@@ -1050,7 +1050,7 @@ namespace Apache.Geode.Client.UnitTests
 
     public void StepSixQT()
     {
-      QueryHelper<object, object> qh = QueryHelper<object, object>.GetHelper(CacheHelper.DCache);
+      QueryHelper<object, object>.GetHelper(CacheHelper.DCache);
       var qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService();
       Query<object> query = qs.NewQuery<object>(QueryStatics.StructSetQueries[17].Query);
 
@@ -1069,7 +1069,7 @@ namespace Apache.Geode.Client.UnitTests
 
     public void StepThreePQT()
     {
-      QueryHelper<object, object> qh = QueryHelper<object, object>.GetHelper(CacheHelper.DCache);
+      QueryHelper<object, object>.GetHelper(CacheHelper.DCache);
       var qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService();
 
       Query<object> query = qs.NewQuery<object>(QueryStatics.StructSetParamQueries[5].Query);
@@ -1111,7 +1111,7 @@ namespace Apache.Geode.Client.UnitTests
 
     public void StepFourPQT()
     {
-      QueryHelper<object, object> qh = QueryHelper<object, object>.GetHelper(CacheHelper.DCache);
+      QueryHelper<object, object>.GetHelper(CacheHelper.DCache);
       var qs = CacheHelper.DCache.GetPoolManager().Find("__TESTPOOL1_").GetQueryService();
 
       Query<object> query = qs.NewQuery<object>(QueryStatics.StructSetParamQueries[5].Query);
@@ -1195,7 +1195,7 @@ namespace Apache.Geode.Client.UnitTests
 
       try
       {
-        ISelectResults<object> results = region.Query<object>("");
+        region.Query<object>("");
         Assert.Fail("Expected IllegalArgumentException exception for empty predicate");
       }
       catch (IllegalArgumentException ex)
@@ -1207,7 +1207,7 @@ namespace Apache.Geode.Client.UnitTests
 
       try
       {
-        ISelectResults<object> results = region.Query<object>(QueryStatics.RegionQueries[0].Query, TimeSpan.FromSeconds(2200000));
+        region.Query<object>(QueryStatics.RegionQueries[0].Query, TimeSpan.FromSeconds(2200000));
         Assert.Fail("Expected IllegalArgumentException exception for invalid timeout");
       }
       catch (IllegalArgumentException ex)
@@ -1219,7 +1219,7 @@ namespace Apache.Geode.Client.UnitTests
 
       try
       {
-        ISelectResults<object> results = region.Query<object>("bad predicate");
+        region.Query<object>("bad predicate");
         Assert.Fail("Expected QueryException exception for wrong predicate");
       }
       catch (QueryException ex)
@@ -1266,7 +1266,7 @@ namespace Apache.Geode.Client.UnitTests
       Assert.IsFalse(ErrorOccurred, "One or more query validation errors occurred.");
       try
       {
-        bool existsValue = region.ExistsValue("");
+        region.ExistsValue("");
         Assert.Fail("Expected IllegalArgumentException exception for empty predicate");
       }
       catch (IllegalArgumentException ex)
@@ -1278,7 +1278,7 @@ namespace Apache.Geode.Client.UnitTests
 
       try
       {
-        bool existsValue = region.ExistsValue(QueryStatics.RegionQueries[0].Query, TimeSpan.FromSeconds(2200000));
+        region.ExistsValue(QueryStatics.RegionQueries[0].Query, TimeSpan.FromSeconds(2200000));
         Assert.Fail("Expected IllegalArgumentException exception for invalid timeout");
       }
       catch (IllegalArgumentException ex)
@@ -1290,7 +1290,7 @@ namespace Apache.Geode.Client.UnitTests
 
       try
       {
-        bool existsValue = region.ExistsValue("bad predicate");
+        region.ExistsValue("bad predicate");
         Assert.Fail("Expected QueryException exception for wrong predicate");
       }
       catch (QueryException ex)
@@ -1321,7 +1321,7 @@ namespace Apache.Geode.Client.UnitTests
 
         try
         {
-          Object result = region.SelectValue(qrystr.Query);
+          region.SelectValue(qrystr.Query);
 
           if (!(QueryStatics.RegionQueryRowCounts[qryIdx] == 0 ||
             QueryStatics.RegionQueryRowCounts[qryIdx] == 1))
@@ -1358,7 +1358,7 @@ namespace Apache.Geode.Client.UnitTests
 
       try
       {
-        Object result = region.SelectValue("");
+        region.SelectValue("");
         Assert.Fail("Expected IllegalArgumentException exception for empty predicate");
       }
       catch (IllegalArgumentException ex)
@@ -1370,7 +1370,7 @@ namespace Apache.Geode.Client.UnitTests
 
       try
       {
-        Object result = region.SelectValue(QueryStatics.RegionQueries[0].Query, TimeSpan.FromSeconds(2200000));
+        region.SelectValue(QueryStatics.RegionQueries[0].Query, TimeSpan.FromSeconds(2200000));
         Assert.Fail("Expected IllegalArgumentException exception for invalid timeout");
       }
       catch (IllegalArgumentException ex)
@@ -1381,7 +1381,7 @@ namespace Apache.Geode.Client.UnitTests
 
       try
       {
-        Object result = region.SelectValue("bad predicate");
+        region.SelectValue("bad predicate");
         Assert.Fail("Expected QueryException exception for wrong predicate");
       }
       catch (QueryException ex)
@@ -1411,7 +1411,7 @@ namespace Apache.Geode.Client.UnitTests
 
         try
         {
-          ISelectResults<object> results = region.Query<object>(qrystr.Query);
+          region.Query<object>(qrystr.Query);
 
           Util.Log("Query # {0} expected exception did not occur", qryIdx);
           ErrorOccurred = true;

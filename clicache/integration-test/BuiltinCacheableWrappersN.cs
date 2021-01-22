@@ -635,7 +635,7 @@ namespace Apache.Geode.Client.UnitTests
 
     public override void InitRandomValue(int maxSize)
     {
-      int rnd = Util.Rand(int.MaxValue);
+
       //DateTime value = DateTime.Now.AddMilliseconds(rnd % 2 == 0 ? rnd : -rnd);
       DateTime value = new DateTime(CacheableHelper.ConstantDateTime);
       m_cacheableObject = value;
@@ -2241,7 +2241,7 @@ namespace Apache.Geode.Client.UnitTests
 
     public override uint GetChecksum(object cacheableObject)
     {
-      CacheableUndefined value = cacheableObject as CacheableUndefined;
+
       // TODO: [sumedh] server sends back null; check this
       //Assert.IsNotNull(value, "GetChecksum: Null object.");
 

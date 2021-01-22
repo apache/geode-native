@@ -598,7 +598,7 @@ namespace Apache.Geode.Client.UnitTests
       foreach (UInt32 keyTypeId in registeredKeyTypeIds)
       {
         int numKeys;
-        numKeys = m_putGetTests_forFirstAppDomain.InitKeys(keyTypeId, PutGetTests.NumKeys, PutGetTests.KeySize);
+        m_putGetTests_forFirstAppDomain.InitKeys(keyTypeId, PutGetTests.NumKeys, PutGetTests.KeySize);
         numKeys = m_putGetTests_forSecondAppDomain.InitKeys(keyTypeId, PutGetTests.NumKeys, PutGetTests.KeySize);
         Type keyType = CacheableWrapperFactory.GetTypeForId(keyTypeId);
 
@@ -1281,7 +1281,7 @@ namespace Apache.Geode.Client.UnitTests
       // Try putting using Item_Set, an entry in region with key as null, should get IllegalArgumentException.
       try
       {
-        Object val = region[NullKey];//null
+        region.Get(NullKey);
         Assert.Fail("Should have got IllegalArgumentException");
       }
       catch (IllegalArgumentException)
@@ -1317,7 +1317,7 @@ namespace Apache.Geode.Client.UnitTests
 
       try
       {
-        Object val = region[1];
+        region.Get(1);
         Assert.Fail("Should have got KeyNotFoundException");
       }
       catch (Apache.Geode.Client.KeyNotFoundException ex)
@@ -1330,7 +1330,7 @@ namespace Apache.Geode.Client.UnitTests
       region.Invalidate(1);
       try
       {
-        Object val = region[1];
+        region.Get(1);
         if (!isRemoteInstance)
         {
           Assert.Fail("Should have got KeyNotFoundException");
@@ -1345,7 +1345,7 @@ namespace Apache.Geode.Client.UnitTests
       //Remove an entry and then do a get on to it, should throw KeyNotFoundException.
       try
       {
-        Object val = region[1];
+        region.Get(1);
         Assert.Fail("Should have got KeyNotFoundException");
       }
       catch (Apache.Geode.Client.KeyNotFoundException ex)
@@ -1659,7 +1659,7 @@ namespace Apache.Geode.Client.UnitTests
     public virtual void Idictionary_CopyTo_Step<TKey, TValue>(IRegion<TKey, TValue> region, TypesClass type, int KeyId, int ValueId)
     {
       Util.Log("Idictionary_CopyTo_Step KeyId = {0} , valueId = {1} ", KeyId, ValueId);
-      ICollection<KeyValuePair<TKey, TValue>> IcollectionRegion = region;
+
 
       // Create an destination array of size 5 
       KeyValuePair<TKey, TValue>[] DestinationArray = new KeyValuePair<TKey, TValue>[5];
@@ -1733,7 +1733,7 @@ namespace Apache.Geode.Client.UnitTests
     public virtual void Idictionary_Array_CopyTo_Step<TKey, TValue>(IRegion<TKey, TValue> region, TypesClass type, int KeyId, int ValueId)
     {
       Util.Log("Idictionary_Array_CopyTo_Step KeyId = {0} , valueId = {1} ", KeyId, ValueId);
-      ICollection<KeyValuePair<TKey, TValue>> IcollectionRegion = region;
+
 
       // Create an destination array of size 5 
       KeyValuePair<TKey, TValue>[] DestinationArray = new KeyValuePair<TKey, TValue>[5];
@@ -1860,7 +1860,7 @@ namespace Apache.Geode.Client.UnitTests
       // Chk before doing generic Enumerator's MoveNext what is the value at Current and that exception is thrown.
       try
       {
-        Object r = RegionGenericEnumerator.Current;
+        var unused = RegionGenericEnumerator.Current;
         Assert.Fail("Should have got InvalidOperationException");
       }
       catch (InvalidOperationException ex)
@@ -1871,7 +1871,7 @@ namespace Apache.Geode.Client.UnitTests
       // Chk before doing non-generic Enumerator's MoveNext what is the value at Current and that exception is thrown.
       try
       {
-        Object r = RegionEnumerator.Current;
+        var unused = RegionEnumerator.Current;
         Assert.Fail("Should have got InvalidOperationException");
       }
       catch (InvalidOperationException ex)
@@ -1884,7 +1884,7 @@ namespace Apache.Geode.Client.UnitTests
       RegionGenericEnumerator.Reset();
       try
       {
-        Object r = RegionGenericEnumerator.Current;
+        var unused = RegionGenericEnumerator.Current;
         Assert.Fail("Should have got InvalidOperationException");
       }
       catch (InvalidOperationException ex)
@@ -1896,7 +1896,7 @@ namespace Apache.Geode.Client.UnitTests
       RegionEnumerator.Reset();
       try
       {
-        Object r = RegionEnumerator.Current;
+        var unused = RegionEnumerator.Current;
         Assert.Fail("Should have got InvalidOperationException");
       }
       catch (InvalidOperationException ex)
@@ -1964,7 +1964,7 @@ namespace Apache.Geode.Client.UnitTests
       }
 
       Assert.IsTrue(5 == RegionEntryCount, "Region entry count does not match.");
-      RegionEntryCount = 0;
+
       Util.Log("Idictionary_GetEnumerator_Step 5 complete.");
 
       // Chk after doing Generic Enumerator's MoveNext to end what is the value at Current and that exception is thrown.      
@@ -1972,7 +1972,7 @@ namespace Apache.Geode.Client.UnitTests
 
       try
       {
-        Object r = RegionGenericEnumerator.Current;
+        var unused = RegionGenericEnumerator.Current;
         Assert.Fail("Should have got InvalidOperationException");
       }
       catch (InvalidOperationException ex)
@@ -1983,7 +1983,7 @@ namespace Apache.Geode.Client.UnitTests
       RegionEnumerator.MoveNext();
       try
       {
-        Object r = RegionEnumerator.Current;
+        var unused = RegionEnumerator.Current;
         Assert.Fail("Should have got InvalidOperationException");
       }
       catch (InvalidOperationException ex)
@@ -2008,7 +2008,7 @@ namespace Apache.Geode.Client.UnitTests
       // Chk before doing generic Enumerator's MoveNext what is the value at Current and that exception is thrown.
       try
       {
-        Object r = RegionGenericEnumerator.Current;
+        var unused = RegionGenericEnumerator.Current;
         Assert.Fail("Should have got InvalidOperationException");
       }
       catch (InvalidOperationException ex)
@@ -2019,7 +2019,7 @@ namespace Apache.Geode.Client.UnitTests
       // Chk before doing non-generic Enumerator's MoveNext what is the value at Current and that exception is thrown.
       try
       {
-        Object r = RegionEnumerator.Current;
+        var unused = RegionEnumerator.Current;
         Assert.Fail("Should have got InvalidOperationException");
       }
       catch (InvalidOperationException ex)
@@ -2032,7 +2032,7 @@ namespace Apache.Geode.Client.UnitTests
       RegionGenericEnumerator.Reset();
       try
       {
-        Object r = RegionGenericEnumerator.Current;
+        var unused = RegionGenericEnumerator.Current;
         Assert.Fail("Should have got InvalidOperationException");
       }
       catch (InvalidOperationException ex)
@@ -2044,7 +2044,7 @@ namespace Apache.Geode.Client.UnitTests
       RegionEnumerator.Reset();
       try
       {
-        Object r = RegionEnumerator.Current;
+        var unused = RegionEnumerator.Current;
         Assert.Fail("Should have got InvalidOperationException");
       }
       catch (InvalidOperationException ex)
@@ -2112,7 +2112,7 @@ namespace Apache.Geode.Client.UnitTests
       }
 
       Assert.IsTrue(5 == RegionEntryCount, "Region entry count does not match.");
-      RegionEntryCount = 0;
+
       Util.Log("Idictionary_Array_GetEnumerator_Step 5 complete.");
 
       // Chk after doing Generic Enumerator's MoveNext to end what is the value at Current and that exception is thrown.      
@@ -2120,7 +2120,7 @@ namespace Apache.Geode.Client.UnitTests
 
       try
       {
-        Object r = RegionGenericEnumerator.Current;
+        var unused = RegionGenericEnumerator.Current;
         Assert.Fail("Should have got InvalidOperationException");
       }
       catch (InvalidOperationException ex)
@@ -2131,7 +2131,7 @@ namespace Apache.Geode.Client.UnitTests
       RegionEnumerator.MoveNext();
       try
       {
-        Object r = RegionEnumerator.Current;
+        var unused = RegionEnumerator.Current;
         Assert.Fail("Should have got InvalidOperationException");
       }
       catch (InvalidOperationException ex)
@@ -2240,7 +2240,7 @@ namespace Apache.Geode.Client.UnitTests
 
       try
       {
-        bool r = region.IsReadOnly;
+        var unused = region.IsReadOnly;
       }
       catch (NotImplementedException ex)
       {
@@ -2346,7 +2346,7 @@ namespace Apache.Geode.Client.UnitTests
 
       try
       {
-        bool r = region.IsReadOnly;
+        var unused = region.IsReadOnly;
       }
       catch (NotImplementedException ex)
       {

@@ -106,7 +106,7 @@ namespace Apache.Geode.Client.UnitTests
 
       region0[1] = new PdxType();
 
-      var pRet = (PdxType) region0[1];
+      region0.Get(1);
       checkPdxInstanceToStringAtServer(region0);
 
       Assert.AreEqual(CacheHelper.DCache.GetPdxReadSerialized(), false,
@@ -119,7 +119,7 @@ namespace Apache.Geode.Client.UnitTests
 
       var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
-      var pRet = (PdxType) region0[1];
+      region0.Get(1);
       checkPdxInstanceToStringAtServer(region0);
     }
 
@@ -216,7 +216,7 @@ namespace Apache.Geode.Client.UnitTests
       {
         var pf = new PortfolioPdx(1001, 10);
         region0[20] = pf;
-        var retpf = (PortfolioPdx) region0[20];
+        region0.Get(20);
         checkPdxInstanceToStringAtServer(region0);
         //Assert.AreEqual(p9, pRet9);
       }
@@ -224,7 +224,7 @@ namespace Apache.Geode.Client.UnitTests
       {
         var pf = new PortfolioPdx(1001, 10, new string[] {"one", "two", "three"});
         region0[21] = pf;
-        var retpf = (PortfolioPdx) region0[21];
+        region0.Get(21);
         checkPdxInstanceToStringAtServer(region0);
         //Assert.AreEqual(p9, pRet9);
       }
@@ -324,11 +324,11 @@ namespace Apache.Geode.Client.UnitTests
         checkPdxInstanceToStringAtServer(region0);
       }
       {
-        var retpf = (PortfolioPdx) region0[20];
+        region0.Get(20);
         checkPdxInstanceToStringAtServer(region0);
       }
       {
-        var retpf = (PortfolioPdx) region0[21];
+        region0.Get(21);
         checkPdxInstanceToStringAtServer(region0);
       }
       {
@@ -627,7 +627,7 @@ namespace Apache.Geode.Client.UnitTests
       region0[1] = 123;
 
       //Get
-      var value = (int) region0[1];
+      region0.Get(1);
       //Util.Log("JavaPutGet_LinedListType value received = " + value);
 
       //verify that listener methods have been called.
@@ -672,7 +672,7 @@ namespace Apache.Geode.Client.UnitTests
       var np = new PdxType();
       region0[1] = np;
 
-      var pRet = (PdxType) region0[1];
+      region0.Get(1);
 
       //Assert.AreEqual(np, pRet);
 
@@ -691,11 +691,9 @@ namespace Apache.Geode.Client.UnitTests
 
       var region0 = CacheHelper.GetVerifyRegion<object, object>(m_regionNames[0]);
 
-      var np = new PdxType();
+      region0.Get(1);
 
-      var pRet = (PdxType) region0[1];
-
-      var putFromjava = (PdxType) region0["putFromjava"];
+      region0.Get("putFromjava");
     }
 
     private void runJavaInterOpsWithLinkedListType()

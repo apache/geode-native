@@ -327,7 +327,7 @@ namespace Apache.Geode.Client.UnitTests
               }
               for (int keyNumIndex = 0; keyNumIndex < numOps; ++keyNumIndex)
               {
-                int keyNum = indices[keyNumIndex];
+                var unused = indices[keyNumIndex];
                 string expectedVal = valPrefix + keyNumIndex;
                 if (CheckFlags(flags, OpFlags.CheckFail))
                 {
@@ -353,7 +353,6 @@ namespace Apache.Geode.Client.UnitTests
 
             case OperationCode.GetServerKeys:
               breakLoop = true;
-              ICollection<object> serverKeys = region.Keys;
               break;
 
             //TODO: Need to fix System.ArgumentOutOfRangeException: Index was out of range. Know issue with GetAll()
@@ -420,7 +419,7 @@ namespace Apache.Geode.Client.UnitTests
               }
               CqAttributesFactory<object, object> cqattrsfact = new CqAttributesFactory<object, object>();
               CqAttributes<object, object> cqattrs = cqattrsfact.Create();
-              CqQuery<object, object> cq = qs.NewCq("cq_security", "SELECT * FROM /" + region.Name, cqattrs, false);
+              qs.NewCq("cq_security", "SELECT * FROM /" + region.Name, cqattrs, false);
               qs.ExecuteCqs();
               qs.StopCqs();
               qs.CloseCqs();
@@ -447,7 +446,7 @@ namespace Apache.Geode.Client.UnitTests
                 IRegionService userCache = CacheHelper.getMultiuserCache(creds);
                 Apache.Geode.Client.Execution<object> exe = Client.FunctionService<object>.OnServer(userCache);
                 exe.Execute("securityTest");
-                exe = Client.FunctionService<object>.OnServers(userCache);
+                Client.FunctionService<object>.OnServers(userCache);
                 Client.FunctionService<object>.OnRegion<object, object>(region);
                 Client.FunctionService<object>.OnRegion<object, object>(userCache.GetRegion<object, object>(region.Name)).Execute("FireNForget");
               }
@@ -539,7 +538,7 @@ namespace Apache.Geode.Client.UnitTests
           OperationCode authOpCode = currentOp.AuthzOperationCode;
           int[] indices = currentOp.Indices;
           CredentialGenerator cGen = gen.GetCredentialGenerator();
-          Properties<string, string> javaProps = null;
+
           if (CheckFlags(opFlags, OpFlags.CheckNotAuthz) ||
             CheckFlags(opFlags, OpFlags.UseNotAuthz))
           {
@@ -557,7 +556,7 @@ namespace Apache.Geode.Client.UnitTests
           }
           if (cGen != null)
           {
-            javaProps = cGen.JavaProperties;
+            var unused = cGen.JavaProperties;
           }
           clientProps = SecurityTestUtil.ConcatProperties(
             opCredentials, extraAuthProps, extraAuthzProps);
