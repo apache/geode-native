@@ -21,11 +21,21 @@ def read_number_from_hex_string(string, offset, size):
     bits = size * 4
     if value & (1 << (bits - 1)):
         value -= 1 << bits
-    return (value, size)
+    return value, size
+
+
+def read_unsigned_number_from_hex_string(string, offset, size):
+    value = int(string[offset : offset + size], 16)
+    bits = size * 4
+    return value, size
 
 
 def read_byte_value(string, offset):
     return read_number_from_hex_string(string, offset, 2)
+
+
+def read_unsigned_byte_value(string, offset):
+    return read_unsigned_number_from_hex_string(string, offset, 2)
 
 
 def read_short_value(string, offset):

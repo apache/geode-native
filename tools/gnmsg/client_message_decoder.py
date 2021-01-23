@@ -22,7 +22,7 @@ from client_messages import parse_client_message
 from decoder_base import DecoderBase
 from message_types import message_types
 from numeric_conversion import to_hex_digit
-
+from gnmsg_globals import global_protocol_state
 
 class ClientMessageDecoder(DecoderBase):
     def __init__(self, output_queue):
@@ -250,6 +250,7 @@ class ClientMessageDecoder(DecoderBase):
 
                 parse_client_message(send_trace, message_bytes)
                 self.output_queue_.put({"message": send_trace})
+                global_protocol_state.set_last_client_message(send_trace["tid"], send_trace["Type"])
         elif self.connection_states_[connection] == self.STATE_FOUND_SECURITY_FOOTER_:
             if is_send_trace:
                 send_trace["Direction"] = "--->"
@@ -261,3 +262,4 @@ class ClientMessageDecoder(DecoderBase):
                     send_trace["SecurityFlag"],
                 ) = self.parse_request_fields(message_bytes)
                 self.output_queue_.put({"message": send_trace})
+                global_protocol_state.set_last_client_message(send_trace["tid"], send_trace["Type"])

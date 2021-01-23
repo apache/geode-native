@@ -13,27 +13,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-to_hex_digit = {
-    0: "0",
-    1: "1",
-    2: "2",
-    3: "3",
-    4: "4",
-    5: "5",
-    6: "6",
-    7: "7",
-    8: "8",
-    9: "9",
-    10: "a",
-    11: "b",
-    12: "c",
-    13: "d",
-    14: "e",
-    15: "f",
-}
 
+from message_types import message_types
+from read_values import read_int_value, read_byte_value, call_reader_function
 
-def decimal_string_to_hex_string(byte):
-    high_nibble = int(int(byte) / 16)
-    low_nibble = int(byte) % 16
-    return to_hex_digit[high_nibble] + to_hex_digit[low_nibble]
+class ProtocolState:
+    def __init__(self):
+        self.last_client_message_ = {}
+
+    def get_last_client_message(self, thread_id):
+        return self.last_client_message_[thread_id]
+
+    def set_last_client_message(self, thread_id, client_message):
+        self.last_client_message_[thread_id] = client_message
