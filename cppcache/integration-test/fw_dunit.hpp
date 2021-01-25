@@ -119,7 +119,7 @@ END_TASK(validate)
 
 #include <ace/ACE.h>
 #include <signal.h>
-
+#include "TimeBomb.hpp"
 #define ASSERT(x, y)                                   \
   do {                                                 \
   if (!(x)) {                                          \
@@ -255,7 +255,7 @@ END_TASK(validate)
 #define s1p2 2
 #define s2p1 3
 #define s2p2 4
-
+extern ClientCleanup gClientCleanup;
 namespace dunit {
 
 void logCoordinator(std::string s, int lineno, const char* filename);
