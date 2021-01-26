@@ -1049,7 +1049,7 @@ void CacheXmlParser::startExpirationAttributes(
 }
 
 std::string CacheXmlParser::getLibraryName(const xercesc::Attributes &attrs) {
-  return getRequiredAttribute(attrs, LIBRARY_NAME);
+  return getOptionalAttribute(attrs, LIBRARY_NAME);
 }
 
 std::string CacheXmlParser::getLibraryFunctionName(
