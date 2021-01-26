@@ -40,6 +40,9 @@ class ClientMessageDecoder(DecoderBase):
             "10.1.1": self.get_send_trace_parts_base,
             "10.1.2": self.get_send_trace_parts_base,
             "10.1.3": self.get_send_trace_parts_base,
+            "10.1.4": self.get_send_trace_parts_base,
+            "10.2.0": self.get_send_trace_parts_base,
+            "10.2.1": self.get_send_trace_parts_base,
             "9.1.1": self.get_send_trace_parts_v911,
         }
         self.send_trace_parsers = {
@@ -48,6 +51,9 @@ class ClientMessageDecoder(DecoderBase):
             "10.1.1": self.parse_request_fields_base,
             "10.1.2": self.parse_request_fields_base,
             "10.1.3": self.parse_request_fields_base,
+            "10.1.4": self.parse_request_fields_base,
+            "10.2.0": self.parse_request_fields_base,
+            "10.2.1": self.parse_request_fields_base,
             "9.1.1": self.parse_request_fields_v911,
         }
         #
@@ -106,6 +112,8 @@ class ClientMessageDecoder(DecoderBase):
         match = expression.search(line)
         if match:
             parts.append(dateutil.parser.parse(match.group(1)))
+            # TODO: Revisit parsing TID here if we ever see a v9 client log again
+            parts.append("0")
             parts.append(match.group(2))
             parts.append(match.group(3))
             result = True
@@ -115,13 +123,14 @@ class ClientMessageDecoder(DecoderBase):
     def get_send_trace_parts_base(self, line, parts):
         result = False
         expression = re.compile(
-            r"(\d\d:\d\d:\d\d\.\d+).*TcrConnection::send:\s*\[([\d|a-f|A-F|x|X]+).*sending request to endpoint.*bytes:\s*([\d|a-f|A-F]+)"
+            r"(\d\d:\d\d:\d\d\.\d+).+:\d+\s+(\d+)\]\s*TcrConnection::send:\s*\[([\d|a-f|A-F|x|X]+).*sending request to endpoint.*bytes:\s*([\d|a-f|A-F]+)"
         )
         match = expression.search(line)
         if match:
             parts.append(parser.parse(match.group(1)))
             parts.append(match.group(2))
             parts.append(match.group(3))
+            parts.append(match.group(4))
             result = True
 
         return result
@@ -133,7 +142,7 @@ class ClientMessageDecoder(DecoderBase):
     def get_add_security_trace_parts(self, line, parts):
         result = False
         expression = re.compile(
-            r"(\d\d:\d\d:\d\d\.\d+).*TcrMessage::addSecurityPart\s*\[(0x[\d|a-f|A-F]*).*length\s*=\s*(\d+)\s*,\s*encrypted\s+ID\s*=\s*([\d|a-f|A-F]+)"
+            r"(\d\d:\d\d:\d\d\.\d+).*(\d+)\]\s*TcrMessage::addSecurityPart\s*\[(0x[\d|a-f|A-F]*).*length\s*=\s*(\d+)\s*,\s*encrypted\s+ID\s*=\s*([\d|a-f|A-F]+)"
         )
         match = expression.search(line)
         if match:
@@ -141,6 +150,7 @@ class ClientMessageDecoder(DecoderBase):
             parts.append(match.group(2))
             parts.append(match.group(3))
             parts.append(match.group(4))
+            parts.append(match.group(5))
             result = True
 
         return result
@@ -208,10 +218,10 @@ class ClientMessageDecoder(DecoderBase):
 
         parts = []
         if self.get_send_trace_parts(line, parts):
-            send_trace["Timestamp"], send_trace["Connection"], message_bytes = parts
+            send_trace["Timestamp"], send_trace["tid"], send_trace["Connection"], message_bytes = parts
             is_send_trace = True
         elif self.get_add_security_trace_parts(line, parts):
-            timestamp, connection, security_footer_length, message_bytes = parts
+            timestamp, tid, connection, security_footer_length, message_bytes = parts
             is_add_security_trace = True
         else:
             return
