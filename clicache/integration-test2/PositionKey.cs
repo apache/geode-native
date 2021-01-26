@@ -92,9 +92,7 @@ namespace Apache.Geode.Client.IntegrationTests
 
 	public override int GetHashCode()
 	{
-	  int hash = 11;
-	  hash = 31 * hash + (int)m_positionId;
-	  return hash;
+	  return Objects.Hash(m_positionId);
 	}
   }
 }

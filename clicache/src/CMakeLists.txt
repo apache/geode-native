@@ -152,6 +152,8 @@ add_library(Apache.Geode SHARED
   native_conditional_unique_ptr.hpp
   native_shared_ptr.hpp
   native_unique_ptr.hpp
+  Objects.cpp
+  Objects.hpp
   PdxIdentityFieldAttribute.hpp
   Pool.cpp
   Pool.hpp
