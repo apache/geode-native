@@ -27,13 +27,31 @@ namespace apache {
 namespace geode {
 namespace client {
 
-std::atomic<int32_t> TXId::m_transactionId(1);
+std::atomic<int32_t> TXId::m_transactionId(0);
 
-TXId::TXId() : m_TXId(m_transactionId++) {}
+TXId::TXId() {
+  // If m_transactionId has reached maximum value, then start again
+  // from zero, and increment by one until first unused value is found.
+  // This is done to avoid overflow of m_transactionId to negative value.
+  auto current = m_transactionId.load();
+  decltype(current) next;
+  do {
+    next = std::numeric_limits<decltype(current)>::max() == current
+               ? 1
+               : current + 1;
+  } while (!m_transactionId.compare_exchange_strong(current, next));
+  m_TXId = next;
+}
 
 TXId& TXId::operator=(const TXId& other) {
   m_TXId = other.m_TXId;
   return *this;
+}
+
+// This method is only for testing and should not be used for any
+// other purpose. See TXIdTest.cpp for more details.
+void TXId::setInitalTransactionIDValue(int32_t newTransactionID) {
+  m_transactionId.exchange(newTransactionID);
 }
 
 TXId::~TXId() {}

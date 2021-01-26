@@ -53,6 +53,7 @@ add_executable(apache-geode_unittests
   StructSetTest.cpp
   TcrMessageTest.cpp
   ThreadPoolTest.cpp
+  TXIdTest.cpp
   mock/MapEntryImplMock.hpp
   mock/MockExpiryTask.hpp
   util/chrono/durationTest.cpp
