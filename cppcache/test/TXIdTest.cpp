@@ -14,43 +14,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * TXId.cpp
- *
- *  Created on: 07-Feb-2011
- *      Author: ankurs
- */
 
-#include "TXId.hpp"
+#include <TXId.hpp>
+
+#include <gtest/gtest.h>
 
 namespace apache {
 namespace geode {
 namespace client {
 
-std::atomic<int32_t> TXId::m_transactionId(0);
+TEST(TXIdTest, testIncrementTransactionID) {
+  auto tx = new TXId();
+  ASSERT_EQ(1, tx->getId());
 
-TXId::TXId() {
-  // If m_transactionId has reached maximum value, then set
-  // it to zero in order to avoid overflow to negative value.
-  auto maxValueTXId = INT32_MAX;
-  m_transactionId.compare_exchange_strong(maxValueTXId, 0);
-  m_TXId = ++m_transactionId;
+  tx = new TXId();
+  ASSERT_EQ(2, tx->getId());
 }
 
-TXId& TXId::operator=(const TXId& other) {
-  m_TXId = other.m_TXId;
-  return *this;
+TEST(TXIdTest, testIncrementTransactionIdOverMaxValue) {
+  // Set inital value of transactionId to integer INT32_MAX.
+  TXId::setInitalTransactionIDValue(INT32_MAX);
+
+  // TransactionId is incremented by one each time TXId is created.
+  // When transactionId is incremented over the INT32_MAX value.
+  // then it should be reset to one.
+  auto tx = new TXId();
+  ASSERT_EQ(1, tx->getId());
+
+  tx = new TXId();
+  ASSERT_EQ(2, tx->getId());
+
+  // reset value at the end of test
+  TXId::setInitalTransactionIDValue(0);
 }
 
-// This method is only for testing and should not be used for any
-// other purpose. See TXIdTest.cpp for more details.
-void TXId::setInitalTransactionIDValue(int32_t newTransactionID) {
-  m_transactionId.exchange(newTransactionID);
-}
-
-TXId::~TXId() {}
-
-int32_t TXId::getId() { return m_TXId; }
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

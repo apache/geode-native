@@ -45,6 +45,10 @@ class TXId : public apache::geode::client::TransactionId {
 
   int32_t getId();
 
+  // This method is only for testing and should not be used for any
+  // other purpose. See TXIdTest.cpp for more details.
+  static void setInitalTransactionIDValue(int32_t);
+
  private:
   int32_t m_TXId;
   static std::atomic<int32_t> m_transactionId;
