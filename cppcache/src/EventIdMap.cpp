@@ -35,8 +35,8 @@ void EventIdMap::clear() {
 
 EventIdMapEntry EventIdMap::make(std::shared_ptr<EventId> eventid) {
   auto sid = std::make_shared<EventSource>(
-      eventid->getMemId(), eventid->getMemIdLen(), eventid->getThrId());
-  auto seq = std::make_shared<EventSequence>(eventid->getSeqNum());
+      eventid->clientId(), eventid->clientIdLength(), eventid->threadId());
+  auto seq = std::make_shared<EventSequence>(eventid->sequenceNumber());
   return std::make_pair(sid, seq);
 }
 
