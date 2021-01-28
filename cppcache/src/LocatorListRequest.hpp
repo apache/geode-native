@@ -34,13 +34,16 @@ class Serializable;
 class LocatorListRequest : public ServerLocationRequest {
  private:
   std::string m_servergroup;
+  bool m_requestInternalAddress;
 
  public:
-  explicit LocatorListRequest(const std::string& servergroup = "");
+  explicit LocatorListRequest(const std::string& servergroup = "",
+                              bool requestInternalAddress = false);
   ~LocatorListRequest() override = default;
 
   void toData(DataOutput& output) const override;
   internal::DSFid getDSFID() const override;
+  bool getRequestInternalAddress() const { return m_requestInternalAddress; }
 };
 
 }  // namespace client

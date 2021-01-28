@@ -236,6 +236,13 @@ PoolFactory& PoolFactory::setPRSingleHopEnabled(bool enabled) {
   m_attrs->setPRSingleHopEnabled(enabled);
   return *this;
 }
+
+PoolFactory& PoolFactory::setRequestLocatorInternalAddress(
+    bool requestInternal) {
+  m_attrs->setRequestLocatorInternalAddress(requestInternal);
+  return *this;
+}
+
 std::shared_ptr<Pool> PoolFactory::create(std::string name) {
   std::shared_ptr<ThinClientPoolDM> poolDM;
 

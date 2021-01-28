@@ -44,6 +44,8 @@ PoolAttributes::PoolAttributes()
       m_subsEnabled(PoolFactory::DEFAULT_SUBSCRIPTION_ENABLED),
       m_multiuserSecurityMode(PoolFactory::DEFAULT_MULTIUSER_SECURE_MODE),
       m_isPRSingleHopEnabled(PoolFactory::DEFAULT_PR_SINGLE_HOP_ENABLED),
+      m_requestLocatorInternalAddress(
+          PoolFactory::DEFAULT_REQUEST_LOCATOR_INTERNAL_ADDRESS),
       m_serverGrp(PoolFactory::DEFAULT_SERVER_GROUP),
       m_sniProxyPort(0) {}
 

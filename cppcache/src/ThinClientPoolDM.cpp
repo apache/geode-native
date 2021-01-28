@@ -2060,7 +2060,9 @@ void ThinClientPoolDM::updateLocatorList(std::atomic<bool>& isRunning) {
   while (isRunning) {
     m_updateLocatorListSema.acquire();
     if (isRunning && !m_connManager.isNetDown()) {
-      (m_locHelper)->updateLocators(getServerGroup());
+      (m_locHelper)
+          ->updateLocators(getServerGroup(),
+                           m_attrs->getRequestLocatorInternalAddress());
     }
   }
 

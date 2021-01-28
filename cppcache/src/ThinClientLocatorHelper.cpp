@@ -274,14 +274,15 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewFwdConn(
   }
 }
 
-GfErrType ThinClientLocatorHelper::updateLocators(
-    const std::string& serverGrp) {
+GfErrType ThinClientLocatorHelper::updateLocators(const std::string& serverGrp,
+                                                  bool requestInternal) {
   auto locators = getLocators();
   for (const auto& loc : locators) {
     LOGFINER("Querying locator list at: [%s:%d] for update from group [%s]",
              loc.getServerName().c_str(), loc.getPort(), serverGrp.c_str());
 
-    auto request = std::make_shared<LocatorListRequest>(serverGrp);
+    auto request =
+        std::make_shared<LocatorListRequest>(serverGrp, requestInternal);
     auto response = std::dynamic_pointer_cast<LocatorListResponse>(
         sendRequest(loc, request));
     if (response == nullptr) {

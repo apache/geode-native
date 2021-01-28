@@ -425,6 +425,26 @@ namespace Apache
 	   }
 
 
+      PoolFactory^ PoolFactory::SetRequestLocatorInternalAddress( bool requestInternal )
+      {
+			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+
+          try
+          {
+            m_nativeptr->get()->setRequestLocatorInternalAddress( requestInternal );
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
+
+			  _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+          return this;
+      }
+
+
+
+
 		  PoolFactory^ PoolFactory::Reset()
       {
 			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */

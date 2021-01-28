@@ -66,7 +66,8 @@ class ThinClientLocatorHelper {
       std::vector<std::shared_ptr<ServerLocation> >& servers,
       const std::string& serverGrp) const;
   size_t getCurLocatorsNum() const { return locators_.size(); }
-  GfErrType updateLocators(const std::string& serverGrp = "");
+  GfErrType updateLocators(const std::string& serverGrp = "",
+                           bool requestInternal = false);
 
  private:
   /**

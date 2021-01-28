@@ -192,6 +192,12 @@ class APACHE_GEODE_EXPORT PoolFactory {
   static constexpr bool DEFAULT_PR_SINGLE_HOP_ENABLED = true;
 
   /**
+   * The default value for whether to request locator internal address.
+   * <p>Current value: <code>false</code>.
+   */
+  static constexpr bool DEFAULT_REQUEST_LOCATOR_INTERNAL_ADDRESS = false;
+
+  /**
    * Sets the free connection timeout for this pool.
    * If the pool has a max connections setting, operations will block
    * if all of the connections are in use. The free connection timeout
@@ -535,6 +541,19 @@ class APACHE_GEODE_EXPORT PoolFactory {
    * @return a reference to <code>this</code>
    */
   PoolFactory& setPRSingleHopEnabled(bool enabled);
+
+  /**
+   * By default setRequestLocatorInternalAddress is false.<br>
+   * The client requests list of locators to connect.
+   * If setRequestLocatorInternalAddress is false, client will get external
+   * locator addresses.
+   * If setRequestLocatorInternalAddress is true, client will get internal
+   * locator addresses.
+   * @param requestInternal is a boolean indicating whether to request locator
+   * internal address or not
+   * @return a reference to <code>this</code>
+   */
+  PoolFactory& setRequestLocatorInternalAddress(bool requestInternal);
 
   ~PoolFactory() = default;
 

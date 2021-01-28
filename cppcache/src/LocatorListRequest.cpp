@@ -26,11 +26,14 @@ namespace client {
 
 using internal::DSFid;
 
-LocatorListRequest::LocatorListRequest(const std::string& servergroup)
-    : m_servergroup(servergroup) {}
+LocatorListRequest::LocatorListRequest(const std::string& servergroup,
+                                       bool requestInternalAddress)
+    : m_servergroup(servergroup),
+      m_requestInternalAddress(requestInternalAddress) {}
 
 void LocatorListRequest::toData(DataOutput& output) const {
   output.writeString(m_servergroup);
+  output.writeBoolean(m_requestInternalAddress);
 }
 
 DSFid LocatorListRequest::getDSFID() const { return DSFid::LocatorListRequest; }
