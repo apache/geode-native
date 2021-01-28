@@ -30,11 +30,18 @@ namespace client {
 std::atomic<int32_t> TXId::m_transactionId(0);
 
 TXId::TXId() {
-  // If m_transactionId has reached maximum value, then set
-  // it to zero in order to avoid overflow to negative value.
-  auto maxValueTXId = INT32_MAX;
-  m_transactionId.compare_exchange_strong(maxValueTXId, 0);
-  m_TXId = ++m_transactionId;
+  // If m_transactionId has reached maximum value, then start again
+  // from zero, and increment by one until first unused value is found.
+  // This is done to avoid overflow of m_transactionId to negative value.
+  auto maxValueTXId = std::numeric_limits<int>::max();
+  auto current = m_transactionId.load();
+  decltype(current) next;
+  do {
+    next = std::numeric_limits<decltype(current)>::max() == current
+               ? 1
+               : current + 1;
+  } while (!m_transactionId.compare_exchange_strong(current, next));
+  m_TXId = next;
 }
 
 TXId& TXId::operator=(const TXId& other) {
