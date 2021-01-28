@@ -17,6 +17,7 @@
 from message_types import message_types
 from read_values import read_int_value, read_byte_value, call_reader_function
 
+
 class ProtocolState:
     def __init__(self):
         self.last_client_message_ = {}

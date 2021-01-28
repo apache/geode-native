@@ -75,7 +75,9 @@ def scan_file(filename, dump_handshake, dump_messages, thread_id):
                     if key == "message" and dump_messages:
                         if thread_id:
                             if "tid" in value.keys() and value["tid"] == thread_id:
-                                print(separator + json.dumps(value, indent=2, default=str))
+                                print(
+                                    separator + json.dumps(value, indent=2, default=str)
+                                )
                                 separator = ","
                         else:
                             print(separator + json.dumps(value, indent=2, default=str))
