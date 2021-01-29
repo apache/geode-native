@@ -16,9 +16,8 @@
  */
 #include "EventId.hpp"
 
-#include <inttypes.h>
-
 #include <atomic>
+#include <cstdint>
 #include <cstring>
 
 #include <geode/DataInput.hpp>
@@ -43,8 +42,8 @@ class ThreadIdCounter {
 class EventIdTSS {
  public:
   static EventIdTSS& instance() {
-    thread_local EventIdTSS idTss_;
-    return idTss_;
+    thread_local EventIdTSS eventId_;
+    return eventId_;
   }
 
   int64_t nextSequenceId() {
