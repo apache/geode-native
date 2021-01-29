@@ -33,7 +33,6 @@ TXId::TXId() {
   // If m_transactionId has reached maximum value, then start again
   // from zero, and increment by one until first unused value is found.
   // This is done to avoid overflow of m_transactionId to negative value.
-  auto maxValueTXId = std::numeric_limits<int>::max();
   auto current = m_transactionId.load();
   decltype(current) next;
   do {
