@@ -99,6 +99,8 @@ class Server {
 
   void stop();
 
+  const ServerAddress &getAddress() const;
+
  private:
   Cluster &cluster_;
   std::vector<Locator> &locators_;

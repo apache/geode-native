@@ -148,6 +148,8 @@ void Locator::stop() {
   started_ = false;
 }
 
+const ServerAddress &Server::getAddress() const { return serverAddress_; }
+
 Server::Server(Cluster &cluster, std::vector<Locator> &locators,
                std::string name, std::string xmlFile, bool useIPv6)
     : cluster_(cluster),
@@ -159,7 +161,7 @@ Server::Server(Cluster &cluster, std::vector<Locator> &locators,
     hostname = "ip6-localhost";
   }
 
-  auto port = static_cast<uint16_t>(0);
+  auto port = Framework::getAvailablePort();
   serverAddress_ = ServerAddress{hostname, port};
 }
 

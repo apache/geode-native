@@ -135,6 +135,13 @@ class TcrEndpoint : public std::enable_shared_from_this<TcrEndpoint> {
             m_serverQueueStatus == PRIMARY_SERVER);
   }
 
+  // TESTING: activates hook that will store every endpoint that disconnected
+  // from client
+  static void setDisconnectionTest();
+  // TESTING: Valid if DisconnectionTest hook enabled. Collects disconnected
+  // servers.
+  static const std::vector<std::string>& getListOfDisconnectedEPs();
+
   // Get cached server queue props.
   int32_t inline getServerQueueSize() { return m_queueSize; }
   ServerQueueStatus getServerQueueStatus() { return m_serverQueueStatus; }
@@ -232,6 +239,9 @@ class TcrEndpoint : public std::enable_shared_from_this<TcrEndpoint> {
   uint16_t m_distributedMemId;
   bool m_isServerQueueStatusSet;
   volatile bool m_connCreatedWhenMaxConnsIsZero;
+  // Varables used for test hook
+  volatile static bool TEST_DISCONNECTIONS;
+  static std::vector<std::string> listOfDisconnectedServers;
 
   bool compareTransactionIds(int32_t reqTransId, int32_t replyTransId,
                              std::string& failReason, TcrConnection* conn);

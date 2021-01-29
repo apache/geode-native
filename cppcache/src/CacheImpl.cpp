@@ -36,6 +36,7 @@
 #include "RegionExpiryHandler.hpp"
 #include "SerializationRegistry.hpp"
 #include "TcrConnectionManager.hpp"
+#include "TcrEndpoint.hpp"
 #include "TcrMessage.hpp"
 #include "ThinClientHARegion.hpp"
 #include "ThinClientPoolDM.hpp"
@@ -868,6 +869,12 @@ void CacheImpl::setCache(Cache* cache) { m_cache = cache; }
 
 void CacheImpl::setClientCrashTEST() {
   m_tcrConnectionManager->setClientCrashTEST();
+}
+
+void CacheImpl::setDisconnectionTest() { TcrEndpoint::setDisconnectionTest(); }
+
+const std::vector<std::string>& CacheImpl::getListOfDisconnectedEPs() {
+  return TcrEndpoint::getListOfDisconnectedEPs();
 }
 
 }  // namespace client

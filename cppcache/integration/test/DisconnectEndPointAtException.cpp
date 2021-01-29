@@ -18,6 +18,10 @@
 #include <framework/Gfsh.h>
 #include <framework/TestConfig.h>
 
+#include <CacheImpl.hpp>
+#include <CacheRegionHelper.hpp>
+#include <TcrConnectionManager.hpp>
+#include <TcrEndpoint.hpp>
 #include <thread>
 
 #include <geode/Cache.hpp>
@@ -31,39 +35,18 @@ namespace {
 using apache::geode::client::Cache;
 using apache::geode::client::CacheableString;
 using apache::geode::client::CacheFactory;
+using apache::geode::client::CacheImpl;
+using apache::geode::client::CacheRegionHelper;
 using apache::geode::client::CacheTransactionManager;
 using apache::geode::client::Pool;
 using apache::geode::client::Region;
 using apache::geode::client::RegionShortcut;
+using apache::geode::client::TcrConnectionManager;
+using apache::geode::client::TcrEndpoint;
 using std::cout;
 
-std::string disconnectingStr("Disconnecting from endpoint");
-
-std::string getClientLogName() {
-  std::string testSuiteName(::testing::UnitTest::GetInstance()
-                                ->current_test_info()
-                                ->test_case_name());
-  std::string testCaseName(
-      ::testing::UnitTest::GetInstance()->current_test_info()->name());
-  std::string logFileName(testSuiteName + "/" + testCaseName + "/client.log");
-  return logFileName;
-}
-
-void removeLogFromPreviousExecution() {
-  std::string logFileName(getClientLogName());
-  std::ifstream previousTestLog(logFileName);
-  if (previousTestLog.good()) {
-    std::cout << "Removing log from previous execution: " << logFileName
-              << std::endl;
-    remove(logFileName.c_str());
-  }
-}
-
 std::shared_ptr<Cache> createCache() {
-  auto cache = CacheFactory()
-                   .set("log-level", "debug")
-                   .set("log-file", getClientLogName())
-                   .create();
+  auto cache = CacheFactory().create();
   return std::make_shared<Cache>(std::move(cache));
 }
 
@@ -81,11 +64,10 @@ std::string addKeyPrefix(int key) {
 
 void runClientOperations(std::shared_ptr<Cache> cache,
                          std::shared_ptr<Region> region, int minEntryKey,
-                         int maxEntryKey, int numTx,
-                         bool usingPartitionResolver) {
+                         int maxEntryKey, bool usingPartitionResolver) {
   auto transactionManager = cache->getCacheTransactionManager();
-
-  for (int i = 0; i < numTx; i++) {
+  auto end = std::chrono::system_clock::now() + std::chrono::minutes{2};
+  do {
     auto theKey = (rand() % (maxEntryKey - minEntryKey)) + minEntryKey;
     std::string theValue = "theValue";
     try {
@@ -101,31 +83,27 @@ void runClientOperations(std::shared_ptr<Cache> cache,
         transactionManager->rollback();
       }
     }
-  }
+  } while (std::chrono::system_clock::now() < end);
 }
 
-void checkAllDisconnectionsAreFromSameServer(
-    std::shared_ptr<std::vector<std::string>> appearances) {
-  if (appearances->size() <= 1) {
-    return;
+std::string getConcatHostName(ServerAddress address) {
+  std::string hostname;
+  return hostname.append(address.address.c_str())
+      .append(":")
+      .append(std::to_string(address.port));
+}
+
+bool checkIfEpDisconnected(const std::string epHostname,
+                           std::vector<std::string> list) {
+  if (std::find(list.begin(), list.end(), epHostname) != list.end()) {
+    return true;
   }
-  std::string firstServerDisconnected("");
-  for (std::string line : *appearances) {
-    auto index = line.find(disconnectingStr);
-    std::string serverDisconnected =
-        line.substr(index + disconnectingStr.length());
-    if (firstServerDisconnected == "") {
-      firstServerDisconnected = serverDisconnected;
-    } else {
-      ASSERT_EQ(firstServerDisconnected, serverDisconnected);
-    }
-  }
+  return false;
 }
 
 void executeTestCase(bool useSingleHopAndPR) {
-  int NUM_THREADS = 8;
-  int MAX_ENTRY_KEY = 100000;
-  int TX_PER_CLIENT = 1000;
+  int NUM_THREADS = 4;
+  int MAX_ENTRY_KEY = 1000000;
   auto keyRangeSize = (MAX_ENTRY_KEY / NUM_THREADS);
 
   Cluster cluster{LocatorCount{1}, ServerCount{2}};
@@ -148,15 +126,24 @@ void executeTestCase(bool useSingleHopAndPR) {
                     .setPoolName("default")
                     .create("region");
 
+  // Get address of server that will remain running
+  auto epRunning = cluster.getServers()[0].getAddress();
+  auto epRunningHostname = getConcatHostName(epRunning);
+
+  // activate hook that will from now on register all servers
+  // that are disconnected from client
+  auto cacheImpl = CacheRegionHelper::getCacheImpl(cache.get());
+  CacheImpl::setDisconnectionTest();
+
   std::vector<std::thread> clientThreads;
   for (int i = 0; i < NUM_THREADS; i++) {
     auto minKey = (i * keyRangeSize);
     auto maxKey = minKey + keyRangeSize - 1;
     std::thread th(runClientOperations, cache, region, minKey, maxKey,
-                   TX_PER_CLIENT, useSingleHopAndPR);
+                   useSingleHopAndPR);
     clientThreads.push_back(std::move(th));
   }
-
+  // Shut down the server
   cluster.getServers()[1].stop();
 
   for (std::thread& th : clientThreads) {
@@ -165,31 +152,17 @@ void executeTestCase(bool useSingleHopAndPR) {
     }
   }
 
-  std::ifstream testLog(getClientLogName());
-  std::string fileLine;
-  auto appearances = std::make_shared<std::vector<std::string>>();
+  auto list = CacheImpl::getListOfDisconnectedEPs();
 
-  std::regex disconnectRegex(disconnectingStr);
-  if (testLog.is_open()) {
-    while (getline(testLog, fileLine)) {
-      if (std::regex_search(fileLine, disconnectRegex)) {
-        appearances->push_back(fileLine);
-      }
-    }
-  }
-
-  checkAllDisconnectionsAreFromSameServer(appearances);
-
+  // Check that running server remain connected to client
+  ASSERT_FALSE(checkIfEpDisconnected(epRunningHostname, list));
 }  // executeTestCase
 
 TEST(DisconnectEndPointAtException, useSingleHopAndPR) {
-  removeLogFromPreviousExecution();
   executeTestCase(true);
 }
 
 TEST(DisconnectEndPointAtException, doNotUseSingleHopAndPR) {
-  removeLogFromPreviousExecution();
   executeTestCase(false);
 }
-
 }  // namespace
