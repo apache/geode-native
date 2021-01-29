@@ -129,7 +129,7 @@ int64_t EventId::getEventIdData(DataInput& input, char numberCode) {
 }
 
 std::shared_ptr<Serializable> EventId::createDeserializable() {
-  LOGDEBUG("EventId::createDeserializable - called", __FUNCTION__);
+  LOGDEBUG("EventId::createDeserializable - called");
   // use false since we dont want to inc sequence
   // (for de-serialization)
   return std::make_shared<EventId>(false);
