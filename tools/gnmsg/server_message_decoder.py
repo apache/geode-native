@@ -22,9 +22,11 @@ from dateutil import parser
 from server_messages import parse_server_message
 from decoder_base import DecoderBase
 from message_types import message_types
-from numeric_conversion import to_hex_digit
+from numeric_conversion import to_hex_digit, decimal_string_to_hex_string
 from chunked_message_decoder import ChunkedResponseDecoder
 from read_values import read_number_from_hex_string
+from gnmsg_globals import global_protocol_state
+
 
 class ServerMessageDecoder(DecoderBase):
     def __init__(self, output_queue):
@@ -70,9 +72,9 @@ class ServerMessageDecoder(DecoderBase):
                 minor = match.group(2)
                 patch = match.group(3)
                 self.nc_version_ = major + "." + minor + "." + patch
-                self.receive_trace_parts_retriever_ = self.get_receive_trace_parts_functions_[
-                    self.nc_version_
-                ]
+                self.receive_trace_parts_retriever_ = (
+                    self.get_receive_trace_parts_functions_[self.nc_version_]
+                )
                 self.receive_trace_parser_ = self.receive_trace_parsers_[
                     self.nc_version_
                 ]
@@ -90,10 +92,11 @@ class ServerMessageDecoder(DecoderBase):
             result = True
 
         return result
+
     def get_receive_trace_header_with_pointer(self, line, parts):
         result = False
         expression = re.compile(
-            r"(\d\d:\d\d:\d\d\.\d+).*:\d+\s+(\d+)\]\s*TcrConnection::readMessage:\s*\[([\d|a-f|A-F|x|X]+).*received header from endpoint.*bytes:\s*([\d|a-f|A-F]+)"
+            r"(\d\d:\d\d:\d\d\.\d+).+:\d+\s+(\d+)\]\s*TcrConnection::readMessage\(([\d|a-f|A-F|x|X]+)\):.*received header from endpoint.*bytes:\s*([\d|a-f|A-F]+)"
         )
         match = expression.search(line)
         if match:
@@ -191,7 +194,6 @@ class ServerMessageDecoder(DecoderBase):
             result = True
 
         return result
-
 
     def get_response_header(self, line, parts):
         # Check if this is a header for a chunked message
@@ -293,17 +295,12 @@ class ServerMessageDecoder(DecoderBase):
 
         return result
 
-    def decimal_string_to_hex_string(self, byte):
-        high_nibble = int(int(byte) / 16)
-        low_nibble = int(byte) % 16
-        return to_hex_digit[high_nibble] + to_hex_digit[low_nibble]
-
     def format_bytes_as_hex_v911(self, message_bytes):
         byte_list = message_bytes.split(" ")
         hex_string = ""
         for byte in byte_list:
             if byte:
-                hex_string += self.decimal_string_to_hex_string(byte)
+                hex_string += decimal_string_to_hex_string(byte)
         return hex_string
 
     def parse_response_fields_base(self, message_bytes):
@@ -357,13 +354,14 @@ class ServerMessageDecoder(DecoderBase):
             pass
         elif self.get_receive_trace_parts(line, parts):
             tid = parts[1]
-            last_header = {"Timestamp": parts[0],
-                           "tid": tid,
-                           "Connection": parts[2]}
+            last_header = {"Timestamp": parts[0], "tid": tid, "Connection": parts[2]}
             message_bytes = parts[3]
             self.headers_[tid] = last_header
             connection = parts[2]
-            if connection in self.connection_states_.keys() and self.connection_states_[connection] != self.STATE_NEUTRAL_:
+            if (
+                connection in self.connection_states_.keys()
+                and self.connection_states_[connection] != self.STATE_NEUTRAL_
+            ):
                 print("WARNING: Multiple headers rec'd without a message body.")
             self.connection_states_[connection] = self.STATE_NEUTRAL_
         elif self.get_receive_trace_body_parts(line, parts):
@@ -378,7 +376,7 @@ class ServerMessageDecoder(DecoderBase):
             connection = parts[2]
             self.chunk_decoder.add_header(parts[2], parts[4])
         elif self.get_chunk_header(line, parts):
-            flags = 0xff
+            flags = 0xFF
             size = 0
             tid = parts[1]
             (flags, size) = read_number_from_hex_string(parts[4], 2, len(parts[4]) - 2)
@@ -387,7 +385,9 @@ class ServerMessageDecoder(DecoderBase):
             tid = parts[1]
             self.chunk_decoder.add_chunk(parts[3])
             if self.chunk_decoder.is_complete_message():
-                self.output_queue_.put({"message": self.chunk_decoder.get_decoded_message()})
+                self.output_queue_.put(
+                    {"message": self.chunk_decoder.get_decoded_message()}
+                )
                 self.chunk_decoder.reset()
         else:
             return
@@ -421,4 +421,3 @@ class ServerMessageDecoder(DecoderBase):
                 parse_server_message(receive_trace, message_body)
                 self.connection_states_[connection] = self.STATE_NEUTRAL_
                 self.output_queue_.put({"message": receive_trace})
-

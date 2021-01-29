@@ -22,6 +22,7 @@ from client_messages import parse_client_message
 from decoder_base import DecoderBase
 from message_types import message_types
 from numeric_conversion import to_hex_digit
+from gnmsg_globals import global_protocol_state
 
 
 class ClientMessageDecoder(DecoderBase):
@@ -84,12 +85,13 @@ class ClientMessageDecoder(DecoderBase):
             "PERIODIC_ACK",
             "PING",
             "REQUEST_EVENT_VALUE",
-            "ROLLBACK"
+            "ROLLBACK",
             "SIZE",
             "TX_FAILOVER",
             "TX_SYNCHRONIZATION",
             "USER_CREDENTIAL_MESSAGE",
         ]
+
     def search_for_version(self, line):
         if self.nc_version_ == None:
             expression = re.compile(r"Product version:.*Native (\d+)\.(\d+)\.(\d+)-")
@@ -218,7 +220,12 @@ class ClientMessageDecoder(DecoderBase):
 
         parts = []
         if self.get_send_trace_parts(line, parts):
-            send_trace["Timestamp"], send_trace["tid"], send_trace["Connection"], message_bytes = parts
+            (
+                send_trace["Timestamp"],
+                send_trace["tid"],
+                send_trace["Connection"],
+                message_bytes,
+            ) = parts
             is_send_trace = True
         elif self.get_add_security_trace_parts(line, parts):
             timestamp, tid, connection, security_footer_length, message_bytes = parts
@@ -250,6 +257,9 @@ class ClientMessageDecoder(DecoderBase):
 
                 parse_client_message(send_trace, message_bytes)
                 self.output_queue_.put({"message": send_trace})
+                global_protocol_state.set_last_client_message(
+                    send_trace["tid"], send_trace["Type"]
+                )
         elif self.connection_states_[connection] == self.STATE_FOUND_SECURITY_FOOTER_:
             if is_send_trace:
                 send_trace["Direction"] = "--->"
@@ -261,3 +271,6 @@ class ClientMessageDecoder(DecoderBase):
                     send_trace["SecurityFlag"],
                 ) = self.parse_request_fields(message_bytes)
                 self.output_queue_.put({"message": send_trace})
+                global_protocol_state.set_last_client_message(
+                    send_trace["tid"], send_trace["Type"]
+                )
