@@ -102,14 +102,6 @@ void Log::validateSizeLimits(int64_t fileSizeLimit, int64_t diskSpaceLimit) {
   }
 }
 
-void Log::validateLogFileName(const std::string& filename) {
-  auto nameToCheck = boost::filesystem::path(filename).filename().string();
-  if (!boost::filesystem::portable_file_name(nameToCheck)) {
-    throw IllegalArgumentException("Specified log file (" + nameToCheck +
-                                   ") is not a valid portable name.");
-  }
-}
-
 void Log::init(LogLevel level, const char* logFileName, int32_t logFileLimit,
                int64_t logDiskSpaceLimit) {
   auto logFileNameString =
@@ -211,12 +203,11 @@ void Log::init(LogLevel level, const std::string& logFileName,
   }
   s_logLevel = level;
 
-  std::lock_guard<decltype(g_logMutex)> guard(g_logMutex);
+  try {
+    std::lock_guard<decltype(g_logMutex)> guard(g_logMutex);
 
-  g_hostName = boost::asio::ip::host_name();
+    g_hostName = boost::asio::ip::host_name();
 
-  if (logFileName.length()) {
-    validateLogFileName(logFileName);
     g_fullpath =
         boost::filesystem::absolute(boost::filesystem::path(logFileName));
 
@@ -245,6 +236,12 @@ void Log::init(LogLevel level, const std::string& logFileName,
       rollLogFile();
     }
     writeBanner();
+  } catch (const boost::exception&) {
+    auto msg = std::string("Unable to log to file '") + logFileName + "'";
+    throw IllegalArgumentException(msg.c_str());
+  } catch (const std::exception&) {
+    auto msg = std::string("Unable to log to file '") + logFileName + "'";
+    throw IllegalArgumentException(msg.c_str());
   }
 }
 
