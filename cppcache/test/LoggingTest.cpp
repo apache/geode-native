@@ -238,9 +238,9 @@ TEST_F(LoggingTest, logInit) {
       apache::geode::client::LogLevel::Config, "LoggingTest.log"));
   apache::geode::client::Log::close();
 
-  // Init with legal filename with () and space
+  // Init with legal filename with (), #, and space
   ASSERT_NO_THROW(apache::geode::client::Log::init(
-      apache::geode::client::LogLevel::Config, "LoggingTest (1).log"));
+      apache::geode::client::LogLevel::Config, "LoggingTest (#).log"));
   apache::geode::client::Log::close();
 
   // Init with invalid filename
