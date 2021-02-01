@@ -24,11 +24,11 @@ namespace geode {
 namespace client {
 
 TEST(TXIdTest, testIncrementTransactionID) {
-  auto tx = new TXId();
-  ASSERT_EQ(1, tx->getId());
+  TXId tx1;
+  ASSERT_EQ(1, tx1.getId());
 
-  tx = new TXId();
-  ASSERT_EQ(2, tx->getId());
+  TXId tx2;
+  ASSERT_EQ(2, tx2.getId());
 }
 
 TEST(TXIdTest, testIncrementTransactionIdOverMaxValue) {
@@ -36,13 +36,13 @@ TEST(TXIdTest, testIncrementTransactionIdOverMaxValue) {
   TXId::setInitalTransactionIDValue(INT32_MAX);
 
   // TransactionId is incremented by one each time TXId is created.
-  // When transactionId is incremented over the INT32_MAX value.
+  // When transactionId is incremented over the INT32_MAX value
   // then it should be reset to one.
-  auto tx = new TXId();
-  ASSERT_EQ(1, tx->getId());
+  TXId tx1;
+  ASSERT_EQ(1, tx1.getId());
 
-  tx = new TXId();
-  ASSERT_EQ(2, tx->getId());
+  TXId tx2;
+  ASSERT_EQ(2, tx2.getId());
 
   // reset value at the end of test
   TXId::setInitalTransactionIDValue(0);
