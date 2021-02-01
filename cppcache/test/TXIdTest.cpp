@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_TXID_H_
-#define GEODE_TXID_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,43 +14,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * TXId.h
- *
- *  Created on: 07-Feb-2011
- *      Author: ankurs
- */
 
-#include <atomic>
+#include <TXId.hpp>
 
-#include <geode/DataOutput.hpp>
-#include <geode/TransactionId.hpp>
+#include <gtest/gtest.h>
 
 namespace apache {
 namespace geode {
 namespace client {
 
-class TXId : public apache::geode::client::TransactionId {
- public:
-  TXId();
+TEST(TXIdTest, testIncrementTransactionID) {
+  TXId tx1;
+  ASSERT_EQ(1, tx1.getId());
 
-  TXId& operator=(const TXId&);
+  TXId tx2;
+  ASSERT_EQ(2, tx2.getId());
+}
 
-  virtual ~TXId();
+TEST(TXIdTest, testIncrementTransactionIdOverMaxValue) {
+  // Set inital value of transactionId to integer INT32_MAX.
+  TXId::setInitalTransactionIDValue(INT32_MAX);
 
-  int32_t getId();
+  // TransactionId is incremented by one each time TXId is created.
+  // When transactionId is incremented over the INT32_MAX value
+  // then it should be reset to one.
+  TXId tx1;
+  ASSERT_EQ(1, tx1.getId());
 
-  // This method is only for testing and should not be used for any
-  // other purpose. See TXIdTest.cpp for more details.
-  static void setInitalTransactionIDValue(int32_t);
+  TXId tx2;
+  ASSERT_EQ(2, tx2.getId());
 
- private:
-  int32_t m_TXId;
-  static std::atomic<int32_t> m_transactionId;
-  TXId(const TXId&);
-};
+  // reset value at the end of test
+  TXId::setInitalTransactionIDValue(0);
+}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
-
-#endif  // GEODE_TXID_H_
