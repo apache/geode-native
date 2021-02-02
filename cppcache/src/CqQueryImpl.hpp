@@ -63,6 +63,7 @@ class CqQueryImpl : public CqQuery,
   std::shared_ptr<CqService> m_cqService;
   std::string m_serverCqName;
   bool m_isDurable;
+  int8_t m_suppressNotification;
 
   // Stats counters
   std::shared_ptr<CqStatistics> m_stats;
@@ -92,7 +93,8 @@ class CqQueryImpl : public CqQuery,
       const std::string& queryString,
       const std::shared_ptr<CqAttributes>& cqAttributes,
       statistics::StatisticsFactory* factory, const bool isDurable = false,
-      const std::shared_ptr<UserAttributes>& userAttributesPtr = nullptr);
+      const std::shared_ptr<UserAttributes>& userAttributesPtr = nullptr,
+      int8_t suppressNotification = 0);
 
   virtual ~CqQueryImpl();
 
@@ -262,6 +264,8 @@ class CqQueryImpl : public CqQuery,
   bool isDurable() const override;
 
   inline ThinClientBaseDM* getDM() { return m_tccdm; }
+
+  inline int8_t getSuppressNotification() { return m_suppressNotification; }
 
  private:
   void updateStats();

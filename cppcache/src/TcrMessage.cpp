@@ -2551,14 +2551,15 @@ TcrMessageExecuteCq::TcrMessageExecuteCq(DataOutput* dataOutput,
                                          const std::string& str1,
                                          const std::string& str2, CqState state,
                                          bool isDurable,
-                                         ThinClientBaseDM* connectionDM) {
+                                         ThinClientBaseDM* connectionDM,
+                                         int8_t suppressNotification) {
   m_request.reset(dataOutput);
 
   m_msgType = TcrMessage::EXECUTECQ_MSG_TYPE;
   m_tcdm = connectionDM;
   m_isDurable = isDurable;
 
-  uint32_t numOfParts = 5;
+  uint32_t numOfParts = 6;
   writeHeader(m_msgType, numOfParts);
   writeStringPart(str1);  // cqName
   writeStringPart(str2);  // query string
@@ -2570,6 +2571,8 @@ TcrMessageExecuteCq::TcrMessageExecuteCq(DataOutput* dataOutput,
   // CQ dependency on region data policy. After the changes, set numOfParts
   // to 4 (currently 5).
   writeBytePart(1);
+  writeIntPart(static_cast<int32_t>(suppressNotification));
+  // suppress notification
   writeMessageLength();
   m_regionName = str1;
   m_regex = str2;
@@ -2577,14 +2580,15 @@ TcrMessageExecuteCq::TcrMessageExecuteCq(DataOutput* dataOutput,
 
 TcrMessageExecuteCqWithIr::TcrMessageExecuteCqWithIr(
     DataOutput* dataOutput, const std::string& str1, const std::string& str2,
-    CqState state, bool isDurable, ThinClientBaseDM* connectionDM) {
+    CqState state, bool isDurable, ThinClientBaseDM* connectionDM,
+    int8_t suppressNotification) {
   m_request.reset(dataOutput);
 
   m_msgType = TcrMessage::EXECUTECQ_WITH_IR_MSG_TYPE;
   m_tcdm = connectionDM;
   m_isDurable = isDurable;
 
-  uint32_t numOfParts = 5;
+  uint32_t numOfParts = 6;
   writeHeader(m_msgType, numOfParts);
   writeStringPart(str1);  // cqName
   writeStringPart(str2);  // query string
@@ -2596,6 +2600,8 @@ TcrMessageExecuteCqWithIr::TcrMessageExecuteCqWithIr(
   // CQ dependency on region data policy. After the changes, set numOfParts
   // to 4 (currently 5).
   writeBytePart(1);
+  writeIntPart(static_cast<int32_t>(suppressNotification));
+  // suppress notification
   writeMessageLength();
   m_regionName = str1;
   m_regex = str2;

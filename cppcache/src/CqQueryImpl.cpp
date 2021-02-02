@@ -39,7 +39,8 @@ CqQueryImpl::CqQueryImpl(
     const std::string& queryString,
     const std::shared_ptr<CqAttributes>& cqAttributes,
     StatisticsFactory* factory, const bool isDurable,
-    const std::shared_ptr<UserAttributes>& userAttributesPtr)
+    const std::shared_ptr<UserAttributes>& userAttributesPtr,
+    int8_t suppressNotification)
     : m_cqName(cqName),
       m_queryString(queryString),
       m_cqAttributes(CqAttributesFactory(cqAttributes).create()),
@@ -57,6 +58,7 @@ CqQueryImpl::CqQueryImpl(
   } else {
     m_authenticatedView = nullptr;
   }
+  m_suppressNotification = suppressNotification & 7;  // filter bits 0-2
 }
 
 CqQueryImpl::~CqQueryImpl() {}
@@ -265,7 +267,7 @@ GfErrType CqQueryImpl::execute(TcrEndpoint* endpoint) {
                                                  .getCacheImpl()
                                                  ->createDataOutput()),
                               m_cqName, m_queryString, CqState::RUNNING,
-                              isDurable(), m_tccdm);
+                              isDurable(), m_tccdm, getSuppressNotification());
   TcrMessageReply reply(true, m_tccdm);
 
   GfErrType err = GF_NOERR;
@@ -323,7 +325,7 @@ bool CqQueryImpl::executeCq(TcrMessage::MsgType) {
                                              .getCacheImpl()
                                              ->createDataOutput()),
                           m_cqName, m_queryString, CqState::RUNNING,
-                          isDurable(), m_tccdm);
+                          isDurable(), m_tccdm, getSuppressNotification());
   TcrMessageReply reply(true, m_tccdm);
 
   GfErrType err = GF_NOERR;
@@ -374,7 +376,8 @@ std::shared_ptr<CqResults> CqQueryImpl::executeWithInitialResults(
                                                    .getCacheImpl()
                                                    ->createDataOutput()),
                                 m_cqName, m_queryString, CqState::RUNNING,
-                                isDurable(), m_tccdm);
+                                isDurable(), m_tccdm,
+                                getSuppressNotification());
 
   TcrMessageReply reply(true, m_tccdm);
   auto resultCollector =

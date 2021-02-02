@@ -98,6 +98,11 @@ class APACHE_GEODE_EXPORT CqService
    * @param queryString the OQL query
    * @param cqAttributes the CqAttributes
    * @param isDurable true if the CQ is durable
+   * @param suppressNotification bitmask of notifications that are suppressed:
+   *        b0 - if set to 1 - suppress create notification
+   *        b1 - if set to 1 - suppress update notification
+   *        b2 - if set to 1 - suppress destroy notification
+   *
    * @return the newly created CqQuery object
    * @throws CqExistsException if a CQ by this name already exists on this
    * client
@@ -121,7 +126,7 @@ class APACHE_GEODE_EXPORT CqService
   std::shared_ptr<CqQuery> newCq(
       const std::string& cqName, const std::string& queryString,
       const std::shared_ptr<CqAttributes>& cqAttributes,
-      const bool isDurable = false);
+      const bool isDurable = false, int8_t suppressNotification = 0);
 
   /**
    * Adds the given CQ and cqQuery object into the CQ map.

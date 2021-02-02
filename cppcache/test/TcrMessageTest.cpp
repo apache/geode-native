@@ -733,14 +733,14 @@ TEST_F(TcrMessageTest, testConstructorEXECUTECQ_MSG_TYPE) {
 
   TcrMessageExecuteCq testMessage(
       new DataOutputUnderTest(), "ExecuteCQ", "select * from /somewhere",
-      CqState::RUNNING, false, static_cast<ThinClientBaseDM *>(nullptr));
+      CqState::RUNNING, false, static_cast<ThinClientBaseDM *>(nullptr), 0);
 
   EXPECT_EQ(TcrMessage::EXECUTECQ_MSG_TYPE, testMessage.getMessageType());
 
   EXPECT_MESSAGE_EQ(
-      "0000002A0000004000000005FFFFFFFF0000000009004578656375746543510000001800"
+      "0000002A0000004900000006FFFFFFFF0000000009004578656375746543510000001800"
       "73656C656374202A2066726F6D202F736F6D657768657265000000040000000001000000"
-      "010000000000010001",
+      "010000000000010001000000040000000000",
       testMessage);
 }
 
@@ -768,13 +768,14 @@ TEST_F(TcrMessageTest, testConstructorWithGinormousQueryEXECUTECQ_MSG_TYPE) {
 
   TcrMessageExecuteCq testMessage(new DataOutputUnderTest(), "ExecuteCQ",
                                   oss.str(), CqState::RUNNING, false,
-                                  static_cast<ThinClientBaseDM *>(nullptr));
+                                  static_cast<ThinClientBaseDM *>(nullptr), 0);
 
   EXPECT_EQ(TcrMessage::EXECUTECQ_MSG_TYPE, testMessage.getMessageType());
 
   EXPECT_MESSAGE_EQ(
-      "0000002A0001009900000005FFFFFFFF0000000009004578656375746543510001007100"
-      "\\h{131298}000000040000000001000000010000000000010001",
+      "0000002A000100A200000006FFFFFFFF0000000009004578656375746543510001007100"
+      "73656C656374202A2066726F6D202F736F6D657768657265207320776865726520732E6"
+      "4\\h{131286}",
       testMessage);
 }
 
@@ -786,15 +787,15 @@ TEST_F(TcrMessageTest, testConstructorEXECUTECQ_WITH_IR_MSG_TYPE) {
 
   TcrMessageExecuteCqWithIr testMessage(
       new DataOutputUnderTest(), "ExecuteCQWithIr", "select * from /somewhere",
-      CqState::RUNNING, false, static_cast<ThinClientBaseDM *>(nullptr));
+      CqState::RUNNING, false, static_cast<ThinClientBaseDM *>(nullptr), 0);
 
   EXPECT_EQ(TcrMessage::EXECUTECQ_WITH_IR_MSG_TYPE,
             testMessage.getMessageType());
 
   EXPECT_MESSAGE_EQ(
-      "0000002B0000004600000005FFFFFFFF000000000F004578656375746543515769746849"
+      "0000002B0000004F00000006FFFFFFFF000000000F004578656375746543515769746849"
       "72000000180073656C656374202A2066726F6D202F736F6D657768657265000000040000"
-      "000001000000010000000000010001",
+      "000001000000010000000000010001000000040000000000",
       testMessage);
 }
 

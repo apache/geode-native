@@ -90,7 +90,8 @@ bool CqService::checkAndAcquireLock() {
 }
 std::shared_ptr<CqQuery> CqService::newCq(
     const std::string& cqName, const std::string& queryString,
-    const std::shared_ptr<CqAttributes>& cqAttributes, bool isDurable) {
+    const std::shared_ptr<CqAttributes>& cqAttributes, bool isDurable,
+    int8_t suppressNotification) {
   if (queryString.empty()) {
     throw IllegalArgumentException("Null queryString is passed. ");
   } else if (cqAttributes == nullptr) {
@@ -133,7 +134,7 @@ std::shared_ptr<CqQuery> CqService::newCq(
 
   auto cQuery = std::make_shared<CqQueryImpl>(
       shared_from_this(), cqName, queryString, cqAttributes,
-      m_statisticsFactory, isDurable, ua);
+      m_statisticsFactory, isDurable, ua, suppressNotification);
   cQuery->initCq();
   return std::move(cQuery);
 }

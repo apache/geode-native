@@ -725,7 +725,8 @@ class TcrMessageExecuteCq : public TcrMessage {
  public:
   TcrMessageExecuteCq(DataOutput* dataOutput, const std::string& str1,
                       const std::string& str2, CqState state, bool isDurable,
-                      ThinClientBaseDM* connectionDM);
+                      ThinClientBaseDM* connectionDM,
+                      int8_t suppressNotification);
 
   ~TcrMessageExecuteCq() override = default;
 };
@@ -734,7 +735,8 @@ class TcrMessageExecuteCqWithIr : public TcrMessage {
  public:
   TcrMessageExecuteCqWithIr(DataOutput* dataOutput, const std::string& str1,
                             const std::string& str2, CqState state,
-                            bool isDurable, ThinClientBaseDM* connectionDM);
+                            bool isDurable, ThinClientBaseDM* connectionDM,
+                            int8_t suppressNotification);
 
   ~TcrMessageExecuteCqWithIr() override = default;
 };
