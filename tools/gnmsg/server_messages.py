@@ -231,6 +231,21 @@ def read_version_tag_part(message_bytes, offset):
     return version_tag_part, offset + 2 * version_tag_part["Size"]
 
 
+def read_bytes_part(message_bytes, offset):
+    bytes_part, offset = read_object_header(message_bytes, offset)
+    cursor = offset
+    bytes_string = ""
+    for i in range(0, offset + 2 * bytes_part["Size"] - cursor, 2):
+        if i:
+            bytes_string += " "
+        byte_val, cursor = call_reader_function(
+            message_bytes, cursor, read_unsigned_byte_value
+        )
+        bytes_string += decimal_string_to_hex_string(str(byte_val))
+    bytes_part["Bytes"] = bytes_string
+    return bytes_part, cursor
+
+
 def read_entry_not_found_part(message_bytes, offset):
     entry_not_found_part, offset = read_object_header(message_bytes, offset)
     int_value, offset = call_reader_function(message_bytes, offset, read_int_value)
@@ -248,7 +263,7 @@ def read_destroy_reply(properties, message_bytes, offset):
     if flags & DestroyReplyFlags.HAS_VERSION_TAG:
         properties["VersionTag"], offset = read_version_tag_part(message_bytes, offset)
 
-    properties["PRMetadataPart(?)"], offset = read_object_part(message_bytes, offset)
+    properties["OkBytes"], offset = read_bytes_part(message_bytes, offset)
 
     if flags & DestroyReplyFlags.HAS_ENTRY_NOT_FOUND_PART:
         properties["EntryNotFoundPart"], offset = read_entry_not_found_part(
