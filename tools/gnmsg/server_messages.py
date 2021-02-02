@@ -15,14 +15,30 @@
 # limitations under the License.
 from read_values import (
     call_reader_function,
-    read_int_value,
-    read_unsigned_byte_value,
+    parse_key_or_value,
     read_byte_value,
     read_cacheable,
-    parse_key_or_value,
+    read_int_value,
+    read_short_value,
+    read_unsigned_byte_value,
+    read_unsigned_vl,
 )
-from numeric_conversion import decimal_string_to_hex_string
+from numeric_conversion import decimal_string_to_hex_string, int_to_hex_string
 from gnmsg_globals import global_protocol_state
+from enum import IntFlag
+
+
+class VersionTagFlags(IntFlag):
+    HAS_MEMBER_ID = 1
+    HAS_PREVIOUS_MEMBER_ID = 2
+    VERSION_TWO_BYTES = 4
+    DUPLICATE_MEMBER_IDS = 8
+    HAS_RVV_HIGH_BYTE = 16
+
+
+class DestroyReplyFlags(IntFlag):
+    HAS_VERSION_TAG = 1
+    HAS_ENTRY_NOT_FOUND_PART = 2
 
 
 def read_bucket_count(message_bytes, offset):
@@ -127,10 +143,124 @@ def read_contains_key_response(properties, message_bytes, offset):
     return properties, offset
 
 
+def read_flags_part(message_bytes, offset):
+    flags_part, offset = read_object_header(message_bytes, offset)
+    int_value, offset = call_reader_function(message_bytes, offset, read_int_value)
+
+    flags_part["Flags"] = int_to_hex_string(int_value) + " ("
+    if int_value & DestroyReplyFlags.HAS_VERSION_TAG:
+        flags_part["Flags"] += "HAS_VERSION_TAG"
+    if int_value & DestroyReplyFlags.HAS_ENTRY_NOT_FOUND_PART:
+        flags_part["Flags"] += " | HAS_ENTRY_NOT_FOUND_PART"
+    flags_part["Flags"] += ")"
+
+    return flags_part, offset, int_value
+
+
+def version_flags_to_string(version_flags):
+    version_flags_string = "("
+    if version_flags & VersionTagFlags.HAS_MEMBER_ID:
+        version_flags_string += "HAS_MEMBER_ID"
+    if version_flags & VersionTagFlags.HAS_PREVIOUS_MEMBER_ID:
+        version_flags_string += "| " if version_flags_string == ")" else ""
+        version_flags_string += "HAS_PREVIOUS_MEMBER_ID"
+    if version_flags & VersionTagFlags.VERSION_TWO_BYTES:
+        version_flags_string += "| " if version_flags_string == ")" else ""
+        version_flags_string += "VERSION_TWO_BYTES"
+    if version_flags & VersionTagFlags.DUPLICATE_MEMBER_IDS:
+        version_flags_string += "| " if version_flags_string == ")" else ""
+        version_flags_string += "DUPLICATE_MEMBER_IDS"
+    if version_flags & VersionTagFlags.HAS_RVV_HIGH_BYTE:
+        version_flags_string += "| " if version_flags_string == ")" else ""
+        version_flags_string += "HAS_RVV_HIGH_BYTE"
+    version_flags_string += ")"
+    return version_flags_string
+
+
+def read_version_tag_part(message_bytes, offset):
+    version_tag_part, offset = read_object_header(message_bytes, offset)
+    cursor = offset
+    version_flags, cursor = call_reader_function(
+        message_bytes, cursor, read_short_value
+    )
+
+    version_tag_part["Flags"] = version_flags_to_string(version_flags)
+
+    entry_version = 0
+    if version_flags & VersionTagFlags.VERSION_TWO_BYTES:
+        entry_version, cursor = call_reader_function(
+            message_bytes, cursor, read_short_value
+        )
+    else:
+        entry_version, cursor = call_reader_function(
+            message_bytes, cursor, read_int_value
+        )
+    version_tag_part["EntryVersion"] = int_to_hex_string(entry_version)
+
+    if version_flags & VersionTagFlags.HAS_RVV_HIGH_BYTE:
+        region_version_high_bytes, cursor = call_reader_function(
+            message_bytes, cursor, read_short_value
+        )
+        version_tag_part["RegionVersionHighBytes"] = int_to_hex_string(
+            region_version_high_bytes
+        )
+
+    region_version_low_bytes, cursor = call_reader_function(
+        message_bytes, cursor, read_int_value
+    )
+
+    timestamp, cursor = call_reader_function(message_bytes, cursor, read_unsigned_vl)
+    version_tag_part["Timestamp"] = int_to_hex_string(timestamp)
+
+    version_tag_part["RegionVersionLowBytes"] = int_to_hex_string(
+        region_version_low_bytes
+    )
+
+    bytes_string = ""
+    for i in range(0, offset + 2 * version_tag_part["Size"] - cursor, 2):
+        if i:
+            bytes_string += " "
+        byte_val, cursor = call_reader_function(
+            message_bytes, cursor, read_unsigned_byte_value
+        )
+        bytes_string += decimal_string_to_hex_string(str(byte_val))
+    version_tag_part[
+        "Un-decodable part (member id, [previous member id])"
+    ] = bytes_string
+
+    return version_tag_part, offset + 2 * version_tag_part["Size"]
+
+
+def read_entry_not_found_part(message_bytes, offset):
+    entry_not_found_part, offset = read_object_header(message_bytes, offset)
+    int_value, offset = call_reader_function(message_bytes, offset, read_int_value)
+    entry_not_found_part["EntryNotFound"] = "true" if int_value == 1 else "false"
+    return entry_not_found_part, offset
+
+
+def read_destroy_reply(properties, message_bytes, offset):
+    (
+        properties["Flags"],
+        offset,
+        flags,
+    ) = read_flags_part(message_bytes, offset)
+
+    if flags & DestroyReplyFlags.HAS_VERSION_TAG:
+        properties["VersionTag"], offset = read_version_tag_part(message_bytes, offset)
+
+    properties["PRMetadataPart(?)"], offset = read_object_part(message_bytes, offset)
+
+    if flags & DestroyReplyFlags.HAS_ENTRY_NOT_FOUND_PART:
+        properties["EntryNotFoundPart"], offset = read_entry_not_found_part(
+            message_bytes, offset
+        )
+
+
 server_message_parsers = {
-    "RESPONSE_CLIENT_PARTITION_ATTRIBUTES": read_partition_attributes,
-    "PUT_REPLY": read_put_reply,
     "CONTAINS_KEY_RESPONSE": read_contains_key_response,
+    "DESTROY_REPLY": read_destroy_reply,
+    "PUT_REPLY": read_put_reply,
+    "RESPONSE_CLIENT_PARTITION_ATTRIBUTES": read_partition_attributes,
 }
 
 
