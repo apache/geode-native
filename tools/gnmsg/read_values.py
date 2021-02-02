@@ -50,6 +50,24 @@ def read_long_value(string, offset):
     return read_number_from_hex_string(string, offset, 16)
 
 
+def read_unsigned_vl(string, offset):
+    shift = 0
+    result = 0
+    cursor = offset
+
+    while shift < 64:
+        b, cursor = call_reader_function(string, cursor, read_byte_value)
+
+        result |= (b & 0x7F) << shift
+        if not (b & 0x80):
+            break
+        shift += 7
+
+    if shift >= 64:
+        raise ValueError("Malformed variable length integer")
+    return result, cursor - offset
+
+
 def read_string_value(string, length, offset):
     string_value = bytearray.fromhex(string[offset : offset + (length * 2)]).decode(
         "utf-8"
