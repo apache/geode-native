@@ -160,11 +160,8 @@ bool TcrConnection::initTcrConnection(
     handShakeMsg.write(static_cast<int8_t>(CLIENT_TO_SERVER));
   }
 
-  // added for versioned client
-  int8_t versionOrdinal = Version::getOrdinal();
-  handShakeMsg.write(versionOrdinal);
-
-  LOGFINE("Client version ordinal is %d", versionOrdinal);
+  Version::write(handShakeMsg, Version::current());
+  LOGFINE("Client version ordinal is %d", Version::current().getOrdinal());
 
   handShakeMsg.write(static_cast<int8_t>(REPLY_OK));
 

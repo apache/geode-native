@@ -37,6 +37,7 @@
 #include "TcpSslConn.hpp"
 #include "TcrConnectionManager.hpp"
 #include "ThinClientPoolDM.hpp"
+#include "Version.hpp"
 
 namespace apache {
 namespace geode {
@@ -111,6 +112,7 @@ std::unique_ptr<Connector> ThinClientLocatorHelper::createConnection(
   }
 }
 
+static constexpr int32_t kGossipVersion = 1002;
 std::shared_ptr<Serializable> ThinClientLocatorHelper::sendRequest(
     const ServerLocation& location,
     const std::shared_ptr<Serializable>& request) const {
@@ -123,7 +125,8 @@ std::shared_ptr<Serializable> ThinClientLocatorHelper::sendRequest(
     auto conn = createConnection(location);
     auto data =
         m_poolDM->getConnectionManager().getCacheImpl()->createDataOutput();
-    data.writeInt(static_cast<int32_t>(1001));  // GOSSIPVERSION
+    data.writeInt(kGossipVersion);
+    data.writeInt(Version::current().getOrdinal());
     data.writeObject(request);
     auto sentLength = conn->send(
         reinterpret_cast<char*>(const_cast<uint8_t*>(data.getBuffer())),
