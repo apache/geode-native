@@ -52,11 +52,8 @@ public class PositionKey implements DataSerializable {
     out.writeLong(this.positionId);
   } 
   
-  public int hashCode()
-  {
-      final int prime = 31;
-      int result = prime * (int)positionId;
-      return result;
+  public int hashCode() {
+    return Objects.hash(positionId);
   }
 
   public boolean equals(final Object obj)
