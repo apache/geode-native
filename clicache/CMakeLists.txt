@@ -22,6 +22,15 @@ add_custom_target(nuget-restore
   COMMAND ${NUGET} restore ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.sln
 )
 
+if (MSVC)
+  # Enable error for "extra qualification" on Windows,
+  # because code with them generates a warning on other
+  # platforms
+  target_compile_options(apache-geode INTERFACE
+    /we4596
+  )
+endif()
+
 add_subdirectory(src)
 add_subdirectory(test)
 add_subdirectory(test2)

@@ -108,6 +108,15 @@ if (USE_PCH)
   endif()
 endif()
 
+if (MSVC)
+  # Enable error for "extra qualification" on Windows,
+  # because code with them generates a warning on other
+  # platforms
+  target_compile_options(_apache-geode INTERFACE
+    /we4596
+  )
+endif()
+
 target_include_directories(_apache-geode INTERFACE
   $<BUILD_INTERFACE:${COMMON_INCLUDE_DIR}>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
