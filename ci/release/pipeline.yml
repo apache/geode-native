@@ -54,7 +54,7 @@ resources:
     source:
       owner: #@ data.values.github.owner
       repository: #@ data.values.github.repository
-      access_token: ((github-access-token))
+      access_token: ((github-pr-access-token))
       release: false
       pre_release: true
     icon: github
