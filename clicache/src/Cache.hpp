@@ -266,7 +266,7 @@ namespace Apache
         virtual DataInput^ CreateDataInput(array<Byte>^ buffer, System::Int32 len);
         virtual DataInput^ CreateDataInput(array<Byte>^ buffer);
         
-        virtual DataOutput^ Cache::CreateDataOutput();
+        virtual DataOutput^ CreateDataOutput();
 
         /// <summary>
         /// Returns a PoolFactory that can be used to create a Pool and that provides

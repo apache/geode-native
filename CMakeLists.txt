@@ -281,6 +281,7 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
   target_compile_options(_WarningsAsError INTERFACE
     /WX
 	/wd4996
+  /we4596
 	)
 
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /ignore:4099")
