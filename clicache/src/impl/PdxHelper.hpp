@@ -54,7 +54,7 @@ namespace Apache
 
           static Int32 ReadInt16(System::Byte* offsetPosition);
 
-					static Int32 ReadUInt16(System::Byte* offsetPosition);
+          static Int32 ReadUInt16(System::Byte* offsetPosition);
 
           static Int32 ReadByte(System::Byte* offsetPosition);
 
