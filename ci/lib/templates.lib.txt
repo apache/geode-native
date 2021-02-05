@@ -148,6 +148,8 @@ packer build -only=googlecompute \
     -var branch=(@= gci_label_value(data.values.repository.branch) @) \
     -var image_name_prefix=(@= image_family_name(build.image_family)[0:51] @) \
     -var image_family=(@= image_family_name(build.image_family) @) \
+    -var googlecompute_project=(@=  data.values.google.project @) \
+    -var googlecompute_zone=(@= data.values.google.zone @) \
     (@= build.image_family @).json
 (@- end @)
 

@@ -1,6 +1,6 @@
 {
   "region": "us-west-2",
   "aws_region": "us-west-2",
-  "googlecompute_project": "gemfire-dev",
+  "googlecompute_project": "apachegeode-ci",
   "googlecompute_zone": "us-central1-c"
 }
