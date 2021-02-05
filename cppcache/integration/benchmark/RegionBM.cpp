@@ -19,6 +19,17 @@
 #include <framework/Cluster.h>
 #include <framework/Gfsh.h>
 
+// Disable warning for "extra qualifications" here.  One of the boost log
+// headers triggers this warning.  Note: use of disable pragma here is
+// intentional - attempts to use push/pop as you ordinarily should just
+// yielded a gripe from the MS tools that "warning number '4596' is not a
+// valid compiler warning". re-enabling the warning after the include
+// fails in the same way, so just leave it disabled for the rest of the
+// file.  This is safe, since the warning can only trigger inside a class
+// declaration, of which there are none in this file.
+#ifdef WIN32
+#pragma warning(disable : 4596)
+#endif
 #include <boost/log/core.hpp>
 #include <boost/log/expressions.hpp>
 #include <boost/log/trivial.hpp>
