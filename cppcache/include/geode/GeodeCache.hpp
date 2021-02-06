@@ -43,9 +43,7 @@ class SystemProperties;
 
 class APACHE_GEODE_EXPORT GeodeCache : public RegionService {
  public:
-#if (!APACHE_GEODE_ABI_COMPATIBILITY)
   ~GeodeCache() override = 0;
-#endif
 
   /** Returns the name of this cache.
    * @return the string name of this cache

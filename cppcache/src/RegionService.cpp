@@ -21,9 +21,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-#if (!APACHE_GEODE_ABI_COMPATIBILITY)
 RegionService::~RegionService() = default;
-#endif
 
 }  // namespace client
 }  // namespace geode
