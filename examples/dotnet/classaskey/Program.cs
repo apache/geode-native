@@ -175,11 +175,9 @@ namespace Apache.Geode.Examples.ClassAsKey
 
       var startIndex = rand.Next(numAvailableDays);
       start = earliestStart.AddDays(startIndex);
-      //start = new DateTime(2020,1,1);
 
       int numRemainingDays = (int)(DateTime.Now - start).TotalDays;
       end = start.AddDays(rand.Next(numRemainingDays));
-      //end = new DateTime(2020,1,1);
     }
 
     public static Bitmap ChooseThumb()
