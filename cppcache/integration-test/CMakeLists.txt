@@ -74,9 +74,12 @@ elseif(WIN32)
   set(LIBRARY_PATH_ENVIRONMENT_VARIABLE PATH)
 endif()
 set(LIBRARY_PATH
+  $<TARGET_LINKER_FILE_DIR:apache-geode>
   $<TARGET_LINKER_FILE_DIR:SqLiteImpl>
-  $<TARGET_LINKER_FILE_DIR:unit_test_callbacks>
   $<TARGET_PROPERTY:SQLite::sqlite3,INTERFACE_LIBRARY_DIR>
+  $<TARGET_PROPERTY:SQLite::sqlite3,INTERFACE_RUNTIME_DIR>
+  $<TARGET_LINKER_FILE_DIR:unit_test_callbacks>
+  $<TARGET_LINKER_FILE_DIR:testobject>
 )
 
 add_custom_target(cppcache-integration-tests)
@@ -157,7 +160,7 @@ foreach(FILE ${SOURCES})
     GF_JAVA=${Java_JAVA_EXECUTABLE}
     GFJAVA=${Geode_PATH}
     GF_CLASSPATH=${CMAKE_BINARY_DIR}/tests/javaobject/javaobject.jar
-    ${LIBRARY_PATH_ENVIRONMENT_VARIABLE}=$<SHELL_PATH:${LIBRARY_PATH}>
+    ${LIBRARY_PATH_ENVIRONMENT_VARIABLE}="${LIBRARY_PATH_ENVIRONMENT_VARIABLE}=$<JOIN:$<SHELL_PATH:${LIBRARY_PATH}>,\\$<SEMICOLON>>"
   )
 
   set_tests_properties(${TEST} PROPERTIES
