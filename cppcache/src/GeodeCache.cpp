@@ -21,9 +21,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-#if (!APACHE_GEODE_ABI_COMPATIBILITY)
 GeodeCache::~GeodeCache() = default;
-#endif
 
 }  // namespace client
 }  // namespace geode

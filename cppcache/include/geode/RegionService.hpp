@@ -57,9 +57,7 @@ class QueryService;
 
 class APACHE_GEODE_EXPORT RegionService {
  public:
-#if (!APACHE_GEODE_ABI_COMPATIBILITY)
   virtual ~RegionService() = 0;
-#endif
 
   /**
    * Indicates if this cache has been closed.
