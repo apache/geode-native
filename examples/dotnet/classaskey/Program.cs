@@ -163,7 +163,6 @@ namespace Apache.Geode.Examples.ClassAsKey
       }
 
       // Sort the chosen. We only care who is chosen, not the order they're chosen.
-      //IComparer<String> comparer = new CacheableStringComparer();
       chosenPeople.Sort();
       return chosenPeople;
     }
