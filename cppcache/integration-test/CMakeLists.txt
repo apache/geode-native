@@ -151,16 +151,16 @@ foreach(FILE ${SOURCES})
 
   set(ENVIRONMENT
     TESTNAME=${TEST}
-    TESTSRC=${CMAKE_CURRENT_SOURCE_DIR}
+    "TESTSRC=$<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}>"
     TIMEBOMB=500
     MCAST_ADDR=0.0.0.0 # unused but framework expects
     MCAST_PORT=0       # unused but framework expects
     GFE_LOGLEVEL=config
     GFE_SECLOGLEVEL=config
-    GF_JAVA=${Java_JAVA_EXECUTABLE}
-    GFJAVA=${Geode_PATH}
-    GF_CLASSPATH=${CMAKE_BINARY_DIR}/tests/javaobject/javaobject.jar
-    ${LIBRARY_PATH_ENVIRONMENT_VARIABLE}="${LIBRARY_PATH_ENVIRONMENT_VARIABLE}=$<JOIN:$<SHELL_PATH:${LIBRARY_PATH}>,\\$<SEMICOLON>>"
+    "GF_JAVA=$<SHELL_PATH:${Java_JAVA_EXECUTABLE}>"
+    "GFJAVA=$<SHELL_PATH:${Geode_PATH}>"
+    "GF_CLASSPATH=$<SHELL_PATH:${CMAKE_BINARY_DIR}/tests/javaobject/javaobject.jar>"
+    "${LIBRARY_PATH_ENVIRONMENT_VARIABLE}=$<JOIN:$<SHELL_PATH:${LIBRARY_PATH}>,\\$<SEMICOLON>>"
   )
 
   set_tests_properties(${TEST} PROPERTIES
