@@ -15,14 +15,8 @@
 
 project(nativeclient.tests.clicache)
 
-set (NUNIT_PATH "C:/Program Files (x86)/NUnit 2.6.4/bin")
-
-if (64 EQUAL ${BUILD_BITS})
-  set (NUNIT_CONSOLE "${NUNIT_PATH}/nunit-console")
-else()
-  set (NUNIT_CONSOLE "${NUNIT_PATH}/nunit-console-x86")
-endif()
-
+find_program(NUNIT_CONSOLE "nunit-console" REQUIRED PATH_SUFFIXES "NUnit 2.6.4/bin")
+message(STATUS "Found nunit-console: ${NUNIT_CONSOLE}")
 
 foreach(var CMAKE_CURRENT_SOURCE_DIR CMAKE_SOURCE_DIR CMAKE_BINARY_DIR CMAKE_CURRENT_BINARY_DIR)
   file(TO_NATIVE_PATH ${${var}} ${var}_NATIVE)
