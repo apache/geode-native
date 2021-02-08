@@ -22,18 +22,22 @@ namespace Apache.Geode.Examples.ClassAsKey
 {
   public class PhotosKey : IDataSerializable, ICacheableKey
   {
-    public List<CacheableString> people;
-    public CacheableDate rangeStart;
-    public CacheableDate rangeEnd;
+    public List<String> people;
+    public DateTime rangeStart;
+    public DateTime rangeEnd;
 
     // A default constructor is required for deserialization
     public PhotosKey() { }
 
-    public PhotosKey(List<CacheableString> names, CacheableDate start, CacheableDate end)
+    public PhotosKey(List<String> names, DateTime start, DateTime end)
     {
       people = names;
-      rangeStart = start;
-      rangeEnd = end;
+
+      // Geode server defaults to Utc to ensure hashes match between client and
+      // server
+      TimeZone tz = TimeZone.CurrentTimeZone;
+      rangeStart = tz.ToUniversalTime(start);
+      rangeEnd = tz.ToUniversalTime(end);
     }
 
     public override string ToString()
@@ -53,15 +57,15 @@ namespace Apache.Geode.Examples.ClassAsKey
     public void ToData(DataOutput output)
     {
       output.WriteObject(people);
-      output.WriteObject(rangeStart);
-      output.WriteObject(rangeEnd);
+      output.WriteDate(rangeStart);
+      output.WriteDate(rangeEnd);
     }
 
     public void FromData(DataInput input)
     {
-      people = (List<CacheableString>)input.ReadObject();
-      rangeStart = (CacheableDate)input.ReadObject();
-      rangeEnd = (CacheableDate)input.ReadObject();
+      people = (List<String>)input.ReadObject();
+      rangeStart = (DateTime)input.ReadDate();
+      rangeEnd = (DateTime)input.ReadDate();
     }
 
     public ulong ObjectSize
@@ -94,17 +98,7 @@ namespace Apache.Geode.Examples.ClassAsKey
 
     public override int GetHashCode()
     {
-      int prime = 31;
-      int result = 1;
-      foreach (CacheableString cs in people)
-      {
-        result = result * prime + cs.GetHashCode();
-      }
-
-      result = result * prime + rangeStart.GetHashCode();
-      result = result * prime + rangeEnd.GetHashCode();
-
-      return result;
+      return Objects.Hash(people, rangeStart, rangeEnd);
     }
 
     public static ISerializable CreateDeserializable()
@@ -113,5 +107,4 @@ namespace Apache.Geode.Examples.ClassAsKey
     }
   }
 }
-
 

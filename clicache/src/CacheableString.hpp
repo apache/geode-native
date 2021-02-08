@@ -40,7 +40,7 @@ namespace Apache
       /// An immutable string wrapper that can serve as a distributable
       /// key object for caching as well as being a string value.
       /// </summary>
-      public ref class CacheableString
+      ref class CacheableString
         :  public IDataSerializablePrimitive, public CacheableKey
       {
       public:

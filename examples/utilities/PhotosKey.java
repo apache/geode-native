@@ -22,6 +22,7 @@ import org.apache.geode.*;
 import org.apache.geode.cache.Declarable;
 import org.apache.geode.DataSerializer;
 
+import org.apache.geode.logging.internal.log4j.api.LogService;
 
 public class PhotosKey implements DataSerializable {
   public List<String> people;
@@ -56,21 +57,11 @@ public class PhotosKey implements DataSerializable {
     DataSerializer.writeDate(this.rangeStart, out);
     DataSerializer.writeDate(this.rangeEnd, out);
   } 
-  
 
   public int hashCode() {
-	final int prime = 31;
-	int result = 1;
-	for( String s : people )
-	{
-		result = result * prime + s.hashCode();
-	}
-
-	result = result * prime + rangeStart.hashCode();
-	result = result * prime + rangeEnd.hashCode();
-	return result;
+	LogService.getLogger().warn("hashCode = {}", Objects.hash(people, rangeStart, rangeEnd));
+	return Objects.hash(people, rangeStart, rangeEnd);
   }
-
 
   public boolean equals(final Object obj)
   {

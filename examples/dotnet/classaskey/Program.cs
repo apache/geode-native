@@ -39,8 +39,8 @@ namespace Apache.Geode.Examples.ClassAsKey
       PhotosKey[] keys = new PhotosKey[MAXPHOTOKEYS];
       PhotosValue[] values = new PhotosValue[MAXPHOTOKEYS];
 
-      CacheableDate start;
-      CacheableDate end;
+      DateTime start;
+      DateTime end;
 
       rand = new Random();
       int numPhotos;
@@ -62,7 +62,8 @@ namespace Apache.Geode.Examples.ClassAsKey
         }
         values[i] = new PhotosValue(metaData);
 
-        Console.WriteLine("Inserting " + numPhotos + " photos for key: " + keys[i].ToString());
+        Console.WriteLine("Inserting " + numPhotos + " photos for key: " + keys[i].ToString() +
+          " with hashCode = " + Objects.Hash(keys[i].people, keys[i].rangeStart, keys[i].rangeEnd));
 
         photosMetaData.Put(keys[i], values[i]);
       }
@@ -133,16 +134,16 @@ namespace Apache.Geode.Examples.ClassAsKey
       return photosMetaData;
     }
 
-    public static List<CacheableString> ChoosePeople()
+    public static List<String> ChoosePeople()
     {
-      List<CacheableString> availablePeople = new List<CacheableString> {
-        new CacheableString("Alice"),
-        new CacheableString("Bob"),
-        new CacheableString("Carol"),
-        new CacheableString("Ted")
+      List<String> availablePeople = new List<String> {
+        "Alice",
+        "Bob",
+        "Carol",
+        "Ted"
       };
 
-      List<CacheableString> chosenPeople = new List<CacheableString>();
+      List<String> chosenPeople = new List<String>();
 
       // Choose at least one person
       int numChosen = rand.Next(1, availablePeople.Count+1);
@@ -162,23 +163,21 @@ namespace Apache.Geode.Examples.ClassAsKey
       }
 
       // Sort the chosen. We only care who is chosen, not the order they're chosen.
-      IComparer<CacheableString> comparer = new CacheableStringComparer();
-      chosenPeople.Sort(comparer);
+      chosenPeople.Sort();
       return chosenPeople;
     }
 
-    public static void ChooseDateRange(out CacheableDate start, out CacheableDate end)
+    public static void ChooseDateRange(out DateTime start, out DateTime end)
     {
       //Choose start and end dates between Jan 1, 1970 and now
       var earliestStart = new DateTime(1970, 1, 1);
       int numAvailableDays = (int)(DateTime.Now - earliestStart).TotalDays;
 
       var startIndex = rand.Next(numAvailableDays);
-      var startDate = earliestStart.AddDays(startIndex);
-      start = new CacheableDate(startDate);
+      start = earliestStart.AddDays(startIndex);
 
-      int numRemainingDays = (int)(DateTime.Now - startDate).TotalDays;
-      end = new CacheableDate(startDate.AddDays(rand.Next(numRemainingDays)));
+      int numRemainingDays = (int)(DateTime.Now - start).TotalDays;
+      end = start.AddDays(rand.Next(numRemainingDays));
     }
 
     public static Bitmap ChooseThumb()
@@ -198,15 +197,6 @@ namespace Apache.Geode.Examples.ClassAsKey
       return thumb;
     }
   }
-
-  public class CacheableStringComparer : IComparer<CacheableString>
-  {
-    public int Compare(CacheableString a, CacheableString b)
-    {
-      return a.Value.CompareTo(b.Value);
-    }
-  }
-
 }
 
 
