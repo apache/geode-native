@@ -15,12 +15,12 @@
 
 project(nativeclient.tests.clicache)
 
-set (NUNIT "C:\\Program Files (x86)\\NUnit 2.6.4")
+set (NUNIT_PATH "C:/Program Files (x86)/NUnit 2.6.4/bin")
 
 if (64 EQUAL ${BUILD_BITS})
-  set (NUNIT_CONSOLE "nunit-console")
+  set (NUNIT_CONSOLE "${NUNIT_PATH}/nunit-console")
 else()
-  set (NUNIT_CONSOLE "nunit-console-x86")
+  set (NUNIT_CONSOLE "${NUNIT_PATH}/nunit-console-x86")
 endif()
 
 
@@ -47,19 +47,14 @@ endforeach()
 
 enable_testing()
 
-# Function to resolve both config and generate stage variables.
-macro(generate_config INPUT TEMP OUTPUT)
-    configure_file(${INPUT} ${TEMP})
-    file(GENERATE OUTPUT ${OUTPUT}
-      INPUT ${TEMP}
-      CONDITION 1
-    )
-endmacro()
-
-foreach( lib SQLite::sqlite3 )
-  get_target_property(runtime_path ${lib} INTERFACE_RUNTIME_DIR)
-  set(PATH ${PATH} ${runtime_path})
-endforeach()
+set(PATH
+  $<TARGET_LINKER_FILE_DIR:apache-geode>
+  $<TARGET_LINKER_FILE_DIR:SqLiteImpl>
+  $<TARGET_PROPERTY:SQLite::sqlite3,INTERFACE_LIBRARY_DIR>
+  $<TARGET_PROPERTY:SQLite::sqlite3,INTERFACE_RUNTIME_DIR>
+  $<TARGET_LINKER_FILE_DIR:unit_test_callbacks>
+  $<TARGET_LINKER_FILE_DIR:testobject>
+)
 
 file(GLOB SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "*.cs")
 
@@ -80,11 +75,24 @@ foreach(FILE ${SOURCES})
     # Get the test class (NewAPI tests have N in the file name but not test class name)
     string(REGEX REPLACE "N$" "" TESTCLASS ${TEST})
 
-    set(TEST_SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/${TEST}.bat)
-    generate_config(${CMAKE_CURRENT_SOURCE_DIR}/test.bat.in ${CMAKE_CURRENT_BINARY_DIR}/.${TEST}.bat.in ${TEST_SCRIPT})
+    add_test(NAME ${TEST}
+        COMMAND "$<SHELL_PATH:${NUNIT_CONSOLE}>" /timeout 1000000 /labels /run:${NAMESPACE}.${TESTCLASS} "$<SHELL_PATH:${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/UnitTests.dll>"
+        WORKING_DIRECTORY ${TEST_DIR}
+    )
 
-    add_test(NAME ${TEST} COMMAND ${TEST_SCRIPT})
-    set_tests_properties(${TEST} PROPERTIES LABELS STABLE)
+    set(ENVIRONMENT
+      "TESTSRC=$<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}>"
+      GFE_LOGLEVEL=config
+      GFE_SECLOGLEVEL=config
+      "GF_JAVA=$<SHELL_PATH:${Java_JAVA_EXECUTABLE}>"
+      "GFE_DIR=$<SHELL_PATH:${Geode_PATH}>"
+      "GF_CLASSPATH=$<SHELL_PATH:${CMAKE_BINARY_DIR}/tests/javaobject/javaobject.jar>"
+      "PATH=$<JOIN:$<SHELL_PATH:${PATH}>,\\$<SEMICOLON>>"
+    )
+
+    set_tests_properties(${TEST} PROPERTIES
+      ENVIRONMENT "${ENVIRONMENT}"
+    )
 
     file(STRINGS ${FILE} IsDeprecated REGEX "\\[Category.*deprecated.*\\]")
     if (IsDeprecated)
@@ -93,17 +101,11 @@ foreach(FILE ${SOURCES})
   endif()
 endforeach()
 
-# Label any flaky tests here
 set_tests_properties(ThinClientCqStatusTestTwoServers
+    # flaky
     ThinClientPoolTestsN
     ThinClientQueryTestsN
-  PROPERTIES
-    DISABLED TRUE
-    LABELS FLAKY
-)
-
-# Label any tests that always fail here
-set_tests_properties(OverflowTestsN
+    # broken
     ThinClientDeltaTestFailing
     ThinClientDurableTestsN
     ThinClientHARegionTestsN
@@ -114,7 +116,6 @@ set_tests_properties(OverflowTestsN
     ThinClientSecurityAuthzTestsN
   PROPERTIES
     DISABLED TRUE
-    LABELS OMITTED
 )
 
 add_custom_target(run-stable-clicache-integration-tests
