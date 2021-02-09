@@ -14,20 +14,26 @@
 # limitations under the License.
 
 
-project(Apache.Geode.Templates.Cache.Security CSharp)
+project(SecurityUtil CSharp)
 
-add_library(Apache.Geode.Templates.Cache.Security SHARED
-  AssemblyInfo.cs
-  UserPasswordAuthInit.cs
+add_library(SecurityUtil SHARED
+  AuthzCredentialGeneratorN.cs
+  CredentialGeneratorN.cs
+  DummyAuthorization3N.cs
+  LdapCredentialGeneratorN.cs
+  #PKCSCredentialGeneratorN.cs
+  XmlAuthzCredentialGeneratorN.cs
 )
 
-target_link_libraries(Apache.Geode.Templates.Cache.Security
+target_link_libraries(SecurityUtil
   PUBLIC
     Apache.Geode
+    Apache.Geode.DUnitFramework
+    Apache.Geode.Templates.Cache.Security
 )
 
-set_target_properties(Apache.Geode.Templates.Cache.Security PROPERTIES
-  VS_GLOBAL_ROOTNAMESPACE Apache.Geode.Templates.Cache.Security
+set_target_properties(SecurityUtil PROPERTIES
+  VS_GLOBAL_ROOTNAMESPACE Apache.Geode.Client.Tests
   VS_GLOBAL_TreatWarningsAsErrors True
   VS_GLOBAL_PROJECT_TYPES "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
   VS_DOTNET_REFERENCES "System;System.Xml;System.Data"
@@ -35,7 +41,7 @@ set_target_properties(Apache.Geode.Templates.Cache.Security PROPERTIES
 )
 
 if(NOT "${STRONG_NAME_KEY}" STREQUAL "")
-  set_target_properties(Apache.Geode.Templates.Cache.Security PROPERTIES
+  set_target_properties(SecurityUtil PROPERTIES
     VS_GLOBAL_SignAssembly "true"
     VS_GLOBAL_AssemblyOriginatorKeyFile ${STRONG_NAME_KEY}
   )

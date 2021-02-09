@@ -128,13 +128,15 @@ class Cluster {
           UseIpv6 useIPv6);
 
   Cluster(LocatorCount initialLocators, ServerCount initialServers,
-          std::vector<uint16_t> &locatorPorts, std::vector<uint16_t> &remoteLocatorPort,
+          std::vector<uint16_t> &locatorPorts,
+          std::vector<uint16_t> &remoteLocatorPort,
           uint16_t distributedSystemId);
 
   Cluster(Name name, Classpath classpath, SecurityManager securityManager,
           User user, Password password, LocatorCount initialLocators,
           ServerCount initialServers, CacheXMLFiles cacheXMLFiles,
-          std::vector<uint16_t> &locatorPorts, std::vector<uint16_t> &remoteLocatorPort,
+          std::vector<uint16_t> &locatorPorts,
+          std::vector<uint16_t> &remoteLocatorPort,
           uint16_t distributedSystemId);
 
   Cluster(LocatorCount initialLocators, ServerCount initialServers);
@@ -223,7 +225,6 @@ class Cluster {
   bool getUseIPv6();
 
  private:
-
   std::string name_;
   std::string classpath_;
   std::string securityManager_;
