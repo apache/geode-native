@@ -213,7 +213,7 @@ set_tests_properties(
     testThinClientPoolRedundancy
     testThinClientPoolServer
     testThinClientPutAll
-    testThinClientPutAllPRSingleHop
+    #testThinClientPutAllPRSingleHop
     testThinClientPutAllWithCallBackArgWithoutConcurrency
     testThinClientSecurityCQAuthorizationMU
     testThinClientTXFailover
@@ -224,7 +224,7 @@ set_tests_properties(
     testThinClientCqDurable
     testThinClientGatewayTest
     testThinClientHAFailoverRegex
-    testThinClientPRSingleHop
+    #testThinClientPRSingleHop
     testThinClientPoolAttrTest
     testThinClientPoolLocator
     testThinClientRemoteQueryTimeout

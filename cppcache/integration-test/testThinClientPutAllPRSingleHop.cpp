@@ -340,6 +340,80 @@ DUNIT_TASK_DEFINITION(SERVER3, CloseServer3)
   }
 END_TASK_DEFINITION
 
+DUNIT_TASK_DEFINITION(SERVER1, CreateLocator1)
+  {
+    // starting locator
+    if (isLocator) CacheHelper::initLocator(1);
+    LOG("Locator1 started");
+  }
+END_TASK_DEFINITION
+
+DUNIT_TASK_DEFINITION(SERVER1, CloseLocator1)
+  {
+    // stop locator
+    if (isLocator) {
+      CacheHelper::closeLocator(1);
+      LOG("Locator1 stopped");
+    }
+  }
+END_TASK_DEFINITION
+
+DUNIT_TASK_DEFINITION(SERVER1, CreateServer1_With_Locator_PR)
+  {
+    // starting servers
+    if (isLocalServer) {
+      CacheHelper::initServer(1, "cacheserver1_partitioned.xml", locatorsG);
+    }
+  }
+END_TASK_DEFINITION
+
+DUNIT_TASK_DEFINITION(SERVER2, CreateServer2_With_Locator_PR)
+  {
+    // starting servers
+    if (isLocalServer) {
+      CacheHelper::initServer(2, "cacheserver2_partitioned.xml", locatorsG);
+    }
+  }
+END_TASK_DEFINITION
+
+DUNIT_TASK_DEFINITION(SERVER3, CreateServer3_With_Locator_PR)
+  {
+    // starting servers
+    if (isLocalServer) {
+      CacheHelper::initServer(3, "cacheserver3_partitioned.xml", locatorsG);
+    }
+  }
+END_TASK_DEFINITION
+
+DUNIT_TASK_DEFINITION(CLIENT1, StepOne_Pooled_Locator)
+  {
+    initClient(true);
+
+    getHelper()->createPoolWithLocators("__TEST_POOL1__", locatorsG);
+    getHelper()->createRegionAndAttachPool(regionNames[0], USE_ACK,
+                                           "__TEST_POOL1__", false);
+    getHelper()->createRegionAndAttachPool(regionNames[1], NO_ACK,
+                                           "__TEST_POOL1__", false);
+
+    LOG("StepOne_Pooled_Locator complete.");
+  }
+END_TASK_DEFINITION
+
+DUNIT_TASK_DEFINITION(CLIENT1, StepOne_Pooled_LocatorTL)
+  {
+    initClient(true);
+
+    auto regPtr = getHelper()->createPooledRegionStickySingleHop(
+        regionNames[0], USE_ACK, locatorsG, "__TEST_POOL1__", false, false);
+    ASSERT(regPtr != nullptr, "Failed to create region.");
+    regPtr = getHelper()->createPooledRegionStickySingleHop(
+        regionNames[1], NO_ACK, locatorsG, "__TEST_POOL1__", false, false);
+    ASSERT(regPtr != nullptr, "Failed to create region.");
+
+    LOG("StepOne_Pooled_LocatorTL complete.");
+  }
+END_TASK_DEFINITION
+
 DUNIT_MAIN
   {
     CacheableHelper::registerBuiltins(true);
@@ -348,14 +422,25 @@ DUNIT_MAIN
     /////////////////////////////////////////////
     /*TODO:: change k < 1 to its original k < 2*/
     for (int k = 0; k < 1; k++) {
-      CALL_TASK(CreateServer1);
-      CALL_TASK(CreateServer2);
-      CALL_TASK(CreateServer3);
+      CALL_TASK(CreateLocator1);
+
+      CALL_TASK(CreateServer1_With_Locator_PR);
+      CALL_TASK(CreateServer2_With_Locator_PR);
+      CALL_TASK(CreateServer3_With_Locator_PR);
+      // CALL_TASK(CreateServer1);
+      // CALL_TASK(CreateServer2);
+      // CALL_TASK(CreateServer3);
+
+      // if (k == 0) {
+      //  CALL_TASK(StepOne_Pooled_Endpoint);
+      //} else {
+      //  CALL_TASK(StepOne_Pooled_EndpointTL);  // StickySingleHop Case
+      //}
 
       if (k == 0) {
-        CALL_TASK(StepOne_Pooled_Endpoint);
+        CALL_TASK(StepOne_Pooled_Locator);
       } else {
-        CALL_TASK(StepOne_Pooled_EndpointTL);  // StickySingleHop Case
+        CALL_TASK(StepOne_Pooled_LocatorTL);
       }
 
       CALL_TASK(WarmUpTask);  //
@@ -367,37 +452,51 @@ DUNIT_MAIN
       CALL_TASK(CloseServer1);
       CALL_TASK(CloseServer2);
       CALL_TASK(CloseServer3);
+
+      CALL_TASK(CloseLocator1);
     }
   }
 END_MAIN
 
-DUNIT_MAIN
-  {
-    CacheableHelper::registerBuiltins(true);
-
-    // First pool with endpoints
-    /////////////////////////////////////////////
-    /*TODO:: change k < 1 to its original k < 2*/
-    for (int k = 0; k < 1; k++) {
-      CALL_TASK(CreateServer1);
-      CALL_TASK(CreateServer2);
-      CALL_TASK(CreateServer3);
-
-      if (k == 0) {
-        CALL_TASK(StepOne_Pooled_Endpoint);
-      } else {
-        CALL_TASK(StepOne_Pooled_EndpointTL);  // StickySingleHop Case
-      }
-
-      CALL_TASK(WarmUpTask);  //
-
-      CALL_TASK(CheckPrSingleHopRemoveAllForIntKeysTask);  //
-
-      CALL_TASK(CloseCache1);
-
-      CALL_TASK(CloseServer1);
-      CALL_TASK(CloseServer2);
-      CALL_TASK(CloseServer3);
-    }
-  }
-END_MAIN
+// DUNIT_MAIN
+//  {
+//    CacheableHelper::registerBuiltins(true);
+//
+//    // First pool with endpoints
+//    /////////////////////////////////////////////
+//    /*TODO:: change k < 1 to its original k < 2*/
+//    for (int k = 0; k < 1; k++) {
+//      CALL_TASK(CreateLocator1);
+//
+//      CALL_TASK(CreateServer1_With_Locator_PR);
+//      CALL_TASK(CreateServer2_With_Locator_PR);
+//      CALL_TASK(CreateServer3_With_Locator_PR);
+//      // CALL_TASK(CreateServer1);
+//      // CALL_TASK(CreateServer2);
+//      // CALL_TASK(CreateServer3);
+//
+//      // if (k == 0) {
+//      //  CALL_TASK(StepOne_Pooled_Endpoint);
+//      //} else {
+//      //  CALL_TASK(StepOne_Pooled_EndpointTL);  // StickySingleHop Case
+//      //}
+//
+//      if (k == 0) {
+//        CALL_TASK(StepOne_Pooled_Locator);
+//      } else {
+//        CALL_TASK(StepOne_Pooled_LocatorTL);
+//      }
+//
+//      CALL_TASK(WarmUpTask);  //
+//
+//      CALL_TASK(CheckPrSingleHopRemoveAllForIntKeysTask);  //
+//
+//      CALL_TASK(CloseCache1);
+//
+//      CALL_TASK(CloseServer1);
+//      CALL_TASK(CloseServer2);
+//      CALL_TASK(CloseServer3);
+//      CALL_TASK(CloseLocator1);
+//    }
+//  }
+// END_MAIN
