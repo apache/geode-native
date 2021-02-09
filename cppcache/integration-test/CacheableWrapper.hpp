@@ -79,6 +79,22 @@ class CacheableWrapperFactory {
 
   static std::string getTypeForId(DSCode typeId);
 
+  static std::map<DSCode, CacheableWrapperFunc>& getKeyMap() {
+    static std::map<DSCode, CacheableWrapperFunc> m_registeredKeyMap;
+    return m_registeredKeyMap;
+  }
+
+  static std::map<DSCode, CacheableWrapperFunc>& getValueMap() {
+    static std::map<DSCode, CacheableWrapperFunc> m_registeredValueMap;
+    return m_registeredValueMap;
+  }
+
+  static std::map<DSCode, std::string>& getTypeIdNameMap() {
+    static std::map<DSCode, std::string> m_typeIdNameMap;
+    return m_typeIdNameMap;
+  }
+
+
  private:
   static std::map<DSCode, CacheableWrapperFunc> m_registeredKeyMap;
   static std::map<DSCode, CacheableWrapperFunc> m_registeredValueMap;
