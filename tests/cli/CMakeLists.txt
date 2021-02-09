@@ -13,21 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cmake_minimum_required(VERSION 3.10)
-project(nativeclient.tests LANGUAGES NONE)
-
+add_subdirectory(DUnitFramework)
 add_subdirectory(QueryHelper)
 add_subdirectory(PdxClassLibrary)
+add_subdirectory(NewTestObject)
+add_subdirectory(SecurityUtil)
 
-set (NUNIT "C:\\Program Files (x86)\\NUnit 2.6.4")
-
-if (64 EQUAL ${BUILD_BITS})
-  set (NUNIT_CONSOLE "nunit-console")
-  set (PLATFORM x64)
-else()
-  set (NUNIT_CONSOLE "nunit-console-x86")
-  set (PLATFORM x86)
-endif()
 
 # Set the .NET Target Framework (Note: This should match the build for Apache.Geode.)
 

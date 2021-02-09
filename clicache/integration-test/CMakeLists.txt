@@ -13,31 +13,67 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-project(nativeclient.tests.clicache)
+cmake_minimum_required( VERSION 3.15 )
+project(Apache.Geode.Client.UnitTests CSharp )
 
 find_program(NUNIT_CONSOLE "nunit-console" REQUIRED PATH_SUFFIXES "NUnit 2.6.4/bin")
 message(STATUS "Found nunit-console: ${NUNIT_CONSOLE}")
 
-foreach(var CMAKE_CURRENT_SOURCE_DIR CMAKE_SOURCE_DIR CMAKE_BINARY_DIR CMAKE_CURRENT_BINARY_DIR)
-  file(TO_NATIVE_PATH ${${var}} ${var}_NATIVE)
-endforeach()
+file(GLOB_RECURSE SOURCE RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "*.cs")
+file(GLOB_RECURSE XML_SOURCE RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "*.xml")
+set(RESOURCES
+  ${XML_SOURCE}
+  geode.properties.mixed
+  geode.properties.nativeclient
+  system.properties
+)
 
-file(GLOB_RECURSE CSPROJECTS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "*.csproj.in")
-if(EXISTS "${STRONG_NAME_KEY}")
-  set(STRONG_NAME_KEY_ENABLED true)
+add_library(Apache.Geode.Client.UnitTests SHARED
+  ${SOURCE}
+  ${RESOURCES}
+)
+
+source_group("Source Files" FILES "${SOURCE}")
+source_group("Resource Files" FILES ${RESOURCES})
+
+set_source_files_properties(
+  ${RESOURCES}
+  PROPERTIES
+    VS_COPY_TO_OUT_DIR PreserveNewest
+    VS_TOOL_OVERRIDE None
+)
+
+target_link_libraries(Apache.Geode.Client.UnitTests
+  PUBLIC
+    Apache.Geode
+    Apache.Geode.DUnitFramework
+    NewTestObject
+    FwkClient
+    PdxClassLibrary
+    PdxVersion1Lib
+    PdxVersion2Lib
+    QueryWrapper
+    SecurityUtil
+)
+
+set_target_properties(Apache.Geode.Client.UnitTests PROPERTIES
+  VS_GLOBAL_ROOTNAMESPACE "Apache.Geode.Client.UnitTests"
+  DOTNET_TARGET_FRAMEWORK_VERSION "v4.5.2"
+  VS_GLOBAL_TreatWarningsAsErrors False
+  VS_GLOBAL_IsTestProject True
+  VS_GLOBAL_TestProjectType UnitTest
+  VS_GLOBAL_PROJECT_TYPES "{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+  VS_DOTNET_REFERENCES "System;System.Xml;System.Web;System.Configuration;System.Management"
+  VS_PACKAGE_REFERENCES "NUnit_2.6.4"
+  FOLDER cli/test/integration
+)
+
+if(NOT "${STRONG_NAME_KEY}" STREQUAL "")
+  set_target_properties(Apache.Geode.Client.UnitTests PROPERTIES
+    VS_GLOBAL_SignAssembly "true"
+    VS_GLOBAL_AssemblyOriginatorKeyFile ${STRONG_NAME_KEY}
+  )
 endif()
-
-foreach(FILE ${CSPROJECTS})
-  # TODO: make this a one line MATCH statement
-  string(REGEX REPLACE "\\.csproj.in" "" PROJDIR ${FILE})
-  string(REGEX REPLACE ".*/" "" PROJNAME ${PROJDIR})
-  configure_file(${FILE} ${CMAKE_CURRENT_BINARY_DIR}/${PROJNAME}.csproj)
-  include_external_msproject(
-      ${PROJNAME}  ${CMAKE_CURRENT_BINARY_DIR}/${PROJNAME}.csproj
-      TYPE FAE04EC0-301F-11D3-BF4B-00C04F79EFBC)
-  set_target_properties(${PROJNAME} PROPERTIES FOLDER cli/test/integration)
-
-endforeach()
 
 enable_testing()
 
@@ -70,7 +106,7 @@ foreach(FILE ${SOURCES})
     string(REGEX REPLACE "N$" "" TESTCLASS ${TEST})
 
     add_test(NAME ${TEST}
-        COMMAND "$<SHELL_PATH:${NUNIT_CONSOLE}>" /timeout 1000000 /labels /run:${NAMESPACE}.${TESTCLASS} "$<SHELL_PATH:${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/UnitTests.dll>"
+        COMMAND "$<SHELL_PATH:${NUNIT_CONSOLE}>" /nologo /nodots /timeout 1000000 /labels /run:${NAMESPACE}.${TESTCLASS} "$<SHELL_PATH:${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/UnitTests.dll>"
         WORKING_DIRECTORY ${TEST_DIR}
     )
 

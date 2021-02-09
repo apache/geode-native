@@ -376,6 +376,7 @@ add_subdirectory(docs/api)
 add_subdirectory(examples)
 if (${BUILD_CLI})
   add_subdirectory(clicache)
+  add_subdirectory(templates/security/csharp)
 endif()
 add_subdirectory(tests)
 
