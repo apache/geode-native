@@ -105,8 +105,8 @@ void Log::validateSizeLimits(int64_t fileSizeLimit, int64_t diskSpaceLimit) {
 void Log::init(LogLevel level, const char* logFileName, int32_t logFileLimit,
                int64_t logDiskSpaceLimit) {
   auto logFileNameString =
-      logFileName ? std::string(logFileName) : std::string();
-  init(level, std::string(logFileNameString), logFileLimit, logDiskSpaceLimit);
+      logFileName ? std::string(logFileName) : std::string("geode-native.log");
+  init(level, logFileNameString, logFileLimit, logDiskSpaceLimit);
 }
 
 void Log::rollLogFile() {

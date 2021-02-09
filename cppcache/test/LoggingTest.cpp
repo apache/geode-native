@@ -77,18 +77,22 @@ const char* __1KStringLiteral =
 
 class LoggingTest : public testing::Test {
   void scrubTestLogFiles() {
-    // Close logger, just in case
-    apache::geode::client::Log::close();
+    auto testFileNames = {testLogFileName.c_str(), "geode-native.log"};
 
-    if (boost::filesystem::exists(testLogFileName)) {
-      boost::filesystem::remove(testLogFileName);
-    }
+    for (auto name : testFileNames) {
+      // Close logger, just in case
+      apache::geode::client::Log::close();
 
-    std::map<int32_t, boost::filesystem::path> rolledFiles;
-    LoggingTest::findRolledFiles(boost::filesystem::current_path().string(),
-                                 rolledFiles);
-    for (auto& item : rolledFiles) {
-      boost::filesystem::remove(item.second);
+      if (boost::filesystem::exists(name)) {
+        boost::filesystem::remove(name);
+      }
+
+      std::map<int32_t, boost::filesystem::path> rolledFiles;
+      LoggingTest::findRolledFiles(boost::filesystem::current_path().string(),
+                                   name, rolledFiles);
+      for (auto& item : rolledFiles) {
+        boost::filesystem::remove(item.second);
+      }
     }
   }
 
@@ -166,11 +170,11 @@ class LoggingTest : public testing::Test {
   }
 
   static void findRolledFiles(
-      const std::string& logFilePath,
+      const std::string& logFilePath, const boost::filesystem::path& filename,
       std::map<int32_t, boost::filesystem::path>& rolledFiles) {
     const auto basePath =
         boost::filesystem::absolute(boost::filesystem::path(logFilePath)) /
-        testLogFileName;
+        filename;
     const auto filterstring = basePath.stem().string() + "-(\\d+)\\.log$";
     const std::regex my_filter(filterstring);
 
@@ -196,7 +200,8 @@ class LoggingTest : public testing::Test {
 
   static size_t calculateUsedDiskSpace(const std::string& logFilePath) {
     std::map<int32_t, boost::filesystem::path> rolledLogFiles{};
-    findRolledFiles(boost::filesystem::current_path().string(), rolledLogFiles);
+    findRolledFiles(boost::filesystem::current_path().string(), testLogFileName,
+                    rolledLogFiles);
 
     auto usedSpace = boost::filesystem::file_size(logFilePath);
     for (auto const& item : rolledLogFiles) {
@@ -256,6 +261,7 @@ TEST_F(LoggingTest, logInit) {
   ASSERT_NO_THROW(apache::geode::client::Log::init(
       apache::geode::client::LogLevel::Config, "LoggingTest (#).log"));
   apache::geode::client::Log::close();
+  boost::filesystem::remove("LoggingTest (#).log");
 
   // Init with invalid filename
   ASSERT_THROW(apache::geode::client::Log::init(
@@ -375,8 +381,8 @@ TEST_F(LoggingTest, logToFileAtEachLevel) {
 
 TEST_F(LoggingTest, verifyFileSizeLimit) {
   ASSERT_NO_THROW(apache::geode::client::Log::init(
-      apache::geode::client::LogLevel::Debug, testLogFileName, 2, 5));
-  for (auto i = 0; i < 20 * __1K__; i++) {
+      apache::geode::client::LogLevel::Debug, testLogFileName, 1, 5));
+  for (auto i = 0; i < 4 * __1K__; i++) {
     LOGDEBUG(__1KStringLiteral);
   }
   apache::geode::client::Log::close();
@@ -398,9 +404,9 @@ TEST_F(LoggingTest, verifyFileSizeLimit) {
   // is preserved intact, rather than truncated or split across files.  We'll
   // assume the file size never exceeds 110% of the specified limit.
   auto adjustedFileSizeLimit =
-      static_cast<uint32_t>(2 * static_cast<uint64_t>(__1M__) * 11 / 10);
+      static_cast<uint32_t>(static_cast<uint64_t>(__1M__) * 11 / 10);
 
-  for (auto i = 1; i < 3; i++) {
+  for (auto i = 0; i < 4; i++) {
     auto rolledLogFileName =
         base.string() + "-" + std::to_string(i) + ext.string();
 
@@ -434,7 +440,7 @@ TEST_F(LoggingTest, verifyDiskSpaceLimit) {
   // <base>-n.log, where n is some reasonable number.
   std::map<int32_t, boost::filesystem::path> rolledFiles;
   LoggingTest::findRolledFiles(boost::filesystem::current_path().string(),
-                               rolledFiles);
+                               testLogFileName, rolledFiles);
   ASSERT_TRUE(rolledFiles.size() == 1);
 
   auto rolledFile = rolledFiles.begin()->second;
