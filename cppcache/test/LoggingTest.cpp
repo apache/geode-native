@@ -185,11 +185,11 @@ class LoggingTest : public testing::Test {
              basePath.parent_path().string());
          i != end_itr; ++i) {
       if (boost::filesystem::is_regular_file(i->status())) {
-        std::string filename = i->path().filename().string();
+        std::string rootFilename = i->path().filename().string();
         std::regex testPattern(filterstring);
         std::match_results<std::string::const_iterator> testMatches;
-        if (std::regex_search(std::string::const_iterator(filename.begin()),
-                              filename.cend(), testMatches, testPattern)) {
+        if (std::regex_search(std::string::const_iterator(rootFilename.begin()),
+                              rootFilename.cend(), testMatches, testPattern)) {
           auto index = std::atoi(
               std::string(testMatches[1].first, testMatches[1].second).c_str());
           rolledFiles[index] = i->path();
