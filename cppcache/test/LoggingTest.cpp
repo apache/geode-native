@@ -92,7 +92,9 @@ class LoggingTest : public testing::Test {
     }
   }
 
-  virtual void SetUp() { scrubTestLogFiles(); }
+  virtual void SetUp() {
+    // scrubTestLogFiles();
+  }
 
   virtual void TearDown() { scrubTestLogFiles(); }
 
@@ -190,6 +192,18 @@ class LoggingTest : public testing::Test {
         }
       }
     }
+  }
+
+  static size_t calculateUsedDiskSpace(const std::string& logFilePath) {
+    std::map<int32_t, boost::filesystem::path> rolledLogFiles{};
+    findRolledFiles(boost::filesystem::current_path().string(), rolledLogFiles);
+
+    auto usedSpace = boost::filesystem::file_size(logFilePath);
+    for (auto const& item : rolledLogFiles) {
+      usedSpace += boost::filesystem::file_size(item.second);
+    }
+
+    return usedSpace;
   }
 };
 
@@ -361,8 +375,8 @@ TEST_F(LoggingTest, logToFileAtEachLevel) {
 
 TEST_F(LoggingTest, verifyFileSizeLimit) {
   ASSERT_NO_THROW(apache::geode::client::Log::init(
-      apache::geode::client::LogLevel::Debug, testLogFileName, 1, 5));
-  for (auto i = 0; i < 4 * __1K__; i++) {
+      apache::geode::client::LogLevel::Debug, testLogFileName, 2, 5));
+  for (auto i = 0; i < 20 * __1K__; i++) {
     LOGDEBUG(__1KStringLiteral);
   }
   apache::geode::client::Log::close();
@@ -384,9 +398,9 @@ TEST_F(LoggingTest, verifyFileSizeLimit) {
   // is preserved intact, rather than truncated or split across files.  We'll
   // assume the file size never exceeds 110% of the specified limit.
   auto adjustedFileSizeLimit =
-      static_cast<uint32_t>(static_cast<uint64_t>(__1M__) * 11 / 10);
+      static_cast<uint32_t>(2 * static_cast<uint64_t>(__1M__) * 11 / 10);
 
-  for (auto i = 0; i < 4; i++) {
+  for (auto i = 1; i < 3; i++) {
     auto rolledLogFileName =
         base.string() + "-" + std::to_string(i) + ext.string();
 
@@ -612,4 +626,28 @@ TEST_F(LoggingTest, countLinesErrorOnly) {
 
 TEST_F(LoggingTest, countLinesNone) { verifyLineCountAtLevel(LogLevel::None); }
 
+TEST_F(LoggingTest, verifyDiskSpaceNotLeaked) {
+  const int NUMBER_OF_ITERATIONS = 4 * __1K__;
+  const int DISK_SPACE_LIMIT = 2 * __1M__;
+
+  // Start/stop logger several times, make sure it's picking up any/all
+  // existing logs in its disk space calculations.
+  for (auto j = 0; j < 5; j++) {
+    ASSERT_NO_THROW(apache::geode::client::Log::init(
+        apache::geode::client::LogLevel::Debug, testLogFileName, 1, 2));
+    for (auto i = 0; i < NUMBER_OF_ITERATIONS; i++) {
+      LOGDEBUG(__1KStringLiteral);
+    }
+    apache::geode::client::Log::close();
+
+    // Original file should still be around
+    ASSERT_TRUE(boost::filesystem::exists(testLogFileName));
+
+    // We wrote 4x the log file limit, and 2x the disk space limit, so
+    // there should be one 'rolled' file.  Its name should be of the form
+    // <base>-n.log, where n is some reasonable number.
+    auto usedSpace = calculateUsedDiskSpace(testLogFileName);
+    ASSERT_TRUE(usedSpace < DISK_SPACE_LIMIT);
+  }
+}
 }  // namespace

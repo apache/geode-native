@@ -138,6 +138,19 @@ void Log::removeOldestRolledLogFile() {
     boost::filesystem::remove(fileToRemove);
     g_rollFiles.erase(index);
     g_spaceUsed -= fileSize;
+  } else {
+    throw IllegalStateException(
+        "Failed to free sufficient disk space for logs");
+  }
+}
+
+void Log::calculateUsedDiskSpace() {
+  g_spaceUsed = 0;
+  if (boost::filesystem::exists(g_fullpath)) {
+    g_spaceUsed = boost::filesystem::file_size(g_fullpath);
+    for (auto const& item : g_rollFiles) {
+      g_spaceUsed += boost::filesystem::file_size(item.second);
+    }
   }
 }
 
@@ -231,6 +244,10 @@ void Log::init(LogLevel level, const std::string& logFileName,
 
     buildRollFileMapping();
     setRollFileIndex();
+    calculateUsedDiskSpace();
+    while (g_spaceUsed > g_diskSpaceLimit) {
+      removeOldestRolledLogFile();
+    }
 
     if (boost::filesystem::exists(g_fullpath) && logFileLimit > 0) {
       rollLogFile();
@@ -239,8 +256,9 @@ void Log::init(LogLevel level, const std::string& logFileName,
   } catch (const boost::exception&) {
     auto msg = std::string("Unable to log to file '") + logFileName + "'";
     throw IllegalArgumentException(msg.c_str());
-  } catch (const std::exception&) {
-    auto msg = std::string("Unable to log to file '") + logFileName + "'";
+  } catch (const std::exception& ex) {
+    auto msg = std::string("Unable to log to file '") + logFileName +
+               "': " + ex.what();
     throw IllegalArgumentException(msg.c_str());
   }
 }
