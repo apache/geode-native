@@ -31,6 +31,7 @@ set(RESOURCES
 add_library(Apache.Geode.Client.UnitTests SHARED
   ${SOURCE}
   ${RESOURCES}
+  NUnitTestAddTests.ps1
 )
 
 source_group("Source Files" FILES "${SOURCE}")
@@ -46,9 +47,8 @@ set_source_files_properties(
 target_link_libraries(Apache.Geode.Client.UnitTests
   PUBLIC
     Apache.Geode
-    Apache.Geode.DUnitFramework
+    DUnitFramework
     NewTestObject
-    FwkClient
     PdxClassLibrary
     PdxVersion1Lib
     PdxVersion2Lib
@@ -75,77 +75,44 @@ if(NOT "${STRONG_NAME_KEY}" STREQUAL "")
   )
 endif()
 
+add_dependencies(Apache.Geode.Client.UnitTests FwkClient SqLiteImpl)
+
 enable_testing()
 
-set(PATH
-  $<TARGET_LINKER_FILE_DIR:apache-geode>
-  $<TARGET_LINKER_FILE_DIR:SqLiteImpl>
-  $<TARGET_PROPERTY:SQLite::sqlite3,INTERFACE_LIBRARY_DIR>
-  $<TARGET_PROPERTY:SQLite::sqlite3,INTERFACE_RUNTIME_DIR>
-  $<TARGET_LINKER_FILE_DIR:unit_test_callbacks>
-  $<TARGET_LINKER_FILE_DIR:testobject>
+
+
+set(ctest_file_base "${CMAKE_CURRENT_BINARY_DIR}/NUnit")
+set(ctest_include_file "${ctest_file_base}_include.cmake")
+set(ctest_tests_file "${ctest_file_base}_tests.cmake")
+
+add_custom_command(
+  TARGET Apache.Geode.Client.UnitTests POST_BUILD
+  BYPRODUCTS "${ctest_tests_file}"
+  COMMAND pwsh -File 
+          "$<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}/NUnitTestAddTests.ps1>"
+          -AssemblyPath "$<SHELL_PATH:$<TARGET_FILE:Apache.Geode.Client.UnitTests>>"
+          -NUnitConsolePath "${NUNIT_CONSOLE}"
+          -WorkingDirectory "$<TARGET_FILE_DIR:Apache.Geode.Client.UnitTests>"
+          -CTestFile "$<SHELL_PATH:${ctest_tests_file}>"
+          -SourcePath "$<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}>"
+          -ServerLogLevel "config"
+          -ServerSecurityLogLevel "config"
+          -ServerClasspath "$<SHELL_PATH:${CMAKE_BINARY_DIR}/tests/javaobject/javaobject.jar>"
+          -GeodePath "$<SHELL_PATH:${Geode_PATH}>"
+          -JavaPath "$<SHELL_PATH:${Java_JAVA_EXECUTABLE}>"
+  WORKING_DIRECTORY "$<TARGET_FILE_DIR:Apache.Geode.Client.UnitTests>"
 )
 
-file(GLOB SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "*.cs")
+file(WRITE "${ctest_include_file}"
+  "if(EXISTS \"${ctest_tests_file}\")\n"
+  "  include(\"${ctest_tests_file}\")\n"
+  "else()\n"
+  "  add_test(${TARGET}_NOT_BUILT ${TARGET}_NOT_BUILT)\n"
+  "endif()\n"
+)
 
-foreach(FILE ${SOURCES})
-  # Find all non-deprecated tests
-  file(STRINGS ${FILE} HasTests REGEX "\\[Test\\]")
-
-  LIST(LENGTH HasTests length)
-  if (${length} GREATER 0)
-    # Get the namespace
-    file(STRINGS ${FILE} NameSpaceLine REGEX "namespace Apache.Geode.Client.UnitTests")
-    string(REGEX REPLACE "namespace.*Apache" "Apache" NAMESPACE ${NameSpaceLine})
-
-    string(REGEX REPLACE "\\.cs" "" TEST ${FILE})
-    set(TESTS ${TESTS} ${TEST})
-    set(TEST_DIR ${CMAKE_CURRENT_BINARY_DIR}/.tests/${TEST})
-
-    # Get the test class (NewAPI tests have N in the file name but not test class name)
-    string(REGEX REPLACE "N$" "" TESTCLASS ${TEST})
-
-    add_test(NAME ${TEST}
-        COMMAND "$<SHELL_PATH:${NUNIT_CONSOLE}>" /nologo /nodots /timeout 1000000 /labels /run:${NAMESPACE}.${TESTCLASS} "$<SHELL_PATH:${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/UnitTests.dll>"
-        WORKING_DIRECTORY ${TEST_DIR}
-    )
-
-    set(ENVIRONMENT
-      "TESTSRC=$<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}>"
-      GFE_LOGLEVEL=config
-      GFE_SECLOGLEVEL=config
-      "GF_JAVA=$<SHELL_PATH:${Java_JAVA_EXECUTABLE}>"
-      "GFE_DIR=$<SHELL_PATH:${Geode_PATH}>"
-      "GF_CLASSPATH=$<SHELL_PATH:${CMAKE_BINARY_DIR}/tests/javaobject/javaobject.jar>"
-      "PATH=$<JOIN:$<SHELL_PATH:${PATH}>,\\$<SEMICOLON>>"
-    )
-
-    set_tests_properties(${TEST} PROPERTIES
-      ENVIRONMENT "${ENVIRONMENT}"
-    )
-
-    file(STRINGS ${FILE} IsDeprecated REGEX "\\[Category.*deprecated.*\\]")
-    if (IsDeprecated)
-      set_tests_properties(${TEST} PROPERTIES DISABLED TRUE)
-	  endif()
-  endif()
-endforeach()
-
-set_tests_properties(ThinClientCqStatusTestTwoServers
-    # flaky
-    ThinClientPoolTestsN
-    ThinClientQueryTestsN
-    # broken
-    ThinClientDeltaTestFailing
-    ThinClientDurableTestsN
-    ThinClientHARegionTestsN
-    ThinClientSecurityAuthTestsMUN
-    ThinClientSecurityAuthTestsN
-    RegionFailingTests
-    ThinClientSecurityAuthzTestsMUN
-    ThinClientSecurityAuthzTestsN
-  PROPERTIES
-    DISABLED TRUE
+set_property(DIRECTORY
+  APPEND PROPERTY TEST_INCLUDE_FILES "${ctest_include_file}"
 )
 
 add_custom_target(run-stable-clicache-integration-tests

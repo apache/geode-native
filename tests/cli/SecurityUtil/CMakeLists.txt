@@ -28,7 +28,7 @@ add_library(SecurityUtil SHARED
 target_link_libraries(SecurityUtil
   PUBLIC
     Apache.Geode
-    Apache.Geode.DUnitFramework
+    DUnitFramework
     Apache.Geode.Templates.Cache.Security
 )
 
