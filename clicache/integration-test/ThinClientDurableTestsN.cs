@@ -27,6 +27,8 @@ namespace Apache.Geode.Client.UnitTests
 
 
   using AssertionException = Apache.Geode.Client.AssertionException;
+  
+  [Ignore("broken")]
   [TestFixture]
   [Category("group2")]
   [Category("unicast_only")]

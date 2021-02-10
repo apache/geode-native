@@ -14,9 +14,9 @@
 # limitations under the License.
 
 cmake_minimum_required( VERSION 3.15 )
-project(Apache.Geode.DUnitFramework CSharp)
+project(DUnitFramework CSharp)
 
-add_library(Apache.Geode.DUnitFramework SHARED
+add_library(DUnitFramework SHARED
   AssemblyInfo.cs
   ClientBase.cs
   ClientGroup.cs
@@ -34,12 +34,12 @@ add_library(Apache.Geode.DUnitFramework SHARED
   XmlNodeReaderWriter.cs
 )
 
-target_link_libraries(Apache.Geode.DUnitFramework
+target_link_libraries(DUnitFramework
   PUBLIC
     Apache.Geode
 )
 
-set_target_properties(Apache.Geode.DUnitFramework PROPERTIES
+set_target_properties(DUnitFramework PROPERTIES
   VS_GLOBAL_ROOTNAMESPACE Apache.Geode.DUnitFramework
   DOTNET_TARGET_FRAMEWORK_VERSION "v4.5.2"
   VS_GLOBAL_TreatWarningsAsErrors True
@@ -50,7 +50,7 @@ set_target_properties(Apache.Geode.DUnitFramework PROPERTIES
 )
 
 if(NOT "${STRONG_NAME_KEY}" STREQUAL "")
-  set_target_properties(Apache.Geode.DUnitFramework PROPERTIES
+  set_target_properties(DUnitFramework PROPERTIES
     VS_GLOBAL_SignAssembly "true"
     VS_GLOBAL_AssemblyOriginatorKeyFile ${STRONG_NAME_KEY}
   )

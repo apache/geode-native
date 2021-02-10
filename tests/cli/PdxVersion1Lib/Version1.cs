@@ -928,10 +928,10 @@ namespace PdxVersionTests
       return false;
     }
 
-    //public override int GetHashCode()
-    //{
-    //  return _id.GetHashCode();
-    //}
+    public override int GetHashCode()
+    {
+      return _id.GetHashCode();
+    }
     #region IPdxSerializer Members
 
     public object FromData(string classname, IPdxReader reader)
@@ -1584,6 +1584,12 @@ namespace PdxVersionTests
                 throw new Exception("pdx enum is not equal");
             return true;
         }
+
+        public override int GetHashCode()
+        {
+            return 0;
+        }
+
         public void FromData(IPdxReader reader)
         {
             //byte[][] baa = reader.ReadArrayOfByteArrays("m_byteByteArray");

@@ -14,39 +14,20 @@
 # limitations under the License.
 
 
-project(NewTestObject CSharp)
+project(PdxVersion1Lib CSharp)
 
-add_library(NewTestObject SHARED
-  #ArrayOfByte.cs
-  #BatchObject.cs
-  CMakeLists.txt
-  DeltaEx.cs
-  #DeltaFastAssetAccount.cs
-  #DeltaPSTObject.cs
-  DeltaTestImpl.cs
-  #EqStruct.cs
-  #FastAsset.cs
-  #FastAssetAccount.cs
-  #NoopAuthInit.cs
-  PdxAutoSerializerObj.cs
-  Portfolio.cs
-  PortfolioPdx.cs
-  Position.cs
-  PositionPdx.cs
-  #PSTObject.cs
-  SimpleCacheListener.cs
-  TestObject1.cs
-  #TimeStampdObject.cs
+add_library(PdxVersion1Lib SHARED
+  Properties/AssemblyInfo.cs
+  Version1.cs
 )
 
-target_link_libraries(NewTestObject
+target_link_libraries(PdxVersion1Lib
   PUBLIC
     Apache.Geode
-    DUnitFramework
 )
 
-set_target_properties(NewTestObject PROPERTIES
-  VS_GLOBAL_ROOTNAMESPACE Apache.Geode.Client.Tests
+set_target_properties(PdxVersion1Lib PROPERTIES
+  VS_GLOBAL_ROOTNAMESPACE PdxVersionTests
   VS_GLOBAL_TreatWarningsAsErrors True
   VS_GLOBAL_PROJECT_TYPES "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
   VS_DOTNET_REFERENCES "System;System.Xml;System.Data"
@@ -54,7 +35,7 @@ set_target_properties(NewTestObject PROPERTIES
 )
 
 if(NOT "${STRONG_NAME_KEY}" STREQUAL "")
-  set_target_properties(NewTestObject PROPERTIES
+  set_target_properties(PdxVersion1Lib PROPERTIES
     VS_GLOBAL_SignAssembly "true"
     VS_GLOBAL_AssemblyOriginatorKeyFile ${STRONG_NAME_KEY}
   )
