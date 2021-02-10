@@ -16,7 +16,10 @@
 cmake_minimum_required( VERSION 3.15 )
 project(DUnitFramework CSharp)
 
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/packages.config ${CMAKE_CURRENT_BINARY_DIR}/packages.config COPYONLY)
+
 add_library(DUnitFramework SHARED
+  packages.config
   AssemblyInfo.cs
   ClientBase.cs
   ClientGroup.cs
@@ -41,11 +44,10 @@ target_link_libraries(DUnitFramework
 
 set_target_properties(DUnitFramework PROPERTIES
   VS_GLOBAL_ROOTNAMESPACE Apache.Geode.DUnitFramework
-  DOTNET_TARGET_FRAMEWORK_VERSION "v4.5.2"
   VS_GLOBAL_TreatWarningsAsErrors True
   VS_GLOBAL_PROJECT_TYPES "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
   VS_DOTNET_REFERENCES "System;System.Xml;System.Runtime.Remoting;System.Management"
-  VS_PACKAGE_REFERENCES "NUnit_2.6.4"
+  VS_DOTNET_REFERENCE_NUnit "${CMAKE_BINARY_DIR}/packages/NUnit.2.6.4/lib/nunit.framework.dll"
   FOLDER cli/test/integration
 )
 
@@ -55,3 +57,5 @@ if(NOT "${STRONG_NAME_KEY}" STREQUAL "")
     VS_GLOBAL_AssemblyOriginatorKeyFile ${STRONG_NAME_KEY}
   )
 endif()
+
+add_dependencies(DUnitFramework nuget-restore)

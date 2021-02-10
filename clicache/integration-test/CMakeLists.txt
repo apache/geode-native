@@ -13,11 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cmake_minimum_required( VERSION 3.15 )
 project(Apache.Geode.Client.UnitTests CSharp )
 
-find_program(NUNIT_CONSOLE "nunit-console" REQUIRED PATH_SUFFIXES "NUnit 2.6.4/bin")
-message(STATUS "Found nunit-console: ${NUNIT_CONSOLE}")
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/packages.config ${CMAKE_CURRENT_BINARY_DIR}/packages.config COPYONLY)
 
 file(GLOB_RECURSE SOURCE RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "*.cs")
 file(GLOB_RECURSE XML_SOURCE RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "*.xml")
@@ -29,9 +27,10 @@ set(RESOURCES
 )
 
 add_library(Apache.Geode.Client.UnitTests SHARED
+  NUnitTestAddTests.ps1
+  packages.config
   ${SOURCE}
   ${RESOURCES}
-  NUnitTestAddTests.ps1
 )
 
 source_group("Source Files" FILES "${SOURCE}")
@@ -58,13 +57,12 @@ target_link_libraries(Apache.Geode.Client.UnitTests
 
 set_target_properties(Apache.Geode.Client.UnitTests PROPERTIES
   VS_GLOBAL_ROOTNAMESPACE "Apache.Geode.Client.UnitTests"
-  DOTNET_TARGET_FRAMEWORK_VERSION "v4.5.2"
   VS_GLOBAL_TreatWarningsAsErrors False
   VS_GLOBAL_IsTestProject True
   VS_GLOBAL_TestProjectType UnitTest
   VS_GLOBAL_PROJECT_TYPES "{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
   VS_DOTNET_REFERENCES "System;System.Xml;System.Web;System.Configuration;System.Management"
-  VS_PACKAGE_REFERENCES "NUnit_2.6.4"
+  VS_DOTNET_REFERENCE_NUnit "${CMAKE_BINARY_DIR}/packages/NUnit.2.6.4/lib/nunit.framework.dll"
   FOLDER cli/test/integration
 )
 
@@ -76,10 +74,10 @@ if(NOT "${STRONG_NAME_KEY}" STREQUAL "")
 endif()
 
 add_dependencies(Apache.Geode.Client.UnitTests FwkClient SqLiteImpl)
+add_dependencies(Apache.Geode.Client.UnitTests nuget-restore)
+
 
 enable_testing()
-
-
 
 set(ctest_file_base "${CMAKE_CURRENT_BINARY_DIR}/NUnit")
 set(ctest_include_file "${ctest_file_base}_include.cmake")
@@ -91,7 +89,7 @@ add_custom_command(
   COMMAND pwsh -File 
           "$<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}/NUnitTestAddTests.ps1>"
           -AssemblyPath "$<SHELL_PATH:$<TARGET_FILE:Apache.Geode.Client.UnitTests>>"
-          -NUnitConsolePath "${NUNIT_CONSOLE}"
+          -NUnitConsolePath "$<SHELL_PATH:${CMAKE_BINARY_DIR}/packages/NUnit.Runners.2.6.4/tools/nunit-console.exe>"
           -WorkingDirectory "$<TARGET_FILE_DIR:Apache.Geode.Client.UnitTests>"
           -CTestFile "$<SHELL_PATH:${ctest_tests_file}>"
           -SourcePath "$<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}>"
@@ -100,6 +98,7 @@ add_custom_command(
           -ServerClasspath "$<SHELL_PATH:${CMAKE_BINARY_DIR}/tests/javaobject/javaobject.jar>"
           -GeodePath "$<SHELL_PATH:${Geode_PATH}>"
           -JavaPath "$<SHELL_PATH:${Java_JAVA_EXECUTABLE}>"
+          -EnvPath "$<SHELL_PATH:${CMAKE_BINARY_DIR}/packages/NUnit.Runners.2.6.4/tools>"
   WORKING_DIRECTORY "$<TARGET_FILE_DIR:Apache.Geode.Client.UnitTests>"
 )
 
