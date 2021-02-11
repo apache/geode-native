@@ -81,13 +81,13 @@ remote_shell cmake -E chdir build/cppcache/test ctest -C ${CMAKE_CONFIG} -j8 --t
 (@ def run_cpp_integration_tests(): -@)
 set -ueo pipefail
 (@= remote_functions() @)
-remote_shell cmake -E chdir build/cppcache/integration/test ctest -C ${CMAKE_CONFIG} -j8 --timeout=500 --output-on-failure --repeat until-pass:4
+remote_shell cmake -E chdir build/cppcache/integration/test ctest -C ${CMAKE_CONFIG} -j6 --timeout=500 --output-on-failure --repeat until-pass:4
 (@- end @)
 
 (@ def run_cpp_legacy_integration_tests(): -@)
 set -ueo pipefail
 (@= remote_functions() @)
-remote_shell cmake -E chdir build/cppcache/integration-test ctest -C ${CMAKE_CONFIG} -j6 --timeout=500 --output-on-failure --repeat until-pass:4
+remote_shell cmake -E chdir build/cppcache/integration-test ctest -C ${CMAKE_CONFIG} -j4 --timeout=500 --output-on-failure --repeat until-pass:4
 (@- end @)
 
 (@ def run_net_unit_tests(): -@)
