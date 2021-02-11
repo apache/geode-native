@@ -930,8 +930,9 @@ namespace PdxVersionTests
 
     public override int GetHashCode()
     {
-      return _id.GetHashCode();
+      return base.GetHashCode();
     }
+
     #region IPdxSerializer Members
 
     public object FromData(string classname, IPdxReader reader)
@@ -1585,9 +1586,10 @@ namespace PdxVersionTests
             return true;
         }
 
+
         public override int GetHashCode()
         {
-            return 0;
+            return base.GetHashCode();
         }
 
         public void FromData(IPdxReader reader)
