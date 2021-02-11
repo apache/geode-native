@@ -29,6 +29,7 @@ set(RESOURCES
 add_library(Apache.Geode.Client.UnitTests SHARED
   NUnitTestAddTests.ps1
   packages.config
+  test.runsettings.in
   ${SOURCE}
   ${RESOURCES}
 )
@@ -60,6 +61,7 @@ set_target_properties(Apache.Geode.Client.UnitTests PROPERTIES
   VS_GLOBAL_TreatWarningsAsErrors False
   VS_GLOBAL_IsTestProject True
   VS_GLOBAL_TestProjectType UnitTest
+  VS_GLOBAL_RunSettingsFilePath "\$(MSBuildProjectDirectory)\\test.runsettings"
   VS_GLOBAL_PROJECT_TYPES "{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
   VS_DOTNET_REFERENCES "System;System.Xml;System.Web;System.Configuration;System.Management"
   VS_DOTNET_REFERENCE_NUnit "${CMAKE_BINARY_DIR}/packages/NUnit.2.6.4/lib/nunit.framework.dll"
@@ -76,6 +78,9 @@ endif()
 add_dependencies(Apache.Geode.Client.UnitTests FwkClient SqLiteImpl)
 add_dependencies(Apache.Geode.Client.UnitTests nuget-restore)
 
+
+configure_file(test.runsettings.in test.runsettings.gen)
+file(GENERATE OUTPUT test.runsettings INPUT ${CMAKE_CURRENT_BINARY_DIR}/test.runsettings.gen TARGET Apache.Geode.Client.UnitTests)
 
 enable_testing()
 
