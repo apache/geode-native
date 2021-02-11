@@ -174,12 +174,12 @@ source:
 
 ---
 #@ def cpp_integration_test_task(build, config):
-#@ return remote_task("cpp-integration-tests", config.config, run_cpp_integration_tests(), "1h", build.params)
+#@ return remote_task("cpp-integration-tests", config.config, run_cpp_integration_tests(), "90m", build.params)
 #@ end
 
 ---
 #@ def cpp_legacy_integration_test_task(build, config):
-#@ return remote_task("cpp-legacy-integration-tests", config.config, run_cpp_legacy_integration_tests(), "2h", build.params)
+#@ return remote_task("cpp-legacy-integration-tests", config.config, run_cpp_legacy_integration_tests(), "150m", build.params)
 #@ end
 
 ---
