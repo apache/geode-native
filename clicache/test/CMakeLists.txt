@@ -16,6 +16,10 @@
 cmake_minimum_required(VERSION 3.10)
 project(Apache.Geode.Test CXX)
 
+set(vstest_dir ${CMAKE_BINARY_DIR}/packages/Microsoft.TestPlatform.16.8.3/tools/net451/Common7/IDE/Extensions/TestPlatform)
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/packages.config ${CMAKE_CURRENT_BINARY_DIR}/packages.config COPYONLY)
+
 if(NOT "${STRONG_NAME_PUBLIC_KEY}" STREQUAL "")
   set(STRONG_NAME_PUBLIC_KEY_ATTRIBUTE ", PublicKey=${STRONG_NAME_PUBLIC_KEY}")
 endif()
@@ -40,7 +44,8 @@ set_target_properties(Apache.Geode.Test PROPERTIES
   VS_GLOBAL_TestProjectType UnitTest
   VS_GLOBAL_PROJECT_TYPES "{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}"
   VS_GLOBAL_ROOTNAMESPACE Apache.Geode.Test
-  VS_DOTNET_REFERENCES "System;System.Xml;Microsoft.VisualStudio.QualityTools.UnitTestFramework"
+  VS_DOTNET_REFERENCES "System;System.Xml"
+  VS_DOTNET_REFERENCE_Microsoft.VisualStudio.QualityTools.UnitTestFramework "${vstest_dir}/Microsoft.VisualStudio.QualityTools.UnitTestFramework.dll"
   FOLDER cli/test/unit
 )
 
@@ -69,3 +74,12 @@ set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${SHARED_LINKER_FLAG
 # For Visual Studio organization
 source_group("Configure In Files" FILES ${CONFIGURE_IN_FILES})
 source_group("Configure Out Files" FILES ${CONFIGURE_OUT_FILES})
+
+enable_testing()
+
+add_test(NAME Apache.Geode.Test
+  COMMAND ${vstest_dir}/vstest.console.exe
+          $<SHELL_PATH:$<TARGET_FILE:Apache.Geode.Test>>
+          --nologo --parallel
+  WORKING_DIRECTORY "$<TARGET_FILE_DIR:Apache.Geode.Test>"
+)
