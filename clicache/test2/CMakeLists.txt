@@ -62,3 +62,11 @@ if(NOT "${STRONG_NAME_KEY}" STREQUAL "")
 endif()
 
 add_dependencies(Apache.Geode.Tests2 nuget-restore)
+
+enable_testing()
+
+add_test(NAME Apache.Geode.Tests2 
+  COMMAND ${CMAKE_BINARY_DIR}/packages/xunit.runner.console.2.4.0/tools/net452/xunit.console.exe
+          $<SHELL_PATH:$<TARGET_FILE:Apache.Geode.Tests2>>
+          -nologo -verbose -parallel all
+)

@@ -93,13 +93,13 @@ remote_shell cmake -E chdir build/cppcache/integration-test ctest -C ${CMAKE_CON
 (@ def run_net_unit_tests(): -@)
 set -ueo pipefail
 (@= remote_functions() @)
-remote_shell cmake -E chdir build/clicache/test2 ../../packages/xunit.runner.console.2.4.0/tools/net452/xunit.console.exe ${CMAKE_CONFIG}/Apache.Geode.Tests2.dll -parallel all
+remote_shell cmake -E chdir build/clicache/test2 ctest -C ${CMAKE_CONFIG} -j6 --timeout=300 --output-on-failure --repeat until-pass:4 --schedule-random
 (@- end @)
 
 (@ def run_net_integration_tests(): -@)
 set -ueo pipefail
 (@= remote_functions() @)
-remote_shell cmake -E chdir build/clicache/integration-test2 ctest -C ${CMAKE_CONFIG} -j76 --timeout=300 --output-on-failure --repeat until-pass:4 --schedule-random
+remote_shell cmake -E chdir build/clicache/integration-test2 ctest -C ${CMAKE_CONFIG} -j6 --timeout=300 --output-on-failure --repeat until-pass:4 --schedule-random
 (@- end @)
 
 (@ def run_net_legacy_integration_tests(): -@)
