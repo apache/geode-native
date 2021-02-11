@@ -14,7 +14,7 @@
 # limitations under the License.
 
 cmake_minimum_required( VERSION 3.9 )
-project( Apache.Geode.IntegrationTests2 CSharp )
+project(Apache.Geode.IntegrationTests2 CSharp)
 
 set(CMAKE_CSharp_FLAGS "/langversion:5")
 
@@ -23,7 +23,7 @@ get_target_property(JAVAOBJECT_JAR_PATH javaobject JAR_FILE)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/packages.config ${CMAKE_CURRENT_BINARY_DIR}/packages.config COPYONLY)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Config.cs.in ${CMAKE_CURRENT_BINARY_DIR}/Config.cs)
 
-add_library( ${PROJECT_NAME} SHARED
+add_library( Apache.Geode.IntegrationTests2 SHARED
   Framework.cs
   Cluster.cs
   ClusterTest.cs
@@ -47,6 +47,7 @@ add_library( ${PROJECT_NAME} SHARED
   cache.xml
   geode.properties
   xunit.runner.json
+  xUnitTestAddTests.ps1
   packages.config
   AutoSerializationTests.cs
   SerializationTests.cs
@@ -62,14 +63,14 @@ set_source_files_properties(
     VS_TOOL_OVERRIDE None
 )
 
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(Apache.Geode.IntegrationTests2
   PUBLIC
     Apache.Geode
     PdxClassLibrary
 )
 
-set_target_properties( ${PROJECT_NAME} PROPERTIES
-  VS_GLOBAL_ROOTNAMESPACE ${PROJECT_NAME}
+set_target_properties(Apache.Geode.IntegrationTests2 PROPERTIES
+  VS_GLOBAL_ROOTNAMESPACE Apache.Geode.IntegrationTests2
   VS_GLOBAL_TreatWarningsAsErrors True
   VS_GLOBAL_IsTestProject True
   VS_GLOBAL_TestProjectType UnitTest
@@ -86,10 +87,39 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
 )
 
 if(NOT "${STRONG_NAME_KEY}" STREQUAL "")
-  set_target_properties( ${PROJECT_NAME} PROPERTIES
+  set_target_properties( Apache.Geode.IntegrationTests2 PROPERTIES
     VS_GLOBAL_SignAssembly "true"
     VS_GLOBAL_AssemblyOriginatorKeyFile ${STRONG_NAME_KEY}
   )
 endif()
 
-add_dependencies(${PROJECT_NAME} nuget-restore)
+add_dependencies(Apache.Geode.IntegrationTests2 nuget-restore)
+
+enable_testing()
+
+set(ctest_file_base "${CMAKE_CURRENT_BINARY_DIR}/xUnit")
+set(ctest_include_file "${ctest_file_base}_include.cmake")
+set(ctest_tests_file "${ctest_file_base}_tests.cmake")
+
+add_custom_command(
+  TARGET Apache.Geode.IntegrationTests2 POST_BUILD
+  BYPRODUCTS "${ctest_tests_file}"
+  COMMAND pwsh -File 
+          "$<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}/xUnitTestAddTests.ps1>"
+          -AssemblyPath "$<SHELL_PATH:$<TARGET_FILE:Apache.Geode.IntegrationTests2>>"
+          -XUnitConsolePath "$<SHELL_PATH:${CMAKE_BINARY_DIR}/packages/xunit.runner.console.2.4.0/tools/net452/xunit.console.exe>"
+          -CTestFile "$<SHELL_PATH:${ctest_tests_file}>"
+  WORKING_DIRECTORY "$<TARGET_FILE_DIR:Apache.Geode.IntegrationTests2>"
+)
+
+file(WRITE "${ctest_include_file}"
+  "if(EXISTS \"${ctest_tests_file}\")\n"
+  "  include(\"${ctest_tests_file}\")\n"
+  "else()\n"
+  "  add_test(${TARGET}_NOT_BUILT ${TARGET}_NOT_BUILT)\n"
+  "endif()\n"
+)
+
+set_property(DIRECTORY
+  APPEND PROPERTY TEST_INCLUDE_FILES "${ctest_include_file}"
+)
