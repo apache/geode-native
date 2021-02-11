@@ -54,8 +54,6 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
   VS_GLOBAL_TestProjectType UnitTest
   VS_GLOBAL_PROJECT_TYPES "{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
   VS_DOTNET_REFERENCES "System;System.Xml;System.Web;System.Configuration"
-  VS_DOTNET_REFERENCE_Microsoft.VisualStudio.TestPlatform.TestFramework "${CMAKE_BINARY_DIR}/packages/Microsoft.VisualStudio.TestPlatform.14.0.0.1/lib/net20/Microsoft.VisualStudio.TestPlatform.TestFramework.dll"
-  VS_DOTNET_REFERENCE_Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions "${CMAKE_BINARY_DIR}/packages/Microsoft.VisualStudio.TestPlatform.14.0.0.1/lib/net20/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.dll"
   VS_DOTNET_REFERENCE_xunit.core "${CMAKE_BINARY_DIR}/packages/xunit.extensibility.core.2.4.0/lib/netstandard1.1/xunit.core.dll"
   VS_DOTNET_REFERENCE_xunit.assert "${CMAKE_BINARY_DIR}/packages/xunit.assert.2.4.0/lib/netstandard1.1/xunit.assert.dll"
   VS_DOTNET_REFERENCE_xunit.abstractions "${CMAKE_BINARY_DIR}/packages/xunit.abstractions.2.0.2/lib/net35/xunit.abstractions.dll"

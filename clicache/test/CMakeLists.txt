@@ -34,6 +34,7 @@ add_library(Apache.Geode.Test MODULE
   native_unique_ptrTests.cpp
   TimeUtilsTests.cpp
   ${CONFIGURE_OUT_FILES}
+  packages.config
 )
 
 set_target_properties(Apache.Geode.Test PROPERTIES
@@ -67,6 +68,7 @@ target_link_libraries(Apache.Geode.Test
 
 # Makes project only reference, no .lib.
 add_dependencies(Apache.Geode.Test Apache.Geode)
+add_dependencies(Apache.Geode.Test nuget-restore)
 
 string(REPLACE "/RTC1" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
 set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${SHARED_LINKER_FLAGS_STRONG_KEY}")
