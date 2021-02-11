@@ -112,7 +112,9 @@ jobs:
                     - #@ pr_status("clang-format", "pending")
                     - #@ pr_status("clang-tidy", "pending")
                     - #@ pr_status("rat-check", "pending")
-                    #@overlay/match by=overlay.index(1)
+            - #@overlay/match by=overlay.subset({"get": "version"})
+              trigger: false
+      #@overlay/match by=overlay.index(1)
       - in_parallel:
           steps:
             - #@overlay/match by=overlay.subset({"task": "clang-tidy"})

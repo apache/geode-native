@@ -436,6 +436,8 @@ plan:
       fail_fast: true
       steps:
         - get: clang-tools-image
+        - get: version
+          trigger: true
         - get: source
           trigger: true
         - get: geode

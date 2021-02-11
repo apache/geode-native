@@ -92,6 +92,8 @@ jobs:
       #@overlay/match by=overlay.index(0)
       - in_parallel:
           steps:
+            - #@overlay/match by=overlay.subset({"get": "version"})
+              passed: [ version-source ]
             - #@overlay/match by=overlay.subset({"get": "source"})
               passed: [ version-source ]
 
@@ -108,6 +110,7 @@ jobs:
                 - #@ build_job_name(build, config)
                 #@ end
                 #@ end
+                - check-source
               trigger: true
             - get: source
               passed:
