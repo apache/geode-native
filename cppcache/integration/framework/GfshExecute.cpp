@@ -41,6 +41,7 @@ using boost::process::child;
 using boost::process::environment;
 using boost::process::ipstream;
 using boost::process::std_err;
+using boost::process::std_in;
 using boost::process::std_out;
 
 GfshExecuteException::GfshExecuteException(std::string message, int returnCode)
@@ -91,7 +92,11 @@ void GfshExecute::execute(const std::string &command, const std::string &user,
     BOOST_LOG_TRIVIAL(debug) << "Gfsh::execute: " << line;
   }
 
-  gfsh.wait();
+  if (!gfsh.wait_for(std::chrono::minutes(3))) {
+    BOOST_LOG_TRIVIAL(debug)
+        << "Gfsh::execute: timeout waiting for completion. terminating!";
+    gfsh.terminate();
+  }
 
   auto exit_code = gfsh.exit_code();
   BOOST_LOG_TRIVIAL(debug) << "Gfsh::execute: exit:" << exit_code;
@@ -107,12 +112,13 @@ void GfshExecute::execute(const std::string &command, const std::string &user,
 child GfshExecute::executeChild(std::vector<std::string> &commands,
                                 environment &env, ipstream &outStream,
                                 ipstream &errStream) {
-#if defined(_WINDOWS)
-  // https://github.com/klemens-morgenstern/boost-process/issues/159
-  std::lock_guard<std::mutex> guard(g_child_mutex);
-#endif
+  #if defined(_WINDOWS)
+   // https://github.com/klemens-morgenstern/boost-process/issues/159
+    std::lock_guard<std::mutex> guard(g_child_mutex);
+  #endif
   return child(getFrameworkString(FrameworkVariable::GfShExecutable),
-               args = commands, env, std_out > outStream, std_err > errStream);
+               args = commands, env, std_out > outStream, std_err > errStream,
+               std_in < boost::process::null);
 }
 
 void GfshExecute::extractConnectionCommand(
