@@ -211,6 +211,33 @@ class LoggingTest : public testing::Test {
 
     return usedSpace;
   }
+
+  void verifyDiskSpaceNotLeakedForFile(const char* filename) {
+    const int NUMBER_OF_ITERATIONS = 4 * __1K__;
+    const int DISK_SPACE_LIMIT = 2 * __1M__;
+
+    std::string logfileName = filename ? filename : "geode-native.log";
+
+    // Start/stop logger several times, make sure it's picking up any/all
+    // existing logs in its disk space calculations.
+    for (auto j = 0; j < 5; j++) {
+      ASSERT_NO_THROW(apache::geode::client::Log::init(
+          apache::geode::client::LogLevel::Debug, logfileName, 1, 2));
+      for (auto i = 0; i < NUMBER_OF_ITERATIONS; i++) {
+        LOGDEBUG(__1KStringLiteral);
+      }
+      apache::geode::client::Log::close();
+
+      // Original file should still be around
+      ASSERT_TRUE(boost::filesystem::exists(logfileName));
+
+      // We wrote 4x the log file limit, and 2x the disk space limit, so
+      // there should be one 'rolled' file.  Its name should be of the form
+      // <base>-n.log, where n is some reasonable number.
+      auto usedSpace = calculateUsedDiskSpace(logfileName);
+      ASSERT_TRUE(usedSpace < DISK_SPACE_LIMIT);
+    }
+  }
 };
 
 /**
@@ -647,29 +674,13 @@ TEST_F(LoggingTest, countLinesErrorOnly) {
 TEST_F(LoggingTest, countLinesNone) { verifyLineCountAtLevel(LogLevel::None); }
 
 TEST_F(LoggingTest, verifyDiskSpaceNotLeaked) {
-  const int NUMBER_OF_ITERATIONS = 4 * __1K__;
-  const int DISK_SPACE_LIMIT = 2 * __1M__;
-
   for (auto logFilename : testFileNames) {
-    // Start/stop logger several times, make sure it's picking up any/all
-    // existing logs in its disk space calculations.
-    for (auto j = 0; j < 5; j++) {
-      ASSERT_NO_THROW(apache::geode::client::Log::init(
-          apache::geode::client::LogLevel::Debug, logFilename, 1, 2));
-      for (auto i = 0; i < NUMBER_OF_ITERATIONS; i++) {
-        LOGDEBUG(__1KStringLiteral);
-      }
-      apache::geode::client::Log::close();
-
-      // Original file should still be around
-      ASSERT_TRUE(boost::filesystem::exists(logFilename));
-
-      // We wrote 4x the log file limit, and 2x the disk space limit, so
-      // there should be one 'rolled' file.  Its name should be of the form
-      // <base>-n.log, where n is some reasonable number.
-      auto usedSpace = calculateUsedDiskSpace(logFilename);
-      ASSERT_TRUE(usedSpace < DISK_SPACE_LIMIT);
-    }
+    verifyDiskSpaceNotLeakedForFile(logFilename);
   }
 }
+
+TEST_F(LoggingTest, verifyDiskSpaceNotLeakedWithDefaultLogName) {
+  verifyDiskSpaceNotLeakedForFile(nullptr);
+}
+
 }  // namespace
