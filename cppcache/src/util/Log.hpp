@@ -213,6 +213,8 @@ class APACHE_GEODE_EXPORT Log {
   static void setSizeLimits(int32_t logFileLimit, int64_t logDiskSpaceLimit);
 
   static void logInternal(LogLevel level, const std::string& msg);
+
+  static void calculateUsedDiskSpace();
 };
 
 }  // namespace client
