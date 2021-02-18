@@ -17,7 +17,7 @@ $ErrorActionPreference = "Stop"
 
 write-host "Installing Geode..."
 
-$GEODE_VERSION = "1.12.0"
+$GEODE_VERSION = "1.13.1"
 
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 Invoke-WebRequest -Uri "https://www.apache.org/dyn/closer.cgi?action=download&filename=geode/${GEODE_VERSION}/apache-geode-${GEODE_VERSION}.tgz" -OutFile "${env:TEMP}\geode.tgz"
