@@ -47,7 +47,7 @@ RUN apt-get update && \
         update-alternatives --install /usr/bin/clang-format  clang-format  /usr/bin/clang-format-${CLANG_VERSION} 999
 
 ENV GEODE_VERSION 1.13.1
-RUN wget "https://downloads.apache.org/geode/${GEODE_VERSION}/apache-geode-${GEODE_VERSION}.tgz" --quiet -O - | \ 
+RUN wget "https://downloads.apache.org/geode/${GEODE_VERSION}/apache-geode-${GEODE_VERSION}.tgz" --quiet -O - | \
         tar xzf -
 
 ENV RAT_VERSION 0.13
