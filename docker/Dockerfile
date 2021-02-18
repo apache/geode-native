@@ -47,14 +47,14 @@ RUN apt-get update && \
         update-alternatives --install /usr/bin/clang-format  clang-format  /usr/bin/clang-format-${CLANG_VERSION} 999
 
 ENV GEODE_VERSION 1.13.1
-RUN wget "https://downloads.apache.org/geode/${GEODE_VERSION}/apache-geode-${GEODE_VERSION}.tgz" --quiet -O - | \
+RUN wget "https://downloads.apache.org/geode/${GEODE_VERSION}/apache-geode-${GEODE_VERSION}.tgz" --quiet -O - | \ 
         tar xzf -
 
 ENV RAT_VERSION 0.13
 RUN wget "https://archive.apache.org/dist/creadur/apache-rat-${RAT_VERSION}/apache-rat-${RAT_VERSION}-bin.tar.gz" --quiet -O - | \
         tar xzf -
 
-ENV CMAKE_VERSION 3.16.8
+ENV CMAKE_VERSION 3.18.0
 RUN wget "https://cmake.org/files/v${CMAKE_VERSION%.*}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh" --quiet -O /tmp/cmake && \
         bash /tmp/cmake --skip-license --prefix=/usr/local && \
         rm -rf /tmp/cmake
