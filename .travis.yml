@@ -27,6 +27,7 @@ env:
     - DOCKER_ARGS="--rm --volume=${TRAVIS_BUILD_DIR}:/geode-native"
     - DOCKER_IMAGE="apachegeode/geode-native-build:latest"
     - SOURCE_DIR="/geode-native"
+    - CMAKE_VERSION=3.18
 
   matrix:
     - DOCKER_COMMAND="echo rat && mkdir build && cd build && cmake ${SOURCE_DIR} -DUSE_RAT=ON && cmake --build . --target rat-check"
@@ -37,6 +38,9 @@ install:
 
 script:
   - sudo apt-get update && sudo apt-get install -y libseccomp2
+  - wget -O cmake.tgz https://cmake.org/files/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}.0-Linux-x86_64.tar.gz
+  - tar xzf cmake.tgz
+  - PATH="`pwd`/cmake-${CMAKE_VERSION}.0-Linux-x86_64/bin":$PATH
   - docker run ${DOCKER_ARGS} "${DOCKER_IMAGE}" bash -c "${DOCKER_COMMAND}"
 
 notifications:
