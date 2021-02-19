@@ -31,17 +31,10 @@ set GEODE_NATIVE_HOME="%TEST_DIR%"
 
 set TESTSRC=$<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}>
 set GF_JAVA=$<SHELL_PATH:${Java_JAVA_EXECUTABLE}>
-set GFJAVA=$<SHELL_PATH:${Geode_PATH}>
 set GFE_LOGLEVEL=config
 set GFE_SECLOGLEVEL=config
 set GFE_DIR=$<SHELL_PATH:${Geode_PATH}>
-set MCAST_ADDR=224.10.13.63
-set MCAST_PORT=${PORT}
-set TIMEBOMB=3600
 set GF_CLASSPATH=%GF_CLASSPATH%;$<SHELL_PATH:${CMAKE_BINARY_DIR}>\tests\javaobject\javaobject.jar
-set PROFILERCMD=
-set BUG481=
-set TESTNAME=${TEST}
 
 rmdir /q /s "%TEST_DIR%" 2>nul
 mkdir "%TEST_DIR%"
@@ -49,7 +42,7 @@ if %errorlevel% neq 0 exit /b %errorlevel%
 pushd "%TEST_DIR%"
 if %errorlevel% neq 0 exit /b %errorlevel%
 
-${NUNIT_CONSOLE} /labels /run:${NAMESPACE}.${TESTCLASS} ..\..\$<CONFIG>\UnitTests.dll 
+${NUNIT_CONSOLE} /timeout 1000000 /labels /run:${NAMESPACE}.${TESTCLASS} ..\..\$<CONFIG>\UnitTests.dll
 if %errorlevel% neq 0 exit /b %errorlevel%
 
 popd

@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_THINCLIENTPOOLSTICKYHADM_H_
-#define GEODE_THINCLIENTPOOLSTICKYHADM_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,11 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_THINCLIENTPOOLSTICKYHADM_H_
+#define GEODE_THINCLIENTPOOLSTICKYHADM_H_
+
 #include "ThinClientPoolHADM.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
+
 class ThinClientPoolStickyHADM : public ThinClientPoolHADM {
  public:
   ThinClientPoolStickyHADM(const char* name,
@@ -32,8 +34,9 @@ class ThinClientPoolStickyHADM : public ThinClientPoolHADM {
       : ThinClientPoolHADM(name, poolAttrs, connManager) {
     m_sticky = true;
   }
-  virtual ~ThinClientPoolStickyHADM() {}
+  ~ThinClientPoolStickyHADM() override = default;
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

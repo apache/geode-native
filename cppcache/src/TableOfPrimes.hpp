@@ -49,7 +49,7 @@ static const uint8_t g_primeConcurLen =
  *  A sampling of primes are used from 0 to 1 million. Not every prime is
  *  necessary, as the map scales, little steps are usually uninteresting.
  */
-class APACHE_GEODE_EXPORT TableOfPrimes {
+class TableOfPrimes {
  public:
   inline static uint32_t getPrimeLength() { return g_primeLen; }
 

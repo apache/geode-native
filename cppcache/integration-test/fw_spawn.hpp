@@ -32,14 +32,14 @@
 
 #if defined(_WIN32)
 #if (FD_SETSIZE != 1024)
-++ + bad fdsetsize...
++++bad fdsetsize...
 #endif
 #endif
 
 #include <ace/Process.h>
 #include <ace/Log_Msg.h>
 
-    namespace dunit {
+  namespace dunit {
 
   // Listing 1 code/ch10
   class Manager : virtual public ACE_Process {
@@ -95,7 +95,7 @@
 
     // Listing 2 code/ch10
     // prepare() is inherited from ACE_Process.
-    virtual int prepare(ACE_Process_Options &options) {
+    int prepare(ACE_Process_Options &options) override {
       options.command_line("%s", this->programName_);
       if (this->setStdHandles(options) == -1 ||
           this->setEnvVariable(options) == -1) {
@@ -117,7 +117,7 @@
 
    private:
    protected:
-    virtual ~Manager() {}
+    ~Manager() noexcept override = default;
 
    private:
     ACE_HANDLE outputfd_;

@@ -61,7 +61,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call,
   return TRUE;
 }
 
-APACHE_GEODE_EXPORT void DllMainGetPath(char *result, int maxLen) {
+void DllMainGetPath(char *result, int maxLen) {
   if (!initgflibDone) {
     result[0] = '\0';
     return;

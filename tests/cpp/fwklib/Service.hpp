@@ -69,7 +69,7 @@ class Service : public ACE_Task_Base {
   ACE_Thread_Mutex m_Mutex;
   ACE_DLList<ServiceTask> m_TaskQueue;
 
-  int32_t svc();
+  int32_t svc() override;
 
   inline void putQ(ServiceTask* task, uint32_t cnt = 1) {
     ACE_Guard<ACE_Thread_Mutex> guard(m_Mutex);
@@ -85,7 +85,7 @@ class Service : public ACE_Task_Base {
  public:
   explicit Service(int32_t threadCnt);
 
-  inline ~Service() { stopThreads(); }
+  ~Service() override { stopThreads(); }
 
   int32_t runThreaded(ServiceTask* task, uint32_t threads);
 
@@ -119,8 +119,7 @@ class SafeQueue {
     if (m_queue.size() == 0) {
       ACE_Time_Value until(2);
       until += ACE_OS::gettimeofday();
-      ;
-      int32_t res = m_cond.wait(&until);
+      auto res = m_cond.wait(&until);
       if (res == -1) return nullptr;
     }
     return m_queue.delete_head();

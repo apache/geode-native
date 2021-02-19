@@ -51,7 +51,7 @@ class putThread : public ACE_Task_Base {
  public:
   explicit putThread(const char *name) : regPtr(getHelper()->getRegion(name)) {}
 
-  int svc(void) {
+  int svc(void) override {
     // TODO: No. of connection should be = minConnection
 
     for (int i = 0; i < 10000; i++) {

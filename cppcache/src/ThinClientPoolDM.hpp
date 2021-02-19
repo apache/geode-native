@@ -342,7 +342,7 @@ class FunctionExecution : public PooledWork<GfErrType> {
     m_userAttr = nullptr;
   }
 
-  ~FunctionExecution() {}
+  ~FunctionExecution() noexcept override = default;
 
   std::shared_ptr<CacheableString> getException() { return exceptionPtr; }
 
@@ -366,7 +366,7 @@ class FunctionExecution : public PooledWork<GfErrType> {
     m_userAttr = userAttr;
   }
 
-  GfErrType execute(void);
+  GfErrType execute(void) override;
 };
 
 class OnRegionFunctionExecution : public PooledWork<GfErrType> {
@@ -398,7 +398,7 @@ class OnRegionFunctionExecution : public PooledWork<GfErrType> {
       const std::shared_ptr<BucketServerLocation>& serverLocation,
       bool allBuckets);
 
-  ~OnRegionFunctionExecution() {
+  ~OnRegionFunctionExecution() noexcept override {
     delete m_request;
     delete m_reply;
     delete m_resultCollector;
@@ -414,7 +414,7 @@ class OnRegionFunctionExecution : public PooledWork<GfErrType> {
     return static_cast<ChunkedFunctionExecutionResponse*>(m_resultCollector);
   }
 
-  GfErrType execute(void) {
+  GfErrType execute(void) override {
     GuardUserAttributes gua;
 
     if (m_userAttr) {

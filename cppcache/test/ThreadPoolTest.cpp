@@ -33,7 +33,7 @@ class TestCallable : public Callable {
  public:
   TestCallable() : called_(0) {}
 
-  void call() {
+  void call() override {
     std::lock_guard<decltype(mutex_)> lock(mutex_);
     called_++;
     condition_.notify_all();

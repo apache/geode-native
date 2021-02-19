@@ -459,7 +459,7 @@ namespace Apache.Geode.Client.FwkLib
           cacheXml = Util.NormalizePath(xmlDir + PathSep + cacheXml);
         }
 
-        int javaServerPort = Util.RandPort(21321, 29789);
+        int javaServerPort = Util.GetAvailablePort();
 
         List<string> targetHosts = Util.BBGet(FwkReadData.HostGroupKey,
           hostGroup) as List<string>;

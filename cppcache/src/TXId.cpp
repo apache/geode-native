@@ -14,12 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * TXId.cpp
- *
- *  Created on: 07-Feb-2011
- *      Author: ankurs
- */
 
 #include "TXId.hpp"
 
@@ -54,7 +48,7 @@ void TXId::setInitalTransactionIDValue(int32_t newTransactionID) {
   m_transactionId.exchange(newTransactionID);
 }
 
-TXId::~TXId() {}
+TXId::~TXId() noexcept = default;
 
 int32_t TXId::getId() { return m_TXId; }
 }  // namespace client

@@ -18,6 +18,7 @@
 #include <framework/Cluster.h>
 #include <framework/Gfsh.h>
 
+#include <random>
 #include <thread>
 
 #include <geode/Cache.hpp>
@@ -63,10 +64,15 @@ std::shared_ptr<Region> setupRegion(Cache& cache) {
 
 void runClientOperations(Cache& cache, std::shared_ptr<Region> region,
                          int minEntryKey, int maxEntryKey, int numTx) {
+  std::random_device randomDevice;
+  std::default_random_engine randomEngine(randomDevice());
+  std::uniform_int_distribution<decltype(maxEntryKey)> distribution(
+      minEntryKey, maxEntryKey);
+
   auto transactionManager = cache.getCacheTransactionManager();
 
   for (int i = 0; i < numTx; i++) {
-    auto theKey = (rand() % (maxEntryKey - minEntryKey)) + minEntryKey;
+    auto theKey = distribution(randomEngine);
     std::string theValue = "theValue";
     try {
       transactionManager->begin();

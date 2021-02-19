@@ -36,52 +36,47 @@ using statistics::StatisticDescriptor;
 using statistics::Statistics;
 using statistics::StatisticsType;
 
-class APACHE_GEODE_EXPORT CqServiceVsdStats : public CqServiceStatistics {
+class CqServiceVsdStats : public CqServiceStatistics {
  public:
   /** hold statistics for a cq. */
   explicit CqServiceVsdStats(statistics::StatisticsFactory* factory,
                              const std::string& cqName = "CqServiceVsdStats");
 
   /** disable stat collection for this item. */
-  virtual ~CqServiceVsdStats();
+  ~CqServiceVsdStats() noexcept override;
 
   void close() { m_cqServiceVsdStats->close(); }
-  inline void decNumCqsActive() {
-    m_cqServiceVsdStats->incInt(m_numCqsActiveId, -1);
-  }
 
   inline void incNumCqsActive() const {
     m_cqServiceVsdStats->incInt(m_numCqsActiveId, 1);
   }
-  inline uint32_t numCqsActive() const {
+  inline uint32_t numCqsActive() const override {
     return m_cqServiceVsdStats->getInt(m_numCqsActiveId);
   }
 
   inline void incNumCqsCreated() {
     m_cqServiceVsdStats->incInt(m_numCqsCreatedId, 1);
   }
-  inline uint32_t numCqsCreated() const {
+  inline uint32_t numCqsCreated() const override {
     return m_cqServiceVsdStats->getInt(m_numCqsCreatedId);
   }
 
-  inline uint32_t numCqsOnClient() const {
+  inline uint32_t numCqsOnClient() const override {
     return m_cqServiceVsdStats->getInt(m_numCqsOnClientId);
   }
 
   inline void incNumCqsClosed() {
     m_cqServiceVsdStats->incInt(m_numCqsClosedId, 1);
   }
-  inline uint32_t numCqsClosed() const {
+  inline uint32_t numCqsClosed() const override {
     return m_cqServiceVsdStats->getInt(m_numCqsClosedId);
   }
 
   inline void incNumCqsStopped() {
     m_cqServiceVsdStats->incInt(m_numCqsStoppedId, 1);
   }
-  inline void decNumCqsStopped() {
-    m_cqServiceVsdStats->incInt(m_numCqsStoppedId, -1);
-  }
-  inline uint32_t numCqsStopped() const {
+
+  inline uint32_t numCqsStopped() const override {
     return m_cqServiceVsdStats->getInt(m_numCqsStoppedId);
   }
 
@@ -91,10 +86,6 @@ class APACHE_GEODE_EXPORT CqServiceVsdStats : public CqServiceStatistics {
 
   inline void setNumCqsOnClient(uint32_t value) {
     m_cqServiceVsdStats->setInt(m_numCqsOnClientId, value);
-  }
-
-  inline void setNumCqsClosed(uint32_t value) {
-    m_cqServiceVsdStats->setInt(m_numCqsClosedId, value);
   }
 
   inline void setNumCqsStopped(uint32_t value) {

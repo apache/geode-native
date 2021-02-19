@@ -49,7 +49,7 @@ class SystemProperties;
 class DistributedSystemImpl;
 class CacheRegionHelper;
 
-class APACHE_GEODE_EXPORT DistributedSystem {
+class DistributedSystem {
   /**
    * @brief public methods
    */

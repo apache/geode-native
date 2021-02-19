@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_ENTRYEXPIRYHANDLER_H_
-#define GEODE_ENTRYEXPIRYHANDLER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,6 +15,11 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_ENTRYEXPIRYHANDLER_H_
+#define GEODE_ENTRYEXPIRYHANDLER_H_
+
 #include <geode/Cache.hpp>
 #include <geode/ExpirationAction.hpp>
 #include <geode/Region.hpp>
@@ -28,13 +28,10 @@
 #include "ExpMapEntry.hpp"
 #include "RegionInternal.hpp"
 
-/**
- * @file
- */
-
 namespace apache {
 namespace geode {
 namespace client {
+
 /**
  * @class EntryExpiryTask EntryExpiryTask.hpp
  *
@@ -44,11 +41,8 @@ namespace client {
  * TODO: TODO: cleanup region entry nodes and handlers from expiry task
  * manager when region is destroyed
  */
-class APACHE_GEODE_EXPORT EntryExpiryHandler : public ACE_Event_Handler {
+class EntryExpiryHandler : public ACE_Event_Handler {
  public:
-  /**
-   * Constructor
-   */
   EntryExpiryHandler(std::shared_ptr<RegionInternal>& rptr,
                      std::shared_ptr<MapEntryImpl>& entryPtr,
                      ExpirationAction action, std::chrono::seconds duration);
@@ -56,11 +50,12 @@ class APACHE_GEODE_EXPORT EntryExpiryHandler : public ACE_Event_Handler {
   /** This task object will be registered with the Timer Queue.
    *  When the timer expires the handle_timeout is invoked.
    */
-  int handle_timeout(const ACE_Time_Value& current_time, const void* arg);
+  int handle_timeout(const ACE_Time_Value& current_time,
+                     const void* arg) override;
   /**
    * This is called when the task object needs to be cleaned up..
    */
-  int handle_close(ACE_HANDLE handle, ACE_Reactor_Mask close_mask);
+  int handle_close(ACE_HANDLE handle, ACE_Reactor_Mask close_mask) override;
 
  private:
   // The region which contains the entry
@@ -75,6 +70,7 @@ class APACHE_GEODE_EXPORT EntryExpiryHandler : public ACE_Event_Handler {
   // perform the actual expiration action
   void DoTheExpirationAction(const std::shared_ptr<CacheableKey>& key);
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

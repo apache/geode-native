@@ -123,14 +123,7 @@ void CqQueryImpl::close(bool sendRequestToServer) {
 
   // Stat update.
   auto& stats = m_cqService->getCqServiceVsdStats();
-  /*
-  if (isRunning()) {
-      stats.decNumCqsActive();
-  }
-  else if (isStopped()) {
-      stats.decNumCqsStopped();
-  }
-  */
+
   setCqState(CqState::CLOSING);
   if (sendRequestToServer == true) {
     try {

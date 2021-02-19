@@ -20,15 +20,15 @@
 #include <mutex>
 
 // Disable warning for "extra qualifications" here.  One of the boost log
-// headers triggers this warning.  Note: use of disable pragma here is 
-// intentional - attempts to use push/pop as you ordinarily should just 
-// yielded a gripe from the MS tools that "warning number '4596' is not a 
+// headers triggers this warning.  Note: use of disable pragma here is
+// intentional - attempts to use push/pop as you ordinarily should just
+// yielded a gripe from the MS tools that "warning number '4596' is not a
 // valid compiler warning". re-enabling the warning after the include
 // fails in the same way, so just leave it disabled for the rest of the
 // file.  This is safe, since the warning can only trigger inside a class
 // declaration, of which there are none in this file.
 #ifdef WIN32
-#pragma warning(disable: 4596)
+#pragma warning(disable : 4596)
 #endif
 #include <boost/log/trivial.hpp>
 
@@ -55,7 +55,8 @@ std::string GfshExecuteException::getName() const {
 int GfshExecuteException::getGfshReturnCode() { return returnCode_; }
 
 void GfshExecute::execute(const std::string &command, const std::string &user,
-                          const std::string &password, const std::string &keyStorePath,
+                          const std::string &password,
+                          const std::string &keyStorePath,
                           const std::string &trustStorePath,
                           const std::string &keyStorePassword,
                           const std::string &trustStorePassword) {
@@ -69,14 +70,16 @@ void GfshExecute::execute(const std::string &command, const std::string &user,
   commands.push_back("-e");
   commands.push_back(command);
 
-  auto env = boost::this_process::environment();
-  environment _env = env;
-  // broken on windows env["JAVA_ARGS"] = "-Xmx1g -client";
+  environment env{boost::this_process::environment()};
+
+  if (!maxHeap_.empty()) {
+    env["JAVA_ARGS"] = "-Xmx" + maxHeap_ + " " + env["JAVA_ARGS"].to_string();
+  }
 
   ipstream outStream;
   ipstream errStream;
 
-  auto gfsh = executeChild(commands, _env, outStream, errStream);
+  auto gfsh = executeChild(commands, env, outStream, errStream);
 
   std::string line;
 
@@ -96,7 +99,9 @@ void GfshExecute::execute(const std::string &command, const std::string &user,
   if (exit_code) {
     throw GfshExecuteException("gfsh error", exit_code);
   }
-  extractConnectionCommand(command, user, password, keyStorePath, trustStorePath, keyStorePassword, trustStorePassword);
+  extractConnectionCommand(command, user, password, keyStorePath,
+                           trustStorePath, keyStorePassword,
+                           trustStorePassword);
 }
 
 child GfshExecute::executeChild(std::vector<std::string> &commands,
@@ -110,10 +115,11 @@ child GfshExecute::executeChild(std::vector<std::string> &commands,
                args = commands, env, std_out > outStream, std_err > errStream);
 }
 
-void GfshExecute::extractConnectionCommand(const std::string &command, const std::string &user,
-                                           const std::string &password, const std::string &keyStorePath,
-                                           const std::string &trustStorePath, const std::string &keyStorePassword,
-                                           const std::string &trustStorePassword) {
+void GfshExecute::extractConnectionCommand(
+    const std::string &command, const std::string &user,
+    const std::string &password, const std::string &keyStorePath,
+    const std::string &trustStorePath, const std::string &keyStorePassword,
+    const std::string &trustStorePassword) {
   if (starts_with(command, std::string("connect"))) {
     connection_ = command;
   } else if (starts_with(command, std::string("start locator"))) {
@@ -132,15 +138,24 @@ void GfshExecute::extractConnectionCommand(const std::string &command, const std
       jmxManagerPort = jmxManagerPortMatch[1];
     }
 
-    connection_ = "connect --jmx-manager=" + jmxManagerHost + "[" + jmxManagerPort + "]";
+    connection_ =
+        "connect --jmx-manager=" + jmxManagerHost + "[" + jmxManagerPort + "]";
 
     if (!(user.empty() || password.empty())) {
       connection_ += " --user=" + user + " --password=" + password;
     }
 
-    if(!(keyStorePath.empty() || trustStorePath.empty() || keyStorePassword.empty() || trustStorePassword.empty())) {
-        connection_ += " --use-ssl=true --key-store=" + keyStorePath + " --trust-store=" + trustStorePath +
-                " --key-store-password=" + keyStorePassword + " --trust-store-password=" + trustStorePassword;
+    if (!(keyStorePath.empty() || trustStorePath.empty() ||
+          keyStorePassword.empty() || trustStorePassword.empty())) {
+      connection_ += " --use-ssl=true --key-store=" + keyStorePath +
+                     " --trust-store=" + trustStorePath +
+                     " --key-store-password=" + keyStorePassword +
+                     " --trust-store-password=" + trustStorePassword;
     }
   }
+}
+
+GfshExecute &GfshExecute::withMaxHeap(std::string maxHeap) {
+  maxHeap_ = std::move(maxHeap);
+  return *this;
 }
