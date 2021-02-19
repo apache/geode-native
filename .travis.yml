@@ -32,8 +32,8 @@ env:
 
 
   matrix:
-    - DOCKER_COMMAND="wget -O /tmp/cmake.tgz https://cmake.org/files/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}.0-Linux-x86_64.tar.gz && tar xzf /tmp/cmake.tgz && echo rat && mkdir build && cd build && cmake ${SOURCE_DIR} -DUSE_RAT=ON && cmake --build . --target rat-check"
-    - DOCKER_COMMAND="wget -O /tmp/cmake.tgz https://cmake.org/files/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}.0-Linux-x86_64.tar.gz && tar xzf /tmp/cmake.tgz && echo test && mkdir build && cd build && cmake ${SOURCE_DIR} -DCMAKE_CXX_FLAGS=-stdlib=libc++ -DCMAKE_CXX_CLANG_TIDY=clang-tidy && cmake --build . -- -j2 && ./cppcache/test/apache-geode_unittests && git -C ${SOURCE_DIR} diff --exit-code"
+    - DOCKER_COMMAND="pushd /tmp && wget -O cmake.tgz https://cmake.org/files/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}.0-Linux-x86_64.tar.gz && tar xzf cmake.tgz && popd && echo rat && mkdir build && cd build && cmake ${SOURCE_DIR} -DUSE_RAT=ON && cmake --build . --target rat-check"
+    - DOCKER_COMMAND="pushd /tmp && wget -O cmake.tgz https://cmake.org/files/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}.0-Linux-x86_64.tar.gz && tar xzf cmake.tgz && popd && echo test && mkdir build && cd build && cmake ${SOURCE_DIR} -DCMAKE_CXX_FLAGS=-stdlib=libc++ -DCMAKE_CXX_CLANG_TIDY=clang-tidy && cmake --build . -- -j2 && ./cppcache/test/apache-geode_unittests && git -C ${SOURCE_DIR} diff --exit-code"
 
 install:
   - docker pull "${DOCKER_IMAGE}"
