@@ -94,6 +94,8 @@ class LoggingTest : public testing::Test {
     }
   }
 
+  void SetUp() override { scrubTestLogFiles(); }
+
   void TearDown() override { scrubTestLogFiles(); }
 
  public:
