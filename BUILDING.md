@@ -2,7 +2,7 @@
 
 ## Prerequisites (All Platforms)
 
-* [CMake 3.12](https://cmake.org/) or newer
+* [CMake 3.xy](https://cmake.org/) or newer
 * C++11 compiler *(see platform specific requirements)*
 * [Doxygen 1.8.11 or greater](https://sourceforge.net/projects/doxygen/) *(for building source documentation)*
 * [OpenSSL](https://www.openssl.org) *(for building source documentation)*
