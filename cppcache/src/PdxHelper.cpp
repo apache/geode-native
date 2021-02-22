@@ -47,6 +47,19 @@ PdxHelper::PdxHelper() {}
 
 PdxHelper::~PdxHelper() {}
 
+void PdxHelper::serialize(DataOutput& output,
+                          const std::shared_ptr<PdxSerializable>& pdxObject) {
+  decltype(output.getCursor()) before;
+
+  try {
+    before = output.getCursor();
+    serializePdx(output, pdxObject);
+  } catch (UnknownPdxTypeException&) {
+    output.advanceCursor(before - output.getCursor());
+    serializePdx(output, pdxObject);
+  }
+}
+
 void PdxHelper::serializePdx(
     DataOutput& output, const std::shared_ptr<PdxSerializable>& pdxObject) {
   auto pdxII = std::dynamic_pointer_cast<PdxInstanceImpl>(pdxObject);

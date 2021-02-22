@@ -48,6 +48,9 @@ class PdxHelper {
 
   virtual ~PdxHelper();
 
+  static void serialize(DataOutput& output,
+                        const std::shared_ptr<PdxSerializable>& pdxObject);
+
   static void serializePdx(DataOutput& output,
                            const std::shared_ptr<PdxSerializable>& pdxObject);
 
