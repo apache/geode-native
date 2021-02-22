@@ -18,11 +18,7 @@
 #include <framework/Cluster.h>
 #include <framework/Gfsh.h>
 
-#include <future>
-#include <initializer_list>
-#include <iostream>
 #include <memory>
-#include <thread>
 
 #include <gtest/gtest.h>
 
@@ -31,23 +27,29 @@
 #include <geode/PoolManager.hpp>
 #include <geode/RegionFactory.hpp>
 #include <geode/RegionShortcut.hpp>
-#include <geode/TypeRegistry.hpp>
 
 #include "LocalRegion.hpp"
 #include "NestedPdxObject.hpp"
 #include "PdxType.hpp"
+#include "mock/CacheListenerMock.hpp"
 
 namespace {
 
 using apache::geode::client::Cache;
 using apache::geode::client::CacheableKey;
 using apache::geode::client::CacheableString;
+using apache::geode::client::CacheFactory;
+using apache::geode::client::CacheListenerMock;
+using apache::geode::client::CacheRegionHelper;
 using apache::geode::client::IllegalStateException;
 using apache::geode::client::LocalRegion;
+using apache::geode::client::PdxInstance;
 using apache::geode::client::PdxInstanceFactory;
 using apache::geode::client::PdxSerializable;
+using apache::geode::client::PoolFactory;
 using apache::geode::client::Region;
 using apache::geode::client::RegionShortcut;
+using apache::geode::client::SelectResults;
 
 using PdxTests::Address;
 using PdxTests::PdxType;
@@ -55,7 +57,22 @@ using PdxTests::PdxType;
 using testobject::ChildPdx;
 using testobject::ParentPdx;
 
+using testing::_;
+using testing::DoAll;
+using testing::InvokeWithoutArgs;
+using testing::Return;
+
 const std::string gemfireJsonClassName = "__GEMFIRE_JSON";
+
+Cache createTestCache() {
+  auto cache = CacheFactory()
+                   .set("log-level", "none")
+                   .set("on-client-disconnect-clear-pdxType-Ids", "true")
+                   .set("statistic-sampling-enabled", "false")
+                   .create();
+
+  return cache;
+}
 
 std::shared_ptr<Region> setupRegion(Cache& cache) {
   auto region = cache.createRegionFactory(RegionShortcut::PROXY)
@@ -306,6 +323,98 @@ TEST(PdxInstanceTest, testCreateJsonInstance) {
   region->put("simpleObject", pdxInstance);
 
   auto retrievedValue = region->get("simpleObject");
+}
+
+TEST(PdxInstanceTest, testInstancePutAfterRestart) {
+  Cluster cluster{LocatorCount{1}, ServerCount{1}};
+  cluster.start();
+
+  auto& gfsh = cluster.getGfsh();
+  gfsh.create().region().withName("region").withType("REPLICATE").execute();
+
+  auto cache = createTestCache();
+  auto poolFactory = cache.getPoolManager()
+                         .createFactory()
+                         .setSubscriptionEnabled(true)
+                         .setPingInterval(std::chrono::seconds{2});
+  cluster.applyLocators(poolFactory);
+  poolFactory.create("default");
+
+  bool status = false;
+  std::mutex mutex_status;
+  std::condition_variable cv_status;
+  auto listener = std::make_shared<CacheListenerMock>();
+  EXPECT_CALL(*listener, afterCreate(_)).WillRepeatedly(Return());
+  EXPECT_CALL(*listener, afterRegionLive(_))
+      .WillRepeatedly(InvokeWithoutArgs([&status, &cv_status] {
+        status = true;
+        cv_status.notify_one();
+      }));
+  EXPECT_CALL(*listener, afterRegionDisconnected(_))
+      .WillRepeatedly(InvokeWithoutArgs([&status, &cv_status] {
+        status = false;
+        cv_status.notify_one();
+      }));
+
+  auto region = cache.createRegionFactory(RegionShortcut::PROXY)
+                    .setPoolName("default")
+                    .setCacheListener(listener)
+                    .create("region");
+
+  std::shared_ptr<PdxInstance> first_instance;
+  std::shared_ptr<PdxInstance> second_instance;
+
+  {
+    auto pdxInstanceFactory =
+        cache.createPdxInstanceFactory(gemfireJsonClassName, false);
+
+    pdxInstanceFactory.writeObject("foo",
+                                   CacheableString::create(std::string("bar")));
+    first_instance = pdxInstanceFactory.create();
+  }
+
+  {
+    auto pdxInstanceFactory =
+        cache.createPdxInstanceFactory(gemfireJsonClassName, false);
+
+    pdxInstanceFactory.writeObject("random",
+                                   CacheableString::create(std::string("bar")));
+
+    pdxInstanceFactory.writeInt("bar", -1);
+    second_instance = pdxInstanceFactory.create();
+  }
+
+  region->put("first_instance", first_instance);
+  region->put("second_instance", second_instance);
+
+  gfsh.shutdown().execute();
+
+  {
+    std::unique_lock<std::mutex> lock(mutex_status);
+    cv_status.wait(lock, [&status] { return !status; });
+  }
+
+  std::this_thread::sleep_for(std::chrono::seconds{30});
+
+  for (auto& server : cluster.getServers()) {
+    server.start();
+  }
+
+  {
+    std::unique_lock<std::mutex> lock(mutex_status);
+    cv_status.wait(lock, [&status] { return status; });
+  }
+
+  EXPECT_NO_THROW(region->put("first_instance", first_instance));
+  EXPECT_NO_THROW(region->put("second_instance", second_instance));
+
+  auto qs = cache.getQueryService();
+  auto q = qs->newQuery("SELECT * FROM /region WHERE bar = -1");
+
+  decltype(q->execute()) result;
+  EXPECT_NO_THROW(result = q->execute());
+  EXPECT_TRUE(result);
+  EXPECT_EQ(result->size(), 1UL);
 }
 
 }  // namespace
