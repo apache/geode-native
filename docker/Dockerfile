@@ -20,7 +20,7 @@ LABEL maintainer="Apache Geode <dev@geode.apache.org>"
 ENV TZ=US/Pacific
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-ENV CLANG_VERSION 6.0
+ARG CLANG_VERSION=11
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
         apt-get install -y \
@@ -36,7 +36,7 @@ RUN apt-get update && \
             git \
             graphviz \
             openjdk-8-jdk \
-            wget && \
+            curl && \
         rm -rf /var/lib/apt/lists/* && \
         ln -s /usr/lib/llvm-*/include/c++/v1/ /usr/include/c++/v1 && \
         update-alternatives --install /usr/bin/clang         clang         /usr/bin/clang-${CLANG_VERSION} 999 && \
@@ -45,23 +45,28 @@ RUN apt-get update && \
         update-alternatives --install /usr/bin/c++           c++           /usr/bin/clang++-${CLANG_VERSION} 999 && \
         update-alternatives --install /usr/bin/clang-tidy    clang-tidy    /usr/bin/clang-tidy-${CLANG_VERSION} 999 && \
         update-alternatives --install /usr/bin/clang-format  clang-format  /usr/bin/clang-format-${CLANG_VERSION} 999
-
-ENV GEODE_VERSION 1.13.1
-RUN wget "https://downloads.apache.org/geode/${GEODE_VERSION}/apache-geode-${GEODE_VERSION}.tgz" --quiet -O - | \
-        tar xzf -
-
-ENV RAT_VERSION 0.13
-RUN wget "https://archive.apache.org/dist/creadur/apache-rat-${RAT_VERSION}/apache-rat-${RAT_VERSION}-bin.tar.gz" --quiet -O - | \
-        tar xzf -
-
-ENV CMAKE_VERSION 3.18.0
-RUN wget "https://cmake.org/files/v${CMAKE_VERSION%.*}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh" --quiet -O /tmp/cmake && \
-        bash /tmp/cmake --skip-license --prefix=/usr/local && \
-        rm -rf /tmp/cmake
-
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
+
+ARG GEODE_VERSION=1.13.1
 ENV GEODE_HOME /apache-geode-${GEODE_VERSION}
+RUN curl -L -s "https://www.apache.org/dyn/closer.cgi?action=download&filename=geode/${GEODE_VERSION}/apache-geode-${GEODE_VERSION}.tgz" \
+        | tar -zxf - --exclude javadoc
+
+ARG RAT_VERSION=0.13
 ENV RAT_HOME /apache-rat-${RAT_VERSION}
+RUN curl -L -s "https://archive.apache.org/dist/creadur/apache-rat-${RAT_VERSION}/apache-rat-${RAT_VERSION}-bin.tar.gz" \
+        | tar xzf -
+
+# Get latest release of CMake ignoring pre-releases
+RUN installer=$(mktemp) \
+    && curl -o ${installer} -L $(curl -s https://api.github.com/repos/Kitware/CMake/releases \
+        | grep -P -i 'browser_download_url.*cmake-\d+\.\d+\.\d+-linux-x86_64\.sh' \
+        | head -n 1 \
+        | cut -d : -f 2,3 \
+        | tr -d '"') \
+    && bash ${installer} --skip-license --prefix=/usr/local \
+    && rm ${installer}
+
 ENV PATH $PATH:$GEODE_HOME/bin
 
 CMD ["bash"]

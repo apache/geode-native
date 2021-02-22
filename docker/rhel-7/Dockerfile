@@ -44,9 +44,11 @@ RUN yum-config-manager --enable ubi-server-rhscl-7-rpms && \
 RUN scl enable rh-python36 "pip3 install --upgrade pip && \
     pip3 install cpp-coveralls"
 
+# Get latest release of CMake ignoring pre-releases
 RUN installer=$(mktemp) \
-    && curl -o ${installer} -L $(curl -s https://api.github.com/repos/Kitware/CMake/releases/latest \
-        | grep 'browser_download_url.*Linux-x86_64\.sh' \
+    && curl -o ${installer} -L $(curl -s https://api.github.com/repos/Kitware/CMake/releases \
+        | grep -P -i 'browser_download_url.*cmake-\d+\.\d+\.\d+-linux-x86_64\.sh' \
+        | head -n 1 \
         | cut -d : -f 2,3 \
         | tr -d '"') \
     && bash ${installer} --skip-license --prefix=/usr/local \
