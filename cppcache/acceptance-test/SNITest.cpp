@@ -124,7 +124,7 @@ TEST_F(SNITest, connectViaProxy) {
   cache.getPoolManager()
       .createFactory()
       .setSniProxy("localhost", portNumber)
-      .addLocator("locator-maeve", 10334)
+      .addLocator("locator-maeve", 20220)
       .create("pool");
 
   auto region = cache.createRegionFactory(RegionShortcut::PROXY)
@@ -151,7 +151,7 @@ TEST_F(SNITest, connectWithoutProxyFails) {
   cache.getPoolManager()
       .createFactory()
       .setSniProxy("badProxyName", 40000)
-      .addLocator("locator-maeve", 10334)
+      .addLocator("locator-maeve", 20220)
       .create("pool");
 
   auto region = cache.createRegionFactory(RegionShortcut::PROXY)
@@ -180,7 +180,7 @@ TEST_F(SNITest, dropSNIProxy) {
   cache.getPoolManager()
       .createFactory()
       .setSniProxy("localhost", proxyPort)
-      .addLocator("locator-maeve", 10334)
+      .addLocator("locator-maeve", 20220)
       .create("pool");
 
   auto region = cache.createRegionFactory(RegionShortcut::PROXY)
