@@ -80,7 +80,7 @@ add_dependencies(Apache.Geode.Client.UnitTests nuget-restore)
 
 
 configure_file(test.runsettings.in test.runsettings.gen)
-file(GENERATE OUTPUT test.runsettings INPUT ${CMAKE_CURRENT_BINARY_DIR}/test.runsettings.gen TARGET Apache.Geode.Client.UnitTests)
+file(GENERATE OUTPUT test.runsettings INPUT ${CMAKE_CURRENT_BINARY_DIR}/test.runsettings.gen)
 
 enable_testing()
 
