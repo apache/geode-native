@@ -62,7 +62,7 @@ static int getRandomNum() {
   return (ACE_OS::rand() % 49999) + 14000;
 }
 
-int G_BBPORT = getRandomNum();
+static int G_BBPORT = getRandomNum();
 
 class BBNamingContextClientImpl {
   FwkBBClient *m_bbc;
@@ -283,6 +283,7 @@ BBNamingContextServer::BBNamingContextServer() {
   m_impl = new BBNamingContextServerImpl();
 }
 BBNamingContextServer::~BBNamingContextServer() {
+  // NOLINTNEXTLINE(clang-analyzer-unix.Malloc): ACE
   if (m_impl != nullptr) {
     delete m_impl;
     m_impl = nullptr;

@@ -101,8 +101,6 @@ class CacheHelper {
 
   virtual ~CacheHelper();
 
-  void closePool(const char* poolName, bool keepAlive = false);
-
   void disconnect(bool keepalive = false);
 
   void createPlainRegion(const char* regionName,
@@ -284,7 +282,7 @@ class CacheHelper {
   static int staticHostPort4;
 
   static const std::string getTcrEndpoints(bool& isLocalServer,
-                                     int numberOfServers = 1);
+                                           int numberOfServers = 1);
 
   static int staticLocatorHostPort1;
   static int staticLocatorHostPort2;
@@ -302,7 +300,7 @@ class CacheHelper {
                                         int numberOfLocators = 0);
 
   static const std::string getTcrEndpoints2(bool& isLocalServer,
-                                      int numberOfServers = 1);
+                                            int numberOfServers = 1);
 
   static std::list<int> staticServerInstanceList;
   static bool isServerCleanupCallbackRegistered;
@@ -354,8 +352,6 @@ class CacheHelper {
                           int dsId = -1, int remoteLocator = 0,
                           bool untrustedCert = false,
                           bool useSecurityManager = false);
-
-  static void clearSecProp();
 
   static void setJavaConnectionPoolSize(uint32_t size);
 

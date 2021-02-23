@@ -21,11 +21,21 @@ def read_number_from_hex_string(string, offset, size):
     bits = size * 4
     if value & (1 << (bits - 1)):
         value -= 1 << bits
-    return (value, size)
+    return value, size
+
+
+def read_unsigned_number_from_hex_string(string, offset, size):
+    value = int(string[offset : offset + size], 16)
+    bits = size * 4
+    return value, size
 
 
 def read_byte_value(string, offset):
     return read_number_from_hex_string(string, offset, 2)
+
+
+def read_unsigned_byte_value(string, offset):
+    return read_unsigned_number_from_hex_string(string, offset, 2)
 
 
 def read_short_value(string, offset):
@@ -38,6 +48,24 @@ def read_int_value(string, offset):
 
 def read_long_value(string, offset):
     return read_number_from_hex_string(string, offset, 16)
+
+
+def read_unsigned_vl(string, offset):
+    shift = 0
+    result = 0
+    cursor = offset
+
+    while shift < 64:
+        b, cursor = call_reader_function(string, cursor, read_byte_value)
+
+        result |= (b & 0x7F) << shift
+        if not (b & 0x80):
+            break
+        shift += 7
+
+    if shift >= 64:
+        raise ValueError("Malformed variable length integer")
+    return result, cursor - offset
 
 
 def read_string_value(string, length, offset):

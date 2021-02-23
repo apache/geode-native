@@ -119,19 +119,20 @@ END_TASK(validate)
 
 #include <ace/ACE.h>
 #include <signal.h>
+#include "TimeBomb.hpp"
 
-#define ASSERT(x, y)                                   \
-  do {                                                 \
-  if (!(x)) {                                          \
-    throw dunit::TestException(y, __LINE__, __FILE__); \
-  }                                                    \
-  } while(false)
-#define XASSERT(x)                                      \
-  do {                                                  \
-  if (!(x)) {                                           \
-    throw dunit::TestException(#x, __LINE__, __FILE__); \
-  }                                                     \
-  } while(false)
+#define ASSERT(x, y)                                     \
+  do {                                                   \
+    if (!(x)) {                                          \
+      throw dunit::TestException(y, __LINE__, __FILE__); \
+    }                                                    \
+  } while (false)
+#define XASSERT(x)                                        \
+  do {                                                    \
+    if (!(x)) {                                           \
+      throw dunit::TestException(#x, __LINE__, __FILE__); \
+    }                                                     \
+  } while (false)
 #define FAIL(y) throw dunit::TestException(y, __LINE__, __FILE__)
 #define LOG(y) dunit::log(y, __LINE__, __FILE__)
 #define LOGCOORDINATOR(y) dunit::logCoordinator(y, __LINE__, __FILE__)
@@ -155,7 +156,7 @@ END_TASK(validate)
     DCLASSNAME(y)() { init(x); }                               \
                                                                \
    public:                                                     \
-    virtual void doTask() {                                    \
+    void doTask() override {                                   \
       static const char* fwtest_Name = DTASKDESC(y, __LINE__); \
       try {
 // Close the class definition produced by DUNIT_TASK macro.
@@ -200,10 +201,10 @@ END_TASK(validate)
 #define DUNIT_TASK_DEFINITION(x, y)                            \
   class DCLASSDEF(y) : virtual public dunit::Task {            \
    public:                                                     \
-    DCLASSDEF(y)() { init(x, true); }                                \
+    DCLASSDEF(y)() { init(x, true); }                          \
                                                                \
    public:                                                     \
-    virtual void doTask() {                                    \
+    void doTask() override {                                   \
       static const char* fwtest_Name = DTASKDESC(y, __LINE__); \
       try {
 #define END_TASK_DEFINITION                       \
@@ -224,7 +225,9 @@ END_TASK(validate)
   }                                               \
   }                                               \
   ;
-#define CALL_TASK(y); DCLASSDEF(y) * DVARNAME(y) = new DCLASSDEF(y)()
+#define CALL_TASK(y) \
+  ;                  \
+  DCLASSDEF(y) * DVARNAME(y) = new DCLASSDEF(y)()
 
 #define DUNIT_MAIN         \
   class DCLASSNAME(Main) { \
@@ -255,7 +258,7 @@ END_TASK(validate)
 #define s1p2 2
 #define s2p1 3
 #define s2p2 4
-
+extern ClientCleanup gClientCleanup;
 namespace dunit {
 
 void logCoordinator(std::string s, int lineno, const char* filename);
@@ -277,7 +280,7 @@ class Task {
   bool m_isHeapAllocated;
 
   Task() {}
-  virtual ~Task() { }
+  virtual ~Task() {}
 
   /** register task with worker. */
   void init(int sId);

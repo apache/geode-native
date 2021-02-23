@@ -151,9 +151,9 @@ class BBProcessor : public ServiceTask {
   BBProcessor(UDPMessageQueues* shared, FwkBBServer* server)
       : ServiceTask(shared), m_queues(shared), m_server(server) {}
 
-  virtual ~BBProcessor() {}
+  ~BBProcessor() noexcept override = default;
 
-  virtual int doTask() {
+  int doTask() override {
     while (*m_run) {
       try {
         UDPMessage* msg = m_queues->getInbound();
@@ -214,8 +214,8 @@ class BBProcessor : public ServiceTask {
     }
     return 0;
   }
-  virtual void initialize() {}
-  virtual void finalize() {}
+  void initialize() override {}
+  void finalize() override {}
 };
 
 }  // namespace  testframework

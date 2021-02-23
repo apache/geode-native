@@ -43,8 +43,7 @@ class TcpConn : public Connector {
   boost::asio::ip::tcp::socket socket_;
 
   boost::asio::ip::tcp::resolver::results_type resolve(
-      const std::string hostname, uint16_t port,
-      std::chrono::microseconds timeout);
+      const std::string hostname, uint16_t port);
 
   void connect(boost::asio::ip::tcp::resolver::results_type r,
                std::chrono::microseconds connect_timeout);

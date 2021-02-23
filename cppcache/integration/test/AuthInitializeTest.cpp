@@ -68,8 +68,7 @@ const int32_t CQ_PLUS_AUTH_TEST_REGION_ENTRY_COUNT = 100000;
 
 Cache createCache(std::shared_ptr<SimpleAuthInitialize> auth) {
   auto cache = CacheFactory()
-                   .set("log-level", "debug")
-                   .set("log-file", "geode_native.log")
+                   .set("log-level", "none")
                    .set("statistic-sampling-enabled", "false")
                    .setAuthInitialize(auth)
                    .create();
@@ -101,7 +100,7 @@ TEST(AuthInitializeTest, putGetWithBasicAuth) {
   Cluster cluster(
       Name(std::string(::testing::UnitTest::GetInstance()
                            ->current_test_info()
-                           ->test_case_name()) +
+                           ->test_suite_name()) +
            "/" +
            ::testing::UnitTest::GetInstance()->current_test_info()->name()),
       Classpath{getFrameworkString(FrameworkVariable::JavaObjectJarPath)},
@@ -133,7 +132,7 @@ TEST(AuthInitializeTest, putWithBadUsername) {
   Cluster cluster(
       Name(std::string(::testing::UnitTest::GetInstance()
                            ->current_test_info()
-                           ->test_case_name()) +
+                           ->test_suite_name()) +
            "/" +
            ::testing::UnitTest::GetInstance()->current_test_info()->name()),
       Classpath{getFrameworkString(FrameworkVariable::JavaObjectJarPath)},
@@ -169,7 +168,7 @@ TEST(AuthInitializeTest, putWithBadPassword) {
   Cluster cluster(
       Name(std::string(::testing::UnitTest::GetInstance()
                            ->current_test_info()
-                           ->test_case_name()) +
+                           ->test_suite_name()) +
            "/" +
            ::testing::UnitTest::GetInstance()->current_test_info()->name()),
       Classpath{getFrameworkString(FrameworkVariable::JavaObjectJarPath)},
@@ -199,7 +198,7 @@ TEST(AuthInitializeTest, badCredentialsWithSubscriptionEnabled) {
   Cluster cluster(
       Name(std::string(::testing::UnitTest::GetInstance()
                            ->current_test_info()
-                           ->test_case_name()) +
+                           ->test_suite_name()) +
            "/" +
            ::testing::UnitTest::GetInstance()->current_test_info()->name()),
       Classpath{getFrameworkString(FrameworkVariable::JavaObjectJarPath)},

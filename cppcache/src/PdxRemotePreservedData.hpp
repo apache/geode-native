@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_PDXREMOTEPRESERVEDDATA_H_
-#define GEODE_PDXREMOTEPRESERVEDDATA_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,6 +15,11 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_PDXREMOTEPRESERVEDDATA_H_
+#define GEODE_PDXREMOTEPRESERVEDDATA_H_
+
 #include <vector>
 
 #include <geode/PdxUnreadFields.hpp>
@@ -30,6 +30,7 @@
 namespace apache {
 namespace geode {
 namespace client {
+
 class PdxRemotePreservedData;
 
 class PdxRemotePreservedData : public PdxUnreadFields {
@@ -38,25 +39,15 @@ class PdxRemotePreservedData : public PdxUnreadFields {
   int32_t m_typeId;
   int32_t m_mergedTypeId;
   int32_t m_currentIndex;
-  std::shared_ptr<Serializable> /*Object^*/ m_owner;
+  std::shared_ptr<Serializable> m_owner;
   ExpiryTaskManager::id_type m_expiryTakId;
 
  public:
   PdxRemotePreservedData()
-      : /* adongre  - Coverity II
-         * CID 29283: Uninitialized scalar field (UNINIT_CTOR)
-         */
-        m_typeId(0),
-        m_mergedTypeId(0),
-        m_currentIndex(0),
-        m_expiryTakId(0) {}
+      : m_typeId(0), m_mergedTypeId(0), m_currentIndex(0), m_expiryTakId(0) {}
 
-  virtual ~PdxRemotePreservedData() {
-    /*for(int i=0;i<numberOfFields;i++)
-            delete[] m_preservedData[i];
+  ~PdxRemotePreservedData() noexcept override = default;
 
-    delete[] m_preservedData;*/
-  }
   PdxRemotePreservedData(int32_t typeId, int32_t mergedTypeId,
                          std::shared_ptr<Serializable> owner) {
     m_typeId = typeId;

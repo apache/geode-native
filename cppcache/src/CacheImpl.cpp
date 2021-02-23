@@ -44,7 +44,6 @@
 #include "ThinClientRegion.hpp"
 #include "ThreadPool.hpp"
 #include "Utils.hpp"
-#include "Version.hpp"
 
 #define DEFAULT_DS_NAME "default_GeodeDS"
 

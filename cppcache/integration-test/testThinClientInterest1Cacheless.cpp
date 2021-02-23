@@ -46,8 +46,8 @@ class MyListener : public CacheListener {
       }
     }
   }
-  virtual void afterCreate(const EntryEvent &event) { checkEntry(event); }
-  virtual void afterUpdate(const EntryEvent &event) { checkEntry(event); }
+  void afterCreate(const EntryEvent &event) override { checkEntry(event); }
+  void afterUpdate(const EntryEvent &event) override { checkEntry(event); }
   inline bool gotAll() {
     for (int i = 0; i < 5; i++) {
       if (m_gotit[i] == 0) return false;

@@ -30,8 +30,6 @@
 #include <smrtheap.h>
 #endif
 
-#include "TimeBomb.hpp"
-
 #include <ace/ACE.h>
 
 #include <typeinfo>
@@ -71,8 +69,8 @@ using apache::geode::client::testframework::BBNamingContextServer;
 #define __DUNIT_NO_MAIN__
 #include "fw_dunit.hpp"
 
-ACE_TCHAR *g_programName = nullptr;
-uint32_t g_coordinatorPid = 0;
+static ACE_TCHAR *g_programName = nullptr;
+static uint32_t g_coordinatorPid = 0;
 
 ClientCleanup gClientCleanup;
 
@@ -140,7 +138,7 @@ class NamingContextImpl : virtual public NamingContext {
       LOGCOORDINATOR(func);
       LOGCOORDINATOR("Dump follows:");
       dump();
-      throw - 1;
+      throw -1;
     }
     return result;
   }
@@ -508,7 +506,7 @@ class TestProcess : virtual public dunit::Manager {
 
  protected:
  public:
-  virtual ~TestProcess() {}
+  ~TestProcess() noexcept override = default;
 };
 
 /**
@@ -1031,7 +1029,6 @@ PerfSuite::PerfSuite(const char *suiteName) : m_suiteName(suiteName) {}
 void PerfSuite::addRecord(std::string testName, int64_t ops,
                           const TimeStamp &start, const TimeStamp &stop) {
   Record tmp(testName, ops, start, stop);
-  m_records[testName] = tmp;
   fprintf(stdout, "[PerfSuite] %s\n", tmp.asString().c_str());
   fflush(stdout);
 }
@@ -1128,10 +1125,6 @@ ThreadLauncher::~ThreadLauncher() {
     delete m_stopTime;
   }
 }
-
-Thread::Thread() : ACE_Task_Base(), m_launcher(nullptr), m_used(false) {}
-
-Thread::~Thread() {}
 
 int Thread::svc() {
   m_used = true;

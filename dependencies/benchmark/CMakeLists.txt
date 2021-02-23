@@ -13,9 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-project( benchmark VERSION 1.5.0 LANGUAGES NONE )
+project( benchmark VERSION 1.5.2 LANGUAGES NONE )
 
-set( SHA256 2d22dd3758afee43842bb504af1a8385cccb3ee1f164824e4837c1c1b04d92a0 )
+set( SHA256 21e6e096c9a9a88076b46bd38c33660f565fa050ca427125f64c4a8bf60f336b )
 set( DEPENDS GTest::gtest )
 
 
@@ -26,17 +26,21 @@ endif()
 set( EXTERN ${PROJECT_NAME}-extern )
 include(ExternalProject)
 ExternalProject_Add( ${EXTERN}
-   URL "https://github.com/google/benchmark/archive/v${PROJECT_VERSION}.zip"
-   URL_HASH SHA256=${SHA256}
-   UPDATE_COMMAND ""
-   CMAKE_ARGS
+  URL "https://github.com/google/benchmark/archive/v${PROJECT_VERSION}.zip"
+  URL_HASH SHA256=${SHA256}
+  UPDATE_COMMAND ""
+  CMAKE_ARGS
     -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
     -DCMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}
     -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>/$<CONFIG>
     -DCMAKE_BUILD_TYPE=$<CONFIG>
     -DGTEST_ROOT=$<TARGET_PROPERTY:GTest::gtest,INTERFACE_INCLUDE_DIRECTORIES>/..
     -DBENCHMARK_ENABLE_TESTING=OFF
-   DEPENDS ${DEPENDS}
+  CMAKE_CACHE_ARGS
+    -DCMAKE_OSX_ARCHITECTURES:STRING=${CMAKE_OSX_ARCHITECTURES}
+    -DCMAKE_OSX_SYSROOT:STRING=${CMAKE_OSX_SYSROOT}
+    -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=${CMAKE_OSX_DEPLOYMENT_TARGET}
+  DEPENDS ${DEPENDS}
 )
 
 ExternalProject_Get_Property( ${EXTERN} SOURCE_DIR )

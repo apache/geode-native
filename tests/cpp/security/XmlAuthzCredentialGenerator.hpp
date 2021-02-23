@@ -84,7 +84,7 @@ class XmlAuthzCredentialGenerator {
     /* initialize random seed: */
     srand(static_cast<unsigned int>(time(nullptr)));
   }
-  virtual ~XmlAuthzCredentialGenerator() { ; }
+  virtual ~XmlAuthzCredentialGenerator() {}
 
   virtual void getAllowedCredentials(opCodeList& opCode,
                                      std::shared_ptr<Properties>& prop,
@@ -109,7 +109,7 @@ class XmlAuthzCredentialGenerator {
         case ID_DUMMY2:
         case ID_DUMMY3:
           break;
-      };
+      }
 
     } catch (...) {
       reset();
@@ -147,7 +147,7 @@ class XmlAuthzCredentialGenerator {
           break;
         case NO_ROLE:
           /* UNNECESSARY role = role*/ break;
-      };
+      }
 
       switch (m_id) {
         case ID_DUMMY:
@@ -164,7 +164,7 @@ class XmlAuthzCredentialGenerator {
         case ID_DUMMY2:
         case ID_DUMMY3:
           break;
-      };
+      }
 
     } catch (...) {
       reset();
@@ -200,7 +200,7 @@ class XmlAuthzCredentialGenerator {
       case NO_ROLE:
         sprintf(userName, kPRiUsername, "user", randomValue(2));
         break;
-    };
+    }
 
     (*m_prop)->insert("security-username", userName);
     (*m_prop)->insert("security-password", userName);
@@ -250,7 +250,7 @@ class XmlAuthzCredentialGenerator {
         sprintf(userName, kPRiUsername, userPrefix.c_str(),
                 adminIndices[randomValue(adminIndSz)]);
         break;
-    };
+    }
     FWKINFO("inserted " << validity << " username " << userName);
     return std::string(userName);
   }

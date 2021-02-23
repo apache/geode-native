@@ -33,16 +33,16 @@ namespace client {
 /**
  * @brief LRUAction for testing map outside of a region....
  */
-class APACHE_GEODE_EXPORT TestMapAction : public virtual LRUAction {
+class TestMapAction : public virtual LRUAction {
  private:
   EntriesMap* m_eMap;
 
  public:
   explicit TestMapAction(EntriesMap* eMap) : m_eMap(eMap) { m_destroys = true; }
 
-  virtual ~TestMapAction() {}
+  ~TestMapAction() noexcept override = default;
 
-  virtual bool evict(const std::shared_ptr<MapEntryImpl>& mePtr) {
+  bool evict(const std::shared_ptr<MapEntryImpl>& mePtr) override {
     std::shared_ptr<CacheableKey> keyPtr;
     mePtr->getKeyI(keyPtr);
     /** @TODO try catch.... return true or false. */
@@ -52,7 +52,7 @@ class APACHE_GEODE_EXPORT TestMapAction : public virtual LRUAction {
     return (m_eMap->remove(keyPtr, cPtr, me, 0, versionTag, false) == GF_NOERR);
   }
 
-  virtual LRUAction::Action getType() { return LRUAction::LOCAL_DESTROY; }
+  LRUAction::Action getType() override { return LRUAction::LOCAL_DESTROY; }
   friend class LRUAction;
 };
 
@@ -104,7 +104,7 @@ void LRUEntriesMap::clear() {
   ConcurrentEntriesMap::clear();
 }
 
-LRUEntriesMap::~LRUEntriesMap() { delete m_action; }
+LRUEntriesMap::~LRUEntriesMap() noexcept { delete m_action; }
 
 /**
  * @brief put an item in the map... if it is a new entry, then the LRU may
@@ -201,7 +201,6 @@ GfErrType LRUEntriesMap::invalidate(const std::shared_ptr<CacheableKey>& key,
                                     std::shared_ptr<MapEntryImpl>& me,
                                     std::shared_ptr<Cacheable>& oldValue,
                                     std::shared_ptr<VersionTag> versionTag) {
-  int64_t newSize = 0;
   MapSegment* segmentRPtr = segmentFor(key);
   bool isTokenAdded = false;
   GfErrType err =
@@ -236,7 +235,7 @@ GfErrType LRUEntriesMap::invalidate(const std::shared_ptr<CacheableKey>& key,
   if (!isOldValueToken) {
     --m_validEntries;
     lru_queue_.remove(me);
-    newSize = CacheableToken::invalid()->objectSize();
+    auto newSize = CacheableToken::invalid()->objectSize();
     if (oldValue != nullptr) {
       newSize -= oldValue->objectSize();
     } else {

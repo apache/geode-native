@@ -45,7 +45,7 @@ using CliCallbackMethod = std::function<void(Cache&)>;
  * A "connection" to a Geode distributed system.
  * The connection will be through a (host, port) pair.
  */
-class APACHE_GEODE_EXPORT DistributedSystemImpl {
+class DistributedSystemImpl {
  public:
   static void setThreadName(const std::string& threadName);
 

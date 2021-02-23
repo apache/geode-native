@@ -20,7 +20,6 @@
 #include <algorithm>
 #include <thread>
 
-#include <ace/INET_Addr.h>
 #include <ace/OS_NS_unistd.h>
 
 #include <geode/AuthInitialize.hpp>
@@ -241,6 +240,8 @@ void ThinClientPoolDM::init() {
 }
 
 ThinClientPoolDM::~ThinClientPoolDM() {
+  // TODO suspect
+  // NOLINTNEXTLINE(clang-analyzer-optin.cplusplus.VirtualCall)
   destroy();
   _GEODE_SAFE_DELETE(m_locHelper);
   _GEODE_SAFE_DELETE(m_stats);
@@ -827,7 +828,9 @@ void ThinClientPoolDM::destroy(bool keepAlive) {
       m_PoolStatsSampler = nullptr;
     }
     LOGDEBUG("PoolStatsSampler thread closed .");
-    stopClearPdxTypeRegistryThread();
+    // TODO suspect
+    // NOLINTNEXTLINE(clang-analyzer-optin.cplusplus.VirtualCall)
+    stopCliCallbackThread();
     LOGDEBUG("ThinClientPoolDM::destroy( ): Closing connection manager.");
     auto cacheImpl = m_connManager.getCacheImpl();
     if (m_connManageTask) {
@@ -841,7 +844,11 @@ void ThinClientPoolDM::destroy(bool keepAlive) {
     }
 
     LOGDEBUG("Closing PoolStatsSampler thread.");
+    // TODO suspect
+    // NOLINTNEXTLINE(clang-analyzer-optin.cplusplus.VirtualCall)
     stopPingThread();
+    // TODO suspect
+    // NOLINTNEXTLINE(clang-analyzer-optin.cplusplus.VirtualCall)
     stopUpdateLocatorListThread();
 
     if (m_clientMetadataService) {
@@ -857,6 +864,8 @@ void ThinClientPoolDM::destroy(bool keepAlive) {
     LOGDEBUG("ThinClientPoolDM::destroy( ): after close ");
 
     // Close Stats
+    // TODO suspect
+    // NOLINTNEXTLINE(clang-analyzer-optin.cplusplus.VirtualCall)
     getStats().close();
     cacheImpl->getStatisticsManager().forceSample();
 

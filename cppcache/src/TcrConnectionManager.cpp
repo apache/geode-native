@@ -26,15 +26,11 @@
 #include "CacheImpl.hpp"
 #include "ExpiryHandler_T.hpp"
 #include "ExpiryTaskManager.hpp"
-#include "RemoteQueryService.hpp"
-#include "ServerLocation.hpp"
 #include "TcrConnection.hpp"
 #include "TcrEndpoint.hpp"
 #include "TcrHADistributionManager.hpp"
 #include "ThinClientBaseDM.hpp"
-#include "ThinClientCacheDistributionManager.hpp"
 #include "ThinClientHARegion.hpp"
-#include "ThinClientLocatorHelper.hpp"
 #include "ThinClientRedundancyManager.hpp"
 #include "ThinClientRegion.hpp"
 #include "Utils.hpp"
@@ -46,7 +42,6 @@ namespace client {
 
 volatile bool TcrConnectionManager::TEST_DURABLE_CLIENT_CRASH = false;
 
-const char *TcrConnectionManager::NC_Redundancy = "NC Redundancy";
 const char *TcrConnectionManager::NC_Failover = "NC Failover";
 const char *TcrConnectionManager::NC_CleanUp = "NC CleanUp";
 
@@ -69,9 +64,6 @@ TcrConnectionManager::TcrConnectionManager(CacheImpl *cache)
       new ThinClientRedundancyManager(this));
 }
 
-ExpiryTaskManager::id_type TcrConnectionManager::getPingTaskId() {
-  return m_pingTaskId;
-}
 void TcrConnectionManager::init(bool isPool) {
   if (!m_initGuard) {
     m_initGuard = true;
@@ -299,7 +291,6 @@ void TcrConnectionManager::failover(std::atomic<bool> &isRunning) {
           it->failover();
         }
         while (m_failoverSema.tryacquire() != -1) {
-          ;
         }
       } catch (const Exception &e) {
         LOGERROR(e.what());
@@ -334,19 +325,13 @@ GfErrType TcrConnectionManager::registerInterestAllRegions(
   // TcrHADistributionManagers).
 
   GfErrType err = GF_NOERR;
-  GfErrType opErr = GF_NOERR;
   std::lock_guard<decltype(m_distMngrsLock)> guard(m_distMngrsLock);
-  std::list<ThinClientBaseDM *>::iterator begin = m_distMngrs.begin();
-  std::list<ThinClientBaseDM *>::iterator end = m_distMngrs.end();
-  for (std::list<ThinClientBaseDM *>::iterator it = begin; it != end; ++it) {
-    TcrHADistributionManager *tcrHADM =
-        dynamic_cast<TcrHADistributionManager *>(*it);
-    if (tcrHADM != nullptr) {
-      if ((opErr = tcrHADM->registerInterestForRegion(ep, request, reply)) !=
-          GF_NOERR) {
-        if (err == GF_NOERR) {
-          err = opErr;
-        }
+
+  for (const auto &it : m_distMngrs) {
+    if (auto tcrHADM = dynamic_cast<TcrHADistributionManager *>(it)) {
+      auto opErr = tcrHADM->registerInterestForRegion(ep, request, reply);
+      if (err == GF_NOERR) {
+        err = opErr;
       }
     }
   }
@@ -429,7 +414,6 @@ void TcrConnectionManager::redundancy(std::atomic<bool> &isRunning) {
     if (isRunning && !m_isNetDown) {
       m_redundancyManager->maintainRedundancyLevel();
       while (m_redundancySema.tryacquire() != -1) {
-        ;
       }
     }
   }
@@ -458,7 +442,6 @@ void TcrConnectionManager::cleanup(std::atomic<bool> &isRunning) {
     cleanNotificationLists();
 
     while (m_cleanupSema.tryacquire() != -1) {
-      ;
     }
 
   } while (isRunning);

@@ -24,6 +24,7 @@ add_library(test-cppcache-utils STATIC
 )
 target_link_libraries(test-cppcache-utils
   PRIVATE
+    integration-framework
     ACE::ACE
     _WarningsAsError
   PUBLIC
@@ -99,17 +100,16 @@ foreach(FILE ${SOURCES})
   set(TESTS ${TESTS} ${TEST})
   add_dependencies(integration-tests ${TEST})
   add_executable(${TEST} ${FILE})
+  if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    target_compile_options(${TEST} PUBLIC
+      -Wno-missing-variable-declarations
+    )
+  endif()
   set_target_properties(${TEST} PROPERTIES
     CXX_VISIBILITY_PRESET hidden
     VISIBILITY_INLINES_HIDDEN ON
     FOLDER cpp/test/integration/legacy
   )
-
-if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  target_compile_options(_WarningsAsError INTERFACE
-          -Wno-missing-variable-declarations
-          )
-endif()
 
   target_link_libraries(${TEST}
     PRIVATE
@@ -177,7 +177,6 @@ include_directories(${CMAKE_SOURCE_DIR}/tests/cpp)
 set_tests_properties(testDataOutput
     testFWHelper
     testSystemProperties
-    testLogger
     testLinkage
     testRegionTemplateArgs
     testRegionMap
@@ -246,7 +245,6 @@ set_tests_properties(testFwPerf
     testThinClientPRSingleHop
     testThinClientPoolAttrTest
     testThinClientPoolLocator
-    testThinClientPutWithDelta
     testThinClientRemoteQueryTimeout
     testThinClientRemoveOps
     testThinClientSecurityAuthentication

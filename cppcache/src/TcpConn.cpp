@@ -113,16 +113,11 @@ TcpConn::TcpConn(const std::string ipaddr,
 TcpConn::TcpConn(const std::string host, uint16_t port,
                  std::chrono::microseconds timeout, int32_t maxBuffSizePool)
     : socket_{io_context_} {
-  auto beforeResolvePoint = std::chrono::system_clock::now();
-  auto results = resolve(host, port, timeout);
-  auto elapsedTime = std::chrono::duration<double, std::micro>(
-      std::chrono::system_clock::now() - beforeResolvePoint);
+  auto results = resolve(host, port);
 
   // We must connect first so we have a valid file descriptor to set options
   // on.
-  auto connectTimeout = std::chrono::duration_cast<std::chrono::microseconds>(
-      timeout - elapsedTime);
-  connect(results, connectTimeout);
+  connect(results, timeout);
 
   socket_.set_option(::boost::asio::ip::tcp::no_delay{true});
   socket_.set_option(
@@ -163,40 +158,40 @@ TcpConn::TcpConn(const std::string ipaddr,
 }
 
 TcpConn::~TcpConn() {
-  std::stringstream ss;
-
   try {
-    ss << "Disconnected " << socket_.local_endpoint() << " -> "
-       << socket_.remote_endpoint();
-
+    LOGFINE("Disconnected %s:%u -> %s:%u",
+            socket_.local_endpoint().address().to_string().c_str(),
+            socket_.local_endpoint().port(),
+            socket_.remote_endpoint().address().to_string().c_str(),
+            socket_.remote_endpoint().port());
     socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_both);
 
   } catch (...) {
-    ss = std::stringstream{};
-
-    ss << "Closed socket " << socket_.local_endpoint();
+    LOGFINE("Closed socket %s:%u ",
+            socket_.local_endpoint().address().to_string().c_str(),
+            socket_.local_endpoint().port());
   }
 
   socket_.close();
-
-  LOGFINE(ss.str());
 }
 
 size_t TcpConn::receive(char *buff, const size_t len,
                         std::chrono::milliseconds timeout) {
-  std::stringstream ss;
-  ss << "Receiving " << len << " bytes from " << socket_.remote_endpoint()
-     << " -> " << socket_.local_endpoint();
-  LOGDEBUG(ss.str());
+  LOGDEBUG("Receiving %d bytes from %s:%u -> %s:%u", len,
+           socket_.remote_endpoint().address().to_string().c_str(),
+           socket_.remote_endpoint().port(),
+           socket_.local_endpoint().address().to_string().c_str(),
+           socket_.local_endpoint().port());
   return receive(buff, len, timeout, true);
 }
 
 size_t TcpConn::receive_nothrowiftimeout(char *buff, const size_t len,
                                          std::chrono::milliseconds timeout) {
-  std::stringstream ss;
-  ss << "Receiving an unknown number of bytes from "
-     << socket_.remote_endpoint() << " -> " << socket_.local_endpoint();
-  LOGDEBUG(ss.str());
+  LOGDEBUG("Receiving an unknown number of bytes from %s:%d -> %s:%d",
+           socket_.remote_endpoint().address().to_string().c_str(),
+           socket_.remote_endpoint().port(),
+           socket_.local_endpoint().address().to_string().c_str(),
+           socket_.local_endpoint().port());
   return receive(buff, len, timeout, false);
 }
 
@@ -206,7 +201,7 @@ size_t TcpConn::receive(char *buff, const size_t len,
   boost::optional<boost::system::error_code> read_result;
   std::size_t bytes_read = 0;
 
-  auto beforeResolvePoint = std::chrono::system_clock::now();
+  auto beforeReadPoint = std::chrono::system_clock::now();
 
   try {
     prepareAsyncRead(buff, len, read_result, bytes_read);
@@ -228,7 +223,7 @@ size_t TcpConn::receive(char *buff, const size_t len,
 
   if (bytes_read == 0) {
     auto elapsedTime = std::chrono::duration<double, std::micro>(
-        std::chrono::system_clock::now() - beforeResolvePoint);
+        std::chrono::system_clock::now() - beforeReadPoint);
     if (elapsedTime < timeout) {
       LOGDEBUG("Throwing an IO exception");
       socket_.cancel();
@@ -260,10 +255,11 @@ size_t TcpConn::receive(char *buff, const size_t len,
 
 size_t TcpConn::send(const char *buff, const size_t len,
                      std::chrono::milliseconds timeout) {
-  std::stringstream ss;
-  ss << "Sending " << len << " bytes from " << socket_.local_endpoint()
-     << " -> " << socket_.remote_endpoint();
-  LOGDEBUG(ss.str());
+  LOGDEBUG("Sending %d bytes from %s:%u -> %s:%u", len,
+           socket_.local_endpoint().address().to_string().c_str(),
+           socket_.local_endpoint().port(),
+           socket_.remote_endpoint().address().to_string().c_str(),
+           socket_.remote_endpoint().port());
 
   boost::optional<boost::system::error_code> write_result;
   std::size_t bytes_written = 0;
@@ -329,51 +325,25 @@ void TcpConn::connect(boost::asio::ip::tcp::resolver::results_type r,
     throw boost::system::system_error{boost::asio::error::operation_aborted};
   }
 
-  std::stringstream ss;
-  ss << "Connected " << socket_.local_endpoint() << " -> "
-     << socket_.remote_endpoint();
-  LOGDEBUG(ss.str());
+  LOGDEBUG("Connected %s:%u -> %s:%u",
+           socket_.local_endpoint().address().to_string().c_str(),
+           socket_.local_endpoint().port(),
+           socket_.remote_endpoint().address().to_string().c_str(),
+           socket_.remote_endpoint().port());
 }
 
 boost::asio::ip::tcp::resolver::results_type TcpConn::resolve(
-    const std::string host, uint16_t port, std::chrono::microseconds timeout) {
-  boost::optional<boost::system::error_code> resolve_result;
+    const std::string host, uint16_t port) {
+  boost::system::error_code resolve_result;
   boost::asio::ip::tcp::resolver::results_type results;
 
-  try {
-    boost::asio::ip::tcp::resolver resolver(io_context_);
-    resolver.async_resolve(host, std::to_string(port),
-                           [&resolve_result, &results](
-                               const boost::system::error_code &ec,
-                               boost::asio::ip::tcp::resolver::results_type r) {
-                             if (ec) {
-                               resolve_result = ec;
-                             } else {
-                               resolve_result = boost::system::error_code{};
-                               results = r;
-                             }
-                           });
+  boost::asio::ip::tcp::resolver resolver(io_context_);
+  results = resolver.resolve(host, std::to_string(port), resolve_result);
 
-    io_context_.restart();
-    io_context_.run_for(timeout);
-  } catch (...) {
-    LOGDEBUG("Throwing an unexpected resolve exception");
-    throw;
-  }
-
-  if (resolve_result && *resolve_result) {
+  if (resolve_result) {
     LOGDEBUG("Throwing a resolve exception: %s",
-             resolve_result->message().c_str());
-    throw boost::system::system_error{*resolve_result};
-  }
-
-  if (!resolve_result) {
-    LOGDEBUG("Throwing a resolve timeout exception");
-    socket_.cancel();
-    // Get the abort
-    io_context_.restart();
-    io_context_.run();
-    throw boost::system::system_error{boost::asio::error::operation_aborted};
+             resolve_result.message().c_str());
+    throw boost::system::system_error{resolve_result};
   }
 
   return results;

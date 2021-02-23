@@ -41,7 +41,7 @@ namespace client {
  * manager when region is destroyed
  *
  */
-class APACHE_GEODE_EXPORT RegionExpiryHandler : public ACE_Event_Handler {
+class RegionExpiryHandler : public ACE_Event_Handler {
  public:
   RegionExpiryHandler(std::shared_ptr<RegionInternal>& rptr,
                       ExpirationAction action, std::chrono::seconds duration);

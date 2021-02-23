@@ -69,6 +69,7 @@ int expiryTimeVariancePercentage() {
   srand(static_cast<unsigned int>((now_s * 1000) + (now_ms / 1000)));
 
   const int numbers = 21;
+  // NOLINTNEXTLINE(clang-analyzer-security.insecureAPI.rand): TODO replace
   int random = rand() % numbers + 1;
 
   if (random > 10) {
@@ -160,11 +161,8 @@ bool TcrConnection::initTcrConnection(
     handShakeMsg.write(static_cast<int8_t>(CLIENT_TO_SERVER));
   }
 
-  // added for versioned client
-  int8_t versionOrdinal = Version::getOrdinal();
-  handShakeMsg.write(versionOrdinal);
-
-  LOGFINE("Client version ordinal is %d", versionOrdinal);
+  Version::write(handShakeMsg, Version::current());
+  LOGFINE("Client version ordinal is %d", Version::current().getOrdinal());
 
   handShakeMsg.write(static_cast<int8_t>(REPLY_OK));
 
@@ -678,7 +676,7 @@ char* TcrConnection::readMessage(size_t* recvLen,
   }
 
   LOGDEBUG(
-      "TcrConnection::readMessage: [%p] received header from endpoint %s; "
+      "TcrConnection::readMessage(%p): received header from endpoint %s; "
       "bytes: %s",
       this, m_endpointObj->name().c_str(),
       Utils::convertBytesToString(msg_header, HEADER_LENGTH).c_str());
@@ -815,9 +813,9 @@ chunkedResponseHeader TcrConnection::readResponseHeader(
   }
 
   LOGDEBUG(
-      "TcrConnection::readResponseHeader: received header from "
+      "TcrConnection::readResponseHeader(%p): received header from "
       "endpoint %s; bytes: %s",
-      m_endpointObj->name().c_str(),
+      this, m_endpointObj->name().c_str(),
       Utils::convertBytesToString(receiveBuffer, HEADER_LENGTH).c_str());
 
   auto input = m_connectionManager.getCacheImpl()->createDataInput(
@@ -828,11 +826,11 @@ chunkedResponseHeader TcrConnection::readResponseHeader(
   header.header.chunkLength = input.readInt32();
   header.header.flags = input.read();
   LOGDEBUG(
-      "TcrConnection::readResponseHeader: "
+      "TcrConnection::readResponseHeader(%p): "
       "messageType=%" PRId32 ", numberOfParts=%" PRId32
       ", transactionId=%" PRId32 ", chunkLength=%" PRId32
       ", lastChunkAndSecurityFlags=0x%" PRIx8,
-      header.messageType, header.numberOfParts, header.transactionId,
+      this, header.messageType, header.numberOfParts, header.transactionId,
       header.header.chunkLength, header.header.flags);
 
   return header;
@@ -867,9 +865,9 @@ chunkHeader TcrConnection::readChunkHeader(std::chrono::microseconds timeout) {
   header.chunkLength = input.readInt32();
   header.flags = input.read();
   LOGDEBUG(
-      "TcrConnection::readChunkHeader: "
+      "TcrConnection::readChunkHeader(%p): "
       ", chunkLen=%" PRId32 ", lastChunkAndSecurityFlags=0x%" PRIx8,
-      header.chunkLength, header.flags);
+      this, header.chunkLength, header.flags);
 
   return header;
 }
@@ -892,9 +890,9 @@ std::vector<uint8_t> TcrConnection::readChunkBody(
   }
 
   LOGDEBUG(
-      "TcrConnection::readChunkBody: received chunk body from endpoint "
+      "TcrConnection::readChunkBody(%p): received chunk body from endpoint "
       "%s; bytes: %s",
-      m_endpointObj->name().c_str(),
+      this, m_endpointObj->name().c_str(),
       Utils::convertBytesToString(chunkBody.data(), chunkLength).c_str());
   return chunkBody;
 }
@@ -989,12 +987,6 @@ std::shared_ptr<CacheableBytes> TcrConnection::readHandshakeRawData(
   }
 }
 
-std::shared_ptr<CacheableBytes> TcrConnection::readHandshakeByteArray(
-    std::chrono::microseconds connectTimeout) {
-  uint32_t arraySize = readHandshakeArraySize(connectTimeout);
-  return readHandshakeRawData(arraySize, connectTimeout);
-}
-
 // read a byte array
 int32_t TcrConnection::readHandshakeArraySize(
     std::chrono::microseconds connectTimeout) {
@@ -1071,37 +1063,6 @@ void TcrConnection::readHandShakeBytes(
   }
 
   _GEODE_SAFE_DELETE_ARRAY(recvMessage);
-}
-
-int32_t TcrConnection::readHandShakeInt(
-    std::chrono::microseconds connectTimeout) {
-  ConnErrType error = CONN_NOERR;
-  uint8_t* recvMessage;
-  _GEODE_NEW(recvMessage, uint8_t[4]);
-
-  if ((error = receiveData(reinterpret_cast<char*>(recvMessage), 4,
-                           connectTimeout)) != CONN_NOERR) {
-    if (error & CONN_TIMEOUT) {
-      _GEODE_SAFE_DELETE_ARRAY(recvMessage);
-      m_conn.reset();
-      throwException(
-          TimeoutException("TcrConnection::TcrConnection: "
-                           "Timeout in handshake"));
-    } else {
-      _GEODE_SAFE_DELETE_ARRAY(recvMessage);
-      m_conn.reset();
-      throwException(
-          GeodeIOException("TcrConnection::TcrConnection: "
-                           "Handshake failure"));
-    }
-  }
-
-  auto di = m_connectionManager.getCacheImpl()->createDataInput(recvMessage, 4);
-  int32_t val = di.readInt32();
-
-  _GEODE_SAFE_DELETE_ARRAY(recvMessage);
-
-  return val;
 }
 
 std::shared_ptr<CacheableString> TcrConnection::readHandshakeString(

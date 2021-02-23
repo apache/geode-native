@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.18)
 project(nativeclient LANGUAGES C CXX)
 
 option(USE_PCH "Use precompiled headers (PCH)." OFF)
@@ -187,6 +187,9 @@ if(ipo_supported)
   set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELWITHDEBINFO TRUE)
 endif()
 
+include(CheckLinkerFlag)
+check_linker_flag(CXX -Wl,--exclude-libs,ALL has_linker_exclude_libs)
+
 include(CheckCXXSymbolExists)
 check_cxx_symbol_exists("PRId8" "cinttypes" HAVE_STDC_FORMAT_MACROS)
 if (NOT HAVE_STDC_FORMAT_MACROS)
@@ -241,7 +244,6 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     -Wextra
     -Wno-unused-variable #TODO fix
     -Wno-unused-function #TODO fix
-    -Wno-used-but-marked-unused #TODO fix
     -Wpedantic
     -Weverything
     -Wno-non-virtual-dtor #TODO fix
@@ -281,9 +283,9 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 
   target_compile_options(_WarningsAsError INTERFACE
     /WX
-	/wd4996
-	/wd4068 # TODO fix
-	)
+    /wd4996
+    /we4596
+  )
 
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /ignore:4099")
   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /ignore:4099")

@@ -78,7 +78,7 @@ TEST_F(TcrMessageTest, intializeDefaultConstructor) {
   EXPECT_EQ(TcrMessage::INVALID, message.getMessageType());
 }
 
-TEST_F(TcrMessageTest, testConstructor1MessageDataContentWithDESTROY_REGION) {
+TEST_F(TcrMessageTest, testConstructor1MessageDataContentWithDestoryRegion) {
   using apache::geode::client::TcrMessageDestroyRegion;
 
   const Region *region = nullptr;
@@ -99,7 +99,7 @@ TEST_F(TcrMessageTest, testConstructor1MessageDataContentWithDESTROY_REGION) {
       message);
 }
 
-TEST_F(TcrMessageTest, testConstructor1MessageDataContentWithCLEAR_REGION) {
+TEST_F(TcrMessageTest, testConstructor1MessageDataContentWithClearRegion) {
   using apache::geode::client::TcrMessageClearRegion;
 
   const Region *region = nullptr;
@@ -135,7 +135,7 @@ TEST_F(TcrMessageTest, testQueryConstructorMessageDataContent) {
       message);
 }
 
-TEST_F(TcrMessageTest, testQueryConstructorWithQUERY) {
+TEST_F(TcrMessageTest, testQueryConstructorWithQuery) {
   using apache::geode::client::TcrMessageQuery;
 
   std::chrono::milliseconds messageResponseTimeout{1000};
@@ -152,7 +152,7 @@ TEST_F(TcrMessageTest, testQueryConstructorWithQUERY) {
       message);
 }
 
-TEST_F(TcrMessageTest, testQueryConstructorWithSTOPCQ_MSG_TYPE) {
+TEST_F(TcrMessageTest, testQueryConstructorWithStopCq) {
   using apache::geode::client::TcrMessageStopCQ;
 
   std::chrono::milliseconds messageResponseTimeout{1000};
@@ -169,7 +169,7 @@ TEST_F(TcrMessageTest, testQueryConstructorWithSTOPCQ_MSG_TYPE) {
       message);
 }
 
-TEST_F(TcrMessageTest, testQueryConstructorWithCLOSECQ_MSG_TYPE) {
+TEST_F(TcrMessageTest, testQueryConstructorWithCloseCq) {
   using apache::geode::client::TcrMessageCloseCQ;
 
   std::chrono::milliseconds messageResponseTimeout{1000};
@@ -187,7 +187,7 @@ TEST_F(TcrMessageTest, testQueryConstructorWithCLOSECQ_MSG_TYPE) {
 }
 
 TEST_F(TcrMessageTest,
-       testParameterizedQueryConstructorWithQUERY_WITH_PARAMETERS) {
+       testParameterizedQueryConstructorWithQueryWithParameters) {
   using apache::geode::client::TcrMessageQueryWithParameters;
 
   std::chrono::milliseconds messageResponseTimeout{1000};
@@ -207,7 +207,7 @@ TEST_F(TcrMessageTest,
       message);
 }
 
-TEST_F(TcrMessageTest, testConstructorWithCONTAINS_KEY) {
+TEST_F(TcrMessageTest, testConstructorWithContainsKey) {
   using apache::geode::client::TcrMessageContainsKey;
 
   TcrMessageContainsKey message(
@@ -226,7 +226,7 @@ TEST_F(TcrMessageTest, testConstructorWithCONTAINS_KEY) {
       message);
 }
 
-TEST_F(TcrMessageTest, testConstructorWithGETDURABLECQS_MSG_TYPE) {
+TEST_F(TcrMessageTest, testConstructorWithGetDurableCqs) {
   using apache::geode::client::TcrMessageGetDurableCqs;
 
   TcrMessageGetDurableCqs message(new DataOutputUnderTest(),
@@ -256,7 +256,7 @@ TEST_F(TcrMessageTest, testConstructor2WithREQUEST) {
       message);
 }
 
-TEST_F(TcrMessageTest, testConstructor2WithDESTROY) {
+TEST_F(TcrMessageTest, testConstructor2WithDestroy) {
   using apache::geode::client::TcrMessageDestroy;
 
   TcrMessageDestroy message(
@@ -275,7 +275,7 @@ TEST_F(TcrMessageTest, testConstructor2WithDESTROY) {
       message);
 }
 
-TEST_F(TcrMessageTest, testConstructor2WithINVALIDATE) {
+TEST_F(TcrMessageTest, testConstructor2WithInvalidate) {
   using apache::geode::client::TcrMessageInvalidate;
 
   TcrMessageInvalidate message(
@@ -295,7 +295,7 @@ TEST_F(TcrMessageTest, testConstructor2WithINVALIDATE) {
       message);
 }
 
-TEST_F(TcrMessageTest, testConstructor3WithPUT) {
+TEST_F(TcrMessageTest, testConstructor3WithPut) {
   using apache::geode::client::TcrMessagePut;
 
   TcrMessagePut message(
@@ -373,7 +373,7 @@ TEST_F(TcrMessageTest, TcrMessageRegisterInterestListWithManyKeys) {
       message);
 }
 
-TEST_F(TcrMessageTest, testConstructor5WithUNREGISTER_INTERST_LIST) {
+TEST_F(TcrMessageTest, testConstructor5WithUnregisterInteresetList) {
   using apache::geode::client::TcrMessageUnregisterInterestList;
 
   std::vector<std::shared_ptr<CacheableKey>> keys;
@@ -394,7 +394,7 @@ TEST_F(TcrMessageTest, testConstructor5WithUNREGISTER_INTERST_LIST) {
       message);
 }
 
-TEST_F(TcrMessageTest, testConstructorGET_FUNCTION_ATTRIBUTES) {
+TEST_F(TcrMessageTest, testConstructorGetFunctionAttributes) {
   using apache::geode::client::TcrMessageGetFunctionAttributes;
 
   TcrMessageGetFunctionAttributes message(
@@ -408,7 +408,7 @@ TEST_F(TcrMessageTest, testConstructorGET_FUNCTION_ATTRIBUTES) {
       message);
 }
 
-TEST_F(TcrMessageTest, testConstructorKEY_SET) {
+TEST_F(TcrMessageTest, testConstructorKeySet) {
   using apache::geode::client::TcrMessageKeySet;
 
   TcrMessageKeySet message(new DataOutputUnderTest(),
@@ -423,7 +423,7 @@ TEST_F(TcrMessageTest, testConstructorKEY_SET) {
       message);
 }
 
-TEST_F(TcrMessageTest, testConstructor6WithCREATE_REGION) {
+TEST_F(TcrMessageTest, testConstructor6WithCreateRegion) {
   using apache::geode::client::TcrMessageCreateRegion;
 
   TcrMessageCreateRegion message(new DataOutputUnderTest(),
@@ -440,7 +440,7 @@ TEST_F(TcrMessageTest, testConstructor6WithCREATE_REGION) {
       message);
 }
 
-TEST_F(TcrMessageTest, testConstructor6WithREGISTER_INTEREST) {
+TEST_F(TcrMessageTest, testConstructor6WithRegisterInterest) {
   using apache::geode::client::TcrMessageRegisterInterest;
 
   TcrMessageRegisterInterest message(
@@ -461,7 +461,7 @@ TEST_F(TcrMessageTest, testConstructor6WithREGISTER_INTEREST) {
       message);
 }
 
-TEST_F(TcrMessageTest, testConstructor6WithUNREGISTER_INTEREST) {
+TEST_F(TcrMessageTest, testConstructor6WithUnregisterInterest) {
   using apache::geode::client::TcrMessageUnregisterInterest;
 
   TcrMessageUnregisterInterest message(
@@ -481,7 +481,7 @@ TEST_F(TcrMessageTest, testConstructor6WithUNREGISTER_INTEREST) {
       message);
 }
 
-TEST_F(TcrMessageTest, testConstructorGET_PDX_TYPE_BY_ID) {
+TEST_F(TcrMessageTest, testConstructorGetPdxTypeById) {
   using apache::geode::client::TcrMessageGetPdxTypeById;
 
   TcrMessageGetPdxTypeById message(new DataOutputUnderTest(), 42,
@@ -493,7 +493,7 @@ TEST_F(TcrMessageTest, testConstructorGET_PDX_TYPE_BY_ID) {
                     message);
 }
 
-TEST_F(TcrMessageTest, testConstructorGET_PDX_ENUM_BY_ID) {
+TEST_F(TcrMessageTest, testConstructorGetPdxEnumById) {
   using apache::geode::client::TcrMessageGetPdxEnumById;
 
   TcrMessageGetPdxEnumById message(new DataOutputUnderTest(), 42,
@@ -505,7 +505,7 @@ TEST_F(TcrMessageTest, testConstructorGET_PDX_ENUM_BY_ID) {
                     message);
 }
 
-TEST_F(TcrMessageTest, testConstructorGET_PDX_ID_FOR_TYPE) {
+TEST_F(TcrMessageTest, testConstructorGetPdxIdForType) {
   using apache::geode::client::TcrMessageGetPdxIdForType;
 
   std::shared_ptr<Cacheable> myPtr(CacheableString::createDeserializable());
@@ -518,7 +518,7 @@ TEST_F(TcrMessageTest, testConstructorGET_PDX_ID_FOR_TYPE) {
                     message);
 }
 
-TEST_F(TcrMessageTest, testConstructorADD_PDX_TYPE) {
+TEST_F(TcrMessageTest, testConstructorAddPdxType) {
   using apache::geode::client::TcrMessageAddPdxType;
 
   std::shared_ptr<Cacheable> myPtr(CacheableString::createDeserializable());
@@ -532,7 +532,7 @@ TEST_F(TcrMessageTest, testConstructorADD_PDX_TYPE) {
       message);
 }
 
-TEST_F(TcrMessageTest, testConstructorGET_PDX_ID_FOR_ENUM) {
+TEST_F(TcrMessageTest, testConstructorGetPdxIdForEnum) {
   using apache::geode::client::TcrMessageGetPdxIdForEnum;
 
   TcrMessageGetPdxIdForEnum message(
@@ -545,7 +545,7 @@ TEST_F(TcrMessageTest, testConstructorGET_PDX_ID_FOR_ENUM) {
   EXPECT_MESSAGE_EQ("000000610000000600000001FFFFFFFF00000000010129", message);
 }
 
-TEST_F(TcrMessageTest, testConstructorADD_PDX_ENUM) {
+TEST_F(TcrMessageTest, testConstructorAddPdxEnum) {
   using apache::geode::client::TcrMessageAddPdxEnum;
 
   std::shared_ptr<Cacheable> myPtr(CacheableString::createDeserializable());
@@ -574,7 +574,7 @@ TEST_F(TcrMessageTest, testConstructorEventId) {
   EXPECT_MESSAGE_EQ("000000440000000600000001FFFFFFFF00000000010129", message);
 }
 
-TEST_F(TcrMessageTest, testConstructorREMOVE_USER_AUTH) {
+TEST_F(TcrMessageTest, testConstructorRemoveUserAuth) {
   using apache::geode::client::TcrMessageRemoveUserAuth;
 
   TcrMessageRemoveUserAuth message(new DataOutputUnderTest(), true,
@@ -592,7 +592,7 @@ TEST_F(TcrMessageTest, testConstructorREMOVE_USER_AUTH) {
   EXPECT_MESSAGE_EQ("0000004E0000000600000001FFFFFFFF00000000010000", message2);
 }
 
-TEST_F(TcrMessageTest, testConstructorUSER_CREDENTIAL_MESSAGE) {
+TEST_F(TcrMessageTest, testConstructorUserCredential) {
   using apache::geode::client::Properties;
   using apache::geode::client::TcrMessageUserCredential;
 
@@ -607,7 +607,7 @@ TEST_F(TcrMessageTest, testConstructorUSER_CREDENTIAL_MESSAGE) {
   EXPECT_MESSAGE_EQ("", message);
 }
 
-TEST_F(TcrMessageTest, testConstructorGET_CLIENT_PARTITION_ATTRIBUTES) {
+TEST_F(TcrMessageTest, testConstructorGetClientPartitionAttributes) {
   using apache::geode::client::TcrMessageGetClientPartitionAttributes;
 
   TcrMessageGetClientPartitionAttributes message(new DataOutputUnderTest(),
@@ -622,7 +622,7 @@ TEST_F(TcrMessageTest, testConstructorGET_CLIENT_PARTITION_ATTRIBUTES) {
       message);
 }
 
-TEST_F(TcrMessageTest, testConstructorGET_CLIENT_PR_METADATA) {
+TEST_F(TcrMessageTest, testConstructorGetClientPrMetadata) {
   using apache::geode::client::TcrMessageGetClientPrMetadata;
 
   TcrMessageGetClientPrMetadata message(new DataOutputUnderTest(),
@@ -635,7 +635,7 @@ TEST_F(TcrMessageTest, testConstructorGET_CLIENT_PR_METADATA) {
       "6F6E50524D455441",
       message);
 }
-TEST_F(TcrMessageTest, testConstructorSIZE) {
+TEST_F(TcrMessageTest, testConstructorSize) {
   using apache::geode::client::TcrMessageSize;
 
   TcrMessageSize message(new DataOutputUnderTest(), "testClientRegionSIZE");
@@ -648,7 +648,7 @@ TEST_F(TcrMessageTest, testConstructorSIZE) {
       message);
 }
 
-TEST_F(TcrMessageTest, testConstructorEXECUTE_REGION_FUNCTION_SINGLE_HOP) {
+TEST_F(TcrMessageTest, testConstructorExecuteRegionFunctionSingleHop) {
   using apache::geode::client::TcrMessageExecuteRegionFunctionSingleHop;
 
   const Region *region = nullptr;
@@ -676,7 +676,7 @@ TEST_F(TcrMessageTest, testConstructorEXECUTE_REGION_FUNCTION_SINGLE_HOP) {
   EXPECT_TRUE(message.hasResult());
 }
 
-TEST_F(TcrMessageTest, testConstructorEXECUTE_REGION_FUNCTION) {
+TEST_F(TcrMessageTest, testConstructorExecuteRegionFunction) {
   using apache::geode::client::TcrMessageExecuteRegionFunction;
 
   const Region *region = nullptr;
@@ -705,7 +705,7 @@ TEST_F(TcrMessageTest, testConstructorEXECUTE_REGION_FUNCTION) {
   EXPECT_TRUE(testMessage.hasResult());
 }
 
-TEST_F(TcrMessageTest, DISABLED_testConstructorEXECUTE_FUNCTION) {
+TEST_F(TcrMessageTest, DISABLED_testConstructorExecuteFunction) {
   using apache::geode::client::TcrMessageExecuteFunction;
 
   std::shared_ptr<Cacheable> myCacheablePtr(
@@ -725,7 +725,7 @@ TEST_F(TcrMessageTest, DISABLED_testConstructorEXECUTE_FUNCTION) {
       testMessage);
 }
 
-TEST_F(TcrMessageTest, testConstructorEXECUTECQ_MSG_TYPE) {
+TEST_F(TcrMessageTest, testConstructorExecuteCq) {
   using apache::geode::client::TcrMessageExecuteCq;
 
   std::shared_ptr<Cacheable> myCacheablePtr(
@@ -744,7 +744,7 @@ TEST_F(TcrMessageTest, testConstructorEXECUTECQ_MSG_TYPE) {
       testMessage);
 }
 
-TEST_F(TcrMessageTest, testConstructorWithGinormousQueryEXECUTECQ_MSG_TYPE) {
+TEST_F(TcrMessageTest, testConstructorWithGinormousQueryExecuteCq) {
   using apache::geode::client::TcrMessageExecuteCq;
 
   std::shared_ptr<Cacheable> myCacheablePtr(
@@ -778,7 +778,7 @@ TEST_F(TcrMessageTest, testConstructorWithGinormousQueryEXECUTECQ_MSG_TYPE) {
       testMessage);
 }
 
-TEST_F(TcrMessageTest, testConstructorEXECUTECQ_WITH_IR_MSG_TYPE) {
+TEST_F(TcrMessageTest, testConstructorExecuteCqWithIr) {
   using apache::geode::client::TcrMessageExecuteCqWithIr;
 
   std::shared_ptr<Cacheable> myCacheablePtr(
@@ -798,7 +798,7 @@ TEST_F(TcrMessageTest, testConstructorEXECUTECQ_WITH_IR_MSG_TYPE) {
       testMessage);
 }
 
-TEST_F(TcrMessageTest, testConstructorPING) {
+TEST_F(TcrMessageTest, testConstructorPing) {
   using apache::geode::client::TcrMessagePing;
 
   std::shared_ptr<Cacheable> myCacheablePtr(
@@ -811,7 +811,7 @@ TEST_F(TcrMessageTest, testConstructorPING) {
   EXPECT_MESSAGE_EQ("000000050000000000000000FFFFFFFF00", testMessage);
 }
 
-TEST_F(TcrMessageTest, testConstructorCLOSE_CONNECTION) {
+TEST_F(TcrMessageTest, testConstructorCloseConnection) {
   using apache::geode::client::TcrMessageCloseConnection;
 
   std::shared_ptr<Cacheable> myCacheablePtr(

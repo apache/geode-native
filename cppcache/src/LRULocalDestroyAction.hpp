@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_LRULOCALDESTROYACTION_H_
-#define GEODE_LRULOCALDESTROYACTION_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,6 +15,11 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_LRULOCALDESTROYACTION_H_
+#define GEODE_LRULOCALDESTROYACTION_H_
+
 #include <atomic>
 
 #include <geode/internal/geode_globals.hpp>
@@ -35,7 +35,7 @@ namespace client {
 /**
  * @brief LRUAction for localDestroy.
  */
-class APACHE_GEODE_EXPORT LRULocalDestroyAction : public virtual LRUAction {
+class LRULocalDestroyAction : public virtual LRUAction {
  private:
   RegionInternal* m_regionPtr;
   LRUEntriesMap* m_entriesMapPtr;
@@ -46,13 +46,14 @@ class APACHE_GEODE_EXPORT LRULocalDestroyAction : public virtual LRUAction {
   }
 
  public:
-  virtual ~LRULocalDestroyAction() {}
+  ~LRULocalDestroyAction() noexcept override = default;
 
-  virtual bool evict(const std::shared_ptr<MapEntryImpl>& mePtr);
+  bool evict(const std::shared_ptr<MapEntryImpl>& mePtr) override;
 
-  virtual LRUAction::Action getType() { return LRUAction::LOCAL_DESTROY; }
+  LRUAction::Action getType() override { return LRUAction::LOCAL_DESTROY; }
   friend class LRUAction;
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

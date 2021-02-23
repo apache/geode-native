@@ -23,7 +23,7 @@
 
 using apache::geode::client::internal::geode_hash;
 
-TEST(string, geode_hash) {
+TEST(string, geodeHash) {
   auto&& hash = geode_hash<std::string>{};
 
   EXPECT_EQ(0, hash(""));

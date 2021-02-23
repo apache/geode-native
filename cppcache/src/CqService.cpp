@@ -26,8 +26,6 @@
 
 #include "CqEventImpl.hpp"
 #include "CqQueryImpl.hpp"
-#include "DistributedSystem.hpp"
-#include "ReadWriteLock.hpp"
 #include "TcrConnectionManager.hpp"
 #include "ThinClientPoolDM.hpp"
 #include "util/exception.hpp"
@@ -42,6 +40,8 @@ CqService::CqService(ThinClientBaseDM* tccdm,
       m_statisticsFactory(statisticsFactory),
       m_notificationSema(1),
       m_stats(std::make_shared<CqServiceVsdStats>(m_statisticsFactory)) {
+  assert(nullptr != m_tccdm);
+
   m_running = true;
   LOGDEBUG("CqService Started");
 }
@@ -99,7 +99,7 @@ std::shared_ptr<CqQuery> CqService::newCq(
 
   // Check if the subscription is enabled on the pool
   auto pool = dynamic_cast<ThinClientPoolDM*>(m_tccdm);
-  if (pool != nullptr && !pool->getSubscriptionEnabled()) {
+  if (pool && !pool->getSubscriptionEnabled()) {
     LOGERROR(
         "Cannot create CQ because subscription is not enabled on the pool.");
     throw IllegalStateException(
@@ -107,7 +107,7 @@ std::shared_ptr<CqQuery> CqService::newCq(
   }
 
   // check for durable client
-  if (isDurable) {
+  if (isDurable && m_tccdm) {
     auto&& durableID = m_tccdm->getConnectionManager()
                            .getCacheImpl()
                            ->getDistributedSystem()
@@ -174,7 +174,7 @@ std::shared_ptr<CqQuery> CqService::getCq(const std::string& cqName) {
  * Clears the CQ Query Map.
  */
 void CqService::clearCqQueryMap() {
-  Log::fine("Cleaning clearCqQueryMap.");
+  LOGFINE("Cleaning clearCqQueryMap.");
   m_cqQueryMap.clear();
 }
 
@@ -287,13 +287,13 @@ void CqService::stopCqs(query_container_type& cqs) {
         cqName = cq->getName();
         cq->stop();
       } catch (QueryException& qe) {
-        Log::fine(("Failed to stop the CQ, CqName : " + cqName +
-                   " Error : " + qe.what())
-                      .c_str());
+        LOGFINE(("Failed to stop the CQ, CqName : " + cqName +
+                 " Error : " + qe.what())
+                    .c_str());
       } catch (CqClosedException& cce) {
-        Log::fine(("Failed to stop the CQ, CqName : " + cqName +
-                   " Error : " + cce.what())
-                      .c_str());
+        LOGFINE(("Failed to stop the CQ, CqName : " + cqName +
+                 " Error : " + cce.what())
+                    .c_str());
       }
     }
   }
@@ -316,13 +316,13 @@ void CqService::closeCqs(query_container_type& cqs) {
           cqi->close(false);
         }
       } catch (QueryException& qe) {
-        Log::fine(("Failed to close the CQ, CqName : " + cqName +
-                   " Error : " + qe.what())
-                      .c_str());
+        LOGFINE(("Failed to close the CQ, CqName : " + cqName +
+                 " Error : " + qe.what())
+                    .c_str());
       } catch (CqClosedException& cce) {
-        Log::fine(("Failed to close the CQ, CqName : " + cqName +
-                   " Error : " + cce.what())
-                      .c_str());
+        LOGFINE(("Failed to close the CQ, CqName : " + cqName +
+                 " Error : " + cce.what())
+                    .c_str());
       }
     }
   }
@@ -349,11 +349,11 @@ void CqService::closeCqService() {
   }
 }
 void CqService::closeAllCqs() {
-  Log::fine("closeAllCqs()");
+  LOGFINE("closeAllCqs()");
   query_container_type cqVec = getAllCqs();
-  Log::fine("closeAllCqs() 1");
+  LOGFINE("closeAllCqs() 1");
   auto&& lock = m_cqQueryMap.make_lock();
-  Log::fine("closeAllCqs() 2");
+  LOGFINE("closeAllCqs() 2");
   closeCqs(cqVec);
 }
 
@@ -361,7 +361,7 @@ void CqService::closeAllCqs() {
  * Cleans up the CqService.
  */
 void CqService::cleanup() {
-  Log::fine("Cleaning up CqService.");
+  LOGFINE("Cleaning up CqService.");
 
   // Close All the CQs.
   // Need to take care when Clients are still connected...

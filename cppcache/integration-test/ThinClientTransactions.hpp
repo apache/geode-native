@@ -34,7 +34,7 @@
 
 #include "CacheHelper.hpp"
 
-namespace { // NOLINT(google-build-namespaces)
+namespace {  // NOLINT(google-build-namespaces)
 
 using apache::geode::client::CacheableKey;
 using apache::geode::client::CacheableString;
@@ -144,7 +144,8 @@ void _verifyEntry(const char* name, const char* key, const char* val,
           std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr));
 
       ASSERT(checkPtr != nullptr, "Value Ptr should not be null.");
-      LOG("In verify loop, get returned " + checkPtr->value() + " for key " + key);
+      LOG("In verify loop, get returned " + checkPtr->value() + " for key " +
+          key);
 
       if (strcmp(checkPtr->value().c_str(), value) != 0) {
         testValueCnt++;
@@ -360,11 +361,13 @@ const bool USE_ACK = true;
 const bool NO_ACK = false;
 #include "LocatorHelper.hpp"
 #define THREADERRORCHECK(x, y) \
-  if (!(x)) {                  \
-    m_isFailed = true;         \
-    sprintf(m_error, y);       \
-    return -1;                 \
-  }
+  do {                         \
+    if (!(x)) {                \
+      m_isFailed = true;       \
+      sprintf(m_error, y);     \
+      return -1;               \
+    }                          \
+  } while (0)
 
 class SuspendTransactionThread : public ACE_Task_Base {
  private:
@@ -376,7 +379,7 @@ class SuspendTransactionThread : public ACE_Task_Base {
   SuspendTransactionThread(bool sleep, ACE_Auto_Event* txEvent)
       : m_suspendedTransaction(nullptr), m_sleep(sleep), m_txEvent(txEvent) {}
 
-  int svc(void) {
+  int svc(void) override {
     char buf[1024];
     sprintf(buf, " In SuspendTransactionThread");
     LOG(buf);
@@ -429,7 +432,7 @@ class ResumeTransactionThread : public ACE_Task_Base {
         m_isFailed(false),
         m_txEvent(txEvent) {}
 
-  int svc(void) {
+  int svc(void) override {
     char buf[1024];
     sprintf(buf, "In ResumeTransactionThread");
     LOG(buf);

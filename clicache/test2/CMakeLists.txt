@@ -20,8 +20,9 @@ set(CMAKE_CSharp_FLAGS "/langversion:5")
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/packages.config ${CMAKE_CURRENT_BINARY_DIR}/packages.config COPYONLY)
 
-add_library( ${PROJECT_NAME} SHARED
+add_library(Apache.Geode.Tests2 SHARED
     Tests2.cs
+	ObjectsTests.cs
     xunit.runner.json
     packages.config
 )
@@ -31,15 +32,16 @@ set_source_files_properties(cache.xml xunit.runner.json geode.properties PROPERT
   VS_TOOL_OVERRIDE "None"
 )
 
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(Apache.Geode.Tests2
   PUBLIC
     Apache.Geode
 )
 
-set_target_properties( ${PROJECT_NAME} PROPERTIES
+set_target_properties(Apache.Geode.Tests2 PROPERTIES
   COMMON_LANGUAGE_RUNTIME "" 
   VS_GLOBAL_ROOTNAMESPACE ${PROJECT_NAME}
   VS_GLOBAL_TreatWarningsAsErrors True
+  VS_GLOBAL_IsTestProject True
   VS_GLOBAL_TestProjectType UnitTest
   VS_GLOBAL_PROJECT_TYPES "{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
   VS_DOTNET_REFERENCES "System;System.Xml;System.Web;System.Configuration"
@@ -54,10 +56,10 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
 )
 
 if(NOT "${STRONG_NAME_KEY}" STREQUAL "")
-  set_target_properties( ${PROJECT_NAME} PROPERTIES
+  set_target_properties(Apache.Geode.Tests2 PROPERTIES
     VS_GLOBAL_SignAssembly "true"
     VS_GLOBAL_AssemblyOriginatorKeyFile ${STRONG_NAME_KEY}
   )
 endif()
 
-add_dependencies(${PROJECT_NAME} nuget-restore)
+add_dependencies(Apache.Geode.Tests2 nuget-restore)

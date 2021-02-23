@@ -20,6 +20,7 @@
 #include "DataInput.hpp"
 #include "DataOutput.hpp"
 #include "Log.hpp"
+#include "Objects.hpp"
 
 using namespace System;
 
@@ -82,10 +83,7 @@ namespace Apache
       System::Int32 CacheableDate::GetHashCode()
       {
         if (m_hashcode == 0) {
-          TimeSpan epochSpan = m_dateTime - EpochTime;
-          System::Int64 millitime =
-            epochSpan.Ticks / TimeSpan::TicksPerMillisecond;
-          m_hashcode = (int)millitime ^ (int)((System::Int64)millitime >> 32);
+          m_hashcode = Objects::GetHashCode(m_dateTime);
         }
         return m_hashcode;
       }
