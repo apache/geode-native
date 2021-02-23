@@ -92,9 +92,7 @@
         "choco install doxygen.install -confirm",
         "choco install openssl -confirm",
         "choco install strawberryperl -confirm",
-        "choco install nuget.commandline -confirm",
-        "# TODO make this a nuget dependency",
-        "choco install nunit.install --version 2.6.4 -confirm"
+        "choco install nuget.commandline -confirm"
       ]
     },
     {
