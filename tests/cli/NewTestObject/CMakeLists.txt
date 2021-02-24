@@ -14,20 +14,39 @@
 # limitations under the License.
 
 
-project(Apache.Geode.Templates.Cache.Security CSharp)
+project(NewTestObject CSharp)
 
-add_library(Apache.Geode.Templates.Cache.Security SHARED
-  AssemblyInfo.cs
-  UserPasswordAuthInit.cs
+add_library(NewTestObject SHARED
+  #ArrayOfByte.cs
+  #BatchObject.cs
+  CMakeLists.txt
+  DeltaEx.cs
+  #DeltaFastAssetAccount.cs
+  #DeltaPSTObject.cs
+  DeltaTestImpl.cs
+  #EqStruct.cs
+  #FastAsset.cs
+  #FastAssetAccount.cs
+  #NoopAuthInit.cs
+  PdxAutoSerializerObj.cs
+  Portfolio.cs
+  PortfolioPdx.cs
+  Position.cs
+  PositionPdx.cs
+  #PSTObject.cs
+  SimpleCacheListener.cs
+  TestObject1.cs
+  #TimeStampdObject.cs
 )
 
-target_link_libraries(Apache.Geode.Templates.Cache.Security
+target_link_libraries(NewTestObject
   PUBLIC
     Apache.Geode
+    DUnitFramework
 )
 
-set_target_properties(Apache.Geode.Templates.Cache.Security PROPERTIES
-  VS_GLOBAL_ROOTNAMESPACE Apache.Geode.Templates.Cache.Security
+set_target_properties(NewTestObject PROPERTIES
+  VS_GLOBAL_ROOTNAMESPACE Apache.Geode.Client.Tests
   VS_GLOBAL_TreatWarningsAsErrors True
   VS_GLOBAL_PROJECT_TYPES "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
   VS_DOTNET_REFERENCES "System;System.Xml;System.Data"
@@ -35,7 +54,7 @@ set_target_properties(Apache.Geode.Templates.Cache.Security PROPERTIES
 )
 
 if(NOT "${STRONG_NAME_KEY}" STREQUAL "")
-  set_target_properties(Apache.Geode.Templates.Cache.Security PROPERTIES
+  set_target_properties(NewTestObject PROPERTIES
     VS_GLOBAL_SignAssembly "true"
     VS_GLOBAL_AssemblyOriginatorKeyFile ${STRONG_NAME_KEY}
   )

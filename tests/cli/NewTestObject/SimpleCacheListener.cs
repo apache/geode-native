@@ -24,7 +24,7 @@ namespace Apache.Geode.Client.Tests
   /// <summary>
   /// Capture and display cache events.
   /// </summary>
-  class SimpleCacheListener<TKey, TValue> : ICacheListener<TKey, TValue>
+  public class SimpleCacheListener<TKey, TValue> : ICacheListener<TKey, TValue>
   {
     #region ICacheListener Members
     public static bool isSuccess = true;

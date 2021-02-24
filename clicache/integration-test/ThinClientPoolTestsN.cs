@@ -27,6 +27,7 @@ namespace Apache.Geode.Client.UnitTests
   using Apache.Geode.Client;
   using Region = Apache.Geode.Client.IRegion<Object, Object>;
 
+  [Ignore("flaky")]
   [TestFixture]
   [Category("group2")]
   [Category("unicast_only")]

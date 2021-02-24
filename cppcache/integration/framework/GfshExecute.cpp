@@ -41,6 +41,7 @@ using boost::process::child;
 using boost::process::environment;
 using boost::process::ipstream;
 using boost::process::std_err;
+using boost::process::std_in;
 using boost::process::std_out;
 
 GfshExecuteException::GfshExecuteException(std::string message, int returnCode)
@@ -112,7 +113,8 @@ child GfshExecute::executeChild(std::vector<std::string> &commands,
   std::lock_guard<std::mutex> guard(g_child_mutex);
 #endif
   return child(getFrameworkString(FrameworkVariable::GfShExecutable),
-               args = commands, env, std_out > outStream, std_err > errStream);
+               args = commands, env, std_out > outStream, std_err > errStream,
+               std_in < boost::process::null);
 }
 
 void GfshExecute::extractConnectionCommand(

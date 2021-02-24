@@ -4,23 +4,39 @@
 # The ASF licenses this file to You under the Apache License, Version 2.0
 # (the "License"); you may not use this file except in compliance with
 # the License.  You may obtain a copy of the License at
-# 
+#
 #      http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-cmake_minimum_required(VERSION 3.4)
-project(nativeclient.clicache.templates)
 
-foreach(var CMAKE_CURRENT_SOURCE_DIR CMAKE_SOURCE_DIR CMAKE_BINARY_DIR CMAKE_CURRENT_BINARY_DIR)
-  file(TO_NATIVE_PATH ${${var}} ${var}_NATIVE)
-endforeach()
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Templates.csproj.in ${CMAKE_BINARY_DIR}/clicache/templates/Templates.csproj)  
+project(PdxVersion1Lib CSharp)
 
-include_external_msproject(
-      Templates   ${CMAKE_BINARY_DIR}/clicache/templates/Templates.csproj
-      TYPE FAE04EC0-301F-11D3-BF4B-00C04F79EFBC)
+add_library(PdxVersion1Lib SHARED
+  Properties/AssemblyInfo.cs
+  Version1.cs
+)
+
+target_link_libraries(PdxVersion1Lib
+  PUBLIC
+    Apache.Geode
+)
+
+set_target_properties(PdxVersion1Lib PROPERTIES
+  VS_GLOBAL_ROOTNAMESPACE PdxVersionTests
+  VS_GLOBAL_TreatWarningsAsErrors True
+  VS_GLOBAL_PROJECT_TYPES "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+  VS_DOTNET_REFERENCES "System;System.Xml;System.Data"
+  FOLDER cli/test/integration
+)
+
+if(NOT "${STRONG_NAME_KEY}" STREQUAL "")
+  set_target_properties(PdxVersion1Lib PROPERTIES
+    VS_GLOBAL_SignAssembly "true"
+    VS_GLOBAL_AssemblyOriginatorKeyFile ${STRONG_NAME_KEY}
+  )
+endif()

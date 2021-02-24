@@ -28,6 +28,7 @@ namespace Apache.Geode.Client.UnitTests
 
   using Region = Apache.Geode.Client.IRegion<Object, Object>;
 
+  [Ignore("broken")]
   [TestFixture]
   [Category("group4")]
   [Category("unicast_only")]

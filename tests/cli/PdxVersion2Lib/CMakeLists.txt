@@ -13,30 +13,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-$GFSH_PATH = ""
-if (Get-Command gfsh -ErrorAction SilentlyContinue)
-{
-    $GFSH_PATH = "gfsh"
-}
-else
-{
-    if (-not (Test-Path env:GEODE_HOME))
-    {
-        Write-Host "Could not find gfsh.  Please set the GEODE_HOME path. e.g. "
-        Write-Host "(Powershell) `$env:GEODE_HOME = <path to Geode>"
-        Write-Host " OR"
-        Write-Host "(Command-line) set %GEODE_HOME% = <path to Geode>"
-    }
-    else
-    {
-        $GFSH_PATH = "$env:GEODE_HOME\bin\gfsh.bat"
-    }
-}
 
-if ($GFSH_PATH -ne "")
-{
-   Invoke-Expression "$GFSH_PATH -e 'connect' -e 'shutdown --include-locators=true'"
-}
+project(PdxVersion2Lib CSharp)
 
-Remove-Item -Path locator -Recurse -Force
-Remove-Item -Path server -Recurse -Force
+add_library(PdxVersion2Lib SHARED
+  Properties/AssemblyInfo.cs
+  Version2.cs
+)
+
+target_link_libraries(PdxVersion2Lib
+  PUBLIC
+    Apache.Geode
+)
+
+set_target_properties(PdxVersion2Lib PROPERTIES
+  VS_GLOBAL_ROOTNAMESPACE PdxVersionTests
+  VS_GLOBAL_TreatWarningsAsErrors True
+  VS_GLOBAL_PROJECT_TYPES "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+  VS_DOTNET_REFERENCES "System;System.Xml;System.Data"
+  FOLDER cli/test/integration
+)
+
+if(NOT "${STRONG_NAME_KEY}" STREQUAL "")
+  set_target_properties(PdxVersion2Lib PROPERTIES
+    VS_GLOBAL_SignAssembly "true"
+    VS_GLOBAL_AssemblyOriginatorKeyFile ${STRONG_NAME_KEY}
+  )
+endif()

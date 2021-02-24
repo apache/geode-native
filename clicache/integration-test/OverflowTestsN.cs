@@ -29,6 +29,7 @@ namespace Apache.Geode.Client.UnitTests
   using Apache.Geode.DUnitFramework;
   using Apache.Geode.Client;
 
+  [Ignore("broken")]
   [TestFixture]
   [Category("group4")]
   [Category("unicast_only")]
