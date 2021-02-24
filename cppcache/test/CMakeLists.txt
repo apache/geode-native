@@ -52,7 +52,6 @@ add_executable(apache-geode_unittests
   StringPrefixPartitionResolverTest.cpp
   StructSetTest.cpp
   TcrMessageTest.cpp
-  ThinClientPoolDMTest.cpp
   ThreadPoolTest.cpp
   TXIdTest.cpp
   mock/MapEntryImplMock.hpp
