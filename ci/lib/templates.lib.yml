@@ -244,7 +244,7 @@ plan:
         - get: #@ gci_resource_name(build.source_image_family)
           trigger: true
         - get: packer-source
-          trigger: false
+          trigger: true
   - #@ bash_task("packer-build", [{"name":"packer-source", "path":"source"}], [], packer_build_bash_task(build), "packer-image", attempts=5)
 #@ end
 
