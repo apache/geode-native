@@ -174,8 +174,9 @@ done
 (@ def instance_delete_bash_task(): -@)
 set -ueo pipefail
 (@= google_variables() @)
-(@= remote_functions() @)
+(@= instance_variables() @)
 
+instance_file=${INSTANCE_DIR}/instance.sh
 instance_name=$(source ${instance_file} && echo -n ${name})
 
 gcloud compute instances delete ${instance_name} \
@@ -200,10 +201,10 @@ git_rev=$(git rev-parse HEAD)
 popd
 version=$(cat version/number)
 builddate=$(date "+%Y-%m-%d")
-remote_upload source .
 remote_shell cmake -E make_directory build
-remote_shell  cmake -E time cmake -E chdir build cmake ../source ${CMAKE_CONFIGURE_FLAGS} \
+remote_shell cmake -E time cmake -E chdir build cmake ../source ${CMAKE_CONFIGURE_FLAGS} \
     -DCMAKE_BUILD_TYPE=${CMAKE_CONFIG} \
+    -DGEODE_ROOT=../geode \
     -DPRODUCT_VERSION=${version} \
     -DPRODUCT_BUILDDATE=${builddate} \
     -DPRODUCT_SOURCE_REVISION=${git_rev} \
@@ -219,4 +220,22 @@ checksums=$(awk '/^CPack: - checksum file: / {print $5}' cpack.out)
 for checksum in ${checksums}; do
   remote_download ${checksum} package/
 done
+(@- end @)
+
+(@ def upload_source_bash_task(): -@)
+set -ueo pipefail
+(@= remote_functions() @)
+remote_upload source .
+(@- end @)
+
+
+(@ def upload_geode_bash_task(): -@)
+set -ueo pipefail
+(@= remote_functions() @)
+geode_version=$(cat geode-latest/version)
+geode_name="apache-geode-${geode_version}"
+geode_artifact="${geode_name}.tgz"
+remote_upload geode-latest/${geode_artifact} .
+remote_shell cmake -E tar xvf ${geode_artifact}
+remote_shell cmake -E rename ${geode_name} geode
 (@- end @)

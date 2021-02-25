@@ -101,7 +101,6 @@
       "scripts": [
         "ubuntu/install-clang-format.sh",
         "linux/install-cmake.sh",
-        "linux/install-geode.sh",
         "ubuntu/install-jdk-11.sh"
       ]
     },

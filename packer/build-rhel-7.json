@@ -121,8 +121,7 @@
         "rhel/disable-selinux.sh",
         "rhel/7/install-devtoolset.sh",
         "rhel/install-jdk-11.sh",
-        "linux/install-cmake.sh",
-        "linux/install-geode.sh"
+        "linux/install-cmake.sh"
       ]
     },
     {
