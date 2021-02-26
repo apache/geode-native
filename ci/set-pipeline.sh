@@ -72,13 +72,9 @@ target=${target:-default}
 output=${output:-$(mktemp -d)}
 
 branch=${branch:-$(git rev-parse --abbrev-ref HEAD)}
-echo "branch set to ${branch}"
 git_tracking_branch=${git_tracking_branch:-$(git for-each-ref --format='%(upstream:short)' $(git symbolic-ref -q HEAD))}
-echo "git_tracking_branch set to ${git_tracking_branch}"
 git_remote=${git_remote:-$(echo ${git_tracking_branch} | cut -d/ -f1)}
-echo "git_remote set to ${git_remote}"
 git_repository_url=${git_repository_url:-$(git remote get-url ${git_remote})}
-echo "git_repository_url set to ${git_repository_url}"
 
 if [[ ${git_repository_url} =~ ^((https|git)(:\/\/|@)github\.com[\/:])([^\/:]+)\/(.+)[\.git]?$ ]]; then
   github_owner=${github_owner:-${BASH_REMATCH[4]}}
