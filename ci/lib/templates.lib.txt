@@ -112,6 +112,8 @@ cd source/packer
 packer build -only=googlecompute \
     -var-file=default.json \
     -var pipeline=(@= gci_label_value(data.values.pipeline.name) @) \
+    -var version=(@= data.values.pipeline.version @) \
+    -var pre=(@= data.values.pipeline.pre @) \
     -var owner=(@= gci_label_value(data.values.github.owner) @) \
     -var repository=(@= gci_label_value(data.values.github.repository) @) \
     -var branch=(@= gci_label_value(data.values.repository.branch) @) \
