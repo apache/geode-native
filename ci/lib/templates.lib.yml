@@ -171,6 +171,7 @@ source:
 ---
 #@ def build_job(build, config):
 name: #@ build_job_name(build, config)
+public: true
 plan:
   - in_parallel:
       fail_fast: true
