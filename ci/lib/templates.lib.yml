@@ -236,6 +236,7 @@ plan:
 ---
 #@ def update_pipeline_job():
 name: #@ update_pipeline_job_name()
+public: true
 serial: true
 plan:
   - in_parallel:
@@ -394,6 +395,7 @@ in_parallel:
 ---
 #@ def check_source_job():
 name: #@ check_source_job_name()
+public: true
 plan:
   - in_parallel:
       fail_fast: true
