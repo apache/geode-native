@@ -36,7 +36,7 @@ using apache::geode::client::RegionShortcut;
 std::string getClientLogName() {
   std::string testSuiteName(::testing::UnitTest::GetInstance()
                                 ->current_test_info()
-                                ->test_case_name());
+                                ->test_suite_name());
   std::string testCaseName(
       ::testing::UnitTest::GetInstance()->current_test_info()->name());
   std::string logFileName(testSuiteName + "/" + testCaseName + "/client.log");
