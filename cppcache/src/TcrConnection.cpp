@@ -263,7 +263,7 @@ bool TcrConnection::initTcrConnection(
   LOGFINE("Attempting handshake with endpoint %s for %s%s connection", endpoint,
           isClientNotification ? (isSecondary ? "secondary " : "primary ") : "",
           isClientNotification ? "subscription" : "client");
-  ConnErrType error = sendData(data, msgLength, connectTimeout, false);
+  ConnErrType error = sendData(data, msgLength, connectTimeout);
 
   if (error == CONN_NOERR) {
     auto acceptanceCode = readHandshakeData(1, connectTimeout);
@@ -466,7 +466,7 @@ Connector* TcrConnection::createConnection(
  */
 inline ConnErrType TcrConnection::receiveData(
     char* buffer, size_t length, std::chrono::microseconds receiveTimeoutSec,
-    bool checkConnected, bool isNotificationMessage) {
+    bool isNotificationMessage) {
   std::chrono::microseconds defaultWaitSecs =
       isNotificationMessage ? std::chrono::seconds(1) : std::chrono::seconds(2);
   if (defaultWaitSecs > receiveTimeoutSec) defaultWaitSecs = receiveTimeoutSec;
@@ -474,9 +474,6 @@ inline ConnErrType TcrConnection::receiveData(
   auto startLen = length;
 
   while (length > 0 && receiveTimeoutSec > std::chrono::microseconds::zero()) {
-    if (checkConnected && !m_connected) {
-      return CONN_IOERR;
-    }
     if (receiveTimeoutSec < defaultWaitSecs) {
       defaultWaitSecs = receiveTimeoutSec;
     }
@@ -510,25 +507,21 @@ inline ConnErrType TcrConnection::receiveData(
 }
 
 inline ConnErrType TcrConnection::sendData(
-    const char* buffer, size_t length, std::chrono::microseconds sendTimeout,
-    bool checkConnected) {
+    const char* buffer, size_t length, std::chrono::microseconds sendTimeout) {
   std::chrono::microseconds dummy{0};
-  return sendData(dummy, buffer, length, sendTimeout, checkConnected);
+  return sendData(dummy, buffer, length, sendTimeout);
 }
 
 inline ConnErrType TcrConnection::sendData(
     std::chrono::microseconds& timeSpent, const char* buffer, size_t length,
-    std::chrono::microseconds sendTimeout, bool checkConnected) {
+    std::chrono::microseconds sendTimeout) {
   std::chrono::microseconds defaultWaitSecs = std::chrono::seconds(2);
   if (defaultWaitSecs > sendTimeout) defaultWaitSecs = sendTimeout;
   LOGDEBUG(
-      "before send len %zu sendTimeoutSec = %s checkConnected = %d m_connected "
+      "before send len %zu sendTimeoutSec = %s m_connected "
       "%d",
-      length, to_string(sendTimeout).c_str(), checkConnected, m_connected);
+      length, to_string(sendTimeout).c_str(), m_connected);
   while (length > 0 && sendTimeout > std::chrono::microseconds::zero()) {
-    if (checkConnected && !m_connected) {
-      return CONN_IOERR;
-    }
     if (sendTimeout < defaultWaitSecs) {
       defaultWaitSecs = sendTimeout;
     }
@@ -607,7 +600,7 @@ std::chrono::microseconds TcrConnection::sendWithTimeouts(
     const char* data, size_t len, std::chrono::microseconds sendTimeout,
     std::chrono::microseconds receiveTimeout) {
   std::chrono::microseconds timeSpent{0};
-  send(timeSpent, data, len, sendTimeout, true);
+  send(timeSpent, data, len, sendTimeout);
 
   if (timeSpent >= receiveTimeout) {
     throwException(
@@ -639,15 +632,14 @@ bool TcrConnection::replyHasResult(const TcrMessage& request,
 }
 
 void TcrConnection::send(const char* buffer, size_t len,
-                         std::chrono::microseconds sendTimeoutSec,
-                         bool checkConnected) {
+                         std::chrono::microseconds sendTimeoutSec) {
   std::chrono::microseconds dummy;
-  send(dummy, buffer, len, sendTimeoutSec, checkConnected);
+  send(dummy, buffer, len, sendTimeoutSec);
 }
 
 void TcrConnection::send(std::chrono::microseconds& timeSpent,
                          const char* buffer, size_t len,
-                         std::chrono::microseconds sendTimeoutSec, bool) {
+                         std::chrono::microseconds sendTimeoutSec) {
   // LOGINFO("TcrConnection::send: [%p] sending request to endpoint %s;",
   //:  this, m_endpoint);
 
@@ -696,7 +688,7 @@ char* TcrConnection::readMessage(size_t* recvLen,
   LOGDEBUG("TcrConnection::readMessage: receiving reply from endpoint %s",
            m_endpoint);
 
-  error = receiveData(msg_header, HEADER_LENGTH, headerTimeout, true,
+  error = receiveData(msg_header, HEADER_LENGTH, headerTimeout,
                       isNotificationMessage);
   LOGDEBUG("TcrConnection::readMessage after recieve data");
   if (error != CONN_NOERR) {
@@ -758,7 +750,7 @@ char* TcrConnection::readMessage(size_t* recvLen,
     mesgBodyTimeout = receiveTimeoutSec * DEFAULT_TIMEOUT_RETRIES;
   }
   error = receiveData(fullMessage + HEADER_LENGTH, msgLen, mesgBodyTimeout,
-                      true, isNotificationMessage);
+                      isNotificationMessage);
   if (error != CONN_NOERR) {
     delete[] fullMessage;
     //  the !isNotificationMessage ensures that notification channel
@@ -851,7 +843,7 @@ chunkedResponseHeader TcrConnection::readResponseHeader(
   chunkedResponseHeader header;
 
   auto error = receiveData(reinterpret_cast<char*>(receiveBuffer),
-                           HEADER_LENGTH, timeout, true, false);
+                           HEADER_LENGTH, timeout, false);
   if (error != CONN_NOERR) {
     if (error & CONN_TIMEOUT) {
       throwException(TimeoutException(
@@ -893,7 +885,7 @@ chunkHeader TcrConnection::readChunkHeader(std::chrono::microseconds timeout) {
   chunkHeader header;
 
   auto error = receiveData(reinterpret_cast<char*>(receiveBuffer),
-                           CHUNK_HEADER_LENGTH, timeout, true, false);
+                           CHUNK_HEADER_LENGTH, timeout, false);
   if (error != CONN_NOERR) {
     if (error & CONN_TIMEOUT) {
       throwException(TimeoutException(
@@ -928,7 +920,7 @@ std::vector<uint8_t> TcrConnection::readChunkBody(
     std::chrono::microseconds timeout, int32_t chunkLength) {
   std::vector<uint8_t> chunkBody(chunkLength);
   auto error = receiveData(reinterpret_cast<char*>(chunkBody.data()),
-                           chunkLength, timeout, true, false);
+                           chunkLength, timeout, false);
   if (error != CONN_NOERR) {
     if (error & CONN_TIMEOUT) {
       throwException(
@@ -975,7 +967,7 @@ void TcrConnection::close() {
     if (!TcrConnectionManager::TEST_DURABLE_CLIENT_CRASH &&
         !m_connectionManager->isNetDown()) {
       send(closeMsg->getMsgData(), closeMsg->getMsgLength(),
-           std::chrono::seconds(2), false);
+           std::chrono::seconds(2));
     }
   } catch (Exception& e) {
     LOGINFO("Close connection message failed with msg: %s", e.what());

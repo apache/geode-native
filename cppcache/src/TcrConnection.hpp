@@ -226,13 +226,11 @@ class APACHE_GEODE_EXPORT TcrConnection {
    * operation: 1 write, 2 read
    */
   void send(const char* buffer, size_t len,
-            std::chrono::microseconds sendTimeoutSec = DEFAULT_WRITE_TIMEOUT,
-            bool checkConnected = true);
+            std::chrono::microseconds sendTimeoutSec = DEFAULT_WRITE_TIMEOUT);
 
   void send(std::chrono::microseconds& timeSpent, const char* buffer,
             size_t len,
-            std::chrono::microseconds sendTimeoutSec = DEFAULT_WRITE_TIMEOUT,
-            bool checkConnected = true);
+            std::chrono::microseconds sendTimeoutSec = DEFAULT_WRITE_TIMEOUT);
 
   /**
    * This method is for receiving client notification. It will read 2 times as
@@ -401,19 +399,16 @@ class APACHE_GEODE_EXPORT TcrConnection {
    * Send data to the connection till sendTimeout
    */
   ConnErrType sendData(const char* buffer, size_t length,
-                       std::chrono::microseconds sendTimeout,
-                       bool checkConnected = true);
+                       std::chrono::microseconds sendTimeout);
 
   ConnErrType sendData(std::chrono::microseconds& timeSpent, const char* buffer,
-                       size_t length, std::chrono::microseconds sendTimeout,
-                       bool checkConnected = true);
+                       size_t length, std::chrono::microseconds sendTimeout);
 
   /**
    * Read data from the connection till receiveTimeoutSec
    */
   ConnErrType receiveData(char* buffer, size_t length,
                           std::chrono::microseconds receiveTimeoutSec,
-                          bool checkConnected = true,
                           bool isNotificationMessage = false);
 
   const char* m_endpoint;
