@@ -415,7 +415,7 @@ void Cluster::applyLocators(apache::geode::client::PoolFactory &poolFactory) {
   }
 }
 
-void Cluster::applyServer(apache::geode::client::PoolFactory &poolFactory, 
+void Cluster::applyServer(apache::geode::client::PoolFactory &poolFactory,
                    ServerAddress oneServer) {
   poolFactory.addServer(oneServer.address, oneServer.port);
 }
