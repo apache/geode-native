@@ -44,7 +44,7 @@ patch releases. Recompilation is required for both minor and major releases.
 
 ## .NET
 
-ABI compatibility is preserved similarly to the API compatibility. ABI compatibility is guaranteed between path and
+ABI compatibility is preserved similarly to the API compatibility. ABI compatibility is guaranteed between patch and
 minor releases. Recompilation is only require for major releases or to utilize new APIs added in minor releases.
 
 # Export Control
