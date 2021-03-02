@@ -1,27 +1,53 @@
-[<img src="https://geode.apache.org/img/Apache_Geode_logo.png" align="center"/>](http://geode.apache.org)
+[![Apache Geode](https://geode.apache.org/img/Apache_Geode_logo.png)](http://geode.apache.org)
 
-[![Build Status](https://travis-ci.org/apache/geode-native.svg?branch=develop)](https://travis-ci.org/apache/geode-native) [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0) [![Total alerts](https://img.shields.io/lgtm/alerts/g/apache/geode-native.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/apache/geode-native/alerts/) [![Language grade: C/C++](https://img.shields.io/lgtm/grade/cpp/g/apache/geode-native.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/apache/geode-native/context:cpp) [![Language grade: C#](https://img.shields.io/lgtm/grade/csharp/g/apache/geode-native.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/apache/geode-native/context:csharp) [![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/apache/geode-native.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/apache/geode-native/context:javascript)
+[![Build Status](https://concourse.apachegeode-ci.info/api/v1/teams/main/pipelines/geode-native-develop/badge)](https://concourse.apachegeode-ci.info/teams/main/pipelines/geode-native-develop)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
+[![LGTM Total Alerts](https://img.shields.io/lgtm/alerts/g/apache/geode-native.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/apache/geode-native/alerts/)
+[![Language grade: C/C++](https://img.shields.io/lgtm/grade/cpp/g/apache/geode-native.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/apache/geode-native/context:cpp)
+[![Language grade: C#](https://img.shields.io/lgtm/grade/csharp/g/apache/geode-native.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/apache/geode-native/context:csharp)
+[![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/apache/geode-native.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/apache/geode-native/context:javascript)
 
-**[Overview](#overview)**  
-**[Building from Source](#building)**  
-**[Application Development](#development)**  
+Table of Contents
+=================
+* [Overview](#overview)
+* [Building from Source](#building-from-source)
+* [Application Development](#application-development)
+* [Versioning](#versioning)
+* [Export Control](#export-control)
 
-## <a name="overview"></a>Overview
+# Overview
 
-Native Client is a client implementation for [Apache Geode](http://geode.apache.org/) that does not require the Java server JARs.
+Native Client is a client implementation for [Apache Geode](http://geode.apache.org/) that does not require the Java
+server JARs.
 
-## <a name="building"></a>Building from Source
+# Building from Source
 
 Directions to build Native Client from source can be found in the source distribution in [BUILDING.md](BUILDING.md).
 
-## <a name="development"></a>Application Development
+# Application Development
 
 Native Client applications can be written in these client technologies:
 
-* [C++] (https://isocpp.org)
-* [C#] (https://msdn.microsoft.com/en-us/library/ms228593.aspx)
+* [C++](https://isocpp.org)
+* [.NET Framework](https://dotnet.microsoft.com/learn/dotnet/what-is-dotnet-framework)
 
-## Export Control
+# Versioning
+
+Geode Native follows the [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html) specification (semver). This
+specification only addresses the [API](https://en.wikipedia.org/wiki/API) compatibility with libraries and does not
+cover [ABI](https://en.wikipedia.org/wiki/Application_binary_interface) compatibility.
+
+## C++
+
+ABI compatibility is not preserved similarly to the API compatibility. ABI compatibility is only guaranteed between
+patch releases. Recompilation is required for both minor and major releases.
+
+## .NET
+
+ABI compatibility is preserved similarly to the API compatibility. ABI compatibility is guaranteed between patch and
+minor releases. Recompilation is only require for major releases or to utilize new APIs added in minor releases.
+
+# Export Control
 
 This distribution includes cryptographic software.
 The country in which you currently reside may have restrictions
@@ -45,5 +71,3 @@ for both object code and source code.
 The following provides more details on the included cryptographic software:
 
 * Apache Geode links to and uses [OpenSSL](https://www.openssl.org/) ciphers.
-
-
