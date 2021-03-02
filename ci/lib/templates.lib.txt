@@ -80,7 +80,7 @@ remote_shell cmake -E chdir (@= path @) ctest -C ${CMAKE_CONFIG} -j(@= str(paral
 
 (@ def clang_tidy_bash_task(): -@)
 set -ueo pipefail
-export GEODE_HOME=$(pwd)/geode/expanded/apache-geode-$(cat geode/version)
+export GEODE_HOME=$(pwd)/geode
 log=$(mktemp)
 cd build
 cmake ../source -DCMAKE_EXPORT_COMPILE_COMMANDS=ON >>${log} 2>&1 || (cat ${log}; exit 1)
@@ -90,7 +90,7 @@ run-clang-tidy -j $(nproc) -quiet
 
 (@ def clang_format_bash_task(): -@)
 set -ueo pipefail
-export GEODE_HOME=$(pwd)/geode/expanded/apache-geode-$(cat geode/version)
+export GEODE_HOME=$(pwd)/geode
 log=$(mktemp)
 cd build
 cmake ../source -DCMAKE_EXPORT_COMPILE_COMMANDS=ON >>${log} 2>&1 || (cat ${log}; exit 1)
@@ -99,7 +99,7 @@ jq -r '.[].file' compile_commands.json | sort | uniq | grep -v $(pwd) | xargs cl
 
 (@ def rat_check_bash_task(): -@)
 set -ueo pipefail
-export GEODE_HOME=$(pwd)/geode/expanded/apache-geode-$(cat geode/version)
+export GEODE_HOME=$(pwd)/geode
 log=$(mktemp)
 cd build
 cmake ../source -DUSE_RAT=ON >>${log} 2>&1 || (cat ${log}; exit 1)
@@ -112,6 +112,8 @@ cd source/packer
 packer build -only=googlecompute \
     -var-file=default.json \
     -var pipeline=(@= gci_label_value(data.values.pipeline.name) @) \
+    -var version=(@= data.values.pipeline.version @) \
+    -var pre=(@= data.values.pipeline.pre @) \
     -var owner=(@= gci_label_value(data.values.github.owner) @) \
     -var repository=(@= gci_label_value(data.values.github.repository) @) \
     -var branch=(@= gci_label_value(data.values.repository.branch) @) \
@@ -174,8 +176,9 @@ done
 (@ def instance_delete_bash_task(): -@)
 set -ueo pipefail
 (@= google_variables() @)
-(@= remote_functions() @)
+(@= instance_variables() @)
 
+instance_file=${INSTANCE_DIR}/instance.sh
 instance_name=$(source ${instance_file} && echo -n ${name})
 
 gcloud compute instances delete ${instance_name} \
@@ -200,10 +203,10 @@ git_rev=$(git rev-parse HEAD)
 popd
 version=$(cat version/number)
 builddate=$(date "+%Y-%m-%d")
-remote_upload source .
 remote_shell cmake -E make_directory build
-remote_shell  cmake -E time cmake -E chdir build cmake ../source ${CMAKE_CONFIGURE_FLAGS} \
+remote_shell cmake -E time cmake -E chdir build cmake ../source ${CMAKE_CONFIGURE_FLAGS} \
     -DCMAKE_BUILD_TYPE=${CMAKE_CONFIG} \
+    -DGEODE_ROOT=../geode \
     -DPRODUCT_VERSION=${version} \
     -DPRODUCT_BUILDDATE=${builddate} \
     -DPRODUCT_SOURCE_REVISION=${git_rev} \
@@ -219,4 +222,34 @@ checksums=$(awk '/^CPack: - checksum file: / {print $5}' cpack.out)
 for checksum in ${checksums}; do
   remote_download ${checksum} package/
 done
+(@- end @)
+
+(@ def upload_source_bash_task(): -@)
+set -ueo pipefail
+(@= remote_functions() @)
+remote_upload source .
+(@- end @)
+
+
+(@ def upload_geode_bash_task(): -@)
+set -ueo pipefail
+(@= remote_functions() @)
+geode_version=$(cat geode-latest/version)
+geode_name="apache-geode-${geode_version}"
+geode_artifact="${geode_name}.tgz"
+remote_upload geode-latest/${geode_artifact} .
+remote_shell cmake -E tar xvf ${geode_artifact}
+remote_shell cmake -E rename ${geode_name} geode
+(@- end @)
+
+(@ def extract_geode_bash_task(): -@)
+set -ueo pipefail
+if (cmp -s geode-latest/version geode/version); then
+ exit 0
+fi
+geode_version=$(cat geode-latest/version)
+geode_name="apache-geode-${geode_version}"
+geode_artifact="${geode_name}.tgz"
+tar xvf geode-latest/${geode_artifact} --directory=geode --strip-components=1
+cp geode-latest/version geode/version
 (@- end @)

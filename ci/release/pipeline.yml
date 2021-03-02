@@ -140,6 +140,14 @@ jobs:
           globs:
             - "package-*-release-*/apache-geode-native-*"
 
+  #@overlay/append
+  - name: bump-minor-version
+    plan:
+      - put: version
+        params:
+          bump: minor
+          pre: #@ data.values.pipeline.pre
+
 #@overlay/match-child-defaults missing_ok=True
 groups:
   #@overlay/match by="name"
@@ -149,7 +157,7 @@ groups:
       - #@ packer_job_name(build)
       - #@ docker_job_name("task-image")
       - #@ docker_job_name("clang-tools-image")
-      #@overlay/match by="name"
+  #@overlay/match by="name"
   - name: all
     jobs:
       #@ for build in data.values.builds:
@@ -163,4 +171,11 @@ groups:
       #@overlay/append
       - #@ version_source_job_name()
       #@overlay/append
+      - bump-minor-version
+      #@overlay/append
       - github-pre-release
+  #@overlay/match by="name"
+  - name: version
+    jobs:
+      - #@ version_source_job_name()
+      - bump-minor-version

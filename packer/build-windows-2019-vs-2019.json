@@ -96,12 +96,6 @@
       ]
     },
     {
-      "type": "powershell",
-      "scripts": [
-        "windows/install-geode.ps1"
-      ]
-    },
-    {
       "type": "file",
       "source": "windows/aws/init-ssh.ps1",
       "destination": "$Env:ProgramData/ssh/init-ssh.ps1",

@@ -98,6 +98,7 @@ This Concourse pipeline YAML is rendered using `ytt`. Depends on output from `gi
 * [Concourse](https://concourse-ci.org) v6.5.0+
 * [`ytt`](https://get-ytt.io) v0.28.0+
 * [`git`](https://git-scm.com) v2.25.2+
+* [`yq`](https://github.com/mikefarah/yq) v4.6.0+ (optional for set-pipeline script)
 * [`gcloud`](https://cloud.google.com/sdk/docs/install) SDK
 
 ## Layout

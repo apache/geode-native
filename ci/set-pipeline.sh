@@ -25,6 +25,8 @@ Options:
 Parameter                Description                         Default
 --target                 Fly target.                         "default"
 --branch                 Branch to build.                    Current checked out branch.
+--version                Version of Geode.                   1.14.0
+--pre                    Version pre release tag.            "" | Empty
 --pipeline               Name of pipeline to set.            Based on repository owner name and branch.
 --github-owner           GitHub owner for repository.        Current tracking branch repository owner.
 --github-repository      GitHub repository name.             Current tracking branch repository name.
@@ -67,6 +69,7 @@ done
 
 ytt=${ytt:-ytt}
 fly=${fly:-fly}
+yq=${yq:-yq}
 
 target=${target:-default}
 output=${output:-$(mktemp -d)}
@@ -84,6 +87,16 @@ fi
 pipeline=${pipeline:-${github_owner}-${branch}}
 pipeline=${pipeline//[^[:word:]-]/-}
 
+if (which ${yq} >/dev/null); then
+  version=${version:-$(bash -c "${yq} \"\$@\"" yq -N e '.pipeline.version | select(.) ' - < base/base.yml)}
+  pre=${pre:-$(bash -c "${yq} \"\$@\"" yq -N e '.pipeline.pre | select(.) ' - < base/base.yml)}
+fi
+
+pre=${pre:-"build"}
+if [ "${pre}" == "none" ]; then
+  pre=""
+fi
+
 google_project=${google_project:-$(gcloud config get-value project)}
 google_zone=${google_zone:-'$(curl "http://metadata.google.internal/computeMetadata/v1/instance/zone" -H "Metadata-Flavor: Google" -s | cut -d / -f 4)'}
 google_storage_bucket=${google_storage_bucket:-${google_project}-concourse}
@@ -100,6 +113,8 @@ for variant in ${variants}; do
     --file base \
     --file ${variant} \
     --data-value "pipeline.name=${pipeline}" \
+    --data-value "pipeline.version=${version}" \
+    --data-value "pipeline.pre=${pre}" \
     --data-value "pipeline.variant=${variant}" \
     --data-value "repository.branch=${branch}" \
     --data-value "github.owner=${github_owner}" \

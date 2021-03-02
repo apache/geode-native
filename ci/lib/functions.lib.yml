@@ -33,3 +33,13 @@
 #@ def image_family_name(family):
 #@ return (data.values.pipeline.name + "-" + family)[0:62]
 #@ end
+
+---
+#@ def initial_version():
+#@ return data.values.pipeline.version + ("-" + data.values.pipeline.pre + ".0" if data.values.pipeline.pre else "")
+#@ end
+
+---
+#@ def version_pattern():
+#@ return (data.values.pipeline.version + ("-" + data.values.pipeline.pre + "." if data.values.pipeline.pre else "")).replace(".", "\.") + ".*"
+#@ end

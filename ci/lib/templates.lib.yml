@@ -33,6 +33,9 @@
 #@      "instance_delete_bash_task",
 #@      "download_build_bash_task",
 #@      "build_bash_task",
+#@      "upload_source_bash_task",
+#@      "upload_geode_bash_task",
+#@      "extract_geode_bash_task",
 #@ )
 
 #@ load("@ytt:overlay", "overlay")
@@ -116,6 +119,7 @@ source:
 #@  }, "google-cloud")
 #@ end
 
+---
 #@ def apache_directory_index_resource(name, directory, folder_pattern, file_pattern, expand=True):
 #@ return resource(name, "apache-directory-index-resource", {
 #@   "directory": directory,
@@ -123,6 +127,15 @@ source:
 #@   "file_pattern": file_pattern,
 #@   "expand": expand
 #@  }, "file-multiple")
+#@ end
+
+---
+#@ def maven_resource(name, url, artifact, version=None):
+#@ return resource(name, "maven-resource", {
+#@   "url": url,
+#@   "artifact": artifact,
+#@   "version": version
+#@  }, "archive")
 #@ end
 
 ---
@@ -187,7 +200,16 @@ plan:
                 steps:
                   - get: gcloud-image
                   - get: #@ gci_resource_name(image_family_name(build.image_family))
-            - #@ create_instance_task(build, config)
+            - in_parallel:
+                fail_fast: true
+                steps:
+                  - #@ create_instance_task(build, config)
+                  - get: geode-latest
+  - in_parallel:
+      fail_fast: true
+      steps:
+        - #@ bash_task("upload-source", [{"name":"instance"},{"name":"source"}], [], upload_source_bash_task())
+        - #@ bash_task("upload-geode", [{"name":"instance"},{"name":"geode-latest"}], [], upload_geode_bash_task())
   - #@ build_task(config.config, build.params)
   - #@ remote_task("cpp-unit-tests", config.config, ctest_bash_task("build/cppcache/test", parallel=8), "30m", build.params)
   - #@ remote_task("cpp-integration-tests", config.config, ctest_bash_task("build/cppcache/integration/test"), "1h", build.params)
@@ -224,7 +246,7 @@ plan:
         - get: #@ gci_resource_name(build.source_image_family)
           trigger: true
         - get: packer-source
-          trigger: false
+          trigger: true
   - #@ bash_task("packer-build", [{"name":"packer-source", "path":"source"}], [], packer_build_bash_task(build), "packer-image", attempts=5)
 #@ end
 
@@ -405,7 +427,10 @@ plan:
           trigger: true
         - get: source
           trigger: true
-        - get: geode
+        - do:
+          - get: task-image
+          - get: geode-latest
+          - #@ bash_task("extract-geode", [{"name":"geode-latest"}], [{"name":"geode"}], extract_geode_bash_task(), caches=[{"path":"geode"}])
   - in_parallel:
       steps:
         - #@ bash_task("clang-tidy", [{"name":"source"}, {"name":"geode"}], [{"name":"build"}], clang_tidy_bash_task(), "clang-tools-image")
@@ -414,7 +439,7 @@ plan:
 #@ end
 
 ---
-#@ def bash_task(name, inputs, outputs, source, image="task-image", params={}, platform="linux", timeout=None, attempts=None):
+#@ def bash_task(name, inputs, outputs, source, image="task-image", params={}, platform="linux", timeout=None, attempts=None, caches=None):
 task: #@ name
 #@ if timeout != None:
 timeout: #@ timeout
@@ -427,6 +452,7 @@ config:
   platform: #@ platform
   inputs: #@ inputs
   outputs: #@ outputs
+  caches: #@ caches
   params:
     _: #@ template.replace(params)
   run:
