@@ -119,7 +119,6 @@ TEST(PdxTypeRegistryTest, cleanupOnClusterRestart) {
   auto& gfsh = cluster.getGfsh();
   gfsh.create().region().withName("region").withType("PARTITION").execute();
 
-  bool running = true;
   auto listener = std::make_shared<RegionListener>();
 
   auto cache = createTestCache();
