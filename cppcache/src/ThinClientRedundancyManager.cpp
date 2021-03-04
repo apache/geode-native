@@ -462,6 +462,11 @@ GfErrType ThinClientRedundancyManager::maintainRedundancyLevel(
     // that we can send it back to the caller, to avoid missing out due
     // to nonfatal errors such as server not available
     if (m_poolHADM && !m_IsAllEpDisCon) {
+      LOGDEBUG(
+          "Subscription redundancy lost for pool %s. Triggering disconnection "
+          "callbacks",
+          m_poolHADM->getName().c_str());
+      m_poolHADM->clearKeysOfInterestAllRegions();
       m_poolHADM->sendNotConMesToAllregions();
       m_IsAllEpDisCon = true;
     }

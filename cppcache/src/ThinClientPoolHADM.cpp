@@ -310,6 +310,17 @@ TcrEndpoint* ThinClientPoolHADM::createEP(const char* endpointName) {
       m_connManager.m_cleanupSema, m_redundancySema, this);
 }
 
+void ThinClientPoolHADM::clearKeysOfInterestAllRegions() {
+  std::lock_guard<decltype(m_regionsLock)> guard(m_regionsLock);
+  LOGDEBUG(
+      "Clearing entries for which keys there is an interest registered for all "
+      "regions in pool %s",
+      m_poolName.c_str());
+  for (auto region : m_regions) {
+    region->clearKeysOfInterest();
+  }
+}
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
