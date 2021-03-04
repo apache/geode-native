@@ -17,6 +17,7 @@
 
 #include "LocalRegion.hpp"
 
+#include <regex>
 #include <vector>
 
 #include <geode/PoolManager.hpp>
@@ -440,6 +441,15 @@ void LocalRegion::destroy(
                                  CacheEventFlags::NORMAL, versionTag);
   // handleReplay(err, nullptr);
   throwExceptionIfError("Region::destroy", err);
+}
+
+void LocalRegion::localDestroyNoCallbacks(
+    const std::shared_ptr<CacheableKey>& key) {
+  std::shared_ptr<VersionTag> versionTag;
+  GfErrType err = destroyNoThrow(
+      key, nullptr, -1, CacheEventFlags::LOCAL | CacheEventFlags::NOCALLBACKS,
+      versionTag);
+  throwExceptionIfError("Region::localDestroy", err);
 }
 
 void LocalRegion::localDestroy(
@@ -1747,12 +1757,16 @@ GfErrType LocalRegion::updateNoThrow(
       m_entries->removeTrackerForEntry(key);
     }
   }
-  // invokeCacheListenerForEntryEvent method has the check that if oldValue
-  // is a CacheableToken then it sets it to nullptr; also determines if it
-  // should be AFTER_UPDATE or AFTER_CREATE depending on oldValue
-  err =
-      invokeCacheListenerForEntryEvent(key, oldValue, value, aCallbackArgument,
-                                       eventFlags, TAction::s_afterEventType);
+
+  if (!eventFlags.isNoCallbacks()) {
+    // invokeCacheListenerForEntryEvent method has the check that if oldValue
+    // is a CacheableToken then it sets it to nullptr; also determines if it
+    // should be AFTER_UPDATE or AFTER_CREATE depending on oldValue
+    err = invokeCacheListenerForEntryEvent(key, oldValue, value,
+                                           aCallbackArgument, eventFlags,
+                                           TAction::s_afterEventType);
+  }
+
   return err;
 }
 
@@ -3198,6 +3212,49 @@ void LocalRegion::updateStatOpTime(Statistics* statistics, int32_t statId,
 void LocalRegion::acquireGlobals(bool) {}
 
 void LocalRegion::releaseGlobals(bool) {}
+
+void LocalRegion::clearKeysOfInterest(
+    const std::unordered_map<std::shared_ptr<CacheableKey>,
+                             InterestResultPolicy>& interest_list) {
+  if (m_entries->empty()) {
+    return;
+  }
+
+  for (const auto& kv : interest_list) {
+    localDestroyNoCallbacks(kv.first);
+  }
+}
+
+void LocalRegion::clearKeysOfInterestRegex(const std::string& pattern) {
+  if (m_entries->empty()) {
+    return;
+  }
+
+  std::regex expression{pattern};
+  for (const auto& key : keys()) {
+    if (std::regex_search(key->toString(), expression)) {
+      localDestroyNoCallbacks(key);
+    }
+  }
+}
+
+void LocalRegion::clearKeysOfInterestRegex(
+    const std::unordered_map<std::string, InterestResultPolicy>&
+        interest_list) {
+  if (m_entries->empty()) {
+    return;
+  }
+
+  for (const auto& kv : interest_list) {
+    const auto& regex = kv.first;
+    if (regex == ".*") {
+      localClear();
+      break;
+    } else {
+      clearKeysOfInterestRegex(kv.first);
+    }
+  }
+}
 
 }  // namespace client
 }  // namespace geode

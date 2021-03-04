@@ -151,6 +151,11 @@ class ConcurrentEntriesMap : public EntriesMap {
       std::vector<std::shared_ptr<Cacheable>>& result) const override;
 
   /**
+   * @brief return whether there are no entries.
+   */
+  bool empty() const override;
+
+  /**
    * @brief return the number of entries in the map.
    */
   uint32_t size() const override;

@@ -191,6 +191,8 @@ class ThinClientRegion : public LocalRegion {
              const std::shared_ptr<Serializable>& callBack,
              std::shared_ptr<VersionTag> versionTag) override;
 
+  void clearKeysOfInterest();
+
  protected:
   GfErrType getNoThrow_remote(
       const std::shared_ptr<CacheableKey>& keyPtr,

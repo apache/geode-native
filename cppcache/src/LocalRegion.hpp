@@ -197,6 +197,8 @@ class APACHE_GEODE_EXPORT LocalRegion : public RegionInternal {
   void localDestroy(const std::shared_ptr<CacheableKey>& key,
                     const std::shared_ptr<Serializable>& aCallbackArgument =
                         nullptr) override;
+  virtual void localDestroyNoCallbacks(
+      const std::shared_ptr<CacheableKey>& key);
   bool remove(const std::shared_ptr<CacheableKey>& key,
               const std::shared_ptr<Cacheable>& value,
               const std::shared_ptr<Serializable>& aCallbackArgument =
@@ -569,6 +571,14 @@ class APACHE_GEODE_EXPORT LocalRegion : public RegionInternal {
   virtual GfErrType getNoThrow_FullObject(
       std::shared_ptr<EventId> eventId, std::shared_ptr<Cacheable>& fullObject,
       std::shared_ptr<VersionTag>& versionTag);
+
+  void clearKeysOfInterest(
+      const std::unordered_map<std::shared_ptr<CacheableKey>,
+                               InterestResultPolicy>& interest_list);
+  void clearKeysOfInterestRegex(const std::string& regex);
+  void clearKeysOfInterestRegex(
+      const std::unordered_map<std::string, InterestResultPolicy>&
+          interest_list);
 
  private:
   std::shared_ptr<Region> findSubRegion(const std::string& name);

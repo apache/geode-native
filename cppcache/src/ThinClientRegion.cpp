@@ -2000,6 +2000,19 @@ GfErrType ThinClientRegion::registerStoredRegex(
   return retVal;
 }
 
+void ThinClientRegion::clearKeysOfInterest() {
+  clearKeysOfInterestRegex(m_interestListRegex);
+  clearKeysOfInterestRegex(m_interestListRegexForUpdatesAsInvalidates);
+  clearKeysOfInterestRegex(m_durableInterestListRegex);
+  clearKeysOfInterestRegex(m_durableInterestListRegexForUpdatesAsInvalidates);
+
+  LocalRegion::clearKeysOfInterest(m_interestList);
+  LocalRegion::clearKeysOfInterest(m_interestListForUpdatesAsInvalidates);
+  LocalRegion::clearKeysOfInterest(m_durableInterestList);
+  LocalRegion::clearKeysOfInterest(
+      m_durableInterestListForUpdatesAsInvalidates);
+}
+
 GfErrType ThinClientRegion::registerKeys(TcrEndpoint* endpoint,
                                          const TcrMessage* request,
                                          TcrMessageReply* reply) {

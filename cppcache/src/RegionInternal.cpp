@@ -39,6 +39,8 @@ const CacheEventFlags CacheEventFlags::CACHE_CLOSE(
     CacheEventFlags::GF_CACHE_CLOSE);
 const CacheEventFlags CacheEventFlags::NOCACHEWRITER(
     CacheEventFlags::GF_NOCACHEWRITER);
+const CacheEventFlags CacheEventFlags::NOCALLBACKS(
+    CacheEventFlags::GF_NOCALLBACKS);
 
 RegionInternal::RegionInternal(CacheImpl* cacheImpl,
                                RegionAttributes attributes)
