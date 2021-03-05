@@ -96,4 +96,11 @@ builds:
     image_family: build-ubuntu-20-04
     source_image_family: ubuntu-2004-lts
 
+  - _: #@ template.replace(new_build("ubuntu-20.04-ipv6"))
+    image_family: build-ubuntu-20-04
+    source_image_family: ubuntu-2004-lts
+    #@yaml/map-key-override
+    params:
+      CMAKE_CONFIGURE_FLAGS: "-DWITH_IPV6=ON"
+
 configs: [ ]

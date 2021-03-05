@@ -116,6 +116,10 @@ configure_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/func_cacheserver2_pool.xml
   ${CMAKE_CURRENT_BINARY_DIR}/func_cacheserver2_pool.xml COPYONLY)
 
+list(APPEND CONFIGURE_IN_FILES ${COMMON_SOURCE_DIR}/config.h.in)
+list(APPEND CONFIGURE_OUT_FILES ${CMAKE_CURRENT_BINARY_DIR}/config.h)
+configure_file(${COMMON_SOURCE_DIR}/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
+
 set_target_properties(cpp-integration-test PROPERTIES
   CXX_VISIBILITY_PRESET hidden
   VISIBILITY_INLINES_HIDDEN ON

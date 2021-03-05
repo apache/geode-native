@@ -16,6 +16,10 @@
 cmake_minimum_required( VERSION 3.10 )
 project(apache-geode_unittests LANGUAGES CXX)
 
+if( NOT WITH_IPV6 )
+  set(ENABLE_QUEUECONNECTIONREQUESTTEST QueueConnectionRequestTest.cpp)
+endif()
+
 add_executable(apache-geode_unittests
   AutoDeleteTest.cpp
   ByteArray.cpp
@@ -46,7 +50,7 @@ add_executable(apache-geode_unittests
   LRUQueueTest.cpp
   PdxInstanceImplTest.cpp
   PdxTypeTest.cpp
-  QueueConnectionRequestTest.cpp
+  ${ENABLE_QUEUECONNECTIONREQUESTTEST}
   RegionAttributesFactoryTest.cpp
   SerializableCreateTests.cpp
   StringPrefixPartitionResolverTest.cpp
