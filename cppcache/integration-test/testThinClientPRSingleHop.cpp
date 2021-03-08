@@ -1155,28 +1155,273 @@ DUNIT_MAIN
 
     for (int k = 0; k < 2; k++) {
       CALL_TASK(CreateLocator1);
+        // start locator
+        //      --name=GFELOC22170
+        //      --port=22170
+        //      --dir=C:\geode-native\build\cppcache\integration-test\.tests\testThinClientPRSingleHop\GFELOC22170
+        //      --classpath=C:\geode-native\build\tests\javaobject\javaobject.jar
+        //      --http-service-port=0
+        //      --J=-Dgemfire.jmx-manager-port=26081
+        //      --max-heap=256m
+        //      --properties-file=C:\geode-native\build\cppcache\integration-test\.tests\testThinClientPRSingleHop\GFELOC22170/test.geode.properties
+        //              locators=localhost[22170],localhost[14868],localhost[16272]
+        //              log-level=config 
+        //              mcast-port=0
+        //              enable-network-partition-detection=false 
+        //              distributed-system-id=-1
 
       CALL_TASK(CreateServer1_With_Locator_PR);
+        // start server
+        //      --classpath=C:\geode-native\build\tests\javaobject\javaobject.jar 
+        //      --name=GFECS16676 
+        //      --cache-xml-file=C:\geode-native\build\cppcache\integration-test\.tests\testThinClientPRSingleHop\cacheserver1_partitioned.xml16676.xml 
+        //      --dir=C:\geode-native\build\cppcache\integration-test\.tests\testThinClientPRSingleHop\GFECS16676 
+        //      --server-port=16676 
+        //      --log-level=config 
+        //      --max-heap=1g 
+        //      --J=-Dgemfire.tombstone-timeout=600000 
+        //      --J=-Dgemfire.tombstone-gc-hreshold=100000 
+        //      --J=-Dgemfire.security-log-level=config 
+        //      --properties-file=C:\geode-native\build\cppcache\integration-test\.tests\testThinClientPRSingleHop\GFECS16676/test.geode.properties (same)
+        //
+        // cacheserver*_partitioned.xml:
+        //
+        //  <cache xmlns="http://geode.apache.org/schema/cache"
+        //        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        //        xsi:schemaLocation="http://geode.apache.org/schema/cache http://geode.apache.org/schema/cache/cache-1.0.xsd"
+        //        version="1.0">
+        //	<cache-server port="26754"/>
+        //
+        //	<region name="DistRegionAck">
+        //		<region-attributes data-policy="partition">
+        //          <cache-writer>
+        //            <class-name>javaobject.CacheWriterForSingleHop</class-name>
+        //          </cache-writer>
+        //        </region-attributes>
+        //	</region>
+        //
+        //	<region name="DistRegionNoAck">
+        //		<region-attributes data-policy="partition">
+        //      <cache-writer>
+        //        <class-name>javaobject.CacheWriterForSingleHop</class-name>
+        //      </cache-writer>
+        //      </region-attributes>
+        //	</region>
+        //  </cache> 
       CALL_TASK(CreateServer2_With_Locator_PR);
+        //  start server 
+        //      --classpath=C:\geode-native\build\tests\javaobject\javaobject.jar 
+        //      --name=GFECS18155 
+        //      --cache-xml-file=C:\geode-native\build\cppcache\integration-test\.tests\testThinClientPRSingleHop\cacheserver2_partitioned.xml16676.xml 
+        //      --dir=C:\geode-native\build\cppcache\integration-test\.tests\testThinClientPRSingleHop\GFECS18155 
+        //      --server-port=18155 
+        //      --log-level=config 
+        //      --max-heap=1g 
+        //      --J=-Dgemfire.tombstone-timeout=600000 
+        //      --J=-Dgemfire.tombstone-gc-hreshold=100000 
+        //      --J=-Dgemfire.security-log-level=config 
+        //      --properties-file=C:\geode-native\build\cppcache\integration-test\.tests\testThinClientPRSingleHop\GFECS18155/test.geode.properties (same)
+        // Same xml just different port
       CALL_TASK(CreateServer3_With_Locator_PR);
+        //  start server 
+        //      --classpath=C:\geode-native\build\tests\javaobject\javaobject.jar 
+        //      --name=GFECS26754 
+        //      --cache-xml-file=C:\geode-native\build\cppcache\integration-test\.tests\testThinClientPRSingleHop\cacheserver3_partitioned.xml16676.xml 
+        //      --dir=C:\geode-native\build\cppcache\integration-test\.tests\testThinClientPRSingleHop\GFECS26754 
+        //      --server-port=26754 
+        //      --log-level=config 
+        //      --max-heap=1g
+        //      --J=-Dgemfire.tombstone-timeout=600000
+        //      --J=-Dgemfire.tombstone-gc-hreshold=100000 
+        //      --J=-Dgemfire.security-log-level=config 
+        //      --properties-file=C:\geode-native\build\cppcache\integration-test\.tests\testThinClientPRSingleHop\GFECS26754/test.geode.properties (same)
+        // Same xml just different port
 
       if (k == 0) {
         CALL_TASK(StepOne_Pooled_Locator);
+        // Native client system properties: Same
+        // archive-disk-space-limit = 0
+        // archive-file-size-limit = 0
+        // auto-ready-for-events = true
+        // bucket-wait-timeout = 0ms
+        // cache-xml-file = 
+        // conflate-events = server
+        // connect-timeout = 59000ms
+        // connection-pool-size = 5
+        // connect-wait-timeout = 0ms
+        // enable-chunk-handler-thread = false
+        // disable-shuffling-of-endpoints = false
+        // durable-client-id = 
+        // durable-timeout = 300s
+        // enable-time-statistics = false
+        // heap-lru-delta = 10
+        // heap-lru-limit = 0
+        // log-disk-space-limit = 0
+        // log-file = 
+        // log-file-size-limit = 0
+        // log-level = config
+        // max-fe-threads = 32
+        // max-socket-buffer-size = 66560
+        // notify-ack-interval = 1000ms
+        // notify-dupcheck-life = 300000ms
+        // on-client-disconnect-clear-pdxType-Ids = false
+        // ping-interval = 10s
+        // redundancy-monitor-interval = 10s
+        // security-client-kspath = 
+        // ssl-enabled = false
+        // ssl-keystore = 
+        // ssl-truststore = 
+        // statistic-archive-file = statArchive.gfs
+        // statistic-sampling-enabled = false
+        // statistic-sample-rate = 1000ms
+        // suspended-tx-timeout = 30s
+        // tombstone-timeout = 480000ms
+        // *** Starting the Geode Native Client
+        //     Using Native_5EJqhVQVpV16648 as random data for ClientProxyMembershipID
+        //     createPool() entered. at line: 508
+        //        in createPoolWithLocators isMultiuserMode = 0
+        //        ClientMetadataService started for pool __TEST_POOL1__
+        //        Current subscription redundancy level is 2
+        //        logPoolAttributes() entered at line: 474
+        //        Pool attributes for pool %s are as follows__TEST_POOL1__
+        //           getFreeConnectionTimeout: 10000ms
+        //           getLoadConditioningInterval: 300000ms
+        //           getSocketBufferSize: 32768
+        //           getReadTimeout: 10000ms
+        //           getMinConnections: 1
+        //           getMaxConnections: -1
+        //           getIdleTimeout: 5000ms
+        //           getPingInterval: 10000ms
+        //           getStatisticInterval: 0ms
+        //           getRetryAttempts: -1
+        //           getSubscriptionEnabled: false
+        //           getSubscriptionRedundancy: -1
+        //           getSubscriptionMessageTrackingTimeout: 900000ms
+        //           getSubscriptionAckInterval: 100000ms
+        //           getServerGroup: 
+        //           getThreadLocalConnections: false
+        //           getPRSingleHopEnabled: true
+        //      Pool created. at line: 515
+        //      Creating region DistRegionAck attached to pool __TEST_POOL1__
+        //      Creating region DistRegionNoAck attached to pool __TEST_POOL1__
+        //  StepOne_Pooled_Locator complete. at line: 277
       } else {
-        CALL_TASK(StepOne_Pooled_LocatorTL);
+        CALL_TASK(StepOne_Pooled_LocatorTL); // *** TL = Thread Local (see getThreadLocalConnections is true below)
+        // Native client system properties: same
+        // *** Starting the Geode Native Client
+        //     Using Native_0w2HXLz8cs16648 as random data for ClientProxyMembershipID
+        //     createPooledRegionStickySingleHop at line: 792
+        //     adding pool locators at line: 797
+        //     createPooledRegionStickySingleHop logPoolAttributes at line: 803
+        //        logPoolAttributes() entered at line: 474
+        //     ClientMetadataService started for pool __TEST_POOL1__
+        //     CPPTEST: Pool attributes for pool %s are as follows__TEST_POOL1__
+        //        getFreeConnectionTimeout: 10000ms
+        //        getLoadConditioningInterval: 300000ms
+        //        getSocketBufferSize: 32768
+        //        getReadTimeout: 10000ms
+        //        getMinConnections: 1
+        //        getMaxConnections: -1
+        //        getIdleTimeout: 5000ms
+        //        getPingInterval: 10000ms
+        //        getStatisticInterval: 0ms
+        //        getRetryAttempts: -1
+        //        getSubscriptionEnabled: false
+        //   ***  getSubscriptionRedundancy: 0 **************************************
+        //        getSubscriptionMessageTrackingTimeout: 900000ms
+        //        getSubscriptionAckInterval: 100000ms
+        //        getServerGroup: 
+        //   ***  getThreadLocalConnections: true ***********************************
+        //        getPRSingleHopEnabled: true
+        //     Creating region DistRegionAck attached to pool __TEST_POOL1__
+        //     createPooledRegionStickySingleHop at line: 792
+        //     adding pool locators at line: 797
+        //     Creating region DistRegionNoAck attached to pool __TEST_POOL1__
+        // StepOne_Pooled_LocatorTL complete. at line: 292
+
       }
 
       CALL_TASK(WarmUpTask);
-      CALL_TASK(CheckPrSingleHopForIntKeysTask);
-      size_t totKeyTypes =
-          CacheableWrapperFactory::getRegisteredKeyTypes().size();
+        // k = 0:
+        //
+        // received task: class Task_WarmUpTask  at line: 342
+        // WarmUpTask started. at line: 298
+        //   WarmUpTask: networkhop is 1 
+        //   CPPTEST: put success 
+        //   WarmUpTask: networkhop is 0 
+        //   CPPTEST: put success 
+        // ...
+        // Time  :16648 23784] Current subscription redundancy level is 2
+        // ...
+        //   WarmUpTask: networkhop is 0 
+        //   CPPTEST: put success 
+        //   WarmUpTask: networkhop is 0 
+        //   CPPTEST: put success 
+        //   poolconn = 3 and endpoints size = 3 
+        // WarmUpTask completed. at line: 354
+
+        // k = 1:
+        //
+        // received task: class Task_WarmUpTask  at line: 342
+        // WarmUpTask started. at line: 298
+        //   WarmUpTask: networkhop is 1
+        //   CPPTEST: put success
+        //   WarmUpTask: networkhop is 0
+        //   CPPTEST: put success
+        // ...
+        // Time  :16648 23784] Current subscription redundancy level is 2   ??? check is see this on k =1 iter
+        // ...
+        //   WarmUpTask: networkhop is 0
+        //   CPPTEST: put success
+        //   WarmUpTask: networkhop is 0
+        //   CPPTEST: put success
+        //   poolconn = 4 and endpoints size = 3
+        // WarmUpTask completed. at line: 354
 
       CALL_TASK(CheckPrSingleHopForIntKeysTask);
+        // k = 0, 1:
+        //
+        // received task: class Task_CheckPrSingleHopForIntKeysTask  at line: 342
+        // CheckPrSingleHopForIntKeysTask started. at line: 823
+        // Time  :16648 15620] CheckPrSingleHopForIntKeysTask: networkhop 0 
+        // Time  :16648 15620] CheckPrSingleHopForIntKeysTask: networkhop 0 
+        //... 
+        // CheckPrSingleHopForIntKeysTask put completed. at line: 901
+        //... 
+        // Time  :16648 15620] CheckPrSingleHopForIntKeysTask: networkhop 0 
+        // Time  :16648 15620] CheckPrSingleHopForIntKeysTask: networkhop 0 
+        // CheckPrSingleHopForIntKeysTask get completed. at line: 942
+        // Time  :16648 15620] CheckPrSingleHopForIntKeysTask: networkhop 0 
+        // Time  :16648 15620] CheckPrSingleHopForIntKeysTask: networkhop 0 
+
+      size_t totKeyTypes =
+          CacheableWrapperFactory::getRegisteredKeyTypes().size();
+        //...
+        // Time  :16648 15620] CheckPrSingleHopForIntKeysTask: poolconn is 3
+        // CheckPrSingleHopForIntKeysTask get completed. at line: 1033
+
+      CALL_TASK(CheckPrSingleHopForIntKeysTask);
+        // received task: class Task_CheckPrSingleHopForIntKeysTask  at line: 342
+        // CheckPrSingleHopForIntKeysTask started. at line: 823
+        // Time  :16648 15620] CheckPrSingleHopForIntKeysTask: networkhop 0 
+        // Time  :16648 15620] CheckPrSingleHopForIntKeysTask: networkhop 0 
+        //... 
+        // CheckPrSingleHopForIntKeysTask put completed. at line: 901
+        // CheckPrSingleHopForIntKeysTask: networkhop 0
+        // CheckPrSingleHopForIntKeysTask: networkhop 0
+
+
       for (size_t i = 0; i < totKeyTypes; i++) {
         CALL_TASK(CheckPrSingleHopForAllKeysTask);
+        // i = 0 thru 13
+        // received task: class Task_CheckPrSingleHopForAllKeysTask  at line: 342
+        // CheckPrSingleHopForAllKeysTask started. at line: 451
+        // CheckPrSingleHopForAllKeysTask completed. at line: 546
       }
 
       CALL_TASK(CheckPrSingleHopForGetAllTask);
+        // received task: class Task_CheckPrSingleHopForGetAllTask  at line: 342
+        // CheckPrSingleHopForGetAll get completed. at line: 817
 
       CALL_TASK(CloseCache1);
 
@@ -1200,6 +1445,16 @@ DUNIT_MAIN
     CALL_TASK(StepOne_Pooled_Locator);  // c1
 
     CALL_TASK(CheckGetAllTask);
+      // received task: class Task_CheckGetAllTask  at line: 342
+      //   Updated client meta data
+      //   Updated client meta data
+      //   Current subscription redundancy level is 2
+      //   Current subscription redundancy level is 2
+      //   Current subscription redundancy level is 2
+      //   Current subscription redundancy level is 2
+      //   Current subscription redundancy level is 2
+      //   Current subscription redundancy level is 2
+      // CheckPrSingleHopForGetAllWithCallBack get completed. valuesMap->size() = 100000
 
     CALL_TASK(CloseCache1);
 
