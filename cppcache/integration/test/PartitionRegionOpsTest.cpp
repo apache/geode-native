@@ -89,19 +89,35 @@ std::shared_ptr<Region> setupRegion(Cache& cache,
 }
 
 void putEntries(std::shared_ptr<Region> region, int numEntries,
-                int offsetForValue) {
+                int offsetForValue, bool isAllOp) {
+  HashMapOfCacheable map;
   for (int i = 0; i < numEntries; i++) {
     auto key = CacheableKey::create(i);
-    region->put(key, Cacheable::create(std::to_string(i + offsetForValue)));
+    auto value = Cacheable::create(std::to_string(i + offsetForValue));
+
+    if (!isAllOp)
+      region->put(key, value);
+    else
+      map.emplace(key, value);
   }
+
+  if (isAllOp) region->putAll(map);
 }
 
-void getEntries(std::shared_ptr<Region> region, int numEntries) {
+void getEntries(std::shared_ptr<Region> region, int numEntries, bool isAllOp) {
+  std::vector<std::shared_ptr<CacheableKey>> keys{};
   for (int i = 0; i < numEntries; i++) {
     auto key = CacheableKey::create(i);
-    auto value = region->get(key);
-    ASSERT_NE(nullptr, value);
+
+    if (!isAllOp) {
+      auto value = region->get(key);
+      ASSERT_NE(nullptr, value);
+    } else {
+      keys.push_back(key);
+    }
   }
+
+  if (isAllOp) region->getAll(keys);
 }
 
 void removeLogFromPreviousExecution() {
@@ -151,7 +167,8 @@ void verifyMetadataWasRemovedAtFirstError() {
   EXPECT_NE(metadataRemovedDueToTimeout, metadataRemovedDueToIoErr);
 }
 
-void putPartitionedRegionWithRedundancyServerGoesDown(bool singleHop) {
+void putgetPartitionedRegionWithRedundancyServerGoesDown(bool singleHop,
+                                                         bool isAllOp) {
   Cluster cluster{LocatorCount{1}, ServerCount{2}};
   cluster.start();
   cluster.getGfsh()
@@ -168,97 +185,67 @@ void putPartitionedRegionWithRedundancyServerGoesDown(bool singleHop) {
 
   int ENTRIES = 30;
 
-  putEntries(region, ENTRIES, 0);
+  putEntries(region, ENTRIES, 0, isAllOp);
+
+  getEntries(region, ENTRIES, isAllOp);
 
   cluster.getServers()[1].stop();
 
-  putEntries(region, ENTRIES, 1);
+  getEntries(region, ENTRIES, isAllOp);
 
   cluster.getServers()[1].start();
 
-  putEntries(region, ENTRIES, 2);
-}
-
-void getPartitionedRegionWithRedundancyServerGoesDown(bool singleHop) {
-  Cluster cluster{LocatorCount{1}, ServerCount{2}};
-  cluster.start();
-  cluster.getGfsh()
-      .create()
-      .region()
-      .withName("region")
-      .withType("PARTITION")
-      .withRedundantCopies("1")
-      .execute();
-
-  auto cache = createCache();
-  auto pool = createPool(cluster, cache, singleHop);
-  auto region = setupRegion(cache, pool);
-
-  int ENTRIES = 30;
-
-  putEntries(region, ENTRIES, 0);
-
-  getEntries(region, ENTRIES);
-
-  cluster.getServers()[1].stop();
-
-  getEntries(region, ENTRIES);
-
-  cluster.getServers()[1].start();
-
-  getEntries(region, ENTRIES);
+  getEntries(region, ENTRIES, isAllOp);
 }
 
 /**
  * In this test case we verify that in a partition region with redundancy
- * when one server goes down, all gets are still served.
+ * when one server goes down, all puts and gets are still served.
  * Single-hop is enabled in the client.
  * It can be observed in the logs that when one of the server goes down
  * the bucketServerLocations for that server are removed from the
  * client metadata.
  */
 TEST(PartitionRegionOpsTest,
-     getPartitionedRegionWithRedundancyServerGoesDownSingleHop) {
+     putgetPartitionedRegionWithRedundancyServerGoesDownSingleHop) {
   removeLogFromPreviousExecution();
-  getPartitionedRegionWithRedundancyServerGoesDown(true);
+  putgetPartitionedRegionWithRedundancyServerGoesDown(true, false);
   verifyMetadataWasRemovedAtFirstError();
 }
 
 /**
  * In this test case we verify that in a partition region with redundancy
- * when one server goes down, all puts are still served.
- * Single-hop is enabled in the client.
- * It can be observed in the logs that when one of the server goes down
- * the bucketServerLocations for that server are removed from the
- * client metadata.
- * When the server is brought back again, the meta data is refreshed
- * after putting again values.
- */
-TEST(PartitionRegionOpsTest,
-     putPartitionedRegionWithRedundancyServerGoesDownSingleHop) {
-  removeLogFromPreviousExecution();
-  putPartitionedRegionWithRedundancyServerGoesDown(true);
-  verifyMetadataWasRemovedAtFirstError();
-}
-
-/**
- * In this test case we verify that in a partition region with redundancy
- * when one server goes down, all gets are still served.
+ * when one server goes down, all puts and gets are still served.
  * Single hop is not enabled in the client.
  */
 TEST(PartitionRegionOpsTest,
-     getPartitionedRegionWithRedundancyServerGoesDownNoSingleHop) {
-  getPartitionedRegionWithRedundancyServerGoesDown(false);
+     putgetPartitionedRegionWithRedundancyServerGoesDownNoSingleHop) {
+  putgetPartitionedRegionWithRedundancyServerGoesDown(false, false);
 }
 
 /**
  * In this test case we verify that in a partition region with redundancy
- * when one server goes down, all puts are still served.
- * Single-hop is not enabled in the client.
+ * when one server goes down, all putAlls and getAlls are still served.
+ * Single-hop is enabled in the client.
+ * It can be observed in the logs that when one of the server goes down
+ * the bucketServerLocations for that server are removed from the
+ * client metadata.
  */
 TEST(PartitionRegionOpsTest,
-     putPartitionedRegionWithRedundancyServerGoesDownNoSingleHop) {
-  putPartitionedRegionWithRedundancyServerGoesDown(false);
+     putAllgetAllPartitionedRegionWithRedundancyServerGoesDownSingleHop) {
+  removeLogFromPreviousExecution();
+  putgetPartitionedRegionWithRedundancyServerGoesDown(true, true);
+  verifyMetadataWasRemovedAtFirstError();
+}
+
+/**
+ * In this test case we verify that in a partition region with redundancy
+ * when one server goes down, all putAlls and getAlls are still served.
+ * Single hop is not enabled in the client.
+ */
+TEST(PartitionRegionOpsTest,
+     putAllgetAllPartitionedRegionWithRedundancyServerGoesDownNoSingleHop) {
+  putgetPartitionedRegionWithRedundancyServerGoesDown(false, true);
 }
 
 }  // namespace
