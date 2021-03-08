@@ -95,10 +95,11 @@ void putEntries(std::shared_ptr<Region> region, int numEntries,
     auto key = CacheableKey::create(i);
     auto value = Cacheable::create(std::to_string(i + offsetForValue));
 
-    if (!isAllOp)
+    if (!isAllOp) {
       region->put(key, value);
-    else
+    } else {
       map.emplace(key, value);
+    }
   }
 
   if (isAllOp) region->putAll(map);
