@@ -1530,7 +1530,7 @@ void TcrMessage::handleByteArrayResponse(
           }
           m_metadata->push_back(bucketServerLocations);
         }
-        LOGFINER("Metadata size is %d", m_metadata->size());
+        LOGFINER("Metadata size is %zu", m_metadata->size());
       }
       break;
     }
