@@ -19,6 +19,7 @@
 
 #include <geode/SystemProperties.hpp>
 
+#include "CacheImpl.hpp"
 #include "FunctionExpiryTask.hpp"
 #include "TcrConnectionManager.hpp"
 #include "util/exception.hpp"
@@ -26,6 +27,7 @@
 namespace apache {
 namespace geode {
 namespace client {
+
 const char* ThinClientPoolHADM::NC_Redundancy = "NC Redundancy";
 ThinClientPoolHADM::ThinClientPoolHADM(const char* name,
                                        std::shared_ptr<PoolAttributes> poolAttr,
@@ -91,10 +93,7 @@ GfErrType ThinClientPoolHADM::sendSyncRequest(TcrMessage& request,
                                               TcrMessageReply& reply,
                                               bool attemptFailover,
                                               bool isBGThread) {
-  GfErrType err = GF_NOERR;
-
   int32_t type = request.getMessageType();
-
   if ((type == TcrMessage::EXECUTECQ_MSG_TYPE ||
        type == TcrMessage::STOPCQ_MSG_TYPE ||
        type == TcrMessage::CLOSECQ_MSG_TYPE ||
@@ -105,12 +104,11 @@ GfErrType ThinClientPoolHADM::sendSyncRequest(TcrMessage& request,
        type == TcrMessage::GETDURABLECQS_MSG_TYPE)) {
     if (m_destroyPending) return GF_NOERR;
     reply.setDM(this);
-    err = sendSyncRequestCq(request, reply);
+    return sendSyncRequestCq(request, reply);
   } else {
-    err = ThinClientPoolDM::sendSyncRequest(request, reply, attemptFailover,
-                                            isBGThread);
+    return ThinClientPoolDM::sendSyncRequest(request, reply, attemptFailover,
+                                             isBGThread);
   }
-  return err;
 }
 
 bool ThinClientPoolHADM::registerInterestForHARegion(
@@ -151,7 +149,6 @@ void ThinClientPoolHADM::redundancy(std::atomic<bool>& isRunning) {
     if (isRunning && !m_connManager.isNetDown()) {
       m_redundancyManager->maintainRedundancyLevel();
       while (m_redundancySema.tryacquire() != -1) {
-        ;
       }
     }
   }
@@ -194,17 +191,15 @@ void ThinClientPoolHADM::sendNotificationCloseMsgs() {
 GfErrType ThinClientPoolHADM::registerInterestAllRegions(
     TcrEndpoint* ep, const TcrMessage* request, TcrMessageReply* reply) {
   GfErrType err = GF_NOERR;
-  GfErrType opErr = GF_NOERR;
 
   std::lock_guard<decltype(m_regionsLock)> guard(m_regionsLock);
-  for (std::list<ThinClientRegion*>::iterator itr = m_regions.begin();
-       itr != m_regions.end(); itr++) {
-    if ((opErr = (*itr)->registerKeys(ep, request, reply)) != GF_NOERR) {
-      if (err == GF_NOERR) {
-        err = opErr;
-      }
+  for (const auto& region : m_regions) {
+    auto opErr = region->registerKeys(ep, request, reply);
+    if (err == GF_NOERR) {
+      err = opErr;
     }
   }
+
   return err;
 }
 
@@ -304,8 +299,9 @@ void ThinClientPoolHADM::sendNotConMesToAllregions() {
   }
 }
 
-TcrEndpoint* ThinClientPoolHADM::createEP(const char* endpointName) {
-  return new TcrPoolEndPoint(
+std::shared_ptr<TcrEndpoint> ThinClientPoolHADM::createEP(
+    const char* endpointName) {
+  return std::make_shared<TcrPoolEndPoint>(
       endpointName, m_connManager.getCacheImpl(), m_connManager.m_failoverSema,
       m_connManager.m_cleanupSema, m_redundancySema, this);
 }

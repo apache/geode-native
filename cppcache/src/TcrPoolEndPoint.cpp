@@ -19,6 +19,7 @@
 
 #include <geode/SystemProperties.hpp>
 
+#include "CacheImpl.hpp"
 #include "ThinClientPoolDM.hpp"
 
 namespace apache {

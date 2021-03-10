@@ -61,6 +61,7 @@ add_library(testobject SHARED
   PositionPdx.hpp
   PSTObject.cpp
   PSTObject.hpp
+  TestFactories.cpp
   TestObject1.cpp
   TestObject1.hpp
   TimestampedObject.hpp

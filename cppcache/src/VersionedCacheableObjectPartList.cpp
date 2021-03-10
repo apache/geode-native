@@ -14,15 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "VersionedCacheableObjectPartList.hpp"
 
 #include <geode/CacheableString.hpp>
 #include <geode/ExceptionTypes.hpp>
 
+#include "CacheImpl.hpp"
 #include "CacheableToken.hpp"
 #include "DiskStoreId.hpp"
 #include "DiskVersionTag.hpp"
 #include "ThinClientRegion.hpp"
+
 namespace apache {
 namespace geode {
 namespace client {
@@ -181,7 +184,6 @@ void VersionedCacheableObjectPartList::fromData(DataInput& input) {
 
   if (m_hasTags) {
     len = static_cast<int32_t>(input.readUnsignedVL());
-    ;
     m_versionTags.resize(len);
     std::vector<uint16_t> ids;
     MemberListForVersionStamp& memberListForVersionStamp =
@@ -232,7 +234,9 @@ void VersionedCacheableObjectPartList::fromData(DataInput& input) {
           versionTag->setInternalMemID(ids.at(idNumber));
           break;
         }
-        default: { break; }
+        default: {
+          break;
+        }
       }
       m_versionTags[index] = versionTag;
     }

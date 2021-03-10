@@ -37,6 +37,10 @@ def parse_command_line():
         help="(optionally) print out regular message details",
     )
 
+    parser.add_argument(
+        "--thread_id", metavar="T", nargs="?", help="Show only messages on this thread"
+    )
+
     args = parser.parse_args()
 
     if args.file is None:
@@ -44,4 +48,4 @@ def parse_command_line():
         parser.print_help()
         sys.exit(1)
 
-    return (args.file, args.handshake, args.messages)
+    return (args.file, args.handshake, args.messages, args.thread_id)

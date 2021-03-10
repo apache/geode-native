@@ -152,6 +152,8 @@ add_library(Apache.Geode SHARED
   native_conditional_unique_ptr.hpp
   native_shared_ptr.hpp
   native_unique_ptr.hpp
+  Objects.cpp
+  Objects.hpp
   PdxIdentityFieldAttribute.hpp
   Pool.cpp
   Pool.hpp
@@ -365,8 +367,6 @@ install (
 )
 
 add_dependencies(client-libraries Apache.Geode)
-
-add_subdirectory(templates)
 
 
 # For Visual Studio organization

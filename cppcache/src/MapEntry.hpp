@@ -29,7 +29,6 @@
 #include <geode/Serializable.hpp>
 #include <geode/internal/geode_globals.hpp>
 
-#include "CacheImpl.hpp"
 #include "RegionInternal.hpp"
 
 namespace apache {
@@ -41,13 +40,14 @@ class LRUEntryProperties;
 class MapEntry;
 class MapEntryImpl;
 class VersionStamp;
+class LRUEntryProperties;
 
 /**
  * @brief Interface class for region mapped entry value.
  */
-class APACHE_GEODE_EXPORT MapEntry {
+class MapEntry {
  public:
-  virtual ~MapEntry() {}
+  virtual ~MapEntry() noexcept = default;
 
   virtual void getKey(std::shared_ptr<CacheableKey>& result) const = 0;
   virtual void getValue(std::shared_ptr<Cacheable>& result) const = 0;
@@ -116,7 +116,7 @@ class APACHE_GEODE_EXPORT MapEntry {
   virtual void cleanup(const CacheEventFlags eventFlags) = 0;
 
  protected:
-  inline MapEntry() {}
+  inline MapEntry() = default;
 
   inline explicit MapEntry(bool) {}
 };

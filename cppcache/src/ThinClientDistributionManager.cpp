@@ -22,6 +22,7 @@
 #include <geode/AuthInitialize.hpp>
 #include <geode/SystemProperties.hpp>
 
+#include "CacheImpl.hpp"
 #include "DistributedSystemImpl.hpp"
 #include "TcrConnectionManager.hpp"
 #include "TcrEndpoint.hpp"
@@ -79,7 +80,7 @@ void ThinClientDistributionManager::destroy(bool keepAlive) {
   destroyAction();
   // stop the chunk processing thread
   stopChunkProcessor();
-  if (Log::finestEnabled()) {
+  if (Log::enabled(LogLevel::Finest)) {
     std::string endpointStr;
     for (size_t index = 0; index < m_endpoints.size(); ++index) {
       if (index != 0) {

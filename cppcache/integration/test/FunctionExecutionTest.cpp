@@ -183,7 +183,9 @@ const std::vector<std::string> serverResultsToStrings(
     for (decltype(resultArray->size()) i = 0; i < resultArray->size(); i++) {
       auto value =
           std::dynamic_pointer_cast<CacheableString>(resultArray->at(i));
-      resultList.push_back(value->toString());
+      if (value != nullptr) {
+        resultList.push_back(value->toString());
+      }
     }
   }
 
@@ -250,4 +252,80 @@ TEST(FunctionExecutionTest, OnServersWithReplicatedRegionsInPool) {
     ASSERT_EQ(resultList[i],
               resultList[i + ON_SERVERS_TEST_REGION_ENTRIES_SIZE / 2]);
   }
+}
+
+void executeTestFunctionOnLoopAndExpectNotConnectedException(
+    std::shared_ptr<apache::geode::client::Pool> pool) {
+  // Filter on odd keys
+  auto routingObj = CacheableVector::create();
+  for (int i = 0; i < ON_SERVERS_TEST_REGION_ENTRIES_SIZE; i++) {
+    if (i % 2 == 0) {
+      continue;
+    }
+    routingObj->push_back(CacheableString::create("KEY--" + std::to_string(i)));
+  }
+
+  auto execution = FunctionService::onServers(pool);
+
+  ASSERT_THROW(
+      {
+        while (true) {
+          // This call must eventually throw the NotConnectedException
+          auto rc =
+              execution.withArgs(routingObj).execute("MultiGetFunctionISlow");
+
+          auto executeFunctionResult = rc->getResult();
+
+          auto resultList = serverResultsToStrings(executeFunctionResult);
+
+          // Executed on 2 servers, we should have two sets of results
+          ASSERT_EQ(resultList.size(), ON_SERVERS_TEST_REGION_ENTRIES_SIZE);
+        }
+      },
+      apache::geode::client::NotConnectedException);
+}
+
+TEST(FunctionExecutionTest, OnServersOneServerGoesDown) {
+  Cluster cluster{
+      LocatorCount{1}, ServerCount{2},
+      CacheXMLFiles(
+          {std::string(getFrameworkString(FrameworkVariable::TestCacheXmlDir)) +
+               "/func_cacheserver1_pool.xml",
+           std::string(getFrameworkString(FrameworkVariable::TestCacheXmlDir)) +
+               "/func_cacheserver2_pool.xml"})};
+
+  cluster.start([&]() {
+    cluster.getGfsh()
+        .deploy()
+        .jar(getFrameworkString(FrameworkVariable::JavaObjectJarPath))
+        .execute();
+  });
+
+  auto cache = CacheFactory().set("log-level", "none").create();
+  auto poolFactory = cache.getPoolManager().createFactory();
+
+  cluster.applyLocators(poolFactory);
+
+  auto pool =
+      poolFactory.setLoadConditioningInterval(std::chrono::milliseconds::zero())
+          .setIdleTimeout(std::chrono::milliseconds::zero())
+          .create("pool");
+
+  auto region = cache.createRegionFactory(RegionShortcut::PROXY)
+                    .setPoolName("pool")
+                    .create("partition_region");
+
+  for (int i = 0; i < ON_SERVERS_TEST_REGION_ENTRIES_SIZE; i++) {
+    region->put("KEY--" + std::to_string(i), "VALUE--" + std::to_string(i));
+  }
+
+  auto threadAux = std::make_shared<std::thread>(
+      executeTestFunctionOnLoopAndExpectNotConnectedException, pool);
+
+  // Sleep a bit to allow for some successful responses before the exception
+  std::this_thread::sleep_for(std::chrono::seconds(5));
+
+  cluster.getServers()[1].stop();
+
+  threadAux->join();
 }

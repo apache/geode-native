@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_TCRDISTRIBUTIONMANAGER_H_
-#define GEODE_TCRDISTRIBUTIONMANAGER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,6 +15,11 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_TCRDISTRIBUTIONMANAGER_H_
+#define GEODE_TCRDISTRIBUTIONMANAGER_H_
+
 #include <geode/internal/geode_globals.hpp>
 
 #include "ThinClientDistributionManager.hpp"
@@ -29,6 +29,7 @@ namespace geode {
 namespace client {
 
 class ThinClientRegion;
+
 /**
  * @brief Distribute data between caches
  */
@@ -36,23 +37,23 @@ class TcrDistributionManager : public ThinClientDistributionManager {
  public:
   TcrDistributionManager(ThinClientRegion* region,
                          TcrConnectionManager& connManager);
+  TcrDistributionManager(const TcrDistributionManager&) = delete;
+  TcrDistributionManager& operator=(const TcrDistributionManager&) = delete;
+  ~TcrDistributionManager() noexcept override = default;
 
  protected:
-  virtual void getEndpointNames(std::unordered_set<std::string>& endpointNames);
+  void getEndpointNames(
+      std::unordered_set<std::string>& endpointNames) override;
 
-  virtual void postUnregisterAction();
+  void postUnregisterAction() override;
 
-  virtual bool preFailoverAction();
+  bool preFailoverAction() override;
 
-  virtual bool postFailoverAction(TcrEndpoint* endpoint);
+  bool postFailoverAction(TcrEndpoint* endpoint) override;
 
-  virtual void destroyAction();
-
- private:
-  // Disallow copy constructor and assignment operator.
-  TcrDistributionManager(const TcrDistributionManager&);
-  TcrDistributionManager& operator=(const TcrDistributionManager&);
+  void destroyAction() override;
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

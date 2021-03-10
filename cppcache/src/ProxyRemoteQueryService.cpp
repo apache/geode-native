@@ -19,6 +19,7 @@
 
 #include <geode/PoolManager.hpp>
 
+#include "CacheImpl.hpp"
 #include "CqQueryImpl.hpp"
 #include "ThinClientPoolDM.hpp"
 

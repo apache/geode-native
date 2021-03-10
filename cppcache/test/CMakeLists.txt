@@ -45,15 +45,20 @@ add_executable(apache-geode_unittests
   gmock_extensions.h
   InterestResultPolicyTest.cpp
   LocalRegionTest.cpp
+  LoggingTest.cpp
+  LRUQueueTest.cpp
   PdxInstanceImplTest.cpp
   PdxTypeTest.cpp
   QueueConnectionRequestTest.cpp
   RegionAttributesFactoryTest.cpp
   SerializableCreateTests.cpp
+  StringPrefixPartitionResolverTest.cpp
   StructSetTest.cpp
   TcrMessageTest.cpp
   ThreadPoolTest.cpp
+  TXIdTest.cpp
   mock/MockExpiryTask.hpp
+  mock/MapEntryImplMock.hpp
   statistics/HostStatSamplerTest.cpp
   util/functionalTests.cpp
   util/JavaModifiedUtf8Tests.cpp

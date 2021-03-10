@@ -1,0 +1,149 @@
+{
+  "variables": {
+    "aws_region": "",
+    "googlecompute_zone": "",
+    "googlecompute_project": "",
+    "image_family": "build-windows-2019-vs-2017",
+    "image_name_prefix": "{{user `image_family`}}"
+  },
+  "builders": [
+    {
+      "type": "amazon-ebs",
+      "instance_type": "c5d.2xlarge",
+      "ami_virtualization_type": "hvm",
+      "ami_name": "{{user `image_family`}}-{{timestamp}}",
+      "region": "{{user `aws_region`}}",
+      "source_ami_filter": {
+        "filters": {
+          "virtualization-type": "hvm",
+          "name": "Windows_Server-2019-English-Full-Base-*",
+          "root-device-type": "ebs"
+        },
+        "owners": [
+          "amazon"
+        ],
+        "most_recent": true
+      },
+      "subnet_id": "{{user `subnet_id`}}",
+      "vpc_id": "{{user `vpc_id`}}",
+      "tags": {
+        "owner": "{{user `owner`}}",
+        "repository": "{{user `repository`}}",
+        "branch": "{{user `branch`}}"
+      },
+      "launch_block_device_mappings": [
+        {
+          "device_name": "/dev/sda1",
+          "delete_on_termination": true,
+          "volume_size": 100
+        }
+      ],
+      "user_data_file": "windows/2019/aws/startup.ps1",
+      "communicator": "winrm",
+      "winrm_username": "Administrator",
+      "winrm_insecure": true,
+      "winrm_use_ssl": true
+    },
+    {
+      "type": "googlecompute",
+      "machine_type": "n1-standard-2",
+      "project_id": "{{user `googlecompute_project`}}",
+      "zone": "{{user `googlecompute_zone`}}",
+      "source_image_family": "windows-2019",
+      "image_name": "{{user `image_name_prefix`}}-{{timestamp}}",
+      "image_family": "{{user `image_family`}}",
+      "image_labels": {
+        "owner": "{{user `owner`}}",
+        "repository": "{{user `repository`}}",
+        "branch": "{{user `branch`}}"
+      },
+      "disk_size": "100",
+      "metadata": {
+        "windows-startup-script-cmd": "dism /Online /NoRestart /Add-Capability /CapabilityName:OpenSSH.Server~~~~0.0.1.0 & dism /Online /NoRestart /Enable-Feature /All /FeatureName:NetFx3 & winrm quickconfig -quiet & winrm set winrm/config/service/auth @{Basic=\"true\"} & net user Administrator /active:yes"
+      },
+      "communicator": "winrm",
+      "winrm_username": "Administrator",
+      "winrm_insecure": true,
+      "winrm_use_ssl": true
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "powershell",
+      "scripts": [
+        "windows/disable-uac.ps1",
+        "windows/2019/install-ssh.ps1",
+        "windows/install-chocolatey.ps1"
+      ]
+    },
+    {
+      "type": "powershell",
+      "scripts": [
+        "windows/install-vs-2019-community.ps1"
+      ]
+    },
+    {
+      "type": "powershell",
+      "inline": [
+        "choco install git.install -confirm",
+        "choco install cmake.portable -confirm",
+        "# TODO Old CLI tests aren't compatible with Java 11",
+        "choco install liberica8jdk -confirm",
+        "choco install doxygen.install -confirm",
+        "choco install openssl -confirm",
+        "choco install strawberryperl -confirm",
+        "choco install nuget.commandline -confirm"
+      ]
+    },
+    {
+      "type": "file",
+      "source": "windows/aws/init-ssh.ps1",
+      "destination": "$Env:ProgramData/ssh/init-ssh.ps1",
+      "only": [
+        "amazon-ebs"
+      ]
+    },
+    {
+      "type": "file",
+      "source": "windows/google/init-ssh.ps1",
+      "destination": "$Env:ProgramData/ssh/init-ssh.ps1",
+      "only": [
+        "googlecompute"
+      ]
+    },
+    {
+      "type": "powershell",
+      "inline": [
+        ". $Env:ProgramData\\ssh\\init-ssh.ps1 -schedule"
+      ]
+    },
+    {
+      "type": "powershell",
+      "scripts": [
+        "windows/aws/setup-ec2launch.ps1"
+      ],
+      "only": [
+        "amazon-ebs"
+      ]
+    },
+    {
+      "type": "windows-restart",
+      "restart_timeout": "30m"
+    },
+    {
+      "type": "powershell",
+      "scripts": [
+        "windows/cleanup.ps1"
+      ]
+    },
+    {
+      "type": "powershell",
+      "inline": [
+        "GCESysprep -NoShutdown"
+      ],
+      "only": [
+        "googlecompute"
+      ]
+    }
+  ]
+}

@@ -26,7 +26,7 @@
 
 using apache::geode::client::synchronized_map;
 
-TEST(synchronized_mapTest, emplaceLocks) {
+TEST(SynchronizedMapTest, emplaceLocks) {
   synchronized_map<std::unordered_map<std::string, std::string>,
                    TestableRecursiveMutex>
       map;
@@ -48,7 +48,7 @@ TEST(synchronized_mapTest, emplaceLocks) {
   EXPECT_EQ(2, map.mutex().unlock_count_);
 }
 
-TEST(synchronized_mapTest, eraseKeyLocks) {
+TEST(SynchronizedMapTest, eraseKeyLocks) {
   synchronized_map<std::unordered_map<std::string, std::string>,
                    TestableRecursiveMutex>
       map;
@@ -63,7 +63,7 @@ TEST(synchronized_mapTest, eraseKeyLocks) {
   EXPECT_EQ(1, map.mutex().unlock_count_);
 }
 
-TEST(synchronized_mapTest, beginLocks) {
+TEST(SynchronizedMapTest, beginLocks) {
   synchronized_map<std::unordered_map<std::string, std::string>,
                    TestableRecursiveMutex>
       map;
@@ -80,7 +80,7 @@ TEST(synchronized_mapTest, beginLocks) {
   EXPECT_EQ(0, map.mutex().unlock_count_);
 }
 
-TEST(synchronized_mapTest, beginConstLocks) {
+TEST(SynchronizedMapTest, beginConstLocks) {
   synchronized_map<std::unordered_map<std::string, std::string>,
                    TestableRecursiveMutex>
       map;
@@ -98,7 +98,7 @@ TEST(synchronized_mapTest, beginConstLocks) {
   EXPECT_EQ(0, map.mutex().unlock_count_);
 }
 
-TEST(synchronized_mapTest, cbeginLocks) {
+TEST(SynchronizedMapTest, cbeginLocks) {
   synchronized_map<std::unordered_map<std::string, std::string>,
                    TestableRecursiveMutex>
       map;
@@ -115,7 +115,7 @@ TEST(synchronized_mapTest, cbeginLocks) {
   EXPECT_EQ(0, map.mutex().unlock_count_);
 }
 
-TEST(synchronized_mapTest, endLocks) {
+TEST(SynchronizedMapTest, endLocks) {
   synchronized_map<std::unordered_map<std::string, std::string>,
                    TestableRecursiveMutex>
       map;
@@ -133,7 +133,7 @@ TEST(synchronized_mapTest, endLocks) {
   EXPECT_EQ(0, map.mutex().unlock_count_);
 }
 
-TEST(synchronized_mapTest, endConsLocks) {
+TEST(SynchronizedMapTest, endConsLocks) {
   synchronized_map<std::unordered_map<std::string, std::string>,
                    TestableRecursiveMutex>
       map;
@@ -152,7 +152,7 @@ TEST(synchronized_mapTest, endConsLocks) {
   EXPECT_EQ(0, map.mutex().unlock_count_);
 }
 
-TEST(synchronized_mapTest, cendLocks) {
+TEST(SynchronizedMapTest, cendLocks) {
   synchronized_map<std::unordered_map<std::string, std::string>,
                    TestableRecursiveMutex>
       map;
@@ -170,7 +170,7 @@ TEST(synchronized_mapTest, cendLocks) {
   EXPECT_EQ(0, map.mutex().unlock_count_);
 }
 
-TEST(synchronized_mapTest, emptyLocks) {
+TEST(SynchronizedMapTest, emptyLocks) {
   synchronized_map<std::unordered_map<std::string, std::string>,
                    TestableRecursiveMutex>
       map;
@@ -189,7 +189,7 @@ TEST(synchronized_mapTest, emptyLocks) {
   EXPECT_EQ(1, map.mutex().unlock_count_);
 }
 
-TEST(synchronized_mapTest, sizeLocks) {
+TEST(SynchronizedMapTest, sizeLocks) {
   synchronized_map<std::unordered_map<std::string, std::string>,
                    TestableRecursiveMutex>
       map;
@@ -208,7 +208,7 @@ TEST(synchronized_mapTest, sizeLocks) {
   EXPECT_EQ(1, map.mutex().unlock_count_);
 }
 
-TEST(synchronized_mapTest, clearLocks) {
+TEST(SynchronizedMapTest, clearLocks) {
   synchronized_map<std::unordered_map<std::string, std::string>,
                    TestableRecursiveMutex>
       map;
@@ -223,7 +223,7 @@ TEST(synchronized_mapTest, clearLocks) {
   EXPECT_TRUE(map.empty());
 }
 
-TEST(synchronized_mapTest, findNotLocked) {
+TEST(SynchronizedMapTest, findNotLocked) {
   synchronized_map<std::unordered_map<std::string, std::string>,
                    TestableRecursiveMutex>
       map;
@@ -244,7 +244,7 @@ TEST(synchronized_mapTest, findNotLocked) {
   EXPECT_EQ(1, map.mutex().unlock_count_);
 }
 
-TEST(synchronized_mapTest, findConstNotLocked) {
+TEST(SynchronizedMapTest, findConstNotLocked) {
   synchronized_map<std::unordered_map<std::string, std::string>,
                    TestableRecursiveMutex>
       map;
@@ -266,7 +266,7 @@ TEST(synchronized_mapTest, findConstNotLocked) {
   EXPECT_EQ(1, map.mutex().unlock_count_);
 }
 
-TEST(synchronized_mapTest, iteratorNotLocked) {
+TEST(SynchronizedMapTest, iteratorNotLocked) {
   synchronized_map<std::unordered_map<std::string, std::string>,
                    TestableRecursiveMutex>
       map;
@@ -305,7 +305,7 @@ TEST(synchronized_mapTest, iteratorNotLocked) {
   EXPECT_EQ(1, map.mutex().unlock_count_);
 }
 
-TEST(synchronized_mapTest, make_lockDefault) {
+TEST(SynchronizedMapTest, makeLockDefault) {
   synchronized_map<std::unordered_map<std::string, std::string>,
                    TestableRecursiveMutex>
       map;
@@ -321,7 +321,7 @@ TEST(synchronized_mapTest, make_lockDefault) {
   EXPECT_EQ(1, map.mutex().unlock_count_);
 }
 
-TEST(synchronized_mapTest, make_lock_WithUniqueLock) {
+TEST(SynchronizedMapTest, makeLockWithUniqueLock) {
   synchronized_map<std::unordered_map<std::string, std::string>,
                    TestableRecursiveMutex>
       map;
@@ -337,7 +337,7 @@ TEST(synchronized_mapTest, make_lock_WithUniqueLock) {
   EXPECT_EQ(1, map.mutex().unlock_count_);
 }
 
-TEST(synchronized_mapTest, make_lock_WithUniqueLockDefered) {
+TEST(SynchronizedMapTest, makeLockWithUniqueLockDefered) {
   synchronized_map<std::unordered_map<std::string, std::string>,
                    TestableRecursiveMutex>
       map;
@@ -357,7 +357,7 @@ TEST(synchronized_mapTest, make_lock_WithUniqueLockDefered) {
   EXPECT_EQ(1, map.mutex().unlock_count_);
 }
 
-TEST(synchronized_mapTest, insertIteratorIteratorLocks) {
+TEST(SynchronizedMapTest, insertIteratorIteratorLocks) {
   std::unordered_map<std::string, std::string> source = {{"a", "A"},
                                                          {"b", "B"}};
 

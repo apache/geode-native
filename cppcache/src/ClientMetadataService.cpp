@@ -24,6 +24,7 @@
 
 #include <geode/FixedPartitionResolver.hpp>
 
+#include "CacheImpl.hpp"
 #include "ClientMetadata.hpp"
 #include "TcrConnectionManager.hpp"
 #include "TcrMessage.hpp"

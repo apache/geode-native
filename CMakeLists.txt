@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.18)
 project(nativeclient LANGUAGES C CXX)
 
 option(USE_PCH "Use precompiled headers (PCH)." OFF)
@@ -48,8 +48,6 @@ if(NOT CMAKE_BUILD_TYPE AND NOT GENERATOR_IS_MULTI_CONFIG)
   set(CMAKE_BUILD_TYPE Debug CACHE STRING "Specifies the build type on single-configuration generators." FORCE)
 endif()
 
-set(CMAKE_DOTNET_TARGET_FRAMEWORK_VERSION "4.5.2")
-set(DOTNET_TARGET_FRAMEWORK_VERSION "4.5.2")
 set(BUILD_BITS 64 CACHE STRING "Build for 64 (Geode default) or 32 bit.")
 option(BUILD_BENCHMARKS "Build benchmarks" ON)
 
@@ -139,13 +137,8 @@ string(REGEX REPLACE " " "" IGNORED_FULL "${IGNORED_FULL}")
 
 list(APPEND CPACK_SOURCE_IGNORE_FILES ${IGNORED_FULL})
 
-if(CMAKE_GENERATOR MATCHES Win64*)
-  set(CMAKE_GENERATOR_TOOLSET "host=x64")
-else()
-  set(CMAKE_GENERATOR_TOOLSET )
-endif()
-
 include(CPack)
+
 include(CheckCXXCompilerFlag)
 include(CheckCCompilerFlag)
 
@@ -186,6 +179,9 @@ if(ipo_supported)
   set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE)
   set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELWITHDEBINFO TRUE)
 endif()
+
+include(CheckLinkerFlag)
+check_linker_flag(CXX -Wl,--exclude-libs,ALL has_linker_exclude_libs)
 
 include(CheckCXXSymbolExists)
 check_cxx_symbol_exists("PRId8" "cinttypes" HAVE_STDC_FORMAT_MACROS)
@@ -241,7 +237,6 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     -Wextra
     -Wno-unused-variable #TODO fix
     -Wno-unused-function #TODO fix
-    -Wno-used-but-marked-unused #TODO fix
     -Wpedantic
     -Weverything
     -Wno-non-virtual-dtor #TODO fix
@@ -272,6 +267,8 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   endif()
 
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+  set(CMAKE_DOTNET_TARGET_FRAMEWORK_VERSION "v4.5.2")
+
   set(BUILD_CLI 1)
 
   # Interface for C++/CLI language.
@@ -281,9 +278,9 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 
   target_compile_options(_WarningsAsError INTERFACE
     /WX
-	/wd4996
-	/wd4068 # TODO fix
-	)
+    /wd4996
+    /we4596
+  )
 
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /ignore:4099")
   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /ignore:4099")
@@ -300,6 +297,12 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     string(REPLACE "\n" "" STRONG_NAME_PUBLIC_KEY ${STRONG_NAME_PUBLIC_KEY})
     string(REGEX REPLACE ".*sha1\\):([a-f0-9]+).*" "\\1" STRONG_NAME_PUBLIC_KEY ${STRONG_NAME_PUBLIC_KEY})
   endif()
+
+  find_program(NUGET nuget)
+  add_custom_target(nuget-restore 
+    COMMAND ${NUGET} restore ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.sln
+  )
+
 endif()
 
 find_package(Java 1.8.0.60 REQUIRED COMPONENTS Development)
@@ -374,6 +377,7 @@ add_subdirectory(docs/api)
 add_subdirectory(examples)
 if (${BUILD_CLI})
   add_subdirectory(clicache)
+  add_subdirectory(templates/security/csharp)
 endif()
 add_subdirectory(tests)
 

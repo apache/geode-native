@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cmake_minimum_required(VERSION 3.10)
 project(framework LANGUAGES CXX)
 
 add_library(framework STATIC
@@ -73,4 +72,4 @@ target_link_libraries(framework
 add_clangformat(framework)
 
 # For Visual Studio organization
-set_target_properties(framework PROPERTIES FOLDER cpp/test/integration)
+set_target_properties(framework PROPERTIES FOLDER cpp/test/integration/legacy)

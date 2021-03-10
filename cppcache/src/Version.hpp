@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_VERSION_H_
-#define GEODE_VERSION_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,22 +15,41 @@
  * limitations under the License.
  */
 
-#include "CacheImpl.hpp"
+#pragma once
+
+#ifndef GEODE_VERSION_H_
+#define GEODE_VERSION_H_
+
+#include <cstdint>
 
 namespace apache {
 namespace geode {
 namespace client {
 
+class DataOutput;
+class DataInput;
+
 class Version {
  public:
-  // getter for ordinal
-  static int8_t getOrdinal() { return Version::m_ordinal; }
+  inline int16_t getOrdinal() const noexcept { return ordinal_; }
+
+  static const Version& current() noexcept {
+    static const auto version = Version{45};  // Geode 1.0.0
+    return version;
+  }
+
+  static void write(DataOutput& dataOutput, const Version& version,
+                    bool compressed = true);
+  static Version read(DataInput& dataOutput);
 
  private:
-  static int8_t m_ordinal;
+  const int16_t ordinal_;
 
-  Version() {}
+  inline explicit Version(int16_t ordinal) noexcept : ordinal_(ordinal) {}
+
+  static constexpr int8_t kTokenOrdinal = -1;
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

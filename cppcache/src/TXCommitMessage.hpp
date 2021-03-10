@@ -30,7 +30,7 @@ namespace geode {
 namespace client {
 
 class TXCommitMessage
-    : public DataSerializableFixedId_t<DSFid::TXCommitMessage> {
+    : public internal::DataSerializableFixedId_t<DSFid::TXCommitMessage> {
  public:
   explicit TXCommitMessage(
       MemberListForVersionStamp& memberListForVersionStamp);

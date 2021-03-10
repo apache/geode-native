@@ -13,9 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-project( sqlite-netFx VERSION 1.0.102.0 LANGUAGES NONE )
+project( sqlite-netFx VERSION 1.0.113.0 LANGUAGES NONE )
 
-set( SHA256 b980e8a151ddc685ed30652d39573381aef7b623478cba80b02d0795607638e1 )
+set( SHA256 deceee8c28c77c1edc9e3edd0a4a7805df6a4a1fb9d2df2a6b70dc0a96491560 )
 
 include(ExternalProject)
 ExternalProject_Add( ${PROJECT_NAME}

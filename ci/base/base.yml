@@ -1,0 +1,99 @@
+#! Licensed to the Apache Software Foundation (ASF) under one or more
+#! contributor license agreements.  See the NOTICE file distributed with
+#! this work for additional information regarding copyright ownership.
+#! The ASF licenses this file to You under the Apache License, Version 2.0
+#! (the "License"); you may not use this file except in compliance with
+#! the License.  You may obtain a copy of the License at
+#!
+#!      http://www.apache.org/licenses/LICENSE-2.0
+#!
+#! Unless required by applicable law or agreed to in writing, software
+#! distributed under the License is distributed on an "AS IS" BASIS,
+#! WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#! See the License for the specific language governing permissions and
+#! limitations under the License.
+
+#@ load("@ytt:template", "template")
+
+---
+#@ def new_build(name, package="Linux-64bit.tar.gz"):
+name: #@ name
+with_dot_net: #@ False
+params:
+  CMAKE_CONFIGURE_FLAGS:
+  CMAKE_BUILD_FLAGS: "-j16"
+  CPACK_GENERATORS: "TGZ"
+packages:
+  - name: archive
+    regexp: #@ "apache-geode-native-(?P<version>.*)-" + package
+    glob: #@ "*-" + package
+  - name: archive.sha512
+    regexp: #@ "apache-geode-native-(?P<version>.*)-" + package + ".sha512"
+    glob: #@ "*-" + package + ".sha512"
+#@ end
+
+#@data/values
+---
+pipeline:
+  name: develop
+  version: 1.15.0
+  pre: build
+
+github:
+  owner: apache
+  repository: geode-native
+
+repository:
+  branch: develop
+
+google:
+  project: apachegeode-ci
+  zone: us-central1-f
+  storage:
+    bucket: apachegeode-ci-concourse
+    key: geode-native/develop
+
+builds:
+  - _: #@ template.replace(new_build("windows-2016-vs-2017", "Windows-64bit.zip"))
+    image_family: build-windows-2016-vs-2017
+    source_image_family: windows-2016
+    #@yaml/map-key-override
+    with_dot_net: #@ True
+    #@yaml/map-key-override
+    params:
+      CMAKE_CONFIGURE_FLAGS: "-A x64 -Tv141,version=14.16,host=x64 -DCMAKE_SYSTEM_VERSION=10.0.16299.0"
+      CMAKE_BUILD_FLAGS: "/m"
+      CPACK_GENERATORS: "ZIP"
+
+  - _: #@ template.replace(new_build("windows-2019-vs-2019", "Windows-64bit.zip"))
+    image_family: build-windows-2019-vs-2019
+    source_image_family: windows-2019
+    #@yaml/map-key-override
+    with_dot_net: #@ True
+    #@yaml/map-key-override
+    params:
+      CMAKE_CONFIGURE_FLAGS: "-A x64 -Tv141,version=14.16,host=x64 -DCMAKE_SYSTEM_VERSION=10.0.16299.0"
+      CMAKE_BUILD_FLAGS: "/m"
+      CPACK_GENERATORS: "ZIP"
+
+  - _: #@ template.replace(new_build("rhel-7"))
+    image_family: build-rhel-7
+    source_image_family: rhel-7
+
+  - _: #@ template.replace(new_build("rhel-8"))
+    image_family: build-rhel-8
+    source_image_family: rhel-8
+
+  - _: #@ template.replace(new_build("ubuntu-16.04"))
+    image_family: build-ubuntu-16-04
+    source_image_family: ubuntu-1604-lts
+
+  - _: #@ template.replace(new_build("ubuntu-18.04"))
+    image_family: build-ubuntu-18-04
+    source_image_family: ubuntu-1804-lts
+
+  - _: #@ template.replace(new_build("ubuntu-20.04"))
+    image_family: build-ubuntu-20-04
+    source_image_family: ubuntu-2004-lts
+
+configs: [ ]

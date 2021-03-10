@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_PDXREMOTEPRESERVEDDATA_H_
-#define GEODE_PDXREMOTEPRESERVEDDATA_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_PDXREMOTEPRESERVEDDATA_H_
+#define GEODE_PDXREMOTEPRESERVEDDATA_H_
 
 #include <vector>
 
@@ -40,7 +40,7 @@ class PdxRemotePreservedData : public PdxUnreadFields {
   int32_t m_typeId;
   int32_t m_mergedTypeId;
   int32_t m_currentIndex;
-  std::shared_ptr<Serializable> /*Object^*/ m_owner;
+  std::shared_ptr<Serializable> m_owner;
   ExpiryTask::id_t expiry_task_id_;
   time_point_t expires_at_;
 
@@ -55,7 +55,7 @@ class PdxRemotePreservedData : public PdxUnreadFields {
         m_owner(owner),
         expiry_task_id_(ExpiryTask::invalid()) {}
 
-  virtual ~PdxRemotePreservedData() = default;
+  ~PdxRemotePreservedData() noexcept override = default;
 
   void initialize(int32_t typeId, int32_t mergedTypeId,
                   std::shared_ptr<Serializable> owner) {

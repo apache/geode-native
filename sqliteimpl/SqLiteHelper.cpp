@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-#include <string.h>
-
 #include "SqLiteHelper.hpp"
+
+#include <string.h>
 
 #define QUERY_SIZE 512
 
-int SqLiteHelper::initDB(const char *regionName, int maxPageCount, int pageSize,
-                         const char *regionDBfile, int busy_timeout_ms) {
+int SqLiteHelper::initDB(const char* regionName, int maxPageCount, int pageSize,
+                         const char* regionDBfile, int busy_timeout_ms) {
   // open the database
   int retCode = sqlite3_open(regionDBfile, &m_dbHandle);
   if (retCode == SQLITE_OK) {
@@ -52,7 +52,7 @@ int SqLiteHelper::createTable() {
   SNPRINTF(query, QUERY_SIZE,
            "CREATE TABLE IF NOT EXISTS %s(key BLOB PRIMARY KEY,value BLOB);",
            m_tableName);
-  sqlite3_stmt *stmt;
+  sqlite3_stmt* stmt;
 
   // prepare statement
   int retCode;
@@ -64,14 +64,14 @@ int SqLiteHelper::createTable() {
   return retCode == SQLITE_DONE ? 0 : retCode;
 }
 
-int SqLiteHelper::insertKeyValue(void *keyData, int keyDataSize,
-                                 void *valueData, int valueDataSize) {
+int SqLiteHelper::insertKeyValue(void* keyData, int keyDataSize,
+                                 void* valueData, int valueDataSize) {
   // construct query
   char query[QUERY_SIZE];
   SNPRINTF(query, QUERY_SIZE, "REPLACE INTO %s VALUES(?,?);", m_tableName);
 
   // prepare statement
-  sqlite3_stmt *stmt;
+  sqlite3_stmt* stmt;
   int retCode = sqlite3_prepare_v2(m_dbHandle, query, -1, &stmt, nullptr);
   if (retCode == SQLITE_OK) {
     // bind parameters and execte statement
@@ -84,13 +84,13 @@ int SqLiteHelper::insertKeyValue(void *keyData, int keyDataSize,
   return retCode == SQLITE_DONE ? 0 : retCode;
 }
 
-int SqLiteHelper::removeKey(void *keyData, int keyDataSize) {
+int SqLiteHelper::removeKey(void* keyData, int keyDataSize) {
   // construct query
   char query[QUERY_SIZE];
   SNPRINTF(query, QUERY_SIZE, "DELETE FROM %s WHERE key=?;", m_tableName);
 
   // prepare statement
-  sqlite3_stmt *stmt;
+  sqlite3_stmt* stmt;
   int retCode = sqlite3_prepare_v2(m_dbHandle, query, -1, &stmt, nullptr);
   if (retCode == SQLITE_OK) {
     // bind parameters and execte statement
@@ -102,8 +102,8 @@ int SqLiteHelper::removeKey(void *keyData, int keyDataSize) {
   return retCode == SQLITE_DONE ? 0 : retCode;
 }
 
-int SqLiteHelper::getValue(void *keyData, int keyDataSize, void *&valueData,
-                           int &valueDataSize) {
+int SqLiteHelper::getValue(void* keyData, int keyDataSize, void*& valueData,
+                           int& valueDataSize) {
   // construct query
   char query[QUERY_SIZE];
   SNPRINTF(query, QUERY_SIZE,
@@ -111,7 +111,7 @@ int SqLiteHelper::getValue(void *keyData, int keyDataSize, void *&valueData,
            m_tableName);
 
   // prepare statement
-  sqlite3_stmt *stmt;
+  sqlite3_stmt* stmt;
   int retCode = sqlite3_prepare_v2(m_dbHandle, query, -1, &stmt, nullptr);
   if (retCode == SQLITE_OK) {
     // bind parameters and execte statement
@@ -119,10 +119,10 @@ int SqLiteHelper::getValue(void *keyData, int keyDataSize, void *&valueData,
     retCode = sqlite3_step(stmt);
     if (retCode == SQLITE_ROW)  // we will get only one row
     {
-      void *tempBuff = const_cast<void *>(sqlite3_column_blob(stmt, 0));
+      void* tempBuff = const_cast<void*>(sqlite3_column_blob(stmt, 0));
       valueDataSize = sqlite3_column_int(stmt, 1);
       valueData =
-          reinterpret_cast<uint8_t *>(malloc(sizeof(uint8_t) * valueDataSize));
+          reinterpret_cast<uint8_t*>(malloc(sizeof(uint8_t) * valueDataSize));
       memcpy(valueData, tempBuff, valueDataSize);
       retCode = sqlite3_step(stmt);
     }
@@ -138,7 +138,7 @@ int SqLiteHelper::dropTable() {
   SNPRINTF(query, QUERY_SIZE, "DROP TABLE %s;", m_tableName);
 
   // prepare statement
-  sqlite3_stmt *stmt;
+  sqlite3_stmt* stmt;
   int retCode;
   retCode = sqlite3_prepare_v2(m_dbHandle, query, -1, &stmt, nullptr);
 
@@ -156,7 +156,7 @@ int SqLiteHelper::closeDB() {
   return retCode;
 }
 
-int SqLiteHelper::executePragma(const char *pragmaName, int pragmaValue) {
+int SqLiteHelper::executePragma(const char* pragmaName, int pragmaValue) {
   // create query
   char query[QUERY_SIZE];
   char strVal[50];
@@ -164,7 +164,7 @@ int SqLiteHelper::executePragma(const char *pragmaName, int pragmaValue) {
   SNPRINTF(query, QUERY_SIZE, "PRAGMA %s = %s;", pragmaName, strVal);
 
   // prepare statement
-  sqlite3_stmt *stmt;
+  sqlite3_stmt* stmt;
   int retCode;
   retCode = sqlite3_prepare_v2(m_dbHandle, query, -1, &stmt, nullptr);
 

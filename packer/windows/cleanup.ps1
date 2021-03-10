@@ -14,7 +14,8 @@
 # limitations under the License.
 
 # Remove admin ssh keys
-Remove-Item C:\Users\Administrator\.ssh -Recurse -Force -ErrorAction SilentlyContinue
+$authorized_keys_file = "${ENV:PROGRAMDATA}\ssh\administrators_authorized_keys"
+Remove-Item "${authorized_keys_file}" -Force -ErrorAction SilentlyContinue
 
 # Cleanup temp
 Get-ChildItem $env:tmp -Recurse | Remove-Item -Recurse -force -ErrorAction SilentlyContinue

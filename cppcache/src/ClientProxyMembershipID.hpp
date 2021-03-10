@@ -129,7 +129,6 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
   static const int8_t TOKEN_ORDINAL;
 
   void readVersion(int flags, DataInput& input);
-  void writeVersion(int16_t ordinal, DataOutput& output);
 
   void readAdditionalData(DataInput& input);
 };

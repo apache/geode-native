@@ -48,7 +48,7 @@ class ThinClientPoolHADM;
 class ThinClientPoolDM;
 class QueryService;
 
-class TcrEndpoint {
+class TcrEndpoint : public std::enable_shared_from_this<TcrEndpoint> {
  public:
   TcrEndpoint(
       const std::string& name, CacheImpl* cacheImpl,
@@ -57,6 +57,9 @@ class TcrEndpoint {
       bool isMultiUserMode = false);  // TODO: need to look for endpoint case
 
   virtual ~TcrEndpoint();
+
+  TcrEndpoint(const TcrEndpoint&) = delete;
+  TcrEndpoint& operator=(const TcrEndpoint&) = delete;
 
   virtual GfErrType registerDM(bool clientNotification,
                                bool isSecondary = false,
@@ -166,9 +169,6 @@ class TcrEndpoint {
 
   int32_t numberOfTimesFailed() { return m_numberOfTimesFailed; }
 
-  void addConnRefCounter(int count) { m_noOfConnRefs += count; }
-
-  int getConnRefCounter() { return m_noOfConnRefs; }
   virtual uint16_t getDistributedMemberID() { return m_distributedMemId; }
   virtual void setDistributedMemberID(uint16_t memId) {
     m_distributedMemId = memId;
@@ -229,19 +229,14 @@ class TcrEndpoint {
   bool m_isActiveEndpoint;
   ServerQueueStatus m_serverQueueStatus;
   int32_t m_queueSize;
-  std::atomic<int32_t> m_noOfConnRefs;
   uint16_t m_distributedMemId;
   bool m_isServerQueueStatusSet;
+  volatile bool m_connCreatedWhenMaxConnsIsZero;
 
   bool compareTransactionIds(int32_t reqTransId, int32_t replyTransId,
                              std::string& failReason, TcrConnection* conn);
   void closeConnections();
   void setRetry(const TcrMessage& request, int& maxSendRetries);
-  // number of connections to this endpoint
-
-  // Disallow copy constructor and assignment operator.
-  TcrEndpoint(const TcrEndpoint&);
-  TcrEndpoint& operator=(const TcrEndpoint&);
 };
 }  // namespace client
 }  // namespace geode

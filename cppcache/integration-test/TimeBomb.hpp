@@ -87,7 +87,7 @@ class TimeBomb : public ACE_Task_Base {
     return activate(thrAttrs, 1);
   }
 
-  int svc() {
+  int svc() override {
     if (m_sleep == ACE_Time_Value(0)) {
       printf("###### TIMEBOMB Disabled. ######\n");
       fflush(stdout);
@@ -108,7 +108,7 @@ class TimeBomb : public ACE_Task_Base {
     return 0;
   }
 
-  ~TimeBomb() {}
+  ~TimeBomb() noexcept override = default;
 };
 
 #endif  // GEODE_INTEGRATION_TEST_TIMEBOMB_H_

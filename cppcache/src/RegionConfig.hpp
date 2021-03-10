@@ -39,7 +39,7 @@ namespace client {
 
 class RegionConfig;
 
-class APACHE_GEODE_EXPORT RegionConfig {
+class RegionConfig {
  public:
   explicit RegionConfig(const std::string& capacity);
 

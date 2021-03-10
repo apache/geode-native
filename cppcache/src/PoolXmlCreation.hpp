@@ -40,7 +40,7 @@ class Cache;
  *
  * @since 3.0
  */
-class APACHE_GEODE_EXPORT PoolXmlCreation {
+class PoolXmlCreation {
  private:
   /** An <code>RegionAttributesFactory</code> for creating default
    * <code>PoolAttribute</code>s */

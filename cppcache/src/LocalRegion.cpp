@@ -25,6 +25,7 @@
 #include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
 #include "CacheableToken.hpp"
+#include "EntriesMapFactory.hpp"
 #include "EntryExpiryTask.hpp"
 #include "ExpiryTaskManager.hpp"
 #include "LRUEntriesMap.hpp"
@@ -93,7 +94,7 @@ LocalRegion::LocalRegion(const std::string& name, CacheImpl* cacheImpl,
 
   m_regionStats = new RegionStats(
       cacheImpl->getStatisticsManager().getStatisticsFactory(), m_fullPath);
-  auto p = cacheImpl->getPoolManager().find(getAttributes().getPoolName());
+  auto p = cacheImpl->getPoolManager().find(m_regionAttributes.getPoolName());
   setPool(p);
 }
 
@@ -720,7 +721,7 @@ void LocalRegion::registerEntryExpiryTask(
   auto id = manager.schedule(std::move(task), duration);
   expProps.task_id(id);
 
-  if (Log::finestEnabled()) {
+  if (Log::enabled(LogLevel::Finest)) {
     std::shared_ptr<CacheableKey> key;
     entry->getKeyI(key);
     LOGFINEST(
@@ -734,6 +735,8 @@ void LocalRegion::registerEntryExpiryTask(
 LocalRegion::~LocalRegion() noexcept {
   TryWriteGuard guard(m_rwLock, m_destroyPending);
   if (!m_destroyPending) {
+    // TODO suspect
+    // NOLINTNEXTLINE(clang-analyzer-optin.cplusplus.VirtualCall)
     release(false);
   }
   m_listener = nullptr;
@@ -2813,7 +2816,7 @@ void LocalRegion::updateAccessAndModifiedTimeForEntry(
     ExpEntryProperties& expProps = ptr->getExpProperties();
     auto now = std::chrono::steady_clock::now();
     std::string keyStr;
-    if (Log::debugEnabled()) {
+    if (Log::enabled(LogLevel::Debug)) {
       std::shared_ptr<CacheableKey> key;
       ptr->getKeyI(key);
       keyStr = Utils::nullSafeToString(key);
@@ -3125,12 +3128,12 @@ void LocalRegion::adjustCacheWriter(const std::string& lib,
   m_writer = m_regionAttributes.getCacheWriter();
 }
 
-void LocalRegion::evict(int32_t percentage) {
+void LocalRegion::evict(float percentage) {
   TryReadGuard guard(m_rwLock, m_destroyPending);
   if (m_released || m_destroyPending) return;
   if (m_entries != nullptr) {
     int32_t size = m_entries->size();
-    int32_t entriesToEvict = (percentage * size) / 100;
+    int32_t entriesToEvict = static_cast<int32_t>(percentage * size);
     // only invoked from EvictionController so static_cast is always safe
     LRUEntriesMap* lruMap = static_cast<LRUEntriesMap*>(m_entries);
     LOGINFO("Evicting %d entries. Current entry count is %d", entriesToEvict,

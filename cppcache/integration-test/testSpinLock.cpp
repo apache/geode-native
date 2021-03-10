@@ -46,7 +46,7 @@ class ThreadA : public ACE_Task_Base {
  public:
   ThreadA() : ACE_Task_Base() {}
 
-  int svc() {
+  int svc() override {
     {
       std::lock_guard<spinlock_mutex> lk(lock);
       LOG("ThreadA: Acquired lock x.");
@@ -62,7 +62,7 @@ class ThreadB : public ACE_Task_Base {
  public:
   ThreadB() : ACE_Task_Base() {}
 
-  int svc() {
+  int svc() override {
     triggerB->acquire();
     {
       std::lock_guard<spinlock_mutex> lk(lock);

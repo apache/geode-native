@@ -29,7 +29,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class APACHE_GEODE_EXPORT EntriesMapFactory {
+class EntriesMapFactory {
  public:
   /** @brief used internally by Region implementation to create the appropriate
    * type of entries map.

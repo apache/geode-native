@@ -67,7 +67,7 @@ Cache createCache(std::string durableClientId) {
   using apache::geode::client::CacheFactory;
 
   auto cache = CacheFactory()
-                   .set("log-level", "debug")
+                   .set("log-level", "none")
                    .set("statistic-sampling-enabled", "false")
                    .setPdxReadSerialized(true)
                    .set("durable-client-id", durableClientId)

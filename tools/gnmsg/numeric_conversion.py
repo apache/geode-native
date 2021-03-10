@@ -31,3 +31,22 @@ to_hex_digit = {
     14: "e",
     15: "f",
 }
+
+
+def int_to_hex_string(intval):
+    byte3 = (intval & 0xFF000000) >> 24
+    byte2 = (intval & 0xFF0000) >> 16
+    byte1 = (intval & 0xFF00) >> 8
+    byte0 = intval & 0xFF
+    return (
+        decimal_string_to_hex_string(byte3)
+        + decimal_string_to_hex_string(byte2)
+        + decimal_string_to_hex_string(byte1)
+        + decimal_string_to_hex_string(byte0)
+    )
+
+
+def decimal_string_to_hex_string(byte):
+    high_nibble = int(int(byte) / 16)
+    low_nibble = int(byte) % 16
+    return to_hex_digit[high_nibble] + to_hex_digit[low_nibble]

@@ -20,8 +20,8 @@ services:
     container_name: 'geode'
     image: 'apachegeode/geode'
     expose:
-      - '10334'
-      - '40404'
+      - '20220'
+      - '20221'
     entrypoint: 'sh'
     command: ["-c", "while true; do sleep 600; done"]
     networks:

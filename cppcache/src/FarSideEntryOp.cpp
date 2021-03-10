@@ -19,7 +19,7 @@
 
 #include "ClientProxyMembershipID.hpp"
 #include "DiskVersionTag.hpp"
-#include "RegionCommit.hpp"
+#include "TcrMessage.hpp"
 #include "util/exception.hpp"
 
 namespace apache {
@@ -28,7 +28,7 @@ namespace client {
 
 FarSideEntryOp::FarSideEntryOp(
     MemberListForVersionStamp& memberListForVersionStamp)
-    : m_op(0),
+    : m_op(Operation::MARKER),
       m_modSerialNum(0),
       m_eventOffset(0),
       m_didDestroy(false),
@@ -36,20 +36,22 @@ FarSideEntryOp::FarSideEntryOp(
 
 {}
 
-bool FarSideEntryOp::isDestroy(int8_t op) {
-  return op == DESTROY || op == LOCAL_DESTROY || op == EVICT_DESTROY ||
-         op == EXPIRE_DESTROY || op == EXPIRE_LOCAL_DESTROY || op == REMOVE;
+bool FarSideEntryOp::isDestroy(Operation op) {
+  return op == Operation::DESTROY || op == Operation::LOCAL_DESTROY ||
+         op == Operation::EVICT_DESTROY || op == Operation::EXPIRE_DESTROY ||
+         op == Operation::EXPIRE_LOCAL_DESTROY || op == Operation::REMOVE;
 }
 
-bool FarSideEntryOp::isInvalidate(int8_t op) {
-  return op == INVALIDATE || op == LOCAL_INVALIDATE ||
-         op == EXPIRE_INVALIDATE || op == EXPIRE_LOCAL_INVALIDATE;
+bool FarSideEntryOp::isInvalidate(Operation op) {
+  return op == Operation::INVALIDATE || op == Operation::LOCAL_INVALIDATE ||
+         op == Operation::EXPIRE_INVALIDATE ||
+         op == Operation::EXPIRE_LOCAL_INVALIDATE;
 }
 
 void FarSideEntryOp::fromData(DataInput& input, bool largeModCount,
                               uint16_t memId) {
   m_key = std::dynamic_pointer_cast<CacheableKey>(input.readObject());
-  m_op = input.read();
+  m_op = static_cast<Operation>(input.read());
   if (largeModCount) {
     m_modSerialNum = input.readInt32();
   } else {

@@ -26,6 +26,7 @@ namespace Apache.Geode.Client.UnitTests
   using Apache.Geode.Client.Tests;
   using Apache.Geode.Client;
 
+  [Ignore("broken")]
   [TestFixture]
   [Category("group3")]
   [Category("unicast_only")]

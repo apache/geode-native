@@ -107,9 +107,9 @@ class MapEntryImpl : public MapEntry,
 class APACHE_GEODE_EXPORT VersionedMapEntryImpl : public MapEntryImpl,
                                                   public VersionStamp {
  public:
-  virtual ~VersionedMapEntryImpl() {}
+  ~VersionedMapEntryImpl() override = default;
 
-  virtual VersionStamp& getVersionStamp() { return *this; }
+  VersionStamp& getVersionStamp() override { return *this; }
 
  protected:
   inline explicit VersionedMapEntryImpl(bool) : MapEntryImpl(true) {}

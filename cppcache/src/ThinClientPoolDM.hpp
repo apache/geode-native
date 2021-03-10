@@ -102,9 +102,9 @@ class ThinClientPoolDM
                             TcrEndpoint* currentEndpoint) override;
   void addConnection(TcrConnection* conn);
 
-  TcrEndpoint* addEP(ServerLocation& serverLoc);
+  std::shared_ptr<TcrEndpoint> addEP(ServerLocation& serverLoc);
 
-  TcrEndpoint* addEP(const std::string& endpointName);
+  std::shared_ptr<TcrEndpoint> addEP(const std::string& endpointName);
   virtual void pingServer(std::atomic<bool>& isRunning);
   virtual void updateLocatorList(std::atomic<bool>& isRunning);
   virtual void cliCallback(std::atomic<bool>& isRunning);
@@ -186,8 +186,9 @@ class ThinClientPoolDM
  protected:
   ThinClientStickyManager* m_manager;
   std::vector<std::string> m_canonicalHosts;
-  synchronized_map<std::unordered_map<std::string, TcrEndpoint*>,
-                   std::recursive_mutex>
+  synchronized_map<
+      std::unordered_map<std::string, std::shared_ptr<TcrEndpoint>>,
+      std::recursive_mutex>
       m_endpoints;
   std::recursive_mutex m_endpointsLock;
   std::recursive_mutex m_endpointSelectionLock;
@@ -245,7 +246,7 @@ class ThinClientPoolDM
                                 bool& isServerException);
 
   // get endpoint using the endpoint string
-  TcrEndpoint* getEndpoint(const std::string& epNameStr);
+  std::shared_ptr<TcrEndpoint> getEndpoint(const std::string& epNameStr);
 
   bool m_isSecurityOn;
   bool m_isMultiUserMode;
@@ -274,7 +275,7 @@ class ThinClientPoolDM
                              const TcrConnection* currentServer = nullptr);
   // TODO global - m_memId was volatile
   std::unique_ptr<ClientProxyMembershipID> m_memId;
-  virtual TcrEndpoint* createEP(const char* endpointName);
+  virtual std::shared_ptr<TcrEndpoint> createEP(const char* endpointName);
   virtual void removeCallbackConnection(TcrEndpoint*) {}
 
   bool excludeServer(std::string, std::set<ServerLocation>&);
@@ -339,7 +340,7 @@ class FunctionExecution : public PooledWork<GfErrType> {
     m_userAttr = nullptr;
   }
 
-  ~FunctionExecution() {}
+  ~FunctionExecution() noexcept override = default;
 
   std::shared_ptr<CacheableString> getException() { return exceptionPtr; }
 
@@ -363,7 +364,7 @@ class FunctionExecution : public PooledWork<GfErrType> {
     m_userAttr = userAttr;
   }
 
-  GfErrType execute(void);
+  GfErrType execute(void) override;
 };
 
 class OnRegionFunctionExecution : public PooledWork<GfErrType> {
@@ -395,7 +396,7 @@ class OnRegionFunctionExecution : public PooledWork<GfErrType> {
       const std::shared_ptr<BucketServerLocation>& serverLocation,
       bool allBuckets);
 
-  ~OnRegionFunctionExecution() {
+  ~OnRegionFunctionExecution() noexcept override {
     delete m_request;
     delete m_reply;
     delete m_resultCollector;
@@ -411,7 +412,7 @@ class OnRegionFunctionExecution : public PooledWork<GfErrType> {
     return static_cast<ChunkedFunctionExecutionResponse*>(m_resultCollector);
   }
 
-  GfErrType execute(void) {
+  GfErrType execute(void) override {
     GuardUserAttributes gua;
 
     if (m_userAttr) {

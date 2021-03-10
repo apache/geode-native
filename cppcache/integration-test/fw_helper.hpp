@@ -131,10 +131,7 @@ class TestException {
         m_filename(const_cast<char*>(filename)) {}
 
   void print() {
-    char buf[256];
-    apache::geode::client::Log::formatLogLine(
-        buf, apache::geode::client::LogLevel::Error);
-    fprintf(stdout, "--->%sTestException: %s in %s at line %d<---\n", buf,
+    fprintf(stdout, "--->%sTestException: %s in %s at line %d<---\n", apache::geode::client::Log::formatLogLine(apache::geode::client::LogLevel::Error).c_str(),
             m_message.c_str(), m_filename, m_lineno);
   }
   std::string m_message;
@@ -236,7 +233,7 @@ int main(int /*argc*/, char** /*argv*/)
     Test_##x() { init(); }                 \
                                            \
    public:                                 \
-    virtual void doTest() {                \
+    void doTest() override {               \
       static const char* fwtest_Name = #x;
 #define END_TEST(x) \
   }                 \

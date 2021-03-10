@@ -48,9 +48,8 @@ namespace client {
 class SystemProperties;
 class DistributedSystemImpl;
 class CacheRegionHelper;
-class TcrConnection;
 
-class APACHE_GEODE_EXPORT DistributedSystem {
+class DistributedSystem {
   /**
    * @brief public methods
    */
@@ -108,7 +107,6 @@ class APACHE_GEODE_EXPORT DistributedSystem {
 
   friend class CacheRegionHelper;
   friend class DistributedSystemImpl;
-  friend class TcrConnection;
 };
 }  // namespace client
 }  // namespace geode

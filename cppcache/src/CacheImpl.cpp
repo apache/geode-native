@@ -43,7 +43,6 @@
 #include "ThinClientRegion.hpp"
 #include "ThreadPool.hpp"
 #include "Utils.hpp"
-#include "Version.hpp"
 
 #define DEFAULT_DS_NAME "default_GeodeDS"
 
@@ -160,7 +159,9 @@ CacheImpl::RegionKind CacheImpl::getRegionKind(
 }
 
 void CacheImpl::removeRegion(const std::string& name) {
+  LOGDEBUG("recursive lock: CacheImpl::removeRegion");
   std::lock_guard<decltype(m_destroyCacheMutex)> lock(m_destroyCacheMutex);
+  LOGDEBUG("locked: CacheImpl::removeRegion");
   if (!m_destroyPending) {
     m_regions.erase(name);
   }
@@ -240,7 +241,9 @@ void CacheImpl::close(bool keepalive) {
   sendNotificationCloseMsgs();
 
   {
+    LOGDEBUG("recursive lock: CacheImpl::setKeepAlive");
     std::lock_guard<decltype(m_destroyCacheMutex)> lock(m_destroyCacheMutex);
+    LOGDEBUG("locked: CacheImpl::setKeepAlive");
     if (m_destroyPending) {
       return;
     }
@@ -297,6 +300,8 @@ void CacheImpl::close(bool keepalive) {
 
   m_poolManager->close(keepalive);
 
+  m_poolManager.reset();
+
   LOGFINE("Closed pool manager with keepalive %s",
           keepalive ? "true" : "false");
 
@@ -330,7 +335,9 @@ void CacheImpl::close(bool keepalive) {
 }
 
 bool CacheImpl::doIfDestroyNotPending(std::function<void()> f) {
+  LOGDEBUG("recursive lock: CacheImpl::doIfDestroyNotPending");
   std::lock_guard<decltype(m_destroyCacheMutex)> lock(m_destroyCacheMutex);
+  LOGDEBUG("locked: CacheImpl::doIfDestroyNotPending");
   if (!m_destroyPending) {
     f();
   }
@@ -465,7 +472,9 @@ std::shared_ptr<Region> CacheImpl::getRegion(const std::string& path) {
   LOGDEBUG("CacheImpl::getRegion " + path);
 
   this->throwIfClosed();
+  LOGDEBUG("recursive lock: CacheImpl::getRegion");
   std::lock_guard<decltype(m_destroyCacheMutex)> lock(m_destroyCacheMutex);
+  LOGDEBUG("locked: CacheImpl::getRegion");
 
   if (m_destroyPending) {
     return nullptr;
@@ -680,8 +689,10 @@ bool CacheImpl::getEndpointStatus(const std::string& endpoint) {
 }
 
 void CacheImpl::processMarker() {
+  LOGDEBUG("recursive lock: CacheImpl::processMarker");
   std::lock_guard<decltype(m_destroyCacheMutex)> destroy_lock(
       m_destroyCacheMutex);
+  LOGDEBUG("locked: CacheImpl::processMarker");
   if (m_destroyPending) {
     return;
   }

@@ -37,6 +37,7 @@ namespace client {
 class TcrMessage;
 class ThinClientRegion;
 class TcrEndpoint;
+class TcrConnection;
 class TcrConnectionManager;
 class TcrMessageReply;
 class TcrChunkedContext;
@@ -48,7 +49,7 @@ class EventId;
 class ThinClientBaseDM {
  public:
   ThinClientBaseDM(TcrConnectionManager& connManager, ThinClientRegion* region);
-  virtual ~ThinClientBaseDM() = 0;
+  virtual ~ThinClientBaseDM() noexcept;
 
   virtual void init();
   virtual void destroy(bool keepalive = false);

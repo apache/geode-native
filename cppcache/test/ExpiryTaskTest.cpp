@@ -24,9 +24,9 @@
 #include "mock/MockExpiryTask.hpp"
 
 using ::testing::DoAll;
-using ::testing::InSequence;
 using ::testing::InvokeWithoutArgs;
 using ::testing::Return;
+using ::testing::Sequence;
 
 using apache::geode::client::ExpiryTask;
 using apache::geode::client::ExpiryTaskManager;
@@ -66,12 +66,16 @@ TEST(ExpiryTaskTest, schedulePeriodic) {
 
   auto task = std::make_shared<MockExpiryTask>(manager);
   {
-    InSequence s;
-    EXPECT_CALL(*task, on_expire()).Times(1).WillOnce(Return(true));
+    Sequence s;
     EXPECT_CALL(*task, on_expire())
         .Times(1)
+        .InSequence(s)
+        .WillOnce(Return(true));
+    EXPECT_CALL(*task, on_expire())
+        .Times(1)
+        .InSequence(s)
         .WillOnce(DoAll(CvNotifyOne(&cv), Return(true)));
-    EXPECT_CALL(*task, on_expire()).WillRepeatedly(Return(true));
+    EXPECT_CALL(*task, on_expire()).InSequence(s).WillRepeatedly(Return(true));
   }
   auto id = manager.schedule(std::move(task), std::chrono::seconds(0),
                              std::chrono::nanoseconds(1));
@@ -94,15 +98,17 @@ TEST(ExpiryTaskTest, resetSingleshot) {
   auto& task_ref = *task;
 
   {
-    InSequence s;
+    Sequence s;
     EXPECT_CALL(task_ref, on_expire())
         .Times(1)
+        .InSequence(s)
         .WillOnce(InvokeWithoutArgs([&task_ref] {
           task_ref.reset(std::chrono::nanoseconds(1));
           return false;
         }));
     EXPECT_CALL(task_ref, on_expire())
         .Times(1)
+        .InSequence(s)
         .WillOnce(DoAll(CvNotifyOne(&cv), Return(true)));
   }
 
@@ -126,14 +132,16 @@ TEST(ExpiryTaskTest, resetPeriodic) {
   auto& task_ref = *task;
 
   {
-    InSequence s;
+    Sequence s;
     EXPECT_CALL(task_ref, on_expire())
         .Times(1)
+        .InSequence(s)
         .WillOnce(InvokeWithoutArgs([&task_ref] {
           task_ref.reset(std::chrono::nanoseconds(1));
           return false;
         }));
     EXPECT_CALL(task_ref, on_expire())
+        .InSequence(s)
         .WillRepeatedly(DoAll(CvNotifyOne(&cv), Return(true)));
   }
   auto id = manager.schedule(std::move(task), std::chrono::seconds(0));

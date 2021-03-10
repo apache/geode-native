@@ -19,6 +19,7 @@
 
 #include <unordered_set>
 
+#include "CacheImpl.hpp"
 #include "MapSegment.hpp"
 #include "TombstoneEntry.hpp"
 #include "TombstoneExpiryTask.hpp"

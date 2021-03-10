@@ -31,10 +31,7 @@ namespace security {
 
 class DummyCredentialGenerator : public CredentialGenerator {
  public:
-  DummyCredentialGenerator() : CredentialGenerator(ID_DUMMY, "DUMMY") {
-    ;
-    ;
-  }
+  DummyCredentialGenerator() : CredentialGenerator(ID_DUMMY, "DUMMY") {}
 
   std::string getInitArgs(std::string workingDir, bool userMode) override {
     std::string additionalArgs;

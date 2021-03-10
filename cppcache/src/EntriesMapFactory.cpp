@@ -17,14 +17,13 @@
 
 #include "EntriesMapFactory.hpp"
 
-#include <geode/Cache.hpp>
 #include <geode/DiskPolicyType.hpp>
+#include <geode/SystemProperties.hpp>
 
+#include "CacheImpl.hpp"
 #include "ExpMapEntry.hpp"
 #include "LRUEntriesMap.hpp"
 #include "LRUExpMapEntry.hpp"
-//#include <geode/ExpirationAction.hpp>
-#include <geode/SystemProperties.hpp>
 
 namespace apache {
 namespace geode {

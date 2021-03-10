@@ -17,253 +17,376 @@
 
 #include "TcpConn.hpp"
 
-#include <thread>
+#include <iomanip>
+#include <iostream>
 
-#include <ace/SOCK_Connector.h>
-#include <boost/interprocess/mapped_region.hpp>
-
-#include <geode/ExceptionTypes.hpp>
-#include <geode/internal/chrono/duration.hpp>
+#include <boost/optional.hpp>
+#include <boost/system/error_code.hpp>
+#include <boost/system/system_error.hpp>
 
 #include "util/Log.hpp"
+
+namespace {
+template <int Level, int Name>
+class timeval {
+ public:
+  // This is not an instance of the template, but of the system provided type
+  // to be written to the socket API.
+#if defined(_WINDOWS)
+  using value_type = DWORD;
+#else
+  using value_type = ::timeval;
+#endif
+
+ private:
+  value_type value_{};
+
+ public:
+  timeval() {}
+
+  explicit timeval(value_type v) : value_(v) {}
+
+  timeval &operator=(value_type v) {
+    value_ = v;
+    return *this;
+  }
+
+  value_type value() const { return value_; }
+
+  template <typename Protocol>
+  int level(const Protocol &) const {
+    return Level;
+  }
+
+  template <typename Protocol>
+  int name(const Protocol &) const {
+    return Name;
+  }
+
+  template <typename Protocol>
+  value_type *data(const Protocol &) {
+    return &value_;
+  }
+
+  template <typename Protocol>
+  const value_type *data(const Protocol &) const {
+    return &value_;
+  }
+
+  template <typename Protocol>
+  std::size_t size(const Protocol &) const {
+    return sizeof(value_);
+  }
+
+  template <typename Protocol>
+  void resize(const Protocol &, std::size_t s) {
+    if (s != sizeof(value_)) {
+      throw std::length_error("timeval socket option resize");
+    }
+  }
+};
+
+// Asio doesn't support these socket options directly, but every major platform
+// does. Timeout on IO socket operations are supported by the platform directly.
+// This means We can all receive without needing to use the timeout interface -
+// and more importantly, we can send while holding to per-operation time
+// constraints and without blocking indefinitely.
+//
+// The default timeout is infinite, or by setting the socket option to null,
+// which I won't provide - just don't construct a TcpConn with send and
+// receieve timeouts.
+typedef timeval<SOL_SOCKET, SO_SNDTIMEO> send_timeout;
+typedef timeval<SOL_SOCKET, SO_RCVTIMEO> receive_timeout;
+}  // namespace
 
 namespace apache {
 namespace geode {
 namespace client {
+TcpConn::TcpConn(const std::string ipaddr,
+                 std::chrono::microseconds connect_timeout,
+                 int32_t maxBuffSizePool)
+    : TcpConn{
+          ipaddr.substr(0, ipaddr.find(':')),
+          static_cast<uint16_t>(std::stoi(ipaddr.substr(ipaddr.find(':') + 1))),
+          connect_timeout, maxBuffSizePool} {}
 
-const size_t TcpConn::kChunkSize = TcpConn::getDefaultChunkSize();
+TcpConn::TcpConn(const std::string host, uint16_t port,
+                 std::chrono::microseconds timeout, int32_t maxBuffSizePool)
+    : socket_{io_context_} {
+  auto results = resolve(host, port);
 
-void TcpConn::clearNagle(ACE_HANDLE sock) {
-  int32_t val = 1;
+  // We must connect first so we have a valid file descriptor to set options
+  // on.
+  connect(results, timeout);
 
-  if (0 != ACE_OS::setsockopt(sock, IPPROTO_TCP, 1,
-                              reinterpret_cast<const char*>(&val),
-                              sizeof(val))) {
-    int32_t lastError = ACE_OS::last_error();
-    LOGERROR("Failed to set TCP_NODELAY on socket. Errno: %d: %s", lastError,
-             ACE_OS::strerror(lastError));
-  }
+  socket_.set_option(::boost::asio::ip::tcp::no_delay{true});
+  socket_.set_option(
+      ::boost::asio::socket_base::send_buffer_size{maxBuffSizePool});
+  socket_.set_option(
+      ::boost::asio::socket_base::receive_buffer_size{maxBuffSizePool});
 }
 
-int32_t TcpConn::maxSize(ACE_HANDLE sock, int32_t flag, int32_t size) {
-  int32_t val = 0;
-
-  int32_t inc = 32120;
-  val = size - (3 * inc);
-  if (val < 0) val = 0;
-  if (size == 0) size = maxBuffSizePool_;
-  int32_t red = 0;
-  int32_t lastRed = -1;
-  while (lastRed != red) {
-    lastRed = red;
-    val += inc;
-    if (0 != ACE_OS::setsockopt(sock, SOL_SOCKET, flag,
-                                reinterpret_cast<const char*>(&val),
-                                sizeof(val))) {
-      int32_t lastError = ACE_OS::last_error();
-      LOGERROR("Failed to set socket options. Errno: %d : %s ", lastError,
-               ACE_OS::strerror(lastError));
-    }
-    int plen = sizeof(val);
-    if (0 != ACE_OS::getsockopt(sock, SOL_SOCKET, flag,
-                                reinterpret_cast<char*>(&val), &plen)) {
-      int32_t lastError = ACE_OS::last_error();
-      LOGERROR(
-          "Failed to get buffer size for flag %d on socket. Errno: %d : %s",
-          flag, lastError, ACE_OS::strerror(lastError));
-    }
-#ifdef _LINUX
-    val /= 2;
-#endif
-    if ((val >= maxBuffSizePool_) || (val >= size)) continue;
-    red = val;
-  }
-  return val;
-}
-
-void TcpConn::createSocket(ACE_HANDLE sock) {
-  LOGDEBUG("Creating plain socket stream");
-  stream_ = std::unique_ptr<ACE_SOCK_Stream>(new ACE_SOCK_Stream(sock));
-}
-
-void TcpConn::init() {
-#ifdef WITH_IPV6
-  ACE_HANDLE sock = ACE_OS::socket(inetAddress_.get_type(), SOCK_STREAM, 0);
+TcpConn::TcpConn(const std::string ipaddr,
+                 std::chrono::microseconds connect_timeout,
+                 int32_t maxBuffSizePool, std::chrono::microseconds send_time,
+                 std::chrono::microseconds receive_time)
+    : TcpConn{ipaddr, connect_timeout, maxBuffSizePool} {
+#if defined(_WINDOWS)
+  socket_.set_option(::send_timeout{static_cast<DWORD>(send_time.count())});
+  socket_.set_option(
+      ::receive_timeout{static_cast<DWORD>(receive_time.count())});
 #else
-  ACE_HANDLE sock = ACE_OS::socket(AF_INET, SOCK_STREAM, 0);
+
+  auto send_seconds =
+      std::chrono::duration_cast<std::chrono::seconds>(send_time);
+  auto send_microseconds =
+      send_time % std::chrono::duration_cast<std::chrono::microseconds>(
+                      std::chrono::seconds{1});
+  socket_.set_option(
+      ::send_timeout{{static_cast<int>(send_seconds.count()),
+                      static_cast<int>(send_microseconds.count())}});
+
+  auto receive_seconds =
+      std::chrono::duration_cast<std::chrono::seconds>(receive_time);
+  auto receive_microseconds =
+      receive_time % std::chrono::duration_cast<std::chrono::microseconds>(
+                         std::chrono::seconds{1});
+  socket_.set_option(
+      ::receive_timeout{{static_cast<int>(receive_seconds.count()),
+                         static_cast<int>(receive_microseconds.count())}});
 #endif
-  if (sock == ACE_INVALID_HANDLE) {
-    int32_t lastError = ACE_OS::last_error();
-    LOGERROR("Failed to create socket. Errno: %d: %s", lastError,
-             ACE_OS::strerror(lastError));
-    char msg[256];
-    std::snprintf(msg, 256, "TcpConn::connect failed with errno: %d: %s",
-                  lastError, ACE_OS::strerror(lastError));
-    throw GeodeIOException(msg);
-  }
-
-  clearNagle(sock);
-
-  int32_t readSize = 0;
-  int32_t writeSize = 0;
-  int32_t originalReadSize = readSize;
-  readSize = maxSize(sock, SO_SNDBUF, readSize);
-  if (originalReadSize != readSize) {
-    // This should get logged once at startup and again only if it changes
-    LOGFINEST("Using socket send buffer size of %d.", readSize);
-  }
-  int32_t originalWriteSize = writeSize;
-  writeSize = maxSize(sock, SO_RCVBUF, writeSize);
-  if (originalWriteSize != writeSize) {
-    // This should get logged once at startup and again only if it changes
-    LOGFINEST("Using socket receive buffer size of %d.", writeSize);
-  }
-
-  createSocket(sock);
-
-  connect();
 }
 
-TcpConn::TcpConn(const std::string& address,
-                 std::chrono::microseconds waitSeconds, int32_t maxBuffSizePool)
-    : stream_(nullptr),
-      maxBuffSizePool_(maxBuffSizePool),
-      inetAddress_(address.c_str()),
-      endpoint_(address),
-      timeout_(waitSeconds) {}
+TcpConn::~TcpConn() {
+  try {
+    LOGFINE("Disconnected %s:%u -> %s:%u",
+            socket_.local_endpoint().address().to_string().c_str(),
+            socket_.local_endpoint().port(),
+            socket_.remote_endpoint().address().to_string().c_str(),
+            socket_.remote_endpoint().port());
+    socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_both);
 
-TcpConn::TcpConn(const std::string& hostname, uint16_t port,
-                 std::chrono::microseconds waitSeconds, int32_t maxBuffSizePool)
-    : stream_(nullptr),
-      maxBuffSizePool_(maxBuffSizePool),
-      inetAddress_(port, hostname.c_str()),
-      endpoint_(hostname + ":" + std::to_string(port)),
-      timeout_(waitSeconds) {}
+  } catch (...) {
+    LOGFINE("Closed socket %s:%u ",
+            socket_.local_endpoint().address().to_string().c_str(),
+            socket_.local_endpoint().port());
+  }
 
-void TcpConn::connect() {
-  using apache::geode::internal::chrono::duration::to_string;
+  socket_.close();
+}
 
-  ACE_OS::signal(SIGPIPE, SIG_IGN);  // Ignore broken pipe
+size_t TcpConn::receive(char *buff, const size_t len,
+                        std::chrono::milliseconds timeout) {
+  LOGDEBUG("Receiving %d bytes from %s:%u -> %s:%u", len,
+           socket_.remote_endpoint().address().to_string().c_str(),
+           socket_.remote_endpoint().port(),
+           socket_.local_endpoint().address().to_string().c_str(),
+           socket_.local_endpoint().port());
+  return receive(buff, len, timeout, true);
+}
 
-  LOGFINER("Connecting plain socket stream to " + endpoint_ + " waiting " +
-           to_string(timeout_));
+size_t TcpConn::receive_nothrowiftimeout(char *buff, const size_t len,
+                                         std::chrono::milliseconds timeout) {
+  LOGDEBUG("Receiving an unknown number of bytes from %s:%d -> %s:%d",
+           socket_.remote_endpoint().address().to_string().c_str(),
+           socket_.remote_endpoint().port(),
+           socket_.local_endpoint().address().to_string().c_str(),
+           socket_.local_endpoint().port());
+  return receive(buff, len, timeout, false);
+}
 
-  const ACE_Time_Value aceTimeout(timeout_);
-  const auto timeout =
-      (timeout_ > std::chrono::microseconds::zero()) ? &aceTimeout : nullptr;
-  if (ACE_SOCK_Connector{}.connect(*stream_, inetAddress_, timeout) == -1) {
-    const auto lastError = ACE_OS::last_error();
-    if (lastError == ETIME || lastError == ETIMEDOUT) {
-      throw TimeoutException(
-          "TcpConn::connect Attempt to connect timed out after " +
-          to_string(timeout_) + ".");
+size_t TcpConn::receive(char *buff, const size_t len,
+                        std::chrono::milliseconds timeout,
+                        bool throwTimeoutException) {
+  boost::optional<boost::system::error_code> read_result;
+  std::size_t bytes_read = 0;
+
+  auto beforeReadPoint = std::chrono::system_clock::now();
+
+  try {
+    prepareAsyncRead(buff, len, read_result, bytes_read);
+    io_context_.restart();
+    io_context_.run_for(timeout);
+  } catch (...) {
+    LOGDEBUG("Throwing an unexpected read exception");
+    throw;
+  }
+
+  if (read_result && *read_result) {
+    LOGDEBUG("Throwing a read exception: %s", read_result->message().c_str());
+    socket_.cancel();
+    // Get the abort
+    io_context_.restart();
+    io_context_.run();
+    throw boost::system::system_error{*read_result};
+  }
+
+  if (bytes_read == 0) {
+    auto elapsedTime = std::chrono::duration<double, std::micro>(
+        std::chrono::system_clock::now() - beforeReadPoint);
+    if (elapsedTime < timeout) {
+      LOGDEBUG("Throwing an IO exception");
+      socket_.cancel();
+      // Get the abort
+      io_context_.restart();
+      io_context_.run();
+      throw boost::system::system_error{boost::asio::error::broken_pipe};
+    } else {
+      LOGDEBUG("Throwing an eof exception");
+      socket_.cancel();
+      // Get the abort
+      io_context_.restart();
+      io_context_.run();
+      throw boost::system::system_error{boost::asio::error::eof};
     }
-    close();
-    throw GeodeIOException("TcpConn::connect failed with errno: " +
-                           ACE_errno_to_string(lastError));
   }
 
-  if (stream_->enable(ACE_NONBLOCK)) {
-    LOGINFO("TcpConn::NONBLOCK: " + ACE_errno_to_string(ACE_OS::last_error()));
+  if (bytes_read != len && throwTimeoutException) {
+    LOGDEBUG("Throwing a read timeout exception");
+    socket_.cancel();
+    // Get the abort
+    io_context_.restart();
+    io_context_.run();
+    throw boost::system::system_error{boost::asio::error::operation_aborted};
   }
+
+  return bytes_read;
 }
 
-void TcpConn::close() {
-  if (stream_) {
-    stream_->close();
-    stream_ = nullptr;
+size_t TcpConn::send(const char *buff, const size_t len,
+                     std::chrono::milliseconds timeout) {
+  LOGDEBUG("Sending %d bytes from %s:%u -> %s:%u", len,
+           socket_.local_endpoint().address().to_string().c_str(),
+           socket_.local_endpoint().port(),
+           socket_.remote_endpoint().address().to_string().c_str(),
+           socket_.remote_endpoint().port());
+
+  boost::optional<boost::system::error_code> write_result;
+  std::size_t bytes_written = 0;
+
+  try {
+    prepareAsyncWrite(buff, len, write_result, bytes_written);
+    io_context_.restart();
+    io_context_.run_for(timeout);
+  } catch (...) {
+    LOGDEBUG("Throwing an unexpected write exception");
+    throw;
   }
-}
 
-size_t TcpConn::receive(char* buff, size_t len,
-                        std::chrono::microseconds waitSeconds) {
-  return socketOp(SOCK_READ, buff, len, waitSeconds);
-}
-
-size_t TcpConn::send(const char* buff, size_t len,
-                     std::chrono::microseconds waitSeconds) {
-  return socketOp(SOCK_WRITE, const_cast<char*>(buff), len, waitSeconds);
-}
-
-size_t TcpConn::socketOp(TcpConn::SockOp op, char* buff, size_t len,
-                         std::chrono::microseconds waitDuration) {
-  {
-    ACE_Time_Value waitTime(waitDuration);
-    auto endTime = std::chrono::steady_clock::now() + waitDuration;
-    size_t readLen = 0;
-    ssize_t retVal;
-    bool errnoSet = false;
-
-    size_t totalsend = 0;
-    while (len > 0 && waitTime > ACE_Time_Value::zero) {
-      size_t sendlen;
-      if (len > kChunkSize) {
-        sendlen = kChunkSize;
-        len -= kChunkSize;
-      } else {
-        sendlen = len;
-        len = 0;
-      }
-      do {
-        retVal = doOperation(op, buff, sendlen, waitTime, readLen);
-        sendlen -= readLen;
-        totalsend += readLen;
-        if (retVal < 0) {
-          int32_t lastError = ACE_OS::last_error();
-          if (lastError == EAGAIN) {
-            std::this_thread::sleep_for(std::chrono::microseconds(100));
-          } else {
-            errnoSet = true;
-            break;
-          }
-        } else if (retVal == 0 && readLen == 0) {
-          ACE_OS::last_error(EPIPE);
-          errnoSet = true;
-          break;
-        }
-
-        buff += readLen;
-        if (sendlen == 0) break;
-        waitTime = endTime - std::chrono::steady_clock::now();
-        if (waitTime <= ACE_Time_Value::zero) break;
-      } while (sendlen > 0);
-      if (errnoSet) break;
-    }
-
-    if (len > 0 && !errnoSet) {
-      ACE_OS::last_error(ETIME);
-    }
-
-    return totalsend;
+  if (write_result && *write_result) {
+    LOGDEBUG("Throwing a write exception. %s", write_result->message().c_str());
+    throw boost::system::system_error{*write_result};
   }
-}
-ssize_t TcpConn::doOperation(const TcpConn::SockOp& op, void* buff,
-                             size_t sendlen, ACE_Time_Value& waitTime,
-                             size_t& readLen) const {
-  if (op == SOCK_READ) {
-    return stream_->recv_n(buff, sendlen, &waitTime, &readLen);
-  } else {
-    return stream_->send_n(buff, sendlen, &waitTime, &readLen);
+
+  if (bytes_written != len) {
+    LOGDEBUG("Throwing a write timeout exception");
+    socket_.cancel();
+    // Get the abort
+    io_context_.restart();
+    io_context_.run();
+    throw boost::system::system_error{boost::asio::error::operation_aborted};
   }
+
+  return bytes_written;
 }
 
 //  Return the local port for this TCP connection.
-uint16_t TcpConn::getPort() {
-  ACE_INET_Addr localAddr;
-  stream_->get_local_addr(localAddr);
-  return localAddr.get_port_number();
-}
+uint16_t TcpConn::getPort() { return socket_.local_endpoint().port(); }
 
-size_t TcpConn::getDefaultChunkSize() {
-  //
-  auto pageSize = boost::interprocess::mapped_region::get_page_size();
-  if (pageSize > 16000000) {
-    return 16000000;
-  } else if (pageSize > 0) {
-    return pageSize + (16000000 / pageSize) * pageSize;
+void TcpConn::connect(boost::asio::ip::tcp::resolver::results_type r,
+                      std::chrono::microseconds timeout) {
+  boost::optional<boost::system::error_code> connect_result;
+
+  try {
+    // We must connect first so we have a valid file descriptor to set
+    // options on.
+    boost::asio::async_connect(
+        socket_, r,
+        [&connect_result](const boost::system::error_code &ec,
+                          const boost::asio::ip::tcp::endpoint) {
+          connect_result = ec;
+        });
+
+    io_context_.restart();
+    io_context_.run_for(timeout);
+  } catch (...) {
+    LOGDEBUG("Throwing an unexpected connect exception");
+    throw;
   }
 
-  return 16000000;
+  if (connect_result && *connect_result) {
+    LOGDEBUG("Throwing a connect exception: %s",
+             connect_result->message().c_str());
+    throw boost::system::system_error{*connect_result};
+  }
+
+  if (!connect_result) {
+    LOGDEBUG("Throwing a connect timeout exception");
+    throw boost::system::system_error{boost::asio::error::operation_aborted};
+  }
+
+  LOGDEBUG("Connected %s:%u -> %s:%u",
+           socket_.local_endpoint().address().to_string().c_str(),
+           socket_.local_endpoint().port(),
+           socket_.remote_endpoint().address().to_string().c_str(),
+           socket_.remote_endpoint().port());
+}
+
+boost::asio::ip::tcp::resolver::results_type TcpConn::resolve(
+    const std::string host, uint16_t port) {
+  boost::system::error_code resolve_result;
+  boost::asio::ip::tcp::resolver::results_type results;
+
+  boost::asio::ip::tcp::resolver resolver(io_context_);
+  results = resolver.resolve(host, std::to_string(port), resolve_result);
+
+  if (resolve_result) {
+    LOGDEBUG("Throwing a resolve exception: %s",
+             resolve_result.message().c_str());
+    throw boost::system::system_error{resolve_result};
+  }
+
+  return results;
+}
+
+void TcpConn::prepareAsyncRead(
+    char *buff, size_t len,
+    boost::optional<boost::system::error_code> &read_result,
+    std::size_t &bytes_read) {
+  boost::asio::async_read(
+      socket_, boost::asio::buffer(buff, len),
+      [&read_result, &bytes_read](const boost::system::error_code &ec,
+                                  const size_t n) {
+        bytes_read = n;
+
+        // EOF itself occurs when there is no data available on the socket at
+        // the time of the read. It may simply imply data has yet to arrive.
+        // Do nothing. Defer to timeout rather than assume a broken
+        // connection.
+        if (ec != boost::asio::error::eof &&
+            ec != boost::asio::error::try_again) {
+          read_result = ec;
+          return;
+        }
+      });
+}
+
+void TcpConn::prepareAsyncWrite(
+    const char *buff, size_t len,
+    boost::optional<boost::system::error_code> &write_result,
+    std::size_t &bytes_written) {
+  boost::asio::async_write(
+      socket_, boost::asio::buffer(buff, len),
+      [&write_result, &bytes_written](const boost::system::error_code &ec,
+                                      const size_t n) {
+        bytes_written = n;
+
+        if (ec != boost::asio::error::eof &&
+            ec != boost::asio::error::try_again) {
+          write_result = ec;
+          return;
+        }
+      });
 }
 
 }  // namespace client
