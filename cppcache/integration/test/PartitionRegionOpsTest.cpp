@@ -126,9 +126,8 @@ void getAllEntries(std::shared_ptr<Region> region, int numEntries) {
   }
 
   HashMapOfCacheable actualMap = region->getAll(keys);
-  ASSERT_EQ(numEntries, actualMap.size());
 
-  for (int i = 0; i < actualMap.size(); i++) {
+  for (int i = 0; i < numEntries; i++) {
     auto key = CacheableKey::create(i);
     ASSERT_EQ(expectedMap[key]->toString(), actualMap[key]->toString());
   }
