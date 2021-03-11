@@ -74,26 +74,27 @@ jobs:
               on_success: #@ pr_status(name, "pending")
             - #@overlay/match by=overlay.subset({"get": "version"})
               trigger: false
-    on_error:
-      in_parallel:
-        steps:
-          #@overlay/append
-          - #@ pr_status(name, "error")
-    on_abort:
-      in_parallel:
-        steps:
-          #@overlay/append
-          - #@ pr_status(name, "error", "Build canceled")
-    on_failure:
-      in_parallel:
-        steps:
-          #@overlay/append
-          - #@ pr_status(name, "failure")
-    on_success:
-      in_parallel:
-        steps:
-          #@overlay/append
-          - #@ pr_status(name, "success")
+      - #@overlay/match by=overlay.index(1)
+        on_error:
+          in_parallel:
+            steps:
+              #@overlay/append
+              - #@ pr_status(name, "error")
+        on_abort:
+          in_parallel:
+            steps:
+              #@overlay/append
+              - #@ pr_status(name, "error", "Build canceled")
+        on_failure:
+          in_parallel:
+            steps:
+              #@overlay/append
+              - #@ pr_status(name, "failure")
+        on_success:
+          in_parallel:
+            steps:
+              #@overlay/append
+              - #@ pr_status(name, "success")
 
   #@ end
   #@ end
