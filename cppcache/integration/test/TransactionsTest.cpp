@@ -138,6 +138,8 @@ TEST(TransactionsTest, IlegalStateExceptionNoTx) {
   EXPECT_THROW(txm->prepare(), IllegalStateException);
   EXPECT_THROW(txm->commit(), IllegalStateException);
   EXPECT_THROW(txm->rollback(), IllegalStateException);
+
+  cache.close();
 }  // TEST
 
 TEST(TransactionsTest, ExceptionConflictOnPrepare) {
