@@ -40,7 +40,7 @@ class FixedPartitionAttributesImpl : public internal::DataSerializableInternal {
  public:
   FixedPartitionAttributesImpl()
       : Serializable(),
-        m_partitionName(nullptr),
+        m_partitionName{},
         m_isPrimary(false),
         m_numBuckets(1),
         m_startingBucketId(-1) {}
