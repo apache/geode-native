@@ -14,10 +14,14 @@
 #! limitations under the License.
 
 #@ load("templates.lib.yml",
+#@      "bash_task",
 #@      "build_job_name",
 #@      "resource_type")
 #@ load("@ytt:data", "data")
+#@ load("@ytt:template", "template")
 #@ load("@ytt:overlay", "overlay")
+#@ load("templates.lib.txt",
+#@      "is_source_from_pr_testable_bash_task")
 
 ---
 #@ def pr_status(context, status, description = None):
@@ -51,12 +55,6 @@ resources:
       repository: #@ data.values.github.owner + "/" + data.values.github.repository
       access_token: ((github-pr-access-token))
       base_branch: #@ data.values.repository.branch
-      ignore_paths:
-        - ci/
-        - packer/
-        - docker/
-        - tools/
-        - '*/*.md'
 
 #@overlay/match-child-defaults missing_ok=True
 jobs:
@@ -74,7 +72,14 @@ jobs:
               on_success: #@ pr_status(name, "pending")
             - #@overlay/match by=overlay.subset({"get": "version"})
               trigger: false
-      - #@overlay/match by=overlay.index(1)
+      #@overlay/match by=overlay.index(0)
+      #@overlay/insert after=True
+      - _: #@ template.replace(bash_task("is-source-change", [{"name":"source"}], [], is_source_from_pr_testable_bash_task()))
+        on_failure:
+          do:
+          #@overlay/append
+          - #@ pr_status(name, "success", "Non-code changes are not compiled.")
+      - #@overlay/match by=overlay.index(2)
         on_error:
           in_parallel:
             steps:
