@@ -150,7 +150,11 @@ TEST(RegisterKeysTest, RegisterAllWithConsistencyDisabled) {
     producer_region = setupProxyRegion(producer_cache);
   }
 
+  std::mutex cv_mutex;
+  std::condition_variable cv;
   auto listener = std::make_shared<CacheListenerMock>();
+  EXPECT_CALL(*listener, afterDestroy(_)).Times(1).WillOnce(CvNotifyOne(&cv));
+
   {
     auto poolFactory =
         listener_cache.getPoolManager().createFactory().setSubscriptionEnabled(
@@ -168,10 +172,6 @@ TEST(RegisterKeysTest, RegisterAllWithConsistencyDisabled) {
 
   producer_region->put("one", std::make_shared<CacheableInt16>(1));
   producer_region->destroy("one");
-
-  std::mutex cv_mutex;
-  std::condition_variable cv;
-  EXPECT_CALL(*listener, afterDestroy(_)).Times(1).WillOnce(CvNotifyOne(&cv));
 
   {
     std::unique_lock<std::mutex> lock(cv_mutex);
