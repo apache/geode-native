@@ -301,7 +301,6 @@ is_source_from_pr_testable() {
 
 exclude_dirs="ci packer docker tools"
 exclude_files="*/*.md"
-is_source_from_pr_testable "source" "${exclude_dirs} "${exclude_files}" && exit 0 || exit 1
-#is_source_from_pr_testable "source" "$(get_geode_pr_exclusion_dirs)" && exit 0 || exit 1
+is_source_from_pr_testable "source" "${exclude_dirs}" "${exclude_files}" && exit 0 || exit 1
 
 (@- end @)
