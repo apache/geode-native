@@ -63,11 +63,7 @@ class EventIdTSS {
   int64_t sequenceId_;
 };
 
-EventIdTSS::EventIdTSS() : threadId_(ThreadIdCounter::next()), sequenceId_(0) {
-  LOGDEBUG("EventIdTSS::EventIdTSS(%p): threadId_=%" PRId64
-           ", sequenceId_=%" PRId64,
-           this, threadId_, sequenceId_);
-}
+EventIdTSS::EventIdTSS() : threadId_(ThreadIdCounter::next()), sequenceId_(0) {}
 
 void EventId::toData(DataOutput& output) const {
   //  This method is always expected to write out nonstatic distributed
