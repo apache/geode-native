@@ -20,6 +20,7 @@ import sys
 import threading
 import traceback
 
+
 from modified_utf8 import utf8m_to_utf8s
 from numeric_conversion import to_hex_digit
 import command_line
