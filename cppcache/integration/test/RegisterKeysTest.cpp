@@ -48,6 +48,8 @@ using apache::geode::client::IllegalStateException;
 using apache::geode::client::Region;
 using apache::geode::client::RegionShortcut;
 using ::testing::_;
+using ::testing::DoAll;
+using ::testing::InvokeWithoutArgs;
 
 ACTION_P(CvNotifyOne, cv) { cv->notify_one(); }
 
@@ -151,9 +153,13 @@ TEST(RegisterKeysTest, RegisterAllWithConsistencyDisabled) {
   }
 
   std::mutex cv_mutex;
+  bool destroyed = false;
   std::condition_variable cv;
   auto listener = std::make_shared<CacheListenerMock>();
-  EXPECT_CALL(*listener, afterDestroy(_)).Times(1).WillOnce(CvNotifyOne(&cv));
+  EXPECT_CALL(*listener, afterDestroy(_))
+      .Times(1)
+      .WillOnce(DoAll(InvokeWithoutArgs([&destroyed] { destroyed = true; }),
+                      CvNotifyOne(&cv)));
 
   {
     auto poolFactory =
@@ -175,8 +181,8 @@ TEST(RegisterKeysTest, RegisterAllWithConsistencyDisabled) {
 
   {
     std::unique_lock<std::mutex> lock(cv_mutex);
-    EXPECT_EQ(cv.wait_for(lock, std::chrono::minutes(1)),
-              std::cv_status::no_timeout);
+    EXPECT_TRUE(cv.wait_for(lock, std::chrono::minutes(1),
+                            [&destroyed] { return destroyed; }));
   }
 }
 
