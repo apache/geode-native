@@ -30,8 +30,8 @@ Parameter                Description                         Default
 --pipeline               Name of pipeline to set.            Based on repository owner name and branch.
 --github-owner           GitHub owner for repository.        Current tracking branch repository owner.
 --github-repository      GitHub repository name.             Current tracking branch repository name.
---google-zone            Google Compute project.             Current default project.
---google-project         Google Compute zone.                Concourse worker's zone.
+--google-project         Google Compute project.             Current default project.
+--google-zone            Google Compute zone.                Concourse worker's zone.
 --google-storage-bucket  Google Compute Storage bucket.      Based on google-project value.
 --google-storage-key     Google Compute Storage key prefix.  Based on pipeline value.
 --fly                    Path to fly executable.             "fly"
