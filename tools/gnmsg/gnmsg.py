@@ -20,6 +20,7 @@ import sys
 import threading
 import traceback
 
+
 from modified_utf8 import utf8m_to_utf8s
 from numeric_conversion import to_hex_digit
 import command_line
@@ -64,6 +65,7 @@ def scan_file(filename, dump_handshake, dump_messages, thread_id):
     separator = ""
     client_decoder = ClientMessageDecoder(output_queue)
     server_decoder = ServerMessageDecoder(output_queue)
+    print("[")
     with open(filename, "rb") as f:
         for line in f:
             linestr = line.decode("utf-8")
@@ -97,6 +99,8 @@ def scan_file(filename, dump_handshake, dump_messages, thread_id):
                     separator = ","
         except queue.Empty:
             break
+
+    print("]")
 
 
 if __name__ == "__main__":

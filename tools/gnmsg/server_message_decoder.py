@@ -108,6 +108,7 @@ class ServerMessageDecoder(DecoderBase):
             parts.append(tid)
             parts.append(connection)
             parts.append(bytes)
+            self.threads_connections_[tid] = connection
             result = True
 
         return result
@@ -204,9 +205,12 @@ class ServerMessageDecoder(DecoderBase):
         )
         match = expression.search(line)
         if match:
+            tid = match.group(2)
+            connection = match.group(3)
+            self.threads_connections_[tid] = connection
             parts.append(parser.parse(match.group(1)))
-            parts.append(match.group(2))
-            parts.append(match.group(3))
+            parts.append(tid)
+            parts.append(connection)
             parts.append(match.group(4))
             parts.append(match.group(5))
             result = True
@@ -234,9 +238,12 @@ class ServerMessageDecoder(DecoderBase):
         )
         match = expression.search(line)
         if match:
+            tid = match.group(2)
+            connection = match.group(3)
+            self.threads_connections_[tid] = connection
             parts.append(parser.parse(match.group(1)))
-            parts.append(match.group(2))
-            parts.append(match.group(3))
+            parts.append(tid)
+            parts.append(connection)
             parts.append(match.group(4))
             parts.append(match.group(5))
             result = True
@@ -380,7 +387,7 @@ class ServerMessageDecoder(DecoderBase):
             size = 0
             tid = parts[1]
             (flags, size) = read_number_from_hex_string(parts[4], 2, len(parts[4]) - 2)
-            self.chunk_decoder.add_chunk_header(parts[2], flags)
+            self.chunk_decoder.add_chunk_header(parts[3], flags)
         elif self.get_chunk_bytes(line, parts):
             tid = parts[1]
             self.chunk_decoder.add_chunk(parts[3])
