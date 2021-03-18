@@ -52,6 +52,8 @@ using apache::geode::client::IllegalStateException;
 using apache::geode::client::Region;
 using apache::geode::client::RegionShortcut;
 using ::testing::_;
+using ::testing::DoAll;
+using ::testing::InvokeWithoutArgs;
 using ::testing::Return;
 
 ACTION_P(CvNotifyOne, cv) { cv->notify_one(); }
@@ -189,15 +191,6 @@ TEST(RegisterKeysTest, RegisterAllWithConsistencyDisabled) {
 }
 
 TEST(RegisterKeysTest, RegisterAnyAndClusterRestart) {
-  std::mutex mutex_create;
-  std::condition_variable cv_create;
-
-  std::mutex mutex_shutdown;
-  std::condition_variable cv_shutdown;
-
-  std::mutex mutex_live;
-  std::condition_variable cv_live;
-
   Cluster cluster{LocatorCount{1}, ServerCount{1}};
   cluster.start();
 
@@ -212,11 +205,19 @@ TEST(RegisterKeysTest, RegisterAnyAndClusterRestart) {
     poolFactory.create("default");
   }
 
+  std::mutex mutex_create;
+  std::condition_variable cv_create;
+
+  bool status = false;
+  std::mutex mutex_status;
+  std::condition_variable cv_status;
   auto listener = std::make_shared<CacheListenerMock>();
   EXPECT_CALL(*listener, afterRegionLive(_))
-      .WillRepeatedly(CvNotifyOne(&cv_live));
+      .WillRepeatedly(DoAll(InvokeWithoutArgs([&status] { status = true; }),
+                            CvNotifyOne(&cv_status)));
   EXPECT_CALL(*listener, afterRegionDisconnected(_))
-      .WillRepeatedly(CvNotifyOne(&cv_shutdown));
+      .WillRepeatedly(DoAll(InvokeWithoutArgs([&status] { status = false; }),
+                            CvNotifyOne(&cv_status)));
 
   auto region = cache.createRegionFactory(RegionShortcut::CACHING_PROXY)
                     .setPoolName("default")
@@ -256,8 +257,8 @@ TEST(RegisterKeysTest, RegisterAnyAndClusterRestart) {
   gfsh.shutdown().execute();
 
   {
-    std::unique_lock<std::mutex> lock(mutex_shutdown);
-    cv_shutdown.wait(lock);
+    std::unique_lock<std::mutex> lock(mutex_status);
+    cv_status.wait(lock, [&status] { return !status; });
   }
 
   for (auto& server : cluster.getServers()) {
@@ -265,8 +266,8 @@ TEST(RegisterKeysTest, RegisterAnyAndClusterRestart) {
   }
 
   {
-    std::unique_lock<std::mutex> lock(mutex_live);
-    cv_live.wait(lock);
+    std::unique_lock<std::mutex> lock(mutex_status);
+    cv_status.wait(lock, [&status] { return status; });
   }
 
   EXPECT_EQ(region->keys().size(), 0);
