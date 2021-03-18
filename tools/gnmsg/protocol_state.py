@@ -23,7 +23,10 @@ class ProtocolState:
         self.last_client_message_ = {}
 
     def get_last_client_message(self, thread_id):
-        return self.last_client_message_[thread_id]
+        result = ""
+        if thread_id in self.last_client_message_.keys():
+            result = self.last_client_message_[thread_id]
+        return result
 
     def set_last_client_message(self, thread_id, client_message):
         self.last_client_message_[thread_id] = client_message

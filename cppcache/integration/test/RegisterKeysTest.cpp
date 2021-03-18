@@ -132,9 +132,6 @@ TEST(RegisterKeysTest, RegisterAllWithCachingRegion) {
 }
 
 TEST(RegisterKeysTest, RegisterAllWithConsistencyDisabled) {
-  std::mutex cv_mutex;
-  std::condition_variable cv;
-
   Cluster cluster{LocatorCount{1}, ServerCount{1}};
 
   cluster.start();
@@ -158,6 +155,8 @@ TEST(RegisterKeysTest, RegisterAllWithConsistencyDisabled) {
     producer_region = setupProxyRegion(producer_cache);
   }
 
+  std::mutex cv_mutex;
+  std::condition_variable cv;
   auto listener = std::make_shared<CacheListenerMock>();
   EXPECT_CALL(*listener, afterCreate(_)).WillRepeatedly(Return());
   EXPECT_CALL(*listener, afterRegionLive(_)).WillRepeatedly(Return());
