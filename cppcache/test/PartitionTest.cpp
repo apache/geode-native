@@ -15,31 +15,14 @@
  * limitations under the License.
  */
 
-#pragma once
+#include <gtest/gtest.h>
 
-#ifndef GEODE_UTIL_EXCEPTION_H_
-#define GEODE_UTIL_EXCEPTION_H_
+#include <geode/Cache.hpp>
 
-#include <string>
+#include "FixedPartitionAttributesImpl.hpp"
 
-#include <geode/internal/geode_base.hpp>
+using apache::geode::client::FixedPartitionAttributesImpl;
 
-#include "../ErrType.hpp"
-
-namespace apache {
-namespace geode {
-namespace client {
-
-extern void GfErrTypeThrowException(const char* str, GfErrType err);
-
-inline void throwExceptionIfError(const char* str, GfErrType err) {
-  if (err != GF_NOERR) {
-    GfErrTypeThrowException(str, err);
-  }
+TEST(PartitionTest, createFixedPartitionAttributes) {
+  FixedPartitionAttributesImpl attributes;
 }
-
-}  // namespace client
-}  // namespace geode
-}  // namespace apache
-
-#endif  // GEODE_UTIL_EXCEPTION_H_
