@@ -26,9 +26,9 @@ namespace geode {
 namespace client {
 
 TcrPoolEndPoint::TcrPoolEndPoint(const std::string& name, CacheImpl* cache,
-                                 ACE_Semaphore& failoverSema,
-                                 ACE_Semaphore& cleanupSema,
-                                 ACE_Semaphore& redundancySema,
+                                 binary_semaphore& failoverSema,
+                                 binary_semaphore& cleanupSema,
+                                 binary_semaphore& redundancySema,
                                  ThinClientPoolDM* dm)
     : TcrEndpoint(name, cache, failoverSema, cleanupSema, redundancySema, dm),
       m_dm(dm) {}

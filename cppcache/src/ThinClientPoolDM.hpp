@@ -47,6 +47,7 @@
 #include "ThinClientStickyManager.hpp"
 #include "ThreadPool.hpp"
 #include "UserAttributes.hpp"
+#include "util/concurrent/binary_semaphore.hpp"
 
 namespace apache {
 namespace geode {
@@ -196,9 +197,9 @@ class ThinClientPoolDM
   PoolStats* m_stats;
   bool m_sticky;
   void netDown();
-  ACE_Semaphore m_updateLocatorListSema;
-  ACE_Semaphore m_pingSema;
-  ACE_Semaphore m_cliCallbackSema;
+  binary_semaphore update_locators_semaphore_;
+  binary_semaphore ping_semaphore_;
+  binary_semaphore cli_callback_semaphore_;
   volatile bool m_isDestroyed;
   volatile bool m_destroyPending;
   volatile bool m_destroyPendingHADM;
@@ -289,7 +290,7 @@ class ThinClientPoolDM
   unsigned m_server;
 
   // Manage Connection thread
-  ACE_Semaphore m_connSema;
+  binary_semaphore conn_semaphore_;
   std::unique_ptr<Task<ThinClientPoolDM>> m_connManageTask;
   std::unique_ptr<Task<ThinClientPoolDM>> m_pingTask;
   std::unique_ptr<Task<ThinClientPoolDM>> m_updateLocatorListTask;

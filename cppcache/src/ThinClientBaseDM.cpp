@@ -217,13 +217,23 @@ void ThinClientBaseDM::processChunks(std::atomic<bool>& isRunning) {
   TcrChunkedContext* chunk;
   LOGFINE("Starting chunk process thread for region %s",
           (m_region ? m_region->getFullPath().c_str() : "(null)"));
+
+  std::chrono::milliseconds wait_for_chunk{100};
+  chunk = m_chunks.getFor(wait_for_chunk);
+
   while (isRunning) {
-    chunk = m_chunks.getFor(std::chrono::microseconds(100000));
     if (chunk) {
       chunk->handleChunk(false);
       _GEODE_SAFE_DELETE(chunk);
     }
+
+    chunk = m_chunks.getFor(wait_for_chunk);
   }
+
+  if (chunk) {
+    _GEODE_SAFE_DELETE(chunk);
+  }
+
   LOGFINE("Ending chunk process thread for region %s",
           (m_region ? m_region->getFullPath().c_str() : "(null)"));
 }
