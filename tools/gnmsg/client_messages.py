@@ -17,20 +17,19 @@ import sys
 import json
 
 from read_values import (
-    read_number_from_hex_string,
-    read_byte_value,
-    read_number_from_hex_string,
-    read_short_value,
-    read_number_from_hex_string,
-    read_int_value,
-    read_long_value,
-    read_string_value,
-    read_jmutf8_string_value,
-    read_number_from_hex_string,
     call_reader_function,
-    read_cacheable,
     parse_key_or_value,
+    read_byte_value,
+    read_cacheable,
+    read_int_value,
+    read_jmutf8_string_value,
+    read_long_value,
+    read_short_value,
+    read_string_value,
+    read_unsigned_byte_value,
 )
+from read_parts import read_object_header, read_int_part
+from numeric_conversion import decimal_string_to_hex_string, int_to_hex_string
 
 CHARS_IN_MESSAGE_HEADER = 34
 
@@ -403,25 +402,46 @@ def read_key_set(properties, message_bytes, offset):
     (properties["Region"], offset) = parse_region_part(message_bytes, offset)
 
 
+def read_object_as_raw_bytes(message_bytes, offset):
+    raw_bytes_part, offset = read_object_header(message_bytes, offset)
+
+    bytes_string = ""
+    for i in range(raw_bytes_part["Size"]):
+        if i:
+            bytes_string += " "
+        byte_val, offset = call_reader_function(
+            message_bytes, offset, read_unsigned_byte_value
+        )
+        bytes_string += decimal_string_to_hex_string(str(byte_val))
+    raw_bytes_part["Bytes"] = bytes_string
+    return raw_bytes_part, offset
+
+
+def read_add_pdx_type_message(properties, message_bytes, offset):
+    properties["PdxType"], offset = read_object_as_raw_bytes(message_bytes, offset)
+    properties["TypeId"], offset = read_int_part(message_bytes, offset)
+
+
 client_message_parsers = {
-    "PUT": read_put_message,
-    "REQUEST": read_request_message,
+    "ADD_PDX_TYPE": read_add_pdx_type_message,
+    "CLOSECQ_MSG_TYPE": read_stopcq_or_closecq_msg_type_message,
     "CLOSE_CONNECTION": read_close_connection_message,
     "CONTAINS_KEY": read_contains_key_message,
     "DESTROY": read_destroy_message,
-    "GET_CLIENT_PARTITION_ATTRIBUTES": read_get_client_partition_attributes_message,
-    "GET_CLIENT_PR_METADATA": read_get_client_pr_metadata_message,
-    "QUERY": read_query_message,
-    "USER_CREDENTIAL_MESSAGE": read_user_credential_message,
     "EXECUTECQ_MSG_TYPE": read_executecq_msg_type_message,
     "EXECUTECQ_WITH_IR_MSG_TYPE": read_executecq_with_ir_msg_type_message,
-    "STOPCQ_MSG_TYPE": read_stopcq_or_closecq_msg_type_message,
-    "CLOSECQ_MSG_TYPE": read_stopcq_or_closecq_msg_type_message,
-    "GET_ALL_70": read_get_all_70_message,
-    "KEY_SET": read_key_set,
-    "GET_PDX_ID_FOR_TYPE": read_get_pdx_id_for_type_message,
-    "GET_FUNCTION_ATTRIBUTES": read_get_function_attributes_message,
     "EXECUTE_FUNCTION": read_execute_function_message,
+    "GET_ALL_70": read_get_all_70_message,
+    "GET_CLIENT_PARTITION_ATTRIBUTES": read_get_client_partition_attributes_message,
+    "GET_CLIENT_PR_METADATA": read_get_client_pr_metadata_message,
+    "GET_FUNCTION_ATTRIBUTES": read_get_function_attributes_message,
+    "GET_PDX_ID_FOR_TYPE": read_get_pdx_id_for_type_message,
+    "KEY_SET": read_key_set,
+    "PUT": read_put_message,
+    "QUERY": read_query_message,
+    "REQUEST": read_request_message,
+    "STOPCQ_MSG_TYPE": read_stopcq_or_closecq_msg_type_message,
+    "USER_CREDENTIAL_MESSAGE": read_user_credential_message,
 }
 
 
