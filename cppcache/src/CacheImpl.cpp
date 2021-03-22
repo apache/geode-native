@@ -871,10 +871,33 @@ void CacheImpl::setClientCrashTEST() {
   m_tcrConnectionManager->setClientCrashTEST();
 }
 
-void CacheImpl::setDisconnectionTest() { TcrEndpoint::setDisconnectionTest(); }
+int CacheImpl::getNumberOfTimeEndpointDisconnected(
+    const std::string& endpoint, const std::string& poolName) {
+  this->throwIfClosed();
+  const auto& pools = getPoolManager().getAll();
 
-const std::vector<std::string>& CacheImpl::getListOfDisconnectedEPs() {
-  return TcrEndpoint::getListOfDisconnectedEPs();
+  if (pools.empty()) {
+    return m_tcrConnectionManager->getNumberOfTimeEndpointDisconnected(
+        endpoint);
+  }
+
+  auto pool = std::static_pointer_cast<ThinClientPoolDM>(
+      getPoolManager().find(poolName));
+
+  if (pool == nullptr) {
+    throw IllegalStateException(
+        "Either pool not found or it has been destroyed");
+  }
+
+  auto& mutex = pool->m_endpointsLock;
+  std::lock_guard<decltype(mutex)> guard(mutex);
+  for (const auto& itr : pool->m_endpoints) {
+    auto ep = itr.second;
+    if (ep->name().find(endpoint) != std::string::npos) {
+      return ep->numberOfTimesFailed();
+    }
+  }
+  throw IllegalStateException("Endpoint not found");
 }
 
 }  // namespace client

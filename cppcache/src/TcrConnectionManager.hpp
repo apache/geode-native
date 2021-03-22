@@ -95,6 +95,8 @@ class TcrConnectionManager {
 
   bool getEndpointStatus(const std::string& endpoint);
 
+  int getNumberOfTimeEndpointDisconnected(const std::string& endpoint);
+
   bool isDurable() { return m_isDurable; }
   bool haEnabled() { return m_redundancyManager->m_HAenabled; }
   CacheImpl* getCacheImpl() const { return m_cache; }

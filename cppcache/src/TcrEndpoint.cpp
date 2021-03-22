@@ -37,8 +37,6 @@ namespace geode {
 namespace client {
 
 const char* TcrEndpoint::NC_Notification = "NC Notification";
-volatile bool TcrEndpoint::TEST_DISCONNECTIONS = false;
-std::vector<std::string> TcrEndpoint::listOfDisconnectedServers;
 
 TcrEndpoint::TcrEndpoint(const std::string& name, CacheImpl* cacheImpl,
                          binary_semaphore& failoverSema,
@@ -1175,10 +1173,6 @@ void TcrEndpoint::setConnectionStatus(bool status) {
       m_baseDM->decConnectedEndpoints();
       LOGFINE("Disconnected from endpoint %s", m_name.c_str());
       triggerRedundancyThread();
-      // Test hook
-      if (TcrEndpoint::TEST_DISCONNECTIONS) {
-        TcrEndpoint::listOfDisconnectedServers.push_back(m_name.c_str());
-      }
     }
   }
 }
@@ -1296,12 +1290,6 @@ void TcrEndpoint::closeFailedConnection(TcrConnection*& conn) {
 }
 
 void TcrEndpoint::handleNotificationStats(int64_t) {}
-
-void TcrEndpoint::setDisconnectionTest() { TEST_DISCONNECTIONS = true; }
-
-const std::vector<std::string>& TcrEndpoint::getListOfDisconnectedEPs() {
-  return listOfDisconnectedServers;
-}
 
 }  // namespace client
 }  // namespace geode

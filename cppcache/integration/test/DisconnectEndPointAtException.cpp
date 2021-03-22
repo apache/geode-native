@@ -43,7 +43,6 @@ using apache::geode::client::Region;
 using apache::geode::client::RegionShortcut;
 using apache::geode::client::TcrConnectionManager;
 using apache::geode::client::TcrEndpoint;
-using std::cout;
 
 std::shared_ptr<Cache> createCache() {
   auto cache = CacheFactory().create();
@@ -62,11 +61,17 @@ std::string addKeyPrefix(int key) {
   return std::to_string(key) + "|" + std::to_string(key);
 }
 
-void runClientOperations(std::shared_ptr<Cache> cache,
-                         std::shared_ptr<Region> region, int minEntryKey,
-                         int maxEntryKey, bool usingPartitionResolver) {
+void runOperationsUntilServerDisconnects(std::shared_ptr<Cache> cache,
+                                         std::shared_ptr<Region> region,
+                                         int minEntryKey, int maxEntryKey,
+                                         bool usingPartitionResolver,
+                                         std::string serverToDisconnect,
+                                         CacheImpl* cacheImpl,
+                                         std::string epShutDownHostname) {
   auto transactionManager = cache->getCacheTransactionManager();
-  auto end = std::chrono::system_clock::now() + std::chrono::minutes{2};
+
+  auto end = std::chrono::system_clock::now() + std::chrono::minutes(2);
+  bool isTimeoutUpdated = false;
   do {
     auto theKey = (rand() % (maxEntryKey - minEntryKey)) + minEntryKey;
     std::string theValue = "theValue";
@@ -83,22 +88,23 @@ void runClientOperations(std::shared_ptr<Cache> cache,
         transactionManager->rollback();
       }
     }
+
+    int isShutDown = cacheImpl->getNumberOfTimeEndpointDisconnected(
+        epShutDownHostname, "default");
+
+    // After server disconnects then send traffic for 15 more seconds
+    if (isShutDown != 0 && !isTimeoutUpdated) {
+      end = std::chrono::system_clock::now() + std::chrono::seconds(15);
+      isTimeoutUpdated = true;
+    }
   } while (std::chrono::system_clock::now() < end);
 }
 
 std::string getConcatHostName(ServerAddress address) {
   std::string hostname;
-  return hostname.append(address.address.c_str())
+  return hostname.append(address.address)
       .append(":")
       .append(std::to_string(address.port));
-}
-
-bool checkIfEpDisconnected(const std::string epHostname,
-                           std::vector<std::string> list) {
-  if (std::find(list.begin(), list.end(), epHostname) != list.end()) {
-    return true;
-  }
-  return false;
 }
 
 void executeTestCase(bool useSingleHopAndPR) {
@@ -106,7 +112,11 @@ void executeTestCase(bool useSingleHopAndPR) {
   int MAX_ENTRY_KEY = 1000000;
   auto keyRangeSize = (MAX_ENTRY_KEY / NUM_THREADS);
 
-  Cluster cluster{LocatorCount{1}, ServerCount{2}};
+  std::vector<uint16_t> serverPorts;
+  serverPorts.push_back(Framework::getAvailablePort());
+  serverPorts.push_back(Framework::getAvailablePort());
+
+  Cluster cluster{LocatorCount{1}, ServerCount{2}, serverPorts};
   cluster.start();
   auto region_cmd =
       cluster.getGfsh().create().region().withName("region").withType(
@@ -130,17 +140,19 @@ void executeTestCase(bool useSingleHopAndPR) {
   auto epRunning = cluster.getServers()[0].getAddress();
   auto epRunningHostname = getConcatHostName(epRunning);
 
-  // activate hook that will from now on register all servers
-  // that are disconnected from client
+  // Get address of server that will be shutdown
+  auto epShutDown = cluster.getServers()[1].getAddress();
+  auto epShutDownHostname = getConcatHostName(epShutDown);
+
   auto cacheImpl = CacheRegionHelper::getCacheImpl(cache.get());
-  CacheImpl::setDisconnectionTest();
 
   std::vector<std::thread> clientThreads;
   for (int i = 0; i < NUM_THREADS; i++) {
     auto minKey = (i * keyRangeSize);
     auto maxKey = minKey + keyRangeSize - 1;
-    std::thread th(runClientOperations, cache, region, minKey, maxKey,
-                   useSingleHopAndPR);
+    std::thread th(runOperationsUntilServerDisconnects, cache, region, minKey,
+                   maxKey, useSingleHopAndPR, epShutDownHostname, cacheImpl,
+                   epShutDownHostname);
     clientThreads.push_back(std::move(th));
   }
   // Shut down the server
@@ -151,11 +163,12 @@ void executeTestCase(bool useSingleHopAndPR) {
       th.join();
     }
   }
-
-  auto list = CacheImpl::getListOfDisconnectedEPs();
-
-  // Check that running server remain connected to client
-  ASSERT_FALSE(checkIfEpDisconnected(epRunningHostname, list));
+  ASSERT_EQ(cacheImpl->getNumberOfTimeEndpointDisconnected(epRunningHostname,
+                                                           "default"),
+            0);
+  ASSERT_EQ(cacheImpl->getNumberOfTimeEndpointDisconnected(epShutDownHostname,
+                                                           "default"),
+            1);
 }  // executeTestCase
 
 TEST(DisconnectEndPointAtException, useSingleHopAndPR) {
