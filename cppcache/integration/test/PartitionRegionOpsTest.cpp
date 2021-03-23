@@ -84,7 +84,7 @@ std::shared_ptr<Region> setupRegion(Cache& cache,
 int putEntries(Cache& cache, std::shared_ptr<Region> region, int numEntries) {
   CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(&cache);
 
-  int numPutsRequiringHop = 0;
+  auto numPutsRequiringHop = 0;
   for (int i = 0; i < numEntries; i++) {
     auto key = CacheableKey::create(i);
     auto value = Cacheable::create(std::to_string(i));
@@ -103,7 +103,7 @@ int putAllEntries(Cache& cache, std::shared_ptr<Region> region,
   CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(&cache);
 
   HashMapOfCacheable map;
-  int numPutAllsRequiringHop = 0;
+  auto numPutAllsRequiringHop = 0;
 
   for (int i = 0; i < numEntries; i++) {
     auto key = CacheableKey::create(i);
@@ -123,7 +123,7 @@ int putAllEntries(Cache& cache, std::shared_ptr<Region> region,
 int getEntries(Cache& cache, std::shared_ptr<Region> region, int numEntries) {
   CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(&cache);
 
-  int numGetsRequiringHop = 0;
+  auto numGetsRequiringHop = 0;
   for (int i = 0; i < numEntries; i++) {
     auto key = CacheableKey::create(i);
     auto value = region->get(key);
@@ -184,7 +184,7 @@ int putget(bool useSingleHop) {
   // Warmup to get metaData
   putEntries(cache, region, WARMUP_ENTRIES);
 
-  int numOpsRequiringHop = putEntries(cache, region, ENTRIES);
+  auto numOpsRequiringHop = putEntries(cache, region, ENTRIES);
   numOpsRequiringHop += getEntries(cache, region, ENTRIES);
 
   cluster.getServers()[1].stop();
@@ -215,7 +215,7 @@ int putAllgetAll(bool useSingleHop) {
   // Warmup to get metaData
   putAllEntries(cache, region, WARMUP_ENTRIES);
 
-  int numOpsRequiringHop = putAllEntries(cache, region, ENTRIES);
+  auto numOpsRequiringHop = putAllEntries(cache, region, ENTRIES);
   numOpsRequiringHop += getAllEntries(cache, region, ENTRIES);
 
   cluster.getServers()[1].stop();
@@ -236,8 +236,8 @@ int putAllgetAll(bool useSingleHop) {
  *
  */
 TEST(PartitionRegionWithRedundancyTest, putgetWithSingleHop) {
-  bool useSingleHop = true;
-  int numSingleHopsAfterWarmup = putget(useSingleHop);
+  auto useSingleHop = true;
+  auto numSingleHopsAfterWarmup = putget(useSingleHop);
   EXPECT_EQ(numSingleHopsAfterWarmup, 0);
 }
 
@@ -249,8 +249,8 @@ TEST(PartitionRegionWithRedundancyTest, putgetWithSingleHop) {
  *
  */
 TEST(PartitionRegionWithRedundancyTest, putAllgetAllWithSingleHop) {
-  bool useSingleHop = true;
-  int numSingleHopsAfterWarmup = putAllgetAll(useSingleHop);
+  auto useSingleHop = true;
+  auto numSingleHopsAfterWarmup = putAllgetAll(useSingleHop);
   EXPECT_EQ(numSingleHopsAfterWarmup, 0);
 }
 
@@ -262,8 +262,8 @@ TEST(PartitionRegionWithRedundancyTest, putAllgetAllWithSingleHop) {
  *
  */
 TEST(PartitionRegionWithRedundancyTest, putgetWithoutSingleHop) {
-  bool useSingleHop = false;
-  int numSingleHopsAfterWarmup = putget(useSingleHop);
+  auto useSingleHop = false;
+  auto numSingleHopsAfterWarmup = putget(useSingleHop);
 }
 
 /**
@@ -274,7 +274,7 @@ TEST(PartitionRegionWithRedundancyTest, putgetWithoutSingleHop) {
  *
  */
 TEST(PartitionRegionWithRedundancyTest, putAllgetAllWithoutSingleHop) {
-  bool useSingleHop = false;
+  auto useSingleHop = false;
   putAllgetAll(useSingleHop);
 }
 
