@@ -38,7 +38,7 @@ static bool isLocalServer = false;
 static bool isLocator = false;
 static int numberOfLocators = 1;
 const char *endPoints = nullptr;
-const char *locatorsG =
+const std::string locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 
 #include "LocatorHelper.hpp"
@@ -47,7 +47,7 @@ int testXmlDeclarativeCacheCreation() {
   auto cacheFactory = CacheFactory();
   std::shared_ptr<Cache> cptr;
 
-  std::string directory(ACE_OS::getenv("TESTSRC"));
+  std::string directory(std::getenv("TESTSRC"));
 
   std::cout
       << "create DistributedSytem with name=XML_DECLARATIVE_CACHE_CREATION_TEST"
@@ -122,9 +122,8 @@ int testSetCacheXmlThenGetRegion() {
       << std::endl;
 
   try {
-    std::string filePath = "valid_cache_pool.xml";
-    std::string duplicateFile;
-    CacheHelper::createDuplicateXMLFile(duplicateFile, filePath);
+    auto duplicateFile =
+        CacheHelper::createDuplicateXMLFile("valid_cache_pool.xml");
 
     cptr = std::make_shared<Cache>(
         cacheFactory.set("enable-time-statistics", "false")

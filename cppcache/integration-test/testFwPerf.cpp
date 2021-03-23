@@ -30,7 +30,7 @@ class LocalPutTask : public perf::Thread {
   }
 
   void perftask() override {
-    ACE_OS::sleep(1);
+    std::this_thread::sleep_for(std::chrono::seconds(1));
     fprintf(stdout, "perffunc done.\n");
     fflush(stdout);
   }

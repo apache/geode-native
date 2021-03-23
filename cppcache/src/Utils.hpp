@@ -59,6 +59,8 @@ class APACHE_GEODE_EXPORT Utils {
    */
   static std::string getEnv(const char* varName);
 
+  static std::error_code getLastError();
+
 #ifdef __GNUC__
   inline static char* _gnuDemangledName(const char* typeIdName, size_t& len) {
     int status;
@@ -155,6 +157,8 @@ class APACHE_GEODE_EXPORT Utils {
                                   uint16_t& port);
 
   static std::string convertHostToCanonicalForm(const char* endpoints);
+
+  static std::string getSystemInfo();
 
   static char* copyString(const char* str);
 

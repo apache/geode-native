@@ -98,7 +98,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, SetupClient)
   {
     // Create a Geode Cache with the "client_Loader.xml" Cache XML file.
     const char* clientXmlFile = "client_Loader.xml";
-    static char* path = ACE_OS::getenv("TESTSRC");
+    static char* path = std::getenv("TESTSRC");
     std::string clientXml = path;
     clientXml += "/resources/";
     clientXml += clientXmlFile;

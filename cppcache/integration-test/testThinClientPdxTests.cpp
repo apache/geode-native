@@ -107,7 +107,7 @@ bool isLocator = false;
 bool isLocalServer = false;
 
 const char *poolNames[] = {"Pool1", "Pool2", "Pool3"};
-const char *locHostPort =
+const std::string locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 bool isPoolConfig = false;  // To track if pool case is running
 // const char * qRegionNames[] = { "Portfolios", "Positions", "Portfolios2",

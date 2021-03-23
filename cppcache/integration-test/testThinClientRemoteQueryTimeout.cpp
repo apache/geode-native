@@ -56,7 +56,7 @@ using apache::geode::client::TimeoutException;
 bool isLocalServer = false;
 bool isLocator = false;
 const char *poolNames[] = {"Pool1", "Pool2", "Pool3"};
-const char *locHostPort =
+const std::string locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
 const char *qRegionNames[] = {"Portfolios", "Positions", "Portfolios2",
@@ -83,7 +83,7 @@ void stepOne() {
     // ignore exception
   }
   isPoolConfig = true;
-  createPool(poolNames[0], locHostPort, nullptr, 0, true);
+  createPool(poolNames[0], locHostPort, {}, 0, true);
   createRegionAndAttachPool(qRegionNames[0], USE_ACK, poolNames[0]);
 
   auto regptr = getHelper()->getRegion(qRegionNames[0]);
@@ -172,9 +172,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
       results = qry->execute(std::chrono::seconds(3));
 
       LOG("EXECUTE 1 STOP");
+      std::string logmsg = "Result size is " + std::to_string(results->size());
 
-      char logmsg[50] = {0};
-      ACE_OS::sprintf(logmsg, "Result size is %zd", results->size());
       LOG(logmsg);
 
       LOG("Didnt get expected timeout exception for first execute");
@@ -216,8 +215,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
 
       LOG("EXECUTE 2 STOP");
 
-      char logmsg[50] = {0};
-      ACE_OS::sprintf(logmsg, "Result size is %zd", results->size());
+      std::string logmsg = "Result size is " + std::to_string(results->size());
       LOG(logmsg);
     } catch (Exception &excp) {
       std::string failmsg = "";
@@ -254,11 +252,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
       results = qry->execute(std::chrono::seconds(2));
 
       LOG("EXECUTE 3 STOP");
+      std::string logmsg = "Result size is " + std::to_string(results->size());
 
-      char logmsg[50] = {0};
-      ACE_OS::sprintf(logmsg, "Result size is %zd", results->size());
       LOG(logmsg);
-
       LOG("Didnt get expected timeout exception for third execute");
       FAIL("Didnt get expected timeout exception for third execute");
     } catch (const TimeoutException &excp) {
@@ -267,7 +263,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
       logmsg += excp.getName();
       logmsg += ": ";
       logmsg += excp.what();
-      LOG(logmsg.c_str());
+      LOG(logmsg);
     }
 
     SLEEP(40000);  // sleep to allow server query to complete
@@ -297,9 +293,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
       results = qry->execute(std::chrono::seconds(850));
 
       LOG("EXECUTE 4 STOP");
+      std::string logmsg = "Result size is " + std::to_string(results->size());
 
-      char logmsg[50] = {0};
-      ACE_OS::sprintf(logmsg, "Result size is %zd", results->size());
       LOG(logmsg);
     } catch (Exception &excp) {
       std::string failmsg = "";
@@ -345,9 +340,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSeven)
       results = qry->execute(paramList, std::chrono::seconds(1));
 
       LOG("EXECUTE Five STOP");
+      std::string logmsg = "Result size is " + std::to_string(results->size());
 
-      char logmsg[50] = {0};
-      ACE_OS::sprintf(logmsg, "Result size is %zd", results->size());
       LOG(logmsg);
 
       LOG("Didnt get expected timeout exception for fifth execute");
@@ -398,9 +392,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight)
       results = qry->execute(paramList, std::chrono::seconds(850));
 
       LOG("EXECUTE 6 STOP");
+      std::string logmsg = "Result size is " + std::to_string(results->size());
 
-      char logmsg[50] = {0};
-      ACE_OS::sprintf(logmsg, "Result size is %zd", results->size());
       LOG(logmsg);
     } catch (Exception &excp) {
       std::string failmsg = "";
@@ -437,9 +430,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, verifyNegativeValueTimeout)
       results = qry->execute(std::chrono::seconds(-3));
 
       LOG("Task::verifyNegativeValueTimeout - EXECUTE 1 STOP");
+      std::string logmsg = "Result size is " + std::to_string(results->size());
 
-      char logmsg[50] = {0};
-      ACE_OS::sprintf(logmsg, "Result size is %zd", results->size());
       LOG(logmsg);
 
       LOG("Didnt get expected timeout exception for first execute");
@@ -482,9 +474,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, verifyLargeValueTimeout)
       results = qry->execute(std::chrono::seconds(2147500));
 
       LOG("Task:: verifyLargeValueTimeout - EXECUTE 1 STOP");
+      std::string logmsg = "Result size is " + std::to_string(results->size());
 
-      char logmsg[50] = {0};
-      ACE_OS::sprintf(logmsg, "Result size is %zd", results->size());
       LOG(logmsg);
 
       LOG("Didnt get expected timeout exception for first execute");

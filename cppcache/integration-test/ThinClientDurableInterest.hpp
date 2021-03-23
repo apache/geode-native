@@ -214,7 +214,7 @@ void feederUpdate1(int value) {
 
 DUNIT_TASK_DEFINITION(FEEDER, FeederInit)
   {
-    initClientWithPool(true, "__TEST_POOL1__", locatorsG, nullptr, nullptr, 0,
+    initClientWithPool(true, "__TEST_POOL1__", locatorsG, {}, nullptr, 0,
                        true);
     getHelper()->createPooledRegion(regionNames[0], USE_ACK, locatorsG,
                                     "__TEST_POOL1__", true, true);

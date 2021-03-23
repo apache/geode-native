@@ -22,7 +22,7 @@ using apache::geode::client::NoAvailableLocatorsException;
 bool isLocalServer = false;
 bool isLocator = false;
 
-const char *locatorsG =
+const std::string locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 3);
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
@@ -41,7 +41,7 @@ END_TASK(CreateLocator_All)
 DUNIT_TASK(SERVERS, CreateServer1_All)
   {
     // starting servers
-    if (isLocalServer) CacheHelper::initServer(1, nullptr, locatorsG);
+    if (isLocalServer) CacheHelper::initServer(1, {}, locatorsG);
     LOG("Server One started");
   }
 END_TASK(CreateServer1_All)
@@ -82,7 +82,7 @@ END_TASK(ConnectC2_All)
 DUNIT_TASK(SERVERS, CreateServer2_All)
   {
     if (isLocalServer) {
-      CacheHelper::initServer(2, nullptr, locatorsG);
+      CacheHelper::initServer(2, {}, locatorsG);
       LOG("Server 2 started");
     }
   }
@@ -135,7 +135,7 @@ END_TASK(SwapLocators)
 DUNIT_TASK(SERVERS, Re_CreateServer1_All)
   {
     if (isLocalServer) {
-      CacheHelper::initServer(1, nullptr, locatorsG);
+      CacheHelper::initServer(1, {}, locatorsG);
       LOG("Server 1 started");
       SLEEP(30000);
     }
@@ -199,7 +199,7 @@ END_TASK(Re_Close1_All_All)
 DUNIT_TASK(SERVERS, StartServer2_All)
   {
     if (isLocalServer) {
-      CacheHelper::initServer(2, nullptr, nullptr);
+      CacheHelper::initServer(2);
       LOG("SERVER2 Started");
       SLEEP(30000);
     }

@@ -52,7 +52,7 @@ using apache::geode::client::HashMapOfCacheable;
 bool isLocalServer = false;
 
 static bool isLocator = false;
-const char *locatorsG =
+const std::string locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
 DUNIT_TASK_DEFINITION(SERVER1, CreateServer1)
@@ -193,12 +193,18 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask)
           valMap.emplace(keyPtr, valPtr);
         }
         LOGINFO("TEST-1");
-        ACE_Time_Value startTime = ACE_OS::gettimeofday();
+        auto startTime = std::chrono::steady_clock::now();
         dataReg->putAll(valMap);
-        ACE_Time_Value interval = ACE_OS::gettimeofday() - startTime;
+        auto interval = std::chrono::steady_clock::now() - startTime;
+        auto interval_sec =
+            std::chrono::duration_cast<std::chrono::seconds>(interval).count();
+        auto interval_usec =
+            std::chrono::duration_cast<std::chrono::microseconds>(interval)
+                .count() %
+            1000;
 
         LOGINFO("Time taken to execute putAll SH sec = %d and MSec = %d ",
-                interval.sec(), interval.usec());
+                interval_sec, interval_usec);
         bool networkhop = TestUtils::getCacheImpl(getHelper()->cachePtr)
                               ->getAndResetNetworkHopFlag();
         LOGINFO("CheckPrSingleHopForIntKeysTask2: putALL OP :: networkhop %d ",
@@ -250,12 +256,18 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopRemoveAllForIntKeysTask)
           keysVector.push_back(keyPtr);
         }
         LOGINFO("TEST-1");
-        ACE_Time_Value startTime = ACE_OS::gettimeofday();
+        auto startTime = std::chrono::steady_clock::now();
         dataReg->putAll(valMap);
-        ACE_Time_Value interval = ACE_OS::gettimeofday() - startTime;
+        auto interval = std::chrono::steady_clock::now() - startTime;
+        auto interval_sec =
+            std::chrono::duration_cast<std::chrono::seconds>(interval).count();
+        auto interval_usec =
+            std::chrono::duration_cast<std::chrono::microseconds>(interval)
+                .count() %
+            1000;
 
         LOGINFO("Time taken to execute putAll SH sec = %d and MSec = %d ",
-                interval.sec(), interval.usec());
+                interval_sec, interval_usec);
         bool networkhop = TestUtils::getCacheImpl(getHelper()->cachePtr)
                               ->getAndResetNetworkHopFlag();
         LOGINFO("CheckPrSingleHopForIntKeysTask2: putALL OP :: networkhop %d ",
@@ -263,12 +275,18 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopRemoveAllForIntKeysTask)
         ASSERT(networkhop == false, "PutAll : Should not cause network hop");
 
         LOGINFO("RemoveALL test");
-        startTime = ACE_OS::gettimeofday();
+        startTime = std::chrono::steady_clock::now();
         dataReg->removeAll(keysVector);
-        interval = ACE_OS::gettimeofday() - startTime;
+        interval = std::chrono::steady_clock::now() - startTime;
+        interval_sec =
+            std::chrono::duration_cast<std::chrono::seconds>(interval).count();
+        interval_usec =
+            std::chrono::duration_cast<std::chrono::microseconds>(interval)
+                .count() %
+            1000;
 
         LOGINFO("Time taken to execute removeAll SH sec = %d and MSec = %d ",
-                interval.sec(), interval.usec());
+                interval_sec, interval_usec);
         networkhop = TestUtils::getCacheImpl(getHelper()->cachePtr)
                          ->getAndResetNetworkHopFlag();
         LOGINFO(

@@ -39,7 +39,7 @@ CacheHelper *cacheHelper = nullptr;
 bool isLocalServer = false;
 
 static bool isLocator = false;
-const char *locatorsG =
+const std::string locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 #include "LocatorHelper.hpp"
 static int clientWithRedundancy = 0;

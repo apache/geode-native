@@ -32,7 +32,7 @@ static bool isLocalServer = true;
 static int numberOfLocators = 1;
 static bool isRegionLive[4] = {false, false, false, false};
 static bool isRegionDead[4] = {false, false, false, false};
-const char *locatorsG =
+const std::string locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 
 class DisconnectCacheListioner : public CacheListener {

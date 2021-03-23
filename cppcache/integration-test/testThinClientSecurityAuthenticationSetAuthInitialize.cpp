@@ -29,14 +29,14 @@ using apache::geode::client::AuthInitialize;
 using apache::geode::client::Cacheable;
 using apache::geode::client::testframework::security::CredentialGenerator;
 
-const char *locHostPort =
+const std::string locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 const char *regionNamesAuth[] = {"DistRegionAck", "DistRegionNoAck"};
 std::shared_ptr<CredentialGenerator> credentialGeneratorHandler;
 
 std::string getXmlPath() {
   char xmlPath[1000] = {'\0'};
-  const char *path = ACE_OS::getenv("TESTSRC");
+  const char *path = std::getenv("TESTSRC");
   ASSERT(path != NULL,
          "Environment variable TESTSRC for test source directory is not set.");
   strncpy(xmlPath, path, strlen(path) - strlen("cppcache"));
@@ -120,7 +120,7 @@ DUNIT_TASK_DEFINITION(LOCATORSERVER, CreateServer1)
         printf("Input to server cmd is -->  %s",
                cmdServerAuthenticator.c_str());
         CacheHelper::initServer(
-            1, nullptr, locHostPort,
+            1, {}, locHostPort,
             const_cast<char *>(cmdServerAuthenticator.c_str()));
         LOG("Server1 started");
       }
