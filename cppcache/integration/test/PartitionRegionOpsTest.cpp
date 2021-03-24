@@ -263,7 +263,7 @@ TEST(PartitionRegionWithRedundancyTest, putAllgetAllWithSingleHop) {
  */
 TEST(PartitionRegionWithRedundancyTest, putgetWithoutSingleHop) {
   auto useSingleHop = false;
-  auto numSingleHopsAfterWarmup = putget(useSingleHop);
+  putget(useSingleHop);
 }
 
 /**
