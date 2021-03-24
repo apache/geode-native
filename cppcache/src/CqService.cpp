@@ -38,7 +38,7 @@ CqService::CqService(ThinClientBaseDM* tccdm,
                      StatisticsFactory* statisticsFactory)
     : m_tccdm(tccdm),
       m_statisticsFactory(statisticsFactory),
-      m_notificationSema(1),
+      notification_semaphore_{1},
       m_stats(std::make_shared<CqServiceVsdStats>(m_statisticsFactory)) {
   assert(nullptr != m_tccdm);
 
@@ -78,9 +78,9 @@ void CqService::updateStats() {
 
 bool CqService::checkAndAcquireLock() {
   if (m_running) {
-    m_notificationSema.acquire();
+    notification_semaphore_.acquire();
     if (m_running == false) {
-      m_notificationSema.release();
+      notification_semaphore_.release();
       return false;
     }
     return true;
@@ -343,9 +343,9 @@ std::shared_ptr<CqServiceStatistics> CqService::getCqServiceStatistics() {
 void CqService::closeCqService() {
   if (m_running) {
     m_running = false;
-    m_notificationSema.acquire();
+    notification_semaphore_.acquire();
     cleanup();
-    m_notificationSema.release();
+    notification_semaphore_.release();
   }
 }
 void CqService::closeAllCqs() {
@@ -385,7 +385,7 @@ void CqService::receiveNotification(TcrMessage* msg) {
   invokeCqListeners(msg->getCqs(), msg->getMessageTypeForCq(), msg->getKey(),
                     msg->getValue(), msg->getDeltaBytes(), msg->getEventId());
   _GEODE_SAFE_DELETE(msg);
-  m_notificationSema.release();
+  notification_semaphore_.release();
 }
 
 /**
