@@ -91,7 +91,7 @@
   <region name="DistRegionNoAck">
    
   
-    <region-attributes scope="distributed-no-ack" data-policy="replicate"/>
+    <region-attributes scope="distributed-ack" data-policy="replicate"/>
      <!-- making entries -->
                     <entry>
                     <key><string>port1-1</string></key>
@@ -148,7 +148,7 @@
                     </value>
                </entry>
     <region name="AuthSubregion">
-      <region-attributes scope="distributed-no-ack" data-policy="replicate"/>
+      <region-attributes scope="distributed-ack" data-policy="replicate"/>
     </region>
   </region>
 </cache> 

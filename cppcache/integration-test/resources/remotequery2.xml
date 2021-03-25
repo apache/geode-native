@@ -106,6 +106,6 @@
 		<region-attributes scope="distributed-ack" data-policy="replicate"/>
 	</region>
 	<region name="DistRegionNoAck">
-		<region-attributes   scope="distributed-no-ack" data-policy="replicate"/>
+		<region-attributes   scope="distributed-ack" data-policy="replicate"/>
 	</region>
 </cache> 
