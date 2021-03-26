@@ -23,28 +23,28 @@ namespace apache {
 namespace geode {
 namespace client {
 
-TryReadGuard::TryReadGuard(ACE_RW_Thread_Mutex& lock,
-                           const volatile bool& exitCondition)
-    : lock_(lock), isAcquired_(false) {
+TryReadGuard::TryReadGuard(boost::shared_mutex& mutex,
+                           const volatile bool& exit_cond)
+    : mutex_{mutex}, locked_{false} {
   do {
-    if (lock_.tryacquire_read() != -1) {
-      isAcquired_ = true;
+    if (mutex_.try_lock_shared()) {
+      locked_ = true;
       break;
     }
     std::this_thread::yield();
-  } while (!exitCondition);
+  } while (!exit_cond);
 }
 
-TryWriteGuard::TryWriteGuard(ACE_RW_Thread_Mutex& lock,
-                             const volatile bool& exitCondition)
-    : lock_(lock), isAcquired_(false) {
+TryWriteGuard::TryWriteGuard(boost::shared_mutex& mutex,
+                             const volatile bool& exit_cond)
+    : mutex_{mutex}, locked_{false} {
   do {
-    if (lock_.tryacquire_write() != -1) {
-      isAcquired_ = true;
+    if (mutex_.try_lock()) {
+      locked_ = true;
       break;
     }
     std::this_thread::yield();
-  } while (!exitCondition);
+  } while (!exit_cond);
 }
 
 }  // namespace client

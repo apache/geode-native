@@ -17,6 +17,8 @@
 
 #include "PdxTypeRegistry.hpp"
 
+#include <boost/thread/lock_types.hpp>
+
 #include <geode/PoolManager.hpp>
 
 #include "CacheImpl.hpp"
@@ -66,7 +68,7 @@ int32_t PdxTypeRegistry::getPDXIdForType(std::shared_ptr<PdxType> nType,
                                          Pool* pool) {
   int32_t typeId = 0;
   {
-    ReadGuard read(g_readerWriterLock_);
+    boost::shared_lock<decltype(types_mutex_)> guard{types_mutex_};
     auto&& iter = pdxTypeToTypeIdMap_.find(nType);
     if (iter != pdxTypeToTypeIdMap_.end()) {
       typeId = iter->second;
@@ -77,7 +79,7 @@ int32_t PdxTypeRegistry::getPDXIdForType(std::shared_ptr<PdxType> nType,
   }
 
   {
-    WriteGuard write(g_readerWriterLock_);
+    boost::unique_lock<decltype(types_mutex_)> guard{types_mutex_};
     auto&& iter = pdxTypeToTypeIdMap_.find(nType);
     if (iter != pdxTypeToTypeIdMap_.end()) {
       typeId = iter->second;
@@ -96,7 +98,7 @@ int32_t PdxTypeRegistry::getPDXIdForType(std::shared_ptr<PdxType> nType,
 
 void PdxTypeRegistry::clear() {
   {
-    WriteGuard guard(g_readerWriterLock_);
+    boost::unique_lock<decltype(types_mutex_)> guard{types_mutex_};
     typeIdToPdxType_.clear();
 
     remoteTypeIdToMergedPdxType_.clear();
@@ -110,19 +112,20 @@ void PdxTypeRegistry::clear() {
     pdxTypeToTypeIdMap_.clear();
   }
   {
-    WriteGuard guard(getPreservedDataLock());
+    boost::unique_lock<decltype(preserved_data_mutex_)> guard{
+        preserved_data_mutex_};
     preserveData_.clear();
   }
 }
 
 void PdxTypeRegistry::addPdxType(int32_t typeId,
                                  std::shared_ptr<PdxType> pdxType) {
-  WriteGuard guard(g_readerWriterLock_);
+  boost::unique_lock<decltype(types_mutex_)> guard{types_mutex_};
   typeIdToPdxType_.emplace(typeId, pdxType);
 }
 
 std::shared_ptr<PdxType> PdxTypeRegistry::getPdxType(int32_t typeId) const {
-  ReadGuard guard(g_readerWriterLock_);
+  boost::shared_lock<decltype(types_mutex_)> guard{types_mutex_};
   auto&& iter = typeIdToPdxType_.find(typeId);
   if (iter != typeIdToPdxType_.end()) {
     return iter->second;
@@ -132,13 +135,13 @@ std::shared_ptr<PdxType> PdxTypeRegistry::getPdxType(int32_t typeId) const {
 
 void PdxTypeRegistry::addLocalPdxType(const std::string& localType,
                                       std::shared_ptr<PdxType> pdxType) {
-  WriteGuard guard(g_readerWriterLock_);
+  boost::unique_lock<decltype(types_mutex_)> guard{types_mutex_};
   localTypeToPdxType_.emplace(localType, pdxType);
 }
 
 std::shared_ptr<PdxType> PdxTypeRegistry::getLocalPdxType(
     const std::string& localType) const {
-  ReadGuard guard(g_readerWriterLock_);
+  boost::shared_lock<decltype(types_mutex_)> guard{types_mutex_};
   auto&& it = localTypeToPdxType_.find(localType);
   if (it != localTypeToPdxType_.end()) {
     return it->second;
@@ -148,7 +151,7 @@ std::shared_ptr<PdxType> PdxTypeRegistry::getLocalPdxType(
 
 void PdxTypeRegistry::setMergedType(int32_t remoteTypeId,
                                     std::shared_ptr<PdxType> mergedType) {
-  WriteGuard guard(g_readerWriterLock_);
+  boost::unique_lock<decltype(types_mutex_)> guard{types_mutex_};
   remoteTypeIdToMergedPdxType_.emplace(remoteTypeId, mergedType);
 }
 
@@ -165,7 +168,8 @@ void PdxTypeRegistry::setPreserveData(
     std::shared_ptr<PdxSerializable> obj,
     std::shared_ptr<PdxRemotePreservedData> pData,
     ExpiryTaskManager& expiryTaskManager) {
-  WriteGuard guard(getPreservedDataLock());
+  boost::unique_lock<decltype(preserved_data_mutex_)> guard{
+      preserved_data_mutex_};
   pData->setOwner(obj);
   if (preserveData_.find(obj) != preserveData_.end()) {
     // reset expiry task
@@ -191,9 +195,10 @@ void PdxTypeRegistry::setPreserveData(
       "PdxTypeRegistry::setPreserveData Successfully inserted new entry in "
       "preservedData");
 }
+
 std::shared_ptr<PdxRemotePreservedData> PdxTypeRegistry::getPreserveData(
     std::shared_ptr<PdxSerializable> pdxobj) const {
-  ReadGuard guard(getPreservedDataLock());
+  boost::shared_lock<decltype(types_mutex_)> guard{types_mutex_};
   const auto& iter = preserveData_.find((pdxobj));
   if (iter != preserveData_.end()) {
     return iter->second;
@@ -211,7 +216,7 @@ int32_t PdxTypeRegistry::getEnumValue(std::shared_ptr<EnumInfo> ei) {
     return val->value();
   }
 
-  WriteGuard guard(g_readerWriterLock_);
+  boost::unique_lock<decltype(types_mutex_)> guard{types_mutex_};
   tmp = enumToInt_;
   const auto& entry2 = tmp->find(ei);
   if (entry2 != tmp->end()) {
@@ -244,7 +249,7 @@ std::shared_ptr<EnumInfo> PdxTypeRegistry::getEnum(int32_t enumVal) {
     }
   }
 
-  WriteGuard guard(g_readerWriterLock_);
+  boost::unique_lock<decltype(types_mutex_)> guard{types_mutex_};
   tmp = intToEnum_;
   {
     auto&& entry = tmp->find(enumValPtr);

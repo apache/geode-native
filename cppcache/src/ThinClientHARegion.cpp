@@ -80,7 +80,7 @@ void ThinClientHARegion::releaseGlobals(bool isFailover) {
 }
 
 void ThinClientHARegion::handleMarker() {
-  TryReadGuard guard(m_rwLock, m_destroyPending);
+  TryReadGuard guard(mutex_, m_destroyPending);
   if (m_destroyPending) {
     return;
   }

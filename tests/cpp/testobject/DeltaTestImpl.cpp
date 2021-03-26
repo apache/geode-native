@@ -80,11 +80,10 @@ void DeltaTestImpl::toData(DataOutput& output) const {
 
 void DeltaTestImpl::toDelta(DataOutput& output) const {
   {
-    ACE_Recursive_Thread_Mutex* lock =
-        const_cast<ACE_Recursive_Thread_Mutex*>(&m_lock);
-    ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(*lock);
+    std::lock_guard<decltype(mutex_)> guard{mutex_};
     toDeltaCounter++;
   }
+
   output.write(deltaBits);
   if ((deltaBits & INT_MASK) == INT_MASK) {
     output.writeInt(intVar);
@@ -105,7 +104,7 @@ void DeltaTestImpl::toDelta(DataOutput& output) const {
 
 void DeltaTestImpl::fromDelta(DataInput& input) {
   {
-    ACE_Guard<ACE_Recursive_Thread_Mutex> _guard(m_lock);
+    std::lock_guard<decltype(mutex_)> guard{mutex_};
     fromDeltaCounter++;
   }
 

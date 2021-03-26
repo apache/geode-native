@@ -23,6 +23,8 @@
 #include <map>
 #include <unordered_map>
 
+#include <boost/thread/shared_mutex.hpp>
+
 #include <geode/Cache.hpp>
 #include <geode/PdxSerializable.hpp>
 #include <geode/internal/functional.hpp>
@@ -32,7 +34,6 @@
 #include "PdxRemotePreservedData.hpp"
 #include "PdxType.hpp"
 #include "PreservedDataExpiryHandler.hpp"
-#include "ReadWriteLock.hpp"
 
 namespace apache {
 namespace geode {
@@ -67,9 +68,9 @@ class APACHE_GEODE_EXPORT PdxTypeRegistry
   // TODO:: preserveData need to be of type WeakHashMap
   PreservedHashMap preserveData_;
 
-  mutable ACE_RW_Thread_Mutex g_readerWriterLock_;
+  mutable boost::shared_mutex types_mutex_;
 
-  mutable ACE_RW_Thread_Mutex g_preservedDataLock_;
+  mutable boost::shared_mutex preserved_data_mutex_;
 
   bool pdxIgnoreUnreadFields_;
 
@@ -132,8 +133,8 @@ class APACHE_GEODE_EXPORT PdxTypeRegistry
 
   int32_t getPDXIdForType(std::shared_ptr<PdxType> nType, Pool* pool);
 
-  ACE_RW_Thread_Mutex& getPreservedDataLock() const {
-    return g_preservedDataLock_;
+  boost::shared_mutex& getPreservedDataMutex() const {
+    return preserved_data_mutex_;
   }
 };
 

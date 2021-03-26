@@ -113,7 +113,7 @@ GfErrType AdminRegion::putNoThrow(const std::shared_ptr<CacheableKey>& keyPtr,
 }
 
 void AdminRegion::close() {
-  TryWriteGuard _guard(m_rwLock, m_destroyPending);
+  TryWriteGuard _guard(mutex_, m_destroyPending);
   if (m_destroyPending) {
     return;
   }
@@ -135,7 +135,7 @@ AdminRegion::~AdminRegion() {
 }
 
 const bool& AdminRegion::isDestroyed() { return m_destroyPending; }
-ACE_RW_Thread_Mutex& AdminRegion::getRWLock() { return m_rwLock; }
+boost::shared_mutex& AdminRegion::getMutex() { return mutex_; }
 
 }  // namespace client
 }  // namespace geode

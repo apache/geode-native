@@ -1145,25 +1145,23 @@ int Thread::svc() {
   return res;
 }
 
-Semaphore::Semaphore(int count) : m_mutex(), m_cond(m_mutex), m_count(count) {}
+Semaphore::Semaphore(int count) : m_count{count} {}
 
 Semaphore::~Semaphore() {}
 
 void Semaphore::acquire(int t) {
-  ACE_Guard<ACE_Thread_Mutex> _guard(m_mutex);
+  std::unique_lock<decltype(mutex_)> guard{mutex_};
 
-  while (m_count < t) {
-    m_cond.wait();
-  }
+  cv_.wait(guard, [this, t] { return m_count >= t; });
   m_count -= t;
 }
 
 void Semaphore::release(int t) {
-  ACE_Guard<ACE_Thread_Mutex> _guard(m_mutex);
+  std::lock_guard<decltype(mutex_)> guard{mutex_};
 
   m_count += t;
   if (m_count > 0) {
-    m_cond.broadcast();
+    cv_.notify_all();
   }
 }
 

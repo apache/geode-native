@@ -52,7 +52,7 @@ namespace client {
 
 #ifndef CHECK_DESTROY_PENDING
 #define CHECK_DESTROY_PENDING(lock, function)             \
-  lock checkGuard(m_rwLock, m_destroyPending);            \
+  lock checkGuard(mutex_, m_destroyPending);              \
   do {                                                    \
     if (m_destroyPending) {                               \
       std::string err_msg = #function;                    \
@@ -64,7 +64,7 @@ namespace client {
 
 #ifndef CHECK_DESTROY_PENDING_NOTHROW
 #define CHECK_DESTROY_PENDING_NOTHROW(lock)       \
-  lock checkGuard(m_rwLock, m_destroyPending);    \
+  lock checkGuard(mutex_, m_destroyPending);      \
   do {                                            \
     if (m_destroyPending) {                       \
       return GF_CACHE_REGION_DESTROYED_EXCEPTION; \
@@ -352,8 +352,8 @@ class APACHE_GEODE_EXPORT LocalRegion : public RegionInternal {
                             std::shared_ptr<VersionTag> versionTag);
 
   void setRegionExpiryTask() override;
-  void acquireReadLock() override { m_rwLock.acquire_read(); }
-  void releaseReadLock() override { m_rwLock.release(); }
+  void acquireReadLock() override { mutex_.lock_shared(); }
+  void releaseReadLock() override { mutex_.unlock_shared(); }
 
   // behaviors for attributes mutator
   uint32_t adjustLruEntriesLimit(uint32_t limit) override;
@@ -522,7 +522,7 @@ class APACHE_GEODE_EXPORT LocalRegion : public RegionInternal {
   std::shared_ptr<Pool> m_attachedPool;
   bool m_enableTimeStatistics;
 
-  mutable ACE_RW_Thread_Mutex m_rwLock;
+  mutable boost::shared_mutex mutex_;
   std::vector<std::shared_ptr<CacheableKey>> keys_internal();
   bool containsKey_internal(const std::shared_ptr<CacheableKey>& keyPtr) const;
   void removeRegion(const std::string& name);

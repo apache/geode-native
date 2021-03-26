@@ -27,7 +27,6 @@
 
 #include "DataInputInternal.hpp"
 #include "DataOutputInternal.hpp"
-#include "SerializationRegistry.hpp"
 #include "testobject_export.h"
 
 namespace testobject {

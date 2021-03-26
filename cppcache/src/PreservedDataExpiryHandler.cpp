@@ -22,6 +22,8 @@
  */
 #include "PreservedDataExpiryHandler.hpp"
 
+#include <boost/thread/lock_types.hpp>
+
 #include "PdxTypeRegistry.hpp"
 
 namespace apache {
@@ -35,7 +37,9 @@ PreservedDataExpiryHandler::PreservedDataExpiryHandler(
 
 int PreservedDataExpiryHandler::handle_timeout(const ACE_Time_Value&,
                                                const void*) {
-  WriteGuard guard(m_pdxTypeRegistry->getPreservedDataLock());
+  auto& mutex = m_pdxTypeRegistry->getPreservedDataMutex();
+  boost::unique_lock<std::remove_reference<decltype(mutex)>::type> guard{mutex};
+
   auto map = m_pdxTypeRegistry->getPreserveDataMap();
   LOGDEBUG(
       "Entered PreservedDataExpiryHandler "

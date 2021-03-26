@@ -125,7 +125,7 @@ GfErrType RemoteQuery::executeNoThrow(
     ThinClientBaseDM* tcdm, std::shared_ptr<CacheableVector> paramList) {
   LOGFINEST("%s: executing query: %s", func, m_queryString.c_str());
 
-  TryReadGuard guard(m_queryService->getLock(), m_queryService->invalid());
+  TryReadGuard guard(m_queryService->getMutex(), m_queryService->invalid());
 
   if (m_queryService->invalid()) {
     return GF_CACHE_CLOSED_EXCEPTION;

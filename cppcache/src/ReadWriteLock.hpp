@@ -20,7 +20,7 @@
 #ifndef GEODE_READWRITELOCK_H_
 #define GEODE_READWRITELOCK_H_
 
-#include <ace/RW_Thread_Mutex.h>
+#include <boost/thread/shared_mutex.hpp>
 
 #include <geode/internal/geode_globals.hpp>
 
@@ -28,55 +28,34 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class ReadGuard {
- public:
-  explicit ReadGuard(ACE_RW_Thread_Mutex& lock) : lock_(lock) {
-    lock_.acquire_read();
-  }
-
-  ~ReadGuard() { lock_.release(); }
-  bool isAcquired() { return true; }
-
- private:
-  ACE_RW_Thread_Mutex& lock_;
-};
-
-class WriteGuard {
- public:
-  explicit WriteGuard(ACE_RW_Thread_Mutex& lock) : lock_(lock) {
-    lock_.acquire_write();
-  }
-
-  ~WriteGuard() { lock_.release(); }
-
- private:
-  ACE_RW_Thread_Mutex& lock_;
-};
-
 class TryReadGuard {
  public:
-  TryReadGuard(ACE_RW_Thread_Mutex& lock, const volatile bool& exitCondition);
+  TryReadGuard(boost::shared_mutex& lock, const volatile bool& exit_cond);
   ~TryReadGuard() {
-    if (isAcquired_) lock_.release();
+    if (locked_) {
+      mutex_.unlock_shared();
+    }
   }
-  bool isAcquired() const { return isAcquired_; }
+  bool locked() const { return locked_; }
 
  private:
-  ACE_RW_Thread_Mutex& lock_;
-  bool isAcquired_;
+  boost::shared_mutex& mutex_;
+  bool locked_;
 };
 
 class TryWriteGuard {
  public:
-  TryWriteGuard(ACE_RW_Thread_Mutex& lock, const volatile bool& exitCondition);
+  TryWriteGuard(boost::shared_mutex& mutex, const volatile bool& exit_cond);
   ~TryWriteGuard() {
-    if (isAcquired_) lock_.release();
+    if (locked_) {
+      mutex_.unlock();
+    }
   }
-  bool isAcquired() const { return isAcquired_; }
+  bool locked() const { return locked_; }
 
  private:
-  ACE_RW_Thread_Mutex& lock_;
-  bool isAcquired_;
+  boost::shared_mutex& mutex_;
+  bool locked_;
 };
 }  // namespace client
 }  // namespace geode

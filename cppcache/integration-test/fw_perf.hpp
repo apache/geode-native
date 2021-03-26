@@ -50,23 +50,22 @@ established limits, a TestException will be thrown.
 
 */
 
-#include <string>
+#include <condition_variable>
 #include <map>
+#include <mutex>
+#include <string>
 
 #include <geode/DataOutput.hpp>
 #include <geode/DataInput.hpp>
 
 #include <ace/Task.h>
-#include <ace/Condition_T.h>
-#include <ace/Thread_Mutex.h>
-//#include "Name_Handler.h"
 
 namespace perf {
 
 class Semaphore {
  private:
-  ACE_Thread_Mutex m_mutex;
-  ACE_Condition<ACE_Thread_Mutex> m_cond;
+  std::mutex mutex_;
+  std::condition_variable cv_;
   volatile int m_count;
 
  public:

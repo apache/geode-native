@@ -23,8 +23,6 @@
 #include <geode/DataOutput.hpp>
 #include <geode/PoolManager.hpp>  // TODO remove
 
-#include "CacheImpl.hpp"  // TODO remove
-
 namespace apache {
 namespace geode {
 namespace client {

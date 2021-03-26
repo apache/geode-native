@@ -19,6 +19,8 @@
 
 #include <vector>
 
+#include <boost/thread/lock_types.hpp>
+
 #include <geode/PoolManager.hpp>
 #include <geode/SystemProperties.hpp>
 
@@ -272,6 +274,7 @@ std::shared_ptr<Region> LocalRegion::createSubregion(
     auto pmPtr = regionAttributes.getPersistenceManager();
     if (pmPtr == nullptr) {
       throw NullPointerException(
+
           "PersistenceManager could not be instantiated");
     }
     auto props = regionAttributes.getPersistenceProperties();
@@ -731,7 +734,7 @@ void LocalRegion::registerEntryExpiryTask(
 }
 
 LocalRegion::~LocalRegion() noexcept {
-  TryWriteGuard guard(m_rwLock, m_destroyPending);
+  TryWriteGuard guard(mutex_, m_destroyPending);
   if (!m_destroyPending) {
     // TODO suspect
     // NOLINTNEXTLINE(clang-analyzer-optin.cplusplus.VirtualCall)
@@ -2184,7 +2187,7 @@ GfErrType LocalRegion::localClearNoThrow(
   /*Update the stats for clear*/
   m_regionStats->incClears();
   GfErrType err = GF_NOERR;
-  TryReadGuard guard(m_rwLock, m_destroyPending);
+  TryReadGuard guard(mutex_, m_destroyPending);
   if (m_released || m_destroyPending) return err;
   if (!invokeCacheWriterForRegionEvent(aCallbackArgument, eventFlags,
                                        BEFORE_REGION_CLEAR)) {
@@ -2347,7 +2350,7 @@ GfErrType LocalRegion::destroyRegionNoThrow(
     }
   }
 
-  TryWriteGuard guard(m_rwLock, m_destroyPending);
+  TryWriteGuard guard(mutex_, m_destroyPending);
   if (m_destroyPending) {
     if (eventFlags.isCacheClose()) {
       return GF_NOERR;
@@ -3086,48 +3089,48 @@ GfErrType LocalRegion::destroyRegionNoThrow_remote(
 
 void LocalRegion::adjustCacheListener(
     const std::shared_ptr<CacheListener>& aListener) {
-  WriteGuard guard(m_rwLock);
+  boost::unique_lock<decltype(mutex_)> guard{mutex_};
   setCacheListener(aListener);
   m_listener = aListener;
 }
 
 void LocalRegion::adjustCacheListener(const std::string& lib,
                                       const std::string& func) {
-  WriteGuard guard(m_rwLock);
+  boost::unique_lock<decltype(mutex_)> guard{mutex_};
   setCacheListener(lib, func);
   m_listener = m_regionAttributes.getCacheListener();
 }
 
 void LocalRegion::adjustCacheLoader(
     const std::shared_ptr<CacheLoader>& aLoader) {
-  WriteGuard guard(m_rwLock);
+  boost::unique_lock<decltype(mutex_)> guard{mutex_};
   setCacheLoader(aLoader);
   m_loader = aLoader;
 }
 
 void LocalRegion::adjustCacheLoader(const std::string& lib,
                                     const std::string& func) {
-  WriteGuard guard(m_rwLock);
+  boost::unique_lock<decltype(mutex_)> guard{mutex_};
   setCacheLoader(lib, func);
   m_loader = m_regionAttributes.getCacheLoader();
 }
 
 void LocalRegion::adjustCacheWriter(
     const std::shared_ptr<CacheWriter>& aWriter) {
-  WriteGuard guard(m_rwLock);
+  boost::unique_lock<decltype(mutex_)> guard{mutex_};
   setCacheWriter(aWriter);
   m_writer = aWriter;
 }
 
 void LocalRegion::adjustCacheWriter(const std::string& lib,
                                     const std::string& func) {
-  WriteGuard guard(m_rwLock);
+  boost::unique_lock<decltype(mutex_)> guard{mutex_};
   setCacheWriter(lib, func);
   m_writer = m_regionAttributes.getCacheWriter();
 }
 
 void LocalRegion::evict(float percentage) {
-  TryReadGuard guard(m_rwLock, m_destroyPending);
+  TryReadGuard guard(mutex_, m_destroyPending);
   if (m_released || m_destroyPending) return;
   if (m_entries != nullptr) {
     int32_t size = m_entries->size();

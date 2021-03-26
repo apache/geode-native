@@ -56,7 +56,7 @@ class MemberListForVersionStamp {
   std::unordered_map<std::string, DistributedMemberWithIntIdentifier>
       m_members2;
 
-  ACE_RW_Thread_Mutex m_mapLock;
+  boost::shared_mutex mutex_;
   uint32_t m_memberCounter;
 };
 

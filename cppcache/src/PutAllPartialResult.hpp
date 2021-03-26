@@ -22,6 +22,8 @@
 
 #include <mutex>
 
+#include <boost/thread/shared_mutex.hpp>
+
 #include <geode/CacheableString.hpp>
 #include <geode/Serializable.hpp>
 
@@ -37,7 +39,7 @@ class PutAllPartialResult final : public Serializable {
   std::shared_ptr<CacheableKey> m_firstFailedKey;
   std::shared_ptr<Exception> m_firstCauseOfFailure;
   int32_t m_totalMapSize;
-  ACE_RW_Thread_Mutex g_readerWriterLock;
+  boost::shared_mutex mutex_;
 
  public:
   PutAllPartialResult(int totalMapSize, std::recursive_mutex& responseLock);

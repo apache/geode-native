@@ -29,6 +29,7 @@
 #include "DataOutputInternal.hpp"
 #include "DistributedSystem.hpp"
 #include "Version.hpp"
+#include "util/Log.hpp"
 
 #define DCPORT 12334
 #define VMKIND 13

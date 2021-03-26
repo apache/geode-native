@@ -42,7 +42,7 @@ class PdxTypeRegistry;
 
 class PdxType : public internal::DataSerializableInternal,
                 public std::enable_shared_from_this<PdxType> {
-  ACE_RW_Thread_Mutex m_lockObj;
+  boost::shared_mutex mutex_;
 
   static const char* m_javaPdxClass;
 

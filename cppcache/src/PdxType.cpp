@@ -23,6 +23,8 @@
 
 #include "PdxType.hpp"
 
+#include <boost/thread/lock_types.hpp>
+
 #include "PdxFieldType.hpp"
 #include "PdxHelper.hpp"
 #include "PdxTypeRegistry.hpp"
@@ -371,7 +373,9 @@ int32_t* PdxType::getLocalToRemoteMap() {
     return m_localToRemoteFieldMap;
   }
 
-  ReadGuard guard(m_lockObj);
+  // REVIEW. This mutex is only locked for read. Should be locked also for write
+  // or maybe remove it?
+  boost::shared_lock<decltype(mutex_)> guard{mutex_};
   if (m_localToRemoteFieldMap != nullptr) {
     return m_localToRemoteFieldMap;
   }
@@ -385,7 +389,8 @@ int32_t* PdxType::getRemoteToLocalMap() {
     return m_remoteToLocalFieldMap;
   }
 
-  ReadGuard guard(m_lockObj);
+  // REVIEW. Same as above
+  boost::shared_lock<decltype(mutex_)> guard{mutex_};
   if (m_remoteToLocalFieldMap != nullptr) {
     return m_remoteToLocalFieldMap;
   }

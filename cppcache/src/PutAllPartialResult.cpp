@@ -16,6 +16,8 @@
  */
 #include "PutAllPartialResult.hpp"
 
+#include <boost/thread/lock_types.hpp>
+
 namespace apache {
 namespace geode {
 namespace client {
@@ -34,7 +36,7 @@ PutAllPartialResult::PutAllPartialResult(int totalMapSize,
 void PutAllPartialResult::consolidate(
     std::shared_ptr<PutAllPartialResult> other) {
   {
-    WriteGuard guard(g_readerWriterLock);
+    boost::unique_lock<decltype(mutex_)> guard{mutex_};
     m_succeededKeys->addAll(other->getSucceededKeysAndVersions());
   }
   saveFailedKey(other->m_firstFailedKey, other->m_firstCauseOfFailure);
@@ -48,7 +50,7 @@ void PutAllPartialResult::addKeysAndVersions(
 void PutAllPartialResult::addKeys(
     std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>> m_keys) {
   {
-    WriteGuard guard(g_readerWriterLock);
+    boost::unique_lock<decltype(mutex_)> guard{mutex_};
     if (m_succeededKeys->getVersionedTagsize() > 0) {
       throw IllegalStateException(
           "attempt to store versionless keys when there are already versioned "

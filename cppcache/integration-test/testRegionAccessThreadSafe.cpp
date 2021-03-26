@@ -17,7 +17,6 @@
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
 #include <ace/Task.h>
-#include <ace/Recursive_Thread_Mutex.h>
 
 using apache::geode::client::Exception;
 
@@ -28,21 +27,20 @@ class GetRegionThread : public ACE_Task_Base {
   std::string m_subPath;
   bool m_regionCreateDone;
   bool m_subRegionCreateDone;
-  ACE_Recursive_Thread_Mutex m_mutex;
+  std::recursive_mutex mutex_;
   GetRegionThread(const char *path, const char *subPath)
       : m_running(false),
         m_path(path),
         m_subPath(subPath),
         m_regionCreateDone(false),
-        m_subRegionCreateDone(false),
-        m_mutex() {}
+        m_subRegionCreateDone(false) {}
   int svc(void) override {
     while (m_running == true) {
       SLEEP(40);
       try {
         auto rptr = getHelper()->getRegion(m_path.c_str());
         if (rptr != nullptr) {
-          ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_mutex);
+          std::lock_guard<decltype(mutex_)> guard{mutex_};
           ASSERT(m_regionCreateDone == true, "regionCreate Not Done");
         }
       } catch (Exception &ex) {
@@ -58,7 +56,7 @@ class GetRegionThread : public ACE_Task_Base {
       try {
         auto rptr = getHelper()->getRegion(m_subPath.c_str());
         if (rptr != nullptr) {
-          ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_mutex);
+          std::lock_guard<decltype(mutex_)> guard{mutex_};
           ASSERT(m_subRegionCreateDone == true, "subRegionCreate Not Done");
           return 0;
         }
@@ -73,11 +71,11 @@ class GetRegionThread : public ACE_Task_Base {
     return 0;
   }
   void setRegionFlag() {
-    ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_mutex);
+    std::lock_guard<decltype(mutex_)> guard{mutex_};
     m_regionCreateDone = true;
   }
   void setSubRegionFlag() {
-    ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_mutex);
+    std::lock_guard<decltype(mutex_)> guard{mutex_};
     m_subRegionCreateDone = true;
   }
   void start() {

@@ -2757,7 +2757,7 @@ GfErrType ThinClientRegion::handleServerException(
 void ThinClientRegion::receiveNotification(TcrMessage* msg) {
   std::unique_lock<std::mutex> lock(m_notificationMutex, std::defer_lock);
   {
-    TryReadGuard guard(m_rwLock, m_destroyPending);
+    TryReadGuard guard(mutex_, m_destroyPending);
     if (m_destroyPending) {
       if (msg != TcrMessage::getAllEPDisMess()) {
         _GEODE_SAFE_DELETE(msg);
@@ -2884,7 +2884,7 @@ void ThinClientRegion::release(bool invokeCallbacks) {
 }
 
 ThinClientRegion::~ThinClientRegion() noexcept {
-  TryWriteGuard guard(m_rwLock, m_destroyPending);
+  TryWriteGuard guard(mutex_, m_destroyPending);
   if (!m_destroyPending) {
     // TODO suspect
     // NOLINTNEXTLINE(clang-analyzer-optin.cplusplus.VirtualCall)
