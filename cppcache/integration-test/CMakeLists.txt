@@ -152,7 +152,7 @@ foreach(FILE ${SOURCES})
   set(ENVIRONMENT
     TESTNAME=${TEST}
     "TESTSRC=$<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}>"
-    TIMEBOMB=500
+    TIMEBOMB=1000
     MCAST_ADDR=0.0.0.0 # unused but framework expects
     MCAST_PORT=0       # unused but framework expects
     GFE_LOGLEVEL=config
@@ -181,24 +181,24 @@ set_tests_properties(
     testThinClientAfterRegionLive
     testThinClientCacheables
     testThinClientCq
-    testThinClientCqFailover
-    testThinClientCqHAFailover
-    testThinClientDurableConnect
+    #testThinClientCqFailover
+    #testThinClientCqHAFailover
+    #testThinClientDurableConnect
     testThinClientDurableDisconnectNormal
     testThinClientDurableDisconnectTimeout
-    testThinClientDurableFailoverClientClosedNoRedundancy
-    testThinClientDurableFailoverClientNotClosedRedundancy
-    testThinClientDurableKeepAliveFalseTimeout
-    testThinClientDurableKeepAliveTrueNormal
+    #testThinClientDurableFailoverClientClosedNoRedundancy
+    #testThinClientDurableFailoverClientNotClosedRedundancy
+    #testThinClientDurableKeepAliveFalseTimeout
+    #testThinClientDurableKeepAliveTrueNormal
     testThinClientDurableReconnect
-    testThinClientFailover
-    testThinClientFailover2
-    testThinClientFailoverInterest
-    testThinClientFailoverInterest2
-    testThinClientFailoverRegex
-    testThinClientFixedPartitionResolver
-    testThinClientHADistOps
-    testThinClientHAEventIDMap
+    #testThinClientFailover
+    #testThinClientFailover2
+    #testThinClientFailoverInterest
+    #testThinClientFailoverInterest2
+    #testThinClientFailoverRegex
+    #testThinClientFixedPartitionResolver
+    #testThinClientHADistOps
+    #testThinClientHAEventIDMap
     testThinClientHAFailover
     testThinClientHAMixedRedundancy
     testThinClientHAQueryFailover
@@ -206,28 +206,28 @@ set_tests_properties(
     testThinClientLargePutAllWithCallBackArg
     testThinClientLocatorFailover
     testThinClientMultiDS
-    testThinClientPRPutAllFailover
+    #testThinClientPRPutAllFailover
     testThinClientPartitionResolver
     testThinClientPdxDeltaWithNotification
     testThinClientPdxTests
-    testThinClientPoolRedundancy
-    testThinClientPoolServer
+    #testThinClientPoolRedundancy
+    #testThinClientPoolServer
     testThinClientPutAll
     testThinClientPutAllPRSingleHop
     testThinClientPutAllWithCallBackArgWithoutConcurrency
     testThinClientSecurityCQAuthorizationMU
     testThinClientTXFailover
-    testThinClientTransactionsXA
+    #testThinClientTransactionsXA
     testTimedSemaphore
     # broken
-    testFwPerf
+    #testFwPerf
     testThinClientCqDurable
     testThinClientGatewayTest
-    testThinClientHAFailoverRegex
+    #testThinClientHAFailoverRegex
     testThinClientPRSingleHop
     testThinClientPoolAttrTest
     testThinClientPoolLocator
-    testThinClientRemoteQueryTimeout
+    #testThinClientRemoteQueryTimeout
     testThinClientRemoveOps
     testThinClientSecurityAuthentication
     testThinClientSecurityAuthenticationMU
