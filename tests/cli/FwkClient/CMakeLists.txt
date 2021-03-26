@@ -12,15 +12,33 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-cmake_minimum_required(VERSION 3.4)
-project(nativeclient.clicache.templates)
 
-foreach(var CMAKE_CURRENT_SOURCE_DIR CMAKE_SOURCE_DIR CMAKE_BINARY_DIR CMAKE_CURRENT_BINARY_DIR)
-  file(TO_NATIVE_PATH ${${var}} ${var}_NATIVE)
-endforeach()
+cmake_minimum_required( VERSION 3.15 )
+project(FwkClient CSharp)
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Templates.csproj.in ${CMAKE_BINARY_DIR}/clicache/templates/Templates.csproj)  
+add_executable(FwkClient
+  AssemblyInfo.cs
+  ClientComm.cs
+  ClientProcess.cs
+  App.config
+)
 
-include_external_msproject(
-      Templates   ${CMAKE_BINARY_DIR}/clicache/templates/Templates.csproj
-      TYPE FAE04EC0-301F-11D3-BF4B-00C04F79EFBC)
+target_link_libraries(FwkClient
+  PUBLIC
+    DUnitFramework
+)
+
+set_target_properties(FwkClient PROPERTIES
+  VS_GLOBAL_ROOTNAMESPACE Apache.Geode.Client.FwkClient
+  VS_GLOBAL_TreatWarningsAsErrors True
+  VS_GLOBAL_PROJECT_TYPES "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+  VS_DOTNET_REFERENCES "System;System.Xml;System.Runtime.Remoting;System.Management"
+  FOLDER cli/test/integration
+)
+
+if(NOT "${STRONG_NAME_KEY}" STREQUAL "")
+  set_target_properties(FwkClient PROPERTIES
+    VS_GLOBAL_SignAssembly "true"
+    VS_GLOBAL_AssemblyOriginatorKeyFile ${STRONG_NAME_KEY}
+  )
+endif()

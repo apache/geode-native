@@ -26,17 +26,6 @@ package-list
 # docker/
 bellsoft.repo
 
-# contrib/pdxautoserializer
-# public domain sources
-CPPDictionary.hpp
-CPPSymbol.hpp
-CPP_parser.g
-DictEntry.hpp
-Dictionary.cpp
-Dictionary.hpp
-STDCTokenTypes.txt
-Support.cpp
-
 # well known build directories
 build
 cmake-build-.*

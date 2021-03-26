@@ -100,7 +100,6 @@
       "execute_command": "{{.Vars}} sudo -E -S bash '{{.Path}}'",
       "scripts": [
         "linux/install-cmake.sh",
-        "linux/install-geode.sh",
         "ubuntu/install-clang-format.sh",
         "ubuntu/install-jdk-11.sh"
       ]

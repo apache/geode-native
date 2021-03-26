@@ -906,7 +906,7 @@ void TcrMessage::writeMessageLength() {
                                            // the beginning.
 }
 
-void TcrMessage::startProcessChunk(ACE_Semaphore& finalizeSema) {
+void TcrMessage::startProcessChunk(binary_semaphore& finalizeSema) {
   if (m_msgTypeRequest == TcrMessage::EXECUTECQ_MSG_TYPE ||
       m_msgTypeRequest == TcrMessage::STOPCQ_MSG_TYPE ||
       m_msgTypeRequest == TcrMessage::CLOSECQ_MSG_TYPE ||

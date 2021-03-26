@@ -23,6 +23,7 @@
 #include <geode/DataInput.hpp>
 
 #include "ClientProxyMembershipID.hpp"
+#include "Utils.hpp"
 #include "util/Log.hpp"
 
 namespace apache {
@@ -137,7 +138,8 @@ std::shared_ptr<Serializable> EventId::createDeserializable() {
 EventId::EventId(char* memId, uint32_t memIdLen, int64_t thr, int64_t seq) {
   LOGDEBUG("EventId::EventId(%p) - memId=%s, memIdLen=%d, thr=%" PRId64
            ", seq=%" PRId64,
-           this, memId, memIdLen, thr, seq);
+           this, Utils::convertBytesToString(memId, memIdLen).c_str(), memIdLen,
+           thr, seq);
   // TODO: statics being assigned; not thread-safe??
   std::memcpy(clientId_, memId, memIdLen);
   clientIdLength_ = memIdLen;

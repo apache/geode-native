@@ -52,8 +52,8 @@ class TcrEndpoint : public std::enable_shared_from_this<TcrEndpoint> {
  public:
   TcrEndpoint(
       const std::string& name, CacheImpl* cacheImpl,
-      ACE_Semaphore& failoverSema, ACE_Semaphore& cleanupSema,
-      ACE_Semaphore& redundancySema, ThinClientBaseDM* dm = nullptr,
+      binary_semaphore& failoverSema, binary_semaphore& cleanupSema,
+      binary_semaphore& redundancySema, ThinClientBaseDM* dm = nullptr,
       bool isMultiUserMode = false);  // TODO: need to look for endpoint case
 
   virtual ~TcrEndpoint();
@@ -205,16 +205,16 @@ class TcrEndpoint : public std::enable_shared_from_this<TcrEndpoint> {
 
  private:
   int64_t m_uniqueId;
-  ACE_Semaphore& m_failoverSema;
-  ACE_Semaphore& m_cleanupSema;
-  ACE_Semaphore& m_redundancySema;
+  binary_semaphore& failover_semaphore_;
+  binary_semaphore& cleanup_semaphore_;
+  binary_semaphore& redundancy_semaphore_;
   ThinClientBaseDM* m_baseDM;
   std::string m_name;
   std::list<ThinClientBaseDM*> m_distMgrs;
   std::recursive_mutex m_endpointAuthenticationLock;
   std::recursive_mutex m_connectionLock;
   std::recursive_mutex m_distMgrsLock;
-  ACE_Semaphore m_notificationCleanupSema;
+  binary_semaphore notification_cleanup_semaphore_;
   synchronized_set<std::unordered_set<uint16_t>> m_ports;
   int32_t m_numberOfTimesFailed;
   int m_numRegions;

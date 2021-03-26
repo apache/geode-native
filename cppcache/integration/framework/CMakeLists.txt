@@ -55,3 +55,5 @@ target_link_libraries(integration-framework
     _WarningsAsError
     internal
 )
+
+add_clangformat(integration-framework)

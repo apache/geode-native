@@ -15,35 +15,14 @@
  * limitations under the License.
  */
 
-using System;
+#include <gtest/gtest.h>
 
-namespace Apache.Geode.Client.FwkLib
-{
-  using Apache.Geode.DUnitFramework;
+#include <geode/Cache.hpp>
 
-  public class ETCacheLoader : ICacheLoader
-  {
-    public static ICacheLoader Create()
-    {
-      return new ETCacheLoader();
-    }
+#include "FixedPartitionAttributesImpl.hpp"
 
-    #region ICacheLoader Members
+using apache::geode::client::FixedPartitionAttributesImpl;
 
-    public ISerializable Load(Region rp, ICacheableKey key, ISerializable helper)
-    {
-      Util.BBIncrement(EventTest.EventCountersBB, "LOAD_CACHEABLE_STRING_COUNT");
-      byte[] buffer = new byte[2000];
-      Util.RandBytes(buffer);
-      CacheableBytes value = CacheableBytes.Create(buffer);
-      return value;
-    }
-
-    public void Close(Region rp)
-    {
-      Util.BBIncrement(EventTest.EventCountersBB, "CLOSE_COUNT");
-    }
-
-    #endregion
-  }
+TEST(PartitionTest, createFixedPartitionAttributes) {
+  FixedPartitionAttributesImpl attributes;
 }

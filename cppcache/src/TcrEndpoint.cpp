@@ -39,9 +39,9 @@ namespace client {
 const char* TcrEndpoint::NC_Notification = "NC Notification";
 
 TcrEndpoint::TcrEndpoint(const std::string& name, CacheImpl* cacheImpl,
-                         ACE_Semaphore& failoverSema,
-                         ACE_Semaphore& cleanupSema,
-                         ACE_Semaphore& redundancySema, ThinClientBaseDM* DM,
+                         binary_semaphore& failoverSema,
+                         binary_semaphore& cleanupSema,
+                         binary_semaphore& redundancySema, ThinClientBaseDM* DM,
                          bool isMultiUserMode)
     : m_notifyConnection(nullptr),
       m_notifyReceiver(nullptr),
@@ -53,12 +53,12 @@ TcrEndpoint::TcrEndpoint(const std::string& name, CacheImpl* cacheImpl,
       m_needToConnectInLock(false),
       m_isQueueHosted(false),
       m_uniqueId(0),
-      m_failoverSema(failoverSema),
-      m_cleanupSema(cleanupSema),
-      m_redundancySema(redundancySema),
+      failover_semaphore_(failoverSema),
+      cleanup_semaphore_(cleanupSema),
+      redundancy_semaphore_(redundancySema),
       m_baseDM(DM),
       m_name(name),
-      m_notificationCleanupSema(0),
+      notification_cleanup_semaphore_(0),
       m_numberOfTimesFailed(0),
       m_numRegions(0),
       m_pingTimeouts(0),
@@ -102,7 +102,7 @@ TcrEndpoint::~TcrEndpoint() {
   while (m_notifyCount > 0) {
     LOGDEBUG("TcrEndpoint::~TcrEndpoint(): reducing notify count at %d",
              m_notifyCount);
-    m_notificationCleanupSema.acquire();
+    notification_cleanup_semaphore_.acquire();
     m_notifyCount--;
   }
   LOGFINE("Connection to %s deleted", m_name.c_str());
@@ -1173,8 +1173,8 @@ void TcrEndpoint::setConnectionStatus(bool status) {
 }
 
 void TcrEndpoint::triggerRedundancyThread() {
-  m_failoverSema.release();
-  m_redundancySema.release();
+  failover_semaphore_.release();
+  redundancy_semaphore_.release();
 }
 
 void TcrEndpoint::closeConnection(TcrConnection*& conn) {
@@ -1208,9 +1208,9 @@ void TcrEndpoint::closeNotification() {
   m_notifyReceiver->stopNoblock();
   TcrConnectionManager& tccm = m_cacheImpl->tcrConnectionManager();
   tccm.addNotificationForDeletion(m_notifyReceiver.get(), m_notifyConnection,
-                                  m_notificationCleanupSema);
+                                  notification_cleanup_semaphore_);
   m_notifyCount++;
-  m_cleanupSema.release();
+  cleanup_semaphore_.release();
   m_isQueueHosted = false;
   LOGFINEST(
       "Added susbcription channel for deletion and "

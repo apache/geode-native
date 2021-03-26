@@ -72,46 +72,15 @@ function remote_upload {
 
 (@- end @)
 
-(@ def run_cpp_unit_tests(): -@)
+(@ def ctest_bash_task(path, timeout=300, parallel=6): -@)
 set -ueo pipefail
 (@= remote_functions() @)
-remote_shell cmake -E chdir build/cppcache/test ctest -C ${CMAKE_CONFIG} -j8 --timeout=500 --output-on-failure --schedule-random
+remote_shell cmake -E chdir (@= path @) ctest -C ${CMAKE_CONFIG} -j(@= str(parallel) @) --timeout=(@= str(timeout) @) --output-on-failure --repeat until-pass:4 --schedule-random
 (@- end @)
-
-(@ def run_cpp_integration_tests(): -@)
-set -ueo pipefail
-(@= remote_functions() @)
-remote_shell cmake -E chdir build/cppcache/integration/test ctest -C ${CMAKE_CONFIG} -j6 --timeout=500 --output-on-failure --repeat until-pass:4  --schedule-random
-(@- end @)
-
-(@ def run_cpp_legacy_integration_tests(): -@)
-set -ueo pipefail
-(@= remote_functions() @)
-remote_shell cmake -E chdir build/cppcache/integration-test ctest -C ${CMAKE_CONFIG} -j4 --timeout=500 --output-on-failure --repeat until-pass:4  --schedule-random
-(@- end @)
-
-(@ def run_net_unit_tests(): -@)
-set -ueo pipefail
-(@= remote_functions() @)
-remote_shell cmake -E chdir build/clicache/test2 ../packages/xunit.runner.console.2.4.0/tools/net452/xunit.console.exe ${CMAKE_CONFIG}/Apache.Geode.Tests2.dll -parallel all
-(@- end @)
-
-(@ def run_net_integration_tests(): -@)
-set -ueo pipefail
-(@= remote_functions() @)
-remote_shell cmake -E chdir build/clicache/integration-test2 ../packages/xunit.runner.console.2.4.0/tools/net452/xunit.console.exe ${CMAKE_CONFIG}/Apache.Geode.IntegrationTests2.dll -verbose -maxthreads 6
-(@- end @)
-
-(@ def run_net_legacy_integration_tests(): -@)
-set -ueo pipefail
-(@= remote_functions() @)
-remote_shell cmake -E chdir build/clicache/integration-test ctest -C ${CMAKE_CONFIG} -j6 --timeout=1000 --output-on-failure --repeat until-pass:4
-(@- end @)
-
 
 (@ def clang_tidy_bash_task(): -@)
 set -ueo pipefail
-export GEODE_HOME=$(pwd)/geode/expanded/apache-geode-$(cat geode/version)
+export GEODE_HOME=$(pwd)/geode
 log=$(mktemp)
 cd build
 cmake ../source -DCMAKE_EXPORT_COMPILE_COMMANDS=ON >>${log} 2>&1 || (cat ${log}; exit 1)
@@ -121,7 +90,7 @@ run-clang-tidy -j $(nproc) -quiet
 
 (@ def clang_format_bash_task(): -@)
 set -ueo pipefail
-export GEODE_HOME=$(pwd)/geode/expanded/apache-geode-$(cat geode/version)
+export GEODE_HOME=$(pwd)/geode
 log=$(mktemp)
 cd build
 cmake ../source -DCMAKE_EXPORT_COMPILE_COMMANDS=ON >>${log} 2>&1 || (cat ${log}; exit 1)
@@ -130,7 +99,7 @@ jq -r '.[].file' compile_commands.json | sort | uniq | grep -v $(pwd) | xargs cl
 
 (@ def rat_check_bash_task(): -@)
 set -ueo pipefail
-export GEODE_HOME=$(pwd)/geode/expanded/apache-geode-$(cat geode/version)
+export GEODE_HOME=$(pwd)/geode
 log=$(mktemp)
 cd build
 cmake ../source -DUSE_RAT=ON >>${log} 2>&1 || (cat ${log}; exit 1)
@@ -143,6 +112,8 @@ cd source/packer
 packer build -only=googlecompute \
     -var-file=default.json \
     -var pipeline=(@= gci_label_value(data.values.pipeline.name) @) \
+    -var version=(@= data.values.pipeline.version @) \
+    -var pre=(@= data.values.pipeline.pre @) \
     -var owner=(@= gci_label_value(data.values.github.owner) @) \
     -var repository=(@= gci_label_value(data.values.github.repository) @) \
     -var branch=(@= gci_label_value(data.values.repository.branch) @) \
@@ -205,8 +176,9 @@ done
 (@ def instance_delete_bash_task(): -@)
 set -ueo pipefail
 (@= google_variables() @)
-(@= remote_functions() @)
+(@= instance_variables() @)
 
+instance_file=${INSTANCE_DIR}/instance.sh
 instance_name=$(source ${instance_file} && echo -n ${name})
 
 gcloud compute instances delete ${instance_name} \
@@ -231,10 +203,10 @@ git_rev=$(git rev-parse HEAD)
 popd
 version=$(cat version/number)
 builddate=$(date "+%Y-%m-%d")
-remote_upload source .
 remote_shell cmake -E make_directory build
-remote_shell  cmake -E time cmake -E chdir build cmake ../source ${CMAKE_CONFIGURE_FLAGS} \
+remote_shell cmake -E time cmake -E chdir build cmake ../source ${CMAKE_CONFIGURE_FLAGS} \
     -DCMAKE_BUILD_TYPE=${CMAKE_CONFIG} \
+    -DGEODE_ROOT=../geode \
     -DPRODUCT_VERSION=${version} \
     -DPRODUCT_BUILDDATE=${builddate} \
     -DPRODUCT_SOURCE_REVISION=${git_rev} \
@@ -250,4 +222,85 @@ checksums=$(awk '/^CPack: - checksum file: / {print $5}' cpack.out)
 for checksum in ${checksums}; do
   remote_download ${checksum} package/
 done
+(@- end @)
+
+(@ def upload_source_bash_task(): -@)
+set -ueo pipefail
+(@= remote_functions() @)
+remote_upload source .
+(@- end @)
+
+
+(@ def upload_geode_bash_task(): -@)
+set -ueo pipefail
+(@= remote_functions() @)
+geode_version=$(cat geode-latest/version)
+geode_name="apache-geode-${geode_version}"
+geode_artifact="${geode_name}.tgz"
+remote_upload geode-latest/${geode_artifact} .
+remote_shell cmake -E tar xvf ${geode_artifact}
+remote_shell cmake -E rename ${geode_name} geode
+(@- end @)
+
+(@ def extract_geode_bash_task(): -@)
+set -ueo pipefail
+if (cmp -s geode-latest/version geode/version); then
+ exit 0
+fi
+geode_version=$(cat geode-latest/version)
+geode_name="apache-geode-${geode_version}"
+geode_artifact="${geode_name}.tgz"
+tar xvf geode-latest/${geode_artifact} --directory=geode --strip-components=1
+cp geode-latest/version geode/version
+(@- end @)
+
+(@ def is_source_from_pr_testable_bash_task(): -@)
+# Cribbed shamelessly from geode/ci/scripts/shared_utilities.sh
+is_source_from_pr_testable() {
+  if [[ $# -ne 3 ]]; then
+    >&2 echo "Invalid args. Try ${0} \"<repo_path>\" \"<list of exclusion dirs>\""
+    exit 1
+  fi
+  local repo_dir="${1}"
+  if [[ ! -d "${repo_dir}" ]]; then
+    # If the repo_dir does not exist, assume call from non-PR
+    return 0;
+  fi
+
+  pushd "${repo_dir}" 2>&1 >> /dev/null
+    local base_dir=$(git rev-parse --show-toplevel)
+    local github_pr_dir="${base_dir}/.git/resource"
+    pushd ${base_dir} 2>&1 >> /dev/null
+      local return_code=0
+      if [ -d "${github_pr_dir}" ]; then
+        # Modify this path list with directories to exclude
+        local exclude_dirs="${2}"
+        for d in $(echo ${exclude_dirs}); do
+          local exclude_pathspec="${exclude_pathspec} :(exclude,glob)${d}/**"
+        done
+        local exclude_files="${3}"
+        for f in "${exclude_files}"; do
+          local exclude_pathspec="${exclude_pathspec} :(exclude,glob)${f}"
+        done
+        pushd ${base_dir} &> /dev/null
+          local files=$(git diff --name-only $(cat "${github_pr_dir}/base_sha") $(cat "${github_pr_dir}/head_sha") -- . $(echo ${exclude_pathspec}))
+        popd &> /dev/null
+        if [[ -z "${files}" ]]; then
+          >&2 echo "Code changes are from CI only"
+          return_code=1
+        else
+          >&2 echo "real code change here!"
+        fi
+      else
+        >&2 echo "repo is not from a PR"
+      fi
+    popd 2>&1 >> /dev/null
+  popd 2>&1 >> /dev/null
+  return ${return_code}
+}
+
+exclude_dirs="ci packer docker tools"
+exclude_files="*/*.md"
+is_source_from_pr_testable "source" "${exclude_dirs}" "${exclude_files}" && exit 0 || exit 1
+
 (@- end @)

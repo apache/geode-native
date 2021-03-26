@@ -21,13 +21,19 @@
 #@      "registry_image_resource",
 #@      "semver_resource",
 #@      "apache_directory_index_resource",
+#@      "maven_resource",
 #@      "build_resources",
 #@      "build_jobs",
 #@      "build_job_name",
 #@      "check_source_job",
 #@      "check_source_job_name",
 #@      "update_pipeline_job",
-#@      "update_pipeline_job_name")
+#@      "update_pipeline_job_name",
+#@ )
+#@ load("functions.lib.yml",
+#@      "initial_version",
+#@      "version_pattern",
+#@ )
 #@ load("@ytt:data", "data")
 #@ load("@ytt:template", "template")
 
@@ -36,9 +42,10 @@ resource_types:
   - #@ resource_type("gci-resource", "smgoller/gci-resource")
   - #@ resource_type("gcs-resource", "frodenas/gcs-resource")
   - #@ resource_type("apache-directory-index-resource", "jakepivotal/apache-directory-index-resource")
+  - #@ resource_type("maven-resource", "jakepivotal/maven-resource")
 
 resources:
-  - #@ semver_resource("version", "1.14.0-build.0")
+  - #@ semver_resource("version", initial_version())
   - #@ gcr_image_resource("gcloud-image", "google.com/cloudsdktool/cloud-sdk", "alpine")
   - #@ project_gcr_image_resource("task-image", "geode-native-task")
   - #@ project_gcr_image_resource("clang-tools-image", "geode-native-clang-tools")
@@ -46,7 +53,8 @@ resources:
   - #@ template.replace(build_resources(data.values.builds, data.values.configs))
   - #@ registry_image_resource("ytt-image", "gerritk/ytt")
   - #@ github_resource("ci-source", data.values.github.owner, data.values.github.repository, data.values.repository.branch, ["ci/*"])
-  - #@ apache_directory_index_resource("geode", "https://archive.apache.org/dist/geode/", "$VERSION", "apache-geode-$VERSION.tgz")
+  - #@ maven_resource("geode-latest", "https://maven.apachegeode-ci.info/snapshots", "org.apache.geode:apache-geode:tgz", version_pattern())
+  #! - #@ apache_directory_index_resource("geode", "https://archive.apache.org/dist/geode/", "$VERSION", "apache-geode-$VERSION.tgz")
 
 jobs:
   - #@ template.replace(build_jobs(data.values.builds, data.values.configs))

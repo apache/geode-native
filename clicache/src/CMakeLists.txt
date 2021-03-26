@@ -368,8 +368,6 @@ install (
 
 add_dependencies(client-libraries Apache.Geode)
 
-add_subdirectory(templates)
-
 
 # For Visual Studio organization
 source_group("Configure In Files" FILES ${CONFIGURE_IN_FILES})

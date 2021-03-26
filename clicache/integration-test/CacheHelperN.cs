@@ -317,7 +317,7 @@ namespace Apache.Geode.Client.UnitTests
     private const string LocatorStartArgs = "start locator --max-heap=512m";
     private const string LocatorStopArgs = "stop locator";
     private const int MaxWaitMillis = 60000;
-   
+
     private static string m_testDir = null;
     private static Dictionary<int, string> m_runningJavaServers =
       new Dictionary<int, string>();
@@ -463,7 +463,7 @@ namespace Apache.Geode.Client.UnitTests
 
     public static void ConnectConfig(string dsName, Properties<string, string> config)
     {
-        DSConnect(dsName, config);
+      DSConnect(dsName, config);
     }
 
     public static void Init()
@@ -471,12 +471,12 @@ namespace Apache.Geode.Client.UnitTests
       InitConfig(null, null);
     }
 
-		public static void InitConfig(Properties<string, string> config, IAuthInitialize authInitialize)
-		{
-			InitConfig(config, null, authInitialize);
-		}
+    public static void InitConfig(Properties<string, string> config, IAuthInitialize authInitialize)
+    {
+      InitConfig(config, null, authInitialize);
+    }
 
-		public static void InitConfig(Properties<string, string> config)
+    public static void InitConfig(Properties<string, string> config)
     {
       InitConfig(config, null);
     }
@@ -1686,7 +1686,7 @@ namespace Apache.Geode.Client.UnitTests
       m_gfeDir = Util.GetEnvironmentVariable("GFE_DIR");
       Assert.IsNotNull(m_gfeDir, "GFE_DIR is not set.");
       Assert.IsNotEmpty(m_gfeDir, "GFE_DIR is not set.");
-      gfsh = Path.Combine(m_gfeDir, "bin",  "gfsh.bat");
+      gfsh = Path.Combine(m_gfeDir, "bin", "gfsh.bat");
       m_gfeLogLevel = Util.GetEnvironmentVariable("GFE_LOGLEVEL");
       m_gfeSecLogLevel = Util.GetEnvironmentVariable("GFE_SECLOGLEVEL");
       if (m_gfeLogLevel == null || m_gfeLogLevel.Length == 0)
@@ -1714,12 +1714,12 @@ namespace Apache.Geode.Client.UnitTests
           string cacheXml = cacheXmls[i];
           Assert.IsNotNull(cacheXml, "cacheXml is not set for Java cacheserver.");
           Assert.IsNotEmpty(cacheXml, "cacheXml is not set for Java cacheserver.");
-          
+
           var duplicateFile = Path.Combine(MakeTempDirectory(), cacheXml);
           cacheXml = Path.Combine(Directory.GetCurrentDirectory(), cacheXml);
           createDuplicateXMLFile(cacheXml, duplicateFile);
           cacheXmls[i] = duplicateFile;
-        
+
           // Find the port number from the given cache.xml
           XmlDocument xmlDoc = new XmlDocument();
           xmlDoc.XmlResolver = null;
@@ -1819,7 +1819,7 @@ namespace Apache.Geode.Client.UnitTests
         {
           Assert.Fail("Locator property file creation failed: {0}: {1}", ex.GetType().Name, ex.Message);
         }
- 
+
         string locatorPort = " --port=" + getLocatorPort(locatorNum);
         if (extraLocatorArgs != null)
         {
@@ -1921,7 +1921,7 @@ namespace Apache.Geode.Client.UnitTests
           extraLocatorArgs = locatorPort;
         }
         string locatorArgs = LocatorStartArgs + " --name=" + locatorName + " --dir=" + startDir + extraLocatorArgs + " --http-service-port=0";
-        
+
         var exitCode = ExecuteGfsh(locatorArgs);
         if (0 != exitCode)
         {
@@ -2090,16 +2090,16 @@ namespace Apache.Geode.Client.UnitTests
 
     static string MakeTempDirectory()
     {
-       var tempDirectory = Path.Combine(tempDirectoryRoot, Path.GetRandomFileName());
-       Directory.CreateDirectory(tempDirectory);
-       return tempDirectory;
+      var tempDirectory = Path.Combine(tempDirectoryRoot, Path.GetRandomFileName());
+      Directory.CreateDirectory(tempDirectory);
+      return tempDirectory;
     }
 
     static int ExecuteGfsh(string command)
     {
       Util.Log("ExecuteGfsh: {0}", command);
 
-      using(var process = new Process())
+      using (var process = new Process())
       {
         process.StartInfo.FileName = gfsh;
         process.StartInfo.Arguments = command;
@@ -2132,9 +2132,13 @@ namespace Apache.Geode.Client.UnitTests
         Util.Log("ExecuteGfsh: Waiting for exit {0}", process.Id);
         if (!process.WaitForExit(MaxWaitMillis))
         {
+          Util.Log("ExecuteGfsh: Timeout, killing {0}", process.Id);
+
+          CloseAndIgnore(process.StandardOutput);
+          CloseAndIgnore(process.StandardError);
+
           try
           {
-            Util.Log("ExecuteGfsh: Timeout, killing {0}", process.Id);
             process.Kill();
           }
           catch (Exception)
@@ -2143,11 +2147,20 @@ namespace Apache.Geode.Client.UnitTests
           }
         }
 
-        //process.CancelOutputRead();
-        //process.CancelOutputRead();
-
         Util.Log("ExecuteGfsh: Exited {0}", process.Id);
         return process.ExitCode;
+      }
+    }
+
+    public static void CloseAndIgnore(StreamReader streamRead)
+    {
+      try
+      {
+        streamRead.Close();
+      } 
+      catch (Exception)
+      {
+        // ignored
       }
     }
 

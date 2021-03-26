@@ -2,7 +2,7 @@
 
 ## Prerequisites (All Platforms)
 
-* [CMake 3.12](https://cmake.org/) or newer
+* [CMake 3.18](https://cmake.org/) or newer
 * C++11 compiler *(see platform specific requirements)*
 * [Doxygen 1.8.11 or greater](https://sourceforge.net/projects/doxygen/) *(for building source documentation)*
 * [OpenSSL](https://www.openssl.org) *(for building source documentation)*
@@ -72,7 +72,7 @@ Install XCode from the App Store
 Install the required dependencies through homebrew. If you use another package manager for your mac feel free to use
 that.
 
-```bash
+```console
 $ brew install geode
 $ brew install openssl
 $ brew install doxygen
@@ -82,7 +82,7 @@ $ brew install cmake
 You will need to provide the path to the brew installed OpenSSL headers since macOS already has a system installed
 version but without the required headers.
 
-```bash
+```console
 $ cmake .. -DOPENSSL_ROOT_DIR=/usr/local/opt/openssl
 ```
 
@@ -130,73 +130,6 @@ IPv6 support can be enabled by adding `-DWITH_IPV6=ON` to the CMake [Generator](
 $ cmake … -DWITH_IPV6=ON …
 ```
 
-#### Code Coverage
-
-If building with GCC or Clang you can enable C++ code coverage by adding `-DUSE_CPP_COVERAGE=ON` to the
-CMake [Generator](#generator) command.
-
-```console
-$ cmake … -DUSE_CPP_COVERAGE=ON …
-```
-
-You can then generate a C++ code coverage report by downloading [lcov](http://ltp.sourceforge.net/coverage/lcov.php).
-After acquiring lcov, finish the [Steps to build](#Steps-to-build) section above. Then, run the tests as described in
-the [CONTRIBUTING.md](CONTRIBUTING.md). Finally, run the following commands from the `build` directory:
-
-```console
-$ lcov --capture --directory . --output-file coverage.info
-$ genhtml coverage.info --output-directory coverage_report
-```
-
-You can then open the `index.html` file in the `coverage_report` directory using any browser.
-
-#### Clang-Tidy
-
-To enable `clang-tidy`:
-
-```console
-$ cmake … -DCMAKE_CXX_CLANG_TIDY=clang-tidy …
-```
-
-To use specific `clang-tidy`:
-
-```console
-$ cmake … -DCMAKE_CXX_CLANG_TIDY=/path/to/clang-tidy …
-```
-
-By default `clang-tidy` uses the configuration found in `.clang-tidy`
-To override `clang-tidy` options:
-
-```console
-$ cmake … -DCMAKE_CXX_CLANG_TIDY=clang-tidy;<options> …
-```
-
-#### Clang-format
-
-Individual targets in the build tree have their own dependency of the form `<<targetName>>-clangformat`, which uses
-the `clang-format` executable, wherever it is found, to format and modified files according to the rules specfied in the
-.clang-format file. This is helpful when submitting changes to geode-native, because an improperly formatted file will
-fail Travis-CI and have to be fixed prior to merging any pull request. If clang-format is not installed on your system,
-clangformat targets will not be added to your project files, and geode-native should build normally. Under some
-circumstances, however, it may become necessary to disable `clang-format` on a system where it _is_ installed.
-
-To disable `clang-format` in the build:
-
-```
-$ cmake … -DClangFormat_EXECUTABLE='' …
-```
-
-On the other hand, it may also be desirable to run clang-format on the entire source tree. This is also easily done via
-the `all-clangformat` _in a build with clang-format enabled_. If clang-format has been disabled in the cmake
-configuration step, as above, the `all-clangformat` target will not exist, and the cmake configuration step will have to
-be re-run with clang-format enabled.
-
-To run clang-format on the entire source tree:
-
-```
-$ cmake --build . --target all-clangformat
-```
-
 ## Installing
 
 By default a system-specific location is used by CMake as the destination of the `install` target, e.g., `/usr/local` on
@@ -218,27 +151,27 @@ $ cmake --build . --target install
 
 # Platform-Specific Prerequisites
 
-## <a id="windows"></a>Windows
+## Windows
 
-* Windows 8.1 64-bit
 * Windows 10 64-bit
-* Windows Server 2012 R2 64-bit
 * Windows Server 2016 64-bit
-* NUnit 2.6.4 (to run clicache tests)
+* Windows Server 2019 64-bit
 
 ### Required Tools
 
-* [Visual Studio 2015](https://www.visualstudio.com) or newer
-* .NET 4.5.2 or later
-* Chocolatey
-* [Other dependencies installed via Powershell](packer/windows/install-dependencies.ps1)
+* [Visual Studio](https://www.visualstudio.com) 2017 or newer
+* [.NET](https://dotnet.microsoft.com/learn/dotnet/what-is-dotnet-framework) 4.5.2 or later
+* Other dependencies installed by [Packer](packer/build-windows-2016-vs-2017.json) scripts
 
-## <a id="linux"></a>Linux
+## Linux
 
-* RHEL/CentOS 6
 * RHEL/CentOS 7
-* SLES 11
-* SLES 12
+* RHEL/CentOS 8
+* Ubuntu 2016.04 (Xenial)
+* Ubuntu 2018.04 (Bionic)
+* Ubuntu 2020.04 (Focal)
+
+Other distributions and versions may be supported given C++11 compatible compiler and runtime library.
 
 ### Required Tools
 
@@ -246,13 +179,15 @@ $ cmake --build . --target install
 
 ### Optional Tools
 
-* [Eclipse CDT 8.8](https://eclipse.org/cdt/) or newer
+* [CLion](https://www.jetbrains.com/clion/)
 
-## <a id="mac-os-x"></a>Mac OS X
+## macOS
 
-* Mac OS X 10.12 (Sierra) or newer
-* Xcode 8.2 or newer
+* macOS X 10.15 (Catalina) or newer
+* Xcode 11 or newer
 
+Older versions of macOS or Mac OS X and Xcode may work but are not regularly tested or developed on.
+  
 ### Required Tools
 
 * [Xcode](https://developer.apple.com/xcode/download/)
@@ -268,10 +203,12 @@ $ xcode-select --install
 * [Doxygen GUI](http://ftp.stack.nl/pub/users/dimitri/Doxygen-1.8.11.dmg)
 * [CLion](https://www.jetbrains.com/clion/)
 
-## <a id="solaris"></a>Solaris
-
+## Solaris
 * Solaris 11 SPARC
 * Solaris 11 x86
+
+Solaris is not actively developed or tested. While no effort has been made to remove Solaris support it is likely
+broken.
 
 ### Required Tools
 

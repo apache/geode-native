@@ -71,6 +71,7 @@ namespace Apache.Geode.Client.UnitTests
     #endregion
   }
 
+  [Ignore("broken")]
   [TestFixture]
   [Category("group4")]
   [Category("unicast_only")]

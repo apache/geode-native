@@ -25,11 +25,13 @@ Options:
 Parameter                Description                         Default
 --target                 Fly target.                         "default"
 --branch                 Branch to build.                    Current checked out branch.
+--version                Version of Geode.                   1.14.0
+--pre                    Version pre release tag.            "" | Empty
 --pipeline               Name of pipeline to set.            Based on repository owner name and branch.
 --github-owner           GitHub owner for repository.        Current tracking branch repository owner.
 --github-repository      GitHub repository name.             Current tracking branch repository name.
---google-zone            Google Compute project.             Current default project.
---google-project         Google Compute zone.                Concourse worker's zone.
+--google-project         Google Compute project.             Current default project.
+--google-zone            Google Compute zone.                Concourse worker's zone.
 --google-storage-bucket  Google Compute Storage bucket.      Based on google-project value.
 --google-storage-key     Google Compute Storage key prefix.  Based on pipeline value.
 --fly                    Path to fly executable.             "fly"
@@ -67,6 +69,7 @@ done
 
 ytt=${ytt:-ytt}
 fly=${fly:-fly}
+yq=${yq:-yq}
 
 target=${target:-default}
 output=${output:-$(mktemp -d)}
@@ -76,13 +79,23 @@ git_tracking_branch=${git_tracking_branch:-$(git for-each-ref --format='%(upstre
 git_remote=${git_remote:-$(echo ${git_tracking_branch} | cut -d/ -f1)}
 git_repository_url=${git_repository_url:-$(git remote get-url ${git_remote})}
 
-if [[ ${git_repository_url} =~ ^((https|git)(:\/\/|@)github\.com[\/:])([^\/:]+)\/(.+).git$ ]]; then
+if [[ ${git_repository_url} =~ ^((https|git)(:\/\/|@)github\.com[\/:])([^\/:]+)\/(.+)[\.git]?$ ]]; then
   github_owner=${github_owner:-${BASH_REMATCH[4]}}
   github_repository=${github_repository:-${BASH_REMATCH[5]}}
 fi
 
 pipeline=${pipeline:-${github_owner}-${branch}}
 pipeline=${pipeline//[^[:word:]-]/-}
+
+if (which ${yq} >/dev/null); then
+  version=${version:-$(bash -c "${yq} \"\$@\"" yq -N e '.pipeline.version | select(.) ' - < base/base.yml)}
+  pre=${pre:-$(bash -c "${yq} \"\$@\"" yq -N e '.pipeline.pre | select(.) ' - < base/base.yml)}
+fi
+
+pre=${pre:-"build"}
+if [ "${pre}" == "none" ]; then
+  pre=""
+fi
 
 google_project=${google_project:-$(gcloud config get-value project)}
 google_zone=${google_zone:-'$(curl "http://metadata.google.internal/computeMetadata/v1/instance/zone" -H "Metadata-Flavor: Google" -s | cut -d / -f 4)'}
@@ -100,6 +113,8 @@ for variant in ${variants}; do
     --file base \
     --file ${variant} \
     --data-value "pipeline.name=${pipeline}" \
+    --data-value "pipeline.version=${version}" \
+    --data-value "pipeline.pre=${pre}" \
     --data-value "pipeline.variant=${variant}" \
     --data-value "repository.branch=${branch}" \
     --data-value "github.owner=${github_owner}" \
@@ -117,3 +132,4 @@ for variant in ${variants}; do
       "--config=${output}/${variant}.yml"
 
 done
+

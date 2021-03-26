@@ -22,6 +22,7 @@ from read_values import (
     read_short_value,
     read_unsigned_byte_value,
     read_unsigned_vl,
+    read_string_value,
 )
 from numeric_conversion import decimal_string_to_hex_string, int_to_hex_string
 from gnmsg_globals import global_protocol_state
@@ -270,10 +271,18 @@ def read_destroy_reply(properties, message_bytes, offset):
             message_bytes, offset
         )
 
+def read_exception_msg(properties, message_bytes, offset):
+    (properties["SerializedJavaObjectPart"], offset) = read_object_part(message_bytes, offset)
+    object_part, offset = read_object_header(message_bytes, offset)
+    (object_part["ExceptionMessageAndCallstack"], offset) = read_string_value(
+        message_bytes, object_part["Size"], offset
+    )
+    properties["StringRepresentationPart"] = object_part
 
 server_message_parsers = {
     "CONTAINS_KEY_RESPONSE": read_contains_key_response,
     "DESTROY_REPLY": read_destroy_reply,
+    "EXCEPTION": read_exception_msg,
     "PUT_REPLY": read_put_reply,
     "RESPONSE_CLIENT_PARTITION_ATTRIBUTES": read_partition_attributes,
 }

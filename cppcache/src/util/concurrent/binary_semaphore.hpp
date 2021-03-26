@@ -15,44 +15,32 @@
  * limitations under the License.
  */
 
-using System;
+#pragma once
 
-namespace Apache.Geode.Client.UnitTests
-{
-  using NUnit.Framework;
-  using Apache.Geode.DUnitFramework;
+#ifndef GEODE_UTIL_CONCURRENT_BINARY_SEMAPHORE_H_
+#define GEODE_UTIL_CONCURRENT_BINARY_SEMAPHORE_H_
 
-  [TestFixture]
-  [Category("unicast_only")]
-  public class CacheServerMsgs : UnitTests
-  {
-    Cache m_cache = null;
+#include <condition_variable>
+#include <mutex>
 
-    protected override ClientBase[] GetClients()
-    {
-      return null;
-    }
+namespace apache {
+namespace geode {
+namespace client {
+class binary_semaphore {
+ public:
+  explicit binary_semaphore(bool released);
 
-    [TestFixtureSetUp]
-    public override void InitTests()
-    {
-      base.InitTests();
-      CacheHelper.InitConfig("MessagesTest", "theCache", "SERVER", null,
-        null, null);
-      m_cache = CacheHelper.DCache;
-    }
+  void release();
+  void acquire();
 
-    [TestFixtureTearDown]
-    public override void EndTests()
-    {
-      try
-      {
-        CacheHelper.Close();
-      }
-      finally
-      {
-        base.EndTests();
-      }
-    }
-  }
-}
+ protected:
+  bool released_;
+  std::mutex mutex_;
+  std::condition_variable cv_;
+};
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache
+
+#endif /* GEODE_UTIL_CONCURRENT_BINARY_SEMAPHORE_H_ */

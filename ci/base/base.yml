@@ -36,6 +36,8 @@ packages:
 ---
 pipeline:
   name: develop
+  version: 1.15.0
+  pre: build
 
 github:
   owner: apache
