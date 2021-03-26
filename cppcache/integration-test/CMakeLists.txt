@@ -108,6 +108,8 @@ foreach(FILE ${SOURCES})
   target_link_libraries(${TEST}
     PRIVATE
       ACE::ACE
+      Boost::boost
+      Boost::iostreams
       test-cppcache-utils
       _WarningsAsError
       _CppCodeCoverage

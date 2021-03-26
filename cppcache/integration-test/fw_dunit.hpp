@@ -117,7 +117,6 @@ END_TASK(validate)
 
 #include <string>
 
-#include <ace/ACE.h>
 #include <signal.h>
 #include "TimeBomb.hpp"
 
@@ -318,13 +317,13 @@ class NamingContext {
    * is not found, the buf will contain the empty string "". Make sure the
    * buffer is big enough to hold whatever has have bound.
    */
-  virtual void getValue(const char* key, char* buf, size_t sizeOfBuf) = 0;
+  virtual std::string getValue(const std::string& key) = 0;
 
   /**
    * return the value by key, as an int using the string to int conversion
    * rules of atoi.
    */
-  virtual int getIntValue(const char* key) = 0;
+  virtual int getIntValue(const std::string& key) = 0;
 
   /** dump the entire context in LOG messages. */
   virtual void dump() = 0;
@@ -346,19 +345,19 @@ NamingContext* globals();
  */
 class TestException {
  public:
-  TestException(const char* msg, int lineno, const char* filename)
-      : m_message(const_cast<char*>(msg)),
+  TestException(const std::string& msg, int lineno, const std::string& filename)
+      : m_message(msg),
         m_lineno(lineno),
-        m_filename(const_cast<char*>(filename)) {}
+        m_filename(filename) {}
 
   void print() {
     fprintf(stdout, "#### TestException: %s in %s at line %d\n",
-            m_message.c_str(), m_filename, m_lineno);
+            m_message.c_str(), m_filename.c_str(), m_lineno);
     fflush(stdout);
   }
   std::string m_message;
   int m_lineno;
-  char* m_filename;
+  std::string m_filename;
 };
 
 int dmain(int argc, char* argv[]);
@@ -367,7 +366,7 @@ int dmain(int argc, char* argv[]);
 
 #ifndef __DUNIT_NO_MAIN__
 
-int ACE_TMAIN(int argc, ACE_TCHAR* argv[]) { return dunit::dmain(argc, argv); }
+int main(int argc, char* argv[]) { return dunit::dmain(argc, argv); }
 
 #endif  // __DUNIT_NO_MAIN__
 

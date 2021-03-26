@@ -57,48 +57,8 @@ bool isLocalServer = false;
 const std::string endPoints = CacheHelper::getTcrEndpoints(isLocalServer, 3);
 
 static bool isLocator = false;
-const char *locatorsG =
+const std::string locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
-
-std::string convertHostToCanonicalForm(const char *endpoints) {
-  if (endpoints == nullptr) return nullptr;
-  std::string hostString("");
-  uint16_t port = 0;
-  std::string endpointsStr(endpoints);
-  std::string endpointsStr1(endpoints);
-  // Parse this string to get all hostnames and port numbers.
-  std::string endpoint;
-  std::string::size_type length = endpointsStr.size();
-  std::string::size_type pos = 0;
-  ACE_TCHAR hostName[256], fullName[256];
-  pos = endpointsStr.find(':', 0);
-  if (pos != std::string::npos) {
-    endpoint = endpointsStr.substr(0, pos);
-    pos += 1;  // skip ':'
-    length -= (pos);
-    endpointsStr = endpointsStr.substr(pos, length);
-  } else {
-    hostString = "";
-    return "";
-  }
-  hostString = endpoint;
-  port = atoi(endpointsStr.c_str());
-  if (strcmp(hostString.c_str(), "localhost") == 0) {
-    ACE_OS::hostname(hostName, sizeof(hostName) - 1);
-    struct hostent *host;
-    host = ACE_OS::gethostbyname(hostName);
-    ACE_OS::snprintf(fullName, 256, "%s:%d", host->h_name, port);
-    return fullName;
-  }
-  pos = endpointsStr1.find('.', 0);
-  if (pos != std::string::npos) {
-    ACE_INET_Addr addr(endpoints);
-    addr.get_host_name(hostName, 256);
-    ACE_OS::snprintf(fullName, 256, "%s:%d", hostName, port);
-    return fullName;
-  }
-  return endpoints;
-}
 
 template <typename T>
 T randomValue(T maxValue) {
@@ -1130,11 +1090,19 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckGetAllTask)
       keysVector.push_back(keyPtr);
     }
 
-    ACE_Time_Value startTime = ACE_OS::gettimeofday();
+    auto startTime = std::chrono::steady_clock::now();
     auto valuesMap = dataReg->getAll(keysVector);
-    ACE_Time_Value interval = ACE_OS::gettimeofday() - startTime;
+    auto interval = std::chrono::steady_clock::now() - startTime;
+
+    auto interval_sec =
+        std::chrono::duration_cast<std::chrono::seconds>(interval).count();
+    auto interval_usec =
+        std::chrono::duration_cast<std::chrono::microseconds>(interval)
+            .count() %
+        1000;
+
     LOGDEBUG("NILKANTH: Time taken to execute getALL sec = %d and MSec = %d ",
-             interval.sec(), interval.usec());
+             interval_sec, interval_usec);
     ASSERT(valuesMap.size() == 100000, "GetAll returns wrong number of values");
 
     valuesMap = dataReg->getAll(keysVector, CacheableInt32::create(10000));

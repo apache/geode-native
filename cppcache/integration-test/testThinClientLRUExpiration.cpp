@@ -51,7 +51,7 @@ CacheHelper *cacheHelper = nullptr;
 bool isLocalServer = false;
 
 static bool isLocator = false;
-const char *locatorsG =
+const std::string locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
 const char *regionNames[] = {"DistRegionAck1", "DistRegionAck2",
@@ -303,7 +303,7 @@ END_TASK(StepTwoCase1)
 DUNIT_TASK(CLIENT1, StepThreeCase1)
   {
     doRgnOperations(regionNames[0], 100);
-    ACE_OS::sleep(1);
+    std::this_thread::sleep_for(std::chrono::seconds(1));
     auto n = getNumOfEntries(regionNames[0]);
     ASSERT(n == 100, "Expected 100 entries");
     LOG("StepThree complete.");
@@ -320,7 +320,7 @@ END_TASK(StepFourCase1)
 DUNIT_TASK(CLIENT1, StepFiveCase1)
   {
     // wair 5 sec so all enteries gone
-    ACE_OS::sleep(5);
+    std::this_thread::sleep_for(std::chrono::seconds(5));
     auto n = getNumOfEntries(regionNames[0]);
     ASSERT(n == 0, "Expected 0 entries");
     LOG("StepFive complete.");
@@ -328,7 +328,7 @@ DUNIT_TASK(CLIENT1, StepFiveCase1)
 END_TASK(StepFiveCase1)
 DUNIT_TASK(CLIENT2, StepSixCase1)
   {
-    ACE_OS::sleep(5);
+    std::this_thread::sleep_for(std::chrono::seconds(5));
     // all enteris has been deleted
     // int n = getNumOfEntries(regionNames[0],true);
     auto n = getNumOfEntries(regionNames[0]);
@@ -384,10 +384,10 @@ DUNIT_TASK(CLIENT2, StepFourCase2)
 END_TASK(StepFourCase2)
 DUNIT_TASK(CLIENT1, StepFiveCase2)
   {
-    ACE_OS::sleep(2);
+    std::this_thread::sleep_for(std::chrono::seconds(2));
     auto n = getNumOfEntries(regionNames[0]);
     ASSERT(n == 100, "Expected 100 entries");
-    ACE_OS::sleep(5);
+    std::this_thread::sleep_for(std::chrono::seconds(5));
     // value should be invalidate as passing true
     n = getNumOfEntries(regionNames[0], true);
     ASSERT(n == 0, "Expected 0 entries");
@@ -396,7 +396,7 @@ DUNIT_TASK(CLIENT1, StepFiveCase2)
 END_TASK(StepFiveCase2)
 DUNIT_TASK(CLIENT2, StepSixCase2)
   {
-    ACE_OS::sleep(2);
+    std::this_thread::sleep_for(std::chrono::seconds(2));
     auto n = getNumOfEntries(regionNames[0], true);
     ASSERT(n == 100, "Expected 100 entries");
     LOG("StepSixCase2 complete.");
@@ -455,7 +455,7 @@ DUNIT_TASK(CLIENT1, StepFiveCase3)
 END_TASK(StepFiveCase3)
 DUNIT_TASK(CLIENT2, StepSixCase3)
   {
-    ACE_OS::sleep(2);
+    std::this_thread::sleep_for(std::chrono::seconds(2));
     auto n = getNumOfEntries(regionNames[0]);
     ASSERT(n == 10, "Expected 10 entries");
     n = getNumOfEntries(regionNames[0], true);
@@ -512,12 +512,12 @@ DUNIT_TASK(CLIENT2, StepFourCase4)
 END_TASK(StepFourCase4)
 DUNIT_TASK(CLIENT1, StepFiveCase4)
   {
-    ACE_OS::sleep(2);
+    std::this_thread::sleep_for(std::chrono::seconds(2));
     auto n = getNumOfEntries(regionNames[0]);
     ASSERT(n == 5, "Expected 5 entries");
     n = getNumOfEntries(regionNames[0], true);
     ASSERT(n == 5, "Expected 5 entries");
-    ACE_OS::sleep(4);
+    std::this_thread::sleep_for(std::chrono::seconds(4));
     n = getNumOfEntries(regionNames[0]);
     ASSERT(n == 5, "Expected 5 entries");
     LOG("StepFiveCase4 "
@@ -526,7 +526,7 @@ DUNIT_TASK(CLIENT1, StepFiveCase4)
 END_TASK(StepFiveCase4)
 DUNIT_TASK(CLIENT2, StepSixCase4)
   {
-    ACE_OS::sleep(1);
+    std::this_thread::sleep_for(std::chrono::seconds(1));
     auto n = getNumOfEntries(regionNames[0]);
     ASSERT(n == 10, "Expected 10 entries");
     n = getNumOfEntries(regionNames[0], true);
@@ -596,7 +596,7 @@ DUNIT_TASK(CLIENT2, StepFourCase5)
 END_TASK(StepFourCase5)
 DUNIT_TASK(CLIENT1, StepFiveCase5)
   {
-    ACE_OS::sleep(2);
+    std::this_thread::sleep_for(std::chrono::seconds(2));
     auto n = getNumOfEntries(regionNames[0]);
     ASSERT(n == 5,
            "Expected "
@@ -607,7 +607,7 @@ DUNIT_TASK(CLIENT1, StepFiveCase5)
            "Expected "
            "5 "
            "entries");
-    ACE_OS::sleep(4);
+    std::this_thread::sleep_for(std::chrono::seconds(4));
     n = getNumOfEntries(regionNames[0]);
     ASSERT(n == 0,
            "Expected "
@@ -620,7 +620,7 @@ DUNIT_TASK(CLIENT1, StepFiveCase5)
 END_TASK(StepFiveCase5)
 DUNIT_TASK(CLIENT2, StepSixCase5)
   {
-    ACE_OS::sleep(2);
+    std::this_thread::sleep_for(std::chrono::seconds(2));
     auto n = getNumOfEntries(regionNames[0]);
     ASSERT(n == 5,
            "Expecte"
@@ -711,12 +711,12 @@ DUNIT_TASK(CLIENT2, StepFourCase6)
 END_TASK(StepFourCase6)
 DUNIT_TASK(CLIENT1, StepFiveCase6)
   {
-    ACE_OS::sleep(2);
+    std::this_thread::sleep_for(std::chrono::seconds(2));
     auto n = getNumOfEntries(regionNames[0]);
     ASSERT(n == 5, "Expected 5 entries");
     n = getNumOfEntries(regionNames[0], true);
     ASSERT(n == 5, "Expected 5 entries");
-    ACE_OS::sleep(4);
+    std::this_thread::sleep_for(std::chrono::seconds(4));
     n = getNumOfEntries(regionNames[0]);
     ASSERT(n == 5, "Expected 5 entries");
     LOG("StepFiveCase6 complete.");
@@ -724,7 +724,7 @@ DUNIT_TASK(CLIENT1, StepFiveCase6)
 END_TASK(StepFiveCase6)
 DUNIT_TASK(CLIENT2, StepSixCase6)
   {
-    ACE_OS::sleep(1);
+    std::this_thread::sleep_for(std::chrono::seconds(1));
     auto n = getNumOfEntries(regionNames[0]);
     ASSERT(n == 10, "Expected 10 entries");
     n = getNumOfEntries(regionNames[0], true);
@@ -771,21 +771,21 @@ DUNIT_TASK(CLIENT2, StepFourCase7)
 END_TASK(StepFourCase7)
 DUNIT_TASK(CLIENT1, StepFiveCase7)
   {
-    ACE_OS::sleep(15);
+    std::this_thread::sleep_for(std::chrono::seconds(15));
     ValidateDestroyRegion(regionNames[0]);
     LOG("StepFiveCase7 complete.");
   }
 END_TASK(StepFiveCase7)
 DUNIT_TASK(CLIENT2, StepSixCase7)
   {
-    ACE_OS::sleep(3);
+    std::this_thread::sleep_for(std::chrono::seconds(3));
     ValidateDestroyRegion(regionNames[0]);
     LOG("StepSixCase7 complete.");
   }
 END_TASK(StepSixCase7)
 DUNIT_TASK(CLIENT1, StepOneCase8)
   {
-    ACE_OS::sleep(10);
+    std::this_thread::sleep_for(std::chrono::seconds(10));
     // regionName, ettl, eit , rttl, rit,lel,endpoints,noOfEntry,rgnOpetation -
     // [put-0/get-5/destroy-3] ,destroyRgn - [true/false]
     // ,clientNotificationEnabled - [true/false] ,ExpirationAction
@@ -823,17 +823,17 @@ DUNIT_TASK(CLIENT2, StepFourCase8)
 END_TASK(StepFourCase8)
 DUNIT_TASK(CLIENT1, StepFiveCase8)
   {
-    ACE_OS::sleep(5);
+    std::this_thread::sleep_for(std::chrono::seconds(5));
     auto n = getNumOfEntries(regionNames[1]);
     ASSERT(n == 10, "Expected 0 entries");
-    ACE_OS::sleep(10);
+    std::this_thread::sleep_for(std::chrono::seconds(10));
     ValidateDestroyRegion(regionNames[1]);
     LOG("StepFiveCase8 complete.");
   }
 END_TASK(StepFiveCase8)
 DUNIT_TASK(CLIENT2, StepSixCase8)
   {
-    ACE_OS::sleep(2);
+    std::this_thread::sleep_for(std::chrono::seconds(2));
     ValidateDestroyRegion(regionNames[1]);
     LOG("StepSixCase8 complete.");
   }
@@ -861,7 +861,7 @@ DUNIT_TASK(CLIENT2, StepTwoCase9)
 END_TASK(StepTwoCase9)
 DUNIT_TASK(CLIENT1, StepThreeCase9)
   {
-    ACE_OS::sleep(2);
+    std::this_thread::sleep_for(std::chrono::seconds(2));
     doRgnOperations(regionNames[2], 10);
     auto n = getNumOfEntries(regionNames[2]);
     ASSERT(n == 5, "Expected 5 entries");
@@ -878,17 +878,17 @@ DUNIT_TASK(CLIENT2, StepFourCase9)
 END_TASK(StepFourCase9)
 DUNIT_TASK(CLIENT1, StepFiveCase9)
   {
-    ACE_OS::sleep(5);
+    std::this_thread::sleep_for(std::chrono::seconds(5));
     auto n = getNumOfEntries(regionNames[2]);
     ASSERT(n == 0, "Expected 0 entries");
-    ACE_OS::sleep(8);
+    std::this_thread::sleep_for(std::chrono::seconds(8));
     ValidateDestroyRegion(regionNames[2]);
     LOG("StepFiveCase9 complete.");
   }
 END_TASK(StepFiveCase9)
 DUNIT_TASK(CLIENT2, StepSixCase9)
   {
-    ACE_OS::sleep(3);
+    std::this_thread::sleep_for(std::chrono::seconds(3));
     ValidateDestroyRegion(regionNames[2]);
     LOG("StepSixCase9 complete.");
   }
@@ -932,17 +932,17 @@ DUNIT_TASK(CLIENT2, StepFourCase10)
 END_TASK(StepFourCase10)
 DUNIT_TASK(CLIENT1, StepFiveCase10)
   {
-    ACE_OS::sleep(5);
+    std::this_thread::sleep_for(std::chrono::seconds(5));
     auto n = getNumOfEntries(regionNames[3]);
     ASSERT(n == 0, "Expected 0 entries");
-    ACE_OS::sleep(10);
+    std::this_thread::sleep_for(std::chrono::seconds(10));
     ValidateDestroyRegion(regionNames[3]);
     LOG("StepFiveCase10 complete.");
   }
 END_TASK(StepFiveCase10)
 DUNIT_TASK(CLIENT2, StepSixCase10)
   {
-    ACE_OS::sleep(3);
+    std::this_thread::sleep_for(std::chrono::seconds(3));
     ValidateDestroyRegion(regionNames[3]);
     LOG("StepSixCase10 complete.");
   }
@@ -1021,7 +1021,7 @@ DUNIT_TASK(CLIENT2, StepFourCase11)
 END_TASK(StepFourCase11)
 DUNIT_TASK(CLIENT1, StepFiveCase11)
   {
-    ACE_OS::sleep(5);
+    std::this_thread::sleep_for(std::chrono::seconds(5));
     auto n = getNumOfEntries(regionNames[4]);
 
     ASSERT(regWriter->isWriterInvoked() == true, "Writer Should be invoked");
@@ -1058,7 +1058,7 @@ DUNIT_TASK(CLIENT2, StepSixCase11)
       so expect 5 entries instead of 0 earlier. */
     ASSERT(n == 5, "Expected 5 entries");
 
-    ACE_OS::sleep(3);
+    std::this_thread::sleep_for(std::chrono::seconds(3));
     LOG("StepSixCase11 complete.");
   }
 END_TASK(StepSixCase11)
@@ -1149,7 +1149,7 @@ DUNIT_TASK(CLIENT2, StepFourCase12)
 END_TASK(StepFourCase12)
 DUNIT_TASK(CLIENT1, StepFiveCase12)
   {
-    ACE_OS::sleep(5);
+    std::this_thread::sleep_for(std::chrono::seconds(5));
     auto n = getNumOfEntries(regionNames[5]);
 
     ASSERT(regWriter->isWriterInvoked() == true, "Writer Should be invoked");
@@ -1168,7 +1168,7 @@ DUNIT_TASK(CLIENT1, StepFiveCase12)
 END_TASK(StepFiveCase12)
 DUNIT_TASK(CLIENT2, StepSixCase12)
   {
-    ACE_OS::sleep(3);
+    std::this_thread::sleep_for(std::chrono::seconds(3));
     auto n = getNumOfEntries(regionNames[5]);
     ASSERT(regWriter->isWriterInvoked() == false,
            "Writer Should not be invoked");
@@ -1262,7 +1262,7 @@ DUNIT_TASK(CLIENT2, StepFourCase13)
 END_TASK(StepFourCase13)
 DUNIT_TASK(CLIENT1, StepFiveCase13)
   {
-    ACE_OS::sleep(5);
+    std::this_thread::sleep_for(std::chrono::seconds(5));
     auto n = getNumOfEntries(regionNames[5]);
 
     ASSERT(regWriter->isWriterInvoked() == true, "Writer Should be invoked");
@@ -1281,7 +1281,7 @@ DUNIT_TASK(CLIENT1, StepFiveCase13)
 END_TASK(StepFiveCase13)
 DUNIT_TASK(CLIENT2, StepSixCase13)
   {
-    ACE_OS::sleep(3);
+    std::this_thread::sleep_for(std::chrono::seconds(3));
     auto n = getNumOfEntries(regionNames[5]);
     ASSERT(regWriter->isWriterInvoked() == false,
            "Writer Should not be invoked");

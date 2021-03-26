@@ -58,7 +58,7 @@ bool isLocator = false;
 bool isLocalServer = false;
 
 const char *poolNames[] = {"Pool1", "Pool2", "Pool3"};
-const char *locHostPort =
+const std::string locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 bool isPoolConfig = false;  // To track if pool case is running
 const char *qRegionNames[] = {"Portfolios", "Positions", "Portfolios2",
@@ -83,7 +83,7 @@ void stepOne() {
     // ignore exception
   }
   isPoolConfig = true;
-  createPool(poolNames[0], locHostPort, nullptr, 0, true);
+  createPool(poolNames[0], locHostPort, {}, 0, true);
   createRegionAndAttachPool(qRegionNames[0], USE_ACK, poolNames[0]);
   createRegionAndAttachPool(qRegionNames[1], USE_ACK, poolNames[0]);
   createRegionAndAttachPool(qRegionNames[2], USE_ACK, poolNames[0]);
@@ -202,9 +202,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
       auto qry = qs->newQuery(resultsetQueriesOPL[i].query());
       auto results = qry->execute();
       if (!qh->verifyRS(results, resultsetRowCountsOPL[i])) {
-        char failmsg[100] = {0};
-        ACE_OS::sprintf(failmsg, "Query verify failed for query index %d", i);
-        ASSERT(false, failmsg);
+        ASSERT(false,
+               "Query verify failed for query index " + std::to_string(i));
       }
 
       auto rsptr = std::dynamic_pointer_cast<ResultSet>(results);
@@ -303,8 +302,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
                                         ? resultsetRowCounts[i]
                                         : resultsetRowCounts[i] *
                                               qh->getPortfolioNumSets()))) {
-          char failmsg[100] = {0};
-          ACE_OS::sprintf(failmsg, "Query verify failed for query index %d", i);
+          std::string failmsg =
+              "Query verify failed for query index " + std::to_string(i);
           ASSERT(false, failmsg);
         }
 
@@ -414,8 +413,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
                                         ? resultsetRowCountsPQ[i]
                                         : resultsetRowCountsPQ[i] *
                                               qh->getPortfolioNumSets()))) {
-          char failmsg[100] = {0};
-          ACE_OS::sprintf(failmsg, "Query verify failed for query index %d", i);
+          std::string failmsg =
+              "Query verify failed for query index " + std::to_string(i);
           ASSERT(false, failmsg);
         }
 
@@ -505,10 +504,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, DoQueryRSError)
 
         try {
           auto results = qry->execute();
+          std::string failmsg =
+              "Query exception didnt occur for index " + std::to_string(i);
 
-          char failmsg[100] = {0};
-          ACE_OS::sprintf(failmsg, "Query exception didnt occur for index %d",
-                          i);
           LOG(failmsg);
           FAIL(failmsg);
         } catch (apache::geode::client::QueryException &) {

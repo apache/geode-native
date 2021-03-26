@@ -40,7 +40,7 @@ static bool isLocalServer = false;
 static bool isLocator = false;
 static int numberOfLocators = 1;
 const char *endPoints = nullptr;
-const char *locatorsG =
+const std::string locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 
 using std::string;
@@ -273,12 +273,11 @@ int testXmlCacheCreationWithPools() {
       << std::endl;
 
   try {
-    std::string filePath = "valid_cache_pool.xml";
-    std::string duplicateFile;
-    CacheHelper::createDuplicateXMLFile(duplicateFile, filePath);
+    auto duplicateFile =
+        CacheHelper::createDuplicateXMLFile("valid_cache_pool.xml");
     cptr = std::make_shared<Cache>(
         cacheFactory.set("cache-xml-file", duplicateFile).create());
-    if (cptr->getPdxIgnoreUnreadFields() != true) {
+    if (!cptr->getPdxIgnoreUnreadFields()) {
       std::cout << "getPdxIgnoreUnreadFields should return true." << std::endl;
       return -1;
     } else {
@@ -417,9 +416,8 @@ int testXmlCacheCreationWithPools() {
 
   try {
     std::cout << "Testing invalid pool xml 1" << std::endl;
-    std::string filePath = "invalid_cache_pool.xml";
-    std::string duplicateFile;
-    CacheHelper::createDuplicateXMLFile(duplicateFile, filePath);
+    auto duplicateFile =
+        CacheHelper::createDuplicateXMLFile("invalid_cache_pool.xml");
     Cache cache = cacheFactory.set("cache-xml-file", duplicateFile).create();
     return -1;
   } catch (Exception &ex) {
@@ -430,9 +428,8 @@ int testXmlCacheCreationWithPools() {
 
   try {
     std::cout << "Testing invalid pool xml 2" << std::endl;
-    std::string filePath = "invalid_cache_pool2.xml";
-    std::string duplicateFile;
-    CacheHelper::createDuplicateXMLFile(duplicateFile, filePath);
+    auto duplicateFile =
+        CacheHelper::createDuplicateXMLFile("invalid_cache_pool2.xml");
     Cache cache = cacheFactory.set("cache-xml-file", duplicateFile).create();
     return -1;
   } catch (Exception &ex) {
@@ -443,9 +440,8 @@ int testXmlCacheCreationWithPools() {
 
   try {
     std::cout << "Testing invalid pool xml 3" << std::endl;
-    std::string filePath = "invalid_cache_pool3.xml";
-    std::string duplicateFile;
-    CacheHelper::createDuplicateXMLFile(duplicateFile, filePath);
+    auto duplicateFile =
+        CacheHelper::createDuplicateXMLFile("invalid_cache_pool3.xml");
     Cache cache = cacheFactory.set("cache-xml-file", duplicateFile).create();
     return -1;
   } catch (Exception &ex) {
@@ -456,9 +452,8 @@ int testXmlCacheCreationWithPools() {
 
   try {
     std::cout << "Testing invalid pool xml 4" << std::endl;
-    std::string filePath = "invalid_cache_pool4.xml";
-    std::string duplicateFile;
-    CacheHelper::createDuplicateXMLFile(duplicateFile, filePath);
+    auto duplicateFile =
+        CacheHelper::createDuplicateXMLFile("invalid_cache_pool4.xml");
     Cache cache = cacheFactory.set("cache-xml-file", duplicateFile).create();
     return -1;
   } catch (Exception &ex) {

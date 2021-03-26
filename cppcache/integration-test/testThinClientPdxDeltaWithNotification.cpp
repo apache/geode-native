@@ -35,7 +35,7 @@ CacheHelper *cacheHelper = nullptr;
 bool isLocalServer = false;
 
 static bool isLocator = false;
-const char *locatorsG =
+const std::string locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
@@ -78,12 +78,14 @@ CacheHelper *getHelper() {
   return cacheHelper;
 }
 
-void createPooledRegion(const char *name, bool ackMode, const char *locators,
-                        const char *poolname,
+void createPooledRegion(const std::string &name, bool ackMode,
+                        const std::string &locators,
+                        const std::string &poolname,
                         bool clientNotificationEnabled = false,
                         bool cachingEnable = true) {
   LOG("createRegion_Pool() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
+  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name.c_str(),
+          ackMode);
   fflush(stdout);
   auto regPtr =
       getHelper()->createPooledRegion(name, ackMode, locators, poolname,
@@ -92,7 +94,8 @@ void createPooledRegion(const char *name, bool ackMode, const char *locators,
   LOG("Pooled Region created.");
 }
 
-void createPooledExpirationRegion(const char *name, const char *poolname) {
+void createPooledExpirationRegion(const std::string &name,
+                                  const std::string &poolname) {
   LOG("createPooledExpirationRegion() entered.");
   // Entry time-to-live = 1 second.
   auto regPtr = getHelper()->createPooledRegionDiscOverFlow(
@@ -101,8 +104,9 @@ void createPooledExpirationRegion(const char *name, const char *poolname) {
       0, nullptr, ExpirationAction::LOCAL_INVALIDATE);
 }
 
-void createPooledLRURegion(const char *name, bool ackMode, const char *locators,
-                           const char *poolname,
+void createPooledLRURegion(const std::string &name, bool ackMode,
+                           const std::string &locators,
+                           const std::string &poolname,
                            bool clientNotificationEnabled = false,
                            bool cachingEnable = true) {
   LOG(" createPooledLRURegion entered");
@@ -114,10 +118,11 @@ void createPooledLRURegion(const char *name, bool ackMode, const char *locators,
   LOG(" createPooledLRURegion exited");
 }
 
-void createRegion(const char *name, bool ackMode,
+void createRegion(const std::string &name, bool ackMode,
                   bool clientNotificationEnabled = false) {
   LOG("createRegion() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
+  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name.c_str(),
+          ackMode);
   fflush(stdout);
   // ack, caching
   auto regPtr = getHelper()->createRegion(name, ackMode, true, nullptr,
@@ -126,7 +131,8 @@ void createRegion(const char *name, bool ackMode,
   LOG("Region created.");
 }
 
-void createLRURegion(const char *name, bool clientNotificationEnabled = false,
+void createLRURegion(const std::string &name,
+                     bool clientNotificationEnabled = false,
                      bool cachingEnable = true) {
   LOG(" createPooledLRURegion entered");
   auto regPtr = getHelper()->createRegionDiscOverFlow(
@@ -136,7 +142,7 @@ void createLRURegion(const char *name, bool clientNotificationEnabled = false,
   LOG(" createPooledLRURegion exited");
 }
 
-void createExpirationRegion(const char *name,
+void createExpirationRegion(const std::string &name,
                             bool clientNotificationEnabled = false,
                             bool cachingEnable = true) {
   LOG(" createPooledLRURegion entered");

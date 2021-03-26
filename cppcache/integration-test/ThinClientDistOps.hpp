@@ -56,7 +56,7 @@ static bool isLocalServer = false;
 static bool isLocator = false;
 static int numberOfLocators = 0;
 
-const char* locatorsG =
+const std::string locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 
 void initClient(const bool isthinClient, const bool redirectLog) {
@@ -183,12 +183,12 @@ void createRegion(const char* name, bool ackMode, const char* endpoints,
   ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
-void createPooledRegion(const char* name, bool ackMode, const char* locators,
-                        const char* poolname,
+void createPooledRegion(const std::string& name, bool ackMode, const std::string& locators,
+                        const std::string& poolname,
                         bool clientNotificationEnabled = false,
                         bool cachingEnable = true) {
   LOG("createRegion_Pool() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
+  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name.c_str(), ackMode);
   fflush(stdout);
   auto regPtr =
       getHelper()->createPooledRegion(name, ackMode, locators, poolname,
@@ -197,12 +197,13 @@ void createPooledRegion(const char* name, bool ackMode, const char* locators,
   LOG("Pooled Region created.");
 }
 
-void createPooledRegionSticky(const char* name, bool ackMode,
-                              const char* locators, const char* poolname,
+void createPooledRegionSticky(const std::string& name, bool ackMode,
+                              const std::string& locators,
+                              const std::string& poolname,
                               bool clientNotificationEnabled = false,
                               bool cachingEnable = true) {
   LOG("createRegion_Pool() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
+  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name.c_str(), ackMode);
   fflush(stdout);
   auto regPtr = getHelper()->createPooledRegionSticky(
       name, ackMode, locators, poolname, cachingEnable,
@@ -538,7 +539,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreatePoolForUpdateLocatorList)
     isMultiuserMode = false, int updateLocatorListInterval = 5000 )
     */
     initClient(true, true);
-    getHelper()->createPool("__TESTPOOL1_", locatorsG, nullptr, 0, false,
+    getHelper()->createPool("__TESTPOOL1_", locatorsG, {}, 0, false,
                             std::chrono::milliseconds::zero(), -1, -1, false);
     LOG("CreatePoolForUpdateLocatorList complete.");
   }
@@ -554,7 +555,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreatePoolForDontUpdateLocatorList)
     isMultiuserMode = false, int updateLocatorListInterval = 5000 )
     */
     initClient(true, true);
-    getHelper()->createPool("__TESTPOOL1_", locatorsG, nullptr, 0, false,
+    getHelper()->createPool("__TESTPOOL1_", locatorsG, {}, 0, false,
                             std::chrono::milliseconds::zero(), -1, -1, false);
     LOG("CreatePoolForDontUpdateLocatorList complete.");
   }

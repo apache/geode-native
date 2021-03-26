@@ -721,19 +721,23 @@ inline bool TcrEndpoint::compareTransactionIds(int32_t reqTransId,
 
 inline bool TcrEndpoint::handleIOException(const std::string& message,
                                            TcrConnection*& conn, bool) {
-  int32_t lastError = ACE_OS::last_error();
-  if (lastError == ECONNRESET || lastError == EPIPE || lastError == ENOTCONN) {
+  auto last_error = Utils::getLastError();
+  auto last_error_val = last_error.value();
+  if (last_error_val == ECONNRESET || last_error_val == EPIPE ||
+      last_error_val == ENOTCONN) {
     _GEODE_SAFE_DELETE(conn);
   } else {
     closeConnection(conn);
   }
+
   LOGFINE(
       "IO error during send for endpoint %s "
       "[errno: %d: %s]: %s",
-      m_name.c_str(), lastError, ACE_OS::strerror(lastError), message.c_str());
+      m_name.c_str(), last_error.value(), last_error.message().c_str(),
+      message.c_str());
   // EAGAIN =11, EWOULDBLOCK = 10035L, EPIPE = 32, ECONNRESET =10054L(An
   // existing connection was forcibly closed by the remote host.)
-  if (!(lastError == EAGAIN || lastError == EWOULDBLOCK /*||
+  if (!(last_error_val == EAGAIN || last_error_val == EWOULDBLOCK /*||
         lastError == ECONNRESET */
         /*|| lastError == EPIPE*/)) {
     // break from enclosing loop without retries
@@ -741,6 +745,7 @@ inline bool TcrEndpoint::handleIOException(const std::string& message,
     m_needToConnectInLock = true;
     return false;
   }
+
   std::this_thread::sleep_for(std::chrono::milliseconds(10));
   return true;
 }

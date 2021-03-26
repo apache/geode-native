@@ -171,7 +171,7 @@ void createServer(bool locator = false) {
   LOG("Starting SERVER1...");
   if (isLocalServer) {
     CacheHelper::initServer(1, "remotequery.xml",
-                            locator ? locatorsG : nullptr);
+                            locator ? locatorsG : std::string{});
   }
   LOG("SERVER1 started");
 }
@@ -179,7 +179,7 @@ void createServer(bool locator = false) {
 void createServer_XML() {
   LOG("Starting SERVER...");
   if (isLocalServer) {
-    CacheHelper::initServer(1, "serverDurableClient.xml", nullptr);
+    CacheHelper::initServer(1, "serverDurableClient.xml");
   }
   LOG("SERVER started");
 }

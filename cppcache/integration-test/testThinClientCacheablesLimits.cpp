@@ -39,7 +39,7 @@ using apache::geode::client::OutOfMemoryException;
 static bool isLocator = false;
 static bool isLocalServer = true;
 static int numberOfLocators = 1;
-const char *locatorsG =
+const std::string locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 #include "LocatorHelper.hpp"
 
@@ -102,8 +102,7 @@ const char *_regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepOne)
   {
-    initClientWithPool(true, "__TEST_POOL1__", locatorsG, nullptr, nullptr, 0,
-                       true);
+    initClientWithPool(true, "__TEST_POOL1__", locatorsG, {}, nullptr, 0, true);
     getHelper()->createPooledRegion(_regionNames[1], NO_ACK, locatorsG,
                                     "__TEST_POOL1__", false, false);
     LOG("StepOne complete.");

@@ -45,7 +45,7 @@ using apache::geode::client::testing::TallyWriter;
 static bool isLocalServer = false;
 static bool isLocator = false;
 static int numberOfLocators = 0;
-const char* locatorsG =
+const std::string locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 const char* poolName = "__TESTPOOL1_";
 std::shared_ptr<TallyListener> regListener;

@@ -77,7 +77,7 @@ static bool isLocator = false;
 const bool USE_ACK = true;
 const bool NO_ACK = false;
 
-const char *locatorsG =
+const std::string locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
 const char *regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
@@ -151,12 +151,14 @@ CacheHelper *getHelper() {
   ASSERT(cacheHelper != nullptr, "No cacheHelper initialized.");
   return cacheHelper;
 }
-void createPooledRegion(const char *name, bool ackMode, const char *locators,
-                        const char *poolname,
+void createPooledRegion(const std::string &name, bool ackMode,
+                        const std::string &locators,
+                        const std::string &poolname,
                         bool clientNotificationEnabled = false,
                         bool cachingEnable = true) {
   LOG("createRegion_Pool() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
+  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name.c_str(),
+          ackMode);
   fflush(stdout);
   auto regPtr =
       getHelper()->createPooledRegion(name, ackMode, locators, poolname,
@@ -1648,8 +1650,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstance)
     std::shared_ptr<CacheableDate> dateVal;
     wpiPtr = pIPtr->createWriter();
     time_t timeofday = 0;
-    const ACE_Time_Value currentTime = ACE_OS::gettimeofday();
-    timeofday = currentTime.sec();
+    timeofday =
+        std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
     auto datePtr = CacheableDate::create(timeofday);
     wpiPtr->setField("m_dateTime", datePtr);
     rptr->put(keyport, wpiPtr);
@@ -2208,10 +2210,11 @@ DUNIT_TASK_DEFINITION(CLIENT2, modifyPdxInstanceAndCheckLocally)
 
     std::shared_ptr<CacheableDate> dateVal;
     wpiPtr = pIPtr->createWriter();
-    time_t timeofday = 0;
-    const ACE_Time_Value currentTime = ACE_OS::gettimeofday();
-    timeofday = currentTime.sec();
+
+    auto timeofday =
+        std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
     auto datePtr = CacheableDate::create(timeofday);
+
     wpiPtr->setField("m_dateTime", datePtr);
     rptr->put(keyport, wpiPtr);
     newPiPtr = std::dynamic_pointer_cast<PdxInstance>(rptr->get(keyport));
