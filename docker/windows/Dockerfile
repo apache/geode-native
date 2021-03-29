@@ -39,7 +39,7 @@ RUN choco install `
 # Only for NUnit 2.6
 RUN choco install nunit.install --version 2.6.4 -confirm
 
-ARG GEODE_VERSION=1.13.1
+ARG GEODE_VERSION=1.13.2
 ENV GEODE_HOME C:\apache-geode-${GEODE_VERSION}
 RUN curl -L -s "https://www.apache.org/dyn/closer.cgi?action=download&filename=geode/%GEODE_VERSION%/apache-geode-%GEODE_VERSION%.tgz" | tar -zxvf - --exclude javadoc
 
