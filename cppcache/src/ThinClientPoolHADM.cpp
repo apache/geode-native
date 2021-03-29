@@ -34,7 +34,7 @@ ThinClientPoolHADM::ThinClientPoolHADM(const char* name,
                                        TcrConnectionManager& connManager)
     : ThinClientPoolDM(name, poolAttr, connManager),
       m_theTcrConnManager(connManager),
-      m_redundancySema(0),
+      redundancy_semaphore_(0),
       m_redundancyTask(nullptr),
       server_monitor_task_id_(ExpiryTask::invalid()) {
   m_redundancyManager = std::unique_ptr<ThinClientRedundancyManager>(
@@ -62,7 +62,7 @@ void ThinClientPoolHADM::startBackgroundThreads() {
   const auto interval = props.redundancyMonitorInterval();
   auto& manager = m_connManager.getCacheImpl()->getExpiryTaskManager();
   auto task = std::make_shared<FunctionExpiryTask>(
-      manager, [this]() { m_redundancySema.release(); });
+      manager, [this]() { redundancy_semaphore_.release(); });
 
   server_monitor_task_id_ =
       manager.schedule(std::move(task), std::chrono::seconds(1), interval);
@@ -144,13 +144,14 @@ bool ThinClientPoolHADM::postFailoverAction(TcrEndpoint*) {
 
 void ThinClientPoolHADM::redundancy(std::atomic<bool>& isRunning) {
   LOGFINE("ThinClientPoolHADM: Starting maintain redundancy thread.");
+
+  redundancy_semaphore_.acquire();
   while (isRunning) {
-    m_redundancySema.acquire();
-    if (isRunning && !m_connManager.isNetDown()) {
+    if (!m_connManager.isNetDown()) {
       m_redundancyManager->maintainRedundancyLevel();
-      while (m_redundancySema.tryacquire() != -1) {
-      }
     }
+
+    redundancy_semaphore_.acquire();
   }
   LOGFINE("ThinClientPoolHADM: Ending maintain redundancy thread.");
 }
@@ -181,7 +182,7 @@ void ThinClientPoolHADM::sendNotificationCloseMsgs() {
     auto& manager = m_connManager.getCacheImpl()->getExpiryTaskManager();
     manager.cancel(server_monitor_task_id_);
     m_redundancyTask->stopNoblock();
-    m_redundancySema.release();
+    redundancy_semaphore_.release();
     m_redundancyTask->wait();
     m_redundancyTask = nullptr;
     m_redundancyManager->sendNotificationCloseMsgs();
@@ -302,8 +303,9 @@ void ThinClientPoolHADM::sendNotConMesToAllregions() {
 std::shared_ptr<TcrEndpoint> ThinClientPoolHADM::createEP(
     const char* endpointName) {
   return std::make_shared<TcrPoolEndPoint>(
-      endpointName, m_connManager.getCacheImpl(), m_connManager.m_failoverSema,
-      m_connManager.m_cleanupSema, m_redundancySema, this);
+      endpointName, m_connManager.getCacheImpl(),
+      m_connManager.failover_semaphore_, m_connManager.cleanup_semaphore_,
+      redundancy_semaphore_, this);
 }
 
 }  // namespace client

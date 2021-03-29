@@ -906,7 +906,7 @@ void TcrMessage::writeMessageLength() {
                                            // the beginning.
 }
 
-void TcrMessage::startProcessChunk(ACE_Semaphore& finalizeSema) {
+void TcrMessage::startProcessChunk(binary_semaphore& finalizeSema) {
   if (m_msgTypeRequest == TcrMessage::EXECUTECQ_MSG_TYPE ||
       m_msgTypeRequest == TcrMessage::STOPCQ_MSG_TYPE ||
       m_msgTypeRequest == TcrMessage::CLOSECQ_MSG_TYPE ||
@@ -1530,7 +1530,7 @@ void TcrMessage::handleByteArrayResponse(
           }
           m_metadata->push_back(bucketServerLocations);
         }
-        LOGFINER("Metadata size is %", m_metadata->size());
+        LOGFINER("Metadata size is %zu", m_metadata->size());
       }
       break;
     }

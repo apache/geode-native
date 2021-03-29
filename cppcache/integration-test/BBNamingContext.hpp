@@ -44,7 +44,7 @@ class BBNamingContextClient {
   void close();
   int rebind(const char* key, const char* value, char* type = nullptr);
   void dump();
-  int resolve(const char* key, char* value, char* type = nullptr);
+  int resolve(const std::string& key, std::string& value, char* type = nullptr);
 };
 class BBNamingContextServerImpl;
 class BBNamingContextServer {

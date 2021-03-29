@@ -29,6 +29,7 @@
 #include <geode/RegionFactory.hpp>
 #include <geode/RegionShortcut.hpp>
 
+#include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
 #include "framework/Cluster.h"
 #include "framework/Framework.h"
@@ -40,6 +41,8 @@ using apache::geode::client::Cache;
 using apache::geode::client::Cacheable;
 using apache::geode::client::CacheableKey;
 using apache::geode::client::CacheableString;
+using apache::geode::client::CacheImpl;
+using apache::geode::client::CacheRegionHelper;
 using apache::geode::client::HashMapOfCacheable;
 using apache::geode::client::Pool;
 using apache::geode::client::Region;
@@ -47,24 +50,14 @@ using apache::geode::client::RegionShortcut;
 
 using std::chrono::minutes;
 
-std::string getClientLogName() {
-  std::string testSuiteName(::testing::UnitTest::GetInstance()
-                                ->current_test_info()
-                                ->test_suite_name());
-  std::string testCaseName(
-      ::testing::UnitTest::GetInstance()->current_test_info()->name());
-  std::string logFileName(testSuiteName + "/" + testCaseName + "/client.log");
-  return logFileName;
-}
+constexpr int ENTRIES = 113;
+constexpr int WARMUP_ENTRIES = 1000;
 
 Cache createCache() {
   using apache::geode::client::CacheFactory;
 
-  auto cache = CacheFactory()
-                   .set("log-level", "debug")  // needed for log checking
-                   .set("log-file", getClientLogName())
-                   .set("statistic-sampling-enabled", "false")
-                   .create();
+  auto cache =
+      CacheFactory().set("statistic-sampling-enabled", "false").create();
 
   return cache;
 }
@@ -88,70 +81,92 @@ std::shared_ptr<Region> setupRegion(Cache& cache,
   return region;
 }
 
-void putEntries(std::shared_ptr<Region> region, int numEntries,
-                int offsetForValue) {
+int putEntries(Cache& cache, std::shared_ptr<Region> region, int numEntries) {
+  CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(&cache);
+
+  auto numPutsRequiringHop = 0;
   for (int i = 0; i < numEntries; i++) {
     auto key = CacheableKey::create(i);
-    region->put(key, Cacheable::create(std::to_string(i + offsetForValue)));
+    auto value = Cacheable::create(std::to_string(i));
+    region->put(key, value);
+
+    if (cacheImpl->getAndResetNetworkHopFlag()) {
+      numPutsRequiringHop++;
+    }
   }
+
+  return numPutsRequiringHop;
 }
 
-void getEntries(std::shared_ptr<Region> region, int numEntries) {
+int putAllEntries(Cache& cache, std::shared_ptr<Region> region,
+                  int numEntries) {
+  CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(&cache);
+
+  HashMapOfCacheable map;
+  auto numPutAllsRequiringHop = 0;
+
+  for (int i = 0; i < numEntries; i++) {
+    auto key = CacheableKey::create(i);
+    auto value = Cacheable::create(std::to_string(i));
+    map.emplace(key, value);
+  }
+
+  region->putAll(map);
+
+  if (cacheImpl->getAndResetNetworkHopFlag()) {
+    numPutAllsRequiringHop++;
+  }
+
+  return numPutAllsRequiringHop;
+}
+
+int getEntries(Cache& cache, std::shared_ptr<Region> region, int numEntries) {
+  CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(&cache);
+
+  auto numGetsRequiringHop = 0;
   for (int i = 0; i < numEntries; i++) {
     auto key = CacheableKey::create(i);
     auto value = region->get(key);
-    ASSERT_NE(nullptr, value);
-  }
-}
 
-void removeLogFromPreviousExecution() {
-  std::string logFileName(getClientLogName());
-  std::ifstream previousTestLog(logFileName.c_str());
-  if (previousTestLog.good()) {
-    std::cout << "Removing log from previous execution: " << logFileName
-              << std::endl;
-    remove(logFileName.c_str());
-  }
-}
-
-void verifyMetadataWasRemovedAtFirstError() {
-  std::ifstream testLog(getClientLogName().c_str());
-  std::string fileLine;
-  bool ioErrors = false;
-  bool timeoutErrors = false;
-  bool metadataRemovedDueToIoErr = false;
-  bool metadataRemovedDueToTimeout = false;
-  std::regex timeoutRegex(
-      "sendRequestConnWithRetry: Giving up for endpoint(.*)reason: timed out "
-      "waiting for endpoint.");
-  std::regex ioErrRegex(
-      "sendRequestConnWithRetry: Giving up for endpoint(.*)reason: IO error "
-      "for endpoint.");
-  std::regex removingMetadataDueToIoErrRegex(
-      "Removing bucketServerLocation(.*)due to GF_IOERR");
-  std::regex removingMetadataDueToTimeoutRegex(
-      "Removing bucketServerLocation(.*)due to GF_TIMEOUT");
-
-  if (testLog.is_open()) {
-    while (std::getline(testLog, fileLine)) {
-      if (std::regex_search(fileLine, timeoutRegex)) {
-        timeoutErrors = true;
-      } else if (std::regex_search(fileLine, ioErrRegex)) {
-        ioErrors = true;
-      } else if (std::regex_search(fileLine, removingMetadataDueToIoErrRegex)) {
-        metadataRemovedDueToIoErr = true;
-      } else if (std::regex_search(fileLine,
-                                   removingMetadataDueToTimeoutRegex)) {
-        metadataRemovedDueToTimeout = true;
-      }
+    if (cacheImpl->getAndResetNetworkHopFlag()) {
+      numGetsRequiringHop++;
     }
+
+    EXPECT_EQ(i, std::stoi(value->toString()));
   }
-  EXPECT_EQ(timeoutErrors, metadataRemovedDueToTimeout);
-  EXPECT_EQ(ioErrors, metadataRemovedDueToIoErr);
-  EXPECT_NE(metadataRemovedDueToTimeout, metadataRemovedDueToIoErr);
+
+  return numGetsRequiringHop;
 }
 
-void putPartitionedRegionWithRedundancyServerGoesDown(bool singleHop) {
+int getAllEntries(Cache& cache, std::shared_ptr<Region> region,
+                  int numEntries) {
+  CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(&cache);
+
+  std::vector<std::shared_ptr<CacheableKey>> keys{};
+  HashMapOfCacheable expectedMap;
+  for (int i = 0; i < numEntries; i++) {
+    auto key = CacheableKey::create(i);
+    keys.push_back(key);
+    auto value = Cacheable::create(std::to_string(i));
+    expectedMap.emplace(key, value);
+  }
+
+  HashMapOfCacheable actualMap = region->getAll(keys);
+
+  int numGetAllsRequiringHop = 0;
+  if (cacheImpl->getAndResetNetworkHopFlag()) {
+    numGetAllsRequiringHop++;
+  }
+
+  for (int i = 0; i < numEntries; i++) {
+    auto key = CacheableKey::create(i);
+    EXPECT_EQ(expectedMap[key]->toString(), actualMap[key]->toString());
+  }
+
+  return numGetAllsRequiringHop;
+}
+
+int putget(bool useSingleHop) {
   Cluster cluster{LocatorCount{1}, ServerCount{2}};
   cluster.start();
   cluster.getGfsh()
@@ -163,23 +178,26 @@ void putPartitionedRegionWithRedundancyServerGoesDown(bool singleHop) {
       .execute();
 
   auto cache = createCache();
-  auto pool = createPool(cluster, cache, singleHop);
+  auto pool = createPool(cluster, cache, useSingleHop);
   auto region = setupRegion(cache, pool);
 
-  int ENTRIES = 30;
+  // Warmup to get metaData
+  putEntries(cache, region, WARMUP_ENTRIES);
 
-  putEntries(region, ENTRIES, 0);
+  auto numOpsRequiringHop = putEntries(cache, region, ENTRIES);
+  numOpsRequiringHop += getEntries(cache, region, ENTRIES);
 
   cluster.getServers()[1].stop();
 
-  putEntries(region, ENTRIES, 1);
+  numOpsRequiringHop += getEntries(cache, region, ENTRIES);
 
   cluster.getServers()[1].start();
 
-  putEntries(region, ENTRIES, 2);
+  numOpsRequiringHop += getEntries(cache, region, ENTRIES);
+  return numOpsRequiringHop;
 }
 
-void getPartitionedRegionWithRedundancyServerGoesDown(bool singleHop) {
+int putAllgetAll(bool useSingleHop) {
   Cluster cluster{LocatorCount{1}, ServerCount{2}};
   cluster.start();
   cluster.getGfsh()
@@ -191,74 +209,73 @@ void getPartitionedRegionWithRedundancyServerGoesDown(bool singleHop) {
       .execute();
 
   auto cache = createCache();
-  auto pool = createPool(cluster, cache, singleHop);
+  auto pool = createPool(cluster, cache, useSingleHop);
   auto region = setupRegion(cache, pool);
 
-  int ENTRIES = 30;
+  // Warmup to get metaData
+  putAllEntries(cache, region, WARMUP_ENTRIES);
 
-  putEntries(region, ENTRIES, 0);
-
-  getEntries(region, ENTRIES);
+  auto numOpsRequiringHop = putAllEntries(cache, region, ENTRIES);
+  numOpsRequiringHop += getAllEntries(cache, region, ENTRIES);
 
   cluster.getServers()[1].stop();
 
-  getEntries(region, ENTRIES);
+  numOpsRequiringHop += getAllEntries(cache, region, ENTRIES);
 
   cluster.getServers()[1].start();
 
-  getEntries(region, ENTRIES);
+  numOpsRequiringHop += getAllEntries(cache, region, ENTRIES);
+  return numOpsRequiringHop;
 }
 
 /**
  * In this test case we verify that in a partition region with redundancy
- * when one server goes down, all gets are still served.
+ * when one server goes down, all puts and gets are still served.
+ *
  * Single-hop is enabled in the client.
- * It can be observed in the logs that when one of the server goes down
- * the bucketServerLocations for that server are removed from the
- * client metadata.
+ *
  */
-TEST(PartitionRegionOpsTest,
-     getPartitionedRegionWithRedundancyServerGoesDownSingleHop) {
-  removeLogFromPreviousExecution();
-  getPartitionedRegionWithRedundancyServerGoesDown(true);
-  verifyMetadataWasRemovedAtFirstError();
+TEST(PartitionRegionWithRedundancyTest, putgetWithSingleHop) {
+  auto useSingleHop = true;
+  auto numSingleHopsAfterWarmup = putget(useSingleHop);
+  EXPECT_EQ(numSingleHopsAfterWarmup, 0);
 }
 
 /**
  * In this test case we verify that in a partition region with redundancy
- * when one server goes down, all puts are still served.
+ * when one server goes down, all putAlls and getAlls are still served.
+ *
  * Single-hop is enabled in the client.
- * It can be observed in the logs that when one of the server goes down
- * the bucketServerLocations for that server are removed from the
- * client metadata.
- * When the server is brought back again, the meta data is refreshed
- * after putting again values.
+ *
  */
-TEST(PartitionRegionOpsTest,
-     putPartitionedRegionWithRedundancyServerGoesDownSingleHop) {
-  removeLogFromPreviousExecution();
-  putPartitionedRegionWithRedundancyServerGoesDown(true);
-  verifyMetadataWasRemovedAtFirstError();
+TEST(PartitionRegionWithRedundancyTest, putAllgetAllWithSingleHop) {
+  auto useSingleHop = true;
+  auto numSingleHopsAfterWarmup = putAllgetAll(useSingleHop);
+  EXPECT_EQ(numSingleHopsAfterWarmup, 0);
 }
 
 /**
  * In this test case we verify that in a partition region with redundancy
- * when one server goes down, all gets are still served.
+ * when one server goes down, all puts and gets are still served.
+ *
  * Single hop is not enabled in the client.
+ *
  */
-TEST(PartitionRegionOpsTest,
-     getPartitionedRegionWithRedundancyServerGoesDownNoSingleHop) {
-  getPartitionedRegionWithRedundancyServerGoesDown(false);
+TEST(PartitionRegionWithRedundancyTest, putgetWithoutSingleHop) {
+  auto useSingleHop = false;
+  putget(useSingleHop);
 }
 
 /**
  * In this test case we verify that in a partition region with redundancy
- * when one server goes down, all puts are still served.
- * Single-hop is not enabled in the client.
+ * when one server goes down, all putAlls and getAlls are still served.
+ *
+ * Single hop is not enabled in the client.
+ *
  */
-TEST(PartitionRegionOpsTest,
-     putPartitionedRegionWithRedundancyServerGoesDownNoSingleHop) {
-  putPartitionedRegionWithRedundancyServerGoesDown(false);
+TEST(PartitionRegionWithRedundancyTest, putAllgetAllWithoutSingleHop) {
+  auto useSingleHop = false;
+  putAllgetAll(useSingleHop);
 }
 
 }  // namespace

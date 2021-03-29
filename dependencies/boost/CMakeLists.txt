@@ -28,6 +28,7 @@ set(B2_FLAGS
   --prefix=<INSTALL_DIR>/$<CONFIG>
   --with-system
   --with-log
+  --with-iostreams
   --layout=system
   address-model=${BUILD_BITS}
   link=static
@@ -135,6 +136,7 @@ find_package(Threads REQUIRED)
 
 add_boost_library(system DEPENDENCIES Boost::boost)
 add_boost_library(atomic DEPENDENCIES Boost::boost)
+add_boost_library(iostreams DEPENDENCIES Boost::boost)
 add_boost_library(thread DEPENDENCIES Threads::Threads Boost::atomic Boost::boost)
 add_boost_library(filesystem DEPENDENCIES Boost::system Boost::boost)
 add_boost_library(log DEPENDENCIES Boost::thread Boost::filesystem Boost::boost)

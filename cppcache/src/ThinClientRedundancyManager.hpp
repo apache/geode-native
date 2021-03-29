@@ -34,6 +34,7 @@
 #include "ServerLocation.hpp"
 #include "Task.hpp"
 #include "TcrMessage.hpp"
+#include "util/concurrent/binary_semaphore.hpp"
 #include "util/synchronized_map.hpp"
 
 namespace apache {
@@ -134,11 +135,11 @@ class ThinClientRedundancyManager {
                               TcrMessageReply* reply, bool isPrimary);
 
   inline bool isDurable();
-  std::unique_ptr<Task<ThinClientRedundancyManager>> m_periodicAckTask;
-  ACE_Semaphore m_periodicAckSema;
-  ExpiryTask::id_t process_event_id_map_task_id_;
 
-  // periodic check eventid map for notify ack and/or expiry
+  std::unique_ptr<Task<ThinClientRedundancyManager>> m_periodicAckTask;
+  binary_semaphore periodic_ack_semaphore_;
+  ExpiryTask::id_t process_event_id_map_task_id_{ExpiryTask::invalid()};
+
   void periodicAck(std::atomic<bool>& isRunning);
   void doPeriodicAck();
   time_point m_nextAck;                     // next ack time

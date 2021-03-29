@@ -33,7 +33,7 @@ using apache::geode::client::AuthenticatedView;
 static bool isLocalServer = false;
 static bool isLocator = false;
 static int numberOfLocators = 1;
-const char* locatorsG =
+const std::string locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 
 void setCacheListener(const std::string& regName,

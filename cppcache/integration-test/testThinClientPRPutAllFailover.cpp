@@ -47,7 +47,7 @@ using apache::geode::client::testing::TallyListener;
 std::shared_ptr<TallyListener> reg1Listener1;
 bool isLocalServer = false;
 static bool isLocator = false;
-const char *locatorsG =
+const std::string locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
 void setCacheListener(const char *regName,

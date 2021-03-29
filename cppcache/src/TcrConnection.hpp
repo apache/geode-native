@@ -29,6 +29,7 @@
 
 #include "Connector.hpp"
 #include "TcrMessage.hpp"
+#include "util/concurrent/binary_semaphore.hpp"
 #include "util/synchronized_set.hpp"
 
 #define DEFAULT_TIMEOUT_RETRIES 12
@@ -355,7 +356,7 @@ class TcrConnection {
   uint16_t m_port;
 
   // semaphore to synchronize with the chunked response processing thread
-  ACE_Semaphore m_chunksProcessSema;
+  binary_semaphore chunks_process_semaphore_;
 
   std::chrono::steady_clock::time_point m_creationTime;
   std::chrono::steady_clock::time_point m_lastAccessed;

@@ -24,9 +24,9 @@ using apache::geode::client::NotConnectedException;
 bool isLocalServer = false;
 bool isLocator = false;
 
-const char *locHostPort1 =
+const std::string locHostPort1 =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
-const char *locHostPort2 =
+const std::string locHostPort2 =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 2);
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2

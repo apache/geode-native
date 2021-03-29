@@ -109,6 +109,7 @@ foreach(FILE ${SOURCES})
     PRIVATE
       ACE::ACE
       Boost::boost
+      Boost::iostreams
       test-cppcache-utils
       _WarningsAsError
       _CppCodeCoverage
@@ -214,7 +215,6 @@ set_tests_properties(
     testThinClientPoolRedundancy
     testThinClientPoolServer
     testThinClientPutAll
-    testThinClientPutAllPRSingleHop
     testThinClientPutAllWithCallBackArgWithoutConcurrency
     testThinClientSecurityCQAuthorizationMU
     testThinClientTXFailover
@@ -225,7 +225,6 @@ set_tests_properties(
     testThinClientCqDurable
     testThinClientGatewayTest
     testThinClientHAFailoverRegex
-    testThinClientPRSingleHop
     testThinClientPoolAttrTest
     testThinClientPoolLocator
     testThinClientRemoteQueryTimeout

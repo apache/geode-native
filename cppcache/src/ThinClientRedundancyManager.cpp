@@ -56,7 +56,7 @@ ThinClientRedundancyManager::ThinClientRedundancyManager(
       m_locators(nullptr),
       m_servers(nullptr),
       m_periodicAckTask(nullptr),
-      process_event_id_map_task_id_(ExpiryTask::invalid()),
+      periodic_ack_semaphore_(1),
       m_HAenabled(false) {}
 
 std::list<ServerLocation> ThinClientRedundancyManager::selectServers(
@@ -680,7 +680,7 @@ void ThinClientRedundancyManager::close() {
     manager.cancel(process_event_id_map_task_id_);
 
     m_periodicAckTask->stopNoblock();
-    m_periodicAckSema.release();
+    periodic_ack_semaphore_.release();
     m_periodicAckTask->wait();
     m_periodicAckTask = nullptr;
   }
@@ -1113,13 +1113,11 @@ void ThinClientRedundancyManager::readyForEvents() {
 }
 
 void ThinClientRedundancyManager::periodicAck(std::atomic<bool>& isRunning) {
+  periodic_ack_semaphore_.acquire();
+
   while (isRunning) {
-    m_periodicAckSema.acquire();
-    if (isRunning) {
-      doPeriodicAck();
-      while (m_periodicAckSema.tryacquire() != -1) {
-      }
-    }
+    doPeriodicAck();
+    periodic_ack_semaphore_.acquire();
   }
 }
 
@@ -1201,7 +1199,7 @@ void ThinClientRedundancyManager::startPeriodicAck() {
   // start the periodic ACK task handler
   auto& manager = m_theTcrConnManager->getCacheImpl()->getExpiryTaskManager();
   auto task = std::make_shared<FunctionExpiryTask>(
-      manager, [this] { m_periodicAckSema.release(); });
+      manager, [this] { periodic_ack_semaphore_.release(); });
   process_event_id_map_task_id_ =
       manager.schedule(std::move(task), next_ack_inc_, next_ack_inc_);
   LOGFINE(

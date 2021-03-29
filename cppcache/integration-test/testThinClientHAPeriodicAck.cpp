@@ -97,7 +97,7 @@ CacheHelper *cacheHelper = nullptr;
 static bool isLocator = false;
 static bool isLocalServer = false;
 static int numberOfLocators = 1;
-const char *locatorsG =
+const std::string locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 int g_redundancyLevel = 0;
 bool g_poolConfig = false;

@@ -47,7 +47,7 @@ static int hashcode(char *str) {
 }
 
 static int getRandomNum() {
-  char *testName = ACE_OS::getenv("TESTNAME");
+  char *testName = std::getenv("TESTNAME");
 
   int seed = hashcode(testName) + 11;
 
@@ -57,9 +57,9 @@ static int getRandomNum() {
   // value specific to the test by way of the test name.
   // Whilst this approach is pessimal, it can not be
   // remedied as the test depend upon it.
-  ACE_OS::srand(seed);
+  std::srand(seed);
   // NOLINTNEXTLINE(clang-analyzer-security.insecureAPI.rand)
-  return (ACE_OS::rand() % 49999) + 14000;
+  return (std::rand() % 49999) + 14000;
 }
 
 static int G_BBPORT = getRandomNum();
@@ -77,7 +77,7 @@ class BBNamingContextClientImpl {
   void close();
   void dump();
   int rebind(const char *key, const char *value, char *type);
-  int resolve(const char *key, char *value, char *type);
+  int resolve(const std::string &key, std::string &value, char *);
 };
 
 class BBNamingContextServerImpl {
@@ -100,16 +100,11 @@ BBNamingContextClientImpl::BBNamingContextClientImpl()
 BBNamingContextClientImpl::~BBNamingContextClientImpl() { close(); }
 void BBNamingContextClientImpl::open() {
   try {
-    // char * bbPort = ACE_OS::getenv( "BB_PORT" );
-
-    char temp[8];
-    char *bbPort = ACE_OS::itoa(G_BBPORT, temp, 10);
-
-    char buf[1024];
-    ACE_OS::sprintf(buf, "localhost:%s", bbPort);
-    fprintf(stdout, "Blackboard client is talking on %s\n", buf);
+    // char * bbPort = std::getenv( "BB_PORT" );
+    std::string endpoint = "localhost:" + std::to_string(G_BBPORT);
+    fprintf(stdout, "Blackboard client is talking on %s\n", endpoint.c_str());
     fflush(stdout);
-    m_bbc = new FwkBBClient(buf);
+    m_bbc = new FwkBBClient(endpoint);
   } catch (FwkException &e) {
     FWKEXCEPTION("create bb client encounted Exception: " << e.what());
   } catch (...) {
@@ -177,8 +172,8 @@ void BBNamingContextClientImpl::dump() {
     FWKEXCEPTION("dump unknown exception\n");
   }
 }
-int BBNamingContextClientImpl::resolve(const char *key, char *value, char *) {
-  // fprintf(stdout, "resolve: key=%s\n", key);fflush(stdout);
+int BBNamingContextClientImpl::resolve(const std::string &key,
+                                       std::string &value, char *) {
   if (m_bbc == nullptr) {
     return -1;
   }
@@ -187,16 +182,11 @@ int BBNamingContextClientImpl::resolve(const char *key, char *value, char *) {
     return -1;
   }
   try {
-    std::string k(key);
-    std::string k1("1");
-    std::string v = m_bbc->getString(k, k1);
-    // fprintf(stdout, "resolve: got value %s for key=%s\n", v.c_str(),
-    // key);fflush(stdout);
-    ACE_OS::strncpy(value, v.c_str(), sizeof(value));
+    value = m_bbc->getString(key, "1");
     if (m_errCount > 0) {
       m_errCount = 0;
     }
-    return v.length() == 0 ? -1 : 0;
+    return value.length() == 0 ? -1 : 0;
   } catch (FwkException &e) {
     m_errCount++;
     FWKEXCEPTION("create resolve encounted Exception: " << e.what());
@@ -223,10 +213,10 @@ bool BBNamingContextClientImpl::checkValue(const std::string &k,
 
 BBNamingContextServerImpl::BBNamingContextServerImpl() {
   try {
-    // char * bbPort = ACE_OS::getenv( "BB_PORT" );
-    char temp[8];
-    char *bbPort = ACE_OS::itoa(G_BBPORT, temp, 10);
-    FwkStrCvt bPort(bbPort);
+    // char * bbPort = std::getenv( "BB_PORT" );
+
+    std::string port = std::to_string(G_BBPORT);
+    FwkStrCvt bPort(port);
     uint32_t prt = bPort.toUInt32();
     fprintf(stdout, "Blackboard server is on port:%u\n", prt);
     fflush(stdout);
@@ -273,7 +263,8 @@ int BBNamingContextClient::rebind(const char *key, const char *value,
                                   char *type) {
   return m_impl->rebind(key, value, type);
 }
-int BBNamingContextClient::resolve(const char *key, char *value, char *type) {
+int BBNamingContextClient::resolve(const std::string &key, std::string &value,
+                                   char *type) {
   return m_impl->resolve(key, value, type);
 }
 //

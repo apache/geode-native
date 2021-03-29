@@ -182,7 +182,7 @@ class TcrMessage {
                const SerializationRegistry& serializationRegistry,
                MemberListForVersionStamp& memberListForVersionStamp);
 
-  void startProcessChunk(ACE_Semaphore& finalizeSema);
+  void startProcessChunk(binary_semaphore& finalizeSema);
   // nullptr chunk means that this is the last chunk
   void processChunk(const std::vector<uint8_t>& chunk, int32_t chunkLen,
                     uint16_t endpointmemId,

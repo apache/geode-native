@@ -93,7 +93,7 @@ class GetRegionThread : public ACE_Task_Base {
 static int numberOfLocators = 1;
 bool isLocalServer = true;
 bool isLocator = true;
-const char *locHostPort =
+const std::string locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 GetRegionThread *getThread = nullptr;
 std::shared_ptr<Region> regionPtr;

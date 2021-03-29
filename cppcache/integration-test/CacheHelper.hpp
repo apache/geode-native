@@ -62,14 +62,14 @@ class CacheHelper {
   static void resetHelper();
 
   static std::string unitTestOutputFile();
-  static int getNumLocatorListUpdates(const char* s);
+  static int getNumLocatorListUpdates(const std::string& search);
 
   explicit CacheHelper(const char* member_id,
                        const std::shared_ptr<Properties>& configPtr = nullptr,
                        const bool noRootRegion = false);
 
   /** rootRegionPtr will still be null... */
-  CacheHelper(const char* member_id, const char* cachexml,
+  CacheHelper(const char* member_id, const std::string& cachexml,
               const std::shared_ptr<Properties>& configPtr = nullptr);
 
   explicit CacheHelper(const std::shared_ptr<Properties>& configPtr = nullptr,
@@ -89,7 +89,7 @@ class CacheHelper {
               const bool noRootRegion = false);
 
   CacheHelper(const bool isthinClient, const char* poolName,
-              const char* locators, const char* serverGroup,
+              const std::string& locators, const char* serverGroup,
               const std::shared_ptr<Properties>& configPtr = nullptr,
               int redundancy = 0, bool clientNotification = false,
               int subscriptionAckInterval = -1, int connections = -1,
@@ -124,23 +124,23 @@ class CacheHelper {
   std::shared_ptr<Region> getRegion(const std::string& name);
 
   std::shared_ptr<Region> createRegion(
-      const char* name, bool ack, bool caching,
+      const std::string& name, bool ack, bool caching,
       const std::shared_ptr<CacheListener>& listener,
       bool clientNotificationEnabled = false, bool scopeLocal = false,
       bool concurrencyCheckEnabled = false, int32_t tombstonetimeout = -1);
 
   std::shared_ptr<Region> createRegion(
-      const char* name, bool ack, bool caching = true,
+      const std::string& name, bool ack, bool caching = true,
       const std::chrono::seconds& ettl = std::chrono::seconds::zero(),
       const std::chrono::seconds& eit = std::chrono::seconds::zero(),
       const std::chrono::seconds& rttl = std::chrono::seconds::zero(),
       const std::chrono::seconds& rit = std::chrono::seconds::zero(),
       int lel = 0, ExpirationAction action = ExpirationAction::DESTROY,
-      const char* endpoints = nullptr, bool clientNotificationEnabled = false);
+      const std::string& endpoints = {}, bool clientNotificationEnabled = false);
 
   std::shared_ptr<Pool> createPool(
-      const std::string& poolName, const char* locators,
-      const char* serverGroup, int redundancy = 0,
+      const std::string& poolName, const std::string& locators,
+      const std::string& serverGroup, int redundancy = 0,
       bool clientNotification = false,
       std::chrono::milliseconds subscriptionAckInterval =
           std::chrono::milliseconds::zero(),
@@ -148,9 +148,9 @@ class CacheHelper {
       bool isMultiuserMode = false);
 
   // this will create pool even endpoints and locatorhost has been not defined
-  std::shared_ptr<Pool> createPool2(const char* poolName, const char* locators,
-                                    const char* serverGroup,
-                                    const char* servers = nullptr,
+  std::shared_ptr<Pool> createPool2(
+      const std::string& poolName, const std::string& locators,
+      const std::string& serverGroup, const std::string& servers = {},
                                     int redundancy = 0,
                                     bool clientNotification = false,
                                     int subscriptionAckInterval = -1,
@@ -159,12 +159,12 @@ class CacheHelper {
   void logPoolAttributes(std::shared_ptr<Pool>& pool);
 
   void createPoolWithLocators(
-      const std::string& name, const char* locators = nullptr,
+      const std::string& name, const std::string& locators = {},
       bool clientNotificationEnabled = false, int subscriptionRedundancy = -1,
       std::chrono::milliseconds subscriptionAckInterval =
           std::chrono::milliseconds::zero(),
       int connections = -1, bool isMultiuserMode = false,
-      const char* serverGroup = nullptr);
+      const std::string& serverGroup = {});
 
   std::shared_ptr<Region> createRegionAndAttachPool(
       const std::string& name, bool ack, const std::string& poolName,
@@ -185,12 +185,12 @@ class CacheHelper {
       const std::chrono::seconds& rit = std::chrono::seconds::zero(),
       int lel = 0, ExpirationAction action = ExpirationAction::DESTROY);
 
-  static void addServerLocatorEPs(const char* epList, PoolFactory& pfPtr,
+  static void addServerLocatorEPs(const std::string& epList, PoolFactory& pfPtr,
                                   bool poolLocators = true);
 
   std::shared_ptr<Region> createPooledRegion(
-      const char* name, bool ack, const char* locators = nullptr,
-      const char* poolName = "__TEST_POOL1__", bool caching = true,
+      const std::string& name, bool ack, const std::string& locators = {},
+      const std::string& poolName = "__TEST_POOL1__", bool caching = true,
       bool clientNotificationEnabled = false,
       const std::chrono::seconds& ettl = std::chrono::seconds::zero(),
       const std::chrono::seconds& eit = std::chrono::seconds::zero(),
@@ -201,8 +201,8 @@ class CacheHelper {
       ExpirationAction action = ExpirationAction::DESTROY);
 
   std::shared_ptr<Region> createPooledRegionConcurrencyCheckDisabled(
-      const char* name, bool ack, const char* locators = nullptr,
-      const char* poolName = "__TEST_POOL1__", bool caching = true,
+      const std::string& name, bool ack, const std::string& locators = {},
+      const std::string& poolName = "__TEST_POOL1__", bool caching = true,
       bool clientNotificationEnabled = false,
       bool concurrencyCheckEnabled = true,
       const std::chrono::seconds& ettl = std::chrono::seconds::zero(),
@@ -214,7 +214,7 @@ class CacheHelper {
       ExpirationAction action = ExpirationAction::DESTROY);
 
   std::shared_ptr<Region> createRegionDiscOverFlow(
-      const char* name, bool caching = true,
+      const std::string& name, bool caching = true,
       bool clientNotificationEnabled = false,
       const std::chrono::seconds& ettl = std::chrono::seconds::zero(),
       const std::chrono::seconds& eit = std::chrono::seconds::zero(),
@@ -223,8 +223,8 @@ class CacheHelper {
       int lel = 0, ExpirationAction action = ExpirationAction::DESTROY);
 
   std::shared_ptr<Region> createPooledRegionDiscOverFlow(
-      const char* name, bool ack, const char* locators = nullptr,
-      const char* poolName = "__TEST_POOL1__", bool caching = true,
+      const std::string& name, bool ack, const std::string& locators = {},
+      const std::string& poolName = "__TEST_POOL1__", bool caching = true,
       bool clientNotificationEnabled = false,
       const std::chrono::seconds& ettl = std::chrono::seconds::zero(),
       const std::chrono::seconds& eit = std::chrono::seconds::zero(),
@@ -235,8 +235,8 @@ class CacheHelper {
       ExpirationAction action = ExpirationAction::DESTROY);
 
   std::shared_ptr<Region> createPooledRegionSticky(
-      const char* name, bool ack, const char* locators = nullptr,
-      const char* poolName = "__TEST_POOL1__", bool caching = true,
+      const std::string& name, bool ack, const std::string& locators = {},
+      const std::string& poolName = "__TEST_POOL1__", bool caching = true,
       bool clientNotificationEnabled = false,
       const std::chrono::seconds& ettl = std::chrono::seconds::zero(),
       const std::chrono::seconds& eit = std::chrono::seconds::zero(),
@@ -247,8 +247,8 @@ class CacheHelper {
       ExpirationAction action = ExpirationAction::DESTROY);
 
   std::shared_ptr<Region> createPooledRegionStickySingleHop(
-      const char* name, bool ack, const char* locators = nullptr,
-      const char* poolName = "__TEST_POOL1__", bool caching = true,
+      const std::string& name, bool ack, const std::string& locators = {},
+      const std::string& poolName = "__TEST_POOL1__", bool caching = true,
       bool clientNotificationEnabled = false,
       const std::chrono::seconds& ettl = std::chrono::seconds::zero(),
       const std::chrono::seconds& eit = std::chrono::seconds::zero(),
@@ -290,13 +290,13 @@ class CacheHelper {
 
   static int staticJmxManagerPort;
 
-  static const char* getstaticLocatorHostPort1();
+  static std::string  getstaticLocatorHostPort1();
 
-  static const char* getstaticLocatorHostPort2();
+  static std::string  getstaticLocatorHostPort2();
 
-  static const char* getLocatorHostPort(int locPort);
+  static std::string  getLocatorHostPort(int locPort);
 
-  static const char* getLocatorHostPort(bool& isLocator, bool& isLocalServer,
+  static std::string  getLocatorHostPort(bool& isLocator, bool& isLocalServer,
                                         int numberOfLocators = 0);
 
   static const std::string getTcrEndpoints2(bool& isLocalServer,
@@ -306,18 +306,18 @@ class CacheHelper {
   static bool isServerCleanupCallbackRegistered;
   static void cleanupServerInstances();
 
-  static void initServer(int instance, const char* xml = nullptr,
-                         const char* locHostport = nullptr,
+  static void initServer(int instance, const std::string& xml = {},
+                         const std::string& locHostport = {},
                          const char* authParam = nullptr, bool ssl = false,
                          bool enableDelta = true, bool multiDS = false,
                          bool testServerGC = false, bool untrustedCert = false,
                          bool useSecurityManager = false);
 
-  static void createDuplicateXMLFile(std::string& originalFile, int hostport1,
-                                     int hostport2, int locport1, int locport2);
+  static std::string createDuplicateXMLFile(const std::string& source,
+                                            int hostport1, int hostport2,
+                                            int locport1, int locport2);
 
-  static void createDuplicateXMLFile(std::string& duplicateFile,
-                                     std::string& originalFile);
+  static std::string createDuplicateXMLFile(const std::string& source);
 
   static void closeServer(int instance);
 

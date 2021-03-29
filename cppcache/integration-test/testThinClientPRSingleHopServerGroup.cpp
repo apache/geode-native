@@ -51,7 +51,7 @@ using apache::geode::client::HashMapOfException;
 bool isLocalServer = false;
 
 static bool isLocator = false;
-const char *locatorsG =
+const std::string locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
 const char *group1 = "ABC";

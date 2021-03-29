@@ -22,13 +22,6 @@
 // Spawn.cpp,v 1.4 2004/01/07 22:40:16 shuston Exp
 
 // @TODO, this out this include list..
-#include <ace/OS_NS_stdio.h>
-#include <ace/OS_NS_fcntl.h>
-#include <ace/OS_NS_pwd.h>
-#include <ace/os_include/os_pwd.h>
-#include <ace/OS_NS_stdlib.h>
-#include <ace/OS_NS_string.h>
-#include <ace/OS_NS_unistd.h>
 
 #if defined(_WIN32)
 #if (FD_SETSIZE != 1024)
@@ -38,15 +31,15 @@
 
 #include <ace/Process.h>
 #include <ace/Log_Msg.h>
+#include <boost/iostreams/device/file_descriptor.hpp>
 
   namespace dunit {
 
   // Listing 1 code/ch10
   class Manager : virtual public ACE_Process {
    public:
-    explicit Manager(const ACE_TCHAR *program_name) : ACE_Process() {
-      ACE_OS::strncpy(programName_, program_name, sizeof(programName_));
-    }
+    explicit Manager(const std::string &program_name)
+        : ACE_Process{}, programName_{program_name} {}
 
     virtual int doWork(void) {
       // Spawn the new process; prepare() hook is called first.
@@ -58,45 +51,9 @@
       return pid;
     }
 
-    virtual int doWait(void) {
-      // Wait forever for my child to exit.
-      if (this->wait() == -1) {
-        ACE_ERROR_RETURN((LM_ERROR, ACE_TEXT("%p\n"), ACE_TEXT("wait")), -1);
-      }
-
-      // Dump whatever happened.
-      this->dumpRun();
-      return 0;
-    }
-    // Listing 1
-
    protected:
-    // Listing 3 code/ch10
-    virtual int dumpRun(void) {
-      if (ACE_OS::lseek(this->outputfd_, 0, SEEK_SET) == -1) {
-        ACE_ERROR_RETURN((LM_ERROR, ACE_TEXT("%p\n"), ACE_TEXT("lseek")), -1);
-      }
-
-      char buf[1024];
-      int length = 0;
-
-      // Read the contents of the error stream written
-      // by the child and print it out.
-      while ((length = static_cast<int>(
-                  ACE_OS::read(this->outputfd_, buf, sizeof(buf) - 1))) > 0) {
-        buf[length] = 0;
-        ACE_DEBUG((LM_DEBUG, ACE_TEXT("%C\n"), buf));
-      }
-
-      ACE_OS::close(this->outputfd_);
-      return 0;
-    }
-    // Listing 3
-
-    // Listing 2 code/ch10
-    // prepare() is inherited from ACE_Process.
     int prepare(ACE_Process_Options &options) override {
-      options.command_line("%s", this->programName_);
+      options.command_line("%s", this->programName_.c_str());
       if (this->setStdHandles(options) == -1 ||
           this->setEnvVariable(options) == -1) {
         return -1;
@@ -105,9 +62,22 @@
     }
 
     virtual int setStdHandles(ACE_Process_Options &options) {
-      ACE_OS::unlink(this->programName_);
-      this->outputfd_ = ACE_OS::open(this->programName_, O_RDWR | O_CREAT);
-      return options.set_handles(ACE_STDIN, ACE_STDOUT, this->outputfd_);
+      boost::filesystem::path p{this->programName_};
+
+      std::string tmp = p.filename().string();
+      boost::replace_all(tmp, " ", "_");
+      boost::replace_all(tmp, "-", "_");
+
+      auto stderr_path = p.parent_path();
+      stderr_path += boost::filesystem::path::preferred_separator;
+      stderr_path += tmp;
+
+      std::string stderr_name = stderr_path.string();
+      std::remove(stderr_name.c_str());
+
+      outputfd_.open(stderr_name,
+                     std::ios::in | std::ios::out | std::ios::trunc);
+      return options.set_handles(ACE_STDIN, ACE_STDOUT, outputfd_.handle());
     }
 
     virtual int setEnvVariable(ACE_Process_Options &options) {
@@ -120,8 +90,8 @@
     ~Manager() noexcept override = default;
 
    private:
-    ACE_HANDLE outputfd_;
-    ACE_TCHAR programName_[2048];
+    std::string programName_;
+    boost::iostreams::file_descriptor outputfd_;
   };
 
 }  // namespace dunit.
