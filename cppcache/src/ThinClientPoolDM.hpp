@@ -104,11 +104,12 @@ class ThinClientPoolDM
   void addConnection(TcrConnection* conn);
 
   std::shared_ptr<TcrEndpoint> addEP(ServerLocation& serverLoc);
-
   std::shared_ptr<TcrEndpoint> addEP(const std::string& endpointName);
+
+  virtual void clearPdxTypeRegistry();
+
   virtual void pingServer(std::atomic<bool>& isRunning);
   virtual void updateLocatorList(std::atomic<bool>& isRunning);
-  virtual void cliCallback(std::atomic<bool>& isRunning);
   virtual void pingServerLocal();
 
   ~ThinClientPoolDM() override;
@@ -131,6 +132,9 @@ class ThinClientPoolDM
   bool excludeConnection(TcrConnection*, std::set<ServerLocation>&);
   void incRegionCount();
   void decRegionCount();
+
+  void incConnectedEndpoints() override;
+  void decConnectedEndpoints() override;
 
   virtual void setStickyNull(bool isBGThread) {
     if (!isBGThread) m_manager->setStickyConnection(nullptr, false);
@@ -199,16 +203,15 @@ class ThinClientPoolDM
   void netDown();
   binary_semaphore update_locators_semaphore_;
   binary_semaphore ping_semaphore_;
-  binary_semaphore cli_callback_semaphore_;
   volatile bool m_isDestroyed;
   volatile bool m_destroyPending;
   volatile bool m_destroyPendingHADM;
-  void checkRegions();
   std::shared_ptr<RemoteQueryService> m_remoteQueryServicePtr;
+
+  void checkRegions();
   virtual void startBackgroundThreads();
   virtual void stopPingThread();
   virtual void stopUpdateLocatorListThread();
-  virtual void stopCliCallbackThread();
   virtual void cleanStickyConnections(std::atomic<bool>& isRunning);
   virtual TcrConnection* getConnectionFromQueue(bool timeout, GfErrType* error,
                                                 std::set<ServerLocation>&,
@@ -249,6 +252,7 @@ class ThinClientPoolDM
   // get endpoint using the endpoint string
   std::shared_ptr<TcrEndpoint> getEndpoint(const std::string& epNameStr);
 
+  bool clear_pdx_registry_{false};
   bool m_isSecurityOn;
   bool m_isMultiUserMode;
 
@@ -294,7 +298,6 @@ class ThinClientPoolDM
   std::unique_ptr<Task<ThinClientPoolDM>> m_connManageTask;
   std::unique_ptr<Task<ThinClientPoolDM>> m_pingTask;
   std::unique_ptr<Task<ThinClientPoolDM>> m_updateLocatorListTask;
-  std::unique_ptr<Task<ThinClientPoolDM>> m_cliCallbackTask;
   ExpiryTaskManager::id_type m_pingTaskId;
   ExpiryTaskManager::id_type m_updateLocatorListTaskId;
   ExpiryTaskManager::id_type m_connManageTaskId;
@@ -306,6 +309,7 @@ class ThinClientPoolDM
   void cleanStaleConnections(std::atomic<bool>& isRunning);
   void restoreMinConnections(std::atomic<bool>& isRunning);
   std::atomic<int32_t> m_clientOps;  // Actual Size of Pool
+  std::atomic<int32_t> connected_endpoints_;
   std::unique_ptr<statistics::PoolStatsSampler> m_PoolStatsSampler;
   std::unique_ptr<ClientMetadataService> m_clientMetadataService;
   friend class CacheImpl;

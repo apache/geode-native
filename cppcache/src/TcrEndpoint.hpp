@@ -89,7 +89,7 @@ class TcrEndpoint : public std::enable_shared_from_this<TcrEndpoint> {
   void stopNotifyReceiverAndCleanup();
   void stopNoBlock();
 
-  bool inline connected() const { return m_connected; }
+  bool inline connected() const { return connected_; }
 
   int inline numRegions() const { return m_numRegions; }
 
@@ -154,7 +154,7 @@ class TcrEndpoint : public std::enable_shared_from_this<TcrEndpoint> {
                                   bool isClientNotification, bool isSecondary,
                                   std::chrono::microseconds connectTimeout);
 
-  void setConnected(volatile bool connected = true) { m_connected = connected; }
+  void setConnected(bool connected = true);
   virtual ThinClientPoolDM* getPoolHADM() const { return nullptr; }
   bool isQueueHosted();
   std::recursive_mutex& getQueueHostedMutex() { return m_notifyReceiverLock; }
@@ -225,7 +225,7 @@ class TcrEndpoint : public std::enable_shared_from_this<TcrEndpoint> {
   volatile bool m_msgSent;
   volatile bool m_pingSent;
   bool m_isMultiUserMode;
-  volatile bool m_connected;
+  std::atomic<bool> connected_;
   bool m_isActiveEndpoint;
   ServerQueueStatus m_serverQueueStatus;
   int32_t m_queueSize;
