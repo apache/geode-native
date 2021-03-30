@@ -27,6 +27,7 @@
 
 #include "AppDomainContext.hpp"
 #include "Utils.hpp"
+#include "util/concurrent/binary_semaphore.hpp"
 
 namespace apache {
 namespace geode {
@@ -38,7 +39,7 @@ namespace client {
  */
 class TcrChunkedResult {
  private:
-  ACE_Semaphore* m_finalizeSema;
+  binary_semaphore* finalize_semaphore_;
   std::shared_ptr<Exception> m_ex;
   bool m_inSameThread;
 
@@ -52,13 +53,13 @@ class TcrChunkedResult {
 
  public:
   inline TcrChunkedResult()
-      : m_finalizeSema(nullptr),
+      : finalize_semaphore_(nullptr),
         m_ex(nullptr),
         m_inSameThread(false),
         m_dsmemId(0) {}
   virtual ~TcrChunkedResult() noexcept {}
-  void setFinalizeSemaphore(ACE_Semaphore* finalizeSema) {
-    m_finalizeSema = finalizeSema;
+  void setFinalizeSemaphore(binary_semaphore* finalizeSema) {
+    finalize_semaphore_ = finalizeSema;
   }
   virtual void setEndpointMemId(uint16_t dsmemId) { m_dsmemId = dsmemId; }
   uint16_t getEndpointMemId() { return m_dsmemId; }
@@ -83,8 +84,8 @@ class TcrChunkedResult {
       m_inSameThread = true;
       return;
     }
-    if (m_finalizeSema != nullptr) {
-      m_finalizeSema->release();
+    if (finalize_semaphore_ != nullptr) {
+      finalize_semaphore_->release();
     } else {
       throw NullPointerException("TcrChunkedResult::finalize: null semaphore");
     }
@@ -96,8 +97,8 @@ class TcrChunkedResult {
    */
   virtual void waitFinalize() const {
     if (m_inSameThread) return;
-    if (m_finalizeSema != nullptr) {
-      m_finalizeSema->acquire();
+    if (finalize_semaphore_ != nullptr) {
+      finalize_semaphore_->acquire();
     } else {
       throw NullPointerException(
           "TcrChunkedResult::waitFinalize: null semaphore");

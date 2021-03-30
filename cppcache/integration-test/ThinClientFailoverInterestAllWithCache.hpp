@@ -47,7 +47,7 @@ volatile bool g_poolLocators = false;
 #define SERVER2 s2p2
 static bool isLocator = false;
 // static int numberOfLocators = 0;
-const char* locatorsG =
+const std::string locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 #include "LocatorHelper.hpp"
 #include "ThinClientTasks_C2S2.hpp"
@@ -181,13 +181,13 @@ void _verifyCreated(const char* name, const char* key, int line) {
   LOG("Entry created.");
 }
 
-void createRegion(const char* name, bool ackMode, const char* endpoints,
+void createRegion(const std::string& name, bool ackMode, const std::string&,
                   bool clientNotificationEnabled = false) {
   LOG("createRegion() entered.");
-  LOGINFO("Creating region --  %s  ackMode is %d", name, ackMode);
+  LOGINFO("Creating region --  %s  ackMode is %d", name.c_str(), ackMode);
   // ack, caching
   auto regPtr = getHelper()->createRegion(name, ackMode, true, nullptr,
-                                          endpoints, clientNotificationEnabled);
+                                          clientNotificationEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }

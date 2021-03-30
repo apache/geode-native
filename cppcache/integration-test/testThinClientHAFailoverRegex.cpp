@@ -42,7 +42,7 @@ volatile int g_redundancyLevel = 0;
 
 static bool isLocator = false;
 static int numberOfLocators = 1;
-const char *locatorsG =
+const std::string locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 
 void initClient() {

@@ -33,7 +33,7 @@ ThinClientPoolHADM::ThinClientPoolHADM(const char* name,
                                        TcrConnectionManager& connManager)
     : ThinClientPoolDM(name, poolAttr, connManager),
       m_theTcrConnManager(connManager),
-      m_redundancySema(0),
+      redundancy_semaphore_(0),
       m_redundancyTask(nullptr),
       m_servermonitorTaskId(-1) {
   m_redundancyManager = std::unique_ptr<ThinClientRedundancyManager>(
@@ -144,19 +144,20 @@ bool ThinClientPoolHADM::postFailoverAction(TcrEndpoint*) {
 
 void ThinClientPoolHADM::redundancy(std::atomic<bool>& isRunning) {
   LOGFINE("ThinClientPoolHADM: Starting maintain redundancy thread.");
+
+  redundancy_semaphore_.acquire();
   while (isRunning) {
-    m_redundancySema.acquire();
-    if (isRunning && !m_connManager.isNetDown()) {
+    if (!m_connManager.isNetDown()) {
       m_redundancyManager->maintainRedundancyLevel();
-      while (m_redundancySema.tryacquire() != -1) {
-      }
     }
+
+    redundancy_semaphore_.acquire();
   }
   LOGFINE("ThinClientPoolHADM: Ending maintain redundancy thread.");
 }
 
 int ThinClientPoolHADM::checkRedundancy(const ACE_Time_Value&, const void*) {
-  m_redundancySema.release();
+  redundancy_semaphore_.release();
   return 0;
 }
 
@@ -188,7 +189,7 @@ void ThinClientPoolHADM::sendNotificationCloseMsgs() {
           m_servermonitorTaskId);
     }
     m_redundancyTask->stopNoblock();
-    m_redundancySema.release();
+    redundancy_semaphore_.release();
     m_redundancyTask->wait();
     m_redundancyTask = nullptr;
     m_redundancyManager->sendNotificationCloseMsgs();
@@ -316,8 +317,9 @@ void ThinClientPoolHADM::clearKeysOfInterestAllRegions() {
 std::shared_ptr<TcrEndpoint> ThinClientPoolHADM::createEP(
     const char* endpointName) {
   return std::make_shared<TcrPoolEndPoint>(
-      endpointName, m_connManager.getCacheImpl(), m_connManager.m_failoverSema,
-      m_connManager.m_cleanupSema, m_redundancySema, this);
+      endpointName, m_connManager.getCacheImpl(),
+      m_connManager.failover_semaphore_, m_connManager.cleanup_semaphore_,
+      redundancy_semaphore_, this);
 }
 
 }  // namespace client

@@ -56,6 +56,7 @@ ThinClientRedundancyManager::ThinClientRedundancyManager(
       m_locators(nullptr),
       m_servers(nullptr),
       m_periodicAckTask(nullptr),
+      periodic_ack_semaphore_(1),
       m_processEventIdMapTaskId(-1),
       m_nextAckInc(0),
       m_HAenabled(false) {}
@@ -683,7 +684,7 @@ void ThinClientRedundancyManager::close() {
           m_processEventIdMapTaskId);
     }
     m_periodicAckTask->stopNoblock();
-    m_periodicAckSema.release();
+    periodic_ack_semaphore_.release();
     m_periodicAckTask->wait();
     m_periodicAckTask = nullptr;
   }
@@ -1117,18 +1118,16 @@ void ThinClientRedundancyManager::readyForEvents() {
 
 int ThinClientRedundancyManager::processEventIdMap(const ACE_Time_Value&,
                                                    const void*) {
-  m_periodicAckSema.release();
+  periodic_ack_semaphore_.release();
   return 0;
 }
 
 void ThinClientRedundancyManager::periodicAck(std::atomic<bool>& isRunning) {
+  periodic_ack_semaphore_.acquire();
+
   while (isRunning) {
-    m_periodicAckSema.acquire();
-    if (isRunning) {
-      doPeriodicAck();
-      while (m_periodicAckSema.tryacquire() != -1) {
-      }
-    }
+    doPeriodicAck();
+    periodic_ack_semaphore_.acquire();
   }
 }
 

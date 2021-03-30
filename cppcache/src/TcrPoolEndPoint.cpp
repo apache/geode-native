@@ -26,9 +26,9 @@ namespace geode {
 namespace client {
 
 TcrPoolEndPoint::TcrPoolEndPoint(const std::string& name, CacheImpl* cache,
-                                 ACE_Semaphore& failoverSema,
-                                 ACE_Semaphore& cleanupSema,
-                                 ACE_Semaphore& redundancySema,
+                                 binary_semaphore& failoverSema,
+                                 binary_semaphore& cleanupSema,
+                                 binary_semaphore& redundancySema,
                                  ThinClientPoolDM* dm)
     : TcrEndpoint(name, cache, failoverSema, cleanupSema, redundancySema, dm),
       m_dm(dm) {}
@@ -74,7 +74,6 @@ GfErrType TcrPoolEndPoint::registerDM(bool, bool isSecondary, bool,
       return err;
     }
     m_dm->addConnection(newConn);
-    // m_connected = true;
     setConnected(true);
   }
 

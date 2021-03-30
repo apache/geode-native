@@ -47,7 +47,7 @@ std::string gfendpoints2 = "localhost:";
 bool isLocalServer1 = false;
 
 static bool isLocator1 = false;
-const char *locatorsG =
+const std::string locatorsG =
     CacheHelper::getLocatorHostPort(isLocator1, isLocalServer1, 1);
 std::shared_ptr<CacheableString> c1v11;
 std::shared_ptr<CacheableString> c1v12;

@@ -34,6 +34,7 @@
 #include "ErrType.hpp"
 #include "Queue.hpp"
 #include "TcrMessage.hpp"
+#include "util/concurrent/binary_semaphore.hpp"
 #include "util/synchronized_map.hpp"
 
 namespace apache {
@@ -52,7 +53,7 @@ class TcrEndpoint;
 class CqService : public std::enable_shared_from_this<CqService> {
   ThinClientBaseDM* m_tccdm;
   statistics::StatisticsFactory* m_statisticsFactory;
-  ACE_Semaphore m_notificationSema;
+  binary_semaphore notification_semaphore_;
 
   bool m_running;
   synchronized_map<std::unordered_map<std::string, std::shared_ptr<CqQuery>>,

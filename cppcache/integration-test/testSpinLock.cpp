@@ -40,7 +40,7 @@ perf::Semaphore *triggerB;
 perf::Semaphore *triggerM;
 
 spinlock_mutex lock;
-ACE_Time_Value *btime;
+std::chrono::steady_clock::time_point btime;
 
 class ThreadA : public ACE_Task_Base {
  public:
@@ -66,7 +66,7 @@ class ThreadB : public ACE_Task_Base {
     triggerB->acquire();
     {
       std::lock_guard<spinlock_mutex> lk(lock);
-      btime = new ACE_Time_Value(ACE_OS::gettimeofday());
+      btime = std::chrono::steady_clock::now();
       LOG("ThreadB: Acquired lock.");
       triggerM->release();
     }
@@ -89,7 +89,7 @@ DUNIT_TASK(s1p1, TwoThreads)
     // A runs, locks the spinlock, and triggers me. B is idle.
     triggerM->acquire();
     // A is now idle, but holds lock. Tell B to acquire the lock
-    ACE_Time_Value stime = ACE_OS::gettimeofday();
+    auto stime = std::chrono::steady_clock::now();
     triggerB->release();
     SLEEP(5000);
     // B will be stuck until we tell A to release it.
@@ -99,11 +99,13 @@ DUNIT_TASK(s1p1, TwoThreads)
 
     // Now diff btime (when B acquired the lock) and stime to see that it
     // took longer than the 5000 seconds before A released it.
-    ACE_Time_Value delta = *btime - stime;
-    char msg[1024];
-    sprintf(msg, "acquire delay was %lu\n", delta.msec());
+    auto delta =
+        std::chrono::duration_cast<std::chrono::milliseconds>(btime - stime)
+            .count();
+    std::string msg = "acquire delay was " + std::to_string(delta);
+
     LOG(msg);
-    ASSERT(delta.msec() >= 4900, "Expected 5 second or more spinlock delay");
+    ASSERT(delta >= 4900, "Expected 5 second or more spinlock delay");
     // Note the test is against 4900 instead of 5000 as there are some
     // measurement
     // issues. Often delta comes back as 4999 on linux.

@@ -42,7 +42,7 @@ static bool isLocator = false;
 static bool isLocalServer = false;
 static int numberOfLocators = 0;
 const char* poolName = "__TESTPOOL1_";
-const char* locatorsG =
+const std::string locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 
 const char* keys[] = {"Key-1", "Key-2", "Key-3", "Key-4"};

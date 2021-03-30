@@ -27,7 +27,7 @@ using apache::geode::client::CacheHelper;
 static int numberOfLocators = 1;
 bool isLocalServer = false;
 bool isLocator = false;
-const char* locatorsG =
+const std::string locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 
 }  // namespace

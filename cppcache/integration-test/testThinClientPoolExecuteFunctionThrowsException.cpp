@@ -47,7 +47,7 @@ bool isLocalServer = false;
 bool isLocator = false;
 bool isPoolWithEndpoint = false;
 
-const char *locHostPort =
+const std::string locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 const char *poolRegNames[] = {"partition_region", "PoolRegion2"};
 
@@ -119,11 +119,15 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(SERVER, StartS12)
   {
-    const char *lhp = nullptr;
-    if (!isPoolWithEndpoint) lhp = locHostPort;
+    std::string lhp;
+    if (!isPoolWithEndpoint) {
+      lhp = locHostPort;
+    }
+
     if (isLocalServer) {
       CacheHelper::initServer(1, "func_cacheserver1_pool.xml", lhp);
     }
+
     if (isLocalServer) {
       CacheHelper::initServer(2, "func_cacheserver2_pool.xml", lhp);
     }

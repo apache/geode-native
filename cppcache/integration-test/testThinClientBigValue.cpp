@@ -96,7 +96,7 @@ void verify(std::shared_ptr<CacheableBytes> &valuePtr, int size) {
 static int numberOfLocators = 1;
 bool isLocalServer = true;
 bool isLocator = true;
-const char *locHostPort =
+const std::string locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 
 DUNIT_TASK(SERVER1, StartServer)

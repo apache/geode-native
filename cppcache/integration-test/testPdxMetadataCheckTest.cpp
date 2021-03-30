@@ -69,7 +69,7 @@ bool isLocator = false;
 bool isLocalServer = false;
 
 const char *poolNames[] = {"Pool1", "Pool2", "Pool3"};
-const char *locHostPort =
+const std::string locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 bool isPoolConfig = false;  // To track if pool case is running
 // const char * qRegionNames[] = { "Portfolios", "Positions", "Portfolios2",
@@ -89,7 +89,7 @@ void initClient1(bool isPdxIgnoreUnreadFields = false) {
   // Create just one pool and attach all regions to that.
   initClient(true, isPdxIgnoreUnreadFields);
   isPoolConfig = true;
-  createPool(poolNames[0], locHostPort, nullptr, 0, false);
+  createPool(poolNames[0], locHostPort, {}, 0, false);
   createRegionAndAttachPool("DistRegionAck", USE_ACK, poolNames[0],
                             true /*Caching enabled*/);
   LOG("StepOne complete.");
@@ -99,7 +99,7 @@ void initClient2(bool isPdxIgnoreUnreadFields = false) {
   // Create just one pool and attach all regions to that.
   initClient(true, isPdxIgnoreUnreadFields);
   isPoolConfig = true;
-  createPool(poolNames[0], locHostPort, nullptr, 0,
+  createPool(poolNames[0], locHostPort, {}, 0,
              true /*ClientNotification enabled*/);
   createRegionAndAttachPool("DistRegionAck", USE_ACK, poolNames[0],
                             true /*Caching enabled*/);

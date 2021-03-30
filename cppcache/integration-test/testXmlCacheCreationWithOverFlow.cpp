@@ -36,7 +36,7 @@ int testXmlCacheCreationWithOverflow() {
   const uint32_t totalSubRegionsRoot1 = 2;
   const uint32_t totalRootRegions = 2;
 
-  char *path = ACE_OS::getenv("TESTSRC");
+  char *path = std::getenv("TESTSRC");
   std::string directory(path);
 
   std::cout << "create DistributedSytem with name=XML_CACHE_CREATION_TEST"

@@ -84,7 +84,7 @@ class ThinClientPoolHADM : public ThinClientPoolDM {
 
   GfErrType sendRequestToPrimary(TcrMessage& request, TcrMessageReply& reply);
 
-  void triggerRedundancyThread() override { m_redundancySema.release(); }
+  void triggerRedundancyThread() override { redundancy_semaphore_.release(); }
 
   bool isReadyForEvent() const;
 
@@ -107,7 +107,7 @@ class ThinClientPoolHADM : public ThinClientPoolDM {
   std::unique_ptr<ThinClientRedundancyManager> m_redundancyManager;
 
   TcrConnectionManager& m_theTcrConnManager;
-  ACE_Semaphore m_redundancySema;
+  binary_semaphore redundancy_semaphore_;
   std::unique_ptr<Task<ThinClientPoolHADM>> m_redundancyTask;
 
   void redundancy(std::atomic<bool>& isRunning);

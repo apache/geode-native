@@ -48,15 +48,15 @@ const char *TcrConnectionManager::NC_CleanUp = "NC CleanUp";
 TcrConnectionManager::TcrConnectionManager(CacheImpl *cache)
     : m_cache(cache),
       m_initGuard(false),
-      m_failoverSema(0),
+      failover_semaphore_(0),
       m_failoverTask(nullptr),
-      m_cleanupSema(0),
+      cleanup_semaphore_(0),
       m_cleanupTask(nullptr),
       m_pingTaskId(-1),
       m_servermonitorTaskId(-1),
       // Create the queues with flag to not delete the objects
-      m_notifyCleanupSemaList(false),
-      m_redundancySema(0),
+      notify_cleanup_semaphore_list_(false),
+      redundancy_semaphore_(0),
       m_redundancyTask(nullptr),
       m_isDurable(false),
       m_isNetDown(false) {
@@ -72,7 +72,7 @@ void TcrConnectionManager::init(bool isPool) {
   }
   auto &props = m_cache->getDistributedSystem().getSystemProperties();
   m_isDurable = !props.durableClientId().empty();
-  auto pingInterval = (props.pingInterval() / 2);
+  auto pingInterval = props.pingInterval();
   if (!isPool) {
     ACE_Event_Handler *connectionChecker =
         new ExpiryHandler_T<TcrConnectionManager>(
@@ -120,7 +120,7 @@ void TcrConnectionManager::close() {
 
   if (m_failoverTask != nullptr) {
     m_failoverTask->stopNoblock();
-    m_failoverSema.release();
+    failover_semaphore_.release();
     m_failoverTask->wait();
     m_failoverTask = nullptr;
   }
@@ -135,7 +135,7 @@ void TcrConnectionManager::readyForEvents() {
 TcrConnectionManager::~TcrConnectionManager() {
   if (m_cleanupTask != nullptr) {
     m_cleanupTask->stopNoblock();
-    m_cleanupSema.release();
+    cleanup_semaphore_.release();
     m_cleanupTask->wait();
     // Clean notification lists if something remains in there; see bug #250
     cleanNotificationLists();
@@ -207,9 +207,9 @@ TcrEndpoint *TcrConnectionManager::addRefToTcrEndpoint(std::string endpointName,
   const auto &find = m_endpoints.find(endpointName);
   if (find == m_endpoints.end()) {
     // this endpoint does not exist
-    ep = std::make_shared<TcrEndpoint>(endpointName, m_cache, m_failoverSema,
-                                       m_cleanupSema, m_redundancySema, dm,
-                                       false);
+    ep = std::make_shared<TcrEndpoint>(endpointName, m_cache,
+                                       failover_semaphore_, cleanup_semaphore_,
+                                       redundancy_semaphore_, dm, false);
     m_endpoints.emplace(endpointName, ep);
   } else {
     ep = find->second;
@@ -276,21 +276,20 @@ int TcrConnectionManager::checkConnection(const ACE_Time_Value &,
 
 int TcrConnectionManager::checkRedundancy(const ACE_Time_Value &,
                                           const void *) {
-  m_redundancySema.release();
+  redundancy_semaphore_.release();
   return 0;
 }
 
 void TcrConnectionManager::failover(std::atomic<bool> &isRunning) {
   LOGFINE("TcrConnectionManager: starting failover thread");
+
+  failover_semaphore_.acquire();
   while (isRunning) {
-    m_failoverSema.acquire();
-    if (isRunning && !m_isNetDown) {
+    if (!m_isNetDown) {
       try {
         std::lock_guard<decltype(m_distMngrsLock)> guard(m_distMngrsLock);
         for (const auto &it : m_distMngrs) {
           it->failover();
-        }
-        while (m_failoverSema.tryacquire() != -1) {
         }
       } catch (const Exception &e) {
         LOGERROR(e.what());
@@ -302,7 +301,10 @@ void TcrConnectionManager::failover(std::atomic<bool> &isRunning) {
             "different endpoint");
       }
     }
+
+    failover_semaphore_.acquire();
   }
+
   LOGFINE("TcrConnectionManager: ending failover thread");
 }
 
@@ -409,42 +411,36 @@ void TcrConnectionManager::revive() {
 
 void TcrConnectionManager::redundancy(std::atomic<bool> &isRunning) {
   LOGFINE("Starting subscription maintain redundancy thread.");
+  redundancy_semaphore_.acquire();
+
   while (isRunning) {
-    m_redundancySema.acquire();
-    if (isRunning && !m_isNetDown) {
+    if (!m_isNetDown) {
       m_redundancyManager->maintainRedundancyLevel();
-      while (m_redundancySema.tryacquire() != -1) {
-      }
     }
+
+    redundancy_semaphore_.acquire();
   }
   LOGFINE("Ending subscription maintain redundancy thread.");
 }
 
 void TcrConnectionManager::addNotificationForDeletion(
     Task<TcrEndpoint> *notifyReceiver, TcrConnection *notifyConnection,
-    ACE_Semaphore &notifyCleanupSema) {
+    binary_semaphore &notifyCleanupSema) {
   std::lock_guard<decltype(m_notificationLock)> guard(m_notificationLock);
   m_connectionReleaseList.put(notifyConnection);
   m_receiverReleaseList.put(notifyReceiver);
-  m_notifyCleanupSemaList.put(&notifyCleanupSema);
+  notify_cleanup_semaphore_list_.put(&notifyCleanupSema);
 }
 
 void TcrConnectionManager::cleanup(std::atomic<bool> &isRunning) {
   LOGFINE("TcrConnectionManager: starting cleanup thread");
-  do {
-    //  If we block on acquire, the queue must be empty (precondition).
-    if (m_receiverReleaseList.size() == 0) {
-      LOGDEBUG(
-          "TcrConnectionManager::cleanup(): waiting to acquire cleanup "
-          "semaphore.");
-      m_cleanupSema.acquire();
-    }
+
+  cleanup_semaphore_.acquire();
+
+  while (isRunning) {
     cleanNotificationLists();
-
-    while (m_cleanupSema.tryacquire() != -1) {
-    }
-
-  } while (isRunning);
+    cleanup_semaphore_.acquire();
+  }
 
   LOGFINE("TcrConnectionManager: ending cleanup thread");
   //  Postcondition - all notification channels should be cleaned up by the end
@@ -454,7 +450,7 @@ void TcrConnectionManager::cleanup(std::atomic<bool> &isRunning) {
 void TcrConnectionManager::cleanNotificationLists() {
   Task<TcrEndpoint> *notifyReceiver;
   TcrConnection *notifyConnection;
-  ACE_Semaphore *notifyCleanupSema;
+  binary_semaphore *semaphore;
 
   while (true) {
     {
@@ -462,12 +458,12 @@ void TcrConnectionManager::cleanNotificationLists() {
       notifyReceiver = m_receiverReleaseList.get();
       if (!notifyReceiver) break;
       notifyConnection = m_connectionReleaseList.get();
-      notifyCleanupSema = m_notifyCleanupSemaList.get();
+      semaphore = notify_cleanup_semaphore_list_.get();
     }
     notifyReceiver->wait();
     //_GEODE_SAFE_DELETE(notifyReceiver);
     _GEODE_SAFE_DELETE(notifyConnection);
-    notifyCleanupSema->release();
+    semaphore->release();
   }
 }
 

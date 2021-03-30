@@ -33,7 +33,7 @@ server-group having the region.
 bool isLocalServer = false;
 bool isLocator = false;
 
-const char *locHostPort =
+const std::string locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 const char *poolRegNames[] = {"PoolRegion1", "PoolRegion2", "PoolRegion3"};
 const char *poolName = "__TEST_POOL1__";
@@ -83,7 +83,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StartClient2)
   {
     initClient(true);
     // Create Pool with no server group
-    getHelper()->createPool(poolName, locHostPort, nullptr);
+    getHelper()->createPool(poolName, locHostPort, {});
 
     getHelper()->createRegionAndAttachPool(poolRegNames[0], USE_ACK,
                                            "__TEST_POOL1__");

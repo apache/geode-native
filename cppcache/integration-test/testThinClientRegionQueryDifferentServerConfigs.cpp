@@ -44,7 +44,7 @@ using apache::geode::client::QueryService;
 bool isLocalServer = false;
 bool isLocator = false;
 const char *poolNames[] = {"Pool1", "Pool2", "Pool3"};
-const char *locHostPort =
+const std::string locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
 const char *qRegionNames[] = {"Portfolios", "Positions"};

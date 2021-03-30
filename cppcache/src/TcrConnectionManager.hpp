@@ -89,7 +89,7 @@ class TcrConnectionManager {
 
   void addNotificationForDeletion(Task<TcrEndpoint>* notifyReceiver,
                                   TcrConnection* notifyConnection,
-                                  ACE_Semaphore& notifyCleanupSema);
+                                  binary_semaphore& notifyCleanupSema);
 
   void processMarker();
 
@@ -107,7 +107,7 @@ class TcrConnectionManager {
       TcrHADistributionManager* theHADM = nullptr,
       ThinClientRegion* region = nullptr);
 
-  inline void triggerRedundancyThread() { m_redundancySema.release(); }
+  inline void triggerRedundancyThread() { redundancy_semaphore_.release(); }
 
   inline void acquireRedundancyLock() {
     m_redundancyManager->acquireRedundancyLock();
@@ -142,7 +142,7 @@ class TcrConnectionManager {
   std::list<ThinClientBaseDM*> m_distMngrs;
   std::recursive_mutex m_distMngrsLock;
 
-  ACE_Semaphore m_failoverSema;
+  binary_semaphore failover_semaphore_;
   std::unique_ptr<Task<TcrConnectionManager>> m_failoverTask;
 
   bool removeRefToEndpoint(TcrEndpoint* ep, bool keepEndpoint = false);
@@ -152,16 +152,16 @@ class TcrConnectionManager {
   void initializeHAEndpoints(const char* endpointsStr);
   void removeHAEndpoints();
 
-  ACE_Semaphore m_cleanupSema;
+  binary_semaphore cleanup_semaphore_;
   std::unique_ptr<Task<TcrConnectionManager>> m_cleanupTask;
 
   ExpiryTaskManager::id_type m_pingTaskId;
   ExpiryTaskManager::id_type m_servermonitorTaskId;
   Queue<Task<TcrEndpoint>*> m_receiverReleaseList;
   Queue<TcrConnection*> m_connectionReleaseList;
-  Queue<ACE_Semaphore*> m_notifyCleanupSemaList;
+  Queue<binary_semaphore*> notify_cleanup_semaphore_list_;
 
-  ACE_Semaphore m_redundancySema;
+  binary_semaphore redundancy_semaphore_;
   std::unique_ptr<Task<TcrConnectionManager>> m_redundancyTask;
   std::recursive_mutex m_notificationLock;
   bool m_isDurable;

@@ -50,7 +50,7 @@ using testobject::Position;
 bool isLocator = false;
 bool isLocalServer = false;
 const char *poolNames[] = {"Pool1", "Pool2", "Pool3"};
-const char *locHostPort =
+const std::string locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
 const char *qRegionNames[] = {"Portfolios", "Positions"};
@@ -71,7 +71,7 @@ void clientOperations() {
   }
 
   std::shared_ptr<Pool> pool1 = nullptr;
-  pool1 = createPool(poolNames[0], locHostPort, nullptr, 0, true);
+  pool1 = createPool(poolNames[0], locHostPort, {}, 0, true);
   createRegionAndAttachPool(qRegionNames[0], USE_ACK, poolNames[0]);
 
   auto rptr = getHelper()->cachePtr->getRegion(qRegionNames[0]);

@@ -21,9 +21,11 @@
 #define GEODE_INTEGRATION_TEST_TIMEBOMB_H_
 
 #include <ace/Task.h>
-#include <ace/OS.h>
-#include <ace/Time_Value.h>
 #include <assert.h>
+
+#include <thread>
+
+#include "Utils.hpp"
 
 #define MAX_CLIENT 10
 
@@ -66,15 +68,16 @@ class TimeBomb : public ACE_Task_Base {
   }
 
  public:
-  ACE_Time_Value m_sleep;
+  std::chrono::seconds m_sleep;
 
   explicit TimeBomb(void (*cleanupFunc)() = nullptr)
       : m_sleep(0) /* UNUSED , m_numberOfClient( -1 )*/
   {
-    char* sleepEnv = ACE_OS::getenv("TIMEBOMB");
-    if (sleepEnv != nullptr) {
-      m_sleep.sec(atol(sleepEnv));
+    std::string sleepEnv = apache::geode::client::Utils::getEnv("TIMEBOMB");
+    if (!sleepEnv.empty()) {
+      m_sleep = std::chrono::seconds{std::stoi(sleepEnv)};
     }
+
     m_cleanupCallback = cleanupFunc;
     arm();  // starting
   }
@@ -88,17 +91,20 @@ class TimeBomb : public ACE_Task_Base {
   }
 
   int svc() override {
-    if (m_sleep == ACE_Time_Value(0)) {
+    if (m_sleep == std::chrono::seconds{}) {
       printf("###### TIMEBOMB Disabled. ######\n");
       fflush(stdout);
       return 0;
     }
-    ACE_Time_Value start = ACE_OS::gettimeofday();
-    ACE_Time_Value now = ACE_OS::gettimeofday();
+
+    auto start = std::chrono::steady_clock::now();
+    decltype(start) now;
+
     do {
-      ACE_OS::sleep(1);
-      now = ACE_OS::gettimeofday();
-    } while (now - start < m_sleep);
+      std::this_thread::sleep_for(std::chrono::seconds(1));
+      now = std::chrono::steady_clock::now();
+    } while ((now - start) < m_sleep);
+
     printf("####### ERROR: TIMEBOMB WENT OFF, TEST TIMED OUT ########\n");
     fflush(stdout);
 

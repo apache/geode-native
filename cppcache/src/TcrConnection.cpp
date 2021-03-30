@@ -110,7 +110,7 @@ TcrConnection::TcrConnection(const TcrConnectionManager& connectionManager)
       m_hasServerQueue(NON_REDUNDANT_SERVER),
       m_queueSize(0),
       m_port(0),
-      m_chunksProcessSema(0),
+      chunks_process_semaphore_(0),
       m_isBeingUsed(false),
       m_isUsed(0),
       m_poolDM(nullptr) {}
@@ -755,7 +755,7 @@ void TcrConnection::readMessageChunked(TcrMessageReply& reply,
   reply.setTransId(responseHeader.transactionId);
 
   // Initialize the chunk processing
-  reply.startProcessChunk(m_chunksProcessSema);
+  reply.startProcessChunk(chunks_process_semaphore_);
 
   // indicate an end to chunk processing and wait for processing
   // to end even if reading the chunks fails in middle

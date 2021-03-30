@@ -20,7 +20,7 @@
 bool isLocalServer = false;
 bool isLocator = false;
 
-const char *locHostPort =
+const std::string locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
 #define CLIENT1 s1p1
@@ -37,8 +37,12 @@ END_TASK(CreateLocator1)
 DUNIT_TASK(SERVER12, CreateServer12)
   {
     // starting servers
-    if (isLocalServer) CacheHelper::initServer(1, nullptr, locHostPort);
-    if (isLocalServer) CacheHelper::initServer(2, nullptr, locHostPort);
+    if (isLocalServer) {
+      CacheHelper::initServer(1, {}, locHostPort);
+    }
+    if (isLocalServer) {
+      CacheHelper::initServer(2, {}, locHostPort);
+    }
     LOG("Server12 started");
   }
 END_TASK(CreateServer12)

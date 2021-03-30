@@ -336,10 +336,12 @@ class CacheableDateWrapper : public CacheableWrapper {
   void initRandomValue(int32_t) override {
     auto rnd = CacheableHelper::random<int32_t>(INT_MAX);
 
-    const ACE_Time_Value currentTime = ACE_OS::gettimeofday();
-    auto timeofday = currentTime.sec();
+    auto timeofday = std::chrono::time_point_cast<std::chrono::seconds>(
+                         std::chrono::system_clock::now())
+                         .time_since_epoch()
+                         .count();
     time_t epoctime =
-        static_cast<time_t>(timeofday + (rnd * (rnd % 2 == 0 ? 1 : -1)));
+        static_cast<time_t>(timeofday + (rnd * (rnd & 1 ? -1 : 1)));
 
     m_cacheableObject = CacheableDate::create(epoctime);
   }

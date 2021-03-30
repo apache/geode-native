@@ -81,12 +81,14 @@ CacheHelper *getHelper() {
   return cacheHelper;
 }
 
-void createPooledRegion(const char *name, bool ackMode, const char *locators,
-                        const char *poolname,
+void createPooledRegion(const std::string &name, bool ackMode,
+                        const std::string &locators,
+                        const std::string &poolname,
                         bool clientNotificationEnabled = false,
                         bool cachingEnable = true) {
   LOG("createRegion_Pool() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
+  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name.c_str(),
+          ackMode);
   fflush(stdout);
   auto regPtr =
       getHelper()->createPooledRegion(name, ackMode, locators, poolname,

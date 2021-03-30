@@ -15,38 +15,32 @@
  * limitations under the License.
  */
 
-#include "ReadWriteLock.hpp"
+#pragma once
 
-#include <thread>
+#ifndef GEODE_UTIL_CONCURRENT_BINARY_SEMAPHORE_H_
+#define GEODE_UTIL_CONCURRENT_BINARY_SEMAPHORE_H_
+
+#include <condition_variable>
+#include <mutex>
 
 namespace apache {
 namespace geode {
 namespace client {
+class binary_semaphore {
+ public:
+  explicit binary_semaphore(bool released);
 
-TryReadGuard::TryReadGuard(ACE_RW_Thread_Mutex& lock,
-                           const volatile bool& exitCondition)
-    : lock_(lock), isAcquired_(false) {
-  do {
-    if (lock_.tryacquire_read() != -1) {
-      isAcquired_ = true;
-      break;
-    }
-    std::this_thread::yield();
-  } while (!exitCondition);
-}
+  void release();
+  void acquire();
 
-TryWriteGuard::TryWriteGuard(ACE_RW_Thread_Mutex& lock,
-                             const volatile bool& exitCondition)
-    : lock_(lock), isAcquired_(false) {
-  do {
-    if (lock_.tryacquire_write() != -1) {
-      isAcquired_ = true;
-      break;
-    }
-    std::this_thread::yield();
-  } while (!exitCondition);
-}
+ protected:
+  bool released_;
+  std::mutex mutex_;
+  std::condition_variable cv_;
+};
 
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
+
+#endif /* GEODE_UTIL_CONCURRENT_BINARY_SEMAPHORE_H_ */

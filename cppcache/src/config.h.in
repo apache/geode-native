@@ -29,6 +29,7 @@
 #cmakedefine HAVE_pthread_setname_np
 #endif
 
+#cmakedefine HAVE_uname
 #cmakedefine HAVE_SIGSTKFLT
 #cmakedefine HAVE_ACE_Select_Reactor
 

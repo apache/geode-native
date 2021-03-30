@@ -52,7 +52,6 @@ const char* durableId = "DurableId";
 #include "ThinClientDurableInit.hpp"
 #include "ThinClientTasks_C2S2.hpp"
 
-const char* g_Locators = locatorsG;
 
 std::string getServerEndPoint(int instance) {
   char instanceStr[16];
@@ -67,30 +66,14 @@ std::string getServerEndPoint(int instance) {
     port = CacheHelper::staticHostPort4;
   }
 
-  std::string retVal(ACE_OS::itoa(port, instanceStr, 10));
-  return retVal;
-
-  std::string allEndPts(endPointsList);
-  std::string::size_type start_idx = 0;
-  std::string::size_type end_idx = 0;
-
-  for (int i = 0; i < instance - 1; i++) {
-    start_idx = allEndPts.find(',', start_idx) + 1;
-  }
-
-  end_idx = allEndPts.find(',', start_idx);
-  if (end_idx == std::string::npos) { /* asking for last endpoint */
-    end_idx = allEndPts.size();
-  }
-
-  return (std::string(allEndPts, start_idx, end_idx - start_idx));
+  return std::to_string(port);
 }
 
 DUNIT_TASK_DEFINITION(SERVER_SET1, S1Up)
   {
     if (isLocalServer) {
       CacheHelper::initServer(1, "cacheserver_notify_subscription.xml",
-                              g_Locators);
+                              locatorsG);
     }
     LOG("SERVER 1 started");
   }
@@ -100,7 +83,7 @@ DUNIT_TASK_DEFINITION(SERVER_SET1, S2Up)
   {
     if (isLocalServer) {
       CacheHelper::initServer(2, "cacheserver_notify_subscription2.xml",
-                              g_Locators);
+                              locatorsG);
     }
     LOG("SERVER 2 started");
   }
@@ -110,7 +93,7 @@ DUNIT_TASK_DEFINITION(SERVER_SET2, S3Up)
   {
     if (isLocalServer) {
       CacheHelper::initServer(3, "cacheserver_notify_subscription3.xml",
-                              g_Locators);
+                              locatorsG);
     }
     LOG("SERVER 3 started");
   }
@@ -120,7 +103,7 @@ DUNIT_TASK_DEFINITION(SERVER_SET2, S4Up)
   {
     if (isLocalServer) {
       CacheHelper::initServer(4, "cacheserver_notify_subscription4.xml",
-                              g_Locators);
+                              locatorsG);
     }
     LOG("SERVER 4 started");
   }

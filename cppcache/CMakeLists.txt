@@ -24,6 +24,8 @@ if (CMAKE_USE_PTHREADS_INIT)
   check_function_exists("pthread_setname_np" HAVE_pthread_setname_np)
 endif()
 
+check_function_exists(uname HAVE_uname)
+
 # Search OpenSSL
 find_package(OpenSSL COMPONENTS Crypto)
 

@@ -46,7 +46,7 @@ using apache::geode::client::IllegalStateException;
 static int numberOfLocators = 1;
 bool isLocalServer = true;
 bool isLocator = true;
-const char *locHostPort =
+const std::string locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 
 const char *_regionNames[] = {"Portfolios", "Positions"};
@@ -123,13 +123,12 @@ DUNIT_TASK(CLIENT1, StepThree)
       sprintf(buf, "results last count=%zd", count);
       LOG(buf);
     } catch (IllegalStateException &ise) {
-      char isemsg[500] = {0};
-      ACE_OS::snprintf(isemsg, 499, "IllegalStateException: %s", ise.what());
-      LOG(isemsg);
-      FAIL(isemsg);
+      std::string excpmsg = "IllegalStateException: " + std::string{ise.what()};
+
+      LOG(excpmsg);
+      FAIL(excpmsg);
     } catch (Exception &excp) {
-      char excpmsg[500] = {0};
-      ACE_OS::snprintf(excpmsg, 499, "Exception: %s", excp.what());
+      std::string excpmsg = "Exception: " + std::string{excp.what()};
       LOG(excpmsg);
       FAIL(excpmsg);
     } catch (...) {

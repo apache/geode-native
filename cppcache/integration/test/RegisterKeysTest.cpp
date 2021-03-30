@@ -158,12 +158,17 @@ TEST(RegisterKeysTest, RegisterAllWithConsistencyDisabled) {
   }
 
   std::mutex cv_mutex;
+  bool destroyed = false;
   std::condition_variable cv;
   auto listener = std::make_shared<CacheListenerMock>();
+
   EXPECT_CALL(*listener, afterCreate(_)).WillRepeatedly(Return());
   EXPECT_CALL(*listener, afterRegionLive(_)).WillRepeatedly(Return());
   EXPECT_CALL(*listener, afterRegionDisconnected(_)).WillRepeatedly(Return());
-  EXPECT_CALL(*listener, afterDestroy(_)).Times(1).WillOnce(CvNotifyOne(&cv));
+  EXPECT_CALL(*listener, afterDestroy(_))
+      .Times(1)
+      .WillOnce(DoAll(InvokeWithoutArgs([&destroyed] { destroyed = true; }),
+                      CvNotifyOne(&cv)));
 
   {
     auto poolFactory =
@@ -185,12 +190,21 @@ TEST(RegisterKeysTest, RegisterAllWithConsistencyDisabled) {
 
   {
     std::unique_lock<std::mutex> lock(cv_mutex);
-    EXPECT_EQ(cv.wait_for(lock, std::chrono::minutes(1)),
-              std::cv_status::no_timeout);
+    EXPECT_TRUE(cv.wait_for(lock, std::chrono::minutes(1),
+                            [&destroyed] { return destroyed; }));
   }
 }
 
 TEST(RegisterKeysTest, RegisterAnyAndClusterRestart) {
+  std::mutex mutex_create;
+  std::condition_variable cv_create;
+
+  std::mutex mutex_shutdown;
+  std::condition_variable cv_shutdown;
+
+  std::mutex mutex_live;
+  std::condition_variable cv_live;
+
   Cluster cluster{LocatorCount{1}, ServerCount{1}};
   cluster.start();
 
@@ -205,19 +219,11 @@ TEST(RegisterKeysTest, RegisterAnyAndClusterRestart) {
     poolFactory.create("default");
   }
 
-  std::mutex mutex_create;
-  std::condition_variable cv_create;
-
-  bool status = false;
-  std::mutex mutex_status;
-  std::condition_variable cv_status;
   auto listener = std::make_shared<CacheListenerMock>();
   EXPECT_CALL(*listener, afterRegionLive(_))
-      .WillRepeatedly(DoAll(InvokeWithoutArgs([&status] { status = true; }),
-                            CvNotifyOne(&cv_status)));
+      .WillRepeatedly(CvNotifyOne(&cv_live));
   EXPECT_CALL(*listener, afterRegionDisconnected(_))
-      .WillRepeatedly(DoAll(InvokeWithoutArgs([&status] { status = false; }),
-                            CvNotifyOne(&cv_status)));
+      .WillRepeatedly(CvNotifyOne(&cv_shutdown));
 
   auto region = cache.createRegionFactory(RegionShortcut::CACHING_PROXY)
                     .setPoolName("default")
@@ -257,8 +263,8 @@ TEST(RegisterKeysTest, RegisterAnyAndClusterRestart) {
   gfsh.shutdown().execute();
 
   {
-    std::unique_lock<std::mutex> lock(mutex_status);
-    cv_status.wait(lock, [&status] { return !status; });
+    std::unique_lock<std::mutex> lock(mutex_shutdown);
+    cv_shutdown.wait(lock);
   }
 
   for (auto& server : cluster.getServers()) {
@@ -266,8 +272,8 @@ TEST(RegisterKeysTest, RegisterAnyAndClusterRestart) {
   }
 
   {
-    std::unique_lock<std::mutex> lock(mutex_status);
-    cv_status.wait(lock, [&status] { return status; });
+    std::unique_lock<std::mutex> lock(mutex_live);
+    cv_live.wait(lock);
   }
 
   EXPECT_EQ(region->keys().size(), 0);
