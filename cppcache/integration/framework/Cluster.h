@@ -85,7 +85,7 @@ struct ServerAddress {
 class Server {
  public:
   Server(Cluster &cluster, std::vector<Locator> &locators, std::string name,
-         std::string xmlFile, bool useIPv6, u_int16_t port);
+         std::string xmlFile, bool useIPv6, uint16_t port);
 
   std::string getCacheXMLFile();
 

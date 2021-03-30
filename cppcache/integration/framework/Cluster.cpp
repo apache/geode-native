@@ -152,7 +152,7 @@ const ServerAddress &Server::getAddress() const { return serverAddress_; }
 
 Server::Server(Cluster &cluster, std::vector<Locator> &locators,
                std::string name, std::string xmlFile, bool useIPv6,
-               u_int16_t port)
+               uint16_t port)
     : cluster_(cluster),
       locators_(locators),
       name_(std::move(name)),
@@ -452,10 +452,11 @@ void Cluster::start(std::function<void()> extraGfshCommands) {
   servers_.reserve(initialServers_);
   std::string xmlFile;
   for (size_t i = 0; i < initialServers_; i++) {
-    xmlFile = (cacheXMLFiles_.size() == 0)
-                  ? ""
-                  : cacheXMLFiles_.size() == 1 ? cacheXMLFiles_[0]
-                                               : cacheXMLFiles_[i];
+
+        xmlFile = (cacheXMLFiles_.size() == 0) ? ""
+              : cacheXMLFiles_.size() == 1 ? cacheXMLFiles_[0]
+                                          : cacheXMLFiles_[i];
+
     uint16_t serverPort;
     if (serverPorts_.empty()) {
       serverPort = static_cast<uint16_t>(0);
