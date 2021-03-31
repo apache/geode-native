@@ -29,6 +29,8 @@
 #include <CacheRegionHelper.hpp>
 #include <MapEntry.hpp>
 
+#include "CacheImpl.hpp"
+
 #include "fw_helper.hpp"
 
 using apache::geode::client::Cache;

@@ -159,12 +159,6 @@ namespace Apache
 
       private:
 
-        ///// <summary>
-        ///// Stores the task ID of the task that adjusts unmanaged memory
-        ///// pressure in managed GC.
-        ///// </summary>
-        //static long s_memoryPressureTaskID = -1;
-
         /// <summary>
         /// Private constructor to wrap a native object pointer
         /// </summary>
@@ -177,17 +171,6 @@ namespace Apache
         ~DistributedSystem();
 
         native_conditional_unique_ptr<native::DistributedSystem>^ m_nativeDistributedSystem;
-
-
-        /// <summary>
-        /// Periodically adjust memory pressure of unmanaged heap for GC.
-        /// </summary>
-        static void HandleMemoryPressure(System::Object^ state);
-
-        /// <summary>
-        /// Timer task to periodically invoke <c>HandleMemoryPressure</c>.
-        /// </summary>
-        System::Threading::Timer^ m_memoryPressureHandler;
 
         static CliCallbackDelegate^ m_cliCallBackObj;
       };

@@ -20,6 +20,7 @@
 #include <geode/CacheableString.hpp>
 #include <geode/ExceptionTypes.hpp>
 
+#include "CacheImpl.hpp"
 #include "CacheableToken.hpp"
 #include "DiskStoreId.hpp"
 #include "DiskVersionTag.hpp"

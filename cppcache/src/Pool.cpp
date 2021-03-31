@@ -20,6 +20,7 @@
 #include <geode/CacheFactory.hpp>
 #include <geode/Pool.hpp>
 
+#include "CacheImpl.hpp"
 #include "PoolAttributes.hpp"
 #include "TcrConnectionManager.hpp"
 #include "ThinClientPoolHADM.hpp"

@@ -21,6 +21,7 @@
 
 #include <geode/AuthenticatedView.hpp>
 
+#include "CacheImpl.hpp"
 #include "TcrConnectionManager.hpp"
 #include "ThinClientRegion.hpp"
 #include "UserAttributes.hpp"

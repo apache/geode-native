@@ -22,7 +22,7 @@
 
 #include <gmock/gmock.h>
 
-#include "MapEntry.hpp"
+#include "MapEntryImpl.hpp"
 
 namespace apache {
 namespace geode {

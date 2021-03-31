@@ -20,7 +20,7 @@
 #include <mutex>
 
 #include "LRUEntryProperties.hpp"
-#include "MapEntry.hpp"
+#include "MapEntryImpl.hpp"
 
 namespace apache {
 namespace geode {

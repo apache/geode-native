@@ -135,16 +135,15 @@ class ThinClientRedundancyManager {
                               TcrMessageReply* reply, bool isPrimary);
 
   inline bool isDurable();
-  int processEventIdMap(const ACE_Time_Value&, const void*);
+
   std::unique_ptr<Task<ThinClientRedundancyManager>> m_periodicAckTask;
   binary_semaphore periodic_ack_semaphore_;
-  ExpiryTaskManager::id_type
-      m_processEventIdMapTaskId;  // periodic check eventid map for notify ack
-                                  // and/or expiry
+  ExpiryTask::id_t process_event_id_map_task_id_{ExpiryTask::invalid()};
+
   void periodicAck(std::atomic<bool>& isRunning);
   void doPeriodicAck();
-  time_point m_nextAck;                    // next ack time
-  std::chrono::milliseconds m_nextAckInc;  // next ack time increment
+  time_point m_nextAck;                     // next ack time
+  std::chrono::milliseconds next_ack_inc_;  // next ack time increment
   volatile bool m_HAenabled;
   EventIdMap m_eventidmap;
 

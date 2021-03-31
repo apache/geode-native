@@ -24,7 +24,7 @@
 #include <geode/internal/geode_globals.hpp>
 
 #include "LRUEntryProperties.hpp"
-#include "MapEntry.hpp"
+#include "MapEntryImpl.hpp"
 #include "VersionStamp.hpp"
 
 namespace apache {

@@ -26,10 +26,10 @@
 #include "CacheRegionHelper.hpp"
 #include "CacheableToken.hpp"
 #include "EntriesMapFactory.hpp"
-#include "EntryExpiryHandler.hpp"
+#include "EntryExpiryTask.hpp"
 #include "ExpiryTaskManager.hpp"
 #include "LRUEntriesMap.hpp"
-#include "RegionExpiryHandler.hpp"
+#include "RegionExpiryTask.hpp"
 #include "RegionGlobalLocks.hpp"
 #include "SerializableHelper.hpp"
 #include "TXState.hpp"
@@ -53,6 +53,7 @@ LocalRegion::LocalRegion(const std::string& name, CacheImpl* cacheImpl,
       m_name(name),
       m_parentRegion(rPtr),
       m_destroyPending(false),
+      expiry_task_id_(ExpiryTask::invalid()),
       m_listener(nullptr),
       m_writer(nullptr),
       m_loader(nullptr),
@@ -108,24 +109,27 @@ std::shared_ptr<Region> LocalRegion::getParentRegion() const {
 
 void LocalRegion::updateAccessAndModifiedTime(bool modified) {
   // locking not required since setters use atomic operations
-  if (regionExpiryEnabled()) {
-    auto now = std::chrono::system_clock::now();
-    auto timeStr = to_string(now.time_since_epoch());
-    LOGDEBUG("Setting last accessed time for region %s to %s",
+  if (!regionExpiryEnabled()) {
+    return;
+  }
+
+  auto now = std::chrono::steady_clock::now();
+  auto timeStr = to_string(now.time_since_epoch());
+  LOGDEBUG("Setting last accessed time for region %s to %s",
+           getFullPath().c_str(), timeStr.c_str());
+  m_cacheStatistics->setLastAccessedTime(now);
+  if (modified) {
+    LOGDEBUG("Setting last modified time for region %s to %s",
              getFullPath().c_str(), timeStr.c_str());
-    m_cacheStatistics->setLastAccessedTime(now);
-    if (modified) {
-      LOGDEBUG("Setting last modified time for region %s to %s",
-               getFullPath().c_str(), timeStr.c_str());
-      m_cacheStatistics->setLastModifiedTime(now);
-    }
-    // TODO:  should we really touch the parent region??
-    RegionInternal* ri = dynamic_cast<RegionInternal*>(m_parentRegion.get());
-    if (ri != nullptr) {
-      ri->updateAccessAndModifiedTime(modified);
-    }
+    m_cacheStatistics->setLastModifiedTime(now);
+  }
+  // TODO:  should we really touch the parent region??
+  RegionInternal* ri = dynamic_cast<RegionInternal*>(m_parentRegion.get());
+  if (ri != nullptr) {
+    ri->updateAccessAndModifiedTime(modified);
   }
 }
+
 std::shared_ptr<CacheStatistics> LocalRegion::getStatistics() const {
   CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::getStatistics);
 
@@ -686,48 +690,46 @@ void LocalRegion::setPersistenceManager(
 }
 
 void LocalRegion::setRegionExpiryTask() {
-  if (regionExpiryEnabled()) {
-    auto rptr = std::static_pointer_cast<RegionInternal>(shared_from_this());
-    const auto& duration = getRegionExpiryDuration();
-    auto handler =
-        new RegionExpiryHandler(rptr, getRegionExpiryAction(), duration);
-    auto expiryTaskId =
-        rptr->getCacheImpl()->getExpiryTaskManager().scheduleExpiryTask(
-            handler, duration, std::chrono::seconds::zero());
-    handler->setExpiryTaskId(expiryTaskId);
-    auto durationStr = to_string(duration);
-    auto expiryTaskIdStr = std::to_string(expiryTaskId);
-    LOGFINE(
-        "expiry for region [%s], expiry task id = %s, duration = %s, "
-        "action = %d",
-        m_fullPath.c_str(), expiryTaskIdStr.c_str(), durationStr.c_str(),
-        getRegionExpiryAction());
+  if (!regionExpiryEnabled()) {
+    return;
   }
+
+  auto& manager = getCacheImpl()->getExpiryTaskManager();
+  auto rptr = std::static_pointer_cast<RegionInternal>(shared_from_this());
+  const auto& duration = getRegionExpiryDuration();
+  auto&& task = std::make_shared<RegionExpiryTask>(
+      manager, rptr, getRegionExpiryAction(), duration);
+  expiry_task_id_ = manager.schedule(task, duration);
+  LOGFINE(
+      "expiry for region [%s], expiry task id = %zu, duration = %s, "
+      "action = %d",
+      m_fullPath.c_str(), expiry_task_id_, to_string(duration).c_str(),
+      getRegionExpiryAction());
 }
 
 void LocalRegion::registerEntryExpiryTask(
     std::shared_ptr<MapEntryImpl>& entry) {
   // locking is not required here since only the thread that creates
   // the entry will register the expiry task for that entry
+
   ExpEntryProperties& expProps = entry->getExpProperties();
-  expProps.initStartTime();
-  auto rptr = std::static_pointer_cast<RegionInternal>(shared_from_this());
   const auto& duration = getEntryExpiryDuration();
-  auto handler =
-      new EntryExpiryHandler(rptr, entry, getEntryExpirationAction(), duration);
-  auto id = rptr->getCacheImpl()->getExpiryTaskManager().scheduleExpiryTask(
-      handler, duration, std::chrono::seconds::zero());
+  auto& manager = getCacheImpl()->getExpiryTaskManager();
+  auto region = std::static_pointer_cast<RegionInternal>(shared_from_this());
+  auto task = std::make_shared<EntryExpiryTask>(
+      manager, region, entry, getEntryExpirationAction(), duration);
+  auto id = manager.schedule(std::move(task), duration);
+  expProps.task_id(id);
+
   if (Log::enabled(LogLevel::Finest)) {
     std::shared_ptr<CacheableKey> key;
     entry->getKeyI(key);
     LOGFINEST(
-        "entry expiry in region [%s], key [%s], task id = %d, "
+        "entry expiry in region [%s], key [%s], task id = %zu, "
         "duration = %s, action = %d",
-        m_fullPath.c_str(), Utils::nullSafeToString(key).c_str(),
-        static_cast<int32_t>(id), to_string(duration).c_str(),
-        getEntryExpirationAction());
+        m_fullPath.c_str(), Utils::nullSafeToString(key).c_str(), id,
+        to_string(duration).c_str(), getEntryExpirationAction());
   }
-  expProps.setExpiryTaskId(id);
 }
 
 LocalRegion::~LocalRegion() noexcept {
@@ -2493,7 +2495,7 @@ GfErrType LocalRegion::putLocal(const std::string& name, bool isCreate,
              Utils::nullSafeToString(value).c_str());
     // entry/region expiration
     if (entryExpiryEnabled()) {
-      if (isUpdate && entry->getExpProperties().getExpiryTaskId() != -1) {
+      if (isUpdate && entry->getExpProperties().task_scheduled()) {
         updateAccessAndModifiedTimeForEntry(entry, true);
       } else {
         registerEntryExpiryTask(entry);
@@ -2812,7 +2814,7 @@ void LocalRegion::updateAccessAndModifiedTimeForEntry(
   // locking is not required since setters use atomic operations
   if (ptr != nullptr && entryExpiryEnabled()) {
     ExpEntryProperties& expProps = ptr->getExpProperties();
-    auto currTime = std::chrono::system_clock::now();
+    auto now = std::chrono::steady_clock::now();
     std::string keyStr;
     if (Log::enabled(LogLevel::Debug)) {
       std::shared_ptr<CacheableKey> key;
@@ -2821,13 +2823,13 @@ void LocalRegion::updateAccessAndModifiedTimeForEntry(
     }
     LOGDEBUG("Setting last accessed time for key [%s] in region %s to %s",
              keyStr.c_str(), getFullPath().c_str(),
-             to_string(currTime.time_since_epoch()).c_str());
-    expProps.updateLastAccessTime(currTime);
+             to_string(now.time_since_epoch()).c_str());
+    expProps.last_accessed(now);
     if (modified) {
       LOGDEBUG("Setting last modified time for key [%s] in region %s to %s",
                keyStr.c_str(), getFullPath().c_str(),
-               to_string(currTime.time_since_epoch()).c_str());
-      expProps.updateLastModifiedTime(currTime);
+               to_string(now.time_since_epoch()).c_str());
+      expProps.last_modified(now);
     }
   }
 }

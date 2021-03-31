@@ -22,8 +22,9 @@
 
 #include <geode/internal/geode_globals.hpp>
 
+#include "ExpEntryProperties.hpp"
 #include "LRUEntryProperties.hpp"
-#include "MapEntry.hpp"
+#include "MapEntryImpl.hpp"
 #include "VersionStamp.hpp"
 
 namespace apache {
@@ -47,7 +48,7 @@ class LRUExpMapEntry : public MapEntryImpl,
 
   void cleanup(const CacheEventFlags eventFlags) override {
     if (!eventFlags.isExpiration()) {
-      cancelExpiryTaskId(m_key);
+      cancel_task();
     }
   }
 

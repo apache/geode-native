@@ -15,41 +15,26 @@
  * limitations under the License.
  */
 
-#include "TrackedMapEntry.hpp"
+#ifndef GEODE_MOCKEXPIRYTASK_H_
+#define GEODE_MOCKEXPIRYTASK_H_
 
-#include "MapEntryImpl.hpp"
+#include <gmock/gmock.h>
+
+#include "ExpiryTask.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
+class MockExpiryTask : public ExpiryTask {
+ public:
+  explicit MockExpiryTask(ExpiryTaskManager& manager) : ExpiryTask(manager) {}
 
-void TrackedMapEntry::getKey(std::shared_ptr<CacheableKey>& result) const {
-  m_entry->getKeyI(result);
-}
+  using ExpiryTask::reset;
 
-void TrackedMapEntry::getValue(std::shared_ptr<Cacheable>& result) const {
-  m_entry->getValueI(result);
-}
-
-void TrackedMapEntry::setValue(const std::shared_ptr<Cacheable>& value) {
-  m_entry->setValueI(value);
-}
-
-LRUEntryProperties& TrackedMapEntry::getLRUProperties() {
-  return m_entry->getLRUProperties();
-}
-
-ExpEntryProperties& TrackedMapEntry::getExpProperties() {
-  return m_entry->getExpProperties();
-}
-VersionStamp& TrackedMapEntry::getVersionStamp() {
-  throw FatalInternalException(
-      "MapEntry::getVersionStamp for TrackedMapEntry is not applicable");
-}
-void TrackedMapEntry::cleanup(const CacheEventFlags eventFlags) {
-  m_entry->cleanup(eventFlags);
-}
-
+  MOCK_METHOD0(on_expire, bool());
+};
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
+
+#endif  // GEODE_MOCKEXPIRYTASK_H_

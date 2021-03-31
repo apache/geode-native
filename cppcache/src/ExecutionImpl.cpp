@@ -23,6 +23,7 @@
 #include <geode/ExceptionTypes.hpp>
 #include <geode/internal/geode_globals.hpp>
 
+#include "CacheImpl.hpp"
 #include "NoResult.hpp"
 #include "TcrConnectionManager.hpp"
 #include "ThinClientPoolDM.hpp"

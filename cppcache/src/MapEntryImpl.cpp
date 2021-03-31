@@ -15,39 +15,42 @@
  * limitations under the License.
  */
 
-#include "TrackedMapEntry.hpp"
-
 #include "MapEntryImpl.hpp"
+
+#include <geode/ExceptionTypes.hpp>
+
+#include "MapEntryT.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
-void TrackedMapEntry::getKey(std::shared_ptr<CacheableKey>& result) const {
-  m_entry->getKeyI(result);
-}
-
-void TrackedMapEntry::getValue(std::shared_ptr<Cacheable>& result) const {
-  m_entry->getValueI(result);
-}
-
-void TrackedMapEntry::setValue(const std::shared_ptr<Cacheable>& value) {
-  m_entry->setValueI(value);
-}
-
-LRUEntryProperties& TrackedMapEntry::getLRUProperties() {
-  return m_entry->getLRUProperties();
-}
-
-ExpEntryProperties& TrackedMapEntry::getExpProperties() {
-  return m_entry->getExpProperties();
-}
-VersionStamp& TrackedMapEntry::getVersionStamp() {
+LRUEntryProperties& MapEntryImpl::getLRUProperties() {
   throw FatalInternalException(
-      "MapEntry::getVersionStamp for TrackedMapEntry is not applicable");
+      "MapEntry::getLRUProperties called for "
+      "non-LRU MapEntry");
 }
-void TrackedMapEntry::cleanup(const CacheEventFlags eventFlags) {
-  m_entry->cleanup(eventFlags);
+
+ExpEntryProperties& MapEntryImpl::getExpProperties() {
+  throw FatalInternalException(
+      "MapEntry::getExpProperties called for "
+      "non-expiration MapEntry");
+}
+
+VersionStamp& MapEntryImpl::getVersionStamp() {
+  throw FatalInternalException(
+      "MapEntry::getVersionStamp called for "
+      "non-versioned MapEntry");
+}
+
+void EntryFactory::newMapEntry(ExpiryTaskManager*,
+                               const std::shared_ptr<CacheableKey>& key,
+                               std::shared_ptr<MapEntryImpl>& result) const {
+  if (m_concurrencyChecksEnabled) {
+    result = MapEntryT<VersionedMapEntryImpl, 0, 0>::create(key);
+  } else {
+    result = MapEntryT<MapEntryImpl, 0, 0>::create(key);
+  }
 }
 
 }  // namespace client

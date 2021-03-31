@@ -31,31 +31,31 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class PdxRemotePreservedData;
-
 class PdxRemotePreservedData : public PdxUnreadFields {
+ private:
+  using time_point_t = std::chrono::steady_clock::time_point;
+
  private:
   std::vector<std::vector<int8_t> > m_preservedData;
   int32_t m_typeId;
   int32_t m_mergedTypeId;
   int32_t m_currentIndex;
   std::shared_ptr<Serializable> m_owner;
-  ExpiryTaskManager::id_type m_expiryTakId;
+  ExpiryTask::id_t expiry_task_id_;
+  time_point_t expires_at_;
 
  public:
-  PdxRemotePreservedData()
-      : m_typeId(0), m_mergedTypeId(0), m_currentIndex(0), m_expiryTakId(0) {}
-
-  ~PdxRemotePreservedData() noexcept override = default;
+  PdxRemotePreservedData() : PdxRemotePreservedData(0, 0, nullptr) {}
 
   PdxRemotePreservedData(int32_t typeId, int32_t mergedTypeId,
-                         std::shared_ptr<Serializable> owner) {
-    m_typeId = typeId;
-    m_mergedTypeId = mergedTypeId;
-    m_currentIndex = 0;
-    m_owner = owner;
-    m_expiryTakId = 0;
-  }
+                         std::shared_ptr<Serializable> owner)
+      : m_typeId(typeId),
+        m_mergedTypeId(mergedTypeId),
+        m_currentIndex(0),
+        m_owner(owner),
+        expiry_task_id_(ExpiryTask::invalid()) {}
+
+  ~PdxRemotePreservedData() noexcept override = default;
 
   void initialize(int32_t typeId, int32_t mergedTypeId,
                   std::shared_ptr<Serializable> owner) {
@@ -63,18 +63,14 @@ class PdxRemotePreservedData : public PdxUnreadFields {
     m_mergedTypeId = mergedTypeId;
     m_currentIndex = 0;
     m_owner = owner;
-    m_expiryTakId = 0;
+    expiry_task_id_ = 0;
   }
 
   inline int32_t getMergedTypeId() { return m_mergedTypeId; }
 
-  inline void setPreservedDataExpiryTaskId(ExpiryTaskManager::id_type expId) {
-    m_expiryTakId = expId;
-  }
+  inline void task_id(ExpiryTask::id_t task_id) { expiry_task_id_ = task_id; }
 
-  inline ExpiryTaskManager::id_type getPreservedDataExpiryTaskId() {
-    return m_expiryTakId;
-  }
+  inline ExpiryTask::id_t task_id() { return expiry_task_id_; }
 
   std::shared_ptr<Serializable> getOwner() { return m_owner; }
 
@@ -103,6 +99,9 @@ class PdxRemotePreservedData : public PdxUnreadFields {
     }
     return 0;
   }
+
+  time_point_t expires_at() const { return expires_at_; }
+  void expires_at(const time_point_t& tp) { expires_at_ = tp; }
 };
 }  // namespace client
 }  // namespace geode

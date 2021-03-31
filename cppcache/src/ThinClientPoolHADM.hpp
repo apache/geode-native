@@ -112,8 +112,7 @@ class ThinClientPoolHADM : public ThinClientPoolDM {
 
   void redundancy(std::atomic<bool>& isRunning);
 
-  ExpiryTaskManager::id_type m_servermonitorTaskId;
-  int checkRedundancy(const ACE_Time_Value&, const void*);
+  ExpiryTask::id_t server_monitor_task_id_;
 
   std::shared_ptr<TcrEndpoint> createEP(const char* endpointName) override;
 

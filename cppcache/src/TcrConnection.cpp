@@ -22,6 +22,7 @@
 #include <geode/AuthInitialize.hpp>
 #include <geode/SystemProperties.hpp>
 
+#include "CacheImpl.hpp"
 #include "ClientProxyMembershipID.hpp"
 #include "Connector.hpp"
 #include "DistributedSystemImpl.hpp"

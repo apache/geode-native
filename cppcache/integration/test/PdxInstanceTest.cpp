@@ -33,6 +33,7 @@
 #include <geode/RegionShortcut.hpp>
 #include <geode/TypeRegistry.hpp>
 
+#include "CacheImpl.hpp"
 #include "LocalRegion.hpp"
 #include "NestedPdxObject.hpp"
 #include "PdxType.hpp"

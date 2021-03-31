@@ -18,9 +18,9 @@
 #include "InternalCacheTransactionManager2PCImpl.hpp"
 
 #include <geode/ExceptionTypes.hpp>
-#include <geode/PoolManager.hpp>
 #include <geode/TransactionId.hpp>
 
+#include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
 #include "CacheTransactionManagerImpl.hpp"
 #include "TXCleaner.hpp"

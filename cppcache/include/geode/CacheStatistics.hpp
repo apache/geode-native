@@ -46,12 +46,13 @@ class LocalRegion;
  *@see RegionEntry::getStatistics
  */
 class APACHE_GEODE_EXPORT CacheStatistics {
- public:
-  typedef std::chrono::system_clock::time_point time_point;
+ private:
+  using time_point = std::chrono::steady_clock::time_point;
 
-  CacheStatistics() : m_lastAccessTime(0), m_lastModifiedTime(0) {}
+ public:
+  CacheStatistics();
   CacheStatistics(const CacheStatistics&) = delete;
-  virtual ~CacheStatistics() = default;
+  virtual ~CacheStatistics();
 
   /**
    * For an entry, returns the time that the entry's value was last modified.
@@ -75,7 +76,7 @@ class APACHE_GEODE_EXPORT CacheStatistics {
    * @see Region::create
    * @see Region::createSubregion
    */
-  virtual time_point getLastModifiedTime() const;
+  virtual std::chrono::system_clock::time_point getLastModifiedTime() const;
 
   /**
    * For an entry, returns the last time it was accessed via
@@ -94,14 +95,17 @@ class APACHE_GEODE_EXPORT CacheStatistics {
    * @see Region::get
    * @see getLastModifiedTime
    */
-  virtual time_point getLastAccessedTime() const;
+  virtual std::chrono::system_clock::time_point getLastAccessedTime() const;
+
+  time_point getLastModifiedSteadyTime() const;
+  time_point getLastAccessedSteadyTime() const;
 
  private:
-  virtual void setLastAccessedTime(time_point lat);
-  virtual void setLastModifiedTime(time_point lmt);
+  virtual void setLastAccessedTime(time_point tp);
+  virtual void setLastModifiedTime(time_point tp);
 
-  std::atomic<time_point::duration::rep> m_lastAccessTime;
-  std::atomic<time_point::duration::rep> m_lastModifiedTime;
+  std::atomic<time_point::duration::rep> last_accessed_;
+  std::atomic<time_point::duration::rep> last_modified_;
 
   friend class LocalRegion;
 };
