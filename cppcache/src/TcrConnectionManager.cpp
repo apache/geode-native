@@ -481,6 +481,18 @@ bool TcrConnectionManager::getEndpointStatus(const std::string &endpoint) {
   }
   return false;
 }
+// TESTING: Disconnections of endpoint - return number of times that endpoint
+// disconnected
+int TcrConnectionManager::getNumberOfTimeEndpointDisconnected(
+    const std::string &endpoint) {
+  auto &&guard = m_endpoints.make_lock();
+  for (auto &currItr : m_endpoints) {
+    auto ep = currItr.second;
+    const std::string epName = ep->name();
+    if (epName == endpoint) return ep->numberOfTimesFailed();
+  }
+  throw IllegalStateException("Endpoint not found");
+}
 
 GfErrType TcrConnectionManager::sendSyncRequestCq(
     TcrMessage &request, TcrMessageReply &reply,

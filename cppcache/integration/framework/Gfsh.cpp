@@ -421,6 +421,12 @@ Gfsh::Create::GatewaySender Gfsh::Create::gatewaySender() {
   return GatewaySender{gfsh_};
 }
 
+Gfsh::Create::Region &Gfsh::Create::Region::withPartitionResolver(
+    const std::string &partitionResolver) {
+  command_ += " --partition-resolver=" + partitionResolver;
+  return *this;
+}
+
 Gfsh::Create::GatewaySender::GatewaySender(Gfsh &gfsh)
     : Command(gfsh, "create gateway-sender") {}
 
