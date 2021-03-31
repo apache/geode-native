@@ -47,6 +47,32 @@ PdxHelper::PdxHelper() {}
 
 PdxHelper::~PdxHelper() {}
 
+void PdxHelper::serializePdxWithRetries(
+    DataOutput& output, const std::shared_ptr<PdxSerializable>& pdxObject,
+    int maxRetries) {
+  auto retries = 0;
+  auto before = output.getCursor();
+
+  for (;;) {
+    try {
+      serializePdx(output, pdxObject);
+      break;
+    } catch (UnknownPdxTypeException&) {
+      if (retries++ >= maxRetries) {
+        throw;
+      } else {
+        if (auto instance =
+                std::dynamic_pointer_cast<PdxInstanceImpl>(pdxObject)) {
+          instance->setPdxId(0);
+        }
+
+        output.advanceCursor(before - output.getCursor());
+        LOGDEBUG("Retrying PDX serialization due to PDX unknown exception");
+      }
+    }
+  }
+}
+
 void PdxHelper::serializePdx(
     DataOutput& output, const std::shared_ptr<PdxSerializable>& pdxObject) {
   auto pdxII = std::dynamic_pointer_cast<PdxInstanceImpl>(pdxObject);
