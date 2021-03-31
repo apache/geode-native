@@ -17,14 +17,14 @@
 
 #pragma once
 
-#ifndef GEODE_REGIONEXPIRYHANDLER_H_
-#define GEODE_REGIONEXPIRYHANDLER_H_
+#ifndef GEODE_REGIONEXPIRYTASK_H_
+#define GEODE_REGIONEXPIRYTASK_H_
 
 #include <geode/ExpirationAction.hpp>
 #include <geode/Region.hpp>
 #include <geode/internal/geode_globals.hpp>
 
-#include "ExpiryTaskManager.hpp"
+#include "ExpiryTask.hpp"
 #include "RegionInternal.hpp"
 
 namespace apache {
@@ -32,39 +32,28 @@ namespace geode {
 namespace client {
 
 /**
- * @class RegionExpiryHandler RegionExpiryHandler.hpp
+ * @class RegionExpiryTask RegionExpiryTask.hpp
  *
  * The task object which contains the handler which gets triggered
  * when a region expires.
- *
- * TODO: cleanup region entry node and handler from expiry task
- * manager when region is destroyed
- *
  */
-class RegionExpiryHandler : public ACE_Event_Handler {
+class RegionExpiryTask : public ExpiryTask {
  public:
-  RegionExpiryHandler(std::shared_ptr<RegionInternal>& rptr,
-                      ExpirationAction action, std::chrono::seconds duration);
+  RegionExpiryTask(ExpiryTaskManager& manager,
+                   std::shared_ptr<RegionInternal> region,
+                   ExpirationAction action, const duration_t& duration);
 
-  int handle_timeout(const ACE_Time_Value& current_time,
-                     const void* arg) override;
+ protected:
+  bool on_expire() override;
+  time_point_t expire_at() const;
 
-  int handle_close(ACE_HANDLE handle, ACE_Reactor_Mask close_mask) override;
-
-  void setExpiryTaskId(ExpiryTaskManager::id_type expiryTaskId) {
-    m_expiryTaskId = expiryTaskId;
-  }
-
- private:
-  std::shared_ptr<RegionInternal> m_regionPtr;
-  ExpirationAction m_action;
-  std::chrono::seconds m_duration;
-  ExpiryTaskManager::id_type m_expiryTaskId;
-  // perform the actual expiration action
-  void DoTheExpirationAction();
+ protected:
+  std::shared_ptr<RegionInternal> region_;
+  ExpiryTask::duration_t duration_;
+  ExpirationAction action_;
 };
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
 
-#endif  // GEODE_REGIONEXPIRYHANDLER_H_
+#endif  // GEODE_REGIONEXPIRYTASK_H_

@@ -19,6 +19,7 @@
 
 #include <geode/SystemProperties.hpp>
 
+#include "CacheImpl.hpp"
 #include "ThinClientPoolDM.hpp"
 
 namespace apache {
@@ -74,7 +75,6 @@ GfErrType TcrPoolEndPoint::registerDM(bool, bool isSecondary, bool,
       return err;
     }
     m_dm->addConnection(newConn);
-    // m_connected = true;
     setConnected(true);
   }
 

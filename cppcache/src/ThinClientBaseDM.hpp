@@ -117,6 +117,9 @@ class ThinClientBaseDM {
 
   virtual TcrEndpoint* getActiveEndpoint() { return nullptr; }
 
+  virtual void incConnectedEndpoints() {}
+  virtual void decConnectedEndpoints() {}
+
   virtual bool checkDupAndAdd(std::shared_ptr<EventId> eventid);
 
   virtual std::recursive_mutex& getRedundancyLock();

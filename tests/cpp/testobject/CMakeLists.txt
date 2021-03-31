@@ -95,6 +95,7 @@ target_link_libraries(testobject
     framework
   PRIVATE
     ACE::ACE
+    Boost::boost
     _WarningsAsError
 )
 

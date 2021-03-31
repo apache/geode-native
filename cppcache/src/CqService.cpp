@@ -24,6 +24,7 @@
 #include <geode/ExceptionTypes.hpp>
 #include <geode/SystemProperties.hpp>
 
+#include "CacheImpl.hpp"
 #include "CqEventImpl.hpp"
 #include "CqQueryImpl.hpp"
 #include "TcrConnectionManager.hpp"

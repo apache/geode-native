@@ -33,7 +33,6 @@
 #include "ExpiryTaskManager.hpp"
 #include "PdxRemotePreservedData.hpp"
 #include "PdxType.hpp"
-#include "PreservedDataExpiryHandler.hpp"
 
 namespace apache {
 namespace geode {
@@ -52,6 +51,8 @@ typedef std::unordered_map<std::shared_ptr<PdxType>, int32_t,
                            dereference_equal_to<std::shared_ptr<PdxType>>>
     PdxTypeToTypeIdMap;
 
+class PreservedDataExpiryTask;
+
 class APACHE_GEODE_EXPORT PdxTypeRegistry
     : public std::enable_shared_from_this<PdxTypeRegistry> {
  private:
@@ -66,7 +67,7 @@ class APACHE_GEODE_EXPORT PdxTypeRegistry
   PdxTypeToTypeIdMap pdxTypeToTypeIdMap_;
 
   // TODO:: preserveData need to be of type WeakHashMap
-  PreservedHashMap preserveData_;
+  PreservedHashMap preserved_data_;
 
   mutable boost::shared_mutex types_mutex_;
 
@@ -104,7 +105,7 @@ class APACHE_GEODE_EXPORT PdxTypeRegistry
   std::shared_ptr<PdxType> getMergedType(int32_t remoteTypeId) const;
 
   void setPreserveData(std::shared_ptr<PdxSerializable> obj,
-                       std::shared_ptr<PdxRemotePreservedData> preserveDataPtr,
+                       std::shared_ptr<PdxRemotePreservedData> data,
                        ExpiryTaskManager& expiryTaskManager);
 
   std::shared_ptr<PdxRemotePreservedData> getPreserveData(
@@ -123,9 +124,7 @@ class APACHE_GEODE_EXPORT PdxTypeRegistry
 
   bool getPdxReadSerialized() const { return pdxReadSerialized_; }
 
-  inline const PreservedHashMap& getPreserveDataMap() const {
-    return preserveData_;
-  }
+  const PreservedHashMap& getPreserveDataMap() const { return preserved_data_; }
 
   int32_t getEnumValue(std::shared_ptr<EnumInfo> ei);
 
@@ -136,6 +135,11 @@ class APACHE_GEODE_EXPORT PdxTypeRegistry
   boost::shared_mutex& getPreservedDataMutex() const {
     return preserved_data_mutex_;
   }
+
+ protected:
+  friend class PreservedDataExpiryTask;
+
+  PreservedHashMap& preserved_data_map() { return preserved_data_; }
 };
 
 }  // namespace client

@@ -15,52 +15,53 @@
  * limitations under the License.
  */
 /*
- * PreservedDataExpiryHandler.cpp
+ * PreservedDataExpiryTask.cpp
  *
  *  Created on: Apr 5, 2012
  *      Author: npatel
  */
-#include "PreservedDataExpiryHandler.hpp"
+#include "PreservedDataExpiryTask.hpp"
 
 #include <boost/thread/lock_types.hpp>
 
+#include "ExpiryTaskManager.hpp"
 #include "PdxTypeRegistry.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
-PreservedDataExpiryHandler::PreservedDataExpiryHandler(
-    const std::shared_ptr<PdxTypeRegistry>& pdxTypeRegistry,
-    const std::shared_ptr<PdxSerializable>& pdxObjectPtr)
-    : m_pdxTypeRegistry(pdxTypeRegistry), m_pdxObjectPtr(pdxObjectPtr) {}
+PreservedDataExpiryTask::PreservedDataExpiryTask(
+    ExpiryTaskManager& manager, decltype(type_registry_) type_registry,
+    decltype(object_) object)
+    : ExpiryTask(manager), type_registry_(type_registry), object_(object) {}
 
-int PreservedDataExpiryHandler::handle_timeout(const ACE_Time_Value&,
-                                               const void*) {
-  auto& mutex = m_pdxTypeRegistry->getPreservedDataMutex();
+bool PreservedDataExpiryTask::on_expire() {
+  auto& mutex = type_registry_->getPreservedDataMutex();
   boost::unique_lock<std::remove_reference<decltype(mutex)>::type> guard{mutex};
 
-  auto map = m_pdxTypeRegistry->getPreserveDataMap();
+  auto& map = type_registry_->preserved_data_map();
+
   LOGDEBUG(
-      "Entered PreservedDataExpiryHandler "
+      "Entered PreservedDataExpiryTask "
       "PdxTypeRegistry::getPreserveDataMap().size() = %zu",
       map.size());
 
-  try {
-    // remove the entry from the map
-    map.erase(m_pdxObjectPtr);
-  } catch (...) {
-    // Ignore whatever exception comes
-    LOGDEBUG(
-        "PreservedDataExpiry:: Error while Clearing PdxObject and its "
-        "preserved data. Ignoring the error");
+  auto&& iter = map.find(object_);
+  if (iter == map.end()) {
+    return true;
   }
-  return 0;
-}
 
-int PreservedDataExpiryHandler::handle_close(ACE_HANDLE, ACE_Reactor_Mask) {
-  delete this;
-  return 0;
+  auto expires_at = iter->second->expires_at();
+  if (expires_at < ExpiryTask::clock_t::now()) {
+    LOGDEBUG("Re-scheduling PreservedDataExpiryTask with ID %zu", id());
+
+    reset(expires_at);
+    return false;
+  }
+
+  map.erase(iter);
+  return true;
 }
 
 }  // namespace client

@@ -37,9 +37,12 @@ add_executable(apache-geode_unittests
   DataInputTest.cpp
   DataOutputTest.cpp
   ExceptionTypesTest.cpp
+  ExpiryTaskTest.cpp
+  ExpiryTaskManagerTest.cpp
   GatewaySenderEventCallbackArgumentTest.cpp
   geodeBannerTest.cpp
   gtest_extensions.h
+  gmock_extensions.h
   InterestResultPolicyTest.cpp
   LocalRegionTest.cpp
   LoggingTest.cpp
@@ -55,6 +58,7 @@ add_executable(apache-geode_unittests
   TcrMessageTest.cpp
   ThreadPoolTest.cpp
   TXIdTest.cpp
+  mock/MockExpiryTask.hpp
   mock/MapEntryImplMock.hpp
   statistics/HostStatSamplerTest.cpp
   util/functionalTests.cpp

@@ -21,6 +21,7 @@
 
 #include <geode/AuthenticatedView.hpp>
 
+#include "CacheImpl.hpp"
 #include "TcrConnectionManager.hpp"
 #include "ThinClientRegion.hpp"
 #include "UserAttributes.hpp"
@@ -129,7 +130,11 @@ GfErrType ThinClientBaseDM::handleEPError(TcrEndpoint* ep,
       const auto& exceptStr = reply.getException();
       if (!exceptStr.empty()) {
         bool markServerDead = unrecoverableServerError(exceptStr);
-        bool doFailover = (markServerDead || nonFatalServerError(exceptStr));
+        bool cacheClosedEx =
+            (exceptStr.find("org.apache.geode.cache.CacheClosedException") !=
+             std::string::npos);
+        bool doFailover =
+            (markServerDead || cacheClosedEx || nonFatalServerError(exceptStr));
         if (doFailover) {
           LOGFINE(
               "ThinClientDistributionManager::sendRequestToEP: retrying for "
@@ -167,9 +172,7 @@ GfErrType ThinClientBaseDM::sendRequestToEndPoint(const TcrMessage& request,
  * This method is for exceptions when server should be marked as dead.
  */
 bool ThinClientBaseDM::unrecoverableServerError(const std::string& exceptStr) {
-  return ((exceptStr.find("org.apache.geode.cache.CacheClosedException") !=
-           std::string::npos) ||
-          (exceptStr.find("org.apache.geode.distributed.ShutdownException") !=
+  return ((exceptStr.find("org.apache.geode.distributed.ShutdownException") !=
            std::string::npos) ||
           (exceptStr.find("java.lang.OutOfMemoryError") != std::string::npos));
 }

@@ -52,7 +52,7 @@ std::shared_ptr<PdxInstance> PdxInstanceFactory::create() {
 
   // Forces registration of PdxType
   auto dataOutput = m_cacheImpl.createDataOutput();
-  PdxHelper::serializePdx(dataOutput, pi);
+  PdxHelper::serializePdxWithRetries(dataOutput, pi);
 
   return std::move(pi);
 }

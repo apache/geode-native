@@ -24,6 +24,7 @@
 #include <geode/SystemProperties.hpp>
 
 #include "AutoDelete.hpp"
+#include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
 #include "DataInputInternal.hpp"
 #include "DataOutputInternal.hpp"
@@ -1530,7 +1531,7 @@ void TcrMessage::handleByteArrayResponse(
           }
           m_metadata->push_back(bucketServerLocations);
         }
-        LOGFINER("Metadata size is %", m_metadata->size());
+        LOGFINER("Metadata size is %zu", m_metadata->size());
       }
       break;
     }

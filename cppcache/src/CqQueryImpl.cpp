@@ -21,9 +21,11 @@
 #include <geode/CqAttributesMutator.hpp>
 #include <geode/ExceptionTypes.hpp>
 
+#include "CacheImpl.hpp"
 #include "ResultSetImpl.hpp"
 #include "StructSetImpl.hpp"
 #include "TcrConnectionManager.hpp"
+#include "ThinClientBaseDM.hpp"
 #include "ThinClientRegion.hpp"
 #include "UserAttributes.hpp"
 #include "util/Log.hpp"
@@ -38,7 +40,7 @@ CqQueryImpl::CqQueryImpl(
     const std::shared_ptr<CqService>& cqService, const std::string& cqName,
     const std::string& queryString,
     const std::shared_ptr<CqAttributes>& cqAttributes,
-    StatisticsFactory* factory, const bool isDurable,
+    statistics::StatisticsFactory* factory, const bool isDurable,
     const std::shared_ptr<UserAttributes>& userAttributesPtr)
     : m_cqName(cqName),
       m_queryString(queryString),

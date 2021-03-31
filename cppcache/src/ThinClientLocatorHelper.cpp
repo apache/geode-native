@@ -26,6 +26,7 @@
 #include <geode/DataOutput.hpp>
 #include <geode/SystemProperties.hpp>
 
+#include "CacheImpl.hpp"
 #include "ClientConnectionRequest.hpp"
 #include "ClientConnectionResponse.hpp"
 #include "ClientReplacementRequest.hpp"

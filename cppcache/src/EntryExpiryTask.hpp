@@ -1,3 +1,8 @@
+#pragma once
+
+#ifndef GEODE_ENTRYEXPIRYTASK_H_
+#define GEODE_ENTRYEXPIRYTASK_H_
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -15,48 +20,50 @@
  * limitations under the License.
  */
 
-#pragma once
-
-#ifndef GEODE_SUSPENDEDTXEXPIRYHANDLER_H_
-#define GEODE_SUSPENDEDTXEXPIRYHANDLER_H_
-
-#include <ace/Event_Handler.h>
-
 #include <geode/Cache.hpp>
+#include <geode/ExpirationAction.hpp>
+#include <geode/Region.hpp>
 #include <geode/internal/geode_globals.hpp>
 
-#include "CacheTransactionManagerImpl.hpp"
+#include "ExpMapEntry.hpp"
+#include "ExpiryTask.hpp"
+#include "RegionInternal.hpp"
+
+/**
+ * @file
+ */
 
 namespace apache {
 namespace geode {
 namespace client {
-
-class CacheTransactionManagerImpl;
-
 /**
- * @class SuspendedTxExpiryHandler
+ * @class EntryExpiryTask EntryExpiryTask.hpp
  *
  * The task object which contains the handler which gets triggered
- * when a suspended transaction expires.
- *
+ * when an entry expires.
  */
-class SuspendedTxExpiryHandler : public ACE_Event_Handler {
+class EntryExpiryTask : public ExpiryTask {
  public:
-  SuspendedTxExpiryHandler(CacheTransactionManagerImpl* cacheTxMgr,
-                           TransactionId& txid);
+  /**
+   * Constructor
+   */
+  EntryExpiryTask(ExpiryTaskManager& manager,
+                  std::shared_ptr<RegionInternal> region,
+                  std::shared_ptr<MapEntryImpl> entry, ExpirationAction action,
+                  const duration_t& duration);
 
-  int handle_timeout(const ACE_Time_Value& current_time,
-                     const void* arg) override;
-
-  int handle_close(ACE_HANDLE, ACE_Reactor_Mask) override;
+ protected:
+  bool on_expire() override;
+  time_point_t expire_at() const;
 
  private:
-  CacheTransactionManagerImpl* m_cacheTxMgr;
-  TransactionId& m_txid;
+  duration_t duration_;
+  ExpirationAction action_;
+  std::shared_ptr<MapEntryImpl> entry_;
+  std::shared_ptr<RegionInternal> region_;
 };
-
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
 
-#endif  // GEODE_SUSPENDEDTXEXPIRYHANDLER_H_
+#endif  // GEODE_ENTRYEXPIRYTASK_H_

@@ -68,7 +68,7 @@ TcrEndpoint::TcrEndpoint(const std::string& name, CacheImpl* cacheImpl,
       m_msgSent(false),
       m_pingSent(false),
       m_isMultiUserMode(isMultiUserMode),
-      m_connected(false),
+      connected_(false),
       m_isActiveEndpoint(false),
       m_serverQueueStatus(NON_REDUNDANT_SERVER),
       m_queueSize(0),
@@ -81,7 +81,7 @@ TcrEndpoint::TcrEndpoint(const std::string& name, CacheImpl* cacheImpl,
 }
 
 TcrEndpoint::~TcrEndpoint() {
-  m_connected = false;
+  connected_ = false;
   m_isActiveEndpoint = false;
   closeConnections();
   {
@@ -209,7 +209,6 @@ GfErrType TcrEndpoint::createNewConnection(
             break;
           }
         }
-        // m_connected = true;
       }
       err = GF_NOERR;
       break;
@@ -354,7 +353,7 @@ ServerQueueStatus TcrEndpoint::getFreshServerQueueStatus(
       } else {
         statusConn = newConn;
       }
-      m_connected = true;
+      setConnected(true);
       return status;
     } else {
       //  remove port from ports list (which is sent to server in notification
@@ -393,12 +392,12 @@ GfErrType TcrEndpoint::registerDM(bool clientNotification, bool isSecondary,
   } else if (!m_isActiveEndpoint) {
     int maxConnections = 0;
     if (isActiveEndpoint) {
-      if (m_connected) {
+      if (connected_) {
         maxConnections = m_maxConnections - 1;
       } else {
         maxConnections = m_maxConnections;
       }
-    } else if (!m_connected) {
+    } else if (!connected_) {
       maxConnections = 1;
     }
     if (maxConnections > 0) {
@@ -412,8 +411,8 @@ GfErrType TcrEndpoint::registerDM(bool clientNotification, bool isSecondary,
                                        m_cacheImpl->getDistributedSystem()
                                            .getSystemProperties()
                                            .connectTimeout(),
-                                       0, m_connected)) != GF_NOERR) {
-          m_connected = false;
+                                       0, connected_)) != GF_NOERR) {
+          setConnected(false);
           m_isActiveEndpoint = false;
           closeConnections();
           return err;
@@ -424,12 +423,12 @@ GfErrType TcrEndpoint::registerDM(bool clientNotification, bool isSecondary,
               (isSecondary ? "secondary server "
                            : (isActiveEndpoint ? "" : "primary server ")),
               m_name.c_str());
-      m_connected = true;
+      setConnected(true);
       m_isActiveEndpoint = isActiveEndpoint;
     }
   }
 
-  if (m_connected || connected) {
+  if (connected_ || connected) {
     if (clientNotification) {
       if (distMgr != nullptr) {
         std::lock_guard<decltype(m_distMgrsLock)> guardDistMgrs(m_distMgrsLock);
@@ -449,7 +448,7 @@ GfErrType TcrEndpoint::registerDM(bool clientNotification, bool isSecondary,
                                                .connectTimeout() *
                                            3,
                                        0)) != GF_NOERR) {
-          m_connected = false;
+          setConnected(false);
           m_isActiveEndpoint = false;
           closeConnections();
           LOGWARN("Failed to start subscription channel for endpoint %s",
@@ -464,7 +463,7 @@ GfErrType TcrEndpoint::registerDM(bool clientNotification, bool isSecondary,
       ++m_numRegionListener;
       LOGFINEST("Incremented notification region count for endpoint %s to %d",
                 m_name.c_str(), m_numRegionListener);
-      m_connected = true;
+      setConnected(true);
     }
   }
 
@@ -499,7 +498,7 @@ void TcrEndpoint::unregisterDM(bool clientNotification,
 
 void TcrEndpoint::pingServer(ThinClientPoolDM* poolDM) {
   LOGDEBUG("Sending ping message to endpoint %s", m_name.c_str());
-  if (!m_connected) {
+  if (!connected_) {
     LOGFINER("Skipping ping task for disconnected endpoint %s", m_name.c_str());
     return;
   }
@@ -532,7 +531,7 @@ void TcrEndpoint::pingServer(ThinClientPoolDM* poolDM) {
       bool connected = (error == GF_NOERR)
                            ? (reply.getMessageType() == TcrMessage::REPLY)
                            : false;
-      if (m_connected != connected) {
+      if (connected_ != connected) {
         setConnectionStatus(connected);
       }
     }
@@ -673,7 +672,7 @@ void TcrEndpoint::receiveNotification(std::atomic<bool>& isRunning) {
       LOGFINER(
           "IO exception while receiving subscription event for endpoint %s: %s",
           m_name.c_str(), e.what());
-      if (m_connected) {
+      if (connected_) {
         setConnectionStatus(false);
         // close notification channel
         std::lock_guard<decltype(m_notifyReceiverLock)> guard(
@@ -913,7 +912,7 @@ GfErrType TcrEndpoint::sendRequestWithRetry(
              m_name.c_str());
     if (createNewConn) {
       createNewConn = false;
-      if (!m_connected) {
+      if (!connected_) {
         return GF_NOTCON;
       } else if ((error =
                       createNewConnection(conn, false, false,
@@ -932,7 +931,7 @@ GfErrType TcrEndpoint::sendRequestWithRetry(
       // max wait time to get a connection
       conn = m_opConnections.getUntil(timeout);
     }
-    if (!m_connected) {
+    if (!connected_) {
       return GF_NOTCON;
     }
     if (conn != nullptr) {
@@ -1136,6 +1135,17 @@ GfErrType TcrEndpoint::sendRequestConnWithRetry(const TcrMessage& request,
   return error;
 }
 
+void TcrEndpoint::setConnected(bool status) {
+  bool flag = !status;
+  if (connected_.compare_exchange_strong(flag, status)) {
+    if (status) {
+      m_baseDM->incConnectedEndpoints();
+    } else {
+      m_baseDM->decConnectedEndpoints();
+    }
+  }
+}
+
 void TcrEndpoint::setConnectionStatus(bool status) {
   // : Store the original value of m_isActiveEndpoint.
   // This is to try make failover more resilient for the case when
@@ -1149,17 +1159,18 @@ void TcrEndpoint::setConnectionStatus(bool status) {
   // bool wasActive = m_isActiveEndpoint;
   // Then after taking the lock:
   // If ( !wasActive && isActiveEndpoint ) { return; }
-  std::lock_guard<decltype(m_connectionLock)> guard(m_connectionLock);
-  if (m_connected != status) {
-    bool connected = m_connected;
-    m_connected = status;
-    if (connected) {
+  bool flag = !status;
+  if (connected_.compare_exchange_strong(flag, status)) {
+    if (status) {
+      m_baseDM->incConnectedEndpoints();
+    } else {
       m_numberOfTimesFailed += 1;
       m_isAuthenticated = false;
       // disconnected
       LOGFINE("Disconnecting from endpoint %s", m_name.c_str());
       closeConnections();
       m_isActiveEndpoint = false;
+      m_baseDM->decConnectedEndpoints();
       LOGFINE("Disconnected from endpoint %s", m_name.c_str());
       triggerRedundancyThread();
     }

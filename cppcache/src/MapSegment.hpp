@@ -31,7 +31,7 @@
 #include <geode/internal/geode_globals.hpp>
 
 #include "CacheableToken.hpp"
-#include "MapEntry.hpp"
+#include "MapEntryImpl.hpp"
 #include "MapWithLock.hpp"
 #include "TombstoneList.hpp"
 #include "util/concurrent/spinlock_mutex.hpp"
@@ -40,23 +40,26 @@ namespace apache {
 namespace geode {
 namespace client {
 
+class EntryFactory;
 class RegionInternal;
-typedef std::unordered_map<std::shared_ptr<CacheableKey>,
-                           std::shared_ptr<MapEntry>,
-                           dereference_hash<std::shared_ptr<CacheableKey>>,
-                           dereference_equal_to<std::shared_ptr<CacheableKey>>>
-    CacheableKeyHashMap;
 
 /** @brief type wrapper around the std::unordered_map implementation. */
 class MapSegment {
  private:
+  using CacheableKeyHashMap =
+      std::unordered_map<std::shared_ptr<CacheableKey>,
+                         std::shared_ptr<MapEntry>,
+                         dereference_hash<std::shared_ptr<CacheableKey>>,
+                         dereference_equal_to<std::shared_ptr<CacheableKey>>>;
+
+ private:
   // contain
-  CacheableKeyHashMap* m_map;
+  CacheableKeyHashMap m_map;
   // refers to object managed by the entries map...
   // does not need deletion here.
   const EntryFactory* m_entryFactory;
   RegionInternal* m_region;
-  ExpiryTaskManager* m_expiryTaskManager;
+  ExpiryTaskManager* expiry_manager_;
 
   // index of the current prime in the primes table
   uint32_t m_primeIndex;
@@ -85,7 +88,7 @@ class MapSegment {
     std::shared_ptr<MapEntry> newEntry;
     entry->incrementUpdateCount(newEntry);
     if (newEntry != nullptr) {
-      m_map->emplace(key, newEntry);
+      m_map.emplace(key, newEntry);
       entry = newEntry;
       return true;
     }
@@ -109,13 +112,13 @@ class MapSegment {
       entryImpl->getValueI(value);
       if (value == nullptr) {
         // get rid of an entry marked as destroyed
-        m_map->erase(key);
+        m_map.erase(key);
         return;
       }
     }
     if (trackerPair.first) {
       entry = entryImpl ? entryImpl : entry->getImplPtr();
-      (*m_map)[key] = entry;
+      m_map[key] = entry;
     }
   }
 
@@ -139,7 +142,7 @@ class MapSegment {
         }
       }
     }
-    m_entryFactory->newMapEntry(m_expiryTaskManager, key, newEntry);
+    m_entryFactory->newMapEntry(expiry_manager_, key, newEntry);
     newEntry->setValueI(newValue);
     if (m_concurrencyChecksEnabled) {
       if (versionTag) {
@@ -148,7 +151,7 @@ class MapSegment {
         newEntry->getVersionStamp().setVersions(*versionStamp);
       }
     }
-    m_map->emplace(key, newEntry);
+    m_map.emplace(key, newEntry);
     return GF_NOERR;
   }
 
@@ -167,15 +170,14 @@ class MapSegment {
       const std::shared_ptr<CacheableKey>& key,
       std::shared_ptr<Cacheable>& oldValue, std::shared_ptr<MapEntryImpl>& me,
       int updateCount, std::shared_ptr<VersionTag> versionTag, bool afterRemote,
-      bool& isEntryFound, ExpiryTaskManager::id_type expiryTaskID,
-      TombstoneExpiryHandler* handler, bool& expTaskSet);
+      bool& isEntryFound);
 
  public:
   MapSegment()
-      : m_map(nullptr),
+      : m_map(),
         m_entryFactory(nullptr),
         m_region(nullptr),
-        m_expiryTaskManager(nullptr),
+        expiry_manager_(nullptr),
         m_primeIndex(0),
         m_spinlock(),
         m_segmentMutex(),
@@ -183,8 +185,6 @@ class MapSegment {
         m_numDestroyTrackers(nullptr),
         m_rehashCount(0),
         m_tombstoneList(nullptr) {}
-
-  ~MapSegment();
 
   // methods for BasicLockable
   void lock();
@@ -283,15 +283,9 @@ class MapSegment {
 
   void reapTombstones(std::shared_ptr<CacheableHashSet> removedKeys);
 
-  bool removeActualEntry(const std::shared_ptr<CacheableKey>& key,
-                         bool cancelTask = true);
+  bool remove_tomb_entry(const std::shared_ptr<TombstoneEntry>& entry);
 
-  bool unguardedRemoveActualEntryWithoutCancelTask(
-      const std::shared_ptr<CacheableKey>& key,
-      TombstoneExpiryHandler*& handler, ExpiryTaskManager::id_type& taskid);
-
-  bool unguardedRemoveActualEntry(const std::shared_ptr<CacheableKey>& key,
-                                  bool cancelTask = true);
+  void remove_entry(const std::shared_ptr<CacheableKey>& key);
 
   GfErrType isTombstone(std::shared_ptr<CacheableKey> key,
                         std::shared_ptr<MapEntryImpl>& me, bool& result);

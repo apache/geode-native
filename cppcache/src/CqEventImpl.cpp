@@ -19,6 +19,7 @@
 
 #include <geode/CacheableString.hpp>
 
+#include "CacheImpl.hpp"
 #include "TcrConnectionManager.hpp"
 #include "TcrMessage.hpp"
 #include "ThinClientCacheDistributionManager.hpp"

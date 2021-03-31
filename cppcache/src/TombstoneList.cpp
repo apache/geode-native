@@ -17,15 +17,18 @@
 
 #include "TombstoneList.hpp"
 
-#include <unordered_map>
+#include <unordered_set>
 
+#include "CacheImpl.hpp"
 #include "MapSegment.hpp"
-#include "TombstoneExpiryHandler.hpp"
+#include "TombstoneEntry.hpp"
+#include "TombstoneExpiryTask.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
+// TODO. Review this overhead is OK
 #define SIZEOF_PTR (sizeof(void*))
 #define SIZEOF_SHAREDPTR (SIZEOF_PTR + 4)
 // 3 variables in expiry handler, two variables for ace_reactor expiry, one
@@ -40,55 +43,45 @@ namespace client {
 #define SIZEOF_TOMBSTONEOVERHEAD \
   (SIZEOF_EXPIRYHANDLER + SIZEOF_TOMBSTONELISTENTRY)
 
-ExpiryTaskManager::id_type TombstoneList::getExpiryTask(
-    TombstoneExpiryHandler** handler) {
-  // This function is not guarded as all functions of this class are called from
-  // MapSegment
-  auto duration = m_cacheImpl->getDistributedSystem()
-                      .getSystemProperties()
-                      .tombstoneTimeout();
-
-  auto tombstoneEntryPtr = std::make_shared<TombstoneEntry>(nullptr);
-  *handler = new TombstoneExpiryHandler(tombstoneEntryPtr, this, duration,
-                                        m_cacheImpl);
-  tombstoneEntryPtr->setHandler(*handler);
-  auto id = m_cacheImpl->getExpiryTaskManager().scheduleExpiryTask(
-      *handler, duration, std::chrono::seconds::zero());
-  return id;
-}
-
-void TombstoneList::add(const std::shared_ptr<MapEntryImpl>& entry,
-                        TombstoneExpiryHandler* handler,
-                        ExpiryTaskManager::id_type taskid) {
+ExpiryTask::id_t TombstoneList::add(
+    const std::shared_ptr<MapEntryImpl>& entry) {
   // This function is not guarded as all functions of this class are called from
   // MapSegment read TombstoneTImeout from systemProperties.
-  auto tombstoneEntryPtr = std::make_shared<TombstoneEntry>(entry);
-  handler->setTombstoneEntry(tombstoneEntryPtr);
-  tombstoneEntryPtr->setHandler(handler);
+  auto tombstone = std::make_shared<TombstoneEntry>(entry);
   std::shared_ptr<CacheableKey> key;
   entry->getKeyI(key);
 
-  tombstoneEntryPtr->setExpiryTaskId(taskid);
-  m_tombstoneMap[key] = tombstoneEntryPtr;
-  m_cacheImpl->getCachePerfStats().incTombstoneCount();
-  auto tombstonesize = key->objectSize() + SIZEOF_TOMBSTONEOVERHEAD;
-  m_cacheImpl->getCachePerfStats().incTombstoneSize(tombstonesize);
+  auto duration =
+      cache_.getDistributedSystem().getSystemProperties().tombstoneTimeout();
+  auto& manager = cache_.getExpiryTaskManager();
+  auto task =
+      std::make_shared<TombstoneExpiryTask>(manager, segment_, tombstone);
+  auto task_id = manager.schedule(std::move(task), duration);
+  tombstone->task_id(task_id);
+  tombstones_[key] = tombstone;
+
+  auto& perf_stats = cache_.getCachePerfStats();
+
+  perf_stats.incTombstoneCount();
+  perf_stats.incTombstoneSize(key->objectSize() + SIZEOF_TOMBSTONEOVERHEAD);
+
+  return task_id;
 }
 
 // Reaps the tombstones which have been gc'ed on server.
 // A map that has identifier for ClientProxyMembershipID as key
 // and server version of the tombstone with highest version as the
 // value is passed as paramter
-void TombstoneList::reapTombstones(std::map<uint16_t, int64_t>& gcVersions) {
+void TombstoneList::reap_tombstones(std::map<uint16_t, int64_t>& gcVersions) {
   // This function is not guarded as all functions of this class are called from
   // MapSegment
   std::unordered_set<std::shared_ptr<CacheableKey>,
                      dereference_hash<std::shared_ptr<CacheableKey>>,
                      dereference_equal_to<std::shared_ptr<CacheableKey>>>
       tobeDeleted;
-  for (const auto& queIter : m_tombstoneMap) {
+  for (const auto& queIter : tombstones_) {
     auto const& mapIter = gcVersions.find(
-        queIter.second->getEntry()->getVersionStamp().getMemberId());
+        queIter.second->entry()->getVersionStamp().getMemberId());
 
     if (mapIter == gcVersions.end()) {
       continue;
@@ -96,87 +89,61 @@ void TombstoneList::reapTombstones(std::map<uint16_t, int64_t>& gcVersions) {
 
     auto const& version = (*mapIter).second;
     if (version >=
-        queIter.second->getEntry()->getVersionStamp().getRegionVersion()) {
+        queIter.second->entry()->getVersionStamp().getRegionVersion()) {
       tobeDeleted.insert(queIter.first);
     }
   }
-  for (const auto& itr : tobeDeleted) {
-    unguardedRemoveEntryFromMapSegment(itr);
+
+  for (const auto& key : tobeDeleted) {
+    segment_.remove_entry(key);
   }
 }
 
 // Reaps the tombstones whose keys are specified in the hash set .
-void TombstoneList::reapTombstones(
-    std::shared_ptr<CacheableHashSet> removedKeys) {
+void TombstoneList::reap_tombstones(
+    const std::shared_ptr<CacheableHashSet>& keys) {
   // This function is not guarded as all functions of this class are called from
   // MapSegment
-  for (auto queIter = removedKeys->begin(); queIter != removedKeys->end();
-       ++queIter) {
-    unguardedRemoveEntryFromMapSegment(*queIter);
+  for (const auto& key : *keys) {
+    segment_.remove_entry(key);
   }
-}
-// Call this when the lock of MapSegment has not been taken
-void TombstoneList::removeEntryFromMapSegment(
-    std::shared_ptr<CacheableKey> key) {
-  m_mapSegment->removeActualEntry(key, false);
-}
-
-// Call this when the lock of MapSegment has already been taken
-void TombstoneList::unguardedRemoveEntryFromMapSegment(
-    std::shared_ptr<CacheableKey> key) {
-  m_mapSegment->unguardedRemoveActualEntry(key);
 }
 
 bool TombstoneList::exists(const std::shared_ptr<CacheableKey>& key) const {
-  if (key) {
-    return m_tombstoneMap.find(key) != m_tombstoneMap.end();
-  }
-  return false;
+  return key != nullptr && tombstones_.find(key) != tombstones_.end();
 }
 
-void TombstoneList::eraseEntryFromTombstoneList(
-    const std::shared_ptr<CacheableKey>& key, bool cancelTask) {
+bool TombstoneList::erase(const std::shared_ptr<CacheableKey>& key,
+                          bool cancel_task) {
   // This function is not guarded as all functions of this class are called from
   // MapSegment
-  if (exists(key)) {
-    if (cancelTask) {
-      m_cacheImpl->getExpiryTaskManager().cancelTask(
-          m_tombstoneMap[key]->getExpiryTaskId());
-      delete m_tombstoneMap[key]->getHandler();
-    }
 
-    m_cacheImpl->getCachePerfStats().decTombstoneCount();
-    auto tombstonesize = key->objectSize() + SIZEOF_TOMBSTONEOVERHEAD;
-    m_cacheImpl->getCachePerfStats().decTombstoneSize(tombstonesize);
-    m_tombstoneMap.erase(key);
+  auto&& iter = tombstones_.find(key);
+  if (iter == tombstones_.end()) {
+    return false;
   }
+
+  iter->second->invalidate();
+
+  if (cancel_task) {
+    cache_.getExpiryTaskManager().cancel(iter->second->task_id());
+  }
+
+  auto& perf_stats = cache_.getCachePerfStats();
+
+  perf_stats.decTombstoneCount();
+  perf_stats.decTombstoneSize(key->objectSize() + SIZEOF_TOMBSTONEOVERHEAD);
+
+  tombstones_.erase(iter);
+  return true;
 }
 
-ExpiryTaskManager::id_type
-TombstoneList::eraseEntryFromTombstoneListWithoutCancelTask(
-    const std::shared_ptr<CacheableKey>& key,
-    TombstoneExpiryHandler*& handler) {
+void TombstoneList::cleanup() {
   // This function is not guarded as all functions of this class are called from
   // MapSegment
-  ExpiryTaskManager::id_type taskid = -1;
-  if (exists(key)) {
-    taskid = m_tombstoneMap[key]->getExpiryTaskId();
-    handler = m_tombstoneMap[key]->getHandler();
-    m_cacheImpl->getCachePerfStats().decTombstoneCount();
-    auto tombstonesize = key->objectSize() + SIZEOF_TOMBSTONEOVERHEAD;
-    m_cacheImpl->getCachePerfStats().decTombstoneSize(tombstonesize);
-    m_tombstoneMap.erase(key);
-  }
-  return taskid;
-}
-
-void TombstoneList::cleanUp() {
-  // This function is not guarded as all functions of this class are called from
-  // MapSegment
-  auto& expiryTaskManager = m_cacheImpl->getExpiryTaskManager();
-  for (const auto& queIter : m_tombstoneMap) {
-    expiryTaskManager.cancelTask(queIter.second->getExpiryTaskId());
-    delete queIter.second->getHandler();
+  auto& manager = cache_.getExpiryTaskManager();
+  for (const auto& iter : tombstones_) {
+    manager.cancel(iter.second->task_id());
   }
 }
 
