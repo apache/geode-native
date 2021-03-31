@@ -304,7 +304,7 @@ Cluster::Cluster(LocatorCount initialLocators, ServerCount initialServers,
                  std::vector<uint16_t> &serverPorts)
     : name_(std::string(::testing::UnitTest::GetInstance()
                             ->current_test_info()
-                            ->test_case_name()) +
+                            ->test_suite_name()) +
             "/" +
             ::testing::UnitTest::GetInstance()->current_test_info()->name()),
       initialLocators_(initialLocators.get()),

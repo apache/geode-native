@@ -273,7 +273,6 @@ class Gfsh {
     class GatewayReceiver : public Command<void> {
      public:
       explicit GatewayReceiver(Gfsh &gfsh);
-
     };
   };
 

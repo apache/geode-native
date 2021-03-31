@@ -65,7 +65,6 @@ void runOperationsUntilServerDisconnects(std::shared_ptr<Cache> cache,
                                          std::shared_ptr<Region> region,
                                          int minEntryKey, int maxEntryKey,
                                          bool usingPartitionResolver,
-                                         std::string serverToDisconnect,
                                          CacheImpl* cacheImpl,
                                          std::string epShutDownHostname) {
   auto transactionManager = cache->getCacheTransactionManager();
@@ -151,8 +150,7 @@ void executeTestCase(bool useSingleHopAndPR) {
     auto minKey = (i * keyRangeSize);
     auto maxKey = minKey + keyRangeSize - 1;
     std::thread th(runOperationsUntilServerDisconnects, cache, region, minKey,
-                   maxKey, useSingleHopAndPR, epShutDownHostname, cacheImpl,
-                   epShutDownHostname);
+                   maxKey, useSingleHopAndPR, cacheImpl, epShutDownHostname);
     clientThreads.push_back(std::move(th));
   }
   // Shut down the server
