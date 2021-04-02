@@ -206,6 +206,7 @@ set_tests_properties(
     testThinClientGatewayTest
     testThinClientPoolAttrTest
     testThinClientPoolLocator
+    testThinClientPoolRedundancy
     testThinClientRemoveOps
     testThinClientSecurityAuthentication
     testThinClientSecurityAuthenticationMU
