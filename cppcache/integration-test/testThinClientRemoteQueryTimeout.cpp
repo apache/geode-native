@@ -187,8 +187,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
       LOG(logmsg.c_str());
     }
 
-    // SLEEP(150000);  // sleep 2.5 min to allow server query to complete
-    SLEEP(15000);  // sleep 2.5 min to allow server query to complete
+    SLEEP(15000);
 
     LOG("StepThree complete.");
   }
@@ -291,7 +290,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
     try {
       LOG("EXECUTE 4 START");
 
-      results = qry->execute(std::chrono::seconds(850000));
+      results = qry->execute(std::chrono::seconds(850));
 
       LOG("EXECUTE 4 STOP");
       std::string logmsg = "Result size is " + std::to_string(results->size());
@@ -390,7 +389,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight)
         }
       }
 
-      results = qry->execute(paramList, std::chrono::seconds(850000));
+      results = qry->execute(paramList, std::chrono::seconds(850));
 
       LOG("EXECUTE 6 STOP");
       std::string logmsg = "Result size is " + std::to_string(results->size());
@@ -448,8 +447,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, verifyNegativeValueTimeout)
       LOG(logmsg.c_str());
     }
 
-    // SLEEP(150000);  // sleep 2.5 min to allow server query to complete
-    SLEEP(15000);  // sleep 2.5 min to allow server query to complete
+    SLEEP(15000);
 
     LOG("StepThree complete.");
   }
@@ -493,8 +491,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, verifyLargeValueTimeout)
       LOG(logmsg.c_str());
     }
 
-    // SLEEP(150000);  // sleep 2.5 min to allow server query to complete
-    SLEEP(15000);  // sleep 2.5 min to allow server query to complete
+    SLEEP(15000);
 
     LOG("StepThree complete.");
   }
@@ -561,13 +558,11 @@ void UnsetPortfolioType() { CALL_TASK(UnsetPortfolioTypeToPdx); }
 
 DUNIT_MAIN
   {
-    // Basic Old Test
-    // runRemoteQueryTimeoutTest(); // not Pdx
+    UnsetPortfolioType();
 
-    UnsetPortfolioType();  // not needed, m_isPdx already false
     for (int runIdx = 1; runIdx <= 2; ++runIdx) {
       // New Test with Pool + EP
-      runRemoteQueryTimeoutTest();  // Same as line 574
+      runRemoteQueryTimeoutTest();
       setPortfolioPdxType();
     }
   }
