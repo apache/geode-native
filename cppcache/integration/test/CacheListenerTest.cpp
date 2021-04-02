@@ -46,9 +46,9 @@ std::unique_ptr<T> make_unique(Args&&... args) {
 
 class CacheListenerTest : public ::testing::Test {
  protected:
-  static std::unique_ptr<Cluster> cluster;
+  std::unique_ptr<Cluster> cluster;
 
-  static void SetUpTestSuite() {
+  void SetUp() {
     std::cout << "Setup Cluster.\n";
     cluster = make_unique<Cluster>(LocatorCount{1}, ServerCount{1});
     std::cout << "Start Cluster.\n";
@@ -65,7 +65,7 @@ class CacheListenerTest : public ::testing::Test {
     std::cout << "Setup complete.\n";
   }
 
-  static void TearDownTestSuite() {
+  void TearDown() {
     cluster->stop();
     cluster.reset();
   }
@@ -74,30 +74,29 @@ class CacheListenerTest : public ::testing::Test {
   ~CacheListenerTest() = default;
 };
 
-std::unique_ptr<Cluster> CacheListenerTest::cluster;
-
+using ::testing::_;  // Match all
 using ::testing::AllOf;
 using ::testing::Eq;
 using ::testing::IsNull;
 using ::testing::Property;
-using ::testing::_; //Match all
 
 TEST_F(CacheListenerTest, afterCreate) {
   using apache::geode::client::EntryEvent;
   using apache::geode::client::Nice_MockListener;
   using apache::geode::client::RegionShortcut;
 
-  auto cache = cluster->createCache({}, true);
-
   auto listener = std::make_shared<Nice_MockListener>();
+
+  auto cache = cluster->createCache({}, true);
 
   auto region = cache.createRegionFactory(RegionShortcut::PROXY)
                     .setPoolName("default")
                     .setCacheListener(listener)
                     .create("region");
 
-  EXPECT_CALL(*listener, afterCreate)
-     .With(AllOf(Property(&EntryEvent::getRegion, Eq(region)),
+  EXPECT_CALL(
+      *listener,
+      afterCreate(AllOf(Property(&EntryEvent::getRegion, Eq(region)),
                         // Property(&EntryEvent::getKey, Eq("key")),
                         Property(&EntryEvent::getOldValue, IsNull()),
                         // Property(&EntryEvent::getNewValue, Eq("value")),
