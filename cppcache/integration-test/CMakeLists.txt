@@ -183,24 +183,9 @@ set_tests_properties(
     testThinClientAfterRegionLive
     testThinClientCacheables
     testThinClientCq
-    #testThinClientCqFailover
-    #testThinClientCqHAFailover
-    #testThinClientDurableConnect
     testThinClientDurableDisconnectNormal
     testThinClientDurableDisconnectTimeout
-    #testThinClientDurableFailoverClientClosedNoRedundancy
-    #testThinClientDurableFailoverClientNotClosedRedundancy
-    #testThinClientDurableKeepAliveFalseTimeout
-    #testThinClientDurableKeepAliveTrueNormal
     testThinClientDurableReconnect
-    #testThinClientFailover
-    #testThinClientFailover2
-    #testThinClientFailoverInterest
-    #testThinClientFailoverInterest2
-    #testThinClientFailoverRegex
-    #testThinClientFixedPartitionResolver
-    #testThinClientHADistOps
-    #testThinClientHAEventIDMap
     testThinClientHAFailover
     testThinClientHAMixedRedundancy
     testThinClientHAQueryFailover
@@ -208,26 +193,19 @@ set_tests_properties(
     testThinClientLargePutAllWithCallBackArg
     testThinClientLocatorFailover
     testThinClientMultiDS
-    #testThinClientPRPutAllFailover
     testThinClientPartitionResolver
     testThinClientPdxDeltaWithNotification
     testThinClientPdxTests
-    #testThinClientPoolRedundancy
-    #testThinClientPoolServer
     testThinClientPutAll
     testThinClientPutAllWithCallBackArgWithoutConcurrency
     testThinClientSecurityCQAuthorizationMU
     testThinClientTXFailover
-    #testThinClientTransactionsXA
     testTimedSemaphore
     # broken
-    #testFwPerf
     testThinClientCqDurable
     testThinClientGatewayTest
-    testThinClientHAFailoverRegex
     testThinClientPoolAttrTest
     testThinClientPoolLocator
-    #testThinClientRemoteQueryTimeout
     testThinClientRemoveOps
     testThinClientSecurityAuthentication
     testThinClientSecurityAuthenticationMU

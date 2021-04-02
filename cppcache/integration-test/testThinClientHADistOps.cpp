@@ -358,7 +358,7 @@ const char *vals[] = {"Value-1", "Value-2", "Value-3", "Value-4"};
 const char *nvals[] = {"New Value-1", "New Value-2", "New Value-3",
                        "New Value-4"};
 
-const char *regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
+const char *regionName = "DistRegionAck";
 
 const bool USE_ACK = true;
 const bool NO_ACK = false;
@@ -375,17 +375,14 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateClient1PoolAndRegions)
   {
     getHelper()->createPoolWithLocators("__TESTPOOL1_", locatorsG, true, 1);
 
-    getHelper()->createRegionAndAttachPool(regionNames[0], USE_ACK,
+    getHelper()->createRegionAndAttachPool(regionName, USE_ACK,
                                            "__TESTPOOL1_", true);
-    getHelper()->createRegionAndAttachPool(regionNames[1], NO_ACK,
-                                           "__TESTPOOL1_", true);
-    /* createPooledRegion( regionNames[0], USE_ACK, locatorsG,
+    /* createPooledRegion( regionName, USE_ACK, locatorsG,
      "__TESTPOOL1_" );
      createPooledRegion( regionNames[1], NO_ACK, locatorsG, "__TESTPOOL2_"
      );*/
 
-    createEntry(regionNames[0], keys[0], vals[0]);
-    createEntry(regionNames[1], keys[2], vals[2]);
+    createEntry(regionName, keys[0], vals[0]);
 
     LOG("CreateClient1PoolAndRegions complete.");
   }
@@ -395,18 +392,15 @@ DUNIT_TASK_DEFINITION(CLIENT2, CreateClient2PoolAndRegions)
   {
     getHelper()->createPoolWithLocators("__TESTPOOL1_", locatorsG, true, 1);
 
-    getHelper()->createRegionAndAttachPool(regionNames[0], USE_ACK,
-                                           "__TESTPOOL1_", true);
-    getHelper()->createRegionAndAttachPool(regionNames[1], NO_ACK,
+    getHelper()->createRegionAndAttachPool(regionName, USE_ACK,
                                            "__TESTPOOL1_", true);
 
-    /* createPooledRegion( regionNames[0], USE_ACK,  locatorsG,
+    /* createPooledRegion( regionName, USE_ACK,  locatorsG,
      "__TESTPOOL1_" );
      createPooledRegion( regionNames[1], NO_ACK,  locatorsG, "__TESTPOOL2_"
      );*/
 
-    createEntry(regionNames[0], keys[1], vals[1]);
-    createEntry(regionNames[1], keys[3], vals[3]);
+    createEntry(regionName, keys[1], vals[1]);
 
     LOG("CreateClient2PoolAndRegions complete.");
   }
@@ -414,12 +408,9 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, RegisterClient1Keys)
   {
-    auto reg0 = getHelper()->getRegion(regionNames[0]);
-    auto reg1 = getHelper()->getRegion(regionNames[1]);
+    auto reg0 = getHelper()->getRegion(regionName);
     auto vec0 = reg0->serverKeys();
-    auto vec1 = reg1->serverKeys();
     ASSERT(vec0.size() == 2, "Should have 2 keys in first region.");
-    ASSERT(vec1.size() == 2, "Should have 2 keys in second region.");
     std::string key0, key1;
     key0 = vec0[0]->toString().c_str();
     key1 = vec0[1]->toString().c_str();
@@ -429,76 +420,54 @@ DUNIT_TASK_DEFINITION(CLIENT1, RegisterClient1Keys)
     ASSERT(key1 == keys[0] || key1 == keys[1],
            "Unexpected key in first region.");
 
-    key0 = vec1[0]->toString().c_str();
-    key1 = vec1[1]->toString().c_str();
-    ASSERT(key0 != key1, "The two keys should be different in second region.");
-    ASSERT(key0 == keys[2] || key0 == keys[3],
-           "Unexpected key in second region.");
-    ASSERT(key1 == keys[2] || key1 == keys[3],
-           "Unexpected key in second region.");
-
-    doNetsearch(regionNames[0], keys[1], vals[1]);
-    doNetsearch(regionNames[1], keys[3], vals[3]);
+    doNetsearch(regionName, keys[1], vals[1]);
 
     auto keyPtr1 = CacheableKey::create(keys[1]);
-    auto keyPtr3 = CacheableKey::create(keys[3]);
 
-    auto regPtr0 = getHelper()->getRegion(regionNames[0]);
-    auto regPtr1 = getHelper()->getRegion(regionNames[1]);
+    auto regPtr0 = getHelper()->getRegion(regionName);
 
     std::vector<std::shared_ptr<CacheableKey>> keys0, keys1;
     keys0.push_back(keyPtr1);
-    keys1.push_back(keyPtr3);
     regPtr0->registerKeys(keys0);
-    regPtr1->registerKeys(keys1);
     LOG("RegisterClient1Keys complete.");
   }
 END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, RegisterClient2Keys)
   {
-    doNetsearch(regionNames[0], keys[0], vals[0]);
-    doNetsearch(regionNames[1], keys[2], vals[2]);
+    doNetsearch(regionName, keys[0], vals[0]);
 
     auto keyPtr0 = CacheableKey::create(keys[0]);
     auto keyPtr2 = CacheableKey::create(keys[2]);
 
-    auto regPtr0 = getHelper()->getRegion(regionNames[0]);
-    auto regPtr1 = getHelper()->getRegion(regionNames[1]);
+    auto regPtr0 = getHelper()->getRegion(regionName);
 
     std::vector<std::shared_ptr<CacheableKey>> keys0, keys1;
     keys0.push_back(keyPtr0);
     keys1.push_back(keyPtr2);
     regPtr0->registerKeys(keys0);
-    regPtr1->registerKeys(keys1);
     LOG("RegisterClient2Keys complete.");
   }
 END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, UpdateClient1Entries)
   {
-    updateEntry(regionNames[0], keys[0], nvals[0]);
-    updateEntry(regionNames[1], keys[2], nvals[2]);
+    updateEntry(regionName, keys[0], nvals[0]);
     LOG("UpdateClient1Entries complete.");
   }
 END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, VerifyAndUpdateClient2Entries)
   {
-    verifyEntry(regionNames[0], keys[0], nvals[0]);
-    verifyEntry(regionNames[1], keys[2], nvals[2]);
+    verifyEntry(regionName, keys[0], nvals[0]);
 
-    updateEntry(regionNames[0], keys[1], nvals[1]);
-    updateEntry(regionNames[1], keys[3], nvals[3]);
+    updateEntry(regionName, keys[1], nvals[1]);
     LOG("VerifyAndUpdateClient2Entries complete.");
   }
 END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, VerifyClient1Entries)
-  {
-    verifyEntry(regionNames[0], keys[1], nvals[1]);
-    verifyEntry(regionNames[1], keys[3], nvals[3]);
-  }
+  { verifyEntry(regionName, keys[1], nvals[1]); }
 END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, DoAbsolutelyNothing)
@@ -507,10 +476,8 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, DestroyAllKeys)
   {
-    destroyEntry(regionNames[0], keys[0]);
-    destroyEntry(regionNames[0], keys[1]);
-    destroyEntry(regionNames[1], keys[2]);
-    destroyEntry(regionNames[1], keys[3]);
+    destroyEntry(regionName, keys[0]);
+    destroyEntry(regionName, keys[1]);
   }
 END_TASK_DEFINITION
 

@@ -405,12 +405,11 @@ const char *vals[] = {"Value-1", "Value-2", "Value-3", "Value-4"};
 const char *nvals[] = {"New Value-1", "New Value-2", "New Value-3",
                        "New Value-4"};
 
-const char *regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
+const char *regionName = "DistRegionAck";
 
 const bool USE_ACK = true;
 const bool NO_ACK = false;
 std::shared_ptr<DupChecker> checker1;
-std::shared_ptr<DupChecker> checker2;
 
 void initClientAndRegion(int redundancy,
                          bool clientNotificationEnabled = true) {
@@ -418,10 +417,8 @@ void initClientAndRegion(int redundancy,
   getHelper()->createPoolWithLocators("__TESTPOOL1_", locatorsG,
                                       clientNotificationEnabled, redundancy);
 
-  getHelper()->createRegionAndAttachPool(regionNames[0], USE_ACK,
+  getHelper()->createRegionAndAttachPool(regionName, USE_ACK,
                                          "__TESTPOOL1_", true);
-  getHelper()->createRegionAndAttachPool(regionNames[1], NO_ACK, "__TESTPOOL1_",
-                                         true);
 }
 
 #include "LocatorHelper.hpp"
@@ -451,18 +448,11 @@ DUNIT_TASK_DEFINITION(CLIENT2, InitClient2)
     LOG("Initialized client with redundancy level 1.");
 
     checker1 = std::make_shared<DupChecker>();
-    checker2 = std::make_shared<DupChecker>();
 
-    setCacheListener(regionNames[0], checker1);
-    setCacheListener(regionNames[1], checker2);
+    setCacheListener(regionName, checker1);
 
     try {
-      getHelper()->getRegion(regionNames[0])->registerAllKeys();
-    } catch (...) {
-    }
-
-    try {
-      getHelper()->getRegion(regionNames[1])->registerAllKeys();
+      getHelper()->getRegion(regionName)->registerAllKeys();
     } catch (...) {
     }
 
@@ -482,21 +472,13 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, CreateEntries)
   {
     for (int value = 1; value <= 100; value++) {
-      createIntEntry(regionNames[0], keys[0], value);
+      createIntEntry(regionName, keys[0], value);
       std::this_thread::sleep_for(std::chrono::milliseconds(10));
-      createIntEntry(regionNames[0], keys[1], value);
+      createIntEntry(regionName, keys[1], value);
       std::this_thread::sleep_for(std::chrono::milliseconds(10));
-      createIntEntry(regionNames[0], keys[2], value);
+      createIntEntry(regionName, keys[2], value);
       std::this_thread::sleep_for(std::chrono::milliseconds(10));
-      createIntEntry(regionNames[0], keys[3], value);
-      std::this_thread::sleep_for(std::chrono::milliseconds(10));
-      createIntEntry(regionNames[1], keys[0], value);
-      std::this_thread::sleep_for(std::chrono::milliseconds(10));
-      createIntEntry(regionNames[1], keys[1], value);
-      std::this_thread::sleep_for(std::chrono::milliseconds(10));
-      createIntEntry(regionNames[1], keys[2], value);
-      std::this_thread::sleep_for(std::chrono::milliseconds(10));
-      createIntEntry(regionNames[1], keys[3], value);
+      createIntEntry(regionName, keys[3], value);
       std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
   }
@@ -516,19 +498,13 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyClient2Entries)
     // wait 30 sec for notifications to complete
     std::this_thread::sleep_for(std::chrono::seconds(30));
 
-    verifyIntEntry(regionNames[0], keys[0], 100);
-    verifyIntEntry(regionNames[0], keys[1], 100);
-    verifyIntEntry(regionNames[0], keys[2], 100);
-    verifyIntEntry(regionNames[0], keys[3], 100);
-    verifyIntEntry(regionNames[1], keys[0], 100);
-    verifyIntEntry(regionNames[1], keys[1], 100);
-    verifyIntEntry(regionNames[1], keys[2], 100);
-    verifyIntEntry(regionNames[1], keys[3], 100);
+    verifyIntEntry(regionName, keys[0], 100);
+    verifyIntEntry(regionName, keys[1], 100);
+    verifyIntEntry(regionName, keys[2], 100);
+    verifyIntEntry(regionName, keys[3], 100);
 
     LOG("Validating checker1 cachelistener");
     checker1->validate();
-    LOG("Validating checker2 cachelistener");
-    checker2->validate();
 
     LOG("VerifyClient2Entries complete.");
   }

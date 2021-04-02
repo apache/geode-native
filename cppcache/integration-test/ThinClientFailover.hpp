@@ -283,7 +283,7 @@ const char* vals[] = {"Value-1", "Value-2", "Value-3", "Value-4"};
 const char* nvals[] = {"New Value-1", "New Value-2", "New Value-3",
                        "New Value-4"};
 
-const char* regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
+const char* regionName = "DistRegionAck";
 
 const bool USE_ACK = true;
 const bool NO_ACK = false;
@@ -298,8 +298,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, StepOne_Pooled_Locator)
   {
     initClient(true);
-    createPooledRegion(regionNames[0], USE_ACK, locatorsG, "__TEST_POOL1__");
-    createPooledRegion(regionNames[1], NO_ACK, locatorsG, "__TEST_POOL2__");
+    createPooledRegion(regionName, USE_ACK, locatorsG, "__TEST_POOL1__");
     LOG("StepOne_Pooled_Locator complete.");
   }
 END_TASK_DEFINITION
@@ -307,10 +306,8 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, StepOne_Pooled_Locator_Sticky)
   {
     initClient(true);
-    createPooledRegionSticky(regionNames[0], USE_ACK, locatorsG,
+    createPooledRegionSticky(regionName, USE_ACK, locatorsG,
                              "__TEST_POOL1__");
-    createPooledRegionSticky(regionNames[1], NO_ACK, locatorsG,
-                             "__TEST_POOL2__");
     LOG("StepOne_Pooled_Locator complete.");
   }
 END_TASK_DEFINITION
@@ -318,8 +315,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, StepTwo_Pooled_Locator)
   {
     initClient(true);
-    createPooledRegion(regionNames[0], USE_ACK, locatorsG, "__TEST_POOL1__");
-    createPooledRegion(regionNames[1], NO_ACK, locatorsG, "__TEST_POOL2__");
+    createPooledRegion(regionName, USE_ACK, locatorsG, "__TEST_POOL1__");
     LOG("StepTwo complete.");
   }
 END_TASK_DEFINITION
@@ -327,28 +323,23 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, StepTwo_Pooled_Locator_Sticky)
   {
     initClient(true);
-    createPooledRegionSticky(regionNames[0], USE_ACK, locatorsG,
+    createPooledRegionSticky(regionName, USE_ACK, locatorsG,
                              "__TEST_POOL1__");
-    createPooledRegionSticky(regionNames[1], NO_ACK, locatorsG,
-                             "__TEST_POOL2__");
     LOG("StepTwo complete.");
   }
 END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
   {
-    createEntry(regionNames[0], keys[0], vals[0]);
-    createEntry(regionNames[1], keys[2], vals[2]);
+    createEntry(regionName, keys[0], vals[0]);
     LOG("StepThree complete.");
   }
 END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, StepFour)
   {
-    doNetsearch(regionNames[0], keys[0], vals[0]);
-    doNetsearch(regionNames[1], keys[2], vals[2]);
-    createEntry(regionNames[0], keys[1], vals[1]);
-    createEntry(regionNames[1], keys[3], vals[3]);
+    doNetsearch(regionName, keys[0], vals[0]);
+    createEntry(regionName, keys[1], vals[1]);
     LOG("StepFour complete.");
   }
 END_TASK_DEFINITION
@@ -372,17 +363,14 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
   {
     // doNetsearch( regionNames[0], keys[1], vals[1] );
     // doNetsearch( regionNames[1], keys[3], vals[3] );
-    updateEntry(regionNames[0], keys[0], nvals[0]);
-    updateEntry(regionNames[1], keys[2], nvals[2]);
+    updateEntry(regionName, keys[0], nvals[0]);
     LOG("StepFive complete.");
   }
 END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, StepSix)
   {
-    doNetsearch(regionNames[0], keys[0], vals[0]);
-    doNetsearch(regionNames[1], keys[2], vals[2]);
-    updateEntry(regionNames[0], keys[1], nvals[1]);
-    updateEntry(regionNames[1], keys[3], nvals[3]);
+    doNetsearch(regionName, keys[0], vals[0]);
+    updateEntry(regionName, keys[1], nvals[1]);
     LOG("StepSix complete.");
   }
 END_TASK_DEFINITION
