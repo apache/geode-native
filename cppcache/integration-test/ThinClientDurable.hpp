@@ -149,9 +149,7 @@ void setCacheListener(const char* regName,
   attrMutator->setCacheListener(monitor);
 }
 std::shared_ptr<OperMonitor> mon1C1 = nullptr;
-std::shared_ptr<OperMonitor> mon2C1 = nullptr;
 std::shared_ptr<OperMonitor> mon1C2 = nullptr;
-std::shared_ptr<OperMonitor> mon2C2 = nullptr;
 
 /* Total 10 Keys , alternate durable and non-durable */
 const char* mixKeys[] = {"Key-1", "D-Key-1", "L-Key", "LD-Key"};
@@ -163,7 +161,6 @@ const char* testRegex[] = {"D-Key-.*", "Key-.*"};
 void initClientCache(int durableIdx, int redundancy,
                      std::chrono::seconds durableTimeout,
                      std::shared_ptr<OperMonitor>& mon1,
-                     std::shared_ptr<OperMonitor>& mon2,
                      int sleepDuration = 0) {
   // Sleep before starting , Used for Timeout testing.
   if (sleepDuration) SLEEP(sleepDuration);
@@ -193,7 +190,7 @@ void initClientCache(int durableIdx, int redundancy,
   LOG("Clnt1Init complete.");
 }
 
-void feederUpdate(int value, int ignoreR2 = false) {
+void feederUpdate(int value) {
   for (int regIdx = 0; regIdx < 1; regIdx++) {
     createIntEntry(regionNames[regIdx], mixKeys[0], value);
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
@@ -231,7 +228,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, InitClient1Timeout300)
       mon1C1 = std::make_shared<OperMonitor>(durableIds[0], regionNames[0]);
     }
     initClientCache(0, 0 /* Redundancy */,
-                    std::chrono::seconds(300) /* D Timeout */, mon1C1, mon2C1);
+                    std::chrono::seconds(300) /* D Timeout */, mon1C1);
   }
 END_TASK_DEFINITION
 
@@ -241,7 +238,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, InitClient1Timeout30)
       mon1C1 = std::make_shared<OperMonitor>(durableIds[0], regionNames[0]);
     }
     initClientCache(0, 0 /* Redundancy */,
-                    std::chrono::seconds(30) /* D Timeout */, mon1C1, mon2C1);
+                    std::chrono::seconds(30) /* D Timeout */, mon1C1);
   }
 END_TASK_DEFINITION
 
@@ -251,7 +248,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, InitClient1DelayedStart)
       mon1C1 = std::make_shared<OperMonitor>(durableIds[0], regionNames[0]);
     }
     initClientCache(0, 0 /* Redundancy */,
-                    std::chrono::seconds(30) /* D Timeout */, mon1C1, mon2C1,
+                    std::chrono::seconds(30) /* D Timeout */, mon1C1,
                     35000 /* Sleep before starting */);
   }
 END_TASK_DEFINITION
@@ -262,7 +259,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, InitClient2Timeout300)
       mon1C2 = std::make_shared<OperMonitor>(durableIds[1], regionNames[0]);
     }
     initClientCache(1, 1 /* Redundancy */,
-                    std::chrono::seconds(300) /* D Timeout */, mon1C2, mon2C2);
+                    std::chrono::seconds(300) /* D Timeout */, mon1C2);
   }
 END_TASK_DEFINITION
 
@@ -273,7 +270,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, InitClient2Timeout30)
       mon1C2 = std::make_shared<OperMonitor>(durableIds[1], regionNames[0]);
     }
     initClientCache(1, 1 /* Redundancy */,
-                    std::chrono::seconds(30) /* D Timeout */, mon1C2, mon2C2);
+                    std::chrono::seconds(30) /* D Timeout */, mon1C2);
   }
 END_TASK_DEFINITION
 
@@ -383,7 +380,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(FEEDER, FeederUpdate2)
   {
-    feederUpdate(2, true);
+    feederUpdate(2);
     LOG("FeederUpdate2 complete.");
   }
 END_TASK_DEFINITION
