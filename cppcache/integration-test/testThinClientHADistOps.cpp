@@ -375,12 +375,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateClient1PoolAndRegions)
   {
     getHelper()->createPoolWithLocators("__TESTPOOL1_", locatorsG, true, 1);
 
-    getHelper()->createRegionAndAttachPool(regionName, USE_ACK,
-                                           "__TESTPOOL1_", true);
-    /* createPooledRegion( regionName, USE_ACK, locatorsG,
-     "__TESTPOOL1_" );
-     createPooledRegion( regionNames[1], NO_ACK, locatorsG, "__TESTPOOL2_"
-     );*/
+    getHelper()->createRegionAndAttachPool(regionName, USE_ACK, "__TESTPOOL1_",
+                                           true);
 
     createEntry(regionName, keys[0], vals[0]);
 
@@ -392,13 +388,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, CreateClient2PoolAndRegions)
   {
     getHelper()->createPoolWithLocators("__TESTPOOL1_", locatorsG, true, 1);
 
-    getHelper()->createRegionAndAttachPool(regionName, USE_ACK,
-                                           "__TESTPOOL1_", true);
-
-    /* createPooledRegion( regionName, USE_ACK,  locatorsG,
-     "__TESTPOOL1_" );
-     createPooledRegion( regionNames[1], NO_ACK,  locatorsG, "__TESTPOOL2_"
-     );*/
+    getHelper()->createRegionAndAttachPool(regionName, USE_ACK, "__TESTPOOL1_",
+                                           true);
 
     createEntry(regionName, keys[1], vals[1]);
 

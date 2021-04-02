@@ -417,8 +417,8 @@ void initClientAndRegion(int redundancy,
   getHelper()->createPoolWithLocators("__TESTPOOL1_", locatorsG,
                                       clientNotificationEnabled, redundancy);
 
-  getHelper()->createRegionAndAttachPool(regionName, USE_ACK,
-                                         "__TESTPOOL1_", true);
+  getHelper()->createRegionAndAttachPool(regionName, USE_ACK, "__TESTPOOL1_",
+                                         true);
 }
 
 #include "LocatorHelper.hpp"

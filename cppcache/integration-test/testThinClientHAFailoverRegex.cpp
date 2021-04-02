@@ -285,8 +285,8 @@ void initClientAndRegion(int redundancy) {
   auto pp = Properties::create();
   getHelper()->createPoolWithLocators("__TESTPOOL1_", locatorsG, true,
                                       redundancy);
-  getHelper()->createRegionAndAttachPool(regionName, USE_ACK,
-                                         "__TESTPOOL1_", true);
+  getHelper()->createRegionAndAttachPool(regionName, USE_ACK, "__TESTPOOL1_",
+                                         true);
 }
 //#include "ThinClientDurableInit.hpp"
 #include "LocatorHelper.hpp"
