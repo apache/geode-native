@@ -104,7 +104,11 @@ TEST_F(CacheListenerTest, afterCreate) {
                         Property(&EntryEvent::remoteOrigin, Eq(false)))))
       .Times(1);
 
+  EXPECT_CALL(*listener, afterRegionLive(_)).Times(1);
+
   region->put("key", "value");
+
+  ::testing::Mock::VerifyAndClearExpectations(listener.get());
 }
 
 TEST_F(CacheListenerTest, afterUpdate) {}
