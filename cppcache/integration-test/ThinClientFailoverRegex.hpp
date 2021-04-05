@@ -292,7 +292,7 @@ const char* vals[] = {"Value-1", "Value-2", "Value-3", "Value-4"};
 const char* nvals[] = {"New Value-1", "New Value-2", "New Value-3",
                        "New Value-4"};
 
-const char* regionNames[] = {"DistRegionAck", "not-used"};
+const char* regionNames[] = {"DistRegionAck"};
 
 const bool USE_ACK = true;
 const bool NO_ACK = false;
@@ -320,8 +320,6 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepTwo_Pool_Locator)
   {
     initClient(true);
     createPooledRegion(regionNames[0], USE_ACK, locatorsG, "__TEST_POOL1__",
-                       true);
-    createPooledRegion(regionNames[1], NO_ACK, locatorsG, "__TEST_POOL1__",
                        true);
 
     auto regPtr0 = getHelper()->getRegion(regionNames[0]);
@@ -357,14 +355,6 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepFour)
 
     verifyCreated(regionNames[0], keys[0]);
     verifyEntry(regionNames[0], keys[0], vals[0]);
-
-    /*
-     auto regPtr1 = getHelper()->getRegion( regionNames[1] );
-     auto keyPtr2 = CacheableKey::create(keys[2]);
-      std::vector<std::shared_ptr<CacheableKey>>  keys2;
-      keys2.push_back(keyPtr2);
-      regPtr1->unregisterKeys(keys2, nullptr);
-      */
 
     LOG("StepFour complete.");
   }
