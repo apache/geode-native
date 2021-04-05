@@ -900,23 +900,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSeven)
   { createEntryTwice(regionNames[0], CREATE_TWICE_KEY, CREATE_TWICE_VALUE); }
 END_TASK_DEFINITION
 
-DUNIT_TASK_DEFINITION(CLIENT1, StepEight_Pool_Sticky)
-  {
-    LOG("REGION Created with Caching Enabled false");
-    auto keyPtr = CacheableKey::create(CREATE_TWICE_KEY);
-    auto valPtr = CacheableString::create(CREATE_TWICE_VALUE);
-
-    auto reg0 = getHelper()->getRegion(regionNames[0]);
-    reg0->localInvalidate(CacheableKey::create(keys[1]));
-    auto pool = getHelper()->getCache()->getPoolManager().find("__TESTPOOL1_");
-    ASSERT(pool != nullptr, "Pool Should have been found");
-    doNetsearch(regionNames[0], keys[1], nvals[1]);
-    pool->releaseThreadLocalConnection();
-    updateEntry(regionNames[0], keys[0], nvals[0]);
-    pool->releaseThreadLocalConnection();
-}
-END_TASK_DEFINITION
-
 DUNIT_TASK_DEFINITION(CLIENT1, CloseCache1)
   { cleanProc(); }
 END_TASK_DEFINITION
@@ -934,28 +917,19 @@ DUNIT_TASK_DEFINITION(SERVER1, CloseServer1)
   }
 END_TASK_DEFINITION
 
-void runTransactionOps(bool isSticky = false) {
+void runTransactionOps() {
   CALL_TASK(CreateLocator1);
   CALL_TASK(CreateServer1_With_Locator);
 
-  if (isSticky) {
-    CALL_TASK(CreateNonexistentServerRegion_Pooled_Locator_Sticky);
-    CALL_TASK(StepOne_Pooled_Locator_Sticky);
-    CALL_TASK(StepTwo_Pooled_Locator_Sticky);
-  } else {
-    CALL_TASK(CreateNonexistentServerRegion_Pooled_Locator);
-    CALL_TASK(StepOne_Pooled_Locator);
-    CALL_TASK(StepTwo_Pooled_Locator);
-  }
+  CALL_TASK(CreateNonexistentServerRegion_Pooled_Locator);
+  CALL_TASK(StepOne_Pooled_Locator);
+  CALL_TASK(StepTwo_Pooled_Locator);
 
   CALL_TASK(StepThree);
   CALL_TASK(StepFour);
   CALL_TASK(StepFive);
   CALL_TASK(StepSix);
   CALL_TASK(StepSeven);
-  if (isSticky) {
-    CALL_TASK(StepEight_Pool_Sticky);
-  }
 
   CALL_TASK(SuspendResumeInThread);
   CALL_TASK(SuspendResumeCommit);
