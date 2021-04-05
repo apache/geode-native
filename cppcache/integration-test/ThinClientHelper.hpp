@@ -134,7 +134,7 @@ const char* vals[] = {"Value-1", "Value-2", "Value-3",
 const char* nvals[] = {"New Value-1", "New Value-2", "New Value-3",
                        "New Value-4", "New Value-5", "New Value-6"};
 
-const char* regionNames[] = {"DistRegionAck", "not-used"};
+const char* regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
 
 const bool USE_ACK = true;
 const bool NO_ACK = false;
