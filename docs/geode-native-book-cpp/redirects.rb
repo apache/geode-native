@@ -21,7 +21,7 @@ r302 %r{/cppapiref/(.*)}, 'https://geode.apache.org/releases/latest/cppdocs/$1'
 r302 %r{/dotnetapiref/(.*)}, 'https://geode.apache.org/releases/latest/dotnetdocs/$1'
 
 # Links to User Guides #
-rewrite '/', '/docs/geode-native/cpp/113/about-client-users-guide.html'
-rewrite '/index.html', '/docs/geode-native/cpp/113/about-client-users-guide.html'
-r301 %r{/serverman/(.*)}, 'https://geode.apache.org/docs/guide/113/$1'
-r301 %r{/geodeman/(.*)}, 'https://geode.apache.org/docs/guide/113/$1'
+rewrite '/', '/docs/geode-native/cpp/115/about-client-users-guide.html'
+rewrite '/index.html', '/docs/geode-native/cpp/115/about-client-users-guide.html'
+r301 %r{/serverman/(.*)}, 'https://geode.apache.org/docs/guide/115/$1'
+r301 %r{/geodeman/(.*)}, 'https://geode.apache.org/docs/guide/115/$1'
