@@ -22,6 +22,7 @@
 #include <geode/AuthInitialize.hpp>
 #include <geode/SystemProperties.hpp>
 
+#include "CacheImpl.hpp"
 #include "DistributedSystemImpl.hpp"
 #include "TcrConnectionManager.hpp"
 #include "TcrEndpoint.hpp"

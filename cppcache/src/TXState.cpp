@@ -20,6 +20,7 @@
 #include <geode/Cache.hpp>
 #include <geode/CacheTransactionManager.hpp>
 
+#include "CacheImpl.hpp"
 #include "ThinClientPoolDM.hpp"
 #include "TransactionalOperation.hpp"
 #include "TssConnectionWrapper.hpp"

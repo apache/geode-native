@@ -58,6 +58,7 @@ add_executable(cpp-integration-test
   TransactionCleaningTest.cpp
   TransactionsTest.cpp
   WanDeserializationTest.cpp
+  DisconnectEndPointAtException.cpp
 )
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   target_compile_options(cpp-integration-test

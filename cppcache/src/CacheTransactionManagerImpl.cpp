@@ -18,11 +18,11 @@
 #include "CacheTransactionManagerImpl.hpp"
 
 #include <geode/ExceptionTypes.hpp>
-#include <geode/PoolManager.hpp>
 #include <geode/TransactionId.hpp>
 
 #include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
+#include "SuspendedTxExpiryTask.hpp"
 #include "TSSTXStateWrapper.hpp"
 #include "TXCleaner.hpp"
 #include "TcrMessage.hpp"
@@ -217,13 +217,13 @@ TransactionId& CacheTransactionManagerImpl::suspend() {
   txState->releaseStickyConnection();
 
   // set the expiry handler for the suspended transaction
-  auto suspendedTxTimeout = m_cache->getDistributedSystem()
-                                .getSystemProperties()
-                                .suspendedTxTimeout();
-  auto handler =
-      new SuspendedTxExpiryHandler(this, txState->getTransactionId());
-  auto id = m_cache->getExpiryTaskManager().scheduleExpiryTask(
-      handler, suspendedTxTimeout, std::chrono::seconds::zero(), false);
+  auto timeout = m_cache->getDistributedSystem()
+                     .getSystemProperties()
+                     .suspendedTxTimeout();
+  auto& manager = m_cache->getExpiryTaskManager();
+  auto task = std::make_shared<SuspendedTxExpiryTask>(
+      manager, *this, txState->getTransactionId());
+  auto id = manager.schedule(std::move(task), timeout);
   txState->setSuspendedExpiryTaskId(id);
 
   // add the transaction state to the list of suspended transactions
@@ -308,11 +308,7 @@ void CacheTransactionManagerImpl::resumeTxUsingTxState(TXState* txState,
 
   if (cancelExpiryTask) {
     // cancel the expiry task for the transaction
-    m_cache->getExpiryTaskManager().cancelTask(
-        txState->getSuspendedExpiryTaskId());
-  } else {
-    m_cache->getExpiryTaskManager().resetTask(
-        txState->getSuspendedExpiryTaskId(), std::chrono::seconds::zero());
+    m_cache->getExpiryTaskManager().cancel(txState->getSuspendedExpiryTaskId());
   }
 
   // set the current state as the state of the suspended transaction

@@ -15,18 +15,16 @@
  * limitations under the License.
  */
 
-#include <CachePerfStats.hpp>
-#include <PdxInstanceImpl.hpp>
-#include <statistics/StatisticsFactory.hpp>
-
 #include <gtest/gtest.h>
 
 #include <geode/AuthenticatedView.hpp>
-#include <geode/Cache.hpp>
-#include <geode/PoolManager.hpp>
 #include <geode/Properties.hpp>
 #include <geode/RegionFactory.hpp>
 #include <geode/RegionShortcut.hpp>
+
+#include "CacheImpl.hpp"
+#include "PdxInstanceImpl.hpp"
+#include "statistics/StatisticsFactory.hpp"
 
 using apache::geode::client::Cache;
 using apache::geode::client::CacheFactory;

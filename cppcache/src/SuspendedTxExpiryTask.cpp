@@ -14,23 +14,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include "SuspendedTxExpiryTask.hpp"
 
-#include "MapEntry.hpp"
-
-#include "MapEntryT.hpp"
+#include "CacheImpl.hpp"
+#include "CacheTransactionManagerImpl.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
-void EntryFactory::newMapEntry(ExpiryTaskManager*,
-                               const std::shared_ptr<CacheableKey>& key,
-                               std::shared_ptr<MapEntryImpl>& result) const {
-  if (m_concurrencyChecksEnabled) {
-    result = MapEntryT<VersionedMapEntryImpl, 0, 0>::create(key);
-  } else {
-    result = MapEntryT<MapEntryImpl, 0, 0>::create(key);
+SuspendedTxExpiryTask::SuspendedTxExpiryTask(
+    ExpiryTaskManager& expiry_manager, CacheTransactionManagerImpl& tx_manager,
+    TransactionId& tx_id)
+    : ExpiryTask(expiry_manager), tx_manager_(tx_manager), tx_id_(tx_id) {}
+
+bool SuspendedTxExpiryTask::on_expire() {
+  LOGDEBUG("Entered SuspendedTxExpiryTask");
+  try {
+    // resume the transaction and rollback it
+    if (tx_manager_.tryResume(tx_id_, false)) {
+      tx_manager_.rollback();
+    }
+  } catch (...) {
+    // Ignore whatever exception comes
+    LOGFINE(
+        "Error while rollbacking expired suspended transaction. Ignoring the "
+        "error");
   }
+  return 0;
 }
 
 }  // namespace client

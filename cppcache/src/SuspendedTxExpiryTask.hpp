@@ -17,47 +17,43 @@
 
 #pragma once
 
-#ifndef GEODE_PRESERVEDDATAEXPIRYHANDLER_H_
-#define GEODE_PRESERVEDDATAEXPIRYHANDLER_H_
+#ifndef GEODE_SUSPENDEDTXEXPIRYTASK_H_
+#define GEODE_SUSPENDEDTXEXPIRYTASK_H_
 
 #include <geode/Cache.hpp>
-#include <geode/PdxSerializable.hpp>
 #include <geode/internal/geode_globals.hpp>
 
-#include "CacheImpl.hpp"
-#include "ExpiryTaskManager.hpp"
+#include "ExpiryTask.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
+class TransactionId;
+class CacheTransactionManagerImpl;
+
 /**
- * @class PreservedDataExpiryHandler
+ * @class SuspendedTxExpiryTask
  *
- * The task object which contains the handler which gets triggered
- * when a preserved data expires.
+ * The task gets triggered whenever a suspended transaction expires.
  *
  */
-class PreservedDataExpiryHandler : public ACE_Event_Handler {
+class SuspendedTxExpiryTask : public ExpiryTask {
  public:
-  /**
-   * Constructor
-   */
-  PreservedDataExpiryHandler(
-      const std::shared_ptr<PdxTypeRegistry>& pdxTypeRegistry,
-      const std::shared_ptr<PdxSerializable>& pdxObjectPtr);
+  SuspendedTxExpiryTask(ExpiryTaskManager& expiry_manager,
+                        CacheTransactionManagerImpl& tx_manager,
+                        TransactionId& tx_id);
 
-  int handle_timeout(const ACE_Time_Value& current_time,
-                     const void* arg) override;
+ protected:
+  bool on_expire() override;
 
-  int handle_close(ACE_HANDLE handle, ACE_Reactor_Mask close_mask) override;
-
- private:
-  std::shared_ptr<PdxTypeRegistry> m_pdxTypeRegistry;
-  std::shared_ptr<PdxSerializable> m_pdxObjectPtr;
+ protected:
+  CacheTransactionManagerImpl& tx_manager_;
+  TransactionId& tx_id_;
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
 
-#endif  // GEODE_PRESERVEDDATAEXPIRYHANDLER_H_
+#endif  // GEODE_SUSPENDEDTXEXPIRYTASK_H_

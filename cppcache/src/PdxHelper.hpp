@@ -48,6 +48,10 @@ class PdxHelper {
 
   virtual ~PdxHelper();
 
+  static void serializePdxWithRetries(
+      DataOutput& output, const std::shared_ptr<PdxSerializable>& pdxObject,
+      int maxRetries = 1);
+
   static void serializePdx(DataOutput& output,
                            const std::shared_ptr<PdxSerializable>& pdxObject);
 

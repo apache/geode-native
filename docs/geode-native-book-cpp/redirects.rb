@@ -15,12 +15,10 @@
 
 # Links to API Documentation #
 r301 %r{/releases/latest/javadoc/(.*)}, 'https://geode.apache.org/releases/latest/javadoc/$1'
-# preferred API redirects 12/8/2020
+r302 %r{/cppdocs/(.*)}, 'https://geode.apache.org/releases/latest/cppdocs/$1'
+r302 %r{/dotnetdocs/(.*)}, 'https://geode.apache.org/releases/latest/dotnetdocs/$1'
 r302 %r{/cppapiref/(.*)}, 'https://geode.apache.org/releases/latest/cppdocs/$1'
 r302 %r{/dotnetapiref/(.*)}, 'https://geode.apache.org/releases/latest/dotnetdocs/$1'
-# old redirects (/cppdocs, /dotnetdocs) deprecated due to recursion in geode .htaccess (delete when no longer needed)
-#r302 %r{/cppdocs/(.*)}, 'https://geode.apache.org/releases/latest/cppdocs/$1'
-#r302 %r{/dotnetdocs/(.*)}, 'https://geode.apache.org/releases/latest/dotnetdocs/$1'
 
 # Links to User Guides #
 rewrite '/', '/docs/geode-native/cpp/113/about-client-users-guide.html'

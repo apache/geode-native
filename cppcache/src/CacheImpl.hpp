@@ -36,6 +36,7 @@
 #include "MemberListForVersionStamp.hpp"
 #include "PdxTypeRegistry.hpp"
 #include "RemoteQueryService.hpp"
+#include "TcrEndpoint.hpp"
 #include "ThreadPool.hpp"
 #include "util/synchronized_map.hpp"
 
@@ -228,6 +229,10 @@ class APACHE_GEODE_EXPORT CacheImpl {
 
   //  TESTING: Durable clients. Not thread safe.
   bool getEndpointStatus(const std::string& endpoint);
+
+  // TESTING: Endpoint disconnections
+  int getNumberOfTimeEndpointDisconnected(const std::string& endpoint,
+                                          const std::string& poolName);
 
   void processMarker();
 
