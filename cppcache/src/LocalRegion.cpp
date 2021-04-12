@@ -29,6 +29,7 @@
 #include "EntriesMapFactory.hpp"
 #include "EntryExpiryHandler.hpp"
 #include "ExpiryTaskManager.hpp"
+#include "InterestResultPolicy.hpp"
 #include "LRUEntriesMap.hpp"
 #include "RegionExpiryHandler.hpp"
 #include "RegionGlobalLocks.hpp"

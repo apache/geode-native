@@ -2001,6 +2001,10 @@ GfErrType ThinClientRegion::registerStoredRegex(
 }
 
 void ThinClientRegion::clearKeysOfInterest() {
+  if (!getAttributes().getCachingEnabled()) {
+    return;
+  }
+
   clearKeysOfInterestRegex(m_interestListRegex);
   clearKeysOfInterestRegex(m_interestListRegexForUpdatesAsInvalidates);
   clearKeysOfInterestRegex(m_durableInterestListRegex);

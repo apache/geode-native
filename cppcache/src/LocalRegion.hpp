@@ -72,12 +72,13 @@ namespace client {
   } while (0)
 #endif
 
-class PutActions;
-class PutActionsTx;
 class CreateActions;
 class DestroyActions;
-class RemoveActions;
 class InvalidateActions;
+class InterestResultPolicy;
+class PutActions;
+class PutActionsTx;
+class RemoveActions;
 
 typedef std::unordered_map<std::shared_ptr<CacheableKey>,
                            std::pair<std::shared_ptr<Cacheable>, int>>
