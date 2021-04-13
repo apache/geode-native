@@ -1548,17 +1548,6 @@ GfErrType ThinClientPoolDM::sendSyncRequest(
   return error;
 }
 
-void ThinClientPoolDM::removeEPFromMetadataIfError(const GfErrType& error,
-                                                   const TcrEndpoint* ep) {
-  if ((error == GF_IOERR || error == GF_TIMEOUT) && (m_clientMetadataService)) {
-    auto sl = std::make_shared<BucketServerLocation>(ep->name());
-    LOGINFO("Removing bucketServerLocation %s due to %s",
-            sl->toString().c_str(),
-            (error == GF_IOERR ? "GF_IOERR" : "GF_TIMEOUT"));
-    m_clientMetadataService->removeBucketServerLocation(sl);
-  }
-}
-
 void ThinClientPoolDM::removeEPConnections(int numConn,
                                            bool triggerManageConn) {
   // TODO: Delete EP
@@ -1961,7 +1950,6 @@ GfErrType ThinClientPoolDM::sendRequestToEP(const TcrMessage& request,
       if (putConnInPool) {
         removeEPConnections(1);
       }
-      removeEPFromMetadataIfError(error, currentEndpoint);
     }
 
     if (error == GF_NOERR || error == GF_CACHESERVER_EXCEPTION ||
@@ -2366,11 +2354,6 @@ TcrConnection* ThinClientPoolDM::getConnectionFromQueueW(
                   version);
         }
         return nullptr;
-<<<<<<< HEAD
-      } else {
-        removeEPFromMetadataIfError(*error, theEP);
-=======
->>>>>>> parent of 85951d7e... GEODE-8231: remove bucket server location from metadata when server down (#615)
       }
     }
   }

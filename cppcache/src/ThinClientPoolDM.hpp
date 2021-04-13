@@ -318,8 +318,6 @@ class ThinClientPoolDM
   static const char* NC_Ping_Thread;
   static const char* NC_MC_Thread;
   int m_primaryServerQueueSize;
-  void removeEPFromMetadataIfError(const GfErrType& error,
-                                   const TcrEndpoint* ep);
 };
 
 class FunctionExecution : public PooledWork<GfErrType> {
