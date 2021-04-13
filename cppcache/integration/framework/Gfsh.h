@@ -252,10 +252,6 @@ class Gfsh {
 
       Region &withType(const std::string &type);
 
-      Region &withRedundantCopies(const std::string &copies);
-
-      Region &withBuckets(const std::string &totalNumBuckets);
-
       Region &withGatewaySenderId(const std::string &gatewaySenderId);
 
       Region &withPartitionResolver(const std::string &partitionResolver);

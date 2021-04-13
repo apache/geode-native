@@ -33,7 +33,6 @@ add_executable(cpp-integration-test
   LocatorRequestsTest.cpp
   Order.cpp
   Order.hpp
-  PartitionRegionOpsTest.cpp
   PdxInstanceFactoryTest.cpp
   PdxInstanceTest.cpp
   PdxJsonTypeTest.cpp

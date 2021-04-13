@@ -141,14 +141,6 @@ class BucketServerLocation : public ServerLocation {
     return *this;
   }
 
-  virtual std::string toString() const override {
-    std::string out = "";
-    out += "[" + m_serverName + ":" + std::to_string(m_port) + "]-" +
-           std::to_string(m_bucketId) + "-" + std::to_string(m_isPrimary) +
-           "-" + std::to_string(m_version);
-    return out;
-  }
-
   BucketServerLocation(
       const BucketServerLocation&
           rhs)  //:ServerLocation(rhs.getServerName(),rhs.getPort())

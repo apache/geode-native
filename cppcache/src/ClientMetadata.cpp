@@ -114,24 +114,14 @@ const std::string& ClientMetadata::getColocatedWith() {
   return m_colocatedWith;
 }
 
-void ClientMetadata::removeBucketServerLocation(
-    const std::shared_ptr<BucketServerLocation>& serverLocation) {
-  for (auto&& locations : m_bucketServerLocationsList) {
-    for (unsigned int i = 0; i < locations.size(); i++) {
-      if (locations[i]->getEpString() == (serverLocation->getEpString())) {
-        locations.erase(locations.begin() + i);
-        break;
-      }
-    }
-  }
-}
-
 void ClientMetadata::getServerLocation(
     int bucketId, bool tryPrimary,
     std::shared_ptr<BucketServerLocation>& serverLocation, int8_t& version) {
+  // ReadGuard guard (m_readWriteLock);
   checkBucketId(bucketId);
+  // BucketServerLocationsType locations =
+  // m_bucketServerLocationsList[bucketId];
   if (m_bucketServerLocationsList[bucketId].empty()) {
-    LOGFINER("m_bucketServerLocationsList[%d] size is zero", bucketId);
     return;
   } else if (tryPrimary) {
     LOGFINER("returning primary & m_bucketServerLocationsList size is %zu",
@@ -153,14 +143,29 @@ void ClientMetadata::getServerLocation(
     } else {
       version = serverLocation->getVersion();
     }
-    LOGFINER("returning random & m_bucketServerLocationsList size is: %zu",
-             m_bucketServerLocationsList.size());
     RandGen randgen;
     serverLocation = m_bucketServerLocationsList[bucketId].at(randgen(
         static_cast<int>(m_bucketServerLocationsList[bucketId].size())));
   }
   // return m_bucketServerLocationsList[bucketId].at(0);
 }
+
+/*
+ServerLocation ClientMetadata::getPrimaryServerLocation(int bucketId)
+{
+  ReadGuard guard (m_readWriteLock);
+
+  checkBucketId(bucketId);
+
+  BucketServerLocationsType locations = m_bucketServerLocationsList[bucketId];
+
+  if (locations.size() > 0 && locations[0].isPrimary()) {
+    return locations[0];
+  }
+
+  return ServerLocation();
+}
+*/
 
 void ClientMetadata::updateBucketServerLocations(
     int bucketId, BucketServerLocationsType bucketServerLocations) {
@@ -332,17 +337,6 @@ ClientMetadata::adviseRandomServerLocation() {
     return locations.at(0);
   }
   return nullptr;
-}
-
-std::string ClientMetadata::toString() {
-  std::string out = "";
-  for (auto&& locations : m_bucketServerLocationsList) {
-    for (auto&& location : locations) {
-      out += location->toString() + "|";
-    }
-    out += "$";
-  }
-  return out;
 }
 }  // namespace client
 }  // namespace geode

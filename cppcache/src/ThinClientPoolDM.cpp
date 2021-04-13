@@ -1448,7 +1448,6 @@ GfErrType ThinClientPoolDM::sendSyncRequest(
             }
           }
           excludeServers.insert(ServerLocation(ep->name()));
-          removeEPFromMetadataIfError(error, ep);
         }
       } else {
         return error;  // server exception while sending credential message to
@@ -2367,8 +2366,11 @@ TcrConnection* ThinClientPoolDM::getConnectionFromQueueW(
                   version);
         }
         return nullptr;
+<<<<<<< HEAD
       } else {
         removeEPFromMetadataIfError(*error, theEP);
+=======
+>>>>>>> parent of 85951d7e... GEODE-8231: remove bucket server location from metadata when server down (#615)
       }
     }
   }

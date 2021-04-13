@@ -203,15 +203,6 @@ std::shared_ptr<ClientMetadata> ClientMetadataService::SendClientPRMetadata(
   return nullptr;
 }
 
-void ClientMetadataService::removeBucketServerLocation(
-    const std::shared_ptr<BucketServerLocation>& serverLocation) {
-  boost::unique_lock<decltype(m_regionMetadataLock)> lock(m_regionMetadataLock);
-  for (const auto& regionMetadataIter : m_regionMetaDataMap) {
-    auto clientMetaData = regionMetadataIter.second;
-    clientMetaData->removeBucketServerLocation(serverLocation);
-  }
-}
-
 void ClientMetadataService::getBucketServerLocation(
     const std::shared_ptr<Region>& region,
     const std::shared_ptr<CacheableKey>& key,
@@ -406,6 +397,35 @@ ClientMetadataService::getServerToFilterMap(
   }
 
   return serverToFilterMap;
+}
+
+void ClientMetadataService::markPrimaryBucketForTimeout(
+    const std::shared_ptr<Region>& region,
+    const std::shared_ptr<CacheableKey>& key,
+    const std::shared_ptr<Cacheable>& value,
+    const std::shared_ptr<Serializable>& aCallbackArgument, bool,
+    std::shared_ptr<BucketServerLocation>& serverLocation, int8_t& version) {
+  if (m_bucketWaitTimeout == std::chrono::milliseconds::zero()) return;
+
+  boost::unique_lock<decltype(m_PRbucketStatusLock)> lock(m_PRbucketStatusLock);
+
+  getBucketServerLocation(region, key, value, aCallbackArgument,
+                          false /*look for secondary host*/, serverLocation,
+                          version);
+
+  if (serverLocation && serverLocation->isValid()) {
+    LOGDEBUG("Server host and port are %s:%d",
+             serverLocation->getServerName().c_str(),
+             serverLocation->getPort());
+    int32_t bId = serverLocation->getBucketId();
+
+    const auto& bs = m_bucketStatus.find(region->getFullPath());
+
+    if (bs != m_bucketStatus.end()) {
+      bs->second->setBucketTimeout(bId);
+      LOGDEBUG("marking bucket %d as timeout ", bId);
+    }
+  }
 }
 
 std::shared_ptr<ClientMetadataService::BucketToKeysMap>
