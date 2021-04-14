@@ -358,8 +358,9 @@ ClientMetadataService::getServerToFilterMap(
       clientMetadata->getServerLocation(bucketId, isPrimary, serverLocation,
                                         version);
       if (!(serverLocation && serverLocation->isValid())) {
-        keysWhichLeft.push_back(key);
-        continue;
+        // If we're missing any metadata, give up.  This will cause us to revert
+        // to multi-hop, which is consistent with the Java client.
+        return nullptr;
       }
 
       buckets[bucketId] = serverLocation;
