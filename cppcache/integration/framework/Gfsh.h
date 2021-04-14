@@ -193,6 +193,7 @@ class Gfsh {
 
       Server &withSystemProperty(const std::string &key,
                                  const std::string &value);
+      Server &withConserveSockets(bool conserveSockets);
     };
 
    private:

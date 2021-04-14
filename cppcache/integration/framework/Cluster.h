@@ -85,7 +85,8 @@ struct ServerAddress {
 class Server {
  public:
   Server(Cluster &cluster, std::vector<Locator> &locators, std::string name,
-         std::string xmlFile, bool useIPv6, uint16_t port);
+         std::string xmlFile, bool useIPv6, uint16_t port,
+         bool conserveSockets);
 
   std::string getCacheXMLFile();
 
@@ -100,8 +101,6 @@ class Server {
   void start();
 
   void stop();
-
-  const ServerAddress &getAddress() const;
 
  private:
   Cluster &cluster_;
@@ -125,6 +124,7 @@ using Password = NamedType<std::string, struct PasswordParameter>;
 using CacheXMLFiles =
     NamedType<std::vector<std::string>, struct CacheXMLFilesParameter>;
 using UseIpv6 = NamedType<bool, struct UseIpv6Parameter>;
+using ConserveSockets = NamedType<bool, struct useConserveSocketsParameter>;
 
 class Cluster {
  public:
@@ -150,6 +150,9 @@ class Cluster {
 
   Cluster(LocatorCount initialLocators, ServerCount initialServers,
           CacheXMLFiles cacheXMLFiles);
+
+  Cluster(LocatorCount initialLocators, ServerCount initialServers,
+          ConserveSockets conserveSockets, CacheXMLFiles cacheXMLFiles);
 
   Cluster(Name name, LocatorCount initialLocators, ServerCount initialServers,
           UseIpv6 useIPv6);
@@ -194,8 +197,8 @@ class Cluster {
 
   void applyLocators(apache::geode::client::PoolFactory &poolFactory);
 
-  void applyServer(apache::geode::client::PoolFactory &poolFactory, 
-            ServerAddress server);
+  void applyServer(apache::geode::client::PoolFactory &poolFactory,
+                   ServerAddress server);
 
   void useSsl(const bool requireSslAuthentication, const std::string keystore,
               const std::string truststore, const std::string keystorePassword,
@@ -234,6 +237,8 @@ class Cluster {
 
   bool getUseIPv6();
 
+  bool getConserveSockets();
+
  private:
   std::string name_;
   std::string classpath_;
@@ -270,6 +275,7 @@ class Cluster {
   std::string hostName_;
 
   bool useIPv6_ = false;
+  bool conserveSockets_;
 
   uint16_t distributedSystemId_ = 0;
 

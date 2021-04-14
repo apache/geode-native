@@ -53,7 +53,7 @@ std::shared_ptr<Cache> createCache() {
 
 TEST(ContainsKeyOnServerExceptionTest, handleException) {
   Cluster cluster{
-      LocatorCount{1}, ServerCount{3},
+      LocatorCount{1}, ServerCount{3}, ConserveSockets(true),
       CacheXMLFiles({
           std::string(getFrameworkString(FrameworkVariable::TestCacheXmlDir)) +
               "/cacheserver1_fpr_transaction.xml",

@@ -152,7 +152,7 @@ const ServerAddress &Server::getAddress() const { return serverAddress_; }
 
 Server::Server(Cluster &cluster, std::vector<Locator> &locators,
                std::string name, std::string xmlFile, bool useIPv6,
-               uint16_t port)
+               uint16_t port, bool conserveSockets)
     : cluster_(cluster),
       locators_(locators),
       name_(std::move(name)),
@@ -186,8 +186,6 @@ Server::Server(Server &&move)
   move.started_ = false;
 }
 
-const ServerAddress &Server::getAddress() const { return serverAddress_; }
-
 void Server::start() {
   auto safeName = name_;
   std::replace(safeName.begin(), safeName.end(), '/', '_');
@@ -207,6 +205,7 @@ void Server::start() {
           .withClasspath(cluster_.getClasspath())
           .withSecurityManager(cluster_.getSecurityManager())
           .withCacheXMLFile(getCacheXMLFile())
+          .withConserveSockets(cluster_.getConserveSockets())
           .withPreferIPv6(cluster_.getUseIPv6());
 
   if (!cluster_.getUser().empty()) {
@@ -303,6 +302,19 @@ Cluster::Cluster(LocatorCount initialLocators, ServerCount initialServers,
 }
 
 Cluster::Cluster(LocatorCount initialLocators, ServerCount initialServers,
+                 ConserveSockets conserveSockets, CacheXMLFiles cacheXMLFiles)
+    : name_(std::string(::testing::UnitTest::GetInstance()
+                            ->current_test_info()
+                            ->test_suite_name()) +
+            "/" +
+            ::testing::UnitTest::GetInstance()->current_test_info()->name()),
+      initialLocators_(initialLocators.get()),
+      initialServers_(initialServers.get()) {
+  cacheXMLFiles_ = cacheXMLFiles.get();
+  conserveSockets_ = conserveSockets.get();
+}
+
+Cluster::Cluster(LocatorCount initialLocators, ServerCount initialServers,
                  std::vector<uint16_t> &serverPorts)
     : name_(std::string(::testing::UnitTest::GetInstance()
                             ->current_test_info()
@@ -310,6 +322,7 @@ Cluster::Cluster(LocatorCount initialLocators, ServerCount initialServers,
             "/" +
             ::testing::UnitTest::GetInstance()->current_test_info()->name()),
       initialLocators_(initialLocators.get()),
+
       initialServers_(initialServers.get()),
       jmxManagerPort_(Framework::getAvailablePort()) {
   for (uint16_t port : serverPorts) {
@@ -438,6 +451,8 @@ std::vector<std::string> &Cluster::getCacheXMLFiles() { return cacheXMLFiles_; }
 
 bool Cluster::getUseIPv6() { return useIPv6_; }
 
+bool Cluster::getConserveSockets() { return conserveSockets_; }
+
 void Cluster::start() { start(std::function<void()>()); }
 
 void Cluster::start(std::function<void()> extraGfshCommands) {
@@ -472,7 +487,7 @@ void Cluster::start(std::function<void()> extraGfshCommands) {
 
     servers_.push_back({*this, locators_,
                         name_ + "/server/" + std::to_string(i), xmlFile,
-                        getUseIPv6(), serverPort});
+                        getUseIPv6(), serverPort, getConserveSockets()});
   }
 
   startLocators();
