@@ -194,7 +194,6 @@ std::shared_ptr<ClientMetadata> ClientMetadataService::SendClientPRMetadata(
     auto newCptr = std::make_shared<ClientMetadata>(*cptr);
     for (const auto& v : *metadata) {
       if (!v.empty()) {
-        LOGDEBUG("%s Updating bucket server locations", __FUNCTION__);
         newCptr->updateBucketServerLocations(v.at(0)->getBucketId(), v);
       }
     }
@@ -327,8 +326,6 @@ ClientMetadataService::getServerToFilterMap(
     return nullptr;
   }
 
-  LOGDEBUG("%s(%p): Getting server to filter map with %d buckets in metadata",
-           __FUNCTION__, this, clientMetadata->getTotalNumBuckets());
   auto serverToFilterMap = std::make_shared<ServerToFilterMap>();
 
   std::vector<std::shared_ptr<CacheableKey>> keysWhichLeft;
