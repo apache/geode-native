@@ -50,10 +50,7 @@ Cache createCache() {
   using apache::geode::client::CacheFactory;
 
   auto cache = CacheFactory()
-                   .set("log-level", "debug")
-                   .set("log-file", "RegionPutAllTest.log")
-                   .set("log-file-size-limit", "100")
-                   .set("log-disk-space-limit", "1000")
+                   .set("log-level", "none")
                    .set("statistic-sampling-enabled", "false")
                    .create();
 
