@@ -177,23 +177,32 @@ std::shared_ptr<ClientMetadata> ClientMetadataService::SendClientPRMetadata(
           regionPath);
   std::shared_ptr<Region> region = nullptr;
   GfErrType err = m_pool->sendSyncRequest(request, reply);
+  LOGFINE("Got reply for GET_CLIENT_PR_METADATA: err=%d, type=%d", err,
+          reply.getMessageType());
   if (err == GF_NOERR &&
       reply.getMessageType() == TcrMessage::RESPONSE_CLIENT_PR_METADATA) {
     region = m_cache->getRegion(regionPath);
+    LOGDEBUG("%s region ptr=%p", __FUNCTION__, region.get());
     if (region != nullptr) {
       if (auto lregion = std::dynamic_pointer_cast<LocalRegion>(region)) {
         lregion->getRegionStats()->incMetaDataRefreshCount();
       }
     }
     auto metadata = reply.getMetadata();
-    if (metadata == nullptr) return nullptr;
+    if (metadata == nullptr) {
+      LOGDEBUG("%s metadata is nullptr", __FUNCTION__);
+      return nullptr;
+    }
     if (metadata->empty()) {
+      LOGDEBUG("%s metadata is empty", __FUNCTION__);
       delete metadata;
       return nullptr;
     }
     auto newCptr = std::make_shared<ClientMetadata>(*cptr);
+    LOGDEBUG("%s creating new metadata object", __FUNCTION__);
     for (const auto& v : *metadata) {
       if (!v.empty()) {
+        LOGDEBUG("%s Updating bucket server locations", __FUNCTION__);
         newCptr->updateBucketServerLocations(v.at(0)->getBucketId(), v);
       }
     }
@@ -326,6 +335,8 @@ ClientMetadataService::getServerToFilterMap(
     return nullptr;
   }
 
+  LOGDEBUG("%s(%p): Getting server to filter map with %d buckets in metadata",
+           __FUNCTION__, this, clientMetadata->getTotalNumBuckets());
   auto serverToFilterMap = std::make_shared<ServerToFilterMap>();
 
   std::vector<std::shared_ptr<CacheableKey>> keysWhichLeft;
