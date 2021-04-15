@@ -173,16 +173,11 @@ std::shared_ptr<ClientMetadata> ClientMetadataService::SendClientPRMetadata(
       new DataOutput(m_cache->createDataOutput(m_pool)), regionPath);
   TcrMessageReply reply(true, nullptr);
   // send this message to server and get metadata from server.
-  LOGFINE("Now sending GET_CLIENT_PR_METADATA for getting from server: %s",
-          regionPath);
   std::shared_ptr<Region> region = nullptr;
   GfErrType err = m_pool->sendSyncRequest(request, reply);
-  LOGFINE("Got reply for GET_CLIENT_PR_METADATA: err=%d, type=%d", err,
-          reply.getMessageType());
   if (err == GF_NOERR &&
       reply.getMessageType() == TcrMessage::RESPONSE_CLIENT_PR_METADATA) {
     region = m_cache->getRegion(regionPath);
-    LOGDEBUG("%s region ptr=%p", __FUNCTION__, region.get());
     if (region != nullptr) {
       if (auto lregion = std::dynamic_pointer_cast<LocalRegion>(region)) {
         lregion->getRegionStats()->incMetaDataRefreshCount();
@@ -190,16 +185,13 @@ std::shared_ptr<ClientMetadata> ClientMetadataService::SendClientPRMetadata(
     }
     auto metadata = reply.getMetadata();
     if (metadata == nullptr) {
-      LOGDEBUG("%s metadata is nullptr", __FUNCTION__);
       return nullptr;
     }
     if (metadata->empty()) {
-      LOGDEBUG("%s metadata is empty", __FUNCTION__);
       delete metadata;
       return nullptr;
     }
     auto newCptr = std::make_shared<ClientMetadata>(*cptr);
-    LOGDEBUG("%s creating new metadata object", __FUNCTION__);
     for (const auto& v : *metadata) {
       if (!v.empty()) {
         LOGDEBUG("%s Updating bucket server locations", __FUNCTION__);
