@@ -18,7 +18,6 @@
 
 #include "begin_native.hpp"
 #include <CacheRegionHelper.hpp>
-#include <CacheImpl.hpp>
 #include "end_native.hpp"
 
 #include "Cache.hpp"
@@ -55,6 +54,20 @@ namespace Apache
         m_nativeptr = gcnew native_shared_ptr<native::Cache>(nativeptr);
         m_pdxTypeRegistry = gcnew Apache::Geode::Client::Internal::PdxTypeRegistry(this);
         m_typeRegistry = gcnew Apache::Geode::Client::TypeRegistry(this);
+      }
+
+      Cache::~Cache() { //Destructor - deterministic
+        if (_disposed) return;
+        //Clean-up managed resources
+        this->!Cache();
+        _disposed = true;
+        //GC.SuppressFinalize(this) is automatically added here
+        //Base destructor is automatically called too if needed
+      }
+
+      Cache::!Cache() { //Finalizer - non-deterministic when called by GC
+        //Clean-up unmanaged resources
+        m_nativeptr->get()->~Cache();
       }
 
       String^ Cache::Name::get( )
@@ -127,6 +140,7 @@ namespace Apache
           m_typeRegistry->Clear();
           Apache::Geode::Client::DistributedSystem::unregisterCliCallback();
           GC::KeepAlive(m_nativeptr);
+
         }
       }
 

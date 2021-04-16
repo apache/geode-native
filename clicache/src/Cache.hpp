@@ -81,6 +81,9 @@ namespace Apache
         : public IGeodeCache
       {
       public:
+        
+        ~Cache();
+        !Cache();
 
         /// <summary>
         /// Initializes the cache from an XML file.
@@ -329,6 +332,9 @@ namespace Apache
 
         Apache::Geode::Client::Internal::PdxTypeRegistry^ m_pdxTypeRegistry;
         Apache::Geode::Client::TypeRegistry^ m_typeRegistry;
+
+        bool _disposed = false;
+
       };
     }  // namespace Client
   }  // namespace Geode
