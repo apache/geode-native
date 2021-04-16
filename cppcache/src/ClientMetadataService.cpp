@@ -173,8 +173,6 @@ std::shared_ptr<ClientMetadata> ClientMetadataService::SendClientPRMetadata(
       new DataOutput(m_cache->createDataOutput(m_pool)), regionPath);
   TcrMessageReply reply(true, nullptr);
   // send this message to server and get metadata from server.
-  LOGFINE("Now sending GET_CLIENT_PR_METADATA for getting from server: %s",
-          regionPath);
   std::shared_ptr<Region> region = nullptr;
   GfErrType err = m_pool->sendSyncRequest(request, reply);
   if (err == GF_NOERR &&
@@ -186,7 +184,9 @@ std::shared_ptr<ClientMetadata> ClientMetadataService::SendClientPRMetadata(
       }
     }
     auto metadata = reply.getMetadata();
-    if (metadata == nullptr) return nullptr;
+    if (metadata == nullptr) {
+      return nullptr;
+    }
     if (metadata->empty()) {
       delete metadata;
       return nullptr;
@@ -358,8 +358,9 @@ ClientMetadataService::getServerToFilterMap(
       clientMetadata->getServerLocation(bucketId, isPrimary, serverLocation,
                                         version);
       if (!(serverLocation && serverLocation->isValid())) {
-        keysWhichLeft.push_back(key);
-        continue;
+        // If we're missing any metadata, give up.  This will cause us to revert
+        // to multi-hop, which is consistent with the Java client.
+        return nullptr;
       }
 
       buckets[bucketId] = serverLocation;
