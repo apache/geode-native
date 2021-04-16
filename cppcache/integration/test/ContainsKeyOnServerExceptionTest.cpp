@@ -62,12 +62,13 @@ TEST(ContainsKeyOnServerExceptionTest, handleException) {
           std::string(getFrameworkString(FrameworkVariable::TestCacheXmlDir)) +
               "/cacheserver3_fpr_transaction.xml",
       })};
-  cluster.start([&]() {
-    cluster.getGfsh()
-        .deploy()
-        .jar(getFrameworkString(FrameworkVariable::JavaObjectJarPath))
-        .execute();
-  });
+
+  cluster.start();
+
+  cluster.getGfsh()
+      .deploy()
+      .jar(getFrameworkString(FrameworkVariable::JavaObjectJarPath))
+      .execute();
 
   auto cache = createCache();
   auto poolFactory = cache->getPoolManager().createFactory();
