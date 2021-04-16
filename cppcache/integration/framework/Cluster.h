@@ -95,11 +95,11 @@ class Server {
   Server &operator=(const Server &other) = delete;
   Server(Server &&move);
 
-  const ServerAddress &getAddress() const;
-
   void start();
 
   void stop();
+
+  const ServerAddress &getAddress() const;
 
  private:
   Cluster &cluster_;
@@ -274,7 +274,7 @@ class Cluster {
   std::string hostName_;
 
   bool useIPv6_ = false;
-  bool conserveSockets_;
+  bool conserveSockets_ = false;
 
   uint16_t distributedSystemId_ = 0;
 
