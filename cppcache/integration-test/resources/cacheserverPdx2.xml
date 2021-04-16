@@ -30,11 +30,11 @@
      </region-attributes>
 	</region>
 	<region name="DistRegionNoAck">
-		<region-attributes   scope="distributed-no-ack" data-policy="replicate">
+		<region-attributes   scope="distributed-ack" data-policy="replicate">
     </region-attributes>
 	</region>
 	<region name="testregion">
-		<region-attributes   scope="distributed-no-ack" data-policy="replicate">
+		<region-attributes   scope="distributed-ack" data-policy="replicate">
     </region-attributes>
 	</region>
     <function-service>

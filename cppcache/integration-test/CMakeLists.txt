@@ -154,7 +154,7 @@ foreach(FILE ${SOURCES})
   set(ENVIRONMENT
     TESTNAME=${TEST}
     "TESTSRC=$<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}>"
-    TIMEBOMB=500
+    TIMEBOMB=1000
     MCAST_ADDR=0.0.0.0 # unused but framework expects
     MCAST_PORT=0       # unused but framework expects
     GFE_LOGLEVEL=config
@@ -183,24 +183,10 @@ set_tests_properties(
     testThinClientAfterRegionLive
     testThinClientCacheables
     testThinClientCq
-    testThinClientCqFailover
-    testThinClientCqHAFailover
-    testThinClientDurableConnect
     testThinClientDurableDisconnectNormal
     testThinClientDurableDisconnectTimeout
-    testThinClientDurableFailoverClientClosedNoRedundancy
-    testThinClientDurableFailoverClientNotClosedRedundancy
-    testThinClientDurableKeepAliveFalseTimeout
-    testThinClientDurableKeepAliveTrueNormal
     testThinClientDurableReconnect
-    testThinClientFailover
     testThinClientFailover2
-    testThinClientFailoverInterest
-    testThinClientFailoverInterest2
-    testThinClientFailoverRegex
-    testThinClientFixedPartitionResolver
-    testThinClientHADistOps
-    testThinClientHAEventIDMap
     testThinClientHAFailover
     testThinClientHAMixedRedundancy
     testThinClientHAQueryFailover
@@ -208,26 +194,20 @@ set_tests_properties(
     testThinClientLargePutAllWithCallBackArg
     testThinClientLocatorFailover
     testThinClientMultiDS
-    testThinClientPRPutAllFailover
     testThinClientPartitionResolver
     testThinClientPdxDeltaWithNotification
     testThinClientPdxTests
-    testThinClientPoolRedundancy
-    testThinClientPoolServer
     testThinClientPutAll
     testThinClientPutAllWithCallBackArgWithoutConcurrency
     testThinClientSecurityCQAuthorizationMU
     testThinClientTXFailover
-    testThinClientTransactionsXA
     testTimedSemaphore
     # broken
-    testFwPerf
     testThinClientCqDurable
     testThinClientGatewayTest
-    testThinClientHAFailoverRegex
     testThinClientPoolAttrTest
     testThinClientPoolLocator
-    testThinClientRemoteQueryTimeout
+    testThinClientPoolRedundancy
     testThinClientRemoveOps
     testThinClientSecurityAuthentication
     testThinClientSecurityAuthenticationMU

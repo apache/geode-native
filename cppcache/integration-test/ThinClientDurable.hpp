@@ -149,9 +149,7 @@ void setCacheListener(const char* regName,
   attrMutator->setCacheListener(monitor);
 }
 std::shared_ptr<OperMonitor> mon1C1 = nullptr;
-std::shared_ptr<OperMonitor> mon2C1 = nullptr;
 std::shared_ptr<OperMonitor> mon1C2 = nullptr;
-std::shared_ptr<OperMonitor> mon2C2 = nullptr;
 
 /* Total 10 Keys , alternate durable and non-durable */
 const char* mixKeys[] = {"Key-1", "D-Key-1", "L-Key", "LD-Key"};
@@ -163,7 +161,6 @@ const char* testRegex[] = {"D-Key-.*", "Key-.*"};
 void initClientCache(int durableIdx, int redundancy,
                      std::chrono::seconds durableTimeout,
                      std::shared_ptr<OperMonitor>& mon1,
-                     std::shared_ptr<OperMonitor>& mon2,
                      int sleepDuration = 0) {
   // Sleep before starting , Used for Timeout testing.
   if (sleepDuration) SLEEP(sleepDuration);
@@ -171,39 +168,30 @@ void initClientCache(int durableIdx, int redundancy,
   initClientAndTwoRegions(durableIdx, redundancy, durableTimeout);
 
   setCacheListener(regionNames[0], mon1);
-  setCacheListener(regionNames[1], mon2);
 
   getHelper()->cachePtr->readyForEvents();
 
   auto regPtr0 = getHelper()->getRegion(regionNames[0]);
-  auto regPtr1 = getHelper()->getRegion(regionNames[1]);
 
   // Register Regex in both region.
   regPtr0->registerRegex(testRegex[0], true);
   regPtr0->registerRegex(testRegex[1], false);
-  regPtr1->registerRegex(testRegex[0], true);
-  regPtr1->registerRegex(testRegex[1], false);
 
   // Register List in both regions
   std::vector<std::shared_ptr<CacheableKey>> v;
   auto ldkey = CacheableKey::create(mixKeys[3]);
   v.push_back(ldkey);
   regPtr0->registerKeys(v, true);
-  regPtr1->registerKeys(v, true);
   v.clear();
   auto lkey = CacheableKey::create(mixKeys[2]);
   v.push_back(lkey);
   regPtr0->registerKeys(v);
-  regPtr1->registerKeys(v);
 
   LOG("Clnt1Init complete.");
 }
 
-void feederUpdate(int value, int ignoreR2 = false) {
-  for (int regIdx = 0; regIdx < 2; regIdx++) {
-    if (ignoreR2 && regIdx == 1) {
-      continue;
-    }
+void feederUpdate(int value) {
+  for (int regIdx = 0; regIdx < 1; regIdx++) {
     createIntEntry(regionNames[regIdx], mixKeys[0], value);
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
     createIntEntry(regionNames[regIdx], mixKeys[1], value);
@@ -230,8 +218,6 @@ DUNIT_TASK_DEFINITION(FEEDER, FeederInit)
                        true);
     getHelper()->createPooledRegion(regionNames[0], USE_ACK, locatorsG,
                                     "__TEST_POOL1__", true, true);
-    getHelper()->createPooledRegion(regionNames[1], USE_ACK, locatorsG,
-                                    "__TEST_POOL1__", true, true);
     LOG("FeederInit complete.");
   }
 END_TASK_DEFINITION
@@ -241,11 +227,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, InitClient1Timeout300)
     if (mon1C1 == nullptr) {
       mon1C1 = std::make_shared<OperMonitor>(durableIds[0], regionNames[0]);
     }
-    if (mon2C1 == nullptr) {
-      mon2C1 = std::make_shared<OperMonitor>(durableIds[0], regionNames[1]);
-    }
     initClientCache(0, 0 /* Redundancy */,
-                    std::chrono::seconds(300) /* D Timeout */, mon1C1, mon2C1);
+                    std::chrono::seconds(300) /* D Timeout */, mon1C1);
   }
 END_TASK_DEFINITION
 
@@ -254,11 +237,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, InitClient1Timeout30)
     if (mon1C1 == nullptr) {
       mon1C1 = std::make_shared<OperMonitor>(durableIds[0], regionNames[0]);
     }
-    if (mon2C1 == nullptr) {
-      mon2C1 = std::make_shared<OperMonitor>(durableIds[0], regionNames[1]);
-    }
     initClientCache(0, 0 /* Redundancy */,
-                    std::chrono::seconds(30) /* D Timeout */, mon1C1, mon2C1);
+                    std::chrono::seconds(30) /* D Timeout */, mon1C1);
   }
 END_TASK_DEFINITION
 
@@ -267,11 +247,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, InitClient1DelayedStart)
     if (mon1C1 == nullptr) {
       mon1C1 = std::make_shared<OperMonitor>(durableIds[0], regionNames[0]);
     }
-    if (mon2C1 == nullptr) {
-      mon2C1 = std::make_shared<OperMonitor>(durableIds[0], regionNames[1]);
-    }
     initClientCache(0, 0 /* Redundancy */,
-                    std::chrono::seconds(30) /* D Timeout */, mon1C1, mon2C1,
+                    std::chrono::seconds(30) /* D Timeout */, mon1C1,
                     35000 /* Sleep before starting */);
   }
 END_TASK_DEFINITION
@@ -281,11 +258,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, InitClient2Timeout300)
     if (mon1C2 == nullptr) {
       mon1C2 = std::make_shared<OperMonitor>(durableIds[1], regionNames[0]);
     }
-    if (mon2C2 == nullptr) {
-      mon2C2 = std::make_shared<OperMonitor>(durableIds[1], regionNames[1]);
-    }
     initClientCache(1, 1 /* Redundancy */,
-                    std::chrono::seconds(300) /* D Timeout */, mon1C2, mon2C2);
+                    std::chrono::seconds(300) /* D Timeout */, mon1C2);
   }
 END_TASK_DEFINITION
 
@@ -295,11 +269,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, InitClient2Timeout30)
     if (mon1C2 == nullptr) {
       mon1C2 = std::make_shared<OperMonitor>(durableIds[1], regionNames[0]);
     }
-    if (mon2C2 == nullptr) {
-      mon2C2 = std::make_shared<OperMonitor>(durableIds[1], regionNames[1]);
-    }
     initClientCache(1, 1 /* Redundancy */,
-                    std::chrono::seconds(30) /* D Timeout */, mon1C2, mon2C2);
+                    std::chrono::seconds(30) /* D Timeout */, mon1C2);
   }
 END_TASK_DEFINITION
 
@@ -409,7 +380,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(FEEDER, FeederUpdate2)
   {
-    feederUpdate(2, true);
+    feederUpdate(2);
     LOG("FeederUpdate2 complete.");
   }
 END_TASK_DEFINITION
@@ -419,7 +390,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, VerifyFeederUpdate_1_C1)
   {
     LOG("Client 1 Verify first feeder update.");
     mon1C1->validate(4, 8, 1, 1);
-    mon2C1->validate(4, 8, 1, 1);
   }
 END_TASK_DEFINITION
 
@@ -427,7 +397,6 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyFeederUpdate_1_C2)
   {
     LOG("Client 2 Verify first feeder udpate.");
     mon1C2->validate(4, 8, 1, 1);
-    mon2C2->validate(4, 8, 1, 1);
   }
 END_TASK_DEFINITION
 
@@ -436,7 +405,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, VerifyClient1)
   {
     LOG("Client 1 Verify.");
     mon1C1->validate(4, 12, 2, 1);
-    mon2C1->validate(4, 8, 1, 1);
   }
 END_TASK_DEFINITION
 
@@ -445,7 +413,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, VerifyClient1KeepAliveFalse)
   {
     LOG("Client 1 Verify.");
     mon1C1->validate(4, 8, 1, 1);
-    mon2C1->validate(4, 8, 1, 1);
   }
 END_TASK_DEFINITION
 
@@ -454,7 +421,6 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyClient2)
   {
     LOG("Client 2 Verify.");
     mon1C2->validate(4, 12, 2, 1);
-    mon2C2->validate(4, 8, 1, 1);
   }
 END_TASK_DEFINITION
 
@@ -463,7 +429,6 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyClient2KeepAliveFalse)
   {
     LOG("Client 2 Verify.");
     mon1C2->validate(4, 8, 1, 1);
-    mon2C2->validate(4, 8, 1, 1);
   }
 END_TASK_DEFINITION
 
@@ -477,7 +442,6 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, CloseClient1)
   {
     mon1C1 = nullptr;
-    mon2C1 = nullptr;
     cleanProc();
     LOG("CLIENT1 closed");
   }
@@ -486,7 +450,6 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, CloseClient2)
   {
     mon1C2 = nullptr;
-    mon2C2 = nullptr;
     cleanProc();
     LOG("CLIENT2 closed");
   }

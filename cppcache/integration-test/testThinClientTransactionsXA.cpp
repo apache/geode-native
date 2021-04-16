@@ -18,8 +18,5 @@
 #include "ThinClientTransactionsXA.hpp"
 
 DUNIT_MAIN
-  {
-    runTransactionOps(false);
-    runTransactionOps(true);
-  }
+  { runTransactionOps(); }
 END_MAIN

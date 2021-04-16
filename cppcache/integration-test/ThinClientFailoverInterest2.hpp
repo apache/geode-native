@@ -289,7 +289,7 @@ const char* vals[] = {"Value-1", "Value-2", "Value-3", "Value-4"};
 const char* nvals[] = {"New Value-1", "New Value-2", "New Value-3",
                        "New Value-4"};
 
-const char* regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
+const char* regionNames[] = {"DistRegionAck"};
 
 const bool USE_ACK = true;
 const bool NO_ACK = false;
@@ -308,8 +308,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne_Pool_Locator)
     initClient(true);
     createPooledRegion(regionNames[0], USE_ACK, locatorsG, "__TEST_POOL1__",
                        true);
-    createPooledRegion(regionNames[1], NO_ACK, locatorsG, "__TEST_POOL1__",
-                       true);
     LOG("StepOne complete.");
   }
 END_TASK_DEFINITION
@@ -320,13 +318,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepTwo_Pool_Locator)
     initClient(true);
     createPooledRegion(regionNames[0], USE_ACK, locatorsG, "__TEST_POOL1__",
                        true);
-    createPooledRegion(regionNames[1], NO_ACK, locatorsG, "__TEST_POOL1__",
-                       true);
 
     auto regPtr0 = getHelper()->getRegion(regionNames[0]);
-    auto regPtr1 = getHelper()->getRegion(regionNames[1]);
     regPtr0->registerAllKeys();
-    regPtr1->registerAllKeys();
 
     LOG("StepTwo complete.");
   }
@@ -335,7 +329,6 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
   {
     createEntry(regionNames[0], keys[0], vals[0]);
-    createEntry(regionNames[1], keys[2], vals[2]);
     LOG("StepThree complete.");
   }
 END_TASK_DEFINITION
@@ -343,9 +336,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepFour)
   {
     // Client two should recieve all entries
     verifyCreated(regionNames[0], keys[0]);
-    verifyCreated(regionNames[1], keys[2]);
     verifyEntry(regionNames[0], keys[0], vals[0]);
-    verifyEntry(regionNames[1], keys[2], vals[2]);
     LOG("StepFour complete.");
   }
 END_TASK_DEFINITION
@@ -372,7 +363,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
   {
     // Client one update entries
     updateEntry(regionNames[0], keys[0], nvals[0]);
-    updateEntry(regionNames[1], keys[2], nvals[2]);
     SLEEP(1000);
     LOG("StepFive complete.");
   }
@@ -381,7 +371,6 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSix)
   {
     // Client two should see updates after failover.
     verifyEntry(regionNames[0], keys[0], nvals[0]);
-    verifyEntry(regionNames[1], keys[2], nvals[2]);
     LOG("StepSix complete.");
   }
 END_TASK_DEFINITION
@@ -390,9 +379,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSeven)
   {
     // Client two unregister all keys
     auto regPtr0 = getHelper()->getRegion(regionNames[0]);
-    auto regPtr1 = getHelper()->getRegion(regionNames[1]);
     regPtr0->unregisterAllKeys();
-    regPtr1->unregisterAllKeys();
 
     LOG("StepSeven complete.");
   }
@@ -402,7 +389,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight)
   {
     // Client one update two entries
     updateEntry(regionNames[0], keys[0], vals[0]);
-    updateEntry(regionNames[1], keys[2], vals[2]);
     LOG("StepEight complete.");
   }
 END_TASK_DEFINITION
@@ -410,7 +396,6 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepNine)
   {
     // Client two should still have the original values
     verifyEntry(regionNames[0], keys[0], nvals[0]);
-    verifyEntry(regionNames[1], keys[2], nvals[2]);
     LOG("StepNine complete.");
   }
 END_TASK_DEFINITION
