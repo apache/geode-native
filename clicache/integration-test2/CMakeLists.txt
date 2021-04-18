@@ -38,6 +38,7 @@ add_library( Apache.Geode.IntegrationTests2 SHARED
   CacheXmlTests.cs
   CqOperationTest.cs
   FunctionExecutionTest.cs
+  GarbageCollectCache.cs
   QueryTest.cs
   RegionTest.cs
   RegionSSLTest.cs
