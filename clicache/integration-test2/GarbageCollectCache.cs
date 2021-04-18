@@ -81,7 +81,7 @@ namespace Apache.Geode.Client.IntegrationTests
                     // of before and after threads is close to one. Also skipping the
                     // first couple of iterations avoids threads related to test 
                     // environment startup.
-                    if (i > 2)
+                    if (i > 5)
                         Assert.True(.9 < ratio && ratio < 1.1);
                 }
             }
