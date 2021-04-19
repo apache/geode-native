@@ -59,6 +59,7 @@ TEST(TransactionCleaningTest, txWithStoppedServer) {
   cache.getCacheTransactionManager()->commit();
 
   cluster.getServers()[0].stop();
+  std::this_thread::sleep_for(std::chrono::seconds{30});
 
   try {
     cache.getCacheTransactionManager()->begin();
