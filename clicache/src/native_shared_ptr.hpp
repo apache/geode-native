@@ -35,7 +35,8 @@ namespace Apache
         std::shared_ptr<_T>* ptr;
 
       public:
-        native_shared_ptr(const std::shared_ptr<_T>& ptr) : ptr(new std::shared_ptr<_T>(ptr)) {}
+        native_shared_ptr(const std::shared_ptr<_T>& ptr) : ptr(new std::shared_ptr<_T>(ptr)) {
+        }
 
         ~native_shared_ptr() {
           native_shared_ptr::!native_shared_ptr();

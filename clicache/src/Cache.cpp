@@ -57,17 +57,18 @@ namespace Apache
       }
 
       Cache::~Cache() { //Destructor - deterministic
-        if (_disposed) return;
-        //Clean-up managed resources
-        this->!Cache();
-        _disposed = true;
-        //GC.SuppressFinalize(this) is automatically added here
-        //Base destructor is automatically called too if needed
+        if (!_disposed) {
+          //Clean-up managed resources
+          this->!Cache();
+          _disposed = true;
+          //GC.SuppressFinalize(this) is automatically added here
+          //Base destructor is automatically called too if needed
+        }
       }
 
       Cache::!Cache() { //Finalizer - non-deterministic when called by GC
         //Clean-up unmanaged resources
-        m_nativeptr->get()->~Cache();
+        delete m_nativeptr;
       }
 
       String^ Cache::Name::get( )
@@ -140,7 +141,6 @@ namespace Apache
           m_typeRegistry->Clear();
           Apache::Geode::Client::DistributedSystem::unregisterCliCallback();
           GC::KeepAlive(m_nativeptr);
-
         }
       }
 

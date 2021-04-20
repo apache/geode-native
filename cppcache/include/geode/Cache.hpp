@@ -167,17 +167,17 @@ class APACHE_GEODE_EXPORT Cache : public GeodeCache {
   virtual void readyForEvents();
 
   /**
-   * Creates an authenticated cache using the given user security properties.
-   * Multiple instances with different user properties can be created with a
-   * single client cache.
+   * Creates an authenticated cache using the given user security
+   * properties. Multiple instances with different user properties can be
+   * created with a single client cache.
    *
    * Application must use this instance to do operations, when
    * multiuser-authentication is set to true.
    *
    * @see RegionService
    * @see PoolFactory#setMultiuserAuthentication(boolean)
-   * @return the {@link RegionService} instance associated with a user and given
-   *         properties.
+   * @return the {@link RegionService} instance associated with a user and
+   * given properties.
    * @throws UnsupportedOperationException
    *           when invoked with multiuser-authentication as false.
    *
