@@ -310,6 +310,7 @@ Cluster::Cluster(LocatorCount initialLocators, ServerCount initialServers,
             ::testing::UnitTest::GetInstance()->current_test_info()->name()),
       initialLocators_(initialLocators.get()),
       initialServers_(initialServers.get()) {
+  jmxManagerPort_ = Framework::getAvailablePort();
   cacheXMLFiles_ = cacheXMLFiles.get();
   conserveSockets_ = conserveSockets.get();
 }
