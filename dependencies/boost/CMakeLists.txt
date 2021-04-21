@@ -60,7 +60,7 @@ set( EXTERN ${PROJECT_NAME}-extern )
 
 include(ExternalProject)
 ExternalProject_Add( ${EXTERN}
-   URL "https://dl.bintray.com/boostorg/release/${PROJECT_VERSION}/source/boost_${_VERSION_UNDERSCORE}.tar.gz"
+   URL "https://boostorg.jfrog.io/artifactory/main/release/${PROJECT_VERSION}/source/boost_${_VERSION_UNDERSCORE}.tar.gz"
    URL_HASH SHA256=${SHA256}
    UPDATE_COMMAND ""
    BUILD_IN_SOURCE 1
