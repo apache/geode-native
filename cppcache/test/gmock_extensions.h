@@ -22,6 +22,6 @@
 
 #include <gmock/gmock.h>
 
-ACTION_P(CvNotifyOne, cv) { cv->notify_one(); }
+ACTION_P(ReleaseSem, sem) { sem->release(); }
 
 #endif  // GEODE_GMOCK_EXTENSIONS_H_

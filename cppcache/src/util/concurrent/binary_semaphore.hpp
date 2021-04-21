@@ -32,6 +32,7 @@ class binary_semaphore {
 
   void release();
   void acquire();
+  bool try_acquire_for(const std::chrono::milliseconds& period);
 
  protected:
   bool released_;
