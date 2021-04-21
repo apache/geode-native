@@ -83,7 +83,6 @@ namespace Apache
       public:
         
         ~Cache();
-        !Cache();
 
         /// <summary>
         /// Initializes the cache from an XML file.
@@ -332,10 +331,6 @@ namespace Apache
 
         Apache::Geode::Client::Internal::PdxTypeRegistry^ m_pdxTypeRegistry;
         Apache::Geode::Client::TypeRegistry^ m_typeRegistry;
-
-        Object^ m_disposedLock;
-        bool m_disposed;
-
       };
     }  // namespace Client
   }  // namespace Geode

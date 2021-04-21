@@ -54,20 +54,22 @@ namespace Apache
         m_nativeptr = gcnew native_shared_ptr<native::Cache>(nativeptr);
         m_pdxTypeRegistry = gcnew Apache::Geode::Client::Internal::PdxTypeRegistry(this);
         m_typeRegistry = gcnew Apache::Geode::Client::TypeRegistry(this);
-
-        m_disposedLock = gcnew Object();
       }
 
       Cache::~Cache() {
-        msclr::lock lockInstance(m_disposedLock);
-        if (!m_disposed) {
-          this->!Cache();
-          m_disposed = true;
+        if (m_nativeptr) {
+          try {
+            if (!IsClosed) {
+              Close();
+            }
+          }
+          catch (...) {
+          }
+          finally{
+              delete m_nativeptr;
+              m_nativeptr = nullptr;
+          }
         }
-      }
-
-      Cache::!Cache() {
-        delete m_nativeptr;
       }
 
       String^ Cache::Name::get( )

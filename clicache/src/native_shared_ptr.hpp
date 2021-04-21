@@ -42,7 +42,10 @@ namespace Apache
         }
 
         !native_shared_ptr() {
-          delete ptr;
+          if (ptr) {
+            delete ptr;
+            ptr = nullptr;
+          }
         }
 
         inline _T* get() {
