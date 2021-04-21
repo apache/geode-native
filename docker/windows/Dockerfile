@@ -41,7 +41,7 @@ RUN choco install nunit.install --version 2.6.4 -confirm
 
 ARG GEODE_VERSION=1.13.2
 ENV GEODE_HOME C:\apache-geode-${GEODE_VERSION}
-RUN curl -L -s "https://www.apache.org/dyn/closer.cgi?action=download&filename=geode/%GEODE_VERSION%/apache-geode-%GEODE_VERSION%.tgz" | tar -zxvf - --exclude javadoc
+RUN curl -L -s "https://www.apache.org/dyn/closer.lua/geode/%GEODE_VERSION%/apache-geode-%GEODE_VERSION%.tgz?action=download" | tar -zxvf - --exclude javadoc
 
 ADD https://raw.githubusercontent.com/microsoft/vs-dockerfiles/master/managed-native-desktop/Install.cmd C:\TEMP\Install.cmd
 ADD https://aka.ms/vscollect.exe C:\TEMP\collect.exe
