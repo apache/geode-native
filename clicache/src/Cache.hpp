@@ -333,7 +333,8 @@ namespace Apache
         Apache::Geode::Client::Internal::PdxTypeRegistry^ m_pdxTypeRegistry;
         Apache::Geode::Client::TypeRegistry^ m_typeRegistry;
 
-        bool _disposed = false;
+        Object^ m_disposedLock;
+        bool m_disposed;
 
       };
     }  // namespace Client
