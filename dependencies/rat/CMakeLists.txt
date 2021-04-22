@@ -18,7 +18,7 @@ project( rat VERSION 0.13 LANGUAGES NONE )
 
 set( ARTIFACT_NAME apache-rat-${PROJECT_VERSION} )
 set( ARTIFACT_FILE apache-rat-${PROJECT_VERSION}-bin.tar.gz )
-set( ARTIFACT_URL "https://www.apache.org/dyn/closer.cgi?action=download&filename=creadur/${ARTIFACT_NAME}/${ARTIFACT_FILE}" )
+set( ARTIFACT_URL "https://www.apache.org/dyn/closer.lua/creadur/${ARTIFACT_NAME}/${ARTIFACT_FILE}?action=download" )
 
 file( DOWNLOAD ${ARTIFACT_URL} ${CMAKE_CURRENT_BINARY_DIR}/${ARTIFACT_FILE} )
 execute_process(

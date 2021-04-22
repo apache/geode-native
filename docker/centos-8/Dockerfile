@@ -55,6 +55,6 @@ RUN installer=$(mktemp) \
 
 ARG GEODE_VERSION=1.13.2
 ENV GEODE_HOME /apache-geode-${GEODE_VERSION}
-RUN curl -L -s "https://www.apache.org/dyn/closer.cgi?action=download&filename=geode/${GEODE_VERSION}/apache-geode-${GEODE_VERSION}.tgz" | tar -zxvf - --exclude javadoc
+RUN curl -L -s "https://www.apache.org/dyn/closer.lua/geode/${GEODE_VERSION}/apache-geode-${GEODE_VERSION}.tgz?action=download" | tar -zxvf - --exclude javadoc
 
 CMD ["bash"]
