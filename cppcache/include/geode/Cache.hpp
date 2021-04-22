@@ -176,8 +176,8 @@ class APACHE_GEODE_EXPORT Cache : public GeodeCache {
    *
    * @see RegionService
    * @see PoolFactory#setMultiuserAuthentication(boolean)
-   * @return the {@link RegionService} instance associated with a user and given
-   *         properties.
+   * @return the {@link RegionService} instance associated with a user and
+   * given properties.
    * @throws UnsupportedOperationException
    *           when invoked with multiuser-authentication as false.
    *
