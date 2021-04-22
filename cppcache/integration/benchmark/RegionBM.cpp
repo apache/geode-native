@@ -59,7 +59,7 @@ class RegionBM : public benchmark::Fixture {
   void SetUp(benchmark::State&) override {
     if (!cluster) {
       cluster = std::unique_ptr<Cluster>(
-          new Cluster(Name{name_}, LocatorCount{1}, ServerCount{1}));
+          new Cluster(::Name{name_}, LocatorCount{1}, ServerCount{1}));
       cluster->getGfsh()
           .create()
           .region()

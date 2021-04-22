@@ -13,22 +13,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-project( benchmark VERSION 1.5.2 LANGUAGES NONE )
+project(benchmark LANGUAGES NONE)
 
-set( SHA256 21e6e096c9a9a88076b46bd38c33660f565fa050ca427125f64c4a8bf60f336b )
-set( DEPENDS GTest::gtest )
+set(DEPENDS GTest::gtest)
 
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "SunPro")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m64")
 endif()
 
-set( EXTERN ${PROJECT_NAME}-extern )
+set(EXTERN ${PROJECT_NAME}-extern)
 include(ExternalProject)
-ExternalProject_Add( ${EXTERN}
-  URL "https://github.com/google/benchmark/archive/v${PROJECT_VERSION}.zip"
-  URL_HASH SHA256=${SHA256}
-  UPDATE_COMMAND ""
+ExternalProject_Add(${EXTERN}
+  GIT_REPOSITORY "https://github.com/google/benchmark.git"
+  GIT_SHALLOW ON
   CMAKE_ARGS
     -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
     -DCMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}
@@ -43,8 +41,8 @@ ExternalProject_Add( ${EXTERN}
   DEPENDS ${DEPENDS}
 )
 
-ExternalProject_Get_Property( ${EXTERN} SOURCE_DIR )
-ExternalProject_Get_Property( ${EXTERN} INSTALL_DIR )
+ExternalProject_Get_Property(${EXTERN} SOURCE_DIR)
+ExternalProject_Get_Property(${EXTERN} INSTALL_DIR)
 set(INSTALL_DIR "${INSTALL_DIR}/$<CONFIG>")
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "SunPro")

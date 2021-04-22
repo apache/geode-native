@@ -13,14 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-project( gtest VERSION 1.10.0 LANGUAGES NONE )
-
-set( SHA256 94c634d499558a76fa649edb13721dce6e98fb1e7018dfaeba3cd7a083945e91 )
+project(gtest LANGUAGES NONE)
 
 include(ExternalProject)
 ExternalProject_Add( ${PROJECT_NAME}-extern
-  URL "https://github.com/google/googletest/archive/release-${PROJECT_VERSION}.zip"
-  URL_HASH SHA256=${SHA256}
+  GIT_REPOSITORY "https://github.com/google/googletest.git"
+  GIT_SHALLOW ON
   CMAKE_ARGS
     -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
     -DCMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}
@@ -33,7 +31,7 @@ ExternalProject_Add( ${PROJECT_NAME}-extern
     -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=${CMAKE_OSX_DEPLOYMENT_TARGET}
 )
 
-ExternalProject_Get_Property( ${PROJECT_NAME}-extern INSTALL_DIR )
+ExternalProject_Get_Property(${PROJECT_NAME}-extern INSTALL_DIR)
 
 if(WIN32)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m64 /D_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING")
