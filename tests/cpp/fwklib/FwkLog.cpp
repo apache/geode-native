@@ -81,13 +81,6 @@ void plog(const char* l, const char* s, const char* filename, int32_t lineno) {
           hacks::aceThreadId(ACE_OS::thr_self()), fil, lineno, l, s);
   fflush(stdout);
 }
-
-void dumpStack() {
-  apache::geode::client::Exception trace("StackTrace  ");
-  fprintf(stdout, "%s\n", trace.getStackTrace().c_str());
-  fflush(stdout);
-}
-
 }  // namespace testframework
 }  // namespace client
 }  // namespace geode

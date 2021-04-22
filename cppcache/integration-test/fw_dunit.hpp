@@ -117,6 +117,8 @@ END_TASK(validate)
 
 #include <string>
 
+#include <boost/interprocess/managed_shared_memory.hpp>
+
 #include <signal.h>
 #include "TimeBomb.hpp"
 
@@ -294,47 +296,7 @@ class Task {
   std::string typeName();
 };
 
-/** Shared naming context for storing ints and strings between processes.
- *  To acquire the naming context, use the globals() function which
- *  returns a pointer for the naming context.
- */
-class NamingContext {
- public:
-  /**
-   * Share a string value, return -1 if there is a failure to store value,
-   * otherwise returns 0.
-   */
-  virtual int rebind(const char* key, const char* value) = 0;
-
-  /**
-   * Share an int value, return -1 if there is a failure to store value,
-   * otherwise returns 0.
-   */
-  virtual int rebind(const char* key, int value) = 0;
-
-  /**
-   * retreive a value by key, storing the result in the users buf. If the key
-   * is not found, the buf will contain the empty string "". Make sure the
-   * buffer is big enough to hold whatever has have bound.
-   */
-  virtual std::string getValue(const std::string& key) = 0;
-
-  /**
-   * return the value by key, as an int using the string to int conversion
-   * rules of atoi.
-   */
-  virtual int getIntValue(const std::string& key) = 0;
-
-  /** dump the entire context in LOG messages. */
-  virtual void dump() = 0;
-
-  virtual ~NamingContext() noexcept = default;
-};
-
-extern "C" {
-
-NamingContext* globals();
-}
+extern boost::interprocess::managed_shared_memory& globals();
 
 /**
  * Exception type to use when test framework has trouble or if ASSERT and FAIL
@@ -369,8 +331,6 @@ int dmain(int argc, char* argv[]);
 int main(int argc, char* argv[]) { return dunit::dmain(argc, argv); }
 
 #endif  // __DUNIT_NO_MAIN__
-
-#include "fw_perf.hpp"
 
 namespace test {}  // namespace test
 #endif             // GEODE_INTEGRATION_TEST_FW_DUNIT_H_

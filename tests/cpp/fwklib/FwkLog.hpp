@@ -44,7 +44,6 @@ namespace testframework {
 const char* strnrchr(const char* str, const char tok, int32_t cnt);
 const char* dirAndFile(const char* str);
 void plog(const char* l, const char* s, const char* filename, int32_t lineno);
-void dumpStack();
 const char* getNodeName();
 
 /* Macro for logging */

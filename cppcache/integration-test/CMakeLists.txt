@@ -18,7 +18,6 @@ project(nativeclient.tests.cppcache LANGUAGES CXX)
 
 add_library(test-cppcache-utils STATIC
   fw_dunit.cpp
-  BBNamingContext.cpp
   CacheHelper.cpp
   CacheableWrapper.cpp
 )
