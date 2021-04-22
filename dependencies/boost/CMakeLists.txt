@@ -59,8 +59,9 @@ string(REPLACE "." "_" _VERSION_UNDERSCORE ${PROJECT_VERSION})
 set( EXTERN ${PROJECT_NAME}-extern )
 
 include(ExternalProject)
-ExternalProject_Add( ${EXTERN}
-   URL "https://dl.bintray.com/boostorg/release/${PROJECT_VERSION}/source/boost_${_VERSION_UNDERSCORE}.tar.gz"
+ExternalProject_Add(${EXTERN}
+   URL "https://boostorg.jfrog.io/artifactory/main/release/${PROJECT_VERSION}/source/boost_${_VERSION_UNDERSCORE}.tar.gz"
+       "https://sourceforge.net/projects/boost/files/boost/${PROJECT_VERSION}/boost_${_VERSION_UNDERSCORE}.tar.gz/download"
    URL_HASH SHA256=${SHA256}
    UPDATE_COMMAND ""
    BUILD_IN_SOURCE 1
