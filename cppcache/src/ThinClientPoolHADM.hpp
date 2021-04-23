@@ -62,7 +62,7 @@ class ThinClientPoolHADM : public ThinClientPoolDM {
                                        const TcrMessage* request,
                                        TcrMessageReply* reply);
 
-  virtual void destroy(bool keepAlive = false) override;
+  void destroy(bool keepAlive = false) override;
 
   void readyForEvents();
 

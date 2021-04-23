@@ -784,7 +784,9 @@ void ThinClientPoolDM::destroy(bool keepAlive) {
   LOGDEBUG("ThinClientPoolDM::destroy...");
   if (!m_isDestroyed && (!m_destroyPending || m_destroyPendingHADM)) {
     checkRegions();
-    TcrMessage::setKeepAlive(keepAlive);
+
+    m_keepAlive = keepAlive;
+
     if (m_remoteQueryServicePtr != nullptr) {
       m_remoteQueryServicePtr->close();
       m_remoteQueryServicePtr = nullptr;

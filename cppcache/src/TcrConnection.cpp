@@ -918,12 +918,16 @@ bool TcrConnection::processChunk(TcrMessageReply& reply,
 }
 
 void TcrConnection::close() {
-  TcrMessage* closeMsg = TcrMessage::getCloseConnMessage(
-      m_poolDM->getConnectionManager().getCacheImpl());
+  auto cache = m_poolDM->getConnectionManager().getCacheImpl();
+  TcrMessageCloseConnection closeMsg{
+      std::unique_ptr<DataOutput>(
+          new DataOutput(cache->createDataOutput(m_poolDM))),
+      cache->isKeepAlive() || m_poolDM->isKeepAlive()};
+
   try {
     if (!TcrConnectionManager::TEST_DURABLE_CLIENT_CRASH &&
         !m_connectionManager.isNetDown()) {
-      send(closeMsg->getMsgData(), closeMsg->getMsgLength(),
+      send(closeMsg.getMsgData(), closeMsg.getMsgLength(),
            std::chrono::seconds(2), false);
     }
   } catch (Exception& e) {

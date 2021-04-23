@@ -170,7 +170,6 @@ class TcrMessage {
 
   } MsgType;
 
-  static bool isKeepAlive();
   static bool isUserInitiativeOps(const TcrMessage& msg);
 
   static std::shared_ptr<VersionTag> readVersionTagPart(
@@ -259,10 +258,6 @@ class TcrMessage {
   void setTimeout(std::chrono::milliseconds timeout);
 
   static TcrMessage* getAllEPDisMess();
-  /* we need a static method to generate close connection message */
-  /* The caller should not delete the message since it is global. */
-  static TcrMessage* getCloseConnMessage(CacheImpl* cacheImpl);
-  static void setKeepAlive(bool keepalive);
   bool isDurable() const;
   bool receiveValues() const;
   bool hasCqPart() const;
@@ -468,7 +463,6 @@ class TcrMessage {
   uint8_t m_hasResult;
 
   static std::atomic<int32_t> m_transactionId;
-  static uint8_t* m_keepAlive;
   const static int m_flag_empty;
   const static int m_flag_concurrency_checks;
 
@@ -915,7 +909,8 @@ class TcrMessagePing : public TcrMessage {
 
 class TcrMessageCloseConnection : public TcrMessage {
  public:
-  TcrMessageCloseConnection(DataOutput* dataOutput, bool decodeAll);
+  TcrMessageCloseConnection(std::unique_ptr<DataOutput> dataOutput,
+                            bool keepAlive);
 
   ~TcrMessageCloseConnection() override = default;
 };

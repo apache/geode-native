@@ -804,11 +804,30 @@ TEST_F(TcrMessageTest, testConstructorPing) {
 TEST_F(TcrMessageTest, testConstructorCloseConnection) {
   using apache::geode::client::TcrMessageCloseConnection;
 
-  TcrMessageCloseConnection testMessage(new DataOutputUnderTest(), false);
+  std::shared_ptr<Cacheable> myCacheablePtr(
+      CacheableString::createDeserializable());
+
+  TcrMessageCloseConnection testMessage(
+      std::unique_ptr<DataOutput>(new DataOutputUnderTest()), false);
 
   EXPECT_EQ(TcrMessage::CLOSE_CONNECTION, testMessage.getMessageType());
 
   EXPECT_MESSAGE_EQ("000000120000000600000001FFFFFFFF00000000010000",
+                    testMessage);
+}
+
+TEST_F(TcrMessageTest, testConstructorCloseConnectionKeepAlive) {
+  using apache::geode::client::TcrMessageCloseConnection;
+
+  std::shared_ptr<Cacheable> myCacheablePtr(
+      CacheableString::createDeserializable());
+
+  TcrMessageCloseConnection testMessage(
+      std::unique_ptr<DataOutput>(new DataOutputUnderTest()), true);
+
+  EXPECT_EQ(TcrMessage::CLOSE_CONNECTION, testMessage.getMessageType());
+
+  EXPECT_MESSAGE_EQ("000000120000000600000001FFFFFFFF00000000010001",
                     testMessage);
 }
 

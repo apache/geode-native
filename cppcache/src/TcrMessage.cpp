@@ -83,11 +83,8 @@ inline void writeInt(uint8_t* buffer, uint32_t value) {
 
 extern void setThreadLocalExceptionMessage(std::string);
 
-uint8_t* TcrMessage::m_keepAlive = nullptr;
 const int TcrMessage::m_flag_empty = 0x01;
 const int TcrMessage::m_flag_concurrency_checks = 0x02;
-
-bool TcrMessage::isKeepAlive() { return (m_keepAlive && (*m_keepAlive > 0)); }
 
 bool TcrMessage::isUserInitiativeOps(const TcrMessage& msg) {
   int32_t msgType = msg.getMessageType();
@@ -344,19 +341,6 @@ std::shared_ptr<CacheableHashSet> TcrMessage::getTombstoneKeys() const {
 TcrMessage* TcrMessage::getAllEPDisMess() {
   static auto allEPDisconnected = new TcrMessageReply(true, nullptr);
   return allEPDisconnected;
-}
-
-TcrMessage* TcrMessage::getCloseConnMessage(CacheImpl* cacheImpl) {
-  static auto closeConnMsg = new TcrMessageCloseConnection(
-      new DataOutput(cacheImpl->createDataOutput()), true);
-  return closeConnMsg;
-}
-
-void TcrMessage::setKeepAlive(bool keepalive) {
-  // TODO global
-  if (TcrMessage::m_keepAlive != nullptr) {
-    *TcrMessage::m_keepAlive = keepalive ? 1 : 0;
-  }
 }
 
 void TcrMessage::writeInterestResultPolicyPart(InterestResultPolicy policy) {
@@ -2089,18 +2073,14 @@ TcrMessagePing::TcrMessagePing(std::unique_ptr<DataOutput> dataOutput) {
   writeMessageLength();
 }
 
-TcrMessageCloseConnection::TcrMessageCloseConnection(DataOutput* dataOutput,
-                                                     bool decodeAll) {
+TcrMessageCloseConnection::TcrMessageCloseConnection(
+    std::unique_ptr<DataOutput> dataOutput, bool keepAlive) {
   m_msgType = TcrMessage::CLOSE_CONNECTION;
-  m_decodeAll = decodeAll;
-  m_request.reset(dataOutput);
+  m_request = std::move(dataOutput);
   writeHeader(m_msgType, 1);
-  // last two parts are not used ... setting zero in both the parts.
-  m_request->writeInt(static_cast<int32_t>(1));  // len is 1
-  m_request->write(static_cast<int8_t>(0));      // is obj is '0'.
-  // cast away constness here since we want to modify this
-  TcrMessage::m_keepAlive = const_cast<uint8_t*>(m_request->getCursor());
-  m_request->write(static_cast<int8_t>(0));  // keepalive is '0'.
+  m_request->writeInt(static_cast<int32_t>(1));  // len
+  m_request->writeBoolean(false);                // is obj
+  m_request->writeBoolean(keepAlive);            // keepalive
   writeMessageLength();
 }
 
