@@ -744,6 +744,7 @@ bool ThinClientRegion::containsKeyOnServer(
   TcrMessageReply reply(true, m_tcrdm.get());
   reply.setMessageTypeRequest(TcrMessage::CONTAINS_KEY);
   err = m_tcrdm->sendSyncRequest(request, reply);
+  if (err != GF_NOERR) return err;
 
   switch (reply.getMessageType()) {
     case TcrMessage::RESPONSE:
@@ -771,7 +772,6 @@ bool ThinClientRegion::containsKeyOnServer(
 
   auto rptr = CacheableBoolean::create(ret);
 
-  rptr = std::dynamic_pointer_cast<CacheableBoolean>(handleReplay(err, rptr));
   throwExceptionIfError("Region::containsKeyOnServer ", err);
   return rptr->value();
 }
@@ -790,7 +790,7 @@ bool ThinClientRegion::containsValueForKey_remote(
   TcrMessageReply reply(true, m_tcrdm.get());
   reply.setMessageTypeRequest(TcrMessage::CONTAINS_KEY);
   err = m_tcrdm->sendSyncRequest(request, reply);
-  // if ( err != GF_NOERR ) return ret;
+  if (err != GF_NOERR) return ret;
 
   switch (reply.getMessageType()) {
     case TcrMessage::RESPONSE:
@@ -817,8 +817,6 @@ bool ThinClientRegion::containsValueForKey_remote(
   }
 
   auto rptr = CacheableBoolean::create(ret);
-
-  rptr = std::dynamic_pointer_cast<CacheableBoolean>(handleReplay(err, rptr));
 
   throwExceptionIfError("Region::containsValueForKey ", err);
   return rptr->value();

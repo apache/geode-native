@@ -353,6 +353,14 @@ Gfsh::Start::Server &Gfsh::Start::Server::withSystemProperty(
   return *this;
 }
 
+Gfsh::Start::Server &Gfsh::Start::Server::withConserveSockets(
+    bool conserveSockets) {
+  if (conserveSockets) {
+    command_ += " --J=-Dgemfire.conserve-sockets=true";
+  }
+  return *this;
+}
+
 Gfsh::Stop::Stop(Gfsh &gfsh) : gfsh_(gfsh) {}
 
 Gfsh::Stop::Server Gfsh::Stop::server() { return Server{gfsh_}; }
