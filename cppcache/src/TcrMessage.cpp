@@ -341,12 +341,6 @@ std::shared_ptr<CacheableHashSet> TcrMessage::getTombstoneKeys() const {
   return m_tombstoneKeys;
 }
 
-TcrMessagePing* TcrMessage::getPingMessage(CacheImpl* cacheImpl) {
-  static auto pingMsg =
-      new TcrMessagePing(new DataOutput(cacheImpl->createDataOutput()), true);
-  return pingMsg;
-}
-
 TcrMessage* TcrMessage::getAllEPDisMess() {
   static auto allEPDisconnected = new TcrMessageReply(true, nullptr);
   return allEPDisconnected;

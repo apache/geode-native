@@ -504,7 +504,8 @@ void TcrEndpoint::pingServer(ThinClientPoolDM* poolDM) {
   }
 
   if (!m_msgSent && !m_pingSent) {
-    TcrMessagePing* pingMsg = TcrMessage::getPingMessage(m_cacheImpl);
+    TcrMessagePing pingMsg(new DataOutput(m_cacheImpl->createDataOutput()),
+                           true);
     TcrMessageReply reply(true, nullptr);
     LOGFINEST("Sending ping message to endpoint %s", m_name.c_str());
     GfErrType error;
