@@ -79,7 +79,7 @@ class ThinClientRedundancyManager {
   void netDown();
   void acquireRedundancyLock() { m_redundantEndpointsLock.lock(); }
   void releaseRedundancyLock() { m_redundantEndpointsLock.unlock(); }
-  bool allEndPointDiscon() { return m_IsAllEpDisCon; }
+  bool allEndPointDiscon() { return m_allEndpointsDisconnected; }
   void removeCallbackConnection(TcrEndpoint*);
 
   std::recursive_mutex& getRedundancyLock() { return m_redundantEndpointsLock; }
@@ -92,7 +92,7 @@ class ThinClientRedundancyManager {
   using time_point = clock::time_point;
 
   // for selectServers
-  volatile bool m_IsAllEpDisCon;
+  volatile bool m_allEndpointsDisconnected;
   int m_server;
   bool m_sentReadyForEvents;
   int m_redundancyLevel;

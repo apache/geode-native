@@ -259,7 +259,6 @@ class TcrMessage {
   std::chrono::milliseconds getTimeout() const;
   void setTimeout(std::chrono::milliseconds timeout);
 
-  static TcrMessage* getAllEPDisMess();
   bool isDurable() const;
   bool receiveValues() const;
   bool hasCqPart() const;
@@ -277,13 +276,13 @@ class TcrMessage {
   void setChunkedResultHandler(TcrChunkedResult* chunkedResult);
   TcrChunkedResult* getChunkedResultHandler();
 
-  DataInput* getDelta();
+  DataInput* getDelta() const;
   //  getDeltaBytes( ) is called *only* by CqService, returns a CacheableBytes
   //  that
   // takes ownership of delta bytes.
   std::shared_ptr<CacheableBytes> getDeltaBytes();
 
-  bool hasDelta();
+  bool hasDelta() const;
 
   void addSecurityPart(int64_t connectionId, int64_t unique_id,
                        TcrConnection* conn);
@@ -321,7 +320,7 @@ class TcrMessage {
   void setCallBackArguement(bool aCallBackArguement);
 
   void setVersionTag(std::shared_ptr<VersionTag> versionTag);
-  std::shared_ptr<VersionTag> getVersionTag();
+  std::shared_ptr<VersionTag> getVersionTag() const;
   uint8_t hasResult() const;
   std::shared_ptr<CacheableHashMap> getTombstoneVersions() const;
   std::shared_ptr<CacheableHashSet> getTombstoneKeys() const;
@@ -908,6 +907,11 @@ class TcrMessageReply : public TcrMessage {
   TcrMessageReply(bool decodeAll, ThinClientBaseDM* connectionDM);
 
   ~TcrMessageReply() override = default;
+};
+
+class TcrMessageAllEndpointsDisconnectedMarker : public TcrMessage {
+ public:
+  TcrMessageAllEndpointsDisconnectedMarker() = default;
 };
 
 /**

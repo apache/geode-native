@@ -46,7 +46,7 @@ ThinClientRedundancyManager::ThinClientRedundancyManager(
     ThinClientPoolHADM* poolHADM, bool sentReadyForEvents,
     bool globalProcessedMarker)
     : m_globalProcessedMarker(globalProcessedMarker),
-      m_IsAllEpDisCon(false),
+      m_allEndpointsDisconnected(false),
       m_server(0),
       m_sentReadyForEvents(sentReadyForEvents),
       m_redundancyLevel(redundancyLevel),
@@ -429,14 +429,14 @@ GfErrType ThinClientRedundancyManager::maintainRedundancyLevel(
   }
 
   if (isRedundancySatisfied) {
-    m_IsAllEpDisCon = false;
+    m_allEndpointsDisconnected = false;
     m_loggedRedundancyWarning = false;
     return GF_NOERR;
   } else if (isPrimaryConnected) {
     if (fatal && err != GF_NOERR) {
       return fatalError;
     }
-    m_IsAllEpDisCon = false;
+    m_allEndpointsDisconnected = false;
     if (m_redundancyLevel == -1) {
       LOGINFO("Current subscription redundancy level is %zu",
               m_redundantEndpoints.size() - 1);
@@ -454,9 +454,10 @@ GfErrType ThinClientRedundancyManager::maintainRedundancyLevel(
     // save any fatal errors that occur during maintain redundancy so
     // that we can send it back to the caller, to avoid missing out due
     // to nonfatal errors such as server not available
-    if (m_poolHADM && !m_IsAllEpDisCon) {
-      m_poolHADM->sendNotConMesToAllregions();
-      m_IsAllEpDisCon = true;
+    if (m_poolHADM && !m_allEndpointsDisconnected) {
+      m_poolHADM->clearKeysOfInterestAllRegions();
+      m_poolHADM->sendNotConnectedMessageToAllregions();
+      m_allEndpointsDisconnected = true;
     }
     if (fatal && err != GF_NOERR) {
       return fatalError;

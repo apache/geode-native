@@ -424,7 +424,7 @@ void CacheImpl::createRegion(std::string name,
     }
 
     regionPtr = rpImpl;
-    rpImpl->addDisMessToQueue();
+    rpImpl->addDisconnectedMessageToQueue();
     // Instantiate a PersistenceManager object if DiskPolicy is overflow
     if (regionAttributes.getDiskPolicy() == DiskPolicyType::OVERFLOWS) {
       auto pmPtr = regionAttributes.getPersistenceManager();
@@ -708,16 +708,14 @@ void CacheImpl::processMarker() {
     if (!kv.second->isDestroyed()) {
       if (const auto tcrHARegion =
               std::dynamic_pointer_cast<ThinClientHARegion>(kv.second)) {
-        auto regionMsg = new TcrMessageClientMarker(
-            new DataOutput(createDataOutput()), true);
-        tcrHARegion->receiveNotification(regionMsg);
+        tcrHARegion->receiveNotification(
+            TcrMessageClientMarker(new DataOutput(createDataOutput()), true));
         for (const auto& iter : tcrHARegion->subregions(true)) {
           if (!iter->isDestroyed()) {
             if (const auto subregion =
                     std::dynamic_pointer_cast<ThinClientHARegion>(iter)) {
-              regionMsg = new TcrMessageClientMarker(
-                  new DataOutput(createDataOutput()), true);
-              subregion->receiveNotification(regionMsg);
+              subregion->receiveNotification(TcrMessageClientMarker(
+                  new DataOutput(createDataOutput()), true));
             }
           }
         }

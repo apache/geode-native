@@ -101,11 +101,11 @@ class ThinClientPoolHADM : public ThinClientPoolDM {
   void startBackgroundThreads() override;
 
  private:
-  std::unique_ptr<ThinClientRedundancyManager> m_redundancyManager;
+  std::unique_ptr<ThinClientRedundancyManager> redundancyManager_;
 
-  TcrConnectionManager& m_theTcrConnManager;
+  TcrConnectionManager& theTcrConnManager_;
   binary_semaphore redundancy_semaphore_;
-  std::unique_ptr<Task<ThinClientPoolHADM>> m_redundancyTask;
+  std::unique_ptr<Task<ThinClientPoolHADM>> redundancyTask_;
 
   void redundancy(std::atomic<bool>& isRunning);
 
@@ -115,12 +115,13 @@ class ThinClientPoolHADM : public ThinClientPoolDM {
 
   void removeCallbackConnection(TcrEndpoint*) override;
 
-  std::list<ThinClientRegion*> m_regions;
-  std::recursive_mutex m_regionsLock;
+  std::list<ThinClientRegion*> regions_;
+  std::recursive_mutex regionsLock_;
   void addRegion(ThinClientRegion* theTCR);
   void removeRegion(ThinClientRegion* theTCR);
-  void sendNotConMesToAllregions();
-  void addDisMessToQueue(ThinClientRegion* theTCR);
+  void clearKeysOfInterestAllRegions();
+  void sendNotConnectedMessageToAllregions();
+  void addDisconnectedMessageToQueue(ThinClientRegion* theTCR);
 
   friend class ThinClientHARegion;
   friend class TcrConnectionManager;
