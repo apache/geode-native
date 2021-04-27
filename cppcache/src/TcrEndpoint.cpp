@@ -510,9 +510,9 @@ void TcrEndpoint::pingServer(ThinClientPoolDM* poolDM) {
     LOGFINEST("Sending ping message to endpoint %s", m_name.c_str());
     GfErrType error;
     if (poolDM != nullptr) {
-      error = poolDM->sendRequestToEP(*pingMsg, reply, this);
+      error = poolDM->sendRequestToEP(pingMsg, reply, this);
     } else {
-      error = send(*pingMsg, reply);
+      error = send(pingMsg, reply);
     }
     LOGFINEST("Sent ping message to endpoint %s with error code %d%s",
               m_name.c_str(), error, error == GF_NOERR ? " (no error)" : "");
