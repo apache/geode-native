@@ -548,8 +548,6 @@ TEST_F(TcrMessageTest, testConstructorGetPdxIdForEnum) {
 TEST_F(TcrMessageTest, testConstructorAddPdxEnum) {
   using apache::geode::client::TcrMessageAddPdxEnum;
 
-  std::shared_ptr<Cacheable> myPtr(CacheableString::createDeserializable());
-
   TcrMessageAddPdxEnum message(new DataOutputUnderTest(),
                                static_cast<std::shared_ptr<Cacheable>>(nullptr),
                                static_cast<ThinClientBaseDM *>(nullptr), 42);
@@ -747,9 +745,6 @@ TEST_F(TcrMessageTest, testConstructorExecuteCq) {
 TEST_F(TcrMessageTest, testConstructorWithGinormousQueryExecuteCq) {
   using apache::geode::client::TcrMessageExecuteCq;
 
-  std::shared_ptr<Cacheable> myCacheablePtr(
-      CacheableString::createDeserializable());
-
   std::ostringstream oss;
   oss << "select * from /somewhere s where s.data.id in SET(";
   // Ensure over 64KiB of query string.
@@ -781,9 +776,6 @@ TEST_F(TcrMessageTest, testConstructorWithGinormousQueryExecuteCq) {
 TEST_F(TcrMessageTest, testConstructorExecuteCqWithIr) {
   using apache::geode::client::TcrMessageExecuteCqWithIr;
 
-  std::shared_ptr<Cacheable> myCacheablePtr(
-      CacheableString::createDeserializable());
-
   TcrMessageExecuteCqWithIr testMessage(
       new DataOutputUnderTest(), "ExecuteCQWithIr", "select * from /somewhere",
       CqState::RUNNING, false, static_cast<ThinClientBaseDM *>(nullptr));
@@ -801,10 +793,8 @@ TEST_F(TcrMessageTest, testConstructorExecuteCqWithIr) {
 TEST_F(TcrMessageTest, testConstructorPing) {
   using apache::geode::client::TcrMessagePing;
 
-  std::shared_ptr<Cacheable> myCacheablePtr(
-      CacheableString::createDeserializable());
-
-  TcrMessagePing testMessage(new DataOutputUnderTest(), false);
+  TcrMessagePing testMessage(
+      std::unique_ptr<DataOutput>(new DataOutputUnderTest()));
 
   EXPECT_EQ(TcrMessage::PING, testMessage.getMessageType());
 
@@ -813,9 +803,6 @@ TEST_F(TcrMessageTest, testConstructorPing) {
 
 TEST_F(TcrMessageTest, testConstructorCloseConnection) {
   using apache::geode::client::TcrMessageCloseConnection;
-
-  std::shared_ptr<Cacheable> myCacheablePtr(
-      CacheableString::createDeserializable());
 
   TcrMessageCloseConnection testMessage(new DataOutputUnderTest(), false);
 

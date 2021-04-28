@@ -2082,10 +2082,9 @@ TcrMessageReply::TcrMessageReply(bool decodeAll,
   if (connectionDM != nullptr) isSecurityOn = connectionDM->isSecurityOn();
 }
 
-TcrMessagePing::TcrMessagePing(DataOutput* dataOutput, bool decodeAll) {
+TcrMessagePing::TcrMessagePing(std::unique_ptr<DataOutput> dataOutput) {
   m_msgType = TcrMessage::PING;
-  m_decodeAll = decodeAll;
-  m_request.reset(dataOutput);
+  m_request = std::move(dataOutput);
   writeHeader(m_msgType, 0);
   writeMessageLength();
 }

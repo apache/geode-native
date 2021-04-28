@@ -908,7 +908,7 @@ class TcrMessageExecuteFunction : public TcrMessage {
 
 class TcrMessagePing : public TcrMessage {
  public:
-  TcrMessagePing(DataOutput* dataOutput, bool decodeAll);
+  TcrMessagePing(std::unique_ptr<DataOutput> dataOutput);
 
   ~TcrMessagePing() override = default;
 };
