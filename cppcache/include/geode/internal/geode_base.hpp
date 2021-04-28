@@ -77,8 +77,6 @@ namespace client {
 constexpr static std::chrono::milliseconds DEFAULT_QUERY_RESPONSE_TIMEOUT =
     std::chrono::seconds{15};
 
-static const std::string EMPTY_STRING{};
-
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
