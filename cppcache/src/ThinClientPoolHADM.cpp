@@ -295,13 +295,6 @@ void ThinClientPoolHADM::sendNotConMesToAllregions() {
   }
 }
 
-void ThinClientPoolHADM::clearKeysOfInterestAllRegions() {
-  std::lock_guard<decltype(m_regionsLock)> guard(m_regionsLock);
-  for (auto region : m_regions) {
-    region->clearKeysOfInterest();
-  }
-}
-
 std::shared_ptr<TcrEndpoint> ThinClientPoolHADM::createEP(
     const char* endpointName) {
   return std::make_shared<TcrPoolEndPoint>(

@@ -120,7 +120,6 @@ class ThinClientPoolHADM : public ThinClientPoolDM {
   void addRegion(ThinClientRegion* theTCR);
   void removeRegion(ThinClientRegion* theTCR);
   void sendNotConMesToAllregions();
-  void clearKeysOfInterestAllRegions();
   void addDisMessToQueue(ThinClientRegion* theTCR);
 
   friend class ThinClientHARegion;
