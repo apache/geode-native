@@ -23,10 +23,12 @@
 #include <condition_variable>
 #include <mutex>
 
+#include <geode/internal/geode_globals.hpp>
+
 namespace apache {
 namespace geode {
 namespace client {
-class binary_semaphore {
+class APACHE_GEODE_EXPORT binary_semaphore {
  public:
   explicit binary_semaphore(bool released);
 

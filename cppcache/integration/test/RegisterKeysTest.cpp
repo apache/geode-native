@@ -19,39 +19,44 @@
 #include <condition_variable>
 #include <mutex>
 
+#include <boost/thread/latch.hpp>
+
 #include <gtest/gtest.h>
 
 #include <geode/Cache.hpp>
 #include <geode/CacheFactory.hpp>
 #include <geode/EntryEvent.hpp>
+#include <geode/RegionEvent.hpp>
 #include <geode/RegionFactory.hpp>
 #include <geode/RegionShortcut.hpp>
 
 #include "framework/Cluster.h"
 #include "framework/Framework.h"
 #include "framework/Gfsh.h"
-
-class CacheListenerMock : public apache::geode::client::CacheListener {
- public:
-  MOCK_METHOD1(afterDestroy,
-               void(const apache::geode::client::EntryEvent& event));
-};
+#include "mock/CacheListenerMock.hpp"
+#include "util/concurrent/binary_semaphore.hpp"
 
 namespace {
 
+using apache::geode::client::binary_semaphore;
 using apache::geode::client::Cache;
 using apache::geode::client::CacheableInt16;
 using apache::geode::client::CacheableKey;
 using apache::geode::client::CacheableString;
 using apache::geode::client::CacheFactory;
+using apache::geode::client::CacheListenerMock;
 using apache::geode::client::IllegalStateException;
 using apache::geode::client::Region;
 using apache::geode::client::RegionShortcut;
+
 using ::testing::_;
 using ::testing::DoAll;
 using ::testing::InvokeWithoutArgs;
+using ::testing::Return;
 
-ACTION_P(CvNotifyOne, cv) { cv->notify_one(); }
+ACTION_P(ReleaseSem, sem) { sem->release(); }
+ACTION_P(AcquireSem, sem) { sem->acquire(); }
+ACTION_P(CountDownLatch, latch) { latch->count_down(); }
 
 Cache createTestCache() {
   CacheFactory cacheFactory;
@@ -152,14 +157,13 @@ TEST(RegisterKeysTest, RegisterAllWithConsistencyDisabled) {
     producer_region = setupProxyRegion(producer_cache);
   }
 
-  std::mutex cv_mutex;
-  bool destroyed = false;
-  std::condition_variable cv;
+  binary_semaphore sem{0};
   auto listener = std::make_shared<CacheListenerMock>();
-  EXPECT_CALL(*listener, afterDestroy(_))
-      .Times(1)
-      .WillOnce(DoAll(InvokeWithoutArgs([&destroyed] { destroyed = true; }),
-                      CvNotifyOne(&cv)));
+
+  EXPECT_CALL(*listener, afterCreate(_)).WillRepeatedly(Return());
+  EXPECT_CALL(*listener, afterRegionLive(_)).WillRepeatedly(Return());
+  EXPECT_CALL(*listener, afterRegionDisconnected(_)).WillRepeatedly(Return());
+  EXPECT_CALL(*listener, afterDestroy(_)).Times(1).WillOnce(ReleaseSem(&sem));
 
   {
     auto poolFactory =
@@ -179,11 +183,307 @@ TEST(RegisterKeysTest, RegisterAllWithConsistencyDisabled) {
   producer_region->put("one", std::make_shared<CacheableInt16>(1));
   producer_region->destroy("one");
 
+  EXPECT_TRUE(sem.try_acquire_for(std::chrono::minutes{1}));
+}
+
+TEST(RegisterKeysTest, RegisterAnyAndClusterRestart) {
+  auto N = 100U;
+  boost::latch create_latch{N};
+  binary_semaphore live_sem{0};
+  binary_semaphore shut_sem{1};
+
+  Cluster cluster{LocatorCount{1}, ServerCount{1}};
+  cluster.start();
+
+  auto& gfsh = cluster.getGfsh();
+  gfsh.create().region().withName("region").withType("REPLICATE").execute();
+
+  auto cache = createTestCache();
   {
-    std::unique_lock<std::mutex> lock(cv_mutex);
-    EXPECT_TRUE(cv.wait_for(lock, std::chrono::minutes(1),
-                            [&destroyed] { return destroyed; }));
+    auto poolFactory =
+        cache.getPoolManager().createFactory().setSubscriptionEnabled(true);
+    cluster.applyLocators(poolFactory);
+    poolFactory.create("default");
   }
+
+  auto listener = std::make_shared<CacheListenerMock>();
+  EXPECT_CALL(*listener, afterRegionLive(_))
+      .WillRepeatedly(DoAll(ReleaseSem(&live_sem), AcquireSem(&shut_sem)));
+  EXPECT_CALL(*listener, afterRegionDisconnected(_))
+      .WillRepeatedly(DoAll(ReleaseSem(&shut_sem), AcquireSem(&live_sem)));
+  EXPECT_CALL(*listener, afterCreate(_))
+      .Times(N)
+      .WillRepeatedly(CountDownLatch(&create_latch));
+
+  auto region = cache.createRegionFactory(RegionShortcut::CACHING_PROXY)
+                    .setPoolName("default")
+                    .setCacheListener(listener)
+                    .create("region");
+  region->registerAllKeys(false, true);
+  EXPECT_EQ(region->keys().size(), 0);
+
+  auto producer = std::thread([&region, N] {
+    for (auto i = 0U; i < N;) {
+      auto key = "entry-" + std::to_string(i++);
+      auto value = "{\"entryName\": \"" + key + "\"}";
+      region->put(key, value);
+    }
+  });
+
+  create_latch.wait();
+
+  producer.join();
+  gfsh.shutdown().execute();
+
+  shut_sem.acquire();
+  shut_sem.release();
+
+  for (auto& server : cluster.getServers()) {
+    server.start();
+  }
+
+  live_sem.acquire();
+  live_sem.release();
+  EXPECT_EQ(region->keys().size(), 0);
+}
+
+TEST(RegisterKeysTest, RegisterRegexAndClusterRestart) {
+  auto N_1 = 10U;
+  auto N_2 = 90U;
+  auto N = N_1 + N_2;
+  binary_semaphore live_sem{0};
+  binary_semaphore shut_sem{1};
+  boost::latch create_latch{N};
+
+  Cluster cluster{LocatorCount{1}, ServerCount{1}};
+  cluster.start();
+
+  auto& gfsh = cluster.getGfsh();
+  gfsh.create().region().withName("region").withType("REPLICATE").execute();
+
+  auto cache = createTestCache();
+  {
+    auto poolFactory =
+        cache.getPoolManager().createFactory().setSubscriptionEnabled(true);
+    cluster.applyLocators(poolFactory);
+    poolFactory.create("default");
+  }
+
+  auto listener = std::make_shared<CacheListenerMock>();
+  EXPECT_CALL(*listener, afterRegionLive(_))
+      .WillRepeatedly(DoAll(ReleaseSem(&live_sem), AcquireSem(&shut_sem)));
+  EXPECT_CALL(*listener, afterRegionDisconnected(_))
+      .WillRepeatedly(DoAll(ReleaseSem(&shut_sem), AcquireSem(&live_sem)));
+  EXPECT_CALL(*listener, afterCreate(_))
+      .Times(N)
+      .WillRepeatedly(CountDownLatch(&create_latch));
+
+  auto region = cache.createRegionFactory(RegionShortcut::CACHING_PROXY)
+                    .setPoolName("default")
+                    .setCacheListener(listener)
+                    .create("region");
+  region->registerRegex("interest-.*", false, true);
+  EXPECT_EQ(region->keys().size(), 0);
+
+  auto producer_non_interest = std::thread([&region, N_1] {
+    for (auto i = 0U; i < N_1;) {
+      auto key = "entry-" + std::to_string(i++);
+      auto value = "{\"entryName\": \"" + key + "\"}";
+      region->put(key, value);
+    }
+  });
+
+  auto producer_interest = std::thread([&region, N_2] {
+    for (auto i = 0U; i < N_2;) {
+      auto key = "interest-" + std::to_string(i++);
+      auto value = "{\"entryName\": \"" + key + "\"}";
+      region->put(key, value);
+    }
+  });
+
+  create_latch.wait();
+
+  producer_non_interest.join();
+  producer_interest.join();
+
+  gfsh.shutdown().execute();
+
+  shut_sem.acquire();
+  shut_sem.release();
+
+  for (auto& server : cluster.getServers()) {
+    server.start();
+  }
+
+  live_sem.acquire();
+  live_sem.release();
+  EXPECT_EQ(region->keys().size(), N_1);
+}
+
+TEST(RegisterKeysTest, RegisterKeySetAndClusterRestart) {
+  auto N_1 = 10U;
+  std::vector<std::shared_ptr<CacheableKey>> interest_keys{
+      CacheableKey::create("dolores-1"),
+      CacheableKey::create("maeve-1"),
+      CacheableKey::create("bernard-2"),
+      CacheableKey::create("theodore-3"),
+      CacheableKey::create("william-5"),
+      CacheableKey::create("clementine-8"),
+      CacheableKey::create("abernathy-13"),
+      CacheableKey::create("ford-21"),
+  };
+
+  auto N = N_1 + interest_keys.size();
+  binary_semaphore live_sem{0};
+  binary_semaphore shut_sem{1};
+  boost::latch create_latch{N};
+  Cluster cluster{LocatorCount{1}, ServerCount{1}};
+  cluster.start();
+
+  auto& gfsh = cluster.getGfsh();
+  gfsh.create().region().withName("region").withType("REPLICATE").execute();
+
+  auto cache = createTestCache();
+  {
+    auto poolFactory =
+        cache.getPoolManager().createFactory().setSubscriptionEnabled(true);
+    cluster.applyLocators(poolFactory);
+    poolFactory.create("default");
+  }
+
+  auto listener = std::make_shared<CacheListenerMock>();
+  EXPECT_CALL(*listener, afterRegionLive(_))
+      .WillRepeatedly(DoAll(ReleaseSem(&live_sem), AcquireSem(&shut_sem)));
+  EXPECT_CALL(*listener, afterRegionDisconnected(_))
+      .WillRepeatedly(DoAll(ReleaseSem(&shut_sem), AcquireSem(&live_sem)));
+  EXPECT_CALL(*listener, afterCreate(_))
+      .Times(N)
+      .WillRepeatedly(CountDownLatch(&create_latch));
+
+  auto region = cache.createRegionFactory(RegionShortcut::CACHING_PROXY)
+                    .setPoolName("default")
+                    .setCacheListener(listener)
+                    .create("region");
+
+  region->registerKeys(interest_keys, false, true);
+  EXPECT_EQ(region->keys().size(), 0);
+
+  auto producer_non_interest = std::thread([&region, N_1] {
+    for (auto i = 0U; i < N_1;) {
+      auto key = "entry-" + std::to_string(i++);
+      auto value = "{\"entryName\": \"" + key + "\"}";
+      region->put(key, value);
+    }
+  });
+
+  auto producer_interest = std::thread([&region, &interest_keys] {
+    for (auto key : interest_keys) {
+      auto value = "{\"entryName\": \"" + key->toString() + "\"}";
+      region->put(key, value);
+    }
+  });
+
+  create_latch.wait();
+
+  producer_non_interest.join();
+  producer_interest.join();
+
+  gfsh.shutdown().execute();
+
+  shut_sem.acquire();
+  shut_sem.release();
+
+  for (auto& server : cluster.getServers()) {
+    server.start();
+  }
+
+  live_sem.acquire();
+  live_sem.release();
+  EXPECT_EQ(region->keys().size(), N_1);
+}
+
+TEST(RegisterKeysTest, RegisterKeySetAndDestroyClusterRestart) {
+  auto N_1 = 10U;
+  std::vector<std::shared_ptr<CacheableKey>> interest_keys{
+      CacheableKey::create("dolores-1"),
+      CacheableKey::create("maeve-1"),
+      CacheableKey::create("bernard-2"),
+      CacheableKey::create("theodore-3"),
+      CacheableKey::create("william-5"),
+      CacheableKey::create("clementine-8"),
+      CacheableKey::create("abernathy-13"),
+      CacheableKey::create("ford-21"),
+  };
+
+  auto N = N_1 + interest_keys.size();
+  binary_semaphore live_sem{0};
+  binary_semaphore shut_sem{1};
+  boost::latch create_latch{N};
+  Cluster cluster{LocatorCount{1}, ServerCount{1}};
+  cluster.start();
+
+  auto& gfsh = cluster.getGfsh();
+  gfsh.create().region().withName("region").withType("REPLICATE").execute();
+
+  auto cache = createTestCache();
+  {
+    auto poolFactory =
+        cache.getPoolManager().createFactory().setSubscriptionEnabled(true);
+    cluster.applyLocators(poolFactory);
+    poolFactory.create("default");
+  }
+
+  auto listener = std::make_shared<CacheListenerMock>();
+  EXPECT_CALL(*listener, afterRegionLive(_))
+      .WillRepeatedly(DoAll(ReleaseSem(&live_sem), AcquireSem(&shut_sem)));
+  EXPECT_CALL(*listener, afterRegionDisconnected(_))
+      .WillRepeatedly(DoAll(ReleaseSem(&shut_sem), AcquireSem(&live_sem)));
+  EXPECT_CALL(*listener, afterCreate(_))
+      .Times(N)
+      .WillRepeatedly(CountDownLatch(&create_latch));
+  EXPECT_CALL(*listener, afterDestroy(_)).Times(1).WillOnce(Return());
+
+  auto region = cache.createRegionFactory(RegionShortcut::CACHING_PROXY)
+                    .setPoolName("default")
+                    .setCacheListener(listener)
+                    .create("region");
+
+  region->registerKeys(interest_keys, false, true);
+  EXPECT_EQ(region->keys().size(), 0);
+
+  auto producer_non_interest = std::thread([&region, N_1] {
+    for (auto i = 0U; i < N_1;) {
+      auto key = "entry-" + std::to_string(i++);
+      auto value = "{\"entryName\": \"" + key + "\"}";
+      region->put(key, value);
+    }
+  });
+
+  auto producer_interest = std::thread([&region, &interest_keys] {
+    for (auto key : interest_keys) {
+      auto value = "{\"entryName\": \"" + key->toString() + "\"}";
+      region->put(key, value);
+    }
+  });
+
+  create_latch.wait();
+
+  producer_non_interest.join();
+  producer_interest.join();
+
+  region->remove(interest_keys[0]);
+  gfsh.shutdown().execute();
+
+  shut_sem.acquire();
+  shut_sem.release();
+
+  for (auto& server : cluster.getServers()) {
+    server.start();
+  }
+
+  live_sem.acquire();
+  live_sem.release();
+  EXPECT_EQ(region->keys().size(), N_1);
 }
 
 TEST(RegisterKeysTest, RegisterAnyWithCachingRegion) {
@@ -220,7 +520,7 @@ TEST(RegisterKeysTest, RegisterAnyWithCachingRegion) {
     cluster.applyLocators(poolFactory);
     poolFactory.create("default");
     auto region2 = setupCachingProxyRegion(cache2);
-    std::vector<std::shared_ptr<CacheableKey> > keys;
+    std::vector<std::shared_ptr<CacheableKey>> keys;
     keys.push_back(std::make_shared<CacheableString>("one"));
 
     auto&& entryBefore = region2->getEntry("one");
@@ -274,7 +574,7 @@ TEST(RegisterKeysTest, RegisterAnyWithProxyRegion) {
   cluster.applyLocators(poolFactory);
   poolFactory.create("default");
   auto region = setupProxyRegion(cache);
-  std::vector<std::shared_ptr<CacheableKey> > keys;
+  std::vector<std::shared_ptr<CacheableKey>> keys;
   keys.push_back(std::make_shared<CacheableInt16>(2));
 
   EXPECT_THROW(region->registerKeys(keys, false, true), IllegalStateException);
