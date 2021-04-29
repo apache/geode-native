@@ -24,11 +24,7 @@
 namespace testobject {
 
 DeltaPSTObject::DeltaPSTObject(int size, bool encodeKey) : Delta() {
-  ACE_Time_Value startTime;
-  startTime = ACE_OS::gettimeofday();
-  ACE_UINT64 tusec = 0;
-  startTime.to_usec(tusec);
-  timestamp = tusec * 1000;
+  timestamp = std::chrono::system_clock::now().time_since_epoch().count();
   field1 = 1234;
   field2 = '*';
   if (size == 0) {

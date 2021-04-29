@@ -15,8 +15,13 @@
  * limitations under the License.
  */
 
-#include <cinttypes>
 #include <fwklib/FwkLog.hpp>
+#include <iomanip>
+#include <iostream>
+
+#include <boost/asio/ip/host_name.hpp>
+#include <boost/process.hpp>
+#include <boost/thread.hpp>
 
 #include <geode/Exception.hpp>
 
@@ -26,10 +31,6 @@ namespace apache {
 namespace geode {
 namespace client {
 namespace testframework {
-
-static ACE_utsname u;
-
-const char* getNodeName() { return u.nodename; }
 
 const char* dirAndFile(const char* str) {
   if (!str) {
@@ -54,32 +55,24 @@ const char* dirAndFile(const char* str) {
 }
 
 void plog(const char* l, const char* s, const char* filename, int32_t lineno) {
-  // ACE_TCHAR tstamp[64];
-  // ACE::timestamp( tstamp, 64, 1 );
-  // tstamp is like "Tue May 17 2005 12:54:22.546780"
-  // for our purpose we just want "12:54:22.546780"
-  char buf[256] = {0};
-  const size_t MINBUFSIZE = 128;
-  ACE_Time_Value clock = ACE_OS::gettimeofday();
-  time_t secs = clock.sec();
-  struct tm* tm_val = ACE_OS::localtime(&secs);
-  char* pbuf = buf;
-  pbuf += ACE_OS::strftime(pbuf, MINBUFSIZE, "%Y/%m/%d %H:%M:%S", tm_val);
-  pbuf += ACE_OS::snprintf(pbuf, 15, ".%06" PRId64 " ",
-                           static_cast<int64_t>(clock.usec()));
-  ACE_OS::strftime(pbuf, MINBUFSIZE, "%Z ", tm_val);
-  static bool needInit = true;
-  if (needInit) {
-    ACE_OS::uname(&u);
-    needInit = false;
-  }
+  using std::chrono::duration_cast;
+  using std::chrono::microseconds;
+  using std::chrono::system_clock;
+
+  auto now = system_clock::now();
+  auto in_time_t = system_clock::to_time_t(now);
+  auto localtime = std::localtime(&in_time_t);
+  auto usec =
+      duration_cast<microseconds>(now.time_since_epoch()).count() % 1000;
 
   const char* fil = dirAndFile(filename);
-
-  fprintf(stdout, "[%s %s %s:P%d:T%" PRIu64 "]::%s::%d  %s  %s\n", buf,
-          u.sysname, u.nodename, ACE_OS::getpid(),
-          hacks::aceThreadId(ACE_OS::thr_self()), fil, lineno, l, s);
-  fflush(stdout);
+  std::cout << '[' << std::put_time(localtime, "%Y/%m/%d %H:%M:%S") << '.'
+            << std::setfill('0') << std::setw(6) << usec << std::setw(0)
+            << std::put_time(localtime, " %Z ") << boost::asio::ip::host_name()
+            << ":P" << boost::this_process::get_id() << ":T"
+            << boost::this_thread::get_id() << "]::" << fil << "::" << lineno
+            << "  " << l << "  " << s << std::endl
+            << std::flush;
 }
 }  // namespace testframework
 }  // namespace client

@@ -22,10 +22,6 @@
 
 #include <string>
 
-#include <ace/ACE.h>
-#include <ace/OS.h>
-#include <ace/Time_Value.h>
-
 #include <geode/CacheableBuiltins.hpp>
 
 #include "TimestampedObject.hpp"
@@ -92,16 +88,12 @@ class TESTOBJECT_EXPORT FastAssetAccount : public TimestampedObject {
   }
 
   void resetTimestamp() override {
-    if (encodeTimestamp) {
-      ACE_Time_Value startTime;
-      startTime = ACE_OS::gettimeofday();
-      ACE_UINT64 tusec;
-      startTime.to_usec(tusec);
-      timestamp = tusec * 1000;
-    } else {
-      timestamp = 0;
-    }
+    timestamp =
+        encodeTimestamp
+            ? std::chrono::system_clock::now().time_since_epoch().count()
+            : 0;
   }
+
   void update() {
     incrementNetWorth();
     if (encodeTimestamp) {

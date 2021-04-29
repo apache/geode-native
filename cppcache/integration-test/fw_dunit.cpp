@@ -22,6 +22,7 @@
 
 #include <string>
 #include <iostream>
+#include <iomanip>
 #include <list>
 #include <map>
 
@@ -66,15 +67,6 @@ void setupCRTOutput() {
 #endif
 #endif
 }
-
-void getTimeStr(char *bufPtr, size_t sizeOfBuf) {
-  ACE_TCHAR timestamp[64] = {0};  // only 35 needed here
-  ACE::timestamp(timestamp, sizeof timestamp);
-  // timestamp is like "Tue May 17 2005 12:54:22.546780"
-  // for our purpose we just want "12:54:22.546780"
-  strncpy(bufPtr, &timestamp[0], sizeOfBuf);
-}
-
 // some common values..
 #define WORKER_STATE_READY 1
 #define WORKER_STATE_DONE 2
@@ -688,36 +680,63 @@ void sleep(int millis) {
 }
 
 void logCoordinator(std::string s, int lineno, const char * /*filename*/) {
-  char buf[128] = {0};
-  dunit::getTimeStr(buf, sizeof(buf));
+  using std::chrono::duration_cast;
+  using std::chrono::microseconds;
+  using std::chrono::system_clock;
 
-  fprintf(stdout, "[TEST coordinator:pid(%d)] %s at line: %d\n",
-          boost::this_process::get_id(), s.c_str(), lineno);
-  fflush(stdout);
+  auto now = system_clock::now();
+  auto in_time_t = system_clock::to_time_t(now);
+  auto localtime = std::localtime(&in_time_t);
+  auto usec =
+      duration_cast<microseconds>(now.time_since_epoch()).count() % 1000;
+
+  std::cout << "[TEST " << std::put_time(localtime, "%Y/%m/%d %H:%M:%S") << '.'
+            << std::setfill('0') << std::setw(6) << usec << std::setw(0)
+            << " coordinator:pid(" << boost::this_process::get_id() << ")] "
+            << s << " at line: " << lineno << std::endl
+            << std::flush;
 }
 
 // log a message and print the worker id as well.. used by fw_helper with no
 // worker id.
 void log(std::string s, int lineno, const char * /*filename*/, int /*id*/) {
-  char buf[128] = {0};
-  dunit::getTimeStr(buf, sizeof(buf));
+  using std::chrono::duration_cast;
+  using std::chrono::microseconds;
+  using std::chrono::system_clock;
 
-  fprintf(stdout, "[TEST 0:pid(%d)] %s at line: %d\n",
-          boost::this_process::get_id(), s.c_str(), lineno);
-  fflush(stdout);
+  auto now = system_clock::now();
+  auto in_time_t = system_clock::to_time_t(now);
+  auto localtime = std::localtime(&in_time_t);
+  auto usec =
+      duration_cast<microseconds>(now.time_since_epoch()).count() % 1000;
+
+  std::cout << "[TEST " << std::put_time(localtime, "%Y/%m/%d %H:%M:%S") << '.'
+            << std::setfill('0') << std::setw(6) << usec << std::setw(0)
+            << " 0:pid(" << boost::this_process::get_id() << ")] " << s
+            << " at line: " << lineno << std::endl
+            << std::flush;
 }
 
 // log a message and print the worker id as well..
 void log(std::string s, int lineno, const char * /*filename*/) {
-  char buf[128] = {0};
-  dunit::getTimeStr(buf, sizeof(buf));
+  using std::chrono::duration_cast;
+  using std::chrono::microseconds;
+  using std::chrono::system_clock;
 
-  fprintf(stdout, "[TEST %s %s:pid(%d)] %s at line: %d\n", buf,
-          (dunit::TestWorker::procWorkerId
-               ? dunit::TestWorker::procWorkerId->getIdName()
-               : "coordinator"),
-          boost::this_process::get_id(), s.c_str(), lineno);
-  fflush(stdout);
+  auto now = system_clock::now();
+  auto in_time_t = system_clock::to_time_t(now);
+  auto localtime = std::localtime(&in_time_t);
+  auto usec =
+      duration_cast<microseconds>(now.time_since_epoch()).count() % 1000;
+
+  std::cout << "[TEST " << std::put_time(localtime, "%Y/%m/%d %H:%M:%S") << '.'
+            << std::setfill('0') << std::setw(6) << usec << std::setw(0) << ' '
+            << (dunit::TestWorker::procWorkerId
+                    ? dunit::TestWorker::procWorkerId->getIdName()
+                    : "coordinator")
+            << ":pid(" << boost::this_process::get_id() << ")] " << s
+            << " at line: " << lineno << std::endl
+            << std::flush;
 }
 
 void cleanup() { gClientCleanup.callClientCleanup(); }
