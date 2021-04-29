@@ -187,6 +187,7 @@ class ThinClientPoolDM
     m_primaryServerQueueSize = queueSize;
   }
   int getPrimaryServerQueueSize() const { return m_primaryServerQueueSize; }
+  bool isKeepAlive() const { return m_keepAlive; }
 
  protected:
   ThinClientStickyManager* m_manager;
@@ -312,6 +313,8 @@ class ThinClientPoolDM
   std::atomic<int32_t> connected_endpoints_;
   std::unique_ptr<statistics::PoolStatsSampler> m_PoolStatsSampler;
   std::unique_ptr<ClientMetadataService> m_clientMetadataService;
+  bool m_keepAlive;
+
   friend class CacheImpl;
   friend class ThinClientStickyManager;
   friend class FunctionExecution;

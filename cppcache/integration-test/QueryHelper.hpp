@@ -32,6 +32,7 @@
 #include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
 #include "DistributedSystemImpl.hpp"
+#include "SerializationRegistry.hpp"
 #include "testobject/Portfolio.hpp"
 #include "testobject/Position.hpp"
 #include "testobject/PdxType.hpp"

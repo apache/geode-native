@@ -50,9 +50,6 @@ class ThinClientPoolHADM : public ThinClientPoolDM {
                             bool attemptFailover = true,
                             bool isBGThread = false) override;
 
-  bool registerInterestForHARegion(TcrEndpoint* ep, const TcrMessage* request,
-                                   ThinClientHARegion& region);
-
   GfErrType sendSyncRequestRegisterInterestEP(TcrMessage& request,
                                               TcrMessageReply& reply,
                                               bool attemptFailover,
@@ -62,7 +59,7 @@ class ThinClientPoolHADM : public ThinClientPoolDM {
                                        const TcrMessage* request,
                                        TcrMessageReply* reply);
 
-  virtual void destroy(bool keepAlive = false) override;
+  void destroy(bool keepAlive = false) override;
 
   void readyForEvents();
 

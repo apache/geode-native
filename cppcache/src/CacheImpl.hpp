@@ -306,6 +306,8 @@ class APACHE_GEODE_EXPORT CacheImpl {
 
   bool doIfDestroyNotPending(std::function<void()>);
 
+  bool isKeepAlive();
+
  private:
   std::atomic<bool> m_networkhop;
   std::atomic<int8_t> m_serverGroupFlag;
@@ -370,6 +372,7 @@ class APACHE_GEODE_EXPORT CacheImpl {
   ThreadPool m_threadPool;
   const std::shared_ptr<AuthInitialize> m_authInitialize;
   std::unique_ptr<TypeRegistry> m_typeRegistry;
+  bool m_keepAlive;
 
   inline void throwIfClosed() const {
     if (m_closed) {
