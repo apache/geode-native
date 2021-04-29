@@ -258,9 +258,6 @@ class TcrMessage {
   std::chrono::milliseconds getTimeout() const;
   void setTimeout(std::chrono::milliseconds timeout);
 
-  /* we need a static method to generate ping */
-  /* The caller should not delete the message since it is global. */
-  static TcrMessagePing* getPingMessage(CacheImpl* cacheImpl);
   static TcrMessage* getAllEPDisMess();
   /* we need a static method to generate close connection message */
   /* The caller should not delete the message since it is global. */
@@ -911,7 +908,7 @@ class TcrMessageExecuteFunction : public TcrMessage {
 
 class TcrMessagePing : public TcrMessage {
  public:
-  TcrMessagePing(DataOutput* dataOutput, bool decodeAll);
+  explicit TcrMessagePing(std::unique_ptr<DataOutput> dataOutput);
 
   ~TcrMessagePing() override = default;
 };

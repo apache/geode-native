@@ -341,12 +341,6 @@ std::shared_ptr<CacheableHashSet> TcrMessage::getTombstoneKeys() const {
   return m_tombstoneKeys;
 }
 
-TcrMessagePing* TcrMessage::getPingMessage(CacheImpl* cacheImpl) {
-  static auto pingMsg =
-      new TcrMessagePing(new DataOutput(cacheImpl->createDataOutput()), true);
-  return pingMsg;
-}
-
 TcrMessage* TcrMessage::getAllEPDisMess() {
   static auto allEPDisconnected = new TcrMessageReply(true, nullptr);
   return allEPDisconnected;
@@ -2088,10 +2082,9 @@ TcrMessageReply::TcrMessageReply(bool decodeAll,
   if (connectionDM != nullptr) isSecurityOn = connectionDM->isSecurityOn();
 }
 
-TcrMessagePing::TcrMessagePing(DataOutput* dataOutput, bool decodeAll) {
+TcrMessagePing::TcrMessagePing(std::unique_ptr<DataOutput> dataOutput) {
   m_msgType = TcrMessage::PING;
-  m_decodeAll = decodeAll;
-  m_request.reset(dataOutput);
+  m_request = std::move(dataOutput);
   writeHeader(m_msgType, 0);
   writeMessageLength();
 }
