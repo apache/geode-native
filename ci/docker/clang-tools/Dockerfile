@@ -48,6 +48,6 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 RUN installer=$(mktemp) \
-    && curl -o ${installer} -L $(curl -s https://api.github.com/repos/Kitware/CMake/releases/latest | jq -r '.assets[].browser_download_url | select(test("Linux-x86_64.sh"))') \
+    && curl -o ${installer} -L $(curl -s https://api.github.com/repos/Kitware/CMake/releases/latest | jq -r '.assets[].browser_download_url | select(test("linux-x86_64.sh"))') \
     && bash ${installer} --skip-license --prefix=/usr/local \
     && rm ${installer}
