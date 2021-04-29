@@ -356,7 +356,7 @@ const char* nvals[] = {"New Value-1", "New Value-2", "New Value-3",
                        "New Value-4", "New Value-5", "New Value-6",
                        "New Value-7"};
 
-const char* regionNames[] = {"DistRegionAck", "DistRegionNoAck", "testregion"};
+const char* regionNames[] = {"DistRegionAck", "not-used", "not-used"};
 
 const bool USE_ACK = true;
 const bool NO_ACK = false;
@@ -390,7 +390,6 @@ class SuspendTransactionThread : public ACE_Task_Base {
     txManager->begin();
 
     createEntry(regionNames[0], keys[4], vals[4]);
-    createEntry(regionNames[1], keys[5], vals[5]);
 
     m_suspendedTransaction = &txManager->getTransactionId();
 
@@ -446,15 +445,7 @@ class ResumeTransactionThread : public ACE_Task_Base {
     auto keyPtr5 = CacheableKey::create(keys[5]);
     auto keyPtr6 = CacheableKey::create(keys[6]);
 
-    auto regPtr1 = getHelper()->getRegion(regionNames[1]);
-    THREADERRORCHECK(regPtr1 != nullptr,
-                     "In ResumeTransactionThread - Region not found.");
-
     THREADERRORCHECK(!regPtr0->containsKeyOnServer(keyPtr4),
-                     "In ResumeTransactionThread - Key should not have been "
-                     "found in region.");
-
-    THREADERRORCHECK(!regPtr1->containsKeyOnServer(keyPtr5),
                      "In ResumeTransactionThread - Key should not have been "
                      "found in region.");
 
@@ -483,11 +474,6 @@ class ResumeTransactionThread : public ACE_Task_Base {
     THREADERRORCHECK(
         regPtr0->containsKeyOnServer(keyPtr4),
         "In ResumeTransactionThread - Key should have been found in region.");
-    THREADERRORCHECK(
-        regPtr1->containsKeyOnServer(keyPtr5),
-        "In ResumeTransactionThread - Key should have been found in region.");
-
-    createEntry(regionNames[1], keys[6], vals[6]);
 
     if (m_commit) {
       txManager->prepare();
@@ -495,54 +481,21 @@ class ResumeTransactionThread : public ACE_Task_Base {
       THREADERRORCHECK(
           regPtr0->containsKeyOnServer(keyPtr4),
           "In ResumeTransactionThread - Key should have been found in region.");
-      THREADERRORCHECK(
-          regPtr1->containsKeyOnServer(keyPtr5),
-          "In ResumeTransactionThread - Key should have been found in region.");
-      THREADERRORCHECK(
-          regPtr1->containsKeyOnServer(keyPtr6),
-          "In ResumeTransactionThread - Key should have been found in region.");
-
     } else {
       txManager->prepare();
       txManager->rollback();
       THREADERRORCHECK(!regPtr0->containsKeyOnServer(keyPtr4),
                        "In ResumeTransactionThread - Key should not have been "
                        "found in region.");
-      THREADERRORCHECK(!regPtr1->containsKeyOnServer(keyPtr5),
-                       "In ResumeTransactionThread - Key should not have been "
-                       "found in region.");
-      THREADERRORCHECK(!regPtr1->containsKeyOnServer(keyPtr6),
-                       "In ResumeTransactionThread - Key should not have been "
-                       "found in region.");
     }
 
     if (m_commit) {
-      regPtr1->destroy(keyPtr6);
-      regPtr1->destroy(keyPtr5);
       regPtr0->destroy(keyPtr4);
 
-      THREADERRORCHECK(!regPtr1->containsKeyOnServer(keyPtr6),
-                       "In ResumeTransactionThread - Key should not have been "
-                       "found in region.");
-      THREADERRORCHECK(!regPtr1->containsKeyOnServer(keyPtr5),
-                       "In ResumeTransactionThread - Key should not have been "
-                       "found in region.");
       THREADERRORCHECK(!regPtr0->containsKeyOnServer(keyPtr4),
                        "In ResumeTransactionThread - Key should not have been "
                        "found in region.");
     } else {
-      try {
-        regPtr1->destroy(keyPtr6);
-        FAIL("Should have got EntryNotFoundException for keyPtr6");
-      } catch (EntryNotFoundException& /*ex*/) {
-        LOG("Got expected EntryNotFoundException for keyPtr6");
-      }
-      try {
-        regPtr1->destroy(keyPtr5);
-        FAIL("Should have got EntryNotFoundException for keyPtr5");
-      } catch (EntryNotFoundException& /*ex*/) {
-        LOG("Got expected EntryNotFoundException for keyPtr5");
-      }
       try {
         regPtr0->destroy(keyPtr4);
         FAIL("Should have got EntryNotFoundException for keyPtr4");
@@ -577,22 +530,17 @@ DUNIT_TASK_DEFINITION(CLIENT1, SuspendResumeCommit)
     auto txManager = getHelper()->getCache()->getCacheTransactionManager();
     auto regPtr0 = getHelper()->getRegion(regionNames[0]);
     ASSERT(regPtr0 != nullptr, "In SuspendResumeCommit - Region not found.");
-    auto regPtr1 = getHelper()->getRegion(regionNames[1]);
-    ASSERT(regPtr1 != nullptr, "In SuspendResumeCommit - Region not found.");
+
     auto keyPtr4 = CacheableKey::create(keys[4]);
     auto keyPtr5 = CacheableKey::create(keys[5]);
     auto keyPtr6 = CacheableKey::create(keys[6]);
 
     txManager->begin();
     createEntry(regionNames[0], keys[4], vals[4]);
-    createEntry(regionNames[1], keys[5], vals[5]);
     auto& m_suspendedTransaction = txManager->suspend();
 
     ASSERT(
         !regPtr0->containsKeyOnServer(keyPtr4),
-        "In SuspendResumeCommit - Key should not have been found in region.");
-    ASSERT(
-        !regPtr1->containsKeyOnServer(keyPtr5),
         "In SuspendResumeCommit - Key should not have been found in region.");
 
     ASSERT(txManager->isSuspended(m_suspendedTransaction),
@@ -608,22 +556,12 @@ DUNIT_TASK_DEFINITION(CLIENT1, SuspendResumeCommit)
         "SuspendResumeRollback: Transaction shouldnt have been resumed again");
     ASSERT(regPtr0->containsKeyOnServer(keyPtr4),
            "In SuspendResumeCommit - Key should have been found in region.");
-    ASSERT(regPtr1->containsKeyOnServer(keyPtr5),
-           "In SuspendResumeCommit - Key should have been found in region.");
-
-    createEntry(regionNames[1], keys[6], vals[6]);
 
     txManager->prepare();
     txManager->commit();
     ASSERT(regPtr0->containsKeyOnServer(keyPtr4),
            "In SuspendResumeCommit - Key should have been found in region.");
-    ASSERT(regPtr1->containsKeyOnServer(keyPtr5),
-           "In SuspendResumeCommit - Key should have been found in region.");
-    ASSERT(regPtr1->containsKeyOnServer(keyPtr6),
-           "In SuspendResumeCommit - Key should have been found in region.");
 
-    regPtr1->destroy(keyPtr6);
-    regPtr1->destroy(keyPtr5);
     regPtr0->destroy(keyPtr4);
 
     ASSERT(!txManager->isSuspended(m_suspendedTransaction),
@@ -706,19 +644,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, SuspendResumeRollback)
 
     auto regPtr0 = getHelper()->getRegion(regionNames[0]);
     ASSERT(regPtr0 != nullptr, "In SuspendResumeRollback - Region not found.");
-    auto regPtr1 = getHelper()->getRegion(regionNames[1]);
-    ASSERT(regPtr1 != nullptr, "In SuspendResumeRollback - Region not found.");
 
     txManager->begin();
     createEntry(regionNames[0], keys[4], vals[4]);
-    createEntry(regionNames[1], keys[5], vals[5]);
     auto& m_suspendedTransaction = txManager->suspend();
 
     ASSERT(
         !regPtr0->containsKeyOnServer(keyPtr4),
-        "In SuspendResumeRollback - Key should not have been found in region.");
-    ASSERT(
-        !regPtr1->containsKeyOnServer(keyPtr5),
         "In SuspendResumeRollback - Key should not have been found in region.");
 
     ASSERT(txManager->isSuspended(m_suspendedTransaction),
@@ -731,35 +663,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, SuspendResumeRollback)
 
     ASSERT(regPtr0->containsKeyOnServer(keyPtr4),
            "In SuspendResumeRollback - Key should have been found in region.");
-    ASSERT(regPtr1->containsKeyOnServer(keyPtr5),
-           "In SuspendResumeRollback - Key should have been found in region.");
-
-    createEntry(regionNames[1], keys[6], vals[6]);
 
     txManager->prepare();
     txManager->rollback();
     ASSERT(
         !regPtr0->containsKeyOnServer(keyPtr4),
         "In SuspendResumeRollback - Key should not have been found in region.");
-    ASSERT(
-        !regPtr1->containsKeyOnServer(keyPtr5),
-        "In SuspendResumeRollback - Key should not have been found in region.");
-    ASSERT(
-        !regPtr1->containsKeyOnServer(keyPtr6),
-        "In SuspendResumeRollback - Key should not have been found in region.");
 
-    try {
-      regPtr1->destroy(keyPtr6);
-      FAIL("Should have got EntryNotFoundException for keyPtr6");
-    } catch (EntryNotFoundException& /*ex*/) {
-      LOG("Got expected EntryNotFoundException for keyPtr6");
-    }
-    try {
-      regPtr1->destroy(keyPtr5);
-      FAIL("Should have got EntryNotFoundException for keyPtr5");
-    } catch (EntryNotFoundException& /*ex*/) {
-      LOG("Got expected EntryNotFoundException for keyPtr5");
-    }
     try {
       regPtr0->destroy(keyPtr4);
       FAIL("Should have got EntryNotFoundException for keyPtr4");
@@ -904,7 +814,6 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, StepOne_Pooled_Locator)
   {
     createPooledRegion(regionNames[0], USE_ACK, locatorsG, "__TESTPOOL1_");
-    createPooledRegion(regionNames[1], NO_ACK, locatorsG, "__TESTPOOL1_");
     LOG("StepOne_Pooled complete.");
   }
 END_TASK_DEFINITION
@@ -913,7 +822,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne_Pooled_Locator_Sticky)
   {
     createPooledRegionSticky(regionNames[0], USE_ACK, locatorsG,
                              "__TESTPOOL1_");
-    createPooledRegionSticky(regionNames[1], NO_ACK, locatorsG, "__TESTPOOL1_");
     LOG("StepOne_Pooled_Locator_Sticky complete.");
   }
 END_TASK_DEFINITION
@@ -922,7 +830,6 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepTwo_Pooled_Locator)
   {
     initClient(true);
     createPooledRegion(regionNames[0], USE_ACK, locatorsG, "__TESTPOOL1_");
-    createPooledRegion(regionNames[1], NO_ACK, locatorsG, "__TESTPOOL1_");
     LOG("StepTwo complete.");
   }
 END_TASK_DEFINITION
@@ -932,7 +839,6 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepTwo_Pooled_Locator_Sticky)
     initClient(true);
     createPooledRegionSticky(regionNames[0], USE_ACK, locatorsG,
                              "__TESTPOOL1_");
-    createPooledRegionSticky(regionNames[1], NO_ACK, locatorsG, "__TESTPOOL1_");
     LOG("StepTwo complete.");
   }
 END_TASK_DEFINITION
@@ -942,7 +848,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
     auto txManager = getHelper()->getCache()->getCacheTransactionManager();
     txManager->begin();
     createEntry(regionNames[0], keys[0], vals[0]);
-    createEntry(regionNames[1], keys[2], vals[2]);
     txManager->prepare();
     txManager->commit();
     LOG("StepThree complete.");
@@ -952,26 +857,20 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, StepFour)
   {
     doNetsearch(regionNames[0], keys[0], vals[0]);
-    doNetsearch(regionNames[1], keys[2], vals[2]);
     auto txManager = getHelper()->getCache()->getCacheTransactionManager();
     txManager->begin();
     createEntry(regionNames[0], keys[1], vals[1]);
-    createEntry(regionNames[1], keys[3], vals[3]);
     txManager->prepare();
     txManager->commit();
     verifyEntry(regionNames[0], keys[1], vals[1]);
-    verifyEntry(regionNames[1], keys[3], vals[3]);
     LOG("StepFour complete.");
   }
 END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
   {
     auto reg0 = getHelper()->getRegion(regionNames[0]);
-    auto reg1 = getHelper()->getRegion(regionNames[1]);
     auto vec0 = reg0->serverKeys();
-    auto vec1 = reg1->serverKeys();
     ASSERT(vec0.size() == 2, "Should have 2 keys in first region.");
-    ASSERT(vec1.size() == 2, "Should have 2 keys in second region.");
     std::string key0, key1;
     key0 = vec0[0]->toString().c_str();
     key1 = vec0[1]->toString().c_str();
@@ -981,29 +880,17 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
     ASSERT(key1 == keys[0] || key1 == keys[1],
            "Unexpected key in first region.");
 
-    key0 = vec1[0]->toString().c_str();
-    key1 = vec1[1]->toString().c_str();
-    ASSERT(key0 != key1, "The two keys should be different in second region.");
-    ASSERT(key0 == keys[2] || key0 == keys[3],
-           "Unexpected key in second region.");
-    ASSERT(key1 == keys[2] || key1 == keys[3],
-           "Unexpected key in second region.");
-
     doNetsearch(regionNames[0], keys[1], vals[1]);
-    doNetsearch(regionNames[1], keys[3], vals[3]);
     updateEntry(regionNames[0], keys[0], nvals[0]);
-    updateEntry(regionNames[1], keys[2], nvals[2]);
     LOG("StepFive complete.");
   }
 END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, StepSix)
   {
     doNetsearch(regionNames[0], keys[0], vals[0]);
-    doNetsearch(regionNames[1], keys[2], vals[2]);
     auto txManager = getHelper()->getCache()->getCacheTransactionManager();
     txManager->begin();
     updateEntry(regionNames[0], keys[1], nvals[1]);
-    updateEntry(regionNames[1], keys[3], nvals[3]);
     txManager->prepare();
     txManager->commit();
     LOG("StepSix complete.");
@@ -1011,75 +898,6 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSix)
 END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, StepSeven)
   { createEntryTwice(regionNames[0], CREATE_TWICE_KEY, CREATE_TWICE_VALUE); }
-END_TASK_DEFINITION
-
-DUNIT_TASK_DEFINITION(CLIENT1, StepEight_Pool)
-  {
-    createPooledRegion(regionNames[2], NO_ACK, locatorsG, "__TESTPOOL1_", false,
-                       false);
-    auto reg = getHelper()->getRegion(regionNames[2]);
-    LOG("REGION Created with Caching Enabled false");
-    auto keyPtr = CacheableKey::create(CREATE_TWICE_KEY);
-    auto valPtr = CacheableString::create(CREATE_TWICE_VALUE);
-    try {
-      reg->create(keyPtr, valPtr);
-      char message[200];
-      sprintf(message, "First create on Key %s ", CREATE_TWICE_KEY);
-      LOG(message);
-      reg->create(keyPtr, valPtr);
-      sprintf(message, "Second create on Key %s ", CREATE_TWICE_KEY);
-      LOG(message);
-      reg->create(keyPtr, valPtr);
-      sprintf(message, "Third create on Key %s ", CREATE_TWICE_KEY);
-      LOG(message);
-    } catch (const EntryExistsException& geodeExcp) {
-      LOG(geodeExcp.what());
-      ASSERT(false,
-             "Creating KEY Twice on a caching-enabled false region should be "
-             "allowed.");
-    }
-  }
-END_TASK_DEFINITION
-
-DUNIT_TASK_DEFINITION(CLIENT1, StepEight_Pool_Sticky)
-  {
-    createPooledRegionSticky(regionNames[2], NO_ACK, locatorsG, "__TESTPOOL1_",
-                             false, false);
-    auto reg = getHelper()->getRegion(regionNames[2]);
-    LOG("REGION Created with Caching Enabled false");
-    auto keyPtr = CacheableKey::create(CREATE_TWICE_KEY);
-    auto valPtr = CacheableString::create(CREATE_TWICE_VALUE);
-
-    auto reg0 = getHelper()->getRegion(regionNames[0]);
-    auto reg1 = getHelper()->getRegion(regionNames[1]);
-    reg0->localInvalidate(CacheableKey::create(keys[1]));
-    reg1->localInvalidate(CacheableKey::create(keys[3]));
-    auto pool = getHelper()->getCache()->getPoolManager().find("__TESTPOOL1_");
-    ASSERT(pool != nullptr, "Pool Should have been found");
-    doNetsearch(regionNames[0], keys[1], nvals[1]);
-    doNetsearch(regionNames[1], keys[3], nvals[3]);
-    pool->releaseThreadLocalConnection();
-    updateEntry(regionNames[0], keys[0], nvals[0]);
-    updateEntry(regionNames[1], keys[2], nvals[2]);
-    pool->releaseThreadLocalConnection();
-    try {
-      reg->create(keyPtr, valPtr);
-      char message[200];
-      sprintf(message, "First create on Key %s ", CREATE_TWICE_KEY);
-      LOG(message);
-      reg->create(keyPtr, valPtr);
-      sprintf(message, "Second create on Key %s ", CREATE_TWICE_KEY);
-      LOG(message);
-      reg->create(keyPtr, valPtr);
-      sprintf(message, "Third create on Key %s ", CREATE_TWICE_KEY);
-      LOG(message);
-    } catch (const EntryExistsException& geodeExcp) {
-      LOG(geodeExcp.what());
-      ASSERT(false,
-             "Creating KEY Twice on a caching-enabled false region should be "
-             "allowed.");
-    }
-  }
 END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, CloseCache1)
@@ -1099,30 +917,19 @@ DUNIT_TASK_DEFINITION(SERVER1, CloseServer1)
   }
 END_TASK_DEFINITION
 
-void runTransactionOps(bool isSticky = false) {
+void runTransactionOps() {
   CALL_TASK(CreateLocator1);
   CALL_TASK(CreateServer1_With_Locator);
 
-  if (isSticky) {
-    CALL_TASK(CreateNonexistentServerRegion_Pooled_Locator_Sticky);
-    CALL_TASK(StepOne_Pooled_Locator_Sticky);
-    CALL_TASK(StepTwo_Pooled_Locator_Sticky);
-  } else {
-    CALL_TASK(CreateNonexistentServerRegion_Pooled_Locator);
-    CALL_TASK(StepOne_Pooled_Locator);
-    CALL_TASK(StepTwo_Pooled_Locator);
-  }
+  CALL_TASK(CreateNonexistentServerRegion_Pooled_Locator);
+  CALL_TASK(StepOne_Pooled_Locator);
+  CALL_TASK(StepTwo_Pooled_Locator);
 
   CALL_TASK(StepThree);
   CALL_TASK(StepFour);
   CALL_TASK(StepFive);
   CALL_TASK(StepSix);
   CALL_TASK(StepSeven);
-  if (isSticky) {
-    CALL_TASK(StepEight_Pool_Sticky);
-  } else {
-    CALL_TASK(StepEight_Pool);
-  }
 
   CALL_TASK(SuspendResumeInThread);
   CALL_TASK(SuspendResumeCommit);

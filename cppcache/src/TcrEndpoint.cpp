@@ -504,14 +504,15 @@ void TcrEndpoint::pingServer(ThinClientPoolDM* poolDM) {
   }
 
   if (!m_msgSent && !m_pingSent) {
-    TcrMessagePing* pingMsg = TcrMessage::getPingMessage(m_cacheImpl);
+    TcrMessagePing pingMsg(std::unique_ptr<DataOutput>(
+        new DataOutput(m_cacheImpl->createDataOutput())));
     TcrMessageReply reply(true, nullptr);
     LOGFINEST("Sending ping message to endpoint %s", m_name.c_str());
     GfErrType error;
     if (poolDM != nullptr) {
-      error = poolDM->sendRequestToEP(*pingMsg, reply, this);
+      error = poolDM->sendRequestToEP(pingMsg, reply, this);
     } else {
-      error = send(*pingMsg, reply);
+      error = send(pingMsg, reply);
     }
     LOGFINEST("Sent ping message to endpoint %s with error code %d%s",
               m_name.c_str(), error, error == GF_NOERR ? " (no error)" : "");

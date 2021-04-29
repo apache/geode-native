@@ -323,6 +323,8 @@ void CacheImpl::close(bool keepalive) {
 
   m_expiryTaskManager->stop();
 
+  m_threadPool.shutDown();
+
   try {
     getDistributedSystem().disconnect();
   } catch (const apache::geode::client::NotConnectedException&) {

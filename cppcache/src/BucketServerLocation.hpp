@@ -151,7 +151,7 @@ class BucketServerLocation : public ServerLocation {
 
   BucketServerLocation(
       const BucketServerLocation&
-          rhs)  //:ServerLocation(rhs.getServerName(),rhs.getPort())
+          rhs)  //: ServerLocation(rhs.getServerName(),rhs.getPort())
   {
     this->m_serverName = rhs.m_serverName;
     this->m_port = rhs.m_port;

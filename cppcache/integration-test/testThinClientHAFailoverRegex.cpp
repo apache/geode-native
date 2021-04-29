@@ -277,7 +277,7 @@ const char *vals[] = {"Value-1", "Value-2", "Value-3", "Value-4"};
 const char *nvals[] = {"New Value-1", "New Value-2", "New Value-3",
                        "New Value-4"};
 
-const char *regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
+const char *regionName = "DistRegionAck";
 
 const bool USE_ACK = true;
 void initClientAndRegion(int redundancy) {
@@ -285,10 +285,8 @@ void initClientAndRegion(int redundancy) {
   auto pp = Properties::create();
   getHelper()->createPoolWithLocators("__TESTPOOL1_", locatorsG, true,
                                       redundancy);
-  getHelper()->createRegionAndAttachPool(regionNames[0], USE_ACK,
-                                         "__TESTPOOL1_", true);
-  getHelper()->createRegionAndAttachPool(regionNames[1], USE_ACK,
-                                         "__TESTPOOL1_", true);
+  getHelper()->createRegionAndAttachPool(regionName, USE_ACK, "__TESTPOOL1_",
+                                         true);
 }
 //#include "ThinClientDurableInit.hpp"
 #include "LocatorHelper.hpp"
@@ -336,7 +334,7 @@ END_TASK_DEFINITION
 
 /*DUNIT_TASK_DEFINITION( CLIENT1, StepOne )
 {
-  createRegion( regionNames[0], USE_ACK, false );
+  createRegion( regionName, USE_ACK, false );
   createRegion( regionNames[1], NO_ACK, false );
   LOG( "StepOne complete." );
 }
@@ -344,7 +342,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION( CLIENT2, StepTwo )
 {
-  createRegion( regionNames[0], USE_ACK, false );
+  createRegion( regionName, USE_ACK, false );
   createRegion( regionNames[1], NO_ACK, false );
 
   LOG( "StepTwo complete." );
@@ -362,37 +360,29 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, RegisterRegexes)
   {
-    auto regPtr0 = getHelper()->getRegion(regionNames[0]);
-    auto regPtr1 = getHelper()->getRegion(regionNames[1]);
+    auto regPtr0 = getHelper()->getRegion(regionName);
 
     if (g_redundancyLevel > 1) {
       regPtr0->registerRegex(testregex[0]);
-      regPtr1->registerRegex(testregex[2]);
     } else {
       regPtr0->registerRegex(testregex[0]);
-      regPtr1->registerRegex(testregex[2]);
     }
   }
 END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
   {
-    createEntry(regionNames[0], keys[0], vals[0]);
-    createEntry(regionNames[0], keys[1], vals[1]);
-    createEntry(regionNames[1], keys[2], vals[2]);
-    createEntry(regionNames[1], keys[3], vals[3]);
+    createEntry(regionName, keys[0], vals[0]);
+    createEntry(regionName, keys[1], vals[1]);
     LOG("StepThree complete.");
   }
 END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, StepFour)
   {
-    verifyCreated(regionNames[0], keys[0]);
-    verifyCreated(regionNames[1], keys[2]);
-    verifyEntry(regionNames[0], keys[0], vals[0]);
-    verifyEntry(regionNames[1], keys[2], vals[2]);
-    doNetsearch(regionNames[0], keys[1], vals[1]);
-    doNetsearch(regionNames[1], keys[3], vals[3]);
+    verifyCreated(regionName, keys[0]);
+    verifyEntry(regionName, keys[0], vals[0]);
+    doNetsearch(regionName, keys[1], vals[1]);
     LOG("StepFour complete.");
   }
 END_TASK_DEFINITION
@@ -409,10 +399,8 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
   {
-    updateEntry(regionNames[0], keys[0], nvals[0]);
-    updateEntry(regionNames[0], keys[1], nvals[1]);
-    updateEntry(regionNames[1], keys[2], nvals[2]);
-    updateEntry(regionNames[1], keys[3], nvals[3]);
+    updateEntry(regionName, keys[0], nvals[0]);
+    updateEntry(regionName, keys[1], nvals[1]);
     SLEEP(1000);
     LOG("StepFive complete.");
   }
@@ -420,12 +408,9 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, StepSix)
   {
-    auto reg0 = getHelper()->getRegion(regionNames[0]);
-    auto reg1 = getHelper()->getRegion(regionNames[1]);
+    auto reg0 = getHelper()->getRegion(regionName);
     auto vec0 = reg0->serverKeys();
-    auto vec1 = reg1->serverKeys();
     ASSERT(vec0.size() == 2, "Should have 2 keys in first region.");
-    ASSERT(vec1.size() == 2, "Should have 2 keys in second region.");
     std::string key0, key1;
     key0 = vec0[0]->toString().c_str();
     key1 = vec0[1]->toString().c_str();
@@ -435,18 +420,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSix)
     ASSERT(key1 == keys[0] || key1 == keys[1],
            "Unexpected key in first region.");
 
-    key0 = vec1[0]->toString().c_str();
-    key1 = vec1[1]->toString().c_str();
-    ASSERT(key0 != key1, "The two keys should be different in second region.");
-    ASSERT(key0 == keys[2] || key0 == keys[3],
-           "Unexpected key in second region.");
-    ASSERT(key1 == keys[2] || key1 == keys[3],
-           "Unexpected key in second region.");
-
-    verifyEntry(regionNames[0], keys[0], nvals[0]);
-    verifyEntry(regionNames[0], keys[1], vals[1]);
-    verifyEntry(regionNames[1], keys[2], nvals[2]);
-    verifyEntry(regionNames[1], keys[3], vals[3]);
+    verifyEntry(regionName, keys[0], nvals[0]);
+    verifyEntry(regionName, keys[1], vals[1]);
     LOG("StepSix complete.");
   }
 END_TASK_DEFINITION
@@ -485,10 +460,8 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepSeven)
   {
-    updateEntry(regionNames[0], keys[0], vals[0]);
-    updateEntry(regionNames[0], keys[1], vals[1]);
-    updateEntry(regionNames[1], keys[2], vals[2]);
-    updateEntry(regionNames[1], keys[3], vals[3]);
+    updateEntry(regionName, keys[0], vals[0]);
+    updateEntry(regionName, keys[1], vals[1]);
     SLEEP(1000);
     LOG("StepSeven complete.");
   }
@@ -496,13 +469,8 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, StepEight)
   {
-    verifyEntry(regionNames[0], keys[0], vals[0]);
-    verifyEntry(regionNames[0], keys[1], vals[1]);
-    verifyEntry(regionNames[1], keys[2], vals[2]);
-    verifyEntry(regionNames[1], keys[3], vals[3]);
-
-    auto regPtr1 = getHelper()->getRegion(regionNames[1]);
-    regPtr1->unregisterRegex(testregex[2]);
+    verifyEntry(regionName, keys[0], vals[0]);
+    verifyEntry(regionName, keys[1], vals[1]);
 
     LOG("StepEight complete.");
   }
@@ -531,10 +499,8 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepNine)
   {
-    updateEntry(regionNames[0], keys[0], nvals[0]);
-    updateEntry(regionNames[0], keys[1], nvals[1]);
-    updateEntry(regionNames[1], keys[2], nvals[2]);
-    updateEntry(regionNames[1], keys[3], nvals[3]);
+    updateEntry(regionName, keys[0], nvals[0]);
+    updateEntry(regionName, keys[1], nvals[1]);
     SLEEP(1000);
     LOG("StepNine complete.");
   }
@@ -542,10 +508,8 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, StepTen)
   {
-    verifyEntry(regionNames[0], keys[0], nvals[0]);
-    verifyEntry(regionNames[0], keys[1], vals[1]);
-    verifyEntry(regionNames[1], keys[2], vals[2]);
-    verifyEntry(regionNames[1], keys[3], vals[3]);
+    verifyEntry(regionName, keys[0], nvals[0]);
+    verifyEntry(regionName, keys[1], vals[1]);
     LOG("StepTen complete.");
   }
 END_TASK_DEFINITION
@@ -562,10 +526,8 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepEleven)
   {
-    updateEntry(regionNames[0], keys[0], vals[0]);
-    updateEntry(regionNames[0], keys[1], vals[1]);
-    updateEntry(regionNames[1], keys[2], vals[2]);
-    updateEntry(regionNames[1], keys[3], vals[3]);
+    updateEntry(regionName, keys[0], vals[0]);
+    updateEntry(regionName, keys[1], vals[1]);
     SLEEP(1000);
     LOG("StepEleven complete.");
   }
@@ -573,10 +535,8 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, StepTwelve)
   {
-    verifyEntry(regionNames[0], keys[0], vals[0]);
-    verifyEntry(regionNames[0], keys[1], vals[1]);
-    verifyEntry(regionNames[1], keys[2], vals[2]);
-    verifyEntry(regionNames[1], keys[3], vals[3]);
+    verifyEntry(regionName, keys[0], vals[0]);
+    verifyEntry(regionName, keys[1], vals[1]);
     LOG("StepTwelve complete.");
   }
 END_TASK_DEFINITION

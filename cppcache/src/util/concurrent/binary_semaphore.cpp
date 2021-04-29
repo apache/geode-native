@@ -35,6 +35,16 @@ void binary_semaphore::acquire() {
   released_ = false;
 }
 
+bool binary_semaphore::try_acquire_for(
+    const std::chrono::milliseconds& period) {
+  std::unique_lock<std::mutex> lock(mutex_);
+  if (!cv_.wait_for(lock, period, [this]() { return released_; })) {
+    return false;
+  }
+
+  released_ = false;
+  return true;
+}
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

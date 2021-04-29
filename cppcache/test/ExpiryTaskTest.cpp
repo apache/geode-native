@@ -22,11 +22,14 @@
 #include "ExpiryTaskManager.hpp"
 #include "gmock_extensions.h"
 #include "mock/MockExpiryTask.hpp"
+#include "util/concurrent/binary_semaphore.hpp"
 
 using ::testing::DoAll;
 using ::testing::InvokeWithoutArgs;
 using ::testing::Return;
 using ::testing::Sequence;
+
+using apache::geode::client::binary_semaphore;
 
 using apache::geode::client::ExpiryTask;
 using apache::geode::client::ExpiryTaskManager;
@@ -36,31 +39,26 @@ using apache::geode::client::MockExpiryTask;
 constexpr std::chrono::milliseconds DEFAULT_TIMEOUT{100};
 
 TEST(ExpiryTaskTest, scheduleSingleshot) {
-  std::mutex cv_mutex;
+  binary_semaphore sem{0};
   ExpiryTaskManager manager;
-  std::condition_variable cv;
-  std::unique_lock<std::mutex> lock(cv_mutex);
-
   EXPECT_NO_THROW(manager.start());
 
   auto task = std::make_shared<MockExpiryTask>(manager);
   EXPECT_CALL(*task, on_expire())
       .Times(1)
-      .WillOnce(DoAll(CvNotifyOne(&cv), Return(true)));
+      .WillOnce(DoAll(ReleaseSem(&sem), Return(true)));
 
   auto id = manager.schedule(std::move(task), std::chrono::seconds(0));
   EXPECT_NE(id, ExpiryTask::invalid());
 
-  EXPECT_EQ(cv.wait_for(lock, DEFAULT_TIMEOUT), std::cv_status::no_timeout);
+  EXPECT_TRUE(sem.try_acquire_for(DEFAULT_TIMEOUT));
 
   EXPECT_NO_THROW(manager.stop());
 }
 
 TEST(ExpiryTaskTest, schedulePeriodic) {
-  std::mutex cv_mutex;
+  binary_semaphore sem{0};
   ExpiryTaskManager manager;
-  std::condition_variable cv;
-  std::unique_lock<std::mutex> lock(cv_mutex);
 
   EXPECT_NO_THROW(manager.start());
 
@@ -74,23 +72,21 @@ TEST(ExpiryTaskTest, schedulePeriodic) {
     EXPECT_CALL(*task, on_expire())
         .Times(1)
         .InSequence(s)
-        .WillOnce(DoAll(CvNotifyOne(&cv), Return(true)));
+        .WillOnce(DoAll(ReleaseSem(&sem), Return(true)));
     EXPECT_CALL(*task, on_expire()).InSequence(s).WillRepeatedly(Return(true));
   }
   auto id = manager.schedule(std::move(task), std::chrono::seconds(0),
                              std::chrono::nanoseconds(1));
   EXPECT_NE(id, ExpiryTask::invalid());
 
-  EXPECT_EQ(cv.wait_for(lock, DEFAULT_TIMEOUT), std::cv_status::no_timeout);
+  EXPECT_TRUE(sem.try_acquire_for(DEFAULT_TIMEOUT));
 
   EXPECT_NO_THROW(manager.stop());
 }
 
 TEST(ExpiryTaskTest, resetSingleshot) {
-  std::mutex cv_mutex;
+  binary_semaphore sem{0};
   ExpiryTaskManager manager;
-  std::condition_variable cv;
-  std::unique_lock<std::mutex> lock(cv_mutex);
 
   EXPECT_NO_THROW(manager.start());
 
@@ -109,22 +105,20 @@ TEST(ExpiryTaskTest, resetSingleshot) {
     EXPECT_CALL(task_ref, on_expire())
         .Times(1)
         .InSequence(s)
-        .WillOnce(DoAll(CvNotifyOne(&cv), Return(true)));
+        .WillOnce(DoAll(ReleaseSem(&sem), Return(true)));
   }
 
   auto id = manager.schedule(std::move(task), std::chrono::seconds(0));
   EXPECT_NE(id, ExpiryTask::invalid());
 
-  EXPECT_EQ(cv.wait_for(lock, DEFAULT_TIMEOUT), std::cv_status::no_timeout);
+  EXPECT_TRUE(sem.try_acquire_for(DEFAULT_TIMEOUT));
 
   EXPECT_NO_THROW(manager.stop());
 }
 
 TEST(ExpiryTaskTest, resetPeriodic) {
-  std::mutex cv_mutex;
+  binary_semaphore sem{0};
   ExpiryTaskManager manager;
-  std::condition_variable cv;
-  std::unique_lock<std::mutex> lock(cv_mutex);
 
   EXPECT_NO_THROW(manager.start());
 
@@ -142,12 +136,12 @@ TEST(ExpiryTaskTest, resetPeriodic) {
         }));
     EXPECT_CALL(task_ref, on_expire())
         .InSequence(s)
-        .WillRepeatedly(DoAll(CvNotifyOne(&cv), Return(true)));
+        .WillRepeatedly(DoAll(ReleaseSem(&sem), Return(true)));
   }
   auto id = manager.schedule(std::move(task), std::chrono::seconds(0));
   EXPECT_NE(id, ExpiryTask::invalid());
 
-  EXPECT_EQ(cv.wait_for(lock, DEFAULT_TIMEOUT), std::cv_status::no_timeout);
+  EXPECT_TRUE(sem.try_acquire_for(DEFAULT_TIMEOUT));
 
   EXPECT_NO_THROW(manager.stop());
 }

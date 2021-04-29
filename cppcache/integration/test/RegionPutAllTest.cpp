@@ -102,4 +102,39 @@ TEST(RegionPutAllTest, putAllToPartitionedRegion) {
   }
 }
 
+//
+// verifies that putall works when not all metadata is present, i.e. not all
+// buckets exist yet on the cluster.
+//
+TEST(RegionPutAllTest, putAllAndVerifyKeysExist) {
+  Cluster cluster{LocatorCount{1}, ServerCount{3}};
+
+  cluster.start();
+
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("region")
+      .withType("PARTITION")
+      .execute();
+
+  auto cache = createCache();
+  auto pool = createPool(cluster, cache);
+  auto region = setupRegion(cache, pool);
+
+  for (int i = 0; i < 50; i++) {
+    region->put(std::to_string(i), Cacheable::create(i));
+  }
+
+  HashMapOfCacheable all;
+  for (int i = 0; i < 113; i++) {
+    all.emplace(CacheableKey::create(std::to_string(i)), Cacheable::create(i));
+  }
+
+  std::this_thread::sleep_for(std::chrono::seconds(10));
+  region->putAll(all);
+  for (auto& key : all) {
+    ASSERT_TRUE(region->containsKeyOnServer(key.first));
+  }
+}
 }  // namespace

@@ -205,6 +205,7 @@ void Server::start() {
           .withClasspath(cluster_.getClasspath())
           .withSecurityManager(cluster_.getSecurityManager())
           .withCacheXMLFile(getCacheXMLFile())
+          .withConserveSockets(cluster_.getConserveSockets())
           .withPreferIPv6(cluster_.getUseIPv6());
 
   if (!cluster_.getUser().empty()) {
@@ -298,6 +299,20 @@ Cluster::Cluster(LocatorCount initialLocators, ServerCount initialServers,
       jmxManagerPort_(Framework::getAvailablePort()) {
   removeServerDirectory();
   cacheXMLFiles_ = cacheXMLFiles.get();
+}
+
+Cluster::Cluster(LocatorCount initialLocators, ServerCount initialServers,
+                 ConserveSockets conserveSockets, CacheXMLFiles cacheXMLFiles)
+    : name_(std::string(::testing::UnitTest::GetInstance()
+                            ->current_test_info()
+                            ->test_suite_name()) +
+            "/" +
+            ::testing::UnitTest::GetInstance()->current_test_info()->name()),
+      initialLocators_(initialLocators.get()),
+      initialServers_(initialServers.get()) {
+  jmxManagerPort_ = Framework::getAvailablePort();
+  cacheXMLFiles_ = cacheXMLFiles.get();
+  conserveSockets_ = conserveSockets.get();
 }
 
 Cluster::Cluster(LocatorCount initialLocators, ServerCount initialServers,
@@ -413,6 +428,11 @@ void Cluster::applyLocators(apache::geode::client::PoolFactory &poolFactory) {
   }
 }
 
+void Cluster::applyServer(apache::geode::client::PoolFactory &poolFactory,
+                          ServerAddress oneServer) {
+  poolFactory.addServer(oneServer.address, oneServer.port);
+}
+
 Gfsh &Cluster::getGfsh() { return gfsh_; }
 
 std::vector<Server> &Cluster::getServers() { return servers_; }
@@ -430,6 +450,8 @@ std::string &Cluster::getPassword() { return password_; }
 std::vector<std::string> &Cluster::getCacheXMLFiles() { return cacheXMLFiles_; }
 
 bool Cluster::getUseIPv6() { return useIPv6_; }
+
+bool Cluster::getConserveSockets() { return conserveSockets_; }
 
 void Cluster::start() { start(std::function<void()>()); }
 

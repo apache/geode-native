@@ -16,29 +16,8 @@
 project(framework LANGUAGES CXX)
 
 add_library(framework STATIC
-  FwkBB.hpp
-  FwkBBClient.cpp
-  FwkBBClient.hpp
-  FwkBBServer.cpp
-  FwkBBServer.hpp
-  FwkException.hpp
-  FwkExport.hpp
   FwkLog.cpp
-  FwkLog.hpp
-  FwkStrCvt.cpp
-  FwkStrCvt.hpp
   GsRandom.cpp
-  GsRandom.hpp
-  IpcHandler.cpp
-  IpcHandler.hpp
-  Service.cpp
-  Service.hpp
-  TcpIpc.cpp
-  TcpIpc.hpp
-  TimeBomb.cpp
-  TimeBomb.hpp
-  UDPIpc.cpp
-  UDPIpc.hpp
 )
 
 set_target_properties(framework PROPERTIES

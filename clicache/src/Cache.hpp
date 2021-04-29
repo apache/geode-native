@@ -81,6 +81,8 @@ namespace Apache
         : public IGeodeCache
       {
       public:
+        
+        ~Cache();
 
         /// <summary>
         /// Initializes the cache from an XML file.
