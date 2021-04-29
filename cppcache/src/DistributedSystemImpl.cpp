@@ -17,6 +17,8 @@
 
 #include "DistributedSystemImpl.hpp"
 
+#include "Utils.hpp"
+
 #if defined(HAVE_PTHREAD_H)
 #include <pthread.h>
 #elif defined(_WIN32)

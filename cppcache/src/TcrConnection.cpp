@@ -965,33 +965,6 @@ std::vector<int8_t> TcrConnection::readHandshakeData(
   }
 }
 
-std::shared_ptr<CacheableBytes> TcrConnection::readHandshakeRawData(
-    int32_t msgLength, std::chrono::microseconds connectTimeout) {
-  ConnErrType error = CONN_NOERR;
-  if (msgLength < 0) {
-    msgLength = 0;
-  }
-  if (msgLength == 0) {
-    return nullptr;
-  }
-  std::vector<int8_t> message(msgLength);
-  if ((error = receiveData(reinterpret_cast<char*>(message.data()), msgLength,
-                           connectTimeout)) != CONN_NOERR) {
-    m_conn.reset();
-    if (error & CONN_TIMEOUT) {
-      throwException(
-          TimeoutException("TcrConnection::TcrConnection: "
-                           "Timeout in handshake"));
-    } else {
-      throwException(
-          GeodeIOException("TcrConnection::TcrConnection: "
-                           "Handshake failure"));
-    }
-  } else {
-    return CacheableBytes::create(std::move(message));
-  }
-}
-
 // read a byte array
 int32_t TcrConnection::readHandshakeArraySize(
     std::chrono::microseconds connectTimeout) {

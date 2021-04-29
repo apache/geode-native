@@ -17,10 +17,9 @@
 
 #include "TombstoneExpiryTask.hpp"
 
-#include "CacheImpl.hpp"
 #include "MapSegment.hpp"
-#include "RegionInternal.hpp"
 #include "TombstoneEntry.hpp"
+#include "Utils.hpp"
 
 namespace apache {
 namespace geode {

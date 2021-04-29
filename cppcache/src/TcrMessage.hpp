@@ -37,22 +37,26 @@
 #include <geode/Serializable.hpp>
 #include <geode/internal/geode_globals.hpp>
 
-#include "BucketServerLocation.hpp"
-#include "EventId.hpp"
 #include "EventIdMap.hpp"
-#include "FixedPartitionAttributesImpl.hpp"
 #include "InterestResultPolicy.hpp"
-#include "SerializationRegistry.hpp"
-#include "TcrChunkedContext.hpp"
-#include "VersionTag.hpp"
-#include "VersionedCacheableObjectPartList.hpp"
+#include "util/concurrent/binary_semaphore.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
+
 class ThinClientBaseDM;
 class TcrConnection;
 class TcrMessagePing;
+class BucketServerLocation;
+class EventId;
+class FixedPartitionAttributesImpl;
+class SerializationRegistry;
+class VersionTag;
+class VersionedCacheableObjectPartList;
+class MemberListForVersionStamp;
+class TcrChunkedResult;
+class DSMemberForVersionStamp;
 
 class TcrMessage {
  public:
@@ -229,10 +233,11 @@ class TcrMessage {
   Region* getRegion() const;
   int32_t getMessageType() const;
   void setMessageType(int32_t msgType);
-  void setMessageTypeRequest(int32_t msgType);  // the msgType of the request
-                                                // that was made if this is a
-                                                // reply
-  int32_t getMessageTypeRequest() const;
+
+  /**
+   * Set the msgType of the request that was made if this is a reply.
+   */
+  void setMessageTypeRequest(int32_t msgType);
   std::shared_ptr<CacheableKey> getKey() const;
   const std::shared_ptr<CacheableKey>& getKeyRef() const;
   std::shared_ptr<Cacheable> getValue() const;
@@ -245,10 +250,7 @@ class TcrMessage {
   const std::string& getException();
 
   const char* getMsgData() const;
-  const char* getMsgHeader() const;
-  const char* getMsgBody() const;
   size_t getMsgLength() const;
-  size_t getMsgBodyLength() const;
   std::shared_ptr<EventId> getEventId() const;
 
   int32_t getTransId() const;
@@ -262,7 +264,6 @@ class TcrMessage {
   bool receiveValues() const;
   bool hasCqPart() const;
   uint32_t getMessageTypeForCq() const;
-  bool isInterestListPassed() const;
   bool shouldIgnore() const;
   int8_t getMetaDataVersion() const;
   uint32_t getEntryNotFound() const;
@@ -275,11 +276,6 @@ class TcrMessage {
   // set the chunked response handler
   void setChunkedResultHandler(TcrChunkedResult* chunkedResult);
   TcrChunkedResult* getChunkedResultHandler();
-  void setVersionedObjectPartList(
-      std::shared_ptr<VersionedCacheableObjectPartList> versionObjPartListptr);
-
-  std::shared_ptr<VersionedCacheableObjectPartList>
-  getVersionedObjectPartList();
 
   DataInput* getDelta();
   //  getDeltaBytes( ) is called *only* by CqService, returns a CacheableBytes
@@ -313,8 +309,6 @@ class TcrMessage {
 
   const std::string& getColocatedWith() const;
 
-  const std::string& getPartitionResolver() const;
-
   std::vector<std::vector<std::shared_ptr<BucketServerLocation>>>*
   getMetadata();
 
@@ -326,8 +320,6 @@ class TcrMessage {
 
   void setCallBackArguement(bool aCallBackArguement);
 
-  void setBucketServerLocation(
-      std::shared_ptr<BucketServerLocation> serverLocation);
   void setVersionTag(std::shared_ptr<VersionTag> versionTag);
   std::shared_ptr<VersionTag> getVersionTag();
   uint8_t hasResult() const;
@@ -360,7 +352,6 @@ class TcrMessage {
   void readKeyPart(DataInput& input);
   void readBooleanPartAsObject(DataInput& input, bool* boolVal);
   void readIntPart(DataInput& input, uint32_t* intValue);
-  void readLongPart(DataInput& input, uint64_t* intValue);
   bool readExceptionPart(DataInput& input, uint8_t isLastChunk,
                          bool skipFirstPart = true);
   void readVersionTag(DataInput& input, uint16_t endpointMemId,
@@ -421,20 +412,14 @@ class TcrMessage {
   std::shared_ptr<Cacheable> m_callbackArgument;
   std::shared_ptr<VersionTag> m_versionTag;
   std::shared_ptr<EventId> m_eventid;
-  std::shared_ptr<CacheableVector> m_vectorPtr;
-  std::shared_ptr<BucketServerLocation> m_bucketServerLocation;
   std::shared_ptr<CacheableHashMap> m_tombstoneVersions;
   std::shared_ptr<CacheableHashSet> m_tombstoneKeys;
-  std::shared_ptr<VersionedCacheableObjectPartList> m_versionObjPartListptr;
   std::string m_exceptionMessage;
   std::string m_regionName;
   std::string m_regex;
-  std::vector<std::shared_ptr<BucketServerLocation>> m_bucketServerLocations;
   std::string m_colocatedWith;
-  std::string m_partitionResolverName;
   int32_t m_securityHeaderLength;
   int32_t m_msgType;
-  int32_t m_msgLength;
   /** the msgType of the request if this TcrMessage is  a reply msg */
   int32_t m_msgTypeRequest;
   int32_t m_txId;
@@ -444,7 +429,7 @@ class TcrMessage {
   int32_t m_deltaBytesLen;
   uint32_t m_entryNotFound;
   bool m_feAnotherHop;
-  bool isSecurityOn;
+  bool m_isSecurityOn;
   uint8_t m_isLastChunkAndisSecurityHeader;
   bool m_isSecurityHeaderAdded;
   bool m_isMetaRegion;
@@ -461,10 +446,6 @@ class TcrMessage {
   bool m_boolValue;
   bool m_isCallBackArguement;
   uint8_t m_hasResult;
-
-  static std::atomic<int32_t> m_transactionId;
-  const static int m_flag_empty;
-  const static int m_flag_concurrency_checks;
 
   friend class TcrMessageHelper;
 };

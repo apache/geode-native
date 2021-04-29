@@ -20,12 +20,9 @@
 #ifndef GEODE_TOMBSTONEEXPIRYTASK_H_
 #define GEODE_TOMBSTONEEXPIRYTASK_H_
 
-#include <geode/ExpirationAction.hpp>
-#include <geode/Region.hpp>
 #include <geode/internal/geode_globals.hpp>
 
 #include "ExpiryTask.hpp"
-#include "RegionInternal.hpp"
 
 namespace apache {
 namespace geode {

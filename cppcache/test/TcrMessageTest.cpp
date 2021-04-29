@@ -18,11 +18,13 @@
 #include <TcrMessage.hpp>
 #include <iostream>
 
+#include <gtest/gtest.h>
+
 #include <geode/CacheFactory.hpp>
 #include <geode/CqState.hpp>
 
 #include "ByteArrayFixture.hpp"
-#include "gtest/gtest.h"
+#include "SerializationRegistry.hpp"
 
 namespace {
 

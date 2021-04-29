@@ -21,6 +21,7 @@
 
 #include "CacheImpl.hpp"
 #include "TcrConnectionManager.hpp"
+#include "ThinClientCacheDistributionManager.hpp"
 #include "ThinClientPoolDM.hpp"
 #include "ThinClientRegion.hpp"
 #include "util/exception.hpp"

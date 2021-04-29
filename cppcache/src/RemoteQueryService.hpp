@@ -23,12 +23,12 @@
 #include <memory>
 #include <string>
 
+#include <ace/RW_Thread_Mutex.h>
+
 #include <geode/QueryService.hpp>
 #include <geode/internal/geode_globals.hpp>
 
 #include "CqService.hpp"
-#include "ThinClientCacheDistributionManager.hpp"
-#include "statistics/StatisticsManager.hpp"
 
 namespace apache {
 namespace geode {

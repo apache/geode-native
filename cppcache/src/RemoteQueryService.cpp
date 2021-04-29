@@ -21,6 +21,7 @@
 #include "CqServiceVsdStats.hpp"
 #include "ReadWriteLock.hpp"
 #include "RemoteQuery.hpp"
+#include "ThinClientCacheDistributionManager.hpp"
 #include "ThinClientPoolDM.hpp"
 #include "UserAttributes.hpp"
 #include "statistics/StatisticsManager.hpp"

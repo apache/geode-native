@@ -111,11 +111,6 @@ GfErrType ThinClientPoolHADM::sendSyncRequest(TcrMessage& request,
   }
 }
 
-bool ThinClientPoolHADM::registerInterestForHARegion(
-    TcrEndpoint* ep, const TcrMessage* request, ThinClientHARegion& region) {
-  return (region.registerKeys(ep, request) == GF_NOERR);
-}
-
 GfErrType ThinClientPoolHADM::sendSyncRequestRegisterInterestEP(
     TcrMessage& request, TcrMessageReply& reply, bool attemptFailover,
     TcrEndpoint* endpoint) {

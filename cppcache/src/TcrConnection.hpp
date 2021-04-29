@@ -245,10 +245,8 @@ class TcrConnection {
   uint16_t inline getPort() { return m_port; }
 
   TcrEndpoint* getEndpointObject() const { return m_endpointObj.get(); }
-  bool isBeingUsed() { return m_isBeingUsed; }
-  bool setAndGetBeingUsed(
-      volatile bool isBeingUsed,
-      bool forTransaction);  // { m_isBeingUsed = isBeingUsed ;}
+
+  bool setAndGetBeingUsed(volatile bool isBeingUsed, bool forTransaction);
 
   // helpers for pool connection manager
   void touch();
@@ -324,12 +322,6 @@ class TcrConnection {
   std::vector<int8_t> readHandshakeData(
       int32_t msgLength, std::chrono::microseconds connectTimeout);
 
-  /**
-   * Reads raw bytes (without appending nullptr terminator) from socket and
-   * handles error conditions in case of Handshake.
-   */
-  std::shared_ptr<CacheableBytes> readHandshakeRawData(
-      int32_t msgLength, std::chrono::microseconds connectTimeout);
   /**
    * Reads a string from socket and handles error conditions in case of
    * Handshake.

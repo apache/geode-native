@@ -32,6 +32,7 @@
 #include <geode/PoolManager.hpp>
 
 #include "TimeBomb.hpp"
+#include "SerializationRegistry.hpp"
 #include "DistributedSystemImpl.hpp"
 #include "Utils.hpp"
 #include "config.h"
