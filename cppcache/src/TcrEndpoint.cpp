@@ -550,7 +550,6 @@ bool TcrEndpoint::checkDupAndAdd(std::shared_ptr<EventId> eventid) {
 void TcrEndpoint::receiveNotification(std::atomic<bool>& isRunning) {
   LOGFINE("Started subscription channel for endpoint %s", m_name.c_str());
   while (isRunning) {
-    TcrMessageReply* msg = nullptr;
     try {
       size_t dataLen;
       ConnErrType opErr = CONN_NOERR;
@@ -576,34 +575,32 @@ void TcrEndpoint::receiveNotification(std::atomic<bool>& isRunning) {
       }
 
       if (data) {
-        msg = new TcrMessageReply(true, m_baseDM);
-        msg->initCqMap();
-        msg->setData(data, static_cast<int32_t>(dataLen),
-                     getDistributedMemberID(),
-                     *(m_cacheImpl->getSerializationRegistry()),
-                     *(m_cacheImpl->getMemberListForVersionStamp()));
+        TcrMessageReply msg(true, m_baseDM);
+        msg.initCqMap();
+        msg.setData(data, static_cast<int32_t>(dataLen),
+                    getDistributedMemberID(),
+                    *(m_cacheImpl->getSerializationRegistry()),
+                    *(m_cacheImpl->getMemberListForVersionStamp()));
         handleNotificationStats(static_cast<int64_t>(dataLen));
-        LOGDEBUG("receive notification %d", msg->getMessageType());
+        LOGDEBUG("receive notification %d", msg.getMessageType());
 
         if (!isRunning) {
-          _GEODE_SAFE_DELETE(msg);
           break;
         }
 
-        if (msg->getMessageType() == TcrMessage::SERVER_TO_CLIENT_PING) {
+        if (msg.getMessageType() == TcrMessage::SERVER_TO_CLIENT_PING) {
           LOGFINE("Received ping from server subscription channel.");
         }
 
         // ignore some message types like REGISTER_INSTANTIATORS
-        if (msg->shouldIgnore()) {
-          _GEODE_SAFE_DELETE(msg);
+        if (msg.shouldIgnore()) {
           continue;
         }
 
-        bool isMarker = (msg->getMessageType() == TcrMessage::CLIENT_MARKER);
-        if (!msg->hasCqPart()) {
-          if (msg->getMessageType() != TcrMessage::CLIENT_MARKER) {
-            const std::string& regionFullPath1 = msg->getRegionName();
+        bool isMarker = (msg.getMessageType() == TcrMessage::CLIENT_MARKER);
+        if (!msg.hasCqPart()) {
+          if (msg.getMessageType() != TcrMessage::CLIENT_MARKER) {
+            const std::string& regionFullPath1 = msg.getRegionName();
             auto region1 = m_cacheImpl->getRegion(regionFullPath1);
 
             if (region1 != nullptr &&
@@ -614,18 +611,16 @@ void TcrEndpoint::receiveNotification(std::atomic<bool>& isRunning) {
               // checking
               LOGFINER("Endpoint %s dropping event for region %s",
                        m_name.c_str(), regionFullPath1.c_str());
-              _GEODE_SAFE_DELETE(msg);
               continue;
             }
           }
         }
 
-        if (!checkDupAndAdd(msg->getEventId())) {
+        if (!checkDupAndAdd(msg.getEventId())) {
           m_dupCount++;
           if (m_dupCount % 100 == 1) {
             LOGFINE("Dropped %dst duplicate notification message", m_dupCount);
           }
-          _GEODE_SAFE_DELETE(msg);
           continue;
         }
 
@@ -633,11 +628,10 @@ void TcrEndpoint::receiveNotification(std::atomic<bool>& isRunning) {
           LOGFINE("Got a marker message on endpont %s", m_name.c_str());
           m_cacheImpl->processMarker();
           processMarker();
-          _GEODE_SAFE_DELETE(msg);
         } else {
-          if (!msg->hasCqPart())  // || msg->isInterestListPassed())
+          if (!msg.hasCqPart())  // || msg.isInterestListPassed())
           {
-            const std::string& regionFullPath = msg->getRegionName();
+            const std::string& regionFullPath = msg.getRegionName();
             auto region = m_cacheImpl->getRegion(regionFullPath);
 
             if (region != nullptr) {
@@ -650,7 +644,7 @@ void TcrEndpoint::receiveNotification(std::atomic<bool>& isRunning) {
                   regionFullPath.c_str());
             }
           } else {
-            LOGDEBUG("receive cq notification %d", msg->getMessageType());
+            LOGDEBUG("receive cq notification %d", msg.getMessageType());
             auto queryService = getQueryService();
             if (queryService != nullptr) {
               static_cast<RemoteQueryService*>(queryService.get())
@@ -685,13 +679,11 @@ void TcrEndpoint::receiveNotification(std::atomic<bool>& isRunning) {
       }
       break;
     } catch (const Exception& ex) {
-      _GEODE_SAFE_DELETE(msg);
       LOGERROR(
           "Exception while receiving subscription event for endpoint %s:: %s: "
           "%s",
           m_name.c_str(), ex.getName().c_str(), ex.what());
     } catch (...) {
-      _GEODE_SAFE_DELETE(msg);
       LOGERROR(
           "Unexpected exception while "
           "receiving subscription event from endpoint %s",

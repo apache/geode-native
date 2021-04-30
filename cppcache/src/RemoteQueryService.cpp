@@ -272,7 +272,7 @@ RemoteQueryService::getCqServiceStatistics() const {
   return nullptr;
 }
 
-void RemoteQueryService::receiveNotification(TcrMessage* msg) {
+void RemoteQueryService::receiveNotification(TcrMessage& msg) {
   {
     TryReadGuard guard(m_rwLock, m_invalid);
 

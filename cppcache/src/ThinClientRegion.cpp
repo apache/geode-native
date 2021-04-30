@@ -2620,7 +2620,7 @@ ThinClientRegion::getInterestListRegex() const {
   return vlist;
 }
 
-GfErrType ThinClientRegion::clientNotificationHandler(TcrMessage& msg) {
+GfErrType ThinClientRegion::clientNotificationHandler(const TcrMessage& msg) {
   GfErrType err = GF_NOERR;
   std::shared_ptr<Cacheable> oldValue;
   switch (msg.getMessageType()) {
@@ -2672,11 +2672,16 @@ GfErrType ThinClientRegion::clientNotificationHandler(TcrMessage& msg) {
       LocalRegion::tombstoneOperationNoThrow(msg.getTombstoneVersions(),
                                              msg.getTombstoneKeys());
       break;
-    default: {
-      if (TcrMessage::getAllEPDisMess() == &msg) {
+    default:
+      try {
+        auto& marker =
+            dynamic_cast<const TcrMessageAllEndpointsDisconnectedMarker&>(msg);
         setProcessedMarker(false);
+        LOGDEBUG(
+            "ThinClientRegion::clientNotificationHandler: rec'd endpoints "
+            "disconnected message");
         LocalRegion::invokeAfterAllEndPointDisconnected();
-      } else {
+      } catch (std::bad_cast&) {
         LOGERROR(
             "Unknown message type %d in subscription event handler; possible "
             "serialization mismatch",
@@ -2684,13 +2689,12 @@ GfErrType ThinClientRegion::clientNotificationHandler(TcrMessage& msg) {
         err = GF_MSG;
       }
       break;
-    }
   }
 
   // Update EventIdMap to mark event processed, Only for durable client.
   // In case of closing, don't send it as listener might not be invoked.
   if (!m_destroyPending && (m_isDurableClnt || msg.hasDelta()) &&
-      TcrMessage::getAllEPDisMess() != &msg) {
+      msg.getMessageType() != TcrMessage::INVALID) {
     m_tcrdm->checkDupAndAdd(msg.getEventId());
   }
 
@@ -2723,12 +2727,12 @@ GfErrType ThinClientRegion::handleServerException(
                                "TransactionDataNodeHasDepartedException") !=
              std::string::npos) {
     error = GF_TRANSACTION_DATA_NODE_HAS_DEPARTED_EXCEPTION;
-  } else if (exceptionMsg.find(
-                 "org.apache.geode.cache.TransactionDataRebalancedException") !=
+  } else if (exceptionMsg.find("org.apache.geode.cache."
+                               "TransactionDataRebalancedException") !=
              std::string::npos) {
     error = GF_TRANSACTION_DATA_REBALANCED_EXCEPTION;
-  } else if (exceptionMsg.find(
-                 "org.apache.geode.security.AuthenticationRequiredException") !=
+  } else if (exceptionMsg.find("org.apache.geode.security."
+                               "AuthenticationRequiredException") !=
              std::string::npos) {
     error = GF_AUTHENTICATION_REQUIRED_EXCEPTION;
   } else if (exceptionMsg.find("org.apache.geode.cache.LowMemoryException") !=
@@ -2752,27 +2756,23 @@ GfErrType ThinClientRegion::handleServerException(
   return error;
 }
 
-void ThinClientRegion::receiveNotification(TcrMessage* msg) {
+void ThinClientRegion::receiveNotification(const TcrMessage& msg) {
   std::unique_lock<std::mutex> lock(m_notificationMutex, std::defer_lock);
   {
     TryReadGuard guard(m_rwLock, m_destroyPending);
     if (m_destroyPending) {
-      if (msg != TcrMessage::getAllEPDisMess()) {
-        _GEODE_SAFE_DELETE(msg);
-      }
       return;
     }
     lock.lock();
   }
 
-  if (msg->getMessageType() == TcrMessage::CLIENT_MARKER) {
+  if (msg.getMessageType() == TcrMessage::CLIENT_MARKER) {
     handleMarker();
   } else {
-    clientNotificationHandler(*msg);
+    clientNotificationHandler(msg);
   }
 
   lock.unlock();
-  if (TcrMessage::getAllEPDisMess() != msg) _GEODE_SAFE_DELETE(msg);
 }
 
 void ThinClientRegion::localInvalidateRegion_internal() {
@@ -2967,7 +2967,8 @@ void ThinClientRegion::executeFunction(
       } else if (err == GF_NOTCON) {
         attempt++;
         LOGDEBUG(
-            "ThinClientRegion::executeFunction with GF_NOTCON retry attempt = "
+            "ThinClientRegion::executeFunction with GF_NOTCON retry attempt "
+            "= "
             "%d ",
             attempt);
         if (attempt > retryAttempts) {
@@ -3052,7 +3053,8 @@ std::shared_ptr<CacheableVector> ThinClientRegion::reExecuteFunction(
         failedNodes->clear();
         if (failedNodesIds) {
           LOGDEBUG(
-              "ThinClientRegion::reExecuteFunction with GF_FUNCTION_EXCEPTION "
+              "ThinClientRegion::reExecuteFunction with "
+              "GF_FUNCTION_EXCEPTION "
               "failedNodesIds size = %zu ",
               failedNodesIds->size());
           failedNodes->insert(failedNodesIds->begin(), failedNodesIds->end());
@@ -3141,7 +3143,8 @@ bool ThinClientRegion::executeFunctionSH(
             currentReply->getFailedNode());
         if (failedNodeIds) {
           LOGDEBUG(
-              "ThinClientRegion::executeFunctionSH with GF_FUNCTION_EXCEPTION "
+              "ThinClientRegion::executeFunctionSH with "
+              "GF_FUNCTION_EXCEPTION "
               "failedNodeIds size = %zu ",
               failedNodeIds->size());
           failedNodes->insert(failedNodeIds->begin(), failedNodeIds->end());
@@ -3365,12 +3368,14 @@ void ChunkedQueryResponse::readObjectPartList(DataInput& input,
           if (arrayType != DSFid::CacheableObjectPartList) {
             LOGERROR(
                 "Query response got unhandled message format %d while "
-                "expecting struct set object part list; possible serialization "
+                "expecting struct set object part list; possible "
+                "serialization "
                 "mismatch",
                 arrayType);
             throw MessageException(
                 "Query response got unhandled message format while expecting "
-                "struct set object part list; possible serialization mismatch");
+                "struct set object part list; possible serialization "
+                "mismatch");
           }
           readObjectPartList(input, true);
         } else {
@@ -3491,7 +3496,8 @@ void ChunkedQueryResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
           "object part list; possible serialization mismatch",
           arrayType);
       throw MessageException(
-          "Query response got unhandled message format while expecting object "
+          "Query response got unhandled message format while expecting "
+          "object "
           "part list; possible serialization mismatch");
     }
     readObjectPartList(input, isResultSet);
@@ -3556,9 +3562,9 @@ void ChunkedFunctionExecutionResponse::handleChunk(
     return;
   }
 
-  auto startLen = static_cast<size_t>(
-      input.getBytesRead() -
-      1);  // from here need to look value part + memberid AND -1 for array type
+  // from here need to look value part + memberid AND -1 for array type
+  auto startLen = static_cast<size_t>(input.getBytesRead() - 1);
+
   // read and ignore array length
   input.readArrayLength();
 
@@ -3571,7 +3577,8 @@ void ChunkedFunctionExecutionResponse::handleChunk(
   const int SECURE_PART_LEN = 5 + 8;
   bool readPart = true;
   LOGDEBUG(
-      "ChunkedFunctionExecutionResponse::handleChunk chunkLen = %d & partLen = "
+      "ChunkedFunctionExecutionResponse::handleChunk chunkLen = %d & partLen "
+      "= "
       "%d ",
       chunkLen, partLen);
   if (partType == DSCode::JavaSerializable) {
@@ -3592,7 +3599,8 @@ void ChunkedFunctionExecutionResponse::handleChunk(
       // skip first part i.e JavaSerializable.
       TcrMessageHelper::skipParts(m_msg, input, 1);
 
-      // read the second part which is string in usual manner, first its length.
+      // read the second part which is string in usual manner, first its
+      // length.
       partLen = input.readInt32();
 
       // then isObject byte
@@ -3601,8 +3609,8 @@ void ChunkedFunctionExecutionResponse::handleChunk(
       startLen = input.getBytesRead();  // reset from here need to look value
       // part + memberid AND -1 for array type
 
-      // Since it is contained as a part of other results, read arrayType which
-      // is arrayList = 65.
+      // Since it is contained as a part of other results, read arrayType
+      // which is arrayList = 65.
       input.read();
 
       // read and ignore its len which is 2

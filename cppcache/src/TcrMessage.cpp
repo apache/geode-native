@@ -255,7 +255,7 @@ TcrChunkedResult* TcrMessage::getChunkedResultHandler() {
   return m_chunkedResult;
 }
 
-DataInput* TcrMessage::getDelta() { return m_delta.get(); }
+DataInput* TcrMessage::getDelta() const { return m_delta.get(); }
 
 //  getDeltaBytes( ) is called *only* by CqService, returns a CacheableBytes
 //  that
@@ -270,7 +270,7 @@ std::shared_ptr<CacheableBytes> TcrMessage::getDeltaBytes() {
   return retVal;
 }
 
-bool TcrMessage::hasDelta() { return (m_delta != nullptr); }
+bool TcrMessage::hasDelta() const { return (m_delta != nullptr); }
 
 void TcrMessage::setMetaRegion(bool isMetaRegion) {
   m_isMetaRegion = isMetaRegion;
@@ -307,7 +307,9 @@ void TcrMessage::setCallBackArguement(bool aCallBackArguement) {
 void TcrMessage::setVersionTag(std::shared_ptr<VersionTag> versionTag) {
   m_versionTag = versionTag;
 }
-std::shared_ptr<VersionTag> TcrMessage::getVersionTag() { return m_versionTag; }
+std::shared_ptr<VersionTag> TcrMessage::getVersionTag() const {
+  return m_versionTag;
+}
 
 uint8_t TcrMessage::hasResult() const { return m_hasResult; }
 
@@ -317,11 +319,6 @@ std::shared_ptr<CacheableHashMap> TcrMessage::getTombstoneVersions() const {
 
 std::shared_ptr<CacheableHashSet> TcrMessage::getTombstoneKeys() const {
   return m_tombstoneKeys;
-}
-
-TcrMessage* TcrMessage::getAllEPDisMess() {
-  static auto allEPDisconnected = new TcrMessageReply(true, nullptr);
-  return allEPDisconnected;
 }
 
 void TcrMessage::writeInterestResultPolicyPart(InterestResultPolicy policy) {

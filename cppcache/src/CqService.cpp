@@ -383,10 +383,9 @@ bool CqService::isCqExists(const std::string& cqName) {
 
   return m_cqQueryMap.find(cqName) != m_cqQueryMap.end();
 }
-void CqService::receiveNotification(TcrMessage* msg) {
-  invokeCqListeners(msg->getCqs(), msg->getMessageTypeForCq(), msg->getKey(),
-                    msg->getValue(), msg->getDeltaBytes(), msg->getEventId());
-  _GEODE_SAFE_DELETE(msg);
+void CqService::receiveNotification(TcrMessage& msg) {
+  invokeCqListeners(msg.getCqs(), msg.getMessageTypeForCq(), msg.getKey(),
+                    msg.getValue(), msg.getDeltaBytes(), msg.getEventId());
   notification_semaphore_.release();
 }
 

@@ -75,7 +75,7 @@ class CqService : public std::enable_shared_from_this<CqService> {
 
   ThinClientBaseDM* getDM() { return m_tccdm; }
 
-  void receiveNotification(TcrMessage* msg);
+  void receiveNotification(TcrMessage& msg);
 
   /**
    * Returns the state of the cqService.

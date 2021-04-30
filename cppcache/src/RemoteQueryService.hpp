@@ -87,7 +87,7 @@ class RemoteQueryService
    * execute all cqs on the endpoint after failover
    */
   GfErrType executeAllCqs(TcrEndpoint* endpoint);
-  void receiveNotification(TcrMessage* msg);
+  void receiveNotification(TcrMessage& msg);
   void invokeCqConnectedListeners(ThinClientPoolDM* pool, bool connected);
   // For Lazy Cq Start-no use, no start
   inline void initCqService() {
