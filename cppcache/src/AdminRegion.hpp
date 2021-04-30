@@ -23,6 +23,9 @@
 #include <memory>
 #include <string>
 
+#include <boost/thread.hpp>
+#include <boost/thread/lock_types.hpp>
+
 #include <geode/Serializable.hpp>
 
 #include "ErrType.hpp"
@@ -45,11 +48,11 @@ class TcrConnectionManager;
 class CacheableKey;
 
 class AdminRegion : public std::enable_shared_from_this<AdminRegion> {
-  ThinClientBaseDM* dist_mgr_;
-  std::string full_path_;
-  TcrConnectionManager* connection_mgr_;
-  boost::shared_mutex mutex_;
-  bool destroy_pending_;
+  ThinClientBaseDM* m_distMngr;
+  std::string m_fullPath;
+  TcrConnectionManager* m_connectionMgr;
+  boost::shared_mutex m_rwMutex;
+  bool m_destroyPending;
 
   GfErrType putNoThrow(const std::shared_ptr<CacheableKey>& keyPtr,
                        const std::shared_ptr<Cacheable>& valuePtr);
@@ -59,10 +62,10 @@ class AdminRegion : public std::enable_shared_from_this<AdminRegion> {
   AdminRegion& operator=(const AdminRegion&) = delete;
 
   AdminRegion()
-      : dist_mgr_(nullptr),
-        full_path_("/__ADMIN_CLIENT_HEALTH_MONITORING__"),
-        connection_mgr_(nullptr),
-        destroy_pending_(false) {}
+      : m_distMngr(nullptr),
+        m_fullPath("/__ADMIN_CLIENT_HEALTH_MONITORING__"),
+        m_connectionMgr(nullptr),
+        m_destroyPending(false) {}
   ~AdminRegion();
 
   static std::shared_ptr<AdminRegion> create(

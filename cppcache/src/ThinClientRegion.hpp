@@ -23,6 +23,9 @@
 #include <mutex>
 #include <unordered_map>
 
+#include <boost/thread.hpp>
+#include <boost/thread/lock_types.hpp>
+
 #include <geode/ResultCollector.hpp>
 #include <geode/internal/functional.hpp>
 

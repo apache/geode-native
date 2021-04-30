@@ -24,6 +24,7 @@
 #include <string>
 
 #include <boost/thread.hpp>
+#include <boost/thread/lock_types.hpp>
 
 #include <geode/QueryService.hpp>
 #include <geode/internal/geode_globals.hpp>
