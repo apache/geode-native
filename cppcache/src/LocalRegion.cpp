@@ -105,7 +105,7 @@ const std::string& LocalRegion::getName() const { return m_name; }
 const std::string& LocalRegion::getFullPath() const { return m_fullPath; }
 
 std::shared_ptr<Region> LocalRegion::getParentRegion() const {
-  CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::getParentRegion);
+  CHECK_DESTROY_PENDING(shared_lock, LocalRegion::getParentRegion);
   return m_parentRegion;
 }
 
@@ -133,7 +133,7 @@ void LocalRegion::updateAccessAndModifiedTime(bool modified) {
 }
 
 std::shared_ptr<CacheStatistics> LocalRegion::getStatistics() const {
-  CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::getStatistics);
+  CHECK_DESTROY_PENDING(shared_lock, LocalRegion::getStatistics);
 
   if (!m_cacheImpl->getDistributedSystem()
            .getSystemProperties()
@@ -214,7 +214,7 @@ std::shared_ptr<Region> LocalRegion::findSubRegion(const std::string& name) {
 }
 
 std::shared_ptr<Region> LocalRegion::getSubregion(const std::string& path) {
-  CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::getSubregion);
+  CHECK_DESTROY_PENDING(shared_lock, LocalRegion::getSubregion);
 
   static const std::string slash("/");
   if (path == slash || path.empty()) {
@@ -247,7 +247,7 @@ std::shared_ptr<Region> LocalRegion::getSubregion(const std::string& path) {
 
 std::shared_ptr<Region> LocalRegion::createSubregion(
     const std::string& subregionName, RegionAttributes regionAttributes) {
-  CHECK_DESTROY_PENDING(TryWriteGuard, LocalRegion::createSubregion);
+  CHECK_DESTROY_PENDING(unique_lock, LocalRegion::createSubregion);
   {
     std::string namestr = subregionName;
     if (namestr.find('/') != std::string::npos) {
@@ -297,7 +297,7 @@ std::shared_ptr<Region> LocalRegion::createSubregion(
 
 std::vector<std::shared_ptr<Region>> LocalRegion::subregions(
     const bool recursive) {
-  CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::subregions);
+  CHECK_DESTROY_PENDING(shared_lock, LocalRegion::subregions);
   if (m_subRegions.empty()) {
     return std::vector<std::shared_ptr<Region>>();
   }
@@ -326,7 +326,7 @@ void LocalRegion::getEntry(const std::shared_ptr<CacheableKey>& key,
   }
 
   std::shared_ptr<MapEntryImpl> mePtr;
-  CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::getEntry);
+  CHECK_DESTROY_PENDING(shared_lock, LocalRegion::getEntry);
   if (m_regionAttributes.getCachingEnabled()) {
     m_entries->getEntry(key, mePtr, valuePtr);
   }
@@ -532,7 +532,7 @@ bool LocalRegion::localRemoveEx(
 }
 
 std::vector<std::shared_ptr<CacheableKey>> LocalRegion::keys() {
-  CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::keys);
+  CHECK_DESTROY_PENDING(shared_lock, LocalRegion::keys);
   return keys_internal();
 }
 
@@ -542,7 +542,7 @@ std::vector<std::shared_ptr<CacheableKey>> LocalRegion::serverKeys() {
 }
 
 std::vector<std::shared_ptr<Cacheable>> LocalRegion::values() {
-  CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::values);
+  CHECK_DESTROY_PENDING(shared_lock, LocalRegion::values);
 
   std::vector<std::shared_ptr<Cacheable>> values;
 
@@ -555,7 +555,7 @@ std::vector<std::shared_ptr<Cacheable>> LocalRegion::values() {
 }
 
 std::vector<std::shared_ptr<RegionEntry>> LocalRegion::entries(bool recursive) {
-  CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::entries);
+  CHECK_DESTROY_PENDING(shared_lock, LocalRegion::entries);
 
   std::vector<std::shared_ptr<RegionEntry>> entries;
 
@@ -596,7 +596,7 @@ HashMapOfCacheable LocalRegion::getAll_internal(
 }
 
 uint32_t LocalRegion::size_remote() {
-  CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::size);
+  CHECK_DESTROY_PENDING(shared_lock, LocalRegion::size);
   if (m_regionAttributes.getCachingEnabled()) {
     return m_entries->size();
   }
@@ -615,18 +615,18 @@ uint32_t LocalRegion::size() {
   return LocalRegion::size_remote();
 }
 RegionService& LocalRegion::getRegionService() const {
-  CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::getRegionService);
+  CHECK_DESTROY_PENDING(shared_lock, LocalRegion::getRegionService);
   return *m_cacheImpl->getCache();
 }
 
 CacheImpl* LocalRegion::getCacheImpl() const {
-  CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::getCache);
+  CHECK_DESTROY_PENDING(shared_lock, LocalRegion::getCache);
   return m_cacheImpl;
 }
 
 bool LocalRegion::containsValueForKey_remote(
     const std::shared_ptr<CacheableKey>& keyPtr) const {
-  CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::containsValueForKey);
+  CHECK_DESTROY_PENDING(shared_lock, LocalRegion::containsValueForKey);
   if (!m_regionAttributes.getCachingEnabled()) {
     return false;
   }
@@ -678,7 +678,7 @@ bool LocalRegion::containsKey(
         "LocalRegion::containsKey: "
         "key is null");
   }
-  CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::containsKey);
+  CHECK_DESTROY_PENDING(shared_lock, LocalRegion::containsKey);
   return containsKey_internal(keyPtr);
 }
 
@@ -736,7 +736,7 @@ void LocalRegion::registerEntryExpiryTask(
 }
 
 LocalRegion::~LocalRegion() noexcept {
-  TryWriteGuard guard(mutex_, m_destroyPending);
+  boost::unique_lock<decltype(mutex_)> guard{mutex_};
   if (!m_destroyPending) {
     // TODO suspect
     // NOLINTNEXTLINE(clang-analyzer-optin.cplusplus.VirtualCall)
@@ -839,7 +839,7 @@ GfErrType LocalRegion::getNoThrow(
     const std::shared_ptr<CacheableKey>& keyPtr,
     std::shared_ptr<Cacheable>& value,
     const std::shared_ptr<Serializable>& aCallbackArgument) {
-  CHECK_DESTROY_PENDING_NOTHROW(TryReadGuard);
+  CHECK_DESTROY_PENDING_NOTHROW(shared_lock);
   GfErrType err = GF_NOERR;
 
   if (keyPtr == nullptr) {
@@ -1018,7 +1018,7 @@ GfErrType LocalRegion::getAllNoThrow(
     const std::shared_ptr<HashMapOfException>& exceptions,
     const bool addToLocalCache,
     const std::shared_ptr<Serializable>& aCallbackArgument) {
-  CHECK_DESTROY_PENDING_NOTHROW(TryReadGuard);
+  CHECK_DESTROY_PENDING_NOTHROW(shared_lock);
   GfErrType err = GF_NOERR;
   std::shared_ptr<Cacheable> value;
 
@@ -1632,7 +1632,7 @@ GfErrType LocalRegion::updateNoThrow(
     return err;
   }
 
-  CHECK_DESTROY_PENDING_NOTHROW(TryReadGuard);
+  CHECK_DESTROY_PENDING_NOTHROW(shared_lock);
 
   TAction action(*this);
   TXState* txState = action.m_txState;
@@ -1774,7 +1774,7 @@ GfErrType LocalRegion::updateNoThrowTX(
     return err;
   }
 
-  CHECK_DESTROY_PENDING_NOTHROW(TryReadGuard);
+  CHECK_DESTROY_PENDING_NOTHROW(shared_lock);
   TAction action(*this);
 
   bool cachingEnabled = m_regionAttributes.getCachingEnabled();
@@ -1914,7 +1914,7 @@ GfErrType LocalRegion::invalidateNoThrowTX(
 GfErrType LocalRegion::putAllNoThrow(
     const HashMapOfCacheable& map, std::chrono::milliseconds timeout,
     const std::shared_ptr<Serializable>& aCallbackArgument) {
-  CHECK_DESTROY_PENDING_NOTHROW(TryReadGuard);
+  CHECK_DESTROY_PENDING_NOTHROW(shared_lock);
   GfErrType err = GF_NOERR;
   // std::shared_ptr<VersionTag> versionTag;
   std::shared_ptr<VersionedCacheableObjectPartList>
@@ -2090,7 +2090,7 @@ GfErrType LocalRegion::removeAllNoThrow(
     const std::vector<std::shared_ptr<CacheableKey>>& keys,
     const std::shared_ptr<Serializable>& aCallbackArgument) {
   // 1. check destroy pending
-  CHECK_DESTROY_PENDING_NOTHROW(TryReadGuard);
+  CHECK_DESTROY_PENDING_NOTHROW(shared_lock);
   GfErrType err = GF_NOERR;
   std::shared_ptr<VersionedCacheableObjectPartList> versionedObjPartListPtr;
 
@@ -2189,8 +2189,12 @@ GfErrType LocalRegion::localClearNoThrow(
   /*Update the stats for clear*/
   m_regionStats->incClears();
   GfErrType err = GF_NOERR;
-  TryReadGuard guard(mutex_, m_destroyPending);
-  if (m_released || m_destroyPending) return err;
+  boost::shared_lock<decltype(mutex_)> guard{mutex_};
+
+  if (m_released || m_destroyPending) {
+    return err;
+  }
+
   if (!invokeCacheWriterForRegionEvent(aCallbackArgument, eventFlags,
                                        BEFORE_REGION_CLEAR)) {
     LOGFINE("Cache writer prevented region clear");
@@ -2211,7 +2215,7 @@ GfErrType LocalRegion::invalidateLocal(
   if (keyPtr == nullptr) {
     return GF_CACHE_ILLEGAL_ARGUMENT_EXCEPTION;
   }
-  CHECK_DESTROY_PENDING_NOTHROW(TryReadGuard);
+  CHECK_DESTROY_PENDING_NOTHROW(shared_lock);
 
   GfErrType err = GF_NOERR;
 
@@ -2291,7 +2295,7 @@ GfErrType LocalRegion::invalidateRegionNoThrowOnSubRegions(
 GfErrType LocalRegion::invalidateRegionNoThrow(
     const std::shared_ptr<Serializable>& aCallbackArgument,
     const CacheEventFlags eventFlags) {
-  CHECK_DESTROY_PENDING_NOTHROW(TryReadGuard);
+  CHECK_DESTROY_PENDING_NOTHROW(shared_lock);
   GfErrType err = GF_NOERR;
 
   if (m_regionAttributes.getCachingEnabled()) {
@@ -2352,7 +2356,7 @@ GfErrType LocalRegion::destroyRegionNoThrow(
     }
   }
 
-  TryWriteGuard guard(mutex_, m_destroyPending);
+  boost::unique_lock<decltype(mutex_)> guard{mutex_};
   if (m_destroyPending) {
     if (eventFlags.isCacheClose()) {
       return GF_NOERR;
@@ -2838,7 +2842,7 @@ void LocalRegion::updateAccessAndModifiedTimeForEntry(
 }
 
 uint32_t LocalRegion::adjustLruEntriesLimit(uint32_t limit) {
-  CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::adjustLruEntriesLimit);
+  CHECK_DESTROY_PENDING(shared_lock, LocalRegion::adjustLruEntriesLimit);
 
   auto attrs = m_regionAttributes;
   if (!attrs.getCachingEnabled()) return 0;
@@ -2861,7 +2865,7 @@ uint32_t LocalRegion::adjustLruEntriesLimit(uint32_t limit) {
 
 ExpirationAction LocalRegion::adjustRegionExpiryAction(
     ExpirationAction action) {
-  CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::adjustRegionExpiryAction);
+  CHECK_DESTROY_PENDING(shared_lock, LocalRegion::adjustRegionExpiryAction);
 
   auto attrs = m_regionAttributes;
   bool hadExpiry = (getRegionExpiryDuration() > std::chrono::seconds::zero());
@@ -2880,7 +2884,7 @@ ExpirationAction LocalRegion::adjustRegionExpiryAction(
 }
 
 ExpirationAction LocalRegion::adjustEntryExpiryAction(ExpirationAction action) {
-  CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::adjustEntryExpiryAction);
+  CHECK_DESTROY_PENDING(shared_lock, LocalRegion::adjustEntryExpiryAction);
 
   auto attrs = m_regionAttributes;
   bool hadExpiry = (getEntryExpiryDuration() > std::chrono::seconds::zero());
@@ -2900,7 +2904,7 @@ ExpirationAction LocalRegion::adjustEntryExpiryAction(ExpirationAction action) {
 
 std::chrono::seconds LocalRegion::adjustRegionExpiryDuration(
     const std::chrono::seconds& duration) {
-  CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::adjustRegionExpiryDuration);
+  CHECK_DESTROY_PENDING(shared_lock, LocalRegion::adjustRegionExpiryDuration);
 
   bool hadExpiry = (getEntryExpiryDuration() > std::chrono::seconds::zero());
   if (!hadExpiry) {
@@ -2919,7 +2923,7 @@ std::chrono::seconds LocalRegion::adjustRegionExpiryDuration(
 
 std::chrono::seconds LocalRegion::adjustEntryExpiryDuration(
     const std::chrono::seconds& duration) {
-  CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::adjustEntryExpiryDuration);
+  CHECK_DESTROY_PENDING(shared_lock, LocalRegion::adjustEntryExpiryDuration);
 
   bool hadExpiry = (getEntryExpiryDuration() > std::chrono::seconds::zero());
   if (!hadExpiry) {
@@ -3132,8 +3136,12 @@ void LocalRegion::adjustCacheWriter(const std::string& lib,
 }
 
 void LocalRegion::evict(float percentage) {
-  TryReadGuard guard(mutex_, m_destroyPending);
-  if (m_released || m_destroyPending) return;
+  boost::shared_lock<decltype(mutex_)> guard{mutex_};
+
+  if (m_released || m_destroyPending) {
+    return;
+  }
+
   if (m_entries != nullptr) {
     int32_t size = m_entries->size();
     int32_t entriesToEvict = static_cast<int32_t>(percentage * size);

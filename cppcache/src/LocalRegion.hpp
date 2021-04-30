@@ -51,8 +51,8 @@ namespace geode {
 namespace client {
 
 #ifndef CHECK_DESTROY_PENDING
-#define CHECK_DESTROY_PENDING(lock, function)             \
-  lock checkGuard(mutex_, m_destroyPending);              \
+#define CHECK_DESTROY_PENDING(lock_type, function)        \
+  boost::lock_type<decltype(mutex_)> checkGuard{mutex_};  \
   do {                                                    \
     if (m_destroyPending) {                               \
       std::string err_msg = #function;                    \
@@ -63,12 +63,12 @@ namespace client {
 #endif
 
 #ifndef CHECK_DESTROY_PENDING_NOTHROW
-#define CHECK_DESTROY_PENDING_NOTHROW(lock)       \
-  lock checkGuard(mutex_, m_destroyPending);      \
-  do {                                            \
-    if (m_destroyPending) {                       \
-      return GF_CACHE_REGION_DESTROYED_EXCEPTION; \
-    }                                             \
+#define CHECK_DESTROY_PENDING_NOTHROW(lock_type)         \
+  boost::lock_type<decltype(mutex_)> checkGuard{mutex_}; \
+  do {                                                   \
+    if (m_destroyPending) {                              \
+      return GF_CACHE_REGION_DESTROYED_EXCEPTION;        \
+    }                                                    \
   } while (0)
 #endif
 

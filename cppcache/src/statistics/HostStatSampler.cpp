@@ -275,7 +275,8 @@ void HostStatSampler::putStatsInAdminRegion() {
     if (conn_man->isNetDown()) {
       return;
     }
-    client::TryReadGuard _guard(adminRgn->getMutex(), adminRgn->isDestroyed());
+
+    auto&& guard = adminRgn->make_shared_lock();
     if (!adminRgn->isDestroyed()) {
       if (conn_man->getNumEndPoints() > 0) {
         if (!initDone) {

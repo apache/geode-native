@@ -300,8 +300,7 @@ void ClientMetadataService::enqueueForMetadataRefresh(
   if (region != nullptr) {
     auto tcrRegion = dynamic_cast<ThinClientRegion*>(region.get());
     {
-      TryWriteGuard guardRegionMetaDataRefresh(
-          tcrRegion->getMataDataMutex(), tcrRegion->getMetaDataRefreshed());
+      auto&& guard = tcrRegion->getMetadataLock();
       if (tcrRegion->getMetaDataRefreshed()) {
         return;
       }

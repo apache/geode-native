@@ -36,13 +36,13 @@ std::shared_ptr<AdminRegion> AdminRegion::create(CacheImpl* cache,
   auto& props = cache->getDistributedSystem().getSystemProperties();
   if (props.statisticsEnabled()) {
     // no need to create a region .. just create a cacheDistribution Manager
-    adminRegion->m_connectionMgr = &(cache->tcrConnectionManager());
+    adminRegion->connection_mgr_ = &(cache->tcrConnectionManager());
     if (!distMan) {
-      adminRegion->m_distMngr =
-          new ThinClientCacheDistributionManager(*adminRegion->m_connectionMgr);
+      adminRegion->dist_mgr_ =
+          new ThinClientCacheDistributionManager(*adminRegion->connection_mgr_);
       cache->getStatisticsManager().RegisterAdminRegion(adminRegion);
     } else {
-      adminRegion->m_distMngr = distMan;
+      adminRegion->dist_mgr_ = distMan;
     }
   }
 
@@ -51,13 +51,13 @@ std::shared_ptr<AdminRegion> AdminRegion::create(CacheImpl* cache,
 
 void AdminRegion::init() {
   // Init distribution manager if it is not a pool
-  if (m_distMngr && !dynamic_cast<ThinClientPoolDM*>(m_distMngr)) {
-    m_distMngr->init();
+  if (dist_mgr_ && !dynamic_cast<ThinClientPoolDM*>(dist_mgr_)) {
+    dist_mgr_->init();
   }
 }
 
 TcrConnectionManager* AdminRegion::getConnectionManager() {
-  return m_connectionMgr;
+  return connection_mgr_;
 }
 
 void AdminRegion::put(const std::shared_ptr<CacheableKey>& keyPtr,
@@ -72,13 +72,13 @@ GfErrType AdminRegion::putNoThrow(const std::shared_ptr<CacheableKey>& keyPtr,
   GfErrType err = GF_NOERR;
 
   TcrMessagePut request(
-      new DataOutput(m_connectionMgr->getCacheImpl()->createDataOutput()),
-      nullptr, keyPtr, valuePtr, nullptr, false, m_distMngr, true, false,
-      m_fullPath.c_str());
+      new DataOutput(connection_mgr_->getCacheImpl()->createDataOutput()),
+      nullptr, keyPtr, valuePtr, nullptr, false, dist_mgr_, true, false,
+      full_path_.c_str());
   request.setMetaRegion(true);
-  TcrMessageReply reply(true, m_distMngr);
+  TcrMessageReply reply(true, dist_mgr_);
   reply.setMetaRegion(true);
-  err = m_distMngr->sendSyncRequest(request, reply, true, true);
+  err = dist_mgr_->sendSyncRequest(request, reply, true, true);
   if (err != GF_NOERR) {
     return err;
   }
@@ -89,7 +89,7 @@ GfErrType AdminRegion::putNoThrow(const std::shared_ptr<CacheableKey>& keyPtr,
       LOGDEBUG(
           "AdminRegion::put: entry is written into remote server "
           "at region %s",
-          m_fullPath.c_str());
+          full_path_.c_str());
       break;
     }
     case TcrMessage::EXCEPTION: {
@@ -100,7 +100,7 @@ GfErrType AdminRegion::putNoThrow(const std::shared_ptr<CacheableKey>& keyPtr,
     }
     case TcrMessage::PUT_DATA_ERROR: {
       LOGERROR("A write error occurred on the endpoint %s",
-               m_distMngr->getActiveEndpoint()->name().c_str());
+               dist_mgr_->getActiveEndpoint()->name().c_str());
       err = GF_CACHESERVER_EXCEPTION;
       break;
     }
@@ -113,29 +113,35 @@ GfErrType AdminRegion::putNoThrow(const std::shared_ptr<CacheableKey>& keyPtr,
 }
 
 void AdminRegion::close() {
-  TryWriteGuard _guard(mutex_, m_destroyPending);
-  if (m_destroyPending) {
+  boost::unique_lock<decltype(mutex_)> guard{mutex_};
+
+  if (destroy_pending_) {
     return;
   }
-  m_destroyPending = true;
+
+  destroy_pending_ = true;
 
   // Close distribution manager if it is not a pool
-  ThinClientPoolDM* pool = dynamic_cast<ThinClientPoolDM*>(m_distMngr);
+  ThinClientPoolDM* pool = dynamic_cast<ThinClientPoolDM*>(dist_mgr_);
   if (pool == nullptr) {
-    m_distMngr->destroy();
-    _GEODE_SAFE_DELETE(m_distMngr);
+    dist_mgr_->destroy();
+    _GEODE_SAFE_DELETE(dist_mgr_);
   }
 }
 
 AdminRegion::~AdminRegion() {
   // destructor should be single threaded in any case, so no need of guard
-  if (m_distMngr != nullptr) {
+  if (dist_mgr_ != nullptr) {
     close();
   }
 }
 
-const bool& AdminRegion::isDestroyed() { return m_destroyPending; }
-boost::shared_mutex& AdminRegion::getMutex() { return mutex_; }
+const bool& AdminRegion::isDestroyed() { return destroy_pending_; }
+
+boost::shared_lock<boost::shared_mutex> AdminRegion::make_shared_lock() {
+  mutex_.lock_shared();
+  return {mutex_, boost::adopt_lock};
+}
 
 }  // namespace client
 }  // namespace geode

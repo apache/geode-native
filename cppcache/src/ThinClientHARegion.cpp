@@ -80,7 +80,7 @@ void ThinClientHARegion::releaseGlobals(bool isFailover) {
 }
 
 void ThinClientHARegion::handleMarker() {
-  TryReadGuard guard(mutex_, m_destroyPending);
+  boost::shared_lock<decltype(mutex_)> guard{mutex_};
   if (m_destroyPending) {
     return;
   }

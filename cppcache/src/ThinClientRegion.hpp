@@ -170,7 +170,7 @@ class ThinClientRegion : public LocalRegion {
   GfErrType getFuncAttributes(const std::string& func,
                               std::shared_ptr<std::vector<int8_t>>* attr);
 
-  boost::shared_mutex& getMataDataMutex() { return region_mutex_; }
+  boost::unique_lock<boost::shared_mutex> getMetadataLock();
 
   bool const& getMetaDataRefreshed() { return m_isMetaDataRefreshed; }
 

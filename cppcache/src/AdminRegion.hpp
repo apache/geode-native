@@ -45,11 +45,11 @@ class TcrConnectionManager;
 class CacheableKey;
 
 class AdminRegion : public std::enable_shared_from_this<AdminRegion> {
-  ThinClientBaseDM* m_distMngr;
-  std::string m_fullPath;
-  TcrConnectionManager* m_connectionMgr;
+  ThinClientBaseDM* dist_mgr_;
+  std::string full_path_;
+  TcrConnectionManager* connection_mgr_;
   boost::shared_mutex mutex_;
-  bool m_destroyPending;
+  bool destroy_pending_;
 
   GfErrType putNoThrow(const std::shared_ptr<CacheableKey>& keyPtr,
                        const std::shared_ptr<Cacheable>& valuePtr);
@@ -59,15 +59,15 @@ class AdminRegion : public std::enable_shared_from_this<AdminRegion> {
   AdminRegion& operator=(const AdminRegion&) = delete;
 
   AdminRegion()
-      : m_distMngr(nullptr),
-        m_fullPath("/__ADMIN_CLIENT_HEALTH_MONITORING__"),
-        m_connectionMgr(nullptr),
-        m_destroyPending(false) {}
+      : dist_mgr_(nullptr),
+        full_path_("/__ADMIN_CLIENT_HEALTH_MONITORING__"),
+        connection_mgr_(nullptr),
+        destroy_pending_(false) {}
   ~AdminRegion();
 
   static std::shared_ptr<AdminRegion> create(
       CacheImpl* cache, ThinClientBaseDM* distMan = nullptr);
-  boost::shared_mutex& getMutex();
+  boost::shared_lock<boost::shared_mutex> make_shared_lock();
   const bool& isDestroyed();
   void close();
   void init();
