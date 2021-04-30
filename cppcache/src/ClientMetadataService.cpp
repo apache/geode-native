@@ -121,6 +121,14 @@ void ClientMetadataService::getClientPRMetadata(const char* regionFullPath) {
     if (err == GF_NOERR &&
         reply.getMessageType() ==
             TcrMessage::RESPONSE_CLIENT_PARTITION_ATTRIBUTES) {
+      // By convention, server returns -1 bucket count to indicate replicated
+      // region
+      if (reply.getNumBuckets() == -1) {
+        LOGDEBUG(
+            "ClientMetadataService::getClientPRMetadata: region is"
+            "replicated, not partitioned - no metadata");
+        return;
+      }
       cptr = std::make_shared<ClientMetadata>(reply.getNumBuckets(),
                                               reply.getColocatedWith(), m_pool,
                                               reply.getFpaSet());
