@@ -26,7 +26,7 @@ RUN yum update -y && \
 COPY bellsoft.repo /etc/yum.repos.d/
 
 RUN yum install -y 'dnf-command(config-manager)' && \
-    yum config-manager --set-enabled PowerTools && \
+    yum config-manager --set-enabled powertools && \
     yum update -y && \
     yum install -y --setopt=tsflags=nodocs \
         git \

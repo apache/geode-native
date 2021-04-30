@@ -57,7 +57,7 @@ class ThinClientHARegion : public ThinClientRegion {
   void setProcessedMarker(bool mark = true) override {
     m_processedMarker = mark;
   }
-  void addDisMessToQueue() override;
+  void addDisconnectedMessageToQueue() override;
 
  protected:
   GfErrType getNoThrow_FullObject(

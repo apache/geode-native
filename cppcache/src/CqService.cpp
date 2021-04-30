@@ -301,8 +301,9 @@ void CqService::stopCqs(query_container_type& cqs) {
 }
 
 void CqService::closeCqs(query_container_type& cqs) {
-  LOGDEBUG("closeCqs() TcrMessage::isKeepAlive() = %d ",
-           TcrMessage::isKeepAlive());
+  const auto keepAlive =
+      m_tccdm->getConnectionManager().getCacheImpl()->isKeepAlive();
+  LOGDEBUG("closeCqs() keepAlive = %d ", keepAlive);
   if (!cqs.empty()) {
     std::string cqName;
     for (auto& cq : cqs) {
@@ -311,7 +312,7 @@ void CqService::closeCqs(query_container_type& cqs) {
         cqName = cqi->getName();
         LOGDEBUG("closeCqs() cqname = %s isDurable = %d ", cqName.c_str(),
                  cqi->isDurable());
-        if (!(cqi->isDurable() && TcrMessage::isKeepAlive())) {
+        if (!(cqi->isDurable() && keepAlive)) {
           cqi->close(true);
         } else {
           cqi->close(false);
@@ -382,10 +383,9 @@ bool CqService::isCqExists(const std::string& cqName) {
 
   return m_cqQueryMap.find(cqName) != m_cqQueryMap.end();
 }
-void CqService::receiveNotification(TcrMessage* msg) {
-  invokeCqListeners(msg->getCqs(), msg->getMessageTypeForCq(), msg->getKey(),
-                    msg->getValue(), msg->getDeltaBytes(), msg->getEventId());
-  _GEODE_SAFE_DELETE(msg);
+void CqService::receiveNotification(TcrMessage& msg) {
+  invokeCqListeners(msg.getCqs(), msg.getMessageTypeForCq(), msg.getKey(),
+                    msg.getValue(), msg.getDeltaBytes(), msg.getEventId());
   notification_semaphore_.release();
 }
 

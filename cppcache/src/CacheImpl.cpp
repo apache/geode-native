@@ -74,7 +74,8 @@ CacheImpl::CacheImpl(Cache* c, const std::shared_ptr<Properties>& dsProps,
       m_serializationRegistry(std::make_shared<SerializationRegistry>()),
       m_pdxTypeRegistry(nullptr),
       m_threadPool(m_distributedSystem.getSystemProperties().threadPoolSize()),
-      m_authInitialize(authInitialize) {
+      m_authInitialize(authInitialize),
+      m_keepAlive(false) {
   using apache::geode::statistics::StatisticsManager;
 
   m_cacheTXManager = std::shared_ptr<CacheTransactionManager>(
@@ -234,11 +235,12 @@ void CacheImpl::sendNotificationCloseMsgs() {
   }
 }
 
-void CacheImpl::close(bool keepalive) {
+void CacheImpl::close(bool keepAlive) {
   this->throwIfClosed();
 
-  TcrMessage::setKeepAlive(keepalive);
-  // bug #247 fix for durable clients missing events when recycled
+  m_keepAlive = keepAlive;
+
+  // fix for durable clients missing events when recycled
   sendNotificationCloseMsgs();
 
   {
@@ -299,12 +301,12 @@ void CacheImpl::close(bool keepalive) {
     m_cacheStats->close();
   }
 
-  m_poolManager->close(keepalive);
+  m_poolManager->close(keepAlive);
 
   m_poolManager.reset();
 
   LOGFINE("Closed pool manager with keepalive %s",
-          keepalive ? "true" : "false");
+          keepAlive ? "true" : "false");
 
   // Close CachePef Stats
   if (m_cacheStats) {
@@ -422,7 +424,7 @@ void CacheImpl::createRegion(std::string name,
     }
 
     regionPtr = rpImpl;
-    rpImpl->addDisMessToQueue();
+    rpImpl->addDisconnectedMessageToQueue();
     // Instantiate a PersistenceManager object if DiskPolicy is overflow
     if (regionAttributes.getDiskPolicy() == DiskPolicyType::OVERFLOWS) {
       auto pmPtr = regionAttributes.getPersistenceManager();
@@ -706,16 +708,14 @@ void CacheImpl::processMarker() {
     if (!kv.second->isDestroyed()) {
       if (const auto tcrHARegion =
               std::dynamic_pointer_cast<ThinClientHARegion>(kv.second)) {
-        auto regionMsg = new TcrMessageClientMarker(
-            new DataOutput(createDataOutput()), true);
-        tcrHARegion->receiveNotification(regionMsg);
+        tcrHARegion->receiveNotification(
+            TcrMessageClientMarker(new DataOutput(createDataOutput()), true));
         for (const auto& iter : tcrHARegion->subregions(true)) {
           if (!iter->isDestroyed()) {
             if (const auto subregion =
                     std::dynamic_pointer_cast<ThinClientHARegion>(iter)) {
-              regionMsg = new TcrMessageClientMarker(
-                  new DataOutput(createDataOutput()), true);
-              subregion->receiveNotification(regionMsg);
+              subregion->receiveNotification(TcrMessageClientMarker(
+                  new DataOutput(createDataOutput()), true));
             }
           }
         }
@@ -900,6 +900,8 @@ int CacheImpl::getNumberOfTimeEndpointDisconnected(
   }
   throw IllegalStateException("Endpoint not found");
 }
+
+bool CacheImpl::isKeepAlive() { return m_keepAlive; }
 
 }  // namespace client
 }  // namespace geode

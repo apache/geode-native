@@ -24,6 +24,7 @@
 #include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
 #include "PreservedDataExpiryTask.hpp"
+#include "SerializationRegistry.hpp"
 #include "ThinClientPoolDM.hpp"
 
 namespace apache {

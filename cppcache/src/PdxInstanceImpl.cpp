@@ -22,14 +22,18 @@
 #include <geode/Cache.hpp>
 #include <geode/PdxFieldTypes.hpp>
 #include <geode/PdxReader.hpp>
+#include <geode/internal/DataSerializablePrimitive.hpp>
 
 #include "CacheRegionHelper.hpp"
 #include "PdxHelper.hpp"
+#include "Utils.hpp"
 #include "util/string.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
+
+using internal::DataSerializablePrimitive;
 
 int8_t PdxInstanceImpl::m_BooleanDefaultBytes[] = {0};
 int8_t PdxInstanceImpl::m_ByteDefaultBytes[] = {0};

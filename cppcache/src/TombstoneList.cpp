@@ -19,6 +19,8 @@
 
 #include <unordered_set>
 
+#include <geode/SystemProperties.hpp>
+
 #include "CacheImpl.hpp"
 #include "MapSegment.hpp"
 #include "TombstoneEntry.hpp"

@@ -271,7 +271,7 @@ class RegionInternal : public Region {
   std::shared_ptr<RegionEntry> createRegionEntry(
       const std::shared_ptr<CacheableKey>& key,
       const std::shared_ptr<Cacheable>& value);
-  virtual void addDisMessToQueue() {}
+  virtual void addDisconnectedMessageToQueue() {}
 
   virtual void txDestroy(const std::shared_ptr<CacheableKey>& key,
                          const std::shared_ptr<Serializable>& callBack,

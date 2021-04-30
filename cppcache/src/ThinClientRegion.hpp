@@ -133,7 +133,7 @@ class ThinClientRegion : public LocalRegion {
   std::vector<std::shared_ptr<CacheableString>> getInterestListRegex()
       const override;
 
-  void receiveNotification(TcrMessage* msg);
+  void receiveNotification(const TcrMessage& msg);
 
   static GfErrType handleServerException(const std::string& func,
                                          const std::string& exceptionMsg);
@@ -257,7 +257,7 @@ class ThinClientRegion : public LocalRegion {
                                    bool attemptFailover = true);
   GfErrType unregisterRegexNoThrowLocalDestroy(const std::string& regex,
                                                bool attemptFailover = true);
-  GfErrType clientNotificationHandler(TcrMessage& msg);
+  GfErrType clientNotificationHandler(const TcrMessage& msg);
 
   virtual void localInvalidateRegion_internal();
 

@@ -74,7 +74,7 @@ namespace Apache
         {           
           return managedPrimitive->ptr();
         } 
-        else if (auto primitive = std::dynamic_pointer_cast<native::DataSerializablePrimitive>(serializableObject))
+        else if (auto primitive = std::dynamic_pointer_cast<native::internal::DataSerializablePrimitive>(serializableObject))
         {           
           if (auto wrapperMethod = TypeRegistry::GetDataSerializablePrimitiveWrapperDelegateForDsCode(static_cast<int8_t>(primitive->getDsCode())))
           {
@@ -174,7 +174,7 @@ namespace Apache
             return (Client::ICacheableKey^)mg_obj->ptr( );
         }
 
-        if (auto primitive = std::dynamic_pointer_cast<native::DataSerializablePrimitive>(obj)) {
+        if (auto primitive = std::dynamic_pointer_cast<native::internal::DataSerializablePrimitive>(obj)) {
           auto wrapperMethod = TypeRegistry::GetDataSerializablePrimitiveWrapperDelegateForDsCode(static_cast<int8_t>(primitive->getDsCode()));
           if (wrapperMethod != nullptr)
           {

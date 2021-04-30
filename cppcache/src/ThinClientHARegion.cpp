@@ -117,15 +117,14 @@ void ThinClientHARegion::destroyDM(bool) {
   poolDM->decRegionCount();
 }
 
-void ThinClientHARegion::addDisMessToQueue() {
+void ThinClientHARegion::addDisconnectedMessageToQueue() {
   auto poolDM = std::dynamic_pointer_cast<ThinClientPoolHADM>(m_tcrdm);
-  poolDM->addDisMessToQueue(this);
+  poolDM->addDisconnectedMessageToQueue(this);
 
-  if (poolDM->m_redundancyManager->m_globalProcessedMarker &&
+  if (poolDM->redundancyManager_->m_globalProcessedMarker &&
       !m_processedMarker) {
-    TcrMessage* regionMsg = new TcrMessageClientMarker(
-        new DataOutput(m_cacheImpl->createDataOutput()), true);
-    receiveNotification(regionMsg);
+    receiveNotification(TcrMessageClientMarker(
+        new DataOutput(m_cacheImpl->createDataOutput()), true));
   }
 }
 

@@ -918,12 +918,16 @@ bool TcrConnection::processChunk(TcrMessageReply& reply,
 }
 
 void TcrConnection::close() {
-  TcrMessage* closeMsg = TcrMessage::getCloseConnMessage(
-      m_poolDM->getConnectionManager().getCacheImpl());
+  auto cache = m_poolDM->getConnectionManager().getCacheImpl();
+  TcrMessageCloseConnection closeMsg{
+      std::unique_ptr<DataOutput>(
+          new DataOutput(cache->createDataOutput(m_poolDM))),
+      cache->isKeepAlive() || m_poolDM->isKeepAlive()};
+
   try {
     if (!TcrConnectionManager::TEST_DURABLE_CLIENT_CRASH &&
         !m_connectionManager.isNetDown()) {
-      send(closeMsg->getMsgData(), closeMsg->getMsgLength(),
+      send(closeMsg.getMsgData(), closeMsg.getMsgLength(),
            std::chrono::seconds(2), false);
     }
   } catch (Exception& e) {
@@ -958,33 +962,6 @@ std::vector<int8_t> TcrConnection::readHandshakeData(
     }
   } else {
     return message;
-  }
-}
-
-std::shared_ptr<CacheableBytes> TcrConnection::readHandshakeRawData(
-    int32_t msgLength, std::chrono::microseconds connectTimeout) {
-  ConnErrType error = CONN_NOERR;
-  if (msgLength < 0) {
-    msgLength = 0;
-  }
-  if (msgLength == 0) {
-    return nullptr;
-  }
-  std::vector<int8_t> message(msgLength);
-  if ((error = receiveData(reinterpret_cast<char*>(message.data()), msgLength,
-                           connectTimeout)) != CONN_NOERR) {
-    m_conn.reset();
-    if (error & CONN_TIMEOUT) {
-      throwException(
-          TimeoutException("TcrConnection::TcrConnection: "
-                           "Timeout in handshake"));
-    } else {
-      throwException(
-          GeodeIOException("TcrConnection::TcrConnection: "
-                           "Handshake failure"));
-    }
-  } else {
-    return CacheableBytes::create(std::move(message));
   }
 }
 

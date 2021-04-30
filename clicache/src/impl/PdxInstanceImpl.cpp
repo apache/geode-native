@@ -20,6 +20,7 @@
 #include <CacheRegionHelper.hpp>
 #include <CacheImpl.hpp>
 #include <CachePerfStats.hpp>
+#include <Utils.hpp>
 #include "../end_native.hpp"
 
 #include "PdxInstanceImpl.hpp"

@@ -23,6 +23,7 @@
 
 #include <geode/PoolManager.hpp>
 #include <geode/SystemProperties.hpp>
+#include <geode/internal/DataSerializablePrimitive.hpp>
 
 #include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
@@ -38,6 +39,7 @@
 #include "TcrConnectionManager.hpp"
 #include "Utils.hpp"
 #include "VersionTag.hpp"
+#include "VersionedCacheableObjectPartList.hpp"
 #include "util/Log.hpp"
 #include "util/bounds.hpp"
 #include "util/exception.hpp"
@@ -45,6 +47,8 @@
 namespace apache {
 namespace geode {
 namespace client {
+
+using internal::DataSerializablePrimitive;
 
 LocalRegion::LocalRegion(const std::string& name, CacheImpl* cacheImpl,
                          const std::shared_ptr<RegionInternal>& rPtr,

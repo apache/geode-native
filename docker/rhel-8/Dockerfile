@@ -24,10 +24,10 @@ RUN yum update -y && \
     yum -y clean all
 
 COPY bellsoft.repo /etc/yum.repos.d/
-COPY --from=centos:8 /etc/yum.repos.d/CentOS-PowerTools.repo /etc/yum.repos.d/
+COPY --from=centos:8 /etc/yum.repos.d/CentOS-Linux-PowerTools.repo /etc/yum.repos.d/
 COPY --from=centos:8 /etc/pki/rpm-gpg/RPM-GPG-KEY-centosofficial /etc/pki/rpm-gpg/
 
-RUN yum config-manager --set-enabled PowerTools && \
+RUN yum config-manager --set-enabled powertools && \
     yum update -y && \
     yum install -y --setopt=tsflags=nodocs \
         git \
