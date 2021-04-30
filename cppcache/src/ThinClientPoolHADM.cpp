@@ -288,13 +288,6 @@ void ThinClientPoolHADM::removeCallbackConnection(TcrEndpoint* ep) {
   redundancyManager_->removeCallbackConnection(ep);
 }
 
-void ThinClientPoolHADM::clearKeysOfInterestAllRegions() {
-  std::lock_guard<decltype(regionsLock_)> guard(regionsLock_);
-  for (auto region : regions_) {
-    region->clearKeysOfInterest();
-  }
-}
-
 void ThinClientPoolHADM::sendNotConnectedMessageToAllregions() {
   std::lock_guard<decltype(regionsLock_)> guard(regionsLock_);
   for (auto region : regions_) {

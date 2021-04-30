@@ -119,7 +119,6 @@ class ThinClientPoolHADM : public ThinClientPoolDM {
   std::recursive_mutex regionsLock_;
   void addRegion(ThinClientRegion* theTCR);
   void removeRegion(ThinClientRegion* theTCR);
-  void clearKeysOfInterestAllRegions();
   void sendNotConnectedMessageToAllregions();
   void addDisconnectedMessageToQueue(ThinClientRegion* theTCR);
 

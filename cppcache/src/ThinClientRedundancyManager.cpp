@@ -455,7 +455,6 @@ GfErrType ThinClientRedundancyManager::maintainRedundancyLevel(
     // that we can send it back to the caller, to avoid missing out due
     // to nonfatal errors such as server not available
     if (m_poolHADM && !m_allEndpointsDisconnected) {
-      m_poolHADM->clearKeysOfInterestAllRegions();
       m_poolHADM->sendNotConnectedMessageToAllregions();
       m_allEndpointsDisconnected = true;
     }
