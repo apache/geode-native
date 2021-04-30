@@ -24,7 +24,6 @@
 #include <geode/Cache.hpp>
 #include <geode/CacheFactory.hpp>
 #include <geode/EntryEvent.hpp>
-#include <geode/RegionEvent.hpp>
 #include <geode/RegionFactory.hpp>
 #include <geode/RegionShortcut.hpp>
 
@@ -34,11 +33,8 @@
 
 class CacheListenerMock : public apache::geode::client::CacheListener {
  public:
-  MOCK_METHOD1(afterDestroy, void(const apache::geode::client::EntryEvent&));
-  MOCK_METHOD1(afterCreate, void(const apache::geode::client::EntryEvent&));
-  MOCK_METHOD1(afterRegionLive,
-               void(const apache::geode::client::RegionEvent&));
-  MOCK_METHOD1(afterRegionDisconnected, void(apache::geode::client::Region&));
+  MOCK_METHOD1(afterDestroy,
+               void(const apache::geode::client::EntryEvent& event));
 };
 
 namespace {
@@ -54,7 +50,6 @@ using apache::geode::client::RegionShortcut;
 using ::testing::_;
 using ::testing::DoAll;
 using ::testing::InvokeWithoutArgs;
-using ::testing::Return;
 
 ACTION_P(CvNotifyOne, cv) { cv->notify_one(); }
 
@@ -161,10 +156,6 @@ TEST(RegisterKeysTest, RegisterAllWithConsistencyDisabled) {
   bool destroyed = false;
   std::condition_variable cv;
   auto listener = std::make_shared<CacheListenerMock>();
-
-  EXPECT_CALL(*listener, afterCreate(_)).WillRepeatedly(Return());
-  EXPECT_CALL(*listener, afterRegionLive(_)).WillRepeatedly(Return());
-  EXPECT_CALL(*listener, afterRegionDisconnected(_)).WillRepeatedly(Return());
   EXPECT_CALL(*listener, afterDestroy(_))
       .Times(1)
       .WillOnce(DoAll(InvokeWithoutArgs([&destroyed] { destroyed = true; }),
@@ -193,90 +184,6 @@ TEST(RegisterKeysTest, RegisterAllWithConsistencyDisabled) {
     EXPECT_TRUE(cv.wait_for(lock, std::chrono::minutes(1),
                             [&destroyed] { return destroyed; }));
   }
-}
-
-TEST(RegisterKeysTest, RegisterAnyAndClusterRestart) {
-  std::mutex mutex_create;
-  std::condition_variable cv_create;
-
-  std::mutex mutex_shutdown;
-  std::condition_variable cv_shutdown;
-
-  std::mutex mutex_live;
-  std::condition_variable cv_live;
-
-  Cluster cluster{LocatorCount{1}, ServerCount{1}};
-  cluster.start();
-
-  auto& gfsh = cluster.getGfsh();
-  gfsh.create().region().withName("region").withType("REPLICATE").execute();
-
-  auto cache = createTestCache();
-  {
-    auto poolFactory =
-        cache.getPoolManager().createFactory().setSubscriptionEnabled(true);
-    cluster.applyLocators(poolFactory);
-    poolFactory.create("default");
-  }
-
-  auto listener = std::make_shared<CacheListenerMock>();
-  EXPECT_CALL(*listener, afterRegionLive(_))
-      .WillRepeatedly(CvNotifyOne(&cv_live));
-  EXPECT_CALL(*listener, afterRegionDisconnected(_))
-      .WillRepeatedly(CvNotifyOne(&cv_shutdown));
-
-  auto region = cache.createRegionFactory(RegionShortcut::CACHING_PROXY)
-                    .setPoolName("default")
-                    .setCacheListener(listener)
-                    .create("region");
-  region->registerAllKeys(false, true);
-  EXPECT_EQ(region->keys().size(), 0);
-
-  auto producer_cache = createTestCache();
-  {
-    auto poolFactory = producer_cache.getPoolManager().createFactory();
-    cluster.applyLocators(poolFactory);
-    poolFactory.create("default");
-  }
-
-  auto producer_region = setupProxyRegion(producer_cache);
-
-  auto N = 100U;
-  EXPECT_CALL(*listener, afterCreate(_))
-      .Times(N)
-      .WillRepeatedly(CvNotifyOne(&cv_create));
-
-  auto producer = std::thread([&producer_region, N] {
-    for (auto i = 0U; i < N;) {
-      auto key = "entry-" + std::to_string(i++);
-      auto value = "{\"entryName\": \"" + key + "\"}";
-      producer_region->put(key, value);
-    }
-  });
-
-  {
-    std::unique_lock<std::mutex> lock(mutex_create);
-    cv_create.wait(lock, [&region, N] { return region->keys().size() == N; });
-  }
-
-  producer.join();
-  gfsh.shutdown().execute();
-
-  {
-    std::unique_lock<std::mutex> lock(mutex_shutdown);
-    cv_shutdown.wait(lock);
-  }
-
-  for (auto& server : cluster.getServers()) {
-    server.start();
-  }
-
-  {
-    std::unique_lock<std::mutex> lock(mutex_live);
-    cv_live.wait(lock);
-  }
-
-  EXPECT_EQ(region->keys().size(), 0);
 }
 
 TEST(RegisterKeysTest, RegisterAnyWithCachingRegion) {

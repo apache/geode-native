@@ -126,9 +126,6 @@ class EntriesMap {
   virtual void getValues(
       std::vector<std::shared_ptr<Cacheable>>& result) const = 0;
 
-  /** @brief return whether there are no entryies. */
-  virtual bool empty() const = 0;
-
   /** @brief return the number of entries in the map. */
   virtual uint32_t size() const = 0;
 

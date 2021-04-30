@@ -177,8 +177,6 @@ void ConcurrentEntriesMap::getValues(
   }
 }
 
-bool ConcurrentEntriesMap::empty() const { return m_size == 0; }
-
 uint32_t ConcurrentEntriesMap::size() const { return m_size; }
 
 int ConcurrentEntriesMap::addTrackerForEntry(
