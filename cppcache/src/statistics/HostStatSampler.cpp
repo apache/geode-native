@@ -28,6 +28,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/process/environment.hpp>
 #include <boost/range/adaptors.hpp>
+#include <boost/thread/lock_types.hpp>
 
 #include <geode/CacheFactory.hpp>
 #include <geode/ExceptionTypes.hpp>
@@ -276,7 +277,7 @@ void HostStatSampler::putStatsInAdminRegion() {
       return;
     }
 
-    auto&& guard = adminRgn->make_shared_lock();
+    boost::shared_lock<boost::shared_mutex> guard{adminRgn->getMutex()};
     if (!adminRgn->isDestroyed()) {
       if (conn_man->getNumEndPoints() > 0) {
         if (!initDone) {

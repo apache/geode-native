@@ -17,6 +17,8 @@
 
 #include "AdminRegion.hpp"
 
+#include <boost/thread/lock_types.hpp>
+
 #include <geode/SystemProperties.hpp>
 
 #include "CacheImpl.hpp"
@@ -139,10 +141,7 @@ AdminRegion::~AdminRegion() {
 
 const bool& AdminRegion::isDestroyed() { return m_destroyPending; }
 
-boost::shared_lock<boost::shared_mutex> AdminRegion::make_shared_lock() {
-  m_rwMutex.lock_shared();
-  return {m_rwMutex, boost::adopt_lock};
-}
+boost::shared_mutex& AdminRegion::getMutex() { return m_rwMutex; }
 
 }  // namespace client
 }  // namespace geode

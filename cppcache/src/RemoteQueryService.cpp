@@ -17,6 +17,8 @@
 
 #include "RemoteQueryService.hpp"
 
+#include <boost/thread/lock_types.hpp>
+
 #include "CacheImpl.hpp"
 #include "CqServiceVsdStats.hpp"
 #include "ReadWriteLock.hpp"
@@ -313,10 +315,7 @@ void RemoteQueryService::invokeCqConnectedListeners(ThinClientPoolDM* pool,
   m_cqService->invokeCqConnectedListeners(poolName, connected);
 }
 
-boost::shared_lock<boost::shared_mutex> RemoteQueryService::make_shared_lock() {
-  mutex_.lock_shared();
-  return {mutex_, boost::adopt_lock};
-}
+boost::shared_mutex& RemoteQueryService::getMutex() { return mutex_; }
 
 }  // namespace client
 }  // namespace geode

@@ -23,9 +23,6 @@
 #include <memory>
 #include <string>
 
-#include <boost/thread.hpp>
-#include <boost/thread/lock_types.hpp>
-
 #include <geode/Serializable.hpp>
 
 #include "ErrType.hpp"
@@ -70,7 +67,7 @@ class AdminRegion : public std::enable_shared_from_this<AdminRegion> {
 
   static std::shared_ptr<AdminRegion> create(
       CacheImpl* cache, ThinClientBaseDM* distMan = nullptr);
-  boost::shared_lock<boost::shared_mutex> make_shared_lock();
+  boost::shared_mutex& getMutex();
   const bool& isDestroyed();
   void close();
   void init();

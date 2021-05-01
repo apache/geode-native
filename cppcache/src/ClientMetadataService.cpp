@@ -300,7 +300,8 @@ void ClientMetadataService::enqueueForMetadataRefresh(
   if (region != nullptr) {
     auto tcrRegion = dynamic_cast<ThinClientRegion*>(region.get());
     {
-      auto&& guard = tcrRegion->getMetadataLock();
+      boost::unique_lock<boost::shared_mutex> guard{
+          tcrRegion->getMetadataMutex()};
       if (tcrRegion->getMetaDataRefreshed()) {
         return;
       }

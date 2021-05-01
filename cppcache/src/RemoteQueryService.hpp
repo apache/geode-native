@@ -23,8 +23,7 @@
 #include <memory>
 #include <string>
 
-#include <boost/thread.hpp>
-#include <boost/thread/lock_types.hpp>
+#include <boost/thread/shared_mutex.hpp>
 
 #include <geode/QueryService.hpp>
 #include <geode/internal/geode_globals.hpp>
@@ -48,7 +47,7 @@ class RemoteQueryService
 
   void init();
 
-  boost::shared_lock<boost::shared_mutex> make_shared_lock();
+  boost::shared_mutex& getMutex();
 
   inline const volatile bool& invalid() { return m_invalid; }
 

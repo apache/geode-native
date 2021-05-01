@@ -17,6 +17,8 @@
 
 #include "ThinClientHARegion.hpp"
 
+#include <boost/thread/lock_types.hpp>
+
 #include <geode/PoolManager.hpp>
 #include <geode/SystemProperties.hpp>
 
@@ -24,6 +26,7 @@
 #include "ReadWriteLock.hpp"
 #include "TcrHADistributionManager.hpp"
 #include "ThinClientPoolHADM.hpp"
+
 namespace apache {
 namespace geode {
 namespace client {

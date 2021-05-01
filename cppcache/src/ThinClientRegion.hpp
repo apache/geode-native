@@ -23,9 +23,6 @@
 #include <mutex>
 #include <unordered_map>
 
-#include <boost/thread.hpp>
-#include <boost/thread/lock_types.hpp>
-
 #include <geode/ResultCollector.hpp>
 #include <geode/internal/functional.hpp>
 
@@ -173,7 +170,7 @@ class ThinClientRegion : public LocalRegion {
   GfErrType getFuncAttributes(const std::string& func,
                               std::shared_ptr<std::vector<int8_t>>* attr);
 
-  boost::unique_lock<boost::shared_mutex> getMetadataLock();
+  boost::shared_mutex& getMetadataMutex();
 
   bool const& getMetaDataRefreshed() { return m_isMetaDataRefreshed; }
 

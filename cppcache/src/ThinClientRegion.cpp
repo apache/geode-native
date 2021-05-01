@@ -20,6 +20,8 @@
 #include <algorithm>
 #include <regex>
 
+#include <boost/thread/lock_types.hpp>
+
 #include <geode/PoolManager.hpp>
 #include <geode/Struct.hpp>
 #include <geode/SystemProperties.hpp>
@@ -3274,9 +3276,8 @@ void ThinClientRegion::txPut(
 }
 
 void ThinClientRegion::setProcessedMarker(bool) {}
-boost::unique_lock<boost::shared_mutex> ThinClientRegion::getMetadataLock() {
-  region_mutex_.lock();
-  return {region_mutex_, boost::adopt_lock};
+boost::shared_mutex& ThinClientRegion::getMetadataMutex() {
+  return region_mutex_;
 }
 
 void ChunkedInterestResponse::reset() {

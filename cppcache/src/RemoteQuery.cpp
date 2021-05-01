@@ -17,6 +17,8 @@
 
 #include "RemoteQuery.hpp"
 
+#include <boost/thread/lock_types.hpp>
+
 #include "ResultSetImpl.hpp"
 #include "StructSetImpl.hpp"
 #include "TcrConnectionManager.hpp"
@@ -125,7 +127,7 @@ GfErrType RemoteQuery::executeNoThrow(
     ThinClientBaseDM* tcdm, std::shared_ptr<CacheableVector> paramList) {
   LOGFINEST("%s: executing query: %s", func, m_queryString.c_str());
 
-  auto&& guard = m_queryService->make_shared_lock();
+  boost::shared_lock<boost::shared_mutex> guard{m_queryService->getMutex()};
   if (m_queryService->invalid()) {
     return GF_CACHE_CLOSED_EXCEPTION;
   }
