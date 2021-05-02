@@ -117,6 +117,7 @@ foreach(FILE ${SOURCES})
       apache-geode
       testobject
       framework
+      security
   )
 
   target_include_directories(${TEST}

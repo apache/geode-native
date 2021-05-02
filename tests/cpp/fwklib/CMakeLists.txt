@@ -16,7 +16,6 @@
 project(framework LANGUAGES CXX)
 
 add_library(framework STATIC
-  FwkLog.cpp
   GsRandom.cpp
 )
 

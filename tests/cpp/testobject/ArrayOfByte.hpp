@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <fwklib/FwkLog.hpp>
+#include <fwklib/FwkException.hpp>
 #include <string>
 
 #include <ace/Time_Value.h>
@@ -29,6 +29,14 @@
 #include "DataOutputInternal.hpp"
 #include "SerializationRegistry.hpp"
 #include "testobject_export.h"
+
+#define FWKEXCEPTION(x)                                              \
+  do {                                                               \
+    std::ostringstream os;                                           \
+    os << x << " In file: " << __FILE__ << " at line: " << __LINE__; \
+    throw apache::geode::client::testframework::FwkException(        \
+        os.str().c_str());                                           \
+  } while (0)
 
 namespace testobject {
 
