@@ -37,6 +37,9 @@ class Gfsh {
   class Create;
   Create create();
 
+  class Destroy;
+  Destroy destroy();
+
   class Connect;
   Connect connect();
 
@@ -274,6 +277,23 @@ class Gfsh {
     class GatewayReceiver : public Command<void> {
      public:
       explicit GatewayReceiver(Gfsh &gfsh);
+    };
+  };
+
+  class Destroy : public Verb {
+   public:
+    explicit Destroy(Gfsh &gfsh);
+
+    class Region;
+    Region region();
+
+    class Region : public Command<void> {
+     public:
+      explicit Region(Gfsh &gfsh);
+
+      Region &withName(const std::string &name);
+
+      Region &ifExists();
     };
   };
 

@@ -54,11 +54,11 @@ class APACHE_GEODE_EXPORT CacheableString
       : m_str(std::move(value)), m_hashcode(0) {
     bool ascii = isAscii(m_str);
 
-    m_type = m_str.length() > std::numeric_limits<uint16_t>::max()
-                 ? ascii ? DSCode::CacheableASCIIStringHuge
-                         : DSCode::CacheableStringHuge
-             : ascii ? DSCode::CacheableASCIIString
-                     : DSCode::CacheableString;
+    m_type =
+        m_str.length() > std::numeric_limits<uint16_t>::max()
+            ? ascii ? DSCode::CacheableASCIIStringHuge
+                    : DSCode::CacheableStringHuge
+            : ascii ? DSCode::CacheableASCIIString : DSCode::CacheableString;
   }
 
   ~CacheableString() noexcept override = default;

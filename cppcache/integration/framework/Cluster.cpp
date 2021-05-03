@@ -394,27 +394,28 @@ apache::geode::client::Cache Cluster::createCache() { return createCache({}); }
 
 apache::geode::client::Cache Cluster::createCache(
     const std::unordered_map<std::string, std::string> &properties) {
-  return createCache(properties, false);
+  return createCache(properties, Subscription_State::Disabled);
 }
 
 apache::geode::client::Cache Cluster::createCache(
     const std::unordered_map<std::string, std::string> &properties,
-    bool subscriptionEnabled) {
+    Subscription_State state) {
   using apache::geode::client::CacheFactory;
 
   CacheFactory cacheFactory;
+
+  cacheFactory.set("log-level", "none")
+      .set("statistic-sampling-enabled", "false");
 
   for (auto &&property : properties) {
     cacheFactory.set(property.first, property.second);
   }
 
-  auto cache = cacheFactory.set("log-level", "none")
-                   .set("statistic-sampling-enabled", "false")
-                   .create();
+  auto cache = cacheFactory.create();
 
   auto poolFactory =
       cache.getPoolManager().createFactory().setSubscriptionEnabled(
-          subscriptionEnabled);
+          state == Subscription_State::Enabled);
   applyLocators(poolFactory);
   poolFactory.create("default");
 
@@ -474,9 +475,10 @@ void Cluster::start(std::function<void()> extraGfshCommands) {
   servers_.reserve(initialServers_);
   std::string xmlFile;
   for (size_t i = 0; i < initialServers_; i++) {
-    xmlFile = (cacheXMLFiles_.size() == 0) ? ""
-              : cacheXMLFiles_.size() == 1 ? cacheXMLFiles_[0]
-                                           : cacheXMLFiles_[i];
+    xmlFile = (cacheXMLFiles_.size() == 0)
+                  ? ""
+                  : cacheXMLFiles_.size() == 1 ? cacheXMLFiles_[0]
+                                               : cacheXMLFiles_[i];
 
     uint16_t serverPort;
     if (serverPorts_.empty()) {
