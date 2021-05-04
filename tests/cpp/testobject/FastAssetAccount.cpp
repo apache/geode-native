@@ -39,12 +39,9 @@ FastAssetAccount::FastAssetAccount(int idx, bool encodeTimestp, int maxVal,
     assets->emplace(CacheableInt32::create(i), asset);
     netWorth += asset->getValue();
   }
+
   if (encodeTimestamp) {
-    ACE_Time_Value startTime;
-    startTime = ACE_OS::gettimeofday();
-    ACE_UINT64 tusec = 0;
-    startTime.to_usec(tusec);
-    timestamp = tusec * 1000;
+    timestamp = std::chrono::system_clock::now().time_since_epoch().count();
   }
 }
 

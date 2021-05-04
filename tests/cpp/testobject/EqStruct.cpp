@@ -25,11 +25,8 @@ namespace testobject {
 EqStruct::EqStruct(int index) {
   myIndex = index;  // index
   state = "1";
-  ACE_Time_Value startTime;
-  startTime = ACE_OS::gettimeofday();
-  ACE_UINT64 tusec = 0;
-  startTime.to_usec(tusec);
-  timestamp = tusec * 1000;
+
+  timestamp = std::chrono::system_clock::now().time_since_epoch().count();
   executedPriceSum = 5.5;
   cxlQty = 10;
   isSyntheticOrder = 0;

@@ -16,7 +16,6 @@
 project(framework LANGUAGES CXX)
 
 add_library(framework STATIC
-  FwkLog.cpp
   GsRandom.cpp
 )
 
@@ -44,6 +43,7 @@ target_link_libraries(framework
     apache-geode
   PRIVATE
     ACE::ACE
+    Boost::boost
     internal
     _WarningsAsError
 )
