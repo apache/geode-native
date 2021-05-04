@@ -121,6 +121,7 @@ class ThinClientPoolHADM : public ThinClientPoolDM {
   void removeRegion(ThinClientRegion* theTCR);
   void sendNotConnectedMessageToAllregions();
   void addDisconnectedMessageToQueue(ThinClientRegion* theTCR);
+  void clearKeysOfInterestAllRegions();
 
   friend class ThinClientHARegion;
   friend class TcrConnectionManager;

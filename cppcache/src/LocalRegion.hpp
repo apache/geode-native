@@ -72,12 +72,13 @@ namespace client {
   } while (0)
 #endif
 
-class PutActions;
-class PutActionsTx;
 class CreateActions;
 class DestroyActions;
-class RemoveActions;
 class InvalidateActions;
+class InterestResultPolicy;
+class PutActions;
+class PutActionsTx;
+class RemoveActions;
 class VersionedCacheableObjectPartList;
 
 typedef std::unordered_map<std::shared_ptr<CacheableKey>,
@@ -198,6 +199,8 @@ class APACHE_GEODE_EXPORT LocalRegion : public RegionInternal {
   void localDestroy(const std::shared_ptr<CacheableKey>& key,
                     const std::shared_ptr<Serializable>& aCallbackArgument =
                         nullptr) override;
+  virtual GfErrType localDestroyNoCallbacks(
+      const std::shared_ptr<CacheableKey>& key);
   bool remove(const std::shared_ptr<CacheableKey>& key,
               const std::shared_ptr<Cacheable>& value,
               const std::shared_ptr<Serializable>& aCallbackArgument =
@@ -571,6 +574,14 @@ class APACHE_GEODE_EXPORT LocalRegion : public RegionInternal {
   virtual GfErrType getNoThrow_FullObject(
       std::shared_ptr<EventId> eventId, std::shared_ptr<Cacheable>& fullObject,
       std::shared_ptr<VersionTag>& versionTag);
+
+  void clearKeysOfInterest(
+      const std::unordered_map<std::shared_ptr<CacheableKey>,
+                               InterestResultPolicy>& interest_list);
+  void clearKeysOfInterestRegex(const std::string& regex);
+  void clearKeysOfInterestRegex(
+      const std::unordered_map<std::string, InterestResultPolicy>&
+          interest_list);
 
  private:
   std::shared_ptr<Region> findSubRegion(const std::string& name);
