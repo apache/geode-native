@@ -176,7 +176,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
     for (int i = 0; i < QueryStrings::RQsize(); i++) {
       if (m_isPdx) {
         if (i == 18) {
-          LOGINFO(
+          LOG_INFO(
               "Skipping query index %d because it is unsupported for pdx type.",
               i);
           continue;

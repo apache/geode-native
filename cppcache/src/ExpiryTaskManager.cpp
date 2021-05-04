@@ -53,9 +53,9 @@ void ExpiryTaskManager::start() {
     start_promise.set_value(true);
     DistributedSystemImpl::setThreadName(NC_ETM_Thread);
 
-    LOGFINE("ExpiryTaskManager thread is running.");
+    LOG_FINE("ExpiryTaskManager thread is running.");
     io_context_.run();
-    LOGFINE("ExpiryTaskManager thread has stopped.");
+    LOG_FINE("ExpiryTaskManager thread has stopped.");
   }};
 
   running_ = start_future.get();
@@ -70,7 +70,7 @@ void ExpiryTaskManager::stop() {
           "Tried to stop ExpiryTaskManager when it was not running");
     }
 
-    LOGDEBUG("Stopping ExpiryTaskManager...");
+    LOG_DEBUG("Stopping ExpiryTaskManager...");
 
     work_guard_.reset();
     running_ = false;
@@ -87,7 +87,7 @@ ExpiryTask::id_t ExpiryTaskManager::schedule(
   std::unique_lock<std::mutex> lock(mutex_);
 
   if (!running_) {
-    LOGDEBUG("Tried to add a task while ExpiryTaskManager is not running");
+    LOG_DEBUG("Tried to add a task while ExpiryTaskManager is not running");
     return ExpiryTask::invalid();
   }
 
@@ -101,8 +101,8 @@ ExpiryTask::id_t ExpiryTaskManager::schedule(
   task_map_.emplace(task_id, std::move(task)).first->second->reset(delay);
 
   using apache::geode::internal::chrono::duration::to_string;
-  LOGDEBUG("Task %zu has been scheduled in %s with an interval of %s", task_id,
-           to_string(delay).c_str(), to_string(interval).c_str());
+  LOG_DEBUG("Task %zu has been scheduled in %s with an interval of %s", task_id,
+            to_string(delay).c_str(), to_string(interval).c_str());
   return task_id;
 }
 

@@ -92,9 +92,9 @@ class RemoteQueryService
   // For Lazy Cq Start-no use, no start
   inline void initCqService() {
     if (m_cqService == nullptr) {
-      LOGFINE("RemoteQueryService: starting cq service");
+      LOG_FINE("RemoteQueryService: starting cq service");
       m_cqService = std::make_shared<CqService>(m_tccdm, m_statisticsFactory);
-      LOGFINE("RemoteQueryService: started cq service");
+      LOG_FINE("RemoteQueryService: started cq service");
     }
   }
 

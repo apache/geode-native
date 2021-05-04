@@ -29,7 +29,7 @@ void GetAllServersResponse::toData(DataOutput& output) const {
 }
 void GetAllServersResponse::fromData(DataInput& input) {
   int numServers = input.readInt32();
-  LOGFINER("GetAllServersResponse::fromData length = %d ", numServers);
+  LOG_FINER("GetAllServersResponse::fromData length = %d ", numServers);
   for (int i = 0; i < numServers; i++) {
     std::shared_ptr<ServerLocation> sLoc = std::make_shared<ServerLocation>();
     sLoc->fromData(input);

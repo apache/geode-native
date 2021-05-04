@@ -64,13 +64,13 @@ GeodeStatisticsFactory::~GeodeStatisticsFactory() {
     std::string message = "Geode exception " + ex.getName() +
                           " caught: " + ex.getMessage() +
                           "\n~StatisticsFactory swallowing Geode exception";
-    LOGWARN(message);
+    LOG_WARN(message);
   } catch (const std::exception& ex) {
     std::string what = "~GeodeStatisticsFactory swallowing std::exception: ";
     what += ex.what();
-    LOGWARN(what.c_str());
+    LOG_WARN(what.c_str());
   } catch (...) {
-    LOGERROR("~GeodeStatisticsFactory swallowing unknown exception");
+    LOG_ERROR("~GeodeStatisticsFactory swallowing unknown exception");
   }
 }
 

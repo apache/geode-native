@@ -40,7 +40,7 @@ RemoteQuery::RemoteQuery(
       m_queryService(queryService),
       m_tccdm(tccdmptr),
       m_authenticatedView(authenticatedView) {
-  LOGFINEST("RemoteQuery: created a new query: " + querystr);
+  LOG_FINEST("RemoteQuery: created a new query: " + querystr);
 }
 
 std::shared_ptr<SelectResults> RemoteQuery::execute(
@@ -90,13 +90,13 @@ std::shared_ptr<SelectResults> RemoteQuery::execute(
 
   std::shared_ptr<SelectResults> sr;
 
-  LOGFINEST("%s: reading reply for query: %s", func, m_queryString.c_str());
+  LOG_FINEST("%s: reading reply for query: %s", func, m_queryString.c_str());
   auto&& values = resultCollector->getQueryResults();
   auto&& fieldNameVec = resultCollector->getStructFieldNames();
   size_t sizeOfFieldNamesVec = fieldNameVec.size();
   if (sizeOfFieldNamesVec == 0) {
-    LOGFINEST("%s: creating ResultSet for query: %s", func,
-              m_queryString.c_str());
+    LOG_FINEST("%s: creating ResultSet for query: %s", func,
+               m_queryString.c_str());
     sr = std::make_shared<ResultSetImpl>(values);
   } else {
     if (values->size() % fieldNameVec.size() != 0) {
@@ -107,8 +107,8 @@ std::shared_ptr<SelectResults> RemoteQuery::execute(
                     func);
       throw MessageException(exMsg);
     } else {
-      LOGFINEST("%s: creating StructSet for query: %s", func,
-                m_queryString.c_str());
+      LOG_FINEST("%s: creating StructSet for query: %s", func,
+                 m_queryString.c_str());
       sr = std::make_shared<StructSetImpl>(values, fieldNameVec);
     }
   }
@@ -125,15 +125,14 @@ std::shared_ptr<SelectResults> RemoteQuery::execute(
 GfErrType RemoteQuery::executeNoThrow(
     std::chrono::milliseconds timeout, TcrMessageReply& reply, const char* func,
     ThinClientBaseDM* tcdm, std::shared_ptr<CacheableVector> paramList) {
-  LOGFINEST("%s: executing query: %s", func, m_queryString.c_str());
+  LOG_FINEST("%s: executing query: %s", func, m_queryString.c_str());
 
   boost::shared_lock<boost::shared_mutex> guard{m_queryService->getMutex()};
   if (m_queryService->invalid()) {
     return GF_CACHE_CLOSED_EXCEPTION;
   }
-
-  LOGDEBUG("%s: creating QUERY TcrMessage for query: %s", func,
-           m_queryString.c_str());
+  LOG_DEBUG("%s: creating QUERY TcrMessage for query: %s", func,
+            m_queryString.c_str());
   if (paramList != nullptr) {
     // QUERY_WITH_PARAMETERS
     TcrMessageQueryWithParameters msg(
@@ -143,7 +142,8 @@ GfErrType RemoteQuery::executeNoThrow(
     msg.setTimeout(timeout);
     reply.setTimeout(timeout);
 
-    LOGFINEST("%s: sending request for query: %s", func, m_queryString.c_str());
+    LOG_FINEST("%s: sending request for query: %s", func,
+               m_queryString.c_str());
     if (tcdm == nullptr) {
       tcdm = m_tccdm;
     }
@@ -166,7 +166,8 @@ GfErrType RemoteQuery::executeNoThrow(
     msg.setTimeout(timeout);
     reply.setTimeout(timeout);
 
-    LOGFINEST("%s: sending request for query: %s", func, m_queryString.c_str());
+    LOG_FINEST("%s: sending request for query: %s", func,
+               m_queryString.c_str());
     if (tcdm == nullptr) {
       tcdm = m_tccdm;
     }

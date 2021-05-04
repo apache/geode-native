@@ -39,7 +39,7 @@ class ServerLocation : public internal::DataSerializableInternal {
  public:
   ServerLocation(std::string serverName, int port)
       : Serializable(), m_serverName(std::move(serverName)), m_port(port) {
-    LOGDEBUG(
+    LOG_DEBUG(
         "ServerLocation::ServerLocation(): creating ServerLocation for %s:%d",
         m_serverName.c_str(), port);
     makeEpString();
@@ -83,7 +83,7 @@ class ServerLocation : public internal::DataSerializableInternal {
   }
 
   void printInfo() {
-    LOGDEBUG(" Got Host \"%s\", and port %d", getServerName().c_str(), m_port);
+    LOG_DEBUG(" Got Host \"%s\", and port %d", getServerName().c_str(), m_port);
   }
 
   bool operator<(const ServerLocation rhs) const {

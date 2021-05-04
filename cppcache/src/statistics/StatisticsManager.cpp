@@ -75,12 +75,12 @@ StatisticsManager::~StatisticsManager() {
     std::lock_guard<decltype(m_statsListLock)> guard(m_statsListLock);
     int32_t count = static_cast<int32_t>(m_statsList.size());
     if (count > 0) {
-      LOGFINEST("~StatisticsManager has found %d leftover statistics:", count);
+      LOG_FINEST("~StatisticsManager has found %d leftover statistics:", count);
       std::vector<Statistics*>::iterator iterFind = m_statsList.begin();
       while (iterFind != m_statsList.end()) {
         if (*iterFind != nullptr) {
           std::string temp((*iterFind)->getType()->getName());
-          LOGFINEST("Leftover statistic: %s", temp.c_str());
+          LOG_FINEST("Leftover statistic: %s", temp.c_str());
           /* adongre
            * Passing null variable "*iterFind" to function
            * "apache::geode::statistics::StatisticsManager::deleteStatistics(apache::geode::statistics::Statistics
@@ -96,14 +96,14 @@ StatisticsManager::~StatisticsManager() {
       m_statsList.erase(m_statsList.begin(), m_statsList.end());
     }
   } catch (const Exception& ex) {
-    LOGWARN("~StatisticsManager swallowing Geode exception %s",
-            ex.getName().c_str());
+    LOG_WARN("~StatisticsManager swallowing Geode exception %s",
+             ex.getName().c_str());
   } catch (const std::exception& ex) {
     std::string what = "~StatisticsManager swallowing std::exception: ";
     what += ex.what();
-    LOGWARN(what.c_str());
+    LOG_WARN(what.c_str());
   } catch (...) {
-    LOGERROR("~StatisticsManager swallowing unknown exception");
+    LOG_ERROR("~StatisticsManager swallowing unknown exception");
   }
 }
 

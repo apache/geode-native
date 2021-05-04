@@ -49,28 +49,28 @@ PdxTypes1::~PdxTypes1() noexcept {
 int32_t PdxTypes1::getHashCode() { return 1; }
 
 bool PdxTypes1::equals(std::shared_ptr<PdxSerializable> obj) {
-  // LOGDEBUG("NIL:PdxTypes1::==::33");
+  // LOG_DEBUG("NIL:PdxTypes1::==::33");
   if (obj == nullptr) {
-    // LOGDEBUG("NIL:PdxTypes1::==::35");
+    // LOG_DEBUG("NIL:PdxTypes1::==::35");
     return false;
   }
   auto pap = std::dynamic_pointer_cast<PdxTypes1>(obj);
   if (pap == nullptr) {
-    // LOGDEBUG("NIL:PdxTypes1::==::40");
+    // LOG_DEBUG("NIL:PdxTypes1::==::40");
     return false;
   }
   if (pap.get() == this) {
-    // LOGDEBUG("NIL:PdxTypes1::==::44");
+    // LOG_DEBUG("NIL:PdxTypes1::==::44");
     return true;
   }
-  LOGINFO("PdxTypes1:[m_i1=%d] [m_i2=%d] [m_i3=%d] [m_i4=%d]", m_i1, m_i2, m_i3,
-          m_i4);
+  LOG_INFO("PdxTypes1:[m_i1=%d] [m_i2=%d] [m_i3=%d] [m_i4=%d]", m_i1, m_i2,
+           m_i3, m_i4);
   if (m_i1 == pap->m_i1 && m_i2 == pap->m_i2 && m_i3 == pap->m_i3 &&
       m_i4 == pap->m_i4) {
-    // LOGDEBUG("NIL:PdxTypes1::==::48");
+    // LOG_DEBUG("NIL:PdxTypes1::==::48");
     return true;
   }
-  LOGDEBUG("NIL:PdxTypes1::==::51");
+  LOG_DEBUG("NIL:PdxTypes1::==::51");
   return false;
 }
 std::string PdxTypes1::toString() const {
@@ -112,12 +112,12 @@ PdxTypes2::~PdxTypes2() noexcept {
 int32_t PdxTypes2::getHashCode() { return 1; }
 
 bool PdxTypes2::equals(std::shared_ptr<PdxSerializable> obj) {
-  // LOGDEBUG("NIL:96:this::PdxType2 = %s", this->toString());
+  // LOG_DEBUG("NIL:96:this::PdxType2 = %s", this->toString());
 
   if (obj == nullptr) return false;
 
   auto pap = std::dynamic_pointer_cast<PdxTypes2>(obj);
-  // LOGDEBUG("NIl:102:pap::PdxType2 = %s", pap->toString());
+  // LOG_DEBUG("NIl:102:pap::PdxType2 = %s", pap->toString());
   if (pap == nullptr) return false;
 
   // if (pap.get() == this)
@@ -348,26 +348,26 @@ PdxTypes6::~PdxTypes6() noexcept {
 int32_t PdxTypes6::getHashCode() { return 1; }
 
 bool PdxTypes6::equals(std::shared_ptr<PdxSerializable> obj) {
-  LOGDEBUG("PdxTypes6::equals -1");
+  LOG_DEBUG("PdxTypes6::equals -1");
   if (obj == nullptr) return false;
 
-  LOGDEBUG("PdxTypes6::equals -2");
+  LOG_DEBUG("PdxTypes6::equals -2");
   auto pap = std::dynamic_pointer_cast<PdxTypes6>(obj);
   if (pap == nullptr) return false;
 
-  LOGDEBUG("PdxTypes6::equals -3 m_i1 = %d", m_i1);
-  LOGDEBUG("PdxTypes6::equals -4 m_i2 = %d", m_i2);
-  LOGDEBUG("PdxTypes6::equals -5 m_i3 = %d", m_i3);
-  LOGDEBUG("PdxTypes6::equals -6 m_i4 = %d", m_i4);
-  LOGDEBUG("PdxTypes6::equals -7 m_s1 = %s", m_s1.c_str());
-  LOGDEBUG("PdxTypes6::equals -8 m_s2 = %s", m_s2.c_str());
+  LOG_DEBUG("PdxTypes6::equals -3 m_i1 = %d", m_i1);
+  LOG_DEBUG("PdxTypes6::equals -4 m_i2 = %d", m_i2);
+  LOG_DEBUG("PdxTypes6::equals -5 m_i3 = %d", m_i3);
+  LOG_DEBUG("PdxTypes6::equals -6 m_i4 = %d", m_i4);
+  LOG_DEBUG("PdxTypes6::equals -7 m_s1 = %s", m_s1.c_str());
+  LOG_DEBUG("PdxTypes6::equals -8 m_s2 = %s", m_s2.c_str());
 
-  LOGDEBUG("PdxTypes6::equals -9 pap->m_i1 = %d", pap->m_i1);
-  LOGDEBUG("PdxTypes6::equals -10 pap->m_i2 = %d", pap->m_i2);
-  LOGDEBUG("PdxTypes6::equals -11 pap->m_i3 = %d", pap->m_i3);
-  LOGDEBUG("PdxTypes6::equals -12 pap->m_i4 = %d", pap->m_i4);
-  LOGDEBUG("PdxTypes6::equals -13 pap->m_s1 = %s", pap->m_s1.c_str());
-  LOGDEBUG("PdxTypes6::equals -14 pap->m_s2 = %s", pap->m_s2.c_str());
+  LOG_DEBUG("PdxTypes6::equals -9 pap->m_i1 = %d", pap->m_i1);
+  LOG_DEBUG("PdxTypes6::equals -10 pap->m_i2 = %d", pap->m_i2);
+  LOG_DEBUG("PdxTypes6::equals -11 pap->m_i3 = %d", pap->m_i3);
+  LOG_DEBUG("PdxTypes6::equals -12 pap->m_i4 = %d", pap->m_i4);
+  LOG_DEBUG("PdxTypes6::equals -13 pap->m_s1 = %s", pap->m_s1.c_str());
+  LOG_DEBUG("PdxTypes6::equals -14 pap->m_s2 = %s", pap->m_s2.c_str());
   // if (pap.get() == this)
   //	return true;
 
@@ -401,22 +401,22 @@ void PdxTypes6::toData(PdxWriter &pw) const {
 
 void PdxTypes6::fromData(PdxReader &pr) {
   m_s1 = pr.readString("s1");
-  // LOGDEBUG("PdxTypes6::fromData m_s1 = %s", m_s1);
+  // LOG_DEBUG("PdxTypes6::fromData m_s1 = %s", m_s1);
 
   m_i1 = pr.readInt("i1");
-  // LOGDEBUG("PdxTypes6::fromData m_i1 = %d", m_i1);
+  // LOG_DEBUG("PdxTypes6::fromData m_i1 = %d", m_i1);
   bytes128 = pr.readByteArray("bytes128");
   m_i2 = pr.readInt("i2");
-  // LOGDEBUG("PdxTypes6::fromData m_i2 = %d", m_i2);
+  // LOG_DEBUG("PdxTypes6::fromData m_i2 = %d", m_i2);
 
   m_i3 = pr.readInt("i3");
-  // LOGDEBUG("PdxTypes6::fromData m_i3 = %d", m_i3);
+  // LOG_DEBUG("PdxTypes6::fromData m_i3 = %d", m_i3);
 
   m_i4 = pr.readInt("i4");
-  // LOGDEBUG("PdxTypes6::fromData m_i4 = %d", m_i4);
+  // LOG_DEBUG("PdxTypes6::fromData m_i4 = %d", m_i4);
 
   m_s2 = pr.readString("s2");
-  // LOGDEBUG("PdxTypes6::fromData m_s2 = %s", m_s2);
+  // LOG_DEBUG("PdxTypes6::fromData m_s2 = %s", m_s2);
 }
 
 /************************************************************

@@ -203,7 +203,7 @@ SystemProperties::SystemProperties(
         CppCacheLibrary::getProductDir() + "/defaultSystem/geode.properties";
     givenConfigPtr->load(defaultSystemProperties);
   } catch (Exception&) {
-    LOGERROR(
+    LOG_ERROR(
         "Unable to determine Product Directory. Please set the "
         "GEODE_NATIVE_HOME environment variable.");
     throw;
@@ -227,7 +227,7 @@ SystemProperties::SystemProperties(
 SystemProperties::~SystemProperties() {}
 
 void SystemProperties::throwError(const std::string& msg) {
-  LOGERROR(msg);
+  LOG_ERROR(msg);
   throw GeodeConfigException(msg);
 }
 
@@ -477,7 +477,7 @@ void SystemProperties::logSettings() {
 
   // *** PLEASE ADD IN ALPHABETICAL ORDER - USER VISIBLE ***
 
-  LOGCONFIG(settings);
+  LOG_CONFIG(settings);
 }
 
 }  // namespace client

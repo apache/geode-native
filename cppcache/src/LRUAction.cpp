@@ -55,7 +55,7 @@ LRUAction* LRUAction::newLRUAction(const LRUAction::Action& actionType,
 bool LRUOverFlowToDiskAction::evict(
     const std::shared_ptr<MapEntryImpl>& mePtr) {
   if (m_regionPtr->isDestroyed()) {
-    LOGERROR(
+    LOG_ERROR(
         "[internal error] :: OverflowAction: region is being destroyed, so not "
         "evicting entries");
     return false;
@@ -65,7 +65,7 @@ bool LRUOverFlowToDiskAction::evict(
   mePtr->getKeyI(keyPtr);
   mePtr->getValueI(valuePtr);
   if (valuePtr == nullptr) {
-    LOGERROR(
+    LOG_ERROR(
         "[internal error]:: OverflowAction: destroyed entry added to "
         "LRU list");
     throw FatalInternalException(
@@ -82,10 +82,10 @@ bool LRUOverFlowToDiskAction::evict(
   try {
     pmPtr->write(keyPtr, valuePtr, persistenceInfo);
   } catch (DiskFailureException& ex) {
-    LOGERROR("DiskFailureException - %s", ex.what());
+    LOG_ERROR("DiskFailureException - %s", ex.what());
     return false;
   } catch (Exception& ex) {
-    LOGERROR("write to persistence layer failed - %s", ex.what());
+    LOG_ERROR("write to persistence layer failed - %s", ex.what());
     return false;
   }
   if (setInfo == true) {
@@ -111,8 +111,8 @@ bool LRULocalInvalidateAction::evict(
   mePtr->getKeyI(keyPtr);
   //  we should invoke the invalidateNoThrow with appropriate
   // flags to correctly invoke listeners
-  LOGDEBUG("LRULocalInvalidate: evicting entry with key [%s]",
-           Utils::nullSafeToString(keyPtr).c_str());
+  LOG_DEBUG("LRULocalInvalidate: evicting entry with key [%s]",
+            Utils::nullSafeToString(keyPtr).c_str());
   GfErrType err = GF_NOERR;
   if (!m_regionPtr->isDestroyed()) {
     err = m_regionPtr->invalidateNoThrow(

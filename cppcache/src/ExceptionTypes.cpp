@@ -383,7 +383,7 @@ using apache::geode::client::UnknownException;
 
 [[noreturn]] void unknownException(std::string message, std::string& exMsg,
                                    GfErrType err, std::string func) {
-  LOGINFO("error code: %d", err);
+  LOG_INFO("error code: %d", err);
   message = func;
   if (exMsg.empty()) {
     message.append("Unknown error code ").append(std::to_string(err));

@@ -94,11 +94,11 @@ void PdxType1V1::toData(PdxWriter& pw) const {
   pw.writeFloatArray("m_floatArray", m_floatArray, 2);
   pw.writeDoubleArray("m_doubleArray", m_doubleArray, 2);
 */
-  // LOGDEBUG("PdxObject::toData() Done......");
+  // LOG_DEBUG("PdxObject::toData() Done......");
 }
 
 void PdxType1V1::fromData(PdxReader& pr) {
-  // LOGDEBUG("PdxObject::fromData() start...");
+  // LOG_DEBUG("PdxObject::fromData() start...");
 
   if (!m_useWeakHashMap) m_pdxUreadFields = pr.readUnreadFields();
 
@@ -117,21 +117,21 @@ void PdxType1V1::fromData(PdxReader& pr) {
 
   /*
   m_bool = pr.readBoolean("m_bool");
-  //LOGDEBUG("PdxObject::fromData() -1 m_bool = %d", m_bool);
+  //LOG_DEBUG("PdxObject::fromData() -1 m_bool = %d", m_bool);
   m_byte = pr.readByte("m_byte");
-  //LOGDEBUG("PdxObject::fromData() -2 m_byte =%d", m_byte);
+  //LOG_DEBUG("PdxObject::fromData() -2 m_byte =%d", m_byte);
   m_int16 = pr.readShort("m_int16");
-  //LOGDEBUG("PdxObject::fromData() -3 m_int16=%d", m_int16);
+  //LOG_DEBUG("PdxObject::fromData() -3 m_int16=%d", m_int16);
   m_int32 = pr.readInt("m_int32");
-  //LOGDEBUG("PdxObject::fromData() -4 m_int32=%d", m_int32);
+  //LOG_DEBUG("PdxObject::fromData() -4 m_int32=%d", m_int32);
   m_long = pr.readLong("m_long");
-  //LOGDEBUG("PdxObject::fromData() -5 m_long=%lld", m_long);
+  //LOG_DEBUG("PdxObject::fromData() -5 m_long=%lld", m_long);
   m_float = pr.readFloat("m_float");
-  //LOGDEBUG("PdxObject::fromData() -6 m_float = %f", m_float);
+  //LOG_DEBUG("PdxObject::fromData() -6 m_float = %f", m_float);
   m_double = pr.readDouble("m_double");
-  //LOGDEBUG("PdxObject::fromData() -7  m_double=%llf", m_double);
+  //LOG_DEBUG("PdxObject::fromData() -7  m_double=%llf", m_double);
   m_string = pr.readString("m_string");
-  //LOGDEBUG("PdxObject::fromData() -8  m_string=%s", m_string);
+  //LOG_DEBUG("PdxObject::fromData() -8  m_string=%s", m_string);
   m_boolArray = pr.readBooleanArray("m_boolArray");
   m_byteArray = pr.readByteArray("m_byteArray");
   m_int16Array = pr.readShortArray("m_int16Array");
@@ -139,10 +139,10 @@ void PdxType1V1::fromData(PdxReader& pr) {
   m_longArray = pr.readLongArray("m_longArray");
   m_floatArray = pr.readFloatArray("m_floatArray");
   m_doubleArray = pr.readDoubleArray("m_doubleArray");
-  //LOGDEBUG("PdxObject::fromData() -8  m_boolArray[0]=%d", m_boolArray[0]);
+  //LOG_DEBUG("PdxObject::fromData() -8  m_boolArray[0]=%d", m_boolArray[0]);
   //m_int32 = pr.readInt("m_int32");
   */
-  LOGDEBUG("PdxObject::fromData() End...");
+  LOG_DEBUG("PdxObject::fromData() End...");
 }
 std::string PdxType1V1::toString() const {
   char idbuf[4096];
@@ -216,7 +216,7 @@ void PdxType2V1::toData(PdxWriter& pw) const {
 }
 
 void PdxType2V1::fromData(PdxReader& pr) {
-  // LOGDEBUG("PdxObject::fromData() start...");
+  // LOG_DEBUG("PdxObject::fromData() start...");
 
   if (!m_useWeakHashMap) m_unreadFields = pr.readUnreadFields();
 
@@ -301,7 +301,7 @@ void PdxType3V1::toData(PdxWriter& pw) const {
 }
 
 void PdxType3V1::fromData(PdxReader& pr) {
-  // LOGDEBUG("PdxObject::fromData() start...");
+  // LOG_DEBUG("PdxObject::fromData() start...");
 
   if (!m_useWeakHashMap) m_unreadFields = pr.readUnreadFields();
 
@@ -452,7 +452,7 @@ void PdxTypesV1R2::toData(PdxWriter& pw) const {
 }
 
 void PdxTypesV1R2::fromData(PdxReader& pr) {
-  // LOGDEBUG("PdxObject::fromData() start...");
+  // LOG_DEBUG("PdxObject::fromData() start...");
   if (!m_useWeakHashMap) m_pdxUreadFields = pr.readUnreadFields();
 
   m_i1 = pr.readInt("i1");
@@ -525,7 +525,7 @@ void PdxTypesIgnoreUnreadFieldsV1::toData(PdxWriter& pw) const {
 }
 
 void PdxTypesIgnoreUnreadFieldsV1::fromData(PdxReader& pr) {
-  // LOGDEBUG("PdxObject::fromData() start...");
+  // LOG_DEBUG("PdxObject::fromData() start...");
 
   if (!m_useWeakHashMap) m_unreadFields = pr.readUnreadFields();
 
@@ -602,7 +602,7 @@ void PdxVersionedV1::init(int32_t size) {
 
 PdxVersionedV1::PdxVersionedV1(int32_t size) {
   init(size);
-  LOGDEBUG("PdxVersioned 1");
+  LOG_DEBUG("PdxVersioned 1");
 }
 
 PdxVersionedV1::~PdxVersionedV1() noexcept {

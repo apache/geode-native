@@ -44,14 +44,14 @@ EvictionController::EvictionController(int64_t max_heap_size,
       max_heap_size_{max_heap_size << 20ULL},
       heap_size_delta_{heap_size_delta / 100.0f},
       heap_size_{0} {
-  LOGINFO("Maximum heap size for Heap LRU set to %ld bytes", max_heap_size_);
+  LOG_INFO("Maximum heap size for Heap LRU set to %ld bytes", max_heap_size_);
 }
 
 void EvictionController::start() {
   running_ = true;
   thread_ = std::thread(&EvictionController::svc, this);
 
-  LOGFINE("Eviction Controller started");
+  LOG_FINE("Eviction Controller started");
 }
 
 void EvictionController::stop() {
@@ -60,7 +60,7 @@ void EvictionController::stop() {
   thread_.join();
 
   regions_.clear();
-  LOGFINE("Eviction controller stopped");
+  LOG_FINE("Eviction controller stopped");
 }
 
 void EvictionController::svc() {
@@ -96,7 +96,7 @@ void EvictionController::checkHeapSize() {
       static_cast<float>(heap_size - max_heap_size_) / max_heap_size_ +
       heap_size_delta_;
 
-  LOGFINE(
+  LOG_FINE(
       "EvictionController::process_delta: evicting %.03f%% of the entries. "
       "Heap size is: %lld / %lld",
       percentage * 100.0f, heap_size, max_heap_size_);
@@ -107,16 +107,16 @@ void EvictionController::checkHeapSize() {
 void EvictionController::registerRegion(const std::string& name) {
   boost::unique_lock<decltype(regions_mutex_)> lock(regions_mutex_);
   if (regions_.insert(name).second) {
-    LOGFINE("Registered region with Heap LRU eviction controller: name is " +
-            name);
+    LOG_FINE("Registered region with Heap LRU eviction controller: name is " +
+             name);
   }
 }
 
 void EvictionController::unregisterRegion(const std::string& name) {
   boost::unique_lock<decltype(regions_mutex_)> lock(regions_mutex_);
   if (regions_.erase(name) > 0) {
-    LOGFINE("Deregistered region with Heap LRU eviction controller: name is " +
-            name);
+    LOG_FINE("Deregistered region with Heap LRU eviction controller: name is " +
+             name);
   }
 }
 

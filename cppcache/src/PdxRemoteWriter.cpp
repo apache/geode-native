@@ -71,10 +71,11 @@ void PdxRemoteWriter::endObjectWriting() {
 
 void PdxRemoteWriter::writePreserveData() {
   m_currentDataIdx++;  // it starts from -1
-  LOGDEBUG("PdxRemoteWriter::writePreserveData m_currentDataIdx = %d",
-           m_currentDataIdx);
-  LOGDEBUG("PdxRemoteWriter::writePreserveData m_remoteTolocalMap->Length = %d",
-           m_remoteTolocalMapLength);
+  LOG_DEBUG("PdxRemoteWriter::writePreserveData m_currentDataIdx = %d",
+            m_currentDataIdx);
+  LOG_DEBUG(
+      "PdxRemoteWriter::writePreserveData m_remoteTolocalMap->Length = %d",
+      m_remoteTolocalMapLength);
 
   if (m_preserveData != nullptr) {
     while (m_currentDataIdx < m_remoteTolocalMapLength) {

@@ -81,7 +81,7 @@ class TESTOBJECT_EXPORT CharTypesWithInvalidUsage : public PdxSerializable {
   }
 
   bool equals(CharTypesWithInvalidUsage& other) const {
-    LOGDEBUG("Inside CharTypesWithInvalidUsage equals");
+    LOG_DEBUG("Inside CharTypesWithInvalidUsage equals");
     CharTypesWithInvalidUsage* ot =
         dynamic_cast<CharTypesWithInvalidUsage*>(&other);
     if (!ot) {
@@ -90,18 +90,19 @@ class TESTOBJECT_EXPORT CharTypesWithInvalidUsage : public PdxSerializable {
     if (ot == this) {
       return true;
     }
-    LOGINFO("CharTypesWithInvalidUsage::equals ot->m_ch = %c m_ch = %c",
-            ot->m_ch, m_ch);
+    LOG_INFO("CharTypesWithInvalidUsage::equals ot->m_ch = {} m_ch = {}",
+             static_cast<int32_t>(ot->m_ch), static_cast<int32_t>(m_ch));
     if (ot->m_ch != m_ch) {
       return false;
     }
 
     int i = 0;
     while (i < 2) {
-      LOGINFO(
+      LOG_INFO(
           "CharTypesWithInvalidUsage::equals Normal char array values "
-          "ot->m_chArray[%d] = %c m_chArray[%d] = %c",
-          i, ot->m_chArray[i], i, m_chArray[i]);
+          "ot->m_chArray[{}] = {} m_chArray[{}] = {}",
+          i, static_cast<int32_t>(ot->m_chArray[i]), i,
+          static_cast<int32_t>(m_chArray[i]));
       if (ot->m_chArray[i] != m_chArray[i]) {
         return false;
       } else {
@@ -156,7 +157,7 @@ class TESTOBJECT_EXPORT AddressWithInvalidAPIUsage : public PdxSerializable {
   }
 
   bool equals(AddressWithInvalidAPIUsage& other) const {
-    LOGDEBUG("Inside AddressWithInvalidAPIUsage equals");
+    LOG_DEBUG("Inside AddressWithInvalidAPIUsage equals");
     AddressWithInvalidAPIUsage* ot =
         dynamic_cast<AddressWithInvalidAPIUsage*>(&other);
     if (!ot) {

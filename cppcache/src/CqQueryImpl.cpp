@@ -111,7 +111,7 @@ void CqQueryImpl::close(bool sendRequestToServer) {
   // Check if the cq is already closed.
   if (isClosed()) {
     // throw CqClosedException("CQ is already closed, CqName : " + this.cqName);
-    LOGFINE("CQ is already closed, CqName : %s", m_cqName.c_str());
+    LOG_FINE("CQ is already closed, CqName : %s", m_cqName.c_str());
     return;
   }
 
@@ -119,7 +119,7 @@ void CqQueryImpl::close(bool sendRequestToServer) {
   if (m_authenticatedView != nullptr) {
     gua.setAuthenticatedView(m_authenticatedView);
   }
-  LOGFINE("Started closing CQ CqName : %s", m_cqName.c_str());
+  LOG_FINE("Started closing CQ CqName : %s", m_cqName.c_str());
 
   // bool isClosed = false;
 
@@ -144,7 +144,7 @@ void CqQueryImpl::close(bool sendRequestToServer) {
     auto cqListeners = m_cqAttributes->getCqListeners();
 
     if (!cqListeners.empty()) {
-      LOGFINE(
+      LOG_FINE(
           "Invoking CqListeners close() api for the CQ, CqName : %s  Number of "
           "CqListeners : %" PRIu64,
           m_cqName.c_str(), cqListeners.size());
@@ -154,7 +154,7 @@ void CqQueryImpl::close(bool sendRequestToServer) {
           l->close();
           // Handle client side exceptions.
         } catch (Exception& ex) {
-          LOGWARN(
+          LOG_WARN(
               "Exception occoured in the CqListener of the CQ, CqName : "
               "%sError : %s",
               m_cqName.c_str(), ex.what());
@@ -165,7 +165,7 @@ void CqQueryImpl::close(bool sendRequestToServer) {
 
   removeFromCqMap();
   updateStats();
-  LOGFINE("Successfully closed the CQ. %s", m_cqName.c_str());
+  LOG_FINE("Successfully closed the CQ. %s", m_cqName.c_str());
 }
 
 /**
@@ -175,18 +175,18 @@ void CqQueryImpl::close(bool sendRequestToServer) {
 void CqQueryImpl::addToCqMap() {
   // Add CQ to the CQ repository
   try {
-    LOGFINE("Adding to CQ Repository. CqName : %s Server CqName : %s",
-            m_cqName.c_str(), m_serverCqName.c_str());
+    LOG_FINE("Adding to CQ Repository. CqName : %s Server CqName : %s",
+             m_cqName.c_str(), m_serverCqName.c_str());
     std::shared_ptr<CqQuery> cq = shared_from_this();
     m_cqService->addCq(m_cqName, cq);
   } catch (Exception& ex) {
     std::string errMsg =
         "Failed to store Continuous Query in the repository. CqName: " +
         m_cqName + ex.what();
-    LOGERROR(errMsg.c_str());
+    LOG_ERROR(errMsg.c_str());
     throw CqException(errMsg.c_str());
   }
-  LOGFINE("Stored CQ in the CQ repository. %s", m_cqName.c_str());
+  LOG_FINE("Stored CQ in the CQ repository. %s", m_cqName.c_str());
 }
 
 /**
@@ -200,10 +200,10 @@ void CqQueryImpl::removeFromCqMap() {
     std::string errMsg =
         "Failed to remove Continuous Query From the repository. CqName: " +
         m_cqName + " Error : " + ex.what();
-    LOGERROR(errMsg.c_str());
+    LOG_ERROR(errMsg.c_str());
     throw CqException(errMsg.c_str());
   }
-  LOGFINE("Removed CQ from the CQ repository. CQ Name: %s", m_cqName.c_str());
+  LOG_FINE("Removed CQ from the CQ repository. CQ Name: %s", m_cqName.c_str());
 }
 
 /**
@@ -253,7 +253,7 @@ GfErrType CqQueryImpl::execute(TcrEndpoint* endpoint) {
     gua.setAuthenticatedView(m_authenticatedView);
   }
 
-  LOGFINE("Executing CQ [%s]", m_cqName.c_str());
+  LOG_FINE("Executing CQ [%s]", m_cqName.c_str());
 
   TcrMessageExecuteCq request(new DataOutput(m_cqService->getDM()
                                                  ->getConnectionManager()
@@ -312,7 +312,7 @@ bool CqQueryImpl::executeCq(TcrMessage::MsgType) {
     gua.setAuthenticatedView(m_authenticatedView);
   }
 
-  LOGDEBUG("CqQueryImpl::executeCq");
+  LOG_DEBUG("CqQueryImpl::executeCq");
   TcrMessageExecuteCq msg(new DataOutput(m_cqService->getDM()
                                              ->getConnectionManager()
                                              .getCacheImpl()
@@ -380,7 +380,7 @@ std::shared_ptr<CqResults> CqQueryImpl::executeWithInitialResults(
   GfErrType err = GF_NOERR;
   err = m_tccdm->sendSyncRequest(msg, reply);
   if (err != GF_NOERR) {
-    LOGDEBUG("CqQueryImpl::executeCqWithInitialResults failed!!!!");
+    LOG_DEBUG("CqQueryImpl::executeCqWithInitialResults failed!!!!");
     throwExceptionIfError("CqQuery::executeCqWithInitialResults:", err);
   }
   if (reply.getMessageType() == TcrMessage::EXCEPTION ||
@@ -403,8 +403,8 @@ std::shared_ptr<CqResults> CqQueryImpl::executeWithInitialResults(
   auto&& fieldNameVec = resultCollector->getStructFieldNames();
   auto sizeOfFieldNamesVec = fieldNameVec.size();
   if (sizeOfFieldNamesVec == 0) {
-    LOGFINEST("Query::execute: creating ResultSet for query: %s",
-              m_queryString.c_str());
+    LOG_FINEST("Query::execute: creating ResultSet for query: %s",
+               m_queryString.c_str());
     sr = std::dynamic_pointer_cast<CqResults>(
         std::make_shared<ResultSetImpl>(values));
   } else {
@@ -413,8 +413,8 @@ std::shared_ptr<CqResults> CqQueryImpl::executeWithInitialResults(
           "Query::execute: Number of values coming "
           "from server has to be exactly divisible by field count");
     } else {
-      LOGFINEST("Query::execute: creating StructSet for query: %s",
-                m_queryString.c_str());
+      LOG_FINEST("Query::execute: creating StructSet for query: %s",
+                 m_queryString.c_str());
       sr = std::dynamic_pointer_cast<CqResults>(
           std::make_shared<StructSetImpl>(values, fieldNameVec));
     }

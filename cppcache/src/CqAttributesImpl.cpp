@@ -47,7 +47,7 @@ CqAttributesImpl* CqAttributesImpl::clone() {
 void CqAttributesImpl::setCqListeners(
     const listener_container_type& addedListeners) {
   if (addedListeners.empty() == true) {
-    LOGWARN("setCqListeners parameter had a null element, nothing to be set");
+    LOG_WARN("setCqListeners parameter had a null element, nothing to be set");
     return;
   }
 
@@ -62,8 +62,8 @@ void CqAttributesImpl::setCqListeners(
         l->close();
         // Handle client side exceptions.
       } catch (Exception& ex) {
-        LOGWARN("Exception occured while closing CQ Listener %s Error",
-                ex.what());
+        LOG_WARN("Exception occured while closing CQ Listener %s Error",
+                 ex.what());
       }
     }
     oldListeners.clear();
@@ -86,7 +86,7 @@ void CqAttributesImpl::removeCqListener(
       cql->close();
       // Handle client side exceptions.
     } catch (Exception& ex) {
-      LOGWARN("Exception closing CQ Listener %s Error ", ex.what());
+      LOG_WARN("Exception closing CQ Listener %s Error ", ex.what());
     }
   }
 }

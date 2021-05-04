@@ -68,7 +68,7 @@ void ClientMetadataService::stop() {
 void ClientMetadataService::svc() {
   DistributedSystemImpl::setThreadName(NC_CMDSvcThread);
 
-  LOGINFO("ClientMetadataService started for pool " + m_pool->getName());
+  LOG_INFO("ClientMetadataService started for pool " + m_pool->getName());
 
   while (m_run) {
     std::unique_lock<std::mutex> lock(m_regionQueueMutex);
@@ -86,13 +86,13 @@ void ClientMetadataService::svc() {
           lock.unlock();
           getClientPRMetadata(regionFullPath.c_str());
         })) {
-      LOGINFO("ClientMetadataService::%s(%p): destroy is pending, bail out",
-              __FUNCTION__, this);
+      LOG_INFO("ClientMetadataService::%s(%p): destroy is pending, bail out",
+               __FUNCTION__, static_cast<void*>(this));
       break;
     }
   }
 
-  LOGINFO("ClientMetadataService stopped for pool " + m_pool->getName());
+  LOG_INFO("ClientMetadataService stopped for pool " + m_pool->getName());
 }
 
 void ClientMetadataService::getClientPRMetadata(const char* regionFullPath) {
@@ -124,7 +124,7 @@ void ClientMetadataService::getClientPRMetadata(const char* regionFullPath) {
       // By convention, server returns -1 bucket count to indicate replicated
       // region
       if (reply.getNumBuckets() == -1) {
-        LOGDEBUG(
+        LOG_DEBUG(
             "ClientMetadataService::getClientPRMetadata: region is"
             "replicated, not partitioned - no metadata");
         return;
@@ -139,7 +139,7 @@ void ClientMetadataService::getClientPRMetadata(const char* regionFullPath) {
         m_bucketStatus[regionFullPath] =
             std::unique_ptr<PRbuckets>(new PRbuckets(reply.getNumBuckets()));
       }
-      LOGDEBUG("ClientMetadata buckets %d ", reply.getNumBuckets());
+      LOG_DEBUG("ClientMetadata buckets %d ", reply.getNumBuckets());
     }
   }
   if (cptr == nullptr) {
@@ -157,7 +157,7 @@ void ClientMetadataService::getClientPRMetadata(const char* regionFullPath) {
       boost::unique_lock<decltype(m_regionMetadataLock)> lock(
           m_regionMetadataLock);
       m_regionMetaDataMap[path] = newCptr;
-      LOGINFO("Updated client meta data");
+      LOG_INFO("Updated client meta data");
     }
   } else {
     newCptr = SendClientPRMetadata(colocatedWith.c_str(), cptr);
@@ -170,7 +170,7 @@ void ClientMetadataService::getClientPRMetadata(const char* regionFullPath) {
           m_regionMetadataLock);
       m_regionMetaDataMap[colocatedWith.c_str()] = newCptr;
       m_regionMetaDataMap[path] = newCptr;
-      LOGINFO("Updated client meta data");
+      LOG_INFO("Updated client meta data");
     }
   }
 }
@@ -229,7 +229,7 @@ void ClientMetadataService::getBucketServerLocation(
   if (region != nullptr) {
     boost::shared_lock<decltype(m_regionMetadataLock)> lock(
         m_regionMetadataLock);
-    LOGDEBUG(
+    LOG_DEBUG(
         "ClientMetadataService::getBucketServerLocation m_regionMetaDataMap "
         "size is %zu",
         m_regionMetaDataMap.size());
@@ -298,7 +298,7 @@ void ClientMetadataService::enqueueForMetadataRefresh(
   if (serverGroup.length() != 0) {
     m_cache->setServerGroupFlag(serverGroupFlag);
     if (serverGroupFlag == 2) {
-      LOGFINER(
+      LOG_FINER(
           "Network hop but, from within same server-group, so no metadata "
           "fetch from the server");
       return;
@@ -313,7 +313,7 @@ void ClientMetadataService::enqueueForMetadataRefresh(
       if (tcrRegion->getMetaDataRefreshed()) {
         return;
       }
-      LOGFINE("Network hop so fetching single hop metadata from the server");
+      LOG_FINE("Network hop so fetching single hop metadata from the server");
       m_cache->setNetworkHopFlag(true);
       tcrRegion->setMetaDataRefreshed(true);
       {
@@ -340,7 +340,7 @@ ClientMetadataService::getServerToFilterMap(
   std::map<int, std::shared_ptr<BucketServerLocation>> buckets;
 
   for (const auto& key : keys) {
-    LOGDEBUG("cmds = %s", key->toString().c_str());
+    LOG_DEBUG("cmds = %s", key->toString().c_str());
     const auto resolver = region->getAttributes().getPartitionResolver();
     std::shared_ptr<CacheableKey> resolveKey;
 
@@ -383,8 +383,8 @@ ClientMetadataService::getServerToFilterMap(
         keyList = itrRes->second;
       }
 
-      LOGDEBUG("new keylist buckets =%zu res = %zu", buckets.size(),
-               serverToFilterMap->size());
+      LOG_DEBUG("new keylist buckets =%zu res = %zu", buckets.size(),
+                serverToFilterMap->size());
     } else {
       keyList = (*serverToFilterMap)[bucketsIter->second];
     }
@@ -490,7 +490,7 @@ ClientMetadataService::getServerToFilterMapFESHOP(
   for (const auto& iter : *bucketToKeysMap) {
     bucketSet.insert(iter.first);
   }
-  LOGDEBUG(
+  LOG_DEBUG(
       "ClientMetadataService::getServerToFilterMapFESHOP: bucketSet size = "
       "%zu ",
       bucketSet.size());
@@ -536,15 +536,16 @@ std::shared_ptr<BucketServerLocation> ClientMetadataService::findNextServer(
     const auto& serverLocation = serverToBucketEntry.first;
     BucketSet buckets(*(serverToBucketEntry.second));
 
-    LOGDEBUG(
+    LOG_DEBUG(
         "ClientMetadataService::findNextServer currentBucketSet->size() = %zu  "
         "bucketSet->size() = %zu ",
         currentBucketSet.size(), buckets.size());
 
     for (const auto& currentBucketSetIter : currentBucketSet) {
       buckets.erase(currentBucketSetIter);
-      LOGDEBUG("ClientMetadataService::findNextServer bucketSet->size() = %zu ",
-               buckets.size());
+      LOG_DEBUG(
+          "ClientMetadataService::findNextServer bucketSet->size() = %zu ",
+          buckets.size());
     }
 
     auto size = buckets.size();
@@ -577,7 +578,7 @@ ClientMetadataService::pruneNodes(
   for (const auto& bucketId : buckets) {
     const auto locations = metadata->adviseServerLocations(bucketId);
     if (locations.size() == 0) {
-      LOGDEBUG(
+      LOG_DEBUG(
           "ClientMetadataService::pruneNodes Since no server location "
           "available for bucketId = %d  putting it into "
           "bucketSetWithoutServer ",
@@ -604,13 +605,13 @@ ClientMetadataService::pruneNodes(
   auto itrRes = serverToBucketsMap.begin();
   std::shared_ptr<BucketServerLocation> randomFirstServer;
   if (serverToBucketsMap.empty()) {
-    LOGDEBUG(
+    LOG_DEBUG(
         "ClientMetadataService::pruneNodes serverToBucketsMap is empty so "
         "returning nullptr");
     return nullptr;
   } else {
     size_t size = serverToBucketsMap.size();
-    LOGDEBUG(
+    LOG_DEBUG(
         "ClientMetadataService::pruneNodes Total size of serverToBucketsMap = "
         "%zu ",
         size);
@@ -630,26 +631,26 @@ ClientMetadataService::pruneNodes(
   while (buckets != currentBucketSet) {
     auto server = findNextServer(serverToBucketsMap, currentBucketSet);
     if (server == nullptr) {
-      LOGDEBUG(
+      LOG_DEBUG(
           "ClientMetadataService::pruneNodes findNextServer returned no "
           "server");
       break;
     }
 
     const auto& bucketSet2 = serverToBucketsMap.find(server)->second;
-    LOGDEBUG(
+    LOG_DEBUG(
         "ClientMetadataService::pruneNodes currentBucketSet->size() = %zu  "
         "bucketSet2->size() = %zu ",
         currentBucketSet.size(), bucketSet2->size());
 
     for (const auto& currentBucketSetIter : currentBucketSet) {
       bucketSet2->erase(currentBucketSetIter);
-      LOGDEBUG("ClientMetadataService::pruneNodes bucketSet2->size() = %zu ",
-               bucketSet2->size());
+      LOG_DEBUG("ClientMetadataService::pruneNodes bucketSet2->size() = %zu ",
+                bucketSet2->size());
     }
 
     if (bucketSet2->empty()) {
-      LOGDEBUG(
+      LOG_DEBUG(
           "ClientMetadataService::pruneNodes bucketSet2 is empty() so removing "
           "server from serverToBucketsMap");
       serverToBucketsMap.erase(server);
@@ -722,7 +723,7 @@ ClientMetadataService::groupByServerToBuckets(
       const auto& itrRes = serverToBucketsMap->begin();
       for (const auto& itr : bucketsWithoutServer) {
         itrRes->second->insert(itr);
-        LOGDEBUG(
+        LOG_DEBUG(
             "ClientMetadataService::groupByServerToBuckets inserting "
             "bucketsWithoutServer");
       }
@@ -769,7 +770,7 @@ void ClientMetadataService::markPrimaryBucketForTimeoutButLookSecondaryBucket(
       return;
     }
   }
-  LOGFINE("Setting in markPrimaryBucketForTimeoutButLookSecondaryBucket");
+  LOG_FINE("Setting in markPrimaryBucketForTimeoutButLookSecondaryBucket");
 
   auto totalBuckets = cptr->getTotalNumBuckets();
 
@@ -780,7 +781,7 @@ void ClientMetadataService::markPrimaryBucketForTimeoutButLookSecondaryBucket(
 
     if (bsl == serverLocation) {
       prBuckets->setBucketTimeout(i);
-      LOGFINE(
+      LOG_FINE(
           "markPrimaryBucketForTimeoutButLookSecondaryBucket::setting bucket "
           "timeout...");
     }
@@ -796,8 +797,8 @@ bool ClientMetadataService::isBucketMarkedForTimeout(const char* regionFullPath,
   const auto& bs = m_bucketStatus.find(regionFullPath);
   if (bs != m_bucketStatus.end()) {
     bool m = bs->second->isBucketTimedOut(bucketid, m_bucketWaitTimeout);
-    LOGFINE("isBucketMarkedForTimeout:: for bucket %d returning = %d", bucketid,
-            m);
+    LOG_FINE("isBucketMarkedForTimeout:: for bucket %d returning = %d",
+             bucketid, m);
     return m;
   }
 

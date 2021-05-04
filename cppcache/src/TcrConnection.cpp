@@ -35,10 +35,10 @@
 #include "Utils.hpp"
 #include "Version.hpp"
 
-#define throwException(ex)                            \
-  do {                                                \
-    LOGFINEST(ex.getName() + ": " + ex.getMessage()); \
-    throw ex;                                         \
+#define throwException(ex)                             \
+  do {                                                 \
+    LOG_FINEST(ex.getName() + ": " + ex.getMessage()); \
+    throw ex;                                          \
   } while (0)
 
 namespace {
@@ -163,7 +163,7 @@ bool TcrConnection::initTcrConnection(
   }
 
   Version::write(handShakeMsg, Version::current());
-  LOGFINE("Client version ordinal is %d", Version::current().getOrdinal());
+  LOG_FINE("Client version ordinal is %d", Version::current().getOrdinal());
 
   handShakeMsg.write(static_cast<int8_t>(REPLY_OK));
 
@@ -228,7 +228,7 @@ bool TcrConnection::initTcrConnection(
     tmpIsSecurityOn = tmpIsSecurityOn || m_endpointObj->isMultiUserMode();
   }
 
-  LOGDEBUG(
+  LOG_DEBUG(
       "TcrConnection tmpIsSecurityOn = %d isNotificationChannel = "
       "%d ",
       tmpIsSecurityOn, isNotificationChannel);
@@ -250,22 +250,22 @@ bool TcrConnection::initTcrConnection(
 
   if (tmpIsSecurityOn) {
     try {
-      LOGFINER("TcrConnection: about to invoke authloader");
+      LOG_FINER("TcrConnection: about to invoke authloader");
       const auto& tmpSecurityProperties = sysProp.getSecurityProperties();
       if (tmpSecurityProperties == nullptr) {
-        LOGWARN("TcrConnection: security properties not found.");
+        LOG_WARN("TcrConnection: security properties not found.");
       }
       // only for backward connection
       if (isClientNotification) {
         if (const auto& authInitialize = cacheImpl->getAuthInitialize()) {
-          LOGFINER(
+          LOG_FINER(
               "TcrConnection: acquired handle to authLoader, "
               "invoking getCredentials");
 
           const auto& tmpAuthIniSecurityProperties =
               authInitialize->getCredentials(tmpSecurityProperties,
                                              m_endpointObj->name().c_str());
-          LOGFINER("TcrConnection: after getCredentials ");
+          LOG_FINER("TcrConnection: after getCredentials ");
           credentials = tmpAuthIniSecurityProperties;
         }
       }
@@ -273,14 +273,14 @@ bool TcrConnection::initTcrConnection(
         credentials->toData(handShakeMsg);
       }
     } catch (const AuthenticationRequiredException&) {
-      LOGDEBUG("AuthenticationRequiredException got");
+      LOG_DEBUG("AuthenticationRequiredException got");
       throw;
     } catch (const AuthenticationFailedException&) {
-      LOGDEBUG("AuthenticationFailedException got");
+      LOG_DEBUG("AuthenticationFailedException got");
       throw;
     } catch (const Exception& ex) {
-      LOGWARN("TcrConnection: failed to acquire handle to authLoader: [%s] %s",
-              ex.getName().c_str(), ex.what());
+      LOG_WARN("TcrConnection: failed to acquire handle to authLoader: [%s] %s",
+               ex.getName().c_str(), ex.what());
       auto message =
           std::string("TcrConnection: failed to load authInit library: ") +
           ex.what();
@@ -291,21 +291,22 @@ bool TcrConnection::initTcrConnection(
   size_t msgLength;
   auto data = reinterpret_cast<char*>(
       const_cast<uint8_t*>(handShakeMsg.getBuffer(&msgLength)));
-  LOGFINE("Attempting handshake with endpoint %s for %s%s connection",
-          endpointObj->name().c_str(),
-          isClientNotification ? (isSecondary ? "secondary " : "primary ") : "",
-          isClientNotification ? "subscription" : "client");
-  LOGDEBUG(std::string("Handshake bytes: (") + std::to_string(msgLength) +
-           "): " + Utils::convertBytesToString(data, msgLength));
+  LOG_FINE(
+      "Attempting handshake with endpoint %s for %s%s connection",
+      endpointObj->name().c_str(),
+      isClientNotification ? (isSecondary ? "secondary " : "primary ") : "",
+      isClientNotification ? "subscription" : "client");
+  LOG_DEBUG(std::string("Handshake bytes: (") + std::to_string(msgLength) +
+            "): " + Utils::convertBytesToString(data, msgLength));
   ConnErrType error = sendData(data, msgLength, connectTimeout);
 
   if (error == CONN_NOERR) {
     auto acceptanceCode = readHandshakeData(1, connectTimeout);
 
-    LOGDEBUG(" Handshake: Got Accept Code %d", acceptanceCode[0]);
+    LOG_DEBUG(" Handshake: Got Accept Code %d", acceptanceCode[0]);
     /* adongre */
     if (acceptanceCode[0] == REPLY_SSL_ENABLED && !sysProp.sslEnabled()) {
-      LOGERROR("SSL is enabled on server, enable SSL in client as well");
+      LOG_ERROR("SSL is enabled on server, enable SSL in client as well");
       AuthenticationRequiredException ex(
           "SSL is enabled on server, enable SSL in client as well");
       m_conn.reset();
@@ -353,7 +354,7 @@ bool TcrConnection::initTcrConnection(
       auto recvMessage = readHandshakeData(recvMsgLen, connectTimeout);
       // If the distributed member has not been set yet, set it.
       if (getEndpointObject()->getDistributedMemberID() == 0) {
-        LOGDEBUG("Deserializing distributed member Id");
+        LOG_DEBUG("Deserializing distributed member Id");
         auto dataInputForClient = cacheImpl->createDataInput(
             reinterpret_cast<const uint8_t*>(recvMessage.data()),
             recvMessage.size());
@@ -361,7 +362,7 @@ bool TcrConnection::initTcrConnection(
             dataInputForClient.readObject());
         auto memId = cacheImpl->getMemberListForVersionStamp()->add(member);
         getEndpointObject()->setDistributedMemberID(memId);
-        LOGDEBUG("Deserialized distributed member Id %d", memId);
+        LOG_DEBUG("Deserialized distributed member Id %d", memId);
       }
     }
 
@@ -382,8 +383,8 @@ bool TcrConnection::initTcrConnection(
     switch (acceptanceCode[0]) {
       case REPLY_OK:
       case SUCCESSFUL_SERVER_TO_CLIENT:
-        LOGFINER("Handshake reply: %u,%u,%u", acceptanceCode[0],
-                 serverQueueStatus[0], recvMsgLen2);
+        LOG_FINER("Handshake reply: %u,%u,%u", acceptanceCode[0],
+                  serverQueueStatus[0], recvMsgLen2);
         if (isClientNotification) readHandshakeInstantiatorMsg(connectTimeout);
         break;
       case REPLY_AUTHENTICATION_FAILED: {
@@ -407,9 +408,9 @@ bool TcrConnection::initTcrConnection(
       case REPLY_REFUSED:
       case REPLY_INVALID:
       case UNSUCCESSFUL_SERVER_TO_CLIENT: {
-        LOGERROR("Handshake rejected by server[%s]: %s",
-                 m_endpointObj->name().c_str(),
-                 reinterpret_cast<char*>(recvMessage.data()));
+        LOG_ERROR("Handshake rejected by server[%s]: %s",
+                  m_endpointObj->name().c_str(),
+                  reinterpret_cast<char*>(recvMessage.data()));
         auto message = std::string("TcrConnection::TcrConnection: ") +
                        "Handshake rejected by server: " +
                        reinterpret_cast<char*>(recvMessage.data());
@@ -418,7 +419,7 @@ bool TcrConnection::initTcrConnection(
         throw ex;
       }
       default: {
-        LOGERROR(
+        LOG_ERROR(
             "Unknown error[%d] received from server [%s] in handshake: "
             "%s",
             acceptanceCode[0], m_endpointObj->name().c_str(),
@@ -597,7 +598,7 @@ bool TcrConnection::replyHasResult(const TcrMessage& request,
         static_cast<ChunkedFunctionExecutionResponse*>(
             reply.getChunkedResultHandler());
     if (resultCollector->getResult() == false) {
-      LOGDEBUG(
+      LOG_DEBUG(
           "TcrConnection::sendRequestForChunkedResponse: function execution, "
           "no response desired");
       hasResult = false;
@@ -609,9 +610,9 @@ bool TcrConnection::replyHasResult(const TcrMessage& request,
 
 void TcrConnection::send(const char* buffer, size_t len,
                          std::chrono::microseconds sendTimeoutSec, bool) {
-  LOGDEBUG(
-      "TcrConnection::send: [%p] sending request to endpoint %s; bytes: %s",
-      this, m_endpointObj->name().c_str(),
+  LOG_DEBUG(
+      "TcrConnection::send: [{}] sending request to endpoint {}; bytes: {}",
+      static_cast<void*>(this), m_endpointObj->name().c_str(),
       Utils::convertBytesToString(buffer, len).c_str());
 
   switch (sendData(buffer, len, sendTimeoutSec)) {
@@ -676,10 +677,10 @@ char* TcrConnection::readMessage(size_t* recvLen,
     }
   }
 
-  LOGDEBUG(
-      "TcrConnection::readMessage(%p): received header from endpoint %s; "
-      "bytes: %s",
-      this, m_endpointObj->name().c_str(),
+  LOG_DEBUG(
+      "TcrConnection::readMessage({}): received header from endpoint {}; "
+      "bytes: {}",
+      static_cast<void*>(this), m_endpointObj->name().c_str(),
       Utils::convertBytesToString(msg_header, HEADER_LENGTH).c_str());
 
   auto input = m_connectionManager.getCacheImpl()->createDataInput(
@@ -730,7 +731,7 @@ char* TcrConnection::readMessage(size_t* recvLen,
     }
   }
 
-  LOGDEBUG(
+  LOG_DEBUG(
       "TcrConnection::readMessage: received message body from "
       "endpoint %s; bytes: %s",
       m_endpointObj->name().c_str(),
@@ -745,7 +746,7 @@ void TcrConnection::readMessageChunked(TcrMessageReply& reply,
   auto headerTimeout =
       calculateHeaderTimeout(receiveTimeout, doHeaderTimeoutRetries);
 
-  LOGFINER(
+  LOG_FINER(
       "TcrConnection::readMessageChunked: receiving reply from "
       "endpoint %s",
       m_endpointObj->name().c_str());
@@ -772,14 +773,14 @@ void TcrConnection::readMessageChunked(TcrMessageReply& reply,
   } catch (const Exception&) {
     if (auto handler = reply.getChunkedResultHandler()) {
       if (auto ex = handler->getException()) {
-        LOGDEBUG("Found existing exception ", ex->what());
+        LOG_DEBUG("Found existing exception ", ex->what());
         handler->clearException();
       }
     }
     throw;
   }
 
-  LOGFINER(
+  LOG_FINER(
       "TcrConnection::readMessageChunked: read full reply "
       "from endpoint %s",
       m_endpointObj->name().c_str());
@@ -813,10 +814,10 @@ chunkedResponseHeader TcrConnection::readResponseHeader(
     }
   }
 
-  LOGDEBUG(
-      "TcrConnection::readResponseHeader(%p): received header from "
-      "endpoint %s; bytes: %s",
-      this, m_endpointObj->name().c_str(),
+  LOG_DEBUG(
+      "TcrConnection::readResponseHeader({}): received header from "
+      "endpoint {}; bytes: {}",
+      static_cast<void*>(this), m_endpointObj->name().c_str(),
       Utils::convertBytesToString(receiveBuffer, HEADER_LENGTH).c_str());
 
   auto input = m_connectionManager.getCacheImpl()->createDataInput(
@@ -826,13 +827,12 @@ chunkedResponseHeader TcrConnection::readResponseHeader(
   header.transactionId = input.readInt32();
   header.header.chunkLength = input.readInt32();
   header.header.flags = input.read();
-  LOGDEBUG(
-      "TcrConnection::readResponseHeader(%p): "
-      "messageType=%" PRId32 ", numberOfParts=%" PRId32
-      ", transactionId=%" PRId32 ", chunkLength=%" PRId32
-      ", lastChunkAndSecurityFlags=0x%" PRIx8,
-      this, header.messageType, header.numberOfParts, header.transactionId,
-      header.header.chunkLength, header.header.flags);
+  LOG_DEBUG(
+      "TcrConnection::readResponseHeader({}): "
+      "messageType={}, numberOfParts={}, transactionId={}, chunkLength={}, "
+      "lastChunkAndSecurityFlags={}",
+      static_cast<void*>(this), header.messageType, header.numberOfParts,
+      header.transactionId, header.header.chunkLength, header.header.flags);
 
   return header;
 }  // namespace client
@@ -855,7 +855,7 @@ chunkHeader TcrConnection::readChunkHeader(std::chrono::microseconds timeout) {
     }
   }
 
-  LOGDEBUG(
+  LOG_DEBUG(
       "TcrConnection::readChunkHeader: received header from "
       "endpoint %s; bytes: %s",
       m_endpointObj->name().c_str(),
@@ -865,10 +865,10 @@ chunkHeader TcrConnection::readChunkHeader(std::chrono::microseconds timeout) {
       receiveBuffer, CHUNK_HEADER_LENGTH);
   header.chunkLength = input.readInt32();
   header.flags = input.read();
-  LOGDEBUG(
-      "TcrConnection::readChunkHeader(%p): "
-      ", chunkLen=%" PRId32 ", lastChunkAndSecurityFlags=0x%" PRIx8,
-      this, header.chunkLength, header.flags);
+  LOG_DEBUG(
+      "TcrConnection::readChunkHeader({}): , chunkLen={}, "
+      "lastChunkAndSecurityFlags={}",
+      static_cast<void*>(this), header.chunkLength, header.flags);
 
   return header;
 }
@@ -890,10 +890,10 @@ std::vector<uint8_t> TcrConnection::readChunkBody(
     }
   }
 
-  LOGDEBUG(
-      "TcrConnection::readChunkBody(%p): received chunk body from endpoint "
-      "%s; bytes: %s",
-      this, m_endpointObj->name().c_str(),
+  LOG_DEBUG(
+      "TcrConnection::readChunkBody({}): received chunk body from endpoint "
+      "{}; bytes: {}",
+      static_cast<void*>(this), m_endpointObj->name().c_str(),
       Utils::convertBytesToString(chunkBody.data(), chunkLength).c_str());
   return chunkBody;
 }
@@ -931,9 +931,9 @@ void TcrConnection::close() {
            std::chrono::seconds(2), false);
     }
   } catch (Exception& e) {
-    LOGINFO("Close connection message failed with msg: %s", e.what());
+    LOG_INFO("Close connection message failed with msg: %s", e.what());
   } catch (...) {
-    LOGINFO("Close connection message failed");
+    LOG_INFO("Close connection message failed");
   }
 }
 
@@ -1051,19 +1051,19 @@ std::shared_ptr<CacheableString> TcrConnection::readHandshakeString(
   if (receiveData(&cstypeid, 1, connectTimeout) != CONN_NOERR) {
     m_conn.reset();
     if (error & CONN_TIMEOUT) {
-      LOGFINE("Timeout receiving string typeid");
+      LOG_FINE("Timeout receiving string typeid");
       throwException(
           TimeoutException("TcrConnection::TcrConnection: "
                            "Timeout in handshake reading string type ID"));
     } else {
-      LOGFINE("IO error receiving string typeid");
+      LOG_FINE("IO error receiving string typeid");
       throwException(
           GeodeIOException("TcrConnection::TcrConnection: "
                            "Handshake failure reading string type ID"));
     }
   }
 
-  LOGDEBUG("Received string typeid as %d", cstypeid);
+  LOG_DEBUG("Received string typeid as %d", cstypeid);
 
   uint32_t length = 0;
   switch (static_cast<DSCode>(cstypeid)) {
@@ -1135,7 +1135,7 @@ std::shared_ptr<CacheableString> TcrConnection::readHandshakeString(
     }
   }
 
-  LOGDEBUG(" Received string len %d", length);
+  LOG_DEBUG(" Received string len %d", length);
 
   if (length == 0) {
     return nullptr;
@@ -1148,19 +1148,19 @@ std::shared_ptr<CacheableString> TcrConnection::readHandshakeString(
       CONN_NOERR) {
     if (error & CONN_TIMEOUT) {
       m_conn.reset();
-      LOGFINE("Timeout receiving string data");
+      LOG_FINE("Timeout receiving string data");
       throwException(
           TimeoutException("TcrConnection::TcrConnection: "
                            "Timeout in handshake reading string bytes"));
     } else {
       m_conn.reset();
-      LOGFINE("IO error receiving string data");
+      LOG_FINE("IO error receiving string data");
       throwException(
           GeodeIOException("TcrConnection::TcrConnection: "
                            "Handshake failure reading string bytes"));
     }
   } else {
-    LOGDEBUG(" Received string data [%s]", recvMessage.data());
+    LOG_DEBUG(" Received string data [%s]", recvMessage.data());
     auto retval =
         CacheableString::create(std::string(recvMessage.data(), length));
     return retval;

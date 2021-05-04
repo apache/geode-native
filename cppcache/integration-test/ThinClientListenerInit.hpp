@@ -70,7 +70,7 @@ class ThinClientTallyLoader : public TallyLoader {
     auto lreturnValue = CacheableString::create(lstrvalue);
     if (key && (!rp.getAttributes().getEndpoints().empty() ||
                 !rp.getAttributes().getPoolName().empty())) {
-      LOGDEBUG("Putting the value (%s) for local region clients only ",
+      LOG_DEBUG("Putting the value (%s) for local region clients only ",
                lstrvalue);
       rp.put(key, lreturnValue);
     }
@@ -100,7 +100,7 @@ void setCacheWriter(const char* regName,
 }
 
 void validateEventCount(int line) {
-  LOGINFO("ValidateEvents called from line (%d).", line);
+  LOG_INFO("ValidateEvents called from line (%d).", line);
   ASSERT(reg1Listener1->getCreates() == numCreates,
          "Got wrong number of creation events.");
   ASSERT(reg1Listener1->getUpdates() == numUpdates,
@@ -160,7 +160,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, testLoaderAndWriter)
     auto regEntryPtr = regPtr->getEntry(keyPtr);
     auto valuePtr = regEntryPtr->getValue();
     int val = atoi(valuePtr->toString().c_str());
-    LOGFINE("val for keyPtr is %d", val);
+    LOG_FINE("val for keyPtr is %d", val);
     ASSERT(val == 0, "Expected value CacheLoad value should be 0");
     numLoads++;
     numCreates++;
@@ -233,7 +233,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, testDestroy)
     auto regEntryPtr = regPtr->getEntry(keyPtr1);
     auto valuePtr = regEntryPtr->getValue();
     int val = atoi(valuePtr->toString().c_str());
-    LOGFINE("val for keyPtr1 is %d", val);
+    LOG_FINE("val for keyPtr1 is %d", val);
     ASSERT(val == 0, "Expected value CacheLoad value should be 0");
     numUpdates++;
     validateEventCount(__LINE__);
@@ -243,7 +243,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, testDestroy)
     auto regEntryPtr1 = regPtr->getEntry(keyPtr2);
     auto valuePtr1 = regEntryPtr1->getValue();
     int val1 = atoi(valuePtr1->toString().c_str());
-    LOGFINE("val1 for keyPtr2 is %d", val1);
+    LOG_FINE("val1 for keyPtr2 is %d", val1);
     ASSERT(val1 == 1, "Expected value CacheLoad value should be 1");
     numLoads++;
     numCreates++;

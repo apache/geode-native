@@ -372,7 +372,7 @@ int32_t OsStatisticsImpl::getInt(int32_t id) const {
   if (isOpen()) {
     return _getInt(id);
   } else {
-    LOGWARN("os statistics is closed");
+    LOG_WARN("os statistics is closed");
     return 0;
   }
 }

@@ -39,8 +39,8 @@ ExpirationAction action = ExpirationAction::DESTROY;
 
 size_t getNumOfEntries(std::shared_ptr<Region> &R1) {
   std::vector<std::shared_ptr<CacheableKey>> v = R1->keys();
-  LOGFINE("Number of keys in region %s is %d", R1->getFullPath().c_str(),
-          v.size());
+  LOG_FINE("Number of keys in region %s is %d", R1->getFullPath().c_str(),
+           v.size());
   return v.size();
 }
 

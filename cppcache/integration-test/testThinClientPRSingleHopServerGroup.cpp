@@ -111,18 +111,18 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_CLIENT1)
                "serverGroupFlag should not be equal to 2");
 
       } catch (CacheServerException &) {
-        LOGERROR("CPPTEST: Put caused extra hop.");
+        LOG_ERROR("CPPTEST: Put caused extra hop.");
         FAIL("Put caused extra hop.");
       } catch (CacheWriterException &) {
-        LOGERROR("CPPTEST: Put caused extra hop.");
+        LOG_ERROR("CPPTEST: Put caused extra hop.");
         FAIL("Put caused extra hop.");
       } catch (Exception &ex) {
-        LOGERROR("CPPTEST: Put caused unexpected %s: %s", ex.getName().c_str(),
-                 ex.what());
+        LOG_ERROR("CPPTEST: Put caused unexpected %s: %s", ex.getName().c_str(),
+                  ex.what());
         cleanProc();
         FAIL("Put caused unexpected exception");
       } catch (...) {
-        LOGERROR("CPPTEST: Put caused random exception");
+        LOG_ERROR("CPPTEST: Put caused random exception");
         cleanProc();
         FAIL("Put caused unexpected exception");
       }
@@ -145,18 +145,18 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_CLIENT1)
         ASSERT(serverGroupFlag != 2,
                "serverGroupFlag should not be equal to 2");
       } catch (CacheServerException &) {
-        LOGERROR("CPPTEST: get caused extra hop.");
+        LOG_ERROR("CPPTEST: get caused extra hop.");
         FAIL("get caused extra hop.");
       } catch (CacheWriterException &) {
-        LOGERROR("CPPTEST: get caused extra hop.");
+        LOG_ERROR("CPPTEST: get caused extra hop.");
         FAIL("get caused extra hop.");
       } catch (Exception &ex) {
-        LOGERROR("CPPTEST: get caused unexpected %s: %s", ex.getName().c_str(),
-                 ex.what());
+        LOG_ERROR("CPPTEST: get caused unexpected %s: %s", ex.getName().c_str(),
+                  ex.what());
         cleanProc();
         FAIL("get caused unexpected exception");
       } catch (...) {
-        LOGERROR("CPPTEST: get caused random exception");
+        LOG_ERROR("CPPTEST: get caused random exception");
         cleanProc();
         FAIL("get caused unexpected exception");
       }
@@ -181,18 +181,18 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_CLIENT1)
         ASSERT(serverGroupFlag != 2,
                "serverGroupFlag should not be equal to 2");
       } catch (CacheServerException &) {
-        LOGERROR("CPPTEST: getAll caused extra hop.");
+        LOG_ERROR("CPPTEST: getAll caused extra hop.");
         FAIL("getAll caused extra hop.");
       } catch (CacheWriterException &) {
-        LOGERROR("CPPTEST: getAll caused extra hop.");
+        LOG_ERROR("CPPTEST: getAll caused extra hop.");
         FAIL("getAll caused extra hop.");
       } catch (Exception &ex) {
-        LOGERROR("CPPTEST: getALL caused unexpected %s: %s",
-                 ex.getName().c_str(), ex.what());
+        LOG_ERROR("CPPTEST: getALL caused unexpected %s: %s",
+                  ex.getName().c_str(), ex.what());
         cleanProc();
         FAIL("getAll caused unexpected exception");
       } catch (...) {
-        LOGERROR("CPPTEST: getAll caused random exception");
+        LOG_ERROR("CPPTEST: getAll caused random exception");
         cleanProc();
         FAIL("getAll caused unexpected exception");
       }
@@ -213,18 +213,18 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_CLIENT1)
         ASSERT(serverGroupFlag != 2,
                "serverGroupFlag should not be equal to 2");
       } catch (CacheServerException &) {
-        LOGERROR("CPPTEST: destroy caused extra hop.");
+        LOG_ERROR("CPPTEST: destroy caused extra hop.");
         FAIL("destroy caused extra hop.");
       } catch (CacheWriterException &) {
-        LOGERROR("CPPTEST: destroy caused extra hop.");
+        LOG_ERROR("CPPTEST: destroy caused extra hop.");
         FAIL("destroy caused extra hop.");
       } catch (Exception &ex) {
-        LOGERROR("CPPTEST: destroy caused unexpected %s: %s",
-                 ex.getName().c_str(), ex.what());
+        LOG_ERROR("CPPTEST: destroy caused unexpected %s: %s",
+                  ex.getName().c_str(), ex.what());
         cleanProc();
         FAIL("destroy caused unexpected exception");
       } catch (...) {
-        LOGERROR("CPPTEST: destroy caused random exception");
+        LOG_ERROR("CPPTEST: destroy caused random exception");
         cleanProc();
         FAIL("destroy caused unexpected exception");
       }
@@ -257,18 +257,18 @@ DUNIT_TASK_DEFINITION(CLIENT2, CheckPrSingleHopForIntKeysTask_CLIENT2)
                "serverGroupFlag should not be equal to 2");
 
       } catch (CacheServerException &) {
-        LOGERROR("CPPTEST: Put caused extra hop.");
+        LOG_ERROR("CPPTEST: Put caused extra hop.");
         FAIL("Put caused extra hop.");
       } catch (CacheWriterException &) {
-        LOGERROR("CPPTEST: Put caused extra hop.");
+        LOG_ERROR("CPPTEST: Put caused extra hop.");
         FAIL("Put caused extra hop.");
       } catch (Exception &ex) {
-        LOGERROR("CPPTEST: Put caused unexpected %s: %s", ex.getName().c_str(),
-                 ex.what());
+        LOG_ERROR("CPPTEST: Put caused unexpected %s: %s", ex.getName().c_str(),
+                  ex.what());
         cleanProc();
         FAIL("Put caused unexpected exception");
       } catch (...) {
-        LOGERROR("CPPTEST: Put caused random exception");
+        LOG_ERROR("CPPTEST: Put caused random exception");
         cleanProc();
         FAIL("Put caused unexpected exception");
       }
@@ -287,18 +287,18 @@ DUNIT_TASK_DEFINITION(CLIENT2, CheckPrSingleHopForIntKeysTask_CLIENT2)
         ASSERT(serverGroupFlag != 2,
                "serverGroupFlag should not be equal to 2");
       } catch (CacheServerException &) {
-        LOGERROR("CPPTEST: get caused extra hop.");
+        LOG_ERROR("CPPTEST: get caused extra hop.");
         FAIL("get caused extra hop.");
       } catch (CacheWriterException &) {
-        LOGERROR("CPPTEST: get caused extra hop.");
+        LOG_ERROR("CPPTEST: get caused extra hop.");
         FAIL("get caused extra hop.");
       } catch (Exception &ex) {
-        LOGERROR("CPPTEST: get caused unexpected %s: %s", ex.getName().c_str(),
-                 ex.what());
+        LOG_ERROR("CPPTEST: get caused unexpected %s: %s", ex.getName().c_str(),
+                  ex.what());
         cleanProc();
         FAIL("get caused unexpected exception");
       } catch (...) {
-        LOGERROR("CPPTEST: get caused random exception");
+        LOG_ERROR("CPPTEST: get caused random exception");
         cleanProc();
         FAIL("get caused unexpected exception");
       }
@@ -319,18 +319,18 @@ DUNIT_TASK_DEFINITION(CLIENT2, CheckPrSingleHopForIntKeysTask_CLIENT2)
         ASSERT(serverGroupFlag != 2,
                "serverGroupFlag should not be equal to 2");
       } catch (CacheServerException &) {
-        LOGERROR("CPPTEST: getAll caused extra hop.");
+        LOG_ERROR("CPPTEST: getAll caused extra hop.");
         FAIL("getAll caused extra hop.");
       } catch (CacheWriterException &) {
-        LOGERROR("CPPTEST: getAll caused extra hop.");
+        LOG_ERROR("CPPTEST: getAll caused extra hop.");
         FAIL("getAll caused extra hop.");
       } catch (Exception &ex) {
-        LOGERROR("CPPTEST: getALL caused unexpected %s: %s",
-                 ex.getName().c_str(), ex.what());
+        LOG_ERROR("CPPTEST: getALL caused unexpected %s: %s",
+                  ex.getName().c_str(), ex.what());
         cleanProc();
         FAIL("getAll caused unexpected exception");
       } catch (...) {
-        LOGERROR("CPPTEST: getAll caused random exception");
+        LOG_ERROR("CPPTEST: getAll caused random exception");
         cleanProc();
         FAIL("getAll caused unexpected exception");
       }
@@ -348,18 +348,18 @@ DUNIT_TASK_DEFINITION(CLIENT2, CheckPrSingleHopForIntKeysTask_CLIENT2)
         ASSERT(serverGroupFlag != 2,
                "serverGroupFlag should not be equal to 2");
       } catch (CacheServerException &) {
-        LOGERROR("CPPTEST: destroy caused extra hop.");
+        LOG_ERROR("CPPTEST: destroy caused extra hop.");
         FAIL("destroy caused extra hop.");
       } catch (CacheWriterException &) {
-        LOGERROR("CPPTEST: destroy caused extra hop.");
+        LOG_ERROR("CPPTEST: destroy caused extra hop.");
         FAIL("destroy caused extra hop.");
       } catch (Exception &ex) {
-        LOGERROR("CPPTEST: destroy caused unexpected %s: %s",
-                 ex.getName().c_str(), ex.what());
+        LOG_ERROR("CPPTEST: destroy caused unexpected %s: %s",
+                  ex.getName().c_str(), ex.what());
         cleanProc();
         FAIL("destroy caused unexpected exception");
       } catch (...) {
-        LOGERROR("CPPTEST: destroy caused random exception");
+        LOG_ERROR("CPPTEST: destroy caused random exception");
         cleanProc();
         FAIL("destroy caused unexpected exception");
       }
@@ -392,18 +392,18 @@ DUNIT_TASK_DEFINITION(CLIENT3, CheckPrSingleHopForIntKeysTask_CLIENT3)
                "serverGroupFlag should not be equal to 2");
 
       } catch (CacheServerException &) {
-        LOGERROR("CPPTEST: Put caused extra hop.");
+        LOG_ERROR("CPPTEST: Put caused extra hop.");
         FAIL("Put caused extra hop.");
       } catch (CacheWriterException &) {
-        LOGERROR("CPPTEST: Put caused extra hop.");
+        LOG_ERROR("CPPTEST: Put caused extra hop.");
         FAIL("Put caused extra hop.");
       } catch (Exception &ex) {
-        LOGERROR("CPPTEST: Put caused unexpected %s: %s", ex.getName().c_str(),
-                 ex.what());
+        LOG_ERROR("CPPTEST: Put caused unexpected %s: %s", ex.getName().c_str(),
+                  ex.what());
         cleanProc();
         FAIL("Put caused unexpected exception");
       } catch (...) {
-        LOGERROR("CPPTEST: Put caused random exception");
+        LOG_ERROR("CPPTEST: Put caused random exception");
         cleanProc();
         FAIL("Put caused unexpected exception");
       }
@@ -422,18 +422,18 @@ DUNIT_TASK_DEFINITION(CLIENT3, CheckPrSingleHopForIntKeysTask_CLIENT3)
         ASSERT(serverGroupFlag != 2,
                "serverGroupFlag should not be equal to 2");
       } catch (CacheServerException &) {
-        LOGERROR("CPPTEST: get caused extra hop.");
+        LOG_ERROR("CPPTEST: get caused extra hop.");
         FAIL("get caused extra hop.");
       } catch (CacheWriterException &) {
-        LOGERROR("CPPTEST: get caused extra hop.");
+        LOG_ERROR("CPPTEST: get caused extra hop.");
         FAIL("get caused extra hop.");
       } catch (Exception &ex) {
-        LOGERROR("CPPTEST: get caused unexpected %s: %s", ex.getName().c_str(),
-                 ex.what());
+        LOG_ERROR("CPPTEST: get caused unexpected %s: %s", ex.getName().c_str(),
+                  ex.what());
         cleanProc();
         FAIL("get caused unexpected exception");
       } catch (...) {
-        LOGERROR("CPPTEST: get caused random exception");
+        LOG_ERROR("CPPTEST: get caused random exception");
         cleanProc();
         FAIL("get caused unexpected exception");
       }
@@ -453,18 +453,18 @@ DUNIT_TASK_DEFINITION(CLIENT3, CheckPrSingleHopForIntKeysTask_CLIENT3)
         ASSERT(serverGroupFlag != 2,
                "serverGroupFlag should not be equal to 2");
       } catch (CacheServerException &) {
-        LOGERROR("CPPTEST: getAll caused extra hop.");
+        LOG_ERROR("CPPTEST: getAll caused extra hop.");
         FAIL("getAll caused extra hop.");
       } catch (CacheWriterException &) {
-        LOGERROR("CPPTEST: getAll caused extra hop.");
+        LOG_ERROR("CPPTEST: getAll caused extra hop.");
         FAIL("getAll caused extra hop.");
       } catch (Exception &ex) {
-        LOGERROR("CPPTEST: getALL caused unexpected %s: %s",
-                 ex.getName().c_str(), ex.what());
+        LOG_ERROR("CPPTEST: getALL caused unexpected %s: %s",
+                  ex.getName().c_str(), ex.what());
         cleanProc();
         FAIL("getAll caused unexpected exception");
       } catch (...) {
-        LOGERROR("CPPTEST: getAll caused random exception");
+        LOG_ERROR("CPPTEST: getAll caused random exception");
         cleanProc();
         FAIL("getAll caused unexpected exception");
       }
@@ -482,18 +482,18 @@ DUNIT_TASK_DEFINITION(CLIENT3, CheckPrSingleHopForIntKeysTask_CLIENT3)
         ASSERT(serverGroupFlag != 2,
                "serverGroupFlag should not be equal to 2");
       } catch (CacheServerException &) {
-        LOGERROR("CPPTEST: destroy caused extra hop.");
+        LOG_ERROR("CPPTEST: destroy caused extra hop.");
         FAIL("destroy caused extra hop.");
       } catch (CacheWriterException &) {
-        LOGERROR("CPPTEST: destroy caused extra hop.");
+        LOG_ERROR("CPPTEST: destroy caused extra hop.");
         FAIL("destroy caused extra hop.");
       } catch (Exception &ex) {
-        LOGERROR("CPPTEST: destroy caused unexpected %s: %s",
-                 ex.getName().c_str(), ex.what());
+        LOG_ERROR("CPPTEST: destroy caused unexpected %s: %s",
+                  ex.getName().c_str(), ex.what());
         cleanProc();
         FAIL("destroy caused unexpected exception");
       } catch (...) {
-        LOGERROR("CPPTEST: destroy caused random exception");
+        LOG_ERROR("CPPTEST: destroy caused random exception");
         cleanProc();
         FAIL("destroy caused unexpected exception");
       }

@@ -77,7 +77,7 @@ PdxInstanceImpl::PdxInstanceImpl(const uint8_t* buffer, size_t length,
       m_pdxTypeRegistry(pdxTypeRegistry),
       m_cacheImpl(cacheImpl),
       m_enableTimeStatistics(enableTimeStatistics) {
-  LOGDEBUG("PdxInstanceImpl::m_bufferLength = %zu ", m_buffer.size());
+  LOG_DEBUG("PdxInstanceImpl::m_bufferLength = %zu ", m_buffer.size());
 }
 
 PdxInstanceImpl::PdxInstanceImpl(FieldVsValues fieldVsValue,
@@ -255,8 +255,8 @@ void PdxInstanceImpl::writeField(PdxWriter& writer,
   }
 }
 std::shared_ptr<WritablePdxInstance> PdxInstanceImpl::createWriter() {
-  LOGDEBUG("PdxInstanceImpl::createWriter m_bufferLength = %zu m_typeId = %d ",
-           m_buffer.size(), m_typeId);
+  LOG_DEBUG("PdxInstanceImpl::createWriter m_bufferLength = %zu m_typeId = %d ",
+            m_buffer.size(), m_typeId);
   return std::make_shared<PdxInstanceImpl>(
       m_buffer.data(), m_buffer.size(), m_typeId, m_cacheStats,
       m_pdxTypeRegistry, m_cacheImpl,
@@ -742,8 +742,8 @@ int32_t PdxInstanceImpl::hashcode() const {
   for (uint32_t i = 0; i < pdxIdentityFieldList.size(); i++) {
     auto pField = pdxIdentityFieldList.at(i);
 
-    LOGDEBUG("hashcode for pdxfield %s  hashcode is %d ",
-             pField->getFieldName().c_str(), hashCode);
+    LOG_DEBUG("hashcode for pdxfield %s  hashcode is %d ",
+              pField->getFieldName().c_str(), hashCode);
     switch (pField->getTypeId()) {
       case PdxFieldTypes::CHAR:
       case PdxFieldTypes::BOOLEAN:
@@ -1237,10 +1237,10 @@ bool PdxInstanceImpl::operator==(const CacheableKey& other) const {
     auto myPFT = myPdxIdentityFieldList.at(i);
     auto otherPFT = otherPdxIdentityFieldList.at(i);
 
-    LOGDEBUG("pdxfield %s ",
-             ((myPFT != m_DefaultPdxFieldType) ? myPFT->getFieldName()
-                                               : otherPFT->getFieldName())
-                 .c_str());
+    LOG_DEBUG("pdxfield %s ",
+              ((myPFT != m_DefaultPdxFieldType) ? myPFT->getFieldName()
+                                                : otherPFT->getFieldName())
+                  .c_str());
     if (myPFT->equals(m_DefaultPdxFieldType)) {
       fieldTypeId = otherPFT->getTypeId();
     } else if (otherPFT->equals(m_DefaultPdxFieldType)) {
@@ -1435,8 +1435,8 @@ void PdxInstanceImpl::toDataMutable(PdxWriter& writer) {
         m_cacheImpl.createDataInput(m_buffer.data(), m_buffer.size());
     for (size_t i = 0; i < pdxFieldList->size(); i++) {
       auto currPf = pdxFieldList->at(i);
-      LOGDEBUG("toData fieldName = %s , isVarLengthType = %d ",
-               currPf->getFieldName().c_str(), currPf->IsVariableLengthType());
+      LOG_DEBUG("toData fieldName = %s , isVarLengthType = %d ",
+                currPf->getFieldName().c_str(), currPf->IsVariableLengthType());
       std::shared_ptr<Cacheable> value = nullptr;
 
       auto&& iter = m_updatedFields.find(currPf->getFieldName());
@@ -1464,8 +1464,8 @@ void PdxInstanceImpl::toDataMutable(PdxWriter& writer) {
   } else {
     for (size_t i = 0; i < pdxFieldList->size(); i++) {
       auto currPf = pdxFieldList->at(i);
-      LOGDEBUG("toData1 fieldName = %s , isVarLengthType = %d ",
-               currPf->getFieldName().c_str(), currPf->IsVariableLengthType());
+      LOG_DEBUG("toData1 fieldName = %s , isVarLengthType = %d ",
+                currPf->getFieldName().c_str(), currPf->IsVariableLengthType());
       auto value = m_updatedFields[currPf->getFieldName()];
       writeField(writer, currPf->getFieldName(), currPf->getTypeId(), value);
     }
@@ -1530,7 +1530,7 @@ int PdxInstanceImpl::getOffset(DataInput& dataInput,
   int offsetSize = 0;
   int serializedLength = 0;
   int pdxSerializedLength = static_cast<int32_t>(dataInput.getPdxBytes());
-  LOGDEBUG("getOffset pdxSerializedLength = %d ", pdxSerializedLength);
+  LOG_DEBUG("getOffset pdxSerializedLength = %d ", pdxSerializedLength);
   if (pdxSerializedLength <= 0xff) {
     offsetSize = 1;
   } else if (pdxSerializedLength <= 0xffff) {
@@ -1561,7 +1561,7 @@ int PdxInstanceImpl::getRawHashCode(std::shared_ptr<PdxType> pt,
   int nextpos =
       getNextFieldPosition(dataInput, pField->getSequenceId() + 1, pt);
 
-  LOGDEBUG("pos = %d nextpos = %d ", pos, nextpos);
+  LOG_DEBUG("pos = %d nextpos = %d ", pos, nextpos);
 
   if (hasDefaultBytes(pField, dataInput, pos, nextpos)) {
     return 0;  // matched default bytes
@@ -1576,15 +1576,15 @@ int PdxInstanceImpl::getRawHashCode(std::shared_ptr<PdxType> pt,
     dataInput.reset();
     dataInput.advanceCursor(i - 1);
   }
-  LOGDEBUG("getRawHashCode nbytes = %d, final hashcode = %d ", (nextpos - pos),
-           h);
+  LOG_DEBUG("getRawHashCode nbytes = %d, final hashcode = %d ", (nextpos - pos),
+            h);
   return h;
 }
 
 int PdxInstanceImpl::getNextFieldPosition(DataInput& dataInput, int fieldId,
                                           std::shared_ptr<PdxType> pt) const {
-  LOGDEBUG("fieldId = %d pt->getTotalFields() = %d ", fieldId,
-           pt->getTotalFields());
+  LOG_DEBUG("fieldId = %d pt->getTotalFields() = %d ", fieldId,
+            pt->getTotalFields());
   if (fieldId == pt->getTotalFields()) {
     // return serialized length
     return getSerializedLength(dataInput, pt);
@@ -1600,7 +1600,7 @@ int PdxInstanceImpl::getSerializedLength(DataInput& dataInput,
   int offsetSize = 0;
   int serializedLength = 0;
   int pdxSerializedLength = static_cast<int32_t>(dataInput.getPdxBytes());
-  LOGDEBUG("pdxSerializedLength = %d ", pdxSerializedLength);
+  LOG_DEBUG("pdxSerializedLength = %d ", pdxSerializedLength);
   if (pdxSerializedLength <= 0xff) {
     offsetSize = 1;
   } else if (pdxSerializedLength <= 0xffff) {

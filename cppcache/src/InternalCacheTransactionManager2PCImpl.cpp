@@ -92,26 +92,26 @@ void InternalCacheTransactionManager2PCImpl::prepare() {
         }
         default: {
           TXCleaner txCleaner(this);
-          LOGERROR("Unknown message type in prepare reply %d",
-                   replyCommitBefore.getMessageType());
+          LOG_ERROR("Unknown message type in prepare reply %d",
+                    replyCommitBefore.getMessageType());
           GfErrTypeThrowException("Commit Failed in prepare", GF_MSG);
           break;
         }
       }
     }
   } catch (const Exception& ex) {
-    LOGERROR("Unexpected exception during commit in prepare %s", ex.what());
+    LOG_ERROR("Unexpected exception during commit in prepare %s", ex.what());
     throw;
   }
 }
 
 void InternalCacheTransactionManager2PCImpl::commit() {
-  LOGFINEST("Committing");
+  LOG_FINEST("Committing");
   this->afterCompletion(STATUS_COMMITTED);
 }
 
 void InternalCacheTransactionManager2PCImpl::rollback() {
-  LOGFINEST("Rolling back");
+  LOG_FINEST("Rolling back");
   this->afterCompletion(STATUS_ROLLEDBACK);
 }
 
@@ -198,8 +198,8 @@ void InternalCacheTransactionManager2PCImpl::afterCompletion(int32_t status) {
       }
     }
   } catch (const Exception& ex) {
-    LOGERROR("Unexpected exception during completing transaction %s",
-             ex.what());
+    LOG_ERROR("Unexpected exception during completing transaction %s",
+              ex.what());
     throw;
   }
 }

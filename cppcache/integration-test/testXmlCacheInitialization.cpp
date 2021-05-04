@@ -64,7 +64,7 @@ int testXmlDeclarativeCacheCreation() {
     LOG(ex.getStackTrace());
     return -1;
   } catch (...) {
-    LOGINFO("unknown exception");
+    LOG_INFO("unknown exception");
     return -1;
   }
 
@@ -136,7 +136,7 @@ int testSetCacheXmlThenGetRegion() {
     LOG(ex.getStackTrace());
     return -1;
   } catch (...) {
-    LOGINFO("unknown exception");
+    LOG_INFO("unknown exception");
     return -1;
   }
 

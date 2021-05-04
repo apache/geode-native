@@ -107,7 +107,7 @@ GfErrType ThinClientBaseDM::sendSyncRequestRegisterInterest(
         break;
 
       default:
-        LOGERROR(
+        LOG_ERROR(
             "Unknown message type %d during register subscription interest",
             reply.getMessageType());
         err = GF_MSG;
@@ -136,7 +136,7 @@ GfErrType ThinClientBaseDM::handleEPError(TcrEndpoint* ep,
         bool doFailover =
             (markServerDead || cacheClosedEx || nonFatalServerError(exceptStr));
         if (doFailover) {
-          LOGFINE(
+          LOG_FINE(
               "ThinClientDistributionManager::sendRequestToEP: retrying for "
               "server [" +
               ep->name() + "] exception: " + exceptStr);
@@ -154,10 +154,10 @@ GfErrType ThinClientBaseDM::handleEPError(TcrEndpoint* ep,
 GfErrType ThinClientBaseDM::sendRequestToEndPoint(const TcrMessage& request,
                                                   TcrMessageReply& reply,
                                                   TcrEndpoint* ep) {
-  LOGDEBUG("ThinClientBaseDM::sendRequestToEP: invoking endpoint send for: %s",
-           ep->name().c_str());
+  LOG_DEBUG("ThinClientBaseDM::sendRequestToEP: invoking endpoint send for: %s",
+            ep->name().c_str());
   auto error = ep->send(request, reply);
-  LOGDEBUG(
+  LOG_DEBUG(
       "ThinClientBaseDM::sendRequestToEP: completed endpoint send for: %s "
       "[error:%d]",
       ep->name().c_str(), error);
@@ -196,30 +196,30 @@ bool ThinClientBaseDM::nonFatalServerError(const std::string& exceptStr) {
 void ThinClientBaseDM::failover() {}
 
 void ThinClientBaseDM::queueChunk(TcrChunkedContext* chunk) {
-  LOGDEBUG("ThinClientBaseDM::queueChunk");
+  LOG_DEBUG("ThinClientBaseDM::queueChunk");
   if (m_chunkProcessor == nullptr) {
-    LOGDEBUG("ThinClientBaseDM::queueChunk2");
+    LOG_DEBUG("ThinClientBaseDM::queueChunk2");
     // process in same thread if no chunk processor thread
     chunk->handleChunk(true);
     _GEODE_SAFE_DELETE(chunk);
   } else if (!m_chunks.putFor(chunk, std::chrono::seconds(1))) {
-    LOGDEBUG("ThinClientBaseDM::queueChunk3");
+    LOG_DEBUG("ThinClientBaseDM::queueChunk3");
     // if put in queue fails due to whatever reason then process in same thread
-    LOGFINE(
+    LOG_FINE(
         "addChunkToQueue: timed out while adding to queue of "
         "unbounded size after waiting for 1 secs");
     chunk->handleChunk(true);
     _GEODE_SAFE_DELETE(chunk);
   } else {
-    LOGDEBUG("Adding message to ThinClientBaseDM::queueChunk");
+    LOG_DEBUG("Adding message to ThinClientBaseDM::queueChunk");
   }
 }
 
 // the chunk processing thread
 void ThinClientBaseDM::processChunks(std::atomic<bool>& isRunning) {
   TcrChunkedContext* chunk;
-  LOGFINE("Starting chunk process thread for region %s",
-          (m_region ? m_region->getFullPath().c_str() : "(null)"));
+  LOG_FINE("Starting chunk process thread for region %s",
+           (m_region ? m_region->getFullPath().c_str() : "(null)"));
 
   std::chrono::milliseconds wait_for_chunk{100};
   chunk = m_chunks.getFor(wait_for_chunk);
@@ -237,8 +237,8 @@ void ThinClientBaseDM::processChunks(std::atomic<bool>& isRunning) {
     _GEODE_SAFE_DELETE(chunk);
   }
 
-  LOGFINE("Ending chunk process thread for region %s",
-          (m_region ? m_region->getFullPath().c_str() : "(null)"));
+  LOG_FINE("Ending chunk process thread for region %s",
+           (m_region ? m_region->getFullPath().c_str() : "(null)"));
 }
 
 // start the chunk processing thread
@@ -263,11 +263,11 @@ void ThinClientBaseDM::stopChunkProcessor() {
 
 void ThinClientBaseDM::beforeSendingRequest(const TcrMessage& request,
                                             TcrConnection* conn) {
-  LOGDEBUG(
+  LOG_DEBUG(
       "ThinClientBaseDM::beforeSendingRequest %d  "
       "TcrMessage::isUserInitiativeOps(request) = %d ",
       request.isMetaRegion(), TcrMessage::isUserInitiativeOps(request));
-  LOGDEBUG(
+  LOG_DEBUG(
       "ThinClientBaseDM::beforeSendingRequest %d this->isMultiUserMode() = %d "
       "messageType = %d ",
       this->isSecurityOn(), this->isMultiUserMode(), request.getMessageType());
@@ -301,8 +301,8 @@ void ThinClientBaseDM::beforeSendingRequest(const TcrMessage& request,
 void ThinClientBaseDM::afterSendingRequest(const TcrMessage& request,
                                            TcrMessageReply& reply,
                                            TcrConnection* conn) {
-  LOGDEBUG("ThinClientBaseDM::afterSendingRequest reply msgtype = %d ",
-           reply.getMessageType());
+  LOG_DEBUG("ThinClientBaseDM::afterSendingRequest reply msgtype = %d ",
+            reply.getMessageType());
   if (!reply.isMetaRegion() && TcrMessage::isUserInitiativeOps(request) &&
       (this->isSecurityOn() || this->isMultiUserMode())) {
     // need to handle encryption/decryption
@@ -352,8 +352,8 @@ bool ThinClientBaseDM::isNotAuthorizedException(
     const std::string& exceptionMsg) {
   if (exceptionMsg.find("org.apache.geode.security.NotAuthorizedException") !=
       std::string::npos) {
-    LOGDEBUG("isNotAuthorizedException() An exception (" + exceptionMsg +
-             ") happened at remote server.");
+    LOG_DEBUG("isNotAuthorizedException() An exception (" + exceptionMsg +
+              ") happened at remote server.");
     return true;
   }
   return false;
@@ -364,8 +364,8 @@ bool ThinClientBaseDM::isPutAllPartialResultException(
   if (exceptionMsg.find(
           "org.apache.geode.internal.cache.PutAllPartialResultException") !=
       std::string::npos) {
-    LOGDEBUG("isNotAuthorizedException() An exception (" + exceptionMsg +
-             ") happened at remote server.");
+    LOG_DEBUG("isNotAuthorizedException() An exception (" + exceptionMsg +
+              ") happened at remote server.");
     return true;
   }
   return false;
@@ -375,8 +375,8 @@ bool ThinClientBaseDM::isAuthRequireException(const std::string& exceptionMsg) {
   if (exceptionMsg.find(
           "org.apache.geode.security.AuthenticationRequiredException") !=
       std::string::npos) {
-    LOGDEBUG("isAuthRequireExcep() An exception (" + exceptionMsg +
-             ") happened at remote server.");
+    LOG_DEBUG("isAuthRequireExcep() An exception (" + exceptionMsg +
+              ") happened at remote server.");
     return true;
   }
   return false;
@@ -384,8 +384,8 @@ bool ThinClientBaseDM::isAuthRequireException(const std::string& exceptionMsg) {
 
 void ThinClientBaseDM::setDeltaEnabledOnServer(bool isDeltaEnabledOnServer) {
   s_isDeltaEnabledOnServer = isDeltaEnabledOnServer;
-  LOGFINE("Delta enabled on server: %s",
-          s_isDeltaEnabledOnServer ? "true" : "false");
+  LOG_FINE("Delta enabled on server: %s",
+           s_isDeltaEnabledOnServer ? "true" : "false");
 }
 
 }  // namespace client

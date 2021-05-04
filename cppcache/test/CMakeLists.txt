@@ -87,6 +87,7 @@ target_link_libraries(apache-geode_unittests
     GTest::gmock
     _WarningsAsError
     _CppCodeCoverage
+    spdlog::spdlog
 )
 
 target_include_directories(apache-geode_unittests

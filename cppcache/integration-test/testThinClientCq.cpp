@@ -107,14 +107,14 @@ const char *regionNamesCq[] = {"Portfolios", "Positions", "Portfolios2",
 
 class MyCqListener1026 : public CqListener {
  public:
-  void close() override { LOGINFO("MyCqListener::close called"); }
+  void close() override { LOG_INFO("MyCqListener::close called"); }
 
   void onError(const CqEvent &) override {
-    LOGINFO("MyCqListener::OnError called");
+    LOG_INFO("MyCqListener::OnError called");
   }
 
   void onEvent(const CqEvent &) override {
-    LOGINFO("MyCqListener::onEvent called");
+    LOG_INFO("MyCqListener::onEvent called");
   }
 };
 
@@ -222,22 +222,22 @@ class MyCqStatusListener : public CqStatusListener {
   }
 
   void onEvent(const CqEvent &cqe) override {
-    LOGINFO("MyCqStatusListener::OnEvent %d called", m_id);
+    LOG_INFO("MyCqStatusListener::OnEvent %d called", m_id);
     updateCount(cqe);
   }
   void onError(const CqEvent &cqe) override {
     updateCount(cqe);
-    LOGINFO("MyCqStatusListener::OnError %d called", m_id);
+    LOG_INFO("MyCqStatusListener::OnError %d called", m_id);
   }
   void close() override {
-    LOGINFO("MyCqStatusListener::close %d called", m_id);
+    LOG_INFO("MyCqStatusListener::close %d called", m_id);
   }
   void onCqDisconnected() override {
-    LOGINFO("MyCqStatusListener %d got onCqDisconnected", m_id);
+    LOG_INFO("MyCqStatusListener %d got onCqDisconnected", m_id);
     m_cqsDisconnectedCount++;
   }
   void onCqConnected() override {
-    LOGINFO("MyCqStatusListener %d got onCqConnected", m_id);
+    LOG_INFO("MyCqStatusListener %d got onCqConnected", m_id);
     m_cqsConnectedCount++;
   }
   void clear() {
@@ -456,11 +456,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
         // execute Cq Query with initial Results
         auto resultsPtr = qry->executeWithInitialResults();
 
-        LOGINFO("ResultSet Query returned %d rows", resultsPtr->size());
+        LOG_INFO("ResultSet Query returned %d rows", resultsPtr->size());
         LOG("Testing bug #1026 Complete");
         // Iterate through the rows of the query result.
       } catch (const Exception &geodeExcp) {
-        LOGERROR("CqQuery Geode Exception: %s", geodeExcp.what());
+        LOG_ERROR("CqQuery Geode Exception: %s", geodeExcp.what());
         FAIL(geodeExcp.what());
       }
     }
@@ -831,7 +831,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, createCQ)
     auto vl = cqAttr->getCqListeners();
     MyCqStatusListener *myStatusCq =
         dynamic_cast<MyCqStatusListener *>(vl[0].get());
-    LOGINFO("checkCQStatusOnConnect = %d ", myStatusCq->getCqsConnectedCount());
+    LOG_INFO("checkCQStatusOnConnect = %d ",
+             myStatusCq->getCqsConnectedCount());
     ASSERT(myStatusCq->getCqsConnectedCount() == 1,
            "incorrect number of CqStatus Connected count.");
     LOG("createCQ complete.");
@@ -857,7 +858,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, createCQ_Pool)
     auto vl = cqAttr->getCqListeners();
     MyCqStatusListener *myStatusCq =
         dynamic_cast<MyCqStatusListener *>(vl[0].get());
-    LOGINFO("checkCQStatusOnConnect = %d ", myStatusCq->getCqsConnectedCount());
+    LOG_INFO("checkCQStatusOnConnect = %d ",
+             myStatusCq->getCqsConnectedCount());
     ASSERT(myStatusCq->getCqsConnectedCount() == 1,
            "incorrect number of CqStatus Connected count.");
 
@@ -877,8 +879,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, createCQ_Pool)
     auto vl2 = cqAttr1->getCqListeners();
     MyCqStatusListener *myStatusCq2 =
         dynamic_cast<MyCqStatusListener *>(vl2[0].get());
-    LOGINFO("checkCQStatusOnConnect = %d ",
-            myStatusCq2->getCqsConnectedCount());
+    LOG_INFO("checkCQStatusOnConnect = %d ",
+             myStatusCq2->getCqsConnectedCount());
     ASSERT(myStatusCq2->getCqsConnectedCount() == 1,
            "incorrect number of CqStatus Connected count.");
 
@@ -898,13 +900,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, createCQ_Pool)
       regPtr1->put(keyport, valport);
       SLEEP(10000);  // sleep a while to allow server query to complete
     }
-    LOGINFO("putEntries complete");
+    LOG_INFO("putEntries complete");
 
-    LOGINFO("checkCQStatusOnPutEvent = %d ", myStatusCq->getNumInserts());
+    LOG_INFO("checkCQStatusOnPutEvent = %d ", myStatusCq->getNumInserts());
     ASSERT(myStatusCq->getNumInserts() == 5,
            "incorrect number of CqStatus Updates count.");
 
-    LOGINFO("checkCQStatusOnPutEvent = %d ", myStatusCq2->getNumInserts());
+    LOG_INFO("checkCQStatusOnPutEvent = %d ", myStatusCq2->getNumInserts());
     ASSERT(myStatusCq2->getNumInserts() == 5,
            "incorrect number of CqStatus Updates count.");
 
@@ -943,7 +945,7 @@ void checkCQStatusOnConnect(const char *poolName, const char *name,
   auto vl = cqAttr->getCqListeners();
   MyCqStatusListener *myStatusCq =
       dynamic_cast<MyCqStatusListener *>(vl[0].get());
-  LOGINFO("checkCQStatusOnConnect = %d ", myStatusCq->getCqsConnectedCount());
+  LOG_INFO("checkCQStatusOnConnect = %d ", myStatusCq->getCqsConnectedCount());
   ASSERT(myStatusCq->getCqsConnectedCount() == connect,
          "incorrect number of CqStatus Connected count.");
 }
@@ -986,8 +988,8 @@ void checkCQStatusOnDisConnect(const char *poolName,
   auto cqAttr = cq->getCqAttributes();
   auto vl = cqAttr->getCqListeners();
   auto myStatusCq = std::dynamic_pointer_cast<MyCqStatusListener>(vl[0]);
-  LOGINFO("checkCQStatusOnDisConnect = %d ",
-          myStatusCq->getCqsDisConnectedCount());
+  LOG_INFO("checkCQStatusOnDisConnect = %d ",
+           myStatusCq->getCqsDisConnectedCount());
   ASSERT(myStatusCq->getCqsDisConnectedCount() == disconnect,
          "incorrect number of CqStatus Disconnected count.");
 }
@@ -1041,7 +1043,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, putEntries)
       regPtr1->put(keyport, valport);
       SLEEP(10000);  // sleep a while to allow server query to complete
     }
-    LOGINFO("putEntries complete");
+    LOG_INFO("putEntries complete");
   }
 END_TASK_DEFINITION
 
@@ -1057,7 +1059,7 @@ void checkCQStatusOnPutEvent(const char *poolName,
   auto vl = cqAttr->getCqListeners();
   MyCqStatusListener *myStatusCq =
       dynamic_cast<MyCqStatusListener *>(vl[0].get());
-  LOGINFO("checkCQStatusOnPutEvent = %d ", myStatusCq->getNumInserts());
+  LOG_INFO("checkCQStatusOnPutEvent = %d ", myStatusCq->getNumInserts());
   ASSERT(myStatusCq->getNumInserts() == count,
          "incorrect number of CqStatus Updates count.");
 }
@@ -1108,23 +1110,23 @@ DUNIT_TASK_DEFINITION(CLIENT1, ProcessCQ)
       regPtr0->put(keyport, valport);
       SLEEP(10000);  // sleep a while to allow server query to complete
     }
-    LOGINFO("putEntries complete");
+    LOG_INFO("putEntries complete");
 
     cqAttr = cq->getCqAttributes();
     auto vl = cqAttr->getCqListeners();
     ASSERT(vl.size() == 2, "incorrect number of CqListeners count.");
     MyCqStatusListener *myStatusCq =
         dynamic_cast<MyCqStatusListener *>(vl[1].get());
-    LOGINFO("No of insert events = %d ", myStatusCq->getNumInserts());
-    LOGINFO("No of OnCqConnected events = %d ",
-            myStatusCq->getCqsConnectedCount());
+    LOG_INFO("No of insert events = %d ", myStatusCq->getNumInserts());
+    LOG_INFO("No of OnCqConnected events = %d ",
+             myStatusCq->getCqsConnectedCount());
     ASSERT(myStatusCq->getNumInserts() == 5,
            "incorrect number of CqStatus Updates count.");
     ASSERT(myStatusCq->getCqsConnectedCount() == 1,
            "incorrect number of CqStatus Connected count.");
 
     MyCqListener *myCq = dynamic_cast<MyCqListener *>(vl[0].get());
-    LOGINFO("No of insert events = %d ", myCq->getNumInserts());
+    LOG_INFO("No of insert events = %d ", myCq->getNumInserts());
     ASSERT(myCq->getNumInserts() == 5,
            "incorrect number of CqStatus Updates count.");
 
@@ -1132,14 +1134,14 @@ DUNIT_TASK_DEFINITION(CLIENT1, ProcessCQ)
     auto ptr = vl[0];
     cqAttrMtor.removeCqListener(ptr);
     vl = cqAttr->getCqListeners();
-    LOGINFO("number of listeners = %d", vl.size());
+    LOG_INFO("number of listeners = %d", vl.size());
 
     ASSERT(vl.size() == 1, "incorrect number of listeners");
 
     cqAttrMtor.removeCqListener(vl[0]);
-    LOGINFO("removeCqListener again");
+    LOG_INFO("removeCqListener again");
     vl = cqAttr->getCqListeners();
-    LOGINFO("number of listeners = %d", vl.size());
+    LOG_INFO("number of listeners = %d", vl.size());
 
     ASSERT(vl.size() == 0, "incorrect number of listeners");
 
@@ -1166,28 +1168,28 @@ DUNIT_TASK_DEFINITION(CLIENT1, ProcessCQ)
       regPtr0->put(keyport, valport);
       SLEEP(10000);  // sleep a while to allow server query to complete
     }
-    LOGINFO("putEntries complete again");
+    LOG_INFO("putEntries complete again");
 
     std::vector<std::shared_ptr<CqListener>> vl21;
     vl21.push_back(cqStatusLstner);
     vl21.push_back(cqLstner);
     cqFac.initCqListeners(vl21);
-    LOGINFO("initCqListeners complete.");
+    LOG_INFO("initCqListeners complete.");
 
     cqAttr = cq->getCqAttributes();
     auto vl2 = cqAttr->getCqListeners();
     ASSERT(vl2.size() == 2, "incorrect number of CqListeners count.");
     myStatusCq2 = std::dynamic_pointer_cast<MyCqStatusListener>(vl2[0]);
-    LOGINFO("No of insert events = %d ", myStatusCq2->getNumUpdates());
-    LOGINFO("No of OnCqConnected events = %d ",
-            myStatusCq2->getCqsConnectedCount());
+    LOG_INFO("No of insert events = %d ", myStatusCq2->getNumUpdates());
+    LOG_INFO("No of OnCqConnected events = %d ",
+             myStatusCq2->getCqsConnectedCount());
     ASSERT(myStatusCq2->getNumUpdates() == 5,
            "incorrect number of CqStatus Updates count.");
     ASSERT(myStatusCq2->getCqsConnectedCount() == 0,
            "incorrect number of CqStatus Connected count.");
 
     auto myCq2 = std::dynamic_pointer_cast<MyCqListener>(vl2[1]);
-    LOGINFO("No of insert events = %d ", myCq2->getNumInserts());
+    LOG_INFO("No of insert events = %d ", myCq2->getNumInserts());
     ASSERT(myCq2->getNumUpdates() == 5,
            "incorrect number of CqStatus Updates count.");
 

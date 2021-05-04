@@ -114,8 +114,8 @@ class LRUDestroyAction : public virtual LRUAction {
     std::shared_ptr<VersionTag> versionTag;
     //  we should invoke the destroyNoThrow with appropriate
     // flags to correctly invoke listeners
-    LOGDEBUG("LRUDestroy: evicting entry with key [%s]",
-             Utils::nullSafeToString(keyPtr).c_str());
+    LOG_DEBUG("LRUDestroy: evicting entry with key [%s]",
+              Utils::nullSafeToString(keyPtr).c_str());
     GfErrType err = GF_NOERR;
     if (!m_regionPtr->isDestroyed()) {
       err = m_regionPtr->destroyNoThrow(keyPtr, nullptr, -1,

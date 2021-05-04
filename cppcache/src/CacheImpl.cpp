@@ -86,7 +86,7 @@ CacheImpl::CacheImpl(Cache* c, const std::shared_ptr<Properties>& dsProps,
     m_evictionController = std::unique_ptr<EvictionController>(
         new EvictionController(prop.heapLRULimit(), prop.heapLRUDelta(), this));
     m_evictionController->start();
-    LOGINFO("Heap LRU eviction controller thread started");
+    LOG_INFO("Heap LRU eviction controller thread started");
   }
 
   m_expiryTaskManager->start();
@@ -161,9 +161,9 @@ CacheImpl::RegionKind CacheImpl::getRegionKind(
 }
 
 void CacheImpl::removeRegion(const std::string& name) {
-  LOGDEBUG("recursive lock: CacheImpl::removeRegion");
+  LOG_DEBUG("recursive lock: CacheImpl::removeRegion");
   std::lock_guard<decltype(m_destroyCacheMutex)> lock(m_destroyCacheMutex);
-  LOGDEBUG("locked: CacheImpl::removeRegion");
+  LOG_DEBUG("locked: CacheImpl::removeRegion");
   if (!m_destroyPending) {
     m_regions.erase(name);
   }
@@ -244,9 +244,9 @@ void CacheImpl::close(bool keepAlive) {
   sendNotificationCloseMsgs();
 
   {
-    LOGDEBUG("recursive lock: CacheImpl::setKeepAlive");
+    LOG_DEBUG("recursive lock: CacheImpl::setKeepAlive");
     std::lock_guard<decltype(m_destroyCacheMutex)> lock(m_destroyCacheMutex);
-    LOGDEBUG("locked: CacheImpl::setKeepAlive");
+    LOG_DEBUG("locked: CacheImpl::setKeepAlive");
     if (m_destroyPending) {
       return;
     }
@@ -305,8 +305,8 @@ void CacheImpl::close(bool keepAlive) {
 
   m_poolManager.reset();
 
-  LOGFINE("Closed pool manager with keepalive %s",
-          keepAlive ? "true" : "false");
+  LOG_FINE("Closed pool manager with keepalive %s",
+           keepAlive ? "true" : "false");
 
   // Close CachePef Stats
   if (m_cacheStats) {
@@ -318,7 +318,7 @@ void CacheImpl::close(bool keepAlive) {
   }
 
   m_regions.clear();
-  LOGDEBUG("CacheImpl::close( ): destroyed regions.");
+  LOG_DEBUG("CacheImpl::close( ): destroyed regions.");
 
   _GEODE_SAFE_DELETE(m_tcrConnectionManager);
   m_cacheTXManager = nullptr;
@@ -336,13 +336,13 @@ void CacheImpl::close(bool keepAlive) {
 
   m_closed = true;
 
-  LOGFINE("Cache closed.");
+  LOG_FINE("Cache closed.");
 }
 
 bool CacheImpl::doIfDestroyNotPending(std::function<void()> f) {
-  LOGDEBUG("recursive lock: CacheImpl::doIfDestroyNotPending");
+  LOG_DEBUG("recursive lock: CacheImpl::doIfDestroyNotPending");
   std::lock_guard<decltype(m_destroyCacheMutex)> lock(m_destroyCacheMutex);
-  LOGDEBUG("locked: CacheImpl::doIfDestroyNotPending");
+  LOG_DEBUG("locked: CacheImpl::doIfDestroyNotPending");
   if (!m_destroyPending) {
     f();
   }
@@ -450,8 +450,8 @@ void CacheImpl::createRegion(std::string name,
       if (const auto& poolDM =
               std::dynamic_pointer_cast<ThinClientPoolDM>(pool)) {
         if (auto clientMetaDataService = poolDM->getClientMetaDataService()) {
-          LOGFINE("enqueued region " + name +
-                  " for initial metadata refresh for singlehop ");
+          LOG_FINE("enqueued region " + name +
+                   " for initial metadata refresh for singlehop ");
           poolDM->getClientMetaDataService()->enqueueForMetadataRefresh(
               regionPtr->getFullPath(), 0);
         }
@@ -474,12 +474,12 @@ std::shared_ptr<Region> CacheImpl::findRegion(const std::string& name) {
 }
 
 std::shared_ptr<Region> CacheImpl::getRegion(const std::string& path) {
-  LOGDEBUG("CacheImpl::getRegion " + path);
+  LOG_DEBUG("CacheImpl::getRegion " + path);
 
   this->throwIfClosed();
-  LOGDEBUG("recursive lock: CacheImpl::getRegion");
+  LOG_DEBUG("recursive lock: CacheImpl::getRegion");
   std::lock_guard<decltype(m_destroyCacheMutex)> lock(m_destroyCacheMutex);
-  LOGDEBUG("locked: CacheImpl::getRegion");
+  LOG_DEBUG("locked: CacheImpl::getRegion");
 
   if (m_destroyPending) {
     return nullptr;
@@ -487,7 +487,7 @@ std::shared_ptr<Region> CacheImpl::getRegion(const std::string& path) {
 
   static const std::string slash("/");
   if (path == slash || path.length() < 1) {
-    LOGERROR("CacheImpl::getRegion: path [" + path + "] is not valid.");
+    LOG_ERROR("CacheImpl::getRegion: path [" + path + "] is not valid.");
     throw IllegalArgumentException("Cache::getRegion: path is empty or a /");
   }
 
@@ -509,10 +509,10 @@ std::shared_ptr<Region> CacheImpl::getRegion(const std::string& path) {
   }
 
   if (region && isPoolInMultiuserMode(*region)) {
-    LOGWARN("Pool " + region->getAttributes().getPoolName() +
-            " attached with region " + region->getFullPath() +
-            " is in multiuser authentication mode. Operations may fail as "
-            "this instance does not have any credentials.");
+    LOG_WARN("Pool " + region->getAttributes().getPoolName() +
+             " attached with region " + region->getFullPath() +
+             " is in multiuser authentication mode. Operations may fail as "
+             "this instance does not have any credentials.");
   }
 
   return region;
@@ -532,7 +532,7 @@ std::shared_ptr<RegionInternal> CacheImpl::createRegion_internal(
     if (pool != nullptr && !pool->isDestroyed()) {
       bool isMultiUserSecureMode = pool->getMultiuserAuthentication();
       if (isMultiUserSecureMode && (attrs.getCachingEnabled())) {
-        LOGERROR(
+        LOG_ERROR(
             "Pool [%s] is in multiuser authentication mode so region local "
             "caching is not supported.",
             poolName.c_str());
@@ -544,7 +544,7 @@ std::shared_ptr<RegionInternal> CacheImpl::createRegion_internal(
   }
 
   if (!poolName.empty() && !regionEndpoints.empty()) {
-    LOGERROR(
+    LOG_ERROR(
         "Cache or region endpoints cannot be specified when pool name is "
         "specified for region %s",
         name.c_str());
@@ -554,27 +554,27 @@ std::shared_ptr<RegionInternal> CacheImpl::createRegion_internal(
   }
 
   if (regionKind == THINCLIENT_REGION) {
-    LOGINFO("Creating region " + name + " with region endpoints " +
-            attrs.getEndpoints().c_str());
+    LOG_INFO("Creating region " + name + " with region endpoints " +
+             attrs.getEndpoints().c_str());
     auto tmp = std::make_shared<ThinClientRegion>(name, this, rootRegion, attrs,
                                                   csptr, shared);
     tmp->initTCR();
     rptr = tmp;
   } else if (regionKind == THINCLIENT_HA_REGION) {
-    LOGINFO("Creating region " + name + " with subscriptions enabled");
+    LOG_INFO("Creating region " + name + " with subscriptions enabled");
     auto tmp = std::make_shared<ThinClientHARegion>(name, this, rootRegion,
                                                     attrs, csptr, shared);
     tmp->initTCR();
     rptr = tmp;
   } else if (regionKind == THINCLIENT_POOL_REGION) {
-    LOGINFO("Creating region " + name + " attached to pool " +
-            attrs.getPoolName());
+    LOG_INFO("Creating region " + name + " attached to pool " +
+             attrs.getPoolName());
     auto tmp = std::make_shared<ThinClientPoolRegion>(name, this, rootRegion,
                                                       attrs, csptr, shared);
     tmp->initTCR();
     rptr = tmp;
   } else {
-    LOGINFO("Creating local region " + name);
+    LOG_INFO("Creating local region " + name);
     rptr = std::make_shared<LocalRegion>(name, this, rootRegion, attrs, csptr,
                                          shared);
   }
@@ -627,7 +627,8 @@ void CacheImpl::readyForEvents() {
         "Only durable clients or clients with the "
         "auto-ready-for-events property set to false should call "
         "readyForEvents()";
-    LOGERROR("CacheImpl::%s(%p): %s", __FUNCTION__, this, msg.c_str());
+    LOG_ERROR("CacheImpl::%s(%p): %s", __FUNCTION__, static_cast<void*>(this),
+              msg.c_str());
     throw IllegalStateException(msg.c_str());
   }
 
@@ -641,15 +642,15 @@ void CacheImpl::readyForEvents() {
   if (pools.empty()) throw IllegalStateException("No pools found.");
   for (const auto& itr : pools) {
     const auto& currPool = itr.second;
-    LOGDEBUG("Sending readyForEvents( ) with pool " + currPool->getName());
+    LOG_DEBUG("Sending readyForEvents( ) with pool " + currPool->getName());
     try {
       if (const auto& poolHADM =
               std::dynamic_pointer_cast<ThinClientPoolHADM>(currPool)) {
         poolHADM->readyForEvents();
       }
     } catch (Exception& ex) {
-      LOGWARN("readyForEvents( ) failed for pool " + currPool->getName() +
-              " with exception: " + ex.getMessage());
+      LOG_WARN("readyForEvents( ) failed for pool " + currPool->getName() +
+               " with exception: " + ex.getMessage());
     }
   }
 }
@@ -694,10 +695,10 @@ bool CacheImpl::getEndpointStatus(const std::string& endpoint) {
 }
 
 void CacheImpl::processMarker() {
-  LOGDEBUG("recursive lock: CacheImpl::processMarker");
+  LOG_DEBUG("recursive lock: CacheImpl::processMarker");
   std::lock_guard<decltype(m_destroyCacheMutex)> destroy_lock(
       m_destroyCacheMutex);
-  LOGDEBUG("locked: CacheImpl::processMarker");
+  LOG_DEBUG("locked: CacheImpl::processMarker");
   if (m_destroyPending) {
     return;
   }

@@ -64,39 +64,39 @@ class SimpleCacheListener : public CacheListener {
  public:
   // The Cache Listener callbacks.
   virtual void afterCreate(const EntryEvent&) override {
-    LOGINFO("SimpleCacheListener: Got an afterCreate event.");
+    LOG_INFO("SimpleCacheListener: Got an afterCreate event.");
     m_totalEvents++;
   }
 
   virtual void afterUpdate(const EntryEvent&) override {
-    LOGINFO("SimpleCacheListener: Got an afterUpdate event.");
+    LOG_INFO("SimpleCacheListener: Got an afterUpdate event.");
     m_totalEvents++;
   }
 
   virtual void afterInvalidate(const EntryEvent&) override {
-    LOGINFO("SimpleCacheListener: Got an afterInvalidate event.");
+    LOG_INFO("SimpleCacheListener: Got an afterInvalidate event.");
     m_totalEvents++;
   }
 
   virtual void afterDestroy(const EntryEvent&) override {
-    LOGINFO("SimpleCacheListener: Got an afterDestroy event.");
+    LOG_INFO("SimpleCacheListener: Got an afterDestroy event.");
     m_totalEvents++;
   }
 
   virtual void afterRegionInvalidate(const RegionEvent&) override {
-    LOGINFO("SimpleCacheListener: Got an afterRegionInvalidate event.");
+    LOG_INFO("SimpleCacheListener: Got an afterRegionInvalidate event.");
     m_totalEvents++;
   }
 
   virtual void afterRegionDestroy(const RegionEvent& event) override {
-    LOGINFO("SimpleCacheListener: Got an afterRegionDestroy event.");
+    LOG_INFO("SimpleCacheListener: Got an afterRegionDestroy event.");
     if (event.remoteOrigin()) {
       m_totalEvents++;
     }
   }
 
   virtual void close(Region&) override {
-    LOGINFO("SimpleCacheListener: Got a close event.");
+    LOG_INFO("SimpleCacheListener: Got a close event.");
   }
 };
 std::shared_ptr<SimpleCacheListener> eventListener1 = nullptr;
@@ -160,7 +160,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne_Pool_Locator)
     auto subregPtr2 =
         regptr->createSubregion(regionNames[4], regptr->getAttributes());
 
-    LOGINFO(
+    LOG_INFO(
         "NIL: CLIENT1 StepOne_Pool_Locator subregions created successfully");
 
     // Attache Listener
@@ -192,7 +192,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepTwo_Pool_Locator)
     auto subregPtr2 =
         regptr->createSubregion(regionNames[4], regptr->getAttributes());
 
-    LOGINFO(
+    LOG_INFO(
         "NIL: CLIENT2 StepTwo_Pool_Locator:: subregions created successfully");
     LOG("StepTwo_Pool complete.");
   }
@@ -210,10 +210,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, registerKeysOnRegion)
     keysVector.push_back(CacheableString::create("Key-1"));
     keysVector.push_back(CacheableString::create("Key-2"));
     regPtr0->registerKeys(keysVector, false);
-    LOGINFO("NIL CLIENT-1 registerAllKeys() done ");
+    LOG_INFO("NIL CLIENT-1 registerAllKeys() done ");
 
     regPtr0->localDestroyRegion();
-    LOGINFO("NIL CLIENT-1 localDestroyRegion() done");
+    LOG_INFO("NIL CLIENT-1 localDestroyRegion() done");
     LOG("StepThree complete.");
   }
 END_TASK_DEFINITION
@@ -240,10 +240,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
     auto regPtr0 = getHelper()->getRegion(regionNames[0]);
 
     regPtr0->registerAllKeys();
-    LOGINFO("NIL CLIENT-1 registerAllKeys() done ");
+    LOG_INFO("NIL CLIENT-1 registerAllKeys() done ");
 
     regPtr0->localDestroyRegion();
-    LOGINFO("NIL CLIENT-1 localDestroyRegion() done");
+    LOG_INFO("NIL CLIENT-1 localDestroyRegion() done");
     LOG("StepThree complete.");
   }
 END_TASK_DEFINITION
@@ -267,7 +267,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, verifyEventsForDestroyedregion)
   {
-    LOGINFO("NIL:LINE_537 eventListener1->m_totalEvents = %d ",
+    LOG_INFO("NIL:LINE_537 eventListener1->m_totalEvents = %d ",
             eventListener1->m_totalEvents);
     ASSERT(eventListener1->m_totalEvents == 0,
            "Region Event count must be zero");
@@ -276,7 +276,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, verifyEventsForDestroyedSubregion)
   {
-    LOGINFO("NIL:LINE_543 eventListener2->m_totalEvents = %d ",
+    LOG_INFO("NIL:LINE_543 eventListener2->m_totalEvents = %d ",
             eventListener2->m_totalEvents);
     ASSERT(eventListener2->m_totalEvents == 0,
            "Subregion Event count must be zero");
@@ -289,10 +289,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
     auto regPtr1 = getHelper()->getRegion(regionNames[1]);
     regPtr0->registerRegex(testregex[0]);
     regPtr1->registerRegex(testregex[1]);
-    LOGINFO("NIL CLIENT-1 registerRegex() done ");
+    LOG_INFO("NIL CLIENT-1 registerRegex() done ");
 
     regPtr0->localDestroyRegion();
-    LOGINFO("NIL CLIENT-1 localDestroyRegion() done");
+    LOG_INFO("NIL CLIENT-1 localDestroyRegion() done");
     LOG("NIL: Client-1 StepFive complete.");
   }
 END_TASK_DEFINITION
@@ -346,18 +346,18 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSeven)
     subregPtr0->registerAllKeys();
     subregPtr1->registerAllKeys();
 
-    LOGINFO("NIL CLIENT-1 StepSeven ::  registerAllKeys() done ");
+    LOG_INFO("NIL CLIENT-1 StepSeven ::  registerAllKeys() done ");
 
     // 2. Now locally destroy SubRegion1
     subregPtr0->localDestroyRegion();
-    LOGINFO("NIL CLIENT-1 SubRegion1 locally destroyed successfully");
+    LOG_INFO("NIL CLIENT-1 SubRegion1 locally destroyed successfully");
 
     LOG("NIL: Client-1 StepSeven complete.");
 
     /*
     regPtr0->registerRegex(testregex[0]);
     regPtr1->registerRegex(testregex[1]);
-    LOGINFO("NIL CLIENT-1 registerRegex() done ");
+    LOG_INFO("NIL CLIENT-1 registerRegex() done ");
     */
   }
 END_TASK_DEFINITION

@@ -71,31 +71,31 @@ std::shared_ptr<CacheableString> s2v14;
 std::shared_ptr<CacheableString> s2v15;
 
 void verifyAllValues() {
-  LOGINFO("verifyAllValues TEST-1");
-  /*LOGINFO("c1v11 = %s", c1v11->value().c_str());
-  LOGINFO("verifyAllValues TEST-2");
-  LOGINFO("c1v12 = %s", c1v12->value().c_str());
-  LOGINFO("c1v13 = %s", c1v13->value().c_str());
-  LOGINFO("c1v14 = %s", c1v14->value().c_str());
-  LOGINFO("c1v15 = %s", c1v15->value().c_str());
+  LOG_INFO("verifyAllValues TEST-1");
+  /*LOG_INFO("c1v11 = %s", c1v11->value().c_str());
+  LOG_INFO("verifyAllValues TEST-2");
+  LOG_INFO("c1v12 = %s", c1v12->value().c_str());
+  LOG_INFO("c1v13 = %s", c1v13->value().c_str());
+  LOG_INFO("c1v14 = %s", c1v14->value().c_str());
+  LOG_INFO("c1v15 = %s", c1v15->value().c_str());
 
-  LOGINFO("s1v11 = %s", s1v11->value().c_str());
-  LOGINFO("s1v12 = %s", s1v12->value().c_str());
-  LOGINFO("s1v13 = %s", s1v13->value().c_str());
-  LOGINFO("s1v14 = %s", s1v14->value().c_str());
-  LOGINFO("s1v15 = %s", s1v15->value().c_str());
+  LOG_INFO("s1v11 = %s", s1v11->value().c_str());
+  LOG_INFO("s1v12 = %s", s1v12->value().c_str());
+  LOG_INFO("s1v13 = %s", s1v13->value().c_str());
+  LOG_INFO("s1v14 = %s", s1v14->value().c_str());
+  LOG_INFO("s1v15 = %s", s1v15->value().c_str());
 
-  LOGINFO("c2v11 = %s", c2v11->value().c_str());
-  LOGINFO("c2v12 = %s", c2v12->value().c_str());
-  LOGINFO("c2v13 = %s", c2v13->value().c_str());
-  LOGINFO("c2v14 = %s", c2v14->value().c_str());
-  LOGINFO("c2v15 = %s", c2v15->value().c_str());
+  LOG_INFO("c2v11 = %s", c2v11->value().c_str());
+  LOG_INFO("c2v12 = %s", c2v12->value().c_str());
+  LOG_INFO("c2v13 = %s", c2v13->value().c_str());
+  LOG_INFO("c2v14 = %s", c2v14->value().c_str());
+  LOG_INFO("c2v15 = %s", c2v15->value().c_str());
 
-  LOGINFO("s2v11 = %s", s2v11->value().c_str());
-  LOGINFO("s2v12 = %s", s2v12->value().c_str());
-  LOGINFO("s2v13 = %s", s2v13->value().c_str());
-  LOGINFO("s2v14 = %s", s2v14->value().c_str());
-  LOGINFO("s2v15 = %s", s2v15->value().c_str());*/
+  LOG_INFO("s2v11 = %s", s2v11->value().c_str());
+  LOG_INFO("s2v12 = %s", s2v12->value().c_str());
+  LOG_INFO("s2v13 = %s", s2v13->value().c_str());
+  LOG_INFO("s2v14 = %s", s2v14->value().c_str());
+  LOG_INFO("s2v15 = %s", s2v15->value().c_str());*/
 }
 
 // added
@@ -234,17 +234,17 @@ DUNIT_TASK_DEFINITION(CLIENT2, transactionPutOnClient2)
     s2v13 = std::dynamic_pointer_cast<CacheableString>(rptr->get(keyPtr3));
 
     // Print remoteGet Values
-    LOGINFO(
+    LOG_INFO(
         "CLIENT-2 :: TASK:transactionPutOnClient2: localGet Val1 = %s "
         "remoteGet "
         "Val1 = %s ",
         c2v11->value().c_str(), s2v11->value().c_str());
-    LOGINFO(
+    LOG_INFO(
         "CLIENT-2 :: TASK:transactionPutOnClient2: localGet Val2 = %s "
         "remoteGet "
         "Val2 = %s ",
         c2v12->value().c_str(), s2v12->value().c_str());
-    LOGINFO(
+    LOG_INFO(
         "CLIENT-2 :: TASK:transactionPutOnClient2: localGet Val3 = %s "
         "remoteGet "
         "Val3 = %s ",
@@ -288,15 +288,15 @@ DUNIT_TASK_DEFINITION(CLIENT1, verifyGetonClient1)
     s1v13 = std::dynamic_pointer_cast<CacheableString>(rptr->get(keyPtr3));
 
     // Print remoteGet Values
-    LOGINFO(
+    LOG_INFO(
         "CLIENT-2 :: verifyGetonClient1: localGet Val1 = %s remoteGet Val1 = "
         "%s ",
         c1v11->value().c_str(), s1v11->value().c_str());
-    LOGINFO(
+    LOG_INFO(
         "CLIENT-2 :: verifyGetonClient1: localGet Val2 = %s remoteGet Val2 = "
         "%s ",
         c1v12->value().c_str(), s1v12->value().c_str());
-    LOGINFO(
+    LOG_INFO(
         "CLIENT-2 :: verifyGetonClient1: localGet Val3 = %s remoteGet Val3 = "
         "%s ",
         c1v13->value().c_str(), s1v13->value().c_str());
@@ -371,15 +371,15 @@ DUNIT_TASK_DEFINITION(CLIENT1, GetOnClient1)
     c1v15 = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr5));
 
     // Print local Get Values
-    LOGINFO("CLIENT-1 :: local GET operation -6 c1v11 = %s",
+    LOG_INFO("CLIENT-1 :: local GET operation -6 c1v11 = %s",
             c1v11->value().c_str());
-    LOGINFO("CLIENT-1 :: local GET operation -7 c1v12 = %s",
+    LOG_INFO("CLIENT-1 :: local GET operation -7 c1v12 = %s",
             c1v12->value().c_str());
-    LOGINFO("CLIENT-1 :: local GET operation -8 c1v13 = %s",
+    LOG_INFO("CLIENT-1 :: local GET operation -8 c1v13 = %s",
             c1v13->value().c_str());
-    LOGINFO("CLIENT-1 :: local GET operation -9 c1v14=%s",
+    LOG_INFO("CLIENT-1 :: local GET operation -9 c1v14=%s",
             c1v14->value().c_str());
-    LOGINFO("CLIENT-1 :: local GET operation....Done c1v15=%s",
+    LOG_INFO("CLIENT-1 :: local GET operation....Done c1v15=%s",
             c1v15->value().c_str());
 
     // localDestroy
@@ -399,15 +399,15 @@ DUNIT_TASK_DEFINITION(CLIENT1, GetOnClient1)
     s1v15 = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr5));
 
     // Print remoteGet Values
-    LOGINFO("CLIENT-1 :: remoteGet operation -6 s1v11 = %s",
+    LOG_INFO("CLIENT-1 :: remoteGet operation -6 s1v11 = %s",
             s1v11->value().c_str());
-    LOGINFO("CLIENT-1 :: remoteGet operation -6 s1v12 = %s",
+    LOG_INFO("CLIENT-1 :: remoteGet operation -6 s1v12 = %s",
             s1v12->value().c_str());
-    LOGINFO("CLIENT-1 :: remoteGet operation -6 s1v13 = %s",
+    LOG_INFO("CLIENT-1 :: remoteGet operation -6 s1v13 = %s",
             s1v13->value().c_str());
-    LOGINFO("CLIENT-1 :: remoteGet operation -6 s1v14 = %s",
+    LOG_INFO("CLIENT-1 :: remoteGet operation -6 s1v14 = %s",
             s1v14->value().c_str());
-    LOGINFO("CLIENT-1 :: remoteGet operation -6 s1v15 = %s",
+    LOG_INFO("CLIENT-1 :: remoteGet operation -6 s1v15 = %s",
             s1v15->value().c_str());
 
     ASSERT(*c1v11 == *s1v11, "GetOnClient1:Values should be equal-1");
@@ -441,15 +441,15 @@ DUNIT_TASK_DEFINITION(CLIENT2, GetOnClient2)
 
     // Print localGets
     // Print local Get Values
-    LOGINFO("CLIENT-2 :: local GET operation  c2v11 = %s",
+    LOG_INFO("CLIENT-2 :: local GET operation  c2v11 = %s",
             c2v11->value().c_str());
-    LOGINFO("CLIENT-2 :: local GET operation  c2v12 = %s",
+    LOG_INFO("CLIENT-2 :: local GET operation  c2v12 = %s",
             c2v12->value().c_str());
-    LOGINFO("CLIENT-2 :: local GET operation  c2v13 = %s",
+    LOG_INFO("CLIENT-2 :: local GET operation  c2v13 = %s",
             c2v13->value().c_str());
-    LOGINFO("CLIENT-2 :: local GET operation  c2v14=%s",
+    LOG_INFO("CLIENT-2 :: local GET operation  c2v14=%s",
             c2v14->value().c_str());
-    LOGINFO("CLIENT-2 :: local GET operation....Done c2v15=%s",
+    LOG_INFO("CLIENT-2 :: local GET operation....Done c2v15=%s",
             c2v15->value().c_str());
 
     LOG("CLIENT-2 :: local GET operation....Done");
@@ -470,15 +470,15 @@ DUNIT_TASK_DEFINITION(CLIENT2, GetOnClient2)
     s2v15 = std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr5));
 
     // Print remoteGet Values
-    LOGINFO("CLIENT-2 :: remoteGet operation  s2v11 = %s",
+    LOG_INFO("CLIENT-2 :: remoteGet operation  s2v11 = %s",
             s2v11->value().c_str());
-    LOGINFO("CLIENT-2 :: remoteGet operation  s2v12 = %s",
+    LOG_INFO("CLIENT-2 :: remoteGet operation  s2v12 = %s",
             s2v12->value().c_str());
-    LOGINFO("CLIENT-2 :: remoteGet operation  s2v13 = %s",
+    LOG_INFO("CLIENT-2 :: remoteGet operation  s2v13 = %s",
             s2v13->value().c_str());
-    LOGINFO("CLIENT-2 :: remoteGet operation  s2v14 = %s",
+    LOG_INFO("CLIENT-2 :: remoteGet operation  s2v14 = %s",
             s2v14->value().c_str());
-    LOGINFO("CLIENT-2 :: remoteGet operation  s2v15 = %s",
+    LOG_INFO("CLIENT-2 :: remoteGet operation  s2v15 = %s",
             s2v15->value().c_str());
 
     ASSERT(*c2v11 == *s2v11, "GetOnClient2:Values should be equal-1");

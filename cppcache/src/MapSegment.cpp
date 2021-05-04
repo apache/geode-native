@@ -40,8 +40,8 @@ void MapSegment::open(RegionInternal* region, const EntryFactory* entryFactory,
                       std::atomic<int32_t>* destroyTrackers,
                       bool concurrencyChecksEnabled) {
   uint32_t mapSize = TableOfPrimes::nextLargerPrime(size, m_primeIndex);
-  LOGFINER("Initializing MapSegment with size %d (given size %d).", mapSize,
-           size);
+  LOG_FINER("Initializing MapSegment with size %d (given size %d).", mapSize,
+            size);
   m_map.reserve(mapSize);
   m_entryFactory = entryFactory;
   m_region = region;
@@ -586,7 +586,7 @@ void MapSegment::removeDestroyTracking() {
 void MapSegment::rehash() {
   // Only called from put, segment must already be locked...
   auto newMapSize = TableOfPrimes::getPrime(++m_primeIndex);
-  LOGFINER("Rehashing MapSegment to size %d.", newMapSize);
+  LOG_FINER("Rehashing MapSegment to size %d.", newMapSize);
   m_map.reserve(newMapSize);
   m_rehashCount++;
 }
@@ -731,14 +731,14 @@ GfErrType MapSegment::isTombstone(std::shared_ptr<CacheableKey> key,
       result = true;
       return GF_NOERR;
     } else {
-      LOGFINER("1 result= false return GF_CACHE_ILLEGAL_STATE_EXCEPTION");
+      LOG_FINER("1 result= false return GF_CACHE_ILLEGAL_STATE_EXCEPTION");
       result = false;
       return GF_CACHE_ILLEGAL_STATE_EXCEPTION;
     }
 
   } else {
     if (m_tombstoneList->exists(key)) {
-      LOGFINER(" 2 result= false return GF_CACHE_ILLEGAL_STATE_EXCEPTION");
+      LOG_FINER(" 2 result= false return GF_CACHE_ILLEGAL_STATE_EXCEPTION");
       result = false;
       return GF_CACHE_ILLEGAL_STATE_EXCEPTION;
     } else {

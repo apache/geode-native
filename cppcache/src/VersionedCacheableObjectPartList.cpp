@@ -91,7 +91,7 @@ void VersionedCacheableObjectPartList::readObjectPart(
 
 void VersionedCacheableObjectPartList::fromData(DataInput& input) {
   std::lock_guard<decltype(m_responseLock)> guard(m_responseLock);
-  LOGDEBUG("VersionedCacheableObjectPartList::fromData");
+  LOG_DEBUG("VersionedCacheableObjectPartList::fromData");
   uint8_t flags = input.read();
   m_hasKeys = (flags & 0x01) == 0x01;
   bool hasObjects = (flags & 0x02) == 0x02;
@@ -111,7 +111,7 @@ void VersionedCacheableObjectPartList::fromData(DataInput& input) {
   }
 
   if (!m_hasKeys && !hasObjects && !m_hasTags) {
-    LOGDEBUG(
+    LOG_DEBUG(
         "VersionedCacheableObjectPartList::fromData: Looks like message has no "
         "data. Returning,");
   }
@@ -130,7 +130,7 @@ void VersionedCacheableObjectPartList::fromData(DataInput& input) {
       localKeys->push_back(key);
     }
   } else if (m_keys != nullptr) {
-    LOGDEBUG("VersionedCacheableObjectPartList::fromData: m_keys NOT nullptr");
+    LOG_DEBUG("VersionedCacheableObjectPartList::fromData: m_keys NOT nullptr");
     /*
        if (m_hasKeys) {
        int64_t tempLen;
@@ -149,19 +149,19 @@ void VersionedCacheableObjectPartList::fromData(DataInput& input) {
        }*/
   } else if (hasObjects) {
     if (m_keys == nullptr && m_resultKeys == nullptr) {
-      LOGERROR(
+      LOG_ERROR(
           "VersionedCacheableObjectPartList::fromData: Exception: hasObjects "
           "is true and m_keys and m_resultKeys are also nullptr");
       throw FatalInternalException(
           "VersionedCacheableObjectPartList: "
           "hasObjects is true and m_keys is also nullptr");
     } else {
-      LOGDEBUG(
+      LOG_DEBUG(
           "VersionedCacheableObjectPartList::fromData m_keys or m_resultKeys "
           "not null");
     }
   } else {
-    LOGDEBUG(
+    LOG_DEBUG(
         "VersionedCacheableObjectPartList::fromData m_hasKeys, m_keys, "
         "hasObjects all are nullptr");
   }  // m_hasKeys else ends here
@@ -175,8 +175,9 @@ void VersionedCacheableObjectPartList::fromData(DataInput& input) {
       } else /*if (m_resultKeys != nullptr && m_resultKeys->size() > 0)*/ {
         readObjectPart(index, input, localKeys->at(index));
       } /*else{
-         LOGERROR("VersionedCacheableObjectPartList::fromData: hasObjects = true
-       but m_keys is nullptr and m_resultKeys== nullptr or m_resultKeys->size=0"
+         LOG_ERROR("VersionedCacheableObjectPartList::fromData: hasObjects =
+       true but m_keys is nullptr and m_resultKeys== nullptr or
+       m_resultKeys->size=0"
        );
        }*/
     }
@@ -259,8 +260,9 @@ void VersionedCacheableObjectPartList::fromData(DataInput& input) {
       } else /*if (m_resultKeys != nullptr && m_resultKeys->size() > 0)*/ {
         key = localKeys->at(index);
       } /*else{
-         LOGERROR("VersionedCacheableObjectPartList::fromData: hasObjects = true
-       but m_keys is nullptr AND m_resultKeys=nullptr or m_resultKeys->size=0"
+         LOG_ERROR("VersionedCacheableObjectPartList::fromData: hasObjects =
+       true but m_keys is nullptr AND m_resultKeys=nullptr or
+       m_resultKeys->size=0"
        );
        }*/
 
@@ -276,7 +278,7 @@ void VersionedCacheableObjectPartList::fromData(DataInput& input) {
               m_region->putLocal("getAll", false, key, value, oldValue, true,
                                  updateCount, m_destroyTracker, versionTag);
           if (err == GF_CACHE_CONCURRENT_MODIFICATION_EXCEPTION) {
-            LOGDEBUG(
+            LOG_DEBUG(
                 "VersionedCacheableObjectPartList::fromData putLocal for key [%s] failed because the cache \
                   already contains an entry with higher version.",
                 Utils::nullSafeToString(key).c_str());

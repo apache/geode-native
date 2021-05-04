@@ -59,14 +59,14 @@ void GeodeLogStrings(benchmark::State& state) {
   int index = g_iteration++ % STRING_ARRAY_LENGTH;
 
   for (auto _ : state) {
-    LOGDEBUG(logStrings[index]);
+    LOG_DEBUG(logStrings[index]);
   }
 }
 
 void GeodeLogInts(benchmark::State& state) {
   std::string intString(std::to_string(g_iteration++));
   for (auto _ : state) {
-    LOGDEBUG(intString.c_str());
+    LOG_DEBUG(intString.c_str());
   }
 }
 
@@ -75,7 +75,7 @@ void GeodeLogCombo(benchmark::State& state) {
   std::string comboString = std::string(logStrings[g_iteration % 3]) + " " +
                             std::to_string(g_iteration);
   for (auto _ : state) {
-    LOGDEBUG(comboString.c_str());
+    LOG_DEBUG(comboString.c_str());
   }
 }
 

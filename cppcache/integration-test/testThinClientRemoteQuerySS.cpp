@@ -195,7 +195,7 @@ void _verifyStructSet(std::shared_ptr<StructSet> &ssptr, int i) {
 void compareMaps(HashMapOfCacheable &map, HashMapOfCacheable &expectedMap) {
   ASSERT(expectedMap.size() == map.size(),
          "Unexpected number of entries in map");
-  LOGINFO("Got expected number of %d entries in map", map.size());
+  LOG_INFO("Got expected number of %d entries in map", map.size());
   for (const auto &iter : map) {
     const auto &key = iter.first;
     const auto &val = iter.second;
@@ -384,7 +384,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
 
     for (int i = 0; i < QueryStrings::SSsize(); i++) {
       if (i == 12 || i == 4 || i == 7 || i == 22 || i == 30 || i == 34) {
-        LOGDEBUG("Skipping query index %d for pdx because it has function.", i);
+        LOG_DEBUG("Skipping query index %d for pdx because it has function.",
+                  i);
         continue;
       }
 
@@ -433,7 +434,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
 
     for (int i = 0; i < QueryStrings::SSPsize(); i++) {
       if (i == 16) {
-        LOGDEBUG("Skipping query index %d for pdx because it has function.", i);
+        LOG_DEBUG("Skipping query index %d for pdx because it has function.",
+                  i);
         continue;
       }
 
@@ -442,7 +444,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
         auto paramList = CacheableVector::create();
 
         for (int j = 0; j < numSSQueryParam[i]; j++) {
-          // LOGINFO("NIL::SSPQ::328: queryparamSetSS[%d][%d] = %s", i, j,
+          // LOG_INFO("NIL::SSPQ::328: queryparamSetSS[%d][%d] = %s", i, j,
           // queryparamSetSS[i][j]);
           if (atoi(queryparamSetSS[i][j]) != 0) {
             paramList->push_back(

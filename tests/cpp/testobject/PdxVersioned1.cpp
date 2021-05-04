@@ -32,7 +32,7 @@ using apache::geode::client::CacheableInt32;
 template <typename T1, typename T2>
 bool PdxTests::PdxVersioned1::genericValCompare(T1 value1, T2 value2) const {
   if (value1 != value2) return false;
-  LOGINFO("PdxObject::genericValCompare Line_19");
+  LOG_INFO("PdxObject::genericValCompare Line_19");
   return true;
 }
 
@@ -47,7 +47,7 @@ bool PdxTests::PdxVersioned1::genericCompare(T1* value1, T2* value2,
       i++;
     }
   }
-  LOGINFO("PdxObject::genericCompare Line_34");
+  LOG_INFO("PdxObject::genericCompare Line_34");
   return true;
 }
 
@@ -55,20 +55,23 @@ template <typename T1, typename T2>
 bool PdxTests::PdxVersioned1::generic2DCompare(T1** value1, T2** value2,
                                                int length,
                                                int* arrLengths) const {
-  LOGINFO("generic2DCompare length = %d ", length);
-  LOGINFO("generic2DCompare value1 = %d \t value2", value1[0][0], value2[0][0]);
-  LOGINFO("generic2DCompare value1 = %d \t value2", value1[1][0], value2[1][0]);
-  LOGINFO("generic2DCompare value1 = %d \t value2", value1[1][1], value2[1][1]);
+  LOG_INFO("generic2DCompare length = %d ", length);
+  LOG_INFO("generic2DCompare value1 = %d \t value2", value1[0][0],
+           value2[0][0]);
+  LOG_INFO("generic2DCompare value1 = %d \t value2", value1[1][0],
+           value2[1][0]);
+  LOG_INFO("generic2DCompare value1 = %d \t value2", value1[1][1],
+           value2[1][1]);
   for (int j = 0; j < length; j++) {
-    LOGINFO("generic2DCompare arrlength0 = %d ", arrLengths[j]);
+    LOG_INFO("generic2DCompare arrlength0 = %d ", arrLengths[j]);
     for (int k = 0; k < arrLengths[j]; k++) {
-      LOGINFO("generic2DCompare arrlength = %d ", arrLengths[j]);
-      LOGINFO("generic2DCompare value1 = %d \t value2 = %d ", value1[j][k],
-              value2[j][k]);
+      LOG_INFO("generic2DCompare arrlength = %d ", arrLengths[j]);
+      LOG_INFO("generic2DCompare value1 = %d \t value2 = %d ", value1[j][k],
+               value2[j][k]);
       if (value1[j][k] != value2[j][k]) return false;
     }
   }
-  LOGINFO("PdxObject::genericCompare Line_34");
+  LOG_INFO("PdxObject::genericCompare Line_34");
   return true;
 }
 /*void PdxVersioned1::checkNullAndDelete(void *data)
@@ -77,45 +80,45 @@ bool PdxTests::PdxVersioned1::generic2DCompare(T1** value1, T2** value2,
                 delete[] data;
 }
 PdxVersioned1::~PdxVersioned1() {
-         LOGINFO("~PdxVersioned1 - 1");
+         LOG_INFO("~PdxVersioned1 - 1");
                 checkNullAndDelete( m_string);
-                LOGINFO("~PdxVersioned1 - 2");
+                LOG_INFO("~PdxVersioned1 - 2");
                 checkNullAndDelete( m_byteArray);
-                LOGINFO("~PdxVersioned1 - 3");
+                LOG_INFO("~PdxVersioned1 - 3");
                 checkNullAndDelete( m_boolArray);
-                LOGINFO("~PdxVersioned1 - 4");
+                LOG_INFO("~PdxVersioned1 - 4");
                 checkNullAndDelete( m_sbyteArray);
-                LOGINFO("~PdxVersioned1 - 5");
+                LOG_INFO("~PdxVersioned1 - 5");
                 checkNullAndDelete( m_charArray);
-                LOGINFO("~PdxVersioned1 - 6");
+                LOG_INFO("~PdxVersioned1 - 6");
                 checkNullAndDelete( m_uint16Array);
-                LOGINFO("~PdxVersioned1 - 7");
+                LOG_INFO("~PdxVersioned1 - 7");
                 checkNullAndDelete( m_uint16Array);
-                LOGINFO("~PdxVersioned1 - 8");
+                LOG_INFO("~PdxVersioned1 - 8");
                 checkNullAndDelete( m_int32Array);
-                LOGINFO("~PdxVersioned1 - 9");
+                LOG_INFO("~PdxVersioned1 - 9");
                 checkNullAndDelete( m_uint32Array);
-                LOGINFO("~PdxVersioned1 - 10");
+                LOG_INFO("~PdxVersioned1 - 10");
                 checkNullAndDelete( m_longArray);
-                LOGINFO("~PdxVersioned1 - 11");
+                LOG_INFO("~PdxVersioned1 - 11");
                 checkNullAndDelete( m_ulongArray);
-                LOGINFO("~PdxVersioned1 - 12");
+                LOG_INFO("~PdxVersioned1 - 12");
                 checkNullAndDelete( m_floatArray);
-                LOGINFO("~PdxVersioned1 - 13");
+                LOG_INFO("~PdxVersioned1 - 13");
                 checkNullAndDelete( m_doubleArray);
-                LOGINFO("~PdxVersioned1 - 14");
+                LOG_INFO("~PdxVersioned1 - 14");
                 checkNullAndDelete( m_byteByteArray);
-                LOGINFO("~PdxVersioned1 - 15");
+                LOG_INFO("~PdxVersioned1 - 15");
                 checkNullAndDelete( m_stringArray);
-                LOGINFO("~PdxVersioned1 - 16");
+                LOG_INFO("~PdxVersioned1 - 16");
                 checkNullAndDelete( m_byte252);
-                LOGINFO("~PdxVersioned1 -17 ");
+                LOG_INFO("~PdxVersioned1 -17 ");
                 checkNullAndDelete( m_byte253);
-                LOGINFO("~PdxVersioned1 - 18");
+                LOG_INFO("~PdxVersioned1 - 18");
                 checkNullAndDelete( m_byte65535);
-                LOGINFO("~PdxVersioned1 - 19");
+                LOG_INFO("~PdxVersioned1 - 19");
                 checkNullAndDelete( m_byte65536);
-                LOGINFO("~PdxVersioned1 -20 ");
+                LOG_INFO("~PdxVersioned1 -20 ");
 }*/
 PdxVersioned1::PdxVersioned1(const char* key) { init(key); }
 
@@ -329,7 +332,7 @@ void PdxTests::PdxVersioned1::fromData(PdxReader& pr) {
   m_uint32Array = pr.readIntArray("m_uint32Array");
   m_ulongArray = pr.readLongArray("m_ulongArray");
   m_uint16Array = pr.readShortArray("m_uint16Array");
-  // LOGINFO("PdxVersioned1::readInt() start...");
+  // LOG_INFO("PdxVersioned1::readInt() start...");
 
   m_byte252 = pr.readByteArray("m_byte252");
   m_byte253 = pr.readByteArray("m_byte253");

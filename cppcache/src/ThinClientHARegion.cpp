@@ -57,7 +57,7 @@ void ThinClientHARegion::initTCR() {
       throw IllegalStateException("pool not found");
     }
   } catch (const Exception& ex) {
-    LOGERROR(
+    LOG_ERROR(
         "ThinClientHARegion: failed to create a DistributionManager "
         "object due to: %s: %s",
         ex.getName().c_str(), ex.what());
@@ -93,10 +93,10 @@ void ThinClientHARegion::handleMarker() {
     try {
       m_listener->afterRegionLive(event);
     } catch (const Exception& ex) {
-      LOGERROR("Exception in CacheListener::afterRegionLive: %s: %s",
-               ex.getName().c_str(), ex.what());
+      LOG_ERROR("Exception in CacheListener::afterRegionLive: %s: %s",
+                ex.getName().c_str(), ex.what());
     } catch (...) {
-      LOGERROR("Unknown exception in CacheListener::afterRegionLive");
+      LOG_ERROR("Unknown exception in CacheListener::afterRegionLive");
     }
     m_cacheImpl->getCachePerfStats().incListenerCalls();
     updateStatOpTime(m_regionStats->getStat(),
@@ -111,7 +111,7 @@ bool ThinClientHARegion::getProcessedMarker() {
 }
 
 void ThinClientHARegion::destroyDM(bool) {
-  LOGDEBUG(
+  LOG_DEBUG(
       "ThinClientHARegion::destroyDM( ): removing region from "
       "ThinClientPoolHADM list.");
   auto poolDM = std::dynamic_pointer_cast<ThinClientPoolHADM>(m_tcrdm);

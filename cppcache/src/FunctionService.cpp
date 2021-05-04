@@ -30,7 +30,7 @@ namespace geode {
 namespace client {
 
 Execution FunctionService::onRegion(const std::shared_ptr<Region>& region) {
-  LOGDEBUG("FunctionService::onRegion(std::shared_ptr<Region> region)");
+  LOG_DEBUG("FunctionService::onRegion(std::shared_ptr<Region> region)");
   if (region == nullptr) {
     throw NullPointerException("FunctionService::onRegion: region is null");
   }
@@ -45,7 +45,7 @@ Execution FunctionService::onRegion(const std::shared_ptr<Region>& region) {
 
   if (pool->getMultiuserAuthentication()) {
     if (auto pr = std::dynamic_pointer_cast<ProxyRegion>(realRegion)) {
-      LOGDEBUG(
+      LOG_DEBUG(
           "FunctionService::onRegion(std::shared_ptr<Region> region) proxy "
           "cache");
       // it is in multiuser mode
@@ -111,7 +111,7 @@ Execution FunctionService::onServerWithCache(RegionService& cache) {
     throw IllegalStateException("Cache has been closed");
   }
 
-  LOGDEBUG("FunctionService::onServer:");
+  LOG_DEBUG("FunctionService::onServer:");
   if (auto pc = dynamic_cast<AuthenticatedView*>(&cache)) {
     auto userAttachedPool = pc->m_userAttributes->getPool();
     auto pool =
@@ -135,7 +135,7 @@ Execution FunctionService::onServersWithCache(RegionService& cache) {
     throw IllegalStateException("Cache has been closed");
   }
 
-  LOGDEBUG("FunctionService::onServers:");
+  LOG_DEBUG("FunctionService::onServers:");
   if (auto pc = dynamic_cast<AuthenticatedView*>(&cache)) {
     auto userAttachedPool = pc->m_userAttributes->getPool();
     auto pool = pc->m_cacheImpl->getCache()->getPoolManager().find(

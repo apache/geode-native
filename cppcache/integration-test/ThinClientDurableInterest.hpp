@@ -74,7 +74,7 @@ class OperMonitor : public CacheListener {
   OperMonitor() : m_ops(0), m_id(-1) {}
 
   explicit OperMonitor(int id) : m_ops(0), m_id(id) {
-    LOGINFO("Inside OperMonitor %d ", m_id);
+    LOG_INFO("Inside OperMonitor %d ", m_id);
   }
 
   ~OperMonitor() override { m_map.clear(); }
@@ -134,7 +134,7 @@ std::shared_ptr<OperMonitor> mon1, mon2;
 
 void setCacheListener(const char* regName,
                       std::shared_ptr<OperMonitor> monitor) {
-  LOGINFO("setCacheListener to %s ", regName);
+  LOG_INFO("setCacheListener to %s ", regName);
   auto reg = getHelper()->getRegion(regName);
   auto attrMutator = reg->getAttributesMutator();
   attrMutator->setCacheListener(monitor);

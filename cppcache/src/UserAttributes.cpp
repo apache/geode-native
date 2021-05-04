@@ -44,12 +44,12 @@ UserAttributes::~UserAttributes() {
 }
 
 UserConnectionAttributes* UserAttributes::getConnectionAttribute() {
-  LOGDEBUG("UserConnectionAttributes* getConnectionAttribute().");
+  LOG_DEBUG("UserConnectionAttributes* getConnectionAttribute().");
   return nullptr;
 }
 
 void UserAttributes::unAuthenticateEP(TcrEndpoint* endpoint) {
-  LOGDEBUG("UserAttributes::unAuthenticateEP.");
+  LOG_DEBUG("UserAttributes::unAuthenticateEP.");
   if (m_connectionAttr.size() == 0) return;
   // TODO: it is always returning first one
   // need to take care when FE for onServers();
@@ -73,7 +73,7 @@ std::shared_ptr<Pool> UserAttributes::getPool() { return m_pool; }
 
 UserConnectionAttributes* UserAttributes::getConnectionAttribute(
     TcrEndpoint* ep) {
-  LOGDEBUG("UserConnectionAttributes* getConnectionAttribute with EP.");
+  LOG_DEBUG("UserConnectionAttributes* getConnectionAttribute with EP.");
   if (m_connectionAttr.size() == 0) return nullptr;
 
   std::lock_guard<decltype(m_listLock)> guard(m_listLock);
@@ -81,7 +81,7 @@ UserConnectionAttributes* UserAttributes::getConnectionAttribute(
 }
 
 bool UserAttributes::isEndpointAuthenticated(TcrEndpoint* ep) {
-  LOGDEBUG(
+  LOG_DEBUG(
       "UserAttributes::isEndpointAuthenticated: (TcrEndpoint* ep) with EP.");
   if (m_connectionAttr.size() == 0) return false;
 
@@ -97,9 +97,9 @@ std::shared_ptr<Properties> UserAttributes::getCredentials() {
     throw IllegalStateException("User cache has been closed");
   }
   if (m_credentials == nullptr) {
-    LOGDEBUG("getCredentials");
+    LOG_DEBUG("getCredentials");
   } else {
-    LOGDEBUG("getCredentials not null ");
+    LOG_DEBUG("getCredentials not null ");
   }
   return m_credentials;
 }
@@ -117,7 +117,7 @@ GuardUserAttributes::GuardUserAttributes(AuthenticatedView* authenticatedView) {
 void GuardUserAttributes::setAuthenticatedView(
     AuthenticatedView* authenticatedView) {
   m_authenticatedView = authenticatedView;
-  LOGDEBUG("GuardUserAttributes::GuardUserAttributes:");
+  LOG_DEBUG("GuardUserAttributes::GuardUserAttributes:");
   if (m_authenticatedView != nullptr && !authenticatedView->isClosed()) {
     UserAttributes::threadLocalUserAttributes =
         authenticatedView->m_userAttributes;

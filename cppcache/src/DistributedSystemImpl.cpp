@@ -57,7 +57,7 @@ DistributedSystemImpl::DistributedSystemImpl(
 }
 
 DistributedSystemImpl::~DistributedSystemImpl() {
-  LOGFINE("Destroyed DistributedSystemImpl");
+  LOG_FINE("Destroyed DistributedSystemImpl");
 }
 
 void DistributedSystemImpl::connect() {
@@ -72,23 +72,23 @@ void DistributedSystemImpl::connect() {
 
 void DistributedSystemImpl::logSystemInformation() const {
   auto productDir = CppCacheLibrary::getProductDir();
-  LOGCONFIG("Using Geode Native Client Product Directory: " + productDir);
+  LOG_CONFIG("Using Geode Native Client Product Directory: " + productDir);
 
   // Add version information, source revision, current directory etc.
-  LOGCONFIG("Product version: %s",
-            PRODUCT_VENDOR " " PRODUCT_NAME " " PRODUCT_VERSION
-                           " (" PRODUCT_BITS ") " PRODUCT_BUILDDATE);
-  LOGCONFIG("Source revision: %s", PRODUCT_SOURCE_REVISION);
-  LOGCONFIG("Source repository: %s", PRODUCT_SOURCE_REPOSITORY);
+  LOG_CONFIG("Product version: %s",
+             PRODUCT_VENDOR " " PRODUCT_NAME " " PRODUCT_VERSION
+                            " (" PRODUCT_BITS ") " PRODUCT_BUILDDATE);
+  LOG_CONFIG("Source revision: %s", PRODUCT_SOURCE_REVISION);
+  LOG_CONFIG("Source repository: %s", PRODUCT_SOURCE_REPOSITORY);
 
   auto sysinfo = Utils::getSystemInfo();
-  LOGCONFIG("Running on: %s", sysinfo.c_str());
-  LOGCONFIG("Current directory: %s",
-            boost::filesystem::current_path().string().c_str());
-  LOGCONFIG("Current value of PATH: %s", Utils::getEnv("PATH").c_str());
+  LOG_CONFIG("Running on: %s", sysinfo.c_str());
+  LOG_CONFIG("Current directory: %s",
+             boost::filesystem::current_path().string().c_str());
+  LOG_CONFIG("Current value of PATH: %s", Utils::getEnv("PATH").c_str());
 #ifndef _WIN32
-  LOGCONFIG("Current library path: %s",
-            Utils::getEnv("LD_LIBRARY_PATH").c_str());
+  LOG_CONFIG("Current library path: %s",
+             Utils::getEnv("LD_LIBRARY_PATH").c_str());
 #endif
   // Log the Geode system properties
   m_sysProps->logSettings();
@@ -101,7 +101,7 @@ void DistributedSystemImpl::disconnect() {
         "not called");
   }
 
-  LOGCONFIG("Stopped the Geode Native Client");
+  LOG_CONFIG("Stopped the Geode Native Client");
 
   // TODO global - log stays global so lets move this
   Log::close();
@@ -139,7 +139,7 @@ void DistributedSystemImpl::unregisterCliCallback(int appdomainId) {
   auto iter = m_cliCallbackMap.find(appdomainId);
   if (iter != m_cliCallbackMap.end()) {
     m_cliCallbackMap.erase(iter);
-    LOGFINE("Removing cliCallback %d", appdomainId);
+    LOG_FINE("Removing cliCallback %d", appdomainId);
   }
 }
 

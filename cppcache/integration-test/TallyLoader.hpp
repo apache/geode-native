@@ -43,7 +43,7 @@ class TallyLoader : virtual public CacheLoader {
   std::shared_ptr<Cacheable> load(
       Region&, const std::shared_ptr<CacheableKey>&,
       const std::shared_ptr<Serializable>&) override {
-    LOGDEBUG("TallyLoader::load invoked for %d.", m_loads);
+    LOG_DEBUG("TallyLoader::load invoked for %d.", m_loads);
     char buf[1024];
     sprintf(buf, "TallyLoader state: (loads = %d)", m_loads);
     LOG(buf);

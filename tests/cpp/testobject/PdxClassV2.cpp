@@ -86,11 +86,11 @@ void PdxTypes1V2::toData(PdxWriter& pw) const {
 
   m_diffInSameFields++;
   m_diffInExtraFields++;
-  // LOGDEBUG("PdxObject::toData() Done......");
+  // LOG_DEBUG("PdxObject::toData() Done......");
 }
 
 void PdxTypes1V2::fromData(PdxReader& pr) {
-  // LOGDEBUG("PdxObject::fromData() start...");
+  // LOG_DEBUG("PdxObject::fromData() start...");
   m_i1 = pr.readInt("i1");
   bool isIdentity = pr.isIdentityField("i2");
   if (isIdentity) throw Exception("i2 is not identity field");
@@ -103,7 +103,7 @@ void PdxTypes1V2::fromData(PdxReader& pr) {
   m_i5 = pr.readInt("i5");
   m_i6 = pr.readInt("i6");
 
-  // LOGDEBUG("PdxType1V2::fromData() End...");
+  // LOG_DEBUG("PdxType1V2::fromData() End...");
 }
 std::string PdxTypes1V2::toString() const {
   char idbuf[4096];
@@ -181,7 +181,7 @@ void PdxTypes2V2::toData(PdxWriter& pw) const {
 }
 
 void PdxTypes2V2::fromData(PdxReader& pr) {
-  // LOGDEBUG("PdxObject::fromData() start...");
+  // LOG_DEBUG("PdxObject::fromData() start...");
   //
   if (!m_useWeakHashMap) m_unreadFields = pr.readUnreadFields();
 
@@ -271,7 +271,7 @@ void PdxTypes3V2::toData(PdxWriter& pw) const {
 }
 
 void PdxTypes3V2::fromData(PdxReader& pr) {
-  // LOGDEBUG("PdxObject::fromData() start...");
+  // LOG_DEBUG("PdxObject::fromData() start...");
   //
   if (!m_useWeakHashMap) m_unreadFields = pr.readUnreadFields();
 
@@ -462,7 +462,7 @@ void PdxTypesR2V2::toData(PdxWriter& pw) const {
 }
 
 void PdxTypesR2V2::fromData(PdxReader& pr) {
-  LOGDEBUG("PdxObject::fromData() start...");
+  LOG_DEBUG("PdxObject::fromData() start...");
 
   if (!m_useWeakHashMap) m_pdxunreadFields = pr.readUnreadFields();
 
@@ -524,17 +524,17 @@ bool PdxTypesIgnoreUnreadFieldsV2::equals(
 
   if (pap.get() == this) return true;
 
-  LOGINFO("PdxTypesIgnoreUnreadFieldsV2::equals");
-  LOGINFO("m_i1 =%d m_diffInSameFields=%d pap->m_i1=%d", m_i1,
-          m_diffInSameFields, pap->m_i1);
-  LOGINFO("m_i2 =%d m_diffInSameFields=%d pap->m_i2=%d", m_i2,
-          m_diffInSameFields, pap->m_i2);
-  LOGINFO("m_i3 =%d m_diffInSameFields=%d pap->m_i3=%d", m_i3,
-          m_diffInSameFields, pap->m_i3);
-  LOGINFO("m_i4 =%d m_diffInSameFields=%d pap->m_i4=%d", m_i4,
-          m_diffInSameFields, pap->m_i4);
-  LOGINFO("m_i5 =%d  pap->m_i5=%d", m_i5, pap->m_i5);
-  LOGINFO("m_i6 =%d  pap->m_i6=%d", m_i6, pap->m_i6);
+  LOG_INFO("PdxTypesIgnoreUnreadFieldsV2::equals");
+  LOG_INFO("m_i1 =%d m_diffInSameFields=%d pap->m_i1=%d", m_i1,
+           m_diffInSameFields, pap->m_i1);
+  LOG_INFO("m_i2 =%d m_diffInSameFields=%d pap->m_i2=%d", m_i2,
+           m_diffInSameFields, pap->m_i2);
+  LOG_INFO("m_i3 =%d m_diffInSameFields=%d pap->m_i3=%d", m_i3,
+           m_diffInSameFields, pap->m_i3);
+  LOG_INFO("m_i4 =%d m_diffInSameFields=%d pap->m_i4=%d", m_i4,
+           m_diffInSameFields, pap->m_i4);
+  LOG_INFO("m_i5 =%d  pap->m_i5=%d", m_i5, pap->m_i5);
+  LOG_INFO("m_i6 =%d  pap->m_i6=%d", m_i6, pap->m_i6);
 
   if (m_i1 + m_diffInSameFields <= pap->m_i1 &&
       m_i2 + m_diffInSameFields <= pap->m_i2 &&
@@ -648,7 +648,7 @@ void PdxVersionedV2::init(int32_t size) {
 
 PdxVersionedV2::PdxVersionedV2(int32_t size) {
   init(size);
-  LOGDEBUG("PdxVersioned 1");
+  LOG_DEBUG("PdxVersioned 1");
 }
 
 PdxVersionedV2::~PdxVersionedV2() noexcept {
@@ -724,12 +724,12 @@ TestDiffTypePdxSV2::TestDiffTypePdxSV2(bool init) {
 }
 
 bool TestDiffTypePdxSV2::equals(const TestDiffTypePdxSV2& other) {
-  LOGINFO("TestDiffTypePdxSV2 other->_coun = %d and _count = %d ", other._count,
-          _count);
-  LOGINFO("TestDiffTypePdxSV2 other->_id = %s and _id = %s ", other._id.c_str(),
-          _id.c_str());
-  LOGINFO("TestDiffTypePdxSV2 other->_name = %s and _name = %s ",
-          other._name.c_str(), _name.c_str());
+  LOG_INFO("TestDiffTypePdxSV2 other->_coun = %d and _count = %d ",
+           other._count, _count);
+  LOG_INFO("TestDiffTypePdxSV2 other->_id = %s and _id = %s ",
+           other._id.c_str(), _id.c_str());
+  LOG_INFO("TestDiffTypePdxSV2 other->_name = %s and _name = %s ",
+           other._name.c_str(), _name.c_str());
 
   if (other._count == _count && other._id == _id && other._name == _name) {
     return true;

@@ -98,6 +98,7 @@ target_link_libraries(testobject
     ACE::ACE
     Boost::boost
     _WarningsAsError
+    spdlog::spdlog
 )
 
 add_clangformat(testobject)

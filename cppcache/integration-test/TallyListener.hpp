@@ -151,7 +151,7 @@ class TallyListener : public CacheListener {
 
 void TallyListener::afterCreate(const EntryEvent& event) {
   m_creates++;
-  LOGDEBUG("TallyListener::afterCreate called m_creates = %d ", m_creates);
+  LOG_DEBUG("TallyListener::afterCreate called m_creates = %d ", m_creates);
   m_lastKey = event.getKey();
   m_lastValue = event.getNewValue();
   checkcallbackArg(event);
@@ -161,7 +161,7 @@ void TallyListener::afterCreate(const EntryEvent& event) {
     char buf[1024];
     sprintf(buf, "TallyListener create - key = \"%s\", value = \"%s\"",
             m_lastKey->toString().c_str(), strPtr->value().c_str());
-    LOGDEBUG(buf);
+    LOG_DEBUG(buf);
   }
   std::string keyString(m_lastKey->toString().c_str());
   if ((!m_ignoreTimeout) && (keyString.find("timeout") != std::string::npos)) {

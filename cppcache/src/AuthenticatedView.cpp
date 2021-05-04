@@ -54,8 +54,8 @@ bool AuthenticatedView::isClosed() const { return m_isAuthenticatedViewClosed; }
  * @throws CacheClosedException,  if the cache is already closed.
  */
 void AuthenticatedView::close() {
-  LOGDEBUG("AuthenticatedView::close: isAuthenticatedViewClosed = %d",
-           m_isAuthenticatedViewClosed);
+  LOG_DEBUG("AuthenticatedView::close: isAuthenticatedViewClosed = %d",
+            m_isAuthenticatedViewClosed);
   if (!m_isAuthenticatedViewClosed) {
     if (m_remoteQueryService != nullptr) {
       ProxyRemoteQueryService* prqs =
@@ -82,7 +82,7 @@ void AuthenticatedView::close() {
 }
 std::shared_ptr<Region> AuthenticatedView::getRegion(
     const std::string& path) const {
-  LOGDEBUG("AuthenticatedView::getRegion:");
+  LOG_DEBUG("AuthenticatedView::getRegion:");
 
   if (!m_isAuthenticatedViewClosed) {
     std::shared_ptr<Region> result;
@@ -128,7 +128,7 @@ std::shared_ptr<QueryService> AuthenticatedView::getQueryService() {
 }
 
 std::vector<std::shared_ptr<Region>> AuthenticatedView::rootRegions() const {
-  LOGDEBUG("AuthenticatedView::rootRegions:");
+  LOG_DEBUG("AuthenticatedView::rootRegions:");
 
   std::vector<std::shared_ptr<Region>> regions;
 

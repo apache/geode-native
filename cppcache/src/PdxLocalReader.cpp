@@ -183,7 +183,7 @@ std::shared_ptr<CacheableObjectArray> PdxLocalReader::readObjectArray(
     const std::string&) {
   auto coa = CacheableObjectArray::create();
   coa->fromData(*m_dataInput);
-  LOGDEBUG("PdxLocalReader::readObjectArray coa->size() = %zu", coa->size());
+  LOG_DEBUG("PdxLocalReader::readObjectArray coa->size() = %zu", coa->size());
   if (coa->size() <= 0) {
     coa = nullptr;
   }
@@ -208,7 +208,7 @@ std::shared_ptr<PdxRemotePreservedData> PdxLocalReader::getPreservedData(
     std::shared_ptr<PdxType> mergedVersion,
     std::shared_ptr<PdxSerializable> pdxObject) {
   int nFieldExtra = m_pdxType->getNumberOfExtraFields();
-  LOGDEBUG(
+  LOG_DEBUG(
       "PdxLocalReader::getPreservedData::nFieldExtra = %d AND "
       "PdxTypeRegistry::getPdxIgnoreUnreadFields = %d ",
       nFieldExtra, m_pdxTypeRegistry->getPdxIgnoreUnreadFields());
@@ -217,7 +217,7 @@ std::shared_ptr<PdxRemotePreservedData> PdxLocalReader::getPreservedData(
     m_pdxRemotePreserveData->initialize(
         m_pdxType != nullptr ? m_pdxType->getTypeId() : 0,
         mergedVersion->getTypeId(), pdxObject);
-    LOGDEBUG("PdxLocalReader::getPreservedData - 1");
+    LOG_DEBUG("PdxLocalReader::getPreservedData - 1");
 
     m_localToRemoteMap = m_pdxType->getLocalToRemoteMap();
     m_remoteToLocalMap = m_pdxType->getRemoteToLocalMap();
@@ -251,14 +251,14 @@ std::shared_ptr<PdxRemotePreservedData> PdxLocalReader::getPreservedData(
         currentIdx++;
         pdVector.erase(pdVector.begin(), pdVector.end());
       } else {
-        LOGDEBUG("PdxLocalReader::getPreservedData No need to preserve");
+        LOG_DEBUG("PdxLocalReader::getPreservedData No need to preserve");
       }
     }
 
     if (m_isDataNeedToPreserve) {
       return m_pdxRemotePreserveData;
     } else {
-      LOGDEBUG(
+      LOG_DEBUG(
           "PdxLocalReader::GetPreservedData m_isDataNeedToPreserve is false");
     }
   }
@@ -275,8 +275,8 @@ bool PdxLocalReader::isIdentityField(const std::string& fieldName) {
 }
 
 std::shared_ptr<PdxUnreadFields> PdxLocalReader::readUnreadFields() {
-  LOGDEBUG("readUnreadFields:: %d ignore property %d", m_isDataNeedToPreserve,
-           m_pdxTypeRegistry->getPdxIgnoreUnreadFields());
+  LOG_DEBUG("readUnreadFields:: %d ignore property %d", m_isDataNeedToPreserve,
+            m_pdxTypeRegistry->getPdxIgnoreUnreadFields());
   if (m_pdxTypeRegistry->getPdxIgnoreUnreadFields() == true) return nullptr;
   m_isDataNeedToPreserve = false;
   return m_pdxRemotePreserveData;

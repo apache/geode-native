@@ -13,9 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-project( spdlog VERSION 1.3.1 LANGUAGES NONE )
+project( spdlog VERSION 1.8.5 LANGUAGES NONE )
 
-set( SHA256 db6986d0141546d4fba5220944cc1f251bd8afdfc434bda173b4b0b6406e3cd0 )
+set( SHA256 6e66c8ed4c014b0fb00c74d34eea95b5d34f6e4b51b746b1ea863dc3c2e854fd )
 
 include(GNUInstallDirs)
 include(ExternalProject)
