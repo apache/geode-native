@@ -186,7 +186,6 @@ set_tests_properties(
     testThinClientDurableDisconnectNormal
     testThinClientDurableDisconnectTimeout
     testThinClientDurableReconnect
-    #testThinClientFailover2
     testThinClientHAFailover
     testThinClientHAMixedRedundancy
     testThinClientHAQueryFailover
