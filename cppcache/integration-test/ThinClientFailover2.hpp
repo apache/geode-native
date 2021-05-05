@@ -440,8 +440,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSix)
     // This step get the value from region, if key is inavalidate in region,
     // value
     // will get from server.
-    // doNetsearch( regionNames[0], keys[4], vals[4] );
-    verifyEntry(regionName, keys[0], nvals[0]);
+    doNetsearch( regionName, keys[0], nvals[0] );
     updateEntry(regionName, keys[1], nvals[1]);
     LOG("StepSix complete.");
   }
