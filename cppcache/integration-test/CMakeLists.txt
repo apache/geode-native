@@ -186,12 +186,11 @@ set_tests_properties(
     testThinClientDurableDisconnectNormal
     testThinClientDurableDisconnectTimeout
     testThinClientDurableReconnect
-    testThinClientFailover2
     testThinClientHAFailover
-    testThinClientHAMixedRedundancy
+    #testThinClientHAMixedRedundancy
     testThinClientHAQueryFailover
     testThinClientLRUExpiration
-    testThinClientLargePutAllWithCallBackArg
+    #testThinClientLargePutAllWithCallBackArg
     testThinClientLocatorFailover
     testThinClientMultiDS
     testThinClientPartitionResolver

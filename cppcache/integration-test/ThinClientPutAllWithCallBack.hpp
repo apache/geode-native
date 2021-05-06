@@ -567,7 +567,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, ExecuteLargePutAll)
     LOG("Do large PutAll");
     HashMapOfCacheable map0;
     map0.clear();
-    for (int i = 0; i < 100000; i++) {
+    for (int i = 0; i < 1000; i++) {
       char key0[50] = {0};
       char val0[2500] = {0};
       sprintf(key0, "key-%d", i);
@@ -587,7 +587,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, VerifyLargePutAll)
   {
     LOG("Verify large PutAll");
-    for (int i = 0; i < 100000; i++) {
+    for (int i = 0; i < 1000; i++) {
       char key0[50] = {0};
       sprintf(key0, "key-%d", i);
       verifyCreated(regionNames[0], key0);
