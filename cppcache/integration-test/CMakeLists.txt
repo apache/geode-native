@@ -190,7 +190,6 @@ set_tests_properties(
     testThinClientHAMixedRedundancy
     testThinClientHAQueryFailover
     testThinClientLRUExpiration
-    testThinClientLargePutAllWithCallBackArg
     testThinClientLocatorFailover
     testThinClientMultiDS
     testThinClientPartitionResolver
