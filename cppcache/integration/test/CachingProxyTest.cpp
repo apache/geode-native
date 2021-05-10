@@ -27,88 +27,112 @@
 #include "framework/Cluster.h"
 
 using namespace apache::geode::client;
-
-namespace CachingProxy {
-
 using apache::geode::client::RegionShortcut;
 using apache::geode::client::Serializable;
 
-TEST(CachingProxyTest, InvalidateAndRemove) {
-  Cluster cluster{LocatorCount{1}, ServerCount{1}};
+namespace CachingProxy {
 
-  cluster.start();
+class CachingProxyTest : public ::testing::Test {
+ protected:
+  CachingProxyTest() {
+    cluster.start();
 
-  cluster.getGfsh()
-      .create()
-      .region()
-      .withName("region")
-      .withType("PARTITION")
-      .execute();
+    cluster.getGfsh()
+        .create()
+        .region()
+        .withName("region")
+        .withType("PARTITION")
+        .execute();
+  }
 
-  auto cache = cluster.createCache();
+  ~CachingProxyTest() override = default;
+
+  void SetUp() override {}
+
+  void TearDown() override {}
+
+  Cluster cluster = Cluster{LocatorCount{1}, ServerCount{1}};
+  std::string key = std::string("scharles");
+  std::string value = std::string("Sylvia Charles");
+};
+
+TEST_F(CachingProxyTest, LocalRemoveAfterLocalInvalidate) {
+  auto cache = CacheFactory().create();
+
+  cache.getPoolManager()
+      .createFactory()
+      .addLocator("localhost", cluster.getLocatorPort())
+      .create("pool");
+
   auto region = cache.createRegionFactory(RegionShortcut::CACHING_PROXY)
-                    .setPoolName("default")
+                    .setPoolName("pool")
                     .create("region");
-
-  std::string key("scharles");
-  std::string value("Sylvia Charles");
 
   region->put(key, value);
 
   auto user = region->get(key);
 
-  //**********************************************************************
-  // Test localRemove after localInvalidate
-  //**********************************************************************
+  region->localInvalidate(key);
 
-  region->localInvalidate(key); // Invalidating a key sets its value to null
-
-  // Local value is now null, so can't do localRemove of original value
   bool resultLocalRemove = region->localRemove(key, value);
   ASSERT_FALSE(resultLocalRemove);
 
-  // Can local remove by nullptr
   resultLocalRemove = region->localRemove(
       key, static_cast<std::shared_ptr<Cacheable>>(nullptr));
   ASSERT_TRUE(resultLocalRemove);
+  cache.close();
+}
 
-  // Still in the server, so get it again
-  user = region->get(key);
-  ASSERT_EQ(std::dynamic_pointer_cast<CacheableString>(user)->value(), value);
+TEST_F(CachingProxyTest, RemoveAfterInvalidate) {
+  auto cache = CacheFactory().create();
 
-  //**********************************************************************
-  // Test remove after invalidate
-  //**********************************************************************
+  cache.getPoolManager()
+      .createFactory()
+      .addLocator("localhost", cluster.getLocatorPort())
+      .create("pool");
 
-  region->invalidate(key);  // Invalidating a key sets its value to null
+  auto region = cache.createRegionFactory(RegionShortcut::CACHING_PROXY)
+                    .setPoolName("pool")
+                    .create("region");
 
-  // Local and remote value is now null, so can't do remove of original value
+  region->put(key, value);
+
+  region->invalidate(key);
+
   bool resultRemove = region->remove(key, value);
   ASSERT_FALSE(resultRemove);
 
-  // Can remove by nullptr value
   resultRemove =
       region->remove(key, static_cast<std::shared_ptr<Cacheable>>(nullptr));
   ASSERT_TRUE(resultRemove);
 
-  //**********************************************************************
-  // Test remove after localInvalidate
-  //**********************************************************************
+  cache.close();
+}
 
-  // First, need to put it back
+TEST_F(CachingProxyTest, RemoveAfterLocalInvalidate) {
+  auto cache = CacheFactory().create();
+
+  cache.getPoolManager()
+      .createFactory()
+      .addLocator("localhost", cluster.getLocatorPort())
+      .create("pool");
+
+  auto region = cache.createRegionFactory(RegionShortcut::CACHING_PROXY)
+                    .setPoolName("pool")
+                    .create("region");
+
   region->put(key, value);
 
-  region->localInvalidate(key);  // Invalidating a key sets its value to null
+  region->localInvalidate(key);
 
-  // Only Local value is now null, so shouldn't be able to remove nullptr value
-  resultRemove =
+  bool resultRemove =
       region->remove(key, static_cast<std::shared_ptr<Cacheable>>(nullptr));
   ASSERT_FALSE(resultRemove);
 
-  // Remove should fail, so should still be in the server
-  user = region->get(key);
+  auto user = region->get(key);
   ASSERT_EQ(std::dynamic_pointer_cast<CacheableString>(user)->value(), value);
 
   cache.close();
 }
+
 }  // namespace CachingProxy
