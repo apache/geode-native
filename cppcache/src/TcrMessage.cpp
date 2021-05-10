@@ -1953,33 +1953,20 @@ TcrMessageDestroy::TcrMessageDestroy(
         "key passed to the constructor can't be nullptr");
   }
 
-  if (value != nullptr) {
-    numOfParts += 2;  // for GFE Destroy65.java
-    writeHeader(TcrMessage::DESTROY, numOfParts);
-    writeRegionPart(m_regionName);
-    writeObjectPart(key);
-    writeObjectPart(value);  // expectedOldValue part
-    uint8_t removeByte = 8;  // OP_TYPE_DESTROY value from Operation.java
-    auto removeBytePart = CacheableByte::create(removeByte);
-    writeObjectPart(removeBytePart);  // operation part
-    writeEventIdPart();
-    if (aCallbackArgument != nullptr) {
-      writeObjectPart(aCallbackArgument);
-    }
-    writeMessageLength();
-  } else {
-    numOfParts += 2;  // for GFE Destroy65.java
-    writeHeader(TcrMessage::DESTROY, numOfParts);
-    writeRegionPart(m_regionName);
-    writeObjectPart(key);
-    writeObjectPart(nullptr);  // expectedOldValue part
-    writeObjectPart(nullptr);  // operation part
-    writeEventIdPart();
-    if (aCallbackArgument != nullptr) {
-      writeObjectPart(aCallbackArgument);
-    }
-    writeMessageLength();
+  numOfParts += 2;  // for GFE Destroy65.java
+  writeHeader(TcrMessage::DESTROY, numOfParts);
+  writeRegionPart(m_regionName);
+  writeObjectPart(key);
+  writeObjectPart(value);  // expectedOldValue part
+  uint8_t removeByte = 8;  // OP_TYPE_DESTROY value from Operation.java
+  auto removeBytePart = CacheableByte::create(removeByte);
+  writeObjectPart(removeBytePart);  // operation part
+  writeEventIdPart();
+  if (aCallbackArgument != nullptr) {
+    writeObjectPart(aCallbackArgument);
   }
+  writeMessageLength();
+
 }
 
 TcrMessagePut::TcrMessagePut(
