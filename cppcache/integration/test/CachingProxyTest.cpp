@@ -20,14 +20,18 @@
 
 #include <gtest/gtest.h>
 
+#include <geode/Cache.hpp>
+#include <geode/CacheFactory.hpp>
 #include <geode/RegionFactory.hpp>
 #include <geode/RegionShortcut.hpp>
 #include <geode/Serializable.hpp>
 
 #include "framework/Cluster.h"
 
-using namespace apache::geode::client;
 using apache::geode::client::RegionShortcut;
+using apache::geode::client::CacheFactory;
+using apache::geode::client::Cacheable;
+using apache::geode::client::CacheableString;
 using apache::geode::client::Serializable;
 
 namespace CachingProxy {

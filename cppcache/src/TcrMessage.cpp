@@ -1966,7 +1966,6 @@ TcrMessageDestroy::TcrMessageDestroy(
     writeObjectPart(aCallbackArgument);
   }
   writeMessageLength();
-
 }
 
 TcrMessagePut::TcrMessagePut(
