@@ -1,3 +1,4 @@
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,15 +20,14 @@
 #include <smrtheap.h>
 #endif
 
-#include <ace/ACE.h>
-
-#include <typeinfo>
-
 #include <string>
 #include <iostream>
 #include <iomanip>
 #include <list>
 #include <map>
+
+#include <boost/asio.hpp>
+#include <boost/process.hpp>
 
 // SW: Switching to framework BB on linux also since it is much faster.
 #ifndef _WIN32
@@ -55,7 +55,7 @@ using apache::geode::client::testframework::BBNamingContextServer;
 #define __DUNIT_NO_MAIN__
 #include "fw_dunit.hpp"
 
-static ACE_TCHAR *g_programName = nullptr;
+static std::string g_programName;
 static uint32_t g_coordinatorPid = 0;
 
 ClientCleanup gClientCleanup;
@@ -93,12 +93,11 @@ class NamingContextImpl : virtual public NamingContext {
 #else
   ACE_Naming_Context
 #endif
+
       m_context;
 
   void millisleep(int msec) {
-    ACE_Time_Value sleepTime;
-    sleepTime.msec(msec);
-    ACE_OS::sleep(sleepTime);
+    std::this_thread::sleep_for(std::chrono::milliseconds{msec});
   }
 
   int checkResult(int result, const char *func) {
@@ -120,7 +119,7 @@ class NamingContextImpl : virtual public NamingContext {
 
   ~NamingContextImpl() noexcept override {
     m_context.close();
-    ACE_OS::unlink(ACE_OS::getenv("TESTNAME"));
+    std::remove(std::getenv("TESTNAME"));
   }
 
   /**
@@ -149,39 +148,37 @@ class NamingContextImpl : virtual public NamingContext {
    * retreive a value by key, storing the result in the users buf. If the key
    * is not found, the buf will contain the empty string "".
    */
-  void getValue(const char *key, char *buf, size_t sizeOfBuf) override {
+  std::string getValue(const std::string &key) override {
 #ifdef SOLARIS_USE_BB
-    char value[VALUE_MAX] = {0};
+    std::string value;
     char type[VALUE_MAX] = {0};
 #else
-    char *value = nullptr;
     char *type = nullptr;
+    char *value = nullptr;
 #endif
 
-    int res = -1;
-    // we should not increase attempts to avoid increasing test run times.
     int attempts = 3;
-    while ((res = m_context.resolve(key, value, type)) != 0 && attempts--) {
+    while (m_context.resolve(key.c_str(), value, type) != 0 && attempts--) {
       // we should not increase sleep to avoid increasing test run times.
       millisleep(5);
     }
 
-    if (res != 0) {
-      strncpy(buf, "", sizeOfBuf);
-      return;
+#ifndef SOLARIS_USE_BB
+    if (value == nullptr) {
+      return {};
     }
-    ACE_OS::strncpy(buf, value, sizeOfBuf);
+#endif
+
+    return value;
   }
 
   /**
    * return the value by key, as an int using the string to int conversion
    * rules of atoi.
    */
-  int getIntValue(const char *key) override {
-    char value[VALUE_MAX] = {0};
-    getValue(key, value, sizeof(value));
-    if (ACE_OS::strcmp(value, "") == 0) return 0;
-    return ACE_OS::atoi(value);
+  int getIntValue(const std::string &key) override {
+    auto val = getValue(key);
+    return val.empty() ? 0 : std::stoi(val);
   }
 
   void open() {
@@ -192,26 +189,22 @@ class NamingContextImpl : virtual public NamingContext {
     name_options->process_name(getContextName().c_str());
     name_options->namespace_dir(".");
     name_options->context(ACE_Naming_Context::PROC_LOCAL);
-    name_options->database(ACE_OS::getenv("TESTNAME"));
+    name_options->database(std::getenv("TESTNAME"));
     checkResult(m_context.open(name_options->context(), 0), "open");
 #endif
     LOGCOORDINATOR("Naming context opened.");
   }
 
   std::string getContextName() {
-    char buf[1024] = {0};
-    ACE_OS::sprintf(buf, "dunit.context.%s%d", ACE::basename(g_programName),
-                    g_coordinatorPid);
-    std::string b_str(buf);
-    return b_str;
+    return "dunit.context." +
+           boost::filesystem::path{g_programName}.filename().stem().string() +
+           std::to_string(g_coordinatorPid);
   }
 
   std::string getMutexName() {
-    char buf[1024] = {0};
-    ACE_OS::sprintf(buf, "dunit.mutex.%s%d", ACE::basename(g_programName),
-                    g_coordinatorPid);
-    std::string b_str(buf);
-    return b_str;
+    return "dunit.mutex." +
+           boost::filesystem::path{g_programName}.filename().stem().string() +
+           std::to_string(g_coordinatorPid);
   }
 
   /** print out all the entries' keys and values in the naming context. */
@@ -222,7 +215,7 @@ class NamingContextImpl : virtual public NamingContext {
     ACE_BINDING_SET set;
     if (this->m_context.list_name_entries(set, "") != 0) {
       char buf[1000] = {0};
-      ACE_OS::sprintf(buf, "There is nothing in the naming context.");
+      ::sprintf(buf, "There is nothing in the naming context.");
       LOGCOORDINATOR(buf);
     } else {
       ACE_BINDING_ITERATOR set_iterator(set);
@@ -230,8 +223,8 @@ class NamingContextImpl : virtual public NamingContext {
            set_iterator.advance()) {
         ACE_Name_Binding binding(*entry);
         char buf[1000] = {0};
-        ACE_OS::sprintf(buf, "%s => %s", binding.name_.char_rep(),
-                        binding.value_.char_rep());
+        ::sprintf(buf, "%s => %s", binding.name_.char_rep(),
+                  binding.value_.char_rep());
         LOGCOORDINATOR(buf);
       }
     }
@@ -240,7 +233,7 @@ class NamingContextImpl : virtual public NamingContext {
 
   void resetContext() {
     char buf[30] = {0};
-    sprintf(buf, "%d", ACE_OS::getpid());
+    sprintf(buf, "%d", boost::this_process::get_id());
 
     int res1 = -1;
     int attempts1 = 10;
@@ -416,9 +409,9 @@ class Dunit {
   /** call this once just inside main... */
   static void init(bool initContext = false) {
     if (initContext) {
-      ACE_OS::unlink("localnames");
-      ACE_OS::unlink("name_space_localnames");
-      ACE_OS::unlink("backing_store_localnames");
+      std::remove("localnames");
+      std::remove("name_space_localnames");
+      std::remove("backing_store_localnames");
     }
 
     globals_region_ = bip::mapped_region{globals_shm_, bip::read_write};
@@ -485,28 +478,22 @@ void TestState::reset() {
   terminate_ = false;
 
   void setWorkerState(WorkerId sId, int state) {
-    char key[100] = {0};
-    ACE_OS::sprintf(key, "ReadyWorker%d", sId.getId());
-    m_globals.rebind(key, state);
+    m_globals.rebind(("ReadyWorker" + std::to_string(sId.getId())).c_str(),
+                     state);
   }
 }
 
   int getWorkerState(WorkerId sId) {
-    char key[100] = {0};
-    ACE_OS::sprintf(key, "ReadyWorker%d", sId.getId());
-    return m_globals.getIntValue(key);
+    return m_globals.getIntValue("ReadyWorker" + std::to_string(sId.getId()));
   }
 
   void setWorkerTimeout(WorkerId sId, int seconds) {
-    char key[100] = {0};
-    ACE_OS::sprintf(key, "TimeoutWorker%d", sId.getId());
-    m_globals.rebind(key, seconds);
+    m_globals.rebind(("TimeoutWorker" + std::to_string(sId.getId())).c_str(),
+                     seconds);
   }
 
   int getWorkerTimeout(WorkerId sId) {
-    char key[100] = {0};
-    ACE_OS::sprintf(key, "TimeoutWorker%d", sId.getId());
-    return m_globals.getIntValue(key);
+    return m_globals.getIntValue("TimeoutWorker" + std::to_string(sId.getId()));
   }
 
 int TestState::getWorkerState(int id) const { return worker_state_[id - 1]; }
@@ -537,7 +524,7 @@ class TestProcess : virtual public dunit::Manager {
   WorkerId m_sId;
 
  public:
-  TestProcess(const ACE_TCHAR *cmdline, uint32_t id)
+  TestProcess(const std::string &cmdline, uint32_t id)
       : Manager(cmdline), m_sId(id) {}
 
   WorkerId &getWorkerId() { return m_sId; }
@@ -559,7 +546,7 @@ class TestDriver {
   TestDriver() {
 #ifdef SOLARIS_USE_BB
     m_bbNamingContextServer = new BBNamingContextServer();
-    ACE_OS::sleep(5);
+    std::this_thread::sleep_for(std::chrono::seconds(5));
     fprintf(stdout, "Blackboard started\n");
     fflush(stdout);
 #endif
@@ -567,29 +554,33 @@ class TestDriver {
     dunit::Dunit::init(true);
     fprintf(stdout, "Coordinator starting workers.\n");
     for (uint32_t i = 1; i < 5; i++) {
-      ACE_TCHAR cmdline[2048] = {0};
-      char *profilerCmd = ACE_OS::getenv("PROFILERCMD");
+      std::string cmdline;
+      auto profilerCmd = std::getenv("PROFILERCMD");
       if (profilerCmd != nullptr && profilerCmd[0] != '$' &&
           profilerCmd[0] != '\0') {
         // replace %d's in profilerCmd with PID and worker ID
         char cmdbuf[2048] = {0};
-        ACE_OS::sprintf(cmdbuf, profilerCmd, ACE_OS::gettimeofday().msec(),
-                        g_coordinatorPid, i);
-        ACE_OS::sprintf(cmdline, "%s %s -s%d -m%d", cmdbuf, g_programName, i,
-                        g_coordinatorPid);
+        auto now = std::chrono::time_point_cast<std::chrono::milliseconds>(
+                       std::chrono::system_clock::now())
+                       .time_since_epoch()
+                       .count();
+        ::sprintf(cmdbuf, profilerCmd, now, g_coordinatorPid, i);
+        cmdline = std::string{cmdbuf} + ' ' + g_programName + " -s" +
+                  std::to_string(i) + " -m" + std::to_string(g_coordinatorPid);
       } else {
-        ACE_OS::sprintf(cmdline, "%s -s%d -m%d", g_programName, i,
-                        g_coordinatorPid);
+        cmdline = g_programName + " -s" + std::to_string(i) + " -m" +
+                  std::to_string(g_coordinatorPid);
       }
-      fprintf(stdout, "%s\n", cmdline);
+      fprintf(stdout, "%s\n", cmdline.c_str());
       m_workers[i - 1] = new TestProcess(cmdline, i);
     }
     fflush(stdout);
     // start each of the workers...
     for (uint32_t j = 1; j < 5; j++) {
       m_workers[j - 1]->doWork();
-      ACE_OS::sleep(2);  // do not increase this to avoid precheckin runs taking
-                         // much longer.
+      std::this_thread::sleep_for(
+          std::chrono::seconds(2));  // do not increase this to avoid precheckin
+                                     // runs taking much longer.
     }
   }
 
@@ -605,7 +596,8 @@ class TestDriver {
   }
 
   int begin() {
-    fprintf(stdout, "Coordinator started with pid %d\n", ACE_OS::getpid());
+    fprintf(stdout, "Coordinator started with pid %d\n",
+            boost::this_process::get_id());
     fflush(stdout);
     waitForReady();
     // dispatch task...
@@ -648,17 +640,13 @@ class TestDriver {
     fprintf(stdout, "Waiting %d seconds for %s to finish task.\n", secs,
             sId.getIdName());
     fflush(stdout);
-    ACE_Time_Value end = ACE_OS::gettimeofday();
-    ACE_Time_Value offset(secs, 0);
-    end += offset;
+    auto end = std::chrono::steady_clock::now() + std::chrono::seconds{secs};
     while (DUNIT->getWorkerState(sId) != WORKER_STATE_TASK_COMPLETE) {
       // sleep a bit..
       if (DUNIT->getFailed()) return;
-      ACE_Time_Value sleepTime;
-      sleepTime.msec(100);
-      ACE_OS::sleep(sleepTime);
+      std::this_thread::sleep_for(std::chrono::milliseconds{100});
       checkWorkerDeath();
-      ACE_Time_Value now = ACE_OS::gettimeofday();
+      auto now = std::chrono::steady_clock::now();
       if (now >= end) {
         handleTimeout(sId);
         break;
@@ -692,18 +680,19 @@ class TestDriver {
     fprintf(stdout, "Waiting %d seconds for all workers to be ready.\n",
             TASK_TIMEOUT);
     fflush(stdout);
-    ACE_Time_Value end = ACE_OS::gettimeofday();
-    ACE_Time_Value offset(TASK_TIMEOUT, 0);
-    end += offset;
+    auto end =
+        std::chrono::steady_clock::now() + std::chrono::seconds{TASK_TIMEOUT};
     uint32_t readyCount = 0;
     while (readyCount < TestState::WORKER_COUNT) {
       fprintf(stdout, "Ready Count: %d\n", readyCount);
       fflush(stdout);
-      if (DUNIT->getFailed()) return;
-      // sleep a bit..
-      ACE_Time_Value sleepTime(1);
-      //      sleepTime.msec( 10 );
-      ACE_OS::sleep(sleepTime);
+
+      if (DUNIT->getFailed()) {
+        return;
+      }
+
+      std::this_thread::sleep_for(std::chrono::seconds{1});
+
       readyCount = 0;
       for (uint32_t i = 1; i < 5; i++) {
         int status = state->getWorkerState(i);
@@ -713,7 +702,7 @@ class TestDriver {
       }
 
       checkWorkerDeath();
-      ACE_Time_Value now = ACE_OS::gettimeofday();
+      auto now = std::chrono::steady_clock::now();
       if (now >= end) {
         handleTimeout();
         break;
@@ -727,16 +716,15 @@ class TestDriver {
     fprintf(stdout, "Waiting %d seconds for all workers to complete.\n",
             TASK_TIMEOUT);
     fflush(stdout);
-    ACE_Time_Value end = ACE_OS::gettimeofday();
-    ACE_Time_Value offset(TASK_TIMEOUT, 0);
-    end += offset;
+
     uint32_t doneCount = 0;
+    auto end =
+        std::chrono::steady_clock::now() + std::chrono::seconds{TASK_TIMEOUT};
+
     while (doneCount < 4) {
       // if ( DUNIT->getFailed() ) return;
       // sleep a bit..
-      ACE_Time_Value sleepTime;
-      sleepTime.msec(100);
-      ACE_OS::sleep(sleepTime);
+      std::this_thread::sleep_for(std::chrono::milliseconds{100});
       doneCount = 0;
       for (uint32_t i = 1; i < 5; i++) {
         int status = state->getWorkerState(i);
@@ -744,7 +732,7 @@ class TestDriver {
           ++doneCount;
         }
       }
-      ACE_Time_Value now = ACE_OS::gettimeofday();
+      auto now = std::chrono::steady_clock::now();
       if (now >= end) {
         handleTimeout();
         break;
@@ -793,7 +781,7 @@ class TestWorker {
   void begin() {
     auto state = DUNIT->getState();
     fprintf(stdout, "Worker %s started with pid %d\n", m_sId.getIdName(),
-            ACE_OS::getpid());
+            boost::this_process::get_id());
     fflush(stdout);
 
     // consume tasks of this workers queue, only when it is his turn..
@@ -830,9 +818,8 @@ class TestWorker {
           }
         }
       }
-      ACE_Time_Value sleepTime;
-      sleepTime.msec(100);
-      ACE_OS::sleep(sleepTime);
+
+      std::this_thread::sleep_for(std::chrono::milliseconds{100});
     }
   }
 
@@ -849,11 +836,9 @@ WorkerId *TestWorker::procWorkerId = nullptr;
 
 void sleep(int millis) {
   if (millis == 0) {
-    ACE_OS::thr_yield();
+    std::this_thread::yield();
   } else {
-    ACE_Time_Value sleepTime;
-    sleepTime.msec(millis);
-    ACE_OS::sleep(sleepTime);
+    std::this_thread::sleep_for(std::chrono::milliseconds{millis});
   }
 }
 
@@ -862,7 +847,7 @@ void logCoordinator(std::string s, int lineno, const char * /*filename*/) {
   dunit::getTimeStr(buf, sizeof(buf));
 
   fprintf(stdout, "[TEST coordinator:pid(%d)] %s at line: %d\n",
-          ACE_OS::getpid(), s.c_str(), lineno);
+          boost::this_process::get_id(), s.c_str(), lineno);
   fflush(stdout);
 }
 
@@ -872,8 +857,8 @@ void log(std::string s, int lineno, const char * /*filename*/, int /*id*/) {
   char buf[128] = {0};
   dunit::getTimeStr(buf, sizeof(buf));
 
-  fprintf(stdout, "[TEST 0:pid(%d)] %s at line: %d\n", ACE_OS::getpid(),
-          s.c_str(), lineno);
+  fprintf(stdout, "[TEST 0:pid(%d)] %s at line: %d\n",
+          boost::this_process::get_id(), s.c_str(), lineno);
   fflush(stdout);
 }
 
@@ -886,13 +871,13 @@ void log(std::string s, int lineno, const char * /*filename*/) {
           (dunit::TestWorker::procWorkerId
                ? dunit::TestWorker::procWorkerId->getIdName()
                : "coordinator"),
-          ACE_OS::getpid(), s.c_str(), lineno);
+          boost::this_process::get_id(), s.c_str(), lineno);
   fflush(stdout);
 }
 
 void cleanup() { gClientCleanup.callClientCleanup(); }
 
-int dmain(int argc, ACE_TCHAR *argv[]) {
+int dmain(int argc, char *argv[]) {
 #ifdef USE_SMARTHEAP
   MemRegisterTask();
 #endif
@@ -900,9 +885,7 @@ int dmain(int argc, ACE_TCHAR *argv[]) {
   TimeBomb tb(&cleanup);
   // tb->arm(); // leak this on purpose.
   try {
-    g_programName = new ACE_TCHAR[2048];
-    ACE_OS::strncpy(g_programName, argv[0], 2048);
-
+    g_programName = argv[0];
     const ACE_TCHAR options[] = ACE_TEXT("s:m:");
     ACE_Get_Opt cmd_opts(argc, argv, options);
 
@@ -913,12 +896,12 @@ int dmain(int argc, ACE_TCHAR *argv[]) {
     while ((option = cmd_opts()) != EOF) {
       switch (option) {
         case 's':
-          workerId = ACE_OS::atoi(cmd_opts.opt_arg());
+          workerId = std::stoul(cmd_opts.opt_arg());
           fprintf(stdout, "Using process id: %d\n", workerId);
           fflush(stdout);
           break;
         case 'm':
-          g_coordinatorPid = ACE_OS::atoi(cmd_opts.opt_arg());
+          g_coordinatorPid = std::stoul(cmd_opts.opt_arg());
           fprintf(stdout, "Using coordinator id: %d\n", g_coordinatorPid);
           fflush(stdout);
           break;
@@ -930,7 +913,7 @@ int dmain(int argc, ACE_TCHAR *argv[]) {
     }
 
     if (g_coordinatorPid == 0) {
-      g_coordinatorPid = ACE_OS::getpid();
+      g_coordinatorPid = boost::this_process::get_id();
     }
 
     if (workerId > 0) {
@@ -958,11 +941,14 @@ int dmain(int argc, ACE_TCHAR *argv[]) {
   } catch (apache::geode::client::testframework::FwkException &fe) {
     printf("Exception: %s\n", fe.what());
     fflush(stdout);
+  } catch (std::exception &ex) {
+    printf("Exception: system exception reached main: %s.\n", ex.what());
+    fflush(stdout);
   } catch (...) {
     printf("Exception: unhandled/unidentified exception reached main.\n");
     fflush(stdout);
-    // return 1;
   }
+
   gClientCleanup.callClientCleanup();
   return 1;
 }
@@ -977,8 +963,10 @@ namespace perf {
 TimeStamp::TimeStamp(int64_t msec) : m_msec(msec) {}
 
 TimeStamp::TimeStamp() {
-  ACE_Time_Value tmp = ACE_OS::gettimeofday();
-  m_msec = tmp.msec();
+  m_msec = std::chrono::time_point_cast<std::chrono::milliseconds>(
+               std::chrono::system_clock::now())
+               .time_since_epoch()
+               .count();
 }
 
 TimeStamp::TimeStamp(const TimeStamp &other) : m_msec(other.m_msec) {}
@@ -1110,9 +1098,11 @@ void PerfSuite::save() {
 
 /** load data saved in $ENV{'baselines'} named "<suite>_baseline.<host>" */
 void PerfSuite::compare() {
-  char hname[100] = {0};
-  ACE_OS::hostname(hname, 100);
-  std::string fname = m_suiteName + "_baseline." + hname;
+  /*
+    char hname[100] = {0};
+    ACE_OS::hostname(hname, 100);
+    std::string fname = m_suiteName + "_baseline." + hname;
+    */
 }
 
 ThreadLauncher::ThreadLauncher(int thrCount, Thread &thr)
