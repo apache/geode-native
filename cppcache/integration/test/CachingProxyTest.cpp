@@ -28,10 +28,10 @@
 
 #include "framework/Cluster.h"
 
-using apache::geode::client::RegionShortcut;
-using apache::geode::client::CacheFactory;
 using apache::geode::client::Cacheable;
 using apache::geode::client::CacheableString;
+using apache::geode::client::CacheFactory;
+using apache::geode::client::RegionShortcut;
 using apache::geode::client::Serializable;
 
 namespace CachingProxy {
@@ -135,6 +135,26 @@ TEST_F(CachingProxyTest, RemoveAfterLocalInvalidate) {
 
   auto user = region->get(key);
   ASSERT_EQ(std::dynamic_pointer_cast<CacheableString>(user)->value(), value);
+
+  cache.close();
+}
+
+TEST_F(CachingProxyTest, Remove) {
+  auto cache = CacheFactory().create();
+
+  cache.getPoolManager()
+      .createFactory()
+      .addLocator("localhost", cluster.getLocatorPort())
+      .create("pool");
+
+  auto region = cache.createRegionFactory(RegionShortcut::CACHING_PROXY)
+                    .setPoolName("pool")
+                    .create("region");
+
+  region->put(key, value);
+
+  bool resultRemove = region->remove(key);
+  ASSERT_TRUE(resultRemove);
 
   cache.close();
 }
