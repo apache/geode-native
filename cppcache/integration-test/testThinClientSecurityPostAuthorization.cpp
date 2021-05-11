@@ -36,7 +36,7 @@ using apache::geode::client::HashMapOfCacheable;
 using apache::geode::client::HashMapOfException;
 using apache::geode::client::NotAuthorizedException;
 
-const std::string locHostPort =
+const char *locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
 #define HANDLE_NO_NOT_AUTHORIZED_EXCEPTION                 \
@@ -90,7 +90,9 @@ void initClientAuth(char userType, int clientNum = 1) {
       config->insert("security-password", "geode1");
       break;
     }
-    default: { break; }
+    default: {
+      break;
+    }
   }
   initClient(true, config);
 }
@@ -108,17 +110,17 @@ const char *getServerSecurityParams() {
         "org.apache.geode.internal.security.FilterPostAuthorization.create "
         "log-level=fine security-log-level=finest";
 
-    char *ldapSrv = std::getenv("LDAP_SERVER");
+    char *ldapSrv = ACE_OS::getenv("LDAP_SERVER");
     serverSecurityParams += std::string(" security-ldap-server=") +
                             (ldapSrv != nullptr ? ldapSrv : "ldap");
 
-    char *ldapRoot = std::getenv("LDAP_BASEDN");
+    char *ldapRoot = ACE_OS::getenv("LDAP_BASEDN");
     serverSecurityParams +=
         std::string(" security-ldap-basedn=") +
         (ldapRoot != nullptr ? ldapRoot
                              : "ou=ldapTesting,dc=ldap,dc=apache,dc=org");
 
-    char *ldapSSL = std::getenv("LDAP_USESSL");
+    char *ldapSSL = ACE_OS::getenv("LDAP_USESSL");
     serverSecurityParams += std::string(" security-ldap-usessl=") +
                             (ldapSSL != nullptr ? ldapSSL : "false");
   }

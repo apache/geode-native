@@ -1,4 +1,3 @@
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,20 +19,32 @@
 #include <smrtheap.h>
 #endif
 
+#include <ace/ACE.h>
+
+#include <typeinfo>
+
 #include <string>
 #include <iostream>
 #include <iomanip>
 #include <list>
 #include <map>
 
-#include <ace/Get_Opt.h>
+// SW: Switching to framework BB on linux also since it is much faster.
+#ifndef _WIN32
+// On solaris, when ACE_Naming_Context maps file to memory using fixed mode, it
+// interfere with malloc/brk system calls later cause failure. For now, we use
+// the Black Board from the regression test framework. When the ACE problem is
+// fixed in a new release we'll go back to original code by undefining
+// SOLARIS_USE_BB
+#define SOLARIS_USE_BB 1
+#endif
 
-#include <boost/asio.hpp>
-#include <boost/process.hpp>
-#include <boost/interprocess/mapped_region.hpp>
+#define VALUE_MAX 128
 
-#ifdef _WIN32
-#include <boost/interprocess/windows_shared_memory.hpp>
+#ifdef SOLARIS_USE_BB
+#include "BBNamingContext.hpp"
+using apache::geode::client::testframework::BBNamingContextClient;
+using apache::geode::client::testframework::BBNamingContextServer;
 #else
 #include <boost/interprocess/shared_memory_object.hpp>
 #endif
@@ -44,9 +55,7 @@
 #define __DUNIT_NO_MAIN__
 #include "fw_dunit.hpp"
 
-namespace bip = boost::interprocess;
-
-static std::string g_programName;
+static ACE_TCHAR *g_programName = nullptr;
 static uint32_t g_coordinatorPid = 0;
 
 ClientCleanup gClientCleanup;
@@ -75,6 +84,181 @@ void setupCRTOutput() {
 #define WORKER_STATE_SCHEDULED 5
 
 void log(std::string s, int lineno, const char *filename);
+
+/** Naming service for sharing data between processes. */
+class NamingContextImpl : virtual public NamingContext {
+ private:
+#ifdef SOLARIS_USE_BB
+  BBNamingContextClient
+#else
+  ACE_Naming_Context
+#endif
+      m_context;
+
+  void millisleep(int msec) {
+    ACE_Time_Value sleepTime;
+    sleepTime.msec(msec);
+    ACE_OS::sleep(sleepTime);
+  }
+
+  int checkResult(int result, const char *func) {
+    if (result == -1) {
+      LOGCOORDINATOR("NamingCtx operation failed for:");
+      LOGCOORDINATOR(func);
+      LOGCOORDINATOR("Dump follows:");
+      dump();
+      throw -1;
+    }
+    return result;
+  }
+
+ public:
+  NamingContextImpl() : m_context() {
+    open();
+    LOGCOORDINATOR("Naming context ready.");
+  }
+
+  ~NamingContextImpl() noexcept override {
+    m_context.close();
+    ACE_OS::unlink(ACE_OS::getenv("TESTNAME"));
+  }
+
+  /**
+   * Share a string value, return -1 if there is a failure to store value,
+   * otherwise returns 0.
+   */
+  int rebind(const char *key, const char *value) override {
+    int res = -1;
+    int attempts = 10;
+    while ((res = m_context.rebind(key, value, const_cast<char *>(""))) == -1 &&
+           attempts--) {
+      millisleep(10);
+    }
+    return checkResult(res, "rebind");
+  }
+
+  /**
+   * Share an int value, return -1 if there is a failure to store value,
+   * otherwise returns 0.
+   */
+  int rebind(const char *key, int value) override {
+    return rebind(key, std::to_string(value).c_str());
+  }
+
+  /**
+   * retreive a value by key, storing the result in the users buf. If the key
+   * is not found, the buf will contain the empty string "".
+   */
+  void getValue(const char *key, char *buf, size_t sizeOfBuf) override {
+#ifdef SOLARIS_USE_BB
+    char value[VALUE_MAX] = {0};
+    char type[VALUE_MAX] = {0};
+#else
+    char *value = nullptr;
+    char *type = nullptr;
+#endif
+
+    int res = -1;
+    // we should not increase attempts to avoid increasing test run times.
+    int attempts = 3;
+    while ((res = m_context.resolve(key, value, type)) != 0 && attempts--) {
+      // we should not increase sleep to avoid increasing test run times.
+      millisleep(5);
+    }
+
+    if (res != 0) {
+      strncpy(buf, "", sizeOfBuf);
+      return;
+    }
+    ACE_OS::strncpy(buf, value, sizeOfBuf);
+  }
+
+  /**
+   * return the value by key, as an int using the string to int conversion
+   * rules of atoi.
+   */
+  int getIntValue(const char *key) override {
+    char value[VALUE_MAX] = {0};
+    getValue(key, value, sizeof(value));
+    if (ACE_OS::strcmp(value, "") == 0) return 0;
+    return ACE_OS::atoi(value);
+  }
+
+  void open() {
+#ifdef SOLARIS_USE_BB
+    m_context.open();
+#else
+    ACE_Name_Options *name_options = m_context.name_options();
+    name_options->process_name(getContextName().c_str());
+    name_options->namespace_dir(".");
+    name_options->context(ACE_Naming_Context::PROC_LOCAL);
+    name_options->database(ACE_OS::getenv("TESTNAME"));
+    checkResult(m_context.open(name_options->context(), 0), "open");
+#endif
+    LOGCOORDINATOR("Naming context opened.");
+  }
+
+  std::string getContextName() {
+    char buf[1024] = {0};
+    ACE_OS::sprintf(buf, "dunit.context.%s%d", ACE::basename(g_programName),
+                    g_coordinatorPid);
+    std::string b_str(buf);
+    return b_str;
+  }
+
+  std::string getMutexName() {
+    char buf[1024] = {0};
+    ACE_OS::sprintf(buf, "dunit.mutex.%s%d", ACE::basename(g_programName),
+                    g_coordinatorPid);
+    std::string b_str(buf);
+    return b_str;
+  }
+
+  /** print out all the entries' keys and values in the naming context. */
+  void dump() override {
+#ifdef SOLARIS_USE_BB
+    m_context.dump();
+#else
+    ACE_BINDING_SET set;
+    if (this->m_context.list_name_entries(set, "") != 0) {
+      char buf[1000] = {0};
+      ACE_OS::sprintf(buf, "There is nothing in the naming context.");
+      LOGCOORDINATOR(buf);
+    } else {
+      ACE_BINDING_ITERATOR set_iterator(set);
+      for (ACE_Name_Binding *entry = 0; set_iterator.next(entry) != 0;
+           set_iterator.advance()) {
+        ACE_Name_Binding binding(*entry);
+        char buf[1000] = {0};
+        ACE_OS::sprintf(buf, "%s => %s", binding.name_.char_rep(),
+                        binding.value_.char_rep());
+        LOGCOORDINATOR(buf);
+      }
+    }
+#endif
+  }
+
+  void resetContext() {
+    char buf[30] = {0};
+    sprintf(buf, "%d", ACE_OS::getpid());
+
+    int res1 = -1;
+    int attempts1 = 10;
+    while ((res1 = m_context.rebind("Driver", buf)) == -1 && attempts1--) {
+      millisleep(10);
+    }
+    checkResult(res1, "rebind1");
+
+    int res2 = -1;
+    int attempts2 = 10;
+    while ((res2 = m_context.rebind("WorkerId", "0")) == -1 && attempts2--) {
+      millisleep(10);
+    }
+    checkResult(res2, "rebind2");
+
+    LOGCOORDINATOR("Naming context reset.");
+  }
+};
 
 /** uniquely represent each different worker. */
 class WorkerId {
@@ -228,30 +412,13 @@ class Dunit {
     if (coordinator) {
       removeStates();
 
-#ifdef _WIN32
-      globals_shm_ =
-          bip::windows_shared_memory{bip::create_only, getSharedName(),
-                                     bip::read_write, sizeof(TestState)};
-#else
-      globals_shm_ = bip::shared_memory_object{
-          bip::create_only, getSharedName(), bip::read_write};
-      globals_shm_.truncate(sizeof(TestState));
-#endif
-
-      managed_state_ = bip::managed_shared_memory{
-          bip::create_only, getManagedStateName(), MANAGED_STATE_SIZE};
-    } else {
-      using shared_memory =
-#ifdef _WIN32
-          bip::windows_shared_memory;
-#else
-          bip::shared_memory_object;
-#endif
-
-      globals_shm_ =
-          shared_memory{bip::open_only, getSharedName(), bip::read_write};
-      managed_state_ =
-          bip::managed_shared_memory{bip::open_only, getManagedStateName()};
+ public:
+  /** call this once just inside main... */
+  static void init(bool initContext = false) {
+    if (initContext) {
+      ACE_OS::unlink("localnames");
+      ACE_OS::unlink("name_space_localnames");
+      ACE_OS::unlink("backing_store_localnames");
     }
 
     globals_region_ = bip::mapped_region{globals_shm_, bip::read_write};
@@ -317,23 +484,30 @@ void TestState::reset() {
   failure_ = false;
   terminate_ = false;
 
-  for (auto i = 0U; i < WORKER_COUNT; ++i) {
-    worker_state_[i] = 0;
-    worker_timeout_[i] = -1;
+  void setWorkerState(WorkerId sId, int state) {
+    char key[100] = {0};
+    ACE_OS::sprintf(key, "ReadyWorker%d", sId.getId());
+    m_globals.rebind(key, state);
   }
 }
 
-void TestState::setWorkerTimeout(int id, int seconds) {
-  worker_timeout_[id - 1] = seconds;
-}
+  int getWorkerState(WorkerId sId) {
+    char key[100] = {0};
+    ACE_OS::sprintf(key, "ReadyWorker%d", sId.getId());
+    return m_globals.getIntValue(key);
+  }
 
-int TestState::getWorkerTimeout(int id) const {
-  return worker_timeout_[id - 1];
-}
+  void setWorkerTimeout(WorkerId sId, int seconds) {
+    char key[100] = {0};
+    ACE_OS::sprintf(key, "TimeoutWorker%d", sId.getId());
+    m_globals.rebind(key, seconds);
+  }
 
-void TestState::setWorkerState(int id, uint8_t state) {
-  worker_state_[id - 1] = state;
-}
+  int getWorkerTimeout(WorkerId sId) {
+    char key[100] = {0};
+    ACE_OS::sprintf(key, "TimeoutWorker%d", sId.getId());
+    return m_globals.getIntValue(key);
+  }
 
 int TestState::getWorkerState(int id) const { return worker_state_[id - 1]; }
 
@@ -363,7 +537,7 @@ class TestProcess : virtual public dunit::Manager {
   WorkerId m_sId;
 
  public:
-  TestProcess(const std::string &cmdline, uint32_t id)
+  TestProcess(const ACE_TCHAR *cmdline, uint32_t id)
       : Manager(cmdline), m_sId(id) {}
 
   WorkerId &getWorkerId() { return m_sId; }
@@ -383,36 +557,39 @@ class TestDriver {
 
  public:
   TestDriver() {
+#ifdef SOLARIS_USE_BB
+    m_bbNamingContextServer = new BBNamingContextServer();
+    ACE_OS::sleep(5);
+    fprintf(stdout, "Blackboard started\n");
+    fflush(stdout);
+#endif
+
     dunit::Dunit::init(true);
     fprintf(stdout, "Coordinator starting workers.\n");
     for (uint32_t i = 1; i < 5; i++) {
-      std::string cmdline;
-      auto profilerCmd = std::getenv("PROFILERCMD");
+      ACE_TCHAR cmdline[2048] = {0};
+      char *profilerCmd = ACE_OS::getenv("PROFILERCMD");
       if (profilerCmd != nullptr && profilerCmd[0] != '$' &&
           profilerCmd[0] != '\0') {
         // replace %d's in profilerCmd with PID and worker ID
         char cmdbuf[2048] = {0};
-        auto now = std::chrono::time_point_cast<std::chrono::milliseconds>(
-                       std::chrono::system_clock::now())
-                       .time_since_epoch()
-                       .count();
-        ::sprintf(cmdbuf, profilerCmd, now, g_coordinatorPid, i);
-        cmdline = std::string{cmdbuf} + ' ' + g_programName + " -s" +
-                  std::to_string(i) + " -m" + std::to_string(g_coordinatorPid);
+        ACE_OS::sprintf(cmdbuf, profilerCmd, ACE_OS::gettimeofday().msec(),
+                        g_coordinatorPid, i);
+        ACE_OS::sprintf(cmdline, "%s %s -s%d -m%d", cmdbuf, g_programName, i,
+                        g_coordinatorPid);
       } else {
-        cmdline = g_programName + " -s" + std::to_string(i) + " -m" +
-                  std::to_string(g_coordinatorPid);
+        ACE_OS::sprintf(cmdline, "%s -s%d -m%d", g_programName, i,
+                        g_coordinatorPid);
       }
-      fprintf(stdout, "%s\n", cmdline.c_str());
+      fprintf(stdout, "%s\n", cmdline);
       m_workers[i - 1] = new TestProcess(cmdline, i);
     }
     fflush(stdout);
     // start each of the workers...
     for (uint32_t j = 1; j < 5; j++) {
       m_workers[j - 1]->doWork();
-      std::this_thread::sleep_for(
-          std::chrono::seconds(2));  // do not increase this to avoid precheckin
-                                     // runs taking much longer.
+      ACE_OS::sleep(2);  // do not increase this to avoid precheckin runs taking
+                         // much longer.
     }
   }
 
@@ -428,8 +605,7 @@ class TestDriver {
   }
 
   int begin() {
-    fprintf(stdout, "Coordinator started with pid %d\n",
-            boost::this_process::get_id());
+    fprintf(stdout, "Coordinator started with pid %d\n", ACE_OS::getpid());
     fflush(stdout);
     waitForReady();
     // dispatch task...
@@ -472,16 +648,17 @@ class TestDriver {
     fprintf(stdout, "Waiting %d seconds for %s to finish task.\n", secs,
             sId.getIdName());
     fflush(stdout);
-    auto end = std::chrono::steady_clock::now() + std::chrono::seconds{secs};
-    while (state->getWorkerState(id) != WORKER_STATE_TASK_COMPLETE) {
+    ACE_Time_Value end = ACE_OS::gettimeofday();
+    ACE_Time_Value offset(secs, 0);
+    end += offset;
+    while (DUNIT->getWorkerState(sId) != WORKER_STATE_TASK_COMPLETE) {
       // sleep a bit..
-      if (state->failed()) {
-        return;
-      }
-
-      std::this_thread::sleep_for(std::chrono::milliseconds{100});
+      if (DUNIT->getFailed()) return;
+      ACE_Time_Value sleepTime;
+      sleepTime.msec(100);
+      ACE_OS::sleep(sleepTime);
       checkWorkerDeath();
-      auto now = std::chrono::steady_clock::now();
+      ACE_Time_Value now = ACE_OS::gettimeofday();
       if (now >= end) {
         handleTimeout(sId);
         break;
@@ -515,21 +692,18 @@ class TestDriver {
     fprintf(stdout, "Waiting %d seconds for all workers to be ready.\n",
             TASK_TIMEOUT);
     fflush(stdout);
-
-    auto end =
-        std::chrono::steady_clock::now() + std::chrono::seconds{TASK_TIMEOUT};
-
+    ACE_Time_Value end = ACE_OS::gettimeofday();
+    ACE_Time_Value offset(TASK_TIMEOUT, 0);
+    end += offset;
     uint32_t readyCount = 0;
     while (readyCount < TestState::WORKER_COUNT) {
       fprintf(stdout, "Ready Count: %d\n", readyCount);
       fflush(stdout);
-
-      if (state->failed()) {
-        return;
-      }
-
-      std::this_thread::sleep_for(std::chrono::seconds{1});
-
+      if (DUNIT->getFailed()) return;
+      // sleep a bit..
+      ACE_Time_Value sleepTime(1);
+      //      sleepTime.msec( 10 );
+      ACE_OS::sleep(sleepTime);
       readyCount = 0;
       for (uint32_t i = 1; i < 5; i++) {
         int status = state->getWorkerState(i);
@@ -539,7 +713,7 @@ class TestDriver {
       }
 
       checkWorkerDeath();
-      auto now = std::chrono::steady_clock::now();
+      ACE_Time_Value now = ACE_OS::gettimeofday();
       if (now >= end) {
         handleTimeout();
         break;
@@ -553,15 +727,16 @@ class TestDriver {
     fprintf(stdout, "Waiting %d seconds for all workers to complete.\n",
             TASK_TIMEOUT);
     fflush(stdout);
-
+    ACE_Time_Value end = ACE_OS::gettimeofday();
+    ACE_Time_Value offset(TASK_TIMEOUT, 0);
+    end += offset;
     uint32_t doneCount = 0;
-    auto end =
-        std::chrono::steady_clock::now() + std::chrono::seconds{TASK_TIMEOUT};
-
-    while (doneCount < TestState::WORKER_COUNT) {
+    while (doneCount < 4) {
       // if ( DUNIT->getFailed() ) return;
       // sleep a bit..
-      std::this_thread::sleep_for(std::chrono::milliseconds{100});
+      ACE_Time_Value sleepTime;
+      sleepTime.msec(100);
+      ACE_OS::sleep(sleepTime);
       doneCount = 0;
       for (uint32_t i = 1; i < 5; i++) {
         int status = state->getWorkerState(i);
@@ -569,7 +744,7 @@ class TestDriver {
           ++doneCount;
         }
       }
-      auto now = std::chrono::steady_clock::now();
+      ACE_Time_Value now = ACE_OS::gettimeofday();
       if (now >= end) {
         handleTimeout();
         break;
@@ -618,7 +793,7 @@ class TestWorker {
   void begin() {
     auto state = DUNIT->getState();
     fprintf(stdout, "Worker %s started with pid %d\n", m_sId.getIdName(),
-            boost::this_process::get_id());
+            ACE_OS::getpid());
     fflush(stdout);
 
     // consume tasks of this workers queue, only when it is his turn..
@@ -655,8 +830,9 @@ class TestWorker {
           }
         }
       }
-
-      std::this_thread::sleep_for(std::chrono::milliseconds{100});
+      ACE_Time_Value sleepTime;
+      sleepTime.msec(100);
+      ACE_OS::sleep(sleepTime);
     }
   }
 
@@ -673,75 +849,50 @@ WorkerId *TestWorker::procWorkerId = nullptr;
 
 void sleep(int millis) {
   if (millis == 0) {
-    std::this_thread::yield();
+    ACE_OS::thr_yield();
   } else {
-    std::this_thread::sleep_for(std::chrono::milliseconds{millis});
+    ACE_Time_Value sleepTime;
+    sleepTime.msec(millis);
+    ACE_OS::sleep(sleepTime);
   }
 }
 
 void logCoordinator(std::string s, int lineno, const char * /*filename*/) {
-  using std::chrono::duration_cast;
-  using std::chrono::microseconds;
-  using std::chrono::system_clock;
+  char buf[128] = {0};
+  dunit::getTimeStr(buf, sizeof(buf));
 
-  auto now = system_clock::now();
-  auto in_time_t = system_clock::to_time_t(now);
-  auto localtime = std::localtime(&in_time_t);
-  auto usec =
-      duration_cast<microseconds>(now.time_since_epoch()).count() % 1000;
-
-  std::cout << "[TEST " << std::put_time(localtime, "%Y/%m/%d %H:%M:%S") << '.'
-            << std::setfill('0') << std::setw(6) << usec << std::setw(0)
-            << " coordinator:pid(" << boost::this_process::get_id() << ")] "
-            << s << " at line: " << lineno << std::endl
-            << std::flush;
+  fprintf(stdout, "[TEST coordinator:pid(%d)] %s at line: %d\n",
+          ACE_OS::getpid(), s.c_str(), lineno);
+  fflush(stdout);
 }
 
 // log a message and print the worker id as well.. used by fw_helper with no
 // worker id.
 void log(std::string s, int lineno, const char * /*filename*/, int /*id*/) {
-  using std::chrono::duration_cast;
-  using std::chrono::microseconds;
-  using std::chrono::system_clock;
+  char buf[128] = {0};
+  dunit::getTimeStr(buf, sizeof(buf));
 
-  auto now = system_clock::now();
-  auto in_time_t = system_clock::to_time_t(now);
-  auto localtime = std::localtime(&in_time_t);
-  auto usec =
-      duration_cast<microseconds>(now.time_since_epoch()).count() % 1000;
-
-  std::cout << "[TEST " << std::put_time(localtime, "%Y/%m/%d %H:%M:%S") << '.'
-            << std::setfill('0') << std::setw(6) << usec << std::setw(0)
-            << " 0:pid(" << boost::this_process::get_id() << ")] " << s
-            << " at line: " << lineno << std::endl
-            << std::flush;
+  fprintf(stdout, "[TEST 0:pid(%d)] %s at line: %d\n", ACE_OS::getpid(),
+          s.c_str(), lineno);
+  fflush(stdout);
 }
 
 // log a message and print the worker id as well..
 void log(std::string s, int lineno, const char * /*filename*/) {
-  using std::chrono::duration_cast;
-  using std::chrono::microseconds;
-  using std::chrono::system_clock;
+  char buf[128] = {0};
+  dunit::getTimeStr(buf, sizeof(buf));
 
-  auto now = system_clock::now();
-  auto in_time_t = system_clock::to_time_t(now);
-  auto localtime = std::localtime(&in_time_t);
-  auto usec =
-      duration_cast<microseconds>(now.time_since_epoch()).count() % 1000;
-
-  std::cout << "[TEST " << std::put_time(localtime, "%Y/%m/%d %H:%M:%S") << '.'
-            << std::setfill('0') << std::setw(6) << usec << std::setw(0) << ' '
-            << (dunit::TestWorker::procWorkerId
-                    ? dunit::TestWorker::procWorkerId->getIdName()
-                    : "coordinator")
-            << ":pid(" << boost::this_process::get_id() << ")] " << s
-            << " at line: " << lineno << std::endl
-            << std::flush;
+  fprintf(stdout, "[TEST %s %s:pid(%d)] %s at line: %d\n", buf,
+          (dunit::TestWorker::procWorkerId
+               ? dunit::TestWorker::procWorkerId->getIdName()
+               : "coordinator"),
+          ACE_OS::getpid(), s.c_str(), lineno);
+  fflush(stdout);
 }
 
 void cleanup() { gClientCleanup.callClientCleanup(); }
 
-int dmain(int argc, char *argv[]) {
+int dmain(int argc, ACE_TCHAR *argv[]) {
 #ifdef USE_SMARTHEAP
   MemRegisterTask();
 #endif
@@ -749,7 +900,9 @@ int dmain(int argc, char *argv[]) {
   TimeBomb tb(&cleanup);
   // tb->arm(); // leak this on purpose.
   try {
-    g_programName = argv[0];
+    g_programName = new ACE_TCHAR[2048];
+    ACE_OS::strncpy(g_programName, argv[0], 2048);
+
     const ACE_TCHAR options[] = ACE_TEXT("s:m:");
     ACE_Get_Opt cmd_opts(argc, argv, options);
 
@@ -760,12 +913,12 @@ int dmain(int argc, char *argv[]) {
     while ((option = cmd_opts()) != EOF) {
       switch (option) {
         case 's':
-          workerId = std::stoul(cmd_opts.opt_arg());
+          workerId = ACE_OS::atoi(cmd_opts.opt_arg());
           fprintf(stdout, "Using process id: %d\n", workerId);
           fflush(stdout);
           break;
         case 'm':
-          g_coordinatorPid = std::stoul(cmd_opts.opt_arg());
+          g_coordinatorPid = ACE_OS::atoi(cmd_opts.opt_arg());
           fprintf(stdout, "Using coordinator id: %d\n", g_coordinatorPid);
           fflush(stdout);
           break;
@@ -777,7 +930,7 @@ int dmain(int argc, char *argv[]) {
     }
 
     if (g_coordinatorPid == 0) {
-      g_coordinatorPid = boost::this_process::get_id();
+      g_coordinatorPid = ACE_OS::getpid();
     }
 
     if (workerId > 0) {
@@ -805,14 +958,11 @@ int dmain(int argc, char *argv[]) {
   } catch (apache::geode::client::testframework::FwkException &fe) {
     printf("Exception: %s\n", fe.what());
     fflush(stdout);
-  } catch (std::exception &ex) {
-    printf("Exception: system exception reached main: %s.\n", ex.what());
-    fflush(stdout);
   } catch (...) {
     printf("Exception: unhandled/unidentified exception reached main.\n");
     fflush(stdout);
+    // return 1;
   }
-
   gClientCleanup.callClientCleanup();
   return 1;
 }
@@ -821,3 +971,242 @@ int dmain(int argc, char *argv[]) {
 bip::managed_shared_memory &globals() { return DUNIT->getManagedState(); }
 
 }  // namespace dunit
+
+namespace perf {
+
+TimeStamp::TimeStamp(int64_t msec) : m_msec(msec) {}
+
+TimeStamp::TimeStamp() {
+  ACE_Time_Value tmp = ACE_OS::gettimeofday();
+  m_msec = tmp.msec();
+}
+
+TimeStamp::TimeStamp(const TimeStamp &other) : m_msec(other.m_msec) {}
+
+TimeStamp &TimeStamp::operator=(const TimeStamp &other) {
+  m_msec = other.m_msec;
+  return *this;
+}
+
+TimeStamp::~TimeStamp() {}
+
+int64_t TimeStamp::msec() const { return m_msec; }
+
+void TimeStamp::msec(int64_t t) { m_msec = t; }
+
+Record::Record(std::string testName, int64_t ops, const TimeStamp &start,
+               const TimeStamp &stop)
+    : m_testName(testName),
+      m_operations(ops),
+      m_startTime(start),
+      m_stopTime(stop) {}
+
+Record::Record()
+    : m_testName(""), m_operations(0), m_startTime(0), m_stopTime(0) {}
+
+Record::Record(const Record &other)
+    : m_testName(other.m_testName),
+      m_operations(other.m_operations),
+      m_startTime(other.m_startTime),
+      m_stopTime(other.m_stopTime) {}
+
+Record &Record::operator=(const Record &other) {
+  m_testName = other.m_testName;
+  m_operations = other.m_operations;
+  m_startTime = other.m_startTime;
+  m_stopTime = other.m_stopTime;
+  return *this;
+}
+
+void Record::write(apache::geode::client::DataOutput &output) {
+  output.writeString(m_testName);
+  output.writeInt(m_operations);
+  output.writeInt(m_startTime.msec());
+  output.writeInt(m_stopTime.msec());
+}
+
+void Record::read(apache::geode::client::DataInput &input) {
+  m_testName = input.readString();
+  m_operations = input.readInt64();
+  m_startTime.msec(input.readInt64());
+  m_stopTime.msec(input.readInt64());
+}
+
+Record::~Record() {}
+
+int Record::elapsed() {
+  return static_cast<int>(m_stopTime.msec() - m_startTime.msec());
+}
+
+int Record::perSec() {
+  return static_cast<int>(((static_cast<double>(1000) * m_operations) /
+                           static_cast<double>(elapsed())) +
+                          0.5);
+}
+
+std::string Record::asString() {
+  std::string tmp = m_testName;
+  char *buf = new char[1000];
+  sprintf(buf, " -- %d ops/sec, ", perSec());
+  tmp += buf;
+  sprintf(buf, "%d ops, ", static_cast<int>(m_operations));
+  tmp += buf;
+  sprintf(buf, "%d millis", elapsed());
+  tmp += buf;
+  return tmp;
+}
+
+PerfSuite::PerfSuite(const char *suiteName) : m_suiteName(suiteName) {}
+
+void PerfSuite::addRecord(std::string testName, int64_t ops,
+                          const TimeStamp &start, const TimeStamp &stop) {
+  Record tmp(testName, ops, start, stop);
+  fprintf(stdout, "[PerfSuite] %s\n", tmp.asString().c_str());
+  fflush(stdout);
+}
+
+/** create a file in cwd, named "<suite>_results.<host>" */
+void PerfSuite::save() {
+  /* Currently having trouble with windows... not useful until the compare
+     function is written anyway...
+
+  apache::geode::client::DataOutput output;
+  output.writeASCII( m_suiteName.c_str(), m_suiteName.length() );
+
+  char hname[100];
+  ACE_OS::hostname( hname, 100 );
+  std::string fname = m_suiteName + "_results." + hname;
+
+  output.writeASCII( hname );
+
+  for( RecordMap::iterator iter = m_records.begin(); iter != m_records.end();
+  iter++ ) {
+    Record record = (*iter).second;
+    record.write( output );
+  }
+  fprintf( stdout, "[PerfSuite] finished serializing results.\n" );
+  fflush( stdout );
+
+  fprintf( stdout, "[PerfSuite] writing results to %s\n", fname.c_str() );
+  FILE* of = ACE_OS::fopen( fname.c_str(), "a+" );
+  if ( of == 0 ) {
+    FAIL( "failed to open result file handle for perfSuite." );
+  }
+  LOG( "opened perf output file for a+" );
+  uint32_t len = 0;
+  char* buf = (char*) output.getBuffer( &len );
+  LOG( "got buffer." );
+  ACE_OS::fwrite( buf, len, 1, of );
+  LOG( "wrote buffer" );
+  ACE_OS::fflush( of );
+  LOG( "flushed of" );
+  ACE_OS::fclose( of );
+  LOG( "closed of" );
+  fprintf( stdout, "[PerfSuite] finished saving results file %s\n",
+  fname.c_str() );
+  fflush( stdout );
+  */
+}
+
+/** load data saved in $ENV{'baselines'} named "<suite>_baseline.<host>" */
+void PerfSuite::compare() {
+  char hname[100] = {0};
+  ACE_OS::hostname(hname, 100);
+  std::string fname = m_suiteName + "_baseline." + hname;
+}
+
+ThreadLauncher::ThreadLauncher(int thrCount, Thread &thr)
+    : m_thrCount(thrCount),
+      m_initSemaphore((-1 * thrCount) + 1),
+      m_startSemaphore(0),
+      m_stopSemaphore((-1 * thrCount) + 1),
+      m_cleanSemaphore(0),
+      m_termSemaphore((-1 * thrCount) + 1),
+      m_startTime(nullptr),
+      m_stopTime(nullptr),
+      m_threadDef(thr) {
+  m_threadDef.init(this);
+}
+
+void ThreadLauncher::go() {
+#ifdef WIN32
+  int thrAttrs = THR_NEW_LWP | THR_JOINABLE;
+#else
+  int thrAttrs = THR_NEW_LWP | THR_JOINABLE | THR_INHERIT_SCHED;
+#endif
+  int res = m_threadDef.activate(thrAttrs, m_thrCount);
+  ASSERT(res == 0, "Failed to start threads properly");
+  m_initSemaphore.acquire();
+  LOG("[ThreadLauncher] all threads ready.");
+  m_startTime = new TimeStamp();
+  m_startSemaphore.release(m_thrCount);
+  m_stopSemaphore.acquire();
+  m_stopTime = new TimeStamp();
+  m_cleanSemaphore.release(m_thrCount);
+  m_termSemaphore.acquire();
+  LOG("[ThreadLauncher] joining threads.");
+  m_threadDef.wait();
+  LOG("[ThreadLauncher] all threads stopped.");
+}
+
+ThreadLauncher::~ThreadLauncher() {
+  if (m_startTime) {
+    delete m_startTime;
+  }
+  if (m_stopTime) {
+    delete m_stopTime;
+  }
+}
+
+int Thread::svc() {
+  m_used = true;
+  int res = 0;
+  try {
+    setup();  // do per thread setup
+  } catch (...) {
+    LOG("[Thread] unknown exception thrown in setup().");
+    res = 1;
+  }
+  m_launcher->initSemaphore().release();
+  m_launcher->startSemaphore().acquire();
+  try {
+    perftask();  // do measured iterations
+  } catch (...) {
+    LOG("[Thread] unknown exception thrown in perftask().");
+    res = 2;
+  }
+  m_launcher->stopSemaphore().release();
+  m_launcher->cleanSemaphore().acquire();
+  try {
+    cleanup();  // cleanup after thread.
+  } catch (...) {
+    LOG("[Thread] unknown exception thrown in cleanup()");
+    res = 3;
+  }
+  m_launcher->termSemaphore().release();
+  return res;
+}
+
+Semaphore::Semaphore(int count) : m_mutex(), m_cond(m_mutex), m_count(count) {}
+
+Semaphore::~Semaphore() {}
+
+void Semaphore::acquire(int t) {
+  ACE_Guard<ACE_Thread_Mutex> _guard(m_mutex);
+
+  while (m_count < t) {
+    m_cond.wait();
+  }
+  m_count -= t;
+}
+
+void Semaphore::release(int t) {
+  ACE_Guard<ACE_Thread_Mutex> _guard(m_mutex);
+
+  m_count += t;
+  if (m_count > 0) {
+    m_cond.broadcast();
+  }
+}
+
+}  // namespace perf

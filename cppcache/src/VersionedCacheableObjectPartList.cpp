@@ -20,7 +20,6 @@
 #include <geode/CacheableString.hpp>
 #include <geode/ExceptionTypes.hpp>
 
-#include "CacheImpl.hpp"
 #include "CacheableToken.hpp"
 #include "DiskStoreId.hpp"
 #include "DiskVersionTag.hpp"
@@ -234,7 +233,9 @@ void VersionedCacheableObjectPartList::fromData(DataInput& input) {
           versionTag->setInternalMemID(ids.at(idNumber));
           break;
         }
-        default: { break; }
+        default: {
+          break;
+        }
       }
       m_versionTags[index] = versionTag;
     }
