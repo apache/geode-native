@@ -264,7 +264,7 @@ TEST_F(TcrMessageTest, testConstructor2WithDestroy) {
   TcrMessageDestroy message(
       new DataOutputUnderTest(), static_cast<const Region *>(nullptr),
       CacheableString::create("mykey"),
-      static_cast<const std::shared_ptr<CacheableKey>>(nullptr),
+      static_cast<const std::shared_ptr<CacheableKey>>(nullptr), true,
       static_cast<const std::shared_ptr<Serializable>>(nullptr),
       static_cast<ThinClientBaseDM *>(nullptr));
 

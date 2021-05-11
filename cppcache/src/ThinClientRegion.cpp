@@ -1022,7 +1022,7 @@ GfErrType ThinClientRegion::destroyNoThrow_remote(
 
   // do TCR destroy
   TcrMessageDestroy request(new DataOutput(m_cacheImpl->createDataOutput()),
-                            this, keyPtr, nullptr, aCallbackArgument,
+                            this, keyPtr, nullptr, false, aCallbackArgument,
                             m_tcrdm.get());
   TcrMessageReply reply(true, m_tcrdm.get());
   err = m_tcrdm->sendSyncRequest(request, reply);
@@ -1066,8 +1066,8 @@ GfErrType ThinClientRegion::removeNoThrow_remote(
 
   // do TCR remove
   TcrMessageDestroy request(new DataOutput(m_cacheImpl->createDataOutput()),
-                            this, keyPtr, cvalue, aCallbackArgument,
-                            m_tcrdm.get());
+                            this, keyPtr, cvalue, cvalue == nullptr,
+                            aCallbackArgument, m_tcrdm.get());
   TcrMessageReply reply(true, m_tcrdm.get());
   err = m_tcrdm->sendSyncRequest(request, reply);
   if (err != GF_NOERR) {
@@ -1109,7 +1109,7 @@ GfErrType ThinClientRegion::removeNoThrowEX_remote(
 
   // do TCR remove
   TcrMessageDestroy request(new DataOutput(m_cacheImpl->createDataOutput()),
-                            this, keyPtr, nullptr, aCallbackArgument,
+                            this, keyPtr, nullptr, false, aCallbackArgument,
                             m_tcrdm.get());
   TcrMessageReply reply(true, m_tcrdm.get());
   err = m_tcrdm->sendSyncRequest(request, reply);

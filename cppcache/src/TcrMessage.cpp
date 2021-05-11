@@ -1930,7 +1930,7 @@ TcrMessageInvalidate::TcrMessageInvalidate(
 TcrMessageDestroy::TcrMessageDestroy(
     DataOutput* dataOutput, const Region* region,
     const std::shared_ptr<CacheableKey>& key,
-    const std::shared_ptr<Cacheable>& value,
+    const std::shared_ptr<Cacheable>& value, bool isUserNullValue,
     const std::shared_ptr<Serializable>& aCallbackArgument,
     ThinClientBaseDM* connectionDM) {
   m_request.reset(dataOutput);
@@ -1953,19 +1953,33 @@ TcrMessageDestroy::TcrMessageDestroy(
         "key passed to the constructor can't be nullptr");
   }
 
-  numOfParts += 2;  // for GFE Destroy65.java
-  writeHeader(TcrMessage::DESTROY, numOfParts);
-  writeRegionPart(m_regionName);
-  writeObjectPart(key);
-  writeObjectPart(value);  // expectedOldValue part
-  uint8_t removeByte = 8;  // OP_TYPE_DESTROY value from Operation.java
-  auto removeBytePart = CacheableByte::create(removeByte);
-  writeObjectPart(removeBytePart);  // operation part
-  writeEventIdPart();
-  if (aCallbackArgument != nullptr) {
-    writeObjectPart(aCallbackArgument);
+  if (value != nullptr || isUserNullValue) {
+    numOfParts += 2;  // for GFE Destroy65.java
+    writeHeader(TcrMessage::DESTROY, numOfParts);
+    writeRegionPart(m_regionName);
+    writeObjectPart(key);
+    writeObjectPart(value);  // expectedOldValue part
+    uint8_t removeByte = 8;  // OP_TYPE_DESTROY value from Operation.java
+    auto removeBytePart = CacheableByte::create(removeByte);
+    writeObjectPart(removeBytePart);  // operation part
+    writeEventIdPart();
+    if (aCallbackArgument != nullptr) {
+      writeObjectPart(aCallbackArgument);
+    }
+    writeMessageLength();
+  } else {
+    numOfParts += 2;  // for GFE Destroy65.java
+    writeHeader(TcrMessage::DESTROY, numOfParts);
+    writeRegionPart(m_regionName);
+    writeObjectPart(key);
+    writeObjectPart(nullptr);  // expectedOldValue part
+    writeObjectPart(nullptr);  // operation part
+    writeEventIdPart();
+    if (aCallbackArgument != nullptr) {
+      writeObjectPart(aCallbackArgument);
+    }
+    writeMessageLength();
   }
-  writeMessageLength();
 }
 
 TcrMessagePut::TcrMessagePut(
