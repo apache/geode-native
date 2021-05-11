@@ -399,7 +399,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(SERVER1, CreateServer1_With_Locator)
   {
-    if (isLocalServer) CacheHelper::initServer(1, nullptr, locatorsG);
+    if (isLocalServer) CacheHelper::initServer(1, {}, locatorsG);
     LOG("SERVER1 with locator started");
   }
 END_TASK_DEFINITION
@@ -625,7 +625,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSix)
     reg1->destroy(keys[3]);
     putEntry(regionNames[0], keys[1], vals[1]);
     putEntry(regionNames[1], keys[3], vals[3]);
-    reg0->localInvalidate(keys[1]);
+    reg0->localInvalidate(
+        keys[1]);  // Invalidating a key sets its value to null
     reg1->localInvalidate(keys[3]);
     ASSERT(reg0->remove(keys[1], static_cast<std::shared_ptr<Cacheable>>(
                                      nullptr)) == false,
