@@ -181,7 +181,7 @@ if(ipo_supported)
 endif()
 
 include(CheckLinkerFlag)
-check_linker_flag(CXX -Wl,--exclude-libs,ALL has_linker_exclude_libs)
+check_linker_flag(CXX -Wl --exclude-libs ALL has_linker_exclude_libs)
 
 include(CheckCXXSymbolExists)
 check_cxx_symbol_exists("PRId8" "cinttypes" HAVE_STDC_FORMAT_MACROS)
@@ -207,7 +207,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "SunPro")
     -errwarn=%all
   )
 elseif (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-  set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,defs")
+  set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl -z defs")
   target_compile_options(_WarningsAsError INTERFACE
     -Werror
     -Wall

@@ -43,10 +43,10 @@ include_directories("include" "src" $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   set_target_properties(${PROJECT_NAME} PROPERTIES
-    LINK_FLAGS "-Wl,-exported_symbols_list,\"${CMAKE_CURRENT_SOURCE_DIR}/symbols\"")
+    LINK_FLAGS "-exported_symbols_list \"${CMAKE_CURRENT_SOURCE_DIR}/symbols\"")
 elseif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
   set_target_properties(${PROJECT_NAME} PROPERTIES
-    LINK_FLAGS "-Wl,--version-script,\"${CMAKE_CURRENT_SOURCE_DIR}/symbols.version\"")
+    LINK_FLAGS "--version-script \"${CMAKE_CURRENT_SOURCE_DIR}/symbols.version\"")
 endif()
 
 install(TARGETS ${PROJECT_NAME}
