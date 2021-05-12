@@ -204,12 +204,13 @@ TEST(PdxInstanceTest, testPdxInstance) {
 
   auto cache = cluster.createCache();
   auto region = setupRegion(cache);
-
   auto&& typeRegistry = cache.getTypeRegistry();
+  auto&& cachePerfStats = std::dynamic_pointer_cast<LocalRegion>(region)
+                              ->getCacheImpl()
+                              ->getCachePerfStats();
+
   typeRegistry.registerPdxType(Address::createDeserializable);
   typeRegistry.registerPdxType(PdxTests::PdxType::createDeserializable);
-  typeRegistry.registerPdxType(ChildPdx::createDeserializable);
-  typeRegistry.registerPdxType(ParentPdx::createDeserializable);
 
   PdxTests::PdxType pdxTypeOriginal;
   auto&& pdxTypeInstanceFactory =
@@ -230,14 +231,10 @@ TEST(PdxInstanceTest, testPdxInstance) {
   auto&& objectFromPdxTypeInstance = pdxTypeInstance->getObject();
   ASSERT_NE(nullptr, objectFromPdxTypeInstance);
 
-  auto&& cachePerfStats = std::dynamic_pointer_cast<LocalRegion>(region)
-                              ->getCacheImpl()
-                              ->getCachePerfStats();
-
   EXPECT_EQ(1, cachePerfStats.getPdxInstanceDeserializations())
       << "pdxInstanceDeserialization should be equal to 1.";
 
-  EXPECT_EQ(0, cachePerfStats.getPdxInstanceCreations())
+  EXPECT_EQ(1, cachePerfStats.getPdxInstanceCreations())
       << "pdxInstanceCreations should be equal to 0.";
 
   EXPECT_EQ(0, cachePerfStats.getPdxInstanceDeserializationTime())
@@ -258,7 +255,7 @@ TEST(PdxInstanceTest, testPdxInstance) {
   EXPECT_EQ(1, cachePerfStats.getPdxInstanceDeserializations())
       << "pdxInstanceDeserialization should be equal to 1.";
 
-  EXPECT_EQ(0, cachePerfStats.getPdxInstanceCreations())
+  EXPECT_EQ(1, cachePerfStats.getPdxInstanceCreations())
       << "pdxInstanceCreations should be equal to 0.";
 
   EXPECT_LT(0, cachePerfStats.getPdxInstanceDeserializationTime())
@@ -273,32 +270,51 @@ TEST(PdxInstanceTest, testPdxInstance) {
 
   EXPECT_EQ(-960665662, pdxTypeInstance->hashcode())
       << "Pdxhashcode hashcode not matched with java pdx hash code.";
+}
 
-  // TODO split into separate test for nested pdx object test.
-  ParentPdx pdxParentOriginal(10);
-  auto pdxParentInstanceFactory =
-      cache.createPdxInstanceFactory("testobject.ParentPdx");
-  clonePdxInstance(pdxParentOriginal, pdxParentInstanceFactory);
-  auto pdxParentInstance = pdxParentInstanceFactory.create();
-  EXPECT_EQ("testobject.ParentPdx", pdxParentInstance->getClassName())
-      << "pdxTypeInstance.getClassName should return testobject.ParentPdx.";
+TEST(PdxInstanceTest, testNestedPdxInstance) {
+  Cluster cluster{LocatorCount{1}, ServerCount{1}};
+
+  cluster.start();
+
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("region")
+      .withType("REPLICATE")
+      .execute();
+
+  auto cache = cluster.createCache();
+  auto region = setupRegion(cache);
+  auto&& typeRegistry = cache.getTypeRegistry();
+  auto&& cachePerfStats = std::dynamic_pointer_cast<LocalRegion>(region)
+                              ->getCacheImpl()
+                              ->getCachePerfStats();
+
+  typeRegistry.registerPdxType(ChildPdx::createDeserializable);
+  typeRegistry.registerPdxType(ParentPdx::createDeserializable);
+
+  ParentPdx original{10};
+  auto factory = cache.createPdxInstanceFactory(original.getClassName());
+  clonePdxInstance(original, factory);
+  auto pdxInstance = factory.create();
 
   auto keyport = CacheableKey::create("pdxParentOriginal");
-  region->put(keyport, pdxParentInstance);
-  auto objectFromPdxParentInstanceGet =
+  region->put(keyport, pdxInstance);
+  auto object =
       std::dynamic_pointer_cast<PdxSerializable>(region->get(keyport));
+  EXPECT_TRUE(object);
 
-  EXPECT_EQ(1, cachePerfStats.getPdxInstanceDeserializations())
+  EXPECT_EQ(0, cachePerfStats.getPdxInstanceDeserializations())
       << "pdxInstanceDeserialization should be equal to 1.";
-  EXPECT_EQ(0, cachePerfStats.getPdxInstanceCreations())
+  EXPECT_EQ(1, cachePerfStats.getPdxInstanceCreations())
       << "pdxInstanceCreations should be equal to 0.";
   EXPECT_LT(0, cachePerfStats.getPdxInstanceDeserializationTime())
       << "pdxInstanceDeserializationTime should be greater than 0.";
 
-  auto pdxParentFromPdxParentInstnaceGet =
-      std::dynamic_pointer_cast<ParentPdx>(objectFromPdxParentInstanceGet);
-  EXPECT_TRUE(
-      pdxParentOriginal.equals(*pdxParentFromPdxParentInstnaceGet, false))
+  auto parentPdx = std::dynamic_pointer_cast<ParentPdx>(object);
+  EXPECT_TRUE(parentPdx);
+  EXPECT_TRUE(original.equals(*parentPdx, false))
       << "ParentPdx objects should be equal.";
 }
 

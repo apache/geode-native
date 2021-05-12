@@ -108,11 +108,53 @@ std::shared_ptr<PdxInstance> createTestPdxInstance(Cache& cache,
                                                    const std::string& entry) {
   auto factory = cache.createPdxInstanceFactory("__GEMFIRE_JSON", false);
   return factory.writeString("entryName", entry)
-      .writeInt("int-value", -1)
+      .writeInt("int_value", -1)
       .create();
 }
 
-TEST(PdxTypeRegistryTest, cleanupOnClusterRestart) {
+TEST(PdxTypeRegistryTest, cleanupOnClusterRestartAndPut) {
+  Cluster cluster{LocatorCount{1}, ServerCount{2}};
+  cluster.start();
+
+  auto& gfsh = cluster.getGfsh();
+  gfsh.create().region().withName("region").withType("PARTITION").execute();
+
+  auto listener = std::make_shared<RegionListener>();
+
+  auto cache = createTestCache();
+  createTestPool(cluster, cache);
+  auto qs = cache.getQueryService("pool");
+  auto region = createTestRegion(cache, listener);
+
+  std::string key = "entry";
+  auto pdx = createTestPdxInstance(cache, key);
+  region->put(key, pdx);
+
+  // Shutdown and wait for some time
+  gfsh.shutdown().execute();
+  listener->waitDisconnected();
+  std::this_thread::sleep_for(std::chrono::seconds{15});
+
+  for (auto& server : cluster.getServers()) {
+    server.start();
+  }
+
+  listener->waitConnected();
+
+  region->put(key, pdx);
+
+  // If PdxTypeRegistry was cleaned up, then the PdxType should have been
+  // registered in the new cluster
+
+  std::shared_ptr<SelectResults> result;
+  auto query = qs->newQuery("SELECT * FROM /region WHERE int_value = -1");
+
+  EXPECT_NO_THROW(result = query->execute());
+  EXPECT_TRUE(result);
+  EXPECT_EQ(result->size(), 1);
+}
+
+TEST(PdxTypeRegistryTest, cleanupOnClusterRestartAndFetchFields) {
   Cluster cluster{LocatorCount{1}, ServerCount{2}};
   cluster.start();
 
@@ -128,6 +170,11 @@ TEST(PdxTypeRegistryTest, cleanupOnClusterRestart) {
 
   std::string key = "before-shutdown";
   region->put(key, createTestPdxInstance(cache, key));
+  auto object = region->get(key);
+  EXPECT_TRUE(object);
+
+  auto pdx = std::dynamic_pointer_cast<PdxInstance>(object);
+  EXPECT_TRUE(pdx);
 
   // Shutdown and wait for some time
   gfsh.shutdown().execute();
@@ -139,20 +186,15 @@ TEST(PdxTypeRegistryTest, cleanupOnClusterRestart) {
   }
 
   listener->waitConnected();
+  auto fields = pdx->getFieldNames();
+  EXPECT_TRUE(fields);
 
-  key = "after-restart";
-  region->put(key, createTestPdxInstance(cache, key));
+  std::set<std::string> fields_set;
+  for (auto field : fields->value()) {
+    fields_set.insert(field->toString());
+  }
 
-  // If PdxTypeRegistry was cleaned up, then the PdxType should have been
-  // registered in the new cluster
-
-  std::shared_ptr<SelectResults> result;
-  auto query =
-      qs->newQuery("SELECT * FROM /region WHERE entryName = '" + key + "'");
-
-  EXPECT_NO_THROW(result = query->execute());
-  EXPECT_TRUE(result);
-  EXPECT_GT(result->size(), 0);
+  EXPECT_EQ(fields_set.count("entryName"), 1);
+  EXPECT_EQ(fields_set.count("int_value"), 1);
 }
-
 }  // namespace
