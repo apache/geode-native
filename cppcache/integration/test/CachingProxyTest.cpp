@@ -83,8 +83,7 @@ TEST_F(CachingProxyTest, LocalRemoveAfterLocalInvalidate) {
   auto resultLocalRemove = region->localRemove(key, value);
   ASSERT_FALSE(resultLocalRemove);
 
-  resultLocalRemove = region->localRemove(
-      key, nullptr);
+  resultLocalRemove = region->localRemove(key, nullptr);
   ASSERT_TRUE(resultLocalRemove);
 }
 
@@ -96,8 +95,7 @@ TEST_F(CachingProxyTest, RemoveAfterInvalidate) {
   auto resultRemove = region->remove(key, value);
   ASSERT_FALSE(resultRemove);
 
-  resultRemove =
-      region->remove(key, nullptr);
+  resultRemove = region->remove(key, nullptr);
   ASSERT_TRUE(resultRemove);
 }
 
@@ -106,8 +104,7 @@ TEST_F(CachingProxyTest, RemoveAfterLocalInvalidate) {
 
   region->localInvalidate(key);
 
-  auto resultRemove =
-      region->remove(key, nullptr);
+  auto resultRemove = region->remove(key, nullptr);
   ASSERT_FALSE(resultRemove);
 
   auto user = region->get(key);
