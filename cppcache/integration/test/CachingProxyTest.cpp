@@ -64,7 +64,7 @@ class CachingProxyTest : public ::testing::Test {
                  .create("region");
   }
 
-  void TearDown() override {}
+  void TearDown() override { cache.close(); }
 
   Cluster cluster = Cluster{LocatorCount{1}, ServerCount{1}};
   Cache cache = CacheFactory().create();
@@ -84,10 +84,8 @@ TEST_F(CachingProxyTest, LocalRemoveAfterLocalInvalidate) {
   ASSERT_FALSE(resultLocalRemove);
 
   resultLocalRemove = region->localRemove(
-      // key, static_cast<std::shared_ptr<Cacheable>>(nullptr));
       key, nullptr);
   ASSERT_TRUE(resultLocalRemove);
-  cache.close();
 }
 
 TEST_F(CachingProxyTest, RemoveAfterInvalidate) {
@@ -99,11 +97,8 @@ TEST_F(CachingProxyTest, RemoveAfterInvalidate) {
   ASSERT_FALSE(resultRemove);
 
   resultRemove =
-      // region->remove(key, static_cast<std::shared_ptr<Cacheable>>(nullptr));
       region->remove(key, nullptr);
   ASSERT_TRUE(resultRemove);
-
-  cache.close();
 }
 
 TEST_F(CachingProxyTest, RemoveAfterLocalInvalidate) {
@@ -112,14 +107,11 @@ TEST_F(CachingProxyTest, RemoveAfterLocalInvalidate) {
   region->localInvalidate(key);
 
   auto resultRemove =
-      // region->remove(key, static_cast<std::shared_ptr<Cacheable>>(nullptr));
       region->remove(key, nullptr);
   ASSERT_FALSE(resultRemove);
 
   auto user = region->get(key);
   ASSERT_EQ(std::dynamic_pointer_cast<CacheableString>(user)->value(), value);
-
-  cache.close();
 }
 
 TEST_F(CachingProxyTest, Remove) {
@@ -127,8 +119,6 @@ TEST_F(CachingProxyTest, Remove) {
 
   auto resultRemove = region->remove(key);
   ASSERT_TRUE(resultRemove);
-
-  cache.close();
 }
 
 }  // namespace CachingProxy
