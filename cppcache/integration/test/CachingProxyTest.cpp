@@ -28,9 +28,11 @@
 
 #include "framework/Cluster.h"
 
+using apache::geode::client::Cache;
 using apache::geode::client::Cacheable;
 using apache::geode::client::CacheableString;
 using apache::geode::client::CacheFactory;
+using apache::geode::client::Region;
 using apache::geode::client::RegionShortcut;
 using apache::geode::client::Serializable;
 
@@ -51,86 +53,67 @@ class CachingProxyTest : public ::testing::Test {
 
   ~CachingProxyTest() override = default;
 
-  void SetUp() override {}
+  void SetUp() override {
+    cache.getPoolManager()
+        .createFactory()
+        .addLocator("localhost", cluster.getLocatorPort())
+        .create("pool");
+
+    region = cache.createRegionFactory(RegionShortcut::CACHING_PROXY)
+                 .setPoolName("pool")
+                 .create("region");
+  }
 
   void TearDown() override {}
 
   Cluster cluster = Cluster{LocatorCount{1}, ServerCount{1}};
+  Cache cache = CacheFactory().create();
   std::string key = std::string("scharles");
   std::string value = std::string("Sylvia Charles");
+  std::shared_ptr<Region> region;
 };
 
 TEST_F(CachingProxyTest, LocalRemoveAfterLocalInvalidate) {
-  auto cache = CacheFactory().create();
-
-  cache.getPoolManager()
-      .createFactory()
-      .addLocator("localhost", cluster.getLocatorPort())
-      .create("pool");
-
-  auto region = cache.createRegionFactory(RegionShortcut::CACHING_PROXY)
-                    .setPoolName("pool")
-                    .create("region");
-
   region->put(key, value);
 
   auto user = region->get(key);
 
   region->localInvalidate(key);
 
-  bool resultLocalRemove = region->localRemove(key, value);
+  auto resultLocalRemove = region->localRemove(key, value);
   ASSERT_FALSE(resultLocalRemove);
 
   resultLocalRemove = region->localRemove(
-      key, static_cast<std::shared_ptr<Cacheable>>(nullptr));
+      // key, static_cast<std::shared_ptr<Cacheable>>(nullptr));
+      key, nullptr);
   ASSERT_TRUE(resultLocalRemove);
   cache.close();
 }
 
 TEST_F(CachingProxyTest, RemoveAfterInvalidate) {
-  auto cache = CacheFactory().create();
-
-  cache.getPoolManager()
-      .createFactory()
-      .addLocator("localhost", cluster.getLocatorPort())
-      .create("pool");
-
-  auto region = cache.createRegionFactory(RegionShortcut::CACHING_PROXY)
-                    .setPoolName("pool")
-                    .create("region");
-
   region->put(key, value);
 
   region->invalidate(key);
 
-  bool resultRemove = region->remove(key, value);
+  auto resultRemove = region->remove(key, value);
   ASSERT_FALSE(resultRemove);
 
   resultRemove =
-      region->remove(key, static_cast<std::shared_ptr<Cacheable>>(nullptr));
+      // region->remove(key, static_cast<std::shared_ptr<Cacheable>>(nullptr));
+      region->remove(key, nullptr);
   ASSERT_TRUE(resultRemove);
 
   cache.close();
 }
 
 TEST_F(CachingProxyTest, RemoveAfterLocalInvalidate) {
-  auto cache = CacheFactory().create();
-
-  cache.getPoolManager()
-      .createFactory()
-      .addLocator("localhost", cluster.getLocatorPort())
-      .create("pool");
-
-  auto region = cache.createRegionFactory(RegionShortcut::CACHING_PROXY)
-                    .setPoolName("pool")
-                    .create("region");
-
   region->put(key, value);
 
   region->localInvalidate(key);
 
-  bool resultRemove =
-      region->remove(key, static_cast<std::shared_ptr<Cacheable>>(nullptr));
+  auto resultRemove =
+      // region->remove(key, static_cast<std::shared_ptr<Cacheable>>(nullptr));
+      region->remove(key, nullptr);
   ASSERT_FALSE(resultRemove);
 
   auto user = region->get(key);
@@ -140,20 +123,9 @@ TEST_F(CachingProxyTest, RemoveAfterLocalInvalidate) {
 }
 
 TEST_F(CachingProxyTest, Remove) {
-  auto cache = CacheFactory().create();
-
-  cache.getPoolManager()
-      .createFactory()
-      .addLocator("localhost", cluster.getLocatorPort())
-      .create("pool");
-
-  auto region = cache.createRegionFactory(RegionShortcut::CACHING_PROXY)
-                    .setPoolName("pool")
-                    .create("region");
-
   region->put(key, value);
 
-  bool resultRemove = region->remove(key);
+  auto resultRemove = region->remove(key);
   ASSERT_TRUE(resultRemove);
 
   cache.close();
