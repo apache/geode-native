@@ -36,44 +36,30 @@ using apache::geode::client::Region;
 using apache::geode::client::RegionShortcut;
 using apache::geode::client::Serializable;
 
-namespace CachingProxy {
-
-class CachingProxyTest : public ::testing::Test {
- protected:
-  CachingProxyTest() {
-    cluster.start();
-
-    cluster.getGfsh()
-        .create()
-        .region()
-        .withName("region")
-        .withType("PARTITION")
-        .execute();
-  }
-
-  ~CachingProxyTest() override = default;
-
-  void SetUp() override {
-    cache.getPoolManager()
-        .createFactory()
-        .addLocator("localhost", cluster.getLocatorPort())
-        .create("pool");
-
-    region = cache.createRegionFactory(RegionShortcut::CACHING_PROXY)
-                 .setPoolName("pool")
-                 .create("region");
-  }
-
-  void TearDown() override { cache.close(); }
-
+TEST(CachingProxyTest, LocalRemoveAfterLocalInvalidate) {
   Cluster cluster = Cluster{LocatorCount{1}, ServerCount{1}};
-  Cache cache = CacheFactory().create();
+  cluster.start();
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("region")
+      .withType("PARTITION")
+      .execute();
+
+  auto cache = CacheFactory().create();
+
+  cache.getPoolManager()
+      .createFactory()
+      .addLocator("localhost", cluster.getLocatorPort())
+      .create("pool");
+
   std::string key = std::string("scharles");
   std::string value = std::string("Sylvia Charles");
-  std::shared_ptr<Region> region;
-};
 
-TEST_F(CachingProxyTest, LocalRemoveAfterLocalInvalidate) {
+  auto region = cache.createRegionFactory(RegionShortcut::CACHING_PROXY)
+                    .setPoolName("pool")
+                    .create("region");
+
   region->put(key, value);
 
   auto user = region->get(key);
@@ -87,7 +73,30 @@ TEST_F(CachingProxyTest, LocalRemoveAfterLocalInvalidate) {
   ASSERT_TRUE(resultLocalRemove);
 }
 
-TEST_F(CachingProxyTest, RemoveAfterInvalidate) {
+TEST(CachingProxyTest, RemoveAfterInvalidate) {
+  Cluster cluster = Cluster{LocatorCount{1}, ServerCount{1}};
+  cluster.start();
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("region")
+      .withType("PARTITION")
+      .execute();
+
+  auto cache = CacheFactory().create();
+
+  cache.getPoolManager()
+      .createFactory()
+      .addLocator("localhost", cluster.getLocatorPort())
+      .create("pool");
+
+  std::string key = std::string("scharles");
+  std::string value = std::string("Sylvia Charles");
+
+  auto region = cache.createRegionFactory(RegionShortcut::CACHING_PROXY)
+                    .setPoolName("pool")
+                    .create("region");
+
   region->put(key, value);
 
   region->invalidate(key);
@@ -99,7 +108,30 @@ TEST_F(CachingProxyTest, RemoveAfterInvalidate) {
   ASSERT_TRUE(resultRemove);
 }
 
-TEST_F(CachingProxyTest, RemoveAfterLocalInvalidate) {
+TEST(CachingProxyTest, RemoveAfterLocalInvalidate) {
+  Cluster cluster = Cluster{LocatorCount{1}, ServerCount{1}};
+  cluster.start();
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("region")
+      .withType("PARTITION")
+      .execute();
+
+  auto cache = CacheFactory().create();
+
+  cache.getPoolManager()
+      .createFactory()
+      .addLocator("localhost", cluster.getLocatorPort())
+      .create("pool");
+
+  std::string key = std::string("scharles");
+  std::string value = std::string("Sylvia Charles");
+
+  auto region = cache.createRegionFactory(RegionShortcut::CACHING_PROXY)
+                    .setPoolName("pool")
+                    .create("region");
+
   region->put(key, value);
 
   region->localInvalidate(key);
@@ -111,11 +143,32 @@ TEST_F(CachingProxyTest, RemoveAfterLocalInvalidate) {
   ASSERT_EQ(std::dynamic_pointer_cast<CacheableString>(user)->value(), value);
 }
 
-TEST_F(CachingProxyTest, Remove) {
+TEST(CachingProxyTest, Remove) {
+  Cluster cluster = Cluster{LocatorCount{1}, ServerCount{1}};
+  cluster.start();
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("region")
+      .withType("PARTITION")
+      .execute();
+
+  auto cache = CacheFactory().create();
+
+  cache.getPoolManager()
+      .createFactory()
+      .addLocator("localhost", cluster.getLocatorPort())
+      .create("pool");
+
+  std::string key = std::string("scharles");
+  std::string value = std::string("Sylvia Charles");
+
+  auto region = cache.createRegionFactory(RegionShortcut::CACHING_PROXY)
+                    .setPoolName("pool")
+                    .create("region");
+
   region->put(key, value);
 
   auto resultRemove = region->remove(key);
   ASSERT_TRUE(resultRemove);
 }
-
-}  // namespace CachingProxy
