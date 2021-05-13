@@ -30,16 +30,13 @@ namespace apache {
 namespace geode {
 namespace client {
 
+class PdxInstanceImpl;
+
 class PdxHelper {
  private:
   static void createMergedType(std::shared_ptr<PdxType> localType,
                                std::shared_ptr<PdxType> remoteType,
                                DataInput& dataInput);
-
-  static void checkAndFetchPdxType(
-      Pool*, std::shared_ptr<PdxTypeRegistry>& pdxTypeRegistry,
-      const std::shared_ptr<SerializationRegistry>& serializationRegistry,
-      int32_t typeId);
 
  public:
   static uint8_t PdxHeader;
@@ -48,14 +45,12 @@ class PdxHelper {
 
   virtual ~PdxHelper();
 
-  static void serialize(DataOutput& output,
-                        const std::shared_ptr<PdxSerializable>& pdxObject);
+  static void serializePdx(DataOutput& output, PdxInstanceImpl* instance);
 
   static void serializePdx(DataOutput& output,
                            const std::shared_ptr<PdxSerializable>& pdxObject);
 
-  static std::shared_ptr<PdxSerializable> deserializePdx(DataInput& dataInput,
-                                                         bool forceDeserialize);
+  static std::shared_ptr<PdxSerializable> deserializePdx(DataInput& dataInput);
 
   static std::shared_ptr<PdxSerializable> deserializePdx(DataInput& dataInput,
                                                          int32_t typeId,

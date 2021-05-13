@@ -361,7 +361,7 @@ class TESTOBJECT_EXPORT PdxType : public PdxSerializable {
 
   std::vector<std::string> m_stringArray;
   std::shared_ptr<Serializable> m_address;
-  Address* m_add[10];
+  std::unique_ptr<Address> m_add[10];
 
   std::shared_ptr<CacheableArrayList> m_arraylist;
   std::shared_ptr<CacheableLinkedList> m_linkedlist;
@@ -394,226 +394,10 @@ class TESTOBJECT_EXPORT PdxType : public PdxSerializable {
   int lengthArr[2];
 
  public:
-  inline void init() {
-    m_char = 'C';
-    m_bool = true;
-    m_byte = 0x74;
-    m_sbyte = 0x67;
-    m_int16 = 0xab;
-    m_uint16 = 0x2dd5;
-    m_int32 = 0x2345abdc;
-    m_uint32 = 0x2a65c434;
-    m_long = 324897980;
-    m_ulong = 238749898;
-    m_float = 23324.324f;
-    m_double = 3243298498.00;
+  PdxType();
+  ~PdxType() override;
 
-    m_string = "gfestring";
-
-    m_boolArray = std::vector<bool>(3);
-    m_boolArray[0] = true;
-    m_boolArray[1] = false;
-    m_boolArray[2] = true;
-    /*for(int i=0; i<3; i++){
-      m_boolArray[i] = true;
-    };*/
-
-    m_byteArray = std::vector<int8_t>(2);
-    m_byteArray[0] = 0x34;
-    m_byteArray[1] = 0x64;
-
-    m_sbyteArray = std::vector<int8_t>(2);
-    m_sbyteArray[0] = 0x34;
-    m_sbyteArray[1] = 0x64;
-
-    m_charArray = std::vector<char16_t>(2);
-    m_charArray[0] = L'c';
-    m_charArray[1] = L'v';
-
-    int64_t d = 1310447869154L;
-    m_date = CacheableDate::create(CacheableDate::duration(d));
-
-    m_int16Array = std::vector<int16_t>(2);
-    m_int16Array[0] = 0x2332;
-    m_int16Array[1] = 0x4545;
-
-    m_uint16Array = std::vector<int16_t>(2);
-    m_uint16Array[0] = 0x3243;
-    m_uint16Array[1] = 0x3232;
-
-    m_int32Array = std::vector<int32_t>(4);
-    m_int32Array[0] = 23;
-    m_int32Array[1] = 676868;
-    m_int32Array[2] = 34343;
-    m_int32Array[3] = 2323;
-
-    m_uint32Array = std::vector<int32_t>(4);
-    m_uint32Array[0] = 435;
-    m_uint32Array[1] = 234324;
-    m_uint32Array[2] = 324324;
-    m_uint32Array[3] = 23432432;
-
-    m_longArray = std::vector<int64_t>(2);
-    m_longArray[0] = 324324L;
-    m_longArray[1] = 23434545L;
-
-    m_ulongArray = std::vector<int64_t>(2);
-    m_ulongArray[0] = 3245435;
-    m_ulongArray[1] = 3425435;
-
-    m_floatArray = std::vector<float>(2);
-    m_floatArray[0] = 232.565f;
-    m_floatArray[1] = 2343254.67f;
-
-    m_doubleArray = std::vector<double>(2);
-    m_doubleArray[0] = 23423432;
-    m_doubleArray[1] = 4324235435.00;
-
-    m_byteByteArray = new int8_t*[2];
-    m_byteByteArray[0] = new int8_t[1];
-    m_byteByteArray[1] = new int8_t[2];
-    m_byteByteArray[0][0] = 0x23;
-    m_byteByteArray[1][0] = 0x34;
-    m_byteByteArray[1][1] = 0x55;
-
-    m_stringArray = {"one", "two"};
-
-    m_arraylist = CacheableArrayList::create();
-    m_arraylist->push_back(CacheableInt32::create(1));
-    m_arraylist->push_back(CacheableInt32::create(2));
-
-    m_linkedlist = CacheableLinkedList::create();
-    m_linkedlist->push_back(CacheableInt32::create(1));
-    m_linkedlist->push_back(CacheableInt32::create(2));
-
-    m_map = CacheableHashMap::create();
-    m_map->emplace(CacheableInt32::create(1), CacheableInt32::create(1));
-    m_map->emplace(CacheableInt32::create(2), CacheableInt32::create(2));
-
-    m_hashtable = CacheableHashTable::create();
-    m_hashtable->emplace(CacheableInt32::create(1),
-                         CacheableString::create("1111111111111111"));
-    m_hashtable->emplace(
-        CacheableInt32::create(2),
-        CacheableString::create("2222222222221111111111111111"));
-
-    m_vector = CacheableVector::create();
-    m_vector->push_back(CacheableInt32::create(1));
-    m_vector->push_back(CacheableInt32::create(2));
-    m_vector->push_back(CacheableInt32::create(3));
-
-    m_chs = CacheableHashSet::create();
-    m_chs->insert(CacheableInt32::create(1));
-
-    m_clhs = CacheableLinkedHashSet::create();
-    m_clhs->insert(CacheableInt32::create(1));
-    m_clhs->insert(CacheableInt32::create(2));
-
-    m_pdxEnum = CacheableEnum::create("PdxTests.pdxEnumTest", "pdx2", pdx2);
-
-    // std::shared_ptr<Address>* addPtr = NULL;
-    // m_add = new Address[10];
-    // addPtr[i] = Address::create();
-
-    m_add[0] = new Address(1, "street0", "city0");
-    m_add[1] = new Address(2, "street1", "city1");
-    m_add[2] = new Address(3, "street2", "city2");
-    m_add[3] = new Address(4, "street3", "city3");
-    m_add[4] = new Address(5, "street4", "city4");
-    m_add[5] = new Address(6, "street5", "city5");
-    m_add[6] = new Address(7, "street6", "city6");
-    m_add[7] = new Address(8, "street7", "city7");
-    m_add[8] = new Address(9, "street8", "city8");
-    m_add[9] = new Address(10, "street9", "city9");
-
-    m_objectArray = nullptr;
-    m_objectArrayEmptyPdxFieldName = nullptr;
-
-    m_objectArray = CacheableObjectArray::create();
-    m_objectArray->push_back(
-        std::shared_ptr<Address>(new Address(1, "street0", "city0")));
-    m_objectArray->push_back(
-        std::shared_ptr<Address>(new Address(2, "street1", "city1")));
-    m_objectArray->push_back(
-        std::shared_ptr<Address>(new Address(3, "street2", "city2")));
-    m_objectArray->push_back(
-        std::shared_ptr<Address>(new Address(4, "street3", "city3")));
-    m_objectArray->push_back(
-        std::shared_ptr<Address>(new Address(5, "street4", "city4")));
-    m_objectArray->push_back(
-        std::shared_ptr<Address>(new Address(6, "street5", "city5")));
-    m_objectArray->push_back(
-        std::shared_ptr<Address>(new Address(7, "street6", "city6")));
-    m_objectArray->push_back(
-        std::shared_ptr<Address>(new Address(8, "street7", "city7")));
-    m_objectArray->push_back(
-        std::shared_ptr<Address>(new Address(9, "street8", "city8")));
-    m_objectArray->push_back(
-        std::shared_ptr<Address>(new Address(10, "street9", "city9")));
-
-    m_objectArrayEmptyPdxFieldName = CacheableObjectArray::create();
-    m_objectArrayEmptyPdxFieldName->push_back(
-        std::shared_ptr<Address>(new Address(1, "street0", "city0")));
-    m_objectArrayEmptyPdxFieldName->push_back(
-        std::shared_ptr<Address>(new Address(2, "street1", "city1")));
-    m_objectArrayEmptyPdxFieldName->push_back(
-        std::shared_ptr<Address>(new Address(3, "street2", "city2")));
-    m_objectArrayEmptyPdxFieldName->push_back(
-        std::shared_ptr<Address>(new Address(4, "street3", "city3")));
-    m_objectArrayEmptyPdxFieldName->push_back(
-        std::shared_ptr<Address>(new Address(5, "street4", "city4")));
-    m_objectArrayEmptyPdxFieldName->push_back(
-        std::shared_ptr<Address>(new Address(6, "street5", "city5")));
-    m_objectArrayEmptyPdxFieldName->push_back(
-        std::shared_ptr<Address>(new Address(7, "street6", "city6")));
-    m_objectArrayEmptyPdxFieldName->push_back(
-        std::shared_ptr<Address>(new Address(8, "street7", "city7")));
-    m_objectArrayEmptyPdxFieldName->push_back(
-        std::shared_ptr<Address>(new Address(9, "street8", "city8")));
-    m_objectArrayEmptyPdxFieldName->push_back(
-        std::shared_ptr<Address>(new Address(10, "street9", "city9")));
-
-    m_byte252 = std::vector<int8_t>(252, 0);
-
-    m_byte253 = std::vector<int8_t>(253, 0);
-
-    m_byte65535 = std::vector<int8_t>(65535, 0);
-
-    m_byte65536 = std::vector<int8_t>(65536, 0);
-
-    /*for (int32_t index = 0; index <3; ++index) {
-      m_objectArray->push_back(objectArray[index]);
-    }*/
-    /*
-    if (keys.size() > 0) {
-      m_objectArray = CacheableObjectArray::create();
-      for (int32_t index = 0; index < keys.size(); ++index) {
-        m_objectArray->push_back(keys.operator[](index));
-      }
-    }*/
-
-    boolArrayLen = 3;
-    byteArrayLen = 2;
-    shortArrayLen = 2;
-    intArrayLen = 4;
-    longArrayLen = 2;
-    doubleArrayLen = 2;
-    floatArrayLen = 2;
-    strLenArray = 2;
-    charArrayLen = 2;
-    byteByteArrayLen = 2;
-
-    lengthArr[0] = 1;
-    lengthArr[1] = 2;
-  }
-
-  PdxType() { init(); }
-
-  inline bool compareBool(bool b, bool b2) {
-    if (b == b2) return b;
-    throw IllegalStateException("Not got expected value for bool type: ");
-  }
-
+  void init();
   void deleteByteByteArray() {
     if (m_byteByteArray == nullptr) {
       return;
@@ -622,13 +406,6 @@ class TESTOBJECT_EXPORT PdxType : public PdxSerializable {
     _GEODE_SAFE_DELETE_ARRAY(m_byteByteArray[1]);
     _GEODE_SAFE_DELETE_ARRAY(m_byteByteArray);
   }
-
-  ~PdxType() override {
-    deleteByteByteArray();
-    for (auto i = 0; i <= 9; i++) {
-      _GEODE_SAFE_DELETE(m_add[i]);
-    }
-  };
 
   virtual size_t objectSize() const override {
     auto objectSize = sizeof(PdxType);
@@ -762,6 +539,11 @@ class TESTOBJECT_EXPORT PdxType : public PdxSerializable {
 
   static std::shared_ptr<PdxSerializable> createDeserializable() {
     return std::make_shared<PdxType>();
+  }
+
+  inline bool compareBool(bool b, bool b2) {
+    if (b == b2) return b;
+    throw IllegalStateException("Not got expected value for bool type: ");
   }
 
   bool equals(PdxTests::PdxType& other, bool isPdxReadSerialized) const;

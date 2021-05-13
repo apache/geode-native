@@ -43,17 +43,13 @@ std::shared_ptr<PdxInstance> PdxInstanceFactory::create() {
     throw IllegalStateException(
         "The PdxInstanceFactory.Create() method can only be called once.");
   }
-  auto pi = std::make_shared<PdxInstanceImpl>(
-      m_FieldVsValues, m_pdxType, m_cachePerfStats, m_pdxTypeRegistry,
-      m_cacheImpl, m_enableTimeStatistics);
+
   m_created = true;
-
-  // Forces registration of PdxType
-  auto dataOutput = m_cacheImpl.createDataOutput();
-  PdxHelper::serialize(dataOutput, pi);
-
-  return std::move(pi);
+  return std::make_shared<PdxInstanceImpl>(m_FieldVsValues, m_pdxType,
+                                           m_cachePerfStats, m_pdxTypeRegistry,
+                                           m_cacheImpl, m_enableTimeStatistics);
 }
+
 PdxInstanceFactory& PdxInstanceFactory::writeChar(const std::string& fieldName,
                                                   char16_t value) {
   isFieldAdded(fieldName);
@@ -63,6 +59,7 @@ PdxInstanceFactory& PdxInstanceFactory::writeChar(const std::string& fieldName,
   m_FieldVsValues.emplace(fieldName, cacheableObject);
   return *this;
 }
+
 PdxInstanceFactory& PdxInstanceFactory::writeChar(const std::string& fieldName,
                                                   char value) {
   isFieldAdded(fieldName);
@@ -72,6 +69,7 @@ PdxInstanceFactory& PdxInstanceFactory::writeChar(const std::string& fieldName,
   m_FieldVsValues.emplace(fieldName, cacheableObject);
   return *this;
 }
+
 PdxInstanceFactory& PdxInstanceFactory::writeBoolean(
     const std::string& fieldName, bool value) {
   isFieldAdded(fieldName);
@@ -81,6 +79,7 @@ PdxInstanceFactory& PdxInstanceFactory::writeBoolean(
   m_FieldVsValues.emplace(fieldName, cacheableObject);
   return *this;
 }
+
 PdxInstanceFactory& PdxInstanceFactory::writeByte(const std::string& fieldName,
                                                   int8_t value) {
   isFieldAdded(fieldName);
@@ -90,6 +89,7 @@ PdxInstanceFactory& PdxInstanceFactory::writeByte(const std::string& fieldName,
   m_FieldVsValues.emplace(fieldName, cacheableObject);
   return *this;
 }
+
 PdxInstanceFactory& PdxInstanceFactory::writeShort(const std::string& fieldName,
                                                    int16_t value) {
   isFieldAdded(fieldName);
@@ -99,6 +99,7 @@ PdxInstanceFactory& PdxInstanceFactory::writeShort(const std::string& fieldName,
   m_FieldVsValues.emplace(fieldName, cacheableObject);
   return *this;
 }
+
 PdxInstanceFactory& PdxInstanceFactory::writeInt(const std::string& fieldName,
                                                  int32_t value) {
   isFieldAdded(fieldName);
@@ -108,6 +109,7 @@ PdxInstanceFactory& PdxInstanceFactory::writeInt(const std::string& fieldName,
   m_FieldVsValues.emplace(fieldName, cacheableObject);
   return *this;
 }
+
 PdxInstanceFactory& PdxInstanceFactory::writeLong(const std::string& fieldName,
                                                   int64_t value) {
   isFieldAdded(fieldName);
@@ -117,6 +119,7 @@ PdxInstanceFactory& PdxInstanceFactory::writeLong(const std::string& fieldName,
   m_FieldVsValues.emplace(fieldName, cacheableObject);
   return *this;
 }
+
 PdxInstanceFactory& PdxInstanceFactory::writeFloat(const std::string& fieldName,
                                                    float value) {
   isFieldAdded(fieldName);
@@ -126,6 +129,7 @@ PdxInstanceFactory& PdxInstanceFactory::writeFloat(const std::string& fieldName,
   m_FieldVsValues.emplace(fieldName, cacheableObject);
   return *this;
 }
+
 PdxInstanceFactory& PdxInstanceFactory::writeDouble(
     const std::string& fieldName, double value) {
   isFieldAdded(fieldName);
@@ -164,6 +168,7 @@ PdxInstanceFactory& PdxInstanceFactory::writeObject(
   m_FieldVsValues.emplace(fieldName, value);
   return *this;
 }
+
 PdxInstanceFactory& PdxInstanceFactory::writeObjectArray(
     const std::string& fieldName, std::shared_ptr<CacheableObjectArray> value) {
   isFieldAdded(fieldName);
@@ -172,6 +177,7 @@ PdxInstanceFactory& PdxInstanceFactory::writeObjectArray(
   m_FieldVsValues.emplace(fieldName, value);
   return *this;
 }
+
 PdxInstanceFactory& PdxInstanceFactory::writeBooleanArray(
     const std::string& fieldName, const std::vector<bool>& value) {
   isFieldAdded(fieldName);
@@ -201,6 +207,7 @@ PdxInstanceFactory& PdxInstanceFactory::writeByteArray(
   m_FieldVsValues.emplace(fieldName, cacheableObject);
   return *this;
 }
+
 PdxInstanceFactory& PdxInstanceFactory::writeShortArray(
     const std::string& fieldName, const std::vector<int16_t>& value) {
   isFieldAdded(fieldName);
@@ -210,6 +217,7 @@ PdxInstanceFactory& PdxInstanceFactory::writeShortArray(
   m_FieldVsValues.emplace(fieldName, cacheableObject);
   return *this;
 }
+
 PdxInstanceFactory& PdxInstanceFactory::writeIntArray(
     const std::string& fieldName, const std::vector<int32_t>& value) {
   isFieldAdded(fieldName);
@@ -219,6 +227,7 @@ PdxInstanceFactory& PdxInstanceFactory::writeIntArray(
   m_FieldVsValues.emplace(fieldName, cacheableObject);
   return *this;
 }
+
 PdxInstanceFactory& PdxInstanceFactory::writeLongArray(
     const std::string& fieldName, const std::vector<int64_t>& value) {
   isFieldAdded(fieldName);
@@ -228,6 +237,7 @@ PdxInstanceFactory& PdxInstanceFactory::writeLongArray(
   m_FieldVsValues.emplace(fieldName, cacheableObject);
   return *this;
 }
+
 PdxInstanceFactory& PdxInstanceFactory::writeFloatArray(
     const std::string& fieldName, const std::vector<float>& value) {
   isFieldAdded(fieldName);
@@ -237,6 +247,7 @@ PdxInstanceFactory& PdxInstanceFactory::writeFloatArray(
   m_FieldVsValues.emplace(fieldName, cacheableObject);
   return *this;
 }
+
 PdxInstanceFactory& PdxInstanceFactory::writeDoubleArray(
     const std::string& fieldName, const std::vector<double>& value) {
   isFieldAdded(fieldName);
@@ -288,6 +299,7 @@ PdxInstanceFactory& PdxInstanceFactory::writeArrayOfByteArrays(
   m_FieldVsValues.emplace(fieldName, cacheableObject);
   return *this;
 }
+
 PdxInstanceFactory& PdxInstanceFactory::markIdentityField(
     const std::string& fieldName) {
   auto pfType = m_pdxType->getPdxField(fieldName);

@@ -294,6 +294,8 @@ void createAndVerifyEntry(const char* name) {
    * null value*/
   // serializationRegistry->addPdxType(PdxTests::PdxType::createDeserializable);
   auto keyObject1 = std::make_shared<PdxTests::PdxType>();
+  keyObject1->init();
+
   regPtr->create(keyObject1, x);
   auto retVal = regPtr->get(keyObject1);
   ASSERT(retVal == x, "retVal and x should match.");
@@ -302,6 +304,8 @@ void createAndVerifyEntry(const char* name) {
    * cacheableInt,CacheableDouble, CacheableString,CacheableHashMap etc) key and
    * int value*/
   auto keyObject2 = std::make_shared<PdxTests::PdxType>();
+  keyObject2->init();
+
   regPtr->create(keyObject2, 1);
   auto intVal =
       std::dynamic_pointer_cast<CacheableInt32>(regPtr->get(keyObject2));
@@ -323,6 +327,8 @@ void createAndVerifyEntry(const char* name) {
    * cacheableInt,CacheableDouble, CacheableString,CacheableHashMap etc) key and
    * string value*/
   auto keyObject3 = std::make_shared<PdxTests::PdxType>();
+  keyObject3->init();
+
   regPtr->create(keyObject3, "testString");
   auto strVal = regPtr->get(keyObject3);
   ASSERT(strcmp(strVal->toString().c_str(), "testString") == 0,
@@ -335,38 +341,13 @@ void createAndVerifyEntry(const char* name) {
    * CacheableString,CacheableHashMap etc)  value*/
   auto keyObject4 = std::make_shared<PdxTests::PdxType>();
   auto valObject = std::make_shared<PdxTests::PdxType>();
+  keyObject4->init();
+  valObject->init();
+
   regPtr->create(keyObject4, valObject);
   auto objVal =
       std::dynamic_pointer_cast<PdxTests::PdxType>(regPtr->get(keyObject4));
   ASSERT(valObject == objVal, "valObject and objVal should match.");
-
-  /*9.create new entry witn non serialize object. IllegalArgumentException
-   * thrown*/
-  // This gives compile time error
-  //  class Person
-  //  {
-  //    int age;
-  //    char *name;
-  //    public:
-  //      Person()
-  //      {
-  //        age= 1;
-  //        name="testuser";
-  //      }
-  //  };
-  //  try{
-  //    regPtr->create(new Person(), 1);
-  //    FAIL("Expected IllegalArgumentException here");
-  //  }catch(IllegalArgumentException ex){
-  //    LOG("Expected IllegalArgumentException : %s");
-  //  }
-  //
-  //  try{
-  //    regPtr->create(100,new Person());
-  //    FAIL("Expected IllegalArgumentException here");
-  //  }catch(IllegalArgumentException ex){
-  //    LOG("Expected IllegalArgumentException : %s");
-  //  }
 }
 
 void createEntryTwice(const char* name, const char* key, const char* value) {
