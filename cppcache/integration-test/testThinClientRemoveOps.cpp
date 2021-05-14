@@ -371,7 +371,6 @@ const char *regionNames[] = {"DistRegionAck", "exampleRegion"};
 
 const bool USE_ACK = true;
 const bool NO_ACK = false;
-//#include "LocatorHelper.hpp"
 
 DUNIT_TASK_DEFINITION(SERVER1, CreateServer1)
   {
@@ -1158,7 +1157,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepTwelve)
     ASSERT(regPtr0->containsKey(keyObject1) == false,
            "containsKey should be false");
     try {
-      // retVal = regPtr0->get(keyObject1);
       retVal = regPtr0->get(x);
       ASSERT(retVal == nullptr, "value should not be found");
       FAIL("Expected IllegalArgumentException here for get");
@@ -1240,15 +1238,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepTwelve)
            "containsKey should be false");
     regPtr0->localPut(keyObject4, valObject1);
     regPtr0->localDestroy(keyObject4);
-    /*try {
-          objVal1 =
-    std::dynamic_pointer_cast<PdxTests::PdxType>(regPtr0->get(keyObject4));;//
-    need to verify that if entry is deleted then some exception should be thrown
-          FAIL("Expected EntryExistException here for get");
-    }catch (Exception)
-    {
-     LOG (" Expected  exception thrown by get");
-    }*/
 
     createRegion("ABC", USE_ACK, true, true);
     auto regPtr2 = getHelper()->getRegion("ABC");
@@ -1480,7 +1469,6 @@ void runRemoveOps1() {
 DUNIT_MAIN
   {
     runRemoveOps();
-
     runRemoveOps1();
   }
 END_MAIN
