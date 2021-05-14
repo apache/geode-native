@@ -264,16 +264,16 @@ TEST_F(TcrMessageTest, testConstructor2WithDestroy) {
   TcrMessageDestroy message(
       new DataOutputUnderTest(), static_cast<const Region *>(nullptr),
       CacheableString::create("mykey"),
-      static_cast<const std::shared_ptr<CacheableKey>>(nullptr),
+      static_cast<const std::shared_ptr<CacheableKey>>(nullptr), true,
       static_cast<const std::shared_ptr<Serializable>>(nullptr),
       static_cast<ThinClientBaseDM *>(nullptr));
 
   EXPECT_EQ(TcrMessage::DESTROY, message.getMessageType());
 
   EXPECT_MESSAGE_EQ(
-      "000000090000004800000005FFFFFFFF000000001300494E56414C49445F524547494F4E"
-      "5F4E414D4500000008015700056D796B6579000000010129000000010129000000120003"
-      "000000000000000103\\h{16}",
+      "000000090000004900000005FFFFFFFF000000001300494E56414C49445F524547494F4E"
+      "5F4E414D4500000008015700056D796B6579000000010129000000020137080000001200"
+      "03000000000000000103\\h{16}",
       message);
 }
 
