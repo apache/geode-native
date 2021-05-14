@@ -20,22 +20,15 @@
 
 #include <string>
 
-#include <ace/OS.h>
-#include <ace/High_Res_Timer.h>
-#include <ace/ACE.h>
-
 #include <statistics/StatisticsFactory.hpp>
 
 #include "fw_dunit.hpp"
-#include "BuiltinCacheableWrappers.hpp"
 #include "Utils.hpp"
 
 #include "CacheHelper.hpp"
 
 // Include these 2 headers for access to CacheImpl for test hooks.
-#include "CacheImplHelper.hpp"
 #include "testUtils.hpp"
-
 #include "ThinClientHelper.hpp"
 
 #define CLIENT1 s1p1

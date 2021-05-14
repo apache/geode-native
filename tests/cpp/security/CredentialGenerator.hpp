@@ -32,22 +32,11 @@
 
 // ----------------------------------------------------------------------------
 
-#include <geode/Properties.hpp>
-
-#ifndef __COMPILE_DUNIT_
-#include <fwklib/FwkLog.hpp>
-#else
-#ifndef FWKINFO
-#define FWKINFO(x)
-#endif
-#ifndef FWKDEBUG
-#define FWKDEBUG(x)
-#endif
-#endif
-
 #include <map>
 
 #include <ace/OS.h>
+
+#include <geode/Properties.hpp>
 
 #include "typedefs.hpp"
 
@@ -145,28 +134,11 @@ class CredentialGenerator {
     sprintf(chID, "%d", m_id);
     return std::string(chID) + m_name;
   }
-  static void dump() {
-    FWKINFO("dumping all registered classes ");
-    registeredClassMap::iterator it = generators().begin();
-    while (it != generators().end()) {
-      FWKINFO(((*it).second)->toString());
-      it++;
-    }
-  }
+  static void dump();
 
   void hashCode() {}
 
-  void getAuthInit(std::shared_ptr<Properties>& prop) {
-    std::string authinit = this->getClientAuthInitLoaderFactory();
-    if (!authinit.empty()) {
-      FWKINFO("Authentication initializer : "
-              << authinit << " library "
-              << this->getClientAuthInitLoaderLibrary());
-      prop->insert("security-client-auth-factory", authinit.c_str());
-      prop->insert("security-client-auth-library",
-                   this->getClientAuthInitLoaderLibrary().c_str());
-    }
-  }
+  void getAuthInit(std::shared_ptr<Properties>& prop);
 
   std::string getPublickeyfile() {
     char* tempPath = nullptr;
@@ -185,49 +157,7 @@ class CredentialGenerator {
 
   std::string getServerCmdParams(std::string securityParams,
                                  std::string workingDir = "",
-                                 bool userMode = false) {
-    std::string securityCmdStr;
-    FWKINFO("User mode is " << userMode);
-    if (securityParams.find("authenticator") != std::string::npos &&
-        !this->getClientAuthenticator().empty()) {
-      securityCmdStr = this->getInitArgs(workingDir, userMode);
-      securityCmdStr +=
-          std::string(" --J=-Dgemfire.security-client-authenticator=") +
-          this->getClientAuthenticator();
-    }
-    if ((securityParams.find("authorizer") != std::string::npos) &&
-        (!this->getClientAuthorizer().empty())) {
-      securityCmdStr +=
-          std::string(" --J=-Dgemfire.security-client-accessor=") +
-          this->getClientAuthorizer();
-    }
-    if ((securityParams.find("authorizerPP") != std::string::npos) &&
-        (!this->getClientAuthorizer().empty())) {
-      securityCmdStr +=
-          std::string(" --J=-Dgemfire.security-client-accessor-pp=") +
-          this->getClientAuthorizer();
-    }
-    if (m_id == ID_PKI) {
-      securityCmdStr +=
-          std::string(" --J=-Dgemfire.security-publickey-filepath=") +
-          this->getPublickeyfile();
-      securityCmdStr +=
-          std::string(" --J=-Dgemfire.security-publickey-pass=geode");
-    }
-    if ((securityParams.find("dummy") != std::string::npos) &&
-        (!this->getClientDummyAuthorizer().empty())) {
-      securityCmdStr +=
-          std::string(" --J=-Dgemfire.security-client-accessor=") +
-          this->getClientDummyAuthorizer();
-    }
-#ifdef __COMPILE_DUNIT_  // lets suppress -N option in case of unit tests.
-    int idx;
-    while ((idx = securityCmdStr.find("--J=-Dgemfire.", 0)) >= 0) {
-      securityCmdStr.replace(idx, 2, "");
-    }
-#endif
-    return securityCmdStr;
-  }
+                                 bool userMode = false);
 
   virtual void getValidCredentials(std::shared_ptr<Properties>& p);
 

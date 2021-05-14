@@ -19,13 +19,19 @@ project(security LANGUAGES CXX)
 add_library(security STATIC
   CredentialGenerator.cpp
   CredentialGenerator.hpp
+  DummyCredentialGenerator.cpp
   DummyCredentialGenerator.hpp
+  DummyCredentialGenerator2.cpp
   DummyCredentialGenerator2.hpp
+  DummyCredentialGenerator3.cpp
   DummyCredentialGenerator3.hpp
+  LdapUserCredentialGenerator.cpp
   LdapUserCredentialGenerator.hpp
   NoopCredentialGenerator.hpp
+  PkcsCredentialGenerator.cpp
   PkcsCredentialGenerator.hpp
   typedefs.hpp
+  XmlAuthzCredentialGenerator.cpp
   XmlAuthzCredentialGenerator.hpp
 )
 
@@ -47,6 +53,8 @@ target_link_libraries(security
     OpenSSL::SSL
   PRIVATE
     ACE::ACE
+    Boost::boost
+    Boost::log
     _WarningsAsError
 )
 

@@ -34,6 +34,14 @@
 
 // ----------------------------------------------------------------------------
 
+#define FWKEXCEPTION(x)                                              \
+  do {                                                               \
+    std::stringstream ss;                                            \
+    ss << x << " In file: " << __FILE__ << " at line: " << __LINE__; \
+    throw apache::geode::client::testframework::FwkException(        \
+        ss.str());                                                   \
+  } while (0)
+
 namespace apache {
 namespace geode {
 namespace client {

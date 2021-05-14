@@ -23,11 +23,7 @@ using apache::geode::client::CacheableBytes;
 
 BatchObject::BatchObject(int32_t anIndex, int32_t batchSize, int32_t size) {
   index = anIndex;
-  ACE_Time_Value startTime;
-  startTime = ACE_OS::gettimeofday();
-  ACE_UINT64 tusec = 0;
-  startTime.to_usec(tusec);
-  timestamp = tusec * 1000;
+  timestamp = std::chrono::system_clock::now().time_since_epoch().count();
   batch = anIndex / batchSize;
   byteArray = CacheableBytes::create(std::vector<int8_t>(size));
 }

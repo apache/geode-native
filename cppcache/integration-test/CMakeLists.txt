@@ -117,6 +117,7 @@ foreach(FILE ${SOURCES})
       apache-geode
       testobject
       framework
+      security
   )
 
   target_include_directories(${TEST}
@@ -185,12 +186,10 @@ set_tests_properties(
     testThinClientDurableDisconnectNormal
     testThinClientDurableDisconnectTimeout
     testThinClientDurableReconnect
-    testThinClientFailover2
     testThinClientHAFailover
     testThinClientHAMixedRedundancy
     testThinClientHAQueryFailover
     testThinClientLRUExpiration
-    testThinClientLargePutAllWithCallBackArg
     testThinClientLocatorFailover
     testThinClientMultiDS
     testThinClientPartitionResolver

@@ -33,7 +33,7 @@ namespace Apache.Geode.Client.IntegrationTests
         const int __1K__ = 1024;
         const int __1M__ = __1K__ * __1K__;
 
-        [Fact(Skip = "Test fails intermittently in VS 2019 build")]
+        [Fact]
         public void CreateDisposeAndCheckForMemoryLeaks()
         {
             using (var cluster = new Cluster(output, CreateTestCaseDirectoryName(), 1, 1))

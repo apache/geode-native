@@ -50,28 +50,7 @@ class PKCSCredentialGenerator : public CredentialGenerator {
  public:
   PKCSCredentialGenerator() : CredentialGenerator(ID_PKI, "PKCS") {}
 
-  std::string getInitArgs(std::string workingDir, bool) override {
-    FWKINFO("Inside PKCS credentials");
-    std::string additionalArgs;
-    char* buildDir = ACE_OS::getenv("BUILDDIR");
-
-    if (buildDir && workingDir.length() == 0) {
-      workingDir = std::string(buildDir);
-      workingDir += std::string("/framework/xml/Security/");
-    }
-
-    if (buildDir && workingDir.length() == 0) {
-      workingDir = std::string(buildDir);
-      workingDir += std::string("/framework/xml/Security/");
-    }
-
-    char* authzXmlUri = ACE_OS::getenv("AUTHZ_XML_URI");
-    additionalArgs = std::string(" --J=-Dgemfire.security-authz-xml-uri=") +
-                     std::string(workingDir) +
-                     std::string(authzXmlUri ? authzXmlUri : "authz-pkcs.xml");
-
-    return additionalArgs;
-  }
+  std::string getInitArgs(std::string workingDir, bool) override;
 
   std::string getClientAuthInitLoaderFactory() override {
     return "createPKCSAuthInitInstance";
@@ -117,21 +96,9 @@ class PKCSCredentialGenerator : public CredentialGenerator {
     insertKeyStorePath(p, username);
   }
 
-  void getValidCredentials(std::shared_ptr<Properties>& p) override {
-    char username[20] = {'\0'};
-    sprintf(username, "geode%d", randomValue(1, 10));
-    setPKCSProperties(p, username);
-    FWKINFO("inserted valid security-username "
-            << p->find("security-username")->value().c_str());
-  }
+  void getValidCredentials(std::shared_ptr<Properties>& p) override;
 
-  void getInvalidCredentials(std::shared_ptr<Properties>& p) override {
-    char username[20] = {'\0'};
-    sprintf(username, "%dgeode", randomValue(1, 11));
-    setPKCSProperties(p, username);
-    FWKINFO("inserted invalid security-username "
-            << p->find("security-username")->value().c_str());
-  }
+  void getInvalidCredentials(std::shared_ptr<Properties>& p) override;
 
   void getAllowedCredentialsForOps(opCodeList& opCodes,
                                    std::shared_ptr<Properties>& p,

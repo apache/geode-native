@@ -69,21 +69,9 @@ class DummyCredentialGenerator3 : public CredentialGenerator {
     return "javaobject.DummyAuthorization.create";
   }
 
-  void getValidCredentials(std::shared_ptr<Properties>& p) override {
-    p->insert("security-username", "user1");
-    p->insert("security-password", "user1");
-    FWKDEBUG("inserted valid security-username "
-             << p->find("security-username")->value().c_str() << " password "
-             << p->find("security-password")->value().c_str());
-  }
+  void getValidCredentials(std::shared_ptr<Properties>& p) override;
 
-  void getInvalidCredentials(std::shared_ptr<Properties>& p) override {
-    p->insert("security-username", "1user");
-    p->insert("security-password", "user1");
-    FWKDEBUG("inserted invalid security-username "
-             << p->find("security-username")->value().c_str() << " password "
-             << p->find("security-password")->value().c_str());
-  }
+  void getInvalidCredentials(std::shared_ptr<Properties>& p) override;
 
   void getAllowedCredentialsForOps(opCodeList& opCodes,
                                    std::shared_ptr<Properties>& p,
