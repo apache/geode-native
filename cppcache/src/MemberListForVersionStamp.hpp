@@ -23,11 +23,11 @@
 #include <memory>
 #include <unordered_map>
 
+#include <boost/thread/shared_mutex.hpp>
+
 #include <geode/internal/geode_globals.hpp>
 
 #include "DSMemberForVersionStamp.hpp"
-#include "ReadWriteLock.hpp"
-
 namespace apache {
 namespace geode {
 namespace client {

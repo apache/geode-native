@@ -23,11 +23,11 @@
 #include <memory>
 #include <string>
 
+#include <boost/thread/shared_mutex.hpp>
+
 #include <geode/Serializable.hpp>
 
 #include "ErrType.hpp"
-#include "ReadWriteLock.hpp"
-
 namespace apache {
 namespace geode {
 

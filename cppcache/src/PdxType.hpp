@@ -30,7 +30,6 @@
 #include <geode/Serializable.hpp>
 
 #include "PdxFieldType.hpp"
-#include "ReadWriteLock.hpp"
 
 namespace apache {
 namespace geode {
@@ -42,8 +41,6 @@ class PdxTypeRegistry;
 
 class PdxType : public internal::DataSerializableInternal,
                 public std::enable_shared_from_this<PdxType> {
-  boost::shared_mutex mutex_;
-
   static const char* m_javaPdxClass;
 
   std::vector<std::shared_ptr<PdxFieldType>>* m_pdxFieldTypes;

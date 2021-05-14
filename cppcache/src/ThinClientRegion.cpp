@@ -32,7 +32,6 @@
 #include "CacheRegionHelper.hpp"
 #include "DataInputInternal.hpp"
 #include "PutAllPartialResultServerException.hpp"
-#include "ReadWriteLock.hpp"
 #include "RegionGlobalLocks.hpp"
 #include "RemoteQuery.hpp"
 #include "TcrConnectionManager.hpp"

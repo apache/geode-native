@@ -23,7 +23,6 @@
 #include <geode/SystemProperties.hpp>
 
 #include "CacheImpl.hpp"
-#include "ReadWriteLock.hpp"
 #include "TcrHADistributionManager.hpp"
 #include "ThinClientPoolHADM.hpp"
 
