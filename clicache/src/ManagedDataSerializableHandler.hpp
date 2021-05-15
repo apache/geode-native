@@ -99,7 +99,7 @@ namespace apache {
             auto createType = cache->GetTypeRegistry()->GetManagedObjectFactory(classId);
 
             if (createType == nullptr) {
-              LOGERROR(
+              LOG_ERROR(
                   "Unregistered class ID %d during deserialization: Did the "
                   "application register serialization types?",
                   classId);

@@ -240,7 +240,7 @@ void QueryHelper::populatePortfolioPdxData(std::shared_ptr<Region>& rptr,
       auto keyport = CacheableKey::create(key);
       rptr->put(keyport, port);
 
-      LOGDEBUG("populatePortfolioPdxData:: Put for iteration current = %d done",
+      LOG_DEBUG("populatePortfolioPdxData:: Put for iteration current = %d done",
                current);
     }
   }
@@ -291,9 +291,9 @@ void QueryHelper::populatePDXObject(std::shared_ptr<Region>& rptr) {
   // Remote GET for PdxObject
   auto obj2 = std::dynamic_pointer_cast<PdxTests::PdxType>(rptr->get(keyport));
 
-  LOGINFO("get... Result-1: Returned float=%f, String val = %s double=%lf",
+  LOG_INFO("get... Result-1: Returned float=%f, String val = %s double=%lf",
           obj2->getFloat(), obj2->getString().c_str(), obj2->getDouble());
-  // LOGINFO("get.. Result-2: Returned BOOL = %d and BYTE = %s SHORT=%d INT=%d",
+  // LOG_INFO("get.. Result-2: Returned BOOL = %d and BYTE = %s SHORT=%d INT=%d",
   // obj2->getBool(), obj2->getByte(), obj2->getShort(), obj2->getInt());
 
   // TODO
@@ -316,16 +316,16 @@ void QueryHelper::getPDXObject(std::shared_ptr<Region>& rptr) {
   LOG("Client-2 PdxObject GET OP Done....");
 
   /*
-  LOGINFO("GET OP Result: BoolVal=%d", obj2->getBool());
-  LOGINFO("GET OP Result: ByteVal=%d", obj2->getByte());
-  LOGINFO("GET OP Result: ShortVal=%d", obj2->getShort());*/
+  LOG_INFO("GET OP Result: BoolVal=%d", obj2->getBool());
+  LOG_INFO("GET OP Result: ByteVal=%d", obj2->getByte());
+  LOG_INFO("GET OP Result: ShortVal=%d", obj2->getShort());*/
 
-  // LOGINFO("GET OP Result: IntVal=%d", obj2->getInt());
+  // LOG_INFO("GET OP Result: IntVal=%d", obj2->getInt());
   /*
-  LOGINFO("GET OP Result: LongVal=%ld", obj2->getLong());
-  LOGINFO("GET OP Result: FloatVal=%f", obj2->getFloat());
-  LOGINFO("GET OP Result: DoubleVal=%lf", obj2->getDouble());
-  LOGINFO("GET OP Result: StringVal=%s", obj2->getString());
+  LOG_INFO("GET OP Result: LongVal=%ld", obj2->getLong());
+  LOG_INFO("GET OP Result: FloatVal=%f", obj2->getFloat());
+  LOG_INFO("GET OP Result: DoubleVal=%lf", obj2->getDouble());
+  LOG_INFO("GET OP Result: StringVal=%s", obj2->getString());
   */
 }
 

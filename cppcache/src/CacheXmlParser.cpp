@@ -245,8 +245,8 @@ extern "C" void warningDebug(void *, const char *msg, ...) {
   // NOLINTNEXTLINE(clang-analyzer-valist.Uninitialized): clang-tidy bug
   std::vsnprintf(logmsg, sizeof(logmsg), msg, args);
   va_end(args);
-  LOGWARN("SAX.warning during XML declarative client initialization: %s",
-          logmsg);
+  LOG_WARN("SAX.warning during XML declarative client initialization: %s",
+           logmsg);
 }
 
 /////////////End of XML Parser Cackllback functions///////////////
@@ -364,8 +364,8 @@ void CacheXmlParser::endElement(const XMLCh *const,
 
 void CacheXmlParser::fatalError(const xercesc::SAXParseException &exception) {
   char *message = xercesc::XMLString::transcode(exception.getMessage());
-  LOGDEBUG("Fatal Error: \"%s\" at line: %" PRIu64, message,
-           exception.getLineNumber());
+  LOG_DEBUG("Fatal Error: \"%s\" at line: %" PRIu64, message,
+            exception.getLineNumber());
   auto ex = CacheXmlException(message);
   xercesc::XMLString::release(&message);
   throw ex;
@@ -506,7 +506,7 @@ void CacheXmlParser::create(Cache *cache) {
   }
   cacheCreation_->create(cache);
   delCacheCreation.noDelete();
-  LOGINFO("Declarative configuration of cache completed successfully");
+  LOG_INFO("Declarative configuration of cache completed successfully");
 }
 
 std::string CacheXmlParser::getOptionalAttribute(

@@ -191,8 +191,8 @@ CacheHelper::CacheHelper(const bool, bool pdxIgnoreUnreadFields,
   }
   try {
     auto cfPtr = CacheFactory(pp);
-    LOGINFO("pdxReadSerialized = %d ", pdxReadSerialized);
-    LOGINFO("pdxIgnoreUnreadFields = %d ", pdxIgnoreUnreadFields);
+    LOG_INFO("pdxReadSerialized = %d ", pdxReadSerialized);
+    LOG_INFO("pdxIgnoreUnreadFields = %d ", pdxIgnoreUnreadFields);
     cfPtr.setPdxReadSerialized(pdxReadSerialized);
     cfPtr.setPdxIgnoreUnreadFields(pdxIgnoreUnreadFields);
     cachePtr = std::make_shared<Cache>(cfPtr.create());
@@ -468,32 +468,32 @@ void CacheHelper::logPoolAttributes(std::shared_ptr<Pool> &pool) {
   using apache::geode::internal::chrono::duration::to_string;
 
   LOG("logPoolAttributes() entered");
-  LOGINFO("CPPTEST: Pool attributes for pool %s are as follows" +
-          pool->getName());
-  LOGINFO("getFreeConnectionTimeout: " +
-          to_string(pool->getFreeConnectionTimeout()));
-  LOGINFO("getLoadConditioningInterval: " +
-          to_string(pool->getLoadConditioningInterval()));
-  LOGINFO("getSocketBufferSize: %d", pool->getSocketBufferSize());
-  LOGINFO("getReadTimeout: " + to_string(pool->getReadTimeout()));
-  LOGINFO("getMinConnections: %d", pool->getMinConnections());
-  LOGINFO("getMaxConnections: %d", pool->getMaxConnections());
-  LOGINFO("getIdleTimeout: " + to_string(pool->getIdleTimeout()));
-  LOGINFO("getPingInterval: " + to_string(pool->getPingInterval()));
-  LOGINFO("getStatisticInterval: " + to_string(pool->getStatisticInterval()));
-  LOGINFO("getRetryAttempts: %d", pool->getRetryAttempts());
-  LOGINFO("getSubscriptionEnabled: %s",
-          pool->getSubscriptionEnabled() ? "true" : "false");
-  LOGINFO("getSubscriptionRedundancy: %d", pool->getSubscriptionRedundancy());
-  LOGINFO("getSubscriptionMessageTrackingTimeout: " +
-          to_string(pool->getSubscriptionMessageTrackingTimeout()));
-  LOGINFO("getSubscriptionAckInterval: " +
-          to_string(pool->getSubscriptionAckInterval()));
-  LOGINFO("getServerGroup: " + pool->getServerGroup());
-  LOGINFO("getThreadLocalConnections: %s",
-          pool->getThreadLocalConnections() ? "true" : "false");
-  LOGINFO("getPRSingleHopEnabled: %s",
-          pool->getPRSingleHopEnabled() ? "true" : "false");
+  LOG_INFO("CPPTEST: Pool attributes for pool %s are as follows" +
+           pool->getName());
+  LOG_INFO("getFreeConnectionTimeout: " +
+           to_string(pool->getFreeConnectionTimeout()));
+  LOG_INFO("getLoadConditioningInterval: " +
+           to_string(pool->getLoadConditioningInterval()));
+  LOG_INFO("getSocketBufferSize: %d", pool->getSocketBufferSize());
+  LOG_INFO("getReadTimeout: " + to_string(pool->getReadTimeout()));
+  LOG_INFO("getMinConnections: %d", pool->getMinConnections());
+  LOG_INFO("getMaxConnections: %d", pool->getMaxConnections());
+  LOG_INFO("getIdleTimeout: " + to_string(pool->getIdleTimeout()));
+  LOG_INFO("getPingInterval: " + to_string(pool->getPingInterval()));
+  LOG_INFO("getStatisticInterval: " + to_string(pool->getStatisticInterval()));
+  LOG_INFO("getRetryAttempts: %d", pool->getRetryAttempts());
+  LOG_INFO("getSubscriptionEnabled: %s",
+           pool->getSubscriptionEnabled() ? "true" : "false");
+  LOG_INFO("getSubscriptionRedundancy: %d", pool->getSubscriptionRedundancy());
+  LOG_INFO("getSubscriptionMessageTrackingTimeout: " +
+           to_string(pool->getSubscriptionMessageTrackingTimeout()));
+  LOG_INFO("getSubscriptionAckInterval: " +
+           to_string(pool->getSubscriptionAckInterval()));
+  LOG_INFO("getServerGroup: " + pool->getServerGroup());
+  LOG_INFO("getThreadLocalConnections: %s",
+           pool->getThreadLocalConnections() ? "true" : "false");
+  LOG_INFO("getPRSingleHopEnabled: %s",
+           pool->getPRSingleHopEnabled() ? "true" : "false");
 }
 
 void CacheHelper::createPoolWithLocators(

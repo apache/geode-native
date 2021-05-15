@@ -100,6 +100,7 @@ target_link_libraries(cpp-integration-test
   PRIVATE
     _WarningsAsError
     internal
+    spdlog::spdlog
 )
 
 if(WIN32)

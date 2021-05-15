@@ -87,7 +87,7 @@ GfErrType AdminRegion::putNoThrow(const std::shared_ptr<CacheableKey>& keyPtr,
   // put the object into local region
   switch (reply.getMessageType()) {
     case TcrMessage::REPLY: {
-      LOGDEBUG(
+      LOG_DEBUG(
           "AdminRegion::put: entry is written into remote server "
           "at region %s",
           m_fullPath.c_str());
@@ -100,13 +100,13 @@ GfErrType AdminRegion::putNoThrow(const std::shared_ptr<CacheableKey>& keyPtr,
       break;
     }
     case TcrMessage::PUT_DATA_ERROR: {
-      LOGERROR("A write error occurred on the endpoint %s",
-               m_distMngr->getActiveEndpoint()->name().c_str());
+      LOG_ERROR("A write error occurred on the endpoint %s",
+                m_distMngr->getActiveEndpoint()->name().c_str());
       err = GF_CACHESERVER_EXCEPTION;
       break;
     }
     default: {
-      LOGERROR("Unknown message type in put reply %d", reply.getMessageType());
+      LOG_ERROR("Unknown message type in put reply %d", reply.getMessageType());
       err = GF_MSG;
     }
   }

@@ -67,7 +67,7 @@ void PdxHelper::serializePdxWithRetries(
         }
 
         output.advanceCursor(before - output.getCursor());
-        LOGDEBUG("Retrying PDX serialization due to PDX unknown exception");
+        LOG_DEBUG("Retrying PDX serialization due to PDX unknown exception");
       }
     }
   }
@@ -180,8 +180,8 @@ std::shared_ptr<PdxSerializable> PdxHelper::deserializePdx(DataInput& dataInput,
   if (pType && pdxLocalType) {
     // type found
     auto&& pdxClassname = pType->getPdxClassName();
-    LOGDEBUG("deserializePdx ClassName = " + pdxClassname +
-             ", isLocal = " + std::to_string(pType->isLocal()));
+    LOG_DEBUG("deserializePdx ClassName = " + pdxClassname +
+              ", isLocal = " + std::to_string(pType->isLocal()));
 
     pdxObjectptr = serializationRegistry->getPdxSerializableType(pdxClassname);
     if (pType->isLocal())  // local type no need to read Unread data
@@ -273,7 +273,7 @@ std::shared_ptr<PdxSerializable> PdxHelper::deserializePdx(DataInput& dataInput,
       prtc.moveStream();
     } else {  // remote reader will come here as local type is there
       pType->InitializeType();
-      LOGDEBUG("Adding type %d ", pType->getTypeId());
+      LOG_DEBUG("Adding type %d ", pType->getTypeId());
       pdxTypeRegistry->addPdxType(pType->getTypeId(),
                                   pType);  // adding remote type
       auto prr = PdxRemoteReader(dataInput, pType, length, pdxTypeRegistry);

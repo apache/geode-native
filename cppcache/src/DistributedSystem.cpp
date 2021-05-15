@@ -70,7 +70,7 @@ DistributedSystem DistributedSystem::create(
   if (!logFilename.empty()) {
     try {
       Log::close();
-      Log::init(systemProperties->logLevel(), logFilename.c_str(),
+      Log::init(systemProperties->logLevel(), logFilename,
                 systemProperties->logFileSizeLimit(),
                 systemProperties->logDiskSpaceLimit());
     } catch (const GeodeIOException&) {
@@ -79,13 +79,13 @@ DistributedSystem DistributedSystem::create(
       throw;
     }
   } else {
-    Log::setLogLevel(systemProperties->logLevel());
+    Log::init(systemProperties->logLevel());
   }
 
   try {
     CppCacheLibrary::getProductDir();
   } catch (const Exception&) {
-    LOGERROR(
+    LOG_ERROR(
         "Unable to determine Product Directory. Please set the "
         "GEODE_NATIVE_HOME environment variable.");
     throw;
@@ -93,7 +93,7 @@ DistributedSystem DistributedSystem::create(
 
   auto distributedSystem = DistributedSystem(name, std::move(systemProperties));
 
-  LOGCONFIG("Starting the Geode Native Client");
+  LOG_CONFIG("Starting the Geode Native Client");
   return distributedSystem;
 }
 

@@ -98,34 +98,34 @@ class CallbackListener : public CacheListener {
         auto fromCallback = callbkArg->getPkid();
         auto mCallback = mCallbkArg->getPkid();
 
-        LOGFINE(" values are %s === %s ", fromCallback->value().c_str(),
-                mCallback->value().c_str());
+        LOG_FINE(" values are %s === %s ", fromCallback->value().c_str(),
+                 mCallback->value().c_str());
 
         if (*(fromCallback.get()) == *(mCallback.get())) {
-          LOGFINE("values are same");
+          LOG_FINE("values are same");
           updateEvent++;
         } else {
-          LOGFINE("values are NOT same");
+          LOG_FINE("values are NOT same");
         }
       } catch (const ClassCastException &ex) {
-        LOGFINE(" in class cast exception %s ", ex.what());
+        LOG_FINE(" in class cast exception %s ", ex.what());
         try {
           auto fromCallback =
               std::dynamic_pointer_cast<CacheableString>(eventCallback);
           auto mCallback =
               std::dynamic_pointer_cast<CacheableString>(m_callbackArg);
 
-          LOGFINE(" values are %s === %s ", fromCallback->value().c_str(),
-                  mCallback->value().c_str());
+          LOG_FINE(" values are %s === %s ", fromCallback->value().c_str(),
+                   mCallback->value().c_str());
 
           if (*(fromCallback.get()) == *(mCallback.get())) {
-            LOGFINE("values are same");
+            LOG_FINE("values are same");
             updateEvent++;
           } else {
-            LOGFINE("values are NOT same");
+            LOG_FINE("values are NOT same");
           }
         } catch (const ClassCastException &ex2) {
-          LOGFINE(" in class cast second exception %s ", ex2.what());
+          LOG_FINE(" in class cast second exception %s ", ex2.what());
         }
       }
     }
@@ -180,7 +180,7 @@ void setCacheListener(const char *regName,
 }
 
 void validateEventCount(int line) {
-  LOGINFO("ValidateEvents called from line (%d).", line);
+  LOG_INFO("ValidateEvents called from line (%d).", line);
   int num = reg1Listener1->getCreates();
   char buf[1024];
   sprintf(buf, "Didn't get expected callback arg in aftercreate event");

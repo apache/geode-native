@@ -61,8 +61,8 @@ ThinClientRedundancyManager::ThinClientRedundancyManager(
 
 std::list<ServerLocation> ThinClientRedundancyManager::selectServers(
     int howMany, std::set<ServerLocation> exclEndPts) {
-  LOGFINE("Selecting %d servers with %d in exclude list", howMany,
-          exclEndPts.size());
+  LOG_FINE("Selecting %d servers with %d in exclude list", howMany,
+           exclEndPts.size());
 
   std::list<ServerLocation> outEndpoints;
 
@@ -76,7 +76,7 @@ std::list<ServerLocation> ThinClientRedundancyManager::selectServers(
     } catch (const AuthenticationRequiredException&) {
       return outEndpoints;
     } catch (const NoAvailableLocatorsException&) {
-      LOGFINE("No locators available");
+      LOG_FINE("No locators available");
       return outEndpoints;
     }
   } else if (m_servers->length() > 0) {
@@ -160,7 +160,7 @@ GfErrType ThinClientRedundancyManager::maintainRedundancyLevel(
   // 2. If redundancy has not been satisfied, scan the nonredundant list to find
   // available endpoints that can be made redundant.
 
-  LOGDEBUG(
+  LOG_DEBUG(
       "ThinClientRedundancyManager::maintainRedundancyLevel(): checking "
       "redundant list, size = %zu",
       m_redundantEndpoints.size());
@@ -198,7 +198,7 @@ GfErrType ThinClientRedundancyManager::maintainRedundancyLevel(
   // For queue locators, fetch an initial list of endpoints which can host
   // queues.
   if (!isRedundancySatisfied && m_poolHADM && !init) {
-    LOGDEBUG(
+    LOG_DEBUG(
         "ThinClientRedundancyManager::maintainRedundancyLevel(): building "
         "nonredundant list via pool.");
 
@@ -206,7 +206,7 @@ GfErrType ThinClientRedundancyManager::maintainRedundancyLevel(
     std::set<ServerLocation> exclEndPts;
     for (std::vector<TcrEndpoint*>::iterator itr = m_redundantEndpoints.begin();
          itr != m_redundantEndpoints.end(); itr++) {
-      LOGDEBUG(
+      LOG_DEBUG(
           "ThinClientRedundancyManager::maintainRedundancyLevel(): excluding "
           "endpoint %s from queue list.",
           (*itr)->name().c_str());
@@ -225,7 +225,7 @@ GfErrType ThinClientRedundancyManager::maintainRedundancyLevel(
     for (std::list<ServerLocation>::iterator it = outEndpoints.begin();
          it != outEndpoints.end(); it++) {
       auto ep = m_poolHADM->addEP(*it);
-      LOGDEBUG(
+      LOG_DEBUG(
           "ThinClientRedundancyManager::maintainRedundancyLevel(): Adding "
           "endpoint %s to nonredundant list.",
           ep->name().c_str());
@@ -233,7 +233,7 @@ GfErrType ThinClientRedundancyManager::maintainRedundancyLevel(
     }
   }
 
-  LOGDEBUG(
+  LOG_DEBUG(
       "ThinClientRedundancyManager::maintainRedundancyLevel(): finding "
       "nonredundant endpoints, size = %zu",
       m_nonredundantEndpoints.size());
@@ -402,13 +402,13 @@ GfErrType ThinClientRedundancyManager::maintainRedundancyLevel(
   if (queryServicePtr != nullptr) {
     if (isPrimaryConnected) {
       // call CqStatusListener connect
-      LOGDEBUG(
+      LOG_DEBUG(
           "invoke invokeCqConnectedListeners for connected for CQ status "
           "listener");
       queryServicePtr->invokeCqConnectedListeners(poolDM, true);
     } else {
       // call CqStatusListener disconnect
-      LOGDEBUG(
+      LOG_DEBUG(
           "invoke invokeCqDisConnectedListeners for disconnected for CQ status "
           "listener");
       queryServicePtr->invokeCqConnectedListeners(poolDM, false);
@@ -438,12 +438,12 @@ GfErrType ThinClientRedundancyManager::maintainRedundancyLevel(
     }
     m_allEndpointsDisconnected = false;
     if (m_redundancyLevel == -1) {
-      LOGINFO("Current subscription redundancy level is %zu",
-              m_redundantEndpoints.size() - 1);
+      LOG_INFO("Current subscription redundancy level is %zu",
+               m_redundantEndpoints.size() - 1);
       return GF_NOERR;
     }
     if (!m_loggedRedundancyWarning) {
-      LOGWARN(
+      LOG_WARN(
           "Requested subscription redundancy level %d is not satisfiable with "
           "%zu servers available",
           m_redundancyLevel, m_redundantEndpoints.size());
@@ -502,7 +502,7 @@ GfErrType ThinClientRedundancyManager::createQueueEP(TcrEndpoint* ep,
                                                      const TcrMessage* request,
                                                      TcrMessageReply* reply,
                                                      bool isPrimary) {
-  LOGFINE("Recovering subscriptions on endpoint [%s]", ep->name().c_str());
+  LOG_FINE("Recovering subscriptions on endpoint [%s]", ep->name().c_str());
   GfErrType err = GF_NOERR;
   if ((err = ep->registerDM(true, !isPrimary)) == GF_NOERR) {
     if ((err = m_theTcrConnManager->registerInterestAllRegions(
@@ -521,27 +521,27 @@ GfErrType ThinClientRedundancyManager::createQueueEP(TcrEndpoint* ep,
         try {
           err = rqsService->executeAllCqs(ep);
         } catch (const Exception& excp) {
-          LOGFINE("Failed to recover CQs on endpoint[%s]: %s",
-                  ep->name().c_str(), excp.what());
+          LOG_FINE("Failed to recover CQs on endpoint[%s]: %s",
+                   ep->name().c_str(), excp.what());
           ep->unregisterDM(true);
           err = GF_NOTCON;
         } catch (...) {
-          LOGFINE("Failed to recover CQs on endpoint[%s]", ep->name().c_str());
+          LOG_FINE("Failed to recover CQs on endpoint[%s]", ep->name().c_str());
           ep->unregisterDM(true);
           err = GF_NOTCON;
         }
       }
     }
   }
-  LOGFINE("Done subscription recovery");
+  LOG_FINE("Done subscription recovery");
   return err;
 }
 
 GfErrType ThinClientRedundancyManager::createPoolQueueEP(
     TcrEndpoint* ep, const TcrMessage* request, TcrMessageReply* reply,
     bool isPrimary) {
-  LOGFINE("Recovering subscriptions on endpoint [" + ep->name() +
-          "] from pool " + m_poolHADM->getName());
+  LOG_FINE("Recovering subscriptions on endpoint [" + ep->name() +
+           "] from pool " + m_poolHADM->getName());
 
   GfErrType err = GF_NOERR;
   if ((err = ep->registerDM(false, !isPrimary, false, m_poolHADM)) ==
@@ -561,19 +561,19 @@ GfErrType ThinClientRedundancyManager::createPoolQueueEP(
         try {
           err = rqsService->executeAllCqs(ep);
         } catch (const Exception& excp) {
-          LOGFINE("Failed to recover CQs on endpoint[" + ep->name() + "]: %s" +
-                  excp.getMessage());
+          LOG_FINE("Failed to recover CQs on endpoint[" + ep->name() + "]: %s" +
+                   excp.getMessage());
           ep->unregisterDM(false);  // Argument is useless
           err = GF_NOTCON;
         } catch (...) {
-          LOGFINE("Failed to recover CQs on endpoint[" + ep->name() + "]");
+          LOG_FINE("Failed to recover CQs on endpoint[" + ep->name() + "]");
           ep->unregisterDM(false);  // Argument is useless
           err = GF_NOTCON;
         }
       }
     }
   }
-  LOGFINE("Done subscription recovery");
+  LOG_FINE("Done subscription recovery");
   return err;
 }
 
@@ -598,12 +598,12 @@ GfErrType ThinClientRedundancyManager::makeSecondary(TcrEndpoint* ep,
 }
 
 void ThinClientRedundancyManager::initialize(int redundancyLevel) {
-  LOGDEBUG(
+  LOG_DEBUG(
       "ThinClientRedundancyManager::initialize(): initializing redundancy "
       "manager.");
-  LOGFINE("Subscription redundancy level set to %d %s %s", redundancyLevel,
-          m_poolHADM != nullptr ? "for pool" : "",
-          m_poolHADM != nullptr ? m_poolHADM->getName().c_str() : "");
+  LOG_FINE("Subscription redundancy level set to %d %s %s", redundancyLevel,
+           m_poolHADM != nullptr ? "for pool" : "",
+           m_poolHADM != nullptr ? m_poolHADM->getName().c_str() : "");
   m_redundancyLevel = redundancyLevel;
   m_HAenabled = (redundancyLevel > 0 || m_theTcrConnManager->isDurable() ||
                  ThinClientBaseDM::isDeltaEnabledOnServer());
@@ -637,8 +637,8 @@ void ThinClientRedundancyManager::initialize(int redundancyLevel) {
     if (m_locators->length() == 0) m_servers = m_poolHADM->getServers();
     if (m_locators->length() > 0) {
       for (int item = 0; item < m_locators->length(); item++) {
-        LOGDEBUG("ThinClientRedundancyManager::initialize: adding locator %s",
-                 (*m_locators)[item]->value().c_str());
+        LOG_DEBUG("ThinClientRedundancyManager::initialize: adding locator %s",
+                  (*m_locators)[item]->value().c_str());
       }
     } else if (m_servers->length() > 0) {
       RandGen randgen;
@@ -657,7 +657,7 @@ void ThinClientRedundancyManager::sendNotificationCloseMsgs() {
       m_redundantEndpointsLock);
 
   for (auto&& endpoint : m_redundantEndpoints) {
-    LOGDEBUG(
+    LOG_DEBUG(
         "ThinClientRedundancyManager::sendNotificationCloseMsgs(): closing "
         "notification for endpoint %s",
         endpoint->name().c_str());
@@ -665,7 +665,7 @@ void ThinClientRedundancyManager::sendNotificationCloseMsgs() {
   }
 
   for (auto&& endpoint : m_redundantEndpoints) {
-    LOGDEBUG(
+    LOG_DEBUG(
         "ThinClientRedundancyManager::sendNotificationCloseMsgs(): closing "
         "receiver for endpoint %s",
         endpoint->name().c_str());
@@ -674,7 +674,8 @@ void ThinClientRedundancyManager::sendNotificationCloseMsgs() {
 }
 
 void ThinClientRedundancyManager::close() {
-  LOGDEBUG("ThinClientRedundancyManager::close(): closing redundancy manager.");
+  LOG_DEBUG(
+      "ThinClientRedundancyManager::close(): closing redundancy manager.");
 
   if (m_periodicAckTask) {
     auto& manager = m_theTcrConnManager->getCacheImpl()->getExpiryTaskManager();
@@ -690,7 +691,7 @@ void ThinClientRedundancyManager::close() {
       m_redundantEndpointsLock);
 
   for (auto&& endpoint : m_redundantEndpoints) {
-    LOGDEBUG(
+    LOG_DEBUG(
         "ThinClientRedundancyManager::close(): unregistering from endpoint %s",
         endpoint->name().c_str());
     endpoint->unregisterDM(true);
@@ -754,7 +755,7 @@ bool ThinClientRedundancyManager::sendMakePrimaryMesg(TcrEndpoint* ep,
       new DataOutput(m_theTcrConnManager->getCacheImpl()->createDataOutput()),
       ThinClientRedundancyManager::m_sentReadyForEvents);
 
-  LOGFINE("Making primary subscription endpoint %s", ep->name().c_str());
+  LOG_FINE("Making primary subscription endpoint %s", ep->name().c_str());
   GfErrType err = GF_NOTCON;
   if (m_poolHADM) {
     err = m_poolHADM->sendRequestToEP(makePrimaryRequest, reply, ep);
@@ -785,8 +786,8 @@ bool ThinClientRedundancyManager::sendMakePrimaryMesg(TcrEndpoint* ep,
 
 GfErrType ThinClientRedundancyManager::sendSyncRequestCq(
     TcrMessage& request, TcrMessageReply& reply, ThinClientBaseDM* theHADM) {
-  LOGDEBUG("ThinClientRedundancyManager::sendSyncRequestCq msgType[%d]",
-           request.getMessageType());
+  LOG_DEBUG("ThinClientRedundancyManager::sendSyncRequestCq msgType[%d]",
+            request.getMessageType());
   std::lock_guard<decltype(m_redundantEndpointsLock)> guard(
       m_redundantEndpointsLock);
 
@@ -795,15 +796,15 @@ GfErrType ThinClientRedundancyManager::sendSyncRequestCq(
   TcrEndpoint* primaryEndpoint = nullptr;
 
   if (m_redundantEndpoints.size() >= 1) {
-    LOGDEBUG(
+    LOG_DEBUG(
         "ThinClientRedundancyManager::sendSyncRequestCq: to secondary "
         "size[%zu]",
         m_redundantEndpoints.size());
     std::vector<TcrEndpoint*>::iterator iter = m_redundantEndpoints.begin();
-    LOGDEBUG("endpoint[%s]", (*iter)->name().c_str());
+    LOG_DEBUG("endpoint[%s]", (*iter)->name().c_str());
     for (++iter; iter != m_redundantEndpoints.end(); ++iter) {
-      LOGDEBUG("endpoint[%s]", (*iter)->name().c_str());
-      LOGDEBUG(
+      LOG_DEBUG("endpoint[%s]", (*iter)->name().c_str());
+      LOG_DEBUG(
           "msgType[%d] ThinClientRedundancyManager::sendSyncRequestCq: to "
           "secondary",
           request.getMessageType());
@@ -820,7 +821,7 @@ GfErrType ThinClientRedundancyManager::sendSyncRequestCq(
       }
     }
     primaryEndpoint = m_redundantEndpoints[0];
-    LOGDEBUG("primary endpoint[%s]", primaryEndpoint->name().c_str());
+    LOG_DEBUG("primary endpoint[%s]", primaryEndpoint->name().c_str());
   }
 
   int32_t attempts = static_cast<int32_t>(m_redundantEndpoints.size()) +
@@ -850,7 +851,7 @@ GfErrType ThinClientRedundancyManager::sendSyncRequestCq(
       err = GF_NOTCON;
     } else {
       primaryEndpoint = m_redundantEndpoints[0];
-      LOGDEBUG(
+      LOG_DEBUG(
           "ThinClientRedundancyManager::sendSyncRequestCq: to primary [%s]",
           primaryEndpoint->name().c_str());
       GuardUserAttributes gua;
@@ -876,7 +877,7 @@ GfErrType ThinClientRedundancyManager::sendSyncRequestCq(
 GfErrType ThinClientRedundancyManager::sendSyncRequestRegisterInterest(
     TcrMessage& request, TcrMessageReply& reply, bool, TcrEndpoint* endpoint,
     ThinClientBaseDM* theHADM, ThinClientRegion* region) {
-  LOGDEBUG("ThinClientRedundancyManager::sendSyncRequestRegisterInterest ");
+  LOG_DEBUG("ThinClientRedundancyManager::sendSyncRequestRegisterInterest ");
   if (!endpoint) {
     std::lock_guard<decltype(m_redundantEndpointsLock)> guard(
         m_redundantEndpointsLock);
@@ -997,18 +998,18 @@ void ThinClientRedundancyManager::getAllEndpoints(
         } else {
           insertEPInQueueSizeOrder(ep.get(), endpoints);
         }
-        LOGDEBUG(
+        LOG_DEBUG(
             "ThinClientRedundancyManager::getAllEndpoints(): sorting "
             "endpoints, found redundant endpoint.");
       } else if (status == PRIMARY_SERVER) {
         // Primary should be unique
         primaryEp = ep;
-        LOGDEBUG(
+        LOG_DEBUG(
             "ThinClientRedundancyManager::getAllEndpoints(): sorting "
             "endpoints, found primary endpoint.");
       } else {
         endpoints.push_back(currItr.second.get());
-        LOGDEBUG(
+        LOG_DEBUG(
             "ThinClientRedundancyManager::getAllEndpoints(): sorting "
             "endpoints, found nonredundant endpoint.");
       }
@@ -1022,19 +1023,19 @@ void ThinClientRedundancyManager::getAllEndpoints(
   if (isDurable()) {
     if (maxQEp) {
       endpoints.push_back(maxQEp.get());
-      LOGDEBUG(
+      LOG_DEBUG(
           "ThinClientRedundancyManager::getAllEndpoints(): sorting endpoints, "
           "pushing max-q endpoint at back.");
     }
     if (primaryEp) {
       if (m_redundancyLevel == 0 || !maxQEp) {
         endpoints.push_back(primaryEp.get());
-        LOGDEBUG(
+        LOG_DEBUG(
             "ThinClientRedundancyManager::getAllEndpoints(): sorting "
             "endpoints, pushing primary at back.");
       } else {
         endpoints.insert(endpoints.begin(), primaryEp.get());
-        LOGDEBUG(
+        LOG_DEBUG(
             "ThinClientRedundancyManager::getAllEndpoints(): sorting "
             "endpoints, inserting primary at head.");
       }
@@ -1123,12 +1124,12 @@ void ThinClientRedundancyManager::periodicAck(std::atomic<bool>& isRunning) {
 }
 
 void ThinClientRedundancyManager::doPeriodicAck() {
-  LOGDEBUG(
+  LOG_DEBUG(
       "ThinClientRedundancyManager::processEventIdMap( ): Examining eventid "
       "map.");
   // do periodic ack if HA is enabled and the time has come
   if (m_HAenabled && (m_nextAck < clock::now())) {
-    LOGFINER("Doing periodic ack");
+    LOG_FINER("Doing periodic ack");
     m_nextAck += next_ack_inc_;
 
     auto entries = m_eventidmap.getUnAcked();
@@ -1155,20 +1156,20 @@ void ThinClientRedundancyManager::doPeriodicAck() {
         }
 
         if (result == GF_NOERR && reply.getMessageType() == TcrMessage::REPLY) {
-          LOGFINE(
+          LOG_FINE(
               "Sent subscription ack message for %zu sources to endpoint %s",
               count, (*endpoint)->name().c_str());
           acked = true;
         } else {
-          LOGWARN(
+          LOG_WARN(
               "Failure sending subscription ack message for %zu sources to "
               "endpoint %s",
               count, (*endpoint)->name().c_str());
-          LOGFINER("Ack result is %d and reply message type is %d", result,
-                   reply.getMessageType());
+          LOG_FINER("Ack result is %d and reply message type is %d", result,
+                    reply.getMessageType());
         }
       } else {
-        LOGWARN(
+        LOG_WARN(
             "No subscription servers available for periodic ack for %zu "
             "sources",
             count);
@@ -1185,7 +1186,7 @@ void ThinClientRedundancyManager::doPeriodicAck() {
   uint32_t expired = m_eventidmap.expire(m_HAenabled /* onlyacked */);
 
   if (expired > 0) {
-    LOGFINE("Expired %d sources from subscription map", expired);
+    LOG_FINE("Expired %d sources from subscription map", expired);
   }
 }
 
@@ -1203,7 +1204,7 @@ void ThinClientRedundancyManager::startPeriodicAck() {
       manager, [this] { periodic_ack_semaphore_.release(); });
   process_event_id_map_task_id_ =
       manager.schedule(std::move(task), next_ack_inc_, next_ack_inc_);
-  LOGFINE(
+  LOG_FINE(
       "Registered subscription event "
       "periodic ack task with id = %ld, notify-ack-interval = %ld, "
       "notify-dupcheck-life = %ld, periodic ack is %sabled",

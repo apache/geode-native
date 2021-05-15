@@ -28,7 +28,7 @@ namespace PdxTests {
 template <typename T1, typename T2>
 bool PdxTests::PdxType::genericValCompare(T1 value1, T2 value2) const {
   if (value1 != value2) return false;
-  LOGINFO("PdxObject::genericValCompare Line_19");
+  LOG_INFO("PdxObject::genericValCompare Line_19");
   return true;
 }
 
@@ -42,27 +42,30 @@ bool PdxTests::PdxType::genericCompare(T1* value1, T2* value2, L length) const {
       i++;
     }
   }
-  LOGINFO("PdxObject::genericCompare Line_34");
+  LOG_INFO("PdxObject::genericCompare Line_34");
   return true;
 }
 
 template <typename T1, typename T2>
 bool PdxTests::PdxType::generic2DCompare(T1** value1, T2** value2, int length,
                                          int* arrLengths) const {
-  LOGINFO("generic2DCompare length = %d ", length);
-  LOGINFO("generic2DCompare value1 = %d \t value2", value1[0][0], value2[0][0]);
-  LOGINFO("generic2DCompare value1 = %d \t value2", value1[1][0], value2[1][0]);
-  LOGINFO("generic2DCompare value1 = %d \t value2", value1[1][1], value2[1][1]);
+  LOG_INFO("generic2DCompare length = %d ", length);
+  LOG_INFO("generic2DCompare value1 = %d \t value2", value1[0][0],
+           value2[0][0]);
+  LOG_INFO("generic2DCompare value1 = %d \t value2", value1[1][0],
+           value2[1][0]);
+  LOG_INFO("generic2DCompare value1 = %d \t value2", value1[1][1],
+           value2[1][1]);
   for (int j = 0; j < length; j++) {
-    LOGINFO("generic2DCompare arrlength0 = %d ", arrLengths[j]);
+    LOG_INFO("generic2DCompare arrlength0 = %d ", arrLengths[j]);
     for (int k = 0; k < arrLengths[j]; k++) {
-      LOGINFO("generic2DCompare arrlength = %d ", arrLengths[j]);
-      LOGINFO("generic2DCompare value1 = %d \t value2 = %d ", value1[j][k],
-              value2[j][k]);
+      LOG_INFO("generic2DCompare arrlength = %d ", arrLengths[j]);
+      LOG_INFO("generic2DCompare value1 = %d \t value2 = %d ", value1[j][k],
+               value2[j][k]);
       if (value1[j][k] != value2[j][k]) return false;
     }
   }
-  LOGINFO("PdxObject::genericCompare Line_34");
+  LOG_INFO("PdxObject::genericCompare Line_34");
   return true;
 }
 
@@ -165,9 +168,9 @@ void PdxTests::PdxType::toData(PdxWriter& pw) const {
   pw.writeObjectArray("m_objectArray", m_objectArray);
   pw.writeObjectArray("", m_objectArrayEmptyPdxFieldName);
 
-  LOGDEBUG("PdxObject::writeObject() for enum Done......");
+  LOG_DEBUG("PdxObject::writeObject() for enum Done......");
 
-  LOGDEBUG("PdxObject::toData() Done......");
+  LOG_DEBUG("PdxObject::toData() Done......");
 }
 
 void PdxTests::PdxType::fromData(PdxReader& pr) {
@@ -236,7 +239,7 @@ void PdxTests::PdxType::fromData(PdxReader& pr) {
   m_uint32Array = pr.readIntArray("m_uint32Array");
   m_ulongArray = pr.readLongArray("m_ulongArray");
   m_uint16Array = pr.readShortArray("m_uint16Array");
-  // LOGINFO("PdxType::readInt() start...");
+  // LOG_INFO("PdxType::readInt() start...");
 
   m_byte252 = pr.readByteArray("m_byte252");
   m_byte253 = pr.readByteArray("m_byte253");
@@ -256,7 +259,7 @@ void PdxTests::PdxType::fromData(PdxReader& pr) {
 
   // TODO:temp added delete it later
 
-  LOGINFO("PdxObject::readObject() for enum Done...");
+  LOG_INFO("PdxObject::readObject() for enum Done...");
 }
 std::string PdxTests::PdxType::toString() const {
   char idbuf[1024];
@@ -319,7 +322,7 @@ bool PdxTests::PdxType::equals(PdxTests::PdxType& other,
       Address* myAddr1 = dynamic_cast<Address*>(m_objectArray->at(i).get());
       if (!otherAddr1->equals(*myAddr1)) return false;
     }
-    LOGINFO("PdxObject::equals isPdxReadSerialized = %d", isPdxReadSerialized);
+    LOG_INFO("PdxObject::equals isPdxReadSerialized = %d", isPdxReadSerialized);
   }
 
   // m_objectArrayEmptyPdxFieldName
@@ -330,8 +333,8 @@ bool PdxTests::PdxType::equals(PdxTests::PdxType& other,
       Address* myAddr1 = dynamic_cast<Address*>(m_objectArray->at(i).get());
       if (!otherAddr1->equals(*myAddr1)) return false;
     }
-    LOGINFO("PdxObject::equals Empty Field Name isPdxReadSerialized = %d",
-            isPdxReadSerialized);
+    LOG_INFO("PdxObject::equals Empty Field Name isPdxReadSerialized = %d",
+             isPdxReadSerialized);
   }
 
   auto myenum = std::dynamic_pointer_cast<CacheableEnum>(m_pdxEnum);
@@ -345,19 +348,19 @@ bool PdxTests::PdxType::equals(PdxTests::PdxType& other,
     genericValCompare(ot->m_arraylist->at(k), m_arraylist->at(k));
   }
 
-  LOGINFO("Equals Linked List Starts");
+  LOG_INFO("Equals Linked List Starts");
   genericValCompare(ot->m_linkedlist->size(), m_linkedlist->size());
   for (size_t k = 0; k < m_linkedlist->size(); k++) {
     genericValCompare(ot->m_linkedlist->at(k), m_linkedlist->at(k));
   }
-  LOGINFO("Equals Linked List Finished");
+  LOG_INFO("Equals Linked List Finished");
 
   genericValCompare(ot->m_vector->size(), m_vector->size());
   for (size_t j = 0; j < m_vector->size(); j++) {
     genericValCompare(ot->m_vector->at(j), m_vector->at(j));
   }
 
-  LOGINFO("PdxObject::equals DOne Line_201");
+  LOG_INFO("PdxObject::equals DOne Line_201");
   return true;
 }
 

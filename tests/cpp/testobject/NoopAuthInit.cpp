@@ -29,13 +29,13 @@ namespace client {
 
 extern "C" {
 TESTOBJECT_EXPORT AuthInitialize* createNoopAuthInitInstance() {
-  LOGINFO("rjk: calling createNoopAuthInitInstance");
+  LOG_INFO("rjk: calling createNoopAuthInitInstance");
   return new NoopAuthInit();
 }
 }
 std::shared_ptr<Properties> NoopAuthInit::getCredentials(
     const std::shared_ptr<Properties>&, const std::string&) {
-  LOGINFO("rjk: calling NoopAuthInit::getCredentials");
+  LOG_INFO("rjk: calling NoopAuthInit::getCredentials");
   auto credentials = Properties::create();
   return credentials;
 }

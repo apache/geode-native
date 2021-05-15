@@ -109,7 +109,7 @@ class TESTOBJECT_EXPORT PdxVersioned2 : public PdxSerializable {
 
   /*
     PdxVersioned2(const char* key) {
-            LOGINFO("rjk:inside testpdxobject pdxType");
+            LOG_INFO("rjk:inside testpdxobject pdxType");
       init(key);
     }
   */
@@ -235,7 +235,7 @@ class TESTOBJECT_EXPORT PdxVersioned2 : public PdxSerializable {
   }
 
   /*PdxVersioned2(){
-   LOGINFO("rjk:inside testpdxobject default pdxType");
+   LOG_INFO("rjk:inside testpdxobject default pdxType");
    init();
   }*/
   static std::shared_ptr<PdxSerializable> createDeserializable() {

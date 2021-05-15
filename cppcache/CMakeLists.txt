@@ -97,6 +97,7 @@ target_link_libraries(_apache-geode INTERFACE
   XercesC::XercesC
   OpenSSL::SSL
   OpenSSL::Crypto
+  spdlog::spdlog
 )
 
 if (USE_PCH)

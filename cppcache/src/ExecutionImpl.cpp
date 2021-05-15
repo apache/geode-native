@@ -96,10 +96,10 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
 
 std::shared_ptr<ResultCollector> ExecutionImpl::execute(
     const std::string& func, std::chrono::milliseconds timeout) {
-  LOGDEBUG("ExecutionImpl::execute: ");
+  LOG_DEBUG("ExecutionImpl::execute: ");
   GuardUserAttributes gua;
   if (m_authenticatedView != nullptr) {
-    LOGDEBUG("ExecutionImpl::execute function on authenticated cache");
+    LOG_DEBUG("ExecutionImpl::execute function on authenticated cache");
     gua.setAuthenticatedView(m_authenticatedView);
   }
   bool serverHasResult = false;
@@ -132,7 +132,7 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
   serverIsHA = ((attr->at(1) == 1) ? true : false);
   serverOptimizeForWrite = ((attr->at(2) == 1) ? true : false);
 
-  LOGDEBUG(
+  LOG_DEBUG(
       "ExecutionImpl::execute got functionAttributes from server for function "
       "= %s serverHasResult = %d serverIsHA = %d serverOptimizeForWrite = %d ",
       func.c_str(), serverHasResult, serverIsHA, serverOptimizeForWrite);
@@ -156,8 +156,8 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
     isHAHasResultOptimizeForWrite = isHAHasResultOptimizeForWrite | 4;
   }
 
-  LOGDEBUG("ExecutionImpl::execute: isHAHasResultOptimizeForWrite = %d",
-           isHAHasResultOptimizeForWrite);
+  LOG_DEBUG("ExecutionImpl::execute: isHAHasResultOptimizeForWrite = %d",
+            isHAHasResultOptimizeForWrite);
   TXState* txState = TSSTXStateWrapper::get().getTXState();
 
   if (txState != nullptr && m_allServer == true) {
@@ -183,13 +183,13 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
       if ((!m_routingObj || m_routingObj->empty()) &&
           txState == nullptr) {  // For transactions we should not create
                                  // multiple threads
-        LOGDEBUG("ExecutionImpl::execute: m_routingObj is empty");
+        LOG_DEBUG("ExecutionImpl::execute: m_routingObj is empty");
         auto serverToBucketsMap = cms->groupByServerToAllBuckets(
             m_region,
             /*serverOptimizeForWrite*/ (isHAHasResultOptimizeForWrite & 4) ==
                 4);
         if (!serverToBucketsMap || serverToBucketsMap->empty()) {
-          LOGDEBUG(
+          LOG_DEBUG(
               "ExecutionImpl::execute: m_routingObj is empty and locationMap "
               "is also empty so use old FE onRegion");
           std::dynamic_pointer_cast<ThinClientRegion>(m_region)
@@ -212,7 +212,7 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
             }
             serverToKeysMap->emplace(entry.first, keys);
           }
-          LOGDEBUG(
+          LOG_DEBUG(
               "ExecutionImpl::execute: withoutFilter and locationMap is not "
               "empty");
           bool reExecute = std::dynamic_pointer_cast<ThinClientRegion>(m_region)
@@ -243,7 +243,7 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
           }
         }
       } else if (m_routingObj != nullptr && m_routingObj->size() == 1) {
-        LOGDEBUG("executeFunction onRegion WithFilter size equal to 1 ");
+        LOG_DEBUG("executeFunction onRegion WithFilter size equal to 1 ");
         dynamic_cast<ThinClientRegion*>(m_region.get())
             ->executeFunction(
                 func, m_args, m_routingObj, isHAHasResultOptimizeForWrite, m_rc,
@@ -255,7 +255,7 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
               m_routingObj, m_region, /*serverOptimizeForWrite*/
               (isHAHasResultOptimizeForWrite & 4) == 4);
           if (!serverToKeysMap || serverToKeysMap->empty()) {
-            LOGDEBUG(
+            LOG_DEBUG(
                 "ExecutionImpl::execute: withFilter but locationMap is empty "
                 "so use old FE onRegion");
             dynamic_cast<ThinClientRegion*>(m_region.get())
@@ -266,7 +266,7 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
                     timeout);
             cms->enqueueForMetadataRefresh(m_region->getFullPath(), 0);
           } else {
-            LOGDEBUG(
+            LOG_DEBUG(
                 "ExecutionImpl::execute: withFilter and locationMap is not "
                 "empty");
             bool reExecute =
@@ -372,7 +372,7 @@ GfErrType ExecutionImpl::getFuncAttributes(
   GfErrType err = GF_NOERR;
 
   // do TCR GET_FUNCTION_ATTRIBUTES
-  LOGDEBUG("Tcrmessage request GET_FUNCTION_ATTRIBUTES ");
+  LOG_DEBUG("Tcrmessage request GET_FUNCTION_ATTRIBUTES ");
   TcrMessageGetFunctionAttributes request(
       new DataOutput(
           tcrdm->getConnectionManager().getCacheImpl()->createDataOutput()),
@@ -394,12 +394,12 @@ GfErrType ExecutionImpl::getFuncAttributes(
       break;
     }
     case TcrMessage::REQUEST_DATA_ERROR: {
-      LOGERROR("Error message from server: " + reply.getValue()->toString());
+      LOG_ERROR("Error message from server: " + reply.getValue()->toString());
       throw FunctionExecutionException(reply.getValue()->toString());
     }
     default: {
-      LOGERROR("Unknown message type %d while getting function attributes.",
-               reply.getMessageType());
+      LOG_ERROR("Unknown message type %d while getting function attributes.",
+                reply.getMessageType());
       err = GF_MSG;
       break;
     }
@@ -432,7 +432,7 @@ void ExecutionImpl::executeOnAllServers(const std::string& func,
       func.c_str(), getResult, timeout, m_args, m_rc, exceptionPtr);
 
   if (err != GF_NOERR) {
-    LOGDEBUG("Execute failed: %d", err);
+    LOG_DEBUG("Execute failed: %d", err);
     if (err == GF_CACHESERVER_EXCEPTION) {
       std::string message;
       if (exceptionPtr) {
@@ -494,8 +494,8 @@ std::shared_ptr<CacheableVector> ExecutionImpl::executeOnPool(
 
     GfErrType err = GF_NOERR;
     err = tcrdm->sendSyncRequest(msg, reply, !(getResult & 1));
-    LOGFINE("executeOnPool %d attempt = %d retryAttempts = %d", err, attempt,
-            retryAttempts);
+    LOG_FINE("executeOnPool %d attempt = %d retryAttempts = %d", err, attempt,
+             retryAttempts);
     if (err == GF_NOERR &&
         (reply.getMessageType() == TcrMessage::EXCEPTION ||
          reply.getMessageType() == TcrMessage::EXECUTE_FUNCTION_ERROR)) {

@@ -184,13 +184,13 @@ void PdxTypeRegistry::setPreserveData(
         expiryTaskManager.schedule(std::move(task), std::chrono::seconds(20));
     data->task_id(id);
 
-    LOGDEBUG(
+    LOG_DEBUG(
         "PdxTypeRegistry::setPreserveData Schedule new expiry task with id=%zu",
         id);
     preserved_data_.emplace_hint(iter, std::move(obj), std::move(data));
   }
 
-  LOGDEBUG(
+  LOG_DEBUG(
       "PdxTypeRegistry::setPreserveData Successfully inserted new entry in "
       "preservedData");
 }

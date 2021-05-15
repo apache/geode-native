@@ -203,7 +203,7 @@ SystemProperties::SystemProperties(
         CppCacheLibrary::getProductDir() + "/defaultSystem/geode.properties";
     givenConfigPtr->load(defaultSystemProperties);
   } catch (Exception&) {
-    LOGERROR(
+    LOG_ERROR(
         "Unable to determine Product Directory. Please set the "
         "GEODE_NATIVE_HOME environment variable.");
     throw;
@@ -227,7 +227,7 @@ SystemProperties::SystemProperties(
 SystemProperties::~SystemProperties() {}
 
 void SystemProperties::throwError(const std::string& msg) {
-  LOGERROR(msg);
+  LOG_ERROR(msg);
   throw GeodeConfigException(msg);
 }
 
@@ -310,7 +310,7 @@ void SystemProperties::processProperty(const std::string& property,
     m_logFilename = value;
   } else if (property == LogLevelProperty) {
     try {
-      m_logLevel = Log::charsToLevel(value);
+      m_logLevel = Log::stringToLogLevel(value);
     } catch (IllegalArgumentException&) {
       throwError(
           ("SystemProperties: unknown log level " + property + "=" + value));
@@ -423,7 +423,7 @@ void SystemProperties::logSettings() {
   settings += std::to_string(logFileSizeLimit());
 
   settings += "\n  log-level = ";
-  settings += Log::levelToChars(logLevel());
+  settings += Log::logLevelToString(logLevel());
 
   settings += "\n  max-fe-threads = ";
   settings += std::to_string(threadPoolSize());
@@ -477,7 +477,7 @@ void SystemProperties::logSettings() {
 
   // *** PLEASE ADD IN ALPHABETICAL ORDER - USER VISIBLE ***
 
-  LOGCONFIG(settings);
+  LOG_CONFIG(settings);
 }
 
 }  // namespace client

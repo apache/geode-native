@@ -110,17 +110,17 @@ void PoolStatsSampler::putStatsInAdminRegion() {
       m_adminRegion->put(keyPtr, obj);
     }
   } catch (const client::AllConnectionsInUseException&) {
-    LOGDEBUG("All connection are in use, trying again.");
+    LOG_DEBUG("All connection are in use, trying again.");
   } catch (const client::NotConnectedException& ex) {
     try {
       std::rethrow_if_nested(ex);
     } catch (const client::NoAvailableLocatorsException&) {
-      LOGDEBUG("No locators available, trying again.");
+      LOG_DEBUG("No locators available, trying again.");
     } catch (...) {
-      LOGDEBUG("Not connected to geode, trying again.");
+      LOG_DEBUG("Not connected to geode, trying again.");
     }
   } catch (...) {
-    LOGDEBUG("Exception occurred, trying again.");
+    LOG_DEBUG("Exception occurred, trying again.");
   }
 }
 }  // namespace statistics

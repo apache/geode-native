@@ -82,8 +82,8 @@ LRUEntriesMap::LRUEntriesMap(ExpiryTaskManager* expiryTaskManager,
       m_evictionControllerPtr = cImpl->getEvictionController();
       if (m_evictionControllerPtr != nullptr) {
         m_evictionControllerPtr->registerRegion(m_name);
-        LOGINFO("Heap LRU eviction controller registered region %s",
-                m_name.c_str());
+        LOG_INFO("Heap LRU eviction controller registered region %s",
+                 m_name.c_str());
       }
     }
   } else {
@@ -334,9 +334,9 @@ GfErrType LRUEntriesMap::put(const std::shared_ptr<CacheableKey>& key,
         static_cast<int64_t>(Utils::checkAndGetObjectSize(newValue));
     /*
     if (newSize == 0) {
-      LOGWARN("Object size for class ID %d should not be zero when HeapLRU is
+      LOG_WARN("Object size for class ID %d should not be zero when HeapLRU is
     enabled", newValue->classId());
-      LOGDEBUG("Type ID is %d for the object returning zero HeapLRU size",
+      LOG_DEBUG("Type ID is %d for the object returning zero HeapLRU size",
     newValue->typeId());
     }
     */
@@ -391,7 +391,7 @@ bool LRUEntriesMap::get(const std::shared_ptr<CacheableKey>& key,
       try {
         value = m_pmPtr->read(key, persistenceInfo);
       } catch (Exception& ex) {
-        LOGERROR("read on the persistence layer failed - %s", ex.what());
+        LOG_ERROR("read on the persistence layer failed - %s", ex.what());
         return false;
       }
 
@@ -488,11 +488,11 @@ std::shared_ptr<Cacheable> LRUEntriesMap::getFromDisk(
   auto&& persistenceInfo = me->getLRUProperties().persistence_info();
   std::shared_ptr<Cacheable> tmpObj;
   try {
-    LOGDEBUG("Reading value from persistence layer for key: %s",
-             key->toString().c_str());
+    LOG_DEBUG("Reading value from persistence layer for key: %s",
+              key->toString().c_str());
     tmpObj = m_pmPtr->read(key, persistenceInfo);
   } catch (Exception& ex) {
-    LOGERROR("read on the persistence layer failed - %s", ex.what());
+    LOG_ERROR("read on the persistence layer failed - %s", ex.what());
     return nullptr;
   }
   return tmpObj;

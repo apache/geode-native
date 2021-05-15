@@ -64,9 +64,8 @@ class EventIdTSS {
 };
 
 EventIdTSS::EventIdTSS() : threadId_(ThreadIdCounter::next()), sequenceId_(0) {
-  LOGDEBUG("EventIdTSS::EventIdTSS(%p): threadId_=%" PRId64
-           ", sequenceId_=%" PRId64,
-           this, threadId_, sequenceId_);
+  LOG_DEBUG("EventIdTSS::EventIdTSS({}): threadId_={}, sequenceId_={}",
+            static_cast<const void*>(this), threadId_, sequenceId_);
 }
 
 void EventId::toData(DataOutput& output) const {
@@ -74,7 +73,7 @@ void EventId::toData(DataOutput& output) const {
   //  memberid.  Note that binary representation of EventId is NOT THE
   //  SAME here as when serialized into part of a message (via the writeIdsData
   //  method).
-  LOGDEBUG("EventId::toData(%p) - called", this);
+  LOG_DEBUG("EventId::toData({}) - called", static_cast<const void*>(this));
   output.writeBytes(reinterpret_cast<const int8_t*>(clientId_),
                     clientIdLength_);
   output.writeArrayLen(18);
@@ -88,7 +87,7 @@ void EventId::toData(DataOutput& output) const {
 }
 
 void EventId::fromData(DataInput& input) {
-  LOGDEBUG("EventId::fromData(%p) - called", this);
+  LOG_DEBUG("EventId::fromData({}) - called", static_cast<void*>(this));
   clientIdLength_ = input.readArrayLength();
   input.readBytesOnly(reinterpret_cast<int8_t*>(clientId_), clientIdLength_);
   input.readArrayLength();
@@ -108,7 +107,7 @@ int64_t EventId::sequenceNumber() const { return sequenceId_; }
 
 int64_t EventId::getEventIdData(DataInput& input, char numberCode) {
   int64_t retVal = 0;
-  LOGDEBUG("EventId::getEventIdData(%p) - called", this);
+  LOG_DEBUG("EventId::getEventIdData({}) - called", static_cast<void*>(this));
 
   //  Read number based on numeric code written by java server.
   if (numberCode == 0) {
@@ -129,17 +128,17 @@ int64_t EventId::getEventIdData(DataInput& input, char numberCode) {
 }
 
 std::shared_ptr<Serializable> EventId::createDeserializable() {
-  LOGDEBUG("EventId::createDeserializable - called");
+  LOG_DEBUG("EventId::createDeserializable - called");
   // use false since we dont want to inc sequence
   // (for de-serialization)
   return std::make_shared<EventId>(false);
 }
 
 EventId::EventId(char* memId, uint32_t memIdLen, int64_t thr, int64_t seq) {
-  LOGDEBUG("EventId::EventId(%p) - memId=%s, memIdLen=%d, thr=%" PRId64
-           ", seq=%" PRId64,
-           this, Utils::convertBytesToString(memId, memIdLen).c_str(), memIdLen,
-           thr, seq);
+  LOG_DEBUG("EventId::EventId({}) - memId={}, memIdLen={}, thr={}, seq={}",
+            static_cast<void*>(this),
+            Utils::convertBytesToString(memId, memIdLen).c_str(), memIdLen, thr,
+            seq);
   // TODO: statics being assigned; not thread-safe??
   std::memcpy(clientId_, memId, memIdLen);
   clientIdLength_ = memIdLen;
@@ -159,10 +158,10 @@ EventId::EventId(bool doInit, uint32_t reserveSize,
       sequenceId_(0),
       bucketId_(-1),
       breadcrumbCounter_(0) {
-  LOGDEBUG(
-      "EventId::EventId(%p) - doInit=%s, reserveSize=%d, "
-      "fullValueAfterDeltaFail=%s",
-      this, doInit ? "true" : "false", reserveSize,
+  LOG_DEBUG(
+      "EventId::EventId({}) - doInit={}, reserveSize={}, "
+      "fullValueAfterDeltaFail={}",
+      static_cast<void*>(this), doInit ? "true" : "false", reserveSize,
       fullValueAfterDeltaFail ? "true" : "false");
   if (!doInit) return;
 
@@ -181,17 +180,17 @@ EventId::EventId(bool doInit, uint32_t reserveSize,
 void EventId::initFromTSS() {
   threadId_ = EventIdTSS::instance().threadId();
   sequenceId_ = EventIdTSS::instance().nextSequenceId();
-  LOGDEBUG("EventId::initFromTSS(%p) - called, tid=%" PRId64 ", seqid=%" PRId64,
-           this, threadId_, sequenceId_);
+  LOG_DEBUG("EventId::initFromTSS({}) - called, tid={}, seqid={}",
+            static_cast<void*>(this), threadId_, sequenceId_);
 }
 
 void EventId::initFromTSS_SameThreadIdAndSameSequenceId() {
   threadId_ = EventIdTSS::instance().threadId();
   sequenceId_ = EventIdTSS::instance().currentSequenceId();
-  LOGDEBUG(
-      "EventId::initFromTSS_SameThreadIdAndSameSequenceId(%p) - called, "
-      "tid=%" PRId64 ", seqid=%" PRId64,
-      this, threadId_, sequenceId_);
+  LOG_DEBUG(
+      "EventId::initFromTSS_SameThreadIdAndSameSequenceId({}) - called, "
+      "tid={}, seqid={}",
+      static_cast<void*>(this), threadId_, sequenceId_);
 }
 
 }  // namespace client

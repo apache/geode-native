@@ -388,7 +388,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight)
       auto checkPtr =
           std::dynamic_pointer_cast<CacheableString>(regPtr0->get(keyPtr));
       ASSERT(checkPtr != nullptr, "Value not found.");
-      LOGINFO("checkPtr->value().c_str() = %s ", checkPtr->value().c_str());
+      LOG_INFO("checkPtr->value().c_str() = %s ", checkPtr->value().c_str());
       ASSERT(strcmp("TxValue", checkPtr->value().c_str()) == 0,
              "Value not correct.");
       if (checkPtr != nullptr &&

@@ -61,7 +61,7 @@ class ClientMetadata {
   FixedMapType m_fpaMap;
   inline void checkBucketId(size_t bucketId) {
     if (bucketId >= m_bucketServerLocationsList.size()) {
-      LOGERROR("ClientMetadata::getServerLocation(): BucketId out of range.");
+      LOG_ERROR("ClientMetadata::getServerLocation(): BucketId out of range.");
       throw IllegalStateException(
           "ClientMetadata::getServerLocation(): BucketId out of range.");
     }

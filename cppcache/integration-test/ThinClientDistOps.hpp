@@ -276,7 +276,7 @@ void createAndVerifyEntry(const char* name) {
     LOG("Entry with null key and value created successfully");
     FAIL("Expected IllegalArgumentException here");
   } catch (IllegalArgumentException& ex) {
-    LOGINFO("Expected IllegalArgumentException : %s", ex.what());
+    LOG_INFO("Expected IllegalArgumentException : %s", ex.what());
   }
 
   /*4.create new with entry nullptr key and string value*/
@@ -284,7 +284,7 @@ void createAndVerifyEntry(const char* name) {
     regPtr->create(x, "testvalue");
     FAIL("Expected IllegalArgumentException here");
   } catch (IllegalArgumentException& ex) {
-    LOGINFO("Expected IllegalArgumentException : %s", ex.what());
+    LOG_INFO("Expected IllegalArgumentException : %s", ex.what());
   }
 
   /*5.create new with entry userobject cantain all cacheable type ( like

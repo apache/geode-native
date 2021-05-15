@@ -102,8 +102,8 @@ class EventId : public internal::DataSerializableFixedId_t<DSFid::EventId> {
     output.writeInt(threadId_);
     output.write(static_cast<uint8_t>(longCode));
     output.writeInt(sequenceId_);
-    LOGDEBUG("%s(%p): Wrote tid=%" PRId64 ", seqid=%" PRId64, __FUNCTION__,
-             this, threadId_, sequenceId_);
+    LOG_DEBUG("{}({}): Wrote tid={}, seqid={}", __FUNCTION__,
+              static_cast<void*>(this), threadId_, sequenceId_);
   }
 
   /** Constructor, given the values. */

@@ -38,6 +38,10 @@ target_include_directories(apache-geode-static
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
 )
 
+target_compile_definitions(apache-geode-static PUBLIC GEODE_WITH_LOG_FMT)
+
+add_dependencies(_apache-geode version-header)
+
 add_dependencies(client-libraries apache-geode-static)
 
 set_target_properties(apache-geode-static PROPERTIES

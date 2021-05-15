@@ -184,7 +184,7 @@ void _verifyCreated(const char* name, const char* key, int line) {
 void createRegion(const std::string& name, bool ackMode, const std::string&,
                   bool clientNotificationEnabled = false) {
   LOG("createRegion() entered.");
-  LOGINFO("Creating region --  %s  ackMode is %d", name.c_str(), ackMode);
+  LOG_INFO("Creating region --  %s  ackMode is %d", name.c_str(), ackMode);
   // ack, caching
   auto regPtr = getHelper()->createRegion(name, ackMode, true, nullptr,
                                           clientNotificationEnabled);
@@ -194,7 +194,7 @@ void createRegion(const std::string& name, bool ackMode, const std::string&,
 
 void createEntry(const char* name, const char* key, const char* value) {
   LOG("createEntry() entered.");
-  LOGINFO("Creating entry -- key: %s  value: %s in region %s", key, value,
+  LOG_INFO("Creating entry -- key: %s  value: %s in region %s", key, value,
           name);
   // Create entry, verify entry is correct
   auto keyPtr = CacheableKey::create(key);
@@ -218,7 +218,7 @@ void createEntry(const char* name, const char* key, const char* value) {
 
 void updateEntry(const char* name, const char* key, const char* value) {
   LOG("updateEntry() entered.");
-  LOGINFO("Updating entry -- key: %s  value: %s in region %s", key, value,
+  LOG_INFO("Updating entry -- key: %s  value: %s in region %s", key, value,
           name);
   // Update entry, verify entry is correct
   auto keyPtr = CacheableKey::create(key);
@@ -240,13 +240,13 @@ void updateEntry(const char* name, const char* key, const char* value) {
 
 void doNetsearch(const char* name, const char* key, const char* value) {
   LOG("doNetsearch() entered.");
-  LOGINFO("Netsearching for entry -- key: %s  expecting value: %s in region %s",
+  LOG_INFO("Netsearching for entry -- key: %s  expecting value: %s in region %s",
           key, value, name);
   // Get entry created in Process A, verify entry is correct
   auto keyPtr = CacheableKey::create(key);
 
   auto regPtr = getHelper()->getRegion(name);
-  LOGINFO("netsearch  region %s", regPtr->getName().c_str());
+  LOG_INFO("netsearch  region %s", regPtr->getName().c_str());
   ASSERT(regPtr != nullptr, "Region not found.");
 
   // ASSERT(!regPtr->containsKey(keyPtr),

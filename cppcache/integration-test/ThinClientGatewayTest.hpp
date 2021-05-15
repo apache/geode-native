@@ -80,7 +80,7 @@ DUNIT_TASK_DEFINITION(SERVER1, StartLocator1)
     CacheHelper::initLocator(1, false, true, 1,
                              CacheHelper::staticLocatorHostPort2);
     locHostPort1 = CacheHelper::getstaticLocatorHostPort1();
-    LOGINFO("Locator1 started");
+    LOG_INFO("Locator1 started");
   }
 END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(SERVER2, StartLocator2)
@@ -132,7 +132,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(SERVER2, VerifyClient2Events)
   {
-    LOGINFO(" nevents = %d got", reg1Listener1->getNumEvents());
+    LOG_INFO(" nevents = %d got", reg1Listener1->getNumEvents());
     ASSERT(reg1Listener1->getNumEvents() > 0,
            "Events should be greater than zero");
   }

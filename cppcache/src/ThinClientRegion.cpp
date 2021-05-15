@@ -140,8 +140,8 @@ class PutAllWork : public PooledWork<GfErrType> {
                                     m_isBGThread, m_serverLocation);
 
     // Set Version Tags
-    LOGDEBUG(" m_verObjPartListPtr size = %d err = %d ",
-             m_resultCollector->getList()->size(), err);
+    LOG_DEBUG(" m_verObjPartListPtr size = %d err = %d ",
+              m_resultCollector->getList()->size(), err);
     m_verObjPartListPtr->setVersionedTagptr(
         m_resultCollector->getList()->getVersionedTagptr());
 
@@ -154,21 +154,21 @@ class PutAllWork : public PooledWork<GfErrType> {
       case TcrMessage::REPLY:
         break;
       case TcrMessage::RESPONSE:
-        LOGDEBUG("PutAllwork execute err = %d ", err);
+        LOG_DEBUG("PutAllwork execute err = %d ", err);
         break;
       case TcrMessage::EXCEPTION:
         // TODO::Check for the PAPException and READ
         // PutAllPartialResultServerException and set its member for later use.
         // set m_papException and m_isPapeReceived
         if (m_poolDM->isNotAuthorizedException(m_reply->getException())) {
-          LOGDEBUG("received NotAuthorizedException");
+          LOG_DEBUG("received NotAuthorizedException");
           err = GF_AUTHENTICATION_FAILED_EXCEPTION;
         } else if (m_poolDM->isPutAllPartialResultException(
                        m_reply->getException())) {
-          LOGDEBUG("received PutAllPartialResultException");
+          LOG_DEBUG("received PutAllPartialResultException");
           err = GF_PUTALL_PARTIAL_RESULT_EXCEPTION;
         } else {
-          LOGDEBUG("received unknown exception:" + m_reply->getException());
+          LOG_DEBUG("received unknown exception:" + m_reply->getException());
           err = GF_PUTALL_PARTIAL_RESULT_EXCEPTION;
           // TODO should assign a new err code
         }
@@ -178,8 +178,8 @@ class PutAllWork : public PooledWork<GfErrType> {
         err = GF_CACHESERVER_EXCEPTION;
         break;
       default:
-        LOGERROR("Unknown message type %d during region put-all",
-                 m_reply->getMessageType());
+        LOG_ERROR("Unknown message type %d during region put-all",
+                  static_cast<int32_t>(m_reply->getMessageType()));
         err = GF_NOTOBJ;
         break;
     }
@@ -266,8 +266,8 @@ class RemoveAllWork : public PooledWork<GfErrType> {
                                     m_isBGThread, m_serverLocation);
 
     // Set Version Tags
-    LOGDEBUG(" m_verObjPartListPtr size = %d err = %d ",
-             m_resultCollector->getList()->size(), err);
+    LOG_DEBUG(" m_verObjPartListPtr size = %d err = %d ",
+              m_resultCollector->getList()->size(), err);
     m_verObjPartListPtr->setVersionedTagptr(
         m_resultCollector->getList()->getVersionedTagptr());
 
@@ -280,21 +280,21 @@ class RemoveAllWork : public PooledWork<GfErrType> {
       case TcrMessage::REPLY:
         break;
       case TcrMessage::RESPONSE:
-        LOGDEBUG("RemoveAllWork execute err = %d ", err);
+        LOG_DEBUG("RemoveAllWork execute err = %d ", err);
         break;
       case TcrMessage::EXCEPTION:
         // TODO::Check for the PAPException and READ
         // PutAllPartialResultServerException and set its member for later use.
         // set m_papException and m_isPapeReceived
         if (m_poolDM->isNotAuthorizedException(m_reply->getException())) {
-          LOGDEBUG("received NotAuthorizedException");
+          LOG_DEBUG("received NotAuthorizedException");
           err = GF_AUTHENTICATION_FAILED_EXCEPTION;
         } else if (m_poolDM->isPutAllPartialResultException(
                        m_reply->getException())) {
-          LOGDEBUG("received PutAllPartialResultException");
+          LOG_DEBUG("received PutAllPartialResultException");
           err = GF_PUTALL_PARTIAL_RESULT_EXCEPTION;
         } else {
-          LOGDEBUG("received unknown exception:" + m_reply->getException());
+          LOG_DEBUG("received unknown exception:" + m_reply->getException());
           err = GF_PUTALL_PARTIAL_RESULT_EXCEPTION;
           // TODO should assign a new err code
         }
@@ -304,8 +304,8 @@ class RemoveAllWork : public PooledWork<GfErrType> {
         err = GF_CACHESERVER_EXCEPTION;
         break;
       default:
-        LOGERROR("Unknown message type %d during region remove-all",
-                 m_reply->getMessageType());
+        LOG_ERROR("Unknown message type %d during region remove-all",
+                  static_cast<int32_t>(m_reply->getMessageType()));
         err = GF_NOTOBJ;
         break;
     }
@@ -334,8 +334,8 @@ void ThinClientRegion::initTCR() {
         this, m_cacheImpl->tcrConnectionManager());
     m_tcrdm->init();
   } catch (const Exception& ex) {
-    LOGERROR("Exception while initializing region: %s: %s",
-             ex.getName().c_str(), ex.what());
+    LOG_ERROR("Exception while initializing region: %s: %s",
+              ex.getName().c_str(), ex.what());
     throw;
   }
 }
@@ -346,7 +346,7 @@ void ThinClientRegion::registerKeys(
   auto pool = m_cacheImpl->getPoolManager().find(getAttributes().getPoolName());
   if (pool != nullptr) {
     if (!pool->getSubscriptionEnabled()) {
-      LOGERROR(
+      LOG_ERROR(
           "Registering keys is supported "
           "only if subscription-enabled attribute is true for pool " +
           pool->getName());
@@ -356,20 +356,20 @@ void ThinClientRegion::registerKeys(
     }
   }
   if (keys.empty()) {
-    LOGERROR("Register keys list is empty");
+    LOG_ERROR("Register keys list is empty");
     throw IllegalArgumentException(
         "Register keys "
         "keys vector is empty");
   }
   if (isDurable && !isDurableClient()) {
-    LOGERROR(
+    LOG_ERROR(
         "Register keys durable flag is only applicable for durable clients");
     throw IllegalStateException(
         "Durable flag only applicable for "
         "durable clients");
   }
   if (getInitialValues && !m_regionAttributes.getCachingEnabled()) {
-    LOGERROR(
+    LOG_ERROR(
         "Register keys getInitialValues flag is only applicable for caching"
         "clients");
     throw IllegalStateException(
@@ -381,8 +381,8 @@ void ThinClientRegion::registerKeys(
     interestPolicy = InterestResultPolicy::KEYS_VALUES;
   }
 
-  LOGDEBUG("ThinClientRegion::registerKeys : interestpolicy is %d",
-           interestPolicy.ordinal);
+  LOG_DEBUG("ThinClientRegion::registerKeys : interestpolicy is %d",
+            interestPolicy.ordinal);
 
   GfErrType err = registerKeysNoThrow(keys, true, nullptr, isDurable,
                                       interestPolicy, receiveValues);
@@ -399,7 +399,7 @@ void ThinClientRegion::unregisterKeys(
   auto pool = m_cacheImpl->getPoolManager().find(getAttributes().getPoolName());
   if (pool != nullptr) {
     if (!pool->getSubscriptionEnabled()) {
-      LOGERROR(
+      LOG_ERROR(
           "Unregister keys is supported "
           "only if subscription-enabled attribute is true for pool " +
           pool->getName());
@@ -409,7 +409,7 @@ void ThinClientRegion::unregisterKeys(
     }
   } else {
     if (!getAttributes().getClientNotificationEnabled()) {
-      LOGERROR(
+      LOG_ERROR(
           "Unregister keys is supported "
           "only if region client-notification attribute is true.");
       throw UnsupportedOperationException(
@@ -418,7 +418,7 @@ void ThinClientRegion::unregisterKeys(
     }
   }
   if (keys.empty()) {
-    LOGERROR("Unregister keys list is empty");
+    LOG_ERROR("Unregister keys list is empty");
     throw IllegalArgumentException(
         "Unregister keys "
         "keys vector is empty");
@@ -432,7 +432,7 @@ void ThinClientRegion::registerAllKeys(bool isDurable, bool getInitialValues,
   auto pool = m_cacheImpl->getPoolManager().find(getAttributes().getPoolName());
   if (pool != nullptr) {
     if (!pool->getSubscriptionEnabled()) {
-      LOGERROR(
+      LOG_ERROR(
           "Register all keys is supported only "
           "if subscription-enabled attribute is true for pool " +
           pool->getName());
@@ -442,7 +442,7 @@ void ThinClientRegion::registerAllKeys(bool isDurable, bool getInitialValues,
     }
   }
   if (isDurable && !isDurableClient()) {
-    LOGERROR(
+    LOG_ERROR(
         "Register all keys durable flag is only applicable for durable "
         "clients");
     throw IllegalStateException(
@@ -450,7 +450,7 @@ void ThinClientRegion::registerAllKeys(bool isDurable, bool getInitialValues,
   }
 
   if (getInitialValues && !m_regionAttributes.getCachingEnabled()) {
-    LOGERROR(
+    LOG_ERROR(
         "Register all keys getInitialValues flag is only applicable for caching"
         "clients");
     throw IllegalStateException(
@@ -464,8 +464,8 @@ void ThinClientRegion::registerAllKeys(bool isDurable, bool getInitialValues,
     interestPolicy = InterestResultPolicy::KEYS;
   }
 
-  LOGDEBUG("ThinClientRegion::registerAllKeys : interestpolicy is %d",
-           interestPolicy.ordinal);
+  LOG_DEBUG("ThinClientRegion::registerAllKeys : interestpolicy is %d",
+            interestPolicy.ordinal);
 
   std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>> resultKeys;
   //  if we need to fetch initial data, then we get the keys in
@@ -489,7 +489,7 @@ void ThinClientRegion::registerRegex(const std::string& regex, bool isDurable,
   auto pool = m_cacheImpl->getPoolManager().find(getAttributes().getPoolName());
   if (pool != nullptr) {
     if (!pool->getSubscriptionEnabled()) {
-      LOGERROR(
+      LOG_ERROR(
           "Register regex is supported only if "
           "subscription-enabled attribute is true for pool " +
           pool->getName());
@@ -499,7 +499,8 @@ void ThinClientRegion::registerRegex(const std::string& regex, bool isDurable,
     }
   }
   if (isDurable && !isDurableClient()) {
-    LOGERROR("Register regex durable flag only applicable for durable clients");
+    LOG_ERROR(
+        "Register regex durable flag only applicable for durable clients");
     throw IllegalStateException(
         "Durable flag only applicable for durable clients");
   }
@@ -516,8 +517,8 @@ void ThinClientRegion::registerRegex(const std::string& regex, bool isDurable,
     interestPolicy = InterestResultPolicy::KEYS;
   }
 
-  LOGDEBUG("ThinClientRegion::registerRegex : interestpolicy is %d",
-           interestPolicy.ordinal);
+  LOG_DEBUG("ThinClientRegion::registerRegex : interestpolicy is %d",
+            interestPolicy.ordinal);
 
   auto resultKeys2 =
       std::make_shared<std::vector<std::shared_ptr<CacheableKey>>>();
@@ -540,7 +541,7 @@ void ThinClientRegion::unregisterRegex(const std::string& regex) {
   auto pool = m_cacheImpl->getPoolManager().find(getAttributes().getPoolName());
   if (pool != nullptr) {
     if (!pool->getSubscriptionEnabled()) {
-      LOGERROR(
+      LOG_ERROR(
           "Unregister regex is supported only if "
           "subscription-enabled attribute is true for pool " +
           pool->getName());
@@ -551,7 +552,7 @@ void ThinClientRegion::unregisterRegex(const std::string& regex) {
   }
 
   if (regex.empty()) {
-    LOGERROR("Unregister regex string is empty");
+    LOG_ERROR("Unregister regex string is empty");
     throw IllegalArgumentException("Unregister regex string is empty");
   }
 
@@ -563,7 +564,7 @@ void ThinClientRegion::unregisterAllKeys() {
   auto pool = m_cacheImpl->getPoolManager().find(getAttributes().getPoolName());
   if (pool != nullptr) {
     if (!pool->getSubscriptionEnabled()) {
-      LOGERROR(
+      LOG_ERROR(
           "Unregister all keys is supported only if "
           "subscription-enabled attribute is true for pool " +
           pool->getName());
@@ -583,7 +584,7 @@ std::shared_ptr<SelectResults> ThinClientRegion::query(
   CHECK_DESTROY_PENDING(TryReadGuard, Region::query);
 
   if (predicate.empty()) {
-    LOGERROR("Region query predicate string is empty");
+    LOG_ERROR("Region query predicate string is empty");
     throw IllegalArgumentException("Region query predicate string is empty");
   }
 
@@ -627,7 +628,7 @@ GfErrType ThinClientRegion::unregisterKeysBeforeDestroyRegion() {
   auto pool = m_cacheImpl->getPoolManager().find(getAttributes().getPoolName());
   if (pool != nullptr) {
     if (!pool->getSubscriptionEnabled()) {
-      LOGDEBUG(
+      LOG_DEBUG(
           "pool subscription-enabled attribute is false, No need to Unregister "
           "keys");
       return GF_NOERR;
@@ -715,13 +716,13 @@ std::vector<std::shared_ptr<CacheableKey>> ThinClientRegion::serverKeys() {
       break;
     }
     case TcrMessage::KEY_SET_DATA_ERROR: {
-      LOGERROR("Region serverKeys: an error occurred on the server");
+      LOG_ERROR("Region serverKeys: an error occurred on the server");
       err = GF_CACHESERVER_EXCEPTION;
       break;
     }
     default: {
-      LOGERROR("Unknown message type %d during region serverKeys",
-               reply.getMessageType());
+      LOG_ERROR("Unknown message type %d during region serverKeys",
+                static_cast<int32_t>(reply.getMessageType()));
       err = GF_MSG;
       break;
     }
@@ -757,15 +758,15 @@ bool ThinClientRegion::containsKeyOnServer(
       break;
 
     case TcrMessage::REQUEST_DATA_ERROR:
-      LOGERROR(
+      LOG_ERROR(
           "Region::containsKeyOnServer: read error occurred on the endpoint %s",
           m_tcrdm->getActiveEndpoint()->name().c_str());
       err = GF_CACHESERVER_EXCEPTION;
       break;
 
     default:
-      LOGERROR("Unknown message type in Region::containsKeyOnServer %d",
-               reply.getMessageType());
+      LOG_ERROR("Unknown message type in Region::containsKeyOnServer %d",
+                static_cast<int32_t>(reply.getMessageType()));
       err = GF_MSG;
       break;
   }
@@ -803,15 +804,15 @@ bool ThinClientRegion::containsValueForKey_remote(
       break;
 
     case TcrMessage::REQUEST_DATA_ERROR:
-      LOGERROR(
+      LOG_ERROR(
           "Region::containsValueForKey: read error occurred on the endpoint %s",
           m_tcrdm->getActiveEndpoint()->name().c_str());
       err = GF_CACHESERVER_EXCEPTION;
       break;
 
     default:
-      LOGERROR("Unknown message type in Region::containsValueForKey %d",
-               reply.getMessageType());
+      LOG_ERROR("Unknown message type in Region::containsValueForKey %d",
+                static_cast<int32_t>(reply.getMessageType()));
       err = GF_MSG;
       break;
   }
@@ -839,22 +840,22 @@ void ThinClientRegion::clear(
 
   switch (reply.getMessageType()) {
     case TcrMessage::REPLY:
-      LOGFINE("Region %s clear message sent to server successfully",
-              m_fullPath.c_str());
+      LOG_FINE("Region %s clear message sent to server successfully",
+               m_fullPath.c_str());
       break;
     case TcrMessage::EXCEPTION:
       err = handleServerException("Region::clear:", reply.getException());
       break;
 
     case TcrMessage::CLEAR_REGION_DATA_ERROR:
-      LOGERROR("Region clear read error occurred on the endpoint %s",
-               m_tcrdm->getActiveEndpoint()->name().c_str());
+      LOG_ERROR("Region clear read error occurred on the endpoint %s",
+                m_tcrdm->getActiveEndpoint()->name().c_str());
       err = GF_CACHESERVER_EXCEPTION;
       break;
 
     default:
-      LOGERROR("Unknown message type %d during region clear",
-               reply.getMessageType());
+      LOG_ERROR("Unknown message type %d during region clear",
+                static_cast<int32_t>(reply.getMessageType()));
       err = GF_MSG;
       break;
   }
@@ -892,14 +893,14 @@ GfErrType ThinClientRegion::getNoThrow_remote(
       break;
     }
     case TcrMessage::REQUEST_DATA_ERROR: {
-      // LOGERROR("A read error occurred on the endpoint %s",
+      // LOG_ERROR("A read error occurred on the endpoint %s",
       //    m_tcrdm->getActiveEndpoint()->name().c_str());
       err = GF_CACHESERVER_EXCEPTION;
       break;
     }
     default: {
-      LOGERROR("Unknown message type %d while getting entry from region",
-               reply.getMessageType());
+      LOG_ERROR("Unknown message type %d while getting entry from region",
+                static_cast<int32_t>(reply.getMessageType()));
       err = GF_MSG;
       break;
     }
@@ -934,8 +935,8 @@ GfErrType ThinClientRegion::invalidateNoThrow_remote(
       break;
     }
     default: {
-      LOGERROR("Unknown message type %d while getting entry from region",
-               reply.getMessageType());
+      LOG_ERROR("Unknown message type %d while getting entry from region",
+                static_cast<int32_t>(reply.getMessageType()));
       err = GF_MSG;
       break;
     }
@@ -997,8 +998,8 @@ GfErrType ThinClientRegion::putNoThrow_remote(
       break;
     }
     default: {
-      LOGERROR("Unknown message type %d during region put reply",
-               reply->getMessageType());
+      LOG_ERROR("Unknown message type %d during region put reply",
+                static_cast<int32_t>(reply->getMessageType()));
       err = GF_MSG;
     }
   }
@@ -1033,8 +1034,8 @@ GfErrType ThinClientRegion::destroyNoThrow_remote(
       if (reply.getEntryNotFound() == 1) {
         err = GF_CACHE_ENTRY_NOT_FOUND;
       } else {
-        LOGDEBUG("Remote key [%s] is destroyed successfully in region %s",
-                 Utils::nullSafeToString(keyPtr).c_str(), m_fullPath.c_str());
+        LOG_DEBUG("Remote key [%s] is destroyed successfully in region %s",
+                  Utils::nullSafeToString(keyPtr).c_str(), m_fullPath.c_str());
       }
       versionTag = reply.getVersionTag();
       break;
@@ -1048,8 +1049,8 @@ GfErrType ThinClientRegion::destroyNoThrow_remote(
       break;
     }
     default: {
-      LOGERROR("Unknown message type %d while destroying region entry",
-               reply.getMessageType());
+      LOG_ERROR("Unknown message type %d while destroying region entry",
+                static_cast<int32_t>(reply.getMessageType()));
       err = GF_MSG;
     }
   }
@@ -1078,8 +1079,8 @@ GfErrType ThinClientRegion::removeNoThrow_remote(
       if (reply.getEntryNotFound() == 1) {
         err = GF_ENOENT;
       } else {
-        LOGDEBUG("Remote key [%s] is removed successfully in region %s",
-                 Utils::nullSafeToString(keyPtr).c_str(), m_fullPath.c_str());
+        LOG_DEBUG("Remote key [%s] is removed successfully in region %s",
+                  Utils::nullSafeToString(keyPtr).c_str(), m_fullPath.c_str());
       }
       versionTag = reply.getVersionTag();
       break;
@@ -1093,8 +1094,8 @@ GfErrType ThinClientRegion::removeNoThrow_remote(
       break;
     }
     default: {
-      LOGERROR("Unknown message type %d while removing region entry",
-               reply.getMessageType());
+      LOG_ERROR("Unknown message type %d while removing region entry",
+                static_cast<int32_t>(reply.getMessageType()));
       err = GF_MSG;
     }
   }
@@ -1122,8 +1123,8 @@ GfErrType ThinClientRegion::removeNoThrowEX_remote(
       if (reply.getEntryNotFound() == 1) {
         err = GF_ENOENT;
       } else {
-        LOGDEBUG("Remote key [%s] is removed successfully in region %s",
-                 Utils::nullSafeToString(keyPtr).c_str(), m_fullPath.c_str());
+        LOG_DEBUG("Remote key [%s] is removed successfully in region %s",
+                  Utils::nullSafeToString(keyPtr).c_str(), m_fullPath.c_str());
       }
       break;
     }
@@ -1136,8 +1137,8 @@ GfErrType ThinClientRegion::removeNoThrowEX_remote(
       break;
     }
     default: {
-      LOGERROR("Unknown message type %d while removing region entry",
-               reply.getMessageType());
+      LOG_ERROR("Unknown message type %d while removing region entry",
+                static_cast<int32_t>(reply.getMessageType()));
       err = GF_MSG;
     }
   }
@@ -1214,14 +1215,14 @@ GfErrType ThinClientRegion::getAllNoThrow_remote(
       break;
     }
     case TcrMessage::GET_ALL_DATA_ERROR: {
-      LOGERROR("Region get-all: a read error occurred on the endpoint %s",
-               m_tcrdm->getActiveEndpoint()->name().c_str());
+      LOG_ERROR("Region get-all: a read error occurred on the endpoint %s",
+                m_tcrdm->getActiveEndpoint()->name().c_str());
       err = GF_CACHESERVER_EXCEPTION;
       break;
     }
     default: {
-      LOGERROR("Unknown message type %d during region get-all",
-               reply.getMessageType());
+      LOG_ERROR("Unknown message type %d during region get-all",
+                static_cast<int32_t>(reply.getMessageType()));
       err = GF_MSG;
       break;
     }
@@ -1234,8 +1235,8 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
     std::shared_ptr<VersionedCacheableObjectPartList>& versionedObjPartList,
     std::chrono::milliseconds timeout,
     const std::shared_ptr<Serializable>& aCallbackArgument) {
-  LOGDEBUG(" ThinClientRegion::singleHopPutAllNoThrow_remote map size = %zu",
-           map.size());
+  LOG_DEBUG(" ThinClientRegion::singleHopPutAllNoThrow_remote map size = %zu",
+            map.size());
   auto region = shared_from_this();
 
   auto error = GF_NOERR;
@@ -1251,13 +1252,13 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
   }
   // last param in getServerToFilterMap() is false for putAll
 
-  // LOGDEBUG("ThinClientRegion::singleHopPutAllNoThrow_remote keys.size() = %d
+  // LOG_DEBUG("ThinClientRegion::singleHopPutAllNoThrow_remote keys.size() = %d
   // ", userKeys->size());
   auto locationMap = tcrdm->getClientMetaDataService()->getServerToFilterMap(
       userKeys, region, true);
   if (!locationMap) {
     // putAll with multiple hop implementation
-    LOGDEBUG("locationMap is Null or Empty");
+    LOG_DEBUG("locationMap is Null or Empty");
 
     return multiHopPutAllNoThrow_remote(map, versionedObjPartList, timeout,
                                         aCallbackArgument);
@@ -1266,7 +1267,7 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
   // set this flag that indicates putAll on PR is invoked with singlehop
   // enabled.
   m_isPRSingleHopEnabled = true;
-  // LOGDEBUG("locationMap.size() = %d ", locationMap->size());
+  // LOG_DEBUG("locationMap.size() = %d ", locationMap->size());
 
   /*Step-2
    *  a. create vector of PutAllWork
@@ -1286,7 +1287,7 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
   for (const auto& locationIter : *locationMap) {
     const auto& serverLocation = locationIter.first;
     if (serverLocation == nullptr) {
-      LOGDEBUG("serverLocation is nullptr");
+      LOG_DEBUG("serverLocation is nullptr");
     }
     const auto& keys = locationIter.second;
 
@@ -1332,7 +1333,7 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
   for (const auto& worker : putAllWorkers) {
     auto err =
         worker->getResult();  // wait() or blocking call for worker thread.
-    LOGDEBUG("Error code :: %s:%d err = %d ", __FILE__, __LINE__, err);
+    LOG_DEBUG("Error code :: %s:%d err = %d ", __FILE__, __LINE__, err);
 
     if (GF_NOERR == err) {
       // No Exception from server
@@ -1353,9 +1354,9 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
                             CacheableInt32::create(error));
     }
 
-    LOGDEBUG("worker->getPutAllMap()->size() = %zu ",
-             worker->getPutAllMap()->size());
-    LOGDEBUG(
+    LOG_DEBUG("worker->getPutAllMap()->size() = %zu ",
+              worker->getPutAllMap()->size());
+    LOG_DEBUG(
         "worker->getResultCollector()->getList()->getVersionedTagsize() = %d ",
         worker->getResultCollector()->getList()->getVersionedTagsize());
 
@@ -1381,13 +1382,13 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
   std::recursive_mutex responseLock;
   auto result = std::make_shared<PutAllPartialResult>(
       static_cast<int>(map.size()), responseLock);
-  LOGDEBUG(
+  LOG_DEBUG(
       " TCRegion:: %s:%d  "
       "result->getSucceededKeysAndVersions()->getVersionedTagsize() = %d ",
       __FILE__, __LINE__,
       result->getSucceededKeysAndVersions()->getVersionedTagsize());
-  LOGDEBUG(" TCRegion:: %s:%d resultMap->size() ", __FILE__, __LINE__,
-           resultMap.size());
+  LOG_DEBUG(" TCRegion:: %s:%d resultMap->size() ", __FILE__, __LINE__,
+            resultMap.size());
   for (const auto& resultMapIter : resultMap) {
     const auto& value = resultMapIter.second;
 
@@ -1409,13 +1410,13 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
     } else {
       // ERROR CASE
       if (value) {
-        LOGERROR(
+        LOG_ERROR(
             "ERROR:: ThinClientRegion::singleHopPutAllNoThrow_remote value "
             "could not Cast to either VCOPL or "
             "PutAllPartialResultServerException:%s",
             value->toString().c_str());
       } else {
-        LOGERROR(
+        LOG_ERROR(
             "ERROR:: ThinClientRegion::singleHopPutAllNoThrow_remote value is "
             "nullptr");
       }
@@ -1430,8 +1431,8 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
    * failedServers->contains(locationIter.first()is false.
    */
 
-  LOGDEBUG("ThinClientRegion:: %s:%d failedServers->size() = %zu", __FILE__,
-           __LINE__, failedServers.size());
+  LOG_DEBUG("ThinClientRegion:: %s:%d failedServers->size() = %zu", __FILE__,
+            __LINE__, failedServers.size());
 
   // if the partial result set doesn't already have keys (for tracking version
   // tags)
@@ -1481,7 +1482,7 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
     }
 
     if (failedKeys == nullptr) {
-      LOGERROR(
+      LOG_ERROR(
           "TCRegion::singleHopPutAllNoThrow_remote :: failedKeys are nullptr "
           "that is not valid");
     }
@@ -1493,7 +1494,7 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
         if (iter != map.end()) {
           newSubMap->emplace(iter->first, iter->second);
         } else {
-          LOGERROR(
+          LOG_ERROR(
               "DEBUG:: TCRegion.cpp singleHopPutAllNoThrow_remote KEY not "
               "found in user failedSubMap");
         }
@@ -1525,8 +1526,8 @@ GfErrType ThinClientRegion::singleHopPutAllNoThrow_remote(
     error = GF_NOERR;
   }
   versionedObjPartList = result->getSucceededKeysAndVersions();
-  LOGDEBUG("singlehop versionedObjPartList = %d error=%d",
-           versionedObjPartList->size(), error);
+  LOG_DEBUG("singlehop versionedObjPartList = %d error=%d",
+            versionedObjPartList->size(), error);
 
   return error;
 }
@@ -1537,7 +1538,7 @@ GfErrType ThinClientRegion::multiHopPutAllNoThrow_remote(
     std::chrono::milliseconds timeout,
     const std::shared_ptr<Serializable>& aCallbackArgument) {
   // Multiple hop implementation
-  LOGDEBUG("ThinClientRegion::multiHopPutAllNoThrow_remote ");
+  LOG_DEBUG("ThinClientRegion::multiHopPutAllNoThrow_remote ");
   auto err = GF_NOERR;
 
   // Construct request/reply for putAll
@@ -1559,21 +1560,21 @@ GfErrType ThinClientRegion::multiHopPutAllNoThrow_remote(
   err = m_tcrdm->sendSyncRequest(request, reply);
 
   versionedObjPartList = resultCollector->getList();
-  LOGDEBUG("multiple hop versionedObjPartList size = %d , err = %d  ",
-           versionedObjPartList->size(), err);
+  LOG_DEBUG("multiple hop versionedObjPartList size = %d , err = %d  ",
+            versionedObjPartList->size(), err);
   delete resultCollector;
   if (err != GF_NOERR) return err;
-  LOGDEBUG(
+  LOG_DEBUG(
       "ThinClientRegion::multiHopPutAllNoThrow_remote reply.getMessageType() = "
       "%d ",
       reply.getMessageType());
   switch (reply.getMessageType()) {
     case TcrMessage::REPLY:
-      // LOGDEBUG("Map is written into remote server at region %s",
+      // LOG_DEBUG("Map is written into remote server at region %s",
       // m_fullPath.c_str());
       break;
     case TcrMessage::RESPONSE:
-      LOGDEBUG(
+      LOG_DEBUG(
           "multiHopPutAllNoThrow_remote TcrMessage::RESPONSE %s, err = %d ",
           m_fullPath.c_str(), err);
       break;
@@ -1584,13 +1585,13 @@ GfErrType ThinClientRegion::multiHopPutAllNoThrow_remote(
       // hop.
       break;
     case TcrMessage::PUT_DATA_ERROR:
-      // LOGERROR( "A write error occurred on the endpoint %s",
+      // LOG_ERROR( "A write error occurred on the endpoint %s",
       // m_tcrdm->getActiveEndpoint( )->name( ).c_str( ) );
       err = GF_CACHESERVER_EXCEPTION;
       break;
     default:
-      LOGERROR("Unknown message type %d during region put-all",
-               reply.getMessageType());
+      LOG_ERROR("Unknown message type %d during region put-all",
+                static_cast<int32_t>(reply.getMessageType()));
       err = GF_NOTOBJ;
       break;
   }
@@ -1602,7 +1603,7 @@ GfErrType ThinClientRegion::putAllNoThrow_remote(
     std::shared_ptr<VersionedCacheableObjectPartList>& versionedObjPartList,
     std::chrono::milliseconds timeout,
     const std::shared_ptr<Serializable>& aCallbackArgument) {
-  LOGDEBUG("ThinClientRegion::putAllNoThrow_remote");
+  LOG_DEBUG("ThinClientRegion::putAllNoThrow_remote");
 
   if (auto poolDM = std::dynamic_pointer_cast<ThinClientPoolDM>(m_tcrdm)) {
     if (poolDM->getPRSingleHopEnabled() && poolDM->getClientMetaDataService() &&
@@ -1614,7 +1615,7 @@ GfErrType ThinClientRegion::putAllNoThrow_remote(
                                           aCallbackArgument);
     }
   } else {
-    LOGERROR("ThinClientRegion::putAllNoThrow_remote :: Pool Not Specified ");
+    LOG_ERROR("ThinClientRegion::putAllNoThrow_remote :: Pool Not Specified ");
     return GF_NOTSUP;
   }
 }
@@ -1624,7 +1625,7 @@ GfErrType ThinClientRegion::singleHopRemoveAllNoThrow_remote(
     const std::vector<std::shared_ptr<CacheableKey>>& keys,
     std::shared_ptr<VersionedCacheableObjectPartList>& versionedObjPartList,
     const std::shared_ptr<Serializable>& aCallbackArgument) {
-  LOGDEBUG(
+  LOG_DEBUG(
       " ThinClientRegion::singleHopRemoveAllNoThrow_remote keys size = %zu",
       keys.size());
   auto region = shared_from_this();
@@ -1634,7 +1635,7 @@ GfErrType ThinClientRegion::singleHopRemoveAllNoThrow_remote(
       keys, region, true);
   if (!locationMap) {
     // removeAll with multiple hop implementation
-    LOGDEBUG("locationMap is Null or Empty");
+    LOG_DEBUG("locationMap is Null or Empty");
     return multiHopRemoveAllNoThrow_remote(keys, versionedObjPartList,
                                            aCallbackArgument);
   }
@@ -1642,7 +1643,7 @@ GfErrType ThinClientRegion::singleHopRemoveAllNoThrow_remote(
   // set this flag that indicates putAll on PR is invoked with singlehop
   // enabled.
   m_isPRSingleHopEnabled = true;
-  LOGDEBUG("locationMap.size() = %zu ", locationMap->size());
+  LOG_DEBUG("locationMap.size() = %zu ", locationMap->size());
 
   /*Step-2
    *  a. create vector of RemoveAllWork
@@ -1662,7 +1663,7 @@ GfErrType ThinClientRegion::singleHopRemoveAllNoThrow_remote(
   for (const auto& locationIter : *locationMap) {
     const auto& serverLocation = locationIter.first;
     if (serverLocation == nullptr) {
-      LOGDEBUG("serverLocation is nullptr");
+      LOG_DEBUG("serverLocation is nullptr");
     }
     const auto& mappedkeys = locationIter.second;
     auto worker = std::make_shared<RemoveAllWork>(
@@ -1694,7 +1695,7 @@ GfErrType ThinClientRegion::singleHopRemoveAllNoThrow_remote(
   for (const auto& worker : removeAllWorkers) {
     auto err =
         worker->getResult();  // wait() or blocking call for worker thread.
-    LOGDEBUG("Error code :: %s:%d err = %d ", __FILE__, __LINE__, err);
+    LOG_DEBUG("Error code :: %s:%d err = %d ", __FILE__, __LINE__, err);
 
     if (GF_NOERR == err) {
       // No Exception from server
@@ -1715,7 +1716,7 @@ GfErrType ThinClientRegion::singleHopRemoveAllNoThrow_remote(
                             CacheableInt32::create(error));
     }
 
-    LOGDEBUG(
+    LOG_DEBUG(
         "worker->getResultCollector()->getList()->getVersionedTagsize() = %d ",
         worker->getResultCollector()->getList()->getVersionedTagsize());
 
@@ -1732,13 +1733,13 @@ GfErrType ThinClientRegion::singleHopRemoveAllNoThrow_remote(
   std::recursive_mutex responseLock;
   auto result = std::make_shared<PutAllPartialResult>(
       static_cast<int>(keys.size()), responseLock);
-  LOGDEBUG(
+  LOG_DEBUG(
       " TCRegion:: %s:%d  "
       "result->getSucceededKeysAndVersions()->getVersionedTagsize() = %d ",
       __FILE__, __LINE__,
       result->getSucceededKeysAndVersions()->getVersionedTagsize());
-  LOGDEBUG(" TCRegion:: %s:%d resultMap->size() ", __FILE__, __LINE__,
-           resultMap.size());
+  LOG_DEBUG(" TCRegion:: %s:%d resultMap->size() ", __FILE__, __LINE__,
+            resultMap.size());
   for (const auto& resultMapIter : resultMap) {
     const auto& value = resultMapIter.second;
 
@@ -1760,13 +1761,13 @@ GfErrType ThinClientRegion::singleHopRemoveAllNoThrow_remote(
     } else {
       // ERROR CASE
       if (value) {
-        LOGERROR(
+        LOG_ERROR(
             "ERROR:: ThinClientRegion::singleHopRemoveAllNoThrow_remote value "
             "could not Cast to either VCOPL or "
             "PutAllPartialResultServerException:%s",
             value->toString().c_str());
       } else {
-        LOGERROR(
+        LOG_ERROR(
             "ERROR:: ThinClientRegion::singleHopRemoveAllNoThrow_remote value "
             "is nullptr");
       }
@@ -1781,8 +1782,8 @@ GfErrType ThinClientRegion::singleHopRemoveAllNoThrow_remote(
    * failedServers->contains(locationIter.first()is false.
    */
 
-  LOGDEBUG("ThinClientRegion:: %s:%d failedServers->size() = %zu", __FILE__,
-           __LINE__, failedServers.size());
+  LOG_DEBUG("ThinClientRegion:: %s:%d failedServers->size() = %zu", __FILE__,
+            __LINE__, failedServers.size());
 
   // if the partial result set doesn't already have keys (for tracking version
   // tags)
@@ -1832,7 +1833,7 @@ GfErrType ThinClientRegion::singleHopRemoveAllNoThrow_remote(
     }
 
     if (failedKeys == nullptr) {
-      LOGERROR(
+      LOG_ERROR(
           "TCRegion::singleHopRemoveAllNoThrow_remote :: failedKeys are "
           "nullptr "
           "that is not valid");
@@ -1860,8 +1861,8 @@ GfErrType ThinClientRegion::singleHopRemoveAllNoThrow_remote(
     error = GF_NOERR;
   }
   versionedObjPartList = result->getSucceededKeysAndVersions();
-  LOGDEBUG("singlehop versionedObjPartList = %d error=%d",
-           versionedObjPartList->size(), error);
+  LOG_DEBUG("singlehop versionedObjPartList = %d error=%d",
+            versionedObjPartList->size(), error);
   return error;
 }
 
@@ -1870,7 +1871,7 @@ GfErrType ThinClientRegion::multiHopRemoveAllNoThrow_remote(
     std::shared_ptr<VersionedCacheableObjectPartList>& versionedObjPartList,
     const std::shared_ptr<Serializable>& aCallbackArgument) {
   // Multiple hop implementation
-  LOGDEBUG("ThinClientRegion::multiHopRemoveAllNoThrow_remote ");
+  LOG_DEBUG("ThinClientRegion::multiHopRemoveAllNoThrow_remote ");
   GfErrType err = GF_NOERR;
 
   // Construct request/reply for putAll
@@ -1889,21 +1890,21 @@ GfErrType ThinClientRegion::multiHopRemoveAllNoThrow_remote(
   err = m_tcrdm->sendSyncRequest(request, reply);
 
   versionedObjPartList = resultCollector->getList();
-  LOGDEBUG("multiple hop versionedObjPartList size = %d , err = %d  ",
-           versionedObjPartList->size(), err);
+  LOG_DEBUG("multiple hop versionedObjPartList size = %d , err = %d  ",
+            versionedObjPartList->size(), err);
   delete resultCollector;
   if (err != GF_NOERR) return err;
-  LOGDEBUG(
+  LOG_DEBUG(
       "ThinClientRegion::multiHopRemoveAllNoThrow_remote "
       "reply.getMessageType() = %d ",
       reply.getMessageType());
   switch (reply.getMessageType()) {
     case TcrMessage::REPLY:
-      // LOGDEBUG("Map is written into remote server at region %s",
+      // LOG_DEBUG("Map is written into remote server at region %s",
       // m_fullPath.c_str());
       break;
     case TcrMessage::RESPONSE:
-      LOGDEBUG(
+      LOG_DEBUG(
           "multiHopRemoveAllNoThrow_remote TcrMessage::RESPONSE %s, err = %d ",
           m_fullPath.c_str(), err);
       break;
@@ -1912,8 +1913,8 @@ GfErrType ThinClientRegion::multiHopRemoveAllNoThrow_remote(
                                   reply.getException());
       break;
     default:
-      LOGERROR("Unknown message type %d during region remove-all",
-               reply.getMessageType());
+      LOG_ERROR("Unknown message type %d during region remove-all",
+                static_cast<int32_t>(reply.getMessageType()));
       err = GF_NOTOBJ;
       break;
   }
@@ -1924,7 +1925,7 @@ GfErrType ThinClientRegion::removeAllNoThrow_remote(
     const std::vector<std::shared_ptr<CacheableKey>>& keys,
     std::shared_ptr<VersionedCacheableObjectPartList>& versionedObjPartList,
     const std::shared_ptr<Serializable>& aCallbackArgument) {
-  LOGDEBUG("ThinClientRegion::removeAllNoThrow_remote");
+  LOG_DEBUG("ThinClientRegion::removeAllNoThrow_remote");
 
   if (auto poolDM = std::dynamic_pointer_cast<ThinClientPoolDM>(m_tcrdm)) {
     if (poolDM->getPRSingleHopEnabled() && poolDM->getClientMetaDataService() &&
@@ -1936,14 +1937,14 @@ GfErrType ThinClientRegion::removeAllNoThrow_remote(
                                              aCallbackArgument);
     }
   } else {
-    LOGERROR(
+    LOG_ERROR(
         "ThinClientRegion::removeAllNoThrow_remote :: Pool Not Specified ");
     return GF_NOTSUP;
   }
 }
 
 uint32_t ThinClientRegion::size_remote() {
-  LOGDEBUG("ThinClientRegion::size_remote");
+  LOG_DEBUG("ThinClientRegion::size_remote");
   GfErrType err = GF_NOERR;
 
   // do TCR size
@@ -1969,8 +1970,8 @@ uint32_t ThinClientRegion::size_remote() {
       err = GF_CACHESERVER_EXCEPTION;
       break;
     default:
-      LOGERROR("Unknown message type %d during region size",
-               reply.getMessageType());
+      LOG_ERROR("Unknown message type %d during region size",
+                static_cast<int32_t>(reply.getMessageType()));
       err = GF_NOTOBJ;
   }
 
@@ -2177,7 +2178,7 @@ GfErrType ThinClientRegion::destroyRegionNoThrow_remote(
 
   switch (reply.getMessageType()) {
     case TcrMessage::REPLY: {
-      // LOGINFO("Region %s at remote is destroyed successfully",
+      // LOG_INFO("Region %s at remote is destroyed successfully",
       // m_fullPath.c_str());
       break;
     }
@@ -2191,8 +2192,8 @@ GfErrType ThinClientRegion::destroyRegionNoThrow_remote(
       break;
     }
     default: {
-      LOGERROR("Unknown message type %d during destroy region",
-               reply.getMessageType());
+      LOG_ERROR("Unknown message type %d during destroy region",
+                static_cast<int32_t>(reply.getMessageType()));
       err = GF_MSG;
     }
   }
@@ -2222,8 +2223,8 @@ GfErrType ThinClientRegion::registerKeysNoThrow(
     needToCreateRC = false;
   }
 
-  LOGDEBUG("ThinClientRegion::registerKeysNoThrow : interestpolicy is %d",
-           interestPolicy.ordinal);
+  LOG_DEBUG("ThinClientRegion::registerKeysNoThrow : interestpolicy is %d",
+            interestPolicy.ordinal);
 
   TcrMessageRegisterInterestList request(
       new DataOutput(m_cacheImpl->createDataOutput()), this, keys, isDurable,
@@ -2255,7 +2256,7 @@ GfErrType ThinClientRegion::registerKeysNoThrow(
   if (err == GF_NOERR /*|| err == GF_CACHE_REDUNDANCY_FAILURE*/) {
     if (reply->getMessageType() == TcrMessage::RESPONSE_FROM_SECONDARY &&
         endpoint) {
-      LOGFINER(
+      LOG_FINER(
           "registerKeysNoThrow - got response from secondary for "
           "endpoint %s, ignoring.",
           endpoint->name().c_str());
@@ -2399,8 +2400,8 @@ GfErrType ThinClientRegion::registerRegexNoThrow(
   }
 
   bool isRCCreatedLocally = false;
-  LOGDEBUG("ThinClientRegion::registerRegexNoThrow : interestpolicy is %d",
-           interestPolicy.ordinal);
+  LOG_DEBUG("ThinClientRegion::registerRegexNoThrow : interestpolicy is %d",
+            interestPolicy.ordinal);
 
   // TODO:
   TcrMessageRegisterInterest request(
@@ -2444,7 +2445,7 @@ GfErrType ThinClientRegion::registerRegexNoThrow(
   if (err == GF_NOERR /*|| err == GF_CACHE_REDUNDANCY_FAILURE*/) {
     if (reply->getMessageType() == TcrMessage::RESPONSE_FROM_SECONDARY &&
         endpoint) {
-      LOGFINER(
+      LOG_FINER(
           "registerRegexNoThrow - got response from secondary for "
           "endpoint %s, ignoring.",
           endpoint->name().c_str());
@@ -2656,8 +2657,8 @@ GfErrType ThinClientRegion::clientNotificationHandler(const TcrMessage& msg) {
       break;
     }
     case TcrMessage::CLEAR_REGION: {
-      LOGDEBUG("remote clear region event for reigon[%s]",
-               msg.getRegionName().c_str());
+      LOG_DEBUG("remote clear region event for reigon[%s]",
+                msg.getRegionName().c_str());
       err = localClearNoThrow(
           nullptr, CacheEventFlags::NOTIFICATION | CacheEventFlags::LOCAL);
       break;
@@ -2694,15 +2695,15 @@ GfErrType ThinClientRegion::clientNotificationHandler(const TcrMessage& msg) {
         auto& marker =
             dynamic_cast<const TcrMessageAllEndpointsDisconnectedMarker&>(msg);
         setProcessedMarker(false);
-        LOGDEBUG(
+        LOG_DEBUG(
             "ThinClientRegion::clientNotificationHandler: rec'd endpoints "
             "disconnected message");
         LocalRegion::invokeAfterAllEndPointDisconnected();
       } catch (std::bad_cast&) {
-        LOGERROR(
+        LOG_ERROR(
             "Unknown message type %d in subscription event handler; possible "
             "serialization mismatch",
-            msg.getMessageType());
+            static_cast<int32_t>(msg.getMessageType()));
         err = GF_MSG;
       }
       break;
@@ -2764,11 +2765,11 @@ GfErrType ThinClientRegion::handleServerException(
   }
 
   if (error != GF_AUTHENTICATION_REQUIRED_EXCEPTION) {
-    LOGERROR(func + ": An exception (" + exceptionMsg +
-             ") happened at remote server.");
+    LOG_ERROR(func + ": An exception (" + exceptionMsg +
+              ") happened at remote server.");
   } else {
-    LOGFINER(func + ": An exception (" + exceptionMsg +
-             ") happened at remote server.");
+    LOG_FINER(func + ": An exception (" + exceptionMsg +
+              ") happened at remote server.");
   }
   return error;
 }
@@ -2975,7 +2976,7 @@ void ThinClientRegion::executeFunction(
         std::shared_ptr<CacheableHashSet> failedNodesIds(reply.getFailedNode());
         failedNodes->clear();
         if (failedNodesIds) {
-          LOGDEBUG(
+          LOG_DEBUG(
               "ThinClientRegion::executeFunction with GF_FUNCTION_EXCEPTION "
               "failedNodesIds size = %zu ",
               failedNodesIds->size());
@@ -2983,7 +2984,7 @@ void ThinClientRegion::executeFunction(
         }
       } else if (err == GF_NOTCON) {
         attempt++;
-        LOGDEBUG(
+        LOG_DEBUG(
             "ThinClientRegion::executeFunction with GF_NOTCON retry attempt "
             "= "
             "%d ",
@@ -2995,21 +2996,21 @@ void ThinClientRegion::executeFunction(
         rc->clearResults();
         failedNodes->clear();
       } else if (err == GF_TIMEOUT) {
-        LOGINFO("function timeout. Name: %s, timeout: %s, params: %" PRIu8
-                ", "
-                "retryAttempts: %d ",
-                func.c_str(), to_string(timeout).c_str(), getResult,
-                retryAttempts);
+        LOG_INFO("function timeout. Name: %s, timeout: %s, params: %" PRIu8
+                 ", "
+                 "retryAttempts: %d ",
+                 func.c_str(), to_string(timeout).c_str(), getResult,
+                 retryAttempts);
         throwExceptionIfError("ExecuteOnRegion", GF_TIMEOUT);
       } else if (err == GF_CLIENT_WAIT_TIMEOUT ||
                  err == GF_CLIENT_WAIT_TIMEOUT_REFRESH_PRMETADATA) {
-        LOGINFO(
+        LOG_INFO(
             "function timeout, possibly bucket is not available. Name: %s, "
             "timeout: %s, params: %" PRIu8 ", retryAttempts: %d ",
             func.c_str(), to_string(timeout).c_str(), getResult, retryAttempts);
         throwExceptionIfError("ExecuteOnRegion", GF_CLIENT_WAIT_TIMEOUT);
       } else {
-        LOGDEBUG("executeFunction err = %d ", err);
+        LOG_DEBUG("executeFunction err = %d ", err);
         throwExceptionIfError("ExecuteOnRegion:", err);
       }
     } else {
@@ -3069,7 +3070,7 @@ std::shared_ptr<CacheableVector> ThinClientRegion::reExecuteFunction(
         std::shared_ptr<CacheableHashSet> failedNodesIds(reply.getFailedNode());
         failedNodes->clear();
         if (failedNodesIds) {
-          LOGDEBUG(
+          LOG_DEBUG(
               "ThinClientRegion::reExecuteFunction with "
               "GF_FUNCTION_EXCEPTION "
               "failedNodesIds size = %zu ",
@@ -3079,7 +3080,7 @@ std::shared_ptr<CacheableVector> ThinClientRegion::reExecuteFunction(
       } else if ((err == GF_NOTCON) || (err == GF_CLIENT_WAIT_TIMEOUT) ||
                  (err == GF_CLIENT_WAIT_TIMEOUT_REFRESH_PRMETADATA)) {
         attempt++;
-        LOGDEBUG(
+        LOG_DEBUG(
             "ThinClientRegion::reExecuteFunction with GF_NOTCON OR TIMEOUT "
             "retry attempt "
             "= %d ",
@@ -3091,10 +3092,10 @@ std::shared_ptr<CacheableVector> ThinClientRegion::reExecuteFunction(
         rc->clearResults();
         failedNodes->clear();
       } else if (err == GF_TIMEOUT) {
-        LOGINFO("function timeout");
+        LOG_INFO("function timeout");
         throwExceptionIfError("ExecuteOnRegion", GF_CACHE_TIMEOUT_EXCEPTION);
       } else {
-        LOGDEBUG("reExecuteFunction err = %d ", err);
+        LOG_DEBUG("reExecuteFunction err = %d ", err);
         throwExceptionIfError("ExecuteOnRegion:", err);
       }
     }
@@ -3159,7 +3160,7 @@ bool ThinClientRegion::executeFunctionSH(
         std::shared_ptr<CacheableHashSet> failedNodeIds(
             currentReply->getFailedNode());
         if (failedNodeIds) {
-          LOGDEBUG(
+          LOG_DEBUG(
               "ThinClientRegion::executeFunctionSH with "
               "GF_FUNCTION_EXCEPTION "
               "failedNodeIds size = %zu ",
@@ -3169,7 +3170,7 @@ bool ThinClientRegion::executeFunctionSH(
       } else if ((err == GF_NOTCON) || (err == GF_CLIENT_WAIT_TIMEOUT) ||
                  (err == GF_CLIENT_WAIT_TIMEOUT_REFRESH_PRMETADATA)) {
         reExecute = true;
-        LOGINFO(
+        LOG_INFO(
             "ThinClientRegion::executeFunctionSH with GF_NOTCON or "
             "GF_CLIENT_WAIT_TIMEOUT ");
         if (auto poolDM =
@@ -3187,9 +3188,9 @@ bool ThinClientRegion::executeFunctionSH(
         }
       } else {
         if (ThinClientBaseDM::isFatalClientError(err)) {
-          LOGERROR("ThinClientRegion::executeFunctionSH: Fatal Exception");
+          LOG_ERROR("ThinClientRegion::executeFunctionSH: Fatal Exception");
         } else {
-          LOGWARN("ThinClientRegion::executeFunctionSH: Unexpected Exception");
+          LOG_WARN("ThinClientRegion::executeFunctionSH: Unexpected Exception");
         }
 
         if (abortError == GF_NOERR) {
@@ -3210,7 +3211,7 @@ GfErrType ThinClientRegion::getFuncAttributes(
   GfErrType err = GF_NOERR;
 
   // do TCR GET_FUNCTION_ATTRIBUTES
-  LOGDEBUG("Tcrmessage request GET_FUNCTION_ATTRIBUTES ");
+  LOG_DEBUG("Tcrmessage request GET_FUNCTION_ATTRIBUTES ");
   TcrMessageGetFunctionAttributes request(
       new DataOutput(m_cacheImpl->createDataOutput()), func, m_tcrdm.get());
   TcrMessageReply reply(true, m_tcrdm.get());
@@ -3229,12 +3230,12 @@ GfErrType ThinClientRegion::getFuncAttributes(
       break;
     }
     case TcrMessage::REQUEST_DATA_ERROR: {
-      LOGERROR("Error message from server: " + reply.getValue()->toString());
+      LOG_ERROR("Error message from server: " + reply.getValue()->toString());
       throw FunctionExecutionException(reply.getValue()->toString());
     }
     default: {
-      LOGERROR("Unknown message type %d while getting function attributes.",
-               reply.getMessageType());
+      LOG_ERROR("Unknown message type %d while getting function attributes.",
+                static_cast<int32_t>(reply.getMessageType()));
       err = GF_MSG;
       break;
     }
@@ -3362,7 +3363,7 @@ void ChunkedQueryResponse::reset() {
 void ChunkedQueryResponse::readObjectPartList(DataInput& input,
                                               bool isResultSet) {
   if (input.readBoolean()) {
-    LOGERROR("Query response has keys which is unexpected.");
+    LOG_ERROR("Query response has keys which is unexpected.");
     throw IllegalStateException("Query response has keys which is unexpected.");
   }
 
@@ -3383,12 +3384,12 @@ void ChunkedQueryResponse::readObjectPartList(DataInput& input,
         if (code == DSCode::FixedIDByte) {
           auto arrayType = static_cast<DSFid>(input.read());
           if (arrayType != DSFid::CacheableObjectPartList) {
-            LOGERROR(
+            LOG_ERROR(
                 "Query response got unhandled message format %d while "
                 "expecting struct set object part list; possible "
                 "serialization "
                 "mismatch",
-                arrayType);
+                static_cast<int32_t>(arrayType));
             throw MessageException(
                 "Query response got unhandled message format while expecting "
                 "struct set object part list; possible serialization "
@@ -3396,11 +3397,11 @@ void ChunkedQueryResponse::readObjectPartList(DataInput& input,
           }
           readObjectPartList(input, true);
         } else {
-          LOGERROR(
+          LOG_ERROR(
               "Query response got unhandled message format %" PRId8
               "while expecting "
               "struct set object part list; possible serialization mismatch",
-              code);
+              static_cast<int32_t>(code));
           throw MessageException(
               "Query response got unhandled message format while expecting "
               "struct set object part list; possible serialization mismatch");
@@ -3413,7 +3414,7 @@ void ChunkedQueryResponse::readObjectPartList(DataInput& input,
 void ChunkedQueryResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
                                        uint8_t isLastChunkWithSecurity,
                                        const CacheImpl* cacheImpl) {
-  LOGDEBUG("ChunkedQueryResponse::handleChunk..");
+  LOG_DEBUG("ChunkedQueryResponse::handleChunk..");
   auto input = cacheImpl->createDataInput(chunk, chunkLen, m_msg.getPool());
 
   uint32_t partLen;
@@ -3474,7 +3475,7 @@ void ChunkedQueryResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
   input.readInt32();  // skip part length
 
   if (!input.read()) {
-    LOGERROR(
+    LOG_ERROR(
         "Query response part is not an object; possible serialization "
         "mismatch");
     throw MessageException(
@@ -3508,10 +3509,10 @@ void ChunkedQueryResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
     arrayType = static_cast<DSCode>(input.read());
     if (static_cast<int32_t>(arrayType) !=
         static_cast<int32_t>(DSFid::CacheableObjectPartList)) {
-      LOGERROR(
+      LOG_ERROR(
           "Query response got unhandled message format %d while expecting "
           "object part list; possible serialization mismatch",
-          arrayType);
+          static_cast<int32_t>(arrayType));
       throw MessageException(
           "Query response got unhandled message format while expecting "
           "object "
@@ -3519,10 +3520,10 @@ void ChunkedQueryResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
     }
     readObjectPartList(input, isResultSet);
   } else {
-    LOGERROR(
+    LOG_ERROR(
         "Query response got unhandled message format %d; possible "
         "serialization mismatch",
-        arrayType);
+        static_cast<int32_t>(arrayType));
     throw MessageException(
         "Query response got unhandled message format; possible serialization "
         "mismatch");
@@ -3552,7 +3553,7 @@ void ChunkedFunctionExecutionResponse::reset() {
 void ChunkedFunctionExecutionResponse::handleChunk(
     const uint8_t* chunk, int32_t chunkLen, uint8_t isLastChunkWithSecurity,
     const CacheImpl* cacheImpl) {
-  LOGDEBUG("ChunkedFunctionExecutionResponse::handleChunk");
+  LOG_DEBUG("ChunkedFunctionExecutionResponse::handleChunk");
   auto input = cacheImpl->createDataInput(chunk, chunkLen, m_msg.getPool());
 
   uint32_t partLen;
@@ -3573,7 +3574,7 @@ void ChunkedFunctionExecutionResponse::handleChunk(
 
   if (static_cast<TcrMessageHelper::ChunkObjectType>(arrayType) ==
       TcrMessageHelper::ChunkObjectType::NULL_OBJECT) {
-    LOGDEBUG("ChunkedFunctionExecutionResponse::handleChunk nullptr object");
+    LOG_DEBUG("ChunkedFunctionExecutionResponse::handleChunk nullptr object");
     //	m_functionExecutionResults->push_back(nullptr);
     m_msg.readSecureObjectPart(input, false, true, isLastChunkWithSecurity);
     return;
@@ -3593,7 +3594,7 @@ void ChunkedFunctionExecutionResponse::handleChunk(
   const int CHUNK_HDR_LEN = 5;
   const int SECURE_PART_LEN = 5 + 8;
   bool readPart = true;
-  LOGDEBUG(
+  LOG_DEBUG(
       "ChunkedFunctionExecutionResponse::handleChunk chunkLen = %d & partLen "
       "= "
       "%d ",
@@ -3650,10 +3651,10 @@ void ChunkedFunctionExecutionResponse::handleChunk(
 
     auto memberIdLen = partLen - objectlen;
     input.advanceCursor(memberIdLen);
-    LOGDEBUG("function partlen = %d , objectlen = %z,  memberidlen = %z ",
-             partLen, objectlen, memberIdLen);
-    LOGDEBUG("function input.getBytesRemaining() = %z ",
-             input.getBytesRemaining());
+    LOG_DEBUG("function partlen = %d , objectlen = %z,  memberidlen = %z ",
+              partLen, objectlen, memberIdLen);
+    LOG_DEBUG("function input.getBytesRemaining() = %z ",
+              input.getBytesRemaining());
 
   } else {
     value = CacheableString::create("Function exception result.");
@@ -3754,14 +3755,14 @@ void ChunkedPutAllResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
            static_cast<int32_t>(DSFid::VersionedObjectPartList),
            "ChunkedPutAllResponse", partLen, isLastChunkWithSecurity)) ==
       TcrMessageHelper::ChunkObjectType::NULL_OBJECT) {
-    LOGDEBUG("ChunkedPutAllResponse::handleChunk nullptr object");
+    LOG_DEBUG("ChunkedPutAllResponse::handleChunk nullptr object");
     // No issues it will be empty in case of disabled caching.
     m_msg.readSecureObjectPart(input, false, true, isLastChunkWithSecurity);
     return;
   }
 
   if (chunkType == TcrMessageHelper::ChunkObjectType::OBJECT) {
-    LOGDEBUG("ChunkedPutAllResponse::handleChunk object");
+    LOG_DEBUG("ChunkedPutAllResponse::handleChunk object");
     std::recursive_mutex responseLock;
     auto vcObjPart = std::make_shared<VersionedCacheableObjectPartList>(
         dynamic_cast<ThinClientRegion*>(m_region.get()),
@@ -3770,10 +3771,10 @@ void ChunkedPutAllResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
     m_list->addAll(vcObjPart);
     m_msg.readSecureObjectPart(input, false, true, isLastChunkWithSecurity);
   } else {
-    LOGDEBUG("ChunkedPutAllResponse::handleChunk BYTES PART");
+    LOG_DEBUG("ChunkedPutAllResponse::handleChunk BYTES PART");
     const auto byte0 = input.read();
-    LOGDEBUG("ChunkedPutAllResponse::handleChunk single-hop bytes byte0 = %d ",
-             byte0);
+    LOG_DEBUG("ChunkedPutAllResponse::handleChunk single-hop bytes byte0 = %d ",
+              byte0);
     const auto byte1 = input.read();
     m_msg.readSecureObjectPart(input, false, true, isLastChunkWithSecurity);
 
@@ -3783,8 +3784,8 @@ void ChunkedPutAllResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
       auto poolDM = dynamic_cast<ThinClientPoolDM*>(pool);
       if ((poolDM != nullptr) &&
           (poolDM->getClientMetaDataService() != nullptr) && (byte0 != 0)) {
-        LOGFINE("enqueued region " + m_region->getFullPath() +
-                " for metadata refresh for singlehop for PUTALL operation.");
+        LOG_FINE("enqueued region " + m_region->getFullPath() +
+                 " for metadata refresh for singlehop for PUTALL operation.");
         poolDM->getClientMetaDataService()->enqueueForMetadataRefresh(
             m_region->getFullPath(), byte1);
       }
@@ -3812,14 +3813,14 @@ void ChunkedRemoveAllResponse::handleChunk(const uint8_t* chunk,
            static_cast<int32_t>(DSFid::VersionedObjectPartList),
            "ChunkedRemoveAllResponse", partLen, isLastChunkWithSecurity)) ==
       TcrMessageHelper::ChunkObjectType::NULL_OBJECT) {
-    LOGDEBUG("ChunkedRemoveAllResponse::handleChunk nullptr object");
+    LOG_DEBUG("ChunkedRemoveAllResponse::handleChunk nullptr object");
     // No issues it will be empty in case of disabled caching.
     m_msg.readSecureObjectPart(input, false, true, isLastChunkWithSecurity);
     return;
   }
 
   if (chunkType == TcrMessageHelper::ChunkObjectType::OBJECT) {
-    LOGDEBUG("ChunkedRemoveAllResponse::handleChunk object");
+    LOG_DEBUG("ChunkedRemoveAllResponse::handleChunk object");
     std::recursive_mutex responseLock;
     auto vcObjPart = std::make_shared<VersionedCacheableObjectPartList>(
         dynamic_cast<ThinClientRegion*>(m_region.get()),
@@ -3828,9 +3829,9 @@ void ChunkedRemoveAllResponse::handleChunk(const uint8_t* chunk,
     m_list->addAll(vcObjPart);
     m_msg.readSecureObjectPart(input, false, true, isLastChunkWithSecurity);
   } else {
-    LOGDEBUG("ChunkedRemoveAllResponse::handleChunk BYTES PART");
+    LOG_DEBUG("ChunkedRemoveAllResponse::handleChunk BYTES PART");
     const auto byte0 = input.read();
-    LOGDEBUG(
+    LOG_DEBUG(
         "ChunkedRemoveAllResponse::handleChunk single-hop bytes byte0 = %d ",
         byte0);
     const auto byte1 = input.read();
@@ -3842,8 +3843,9 @@ void ChunkedRemoveAllResponse::handleChunk(const uint8_t* chunk,
       auto poolDM = dynamic_cast<ThinClientPoolDM*>(pool);
       if ((poolDM != nullptr) &&
           (poolDM->getClientMetaDataService() != nullptr) && (byte0 != 0)) {
-        LOGFINE("enqueued region " + m_region->getFullPath() +
-                " for metadata refresh for singlehop for REMOVEALL operation.");
+        LOG_FINE(
+            "enqueued region " + m_region->getFullPath() +
+            " for metadata refresh for singlehop for REMOVEALL operation.");
         poolDM->getClientMetaDataService()->enqueueForMetadataRefresh(
             m_region->getFullPath(), byte1);
       }

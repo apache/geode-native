@@ -49,8 +49,8 @@ void ThinClientPoolRegion::initTCR() {
     }
     poolDM->incRegionCount();
   } catch (const Exception& ex) {
-    LOGERROR("Failed to initialize region due to %s: %s", ex.getName().c_str(),
-             ex.what());
+    LOG_ERROR("Failed to initialize region due to %s: %s", ex.getName().c_str(),
+              ex.what());
     throw;
   }
 }

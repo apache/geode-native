@@ -131,7 +131,7 @@ class TestException {
         m_filename(filename) {}
 
   void print() {
-    fprintf(stdout, "--->%sTestException: %s in %s at line %d<---\n", apache::geode::client::Log::formatLogLine(apache::geode::client::LogLevel::Error).c_str(),
+    fprintf(stdout, "--->TestException: %s in %s at line %d<---\n",
             m_message.c_str(), m_filename.c_str(), m_lineno);
   }
   std::string m_message;

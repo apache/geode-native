@@ -175,7 +175,7 @@ class TestPdxSerializer : public PdxSerializer {
 
       nonPdxType->m_objectArray = pdxReader.readObjectArray("m_objectArray");
 
-      LOGINFO("TestPdxSerializer: NonPdxType fromData() Done.");
+      LOG_INFO("TestPdxSerializer: NonPdxType fromData() Done.");
     } catch (...) {
       return nullptr;
     }

@@ -23,12 +23,12 @@ namespace client {
 
 PutAllPartialResultServerException::PutAllPartialResultServerException(
     std::shared_ptr<PutAllPartialResult> result) {
-  LOGDEBUG("Partial keys are processed in putAll");
+  LOG_DEBUG("Partial keys are processed in putAll");
   m_result = result;
 }
 
 PutAllPartialResultServerException::PutAllPartialResultServerException() {
-  LOGDEBUG("Partial keys are processed in putAll");
+  LOG_DEBUG("Partial keys are processed in putAll");
   std::recursive_mutex responseLock;
   m_result = std::make_shared<PutAllPartialResult>(-1, responseLock);
 }

@@ -288,7 +288,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
     for (int i = 0; i < QueryStrings::RSsize(); i++) {
       if (m_isPdx == true) {
         if (i == 2 || i == 3 || i == 4) {
-          LOGINFO(
+          LOG_INFO(
               "Skipping query index %d for Pdx because it is function type.",
               i);
           continue;
@@ -394,12 +394,12 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
     for (int i = 0; i < QueryStrings::RSPsize(); i++) {
       if (resultsetparamQueries[i].category != unsupported) {
         auto qry = qs->newQuery(resultsetparamQueries[i].query());
-        // LOGINFO("NIL::229:Retrieved QueryString = %s",
+        // LOG_INFO("NIL::229:Retrieved QueryString = %s",
         // qry->getQueryString());
 
         auto paramList = CacheableVector::create();
         for (int j = 0; j < noofQueryParam[i]; j++) {
-          // LOGINFO("NIL::260: queryparamSet[%d][%d] = %s", i, j,
+          // LOG_INFO("NIL::260: queryparamSet[%d][%d] = %s", i, j,
           // queryparamSet[i][j]);
           if (atoi(queryparamSet[i][j]) != 0) {
             paramList->push_back(Cacheable::create(atoi(queryparamSet[i][j])));

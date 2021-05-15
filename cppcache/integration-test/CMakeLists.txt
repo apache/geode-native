@@ -26,6 +26,7 @@ target_link_libraries(test-cppcache-utils
     integration-framework
     ACE::ACE
     _WarningsAsError
+    spdlog::spdlog
   PUBLIC
     apache-geode
     framework
@@ -51,6 +52,7 @@ target_link_libraries(unit_test_callbacks
   PRIVATE
     ACE::ACE
     _WarningsAsError
+    spdlog::spdlog
   PUBLIC
     apache-geode
 )
@@ -113,6 +115,7 @@ foreach(FILE ${SOURCES})
       _WarningsAsError
       _CppCodeCoverage
       internal
+      spdlog::spdlog
     PUBLIC
       apache-geode
       testobject

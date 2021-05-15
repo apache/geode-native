@@ -154,13 +154,13 @@ class TcrChunkedContext {
         m_result->fireHandleChunk(m_chunk.data(), m_len,
                                   m_isLastChunkWithSecurity, m_cache);
       } catch (Exception& ex) {
-        LOGERROR("HandleChunk error message %s, name = %s", ex.what(),
-                 ex.getName().c_str());
+        LOG_ERROR("HandleChunk error message %s, name = %s", ex.what(),
+                  ex.getName().c_str());
         m_result->setException(std::make_shared<Exception>(ex));
       } catch (std::exception& stdEx) {
         std::string exMsg("HandleChunk exception:: ");
         exMsg += stdEx.what();
-        LOGERROR("HandleChunk exception: %s", stdEx.what());
+        LOG_ERROR("HandleChunk exception: %s", stdEx.what());
         auto ex = std::make_shared<UnknownException>(exMsg.c_str());
         m_result->setException(ex);
       } catch (...) {
@@ -169,7 +169,7 @@ class TcrChunkedContext {
         exMsg +=
             "::handleChunk while processing response, possible serialization "
             "mismatch";
-        LOGERROR(exMsg.c_str());
+        LOG_ERROR(exMsg.c_str());
         auto ex = std::make_shared<UnknownException>(exMsg.c_str());
         m_result->setException(ex);
       }

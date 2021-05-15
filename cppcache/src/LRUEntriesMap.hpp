@@ -109,7 +109,7 @@ class LRUEntriesMap : public ConcurrentEntriesMap {
 
   inline bool mustEvict() const {
     if (m_action == nullptr) {
-      LOGFINE("Eviction action is nullptr");
+      LOG_FINE("Eviction action is nullptr");
       return false;
     }
     if (m_action->overflows()) {

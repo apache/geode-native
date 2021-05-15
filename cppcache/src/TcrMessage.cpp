@@ -378,8 +378,8 @@ void TcrMessage::readPrMetaData(DataInput& input) {
   m_metaDataVersion = input.read();  // read refresh meta data byte
   if (lenObj == 2) {
     m_serverGroupVersion = input.read();
-    LOGDEBUG("Single-hop m_serverGroupVersion in message reply is %d",
-             m_serverGroupVersion);
+    LOG_DEBUG("Single-hop m_serverGroupVersion in message reply is %d",
+              m_serverGroupVersion);
   }
 }
 std::shared_ptr<VersionTag> TcrMessage::readVersionTagPart(
@@ -493,7 +493,7 @@ void TcrMessage::readObjectPart(DataInput& input, bool defaultString) {
 void TcrMessage::readSecureObjectPart(DataInput& input, bool defaultString,
                                       bool isChunk,
                                       uint8_t isLastChunkWithSecurity) {
-  LOGDEBUG(
+  LOG_DEBUG(
       "TcrMessage::readSecureObjectPart isChunk = %d isLastChunkWithSecurity = "
       "%d",
       isChunk, isLastChunkWithSecurity);
@@ -505,7 +505,7 @@ void TcrMessage::readSecureObjectPart(DataInput& input, bool defaultString,
 
   int32_t lenObj = input.readInt32();
   const auto isObj = input.readBoolean();
-  LOGDEBUG(
+  LOG_DEBUG(
       "TcrMessage::readSecureObjectPart lenObj = %d isObj = %d, "
       "m_msgTypeRequest = %d defaultString = %d ",
       lenObj, isObj, m_msgTypeRequest, defaultString);
@@ -520,7 +520,7 @@ void TcrMessage::readSecureObjectPart(DataInput& input, bool defaultString,
         //   (char*)input.currentBufferPosition( ), lenObj );
         m_value = readCacheableString(input, lenObj);
       } else {
-        LOGDEBUG("reading connectionid");
+        LOG_DEBUG("reading connectionid");
         // TODO: this will execute always
         // input.rea.readInt(&connectionId);
         // m_connectionIDBytes =
@@ -534,19 +534,19 @@ void TcrMessage::readSecureObjectPart(DataInput& input, bool defaultString,
     }
   }
   if (input.getBytesRemaining() != 0) {
-    LOGERROR("readSecureObjectPart: we not read all bytes. Messagetype:%d",
-             m_msgType);
+    LOG_ERROR("readSecureObjectPart: we not read all bytes. Messagetype:%d",
+              m_msgType);
     throw IllegalStateException("didn't read all bytes");
   }
 }
 
 void TcrMessage::readUniqueIDObjectPart(DataInput& input) {
-  LOGDEBUG("TcrMessage::readUniqueIDObjectPart");
+  LOG_DEBUG("TcrMessage::readUniqueIDObjectPart");
 
   int32_t lenObj = input.readInt32();
   const auto isObj = input.readBoolean();
-  LOGDEBUG("TcrMessage::readUniqueIDObjectPart lenObj = %d isObj = %d", lenObj,
-           isObj);
+  LOG_DEBUG("TcrMessage::readUniqueIDObjectPart lenObj = %d isObj = %d", lenObj,
+            isObj);
   if (lenObj > 0) {
     m_value = CacheableBytes::create(std::vector<int8_t>(
         input.currentBufferPosition(), input.currentBufferPosition() + lenObj));
@@ -561,7 +561,7 @@ int64_t TcrMessage::getConnectionId() {
         m_connectionIDBytes->length());
     return di.readInt64();
   } else {
-    LOGWARN("Returning 0 as internal connection ID msgtype = %d ", m_msgType);
+    LOG_WARN("Returning 0 as internal connection ID msgtype = %d ", m_msgType);
     return 0;
   }
 }
@@ -586,7 +586,7 @@ void TcrMessage::readFailedNodePart(DataInput& input) {
   input.read();  // ignore typeId
   // input.readDirectObject(m_failedNode, typeId);
   m_failedNode->fromData(input);
-  LOGDEBUG("readFailedNodePart m_failedNode size = %zu", m_failedNode->size());
+  LOG_DEBUG("readFailedNodePart m_failedNode size = %zu", m_failedNode->size());
 }
 
 void TcrMessage::readKeyPart(DataInput& input) {
@@ -640,7 +640,7 @@ bool TcrMessage::readExceptionPart(DataInput& input, uint8_t isLastChunk,
   // exception.
 
   isLastChunk = (isLastChunk >> 5);
-  LOGDEBUG("TcrMessage::readExceptionPart: isLastChunk = %d", isLastChunk);
+  LOG_DEBUG("TcrMessage::readExceptionPart: isLastChunk = %d", isLastChunk);
   if (skipFirstPart == true) {
     skipParts(input, 1);
     isLastChunk--;
@@ -768,7 +768,7 @@ void TcrMessage::writeBytesOnly(const std::shared_ptr<Serializable>& se) {
 
 void TcrMessage::writeHeader(uint32_t msgType, uint32_t numOfParts) {
   int8_t earlyAck = 0x0;
-  LOGDEBUG("TcrMessage::writeHeader m_isMetaRegion = %d", m_isMetaRegion);
+  LOG_DEBUG("TcrMessage::writeHeader m_isMetaRegion = %d", m_isMetaRegion);
   if (m_tcdm != nullptr) {
     if ((m_isSecurityOn =
              (m_tcdm->isSecurityOn() &&
@@ -777,7 +777,7 @@ void TcrMessage::writeHeader(uint32_t msgType, uint32_t numOfParts) {
     }
   }
 
-  LOGDEBUG("TcrMessage::writeHeader earlyAck = %d", earlyAck);
+  LOG_DEBUG("TcrMessage::writeHeader earlyAck = %d", earlyAck);
 
   m_request->writeInt(static_cast<int32_t>(msgType));
   m_request->writeInt(
@@ -889,7 +889,7 @@ void TcrMessage::startProcessChunk(binary_semaphore& finalizeSema) {
       break;
     }
     default: {
-      LOGERROR(
+      LOG_ERROR(
           "Got unexpected request message type %d while starting to process "
           "response",
           m_msgTypeRequest);
@@ -902,12 +902,13 @@ void TcrMessage::startProcessChunk(binary_semaphore& finalizeSema) {
 
 bool TcrMessage::isFEAnotherHop() { return m_feAnotherHop; }
 void TcrMessage::handleSpecialFECase() {
-  LOGDEBUG("handleSpecialFECase1 %d", this->m_isLastChunkAndisSecurityHeader);
+  LOG_DEBUG("handleSpecialFECase1 %d", this->m_isLastChunkAndisSecurityHeader);
   if ((this->m_isLastChunkAndisSecurityHeader & 0x01) == 0x01) {
-    LOGDEBUG("handleSpecialFECase2 %d", this->m_isLastChunkAndisSecurityHeader);
+    LOG_DEBUG("handleSpecialFECase2 %d",
+              this->m_isLastChunkAndisSecurityHeader);
     if (!((this->m_isLastChunkAndisSecurityHeader & 0x04) == 0x04)) {
-      LOGDEBUG("handleSpecialFECase3 %d",
-               this->m_isLastChunkAndisSecurityHeader);
+      LOG_DEBUG("handleSpecialFECase3 %d",
+                this->m_isLastChunkAndisSecurityHeader);
       m_feAnotherHop = true;
     }
   }
@@ -917,7 +918,7 @@ void TcrMessage::processChunk(const std::vector<uint8_t>& chunk, int32_t len,
                               uint16_t endpointmemId,
                               const uint8_t isLastChunkAndisSecurityHeader) {
   // TODO: see if security header is there
-  LOGDEBUG(
+  LOG_DEBUG(
       "TcrMessage::processChunk isLastChunkAndisSecurityHeader = %d chunklen = "
       "%d m_msgType = %d",
       isLastChunkAndisSecurityHeader, len, m_msgType);
@@ -931,7 +932,7 @@ void TcrMessage::processChunk(const std::vector<uint8_t>& chunk, int32_t len,
 
   switch (m_msgType) {
     case TcrMessage::REPLY: {
-      LOGDEBUG("processChunk - got reply for request %d", m_msgTypeRequest);
+      LOG_DEBUG("processChunk - got reply for request %d", m_msgTypeRequest);
       chunkSecurityHeader(1, chunk, len, isLastChunkAndisSecurityHeader);
       break;
     }
@@ -942,8 +943,8 @@ void TcrMessage::processChunk(const std::vector<uint8_t>& chunk, int32_t len,
           m_msgTypeRequest == TcrMessage::CLOSECLIENTCQS_MSG_TYPE ||
           m_msgTypeRequest == TcrMessage::GETCQSTATS_MSG_TYPE ||
           m_msgTypeRequest == TcrMessage::MONITORCQ_MSG_TYPE) {
-        LOGDEBUG("processChunk - got CQ response for request %d",
-                 m_msgTypeRequest);
+        LOG_DEBUG("processChunk - got CQ response for request %d",
+                  m_msgTypeRequest);
         // TODO: do we need to do anything here
         break;
       } else if (m_msgTypeRequest == TcrMessage::PUTALL ||
@@ -965,7 +966,7 @@ void TcrMessage::processChunk(const std::vector<uint8_t>& chunk, int32_t len,
       }
       // fall-through for other cases
       if (m_chunkedResult != nullptr) {
-        LOGDEBUG("tcrmessage in case22 ");
+        LOG_DEBUG("tcrmessage in case22 ");
         TcrChunkedContext* chunkedContext = new TcrChunkedContext(
             chunk, len, m_chunkedResult, isLastChunkAndisSecurityHeader,
             m_tcdm->getConnectionManager().getCacheImpl());
@@ -1001,7 +1002,7 @@ void TcrMessage::processChunk(const std::vector<uint8_t>& chunk, int32_t len,
     case TcrMessage::CQ_EXCEPTION_TYPE:     // one part
     case TcrMessage::RESPONSE_FROM_PRIMARY: {
       if (m_chunkedResult != nullptr) {
-        LOGDEBUG("tcrmessage in case22 ");
+        LOG_DEBUG("tcrmessage in case22 ");
         TcrChunkedContext* chunkedContext = new TcrChunkedContext(
             chunk, len, m_chunkedResult, isLastChunkAndisSecurityHeader,
             m_tcdm->getConnectionManager().getCacheImpl());
@@ -1062,7 +1063,7 @@ void TcrMessage::processChunk(const std::vector<uint8_t>& chunk, int32_t len,
       // TODO: how many parts
       chunkSecurityHeader(1, chunk, len, isLastChunkAndisSecurityHeader);
       if (chunk.size()) {
-        LOGFINEST("processChunk - got response from secondary, ignoring.");
+        LOG_FINEST("processChunk - got response from secondary, ignoring.");
       }
       break;
     }
@@ -1079,7 +1080,7 @@ void TcrMessage::processChunk(const std::vector<uint8_t>& chunk, int32_t len,
               errorString.begin(),
               std::find_if(errorString.begin(), errorString.end(),
                            std::not1(std::ptr_fun<int, int>(std::isspace))));
-          LOGDEBUG(
+          LOG_DEBUG(
               "TcrMessage::%s: setting thread-local ex msg to \"%s\", %s, %d",
               __FUNCTION__, errorString.c_str(), __FILE__, __LINE__);
           setThreadLocalExceptionMessage(errorString.c_str());
@@ -1095,7 +1096,7 @@ void TcrMessage::processChunk(const std::vector<uint8_t>& chunk, int32_t len,
     default: {
       // TODO: how many parts what should we do here
       if (chunk.empty()) {
-        LOGWARN(
+        LOG_WARN(
             "Got unhandled message type %d while processing response, possible "
             "serialization mismatch",
             m_msgType);
@@ -1119,7 +1120,7 @@ void TcrMessage::chunkSecurityHeader(int skipPart,
                                      const std::vector<uint8_t> bytes,
                                      int32_t len,
                                      uint8_t isLastChunkAndSecurityHeader) {
-  LOGDEBUG("TcrMessage::chunkSecurityHeader:: skipParts = %d", skipPart);
+  LOG_DEBUG("TcrMessage::chunkSecurityHeader:: skipParts = %d", skipPart);
   if ((isLastChunkAndSecurityHeader & 0x3) == 0x3) {
     auto di = m_tcdm->getConnectionManager().getCacheImpl()->createDataInput(
         bytes.data(), len);
@@ -1144,16 +1145,16 @@ void TcrMessage::handleByteArrayResponse(
   numparts = input.readInt32();
   m_txId = input.readInt32();
   auto earlyack = input.read();
-  LOGDEBUG(
+  LOG_DEBUG(
       "handleByteArrayResponse m_msgType = %d m_isSecurityOn = %d requesttype "
       "=%d",
       m_msgType, m_isSecurityOn, m_msgTypeRequest);
-  LOGDEBUG(
+  LOG_DEBUG(
       "Message type=%d, length=%d, parts=%d, txid=%d and eack %d with data "
       "length=%d",
       m_msgType, msglen, numparts, m_txId, earlyack, len);
 
-  // LOGFINE("Message type=%d, length=%d, parts=%d, txid=%d and eack %d with
+  // LOG_FINE("Message type=%d, length=%d, parts=%d, txid=%d and eack %d with
   // data length=%d",
   // m_msgType, msglen, numparts, m_txId, earlyack, len);
 
@@ -1225,7 +1226,7 @@ void TcrMessage::handleByteArrayResponse(
             m_metaDataVersion = input.read();
             if (lenObj == 2) {
               m_serverGroupVersion = input.read();
-              LOGDEBUG(
+              LOG_DEBUG(
                   "Single-hop m_serverGroupVersion in message response is %d",
                   m_serverGroupVersion);
             }
@@ -1235,11 +1236,11 @@ void TcrMessage::handleByteArrayResponse(
           int32_t lenObj = input.readInt32();
           input.readBoolean();
           m_metaDataVersion = input.read();
-          LOGFINE("Single-hop metadata version in message response is %d",
-                  m_metaDataVersion);
+          LOG_FINE("Single-hop metadata version in message response is %d",
+                   m_metaDataVersion);
           if (lenObj == 2) {
             m_serverGroupVersion = input.read();
-            LOGDEBUG(
+            LOG_DEBUG(
                 "Single-hop m_serverGroupVersion in message response is %d",
                 m_serverGroupVersion);
           }
@@ -1259,7 +1260,7 @@ void TcrMessage::handleByteArrayResponse(
 
     case TcrMessage::INVALID: {
       // Read the string in the reply
-      LOGWARN("Received invalid message type as reply from server");
+      LOG_WARN("Received invalid message type as reply from server");
       readObjectPart(input, true);
       break;
     }
@@ -1321,8 +1322,8 @@ void TcrMessage::handleByteArrayResponse(
           // that the readSecureObjectPart() call below gets the security part
           // skipParts(input, 1);
           readIntPart(input, &m_entryNotFound);
-          LOGDEBUG("Inside TcrMessage::REPLY::DESTROY m_entryNotFound = %d ",
-                   m_entryNotFound);
+          LOG_DEBUG("Inside TcrMessage::REPLY::DESTROY m_entryNotFound = %d ",
+                    m_entryNotFound);
           break;
         }
         case TcrMessage::PING:
@@ -1357,7 +1358,7 @@ void TcrMessage::handleByteArrayResponse(
         } else {
           m_msgTypeForCq = static_cast<uint32_t>(m_msgType);
         }
-        // LOGINFO("got cq local local_invalidate/local_destroy read
+        // LOG_INFO("got cq local local_invalidate/local_destroy read
         // m_hasCqsPart");
         readCqsPart(input);
       }
@@ -1405,7 +1406,7 @@ void TcrMessage::handleByteArrayResponse(
       readBooleanPartAsObject(input, &m_hasCqsPart);
 
       if (m_hasCqsPart) {
-        // LOGINFO("got cq local_create/local_create");
+        // LOG_INFO("got cq local_create/local_create");
         readCqsPart(input);
         m_msgTypeForCq = static_cast<uint32_t>(m_msgType);
       }
@@ -1437,7 +1438,7 @@ void TcrMessage::handleByteArrayResponse(
       readCallbackObjectPart(input);
       readBooleanPartAsObject(input, &m_hasCqsPart);
       if (m_hasCqsPart) {
-        // LOGINFO("got cq region_destroy read m_hasCqsPart");
+        // LOG_INFO("got cq region_destroy read m_hasCqsPart");
         readCqsPart(input);
       }
       // read eventid part
@@ -1447,7 +1448,7 @@ void TcrMessage::handleByteArrayResponse(
 
     case TcrMessage::RESPONSE_CLIENT_PR_METADATA: {
       if (len == 17) {
-        LOGDEBUG("RESPONSE_CLIENT_PR_METADATA len is 17");
+        LOG_DEBUG("RESPONSE_CLIENT_PR_METADATA len is 17");
         return;
       }
       m_metadata =
@@ -1456,11 +1457,11 @@ void TcrMessage::handleByteArrayResponse(
         input.readInt32();          // ignore partlen
         input.read();               // ignore  isObj;
         auto bits8 = input.read();  // cacheable vector typeid
-        LOGDEBUG("Expected typeID %d, got %d", DSCode::CacheableArrayList,
-                 bits8);
+        LOG_DEBUG("Expected typeID {}, got {}",
+                  static_cast<int32_t>(DSCode::CacheableArrayList), bits8);
 
         auto arrayLength = input.readArrayLength();  // array length
-        LOGDEBUG("Array length = %d ", arrayLength);
+        LOG_DEBUG("Array length = %d ", arrayLength);
         if (arrayLength > 0) {
           std::vector<std::shared_ptr<BucketServerLocation>>
               bucketServerLocations;
@@ -1471,21 +1472,21 @@ void TcrMessage::handleByteArrayResponse(
             input.advanceCursor(classLen);
             auto location = std::make_shared<BucketServerLocation>();
             location->fromData(input);
-            LOGFINE("location contains %d\t%s\t%d\t%d\t%s",
-                    location->getBucketId(), location->getServerName().c_str(),
-                    location->getPort(), location->getVersion(),
-                    (location->isPrimary() ? "true" : "false"));
+            LOG_FINE("location contains %d\t%s\t%d\t%d\t%s",
+                     location->getBucketId(), location->getServerName().c_str(),
+                     location->getPort(), location->getVersion(),
+                     (location->isPrimary() ? "true" : "false"));
             bucketServerLocations.push_back(location);
           }
           m_metadata->push_back(bucketServerLocations);
         }
-        LOGFINER("Metadata size is %zu", m_metadata->size());
+        LOG_FINER("Metadata size is %zu", m_metadata->size());
       }
       break;
     }
 
     case TcrMessage::GET_CLIENT_PR_METADATA_ERROR: {
-      LOGERROR("Failed to get single-hop meta data");
+      LOG_ERROR("Failed to get single-hop meta data");
       break;
     }
 
@@ -1526,9 +1527,9 @@ void TcrMessage::handleByteArrayResponse(
             input.advanceCursor(classLen);
             auto fpa = std::make_shared<FixedPartitionAttributesImpl>();
             fpa->fromData(input);  // PART4 = set of FixedAttributes.
-            LOGDEBUG("fpa contains %d\t%s\t%d\t%d", fpa->getNumBuckets(),
-                     fpa->getPartitionName().c_str(), fpa->isPrimary(),
-                     fpa->getStartingBucketID());
+            LOG_DEBUG("fpa contains %d\t%s\t%d\t%d", fpa->getNumBuckets(),
+                      fpa->getPartitionName().c_str(), fpa->isPrimary(),
+                      fpa->getStartingBucketID());
             m_fpaSet->push_back(fpa);
           }
         }
@@ -1564,7 +1565,7 @@ void TcrMessage::handleByteArrayResponse(
         // input.readObject(m_tombstoneKeys);
         readHashSetForGCVersions(input, m_tombstoneKeys);
       } else {
-        LOGERROR("Failed to read the tombstone versions");
+        LOG_ERROR("Failed to read the tombstone versions");
         break;
       }
       // readEventId Part
@@ -1572,7 +1573,7 @@ void TcrMessage::handleByteArrayResponse(
       break;
     }
     case TcrMessage::GET_CLIENT_PARTITION_ATTRIBUTES_ERROR: {
-      LOGERROR("Failed to get server partitioned region attributes");
+      LOG_ERROR("Failed to get server partitioned region attributes");
       break;
     }
 
@@ -1582,21 +1583,21 @@ void TcrMessage::handleByteArrayResponse(
     }
 
     case TcrMessage::REQUEST_EVENT_VALUE_ERROR: {
-      LOGERROR("Error while requesting full value for delta");
+      LOG_ERROR("Error while requesting full value for delta");
       break;
     }
 
     default:
-      LOGERROR(
+      LOG_ERROR(
           "Unknown message type %d in response, possible serialization "
           "mismatch",
           m_msgType);
       std::stringstream ss;
       ss << boost::stacktrace::stacktrace();
-      LOGERROR(ss.str().c_str());
+      LOG_ERROR(ss.str().c_str());
       throw MessageException("handleByteArrayResponse: unknown message type");
   }
-  LOGDEBUG("handleByteArrayResponse earlyack = %d ", earlyack);
+  LOG_DEBUG("handleByteArrayResponse earlyack = %d ", earlyack);
   if (earlyack & 0x2) readSecureObjectPart(input);
 }
 
@@ -2365,11 +2366,11 @@ TcrMessagePutAll::TcrMessagePutAll(
   int flags = 0;
   if (!region->getAttributes().getCachingEnabled()) {
     flags |= kFlagEmpty;
-    LOGDEBUG("TcrMessage::PUTALL datapolicy empty flags = %d ", flags);
+    LOG_DEBUG("TcrMessage::PUTALL datapolicy empty flags = %d ", flags);
   }
   if (region->getAttributes().getConcurrencyChecksEnabled()) {
     flags |= kFlagConcurrencyChecks;
-    LOGDEBUG("TcrMessage::PUTALL ConcurrencyChecksEnabled flags = %d ", flags);
+    LOG_DEBUG("TcrMessage::PUTALL ConcurrencyChecksEnabled flags = %d ", flags);
   }
   writeIntPart(flags);
 
@@ -2419,12 +2420,12 @@ TcrMessageRemoveAll::TcrMessageRemoveAll(
   int flags = 0;
   if (!region->getAttributes().getCachingEnabled()) {
     flags |= kFlagEmpty;
-    LOGDEBUG("TcrMessage::REMOVE_ALL datapolicy empty flags = %d ", flags);
+    LOG_DEBUG("TcrMessage::REMOVE_ALL datapolicy empty flags = %d ", flags);
   }
   if (region->getAttributes().getConcurrencyChecksEnabled()) {
     flags |= kFlagConcurrencyChecks;
-    LOGDEBUG("TcrMessage::REMOVE_ALL ConcurrencyChecksEnabled flags = %d ",
-             flags);
+    LOG_DEBUG("TcrMessage::REMOVE_ALL ConcurrencyChecksEnabled flags = %d ",
+              flags);
   }
   writeIntPart(flags);
   writeObjectPart(aCallbackArgument);
@@ -2479,7 +2480,7 @@ void TcrMessage::InitializeGetallMsg(
       keyArr->push_back(m_keyList->operator[](index));
     }
   }*/
-  // LOGINFO(" in InitializeGetallMsg %s ", m_regionName.c_str());
+  // LOG_INFO(" in InitializeGetallMsg %s ", m_regionName.c_str());
   // writeHeader(m_msgType, 2);
   // writeRegionPart(m_regionName);
   writeObjectPart(nullptr, false, false, m_keyList);  // will do manually
@@ -2580,7 +2581,7 @@ TcrMessageExecuteRegionFunction::TcrMessageExecuteRegionFunction(
   m_hasResult = getResult;
 
   if (routingObj && routingObj->size() == 1) {
-    LOGDEBUG("setting up key");
+    LOG_DEBUG("setting up key");
     m_key = std::dynamic_pointer_cast<CacheableKey>(routingObj->at(0));
   }
 
@@ -2650,14 +2651,14 @@ TcrMessageExecuteRegionFunctionSingleHop::
   if (routingObj) {
     writeIntPart(static_cast<int32_t>(routingObj->size()));
     if (allBuckets) {
-      LOGDEBUG("All Buckets so putting IntPart for buckets = %zu",
-               routingObj->size());
+      LOG_DEBUG("All Buckets so putting IntPart for buckets = %zu",
+                routingObj->size());
       for (const auto& itr : *routingObj) {
         writeIntPart(std::dynamic_pointer_cast<CacheableInt32>(itr)->value());
       }
     } else {
-      LOGDEBUG("putting keys as withFilter called, routing Keys size = %zu",
-               routingObj->size());
+      LOG_DEBUG("putting keys as withFilter called, routing Keys size = %zu",
+                routingObj->size());
       for (const auto& itr : *routingObj) {
         writeObjectPart(itr);
       }
@@ -2717,11 +2718,11 @@ TcrMessageUserCredential::TcrMessageUserCredential(
    * Second part will be credentails (may be in encrypted form)
    */
   m_creds = creds;
-  /*LOGDEBUG("Tcrmessage sending creds to server");
+  /*LOG_DEBUG("Tcrmessage sending creds to server");
   writeHeader(msgType, numOfParts);
   writeObjectPart(creds);
   writeMessageLength();
-  LOGDEBUG("TcrMessage addsp = %s ",
+  LOG_DEBUG("TcrMessage addsp = %s ",
   Utils::convertBytesToString(m_request->getBuffer(),
   m_request->getBufferLength())->value().c_str());*/
 }
@@ -2732,7 +2733,7 @@ TcrMessageRemoveUserAuth::TcrMessageRemoveUserAuth(
 
   m_msgType = TcrMessage::REMOVE_USER_AUTH;
   m_tcdm = connectionDM;
-  LOGDEBUG("Tcrmessage sending REMOVE_USER_AUTH message to server");
+  LOG_DEBUG("Tcrmessage sending REMOVE_USER_AUTH message to server");
   writeHeader(m_msgType, 1);
   // adding dummy part as server has check for numberofparts > 0
   int8_t dummy = 0;
@@ -2740,10 +2741,10 @@ TcrMessageRemoveUserAuth::TcrMessageRemoveUserAuth(
   auto cbp = CacheableBytes::create(std::vector<int8_t>(&dummy, &dummy + 1));
   writeObjectPart(cbp, false);
   writeMessageLength();
-  LOGDEBUG("TcrMessage REMOVE_USER_AUTH = %s ",
-           Utils::convertBytesToString(m_request->getBuffer(),
-                                       m_request->getBufferLength())
-               .c_str());
+  LOG_DEBUG("TcrMessage REMOVE_USER_AUTH = %s ",
+            Utils::convertBytesToString(m_request->getBuffer(),
+                                        m_request->getBufferLength())
+                .c_str());
 }
 
 void TcrMessage::createUserCredentialMessage(TcrConnection*) {
@@ -2761,16 +2762,16 @@ void TcrMessage::createUserCredentialMessage(TcrConnection*) {
   writeObjectPart(credBytes);
 
   writeMessageLength();
-  LOGDEBUG("TcrMessage::createUserCredentialMessage  msg = %s ",
-           Utils::convertBytesToString(m_request->getBuffer(),
-                                       m_request->getBufferLength())
-               .c_str());
+  LOG_DEBUG("TcrMessage::createUserCredentialMessage  msg = %s ",
+            Utils::convertBytesToString(m_request->getBuffer(),
+                                        m_request->getBufferLength())
+                .c_str());
 }
 
 void TcrMessage::addSecurityPart(int64_t connectionId, int64_t unique_id,
                                  TcrConnection* conn) {
-  LOGDEBUG("TcrMessage::addSecurityPart m_isSecurityHeaderAdded = %d ",
-           m_isSecurityHeaderAdded);
+  LOG_DEBUG("TcrMessage::addSecurityPart m_isSecurityHeaderAdded = %d ",
+            m_isSecurityHeaderAdded);
   if (m_isSecurityHeaderAdded) {
     m_request->rewindCursor(m_securityHeaderLength);
     writeMessageLength();
@@ -2778,7 +2779,7 @@ void TcrMessage::addSecurityPart(int64_t connectionId, int64_t unique_id,
     m_isSecurityHeaderAdded = false;
   }
   m_isSecurityHeaderAdded = true;
-  LOGDEBUG("addSecurityPart( , ) ");
+  LOG_DEBUG("addSecurityPart( , ) ");
   auto dOutput =
       m_tcdm->getConnectionManager().getCacheImpl()->createDataOutput(
           getPool());
@@ -2789,11 +2790,10 @@ void TcrMessage::addSecurityPart(int64_t connectionId, int64_t unique_id,
   auto bytes = CacheableBytes::create(std::vector<int8_t>(
       dOutput.getBuffer(), dOutput.getBuffer() + dOutput.getBufferLength()));
 
-  LOGDEBUG("TcrMessage::addSecurityPart [%p] length = %" PRId32
-           ", encrypted ID = %s ",
-           conn, bytes->length(),
-           Utils::convertBytesToString(bytes->value().data(), bytes->length())
-               .c_str());
+  LOG_DEBUG("TcrMessage::addSecurityPart [{}] length = {}, encrypted ID = {} ",
+            static_cast<void*>(conn), bytes->length(),
+            Utils::convertBytesToString(bytes->value().data(), bytes->length())
+                .c_str());
 
   writeObjectPart(bytes);
   writeMessageLength();
@@ -2801,8 +2801,8 @@ void TcrMessage::addSecurityPart(int64_t connectionId, int64_t unique_id,
 }
 
 void TcrMessage::addSecurityPart(int64_t connectionId, TcrConnection*) {
-  LOGDEBUG("TcrMessage::addSecurityPart m_isSecurityHeaderAdded = %d ",
-           m_isSecurityHeaderAdded);
+  LOG_DEBUG("TcrMessage::addSecurityPart m_isSecurityHeaderAdded = %d ",
+            m_isSecurityHeaderAdded);
   if (m_isSecurityHeaderAdded) {
     m_request->rewindCursor(m_securityHeaderLength);
     writeMessageLength();
@@ -2810,7 +2810,7 @@ void TcrMessage::addSecurityPart(int64_t connectionId, TcrConnection*) {
     m_isSecurityHeaderAdded = false;
   }
   m_isSecurityHeaderAdded = true;
-  LOGDEBUG("TcrMessage::addSecurityPart only connid");
+  LOG_DEBUG("TcrMessage::addSecurityPart only connid");
   auto dOutput =
       m_tcdm->getConnectionManager().getCacheImpl()->createDataOutput(
           getPool());
@@ -2823,10 +2823,10 @@ void TcrMessage::addSecurityPart(int64_t connectionId, TcrConnection*) {
   writeObjectPart(bytes);
   writeMessageLength();
   m_securityHeaderLength = 4 + 1 + bytes->length();
-  LOGDEBUG("TcrMessage addspCC = %s ",
-           Utils::convertBytesToString(m_request->getBuffer(),
-                                       m_request->getBufferLength())
-               .c_str());
+  LOG_DEBUG("TcrMessage addspCC = %s ",
+            Utils::convertBytesToString(m_request->getBuffer(),
+                                        m_request->getBufferLength())
+                .c_str());
 }
 
 TcrMessageRequestEventValue::TcrMessageRequestEventValue(
@@ -2847,14 +2847,14 @@ TcrMessageGetPdxIdForType::TcrMessageGetPdxIdForType(
   m_msgType = TcrMessage::GET_PDX_ID_FOR_TYPE;
   m_tcdm = connectionDM;
 
-  LOGDEBUG("Tcrmessage sending GET_PDX_ID_FOR_TYPE message to server");
+  LOG_DEBUG("Tcrmessage sending GET_PDX_ID_FOR_TYPE message to server");
   writeHeader(m_msgType, 1);
   writeObjectPart(pdxType, false, true);
   writeMessageLength();
-  LOGDEBUG("TcrMessage GET_PDX_ID_FOR_TYPE = %s ",
-           Utils::convertBytesToString(m_request->getBuffer(),
-                                       m_request->getBufferLength())
-               .c_str());
+  LOG_DEBUG("TcrMessage GET_PDX_ID_FOR_TYPE = %s ",
+            Utils::convertBytesToString(m_request->getBuffer(),
+                                        m_request->getBufferLength())
+                .c_str());
 }
 
 TcrMessageAddPdxType::TcrMessageAddPdxType(
@@ -2864,15 +2864,15 @@ TcrMessageAddPdxType::TcrMessageAddPdxType(
   m_msgType = TcrMessage::ADD_PDX_TYPE;
   m_tcdm = connectionDM;
 
-  LOGDEBUG("Tcrmessage sending ADD_PDX_TYPE message to server");
+  LOG_DEBUG("Tcrmessage sending ADD_PDX_TYPE message to server");
   writeHeader(m_msgType, 2);
   writeObjectPart(pdxType, false, true);
   writeIntPart(pdxTypeId);
   writeMessageLength();
-  LOGDEBUG("TcrMessage ADD_PDX_TYPE id = %d = %s ", pdxTypeId,
-           Utils::convertBytesToString(m_request->getBuffer(),
-                                       m_request->getBufferLength())
-               .c_str());
+  LOG_DEBUG("TcrMessage ADD_PDX_TYPE id = %d = %s ", pdxTypeId,
+            Utils::convertBytesToString(m_request->getBuffer(),
+                                        m_request->getBufferLength())
+                .c_str());
 }
 
 TcrMessageGetPdxIdForEnum::TcrMessageGetPdxIdForEnum(
@@ -2882,14 +2882,14 @@ TcrMessageGetPdxIdForEnum::TcrMessageGetPdxIdForEnum(
   m_msgType = TcrMessage::GET_PDX_ID_FOR_ENUM;
   m_tcdm = connectionDM;
 
-  LOGDEBUG("Tcrmessage sending GET_PDX_ID_FOR_ENUM message to server");
+  LOG_DEBUG("Tcrmessage sending GET_PDX_ID_FOR_ENUM message to server");
   writeHeader(m_msgType, 1);
   writeObjectPart(pdxType, false, false);
   writeMessageLength();
-  LOGDEBUG("TcrMessage GET_PDX_ID_FOR_ENUM = %s ",
-           Utils::convertBytesToString(m_request->getBuffer(),
-                                       m_request->getBufferLength())
-               .c_str());
+  LOG_DEBUG("TcrMessage GET_PDX_ID_FOR_ENUM = %s ",
+            Utils::convertBytesToString(m_request->getBuffer(),
+                                        m_request->getBufferLength())
+                .c_str());
 }
 
 TcrMessageAddPdxEnum::TcrMessageAddPdxEnum(
@@ -2899,15 +2899,15 @@ TcrMessageAddPdxEnum::TcrMessageAddPdxEnum(
   m_msgType = TcrMessage::ADD_PDX_ENUM;
   m_tcdm = connectionDM;
 
-  LOGDEBUG("Tcrmessage sending ADD_PDX_ENUM message to server");
+  LOG_DEBUG("Tcrmessage sending ADD_PDX_ENUM message to server");
   writeHeader(m_msgType, 2);
   writeObjectPart(pdxType, false, false);
   writeIntPart(pdxTypeId);
   writeMessageLength();
-  LOGDEBUG("TcrMessage ADD_PDX_ENUM id = %d = %s ", pdxTypeId,
-           Utils::convertBytesToString(m_request->getBuffer(),
-                                       m_request->getBufferLength())
-               .c_str());
+  LOG_DEBUG("TcrMessage ADD_PDX_ENUM id = %d = %s ", pdxTypeId,
+            Utils::convertBytesToString(m_request->getBuffer(),
+                                        m_request->getBufferLength())
+                .c_str());
 }
 
 TcrMessageGetPdxTypeById::TcrMessageGetPdxTypeById(
@@ -2916,16 +2916,16 @@ TcrMessageGetPdxTypeById::TcrMessageGetPdxTypeById(
   m_msgType = TcrMessage::GET_PDX_TYPE_BY_ID;
   m_tcdm = connectionDM;
 
-  LOGDEBUG("Tcrmessage sending GET_PDX_TYPE_BY_ID message to server");
+  LOG_DEBUG("Tcrmessage sending GET_PDX_TYPE_BY_ID message to server");
   writeHeader(m_msgType, 1);
   m_request->writeInt(4);
   m_request->writeBoolean(false);
   m_request->writeInt(typeId);
   writeMessageLength();
-  LOGDEBUG("TcrMessage GET_PDX_TYPE_BY_ID = %s ",
-           Utils::convertBytesToString(m_request->getBuffer(),
-                                       m_request->getBufferLength())
-               .c_str());
+  LOG_DEBUG("TcrMessage GET_PDX_TYPE_BY_ID = %s ",
+            Utils::convertBytesToString(m_request->getBuffer(),
+                                        m_request->getBufferLength())
+                .c_str());
 }
 
 TcrMessageGetPdxEnumById::TcrMessageGetPdxEnumById(
@@ -2934,16 +2934,16 @@ TcrMessageGetPdxEnumById::TcrMessageGetPdxEnumById(
   m_msgType = TcrMessage::GET_PDX_ENUM_BY_ID;
   m_tcdm = connectionDM;
 
-  LOGDEBUG("Tcrmessage sending GET_PDX_ENUM_BY_ID message to server");
+  LOG_DEBUG("Tcrmessage sending GET_PDX_ENUM_BY_ID message to server");
   writeHeader(m_msgType, 1);
   m_request->writeInt(4);
   m_request->writeBoolean(false);
   m_request->writeInt(typeId);
   writeMessageLength();
-  LOGDEBUG("TcrMessage GET_PDX_ENUM_BY_ID = %s ",
-           Utils::convertBytesToString(m_request->getBuffer(),
-                                       m_request->getBufferLength())
-               .c_str());
+  LOG_DEBUG("TcrMessage GET_PDX_ENUM_BY_ID = %s ",
+            Utils::convertBytesToString(m_request->getBuffer(),
+                                        m_request->getBufferLength())
+                .c_str());
 }
 
 TcrMessageGetFunctionAttributes::TcrMessageGetFunctionAttributes(
@@ -3050,7 +3050,7 @@ void TcrMessage::skipParts(DataInput& input, int32_t numParts) {
   while (numParts > 0) {
     numParts--;
     int32_t partLen = input.readInt32();
-    LOGDEBUG("TcrMessage::skipParts partLen= %d ", partLen);
+    LOG_DEBUG("TcrMessage::skipParts partLen= %d ", partLen);
     input.advanceCursor(partLen + 1);  // Skip the whole part including "isObj"
   }
 }
@@ -3175,7 +3175,7 @@ TcrMessageHelper::ChunkObjectType TcrMessageHelper::readChunkPartHeader(
                   "TcrMessageHelper::readChunkPartHeader: "
                   "%s: part is not object",
                   methodName);
-    LOGDEBUG("%s ", exMsg);
+    LOG_DEBUG("%s ", exMsg);
     return ChunkObjectType::EXCEPTION;
   }
 

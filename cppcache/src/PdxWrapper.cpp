@@ -50,7 +50,7 @@ void PdxWrapper::toData(PdxWriter& output) const {
   if (m_userObject != nullptr) {
     output.getPdxSerializer()->toData(m_userObject, m_className, output);
   } else {
-    LOGERROR("User object is nullptr or detached in PdxWrapper toData");
+    LOG_ERROR("User object is nullptr or detached in PdxWrapper toData");
     throw IllegalStateException(
         "User object is nullptr or detached in PdxWrapper toData");
   }

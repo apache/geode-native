@@ -39,8 +39,8 @@ ExpirationAction action = ExpirationAction::DESTROY;
 
 size_t getNumOfEntries(std::shared_ptr<Region> &R1) {
   std::vector<std::shared_ptr<CacheableKey>> v = R1->keys();
-  LOGFINE("Number of keys in region %s is %d", R1->getFullPath().c_str(),
-          v.size());
+  LOG_FINE("Number of keys in region %s is %d", R1->getFullPath().c_str(),
+           v.size());
   return v.size();
 }
 
@@ -64,8 +64,8 @@ void doNPuts(std::shared_ptr<Region> &rptr, int n) {
   for (int i = 0; i < n; i++) {
     sprintf(buf, "KeyA - %d", i + 1);
     auto key = CacheableKey::create(buf);
-    LOGINFO("Putting key %s value %s in region %s", buf,
-            value->toString().c_str(), rptr->getFullPath().c_str());
+    LOG_INFO("Putting key %s value %s in region %s", buf,
+             value->toString().c_str(), rptr->getFullPath().c_str());
     rptr->put(key, value);
   }
 }
@@ -80,8 +80,8 @@ std::shared_ptr<CacheableKey> do1Put(std::shared_ptr<Region> &rptr) {
 
   sprintf(buf, "KeyA - %d", 0 + 1);
   auto key = CacheableKey::create(buf);
-  LOGINFO("Putting key %s value %s in region %s", buf,
-          value->toString().c_str(), rptr->getFullPath().c_str());
+  LOG_INFO("Putting key %s value %s in region %s", buf,
+           value->toString().c_str(), rptr->getFullPath().c_str());
   rptr->put(key, value);
   return key;
 }

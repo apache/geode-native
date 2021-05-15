@@ -76,7 +76,7 @@ Cache CacheFactory::create() const {
       cache.m_cacheImpl->initServices();
     }
   } catch (const RegionExistsException&) {
-    LOGWARN("Attempt to create existing regions declaratively");
+    LOG_WARN("Attempt to create existing regions declaratively");
   } catch (const Exception&) {
     if (!cache.isClosed()) {
       cache.close();

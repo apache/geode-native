@@ -25,7 +25,6 @@
 #include <unistd.h>
 #endif
 
-using apache::geode::client::Log;
 using apache::geode::client::LogLevel;
 using apache::geode::client::Properties;
 using apache::geode::client::SystemProperties;
@@ -57,8 +56,6 @@ BEGIN_TEST(DEFAULT)
         systemProperties->statisticsArchiveFile();
     ASSERT(statisticsArchiveFileName == "statArchive.gfs",
            "Expected statisticsArchiveFileName == \"statArchive.gfs\"");
-    auto &&logLevel = Log::levelToChars(systemProperties->logLevel());
-    ASSERT_STREQ("config", logLevel);
     delete systemProperties;
   }
 END_TEST(DEFAULT)
@@ -69,9 +66,6 @@ BEGIN_TEST(NEW_CONFIG)
     // TESTSRC is set.
     std::string testSource(std::getenv("TESTSRC"));
     std::string filePath = testSource + "/resources/system.properties";
-
-    // Make sure product can at least log to stdout.
-    Log::init(LogLevel::Config, nullptr, 0);
 
     SystemProperties *systemProperties =
         new SystemProperties(nullptr, filePath);

@@ -67,7 +67,7 @@ void setCacheWriter(const char* regName,
 }
 
 void validateEventCount(int line) {
-  LOGINFO("ValidateEvents called from line (%d).", line);
+  LOG_INFO("ValidateEvents called from line (%d).", line);
   int num = reg1Listener1->getCreates();
   char buf[1024];
   sprintf(buf, "Got wrong number of creation events. expected[%d], real[%d]",

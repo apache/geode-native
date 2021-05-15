@@ -70,12 +70,6 @@ namespace Apache
           static_cast<apache::geode::client::LogLevel>(level));
       }
 
-      bool Log::Enabled(LogLevel level)
-      {
-        return apache::geode::client::Log::enabled(
-          static_cast<apache::geode::client::LogLevel>(level));
-      }
-
       void Log::Write(LogLevel level, String^ msg)
       {
         _GF_MG_EXCEPTION_TRY2

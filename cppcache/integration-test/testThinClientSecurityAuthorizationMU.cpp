@@ -391,9 +391,9 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
                   std::dynamic_pointer_cast<UserFunctionExecutionException>(
                       result->operator[](i));
               ASSERT(uFEPtr != nullptr, "uFEPtr exception is nullptr");
-              LOGINFO("Done casting to uFEPtr");
-              LOGINFO("Read expected uFEPtr exception %s ",
-                      uFEPtr->getMessage().c_str());
+              LOG_INFO("Done casting to uFEPtr");
+              LOG_INFO("Read expected uFEPtr exception %s ",
+                       uFEPtr->getMessage().c_str());
             }
           } catch (ClassCastException &ex) {
             std::string logmsg = "";
@@ -427,7 +427,7 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
             auto intValue = std::dynamic_pointer_cast<CacheableInt32>(
                 result->operator[](i));
             ASSERT(intValue != nullptr, "int value is nullptr");
-            LOGINFO("intValue is %d ", intValue->value());
+            LOG_INFO("intValue is %d ", intValue->value());
           } catch (ClassCastException &ex) {
             LOG("exFuncNameSendException casting to int for arrayList "
                 "arguement "
@@ -442,9 +442,9 @@ DUNIT_TASK_DEFINITION(ADMIN_CLIENT, StepOne)
                 std::dynamic_pointer_cast<UserFunctionExecutionException>(
                     result->operator[](i));
             ASSERT(uFEPtr != nullptr, "uFEPtr exception is nullptr");
-            LOGINFO("Done casting to uFEPtr");
-            LOGINFO("Read expected uFEPtr exception %s ",
-                    uFEPtr->getMessage().c_str());
+            LOG_INFO("Done casting to uFEPtr");
+            LOG_INFO("Read expected uFEPtr exception %s ",
+                     uFEPtr->getMessage().c_str());
           } catch (...) {
             FAIL(
                 "exFuncNameSendException casting to string for bool arguement "

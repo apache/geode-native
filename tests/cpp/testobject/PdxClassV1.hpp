@@ -408,7 +408,7 @@ class TestPdxSerializerForV1 : public PdxSerializer {
   static void deallocate(void* testObject, const std::string& className) {
     // ASSERT(strcmp(className, V1CLASSNAME1) == 0 || strcmp(className,
     // V1CLASSNAME2) == 0 , "Unexpected classname in deallocate()");
-    LOGINFO("TestPdxSerializer::deallocate called");
+    LOG_INFO("TestPdxSerializer::deallocate called");
     if (className == V1CLASSNAME1) {
       PdxTests::TestKeyV1* tkv1 =
           reinterpret_cast<PdxTests::TestKeyV1*>(testObject);
@@ -418,7 +418,7 @@ class TestPdxSerializerForV1 : public PdxSerializer {
           reinterpret_cast<PdxTests::TestDiffTypePdxSV1*>(testObject);
       delete dtpv1;
     } else {
-      LOGINFO("TestPdxSerializerForV1::deallocate Invalid Class Name");
+      LOG_INFO("TestPdxSerializerForV1::deallocate Invalid Class Name");
     }
   }
 
@@ -491,7 +491,7 @@ class TestPdxSerializerForV1 : public PdxSerializer {
       return fromDataForTestKeyV1(pr);
 
     } else {
-      LOGINFO("TestPdxSerializerForV1::fromdata() Invalid Class Name");
+      LOG_INFO("TestPdxSerializerForV1::fromdata() Invalid Class Name");
       return nullptr;
     }
   }
@@ -508,7 +508,7 @@ class TestPdxSerializerForV1 : public PdxSerializer {
       return toDataForTestKeyV1(testObject, pw);
 
     } else {
-      LOGINFO("TestPdxSerializerForV1::fromdata() Invalid Class Name");
+      LOG_INFO("TestPdxSerializerForV1::fromdata() Invalid Class Name");
       return false;
     }
   }

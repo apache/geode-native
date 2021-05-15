@@ -91,7 +91,7 @@ void CacheableObjectPartList::fromData(DataInput& input) {
               m_region->putLocal("getAll", false, key, value, oldValue, true,
                                  updateCount, m_destroyTracker, versionTag);
           if (err == GF_CACHE_CONCURRENT_MODIFICATION_EXCEPTION) {
-            LOGDEBUG(
+            LOG_DEBUG(
                 "CacheableObjectPartList::fromData putLocal for key [%s] failed because the cache \
                 already contains an entry with higher version.",
                 Utils::nullSafeToString(key).c_str());

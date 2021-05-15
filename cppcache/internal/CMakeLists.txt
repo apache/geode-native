@@ -15,3 +15,4 @@
 
 add_library(internal INTERFACE)
 target_include_directories(internal INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+target_compile_definitions(internal INTERFACE GEODE_WITH_LOG_FMT)

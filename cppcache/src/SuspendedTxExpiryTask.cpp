@@ -29,7 +29,7 @@ SuspendedTxExpiryTask::SuspendedTxExpiryTask(
     : ExpiryTask(expiry_manager), tx_manager_(tx_manager), tx_id_(tx_id) {}
 
 bool SuspendedTxExpiryTask::on_expire() {
-  LOGDEBUG("Entered SuspendedTxExpiryTask");
+  LOG_DEBUG("Entered SuspendedTxExpiryTask");
   try {
     // resume the transaction and rollback it
     if (tx_manager_.tryResume(tx_id_, false)) {
@@ -37,7 +37,7 @@ bool SuspendedTxExpiryTask::on_expire() {
     }
   } catch (...) {
     // Ignore whatever exception comes
-    LOGFINE(
+    LOG_FINE(
         "Error while rollbacking expired suspended transaction. Ignoring the "
         "error");
   }

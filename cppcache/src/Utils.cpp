@@ -54,7 +54,7 @@ std::error_code Utils::getLastError() {
 void Utils::parseEndpointString(const char* endpoints, std::string& host,
                                 uint16_t& port) {
   std::string endpointsStr(endpoints);
-  LOGFINE("Parsing endpoint string [%s]", endpointsStr.c_str());
+  LOG_FINE("Parsing endpoint string [%s]", endpointsStr.c_str());
   // Parse this string to get all hostnames and port numbers.
   std::string endpoint;
   std::string::size_type length = endpointsStr.size();

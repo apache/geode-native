@@ -88,13 +88,13 @@ class TESTOBJECT_EXPORT Portfolio : public DataSerializable {
 
   int32_t getID() { return ID; }
   void showNames(const char* label) {
-    LOGINFO(label);
+    LOG_INFO(label);
     if (!names) {
-      LOGINFO("names is NULL");
+      LOG_INFO("names is NULL");
       return;
     }
     for (int i = 0; i < names->length(); i++) {
-      LOGINFO("names[%d]=%s", i, names->operator[](i)->value().c_str());
+      LOG_INFO("names[%d]=%s", i, names->operator[](i)->value().c_str());
     }
   }
 

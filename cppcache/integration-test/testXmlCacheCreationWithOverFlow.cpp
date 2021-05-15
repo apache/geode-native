@@ -54,7 +54,7 @@ int testXmlCacheCreationWithOverflow() {
     std::cout << "CacheXmlException: msg = " << ex.what() << std::endl;
     LOG(ex.getStackTrace());
   } catch (...) {
-    LOGINFO("Unknown exception");
+    LOG_INFO("Unknown exception");
     return -1;
   }
 
@@ -77,7 +77,7 @@ int testXmlCacheCreationWithOverflow() {
     LOG(ex.getStackTrace());
     return -1;
   } catch (...) {
-    LOGINFO(" unknown exception");
+    LOG_INFO(" unknown exception");
     return -1;
   }
 

@@ -128,15 +128,15 @@ class MyCqListener1 : public CqListener {
       case CqOperation::OP_TYPE_MARKER:
         break;
     }
-    LOGINFO("MyCqListener1::OnEvent called with %s, key[%s], value=(%s)", opStr,
-            key->toString().c_str(), value->toString().c_str());
+    LOG_INFO("MyCqListener1::OnEvent called with %s, key[%s], value=(%s)",
+             opStr, key->toString().c_str(), value->toString().c_str());
   }
 
   void onError(const CqEvent &) override {
-    LOGINFO("MyCqListener1::OnError called");
+    LOG_INFO("MyCqListener1::OnError called");
   }
 
-  void close() override { LOGINFO("MyCqListener1::close called"); }
+  void close() override { LOG_INFO("MyCqListener1::close called"); }
 };
 int MyCqListener1::m_cntEvents = 0;
 
@@ -221,7 +221,7 @@ void RunDurableCqClient() {
       .setSubscriptionMessageTrackingTimeout(std::chrono::milliseconds(50000))
       .create("");
 
-  LOGINFO("Created the Geode Cache Programmatically");
+  LOG_INFO("Created the Geode Cache Programmatically");
 
   auto regionFactory =
       cachePtr->createRegionFactory(RegionShortcut::CACHING_PROXY);
@@ -229,7 +229,7 @@ void RunDurableCqClient() {
   // Create the Region Programmatically.
   auto regionPtr = regionFactory.create("DistRegionAck");
 
-  LOGINFO("Created the Region Programmatically");
+  LOG_INFO("Created the Region Programmatically");
 
   // Get the QueryService from the Cache.
   auto qrySvcPtr = cachePtr->getQueryService();
@@ -240,25 +240,25 @@ void RunDurableCqClient() {
   cqFac.addCqListener(cqLstner);
   auto cqAttr = cqFac.create();
 
-  LOGINFO("Attached CqListener");
+  LOG_INFO("Attached CqListener");
 
   // create a new Cq Query
   const char *qryStr = "select * from /DistRegionAck ";
   auto qry = qrySvcPtr->newCq("MyCq", qryStr, cqAttr, true);
 
-  LOGINFO("Created new CqQuery");
+  LOG_INFO("Created new CqQuery");
 
   // execute Cq Query
   qry->execute();
   std::this_thread::sleep_for(std::chrono::seconds(10));
 
-  LOGINFO("Executed new CqQuery");
+  LOG_INFO("Executed new CqQuery");
 
   // Send ready for Event message to Server( only for Durable Clients ).
   // Server will send queued events to client after recieving this.
   cachePtr->readyForEvents();
 
-  LOGINFO("Sent ReadyForEvents message to server");
+  LOG_INFO("Sent ReadyForEvents message to server");
 
   // wait for some time to recieve events
   std::this_thread::sleep_for(std::chrono::seconds(10));
@@ -270,25 +270,25 @@ void RunDurableCqClient() {
   // within timeout period and send "readyForEvents()"
   cachePtr->close(true);
 
-  LOGINFO("Closed the Geode Cache with keepalive as true");
+  LOG_INFO("Closed the Geode Cache with keepalive as true");
 }
 
 void RunFeederClient() {
   auto cacheFactory = CacheFactory();
-  LOGINFO("Feeder connected to the Geode Distributed System");
+  LOG_INFO("Feeder connected to the Geode Distributed System");
 
   auto cachePtr = std::make_shared<Cache>(cacheFactory.create());
 
-  LOGINFO("Created the Geode Cache");
+  LOG_INFO("Created the Geode Cache");
 
   auto regionFactory = cachePtr->createRegionFactory(RegionShortcut::PROXY);
 
-  LOGINFO("Created the RegionFactory");
+  LOG_INFO("Created the RegionFactory");
 
   // Create the Region Programmatically.
   auto regionPtr = regionFactory.create("DistRegionAck");
 
-  LOGINFO("Created the Region Programmatically.");
+  LOG_INFO("Created the Region Programmatically.");
 
   for (int i = 0; i < 10; i++) {
     auto keyPtr = CacheableInt32::create(i);
@@ -297,30 +297,30 @@ void RunFeederClient() {
     regionPtr->put(keyPtr, valPtr);
   }
   std::this_thread::sleep_for(std::chrono::seconds(10));
-  LOGINFO("put on 0-10 keys done.");
+  LOG_INFO("put on 0-10 keys done.");
 
   // Close the Geode Cache
   cachePtr->close();
 
-  LOGINFO("Closed the Geode Cache");
+  LOG_INFO("Closed the Geode Cache");
 }
 
 void RunFeederClient1() {
   auto cacheFactory = CacheFactory();
-  LOGINFO("Feeder connected to the Geode Distributed System");
+  LOG_INFO("Feeder connected to the Geode Distributed System");
 
   auto cachePtr = std::make_shared<Cache>(cacheFactory.create());
 
-  LOGINFO("Created the Geode Cache");
+  LOG_INFO("Created the Geode Cache");
 
   auto regionFactory = cachePtr->createRegionFactory(RegionShortcut::PROXY);
 
-  LOGINFO("Created the RegionFactory");
+  LOG_INFO("Created the RegionFactory");
 
   // Create the Region Programmatically.
   auto regionPtr = regionFactory.create("DistRegionAck");
 
-  LOGINFO("Created the Region Programmatically.");
+  LOG_INFO("Created the Region Programmatically.");
 
   for (int i = 10; i < 20; i++) {
     auto keyPtr = CacheableInt32::create(i);
@@ -329,12 +329,12 @@ void RunFeederClient1() {
     regionPtr->put(keyPtr, valPtr);
   }
   std::this_thread::sleep_for(std::chrono::seconds(10));
-  LOGINFO("put on 0-10 keys done.");
+  LOG_INFO("put on 0-10 keys done.");
 
   // Close the Geode Cache
   cachePtr->close();
 
-  LOGINFO("Closed the Geode Cache");
+  LOG_INFO("Closed the Geode Cache");
 }
 
 DUNIT_TASK_DEFINITION(CLIENT1, RunDurableClient)
@@ -355,7 +355,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, VerifyEvents)
   {
-    LOGINFO("MyCqListener1::m_cntEvents = %d ", MyCqListener1::m_cntEvents);
+    LOG_INFO("MyCqListener1::m_cntEvents = %d ", MyCqListener1::m_cntEvents);
     ASSERT(MyCqListener1::m_cntEvents == 20, "Incorrect events, expected 20");
   }
 END_TASK_DEFINITION
@@ -562,7 +562,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
     char buf[1024];
     try {
       // TEST_COVERAGE
-      LOGINFO(
+      LOG_INFO(
           "CLIENT-1 StepFour: verifying getCq() behaviour for the invalid CQ "
           "Name");
       auto invalidCqptr = qs->getCq("InValidCQ");
@@ -570,9 +570,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
           invalidCqptr == nullptr,
           "Cqptr must be nullptr, as it getCq() is invoked on invalid CQ name");
       /*if(invalidCqptr == nullptr){
-        LOGINFO("Testing getCq(InvalidName) :: invalidCqptr is nullptr");
+        LOG_INFO("Testing getCq(InvalidName) :: invalidCqptr is nullptr");
       }else{
-         LOGINFO("Testing getCq(InvalidName) :: invalidCqptr is NOT nullptr");
+         LOG_INFO("Testing getCq(InvalidName) :: invalidCqptr is NOT nullptr");
       }*/
 
       auto cqy = qs->getCq(cqName);

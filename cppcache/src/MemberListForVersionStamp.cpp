@@ -40,7 +40,7 @@ uint16_t MemberListForVersionStamp::add(
   DistributedMemberWithIntIdentifier dmwithIntId(member, ++m_memberCounter);
   m_members1[m_memberCounter] = member;
   m_members2[member->getHashKey()] = dmwithIntId;
-  LOGDEBUG(
+  LOG_DEBUG(
       "Adding a new member to the member list maintained for version stamps "
       "member Ids. HashKey: %s MemberCounter: %d",
       member->getHashKey().c_str(), m_memberCounter);

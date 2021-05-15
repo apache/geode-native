@@ -48,6 +48,7 @@ add_executable(apache-geode_unittests
   LoggingTest.cpp
   LRUQueueTest.cpp
   PartitionTest.cpp
+  LoggingTest.cpp
   PdxInstanceImplTest.cpp
   PdxTypeTest.cpp
   QueueConnectionRequestTest.cpp
@@ -86,12 +87,15 @@ target_link_libraries(apache-geode_unittests
     GTest::gmock
     _WarningsAsError
     _CppCodeCoverage
+    spdlog::spdlog
 )
 
 target_include_directories(apache-geode_unittests
   PRIVATE
     $<TARGET_PROPERTY:apache-geode,SOURCE_DIR>/../src
 )
+
+target_compile_definitions(apache-geode_unittests PUBLIC GEODE_WITH_LOG_FMT)
 
 add_dependencies(unit-tests apache-geode_unittests)
 

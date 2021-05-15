@@ -288,7 +288,7 @@ int testXmlCacheCreationWithPools() {
     LOG(ex.getStackTrace());
     return -1;
   } catch (...) {
-    LOGINFO("unknown exception");
+    LOG_INFO("unknown exception");
     return -1;
   }
 

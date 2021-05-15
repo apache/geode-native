@@ -101,7 +101,7 @@ std::shared_ptr<StatisticDescriptor> StatisticsTypeImpl::nameToDescriptor(
   if (iterFind == statsDescMap.end()) {
     std::string s = "There is no statistic named " + nameArg +
                     " in this statistics instance ";
-    LOGWARN("StatisticsTypeImpl::nameToDescriptor %s", s.c_str());
+    LOG_WARN("StatisticsTypeImpl::nameToDescriptor %s", s.c_str());
     throw IllegalArgumentException(s);
   } else {
     return iterFind->second;

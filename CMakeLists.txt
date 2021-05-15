@@ -285,8 +285,9 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /ignore:4099")
   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /ignore:4099")
 
-  # Enables multiprocess compiles
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+  # /MP Enables multiprocess compiles
+  # SPDLOG_NO_TLS disables use of tls code which clashes with managed build on Windows
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP /DSPDLOG_NO_TLS")
 
   # Enables strong name signing
   set(STRONG_NAME_KEY "" CACHE FILEPATH "Strong Name Key File")

@@ -57,7 +57,7 @@ class SimpleCacheListener : public CacheListener {
   void afterRegionClear(const RegionEvent& event) override;
 
   SimpleCacheListener() : CacheListener(), m_creates(0), m_clears(0) {
-    LOGINFO("SimpleCacheListener contructor called");
+    LOG_INFO("SimpleCacheListener contructor called");
   }
 
   virtual ~SimpleCacheListener() override {}
@@ -67,45 +67,45 @@ class SimpleCacheListener : public CacheListener {
 };
 
 void SimpleCacheListener::afterCreate(const EntryEvent& event) {
-  LOGINFO("SimpleCacheListener: Got an afterCreate event for %s region .",
+  LOG_INFO("SimpleCacheListener: Got an afterCreate event for %s region .",
           event.getRegion()->getName().c_str());
   m_creates++;
 }
 
 void SimpleCacheListener::afterUpdate(const EntryEvent& event) {
-  LOGINFO("SimpleCacheListener: Got an afterUpdate event for %s region .",
+  LOG_INFO("SimpleCacheListener: Got an afterUpdate event for %s region .",
           event.getRegion()->getName().c_str());
 }
 
 void SimpleCacheListener::afterInvalidate(const EntryEvent& event) {
-  LOGINFO("SimpleCacheListener: Got an afterInvalidate event for %s region .",
+  LOG_INFO("SimpleCacheListener: Got an afterInvalidate event for %s region .",
           event.getRegion()->getName().c_str());
 }
 
 void SimpleCacheListener::afterDestroy(const EntryEvent& event) {
-  LOGINFO("SimpleCacheListener: Got an afterDestroy event for %s region .",
+  LOG_INFO("SimpleCacheListener: Got an afterDestroy event for %s region .",
           event.getRegion()->getName().c_str());
 }
 
 void SimpleCacheListener::afterRegionInvalidate(const RegionEvent& event) {
-  LOGINFO(
+  LOG_INFO(
       "SimpleCacheListener: Got an afterRegionInvalidate event for %s region .",
       event.getRegion()->getName().c_str());
 }
 
 void SimpleCacheListener::afterRegionDestroy(const RegionEvent& event) {
-  LOGINFO(
+  LOG_INFO(
       "SimpleCacheListener: Got an afterRegionDestroy event for %s region .",
       event.getRegion()->getName().c_str());
 }
 
 void SimpleCacheListener::close(Region& region) {
-  LOGINFO("SimpleCacheListener: Got an close event for %s region .",
+  LOG_INFO("SimpleCacheListener: Got an close event for %s region .",
           region.getName().c_str());
 }
 
 void SimpleCacheListener::afterRegionClear(const RegionEvent& event) {
-  LOGINFO("SimpleCacheListener: Got an afterRegionClear event for %s region .",
+  LOG_INFO("SimpleCacheListener: Got an afterRegionClear event for %s region .",
           event.getRegion()->getName().c_str());
   m_clears++;
 }
@@ -220,7 +220,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, SetupClient1withCachingEnabled_Pooled_Locator)
     auto subregPtr1 = exmpRegptr->createSubregion(myRegNames[3], lattribPtr);
     auto subregPtr2 = exmpRegptr->createSubregion(myRegNames[4], lattribPtr);
 
-    LOGINFO(
+    LOG_INFO(
         " CLIENT1 SetupClient1withCachingEnabled_Pooled_Locator subRegions "
         "created successfully");
   }
@@ -304,7 +304,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, SetupClient2withCachingEnabled_Pooled_Locator)
     auto subregPtr1 = exmpRegptr->createSubregion(myRegNames[3], lattribPtr);
     auto subregPtr2 = exmpRegptr->createSubregion(myRegNames[4], lattribPtr);
 
-    LOGINFO(
+    LOG_INFO(
         "CLIENT2 SetupClient2withCachingEnabled_Pooled_Locator:: subRegions "
         "created successfully");
 
@@ -361,7 +361,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, validateListenerWriterWithNBSTrue)
     ASSERT(regWriter->isWriterInvoked() == false,
            "Writer Should not be invoked");
 
-    LOGINFO("Total cleared Entries = %d ", regListener->getClears());
+    LOG_INFO("Total cleared Entries = %d ", regListener->getClears());
   }
 END_TASK_DEFINITION
 
@@ -388,29 +388,29 @@ DUNIT_TASK_DEFINITION(CLIENT1, doEventOperations)
       subregPtr2->put(keyptr, valuePtr);
     }
 
-    LOGINFO(
+    LOG_INFO(
         "CLIENT-1 localCaching Enabled After Put ....ExampleRegion.size() = %d",
         exmpRegPtr->size());
     ASSERT(exmpRegPtr->size() == 5,
            "Total number of entries in the region should be 5");
 
-    LOGINFO(
+    LOG_INFO(
         "CLIENT-1 localCaching Enabled After Put ....DistRegionAck.size() = %d",
         regPtr0->size());
 
     // TEST COVERAGE FOR cacheListener.afterRegionClear() API
     exmpRegPtr->clear();
-    LOGINFO("CLIENT-1 AFTER Clear() call ....reg.size() = %d",
+    LOG_INFO("CLIENT-1 AFTER Clear() call ....reg.size() = %d",
             exmpRegPtr->size());
     ASSERT(exmpRegPtr->size() == 0,
            "Total number of entries in the region should be 0");
 
-    LOGINFO("CLIENT-1 AFTER Clear() call ....SubRegion-1.size() = %d",
+    LOG_INFO("CLIENT-1 AFTER Clear() call ....SubRegion-1.size() = %d",
             subregPtr1->size());
     ASSERT(subregPtr1->size() == 5,
            "Total number of entries in the region should be 0");
 
-    LOGINFO("CLIENT-1 AFTER Clear() call ....SubRegion-2.size() = %d",
+    LOG_INFO("CLIENT-1 AFTER Clear() call ....SubRegion-2.size() = %d",
             subregPtr2->size());
     ASSERT(subregPtr2->size() == 5,
            "Total number of entries in the region should be 0");
@@ -425,10 +425,10 @@ DUNIT_TASK_DEFINITION(CLIENT2, validateListenerWriterEventsWithNBSTrue)
     SLEEP(5000);
     LOG("Verifying SimpleListerner has received verious events.");
     // regListener->showTallies();
-    LOGINFO(" distRegCacheListener->getCreates() = %d",
+    LOG_INFO(" distRegCacheListener->getCreates() = %d",
             distRegCacheListener->getCreates());
 
-    // LOGINFO(" parentRegCacheListener->getCreates() = %d",
+    // LOG_INFO(" parentRegCacheListener->getCreates() = %d",
     // parentRegCacheListener->getCreates());
     ASSERT(parentRegCacheListener->getCreates() == 10, "Should be 10 creates");
     ASSERT(regWriter->isWriterInvoked() == false,
@@ -436,13 +436,13 @@ DUNIT_TASK_DEFINITION(CLIENT2, validateListenerWriterEventsWithNBSTrue)
 
     // Verify that the region.clear event is received and it has cleared all
     // entries in region
-    // LOGINFO("parentRegCacheListener::m_clears = %d ",
+    // LOG_INFO("parentRegCacheListener::m_clears = %d ",
     // parentRegCacheListener->getClears());
     ASSERT(parentRegCacheListener->getClears() == 1,
            "region.clear() should be called once");
 
     auto exmpRegPtr = getHelper()->getRegion(myRegNames[2]);
-    // LOGINFO(" Total Entries in ExampleRegion = %d ", exmpRegPtr->size());
+    // LOG_INFO(" Total Entries in ExampleRegion = %d ", exmpRegPtr->size());
     ASSERT(exmpRegPtr->size() == 0,
            "Client-2 ExampleRegion.clear() should have called and so "
            "Exampleregion size is expected to 0 ");
@@ -451,8 +451,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, validateListenerWriterEventsWithNBSTrue)
     auto subregPtr1 = exmpRegPtr->getSubregion(myRegNames[3]);
     auto subregPtr2 = exmpRegPtr->getSubregion(myRegNames[4]);
 
-    // LOGINFO(" Total Entries in SubRegion-1 = %d ", subregPtr1->size());
-    // LOGINFO(" Total Entries in SubRegion-2 = %d ", subregPtr2->size());
+    // LOG_INFO(" Total Entries in SubRegion-1 = %d ", subregPtr1->size());
+    // LOG_INFO(" Total Entries in SubRegion-2 = %d ", subregPtr2->size());
     ASSERT(subRegCacheListener->getCreates() == 5,
            "should be 5 creates for SubRegion-1 ");
     ASSERT(subRegCacheListener->getClears() == 0,
@@ -462,12 +462,12 @@ DUNIT_TASK_DEFINITION(CLIENT2, validateListenerWriterEventsWithNBSTrue)
     ASSERT(subregPtr2->size() == 5,
            "Client-2 SubRegion-2 should contains 5 entries ");
 
-    // LOGINFO(" SubRegion-1 CREATES:: subRegCacheListener::m_creates = %d ",
+    // LOG_INFO(" SubRegion-1 CREATES:: subRegCacheListener::m_creates = %d ",
     // subRegCacheListener->getCreates());
-    // LOGINFO(" SubRegion-1 CLEARS:: subRegCacheListener::m_clears = %d ",
+    // LOG_INFO(" SubRegion-1 CLEARS:: subRegCacheListener::m_clears = %d ",
     // subRegCacheListener->getClears());
 
-    LOGINFO(
+    LOG_INFO(
         "validateListenerWriterEventsWithNBSTrue :: Event Validation "
         "Passed....!!");
   }

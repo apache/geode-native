@@ -56,7 +56,7 @@ const std::string locHostPort =
 bool isPoolConfig = false;  // To track if pool case is running
 
 void initClient(const bool isthinClient, bool isPdxIgnoreUnreadFields) {
-  LOGINFO("initClient: isPdxIgnoreUnreadFields = %d ", isPdxIgnoreUnreadFields);
+  LOG_INFO("initClient: isPdxIgnoreUnreadFields = %d ", isPdxIgnoreUnreadFields);
   if (cacheHelper == nullptr) {
     cacheHelper = new CacheHelper(isthinClient, isPdxIgnoreUnreadFields, false,
                                   nullptr, false);
@@ -197,27 +197,27 @@ DUNIT_TASK_DEFINITION(CLIENT2, JavaGet)
         ->getTypeRegistry()
         .registerPdxSerializer(std::make_shared<TestPdxSerializer>());
 
-    LOGDEBUG("JavaGet-1 Line_309");
+    LOG_DEBUG("JavaGet-1 Line_309");
     auto region0 = getHelper()->getRegion("DistRegionAck");
 
     auto keyPort1 = CacheableKey::create(1);
 
-    LOGDEBUG("JavaGet-2 Line_314");
+    LOG_DEBUG("JavaGet-2 Line_314");
     auto pdxWrapper1 =
         std::dynamic_pointer_cast<PdxWrapper>(region0->get(keyPort1));
     auto nonPdxType1 = std::static_pointer_cast<PdxTests::NonPdxType>(
         pdxWrapper1->getObject());
 
-    LOGDEBUG("JavaGet-3 Line_316");
+    LOG_DEBUG("JavaGet-3 Line_316");
     auto keyPort2 = CacheableKey::create("putFromjava");
 
-    LOGDEBUG("JavaGet-4 Line_316");
+    LOG_DEBUG("JavaGet-4 Line_316");
     auto pdxWrapper2 =
         std::dynamic_pointer_cast<PdxWrapper>(region0->get(keyPort2));
     auto nonPdxWrapper2 = std::static_pointer_cast<PdxTests::NonPdxType>(
         pdxWrapper2->getObject());
 
-    LOGDEBUG("JavaGet-5 Line_320");
+    LOG_DEBUG("JavaGet-5 Line_320");
   }
 END_TASK_DEFINITION
 
@@ -244,7 +244,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, putFromVersion1_PS)
 
     // Equal check
     bool isEqual = nonPdxType1->equals(*nonPdxType2);
-    LOGDEBUG("putFromVersion1_PS isEqual = %d", isEqual);
+    LOG_DEBUG("putFromVersion1_PS isEqual = %d", isEqual);
     ASSERT(isEqual == true,
            "Task putFromVersion1_PS:Objects of type TestPdxSerializerForV1 "
            "should be equal");
@@ -275,7 +275,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, putFromVersion2_PS)
 
     // Equal check
     bool isEqual = nonPdxType1->equals(*nonPdxType2);
-    LOGDEBUG("putFromVersion2_PS isEqual = %d", isEqual);
+    LOG_DEBUG("putFromVersion2_PS isEqual = %d", isEqual);
     ASSERT(isEqual == true,
            "Task putFromVersion2_PS:Objects of type TestPdxSerializerForV2 "
            "should be equal");
@@ -298,7 +298,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, getputFromVersion1_PS)
     // Create New object and Compare
     auto nonPdxType1 = std::make_shared<PdxTests::TestDiffTypePdxSV1>(true);
     bool isEqual = nonPdxType1->equals(*nonPdxType2);
-    LOGDEBUG("getputFromVersion1_PS-1 isEqual = %d", isEqual);
+    LOG_DEBUG("getputFromVersion1_PS-1 isEqual = %d", isEqual);
     ASSERT(isEqual == true,
            "Task getputFromVersion1_PS:Objects of type TestPdxSerializerForV1 "
            "should be equal");
@@ -311,7 +311,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, getputFromVersion1_PS)
     auto pRet = std::static_pointer_cast<PdxTests::TestDiffTypePdxSV1>(
         pdxWrapper2->getObject());
     isEqual = nonPdxType1->equals(*pRet);
-    LOGDEBUG("getputFromVersion1_PS-2 isEqual = %d", isEqual);
+    LOG_DEBUG("getputFromVersion1_PS-2 isEqual = %d", isEqual);
     ASSERT(isEqual == true,
            "Task getputFromVersion1_PS:Objects of type TestPdxSerializerForV1 "
            "should be equal");
@@ -336,7 +336,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, getAtVersion2_PS)
         pdxWrapper2->getObject());
 
     bool isEqual = testDiffTpePdxSV2->equals(*pRet);
-    LOGDEBUG("getAtVersion2_PS-1 isEqual = %d", isEqual);
+    LOG_DEBUG("getAtVersion2_PS-1 isEqual = %d", isEqual);
     ASSERT(
         isEqual == true,
         "Task getAtVersion2_PS:Objects of type TestPdxSerializerForV2 should "
@@ -350,7 +350,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, getAtVersion2_PS)
         pdxWrapper2->getObject());
     isEqual = testDiffTpePdxSV2->equals(*pRet);
 
-    LOGDEBUG("getAtVersion2_PS-2 isEqual = %d", isEqual);
+    LOG_DEBUG("getAtVersion2_PS-2 isEqual = %d", isEqual);
     ASSERT(
         isEqual == false,
         "Task getAtVersion2_PS:Objects of type TestPdxSerializerForV2 should "

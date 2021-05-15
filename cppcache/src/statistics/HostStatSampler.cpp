@@ -419,7 +419,7 @@ void HostStatSampler::checkDiskLimit() {
         boost::filesystem::remove(file);
         m_spaceUsed -= size;
       } catch (boost::filesystem::filesystem_error& e) {
-        LOGWARN("Could not delete " + file.string() + ": " + e.what());
+        LOG_WARN("Could not delete " + file.string() + ": " + e.what());
       }
     }
   }
@@ -471,12 +471,12 @@ void HostStatSampler::svc(void) {
         }
       } catch (Exception& e) {
         // log the exception and let the thread exit.
-        LOGERROR("Exception in statistics sampler thread: %s: %s",
-                 e.getName().c_str(), e.what());
+        LOG_ERROR("Exception in statistics sampler thread: %s: %s",
+                  e.getName().c_str(), e.what());
         // now close current archiver and see if we can start new one
         gotexception = true;
       } catch (...) {
-        LOGERROR("Unknown Exception in statistics sampler thread: ");
+        LOG_ERROR("Unknown Exception in statistics sampler thread: ");
         gotexception = true;
       }
     }
@@ -486,11 +486,11 @@ void HostStatSampler::svc(void) {
     }
   } catch (Exception& e) {
     // log the exception and let the thread exit.
-    LOGERROR("Exception in statistics sampler thread: %s: %s",
-             e.getName().c_str(), e.what());
+    LOG_ERROR("Exception in statistics sampler thread: %s: %s",
+              e.getName().c_str(), e.what());
   } /* catch (...) {
        // log the exception and let the thread exit.
-       LOGERROR("Exception in sampler thread ");
+       LOG_ERROR("Exception in sampler thread ");
        closeSpecialStats();
    }*/
   m_running = false;

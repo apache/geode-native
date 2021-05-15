@@ -52,7 +52,7 @@ void TcrPoolEndPoint::closeFailedConnection(TcrConnection*& conn) {
 bool TcrPoolEndPoint::isMultiUserMode() { return m_dm->isMultiUserMode(); }
 
 void TcrPoolEndPoint::closeNotification() {
-  LOGFINE("TcrPoolEndPoint::closeNotification..");
+  LOG_FINE("TcrPoolEndPoint::closeNotification..");
   m_notifyReceiver->stopNoblock();
   m_notifyConnectionList.push_back(m_notifyConnection);
   m_notifyReceiverList.push_back(m_notifyReceiver.get());
@@ -78,7 +78,7 @@ GfErrType TcrPoolEndPoint::registerDM(bool, bool isSecondary, bool,
     setConnected(true);
   }
 
-  LOGFINEST(
+  LOG_FINEST(
       "TcrEndpoint::registerPoolDM( ): registering DM and notification "
       "channel for endpoint %s",
       name().c_str());
@@ -88,8 +88,8 @@ GfErrType TcrPoolEndPoint::registerDM(bool, bool isSecondary, bool,
                                    sysProp.connectTimeout() * 3, 0)) !=
         GF_NOERR) {
       setConnected(false);
-      LOGWARN("Failed to start subscription channel for endpoint %s",
-              name().c_str());
+      LOG_WARN("Failed to start subscription channel for endpoint %s",
+               name().c_str());
       return err;
     }
     m_notifyReceiver = std::unique_ptr<Task<TcrEndpoint>>(new Task<TcrEndpoint>(
@@ -97,8 +97,8 @@ GfErrType TcrPoolEndPoint::registerDM(bool, bool isSecondary, bool,
     m_notifyReceiver->start();
   }
   ++m_numRegionListener;
-  LOGFINEST("Incremented notification count for endpoint %s to %d",
-            name().c_str(), m_numRegionListener);
+  LOG_FINEST("Incremented notification count for endpoint %s to %d",
+             name().c_str(), m_numRegionListener);
 
   m_isQueueHosted = true;
   setConnected(true);
@@ -110,14 +110,14 @@ void TcrPoolEndPoint::unregisterDM(bool, ThinClientBaseDM*,
       getQueueHostedMutex());
 
   if (checkQueueHosted && !m_isQueueHosted) {
-    LOGFINEST(
+    LOG_FINEST(
         "TcrEndpoint: unregistering pool DM, notification channel not present "
         "for %s",
         name().c_str());
     return;
   }
 
-  LOGFINEST(
+  LOG_FINEST(
       "TcrEndpoint: unregistering pool DM and closing notification "
       "channel for endpoint %s",
       name().c_str());
@@ -125,10 +125,10 @@ void TcrPoolEndPoint::unregisterDM(bool, ThinClientBaseDM*,
   if (m_numRegionListener > 0 && --m_numRegionListener == 0) {
     closeNotification();
   }
-  LOGFINEST("Decremented notification count for endpoint %s to %d",
-            name().c_str(), m_numRegionListener);
-  LOGFINEST("TcrEndpoint: unregisterPoolDM done for endpoint %s",
-            name().c_str());
+  LOG_FINEST("Decremented notification count for endpoint %s to %d",
+             name().c_str(), m_numRegionListener);
+  LOG_FINEST("TcrEndpoint: unregisterPoolDM done for endpoint %s",
+             name().c_str());
 }
 
 bool TcrPoolEndPoint::handleIOException(const std::string& message,

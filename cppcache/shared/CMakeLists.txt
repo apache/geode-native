@@ -51,6 +51,8 @@ target_include_directories(apache-geode
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
 )
 
+target_compile_definitions(apache-geode PUBLIC GEODE_WITH_LOG_FMT)
+
 set_target_properties(apache-geode PROPERTIES
   PUBLIC_HEADER "${PUBLIC_HEADERS}"
   OUTPUT_NAME ${PRODUCT_LIB_NAME}

@@ -194,7 +194,7 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
       } else {
         if (this->m_tempKeys != nullptr) {
           if (!this->m_hasKeys) {
-            LOGDEBUG(" VCOPL::addAll m_hasKeys should be true here");
+            LOG_DEBUG(" VCOPL::addAll m_hasKeys should be true here");
             this->m_hasKeys = true;
           }
           this->m_tempKeys->insert(this->m_tempKeys->cend(),
@@ -207,7 +207,7 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
     // set m_regionIsVersioned
     this->m_regionIsVersioned |= other->m_regionIsVersioned;
     auto size = other->m_versionTags.size();
-    LOGDEBUG(" VCOPL::addAll other->m_versionTags.size() = %zd ", size);
+    LOG_DEBUG(" VCOPL::addAll other->m_versionTags.size() = %zd ", size);
     // Append m_versionTags
     if (size > 0) {
       this->m_versionTags.insert(this->m_versionTags.cend(),
@@ -223,7 +223,7 @@ class VersionedCacheableObjectPartList : public CacheableObjectPartList {
     } else if (this->m_hasTags) {
       return static_cast<int>(this->m_versionTags.size());
     } else {
-      LOGDEBUG(
+      LOG_DEBUG(
           "DEBUG:: Should not call VCOPL.size() if hasKeys and hasTags both "
           "are false.!!");
     }

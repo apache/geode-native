@@ -19,6 +19,8 @@
 
 #define NOMINMAX
 
+#undef GEODE_WITH_LOG_FMT
+
 #include <winsock2.h>
 #include <vcclr.h>
 #include <msclr/marshal_cppstd.h>

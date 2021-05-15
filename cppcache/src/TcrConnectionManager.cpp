@@ -79,7 +79,7 @@ void TcrConnectionManager::init(bool isPool) {
 
     ping_task_id_ = expiry_manager.schedule(std::move(task),
                                             std::chrono::seconds(10), interval);
-    LOGFINE(
+    LOG_FINE(
         "TcrConnectionManager::TcrConnectionManager Registered ping "
         "task with id = %ld, interval = %ld",
         ping_task_id_, interval.count());
@@ -112,7 +112,7 @@ void TcrConnectionManager::startFailoverAndCleanupThreads(bool isPool) {
 }
 
 void TcrConnectionManager::close() {
-  LOGFINE("TcrConnectionManager is closing");
+  LOG_FINE("TcrConnectionManager is closing");
 
   m_cache->getExpiryTaskManager().cancel(ping_task_id_);
 
@@ -123,7 +123,7 @@ void TcrConnectionManager::close() {
     m_failoverTask = nullptr;
   }
 
-  LOGFINE("TcrConnectionManager is closed");
+  LOG_FINE("TcrConnectionManager is closed");
 }
 
 void TcrConnectionManager::readyForEvents() {
@@ -144,7 +144,7 @@ TcrConnectionManager::~TcrConnectionManager() {
     {
       auto &&guard = m_endpoints.make_lock();
       if (m_endpoints.size() > 0) {
-        LOGFINE("TCCM: endpoints remain in destructor");
+        LOG_FINE("TCCM: endpoints remain in destructor");
       }
     }
   }
@@ -160,7 +160,7 @@ void TcrConnectionManager::connect(
     int32_t numEndPoints = static_cast<int32_t>(endpointStrs.size());
 
     if (numEndPoints == 0) {
-      LOGFINE(
+      LOG_FINE(
           "TcrConnectionManager::connect(): Empty endpointstr vector "
           "passed to TCCM, will initialize endpoints list with all available "
           "endpoints (%zu).",
@@ -168,7 +168,7 @@ void TcrConnectionManager::connect(
       for (const auto &currItr : m_endpoints) {
         auto ep = currItr.second;
         ep->setNumRegions(ep->numRegions() + 1);
-        LOGFINER(
+        LOG_FINER(
             "TCCM 2: incremented region reference count for endpoint %s "
             "to %d",
             ep->name().c_str(), ep->numRegions());
@@ -214,8 +214,8 @@ TcrEndpoint *TcrConnectionManager::addRefToTcrEndpoint(std::string endpointName,
   }
   ep->setNumRegions(ep->numRegions() + 1);
 
-  LOGFINER("TCCM: incremented region reference count for endpoint %s to %d",
-           ep->name().c_str(), ep->numRegions());
+  LOG_FINER("TCCM: incremented region reference count for endpoint %s to %d",
+            ep->name().c_str(), ep->numRegions());
 
   return ep.get();
 }
@@ -243,13 +243,13 @@ bool TcrConnectionManager::removeRefToEndpoint(TcrEndpoint *ep,
   }
   ep->setNumRegions(ep->numRegions() - 1);
 
-  LOGFINER("TCCM: decremented region reference count for endpoint %s to %d",
-           ep->name().c_str(), ep->numRegions());
+  LOG_FINER("TCCM: decremented region reference count for endpoint %s to %d",
+            ep->name().c_str(), ep->numRegions());
 
   if (0 == ep->numRegions()) {
     // this endpoint no longer used
     m_endpoints.erase(ep->name());
-    LOGFINE("delete endpoint %s", ep->name().c_str());
+    LOG_FINE("delete endpoint %s", ep->name().c_str());
     _GEODE_SAFE_DELETE(ep);
     hasRemovedEndpoint = true;
   }
@@ -266,7 +266,7 @@ void TcrConnectionManager::ping_endpoints() {
 }
 
 void TcrConnectionManager::failover(std::atomic<bool> &isRunning) {
-  LOGFINE("TcrConnectionManager: starting failover thread");
+  LOG_FINE("TcrConnectionManager: starting failover thread");
 
   failover_semaphore_.acquire();
   while (isRunning) {
@@ -277,11 +277,11 @@ void TcrConnectionManager::failover(std::atomic<bool> &isRunning) {
           it->failover();
         }
       } catch (const Exception &e) {
-        LOGERROR(e.what());
+        LOG_ERROR(e.what());
       } catch (const std::exception &e) {
-        LOGERROR(e.what());
+        LOG_ERROR(e.what());
       } catch (...) {
-        LOGERROR(
+        LOG_ERROR(
             "Unexpected exception while failing over to a "
             "different endpoint");
       }
@@ -290,7 +290,7 @@ void TcrConnectionManager::failover(std::atomic<bool> &isRunning) {
     failover_semaphore_.acquire();
   }
 
-  LOGFINE("TcrConnectionManager: ending failover thread");
+  LOG_FINE("TcrConnectionManager: ending failover thread");
 }
 
 void TcrConnectionManager::getAllEndpoints(
@@ -326,7 +326,7 @@ GfErrType TcrConnectionManager::registerInterestAllRegions(
 }
 GfErrType TcrConnectionManager::sendSyncRequestCq(TcrMessage &request,
                                                   TcrMessageReply &reply) {
-  LOGDEBUG("TcrConnectionManager::sendSyncRequestCq");
+  LOG_DEBUG("TcrConnectionManager::sendSyncRequestCq");
   GfErrType err = GF_NOERR;
   // Preconditions:
   // 1. m_distMngrs.size() > 1 (query distribution manager + 1 or more
@@ -395,7 +395,7 @@ void TcrConnectionManager::revive() {
 }
 
 void TcrConnectionManager::redundancy(std::atomic<bool> &isRunning) {
-  LOGFINE("Starting subscription maintain redundancy thread.");
+  LOG_FINE("Starting subscription maintain redundancy thread.");
   redundancy_semaphore_.acquire();
 
   while (isRunning) {
@@ -405,7 +405,7 @@ void TcrConnectionManager::redundancy(std::atomic<bool> &isRunning) {
 
     redundancy_semaphore_.acquire();
   }
-  LOGFINE("Ending subscription maintain redundancy thread.");
+  LOG_FINE("Ending subscription maintain redundancy thread.");
 }
 
 void TcrConnectionManager::addNotificationForDeletion(
@@ -418,7 +418,7 @@ void TcrConnectionManager::addNotificationForDeletion(
 }
 
 void TcrConnectionManager::cleanup(std::atomic<bool> &isRunning) {
-  LOGFINE("TcrConnectionManager: starting cleanup thread");
+  LOG_FINE("TcrConnectionManager: starting cleanup thread");
 
   cleanup_semaphore_.acquire();
 
@@ -427,7 +427,7 @@ void TcrConnectionManager::cleanup(std::atomic<bool> &isRunning) {
     cleanup_semaphore_.acquire();
   }
 
-  LOGFINE("TcrConnectionManager: ending cleanup thread");
+  LOG_FINE("TcrConnectionManager: ending cleanup thread");
   //  Postcondition - all notification channels should be cleaned up by the end
   //  of this function.
 }

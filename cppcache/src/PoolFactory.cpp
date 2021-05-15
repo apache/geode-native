@@ -255,11 +255,11 @@ std::shared_ptr<Pool> PoolFactory::create(std::string name) {
 
   auto&& tccm = cacheImpl->tcrConnectionManager();
 
-  LOGDEBUG("PoolFactory::create mulitusermode = %d ",
-           copyAttrs->getMultiuserSecureModeEnabled());
+  LOG_DEBUG("PoolFactory::create mulitusermode = %d ",
+            copyAttrs->getMultiuserSecureModeEnabled());
   if (copyAttrs->getMultiuserSecureModeEnabled()) {
     if (copyAttrs->getThreadLocalConnectionSetting()) {
-      LOGERROR(
+      LOG_ERROR(
           "When pool [%s] is in multiuser authentication mode then thread "
           "local connections are not supported.",
           name.c_str());
@@ -275,12 +275,12 @@ std::shared_ptr<Pool> PoolFactory::create(std::string name) {
       poolDM = std::make_shared<ThinClientPoolStickyDM>(name.c_str(), copyAttrs,
                                                         tccm);
     } else {
-      LOGDEBUG("ThinClientPoolDM created ");
+      LOG_DEBUG("ThinClientPoolDM created ");
       poolDM =
           std::make_shared<ThinClientPoolDM>(name.c_str(), copyAttrs, tccm);
     }
   } else {
-    LOGDEBUG("ThinClientPoolHADM created ");
+    LOG_DEBUG("ThinClientPoolHADM created ");
     if (copyAttrs->getThreadLocalConnectionSetting()) {
       poolDM = std::make_shared<ThinClientPoolStickyHADM>(name.c_str(),
                                                           copyAttrs, tccm);

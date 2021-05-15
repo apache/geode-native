@@ -36,8 +36,6 @@ namespace statistics {
 
 using client::Exception;
 using client::IllegalArgumentException;
-using client::Log;
-using client::LogLevel;
 using client::OutOfMemoryException;
 
 GeodeStatisticsFactory::GeodeStatisticsFactory(StatisticsManager* statMngr) {
@@ -63,14 +61,16 @@ GeodeStatisticsFactory::~GeodeStatisticsFactory() {
     statsTypeMap.clear();
 
   } catch (const Exception& ex) {
-    Log::logCatch(LogLevel::Warning,
-                  "~GeodeStatisticsFactory swallowing Geode exception", ex);
+    std::string message = "Geode exception " + ex.getName() +
+                          " caught: " + ex.getMessage() +
+                          "\n~StatisticsFactory swallowing Geode exception";
+    LOG_WARN(message);
   } catch (const std::exception& ex) {
     std::string what = "~GeodeStatisticsFactory swallowing std::exception: ";
     what += ex.what();
-    LOGWARN(what.c_str());
+    LOG_WARN(what.c_str());
   } catch (...) {
-    LOGERROR("~GeodeStatisticsFactory swallowing unknown exception");
+    LOG_ERROR("~GeodeStatisticsFactory swallowing unknown exception");
   }
 }
 

@@ -55,7 +55,7 @@ class UserPasswordAuthInit : public AuthInitialize {
   std::shared_ptr<Properties> getCredentials(
       const std::shared_ptr<Properties> &securityprops,
       const std::string &) override {
-    // LOGDEBUG("UserPasswordAuthInit: inside userPassword::getCredentials");
+    // LOG_DEBUG("UserPasswordAuthInit: inside userPassword::getCredentials");
     std::shared_ptr<Cacheable> userName;
     if (securityprops == nullptr ||
         (userName = securityprops->find(SECURITY_USERNAME)) == nullptr) {
@@ -72,7 +72,7 @@ class UserPasswordAuthInit : public AuthInitialize {
       passwd = CacheableString::create("");
     }
     credentials->insert(SECURITY_PASSWORD, passwd->value().c_str());
-    // LOGDEBUG("UserPasswordAuthInit: inserted username:password - %s:%s",
+    // LOG_DEBUG("UserPasswordAuthInit: inserted username:password - %s:%s",
     //    userName->toString().c_str(), passwd->toString().c_str());
     return credentials;
   }

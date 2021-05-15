@@ -79,7 +79,7 @@ int testXmlCacheCreationWithRefid(const char *fileName) {
     Root2 = cptr->getRegion("Root2");
     SubRegion21 = Root2->getSubregion("SubRegion21");
   } catch (...) {
-    LOGINFO("Unknown Exception while getting one of the regions");
+    LOG_INFO("Unknown Exception while getting one of the regions");
     return -1;
   }
 
@@ -89,22 +89,22 @@ int testXmlCacheCreationWithRefid(const char *fileName) {
   auto atts = SubRegion11->getAttributes();
 
   if (atts.getCachingEnabled() != true) {
-    LOGINFO("Caching is not enabled in SubRegion11");
+    LOG_INFO("Caching is not enabled in SubRegion11");
     return -1;
   }
 
   if (atts.getInitialCapacity() != 10) {
-    LOGINFO("Initial capacity of SubRegion11 is not 10");
+    LOG_INFO("Initial capacity of SubRegion11 is not 10");
     return -1;
   }
 
   if (atts.getConcurrencyLevel() != 52) {
-    LOGINFO("Concurrency level of SubRegion11 is not 52");
+    LOG_INFO("Concurrency level of SubRegion11 is not 52");
     return -1;
   }
 
   if (fabs(atts.getLoadFactor() - 0.89) > 0.001) {
-    LOGINFO("Load factor of SubRegion11 is not 0.89");
+    LOG_INFO("Load factor of SubRegion11 is not 0.89");
     return -1;
   }
 
@@ -114,22 +114,22 @@ int testXmlCacheCreationWithRefid(const char *fileName) {
   atts = SubRegion2->getAttributes();
 
   if (atts.getCachingEnabled() != true) {
-    LOGINFO("Caching is not enabled in SubRegion2");
+    LOG_INFO("Caching is not enabled in SubRegion2");
     return -1;
   }
 
   if (atts.getInitialCapacity() != 10) {
-    LOGINFO("Initial capacity of SubRegion2 is not 10");
+    LOG_INFO("Initial capacity of SubRegion2 is not 10");
     return -1;
   }
 
   if (fabs(atts.getLoadFactor() - 0.89) > 0.001) {
-    LOGINFO("Load factor of SubRegion2 is not 0.89");
+    LOG_INFO("Load factor of SubRegion2 is not 0.89");
     return -1;
   }
 
   if (atts.getConcurrencyLevel() != 52) {
-    LOGINFO("Concurrency level of SubRegion2 is not 52");
+    LOG_INFO("Concurrency level of SubRegion2 is not 52");
     return -1;
   }
 
@@ -139,42 +139,42 @@ int testXmlCacheCreationWithRefid(const char *fileName) {
   atts = SubRegion21->getAttributes();
 
   if (atts.getCachingEnabled() != true) {
-    LOGINFO("Caching is not enabled in SubRegion21");
+    LOG_INFO("Caching is not enabled in SubRegion21");
     return -1;
   }
 
   if (atts.getInitialCapacity() != 10) {
-    LOGINFO("Initial capacity of SubRegion21 is not 10");
+    LOG_INFO("Initial capacity of SubRegion21 is not 10");
     return -1;
   }
 
   if (fabs(atts.getLoadFactor() - 0.89) > 0.001) {
-    LOGINFO("Load factor of SubRegion21 is not 0.89");
+    LOG_INFO("Load factor of SubRegion21 is not 0.89");
     return -1;
   }
 
   if (atts.getConcurrencyLevel() != 52) {
-    LOGINFO("Concurrency level of SubRegion21 is not 52");
+    LOG_INFO("Concurrency level of SubRegion21 is not 52");
     return -1;
   }
 
   if (atts.getEntryIdleTimeout().count() != 10) {
-    LOGINFO("Entryidletimeout of SubRegion21 is not 10");
+    LOG_INFO("Entryidletimeout of SubRegion21 is not 10");
     return -1;
   }
 
   if (atts.getEntryIdleTimeoutAction() != ExpirationAction::INVALIDATE) {
-    LOGINFO("Entryidletimeoutaction of SubRegion21 is not invalidate");
+    LOG_INFO("Entryidletimeoutaction of SubRegion21 is not invalidate");
     return -1;
   }
 
   if (atts.getRegionIdleTimeout().count() != 20) {
-    LOGINFO("Regionidletimeout of SubRegion21 is not 20");
+    LOG_INFO("Regionidletimeout of SubRegion21 is not 20");
     return -1;
   }
 
   if (atts.getRegionIdleTimeoutAction() != ExpirationAction::DESTROY) {
-    LOGINFO("Regionidletimeoutaction of SubRegion21 is not destroy");
+    LOG_INFO("Regionidletimeoutaction of SubRegion21 is not destroy");
     return -1;
   }
 
@@ -184,62 +184,62 @@ int testXmlCacheCreationWithRefid(const char *fileName) {
   atts = Root2->getAttributes();
 
   if (atts.getCachingEnabled() != true) {
-    LOGINFO("Caching is not enabled in Root2");
+    LOG_INFO("Caching is not enabled in Root2");
     return -1;
   }
 
   if (atts.getInitialCapacity() != 25) {
-    LOGINFO("Initial capacity of Root2 is not 10");
+    LOG_INFO("Initial capacity of Root2 is not 10");
     return -1;
   }
 
   if (fabs(atts.getLoadFactor() - 0.32) > 0.001) {
-    LOGINFO("Load factor of Root2 is not 0.0.32");
+    LOG_INFO("Load factor of Root2 is not 0.0.32");
     return -1;
   }
 
   if (atts.getConcurrencyLevel() != 16) {
-    LOGINFO("Concurrency level of Root2 is not 16");
+    LOG_INFO("Concurrency level of Root2 is not 16");
     return -1;
   }
 
   if (atts.getEntryIdleTimeout().count() != 10) {
-    LOGINFO("Entryidletimeout of Root2 is not 10");
+    LOG_INFO("Entryidletimeout of Root2 is not 10");
     return -1;
   }
 
   if (atts.getEntryIdleTimeoutAction() != ExpirationAction::INVALIDATE) {
-    LOGINFO("Entryidletimeoutaction of Root2 is not invalidate");
+    LOG_INFO("Entryidletimeoutaction of Root2 is not invalidate");
     return -1;
   }
 
   if (atts.getEntryTimeToLive().count() != 0) {
-    LOGINFO("Entrytimetolive of Root2 is not 0");
+    LOG_INFO("Entrytimetolive of Root2 is not 0");
     return -1;
   }
 
   if (atts.getEntryTimeToLiveAction() != ExpirationAction::LOCAL_INVALIDATE) {
-    LOGINFO("Entrytimetoliveaction of Root2 is not local_invalidate");
+    LOG_INFO("Entrytimetoliveaction of Root2 is not local_invalidate");
     return -1;
   }
 
   if (atts.getRegionIdleTimeout().count() != 0) {
-    LOGINFO("Regionidletimeout of Root2 is not 0");
+    LOG_INFO("Regionidletimeout of Root2 is not 0");
     return -1;
   }
 
   if (atts.getRegionIdleTimeoutAction() != ExpirationAction::INVALIDATE) {
-    LOGINFO("Regionidletimeoutaction of Root2 is not invalidate");
+    LOG_INFO("Regionidletimeoutaction of Root2 is not invalidate");
     return -1;
   }
 
   if (atts.getRegionTimeToLive().count() != 0) {
-    LOGINFO("Regiontimetolive of Root2 is not 0");
+    LOG_INFO("Regiontimetolive of Root2 is not 0");
     return -1;
   }
 
   if (atts.getRegionTimeToLiveAction() != ExpirationAction::DESTROY) {
-    LOGINFO("Regiontimetoliveaction of Root2 is not destroy");
+    LOG_INFO("Regiontimetoliveaction of Root2 is not destroy");
     return -1;
   }
 

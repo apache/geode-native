@@ -100,8 +100,8 @@ void CacheTransactionManagerImpl::commit() {
       }
       default: {
         //			noteCommitFailure(txState, nullptr);
-        LOGERROR("Unknown message type in commit reply %d",
-                 reply.getMessageType());
+        LOG_ERROR("Unknown message type in commit reply %d",
+                  reply.getMessageType());
         GfErrTypeThrowException("Commit Failed", GF_MSG);
         break;
       }
@@ -190,14 +190,14 @@ TransactionId& CacheTransactionManagerImpl::suspend() {
   // get the current state of the thread
   auto txState = TSSTXStateWrapper::get().getTXState();
   if (txState == nullptr) {
-    LOGFINE("Transaction not in progress. Returning nullptr transaction Id.");
+    LOG_FINE("Transaction not in progress. Returning nullptr transaction Id.");
     throw TransactionException("Transaction not in progress.");
   }
 
   // get the current connection that this transaction is using
   auto conn = TssConnectionWrapper::get().getConnection();
   if (!conn) {
-    LOGFINE(
+    LOG_FINE(
         "Thread local connection is null. Returning nullptr transaction Id.");
     throw TransactionException("Thread local connection is null.");
   }
@@ -211,7 +211,7 @@ TransactionId& CacheTransactionManagerImpl::suspend() {
   txState->setEPStr(ep->name());
   txState->setPoolDM(ep->getPoolHADM());
 
-  LOGFINE(
+  LOG_FINE(
       "suspended Release the sticky connection associated with the "
       "transaction");
   txState->releaseStickyConnection();
@@ -265,7 +265,8 @@ bool CacheTransactionManagerImpl::tryResume(TransactionId& transactionId,
                                             bool cancelExpiryTask) {
   // get the current state of the thread
   if (TSSTXStateWrapper::get().getTXState() != nullptr) {
-    LOGFINE("A transaction is already in progress. Cannot resume transaction.");
+    LOG_FINE(
+        "A transaction is already in progress. Cannot resume transaction.");
     return false;
   }
 
@@ -282,7 +283,8 @@ bool CacheTransactionManagerImpl::tryResume(
     TransactionId& transactionId, std::chrono::milliseconds waitTime) {
   // get the current state of the thread
   if (TSSTXStateWrapper::get().getTXState() != nullptr) {
-    LOGFINE("A transaction is already in progress. Cannot resume transaction.");
+    LOG_FINE(
+        "A transaction is already in progress. Cannot resume transaction.");
     return false;
   }
 
@@ -303,8 +305,8 @@ void CacheTransactionManagerImpl::resumeTxUsingTxState(TXState* txState,
 
   TcrConnection* conn;
 
-  LOGDEBUG("Resuming transaction for tid: %d",
-           txState->getTransactionId().getId());
+  LOG_DEBUG("Resuming transaction for tid: %d",
+            txState->getTransactionId().getId());
 
   if (cancelExpiryTask) {
     // cancel the expiry task for the transaction
@@ -314,8 +316,8 @@ void CacheTransactionManagerImpl::resumeTxUsingTxState(TXState* txState,
   // set the current state as the state of the suspended transaction
   TSSTXStateWrapper::get().setTXState(txState);
 
-  LOGFINE("Get connection for transaction id %d",
-          txState->getTransactionId().getId());
+  LOG_FINE("Get connection for transaction id %d",
+           txState->getTransactionId().getId());
   // get connection to the endpoint specified in the transaction state
   GfErrType error = txState->getPoolDM()->getConnectionToAnEndPoint(
       txState->getEPStr(), conn);
@@ -328,8 +330,8 @@ void CacheTransactionManagerImpl::resumeTxUsingTxState(TXState* txState,
         GF_CACHE_ILLEGAL_STATE_EXCEPTION);
   } else {
     txState->getPoolDM()->setThreadLocalConnection(conn);
-    LOGFINE("Set the thread local connection for transaction id %d",
-            txState->getTransactionId().getId());
+    LOG_FINE("Set the thread local connection for transaction id %d",
+             txState->getTransactionId().getId());
   }
 }
 
@@ -385,7 +387,7 @@ TXState* CacheTransactionManagerImpl::removeSuspendedTx(
 
   auto txState = removeSuspendedTx(txId);
   if (txState == nullptr) {
-    LOGFINE("Wait for the connection to get suspended, Tid: %d", txId);
+    LOG_FINE("Wait for the connection to get suspended, Tid: %d", txId);
     m_txCond.wait_for(_guard, waitTime, [this, txId, &txState] {
       return nullptr != (txState = removeSuspendedTx(txId));
     });
